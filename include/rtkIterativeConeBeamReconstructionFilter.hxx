@@ -68,10 +68,7 @@ namespace rtk
         fw = rtk::CudaForwardProjectionImageFilter<itk::CudaImage<float, 3>, itk::CudaImage<float, 3>>::New();
       break;
       case(FP_JOSEPHATTENUATED):
-    {
         fw = rtk::JosephForwardAttenuatedProjectionImageFilter<itk::CudaImage<float, 3>, itk::CudaImage<float, 3>>::New();
-        m_CurrentForwardProjectionConfiguration = FP_JOSEPHATTENUATED;
-      }
       break;
       default:
         itkGenericExceptionMacro(<< "Unhandled --fp value.");
@@ -189,10 +186,7 @@ namespace rtk
         bp = rtk::CudaRayCastBackProjectionImageFilter::New();
         break;
       case(BP_JOSEPHATTENUATED):
-    {
         bp = rtk::JosephBackAttenuatedProjectionImageFilter<itk::CudaImage<float, 3>, itk::CudaImage<float, 3>>::New();
-         m_CurrentBackProjectionConfiguration =BP_JOSEPHATTENUATED;
-    }
         break;
       default:
         itkGenericExceptionMacro(<< "Unhandled --bp value.");
@@ -288,6 +282,7 @@ namespace rtk
   {
     if (m_CurrentForwardProjectionConfiguration != fwtype)
       {
+      m_CurrentForwardProjectionConfiguration = fwtype;
       this->Modified();
       }
   }
@@ -299,6 +294,7 @@ namespace rtk
   {
     if (m_CurrentBackProjectionConfiguration != bptype)
       {
+      m_CurrentBackProjectionConfiguration = bptype;
       this->Modified();
       }
   }

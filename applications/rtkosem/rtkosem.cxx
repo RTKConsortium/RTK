@@ -80,25 +80,13 @@ int main(int argc, char * argv[])
     }
 
   itk::ImageSource< OutputImageType >::Pointer attenuationFilter;
-  if(args_info.fp_arg == 2 || args_info.bp_arg == 4)
+  if(args_info.attenuationmap_given)
   {
-    if(args_info.attenuationmap_given)
-      {
-      // Read an existing image to initialize the attenuation map
-      typedef itk::ImageFileReader<  OutputImageType > AttenuationReaderType;
-      AttenuationReaderType::Pointer attenuationReader = AttenuationReaderType::New();
-      attenuationReader->SetFileName( args_info.attenuationmap_arg );
-      attenuationFilter = attenuationReader;
-      }
-    else
-      {
-      // Create new empty attenuation map
-      typedef rtk::ConstantImageSource< OutputImageType > ConstantImageSourceType;
-      ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
-      rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkosem>(constantImageSource, args_info);
-      constantImageSource->SetConstant(0.);
-      attenuationFilter = constantImageSource;
-      }
+    // Read an existing image to initialize the attenuation map
+    typedef itk::ImageFileReader<  OutputImageType > AttenuationReaderType;
+    AttenuationReaderType::Pointer attenuationReader = AttenuationReaderType::New();
+    attenuationReader->SetFileName( args_info.attenuationmap_arg );
+    attenuationFilter = attenuationReader;
   }
 
   // OSEM reconstruction filter
@@ -110,7 +98,7 @@ int main(int argc, char * argv[])
   SetBackProjectionFromGgo(args_info, osem.GetPointer());
   osem->SetInput( inputFilter->GetOutput() );
   osem->SetInput(1, reader->GetOutput());
-  if(args_info.fp_arg == 2 || args_info.bp_arg == 4)
+  if(args_info.attenuationmap_given)
     osem->SetInput(2, attenuationFilter->GetOutput());
   osem->SetGeometry( geometryReader->GetOutputObject() );
 

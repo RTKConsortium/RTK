@@ -129,14 +129,26 @@ OSEMConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>
   m_BackProjectionFilter->SetInput ( 0, m_ConstantVolumeSource->GetOutput() );
   m_BackProjectionFilter->SetInput(1, m_DivideProjectionFilter->GetOutput() );
   if (this->GetBackProjectionFilter() == this->BP_JOSEPHATTENUATED)
+  {
+    if( !(this->GetInput(2)))
+    {
+      itkExceptionMacro(<< "Set Joseph attenuated backprojection filter but no attenuation map is given");
+    }
     m_BackProjectionFilter->SetInput(2, this->GetInput(2));
+  }
 
   m_BackProjectionFilter->SetTranspose(false);
 
   m_BackProjectionNormalizationFilter->SetInput ( 0, m_ConstantVolumeSource->GetOutput() );
   m_BackProjectionNormalizationFilter->SetInput(1, m_OneConstantProjectionStackSource->GetOutput() );
   if (this->GetBackProjectionFilter() == this->BP_JOSEPHATTENUATED)
+  {
+    if( !(this->GetInput(2)))
+    {
+      itkExceptionMacro(<< "Set Joseph attenuated backprojection filter but no attenuation map is given");
+    }
     m_BackProjectionNormalizationFilter->SetInput(2, this->GetInput(2));
+  }
 
   m_BackProjectionNormalizationFilter->SetTranspose(false);
 
@@ -149,7 +161,13 @@ OSEMConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>
   m_ForwardProjectionFilter->SetInput( 0, m_ZeroConstantProjectionStackSource->GetOutput() );
   m_ForwardProjectionFilter->SetInput( 1, this->GetInput(0) );
   if (this->GetForwardProjectionFilter() == this->FP_JOSEPHATTENUATED)
+  {
+    if( !(this->GetInput(2)))
+    {
+      itkExceptionMacro(<< "Set Joseph attenuated forward projection filter but no attenuation map is given");
+    }
     m_ForwardProjectionFilter->SetInput(2, this->GetInput(2));
+  }
 
   m_DivideProjectionFilter->SetInput2(m_ForwardProjectionFilter->GetOutput() );
   m_DivideProjectionFilter->SetConstant(1);
