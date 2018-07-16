@@ -19,6 +19,10 @@
 #ifndef rtkCudaConjugateGradientImageFilter_hxx
 #define rtkCudaConjugateGradientImageFilter_hxx
 
+#include "rtkConfiguration.h"
+//Conditional definition of the class to pass ITKHeaderTest
+#ifdef RTK_USE_CUDA
+
 #include "rtkCudaConjugateGradientImageFilter.h"
 #include "rtkCudaConjugateGradientImageFilter.hcu"
 #include "rtkCudaConstantVolumeSource.h"
@@ -111,4 +115,5 @@ CudaConjugateGradientImageFilter<TImage>
 }
 } // namespace rtk
 
+#endif
 #endif
