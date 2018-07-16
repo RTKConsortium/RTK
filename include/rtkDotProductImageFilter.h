@@ -20,8 +20,12 @@
 
 #include "rtkMacro.h"
 #include "itkMetaProgrammingLibrary.h"
-#include <itkMultiplyImageFilter.h>
 #include <itkEnableIf.h>
+#if ITK_VERSION_MAJOR<5
+# include <itkBinaryFunctorImageFilter.h>
+#else
+# include <itkBinaryGeneratorImageFilter.h>
+#endif
 
 namespace rtk
 {
@@ -76,12 +80,20 @@ namespace Functor
 template< typename TImage >
 class ITK_EXPORT DotProductImageFilter:
   public
-  itk::BinaryGeneratorImageFilter< TImage, TImage, typename itk::Image<typename TImage::InternalPixelType, TImage::ImageDimension> >
+#if ITK_VERSION_MAJOR<5
+    itk::BinaryFunctorImageFilter< TImage, TImage, TImage, typename Functor::DotProduct<TImage, double>  >
+#else
+    itk::BinaryGeneratorImageFilter< TImage, TImage, typename itk::Image<typename TImage::InternalPixelType, TImage::ImageDimension> >
+#endif
 {
 public:
   /** Standard class typedefs. */
   typedef DotProductImageFilter           Self;
+#if ITK_VERSION_MAJOR<5
+  typedef itk::BinaryFunctorImageFilter< TImage, TImage, TImage, typename Functor::DotProduct<TImage, double>  > Superclass;
+#else
   typedef itk::BinaryGeneratorImageFilter< TImage, TImage, typename itk::Image<typename TImage::InternalPixelType, TImage::ImageDimension> > Superclass;
+#endif
   typedef itk::SmartPointer< Self >            Pointer;
   typedef itk::SmartPointer< const Self >      ConstPointer;
 
@@ -93,7 +105,11 @@ public:
 
   /** Runtime information support. */
   itkTypeMacro(DotProductImageFilter,
+#if ITK_VERSION_MAJOR<5
+               itk::BinaryFunctorImageFilter);
+#else
                itk::BinaryGeneratorImageFilter);
+#endif
 
 protected:
   DotProductImageFilter()
