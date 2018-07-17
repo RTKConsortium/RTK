@@ -23,7 +23,6 @@
 #include <itkStatisticsImageFilter.h>
 #include <itkTimeProbe.h>
 
-#include "rtkDotProductImageFilter.h"
 #include "rtkSumOfSquaresImageFilter.h"
 
 #include "rtkConjugateGradientGetR_kPlusOneImageFilter.h"

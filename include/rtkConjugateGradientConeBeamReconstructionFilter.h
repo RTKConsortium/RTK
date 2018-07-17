@@ -137,7 +137,6 @@ public:
     typedef itk::DivideOrZeroOutImageFilter<TOutputImage>                                   DivideFilterType;
     typedef itk::StatisticsImageFilter<TOutputImage>                                        StatisticsImageFilterType;
     typedef typename TOutputImage::Pointer                                                  OutputImagePointer;
-    typedef rtk::DotProductImageFilter<TOutputImage>                                        DotProductFilterType;
     typedef itk::StatisticsImageFilter<TSingleComponentImage>                               StatisticsFilterType;
 
     typedef typename Superclass::ForwardProjectionType ForwardProjectionType;
