@@ -160,20 +160,25 @@ void ConjugateGradientImageFilter<OutputImageType>
 #if ITK_VERSION_MAJOR<5
   // Declare iterators that will be used throughout the calculations
   itk::ImageRegionConstIterator<OutputImageType> itB(this->GetB(), largest);
-  itk::ImageRegionIterator<OutputImageType> itA_out, itP, itR, itX;
+  itk::ImageRegionIterator<OutputImageType> itA_out, itP, itR, itIn, itX;
 
   // Initialize P0 and R0
   itP = itk::ImageRegionIterator<OutputImageType>(Pk, largest);
   itR = itk::ImageRegionIterator<OutputImageType>(Rk, largest);
   itA_out = itk::ImageRegionIterator<OutputImageType>(m_A->GetOutput(), largest);
+  itIn = itk::ImageRegionIterator<OutputImageType>(this->GetX(), largest);
+  itX = itk::ImageRegionIterator<OutputImageType>(this->GetOutput(), largest);
   while(!itP.IsAtEnd())
     {
     itR.Set(itB.Get() - itA_out.Get());
     itP.Set(itR.Get());
+    itX.Set(itIn.Get());
     ++itP;
     ++itR;
     ++itA_out;
     ++itB;
+    ++itIn;
+    ++itX;
     }
 #else
   // Instantiate the multithreader
