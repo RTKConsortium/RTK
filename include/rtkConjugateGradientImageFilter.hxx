@@ -154,8 +154,8 @@ void ConjugateGradientImageFilter<OutputImageType>
   m_A->Update();
 
   // Declare intermediate variables
-  DataType numerator, denominator, alpha, beta, eps;
-  eps = itk::NumericTraits<DataType>::min(eps);
+  DataType numerator, denominator, alpha, beta;
+  DataType eps = itk::NumericTraits<DataType>::min();
 
 #if ITK_VERSION_MAJOR<5
   // Declare iterators that will be used throughout the calculations
