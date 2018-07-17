@@ -126,7 +126,7 @@ int main(int argc, char * argv[])
     itkGenericExceptionMacro(<< "Number of thresholds "<< args_info.thresholds_given << " does not match the number of bins " << nBins);
 
   // Read the detector response image as a matrix, and bin it
-  vnl_matrix<dataType> detectorResponseMatrix(nBins, nEnergies);
+  vnl_matrix<dataType> detectorResponseMatrix(nBins, nEnergies, 0.);
   DetectorResponseType::IndexType indexDet;
   for (unsigned int energy=0; energy<nEnergies; energy++)
     {

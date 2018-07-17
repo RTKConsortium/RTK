@@ -270,7 +270,7 @@ int main(int argc, char*argv[])
     }
 
   // Read the detector response image as a matrix, and bin it
-  vnl_matrix<DataType> detectorResponseMatrix(nBins, nEnergies);
+  vnl_matrix<DataType> detectorResponseMatrix(nBins, nEnergies, 0.);
   DetectorResponseImageType::IndexType indexDet;
   for (unsigned int energy=0; energy<nEnergies; energy++)
     {
