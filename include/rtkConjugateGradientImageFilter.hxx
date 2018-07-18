@@ -215,7 +215,7 @@ void ConjugateGradientImageFilter<OutputImageType>
 #endif
 
   bool stopIterations = false;
-  for(unsigned int iter=0; (iter<m_NumberOfIterations) && !stopIterations; iter++)
+  for(int iter=0; (iter<m_NumberOfIterations) && !stopIterations; iter++)
     {
     // Compute A * Pk
     m_A->SetX(Pk);

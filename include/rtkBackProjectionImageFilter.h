@@ -23,7 +23,6 @@
 
 #include <itkInPlaceImageFilter.h>
 #include <itkConceptChecking.h>
-#include <itkVectorImage.h>
 
 #include "rtkThreeDCircularProjectionGeometry.h"
 

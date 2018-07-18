@@ -20,7 +20,6 @@
 #define rtkSumOfSquaresImageFilter_h
 
 #include <itkInPlaceImageFilter.h>
-#include <itkVectorImage.h>
 
 /** \class SumOfSquaresImageFilter
  * \brief Computes the sum of squared differences between two images

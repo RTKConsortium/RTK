@@ -31,8 +31,6 @@
   #include "rtkCudaRayCastBackProjectionImageFilter.h"
 #endif
 
-#include <itkVectorImage.h>
-
 namespace rtk
 {
 
@@ -106,16 +104,6 @@ private:
   void operator=(const Self&);
 
 }; // end of class
-
-template<>
-rtk::BackProjectionImageFilter<itk::VectorImage<double, 3>, itk::VectorImage<double, 3> >::Pointer
-IterativeConeBeamReconstructionFilter< itk::VectorImage<double, 3>, itk::VectorImage<double, 3> >
-::InstantiateBackProjectionFilter(int bptype);
-
-template<>
-rtk::ForwardProjectionImageFilter<itk::VectorImage<double, 3>,itk::VectorImage<double, 3> >::Pointer
-IterativeConeBeamReconstructionFilter< itk::VectorImage<double, 3>, itk::VectorImage<double, 3> >
-::InstantiateForwardProjectionFilter(int fwtype);
 
 } // end namespace rtk
 
