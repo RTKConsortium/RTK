@@ -1,8 +1,10 @@
-set(ITK_VERSION "v5.0a01")
+set(MSVC_VERSION 14)
+set(MSVC_YEAR 2015)
 foreach(FFTW ON OFF)
-  foreach(DEBUG_RELEASE Debug Release)
+  foreach(DEBUG_RELEASE Release Debug)
     foreach(STATIC_SHARED Static Shared)
-      if(${STATIC_SHARED} EQUAL "Shared")
+      set(BUILD_SHARED_LIBS OFF)
+      if(${STATIC_SHARED} STREQUAL Shared)
         set(BUILD_SHARED_LIBS ON)
       endif()
 
@@ -10,17 +12,20 @@ foreach(FFTW ON OFF)
       set(CTEST_GIT_COMMAND "C:\\Program Files\\Git\\bin\\git.exe")
       set(CTEST_GIT_UPDATE_CUSTOM "${CTEST_GIT_COMMAND} checkout ${ITK_VERSION}")
       set(CTEST_SOURCE_DIRECTORY "D:\\src\\itk\\ITK-${ITK_VERSION}")
-      set(CTEST_BINARY_DIRECTORY "D:\\src\\itk\\ITK-${ITK_VERSION}-${STATIC_SHARED}-${DEBUG_RELEASE}-FFTW${FFTW}")
-      set(CTEST_CMAKE_GENERATOR "Visual Studio 12 2013 Win64")
+      set(CTEST_BINARY_DIRECTORY "D:\\src\\itk\\${MSVC_YEAR}-${ITK_VERSION}-${STATIC_SHARED}-${DEBUG_RELEASE}-FFTW${FFTW}")
+      set(CTEST_CMAKE_GENERATOR "Visual Studio ${MSVC_VERSION} ${MSVC_YEAR} Win64")
       set(CTEST_BUILD_CONFIGURATION ${DEBUG_RELEASE})
       set(CTEST_CONFIGURATION_TYPE ${DEBUG_RELEASE})
 
       set(ENV{PATH} "D:/src/fftw-3.3.7/build/${DEBUG_RELEASE};$ENV{PATH}")
+      set(ENV{PATH} "D:/src/kwstyle;$ENV{PATH}")
 
       ctest_start(Nightly)
       ctest_update()
 
       set(cfg_options
+         -DITK_FUTURE_LEGACY=ON
+         -DITK_LEGACY_REMOVE=ON
          -DBUILD_EXAMPLES=OFF
          -DBUILD_TESTING=OFF
          -DITK_USE_FFTWD=${FFTW}
