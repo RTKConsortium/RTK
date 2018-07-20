@@ -19,27 +19,34 @@
 #ifndef __rtkCudaConjugateGradientImageFilter_hcu
 #define __rtkCudaConjugateGradientImageFilter_hcu
 
+#include "rtkWin32Header.h"
+
 void
+RTK_EXPORT
 CUDA_copy(long int numberOfElements,
           float* in,
           float* out);
 
 void
+RTK_EXPORT
 CUDA_copy(long int numberOfElements,
           double* in,
           double* out);
 
 void
+RTK_EXPORT
 CUDA_subtract( long int numberOfElements,
                float* out,
                float* toBeSubtracted);
 
 void
+RTK_EXPORT
 CUDA_subtract( long int numberOfElements,
                double* out,
                double* toBeSubtracted);
 
 void
+RTK_EXPORT
 CUDA_conjugate_gradient( long int numberOfElements,
                          float* Xk,
                          float* Rk,
@@ -47,6 +54,7 @@ CUDA_conjugate_gradient( long int numberOfElements,
                          float* APk);
 
 void
+RTK_EXPORT
 CUDA_conjugate_gradient( long int numberOfElements,
                          double* Xk,
                          double* Rk,

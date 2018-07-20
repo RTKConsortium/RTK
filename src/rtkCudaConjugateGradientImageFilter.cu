@@ -17,10 +17,8 @@
  *=========================================================================*/
 
 // rtk includes
-#include "rtkCudaConjugateGradientImageFilter.hcu"
 #include "rtkCudaUtilities.hcu"
-
-#include <itkMacro.h>
+#include "rtkCudaConjugateGradientImageFilter.hcu"
 
 // cuda includes
 #include <cuda.h>

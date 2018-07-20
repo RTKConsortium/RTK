@@ -41,7 +41,7 @@ namespace rtk
  */
 
 template < class TImage >
-class ITK_EXPORT CudaConjugateGradientImageFilter :
+class CudaConjugateGradientImageFilter :
   public itk::CudaImageToImageFilter< TImage, TImage,
          ConjugateGradientImageFilter< TImage > >
 {
