@@ -163,6 +163,7 @@ template <class TPixel, unsigned int VImageDimension>
 void CudaImage< TPixel, VImageDimension >::SetPixelContainer(PixelContainer *container)
 {
   Superclass::SetPixelContainer(container);
+  m_DataManager->SetCPUBufferPointer(Superclass::GetBufferPointer());
   m_DataManager->SetCPUDirtyFlag(false);
   m_DataManager->SetGPUDirtyFlag(true);
 }
