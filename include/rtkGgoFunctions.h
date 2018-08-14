@@ -250,7 +250,7 @@ SetProjectionsReaderFromGgo(typename TProjectionsReaderType::Pointer reader,
   geometryReader = rtk::ThreeDCircularProjectionGeometryXMLFileReader::New();
   geometryReader->SetFilename(args_info.geometry_arg);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(geometryReader->GenerateOutputInformation());
-  while (geometryReader->GetGeometry()->GetAngularGaps().size() < fileNames.size()) {
+  while (geometryReader->GetGeometry()->GetGantryAngles().size() < fileNames.size()) {
 	  std::cout << "WARNING: Geometry has less entries than the number of files:\n"
 		  << "Assuming the last file is empty..."
 		  << std::endl;
