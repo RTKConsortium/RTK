@@ -163,10 +163,9 @@ struct HasGeometryArg
 	static const bool Has = sizeof(Test<T>(0)) == sizeof(char);
 };
 
-
 template<class TArgsInfo>
 void
-check_geom_against_files(std::vector<std::string> fileNames, typename TArgsInfo args_info) {
+check_geom_against_files(std::vector<std::string> fileNames, typename TArgsInfo args_info, std::true_type) {
 	rtk::ThreeDCircularProjectionGeometryXMLFileReader::Pointer geometryReader;
 	geometryReader = rtk::ThreeDCircularProjectionGeometryXMLFileReader::New();
 	geometryReader->SetFilename(args_info.geometry_arg);
@@ -177,6 +176,16 @@ check_geom_against_files(std::vector<std::string> fileNames, typename TArgsInfo 
 			<< std::endl;
 		fileNames.pop_back();
 	}
+}
+
+template<class TArgsInfo>
+void
+check_geom_against_files(std::vector<std::string> fileNames, typename TArgsInfo args_info, std::false_type) {}
+
+template<class TArgsInfo>
+void
+check_geom_against_files(std::vector<std::string> fileNames, typename TArgsInfo args_info){
+	check_geom_against_files(fileNames, args_info, std::integral_constant<bool, HasGeometryArg<TArgsInfo>::Has>());
 }
 
 template< class TProjectionsReaderType, class TArgsInfo >
