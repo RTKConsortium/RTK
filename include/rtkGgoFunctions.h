@@ -25,6 +25,7 @@
 #include "rtkMacro.h"
 #include "rtkConstantImageSource.h"
 #include "rtkProjectionsReader.h"
+#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include <itkRegularExpressionSeriesFileNames.h>
 #include <itksys/RegularExpression.hxx>
 
