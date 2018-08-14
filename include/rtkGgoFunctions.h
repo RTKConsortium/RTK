@@ -154,12 +154,37 @@ GetProjectionsFileNamesFromGgo(const TArgsInfo &args_info)
   return names->GetFileNames();
 }
 
+template<typename T>
+struct HasGeometryArg
+{
+	template<typename U, size_t(U::*)() const> struct SFINAE {};
+	template<typename U> static char Test(SFINAE<U, &U::geometry_arg>*);
+	template<typename U> static int Test(...);
+	static const bool Has = sizeof(Test<T>(0)) == sizeof(char);
+};
+
+
+template<class TArgsInfo>
+void
+check_geom_against_files(std::vector<std::string> fileNames, typename TArgsInfo args_info) {
+	rtk::ThreeDCircularProjectionGeometryXMLFileReader::Pointer geometryReader;
+	geometryReader = rtk::ThreeDCircularProjectionGeometryXMLFileReader::New();
+	geometryReader->SetFilename(args_info.geometry_arg);
+	TRY_AND_EXIT_ON_ITK_EXCEPTION(geometryReader->GenerateOutputInformation());
+	while (geometryReader->GetGeometry()->GetGantryAngles().size() < fileNames.size()) {
+		std::cout << "WARNING: Geometry has less entries than the number of files:\n"
+			<< "Assuming the last file is empty..."
+			<< std::endl;
+		fileNames.pop_back();
+	}
+}
+
 template< class TProjectionsReaderType, class TArgsInfo >
 void
 SetProjectionsReaderFromGgo(typename TProjectionsReaderType::Pointer reader,
                             const TArgsInfo &args_info)
 {
-  const std::vector< std::string > fileNames = GetProjectionsFileNamesFromGgo(args_info);
+  std::vector< std::string > fileNames = GetProjectionsFileNamesFromGgo(args_info);
 
   // Vector component extraction
   if(args_info.component_given)
@@ -246,16 +271,8 @@ SetProjectionsReaderFromGgo(typename TProjectionsReaderType::Pointer reader,
     reader->SetWaterPrecorrectionCoefficients(coeffs);
     }
 
-
-  rtk::ThreeDCircularProjectionGeometryXMLFileReader::Pointer geometryReader;
-  geometryReader = rtk::ThreeDCircularProjectionGeometryXMLFileReader::New();
-  geometryReader->SetFilename(args_info.geometry_arg);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(geometryReader->GenerateOutputInformation());
-  while (geometryReader->GetGeometry()->GetGantryAngles().size() < fileNames.size()) {
-	  std::cout << "WARNING: Geometry has less entries than the number of files:\n"
-		  << "Assuming the last file is empty..."
-		  << std::endl;
-	  fileNames.pop_back();
+  if (HasGeometryArg<TArgsInfo>::Has) {
+	  check_geom_against_files<TArgsInfo>(fileNames, args_info);
   }
 
   // Pass list to projections reader
