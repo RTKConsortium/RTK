@@ -49,10 +49,19 @@ rtk::VarianProBeamGeometryReader
   const double sdd = dynamic_cast<MetaDataDoubleType *>(dic["SID"].GetPointer() )->GetMetaDataObjectValue();
   const double sid = dynamic_cast<MetaDataDoubleType *>(dic["SAD"].GetPointer() )->GetMetaDataObjectValue();
 
+  // Get count to avoid the possibly empty last projection
+  // see: https://public.kitware.com/pipermail/rtk-users/2018-August/010622.html
+  typedef itk::MetaDataObject< int > MetaDataIntType;
+  const int count = dynamic_cast<MetaDataIntType *>(dic["Count"].GetPointer())->GetMetaDataObjectValue();
+
   // Projections reader (for angle)
   rtk::XimImageIOFactory::RegisterOneFactory();
+
+  // if count negative it will underflow and number of files will be used.
+  const size_t noProjMax = std::min(m_ProjectionsFileNames.size(), static_cast<size_t>(count));
+
   // Projection matrices
-  for(unsigned int noProj=0; noProj<m_ProjectionsFileNames.size(); noProj++)
+  for(unsigned int noProj=0; noProj<noProjMax; noProj++)
     {
     typedef unsigned int                    InputPixelType;
     typedef itk::Image< InputPixelType, 2 > InputImageType;

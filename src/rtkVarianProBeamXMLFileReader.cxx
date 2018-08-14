@@ -72,6 +72,12 @@ EndElement(const char *name)
     itk::EncapsulateMetaData<std::string>(m_Dictionary, metaName, m_CurCharacterData); \
     }
 
+#define ENCAPLULATE_META_DATA_INT(metaName) \
+  if(itksys::SystemTools::Strucmp(name, metaName) == 0) { \
+    int d = atoi(m_CurCharacterData.c_str() ); \
+    itk::EncapsulateMetaData<int>(m_Dictionary, metaName, d); \
+    }
+
   ENCAPLULATE_META_DATA_DOUBLE("Velocity");
   ENCAPLULATE_META_DATA_DOUBLE("SAD");
   ENCAPLULATE_META_DATA_DOUBLE("SID");
@@ -82,6 +88,7 @@ EndElement(const char *name)
   MODIFY_META_DATA_DOUBLE_MULTIPLY("ImagerResY", "DetectorSizeY");
   ENCAPLULATE_META_DATA_DOUBLE("ImagerLat");
   ENCAPLULATE_META_DATA_STRING("Fan");
+  ENCAPLULATE_META_DATA_INT("Count");
 }
 
 void

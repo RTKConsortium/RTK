@@ -154,13 +154,16 @@ GetProjectionsFileNamesFromGgo(const TArgsInfo &args_info)
   return names->GetFileNames();
 }
 
-template<typename T>
-struct HasGeometryArg
-{
-	template<typename U, size_t(U::*)() const> struct SFINAE {};
-	template<typename U> static char Test(SFINAE<U, &U::geometry_arg>*);
-	template<typename U> static int Test(...);
-	static const bool Has = sizeof(Test<T>(0)) == sizeof(char);
+template<typename T> struct HasGeometryArg {
+	struct Fallback { int geometry_arg; }; // introduce member name "geometry_arg"
+	struct Derived : T, Fallback { };
+
+	template<typename C, C> struct ChT;
+
+	template<typename C> static char(&f(ChT<int Fallback::*, &C::geometry_arg>*))[1];
+	template<typename C> static char(&f(...))[2];
+
+	static bool const Has = sizeof(f<Derived>(0)) == 2;
 };
 
 /** Check if the number of files is larger than the number of entries in the geometry.
@@ -287,7 +290,8 @@ SetProjectionsReaderFromGgo(typename TProjectionsReaderType::Pointer reader,
     coeffs.assign(args_info.wpc_arg, args_info.wpc_arg+args_info.wpc_given);
     reader->SetWaterPrecorrectionCoefficients(coeffs);
     }
-
+  if (HasGeometryArg<TArgsInfo>::Has)
+	  std::cout << "Has geometry arg" << std::endl;
   CheckGeomAgainstFiles<TArgsInfo>(fileNames, args_info);
 
   // Pass list to projections reader
