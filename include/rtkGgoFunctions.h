@@ -245,6 +245,18 @@ SetProjectionsReaderFromGgo(typename TProjectionsReaderType::Pointer reader,
     reader->SetWaterPrecorrectionCoefficients(coeffs);
     }
 
+
+  rtk::ThreeDCircularProjectionGeometryXMLFileReader::Pointer geometryReader;
+  geometryReader = rtk::ThreeDCircularProjectionGeometryXMLFileReader::New();
+  geometryReader->SetFilename(args_info.geometry_arg);
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(geometryReader->GenerateOutputInformation());
+  while (geometryReader->GetGeometry()->GetAngularGaps().size() < fileNames.size()) {
+	  std::cout << "WARNING: Geometry has less entries than the number of files:\n"
+		  << "Assuming the last file is empty..."
+		  << std::endl;
+	  fileNames.pop_back();
+  }
+
   // Pass list to projections reader
   reader->SetFileNames( fileNames );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->UpdateOutputInformation() );
