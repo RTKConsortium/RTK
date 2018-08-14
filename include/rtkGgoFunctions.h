@@ -163,29 +163,37 @@ struct HasGeometryArg
 	static const bool Has = sizeof(Test<T>(0)) == sizeof(char);
 };
 
+/** Check if the number of files is larger than the number of entries in the geometry.
+* If larger, remove the last file from the container until equal */
 template<class TArgsInfo>
 void
-check_geom_against_files(std::vector<std::string> fileNames, typename TArgsInfo args_info, std::true_type) {
+CheckGeomAgainstFiles(std::vector<std::string> fileNames, typename TArgsInfo args_info, std::true_type)
+{
 	rtk::ThreeDCircularProjectionGeometryXMLFileReader::Pointer geometryReader;
 	geometryReader = rtk::ThreeDCircularProjectionGeometryXMLFileReader::New();
 	geometryReader->SetFilename(args_info.geometry_arg);
 	TRY_AND_EXIT_ON_ITK_EXCEPTION(geometryReader->GenerateOutputInformation());
-	while (geometryReader->GetGeometry()->GetGantryAngles().size() < fileNames.size()) {
-		std::cout << "WARNING: Geometry has less entries than the number of files:\n"
-			<< "Assuming the last file is empty..."
-			<< std::endl;
-		fileNames.pop_back();
-	}
+	while (geometryReader->GetGeometry()->GetGantryAngles().size() < fileNames.size())
+	  {
+      std::cout << "WARNING: Geometry has less entries than the number of files:\n"
+        << "Assuming the last file is empty..."
+        << std::endl;
+      fileNames.pop_back();
+	  }
 }
 
 template<class TArgsInfo>
 void
-check_geom_against_files(std::vector<std::string> fileNames, typename TArgsInfo args_info, std::false_type) {}
+CheckGeomAgainstFiles(std::vector<std::string> fileNames, typename TArgsInfo args_info, std::false_type)
+{
+// Intentionally empty
+}
 
+/** Check if TArgsInfo in template instantiation has geometry_arg. */
 template<class TArgsInfo>
 void
-check_geom_against_files(std::vector<std::string> fileNames, typename TArgsInfo args_info){
-	check_geom_against_files(fileNames, args_info, std::integral_constant<bool, HasGeometryArg<TArgsInfo>::Has>());
+CheckGeomAgainstFiles(std::vector<std::string> fileNames, typename TArgsInfo args_info){
+	CheckGeomAgainstFiles(fileNames, args_info, std::integral_constant<bool, HasGeometryArg<TArgsInfo>::Has>());
 }
 
 template< class TProjectionsReaderType, class TArgsInfo >
@@ -280,9 +288,7 @@ SetProjectionsReaderFromGgo(typename TProjectionsReaderType::Pointer reader,
     reader->SetWaterPrecorrectionCoefficients(coeffs);
     }
 
-  if (HasGeometryArg<TArgsInfo>::Has) {
-	  check_geom_against_files<TArgsInfo>(fileNames, args_info);
-  }
+  CheckGeomAgainstFiles<TArgsInfo>(fileNames, args_info);
 
   // Pass list to projections reader
   reader->SetFileNames( fileNames );
