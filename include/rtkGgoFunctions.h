@@ -25,6 +25,7 @@
 #include "rtkMacro.h"
 #include "rtkConstantImageSource.h"
 #include "rtkProjectionsReader.h"
+#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include <itkRegularExpressionSeriesFileNames.h>
 #include <itksys/RegularExpression.hxx>
 
@@ -153,12 +154,59 @@ GetProjectionsFileNamesFromGgo(const TArgsInfo &args_info)
   return names->GetFileNames();
 }
 
+template<typename T> struct HasGeometryArg {
+	struct Fallback { int geometry_arg; }; // introduce member name "geometry_arg"
+	struct Derived : T, Fallback { };
+
+	template<typename C, C> struct ChT;
+
+	template<typename C> static char(&f(ChT<int Fallback::*, &C::geometry_arg>*))[1];
+	template<typename C> static char(&f(...))[2];
+
+	static bool const Has = sizeof(f<Derived>(0)) == 2;
+};
+
+/** Check if the number of files is larger than the number of entries in the geometry.
+* If larger, remove the last file from the container until equal */
+template<class TArgsInfo>
+void
+CheckGeomAgainstFiles(std::vector<std::string> &fileNames, typename TArgsInfo args_info, std::true_type)
+{
+	rtk::ThreeDCircularProjectionGeometryXMLFileReader::Pointer geometryReader;
+	geometryReader = rtk::ThreeDCircularProjectionGeometryXMLFileReader::New();
+	geometryReader->SetFilename(args_info.geometry_arg);
+	TRY_AND_EXIT_ON_ITK_EXCEPTION(geometryReader->GenerateOutputInformation());
+	while (geometryReader->GetGeometry()->GetGantryAngles().size() < fileNames.size())
+	  {
+      std::cout << "WARNING: Geometry has less entries than the number of files:\n"
+        << "Assuming the last file, "
+		<< fileNames.at(fileNames.size()-1)
+		<< ", is empty..."
+        << std::endl;
+      fileNames.pop_back();
+	  }
+}
+
+template<class TArgsInfo>
+void
+CheckGeomAgainstFiles(std::vector<std::string> &fileNames, typename TArgsInfo args_info, std::false_type)
+{
+// Intentionally empty
+}
+
+/** Check if TArgsInfo in template instantiation has geometry_arg. */
+template<class TArgsInfo>
+void
+CheckGeomAgainstFiles(std::vector<std::string> &fileNames, typename TArgsInfo args_info){
+	CheckGeomAgainstFiles(fileNames, args_info, std::integral_constant<bool, HasGeometryArg<TArgsInfo>::Has>());
+}
+
 template< class TProjectionsReaderType, class TArgsInfo >
 void
 SetProjectionsReaderFromGgo(typename TProjectionsReaderType::Pointer reader,
                             const TArgsInfo &args_info)
 {
-  const std::vector< std::string > fileNames = GetProjectionsFileNamesFromGgo(args_info);
+  std::vector< std::string > fileNames = GetProjectionsFileNamesFromGgo(args_info);
 
   // Vector component extraction
   if(args_info.component_given)
@@ -244,6 +292,8 @@ SetProjectionsReaderFromGgo(typename TProjectionsReaderType::Pointer reader,
     coeffs.assign(args_info.wpc_arg, args_info.wpc_arg+args_info.wpc_given);
     reader->SetWaterPrecorrectionCoefficients(coeffs);
     }
+  
+  CheckGeomAgainstFiles<TArgsInfo>(fileNames, args_info);
 
   // Pass list to projections reader
   reader->SetFileNames( fileNames );
