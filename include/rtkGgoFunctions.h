@@ -170,7 +170,7 @@ template<typename T> struct HasGeometryArg {
 * If larger, remove the last file from the container until equal */
 template<class TArgsInfo>
 void
-CheckGeomAgainstFiles(std::vector<std::string> fileNames, typename TArgsInfo args_info, std::true_type)
+CheckGeomAgainstFiles(std::vector<std::string> &fileNames, typename TArgsInfo args_info, std::true_type)
 {
 	rtk::ThreeDCircularProjectionGeometryXMLFileReader::Pointer geometryReader;
 	geometryReader = rtk::ThreeDCircularProjectionGeometryXMLFileReader::New();
@@ -179,7 +179,9 @@ CheckGeomAgainstFiles(std::vector<std::string> fileNames, typename TArgsInfo arg
 	while (geometryReader->GetGeometry()->GetGantryAngles().size() < fileNames.size())
 	  {
       std::cout << "WARNING: Geometry has less entries than the number of files:\n"
-        << "Assuming the last file is empty..."
+        << "Assuming the last file, "
+		<< fileNames.at(fileNames.size()-1)
+		<< ", is empty..."
         << std::endl;
       fileNames.pop_back();
 	  }
@@ -187,7 +189,7 @@ CheckGeomAgainstFiles(std::vector<std::string> fileNames, typename TArgsInfo arg
 
 template<class TArgsInfo>
 void
-CheckGeomAgainstFiles(std::vector<std::string> fileNames, typename TArgsInfo args_info, std::false_type)
+CheckGeomAgainstFiles(std::vector<std::string> &fileNames, typename TArgsInfo args_info, std::false_type)
 {
 // Intentionally empty
 }
@@ -195,7 +197,7 @@ CheckGeomAgainstFiles(std::vector<std::string> fileNames, typename TArgsInfo arg
 /** Check if TArgsInfo in template instantiation has geometry_arg. */
 template<class TArgsInfo>
 void
-CheckGeomAgainstFiles(std::vector<std::string> fileNames, typename TArgsInfo args_info){
+CheckGeomAgainstFiles(std::vector<std::string> &fileNames, typename TArgsInfo args_info){
 	CheckGeomAgainstFiles(fileNames, args_info, std::integral_constant<bool, HasGeometryArg<TArgsInfo>::Has>());
 }
 
@@ -290,8 +292,7 @@ SetProjectionsReaderFromGgo(typename TProjectionsReaderType::Pointer reader,
     coeffs.assign(args_info.wpc_arg, args_info.wpc_arg+args_info.wpc_given);
     reader->SetWaterPrecorrectionCoefficients(coeffs);
     }
-  if (HasGeometryArg<TArgsInfo>::Has)
-	  std::cout << "Has geometry arg" << std::endl;
+  
   CheckGeomAgainstFiles<TArgsInfo>(fileNames, args_info);
 
   // Pass list to projections reader
