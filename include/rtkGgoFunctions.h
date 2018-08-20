@@ -24,6 +24,7 @@
 
 #include "rtkMacro.h"
 #include "rtkConstantImageSource.h"
+#include "rtkIOFactories.h"
 #include "rtkProjectionsReader.h"
 #include <itkRegularExpressionSeriesFileNames.h>
 #include <itksys/RegularExpression.hxx>
@@ -150,7 +151,25 @@ GetProjectionsFileNamesFromGgo(const TArgsInfo &args_info)
         }
       }
     }
-  return names->GetFileNames();
+  
+  std::vector<std::string> fileNames = names->GetFileNames();
+  rtk::RegisterIOFactories();
+  std::vector<size_t> idxtopop;
+  for (auto fn : fileNames) {
+    itk::ImageIOBase::Pointer imageio = itk::ImageIOFactory::CreateImageIO(
+      fn.c_str(), itk::ImageIOFactory::ReadMode);
+
+    if (imageio.IsNull()) {
+      std::cerr << "Ignoring file: " << fn << std::endl;
+      idxtopop.push_back(&fn - &fileNames[0]);
+    }
+  }
+  std::reverse(idxtopop.begin(), idxtopop.end());
+  for (auto id : idxtopop) {
+    fileNames.erase(fileNames.begin() + id);
+  }
+
+  return fileNames;
 }
 
 template< class TProjectionsReaderType, class TArgsInfo >
