@@ -196,10 +196,6 @@ set(RTK_SYSTEM_INCLUDE_DIRS ${RTK_INCLUDE_DIRS})
 set(RTK_MODULE_PATH_CONFIG ${CMAKE_MODULE_PATH})
 set(RTK_USE_FILE "${RTK_SOURCE_DIR}/cmake/UseRTK.cmake")
 set(RTK_LIBRARY_DIRS ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
-configure_file(cmake/RTKConfig.cmake.in RTKConfig.cmake @ONLY)
-configure_file(cmake/RTKConfigVersion.cmake.in RTKConfigVersion.cmake @ONLY)
-
-configure_file(CTestCustom.cmake ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
 
 set(RTK_EXPORT_CODE_BUILD "
   # The RTK version number
@@ -218,6 +214,11 @@ set(RTK_EXPORT_CODE_BUILD "
     set(RTK_CUDA_PROJECTIONS_SLAB_SIZE \"16\" CACHE STRING \"Number of projections processed simultaneously in CUDA forward and back projections\")
   endif()
   ")
+
+configure_file(cmake/RTKConfig.cmake.in RTKConfig.cmake @ONLY)
+configure_file(cmake/RTKConfigVersion.cmake.in RTKConfigVersion.cmake @ONLY)
+
+configure_file(CTestCustom.cmake ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
 
 #=========================================================
 # Configure and build ITK external module
