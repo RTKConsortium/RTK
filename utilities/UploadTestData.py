@@ -97,7 +97,7 @@ def main():
 
     gc = GirderExternalDataCli(args.api_key)
     gc._uploadContentLinkItem(args.content_link, args.test_folder, args.parent_id,
-            reuseExisting=True, dryRun=args.dry_run)
+            reuseExisting=False, dryRun=args.dry_run)
 
 if __name__ == '__main__':
     main()
