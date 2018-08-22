@@ -19,12 +19,13 @@ format, ThreeDCircularProjectionGeometry.
 
 \section ICS Image coordinate system
 
-An \p itk::Image<> contains information to convert voxel indices to
-physical coordinates using its members \p m_Origin, \p m_Spacing and
-\p m_Direction. Voxel coordinates are not used in RTK except for internal
-computation. The conversion from voxel index coordinates to physical
-coordinates and the dimensions of the images are out of the scope of this
-document.
+An \p itk::Image<> contains information to convert voxel indices to physical
+coordinates using its members \p m_Origin, \p m_Spacing and \p m_Direction.
+Voxel coordinates are not used in RTK except for internal computation. The
+conversion from voxel index coordinates to physical coordinates and the
+dimensions of the images are out of the scope of this document. In the
+following, origin refers to point with coordinates \f$\vec{0}\f$ mm (and not to
+\p m_Origin in ITK).
 
 \section FCS Fixed coordinate system
 
@@ -111,7 +112,7 @@ If OutOfPlaneAngle equals 0, it corresponds to \f$\theta r\f$ in Section 2.6 of 
 
 \subsubsection RM Rotation matrix
 
-The rotation matrix in homogeneous coordinate is then (constructed with\\
+The rotation matrix in homogeneous coordinate is then (constructed with
 \p itk::Euler3DTransform<double>::ComputeMatrix() with opposite angles
 because we rotate the volume coordinates instead of the scanner):
 
@@ -144,8 +145,9 @@ because we rotate the volume coordinates instead of the scanner):
 \subsection Drawings
 
 The following drawing describes the parameters of the source and the detector
-positions in the coordinate system \f$(Rx,Ry,Rz)\f$ (i.e., oriented according
-to the detector orientation) when all values are positive:
+positions in the rotated coordinate system \f$(Rx,Ry,Rz)\f$ (i.e., oriented
+according to the detector orientation), with its origin at the isocenter, when
+all values are positive (but all distances can be negative in this geometry):
 
 \image html http://www.openrtk.org/RTK/img/ThreeDCircularProjectionGeometry.svg
 
@@ -168,10 +170,10 @@ SourceOffsetX and SourceOffsetY are optional and zero by default.
 The detector position is defined with respect to the source with three
 parameters: ProjectionOffsetX, ProjectionOffsetY and SourceToDetectorDistance.
 (ProjectionOffsetX,ProjectionOffsetY,SourceToIsocenterDistance-SourceToDetectorDistance)
-are the of the coordinates of the detector origin in the rotated coordinated
-system. In IEC 61217, SourceToDetectorDistance is the RADIATION SOURCE to IMAGE
-RECEPTION AREA distance, SID. ProjectionOffsetX and ProjectionOffsetY are
-optional and zero by default.
+are the coordinates of the detector origin \f$(0,0)\f$ in the rotated
+coordinated system. In IEC 61217, SourceToDetectorDistance is the RADIATION
+SOURCE to IMAGE RECEPTION AREA distance, SID. ProjectionOffsetX and
+ProjectionOffsetY are optional and zero by default.
 
 \subsection FM Final matrix
 
@@ -212,8 +214,8 @@ RadiusCylindricalDetector is 0, and indicates that the detector is a flat panel
 (i.e. infinite radius, but 0 is easier to deal with). When the value is
 non-zero, then the flat detector is curved according to the radius and remain
 tangent to the corresponding flat detector along the line defined by the
-detector origin and second axis of the detector. This is illustrated in the
-following scheme:
+detector origin \f$(0,0)\f$ and second axis of the detector. This is
+illustrated in the following scheme:
 
 \image html http://www.openrtk.org/RTK/img/ThreeDCircularProjectionGeometry_cylindrical.svg
 
@@ -226,7 +228,7 @@ parallel (i.e. infinite distance, but 0 is easier to deal with). The detector
 is then flat. The rays are perpendicular to the detector plane which is
 oriented similarly to the divergent geometry.  The (plane) source is actually
 placed at a distance SourceToIsocenterDistance from the isocenter and the
-detector is placed symetrically around the origin at the same
+detector is placed symetrically around the origin \f$(0,0,0)\f$ at the same
 SourceToIsocenterDistance. This is summarized in the following scheme:
 
 \image html http://www.openrtk.org/RTK/img/ThreeDCircularProjectionGeometry_parallel.svg
