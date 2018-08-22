@@ -67,7 +67,9 @@ namespace rtk
       case(FP_CUDARAYCAST):
         fw = rtk::CudaForwardProjectionImageFilter<itk::CudaImage<float, 3>, itk::CudaImage<float, 3>>::New();
       break;
-
+      case(FP_JOSEPHATTENUATED):
+        fw = rtk::JosephForwardAttenuatedProjectionImageFilter<itk::CudaImage<float, 3>, itk::CudaImage<float, 3>>::New();
+      break;
       default:
         itkGenericExceptionMacro(<< "Unhandled --fp value.");
       }
@@ -88,7 +90,6 @@ namespace rtk
       case(FP_CUDARAYCAST):
         fw = rtk::CudaForwardProjectionImageFilter<itk::CudaImage<itk::Vector<float, 3>, 3>, itk::CudaImage<itk::Vector<float, 3>, 3>>::New();
       break;
-
       default:
         itkGenericExceptionMacro(<< "Unhandled --fp value.");
       }
@@ -96,6 +97,22 @@ namespace rtk
   }
 #endif
 
+  template<> inline
+  typename IterativeConeBeamReconstructionFilter<itk::Image<itk::Vector<float, 3>, 3>, itk::Image<itk::Vector<float, 3>, 3>>::ForwardProjectionPointerType
+  IterativeConeBeamReconstructionFilter<itk::Image<itk::Vector<float, 3>, 3>, itk::Image<itk::Vector<float, 3>, 3>>
+  ::InstantiateForwardProjectionFilter (int fwtype)
+  {
+    ForwardProjectionPointerType fw;
+    switch(fwtype)
+      {
+      case(FP_JOSEPH):
+        fw = rtk::JosephForwardProjectionImageFilter<itk::Image<itk::Vector<float, 3>, 3>, itk::Image<itk::Vector<float, 3>, 3>>::New();
+      break;
+      default:
+        itkGenericExceptionMacro(<< "Unhandled --fp value.");
+      }
+    return fw;
+  }
   template<class TOutputImage, class ProjectionStackType>
   typename IterativeConeBeamReconstructionFilter<TOutputImage, ProjectionStackType>::ForwardProjectionPointerType
   IterativeConeBeamReconstructionFilter<TOutputImage, ProjectionStackType>
@@ -114,7 +131,9 @@ namespace rtk
         itkGenericExceptionMacro(<< "The program has not been compiled with cuda option");
       #endif
       break;
-
+      case(FP_JOSEPHATTENUATED):
+          fw = rtk::JosephForwardAttenuatedProjectionImageFilter<VolumeType, ProjectionStackType>::New();
+      break;
       default:
         itkGenericExceptionMacro(<< "Unhandled --fp value.");
       }
@@ -166,6 +185,9 @@ namespace rtk
       case(BP_CUDARAYCAST):
         bp = rtk::CudaRayCastBackProjectionImageFilter::New();
         break;
+      case(BP_JOSEPHATTENUATED):
+        bp = rtk::JosephBackAttenuatedProjectionImageFilter<itk::CudaImage<float, 3>, itk::CudaImage<float, 3>>::New();
+        break;
       default:
         itkGenericExceptionMacro(<< "Unhandled --bp value.");
       }
@@ -198,6 +220,25 @@ namespace rtk
   }
 #endif
 
+  template<> inline
+  typename IterativeConeBeamReconstructionFilter<itk::Image<itk::Vector<float, 3>, 3>, itk::Image<itk::Vector<float, 3>, 3> >::BackProjectionPointerType
+  IterativeConeBeamReconstructionFilter<itk::Image<itk::Vector<float, 3>, 3>, itk::Image<itk::Vector<float, 3>, 3> >::InstantiateBackProjectionFilter(int bptype)
+  {
+    BackProjectionPointerType bp;
+    switch(bptype)
+      {
+      case(BP_VOXELBASED):
+        bp = rtk::BackProjectionImageFilter<itk::Image<itk::Vector<float, 3>, 3>, itk::Image<itk::Vector<float, 3>, 3> >::New();
+        break;
+      case(BP_JOSEPH):
+        bp = rtk::JosephBackProjectionImageFilter<itk::Image<itk::Vector<float, 3>, 3>, itk::Image<itk::Vector<float, 3>, 3> >::New();
+        break;
+      default:
+        itkGenericExceptionMacro(<< "Unhandled --bp value.");
+      }
+    return bp;
+  }
+
   template<class TOutputImage, class ProjectionStackType>
   typename IterativeConeBeamReconstructionFilter<TOutputImage, ProjectionStackType>::BackProjectionPointerType
   IterativeConeBeamReconstructionFilter<TOutputImage, ProjectionStackType>::InstantiateBackProjectionFilter(int bptype)
@@ -225,6 +266,9 @@ namespace rtk
         itkGenericExceptionMacro(<< "The program has not been compiled with cuda option");
       #endif
         break;
+      case(BP_JOSEPHATTENUATED):
+        bp = rtk::JosephBackAttenuatedProjectionImageFilter<ProjectionStackType, VolumeType>::New();
+        break;
       default:
         itkGenericExceptionMacro(<< "Unhandled --bp value.");
       }
@@ -238,6 +282,7 @@ namespace rtk
   {
     if (m_CurrentForwardProjectionConfiguration != fwtype)
       {
+      m_CurrentForwardProjectionConfiguration = fwtype;
       this->Modified();
       }
   }
@@ -249,6 +294,7 @@ namespace rtk
   {
     if (m_CurrentBackProjectionConfiguration != bptype)
       {
+      m_CurrentBackProjectionConfiguration = bptype;
       this->Modified();
       }
   }

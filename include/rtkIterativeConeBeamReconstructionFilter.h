@@ -22,8 +22,10 @@
 // Forward projection filters
 #include "rtkConfiguration.h"
 #include "rtkJosephForwardProjectionImageFilter.h"
+#include "rtkJosephForwardAttenuatedProjectionImageFilter.h"
 // Back projection filters
 #include "rtkJosephBackProjectionImageFilter.h"
+#include "rtkJosephBackAttenuatedProjectionImageFilter.h"
 
 #ifdef RTK_USE_CUDA
   #include "rtkCudaForwardProjectionImageFilter.h"
@@ -60,8 +62,8 @@ public:
 
   /** Convenient typedefs */
   typedef ProjectionStackType                                                     VolumeType;
-  typedef enum {FP_UNKNOWN=-1, FP_JOSEPH=0, FP_CUDARAYCAST=2}                                    ForwardProjectionType;
-  typedef enum {BP_UNKNOWN=-1, BP_VOXELBASED=0,BP_JOSEPH=1,BP_CUDAVOXELBASED=2,BP_CUDARAYCAST=4} BackProjectionType;
+  typedef enum {FP_UNKNOWN=-1, FP_JOSEPH=0, FP_CUDARAYCAST=2, FP_JOSEPHATTENUATED=3}                                    ForwardProjectionType;
+  typedef enum {BP_UNKNOWN=-1, BP_VOXELBASED=0,BP_JOSEPH=1,BP_CUDAVOXELBASED=2,BP_CUDARAYCAST=4,BP_JOSEPHATTENUATED=5} BackProjectionType;
 
   /** Typedefs of each subfilter of this composite filter */
   typedef rtk::ForwardProjectionImageFilter< VolumeType, ProjectionStackType >    ForwardProjectionFilterType;

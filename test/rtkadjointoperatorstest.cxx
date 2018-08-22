@@ -4,6 +4,8 @@
 #include "rtkConstantImageSource.h"
 #include "rtkJosephBackProjectionImageFilter.h"
 #include "rtkJosephForwardProjectionImageFilter.h"
+#include "rtkJosephBackAttenuatedProjectionImageFilter.h"
+#include "rtkJosephForwardAttenuatedProjectionImageFilter.h"
 #ifdef RTK_USE_CUDA
   #include "rtkCudaForwardProjectionImageFilter.h"
   #include "rtkCudaRayCastBackProjectionImageFilter.h"
@@ -50,6 +52,7 @@ int main(int, char** )
   typedef rtk::ConstantImageSource< OutputImageType > ConstantImageSourceType;
   ConstantImageSourceType::Pointer constantVolumeSource = ConstantImageSourceType::New();
   ConstantImageSourceType::Pointer constantProjectionsSource = ConstantImageSourceType::New();
+  ConstantImageSourceType::Pointer constantAttenuationSource = ConstantImageSourceType::New();
   
   // Image meta data
   RandomImageSourceType::PointType origin;
@@ -86,6 +89,11 @@ int main(int, char** )
   constantVolumeSource->SetSpacing( spacing );
   constantVolumeSource->SetSize( size );
   constantVolumeSource->SetConstant( 0. );
+
+  constantAttenuationSource->SetOrigin( origin );
+  constantAttenuationSource->SetSpacing( spacing );
+  constantAttenuationSource->SetSize( size );
+  constantAttenuationSource->SetConstant( 0.0154 );
 
   // Projections metadata
   origin[0] = -255.;
@@ -254,6 +262,30 @@ int main(int, char** )
       TRY_AND_EXIT_ON_ITK_EXCEPTION( vbp->Update() );
 
       CheckVectorScalarProducts<VectorImageType, VectorImageType>(vectorRandomVolume, vbp->GetOutput(), vectorRandomProjections, vfw->GetOutput());
+
+      std::cout << "\n\n****** Attenuated Joseph Forward projector ******" << std::endl;
+
+      typedef rtk::JosephForwardAttenuatedProjectionImageFilter<OutputImageType, OutputImageType> JosephForwardAttenuatedProjectorType;
+      JosephForwardAttenuatedProjectorType::Pointer attfw = JosephForwardAttenuatedProjectorType::New();
+      attfw->SetInput(0, constantProjectionsSource->GetOutput());
+      attfw->SetInput(1, randomVolumeSource->GetOutput());
+      attfw->SetInput(2, constantAttenuationSource->GetOutput());
+      attfw->SetGeometry( geometry );
+      TRY_AND_EXIT_ON_ITK_EXCEPTION( attfw->Update() );
+
+      std::cout << "\n\n****** Attenuated Joseph Back projector ******" << std::endl;
+
+      typedef rtk::JosephBackAttenuatedProjectionImageFilter<OutputImageType, OutputImageType> JosephBackAttenuatedProjectorType;
+      JosephBackAttenuatedProjectorType::Pointer attbp = JosephBackAttenuatedProjectorType::New();
+      attbp->SetInput(0, constantVolumeSource->GetOutput());
+      attbp->SetInput(1, randomProjectionsSource->GetOutput());
+      attbp->SetInput(2, constantAttenuationSource->GetOutput());
+      attbp->SetGeometry( geometry.GetPointer() );
+
+      TRY_AND_EXIT_ON_ITK_EXCEPTION( attbp->Update() );
+
+      CheckScalarProducts<OutputImageType, OutputImageType>(randomVolumeSource->GetOutput(), attbp->GetOutput(), randomProjectionsSource->GetOutput(), attfw->GetOutput());
+
       std::cout << "\n\nTest PASSED! " << std::endl;
 
     #ifdef USE_CUDA

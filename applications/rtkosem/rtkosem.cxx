@@ -18,6 +18,7 @@
 
 #include "rtkosem_ggo.h"
 #include "rtkGgoFunctions.h"
+#include "chrono"
 
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkOSEMConeBeamReconstructionFilter.h"
@@ -78,6 +79,16 @@ int main(int argc, char * argv[])
     inputFilter = constantImageSource;
     }
 
+  itk::ImageSource< OutputImageType >::Pointer attenuationFilter;
+  if(args_info.attenuationmap_given)
+  {
+    // Read an existing image to initialize the attenuation map
+    typedef itk::ImageFileReader<  OutputImageType > AttenuationReaderType;
+    AttenuationReaderType::Pointer attenuationReader = AttenuationReaderType::New();
+    attenuationReader->SetFileName( args_info.attenuationmap_arg );
+    attenuationFilter = attenuationReader;
+  }
+
   // OSEM reconstruction filter
   rtk::OSEMConeBeamReconstructionFilter< OutputImageType >::Pointer osem =
       rtk::OSEMConeBeamReconstructionFilter< OutputImageType >::New();
@@ -87,6 +98,8 @@ int main(int argc, char * argv[])
   SetBackProjectionFromGgo(args_info, osem.GetPointer());
   osem->SetInput( inputFilter->GetOutput() );
   osem->SetInput(1, reader->GetOutput());
+  if(args_info.attenuationmap_given)
+    osem->SetInput(2, attenuationFilter->GetOutput());
   osem->SetGeometry( geometryReader->GetOutputObject() );
 
   osem->SetNumberOfIterations( args_info.niterations_arg );
@@ -97,7 +110,10 @@ int main(int argc, char * argv[])
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
   writer->SetInput( osem->GetOutput() );
+  std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
   TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() )
-
+  std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
+  auto duration = std::chrono::duration_cast<std::chrono::seconds>( t2 - t1 ).count();
+  std::cout<<"Time: "<<duration<<" s"<<std::endl;
   return EXIT_SUCCESS;
 }

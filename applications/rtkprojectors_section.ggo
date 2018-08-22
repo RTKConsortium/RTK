@@ -1,4 +1,4 @@
 section "Projectors"
-option "fp"    f "Forward projection method" values="Joseph","CudaRayCast" enum no default="Joseph"
-option "bp"    b "Back projection method" values="VoxelBasedBackProjection","Joseph","CudaVoxelBased","CudaRayCast" enum no default="VoxelBasedBackProjection"
+option "fp"    f "Forward projection method" values="Joseph","CudaRayCast","JosephAttenuated" enum no default="Joseph"
+option "bp"    b "Back projection method" values="VoxelBasedBackProjection","Joseph","CudaVoxelBased","CudaRayCast","JosephAttenuated" enum no default="VoxelBasedBackProjection"
 
