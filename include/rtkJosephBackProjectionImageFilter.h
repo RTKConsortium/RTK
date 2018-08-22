@@ -200,10 +200,10 @@ public:
   void SetSumAlongRay(const TSumAlongRay & _arg)
   {
     if ( m_SumAlongRay != _arg )
-    {
+      {
       m_SumAlongRay = _arg;
       this->Modified();
-    }
+      }
   }
 
   /** Each ray is clipped from source+m_InferiorClip*(pixel-source) to

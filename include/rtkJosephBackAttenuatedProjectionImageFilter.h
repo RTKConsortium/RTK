@@ -42,15 +42,16 @@ public:
   InterpolationWeightMultiplicationAttenuatedBackProjection()
   {
     for (int i = 0; i < ITK_MAX_THREADS; i++)
-    {
+      {
       m_AttenuationPixel = 0;
-    }
+      }
   }
 
-  ~InterpolationWeightMultiplicationAttenuatedBackProjection() {};
+  ~InterpolationWeightMultiplicationAttenuatedBackProjection() {}
   bool operator!=( const InterpolationWeightMultiplicationAttenuatedBackProjection & ) const {
     return false;
   }
+
   bool operator==(const InterpolationWeightMultiplicationAttenuatedBackProjection & other) const
   {
     return !( *this != other );
@@ -61,13 +62,14 @@ public:
                              const TInput *p,
                              const int i )
   {
-//    std::cout<<(p+m_AttenuationMinusEmissionMapsPtrDiff)[i]<<std::endl;
     const double w = weight*stepLengthInVoxel;
+
     m_AttenuationPixel += w*(p+m_AttenuationMinusEmissionMapsPtrDiff)[i];
     return w*(p+m_AttenuationMinusEmissionMapsPtrDiff)[i];
   }
+
   void SetAttenuationMinusEmissionMapsPtrDiff(std::ptrdiff_t pd) {m_AttenuationMinusEmissionMapsPtrDiff = pd;}
-  TOutput *GetAttenuationPixel() {return &m_AttenuationPixel;}
+  TOutput * GetAttenuationPixel() {return &m_AttenuationPixel;}
 
 private:
   std::ptrdiff_t m_AttenuationMinusEmissionMapsPtrDiff;
@@ -89,12 +91,14 @@ public:
 
   ComputeAttenuationCorrectionBackProjection(){
     m_ex1 = 1;
-  };
-  ~ComputeAttenuationCorrectionBackProjection() {};
+  }
+
+  ~ComputeAttenuationCorrectionBackProjection() {}
   bool operator!=( const ComputeAttenuationCorrectionBackProjection & ) const
   {
     return false;
   }
+
   bool operator==(const ComputeAttenuationCorrectionBackProjection & other) const
   {
     return !( *this != other );
@@ -106,25 +110,26 @@ public:
                             bool &isNewRay)
   {
     if(isNewRay)
-    {
+      {
       m_ex1 = 1;
       isNewRay =false;
-    }
-    TInput ex2 = exp(-attenuationRay*stepInMM.GetNorm());
+      }
+    TInput ex2 = exp(-attenuationRay*stepInMM.GetNorm() );
     TInput wf;
     if(*m_AttenuationPixel> 0)
-    {
+      {
       wf = (m_ex1 - ex2)/ *m_AttenuationPixel;
-    }
+      }
     else
-    {
+      {
       wf  = m_ex1 * stepInMM.GetNorm();
-    }
+      }
 
     m_ex1 = ex2 ;
     *m_AttenuationPixel= 0;
     return wf *rayValue;
   }
+
   void SetAttenuationPixel( TInput *attenuationPixel) {m_AttenuationPixel = attenuationPixel;}
 
 private:
@@ -144,28 +149,27 @@ template< class TInput, class TCoordRepType, class TOutput=TCoordRepType >
 class SplatWeightMultiplicationAttenuated
 {
 public:
-  SplatWeightMultiplicationAttenuated() {};
-  ~SplatWeightMultiplicationAttenuated() {};
+  SplatWeightMultiplicationAttenuated() {}
+  ~SplatWeightMultiplicationAttenuated() {}
   bool operator!=( const SplatWeightMultiplicationAttenuated & ) const
-    {
+  {
     return false;
-    }
+  }
+
   bool operator==(const SplatWeightMultiplicationAttenuated & other) const
-    {
+  {
     return !( *this != other );
-    }
+  }
 
   inline TOutput operator()( const TInput rayValue,
                              const double stepLengthInVoxel,
                              const double itkNotUsed(voxelSize),
                              const TCoordRepType weight) const
-    {
+  {
     return rayValue * weight * stepLengthInVoxel;
-    }
+  }
 };
-
 } // end namespace Functor
-
 
 /** \class JosephBackAttenuatedProjectionImageFilter
  * \brief Attenuated Joseph back projection.
@@ -230,7 +234,6 @@ private:
   void operator=(const Self&);                  //purposely not implemented
 
 };
-
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
