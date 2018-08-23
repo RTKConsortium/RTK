@@ -155,14 +155,16 @@ GetProjectionsFileNamesFromGgo(const TArgsInfo &args_info)
   std::vector<std::string> fileNames = names->GetFileNames();
   rtk::RegisterIOFactories();
   std::vector<size_t> idxtopop;
+  size_t i = 0;
   for (auto fn : fileNames) {
     itk::ImageIOBase::Pointer imageio = itk::ImageIOFactory::CreateImageIO(
       fn.c_str(), itk::ImageIOFactory::ReadMode);
 
     if (imageio.IsNull()) {
       std::cerr << "Ignoring file: " << fn << std::endl;
-      idxtopop.push_back(&fn - &fileNames[0]);
+      idxtopop.push_back(i);
     }
+    i++;
   }
   std::reverse(idxtopop.begin(), idxtopop.end());
   for (auto id : idxtopop) {
