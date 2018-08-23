@@ -294,7 +294,7 @@ bool rtk::XimImageIO::CanReadFile(const char* FileNameToRead)
 //--------------------------------------------------------------------
 
 template<typename T>
-T rtk::XimImageIO::get_diff(char vsub, FILE* &fp)
+inline T rtk::XimImageIO::get_diff(char vsub, FILE* &fp)
 {
   if (vsub == 0) {
     char diff8;
@@ -344,12 +344,10 @@ void rtk::XimImageIO::Read(void * buffer)
   if ((xdim + 1) != fread(&buf[0], sizeof(Int4), xdim + 1, fp))
     itkGenericExceptionMacro(<< "Could not read first row +1 in: " << m_FileName);
 
-  int lut_idx = 0;
   char vsub;
 
   size_t i = xdim;
   size_t iminxdim = 0;
-  size_t imax = xdim * ydim - 1; // -1 bc how we index
 
   for (int lut_idx = 0; lut_idx < lookUpTableSize; lut_idx++) {
     char v = m_lookup_table[lut_idx];
