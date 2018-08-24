@@ -166,7 +166,7 @@ Reg1DExtractShroudSignalImageFilter<TInputPixel, TOutputPixel>
   typename DuplicatorType::Pointer duplicator = DuplicatorType::New();
   duplicator->SetInputImage(extractor->GetOutput());
   duplicator->Update();
-  const typename RegisterImageType* prev = duplicator->GetOutput();
+  const RegisterImageType* prev = duplicator->GetOutput();
   TOutputPixel pos = itk::NumericTraits<TOutputPixel>::Zero;
 
   typename Superclass::OutputImagePointer output = this->GetOutput();
