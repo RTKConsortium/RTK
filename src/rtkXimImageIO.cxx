@@ -216,7 +216,8 @@ void rtk::XimImageIO::ReadImageInformation()
   this->SetOrigin(0, -0.5 * (xim.SizeX - 1) * xim.dIDUResolutionX); //SR: assumed centered
   this->SetOrigin(1, -0.5 * (xim.SizeY - 1) * xim.dIDUResolutionY); //SR: assumed centered
 
-  this->SetComponentType(itk::ImageIOBase::LONG); // 32 bit ints
+  this->SetPixelType(itk::ImageIOBase::SCALAR);
+  this->SetComponentType(itk::ImageIOBase::UINT); // 32 bit ints
   
   /* Store important meta information in the meta data dictionary */
   if (xim.SizeX * xim.SizeY != 0){
@@ -298,24 +299,30 @@ inline T rtk::XimImageIO::get_diff(char vsub, FILE* &fp)
 {
   if (vsub == 0) {
     char diff8;
-    fread(&diff8, sizeof(char), 1, fp);
-    return static_cast<T>(diff8);
+    if (fread(&diff8, sizeof(char), 1, fp) == 1) {
+      return static_cast<T>(diff8);
+    }
   }
   else if (vsub == 1){
     short diff16;
-    fread(&diff16, sizeof(short), 1, fp);
-    return static_cast<T>(diff16);
+    if (fread(&diff16, sizeof(short), 1, fp) == 1) {
+      return static_cast<T>(diff16);
+    }
   }
   // else if vsub == 2: (only 0, 1 and 2 is possible according to Xim docs)
   Int4 diff32;
-  fread(&diff32, sizeof(Int4), 1, fp);
-  return static_cast<T>(diff32);
+  if (fread(&diff32, sizeof(Int4), 1, fp) == 1) {
+    return static_cast<T>(diff32);
+  }
+
+  itkGenericExceptionMacro(<< "Could not read diff data in: " << this->m_FileName);
 }
 
 // Read Image Content
 void rtk::XimImageIO::Read(void * buffer)
 {
   FILE *fp;
+  // Long is only garanteed to be AT LEAST 32 bits, it could be 64 bit
   Int4 *buf = (Int4*)buffer;
 
   fp = fopen(m_FileName.c_str(), "rb");
