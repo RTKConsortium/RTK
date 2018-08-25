@@ -50,23 +50,24 @@ public:
   typedef itk::ImageIOBase        Superclass;
   typedef itk::SmartPointer<Self> Pointer;
   typedef signed short int        PixelType;
+  typedef itk::int32_t            Int4; // int of 4 bytes as in xim docs
 
   typedef struct xim_header {
     //Actual Header:
     char sFileType[32];
-    itk::int32_t FileVersion;
-    itk::int32_t SizeX;
-    itk::int32_t SizeY;
-    itk::int32_t dBitsPerPixel;
-    itk::int32_t dBytesPerPixel;
-    itk::int32_t dCompressionIndicator;
-    itk::int32_t lookUpTableSize;
-    itk::int32_t compressedPixelBufferSize;
-    itk::int32_t unCompressedPixelBufferSize;
+    Int4 FileVersion;
+    Int4 SizeX;
+    Int4 SizeY;
+    Int4 dBitsPerPixel;
+    Int4 dBytesPerPixel;
+    Int4 dCompressionIndicator;
+    Int4 lookUpTableSize;
+    Int4 compressedPixelBufferSize;
+    Int4 unCompressedPixelBufferSize;
     //Header after pixel-data:
-    itk::int32_t binsInHistogram;
-    itk::int32_t * histogramData;
-    itk::int32_t numberOfProperties;
+    Int4 binsInHistogram;
+    Int4 * histogramData;
+    Int4 numberOfProperties;
     unsigned int nPixelOffset;
     double dCollX1;
     double dCollX2;
@@ -120,10 +121,11 @@ public:
   void Write(const void* buffer) ITK_OVERRIDE;
 
 private:
-  template<typename T> size_t SetPropertyValue(char *property_name, itk::uint32_t value_length, FILE *fp, Xim_header *xim);
+  template<typename T> size_t SetPropertyValue(char *property_name, Int4 value_length, FILE *fp, Xim_header *xim);
+  template<typename T> T get_diff(char vsub, FILE* &fp);
 
   int          m_ImageDataStart;
-  itk::int32_t m_BytesPerPixel;
+  Int4 m_BytesPerPixel;
 
 }; // end class XimImageIO
 
