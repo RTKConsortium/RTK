@@ -42,6 +42,8 @@ namespace rtk
  * \test rtkshortscantest.cxx, rtkshortscancompcudatest.cxx
  *
  * \author peter
+ *
+ * \ingroup RTK
  * \version 0.1
  */
 class RTK_EXPORT CudaParkerShortScanImageFilter :

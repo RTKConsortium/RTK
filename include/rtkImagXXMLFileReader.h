@@ -35,8 +35,9 @@ namespace rtk
 
 /** \class ImagXXMLFileReader
  *
- * TODO
+ * \author Simon Rit
  *
+ * \ingroup RTK
  */
 class ImagXXMLFileReader : public itk::XMLReader<itk::MetaDataDictionary>
 {

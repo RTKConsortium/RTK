@@ -43,7 +43,7 @@ namespace rtk
  *
  * \author Simon Rit
  *
- * \ingroup Projector CudaImageToImageFilter
+ * \ingroup RTK Projector CudaImageToImageFilter
  */
 
 template <class ImageType = itk::CudaImage<float,3> >

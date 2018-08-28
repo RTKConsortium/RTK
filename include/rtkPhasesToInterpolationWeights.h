@@ -30,6 +30,9 @@ namespace rtk
  *
  * Useful for 4D reconstruction of beating heart or breathing thorax
  *
+ * \author Cyril Mory
+ *
+ * \ingroup RTK
  */
 
 class ITK_EXPORT PhasesToInterpolationWeights:public itk::CSVFileReaderBase

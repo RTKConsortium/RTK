@@ -43,7 +43,7 @@ namespace rtk
  *
  * \author Simon Rit
  *
- * \ingroup Functions
+ * \ingroup RTK Functions
  */
 template< class TConstantImageSourceType, class TArgsInfo >
 void
@@ -110,7 +110,7 @@ SetConstantImageSourceFromGgo(typename TConstantImageSourceType::Pointer source,
  *
  * \author Simon Rit
  *
- * \ingroup Functions
+ * \ingroup RTK Functions
  */
 template< class TArgsInfo >
 const std::vector< std::string >
@@ -277,7 +277,7 @@ SetProjectionsReaderFromGgo(typename TProjectionsReaderType::Pointer reader,
  *
  * \author Simon Rit
  *
- * \ingroup Functions
+ * \ingroup RTK Functions
  */
 template< class TArgsInfo, class TIterativeReconstructionFilter >
 void
@@ -312,7 +312,7 @@ SetBackProjectionFromGgo(const TArgsInfo &args_info, TIterativeReconstructionFil
  *
  * \author Simon Rit
  *
- * \ingroup Functions
+ * \ingroup RTK Functions
  */
 template< class TArgsInfo, class TIterativeReconstructionFilter  >
 void

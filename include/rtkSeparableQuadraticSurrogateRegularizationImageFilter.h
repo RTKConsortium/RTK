@@ -36,7 +36,7 @@ namespace rtk
  * From Emission Tomography Data Using a Modified EM Algorithm", by Peter J. Green, IEEE TMI 1990.
  * With respect to Huber, it has the advantage of not requiring a cut-off parameter.
  *
- * \ingroup IntensityImageFilters
+ * \ingroup RTK IntensityImageFilters
  */
 
 template<typename TImage>

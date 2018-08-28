@@ -42,6 +42,8 @@ namespace rtk
  * \see PolynomialGainCorrectionImageFilter
  *
  * \author Sebastien Brousmiche
+ *
+ * \ingroup RTK
  */
 class RTK_EXPORT CudaPolynomialGainCorrectionImageFilter :
     public  itk::CudaInPlaceImageFilter < itk::CudaImage<unsigned short, 3>, itk::CudaImage<float, 3>,

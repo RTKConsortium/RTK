@@ -37,7 +37,12 @@ namespace rtk
  * voxel coordinates. The iterator only works with the
  * ThreeDCircularProjectionGeometry is purely virtual because this geometry
  * can handle parallel geometry with flat panels and cone-beam geometries with
- * flat and curved detectors. */
+ * flat and curved detectors.
+ *
+ * \author Simon Rit
+ *
+ * \ingroup RTK
+ */
 template< typename TImage >
 class ProjectionsRegionConstIteratorRayBasedWithFlatPanel;
 template< typename TImage >

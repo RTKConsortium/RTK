@@ -37,7 +37,7 @@ namespace Functor
  *
  * \author Simon Rit
  *
- * \ingroup Functions
+ * \ingroup RTK Functions
  */
 template< class TInput, class TCoordRepType, class TOutput=TInput >
 class InterpolationWeightMultiplication
@@ -68,7 +68,7 @@ public:
  *
  * \author Antoine Robert
  *
- * \ingroup Functions
+ * \ingroup RTK Functions
  */
 template< class TInput, class TOutput>
 class SumAlongRay
@@ -100,7 +100,7 @@ public:
  *
  * \author Simon Rit
  *
- * \ingroup Functions
+ * \ingroup RTK Functions
  */
 template< class TInput, class TOutput >
 class ProjectedValueAccumulation
@@ -148,7 +148,7 @@ public:
  *
  * \author Simon Rit
  *
- * \ingroup Projector
+ * \ingroup RTK Projector
  */
 
 template <class TInputImage,

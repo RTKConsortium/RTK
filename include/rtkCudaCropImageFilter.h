@@ -42,7 +42,7 @@ namespace rtk
  *
  * \author Marc Vila
  *
- * \ingroup CudaImageToImageFilter
+ * \ingroup RTK CudaImageToImageFilter
  *
  */
 class RTK_EXPORT CudaCropImageFilter :

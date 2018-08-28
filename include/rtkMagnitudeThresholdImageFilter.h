@@ -32,6 +32,9 @@ namespace rtk
  * components of the vector by norm / threshold. Mathematically, it amounts
  * to projecting onto the L_2 ball of radius m_Threshold
  *
+ * \author Cyril Mory
+ *
+ * \ingroup RTK
  */
 template< typename TInputImage,
           typename TRealType = float,

@@ -43,6 +43,8 @@ namespace rtk
  * rtkshortscantest.cxx, rtkfdkprojweightcompcudatest.cxx
  *
  * \author peter
+ *
+ * \ingroup RTK
  * \version 0.1
  */
 class RTK_EXPORT CudaFDKWeightProjectionFilter :

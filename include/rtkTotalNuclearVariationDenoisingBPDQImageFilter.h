@@ -103,7 +103,7 @@ namespace rtk
  *
  * \author Cyril Mory
  *
- * \ingroup IntensityImageFilters
+ * \ingroup RTK IntensityImageFilters
  */
 
 template< typename TOutputImage, typename TGradientImage =

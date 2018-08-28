@@ -128,7 +128,7 @@ namespace rtk
  *
  * \author Simon Rit
  *
- * \ingroup ReconstructionAlgorithm
+ * \ingroup RTK ReconstructionAlgorithm
  */
 template<class TVolumeImage, class TProjectionImage=TVolumeImage>
 class ITK_EXPORT SARTConeBeamReconstructionFilter :

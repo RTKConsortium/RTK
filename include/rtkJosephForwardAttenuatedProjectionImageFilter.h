@@ -37,7 +37,7 @@ namespace Functor
  *
  * \author Antoine Robert
  *
- * \ingroup Functions
+ * \ingroup RTK Functions
  */
 template< class TInput, class TCoordRepType, class TOutput = TInput >
 class InterpolationWeightMultiplicationAttenuated
@@ -93,7 +93,7 @@ private:
  *
  * \author Antoine Robert
  *
- * \ingroup Functions
+ * \ingroup RTK Functions
  */
 template< class TInput, class TOutput>
 class ComputeAttenuationCorrection
@@ -149,7 +149,7 @@ private:
  *
  * \author Antoine Robert
  *
- * \ingroup Functions
+ * \ingroup RTK Functions
  */
 template< class TInput, class TOutput >
 class ProjectedValueAccumulationAttenuated
@@ -205,7 +205,7 @@ private:
  *
  * \author Antoine Robert
  *
- * \ingroup Projector
+ * \ingroup RTK Projector
  */
 
 template <class TInputImage,

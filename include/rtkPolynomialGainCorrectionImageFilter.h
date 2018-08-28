@@ -35,7 +35,7 @@
  *
  * \author Sebastien Brousmiche
  *
- * \ingroup ImageToImageFilter
+ * \ingroup RTK ImageToImageFilter
  */
 
 namespace rtk

@@ -112,6 +112,8 @@ namespace rtk {
  * \test rtkwaveletstest.cxx
  *
  * \author Cyril Mory
+ *
+ * \ingroup RTK
  */
 template <class TImage>
 class DeconstructImageFilter

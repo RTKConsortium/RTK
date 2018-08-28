@@ -35,7 +35,7 @@ namespace rtk
  *
  * \author Marc Vila, C. Mory, S. Brousmiche (IBA)
  *
- * \ingroup IOFilters
+ * \ingroup RTK IOFilters
  */
 template< typename TInputImage >
 class ImagXGeometryReader : public itk::LightProcessObject

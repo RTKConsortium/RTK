@@ -29,8 +29,12 @@ namespace rtk
 {
 
 /** \class DbfField
- * 
+ *
  * Class for the description of a dbase field.
+ *
+ * \author Simon Rit
+ *
+ * \ingroup RTK
  */
 class DbfField
 {
@@ -54,10 +58,14 @@ private:
 };
 
 /** \class DbfFile
- * 
+ *
  * Light dbase file (.dbf) file reader. It assumes little-endianness
  * (least significant byte first). The format describet on this page:
  * http://www.dbf2002.com/dbf-file-format.html
+ *
+ * \author Simon Rit
+ *
+ * \ingroup RTK
  */
 class DbfFile
 {

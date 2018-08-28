@@ -34,6 +34,8 @@ namespace rtk
    * back projection in Weidinger2016
    *
    * \author Cyril Mory
+ *
+ * \ingroup RTK
    *
    */
 template< class TMaterialProjections,

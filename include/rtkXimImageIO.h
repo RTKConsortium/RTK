@@ -40,7 +40,7 @@ namespace rtk {
  *
  * \author Andreas Gravgaard Andersen
  *
- * \ingroup IOFilters
+ * \ingroup RTK IOFilters
  */
 class XimImageIO : public itk::ImageIOBase
 {

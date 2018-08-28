@@ -44,7 +44,7 @@ namespace rtk
  *
  * \author Cyril Mory
  *
- * \ingroup ReconstructionAlgorithm
+ * \ingroup RTK ReconstructionAlgorithm
  */
 template<class TOutputImage,
          class ProjectionStackType=TOutputImage>

@@ -36,6 +36,10 @@ namespace rtk
  *
  * Reads the XML-format file written by a Varian OBI
  * machine for every acquisition
+ *
+ * \author Simon Rit
+ *
+ * \ingroup RTK
  */
 class VarianObiXMLFileReader : public itk::XMLReader<itk::MetaDataDictionary>
 {

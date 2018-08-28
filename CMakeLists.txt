@@ -218,8 +218,6 @@ set(RTK_EXPORT_CODE_BUILD "
 configure_file(cmake/RTKConfig.cmake.in RTKConfig.cmake @ONLY)
 configure_file(cmake/RTKConfigVersion.cmake.in RTKConfigVersion.cmake @ONLY)
 
-configure_file(CTestCustom.cmake ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
-
 #=========================================================
 # Configure and build ITK external module
 #=========================================================

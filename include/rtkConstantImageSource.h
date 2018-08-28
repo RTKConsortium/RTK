@@ -45,7 +45,7 @@ namespace rtk
  *
  * \author Simon Rit
  *
- * \ingroup ImageSource
+ * \ingroup RTK ImageSource
  */
 template <typename TOutputImage>
 class ITK_EXPORT ConstantImageSource : public itk::ImageSource<TOutputImage>

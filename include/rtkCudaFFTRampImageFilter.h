@@ -36,7 +36,7 @@ namespace rtk
  *
  * \author Simon Rit
  *
- * \ingroup CudaImageToImageFilter
+ * \ingroup RTK CudaImageToImageFilter
  */
 class CudaFFTRampImageFilter :
   public CudaFFTProjectionsConvolutionImageFilter< FFTRampImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>, float > >

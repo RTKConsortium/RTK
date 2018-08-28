@@ -33,6 +33,8 @@ namespace rtk
    * values).
    *
    * \author Cyril Mory
+ *
+ * \ingroup RTK
    *
    */
 template< class TDiagonal,

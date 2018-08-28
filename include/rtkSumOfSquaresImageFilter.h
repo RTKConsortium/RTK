@@ -27,6 +27,8 @@
  * Works on vector images too.
  *
  * \author Cyril Mory
+ *
+ * \ingroup RTK
  */
 namespace rtk
 {

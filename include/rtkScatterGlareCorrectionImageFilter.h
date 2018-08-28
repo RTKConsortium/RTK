@@ -35,7 +35,7 @@ namespace rtk
  *
  * \author Sebastien Brousmiche
  *
- * \ingroup ImageToImageFilter
+ * \ingroup RTK ImageToImageFilter
  */
 
 template<class TInputImage, class TOutputImage=TInputImage, class TFFTPrecision=double>

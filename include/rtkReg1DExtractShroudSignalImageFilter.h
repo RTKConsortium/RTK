@@ -31,7 +31,7 @@ namespace rtk
    *
    * \author Vivien Delmon
    *
-   * \ingroup ImageToImageFilter
+   * \ingroup RTK ImageToImageFilter
    */
 
 template<class TInputPixel, class TOutputPixel>

@@ -48,7 +48,7 @@ namespace rtk
  *
  * \author Simon Rit
  *
- * \ingroup ImageToImageFilter
+ * \ingroup RTK ImageToImageFilter
  */
 template <class TInputImage, class TOutputImage>
 class ITK_EXPORT CyclicDeformationImageFilter:

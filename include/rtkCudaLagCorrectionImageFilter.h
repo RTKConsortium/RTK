@@ -42,6 +42,8 @@ namespace rtk
  * \see LagCorrectionImageFilter
  *
  * \author Sebastien Brousmiche
+ *
+ * \ingroup RTK
  */
 class RTK_EXPORT CudaLagCorrectionImageFilter :
   public  itk::CudaInPlaceImageFilter < itk::CudaImage<unsigned short, 3>, itk::CudaImage<unsigned short, 3>,

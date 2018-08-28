@@ -44,7 +44,7 @@ namespace rtk
  *
  * \author Simon Rit
  *
- * \ingroup Projector
+ * \ingroup RTK Projector
  */
 template <class TInputImage, class TOutputImage>
 class BackProjectionImageFilter :

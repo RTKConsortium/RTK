@@ -39,7 +39,7 @@ namespace rtk
  *
  * \author Cyril Mory
  *
- * \ingroup ImageToImageFilter
+ * \ingroup RTK ImageToImageFilter
  */
 template<class TInputImage, class TOutputImage=TInputImage>
 class ITK_EXPORT ReorderProjectionsImageFilter :

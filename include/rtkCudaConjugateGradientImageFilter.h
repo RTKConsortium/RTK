@@ -37,7 +37,7 @@ namespace rtk
  *
  * \author Cyril Mory
  *
- * \ingroup CudaImageToImageFilter
+ * \ingroup RTK CudaImageToImageFilter
  */
 
 template < class TImage >

@@ -35,6 +35,8 @@ namespace rtk
  * \test rtkfourdroostertest
  *
  * \author Cyril Mory
+ *
+ * \ingroup RTK
  */
 template <class TInputImage,
           class TOutputImage = TInputImage,

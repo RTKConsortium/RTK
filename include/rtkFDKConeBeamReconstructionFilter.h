@@ -57,7 +57,7 @@ namespace rtk
  *
  * \author Simon Rit
  *
- * \ingroup ReconstructionAlgorithm
+ * \ingroup RTK ReconstructionAlgorithm
  */
 template<class TInputImage, class TOutputImage=TInputImage, class TFFTPrecision=double>
 class ITK_EXPORT FDKConeBeamReconstructionFilter :

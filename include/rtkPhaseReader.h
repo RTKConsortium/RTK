@@ -24,9 +24,13 @@ namespace rtk
 {
 
 /** \class PhaseReader
+ *
  * \brief Parses csv file containing the cardiac or respiratory phases of each projection.
+ *
+ * \author Cyril Mory
+ *
+ * \ingroup RTK
  */
-
 class ITK_EXPORT PhaseReader:public itk::CSVFileReaderBase
 {
 public:

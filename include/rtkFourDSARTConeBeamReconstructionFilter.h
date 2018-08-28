@@ -114,7 +114,7 @@ namespace rtk
  *
  * \author Cyril Mory
  *
- * \ingroup ReconstructionAlgorithm
+ * \ingroup RTK ReconstructionAlgorithm
  */
 template<class VolumeSeriesType, class ProjectionStackType>
 class ITK_EXPORT FourDSARTConeBeamReconstructionFilter :

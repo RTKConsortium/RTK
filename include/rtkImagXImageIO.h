@@ -30,9 +30,10 @@ namespace rtk
 
 /** \class ImagXImageIO
  *
- * TODO
+ * \author Simon Rit
  *
- */
+ * \ingroup RTK
+*/
 class ImagXImageIO : public itk::ImageIOBase
 {
 public:

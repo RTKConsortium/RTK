@@ -36,7 +36,7 @@ namespace rtk
    *
    * \author Cyril Mory
    *
-   * \ingroup ReconstructionAlgorithm
+   * \ingroup RTK ReconstructionAlgorithm
    */
 
 // We have to define the cost function first

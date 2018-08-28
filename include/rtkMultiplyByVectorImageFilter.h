@@ -32,6 +32,8 @@ namespace rtk
    * must be equal to vector's size.
    *
    * \author Cyril Mory
+ *
+ * \ingroup RTK
    *
    */
 template< class TInputImage>

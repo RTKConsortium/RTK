@@ -31,7 +31,7 @@ namespace rtk
  *
  * \author Cyril Mory
  *
- * \ingroup Functions
+ * \ingroup RTK Functions
  */
 
 inline

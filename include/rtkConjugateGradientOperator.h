@@ -22,6 +22,12 @@
 
 namespace rtk
 {
+/** \class ConjugateGradientOperator
+ *
+ * \author Cyril Mory
+ *
+ * \ingroup RTK
+ */
 template< typename OutputImageType>
 class ConjugateGradientOperator : public itk::ImageToImageFilter< OutputImageType, OutputImageType>
 {

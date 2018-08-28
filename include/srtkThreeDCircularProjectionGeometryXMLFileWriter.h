@@ -35,6 +35,7 @@ namespace rtk {
 	 * defined in rtkThreeDCircularProjectionGeometryXMLFile.h to expose the
 	 * writer when wrapping RTK for python.
 	 * \sa rtkThreeDCircularProjectionGeometryXMLFile.h
+     * \ingroup RTK
      */
     class RTK_EXPORT ThreeDCircularProjectionGeometryXMLFileWriter :
       public itk::ProcessObject

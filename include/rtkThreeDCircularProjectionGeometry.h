@@ -44,7 +44,7 @@ namespace rtk
  *
  * \author Simon Rit
  *
- * \ingroup ProjectionGeometry
+ * \ingroup RTK ProjectionGeometry
  */
 
 class RTK_EXPORT ThreeDCircularProjectionGeometry : public ProjectionGeometry<3>

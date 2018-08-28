@@ -28,8 +28,9 @@ namespace rtk
 
 /** \class DCMImagXImageIO
  *
+ * \author Simon Rit
  *
- *
+ * \ingroup RTK
  */
 class DCMImagXImageIO : public itk::GDCMImageIO
 {

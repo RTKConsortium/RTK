@@ -25,6 +25,12 @@
 
 namespace rtk
 {
+/** \class ConjugateGradientGetP_kPlusOneImageFilter
+ *
+ * \author Cyril Mory
+ *
+ * \ingroup RTK
+ */
 template< typename TInputImage>
 class ConjugateGradientGetP_kPlusOneImageFilter : public itk::ImageToImageFilter< TInputImage, TInputImage>
 {

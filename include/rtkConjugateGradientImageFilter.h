@@ -39,6 +39,7 @@ namespace rtk
  * ConjugateGradientImageFilter implements the algorithm described
  * in http://en.wikipedia.org/wiki/Conjugate_gradient_method
  *
+ * \ingroup RTK
 */
 
 template< typename OutputImageType>

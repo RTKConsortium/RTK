@@ -34,7 +34,7 @@ namespace rtk
  *
  * \author Simon Rit
  *
- * \ingroup IOFilters
+ * \ingroup RTK IOFilters
  */
 class RTK_EXPORT OraGeometryReader : public itk::LightProcessObject
 {

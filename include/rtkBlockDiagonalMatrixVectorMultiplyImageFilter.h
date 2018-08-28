@@ -27,6 +27,8 @@ namespace rtk
    * \brief Multiplies matrix by vector
    *
    * \author Cyril Mory
+ *
+ * \ingroup RTK
    *
    */
 template< class TVectorImage,

@@ -32,7 +32,7 @@ namespace rtk
  *
  * \author Marc Vila, Simon Rit
  *
- * \ingroup InPlaceImageFilter
+ * \ingroup RTK InPlaceImageFilter
  */
 template <class TInputImage, class TOutputImage>
 class DrawConeImageFilter:
