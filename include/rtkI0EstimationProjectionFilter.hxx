@@ -69,7 +69,11 @@ void I0EstimationProjectionFilter< TInputImage, TOutputImage, bitShift >
     *it = 0;
     }
 
+#if ITK_VERSION_MAJOR<5
   m_Nthreads = this->GetNumberOfThreads();
+#else
+  m_Nthreads = this->GetNumberOfWorkUnits();
+#endif
   m_Nsync = 0;
 
   if ( m_Reset )

@@ -88,8 +88,11 @@ void ConjugateGradientGetR_kPlusOneImageFilter<TInputType>
   // itkImageSource::SplitRequestedRegion. Sometimes this number is less than
   // the number of threads requested.
   OutputImageRegionType dummy;
-  unsigned int actualThreads = this->SplitRequestedRegion(
-    0, this->GetNumberOfThreads(), dummy);
+#if ITK_VERSION_MAJOR<5
+  unsigned int actualThreads = this->SplitRequestedRegion(0, this->GetNumberOfThreads(), dummy);
+#else
+  unsigned int actualThreads = this->SplitRequestedRegion(0, this->GetNumberOfWorkUnits(), dummy);
+#endif
 
   m_Barrier = itk::Barrier::New();
   m_Barrier->Initialize(actualThreads);
@@ -98,7 +101,11 @@ void ConjugateGradientGetR_kPlusOneImageFilter<TInputType>
   m_SquaredNormR_kPlusOneVector.clear();
   m_PktApkVector.clear();
 
+#if ITK_VERSION_MAJOR<5
   for (unsigned int i=0; i<this->GetNumberOfThreads(); i++)
+#else
+  for (unsigned int i=0; i<this->GetNumberOfWorkUnits(); i++)
+#endif
     {
     m_SquaredNormR_kVector.push_back(0);
     m_SquaredNormR_kPlusOneVector.push_back(0);
@@ -140,7 +147,11 @@ void ConjugateGradientGetR_kPlusOneImageFilter<TInputType>
   // Each thread computes alpha_k
   double squaredNormR_k = 0;
   double p_k_t_A_p_k = 0;
+#if ITK_VERSION_MAJOR<5
   for (unsigned int i=0; i<this->GetNumberOfThreads(); i++)
+#else
+  for (unsigned int i=0; i<this->GetNumberOfWorkUnits(); i++)
+#endif
     {
     squaredNormR_k += m_SquaredNormR_kVector[i];
     p_k_t_A_p_k += m_PktApkVector[i];
@@ -173,7 +184,11 @@ void ConjugateGradientGetR_kPlusOneImageFilter<TInputType>
   m_SquaredNormR_k = 0;
   m_SquaredNormR_kPlusOne = 0;
   double p_k_t_A_p_k = 0;
+#if ITK_VERSION_MAJOR<5
   for (unsigned int i=0; i<this->GetNumberOfThreads(); i++)
+#else
+  for (unsigned int i=0; i<this->GetNumberOfWorkUnits(); i++)
+#endif
     {
     m_SquaredNormR_k += m_SquaredNormR_kVector[i];
     m_SquaredNormR_kPlusOne += m_SquaredNormR_kPlusOneVector[i];
