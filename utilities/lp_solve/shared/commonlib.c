@@ -370,8 +370,8 @@ int CMP_CALLMODEL compareREAL(const void *current, const void *candidate)
    where interchanges are reflected in a caller-initialized integer "tags" list. */
 void hpsort(void *attributes, int count, int offset, int recsize, MYBOOL descending, findCompare_func findCompare)
 {
-  register int  i, j, k, ir, order;
-  register char *hold, *base;
+  int  i, j, k, ir, order;
+  char *hold, *base;
   char          *save;
 
   if(count < 2)
@@ -432,8 +432,8 @@ void hpsortex(void *attributes, int count, int offset, int recsize, MYBOOL desce
     return;
   }
   else {
-    register int  i, j, k, ir, order;
-    register char *hold, *base;
+    int  i, j, k, ir, order;
+    char *hold, *base;
     char          *save;
     int           savetag;
 
@@ -517,7 +517,7 @@ void qsortex_swap(void *attributes, int l, int r, int recsize,
 int qsortex_sort(void *attributes, int l, int r, int recsize, int sortorder, findCompare_func findCompare,
                         void *tags, int tagsize, char *save, char *savetag)
 {
-  register int i, j, nmove = 0;
+  int i, j, nmove = 0;
   char     *v;
 
   /* Perform the a fast QuickSort */
@@ -656,7 +656,7 @@ void QS_delete(UNIONTYPE QSORTrec a[], int ipos, int epos)
 }
 int QS_sort(UNIONTYPE QSORTrec a[], int l, int r, findCompare_func findCompare)
 {
-  register int i, j, nmove = 0;
+  int i, j, nmove = 0;
   UNIONTYPE QSORTrec v;
 
   /* Perform the a fast QuickSort */

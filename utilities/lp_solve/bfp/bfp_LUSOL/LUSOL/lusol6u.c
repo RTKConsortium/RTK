@@ -100,7 +100,7 @@ void LU6U0_v(LUSOLrec *LUSOL, LUSOLmat *mat, REAL V[], REAL W[], int NZidx[], in
 #endif
   int  LEN, I, K, L, L1, NRANK, NRANK1, KLAST;
   REAL SMALL;
-  register REAL T;
+  REAL T;
 #if (defined xxLUSOLFastSolve) && !(defined DoTraceU0)
   REAL *aptr;
   int  *jptr;

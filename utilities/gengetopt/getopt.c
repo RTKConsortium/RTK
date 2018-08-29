@@ -337,7 +337,7 @@ exchange (argv)
 	{
 	  /* Bottom segment is the short one.  */
 	  int len = middle - bottom;
-	  register int i;
+	  int i;
 
 	  /* Swap it with the top part of the top segment.  */
 	  for (i = 0; i < len; i++)
@@ -354,7 +354,7 @@ exchange (argv)
 	{
 	  /* Top segment is the short one.  */
 	  int len = top - middle;
-	  register int i;
+	  int i;
 
 	  /* Swap it with the bottom part of the bottom segment.  */
 	  for (i = 0; i < len; i++)
