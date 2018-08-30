@@ -47,7 +47,6 @@ set(RTK_SRCS
   rtkXRadGeometryReader.cxx
   rtkXRadImageIO.cxx
   rtkXRadImageIOFactory.cxx
-  srtkThreeDCircularProjectionGeometryXMLFileWriter.cxx
   )
 
 #=========================================================
