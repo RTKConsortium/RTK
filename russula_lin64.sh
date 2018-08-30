@@ -10,4 +10,5 @@ rsync -e 'ssh -i /home/srit/.ssh/nophrase' -a --delete \
 ctest -S /home/srit/src/rtk/rtk-dashboard/russula_suse_gcc_nocuda_valgrind.cmake -V
 ctest -S /home/srit/src/rtk/rtk-dashboard/russula_suse_gcc_cuda_valgrind.cmake -V
 ctest -S /home/srit/src/rtk/rtk-dashboard/russula_suse_gcc_cuda_cov.cmake -V
+ctest -S /home/srit/src/rtk/rtk-dashboard/russula_suse_gcc_space.cmake -V
 
