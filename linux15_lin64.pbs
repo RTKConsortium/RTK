@@ -1,6 +1,5 @@
 #PBS -N rtk_dashboard
-#PBS -l walltime=10:00:00,nodes=1:ppn=12,mem=16gb
-#PBS -W x=GRES:gpu@1
+#PBS -l walltime=10:00:00,nodes=1:ppn=12:gpus=1:shared,mem=16gb
 #PBS -o /home/srit/tmp/rtk_dashboard.out
 #PBS -e /home/srit/tmp/rtk_dashboard.err
 #PBS -q gpu
@@ -21,7 +20,7 @@ export CUDA_INC_PATH=/usr/include/cuda
 
 rm -fr /tmp/RTK_dashboard
 mkdir /tmp/RTK_dashboard
-git clone -b RTK-ExternalModule git://github.com/SimonRit/RTK.git /tmp/RTK_dashboard/RTK
+git clone git://github.com/SimonRit/RTK.git /tmp/RTK_dashboard/RTK
 
 /bin/time ctest -VV -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_nocuda_system_itk4.cmake -V
 /bin/time ctest -VV -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_cuda_system_itk4_cov.cmake -V
