@@ -7,7 +7,7 @@ set(CTEST_DASHBOARD_ROOT "/tmp/RTK_dashboard")
 set(dashboard_binary_name "RTK_lin64_gcc_cuda_system_itk4_valgrind")
 set(ENV{ITK_DIR} "/home/srit/src/itk/lin64-dg")
 set(CTEST_BUILD_FLAGS -j12)
-set(ENV{CXXFLAGS} "-fPIC -std=c++11")
+set(ENV{CXXFLAGS} "-fPIC -std=c++11 --param=max-vartrack-size=60000000")
 
 set(CONFIGURE_OPTIONS
    -DCUDA_NVCC_FLAGS:STRING=-std=c++11
