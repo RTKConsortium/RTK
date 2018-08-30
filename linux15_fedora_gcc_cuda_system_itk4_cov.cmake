@@ -10,7 +10,7 @@ set(CTEST_BUILD_FLAGS -j12)
 
 # Coverage
 SET(CTEST_COVERAGE_COMMAND "/usr/bin/gcov")
-SET(ENV{CXXFLAGS} "-g -O0 -fprofile-arcs -ftest-coverage -Wno-deprecated -Wno-unused-local-typedefs -Wall")
+SET(ENV{CXXFLAGS} "-fPIC -std=c++11 -g -O0 -fprofile-arcs -ftest-coverage -Wno-deprecated -Wno-unused-local-typedefs -Wall")
 SET(ENV{CFLAGS} "-g -O0 -fprofile-arcs -ftest-coverage -Wall")
 SET(ENV{LDFLAGS} "-fprofile-arcs -ftest-coverage")
 set(CTEST_CUSTOM_COVERAGE_EXCLUDE
@@ -19,7 +19,7 @@ set(CTEST_CUSTOM_COVERAGE_EXCLUDE
     "/utilities/"
     ".ggo"
     )
-set(CTEST_EXTRA_COVERAGE_GLOB "/code/*.h" "/code/*.cxx" "/code/*.hxx")
+set(CTEST_EXTRA_COVERAGE_GLOB "/include/*.h" "/src/*.cxx" "/include/*.hxx")
 SET(CONFIGURE_OPTIONS ${CONFIGURE_OPTIONS}
                       -DFAST_TESTS_NO_CHECKS=TRUE)
 set(dashboard_do_coverage true)
