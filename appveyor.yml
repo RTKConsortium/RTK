@@ -41,6 +41,11 @@ cache:
   - '%ITK_SOURCE_DIR%'
   - '%ITK_BINARY_DIR%'
 
+branches:
+  except:
+    - dashboard
+    - hooks
+
 build:
   parallel: true
   verbosity: minimal
