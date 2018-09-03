@@ -9,7 +9,5 @@ set(ENV{ITK_DIR} "/home/srit/src/itk/lin64-dg")
 set(CTEST_BUILD_FLAGS -j12)
 set(ENV{CXXFLAGS} "-fPIC -std=c++11")
 
-set(ENV{LD_LIBRARY_PATH} "/usr/lib64:$ENV{LD_LIBRARY_PATH}")
-
 include("${CTEST_SCRIPT_DIRECTORY}/rtk_common.cmake")
 
