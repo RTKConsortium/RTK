@@ -33,7 +33,7 @@ namespace rtk
  *
  * \author Marc Vila, Simon Rit
  *
- * \ingroup Functions
+ * \ingroup RTK Functions
  */
 class RTK_EXPORT GeometricPhantomFileReader :
     public itk::LightProcessObject

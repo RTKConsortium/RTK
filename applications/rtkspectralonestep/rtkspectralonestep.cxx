@@ -38,20 +38,19 @@ int main(int argc, char * argv[])
   typedef float dataType;
   const unsigned int Dimension = 3;
   const unsigned int nBins = 5;
-  const unsigned int nEnergies = 150;
   const unsigned int nMaterials = 3;
 
   // Define types for the input images
 #ifdef RTK_USE_CUDA
   typedef itk::CudaImage< itk::Vector<dataType, nMaterials>, Dimension > MaterialVolumesType;
   typedef itk::CudaImage< itk::Vector<dataType, nBins>, Dimension > PhotonCountsType;
-  typedef itk::CudaImage< itk::Vector<dataType, nEnergies>, Dimension-1 > IncidentSpectrumType;
+  typedef itk::CudaImage< dataType, Dimension > IncidentSpectrumType;
   typedef itk::CudaImage< dataType, 2 > DetectorResponseType;
   typedef itk::CudaImage< dataType, 2 > MaterialAttenuationsType;
 #else
   typedef itk::Image< itk::Vector<dataType, nMaterials>, Dimension > MaterialVolumesType;
   typedef itk::Image< itk::Vector<dataType, nBins>, Dimension > PhotonCountsType;
-  typedef itk::Image< itk::Vector<dataType, nEnergies>, Dimension-1 > IncidentSpectrumType;
+  typedef itk::Image< dataType, Dimension > IncidentSpectrumType;
   typedef itk::Image< dataType, 2 > DetectorResponseType;
   typedef itk::Image< dataType, 2 > MaterialAttenuationsType;
 #endif
@@ -100,7 +99,8 @@ int main(int argc, char * argv[])
 
   // Read the material attenuations image as a matrix
   MaterialAttenuationsType::IndexType indexMat;
-  itk::Matrix<dataType, nEnergies, nMaterials> materialAttenuationsMatrix;
+  unsigned int nEnergies = materialAttenuationsReader->GetOutput()->GetLargestPossibleRegion().GetSize()[1];
+  vnl_matrix<dataType> materialAttenuationsMatrix(nEnergies, nMaterials);
   for (unsigned int energy=0; energy<nEnergies; energy++)
     {
     indexMat[1] = energy;
@@ -126,7 +126,7 @@ int main(int argc, char * argv[])
     itkGenericExceptionMacro(<< "Number of thresholds "<< args_info.thresholds_given << " does not match the number of bins " << nBins);
 
   // Read the detector response image as a matrix, and bin it
-  itk::Matrix<dataType, nBins, nEnergies> detectorResponseMatrix;
+  vnl_matrix<dataType> detectorResponseMatrix(nBins, nEnergies, 0.);
   DetectorResponseType::IndexType indexDet;
   for (unsigned int energy=0; energy<nEnergies; energy++)
     {

@@ -42,6 +42,8 @@ namespace rtk
  *
  * \author Cyril Mory
  *
+ * \ingroup RTK
+ *
  */
 template< typename TInputImage>
 class ConditionalMedianImageFilter : public itk::InPlaceImageFilter<TInputImage>

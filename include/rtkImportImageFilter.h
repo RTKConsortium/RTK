@@ -36,6 +36,8 @@ namespace rtk
  * and is therefore incompatible with itk::CudaImage.
  *
  * \author Marc Vila
+ *
+ * \ingroup RTK
  **/
 
 template< typename TImage >

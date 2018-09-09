@@ -41,7 +41,7 @@ namespace rtk
  *
  * \author Cyril Mory
  *
- * \ingroup CudaImageToImageFilter
+ * \ingroup RTK CudaImageToImageFilter
  */
 class RTK_EXPORT CudaWarpImageFilter :
   public itk::CudaInPlaceImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>,

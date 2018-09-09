@@ -31,6 +31,8 @@ namespace rtk
  * http://www.insight-journal.org/browse/publication/103
  * 
  * \author Cyril Mory
+ *
+ * \ingroup RTK
  */
 template <class TInputImage, class TOutputImage = TInputImage>
 class ITK_EXPORT DownsampleImageFilter:

@@ -24,6 +24,7 @@
 
 #include "rtkMacro.h"
 #include "rtkConstantImageSource.h"
+#include "rtkIOFactories.h"
 #include "rtkProjectionsReader.h"
 #include <itkRegularExpressionSeriesFileNames.h>
 #include <itksys/RegularExpression.hxx>
@@ -42,7 +43,7 @@ namespace rtk
  *
  * \author Simon Rit
  *
- * \ingroup Functions
+ * \ingroup RTK Functions
  */
 template< class TConstantImageSourceType, class TArgsInfo >
 void
@@ -109,7 +110,7 @@ SetConstantImageSourceFromGgo(typename TConstantImageSourceType::Pointer source,
  *
  * \author Simon Rit
  *
- * \ingroup Functions
+ * \ingroup RTK Functions
  */
 template< class TArgsInfo >
 const std::vector< std::string >
@@ -150,7 +151,27 @@ GetProjectionsFileNamesFromGgo(const TArgsInfo &args_info)
         }
       }
     }
-  return names->GetFileNames();
+  
+  std::vector<std::string> fileNames = names->GetFileNames();
+  rtk::RegisterIOFactories();
+  std::vector<size_t> idxtopop;
+  size_t i = 0;
+  for (auto fn : fileNames) {
+    itk::ImageIOBase::Pointer imageio = itk::ImageIOFactory::CreateImageIO(
+      fn.c_str(), itk::ImageIOFactory::ReadMode);
+
+    if (imageio.IsNull()) {
+      std::cerr << "Ignoring file: " << fn << std::endl;
+      idxtopop.push_back(i);
+    }
+    i++;
+  }
+  std::reverse(idxtopop.begin(), idxtopop.end());
+  for (auto id : idxtopop) {
+    fileNames.erase(fileNames.begin() + id);
+  }
+
+  return fileNames;
 }
 
 template< class TProjectionsReaderType, class TArgsInfo >
@@ -256,7 +277,7 @@ SetProjectionsReaderFromGgo(typename TProjectionsReaderType::Pointer reader,
  *
  * \author Simon Rit
  *
- * \ingroup Functions
+ * \ingroup RTK Functions
  */
 template< class TArgsInfo, class TIterativeReconstructionFilter >
 void
@@ -279,6 +300,9 @@ SetBackProjectionFromGgo(const TArgsInfo &args_info, TIterativeReconstructionFil
     case(3): //bp_arg_CudaRayCast
       recon->SetBackProjectionFilter(TIterativeReconstructionFilter::BP_CUDARAYCAST);
       break;
+    case(4): //bp_arg_JosephAttenuated
+      recon->SetBackProjectionFilter(TIterativeReconstructionFilter::BP_JOSEPHATTENUATED);
+      break;
     }
 }
 
@@ -288,7 +312,7 @@ SetBackProjectionFromGgo(const TArgsInfo &args_info, TIterativeReconstructionFil
  *
  * \author Simon Rit
  *
- * \ingroup Functions
+ * \ingroup RTK Functions
  */
 template< class TArgsInfo, class TIterativeReconstructionFilter  >
 void
@@ -304,6 +328,9 @@ SetForwardProjectionFromGgo(const TArgsInfo &args_info, TIterativeReconstruction
       break;
     case(1): //fp_arg_CudaRayCast
       recon->SetForwardProjectionFilter(TIterativeReconstructionFilter::FP_CUDARAYCAST);
+      break;
+    case(2): //fp_arg_JosephAttenuated
+      recon->SetForwardProjectionFilter(TIterativeReconstructionFilter::FP_JOSEPHATTENUATED);
       break;
     }
 }

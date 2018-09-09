@@ -28,6 +28,7 @@
 #include <itkImageRegionConstIterator.h>
 #include <itkImageRegionIteratorWithIndex.h>
 #include <itkIdentityTransform.h>
+#include <itkInputDataObjectIterator.h>
 
 namespace rtk
 {
@@ -35,14 +36,16 @@ namespace rtk
 template <class TInputImage,
           class TOutputImage,
           class TInterpolationWeightMultiplication,
-          class TProjectedValueAccumulation>
+          class TProjectedValueAccumulation,
+          class TSumAlongRay>
 JosephForwardProjectionImageFilter<TInputImage,
-                                   TOutputImage,
-                                   TInterpolationWeightMultiplication,
-                                   TProjectedValueAccumulation>
+TOutputImage,
+TInterpolationWeightMultiplication,
+TProjectedValueAccumulation,
+TSumAlongRay>
 ::JosephForwardProjectionImageFilter():
-    m_InferiorClip(0.),
-    m_SuperiorClip(1.)
+  m_InferiorClip(0.),
+  m_SuperiorClip(1.)
 {
 #if ITK_VERSION_MAJOR>4
   this->DynamicMultiThreadingOff();
@@ -52,12 +55,13 @@ JosephForwardProjectionImageFilter<TInputImage,
 template <class TInputImage,
           class TOutputImage,
           class TInterpolationWeightMultiplication,
-          class TProjectedValueAccumulation>
-void
-JosephForwardProjectionImageFilter<TInputImage,
-                                   TOutputImage,
-                                   TInterpolationWeightMultiplication,
-                                   TProjectedValueAccumulation>
+          class TProjectedValueAccumulation,
+          class TSumAlongRay>
+void JosephForwardProjectionImageFilter<TInputImage,
+TOutputImage,
+TInterpolationWeightMultiplication,
+TProjectedValueAccumulation,
+TSumAlongRay>
 ::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread,
                        ThreadIdType threadId )
 {
@@ -95,45 +99,46 @@ JosephForwardProjectionImageFilter<TInputImage,
   typename BoxShape::Pointer box = BoxShape::New();
   typename BoxShape::VectorType boxMin, boxMax;
   for(unsigned int i=0; i<Dimension; i++)
-    {
+  {
     boxMin[i] = this->GetInput(1)->GetBufferedRegion().GetIndex()[i];
     boxMax[i] = this->GetInput(1)->GetBufferedRegion().GetIndex()[i] +
-                this->GetInput(1)->GetBufferedRegion().GetSize()[i] - 1;
+        this->GetInput(1)->GetBufferedRegion().GetSize()[i] - 1;
     boxMax[i] *= 1.-itk::NumericTraits<BoxShape::ScalarType>::epsilon();
-    }
+  }
   box->SetBoxMin(boxMin);
   box->SetBoxMax(boxMax);
 
   // Go over each pixel of the projection
   typename BoxShape::VectorType stepMM, np, fp;
   for(unsigned int pix=0; pix<outputRegionForThread.GetNumberOfPixels(); pix++, itIn->Next(), ++itOut)
-    {
-    typename InputRegionIterator::PointType sourcePosition = itIn->GetSourcePosition();
-    typename InputRegionIterator::PointType dirVox = itIn->GetSourceToPixel();
+  {
+    typename InputRegionIterator::PointType pixelPosition = itIn->GetPixelPosition();
+    typename InputRegionIterator::PointType dirVox = - itIn->GetSourceToPixel();
 
     // Select main direction
     unsigned int mainDir = 0;
     typename BoxShape::VectorType dirVoxAbs;
     for(unsigned int i=0; i<Dimension; i++)
-      {
+    {
       dirVoxAbs[i] = vnl_math_abs( dirVox[i] );
       if(dirVoxAbs[i]>dirVoxAbs[mainDir])
         mainDir = i;
-      }
+    }
 
     // Test if there is an intersection
     BoxShape::ScalarType nearDist, farDist;
-    if( box->IsIntersectedByRay(sourcePosition, dirVox, nearDist, farDist) &&
+    if( box->IsIntersectedByRay(pixelPosition, dirVox, nearDist, farDist) &&
         farDist>=0. && // check if detector after the source
         nearDist<=1.)  // check if detector after or in the volume
-      {
+    {
+
       // Clip the casting between source and pixel of the detector
       nearDist = std::max(nearDist, m_InferiorClip);
       farDist = std::min(farDist, m_SuperiorClip);
 
       // Compute and sort intersections: (n)earest and (f)arthest (p)points
-      np = sourcePosition + nearDist * dirVox;
-      fp = sourcePosition + farDist * dirVox;
+      np = pixelPosition + nearDist * dirVox;
+      fp = pixelPosition + farDist * dirVox;
       if(np[mainDir]>fp[mainDir])
         std::swap(np, fp);
 
@@ -171,23 +176,31 @@ JosephForwardProjectionImageFilter<TInputImage,
       CoordRepType currentx = np[notMainDirInf] + residual * stepx;
       CoordRepType currenty = np[notMainDirSup] + residual * stepy;
 
+      // Compute voxel to millimeters conversion
+      stepMM[notMainDirInf] = this->GetInput(1)->GetSpacing()[notMainDirInf] * stepx;
+      stepMM[notMainDirSup] = this->GetInput(1)->GetSpacing()[notMainDirSup] * stepy;
+      stepMM[mainDir]       = this->GetInput(1)->GetSpacing()[mainDir];
+
       // Initialize the accumulation
       typename TOutputImage::PixelType sum = itk::NumericTraits<typename TOutputImage::PixelType>::ZeroValue();
 
+      typename TInputImage::PixelType volumeValue = itk::NumericTraits<typename TInputImage::PixelType>::ZeroValue();
       if (fs == ns) //If the voxel is a corner, we can skip most steps
-        {
-          sum += BilinearInterpolationOnBorders(threadId, fp[mainDir] - np[mainDir],
-                                                pxiyi, pxsyi, pxiys, pxsys,
-                                                currentx, currenty, offsetx, offsety,
-                                                minx, miny, maxx, maxy);
-        }
-      else
-        {
-        // First step
-        sum += BilinearInterpolationOnBorders(threadId, residual + 0.5,
+      {
+        volumeValue = BilinearInterpolationOnBorders(threadId, fp[mainDir] - np[mainDir],
                                               pxiyi, pxsyi, pxiys, pxsys,
                                               currentx, currenty, offsetx, offsety,
                                               minx, miny, maxx, maxy);
+        sum += m_SumAlongRay(threadId, volumeValue, stepMM);
+      }
+      else
+      {
+        // First step
+        volumeValue = BilinearInterpolationOnBorders(threadId, residual + 0.5,
+                                              pxiyi, pxsyi, pxiys, pxsys,
+                                              currentx, currenty, offsetx, offsety,
+                                              minx, miny, maxx, maxy);
+        sum += m_SumAlongRay(threadId, volumeValue, stepMM);
 
         // Move to next main direction slice
         pxiyi += offsetz;
@@ -199,10 +212,11 @@ JosephForwardProjectionImageFilter<TInputImage,
 
         // Middle steps
         for(int i=ns+1; i<fs; i++)
-          {
-          sum += BilinearInterpolation(threadId, 1.0,
+        {
+          volumeValue = BilinearInterpolation(threadId, 1.0,
                                        pxiyi, pxsyi, pxiys, pxsys,
                                        currentx, currenty, offsetx, offsety);
+          sum += m_SumAlongRay(threadId, volumeValue, stepMM);
 
           // Move to next main direction slice
           pxiyi += offsetz;
@@ -211,56 +225,55 @@ JosephForwardProjectionImageFilter<TInputImage,
           pxsys += offsetz;
           currentx += stepx;
           currenty += stepy;
-          }
+        }
 
         // Last step
-        sum += BilinearInterpolationOnBorders(threadId,fp[mainDir] - fs + 0.5,
+        volumeValue = BilinearInterpolationOnBorders(threadId,fp[mainDir] - fs + 0.5,
                                               pxiyi, pxsyi, pxiys, pxsys,
                                               currentx, currenty, offsetx, offsety,
                                               minx, miny, maxx, maxy);
-        }
-      // Compute voxel to millimeters conversion
-      stepMM[notMainDirInf] = this->GetInput(1)->GetSpacing()[notMainDirInf] * stepx;
-      stepMM[notMainDirSup] = this->GetInput(1)->GetSpacing()[notMainDirSup] * stepy;
-      stepMM[mainDir]       = this->GetInput(1)->GetSpacing()[mainDir];
-
+        sum += m_SumAlongRay(threadId, volumeValue, stepMM);
+      }
       // Accumulate
       m_ProjectedValueAccumulation(threadId,
                                    itIn->Get(),
                                    itOut.Value(),
                                    sum,
                                    stepMM,
-                                   sourcePosition,
+                                   pixelPosition,
                                    dirVox,
                                    np,
                                    fp);
-      }
+    }
     else
       m_ProjectedValueAccumulation(threadId,
                                    itIn->Get(),
                                    itOut.Value(),
                                    0.,
-                                   sourcePosition,
-                                   sourcePosition,
+                                   pixelPosition,
+                                   pixelPosition,
                                    dirVox,
-                                   sourcePosition,
-                                   sourcePosition);
-    }
+                                   pixelPosition,
+                                   pixelPosition);
+  }
   delete itIn;
 }
 
 template <class TInputImage,
           class TOutputImage,
           class TInterpolationWeightMultiplication,
-          class TProjectedValueAccumulation>
+          class TProjectedValueAccumulation,
+          class TSumAlongRay>
 typename JosephForwardProjectionImageFilter<TInputImage,
-                                            TOutputImage,
-                                            TInterpolationWeightMultiplication,
-                                            TProjectedValueAccumulation>::OutputPixelType
+TOutputImage,
+TInterpolationWeightMultiplication,
+TProjectedValueAccumulation,
+TSumAlongRay>::OutputPixelType
 JosephForwardProjectionImageFilter<TInputImage,
-                                   TOutputImage,
-                                   TInterpolationWeightMultiplication,
-                                   TProjectedValueAccumulation>
+TOutputImage,
+TInterpolationWeightMultiplication,
+TProjectedValueAccumulation,
+TSumAlongRay>
 ::BilinearInterpolation( const ThreadIdType threadId,
                          const double stepLengthInVoxel,
                          const InputPixelType *pxiyi,
@@ -283,7 +296,7 @@ JosephForwardProjectionImageFilter<TInputImage,
            m_InterpolationWeightMultiplication(threadId, stepLengthInVoxel, lx  * lyc, pxsyi, idx) +
            m_InterpolationWeightMultiplication(threadId, stepLengthInVoxel, lxc * ly , pxiys, idx) +
            m_InterpolationWeightMultiplication(threadId, stepLengthInVoxel, lx  * ly , pxsys, idx) );
-/* Alternative slower solution
+  /* Alternative slower solution
   const unsigned int ix = itk::Math::Floor(x);
   const unsigned int iy = itk::Math::Floor(y);
   const unsigned int idx = ix*ox + iy*oy;
@@ -300,29 +313,32 @@ JosephForwardProjectionImageFilter<TInputImage,
 template <class TInputImage,
           class TOutputImage,
           class TInterpolationWeightMultiplication,
-          class TProjectedValueAccumulation>
+          class TProjectedValueAccumulation,
+          class TSumAlongRay>
 typename JosephForwardProjectionImageFilter<TInputImage,
-                                            TOutputImage,
-                                            TInterpolationWeightMultiplication,
-                                            TProjectedValueAccumulation>::OutputPixelType
+TOutputImage,
+TInterpolationWeightMultiplication,
+TProjectedValueAccumulation,
+TSumAlongRay>::OutputPixelType
 JosephForwardProjectionImageFilter<TInputImage,
-                                   TOutputImage,
-                                   TInterpolationWeightMultiplication,
-                                   TProjectedValueAccumulation>
+TOutputImage,
+TInterpolationWeightMultiplication,
+TProjectedValueAccumulation,
+TSumAlongRay>
 ::BilinearInterpolationOnBorders( const ThreadIdType threadId,
-                           const double stepLengthInVoxel,
-                           const InputPixelType *pxiyi,
-                           const InputPixelType *pxsyi,
-                           const InputPixelType *pxiys,
-                           const InputPixelType *pxsys,
-                           const CoordRepType x,
-                           const CoordRepType y,
-                           const int ox,
-                           const int oy,
-                           const CoordRepType minx,
-                           const CoordRepType miny,
-                           const CoordRepType maxx,
-                           const CoordRepType maxy)
+                                  const double stepLengthInVoxel,
+                                  const InputPixelType *pxiyi,
+                                  const InputPixelType *pxsyi,
+                                  const InputPixelType *pxiys,
+                                  const InputPixelType *pxsys,
+                                  const CoordRepType x,
+                                  const CoordRepType y,
+                                  const int ox,
+                                  const int oy,
+                                  const CoordRepType minx,
+                                  const CoordRepType miny,
+                                  const CoordRepType maxx,
+                                  const CoordRepType maxy)
 {
   int ix = vnl_math_floor(x);
   int iy = vnl_math_floor(y);
@@ -342,6 +358,7 @@ JosephForwardProjectionImageFilter<TInputImage,
   if(iy < miny) offset_yi = oy;
   if(ix >= maxx) offset_xs = -ox;
   if(iy >= maxy) offset_ys = -oy;
+
   result += m_InterpolationWeightMultiplication(threadId, stepLengthInVoxel, lxc * lyc, pxiyi, idx + offset_xi + offset_yi);
   result += m_InterpolationWeightMultiplication(threadId, stepLengthInVoxel, lxc * ly , pxiys, idx + offset_xi + offset_ys);
   result += m_InterpolationWeightMultiplication(threadId, stepLengthInVoxel, lx  * lyc, pxsyi, idx + offset_xs + offset_yi);
@@ -351,7 +368,6 @@ JosephForwardProjectionImageFilter<TInputImage,
 
   return (result);
 }
-
 
 } // end namespace rtk
 

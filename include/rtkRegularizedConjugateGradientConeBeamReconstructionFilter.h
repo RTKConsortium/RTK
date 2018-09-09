@@ -95,7 +95,7 @@ namespace rtk
    *
    * \author Cyril Mory
    *
-   * \ingroup ReconstructionAlgorithm
+   * \ingroup RTK ReconstructionAlgorithm
    */
 
 template< typename TImage>
@@ -198,8 +198,8 @@ public:
   itkGetMacro(Preconditioned, bool)
 
   /** Quadratic regularization for the conjugate gradient filter */
-  itkSetMacro(RegularizedCG, bool)
-  itkGetMacro(RegularizedCG, bool)
+  itkSetMacro(Tikhonov, float)
+  itkGetMacro(Tikhonov, float)
   itkSetMacro(Gamma, float)
   itkGetMacro(Gamma, float)
 
@@ -244,6 +244,7 @@ protected:
   // Regularization parameters
   float m_GammaTV;
   float m_Gamma;
+  float m_Tikhonov;
   float m_SoftThresholdWavelets;
   float m_SoftThresholdOnImage;
   bool  m_DimensionsProcessedForTV[TImage::ImageDimension];

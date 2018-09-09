@@ -42,7 +42,7 @@ namespace rtk
  *
  * \author Marc Vila
  *
- * \ingroup InPlaceImageFilter
+ * \ingroup RTK InPlaceImageFilter
  */
 template <class TInputImage, class TOutputImage>
 class ITK_EXPORT FieldOfViewImageFilter:

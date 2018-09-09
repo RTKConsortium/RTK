@@ -24,6 +24,12 @@
 
 namespace rtk
 {
+/** \class PhaseGatingImageFilter
+ *
+ * \author Cyril Mory
+ *
+ * \ingroup RTK
+ */
 template< typename ProjectionStackType>
 class PhaseGatingImageFilter : public SubSelectImageFilter<ProjectionStackType>
 {

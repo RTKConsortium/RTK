@@ -38,7 +38,7 @@ namespace rtk
  *
  * \test rtkI0estimationtest.cxx
  *
- * \ingroup InPlaceImageFilter
+ * \ingroup RTK InPlaceImageFilter
  */
 
 template<class TInputImage = itk::Image< unsigned short, 3>,

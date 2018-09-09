@@ -37,7 +37,7 @@ namespace rtk
  *
  * \author Simon Rit
  *
- * \ingroup Functions
+ * \ingroup RTK Functions
  */
 
 namespace Functor
@@ -130,7 +130,7 @@ LUT<double, double>
  *
  * \author Simon Rit
  *
- * \ingroup ImageToImageFilter
+ * \ingroup RTK ImageToImageFilter
  */
 template <class TInputImage, class TOutputImage>
 class ITK_EXPORT LookupTableImageFilter : public

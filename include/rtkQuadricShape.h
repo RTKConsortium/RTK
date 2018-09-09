@@ -40,6 +40,8 @@ namespace rtk
  *
  * \author Simon Rit
  *
+ * \ingroup RTK
+ *
  */
 class RTK_EXPORT QuadricShape:
     public ConvexShape

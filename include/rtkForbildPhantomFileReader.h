@@ -35,6 +35,8 @@ namespace rtk
  * \test rtkforbildtest.cxx
  *
  * \author Simon Rit
+ *
+ * \ingroup RTK
  */
 class RTK_EXPORT ForbildPhantomFileReader :
     public itk::LightProcessObject

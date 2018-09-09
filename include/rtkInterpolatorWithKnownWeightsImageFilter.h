@@ -58,7 +58,7 @@ namespace rtk
    *
    * \author Cyril Mory
    *
-   * \ingroup ReconstructionAlgorithm
+   * \ingroup RTK ReconstructionAlgorithm
    */
 template< typename VolumeType, typename VolumeSeriesType>
 class InterpolatorWithKnownWeightsImageFilter : public itk::InPlaceImageFilter< VolumeType, VolumeType >

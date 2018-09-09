@@ -36,7 +36,7 @@ namespace rtk
  *
  * \author Simon Rit
  *
- * \ingroup ImageToImageFilter
+ * \ingroup RTK ImageToImageFilter
  */
 template < class TInputImage  = itk::Image<unsigned short, 2>,
            class TOutputImage = itk::Image<unsigned short, 2> >

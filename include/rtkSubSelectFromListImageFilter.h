@@ -23,6 +23,12 @@
 
 namespace rtk
 {
+/** \class SubSelectFromListImageFilter
+ *
+ * \author Cyril Mory
+ *
+ * \ingroup RTK
+ */
 template< typename ProjectionStackType>
 class SubSelectFromListImageFilter : public SubSelectImageFilter<ProjectionStackType>
 {

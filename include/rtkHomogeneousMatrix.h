@@ -32,7 +32,7 @@ namespace rtk
  *
  * \author Simon Rit
  *
- * \ingroup Functions
+ * \ingroup RTK Functions
  */
 //template <class TPixel, unsigned int VImageDimension>
 template <class TImageType>
@@ -69,7 +69,7 @@ GetIndexToPhysicalPointMatrix(const TImageType *image)
  *
  * \author Simon Rit
  *
- * \ingroup Functions
+ * \ingroup RTK Functions
  */
 //template <class TPixel, unsigned int VImageDimension>
 template <class TImageType>

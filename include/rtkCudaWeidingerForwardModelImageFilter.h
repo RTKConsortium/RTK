@@ -33,6 +33,8 @@
  * \brief CUDA implementation of the Weidinger forward model filter
  *
  * \author Cyril Mory
+ *
+ * \ingroup RTK
  */
 
 namespace rtk

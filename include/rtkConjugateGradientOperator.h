@@ -22,6 +22,12 @@
 
 namespace rtk
 {
+/** \class ConjugateGradientOperator
+ *
+ * \author Cyril Mory
+ *
+ * \ingroup RTK
+ */
 template< typename OutputImageType>
 class ConjugateGradientOperator : public itk::ImageToImageFilter< OutputImageType, OutputImageType>
 {
@@ -38,7 +44,7 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(ConjugateGradientOperator, itk::ImageToImageFilter)
 
-  /** The 4D image to be updated.*/
+  /** The image to be updated.*/
   virtual void SetX(const OutputImageType* OutputImage);
 
 protected:

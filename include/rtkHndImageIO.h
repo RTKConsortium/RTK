@@ -40,7 +40,7 @@ namespace rtk {
  *
  * \author Simon Rit
  *
- * \ingroup IOFilters
+ * \ingroup RTK IOFilters
  */
 class HndImageIO : public itk::ImageIOBase
 {

@@ -34,6 +34,8 @@ namespace rtk
    * independently and has its own small G, H and U
    *
    * \author Cyril Mory
+ *
+ * \ingroup RTK
    *
    */
 template< class TGradient,

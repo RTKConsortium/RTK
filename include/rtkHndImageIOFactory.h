@@ -37,6 +37,8 @@ namespace rtk
  * \brief ITK factory for Hnd file I/O.
  *
  * \author Simon Rit
+ *
+ * \ingroup RTK
  */
 class RTK_EXPORT HndImageIOFactory : public itk::ObjectFactoryBase
 {

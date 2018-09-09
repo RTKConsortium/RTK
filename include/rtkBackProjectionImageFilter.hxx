@@ -347,8 +347,8 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
   typename ProjectionImageType::IndexType pIndex = projection->GetBufferedRegion().GetIndex();
   typename TOutputImage::SizeType vBufferSize = this->GetOutput()->GetBufferedRegion().GetSize();
   typename TOutputImage::IndexType vBufferIndex = this->GetOutput()->GetBufferedRegion().GetIndex();
-  typename TInputImage::PixelType *pProj;
-  typename TOutputImage::PixelType *pVol, *pVolZeroPointer;
+  typename TInputImage::InternalPixelType *pProj;
+  typename TOutputImage::InternalPixelType *pVol, *pVolZeroPointer;
 
   // Pointers in memory to index (0,0,0) which do not necessarily exist
   pVolZeroPointer = this->GetOutput()->GetBufferPointer();
@@ -412,8 +412,8 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
   typename ProjectionImageType::IndexType pIndex = projection->GetBufferedRegion().GetIndex();
   typename TOutputImage::SizeType vBufferSize = this->GetOutput()->GetBufferedRegion().GetSize();
   typename TOutputImage::IndexType vBufferIndex = this->GetOutput()->GetBufferedRegion().GetIndex();
-  typename TInputImage::PixelType *pProj;
-  typename TOutputImage::PixelType *pVol, *pVolZeroPointer;
+  typename TInputImage::InternalPixelType *pProj;
+  typename TOutputImage::InternalPixelType *pVol, *pVolZeroPointer;
 
   // Pointers in memory to index (0,0,0) which do not necessarily exist
   pVolZeroPointer = this->GetOutput()->GetBufferPointer();
@@ -503,9 +503,9 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
   projection->SetRegions(region);
   projection->Allocate();
 
-  const unsigned int    npixels = projection->GetBufferedRegion().GetNumberOfPixels();
-  const InputPixelType *pi = stack->GetBufferPointer() + (iProj-iProjBuff)*npixels;
-  InputPixelType *      po = projection->GetBufferPointer();
+  const unsigned int       npixels = projection->GetBufferedRegion().GetNumberOfPixels();
+  const InternalInputPixelType *pi = stack->GetBufferPointer() + (iProj-iProjBuff)*npixels;
+  InternalInputPixelType *      po = projection->GetBufferPointer();
 
   // Transpose projection for optimization
   if(this->GetTranspose() )

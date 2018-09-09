@@ -54,7 +54,7 @@ namespace rtk
  *
  * \author Simon Rit
  *
- * \ingroup ImageToImageFilter
+ * \ingroup RTK ImageToImageFilter
  */
 template<class TInputImage, class TOutputImage=TInputImage>
 class ITK_EXPORT DisplacedDetectorImageFilter :
@@ -73,7 +73,7 @@ public:
   typedef TInputImage                                     InputImageType;
   typedef TOutputImage                                    OutputImageType;
   typedef typename OutputImageType::RegionType            OutputImageRegionType;
-  typedef itk::Image<typename TOutputImage::PixelType, 1> WeightImageType;
+  typedef itk::Image<typename TOutputImage::InternalPixelType, 1> WeightImageType;
 
   typedef ThreeDCircularProjectionGeometry GeometryType;
   typedef GeometryType::ConstPointer       GeometryConstPointer;

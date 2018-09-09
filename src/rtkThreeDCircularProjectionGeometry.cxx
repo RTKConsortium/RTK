@@ -355,7 +355,7 @@ const std::multimap<double,unsigned int> rtk::ThreeDCircularProjectionGeometry::
   return sangles;
 }
 
-const std::map<double,unsigned int> rtk::ThreeDCircularProjectionGeometry::GetUniqueSortedAngles(const std::vector<double> &angles)
+const std::map<double,unsigned int> rtk::ThreeDCircularProjectionGeometry::GetUniqueSortedAngles(const std::vector<double> &angles) const
 {
   unsigned int nProj = angles.size();
   std::map<double,unsigned int> sangles;

@@ -229,7 +229,7 @@
   #define XLI_CALLMODEL BFP_CALLMODEL
 #endif
 
-#define REGISTER        register      /* Speed up certain operations */
+#define REGISTER             /* Speed up certain operations */
 
 
 /* Definition of program constrants                                          */

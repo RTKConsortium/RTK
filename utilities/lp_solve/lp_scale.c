@@ -82,7 +82,7 @@ REAL CurtisReidMeasure(lprec *lp, MYBOOL _Advanced, REAL *FRowScale, REAL *FColS
 {
   int      i, nz;
   REAL     absvalue, logvalue;
-  register REAL result;
+  REAL result;
   MATrec   *mat = lp->matA;
   REAL     *value;
   int      *rownr, *colnr;

@@ -20,7 +20,11 @@
 #define rtkConjugateGradientImageFilter_hxx
 
 #include "rtkConjugateGradientImageFilter.h"
-
+#if ITK_VERSION_MAJOR>=5
+  #include <itkMultiThreaderBase.h>
+  #include <itkSimpleFastMutexLock.h>
+  #include <itkMutexLockHolder.h>
+#endif
 namespace rtk
 {
 
@@ -28,6 +32,7 @@ template<typename OutputImageType>
 ConjugateGradientImageFilter<OutputImageType>::ConjugateGradientImageFilter()
 {
   this->SetNumberOfRequiredInputs(2);
+  this->SetInPlace(true);
 
   m_NumberOfIterations = 1;
   m_IterationCosts = false;
@@ -49,42 +54,6 @@ double ConjugateGradientImageFilter<OutputImageType>
 ::GetC()
 {
   return this->m_C;
-}
-
-template<typename OutputImageType>
-void ConjugateGradientImageFilter<OutputImageType>
-::CalculateResidualCosts(OutputImagePointer R_kPlusOne, OutputImagePointer X_kPlusOne)
-/* Perform the calculation of the residual cost function at each iteration :
- *
- *  Cost_residuals(kPlusOne) = -(1/2) <X_kPlusOne, R_kPlusOne + B> + C ( where <.,.> is the scalar product )
- *
- *                           = (1/2) <X_kPlusOne, -R_kPlusOne - B> + C
- *
- *                                                  /                    \
- *                           = (1/2) X_kPlusOne^T . | A X_kPlusOne - 2 B | + C
- *                                                  \                    /
- *
- *                           = (1/2) X_kPlusOne^T A X_kPlusOne - B^T X_kPlusOne + C
- *
- *  which is the value of the quadratic form the minimization of which is equivalent to resolve AX=B by CG.
- *
- *           -> X_kPlusOne is the current estimate.
- *           -> A and B are the components of the normal equations AX=B resolved by the CG algorithm.
- *         -> R_kPlusOne is the CG residual (steepest descent direction).
- *           -> C is the constant involved in the cost function. If it is known, it can be added by setting its value to the attribute C (default 0).
- */
-{
-  typename StatisticsImageFilterType::Pointer IterationCostsStatisticsImageFilter = StatisticsImageFilterType::New();
-  typename AddFilterType::Pointer IterationCostsAddFilter = AddFilterType::New();
-  typename MultiplyFilterType::Pointer IterationCostsMultiplyFilter = MultiplyFilterType::New();
-
-  IterationCostsAddFilter->SetInput(0, R_kPlusOne);
-  IterationCostsAddFilter->SetInput(1, this->GetB());
-  IterationCostsMultiplyFilter->SetInput(0, X_kPlusOne);
-  IterationCostsMultiplyFilter->SetInput(1, IterationCostsAddFilter->GetOutput());
-  IterationCostsStatisticsImageFilter->SetInput(IterationCostsMultiplyFilter->GetOutput());
-  IterationCostsStatisticsImageFilter->Update();
-  m_ResidualCosts.push_back(-0.5*IterationCostsStatisticsImageFilter->GetSum()+this->GetC());
 }
 
 template<typename OutputImageType>
@@ -155,7 +124,6 @@ void ConjugateGradientImageFilter<OutputImageType>
 
   // Initialization
   m_A->SetX(this->GetX());
-  m_A->ReleaseDataFlagOn();
 
   // Compute output information
   this->m_A->UpdateOutputInformation();
@@ -165,98 +133,240 @@ template<typename OutputImageType>
 void ConjugateGradientImageFilter<OutputImageType>
 ::GenerateData()
 {
-  typename SubtractFilterType::Pointer SubtractFilter = SubtractFilterType::New();
-  SubtractFilter->SetInput(0, this->GetB());
-  SubtractFilter->SetInput(1, m_A->GetOutput());
-  SubtractFilter->Update();
+  typename OutputImageType::RegionType largest = this->GetOutput()->GetLargestPossibleRegion();
+  typedef typename itk::PixelTraits<typename OutputImageType::PixelType>::ValueType DataType;
 
-  typename GetP_kPlusOne_FilterType::Pointer GetP_kPlusOne_Filter = GetP_kPlusOne_FilterType::New();
-  typename GetR_kPlusOne_FilterType::Pointer GetR_kPlusOne_Filter = GetR_kPlusOne_FilterType::New();
-  typename GetX_kPlusOne_FilterType::Pointer GetX_kPlusOne_Filter = GetX_kPlusOne_FilterType::New();
+  // Create and allocate images
+  typename OutputImageType::Pointer Pk = OutputImageType::New();
+  typename OutputImageType::Pointer Rk = OutputImageType::New();
+  Pk->SetRegions(largest);
+  Rk->SetRegions(largest);
+  this->GetOutput()->SetRegions(largest);
+  Pk->Allocate();
+  Rk->Allocate();
+  this->GetOutput()->Allocate();
+  Pk->CopyInformation(this->GetOutput());
+  Rk->CopyInformation(this->GetOutput());
 
-  // Compute P_zero = R_zero
-  typename OutputImageType::Pointer P_zero = SubtractFilter->GetOutput();
-  P_zero->DisconnectPipeline();
+  // In rtkConjugateGradientConeBeamReconstructionFilter, B is not updated
+  // So at this point, it is only an empty shell. Let's update it
+  this->GetB()->Update();
+  m_A->Update();
 
-  if (m_IterationCosts)
-    CalculateResidualCosts(P_zero,this->GetX());
+  // Declare intermediate variables
+  DataType numerator, denominator, alpha, beta;
+  DataType eps = itk::NumericTraits<DataType>::min();
 
-  // Compute AP_zero
-  m_A->SetX(P_zero);
+#if ITK_VERSION_MAJOR<5
+  // Declare iterators that will be used throughout the calculations
+  itk::ImageRegionConstIterator<OutputImageType> itB(this->GetB(), largest);
+  itk::ImageRegionIterator<OutputImageType> itA_out, itP, itR, itIn, itX;
 
-  GetR_kPlusOne_Filter->SetRk(P_zero);
-  GetR_kPlusOne_Filter->SetPk(P_zero);
-  GetR_kPlusOne_Filter->SetAPk(m_A->GetOutput());
-
-  GetP_kPlusOne_Filter->SetR_kPlusOne(GetR_kPlusOne_Filter->GetOutput());
-  GetP_kPlusOne_Filter->SetRk(P_zero);
-  GetP_kPlusOne_Filter->SetPk(P_zero);
-
-  GetX_kPlusOne_Filter->SetXk(this->GetX());
-  GetX_kPlusOne_Filter->SetPk(P_zero);
-
-  // Define the smart pointers that will be used with DisconnectPipeline()
-  typename OutputImageType::Pointer R_kPlusOne;
-  typename OutputImageType::Pointer P_kPlusOne;
-  typename OutputImageType::Pointer X_kPlusOne;
-
-  // Start the iterative procedure
-  for (int iter=0; iter<m_NumberOfIterations; iter++)
+  // Initialize P0 and R0
+  itP = itk::ImageRegionIterator<OutputImageType>(Pk, largest);
+  itR = itk::ImageRegionIterator<OutputImageType>(Rk, largest);
+  itA_out = itk::ImageRegionIterator<OutputImageType>(m_A->GetOutput(), largest);
+  itIn = itk::ImageRegionIterator<OutputImageType>(this->GetX(), largest);
+  itX = itk::ImageRegionIterator<OutputImageType>(this->GetOutput(), largest);
+  while(!itP.IsAtEnd())
     {
-    if(iter>0)
-      {
-      R_kPlusOne = GetR_kPlusOne_Filter->GetOutput();
-      R_kPlusOne->DisconnectPipeline();
+    itR.Set(itB.Get() - itA_out.Get());
+    itP.Set(itR.Get());
+    itX.Set(itIn.Get());
+    ++itP;
+    ++itR;
+    ++itA_out;
+    ++itB;
+    ++itIn;
+    ++itX;
+    }
+#else
+  // Instantiate the multithreader
+  itk::MultiThreaderBase::Pointer mt = itk::MultiThreaderBase::New();
+  itk::SimpleFastMutexLock accumulationLock;
 
-      P_kPlusOne = GetP_kPlusOne_Filter->GetOutput();
-      P_kPlusOne->DisconnectPipeline();
+  // Compute Xk+1
+  mt->template ParallelizeImageRegion<OutputImageType::ImageDimension>
+      (
+      largest,
+      [this, Pk, Rk](const typename OutputImageType::RegionType & outputRegionForThread)
+        {
+        itk::ImageRegionIterator<OutputImageType> itP(Pk, outputRegionForThread);
+        itk::ImageRegionIterator<OutputImageType> itR(Rk, outputRegionForThread);
+        itk::ImageRegionIterator<OutputImageType> itB(this->GetB(), outputRegionForThread);
+        itk::ImageRegionIterator<OutputImageType> itA_out(this->m_A->GetOutput(), outputRegionForThread);
+        itk::ImageRegionIterator<OutputImageType> itIn(this->GetX(), outputRegionForThread);
+        itk::ImageRegionIterator<OutputImageType> itX(this->GetOutput(), outputRegionForThread);
+        while(!itP.IsAtEnd())
+          {
+          itR.Set(itB.Get() - itA_out.Get());
+          itP.Set(itR.Get());
+          itX.Set(itIn.Get());
+          ++itP;
+          ++itR;
+          ++itA_out;
+          ++itB;
+          ++itIn;
+          ++itX;
+          }
+        },
+      nullptr
+      );
+#endif
 
-      X_kPlusOne = GetX_kPlusOne_Filter->GetOutput();
-      X_kPlusOne->DisconnectPipeline();
-
-      if (m_IterationCosts)
-        CalculateResidualCosts(R_kPlusOne,X_kPlusOne);
-
-      m_A->SetX(P_kPlusOne);
-
-      GetR_kPlusOne_Filter->SetRk(R_kPlusOne);
-      GetR_kPlusOne_Filter->SetPk(P_kPlusOne);
-      GetR_kPlusOne_Filter->SetAPk(m_A->GetOutput());
-
-      GetP_kPlusOne_Filter->SetRk(R_kPlusOne);
-      GetP_kPlusOne_Filter->SetPk(P_kPlusOne);
-      GetP_kPlusOne_Filter->SetR_kPlusOne(GetR_kPlusOne_Filter->GetOutput());
-
-      GetX_kPlusOne_Filter->SetPk(P_kPlusOne);
-      GetX_kPlusOne_Filter->SetXk(X_kPlusOne);
-
-      P_zero->ReleaseData();
-      }
-
+  bool stopIterations = false;
+  for(int iter=0; (iter<m_NumberOfIterations) && !stopIterations; iter++)
+    {
+    // Compute A * Pk
+    m_A->SetX(Pk);
     m_A->Update();
-    GetR_kPlusOne_Filter->Update();
-    GetX_kPlusOne_Filter->SetAlphak(GetR_kPlusOne_Filter->GetAlphak());
-    GetX_kPlusOne_Filter->Update();
-    GetP_kPlusOne_Filter->SetSquaredNormR_k(GetR_kPlusOne_Filter->GetSquaredNormR_k());
-    GetP_kPlusOne_Filter->SetSquaredNormR_kPlusOne(GetR_kPlusOne_Filter->GetSquaredNormR_kPlusOne());
-    GetP_kPlusOne_Filter->Update();
-    }
 
-  this->GraftOutput(GetX_kPlusOne_Filter->GetOutput());
+    // Compute alpha
+    numerator = 0;
+    denominator = 0;
+#if ITK_VERSION_MAJOR<5
+    itP = itk::ImageRegionIterator<OutputImageType>(Pk, largest);
+    itR = itk::ImageRegionIterator<OutputImageType>(Rk, largest);
+    itA_out = itk::ImageRegionIterator<OutputImageType>(m_A->GetOutput(), largest);
+    while(!itP.IsAtEnd())
+      {
+      numerator += itR.Get() * itR.Get();
+      denominator += itP.Get() * itA_out.Get();
+      ++itR;
+      ++itA_out;
+      ++itP;
+      }
+#else
+    mt->template ParallelizeImageRegion<OutputImageType::ImageDimension>
+        (
+        largest,
+        [this, Pk, Rk, &numerator, &denominator, &accumulationLock](const typename OutputImageType::RegionType & outputRegionForThread)
+          {
+          itk::ImageRegionIterator<OutputImageType> itP(Pk, outputRegionForThread);
+          itk::ImageRegionIterator<OutputImageType> itR(Rk, outputRegionForThread);
+          itk::ImageRegionIterator<OutputImageType> itA_out(this->m_A->GetOutput(), outputRegionForThread);
+          DataType currentThreadNumerator = 0.0;
+          DataType currentThreadDenominator = 0.0;
+          while(!itP.IsAtEnd())
+            {
+            currentThreadNumerator += itR.Get() * itR.Get();
+            currentThreadDenominator += itP.Get() * itA_out.Get();
+            ++itR;
+            ++itA_out;
+            ++itP;
+            }
 
-  // Release the data from internal filters
-  if (m_NumberOfIterations > 1)
-    {
-    R_kPlusOne->ReleaseData();
-    P_kPlusOne->ReleaseData();
-    X_kPlusOne->ReleaseData();
+          itk::MutexLockHolder<itk::SimpleFastMutexLock> mutexHolder(accumulationLock);
+          numerator += currentThreadNumerator;
+          denominator += currentThreadDenominator;
+          },
+        nullptr
+        );
+#endif
+    alpha = numerator / (denominator + eps);
+
+#if ITK_VERSION_MAJOR<5
+    itP = itk::ImageRegionIterator<OutputImageType>(Pk, largest);
+    itX = itk::ImageRegionIterator<OutputImageType>(this->GetOutput(), largest);
+    while(!itP.IsAtEnd())
+      {
+      itX.Set(itX.Get() + alpha * itP.Get());
+      ++itX;
+      ++itP;
+      }
+#else
+    // Compute Xk+1
+    mt->template ParallelizeImageRegion<OutputImageType::ImageDimension>
+        (
+        largest,
+        [this, alpha, Pk](const typename OutputImageType::RegionType & outputRegionForThread)
+          {
+          itk::ImageRegionIterator<OutputImageType> itP(Pk, outputRegionForThread);
+          itk::ImageRegionIterator<OutputImageType> itX(this->GetOutput(), outputRegionForThread);
+          while(!itP.IsAtEnd())
+            {
+            itX.Set(itX.Get() + alpha * itP.Get());
+            ++itX;
+            ++itP;
+            }
+          },
+        nullptr
+        );
+#endif
+
+    // Compute Rk+1 and beta simultaneously
+    denominator = numerator;
+    numerator = 0;
+#if ITK_VERSION_MAJOR<5
+    itR = itk::ImageRegionIterator<OutputImageType>(Rk, largest);
+    itA_out = itk::ImageRegionIterator<OutputImageType>(this->m_A->GetOutput(), largest);
+    while(!itR.IsAtEnd())
+      {
+      itR.Set(itR.Get() - alpha * itA_out.Get());
+      numerator += itR.Get() * itR.Get();
+      ++itR;
+      ++itA_out;
+      }
+#else
+    mt->template ParallelizeImageRegion<OutputImageType::ImageDimension>
+        (
+        largest,
+        [this, Rk, &numerator, &accumulationLock, alpha](const typename OutputImageType::RegionType & outputRegionForThread)
+          {
+          itk::ImageRegionIterator<OutputImageType> itR(Rk, outputRegionForThread);
+          itk::ImageRegionIterator<OutputImageType> itA_out(this->m_A->GetOutput(), outputRegionForThread);
+          DataType currentThreadNumerator = 0.0;
+          while(!itR.IsAtEnd())
+            {
+            itR.Set(itR.Get() - alpha * itA_out.Get());
+            currentThreadNumerator += itR.Get() * itR.Get();
+            ++itR;
+            ++itA_out;
+            }
+
+          itk::MutexLockHolder<itk::SimpleFastMutexLock> mutexHolder(accumulationLock);
+          numerator += currentThreadNumerator;
+          },
+        nullptr
+        );
+#endif
+    beta = numerator / (denominator + eps);
+
+#if ITK_VERSION_MAJOR<5
+    // Compute Pk+1
+    itP = itk::ImageRegionIterator<OutputImageType>(Pk, largest);
+    itR = itk::ImageRegionIterator<OutputImageType>(Rk, largest);
+    while(!itP.IsAtEnd())
+      {
+      itP.Set(itR.Get() + beta * itP.Get());
+      ++itR;
+      ++itP;
+      }
+#else
+    mt->template ParallelizeImageRegion<OutputImageType::ImageDimension>
+        (
+        largest,
+        [Rk, Pk, beta](const typename OutputImageType::RegionType & outputRegionForThread)
+          {
+          itk::ImageRegionIterator<OutputImageType> itR(Rk, outputRegionForThread);
+          itk::ImageRegionIterator<OutputImageType> itP(Pk, outputRegionForThread);
+          while(!itR.IsAtEnd())
+            {
+            itP.Set(itR.Get() + beta * itP.Get());
+            ++itR;
+            ++itP;
+            }
+          },
+        nullptr
+        );
+#endif
+
+    // Let the m_A filter know that Pk has been modified, and it should
+    // recompute its output at the beginning of next iteration
+    Pk->Modified();
     }
-  GetR_kPlusOne_Filter->GetOutput()->ReleaseData();
-  GetP_kPlusOne_Filter->GetOutput()->ReleaseData();
   m_A->GetOutput()->ReleaseData();
-  SubtractFilter->GetOutput()->ReleaseData();
 }
-
 }// end namespace
 
 

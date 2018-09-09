@@ -44,7 +44,7 @@ namespace rtk
  * \test rtkfdktest.cxx, rtkrampfiltertest.cxx, rtkdisplaceddetectortest.cxx,
  * rtkshortscantest.cxx, rtkfdkprojweightcompcudatest.cxx
  *
- * \ingroup InPlaceImageFilter
+ * \ingroup RTK InPlaceImageFilter
  */
 
 template<class TInputImage, class TOutputImage=TInputImage>

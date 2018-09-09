@@ -34,6 +34,8 @@ namespace rtk
    * \test rtkl0gradientnormtest
    *
    * \author Cyril Mory
+ *
+ * \ingroup RTK
    *
    */
 template< class TInputImage >

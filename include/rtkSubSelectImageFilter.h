@@ -57,6 +57,8 @@ namespace rtk
  * \test rtkadmmtotalvariationtest.cxx, rtkselectoneprojpercycletest.cxx
  *
  * \author Simon Rit
+ *
+ * \ingroup RTK
  */
 template< typename ProjectionStackType>
 class SubSelectImageFilter : public itk::ImageToImageFilter<ProjectionStackType, ProjectionStackType>

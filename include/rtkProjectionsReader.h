@@ -114,7 +114,7 @@ namespace rtk
  *
  * \author Simon Rit
  *
- * \ingroup ImageSource
+ * \ingroup RTK ImageSource
  */
 template <class TOutputImage>
 class ITK_EXPORT ProjectionsReader : public itk::ImageSource<TOutputImage>

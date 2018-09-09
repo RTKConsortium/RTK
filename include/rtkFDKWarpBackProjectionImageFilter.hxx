@@ -47,7 +47,11 @@ FDKWarpBackProjectionImageFilter<TInputImage,TOutputImage,TDeformation>
   this->SetTranspose(true);
   typename TOutputImage::RegionType splitRegion;
   m_Barrier = itk::Barrier::New();
+#if ITK_VERSION_MAJOR<5
   m_Barrier->Initialize( this->SplitRequestedRegion(0, this->GetNumberOfThreads(), splitRegion) );
+#else
+  m_Barrier->Initialize( this->SplitRequestedRegion(0, this->GetNumberOfWorkUnits(), splitRegion) );
+#endif
   m_DeformationUpdateError = false;
 }
 

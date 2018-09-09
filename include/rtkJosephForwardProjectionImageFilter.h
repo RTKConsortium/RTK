@@ -24,6 +24,9 @@
 #include "rtkMacro.h"
 #include <itkPixelTraits.h>
 
+#include "rtkProjectionsRegionConstIteratorRayBased.h"
+
+#include <itkVectorImage.h>
 namespace rtk
 {
 namespace Functor
@@ -34,7 +37,7 @@ namespace Functor
  *
  * \author Simon Rit
  *
- * \ingroup Functions
+ * \ingroup RTK Functions
  */
 template< class TInput, class TCoordRepType, class TOutput=TInput >
 class InterpolationWeightMultiplication
@@ -60,12 +63,44 @@ public:
   }
 };
 
+/** \class SumAlongRay
+ * \brief Function to compute the attenuation correction on the projection.
+ *
+ * \author Antoine Robert
+ *
+ * \ingroup RTK Functions
+ */
+template< class TInput, class TOutput>
+class SumAlongRay
+{
+public:
+  typedef itk::Vector<double, 3> VectorType;
+
+  SumAlongRay(){};
+  ~SumAlongRay() {};
+  bool operator!=( const SumAlongRay & ) const
+  {
+    return false;
+  }
+  bool operator==(const SumAlongRay & other) const
+  {
+    return !( *this != other );
+  }
+
+  inline TOutput operator()(const ThreadIdType itkNotUsed(threadId),
+                            const TInput volumeValue,
+                            const VectorType &itkNotUsed(stepInMM))
+  {
+    return volumeValue;
+  }
+};
+
 /** \class ProjectedValueAccumulation
  * \brief Function to accumulate the ray casting on the projection.
  *
  * \author Simon Rit
  *
- * \ingroup Functions
+ * \ingroup RTK Functions
  */
 template< class TInput, class TOutput >
 class ProjectedValueAccumulation
@@ -113,13 +148,14 @@ public:
  *
  * \author Simon Rit
  *
- * \ingroup Projector
+ * \ingroup RTK Projector
  */
 
 template <class TInputImage,
           class TOutputImage,
           class TInterpolationWeightMultiplication = Functor::InterpolationWeightMultiplication<typename TInputImage::PixelType,typename itk::PixelTraits<typename TInputImage::PixelType>::ValueType>,
-          class TProjectedValueAccumulation        = Functor::ProjectedValueAccumulation<typename TInputImage::PixelType, typename TOutputImage::PixelType>
+          class TProjectedValueAccumulation        = Functor::ProjectedValueAccumulation<typename TInputImage::PixelType, typename TOutputImage::PixelType>,
+          class TSumAlongRay                       = Functor::SumAlongRay<typename TInputImage::PixelType, typename TOutputImage::PixelType>
           >
 class ITK_EXPORT JosephForwardProjectionImageFilter :
   public ForwardProjectionImageFilter<TInputImage,TOutputImage>
@@ -166,6 +202,18 @@ public:
       this->Modified();
       }
     }
+
+  /** Get/Set the functor that is used to compute the sum along the ray*/
+  TSumAlongRay &       GetSumAlongRay() { return m_SumAlongRay; }
+  const TSumAlongRay & GetSumAlongRay() const { return m_SumAlongRay; }
+  void SetSumAlongRay(const TSumAlongRay & _arg)
+  {
+    if ( m_SumAlongRay != _arg )
+    {
+      m_SumAlongRay = _arg;
+      this->Modified();
+    }
+  }
 
   /** Each ray is clipped from source+m_InferiorClip*(pixel-source) to
   ** source+m_SuperiorClip*(pixel-source) with m_InferiorClip and
@@ -215,8 +263,10 @@ private:
   JosephForwardProjectionImageFilter(const Self&); //purposely not implemented
   void operator=(const Self&);                     //purposely not implemented
 
+  // Functors
   TInterpolationWeightMultiplication m_InterpolationWeightMultiplication;
   TProjectedValueAccumulation        m_ProjectedValueAccumulation;
+  TSumAlongRay                       m_SumAlongRay;
   double                             m_InferiorClip;
   double                             m_SuperiorClip;
 };

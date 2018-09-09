@@ -156,7 +156,7 @@ FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionS
   // Set the Conjugate Gradient filter (either on CPU or GPU depending on user's choice)
 #ifdef RTK_USE_CUDA
   if (m_CudaConjugateGradient)
-    m_ConjugateGradientFilter = rtk::CudaConjugateGradientImageFilter_4f::New();
+    m_ConjugateGradientFilter = rtk::CudaConjugateGradientImageFilter<VolumeSeriesType>::New();
 #endif
   m_ConjugateGradientFilter->SetA(m_CGOperator.GetPointer());
 

@@ -9,6 +9,7 @@ option "niterations"    n "Number of iterations"                                
 option "input"          i "Input volume"                                                                              string no
 option "weights"        w "Weights file for Weighted Least Squares (WLS)"                                             string no
 option "gamma"          - "Laplacian regularization weight"                                                           float  no   default="0"
+option "tikhonov"       - "Tikhonov regularization weight"                                                            float  no   default="0"
 option "nocudacg"       - "Do not perform conjugate gradient calculations on GPU"                                     flag   off
 option "mask"           m "Apply a support binary mask: reconstruction kept null outside the mask)"                   string no
 option "costs"          - "Show residual costs at each iteration at the end of the process"                           flag   off

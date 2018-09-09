@@ -24,7 +24,12 @@
 namespace rtk
 {
 /** \class ProjectionsRegionConstIteratorRayBasedParallel
+ *
  * \brief Implements a ray-based iterator for a parallel beam and a flat panel.
+ *
+ * \author Simon Rit
+ *
+ * \ingroup RTK
  */
 template< typename TImage >
 class ProjectionsRegionConstIteratorRayBasedParallel:

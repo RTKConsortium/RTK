@@ -38,6 +38,9 @@ namespace rtk
  *  multiple channel image with vectors colinear to the input vectors
  *  but having a smaller norm.
  *
+ * \author Cyril Mory
+ *
+ * \ingroup RTK
  */
 template< typename TInputImage,
           typename TRealType = float,

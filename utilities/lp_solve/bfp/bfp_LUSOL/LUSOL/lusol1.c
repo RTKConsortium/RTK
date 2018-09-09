@@ -37,12 +37,12 @@ void LU1DCP(LUSOLrec *LUSOL, REAL DA[], int LDA, int M, int N, REAL SMALL,
 {
   int       I, J, K, KP1, L, LAST, LENCOL, IMAX, JMAX, JLAST, JNEW;
   REAL      AIJMAX, AJMAX;
-  register REAL T;
+  REAL T;
 #ifdef LUSOLFastDenseIndex
-  register REAL *DA1, *DA2;
+  REAL *DA1, *DA2;
   int IDA1, IDA2;
 #else
-  register int IDA1, IDA2;
+  int IDA1, IDA2;
 #endif
   (void)LUSOL;
 
@@ -230,12 +230,12 @@ void LU1DPP(LUSOLrec *LUSOL, REAL DA[], int LDA, int M, int N, REAL SMALL,
             int *NSING, int IPVT[], int IX[])
 {
   int            I, J, K, KP1, L, LAST, LENCOL;
-  register REAL T;
+  REAL T;
 #ifdef LUSOLFastDenseIndex
-  register REAL *DA1, *DA2;
+  REAL *DA1, *DA2;
   int IDA1, IDA2;
 #else
-  register int IDA1, IDA2;
+  int IDA1, IDA2;
 #endif
   (void)LUSOL;
 
@@ -672,7 +672,7 @@ void LU1GAU(LUSOLrec *LUSOL, int MELIM, int NSPARE,
   MYBOOL ATEND;
   int    LR, J, LENJ, NFREE, LC1, LC2, NDONE, NDROP, L, I, LL, K,
          LR1, LAST, LREP, L1, L2, LC, LENI;
-  register REAL UJ;
+  REAL UJ;
   REAL   AIJ;
 
   for(LR = *LFIRST; LR <= LPIVR2; LR++) {

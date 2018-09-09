@@ -25,7 +25,6 @@
 
 namespace rtk
 {
-
 template <class TOutputImage>
 ConstantImageSource<TOutputImage>
 ::ConstantImageSource()
@@ -42,7 +41,7 @@ ConstantImageSource<TOutputImage>
       m_Direction[i][j] = (i==j)?1.:0.;
     }
 
-  m_Constant = 0.;
+  m_Constant = itk::NumericTraits<OutputImagePixelType>::ZeroValue(m_Constant);
 }
 
 template <class TOutputImage>
@@ -140,7 +139,7 @@ ConstantImageSource<TOutputImage>
 }
 
 //----------------------------------------------------------------------------
-template <typename TOutputImage>
+template <class TOutputImage>
 void 
 ConstantImageSource<TOutputImage>
 ::GenerateOutputInformation()
@@ -159,7 +158,7 @@ ConstantImageSource<TOutputImage>
 }
 
 //----------------------------------------------------------------------------
-template <typename TOutputImage>
+template <class TOutputImage>
 void 
 ConstantImageSource<TOutputImage>
 #if ITK_VERSION_MAJOR<5
@@ -169,8 +168,10 @@ ConstantImageSource<TOutputImage>
 #endif
 {
   itk::ImageRegionIterator<TOutputImage> it(this->GetOutput(), outputRegionForThread);
+
+  // Write the constant everywhere in the image
   for (; !it.IsAtEnd(); ++it)
-    it.Set( this->GetConstant() );
+    it.Set(m_Constant);
 }
 
 } // end namespace rtk

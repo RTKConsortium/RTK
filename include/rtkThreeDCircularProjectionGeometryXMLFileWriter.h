@@ -36,7 +36,7 @@ namespace rtk
  *
  * \author Simon Rit
  *
- * \ingroup IOFilters
+ * \ingroup RTK IOFilters
  */
 class RTK_EXPORT ThreeDCircularProjectionGeometryXMLFileWriter :
   public itk::XMLWriterBase< ThreeDCircularProjectionGeometry >

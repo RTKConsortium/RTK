@@ -33,6 +33,9 @@ namespace rtk
  * the second input is the product of the inverse hessian matrix
  * by the gradient vector (the Newton's update, before applying a minus sign)
  *
+ * \author Cyril Mory
+ *
+ * \ingroup RTK
 */
 
 template< typename TImage>

@@ -38,7 +38,7 @@
  *
  * \author Cyril Mory
  *
- * \ingroup Projector CudaImageToImageFilter
+ * \ingroup RTK Projector CudaImageToImageFilter
  */
 
 namespace rtk

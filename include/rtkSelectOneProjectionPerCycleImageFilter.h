@@ -32,6 +32,8 @@ namespace rtk
  * \test rtkselectoneprojpercycletest.cxx
  *
  * \author Simon Rit
+ *
+ * \ingroup RTK
  */
 template< typename ProjectionStackType>
 class SelectOneProjectionPerCycleImageFilter : public SubSelectImageFilter<ProjectionStackType>

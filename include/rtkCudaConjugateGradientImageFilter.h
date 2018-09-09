@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef rtkCudaConjugateGradientImageFilter_4f_h
-#define rtkCudaConjugateGradientImageFilter_4f_h
+#ifndef rtkCudaConjugateGradientImageFilter_h
+#define rtkCudaConjugateGradientImageFilter_h
 
 #include "rtkConfiguration.h"
 //Conditional definition of the class to pass ITKHeaderTest
@@ -30,48 +30,53 @@
 namespace rtk
 {
 
-/** \class CudaConjugateGradientImageFilter_4f
- * \brief A 4D float conjugate gradient image filter on GPU.
+/** \class CudaConjugateGradientImageFilter
+ * \brief A 3D float conjugate gradient image filter on GPU.
  *
  *
  *
  * \author Cyril Mory
  *
- * \ingroup CudaImageToImageFilter
+ * \ingroup RTK CudaImageToImageFilter
  */
 
-class RTK_EXPORT CudaConjugateGradientImageFilter_4f :
-  public itk::CudaImageToImageFilter< itk::CudaImage<float,4>, itk::CudaImage<float,4>,
-         ConjugateGradientImageFilter< itk::CudaImage<float,4> > >
+template < class TImage >
+class CudaConjugateGradientImageFilter :
+  public itk::CudaImageToImageFilter< TImage, TImage,
+         ConjugateGradientImageFilter< TImage > >
 {
 public:
   /** Standard class typedefs. */
-  typedef rtk::CudaConjugateGradientImageFilter_4f                    Self;
-  typedef itk::CudaImage<float,4>                                     OutputImageType;
-  typedef rtk::ConjugateGradientImageFilter< OutputImageType >        Superclass;
-  typedef itk::SmartPointer<Self>                                     Pointer;
-  typedef itk::SmartPointer<const Self>                               ConstPointer;
+  typedef rtk::CudaConjugateGradientImageFilter<TImage>      Self;
+  typedef rtk::ConjugateGradientImageFilter< TImage >        Superclass;
+  typedef itk::SmartPointer<Self>                            Pointer;
+  typedef itk::SmartPointer<const Self>                      ConstPointer;
 
   /** Standard New method. */
   itkNewMacro(Self)
 
   /** Runtime information support. */
-  itkTypeMacro(CudaConjugateGradientImageFilter_4f, ConjugateGradientImageFilter)
+  itkTypeMacro(CudaConjugateGradientImageFilter, ConjugateGradientImageFilter)
 
 protected:
-  CudaConjugateGradientImageFilter_4f();
-  ~CudaConjugateGradientImageFilter_4f(){
+  CudaConjugateGradientImageFilter();
+  ~CudaConjugateGradientImageFilter(){
   }
 
   virtual void GPUGenerateData();
 
 private:
-  CudaConjugateGradientImageFilter_4f(const Self&); //purposely not implemented
+  CudaConjugateGradientImageFilter(const Self&); //purposely not implemented
   void operator=(const Self&);         //purposely not implemented
 
 }; // end of class
 
 } // end namespace rtk
+
+#ifndef ITK_MANUAL_INSTANTIATION
+#include "rtkCudaConjugateGradientImageFilter.hxx"
+#endif
+
 
 #endif //end conditional definition of the class
 

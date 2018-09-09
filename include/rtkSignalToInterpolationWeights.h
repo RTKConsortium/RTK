@@ -31,6 +31,9 @@ namespace rtk
  * Computes the interpolation weights (along time) for 4D reconstruction
  * from the input signal (the phase at which each projection has been acquired).
  *
+ * \author Cyril Mory
+ *
+ * \ingroup RTK
  */
 
 class ITK_EXPORT SignalToInterpolationWeights:public itk::CSVFileReaderBase

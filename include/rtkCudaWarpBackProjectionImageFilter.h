@@ -42,7 +42,7 @@ namespace rtk
  *
  * \author Cyril Mory
  *
- * \ingroup Projector CudaImageToImageFilter
+ * \ingroup RTK Projector CudaImageToImageFilter
  */
 class RTK_EXPORT CudaWarpBackProjectionImageFilter :
   public itk::CudaInPlaceImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>,

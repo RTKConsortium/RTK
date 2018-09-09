@@ -34,6 +34,8 @@ namespace rtk
  *
  * \author Mathieu Dupont, Simon Rit
  *
+ * \ingroup RTK
+ *
  */
 
 template < class TInputImage,

@@ -147,11 +147,11 @@ int main(int, char** )
   CheckImageQuality<OutputImageType>(conjugategradient->GetOutput(), dsl->GetOutput(), 0.08, 23, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 
-  std::cout << "\n\n****** Case 2: Joseph Backprojector, laplacian regularization ******" << std::endl;
+  std::cout << "\n\n****** Case 2: Joseph Backprojector, laplacian and Tikhonov regularization ******" << std::endl;
 
   conjugategradient->SetBackProjectionFilter(ConjugateGradientType::BP_JOSEPH);
-  conjugategradient->SetRegularized(true);
   conjugategradient->SetGamma(0.01);
+  conjugategradient->SetTikhonov(0.01);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( conjugategradient->Update() );
 
   CheckImageQuality<OutputImageType>(conjugategradient->GetOutput(), dsl->GetOutput(), 0.08, 23, 2.0);
@@ -162,7 +162,8 @@ int main(int, char** )
 
   conjugategradient->SetForwardProjectionFilter(ConjugateGradientType::FP_CUDARAYCAST);
   conjugategradient->SetBackProjectionFilter(ConjugateGradientType::BP_CUDAVOXELBASED);
-  conjugategradient->SetRegularized(false);
+  conjugategradient->SetGamma(0);
+  conjugategradient->SetTikhonov(0);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( conjugategradient->Update() );
 
   CheckImageQuality<OutputImageType>(conjugategradient->GetOutput(), dsl->GetOutput(), 0.08, 23, 2.0);
@@ -172,7 +173,6 @@ int main(int, char** )
   std::cout << "\n\n****** Case 4: Joseph Backprojector, weighted least squares  ******" << std::endl;
 
   uniformWeightsSource->SetConstant(2.0);
-  conjugategradient->SetRegularized(false);
 
   conjugategradient->SetBackProjectionFilter(ConjugateGradientType::BP_JOSEPH);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( conjugategradient->Update() );

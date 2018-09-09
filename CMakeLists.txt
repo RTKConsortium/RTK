@@ -192,6 +192,33 @@ set(RTK_SYSTEM_LIBRARY_DIRS ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
 set(RTK_SYSTEM_INCLUDE_DIRS ${RTK_INCLUDE_DIRS})
 
 #=========================================================
+# Generate RTKConfig.cmake for the build tree.
+set(RTK_MODULE_PATH_CONFIG ${CMAKE_MODULE_PATH})
+set(RTK_USE_FILE "${RTK_SOURCE_DIR}/cmake/UseRTK.cmake")
+set(RTK_LIBRARY_DIRS ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
+
+set(RTK_EXPORT_CODE_BUILD "
+  # The RTK version number
+  set(RTK_VERSION_MAJOR ${RTK_VERSION_MAJOR})
+  set(RTK_VERSION_MINOR ${RTK_VERSION_MINOR})
+  set(RTK_VERSION_PATCH ${RTK_VERSION_PATCH})
+
+  # Whether the compiled version of RTK uses CUDA
+  set(RTK_USE_CUDA ${RTK_USE_CUDA})
+
+  if(${RTK_USE_CUDA})
+    set(CMAKE_MODULE_PATH ${RTK_MODULE_PATH_CONFIG} ${CMAKE_MODULE_PATH})
+    # if we are using CUDA, make sure CUDA libraries are available
+    find_package(CUDA_wrap REQUIRED)
+    include_directories(${CUDA_INCLUDE_DIRS})
+    set(RTK_CUDA_PROJECTIONS_SLAB_SIZE \"16\" CACHE STRING \"Number of projections processed simultaneously in CUDA forward and back projections\")
+  endif()
+  ")
+
+configure_file(cmake/RTKConfig.cmake.in RTKConfig.cmake @ONLY)
+configure_file(cmake/RTKConfigVersion.cmake.in RTKConfigVersion.cmake @ONLY)
+
+#=========================================================
 # Configure and build ITK external module
 #=========================================================
 if(NOT ITK_SOURCE_DIR)
@@ -201,14 +228,6 @@ else()
   itk_module_impl()
 endif()
 
-#=========================================================
-# Generate RTKConfig.cmake for the build tree.
-set (RTK_USE_FILE "${RTK_SOURCE_DIR}/cmake/UseRTK.cmake")
-set (RTK_LIBRARY_DIRS ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
-configure_file(cmake/RTKConfig.cmake.in RTKConfig.cmake @ONLY)
-configure_file(cmake/RTKConfigVersion.cmake.in RTKConfigVersion.cmake @ONLY)
-
-configure_file(CTestCustom.cmake ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
 #-----------------------------------------------------------------------------
 # The subdirectories added below this line should use only the public
 # interface with find_package(ITK). Set ITK_DIR to use this ITK build.

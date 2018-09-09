@@ -30,8 +30,8 @@ namespace rtk
 /** \class GlobalTimer
  * \brief
  *
- * \ingroup OSSystemObjects
- * \ingroup ITKCommon
+ * \ingroup RTK OSSystemObjects
+ * \ingroup RTK ITKCommon
  */
 
 class RTK_EXPORT GlobalTimer:public itk::Object

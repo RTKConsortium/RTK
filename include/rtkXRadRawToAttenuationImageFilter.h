@@ -27,7 +27,7 @@
  *
  * \author Simon Rit
  *
- * \ingroup ImageToImageFilter
+ * \ingroup RTK ImageToImageFilter
  */
 namespace rtk
 {

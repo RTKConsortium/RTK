@@ -23,7 +23,11 @@
 
 #include <itkInPlaceImageFilter.h>
 #include <itkConceptChecking.h>
+
 #include "rtkThreeDCircularProjectionGeometry.h"
+
+#include <type_traits>
+#include <typeinfo>
 
 namespace rtk
 {
@@ -40,7 +44,7 @@ namespace rtk
  *
  * \author Simon Rit
  *
- * \ingroup Projector
+ * \ingroup RTK Projector
  */
 template <class TInputImage, class TOutputImage>
 class BackProjectionImageFilter :
@@ -53,6 +57,7 @@ public:
   typedef itk::SmartPointer<Self>                           Pointer;
   typedef itk::SmartPointer<const Self>                     ConstPointer;
   typedef typename TInputImage::PixelType                   InputPixelType;
+  typedef typename TInputImage::InternalPixelType           InternalInputPixelType;
   typedef typename TOutputImage::RegionType                 OutputImageRegionType;
 
   typedef rtk::ThreeDCircularProjectionGeometry                     GeometryType;

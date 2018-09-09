@@ -39,6 +39,11 @@ endfunction()
 
 itk_module_test()
 
+# Use sha512 algorithm to generate content link
+if(NOT ITK_SOURCE_DIR)
+  set(ExternalData_LINK_CONTENT SHA512)
+endif()
+
 #-----------------------------------------------------------------------------
 # Executable to check the image quality
 add_executable(rtkcheckimagequality rtkcheckimagequality.cxx)
@@ -84,6 +89,7 @@ rtk_add_cuda_test(rtkGainCorrectionCudaTest rtkgaincorrectiontest.cxx)
 
 rtk_add_test(rtkForwardProjectionTest rtkforwardprojectiontest.cxx)
 rtk_add_cuda_test(rtkForwardProjectionCudaTest rtkforwardprojectiontest.cxx)
+rtk_add_test(rtkForwardAttenuatedProjectionTest rtkforwardattenuatedprojectiontest.cxx)
 
 rtk_add_test(rtkGeometryFileTest rtkgeometryfiletest.cxx)
 
@@ -105,6 +111,7 @@ rtk_add_test(rtkDecomposeSpectralProjectionsTest rtkdecomposespectralprojections
   DATA{Input/Spectral/material_attenuations.mha})
 
 rtk_add_test(rtkSpectralOneStepTest rtkspectralonesteptest.cxx
+  DATA{Input/Spectral/OneStep/no_vector_incident_spectrum_64_rows.mha}
   DATA{Input/Spectral/OneStep/incident_spectrum_64_rows.mha}
   DATA{Input/Spectral/detector_response.mha}
   DATA{Input/Spectral/material_attenuations.mha})

@@ -32,7 +32,7 @@ namespace rtk
  *
  *  \sa ResourceProbe
  *
- * \ingroup ITKCommon
+ * \ingroup RTK ITKCommon
  */
 
 class GlobalTimerProbesCollector

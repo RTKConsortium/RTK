@@ -30,8 +30,9 @@ namespace rtk
 
 /** \class ImagXImageIOFactory
  *
- * TODO
+ * \author Simon Rit
  *
+ * \ingroup RTK
  */
 class RTK_EXPORT ImagXImageIOFactory : public itk::ObjectFactoryBase
 {

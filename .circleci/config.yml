@@ -1,6 +1,10 @@
 version: 2
 jobs:
   build-and-test:
+    branches:
+      ignore:
+        - dashboard
+        - hooks
     working_directory: ~/RTK-build
     docker:
       - image: insighttoolkit/module-ci:latest

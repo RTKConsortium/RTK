@@ -110,7 +110,7 @@ void LU6L0T_v(LUSOLrec *LUSOL, LUSOLmat *mat, REAL V[], int NZidx[], int *INFORM
   REAL TEMP;
 #endif
   REAL SMALL;
-  register REAL VPIV;
+  REAL VPIV;
 #if (defined LUSOLFastSolve) && !(defined DoTraceL0)
   REAL *aptr;
   int  *jptr;

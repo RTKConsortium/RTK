@@ -20,6 +20,7 @@
 #define rtkConjugateGradientGetR_kPlusOneImageFilter_h
 
 #include <itkImageToImageFilter.h>
+#include <itkVectorImage.h>
 #include <itkBarrier.h>
 
 #include "rtkConfiguration.h"
@@ -27,6 +28,12 @@
 
 namespace rtk
 {
+/** \class ConjugateGradientGetR_kPlusOneImageFilter
+ *
+ * \author Cyril Mory
+ *
+ * \ingroup RTK
+ */
 template< typename TInputImage>
 class ConjugateGradientGetR_kPlusOneImageFilter : public itk::ImageToImageFilter< TInputImage, TInputImage>
 {
@@ -48,9 +55,9 @@ public:
     void SetPk(const TInputImage* Pk);
     void SetAPk(const TInputImage* APk);
 
-    itkGetMacro(Alphak, float)
-    itkGetMacro(SquaredNormR_k, float)
-    itkGetMacro(SquaredNormR_kPlusOne, float)
+    itkGetMacro(Alphak, double)
+    itkGetMacro(SquaredNormR_k, double)
+    itkGetMacro(SquaredNormR_kPlusOne, double)
 
 protected:
     ConjugateGradientGetR_kPlusOneImageFilter();
@@ -76,21 +83,29 @@ protected:
 private:
     ConjugateGradientGetR_kPlusOneImageFilter(const Self &); //purposely not implemented
     void operator=(const Self &);  //purposely not implemented
-    float m_Alphak;
-    float m_SquaredNormR_k;
-    float m_SquaredNormR_kPlusOne;
+    double m_Alphak;
+    double m_SquaredNormR_k;
+    double m_SquaredNormR_kPlusOne;
 
     // Thread synchronization tool
     itk::Barrier::Pointer m_Barrier;
 
     // These vector store one accumulation value per thread
     // The values are then sumed
-    std::vector<float> m_SquaredNormR_kVector;
-    std::vector<float> m_SquaredNormR_kPlusOneVector;
-    std::vector<float> m_PktApkVector;
+    std::vector<double> m_SquaredNormR_kVector;
+    std::vector<double> m_SquaredNormR_kPlusOneVector;
+    std::vector<double> m_PktApkVector;
 
 };
-} //namespace ITK
+
+template<>
+void
+ConjugateGradientGetR_kPlusOneImageFilter<itk::VectorImage<double, 3>>
+::ThreadedGenerateData(const itk::VectorImage<double, 3>::RegionType &
+                           outputRegionForThread,
+                           ThreadIdType threadId);
+
+} //namespace RTK
 
 
 #ifndef ITK_MANUAL_INSTANTIATION

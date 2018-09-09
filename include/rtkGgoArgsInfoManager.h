@@ -25,6 +25,12 @@
 
 namespace rtk
 {
+/** \class args_info_manager
+ *
+ * \author Simon Rit
+ *
+ * \ingroup RTK
+ */
 template < class TArgsInfo, class TCleanupFunction = void (*)( TArgsInfo* ) >
 class args_info_manager
 {

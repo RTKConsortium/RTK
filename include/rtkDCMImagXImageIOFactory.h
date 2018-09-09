@@ -30,8 +30,9 @@ namespace rtk
 
 /** \class DCMImagXImageIOFactory
  *
- * TODO
+ * \author Simon Rit
  *
+ * \ingroup RTK
  */
 class RTK_EXPORT DCMImagXImageIOFactory: public itk::ObjectFactoryBase
 {

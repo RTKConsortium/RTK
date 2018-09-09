@@ -32,6 +32,8 @@ namespace rtk
  * \test rtkforbildtest.cxx
  *
  * \author Simon Rit
+ *
+ * \ingroup RTK
  */
 class RTK_EXPORT IntersectionOfConvexShapes:
     public ConvexShape

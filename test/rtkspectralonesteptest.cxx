@@ -43,21 +43,20 @@ int main(int argc, char*argv[])
   typedef float                               DataType;
   typedef itk::Vector<DataType, nMaterials>   MaterialPixelType;
   typedef itk::Vector<DataType, nBins>        PhotonCountsPixelType;
-  typedef itk::Vector<DataType, nEnergies>    SpectrumPixelType;
 
   typedef itk::VectorImage<DataType, Dimension>           MaterialProjectionsType;
   typedef itk::VectorImage<DataType, Dimension - 1>       vIncidentSpectrum;
 #ifdef RTK_USE_CUDA
   typedef itk::CudaImage<MaterialPixelType, Dimension>        MaterialVolumeType;
   typedef itk::CudaImage<PhotonCountsPixelType, Dimension>    PhotonCountsType;
-  typedef itk::CudaImage<SpectrumPixelType, Dimension-1 >     IncidentSpectrumImageType;
+  typedef itk::CudaImage<DataType, Dimension >                IncidentSpectrumImageType;
   typedef itk::CudaImage<DataType, Dimension-1 >              DetectorResponseImageType;
   typedef itk::CudaImage<DataType, Dimension-1 >              MaterialAttenuationsImageType;
   typedef itk::CudaImage<DataType, Dimension>                 SingleComponentImageType;
 #else
   typedef itk::Image<MaterialPixelType, Dimension>        MaterialVolumeType;
   typedef itk::Image<PhotonCountsPixelType, Dimension>    PhotonCountsType;
-  typedef itk::Image<SpectrumPixelType, Dimension-1 >     IncidentSpectrumImageType;
+  typedef itk::Image<DataType, Dimension >                IncidentSpectrumImageType;
   typedef itk::Image<DataType, Dimension-1 >              DetectorResponseImageType;
   typedef itk::Image<DataType, Dimension-1 >              MaterialAttenuationsImageType;
   typedef itk::Image<DataType, Dimension>                 SingleComponentImageType;
@@ -74,15 +73,15 @@ int main(int argc, char*argv[])
   incidentSpectrumReader->Update();
 
   vIncidentSpectrumReaderType::Pointer vIncidentSpectrumReader = vIncidentSpectrumReaderType::New();
-  vIncidentSpectrumReader->SetFileName(argv[1]);
+  vIncidentSpectrumReader->SetFileName(argv[2]);
   vIncidentSpectrumReader->Update();
 
   DetectorResponseReaderType::Pointer detectorResponseReader = DetectorResponseReaderType::New();
-  detectorResponseReader->SetFileName(argv[2]);
+  detectorResponseReader->SetFileName(argv[3]);
   detectorResponseReader->Update();
 
   MaterialAttenuationsReaderType::Pointer materialAttenuationsReader = MaterialAttenuationsReaderType::New();
-  materialAttenuationsReader->SetFileName(argv[3]);
+  materialAttenuationsReader->SetFileName(argv[4]);
   materialAttenuationsReader->Update();
 
 #if FAST_TESTS_NO_CHECKS
@@ -105,23 +104,26 @@ int main(int argc, char*argv[])
 
   // Generate a blank volume
   ConstantImageSourceType::Pointer tomographySource  = ConstantImageSourceType::New();
-  origin[0] = -127.;
-  origin[1] = -127.;
-  origin[2] = -127.;
 #if FAST_TESTS_NO_CHECKS
+  origin[0] = -64.;
+  origin[1] = -64.;
+  origin[2] = -64.;
   size[0] = 2;
   size[1] = 2;
   size[2] = 2;
-  spacing[0] = 252.;
-  spacing[1] = 252.;
-  spacing[2] = 252.;
+  spacing[0] = 128.;
+  spacing[1] = 128.;
+  spacing[2] = 128.;
 #else
-  size[0] = 64;
-  size[1] = 64;
-  size[2] = 64;
-  spacing[0] = 4.;
-  spacing[1] = 4.;
-  spacing[2] = 4.;
+  origin[0] = -124.;
+  origin[1] = -124.;
+  origin[2] = -124.;
+  size[0] = 32;
+  size[1] = 32;
+  size[2] = 32;
+  spacing[0] = 8.;
+  spacing[1] = 8.;
+  spacing[2] = 8.;
 #endif
   tomographySource->SetOrigin( origin );
   tomographySource->SetSpacing( spacing );
@@ -137,23 +139,26 @@ int main(int argc, char*argv[])
 
   // Generate a blank set of projections
   ConstantImageSourceType::Pointer projectionsSource = ConstantImageSourceType::New();
-  origin[0] = -255.;
-  origin[1] = -255.;
-  origin[2] = -255.;
 #if FAST_TESTS_NO_CHECKS
+  origin[0] = -128.;
+  origin[1] = -128.;
+  origin[2] = 0.;
   size[0] = 2;
   size[1] = 2;
   size[2] = NumberOfProjectionImages;
-  spacing[0] = 504.;
-  spacing[1] = 504.;
-  spacing[2] = 504.;
+  spacing[0] = 256.;
+  spacing[1] = 256.;
+  spacing[2] = 256.;
 #else
-  size[0] = 64;
-  size[1] = 64;
+  origin[0] = -240.;
+  origin[1] = -240.;
+  origin[2] = 0.;
+  size[0] = 32;
+  size[1] = 32;
   size[2] = NumberOfProjectionImages;
-  spacing[0] = 8.;
-  spacing[1] = 8.;
-  spacing[2] = 8.;
+  spacing[0] = 16.;
+  spacing[1] = 16.;
+  spacing[2] = 16.;
 #endif
   projectionsSource->SetOrigin( origin );
   projectionsSource->SetSpacing( spacing );
@@ -259,7 +264,7 @@ int main(int argc, char*argv[])
 
   // Read the material attenuations image as a matrix
   MaterialAttenuationsImageType::IndexType indexMat;
-  itk::Matrix<DataType, nEnergies, nMaterials> materialAttenuationsMatrix;
+  vnl_matrix<DataType> materialAttenuationsMatrix(nEnergies, nMaterials);
   for (unsigned int energy=0; energy<nEnergies; energy++)
     {
     indexMat[1] = energy;
@@ -271,7 +276,7 @@ int main(int argc, char*argv[])
     }
 
   // Read the detector response image as a matrix, and bin it
-  itk::Matrix<DataType, nBins, nEnergies> detectorResponseMatrix;
+  vnl_matrix<DataType> detectorResponseMatrix(nBins, nEnergies, 0.);
   DetectorResponseImageType::IndexType indexDet;
   for (unsigned int energy=0; energy<nEnergies; energy++)
     {
@@ -308,7 +313,7 @@ int main(int argc, char*argv[])
   mechlemOneStep->SetBackProjectionFilter( MechlemType::BP_JOSEPH );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( mechlemOneStep->Update() );
 
-  CheckVectorImageQuality<MaterialVolumeType>(mechlemOneStep->GetOutput(), composeVols->GetOutput(), 0.08, 23, 2.0);
+  CheckVectorImageQuality<MaterialVolumeType>(mechlemOneStep->GetOutput(), composeVols->GetOutput(), 0.08, 22, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 
   std::cout << "\n\n****** Case 2: Voxel-based Backprojector ******" << std::endl;
@@ -316,7 +321,7 @@ int main(int argc, char*argv[])
   mechlemOneStep->SetBackProjectionFilter( MechlemType::BP_VOXELBASED );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( mechlemOneStep->Update() );
 
-  CheckVectorImageQuality<MaterialVolumeType>(mechlemOneStep->GetOutput(), composeVols->GetOutput(), 0.08, 23, 2.0);
+  CheckVectorImageQuality<MaterialVolumeType>(mechlemOneStep->GetOutput(), composeVols->GetOutput(), 0.08, 22, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 
   std::cout << "\n\n****** Case 3: Voxel-based Backprojector, 4 subsets, with regularization  ******" << std::endl;

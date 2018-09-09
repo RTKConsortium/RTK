@@ -34,7 +34,7 @@ namespace rtk {
  *
  * \author Simon Rit
  *
- * \ingroup IOFilters
+ * \ingroup RTK IOFilters
  */
 class XRadImageIO : public itk::ImageIOBase
 {

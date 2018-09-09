@@ -43,7 +43,7 @@ namespace rtk
  *
  * \author Simon Rit
  *
- * \ingroup CudaImageToImageFilter
+ * \ingroup RTK CudaImageToImageFilter
  */
 template< class TParentImageFilter >
 class CudaFFTProjectionsConvolutionImageFilter:

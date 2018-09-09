@@ -31,6 +31,8 @@ namespace rtk {
  * \brief ITK factory for XRad file I/O.
  *
  * \author Simon Rit
+ *
+ * \ingroup RTK
  */
 class RTK_EXPORT XRadImageIOFactory : public itk::ObjectFactoryBase
 {

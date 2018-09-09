@@ -29,9 +29,10 @@
 #include "rtkDisplacedDetectorImageFilter.h"
 #include "rtkConstantImageSource.h"
 #include "rtkLaplacianImageFilter.h"
+#include "rtkBlockDiagonalMatrixVectorMultiplyImageFilter.h"
 
 #ifdef RTK_USE_CUDA
-  #include "rtkCudaConjugateGradientImageFilter_3f.h"
+  #include "rtkCudaConjugateGradientImageFilter.h"
   #include "rtkCudaDisplacedDetectorImageFilter.h"
   #include "rtkCudaConstantVolumeSource.h"
 #endif
@@ -98,11 +99,13 @@ namespace rtk
    *
    * \author Cyril Mory
    *
-   * \ingroup ReconstructionAlgorithm
+   * \ingroup RTK ReconstructionAlgorithm
    */
 
-template< typename TOutputImage >
-class ConjugateGradientConeBeamReconstructionFilter : public rtk::IterativeConeBeamReconstructionFilter<TOutputImage, TOutputImage>
+template< typename TOutputImage,
+          typename TSingleComponentImage = TOutputImage,
+          typename TWeightsImage = TOutputImage>
+class ConjugateGradientConeBeamReconstructionFilter : public rtk::IterativeConeBeamReconstructionFilter<TOutputImage>
 {
 public:
     /** Standard class typedefs. */
@@ -116,20 +119,37 @@ public:
     /** Run-time type information (and related methods). */
     itkTypeMacro(ConjugateGradientConeBeamReconstructionFilter, itk::ImageToImageFilter)
 
-    typedef rtk::ForwardProjectionImageFilter< TOutputImage, TOutputImage >  ForwardProjectionFilterType;
-    typedef typename ForwardProjectionFilterType::Pointer                    ForwardProjectionFilterPointer;
-    typedef rtk::BackProjectionImageFilter< TOutputImage, TOutputImage >     BackProjectionFilterType;
-    typedef rtk::ConjugateGradientImageFilter<TOutputImage>                  ConjugateGradientFilterType;
-    typedef itk::MultiplyImageFilter<TOutputImage>                           MultiplyFilterType;
-    typedef rtk::ReconstructionConjugateGradientOperator<TOutputImage>       CGOperatorFilterType;
-    typedef rtk::DisplacedDetectorImageFilter<TOutputImage>                  DisplacedDetectorFilterType;
-    typedef rtk::ConstantImageSource<TOutputImage>                           ConstantImageSourceType;
-    typedef itk::DivideOrZeroOutImageFilter<TOutputImage>                    DivideFilterType;
-    typedef itk::StatisticsImageFilter<TOutputImage>                         StatisticsImageFilterType;
-    typedef typename TOutputImage::Pointer                                   OutputImagePointer;
+    /** Setters for the inputs */
+    void SetInputVolume(const TOutputImage* vol);
+    void SetInputProjectionStack(const TOutputImage* projs);
+    void SetInputWeights(const TWeightsImage* weights);
+
+    typedef rtk::ForwardProjectionImageFilter< TOutputImage, TOutputImage >                 ForwardProjectionFilterType;
+    typedef typename ForwardProjectionFilterType::Pointer                                   ForwardProjectionFilterPointer;
+    typedef rtk::BackProjectionImageFilter< TOutputImage, TOutputImage >                    BackProjectionFilterType;
+    typedef rtk::ConjugateGradientImageFilter<TOutputImage>                                 ConjugateGradientFilterType;
+    typedef itk::MultiplyImageFilter<TOutputImage, TSingleComponentImage, TOutputImage>     MultiplyFilterType;
+    typedef rtk::ReconstructionConjugateGradientOperator<TOutputImage,
+                                                         TSingleComponentImage,
+                                                         TWeightsImage>                     CGOperatorFilterType;
+    typedef rtk::DisplacedDetectorImageFilter<TOutputImage>                                 DisplacedDetectorFilterType;
+    typedef rtk::ConstantImageSource<TOutputImage>                                          ConstantImageSourceType;
+    typedef itk::DivideOrZeroOutImageFilter<TOutputImage>                                   DivideFilterType;
+    typedef itk::StatisticsImageFilter<TOutputImage>                                        StatisticsImageFilterType;
+    typedef typename TOutputImage::Pointer                                                  OutputImagePointer;
+    typedef itk::StatisticsImageFilter<TSingleComponentImage>                               StatisticsFilterType;
 
     typedef typename Superclass::ForwardProjectionType ForwardProjectionType;
-    typedef typename Superclass::BackProjectionType    BackProjectionType;
+    typedef typename Superclass::BackProjectionType BackProjectionType;
+
+    // If TOutputImage is an itk::Image of floats or double, so are the weights, and a simple Multiply filter is required
+    // If TOutputImage is an itk::Image of itk::Vector<float (or double)>, a BlockDiagonalMatrixVectorMultiply filter
+    // is needed. Thus the meta-programming construct
+    typedef rtk::BlockDiagonalMatrixVectorMultiplyImageFilter<TOutputImage, TWeightsImage>  MatrixVectorMultiplyFilterType;
+    typedef itk::MultiplyImageFilter<TOutputImage, TOutputImage, TOutputImage>              PlainMultiplyFilterType;
+    typedef typename std::conditional<std::is_same< TSingleComponentImage, TOutputImage>::value,
+                                                    PlainMultiplyFilterType,
+                                                    MatrixVectorMultiplyFilterType>::type MultiplyWithWeightsFilterType;
 
     /** Pass the ForwardProjection filter to the conjugate gradient operator */
     void SetForwardProjectionFilter (ForwardProjectionType _arg) ITK_OVERRIDE;
@@ -138,8 +158,8 @@ public:
     void SetBackProjectionFilter (BackProjectionType _arg) ITK_OVERRIDE;
 
     /** Set the support mask, if any, for support constraint in reconstruction */
-    void SetSupportMask(const TOutputImage *SupportMask);
-    typename TOutputImage::ConstPointer GetSupportMask();
+    void SetSupportMask(const TSingleComponentImage *SupportMask);
+    typename TSingleComponentImage::ConstPointer GetSupportMask();
 
     /** Pass the geometry to all filters needing it */
     itkSetConstObjectMacro(Geometry, ThreeDCircularProjectionGeometry)
@@ -156,8 +176,8 @@ public:
 
     /** If Regularized, perform laplacian-based regularization during
      *  reconstruction (gamma is the strength of the regularization) */
-    itkSetMacro(Regularized, bool)
-    itkGetMacro(Regularized, bool)
+    itkSetMacro(Tikhonov, float)
+    itkGetMacro(Tikhonov, float)
     itkSetMacro(Gamma, float)
     itkGetMacro(Gamma, float)
 
@@ -186,6 +206,7 @@ protected:
     typename BackProjectionImageFilter<TOutputImage, TOutputImage>::Pointer     m_BackProjectionFilterForB;
     typename DisplacedDetectorFilterType::Pointer                               m_DisplacedDetectorFilter;
     typename ConstantImageSourceType::Pointer                                   m_ConstantVolumeSource;
+    typename MultiplyWithWeightsFilterType::Pointer                            m_MultiplyWithWeightsFilter;
 
     /** The inputs of this filter have the same type (float, 3) but not the same meaning
     * It is normal that they do not occupy the same physical space. Therefore this check
@@ -197,6 +218,11 @@ protected:
     void GenerateInputRequestedRegion() ITK_OVERRIDE;
     void GenerateOutputInformation() ITK_OVERRIDE;
 
+    /** Getters for the inputs */
+    typename TOutputImage::ConstPointer   GetInputVolume();
+    typename TOutputImage::ConstPointer   GetInputProjectionStack();
+    typename TWeightsImage::ConstPointer  GetInputWeights();
+
 private:
     ConjugateGradientConeBeamReconstructionFilter(const Self &); //purposely not implemented
     void operator=(const Self &);  //purposely not implemented
@@ -205,12 +231,12 @@ private:
 
     int                          m_NumberOfIterations;
     float                        m_Gamma;
+    float                        m_Tikhonov;
     bool                         m_IterationCosts;
-    bool                         m_Regularized;
     bool                         m_CudaConjugateGradient;
     bool                         m_DisableDisplacedDetectorFilter;
 };
-} //namespace ITK
+} //namespace RTK
 
 
 #ifndef ITK_MANUAL_INSTANTIATION
