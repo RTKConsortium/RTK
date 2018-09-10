@@ -134,7 +134,7 @@ add_library(RTK ${ITK_LIBRARY_BUILD_TYPE} ${RTK_SRCS})
 target_link_libraries(RTK LINK_PUBLIC lpsolve55)
 
 itk_module_link_dependencies()
-itk_module_target(RTK NO_INSTALL)
+itk_module_target(RTK)
 
 if (RTK_USE_CUDA)
   target_link_libraries( RTK LINK_PUBLIC ITKCudaCommon ${CUDA_LIBRARIES} ${CUDA_CUDA_LIBRARY} ${CUDA_cufft_LIBRARY} ${CUDA_CUBLAS_LIBRARIES} )
