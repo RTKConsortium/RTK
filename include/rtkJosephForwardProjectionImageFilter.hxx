@@ -108,6 +108,11 @@ TSumAlongRay>
   box->SetBoxMin(boxMin);
   box->SetBoxMax(boxMax);
 
+  // m_InferiorClip and m_SuperiorClip are understood in the sense of a
+  // source-to-pixel vector. Since we go from pixel-to-source, we invert them.
+  double inferiorClip = 1.-m_SuperiorClip;
+  double superiorClip = 1.-m_InferiorClip;
+
   // Go over each pixel of the projection
   typename BoxShape::VectorType stepMM, np, fp;
   for(unsigned int pix=0; pix<outputRegionForThread.GetNumberOfPixels(); pix++, itIn->Next(), ++itOut)
@@ -130,11 +135,10 @@ TSumAlongRay>
     if( box->IsIntersectedByRay(pixelPosition, dirVox, nearDist, farDist) &&
         farDist>=0. && // check if detector after the source
         nearDist<=1.)  // check if detector after or in the volume
-    {
-
+      {
       // Clip the casting between source and pixel of the detector
-      nearDist = std::max(nearDist, m_InferiorClip);
-      farDist = std::min(farDist, m_SuperiorClip);
+      nearDist = std::max(nearDist, inferiorClip);
+      farDist = std::min(farDist, superiorClip);
 
       // Compute and sort intersections: (n)earest and (f)arthest (p)points
       np = pixelPosition + nearDist * dirVox;
