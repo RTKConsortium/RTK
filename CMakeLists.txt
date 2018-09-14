@@ -88,8 +88,18 @@ if(RTK_USE_CUDA)
 endif()
 
 # --------------------------------------------------------
+# Find ITK (required)
+if(NOT ITK_SOURCE_DIR)
+  find_package(ITK 4.12.0 REQUIRED)
+endif()
+
+# --------------------------------------------------------
 # Shared libraries option
-set(RTK_BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS})
+if("${ITK_LIBRARY_BUILD_TYPE}" STREQUAL "SHARED")
+  set(RTK_BUILD_SHARED_LIBS ON)
+else()
+  set(RTK_BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS})
+endif()
 
 # ----------------------------------------------------------------------------
 # Set RTK_DATA_ROOT
@@ -143,12 +153,6 @@ set(LPSOLVE_INCLUDE_DIRS
 
 list(APPEND RTK_INCLUDE_DIRS
   "${LPSOLVE_INCLUDE_DIRS}")
-
-# --------------------------------------------------------
-# Find ITK (required)
-if(NOT ITK_SOURCE_DIR)
-  find_package(ITK 4.12.0 REQUIRED)
-endif()
 
 # --------------------------------------------------------
 # Setup KWStyle from ITK

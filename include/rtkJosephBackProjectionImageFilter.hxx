@@ -129,6 +129,11 @@ void JosephBackProjectionImageFilter<TInputImage,
   box->SetBoxMin(boxMin);
   box->SetBoxMax(boxMax);
 
+  // m_InferiorClip and m_SuperiorClip are understood in the sense of a
+  // source-to-pixel vector. Since we go from pixel-to-source, we invert them.
+  double inferiorClip = 1.-m_SuperiorClip;
+  double superiorClip = 1.-m_InferiorClip;
+
   // Go over each pixel of the projection
   typename BoxShape::VectorType stepMM, np, fp;
   for(unsigned int pix=0; pix<buffReg.GetNumberOfPixels(); pix++, itIn->Next())
@@ -153,8 +158,8 @@ void JosephBackProjectionImageFilter<TInputImage,
         nearDist<=1.)  // check if detector after or in the volume
       {
       // Clip the casting between source and pixel of the detector
-      nearDist = std::max(nearDist, m_InferiorClip);
-      farDist = std::min(farDist, m_SuperiorClip);
+      nearDist = std::max(nearDist, inferiorClip);
+      farDist = std::min(farDist, superiorClip);
 
       // Compute and sort intersections: (n)earest and (f)arthest (p)points
       np = sourcePosition + nearDist * dirVox;
