@@ -6,10 +6,8 @@ configure_file (${CMAKE_CURRENT_SOURCE_DIR}/rtkTestConfiguration.h.in
 # Required to include ITK_USE_FILE in order to Register IO factories
 # Force requested modules to be RTK dependencies only, otherwise all
 # available factories will try to register themselves.
-if (NOT ITK_SOURCE_DIR)
-  find_package(ITK REQUIRED COMPONENTS ${ITK_MODULE_RTK_DEPENDS})
-  include(${ITK_USE_FILE})
-endif()
+find_package(ITK REQUIRED COMPONENTS ${ITK_MODULE_RTK_DEPENDS})
+include(${ITK_USE_FILE})
 
 #-----------------------------------------------------------------------------
 # rtk_add_test(testname testfile [DATA{}])
