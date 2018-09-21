@@ -119,6 +119,10 @@ if(NOT ITK_SOURCE_DIR)
   include(itk-module-init.cmake)
 endif()
 
+# Propagate cmake options in a header file
+configure_file(${RTK_SOURCE_DIR}/rtkConfiguration.h.in
+  ${RTK_BINARY_DIR}/rtkConfiguration.h)
+
 #=========================================================
 # If choose to build documentation, then search for Doxygen executables.
 option(RTK_BUILD_DOXYGEN "Build Doxygen Documentation" OFF)
