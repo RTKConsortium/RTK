@@ -21,7 +21,6 @@
 
 #include <itkInPlaceImageFilter.h>
 #include <itkMutexLock.h>
-#include <itkBarrier.h>
 #include "rtkThreeDCircularProjectionGeometry.h"
 #include "rtkConfiguration.h"
 

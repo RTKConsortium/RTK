@@ -22,9 +22,9 @@
 #include "rtkConfiguration.h"
 #include "rtkBackProjectionImageFilter.h"
 #include "rtkThreeDCircularProjectionGeometry.h"
-#include <itkBarrier.h>
 
 #include <itkVectorImage.h>
+
 namespace rtk
 {
 namespace Functor

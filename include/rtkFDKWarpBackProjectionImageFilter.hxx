@@ -36,6 +36,7 @@ FDKWarpBackProjectionImageFilter<TInputImage,TOutputImage,TDeformation>
 {
 #if ITK_VERSION_MAJOR>4
   this->DynamicMultiThreadingOff();
+  this->SetNumberOfWorkUnits( itk::MultiThreaderBase::GetGlobalDefaultNumberOfThreads() );
 #endif
 }
 

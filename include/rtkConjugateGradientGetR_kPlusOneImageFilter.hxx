@@ -36,6 +36,7 @@ ConjugateGradientGetR_kPlusOneImageFilter<TInputType>::ConjugateGradientGetR_kPl
 {
 #if ITK_VERSION_MAJOR>4
   this->DynamicMultiThreadingOff();
+  this->SetNumberOfWorkUnits( itk::MultiThreaderBase::GetGlobalDefaultNumberOfThreads() );
 #endif
   this->SetNumberOfRequiredInputs(3);
 }
