@@ -1,9 +1,5 @@
 itk_wrap_class("rtk::FourDSARTConeBeamReconstructionFilter" POINTER)
 
-  #WARNING: Templates can not be defined for both itk::Image and itk::CudaImage.
-  # The "=" operator between this class and its associated Cuda class is only defined
-  # for templates of type itk::CudaImage.
-
   if(RTK_USE_CUDA)
     itk_wrap_template("CIF4CIF3" "itk::CudaImage<float, 4>, itk::CudaImage<float, 3>")
   else()

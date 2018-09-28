@@ -1,6 +1,3 @@
-# itk::InPlaceImageFilter<itk::VectorImage<float, 3>> wrapped in rtkSpectralForwardModelImageFilter.wrap
-# itk::VariableLengthVector<unsigned int> wrapped in rtkSpectralForwardModelImageFilter.wrap
-
 itk_wrap_class("rtk::SimplexSpectralProjectionsDecompositionImageFilter" POINTER)
   foreach(t ${WRAP_ITK_REAL})
     itk_wrap_template("VI${ITKM_${t}}3VI${ITKM_${t}}3VIF2IF2IF2"

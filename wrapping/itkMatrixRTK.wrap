@@ -1,0 +1,16 @@
+itk_wrap_class("itk::Matrix")
+
+  # Wrap ITK double missing types --
+  if (NOT ITK_WRAP_double)
+    itk_wrap_template("D11" "${ITKT_D}, 1, 1")
+  endif()
+
+  # Wrap ITK dimension 1 missing types
+  list(FIND ITK_WRAP_IMAGE_DIMS "1" _index)
+  if (${_index} EQUAL -1)
+	if (ITK_WRAP_double)
+      itk_wrap_template("D11" "${ITKT_D}, 1, 1")
+    endif()
+  endif()
+
+itk_end_wrap_class()

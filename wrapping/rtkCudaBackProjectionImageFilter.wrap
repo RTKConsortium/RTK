@@ -2,6 +2,7 @@ if(RTK_USE_CUDA)
 
   itk_wrap_class("rtk::CudaBackProjectionImageFilter" POINTER)
     itk_wrap_template("CIF3" "itk::CudaImage<${ITKT_F}, 3>")
+    itk_wrap_template("CI${ITKM_VF3}3" "itk::CudaImage<itk::Vector<${ITKT_F},3>, 3>")
   itk_end_wrap_class()
 
 endif()

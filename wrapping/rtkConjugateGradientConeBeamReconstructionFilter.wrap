@@ -1,6 +1,3 @@
-#-----------------------------------------------------------------------------
-# rtk::ConjugateGradientConeBeamReconstructionFilter
-#-----------------------------------------------------------------------------
 itk_wrap_class("rtk::ConjugateGradientConeBeamReconstructionFilter" POINTER)
 
  if(RTK_USE_CUDA)

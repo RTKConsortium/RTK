@@ -1,0 +1,14 @@
+itk_wrap_simple_type_swig_interface("itk::VectorImage< float, 2 >::ConstPointer" "itkVectorImageF2_ConstPointer")
+itk_wrap_simple_type("itk::VectorImage< float, 2 >::ConstPointer" "itkVectorImageF2_ConstPointer")
+
+itk_wrap_simple_type_swig_interface("itk::VectorImage< float, 3 >::ConstPointer" "itkVectorImageF3_ConstPointer")
+itk_wrap_simple_type("itk::VectorImage< float, 3 >::ConstPointer" "itkVectorImageF3_ConstPointer")
+
+if (ITK_WRAP_double)
+
+  foreach(d 2 3) 
+    itk_wrap_simple_type_swig_interface("itk::VectorImage< double, ${d] >::ConstPointer" "itkVectorImageD${d]_ConstPointer")
+    itk_wrap_simple_type("itk::VectorImage< double, ${d] >::ConstPointer" "itkVectorImageD${d]_ConstPointer")
+  endforeach()
+
+endif()

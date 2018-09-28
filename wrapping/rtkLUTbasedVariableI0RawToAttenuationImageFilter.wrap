@@ -1,6 +1,3 @@
-#-----------------------------------------------------------------------------
-# rtk::LUTbasedVariableI0RawToAttenuationImageFilter
-#-----------------------------------------------------------------------------
 itk_wrap_class("rtk::LUTbasedVariableI0RawToAttenuationImageFilter" POINTER)
 
   itk_wrap_template("IUS2IF2" "itk::Image<${ITKT_US}, 2>, itk::Image<${ITKT_F}, 2>")

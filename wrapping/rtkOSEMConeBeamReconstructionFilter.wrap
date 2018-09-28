@@ -1,8 +1,5 @@
 itk_wrap_class("rtk::OSEMConeBeamReconstructionFilter" POINTER)
 
-  #WARNING: Templates can not be defined for both itk::Image and itk::CudaImage
-  # Templates definition for this class should match Superclass.
-
   if(RTK_USE_CUDA)
     itk_wrap_template("CIF4CIF3" "itk::CudaImage<float, 3>, itk::CudaImage<float, 3>")
   else()

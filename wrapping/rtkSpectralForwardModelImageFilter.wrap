@@ -1,16 +1,3 @@
-# itk::InPlaceImageFilter<itk::VectorImage<float, 3>>
-itk_wrap_class("itk::InPlaceImageFilter" POINTER)
-  foreach(t ${WRAP_ITK_REAL})
-    itk_wrap_template("VI${ITKM_${t}}3VI${ITKM_${t}}3"
-        "itk::VectorImage<${ITKT_${t}}, 3>, itk::VectorImage<${ITKT_${t}}, 3>")
-  endforeach()
-itk_end_wrap_class()
-
-#itk::VariableLengthVector<int>
-itk_wrap_class("itk::VariableLengthVector")
-  itk_wrap_template("I" "int")
-itk_end_wrap_class()
-
 itk_wrap_class("rtk::SpectralForwardModelImageFilter" POINTER)
   foreach(t ${WRAP_ITK_REAL})
     itk_wrap_template("VI${ITKM_${t}}3VI${ITKM_${t}}3VIF2IF2IF2"

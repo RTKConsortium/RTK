@@ -1,0 +1,71 @@
+itk_wrap_class("itk::Image" POINTER)
+
+  # Wrap ITK double missing types
+  if (NOT ITK_WRAP_double)
+    itk_wrap_template("D1" "${ITKT_D}, 1")
+  endif()
+
+  # Wrap ITK unsigned char missing types
+  if (NOT ITK_WRAP_unsigned_char)
+    itk_wrap_template("UC1" "${ITKT_UC}, 1")
+  endif()
+
+  # Wrap ITK unsigned short missing types
+  if (NOT ITK_WRAP_unsigned_short)
+    itk_wrap_template("US2" "${ITKT_US}, 2")
+    itk_wrap_template("US3" "${ITKT_US}, 3")
+    itk_wrap_template("US4" "${ITKT_US}, 4")
+  endif()
+
+  # Wrap ITK short combination (required by : rtkLookupTableImageFilter)
+  if (NOT ITK_WRAP_signed_short)
+    itk_wrap_template("SS3" "${ITKT_SS}, 3")
+  endif()
+
+  # Wrap ITK dimension 1 missing types
+  list(FIND ITK_WRAP_IMAGE_DIMS "1" _index)
+  if (${_index} EQUAL -1)
+    itk_wrap_template("F1" "${ITKT_F}, 1")
+	if (ITK_WRAP_double)
+      itk_wrap_template("D1" "${ITKT_D}, 1")
+    endif()
+	if (ITK_WRAP_unsigned_char)
+      itk_wrap_template("UC1" "${ITKT_UC}, 1")
+    endif()
+  endif()
+
+  # Wrap ITK dimension 4 missing types
+  list(FIND ITK_WRAP_IMAGE_DIMS "4" _index)
+  if (${_index} EQUAL -1)
+    itk_wrap_template("F4" "${ITKT_F}, 4")
+    itk_wrap_template("${ITKM_VF3}4" "${ITKT_VF3}, 4") #rtkCyclicDeformationImageFilter
+    itk_wrap_template("${ITKM_CVF3}4" "${ITKT_CVF3}, 4") #rtkMotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter
+    if (ITK_WRAP_unsigned_short)
+      itk_wrap_template("US4" "${ITKT_US}, 4")
+    endif()
+  endif()
+
+itk_end_wrap_class()
+
+itk_wrap_simple_type_swig_interface("itk::Image< float, 2 >::ConstPointer" "itkImageF2_ConstPointer")
+itk_wrap_simple_type("itk::Image< float, 2 >::ConstPointer" "itkImageF2_ConstPointer")
+
+itk_wrap_simple_type_swig_interface("itk::Image< float, 3 >::ConstPointer" "itkImageF3_ConstPointer")
+itk_wrap_simple_type("itk::Image< float, 3 >::ConstPointer" "itkImageF3_ConstPointer")
+
+itk_wrap_simple_type_swig_interface("itk::Image< float, 4 >::ConstPointer" "itkImageF4_ConstPointer")
+itk_wrap_simple_type("itk::Image< float, 4 >::ConstPointer" "itkImageF4_ConstPointer")
+
+itk_wrap_simple_type_swig_interface("itk::Image< itk::CovariantVector< float, 3 >, 4 >::ConstPointer" "itkImageCVF34_ConstPointer")
+itk_wrap_simple_type("itk::Image< itk::CovariantVector< float, 3 >, 4 >::ConstPointer" "itkImageCVF34_ConstPointer")
+
+if (ITK_WRAP_double)
+  itk_wrap_simple_type_swig_interface("itk::Image< double, 3 >::ConstPointer" "itkImageD3_ConstPointer")
+  itk_wrap_simple_type("itk::Image< double, 3 >::ConstPointer" "itkImageD3_ConstPointer")
+
+  itk_wrap_simple_type_swig_interface("itk::Image< double, 4 >::ConstPointer" "itkImageD4_ConstPointer")
+  itk_wrap_simple_type("itk::Image< double, 4 >::ConstPointer" "itkImageD4_ConstPointer")
+
+  itk_wrap_simple_type_swig_interface("itk::Image< itk::CovariantVector< double, 3 >, 4 >::ConstPointer" "itkImageCVD34_ConstPointer")
+  itk_wrap_simple_type("itk::Image< itk::CovariantVector< double, 3 >, 4 >::ConstPointer" "itkImageCVD34_ConstPointer")
+endif()

@@ -2,9 +2,6 @@ if(RTK_USE_CUDA)
   itk_wrap_include(itkCudaImage.h)
 endif()
 
-#-----------------------------------------------------------------------------
-# rtk::FDKBackProjectionImageFilter
-#-----------------------------------------------------------------------------
 itk_wrap_class("rtk::FDKBackProjectionImageFilter" POINTER)
   itk_wrap_image_filter("${WRAP_ITK_REAL}" 2 3)
 
@@ -15,9 +12,6 @@ itk_wrap_class("rtk::FDKBackProjectionImageFilter" POINTER)
 itk_end_wrap_class()
 
 if(RTK_USE_CUDA)
-  #-----------------------------------------------------------------------------
-  # Templates to be used with rtk::CudaFDKBackProjectionImageFilter
-  #-----------------------------------------------------------------------------
   itk_wrap_class("itk::CudaImageToImageFilter" POINTER)
     itk_wrap_template("CIF3CIF3FDKBPCIF3CIF3"
       "itk::CudaImage<${ITKT_F}, 3>, itk::CudaImage<${ITKT_F}, 3>, rtk::FDKBackProjectionImageFilter< itk::CudaImage<${ITKT_F}, 3>, itk::CudaImage<${ITKT_F}, 3> >")

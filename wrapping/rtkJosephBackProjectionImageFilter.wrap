@@ -1,6 +1,3 @@
-#-----------------------------------------------------------------------------
-# rtk::Functor::SplatWeightMultiplication< float, double, float >
-#-----------------------------------------------------------------------------
 set(WRAPPER_AUTO_INCLUDE_HEADERS OFF)
 itk_wrap_named_class("rtk::Functor::SplatWeightMultiplication" "rtkFunctorSplatWeightMultiplication")
   foreach(t ${WRAP_ITK_REAL})
@@ -9,12 +6,8 @@ itk_wrap_named_class("rtk::Functor::SplatWeightMultiplication" "rtkFunctorSplatW
 itk_end_wrap_class()
 set(WRAPPER_AUTO_INCLUDE_HEADERS ON)
 
-#-----------------------------------------------------------------------------
-# rtk::JosephBackProjectionImageFilter
-#-----------------------------------------------------------------------------
 itk_wrap_class("rtk::JosephBackProjectionImageFilter" POINTER)
   foreach(t ${WRAP_ITK_REAL})
-    # WARNING: Only wrapped for TInputImage == TOutputImage
     itk_wrap_template("I${ITKM_${t}}3I${ITKM_${t}}3SWM${ITKM_${t}}D${ITKM_${t}}"
       "itk::Image<${ITKT_${t}}, 3>, itk::Image< ${ITKT_${t}}, 3>")
   endforeach()

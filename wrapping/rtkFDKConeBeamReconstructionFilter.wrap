@@ -12,9 +12,6 @@ itk_wrap_class("rtk::FDKConeBeamReconstructionFilter"  POINTER)
 itk_end_wrap_class()
 
 if(RTK_USE_CUDA)
-  #-----------------------------------------------------------------------------
-  # Templates to be used with rtk::CudaFDKConeBeamReconstructionFilter
-  #-----------------------------------------------------------------------------
   itk_wrap_class("itk::CudaImageToImageFilter" POINTER)
     itk_wrap_template("CIF3CIF3FDKCIF3F" "itk::CudaImage<${ITKT_F}, 3>, itk::CudaImage<${ITKT_F}, 3>, rtk::FDKConeBeamReconstructionFilter< itk::CudaImage<${ITKT_F}, 3>, itk::CudaImage<${ITKT_F}, 3>, float >")
   itk_end_wrap_class()

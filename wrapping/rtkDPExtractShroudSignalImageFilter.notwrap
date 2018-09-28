@@ -1,15 +1,3 @@
-itk_wrap_class("itk::ImageSource" POINTER)
-  foreach(t ${WRAP_ITK_REAL})
-      itk_wrap_template("I${ITKM_${t}}1" "itk::Image<${ITKT_${t}}, 1>")
-  endforeach()
-itk_end_wrap_class()
-
-itk_wrap_class("itk::ImageToImageFilter" POINTER)
-  foreach(t ${WRAP_ITK_REAL})
-      itk_wrap_template("I${ITKM_${t}}2I${ITKM_${t}}1" "itk::Image<${ITKT_${t}}, 2>, itk::Image<${ITKT_${t}}, 1>")
-  endforeach()
-itk_end_wrap_class()
-
 itk_wrap_class("rtk::DPExtractShroudSignalImageFilter" POINTER)
   foreach(t_in ${WRAP_ITK_REAL})
     foreach(t_out ${WRAP_ITK_REAL})
