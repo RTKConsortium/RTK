@@ -74,6 +74,7 @@ itk_wrap_class("itk::ImageToImageFilter" POINTER)
     itk_wrap_template("I${ITKM_${t}}2I${ITKM_${t}}1" "itk::Image<${ITKT_${t}}, 2>, itk::Image<${ITKT_${t}}, 1>")
     itk_wrap_template("I${ITKM_${t}}3VI${ITKM_${t}}2" "itk::Image<${ITKT_${t}}, 3>, itk::VectorImage<${ITKT_${t}}, 2>")
     itk_wrap_template("VI${ITKM_${t}}2I${ITKM_${t}}3" "itk::VectorImage<${ITKT_${t}}, 2>, itk::Image<${ITKT_${t}}, 3>")
+    itk_wrap_template("VI${ITKM_${t}}3I${ITKM_${t}}4" "itk::VectorImage<${ITKT_${t}}, 3>, itk::Image<${ITKT_${t}}, 4>")
   endforeach()
 
 itk_end_wrap_class()
