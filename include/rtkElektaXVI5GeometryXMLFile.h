@@ -41,7 +41,7 @@ namespace rtk
  *
  * \author Yang K Park (theday79@gmail.com)
  *
- * \ingroup IOFilters
+ * \ingroup RTK IOFilters
  */
 class RTK_EXPORT ElektaXVI5GeometryXMLFileReader :
   public itk::XMLReader< ThreeDCircularProjectionGeometry >

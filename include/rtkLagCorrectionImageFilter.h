@@ -47,7 +47,7 @@ namespace rtk
  *
  * \author Sebastien Brousmiche
  *
- * \ingroup ImageToImageFilter
+ * \ingroup RTK ImageToImageFilter
 */
 
 template< typename TImage, unsigned ModelOrder >

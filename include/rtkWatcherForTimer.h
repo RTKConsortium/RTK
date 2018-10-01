@@ -28,6 +28,8 @@ namespace rtk
  * on all filters
  *
  * \author Cyril Mory
+ *
+ * \ingroup RTK
  */
 
 using namespace itk;

@@ -178,7 +178,7 @@ typedef struct lp_yy_buffer_state *YY_BUFFER_STATE;
      *       existing scanners that call lp_yyless() from OUTSIDE lp_yylex. 
      *       One obvious solution it to make lp_yy_act a global. I tried that, and saw
      *       a 5% performance hit in a non-lp_yylineno scanner, because lp_yy_act is
-     *       normally declared as a register variable-- so it is not worth it.
+     *       normally declared as a variable-- so it is not worth it.
      */
     #define  YY_LESS_LINENO(n) \
             do { \
@@ -831,9 +831,9 @@ extern int lp_yylex \
  */
 YY_DECL
 {
-	register lp_yy_state_type lp_yy_current_state;
-	register char *lp_yy_cp, *lp_yy_bp;
-	register int lp_yy_act;
+	lp_yy_state_type lp_yy_current_state;
+	char *lp_yy_cp, *lp_yy_bp;
+	int lp_yy_act;
     struct lp_yyguts_t * lp_yyg = (struct lp_yyguts_t*)lp_yyscanner;
 
     lp_yylval = lp_yylval_param;
@@ -881,7 +881,7 @@ YY_DECL
 lp_yy_match:
 		do
 			{
-			register YY_CHAR lp_yy_c = lp_yy_ec[YY_SC_TO_UI(*lp_yy_cp)];
+			YY_CHAR lp_yy_c = lp_yy_ec[YY_SC_TO_UI(*lp_yy_cp)];
 			if ( lp_yy_accept[lp_yy_current_state] )
 				{
 				lp_yyg->lp_yy_last_accepting_state = lp_yy_current_state;
@@ -1414,9 +1414,9 @@ case YY_STATE_EOF(LINECOMMENT):
 static int lp_yy_get_next_buffer (lp_yyscan_t lp_yyscanner)
 {
     struct lp_yyguts_t * lp_yyg = (struct lp_yyguts_t*)lp_yyscanner;
-	register char *dest = YY_CURRENT_BUFFER_LVALUE->lp_yy_ch_buf;
-	register char *source = lp_yyg->lp_yytext_ptr;
-	register int number_to_move, i;
+	char *dest = YY_CURRENT_BUFFER_LVALUE->lp_yy_ch_buf;
+	char *source = lp_yyg->lp_yytext_ptr;
+	int number_to_move, i;
 	int ret_val;
 
 	if ( lp_yyg->lp_yy_c_buf_p > &YY_CURRENT_BUFFER_LVALUE->lp_yy_ch_buf[lp_yyg->lp_yy_n_chars + 1] )
@@ -1548,8 +1548,8 @@ static int lp_yy_get_next_buffer (lp_yyscan_t lp_yyscanner)
 
     static lp_yy_state_type lp_yy_get_previous_state (lp_yyscan_t lp_yyscanner)
 {
-	register lp_yy_state_type lp_yy_current_state;
-	register char *lp_yy_cp;
+	lp_yy_state_type lp_yy_current_state;
+	char *lp_yy_cp;
     struct lp_yyguts_t * lp_yyg = (struct lp_yyguts_t*)lp_yyscanner;
 
 	lp_yy_current_state = lp_yyg->lp_yy_start;
@@ -1557,7 +1557,7 @@ static int lp_yy_get_next_buffer (lp_yyscan_t lp_yyscanner)
 
 	for ( lp_yy_cp = lp_yyg->lp_yytext_ptr + YY_MORE_ADJ; lp_yy_cp < lp_yyg->lp_yy_c_buf_p; ++lp_yy_cp )
 		{
-		register YY_CHAR lp_yy_c = (*lp_yy_cp ? lp_yy_ec[YY_SC_TO_UI(*lp_yy_cp)] : 1);
+		YY_CHAR lp_yy_c = (*lp_yy_cp ? lp_yy_ec[YY_SC_TO_UI(*lp_yy_cp)] : 1);
 		if ( lp_yy_accept[lp_yy_current_state] )
 			{
 			lp_yyg->lp_yy_last_accepting_state = lp_yy_current_state;
@@ -1582,11 +1582,11 @@ static int lp_yy_get_next_buffer (lp_yyscan_t lp_yyscanner)
  */
     static lp_yy_state_type lp_yy_try_NUL_trans  (lp_yy_state_type lp_yy_current_state , lp_yyscan_t lp_yyscanner)
 {
-	register int lp_yy_is_jam;
+	int lp_yy_is_jam;
     struct lp_yyguts_t * lp_yyg = (struct lp_yyguts_t*)lp_yyscanner; /* This var may be unused depending upon options. */
-	register char *lp_yy_cp = lp_yyg->lp_yy_c_buf_p;
+	char *lp_yy_cp = lp_yyg->lp_yy_c_buf_p;
 
-	register YY_CHAR lp_yy_c = 1;
+	YY_CHAR lp_yy_c = 1;
 	if ( lp_yy_accept[lp_yy_current_state] )
 		{
 		lp_yyg->lp_yy_last_accepting_state = lp_yy_current_state;
@@ -1604,9 +1604,9 @@ static int lp_yy_get_next_buffer (lp_yyscan_t lp_yyscanner)
 	return lp_yy_is_jam ? 0 : lp_yy_current_state;
 }
 
-    static void lp_yyunput (int c, register char * lp_yy_bp , lp_yyscan_t lp_yyscanner)
+    static void lp_yyunput (int c, char * lp_yy_bp , lp_yyscan_t lp_yyscanner)
 {
-	register char *lp_yy_cp;
+	char *lp_yy_cp;
     struct lp_yyguts_t * lp_yyg = (struct lp_yyguts_t*)lp_yyscanner;
 
     lp_yy_cp = lp_yyg->lp_yy_c_buf_p;
@@ -1617,10 +1617,10 @@ static int lp_yy_get_next_buffer (lp_yyscan_t lp_yyscanner)
 	if ( lp_yy_cp < YY_CURRENT_BUFFER_LVALUE->lp_yy_ch_buf + 2 )
 		{ /* need to shift things up to make room */
 		/* +2 for EOB chars. */
-		register int number_to_move = lp_yyg->lp_yy_n_chars + 2;
-		register char *dest = &YY_CURRENT_BUFFER_LVALUE->lp_yy_ch_buf[
+		int number_to_move = lp_yyg->lp_yy_n_chars + 2;
+		char *dest = &YY_CURRENT_BUFFER_LVALUE->lp_yy_ch_buf[
 					YY_CURRENT_BUFFER_LVALUE->lp_yy_buf_size + 2];
-		register char *source =
+		char *source =
 				&YY_CURRENT_BUFFER_LVALUE->lp_yy_ch_buf[number_to_move];
 
 		while ( source > YY_CURRENT_BUFFER_LVALUE->lp_yy_ch_buf )
@@ -2411,7 +2411,7 @@ int lp_yylex_destroy  (lp_yyscan_t lp_yyscanner)
 #ifndef lp_yytext_ptr
 static void lp_yy_flex_strncpy (char* s1, lp_yyconst char * s2, int n , lp_yyscan_t lp_yyscanner)
 {
-	register int i;
+	int i;
 	for ( i = 0; i < n; ++i )
 		s1[i] = s2[i];
 }
@@ -2420,7 +2420,7 @@ static void lp_yy_flex_strncpy (char* s1, lp_yyconst char * s2, int n , lp_yysca
 #ifdef YY_NEED_STRLEN
 static int lp_yy_flex_strlen (lp_yyconst char * s , lp_yyscan_t lp_yyscanner)
 {
-	register int n;
+	int n;
 	for ( n = 0; s[n]; ++n )
 		;
 

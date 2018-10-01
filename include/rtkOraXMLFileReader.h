@@ -31,6 +31,10 @@ namespace rtk
 /** \class OraXMLFileReader
  *
  * Reads the XML-format file written by a medPhoton scanner
+ *
+ * \author Simon Rit
+ *
+ * \ingroup RTK
  */
 class OraXMLFileReader : public itk::XMLReader<itk::MetaDataDictionary>
 {

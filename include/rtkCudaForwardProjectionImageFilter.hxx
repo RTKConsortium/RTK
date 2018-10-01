@@ -42,7 +42,7 @@ template <class TInputImage,
 CudaForwardProjectionImageFilter<TInputImage,
                                  TOutputImage>
 ::CudaForwardProjectionImageFilter():
-  m_StepSize(1),m_UseCudaTexture(true)
+  m_StepSize(1)
 {
 }
 
@@ -59,12 +59,13 @@ CudaForwardProjectionImageFilter<TInputImage,
     itkGenericExceptionMacro(<< "Parallel geometry is not handled by CUDA forward projector.");
     }
 
-  const typename Superclass::GeometryType::Pointer geometry = this->GetGeometry();
+  const typename Superclass::GeometryType *geometry = this->GetGeometry();
   const unsigned int Dimension = TInputImage::ImageDimension;
   const unsigned int iFirstProj = this->GetInput(0)->GetRequestedRegion().GetIndex(Dimension-1);
   const unsigned int nProj = this->GetInput(0)->GetRequestedRegion().GetSize(Dimension-1);
-  const unsigned int nPixelsPerProj = this->GetOutput()->GetBufferedRegion().GetSize(0) *
-    this->GetOutput()->GetBufferedRegion().GetSize(1);
+  const unsigned int nPixelsPerProj = this->GetOutput()->GetBufferedRegion().GetSize(0)
+                                    * this->GetOutput()->GetBufferedRegion().GetSize(1)
+                                    * itk::NumericTraits<typename TInputImage::PixelType>::GetLength();
 
   itk::Vector<double, 4> source_position;
 
@@ -115,12 +116,9 @@ CudaForwardProjectionImageFilter<TInputImage,
     projIndexTranslation[i][3] = this->GetOutput()->GetRequestedRegion().GetIndex(i);
     volIndexTranslation[i][3] = -this->GetInput(1)->GetBufferedRegion().GetIndex(i);
 
-    if (m_UseCudaTexture)
-      {
-      // Adding 0.5 offset to change from the centered pixel convention (ITK)
-      // to the corner pixel convention (CUDA).
-      volPPToIndex[i][3] += 0.5;
-      }
+    // Adding 0.5 offset to change from the centered pixel convention (ITK)
+    // to the corner pixel convention (CUDA).
+    volPPToIndex[i][3] += 0.5;
     }
 
   // Compute matrices to transform projection index to volume index, one per projection
@@ -178,6 +176,8 @@ CudaForwardProjectionImageFilter<TInputImage,
     }
 
   int projectionOffset = 0;
+  const unsigned int vectorLength = itk::PixelTraits<typename TInputImage::PixelType>::Dimension;
+
   for (unsigned int i=0; i<nProj; i+=SLAB_SIZE)
     {
     // If nProj is not a multiple of SLAB_SIZE, the last slab will contain less than SLAB_SIZE projections
@@ -198,7 +198,7 @@ CudaForwardProjectionImageFilter<TInputImage,
                         boxMin,
                         boxMax,
                         spacing,
-                        m_UseCudaTexture);
+                        vectorLength);
     }
 
   delete[] translatedProjectionIndexTransformMatrices;

@@ -24,10 +24,11 @@
 
 #include <itkImageSource.h>
 #include <itkNumericTraits.h>
+#include <itkVariableLengthVector.h>
+#include <itkVectorImage.h>
 
 namespace rtk
 {
-
 /** \class ConstantImageSource
  * \brief Generate an n-dimensional image with constant pixel values.
  *
@@ -44,7 +45,7 @@ namespace rtk
  *
  * \author Simon Rit
  *
- * \ingroup ImageSource
+ * \ingroup RTK ImageSource
  */
 template <typename TOutputImage>
 class ITK_EXPORT ConstantImageSource : public itk::ImageSource<TOutputImage>
@@ -59,8 +60,8 @@ public:
   /** Typedef for the output image type. */
   typedef TOutputImage OutputImageType;
 
-  /** Typedef for the output image PixelType. */
-  typedef typename TOutputImage::PixelType OutputImagePixelType;
+  /** Typedefs for the output image PixelType. */
+  typedef typename TOutputImage::PixelType          OutputImagePixelType;
 
   /** Typedef to describe the output image region type. */
   typedef typename TOutputImage::RegionType OutputImageRegionType;
@@ -111,14 +112,18 @@ public:
   itkGetConstMacro(Constant, OutputImagePixelType);
 
   /** Set output image information from an existing image */
-  void SetInformationFromImage(const typename TOutputImage::Superclass* image);
+  void SetInformationFromImage(const itk::ImageBase<TOutputImage::ImageDimension>* image);
 
 protected:
   ConstantImageSource();
   virtual ~ConstantImageSource() ITK_OVERRIDE;
   void PrintSelf(std::ostream& os, itk::Indent indent) const ITK_OVERRIDE;
 
+#if ITK_VERSION_MAJOR<5
   void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) ITK_OVERRIDE;
+#else
+  void DynamicThreadedGenerateData(const OutputImageRegionType& outputRegionForThread) ITK_OVERRIDE;
+#endif
 
   void GenerateOutputInformation() ITK_OVERRIDE;
 
@@ -128,7 +133,7 @@ protected:
   DirectionType  m_Direction;
   IndexType      m_Index;
 
-  typename TOutputImage::PixelType m_Constant;
+  OutputImagePixelType  m_Constant;
 
 private:
   ConstantImageSource(const ConstantImageSource&); //purposely not implemented

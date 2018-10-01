@@ -37,7 +37,7 @@ namespace rtk
  *
  * \author Simon Rit
  *
- * \ingroup InPlaceImageFilter
+ * \ingroup RTK InPlaceImageFilter
  */
 template <class TInputImage, class TOutputImage>
 class ITK_EXPORT RayEllipsoidIntersectionImageFilter :

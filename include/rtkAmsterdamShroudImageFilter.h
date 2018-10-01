@@ -75,7 +75,7 @@ namespace rtk
  *
  * \author Simon Rit
  *
- * \ingroup ImageToImageFilter
+ * \ingroup RTK ImageToImageFilter
  */
 template<class TInputImage>
 class ITK_EXPORT AmsterdamShroudImageFilter :
@@ -115,7 +115,7 @@ public:
   itkSetMacro(UnsharpMaskSize, unsigned int);
 
   /** Get / Set the object pointer to projection geometry */
-  itkGetObjectMacro(Geometry, GeometryType);
+  itkGetModifiableObjectMacro(Geometry, GeometryType);
   itkSetObjectMacro(Geometry, GeometryType);
 
   /** 3D clipbox corners for selecting part of the projections. Each corner is

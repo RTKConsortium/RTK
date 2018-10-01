@@ -148,6 +148,7 @@ int main(int argc, char * argv[])
 
   typedef rtk::JosephBackProjectionImageFilter<OutputImageType,
                                                OutputImageType,
+                                               rtk::Functor::InterpolationWeightMultiplicationBackProjection<OutputPixelType, OutputPixelType>,
                                                rtk::Functor::StoreSparseMatrixSplatWeightMultiplication<OutputPixelType, double, OutputPixelType> >
                                                  JosephType;
   JosephType::Pointer backProjection = JosephType::New();

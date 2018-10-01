@@ -1,4 +1,11 @@
+if(RTK_USE_CUDA)
+  itk_wrap_include(itkCudaImage.h)
+endif()
+
 itk_wrap_class("rtk::FDKWeightProjectionFilter" POINTER)
   #WARNING: Only wrapping one image template because TInputImage == TOutputImage
   itk_wrap_image_filter("${WRAP_ITK_REAL}" 1)  
+  if(RTK_USE_CUDA)
+    itk_wrap_template("CIF3CIF3F" "itk::CudaImage<${ITKT_F}, 3>" "itk::CudaImage<${ITKT_F}, 3>" "${ITKT_F}")
+  endif()
 itk_end_wrap_class()

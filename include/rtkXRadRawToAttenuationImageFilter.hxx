@@ -31,8 +31,8 @@ namespace rtk
 template <class TInputImage, class TOutputImage>
 XRadRawToAttenuationImageFilter<TInputImage, TOutputImage>
 ::XRadRawToAttenuationImageFilter() :
-  m_DarkImageFileName(std::string(RTK_BINARY_DIR) + std::string("/ExternalData/test/Input/XRad/dark.header")),
-  m_FlatImageFileName(std::string(RTK_BINARY_DIR) + std::string("/ExternalData/test/Input/XRad/flat.header"))
+  m_DarkImageFileName(std::string(RTK_DATA_ROOT) + std::string("/Input/XRad/dark.header")),
+  m_FlatImageFileName(std::string(RTK_DATA_ROOT) + std::string("/Input/XRad/flat.header"))
 {
 }
 
@@ -58,7 +58,11 @@ XRadRawToAttenuationImageFilter<TInputImage, TOutputImage>
 template<class TInputImage, class TOutputImage>
 void
 XRadRawToAttenuationImageFilter<TInputImage, TOutputImage>
+#if ITK_VERSION_MAJOR<5
 ::ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType itkNotUsed(threadId) )
+#else
+::DynamicThreadedGenerateData( const OutputImageRegionType& outputRegionForThread)
+#endif
 {
   // Dark and flat image iterator
   OutputImageRegionType darkRegion = outputRegionForThread;

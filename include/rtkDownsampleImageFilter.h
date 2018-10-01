@@ -31,6 +31,8 @@ namespace rtk
  * http://www.insight-journal.org/browse/publication/103
  * 
  * \author Cyril Mory
+ *
+ * \ingroup RTK
  */
 template <class TInputImage, class TOutputImage = TInputImage>
 class ITK_EXPORT DownsampleImageFilter:
@@ -102,7 +104,11 @@ protected:
    * \sa ImageToImageFilter::ThreadedGenerateData(),
    *     ImageToImageFilter::GenerateData() */
 //  virtual void BeforeThreadedGenerateData();
+#if ITK_VERSION_MAJOR<5
   void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) ITK_OVERRIDE;
+#else
+  void DynamicThreadedGenerateData(const OutputImageRegionType& outputRegionForThread) ITK_OVERRIDE;
+#endif
 //  virtual void AfterThreadedGenerateData();
 
 private:

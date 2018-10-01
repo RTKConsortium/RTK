@@ -26,7 +26,6 @@ set(RTK_SRCS
   rtkImagXXMLFileReader.cxx
   rtkIntersectionOfConvexShapes.cxx
   rtkIOFactories.cxx
-  rtkMedianImageFilter.cxx
   rtkOraGeometryReader.cxx
   rtkOraImageIO.cxx
   rtkOraImageIOFactory.cxx
@@ -48,7 +47,6 @@ set(RTK_SRCS
   rtkXRadGeometryReader.cxx
   rtkXRadImageIO.cxx
   rtkXRadImageIOFactory.cxx
-  srtkThreeDCircularProjectionGeometryXMLFileWriter.cxx
   )
 
 #=========================================================
@@ -70,8 +68,7 @@ if (RTK_USE_CUDA)
   set(RTK_CUDA_FILES
     rtkCudaAverageOutOfROIImageFilter.cu
     rtkCudaBackProjectionImageFilter.cu
-    rtkCudaConjugateGradientImageFilter_3f.cu
-    rtkCudaConjugateGradientImageFilter_4f.cu
+    rtkCudaConjugateGradientImageFilter.cu
     rtkCudaConstantVolumeSeriesSource.cu
     rtkCudaConstantVolumeSource.cu
     rtkCudaCropImageFilter.cu
@@ -96,6 +93,7 @@ if (RTK_USE_CUDA)
     rtkCudaWarpBackProjectionImageFilter.cu
     rtkCudaWarpForwardProjectionImageFilter.cu
     rtkCudaWarpImageFilter.cu
+    rtkCudaWeidingerForwardModelImageFilter.cu
     )
 
   set(CUDA_PROPAGATE_HOST_FLAGS ON)
@@ -104,9 +102,6 @@ if (RTK_USE_CUDA)
 
   set(RTK_SRCS ${RTK_SRCS}
     rtkCudaAverageOutOfROIImageFilter.cxx
-    rtkCudaBackProjectionImageFilter.cxx
-    rtkCudaConjugateGradientImageFilter_3f.cxx
-    rtkCudaConjugateGradientImageFilter_4f.cxx
     rtkCudaConstantVolumeSeriesSource.cxx
     rtkCudaConstantVolumeSource.cxx
     rtkCudaCropImageFilter.cxx
@@ -134,11 +129,11 @@ if (RTK_USE_CUDA)
 endif ()
 #=========================================================
 
-add_library(RTK ${RTK_SRCS})
+add_library(RTK ${ITK_LIBRARY_BUILD_TYPE} ${RTK_SRCS})
 target_link_libraries(RTK LINK_PUBLIC lpsolve55)
 
 itk_module_link_dependencies()
-itk_module_target(RTK NO_INSTALL)
+itk_module_target(RTK)
 
 if (RTK_USE_CUDA)
   target_link_libraries( RTK LINK_PUBLIC ITKCudaCommon ${CUDA_LIBRARIES} ${CUDA_CUDA_LIBRARY} ${CUDA_cufft_LIBRARY} ${CUDA_CUBLAS_LIBRARIES} )

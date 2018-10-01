@@ -1,20 +1,20 @@
 package "rtksimulatedgeometry"
-purpose "Creates an RTK geometry file from simulated/regular trajectory."
+purpose "Creates an RTK geometry file from simulated/regular trajectory. See http://www.openrtk.org/Doxygen/DocGeo3D.html for more information."
 
-option "verbose"     v "Verbose execution"                                     flag   off
-option "config"      - "Config file"                                           string no
+option "verbose"     v "Verbose execution"                                                    flag   off
+option "config"      - "Config file"                                                          string no
 
-option "output"      o "Output file name"                                      string yes
-option "first_angle" f "First angle in degrees"                                double no  default="0"
-option "nproj"       n "Number of projections"                                 int    yes
-option "arc"         a "Angular arc covevered by the acquisition in degrees"   double no  default="360"
-option "sdd"         - "Source to detector distance (mm)"                      double no  default="1536"
-option "sid"         - "Source to isocenter distance (mm)"                     double no  default="1000"
-option "proj_iso_x"  - "X coordinate on the projection image of isocenter"     double no  default="0"
-option "proj_iso_y"  - "Y coordinate on the projection image of isocenter"     double no  default="0"
-option "source_x"    - "In-place x source position wrt to central ray"         double no  default="0"
-option "source_y"    - "In-place y source position wrt to central ray"         double no  default="0"
-option "out_angle"   - "Out of plane angle"                                    double no  default="0"
-option "in_angle"    - "In plane angle"                                        double no  default="0"
-option "rad_cyl"     - "Radius cylinder of cylindrical detector"               double no  default="0"
+option "output"      o "Output file name"                                                     string yes
+option "first_angle" f "First angle in degrees"                                               double no  default="0"
+option "nproj"       n "Number of projections"                                                int    yes
+option "arc"         a "Angular arc covevered by the acquisition in degrees"                  double no  default="360"
+option "sdd"         - "Source to detector distance (mm)"                                     double no  default="1536"
+option "sid"         - "Source to isocenter distance (mm)"                                    double no  default="1000"
+option "proj_iso_x"  - "X coordinate of detector point (0,0) mm in rotated coordinate system" double no  default="0"
+option "proj_iso_y"  - "Y coordinate of detector point (0,0) mm in rotated coordinate system" double no  default="0"
+option "source_x"    - "X coordinate of source in rotated coordinate system"                  double no  default="0"
+option "source_y"    - "Y coordinate of source in rotated coordinate system"                  double no  default="0"
+option "out_angle"   - "Out of plane angle"                                                   double no  default="0"
+option "in_angle"    - "In plane angle"                                                       double no  default="0"
+option "rad_cyl"     - "Radius cylinder of cylindrical detector"                              double no  default="0"
 

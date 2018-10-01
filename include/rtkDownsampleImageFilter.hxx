@@ -23,7 +23,6 @@
 
 #include "itkImageRegionIterator.h"
 #include "itkObjectFactory.h"
-#include "itkProgressReporter.h"
 
 namespace rtk
 {
@@ -98,7 +97,11 @@ DownsampleImageFilter<TInputImage,TOutputImage>
 template <class TInputImage, class TOutputImage>
 void 
 DownsampleImageFilter<TInputImage,TOutputImage>
-::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, itk::ThreadIdType threadId)
+#if ITK_VERSION_MAJOR<5
+::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId))
+#else
+::DynamicThreadedGenerateData(const OutputImageRegionType& outputRegionForThread)
+#endif
 {
   itkDebugMacro(<<"Actually executing");
 
@@ -121,9 +124,6 @@ DownsampleImageFilter<TInputImage,TOutputImage>
   typename TOutputImage::OffsetType firstPixelOfOutputLineOffset;
   typename TInputImage::OffsetType firstPixelOfInputLineOffset;
   typename TOutputImage::OffsetType offset;
-
-  //Support progress methods/callbacks
-  itk::ProgressReporter progress(this, threadId, outputRegionForThread.GetNumberOfPixels());
 
   //Unless the downsampling factor is 1, we always skip the first pixel
   //Create an offset array to enforce this behavior
@@ -201,8 +201,6 @@ DownsampleImageFilter<TInputImage,TOutputImage>
       outIt.Set(inIt.Get());
       for (unsigned int i=0; i<m_Factors[0]; i++) ++inIt;
       ++outIt;
-
-      progress.CompletedPixel();
       }
 
     // Move to next pixel in the slice

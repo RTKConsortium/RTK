@@ -34,7 +34,7 @@ namespace rtk
  * Variation Minimization and Applications.” J. Math. Imaging Vis. 20,
  * no. 1–2 (January 2004): 89–97. The border conditions are described there.
  *
- * \ingroup IntensityImageFilters
+ * \ingroup RTK IntensityImageFilters
  */
 
 template< typename OutputImageType, typename GradientImageType>

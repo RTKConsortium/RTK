@@ -31,6 +31,8 @@ namespace rtk {
  * \brief ITK factory for Edf file I/O.
  *
  * \author Simon Rit
+ *
+ * \ingroup RTK
  */
 class RTK_EXPORT EdfImageIOFactory : public itk::ObjectFactoryBase
 {

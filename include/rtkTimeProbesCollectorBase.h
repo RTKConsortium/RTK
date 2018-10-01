@@ -24,9 +24,13 @@
 namespace rtk
 {
 /** \class TimeProbesCollectorBase
- *  \brief Aggregates a set of time probes.
+ * \brief Aggregates a set of time probes.
  *
- *  Derives from itk::TimeProbesCollectorBase but improves the report output.
+ * Derives from itk::TimeProbesCollectorBase but improves the report output.
+ *
+ * \author Cyril Mory
+ *
+ * \ingroup RTK
  */
 class RTK_EXPORT TimeProbesCollectorBase: public itk::TimeProbesCollectorBase
 {

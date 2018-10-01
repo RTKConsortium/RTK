@@ -357,7 +357,7 @@ void LU6L(LUSOLrec *LUSOL, int *INFORM, REAL V[], int NZidx[])
   (void)NZidx;
   int  JPIV, K, L, L1, LEN, LENL, LENL0, NUML, NUML0;
   REAL SMALL;
-  register REAL VPIV;
+  REAL VPIV;
 #ifdef LUSOLFastSolve
   REAL *aptr;
   int  *iptr, *jptr;
@@ -451,7 +451,7 @@ void LU6LD(LUSOLrec *LUSOL, int *INFORM, int MODE, REAL V[], int NZidx[])
   (void)NZidx;
   int  IPIV, K, L, L1, LEN, NUML0;
   REAL DIAG, SMALL;
-  register REAL VPIV;
+  REAL VPIV;
 #ifdef LUSOLFastSolve
   REAL *aptr;
   int  *jptr;
@@ -516,8 +516,8 @@ void LU6LT(LUSOLrec *LUSOL, int *INFORM, REAL V[], int NZidx[])
 #endif
   int     K, L, L1, L2, LEN, LENL, LENL0, NUML0;
   REAL    SMALL;
-  register REALXP SUM;
-  register REAL HOLD;
+  REALXP SUM;
+  REAL HOLD;
 #if (defined LUSOLFastSolve) && !(defined DoTraceL0)
   REAL    *aptr;
   int     *iptr, *jptr;
@@ -654,7 +654,7 @@ void LU6U(LUSOLrec *LUSOL, int *INFORM, REAL V[], REAL W[], int NZidx[])
   else {
     int  I, J, K, KLAST, L, L1, L2, L3, NRANK, NRANK1;
     REAL SMALL;
-    register REALXP T;
+    REALXP T;
 #ifdef LUSOLFastSolve
     REAL *aptr;
     int  *jptr;
@@ -730,7 +730,7 @@ void LU6UT(LUSOLrec *LUSOL, int *INFORM, REAL V[], REAL W[], int NZidx[])
   int  I, J, K, L, L1, L2, NRANK, NRANK1,
        *ip = LUSOL->ip + 1, *iq = LUSOL->iq + 1;
   REAL SMALL;
-  register REAL T;
+  REAL T;
 #ifdef LUSOLFastSolve
   REAL *aptr;
   int  *jptr;

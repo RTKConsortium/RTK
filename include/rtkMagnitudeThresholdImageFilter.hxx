@@ -38,14 +38,15 @@ MagnitudeThresholdImageFilter< TInputImage, TRealType, TOutputImage >
 template< typename TInputImage, typename TRealType, typename TOutputImage >
 void
 MagnitudeThresholdImageFilter< TInputImage, TRealType, TOutputImage >
+#if ITK_VERSION_MAJOR<5
 ::ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread,
-                       itk::ThreadIdType threadId)
+                       itk::ThreadIdType itkNotUsed(threadId))
+#else
+::DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread)
+#endif
 {
   itk::ImageRegionConstIterator< TInputImage >                 InputIt;
   itk::ImageRegionIterator< TOutputImage >                     OutputIt;
-
-  // Support progress methods/callbacks
-  itk::ProgressReporter progress( this, threadId, outputRegionForThread.GetNumberOfPixels() );
 
   InputIt = itk::ImageRegionConstIterator< TInputImage >(this->GetInput(), outputRegionForThread);
   OutputIt = itk::ImageRegionIterator< TOutputImage >(this->GetOutput(), outputRegionForThread);
@@ -60,7 +61,6 @@ MagnitudeThresholdImageFilter< TInputImage, TRealType, TOutputImage >
 
     ++InputIt;
     ++OutputIt;
-    progress.CompletedPixel();
     }
 }
 

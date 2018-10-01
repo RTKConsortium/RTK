@@ -34,7 +34,7 @@ namespace rtk
  * are max(x-t,0).sign(x) where x is the corresponding
  * input pixel value and t the threshold
  *
- * \ingroup IntensityImageFilters  Multithreaded
+ * \ingroup RTK IntensityImageFilters  Multithreaded
  */
 
 namespace Functor {  

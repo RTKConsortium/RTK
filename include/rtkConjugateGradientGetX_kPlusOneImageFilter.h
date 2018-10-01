@@ -25,6 +25,12 @@
 
 namespace rtk
 {
+/** \class ConjugateGradientGetX_kPlusOneImageFilter
+ *
+ * \author Cyril Mory
+ *
+ * \ingroup RTK
+ */
 template< typename TInputImage>
 class ConjugateGradientGetX_kPlusOneImageFilter : public itk::ImageToImageFilter< TInputImage, TInputImage>
 {
@@ -35,6 +41,8 @@ public:
   typedef itk::ImageToImageFilter< TInputImage, TInputImage> Superclass;
   typedef itk::SmartPointer< Self >                          Pointer;
   typedef typename TInputImage::RegionType                   OutputImageRegionType;
+  typedef itk::Image<typename TInputImage::InternalPixelType,
+                              TInputImage::ImageDimension>    AlphaImage;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self)
@@ -46,12 +54,12 @@ public:
   void SetXk(const TInputImage* Xk);
   void SetPk(const TInputImage* Pk);
 
-  itkGetMacro(Alphak, float)
-  itkSetMacro(Alphak, float)
+  itkGetMacro(Alphak, double)
+  itkSetMacro(Alphak, double)
 
   /** Typedefs for sub filters */
-  typedef itk::AddImageFilter<TInputImage>      AddFilterType;
-  typedef itk::MultiplyImageFilter<TInputImage> MultiplyFilterType;
+  typedef itk::AddImageFilter<TInputImage>                               AddFilterType;
+  typedef itk::MultiplyImageFilter<TInputImage, AlphaImage, TInputImage> MultiplyFilterType;
 
 protected:
   ConjugateGradientGetX_kPlusOneImageFilter();
@@ -68,7 +76,7 @@ protected:
 private:
   ConjugateGradientGetX_kPlusOneImageFilter(const Self &); //purposely not implemented
   void operator=(const Self &);  //purposely not implemented
-  float m_Alphak;
+  double m_Alphak;
 
   /** Pointers to sub filters */
   typename AddFilterType::Pointer       m_AddFilter;

@@ -32,7 +32,7 @@ namespace rtk
  *
  * \author Cyril Mory
  *
- * \ingroup IntensityImageFilters
+ * \ingroup RTK IntensityImageFilters
  */
 template <class TInputImage>
 class DivergenceOfGradientConjugateGradientOperator :

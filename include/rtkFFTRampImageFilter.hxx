@@ -95,7 +95,11 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
   typedef itk::RealToHalfHermitianForwardFFTImageFilter< FFTInputImageType, FFTOutputImageType > FFTType;
   typename FFTType::Pointer fftK = FFTType::New();
   fftK->SetInput( kernel );
+#if ITK_VERSION_MAJOR<5
   fftK->SetNumberOfThreads( this->GetNumberOfThreads() );
+#else
+  fftK->SetNumberOfWorkUnits( this->GetNumberOfWorkUnits() );
+#endif
   fftK->Update();
   this->m_KernelFFT = fftK->GetOutput();
 

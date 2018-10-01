@@ -38,7 +38,7 @@ namespace rtk
  *
  * \author Simon Rit
  *
- * \ingroup CudaImageToImageFilter
+ * \ingroup RTK CudaImageToImageFilter
  */
 class CudaScatterGlareCorrectionImageFilter :
   public CudaFFTProjectionsConvolutionImageFilter< ScatterGlareCorrectionImageFilter< itk::CudaImage<float,3>,

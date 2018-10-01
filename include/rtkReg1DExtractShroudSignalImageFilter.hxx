@@ -95,7 +95,7 @@ Reg1DExtractShroudSignalImageFilter<TInputPixel, TOutputPixel>
 template<class TInputPixel, class TOutputPixel>
 TOutputPixel
 Reg1DExtractShroudSignalImageFilter<TInputPixel, TOutputPixel>
-::register1D(RegisterImageType* f, RegisterImageType* m)
+::register1D(const RegisterImageType* f, const RegisterImageType* m)
 {
   typedef itk::TranslationTransform<TOutputPixel, 1>                                TransformType;
   typedef itk::RegularStepGradientDescentOptimizer                                  OptimizerType;
@@ -166,7 +166,7 @@ Reg1DExtractShroudSignalImageFilter<TInputPixel, TOutputPixel>
   typename DuplicatorType::Pointer duplicator = DuplicatorType::New();
   duplicator->SetInputImage(extractor->GetOutput());
   duplicator->Update();
-  typename RegisterImageType::Pointer prev = duplicator->GetOutput();
+  const RegisterImageType* prev = duplicator->GetOutput();
   TOutputPixel pos = itk::NumericTraits<TOutputPixel>::Zero;
 
   typename Superclass::OutputImagePointer output = this->GetOutput();

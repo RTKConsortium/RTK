@@ -35,7 +35,7 @@ namespace rtk
  *
  * \author Simon Rit
  *
- * \ingroup IOFilters
+ * \ingroup RTK IOFilters
  */
 class RTK_EXPORT DigisensGeometryReader :
   public itk::LightProcessObject

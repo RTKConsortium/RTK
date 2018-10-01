@@ -34,6 +34,8 @@ namespace rtk
  * \brief ITK factory for Ora file I/O.
  *
  * \author Simon Rit
+ *
+ * \ingroup RTK
  */
 class RTK_EXPORT OraImageIOFactory: public itk::ObjectFactoryBase
 {

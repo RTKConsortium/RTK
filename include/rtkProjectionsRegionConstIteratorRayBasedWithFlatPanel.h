@@ -24,7 +24,12 @@
 namespace rtk
 {
 /** \class ProjectionsRegionConstIteratorRayBasedWithFlatPanel
+ *
  * \brief Implements a ray-based iterator for a point source and a flat panel 
+ *
+ * \author Simon Rit
+ *
+ * \ingroup RTK
  */
 template< typename TImage >
 class ProjectionsRegionConstIteratorRayBasedWithFlatPanel:
@@ -53,7 +58,7 @@ public:
    * coordinates to voxel indices in an itk Image. */
   ProjectionsRegionConstIteratorRayBasedWithFlatPanel(const TImage *ptr,
                                                       const RegionType & region,
-                                                      ThreeDCircularProjectionGeometry *geometry,
+                                                      const ThreeDCircularProjectionGeometry *geometry,
                                                       const MatrixType &postMat);
 
 protected:

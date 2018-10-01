@@ -42,6 +42,8 @@ namespace rtk
  * \test rtkdisplaceddetectortest.cxx, rtkdisplaceddetectorcompcudatest.cxx
  *
  * \author peter
+ *
+ * \ingroup RTK
  * \version 0.1
  */
 class RTK_EXPORT CudaDisplacedDetectorImageFilter :

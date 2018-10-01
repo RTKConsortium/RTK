@@ -52,6 +52,8 @@ namespace rtk
    * \test rtkunwarpsequencetest.cxx
    *
    * \author Cyril Mory
+ *
+ * \ingroup RTK
    */
 
   template< typename TImageSequence,

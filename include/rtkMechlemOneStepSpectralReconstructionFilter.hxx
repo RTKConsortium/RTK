@@ -55,11 +55,11 @@ MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectr
   m_NesterovFilter = NesterovFilterType::New();
 
   // Set permanent parameters
-  m_ProjectionsSource->SetConstant(itk::NumericTraits<typename TOutputImage::PixelType>::Zero);
-  m_SingleComponentProjectionsSource->SetConstant(itk::NumericTraits<typename TOutputImage::PixelType::ValueType>::Zero);
+  m_ProjectionsSource->SetConstant(itk::NumericTraits<typename TOutputImage::PixelType>::ZeroValue());
+  m_SingleComponentProjectionsSource->SetConstant(itk::NumericTraits<typename TOutputImage::PixelType::ValueType>::ZeroValue());
   m_SingleComponentVolumeSource->SetConstant(itk::NumericTraits<typename TOutputImage::PixelType::ValueType>::One);
-  m_GradientsSource->SetConstant(itk::NumericTraits<typename MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectrum>::TGradientsImage::PixelType>::Zero);
-  m_HessiansSource->SetConstant(itk::NumericTraits<typename MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectrum>::THessiansImage::PixelType>::Zero);
+  m_GradientsSource->SetConstant(itk::NumericTraits<typename MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectrum>::TGradientsImage::PixelType>::ZeroValue());
+  m_HessiansSource->SetConstant(itk::NumericTraits<typename MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectrum>::THessiansImage::PixelType>::ZeroValue());
 }
 
 template< class TOutputImage, class TPhotonCounts, class TSpectrum>
@@ -157,7 +157,11 @@ MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectr
       fw = rtk::JosephForwardProjectionImageFilter<TSingleComponent, TSingleComponent>::New();
     break;
     case(MechlemOneStepSpectralReconstructionFilter::FP_CUDARAYCAST):
-      itkGenericExceptionMacro(<< "MechlemOneStep can currently not use CUDA projectors");
+#ifdef RTK_USE_CUDA
+      fw = rtk::CudaForwardProjectionImageFilter<TSingleComponent, TSingleComponent>::New();
+#else
+      itkGenericExceptionMacro(<< "The program has not been compiled with cuda option");
+#endif
     break;
 
     default:
@@ -187,10 +191,14 @@ MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectr
       bp = rtk::JosephBackProjectionImageFilter<THessians, THessians>::New();
       break;
     case(MechlemOneStepSpectralReconstructionFilter::BP_CUDAVOXELBASED):
-      itkGenericExceptionMacro(<< "MechlemOneStep can currently not use CUDA projectors");
+#ifdef RTK_USE_CUDA
+      bp = rtk::CudaBackProjectionImageFilter<THessians>::New();
+#else
+      itkGenericExceptionMacro(<< "The program has not been compiled with cuda option");
+#endif
     break;
     case(MechlemOneStepSpectralReconstructionFilter::BP_CUDARAYCAST):
-      itkGenericExceptionMacro(<< "MechlemOneStep can currently not use CUDA projectors");
+      itkGenericExceptionMacro(<< "The CUDA ray cast back projector can currently not handle vector images");
       break;
     default:
       itkGenericExceptionMacro(<< "Unhandled --bp value.");
@@ -252,7 +260,7 @@ MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectr
   // Pre-compute the number of projections in each subset
   m_NumberOfProjectionsInSubset.clear();
   m_NumberOfProjectionsPerSubset = std::ceil( (float) m_NumberOfProjections / (float) m_NumberOfSubsets);
-  for (unsigned int s=0; s<m_NumberOfSubsets; s++)
+  for (int s=0; s<m_NumberOfSubsets; s++)
     m_NumberOfProjectionsInSubset.push_back(std::min(m_NumberOfProjectionsPerSubset, m_NumberOfProjections - s * m_NumberOfProjectionsPerSubset));
 
   // Compute the extract filter's initial extract region
@@ -343,7 +351,7 @@ MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectr
   // Run the iteration loop
   for(int iter = 0; iter < m_NumberOfIterations; iter++)
     {
-    for (unsigned int subset = 0; subset < m_NumberOfSubsets; subset++)
+    for (int subset = 0; subset < m_NumberOfSubsets; subset++)
       {
       // Starting from the second subset, or the second iteration
       // if there is only one subset, plug the output

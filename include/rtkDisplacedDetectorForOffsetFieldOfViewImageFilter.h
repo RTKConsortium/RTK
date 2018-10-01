@@ -35,7 +35,7 @@ namespace rtk
  *
  * \author Simon Rit
  *
- * \ingroup ImageToImageFilter
+ * \ingroup RTK ImageToImageFilter
  */
 template<class TInputImage, class TOutputImage=TInputImage>
 class ITK_EXPORT DisplacedDetectorForOffsetFieldOfViewImageFilter :
@@ -69,7 +69,11 @@ protected:
 
   void GenerateOutputInformation() ITK_OVERRIDE;
 
+#if ITK_VERSION_MAJOR<5
   void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) ITK_OVERRIDE;
+#else
+  void DynamicThreadedGenerateData(const OutputImageRegionType& outputRegionForThread) ITK_OVERRIDE;
+#endif
 
 private:
   DisplacedDetectorForOffsetFieldOfViewImageFilter(const Self&); //purposely not implemented

@@ -163,6 +163,7 @@ template <class TPixel, unsigned int VImageDimension>
 void CudaImage< TPixel, VImageDimension >::SetPixelContainer(PixelContainer *container)
 {
   Superclass::SetPixelContainer(container);
+  m_DataManager->SetCPUBufferPointer(Superclass::GetBufferPointer());
   m_DataManager->SetCPUDirtyFlag(false);
   m_DataManager->SetGPUDirtyFlag(true);
 }
@@ -205,7 +206,7 @@ CudaImage< TPixel, VImageDimension >::GetCudaDataManager() const
 
 template <class TPixel, unsigned int VImageDimension>
 void
-CudaImage< TPixel, VImageDimension >::Graft(const DataObject *data)
+CudaImage< TPixel, VImageDimension >::Graft(const Superclass *data)
 {
   typedef CudaImageDataManager< CudaImage >             CudaImageDataManagerType;
   typedef typename CudaImageDataManagerType::Superclass CudaImageDataSuperclass;
@@ -214,22 +215,43 @@ CudaImage< TPixel, VImageDimension >::Graft(const DataObject *data)
   // call the superclass' implementation
   Superclass::Graft(data);
 
-  //std::cout << this << " graft from " << data << std::endl;
-  m_DataManager = dynamic_cast<CudaImageDataManagerType*>((((CudaImage*)data)->GetCudaDataManager()).GetPointer());
-
+  const auto * const cudaImg = dynamic_cast<const CudaImage*>(data);
+  if(cudaImg)
+    {
+    m_DataManager = dynamic_cast<CudaImageDataManagerType*>(((cudaImg)->GetCudaDataManager()).GetPointer());
+    }
+  else
+    {
+    m_DataManager = CudaImageDataManager< CudaImage< TPixel, VImageDimension > >::New();
+    m_DataManager->SetImagePointer(this);
+    if(this->GetBufferPointer())
+      {
+      m_DataManager->SetCPUDirtyFlag(false);
+      }
+    }
   return;
+}
 
-  // Pass regular pointer to Graft() instead of smart pointer due to type
-  // casting problem
-  CudaImageDataManagerType* ptr = dynamic_cast<CudaImageDataManagerType*>(
-      (((CudaImage*)data)->GetCudaDataManager()).GetPointer());
-
-  // call Cuda data graft function
-  m_DataManager->SetImagePointer(this); // hu! not necessary ?!
-  m_DataManager->Graft(ptr);
-
-  // Synchronize timestamp of CudaImage and CudaDataManager
-  m_DataManager->SetTimeStamp(this->GetTimeStamp());
+template <class TPixel, unsigned int VImageDimension>
+void
+CudaImage< TPixel, VImageDimension >::Graft(const DataObject *data)
+{
+  if ( data )
+    {
+    // Attempt to cast data to an Image
+    const auto * const imgData = dynamic_cast< const Superclass * >( data );
+    if ( imgData != nullptr )
+      {
+      this->Graft(imgData);
+      }
+    else
+      {
+      // pointer could not be cast back down
+      itkExceptionMacro( << "itk::CudaImage::Graft() cannot cast "
+                         << typeid( data ).name() << " to "
+                         << typeid( const Superclass * ).name() );
+      }
+    }
 }
 
 } // namespace itk

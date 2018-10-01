@@ -25,7 +25,7 @@
 #include "rtkConstantImageSource.h"
 
 #ifdef RTK_USE_CUDA
-#  include "rtkCudaConjugateGradientImageFilter_4f.h"
+#  include "rtkCudaConjugateGradientImageFilter.h"
 #  include "rtkCudaConstantVolumeSeriesSource.h"
 #endif
 
@@ -65,7 +65,7 @@ namespace rtk
    *
    * \author Cyril Mory
    *
-   * \ingroup ReconstructionAlgorithm
+   * \ingroup RTK ReconstructionAlgorithm
    */
 
   template< typename TImageSequence,

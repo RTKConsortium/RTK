@@ -33,7 +33,7 @@ namespace rtk
  *
  * \author Simon Rit
  *
- * \ingroup Projector
+ * \ingroup RTK Projector
  */
 template <class TInputImage, class TOutputImage>
 class ITK_EXPORT FDKBackProjectionImageFilter :
@@ -63,7 +63,11 @@ protected:
 
   void GenerateOutputInformation() ITK_OVERRIDE;
 
+#if ITK_VERSION_MAJOR<5
   void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) ITK_OVERRIDE;
+#else
+  void DynamicThreadedGenerateData(const OutputImageRegionType& outputRegionForThread) ITK_OVERRIDE;
+#endif
 
   /** Optimized version when the rotation is parallel to X, i.e. matrix[1][0]
     and matrix[2][0] are zeros. */

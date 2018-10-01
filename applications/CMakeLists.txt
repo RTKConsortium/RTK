@@ -26,10 +26,11 @@ set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${RTK_INSTALL_LIB_DIR}")
 # Required to include ITK_USE_FILE in order to Register IO factories
 # Force requested modules to be RTK dependencies only, otherwise all
 # available factories will try to register themselves.
-if(NOT ITK_SOURCE_DIR)
+if (NOT ITK_SOURCE_DIR)
   find_package(ITK REQUIRED COMPONENTS ${ITK_MODULE_RTK_DEPENDS})
   include(${ITK_USE_FILE})
 endif()
+
 #-----------------------------------------------------------------------------
 # Executables
 add_subdirectory(rtkamsterdamshroud)
@@ -40,7 +41,6 @@ add_subdirectory(rtkfieldofview)
 add_subdirectory(rtkforwardprojections)
 add_subdirectory(rtkfourdfdk)
 add_subdirectory(rtkfourdsart)
-add_subdirectory(rtkinlinefdk)
 add_subdirectory(rtkiterativefdk)
 add_subdirectory(rtkosem)
 add_subdirectory(rtkparkershortscanweighting)
@@ -59,7 +59,6 @@ add_subdirectory(rtkdrawshepploganphantom)
 add_subdirectory(rtkextractshroudsignal)
 add_subdirectory(rtkextractphasesignal)
 add_subdirectory(rtkoverlayphaseandshroud)
-add_subdirectory(rtkmedian)
 add_subdirectory(rtklut)
 add_subdirectory(rtktotalvariationdenoising)
 add_subdirectory(rtktotalnuclearvariationdenoising)
@@ -87,8 +86,8 @@ add_subdirectory(rtkspectralrooster)
 add_subdirectory(rtkspectralforwardmodel)
 add_subdirectory(rtkmaskcollimation)
 add_subdirectory(rtkspectraldenoiseprojections)
-add_subdirectory(rtkdualenergyforwardmodel)
 add_subdirectory(rtkprojectionmatrix)
+add_subdirectory(rtkvectorconjugategradient)
 
 #All the executables below are meant to create RTK ThreeDCircularProjectionGeometry files
 add_subdirectory(rtkvarianobigeometry)

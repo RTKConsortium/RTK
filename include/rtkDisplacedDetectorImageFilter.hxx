@@ -180,8 +180,16 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>
 template <class TInputImage, class TOutputImage>
 void
 DisplacedDetectorImageFilter<TInputImage, TOutputImage>
+#if ITK_VERSION_MAJOR<5
 ::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType itkNotUsed(threadId) )
+#else
+::DynamicThreadedGenerateData(const OutputImageRegionType& outputRegionForThread)
+#endif
 {
+  // Declare the pixel and initialize it to the right length (for vector images)
+  typename TOutputImage::PixelType pix;
+  itk::NumericTraits<typename TOutputImage::PixelType>::SetLength(pix, this->GetInput()->GetNumberOfComponentsPerPixel());
+
   // Compute overlap between input and output
   OutputImageRegionType overlapRegion = outputRegionForThread;
 
@@ -282,7 +290,8 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>
       // Set outside of overlap to 0 values
       while( itOut.GetIndex()[0] != itIn.GetIndex()[0] )
         {
-        itOut.Set( 0 );
+        pix = itk::NumericTraits<typename TOutputImage::PixelType>::ZeroValue(pix);
+        itOut.Set( pix );
         ++itOut;
         }
 
@@ -300,7 +309,8 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>
   // Make sure that last values are set to 0
   while( !itOut.IsAtEnd() )
     {
-    itOut.Set( 0 );
+    pix = itk::NumericTraits<typename TOutputImage::PixelType>::ZeroValue(pix);
+    itOut.Set( pix );
     ++itOut;
     }
 }

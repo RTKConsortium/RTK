@@ -343,7 +343,7 @@ const std::vector<double> rtk::ThreeDCircularProjectionGeometry::GetTiltAngles()
   return tang;
 }
 
-const std::multimap<double,unsigned int> rtk::ThreeDCircularProjectionGeometry::GetSortedAngles(const std::vector<double> &angles)
+const std::multimap<double,unsigned int> rtk::ThreeDCircularProjectionGeometry::GetSortedAngles(const std::vector<double> &angles) const
 {
   unsigned int nProj = angles.size();
   std::multimap<double,unsigned int> sangles;
@@ -355,7 +355,7 @@ const std::multimap<double,unsigned int> rtk::ThreeDCircularProjectionGeometry::
   return sangles;
 }
 
-const std::map<double,unsigned int> rtk::ThreeDCircularProjectionGeometry::GetUniqueSortedAngles(const std::vector<double> &angles)
+const std::map<double,unsigned int> rtk::ThreeDCircularProjectionGeometry::GetUniqueSortedAngles(const std::vector<double> &angles) const
 {
   unsigned int nProj = angles.size();
   std::map<double,unsigned int> sangles;
@@ -367,7 +367,7 @@ const std::map<double,unsigned int> rtk::ThreeDCircularProjectionGeometry::GetUn
   return sangles;
 }
 
-const std::vector<double> rtk::ThreeDCircularProjectionGeometry::GetAngularGapsWithNext(const std::vector<double> &angles)
+const std::vector<double> rtk::ThreeDCircularProjectionGeometry::GetAngularGapsWithNext(const std::vector<double> &angles) const
 {
   std::vector<double> angularGaps;
   unsigned int        nProj = angles.size();

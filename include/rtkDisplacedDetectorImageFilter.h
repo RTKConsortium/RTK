@@ -54,7 +54,7 @@ namespace rtk
  *
  * \author Simon Rit
  *
- * \ingroup ImageToImageFilter
+ * \ingroup RTK ImageToImageFilter
  */
 template<class TInputImage, class TOutputImage=TInputImage>
 class ITK_EXPORT DisplacedDetectorImageFilter :
@@ -73,10 +73,10 @@ public:
   typedef TInputImage                                     InputImageType;
   typedef TOutputImage                                    OutputImageType;
   typedef typename OutputImageType::RegionType            OutputImageRegionType;
-  typedef itk::Image<typename TOutputImage::PixelType, 1> WeightImageType;
+  typedef itk::Image<typename TOutputImage::InternalPixelType, 1> WeightImageType;
 
   typedef ThreeDCircularProjectionGeometry GeometryType;
-  typedef GeometryType::Pointer            GeometryPointer;
+  typedef GeometryType::ConstPointer       GeometryConstPointer;
 
   /** Standard New method. */
   itkNewMacro(Self);
@@ -85,8 +85,8 @@ public:
   itkTypeMacro(DisplacedDetectorImageFilter, ImageToImageFilter);
 
   /** Get / Set the object pointer to projection geometry */
-  itkGetObjectMacro(Geometry, GeometryType);
-  itkSetObjectMacro(Geometry, GeometryType);
+  itkGetConstObjectMacro(Geometry, GeometryType);
+  itkSetConstObjectMacro(Geometry, GeometryType);
 
   /** Get / Set whether the projections should be padded
    * (yes for FDK, no for iterative) */
@@ -119,7 +119,11 @@ protected:
 
   void GenerateOutputInformation() ITK_OVERRIDE;
 
+#if ITK_VERSION_MAJOR<5
   void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) ITK_OVERRIDE;
+#else
+  void DynamicThreadedGenerateData(const OutputImageRegionType& outputRegionForThread) ITK_OVERRIDE;
+#endif
 
   // Iterative filters do not need padding
   bool m_PadOnTruncatedSide;
@@ -129,7 +133,7 @@ private:
   void operator=(const Self&);               //purposely not implemented
 
   /** RTK geometry object */
-  GeometryPointer m_Geometry;
+  GeometryConstPointer m_Geometry;
 
   /**
    * Minimum and maximum offsets of the detector along the weighting direction, i.e. x.

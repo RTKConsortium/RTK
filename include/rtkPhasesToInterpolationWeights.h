@@ -30,6 +30,9 @@ namespace rtk
  *
  * Useful for 4D reconstruction of beating heart or breathing thorax
  *
+ * \author Cyril Mory
+ *
+ * \ingroup RTK
  */
 
 class ITK_EXPORT PhasesToInterpolationWeights:public itk::CSVFileReaderBase
@@ -55,7 +58,7 @@ public:
 
     //  /** This method can be used to get the data frame object once the data from
     //  * the file has been parsed. */
-    //  itkGetObjectMacro(Array2D,Array2DType);
+    //  itkGetModifiableObjectMacro(Array2D,Array2DType);
 
     /** Parses the data from the file. Gets the phases of the projections
   * into a vector, then generate an Array2D object containing the interpolation weights  */

@@ -73,7 +73,7 @@ ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImag
 
   // Set permanent parameters
   m_ZeroMultiplyVolumeFilter->SetConstant2(itk::NumericTraits<typename TOutputImage::PixelType>::ZeroValue());
-  m_ZeroMultiplyGradientFilter->SetConstant2(itk::NumericTraits<typename TOutputImage::PixelType>::ZeroValue());
+  m_ZeroMultiplyGradientFilter->SetConstant2(itk::NumericTraits<typename TGradientOutputImage::PixelType>::ZeroValue());
   m_DisplacedDetectorFilter->SetPadOnTruncatedSide(false);
   m_DisableDisplacedDetectorFilter = false;
 

@@ -153,9 +153,9 @@ REAL BFP_CALLMODEL bfp_pivotRHS(lprec *lp, LREAL theta, REAL *pcol)
     pcol = lu->pcol;
 
   if(theta != 0) {
-    register int    i, n = lp->rows;
-    register LREAL  roundzero = lp->epsvalue;
-    register LREAL  *rhs = lp->rhs, rhsmax = 0;
+    int    i, n = lp->rows;
+    LREAL  roundzero = lp->epsvalue;
+    LREAL  *rhs = lp->rhs, rhsmax = 0;
 
     for(i = 0; i <= n; i++, rhs++, pcol++) {
       (*rhs) -= theta * (*pcol);

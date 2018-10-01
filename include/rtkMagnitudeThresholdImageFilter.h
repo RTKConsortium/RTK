@@ -32,6 +32,9 @@ namespace rtk
  * components of the vector by norm / threshold. Mathematically, it amounts
  * to projecting onto the L_2 ball of radius m_Threshold
  *
+ * \author Cyril Mory
+ *
+ * \ingroup RTK
  */
 template< typename TInputImage,
           typename TRealType = float,
@@ -96,8 +99,12 @@ protected:
   MagnitudeThresholdImageFilter();
   virtual ~MagnitudeThresholdImageFilter() ITK_OVERRIDE {}
 
+#if ITK_VERSION_MAJOR<5
   void ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread,
                             itk::ThreadIdType threadId) ITK_OVERRIDE;
+#else
+  void DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread) ITK_OVERRIDE;
+#endif
 
 private:
   TRealType m_Threshold;

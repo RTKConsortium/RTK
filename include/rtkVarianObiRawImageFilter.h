@@ -38,7 +38,7 @@ namespace Function {
  *
  * \author Simon Rit
  *
- * \ingroup Functions
+ * \ingroup RTK Functions
  */
 template< class TInput, class TOutput>
 class ObiAttenuation
@@ -74,7 +74,7 @@ private:
  *
  * \author Simon Rit
  *
- * \ingroup ImageToImageFilter
+ * \ingroup RTK ImageToImageFilter
  */
 template <class TInputImage, class TOutputImage>
 class ITK_EXPORT VarianObiRawImageFilter :

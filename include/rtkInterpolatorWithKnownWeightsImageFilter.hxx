@@ -137,7 +137,11 @@ void InterpolatorWithKnownWeightsImageFilter<VolumeType, VolumeSeriesType>
 
 template< typename VolumeType, typename VolumeSeriesType>
 void InterpolatorWithKnownWeightsImageFilter<VolumeType, VolumeSeriesType>
+#if ITK_VERSION_MAJOR<5
 ::ThreadedGenerateData(const typename VolumeType::RegionType& outputRegionForThread, ThreadIdType itkNotUsed(threadId) )
+#else
+::DynamicThreadedGenerateData(const typename VolumeType::RegionType& outputRegionForThread)
+#endif
 {
   typename VolumeType::ConstPointer volume = this->GetInputVolume();
   typename VolumeSeriesType::Pointer volumeSeries = this->GetInputVolumeSeries();

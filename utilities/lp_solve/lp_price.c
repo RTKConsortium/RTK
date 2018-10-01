@@ -41,9 +41,9 @@
    dual simplexes.  The functions compare a candidate variable with an incumbent. */
 int CMP_CALLMODEL compareImprovementVar(const pricerec *current, const pricerec *candidate)
 {
-  register int   result = COMP_PREFERNONE;
-  register lprec *lp = current->lp;
-  register REAL  testvalue, margin = PREC_IMPROVEGAP;
+  int   result = COMP_PREFERNONE;
+  lprec *lp = current->lp;
+  REAL  testvalue, margin = PREC_IMPROVEGAP;
   int currentcolno, currentvarno = current->varno,
       candidatecolno, candidatevarno = candidate->varno;
   MYBOOL isdual = candidate->isdual;
@@ -152,9 +152,9 @@ Finish:
 
 int CMP_CALLMODEL compareSubstitutionVar(const pricerec *current, const pricerec *candidate)
 {
-  register int    result = COMP_PREFERNONE;
-  register lprec  *lp = current->lp;
-  register REAL   testvalue = candidate->theta,
+  int    result = COMP_PREFERNONE;
+  lprec  *lp = current->lp;
+  REAL   testvalue = candidate->theta,
                   margin = current->theta;
   MYBOOL isdual = candidate->isdual, candbetter;
   int    currentcolno, currentvarno = current->varno,
@@ -292,9 +292,9 @@ Finish:
 }
 int CMP_CALLMODEL compareBoundFlipVar(const pricerec *current, const pricerec *candidate)
 {
-  register REAL  testvalue, margin;
-  register int   result = COMP_PREFERNONE;
-  register lprec *lp = current->lp;
+  REAL  testvalue, margin;
+  int   result = COMP_PREFERNONE;
+  lprec *lp = current->lp;
   MYBOOL    candbetter;
   int currentvarno = current->varno,
       candidatevarno = candidate->varno;
@@ -372,7 +372,7 @@ Finish:
    a subject for the comparison functions/operators. */
 STATIC MYBOOL validImprovementVar(pricerec *candidate)
 {
-  register REAL candidatepivot = fabs(candidate->pivot);
+  REAL candidatepivot = fabs(candidate->pivot);
 
 #ifdef Paranoia
   return( (MYBOOL) ((candidate->varno > 0) && (candidatepivot > candidate->lp->epsvalue)) );
@@ -383,8 +383,8 @@ STATIC MYBOOL validImprovementVar(pricerec *candidate)
 
 STATIC MYBOOL validSubstitutionVar(pricerec *candidate)
 {
-  register lprec *lp   = candidate->lp;
-  register REAL  theta = (candidate->isdual ? fabs(candidate->theta) : candidate->theta);
+  lprec *lp   = candidate->lp;
+  REAL  theta = (candidate->isdual ? fabs(candidate->theta) : candidate->theta);
 
 #ifdef Paranoia
   if(candidate->varno <= 0)
@@ -1175,7 +1175,7 @@ Retry:
 STATIC int rowdual(lprec *lp, REAL *rhvec, MYBOOL forceoutEQ, MYBOOL updateinfeas, REAL *xviol)
 {
   int       k, i, iy, iz, ii, ninfeas;
-  register REAL     rh;
+  REAL     rh;
   REAL      up, lo = 0,
             epsvalue, sinfeas, xinfeas;
   pricerec  current, candidate;

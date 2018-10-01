@@ -147,8 +147,12 @@ ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputVal
 template< typename TInputImage, typename TOperatorValueType, typename TOuputValue , typename TOuputImage >
 void
 ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputValue, TOuputImage >
+#if ITK_VERSION_MAJOR<5
 ::ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread,
-                       itk::ThreadIdType threadId)
+                       itk::ThreadIdType itkNotUsed(threadId))
+#else
+::DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread)
+#endif
 {
 
   itk::NeighborhoodInnerProduct< InputImageType, OperatorValueType, OutputValueType > SIP;
@@ -203,9 +207,6 @@ ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputVal
   typename itk::NeighborhoodAlgorithm::ImageBoundaryFacesCalculator< InputImageType >::FaceListType::iterator fit
           = faceList.begin();
 
-  // support progress methods/callbacks
-  itk::ProgressReporter progress( this, threadId, outputRegionForThread.GetNumberOfPixels() );
-
   // Initialize the x_slice array
   itk::ConstNeighborhoodIterator< InputImageType > nit = itk::ConstNeighborhoodIterator< InputImageType >(radius, inputImage, *fit);
 
@@ -246,7 +247,6 @@ ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputVal
 
       ++nit;
       ++it;
-      progress.CompletedPixel();
       }
     }
 }

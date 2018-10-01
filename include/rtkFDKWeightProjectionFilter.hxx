@@ -56,7 +56,11 @@ FDKWeightProjectionFilter<TInputImage, TOutputImage>
 template <class TInputImage, class TOutputImage>
 void
 FDKWeightProjectionFilter<TInputImage, TOutputImage>
+#if ITK_VERSION_MAJOR<5
 ::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType itkNotUsed(threadId))
+#else
+::DynamicThreadedGenerateData(const OutputImageRegionType& outputRegionForThread)
+#endif
 {
   // Prepare point increment (TransformIndexToPhysicalPoint too slow)
   typename InputImageType::PointType pointBase, pointIncrement;

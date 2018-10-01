@@ -104,7 +104,7 @@ ReorderProjectionsImageFilter<TInputImage, TOutputImage>
   // Allocate the pixels of the output, and at first fill them with zeros
   this->GetOutput()->SetBufferedRegion(this->GetOutput()->GetRequestedRegion());
   this->GetOutput()->Allocate();
-  this->GetOutput()->FillBuffer(itk::NumericTraits<typename TInputImage::PixelType>::Zero);
+  this->GetOutput()->FillBuffer(itk::NumericTraits<typename TInputImage::PixelType>::ZeroValue());
 
   // Declare regions used in the loop
   typename TInputImage::RegionType inputRegion = this->GetOutput()->GetRequestedRegion();

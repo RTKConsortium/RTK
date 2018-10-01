@@ -128,7 +128,7 @@ namespace rtk
  *
  * \author Simon Rit
  *
- * \ingroup ReconstructionAlgorithm
+ * \ingroup RTK ReconstructionAlgorithm
  */
 template<class TVolumeImage, class TProjectionImage=TVolumeImage>
 class ITK_EXPORT SARTConeBeamReconstructionFilter :
@@ -171,7 +171,7 @@ public:
   itkTypeMacro(SARTConeBeamReconstructionFilter, IterativeConeBeamReconstructionFilter);
 
   /** Get / Set the object pointer to projection geometry */
-  itkGetObjectMacro(Geometry, ThreeDCircularProjectionGeometry);
+  itkGetModifiableObjectMacro(Geometry, ThreeDCircularProjectionGeometry);
   itkSetObjectMacro(Geometry, ThreeDCircularProjectionGeometry);
 
   /** Get / Set the number of iterations. Default is 3. */

@@ -31,6 +31,10 @@
 #include <itkExtractImageFilter.h>
 #include <itkAddImageFilter.h>
 
+#ifdef RTK_USE_CUDA
+  #include "rtkCudaWeidingerForwardModelImageFilter.h"
+#endif
+
 namespace rtk
 {
   /** \class MechlemOneStepSpectralReconstructionFilter
@@ -109,7 +113,7 @@ namespace rtk
    *
    * \author Cyril Mory
    *
-   * \ingroup ReconstructionAlgorithm
+   * \ingroup RTK ReconstructionAlgorithm
    */
 
 template< typename TOutputImage, typename TPhotonCounts, typename TSpectrum >
@@ -117,9 +121,9 @@ class MechlemOneStepSpectralReconstructionFilter : public rtk::IterativeConeBeam
 {
 public:
     /** Standard class typedefs. */
-    typedef MechlemOneStepSpectralReconstructionFilter                      Self;
-    typedef IterativeConeBeamReconstructionFilter<TOutputImage, TOutputImage>  Superclass;
-    typedef itk::SmartPointer< Self >                                          Pointer;
+    typedef MechlemOneStepSpectralReconstructionFilter                          Self;
+    typedef IterativeConeBeamReconstructionFilter<TOutputImage, TOutputImage>   Superclass;
+    typedef itk::SmartPointer< Self >                                           Pointer;
 
     /** Method for creation through the object factory. */
     itkNewMacro(Self)
@@ -130,12 +134,17 @@ public:
     /** Internal typedefs and parameters */
     itkStaticConstMacro(nBins, unsigned int, TPhotonCounts::PixelType::Dimension);
     itkStaticConstMacro(nMaterials, unsigned int, TOutputImage::PixelType::Dimension);
-    itkStaticConstMacro(nEnergies, unsigned int, TSpectrum::PixelType::Dimension);
     typedef typename TOutputImage::PixelType::ValueType dataType;
 
+#ifdef RTK_USE_CUDA
+    typedef itk::CudaImage< itk::Vector<dataType, nMaterials * nMaterials>, TOutputImage::ImageDimension > THessiansImage;
+    typedef itk::CudaImage<dataType, TOutputImage::ImageDimension> TSingleComponentImage;
+#else
     typedef itk::Image< itk::Vector<dataType, nMaterials * nMaterials>, TOutputImage::ImageDimension > THessiansImage;
-    typedef TOutputImage TGradientsImage;
     typedef itk::Image<dataType, TOutputImage::ImageDimension> TSingleComponentImage;
+#endif
+
+    typedef TOutputImage TGradientsImage;
 
     typedef typename Superclass::ForwardProjectionType ForwardProjectionType;
     typedef typename Superclass::BackProjectionType    BackProjectionType;
@@ -153,7 +162,11 @@ public:
     typedef rtk::ConstantImageSource<TGradientsImage>                                     GradientsSourceType;
     typedef rtk::ConstantImageSource<THessiansImage>                                      HessiansSourceType;
     typedef rtk::SeparableQuadraticSurrogateRegularizationImageFilter<TGradientsImage>    SQSRegularizationType;
+#ifdef RTK_USE_CUDA
+    typedef rtk::CudaWeidingerForwardModelImageFilter<TOutputImage, TPhotonCounts, TSpectrum> WeidingerForwardModelType;
+#else
     typedef rtk::WeidingerForwardModelImageFilter<TOutputImage, TPhotonCounts, TSpectrum> WeidingerForwardModelType;
+#endif
     typedef rtk::AddMatrixAndDiagonalImageFilter<TGradientsImage, THessiansImage>         AddMatrixAndDiagonalFilterType;
     typedef rtk::GetNewtonUpdateImageFilter<TGradientsImage, THessiansImage>              NewtonFilterType;
 
@@ -164,7 +177,7 @@ public:
     void SetBackProjectionFilter (BackProjectionType _arg) ITK_OVERRIDE;
 
     /** Pass the geometry to all filters needing it */
-    itkSetObjectMacro(Geometry, ThreeDCircularProjectionGeometry)
+    itkSetConstObjectMacro(Geometry, ThreeDCircularProjectionGeometry)
 
     itkSetMacro(NumberOfIterations, int)
     itkGetMacro(NumberOfIterations, int)
@@ -189,8 +202,8 @@ public:
 
     /** Set methods forwarding the detector response and material attenuation
      * matrices to the internal WeidingerForwardModel filter */
-    typedef itk::Matrix<dataType, nBins, nEnergies>       BinnedDetectorResponseType;
-    typedef itk::Matrix<dataType, nEnergies, nMaterials>  MaterialAttenuationsType;
+    typedef vnl_matrix<dataType>  BinnedDetectorResponseType;
+    typedef vnl_matrix<dataType>  MaterialAttenuationsType;
     virtual void SetBinnedDetectorResponse(const BinnedDetectorResponseType & detResp);
     virtual void SetMaterialAttenuations(const MaterialAttenuationsType & matAtt);
 
@@ -239,16 +252,16 @@ protected:
     typename SingleComponentForwardProjectionFilterType::Pointer InstantiateSingleComponentForwardProjectionFilter(int fwtype);
     typename HessiansBackProjectionFilterType::Pointer InstantiateHessiansBackProjectionFilter (int bptype);
 
-    ThreeDCircularProjectionGeometry::Pointer   m_Geometry;
+    ThreeDCircularProjectionGeometry::ConstPointer m_Geometry;
 
-    int                                         m_NumberOfIterations;
-    unsigned int                                m_NumberOfProjectionsPerSubset;
-    unsigned int                                m_NumberOfSubsets;
-    std::vector<unsigned int>                   m_NumberOfProjectionsInSubset;
-    unsigned int                                m_NumberOfProjections;
+    int                                            m_NumberOfIterations;
+    int                                            m_NumberOfProjectionsPerSubset;
+    int                                            m_NumberOfSubsets;
+    std::vector<int>                               m_NumberOfProjectionsInSubset;
+    int                                            m_NumberOfProjections;
 
-    typename TOutputImage::PixelType            m_RegularizationWeights;
-    typename TOutputImage::RegionType::SizeType m_RegularizationRadius;
+    typename TOutputImage::PixelType               m_RegularizationWeights;
+    typename TOutputImage::RegionType::SizeType    m_RegularizationRadius;
 
 private:
     MechlemOneStepSpectralReconstructionFilter(const Self &); //purposely not implemented

@@ -43,7 +43,7 @@ UnwarpSequenceImageFilter< TImageSequence, TDVFImageSequence, TImage, TDVFImage>
 #ifdef RTK_USE_CUDA
   if (m_CudaConjugateGradient)
     {
-    m_ConjugateGradientFilter = rtk::CudaConjugateGradientImageFilter_4f::New();
+    m_ConjugateGradientFilter = rtk::CudaConjugateGradientImageFilter<TImageSequence>::New();
     }
     m_ConstantSource = rtk::CudaConstantVolumeSeriesSource::New();
 #endif

@@ -46,7 +46,7 @@ namespace rtk
  *
  * \author Simon Rit
  *
- * \ingroup ReconstructionAlgorithm CudaImageToImageFilter
+ * \ingroup RTK ReconstructionAlgorithm CudaImageToImageFilter
  */
 class RTK_EXPORT CudaIterativeFDKConeBeamReconstructionFilter :
   public itk::CudaInPlaceImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>,

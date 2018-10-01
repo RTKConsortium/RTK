@@ -39,6 +39,8 @@ namespace rtk
    * the output image will be of size (X, Y, N).
    *
    * \author Cyril Mory
+ *
+ * \ingroup RTK
    */
 
 template< typename InputImageType, typename OutputImageType>

@@ -17,8 +17,15 @@
  * \author Cyril Mory
  */
 
-int main(int, char** )
+int main(int argc, char*argv[])
 {
+  if (argc < 9)
+  {
+    std::cerr << "Usage: " << std::endl;
+    std::cerr << argv[0] << " materialProjections.mha photonCounts.mha spectrum.mha projections.mha DetectorResponse.csv materialAttenuations.csv out1.mha out2.mha" << std::endl;
+    return EXIT_FAILURE;
+  }
+
   // Define types
   const unsigned int nBins=5;
   const unsigned int nMaterials=3;
@@ -26,43 +33,43 @@ int main(int, char** )
   typedef double dataType;
   typedef itk::Image<itk::Vector<dataType, nMaterials>, 3> TMaterialProjections;
   typedef itk::Image<itk::Vector<dataType, nBins>, 3> TPhotonCounts;
-  typedef itk::Image<itk::Vector<dataType, nEnergies>, 2> TSpectrum;
+  typedef itk::Image<dataType, 3> TSpectrum;
   typedef itk::Image<dataType, 3> TProjections;
   typedef itk::Image<itk::Vector<dataType, nMaterials>, 3> TOutput1;
   typedef itk::Image<itk::Vector<dataType, nMaterials * nMaterials>, 3> TOutput2;
 
-  typedef itk::Matrix<dataType, nBins, nEnergies>       BinnedDetectorResponseType;
-  typedef itk::Matrix<dataType, nEnergies, nMaterials>  MaterialAttenuationsType;
+  vnl_matrix<dataType> detectorResponse(nBins, nEnergies);
+  vnl_matrix<dataType> materialAttenuations(nEnergies, nMaterials);
 
   // Define, instantiate, set and update readers
   typedef itk::ImageFileReader<TMaterialProjections> MaterialProjectionsReaderType;
   MaterialProjectionsReaderType::Pointer materialProjectionsReader = MaterialProjectionsReaderType::New();
-  materialProjectionsReader->SetFileName(std::string(RTK_DATA_ROOT) + std::string("/Input/Spectral/OneStep/materialProjections.mha"));
+  materialProjectionsReader->SetFileName(argv[1]);
   materialProjectionsReader->Update();
 
   typedef itk::ImageFileReader<TPhotonCounts> PhotonCountsReaderType;
   PhotonCountsReaderType::Pointer photonCountsReader = PhotonCountsReaderType::New();
-  photonCountsReader->SetFileName(std::string(RTK_DATA_ROOT) + std::string("/Input/Spectral/OneStep/photonCounts.mha"));
+  photonCountsReader->SetFileName(argv[2]);
   photonCountsReader->Update();
 
   typedef itk::ImageFileReader<TSpectrum> SpectrumReaderType;
   SpectrumReaderType::Pointer spectrumReader = SpectrumReaderType::New();
-  spectrumReader->SetFileName(std::string(RTK_DATA_ROOT) + std::string("/Input/Spectral/OneStep/spectrum.mha"));
+  spectrumReader->SetFileName(argv[3]);
   spectrumReader->Update();
 
   typedef itk::ImageFileReader<TProjections> ProjectionsReaderType;
   ProjectionsReaderType::Pointer projectionsReader = ProjectionsReaderType::New();
-  projectionsReader->SetFileName(std::string(RTK_DATA_ROOT) + std::string("/Input/Spectral/OneStep/projOfOnes.mha"));
+  projectionsReader->SetFileName(argv[4]);
   projectionsReader->Update();
 
   typedef itk::ImageFileReader<TOutput1> Output1ReaderType;
   Output1ReaderType::Pointer output1Reader = Output1ReaderType::New();
-  output1Reader->SetFileName(std::string(RTK_DATA_ROOT) + std::string("/Baseline/Spectral/OneStep/out1.mha"));
+  output1Reader->SetFileName(argv[7]);
   output1Reader->Update();
 
   typedef itk::ImageFileReader<TOutput2> Output2ReaderType;
   Output2ReaderType::Pointer output2Reader = Output2ReaderType::New();
-  output2Reader->SetFileName(std::string(RTK_DATA_ROOT) + std::string("/Baseline/Spectral/OneStep/out2.mha"));
+  output2Reader->SetFileName(argv[8]);
   output2Reader->Update();
 
   // Read binned detector response
@@ -72,19 +79,17 @@ int main(int, char** )
   csvReader->HasColumnHeadersOff();
   csvReader->HasRowHeadersOff();
 
-  std::string filename = std::string(RTK_DATA_ROOT) + std::string("/Input/Spectral/OneStep/binnedDetectorResponse.csv");
+  std::string filename = argv[5];
   csvReader->SetFileName( filename );
   csvReader->Parse();
-  BinnedDetectorResponseType detectorResponse;
   for (unsigned int r=0; r<nBins; r++)
     for (unsigned int c=0; c<nEnergies; c++)
       detectorResponse[r][c] = csvReader->GetOutput()->GetData(r, c);
 
   // Read material attenuations
-  filename = std::string(RTK_DATA_ROOT) + std::string("/Input/Spectral/OneStep/materialAttenuations.csv");
+  filename = argv[6];
   csvReader->SetFileName( filename );
   csvReader->Parse();
-  MaterialAttenuationsType materialAttenuations;
   for (unsigned int r=0; r<nEnergies; r++)
     for (unsigned int c=0; c<nMaterials; c++)
       materialAttenuations[r][c] = csvReader->GetOutput()->GetData(r, c);

@@ -21,7 +21,6 @@
 
 #include <itkInPlaceImageFilter.h>
 #include <itkMutexLock.h>
-#include <itkBarrier.h>
 #include "rtkThreeDCircularProjectionGeometry.h"
 #include "rtkConfiguration.h"
 
@@ -38,7 +37,7 @@ namespace rtk
  *
  * \test rtkI0estimationtest.cxx
  *
- * \ingroup InPlaceImageFilter
+ * \ingroup RTK InPlaceImageFilter
  */
 
 template<class TInputImage = itk::Image< unsigned short, 3>,

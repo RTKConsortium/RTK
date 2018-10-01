@@ -1,8 +1,0 @@
-package "rtkmedian"
-purpose "Performs a median filtering on a 2D image (pixeltype uint16)"
-
-option "verbose"  v "Verbose execution"                              flag            off
-option "config"   - "Config file"                                    string          no
-option "input"    i "Input projection file name"                     string          yes
-option "output"   o "Output projections file name"                   string          yes
-option "median"   b "Median window, e.g. [3,3] or [3,2]"             int    multiple no  default="3"

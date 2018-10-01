@@ -36,7 +36,7 @@ namespace rtk
  * From Emission Tomography Data Using a Modified EM Algorithm", by Peter J. Green, IEEE TMI 1990.
  * With respect to Huber, it has the advantage of not requiring a cut-off parameter.
  *
- * \ingroup IntensityImageFilters
+ * \ingroup RTK IntensityImageFilters
  */
 
 template<typename TImage>
@@ -71,7 +71,11 @@ protected:
   itk::DataObject::Pointer MakeOutput(unsigned int idx);
 
   /** Does the real work. */
+#if ITK_VERSION_MAJOR<5
   void ThreadedGenerateData(const typename TImage::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) ITK_OVERRIDE;
+#else
+  void DynamicThreadedGenerateData(const typename TImage::RegionType& outputRegionForThread) ITK_OVERRIDE;
+#endif
   void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
   /** Derivatives of the absolute value approximation */

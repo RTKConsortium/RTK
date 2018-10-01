@@ -39,7 +39,7 @@ namespace rtk
  *
  * \author Cyril Mory
  *
- * \ingroup ImageToImageFilter
+ * \ingroup RTK ImageToImageFilter
  */
 template<class TInputImage, class TOutputImage=TInputImage>
 class ITK_EXPORT ReorderProjectionsImageFilter :
@@ -69,7 +69,7 @@ public:
   itkTypeMacro(ReorderProjectionsImageFilter, ImageToImageFilter);
 
   /** Get / Set the object pointer to projection geometry */
-  itkGetObjectMacro(OutputGeometry, GeometryType);
+  itkGetModifiableObjectMacro(OutputGeometry, GeometryType);
   itkSetObjectMacro(InputGeometry, GeometryType);
 
   /** Get / Set the kind of permutation requested */

@@ -41,6 +41,10 @@ namespace rtk
  * be found in Chambolle, Antonin. “An Algorithm for Total
  * Variation Minimization and Applications.” J. Math. Imaging Vis. 20,
  * no. 1–2 (January 2004): 89–97.
+ *
+ * \author Cyril Mory
+ *
+ * \ingroup RTK
  */
 
 template< typename TInputImage,
@@ -154,8 +158,12 @@ protected:
    *
    * \sa ImageToImageFilter::ThreadedGenerateData(),
    *     ImageToImageFilter::GenerateData() */
+#if ITK_VERSION_MAJOR<5
   void ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread,
                             itk::ThreadIdType threadId) ITK_OVERRIDE;
+#else
+  void DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread) ITK_OVERRIDE;
+#endif
 
   void GenerateOutputInformation() ITK_OVERRIDE;
 

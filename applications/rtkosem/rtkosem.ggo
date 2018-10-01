@@ -8,4 +8,4 @@ option "output"      o "Output file name"                                      s
 option "niterations" n "Number of iterations"                                  int    no   default="5"
 option "input"     i "Input volume"              string          no
 option "nprojpersubset" - "Number of projections processed between each update of the reconstructed volume (several for OSEM, all for MLEM)" int no default="1"
-
+option "attenuationmap" a "Attenuation map relative to the volume to perfom the attenuation correction"   string  no

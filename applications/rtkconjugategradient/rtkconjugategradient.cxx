@@ -126,13 +126,12 @@ int main(int argc, char * argv[])
     {
     conjugategradient->SetSupportMask(supportmaskSource->GetOutput() );
     }
-  conjugategradient->SetIterationCosts(args_info.costs_flag);
+//  conjugategradient->SetIterationCosts(args_info.costs_flag);
 
   if (args_info.gamma_given)
-    {
-    conjugategradient->SetRegularized(true);
     conjugategradient->SetGamma(args_info.gamma_arg);
-    }
+  if (args_info.tikhonov_given)
+    conjugategradient->SetTikhonov(args_info.tikhonov_arg);
 
   conjugategradient->SetGeometry( geometryReader->GetOutputObject() );
   conjugategradient->SetNumberOfIterations( args_info.niterations_arg );

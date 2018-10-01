@@ -34,7 +34,7 @@ namespace rtk
  *
  * \author Simon Rit
  *
- * \ingroup InPlaceImageFilter
+ * \ingroup RTK InPlaceImageFilter
  */
 template <class TInputImage, class TOutputImage>
 class ITK_EXPORT MaskCollimationImageFilter :
@@ -59,7 +59,7 @@ public:
   itkTypeMacro(MaskCollimationImageFilter, itk::ImageToImageFilter);
 
   /** Get / Set the object pointer to projection geometry */
-  itkGetObjectMacro(Geometry, GeometryType);
+  itkGetModifiableObjectMacro(Geometry, GeometryType);
   itkSetObjectMacro(Geometry, GeometryType);
 
 protected:
@@ -69,8 +69,12 @@ protected:
   void BeforeThreadedGenerateData() ITK_OVERRIDE;
 
   /** Apply changes to the input image requested region. */
+#if ITK_VERSION_MAJOR<5
   void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread,
                              ThreadIdType threadId ) ITK_OVERRIDE;
+#else
+  void DynamicThreadedGenerateData( const OutputImageRegionType& outputRegionForThread ) ITK_OVERRIDE;
+#endif
 
   /** The two inputs should not be in the same space so there is nothing
    * to verify. */

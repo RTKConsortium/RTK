@@ -38,7 +38,7 @@ namespace rtk
  *
  * \author Simon Rit
  *
- * \ingroup Geometry
+ * \ingroup RTK Geometry
  */
 template< unsigned int TDimension = 3 >
 class ProjectionGeometry : public itk::DataObject
@@ -65,7 +65,7 @@ public:
    * with the i-th matrix provides the physical coordinate on
    * the i-th projection.
    */
-  const std::vector<MatrixType> &GetMatrices(){
+  const std::vector<MatrixType> &GetMatrices() const{
     return this->m_Matrices;
   }
 

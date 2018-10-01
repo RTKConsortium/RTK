@@ -56,6 +56,8 @@ namespace rtk
  * \test {TestReg23ProjectionGeometry.cxx}
  *
  * @author phil steininger
+ *
+ * \ingroup RTK
  * @version 1.0
  */
 class RTK_EXPORT Reg23ProjectionGeometry :

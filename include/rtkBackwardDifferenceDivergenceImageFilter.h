@@ -33,7 +33,7 @@ namespace rtk
  * Variation Minimization and Applications.” J. Math. Imaging Vis. 20,
  * no. 1–2 (January 2004): 89–97.
  *
- * \ingroup IntensityImageFilters
+ * \ingroup RTK IntensityImageFilters
  */
 
 template <typename TInputImage, typename TOutputImage = itk::Image< float, TInputImage::ImageDimension > >
@@ -96,7 +96,11 @@ protected:
 
     void BeforeThreadedGenerateData() ITK_OVERRIDE;
 
+#if ITK_VERSION_MAJOR<5
     void ThreadedGenerateData(const typename InputImageType::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) ITK_OVERRIDE;
+#else
+    void DynamicThreadedGenerateData(const typename InputImageType::RegionType& outputRegionForThread) ITK_OVERRIDE;
+#endif
 
     void AfterThreadedGenerateData() ITK_OVERRIDE;
 

@@ -37,6 +37,8 @@ namespace rtk {
  *
  * \author Cyril Mory
  *
+ * \ingroup RTK
+ *
  */
 template<typename TImage>
 class DaubechiesWaveletsConvolutionImageFilter : public itk::ImageToImageFilter<TImage, TImage>

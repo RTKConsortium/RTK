@@ -38,6 +38,9 @@ namespace rtk
  *  multiple channel image with vectors colinear to the input vectors
  *  but having a smaller norm.
  *
+ * \author Cyril Mory
+ *
+ * \ingroup RTK
  */
 template< typename TInputImage,
           typename TRealType = float,
@@ -117,8 +120,12 @@ protected:
    *
    * \sa ImageToImageFilter::ThreadedGenerateData(),
    *     ImageToImageFilter::GenerateData() */
+#if ITK_VERSION_MAJOR<5
   void ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread,
                               ThreadIdType threadId) ITK_OVERRIDE;
+#else
+  void DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread) ITK_OVERRIDE;
+#endif
 
 //    typedef typename InputImageType::Superclass ImageBaseType;
 

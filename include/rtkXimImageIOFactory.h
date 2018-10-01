@@ -38,6 +38,8 @@ namespace rtk
  * \brief ITK factory for Xim file I/O.
  *
  * \author Simon Rit & Andreas Gravgaard Andersen
+ *
+ * \ingroup RTK
  */
 class RTK_EXPORT XimImageIOFactory : public itk::ObjectFactoryBase
 {

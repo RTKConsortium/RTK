@@ -23,7 +23,11 @@
 
 #include <itkInPlaceImageFilter.h>
 #include <itkConceptChecking.h>
+
 #include "rtkThreeDCircularProjectionGeometry.h"
+
+#include <type_traits>
+#include <typeinfo>
 
 namespace rtk
 {
@@ -40,7 +44,7 @@ namespace rtk
  *
  * \author Simon Rit
  *
- * \ingroup Projector
+ * \ingroup RTK Projector
  */
 template <class TInputImage, class TOutputImage>
 class BackProjectionImageFilter :
@@ -53,10 +57,11 @@ public:
   typedef itk::SmartPointer<Self>                           Pointer;
   typedef itk::SmartPointer<const Self>                     ConstPointer;
   typedef typename TInputImage::PixelType                   InputPixelType;
+  typedef typename TInputImage::InternalPixelType           InternalInputPixelType;
   typedef typename TOutputImage::RegionType                 OutputImageRegionType;
 
   typedef rtk::ThreeDCircularProjectionGeometry                     GeometryType;
-  typedef typename GeometryType::Pointer                            GeometryPointer;
+  typedef typename GeometryType::ConstPointer                       GeometryConstPointer;
   typedef typename GeometryType::MatrixType                         ProjectionMatrixType;
   typedef itk::Image<InputPixelType, TInputImage::ImageDimension-1> ProjectionImageType;
   typedef typename ProjectionImageType::Pointer                     ProjectionImagePointer;
@@ -68,8 +73,8 @@ public:
   itkTypeMacro(BackProjectionImageFilter, itk::ImageToImageFilter);
 
   /** Get / Set the object pointer to projection geometry */
-  itkGetObjectMacro(Geometry, GeometryType);
-  itkSetObjectMacro(Geometry, GeometryType);
+  itkGetConstObjectMacro(Geometry, GeometryType);
+  itkSetConstObjectMacro(Geometry, GeometryType);
 
   /** Get / Set the transpose flag for 2D projections (optimization trick) */
   itkGetMacro(Transpose, bool);
@@ -86,7 +91,11 @@ protected:
 
   void BeforeThreadedGenerateData() ITK_OVERRIDE;
 
+#if ITK_VERSION_MAJOR<5
   void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) ITK_OVERRIDE;
+#else
+  void DynamicThreadedGenerateData(const OutputImageRegionType& outputRegionForThread) ITK_OVERRIDE;
+#endif
 
   /** Special case when the detector is cylindrical and centered on source */
   virtual void CylindricalDetectorCenteredOnSourceBackprojection(const OutputImageRegionType& region,
@@ -124,7 +133,7 @@ protected:
   itk::Matrix<double, TInputImage::ImageDimension, TInputImage::ImageDimension> GetProjectionPhysicalPointToProjectionIndexMatrix();
 
   /** RTK geometry object */
-  GeometryPointer m_Geometry;
+  GeometryConstPointer m_Geometry;
 
 private:
   BackProjectionImageFilter(const Self&); //purposely not implemented

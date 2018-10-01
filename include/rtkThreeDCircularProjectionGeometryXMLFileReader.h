@@ -39,7 +39,7 @@ namespace rtk
  *
  * \author Simon Rit
  *
- * \ingroup IOFilters
+ * \ingroup RTK IOFilters
  */
 class RTK_EXPORT ThreeDCircularProjectionGeometryXMLFileReader :
   public itk::XMLReader< ThreeDCircularProjectionGeometry >
@@ -67,7 +67,7 @@ public:
   int CanReadFile(const char* name) ITK_OVERRIDE;
 
   /** Get smart pointer to projection geometry. */
-  itkGetMacro(Geometry, GeometryPointer);
+  itkGetModifiableObjectMacro(Geometry, GeometryType);
 
 protected:
   ThreeDCircularProjectionGeometryXMLFileReader();

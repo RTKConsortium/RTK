@@ -34,6 +34,9 @@ m_AirThreshold(32000),
 m_ScatterToPrimaryRatio(0.),
 m_NonNegativityConstraintThreshold(20)
 {
+#if ITK_VERSION_MAJOR>4
+  this->DynamicMultiThreadingOff();
+#endif
 }
 
 // Requires full projection images to estimate scatter.

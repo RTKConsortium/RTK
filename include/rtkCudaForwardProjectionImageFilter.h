@@ -43,7 +43,7 @@
  *
  * \author Marc Vila, updated by Simon Rit and Cyril Mory
  *
- * \ingroup Projector CudaImageToImageFilter
+ * \ingroup RTK Projector CudaImageToImageFilter
  */
 
 namespace rtk
@@ -89,7 +89,6 @@ private:
   void operator=(const Self&);
 
   double             m_StepSize;
-  bool               m_UseCudaTexture;
 }; // end of class
 
 } // end namespace rtk

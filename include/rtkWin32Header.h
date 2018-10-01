@@ -20,7 +20,7 @@
 
 #include "rtkConfiguration.h"
 
-#if (defined(_WIN32) || defined(WIN32)) && defined(RTK_BUILD_SHARED_LIBS) 
+#if (defined(_WIN32) || defined(WIN32)) && defined(RTK_BUILD_SHARED_LIBS)
 # if defined(RTK_EXPORTS) || defined(__CUDACC__)
 #  define RTK_EXPORT __declspec(dllexport)
 # else
@@ -28,7 +28,7 @@
 # endif  /* RTK_EXPORT */
 #else
 /* unix needs nothing */
-#define RTK_EXPORT 
+#define RTK_EXPORT
 #endif
 
 #endif

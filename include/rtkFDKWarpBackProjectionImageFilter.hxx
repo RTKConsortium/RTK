@@ -30,6 +30,17 @@ namespace rtk
 {
 
 template <class TInputImage, class TOutputImage, class TDeformation>
+FDKWarpBackProjectionImageFilter<TInputImage,TOutputImage,TDeformation>
+::FDKWarpBackProjectionImageFilter():
+    m_DeformationUpdateError(false)
+{
+#if ITK_VERSION_MAJOR>4
+  this->DynamicMultiThreadingOff();
+  this->SetNumberOfWorkUnits( itk::MultiThreaderBase::GetGlobalDefaultNumberOfThreads() );
+#endif
+}
+
+template <class TInputImage, class TOutputImage, class TDeformation>
 void
 FDKWarpBackProjectionImageFilter<TInputImage,TOutputImage,TDeformation>
 ::BeforeThreadedGenerateData()
@@ -37,7 +48,11 @@ FDKWarpBackProjectionImageFilter<TInputImage,TOutputImage,TDeformation>
   this->SetTranspose(true);
   typename TOutputImage::RegionType splitRegion;
   m_Barrier = itk::Barrier::New();
+#if ITK_VERSION_MAJOR<5
   m_Barrier->Initialize( this->SplitRequestedRegion(0, this->GetNumberOfThreads(), splitRegion) );
+#else
+  m_Barrier->Initialize( this->SplitRequestedRegion(0, this->GetNumberOfWorkUnits(), splitRegion) );
+#endif
   m_DeformationUpdateError = false;
 }
 

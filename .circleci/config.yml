@@ -1,6 +1,10 @@
 version: 2
 jobs:
-  build-and-test:
+  build:
+    branches:
+      ignore:
+        - dashboard
+        - hooks
     working_directory: ~/RTK-build
     docker:
       - image: insighttoolkit/module-ci:latest
@@ -20,10 +24,4 @@ jobs:
               -D ITK_DIR="~/ITK-build" \
               -D SITE="CircleCI" \
               -D BRANCH_NAME="${CIRCLE_BRANCH}" \
-              -D PULL_REQUEST_NUMBER="${CIRCLE_PR_NUMBER}" \
-
-workflows:
-    version: 2
-    build-test:
-      jobs:
-        - build-and-test
+              -D PULL_REQUEST_NUMBER="${CIRCLE_PR_NUMBER}"

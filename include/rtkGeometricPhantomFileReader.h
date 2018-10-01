@@ -33,7 +33,7 @@ namespace rtk
  *
  * \author Marc Vila, Simon Rit
  *
- * \ingroup Functions
+ * \ingroup RTK Functions
  */
 class RTK_EXPORT GeometricPhantomFileReader :
     public itk::LightProcessObject
@@ -55,7 +55,7 @@ public:
   itkTypeMacro(GeometricPhantomFileReader, itk::LightProcessObject);
 
   /** Get / Set the object pointer to geometric phantom. */
-  itkGetObjectMacro(GeometricPhantom, GeometricPhantom);
+  itkGetModifiableObjectMacro(GeometricPhantom, GeometricPhantom);
   itkSetObjectMacro(GeometricPhantom, GeometricPhantom);
 
   /** Get/Set the filename to read. */

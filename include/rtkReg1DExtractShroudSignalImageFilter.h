@@ -31,7 +31,7 @@ namespace rtk
    *
    * \author Vivien Delmon
    *
-   * \ingroup ImageToImageFilter
+   * \ingroup RTK ImageToImageFilter
    */
 
 template<class TInputPixel, class TOutputPixel>
@@ -74,7 +74,7 @@ private:
   void operator=(const Self&);                  //purposely not implemented
 
   typedef itk::Image<TInputPixel, 1>    RegisterImageType;
-  TOutputPixel register1D(RegisterImageType*, RegisterImageType*);
+  TOutputPixel register1D(const RegisterImageType*, const RegisterImageType*);
 
 }; // end of class
 

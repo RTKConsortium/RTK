@@ -43,15 +43,16 @@ namespace rtk
  *
  * \author Simon Rit
  *
- * \ingroup Projector CudaImageToImageFilter
+ * \ingroup RTK Projector CudaImageToImageFilter
  */
-class RTK_EXPORT CudaBackProjectionImageFilter :
-  public itk::CudaInPlaceImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>,
-  BackProjectionImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3> > >
+
+template <class ImageType = itk::CudaImage<float,3> >
+class ITK_EXPORT CudaBackProjectionImageFilter :
+  public itk::CudaInPlaceImageFilter< ImageType, ImageType,
+  BackProjectionImageFilter< ImageType, ImageType> >
 {
 public:
   /** Standard class typedefs. */
-  typedef itk::CudaImage<float,3>                          ImageType;
   typedef BackProjectionImageFilter< ImageType, ImageType> BackProjectionImageFilterType;
   typedef CudaBackProjectionImageFilter                    Self;
   typedef itk::CudaInPlaceImageFilter<ImageType, ImageType,
@@ -59,7 +60,7 @@ public:
   typedef itk::SmartPointer<Self>                          Pointer;
   typedef itk::SmartPointer<const Self>                    ConstPointer;
 
-  typedef ImageType::RegionType            OutputImageRegionType;
+  typedef typename ImageType::RegionType   OutputImageRegionType;
   typedef itk::CudaImage<float, 2>         ProjectionImageType;
   typedef ProjectionImageType::Pointer     ProjectionImagePointer;
 
@@ -81,6 +82,10 @@ private:
 };
 
 } // end namespace rtk
+
+#ifndef ITK_MANUAL_INSTANTIATION
+#include "rtkCudaBackProjectionImageFilter.hxx"
+#endif
 
 #endif //end conditional definition of the class
 

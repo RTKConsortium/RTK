@@ -32,6 +32,8 @@ namespace rtk
    * must be equal to vector's size.
    *
    * \author Cyril Mory
+ *
+ * \ingroup RTK
    *
    */
 template< class TInputImage>
@@ -57,7 +59,11 @@ protected:
     virtual ~MultiplyByVectorImageFilter() ITK_OVERRIDE {}
 
     /** Does the real work. */
+#if ITK_VERSION_MAJOR<5
     void ThreadedGenerateData(const typename TInputImage::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) ITK_OVERRIDE;
+#else
+    void DynamicThreadedGenerateData(const typename TInputImage::RegionType& outputRegionForThread) ITK_OVERRIDE;
+#endif
 
 private:
     MultiplyByVectorImageFilter(const Self &); //purposely not implemented

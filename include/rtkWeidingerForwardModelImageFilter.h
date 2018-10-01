@@ -21,6 +21,10 @@
 #include "itkImageToImageFilter.h"
 #include "rtkMacro.h"
 
+#ifdef RTK_USE_CUDA
+  #include <itkCudaImage.h>
+#endif
+
 namespace rtk
 {
   /** \class WeidingerForwardModelImageFilter
@@ -30,6 +34,8 @@ namespace rtk
    * back projection in Weidinger2016
    *
    * \author Cyril Mory
+ *
+ * \ingroup RTK
    *
    */
 template< class TMaterialProjections,
@@ -53,7 +59,6 @@ public:
     /** Convenient parameters extracted from template types */
     itkStaticConstMacro(nBins, unsigned int, TPhotonCounts::PixelType::Dimension);
     itkStaticConstMacro(nMaterials, unsigned int, TMaterialProjections::PixelType::Dimension);
-    itkStaticConstMacro(nEnergies, unsigned int, TSpectrum::PixelType::Dimension);
 
     /** Convenient typedef */
     typedef typename TMaterialProjections::PixelType::ValueType dataType;
@@ -64,7 +69,11 @@ public:
     to allow vector back projection */
     typedef TMaterialProjections TOutputImage1;
     typedef itk::Vector<dataType, nMaterials * nMaterials> TPixelOutput2;
+#ifdef RTK_USE_CUDA
+    typedef itk::CudaImage<TPixelOutput2, TMaterialProjections::ImageDimension > TOutputImage2;
+#else
     typedef itk::Image<TPixelOutput2, TMaterialProjections::ImageDimension > TOutputImage2;
+#endif
 
     /** Define the getters for the outputs, with correct types */
     TOutputImage1* GetOutput1();
@@ -77,8 +86,8 @@ public:
     void SetInputProjectionsOfOnes(const TProjections* projectionsOfOnes);
 
     /** Typedefs for additional input information */
-    typedef itk::Matrix<dataType, nBins, nEnergies>       BinnedDetectorResponseType;
-    typedef itk::Matrix<dataType, nEnergies, nMaterials>  MaterialAttenuationsType;
+    typedef vnl_matrix<dataType>    BinnedDetectorResponseType;
+    typedef vnl_matrix<dataType>    MaterialAttenuationsType;
 
     /** Set and Get macros for the additional input information */
     itkGetConstReferenceMacro(BinnedDetectorResponse, BinnedDetectorResponseType)
@@ -91,9 +100,14 @@ protected:
     ~WeidingerForwardModelImageFilter() {}
 
     void GenerateInputRequestedRegion() ITK_OVERRIDE;
+    void VerifyInputInformation() ITK_OVERRIDE {}
 
     /** Does the real work. */
+#if ITK_VERSION_MAJOR<5
     void ThreadedGenerateData(const typename TOutputImage1::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) ITK_OVERRIDE;
+#else
+    void DynamicThreadedGenerateData(const typename TOutputImage1::RegionType& outputRegionForThread) ITK_OVERRIDE;
+#endif
 
     /** Creates the Outputs */
     itk::DataObject::Pointer MakeOutput(unsigned int idx);

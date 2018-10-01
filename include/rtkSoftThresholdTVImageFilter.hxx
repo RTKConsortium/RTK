@@ -35,21 +35,26 @@ template< typename TInputImage, typename TRealType, typename TOutputImage >
 SoftThresholdTVImageFilter< TInputImage, TRealType, TOutputImage >
 ::SoftThresholdTVImageFilter()
 {
-    m_RequestedNumberOfThreads = this->GetNumberOfThreads();
-    m_Threshold = 0;
+#if ITK_VERSION_MAJOR<5
+  m_RequestedNumberOfThreads = this->GetNumberOfThreads();
+#else
+  m_RequestedNumberOfThreads = this->GetNumberOfWorkUnits();
+#endif
+  m_Threshold = 0;
 }
 
 template< typename TInputImage, typename TRealType, typename TOutputImage >
 void
 SoftThresholdTVImageFilter< TInputImage, TRealType, TOutputImage >
+#if ITK_VERSION_MAJOR<5
 ::ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread,
-                       ThreadIdType threadId)
+                       ThreadIdType itkNotUsed(threadId))
+#else
+::DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread)
+#endif
 {
     itk::ImageRegionConstIterator< TInputImage >                     InputIt;
     itk::ImageRegionIterator< TOutputImage >                     OutputIt;
-
-    // Support progress methods/callbacks
-    itk::ProgressReporter progress( this, threadId, outputRegionForThread.GetNumberOfPixels() );
 
     InputIt = itk::ImageRegionConstIterator< TInputImage >(this->GetInput(), outputRegionForThread);
     OutputIt = itk::ImageRegionIterator< TOutputImage >(this->GetOutput(), outputRegionForThread);
@@ -72,7 +77,6 @@ SoftThresholdTVImageFilter< TInputImage, TRealType, TOutputImage >
         OutputIt.Set( ratio * InputIt.Get());
         ++InputIt;
         ++OutputIt;
-        progress.CompletedPixel();
     }
 }
 

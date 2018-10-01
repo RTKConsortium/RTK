@@ -26,8 +26,8 @@
   Copyright (c) 2004 Insight Software Consortium. All rights reserved.
   See ITKCopyright.txt or http://www.itk.org/HTML/Copyright.htm for details.
 
-     This software is distributed WITHOUT ANY WARRANTY; without even 
-     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
+     This software is distributed WITHOUT ANY WARRANTY; without even
+     the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
      PURPOSE.  See the above copyright notices for more information.
 
 =========================================================================*/
@@ -48,6 +48,8 @@ namespace rtk
 * \brief Pixel functor that adds Gaussian noise.
 *
 * \author Gavin Baker: gavinb at cs_mu_oz_au
+*
+* \ingroup RTK
 */
 template < class TPixel >
 class NormalVariateNoiseFunctor
@@ -88,7 +90,7 @@ public:
   {
     m_Generator->Initialize( seed );
   }
-  
+
   void SetOutputMinimum( TPixel min ) {
     m_OutputMinimum = min;
   }
@@ -149,7 +151,7 @@ private:
  *
  * \author Gavin Baker: gavinb at cs_mu_oz_au
  *
- * \ingroup ImageToImageFilter
+ * \ingroup RTK ImageToImageFilter
  */
 template <class TInputImage >
 class ITK_EXPORT AdditiveGaussianNoiseImageFilter :
@@ -163,7 +165,7 @@ public:
   typedef itk::SmartPointer<const Self>                     ConstPointer;
 
   /** Method for creation through the object factory */
-  itkNewMacro(Self);  
+  itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(AdditiveGaussianNoiseImageFilter, ImageToImageFilter);
@@ -260,7 +262,7 @@ public:
   /** Set the maximum output value. */
   void SetOutputMaximum( InputImagePixelType max )
   {
-    if( max == m_NoiseFilter->GetFunctor().GetOutputMaximum() ) 
+    if( max == m_NoiseFilter->GetFunctor().GetOutputMaximum() )
       {
       return;
       }

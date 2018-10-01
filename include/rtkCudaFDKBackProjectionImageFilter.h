@@ -41,7 +41,7 @@ namespace rtk
  *
  * \author Simon Rit
  *
- * \ingroup Projector CudaImageToImageFilter
+ * \ingroup RTK Projector CudaImageToImageFilter
  */
 class RTK_EXPORT CudaFDKBackProjectionImageFilter :
   public itk::CudaInPlaceImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>,

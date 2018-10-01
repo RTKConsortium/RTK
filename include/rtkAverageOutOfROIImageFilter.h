@@ -43,6 +43,8 @@ namespace rtk
    * \test rtkfourdroostertest.cxx
    *
    * \author Cyril Mory
+ *
+ * \ingroup RTK
    *
    */
 template< class TInputImage,

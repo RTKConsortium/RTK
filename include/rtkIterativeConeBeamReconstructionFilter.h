@@ -21,9 +21,9 @@
 
 // Forward projection filters
 #include "rtkConfiguration.h"
-#include "rtkJosephForwardProjectionImageFilter.h"
+#include "rtkJosephForwardAttenuatedProjectionImageFilter.h"
 // Back projection filters
-#include "rtkJosephBackProjectionImageFilter.h"
+#include "rtkJosephBackAttenuatedProjectionImageFilter.h"
 
 #ifdef RTK_USE_CUDA
   #include "rtkCudaForwardProjectionImageFilter.h"
@@ -44,9 +44,10 @@ namespace rtk
  *
  * \author Cyril Mory
  *
- * \ingroup ReconstructionAlgorithm
+ * \ingroup RTK ReconstructionAlgorithm
  */
-template<class TOutputImage, class ProjectionStackType=TOutputImage> //Most of the time, TOutputImage is 3D, so it's fine to use only TOutputImage
+template<class TOutputImage,
+         class ProjectionStackType=TOutputImage>
 class ITK_EXPORT IterativeConeBeamReconstructionFilter :
   public itk::ImageToImageFilter<TOutputImage, TOutputImage>
 {
@@ -58,15 +59,23 @@ public:
   typedef itk::SmartPointer<const Self>                       ConstPointer;
 
   /** Convenient typedefs */
-  typedef ProjectionStackType                                                     VolumeType;
-  typedef enum {FP_UNKNOWN=-1, FP_JOSEPH=0, FP_CUDARAYCAST=2}                                    ForwardProjectionType;
-  typedef enum {BP_UNKNOWN=-1, BP_VOXELBASED=0,BP_JOSEPH=1,BP_CUDAVOXELBASED=2,BP_CUDARAYCAST=4} BackProjectionType;
+  typedef ProjectionStackType          VolumeType;
+  typedef enum {FP_UNKNOWN=-1,
+                FP_JOSEPH=0,
+                FP_CUDARAYCAST=2,
+                FP_JOSEPHATTENUATED=3} ForwardProjectionType;
+  typedef enum {BP_UNKNOWN=-1,
+                BP_VOXELBASED=0,
+                BP_JOSEPH=1,
+                BP_CUDAVOXELBASED=2,
+                BP_CUDARAYCAST=4,
+                BP_JOSEPHATTENUATED=5} BackProjectionType;
 
   /** Typedefs of each subfilter of this composite filter */
-  typedef rtk::ForwardProjectionImageFilter< VolumeType, ProjectionStackType >  ForwardProjectionFilterType;
-  typedef rtk::BackProjectionImageFilter< ProjectionStackType, VolumeType >     BackProjectionFilterType;
-  typedef typename ForwardProjectionFilterType::Pointer                         ForwardProjectionPointerType;
-  typedef typename BackProjectionFilterType::Pointer                            BackProjectionPointerType;
+  typedef rtk::ForwardProjectionImageFilter< VolumeType, ProjectionStackType >    ForwardProjectionFilterType;
+  typedef rtk::BackProjectionImageFilter< ProjectionStackType, VolumeType >       BackProjectionFilterType;
+  typedef typename ForwardProjectionFilterType::Pointer                           ForwardProjectionPointerType;
+  typedef typename BackProjectionFilterType::Pointer                              BackProjectionPointerType;
 
   /** Standard New method. */
   itkNewMacro(Self)

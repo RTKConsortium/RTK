@@ -55,10 +55,10 @@ ImagXGeometryReader<TInputImage>::GetGeometryForAI2p1()
   itk::DOMNodeXMLReader::Pointer readerXML = itk::DOMNodeXMLReader::New();
   readerXML->SetFileName(m_CalibrationXMLFileName);
   readerXML->Update();
-  itk::DOMNode::Pointer XMLFile = readerXML->GetOutput();
+  const itk::DOMNodeXMLReader::OutputType* XMLFile = readerXML->GetOutput();
 
   itk::DOMNode::AttributesListType::const_iterator list_it;
-  itk::DOMNode::ChildrenListType list_child;
+  itk::DOMNode::ConstChildrenListType list_child;
   XMLFile->GetAllChildren(list_child);
 
   bool arcFound = false;
@@ -169,7 +169,7 @@ ImagXGeometryReader<TInputImage>::GetGeometryForAI2p1()
       {
       if (list_child[i]->GetName() == "geometricalCalibrationModels")
         {
-        itk::DOMNode::ChildrenListType list_geocals;
+        itk::DOMNode::ConstChildrenListType list_geocals;
         list_child[i]->GetAllChildren(list_geocals);
 
         for (unsigned int gid = 0; gid < list_geocals.size(); gid++)
@@ -190,12 +190,12 @@ ImagXGeometryReader<TInputImage>::GetGeometryForAI2p1()
 
           if (flexmapFoundAndLoaded)
             {
-            itk::DOMNode::ChildrenListType list_flexmap;
+            itk::DOMNode::ConstChildrenListType list_flexmap;
             list_geocals[gid]->GetAllChildren(list_flexmap);
 
             for (unsigned int flist_id = 0; flist_id < list_flexmap.size(); flist_id++)
               {
-              std::string str = dynamic_cast<itk::DOMTextNode*>(list_flexmap[flist_id])->GetText();
+              std::string str = dynamic_cast<const itk::DOMTextNode*>(list_flexmap[flist_id])->GetText();
               std::stringstream iss(str);
               std::vector<float> v;
               while (iss.good() )
@@ -338,11 +338,11 @@ ImagXGeometryReader<TInputImage>::GetGeometryForAI1p5FromXMLFiles()
   itk::DOMNodeXMLReader::Pointer readerXML = itk::DOMNodeXMLReader::New();
   readerXML->SetFileName(m_CalibrationXMLFileName);
   readerXML->Update();
-  itk::DOMNode::Pointer XMLFile = readerXML->GetOutput();
+  const itk::DOMNodeXMLReader::OutputType* XMLFile = readerXML->GetOutput();
 
   itk::DOMNode::AttributesListType list;
   itk::DOMNode::AttributesListType::const_iterator list_it;
-  itk::DOMNode::ChildrenListType list_child;
+  itk::DOMNode::ConstChildrenListType list_child;
   XMLFile->GetAllChildren(list_child);
 
   for (unsigned int i = 0; i < list_child.size(); i++)
@@ -358,11 +358,11 @@ ImagXGeometryReader<TInputImage>::GetGeometryForAI1p5FromXMLFiles()
     // If cbct axis then extract deformation model parameters
     if (axisName == std::string("CBCT") )
       {
-      itk::DOMNode::ChildrenListType list_child2;
+      itk::DOMNode::ConstChildrenListType list_child2;
       list_child[i]->GetAllChildren(list_child2);
       for (unsigned int l = 0; l < list_child2.size(); l++)
         {
-        itk::DOMNode::ChildrenListType list_child3;
+        itk::DOMNode::ConstChildrenListType list_child3;
         list_child2[l]->GetAllChildren(list_child3);
         unsigned int p = 0;
         for (unsigned int n = 0; n < list_child3.size(); n++, p++)
@@ -427,7 +427,7 @@ ImagXGeometryReader<TInputImage>::GetGeometryForAI1p5FromXMLFiles()
     // If cbct axis then extract sdd and sid parameters
     if (axisName == std::string("CBCT") )
       {
-      itk::DOMNode::ChildrenListType list_child2;
+      itk::DOMNode::ConstChildrenListType list_child2;
       list_child[i]->GetAllChildren(list_child2);
       for (unsigned int l = 0; l < list_child2.size(); l++)
         {

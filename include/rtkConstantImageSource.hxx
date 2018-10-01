@@ -25,7 +25,6 @@
 
 namespace rtk
 {
-
 template <class TOutputImage>
 ConstantImageSource<TOutputImage>
 ::ConstantImageSource()
@@ -42,7 +41,7 @@ ConstantImageSource<TOutputImage>
       m_Direction[i][j] = (i==j)?1.:0.;
     }
 
-  m_Constant = 0.;
+  m_Constant = itk::NumericTraits<OutputImagePixelType>::ZeroValue(m_Constant);
 }
 
 template <class TOutputImage>
@@ -115,10 +114,22 @@ ConstantImageSource<TOutputImage>
   os << m_Size[i] << "]" << std::endl;
 }
 
+//template <class TOutputImage>
+//void
+//ConstantImageSource<TOutputImage>
+//::SetInformationFromImage(const typename TOutputImage::Superclass* image)
+//{
+//  this->SetSize( image->GetLargestPossibleRegion().GetSize() );
+//  this->SetIndex( image->GetLargestPossibleRegion().GetIndex() );
+//  this->SetSpacing( image->GetSpacing() );
+//  this->SetOrigin( image->GetOrigin() );
+//  this->SetDirection( image->GetDirection() );
+//}
+
 template <class TOutputImage>
 void
 ConstantImageSource<TOutputImage>
-::SetInformationFromImage(const typename TOutputImage::Superclass* image)
+::SetInformationFromImage(const itk::ImageBase<TOutputImage::ImageDimension>* image)
 {
   this->SetSize( image->GetLargestPossibleRegion().GetSize() );
   this->SetIndex( image->GetLargestPossibleRegion().GetIndex() );
@@ -128,7 +139,7 @@ ConstantImageSource<TOutputImage>
 }
 
 //----------------------------------------------------------------------------
-template <typename TOutputImage>
+template <class TOutputImage>
 void 
 ConstantImageSource<TOutputImage>
 ::GenerateOutputInformation()
@@ -147,14 +158,20 @@ ConstantImageSource<TOutputImage>
 }
 
 //----------------------------------------------------------------------------
-template <typename TOutputImage>
+template <class TOutputImage>
 void 
 ConstantImageSource<TOutputImage>
+#if ITK_VERSION_MAJOR<5
 ::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType itkNotUsed(threadId) )
+#else
+::DynamicThreadedGenerateData(const OutputImageRegionType& outputRegionForThread)
+#endif
 {
   itk::ImageRegionIterator<TOutputImage> it(this->GetOutput(), outputRegionForThread);
+
+  // Write the constant everywhere in the image
   for (; !it.IsAtEnd(); ++it)
-    it.Set( this->GetConstant() );
+    it.Set(m_Constant);
 }
 
 } // end namespace rtk

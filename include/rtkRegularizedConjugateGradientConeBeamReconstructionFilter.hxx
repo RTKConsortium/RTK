@@ -29,6 +29,7 @@ RegularizedConjugateGradientConeBeamReconstructionFilter<TImage>::RegularizedCon
   // Set the default values of member parameters
   m_GammaTV = 0.00005;
   m_Gamma = 0; // Laplacian regularization
+  m_Tikhonov = 0; // Tikhonov regularization
   m_SoftThresholdWavelets = 0.001;
   m_SoftThresholdOnImage = 0.001;
   m_Preconditioned = false;
@@ -186,9 +187,9 @@ RegularizedConjugateGradientConeBeamReconstructionFilter<TImage>
   m_CGFilter->SetGeometry(this->m_Geometry);
   m_CGFilter->SetNumberOfIterations(this->m_CG_iterations);
   m_CGFilter->SetCudaConjugateGradient(this->GetCudaConjugateGradient());
-  m_CGFilter->SetRegularized(this->m_RegularizedCG);
   m_CGFilter->SetGamma(this->m_Gamma);
-  m_CGFilter->SetIterationCosts(m_IterationCosts);
+  m_CGFilter->SetTikhonov(this->m_Tikhonov);
+//  m_CGFilter->SetIterationCosts(m_IterationCosts);
   m_CGFilter->SetDisableDisplacedDetectorFilter(m_DisableDisplacedDetectorFilter);
 
   currentDownstreamFilter = m_CGFilter;
@@ -196,7 +197,7 @@ RegularizedConjugateGradientConeBeamReconstructionFilter<TImage>
   // Plug the positivity filter if requested
   if (m_PerformPositivity)
     {
-    m_PositivityFilter->SetInPlace(true);
+    m_PositivityFilter->SetInPlace(false);
 
     m_PositivityFilter->SetOutsideValue(0.0);
     m_PositivityFilter->ThresholdBelow(0.0);
@@ -219,8 +220,6 @@ RegularizedConjugateGradientConeBeamReconstructionFilter<TImage>
 
   if (m_PerformWaveletsSpatialDenoising)
     {
-    currentDownstreamFilter->ReleaseDataFlagOn();
-
     m_WaveletsDenoising->SetInput(currentDownstreamFilter->GetOutput());
     m_WaveletsDenoising->SetOrder(m_Order);
     m_WaveletsDenoising->SetThreshold(m_SoftThresholdWavelets);

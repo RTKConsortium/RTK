@@ -2270,8 +2270,8 @@ STATIC void mat_multcol(MATrec *mat, int col_nr, REAL mult, MYBOOL DoObj)
 STATIC void mat_multadd(MATrec *mat, REAL *lhsvector, int varnr, REAL mult)
 {
   int               colnr;
-  register int      ib, ie, *matRownr;
-  register REAL     *matValue;
+  int      ib, ie, *matRownr;
+  REAL     *matValue;
 
   /* Handle case of a slack variable */
   if(varnr <= mat->lp->rows) {
@@ -3414,11 +3414,11 @@ STATIC int prod_xA(lprec *lp, int *coltarget,
   int      colnr, rownr, varnr, ib, ie, vb, ve, nrows = lp->rows;
   MYBOOL   localset, localnz = FALSE, includeOF, isRC;
   REALXP   vmax;
-  register REALXP v;
+  REALXP v;
   int      inz, *rowin, countNZ = 0;
   MATrec   *mat = lp->matA;
-  register REAL     *matValue;
-  register int      *matRownr;
+  REAL     *matValue;
+  int      *matRownr;
 
   /* Clean output area (only necessary if we are returning the full vector) */
   isRC = (MYBOOL) ((roundmode & MAT_ROUNDRC) != 0);
@@ -3633,11 +3633,11 @@ STATIC MYBOOL prod_xA2(lprec *lp, int *coltarget,
   int      varnr, colnr, ib, ie, vb, ve, nrows = lp->rows;
   MYBOOL   includeOF, isRC;
   REALXP   dmax, pmax;
-  register REALXP d, p;
+  REALXP d, p;
   MATrec   *mat = lp->matA;
   REAL     value;
-  register REAL     *matValue;
-  register int      *matRownr;
+  REAL     *matValue;
+  int      *matRownr;
   MYBOOL localset;
 
   /* Find what variable range to scan - default is {SCAN_USERVARS} */

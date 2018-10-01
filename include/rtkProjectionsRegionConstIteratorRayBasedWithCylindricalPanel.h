@@ -24,7 +24,12 @@
 namespace rtk
 {
 /** \class ProjectionsRegionConstIteratorRayBasedWithCylindricalPanel
+ *
  * \brief Implements a ray-based iterator for a point source and a cylindrical panel
+ *
+ * \author Simon Rit
+ *
+ * \ingroup RTK
  */
 template< typename TImage >
 class ProjectionsRegionConstIteratorRayBasedWithCylindricalPanel:
@@ -55,7 +60,7 @@ public:
    * coordinates to voxel indices in an itk Image. */
   ProjectionsRegionConstIteratorRayBasedWithCylindricalPanel(const TImage *ptr,
                                                              const RegionType & region,
-                                                             ThreeDCircularProjectionGeometry *geometry,
+                                                             const ThreeDCircularProjectionGeometry *geometry,
                                                              const MatrixType &postMat);
 
 protected:

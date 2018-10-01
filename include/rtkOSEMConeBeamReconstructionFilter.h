@@ -106,7 +106,7 @@ namespace rtk
  *
  * \author Antoine Robert
  *
- * \ingroup ReconstructionAlgorithm
+ * \ingroup RTK ReconstructionAlgorithm
  */
 template<class TVolumeImage, class TProjectionImage=TVolumeImage>
 class ITK_EXPORT OSEMConeBeamReconstructionFilter :

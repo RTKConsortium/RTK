@@ -49,7 +49,7 @@ RayBoxIntersectionImageFilter<TInputImage, TOutputImage>
 
   Superclass::BeforeThreadedGenerateData();
 
-  BoxShape * qo = dynamic_cast< BoxShape * >( this->GetConvexShape() );
+  BoxShape * qo = dynamic_cast< BoxShape * >( this->GetModifiableConvexShape() );
   if( qo == ITK_NULLPTR )
     {
     itkExceptionMacro("This is not a BoxShape!");
@@ -77,7 +77,7 @@ RayBoxIntersectionImageFilter<TInputImage,TOutputImage>
 {
   if( this->GetConvexShape() == ITK_NULLPTR )
     this->SetConvexShape( BoxShape::New().GetPointer() );
-  BoxShape * qo = dynamic_cast< BoxShape * >( this->GetConvexShape() );
+  BoxShape * qo = dynamic_cast< BoxShape * >( this->GetModifiableConvexShape() );
   if( qo == ITK_NULLPTR )
     {
     itkExceptionMacro("This is not a BoxShape!");

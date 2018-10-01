@@ -42,7 +42,7 @@ namespace rtk
  *
  * \author Simon Rit
  *
- * \ingroup Projector
+ * \ingroup RTK Projector
  */
 template <class TInputImage, class TOutputImage, class TDeformation>
 class ITK_EXPORT FDKWarpBackProjectionImageFilter :
@@ -77,7 +77,7 @@ public:
   itkSetObjectMacro(Deformation, DeformationType);
 
 protected:
-  FDKWarpBackProjectionImageFilter():m_DeformationUpdateError(false) {};
+  FDKWarpBackProjectionImageFilter();
   virtual ~FDKWarpBackProjectionImageFilter() ITK_OVERRIDE {}
 
   void BeforeThreadedGenerateData() ITK_OVERRIDE;

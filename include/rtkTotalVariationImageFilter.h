@@ -41,8 +41,8 @@ namespace rtk
  * The filter passes its input through unmodified. The filter is
  * threaded.
  *
- * \ingroup MathematicalStatisticsImageFilters
- * \ingroup ITKImageStatistics
+ * \ingroup RTK MathematicalStatisticsImageFilters
+ * \ingroup RTK ITKImageStatistics
  *
  */
 

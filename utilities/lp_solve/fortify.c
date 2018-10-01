@@ -1374,7 +1374,7 @@ static void MakeHeaderValid(struct Header *h)
  */
 static int ChecksumHeader(struct Header *h)
 {
-	register int c, checksum, *p;
+	int c, checksum, *p;
 
 	for(c = 0, checksum = 0, p = (int *)h; c < sizeof(struct Header)/sizeof(int); c++)
 		checksum += *p++;
