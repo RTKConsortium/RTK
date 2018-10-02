@@ -230,6 +230,10 @@ configure_file(cmake/RTKConfigVersion.cmake.in RTKConfigVersion.cmake @ONLY)
 # Configure and build ITK external module
 #=========================================================
 if(NOT ITK_SOURCE_DIR)
+  if(NOT EXISTS ${ITK_CMAKE_DIR}/ITKModuleMacros.cmake)
+    message(FATAL_ERROR "Modules can only be built against an ITK build tree; they cannot be built against an ITK install tree.")
+  endif()
+
   list(APPEND CMAKE_MODULE_PATH ${ITK_CMAKE_DIR})
   include(ITKModuleExternal)
 else()
