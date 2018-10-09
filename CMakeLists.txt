@@ -240,12 +240,6 @@ else()
   itk_module_impl()
 endif()
 
-#-----------------------------------------------------------------------------
-# The subdirectories added below this line should use only the public
-# interface with find_package(ITK). Set ITK_DIR to use this ITK build.
-if(ITK_SOURCE_DIR)
-  set(ITK_DIR "${ITK_BINARY_DIR}")
-endif()
 #=========================================================
 # Build applications
 #=========================================================
