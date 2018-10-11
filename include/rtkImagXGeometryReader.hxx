@@ -543,7 +543,7 @@ void ImagXGeometryReader<TInputImage>::GenerateData()
     else if (isImagX2pX) // Using flexmap
       {
       float cbctTubeAngle = std::atof(value.c_str() );
-      float gantryAngle = cbctTubeAngle + flex.sourceToNozzleOffsetAngle;
+	  float gantryAngle = cbctTubeAngle; // Warning: no correction by sourceToNozzleOffsetAngle as radiographic angle read
       gantryAngle = (gantryAngle > 180.f) ? (gantryAngle - 360.f) : gantryAngle;
       gantryAngle = (gantryAngle < -180.f) ? (gantryAngle + 360.f) : gantryAngle;
       addEntryToGeometry(flex, gantryAngle);
