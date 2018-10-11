@@ -39,7 +39,7 @@ rtk::MatlabSparseMatrix::MatlabSparseMatrix(const vnl_sparse_matrix<double>& spa
     unsigned int indexColumn = idx[0] + idx[2]*output->GetLargestPossibleRegion().GetSize()[2];
     sparseMatrixColumn::iterator it = columnsVector[indexColumn].begin();
     while (it != columnsVector[indexColumn].end()) {
-      if (sparseMatrix.getrow() < it->first)
+      if ((unsigned int)sparseMatrix.getrow() < it->first)
         break;
       ++it;
     }
