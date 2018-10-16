@@ -55,6 +55,9 @@ NesterovUpdateImageFilter<TImage>::ResetIterations()
 
   // Precompute enough Nesterov coefficients for the expected
   // number of iterations
+  m_tCoeffs.clear();
+  m_Sums.clear();
+  m_Ratios.clear();
   m_tCoeffs.push_back(1.0);
   m_Sums.push_back(0.0);
   m_Ratios.push_back(0.0);
