@@ -21,7 +21,7 @@
 #include "rtkBlockDiagonalMatrixVectorMultiplyImageFilter.h"
 #include "itkImageRegionIteratorWithIndex.h"
 #include "itkImageRegionIterator.h"
-#include "vnl_inverse.h"
+#include "vnl/vnl_inverse.h"
 
 namespace rtk
 {
