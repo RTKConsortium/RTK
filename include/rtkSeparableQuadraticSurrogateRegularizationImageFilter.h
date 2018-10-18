@@ -68,7 +68,7 @@ protected:
   virtual ~SeparableQuadraticSurrogateRegularizationImageFilter() ITK_OVERRIDE {}
 
   /** Creates the Outputs */
-  itk::DataObject::Pointer MakeOutput(unsigned int idx);
+  itk::DataObject::Pointer MakeOutput(unsigned int idx) override;
 
   /** Does the real work. */
 #if ITK_VERSION_MAJOR<5

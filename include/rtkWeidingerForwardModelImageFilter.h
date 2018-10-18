@@ -110,7 +110,7 @@ protected:
 #endif
 
     /** Creates the Outputs */
-    itk::DataObject::Pointer MakeOutput(unsigned int idx);
+    itk::DataObject::Pointer MakeOutput(unsigned int idx) override;
 
     /** Getters for the inputs */
     typename TMaterialProjections::ConstPointer GetInputMaterialProjections();

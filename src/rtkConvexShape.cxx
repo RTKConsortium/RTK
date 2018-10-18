@@ -29,7 +29,7 @@ ConvexShape
 
 bool
 ConvexShape
-::IsInside(const PointType& point) const
+::IsInside(const PointType& /*point*/) const
 {
   itkExceptionMacro(<< "This method should have been reimplemented in base classe");
   return false;
@@ -37,10 +37,10 @@ ConvexShape
 
 bool
 ConvexShape
-::IsIntersectedByRay(const PointType & rayOrigin,
-                     const VectorType & rayDirection,
-                     ScalarType & nearDist,
-                     ScalarType & farDist) const
+::IsIntersectedByRay(const PointType & /*rayOrigin*/,
+                     const VectorType & /*rayDirection*/,
+                     ScalarType & /*nearDist*/,
+                     ScalarType & /*farDist*/) const
 {
   itkExceptionMacro(<< "This method should have been reimplemented in base classe");
   return false;

@@ -73,7 +73,7 @@ RayBoxIntersectionImageFilter<TInputImage, TOutputImage>
 template <class TInputImage, class TOutputImage>
 void
 RayBoxIntersectionImageFilter<TInputImage,TOutputImage>
-::SetBoxFromImage(const ImageBaseType *_arg, bool bWithExternalHalfPixelBorder )
+::SetBoxFromImage(const ImageBaseType *_arg, bool /*bWithExternalHalfPixelBorder*/ )
 {
   if( this->GetConvexShape() == ITK_NULLPTR )
     this->SetConvexShape( BoxShape::New().GetPointer() );
