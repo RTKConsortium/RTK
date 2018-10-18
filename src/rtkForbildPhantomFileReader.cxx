@@ -277,14 +277,14 @@ ForbildPhantomFileReader
 
 void
 ForbildPhantomFileReader
-::CreateForbildCone(const std::string &s, const std::string &fig)
+::CreateForbildCone(const std::string & /*s*/, const std::string & /*fig*/)
 {
   itkExceptionMacro(<< "Cones have not been implemented (yet).");
 }
 
 void
 ForbildPhantomFileReader
-::CreateForbildTetrahedron(const std::string &s)
+::CreateForbildTetrahedron(const std::string & /*s*/)
 {
 }
 

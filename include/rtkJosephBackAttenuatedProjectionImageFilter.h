@@ -41,10 +41,7 @@ class InterpolationWeightMultiplicationAttenuatedBackProjection
 public:
   InterpolationWeightMultiplicationAttenuatedBackProjection()
   {
-    for (int i = 0; i < ITK_MAX_THREADS; i++)
-      {
-      m_AttenuationPixel = 0;
-      }
+    m_AttenuationPixel = 0;
   }
 
   ~InterpolationWeightMultiplicationAttenuatedBackProjection() {}

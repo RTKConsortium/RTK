@@ -46,7 +46,7 @@ SeparableQuadraticSurrogateRegularizationImageFilter<TImage>
 template<typename TImage>
 itk::DataObject::Pointer
 SeparableQuadraticSurrogateRegularizationImageFilter<TImage>
-::MakeOutput(unsigned int idx)
+::MakeOutput(itk::ProcessObject::DataObjectPointerArraySizeType idx)
 {
   itk::DataObject::Pointer output;
 

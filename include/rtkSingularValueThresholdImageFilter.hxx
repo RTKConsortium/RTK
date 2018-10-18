@@ -57,7 +57,7 @@ template< typename TInputImage, typename TRealType, typename TOutputImage >
 void
 SingularValueThresholdImageFilter< TInputImage, TRealType, TOutputImage >
 ::ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread,
-                       itk::ThreadIdType threadId)
+                       itk::ThreadIdType /*threadId*/)
 {
   // Walks the first frame of the outputRegionForThread
   // For each voxel, creates an input iterator that walks

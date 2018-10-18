@@ -45,7 +45,7 @@ class InterpolationWeightMultiplicationAttenuated
 public:
   InterpolationWeightMultiplicationAttenuated()
   {
-    for (int i = 0; i < ITK_MAX_THREADS; i++)
+    for (std::size_t i = 0; i < ITK_MAX_THREADS; i++)
       {
       m_AttenuationRay[i] = 0;
       m_AttenuationPixel[i] = 0;
@@ -173,7 +173,7 @@ public:
                           const TInput &input,
                           TOutput &output,
                           const TOutput &rayCastValue,
-                          const VectorType &stepInMM,
+                          const VectorType & /*stepInMM*/,
                           const VectorType &itkNotUsed(source),
                           const VectorType &itkNotUsed(sourceToPixel),
                           const VectorType &itkNotUsed(nearestPoint),

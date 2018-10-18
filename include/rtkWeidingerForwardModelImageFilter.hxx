@@ -110,7 +110,7 @@ WeidingerForwardModelImageFilter< TMaterialProjections, TPhotonCounts, TSpectrum
 template< class TMaterialProjections, class TPhotonCounts, class TSpectrum, class TProjections>
 itk::DataObject::Pointer
 WeidingerForwardModelImageFilter< TMaterialProjections, TPhotonCounts, TSpectrum, TProjections>
-::MakeOutput(unsigned int idx)
+::MakeOutput(itk::ProcessObject::DataObjectPointerArraySizeType idx)
 {
   itk::DataObject::Pointer output;
 
