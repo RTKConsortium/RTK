@@ -1,14 +1,22 @@
 if(RTK_USE_CUDA)
 
-  #-----------------------------------------------------------------------------
-  # itk::CudaImage : CI
-  #-----------------------------------------------------------------------------
   itk_wrap_class("itk::CudaImage" POINTER_WITH_CONST_POINTER)
     foreach(t ${WRAP_ITK_REAL})
       foreach(d ${ITK_WRAP_IMAGE_DIMS})
         itk_wrap_template("${ITKM_${t}}${d}" "${ITKT_${t}}, ${d}")
       endforeach()
     endforeach()
+
+    list(FIND ITK_WRAP_IMAGE_DIMS "4" _index)
+    if (${_index} EQUAL -1)
+      itk_wrap_template("F4" "${ITKT_F}, 4")
+      itk_wrap_template("CI${ITKM_VF3}4" "itk::Vector<${ITKT_F},3>, 4")
+    endif()
+
+    foreach(nbin ${ITK_WRAP_VECTOR_COMPONENTS})
+      itk_wrap_template("${ITKM_VF${nbin}}3" "itk::Vector<${ITKT_F},${nbin}>, 3")
+    endforeach()
+    itk_wrap_template("${ITKM_CVF3}4" "itk::CovariantVector<${ITKT_F},3>, 4")
   itk_end_wrap_class()
 
 endif()

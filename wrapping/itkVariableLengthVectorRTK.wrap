@@ -1,0 +1,3 @@
+itk_wrap_class("itk::VariableLengthVector")
+  itk_wrap_template("I" "int")
+itk_end_wrap_class()

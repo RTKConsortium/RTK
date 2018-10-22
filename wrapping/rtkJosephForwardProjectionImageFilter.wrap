@@ -1,30 +1,5 @@
-#-----------------------------------------------------------------------------
-# rtk::Functor::InterpolationWeightMultiplication< float, double >
-#-----------------------------------------------------------------------------
-set(WRAPPER_AUTO_INCLUDE_HEADERS OFF)
-itk_wrap_named_class("rtk::Functor::InterpolationWeightMultiplication" "rtkFunctorInterpolationWeightMultiplication")
-  foreach(t ${WRAP_ITK_REAL})
-    itk_wrap_template("${ITKM_${t}}D" "${ITKT_${t}}, double")
-  endforeach()
-itk_end_wrap_class()
-
-#-----------------------------------------------------------------------------
-# rtk::Functor::ProjectedValueAccumulation< float, float >
-#-----------------------------------------------------------------------------
-itk_wrap_named_class("rtk::Functor::ProjectedValueAccumulation" "rtkFunctorProjectedValueAccumulation")
-  foreach(t ${WRAP_ITK_REAL})
-    itk_wrap_template("${ITKM_${t}}${ITKM_${t}}" "${ITKT_${t}}, ${ITKT_${t}}")
-  endforeach()
-itk_end_wrap_class()
-set(WRAPPER_AUTO_INCLUDE_HEADERS ON)
-
-#-----------------------------------------------------------------------------
-# rtk::JosephForwardProjectionImageFilter
-#-----------------------------------------------------------------------------
 itk_wrap_class("rtk::JosephForwardProjectionImageFilter" POINTER)
   foreach(t ${WRAP_ITK_REAL})
-    # WARNING: Only wrapped for TInputImage == TOutputImage
-    itk_wrap_template("I${ITKM_${t}}3I${ITKM_${t}}3IWM${ITKM_${t}}DPVA${ITKM_${t}}${ITKM_${t}}"
-      "itk::Image<${ITKT_${t}}, 3>, itk::Image<${ITKT_${t}}, 3>, rtk::Functor::InterpolationWeightMultiplication< ${ITKT_${t}}, double >, rtk::Functor::ProjectedValueAccumulation< ${ITKT_${t}}, ${ITKT_${t}} >")
+    itk_wrap_template("I${ITKM_${t}}3I${ITKM_${t}}3" "itk::Image<${ITKT_${t}}, 3>, itk::Image<${ITKT_${t}}, 3>")
   endforeach()
 itk_end_wrap_class()

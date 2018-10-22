@@ -1,0 +1,24 @@
+itk_wrap_class("itk::ContinuousIndex")
+
+  # Wrap ITK double missing types
+  if (NOT ITK_WRAP_double)
+    itk_wrap_template("${ITKM_D}1" "${ITKT_D}, 1")
+  endif()
+
+  # Wrap ITK dimension 1 missing types
+  list(FIND ITK_WRAP_IMAGE_DIMS "1" _index)
+  if (${_index} EQUAL -1)
+    if (ITK_WRAP_double)
+      itk_wrap_template("${ITKM_D}1" "double, 1")
+    endif()
+  endif()
+
+itk_end_wrap_class()
+itk_wrap_class("itk::ImageBase" POINTER)
+
+  list(FIND ITK_WRAP_IMAGE_DIMS "1" _index)
+  if (${_index} EQUAL -1)
+    itk_wrap_template("1" "1")
+  endif()
+
+itk_end_wrap_class()

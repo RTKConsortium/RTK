@@ -1,0 +1,82 @@
+itk_wrap_class("itk::ImageToImageFilter" POINTER)
+
+  # Wrap ITK double missing types --
+  if (NOT ITK_WRAP_double)
+    itk_wrap_template("ID1ID1" "itk::Image<${ITKT_D}, 1>, itk::Image<${ITKT_D}, 1>")
+    itk_wrap_template("ID3ID2" "itk::Image<${ITKT_D}, 3>, itk::Image<${ITKT_D}, 2>")
+  endif()
+
+  # Wrap ITK unsigned short missing types
+  if (NOT ITK_WRAP_unsigned_short)
+    itk_wrap_template("IUS2IUS2" "itk::Image<${ITKT_US}, 2>, itk::Image<${ITKT_US}, 2>")
+    itk_wrap_template("IUS3IUS3" "itk::Image<${ITKT_US}, 3>, itk::Image<${ITKT_US}, 3>")
+  endif()
+
+  # Wrap ITK unsigned short combination (required by : rtkLookupTableImageFilter)
+  if (NOT ITK_WRAP_unsigned_short)
+    if (NOT ITK_WRAP_double)
+      itk_wrap_template("IUS3ID3" "itk::Image<${ITKT_US}, 3>, itk::Image<${ITKT_D}, 3>")
+    endif()
+    itk_wrap_template("IUS4IF4" "itk::Image<${ITKT_US}, 4>, itk::Image<${ITKT_F}, 4>")
+    itk_wrap_template("IUS3IF3" "itk::Image<${ITKT_US}, 3>, itk::Image<${ITKT_F}, 3>")
+    itk_wrap_template("IUS2IF2" "itk::Image<${ITKT_US}, 2>, itk::Image<${ITKT_F}, 2>")
+  endif()
+
+  # Wrap ITK short combination (required by : rtkLookupTableImageFilter)
+  if (NOT ITK_WRAP_signed_short)
+    itk_wrap_template("ISS3IF3" "itk::Image<${ITKT_SS}, 3>, itk::Image<${ITKT_F}, 3>")
+  endif()
+
+  # Wrap ITK CovariantVector missing types
+  if (NOT ITK_WRAP_covariant_vector_double)
+    itk_wrap_template("ICVD33ICVD33" "itk::Image<itk::CovariantVector<${ITKT_D}, 3>, 3>, itk::Image<itk::CovariantVector<${ITKT_D}, 3>, 3>")
+  endif()
+
+  # Wrap ITK real type combination
+  itk_wrap_template("IF3ID2" "itk::Image<${ITKT_F}, 3>, itk::Image<${ITKT_D}, 2>")
+
+  # Wrap ITK dimension 1 missing types
+  list(FIND ITK_WRAP_IMAGE_DIMS "1" _index)
+  if (${_index} EQUAL -1)
+    itk_wrap_template("IF1IF1" "itk::Image<${ITKT_F}, 1>, itk::Image<${ITKT_F}, 1>")
+	if (ITK_WRAP_double)
+      itk_wrap_template("ID1ID1" "itk::Image<${ITKT_D}, 1>, itk::Image<${ITKT_D}, 1>")
+    endif()
+  endif()
+
+  # Wrap ITK dimension 4 missing types
+  list(FIND ITK_WRAP_IMAGE_DIMS "4" _index)
+  if (${_index} EQUAL -1)
+    itk_wrap_template("IF4IF3" "itk::Image<${ITKT_F}, 4>, itk::Image<${ITKT_F}, 3>")
+    itk_wrap_template("IF4IF4" "itk::Image<${ITKT_F}, 4>, itk::Image<${ITKT_F}, 4>")
+  endif()
+
+  if(RTK_USE_CUDA)
+    itk_wrap_include(itkCudaImage.h)
+    foreach(d ${ITK_WRAP_IMAGE_DIMS})
+      foreach(t ${WRAP_ITK_REAL})
+        itk_wrap_template("CI${ITKM_${t}}${d}CI${ITKM_${t}}${d}"
+          "itk::CudaImage<${ITKT_${t}}, ${d}>, itk::CudaImage<${ITKT_${t}}, ${d}>")
+      endforeach()
+    endforeach()
+
+    # Wrap ITK dimension 4 missing types
+    list(FIND ITK_WRAP_IMAGE_DIMS "4" _index)
+    if (${_index} EQUAL -1)
+      itk_wrap_template("CIF4CIF4" "itk::CudaImage<${ITKT_F}, 4>, itk::CudaImage<${ITKT_F}, 4>")
+    endif()
+
+    itk_wrap_template("CI${ITKM_VF3}3CI${ITKM_VF3}3" "itk::CudaImage<itk::Vector<${ITKT_F},3>, 3>, itk::CudaImage<itk::Vector<${ITKT_F},3>, 3>")
+  endif()
+  itk_wrap_template("${ITKM_I${ITKM_VF3}4}${ITKM_I${ITKM_VF3}3}" "itk::Image<${ITKT_VF3}, 4>, itk::Image<${ITKT_VF3}, 3>")
+
+  foreach(t ${WRAP_ITK_REAL})
+    itk_wrap_template("I${ITKM_${t}}2I${ITKM_${t}}1" "itk::Image<${ITKT_${t}}, 2>, itk::Image<${ITKT_${t}}, 1>")
+    itk_wrap_template("I${ITKM_${t}}3VI${ITKM_${t}}2" "itk::Image<${ITKT_${t}}, 3>, itk::VectorImage<${ITKT_${t}}, 2>")
+    itk_wrap_template("VI${ITKM_${t}}2I${ITKM_${t}}3" "itk::VectorImage<${ITKT_${t}}, 2>, itk::Image<${ITKT_${t}}, 3>")
+    itk_wrap_template("VI${ITKM_${t}}3I${ITKM_${t}}4" "itk::VectorImage<${ITKT_${t}}, 3>, itk::Image<${ITKT_${t}}, 4>")
+  endforeach()
+
+itk_end_wrap_class()
+
+

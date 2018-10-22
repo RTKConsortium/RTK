@@ -135,7 +135,7 @@ public:
     itkStaticConstMacro(nBins, unsigned int, TPhotonCounts::PixelType::Dimension);
     itkStaticConstMacro(nMaterials, unsigned int, TOutputImage::PixelType::Dimension);
     typedef typename TOutputImage::PixelType::ValueType dataType;
-
+#if !defined( ITK_WRAPPING_PARSER )
 #ifdef RTK_USE_CUDA
     typedef itk::CudaImage< itk::Vector<dataType, nMaterials * nMaterials>, TOutputImage::ImageDimension > THessiansImage;
     typedef itk::CudaImage<dataType, TOutputImage::ImageDimension> TSingleComponentImage;
@@ -145,10 +145,12 @@ public:
 #endif
 
     typedef TOutputImage TGradientsImage;
+#endif
 
     typedef typename Superclass::ForwardProjectionType ForwardProjectionType;
     typedef typename Superclass::BackProjectionType    BackProjectionType;
 
+#if !defined( ITK_WRAPPING_PARSER )
     /** Filter typedefs */
     typedef itk::ExtractImageFilter<TPhotonCounts, TPhotonCounts>                         ExtractPhotonCountsFilterType;
     typedef itk::AddImageFilter<TGradientsImage>                                          AddFilterType;
@@ -169,6 +171,7 @@ public:
 #endif
     typedef rtk::AddMatrixAndDiagonalImageFilter<TGradientsImage, THessiansImage>         AddMatrixAndDiagonalFilterType;
     typedef rtk::GetNewtonUpdateImageFilter<TGradientsImage, THessiansImage>              NewtonFilterType;
+#endif
 
     /** Instantiate the forward projection filters */
     void SetForwardProjectionFilter (ForwardProjectionType _arg) ITK_OVERRIDE;
@@ -214,6 +217,7 @@ protected:
     /** Does the real work. */
     void GenerateData() ITK_OVERRIDE;
 
+#if !defined( ITK_WRAPPING_PARSER )
     /** Member pointers to the filters used internally (for convenience)*/
     typename ExtractPhotonCountsFilterType::Pointer                          m_ExtractPhotonCountsFilter;
     typename AddFilterType::Pointer                                          m_AddGradients;
@@ -231,6 +235,7 @@ protected:
     typename ForwardProjectionFilterType::Pointer                            m_ForwardProjectionFilter;
     typename GradientsBackProjectionFilterType::Pointer                      m_GradientsBackProjectionFilter;
     typename HessiansBackProjectionFilterType::Pointer                       m_HessiansBackProjectionFilter;
+#endif
 
     /** The inputs of this filter have the same type but not the same meaning
     * It is normal that they do not occupy the same physical space. Therefore this check
@@ -247,10 +252,12 @@ protected:
     typename TPhotonCounts::ConstPointer GetInputPhotonCounts();
     typename TSpectrum::ConstPointer GetInputSpectrum();
 
+#if !defined( ITK_WRAPPING_PARSER )
     /** Functions to instantiate forward and back projection filters with a different
      * number of components than the ones provided by the IterativeConeBeamReconstructionFilter class */
     typename SingleComponentForwardProjectionFilterType::Pointer InstantiateSingleComponentForwardProjectionFilter(int fwtype);
     typename HessiansBackProjectionFilterType::Pointer InstantiateHessiansBackProjectionFilter (int bptype);
+#endif
 
     ThreeDCircularProjectionGeometry::ConstPointer m_Geometry;
 
