@@ -5,6 +5,10 @@ ADD_DEFINITIONS(-DVERSION=\"2.22.4\")
 ADD_DEFINITIONS(-DHAVE_SSTREAM)
 ADD_DEFINITIONS(-DHAVE_NAMESPACES)
 
+if(NOT ITK_SOURCE_DIR)
+  list(APPEND CMAKE_MODULE_PATH ${ITK_CMAKE_DIR})
+  include(ITKModuleMacros)
+endif()
 itk_module_warnings_disable(C CXX)
 
 # MSVC specific issues
