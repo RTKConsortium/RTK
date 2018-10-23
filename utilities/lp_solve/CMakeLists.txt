@@ -3,6 +3,8 @@ set(LPSOLVE_VERSION_MINOR 5)
 set(LPSOLVE_VERSION_PATCH 2)
 set(LPSOLVE_VERSION ${LPSOLVE_VERSION_MAJOR}.${LPSOLVE_VERSION_MINOR}.${LPSOLVE_VERSION_PATCH})
 
+itk_module_warnings_disable(C CXX)
+
 # Set up install directories
 add_library(lpsolve55
 	lp_MDO.c
@@ -87,11 +89,6 @@ check_symbol_exists(isnan math.h HAVE_ISNAN)
 if(NOT HAVE_ISNAN)
 	set_property(TARGET lpsolve55 APPEND PROPERTY COMPILE_DEFINITIONS NOISNAN)
 endif()
-
-STRING(REGEX REPLACE "/W[0-4]" "/W0" CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
-STRING(REGEX REPLACE "/W[0-4]" "/W0" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-STRING(REPLACE "-Wall" "" CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
-STRING(REPLACE "-Wall" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 
 # Set version of library
 set_target_properties(lpsolve55 PROPERTIES VERSION ${LPSOLVE_VERSION}
