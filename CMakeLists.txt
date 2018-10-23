@@ -161,8 +161,9 @@ list(APPEND RTK_INCLUDE_DIRS
 # --------------------------------------------------------
 # Setup KWStyle from ITK
 if(ITK_USE_KWSTYLE)
-  set( KWStyle_DIR ${CMAKE_BINARY_DIR}/KWStyle-build )
-  set( KWSTYLE_EXECUTABLE ${KWStyle_DIR}/KWStyle)
+  if(NOT EXISTS KWSTYLE_EXECUTABLE )
+    set( KWSTYLE_EXECUTABLE ${CMAKE_BINARY_DIR}/KWStyle-build/KWStyle)
+  endif()
 
   set(WORKING_DIR "")
   if(ITK_SOURCE_DIR)
