@@ -19,27 +19,27 @@ matrix:
   include:
     - os: osx
       compiler: clang
-      env: ITK_VERSION=v4.13.0 CUDA=NONE TESTING=ON APPLICATIONS=OFF
+      env: ITK_VERSION=v4.13.1 CUDA=NONE TESTING=ON APPLICATIONS=OFF
     - os: osx
       compiler: clang
-      env: ITK_VERSION=v4.13.0 CUDA=NONE TESTING=OFF APPLICATIONS=ON
+      env: ITK_VERSION=v4.13.1 CUDA=NONE TESTING=OFF APPLICATIONS=ON
     - os: linux
       compiler: gcc
-      env: ITK_VERSION=v4.13.0 CUDA=NONE TESTING=OFF APPLICATIONS=ON
+      env: ITK_VERSION=v4.13.1 CUDA=NONE TESTING=OFF APPLICATIONS=ON
     - os: linux
       compiler: gcc
-      env: ITK_VERSION=v4.13.0 CUDA=NONE TESTING=ON APPLICATIONS=OFF
+      env: ITK_VERSION=v4.13.1 CUDA=NONE TESTING=ON APPLICATIONS=OFF
     - os: linux
       compiler: gcc
-      env: ITK_VERSION=v4.13.0 CUDA=8.0.61-1 TESTING=ON APPLICATIONS=OFF
+      env: ITK_VERSION=v4.13.1 CUDA=8.0.61-1 TESTING=ON APPLICATIONS=OFF
     - os: linux
       compiler: gcc
-      env: ITK_VERSION=v4.13.0 CUDA=8.0.61-1 TESTING=OFF APPLICATIONS=ON
+      env: ITK_VERSION=v4.13.1 CUDA=8.0.61-1 TESTING=OFF APPLICATIONS=ON
 
 cache:
   - directories:
-    - $HOME/itk-v4.13.0
-    - $HOME/itk-v4.13.0-build
+    - $HOME/itk-v4.13.1
+    - $HOME/itk-v4.13.1-build
     - $HOME/build/SimonRit/RTK/build/ExternalData
     - $HOME/cmake
   - timeout: 1000
