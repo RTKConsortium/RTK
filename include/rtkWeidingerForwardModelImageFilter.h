@@ -100,7 +100,11 @@ protected:
     ~WeidingerForwardModelImageFilter() {}
 
     void GenerateInputRequestedRegion() ITK_OVERRIDE;
+#if ITK_VERSION_MAJOR<5
     void VerifyInputInformation() ITK_OVERRIDE {}
+#else
+    void VerifyInputInformation() const ITK_OVERRIDE {}
+#endif
 
     /** Does the real work. */
 #if ITK_VERSION_MAJOR<5

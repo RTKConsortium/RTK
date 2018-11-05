@@ -28,7 +28,7 @@
 #include <itkImageRegionConstIterator.h>
 #include <itkImageRegionIteratorWithIndex.h>
 #include <itkIdentityTransform.h>
-#include <itkInputDataObjectIterator.h>
+#include <itkInputDataObjectConstIterator.h>
 
 namespace rtk
 {
@@ -100,11 +100,17 @@ JosephForwardAttenuatedProjectionImageFilter<TInputImage,
   TInterpolationWeightMultiplication,
   TProjectedValueAccumulation,
   TComputeAttenuationCorrection>
+#if ITK_VERSION_MAJOR<5
 ::VerifyInputInformation()
+#else
+::VerifyInputInformation() const
+#endif
 {
-  TOutputImage *inputPtr1 = nullptr;
+  using ImageBaseType = const itk::ImageBase< InputImageDimension >;
 
-  itk::InputDataObjectIterator it(this);
+  ImageBaseType *inputPtr1 = nullptr;
+
+  itk::InputDataObjectConstIterator it(this);
   for(; !it.IsAtEnd(); ++it )
     {
     // Check whether the output is an image of the appropriate
@@ -114,7 +120,7 @@ JosephForwardAttenuatedProjectionImageFilter<TInputImage,
     // static_casts the input to an TInputImage).
     if(it.GetName() != "Primary" )
       {
-      inputPtr1 = dynamic_cast< TOutputImage * >( it.GetInput() );
+      inputPtr1 = dynamic_cast< ImageBaseType * >( it.GetInput() );
       }
     if ( inputPtr1 )
       {
@@ -126,7 +132,7 @@ JosephForwardAttenuatedProjectionImageFilter<TInputImage,
     {
     if(it.GetName() != "Primary" )
       {
-      TOutputImage * inputPtrN = dynamic_cast< TOutputImage * >( it.GetInput() );
+      auto * inputPtrN = dynamic_cast< ImageBaseType * >( it.GetInput() );
       // Physical space computation only matters if we're using two
       // images, and not an image and a constant.
       if( inputPtrN )

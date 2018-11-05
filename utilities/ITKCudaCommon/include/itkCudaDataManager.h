@@ -23,10 +23,9 @@
 #include "itkObjectFactory.h"
 #include "itkCudaUtil.h"
 #include "itkCudaContextManager.h"
-#include "itkSimpleFastMutexLock.h"
-#include "itkMutexLockHolder.h"
 #include "itkCudaWin32Header.h"
 
+#include <mutex>
 #include <memory>
 
 //#define VERBOSE
@@ -229,7 +228,7 @@ protected:
   bool m_ReleaseDirtyGPUBuffer;
 
   /** Mutex lock to prevent r/w hazard for multithreaded code */
-  SimpleFastMutexLock m_Mutex;
+  std::mutex m_Mutex;
 };
 
 } // namespace itk

@@ -20,10 +20,10 @@
 #define rtkI0EstimationProjectionFilter_h
 
 #include <itkInPlaceImageFilter.h>
-#include <itkMutexLock.h>
 #include "rtkThreeDCircularProjectionGeometry.h"
 #include "rtkConfiguration.h"
 
+#include <mutex>
 #include <vector>
 #include <string>
 
@@ -144,9 +144,9 @@ private:
   unsigned int m_LowBound, m_HighBound;   // Lower/Upper bounds of the I0 mode
                                           // at half width
 
-  itk::MutexLock::Pointer m_Mutex;
-  int                     m_Nsync;
-  int                     m_Nthreads;
+  std::mutex   m_Mutex;
+  int          m_Nsync;
+  int          m_Nthreads;
 };
 } // end namespace rtk
 

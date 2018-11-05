@@ -351,7 +351,11 @@ protected:
 
   // Inputs are not supposed to occupy the same physical space,
   // so there is nothing to verify
+#if ITK_VERSION_MAJOR<5
   void VerifyInputInformation() ITK_OVERRIDE {}
+#else
+  void VerifyInputInformation() const ITK_OVERRIDE {}
+#endif
 
   /** Member pointers to the filters used internally (for convenience)*/
   typename FourDCGFilterType::Pointer                     m_FourDCGFilter;

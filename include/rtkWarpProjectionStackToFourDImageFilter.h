@@ -135,7 +135,11 @@ protected:
 
     /** The first two inputs should not be in the same space so there is nothing
      * to verify. */
+#if ITK_VERSION_MAJOR<5
     void VerifyInputInformation() ITK_OVERRIDE {}
+#else
+    void VerifyInputInformation() const ITK_OVERRIDE {}
+#endif
 
     /** Member pointers to the filters used internally (for convenience)*/
     typename DVFInterpolatorType::Pointer           m_DVFInterpolatorFilter;

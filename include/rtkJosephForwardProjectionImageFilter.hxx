@@ -25,10 +25,7 @@
 #include "rtkBoxShape.h"
 #include "rtkProjectionsRegionConstIteratorRayBased.h"
 
-#include <itkImageRegionConstIterator.h>
 #include <itkImageRegionIteratorWithIndex.h>
-#include <itkIdentityTransform.h>
-#include <itkInputDataObjectIterator.h>
 
 namespace rtk
 {

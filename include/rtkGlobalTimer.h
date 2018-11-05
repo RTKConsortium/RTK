@@ -23,7 +23,7 @@
 #include "rtkTimeProbesCollectorBase.h"
 #include "rtkWatcherForTimer.h"
 #include "rtkWin32Header.h"
-#include <itkSimpleFastMutexLock.h>
+#include <mutex>
 
 namespace rtk
 {
@@ -94,8 +94,8 @@ private:
   GlobalTimer(const Self &);   //purposely not implemented
   void operator=(const Self &); //purposely not implemented
 
-  static Pointer           m_Instance;
-  itk::SimpleFastMutexLock m_Mutex;
+  static Pointer m_Instance;
+  std::mutex     m_Mutex;
 
 };
 } // end namespace itk

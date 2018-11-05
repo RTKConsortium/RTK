@@ -50,8 +50,6 @@ I0EstimationProjectionFilter< TInputImage, TOutputImage, bitShift >
 
   m_Imin = 0;
   m_Imax = m_MaxPixelValue;
-
-  m_Mutex = itk::MutexLock::New();
 }
 
 template< class TInputImage, class TOutputImage, unsigned char bitShift >
@@ -116,8 +114,7 @@ void I0EstimationProjectionFilter< TInputImage, TOutputImage, bitShift >
     }
 
   // Merge into global histogram
-
-  m_Mutex->Lock();
+  m_Mutex.lock();
     {
     // Add its results to shared histogram
     for ( unsigned int i = 0; i < m_NBins; ++i )
@@ -166,7 +163,7 @@ void I0EstimationProjectionFilter< TInputImage, TOutputImage, bitShift >
       // If Imax very close to MaxPixelValue then possible saturation
       }
     }
-  m_Mutex->Unlock();
+  m_Mutex.unlock();
 }
 
 template< class TInputImage, class TOutputImage, unsigned char bitShift >

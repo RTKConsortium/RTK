@@ -25,9 +25,8 @@
 #include "rtkBoxShape.h"
 #include "rtkProjectionsRegionConstIteratorRayBased.h"
 
-#include <itkImageRegionConstIterator.h>
 #include <itkImageRegionIteratorWithIndex.h>
-#include <itkIdentityTransform.h>
+#include <itkInputDataObjectConstIterator.h>
 
 namespace rtk
 {
@@ -78,11 +77,17 @@ TOutputImage,
 TInterpolationWeightMultiplication,
 TSplatWeightMultiplication,
 TSumAlongRay >
+#if ITK_VERSION_MAJOR<5
 ::VerifyInputInformation()
+#else
+::VerifyInputInformation() const
+#endif
 {
-  TOutputImage *inputPtr1 = nullptr;
+  using ImageBaseType = const itk::ImageBase< InputImageDimension >;
 
-  itk::InputDataObjectIterator it(this);
+  ImageBaseType *inputPtr1 = nullptr;
+
+  itk::InputDataObjectConstIterator it(this);
   for(; !it.IsAtEnd(); ++it )
     {
     // Check whether the output is an image of the appropriate
@@ -92,19 +97,19 @@ TSumAlongRay >
     // static_casts the input to an TInputImage).
     if(it.GetName() != "_1" )
       {
-      inputPtr1 = dynamic_cast< TOutputImage * >( it.GetInput() );
+      inputPtr1 = dynamic_cast< ImageBaseType * >( it.GetInput() );
       }
     if ( inputPtr1 )
       {
       break;
       }
-    }
+    } 
 
   for (; !it.IsAtEnd(); ++it )
     {
     if(it.GetName() != "_1" )
       {
-      TOutputImage * inputPtrN = dynamic_cast< TOutputImage * >( it.GetInput() );
+      auto * inputPtrN = dynamic_cast< ImageBaseType * >( it.GetInput() );
       // Physical space computation only matters if we're using two
       // images, and not an image and a constant.
       if( inputPtrN )

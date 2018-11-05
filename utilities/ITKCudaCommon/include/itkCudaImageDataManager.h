@@ -25,7 +25,6 @@
 #include "itkCudaUtil.h"
 #include "itkCudaDataManager.h"
 #include "itkCudaContextManager.h"
-#include "itkSimpleFastMutexLock.h"
 
 namespace itk
 {

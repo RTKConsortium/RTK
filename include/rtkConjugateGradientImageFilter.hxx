@@ -22,8 +22,7 @@
 #include "rtkConjugateGradientImageFilter.h"
 #if ITK_VERSION_MAJOR>=5
   #include <itkMultiThreaderBase.h>
-  #include <itkSimpleFastMutexLock.h>
-  #include <itkMutexLockHolder.h>
+  #include <mutex>
 #endif
 namespace rtk
 {
@@ -183,7 +182,7 @@ void ConjugateGradientImageFilter<OutputImageType>
 #else
   // Instantiate the multithreader
   itk::MultiThreaderBase::Pointer mt = itk::MultiThreaderBase::New();
-  itk::SimpleFastMutexLock accumulationLock;
+  std::mutex accumulationLock;
 
   // Compute Xk+1
   mt->template ParallelizeImageRegion<OutputImageType::ImageDimension>
@@ -256,7 +255,7 @@ void ConjugateGradientImageFilter<OutputImageType>
             ++itP;
             }
 
-          itk::MutexLockHolder<itk::SimpleFastMutexLock> mutexHolder(accumulationLock);
+          std::lock_guard<std::mutex> mutexHolder(accumulationLock);
           numerator += currentThreadNumerator;
           denominator += currentThreadDenominator;
           },
@@ -324,7 +323,7 @@ void ConjugateGradientImageFilter<OutputImageType>
             ++itA_out;
             }
 
-          itk::MutexLockHolder<itk::SimpleFastMutexLock> mutexHolder(accumulationLock);
+          std::lock_guard<std::mutex> mutexHolder(accumulationLock);
           numerator += currentThreadNumerator;
           },
         nullptr

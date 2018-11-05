@@ -56,7 +56,7 @@ void CudaImageDataManager< ImageType >::MakeCPUBufferUpToDate()
 {
   if (m_Image)
     {
-    m_Mutex.Lock();
+    m_Mutex.lock();
 
     TimeStamp gpu_time_stamp = this->GetTimeStamp();
     TimeStamp cpu_time_stamp = m_Image->GetTimeStamp();
@@ -84,7 +84,7 @@ void CudaImageDataManager< ImageType >::MakeCPUBufferUpToDate()
       m_IsGPUBufferDirty = false;
       }
 
-    m_Mutex.Unlock();
+    m_Mutex.unlock();
     }
 }
 
@@ -93,7 +93,7 @@ void CudaImageDataManager< ImageType >::MakeGPUBufferUpToDate()
 {
   if (m_Image)
     {
-    m_Mutex.Lock();
+    m_Mutex.lock();
 
     TimeStamp gpu_time_stamp = this->GetTimeStamp();
     TimeStamp cpu_time_stamp = m_Image->GetTimeStamp();
@@ -121,7 +121,7 @@ void CudaImageDataManager< ImageType >::MakeGPUBufferUpToDate()
       m_IsGPUBufferDirty = false;
       }
 
-    m_Mutex.Unlock();
+    m_Mutex.unlock();
     }
 }
 

@@ -81,13 +81,13 @@ void CudaDataManager::Allocate()
 
 void CudaDataManager::Free()
 {
-  m_Mutex.Lock();
+  m_Mutex.lock();
   if (m_GPUBuffer->GetBufferSize() > 0)
     {
     m_GPUBuffer->Free();
     m_IsGPUBufferDirty = true;
     }
-  m_Mutex.Unlock();
+  m_Mutex.unlock();
 }
 
 void CudaDataManager::SetCPUBufferPointer(void* ptr)
@@ -123,7 +123,7 @@ void CudaDataManager::SetCPUBufferDirty()
 
 void CudaDataManager::UpdateCPUBuffer()
 {
-  m_Mutex.Lock();
+  m_Mutex.lock();
   if(m_IsGPUBufferDirty)
     {
     m_IsCPUBufferDirty = false;
@@ -138,12 +138,12 @@ void CudaDataManager::UpdateCPUBuffer()
     CUDA_CHECK(cudaMemcpy(m_CPUBuffer, m_GPUBuffer->GetPointer(), m_BufferSize, cudaMemcpyDeviceToHost));
     m_IsCPUBufferDirty = false;
     }
-  m_Mutex.Unlock();
+  m_Mutex.unlock();
 }
 
 void CudaDataManager::UpdateGPUBuffer()
 {
-  m_Mutex.Lock();
+  m_Mutex.lock();
   if (m_IsGPUBufferDirty && m_GPUBuffer)
     {
     this->Allocate(); // do the allocation
@@ -158,7 +158,7 @@ void CudaDataManager::UpdateGPUBuffer()
       }
     m_IsGPUBufferDirty = false;
     }
-  m_Mutex.Unlock();
+  m_Mutex.unlock();
 }
 
 void* CudaDataManager::GetGPUBufferPointer()

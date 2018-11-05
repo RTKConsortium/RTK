@@ -20,7 +20,7 @@
 #define rtkParkerShortScanImageFilter_h
 
 #include <itkInPlaceImageFilter.h>
-#include <itkSimpleFastMutexLock.h>
+#include <mutex>
 
 #include "rtkThreeDCircularProjectionGeometry.h"
 #include "rtkConfiguration.h"
@@ -97,7 +97,7 @@ private:
   double m_InferiorCorner;
   double m_SuperiorCorner;
 
-  itk::SimpleFastMutexLock m_WarningMutex;
+  std::mutex m_WarningMutex;
 }; // end of class
 
 } // end namespace rtk

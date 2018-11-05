@@ -206,6 +206,9 @@ public:
   typedef rtk::ThreeDCircularProjectionGeometry                  GeometryType;
   typedef typename GeometryType::Pointer                         GeometryPointer;
 
+  /** ImageDimension constants */
+  static constexpr unsigned int InputImageDimension = TInputImage::ImageDimension;
+
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
@@ -221,7 +224,11 @@ protected:
 
   /** Only the last two inputs should be in the same space so we need
    * to overwrite the method. */
+#if ITK_VERSION_MAJOR<5
   void VerifyInputInformation() ITK_OVERRIDE;
+#else
+  void VerifyInputInformation() const ITK_OVERRIDE;
+#endif
 
   void GenerateData() ITK_OVERRIDE;
 

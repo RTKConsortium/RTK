@@ -229,6 +229,9 @@ public:
   typedef double                                                 CoordRepType;
   typedef itk::Vector<CoordRepType, TInputImage::ImageDimension> VectorType;
 
+  /** ImageDimension constants */
+  static constexpr unsigned int InputImageDimension = TInputImage::ImageDimension;
+
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
@@ -246,7 +249,11 @@ protected:
 
   /** Only the last two inputs should be in the same space so we need
    * to overwrite the method. */
-  void VerifyInputInformation() ITK_OVERRIDE ;
+ #if ITK_VERSION_MAJOR<5
+  void VerifyInputInformation() ITK_OVERRIDE;
+#else
+  void VerifyInputInformation() const ITK_OVERRIDE;
+#endif
 
 private:
   JosephForwardAttenuatedProjectionImageFilter(const Self&); //purposely not implemented

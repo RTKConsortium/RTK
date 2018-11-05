@@ -88,60 +88,58 @@ void
 GlobalTimer
 ::Watch(ProcessObject *o)
 {
-  m_Mutex.Lock();
+  m_Mutex.lock();
   rtk::WatcherForTimer *w = new rtk::WatcherForTimer(o);
   m_Watchers.push_back(w);
-  m_Mutex.Unlock();
+  m_Mutex.unlock();
 }
 
 void
 GlobalTimer
 ::Remove(const rtk::WatcherForTimer *w)
 {
-  m_Mutex.Lock();
+  m_Mutex.lock();
   std::vector<rtk::WatcherForTimer*>::iterator itw = std::find( m_Watchers.begin(), m_Watchers.end(), w);
   if(itw != m_Watchers.end())
     {
     delete *itw;
     m_Watchers.erase(itw);
     }
-  m_Mutex.Unlock();
+  m_Mutex.unlock();
 }
 
 void
 GlobalTimer
 ::Start(const char *id)
 {
-  m_Mutex.Lock();
+  m_Mutex.lock();
   m_TimeProbesCollectorBase.Start(id);
-  m_Mutex.Unlock();
+  m_Mutex.unlock();
 }
 
 void
 GlobalTimer
 ::Stop(const char *id)
 {
-  m_Mutex.Lock();
+  m_Mutex.lock();
   m_TimeProbesCollectorBase.Stop(id);
-  m_Mutex.Unlock();
+  m_Mutex.unlock();
 }
 
 void
 GlobalTimer
 ::Report(std::ostream & os) const
 {
-  m_Mutex.Lock();
   m_TimeProbesCollectorBase.ConstReport(os);
-  m_Mutex.Unlock();
 }
 
 void
 GlobalTimer
 ::Clear(void)
 {
-  m_Mutex.Lock();
+  m_Mutex.lock();
   m_TimeProbesCollectorBase.Clear();
   m_Watchers.clear();
-  m_Mutex.Unlock();
+  m_Mutex.unlock();
 }
 } // end namespace rtk

@@ -126,12 +126,12 @@ ParkerShortScanImageFilter<TInputImage, TOutputImage>
     double halfDetectorWidth = std::min(halfDetectorWidth1, halfDetectorWidth2);
     if( delta < atan(halfDetectorWidth * invsid) )
       {
-      m_WarningMutex.Lock();
+      m_WarningMutex.lock();
       itkWarningMacro(<< "You do not have enough data for proper Parker weighting (short scan)"
                       << " according to projection #" << k << ". Delta is " << delta*180./itk::Math::pi
                       << " degrees and should be more than half the beam angle, i.e. "
                       << atan(halfDetectorWidth * invsid)*180./itk::Math::pi << " degrees.");
-      m_WarningMutex.Unlock();
+      m_WarningMutex.unlock();
       }
 
     // Prepare weights for current slice (depends on ProjectionOffsetsX)

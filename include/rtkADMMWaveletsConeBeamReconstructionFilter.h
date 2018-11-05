@@ -228,7 +228,11 @@ protected:
     /** The inputs of this filter have the same type (float, 3) but not the same meaning
     * It is normal that they do not occupy the same physical space. Therefore this check
     * must be removed */
+#if ITK_VERSION_MAJOR<5
     void VerifyInputInformation() ITK_OVERRIDE {}
+#else
+    void VerifyInputInformation() const ITK_OVERRIDE {}
+#endif
 
     /** The volume and the projections must have different requested regions
     */

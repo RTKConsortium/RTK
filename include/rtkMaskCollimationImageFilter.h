@@ -78,7 +78,11 @@ protected:
 
   /** The two inputs should not be in the same space so there is nothing
    * to verify. */
+#if ITK_VERSION_MAJOR<5
   void VerifyInputInformation() ITK_OVERRIDE {}
+#else
+  void VerifyInputInformation() const ITK_OVERRIDE {}
+#endif
 
 private:
   MaskCollimationImageFilter(const Self&); //purposely not implemented

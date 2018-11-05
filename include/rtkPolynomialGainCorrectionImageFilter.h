@@ -20,7 +20,6 @@
 #define rtkPolynomialGainCorrectionImageFilter_h
 
 #include <itkImageToImageFilter.h>
-#include <itkSimpleFastMutexLock.h>
 
 #include <vector>
 
