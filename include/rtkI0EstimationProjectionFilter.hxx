@@ -34,6 +34,7 @@ I0EstimationProjectionFilter< TInputImage, TOutputImage, bitShift >
 {
 #if ITK_VERSION_MAJOR>4
   this->DynamicMultiThreadingOff();
+  this->SetNumberOfWorkUnits( itk::MultiThreaderBase::GetGlobalDefaultNumberOfThreads() );
 #endif
 
   m_MaxPixelValue = (InputImagePixelType)((1<<24)-1);
