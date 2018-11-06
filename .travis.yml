@@ -87,7 +87,8 @@ before_script:
 script:
   - DO_BUILD_RTK=true
   - cd ${ITK_BUILD_DIR}
-  - if ! test -e ${ITK_BUILD_DIR}/Makefile; then cmake ${ITK_SOURCE_DIR}
+  - if test $TRAVIS_OS_NAME == linux ; then KWSTYLE_CMAKE_OPTIONS="-DITK_USE_KWSTYLE=ON"; fi
+  - if ! test -e ${ITK_BUILD_DIR}/Makefile; then cmake ${ITK_SOURCE_DIR} ${KWSTYLE_CMAKE_OPTIONS}
     -DCMAKE_BUILD_TYPE=Release
     -DBUILD_EXAMPLES=OFF
     -DBUILD_TESTING=OFF
@@ -101,9 +102,8 @@ script:
   - cd -
   - if ! test -d build; then mkdir build; fi
   - cd build
-  - CMAKE_OPTIONS="-DRTK_BUILD_APPLICATIONS=${APPLICATIONS} ${CMAKE_OPTIONS}"
+  - CMAKE_OPTIONS="${KWSTYLE_CMAKE_OPTIONS} -DRTK_BUILD_APPLICATIONS=${APPLICATIONS} ${CMAKE_OPTIONS}"
   - CMAKE_OPTIONS="-DBUILD_TESTING=${TESTING} ${CMAKE_OPTIONS}"
-  - if test $TRAVIS_OS_NAME == linux ; then CMAKE_OPTIONS="-DITK_USE_KWSTYLE=ON ${CMAKE_OPTIONS}"; fi
   - if [ $DO_BUILD_RTK == true ]; then cmake .. $CMAKE_OPTIONS || travis_terminate 1; fi
   - if [ $DO_BUILD_RTK == true ]; then make --jobs=$NUM_THREADS --keep-going all || travis_terminate 1; fi
   - if [ $DO_BUILD_RTK == true ] && [ "$TESTING" == ON ] && [ "$CUDA" == NONE ]; then make test || travis_terminate 1; fi
