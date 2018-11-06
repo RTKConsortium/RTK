@@ -67,7 +67,7 @@ public:
 
   inline TOutput operator()( const TInput & A ) const
     {
-    return (vnl_math_sgn(A) * vnl_math_max((TInput)vnl_math_abs(A) - m_Threshold, (TInput)0.0));
+    return (itk::Math::sgn(A) * std::max((TInput)itk::Math::abs(A) - m_Threshold, (TInput)0.0));
     }
 
 private:

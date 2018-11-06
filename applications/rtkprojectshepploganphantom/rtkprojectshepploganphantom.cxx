@@ -72,7 +72,7 @@ int main(int argc, char * argv[])
   scale.Fill(args_info.phantomscale_arg[0]);
   if(args_info.phantomscale_given)
     {
-    for(unsigned int i=0; i<vnl_math_min(args_info.phantomscale_given, Dimension); i++)
+    for(unsigned int i=0; i<std::min(args_info.phantomscale_given, Dimension); i++)
       scale[i] = args_info.phantomscale_arg[i];
     }
   slp->SetInput(constantImageSource->GetOutput());

@@ -128,15 +128,15 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
           // Look for extremas on projection to calculate requested region
           for(int i=0; i<2; i++)
             {
-            cornerInf[i] = vnl_math_min(cornerInf[i], point[i]);
-            cornerSup[i] = vnl_math_max(cornerSup[i], point[i]);
+            cornerInf[i] = std::min(cornerInf[i], point[i]);
+            cornerSup[i] = std::max(cornerSup[i], point[i]);
             }
           }
     }
-  reqRegion.SetIndex(0, vnl_math_floor(cornerInf[0]) );
-  reqRegion.SetIndex(1, vnl_math_floor(cornerInf[1]) );
-  reqRegion.SetSize(0, vnl_math_ceil(cornerSup[0]+1.)-vnl_math_floor(cornerInf[0]) );
-  reqRegion.SetSize(1, vnl_math_ceil(cornerSup[1]+1.)-vnl_math_floor(cornerInf[1]) );
+  reqRegion.SetIndex(0, itk::Math::floor(cornerInf[0]) );
+  reqRegion.SetIndex(1, itk::Math::floor(cornerInf[1]) );
+  reqRegion.SetSize(0, itk::Math::ceil(cornerSup[0]+1.)-itk::Math::floor(cornerInf[0]) );
+  reqRegion.SetSize(1, itk::Math::ceil(cornerSup[1]+1.)-itk::Math::floor(cornerInf[1]) );
 
   if( reqRegion.Crop( inputPtr1->GetLargestPossibleRegion() ) )
     inputPtr1->SetRequestedRegion( reqRegion );
@@ -376,7 +376,7 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
 
       typedef typename itk::PixelTraits<typename TInputImage::PixelType>::ValueType ComponentType;
       ComponentType u1, u2, v1, v2;
-      vi = vnl_math_floor(v);
+      vi = itk::Math::floor(v);
       if(vi>=0 && vi<(int)pSize[1]-1)
         {
         v1 = v-vi;
@@ -388,7 +388,7 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
         // Innermost loop
         for(; i<(region.GetIndex(0) + (int)region.GetSize(0)); i++, u += du, pVol++)
           {
-          ui = vnl_math_floor(u);
+          ui = itk::Math::floor(u);
           if(ui>=0 && ui<(int)pSize[0]-1)
             {
             u1 = u-ui;
@@ -439,13 +439,13 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
       v = v*w-pIndex[1];
       du = w * matrix[0][1];
 
-      vi = vnl_math_floor(v);
+      vi = itk::Math::floor(v);
       if(vi>=0 && vi<(int)pSize[1]-1)
         {
         pVol = pVolZeroPointer + i + vBufferSize[0] * (j + k * vBufferSize[1] );
         for(; j<(region.GetIndex(1) + (int)region.GetSize(1)); j++, pVol += vBufferSize[0], u += du)
           {
-          ui = vnl_math_floor(u);
+          ui = itk::Math::floor(u);
           if(ui>=0 && ui<(int)pSize[0]-1)
             {
             typedef typename itk::PixelTraits<typename TInputImage::PixelType>::ValueType ComponentType;

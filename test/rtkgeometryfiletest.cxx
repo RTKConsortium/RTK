@@ -30,7 +30,7 @@ void WriteReadAndCheck(GeometryType *geometry)
       {                                                                    \
       double val1 = geoRead->Get##paramName()[i];                          \
       double val2 = geometry->Get##paramName()[i];                         \
-      if( std::abs(val1 - val2) > epsilon )                                \
+      if( itk::Math::abs(val1 - val2) > epsilon )                                \
         {                                                                  \
         std::cerr << #paramName " differ ["                                \
                   << val1                                                  \

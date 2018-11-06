@@ -21,7 +21,7 @@
 
 //Includes
 #include "rtkDaubechiesWaveletsConvolutionImageFilter.h"
-#include "vnl/vnl_math.h"
+
 #include <vector>
 #include <algorithm>
 #include <itkImageRegionIterator.h>
@@ -89,74 +89,74 @@ DaubechiesWaveletsConvolutionImageFilter<TImage>
   switch (this->GetOrder())
     {
     case 1:
-      coeff.push_back(1.0/vnl_math::sqrt2);
-      coeff.push_back(1.0/vnl_math::sqrt2);
+      coeff.push_back(1.0/itk::Math::sqrt2);
+      coeff.push_back(1.0/itk::Math::sqrt2);
       break;
     case 2:
-      coeff.push_back(-0.1830127/vnl_math::sqrt2);
-      coeff.push_back(0.3169873/vnl_math::sqrt2);
-      coeff.push_back(1.1830127/vnl_math::sqrt2);
-      coeff.push_back(0.6830127/vnl_math::sqrt2);
+      coeff.push_back(-0.1830127/itk::Math::sqrt2);
+      coeff.push_back(0.3169873/itk::Math::sqrt2);
+      coeff.push_back(1.1830127/itk::Math::sqrt2);
+      coeff.push_back(0.6830127/itk::Math::sqrt2);
       break;
     case 3:
-      coeff.push_back(0.0498175/vnl_math::sqrt2);
-      coeff.push_back(-0.12083221/vnl_math::sqrt2);
-      coeff.push_back(-0.19093442/vnl_math::sqrt2);
-      coeff.push_back(0.650365/vnl_math::sqrt2);
-      coeff.push_back(1.14111692/vnl_math::sqrt2);
-      coeff.push_back(0.47046721/vnl_math::sqrt2);
+      coeff.push_back(0.0498175/itk::Math::sqrt2);
+      coeff.push_back(-0.12083221/itk::Math::sqrt2);
+      coeff.push_back(-0.19093442/itk::Math::sqrt2);
+      coeff.push_back(0.650365/itk::Math::sqrt2);
+      coeff.push_back(1.14111692/itk::Math::sqrt2);
+      coeff.push_back(0.47046721/itk::Math::sqrt2);
       break;
     case 4:
-      coeff.push_back(-0.01498699/vnl_math::sqrt2);
-      coeff.push_back(0.0465036/vnl_math::sqrt2);
-      coeff.push_back(0.0436163/vnl_math::sqrt2);
-      coeff.push_back(-0.26450717/vnl_math::sqrt2);
-      coeff.push_back(-0.03957503/vnl_math::sqrt2);
-      coeff.push_back(0.8922014/vnl_math::sqrt2);
-      coeff.push_back(1.01094572/vnl_math::sqrt2);
-      coeff.push_back(0.32580343/vnl_math::sqrt2);
+      coeff.push_back(-0.01498699/itk::Math::sqrt2);
+      coeff.push_back(0.0465036/itk::Math::sqrt2);
+      coeff.push_back(0.0436163/itk::Math::sqrt2);
+      coeff.push_back(-0.26450717/itk::Math::sqrt2);
+      coeff.push_back(-0.03957503/itk::Math::sqrt2);
+      coeff.push_back(0.8922014/itk::Math::sqrt2);
+      coeff.push_back(1.01094572/itk::Math::sqrt2);
+      coeff.push_back(0.32580343/itk::Math::sqrt2);
       break;
     case 5:
-      coeff.push_back(0.00471742793/vnl_math::sqrt2);
-      coeff.push_back(-0.01779187/vnl_math::sqrt2);
-      coeff.push_back(-0.00882680/vnl_math::sqrt2);
-      coeff.push_back(0.10970265/vnl_math::sqrt2);
-      coeff.push_back(-0.04560113/vnl_math::sqrt2);
-      coeff.push_back(-0.34265671/vnl_math::sqrt2);
-      coeff.push_back(0.19576696/vnl_math::sqrt2);
-      coeff.push_back(1.02432694/vnl_math::sqrt2);
-      coeff.push_back(0.85394354/vnl_math::sqrt2);
-      coeff.push_back(0.22641898/vnl_math::sqrt2);
+      coeff.push_back(0.00471742793/itk::Math::sqrt2);
+      coeff.push_back(-0.01779187/itk::Math::sqrt2);
+      coeff.push_back(-0.00882680/itk::Math::sqrt2);
+      coeff.push_back(0.10970265/itk::Math::sqrt2);
+      coeff.push_back(-0.04560113/itk::Math::sqrt2);
+      coeff.push_back(-0.34265671/itk::Math::sqrt2);
+      coeff.push_back(0.19576696/itk::Math::sqrt2);
+      coeff.push_back(1.02432694/itk::Math::sqrt2);
+      coeff.push_back(0.85394354/itk::Math::sqrt2);
+      coeff.push_back(0.22641898/itk::Math::sqrt2);
       break;
     case 6:
-      coeff.push_back(-0.00152353381/vnl_math::sqrt2);
-      coeff.push_back(0.00675606236/vnl_math::sqrt2);
-      coeff.push_back(0.000783251152/vnl_math::sqrt2);
-      coeff.push_back(-0.04466375/vnl_math::sqrt2);
-      coeff.push_back(0.03892321/vnl_math::sqrt2);
-      coeff.push_back(0.13788809/vnl_math::sqrt2);
-      coeff.push_back(-0.18351806/vnl_math::sqrt2);
-      coeff.push_back(-0.31998660/vnl_math::sqrt2);
-      coeff.push_back(0.44583132/vnl_math::sqrt2);
-      coeff.push_back(1.06226376/vnl_math::sqrt2);
-      coeff.push_back(0.69950381/vnl_math::sqrt2);
-      coeff.push_back(0.15774243/vnl_math::sqrt2);
+      coeff.push_back(-0.00152353381/itk::Math::sqrt2);
+      coeff.push_back(0.00675606236/itk::Math::sqrt2);
+      coeff.push_back(0.000783251152/itk::Math::sqrt2);
+      coeff.push_back(-0.04466375/itk::Math::sqrt2);
+      coeff.push_back(0.03892321/itk::Math::sqrt2);
+      coeff.push_back(0.13788809/itk::Math::sqrt2);
+      coeff.push_back(-0.18351806/itk::Math::sqrt2);
+      coeff.push_back(-0.31998660/itk::Math::sqrt2);
+      coeff.push_back(0.44583132/itk::Math::sqrt2);
+      coeff.push_back(1.06226376/itk::Math::sqrt2);
+      coeff.push_back(0.69950381/itk::Math::sqrt2);
+      coeff.push_back(0.15774243/itk::Math::sqrt2);
       break;
     case 7:
-      coeff.push_back(0.000500226853/vnl_math::sqrt2);
-      coeff.push_back(-0.00254790472/vnl_math::sqrt2);
-      coeff.push_back(0.000607514995/vnl_math::sqrt2);
-      coeff.push_back(0.01774979/vnl_math::sqrt2);
-      coeff.push_back(-0.02343994/vnl_math::sqrt2);
-      coeff.push_back(-0.05378245/vnl_math::sqrt2);
-      coeff.push_back(0.11400345/vnl_math::sqrt2);
-      coeff.push_back(0.1008467/vnl_math::sqrt2);
-      coeff.push_back(-0.31683501/vnl_math::sqrt2);
-      coeff.push_back(-0.20351382/vnl_math::sqrt2);
-      coeff.push_back(0.66437248/vnl_math::sqrt2);
-      coeff.push_back(1.03114849/vnl_math::sqrt2);
-      coeff.push_back(0.56079128/vnl_math::sqrt2);
-      coeff.push_back(0.11009943/vnl_math::sqrt2);
+      coeff.push_back(0.000500226853/itk::Math::sqrt2);
+      coeff.push_back(-0.00254790472/itk::Math::sqrt2);
+      coeff.push_back(0.000607514995/itk::Math::sqrt2);
+      coeff.push_back(0.01774979/itk::Math::sqrt2);
+      coeff.push_back(-0.02343994/itk::Math::sqrt2);
+      coeff.push_back(-0.05378245/itk::Math::sqrt2);
+      coeff.push_back(0.11400345/itk::Math::sqrt2);
+      coeff.push_back(0.1008467/itk::Math::sqrt2);
+      coeff.push_back(-0.31683501/itk::Math::sqrt2);
+      coeff.push_back(-0.20351382/itk::Math::sqrt2);
+      coeff.push_back(0.66437248/itk::Math::sqrt2);
+      coeff.push_back(1.03114849/itk::Math::sqrt2);
+      coeff.push_back(0.56079128/itk::Math::sqrt2);
+      coeff.push_back(0.11009943/itk::Math::sqrt2);
       break;
     default:
       itkGenericExceptionMacro(<< "In rtkDaubechiesWaveletsConvolutionImageFilter.hxx: Order should be >= 7.");

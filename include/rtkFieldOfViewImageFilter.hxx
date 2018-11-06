@@ -297,7 +297,7 @@ void FieldOfViewImageFilter<TInputImage, TOutputImage>
           {
           double xsquare = m_CenterX - point[0];
           xsquare *= xsquare;
-          double radius = vcl_sqrt( xsquare + zsquare);
+          double radius = std::sqrt( xsquare + zsquare);
           if ( radius <= m_Radius &&
                radius*m_HatTangentInf >= m_HatHeightInf - point[1] &&
                radius*m_HatTangentSup <= m_HatHeightSup - point[1])
@@ -330,7 +330,7 @@ void FieldOfViewImageFilter<TInputImage, TOutputImage>
     while( !itIn.IsAtEnd() )
       {
       this->GetInput()->TransformIndexToPhysicalPoint( itIn.GetIndex(), point );
-      double radius = vcl_sqrt(point[0]*point[0] + point[2]*point[2]);
+      double radius = std::sqrt(point[0]*point[0] + point[2]*point[2]);
       if ( radius <= m_Radius &&
            point[1] <= m_HatHeightSup - radius*m_HatTangentSup &&
            point[1] >= m_HatHeightInf - radius*m_HatTangentInf )

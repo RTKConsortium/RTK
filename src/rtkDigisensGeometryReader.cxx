@@ -103,7 +103,7 @@ rtk::DigisensGeometryReader
     // Convert rotation center and rotation axis parameterization to euler angles
     double angle = - startAngle - i * angularRange / nProj;
 
-    const double degreesToRadians = vcl_atan(1.0) / 45.0;
+    const double degreesToRadians = std::atan(1.0) / 45.0;
     itk::Versor<double> xfm3DVersor;
     xfm3DVersor.Set(rotationAxis, angle*degreesToRadians);
 

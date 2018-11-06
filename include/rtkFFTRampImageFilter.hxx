@@ -85,7 +85,7 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
   kernel->SetPixel(ix, 1./(4.*spacing) );
   for(ix[0]=1, jx[0]=size[0]-1; ix[0] < typename IndexType::IndexValueType(size[0]/2); ix[0] += 2, jx[0] -= 2)
     {
-    double v = ix[0] * vnl_math::pi;
+    double v = ix[0] * itk::Math::pi;
     v = -1. / (v * v * spacing);
     kernel->SetPixel(ix, v);
     kernel->SetPixel(jx, v);
@@ -112,36 +112,36 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
   itK.GoToBegin();
   if(this->GetHannCutFrequency()>0.)
     {
-    const unsigned int ncut = itk::Math::Round<double>(n * vnl_math_min(1.0, this->GetHannCutFrequency() ) );
+    const unsigned int ncut = itk::Math::Round<double>(n * std::min(1.0, this->GetHannCutFrequency() ) );
     for(unsigned int i=0; i<ncut; i++, ++itK)
-      itK.Set( itK.Get() * TFFTPrecision(0.5*(1+vcl_cos(vnl_math::pi*i/ncut))));
+      itK.Set( itK.Get() * TFFTPrecision(0.5*(1+std::cos(itk::Math::pi*i/ncut))));
     }
   else if(this->GetCosineCutFrequency() > 0.)
     {
-    const unsigned int ncut = itk::Math::Round<double>(n * vnl_math_min(1.0, this->GetCosineCutFrequency() ) );
+    const unsigned int ncut = itk::Math::Round<double>(n * std::min(1.0, this->GetCosineCutFrequency() ) );
     for(unsigned int i=0; i<ncut; i++, ++itK)
-      itK.Set( itK.Get() * TFFTPrecision(vcl_cos(0.5*vnl_math::pi*i/ncut)));
+      itK.Set( itK.Get() * TFFTPrecision(std::cos(0.5*itk::Math::pi*i/ncut)));
     }
   else if(this->GetHammingFrequency() > 0.)
     {
-    const unsigned int ncut = itk::Math::Round<double>(n * vnl_math_min(1.0, this->GetHammingFrequency() ) );
+    const unsigned int ncut = itk::Math::Round<double>(n * std::min(1.0, this->GetHammingFrequency() ) );
     for(unsigned int i=0; i<ncut; i++, ++itK)
-      itK.Set( itK.Get() * TFFTPrecision(0.54+0.46*(vcl_cos(vnl_math::pi*i/ncut))));
+      itK.Set( itK.Get() * TFFTPrecision(0.54+0.46*(std::cos(itk::Math::pi*i/ncut))));
     }
   else if (this->GetRamLakCutFrequency() > 0.)
     {
-    const unsigned int ncut = itk::Math::Round<double>(n * vnl_math_min(1.0, this->GetRamLakCutFrequency() ) );
+    const unsigned int ncut = itk::Math::Round<double>(n * std::min(1.0, this->GetRamLakCutFrequency() ) );
     for(unsigned int i=0; i<ncut; i++, ++itK) {}
     }
   else if (this->GetSheppLoganCutFrequency() > 0.)
     {
-    const unsigned int ncut = itk::Math::Round<double>(n * vnl_math_min(1.0, this->GetSheppLoganCutFrequency() ) );
+    const unsigned int ncut = itk::Math::Round<double>(n * std::min(1.0, this->GetSheppLoganCutFrequency() ) );
     //sinc(0) --> is 1
     ++itK;
     for(unsigned int i=1; i<ncut; i++, ++itK)
       {
-      double x = 0.5*vnl_math::pi*i / ncut;
-      itK.Set( itK.Get() * TFFTPrecision(vcl_sin(x) / x));
+      double x = 0.5*itk::Math::pi*i / ncut;
+      itK.Set( itK.Get() * TFFTPrecision(std::sin(x) / x));
       }
     }
   else
@@ -162,7 +162,7 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
     size[0] = this->m_KernelFFT->GetLargestPossibleRegion().GetSize(0);
     size[1] = height;
 
-    const unsigned int ncut = itk::Math::Round<double>( (height/2+1) * vnl_math_min(1.0, this->GetHannCutFrequencyY() ) );
+    const unsigned int ncut = itk::Math::Round<double>( (height/2+1) * std::min(1.0, this->GetHannCutFrequencyY() ) );
 
     this->m_KernelFFT = FFTOutputImageType::New();
     this->m_KernelFFT->SetRegions( size );
@@ -173,7 +173,7 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
     for(unsigned int j=0; j<ncut; j++)
       {
       itK.GoToBegin();
-      const TFFTPrecision win( 0.5*( 1+vcl_cos(vnl_math::pi*j/ncut) ) );
+      const TFFTPrecision win( 0.5*( 1+std::cos(itk::Math::pi*j/ncut) ) );
       for(unsigned int i=0; i<size[0]; ++itK, ++itTwoDK, i++)
         {
         itTwoDK.Set( win * itK.Get() );
@@ -183,7 +183,7 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
     for(unsigned int j=1; j<ncut; j++)
       {
       itK.GoToReverseBegin();
-      const TFFTPrecision win( 0.5*( 1+vcl_cos(vnl_math::pi*j/ncut) ) );
+      const TFFTPrecision win( 0.5*( 1+std::cos(itk::Math::pi*j/ncut) ) );
       for(unsigned int i=0; i<size[0]; --itK, --itTwoDK, i++)
         {
         itTwoDK.Set( win * itK.Get() );

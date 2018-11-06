@@ -58,8 +58,8 @@ void CheckImageQuality(typename TImage::Pointer recon,
     {
     typename TImage::PixelType TestVal = itTest.Get();
     typename TImage::PixelType RefVal = itRef.Get();
-    TestError += vcl_abs(RefVal - TestVal);
-    EnerError += vcl_pow(ErrorType(RefVal - TestVal), 2.);
+    TestError += itk::Math::abs(RefVal - TestVal);
+    EnerError += std::pow(ErrorType(RefVal - TestVal), 2.);
     ++itTest;
     ++itRef;
     }
@@ -421,7 +421,7 @@ void CheckScalarProducts(typename TImage1::Pointer im1A,
 
 
   // Checking results
-  if (!(vcl_abs(ratio-1)<0.001))
+  if (!(itk::Math::abs(ratio-1)<0.001))
   {
     std::cerr << "Test Failed, ratio not valid! "
               << ratio << " instead of 1 +/- 0.001" << std::endl;
@@ -501,7 +501,7 @@ void CheckVectorScalarProducts(typename TImage1::Pointer im1A,
 
 
   // Checking results
-  if (!(vcl_abs(ratio-1)<0.001))
+  if (!(itk::Math::abs(ratio-1)<0.001))
   {
     std::cerr << "Test Failed, ratio not valid! "
               << ratio << " instead of 1 +/- 0.001" << std::endl;

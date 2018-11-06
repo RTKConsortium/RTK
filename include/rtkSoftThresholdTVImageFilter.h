@@ -26,7 +26,6 @@
 #include "vnl/vnl_matrix.h"
 #include "vnl/vnl_vector_fixed.h"
 #include "vnl/algo/vnl_symmetric_eigensystem.h"
-#include "vnl/vnl_math.h"
 #include "rtkConfiguration.h"
 
 namespace rtk

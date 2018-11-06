@@ -271,7 +271,7 @@ int main(int , char** )
   float diffValue = 0.f;
   while (!itExp.IsAtEnd())
   {
-      diffValue += std::abs(itExp.Get() - itOut.Get());
+      diffValue += itk::Math::abs(itExp.Get() - itOut.Get());
       ++itExp;
       ++itOut;
   }

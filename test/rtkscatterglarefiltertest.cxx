@@ -91,7 +91,7 @@ ImageType::Pointer createInputImage(const std::vector<float> & coef)
     float xx = (float)idx[0] - (float)size[0] / 2.0f;
     float yy = (float)idx[1] - (float)size[1] / 2.0f;
     float rr2 = (xx*xx + yy*yy);
-    float g = (a3*dx*dy / (2.0f * vnl_math::pi * b3sq)) * 1.0f / std::pow((1.0f + rr2 / b3sq), 1.5f);
+    float g = (a3*dx*dy / (2.0f * itk::Math::pi * b3sq)) * 1.0f / std::pow((1.0f + rr2 / b3sq), 1.5f);
     if ((2 * idx[0] == (ImageType::IndexValueType)size[0]) && ((2 * idx[1] == (ImageType::IndexValueType)size[1]))) {
       g += (1 - a3);
     }
@@ -142,7 +142,7 @@ int main(int , char** )
     ++itO;
   }
 
-  if (!( (std::abs(spikeValueOut - spikeValue) < 1e-2)&&(std::abs(sumBng)<1e-2) ))
+  if (!( (itk::Math::abs(spikeValueOut - spikeValue) < 1e-2)&&(itk::Math::abs(sumBng)<1e-2) ))
   {
     std::cerr << "Test Failed! "<< std::endl;
     exit(EXIT_FAILURE);

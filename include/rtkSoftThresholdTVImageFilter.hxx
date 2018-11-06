@@ -26,8 +26,6 @@
 #include <itkProgressReporter.h>
 #include <itkVectorCastImageFilter.h>
 
-#include "vnl/vnl_math.h"
-
 namespace rtk
 {
 

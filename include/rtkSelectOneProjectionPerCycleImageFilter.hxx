@@ -52,18 +52,18 @@ void SelectOneProjectionPerCycleImageFilter<ProjectionStackType>
     {
     // Put phase between -0.5 and 0.5 with 0 the ref phase
     double valPrev = m_Signal[i]-m_Phase;
-    valPrev -= vnl_math_floor(valPrev);
+    valPrev -= itk::Math::floor(valPrev);
     if(valPrev>0.5)
       valPrev -= 1.;
     double valAfter = m_Signal[i+1]-m_Phase;
-    valAfter -= vnl_math_floor(valAfter);
+    valAfter -= itk::Math::floor(valAfter);
     if(valAfter>0.5)
       valAfter -= 1.;
 
     // Frame is selected if phase is increasing and has opposite signs
     if(valPrev<valAfter && valAfter * valPrev <= 0.)
       {
-      if(vnl_math_abs(valPrev)>vnl_math_abs(valAfter))
+      if(itk::Math::abs(valPrev)>itk::Math::abs(valAfter))
         {
         this->m_SelectedProjections[i+1] = true;
         this->m_NbSelectedProjs++;

@@ -102,7 +102,7 @@ QuadricShape
     farDist = (-Bq+sqrt(discriminant))/(2*Aq);
 
     // The following condition is equivant to but assumed to be faster
-    //if( vcl_abs(nearDist)>vcl_abs(farDist) )
+    //if( itk::Math::abs(nearDist)>itk::Math::abs(farDist) )
     if( (nearDist-farDist)*(nearDist+farDist)>0. )
       std::swap(nearDist, farDist);
     }
@@ -136,8 +136,8 @@ QuadricShape
   ScalarType newG = m_G -2.*m_A*t[0] - m_D*t[1] - m_E*t[2];
   ScalarType newH = m_H -2.*m_B*t[1] - m_D*t[0] - m_F*t[2];
   ScalarType newI = m_I -2.*m_C*t[2] - m_E*t[0] - m_F*t[1];
-  ScalarType newJ = m_J + m_A*vcl_pow(t[0],2.0) + m_B*vcl_pow(t[1],2.0)
-                    + m_C*vcl_pow(t[2],2.) + m_D*t[0]*t[1]
+  ScalarType newJ = m_J + m_A*std::pow(t[0],2.0) + m_B*std::pow(t[1],2.0)
+                    + m_C*std::pow(t[2],2.) + m_D*t[0]*t[1]
                     + m_E*t[0]*t[2] + m_F*t[1]*t[2]
                     - m_G*t[0] - m_H*t[1] - m_I*t[2];
   m_G = newG;
@@ -196,25 +196,25 @@ QuadricShape
 {
   // A
   if(axis[0] > itk::NumericTraits<ScalarType>::ZeroValue())
-    m_A = 1/vcl_pow(axis[0],2.0);
+    m_A = 1/std::pow(axis[0],2.0);
   else if (axis[0] < itk::NumericTraits<ScalarType>::ZeroValue())
-    m_A = -1/vcl_pow(axis[0],2.0);
+    m_A = -1/std::pow(axis[0],2.0);
   else
     m_A = 0.;
 
   // B
   if(axis[1] > itk::NumericTraits<ScalarType>::ZeroValue())
-    m_B = 1/vcl_pow(axis[1],2.0);
+    m_B = 1/std::pow(axis[1],2.0);
   else if (axis[1] < itk::NumericTraits<ScalarType>::ZeroValue())
-    m_B = -1/vcl_pow(axis[1],2.0);
+    m_B = -1/std::pow(axis[1],2.0);
   else
     m_B = 0.;
 
   // C
   if(axis[2] > itk::NumericTraits<ScalarType>::ZeroValue())
-    m_C = 1/vcl_pow(axis[2],2.0);
+    m_C = 1/std::pow(axis[2],2.0);
   else if (axis[2] < itk::NumericTraits<ScalarType>::ZeroValue())
-    m_C = -1/vcl_pow(axis[2],2.0);
+    m_C = -1/std::pow(axis[2],2.0);
   else
     m_C = 0.;
 
@@ -236,9 +236,9 @@ QuadricShape
   ScalarType TempJ = m_J;
 
   //Applying Rotation on Y-axis
-  m_A = TempA*vcl_pow(cos(yangle*(itk::Math::pi/180)), 2.0) + TempC*vcl_pow(sin(yangle*(itk::Math::pi/180)),2.0);
+  m_A = TempA*std::pow(cos(yangle*(itk::Math::pi/180)), 2.0) + TempC*std::pow(sin(yangle*(itk::Math::pi/180)),2.0);
   m_B = TempB;
-  m_C = TempA*vcl_pow(sin(yangle*(itk::Math::pi/180)), 2.0) + TempC*vcl_pow(cos(yangle*(itk::Math::pi/180)),2.0);
+  m_C = TempA*std::pow(sin(yangle*(itk::Math::pi/180)), 2.0) + TempC*std::pow(cos(yangle*(itk::Math::pi/180)),2.0);
   m_D = 0.;
   m_E = 2*cos(yangle*(itk::Math::pi/180))*sin(yangle*(itk::Math::pi/180))*(TempA - TempC);
   m_F = 0.;

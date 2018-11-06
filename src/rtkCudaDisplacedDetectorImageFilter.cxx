@@ -103,7 +103,7 @@ CudaDisplacedDetectorImageFilter
   proj_size_out[1] = this->GetOutput()->GetRequestedRegion().GetSize()[1];
   proj_size_out[2] = this->GetOutput()->GetRequestedRegion().GetSize()[2];
 
-  double theta = vnl_math_min(-1. * this->GetInferiorCorner(), this->GetSuperiorCorner());
+  double theta = std::min(-1. * this->GetInferiorCorner(), this->GetSuperiorCorner());
   bool isPositiveCase = (this->GetSuperiorCorner() + this->GetInferiorCorner() > 0.) ? true : false;
 
   // 2D matrix (numgeom * 4 values) in one block for memcpy!

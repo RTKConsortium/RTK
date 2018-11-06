@@ -47,7 +47,7 @@ void CheckGradient(typename TImage::Pointer im, typename TGradient::Pointer grad
     {
     for ( std::vector<int>::size_type k = 0; k < dimsToProcess.size(); k++ )
       {
-      AbsDiff = vnl_math_abs(iit.GetPixel(c + strides[dimsToProcess[k]]) - iit.GetPixel(c) - itGrad.Get()[k] * grad->GetSpacing()[k]);
+      AbsDiff = itk::Math::abs(iit.GetPixel(c + strides[dimsToProcess[k]]) - iit.GetPixel(c) - itGrad.Get()[k] * grad->GetSpacing()[k]);
 
       // Checking results
       if (AbsDiff > epsilon)

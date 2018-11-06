@@ -37,14 +37,14 @@ double rtk::ThreeDCircularProjectionGeometry::ConvertAngleBetween0And360Degrees(
 
 double rtk::ThreeDCircularProjectionGeometry::ConvertAngleBetween0And2PIRadians(const double a)
 {
-  return a-2*vnl_math::pi*floor( a / (2*vnl_math::pi) );
+  return a-2*itk::Math::pi*floor( a / (2*itk::Math::pi) );
 }
 
 double rtk::ThreeDCircularProjectionGeometry::ConvertAngleBetweenMinusAndPlusPIRadians(const double a)
 {
   double d = ConvertAngleBetween0And2PIRadians(a);
-  if(d>vnl_math::pi)
-    d -= 2*vnl_math::pi;
+  if(d>itk::Math::pi)
+    d -= 2*itk::Math::pi;
   return d;
 }
 
@@ -54,7 +54,7 @@ void rtk::ThreeDCircularProjectionGeometry::AddProjection(
   const double outOfPlaneAngle, const double inPlaneAngle,
   const double sourceOffsetX, const double sourceOffsetY)
 {
-  const double degreesToRadians = vcl_atan(1.0) / 45.0;
+  const double degreesToRadians = std::atan(1.0) / 45.0;
   AddProjectionInRadians(sid, sdd, degreesToRadians * gantryAngle,
                          projOffsetX, projOffsetY, degreesToRadians * outOfPlaneAngle,
                          degreesToRadians * inPlaneAngle,
@@ -119,7 +119,7 @@ void rtk::ThreeDCircularProjectionGeometry::AddProjectionInRadians(
   sp.Normalize();
   double a = acos(sp*z);
   if(sp[0] > 0.)
-    a = 2. * vnl_math::pi - a;
+    a = 2. * itk::Math::pi - a;
   m_SourceAngles.push_back( ConvertAngleBetween0And2PIRadians(a) );
 
   // Default collimation (uncollimated)
@@ -242,7 +242,7 @@ AddProjection(const HomogeneousProjectionMatrixType &pMat)
              pMat(0,0)*pMat(1,2)*pMat(2,1) -
              pMat(0,1)*pMat(1,0)*pMat(2,2) -
              pMat(0,2)*pMat(1,1)*pMat(2,0);
-  d = -1.*d/std::abs(d);
+  d = -1.*d/itk::Math::abs(d);
 
   // Extract intrinsic parameters u0, v0 and f (f is chosen to be positive at that point)
   // The extraction of u0 and v0 is independant of KR-decomp.
@@ -375,7 +375,7 @@ const std::vector<double> rtk::ThreeDCircularProjectionGeometry::GetAngularGapsW
 
   // Special management of single or empty dataset
   if(nProj==1)
-    angularGaps[0] = 2*vnl_math::pi;
+    angularGaps[0] = 2*itk::Math::pi;
   if(nProj<2)
     return angularGaps;
 
@@ -396,7 +396,7 @@ const std::vector<double> rtk::ThreeDCircularProjectionGeometry::GetAngularGapsW
     }
 
   //Last projection wraps the angle of the first one
-  angularGaps[curr->second] = sangles.begin()->first + 2*vnl_math::pi - curr->first;
+  angularGaps[curr->second] = sangles.begin()->first + 2*itk::Math::pi - curr->first;
 
   return angularGaps;
 }
@@ -409,7 +409,7 @@ const std::vector<double> rtk::ThreeDCircularProjectionGeometry::GetAngularGaps(
 
   // Special management of single or empty dataset
   if(nProj==1)
-    angularGaps[0] = 2*vnl_math::pi;
+    angularGaps[0] = 2*itk::Math::pi;
   if(nProj<2)
     return angularGaps;
 
@@ -423,7 +423,7 @@ const std::vector<double> rtk::ThreeDCircularProjectionGeometry::GetAngularGaps(
   next++;
 
   //First projection wraps the angle of the last one
-  angularGaps[curr->second] = 0.5 * ( next->first - sangles.rbegin()->first + 2*vnl_math::pi );
+  angularGaps[curr->second] = 0.5 * ( next->first - sangles.rbegin()->first + 2*itk::Math::pi );
   curr++; next++;
 
   //Rest of the angles
@@ -434,7 +434,7 @@ const std::vector<double> rtk::ThreeDCircularProjectionGeometry::GetAngularGaps(
     }
 
   //Last projection wraps the angle of the first one
-  angularGaps[curr->second] = 0.5 * ( sangles.begin()->first + 2*vnl_math::pi - prev->first );
+  angularGaps[curr->second] = 0.5 * ( sangles.begin()->first + 2*itk::Math::pi - prev->first );
 
   // FIXME: Trick for the half scan in parallel geometry case
   if(m_SourceToDetectorDistances[0]==0.)
@@ -596,7 +596,7 @@ ToUntiltedCoordinateAtIsocenter(const unsigned int noProj,
 
   // the following relation refers to a note by R. Clackdoyle, title
  // "Samping a tilted detector"
-  return l * std::abs(sid) / (sidu - l*cosa);
+  return l * itk::Math::abs(sid) / (sidu - l*cosa);
 }
 
 bool rtk::ThreeDCircularProjectionGeometry::

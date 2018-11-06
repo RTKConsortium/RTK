@@ -98,11 +98,11 @@ ParkerShortScanImageFilter<TInputImage, TOutputImage>
   double lastAngle = itLastAngle->first;
   if(lastAngle<firstAngle)
     {
-    lastAngle += 2*vnl_math::pi;
+    lastAngle += 2*itk::Math::pi;
     }
   //Delta
-  double delta = 0.5 * (lastAngle - firstAngle - vnl_math::pi);
-  delta = delta - 2*vnl_math::pi*floor( delta / (2*vnl_math::pi) ); // between -2*PI and 2*PI
+  double delta = 0.5 * (lastAngle - firstAngle - itk::Math::pi);
+  delta = delta - 2*itk::Math::pi*floor( delta / (2*itk::Math::pi) ); // between -2*PI and 2*PI
 
   // Pre-compute the two corners of the projection images
   typename TInputImage::IndexType id = this->GetInput()->GetLargestPossibleRegion().GetIndex();
@@ -121,8 +121,8 @@ ParkerShortScanImageFilter<TInputImage, TOutputImage>
     double invsid = 1./sqrt(sid*sid+sox*sox);
 
     // Check that Parker weighting is relevant for this projection
-    double halfDetectorWidth1 = std::abs( m_Geometry->ToUntiltedCoordinateAtIsocenter(k, corner1[0]) );
-    double halfDetectorWidth2 = std::abs( m_Geometry->ToUntiltedCoordinateAtIsocenter(k, corner2[0]) );
+    double halfDetectorWidth1 = itk::Math::abs( m_Geometry->ToUntiltedCoordinateAtIsocenter(k, corner1[0]) );
+    double halfDetectorWidth2 = itk::Math::abs( m_Geometry->ToUntiltedCoordinateAtIsocenter(k, corner2[0]) );
     double halfDetectorWidth = std::min(halfDetectorWidth1, halfDetectorWidth2);
     if( delta < atan(halfDetectorWidth * invsid) )
       {
@@ -143,7 +143,7 @@ ParkerShortScanImageFilter<TInputImage, TOutputImage>
     double beta = rotationAngles[ itIn.GetIndex()[2] ];
     beta = beta - firstAngle;
     if (beta<0)
-      beta += 2*vnl_math::pi;
+      beta += 2*itk::Math::pi;
 
     itWeights.GoToBegin();
     while(!itWeights.IsAtEnd() )

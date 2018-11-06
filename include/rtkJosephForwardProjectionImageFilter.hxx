@@ -122,7 +122,7 @@ TSumAlongRay>
     typename BoxShape::VectorType dirVoxAbs;
     for(unsigned int i=0; i<Dimension; i++)
     {
-      dirVoxAbs[i] = vnl_math_abs( dirVox[i] );
+      dirVoxAbs[i] = itk::Math::abs( dirVox[i] );
       if(dirVoxAbs[i]>dirVoxAbs[mainDir])
         mainDir = i;
     }
@@ -144,8 +144,8 @@ TSumAlongRay>
         std::swap(np, fp);
 
       // Compute main nearest and farthest slice indices
-      const int ns = vnl_math_rnd( np[mainDir]);
-      const int fs = vnl_math_rnd( fp[mainDir]);
+      const int ns = itk::Math::rnd( np[mainDir]);
+      const int fs = itk::Math::rnd( fp[mainDir]);
 
       // Determine the other two directions
       unsigned int notMainDirInf = (mainDir+1)%Dimension;
@@ -286,8 +286,8 @@ TSumAlongRay>
                          const int ox,
                          const int oy )
 {
-  int ix = vnl_math_floor(x);
-  int iy = vnl_math_floor(y);
+  int ix = itk::Math::floor(x);
+  int iy = itk::Math::floor(y);
   int idx = ix*ox + iy*oy;
   CoordRepType lx = x - ix;
   CoordRepType ly = y - iy;
@@ -341,8 +341,8 @@ TSumAlongRay>
                                   const CoordRepType maxx,
                                   const CoordRepType maxy)
 {
-  int ix = vnl_math_floor(x);
-  int iy = vnl_math_floor(y);
+  int ix = itk::Math::floor(x);
+  int iy = itk::Math::floor(y);
   int idx = ix*ox + iy*oy;
   CoordRepType lx = x - ix;
   CoordRepType ly = y - iy;

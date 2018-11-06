@@ -192,7 +192,7 @@ FDKBackProjectionImageFilter<TInputImage,TOutputImage>
 
 #ifdef BILINEAR_BACKPROJECTION
       double u1, u2, v1, v2;
-      vi = vnl_math_floor(v);
+      vi = itk::Math::floor(v);
       if(vi>=0 && vi<(int)pSize[1]-1)
         {
         v1 = v-vi;
@@ -210,7 +210,7 @@ FDKBackProjectionImageFilter<TInputImage,TOutputImage>
         for(; i<(region.GetIndex(0) + (int)region.GetSize(0)); i++, u += du, pVol++)
           {
 #ifdef BILINEAR_BACKPROJECTION
-          ui = vnl_math_floor(u);
+          ui = itk::Math::floor(u);
           if(ui>=0 && ui<(int)pSize[0]-1)
             {
             u1 = u-ui;
@@ -270,7 +270,7 @@ FDKBackProjectionImageFilter<TInputImage,TOutputImage>
       w *= w;
 
 #ifdef BILINEAR_BACKPROJECTION
-      vi = vnl_math_floor(v);
+      vi = itk::Math::floor(v);
       if(vi>=0 && vi<(int)pSize[1]-1)
         {
 #else
@@ -282,7 +282,7 @@ FDKBackProjectionImageFilter<TInputImage,TOutputImage>
         for(; j<(region.GetIndex(1) + (int)region.GetSize(1)); j++, pVol += vBufferSize[0], u += du)
           {
 #ifdef BILINEAR_BACKPROJECTION
-          ui = vnl_math_floor(u);
+          ui = itk::Math::floor(u);
           if(ui>=0 && ui<(int)pSize[0]-1)
             {
             double u1, u2, v1, v2;

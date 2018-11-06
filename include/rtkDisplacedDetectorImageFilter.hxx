@@ -136,8 +136,8 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>
     double maxInfUntiltCorner = itk::NumericTraits<double>::NonpositiveMin();
     for(unsigned int i=0; i<m_Geometry->GetProjectionOffsetsX().size(); i++)
       {
-      maxInfUntiltCorner = vnl_math_max(maxInfUntiltCorner, m_Geometry->ToUntiltedCoordinateAtIsocenter(i, m_InferiorCorner) );
-      minSupUntiltCorner = vnl_math_min(minSupUntiltCorner, m_Geometry->ToUntiltedCoordinateAtIsocenter(i, m_SuperiorCorner) );
+      maxInfUntiltCorner = std::max(maxInfUntiltCorner, m_Geometry->ToUntiltedCoordinateAtIsocenter(i, m_InferiorCorner) );
+      minSupUntiltCorner = std::min(minSupUntiltCorner, m_Geometry->ToUntiltedCoordinateAtIsocenter(i, m_SuperiorCorner) );
       }
     m_InferiorCorner = maxInfUntiltCorner;
     m_SuperiorCorner = minSupUntiltCorner;
@@ -234,7 +234,7 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>
   weights->Allocate();
   typename itk::ImageRegionIteratorWithIndex<WeightImageType> itWeights(weights, weights->GetLargestPossibleRegion() );
 
-  double       theta = vnl_math_min(-1*m_InferiorCorner, m_SuperiorCorner);
+  double theta = std::min(-1*m_InferiorCorner, m_SuperiorCorner);
 
   for(unsigned int k=0; k<overlapRegion.GetSize(2); k++)
     {
@@ -247,7 +247,7 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>
     if (sdd!=0.)
       {
       invsdd = 1./sdd;
-      invden = 1./(2.*vcl_atan( theta * invsdd ) );
+      invden = 1./(2.*std::atan( theta * invsdd ) );
       }
     typename WeightImageType::PointType point;
     weights->TransformIndexToPhysicalPoint(itWeights.GetIndex(), point);

@@ -28,7 +28,7 @@ int main(int argc, char * argv[])
   rtk::OraGeometryReader::MarginVectorType margin;
   margin.Fill(args_info.margin_arg[0]);
   for(unsigned int i=0;
-                   i<vnl_math_min(args_info.margin_given, margin.GetVectorDimension());
+                   i<std::min(args_info.margin_given, margin.GetVectorDimension());
                    i++)
     margin[i] = args_info.margin_arg[i];
 

@@ -184,7 +184,7 @@ int main(int, char** )
     // Ellipse 2
     REIType::Pointer e2 = REIType::New();
     semiprincipalaxis.Fill(8.);
-    center[0] = 4*(vcl_abs( (4+noProj) % 8 - 4.) - 2.);
+    center[0] = 4*(itk::Math::abs( (4+noProj) % 8 - 4.) - 2.);
     center[1] = 0.;
     center[2] = 0.;
     e2->SetInput(e1->GetOutput());
@@ -245,7 +245,7 @@ int main(int, char** )
     axis2.Fill(8.);
     de2->SetAxis(axis2);
     DEType::VectorType center2;
-    center2[0] = 4*(vcl_abs( (4+n) % 8 - 4.) - 2.);
+    center2[0] = 4*(itk::Math::abs( (4+n) % 8 - 4.) - 2.);
     center2[1] = 0.;
     center2[2] = 0.;
     de2->SetCenter(center2);

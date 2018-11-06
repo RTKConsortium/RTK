@@ -263,7 +263,7 @@ int main(int argc, char*argv[])
   unsigned int i = 0;
   itk::ImageRegionConstIterator<reg1DImageType> it( reg1DSignal, reg1DSignal->GetLargestPossibleRegion() );
   for (it.GoToBegin(); !it.IsAtEnd(); ++it, i++)
-    sum += vcl_abs(reg1D[i] - it.Get());
+    sum += itk::Math::abs(reg1D[i] - it.Get());
 
   if ( sum <= zeroValue )
     std::cout << "Test PASSED! " << std::endl;
@@ -298,7 +298,7 @@ int main(int argc, char*argv[])
   i = 0;
   itk::ImageRegionConstIterator< reg1DImageType > itDP( DPSignal, DPSignal->GetLargestPossibleRegion() );
   for (itDP.GoToBegin(); !itDP.IsAtEnd(); ++itDP, i++)
-    sum += vcl_abs(DP[i] - itDP.Get());
+    sum += itk::Math::abs(DP[i] - itDP.Get());
 
   if ( sum <= zeroValue )
     std::cout << "Test PASSED! " << std::endl;
@@ -336,7 +336,7 @@ int main(int argc, char*argv[])
                               0.32f, 0.35f, 0.39f, 0.44f, 0.49f, 0.53f, 0.58f, 0.63f, 0.68f, 0.72f };
   itk::ImageRegionConstIterator< reg1DImageType > itPhaseLocal( phase, phase->GetLargestPossibleRegion() );
   for (sum=0, i=0; !itPhaseLocal.IsAtEnd(); ++itPhaseLocal, i++)
-    sum += vcl_abs(refLocalPhase[i] - itPhaseLocal.Get());
+    sum += itk::Math::abs(refLocalPhase[i] - itPhaseLocal.Get());
   std::cout << "LOCAL_PHASE... ";
   if ( sum <= 0.27 )
     std::cout << "Test PASSED! " << std::endl;
@@ -363,7 +363,7 @@ int main(int argc, char*argv[])
 
   itk::ImageRegionConstIterator< reg1DImageType > itPhaseMax( phase, phase->GetLargestPossibleRegion() );
   for (sum=0, i=0; !itPhaseMax.IsAtEnd(); ++itPhaseMax, i++)
-    sum += vcl_abs(refMaxPhase[i] - itPhaseMax.Get());
+    sum += itk::Math::abs(refMaxPhase[i] - itPhaseMax.Get());
   std::cout << "LINEAR_BETWEEN_MAXIMA... ";
   if ( sum <= 0.081 )
     std::cout << "Test PASSED! " << std::endl;
@@ -390,7 +390,7 @@ int main(int argc, char*argv[])
 
   itk::ImageRegionConstIterator< reg1DImageType > itPhaseMin( phase, phase->GetLargestPossibleRegion() );
   for (sum=0, i=0; !itPhaseMin.IsAtEnd(); ++itPhaseMin, i++)
-    sum += vcl_abs(refMinPhase[i] - itPhaseMin.Get());
+    sum += itk::Math::abs(refMinPhase[i] - itPhaseMin.Get());
   std::cout << "LINEAR_BETWEEN_MINIMA... ";
   if ( sum <= 0.076 )
     std::cout << "Test PASSED! " << std::endl;

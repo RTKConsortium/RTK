@@ -138,7 +138,7 @@ WriteFile()
     WriteLocalParameter(output, indent, radius, "RadiusCylindricalDetector");
 
   // Second, write per projection parameters (if corresponding parameter is not global)
-  const double radiansToDegrees = 45. / vcl_atan(1.);
+  const double radiansToDegrees = 45. / std::atan(1.);
   for(unsigned int i = 0; i<this->m_InputObject->GetMatrices().size(); i++)
     {
     output << indent;
@@ -250,7 +250,7 @@ WriteGlobalParameter(std::ofstream &output,
     {
     double val = v[0];
     if(convertToDegrees)
-      val *= 45. / vcl_atan(1.);
+      val *= 45. / std::atan(1.);
 
     WriteLocalParameter(output, indent, val, s);
     }

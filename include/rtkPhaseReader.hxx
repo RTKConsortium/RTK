@@ -21,7 +21,6 @@
 #include "rtkPhaseReader.h"
 
 #include "itksys/SystemTools.hxx"
-#include <vcl_limits.h>
 
 namespace rtk
 {

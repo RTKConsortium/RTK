@@ -82,7 +82,7 @@ int main(int argc, char * argv[])
       std::cerr << "--phantomscale needs up to 3 values" << std::endl;
       exit(EXIT_FAILURE);
       }
-    for(unsigned int i=0; i<vnl_math_min(args_info.phantomscale_given, Dimension); i++)
+    for(unsigned int i=0; i<std::min(args_info.phantomscale_given, Dimension); i++)
       scale[i] = args_info.phantomscale_arg[i];
     }
   PPCType::RotationMatrixType rot;

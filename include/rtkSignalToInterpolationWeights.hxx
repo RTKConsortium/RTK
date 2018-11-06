@@ -21,7 +21,6 @@
 #include "rtkSignalToInterpolationWeights.h"
 
 #include <itksys/SystemTools.hxx>
-#include <vcl_limits.h>
 #include <itkMath.h>
 
 namespace rtk

@@ -102,7 +102,7 @@ int main(int, char** )
     // Ellipse 2
     REIType::Pointer e2 = REIType::New();
     semiprincipalaxis.Fill(8.);
-    center[0] = 4*(vcl_abs( (4+noProj) % 8 - 4.) - 2.);
+    center[0] = 4*(itk::Math::abs( (4+noProj) % 8 - 4.) - 2.);
     center[1] = 0.;
     center[2] = 0.;
     e2->SetInput(e1->GetOutput());

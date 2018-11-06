@@ -1,6 +1,8 @@
-# -*- coding: utf-8 -*-
+
+# Generated using: python setup_py_configure.py 'itk'
+
 from __future__ import print_function
-from os import sys
+from os import sys, path
 
 try:
     from skbuild import setup
@@ -11,16 +13,28 @@ except ImportError:
     print('  python -m pip install scikit-build')
     sys.exit(1)
 
+sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
+from itkVersion import get_versions
+
 setup(
-    name='itk-rtk',
-    version='0.0.1',
-    author='RTK Consortium',
-    author_email='rtk-users@openrtk.org',
-    packages=['itk'],
+    name='rtk',
+    version=get_versions()['package-version'],
+    author='RTK consortium',
+    author_email='simon.rit@creatis.insa-lyon.fr',
+    packages=['rtk'],
     package_dir={'itk': 'itk'},
-    download_url=r'https://github.com/SimonRit/RTK.git',
-    description=r'The Reconstruction Toolkit (RTK) is an open-source and cross-platform software for fast circular cone-beam CT reconstruction.',
-    long_description='Based on the Insight Toolkit ITK, RTK provides: Basic operators for reconstruction (e.g. filtering, forward, projection and backprojection), Multithreaded CPU and GPU versions, Tools for respiratory motion correction, I/O for several scanners, Preprocessing of raw data for scatter correction.',
+    cmake_args=[],
+    py_modules=[
+        'itkRTK'
+    ],
+    download_url=r'https://itk.org/ITK/resources/software.html',
+    description=r'ITK is an open-source toolkit for multidimensional image analysis',
+    long_description='ITK is an open-source, cross-platform library that '
+                     'provides developers with an extensive suite of software '
+                     'tools for image analysis. Developed through extreme '
+                     'programming methodologies, ITK employs leading-edge '
+                     'algorithms for registering and segmenting '
+                     'multidimensional scientific images.',
     classifiers=[
         "License :: OSI Approved :: Apache Software License",
         "Programming Language :: Python",
@@ -41,9 +55,8 @@ setup(
         "Operating System :: MacOS"
         ],
     license='Apache',
-    keywords='RTK Reconstruction Toolkit',
-    url=r'https://www.openrtk.org/',
+    keywords='ITK InsightToolkit segmentation registration image imaging',
+    url=r'http://openrtk.org/',
     install_requires=[
-        r'itk'
     ]
     )

@@ -84,7 +84,7 @@ int
 FFTProjectionsConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 ::GetTruncationCorrectionExtent()
 {
-  return vnl_math_floor(m_TruncationCorrection * this->GetInput()->GetRequestedRegion().GetSize(0));
+  return itk::Math::floor(m_TruncationCorrection * this->GetInput()->GetRequestedRegion().GetSize(0));
 }
 
 template<class TInputImage, class TOutputImage, class TFFTPrecision>
@@ -213,7 +213,7 @@ FFTProjectionsConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
   paddedImage->Allocate();
   paddedImage->FillBuffer(0);
 
-  const long next = vnl_math_min(inputRegion.GetIndex(0) - paddedRegion.GetIndex(0),
+  const long next = std::min(inputRegion.GetIndex(0) - paddedRegion.GetIndex(0),
                                  (typename FFTInputImageType::IndexValueType)this->GetTruncationCorrectionExtent() );
   if(next)
     {
@@ -324,7 +324,7 @@ bool
 FFTProjectionsConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 ::IsPrime( int n ) const
 {
-  int last = (int)vcl_sqrt( double(n) );
+  int last = (int)std::sqrt( double(n) );
 
   for( int x=2; x<=last; x++ )
     if( n%x == 0 )
@@ -358,7 +358,7 @@ FFTProjectionsConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
     {
     m_TruncationMirrorWeights.resize(next+1);
     for(unsigned int i=0; i<next+1; i++)
-      m_TruncationMirrorWeights[i] = pow( sin( (next-i)*vnl_math::pi/(2*next-2) ), 0.75);
+      m_TruncationMirrorWeights[i] = pow( sin( (next-i)*itk::Math::pi/(2*next-2) ), 0.75);
     }
 }
 

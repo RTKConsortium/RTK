@@ -121,16 +121,16 @@ int main(int argc, char * argv[])
     inputOrigin[Dimension] = 0;
     inputDirection.SetIdentity();
 
-    for(unsigned int i=0; i<vnl_math_min(args_info.dimension_given, Dimension); i++)
+    for(unsigned int i=0; i<std::min(args_info.dimension_given, Dimension); i++)
       inputSize[i] = args_info.dimension_arg[i];
 
     inputSpacing.Fill(args_info.spacing_arg[0]);
-    for(unsigned int i=0; i<vnl_math_min(args_info.spacing_given, Dimension); i++)
+    for(unsigned int i=0; i<std::min(args_info.spacing_given, Dimension); i++)
       inputSpacing[i] = args_info.spacing_arg[i];
 
     for(unsigned int i=0; i<Dimension; i++)
       inputOrigin[i] = inputSpacing[i] * (inputSize[i]-1) * -0.5;
-    for(unsigned int i=0; i<vnl_math_min(args_info.origin_given, Dimension); i++)
+    for(unsigned int i=0; i<std::min(args_info.origin_given, Dimension); i++)
       inputOrigin[i] = args_info.origin_arg[i];
 
     if(args_info.direction_given)
