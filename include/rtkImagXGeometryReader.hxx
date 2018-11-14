@@ -141,7 +141,7 @@ ImagXGeometryReader<TInputImage>::GetGeometryForAI2p1()
           }
         else if (!subTagName.compare("sourceToNozzleOffsetAngle") )
           {
-          F.sourceToNozzleOffsetAngle = std::atof(subTagValue.c_str() );
+          F.sourceToNozzleOffsetAngle = 0; // std::atof(subTagValue.c_str());
           angleOffsetFound = true;
           }
         }
