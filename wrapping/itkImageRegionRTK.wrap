@@ -1,0 +1,6 @@
+itk_wrap_class("itk::ImageRegion")
+  list(FIND ITK_WRAP_IMAGE_DIMS "1" _index)
+  if (${_index} EQUAL -1)
+    itk_wrap_template(1 1)
+  endif()
+itk_end_wrap_class()
