@@ -27,7 +27,7 @@
 #include "itkCudaInPlaceImageFilter.h"
 #include "itkCudaUtil.h"
 #include "itkCudaKernelManager.h"
-#include "rtkWin32Header.h"
+#include "RTKExport.h"
 
 /** \class CudaForwardProjectionImageFilter
  * \brief Trilinear interpolation forward projection implemented in CUDA

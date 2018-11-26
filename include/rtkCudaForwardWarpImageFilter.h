@@ -23,7 +23,7 @@
 //Conditional definition of the class to pass ITKHeaderTest
 #ifdef RTK_USE_CUDA
 
-#include "rtkWin32Header.h"
+#include "RTKExport.h"
 #include "rtkForwardWarpImageFilter.h"
 
 #include <itkCudaImage.h>

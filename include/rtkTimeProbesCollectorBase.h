@@ -19,7 +19,7 @@
 #define rtkTimeProbesCollectorBase_h
 
 #include <itkTimeProbesCollectorBase.h>
-#include "rtkWin32Header.h"
+#include "RTKExport.h"
 
 namespace rtk
 {

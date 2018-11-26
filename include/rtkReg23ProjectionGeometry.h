@@ -21,7 +21,7 @@
 
 //RTK
 #include "rtkThreeDCircularProjectionGeometry.h"
-#include "rtkWin32Header.h"
+#include "RTKExport.h"
 
 //ITK
 #include <itkPoint.h>

@@ -24,7 +24,7 @@
 #include <itkDataObject.h>
 #include <itkObjectFactory.h>
 
-#include "rtkWin32Header.h"
+#include "RTKExport.h"
 #include "rtkMacro.h"
 
 namespace rtk

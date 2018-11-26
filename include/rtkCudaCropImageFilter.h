@@ -23,7 +23,7 @@
 #ifdef RTK_USE_CUDA
 
 #include <itkCropImageFilter.h>
-#include "rtkWin32Header.h"
+#include "RTKExport.h"
 
 #include <itkCudaImage.h>
 #include <itkCudaImageToImageFilter.h>

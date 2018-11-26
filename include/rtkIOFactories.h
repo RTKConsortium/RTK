@@ -19,7 +19,7 @@
 #ifndef rtkIOFactories_h
 #define rtkIOFactories_h
 
-#include "rtkWin32Header.h"
+#include "RTKExport.h"
 
 namespace rtk
 {

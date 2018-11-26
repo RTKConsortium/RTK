@@ -21,7 +21,7 @@
 
 #include <itkLightProcessObject.h>
 #include "rtkThreeDCircularProjectionGeometry.h"
-#include "rtkWin32Header.h"
+#include "RTKExport.h"
 
 // Trick KWStyle with a first declaration of namespace RTK. Style test would
 // not pass otherwise on the gdcm namespace.

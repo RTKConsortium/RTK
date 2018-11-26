@@ -25,7 +25,7 @@
 
 #include "rtkLaplacianImageFilter.h"
 #include <itkCudaInPlaceImageFilter.h>
-#include "rtkWin32Header.h"
+#include "RTKExport.h"
 
 namespace rtk
 {

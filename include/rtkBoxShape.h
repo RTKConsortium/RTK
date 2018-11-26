@@ -19,7 +19,7 @@
 #ifndef rtkBoxShape_h
 #define rtkBoxShape_h
 
-#include "rtkWin32Header.h"
+#include "RTKExport.h"
 #include "rtkMacro.h"
 #include "rtkConvexShape.h"
 
