@@ -28,7 +28,7 @@
 #include "rtkCudaDisplacedDetectorImageFilter.h"
 #include "rtkCudaParkerShortScanImageFilter.h"
 #include "rtkCudaConstantVolumeSource.h"
-#include "rtkWin32Header.h"
+#include "RTKExport.h"
 
 namespace rtk
 {

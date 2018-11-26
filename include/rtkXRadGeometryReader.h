@@ -21,7 +21,7 @@
 
 #include <itkLightProcessObject.h>
 #include "rtkReg23ProjectionGeometry.h"
-#include "rtkWin32Header.h"
+#include "RTKExport.h"
 
 namespace rtk
 {

@@ -21,7 +21,7 @@
 
 #include <vector_types.h>
 #include <vector>
-#include "rtkWin32Header.h"
+#include "RTKExport.h"
 
 void
 RTK_EXPORT CUDA_fft_convolution(const int3 &inputDimension,

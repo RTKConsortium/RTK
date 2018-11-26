@@ -24,7 +24,7 @@
 #ifdef RTK_USE_CUDA
 
 #include "rtkBackProjectionImageFilter.h"
-#include "rtkWin32Header.h"
+#include "RTKExport.h"
 
 #include <itkCudaImage.h>
 #include <itkCudaInPlaceImageFilter.h>

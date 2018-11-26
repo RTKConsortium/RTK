@@ -19,7 +19,7 @@
 #ifndef rtkThreeDCircularProjectionGeometry_h
 #define rtkThreeDCircularProjectionGeometry_h
 
-#include "rtkWin32Header.h"
+#include "RTKExport.h"
 #include "rtkProjectionGeometry.h"
 
 namespace rtk

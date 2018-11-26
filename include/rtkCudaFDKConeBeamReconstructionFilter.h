@@ -27,7 +27,7 @@
 #include "rtkCudaFDKWeightProjectionFilter.h"
 #include "rtkCudaFFTRampImageFilter.h"
 #include "rtkCudaFDKBackProjectionImageFilter.h"
-#include "rtkWin32Header.h"
+#include "RTKExport.h"
 
 namespace rtk
 {

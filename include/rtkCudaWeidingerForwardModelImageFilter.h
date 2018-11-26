@@ -27,7 +27,7 @@
 #include "itkCudaImageToImageFilter.h"
 #include "itkCudaUtil.h"
 #include "itkCudaKernelManager.h"
-#include "rtkWin32Header.h"
+#include "RTKExport.h"
 
 /** \class CudaWeidingerForwardModelImageFilter
  * \brief CUDA implementation of the Weidinger forward model filter
