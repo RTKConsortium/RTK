@@ -65,8 +65,13 @@ public:
    * with the i-th matrix provides the physical coordinate on
    * the i-th projection.
    */
-  const std::vector<MatrixType> &GetMatrices() const{
+  const std::vector<MatrixType> &GetMatrices() const {
     return this->m_Matrices;
+  }
+
+  /** Get the i-th projection matrix. */
+  MatrixType GetMatrix(const unsigned int i) const {
+    return this->m_Matrices[i];
   }
 
   /** Empty the geometry object. */
