@@ -161,15 +161,9 @@ list(APPEND RTK_INCLUDE_DIRS
 # --------------------------------------------------------
 # Setup KWStyle from ITK
 if(ITK_USE_KWSTYLE)
-  if(NOT EXISTS KWSTYLE_EXECUTABLE )
-    set( KWSTYLE_EXECUTABLE ${CMAKE_BINARY_DIR}/KWStyle-build/KWStyle)
-  endif()
-
-  set(WORKING_DIR "")
+  set(WORKING_DIR "${CMAKE_SOURCE_DIR}")
   if(ITK_SOURCE_DIR)
     set(WORKING_DIR "${ITK_SOURCE_DIR}")
-  else()
-    set(WORKING_DIR "${CMAKE_SOURCE_DIR}")
   endif()
 
   find_package( Git )
