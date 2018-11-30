@@ -1,6 +1,12 @@
 #!/bin/bash -x
 export CXXFLAGS="-fPIC -std=c++11"
 ctest -S /home/srit/src/rtk/rtk-dashboard/russula_suse_gcc.cmake -V
+ctest -S /home/srit/src/rtk/rtk-dashboard/russula_suse_gcc_shared_itk-v4.12.0.cmake -V
+ctest -S /home/srit/src/rtk/rtk-dashboard/russula_suse_gcc_itk-v4.12.0.cmake -V
+ctest -S /home/srit/src/rtk/rtk-dashboard/russula_suse_gcc_shared_itk-v4.13.1_nocuda.cmake -V
+ctest -S /home/srit/src/rtk/rtk-dashboard/russula_suse_gcc_shared_itk-v4.13.1.cmake -V
+ctest -S /home/srit/src/rtk/rtk-dashboard/russula_suse_gcc_itk-v4.13.1.cmake -V
+ctest -S /home/srit/src/rtk/rtk-dashboard/russula_suse_gcc_shared.cmake -V
 ctest -S /home/srit/src/rtk/rtk-dashboard/russula_suse_gcc_debug.cmake -V
 ctest -S /home/srit/src/rtk/rtk-dashboard/russula_style.cmake -V
 ctest -S /home/srit/src/rtk/rtk-dashboard/russula_doxygen.cmake -V
