@@ -6,9 +6,10 @@ option "config"    - "Config file"                                              
 option "geometry"  g  "XML geometry file name"                                   string   yes
 option "input"     i "Input volume file name"                                    string   yes
 option "output"    o "Output projections file name"                              string   yes
+option "attenuationmap" a "Attenuation map relative to the volume to perfom the attenuation correction"   string  no
 option "step"      s "Step size along ray (for CudaRayCast only)"                double   no   default="1"
 option "lowmem"    l "Compute only one projection at a time"                     flag     off
 
 section "Projectors"
-option "fp"    f "Forward projection method" values="Joseph","CudaRayCast" enum no default="Joseph"
+option "fp"    f "Forward projection method" values="Joseph","JosephAttenuated","CudaRayCast" enum no default="Joseph"
 

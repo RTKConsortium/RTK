@@ -21,6 +21,7 @@
 
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkJosephForwardProjectionImageFilter.h"
+#include "rtkJosephForwardAttenuatedProjectionImageFilter.h"
 #ifdef RTK_USE_CUDA
 #include "rtkCudaForwardProjectionImageFilter.h"
 #endif
@@ -77,17 +78,35 @@ int main(int argc, char * argv[])
   reader->SetFileName( args_info.input_arg );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->Update() )
 
+  itk::ImageSource< OutputImageType >::Pointer attenuationFilter;
+  if(args_info.attenuationmap_given)
+    {
+    if(args_info.verbose_flag)
+      std::cout << "Reading attenuation map "
+              << args_info.attenuationmap_arg
+              << "..."
+              << std::endl;
+    // Read an existing image to initialize the attenuation map
+    typedef itk::ImageFileReader<  OutputImageType > AttenuationReaderType;
+    AttenuationReaderType::Pointer attenuationReader = AttenuationReaderType::New();
+    attenuationReader->SetFileName( args_info.attenuationmap_arg );
+    attenuationFilter = attenuationReader;
+    }
+
   // Create forward projection image filter
   if(args_info.verbose_flag)
     std::cout << "Projecting volume..." << std::endl;
 
   rtk::ForwardProjectionImageFilter<OutputImageType, OutputImageType>::Pointer forwardProjection;
-  
+
   switch(args_info.fp_arg)
   {
   case(fp_arg_Joseph):
     forwardProjection = rtk::JosephForwardProjectionImageFilter<OutputImageType, OutputImageType>::New();
-    break;
+      break;
+  case(fp_arg_JosephAttenuated):
+    forwardProjection = rtk::JosephForwardAttenuatedProjectionImageFilter<OutputImageType, OutputImageType>::New();
+      break;
   case(fp_arg_CudaRayCast):
 #ifdef RTK_USE_CUDA
     forwardProjection = rtk::CudaForwardProjectionImageFilter<OutputImageType, OutputImageType>::New();
@@ -103,6 +122,8 @@ int main(int argc, char * argv[])
   }
   forwardProjection->SetInput( constantImageSource->GetOutput() );
   forwardProjection->SetInput( 1, reader->GetOutput() );
+  if(args_info.attenuationmap_given)
+    forwardProjection->SetInput(2, attenuationFilter->GetOutput());
   forwardProjection->SetGeometry( geometryReader->GetOutputObject() );
   if(!args_info.lowmem_flag)
     {
