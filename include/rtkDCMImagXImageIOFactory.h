@@ -19,7 +19,7 @@
 #ifndef rtkDCMImagXImageIOFactory_h
 #define rtkDCMImagXImageIOFactory_h
 
-#include "rtkWin32Header.h"
+#include "RTKExport.h"
 #include "rtkDCMImagXImageIO.h"
 #include <itkImageIOBase.h>
 #include <itkObjectFactoryBase.h>

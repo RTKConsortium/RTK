@@ -26,7 +26,7 @@
 #include "rtkInterpolatorWithKnownWeightsImageFilter.h"
 #include "itkCudaImage.h"
 #include "itkCudaInPlaceImageFilter.h"
-#include "rtkWin32Header.h"
+#include "RTKExport.h"
 
 namespace rtk
 {

@@ -19,7 +19,7 @@
 #ifndef __rtkCudaIntersectBox_hcu
 #define __rtkCudaIntersectBox_hcu
 
-#include "rtkWin32Header.h"
+#include "RTKExport.h"
 #include "rtkCudaUtilities.hcu"
 
 struct Ray {

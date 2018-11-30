@@ -19,7 +19,7 @@
 #ifndef rtkXRadImageIOFactory_h
 #define rtkXRadImageIOFactory_h
 
-#include "rtkWin32Header.h"
+#include "RTKExport.h"
 #include "rtkXRadImageIO.h"
 #include <itkImageIOBase.h>
 #include <itkObjectFactoryBase.h>

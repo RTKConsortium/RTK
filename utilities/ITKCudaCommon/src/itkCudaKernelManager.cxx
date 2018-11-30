@@ -69,7 +69,7 @@ bool CudaKernelManager::LoadProgramFromString(const char* str)
     {
     CUDA_CHECK(cuModuleLoadData(&module, str));
     }
-  catch(::itk::ExceptionObject e)
+  catch(::itk::ExceptionObject &e)
     {
     itkWarningMacro(<< e.GetDescription());
     }

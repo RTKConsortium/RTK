@@ -19,8 +19,7 @@
 #ifndef rtkQuadricShape_h
 #define rtkQuadricShape_h
 
-#include "rtkWin32Header.h"
-
+#include "RTKExport.h"
 #include <itkPoint.h>
 #include <rtkMacro.h>
 

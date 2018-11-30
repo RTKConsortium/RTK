@@ -19,7 +19,7 @@
 #ifndef rtkIntersectionOfConvexShapes_h
 #define rtkIntersectionOfConvexShapes_h
 
-#include "rtkWin32Header.h"
+#include "RTKExport.h"
 #include "rtkMacro.h"
 #include "rtkConvexShape.h"
 

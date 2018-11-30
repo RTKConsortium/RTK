@@ -23,9 +23,9 @@
 #pragma warning ( disable : 4786 )
 #endif
 
-#include "rtkWin32Header.h"
 #include <itkXMLFile.h>
 #include "rtkThreeDCircularProjectionGeometry.h"
+#include "RTKExport.h"
 
 namespace rtk
 {

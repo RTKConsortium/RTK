@@ -29,10 +29,13 @@ endif ()
 
 # GCS 2012-09-25 - Seems this is needed too
 if ("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "x86_64")
-	#  set (CUDA_CXX_FLAGS "${CUDA_CXX_FLAGS},-fPIC")
   set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -Xcompiler -fPIC")
 endif ()
 
+# SR Remove warning with shared libs and MSVC
+if(MSVC)
+  set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} -DRTK_EXPORTS")
+endif()
 
 set (CUDA_FOUND ${CUDA_FOUND} CACHE BOOL "Did we find cuda?")
 mark_as_advanced(CUDA_FOUND)

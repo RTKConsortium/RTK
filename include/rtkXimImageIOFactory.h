@@ -22,7 +22,7 @@
 #ifndef rtkXimImageIOFactory_h
 #define rtkXimImageIOFactory_h
 
-#include "rtkWin32Header.h"
+#include "RTKExport.h"
 #include "rtkXimImageIO.h"
 #include "rtkMacro.h"
 
