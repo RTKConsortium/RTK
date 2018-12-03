@@ -1,3 +1,10 @@
 itk_wrap_class("rtk::ExtractPhaseImageFilter" POINTER)
-  itk_wrap_image_filter("${WRAP_ITK_REAL}" 1 1)
+  # WARNING: Do not use "itk_wrap_image_filter(${WRAP_ITK_REAL} 1 1)" macro.
+  # The "itk_wrap_image_filter" macro verifies that the dimension parameter
+  # exists in ITK_WRAP_IMAGE_DIMS before wrapping anything.
+  # Instead, RTK should force wrapping of dimension 1 even if it was not
+  # requested in ITK_WRAP_IMAGE_DIMS.
+  foreach(t ${WRAP_ITK_REAL})
+    itk_wrap_template("I${ITKM_${t}}1" "itk::Image<${ITKT_${t}}, 1>")
+  endforeach()
 itk_end_wrap_class()
