@@ -19,7 +19,7 @@
 #ifndef rtkOraImageIOFactory_h
 #define rtkOraImageIOFactory_h
 
-#include "rtkWin32Header.h"
+#include "RTKExport.h"
 #include "rtkOraImageIO.h"
 
 // itk include

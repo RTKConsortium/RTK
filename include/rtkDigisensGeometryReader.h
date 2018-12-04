@@ -19,9 +19,9 @@
 #ifndef rtkDigisensGeometryReader_h
 #define rtkDigisensGeometryReader_h
 
+#include "RTKExport.h"
 #include <itkLightProcessObject.h>
 #include "rtkThreeDCircularProjectionGeometry.h"
-#include "rtkWin32Header.h"
 
 namespace rtk
 {

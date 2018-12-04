@@ -23,7 +23,7 @@
 #pragma warning ( disable : 4786 )
 #endif
 
-#include "rtkWin32Header.h"
+#include "RTKExport.h"
 #include <itkXMLFile.h>
 #include "rtkThreeDCircularProjectionGeometry.h"
 

@@ -22,7 +22,7 @@
 #include "rtkGlobalTimerProbesCollector.h"
 #include "rtkTimeProbesCollectorBase.h"
 #include "rtkWatcherForTimer.h"
-#include "rtkWin32Header.h"
+#include "RTKExport.h"
 #include <mutex>
 
 namespace rtk

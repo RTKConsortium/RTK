@@ -22,7 +22,7 @@
 #include <itkConstNeighborhoodIterator.h>
 #include <itkVectorImage.h>
 
-#include "rtkWin32Header.h"
+#include "RTKExport.h"
 #include "rtkMacro.h"
 
 namespace rtk

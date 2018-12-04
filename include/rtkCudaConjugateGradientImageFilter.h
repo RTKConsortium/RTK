@@ -25,7 +25,7 @@
 
 #include "rtkConjugateGradientImageFilter.h"
 #include <itkCudaImageToImageFilter.h>
-#include "rtkWin32Header.h"
+#include "RTKExport.h"
 
 namespace rtk
 {

@@ -19,7 +19,7 @@
 #ifndef rtkHisImageIOFactory_h
 #define rtkHisImageIOFactory_h
 
-#include "rtkWin32Header.h"
+#include "RTKExport.h"
 #include "rtkHisImageIO.h"
 #include "rtkMacro.h"
 

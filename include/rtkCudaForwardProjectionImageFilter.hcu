@@ -19,7 +19,7 @@
 #ifndef __rtkCudaForwardProjectionImageFilter_hcu
 #define __rtkCudaForwardProjectionImageFilter_hcu
 
-#include "rtkWin32Header.h"
+#include "RTKExport.h"
 
 void
 RTK_EXPORT CUDA_forward_project(int projSize[3],

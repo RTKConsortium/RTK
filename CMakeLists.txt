@@ -95,11 +95,10 @@ endif()
 
 # --------------------------------------------------------
 # Shared libraries option
-if("${ITK_LIBRARY_BUILD_TYPE}" STREQUAL "SHARED")
-  set(RTK_BUILD_SHARED_LIBS ON)
-else()
-  set(RTK_BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS})
+if(NOT ITK_SOURCE_DIR)
+  set(BUILD_SHARED_LIBS ${ITK_BUILD_SHARED})
 endif()
+set(RTK_BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS})
 
 # ----------------------------------------------------------------------------
 # Set RTK_DATA_ROOT
@@ -161,15 +160,9 @@ list(APPEND RTK_INCLUDE_DIRS
 # --------------------------------------------------------
 # Setup KWStyle from ITK
 if(ITK_USE_KWSTYLE)
-  if(NOT EXISTS KWSTYLE_EXECUTABLE )
-    set( KWSTYLE_EXECUTABLE ${CMAKE_BINARY_DIR}/KWStyle-build/KWStyle)
-  endif()
-
-  set(WORKING_DIR "")
+  set(WORKING_DIR "${CMAKE_SOURCE_DIR}")
   if(ITK_SOURCE_DIR)
     set(WORKING_DIR "${ITK_SOURCE_DIR}")
-  else()
-    set(WORKING_DIR "${CMAKE_SOURCE_DIR}")
   endif()
 
   find_package( Git )

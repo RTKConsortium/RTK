@@ -19,7 +19,7 @@
 #ifndef __rtkCudaBackProjectionImageFilter_hcu
 #define __rtkCudaBackProjectionImageFilter_hcu
 
-#include "rtkWin32Header.h"
+#include "RTKExport.h"
 
 void
 RTK_EXPORT

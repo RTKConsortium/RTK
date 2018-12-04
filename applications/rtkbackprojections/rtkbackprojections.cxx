@@ -23,6 +23,7 @@
 #include "rtkFDKBackProjectionImageFilter.h"
 #include "rtkFDKWarpBackProjectionImageFilter.h"
 #include "rtkJosephBackProjectionImageFilter.h"
+#include "rtkJosephBackAttenuatedProjectionImageFilter.h"
 #ifdef RTK_USE_CUDA
 #  include "rtkCudaFDKBackProjectionImageFilter.h"
 #  include "rtkCudaBackProjectionImageFilter.h"
@@ -68,6 +69,21 @@ int main(int argc, char * argv[])
   rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkbackprojections>(reader, args_info);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->Update() )
 
+  itk::ImageSource< OutputImageType >::Pointer attenuationFilter;
+  if(args_info.attenuationmap_given)
+    {
+    if(args_info.verbose_flag)
+      std::cout << "Reading attenuation map "
+              << args_info.attenuationmap_arg
+              << "..."
+              << std::endl;
+    // Read an existing image to initialize the attenuation map
+    typedef itk::ImageFileReader<  OutputImageType > AttenuationReaderType;
+    AttenuationReaderType::Pointer attenuationReader = AttenuationReaderType::New();
+    attenuationReader->SetFileName( args_info.attenuationmap_arg );
+    attenuationFilter = attenuationReader;
+    }
+
   // Create back projection image filter
   if(args_info.verbose_flag)
     std::cout << "Backprojecting volume..." << std::endl;
@@ -107,6 +123,9 @@ int main(int argc, char * argv[])
     case(bp_arg_Joseph):
       bp = rtk::JosephBackProjectionImageFilter<OutputImageType, OutputImageType>::New();
       break;
+    case(bp_arg_JosephAttenuated):
+      bp = rtk::JosephBackAttenuatedProjectionImageFilter<OutputImageType, OutputImageType>::New();
+      break;
     case(bp_arg_CudaFDKBackProjection):
 #ifdef RTK_USE_CUDA
       bp = rtk::CudaFDKBackProjectionImageFilter::New();
@@ -138,6 +157,8 @@ int main(int argc, char * argv[])
 
   bp->SetInput( constantImageSource->GetOutput() );
   bp->SetInput( 1, reader->GetOutput() );
+  if(args_info.attenuationmap_given)
+    bp->SetInput(2, attenuationFilter->GetOutput());
   bp->SetGeometry( geometryReader->GetOutputObject() );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( bp->Update() )
 

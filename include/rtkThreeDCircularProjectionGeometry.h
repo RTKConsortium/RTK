@@ -19,7 +19,7 @@
 #ifndef rtkThreeDCircularProjectionGeometry_h
 #define rtkThreeDCircularProjectionGeometry_h
 
-#include "rtkWin32Header.h"
+#include "RTKExport.h"
 #include "rtkProjectionGeometry.h"
 
 namespace rtk
@@ -188,15 +188,31 @@ public:
   const std::vector<TwoDHomogeneousMatrixType> &GetProjectionTranslationMatrices() const {
     return this->m_ProjectionTranslationMatrices;
   }
+  TwoDHomogeneousMatrixType GetProjectionTranslationMatrix(const unsigned int i) const {
+    return this->m_ProjectionTranslationMatrices[i];
+  }
+
   const std::vector<ThreeDHomogeneousMatrixType> &GetRotationMatrices() const {
     return this->m_RotationMatrices;
   }
+  ThreeDHomogeneousMatrixType GetRotationMatrix(const unsigned int i) const {
+    return this->m_RotationMatrices[i];
+  }
+
   const std::vector<ThreeDHomogeneousMatrixType> &GetSourceTranslationMatrices() const {
     return this->m_SourceTranslationMatrices;
   }
+  ThreeDHomogeneousMatrixType GetSourceTranslationMatrices(const unsigned int i) const {
+    return this->m_SourceTranslationMatrices[i];
+  }
+
   const std::vector<Superclass::MatrixType> &GetMagnificationMatrices() const {
     return this->m_MagnificationMatrices;
   }
+  Superclass::MatrixType GetMagnificationMatrices(const unsigned int i) const {
+    return this->m_MagnificationMatrices[i];
+  }
+
 
   /** Get the vector containing the collimation jaw parameters. */
   const std::vector<double> &GetCollimationUInf() const {

@@ -56,7 +56,7 @@ public:
     }
   inline TOutput operator()( const TInput & A ) const
     {
-    return (!A)?0.:TOutput( std::log(m_I0-m_IDark) - std::log( A-m_IDark ) );
+    return (!A)?0.:TOutput( std::log( (m_I0-m_IDark) / ( A-m_IDark ) ) );
     }
   void SetI0(double i0) {m_I0 = i0;}
   void SetIDark(double idark) {m_IDark = idark;}

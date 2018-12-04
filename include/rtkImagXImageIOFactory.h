@@ -19,7 +19,7 @@
 #ifndef rtkImagXImageIOFactory_h
 #define rtkImagXImageIOFactory_h
 
-#include "rtkWin32Header.h"
+#include "RTKExport.h"
 #include "rtkImagXImageIO.h"
 #include <itkImageIOBase.h>
 #include <itkObjectFactoryBase.h>
