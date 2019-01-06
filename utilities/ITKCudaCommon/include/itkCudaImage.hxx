@@ -224,10 +224,11 @@ CudaImage< TPixel, VImageDimension >::Graft(const Superclass *data)
     {
     m_DataManager = CudaImageDataManager< CudaImage< TPixel, VImageDimension > >::New();
     m_DataManager->SetImagePointer(this);
-    if(this->GetBufferPointer())
-      {
-      m_DataManager->SetCPUDirtyFlag(false);
-      }
+    m_DataManager->SetCPUBufferPointer(Superclass::GetBufferPointer());
+    unsigned long numPixel = this->GetOffsetTable()[VImageDimension];
+    m_DataManager->SetBufferSize(sizeof(TPixel)*numPixel);
+    m_DataManager->SetCPUDirtyFlag(this->GetBufferPointer() == NULL);
+    m_DataManager->SetTimeStamp(this->GetTimeStamp());
     }
   return;
 }
