@@ -96,9 +96,10 @@ int main(int argc, char * argv[])
     std::cerr << "This tool has been designed for 2D, i.e., with one row in the sinogram only." << std::endl;
     return EXIT_FAILURE;
     }
-  if(!reader->GetOutput()->GetDirection().GetVnlMatrix().is_identity ())
+  const OutputImageType::DirectionType dir = reader->GetOutput()->GetDirection();
+  if(itk::Math::abs(dir[0][0]) != 1. || itk::Math::abs(dir[1][1]) != 1.)
     {
-    std::cerr << "Projections with non-identity Direction is not handled." << std::endl;
+    std::cerr << "Projections with non-diagonal Direction is not handled." << std::endl;
     return EXIT_FAILURE;
     }
 
