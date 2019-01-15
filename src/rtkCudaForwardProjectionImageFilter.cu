@@ -217,6 +217,9 @@ CUDA_forward_project(int projSize[3],
     case 3:
     kernel_forwardProject<3> <<< dimGrid, dimBlock >>> (dev_proj_in, dev_proj_out, dev_vol, dev_tex_vol);
     break;
+
+    default:
+      itkGenericExceptionMacro("Vector length " << vectorLength << " is not supported.")
     }
   CUDA_CHECK_ERROR;
 
