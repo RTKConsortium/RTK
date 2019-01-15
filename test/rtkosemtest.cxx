@@ -4,6 +4,7 @@
 #include "rtkDrawEllipsoidImageFilter.h"
 #include "rtkRayEllipsoidIntersectionImageFilter.h"
 #include "rtkConstantImageSource.h"
+#include "itkMaskImageFilter.h"
 
 #ifdef RTK_USE_CUDA
   #include "itkCudaImage.h"
@@ -46,9 +47,11 @@ int main(int, char** )
   ConstantImageSourceType::PointType origin;
   ConstantImageSourceType::SizeType size;
   ConstantImageSourceType::SpacingType spacing;
+  const double att = 0.0154;
 
   ConstantImageSourceType::Pointer tomographySource  = ConstantImageSourceType::New();
   ConstantImageSourceType::Pointer volumeSource  = ConstantImageSourceType::New();
+  ConstantImageSourceType::Pointer attenuationInput = ConstantImageSourceType::New();
   origin[0] = -127.;
   origin[1] = -127.;
   origin[2] = -127.;
@@ -75,6 +78,10 @@ int main(int, char** )
   volumeSource->SetSpacing( spacing );
   volumeSource->SetSize( size );
   volumeSource->SetConstant( 1. );
+  attenuationInput->SetOrigin( origin );
+  attenuationInput->SetSpacing( spacing );
+  attenuationInput->SetSize( size );
+  attenuationInput->SetConstant( att );
 
   ConstantImageSourceType::Pointer projectionsSource = ConstantImageSourceType::New();
   origin[0] = -255.;
@@ -129,7 +136,14 @@ int main(int, char** )
   typedef rtk::DrawEllipsoidImageFilter<OutputImageType, OutputImageType> DEType;
   DEType::Pointer dsl = DEType::New();
   dsl->SetInput( tomographySource->GetOutput() );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( dsl->Update() )
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( dsl->Update() );
+
+  // Create attenuation map according to the reference object
+  typedef itk::MaskImageFilter< OutputImageType, OutputImageType > MaskFilterType;
+  MaskFilterType::Pointer maskFilter = MaskFilterType::New();
+  maskFilter->SetInput(attenuationInput->GetOutput());
+  maskFilter->SetMaskImage(dsl->GetOutput());
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( maskFilter->Update() );
 
   // OSEM reconstruction filtering
   typedef rtk::OSEMConeBeamReconstructionFilter< OutputImageType > OSEMType;
@@ -182,6 +196,32 @@ int main(int, char** )
   std::cout << "\n\nTest PASSED! " << std::endl;
 #endif
 
+  typedef itk::ImageRegionIterator<OutputImageType> ImageIterator;
+  ImageIterator itRei( rei->GetOutput(), rei->GetOutput()->GetBufferedRegion() );
 
+  itRei.GoToBegin();
+
+  while( !itRei.IsAtEnd() )
+  {
+    typename OutputImageType::PixelType RefVal = itRei.Get();
+    if(att == 0)
+      itRei.Set(RefVal);
+    else
+      itRei.Set((1-exp(-RefVal*att))/(att));
+    ++itRei;
+  }
+  osem->SetInput(1, rei->GetOutput());
+  osem->SetInput(2, maskFilter->GetOutput());
+
+  std::cout << "\n\n****** Case 5: Joseph Attenuated Backprojector, OS-EM with 30 projections per subset and 1 iterations******" << std::endl;
+
+  osem->SetNumberOfIterations(1);
+  osem->SetBackProjectionFilter(OSEMType::BP_JOSEPHATTENUATED);
+  osem->SetForwardProjectionFilter(OSEMType::FP_JOSEPHATTENUATED);
+  osem->SetNumberOfProjectionsPerSubset(30);
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( osem->Update() );
+
+  CheckImageQuality<OutputImageType>(osem->GetOutput(), dsl->GetOutput(), 0.032, 28.0, 2.0);
+  std::cout << "\n\nTest PASSED! " << std::endl;
   return EXIT_SUCCESS;
 }
