@@ -38,7 +38,6 @@
 * CUDA #includes *
 *****************/
 #include <cuda.h>
-#include <device_functions.h>
 
 // T E X T U R E S ////////////////////////////////////////////////////////
 texture<float, 1, cudaReadModeElementType> tex_IndexInputToPPInputMatrix;

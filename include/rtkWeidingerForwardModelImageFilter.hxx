@@ -158,6 +158,7 @@ WeidingerForwardModelImageFilter< TMaterialProjections, TPhotonCounts, TSpectrum
     {
     modified = true;
     m_BinnedDetectorResponse.set_size(nBins, nEnergies);
+    m_BinnedDetectorResponse.fill(0.);
     }
 
   for ( unsigned int r = 0; r < nBins; r++ )
@@ -189,6 +190,7 @@ WeidingerForwardModelImageFilter< TMaterialProjections, TPhotonCounts, TSpectrum
     {
     modified = true;
     m_MaterialAttenuations.set_size(nEnergies, nMaterials);
+    m_MaterialAttenuations.fill(0.);
     }
 
   for ( unsigned int r = 0; r < nEnergies; r++ )

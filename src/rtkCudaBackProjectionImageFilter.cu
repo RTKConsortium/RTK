@@ -211,6 +211,9 @@ CUDA_back_project(int projSize[3],
       else
         kernel_backProject<9, true> <<< dimGrid, dimBlock >>> (dev_vol_in, dev_vol_out, radiusCylindricalDetector, dev_tex_proj);
       break;
+
+    default:
+      itkGenericExceptionMacro("Vector length " << vectorLength << " is not supported.")
     }
   CUDA_CHECK_ERROR;
 
