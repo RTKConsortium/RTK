@@ -45,15 +45,12 @@ ReconstructionConjugateGradientOperator<TOutputImage,
 //#else
   m_ConstantProjectionsSource = ConstantSourceType::New();
   m_ConstantVolumeSource = ConstantSourceType::New();
-//  m_LaplacianFilter = LaplacianFilterType::New();
 //#endif
   m_MultiplyWithWeightsFilter = MultiplyWithWeightsFilterType::New();
   m_MultiplyOutputVolumeFilter = MultiplyFilterType::New();
   m_MultiplyInputVolumeFilter = MultiplyFilterType::New();
-//  m_AddLaplacianFilter = AddFilterType::New();
   m_AddTikhonovFilter = AddFilterType::New();
 
-//  m_MultiplyLaplacianFilter = MultiplyFilterType::New();
   m_MultiplyTikhonovFilter = MultiplyFilterType::New();
 
   // Set permanent parameters
@@ -160,8 +157,8 @@ template< typename TOutputImage,
 typename TSingleComponentImage::ConstPointer
 ReconstructionConjugateGradientOperator<TOutputImage,
                                               TSingleComponentImage,
-                                              TWeightsImage>::
-GetSupportMask()
+                                              TWeightsImage>
+::GetSupportMask()
 {
   return static_cast< const TSingleComponentImage * >
           ( this->itk::ProcessObject::GetInput("SupportMask") );
@@ -268,20 +265,11 @@ ReconstructionConjugateGradientOperator<TOutputImage,
   m_BackProjectionFilter->SetInput(1, m_MultiplyWithWeightsFilter->GetOutput());
   m_FloatingOutputPointer= m_BackProjectionFilter->GetOutput();
 
-//  // Set the filters to compute the laplacian regularization, if any
-//  if (m_Gamma != 0)
-//    {
-//    m_LaplacianFilter->SetInput(m_FloatingInputPointer);
-//    m_MultiplyLaplacianFilter->SetInput1(m_LaplacianFilter->GetOutput());
-//    // Set "-1.0*gamma" because we need to perform "-1.0*Laplacian"
-//    // for correctly applying quadratic regularization || grad f ||_2^2
-//    m_MultiplyLaplacianFilter->SetConstant2(-1.0*m_Gamma);
-
-//    m_AddLaplacianFilter->SetInput(0, m_BackProjectionFilter->GetOutput());
-//    m_AddLaplacianFilter->SetInput(1, m_MultiplyLaplacianFilter->GetOutput());
-
-//    m_FloatingOutputPointer= m_AddLaplacianFilter->GetOutput();
-//    }
+  // Set the filters to compute the laplacian regularization, if any
+  if (m_Gamma != 0)
+    {
+    m_FloatingOutputPointer = ConnectGradientRegularization<TOutputImage>();
+    }
 
   // Set the filters to compute the Tikhonov regularization, if any
   if (m_Tikhonov != 0)
@@ -325,11 +313,52 @@ template< typename TOutputImage,
 void
 ReconstructionConjugateGradientOperator<TOutputImage,
                                         TSingleComponentImage,
-                                        TWeightsImage>::GenerateData()
+                                        TWeightsImage>
+::GenerateData()
 {
   // Execute Pipeline
   m_FloatingOutputPointer->Update();
   this->GraftOutput( m_FloatingOutputPointer );
+}
+
+template< typename TOutputImage,
+          typename TSingleComponentImage,
+          typename TWeightsImage>
+template < typename ImageType >
+typename std::enable_if< std::is_same< TSingleComponentImage, ImageType >::value, ImageType >::type::Pointer
+ReconstructionConjugateGradientOperator<TOutputImage,
+                                        TSingleComponentImage,
+                                        TWeightsImage>
+::ConnectGradientRegularization()
+{
+  typedef rtk::LaplacianImageFilter<TOutputImage, GradientImageType> LaplacianFilterType;
+  m_LaplacianFilter = LaplacianFilterType::New();
+  m_LaplacianFilter->SetInput(m_FloatingInputPointer);
+  m_MultiplyLaplacianFilter = MultiplyFilterType::New();
+  m_MultiplyLaplacianFilter->SetInput1(m_LaplacianFilter->GetOutput());
+  // Set "-1.0*gamma" because we need to perform "-1.0*Laplacian"
+  // for correctly applying quadratic regularization || grad f ||_2^2
+  m_MultiplyLaplacianFilter->SetConstant2(-1.0*m_Gamma);
+
+  m_AddLaplacianFilter = AddFilterType::New();
+  m_AddLaplacianFilter->SetInput(0, m_BackProjectionFilter->GetOutput());
+  m_AddLaplacianFilter->SetInput(1, m_MultiplyLaplacianFilter->GetOutput());
+
+  return m_AddLaplacianFilter->GetOutput();
+}
+
+template< typename TOutputImage,
+          typename TSingleComponentImage,
+          typename TWeightsImage>
+template < typename ImageType >
+typename std::enable_if< !std::is_same< TSingleComponentImage, ImageType >::value, ImageType >::type::Pointer
+ReconstructionConjugateGradientOperator<TOutputImage,
+                                        TSingleComponentImage,
+                                        TWeightsImage>
+::ConnectGradientRegularization()
+{
+  itkWarningMacro(<< "Gradient regularization is not enabled for vector images, assuming Gamma 0");
+  return m_FloatingOutputPointer;
 }
 
 }// end namespace
