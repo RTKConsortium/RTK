@@ -42,7 +42,7 @@ template< typename TImage>
 class NesterovUpdateImageFilter : public itk::InPlaceImageFilter< TImage,  TImage>
 {
 public:
-   
+
   /** Standard class typedefs. */
   typedef NesterovUpdateImageFilter                        Self;
   typedef itk::InPlaceImageFilter< TImage, TImage>         Superclass;
@@ -80,16 +80,16 @@ protected:
 
   void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
-  int                 m_NumberOfIterations;
-  int                 m_CurrentIteration;
-  bool                m_MustInitializeIntermediateImages;
+  int                                                m_NumberOfIterations;
+  int                                                m_CurrentIteration;
+  bool                                               m_MustInitializeIntermediateImages;
   std::vector<typename TImage::PixelType::ValueType> m_tCoeffs;
   std::vector<typename TImage::PixelType::ValueType> m_Sums;
   std::vector<typename TImage::PixelType::ValueType> m_Ratios;
 
   // Internal images
   typename TImage::Pointer m_Vk;
-  typename TImage::Pointer m_Zk;
+  typename TImage::Pointer m_Alphak;
 
 private:
   NesterovUpdateImageFilter(const Self &); //purposely not implemented

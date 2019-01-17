@@ -345,9 +345,6 @@ MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectr
   m_NesterovFilter->SetNumberOfIterations(m_NumberOfIterations * m_NumberOfSubsets + 1);
   m_NesterovFilter->ResetIterations();
 
-  // Declare the pointer that will be used to plug output back as input
-  typename TOutputImage::Pointer NextAlpha_k;
-
   // Run the iteration loop
   for(int iter = 0; iter < m_NumberOfIterations; iter++)
     {
@@ -362,10 +359,12 @@ MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectr
       // needs the new update from rtkGetNewtonUpdateImageFilter
       if ((iter + subset) >0)
         {
-        NextAlpha_k = m_NesterovFilter->GetOutput();
-        NextAlpha_k->DisconnectPipeline();
-        m_ForwardProjectionFilter->SetInput(1, NextAlpha_k);
-        m_SQSRegul->SetInput(NextAlpha_k);
+        typename TOutputImage::Pointer Next_Zk;
+        Next_Zk = m_NesterovFilter->GetOutput();
+        Next_Zk->DisconnectPipeline();
+        m_ForwardProjectionFilter->SetInput(1, Next_Zk);
+        m_SQSRegul->SetInput(Next_Zk);
+        m_NesterovFilter->SetInput(Next_Zk);
         }
 
       // Set the extract filter's region

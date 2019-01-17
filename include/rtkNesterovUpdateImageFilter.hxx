@@ -30,7 +30,7 @@ NesterovUpdateImageFilter<TImage>::NesterovUpdateImageFilter()
 {
   this->SetNumberOfRequiredInputs(2);
   m_Vk = TImage::New();
-  m_Zk = TImage::New();
+  m_Alphak = TImage::New();
 
   m_NumberOfIterations = 100;
   m_MustInitializeIntermediateImages = true;
@@ -40,8 +40,6 @@ NesterovUpdateImageFilter<TImage>::NesterovUpdateImageFilter()
 template<typename TImage>
 NesterovUpdateImageFilter<TImage>::~NesterovUpdateImageFilter()
 {
-  m_Vk->ReleaseData();
-  m_Zk->ReleaseData();
 }
 
 template<typename TImage>
@@ -98,9 +96,9 @@ void NesterovUpdateImageFilter<TImage>
     m_Vk->CopyInformation(this->GetInput(0));
     m_Vk->SetRegions(m_Vk->GetLargestPossibleRegion());
     m_Vk->Allocate();
-    m_Zk->CopyInformation(this->GetInput(0));
-    m_Zk->SetRegions(m_Zk->GetLargestPossibleRegion());
-    m_Zk->Allocate();
+    m_Alphak->CopyInformation(this->GetInput(0));
+    m_Alphak->SetRegions(m_Alphak->GetLargestPossibleRegion());
+    m_Alphak->Allocate();
     }
 }
 
@@ -117,36 +115,53 @@ void NesterovUpdateImageFilter<TImage>
     // Copy the input 0 into them
     itk::ImageRegionConstIterator<TImage> inIt(this->GetInput(0), outputRegionForThread);
     itk::ImageRegionIterator<TImage> vIt(m_Vk, outputRegionForThread);
-    itk::ImageRegionIterator<TImage> zIt(m_Zk, outputRegionForThread);
+    itk::ImageRegionIterator<TImage> alphaIt(m_Alphak, outputRegionForThread);
 
     while(!inIt.IsAtEnd())
       {
       vIt.Set(inIt.Get());
-      zIt.Set(inIt.Get());
+      alphaIt.Set(inIt.Get());
 
       ++inIt;
       ++vIt;
-      ++zIt;
+      ++alphaIt;
       }
     }
 
   // Create iterators for all inputs and outputs
-  itk::ImageRegionIterator<TImage> alpha_k_It(this->GetOutput(), outputRegionForThread);
   itk::ImageRegionIterator<TImage> v_k_It(m_Vk, outputRegionForThread);
-  itk::ImageRegionIterator<TImage> z_k_It(m_Zk, outputRegionForThread);
+  itk::ImageRegionConstIterator<TImage> z_k_ItIn(this->GetInput(), outputRegionForThread);
+  itk::ImageRegionIterator<TImage> z_k_ItOut(this->GetOutput(), outputRegionForThread);
   itk::ImageRegionConstIterator<TImage> g_k_It(this->GetInput(1), outputRegionForThread);
 
   // Perform computations
-  while(!alpha_k_It.IsAtEnd())
+  if(m_CurrentIteration == m_NumberOfIterations)
     {
-    alpha_k_It.Set(z_k_It.Get() - g_k_It.Get());
-    v_k_It.Set(v_k_It.Get() - m_tCoeffs[m_CurrentIteration] * g_k_It.Get());
-    z_k_It.Set(alpha_k_It.Get() + m_Ratios[m_CurrentIteration + 1] * (v_k_It.Get() - alpha_k_It.Get()) );
+    // Last iteration, no need to update v_k and z_k. Return alpha_k, the current iterate.
+    itk::ImageRegionIterator<TImage> alpha_k_It(this->GetOutput(), outputRegionForThread);
+    while(!alpha_k_It.IsAtEnd())
+      {
+      alpha_k_It.Set(z_k_ItIn.Get() - g_k_It.Get());
+      ++alpha_k_It;
+      ++z_k_ItIn;
+      ++g_k_It;
+      }
+    }
+  else
+    {
+    itk::ImageRegionIterator<TImage> alpha_k_It(m_Alphak, outputRegionForThread);
+    while(!alpha_k_It.IsAtEnd())
+      {
+      alpha_k_It.Set(z_k_ItIn.Get() - g_k_It.Get());
+      v_k_It.Set(v_k_It.Get() - m_tCoeffs[m_CurrentIteration] * g_k_It.Get());
+      z_k_ItOut.Set(alpha_k_It.Get() + m_Ratios[m_CurrentIteration + 1] * (v_k_It.Get() - alpha_k_It.Get()) );
 
-    ++alpha_k_It;
-    ++v_k_It;
-    ++z_k_It;
-    ++g_k_It;
+      ++alpha_k_It;
+      ++v_k_It;
+      ++z_k_ItIn;
+      ++z_k_ItOut;
+      ++g_k_It;
+      }
     }
 }
 
