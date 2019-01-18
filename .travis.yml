@@ -87,12 +87,11 @@ before_script:
 script:
   - DO_BUILD_RTK=true
   - cd ${ITK_BUILD_DIR}
-  - if test $TRAVIS_OS_NAME == linux ; then KWSTYLE_CMAKE_OPTIONS="-DITK_USE_KWSTYLE=ON"; fi
+  - if test $TRAVIS_OS_NAME == linux ; then KWSTYLE_CMAKE_OPTIONS="-DITK_USE_KWSTYLE=ON"; else KWSTYLE_CMAKE_OPTIONS="-DITK_USE_KWSTYLE=OFF" ; fi
   - if ! test -e ${ITK_BUILD_DIR}/Makefile; then cmake ${ITK_SOURCE_DIR} ${KWSTYLE_CMAKE_OPTIONS}
     -DCMAKE_BUILD_TYPE=Release
     -DBUILD_EXAMPLES=OFF
     -DBUILD_TESTING=OFF
-    -DModule_ITKReview=ON
     -DITK_USE_FFTWD=ON
     -DITK_USE_FFTWF=ON
     -DITK_USE_SYSTEM_FFTW=ON
