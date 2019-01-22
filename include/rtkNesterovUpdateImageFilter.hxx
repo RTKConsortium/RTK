@@ -34,39 +34,11 @@ NesterovUpdateImageFilter<TImage>::NesterovUpdateImageFilter()
 
   m_NumberOfIterations = 100;
   m_MustInitializeIntermediateImages = true;
-  this->ResetIterations();
 }
 
 template<typename TImage>
 NesterovUpdateImageFilter<TImage>::~NesterovUpdateImageFilter()
 {
-}
-
-template<typename TImage>
-void
-NesterovUpdateImageFilter<TImage>::ResetIterations()
-{
-  // Nesterov's coefficients change at every iteration,
-  // and this filter only performs one iteration. It needs
-  // to keep track of the iteration number
-  m_CurrentIteration = 0;
-
-  // Precompute enough Nesterov coefficients for the expected
-  // number of iterations
-  m_tCoeffs.clear();
-  m_Sums.clear();
-  m_Ratios.clear();
-  m_tCoeffs.push_back(1.0);
-  m_Sums.push_back(0.0);
-  m_Ratios.push_back(0.0);
-  for (int k=1; k<m_NumberOfIterations; k++)
-    {
-    m_tCoeffs.push_back(0.5 * (1 + sqrt(1+ 4 * m_tCoeffs[k-1] * m_tCoeffs[k-1])));
-    m_Sums.push_back(m_Sums[k-1] + m_tCoeffs[k]);
-    m_Ratios.push_back(m_tCoeffs[k] / m_Sums[k]);
-    }
-
-  m_MustInitializeIntermediateImages = true;
 }
 
 template<typename TImage>
@@ -99,7 +71,21 @@ void NesterovUpdateImageFilter<TImage>
     m_Alphak->CopyInformation(this->GetInput(0));
     m_Alphak->SetRegions(m_Alphak->GetLargestPossibleRegion());
     m_Alphak->Allocate();
+
+    // Nesterov's coefficients change at every iteration,
+    // and this filter only performs one iteration. It needs
+    // to keep track of the iteration number
+    m_CurrentIteration = 0;
+
+    m_tCoeff = 1.;
+    m_Sum = 0.;
+    m_Ratio = 0.;
     }
+  else
+    m_tCoeff = m_tCoeffNext;
+  m_tCoeffNext = 0.5 * (1. + sqrt(1. + 4. * m_tCoeff * m_tCoeff));
+  m_Sum += m_tCoeffNext;
+  m_Ratio = m_tCoeffNext / m_Sum;
 }
 
 template<typename TImage>
@@ -135,7 +121,7 @@ void NesterovUpdateImageFilter<TImage>
   itk::ImageRegionConstIterator<TImage> g_k_It(this->GetInput(1), outputRegionForThread);
 
   // Perform computations
-  if(m_CurrentIteration == m_NumberOfIterations)
+  if(m_CurrentIteration == m_NumberOfIterations-1)
     {
     // Last iteration, no need to update v_k and z_k. Return alpha_k, the current iterate.
     itk::ImageRegionIterator<TImage> alpha_k_It(this->GetOutput(), outputRegionForThread);
@@ -153,8 +139,8 @@ void NesterovUpdateImageFilter<TImage>
     while(!alpha_k_It.IsAtEnd())
       {
       alpha_k_It.Set(z_k_ItIn.Get() - g_k_It.Get());
-      v_k_It.Set(v_k_It.Get() - m_tCoeffs[m_CurrentIteration] * g_k_It.Get());
-      z_k_ItOut.Set(alpha_k_It.Get() + m_Ratios[m_CurrentIteration + 1] * (v_k_It.Get() - alpha_k_It.Get()) );
+      v_k_It.Set(v_k_It.Get() - m_tCoeff * g_k_It.Get());
+      z_k_ItOut.Set(alpha_k_It.Get() + m_Ratio * (v_k_It.Get() - alpha_k_It.Get()) );
 
       ++alpha_k_It;
       ++v_k_It;
@@ -170,7 +156,10 @@ void NesterovUpdateImageFilter<TImage>
 ::AfterThreadedGenerateData()
 {
   m_CurrentIteration++;
-  m_MustInitializeIntermediateImages = false;
+  if(m_CurrentIteration == m_NumberOfIterations)
+    m_MustInitializeIntermediateImages = true;
+  else
+    m_MustInitializeIntermediateImages = false;
 }
 
 }// end namespace

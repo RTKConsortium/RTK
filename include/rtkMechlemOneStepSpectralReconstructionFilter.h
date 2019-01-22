@@ -184,8 +184,16 @@ public:
 
     itkSetMacro(NumberOfIterations, int)
     itkGetMacro(NumberOfIterations, int)
+
+    /** Number of subsets per iteration. */
     itkSetMacro(NumberOfSubsets, int)
     itkGetMacro(NumberOfSubsets, int)
+
+    /** Parameter to trigger Nesterov's reset. The value is a number of subsets
+    ** which can be larger than the number of subsets per iteration. 1 means no
+    ** Nesterov acceleration. */
+    itkSetMacro(ResetNesterovEvery, int)
+    itkGetMacro(ResetNesterovEvery, int)
 
     /** Set methods for all inputs, since they have different types */
     void SetInputMaterialVolumes(const TOutputImage* materialVolumes);
@@ -270,6 +278,7 @@ protected:
     int                                            m_NumberOfSubsets;
     std::vector<int>                               m_NumberOfProjectionsInSubset;
     int                                            m_NumberOfProjections;
+    int                                            m_ResetNesterovEvery;
 
     typename TOutputImage::PixelType               m_RegularizationWeights;
     typename TOutputImage::RegionType::SizeType    m_RegularizationRadius;

@@ -61,10 +61,6 @@ public:
   itkGetMacro(NumberOfIterations, int)
   itkSetMacro(NumberOfIterations, int)
 
-  /** Method to reset the internal counter of iterations
-   * (Nesterov's method uses coefficients that change at each iteration) */
-  void ResetIterations();
-
 protected:
   NesterovUpdateImageFilter();
   virtual ~NesterovUpdateImageFilter() ITK_OVERRIDE;
@@ -80,12 +76,13 @@ protected:
 
   void GenerateInputRequestedRegion() ITK_OVERRIDE;
 
-  int                                                m_NumberOfIterations;
-  int                                                m_CurrentIteration;
-  bool                                               m_MustInitializeIntermediateImages;
-  std::vector<typename TImage::PixelType::ValueType> m_tCoeffs;
-  std::vector<typename TImage::PixelType::ValueType> m_Sums;
-  std::vector<typename TImage::PixelType::ValueType> m_Ratios;
+  int                                   m_NumberOfIterations;
+  int                                   m_CurrentIteration;
+  bool                                  m_MustInitializeIntermediateImages;
+  typename TImage::PixelType::ValueType m_tCoeff;
+  typename TImage::PixelType::ValueType m_tCoeffNext;
+  typename TImage::PixelType::ValueType m_Sum;
+  typename TImage::PixelType::ValueType m_Ratio;
 
   // Internal images
   typename TImage::Pointer m_Vk;

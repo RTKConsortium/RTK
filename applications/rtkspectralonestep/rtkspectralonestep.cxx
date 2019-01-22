@@ -187,6 +187,8 @@ int main(int argc, char * argv[])
   mechlemOneStep->SetNumberOfSubsets( args_info.subsets_arg );
   mechlemOneStep->SetRegularizationRadius( regulRadius );
   mechlemOneStep->SetRegularizationWeights( regulWeights );
+  if(args_info.reset_nesterov_given)
+    mechlemOneStep->SetResetNesterovEvery( args_info.reset_nesterov_arg );
 
   // If subsets are used, reorder projections and geometry according to
   // a random permutation

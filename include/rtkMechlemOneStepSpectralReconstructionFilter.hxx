@@ -33,12 +33,10 @@ MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectr
   m_NumberOfIterations=3;
   m_NumberOfProjectionsPerSubset=0;
   m_NumberOfSubsets=1;
+  m_ResetNesterovEvery = itk::NumericTraits<int>::max();
   m_NumberOfProjections=0;
   m_RegularizationWeights.Fill(0);
   m_RegularizationRadius.Fill(0);
-//  m_IterationCosts=false;
-//  m_Gamma = 0;
-//  m_Regularized = false;
 
   // Create the filters
   m_ExtractPhotonCountsFilter = ExtractPhotonCountsFilterType::New();
@@ -337,19 +335,19 @@ void
 MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectrum>
 ::GenerateData()
 {
-  // Nesterov filter needs its input to be updated before it is initialized
-  // since it allocates its internal images to the same size as the input
-  m_NesterovFilter->UpdateOutputInformation();
-
-  // Initialize Nesterov filter
-  m_NesterovFilter->SetNumberOfIterations(m_NumberOfIterations * m_NumberOfSubsets + 1);
-  m_NesterovFilter->ResetIterations();
-
   // Run the iteration loop
   for(int iter = 0; iter < m_NumberOfIterations; iter++)
     {
     for (int subset = 0; subset < m_NumberOfSubsets; subset++)
       {
+      // Initialize Nesterov filter
+      int k = iter*m_NumberOfSubsets + subset;
+      if(k%m_ResetNesterovEvery == 0)
+        {
+        int r = m_NumberOfIterations*m_NumberOfSubsets-k;
+        m_NesterovFilter->SetNumberOfIterations(std::min(m_ResetNesterovEvery, r));
+        }
+
       // Starting from the second subset, or the second iteration
       // if there is only one subset, plug the output
       // of Nesterov back as input of the forward projection

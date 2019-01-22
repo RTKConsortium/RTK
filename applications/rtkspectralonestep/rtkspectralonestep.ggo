@@ -15,3 +15,4 @@ option "thresholds"     t "Lower threshold of bins, expressed in pulse height"  
 option "subsets"        - "Number of subsets of projections (should not exceed 6)"            int    no   default="4"
 option "regul_weights"  - "Regularization parameters for each material"                       double multiple no
 option "regul_radius"   - "Radius of the neighborhood for regularization"                     int    multiple no
+option "reset_nesterov" - "Reset Nesterov after a number of subsets"                          int    no
