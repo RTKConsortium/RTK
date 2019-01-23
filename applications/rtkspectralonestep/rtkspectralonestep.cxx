@@ -79,6 +79,14 @@ int main(int argc, char * argv[])
   materialAttenuationsReader->SetFileName(args_info.attenuations_arg);
   materialAttenuationsReader->Update();
 
+  // Read Support Mask if given
+  IncidentSpectrumReaderType::Pointer supportmaskReader;
+  if(args_info.mask_given)
+    {
+    supportmaskReader = IncidentSpectrumReaderType::New();
+    supportmaskReader->SetFileName( args_info.mask_arg );
+    }
+
   // Create input: either an existing volume read from a file or a blank image
   itk::ImageSource< MaterialVolumesType >::Pointer inputFilter;
   if(args_info.input_given)
@@ -189,6 +197,8 @@ int main(int argc, char * argv[])
   mechlemOneStep->SetRegularizationWeights( regulWeights );
   if(args_info.reset_nesterov_given)
     mechlemOneStep->SetResetNesterovEvery( args_info.reset_nesterov_arg );
+  if(args_info.mask_given)
+    mechlemOneStep->SetSupportMask( supportmaskReader->GetOutput() );
 
   // If subsets are used, reorder projections and geometry according to
   // a random permutation

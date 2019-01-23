@@ -30,6 +30,7 @@
 
 #include <itkExtractImageFilter.h>
 #include <itkAddImageFilter.h>
+#include <itkMultiplyImageFilter.h>
 
 #ifdef RTK_USE_CUDA
   #include "rtkCudaWeidingerForwardModelImageFilter.h"
@@ -57,6 +58,8 @@ namespace rtk
    * Input1 [shape=Mdiamond];
    * Input2 [label="Input 2 (Incident spectrum)"];
    * Input2 [shape=Mdiamond];
+   * Input3 [label="Input 3 (Support mask)"];
+   * Input3 [shape=Mdiamond];
    * Output [label="Output (Material volumes)"];
    * Output [shape=Mdiamond];
    *
@@ -77,6 +80,7 @@ namespace rtk
    * AddHessians [ label="rtk::AddMatrixAndDiagonalImageFilter" URL="\ref rtk::AddMatrixAndDiagonalImageFilter"];
    * Newton [ label="rtk::GetNewtonUpdateImageFilter" URL="\ref rtk::GetNewtonUpdateImageFilter"];
    * Nesterov [ label="rtk::NesterovUpdateImageFilter" URL="\ref rtk::NesterovUpdateImageFilter"];
+   * MultiplySupport [ label="itk::MultiplyImageFilter" URL="\ref itk::MultiplyImageFilter" style=dashed];
    * Alphak [ label="", fixedsize="false", width=0, height=0, shape=none];
    * NextAlphak [ label="", fixedsize="false", width=0, height=0, shape=none];
    *
@@ -102,8 +106,10 @@ namespace rtk
    * BackProjectionHessians -> AddHessians;
    * AddHessians -> Newton;
    * Newton -> Nesterov;
-   * Input0 -> Nesterov;
-   * Nesterov -> NextAlphak [arrowhead=none];
+   * Alphak -> Nesterov;
+   * Nesterov -> MultiplySupport;
+   * Input3 -> MultiplySupport;
+   * MultiplySupport -> NextAlphak [arrowhead=none];
    * NextAlphak -> Output;
    * NextAlphak -> Alphak [style=dashed, constraint=false];
    * }
@@ -135,15 +141,15 @@ public:
     itkStaticConstMacro(nBins, unsigned int, TPhotonCounts::PixelType::Dimension);
     itkStaticConstMacro(nMaterials, unsigned int, TOutputImage::PixelType::Dimension);
     typedef typename TOutputImage::PixelType::ValueType dataType;
-#if !defined( ITK_WRAPPING_PARSER )
 #ifdef RTK_USE_CUDA
     typedef itk::CudaImage< itk::Vector<dataType, nMaterials * nMaterials>, TOutputImage::ImageDimension > THessiansImage;
-    typedef itk::CudaImage<dataType, TOutputImage::ImageDimension> TSingleComponentImage;
+    typedef itk::CudaImage<dataType, TOutputImage::ImageDimension> SingleComponentImageType;
 #else
     typedef itk::Image< itk::Vector<dataType, nMaterials * nMaterials>, TOutputImage::ImageDimension > THessiansImage;
-    typedef itk::Image<dataType, TOutputImage::ImageDimension> TSingleComponentImage;
+    typedef itk::Image<dataType, TOutputImage::ImageDimension> SingleComponentImageType;
 #endif
 
+#if !defined( ITK_WRAPPING_PARSER )
     typedef TOutputImage TGradientsImage;
 #endif
 
@@ -152,25 +158,27 @@ public:
 
 #if !defined( ITK_WRAPPING_PARSER )
     /** Filter typedefs */
-    typedef itk::ExtractImageFilter<TPhotonCounts, TPhotonCounts>                         ExtractPhotonCountsFilterType;
-    typedef itk::AddImageFilter<TGradientsImage>                                          AddFilterType;
-    typedef rtk::ForwardProjectionImageFilter< TSingleComponentImage, TSingleComponentImage > SingleComponentForwardProjectionFilterType;
-    typedef rtk::ForwardProjectionImageFilter< TOutputImage, TOutputImage >               ForwardProjectionFilterType;
-    typedef rtk::BackProjectionImageFilter< TGradientsImage, TGradientsImage >            GradientsBackProjectionFilterType;
-    typedef rtk::BackProjectionImageFilter< THessiansImage, THessiansImage >              HessiansBackProjectionFilterType;
-    typedef rtk::NesterovUpdateImageFilter<TOutputImage>                                  NesterovFilterType;
-    typedef rtk::ConstantImageSource<TSingleComponentImage>                               SingleComponentImageSourceType;
-    typedef rtk::ConstantImageSource<TOutputImage>                                        MaterialProjectionsSourceType;
-    typedef rtk::ConstantImageSource<TGradientsImage>                                     GradientsSourceType;
-    typedef rtk::ConstantImageSource<THessiansImage>                                      HessiansSourceType;
-    typedef rtk::SeparableQuadraticSurrogateRegularizationImageFilter<TGradientsImage>    SQSRegularizationType;
+    typedef itk::ExtractImageFilter<TPhotonCounts, TPhotonCounts>                      ExtractPhotonCountsFilterType;
+    typedef itk::AddImageFilter<TGradientsImage>                                       AddFilterType;
+    typedef rtk::ForwardProjectionImageFilter< SingleComponentImageType,
+                                               SingleComponentImageType >              SingleComponentForwardProjectionFilterType;
+    typedef rtk::ForwardProjectionImageFilter< TOutputImage, TOutputImage >            ForwardProjectionFilterType;
+    typedef rtk::BackProjectionImageFilter< TGradientsImage, TGradientsImage >         GradientsBackProjectionFilterType;
+    typedef rtk::BackProjectionImageFilter< THessiansImage, THessiansImage >           HessiansBackProjectionFilterType;
+    typedef rtk::NesterovUpdateImageFilter<TOutputImage>                               NesterovFilterType;
+    typedef rtk::ConstantImageSource<SingleComponentImageType>                         SingleComponentImageSourceType;
+    typedef rtk::ConstantImageSource<TOutputImage>                                     MaterialProjectionsSourceType;
+    typedef rtk::ConstantImageSource<TGradientsImage>                                  GradientsSourceType;
+    typedef rtk::ConstantImageSource<THessiansImage>                                   HessiansSourceType;
+    typedef rtk::SeparableQuadraticSurrogateRegularizationImageFilter<TGradientsImage> SQSRegularizationType;
 #ifdef RTK_USE_CUDA
     typedef rtk::CudaWeidingerForwardModelImageFilter<TOutputImage, TPhotonCounts, TSpectrum> WeidingerForwardModelType;
 #else
     typedef rtk::WeidingerForwardModelImageFilter<TOutputImage, TPhotonCounts, TSpectrum> WeidingerForwardModelType;
 #endif
-    typedef rtk::AddMatrixAndDiagonalImageFilter<TGradientsImage, THessiansImage>         AddMatrixAndDiagonalFilterType;
-    typedef rtk::GetNewtonUpdateImageFilter<TGradientsImage, THessiansImage>              NewtonFilterType;
+    typedef rtk::AddMatrixAndDiagonalImageFilter<TGradientsImage, THessiansImage>      AddMatrixAndDiagonalFilterType;
+    typedef rtk::GetNewtonUpdateImageFilter<TGradientsImage, THessiansImage>           NewtonFilterType;
+    typedef itk::MultiplyImageFilter<TOutputImage, SingleComponentImageType>           MultiplyFilterType;
 #endif
 
     /** Instantiate the forward projection filters */
@@ -199,6 +207,7 @@ public:
     void SetInputMaterialVolumes(const TOutputImage* materialVolumes);
     void SetInputPhotonCounts(const TPhotonCounts* photonCounts);
     void SetInputSpectrum(const TSpectrum* spectrum);
+    void SetSupportMask(const SingleComponentImageType* support);
 
     /** Set/Get for the regularization weights */
     itkSetMacro(RegularizationWeights, typename TOutputImage::PixelType)
@@ -243,6 +252,7 @@ protected:
     typename ForwardProjectionFilterType::Pointer                            m_ForwardProjectionFilter;
     typename GradientsBackProjectionFilterType::Pointer                      m_GradientsBackProjectionFilter;
     typename HessiansBackProjectionFilterType::Pointer                       m_HessiansBackProjectionFilter;
+    typename MultiplyFilterType::Pointer                                     m_MultiplySupportFilter;
 #endif
 
     /** The inputs of this filter have the same type but not the same meaning
@@ -263,6 +273,7 @@ protected:
     typename TOutputImage::ConstPointer GetInputMaterialVolumes();
     typename TPhotonCounts::ConstPointer GetInputPhotonCounts();
     typename TSpectrum::ConstPointer GetInputSpectrum();
+    typename SingleComponentImageType::ConstPointer GetSupportMask();
 
 #if !defined( ITK_WRAPPING_PARSER )
     /** Functions to instantiate forward and back projection filters with a different

@@ -51,6 +51,7 @@ MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectr
   m_WeidingerForward = WeidingerForwardModelType::New();
   m_NewtonFilter = NewtonFilterType::New();
   m_NesterovFilter = NesterovFilterType::New();
+  m_MultiplySupportFilter = MultiplyFilterType::New();
 
   // Set permanent parameters
   m_ProjectionsSource->SetConstant(itk::NumericTraits<typename TOutputImage::PixelType>::ZeroValue());
@@ -85,6 +86,14 @@ MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectr
 }
 
 template< class TOutputImage, class TPhotonCounts, class TSpectrum>
+void
+MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectrum>
+::SetSupportMask(const SingleComponentImageType* support)
+{
+  this->SetNthInput(3, const_cast<SingleComponentImageType*>(support));
+}
+
+template< class TOutputImage, class TPhotonCounts, class TSpectrum>
 typename TOutputImage::ConstPointer
 MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectrum>
 ::GetInputMaterialVolumes()
@@ -109,6 +118,15 @@ MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectr
 {
   return static_cast< const TSpectrum * >
          ( this->itk::ProcessObject::GetInput(2) );
+}
+
+template< class TOutputImage, class TPhotonCounts, class TSpectrum>
+typename MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectrum>::SingleComponentImageType::ConstPointer
+MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectrum>
+::GetSupportMask()
+{
+  return static_cast< const SingleComponentImageType* >
+         ( this->itk::ProcessObject::GetInput(3) );
 }
 
 template< class TOutputImage, class TPhotonCounts, class TSpectrum>
@@ -143,7 +161,7 @@ MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectr
 ::InstantiateSingleComponentForwardProjectionFilter (int fwtype)
 {
   // Define the type of image to be back projected
-  typedef typename MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectrum>::TSingleComponentImage TSingleComponent;
+  typedef typename MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectrum>::SingleComponentImageType TSingleComponent;
 
   // Declare the pointer
   typename MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectrum>::SingleComponentForwardProjectionFilterType::Pointer fw;
@@ -245,6 +263,13 @@ MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectr
   if ( !inputPtr2 )
       return;
   inputPtr2->SetRequestedRegion( inputPtr2->GetLargestPossibleRegion() );
+
+  // Input 3 is the support (optional)
+  typename SingleComponentImageType::Pointer inputPtr3 =
+          const_cast< SingleComponentImageType * >( this->GetSupportMask().GetPointer() );
+  if ( !inputPtr3 )
+      return;
+  inputPtr3->SetRequestedRegion( inputPtr0->GetRequestedRegion() );
 }
 
 template< class TOutputImage, class TPhotonCounts, class TSpectrum>
@@ -302,6 +327,14 @@ MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectr
   m_NesterovFilter->SetInput(0, this->GetInputMaterialVolumes());
   m_NesterovFilter->SetInput(1, m_NewtonFilter->GetOutput());
 
+  typename TOutputImage::Pointer lastOutput = m_NesterovFilter->GetOutput();
+  if(this->GetSupportMask().GetPointer() != ITK_NULLPTR)
+    {
+    m_MultiplySupportFilter->SetInput1( m_NesterovFilter->GetOutput() );
+    m_MultiplySupportFilter->SetInput2( this->GetSupportMask() );
+    lastOutput = m_MultiplySupportFilter->GetOutput();
+    }
+
   // Set information for the extract filter and the sources
   m_ExtractPhotonCountsFilter->SetExtractionRegion(extractionRegion);
   m_ExtractPhotonCountsFilter->UpdateOutputInformation();
@@ -317,17 +350,15 @@ MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectr
   m_GradientsBackProjectionFilter->SetGeometry(this->m_Geometry.GetPointer());
   m_HessiansBackProjectionFilter->SetGeometry(this->m_Geometry.GetPointer());
 
-  // Set memory management parameters
-
   // Set regularization parameters
   m_SQSRegul->SetRegularizationWeights(m_RegularizationWeights);
   m_SQSRegul->SetRadius(m_RegularizationRadius);
 
   // Have the last filter calculate its output information
-  m_NesterovFilter->UpdateOutputInformation();
+  lastOutput->UpdateOutputInformation();
 
   // Copy it as the output information of the composite filter
-  this->GetOutput()->CopyInformation( m_NesterovFilter->GetOutput() );
+  this->GetOutput()->CopyInformation( lastOutput );
 }
 
 template< class TOutputImage, class TPhotonCounts, class TSpectrum>
@@ -336,6 +367,7 @@ MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectr
 ::GenerateData()
 {
   // Run the iteration loop
+  typename TOutputImage::Pointer Next_Zk;
   for(int iter = 0; iter < m_NumberOfIterations; iter++)
     {
     for (int subset = 0; subset < m_NumberOfSubsets; subset++)
@@ -357,8 +389,6 @@ MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectr
       // needs the new update from rtkGetNewtonUpdateImageFilter
       if ((iter + subset) >0)
         {
-        typename TOutputImage::Pointer Next_Zk;
-        Next_Zk = m_NesterovFilter->GetOutput();
         Next_Zk->DisconnectPipeline();
         m_ForwardProjectionFilter->SetInput(1, Next_Zk);
         m_SQSRegul->SetInput(Next_Zk);
@@ -377,11 +407,20 @@ MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectr
       m_ProjectionsSource->SetInformationFromImage(m_ExtractPhotonCountsFilter->GetOutput());
 
       // Update the most downstream filter
-      m_NesterovFilter->Update();
+      if(this->GetSupportMask().GetPointer() != ITK_NULLPTR)
+        {
+        m_MultiplySupportFilter->Update();
+        Next_Zk = m_MultiplySupportFilter->GetOutput();
+        }
+      else
+        {
+        m_NesterovFilter->Update();
+        Next_Zk = m_NesterovFilter->GetOutput();
+        }
       }
 
     }
-  this->GraftOutput( m_NesterovFilter->GetOutput() );
+  this->GraftOutput( Next_Zk );
 }
 
 }// end namespace
