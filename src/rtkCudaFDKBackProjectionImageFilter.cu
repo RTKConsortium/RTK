@@ -62,9 +62,9 @@ void kernel_fdk(float *dev_vol_in, float *dev_vol_out, unsigned int Blocks_Y)
   // limitation.
   unsigned int blockIdx_z = blockIdx.y / Blocks_Y;
   unsigned int blockIdx_y = blockIdx.y - __umul24(blockIdx_z, Blocks_Y);
-  unsigned int i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
-  unsigned int j = __umul24(blockIdx_y, blockDim.y) + threadIdx.y;
-  unsigned int k = __umul24(blockIdx_z, blockDim.z) + threadIdx.z;
+  itk::SizeValueType i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
+  itk::SizeValueType j = __umul24(blockIdx_y, blockDim.y) + threadIdx.y;
+  itk::SizeValueType k = __umul24(blockIdx_z, blockDim.z) + threadIdx.z;
 
   if (i >= c_vol_size.x || j >= c_vol_size.y || k >= c_vol_size.z)
     {
@@ -72,7 +72,7 @@ void kernel_fdk(float *dev_vol_in, float *dev_vol_out, unsigned int Blocks_Y)
     }
 
   // Index row major into the volume
-  long int vol_idx = i + (j + k*c_vol_size.y)*(c_vol_size.x);
+  itk::SizeValueType vol_idx = i + (j + k*c_vol_size.y)*(c_vol_size.x);
 
   float3 ip;
   float  voxel_data = 0;
@@ -98,9 +98,9 @@ void kernel_fdk(float *dev_vol_in, float *dev_vol_out, unsigned int Blocks_Y)
 __global__
 void kernel_fdk_3Dgrid(float *dev_vol_in, float * dev_vol_out)
 {
-  unsigned int i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
-  unsigned int j = __umul24(blockIdx.y, blockDim.y) + threadIdx.y;
-  unsigned int k = __umul24(blockIdx.z, blockDim.z) + threadIdx.z;
+  itk::SizeValueType i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
+  itk::SizeValueType j = __umul24(blockIdx.y, blockDim.y) + threadIdx.y;
+  itk::SizeValueType k = __umul24(blockIdx.z, blockDim.z) + threadIdx.z;
 
   if (i >= c_vol_size.x || j >= c_vol_size.y || k >= c_vol_size.z)
     {
@@ -108,7 +108,7 @@ void kernel_fdk_3Dgrid(float *dev_vol_in, float * dev_vol_out)
     }
 
   // Index row major into the volume
-  long int vol_idx = i + (j + k*c_vol_size.y)*(c_vol_size.x);
+  itk::SizeValueType vol_idx = i + (j + k*c_vol_size.y)*(c_vol_size.x);
 
   float3 ip;
   float  voxel_data = 0;

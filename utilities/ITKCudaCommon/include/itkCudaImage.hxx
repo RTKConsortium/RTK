@@ -45,7 +45,7 @@ void CudaImage< TPixel, VImageDimension >::Allocate(bool initializePixels)
 
   // allocate Cuda memory
   this->ComputeOffsetTable();
-  unsigned long numPixel = this->GetOffsetTable()[VImageDimension];
+  SizeValueType numPixel = this->GetOffsetTable()[VImageDimension];
   m_DataManager->SetBufferSize(sizeof(TPixel)*numPixel);
   m_DataManager->SetImagePointer(this);
   m_DataManager->SetCPUBufferPointer(Superclass::GetBufferPointer());
@@ -110,7 +110,7 @@ void CudaImage< TPixel, VImageDimension >::SetBufferedRegion(const RegionType & 
     }
 
   Superclass::SetBufferedRegion(region);
-  unsigned long numPixel = this->GetOffsetTable()[VImageDimension];
+  SizeValueType numPixel = this->GetOffsetTable()[VImageDimension];
   m_DataManager->SetBufferSize(sizeof(TPixel)*numPixel);
   m_DataManager->SetCPUDirtyFlag(false); // prevent the GPU to copy to the CPU
   m_DataManager->SetGPUBufferDirty();
@@ -225,7 +225,7 @@ CudaImage< TPixel, VImageDimension >::Graft(const Superclass *data)
     m_DataManager = CudaImageDataManager< CudaImage< TPixel, VImageDimension > >::New();
     m_DataManager->SetImagePointer(this);
     m_DataManager->SetCPUBufferPointer(Superclass::GetBufferPointer());
-    unsigned long numPixel = this->GetOffsetTable()[VImageDimension];
+    SizeValueType numPixel = this->GetOffsetTable()[VImageDimension];
     m_DataManager->SetBufferSize(sizeof(TPixel)*numPixel);
     m_DataManager->SetCPUDirtyFlag(this->GetBufferPointer() == NULL);
     m_DataManager->SetTimeStamp(this->GetTimeStamp());
