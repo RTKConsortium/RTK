@@ -41,18 +41,18 @@ int main(int , char** )
 
   RampFilterType::Pointer rampFilter = RampFilterType::New();
   rampFilter->SetInput(image);
-  
+
   try
     {
     rampFilter->Update();
     }
- catch( itk::ExceptionObject & err )                                   
-    { 
-    std::cerr << err << std::endl;                                      
-    exit(EXIT_FAILURE);                                                 
+ catch( itk::ExceptionObject & err )
+    {
+    std::cerr << err << std::endl;
+    exit(EXIT_FAILURE);
     }
-    
-  
+
+
   // Check the results
   ImageType::IndexType index;
   index[0] = 3;
@@ -62,7 +62,7 @@ int main(int , char** )
   float value = 0.132652;
   if(fabs(rampFilter->GetOutput()->GetPixel(index)-value)>0.000001)
     {
-    std::cout << "Output value #0 should be " << value << " found " 
+    std::cout << "Output value #0 should be " << value << " found "
               << rampFilter->GetOutput()->GetPixel(index) << " instead." << std::endl;
     return EXIT_FAILURE;
     }
@@ -73,7 +73,7 @@ int main(int , char** )
   value = 0.149724;
   if(fabs(rampFilter->GetOutput()->GetPixel(index)-value)>0.000001)
     {
-    std::cout << "Output value #1 should be " << value << " found " 
+    std::cout << "Output value #1 should be " << value << " found "
               << rampFilter->GetOutput()->GetPixel(index) << " instead." << std::endl;
     return EXIT_FAILURE;
     }
@@ -84,7 +84,7 @@ int main(int , char** )
   value = 0.150181;
   if(fabs(rampFilter->GetOutput()->GetPixel(index)-value)>0.000001)
     {
-    std::cout << "Output value #2 should be " << value << " found " 
+    std::cout << "Output value #2 should be " << value << " found "
               << rampFilter->GetOutput()->GetPixel(index) << " instead." << std::endl;
     return EXIT_FAILURE;
     }

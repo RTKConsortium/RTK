@@ -18,7 +18,7 @@ IF(MSVC)
   ADD_DEFINITIONS(-Disatty=!)
 ENDIF(MSVC)
 
-ADD_EXECUTABLE(gengetopt 
+ADD_EXECUTABLE(gengetopt
   ./cmdline.c
   ./ggos.cpp
   ./scanner.cc

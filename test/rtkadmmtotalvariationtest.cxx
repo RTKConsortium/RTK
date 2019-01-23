@@ -36,11 +36,11 @@ int main(int argc, char*argv[])
 
 #ifdef USE_CUDA
   typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
-  typedef itk::CudaImage< itk::CovariantVector 
+  typedef itk::CudaImage< itk::CovariantVector
       < OutputPixelType, Dimension >, Dimension >                GradientOutputImageType;
 #else
   typedef itk::Image< OutputPixelType, Dimension >     OutputImageType;
-  typedef itk::Image< itk::CovariantVector 
+  typedef itk::Image< itk::CovariantVector
       < OutputPixelType, Dimension >, Dimension >                GradientOutputImageType;
 #endif
 

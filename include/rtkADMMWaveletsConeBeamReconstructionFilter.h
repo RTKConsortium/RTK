@@ -44,7 +44,7 @@ namespace rtk
    * \f$ W^{T} = W^{-1} \f$
    * Details on the method and the calculations can be found on page 53 of
    *
-   * Mory, C. “Cardiac C-Arm Computed Tomography”, PhD thesis, 2014.
+   * Mory, C. "Cardiac C-Arm Computed Tomography", PhD thesis, 2014.
    * https://hal.inria.fr/tel-00985728/document
    *
    * \f$ f_{k+1} \f$ is obtained by linear conjugate solving the following:

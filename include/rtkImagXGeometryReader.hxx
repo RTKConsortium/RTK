@@ -481,8 +481,8 @@ void ImagXGeometryReader<TInputImage>::GenerateData()
 
   bool isImagX1p2 = (version.find(m_AI_VERSION_1p2) != std::string::npos);
   bool isImagX1p5 = (version.find(m_AI_VERSION_1p5) != std::string::npos);
-  bool isImagX2pX = (version.find(m_AI_VERSION_2pX) != std::string::npos);  
-  
+  bool isImagX2pX = (version.find(m_AI_VERSION_2pX) != std::string::npos);
+
   if(!isImagX1p2 && !isImagX1p5 && !isImagX2pX)
     {
     itkExceptionMacro("Unknown AI version : " << version);

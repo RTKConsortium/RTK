@@ -131,7 +131,7 @@ ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPre
   if (m_UseCudaSplat)
     m_SplatFilter = rtk::CudaSplatImageFilter::New();
 #endif
-  
+
   // Create the constant sources (first on CPU, and overwrite with the GPU version if CUDA requested)
   m_ConstantVolumeSource = ConstantVolumeSourceType::New();
   m_ConstantVolumeSeriesSource = ConstantVolumeSeriesSourceType::New();

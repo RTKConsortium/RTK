@@ -118,8 +118,8 @@ init_help_array(void)
   gengetopt_args_info_help[34] = gengetopt_args_info_detailed_help[40];
   gengetopt_args_info_help[35] = gengetopt_args_info_detailed_help[41];
   gengetopt_args_info_help[36] = gengetopt_args_info_detailed_help[42];
-  gengetopt_args_info_help[37] = 0; 
-  
+  gengetopt_args_info_help[37] = 0;
+
 }
 
 const char *gengetopt_args_info_help[38];
@@ -233,14 +233,14 @@ void clear_args (struct gengetopt_args_info *args_info)
   args_info->set_package_orig = NULL;
   args_info->set_version_arg = NULL;
   args_info->set_version_orig = NULL;
-  
+
 }
 
 static
 void init_args_info(struct gengetopt_args_info *args_info)
 {
 
-  init_help_array(); 
+  init_help_array();
   args_info->help_help = gengetopt_args_info_detailed_help[0] ;
   args_info->detailed_help_help = gengetopt_args_info_detailed_help[1] ;
   args_info->version_help = gengetopt_args_info_detailed_help[2] ;
@@ -272,7 +272,7 @@ void init_args_info(struct gengetopt_args_info *args_info)
   args_info->show_full_help_help = gengetopt_args_info_detailed_help[39] ;
   args_info->show_detailed_help_help = gengetopt_args_info_detailed_help[40] ;
   args_info->show_version_help = gengetopt_args_info_detailed_help[41] ;
-  
+
 }
 
 void
@@ -328,7 +328,7 @@ void
 cmdline_parser_params_init(struct cmdline_parser_params *params)
 {
   if (params)
-    { 
+    {
       params->override = 0;
       params->initialize = 1;
       params->check_required = 1;
@@ -340,9 +340,9 @@ cmdline_parser_params_init(struct cmdline_parser_params *params)
 struct cmdline_parser_params *
 cmdline_parser_params_create(void)
 {
-  struct cmdline_parser_params *params = 
+  struct cmdline_parser_params *params =
     (struct cmdline_parser_params *)malloc(sizeof(struct cmdline_parser_params));
-  cmdline_parser_params_init(params);  
+  cmdline_parser_params_init(params);
   return params;
 }
 
@@ -387,8 +387,8 @@ cmdline_parser_release (struct gengetopt_args_info *args_info)
   free_string_field (&(args_info->set_package_orig));
   free_string_field (&(args_info->set_version_arg));
   free_string_field (&(args_info->set_version_orig));
-  
-  
+
+
 
   clear_given (args_info);
 }
@@ -479,7 +479,7 @@ cmdline_parser_dump(FILE *outfile, struct gengetopt_args_info *args_info)
     write_into_file(outfile, "show-detailed-help", 0, 0 );
   if (args_info->show_version_given)
     write_into_file(outfile, "show-version", 0, 0 );
-  
+
 
   i = EXIT_SUCCESS;
   return i;
@@ -547,7 +547,7 @@ cmdline_parser2 (int argc, char **argv, struct gengetopt_args_info *args_info, i
 {
   int result;
   struct cmdline_parser_params params;
-  
+
   params.override = override;
   params.initialize = initialize;
   params.check_required = check_required;
@@ -590,7 +590,7 @@ static char *package_name = 0;
  */
 static
 int update_arg(void *field, char **orig_field,
-               unsigned int *field_given, unsigned int *prev_given, 
+               unsigned int *field_given, unsigned int *prev_given,
                char *value, const char *possible_values[],
                const char *default_value,
                cmdline_parser_arg_type arg_type,
@@ -611,18 +611,18 @@ int update_arg(void *field, char **orig_field,
   if (!multiple_option && prev_given && (*prev_given || (check_ambiguity && *field_given)))
     {
       if (short_opt != '-')
-        fprintf (stderr, "%s: `--%s' (`-%c') option given more than once%s\n", 
+        fprintf (stderr, "%s: `--%s' (`-%c') option given more than once%s\n",
                package_name, long_opt, short_opt,
                (additional_error ? additional_error : ""));
       else
-        fprintf (stderr, "%s: `--%s' option given more than once%s\n", 
+        fprintf (stderr, "%s: `--%s' option given more than once%s\n",
                package_name, long_opt,
                (additional_error ? additional_error : ""));
       return 1; /* failure */
     }
 
   FIX_UNUSED (default_value);
-    
+
   if (field_given && *field_given && ! override)
     return 0;
   if (prev_given)
@@ -679,14 +679,14 @@ cmdline_parser_internal (
 
   int error = 0;
   struct gengetopt_args_info local_args_info;
-  
+
   int override;
   int initialize;
   int check_required;
   int check_ambiguity;
-  
+
   package_name = argv[0];
-  
+
   override = params->override;
   initialize = params->initialize;
   check_required = params->check_required;
@@ -748,9 +748,9 @@ cmdline_parser_internal (
       switch (c)
         {
         case 'h':	/* Print help and exit.  */
-        
-        
-          if (update_arg( 0 , 
+
+
+          if (update_arg( 0 ,
                0 , &(args_info->help_given),
               &(local_args_info.help_given), optarg, 0, 0, ARG_NO,
               check_ambiguity, override, 0, 0,
@@ -759,12 +759,12 @@ cmdline_parser_internal (
             goto failure;
           cmdline_parser_free (&local_args_info);
           return 0;
-        
+
           break;
         case 'V':	/* Print version and exit.  */
-        
-        
-          if (update_arg( 0 , 
+
+
+          if (update_arg( 0 ,
                0 , &(args_info->version_given),
               &(local_args_info.version_given), optarg, 0, 0, ARG_NO,
               check_ambiguity, override, 0, 0,
@@ -773,194 +773,194 @@ cmdline_parser_internal (
             goto failure;
           cmdline_parser_free (&local_args_info);
           return 0;
-        
+
           break;
         case 'i':	/* input file (default std input).  */
-        
-        
-          if (update_arg( (void *)&(args_info->input_arg), 
+
+
+          if (update_arg( (void *)&(args_info->input_arg),
                &(args_info->input_orig), &(args_info->input_given),
               &(local_args_info.input_given), optarg, 0, 0, ARG_STRING,
               check_ambiguity, override, 0, 0,
               "input", 'i',
               additional_error))
             goto failure;
-        
+
           break;
         case 'f':	/* name of generated function.  */
-        
-        
-          if (update_arg( (void *)&(args_info->func_name_arg), 
+
+
+          if (update_arg( (void *)&(args_info->func_name_arg),
                &(args_info->func_name_orig), &(args_info->func_name_given),
               &(local_args_info.func_name_given), optarg, 0, "cmdline_parser", ARG_STRING,
               check_ambiguity, override, 0, 0,
               "func-name", 'f',
               additional_error))
             goto failure;
-        
+
           break;
         case 'a':	/* name of generated args info struct.  */
-        
-        
-          if (update_arg( (void *)&(args_info->arg_struct_name_arg), 
+
+
+          if (update_arg( (void *)&(args_info->arg_struct_name_arg),
                &(args_info->arg_struct_name_orig), &(args_info->arg_struct_name_given),
               &(local_args_info.arg_struct_name_given), optarg, 0, "gengetopt_args_info", ARG_STRING,
               check_ambiguity, override, 0, 0,
               "arg-struct-name", 'a',
               additional_error))
             goto failure;
-        
+
           break;
         case 'F':	/* name of generated file.  */
-        
-        
-          if (update_arg( (void *)&(args_info->file_name_arg), 
+
+
+          if (update_arg( (void *)&(args_info->file_name_arg),
                &(args_info->file_name_orig), &(args_info->file_name_given),
               &(local_args_info.file_name_given), optarg, 0, "cmdline", ARG_STRING,
               check_ambiguity, override, 0, 0,
               "file-name", 'F',
               additional_error))
             goto failure;
-        
+
           break;
         case 'c':	/* extension of c file.  */
-        
-        
-          if (update_arg( (void *)&(args_info->c_extension_arg), 
+
+
+          if (update_arg( (void *)&(args_info->c_extension_arg),
                &(args_info->c_extension_orig), &(args_info->c_extension_given),
               &(local_args_info.c_extension_given), optarg, 0, "c", ARG_STRING,
               check_ambiguity, override, 0, 0,
               "c-extension", 'c',
               additional_error))
             goto failure;
-        
+
           break;
         case 'H':	/* extension of header file.  */
-        
-        
-          if (update_arg( (void *)&(args_info->header_extension_arg), 
+
+
+          if (update_arg( (void *)&(args_info->header_extension_arg),
                &(args_info->header_extension_orig), &(args_info->header_extension_given),
               &(local_args_info.header_extension_given), optarg, 0, "h", ARG_STRING,
               check_ambiguity, override, 0, 0,
               "header-extension", 'H',
               additional_error))
             goto failure;
-        
+
           break;
         case 'l':	/* long usage line in help.  */
-        
-        
-          if (update_arg( 0 , 
+
+
+          if (update_arg( 0 ,
                0 , &(args_info->long_help_given),
               &(local_args_info.long_help_given), optarg, 0, 0, ARG_NO,
               check_ambiguity, override, 0, 0,
               "long-help", 'l',
               additional_error))
             goto failure;
-        
+
           break;
         case 'u':	/* accept options without names (e.g., file names).  */
-        
-        
-          if (update_arg( (void *)&(args_info->unamed_opts_arg), 
+
+
+          if (update_arg( (void *)&(args_info->unamed_opts_arg),
                &(args_info->unamed_opts_orig), &(args_info->unamed_opts_given),
               &(local_args_info.unamed_opts_given), optarg, 0, "FILES", ARG_STRING,
               check_ambiguity, override, 0, 0,
               "unamed-opts", 'u',
               additional_error))
             goto failure;
-        
+
           break;
         case 'C':	/* generate a config file parser.  */
-        
-        
-          if (update_arg( 0 , 
+
+
+          if (update_arg( 0 ,
                0 , &(args_info->conf_parser_given),
               &(local_args_info.conf_parser_given), optarg, 0, 0, ARG_NO,
               check_ambiguity, override, 0, 0,
               "conf-parser", 'C',
               additional_error))
             goto failure;
-        
+
           break;
         case 'S':	/* generate a string parser (the string contains the command line).  */
-        
-        
-          if (update_arg( 0 , 
+
+
+          if (update_arg( 0 ,
                0 , &(args_info->string_parser_given),
               &(local_args_info.string_parser_given), optarg, 0, 0, ARG_NO,
               check_ambiguity, override, 0, 0,
               "string-parser", 'S',
               additional_error))
             goto failure;
-        
+
           break;
         case 'G':	/* adds the code for getopt_long in the generated C file.  */
-        
-        
-          if (update_arg( 0 , 
+
+
+          if (update_arg( 0 ,
                0 , &(args_info->include_getopt_given),
               &(local_args_info.include_getopt_given), optarg, 0, 0, ARG_NO,
               check_ambiguity, override, 0, 0,
               "include-getopt", 'G',
               additional_error))
             goto failure;
-        
+
           break;
         case 'n':	/* do not handle --help|-h automatically.  */
-        
-        
-          if (update_arg( 0 , 
+
+
+          if (update_arg( 0 ,
                0 , &(args_info->no_handle_help_given),
               &(local_args_info.no_handle_help_given), optarg, 0, 0, ARG_NO,
               check_ambiguity, override, 0, 0,
               "no-handle-help", 'n',
               additional_error))
             goto failure;
-        
+
           break;
         case 'N':	/* do not handle --version|-V automatically.  */
-        
-        
-          if (update_arg( 0 , 
+
+
+          if (update_arg( 0 ,
                0 , &(args_info->no_handle_version_given),
               &(local_args_info.no_handle_version_given), optarg, 0, 0, ARG_NO,
               check_ambiguity, override, 0, 0,
               "no-handle-version", 'N',
               additional_error))
             goto failure;
-        
+
           break;
         case 'e':	/* do not exit on errors.  */
-        
-        
-          if (update_arg( 0 , 
+
+
+          if (update_arg( 0 ,
                0 , &(args_info->no_handle_error_given),
               &(local_args_info.no_handle_error_given), optarg, 0, 0, ARG_NO,
               check_ambiguity, override, 0, 0,
               "no-handle-error", 'e',
               additional_error))
             goto failure;
-        
+
           break;
         case 'g':	/* put gengetopt version in the generated file.  */
-        
-        
+
+
           if (update_arg((void *)&(args_info->gen_version_flag), 0, &(args_info->gen_version_given),
               &(local_args_info.gen_version_given), optarg, 0, 0, ARG_FLAG,
               check_ambiguity, override, 1, 0, "gen-version", 'g',
               additional_error))
             goto failure;
-        
+
           break;
 
         case 0:	/* Long option with no short option */
           /* Print help, including all details and hidden options, and exit.  */
           if (strcmp (long_options[option_index].name, "detailed-help") == 0)
           {
-          
-          
-            if (update_arg( 0 , 
+
+
+            if (update_arg( 0 ,
                  0 , &(args_info->detailed_help_given),
                 &(local_args_info.detailed_help_given), optarg, 0, 0, ARG_NO,
                 check_ambiguity, override, 0, 0,
@@ -969,191 +969,191 @@ cmdline_parser_internal (
               goto failure;
             cmdline_parser_free (&local_args_info);
             return 0;
-          
+
           }
           /* output directory.  */
           else if (strcmp (long_options[option_index].name, "output-dir") == 0)
           {
-          
-          
-            if (update_arg( (void *)&(args_info->output_dir_arg), 
+
+
+            if (update_arg( (void *)&(args_info->output_dir_arg),
                  &(args_info->output_dir_orig), &(args_info->output_dir_given),
                 &(local_args_info.output_dir_given), optarg, 0, 0, ARG_STRING,
                 check_ambiguity, override, 0, 0,
                 "output-dir", '-',
                 additional_error))
               goto failure;
-          
+
           }
           /* header output directory.  */
           else if (strcmp (long_options[option_index].name, "header-output-dir") == 0)
           {
-          
-          
-            if (update_arg( (void *)&(args_info->header_output_dir_arg), 
+
+
+            if (update_arg( (void *)&(args_info->header_output_dir_arg),
                  &(args_info->header_output_dir_orig), &(args_info->header_output_dir_given),
                 &(local_args_info.header_output_dir_given), optarg, 0, 0, ARG_STRING,
                 check_ambiguity, override, 0, 0,
                 "header-output-dir", '-',
                 additional_error))
               goto failure;
-          
+
           }
           /* source output directory.  */
           else if (strcmp (long_options[option_index].name, "src-output-dir") == 0)
           {
-          
-          
-            if (update_arg( (void *)&(args_info->src_output_dir_arg), 
+
+
+            if (update_arg( (void *)&(args_info->src_output_dir_arg),
                  &(args_info->src_output_dir_orig), &(args_info->src_output_dir_given),
                 &(local_args_info.src_output_dir_given), optarg, 0, 0, ARG_STRING,
                 check_ambiguity, override, 0, 0,
                 "src-output-dir", '-',
                 additional_error))
               goto failure;
-          
+
           }
           /* by default, an option is considered optional if not specified otherwise.  */
           else if (strcmp (long_options[option_index].name, "default-optional") == 0)
           {
-          
-          
-            if (update_arg( 0 , 
+
+
+            if (update_arg( 0 ,
                  0 , &(args_info->default_optional_given),
                 &(local_args_info.default_optional_given), optarg, 0, 0, ARG_NO,
                 check_ambiguity, override, 0, 0,
                 "default-optional", '-',
                 additional_error))
               goto failure;
-          
+
           }
           /* do not add --help|-h automatically.  */
           else if (strcmp (long_options[option_index].name, "no-help") == 0)
           {
-          
-          
-            if (update_arg( 0 , 
+
+
+            if (update_arg( 0 ,
                  0 , &(args_info->no_help_given),
                 &(local_args_info.no_help_given), optarg, 0, 0, ARG_NO,
                 check_ambiguity, override, 0, 0,
                 "no-help", '-',
                 additional_error))
               goto failure;
-          
+
           }
           /* do not add --version|-V automatically.  */
           else if (strcmp (long_options[option_index].name, "no-version") == 0)
           {
-          
-          
-            if (update_arg( 0 , 
+
+
+            if (update_arg( 0 ,
                  0 , &(args_info->no_version_given),
                 &(local_args_info.no_version_given), optarg, 0, 0, ARG_NO,
                 check_ambiguity, override, 0, 0,
                 "no-version", '-',
                 additional_error))
               goto failure;
-          
+
           }
           /* in the output of help will specify which options are mandatory, by using the optional passed string.  */
           else if (strcmp (long_options[option_index].name, "show-required") == 0)
           {
-          
-          
-            if (update_arg( (void *)&(args_info->show_required_arg), 
+
+
+            if (update_arg( (void *)&(args_info->show_required_arg),
                  &(args_info->show_required_orig), &(args_info->show_required_given),
                 &(local_args_info.show_required_given), optarg, 0, "(mandatory)", ARG_STRING,
                 check_ambiguity, override, 0, 0,
                 "show-required", '-',
                 additional_error))
               goto failure;
-          
+
           }
           /* set the package name (override package defined in the .ggo file).  */
           else if (strcmp (long_options[option_index].name, "set-package") == 0)
           {
-          
-          
-            if (update_arg( (void *)&(args_info->set_package_arg), 
+
+
+            if (update_arg( (void *)&(args_info->set_package_arg),
                  &(args_info->set_package_orig), &(args_info->set_package_given),
                 &(local_args_info.set_package_given), optarg, 0, 0, ARG_STRING,
                 check_ambiguity, override, 0, 0,
                 "set-package", '-',
                 additional_error))
               goto failure;
-          
+
           }
           /* set the version number (override version defined in the .ggo file).  */
           else if (strcmp (long_options[option_index].name, "set-version") == 0)
           {
-          
-          
-            if (update_arg( (void *)&(args_info->set_version_arg), 
+
+
+            if (update_arg( (void *)&(args_info->set_version_arg),
                  &(args_info->set_version_orig), &(args_info->set_version_given),
                 &(local_args_info.set_version_given), optarg, 0, 0, ARG_STRING,
                 check_ambiguity, override, 0, 0,
                 "set-version", '-',
                 additional_error))
               goto failure;
-          
+
           }
           /* show the output of --help instead of generating code.  */
           else if (strcmp (long_options[option_index].name, "show-help") == 0)
           {
-          
-          
-            if (update_arg( 0 , 
+
+
+            if (update_arg( 0 ,
                  0 , &(args_info->show_help_given),
                 &(local_args_info.show_help_given), optarg, 0, 0, ARG_NO,
                 check_ambiguity, override, 0, 0,
                 "show-help", '-',
                 additional_error))
               goto failure;
-          
+
           }
           /* show the output of --full-help (i.e., including hidden options) instead of generating code.  */
           else if (strcmp (long_options[option_index].name, "show-full-help") == 0)
           {
-          
-          
-            if (update_arg( 0 , 
+
+
+            if (update_arg( 0 ,
                  0 , &(args_info->show_full_help_given),
                 &(local_args_info.show_full_help_given), optarg, 0, 0, ARG_NO,
                 check_ambiguity, override, 0, 0,
                 "show-full-help", '-',
                 additional_error))
               goto failure;
-          
+
           }
           /* show the output of --detailed-help (i.e., including details and hidden options) instead of generating code.  */
           else if (strcmp (long_options[option_index].name, "show-detailed-help") == 0)
           {
-          
-          
-            if (update_arg( 0 , 
+
+
+            if (update_arg( 0 ,
                  0 , &(args_info->show_detailed_help_given),
                 &(local_args_info.show_detailed_help_given), optarg, 0, 0, ARG_NO,
                 check_ambiguity, override, 0, 0,
                 "show-detailed-help", '-',
                 additional_error))
               goto failure;
-          
+
           }
           /* show the output of --version instead of generating code.  */
           else if (strcmp (long_options[option_index].name, "show-version") == 0)
           {
-          
-          
-            if (update_arg( 0 , 
+
+
+            if (update_arg( 0 ,
                  0 , &(args_info->show_version_given),
                 &(local_args_info.show_version_given), optarg, 0, 0, ARG_NO,
                 check_ambiguity, override, 0, 0,
                 "show-version", '-',
                 additional_error))
               goto failure;
-          
+
           }
-          
+
           break;
         case '?':	/* Invalid option.  */
           /* `getopt_long' already printed an error message.  */
@@ -1176,7 +1176,7 @@ cmdline_parser_internal (
   return 0;
 
 failure:
-  
+
   cmdline_parser_release (&local_args_info);
   return (EXIT_FAILURE);
 }
@@ -1269,19 +1269,19 @@ cmdline_parser_string_ext(const char *cmdline, struct gengetopt_args_info *args_
   char **argv_ptr = 0;
   int result;
   unsigned int argc;
-  
+
   argc = cmdline_parser_create_argv(cmdline, &argv_ptr, prog_name);
-  
+
   result =
     cmdline_parser_internal (argc, argv_ptr, args_info, params, 0);
-  
+
   if (argv_ptr)
     {
       free (argv_ptr);
     }
 
   free_cmd_list();
-  
+
   return result;
 }
 

@@ -8,7 +8,7 @@
  * \file rtkcheckimagequality.cxx
  *
  * \brief Check the quality of the input image
- * If a baseline is provided then a pixel quality 
+ * If a baseline is provided then a pixel quality
  *
  * \author Julien Jomier
  */
@@ -27,7 +27,7 @@ int main(int argc, char** argv)
   typedef itk::ImageFileReader<ImageType> ReaderType;
   ReaderType::Pointer reader = ReaderType::New();
   reader->SetFileName(argv[1]);
-  
+
   try
     {
     reader->Update();

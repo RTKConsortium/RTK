@@ -110,7 +110,7 @@ UnwarpSequenceConjugateGradientOperator< TImageSequence, TDVFImageSequence, TIma
 }
 
 template< typename TImageSequence, typename TDVFImageSequence, typename TImage, typename TDVFImage>
-void 
+void
 UnwarpSequenceConjugateGradientOperator< TImageSequence, TDVFImageSequence, TImage, TDVFImage>
 ::GenerateData()
 {

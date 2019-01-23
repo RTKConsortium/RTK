@@ -58,7 +58,7 @@ class ITKCudaCommon_EXPORT kernel                  \
   {                                 \
     return kernel::GetCudaPTXSource();  \
   }
-    
+
 /** Get the local block size based on the desired Image Dimension
  * currently set as follows:
  * Cuda workgroup (block) size for 1/2/3D - needs to be tuned based on the Cuda architecture

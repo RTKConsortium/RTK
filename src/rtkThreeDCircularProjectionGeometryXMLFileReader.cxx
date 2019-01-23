@@ -182,7 +182,7 @@ EndElement(const char *name)
         if( fabs(m_Matrix[i][j]-m_OutputObject->GetMatrices().back()[i][j]) > 0.001 )
           {
           itkGenericExceptionMacro(<< "Matrix and parameters are not consistent."
-                                   << std::endl << "Read matrix from geometry file: " 
+                                   << std::endl << "Read matrix from geometry file: "
                                    << std::endl << m_Matrix
                                    << std::endl << "Computed matrix from parameters:"
                                    << std::endl << m_OutputObject->GetMatrices().back());

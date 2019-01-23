@@ -97,7 +97,7 @@ x10:
     else if(V==NULL)
 /* Otherwise, the V vector is taken to satisfy this already, or stored earlier. */
       V=LUSOL->vLU6L;
-      
+
 
 /*         Insert into  U  any nonzeros in the top of  v.
            row  ip(klast)  will contain the last nonzero in pivotal order.

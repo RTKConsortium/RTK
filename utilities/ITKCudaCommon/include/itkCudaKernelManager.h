@@ -32,7 +32,7 @@ namespace itk
 /** \class CudaKernelManager
  * \brief Cuda kernel manager implemented using Cuda.
  *
- * This class is responsible for managing the Cuda kernel 
+ * This class is responsible for managing the Cuda kernel
  *
  * \ingroup ITKCudaCommon
  */
@@ -58,13 +58,13 @@ public:
 
   bool LoadProgramFromFile(const char* filename);
   bool LoadProgramFromString(const char* str);
-  
+
   int CreateKernel(const char* kernelName);
 
   int CreateKernel(const char* kernelName, const std::type_info&);
-  
+
   bool PushKernelArg(int kernelIdx, const void* argVal);
-  
+
   void ClearKernelArgs(int kernelIdx);
 
   bool SetKernelArg(int kernelIdx, int argIdx, size_t argSize, const void* argVal);
@@ -76,36 +76,36 @@ public:
   {
     return SetKernelArgWithImage(kernelIdx, argIdx, image->GetCudaDataManager());
   }
-  
+
   /** Pass to Cuda both the pixel buffer and the buffered region. */
   template< class TCudaImageDataManager >
   bool SetKernelArgWithImageAndBufferedRegion(
     int kernelIdx, int &argIdx,
     TCudaImageDataManager *manager)
   {
-    return SetKernelArgWithImage(kernelIdx, argIdx++, manager) && 
+    return SetKernelArgWithImage(kernelIdx, argIdx++, manager) &&
       SetKernelArgWithImage(kernelIdx, argIdx++, manager->GetGPUBufferedRegionIndex()) &&
       SetKernelArgWithImage(kernelIdx, argIdx++, manager->GetGPUBufferedRegionSize());
   }
 
-  bool LaunchKernel(int kernelIdx, int dim, 
-                   size_t *globalWorkSize, size_t *localWorkSize, 
+  bool LaunchKernel(int kernelIdx, int dim,
+                   size_t *globalWorkSize, size_t *localWorkSize,
                    unsigned int sharedMemBytes = 0);
 
-  bool LaunchKernel1D(int kernelIdx, 
-                      size_t globalWorkSize, size_t localWorkSize, 
+  bool LaunchKernel1D(int kernelIdx,
+                      size_t globalWorkSize, size_t localWorkSize,
                       unsigned int sharedMemBytes = 0);
 
   bool LaunchKernel2D(int kernelIdx,
                       size_t globalWorkSizeX, size_t globalWorkSizeY,
-                      size_t localWorkSizeX,  size_t localWorkSizeY, 
+                      size_t localWorkSizeX,  size_t localWorkSizeY,
                       unsigned int sharedMemBytes = 0);
 
   bool LaunchKernel3D(int kernelIdx,
                       size_t globalWorkSizeX, size_t globalWorkSizeY, size_t globalWorkSizeZ,
                       size_t localWorkSizeX,  size_t localWorkSizeY, size_t localWorkSizeZ,
                       unsigned int sharedMemBytes = 0);
-  
+
   void Synchronize();
 
 protected:

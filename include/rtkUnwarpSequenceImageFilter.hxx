@@ -49,7 +49,7 @@ UnwarpSequenceImageFilter< TImageSequence, TDVFImageSequence, TImage, TDVFImage>
 #endif
   m_WarpForwardFilter = WarpForwardFilterType::New();
   m_CGOperator = CGOperatorFilterType::New();
-  
+
   // Set permanent connections
   m_ConjugateGradientFilter->SetB(m_WarpForwardFilter->GetOutput());
   m_ConjugateGradientFilter->SetX(m_ConstantSource->GetOutput());
@@ -132,9 +132,9 @@ UnwarpSequenceImageFilter< TImageSequence, TDVFImageSequence, TImage, TDVFImage>
   m_ConjugateGradientFilter->Update();
 
   this->GraftOutput( m_ConjugateGradientFilter->GetOutput() );
-  
-  // During mini-pipeline execution, the requested region on the primary input 
-  // is modified by the extract filters contained in the warp filters. This 
+
+  // During mini-pipeline execution, the requested region on the primary input
+  // is modified by the extract filters contained in the warp filters. This
   typename TImageSequence::Pointer  inputPtr  = const_cast<TImageSequence *>(this->GetInput(0));
   inputPtr->SetRequestedRegionToLargestPossibleRegion();
 

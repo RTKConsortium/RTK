@@ -24,7 +24,7 @@
 namespace rtk
 {
 
-template< typename TOutputImage, typename TGradientOutputImage> 
+template< typename TOutputImage, typename TGradientOutputImage>
 ADMMTotalVariationConjugateGradientOperator<TOutputImage, TGradientOutputImage>
 ::ADMMTotalVariationConjugateGradientOperator()
 {
@@ -64,7 +64,7 @@ ADMMTotalVariationConjugateGradientOperator<TOutputImage, TGradientOutputImage>
   m_SubtractFilter->ReleaseDataFlagOff();
 }
 
-template< typename TOutputImage, typename TGradientOutputImage> 
+template< typename TOutputImage, typename TGradientOutputImage>
 void
 ADMMTotalVariationConjugateGradientOperator<TOutputImage, TGradientOutputImage>
 ::SetBackProjectionFilter (const typename BackProjectionFilterType::Pointer _arg)
@@ -74,7 +74,7 @@ ADMMTotalVariationConjugateGradientOperator<TOutputImage, TGradientOutputImage>
   m_BackProjectionFilter = _arg;
 }
 
-template< typename TOutputImage, typename TGradientOutputImage> 
+template< typename TOutputImage, typename TGradientOutputImage>
 void
 ADMMTotalVariationConjugateGradientOperator<TOutputImage, TGradientOutputImage>
 ::SetForwardProjectionFilter (const typename ForwardProjectionFilterType::Pointer _arg)
@@ -94,7 +94,7 @@ ADMMTotalVariationConjugateGradientOperator<TOutputImage, TGradientOutputImage>
   this->Modified();
 }
 
-template< typename TOutputImage, typename TGradientOutputImage> 
+template< typename TOutputImage, typename TGradientOutputImage>
 void
 ADMMTotalVariationConjugateGradientOperator<TOutputImage, TGradientOutputImage>
 ::GenerateInputRequestedRegion()
@@ -112,7 +112,7 @@ ADMMTotalVariationConjugateGradientOperator<TOutputImage, TGradientOutputImage>
   inputPtr1->SetRequestedRegion( inputPtr1->GetLargestPossibleRegion() );
 }
 
-template< typename TOutputImage, typename TGradientOutputImage> 
+template< typename TOutputImage, typename TGradientOutputImage>
 void
 ADMMTotalVariationConjugateGradientOperator<TOutputImage, TGradientOutputImage>
 ::GenerateOutputInformation()
@@ -161,8 +161,8 @@ ADMMTotalVariationConjugateGradientOperator<TOutputImage, TGradientOutputImage>
   this->GetOutput()->CopyInformation( m_SubtractFilter->GetOutput() );
 }
 
-template< typename TOutputImage, typename TGradientOutputImage> 
-void 
+template< typename TOutputImage, typename TGradientOutputImage>
+void
 ADMMTotalVariationConjugateGradientOperator<TOutputImage, TGradientOutputImage>
 ::GenerateData()
 {

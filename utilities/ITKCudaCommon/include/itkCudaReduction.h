@@ -65,7 +65,7 @@ public:
 
   unsigned int NextPow2(unsigned int x);
   bool isPow2(unsigned int x);
-  void GetNumBlocksAndThreads(int whichKernel, int n, 
+  void GetNumBlocksAndThreads(int whichKernel, int n,
     int maxBlocks, int maxThreads, int &blocks, int &threads);
   unsigned int GetReductionKernel(int whichKernel, int blockSize, int isPowOf2);
 

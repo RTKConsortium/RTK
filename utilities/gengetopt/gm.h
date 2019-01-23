@@ -158,20 +158,20 @@ class CmdlineParserCreator : public header_gen_class, public c_source_gen_class
   /**
    * generate a list of option descriptions that will be printed in the
    * help output
-   * 
+   *
    * @param generate_hidden if true, include also the hidden options
    * @param generate_details if true, include also the hidden options and
    * details for options that have them.
    */
   OptionHelpList *generate_help_option_list(bool generate_hidden = false,
           bool generate_details = false);
-  
+
   /**
    * generate the sharing between a list of help string, using the
    * complete_list as the list with all the strings (both for hidden
    * options and details, e.g.) and the smaller_list as the list
    * with less strings
-   * 
+   *
    * @param target_array the name of the array to copy to
    * @param source_array the name of the array to copy from
    */
@@ -179,7 +179,7 @@ class CmdlineParserCreator : public header_gen_class, public c_source_gen_class
           unsigned int indent, OptionHelpList *complete_list,
           OptionHelpList *smaller_list, const std::string &target_array,
           const std::string &source_array);
-  
+
   /**
    * Sets the has_arg_XXX by inspecting all the options types
    */

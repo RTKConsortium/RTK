@@ -132,7 +132,7 @@ public:
  * \brief Joseph back projection.
  *
  * Performs a back projection, i.e. smearing of ray value along its path,
- * using [Joseph, IEEE TMI, 1982]. The back projector is the adjoint operator of the 
+ * using [Joseph, IEEE TMI, 1982]. The back projector is the adjoint operator of the
  * forward projector
  *
  * \test rtkbackprojectiontest.cxx

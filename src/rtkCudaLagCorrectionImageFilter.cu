@@ -56,13 +56,13 @@ float *state
     tIdx.z + proj_idx_out.z);
   // combined proj. index -> use thread index in z because accessing memory only with this index
   long int pIdx_comp = (pIdx.x - proj_idx_in.x) + (pIdx.y - proj_idx_in.y) * proj_size_in_buf.x + (pIdx.z - proj_idx_in.z) * proj_size_in_buf.x * proj_size_in_buf.y;
-  
+
   long int sIdx_comp = tIdx.x + tIdx.y * proj_size_out.x;
   unsigned idx_s = sIdx_comp*modelOrder;
-  
+
   float yk = static_cast<float>(dev_proj_in[pIdx_comp]);
   float xk = yk;
-  
+
   float Sa[modelOrder];
   for (unsigned int n = 0; n < modelOrder; n++)
   {
@@ -117,7 +117,7 @@ int state_size, float *coefficients)
   if (cudaMemcpy(d_state, h_state, state_size, cudaMemcpyHostToDevice) != cudaSuccess) {
     std::cout << "Error allocating state" << std::endl;
   }
-  
+
   if (coefficients[8] <= 0.0)
     coefficients[8] = 1.0;
 

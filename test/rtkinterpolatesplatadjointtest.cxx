@@ -59,7 +59,7 @@ int main(int argc, char*argv[])
 
   typedef rtk::ConstantImageSource< VolumeSeriesType > ConstantVolumeSeriesSourceType;
   ConstantVolumeSeriesSourceType::Pointer constantVolumeSeriesSource  = ConstantVolumeSeriesSourceType::New();
-  
+
   // Volume metadata
   VolumeSeriesType::PointType fourDOrigin;
   VolumeSeriesType::SizeType fourDSize;

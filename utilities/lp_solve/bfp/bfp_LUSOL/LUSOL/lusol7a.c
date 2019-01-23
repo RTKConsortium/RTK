@@ -169,7 +169,7 @@ void LU7ELM(LUSOLrec *LUSOL, int JELM, REAL V[], int *LENL,
   NFREE = LUSOL->lena-(*LENL)-(*LROW);
   if(NFREE<MINFRE)
     goto x970;
-    
+
 /*      Pack the subdiagonals of  v  into  L,  and find the largest. */
 x100:
   VMAX = ZERO;

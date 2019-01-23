@@ -45,12 +45,12 @@ int main(int argc, char * argv[])
   typedef rtk::CudaTotalVariationDenoisingBPDQImageFilter       TVDenoisingFilterType;
 #else
   typedef itk::Image< OutputPixelType, Dimension >              OutputImageType;
-  typedef itk::Image< itk::CovariantVector 
+  typedef itk::Image< itk::CovariantVector
       < OutputPixelType, Dimension >, Dimension >               GradientOutputImageType;
   typedef rtk::TotalVariationDenoisingBPDQImageFilter
       <OutputImageType, GradientOutputImageType>                TVDenoisingFilterType;
 #endif
-  
+
   // Read input
   typedef itk::ImageFileReader<OutputImageType>                 ReaderType;
   ReaderType::Pointer reader = ReaderType::New();

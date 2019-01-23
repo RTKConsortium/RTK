@@ -116,7 +116,7 @@ int main(int , char** )
   std::vector<float> coef;
   coef.push_back(0.0787f);
   coef.push_back(106.244f);
-  
+
   SFilter->SetTruncationCorrection(0.5);
   SFilter->SetCoefficients(coef);
 
@@ -128,7 +128,7 @@ int main(int , char** )
   ImageType::SizeType size = outputI->GetLargestPossibleRegion().GetSize();
   itk::ImageRegionConstIterator<ImageType> itO(outputI, outputI->GetLargestPossibleRegion());
   itO.GoToBegin();
-    
+
   ImageType::IndexType idx;
   float sumBng = 0.0f;
   float spikeValueOut = 0.0f;
@@ -147,7 +147,7 @@ int main(int , char** )
     std::cerr << "Test Failed! "<< std::endl;
     exit(EXIT_FAILURE);
   }
-  
+
   std::cout << "\n\nTest PASSED! " << std::endl;
 
   return EXIT_SUCCESS;

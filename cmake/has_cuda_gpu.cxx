@@ -6,7 +6,7 @@ int main() {
     int gpuDeviceCount = 0;
     struct cudaDeviceProp properties;
     cudaError_t cudaResultCode = cudaGetDeviceCount(&deviceCount);
-    if (cudaResultCode != cudaSuccess) 
+    if (cudaResultCode != cudaSuccess)
         deviceCount = 0;
     /* machines with no GPUs can still report one emulation device */
     for (device = 0; device < deviceCount; ++device) {

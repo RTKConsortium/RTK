@@ -43,7 +43,7 @@ The other updates use either forward or backward sweeps. They tend to generate m
 
 Both the F77 and C versions contain extensive comments, method and implementational information as part of the code.
 
-The C version contains a record-based wrapper for the data.  Function calls have been simplified by including references to this structure.  New maintenance routines enable dynamic instance creation and destruction, and  simplifies access to the most frequently used functions.  The LUSOL C library is multi-instance and fully re-entrant.  All control and output parameters have been given long descriptive names for usability. 
+The C version contains a record-based wrapper for the data.  Function calls have been simplified by including references to this structure.  New maintenance routines enable dynamic instance creation and destruction, and  simplifies access to the most frequently used functions.  The LUSOL C library is multi-instance and fully re-entrant.  All control and output parameters have been given long descriptive names for usability.
 
 
 Benefits
@@ -67,7 +67,7 @@ For TRP, the current bottleneck is updating the vector containing the largest el
 
 For TCP, the heap structure is already efficient, but the dense factors (and the extended searching for acceptable pivots) are unavoidable expenses.
 
-The triangular Solve routines do not take full of advantage of sparse right-hand sides.  Gilbert and Peierls have shown how to solve Lx = (sparse b) efficiently if L is stored column-wise.  Their approach could therefore be implemented in LUSOL for solves with L and U(transpose).  Solves with L(transpose) and U would need a second copy of L and U. 
+The triangular Solve routines do not take full of advantage of sparse right-hand sides.  Gilbert and Peierls have shown how to solve Lx = (sparse b) efficiently if L is stored column-wise.  Their approach could therefore be implemented in LUSOL for solves with L and U(transpose).  Solves with L(transpose) and U would need a second copy of L and U.
 
 
 Original Reference

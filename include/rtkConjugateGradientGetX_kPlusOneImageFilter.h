@@ -35,7 +35,7 @@ template< typename TInputImage>
 class ConjugateGradientGetX_kPlusOneImageFilter : public itk::ImageToImageFilter< TInputImage, TInputImage>
 {
 public:
-    
+
   /** Standard class typedefs. */
   typedef ConjugateGradientGetX_kPlusOneImageFilter          Self;
   typedef itk::ImageToImageFilter< TInputImage, TInputImage> Superclass;
@@ -72,7 +72,7 @@ protected:
   void GenerateData() ITK_OVERRIDE;
 
   void GenerateOutputInformation() ITK_OVERRIDE;
-  
+
 private:
   ConjugateGradientGetX_kPlusOneImageFilter(const Self &); //purposely not implemented
   void operator=(const Self &);  //purposely not implemented

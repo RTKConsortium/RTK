@@ -68,11 +68,11 @@ public:
   /** Input projection stack */
   void SetInputProjectionStack(const InputImageType* ProjectionStack);
   InputImageType::Pointer GetInputProjectionStack();
-  
+
   /** Input displacement vector field */
   void SetInputVolume(const InputImageType* Volume);
   InputImageType::Pointer GetInputVolume();
-  
+
   /** Input displacement vector field */
   void SetDisplacementField(const DVFType* DVF);
   DVFType::Pointer GetDisplacementField();
@@ -86,7 +86,7 @@ protected:
   ~CudaWarpForwardProjectionImageFilter() {};
 
   virtual void GenerateInputRequestedRegion();
-  
+
   virtual void GPUGenerateData();
 
 private:

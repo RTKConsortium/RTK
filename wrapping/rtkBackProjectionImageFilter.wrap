@@ -14,7 +14,7 @@ itk_wrap_class("rtk::BackProjectionImageFilter" POINTER)
 itk_end_wrap_class()
 
 if(RTK_USE_CUDA)
- 
+
   itk_wrap_class("itk::CudaImageToImageFilter" POINTER)
     itk_wrap_template("CIF3CIF3BPCIF3CIF3"
       "itk::CudaImage<${ITKT_F}, 3>, itk::CudaImage<${ITKT_F}, 3>, rtk::BackProjectionImageFilter< itk::CudaImage<${ITKT_F}, 3>, itk::CudaImage<${ITKT_F}, 3> >")

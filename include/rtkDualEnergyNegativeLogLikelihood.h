@@ -107,7 +107,7 @@ public:
   long double measure = 0;
   // TODO: Improve this estimation
   // We assume that the variance of the integrated energy is equal to the mean
-  // From equation (5) of "Cramér–Rao lower bound of basis image noise in multiple-energy x-ray imaging",
+  // From equation (5) of "Cramer-Rao lower bound of basis image noise in multiple-energy x-ray imaging",
   // PMB 2009, Roessl et al, we replace the variance with the mean
 
   // Compute the negative log likelihood from the expectedEnergies

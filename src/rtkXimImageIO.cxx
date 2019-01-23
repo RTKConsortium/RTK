@@ -218,7 +218,7 @@ void rtk::XimImageIO::ReadImageInformation()
 
   this->SetPixelType(itk::ImageIOBase::SCALAR);
   this->SetComponentType(itk::ImageIOBase::UINT); // 32 bit ints
-  
+
   /* Store important meta information in the meta data dictionary */
   if (xim.SizeX * xim.SizeY != 0){
     itk::EncapsulateMetaData<double>(this->GetMetaDataDictionary(), "dCTProjectionAngle", xim.dCTProjectionAngle);
@@ -358,7 +358,7 @@ void rtk::XimImageIO::Read(void * buffer)
 
   for (int lut_idx = 0; lut_idx < lookUpTableSize; lut_idx++) {
     char v = m_lookup_table[lut_idx];
-    
+
     vsub =  v & 0b00000011;       // 0x03
     auto diff1 = get_diff<Int4>(vsub, fp);
     vsub = (v & 0b00001100) >> 2; // 0x0C

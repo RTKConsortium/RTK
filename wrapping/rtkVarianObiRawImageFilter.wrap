@@ -1,5 +1,5 @@
 #-----------------------------------------------------------------------------
-# itk::UnaryFunctorImageFilter<itk::Image<u, d>, itk::Image<t, d>, 
+# itk::UnaryFunctorImageFilter<itk::Image<u, d>, itk::Image<t, d>,
 #   rtk::Function::ObiAttenuation<u, t>>
 #-----------------------------------------------------------------------------
 itk_wrap_class("itk::UnaryFunctorImageFilter" POINTER)
@@ -7,7 +7,7 @@ itk_wrap_class("itk::UnaryFunctorImageFilter" POINTER)
     foreach(t ${WRAP_ITK_REAL})
       foreach(u ${WRAP_ITK_SCALARS})
         itk_wrap_template("I${ITKM_${u}}${d}I${ITKM_${t}}${d}OA${ITKM_${u}}${ITKM_${t}}" "itk::Image<${ITKT_${u}}, ${d}>, itk::Image<${ITKT_${t}}, ${d}>, rtk::Function::ObiAttenuation< ${ITKM_${u}},${ITKM_${t}} >")
-      endforeach()  
+      endforeach()
     endforeach()
   endforeach()
 itk_end_wrap_class()
@@ -23,7 +23,7 @@ itk_wrap_class("rtk::VarianObiRawImageFilter" POINTER)
     foreach(t ${WRAP_ITK_REAL})
       foreach(u ${WRAP_ITK_SCALARS})
         itk_wrap_template("I${ITKM_${u}}${d}I${ITKM_${t}}${d}" "itk::Image<${ITKT_${u}}, ${d}>, itk::Image<${ITKT_${t}}, ${d}>")
-      endforeach()  
+      endforeach()
     endforeach()
   endforeach()
 itk_end_wrap_class()

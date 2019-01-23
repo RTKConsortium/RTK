@@ -104,7 +104,7 @@ namespace rtk
  */
 
 template< typename TOutputImage, typename TGradientImage =
-    itk::Image< itk::CovariantVector < typename TOutputImage::ValueType, TOutputImage::ImageDimension >, 
+    itk::Image< itk::CovariantVector < typename TOutputImage::ValueType, TOutputImage::ImageDimension >,
     TOutputImage::ImageDimension > >
 class TotalVariationDenoisingBPDQImageFilter :
         public rtk::DenoisingBPDQImageFilter< TOutputImage, TGradientImage >

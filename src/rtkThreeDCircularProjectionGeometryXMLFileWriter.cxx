@@ -65,7 +65,7 @@ WriteFile()
                    << '"';
   this->WriteStartElement(startWithVersion.str().c_str(),output);
   output << std::endl;
-  
+
   // First, we test for each of the 9 parameters per projection if it's constant
   // over all projection images except GantryAngle which is supposed to be different
   // for all projections. If 0. for OutOfPlaneAngle, InPlaneAngle, projection and source

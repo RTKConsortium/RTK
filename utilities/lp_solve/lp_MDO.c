@@ -1,21 +1,21 @@
 /*
     Minimum matrix inverse fill-in modules - interface for lp_solve v5.0+
    ----------------------------------------------------------------------------------
-    Author:        Kjell Eikland 
-    Contact:       kjell.eikland@broadpark.no 
+    Author:        Kjell Eikland
+    Contact:       kjell.eikland@broadpark.no
     License terms: LGPL.
-    
+
     Requires:      string.h, colamd.h, lp_lib.h
 
     Release notes:
-    v1.0    1 September 2003    Preprocessing routines for minimum fill-in column 
-                                ordering for inverse factorization using the open 
+    v1.0    1 September 2003    Preprocessing routines for minimum fill-in column
+                                ordering for inverse factorization using the open
                                 source COLAMD library.  Suitable for the dense parts
-                                of both the product form and LU factorization inverse 
+                                of both the product form and LU factorization inverse
                                 methods.
-    v1.1    1 July 2004         Renamed from lp_colamdMDO to lp_MDO.                                
+    v1.1    1 July 2004         Renamed from lp_colamdMDO to lp_MDO.
 
-   ---------------------------------------------------------------------------------- 
+   ----------------------------------------------------------------------------------
 */
 
 #include <string.h>
@@ -38,7 +38,7 @@ STATIC MYBOOL includeMDO(MYBOOL *usedpos, int item)
   /* Handle case where we are processing all columns */
   if(usedpos == NULL)
     return( TRUE );
-    
+
   else {
   /* Otherwise do the selective case */
     MYBOOL test = usedpos[item];
@@ -53,8 +53,8 @@ STATIC MYBOOL includeMDO(MYBOOL *usedpos, int item)
 
 STATIC int prepareMDO(lprec *lp, MYBOOL *usedpos, int *colorder, int *data, int *rowmap)
 /* This routine prepares data structures for colamd().  It is called twice, the first
-   time to count applicable non-zero elements by column, and the second time to fill in 
-   the row indexes of the non-zero values from the first call.  Note that the colamd() 
+   time to count applicable non-zero elements by column, and the second time to fill in
+   the row indexes of the non-zero values from the first call.  Note that the colamd()
    row index base is 0 (which suits lp_solve fine). */
 {
   int     i, ii, j, k, kk;
@@ -103,14 +103,14 @@ STATIC int prepareMDO(lprec *lp, MYBOOL *usedpos, int *colorder, int *data, int 
         Bnz++;
       }
       /* Loop over all NZ-variables */
-      for(; i < ii; 
+      for(; i < ii;
           i++, value += matValueStep, rownr += matRowColStep) {
         if(!includeMDO(usedpos, *rownr))
           continue;
         /* See if we need to change phase 1 OF value */
         if(*rownr == 0) {
           hold = *value;
-          if(!modifyOF1(lp, kk, &hold, 1.0)) 
+          if(!modifyOF1(lp, kk, &hold, 1.0))
             continue;
         }
         /* Tally uneliminated constraint row values */
@@ -164,14 +164,14 @@ int __WINAPI getMDO(lprec *lp, MYBOOL *usedpos, int *colorder, int *size, MYBOOL
   int    stats[COLAMD_STATS];
   double knobs[COLAMD_KNOBS];
 
- /* Tally the non-zero counts of the unused columns/rows of the 
+ /* Tally the non-zero counts of the unused columns/rows of the
     basis matrix and store corresponding "net" starting positions */
   allocINT(lp, &col_end, ncols+1, FALSE);
   n = prepareMDO(lp, usedpos, colorder, col_end, NULL);
   Bnz = col_end[ncols];
 
- /* Check that we have unused basic columns, otherwise skip analysis */  
-  if(ncols == 0 || Bnz == 0) 
+ /* Check that we have unused basic columns, otherwise skip analysis */
+  if(ncols == 0 || Bnz == 0)
     goto Transfer;
 
  /* Get net number of rows and fill mapper */
@@ -180,7 +180,7 @@ int __WINAPI getMDO(lprec *lp, MYBOOL *usedpos, int *colorder, int *size, MYBOOL
   for(i = 0; i <= lp->rows; i++) {
     row_map[i] = i-nrows;
    /* Increment eliminated row counter if necessary */
-    if(!includeMDO(usedpos, i)) 
+    if(!includeMDO(usedpos, i))
       nrows++;
   }
   nrows = lp->rows+1 - nrows;
@@ -197,7 +197,7 @@ int __WINAPI getMDO(lprec *lp, MYBOOL *usedpos, int *colorder, int *size, MYBOOL
 #if 1
   colamd_set_defaults(knobs);
   knobs [COLAMD_DENSE_ROW] = 0.2+0.2 ;    /* default changed for UMFPACK */
-  knobs [COLAMD_DENSE_COL] = knobs [COLAMD_DENSE_ROW];    
+  knobs [COLAMD_DENSE_COL] = knobs [COLAMD_DENSE_ROW];
   if(symmetric && (nrows == ncols)) {
     MEMCOPY(colorder, Brows, ncols + 1);
     error = !symamd(nrows, colorder, col_end, Brows, knobs, stats, mdo_calloc, mdo_free);
@@ -215,7 +215,7 @@ int __WINAPI getMDO(lprec *lp, MYBOOL *usedpos, int *colorder, int *size, MYBOOL
 
  /* Transfer the estimated optimal ordering, adjusting for index offsets */
 Transfer:
-  if(error) 
+  if(error)
     error = stats[COLAMD_STATUS];
   else {
     MEMCOPY(Brows, colorder, ncols + 1);

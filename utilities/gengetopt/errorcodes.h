@@ -1,7 +1,7 @@
 //
 // C++ Interface: errorcodes
 //
-// Description: 
+// Description:
 //
 //
 // Author: Lorenzo Bettini <http://www.lorenzobettini.it>, (C) 2004

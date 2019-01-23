@@ -267,7 +267,7 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage,
 #endif
   m_ConjugateGradientFilter->SetA(m_CGOperator.GetPointer());
   m_ConjugateGradientFilter->SetIterationCosts(m_IterationCosts);
-  
+
   // Set runtime connections
   m_ConstantVolumeSource->SetInformationFromImage(this->GetInputVolume());
   m_CGOperator->SetInputProjectionStack(m_DisplacedDetectorFilter->GetOutput());
@@ -305,7 +305,7 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage,
   m_CGOperator->SetGeometry(this->m_Geometry);
   m_BackProjectionFilterForB->SetGeometry(this->m_Geometry.GetPointer());
   m_DisplacedDetectorFilter->SetGeometry(this->m_Geometry);
-  
+
   // Set runtime parameters
   m_ConjugateGradientFilter->SetNumberOfIterations(this->m_NumberOfIterations);
   m_CGOperator->SetGamma(m_Gamma);

@@ -44,8 +44,8 @@ namespace rtk
    * Details on the method and the calculations can be found in
    *
    * Mory, C., B. Zhang, V. Auvray, M. Grass, D. Schafer, F. Peyrin, S. Rit, P. Douek,
-   * and L. Boussel. “ECG-Gated C-Arm Computed Tomography Using L1 Regularization.”
-   * In Proceedings of the 20th European Signal Processing Conference (EUSIPCO), 2728–32, 2012.
+   * and L. Boussel. "ECG-Gated C-Arm Computed Tomography Using L1 Regularization."
+   * In Proceedings of the 20th European Signal Processing Conference (EUSIPCO), 2728-32, 2012.
    *
    * This filter takes in input f and outputs R_t R f + beta * W_t W f. The Daubechies
    * wavelets being orthogonal, W_t happens to be the inverse of W, and therefore

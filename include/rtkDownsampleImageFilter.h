@@ -29,7 +29,7 @@ namespace rtk
  *
  * This filter is inspired from Dan Mueller's GIFT package
  * http://www.insight-journal.org/browse/publication/103
- * 
+ *
  * \author Cyril Mory
  *
  * \ingroup RTK
@@ -46,7 +46,7 @@ public:
   typedef itk::SmartPointer<const Self>                         ConstPointer;
 
   /** Method for creation through the object factory. */
-  itkNewMacro(Self);  
+  itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(DownsampleImageFilter, ImageToImageFilter);
@@ -114,16 +114,16 @@ protected:
 private:
   DownsampleImageFilter(const Self&);   //purposely not implemented
   void operator=(const Self&);          //purposely not implemented
-  
+
   unsigned int  m_Factors[ImageDimension];
   int           m_Offsets[ImageDimension];
 };
 
-  
+
 } // end namespace rtk
-  
+
 #ifndef rtk_MANUAL_INSTANTIATION
 #include "rtkDownsampleImageFilter.hxx"
 #endif
-  
+
 #endif

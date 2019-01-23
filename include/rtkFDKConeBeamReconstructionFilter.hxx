@@ -91,7 +91,7 @@ FDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecision>
   unsigned int firstStackSize = std::min(m_ProjectionSubsetSize, (unsigned int)projRegion.GetSize(Dimension-1) );
   projRegion.SetSize(Dimension-1, firstStackSize);
   m_ExtractFilter->SetExtractionRegion(projRegion);
-  
+
   // Run composite filter update
   m_BackProjectionFilter->SetInput ( 0, this->GetInput(0) );
   m_BackProjectionFilter->SetInPlace( this->GetInPlace() );

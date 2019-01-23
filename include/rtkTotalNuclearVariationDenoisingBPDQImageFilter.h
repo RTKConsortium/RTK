@@ -28,7 +28,7 @@ namespace rtk
  * \brief Performs total nuclear variation denoising
  *
  * This filter implements "Joint reconstruction of multi-channel, spectral CT data
- * via constrained total nuclear variation minimization", by Rigie & LaRivière, in
+ * via constrained total nuclear variation minimization", by Rigie & LaRiviere, in
  * Physics in Medicine and Biology 2015.
  *
  * It uses basis pursuit dequantization, and is (mathematically) only a generalization

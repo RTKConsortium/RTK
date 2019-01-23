@@ -78,14 +78,14 @@ int main(int argc, char*argv[])
   dsl->InPlaceOff();
   TRY_AND_EXIT_ON_ITK_EXCEPTION( dsl->Update() );
 
-  
+
   // Read a reference image
   typedef itk::ImageFileReader<OutputImageType> ReaderType;
   ReaderType::Pointer readerRef = ReaderType::New();
   readerRef->SetFileName(argv[1]);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(readerRef->Update());
-  
-  
+
+
   std::cout << "\n\n****** Case 1: CPU laplacian ******" << std::endl;
 
   // Create and set the laplacian filter
@@ -117,6 +117,6 @@ int main(int argc, char*argv[])
 
   std::cout << "\n\nTest PASSED! " << std::endl;
 #endif
-  
+
   return EXIT_SUCCESS;
 }

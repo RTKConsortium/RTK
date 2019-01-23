@@ -31,7 +31,7 @@ if (RTK_BUILD_DOXYGEN)
   if(EXISTS ${ITK_DOXYGEN_COMPRESSED_TAG_FILE})
     find_program(GZIP_TOOL NAMES gzip)
     if(GZIP_TOOL)
-      execute_process(COMMAND ${GZIP_TOOL} -dkf ${ITK_DOXYGEN_COMPRESSED_TAG_FILE})    
+      execute_process(COMMAND ${GZIP_TOOL} -dkf ${ITK_DOXYGEN_COMPRESSED_TAG_FILE})
       set(DOXYGEN_TAGFILES_PARAMETER "${ITK_DOXYGEN_TAG_FILE}=http://www.itk.org/Doxygen/html/")
     endif()
   else()
@@ -44,7 +44,7 @@ if (RTK_BUILD_DOXYGEN)
   configure_file(${PROJECT_SOURCE_DIR}/documentation/Doxygen/itkdoxygen.pl.in
                  ${PROJECT_BINARY_DIR}/Doxygen/itkdoxygen.pl)
 
-  add_custom_target(Documentation 
+  add_custom_target(Documentation
     COMMAND ${DOXYGEN_EXECUTABLE} ${PROJECT_BINARY_DIR}/Doxygen/doxygen.config
     MAIN_DEPENDENCY ${PROJECT_BINARY_DIR}/Doxygen/doxygen.config
     DEPENDS         ${PROJECT_BINARY_DIR}/Doxygen/itkdoxygen.pl ${LATEXTARGETS}

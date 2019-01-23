@@ -50,7 +50,7 @@ struct gengetopt_option
 
   char *text_before; /**< a possible text specified before this option */
   char *text_after; /**< a possible text specified after this option */
-  
+
   char *details; /**< possible further details for this option that will be
   printed only if --detailed-help is specified */
 

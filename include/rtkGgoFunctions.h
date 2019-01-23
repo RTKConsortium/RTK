@@ -151,7 +151,7 @@ GetProjectionsFileNamesFromGgo(const TArgsInfo &args_info)
         }
       }
     }
-  
+
   std::vector<std::string> fileNames = names->GetFileNames();
   rtk::RegisterIOFactories();
   std::vector<size_t> idxtopop;

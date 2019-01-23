@@ -3302,7 +3302,7 @@ MYBOOL __WINAPI str_add_lag_con(lprec *lp, const char *row_string, int con_type,
   int    i;
   MYBOOL ret = TRUE;
   REAL   *a_row;
-  const char   *p; 
+  const char   *p;
   char *new_p;
 
   allocREAL(lp, &a_row, lp->columns + 1, FALSE);

@@ -48,14 +48,14 @@ bool CudaKernelManager::LoadProgramFromFile(const char* filename)
   //
   CUmodule module;
   CUresult err = cuModuleLoad(&module, filename);
-  if (err != CUDA_SUCCESS) 
+  if (err != CUDA_SUCCESS)
     {
     itkWarningMacro(<< "Cannot create Cuda program");
     return false;
     }
 
   m_Program = module;
-  
+
   return true;
 }
 
@@ -75,7 +75,7 @@ bool CudaKernelManager::LoadProgramFromString(const char* str)
     }
 
   m_Program = module;
-  
+
   return true;
 }
 
@@ -83,17 +83,17 @@ int CudaKernelManager::CreateKernel(const char* kernelName)
 {
   CUfunction func;
   CUresult errid = cuModuleGetFunction(&func, static_cast<CUmodule>(m_Program), kernelName);
-  if (errid != CUDA_SUCCESS) 
+  if (errid != CUDA_SUCCESS)
     {
     itkWarningMacro("Fail to create Cuda kernel " + std::string(kernelName));
     return false;
     }
-  
+
   m_KernelContainer.push_back(func);
 
   // argument list
   m_KernelArgumentReady.push_back(std::vector< KernelArgumentList >());
-  
+
   return (int)m_KernelContainer.size()-1;
 }
 
@@ -233,7 +233,7 @@ bool CudaKernelManager::LaunchKernel(int kernelIdx, int itkNotUsed(dim), size_t 
 
   std::vector<void*> params;
   GetKernelParams(kernelIdx, params);
-  
+
   std::cout << "Kernel " << m_KernelContainer[kernelIdx] << " has " << params.size() << " params" << std::endl;
   /*for (int i = 0; i < params.size() ;i++)
     {
@@ -244,14 +244,14 @@ bool CudaKernelManager::LaunchKernel(int kernelIdx, int itkNotUsed(dim), size_t 
   std::cout << " localWorkSize: " << localWorkSize[0] << ", " << localWorkSize[1] << ", " << localWorkSize[2] << std::endl;
 
   std::cout << "blocks " << GETBLOCKSIZE(globalWorkSize[0], localWorkSize[0]) << ", " <<
-    GETBLOCKSIZE(globalWorkSize[1], localWorkSize[1]) << ", " << 
+    GETBLOCKSIZE(globalWorkSize[1], localWorkSize[1]) << ", " <<
     GETBLOCKSIZE(globalWorkSize[2], localWorkSize[2]) << std::endl;
-  
-  CUDA_CHECK(cuLaunchKernel(m_KernelContainer[kernelIdx], 
-    GETBLOCKSIZE(globalWorkSize[0], localWorkSize[0]), 
+
+  CUDA_CHECK(cuLaunchKernel(m_KernelContainer[kernelIdx],
+    GETBLOCKSIZE(globalWorkSize[0], localWorkSize[0]),
     GETBLOCKSIZE(globalWorkSize[1], localWorkSize[1]),
     GETBLOCKSIZE(globalWorkSize[2], localWorkSize[2]),
-    localWorkSize[0], localWorkSize[1], localWorkSize[2], 
+    localWorkSize[0], localWorkSize[1], localWorkSize[2],
     sharedMemBytes, 0, &params[0], 0));
   return true;
 }

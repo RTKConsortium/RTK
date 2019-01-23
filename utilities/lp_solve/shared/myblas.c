@@ -99,10 +99,10 @@ MYBOOL load_BLAS(const char *libname)
       BLAS_dswap  = (BLAS_dswap_func *)  GetProcAddress(hBLAS, BLAS_prec "swap");
       BLAS_ddot   = (BLAS_ddot_func *)   GetProcAddress(hBLAS, BLAS_prec "dot");
       BLAS_idamax = (BLAS_idamax_func *) GetProcAddress(hBLAS, "i" BLAS_prec "amax");
-#if 0      
+#if 0
       BLAS_dload  = (BLAS_dload_func *)  GetProcAddress(hBLAS, BLAS_prec "load");
       BLAS_dnormi = (BLAS_dnormi_func *) GetProcAddress(hBLAS, BLAS_prec "normi");
-#endif      
+#endif
     }
   #else
    /* First standardize UNIX .SO library name format. */
@@ -133,10 +133,10 @@ MYBOOL load_BLAS(const char *libname)
       BLAS_dswap  = (BLAS_dswap_func *)  dlsym(hBLAS, BLAS_prec "swap");
       BLAS_ddot   = (BLAS_ddot_func *)   dlsym(hBLAS, BLAS_prec "dot");
       BLAS_idamax = (BLAS_idamax_func *) dlsym(hBLAS, "i" BLAS_prec "amax");
-#if 0      
+#if 0
       BLAS_dload  = (BLAS_dload_func *)  dlsym(hBLAS, BLAS_prec "load");
       BLAS_dnormi = (BLAS_dnormi_func *) dlsym(hBLAS, BLAS_prec "normi");
-#endif      
+#endif
     }
   #endif
 #endif
@@ -210,7 +210,7 @@ void BLAS_CALLMODEL my_daxpy( int *_n, REAL *_da, REAL *dx, int *_incx, REAL *dy
       (*yptr) += rda*(*xptr);
     return;
   }
-#else  
+#else
 
   if (incx==1 && incy==1) goto x20;
 
@@ -366,8 +366,8 @@ void BLAS_CALLMODEL my_dscal (int *_n, REAL *_da, REAL *dx, int *_incx)
 
   if (n <= 0)
     return;
-  rda = da;  
-  
+  rda = da;
+
   dx--;
 
 /* Optionally do fast pointer arithmetic */
@@ -538,7 +538,7 @@ void BLAS_CALLMODEL my_dswap( int *_n, REAL *dx, int *_incx, REAL *dy, int *_inc
     }
     return;
   }
-#else  
+#else
 
   if (incx == incy) {
     if (incx <= 0) goto x5;
@@ -707,7 +707,7 @@ int BLAS_CALLMODEL my_idamax( int *_n, REAL *x, int *_is )
 		  imax = i;
     }
   }
-#endif  
+#endif
   return(imax);
 }
 

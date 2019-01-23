@@ -59,7 +59,7 @@ FourDSARTConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 
   // Create the filter that enforces positivity
   m_ThresholdFilter = ThresholdFilterType::New();
-  
+
   //Permanent internal connections
   m_ZeroMultiplyFilter->SetInput1( itk::NumericTraits<typename InputImageType::PixelType>::ZeroValue() );
   m_ZeroMultiplyFilter->SetInput2( m_ExtractFilter->GetOutput() );
@@ -166,7 +166,7 @@ template<class VolumeSeriesType, class ProjectionStackType>
 void
 FourDSARTConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 ::GenerateInputRequestedRegion()
-{  
+{
   typename Superclass::InputImagePointer inputPtr =
     const_cast< VolumeSeriesType * >( this->GetInput() );
 
@@ -277,7 +277,7 @@ FourDSARTConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 
   m_DivideFilter->UpdateOutputInformation();
 
-  
+
   if(m_EnforcePositivity)
     {
     m_ThresholdFilter->SetOutsideValue(0);
@@ -323,7 +323,7 @@ FourDSARTConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
   subsetRegion.SetSize(Dimension-1, 1);
 
   m_MultiplyFilter->SetInput1( (const float) m_Lambda/(double)m_NumberOfProjectionsPerSubset  );
-  
+
   // Create the zero projection stack used as input by RayBoxIntersectionFilter
   m_ConstantProjectionStackSource->Update();
 

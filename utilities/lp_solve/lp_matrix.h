@@ -116,13 +116,13 @@ typedef struct _MATrec
   int       mat_alloc;          /* The allocated size for matrix sized structures */
 
   /* Sparse problem matrix storage */
-#if MatrixColAccess==CAM_Record  
+#if MatrixColAccess==CAM_Record
   MATitem   *col_mat;           /* mat_alloc : The sparse data storage */
 #else /*MatrixColAccess==CAM_Vector*/
   int       *col_mat_colnr;
   int       *col_mat_rownr;
   REAL      *col_mat_value;
-#endif  
+#endif
   int       *col_end;           /* columns_alloc+1 : col_end[i] is the index of the
                                    first element after column i; column[i] is stored
                                    in elements col_end[i-1] to col_end[i]-1 */
@@ -231,7 +231,7 @@ STATIC void btran(lprec *lp, REAL *rhsvector, int *nzidx, REAL roundzero);
 /* Combined equation solution and matrix product for simplex operations */
 STATIC MYBOOL fsolve(lprec *lp, int varin, REAL *pcol, int *nzidx, REAL roundzero, REAL ofscalar, MYBOOL prepareupdate);
 STATIC MYBOOL bsolve(lprec *lp, int row_nr, REAL *rhsvector, int *nzidx, REAL roundzero, REAL ofscalar);
-STATIC void bsolve_xA2(lprec *lp, int* coltarget, 
+STATIC void bsolve_xA2(lprec *lp, int* coltarget,
                                   int row_nr1, REAL *vector1, REAL roundzero1, int *nzvector1,
                                   int row_nr2, REAL *vector2, REAL roundzero2, int *nzvector2, int roundmode);
 

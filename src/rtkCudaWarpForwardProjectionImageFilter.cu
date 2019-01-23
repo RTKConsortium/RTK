@@ -189,7 +189,7 @@ CUDA_warp_forward_project( int projSize[3],
 
   // Prepare channel description for arrays
   static cudaChannelFormatDesc channelDesc = cudaCreateChannelDesc<float>();
-  
+
   // Extent stuff, will be used for each component extraction
   cudaExtent dvfExtent = make_cudaExtent(dvfSize[0], dvfSize[1], dvfSize[2]);
 

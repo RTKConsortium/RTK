@@ -28,8 +28,8 @@
 namespace rtk
 {
 
-namespace Function {  
-  
+namespace Function {
+
 /** \class ObiAttenuation
  * \brief Converts a raw value measured by the Varian OBI system to attenuation
  *
@@ -79,15 +79,15 @@ private:
 template <class TInputImage, class TOutputImage>
 class ITK_EXPORT VarianObiRawImageFilter :
     public
-itk::UnaryFunctorImageFilter<TInputImage,TOutputImage, 
+itk::UnaryFunctorImageFilter<TInputImage,TOutputImage,
                              Function::ObiAttenuation<
-  typename TInputImage::PixelType, 
+  typename TInputImage::PixelType,
   typename TOutputImage::PixelType>   >
 {
 public:
   /** Standard class typedefs. */
   typedef VarianObiRawImageFilter  Self;
-  typedef itk::UnaryFunctorImageFilter<TInputImage,TOutputImage, 
+  typedef itk::UnaryFunctorImageFilter<TInputImage,TOutputImage,
                                        Function::ObiAttenuation< typename TInputImage::PixelType,
                                                       typename TOutputImage::PixelType> >  Superclass;
   typedef itk::SmartPointer<Self>        Pointer;

@@ -43,7 +43,7 @@ class ITK_EXPORT MagnitudeThresholdImageFilter:
         public itk::InPlaceImageFilter< TInputImage, TOutputImage >
 {
 public:
-  
+
   /** Standard class typedefs. */
   typedef MagnitudeThresholdImageFilter                        Self;
   typedef itk::ImageToImageFilter< TInputImage, TOutputImage > Superclass;
@@ -94,7 +94,7 @@ public:
 
   itkGetMacro(Threshold, TRealType)
   itkSetMacro(Threshold, TRealType)
-    
+
 protected:
   MagnitudeThresholdImageFilter();
   virtual ~MagnitudeThresholdImageFilter() ITK_OVERRIDE {}

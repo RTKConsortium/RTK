@@ -14,7 +14,7 @@ MYBOOL BFP_CALLMODEL bfp_init(lprec *lp, int size, int delta, const char *option
 
   lp->invB = (INVrec *) calloc(1, sizeof(*(lp->invB)));
   lu = lp->invB;
-  if((lu == NULL) || 
+  if((lu == NULL) ||
      !lp->bfp_resize(lp, size) ||
      !lp->bfp_restart(lp))
     return( FALSE );

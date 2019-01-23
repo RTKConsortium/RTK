@@ -90,7 +90,7 @@ int itkCudaImageTest(int argc, char *argv[])
   kernelManager->LoadProgramFromString(CudaSource.c_str());
 
   int2 imageSize = make_int2(width, height);
- 
+
   //
   // create addition kernel
   //
@@ -103,7 +103,7 @@ int itkCudaImageTest(int argc, char *argv[])
   std::cout << "SrcA : " << srcA->GetPixel( idx ) << std::endl;
   std::cout << "SrcB : " << srcB->GetPixel( idx ) << std::endl;
   std::cout << "Dest : " << dest->GetPixel( idx ) << std::endl;
-  
+
   kernelManager->SetKernelArg(kernel_add, 0, 1, &imageSize);
   kernelManager->SetKernelArgWithImage(kernel_add, 1, srcA);
   kernelManager->SetKernelArgWithImage(kernel_add, 2, srcB);
@@ -145,9 +145,9 @@ int itkCudaImageTest(int argc, char *argv[])
   std::cout << "SrcB : " << srcB->GetPixel( idx ) << std::endl;
   std::cout << "Des  : " << dest->GetPixel( idx ) << std::endl;
   std::cout << "======================" << std::endl;
-  
+
   itk::CudaContextManager *contextManager = itk::CudaContextManager::GetInstance();
-  
+
   //
   // create subtraction kernel
   //
@@ -178,6 +178,6 @@ int itkCudaImageTest(int argc, char *argv[])
   std::cout << "SrcB : " << srcB->GetPixel( idx ) << std::endl;
   std::cout << "Des  : " << dest->GetPixel( idx ) << std::endl;
   std::cout << "======================" << std::endl;
-  
+
   return EXIT_SUCCESS;
 }

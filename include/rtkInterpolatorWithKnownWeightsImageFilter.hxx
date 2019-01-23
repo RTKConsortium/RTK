@@ -192,7 +192,7 @@ void InterpolatorWithKnownWeightsImageFilter<VolumeType, VolumeSeriesType>
         }
       volumeSeriesSize[Dimension] = 1;
       volumeSeriesIndex[Dimension] = frame;
-      
+
       volumeSeriesRegion.SetSize(volumeSeriesSize);
       volumeSeriesRegion.SetIndex(volumeSeriesIndex);
 

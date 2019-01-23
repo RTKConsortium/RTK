@@ -28,7 +28,7 @@
 # endif  /* ITK_EXPORT */
 #else
 /* unix needs nothing */
-#define ITKCudaCommon_EXPORT 
+#define ITKCudaCommon_EXPORT
 #endif
 
 #endif

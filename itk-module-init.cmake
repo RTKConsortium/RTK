@@ -1,7 +1,7 @@
 #
 # Find the packages required by this module
 #
-list(APPEND CMAKE_MODULE_PATH ${RTK_SOURCE_DIR}/cmake) 
+list(APPEND CMAKE_MODULE_PATH ${RTK_SOURCE_DIR}/cmake)
 
 find_package(CUDA_wrap QUIET)
 if(CUDA_FOUND)

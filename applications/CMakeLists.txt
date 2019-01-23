@@ -4,7 +4,7 @@ find_package(Gengetopt)
 # Common revision info between applications
 include(GetGitRevisionDescription)
 get_git_head_revision(GIT_REFSPEC GIT_SHA1)
-if(GIT_SHA1 MATCHES ".*NOTFOUND") 
+if(GIT_SHA1 MATCHES ".*NOTFOUND")
   set(RTK_VERSION_HASH "")
 else()
   set(RTK_VERSION_HASH ", git hash ${GIT_SHA1}")
@@ -118,7 +118,7 @@ if(BUILD_TESTING)
     add_test(rtkappfdkchecktest ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/rtkcheckimagequality fdk_gpu.mha)
     set_tests_properties(rtkappfdkchecktest PROPERTIES DEPENDS rtkappfdkcudatest)
   else()
-    # Only run the software version if 
+    # Only run the software version if
     if(NOT FAST_TESTS_NO_CHECKS)
       add_test(rtkappfdktest ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/rtkfdk -g geo -p . -r sheppy.mha -o fdk_gpu.mha)
       set_tests_properties(rtkappfdktest PROPERTIES DEPENDS rtkappprojectshepploganphantomtest)
@@ -127,5 +127,5 @@ if(BUILD_TESTING)
       set_tests_properties(rtkappfdkchecktest PROPERTIES DEPENDS rtkappfdktest)
     endif()
   endif()
- 
+
 endif()

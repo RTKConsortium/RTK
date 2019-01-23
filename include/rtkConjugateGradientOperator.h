@@ -32,7 +32,7 @@ template< typename OutputImageType>
 class ConjugateGradientOperator : public itk::ImageToImageFilter< OutputImageType, OutputImageType>
 {
 public:
- 
+
   /** Standard class typedefs. */
   typedef ConjugateGradientOperator                                   Self;
   typedef itk::ImageToImageFilter< OutputImageType, OutputImageType > Superclass;

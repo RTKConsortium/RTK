@@ -89,31 +89,31 @@ LastDimensionL0GradientDenoisingImageFilter< TInputImage >
     weights[i] = 1.0;
     values[i] = input[i];
     }
-  
+
   // Main loop
   for (unsigned int iter=0; iter<nbIters; iter++)
     {
     // Set the threshold for the current iteration (beta increases over time towards lambda)
-    beta = (float) iter / (float) nbIters * lambda;  
-      
-    // Run through all groups  
+    beta = (float) iter / (float) nbIters * lambda;
+
+    // Run through all groups
     unsigned int i=0;
     while (i < nbGroups - 1)
       {
       // Check the right neighbour of the current group
       unsigned int j = (i + 1) % nbGroups;
-    
+
       // Decide whether or not to merge the current group with its right neighbour
       if ( weights[i] * weights[j] * (values[i] - values[j]) * (values[i] - values[j]) <= beta * (weights[i] + weights[j]) )
         {
         // Perform the fusion
-          
+
         // The merged group's value is the weighted mean between the values of both groups
         values[i] = ( weights[i] * values[i] + weights[j] * values[j] ) / (weights[i] + weights[j]);
-          
+
         // The merged group's weight is the sum of the weights of both groups
         weights[i] = weights[i] + weights[j];
-      
+
         // Remove j-th element by shifting everything after it
         for (unsigned int k=j+1; k<length; k++)
           {
@@ -124,16 +124,16 @@ LastDimensionL0GradientDenoisingImageFilter< TInputImage >
         firsts[length-1] = 0;
         values[length-1] = 0;
         weights[length-1] = 0;
-        
+
         // Decrement the total number of groups
         nbGroups--;
         }
-        
+
       // Move to next group
       i++;
       }
     }
-    
+
   // Assemble the pieces to create the denoised output (overwriting the input)
   for (unsigned int i=0; i<nbGroups; i++)
     {
@@ -179,7 +179,7 @@ LastDimensionL0GradientDenoisingImageFilter< TInputImage >
     // Walk the input along last dimension for this voxel, filling an array with the values read
     itk::ImageRegionConstIterator<TInputImage> inputIterator(this->GetInput(), SingleVoxelRegion);
     InputPixelType* toBeRegularized = new InputPixelType[outputRegionForThread.GetSize(TInputImage::ImageDimension - 1)];
-  
+
     unsigned int i=0;
     while (!inputIterator.IsAtEnd())
       {
@@ -187,10 +187,10 @@ LastDimensionL0GradientDenoisingImageFilter< TInputImage >
       i++;
       ++inputIterator;
       }
-  
+
     // Perform regularization (in place) on this array
     OneDimensionMinimizeL0NormOfGradient(toBeRegularized, outputRegionForThread.GetSize(TInputImage::ImageDimension - 1), this->GetLambda(), this->GetNumberOfIterations());
-  
+
     // Walk the output along last dimension for this voxel,
     // replacing voxel with their regularized value
     itk::ImageRegionIterator<TInputImage> outputIterator(this->GetOutput(), SingleVoxelRegion);
@@ -203,7 +203,7 @@ LastDimensionL0GradientDenoisingImageFilter< TInputImage >
       }
 
     delete [] toBeRegularized;
-      
+
     ++FakeIterator;
     }
 }

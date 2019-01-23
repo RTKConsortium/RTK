@@ -58,7 +58,7 @@ int main(int , char** )
   spacing[2] = 2.;
 #endif
 
-  
+
   fovInput->SetOrigin( origin );
   fovInput->SetSpacing( spacing );
   fovInput->SetSize( size );
@@ -144,6 +144,6 @@ int main(int , char** )
 
   CheckImageQuality<OutputImageType>(fov->GetOutput(), threshold->GetOutput(), 0.02, 23.5, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
-  
+
   return EXIT_SUCCESS;
 }

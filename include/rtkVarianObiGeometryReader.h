@@ -27,7 +27,7 @@ namespace rtk
 
 /** \class VarianObiGeometryReader
  *
- * Creates a 3D circular geometry from Varian OBI data. 
+ * Creates a 3D circular geometry from Varian OBI data.
  *
  * \test rtkvariantest.cxx
  *

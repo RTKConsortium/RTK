@@ -4083,7 +4083,7 @@ STATIC int presolve_coldominance01(presolverec *psdata, NATURAL *nConRemoved, NA
 /* The current version of this routine eliminates binary variables
    that are dominated via set coverage or unit knapsack constraints */
 {
-  (void)nConRemoved; 
+  (void)nConRemoved;
   lprec    *lp = psdata->lp;
   MATrec   *mat = lp->matA;
   NATURAL  i, ib, ie, jx, item, item2,
@@ -4095,7 +4095,7 @@ STATIC int presolve_coldominance01(presolverec *psdata, NATURAL *nConRemoved, NA
            *colvalues = NULL, *colobj = NULL;
   LLrec    *sets = NULL;
   UNIONTYPE QSORTrec *QS = (UNIONTYPE QSORTrec *) calloc(n+1, sizeof(*QS));
-  (void)nConRemoved; 
+  (void)nConRemoved;
 
   /* Check if we were able to obtain working memory */
   if(QS == NULL)

@@ -105,7 +105,7 @@ int main(int argc, char * argv[])
     {
     typedef rtk::ConstantImageSource< WeightsImageType > ConstantWeightsSourceType;
     ConstantWeightsSourceType::Pointer constantWeightsSource = ConstantWeightsSourceType::New();
-    
+
     // Set the weights to the identity matrix
     TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->UpdateOutputInformation() )
     constantWeightsSource->SetInformationFromImage(reader->GetOutput());

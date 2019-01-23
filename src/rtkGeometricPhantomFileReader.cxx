@@ -64,7 +64,7 @@ GeometricPhantomFileReader
             //Saving all parameters for each ellipsoid
             }
           parameters.push_back(val);
-          } 
+          }
         ConvexShape::Pointer cs;
         QuadricShape::VectorType axis;
         QuadricShape::PointType center;

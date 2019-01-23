@@ -17,7 +17,7 @@
  * are the adjoint of one another.
  *
  * This test generates a random 4D volume "v" and a random set of projections "p",
- * and compares the scalar products <Rv , p> and <v, R* p>, where R is the 
+ * and compares the scalar products <Rv , p> and <v, R* p>, where R is the
  * FourDToProjectionStack filter and R* is the ProjectionStackToFourD. If R* is indeed
  * the adjoint of R, these scalar products are equal.
  *
@@ -64,7 +64,7 @@ int main(int argc, char*argv[])
 
   typedef rtk::ConstantImageSource< VolumeSeriesType > ConstantVolumeSeriesSourceType;
   ConstantVolumeSeriesSourceType::Pointer constantVolumeSeriesSource  = ConstantVolumeSeriesSourceType::New();
-  
+
   // Volume metadata
   VolumeSeriesType::PointType fourDOrigin;
   VolumeSeriesType::SizeType fourDSize;

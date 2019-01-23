@@ -1,4 +1,4 @@
-RTK: The Reconstruction ToolKit 
+RTK: The Reconstruction ToolKit
 -------------------------------
 
 .. image:: https://circleci.com/gh/SimonRit/RTK/tree/master.svg?style=shield

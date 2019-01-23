@@ -44,7 +44,7 @@ namespace rtk
    * D the displaced detector weighting matrix, and TV the total variation.
    * Details on the method and the calculations can be found on page 48 of
    *
-   * Mory, C. “Cardiac C-Arm Computed Tomography”, PhD thesis, 2014.
+   * Mory, C. "Cardiac C-Arm Computed Tomography", PhD thesis, 2014.
    * https://hal.inria.fr/tel-00985728/document
    *
    * \f$ f_{k+1} \f$ is obtained by linear conjugate solving the following:
@@ -128,8 +128,8 @@ namespace rtk
    * \ingroup RTK ReconstructionAlgorithm
    */
 
-template< typename TOutputImage, typename TGradientOutputImage = 
-    itk::Image< itk::CovariantVector < typename TOutputImage::ValueType, TOutputImage::ImageDimension >, 
+template< typename TOutputImage, typename TGradientOutputImage =
+    itk::Image< itk::CovariantVector < typename TOutputImage::ValueType, TOutputImage::ImageDimension >,
     TOutputImage::ImageDimension > >
 class ADMMTotalVariationConeBeamReconstructionFilter : public rtk::IterativeConeBeamReconstructionFilter<TOutputImage, TOutputImage>
 {
@@ -153,9 +153,9 @@ public:
     typedef rtk::BackProjectionImageFilter< TOutputImage, TOutputImage >        BackProjectionFilterType;
     typedef typename BackProjectionFilterType::Pointer                          BackProjectionFilterPointer;
     typedef rtk::ConjugateGradientImageFilter<TOutputImage>                     ConjugateGradientFilterType;
-    typedef ForwardDifferenceGradientImageFilter<TOutputImage, 
-            typename TOutputImage::ValueType, 
-            typename TOutputImage::ValueType, 
+    typedef ForwardDifferenceGradientImageFilter<TOutputImage,
+            typename TOutputImage::ValueType,
+            typename TOutputImage::ValueType,
             TGradientOutputImage>                                               ImageGradientFilterType;
     typedef rtk::BackwardDifferenceDivergenceImageFilter
         <TGradientOutputImage, TOutputImage>                                    ImageDivergenceFilterType;
@@ -214,7 +214,7 @@ protected:
     typename MultiplyVolumeFilterType::Pointer                                  m_MultiplyFilter;
     typename MultiplyVolumeFilterType::Pointer                                  m_ZeroMultiplyVolumeFilter;
     typename MultiplyGradientFilterType::Pointer                                m_ZeroMultiplyGradientFilter;
-    typename ImageGradientFilterType::Pointer                                   m_GradientFilter1; 
+    typename ImageGradientFilterType::Pointer                                   m_GradientFilter1;
     typename ImageGradientFilterType::Pointer                                   m_GradientFilter2;
     typename SubtractVolumeFilterType::Pointer                                  m_SubtractVolumeFilter;
     typename AddGradientsFilterType::Pointer                                    m_AddGradientsFilter;

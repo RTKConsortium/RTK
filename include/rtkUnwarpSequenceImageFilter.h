@@ -38,20 +38,20 @@ namespace rtk
    *
    * \dot
    * digraph UnwarpSequenceImageFilter {
-   * 
+   *
    * Input0 [ label="Input 0 (4D volume sequence)"];
    * Input0 [shape=Mdiamond];
    * Input1 [label="Input 1 (4D DVF)"];
    * Input1 [shape=Mdiamond];
    * Output [label="Output (4D volume sequence)"];
    * Output [shape=Mdiamond];
-   * 
+   *
    * node [shape=box];
    * ConstantSource [label="rtk::ConstantImageSource (4D volume sequence)" URL="\ref rtk::WarpSequenceImageFilter"];
    * WarpSequenceForward [label="rtk::WarpSequenceImageFilter (forward mapping)" URL="\ref rtk::WarpSequenceImageFilter"];
    * ConjugateGradient[ label="rtk::ConjugateGradientImageFilter" URL="\ref rtk::ConjugateGradientImageFilter"];
    * CyclicDeformation [label="rtk::CyclicDeformationImageFilter (for DVFs)" URL="\ref rtk::CyclicDeformationImageFilter"];
-   * 
+   *
    * Input0 -> WarpSequenceForward;
    * Input1 -> CyclicDeformation;
    * CyclicDeformation -> WarpSequenceForward;

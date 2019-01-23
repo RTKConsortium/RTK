@@ -30,9 +30,9 @@ namespace rtk
  *
  * Computes the gradient of the input image, then the divergence of
  * this gradient. The exact definition of the gradient and divergence filters can
- * be found in Chambolle, Antonin. “An Algorithm for Total
- * Variation Minimization and Applications.” J. Math. Imaging Vis. 20,
- * no. 1–2 (January 2004): 89–97. The border conditions are described there.
+ * be found in Chambolle, Antonin. "An Algorithm for Total
+ * Variation Minimization and Applications." J. Math. Imaging Vis. 20,
+ * no. 1-2 (January 2004): 89-97. The border conditions are described there.
  *
  * \ingroup RTK IntensityImageFilters
  */
@@ -52,7 +52,7 @@ public:
                                                     typename OutputImageType::ValueType,
                                                     GradientImageType>                      GradientFilterType;
   typedef rtk::BackwardDifferenceDivergenceImageFilter<GradientImageType, OutputImageType>  DivergenceFilterType;
-  
+
   /** Method for creation through the object factory. */
   itkNewMacro(Self)
 

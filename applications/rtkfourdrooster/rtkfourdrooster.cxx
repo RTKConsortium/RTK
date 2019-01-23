@@ -113,7 +113,7 @@ int main(int argc, char * argv[])
   signalToInterpolationWeights->SetSignal(reorder->GetOutputSignal());
   signalToInterpolationWeights->SetNumberOfReconstructedFrames(inputFilter->GetOutput()->GetLargestPossibleRegion().GetSize(3));
   TRY_AND_EXIT_ON_ITK_EXCEPTION( signalToInterpolationWeights->Update() )
-  
+
   // Create the 4DROOSTER filter, connect the basic inputs, and set the basic parameters
   // Also set the forward and back projection filters to be used
   typedef rtk::FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType> ROOSTERFilterType;
@@ -127,7 +127,7 @@ int main(int argc, char * argv[])
   rooster->SetCudaConjugateGradient(args_info.cudacg_flag);
   rooster->SetUseCudaCyclicDeformation(args_info.cudadvfinterpolation_flag);
   rooster->SetDisableDisplacedDetectorFilter(args_info.nodisplaced_flag);
-  
+
   // Set the newly ordered arguments
   rooster->SetInputProjectionStack( reorder->GetOutput() );
   rooster->SetGeometry( reorder->GetOutputGeometry() );
@@ -136,13 +136,13 @@ int main(int argc, char * argv[])
 
   // For each optional regularization step, set whether or not
   // it should be performed, and provide the necessary inputs
-  
+
   // Positivity
   if (args_info.nopositivity_flag)
     rooster->SetPerformPositivity(false);
   else
     rooster->SetPerformPositivity(true);
-  
+
   // Motion mask
   typedef itk::ImageFileReader<  VolumeType > InputReaderType;
   if (args_info.motionmask_given)
@@ -155,7 +155,7 @@ int main(int argc, char * argv[])
     }
   else
     rooster->SetPerformMotionMask(false);
-    
+
   // Spatial TV
   if (args_info.gamma_space_given)
     {
@@ -165,7 +165,7 @@ int main(int argc, char * argv[])
     }
   else
     rooster->SetPerformTVSpatialDenoising(false);
-  
+
   // Spatial wavelets
   if (args_info.threshold_given)
     {
@@ -176,7 +176,7 @@ int main(int argc, char * argv[])
     }
   else
     rooster->SetPerformWaveletsSpatialDenoising(false);
-  
+
   // Temporal TV
   if (args_info.gamma_time_given)
     {

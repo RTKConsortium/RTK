@@ -81,7 +81,7 @@ InputImageType::Pointer createDarkImage()
 
     itk::ImageRegionIteratorWithIndex<InputImageType> itIn(darkImage, darkImage->GetLargestPossibleRegion());
     itIn.GoToBegin();
-    while (!itIn.IsAtEnd()) 
+    while (!itIn.IsAtEnd())
     {
         InputImageType::IndexType idx = itIn.GetIndex();
         float xx = static_cast<float>(idx[0]) + orig_x;
@@ -159,7 +159,7 @@ InputImageType::Pointer createInputImage()
   inputImage->SetSpacing(spacing);
   inputImage->Allocate();
   inputImage->FillBuffer(32000.0f);
-  
+
   return inputImage;
 }
 
@@ -214,7 +214,7 @@ OutputImageType::Pointer generateExpectedOutput(InputImageType::Pointer inputIma
             float correctedValue = 0.f;
             float powValue = static_cast<float>(px);
             for (int m = 0; m < modelOrder; ++m)
-            {    
+            {
                 int gainidx = m*sizeI2 + j*sizeI + i;
                 float Aij = gainBuffer[gainidx];
                 correctedValue += Aij *powValue;
@@ -251,21 +251,21 @@ int main(int , char** )
   gainfilter->SetGainCoefficients(gainImage);
 
   gainfilter->SetK(K);
-  
+
   InputImageType::Pointer testImage = createInputImage();
   gainfilter->SetInput(testImage);
-  
+
   // Apply correction
   TRY_AND_EXIT_ON_ITK_EXCEPTION(gainfilter->Update())
   OutputImageType::Pointer outputImage = gainfilter->GetOutput();
-  
+
   // Generate expected output
   OutputImageType::Pointer expectedOutput = generateExpectedOutput(testImage, K, darkImage, gainImage);
-  
+
   // Compare
   itk::ImageRegionConstIterator<OutputImageType>  itExp(expectedOutput, expectedOutput->GetLargestPossibleRegion());
   itk::ImageRegionConstIterator<OutputImageType>  itOut(outputImage, outputImage->GetLargestPossibleRegion());
-  
+
   itExp.GoToBegin();
   itOut.GoToBegin();
   float diffValue = 0.f;
@@ -282,7 +282,7 @@ int main(int , char** )
     std::cerr << "Test Failed! "<< std::endl;
     exit(EXIT_FAILURE);
   }
-  
+
   std::cout << "\n\nTest PASSED! " << std::endl;
 
   return EXIT_SUCCESS;

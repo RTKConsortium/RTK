@@ -47,8 +47,8 @@ namespace rtk
    * Details on the method and the calculations can be found in
    *
    * Mory, C., B. Zhang, V. Auvray, M. Grass, D. Schafer, F. Peyrin, S. Rit, P. Douek,
-   * and L. Boussel. “ECG-Gated C-Arm Computed Tomography Using L1 Regularization.”
-   * In Proceedings of the 20th European Signal Processing Conference (EUSIPCO), 2728–32, 2012.
+   * and L. Boussel. "ECG-Gated C-Arm Computed Tomography Using L1 Regularization."
+   * In Proceedings of the 20th European Signal Processing Conference (EUSIPCO), 2728-32, 2012.
    *
    * This filter takes in input f and outputs R_t D R f - beta div(grad(f)).
    *
@@ -99,8 +99,8 @@ namespace rtk
    * \ingroup RTK ReconstructionAlgorithm
    */
 
-template< typename TOutputImage, typename TGradientOutputImage = 
-    itk::Image< itk::CovariantVector < typename TOutputImage::ValueType, TOutputImage::ImageDimension >, 
+template< typename TOutputImage, typename TGradientOutputImage =
+    itk::Image< itk::CovariantVector < typename TOutputImage::ValueType, TOutputImage::ImageDimension >,
     TOutputImage::ImageDimension > >
 class ADMMTotalVariationConjugateGradientOperator : public ConjugateGradientOperator< TOutputImage >
 {
@@ -124,9 +124,9 @@ public:
 
     typedef itk::MultiplyImageFilter<TOutputImage>                          MultiplyFilterType;
     typedef itk::SubtractImageFilter<TOutputImage>                          SubtractFilterType;
-    typedef ForwardDifferenceGradientImageFilter<TOutputImage, 
-            typename TOutputImage::ValueType, 
-            typename TOutputImage::ValueType, 
+    typedef ForwardDifferenceGradientImageFilter<TOutputImage,
+            typename TOutputImage::ValueType,
+            typename TOutputImage::ValueType,
             TGradientOutputImage>                                           GradientFilterType;
     typedef rtk::BackwardDifferenceDivergenceImageFilter
         <TGradientOutputImage, TOutputImage>                                DivergenceFilterType;

@@ -103,7 +103,7 @@ TSumAlongRay >
       {
       break;
       }
-    } 
+    }
 
   for (; !it.IsAtEnd(); ++it )
     {

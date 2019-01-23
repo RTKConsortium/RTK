@@ -46,7 +46,7 @@ template< typename OutputImageType>
 class ConjugateGradientImageFilter : public itk::InPlaceImageFilter< OutputImageType,  OutputImageType>
 {
 public:
-   
+
   /** Standard class typedefs. */
   typedef ConjugateGradientImageFilter                                              Self;
   typedef itk::InPlaceImageFilter< OutputImageType, OutputImageType>                Superclass;
@@ -83,7 +83,7 @@ public:
 
   /** Getter for ResidualCosts storing array **/
   const std::vector<double> &GetResidualCosts();
-  
+
 protected:
   ConjugateGradientImageFilter();
   virtual ~ConjugateGradientImageFilter() ITK_OVERRIDE {}

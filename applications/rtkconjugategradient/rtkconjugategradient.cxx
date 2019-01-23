@@ -95,7 +95,7 @@ int main(int argc, char * argv[])
     {
     typedef rtk::ConstantImageSource< OutputImageType > ConstantWeightsSourceType;
     ConstantWeightsSourceType::Pointer constantWeightsSource = ConstantWeightsSourceType::New();
-    
+
     // Set the weights to be like the projections
     TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->UpdateOutputInformation() )
     constantWeightsSource->SetInformationFromImage(reader->GetOutput());

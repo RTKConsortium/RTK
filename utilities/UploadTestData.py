@@ -54,7 +54,7 @@ class GirderExternalDataCli(GirderClient):
         workDir = os.path.normpath(scriptDir + "/../test/" + test_folder)
 
         content_link = os.path.join(workDir, content_link)
-        
+
         if os.path.isfile(content_link) and \
                 fnmatch.fnmatch(content_link, '*.sha512'):
             with open(content_link, 'r') as fp:
@@ -63,7 +63,7 @@ class GirderExternalDataCli(GirderClient):
             content_file = os.path.join(workDir, ".ExternalData_SHA512_" + hash_value)
             if os.path.isfile(content_file):
                 print("\n Found content file: " + content_file)
-                    
+
                 self._uploadAsItem(
                     name,
                     folder['_id'],

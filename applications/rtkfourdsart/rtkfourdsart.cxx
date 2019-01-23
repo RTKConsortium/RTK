@@ -96,7 +96,7 @@ int main(int argc, char * argv[])
   phaseReader->SetFileName(args_info.signal_arg);
   phaseReader->SetNumberOfReconstructedFrames(inputFilter->GetOutput()->GetLargestPossibleRegion().GetSize(3));
   TRY_AND_EXIT_ON_ITK_EXCEPTION( phaseReader->Update() )
-  
+
   // 4D SART reconstruction filter
   rtk::FourDSARTConeBeamReconstructionFilter< VolumeSeriesType, ProjectionStackType >::Pointer fourdsart =
       rtk::FourDSARTConeBeamReconstructionFilter< VolumeSeriesType, ProjectionStackType >::New();

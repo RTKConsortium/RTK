@@ -35,11 +35,11 @@ int main(int argc, char * argv[])
   const unsigned int DimensionsProcessed = 3; // Number of dimensions along which the gradient is computed
 
   typedef itk::Image< OutputPixelType, Dimension >     OutputImageType;
-  typedef itk::Image< itk::CovariantVector 
+  typedef itk::Image< itk::CovariantVector
       < OutputPixelType, DimensionsProcessed >, Dimension >                GradientOutputImageType;
   typedef rtk::TotalNuclearVariationDenoisingBPDQImageFilter
       <OutputImageType, GradientOutputImageType>                           TVDenoisingFilterType;
-  
+
   // Read input
   typedef itk::ImageFileReader<OutputImageType> ReaderType;
   ReaderType::Pointer reader = ReaderType::New();

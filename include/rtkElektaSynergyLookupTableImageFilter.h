@@ -47,7 +47,7 @@ class ITK_EXPORT ElektaSynergyLookupTableImageFilter:
 public:
   /** Standard class typedefs. */
   typedef ElektaSynergyLookupTableImageFilter                                 Self;
-  typedef LookupTableImageFilter<itk::Image<unsigned short, 
+  typedef LookupTableImageFilter<itk::Image<unsigned short,
                                             TOutputImage::ImageDimension>,
                                  TOutputImage>                                Superclass;
   typedef itk::SmartPointer<Self>                                             Pointer;

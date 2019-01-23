@@ -37,7 +37,7 @@ rtk::ElektaSynergyGeometryReader
   // Open frame database file
   rtk::DbfFile dbImage(m_ImageDbfFileName);
   if( !dbImage.is_open() )
-    itkGenericExceptionMacro( << "Couldn't open " 
+    itkGenericExceptionMacro( << "Couldn't open "
                               << m_ImageDbfFileName);
 
   // Search for correct record
@@ -69,7 +69,7 @@ rtk::ElektaSynergyGeometryReader
   // Open frame database file
   rtk::DbfFile dbFrame(m_FrameDbfFileName);
   if( !dbFrame.is_open() )
-    itkGenericExceptionMacro( << "Couldn't open " 
+    itkGenericExceptionMacro( << "Couldn't open "
                               << m_FrameDbfFileName);
 
   // Go through the database, select correct records and get data

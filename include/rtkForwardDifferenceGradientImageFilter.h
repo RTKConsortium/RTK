@@ -38,9 +38,9 @@ namespace rtk
  * whose value type is specified as this third template parameter.
  *
  * The exact definition of the desired gradient filter can
- * be found in Chambolle, Antonin. “An Algorithm for Total
- * Variation Minimization and Applications.” J. Math. Imaging Vis. 20,
- * no. 1–2 (January 2004): 89–97.
+ * be found in Chambolle, Antonin. "An Algorithm for Total
+ * Variation Minimization and Applications." J. Math. Imaging Vis. 20,
+ * no. 1-2 (January 2004): 89-97.
  *
  * \author Cyril Mory
  *

@@ -97,7 +97,7 @@ void CudaImageDataManager< ImageType >::MakeGPUBufferUpToDate()
 
     TimeStamp gpu_time_stamp = this->GetTimeStamp();
     TimeStamp cpu_time_stamp = m_Image->GetTimeStamp();
-    
+
     /* Why we check dirty flag and time stamp together?
     * Because existing CPU image filters do not use pixel/buffer
     * access function in CudaImage and therefore dirty flag is not

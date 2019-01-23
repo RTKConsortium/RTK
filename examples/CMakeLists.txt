@@ -7,7 +7,7 @@ add_subdirectory(FirstReconstruction)
 if(BUILD_TESTING)
   add_test(HelloWorldTest ${EXECUTABLE_OUTPUT_PATH}/HelloWorld)
   set_tests_properties (HelloWorldTest
-    PROPERTIES 
+    PROPERTIES
     PASS_REGULAR_EXPRESSION "RTK Hello World!"
     )
 	

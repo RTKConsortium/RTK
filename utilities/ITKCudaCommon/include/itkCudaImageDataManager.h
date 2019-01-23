@@ -72,7 +72,7 @@ public:
 
   /** Grafting Cuda Image Data */
   virtual void Graft(const CudaDataManager* data);
-  
+
 protected:
   CudaImageDataManager() {}
   virtual ~CudaImageDataManager() {}

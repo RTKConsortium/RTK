@@ -137,13 +137,13 @@ int main(int argc, char * argv[])
 
   // For each optional regularization step, set whether or not
   // it should be performed, and provide the necessary inputs
-  
+
   // Positivity
   if (args_info.nopositivity_flag)
     mcrooster->SetPerformPositivity(false);
   else
     mcrooster->SetPerformPositivity(true);
-  
+
   // Motion mask
   typedef itk::ImageFileReader<  VolumeType > InputReaderType;
   if (args_info.motionmask_given)
@@ -156,7 +156,7 @@ int main(int argc, char * argv[])
     }
   else
     mcrooster->SetPerformMotionMask(false);
-    
+
   // Spatial TV
   if (args_info.gamma_space_given)
     {
@@ -166,7 +166,7 @@ int main(int argc, char * argv[])
     }
   else
     mcrooster->SetPerformTVSpatialDenoising(false);
-  
+
   // Spatial wavelets
   if (args_info.threshold_given)
     {
@@ -177,7 +177,7 @@ int main(int argc, char * argv[])
     }
   else
     mcrooster->SetPerformWaveletsSpatialDenoising(false);
-  
+
   // Temporal TV
   if (args_info.gamma_time_given)
     {

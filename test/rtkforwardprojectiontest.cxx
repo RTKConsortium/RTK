@@ -196,7 +196,7 @@ int main(int , char** )
   dsl->InPlaceOff();
   dsl->SetInput( volInput->GetOutput() );
   dsl->Update();
-  
+
   // Forward projection
   jfp->SetInput( 1, dsl->GetOutput() );
   stream->Update();

@@ -80,7 +80,7 @@ UpsampleImageFilter<TInputImage,TOutputImage>
 }
 
 template <class TInputImage, class TOutputImage>
-void 
+void
 UpsampleImageFilter<TInputImage,TOutputImage>
 #if ITK_VERSION_MAJOR<5
 ::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId))
@@ -192,7 +192,7 @@ UpsampleImageFilter<TInputImage,TOutputImage>
 }
 
 template <class TInputImage, class TOutputImage>
-void 
+void
 UpsampleImageFilter<TInputImage,TOutputImage>
 ::GenerateInputRequestedRegion()
 {
@@ -212,7 +212,7 @@ UpsampleImageFilter<TInputImage,TOutputImage>
 }
 
 template <class TInputImage, class TOutputImage>
-void 
+void
 UpsampleImageFilter<TInputImage,TOutputImage>
 ::GenerateOutputInformation()
 {

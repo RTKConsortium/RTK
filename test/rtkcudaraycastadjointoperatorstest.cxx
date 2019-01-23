@@ -11,7 +11,7 @@
  * \brief Tests whether CUDA ray cast forward and back projectors are matched
  *
  * This test generates a random volume "v" and a random set of projections "p",
- * and compares the scalar products <Rv , p> and <v, R* p>, where R is the 
+ * and compares the scalar products <Rv , p> and <v, R* p>, where R is the
  * CUDA ray cast forward projector and R* is the CUDA ray cast back projector. If R* is indeed
  * the adjoint of R, these scalar products are equal.
  *
@@ -45,7 +45,7 @@ int main(int, char** )
   typedef rtk::ConstantImageSource< OutputImageType > ConstantImageSourceType;
   ConstantImageSourceType::Pointer constantVolumeSource = ConstantImageSourceType::New();
   ConstantImageSourceType::Pointer constantProjectionsSource = ConstantImageSourceType::New();
-  
+
   // Image meta data
   RandomImageSourceType::PointType origin;
   RandomImageSourceType::SizeType size;
@@ -134,14 +134,14 @@ int main(int, char** )
   TRY_AND_EXIT_ON_ITK_EXCEPTION( fw->Update() );
 
   std::cout << "\n\n****** CUDA ray cast Back projector, flat panel detector ******" << std::endl;
-  
+
   typedef rtk::CudaRayCastBackProjectionImageFilter BackProjectorType;
   BackProjectorType::Pointer bp = BackProjectorType::New();
   bp->SetInput(0, constantVolumeSource->GetOutput());
   bp->SetInput(1, randomProjectionsSource->GetOutput());
   bp->SetGeometry( geometry.GetPointer() );
   bp->SetNormalize(false);
-  
+
   TRY_AND_EXIT_ON_ITK_EXCEPTION( bp->Update() );
 
   CheckScalarProducts<OutputImageType, OutputImageType>(randomVolumeSource->GetOutput(), bp->GetOutput(), randomProjectionsSource->GetOutput(), fw->GetOutput());

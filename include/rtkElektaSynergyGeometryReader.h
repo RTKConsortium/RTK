@@ -28,7 +28,7 @@ namespace rtk
 
 /** \class ElektaSynergyGeometryReader
  *
- * Creates a 3D circular geometry from the Elekta database input. 
+ * Creates a 3D circular geometry from the Elekta database input.
  *
  * \test rtkelektatest.cxx
  *
@@ -91,7 +91,7 @@ private:
   GeometryType::Pointer m_Geometry;
   std::string           m_DicomUID;
   std::string           m_ImageDbfFileName;
-  std::string           m_FrameDbfFileName;  
+  std::string           m_FrameDbfFileName;
 };
 
 }

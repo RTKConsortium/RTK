@@ -43,7 +43,7 @@ int main(int argc, char * argv[])
   typedef itk::Image< OutputPixelType, Dimension >     OutputImageType;
   typedef rtk::LastDimensionL0GradientDenoisingImageFilter <OutputImageType>       DenoisingFilterType;
 // #endif
-  
+
   // Read input
   typedef itk::ImageFileReader<OutputImageType> ReaderType;
   ReaderType::Pointer reader = ReaderType::New();

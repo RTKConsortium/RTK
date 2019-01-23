@@ -140,7 +140,7 @@ ConstantImageSource<TOutputImage>
 
 //----------------------------------------------------------------------------
 template <class TOutputImage>
-void 
+void
 ConstantImageSource<TOutputImage>
 ::GenerateOutputInformation()
 {
@@ -159,7 +159,7 @@ ConstantImageSource<TOutputImage>
 
 //----------------------------------------------------------------------------
 template <class TOutputImage>
-void 
+void
 ConstantImageSource<TOutputImage>
 #if ITK_VERSION_MAJOR<5
 ::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType itkNotUsed(threadId) )

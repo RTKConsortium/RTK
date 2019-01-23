@@ -111,7 +111,7 @@ control on --help|-h, you should use --ho-help.\n"
 	
 option  "no-help"   - "do not add --help|-h automatically" optional
 	details="\nWith this option you can disable the \
-automatic addition of options --help|-h. The programmer \ 
+automatic addition of options --help|-h. The programmer \
 will then be able to add this option in \
 the input file and handle it as he sees fit.  Notice that \
 --no-help will also disable the automatic options \

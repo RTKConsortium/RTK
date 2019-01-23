@@ -99,7 +99,7 @@ struct gengetopt_args_info
   const char *show_full_help_help; /**< @brief show the output of --full-help (i.e., including hidden options) instead of generating code help description.  */
   const char *show_detailed_help_help; /**< @brief show the output of --detailed-help (i.e., including details and hidden options) instead of generating code help description.  */
   const char *show_version_help; /**< @brief show the output of --version instead of generating code help description.  */
-  
+
   unsigned int help_given ;	/**< @brief Whether help was given.  */
   unsigned int detailed_help_given ;	/**< @brief Whether detailed-help was given.  */
   unsigned int version_given ;	/**< @brief Whether version was given.  */
@@ -223,7 +223,7 @@ void cmdline_parser_print_detailed_help(void);
 void cmdline_parser_print_version(void);
 
 /**
- * Initializes all the fields a cmdline_parser_params structure 
+ * Initializes all the fields a cmdline_parser_params structure
  * to their default values
  * @param params the structure to initialize
  */

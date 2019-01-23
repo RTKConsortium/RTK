@@ -26,7 +26,7 @@ class AcceptedValues : protected std::list<std::string>
   private:
     typedef std::set<std::string> value_set;
     value_set values;
-  
+
   public:
     using std::list<std::string>::const_iterator;
     using std::list<std::string>::begin;

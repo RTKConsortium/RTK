@@ -344,7 +344,7 @@ text
             		std::string current_option_text;
             		if (current_option->text_after) {
             			current_option_text = std::string(current_option->text_after) + $2;
-            			current_option->text_after = strdup(current_option_text.c_str()); 
+            			current_option->text_after = strdup(current_option_text.c_str());
             		} else {
 	            		current_option->text_after = strdup($2);
 	            	}

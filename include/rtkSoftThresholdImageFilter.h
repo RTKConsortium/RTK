@@ -25,7 +25,7 @@
 
 namespace rtk
 {
-  
+
 /** \class SoftThresholdImageFilter
  *
  * \brief Soft thresholds an image
@@ -37,8 +37,8 @@ namespace rtk
  * \ingroup RTK IntensityImageFilters  Multithreaded
  */
 
-namespace Functor {  
-  
+namespace Functor {
+
 template< class TInput, class TOutput>
 class SoftThreshold
 {
@@ -81,7 +81,7 @@ class ITK_EXPORT SoftThresholdImageFilter :
     public
 itk::UnaryFunctorImageFilter<TInputImage,TOutputImage,
                         Functor::SoftThreshold<
-  typename TInputImage::PixelType, 
+  typename TInputImage::PixelType,
   typename TOutputImage::PixelType> >
 {
 public:
@@ -109,7 +109,7 @@ public:
 
   /** Set the threshold */
   virtual void SetThreshold(const InputPixelType threshold);
-                 
+
 #ifdef ITK_USE_CONCEPT_CHECKING
   /** Begin concept checking */
   itkConceptMacro(OutputEqualityComparableCheck,

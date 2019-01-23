@@ -7,12 +7,12 @@
 # that can be included to set the include directories, library directories,
 # and preprocessor macros.  In addition to the variables read from
 # RTKConfig.cmake, this find module also defines
-#  RTK_DIR  - The directory containing RTKConfig.cmake.  
-#             This is either the root of the build tree, 
-#             or the lib/InsightToolkit directory.  
+#  RTK_DIR  - The directory containing RTKConfig.cmake.
+#             This is either the root of the build tree,
+#             or the lib/InsightToolkit directory.
 #             This is the only cache entry.
-#   
-#  RTK_FOUND - Whether RTK was found.  If this is true, 
+#
+#  RTK_FOUND - Whether RTK was found.  If this is true,
 #              RTK_DIR is okay.
 #
 

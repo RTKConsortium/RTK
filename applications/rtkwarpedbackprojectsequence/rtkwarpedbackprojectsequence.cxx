@@ -97,8 +97,8 @@ int main(int argc, char * argv[])
   rtk::PhasesToInterpolationWeights::Pointer phaseReader = rtk::PhasesToInterpolationWeights::New();
   phaseReader->SetFileName(args_info.signal_arg);
   phaseReader->SetNumberOfReconstructedFrames(inputFilter->GetOutput()->GetLargestPossibleRegion().GetSize(3));
-  phaseReader->Update();  
-  
+  phaseReader->Update();
+
   // Create the main filter, connect the basic inputs, and set the basic parameters
   typedef rtk::WarpProjectionStackToFourDImageFilter<VolumeSeriesType,
                                                      ProjectionStackType> WarpForwardProjectSequenceFilterType;

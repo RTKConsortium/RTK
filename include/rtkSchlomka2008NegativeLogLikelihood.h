@@ -143,7 +143,7 @@ public:
   GetAttenuationFactors(lineIntegrals, attenuationFactors);
   vnl_vector<double> lambdas = ForwardModel(lineIntegrals);
 
-  // Compute the vector of m_b / lambda_b²
+  // Compute the vector of m_b / lambda_b^2
   vnl_vector<double> weights;
   weights.set_size(m_NumberOfSpectralBins);
   for (unsigned int i=0; i<m_NumberOfSpectralBins; i++)

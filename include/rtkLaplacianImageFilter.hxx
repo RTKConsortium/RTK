@@ -30,10 +30,10 @@ LaplacianImageFilter<OutputImageType, GradientImageType>::LaplacianImageFilter()
   // Create the filters
   m_Gradient = GradientFilterType::New();
   m_Divergence = DivergenceFilterType::New();
-  
+
   // Set permanent connections between filters
   m_Divergence->SetInput(m_Gradient->GetOutput());
-  
+
   // Set memory management parameters
   m_Gradient->ReleaseDataFlagOn();
 }
@@ -43,10 +43,10 @@ void LaplacianImageFilter<OutputImageType, GradientImageType>
 ::GenerateOutputInformation()
 {
   Superclass::GenerateOutputInformation();
-  
+
   // Set runtime connections
   m_Gradient->SetInput(this->GetInput());
-  
+
   // Update the last filter
   m_Divergence->UpdateOutputInformation();
 
@@ -60,7 +60,7 @@ void LaplacianImageFilter<OutputImageType, GradientImageType>
 {
   // Update the last filter
   m_Divergence->Update();
-  
+
   // Graft its output to the composite filter's output
   this->GraftOutput(m_Divergence->GetOutput());
 }

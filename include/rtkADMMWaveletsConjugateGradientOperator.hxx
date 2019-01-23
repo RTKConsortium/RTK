@@ -137,7 +137,7 @@ ADMMWaveletsConjugateGradientOperator<TOutputImage>
 }
 
 template< typename TOutputImage >
-void 
+void
 ADMMWaveletsConjugateGradientOperator<TOutputImage>
 ::GenerateData()
 {

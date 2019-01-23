@@ -47,7 +47,7 @@ class ITK_EXPORT OraLookupTableImageFilter:
 public:
   /** Standard class typedefs. */
   typedef OraLookupTableImageFilter                                           Self;
-  typedef LookupTableImageFilter<itk::Image<unsigned short, 
+  typedef LookupTableImageFilter<itk::Image<unsigned short,
                                             TOutputImage::ImageDimension>,
                                  TOutputImage>                                Superclass;
   typedef itk::SmartPointer<Self>                                             Pointer;

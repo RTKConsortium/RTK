@@ -95,7 +95,7 @@ DownsampleImageFilter<TInputImage,TOutputImage>
  *
  */
 template <class TInputImage, class TOutputImage>
-void 
+void
 DownsampleImageFilter<TInputImage,TOutputImage>
 #if ITK_VERSION_MAJOR<5
 ::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId))
@@ -217,11 +217,11 @@ DownsampleImageFilter<TInputImage,TOutputImage>
 //  std::cout << "In DownsampleImageFilter : AfterThreadedGenerateData" << std::endl;
 //}
 
-/** 
+/**
  *
  */
 template <class TInputImage, class TOutputImage>
-void 
+void
 DownsampleImageFilter<TInputImage,TOutputImage>
 ::GenerateInputRequestedRegion()
 {
@@ -239,11 +239,11 @@ DownsampleImageFilter<TInputImage,TOutputImage>
   inputPtr->SetRequestedRegionToLargestPossibleRegion();
 }
 
-/** 
+/**
  *
  */
 template <class TInputImage, class TOutputImage>
-void 
+void
 DownsampleImageFilter<TInputImage,TOutputImage>
 ::GenerateOutputInformation()
 {

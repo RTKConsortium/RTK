@@ -54,16 +54,16 @@ float *powerlut
   int3 pIdx = make_int3(tIdx.x + proj_idx_out.x, tIdx.y + proj_idx_out.y, tIdx.z + proj_idx_out.z);
   // combined proj. index -> use thread index in z because accessing memory only with this index
   long int pIdx_comp = (pIdx.x - proj_idx_in.x) + (pIdx.y - proj_idx_in.y) * proj_size_in_buf.x + (pIdx.z - proj_idx_in.z) * proj_size_in_buf.x * proj_size_in_buf.y;
-  
+
   int modelOrder = static_cast<float>(cst_coef[0]);
 
   long int sIdx_comp = tIdx.x + tIdx.y * proj_size_out.x; // in-slice index
-  
+
   // Correct for dark field
   unsigned short xk = 0;
   if (dev_proj_in[pIdx_comp] > dev_dark_in[sIdx_comp])
       xk = dev_proj_in[pIdx_comp] - dev_dark_in[sIdx_comp];
-    
+
   float yk = 0.f;
   int lutidx = xk*modelOrder;    // index to powerlut
   int projsize = proj_size_in.x * proj_size_in.y;
@@ -79,7 +79,7 @@ float *powerlut
 
   // Avoid negative values
   yk = (yk < 0.0f) ? 0.f : yk;
-  
+
   dev_proj_out[tIdx_comp] = yk;
 }
 

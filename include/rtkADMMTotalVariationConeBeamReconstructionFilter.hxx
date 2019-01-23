@@ -24,7 +24,7 @@
 namespace rtk
 {
 
-template< typename TOutputImage, typename TGradientOutputImage> 
+template< typename TOutputImage, typename TGradientOutputImage>
 ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImage>
 ::ADMMTotalVariationConeBeamReconstructionFilter()
 {
@@ -93,7 +93,7 @@ ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImag
   m_DisplacedDetectorFilter->ReleaseDataFlagOn();
 }
 
-template< typename TOutputImage, typename TGradientOutputImage> 
+template< typename TOutputImage, typename TGradientOutputImage>
 void
 ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImage>
 ::SetForwardProjectionFilter (ForwardProjectionType _arg)
@@ -106,7 +106,7 @@ ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImag
     }
 }
 
-template< typename TOutputImage, typename TGradientOutputImage> 
+template< typename TOutputImage, typename TGradientOutputImage>
 void
 ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImage>
 ::SetBackProjectionFilter (BackProjectionType _arg)
@@ -120,7 +120,7 @@ ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImag
     }
 }
 
-template< typename TOutputImage, typename TGradientOutputImage> 
+template< typename TOutputImage, typename TGradientOutputImage>
 void
 ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImage>
 ::SetBetaForCurrentIteration(int iter)
@@ -141,7 +141,7 @@ ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImag
   m_IsGated = true;
 }
 
-template< typename TOutputImage, typename TGradientOutputImage> 
+template< typename TOutputImage, typename TGradientOutputImage>
 void
 ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImage>
 ::GenerateInputRequestedRegion()
@@ -163,7 +163,7 @@ ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImag
   inputPtr1->SetRequestedRegion( inputPtr1->GetLargestPossibleRegion() );
 }
 
-template< typename TOutputImage, typename TGradientOutputImage> 
+template< typename TOutputImage, typename TGradientOutputImage>
 void
 ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImage>
 ::GenerateOutputInformation()
@@ -212,7 +212,7 @@ ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImag
   this->GetOutput()->CopyInformation( m_SubtractFilter2->GetOutput() );
 }
 
-template< typename TOutputImage, typename TGradientOutputImage> 
+template< typename TOutputImage, typename TGradientOutputImage>
 void
 ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImage>
 ::GenerateData()

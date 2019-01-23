@@ -96,7 +96,7 @@ MYBOOL SOS_set_marked(SOSgroup *group, int sosindex, int column, MYBOOL asactive
 MYBOOL SOS_unmark(SOSgroup *group, int sosindex, int column);
 int SOS_fix_unmarked(SOSgroup *group, int sosindex, int variable, REAL *bound, REAL value,
                      MYBOOL isupper, int *diffcount, DeltaVrec *changelog);
-int SOS_fix_list(SOSgroup *group, int sosindex, int variable, REAL *bound, 
+int SOS_fix_list(SOSgroup *group, int sosindex, int variable, REAL *bound,
                   int *varlist, MYBOOL isleft, DeltaVrec *changelog);
 int SOS_is_satisfied(SOSgroup *group, int sosindex, REAL *solution);
 MYBOOL SOS_is_feasible(SOSgroup *group, int sosindex, REAL *solution);

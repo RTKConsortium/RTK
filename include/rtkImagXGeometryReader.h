@@ -107,7 +107,7 @@ private:
   static const std::string m_AI_VERSION_1p2;
   static const std::string m_AI_VERSION_1p5;
   static const std::string m_AI_VERSION_2pX;
-  
+
   // DICOM tags depend on AI version
   std::string getAIversion();
 
@@ -133,7 +133,7 @@ private:
   };
 
   InterpResultType interpolate(const std::vector<float>& flexAngles, bool isCW, float angleDegree);
-  
+
   // Structure containing the calibration models (for AI versions < 2.0)
   struct CalibrationModelType {
       bool isValid;
@@ -143,7 +143,7 @@ private:
                          Tx, Ty, Tz; // Source translations model
 
       CalibrationModelType() {
-          sourceToNozzleOffsetAngle = -90.f; 
+          sourceToNozzleOffsetAngle = -90.f;
           Px = std::vector<float>(5, 0.f);
           Py = std::vector<float>(5, 0.f);
           Pz = std::vector<float>(5, 0.f);
@@ -155,7 +155,7 @@ private:
           Tz = std::vector<float>(5, 0.f);
       }
   };
-  
+
   CalibrationModelType GetGeometryForAI1p5();
 
   CalibrationModelType GetGeometryForAI1p5FromXMLFiles();
@@ -166,8 +166,8 @@ private:
 
   // Evaluate the calibration models for a given angle
   std::vector<float> getDeformations(float gantryAngle, const std::vector<float>& Dx, const std::vector<float>& Dy, const std::vector<float>& Dz);
-  
-  void addEntryToGeometry(float gantryAngleDegree, float nozzleToRadAngleOffset, float sid, float sdd, 
+
+  void addEntryToGeometry(float gantryAngleDegree, float nozzleToRadAngleOffset, float sid, float sdd,
                           std::vector<float>& P, std::vector<float>& R, std::vector<float>& T);
 
   void addEntryToGeometry(const FlexmapType& flex, float gantryAngleDegree);

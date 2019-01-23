@@ -366,11 +366,11 @@ int main(int, char** )
   rooster->SetGeometry( geometry );
   rooster->SetCG_iterations( 2 );
   rooster->SetMainLoop_iterations( 2);
-  
+
   rooster->SetTV_iterations( 3 );
   rooster->SetGammaTVSpace(1);
   rooster->SetGammaTVTime(0.1);
-  
+
   rooster->SetSoftThresholdWavelets(0.1);
   rooster->SetOrder(3);
   rooster->SetNumberOfLevels(3);
@@ -382,7 +382,7 @@ int main(int, char** )
 
   rooster->SetBackProjectionFilter( ROOSTERFilterType::BP_VOXELBASED );
   rooster->SetForwardProjectionFilter( ROOSTERFilterType::FP_JOSEPH );
-  
+
   rooster->SetPerformPositivity(true);
   rooster->SetPerformMotionMask(true);
   rooster->SetMotionMask(roi->GetOutput());
@@ -392,7 +392,7 @@ int main(int, char** )
   rooster->SetPerformL0TemporalDenoising(false);
   rooster->SetPerformWarping(false);
   rooster->SetComputeInverseWarpingByConjugateGradient(false);
-  
+
   TRY_AND_EXIT_ON_ITK_EXCEPTION( rooster->Update() );
 
   CheckImageQuality<VolumeSeriesType>(rooster->GetOutput(), join->GetOutput(), 0.25, 15, 2.0);
@@ -423,7 +423,7 @@ int main(int, char** )
 
   rooster->SetBackProjectionFilter( ROOSTERFilterType::BP_VOXELBASED );
   rooster->SetForwardProjectionFilter( ROOSTERFilterType::FP_JOSEPH );
-  
+
   rooster->SetPerformPositivity(false);
   rooster->SetPerformMotionMask(true);
   rooster->SetMotionMask(roi->GetOutput());
@@ -436,7 +436,7 @@ int main(int, char** )
   rooster->SetComputeInverseWarpingByConjugateGradient(false);
   rooster->SetInverseDisplacementField(inverseDeformationField);
   rooster->SetUseNearestNeighborInterpolationInWarping(false);
-  
+
   TRY_AND_EXIT_ON_ITK_EXCEPTION( rooster->Update() );
 
   CheckImageQuality<VolumeSeriesType>(rooster->GetOutput(), join->GetOutput(), 0.25, 15, 2.0);
@@ -447,7 +447,7 @@ int main(int, char** )
 
   rooster->SetBackProjectionFilter( ROOSTERFilterType::BP_CUDAVOXELBASED ); // Cuda voxel based
   rooster->SetForwardProjectionFilter( ROOSTERFilterType::FP_CUDARAYCAST ); // Cuda ray cast
-  
+
   rooster->SetPerformPositivity(false);
   rooster->SetPerformMotionMask(false);
   rooster->SetPerformTVSpatialDenoising(false);
@@ -457,7 +457,7 @@ int main(int, char** )
   rooster->SetPerformWarping(false);
   rooster->SetComputeInverseWarpingByConjugateGradient(false);
   rooster->SetUseNearestNeighborInterpolationInWarping(false);
-  
+
   TRY_AND_EXIT_ON_ITK_EXCEPTION( rooster->Update() );
 
   CheckImageQuality<VolumeSeriesType>(rooster->GetOutput(), join->GetOutput(), 0.25, 15, 2.0);

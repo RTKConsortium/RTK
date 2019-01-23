@@ -132,7 +132,7 @@ public:
   /** total buffer size in bytes */
   void SetBufferSize(size_t num);
 
-  size_t GetBufferSize() 
+  size_t GetBufferSize()
     {
     return m_BufferSize;
     }

@@ -53,7 +53,7 @@ int main(int, char** )
   ConstantImageSourceType::Pointer constantVolumeSource = ConstantImageSourceType::New();
   ConstantImageSourceType::Pointer constantProjectionsSource = ConstantImageSourceType::New();
   ConstantImageSourceType::Pointer constantAttenuationSource = ConstantImageSourceType::New();
-  
+
   // Image meta data
   RandomImageSourceType::PointType origin;
   RandomImageSourceType::SizeType size;

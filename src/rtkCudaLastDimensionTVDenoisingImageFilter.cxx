@@ -41,12 +41,12 @@ rtk::CudaLastDimensionTVDenoisingImageFilter
 //   this->GetInput()->Print(std::cout);
 //   std::cout << "PRINTING OUTPUT" << std::endl;
 //   this->GetOutput()->Print(std::cout);
-  
+
   for (int i=0; i<4; i++)
     {
     inputSize[i] = this->GetInput()->GetBufferedRegion().GetSize()[i];
     outputSize[i] = this->GetOutput()->GetBufferedRegion().GetSize()[i];
-  
+
     if (inputSize[i] != outputSize[i])
       {
 

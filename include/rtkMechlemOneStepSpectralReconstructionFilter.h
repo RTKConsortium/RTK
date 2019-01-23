@@ -50,7 +50,7 @@ namespace rtk
    *
    * \dot
    * digraph MechlemOneStepSpectralReconstructionFilter {
-   * 
+   *
    * Input0 [ label="Input 0 (Material volumes)"];
    * Input0 [shape=Mdiamond];
    * Input1 [label="Input 1 (Photon counts)"];
@@ -59,7 +59,7 @@ namespace rtk
    * Input2 [shape=Mdiamond];
    * Output [label="Output (Material volumes)"];
    * Output [shape=Mdiamond];
-   * 
+   *
    * node [shape=box];
    * Extract [ label="itk::ExtractImageFilter" URL="\ref itk::ExtractImageFilter"];
    * VolumeSource [ label="rtk::ConstantImageSource (1 component volume, full of ones)" URL="\ref rtk::ConstantImageSource"];
@@ -79,7 +79,7 @@ namespace rtk
    * Nesterov [ label="rtk::NesterovUpdateImageFilter" URL="\ref rtk::NesterovUpdateImageFilter"];
    * Alphak [ label="", fixedsize="false", width=0, height=0, shape=none];
    * NextAlphak [ label="", fixedsize="false", width=0, height=0, shape=none];
-   * 
+   *
    * Input0 -> Alphak [arrowhead=none];
    * Alphak -> ForwardProjection;
    * Alphak -> SQSRegul;

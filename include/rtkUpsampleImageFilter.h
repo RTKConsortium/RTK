@@ -29,7 +29,7 @@ namespace rtk
  *
  * This filter is inspired from Dan Mueller's GIFT package
  * http://www.insight-journal.org/browse/publication/103
- * 
+ *
  * \author Cyril Mory
  *
  * \ingroup RTK
@@ -46,7 +46,7 @@ public:
   typedef itk::SmartPointer<const Self>                         ConstPointer;
 
   /** Method for creation through the object factory. */
-  itkNewMacro(Self);  
+  itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(UpsampleImageFilter, ImageToImageFilter);
@@ -68,7 +68,7 @@ public:
   /** Set the shrink factors. Values are clamped to
    * a minimum value of 1.*/
   void SetFactors(unsigned int factors[]);
-  
+
   /** Sets the shrink factor for the given dimension.
    * All other dimensions are set to 1 */
   void SetFactor(unsigned int dimension, unsigned int factor);
@@ -146,11 +146,11 @@ private:
   typename TOutputImage::IndexType  m_OutputIndex;
 };
 
-  
+
 } // end namespace rtk
-  
+
 #ifndef rtk_MANUAL_INSTANTIATION
 #include "rtkUpsampleImageFilter.hxx"
 #endif
-  
+
 #endif

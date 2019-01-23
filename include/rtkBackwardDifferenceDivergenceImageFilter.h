@@ -29,9 +29,9 @@ namespace rtk
  * (adjoint of the forward differences gradient) of the input image
  *
  * The exact definition of the desired divergence filter can
- * be found in Chambolle, Antonin. “An Algorithm for Total
- * Variation Minimization and Applications.” J. Math. Imaging Vis. 20,
- * no. 1–2 (January 2004): 89–97.
+ * be found in Chambolle, Antonin. "An Algorithm for Total
+ * Variation Minimization and Applications." J. Math. Imaging Vis. 20,
+ * no. 1-2 (January 2004): 89-97.
  *
  * \ingroup RTK IntensityImageFilters
  */

@@ -100,8 +100,8 @@ int main(int argc, char * argv[])
   phaseReader->SetFileName(args_info.signal_arg);
   phaseReader->SetNumberOfReconstructedFrames(inputFilter->GetOutput()->GetLargestPossibleRegion().GetSize(3));
   TRY_AND_EXIT_ON_ITK_EXCEPTION( phaseReader->Update() )
-  
-  
+
+
   // Create the mcfourdcg filter, connect the basic inputs, and set the basic parameters
   typedef rtk::MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType> MCFourDCGFilterType;
   MCFourDCGFilterType::Pointer mcfourdcg = MCFourDCGFilterType::New();
@@ -113,7 +113,7 @@ int main(int argc, char * argv[])
   mcfourdcg->SetCudaConjugateGradient(args_info.cudacg_flag);
   mcfourdcg->SetSignal(rtk::ReadSignalFile(args_info.signal_arg));
   mcfourdcg->SetDisableDisplacedDetectorFilter(args_info.nodisplaced_flag);
-  
+
   // Read DVF
   DVFReaderType::Pointer dvfReader = DVFReaderType::New();
   dvfReader->SetFileName( args_info.dvf_arg );

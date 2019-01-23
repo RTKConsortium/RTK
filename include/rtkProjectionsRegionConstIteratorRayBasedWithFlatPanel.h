@@ -25,7 +25,7 @@ namespace rtk
 {
 /** \class ProjectionsRegionConstIteratorRayBasedWithFlatPanel
  *
- * \brief Implements a ray-based iterator for a point source and a flat panel 
+ * \brief Implements a ray-based iterator for a point source and a flat panel
  *
  * \author Simon Rit
  *

@@ -33,14 +33,14 @@ void CheckTotalVariation(typename TImage::Pointer before, typename TImage::Point
 /**
  * \file rtktotalvariationtest.cxx
  *
- * \brief Tests whether the Total Variation denoising BPDQ filter indeed 
+ * \brief Tests whether the Total Variation denoising BPDQ filter indeed
  * reduces the total variation of a random image
  *
- * This test generates a random volume and performs TV denoising on this 
+ * This test generates a random volume and performs TV denoising on this
  * volume. It measures its total variation before and after denoising and
- * compares. Note that the TV denoising filter does not minimize TV alone, 
+ * compares. Note that the TV denoising filter does not minimize TV alone,
  * but TV + a data attachment term (it computes the proximal operator of TV).
- * Nevertheless, in most cases, it is expected that the output has 
+ * Nevertheless, in most cases, it is expected that the output has
  * a lower TV than the input.
  *
  * \author Cyril Mory
@@ -53,14 +53,14 @@ int main(int, char** )
 
 #ifdef USE_CUDA
   typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
-  typedef itk::CudaImage< itk::CovariantVector 
+  typedef itk::CudaImage< itk::CovariantVector
       < OutputPixelType, Dimension >, Dimension >                GradientOutputImageType;
 #else
   typedef itk::Image< OutputPixelType, Dimension >     OutputImageType;
-  typedef itk::Image< itk::CovariantVector 
+  typedef itk::Image< itk::CovariantVector
       < OutputPixelType, Dimension >, Dimension >                GradientOutputImageType;
 #endif
-  
+
   // Random image sources
   typedef itk::RandomImageSource< OutputImageType > RandomImageSourceType;
   RandomImageSourceType::Pointer randomVolumeSource  = RandomImageSourceType::New();
@@ -108,7 +108,7 @@ int main(int, char** )
   TVdenoising->SetInput(randomVolumeSource->GetOutput());
   TVdenoising->SetNumberOfIterations(100);
   TVdenoising->SetGamma(0.3);
-  
+
   bool dimsProcessed[Dimension];
   for (unsigned int i=0; i<Dimension; i++)
     {
@@ -118,7 +118,7 @@ int main(int, char** )
 
   // Update the TV denoising filter
   TRY_AND_EXIT_ON_ITK_EXCEPTION( TVdenoising->Update() );
-  
+
   CheckTotalVariation<OutputImageType>(randomVolumeSource->GetOutput(), TVdenoising->GetOutput());
 
   std::cout << "\n\nTest PASSED! " << std::endl;

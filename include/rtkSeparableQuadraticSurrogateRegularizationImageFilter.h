@@ -48,7 +48,7 @@ public:
   typedef SeparableQuadraticSurrogateRegularizationImageFilter      Self;
   typedef itk::ImageToImageFilter< TImage, TImage>                  Superclass;
   typedef itk::SmartPointer< Self >                                 Pointer;
-  
+
   /** Method for creation through the object factory. */
   itkNewMacro(Self)
 
