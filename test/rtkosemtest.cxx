@@ -38,7 +38,7 @@ int main(int, char** )
 #if FAST_TESTS_NO_CHECKS
   const unsigned int NumberOfProjectionImages = 3;
 #else
-  const unsigned int NumberOfProjectionImages = 180;
+  const unsigned int NumberOfProjectionImages = 60;
 #endif
 
 
@@ -52,9 +52,9 @@ int main(int, char** )
   ConstantImageSourceType::Pointer tomographySource  = ConstantImageSourceType::New();
   ConstantImageSourceType::Pointer volumeSource  = ConstantImageSourceType::New();
   ConstantImageSourceType::Pointer attenuationInput = ConstantImageSourceType::New();
-  origin[0] = -127.;
-  origin[1] = -127.;
-  origin[2] = -127.;
+  origin[0] = -67.;
+  origin[1] = -67.;
+  origin[2] = -67.;
 #if FAST_TESTS_NO_CHECKS
   size[0] = 2;
   size[1] = 2;
@@ -63,13 +63,31 @@ int main(int, char** )
   spacing[1] = 252.;
   spacing[2] = 252.;
 #else
-  size[0] = 64;
-  size[1] = 64;
-  size[2] = 64;
+  size[0] = 34;
+  size[1] = 34;
+  size[2] = 34;
   spacing[0] = 4.;
   spacing[1] = 4.;
   spacing[2] = 4.;
 #endif
+//  origin[0] = -127.;
+//  origin[1] = -127.;
+//  origin[2] = -127.;
+//#if FAST_TESTS_NO_CHECKS
+//  size[0] = 2;
+//  size[1] = 2;
+//  size[2] = 2;
+//  spacing[0] = 252.;
+//  spacing[1] = 252.;
+//  spacing[2] = 252.;
+//#else
+//  size[0] = 64;
+//  size[1] = 64;
+//  size[2] = 64;
+//  spacing[0] = 4.;
+//  spacing[1] = 4.;
+//  spacing[2] = 4.;
+//#endif
   tomographySource->SetOrigin( origin );
   tomographySource->SetSpacing( spacing );
   tomographySource->SetSize( size );
@@ -84,9 +102,9 @@ int main(int, char** )
   attenuationInput->SetConstant( att );
 
   ConstantImageSourceType::Pointer projectionsSource = ConstantImageSourceType::New();
-  origin[0] = -255.;
-  origin[1] = -255.;
-  origin[2] = -255.;
+  origin[0] = -135.;
+  origin[1] = -135.;
+  origin[2] = -135.;
 #if FAST_TESTS_NO_CHECKS
   size[0] = 2;
   size[1] = 2;
@@ -95,13 +113,32 @@ int main(int, char** )
   spacing[1] = 504.;
   spacing[2] = 504.;
 #else
-  size[0] = 64;
-  size[1] = 64;
+  size[0] = 34;
+  size[1] = 34;
   size[2] = NumberOfProjectionImages;
   spacing[0] = 8.;
   spacing[1] = 8.;
   spacing[2] = 8.;
 #endif
+//  ConstantImageSourceType::Pointer projectionsSource = ConstantImageSourceType::New();
+//  origin[0] = -255.;
+//  origin[1] = -255.;
+//  origin[2] = -255.;
+//#if FAST_TESTS_NO_CHECKS
+//  size[0] = 2;
+//  size[1] = 2;
+//  size[2] = NumberOfProjectionImages;
+//  spacing[0] = 504.;
+//  spacing[1] = 504.;
+//  spacing[2] = 504.;
+//#else
+//  size[0] = 64;
+//  size[1] = 64;
+//  size[2] = NumberOfProjectionImages;
+//  spacing[0] = 8.;
+//  spacing[1] = 8.;
+//  spacing[2] = 8.;
+//#endif
   projectionsSource->SetOrigin( origin );
   projectionsSource->SetSpacing( spacing );
   projectionsSource->SetSize( size );
@@ -119,7 +156,7 @@ int main(int, char** )
 
   rei = REIType::New();
   REIType::VectorType semiprincipalaxis, center;
-  semiprincipalaxis.Fill(90.);
+  semiprincipalaxis.Fill(60.);
   center.Fill(0.);
   rei->SetAngle(0.);
   rei->SetDensity(1.);
@@ -136,6 +173,7 @@ int main(int, char** )
   typedef rtk::DrawEllipsoidImageFilter<OutputImageType, OutputImageType> DEType;
   DEType::Pointer dsl = DEType::New();
   dsl->SetInput( tomographySource->GetOutput() );
+  dsl->SetAxis(semiprincipalaxis);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( dsl->Update() );
 
   // Create attenuation map according to the reference object
@@ -152,37 +190,37 @@ int main(int, char** )
   osem->SetInput(1, rei->GetOutput());
   osem->SetGeometry( geometry );
 
-  std::cout << "\n\n****** Case 1: Voxel-Based Backprojector, ML-EM 7 iterations ******" << std::endl;
+  std::cout << "\n\n****** Case 1: Voxel-Based Backprojector, ML-EM 10 iterations ******" << std::endl;
 
-  osem->SetNumberOfIterations(7);
+  osem->SetNumberOfIterations(10);
   osem->SetBackProjectionFilter(OSEMType::BP_VOXELBASED);
   osem->SetForwardProjectionFilter(OSEMType::FP_JOSEPH);
   osem->SetNumberOfProjectionsPerSubset(NumberOfProjectionImages);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( osem->Update() );
 
-  CheckImageQuality<OutputImageType>(osem->GetOutput(), dsl->GetOutput(), 0.032, 28.0, 2.0);
+  CheckImageQuality<OutputImageType>(osem->GetOutput(), dsl->GetOutput(), 0.047, 25.0, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 
-  std::cout << "\n\n****** Case 2: Joseph-Based Backprojector, OS-EM with 50 projections per subset and 4 iterations******" << std::endl;
+  std::cout << "\n\n****** Case 2: Joseph-Based Backprojector, OS-EM with 10 projections per subset and 4 iterations******" << std::endl;
 
-  osem->SetNumberOfIterations(4);
+  osem->SetNumberOfIterations(3);
   osem->SetBackProjectionFilter(OSEMType::BP_JOSEPH);
   osem->SetForwardProjectionFilter(OSEMType::FP_JOSEPH);
-  osem->SetNumberOfProjectionsPerSubset(50);
+  osem->SetNumberOfProjectionsPerSubset(10);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( osem->Update() );
 
-  CheckImageQuality<OutputImageType>(osem->GetOutput(), dsl->GetOutput(), 0.032, 28.0, 2.0);
+  CheckImageQuality<OutputImageType>(osem->GetOutput(), dsl->GetOutput(), 0.032, 25.0, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 
-  std::cout << "\n\n****** Case 3: Voxel-Based Backprojector, OS-EM with 50 projections per subset and 4 iterations******" << std::endl;
+  std::cout << "\n\n****** Case 3: Voxel-Based Backprojector, OS-EM with 10 projections per subset and 3 iterations******" << std::endl;
 
-  osem->SetNumberOfIterations(4);
+  osem->SetNumberOfIterations(3);
   osem->SetBackProjectionFilter(OSEMType::BP_VOXELBASED);
   osem->SetForwardProjectionFilter(OSEMType::FP_JOSEPH);
-  osem->SetNumberOfProjectionsPerSubset(50);
+  osem->SetNumberOfProjectionsPerSubset(10);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( osem->Update() );
 
-  CheckImageQuality<OutputImageType>(osem->GetOutput(), dsl->GetOutput(), 0.032, 28.6, 2.0);
+  CheckImageQuality<OutputImageType>(osem->GetOutput(), dsl->GetOutput(), 0.032, 25, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 
 #ifdef USE_CUDA
@@ -213,15 +251,15 @@ int main(int, char** )
   osem->SetInput(1, rei->GetOutput());
   osem->SetInput(2, maskFilter->GetOutput());
 
-  std::cout << "\n\n****** Case 5: Joseph Attenuated Backprojector, OS-EM with 30 projections per subset and 1 iterations******" << std::endl;
+  std::cout << "\n\n****** Case 5: Joseph Attenuated Backprojector, OS-EM with 10 projections per subset and 3 iterations******" << std::endl;
 
-  osem->SetNumberOfIterations(1);
+  osem->SetNumberOfIterations(3);
   osem->SetBackProjectionFilter(OSEMType::BP_JOSEPHATTENUATED);
   osem->SetForwardProjectionFilter(OSEMType::FP_JOSEPHATTENUATED);
-  osem->SetNumberOfProjectionsPerSubset(30);
+  osem->SetNumberOfProjectionsPerSubset(10);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( osem->Update() );
 
-  CheckImageQuality<OutputImageType>(osem->GetOutput(), dsl->GetOutput(), 0.032, 28.0, 2.0);
+  CheckImageQuality<OutputImageType>(osem->GetOutput(), dsl->GetOutput(), 0.032, 25.0, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
   return EXIT_SUCCESS;
 }
