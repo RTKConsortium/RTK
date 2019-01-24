@@ -40,7 +40,7 @@ int main(int, char** )
 #if FAST_TESTS_NO_CHECKS
   const unsigned int NumberOfProjectionImages = 3;
 #else
-  const unsigned int NumberOfProjectionImages = 180;
+  const unsigned int NumberOfProjectionImages = 60;
 #endif
 
   // Random image sources
