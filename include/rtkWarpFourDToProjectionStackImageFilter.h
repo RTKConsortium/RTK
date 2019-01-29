@@ -94,14 +94,43 @@ public:
 
     /** Convenient typedefs */
     typedef ProjectionStackType VolumeType;
-    typedef itk::CovariantVector< typename VolumeSeriesType::ValueType, VolumeSeriesType::ImageDimension - 1>   VectorForDVF;
+    typedef itk::CovariantVector< typename VolumeSeriesType::ValueType,
+                                  VolumeSeriesType::ImageDimension - 1>   VectorForDVF;
 
+    typedef typename itk::Image< typename VolumeSeriesType::PixelType,
+                                 VolumeSeriesType::ImageDimension>        CPUVolumeSeriesType;
+    static constexpr bool IsCPUImage(){ return std::is_same< VolumeSeriesType, CPUVolumeSeriesType >::value; }
 #ifdef RTK_USE_CUDA
-    typedef itk::CudaImage<VectorForDVF, VolumeSeriesType::ImageDimension>          DVFSequenceImageType;
-    typedef itk::CudaImage<VectorForDVF, VolumeSeriesType::ImageDimension - 1>      DVFImageType;
+    /** SFINAE typedef, depending on whether a CUDA image is used. */
+    typedef typename std::conditional< IsCPUImage(),
+                                       itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension>,
+                                       itk::CudaImage<VectorForDVF, VolumeSeriesType::ImageDimension> >::type
+                                                                          DVFSequenceImageType;
+    typedef typename std::conditional< IsCPUImage(),
+                                       itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension - 1>,
+                                       itk::CudaImage<VectorForDVF, VolumeSeriesType::ImageDimension - 1> >::type
+                                                                          DVFImageType;
 #else
-    typedef itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension>              DVFSequenceImageType;
-    typedef itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension - 1>          DVFImageType;
+    typedef typename itk::Image<VectorForDVF,
+                                VolumeSeriesType::ImageDimension>         DVFSequenceImageType;
+    typedef typename itk::Image<VectorForDVF,
+                                VolumeSeriesType::ImageDimension - 1>     DVFImageType;
+#endif
+    typedef CyclicDeformationImageFilter< DVFSequenceImageType,
+                                          DVFImageType>                   CPUDVFInterpolatorType;
+#ifdef RTK_USE_CUDA
+    typedef typename std::conditional< IsCPUImage(),
+                                       JosephForwardProjectionImageFilter<ProjectionStackType, ProjectionStackType>,
+                                       CudaWarpForwardProjectionImageFilter >::type
+                                                                          WarpForwardProjectionImageFilterType;
+    typedef typename std::conditional< IsCPUImage(),
+                                       CPUDVFInterpolatorType,
+                                       CudaCyclicDeformationImageFilter >::type
+                                                                          CudaCyclicDeformationImageFilterType;
+#else
+    typedef JosephForwardProjectionImageFilter< ProjectionStackType,
+                                                ProjectionStackType>      WarpForwardProjectionImageFilterType;
+    typedef CPUDVFInterpolatorType                                        CudaCyclicDeformationImageFilterType;
 #endif
 
     /** Method for creation through the object factory. */
@@ -110,8 +139,7 @@ public:
     /** Run-time type information (and related methods). */
     itkTypeMacro(WarpFourDToProjectionStackImageFilter, rtk::FourDToProjectionStackImageFilter)
 
-    typedef rtk::CyclicDeformationImageFilter<DVFSequenceImageType, DVFImageType>  DVFInterpolatorType;
-    typedef std::vector<double>                                                    SignalVectorType;
+    typedef std::vector<double> SignalVectorType;
 
     /** The forward projection filter cannot be set by the user */
     void SetForwardProjectionFilter (const typename Superclass::ForwardProjectionFilterType::Pointer itkNotUsed(_arg)) {itkExceptionMacro(<< "ForwardProjection cannot be changed");}
@@ -146,9 +174,9 @@ protected:
 #endif
 
     /** Member pointers to the filters used internally (for convenience)*/
-    typename DVFInterpolatorType::Pointer               m_DVFInterpolatorFilter;
-    std::vector<double>                                 m_Signal;
-    bool                                                m_UseCudaCyclicDeformation;
+    typename CPUDVFInterpolatorType::Pointer m_DVFInterpolatorFilter;
+    std::vector<double>                      m_Signal;
+    bool                                     m_UseCudaCyclicDeformation;
 
 private:
     WarpFourDToProjectionStackImageFilter(const Self &); //purposely not implemented

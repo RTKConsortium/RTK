@@ -2,11 +2,10 @@ itk_wrap_class("rtk::FourDSARTConeBeamReconstructionFilter" POINTER)
 
   if(RTK_USE_CUDA)
     itk_wrap_template("CIF4CIF3" "itk::CudaImage<float, 4>, itk::CudaImage<float, 3>")
-  else()
-    foreach(t ${WRAP_ITK_REAL})
-      itk_wrap_template("I${ITKM_${t}}4I${ITKM_${t}}3"
-        "itk::Image<${ITKT_${t}}, 4>, itk::Image<${ITKT_${t}}, 3>")
-    endforeach()
   endif()
+  foreach(t ${WRAP_ITK_REAL})
+    itk_wrap_template("I${ITKM_${t}}4I${ITKM_${t}}3"
+      "itk::Image<${ITKT_${t}}, 4>, itk::Image<${ITKT_${t}}, 3>")
+  endforeach()
 
 itk_end_wrap_class()

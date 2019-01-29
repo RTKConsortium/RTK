@@ -263,7 +263,7 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage,
   m_ConjugateGradientFilter = ConjugateGradientFilterType::New();
 #ifdef RTK_USE_CUDA
   if (m_CudaConjugateGradient)
-    m_ConjugateGradientFilter = rtk::CudaConjugateGradientImageFilter<TOutputImage>::New();
+    m_ConjugateGradientFilter = InstantiateCudaConjugateGradientImageFilter<TOutputImage>();
 #endif
   m_ConjugateGradientFilter->SetA(m_CGOperator.GetPointer());
   m_ConjugateGradientFilter->SetIterationCosts(m_IterationCosts);
@@ -350,6 +350,37 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage,
     {
     this->GraftOutput( m_ConjugateGradientFilter->GetOutput() );
     }
+}
+
+template< typename TOutputImage,
+          typename TSingleComponentImage,
+          typename TWeightsImage>
+template < typename ImageType, typename IterativeConeBeamReconstructionFilter<TOutputImage>::template EnableCudaScalarAndVectorType<ImageType>* >
+typename ConjugateGradientConeBeamReconstructionFilter<TOutputImage, TSingleComponentImage, TWeightsImage>::ConjugateGradientFilterPointer
+ConjugateGradientConeBeamReconstructionFilter<TOutputImage,
+                                              TSingleComponentImage,
+                                              TWeightsImage>
+::InstantiateCudaConjugateGradientImageFilter()
+{
+#ifdef RTK_USE_CUDA
+  return CudaConjugateGradientImageFilter<TOutputImage>::New();
+#else
+  return ITK_NULLPTR;
+#endif
+}
+
+template< typename TOutputImage,
+          typename TSingleComponentImage,
+          typename TWeightsImage>
+template < typename ImageType, typename IterativeConeBeamReconstructionFilter<TOutputImage>::template DisableCudaScalarAndVectorType<ImageType>* >
+typename ConjugateGradientConeBeamReconstructionFilter<TOutputImage, TSingleComponentImage, TWeightsImage>::ConjugateGradientFilterPointer
+ConjugateGradientConeBeamReconstructionFilter<TOutputImage,
+                                              TSingleComponentImage,
+                                              TWeightsImage>
+::InstantiateCudaConjugateGradientImageFilter()
+{
+  itkGenericExceptionMacro(<< "CudaConjugateGradientImageFilter only available with 3D CudaImage of float or itk::Vector<float,3>.");
+  return ITK_NULLPTR;
 }
 
 }// end namespace

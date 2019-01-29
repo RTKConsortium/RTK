@@ -135,11 +135,31 @@ public:
 
     typedef rtk::ThreeDCircularProjectionGeometry                                 GeometryType;
 
+    /** SFINAE typedef, depending on whether a CUDA image is used. */
+    typedef typename itk::Image< typename VolumeSeriesType::PixelType,
+                                 VolumeSeriesType::ImageDimension>        CPUVolumeSeriesType;
+    static constexpr bool IsCPUImage(){ return std::is_same< VolumeSeriesType, CPUVolumeSeriesType >::value; }
+#ifdef RTK_USE_CUDA
+    typedef typename std::conditional< IsCPUImage(),
+                                       SplatFilterType,
+                                       CudaSplatImageFilter >::type               CudaSplatImageFilterType;
+    typedef typename std::conditional< IsCPUImage(),
+                                       ConstantVolumeSourceType,
+                                       CudaConstantVolumeSource >::type           CudaConstantVolumeSourceType;
+    typedef typename std::conditional< IsCPUImage(),
+                                       ConstantVolumeSeriesSourceType,
+                                       CudaConstantVolumeSeriesSource >::type     CudaConstantVolumeSeriesSourceType;
+#else
+    typedef SplatFilterType                                                       CudaSplatImageFilterType;
+    typedef ConstantVolumeSourceType                                              CudaConstantVolumeSourceType;
+    typedef ConstantVolumeSeriesSourceType                                        CudaConstantVolumeSeriesSourceType;
+#endif
+
     /** Pass the backprojection filter to SingleProjectionToFourDFilter */
     void SetBackProjectionFilter (const typename BackProjectionFilterType::Pointer _arg);
 
     /** Pass the geometry to SingleProjectionToFourDFilter */
-    itkSetConstObjectMacro(Geometry, GeometryType);
+    itkSetConstObjectMacro(Geometry, GeometryType)
 
     /** Use CUDA splat / sources */
     itkSetMacro(UseCudaSplat, bool)

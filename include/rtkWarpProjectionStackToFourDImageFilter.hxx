@@ -32,16 +32,13 @@ WarpProjectionStackToFourDImageFilter< VolumeSeriesType, ProjectionStackType>::W
 {
   this->SetNumberOfRequiredInputs(3);
 
-  this->m_UseCudaSplat = true;
-  this->m_UseCudaSources = true;
+  this->m_UseCudaSplat = !IsCPUImage();
+  this->m_UseCudaSources = !IsCPUImage();
   m_UseCudaCyclicDeformation = false;
 
-#ifdef RTK_USE_CUDA
-  this->m_BackProjectionFilter = rtk::CudaWarpBackProjectionImageFilter::New();
-#else
-  this->m_BackProjectionFilter = rtk::BackProjectionImageFilter<VolumeType, VolumeType>::New();
-  itkWarningMacro("The warp back project image filter exists only in CUDA. Ignoring the displacement vector field and using CPU voxel-based back projection")
-#endif
+  this->m_BackProjectionFilter = WarpBackProjectionImageFilter::New();
+  if(IsCPUImage())
+    itkWarningMacro("The warp back project image filter exists only in CUDA. Ignoring the displacement vector field and using CPU voxel-based back projection")
 }
 
 template< typename VolumeSeriesType, typename ProjectionStackType>
@@ -73,19 +70,27 @@ void
 WarpProjectionStackToFourDImageFilter< VolumeSeriesType, ProjectionStackType>
 ::GenerateOutputInformation()
 {
-  m_DVFInterpolatorFilter = DVFInterpolatorType::New();
-#ifdef RTK_USE_CUDA
+  m_DVFInterpolatorFilter = CPUDVFInterpolatorType::New();
   if (m_UseCudaCyclicDeformation)
-    m_DVFInterpolatorFilter = rtk::CudaCyclicDeformationImageFilter::New();
+    {
+    if( IsCPUImage() )
+      itkGenericExceptionMacro(<< "UseCudaCyclicDeformation option only available with itk::CudaImage.");
+    m_DVFInterpolatorFilter = CudaCyclicDeformationImageFilterType::New();
+    }
+#ifdef RTK_USE_CUDA
+  if ( !IsCPUImage() )
+    {
+    CudaWarpBackProjectionImageFilter* wbp;
+    wbp = dynamic_cast< CudaWarpBackProjectionImageFilter* > (this->m_BackProjectionFilter.GetPointer());
+    typedef itk::CudaImage<VectorForDVF, VolumeSeriesType::ImageDimension - 1> CudaDVFImageType;
+    CudaDVFImageType* cudvf;
+    cudvf = dynamic_cast< CudaDVFImageType* > (m_DVFInterpolatorFilter->GetOutput());
+    wbp->SetDisplacementField( cudvf );
+    }
 #endif
   m_DVFInterpolatorFilter->SetSignalVector(m_Signal);
   m_DVFInterpolatorFilter->SetInput(this->GetDisplacementField());
   m_DVFInterpolatorFilter->SetFrame(0);
-
-#ifdef RTK_USE_CUDA
-  dynamic_cast< rtk::CudaWarpBackProjectionImageFilter* >
-      (this->m_BackProjectionFilter.GetPointer())->SetDisplacementField(m_DVFInterpolatorFilter->GetOutput());
-#endif
 
   Superclass::GenerateOutputInformation();
 }

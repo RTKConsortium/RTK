@@ -22,10 +22,6 @@
 #include <itkImageToImageFilter.h>
 
 #include "rtkConfiguration.h"
-#ifdef RTK_USE_CUDA
-  #include <itkCudaImage.h>
-#endif
-
 #include "rtkMacro.h"
 
 namespace rtk

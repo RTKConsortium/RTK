@@ -86,12 +86,22 @@ public:
   typedef typename Superclass::ForwardProjectionType ForwardProjectionType;
   typedef typename Superclass::BackProjectionType    BackProjectionType;
 
+  /** SFINAE typedef, depending on whether a CUDA image is used. */
+  typedef typename itk::Image< typename VolumeSeriesType::PixelType,
+                               VolumeSeriesType::ImageDimension>        CPUVolumeSeriesType;
+  static constexpr bool IsCPUImage(){ return std::is_same< VolumeSeriesType, CPUVolumeSeriesType >::value; }
 #ifdef RTK_USE_CUDA
-  typedef itk::CudaImage<VectorForDVF, VolumeSeriesType::ImageDimension>          DVFSequenceImageType;
-  typedef itk::CudaImage<VectorForDVF, VolumeSeriesType::ImageDimension - 1>      DVFImageType;
+  typedef typename std::conditional< IsCPUImage(),
+                                     itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension>,
+                                     itk::CudaImage<VectorForDVF, VolumeSeriesType::ImageDimension> >::type
+                                                                        DVFSequenceImageType;
+  typedef typename std::conditional< IsCPUImage(),
+                                     itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension - 1>,
+                                     itk::CudaImage<VectorForDVF, VolumeSeriesType::ImageDimension - 1> >::type
+                                                                        DVFImageType;
 #else
-  typedef itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension>              DVFSequenceImageType;
-  typedef itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension - 1>          DVFImageType;
+  typedef itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension>    DVFSequenceImageType;
+  typedef itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension-1>  DVFImageType;
 #endif
 
   /** Typedefs of each subfilter of this composite filter */
