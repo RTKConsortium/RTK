@@ -58,9 +58,9 @@ void kernel_backProject(float *dev_vol_in,
                         double radius,
                         cudaTextureObject_t* dev_tex_proj)
 {
-  unsigned int i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
-  unsigned int j = __umul24(blockIdx.y, blockDim.y) + threadIdx.y;
-  unsigned int k = __umul24(blockIdx.z, blockDim.z) + threadIdx.z;
+  itk::SizeValueType i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
+  itk::SizeValueType j = __umul24(blockIdx.y, blockDim.y) + threadIdx.y;
+  itk::SizeValueType k = __umul24(blockIdx.z, blockDim.z) + threadIdx.z;
 
   if (i >= c_volSize.x || j >= c_volSize.y || k >= c_volSize.z)
     {
@@ -68,7 +68,7 @@ void kernel_backProject(float *dev_vol_in,
     }
 
   // Index row major into the volume
-  long int vol_idx = i + (j + k*c_volSize.y)*(c_volSize.x);
+  itk::SizeValueType vol_idx = i + (j + k*c_volSize.y)*(c_volSize.x);
 
   float3 ip, pp;
   float voxel_data[vectorLength];
