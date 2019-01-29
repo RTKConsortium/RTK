@@ -1,6 +1,6 @@
 set(MSVC_VERSION 14)
 set(MSVC_YEAR 2015)
-foreach(ITK_VERSION "v4.13.0" "v5.0a02")
+foreach(ITK_VERSION "master")
   foreach(FFTW ON OFF)
     foreach(DEBUG_RELEASE Release Debug)
       foreach(STATIC_SHARED Static Shared)
@@ -11,7 +11,7 @@ foreach(ITK_VERSION "v4.13.0" "v5.0a02")
 
         set(CTEST_SITE "shiitake.clb")
         set(CTEST_GIT_COMMAND "C:\\Program Files\\Git\\bin\\git.exe")
-        set(CTEST_GIT_UPDATE_CUSTOM "${CTEST_GIT_COMMAND} checkout ${ITK_VERSION}")
+        set(CTEST_GIT_UPDATE_CUSTOM "${CTEST_GIT_COMMAND}" pull)
         set(CTEST_SOURCE_DIRECTORY "D:\\src\\itk\\ITK-${ITK_VERSION}")
         set(CTEST_BINARY_DIRECTORY "D:\\src\\itk\\${MSVC_YEAR}-${ITK_VERSION}-${STATIC_SHARED}-${DEBUG_RELEASE}-FFTW${FFTW}")
         set(CTEST_CMAKE_GENERATOR "Visual Studio ${MSVC_VERSION} ${MSVC_YEAR} Win64")
@@ -22,7 +22,9 @@ foreach(ITK_VERSION "v4.13.0" "v5.0a02")
         set(ENV{PATH} "D:/src/kwstyle;$ENV{PATH}")
 
         ctest_start(Nightly)
-        ctest_update()
+        if("${ITK_VERSION}" STREQUAL "master")
+          ctest_update()
+        endif()
 
         set(cfg_options
            -DITK_FUTURE_LEGACY=ON
