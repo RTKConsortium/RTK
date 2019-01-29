@@ -193,7 +193,7 @@ int main(int, char** )
   osem->SetForwardProjectionFilter(OSEMType::FP_CUDARAYCAST);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( osem->Update() );
 
-  CheckImageQuality<OutputImageType>(osem->GetOutput(), dsl->GetOutput(), 0.032, 28.6, 2.0);
+  CheckImageQuality<OutputImageType>(osem->GetOutput(), dsl->GetOutput(), 0.032, 26, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 #endif
 
