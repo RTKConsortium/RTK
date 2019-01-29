@@ -1,6 +1,6 @@
 set(MSVC_VERSION 14)
 set(MSVC_YEAR 2015)
-foreach(ITK_VERSION "v5.0a02" "v4.13.0")
+foreach(ITK_VERSION "master" "v4.13.0")
   foreach(DEBUG_RELEASE "Release" "Debug")
     foreach(FFTW OFF ON)
       foreach(STATIC_SHARED "Shared" "Static")
