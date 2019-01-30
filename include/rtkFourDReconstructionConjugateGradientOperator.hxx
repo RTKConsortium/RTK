@@ -34,11 +34,7 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
   m_UseCudaSplat = false;
   m_UseCudaSources = false;
 
-#ifdef RTK_USE_CUDA
-  m_DisplacedDetectorFilter = rtk::CudaDisplacedDetectorImageFilter::New();
-#else
   m_DisplacedDetectorFilter = DisplacedDetectorFilterType::New();
-#endif
   m_DisplacedDetectorFilter->SetPadOnTruncatedSide(false);
   m_DisableDisplacedDetectorFilter = false;
 
@@ -169,32 +165,36 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
   // Create the interpolation filter and the displaced detector filter
   // (first on CPU, and overwrite with the GPU version if CUDA requested)
   m_InterpolationFilter = InterpolationFilterType::New();
-#ifdef RTK_USE_CUDA
   if (m_UseCudaInterpolation)
-    m_InterpolationFilter = rtk::CudaInterpolateImageFilter::New();
-#endif
+    {
+    if(IsCPUImage())
+      itkGenericExceptionMacro(<< "UseCudaInterpolation option only available with itk::CudaImage.");
+    m_InterpolationFilter = CudaInterpolateImageFilterType::New();
+    }
 
   // Create the splat filter (first on CPU, and overwrite with the GPU version if CUDA requested)
   m_SplatFilter = SplatFilterType::New();
-#ifdef RTK_USE_CUDA
   if (m_UseCudaSplat)
-    m_SplatFilter = rtk::CudaSplatImageFilter::New();
-#endif
+    {
+    if(IsCPUImage())
+      itkGenericExceptionMacro(<< "UseCudaSplat option only available with itk::CudaImage.");
+    m_SplatFilter = CudaSplatImageFilterType::New();
+    }
 
   // Create the constant sources (first on CPU, and overwrite with the GPU version if CUDA requested)
   m_ConstantVolumeSource1 = ConstantVolumeSourceType::New();
   m_ConstantVolumeSource2 = ConstantVolumeSourceType::New();
   m_ConstantProjectionStackSource = ConstantProjectionStackSourceType::New();
   m_ConstantVolumeSeriesSource = ConstantVolumeSeriesSourceType::New();
-#ifdef RTK_USE_CUDA
   if (m_UseCudaSources)
     {
-    m_ConstantVolumeSource1 = rtk::CudaConstantVolumeSource::New();
-    m_ConstantVolumeSource2 = rtk::CudaConstantVolumeSource::New();
-    m_ConstantProjectionStackSource = rtk::CudaConstantVolumeSource::New();
-    m_ConstantVolumeSeriesSource = rtk::CudaConstantVolumeSeriesSource::New();
+    if(IsCPUImage())
+      itkGenericExceptionMacro(<< "UseCudaSources option only available with itk::CudaImage.");
+    m_ConstantVolumeSource1 = CudaConstantVolumeSourceType::New();
+    m_ConstantVolumeSource2 = CudaConstantVolumeSourceType::New();
+    m_ConstantProjectionStackSource = CudaConstantVolumeSourceType::New();
+    m_ConstantVolumeSeriesSource = CudaConstantVolumeSeriesSourceType::New();
     }
-#endif
 
   // Initialize sources
   this->InitializeConstantSources();

@@ -127,21 +127,23 @@ ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPre
 {
   // Create and set the splat filter
   m_SplatFilter = SplatFilterType::New();
-#ifdef RTK_USE_CUDA
   if (m_UseCudaSplat)
-    m_SplatFilter = rtk::CudaSplatImageFilter::New();
-#endif
+    {
+    if( IsCPUImage() )
+      itkGenericExceptionMacro(<< "UseCudaSplat option only available with itk::CudaImage.");
+    m_SplatFilter = CudaSplatImageFilterType::New();
+    }
 
   // Create the constant sources (first on CPU, and overwrite with the GPU version if CUDA requested)
   m_ConstantVolumeSource = ConstantVolumeSourceType::New();
   m_ConstantVolumeSeriesSource = ConstantVolumeSeriesSourceType::New();
-#ifdef RTK_USE_CUDA
   if (m_UseCudaSources)
     {
-    m_ConstantVolumeSource = rtk::CudaConstantVolumeSource::New();
-    m_ConstantVolumeSeriesSource = rtk::CudaConstantVolumeSeriesSource::New();
+    if( IsCPUImage() )
+      itkGenericExceptionMacro(<< "UseCudaSources option only available with itk::CudaImage.");
+    m_ConstantVolumeSource = CudaConstantVolumeSourceType::New();
+    m_ConstantVolumeSeriesSource = CudaConstantVolumeSeriesSourceType::New();
     }
-#endif
 
   // Set runtime connections
   m_ExtractFilter->SetInput(this->GetInputProjectionStack());

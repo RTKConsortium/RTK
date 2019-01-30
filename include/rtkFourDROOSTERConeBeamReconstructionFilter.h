@@ -205,16 +205,36 @@ public:
   typedef itk::CovariantVector< typename VolumeSeriesType::ValueType, 1>                                    CovariantVectorForTemporalGradient;
   typedef CovariantVectorForSpatialGradient                                                                 DVFVectorType;
 
+  /** SFINAE typedef, depending on whether a CUDA image is used. */
+  typedef typename itk::Image< typename VolumeSeriesType::PixelType,
+                               VolumeSeriesType::ImageDimension> CPUVolumeSeriesType;
+  static constexpr bool IsCPUImage(){ return std::is_same< VolumeSeriesType, CPUVolumeSeriesType >::value; }
 #ifdef RTK_USE_CUDA
-  typedef itk::CudaImage<CovariantVectorForSpatialGradient, VolumeSeriesType::ImageDimension>   SpatialGradientImageType;
-  typedef itk::CudaImage<CovariantVectorForTemporalGradient, VolumeSeriesType::ImageDimension>  TemporalGradientImageType;
-  typedef itk::CudaImage<DVFVectorType, VolumeSeriesType::ImageDimension>                       DVFSequenceImageType;
-  typedef itk::CudaImage<DVFVectorType, VolumeSeriesType::ImageDimension - 1>                   DVFImageType;
+  typedef typename std::conditional< IsCPUImage(),
+                                     itk::Image<CovariantVectorForSpatialGradient, VolumeSeriesType::ImageDimension>,
+                                     itk::CudaImage<CovariantVectorForSpatialGradient, VolumeSeriesType::ImageDimension> >::type SpatialGradientImageType;
+  typedef typename std::conditional< IsCPUImage(),
+                                     itk::Image<CovariantVectorForTemporalGradient, VolumeSeriesType::ImageDimension>,
+                                     itk::CudaImage<CovariantVectorForTemporalGradient, VolumeSeriesType::ImageDimension> >::type TemporalGradientImageType;
+  typedef typename std::conditional< IsCPUImage(),
+                                     itk::Image<DVFVectorType, VolumeSeriesType::ImageDimension>,
+                                     itk::CudaImage<DVFVectorType, VolumeSeriesType::ImageDimension> >::type DVFSequenceImageType;
+  typedef typename std::conditional< IsCPUImage(),
+                                     itk::Image<DVFVectorType, VolumeSeriesType::ImageDimension - 1>,
+                                     itk::CudaImage<DVFVectorType, VolumeSeriesType::ImageDimension - 1> >::type DVFImageType;
+  typedef typename std::conditional< IsCPUImage(),
+                                     AverageOutOfROIImageFilter <VolumeSeriesType, VolumeType>,
+                                     CudaAverageOutOfROIImageFilter >::type AverageOutOfROIFilterType;
+  typedef typename std::conditional< IsCPUImage(),
+                                     TotalVariationDenoisingBPDQImageFilter<VolumeSeriesType, TemporalGradientImageType>,
+                                     CudaLastDimensionTVDenoisingImageFilter >::type TemporalTVDenoisingFilterType;
 #else
-  typedef itk::Image<CovariantVectorForSpatialGradient, VolumeSeriesType::ImageDimension>       SpatialGradientImageType;
-  typedef itk::Image<CovariantVectorForTemporalGradient, VolumeSeriesType::ImageDimension>      TemporalGradientImageType;
-  typedef itk::Image<DVFVectorType, VolumeSeriesType::ImageDimension>                           DVFSequenceImageType;
-  typedef itk::Image<DVFVectorType, VolumeSeriesType::ImageDimension - 1>                       DVFImageType;
+  typedef itk::Image<CovariantVectorForSpatialGradient, VolumeSeriesType::ImageDimension>     SpatialGradientImageType;
+  typedef itk::Image<CovariantVectorForTemporalGradient, VolumeSeriesType::ImageDimension>    TemporalGradientImageType;
+  typedef itk::Image<DVFVectorType, VolumeSeriesType::ImageDimension>                         DVFSequenceImageType;
+  typedef itk::Image<DVFVectorType, VolumeSeriesType::ImageDimension - 1>                     DVFImageType;
+  typedef AverageOutOfROIImageFilter <VolumeSeriesType, VolumeType>                           AverageOutOfROIFilterType;
+  typedef TotalVariationDenoisingBPDQImageFilter<VolumeSeriesType, TemporalGradientImageType> TemporalTVDenoisingFilterType;
 #endif
 
   /** Method for creation through the object factory. */
@@ -244,11 +264,9 @@ public:
   typedef rtk::FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>    FourDCGFilterType;
   typedef itk::ThresholdImageFilter<VolumeSeriesType>                                                       ThresholdFilterType;
   typedef itk::ResampleImageFilter<VolumeType, VolumeType>                                                  ResampleFilterType;
-  typedef rtk::AverageOutOfROIImageFilter <VolumeSeriesType, VolumeType>                                    AverageOutOfROIFilterType;
   typedef rtk::TotalVariationDenoiseSequenceImageFilter<VolumeSeriesType>                                   SpatialTVDenoisingFilterType;
   typedef rtk::DaubechiesWaveletsDenoiseSequenceImageFilter<VolumeSeriesType>                               SpatialWaveletsDenoisingFilterType;
   typedef rtk::WarpSequenceImageFilter<VolumeSeriesType, DVFSequenceImageType, VolumeType, DVFImageType>    WarpSequenceFilterType;
-  typedef rtk::TotalVariationDenoisingBPDQImageFilter<VolumeSeriesType, TemporalGradientImageType>          TemporalTVDenoisingFilterType;
   typedef rtk::UnwarpSequenceImageFilter<VolumeSeriesType, DVFSequenceImageType, VolumeType, DVFImageType>  UnwarpSequenceFilterType;
   typedef itk::SubtractImageFilter<VolumeSeriesType, VolumeSeriesType>                                      SubtractFilterType;
   typedef itk::AddImageFilter<VolumeSeriesType, VolumeSeriesType>                                           AddFilterType;

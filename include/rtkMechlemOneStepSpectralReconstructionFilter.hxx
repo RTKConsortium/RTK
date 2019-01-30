@@ -171,13 +171,11 @@ MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectr
     {
     case(MechlemOneStepSpectralReconstructionFilter::FP_JOSEPH):
       fw = rtk::JosephForwardProjectionImageFilter<TSingleComponent, TSingleComponent>::New();
-    break;
+      break;
     case(MechlemOneStepSpectralReconstructionFilter::FP_CUDARAYCAST):
-#ifdef RTK_USE_CUDA
-      fw = rtk::CudaForwardProjectionImageFilter<TSingleComponent, TSingleComponent>::New();
-#else
-      itkGenericExceptionMacro(<< "The program has not been compiled with cuda option");
-#endif
+      fw = CudaSingleComponentForwardProjectionImageFilterType::New();
+      if(IsCPUImage())
+        itkGenericExceptionMacro(<< "The program has not been compiled with cuda option");
     break;
 
     default:
@@ -207,12 +205,10 @@ MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectr
       bp = rtk::JosephBackProjectionImageFilter<THessians, THessians>::New();
       break;
     case(MechlemOneStepSpectralReconstructionFilter::BP_CUDAVOXELBASED):
-#ifdef RTK_USE_CUDA
-      bp = rtk::CudaBackProjectionImageFilter<THessians>::New();
-#else
-      itkGenericExceptionMacro(<< "The program has not been compiled with cuda option");
-#endif
-    break;
+      bp = CudaHessiansBackProjectionImageFilterType::New();
+      if(IsCPUImage())
+        itkGenericExceptionMacro(<< "The program has not been compiled with cuda option");
+      break;
     case(MechlemOneStepSpectralReconstructionFilter::BP_CUDARAYCAST):
       itkGenericExceptionMacro(<< "The CUDA ray cast back projector can currently not handle vector images");
       break;

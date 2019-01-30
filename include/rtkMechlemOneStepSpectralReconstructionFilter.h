@@ -141,15 +141,46 @@ public:
     itkStaticConstMacro(nBins, unsigned int, TPhotonCounts::PixelType::Dimension);
     itkStaticConstMacro(nMaterials, unsigned int, TOutputImage::PixelType::Dimension);
     typedef typename TOutputImage::PixelType::ValueType dataType;
+
+    /** SFINAE typedef, depending on whether a CUDA image is used. */
+    typedef typename itk::Image< typename TOutputImage::PixelType,
+                                 TOutputImage::ImageDimension>                         CPUOutputImageType;
+    static constexpr bool IsCPUImage(){ return std::is_same< TOutputImage, CPUOutputImageType >::value; }
 #ifdef RTK_USE_CUDA
-    typedef itk::CudaImage< itk::Vector<dataType, nMaterials * nMaterials>, TOutputImage::ImageDimension > THessiansImage;
-    typedef itk::CudaImage<dataType, TOutputImage::ImageDimension> SingleComponentImageType;
+    typedef typename std::conditional< IsCPUImage(),
+                                       itk::Image< itk::Vector<dataType, nMaterials * nMaterials>, TOutputImage::ImageDimension >,
+                                       itk::CudaImage< itk::Vector<dataType, nMaterials * nMaterials>, TOutputImage::ImageDimension > >::type
+                                                                                       THessiansImage;
+    typedef typename std::conditional< IsCPUImage(),
+                                       itk::Image<dataType, TOutputImage::ImageDimension>,
+                                       itk::CudaImage<dataType, TOutputImage::ImageDimension> >::type
+                                                                                       SingleComponentImageType;
 #else
-    typedef itk::Image< itk::Vector<dataType, nMaterials * nMaterials>, TOutputImage::ImageDimension > THessiansImage;
-    typedef itk::Image<dataType, TOutputImage::ImageDimension> SingleComponentImageType;
+    typedef typename itk::Image< itk::Vector<dataType, nMaterials * nMaterials>,
+                                 TOutputImage::ImageDimension >                        THessiansImage;
+    typedef typename itk::Image<dataType, TOutputImage::ImageDimension>                SingleComponentImageType;
 #endif
 
 #if !defined( ITK_WRAPPING_PARSER )
+#ifdef RTK_USE_CUDA
+    typedef typename std::conditional< IsCPUImage(),
+                                       WeidingerForwardModelImageFilter<TOutputImage, TPhotonCounts, TSpectrum>,
+                                       CudaWeidingerForwardModelImageFilter<TOutputImage, TPhotonCounts, TSpectrum> >::type
+                                                                                       WeidingerForwardModelType;
+    typedef typename std::conditional< IsCPUImage(),
+                                       JosephForwardProjectionImageFilter<SingleComponentImageType, SingleComponentImageType>,
+                                       CudaForwardProjectionImageFilter<SingleComponentImageType, SingleComponentImageType> >::type
+                                                                                       CudaSingleComponentForwardProjectionImageFilterType;
+    typedef typename std::conditional< IsCPUImage(),
+                                       BackProjectionImageFilter<THessiansImage, THessiansImage>,
+                                       CudaBackProjectionImageFilter<THessiansImage> >::type
+                                                                                       CudaHessiansBackProjectionImageFilterType;
+#else
+    typedef WeidingerForwardModelImageFilter<TOutputImage, TPhotonCounts, TSpectrum>   WeidingerForwardModelType;
+    typedef JosephForwardProjectionImageFilter<SingleComponentImageType,
+                                               SingleComponentImageType>               CudaSingleComponentForwardProjectionImageFilterType;
+    typedef BackProjectionImageFilter<THessiansImage, THessiansImage>                  CudaHessiansBackProjectionImageFilterType;
+#endif
     typedef TOutputImage TGradientsImage;
 #endif
 
@@ -171,11 +202,6 @@ public:
     typedef rtk::ConstantImageSource<TGradientsImage>                                  GradientsSourceType;
     typedef rtk::ConstantImageSource<THessiansImage>                                   HessiansSourceType;
     typedef rtk::SeparableQuadraticSurrogateRegularizationImageFilter<TGradientsImage> SQSRegularizationType;
-#ifdef RTK_USE_CUDA
-    typedef rtk::CudaWeidingerForwardModelImageFilter<TOutputImage, TPhotonCounts, TSpectrum> WeidingerForwardModelType;
-#else
-    typedef rtk::WeidingerForwardModelImageFilter<TOutputImage, TPhotonCounts, TSpectrum> WeidingerForwardModelType;
-#endif
     typedef rtk::AddMatrixAndDiagonalImageFilter<TGradientsImage, THessiansImage>      AddMatrixAndDiagonalFilterType;
     typedef rtk::GetNewtonUpdateImageFilter<TGradientsImage, THessiansImage>           NewtonFilterType;
     typedef itk::MultiplyImageFilter<TOutputImage, SingleComponentImageType>           MultiplyFilterType;

@@ -151,14 +151,41 @@ public:
     void SetInputProjectionStack(const ProjectionStackType* Projections);
     typename ProjectionStackType::ConstPointer GetInputProjectionStack();
 
-    typedef rtk::BackProjectionImageFilter< ProjectionStackType, ProjectionStackType >          BackProjectionFilterType;
-    typedef rtk::ForwardProjectionImageFilter< ProjectionStackType, ProjectionStackType >       ForwardProjectionFilterType;
-    typedef rtk::InterpolatorWithKnownWeightsImageFilter<VolumeType, VolumeSeriesType>          InterpolationFilterType;
-    typedef rtk::SplatWithKnownWeightsImageFilter<VolumeSeriesType, VolumeType>                 SplatFilterType;
-    typedef rtk::ConstantImageSource<VolumeType>                                                ConstantVolumeSourceType;
-    typedef rtk::ConstantImageSource<ProjectionStackType>                                       ConstantProjectionStackSourceType;
-    typedef rtk::ConstantImageSource<VolumeSeriesType>                                          ConstantVolumeSeriesSourceType;
-    typedef rtk::DisplacedDetectorImageFilter<ProjectionStackType>                              DisplacedDetectorFilterType;
+    typedef BackProjectionImageFilter< ProjectionStackType, ProjectionStackType >    BackProjectionFilterType;
+    typedef ForwardProjectionImageFilter< ProjectionStackType, ProjectionStackType > ForwardProjectionFilterType;
+    typedef InterpolatorWithKnownWeightsImageFilter<VolumeType, VolumeSeriesType>    InterpolationFilterType;
+    typedef SplatWithKnownWeightsImageFilter<VolumeSeriesType, VolumeType>           SplatFilterType;
+    typedef ConstantImageSource<VolumeType>                                          ConstantVolumeSourceType;
+    typedef ConstantImageSource<ProjectionStackType>                                 ConstantProjectionStackSourceType;
+    typedef ConstantImageSource<VolumeSeriesType>                                    ConstantVolumeSeriesSourceType;
+
+    /** SFINAE typedef, depending on whether a CUDA image is used. */
+    typedef typename itk::Image< typename ProjectionStackType::PixelType,
+                                 ProjectionStackType::ImageDimension>                CPUProjectionStackType;
+    static constexpr bool IsCPUImage(){ return std::is_same< ProjectionStackType, CPUProjectionStackType >::value; }
+#ifdef RTK_USE_CUDA
+    typedef typename std::conditional< IsCPUImage(),
+                                       DisplacedDetectorImageFilter<ProjectionStackType>,
+                                       CudaDisplacedDetectorImageFilter >::type      DisplacedDetectorFilterType;
+    typedef typename std::conditional< IsCPUImage(),
+                                       InterpolationFilterType,
+                                       CudaInterpolateImageFilter >::type            CudaInterpolateImageFilterType;
+    typedef typename std::conditional< IsCPUImage(),
+                                       SplatFilterType,
+                                       CudaSplatImageFilter >::type                  CudaSplatImageFilterType;
+    typedef typename std::conditional< IsCPUImage(),
+                                       ConstantVolumeSourceType,
+                                       CudaConstantVolumeSource >::type              CudaConstantVolumeSourceType;
+    typedef typename std::conditional< IsCPUImage(),
+                                       ConstantVolumeSeriesSourceType,
+                                       CudaConstantVolumeSeriesSource >::type        CudaConstantVolumeSeriesSourceType;
+#else
+    typedef DisplacedDetectorImageFilter<ProjectionStackType>                        DisplacedDetectorFilterType;
+    typedef InterpolationFilterType                                                  CudaInterpolateImageFilterType;
+    typedef SplatFilterType                                                          CudaSplatImageFilterType;
+    typedef ConstantVolumeSourceType                                                 CudaConstantVolumeSourceType;
+    typedef ConstantVolumeSeriesSourceType                                           CudaConstantVolumeSeriesSourceType;
+#endif
 
     /** Pass the backprojection filter to ProjectionStackToFourD*/
     void SetBackProjectionFilter (const typename BackProjectionFilterType::Pointer _arg);

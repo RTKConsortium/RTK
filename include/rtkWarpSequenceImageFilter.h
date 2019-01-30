@@ -105,6 +105,30 @@ public:
     /** Method for creation through the object factory. */
     itkNewMacro(Self)
 
+    /** SFINAE typedef, depending on whether a CUDA image is used. */
+    typedef typename itk::Image< typename TImage::PixelType,
+                                 TImage::ImageDimension>             CPUImageType;
+    typedef typename itk::WarpImageFilter<TImage, TImage, TDVFImage> CPUWarpFilterType;
+    static constexpr bool IsCPUImage(){ return std::is_same< TImage, CPUImageType >::value; }
+#ifdef RTK_USE_CUDA
+    typedef typename std::conditional< IsCPUImage(),
+                                       CPUWarpFilterType,
+                                       CudaWarpImageFilter >::type   WarpFilterType;
+    typedef typename std::conditional< IsCPUImage(),
+                                       ForwardWarpImageFilter<TImage, TImage, TDVFImage>,
+                                       CudaForwardWarpImageFilter >::type
+                                                                     ForwardWarpFilterType;
+    typedef typename std::conditional< IsCPUImage(),
+                                       CyclicDeformationImageFilter<TDVFImageSequence, TDVFImage>,
+                                       CudaCyclicDeformationImageFilter >::type
+                                                                     CudaCyclicDeformationImageFilterType;
+#else
+    typedef CPUWarpFilterType                                        WarpFilterType;
+    typedef ForwardWarpImageFilter<TImage, TImage, TDVFImage>        ForwardWarpFilterType;
+    typedef CyclicDeformationImageFilter<TDVFImageSequence,
+                                         TDVFImage>                  CudaCyclicDeformationImageFilterType;
+#endif
+
     /** Run-time type information (and related methods). */
     itkTypeMacro(WarpSequenceImageFilter, IterativeConeBeamReconstructionFilter)
 
@@ -131,13 +155,6 @@ public:
     itkGetMacro(UseCudaCyclicDeformation, bool)
 
     /** Typedefs of internal filters */
-#ifdef RTK_USE_CUDA
-    typedef rtk::CudaWarpImageFilter                                          CudaWarpFilterType;
-    typedef rtk::CudaForwardWarpImageFilter                                   CudaForwardWarpFilterType;
-#endif
-    typedef itk::WarpImageFilter<TImage, TImage, TDVFImage>                   WarpFilterType;
-    typedef rtk::ForwardWarpImageFilter<TImage, TImage, TDVFImage>            ForwardWarpFilterType;
-
     typedef itk::LinearInterpolateImageFunction<TImage, double >              LinearInterpolatorType;
     typedef itk::NearestNeighborInterpolateImageFunction<TImage, double >     NearestNeighborInterpolatorType;
     typedef itk::ExtractImageFilter<TImageSequence, TImage>                   ExtractFilterType;
@@ -154,7 +171,7 @@ protected:
     void GenerateData() ITK_OVERRIDE;
 
     /** Member pointers to the filters used internally (for convenience)*/
-    typename WarpFilterType::Pointer          m_WarpFilter;
+    typename CPUWarpFilterType::Pointer       m_WarpFilter;
     typename ExtractFilterType::Pointer       m_ExtractFilter;
     typename DVFInterpolatorType::Pointer     m_DVFInterpolatorFilter;
     typename PasteFilterType::Pointer         m_PasteFilter;

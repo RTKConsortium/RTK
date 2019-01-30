@@ -108,15 +108,27 @@ public:
   typedef ProjectionStackType   VolumeType;
 
   /** Typedefs of each subfilter of this composite filter */
-  typedef rtk::ForwardProjectionImageFilter< VolumeType, ProjectionStackType >                      ForwardProjectionFilterType;
-  typedef rtk::BackProjectionImageFilter< ProjectionStackType, VolumeType >                         BackProjectionFilterType;
-  typedef rtk::ConjugateGradientImageFilter<VolumeSeriesType>                                       ConjugateGradientFilterType;
-  typedef rtk::FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType>  CGOperatorFilterType;
-  typedef rtk::ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType>             ProjStackToFourDFilterType;
-  typedef rtk::DisplacedDetectorImageFilter<ProjectionStackType>                                    DisplacedDetectorFilterType;
+  typedef ForwardProjectionImageFilter< VolumeType, ProjectionStackType >                      ForwardProjectionFilterType;
+  typedef BackProjectionImageFilter< ProjectionStackType, VolumeType >                         BackProjectionFilterType;
+  typedef ConjugateGradientImageFilter<VolumeSeriesType>                                       ConjugateGradientFilterType;
+  typedef FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType>  CGOperatorFilterType;
+  typedef ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType>             ProjStackToFourDFilterType;
+  typedef DisplacedDetectorImageFilter<ProjectionStackType>                                    DisplacedDetectorFilterType;
 
   typedef typename Superclass::ForwardProjectionType ForwardProjectionType;
   typedef typename Superclass::BackProjectionType    BackProjectionType;
+
+  /** SFINAE typedef, depending on whether a CUDA image is used. */
+  typedef typename itk::Image< typename VolumeSeriesType::PixelType,
+                               VolumeSeriesType::ImageDimension>                               CPUVolumeSeriesType;
+  static constexpr bool IsCPUImage(){ return std::is_same< VolumeSeriesType, CPUVolumeSeriesType >::value; }
+#ifdef RTK_USE_CUDA
+  typedef typename std::conditional<IsCPUImage(),
+                                    ConjugateGradientImageFilter<VolumeSeriesType>,
+                                    CudaConjugateGradientImageFilter<VolumeSeriesType> >::type CudaConjugateGradientImageFilterType;
+#else
+  typedef ConjugateGradientImageFilter<VolumeSeriesType>                                       CudaConjugateGradientImageFilterType;
+#endif
 
   /** Standard New method. */
   itkNewMacro(Self)

@@ -29,12 +29,9 @@ WarpFourDToProjectionStackImageFilter< VolumeSeriesType, ProjectionStackType>::W
 {
   this->SetNumberOfRequiredInputs(3);
 
-#ifdef RTK_USE_CUDA
-  this->m_ForwardProjectionFilter = rtk::CudaWarpForwardProjectionImageFilter::New();
-#else
-  this->m_ForwardProjectionFilter = rtk::JosephForwardProjectionImageFilter<ProjectionStackType, ProjectionStackType>::New();
-  itkWarningMacro("The warp Forward project image filter exists only in CUDA. Ignoring the displacement vector field and using CPU Joseph forward projection")
-#endif
+  this->m_ForwardProjectionFilter = WarpForwardProjectionImageFilterType::New();
+  if(IsCPUImage())
+    itkWarningMacro("The warp Forward project image filter exists only in CUDA. Ignoring the displacement vector field and using CPU Joseph forward projection")
 }
 
 template< typename VolumeSeriesType, typename ProjectionStackType>
@@ -66,19 +63,27 @@ void
 WarpFourDToProjectionStackImageFilter< VolumeSeriesType, ProjectionStackType>
 ::GenerateOutputInformation()
 {
-  m_DVFInterpolatorFilter = DVFInterpolatorType::New();
-#ifdef RTK_USE_CUDA
+  m_DVFInterpolatorFilter = CPUDVFInterpolatorType::New();
   if (m_UseCudaCyclicDeformation)
-    m_DVFInterpolatorFilter = rtk::CudaCyclicDeformationImageFilter::New();
+    {
+    if( IsCPUImage() )
+      itkGenericExceptionMacro(<< "UseCudaCyclicDeformation option only available with itk::CudaImage.");
+    m_DVFInterpolatorFilter = CudaCyclicDeformationImageFilterType::New();
+    }
+#ifdef RTK_USE_CUDA
+  if ( !IsCPUImage() )
+    {
+    CudaWarpForwardProjectionImageFilter* wfp;
+    wfp = dynamic_cast< CudaWarpForwardProjectionImageFilter* > (this->m_ForwardProjectionFilter.GetPointer());
+    typedef itk::CudaImage<VectorForDVF, VolumeSeriesType::ImageDimension - 1> CudaDVFImageType;
+    CudaDVFImageType* cudvf;
+    cudvf = dynamic_cast< CudaDVFImageType* > (m_DVFInterpolatorFilter->GetOutput());
+    wfp->SetDisplacementField( cudvf );
+    }
 #endif
   m_DVFInterpolatorFilter->SetSignalVector(m_Signal);
   m_DVFInterpolatorFilter->SetInput(this->GetDisplacementField());
   m_DVFInterpolatorFilter->SetFrame(0);
-
-#ifdef RTK_USE_CUDA
-  dynamic_cast<rtk::CudaWarpForwardProjectionImageFilter* >
-      (this->m_ForwardProjectionFilter.GetPointer())->SetDisplacementField(m_DVFInterpolatorFilter->GetOutput());
-#endif
 
   Superclass::GenerateOutputInformation();
 }

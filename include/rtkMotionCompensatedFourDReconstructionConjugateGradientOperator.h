@@ -20,6 +20,7 @@
 
 #include "rtkFourDReconstructionConjugateGradientOperator.h"
 #include "rtkCyclicDeformationImageFilter.h"
+#include "rtkJosephForwardProjectionImageFilter.h"
 
 #ifdef RTK_USE_CUDA
   #include "rtkCudaWarpForwardProjectionImageFilter.h"
@@ -96,20 +97,51 @@ class MotionCompensatedFourDReconstructionConjugateGradientOperator : public Fou
 {
 public:
     /** Standard class typedefs. */
-    typedef MotionCompensatedFourDReconstructionConjugateGradientOperator                                      Self;
+    typedef MotionCompensatedFourDReconstructionConjugateGradientOperator                         Self;
     typedef FourDReconstructionConjugateGradientOperator< VolumeSeriesType, ProjectionStackType>  Superclass;
     typedef itk::SmartPointer< Self >                                                             Pointer;
 
-  /** Convenient typedef */
-    typedef ProjectionStackType                                 VolumeType;
+    /** Convenient typedef */
+    typedef ProjectionStackType                                                                                 VolumeType;
     typedef itk::CovariantVector< typename VolumeSeriesType::ValueType, VolumeSeriesType::ImageDimension - 1>   VectorForDVF;
 
+    /** SFINAE typedef, depending on whether a CUDA image is used. */
+    typedef typename itk::Image< typename VolumeSeriesType::PixelType,
+                                 VolumeSeriesType::ImageDimension>        CPUVolumeSeriesType;
+    static constexpr bool IsCPUImage(){ return std::is_same< VolumeSeriesType, CPUVolumeSeriesType >::value; }
 #ifdef RTK_USE_CUDA
-    typedef itk::CudaImage<VectorForDVF, VolumeSeriesType::ImageDimension>          DVFSequenceImageType;
-    typedef itk::CudaImage<VectorForDVF, VolumeSeriesType::ImageDimension - 1>      DVFImageType;
+    typedef typename std::conditional< IsCPUImage(),
+                                       itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension>,
+                                       itk::CudaImage<VectorForDVF, VolumeSeriesType::ImageDimension> >::type
+                                                                          DVFSequenceImageType;
+    typedef typename std::conditional< IsCPUImage(),
+                                       itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension - 1>,
+                                       itk::CudaImage<VectorForDVF, VolumeSeriesType::ImageDimension - 1> >::type
+                                                                          DVFImageType;
+    typedef typename std::conditional< IsCPUImage(),
+                                       JosephForwardProjectionImageFilter<ProjectionStackType, ProjectionStackType>,
+                                       CudaWarpForwardProjectionImageFilter >::type
+                                                                          WarpForwardProjectionImageFilterType;
+    typedef typename std::conditional< IsCPUImage(),
+                                       BackProjectionImageFilter<VolumeType, VolumeType>,
+                                       CudaWarpBackProjectionImageFilter >::type
+                                                                          WarpBackProjectionImageFilterType;
 #else
-    typedef itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension>              DVFSequenceImageType;
-    typedef itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension - 1>          DVFImageType;
+    typedef itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension>    DVFSequenceImageType;
+    typedef itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension-1>  DVFImageType;
+    typedef JosephForwardProjectionImageFilter<ProjectionStackType,
+                                               ProjectionStackType>       WarpForwardProjectionImageFilterType;
+    typedef BackProjectionImageFilter<VolumeType, VolumeType>             WarpBackProjectionImageFilterType;
+#endif
+    typedef CyclicDeformationImageFilter< DVFSequenceImageType,
+                                          DVFImageType>                   CPUDVFInterpolatorType;
+#ifdef RTK_USE_CUDA
+    typedef typename std::conditional< IsCPUImage(),
+                                       CPUDVFInterpolatorType,
+                                       CudaCyclicDeformationImageFilter >::type
+                                                                          CudaCyclicDeformationImageFilterType;
+#else
+    typedef CPUDVFInterpolatorType                                        CudaCyclicDeformationImageFilterType;
 #endif
 
     /** Method for creation through the object factory. */
@@ -117,8 +149,6 @@ public:
 
     /** Run-time type information (and related methods). */
     itkTypeMacro(MotionCompensatedFourDReconstructionConjugateGradientOperator, FourDReconstructionConjugateGradientOperator)
-
-    typedef rtk::CyclicDeformationImageFilter<DVFSequenceImageType, DVFImageType>                  DVFInterpolatorType;
 
     /** The forward and back projection filters cannot be set by the user */
     void SetForwardProjectionFilter (const typename Superclass::ForwardProjectionFilterType::Pointer itkNotUsed(_arg)) {itkExceptionMacro(<< "ForwardProjection cannot be changed");}
@@ -155,8 +185,8 @@ protected:
     void GenerateData() ITK_OVERRIDE;
 
     /** Member pointers to the filters used internally (for convenience)*/
-    typename DVFInterpolatorType::Pointer               m_DVFInterpolatorFilter;
-    typename DVFInterpolatorType::Pointer               m_InverseDVFInterpolatorFilter;
+    typename CPUDVFInterpolatorType::Pointer            m_DVFInterpolatorFilter;
+    typename CPUDVFInterpolatorType::Pointer            m_InverseDVFInterpolatorFilter;
     std::vector<double>                                 m_Signal;
     bool                                                m_UseCudaCyclicDeformation;
 

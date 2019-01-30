@@ -40,13 +40,13 @@ UnwarpSequenceImageFilter< TImageSequence, TDVFImageSequence, TImage, TDVFImage>
   // Create the filters
   m_ConjugateGradientFilter = ConjugateGradientFilterType::New();
   m_ConstantSource = ConstantSourceType::New();
-#ifdef RTK_USE_CUDA
   if (m_CudaConjugateGradient)
     {
-    m_ConjugateGradientFilter = rtk::CudaConjugateGradientImageFilter<TImageSequence>::New();
+    if( IsCPUImage() )
+      itkGenericExceptionMacro(<< "CudaConjugateGradient option only available with itk::CudaImage.");
+    m_ConjugateGradientFilter = CudaConjugateGradientType::New();
     }
-    m_ConstantSource = rtk::CudaConstantVolumeSeriesSource::New();
-#endif
+
   m_WarpForwardFilter = WarpForwardFilterType::New();
   m_CGOperator = CGOperatorFilterType::New();
 

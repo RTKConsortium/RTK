@@ -82,20 +82,18 @@ WarpSequenceImageFilter< TImageSequence, TDVFImageSequence, TImage, TDVFImage>
   int Dimension = TImageSequence::ImageDimension;
 
   m_DVFInterpolatorFilter = DVFInterpolatorType::New();
-#ifdef RTK_USE_CUDA
+
   // Create the right warp filter (regular or forward)
-  if (m_ForwardWarp)
-    m_WarpFilter = CudaForwardWarpFilterType::New();
-  else
-    m_WarpFilter = CudaWarpFilterType::New();
-  if (m_UseCudaCyclicDeformation)
-    m_DVFInterpolatorFilter = rtk::CudaCyclicDeformationImageFilter::New();
-#else
   if (m_ForwardWarp)
     m_WarpFilter = ForwardWarpFilterType::New();
   else
     m_WarpFilter = WarpFilterType::New();
-#endif
+  if (m_UseCudaCyclicDeformation)
+    {
+    if(IsCPUImage())
+      itkGenericExceptionMacro(<< "UseCudaCyclicDeformation option only available with itk::CudaImage.");
+    m_DVFInterpolatorFilter = CudaCyclicDeformationImageFilterType::New();
+    }
 
   typename LinearInterpolatorType::Pointer linearInterpolator = LinearInterpolatorType::New();
   typename NearestNeighborInterpolatorType::Pointer nearestNeighborInterpolator = NearestNeighborInterpolatorType::New();

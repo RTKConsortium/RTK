@@ -109,9 +109,9 @@ class ConjugateGradientConeBeamReconstructionFilter : public rtk::IterativeConeB
 {
 public:
     /** Standard class typedefs. */
-    typedef ConjugateGradientConeBeamReconstructionFilter                      Self;
-    typedef IterativeConeBeamReconstructionFilter<TOutputImage, TOutputImage>  Superclass;
-    typedef itk::SmartPointer< Self >                                          Pointer;
+    typedef ConjugateGradientConeBeamReconstructionFilter        Self;
+    typedef IterativeConeBeamReconstructionFilter<TOutputImage>  Superclass;
+    typedef itk::SmartPointer< Self >                            Pointer;
 
     /** Method for creation through the object factory. */
     itkNewMacro(Self)
@@ -128,6 +128,7 @@ public:
     typedef typename ForwardProjectionFilterType::Pointer                                   ForwardProjectionFilterPointer;
     typedef rtk::BackProjectionImageFilter< TOutputImage, TOutputImage >                    BackProjectionFilterType;
     typedef rtk::ConjugateGradientImageFilter<TOutputImage>                                 ConjugateGradientFilterType;
+    typedef typename ConjugateGradientFilterType::Pointer                                   ConjugateGradientFilterPointer;
     typedef itk::MultiplyImageFilter<TOutputImage, TSingleComponentImage, TOutputImage>     MultiplyFilterType;
     typedef rtk::ReconstructionConjugateGradientOperator<TOutputImage,
                                                          TSingleComponentImage,
@@ -199,7 +200,7 @@ protected:
     typename MultiplyFilterType::Pointer                                        m_MultiplyProjectionsFilter;
     typename MultiplyFilterType::Pointer                                        m_MultiplyVolumeFilter;
     typename MultiplyFilterType::Pointer                                        m_MultiplyOutputFilter;
-    typename ConjugateGradientFilterType::Pointer                               m_ConjugateGradientFilter;
+    ConjugateGradientFilterPointer                                              m_ConjugateGradientFilter;
     typename CGOperatorFilterType::Pointer                                      m_CGOperator;
     typename ForwardProjectionImageFilter<TOutputImage, TOutputImage>::Pointer  m_ForwardProjectionFilter;
     typename BackProjectionImageFilter<TOutputImage, TOutputImage>::Pointer     m_BackProjectionFilter;
@@ -226,6 +227,12 @@ protected:
     typename TOutputImage::ConstPointer   GetInputVolume();
     typename TOutputImage::ConstPointer   GetInputProjectionStack();
     typename TWeightsImage::ConstPointer  GetInputWeights();
+
+    template < typename ImageType, typename IterativeConeBeamReconstructionFilter<TOutputImage>::template EnableCudaScalarAndVectorType<ImageType>* = ITK_NULLPTR >
+    ConjugateGradientFilterPointer InstantiateCudaConjugateGradientImageFilter();
+
+    template < typename ImageType, typename IterativeConeBeamReconstructionFilter<TOutputImage>::template DisableCudaScalarAndVectorType<ImageType>* = ITK_NULLPTR >
+    ConjugateGradientFilterPointer InstantiateCudaConjugateGradientImageFilter();
 
 private:
     ConjugateGradientConeBeamReconstructionFilter(const Self &); //purposely not implemented

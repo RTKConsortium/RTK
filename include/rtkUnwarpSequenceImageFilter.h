@@ -91,17 +91,33 @@ public:
     /** Run-time type information (and related methods). */
     itkTypeMacro(UnwarpSequenceImageFilter, ImageToImageFilter)
 
-    typedef rtk::UnwarpSequenceConjugateGradientOperator<TImageSequence,
-                                                         TDVFImageSequence,
-                                                         TImage,
-                                                         TDVFImage>           CGOperatorFilterType;
-    typedef rtk::WarpSequenceImageFilter< TImageSequence,
-                                          TDVFImageSequence,
-                                          TImage,
-                                          TDVFImage>                          WarpForwardFilterType;
-    typedef rtk::ConjugateGradientImageFilter<TImageSequence>                 ConjugateGradientFilterType;
-//     typedef rtk::CyclicDeformationImageFilter<TDVFImage>                      DVFInterpolatorType;
-    typedef rtk::ConstantImageSource<TImageSequence>                          ConstantSourceType;
+    typedef UnwarpSequenceConjugateGradientOperator< TImageSequence,
+                                                     TDVFImageSequence,
+                                                     TImage,
+                                                     TDVFImage>       CGOperatorFilterType;
+    typedef WarpSequenceImageFilter< TImageSequence,
+                                     TDVFImageSequence,
+                                     TImage,
+                                     TDVFImage>                       WarpForwardFilterType;
+    typedef ConjugateGradientImageFilter<TImageSequence>              ConjugateGradientFilterType;
+
+    /** SFINAE typedef, depending on whether a CUDA image is used. */
+    typedef typename itk::Image< typename TImageSequence::PixelType,
+                                 TImageSequence::ImageDimension>      CPUTImageSequence;
+    static constexpr bool IsCPUImage(){ return std::is_same< TImageSequence, CPUTImageSequence >::value; }
+#ifdef RTK_USE_CUDA
+    typedef typename std::conditional< IsCPUImage(),
+                                       ConstantImageSource<TImageSequence>,
+                                       CudaConstantVolumeSeriesSource >::type
+                                                                      ConstantSourceType;
+    typedef typename std::conditional< IsCPUImage(),
+                                       ConjugateGradientFilterType,
+                                       CudaConjugateGradientImageFilter<TImageSequence> >::type
+                                                                      CudaConjugateGradientType;
+#else
+    typedef ConstantImageSource<TImageSequence>                       ConstantSourceType;
+    typedef ConjugateGradientFilterType                               CudaConjugateGradientType;
+#endif
 
     /** Set the motion vector field used in input 1 */
     void SetDisplacementField(const TDVFImageSequence* DVFs);
@@ -135,10 +151,10 @@ protected:
     void GenerateData() ITK_OVERRIDE;
 
     /** Member pointers to the filters used internally (for convenience)*/
-    typename ConjugateGradientFilterType::Pointer                   m_ConjugateGradientFilter;
-    typename CGOperatorFilterType::Pointer                          m_CGOperator;
-    typename WarpForwardFilterType::Pointer                         m_WarpForwardFilter;
-    typename ConstantSourceType::Pointer                            m_ConstantSource;
+    typename ConjugateGradientFilterType::Pointer m_ConjugateGradientFilter;
+    typename CGOperatorFilterType::Pointer        m_CGOperator;
+    typename WarpForwardFilterType::Pointer       m_WarpForwardFilter;
+    typename ConstantSourceType::Pointer          m_ConstantSource;
 
     /** Member variables */
     float m_PhaseShift;
