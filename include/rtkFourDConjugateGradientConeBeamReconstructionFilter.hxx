@@ -156,7 +156,7 @@ FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionS
   // Set the Conjugate Gradient filter (either on CPU or GPU depending on user's choice)
   if (m_CudaConjugateGradient)
     {
-    if( IsCPUImage() )
+    if( std::is_same< VolumeSeriesType, CPUVolumeSeriesType >::value )
       itkGenericExceptionMacro(<< "CudaConjugateGradient option only available with itk::CudaImage.");
     m_ConjugateGradientFilter = CudaConjugateGradientImageFilterType::New();
     }

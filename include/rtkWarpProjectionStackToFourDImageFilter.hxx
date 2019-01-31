@@ -32,12 +32,12 @@ WarpProjectionStackToFourDImageFilter< VolumeSeriesType, ProjectionStackType>::W
 {
   this->SetNumberOfRequiredInputs(3);
 
-  this->m_UseCudaSplat = !IsCPUImage();
-  this->m_UseCudaSources = !IsCPUImage();
+  this->m_UseCudaSplat = !std::is_same< VolumeSeriesType, CPUVolumeSeriesType >::value;
+  this->m_UseCudaSources = !std::is_same< VolumeSeriesType, CPUVolumeSeriesType >::value;
   m_UseCudaCyclicDeformation = false;
 
   this->m_BackProjectionFilter = WarpBackProjectionImageFilter::New();
-  if(IsCPUImage())
+  if( std::is_same< VolumeSeriesType, CPUVolumeSeriesType >::value )
     itkWarningMacro("The warp back project image filter exists only in CUDA. Ignoring the displacement vector field and using CPU voxel-based back projection")
 }
 
@@ -73,12 +73,12 @@ WarpProjectionStackToFourDImageFilter< VolumeSeriesType, ProjectionStackType>
   m_DVFInterpolatorFilter = CPUDVFInterpolatorType::New();
   if (m_UseCudaCyclicDeformation)
     {
-    if( IsCPUImage() )
+    if( std::is_same< VolumeSeriesType, CPUVolumeSeriesType >::value )
       itkGenericExceptionMacro(<< "UseCudaCyclicDeformation option only available with itk::CudaImage.");
     m_DVFInterpolatorFilter = CudaCyclicDeformationImageFilterType::New();
     }
 #ifdef RTK_USE_CUDA
-  if ( !IsCPUImage() )
+  if ( !std::is_same< VolumeSeriesType, CPUVolumeSeriesType >::value )
     {
     CudaWarpBackProjectionImageFilter* wbp;
     wbp = dynamic_cast< CudaWarpBackProjectionImageFilter* > (this->m_BackProjectionFilter.GetPointer());

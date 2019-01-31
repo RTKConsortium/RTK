@@ -129,7 +129,7 @@ ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPre
   m_SplatFilter = SplatFilterType::New();
   if (m_UseCudaSplat)
     {
-    if( IsCPUImage() )
+    if( std::is_same< VolumeSeriesType, CPUVolumeSeriesType >::value )
       itkGenericExceptionMacro(<< "UseCudaSplat option only available with itk::CudaImage.");
     m_SplatFilter = CudaSplatImageFilterType::New();
     }
@@ -139,7 +139,7 @@ ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPre
   m_ConstantVolumeSeriesSource = ConstantVolumeSeriesSourceType::New();
   if (m_UseCudaSources)
     {
-    if( IsCPUImage() )
+    if( std::is_same< VolumeSeriesType, CPUVolumeSeriesType >::value )
       itkGenericExceptionMacro(<< "UseCudaSources option only available with itk::CudaImage.");
     m_ConstantVolumeSource = CudaConstantVolumeSourceType::New();
     m_ConstantVolumeSeriesSource = CudaConstantVolumeSeriesSourceType::New();

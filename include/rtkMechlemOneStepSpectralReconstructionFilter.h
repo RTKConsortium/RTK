@@ -145,13 +145,12 @@ public:
     /** SFINAE typedef, depending on whether a CUDA image is used. */
     typedef typename itk::Image< typename TOutputImage::PixelType,
                                  TOutputImage::ImageDimension>                         CPUOutputImageType;
-    static constexpr bool IsCPUImage(){ return std::is_same< TOutputImage, CPUOutputImageType >::value; }
 #ifdef RTK_USE_CUDA
-    typedef typename std::conditional< IsCPUImage(),
+    typedef typename std::conditional< std::is_same< TOutputImage, CPUOutputImageType >::value,
                                        itk::Image< itk::Vector<dataType, nMaterials * nMaterials>, TOutputImage::ImageDimension >,
                                        itk::CudaImage< itk::Vector<dataType, nMaterials * nMaterials>, TOutputImage::ImageDimension > >::type
                                                                                        THessiansImage;
-    typedef typename std::conditional< IsCPUImage(),
+    typedef typename std::conditional< std::is_same< TOutputImage, CPUOutputImageType >::value,
                                        itk::Image<dataType, TOutputImage::ImageDimension>,
                                        itk::CudaImage<dataType, TOutputImage::ImageDimension> >::type
                                                                                        SingleComponentImageType;
@@ -163,15 +162,15 @@ public:
 
 #if !defined( ITK_WRAPPING_PARSER )
 #ifdef RTK_USE_CUDA
-    typedef typename std::conditional< IsCPUImage(),
+    typedef typename std::conditional< std::is_same< TOutputImage, CPUOutputImageType >::value,
                                        WeidingerForwardModelImageFilter<TOutputImage, TPhotonCounts, TSpectrum>,
                                        CudaWeidingerForwardModelImageFilter<TOutputImage, TPhotonCounts, TSpectrum> >::type
                                                                                        WeidingerForwardModelType;
-    typedef typename std::conditional< IsCPUImage(),
+    typedef typename std::conditional< std::is_same< TOutputImage, CPUOutputImageType >::value,
                                        JosephForwardProjectionImageFilter<SingleComponentImageType, SingleComponentImageType>,
                                        CudaForwardProjectionImageFilter<SingleComponentImageType, SingleComponentImageType> >::type
                                                                                        CudaSingleComponentForwardProjectionImageFilterType;
-    typedef typename std::conditional< IsCPUImage(),
+    typedef typename std::conditional< std::is_same< TOutputImage, CPUOutputImageType >::value,
                                        BackProjectionImageFilter<THessiansImage, THessiansImage>,
                                        CudaBackProjectionImageFilter<THessiansImage> >::type
                                                                                        CudaHessiansBackProjectionImageFilterType;

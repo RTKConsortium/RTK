@@ -121,9 +121,8 @@ public:
   /** SFINAE typedef, depending on whether a CUDA image is used. */
   typedef typename itk::Image< typename VolumeSeriesType::PixelType,
                                VolumeSeriesType::ImageDimension>                               CPUVolumeSeriesType;
-  static constexpr bool IsCPUImage(){ return std::is_same< VolumeSeriesType, CPUVolumeSeriesType >::value; }
 #ifdef RTK_USE_CUDA
-  typedef typename std::conditional<IsCPUImage(),
+  typedef typename std::conditional<std::is_same< VolumeSeriesType, CPUVolumeSeriesType >::value,
                                     ConjugateGradientImageFilter<VolumeSeriesType>,
                                     CudaConjugateGradientImageFilter<VolumeSeriesType> >::type CudaConjugateGradientImageFilterType;
 #else

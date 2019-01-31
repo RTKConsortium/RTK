@@ -109,16 +109,15 @@ public:
     typedef typename itk::Image< typename TImage::PixelType,
                                  TImage::ImageDimension>             CPUImageType;
     typedef typename itk::WarpImageFilter<TImage, TImage, TDVFImage> CPUWarpFilterType;
-    static constexpr bool IsCPUImage(){ return std::is_same< TImage, CPUImageType >::value; }
 #ifdef RTK_USE_CUDA
-    typedef typename std::conditional< IsCPUImage(),
+    typedef typename std::conditional< std::is_same< TImage, CPUImageType >::value,
                                        CPUWarpFilterType,
                                        CudaWarpImageFilter >::type   WarpFilterType;
-    typedef typename std::conditional< IsCPUImage(),
+    typedef typename std::conditional< std::is_same< TImage, CPUImageType >::value,
                                        ForwardWarpImageFilter<TImage, TImage, TDVFImage>,
                                        CudaForwardWarpImageFilter >::type
                                                                      ForwardWarpFilterType;
-    typedef typename std::conditional< IsCPUImage(),
+    typedef typename std::conditional< std::is_same< TImage, CPUImageType >::value,
                                        CyclicDeformationImageFilter<TDVFImageSequence, TDVFImage>,
                                        CudaCyclicDeformationImageFilter >::type
                                                                      CudaCyclicDeformationImageFilterType;

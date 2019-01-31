@@ -167,7 +167,7 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
   m_InterpolationFilter = InterpolationFilterType::New();
   if (m_UseCudaInterpolation)
     {
-    if(IsCPUImage())
+    if( std::is_same< ProjectionStackType, CPUProjectionStackType >::value )
       itkGenericExceptionMacro(<< "UseCudaInterpolation option only available with itk::CudaImage.");
     m_InterpolationFilter = CudaInterpolateImageFilterType::New();
     }
@@ -176,7 +176,7 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
   m_SplatFilter = SplatFilterType::New();
   if (m_UseCudaSplat)
     {
-    if(IsCPUImage())
+    if( std::is_same< ProjectionStackType, CPUProjectionStackType >::value )
       itkGenericExceptionMacro(<< "UseCudaSplat option only available with itk::CudaImage.");
     m_SplatFilter = CudaSplatImageFilterType::New();
     }
@@ -188,7 +188,7 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
   m_ConstantVolumeSeriesSource = ConstantVolumeSeriesSourceType::New();
   if (m_UseCudaSources)
     {
-    if(IsCPUImage())
+    if( std::is_same< ProjectionStackType, CPUProjectionStackType >::value )
       itkGenericExceptionMacro(<< "UseCudaSources option only available with itk::CudaImage.");
     m_ConstantVolumeSource1 = CudaConstantVolumeSourceType::New();
     m_ConstantVolumeSource2 = CudaConstantVolumeSourceType::New();

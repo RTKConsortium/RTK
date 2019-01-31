@@ -174,7 +174,7 @@ MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectr
       break;
     case(MechlemOneStepSpectralReconstructionFilter::FP_CUDARAYCAST):
       fw = CudaSingleComponentForwardProjectionImageFilterType::New();
-      if(IsCPUImage())
+      if( std::is_same< TOutputImage, CPUOutputImageType >::value )
         itkGenericExceptionMacro(<< "The program has not been compiled with cuda option");
     break;
 
@@ -206,7 +206,7 @@ MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectr
       break;
     case(MechlemOneStepSpectralReconstructionFilter::BP_CUDAVOXELBASED):
       bp = CudaHessiansBackProjectionImageFilterType::New();
-      if(IsCPUImage())
+      if( std::is_same< TOutputImage, CPUOutputImageType >::value )
         itkGenericExceptionMacro(<< "The program has not been compiled with cuda option");
       break;
     case(MechlemOneStepSpectralReconstructionFilter::BP_CUDARAYCAST):

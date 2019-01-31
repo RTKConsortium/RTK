@@ -162,21 +162,20 @@ public:
     /** SFINAE typedef, depending on whether a CUDA image is used. */
     typedef typename itk::Image< typename ProjectionStackType::PixelType,
                                  ProjectionStackType::ImageDimension>                CPUProjectionStackType;
-    static constexpr bool IsCPUImage(){ return std::is_same< ProjectionStackType, CPUProjectionStackType >::value; }
 #ifdef RTK_USE_CUDA
-    typedef typename std::conditional< IsCPUImage(),
+    typedef typename std::conditional< std::is_same< ProjectionStackType, CPUProjectionStackType >::value,
                                        DisplacedDetectorImageFilter<ProjectionStackType>,
                                        CudaDisplacedDetectorImageFilter >::type      DisplacedDetectorFilterType;
-    typedef typename std::conditional< IsCPUImage(),
+    typedef typename std::conditional< std::is_same< ProjectionStackType, CPUProjectionStackType >::value,
                                        InterpolationFilterType,
                                        CudaInterpolateImageFilter >::type            CudaInterpolateImageFilterType;
-    typedef typename std::conditional< IsCPUImage(),
+    typedef typename std::conditional< std::is_same< ProjectionStackType, CPUProjectionStackType >::value,
                                        SplatFilterType,
                                        CudaSplatImageFilter >::type                  CudaSplatImageFilterType;
-    typedef typename std::conditional< IsCPUImage(),
+    typedef typename std::conditional< std::is_same< ProjectionStackType, CPUProjectionStackType >::value,
                                        ConstantVolumeSourceType,
                                        CudaConstantVolumeSource >::type              CudaConstantVolumeSourceType;
-    typedef typename std::conditional< IsCPUImage(),
+    typedef typename std::conditional< std::is_same< ProjectionStackType, CPUProjectionStackType >::value,
                                        ConstantVolumeSeriesSourceType,
                                        CudaConstantVolumeSeriesSource >::type        CudaConstantVolumeSeriesSourceType;
 #else
