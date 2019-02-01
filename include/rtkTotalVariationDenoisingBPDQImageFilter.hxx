@@ -43,16 +43,16 @@ void
 TotalVariationDenoisingBPDQImageFilter<TOutputImage, TGradientImage>
 ::SetDimensionsProcessed(bool* arg)
 {
-  bool Modified=false;
+  bool bModif=false;
   for (unsigned int dim=0; dim<TOutputImage::ImageDimension; dim++)
     {
     if (this->m_DimensionsProcessed[dim] != arg[dim])
       {
       this->m_DimensionsProcessed[dim] = arg[dim];
-      Modified = true;
+      bModif = true;
       }
     }
-  if(Modified) this->Modified();
+  if(bModif) this->Modified();
 }
 
 template< typename TOutputImage, typename TGradientImage>

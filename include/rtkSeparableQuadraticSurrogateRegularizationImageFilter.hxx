@@ -44,7 +44,7 @@ SeparableQuadraticSurrogateRegularizationImageFilter<TImage>
 }
 
 template<typename TImage>
-itk::DataObject::Pointer
+itk::ProcessObject::DataObjectPointer
 SeparableQuadraticSurrogateRegularizationImageFilter<TImage>
 ::MakeOutput(itk::ProcessObject::DataObjectPointerArraySizeType idx)
 {
@@ -64,6 +64,14 @@ SeparableQuadraticSurrogateRegularizationImageFilter<TImage>
       break;
     }
   return output.GetPointer();
+}
+
+template<typename TImage>
+itk::ProcessObject::DataObjectPointer
+SeparableQuadraticSurrogateRegularizationImageFilter<TImage>
+::MakeOutput(const itk::ProcessObject::DataObjectIdentifierType &idx)
+{
+  return Superclass::MakeOutput(idx);
 }
 
 template<typename TImage>

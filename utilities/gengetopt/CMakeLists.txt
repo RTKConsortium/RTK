@@ -11,6 +11,12 @@ if(NOT ITK_SOURCE_DIR)
 endif()
 itk_module_warnings_disable(C CXX)
 
+include(CheckCCompilerFlag)
+CHECK_CXX_COMPILER_FLAG(-fno-var-tracking-assignments HAS_NO_VAR_TRACKING_ASSIGNMENTS)
+if (HAS_NO_VAR_TRACKING_ASSIGNMENTS)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-var-tracking-assignments")
+endif()
+
 # MSVC specific issues
 ADD_DEFINITIONS(-DHAVE_STRING_H)
 IF(MSVC)

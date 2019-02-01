@@ -51,7 +51,6 @@ typedef itk::Image< float, Dimension >              OutputImageType;
 
 const int modelOrder = 3;
 const int sizeI = 100;
-const float K = 0.5f;
 
 InputImageType::Pointer createDarkImage()
 {
@@ -236,10 +235,11 @@ OutputImageType::Pointer generateExpectedOutput(InputImageType::Pointer inputIma
 
 int main(int , char** )
 {
+  const float K = 0.5f;
 #ifdef RTK_USE_CUDA
-    typedef rtk::CudaPolynomialGainCorrectionImageFilter                              GainCorrectionType;
+  typedef rtk::CudaPolynomialGainCorrectionImageFilter                              GainCorrectionType;
 #else
-    typedef rtk::PolynomialGainCorrectionImageFilter<InputImageType, OutputImageType> GainCorrectionType;
+  typedef rtk::PolynomialGainCorrectionImageFilter<InputImageType, OutputImageType> GainCorrectionType;
 #endif
   GainCorrectionType::Pointer gainfilter = GainCorrectionType::New();
 

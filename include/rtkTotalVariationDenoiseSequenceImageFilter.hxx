@@ -112,16 +112,16 @@ void
 TotalVariationDenoiseSequenceImageFilter< TImageSequence>
 ::SetDimensionsProcessed(bool* arg)
 {
-  bool Modified=false;
+  bool bModif=false;
   for (unsigned int dim=0; dim<TImage::ImageDimension; dim++)
     {
     if (m_DimensionsProcessed[dim] != arg[dim])
       {
       m_DimensionsProcessed[dim] = arg[dim];
-      Modified = true;
+      bModif = true;
       }
     }
-  if(Modified) this->Modified();
+  if(bModif) this->Modified();
 }
 
 template< typename TImageSequence>

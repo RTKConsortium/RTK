@@ -115,37 +115,37 @@
  *
  * \ingroup RTK Macro
  */
-#define TRY_AND_EXIT_ON_ITK_EXCEPTION(execFunc)                         \
-  try                                                                   \
-    {                                                                   \
-    execFunc;                                                           \
-    }                                                                   \
-  catch( itk::ExceptionObject & err )                                   \
-    {                                                                   \
-    std::cerr << "ExceptionObject caught with " #execFunc               \
-              << " in file " << __FILE__                                \
-              << " line " << __LINE__                                   \
-              << std::endl;                                             \
-    std::cerr << err << std::endl;                                      \
-    itk::InvalidRequestedRegionError* r;                                \
-    r = dynamic_cast<itk::InvalidRequestedRegionError*>(&err);          \
-    if(r)                                                               \
-      {                                                                 \
-      if( r->GetDataObject()->GetSource() )                             \
-        {                                                               \
-        std::cerr << "Invalid requested region error triggered by "     \
-                  << r->GetDataObject()->GetSource()->GetNameOfClass()  \
-                  << std::endl;                                         \
-      }                                                                 \
-      itk::ImageBase<3> *img;                                           \
-      img = dynamic_cast<itk::ImageBase<3>*>(r->GetDataObject());       \
-      if(img)                                                           \
-        {                                                               \
-        DD(img->GetRequestedRegion())                                   \
-        DD(img->GetLargestPossibleRegion())                             \
-        }                                                               \
-      }                                                                 \
-      exit(EXIT_FAILURE);                                               \
+#define TRY_AND_EXIT_ON_ITK_EXCEPTION(execFunc)                            \
+  try                                                                      \
+    {                                                                      \
+    execFunc;                                                              \
+    }                                                                      \
+  catch( itk::ExceptionObject & err )                                      \
+    {                                                                      \
+    std::cerr << "ExceptionObject caught with " #execFunc                  \
+              << " in file " << __FILE__                                   \
+              << " line " << __LINE__                                      \
+              << std::endl;                                                \
+    std::cerr << err << std::endl;                                         \
+    itk::InvalidRequestedRegionError* rInv;                                \
+    rInv = dynamic_cast<itk::InvalidRequestedRegionError*>(&err);          \
+    if(rInv)                                                               \
+      {                                                                    \
+      if( rInv->GetDataObject()->GetSource() )                             \
+        {                                                                  \
+        std::cerr << "Invalid requested region error triggered by "        \
+                  << rInv->GetDataObject()->GetSource()->GetNameOfClass() \
+                  << std::endl;                                            \
+      }                                                                    \
+      itk::ImageBase<3> *img;                                              \
+      img = dynamic_cast<itk::ImageBase<3>*>(rInv->GetDataObject());       \
+      if(img)                                                              \
+        {                                                                  \
+        DD(img->GetRequestedRegion())                                      \
+        DD(img->GetLargestPossibleRegion())                                \
+        }                                                                  \
+      }                                                                    \
+      exit(EXIT_FAILURE);                                                  \
     }
 //--------------------------------------------------------------------
 

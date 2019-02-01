@@ -132,7 +132,7 @@ private:
       float a0, a1; // weights (1/distance) to angles below and above
   };
 
-  InterpResultType interpolate(const std::vector<float>& flexAngles, bool isCW, float angleDegree);
+  InterpResultType interpolate(const std::vector<float>& flexAngles, bool bIsCW, float angleDegree);
 
   // Structure containing the calibration models (for AI versions < 2.0)
   struct CalibrationModelType {

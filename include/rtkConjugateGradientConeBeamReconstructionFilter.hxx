@@ -362,11 +362,11 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage,
                                               TWeightsImage>
 ::InstantiateCudaConjugateGradientImageFilter()
 {
+  ConjugateGradientFilterPointer cg;
 #ifdef RTK_USE_CUDA
-  return CudaConjugateGradientImageFilter<TOutputImage>::New();
-#else
-  return ITK_NULLPTR;
+  cg = CudaConjugateGradientImageFilter<TOutputImage>::New();
 #endif
+  return cg;
 }
 
 template< typename TOutputImage,

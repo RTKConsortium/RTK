@@ -114,7 +114,8 @@ protected:
 #endif
 
     /** Creates the Outputs */
-    itk::DataObject::Pointer MakeOutput(itk::ProcessObject::DataObjectPointerArraySizeType idx) override;
+    itk::ProcessObject::DataObjectPointer MakeOutput(itk::ProcessObject::DataObjectPointerArraySizeType idx) override;
+    itk::ProcessObject::DataObjectPointer MakeOutput(const itk::ProcessObject::DataObjectIdentifierType &) override;
 
     /** Getters for the inputs */
     typename TMaterialProjections::ConstPointer GetInputMaterialProjections();

@@ -24,8 +24,6 @@
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkTestConfiguration.h"
 
-typedef rtk::ThreeDCircularProjectionGeometry GeometryType;
-
 
 template<class TImage>
 #if FAST_TESTS_NO_CHECKS
@@ -280,7 +278,8 @@ void CheckVariableLengthVectorImageQuality(typename TImage::Pointer recon,
 }
 #endif //FAST_TESTS_NO_CHECKS
 
-void CheckGeometries(const GeometryType *g1, const GeometryType *g2)
+void CheckGeometries(const rtk::ThreeDCircularProjectionGeometry *g1,
+                     const rtk::ThreeDCircularProjectionGeometry *g2)
 {
 //  // It is often necessary to write the geometries and look at them
 //  // to understand why a given test fails. This portion of code

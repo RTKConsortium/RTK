@@ -68,16 +68,16 @@ void
 ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputValue, TOuputImage >
 ::SetDimensionsProcessed(bool* DimensionsProcessed)
 {
-  bool Modified=false;
+  bool bModif=false;
   for (unsigned int dim=0; dim<TInputImage::ImageDimension; dim++)
     {
     if (m_DimensionsProcessed[dim] != DimensionsProcessed[dim])
       {
       m_DimensionsProcessed[dim] = DimensionsProcessed[dim];
-      Modified = true;
+      bModif = true;
       }
     }
-  if(Modified) this->Modified();
+  if(bModif) this->Modified();
 }
 
 template< typename TInputImage, typename TOperatorValueType, typename TOuputValue , typename TOuputImage >
@@ -218,7 +218,7 @@ ForwardDifferenceGradientImageFilter< TInputImage, TOperatorValueType, TOuputVal
                              op[i].GetSize()[0], nit.GetStride(i) );
     }
 
-  CovariantVectorType gradient;
+  CovariantVectorType gradient(itk::NumericTraits<typename CovariantVectorType::ValueType>::ZeroValue());
   // Process non-boundary face and then each of the boundary faces.
   // These are N-d regions which border the edge of the buffer.
   for ( fit = faceList.begin(); fit != faceList.end(); ++fit )

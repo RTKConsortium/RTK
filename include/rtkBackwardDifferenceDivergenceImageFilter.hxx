@@ -62,16 +62,16 @@ void
 BackwardDifferenceDivergenceImageFilter<TInputImage, TOutputImage>
 ::SetDimensionsProcessed(bool* DimensionsProcessed)
 {
-  bool Modified=false;
+  bool bModif=false;
   for (unsigned int dim=0; dim<TInputImage::ImageDimension; dim++)
     {
     if (m_DimensionsProcessed[dim] != DimensionsProcessed[dim])
       {
       m_DimensionsProcessed[dim] = DimensionsProcessed[dim];
-      Modified = true;
+      bModif = true;
       }
     }
-  if(Modified) this->Modified();
+  if(bModif) this->Modified();
 }
 
 template <class TInputImage, class TOutputImage>

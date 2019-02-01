@@ -88,12 +88,8 @@ int main(int, char** )
 
 #ifdef USE_CUDA
   typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
-  typedef itk::CudaImage< itk::CovariantVector
-      < OutputPixelType, Dimension >, Dimension >                GradientOutputImageType;
 #else
   typedef itk::Image< OutputPixelType, Dimension >     OutputImageType;
-  typedef itk::Image< itk::CovariantVector
-      < OutputPixelType, Dimension >, Dimension >                GradientOutputImageType;
 #endif
 
 #if FAST_TESTS_NO_CHECKS

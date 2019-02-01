@@ -8,8 +8,6 @@
 
 #include <itkRegularExpressionSeriesFileNames.h>
 
-typedef rtk::ThreeDCircularProjectionGeometry GeometryType;
-
 /**
  * \file rtkprojectgeometricphantomtest.cxx
  *
@@ -41,6 +39,7 @@ int main(int argc, char*argv[])
 #else
   const unsigned int NumberOfProjectionImages = 180;
 #endif
+  typedef rtk::ThreeDCircularProjectionGeometry GeometryType;
 
   // Constant image sources
   typedef rtk::ConstantImageSource< OutputImageType > ConstantImageSourceType;

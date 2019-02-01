@@ -108,7 +108,7 @@ WeidingerForwardModelImageFilter< TMaterialProjections, TPhotonCounts, TSpectrum
 }
 
 template< class TMaterialProjections, class TPhotonCounts, class TSpectrum, class TProjections>
-itk::DataObject::Pointer
+itk::ProcessObject::DataObjectPointer
 WeidingerForwardModelImageFilter< TMaterialProjections, TPhotonCounts, TSpectrum, TProjections>
 ::MakeOutput(itk::ProcessObject::DataObjectPointerArraySizeType idx)
 {
@@ -128,6 +128,14 @@ WeidingerForwardModelImageFilter< TMaterialProjections, TPhotonCounts, TSpectrum
       break;
     }
   return output.GetPointer();
+}
+
+template< class TMaterialProjections, class TPhotonCounts, class TSpectrum, class TProjections>
+itk::ProcessObject::DataObjectPointer
+WeidingerForwardModelImageFilter< TMaterialProjections, TPhotonCounts, TSpectrum, TProjections>
+::MakeOutput(const itk::ProcessObject::DataObjectIdentifierType &idx)
+{
+  return Superclass::MakeOutput(idx);
 }
 
 template< class TMaterialProjections, class TPhotonCounts, class TSpectrum, class TProjections>

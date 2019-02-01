@@ -599,7 +599,7 @@ ImagXGeometryReader<TInputImage>::addEntryToGeometry(float gantryAngleDegree,
 
 template< typename TInputImage >
 typename ImagXGeometryReader<TInputImage>::InterpResultType
-ImagXGeometryReader<TInputImage>::interpolate(const std::vector<float>& flexAngles, bool isCW, float angleDegree)
+ImagXGeometryReader<TInputImage>::interpolate(const std::vector<float>& flexAngles, bool bIsCW, float angleDegree)
 {
   const int N = static_cast<int>(flexAngles.size() );
 
@@ -627,14 +627,14 @@ ImagXGeometryReader<TInputImage>::interpolate(const std::vector<float>& flexAngl
     }
 
   // Clipping
-  if (idc == 0 && ( (delta < 0.f && isCW) || (delta > 0.f && !isCW) ) ) {
+  if (idc == 0 && ( (delta < 0.f && bIsCW) || (delta > 0.f && !bIsCW) ) ) {
     ires.id0 = 0;
     ires.id1 = 0;
     ires.a0 = 1.f;
     ires.a1 = 0.f;
     return ires;
     }
-  else if (idc == N - 1 && ( (delta > 0.f && isCW) || (delta < 0.f && !isCW) ) ) {
+  else if (idc == N - 1 && ( (delta > 0.f && bIsCW) || (delta < 0.f && !bIsCW) ) ) {
     ires.id0 = N - 1;
     ires.id1 = N - 1;
     ires.a0 = 1.f;
@@ -643,7 +643,7 @@ ImagXGeometryReader<TInputImage>::interpolate(const std::vector<float>& flexAngl
     }
 
   // Interpolation
-  if(isCW) {
+  if(bIsCW) {
     if (delta > 0.f) {
       float a = itk::Math::abs(delta / (flexAngles[idc + 1] - flexAngles[idc]) );
       ires.id0 = idc;

@@ -25,7 +25,7 @@ void cleanup_function( args_info_test * args_info )
   args_info->testVar = false;
 }
 
-int main(int argc, char** argv)
+int main(int , char** )
 {
   args_info_test args_info_1, args_info_2;
 
