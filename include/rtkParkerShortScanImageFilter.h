@@ -74,8 +74,12 @@ public:
   itkGetModifiableObjectMacro(Geometry, GeometryType);
   itkSetObjectMacro(Geometry, GeometryType);
 
+  /** Get / Set the angular gap threshold above which a short scan is detected. */
+  itkGetMacro(AngularGapThreshold, double);
+  itkSetMacro(AngularGapThreshold, double);
+
 protected:
-  ParkerShortScanImageFilter(){ this->SetInPlace(true); }
+  ParkerShortScanImageFilter();
   virtual ~ParkerShortScanImageFilter() ITK_OVERRIDE {}
 
 #if ITK_VERSION_MAJOR<5
@@ -96,6 +100,9 @@ private:
    */
   double m_InferiorCorner;
   double m_SuperiorCorner;
+
+  /** Minimum angular gap to automatically detect a short scan. Defaults is pi/9 radians. */
+  double m_AngularGapThreshold;
 
   std::mutex m_WarningMutex;
 }; // end of class

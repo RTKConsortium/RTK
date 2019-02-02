@@ -10,6 +10,7 @@ option "lowmem"     l "Load only one projection per thread in memory"           
 option "divisions"  d "Streaming option: number of stream divisions of the CT"      int                          no   default="1"
 option "subsetsize" - "Streaming option: number of projections processed at a time" int                          no   default="16"
 option "nodisplaced" - "Disable the displaced detector filter"                      flag                         off
+option "short"      - "Minimum angular gap to detect a short scan (in degree)."     double                       no   default="20"
 
 section "Ramp filter"
 option "pad"       - "Data padding parameter to correct for truncation"          double                       no   default="0.0"

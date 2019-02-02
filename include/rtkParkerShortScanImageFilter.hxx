@@ -29,6 +29,14 @@ namespace rtk
 {
 
 template <class TInputImage, class TOutputImage>
+ParkerShortScanImageFilter<TInputImage, TOutputImage>
+::ParkerShortScanImageFilter():
+    m_AngularGapThreshold(itk::Math::pi / 9)
+{
+  this->SetInPlace(true);
+}
+
+template <class TInputImage, class TOutputImage>
 void
 ParkerShortScanImageFilter<TInputImage, TOutputImage>
 #if ITK_VERSION_MAJOR<5
@@ -54,7 +62,7 @@ ParkerShortScanImageFilter<TInputImage, TOutputImage>
   // Not a short scan if less than 20 degrees max gap, => nothing to do
   // FIXME: do nothing in parallel geometry, currently handled with a trick in the geometry object
   if( m_Geometry->GetSourceToDetectorDistances()[0] == 0. ||
-      angularGaps[maxAngularGapPos] < itk::Math::pi / 9 )
+      angularGaps[maxAngularGapPos] < m_AngularGapThreshold )
     {
     if(this->GetInput() != this->GetOutput() ) // If not in place, copy is
                                                // required
