@@ -105,7 +105,7 @@ namespace rtk
 template< typename TOutputImage,
           typename TSingleComponentImage = TOutputImage,
           typename TWeightsImage = TOutputImage>
-class ConjugateGradientConeBeamReconstructionFilter : public rtk::IterativeConeBeamReconstructionFilter<TOutputImage>
+class ConjugateGradientConeBeamReconstructionFilter : public IterativeConeBeamReconstructionFilter<TOutputImage>
 {
 public:
     /** Standard class typedefs. */
@@ -124,17 +124,15 @@ public:
     void SetInputProjectionStack(const TOutputImage* projs);
     void SetInputWeights(const TWeightsImage* weights);
 
-    typedef rtk::ForwardProjectionImageFilter< TOutputImage, TOutputImage >                 ForwardProjectionFilterType;
+    typedef ForwardProjectionImageFilter< TOutputImage, TOutputImage >                      ForwardProjectionFilterType;
     typedef typename ForwardProjectionFilterType::Pointer                                   ForwardProjectionFilterPointer;
-    typedef rtk::BackProjectionImageFilter< TOutputImage, TOutputImage >                    BackProjectionFilterType;
-    typedef rtk::ConjugateGradientImageFilter<TOutputImage>                                 ConjugateGradientFilterType;
+    typedef BackProjectionImageFilter< TOutputImage, TOutputImage >                         BackProjectionFilterType;
+    typedef ConjugateGradientImageFilter<TOutputImage>                                      ConjugateGradientFilterType;
     typedef typename ConjugateGradientFilterType::Pointer                                   ConjugateGradientFilterPointer;
     typedef itk::MultiplyImageFilter<TOutputImage, TSingleComponentImage, TOutputImage>     MultiplyFilterType;
-    typedef rtk::ReconstructionConjugateGradientOperator<TOutputImage,
+    typedef ReconstructionConjugateGradientOperator<TOutputImage,
                                                          TSingleComponentImage,
                                                          TWeightsImage>                     CGOperatorFilterType;
-    typedef rtk::DisplacedDetectorImageFilter<TOutputImage>                                 DisplacedDetectorFilterType;
-    typedef rtk::ConstantImageSource<TOutputImage>                                          ConstantImageSourceType;
     typedef itk::DivideOrZeroOutImageFilter<TOutputImage>                                   DivideFilterType;
     typedef itk::StatisticsImageFilter<TOutputImage>                                        StatisticsImageFilterType;
     typedef typename TOutputImage::Pointer                                                  OutputImagePointer;
@@ -146,11 +144,26 @@ public:
     // If TOutputImage is an itk::Image of floats or double, so are the weights, and a simple Multiply filter is required
     // If TOutputImage is an itk::Image of itk::Vector<float (or double)>, a BlockDiagonalMatrixVectorMultiply filter
     // is needed. Thus the meta-programming construct
-    typedef rtk::BlockDiagonalMatrixVectorMultiplyImageFilter<TOutputImage, TWeightsImage>  MatrixVectorMultiplyFilterType;
+    typedef BlockDiagonalMatrixVectorMultiplyImageFilter<TOutputImage, TWeightsImage>       MatrixVectorMultiplyFilterType;
     typedef itk::MultiplyImageFilter<TOutputImage, TOutputImage, TOutputImage>              PlainMultiplyFilterType;
     typedef typename std::conditional<std::is_same< TSingleComponentImage, TOutputImage>::value,
                                                     PlainMultiplyFilterType,
-                                                    MatrixVectorMultiplyFilterType>::type MultiplyWithWeightsFilterType;
+                                                    MatrixVectorMultiplyFilterType>::type   MultiplyWithWeightsFilterType;
+    typedef typename itk::Image< typename TOutputImage::PixelType,
+                                 TOutputImage::ImageDimension>                              CPUOutputImageType;
+#ifdef RTK_USE_CUDA
+    typedef typename std::conditional<!std::is_same< TOutputImage, CPUOutputImageType >::value &&
+                                      std::is_same< TSingleComponentImage, TOutputImage>::value,
+                                      CudaDisplacedDetectorImageFilter,
+                                      DisplacedDetectorImageFilter<TWeightsImage> >::type   DisplacedDetectorFilterType;
+    typedef typename std::conditional<!std::is_same< TOutputImage, CPUOutputImageType >::value &&
+                                      std::is_same< TSingleComponentImage, TOutputImage>::value,
+                                      CudaConstantVolumeSource,
+                                      ConstantImageSource<TOutputImage> >::type             ConstantImageSourceType;
+#else
+    typedef DisplacedDetectorImageFilter<TWeightsImage>                                     DisplacedDetectorFilterType;
+    typedef ConstantImageSource<TOutputImage>                                               ConstantImageSourceType;
+#endif
 
     /** Pass the ForwardProjection filter to the conjugate gradient operator */
     void SetForwardProjectionFilter (ForwardProjectionType _arg) ITK_OVERRIDE;
@@ -207,7 +220,7 @@ protected:
     typename BackProjectionImageFilter<TOutputImage, TOutputImage>::Pointer     m_BackProjectionFilterForB;
     typename DisplacedDetectorFilterType::Pointer                               m_DisplacedDetectorFilter;
     typename ConstantImageSourceType::Pointer                                   m_ConstantVolumeSource;
-    typename MultiplyWithWeightsFilterType::Pointer                            m_MultiplyWithWeightsFilter;
+    typename MultiplyWithWeightsFilterType::Pointer                             m_MultiplyWithWeightsFilter;
 
     /** The inputs of this filter have the same type (float, 3) but not the same meaning
     * It is normal that they do not occupy the same physical space. Therefore this check

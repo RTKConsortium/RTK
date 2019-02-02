@@ -44,15 +44,9 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage,
   m_DisableDisplacedDetectorFilter = false;
 
   // Create the filters
-//#ifdef RTK_USE_CUDA
-//  m_DisplacedDetectorFilter = rtk::CudaDisplacedDetectorImageFilter::New();
-//  m_ConstantVolumeSource    = rtk::CudaConstantVolumeSource::New();
-//#else
   m_DisplacedDetectorFilter = DisplacedDetectorFilterType::New();
-  m_ConstantVolumeSource     = ConstantImageSourceType::New();
-//#endif
+  m_ConstantVolumeSource = ConstantImageSourceType::New();
   m_CGOperator = CGOperatorFilterType::New();
-
   m_MultiplyVolumeFilter = MultiplyFilterType::New();
   m_MultiplyProjectionsFilter = MultiplyFilterType::New();
   m_MultiplyOutputFilter = MultiplyFilterType::New();
@@ -270,11 +264,11 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage,
 
   // Set runtime connections
   m_ConstantVolumeSource->SetInformationFromImage(this->GetInputVolume());
-  m_CGOperator->SetInputProjectionStack(m_DisplacedDetectorFilter->GetOutput());
+  m_CGOperator->SetInputProjectionStack(this->GetInputProjectionStack());
   m_CGOperator->SetSupportMask(this->GetSupportMask());
   m_ConjugateGradientFilter->SetX(this->GetInputVolume());
   m_DisplacedDetectorFilter->SetDisable(m_DisableDisplacedDetectorFilter);
-  m_DisplacedDetectorFilter->SetInput(this->GetInputProjectionStack());
+  m_DisplacedDetectorFilter->SetInput(this->GetInputWeights());
 
   // Links with the m_BackProjectionFilter should be set here and not
   // in the constructor, as m_BackProjectionFilter is set at runtime
@@ -282,9 +276,9 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage,
   m_ConjugateGradientFilter->SetB(m_BackProjectionFilterForB->GetOutput());
 
   // Multiply the projections by the weights map
-  m_MultiplyWithWeightsFilter->SetInput1(m_DisplacedDetectorFilter->GetOutput());
-  m_MultiplyWithWeightsFilter->SetInput2(this->GetInputWeights());
-  m_CGOperator->SetInputWeights(this->GetInputWeights());
+  m_MultiplyWithWeightsFilter->SetInput1(this->GetInputProjectionStack());
+  m_MultiplyWithWeightsFilter->SetInput2(m_DisplacedDetectorFilter->GetOutput());
+  m_CGOperator->SetInputWeights(m_DisplacedDetectorFilter->GetOutput());
   m_BackProjectionFilterForB->SetInput(1, m_MultiplyWithWeightsFilter->GetOutput());
 
   // If a support mask is used, it serves as preconditioning weights
@@ -312,6 +306,7 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage,
   m_CGOperator->SetTikhonov(m_Tikhonov);
 
   // Set memory management parameters
+  m_MultiplyProjectionsFilter->ReleaseDataFlagOn();
   m_BackProjectionFilterForB->ReleaseDataFlagOn();
   if (this->GetSupportMask().IsNotNull())
     {
