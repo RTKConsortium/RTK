@@ -115,7 +115,7 @@ int main(int argc, char * argv[])
   pssf->SetInput( ddf->GetOutput() );
   pssf->SetGeometry( geometryReader->GetOutputObject() );
   pssf->InPlaceOff();
-  pssf->SetAngularGapThreshold(args_info.short_arg);
+  pssf->SetAngularGapThreshold(args_info.short_arg*itk::Math::pi/180.);
 
   // Create reconstructed image
   typedef rtk::ConstantImageSource< OutputImageType > ConstantImageSourceType;

@@ -53,8 +53,8 @@ CudaParkerShortScanImageFilter
 
   // check if it is a short scan
   // NOTE: not a short scan if less than 20 degrees max gap
-  if (this->GetGeometry()->GetSourceToDetectorDistances()[0] == 0. ||
-      angularGaps[maxAngularGapPos] < itk::Math::pi / 9.)
+  if ( this->GetGeometry()->GetSourceToDetectorDistances()[0] == 0. ||
+       angularGaps[maxAngularGapPos] < this->GetAngularGapThreshold() )
     {
     if ( outBuffer != inBuffer )
       {
