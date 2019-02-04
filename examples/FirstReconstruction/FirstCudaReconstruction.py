@@ -64,7 +64,10 @@ constantImageSource2.SetConstant(0.)
 # Graft the projections to an itk::CudaImage
 projections = GPUImageType.New()
 rei.Update()
-projections.Graft(rei.GetOutput())
+projections.SetPixelContainer(rei.GetOutput().GetPixelContainer())
+projections.CopyInformation(rei.GetOutput())
+projections.SetBufferedRegion(rei.GetOutput().GetBufferedRegion())
+projections.SetRequestedRegion(rei.GetOutput().GetRequestedRegion())
 
 # FDK reconstruction
 print("Reconstructing...")

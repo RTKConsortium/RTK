@@ -62,22 +62,58 @@ CudaImageToImageFilter< TInputImage, TOutputImage, TParentImageFilter >::Generat
 
 template< class TInputImage, class TOutputImage, class TParentImageFilter >
 void
+CudaImageToImageFilter< TInputImage, TOutputImage, TParentImageFilter >::GraftOutput(typename itk::CudaTraits< TOutputImage >::Type *output)
+{
+  using CudaOutputImage = typename itk::CudaTraits< TOutputImage >::Type;
+  typename CudaOutputImage::Pointer cudaImage = dynamic_cast< CudaOutputImage * >(this->GetOutput());
+
+  cudaImage->Graft(output);
+}
+
+template< class TInputImage, class TOutputImage, class TParentImageFilter >
+void
 CudaImageToImageFilter< TInputImage, TOutputImage, TParentImageFilter >::GraftOutput(DataObject *output)
 {
-  typedef typename itk::CudaTraits< TOutputImage >::Type CudaOutputImage;
-  typename CudaOutputImage::Pointer otPtr = dynamic_cast< CudaOutputImage * >(this->GetOutput());
+  using CudaOutputImage = typename itk::CudaTraits< TOutputImage >::Type;
+  CudaOutputImage* cudaImage = dynamic_cast<CudaOutputImage*>(output);
+  if(cudaImage)
+    {
+    this->GraftOutput(cudaImage);
+    }
+  else
+    {
+    itkExceptionMacro( << "itk::CudaImageToImageFilter::GraftOutput() cannot cast "
+                       << typeid( output ).name() << " to "
+                       << typeid( CudaOutputImage * ).name() );
+    }
+}
 
-  otPtr->Graft(output);
+template< class TInputImage, class TOutputImage, class TParentImageFilter >
+void
+CudaImageToImageFilter< TInputImage, TOutputImage, TParentImageFilter >::GraftOutput(const DataObjectIdentifierType & key, typename itk::CudaTraits< TOutputImage >::Type *output)
+{
+  using CudaOutputImage = typename itk::CudaTraits< TOutputImage >::Type;
+  typename CudaOutputImage::Pointer cudaImage = dynamic_cast< CudaOutputImage * >( this->ProcessObject::GetOutput(key) );
+
+  cudaImage->Graft( output );
 }
 
 template< class TInputImage, class TOutputImage, class TParentImageFilter >
 void
 CudaImageToImageFilter< TInputImage, TOutputImage, TParentImageFilter >::GraftOutput(const DataObjectIdentifierType & key, DataObject *output)
 {
-  typedef typename itk::CudaTraits< TOutputImage >::Type CudaOutputImage;
-  typename CudaOutputImage::Pointer otPtr = dynamic_cast< CudaOutputImage * >(this->ProcessObject::GetOutput(key));
-
-  otPtr->Graft(output);
+  using CudaOutputImage = typename itk::CudaTraits< TOutputImage >::Type;
+  CudaOutputImage* cudaImage = dynamic_cast<CudaOutputImage*>(output);
+  if(cudaImage)
+    {
+    this->GraftOutput(key,cudaImage);
+    }
+  else
+    {
+    itkExceptionMacro( << "itk::CudaImageToImageFilter::GraftOutput() cannot cast "
+                       << typeid( output ).name() << " to "
+                       << typeid( CudaOutputImage * ).name() );
+    }
 }
 
 } // end namespace itk

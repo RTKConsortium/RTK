@@ -181,15 +181,16 @@ public:
   }
 
   /** Graft the data and information from one CudaImage to another. */
-  virtual void Graft(const Superclass *data) override;
-  virtual void Graft(const DataObject *data) override;
+  virtual void Graft(const Self *data);
 
 protected:
+  void Graft(const DataObject *data) override;
+
   CudaImage();
   virtual ~CudaImage();
+  using Superclass::Graft;
 
 private:
-
   // functions that are purposely not implemented
   CudaImage(const Self&);
   void operator=(const Self&);

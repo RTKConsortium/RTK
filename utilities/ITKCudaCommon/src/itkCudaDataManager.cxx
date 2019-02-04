@@ -199,7 +199,6 @@ void CudaDataManager::Graft(const CudaDataManager* data)
     m_CPUBuffer = data->m_CPUBuffer;
     m_IsCPUBufferDirty = data->m_IsCPUBufferDirty;
     m_IsGPUBufferDirty = data->m_IsGPUBufferDirty;
-    m_TimeStamp = data->m_TimeStamp;
     }
 }
 

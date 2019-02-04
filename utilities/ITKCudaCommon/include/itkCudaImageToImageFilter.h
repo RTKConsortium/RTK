@@ -53,9 +53,7 @@ public:
   itkTypeMacro(CudaImageToImageFilter, TParentImageFilter);
 
   /** Superclass typedefs. */
-  //typedef typename Superclass::DataObjectIdentifierType DataObjectIdentifierType;
-  typedef unsigned int DataObjectIdentifierType;
-
+  typedef typename Superclass::DataObjectIdentifierType DataObjectIdentifierType ;
   typedef typename Superclass::OutputImageRegionType    OutputImageRegionType;
   typedef typename Superclass::OutputImagePixelType     OutputImagePixelType;
 
@@ -75,13 +73,13 @@ public:
   itkGetConstMacro(GPUEnabled, bool);
   itkBooleanMacro(GPUEnabled);
 
-  void GenerateData();
-
-  virtual void GraftOutput(DataObject *output);
-
-  virtual void GraftOutput(const DataObjectIdentifierType & key, DataObject *output);
+  void GenerateData() override;
+  virtual void GraftOutput(typename itk::CudaTraits< TOutputImage >::Type *output);
+  virtual void GraftOutput(const DataObjectIdentifierType & key, typename itk::CudaTraits< TOutputImage >::Type *output);
 
 protected:
+  void GraftOutput(DataObject *output) override;
+  void GraftOutput(const DataObjectIdentifierType & key, DataObject *output) override;
   CudaImageToImageFilter();
   ~CudaImageToImageFilter();
 

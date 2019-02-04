@@ -29,7 +29,6 @@ template <class TPixel, unsigned int VImageDimension>
 CudaImage< TPixel, VImageDimension >::CudaImage()
 {
   m_DataManager = CudaImageDataManager< CudaImage< TPixel, VImageDimension > >::New();
-  m_DataManager->SetTimeStamp(this->GetTimeStamp());
 }
 
 template <class TPixel, unsigned int VImageDimension>
@@ -60,9 +59,6 @@ void CudaImage< TPixel, VImageDimension >::Allocate(bool initializePixels)
     {
     m_DataManager->SetCPUDirtyFlag(false);
     }
-
-  // prevent unnecessary copy from CPU to Cuda at the beginning
-  m_DataManager->SetTimeStamp(this->GetTimeStamp());
 }
 
 template< class TPixel, unsigned int VImageDimension >
@@ -72,20 +68,6 @@ void CudaImage< TPixel, VImageDimension >::Initialize()
   Superclass::Initialize();
 
   m_DataManager = CudaImageDataManager< CudaImage< TPixel, VImageDimension > >::New();
-  m_DataManager->SetTimeStamp(this->GetTimeStamp());
-
-  /*
-  // Cuda image initialize
-  m_DataManager->Initialize();
-  this->ComputeOffsetTable();
-  unsigned long numPixel = this->GetOffsetTable()[VImageDimension];
-  m_DataManager->SetBufferSize(sizeof(TPixel)*numPixel);
-  m_DataManager->SetImagePointer(this);
-  m_DataManager->SetCPUBufferPointer(Superclass::GetBufferPointer());
-  m_DataManager->SetGPUBufferDirty();
-
-  // prevent unnecessary copy from CPU to Cuda at the beginning
-  m_DataManager->SetTimeStamp(this->GetTimeStamp());*/
 }
 
 template <class TPixel, unsigned int VImageDimension>
@@ -163,9 +145,12 @@ template <class TPixel, unsigned int VImageDimension>
 void CudaImage< TPixel, VImageDimension >::SetPixelContainer(PixelContainer *container)
 {
   Superclass::SetPixelContainer(container);
+  m_DataManager->SetImagePointer(this);
   m_DataManager->SetCPUBufferPointer(Superclass::GetBufferPointer());
-  m_DataManager->SetCPUDirtyFlag(false);
+  m_DataManager->SetCPUDirtyFlag(this->GetBufferPointer() == NULL);
   m_DataManager->SetGPUDirtyFlag(true);
+  SizeValueType numPixel = this->GetOffsetTable()[VImageDimension];
+  m_DataManager->SetBufferSize(sizeof(TPixel)*numPixel);
 }
 
 template <class TPixel, unsigned int VImageDimension>
@@ -206,30 +191,13 @@ CudaImage< TPixel, VImageDimension >::GetCudaDataManager() const
 
 template <class TPixel, unsigned int VImageDimension>
 void
-CudaImage< TPixel, VImageDimension >::Graft(const Superclass *data)
+CudaImage< TPixel, VImageDimension >::Graft(const Self *data)
 {
   typedef CudaImageDataManager< CudaImage >             CudaImageDataManagerType;
-  typedef typename CudaImageDataManagerType::Superclass CudaImageDataSuperclass;
-  typedef typename CudaImageDataSuperclass::Pointer     CudaImageDataSuperclassPointer;
 
   // call the superclass' implementation
-  Superclass::Graft(data);
-
-  const auto * const cudaImg = dynamic_cast<const CudaImage*>(data);
-  if(cudaImg)
-    {
-    m_DataManager = dynamic_cast<CudaImageDataManagerType*>(((cudaImg)->GetCudaDataManager()).GetPointer());
-    }
-  else
-    {
-    m_DataManager = CudaImageDataManager< CudaImage< TPixel, VImageDimension > >::New();
-    m_DataManager->SetImagePointer(this);
-    m_DataManager->SetCPUBufferPointer(Superclass::GetBufferPointer());
-    SizeValueType numPixel = this->GetOffsetTable()[VImageDimension];
-    m_DataManager->SetBufferSize(sizeof(TPixel)*numPixel);
-    m_DataManager->SetCPUDirtyFlag(this->GetBufferPointer() == NULL);
-    m_DataManager->SetTimeStamp(this->GetTimeStamp());
-    }
+  Superclass::Graft(dynamic_cast<const DataObject *>(data));
+  m_DataManager = dynamic_cast<CudaImageDataManagerType*>(data->GetCudaDataManager().GetPointer());
   return;
 }
 
@@ -240,17 +208,17 @@ CudaImage< TPixel, VImageDimension >::Graft(const DataObject *data)
   if ( data )
     {
     // Attempt to cast data to an Image
-    const auto * const imgData = dynamic_cast< const Superclass * >( data );
-    if ( imgData != nullptr )
+    const auto * const cuImgData = dynamic_cast< const Self * >( data );
+    if ( cuImgData != nullptr )
       {
-      this->Graft(imgData);
+      this->Graft(cuImgData);
       }
     else
       {
       // pointer could not be cast back down
       itkExceptionMacro( << "itk::CudaImage::Graft() cannot cast "
                          << typeid( data ).name() << " to "
-                         << typeid( const Superclass * ).name() );
+                         << typeid( const Self * ).name() );
       }
     }
 }

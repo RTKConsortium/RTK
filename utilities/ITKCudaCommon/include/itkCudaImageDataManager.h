@@ -19,7 +19,6 @@
 #define __itkCudaImageDataManager_h
 
 #include <itkObject.h>
-#include <itkTimeStamp.h>
 #include <itkLightObject.h>
 #include <itkObjectFactory.h>
 #include "itkCudaUtil.h"

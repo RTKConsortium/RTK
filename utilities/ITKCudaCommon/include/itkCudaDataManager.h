@@ -32,7 +32,7 @@
 
 namespace itk
 {
-class GPUMemPointer: public LightObject
+class GPUMemPointer: public Object
 {
 public:
   typedef GPUMemPointer            Self;
@@ -192,15 +192,11 @@ public:
     return m_GPUBuffer->GetBufferSize();
     }
 
-  itkSetMacro(TimeStamp,TimeStamp);
-  itkGetMacro(TimeStamp,TimeStamp);
-
 protected:
 
   CudaDataManager();
   virtual ~CudaDataManager();
   virtual void PrintSelf(std::ostream & os, Indent indent) const;
-  TimeStamp                          m_TimeStamp;
 
 private:
 

@@ -210,7 +210,6 @@ ImportImageFilter< TImage >
     cudaOutputPtr->GetModifiableDataManager()->SetCPUBufferPointer(m_ImportPointer);
     cudaOutputPtr->GetModifiableDataManager()->SetGPUDirtyFlag(true);
     cudaOutputPtr->GetModifiableDataManager()->SetCPUDirtyFlag(false);
-    cudaOutputPtr->GetModifiableDataManager()->SetTimeStamp(outputPtr->GetPixelContainer()->GetTimeStamp());
     }
 #endif
 }
