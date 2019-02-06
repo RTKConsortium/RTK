@@ -29,8 +29,8 @@ endmacro()
 project(RTK)
 
 ## RTK Version
-set(RTK_VERSION_MAJOR "1")
-set(RTK_VERSION_MINOR "4")
+set(RTK_VERSION_MAJOR "2")
+set(RTK_VERSION_MINOR "0")
 set(RTK_VERSION_PATCH "0")
 
 set(RTK_LIBRARIES RTK)
