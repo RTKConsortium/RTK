@@ -20,6 +20,7 @@
 #define rtkSimplexSpectralProjectionsDecompositionImageFilter_hxx
 
 #include "rtkSimplexSpectralProjectionsDecompositionImageFilter.h"
+#include "rtkSpectralForwardModelImageFilter.h"
 #include <itkImageRegionIterator.h>
 #include <itkImageRegionConstIterator.h>
 
@@ -329,27 +330,9 @@ SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType, Me
     }
   else
     {
-    // Read the detector response image as a matrix
-    this->m_DetectorResponse.set_size(this->m_NumberOfSpectralBins, this->m_NumberOfEnergies);
-    this->m_DetectorResponse.fill(0);
-    typename DetectorResponseImageType::IndexType indexDet;
-    for (unsigned int energy=0; energy<this->m_NumberOfEnergies; energy++)
-      {
-      indexDet[0] = energy;
-      for (unsigned int bin=0; bin<m_NumberOfSpectralBins; bin++)
-        {
-        for (int pulseHeight=m_Thresholds[bin]-1; pulseHeight<m_Thresholds[bin+1]; pulseHeight++)
-          {
-          indexDet[1] = pulseHeight;
-          // Linear interpolation on the pulse heights: half of the pulses that have "threshold"
-          // height are considered below threshold, the other half are considered above threshold
-          if ((pulseHeight == m_Thresholds[bin]-1) || (pulseHeight == m_Thresholds[bin+1] - 1))
-            this->m_DetectorResponse[bin][energy] += this->GetDetectorResponse()->GetPixel(indexDet) / 2;
-          else
-            this->m_DetectorResponse[bin][energy] += this->GetDetectorResponse()->GetPixel(indexDet);
-          }
-        }
-      }
+    this->m_DetectorResponse = SpectralBinDetectorResponse<DetectorResponseType::element_type>(this->GetDetectorResponse().GetPointer(),
+                                                                                               m_Thresholds,
+                                                                                               m_NumberOfEnergies);
     }
 }
 

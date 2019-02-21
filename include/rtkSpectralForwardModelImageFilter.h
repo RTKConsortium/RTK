@@ -19,7 +19,6 @@
 #ifndef rtkSpectralForwardModelImageFilter_h
 #define rtkSpectralForwardModelImageFilter_h
 
-#include "rtkSimplexSpectralProjectionsDecompositionImageFilter.h"
 #include "rtkSchlomka2008NegativeLogLikelihood.h"
 #include "rtkDualEnergyNegativeLogLikelihood.h"
 
@@ -60,7 +59,7 @@ public:
   typedef MeasuredProjectionsType       OutputImageType;
 
   /** Convenient information */
-  typedef itk::VariableLengthVector<int>       ThresholdsType;
+  typedef itk::VariableLengthVector<double>    ThresholdsType;
   typedef vnl_matrix<double>                   DetectorResponseType;
   typedef vnl_matrix<double>                   MaterialAttenuationsType;
 
@@ -156,8 +155,14 @@ private:
   //purposely not implemented
   SpectralForwardModelImageFilter(const Self&);
   void operator=(const Self&);
-
 }; // end of class
+
+// Function to bin a detector response matrix according to given energy thresholds
+template<typename OutputElementType, typename DetectorResponseImageType, typename ThresholdsType>
+vnl_matrix<OutputElementType>
+SpectralBinDetectorResponse(const DetectorResponseImageType *drm,
+                            const ThresholdsType &thresholds,
+                            const unsigned int numberOfEnergies);
 
 } // end namespace rtk
 

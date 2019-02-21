@@ -57,7 +57,7 @@ public:
   typedef DecomposedProjectionsType       OutputImageType;
 
   /** Convenient information */
-  typedef itk::VariableLengthVector<int>                    ThresholdsType;
+  typedef itk::VariableLengthVector<double>                 ThresholdsType;
   typedef itk::VariableSizeMatrix<double>                   MeanAttenuationInBinType;
   typedef vnl_matrix<double>                                DetectorResponseType;
   typedef vnl_matrix<double>                                MaterialAttenuationsType;

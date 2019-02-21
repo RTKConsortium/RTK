@@ -275,27 +275,9 @@ SpectralForwardModelImageFilter<DecomposedProjectionsType, MeasuredProjectionsTy
     }
   else
     {
-    // Read the detector response image as a matrix
-    this->m_DetectorResponse.set_size(this->m_NumberOfSpectralBins, this->m_NumberOfEnergies);
-    this->m_DetectorResponse.fill(0);
-    typename DetectorResponseImageType::IndexType indexDet;
-    for (unsigned int energy=0; energy<this->m_NumberOfEnergies; energy++)
-      {
-      indexDet[0] = energy;
-      for (unsigned int bin=0; bin<m_NumberOfSpectralBins; bin++)
-        {
-        for (int pulseHeight=m_Thresholds[bin]-1; pulseHeight<m_Thresholds[bin+1]; pulseHeight++)
-          {
-          indexDet[1] = pulseHeight;
-          // Linear interpolation on the pulse heights: half of the pulses that have "threshold"
-          // height are considered below threshold, the other half are considered above threshold
-          if ((pulseHeight == m_Thresholds[bin]-1) || (pulseHeight == m_Thresholds[bin+1] - 1))
-            this->m_DetectorResponse[bin][energy] += this->GetDetectorResponse()->GetPixel(indexDet) / 2;
-          else
-            this->m_DetectorResponse[bin][energy] += this->GetDetectorResponse()->GetPixel(indexDet);
-          }
-        }
-      }
+    this->m_DetectorResponse = SpectralBinDetectorResponse<DetectorResponseType::element_type>(this->GetDetectorResponse().GetPointer(),
+                                                                                               m_Thresholds,
+                                                                                               m_NumberOfEnergies);
     }
 }
 
@@ -408,6 +390,65 @@ SpectralForwardModelImageFilter<DecomposedProjectionsType, MeasuredProjectionsTy
     if (this->GetInputSecondIncidentSpectrum())
       ++secondSpectrumIt;
     }
+}
+
+template<typename OutputElementType, typename DetectorResponseImageType, typename ThresholdsType>
+vnl_matrix<OutputElementType>
+SpectralBinDetectorResponse(const DetectorResponseImageType *drm,
+                            const ThresholdsType &thresholds,
+                            const unsigned int numberOfEnergies)
+{ 
+  vnl_matrix<OutputElementType> binnedResponse;
+  int numberOfSpectralBins = thresholds.GetSize()-1;
+  binnedResponse.set_size(numberOfSpectralBins, numberOfEnergies);
+  binnedResponse.fill(0);
+  typename DetectorResponseImageType::IndexType indexDet;
+  for (unsigned int energy=0; energy<numberOfEnergies; energy++)
+    {
+    indexDet[0] = energy;
+    for (unsigned int bin=0; bin<numberOfSpectralBins; bin++)
+      {
+      // First and last couple of values:
+      // use trapezoidal rule with linear interpolation
+      int infPulse = itk::Math::floor(thresholds[bin]);
+      if(infPulse<1)
+        {
+        itkGenericExceptionMacro(<< "Threshold " << thresholds[bin] << " below 0 keV.");
+        }
+      int supPulse = itk::Math::floor(thresholds[bin+1]);
+      if(double(supPulse)==thresholds[bin+1])
+        supPulse--;
+      if(supPulse-infPulse<3)
+        {
+        itkGenericExceptionMacro(<< "Thresholds are too close for the current code.");
+        }
+
+      double wInf = infPulse+1.-thresholds[bin];
+      indexDet[1] = infPulse-1; // Index 0 is 1 keV
+      binnedResponse[bin][energy] += 0.5*wInf*wInf*drm->GetPixel(indexDet);
+      indexDet[1]++;
+      binnedResponse[bin][energy] += 0.5*(1.+wInf*(2.-wInf))*drm->GetPixel(indexDet);
+
+      double wSup = thresholds[bin+1]-supPulse;
+      indexDet[1] = supPulse; // Index 0 is 1 keV
+      binnedResponse[bin][energy] += 0.5*wSup*wSup*drm->GetPixel(indexDet);
+      if(supPulse>=drm->GetLargestPossibleRegion().GetSize(1))
+        {
+        itkGenericExceptionMacro(<< "Threshold " << thresholds[bin+1]
+                << " above max " << drm->GetLargestPossibleRegion().GetSize(1)+1);
+        }
+      indexDet[1]--;
+      binnedResponse[bin][energy] += 0.5*(1.+wSup*(2.-wSup))*drm->GetPixel(indexDet);
+
+      // Intermediate values
+      for (int pulseHeight=infPulse+1; pulseHeight<supPulse-1; pulseHeight++)
+        {
+        indexDet[1] = pulseHeight;
+        binnedResponse[bin][energy] += drm->GetPixel(indexDet);
+        }
+      }
+    }
+  return binnedResponse;
 }
 
 } // end namespace rtk

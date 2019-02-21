@@ -8,4 +8,4 @@ option "input"      i "Material-decomposed projections"                         
 option "detector"   d "Detector response file"                                            string                       yes
 option "incident"   - "Incident spectrum file"                                            string                       yes
 option "attenuations" a "Material attenuations file"                                      string                       yes
-option "thresholds" t "Lower threshold of bins, expressed in pulse height"                int                          yes multiple
+option "thresholds" t "Lower threshold of bins, expressed in pulse height"                double                       yes multiple
