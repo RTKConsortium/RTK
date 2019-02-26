@@ -1,9 +1,5 @@
 itk_wrap_class("rtk::IterativeConeBeamReconstructionFilter" POINTER)
 
-  #WARNING: Templates can not be defined for both itk::Image and itk::CudaImage.
-  # The "=" operator for one subclass (rtk::FourDConjugateGradientConeBeamReconstructionFilter)
-  # of this class is only defined for templates of type itk::CudaImage when RTK_USE_CUDA.
-
   if(RTK_USE_CUDA)
     itk_wrap_template("CIF3CIF3" "itk::CudaImage<float, 3>, itk::CudaImage<float, 3>")
     itk_wrap_template("CIF4CIF3" "itk::CudaImage<float, 4>, itk::CudaImage<float, 3>")
@@ -24,7 +20,7 @@ itk_wrap_class("rtk::IterativeConeBeamReconstructionFilter" POINTER)
     if(RTK_USE_CUDA)
       itk_wrap_template("CIV${ITKM_VF${v}}3CIV${ITKM_VF${v}}3" "itk::CudaImage<itk::Vector<${ITKT_F}, ${v}>, 3>, itk::CudaImage<itk::Vector<${ITKT_F}, ${v}>, 3>")
     endif()
-    foreach(t F)
+    foreach(t ${WRAP_ITK_REAL})
       itk_wrap_template("IV${ITKM_V${t}${v}}3IV${ITKM_V${t}${v}}3" "itk::Image<itk::Vector<${ITKT_${t}}, ${v}>, 3>, itk::Image<itk::Vector<${ITKT_${t}}, ${v}>, 3>")
     endforeach()
   endforeach()

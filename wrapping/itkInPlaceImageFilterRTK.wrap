@@ -3,7 +3,7 @@ itk_wrap_class("itk::InPlaceImageFilter" POINTER)
   # Wrap ITK double missing types --
   if (NOT ITK_WRAP_double)
     itk_wrap_template("ID1ID1" "itk::Image<${ITKT_D}, 1>, itk::Image<${ITKT_D}, 1>")
-	itk_wrap_template("ID3ID2" "itk::Image<${ITKT_D}, 3>, itk::Image<${ITKT_D}, 2>")
+    itk_wrap_template("ID3ID2" "itk::Image<${ITKT_D}, 3>, itk::Image<${ITKT_D}, 2>")
   endif()
 
   # Wrap ITK dimension 1 missing types
@@ -61,5 +61,9 @@ itk_wrap_class("itk::InPlaceImageFilter" POINTER)
 
   itk_wrap_template("VI${ITKM_F}3VI${ITKM_F}3"
         "itk::VectorImage<${ITKT_F}, 3>, itk::VectorImage<${ITKT_F}, 3>")
+  if (ITK_WRAP_double)
+    itk_wrap_template("VI${ITKM_D}3VI${ITKM_D}3"
+          "itk::VectorImage<${ITKT_D}, 3>, itk::VectorImage<${ITKT_D}, 3>")
+  endif()
 itk_end_wrap_class()
 
