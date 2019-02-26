@@ -42,7 +42,6 @@ itk_wrap_class("itk::Image" POINTER)
     itk_wrap_template("${ITKM_CVF3}4" "${ITKT_CVF3}, 4") #rtkMotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter
     if (ITK_WRAP_double)
       itk_wrap_template("D4" "${ITKT_D}, 4")
-      itk_wrap_template("${ITKM_VD3}4" "${ITKT_VD3}, 4") #rtkCyclicDeformationImageFilter
       itk_wrap_template("${ITKM_CVD3}4" "${ITKT_CVD3}, 4") #rtkMotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter
     endif()
     if (ITK_WRAP_unsigned_short)
