@@ -122,7 +122,6 @@ public:
 
 private:
   template<typename T> size_t SetPropertyValue(char *property_name, Int4 value_length, FILE *fp, Xim_header *xim);
-  template<typename T> T get_diff(char vsub, FILE* &fp);
 
   int          m_ImageDataStart;
   Int4 m_BytesPerPixel;
