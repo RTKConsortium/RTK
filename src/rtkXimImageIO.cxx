@@ -296,7 +296,7 @@ bool rtk::XimImageIO::CanReadFile(const char* FileNameToRead)
 //--------------------------------------------------------------------
 template<typename T>
 inline T cast_binary_char_to(const unsigned char* bin_vals, const size_t n_bytes){
-  T out_val;
+  T out_val = 0;
   switch (n_bytes){
     case 1:
       out_val = static_cast<T>(*(int8_t*)bin_vals);
@@ -309,6 +309,19 @@ inline T cast_binary_char_to(const unsigned char* bin_vals, const size_t n_bytes
       break;
   }
   return out_val;
+}
+
+inline size_t lut_to_bytes(const char val){
+  switch (val){
+    case 0:
+      return 1;
+    case 1:
+      return 2;
+    case 2:
+      return 4;
+    default: // only 0, 1 & 2 should be possible
+      return 8;
+    }
 }
 
 // Read Image Content
@@ -352,10 +365,10 @@ void rtk::XimImageIO::Read(void * buffer)
 
   auto byte_table = m_lookup_table.apply([](const char &v){
     char bytes = 0;
-    bytes += static_cast<char>(std::exp2( v & 0b00000011));       // 0x03
-    bytes += static_cast<char>(std::exp2((v & 0b00001100) >> 2)); // 0x0C
-    bytes += static_cast<char>(std::exp2((v & 0b00110000) >> 4)); // 0x30
-    bytes += static_cast<char>(std::exp2((v & 0b11000000) >> 6)); // 0xC0
+    bytes += lut_to_bytes( v & 0b00000011);       // 0x03
+    bytes += lut_to_bytes((v & 0b00001100) >> 2); // 0x0C
+    bytes += lut_to_bytes((v & 0b00110000) >> 4); // 0x30
+    bytes += lut_to_bytes((v & 0b11000000) >> 6); // 0xC0
     return bytes;
     });
 
@@ -376,22 +389,22 @@ void rtk::XimImageIO::Read(void * buffer)
 
   for (auto lut_idx = 0U; lut_idx < lookUpTableSize; ++lut_idx) {
     const char v = m_lookup_table[lut_idx];
-    char bytes = static_cast<char>(std::exp2(v & 0b00000011));   // 0x03
+    size_t bytes = lut_to_bytes(v & 0b00000011);   // 0x03
     assert(bytes == 1 || bytes == 2 || bytes == 4);
     auto diff1 = cast_binary_char_to<Int4>(&compr_img_buffer[j], bytes);
     j += bytes;
 
-    bytes = static_cast<char>(std::exp2((v & 0b00001100) >> 2)); // 0x0C
+    bytes = lut_to_bytes((v & 0b00001100) >> 2); // 0x0C
     assert(bytes == 1 || bytes == 2 || bytes == 4);
     auto diff2 = cast_binary_char_to<Int4>(&compr_img_buffer[j], bytes);
     j += bytes;
 
-    bytes = static_cast<char>(std::exp2((v & 0b00110000) >> 4)); // 0x30
+    bytes = lut_to_bytes((v & 0b00110000) >> 4); // 0x30
     assert(bytes == 1 || bytes == 2 || bytes == 4);
     auto diff3 = cast_binary_char_to<Int4>(&compr_img_buffer[j], bytes);
     j += bytes;
 
-    bytes = static_cast<char>(std::exp2((v & 0b11000000) >> 6)); // 0xC0
+    bytes = lut_to_bytes((v & 0b11000000) >> 6); // 0xC0
     assert(bytes == 1 || bytes == 2 || bytes == 4);
     auto diff4 = cast_binary_char_to<Int4>(&compr_img_buffer[j], bytes);
     j += bytes;
