@@ -17,7 +17,8 @@
  *=========================================================================*/
 
 // std include
-#include <stdio.h>
+#include <cstdio>
+#include <valarray>
 
 #include "rtkXimImageIO.h"
 #include <itkMetaDataObject.h>
@@ -104,7 +105,7 @@ void rtk::XimImageIO::ReadImageInformation()
   FILE *     fp;
 
   fp = fopen (m_FileName.c_str(), "rb");
-  if (fp == NULL)
+  if (fp == nullptr)
     itkGenericExceptionMacro(<< "Could not open file (for reading): " << m_FileName);
   size_t nelements = 0;
   nelements += fread ( (void *) xim.sFileType, sizeof(char), 8, fp);
@@ -241,7 +242,7 @@ void rtk::XimImageIO::ReadImageInformation()
 bool rtk::XimImageIO::CanReadFile(const char* FileNameToRead)
 {
   std::string                  filename(FileNameToRead);
-  const std::string::size_type it = filename.find_last_of(".");
+  const std::string::size_type it = filename.find_last_of('.');
   std::string                  fileExt(filename, it + 1, filename.length());
 
   if (fileExt != std::string("xim"))
@@ -249,7 +250,7 @@ bool rtk::XimImageIO::CanReadFile(const char* FileNameToRead)
 
   FILE* fp;
   fp = fopen(filename.c_str(), "rb");
-  if (fp == NULL) {
+  if (fp == nullptr) {
     std::cerr << "Could not open file (for reading): "
       << m_FileName
       << std::endl;
@@ -293,29 +294,34 @@ bool rtk::XimImageIO::CanReadFile(const char* FileNameToRead)
 
 
 //--------------------------------------------------------------------
-
 template<typename T>
-inline T rtk::XimImageIO::get_diff(char vsub, FILE* &fp)
-{
-  if (vsub == 0) {
-    char diff8;
-    if (fread(&diff8, sizeof(char), 1, fp) == 1) {
-      return static_cast<T>(diff8);
-    }
+inline T cast_binary_char_to(const unsigned char* bin_vals, const size_t n_bytes){
+  T out_val = 0;
+  switch (n_bytes){
+    case 1:
+      out_val = static_cast<T>(*(int8_t*)bin_vals);
+      break;
+    case 2:
+      out_val = static_cast<T>(*(int16_t*)bin_vals);
+      break;
+    case 4:
+      out_val = static_cast<T>(*(int32_t*)bin_vals);
+      break;
   }
-  else if (vsub == 1){
-    short diff16;
-    if (fread(&diff16, sizeof(short), 1, fp) == 1) {
-      return static_cast<T>(diff16);
-    }
-  }
-  // else if vsub == 2: (only 0, 1 and 2 is possible according to Xim docs)
-  Int4 diff32;
-  if (fread(&diff32, sizeof(Int4), 1, fp) == 1) {
-    return static_cast<T>(diff32);
-  }
+  return out_val;
+}
 
-  itkGenericExceptionMacro(<< "Could not read diff data in: " << this->m_FileName);
+inline size_t lut_to_bytes(const char val){
+  switch (val){
+    case 0:
+      return 1;
+    case 1:
+      return 2;
+    case 2:
+      return 4;
+    default: // only 0, 1 & 2 should be possible
+      return 8;
+    }
 }
 
 // Read Image Content
@@ -326,24 +332,29 @@ void rtk::XimImageIO::Read(void * buffer)
   Int4 *buf = (Int4*)buffer;
 
   fp = fopen(m_FileName.c_str(), "rb");
-  if (fp == NULL)
+  if (fp == nullptr)
     itkGenericExceptionMacro(<< "Could not open file (for reading): " << m_FileName);
 
   if (fseek(fp, m_ImageDataStart, SEEK_SET) != 0)
     itkGenericExceptionMacro(<< "Could not seek to image data in: " << m_FileName);
 
-  size_t nelements = 0;
   Int4 lookUpTableSize;
-  Int4 compressedPixelBufferSize;
   // De"compress" image
-  nelements += fread((void *)&lookUpTableSize, sizeof(Int4), 1, fp);
-  char * m_lookup_table = (char *) malloc(sizeof(char) * lookUpTableSize);
-  nelements += fread((void *)m_lookup_table, sizeof(char), lookUpTableSize, fp);
+  if (1 != fread((void *)&lookUpTableSize, sizeof(Int4), 1, fp)){
+    itkGenericExceptionMacro(<< "Could not read LUT size from: " << m_FileName);
+  }
+  auto m_lookup_table = std::valarray<unsigned char>(lookUpTableSize);
+  if (lookUpTableSize != fread((void *)&m_lookup_table[0], sizeof(unsigned char), lookUpTableSize, fp)){
+      itkGenericExceptionMacro(<< "Could not read lookup table from Xim file: " << m_FileName);
+    }
 
-  nelements += fread((void *)&compressedPixelBufferSize, sizeof(Int4), 1, fp);
+  Int4 compressedPixelBufferSize;
+  if (1 != fread((void *)&compressedPixelBufferSize, sizeof(Int4), 1, fp)){
+    itkGenericExceptionMacro(<< "Could not get compressed pixel buffer size from: " << m_FileName);
+  }
 
-  auto xdim = GetDimensions(0);
-  auto ydim = GetDimensions(1);
+  const auto xdim = GetDimensions(0);
+  const auto ydim = GetDimensions(1);
   if (xdim*ydim == 0) {
     itkGenericExceptionMacro(<< "Dimensions of image was 0 in: " << m_FileName);
   }
@@ -351,22 +362,52 @@ void rtk::XimImageIO::Read(void * buffer)
   if ((xdim + 1) != fread(&buf[0], sizeof(Int4), xdim + 1, fp))
     itkGenericExceptionMacro(<< "Could not read first row +1 in: " << m_FileName);
 
-  char vsub;
+  auto byte_table = m_lookup_table.apply([](const unsigned char &v){
+    unsigned char bytes = 0;
+    bytes += lut_to_bytes( v & 0b00000011);       // 0x03
+    bytes += lut_to_bytes((v & 0b00001100) >> 2); // 0x0C
+    bytes += lut_to_bytes((v & 0b00110000) >> 4); // 0x30
+    bytes += lut_to_bytes((v & 0b11000000) >> 6); // 0xC0
+    return bytes;
+    });
 
+  auto total_bytes = 0U;
+#pragma omp parallel for shared(total_bytes, byte_table) reduction(+:total_bytes)
+  for (auto byte_idx = 0U; byte_idx < byte_table.size(); ++byte_idx) {
+    total_bytes += byte_table[byte_idx];
+  }
+
+  auto compr_img_buffer = std::valarray<unsigned char>(total_bytes);
+  // total_bytes - 3 because the last two bits can be redundant (according to Xim docs)
+  if ((total_bytes - 3) > fread((void*)&compr_img_buffer[0], sizeof(unsigned char), total_bytes, fp)){
+    itkGenericExceptionMacro(<< "Could not read image buffer of Xim file: " << m_FileName);
+  }
+
+  size_t j = 0U;
   size_t i = xdim;
   size_t iminxdim = 0;
 
-  for (int lut_idx = 0; lut_idx < lookUpTableSize; lut_idx++) {
-    char v = m_lookup_table[lut_idx];
+  for (auto lut_idx = 0U; lut_idx < lookUpTableSize; ++lut_idx) {
+    const auto v = m_lookup_table[lut_idx];
+    auto bytes = lut_to_bytes(v & 0b00000011);   // 0x03
+    assert(bytes == 1 || bytes == 2 || bytes == 4);
+    auto diff1 = cast_binary_char_to<Int4>(&compr_img_buffer[j], bytes);
+    j += bytes;
 
-    vsub =  v & 0b00000011;       // 0x03
-    auto diff1 = get_diff<Int4>(vsub, fp);
-    vsub = (v & 0b00001100) >> 2; // 0x0C
-    auto diff2 = get_diff<Int4>(vsub, fp);
-    vsub = (v & 0b00110000) >> 4; // 0x30
-    auto diff3 = get_diff<Int4>(vsub, fp);
-    vsub = (v & 0b11000000) >> 6; // 0xC0
-    auto diff4 = get_diff<Int4>(vsub, fp);
+    bytes = lut_to_bytes((v & 0b00001100) >> 2); // 0x0C
+    assert(bytes == 1 || bytes == 2 || bytes == 4);
+    auto diff2 = cast_binary_char_to<Int4>(&compr_img_buffer[j], bytes);
+    j += bytes;
+
+    bytes = lut_to_bytes((v & 0b00110000) >> 4); // 0x30
+    assert(bytes == 1 || bytes == 2 || bytes == 4);
+    auto diff3 = cast_binary_char_to<Int4>(&compr_img_buffer[j], bytes);
+    j += bytes;
+
+    bytes = lut_to_bytes((v & 0b11000000) >> 6); // 0xC0
+    assert(bytes == 1 || bytes == 2 || bytes == 4);
+    auto diff4 = cast_binary_char_to<Int4>(&compr_img_buffer[j], bytes);
+    j += bytes;
 
     buf[i + 1] = diff1 + buf[i]     + buf[iminxdim + 1] - buf[iminxdim];
     buf[i + 2] = diff2 + buf[i + 1] + buf[iminxdim + 2] - buf[iminxdim + 1];
@@ -377,12 +418,11 @@ void rtk::XimImageIO::Read(void * buffer)
     iminxdim += 4;
   }
 
-  /* Clean up */
-  free(m_lookup_table);
+  assert(j == total_bytes);
+  assert(i == (xdim * ydim));
 
   if(fclose (fp) != 0)
     itkGenericExceptionMacro(<< "Could not close file: " << m_FileName);
-  return;
 
 }
 
