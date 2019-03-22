@@ -343,9 +343,8 @@ void rtk::XimImageIO::Read(void * buffer)
   if (1 != fread((void *)&lookUpTableSize, sizeof(Int4), 1, fp)){
     itkGenericExceptionMacro(<< "Could not read LUT size from: " << m_FileName);
   }
-  // char * m_lookup_table = (char *) malloc(sizeof(char) * lookUpTableSize);
-  auto m_lookup_table = std::valarray<char>(lookUpTableSize);
-  if (lookUpTableSize != fread((void *)&m_lookup_table[0], sizeof(char), lookUpTableSize, fp)){
+  auto m_lookup_table = std::valarray<unsigned char>(lookUpTableSize);
+  if (lookUpTableSize != fread((void *)&m_lookup_table[0], sizeof(unsigned char), lookUpTableSize, fp)){
       itkGenericExceptionMacro(<< "Could not read lookup table from Xim file: " << m_FileName);
     }
 
@@ -354,8 +353,8 @@ void rtk::XimImageIO::Read(void * buffer)
     itkGenericExceptionMacro(<< "Could not get compressed pixel buffer size from: " << m_FileName);
   }
 
-  auto xdim = GetDimensions(0);
-  auto ydim = GetDimensions(1);
+  const auto xdim = GetDimensions(0);
+  const auto ydim = GetDimensions(1);
   if (xdim*ydim == 0) {
     itkGenericExceptionMacro(<< "Dimensions of image was 0 in: " << m_FileName);
   }
@@ -363,8 +362,8 @@ void rtk::XimImageIO::Read(void * buffer)
   if ((xdim + 1) != fread(&buf[0], sizeof(Int4), xdim + 1, fp))
     itkGenericExceptionMacro(<< "Could not read first row +1 in: " << m_FileName);
 
-  auto byte_table = m_lookup_table.apply([](const char &v){
-    char bytes = 0;
+  auto byte_table = m_lookup_table.apply([](const unsigned char &v){
+    unsigned char bytes = 0;
     bytes += lut_to_bytes( v & 0b00000011);       // 0x03
     bytes += lut_to_bytes((v & 0b00001100) >> 2); // 0x0C
     bytes += lut_to_bytes((v & 0b00110000) >> 4); // 0x30
@@ -379,7 +378,8 @@ void rtk::XimImageIO::Read(void * buffer)
   }
 
   auto compr_img_buffer = std::valarray<unsigned char>(total_bytes);
-  if (total_bytes != fread((void*)&compr_img_buffer[0], sizeof(unsigned char), total_bytes, fp)){
+  // total_bytes - 3 because the last two bits can be redundant (according to Xim docs)
+  if ((total_bytes - 3) > fread((void*)&compr_img_buffer[0], sizeof(unsigned char), total_bytes, fp)){
     itkGenericExceptionMacro(<< "Could not read image buffer of Xim file: " << m_FileName);
   }
 
@@ -388,8 +388,8 @@ void rtk::XimImageIO::Read(void * buffer)
   size_t iminxdim = 0;
 
   for (auto lut_idx = 0U; lut_idx < lookUpTableSize; ++lut_idx) {
-    const char v = m_lookup_table[lut_idx];
-    size_t bytes = lut_to_bytes(v & 0b00000011);   // 0x03
+    const auto v = m_lookup_table[lut_idx];
+    auto bytes = lut_to_bytes(v & 0b00000011);   // 0x03
     assert(bytes == 1 || bytes == 2 || bytes == 4);
     auto diff1 = cast_binary_char_to<Int4>(&compr_img_buffer[j], bytes);
     j += bytes;

@@ -18,6 +18,7 @@
 
 // std include
 #include <stdio.h>
+#include <valarray>
 
 #include "rtkHndImageIO.h"
 #include <itkMetaDataObject.h>
@@ -128,112 +129,129 @@ bool rtk::HndImageIO::CanReadFile(const char* FileNameToRead)
 }
 
 //--------------------------------------------------------------------
+template<typename T>
+inline T cast_binary_char_to(const unsigned char* bin_vals, const size_t n_bytes){
+  T out_val = 0;
+  switch (n_bytes){
+    case 1:
+      out_val = static_cast<T>(*(int8_t*)bin_vals);
+      break;
+    case 2:
+      out_val = static_cast<T>(*(int16_t*)bin_vals);
+      break;
+    case 4:
+      out_val = static_cast<T>(*(int32_t*)bin_vals);
+      break;
+  }
+  return out_val;
+}
+
+inline size_t lut_to_bytes(const char val){
+  switch (val){
+    case 0:
+      return 1;
+    case 1:
+      return 2;
+    case 2:
+      return 4;
+    default: // only 0, 1 & 2 should be possible
+      return 8;
+    }
+}
+
 // Read Image Content
 void rtk::HndImageIO::Read(void * buffer)
 {
   FILE *fp;
+  // Long is only garanteed to be AT LEAST 32 bits, it could be 64 bit
+  using Int4 = itk::uint32_t;
+  Int4 *buf = (Int4*)buffer;
 
-  itk::uint32_t *buf = (itk::uint32_t*)buffer;
-  unsigned char *pt_lut;
-  itk::uint32_t  a;
-  unsigned char  v;
-  int            lut_idx, lut_off;
-  size_t         num_read;
-  char           dc;
-  short          ds;
-  long           dl, diff=0;
-  itk::uint32_t  i;
-
-  fp = fopen (m_FileName.c_str(), "rb");
-  if (fp == ITK_NULLPTR)
+  fp = fopen(m_FileName.c_str(), "rb");
+  if (fp == nullptr)
     itkGenericExceptionMacro(<< "Could not open file (for reading): " << m_FileName);
 
-  pt_lut = (unsigned char*) malloc (sizeof (unsigned char) * GetDimensions(0) * GetDimensions(1) );
-
-  /* Read LUT */
-  if(fseek (fp, 1024, SEEK_SET) != 0)
+  if (fseek(fp, 1024, SEEK_SET) != 0)
     itkGenericExceptionMacro(<< "Could not seek to image data in: " << m_FileName);
 
-  size_t nbytes = (GetDimensions(1)-1)*GetDimensions(0) / 4;
-  if(nbytes != fread (pt_lut, sizeof(unsigned char), nbytes, fp))
-    itkGenericExceptionMacro(<< "Could not read image LUT in: " << m_FileName);
+  const auto xdim = GetDimensions(0);
+  const auto ydim = GetDimensions(1);
+  Int4 lookUpTableSize = (ydim - 1) * xdim / 4;
+  // De"compress" image
+  auto m_lookup_table = std::valarray<unsigned char>(lookUpTableSize);
+  if (lookUpTableSize != fread((void *)&m_lookup_table[0], sizeof(unsigned char), lookUpTableSize, fp)){
+    itkGenericExceptionMacro(<< "Could not read lookup table from Hnd file: " << m_FileName);
+  }
 
-  /* Read first row */
-  for (i = 0; i < GetDimensions(0); i++) {
-    if(1 != fread (&a, sizeof(itk::uint32_t), 1, fp))
-      itkGenericExceptionMacro(<< "Could not read first row in: " << m_FileName);
-    buf[i] = a;
-    }
+  if (xdim*ydim == 0) {
+    itkGenericExceptionMacro(<< "Dimensions of image was 0 in: " << m_FileName);
+  }
 
-  /* Read first pixel of second row */
-  if(1 != fread (&a, sizeof(itk::uint32_t), 1, fp))
-    itkGenericExceptionMacro(<< "Could not read first pixel of second row");
-  buf[i++] = a;
+  if ((xdim + 1) != fread(&buf[0], sizeof(Int4), xdim + 1, fp))
+    itkGenericExceptionMacro(<< "Could not read first row +1 in: " << m_FileName);
 
-  /* Decompress the rest */
-  lut_idx = 0;
-  lut_off = 0;
-  while (i < GetDimensions(0) * GetDimensions(1) ) {
-    itk::uint32_t r11, r12, r21;
+  auto byte_table = m_lookup_table.apply([](const unsigned char &v){
+    unsigned char bytes = 0;
+    bytes += lut_to_bytes( v & 0b00000011);       // 0x03
+    bytes += lut_to_bytes((v & 0b00001100) >> 2); // 0x0C
+    bytes += lut_to_bytes((v & 0b00110000) >> 4); // 0x30
+    bytes += lut_to_bytes((v & 0b11000000) >> 6); // 0xC0
+    return bytes;
+    });
 
-    r11 = buf[i-GetDimensions(0)-1];
-    r12 = buf[i-GetDimensions(0)];
-    r21 = buf[i-1];
-    v = pt_lut[lut_idx];
-    switch (lut_off) {
-      case 0:
-        v = v & 0x03;
-        lut_off++;
-        break;
-      case 1:
-        v = (v & 0x0C) >> 2;
-        lut_off++;
-        break;
-      case 2:
-        v = (v & 0x30) >> 4;
-        lut_off++;
-        break;
-      case 3:
-        v = (v & 0xC0) >> 6;
-        lut_off = 0;
-        lut_idx++;
-        break;
-      }
-    switch (v) {
-      case 0:
-        num_read = fread (&dc, sizeof(unsigned char), 1, fp);
-        if (num_read != 1) goto read_error;
-        diff = dc;
-        break;
-      case 1:
-        num_read = fread (&ds, sizeof(unsigned short), 1, fp);
-        if (num_read != 1) goto read_error;
-        diff = ds;
-        break;
-      case 2:
-        num_read = fread (&dl, sizeof(itk::uint32_t), 1, fp);
-        if (num_read != 1) goto read_error;
-        diff = dl;
-        break;
-      }
+  auto total_bytes = 0U;
+#pragma omp parallel for shared(total_bytes, byte_table) reduction(+:total_bytes)
+  for (auto byte_idx = 0U; byte_idx < byte_table.size(); ++byte_idx) {
+    total_bytes += byte_table[byte_idx];
+  }
 
-    buf[i] = r21 + r12 + diff - r11;
-    i++;
-    }
+  auto compr_img_buffer = std::valarray<unsigned char>(total_bytes);
+  // total_bytes - 3 because the last two bits can be redundant (according to Xim docs)
+  if ((total_bytes - 3) > fread((void*)&compr_img_buffer[0], sizeof(unsigned char), total_bytes, fp)){
+    itkGenericExceptionMacro(<< "Could not read image buffer of Hnd file: " << m_FileName);
+  }
 
-  /* Clean up */
-  free (pt_lut);
+  size_t j = 0U;
+  size_t i = xdim;
+  size_t iminxdim = 0;
+
+  for (auto lut_idx = 0U; lut_idx < lookUpTableSize; ++lut_idx) {
+    const auto v = m_lookup_table[lut_idx];
+    auto bytes = lut_to_bytes(v & 0b00000011);   // 0x03
+    assert(bytes == 1 || bytes == 2 || bytes == 4);
+    auto diff1 = cast_binary_char_to<Int4>(&compr_img_buffer[j], bytes);
+    j += bytes;
+
+    bytes = lut_to_bytes((v & 0b00001100) >> 2); // 0x0C
+    assert(bytes == 1 || bytes == 2 || bytes == 4);
+    auto diff2 = cast_binary_char_to<Int4>(&compr_img_buffer[j], bytes);
+    j += bytes;
+
+    bytes = lut_to_bytes((v & 0b00110000) >> 4); // 0x30
+    assert(bytes == 1 || bytes == 2 || bytes == 4);
+    auto diff3 = cast_binary_char_to<Int4>(&compr_img_buffer[j], bytes);
+    j += bytes;
+
+    bytes = lut_to_bytes((v & 0b11000000) >> 6); // 0xC0
+    assert(bytes == 1 || bytes == 2 || bytes == 4);
+    auto diff4 = cast_binary_char_to<Int4>(&compr_img_buffer[j], bytes);
+    j += bytes;
+
+    buf[i + 1] = diff1 + buf[i]     + buf[iminxdim + 1] - buf[iminxdim];
+    buf[i + 2] = diff2 + buf[i + 1] + buf[iminxdim + 2] - buf[iminxdim + 1];
+    buf[i + 3] = diff3 + buf[i + 2] + buf[iminxdim + 3] - buf[iminxdim + 2];
+    buf[i + 4] = diff4 + buf[i + 3] + buf[iminxdim + 4] - buf[iminxdim + 3];
+
+    i += 4;
+    iminxdim += 4;
+  }
+
+  assert(j == total_bytes);
+  assert(i == (xdim * ydim));
+
   if(fclose (fp) != 0)
     itkGenericExceptionMacro(<< "Could not close file: " << m_FileName);
-  return;
 
-read_error:
-
-  itkGenericExceptionMacro(<< "Error reading hnd file");
-  free (pt_lut);
-  if(fclose (fp) != 0)
-    itkGenericExceptionMacro(<< "Could not close file: " << m_FileName);
-  return;
 }
 
 //--------------------------------------------------------------------
