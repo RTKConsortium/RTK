@@ -19,6 +19,7 @@
 // std include
 #include <cstdio>
 #include <valarray>
+#include <numeric>
 
 #include "rtkXimImageIO.h"
 #include <itkMetaDataObject.h>
