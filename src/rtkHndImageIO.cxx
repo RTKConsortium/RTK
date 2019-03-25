@@ -19,6 +19,7 @@
 // std include
 #include <stdio.h>
 #include <valarray>
+#include <numeric>
 
 #include "rtkHndImageIO.h"
 #include <itkMetaDataObject.h>
@@ -176,7 +177,7 @@ void rtk::HndImageIO::Read(void * buffer)
 
   const auto xdim = GetDimensions(0);
   const auto ydim = GetDimensions(1);
-  Int4 lookUpTableSize = (ydim - 1) * xdim / 4;
+  const size_t lookUpTableSize = (ydim - 1) * xdim / 4;
   // De"compress" image
   auto m_lookup_table = std::valarray<unsigned char>(lookUpTableSize);
   if (lookUpTableSize != fread((void *)&m_lookup_table[0], sizeof(unsigned char), lookUpTableSize, fp)){
@@ -190,7 +191,7 @@ void rtk::HndImageIO::Read(void * buffer)
   if ((xdim + 1) != fread(&buf[0], sizeof(Int4), xdim + 1, fp))
     itkGenericExceptionMacro(<< "Could not read first row +1 in: " << m_FileName);
 
-  auto byte_table = m_lookup_table.apply([](const unsigned char &v){
+  auto byte_table_expr = m_lookup_table.apply([](const unsigned char &v){
     unsigned char bytes = 0;
     bytes += lut_to_bytes( v & 0b00000011);       // 0x03
     bytes += lut_to_bytes((v & 0b00001100) >> 2); // 0x0C
@@ -199,11 +200,8 @@ void rtk::HndImageIO::Read(void * buffer)
     return bytes;
     });
 
-  auto total_bytes = 0U;
-#pragma omp parallel for shared(total_bytes, byte_table) reduction(+:total_bytes)
-  for (auto byte_idx = 0U; byte_idx < byte_table.size(); ++byte_idx) {
-    total_bytes += byte_table[byte_idx];
-  }
+  std::valarray<unsigned char> byte_table(byte_table_expr);
+  const auto total_bytes = std::accumulate(std::begin(byte_table), std::end(byte_table), 0ull);
 
   auto compr_img_buffer = std::valarray<unsigned char>(total_bytes);
   // total_bytes - 3 because the last two bits can be redundant (according to Xim docs)
