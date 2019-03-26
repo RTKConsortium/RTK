@@ -19,6 +19,7 @@
 // std include
 #include <cstdio>
 #include <valarray>
+#include <numeric>
 
 #include "rtkXimImageIO.h"
 #include <itkMetaDataObject.h>
@@ -362,7 +363,7 @@ void rtk::XimImageIO::Read(void * buffer)
   if ((xdim + 1) != fread(&buf[0], sizeof(Int4), xdim + 1, fp))
     itkGenericExceptionMacro(<< "Could not read first row +1 in: " << m_FileName);
 
-  auto byte_table = m_lookup_table.apply([](const unsigned char &v){
+  auto byte_table_expr = m_lookup_table.apply([](const unsigned char &v){
     unsigned char bytes = 0;
     bytes += lut_to_bytes( v & 0b00000011);       // 0x03
     bytes += lut_to_bytes((v & 0b00001100) >> 2); // 0x0C
@@ -371,11 +372,9 @@ void rtk::XimImageIO::Read(void * buffer)
     return bytes;
     });
 
-  auto total_bytes = 0U;
-#pragma omp parallel for shared(total_bytes, byte_table) reduction(+:total_bytes)
-  for (auto byte_idx = 0U; byte_idx < byte_table.size(); ++byte_idx) {
-    total_bytes += byte_table[byte_idx];
-  }
+  std::valarray<unsigned char> byte_table(byte_table_expr);
+  const auto total_bytes = std::accumulate(std::begin(byte_table), std::end(byte_table), 0ull);
+
 
   auto compr_img_buffer = std::valarray<unsigned char>(total_bytes);
   // total_bytes - 3 because the last two bits can be redundant (according to Xim docs)
@@ -387,7 +386,7 @@ void rtk::XimImageIO::Read(void * buffer)
   size_t i = xdim;
   size_t iminxdim = 0;
 
-  for (auto lut_idx = 0U; lut_idx < lookUpTableSize; ++lut_idx) {
+  for (auto lut_idx = 0U; lut_idx < static_cast<size_t>(lookUpTableSize); ++lut_idx) {
     const auto v = m_lookup_table[lut_idx];
     auto bytes = lut_to_bytes(v & 0b00000011);   // 0x03
     assert(bytes == 1 || bytes == 2 || bytes == 4);
