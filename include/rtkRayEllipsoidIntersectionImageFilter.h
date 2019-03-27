@@ -44,16 +44,16 @@ class ITK_EXPORT RayEllipsoidIntersectionImageFilter :
   public RayConvexIntersectionImageFilter<TInputImage,TOutputImage>
 {
 public:
-  /** Standard class typedefs. */
-  typedef RayEllipsoidIntersectionImageFilter                        Self;
-  typedef RayConvexIntersectionImageFilter<TInputImage,TOutputImage> Superclass;
-  typedef itk::SmartPointer<Self>                                    Pointer;
-  typedef itk::SmartPointer<const Self>                              ConstPointer;
+  /** Standard class type alias. */
+  using Self = RayEllipsoidIntersectionImageFilter;
+  using Superclass = RayConvexIntersectionImageFilter<TInputImage,TOutputImage>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
-  /** Convenient typedefs. */
-  typedef ConvexShape::PointType  PointType;
-  typedef ConvexShape::VectorType VectorType;
-  typedef ConvexShape::ScalarType ScalarType;
+  /** Convenient type alias. */
+  using PointType = ConvexShape::PointType;
+  using VectorType = ConvexShape::VectorType;
+  using ScalarType = ConvexShape::ScalarType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);

@@ -42,10 +42,10 @@ template< class TDiagonal,
 class AddMatrixAndDiagonalImageFilter : public itk::ImageToImageFilter<TMatrix, TMatrix>
 {
 public:
-    /** Standard class typedefs. */
-    typedef AddMatrixAndDiagonalImageFilter               Self;
-    typedef itk::ImageToImageFilter<TMatrix, TMatrix>     Superclass;
-    typedef itk::SmartPointer< Self >                     Pointer;
+    /** Standard class type alias. */
+    using Self = AddMatrixAndDiagonalImageFilter;
+    using Superclass = itk::ImageToImageFilter<TMatrix, TMatrix>;
+    using Pointer = itk::SmartPointer< Self >;
 
     /** Method for creation through the object factory. */
     itkNewMacro(Self)
@@ -56,8 +56,8 @@ public:
     /** Convenient parameters extracted from template types */
     itkStaticConstMacro(nChannels, unsigned int, TDiagonal::PixelType::Dimension);
 
-    /** Convenient typedef */
-    typedef typename TDiagonal::PixelType::ValueType dataType;
+    /** Convenient type alias */
+    using dataType = typename TDiagonal::PixelType::ValueType;
 
     /** Set methods for all inputs, since they have different types */
     void SetInputDiagonal(const TDiagonal* gradient);

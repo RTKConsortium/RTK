@@ -71,7 +71,7 @@ template< class TInput, class TOutput>
 class ValueAlongRay
 {
 public:
-  typedef itk::Vector<double, 3> VectorType;
+  using VectorType = itk::Vector<double, 3>;
 
   ValueAlongRay(){};
   ~ValueAlongRay() {};
@@ -152,18 +152,18 @@ class ITK_EXPORT JosephBackProjectionImageFilter :
   public BackProjectionImageFilter<TInputImage,TOutputImage>
 {
 public:
-  /** Standard class typedefs. */
-  typedef JosephBackProjectionImageFilter                        Self;
-  typedef BackProjectionImageFilter<TInputImage,TOutputImage>    Superclass;
-  typedef itk::SmartPointer<Self>                                Pointer;
-  typedef itk::SmartPointer<const Self>                          ConstPointer;
-  typedef typename TInputImage::PixelType                        InputPixelType;
-  typedef typename TOutputImage::PixelType                       OutputPixelType;
-  typedef typename TOutputImage::RegionType                      OutputImageRegionType;
-  typedef double                                                 CoordRepType;
-  typedef itk::Vector<CoordRepType, TInputImage::ImageDimension> VectorType;
-  typedef rtk::ThreeDCircularProjectionGeometry                  GeometryType;
-  typedef typename GeometryType::Pointer                         GeometryPointer;
+  /** Standard class type alias. */
+  using Self = JosephBackProjectionImageFilter;
+  using Superclass = BackProjectionImageFilter<TInputImage,TOutputImage>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
+  using InputPixelType = typename TInputImage::PixelType;
+  using OutputPixelType = typename TOutputImage::PixelType;
+  using OutputImageRegionType = typename TOutputImage::RegionType;
+  using CoordRepType = double;
+  using VectorType = itk::Vector<CoordRepType, TInputImage::ImageDimension>;
+  using GeometryType = rtk::ThreeDCircularProjectionGeometry;
+  using GeometryPointer = typename GeometryType::Pointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);

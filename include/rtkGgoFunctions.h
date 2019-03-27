@@ -49,7 +49,7 @@ template< class TConstantImageSourceType, class TArgsInfo >
 void
 SetConstantImageSourceFromGgo(typename TConstantImageSourceType::Pointer source, const TArgsInfo &args_info)
 {
-  typedef typename TConstantImageSourceType::OutputImageType ImageType;
+  using ImageType = typename TConstantImageSourceType::OutputImageType;
 
   const unsigned int Dimension = ImageType::GetImageDimension();
 
@@ -87,7 +87,7 @@ SetConstantImageSourceFromGgo(typename TConstantImageSourceType::Pointer source,
   // Overwrites parameters given in command line, if any
   if (args_info.like_given)
     {
-    typedef itk::ImageFileReader<  ImageType > LikeReaderType;
+    using LikeReaderType = itk::ImageFileReader<  ImageType >;
     typename LikeReaderType::Pointer likeReader = LikeReaderType::New();
     likeReader->SetFileName( args_info.like_arg );
     TRY_AND_EXIT_ON_ITK_EXCEPTION( likeReader->UpdateOutputInformation() );

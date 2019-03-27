@@ -74,7 +74,7 @@ template< class TInput, class TOutput>
 class SumAlongRay
 {
 public:
-  typedef itk::Vector<double, 3> VectorType;
+  using VectorType = itk::Vector<double, 3>;
 
   SumAlongRay(){};
   ~SumAlongRay() {};
@@ -106,7 +106,7 @@ template< class TInput, class TOutput >
 class ProjectedValueAccumulation
 {
 public:
-  typedef itk::Vector<double, 3> VectorType;
+  using VectorType = itk::Vector<double, 3>;
 
   ProjectedValueAccumulation() {};
   ~ProjectedValueAccumulation() {};
@@ -161,16 +161,16 @@ class ITK_EXPORT JosephForwardProjectionImageFilter :
   public ForwardProjectionImageFilter<TInputImage,TOutputImage>
 {
 public:
-  /** Standard class typedefs. */
-  typedef JosephForwardProjectionImageFilter                     Self;
-  typedef ForwardProjectionImageFilter<TInputImage,TOutputImage> Superclass;
-  typedef itk::SmartPointer<Self>                                Pointer;
-  typedef itk::SmartPointer<const Self>                          ConstPointer;
-  typedef typename TInputImage::PixelType                        InputPixelType;
-  typedef typename TOutputImage::PixelType                       OutputPixelType;
-  typedef typename TOutputImage::RegionType                      OutputImageRegionType;
-  typedef double                                                 CoordRepType;
-  typedef itk::Vector<CoordRepType, TInputImage::ImageDimension> VectorType;
+  /** Standard class type alias. */
+  using Self = JosephForwardProjectionImageFilter;
+  using Superclass = ForwardProjectionImageFilter<TInputImage,TOutputImage>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
+  using InputPixelType = typename TInputImage::PixelType;
+  using OutputPixelType = typename TOutputImage::PixelType;
+  using OutputImageRegionType = typename TOutputImage::RegionType;
+  using CoordRepType = double;
+  using VectorType = itk::Vector<CoordRepType, TInputImage::ImageDimension>;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);

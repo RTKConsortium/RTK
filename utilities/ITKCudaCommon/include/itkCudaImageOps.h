@@ -37,8 +37,8 @@ itkCudaKernelClassMacro(CudaImageOpsKernel);
 class ITK_EXPORT CudaImageOps
 {
 public:
-  /** Standard class typedefs. */
-  typedef CudaImageOps Self;
+  /** Standard class type alias. */
+  using Self = CudaImageOps;
 
   /** Get Cuda Kernel PTX sourcefilename, creates a GetCudaPTXFile method */
   itkGetCudaPTXSourceMacro(CudaImageOpsKernel);

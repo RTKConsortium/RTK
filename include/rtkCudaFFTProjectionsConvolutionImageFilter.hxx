@@ -142,7 +142,7 @@ CudaFFTProjectionsConvolutionImageFilter<TParentImageFilter>
                        *(float2**)(this->m_KernelFFTCUDA->GetCudaDataManager()->GetGPUBufferPointer()));
 
   // CUDA Cropping and Graft Output
-  typedef CudaCropImageFilter CropFilter;
+  using CropFilter = CudaCropImageFilter;
   CropFilter::Pointer cf = CropFilter::New();
   typename Superclass::OutputImageType::SizeType upCropSize, lowCropSize;
   for(unsigned int i=0; i<CudaImageType::ImageDimension; i++)

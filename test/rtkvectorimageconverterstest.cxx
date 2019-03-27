@@ -23,10 +23,10 @@
 
 int main(int, char** )
 {
-  typedef float                                 PixelType;
-  typedef itk::Image< PixelType, 3 >            HigherDimensionImageType;
-  typedef itk::Image< PixelType, 2 >            ImageType;
-  typedef itk::VectorImage< PixelType, 2 >      VectorImageType;
+  using PixelType = float;
+  using HigherDimensionImageType = itk::Image< PixelType, 3 >;
+  using ImageType = itk::Image< PixelType, 2 >;
+  using VectorImageType = itk::VectorImage< PixelType, 2 >;
 
   std::cout << "\n\n****** Case 1: 3D image to 2D vector image, and back ******" << std::endl;
 
@@ -65,7 +65,7 @@ int main(int, char** )
     }
 
   // Create the filter to convert it to a vector image
-  typedef rtk::ImageToVectorImageFilter<HigherDimensionImageType, VectorImageType> HigherDimensionToVectorType;
+  using HigherDimensionToVectorType = rtk::ImageToVectorImageFilter<HigherDimensionImageType, VectorImageType>;
   HigherDimensionToVectorType::Pointer higherDimensionToVector = HigherDimensionToVectorType::New();
   higherDimensionToVector->SetInput(higherDimensionInput);
 
@@ -107,7 +107,7 @@ int main(int, char** )
   CheckVariableLengthVectorImageQuality<VectorImageType>(higherDimensionToVector->GetOutput(), refVectorImage, 1e-7, 100, 2.0);
 
   // Create the filter to convert the result back to an image
-  typedef rtk::VectorImageToImageFilter<VectorImageType, HigherDimensionImageType> VectorToHigherDimensionType;
+  using VectorToHigherDimensionType = rtk::VectorImageToImageFilter<VectorImageType, HigherDimensionImageType>;
   VectorToHigherDimensionType::Pointer vectorToHigherDimension = VectorToHigherDimensionType::New();
   vectorToHigherDimension->SetInput(higherDimensionToVector->GetOutput());
 
@@ -152,7 +152,7 @@ int main(int, char** )
     }
 
   // Create the filter to convert it to a vector image
-  typedef rtk::ImageToVectorImageFilter<ImageType, VectorImageType> ToVectorType;
+  using ToVectorType = rtk::ImageToVectorImageFilter<ImageType, VectorImageType>;
   ToVectorType::Pointer imageToVector = ToVectorType::New();
   imageToVector->SetInput(input);
   imageToVector->SetNumberOfChannels(8);
@@ -164,7 +164,7 @@ int main(int, char** )
   CheckVariableLengthVectorImageQuality<VectorImageType>(imageToVector->GetOutput(), refVectorImage, 1e-7, 100, 2.0);
 
   // Create the filter to convert the result back to an image
-  typedef rtk::VectorImageToImageFilter<VectorImageType, ImageType> VectorToType;
+  using VectorToType = rtk::VectorImageToImageFilter<VectorImageType, ImageType>;
   VectorToType::Pointer vectorToImage = VectorToType::New();
   vectorToImage->SetInput(imageToVector->GetOutput());
 

@@ -105,13 +105,13 @@ template< typename VolumeSeriesType, typename ProjectionStackType, typename TFFT
 class ProjectionStackToFourDImageFilter : public itk::ImageToImageFilter< VolumeSeriesType, VolumeSeriesType >
 {
 public:
-    /** Standard class typedefs. */
-    typedef ProjectionStackToFourDImageFilter                             Self;
-    typedef itk::ImageToImageFilter< VolumeSeriesType, VolumeSeriesType > Superclass;
-    typedef itk::SmartPointer< Self >                                     Pointer;
+    /** Standard class type alias. */
+    using Self = ProjectionStackToFourDImageFilter;
+    using Superclass = itk::ImageToImageFilter< VolumeSeriesType, VolumeSeriesType >;
+    using Pointer = itk::SmartPointer< Self >;
 
-    /** Convenient typedefs */
-  typedef ProjectionStackType VolumeType;
+    /** Convenient type alias */
+  using VolumeType = ProjectionStackType;
 
     /** Method for creation through the object factory. */
     itkNewMacro(Self)
@@ -127,17 +127,17 @@ public:
     void SetInputProjectionStack(const ProjectionStackType* Projections);
     typename ProjectionStackType::ConstPointer GetInputProjectionStack();
 
-    typedef rtk::BackProjectionImageFilter< VolumeType, VolumeType >              BackProjectionFilterType;
-    typedef itk::ExtractImageFilter< ProjectionStackType, ProjectionStackType >   ExtractFilterType;
-    typedef rtk::ConstantImageSource< VolumeType >                                ConstantVolumeSourceType;
-    typedef rtk::ConstantImageSource< VolumeSeriesType >                          ConstantVolumeSeriesSourceType;
-    typedef rtk::SplatWithKnownWeightsImageFilter<VolumeSeriesType, VolumeType>   SplatFilterType;
+    using BackProjectionFilterType = rtk::BackProjectionImageFilter< VolumeType, VolumeType >;
+    using ExtractFilterType = itk::ExtractImageFilter< ProjectionStackType, ProjectionStackType >;
+    using ConstantVolumeSourceType = rtk::ConstantImageSource< VolumeType >;
+    using ConstantVolumeSeriesSourceType = rtk::ConstantImageSource< VolumeSeriesType >;
+    using SplatFilterType = rtk::SplatWithKnownWeightsImageFilter<VolumeSeriesType, VolumeType>;
 
-    typedef rtk::ThreeDCircularProjectionGeometry                                 GeometryType;
+    using GeometryType = rtk::ThreeDCircularProjectionGeometry;
 
-    /** SFINAE typedef, depending on whether a CUDA image is used. */
-    typedef typename itk::Image< typename VolumeSeriesType::PixelType,
-                                 VolumeSeriesType::ImageDimension>        CPUVolumeSeriesType;
+    /** SFINAE type alias, depending on whether a CUDA image is used. */
+    using CPUVolumeSeriesType = typename itk::Image< typename VolumeSeriesType::PixelType,
+                                 VolumeSeriesType::ImageDimension>;
 #ifdef RTK_USE_CUDA
     typedef typename std::conditional< std::is_same< VolumeSeriesType, CPUVolumeSeriesType >::value,
                                        SplatFilterType,
@@ -149,9 +149,9 @@ public:
                                        ConstantVolumeSeriesSourceType,
                                        CudaConstantVolumeSeriesSource >::type     CudaConstantVolumeSeriesSourceType;
 #else
-    typedef SplatFilterType                                                       CudaSplatImageFilterType;
-    typedef ConstantVolumeSourceType                                              CudaConstantVolumeSourceType;
-    typedef ConstantVolumeSeriesSourceType                                        CudaConstantVolumeSeriesSourceType;
+    using CudaSplatImageFilterType = SplatFilterType;
+    using CudaConstantVolumeSourceType = ConstantVolumeSourceType;
+    using CudaConstantVolumeSeriesSourceType = ConstantVolumeSeriesSourceType;
 #endif
 
     /** Pass the backprojection filter to SingleProjectionToFourDFilter */

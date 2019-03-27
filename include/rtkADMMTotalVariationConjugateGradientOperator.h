@@ -105,10 +105,10 @@ template< typename TOutputImage, typename TGradientOutputImage =
 class ADMMTotalVariationConjugateGradientOperator : public ConjugateGradientOperator< TOutputImage >
 {
 public:
-    /** Standard class typedefs. */
-    typedef ADMMTotalVariationConjugateGradientOperator   Self;
-    typedef ConjugateGradientOperator< TOutputImage >     Superclass;
-    typedef itk::SmartPointer< Self >                     Pointer;
+    /** Standard class type alias. */
+    using Self = ADMMTotalVariationConjugateGradientOperator;
+    using Superclass = ConjugateGradientOperator< TOutputImage >;
+    using Pointer = itk::SmartPointer< Self >;
 
     /** Method for creation through the object factory. */
     itkNewMacro(Self)
@@ -116,22 +116,22 @@ public:
     /** Run-time type information (and related methods). */
     itkTypeMacro(rtkADMMTotalVariationConjugateGradientOperator, ConjugateGradientOperator)
 
-    typedef rtk::BackProjectionImageFilter< TOutputImage, TOutputImage >    BackProjectionFilterType;
-    typedef typename BackProjectionFilterType::Pointer                      BackProjectionFilterPointer;
+    using BackProjectionFilterType = rtk::BackProjectionImageFilter< TOutputImage, TOutputImage >;
+    using BackProjectionFilterPointer = typename BackProjectionFilterType::Pointer;
 
-    typedef rtk::ForwardProjectionImageFilter< TOutputImage, TOutputImage > ForwardProjectionFilterType;
-    typedef typename ForwardProjectionFilterType::Pointer                   ForwardProjectionFilterPointer;
+    using ForwardProjectionFilterType = rtk::ForwardProjectionImageFilter< TOutputImage, TOutputImage >;
+    using ForwardProjectionFilterPointer = typename ForwardProjectionFilterType::Pointer;
 
-    typedef itk::MultiplyImageFilter<TOutputImage>                          MultiplyFilterType;
-    typedef itk::SubtractImageFilter<TOutputImage>                          SubtractFilterType;
-    typedef ForwardDifferenceGradientImageFilter<TOutputImage,
+    using MultiplyFilterType = itk::MultiplyImageFilter<TOutputImage>;
+    using SubtractFilterType = itk::SubtractImageFilter<TOutputImage>;
+    using GradientFilterType = ForwardDifferenceGradientImageFilter<TOutputImage,
             typename TOutputImage::ValueType,
             typename TOutputImage::ValueType,
-            TGradientOutputImage>                                           GradientFilterType;
-    typedef rtk::BackwardDifferenceDivergenceImageFilter
-        <TGradientOutputImage, TOutputImage>                                DivergenceFilterType;
-    typedef rtk::DisplacedDetectorImageFilter<TOutputImage>                 DisplacedDetectorFilterType;
-    typedef rtk::MultiplyByVectorImageFilter<TOutputImage>                  GatingWeightsFilterType;
+            TGradientOutputImage>;
+    using DivergenceFilterType = rtk::BackwardDifferenceDivergenceImageFilter
+        <TGradientOutputImage, TOutputImage>;
+    using DisplacedDetectorFilterType = rtk::DisplacedDetectorImageFilter<TOutputImage>;
+    using GatingWeightsFilterType = rtk::MultiplyByVectorImageFilter<TOutputImage>;
 
     /** Set the backprojection filter*/
     void SetBackProjectionFilter (const BackProjectionFilterPointer _arg);

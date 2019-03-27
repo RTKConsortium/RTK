@@ -92,7 +92,7 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
     }
 
   // FFT kernel
-  typedef itk::RealToHalfHermitianForwardFFTImageFilter< FFTInputImageType, FFTOutputImageType > FFTType;
+  using FFTType = itk::RealToHalfHermitianForwardFFTImageFilter< FFTInputImageType, FFTOutputImageType >;
   typename FFTType::Pointer fftK = FFTType::New();
   fftK->SetInput( kernel );
 #if ITK_VERSION_MAJOR<5
@@ -104,7 +104,7 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
   this->m_KernelFFT = fftK->GetOutput();
 
   // Windowing (if enabled)
-  typedef itk::ImageRegionIteratorWithIndex<typename FFTType::OutputImageType> IteratorType;
+  using IteratorType = itk::ImageRegionIteratorWithIndex<typename FFTType::OutputImageType>;
   IteratorType itK(this->m_KernelFFT, this->m_KernelFFT->GetLargestPossibleRegion() );
 
   unsigned int n = this->m_KernelFFT->GetLargestPossibleRegion().GetSize(0);

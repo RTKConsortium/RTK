@@ -28,11 +28,11 @@
 int main(int, char**)
 {
   const unsigned int Dimension = 3;
-  typedef float                                    OutputPixelType;
+  using OutputPixelType = float;
 #ifdef USE_CUDA
-  typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
+  using OutputImageType = itk::CudaImage< OutputPixelType, Dimension >;
 #else
-  typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
+  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
 #endif
 
 #if FAST_TESTS_NO_CHECKS
@@ -42,7 +42,7 @@ int main(int, char**)
 #endif
 
   // Constant image sources
-  typedef rtk::ConstantImageSource< OutputImageType > ConstantImageSourceType;
+  using ConstantImageSourceType = rtk::ConstantImageSource< OutputImageType >;
   ConstantImageSourceType::PointType origin;
   ConstantImageSourceType::SizeType size;
   ConstantImageSourceType::SpacingType spacing;
@@ -96,33 +96,33 @@ int main(int, char**)
   projectionsSource->SetConstant( 0. );
 
   // Shepp Logan projections filter
-  typedef rtk::SheppLoganPhantomFilter<OutputImageType, OutputImageType> SLPType;
+  using SLPType = rtk::SheppLoganPhantomFilter<OutputImageType, OutputImageType>;
   SLPType::Pointer slp = SLPType::New();
   slp->SetInput( projectionsSource->GetOutput() );
 
   // Displaced detector weighting
 #ifdef USE_CUDA
-  typedef rtk::CudaDisplacedDetectorImageFilter DDFType;
+  using DDFType = rtk::CudaDisplacedDetectorImageFilter;
 #else
-  typedef rtk::DisplacedDetectorImageFilter<OutputImageType> DDFType;
+  using DDFType = rtk::DisplacedDetectorImageFilter<OutputImageType>;
 #endif
   DDFType::Pointer ddf = DDFType::New();
   ddf->SetInput( slp->GetOutput() );
 
   // Create a reference object (in this case a 3D phantom reference).
-  typedef rtk::DrawSheppLoganFilter<OutputImageType, OutputImageType> DSLType;
+  using DSLType = rtk::DrawSheppLoganFilter<OutputImageType, OutputImageType>;
   DSLType::Pointer dsl = DSLType::New();
   dsl->SetInput( tomographySource->GetOutput() );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( dsl->Update() );
 
   // FDK reconstruction filtering
-  typedef rtk::FDKConeBeamReconstructionFilter<OutputImageType> FDKCPUType;
+  using FDKCPUType = rtk::FDKConeBeamReconstructionFilter<OutputImageType>;
   FDKCPUType::Pointer feldkamp = FDKCPUType::New();
   feldkamp->SetInput( 0, tomographySource->GetOutput() );
   feldkamp->SetInput( 1, ddf->GetOutput() );
 
   std::cout << "\n\n****** Case 1: positive offset in geometry ******" << std::endl;
-  typedef rtk::ThreeDCircularProjectionGeometry GeometryType;
+  using GeometryType = rtk::ThreeDCircularProjectionGeometry;
   GeometryType::Pointer geometry = GeometryType::New();
   slp->SetGeometry(geometry);
   ddf->SetGeometry( geometry );

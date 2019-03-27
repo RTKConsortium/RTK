@@ -68,10 +68,10 @@ namespace rtk
 class UnwarpSequenceConjugateGradientOperator : public ConjugateGradientOperator< TImageSequence >
 {
 public:
-    /** Standard class typedefs. */
-    typedef UnwarpSequenceConjugateGradientOperator       Self;
-    typedef ConjugateGradientOperator< TImageSequence >   Superclass;
-    typedef itk::SmartPointer< Self >                     Pointer;
+    /** Standard class type alias. */
+    using Self = UnwarpSequenceConjugateGradientOperator;
+    using Superclass = ConjugateGradientOperator< TImageSequence >;
+    using Pointer = itk::SmartPointer< Self >;
 
     /** Method for creation through the object factory. */
     itkNewMacro(Self)
@@ -79,7 +79,7 @@ public:
     /** Run-time type information (and related methods). */
     itkTypeMacro(rtkUnwarpSequenceConjugateGradientOperator, ConjugateGradientOperator)
 
-    typedef rtk::WarpSequenceImageFilter<TImageSequence, TDVFImageSequence, TImage, TDVFImage> WarpSequenceFilterType;
+    using WarpSequenceFilterType = rtk::WarpSequenceImageFilter<TImageSequence, TDVFImageSequence, TImage, TDVFImage>;
 
     /** Set the motion vector field used in input 1 */
     void SetDisplacementField(const TDVFImageSequence* DVFs);

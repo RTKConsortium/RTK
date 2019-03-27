@@ -27,7 +27,7 @@ rtk::ConditionalMedianImageFilter<itk::VectorImage<float, 3> >
 ::DynamicThreadedGenerateData(const itk::VectorImage<float, 3>::RegionType& outputRegionForThread)
 #endif
 {
-typedef itk::VectorImage<float, 3> TInputImage;
+using TInputImage = itk::VectorImage<float, 3>;
 
 // Compute the centered difference with the previous and next frames, store it into the intermediate image
 itk::ConstNeighborhoodIterator<TInputImage> nIt(m_Radius, this->GetInput(), outputRegionForThread);

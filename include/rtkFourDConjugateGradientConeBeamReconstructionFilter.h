@@ -96,37 +96,37 @@ class ITK_EXPORT FourDConjugateGradientConeBeamReconstructionFilter :
   public rtk::IterativeConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 {
 public:
-  /** Standard class typedefs. */
-  typedef FourDConjugateGradientConeBeamReconstructionFilter                   Self;
-  typedef IterativeConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>     Superclass;
-  typedef itk::SmartPointer<Self>                            Pointer;
-  typedef itk::SmartPointer<const Self>                      ConstPointer;
+  /** Standard class type alias. */
+  using Self = FourDConjugateGradientConeBeamReconstructionFilter;
+  using Superclass = IterativeConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
-  /** Some convenient typedefs. */
-  typedef VolumeSeriesType      InputImageType;
-  typedef VolumeSeriesType      OutputImageType;
-  typedef ProjectionStackType   VolumeType;
+  /** Some convenient type alias. */
+  using InputImageType = VolumeSeriesType;
+  using OutputImageType = VolumeSeriesType;
+  using VolumeType = ProjectionStackType;
 
   /** Typedefs of each subfilter of this composite filter */
-  typedef ForwardProjectionImageFilter< VolumeType, ProjectionStackType >                      ForwardProjectionFilterType;
-  typedef BackProjectionImageFilter< ProjectionStackType, VolumeType >                         BackProjectionFilterType;
-  typedef ConjugateGradientImageFilter<VolumeSeriesType>                                       ConjugateGradientFilterType;
-  typedef FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType>  CGOperatorFilterType;
-  typedef ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType>             ProjStackToFourDFilterType;
-  typedef DisplacedDetectorImageFilter<ProjectionStackType>                                    DisplacedDetectorFilterType;
+  using ForwardProjectionFilterType = ForwardProjectionImageFilter< VolumeType, ProjectionStackType >;
+  using BackProjectionFilterType = BackProjectionImageFilter< ProjectionStackType, VolumeType >;
+  using ConjugateGradientFilterType = ConjugateGradientImageFilter<VolumeSeriesType>;
+  using CGOperatorFilterType = FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType>;
+  using ProjStackToFourDFilterType = ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType>;
+  using DisplacedDetectorFilterType = DisplacedDetectorImageFilter<ProjectionStackType>;
 
-  typedef typename Superclass::ForwardProjectionType ForwardProjectionType;
-  typedef typename Superclass::BackProjectionType    BackProjectionType;
+  using ForwardProjectionType = typename Superclass::ForwardProjectionType;
+  using BackProjectionType = typename Superclass::BackProjectionType;
 
-  /** SFINAE typedef, depending on whether a CUDA image is used. */
-  typedef typename itk::Image< typename VolumeSeriesType::PixelType,
-                               VolumeSeriesType::ImageDimension>                               CPUVolumeSeriesType;
+  /** SFINAE type alias, depending on whether a CUDA image is used. */
+  using CPUVolumeSeriesType = typename itk::Image< typename VolumeSeriesType::PixelType,
+                               VolumeSeriesType::ImageDimension>;
 #ifdef RTK_USE_CUDA
   typedef typename std::conditional<std::is_same< VolumeSeriesType, CPUVolumeSeriesType >::value,
                                     ConjugateGradientImageFilter<VolumeSeriesType>,
                                     CudaConjugateGradientImageFilter<VolumeSeriesType> >::type CudaConjugateGradientImageFilterType;
 #else
-  typedef ConjugateGradientImageFilter<VolumeSeriesType>                                       CudaConjugateGradientImageFilterType;
+  using CudaConjugateGradientImageFilterType = ConjugateGradientImageFilter<VolumeSeriesType>;
 #endif
 
   /** Standard New method. */

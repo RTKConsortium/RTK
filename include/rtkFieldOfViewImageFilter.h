@@ -49,18 +49,18 @@ class ITK_EXPORT FieldOfViewImageFilter:
   public itk::InPlaceImageFilter<TInputImage,TOutputImage>
 {
 public:
-  /** Standard class typedefs. */
-  typedef FieldOfViewImageFilter                            Self;
-  typedef itk::ImageToImageFilter<TInputImage,TOutputImage> Superclass;
-  typedef itk::SmartPointer<Self>                           Pointer;
-  typedef itk::SmartPointer<const Self>                     ConstPointer;
+  /** Standard class type alias. */
+  using Self = FieldOfViewImageFilter;
+  using Superclass = itk::ImageToImageFilter<TInputImage,TOutputImage>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
-  typedef typename TOutputImage::RegionType                 OutputImageRegionType;
-  typedef typename TInputImage::Superclass                  ProjectionsStackType;
-  typedef typename ProjectionsStackType::Pointer            ProjectionsStackPointer;
-  typedef rtk::ThreeDCircularProjectionGeometry             GeometryType;
-  typedef typename GeometryType::ConstPointer               GeometryConstPointer;
-  typedef enum {RADIUSINF,RADIUSSUP,RADIUSBOTH}             FOVRadiusType;
+  using OutputImageRegionType = typename TOutputImage::RegionType;
+  using ProjectionsStackType = typename TInputImage::Superclass;
+  using ProjectionsStackPointer = typename ProjectionsStackType::Pointer;
+  using GeometryType = rtk::ThreeDCircularProjectionGeometry;
+  using GeometryConstPointer = typename GeometryType::ConstPointer;
+  using FOVRadiusType = enum {RADIUSINF,RADIUSSUP,RADIUSBOTH};
 
 
   /** Method for creation through the object factory. */

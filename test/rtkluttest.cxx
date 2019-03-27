@@ -26,8 +26,8 @@ int main(int argc, char*argv[])
   }
 
   // Elekta projections reader
-  typedef itk::Image< unsigned short, 3 > ShortImageType;
-  typedef rtk::ProjectionsReader< ShortImageType > ReaderType;
+  using ShortImageType = itk::Image< unsigned short, 3 >;
+  using ReaderType = rtk::ProjectionsReader< ShortImageType >;
   ReaderType::Pointer r = ReaderType::New();
   std::vector<std::string> fileNames;
   fileNames.push_back( argv[1] );
@@ -35,24 +35,24 @@ int main(int argc, char*argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION( r->Update() );
 
   /***** Float *****/
-  typedef itk::Image <float, 3> FloatImageType;
-  typedef rtk::ElektaSynergyLookupTableImageFilter<FloatImageType> ShortFloatLUTType;
+  using FloatImageType = itk::Image <float, 3>;
+  using ShortFloatLUTType = rtk::ElektaSynergyLookupTableImageFilter<FloatImageType>;
   ShortFloatLUTType::Pointer sflut = ShortFloatLUTType::New();
   sflut->SetInput( r->GetOutput() );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( sflut->Update() );
 
-  typedef itk::CastImageFilter<ShortImageType, FloatImageType> FloatCastType;
+  using FloatCastType = itk::CastImageFilter<ShortImageType, FloatImageType>;
   FloatCastType::Pointer fCast = FloatCastType::New();
   fCast->SetInput( r->GetOutput() );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( fCast->Update() );
 
-  typedef itk::Image <float, 1> FloatLUTType;
-  typedef itk::CastImageFilter<ShortFloatLUTType::LookupTableType, FloatLUTType> FloatLUTCastType;
+  using FloatLUTType = itk::Image <float, 1>;
+  using FloatLUTCastType = itk::CastImageFilter<ShortFloatLUTType::LookupTableType, FloatLUTType>;
   FloatLUTCastType::Pointer flCast = FloatLUTCastType::New();
   flCast->SetInput( sflut->GetLookupTable() );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( flCast->Update() );
 
-  typedef rtk::LookupTableImageFilter<FloatImageType, FloatImageType> FloatLUTTypea;
+  using FloatLUTTypea = rtk::LookupTableImageFilter<FloatImageType, FloatImageType>;
   FloatLUTTypea::Pointer flut = FloatLUTTypea::New();
   flut->SetInput( fCast->GetOutput() );
   flut->SetLookupTable( flCast->GetOutput() );
@@ -61,24 +61,24 @@ int main(int argc, char*argv[])
   CheckImageQuality< FloatImageType >(flut->GetOutput(), sflut->GetOutput(), 1.6e-7, 100, 2.0);
 
   /***** Double *****/
-  typedef itk::Image <float, 3> DoubleImageType;
-  typedef rtk::ElektaSynergyLookupTableImageFilter<DoubleImageType> ShortDoubleLUTType;
+  using DoubleImageType = itk::Image <float, 3>;
+  using ShortDoubleLUTType = rtk::ElektaSynergyLookupTableImageFilter<DoubleImageType>;
   ShortDoubleLUTType::Pointer sdlut = ShortDoubleLUTType::New();
   sdlut->SetInput( r->GetOutput() );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( sdlut->Update() );
 
-  typedef itk::CastImageFilter<ShortImageType, DoubleImageType> DoubleCastType;
+  using DoubleCastType = itk::CastImageFilter<ShortImageType, DoubleImageType>;
   DoubleCastType::Pointer dCast = DoubleCastType::New();
   dCast->SetInput( r->GetOutput() );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( dCast->Update() );
 
-  typedef itk::Image <float, 1> DoubleLUTType;
-  typedef itk::CastImageFilter<ShortDoubleLUTType::LookupTableType, DoubleLUTType> DoubleLUTCastType;
+  using DoubleLUTType = itk::Image <float, 1>;
+  using DoubleLUTCastType = itk::CastImageFilter<ShortDoubleLUTType::LookupTableType, DoubleLUTType>;
   DoubleLUTCastType::Pointer dlCast = DoubleLUTCastType::New();
   dlCast->SetInput( sdlut->GetLookupTable() );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( dlCast->Update() );
 
-  typedef rtk::LookupTableImageFilter<DoubleImageType, DoubleImageType> DoubleLUTTypea;
+  using DoubleLUTTypea = rtk::LookupTableImageFilter<DoubleImageType, DoubleImageType>;
   DoubleLUTTypea::Pointer dlut = DoubleLUTTypea::New();
   dlut->SetInput( dCast->GetOutput() );
   dlut->SetLookupTable( dlCast->GetOutput() );

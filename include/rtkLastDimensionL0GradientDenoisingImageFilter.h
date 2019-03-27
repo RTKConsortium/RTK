@@ -43,11 +43,11 @@ template< class TInputImage >
 class LastDimensionL0GradientDenoisingImageFilter : public itk::InPlaceImageFilter<TInputImage, TInputImage>
 {
 public:
-    /** Standard class typedefs. */
-    typedef LastDimensionL0GradientDenoisingImageFilter                        Self;
-    typedef itk::InPlaceImageFilter<TInputImage, TInputImage> Superclass;
-    typedef itk::SmartPointer< Self >                         Pointer;
-    typedef typename TInputImage::PixelType                   InputPixelType;
+    /** Standard class type alias. */
+    using Self = LastDimensionL0GradientDenoisingImageFilter;
+    using Superclass = itk::InPlaceImageFilter<TInputImage, TInputImage>;
+    using Pointer = itk::SmartPointer< Self >;
+    using InputPixelType = typename TInputImage::PixelType;
 
     /** Method for creation through the object factory. */
     itkNewMacro(Self)

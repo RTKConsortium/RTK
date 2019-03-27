@@ -196,18 +196,18 @@ template< typename VolumeSeriesType, typename ProjectionStackType>
 class FourDROOSTERConeBeamReconstructionFilter : public rtk::IterativeConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 {
 public:
-  /** Standard class typedefs. */
-  typedef FourDROOSTERConeBeamReconstructionFilter                                          Self;
-  typedef rtk::IterativeConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType> Superclass;
-  typedef itk::SmartPointer< Self >                                                         Pointer;
-  typedef ProjectionStackType                                                               VolumeType;
-  typedef itk::CovariantVector< typename VolumeSeriesType::ValueType, VolumeSeriesType::ImageDimension - 1> CovariantVectorForSpatialGradient;
-  typedef itk::CovariantVector< typename VolumeSeriesType::ValueType, 1>                                    CovariantVectorForTemporalGradient;
-  typedef CovariantVectorForSpatialGradient                                                                 DVFVectorType;
+  /** Standard class type alias. */
+  using Self = FourDROOSTERConeBeamReconstructionFilter;
+  using Superclass = rtk::IterativeConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>;
+  using Pointer = itk::SmartPointer< Self >;
+  using VolumeType = ProjectionStackType;
+  using CovariantVectorForSpatialGradient = itk::CovariantVector< typename VolumeSeriesType::ValueType, VolumeSeriesType::ImageDimension - 1>;
+  using CovariantVectorForTemporalGradient = itk::CovariantVector< typename VolumeSeriesType::ValueType, 1>;
+  using DVFVectorType = CovariantVectorForSpatialGradient;
 
-  /** SFINAE typedef, depending on whether a CUDA image is used. */
-  typedef typename itk::Image< typename VolumeSeriesType::PixelType,
-                               VolumeSeriesType::ImageDimension> CPUVolumeSeriesType;
+  /** SFINAE type alias, depending on whether a CUDA image is used. */
+  using CPUVolumeSeriesType = typename itk::Image< typename VolumeSeriesType::PixelType,
+                               VolumeSeriesType::ImageDimension>;
 #ifdef RTK_USE_CUDA
   typedef typename std::conditional< std::is_same< VolumeSeriesType, CPUVolumeSeriesType >::value,
                                      itk::Image<CovariantVectorForSpatialGradient, VolumeSeriesType::ImageDimension>,
@@ -228,12 +228,12 @@ public:
                                      TotalVariationDenoisingBPDQImageFilter<VolumeSeriesType, TemporalGradientImageType>,
                                      CudaLastDimensionTVDenoisingImageFilter >::type TemporalTVDenoisingFilterType;
 #else
-  typedef itk::Image<CovariantVectorForSpatialGradient, VolumeSeriesType::ImageDimension>     SpatialGradientImageType;
-  typedef itk::Image<CovariantVectorForTemporalGradient, VolumeSeriesType::ImageDimension>    TemporalGradientImageType;
-  typedef itk::Image<DVFVectorType, VolumeSeriesType::ImageDimension>                         DVFSequenceImageType;
-  typedef itk::Image<DVFVectorType, VolumeSeriesType::ImageDimension - 1>                     DVFImageType;
-  typedef AverageOutOfROIImageFilter <VolumeSeriesType, VolumeType>                           AverageOutOfROIFilterType;
-  typedef TotalVariationDenoisingBPDQImageFilter<VolumeSeriesType, TemporalGradientImageType> TemporalTVDenoisingFilterType;
+  using SpatialGradientImageType = itk::Image<CovariantVectorForSpatialGradient, VolumeSeriesType::ImageDimension>;
+  using TemporalGradientImageType = itk::Image<CovariantVectorForTemporalGradient, VolumeSeriesType::ImageDimension>;
+  using DVFSequenceImageType = itk::Image<DVFVectorType, VolumeSeriesType::ImageDimension>;
+  using DVFImageType = itk::Image<DVFVectorType, VolumeSeriesType::ImageDimension - 1>;
+  using AverageOutOfROIFilterType = AverageOutOfROIImageFilter <VolumeSeriesType, VolumeType>;
+  using TemporalTVDenoisingFilterType = TotalVariationDenoisingBPDQImageFilter<VolumeSeriesType, TemporalGradientImageType>;
 #endif
 
   /** Method for creation through the object factory. */
@@ -260,20 +260,20 @@ public:
   typename DVFSequenceImageType::Pointer            GetDisplacementField();
   typename DVFSequenceImageType::Pointer            GetInverseDisplacementField();
 
-  typedef rtk::FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>    FourDCGFilterType;
-  typedef itk::ThresholdImageFilter<VolumeSeriesType>                                                       ThresholdFilterType;
-  typedef itk::ResampleImageFilter<VolumeType, VolumeType>                                                  ResampleFilterType;
-  typedef rtk::TotalVariationDenoiseSequenceImageFilter<VolumeSeriesType>                                   SpatialTVDenoisingFilterType;
-  typedef rtk::DaubechiesWaveletsDenoiseSequenceImageFilter<VolumeSeriesType>                               SpatialWaveletsDenoisingFilterType;
-  typedef rtk::WarpSequenceImageFilter<VolumeSeriesType, DVFSequenceImageType, VolumeType, DVFImageType>    WarpSequenceFilterType;
-  typedef rtk::UnwarpSequenceImageFilter<VolumeSeriesType, DVFSequenceImageType, VolumeType, DVFImageType>  UnwarpSequenceFilterType;
-  typedef itk::SubtractImageFilter<VolumeSeriesType, VolumeSeriesType>                                      SubtractFilterType;
-  typedef itk::AddImageFilter<VolumeSeriesType, VolumeSeriesType>                                           AddFilterType;
-  typedef rtk::LastDimensionL0GradientDenoisingImageFilter<VolumeSeriesType>                                TemporalL0DenoisingFilterType;
-  typedef rtk::TotalNuclearVariationDenoisingBPDQImageFilter<VolumeSeriesType, SpatialGradientImageType>    TNVDenoisingFilterType;
+  using FourDCGFilterType = rtk::FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>;
+  using ThresholdFilterType = itk::ThresholdImageFilter<VolumeSeriesType>;
+  using ResampleFilterType = itk::ResampleImageFilter<VolumeType, VolumeType>;
+  using SpatialTVDenoisingFilterType = rtk::TotalVariationDenoiseSequenceImageFilter<VolumeSeriesType>;
+  using SpatialWaveletsDenoisingFilterType = rtk::DaubechiesWaveletsDenoiseSequenceImageFilter<VolumeSeriesType>;
+  using WarpSequenceFilterType = rtk::WarpSequenceImageFilter<VolumeSeriesType, DVFSequenceImageType, VolumeType, DVFImageType>;
+  using UnwarpSequenceFilterType = rtk::UnwarpSequenceImageFilter<VolumeSeriesType, DVFSequenceImageType, VolumeType, DVFImageType>;
+  using SubtractFilterType = itk::SubtractImageFilter<VolumeSeriesType, VolumeSeriesType>;
+  using AddFilterType = itk::AddImageFilter<VolumeSeriesType, VolumeSeriesType>;
+  using TemporalL0DenoisingFilterType = rtk::LastDimensionL0GradientDenoisingImageFilter<VolumeSeriesType>;
+  using TNVDenoisingFilterType = rtk::TotalNuclearVariationDenoisingBPDQImageFilter<VolumeSeriesType, SpatialGradientImageType>;
 
-  typedef typename Superclass::ForwardProjectionType ForwardProjectionType;
-  typedef typename Superclass::BackProjectionType    BackProjectionType;
+  using ForwardProjectionType = typename Superclass::ForwardProjectionType;
+  using BackProjectionType = typename Superclass::BackProjectionType;
 
   /** Pass the ForwardProjection filter to SingleProjectionToFourDFilter */
   void SetForwardProjectionFilter(ForwardProjectionType fwtype) ITK_OVERRIDE;

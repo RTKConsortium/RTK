@@ -45,10 +45,10 @@ template< class TMaterialProjections,
 class WeidingerForwardModelImageFilter : public itk::ImageToImageFilter<TMaterialProjections, TMaterialProjections>
 {
 public:
-    /** Standard class typedefs. */
-    typedef WeidingerForwardModelImageFilter                                    Self;
-    typedef itk::ImageToImageFilter<TMaterialProjections, TMaterialProjections> Superclass;
-    typedef itk::SmartPointer< Self >                                           Pointer;
+    /** Standard class type alias. */
+    using Self = WeidingerForwardModelImageFilter;
+    using Superclass = itk::ImageToImageFilter<TMaterialProjections, TMaterialProjections>;
+    using Pointer = itk::SmartPointer< Self >;
 
     /** Method for creation through the object factory. */
     itkNewMacro(Self)
@@ -60,19 +60,19 @@ public:
     itkStaticConstMacro(nBins, unsigned int, TPhotonCounts::PixelType::Dimension);
     itkStaticConstMacro(nMaterials, unsigned int, TMaterialProjections::PixelType::Dimension);
 
-    /** Convenient typedef */
-    typedef typename TMaterialProjections::PixelType::ValueType dataType;
+    /** Convenient type alias */
+    using dataType = typename TMaterialProjections::PixelType::ValueType;
 
     /** Define types for output images:
      * - one n-vector per pixel
      * - one nxn-matrix per pixel, but stored as one nxn-vector
     to allow vector back projection */
-    typedef TMaterialProjections TOutputImage1;
-    typedef itk::Vector<dataType, nMaterials * nMaterials> TPixelOutput2;
+    using TOutputImage1 = TMaterialProjections;
+    using TPixelOutput2 = itk::Vector<dataType, nMaterials * nMaterials>;
 #ifdef RTK_USE_CUDA
-    typedef itk::CudaImage<TPixelOutput2, TMaterialProjections::ImageDimension > TOutputImage2;
+    using TOutputImage2 = itk::CudaImage<TPixelOutput2, TMaterialProjections::ImageDimension >;
 #else
-    typedef itk::Image<TPixelOutput2, TMaterialProjections::ImageDimension > TOutputImage2;
+    using TOutputImage2 = itk::Image<TPixelOutput2, TMaterialProjections::ImageDimension >;
 #endif
 
     /** Define the getters for the outputs, with correct types */
@@ -86,8 +86,8 @@ public:
     void SetInputProjectionsOfOnes(const TProjections* projectionsOfOnes);
 
     /** Typedefs for additional input information */
-    typedef vnl_matrix<dataType>    BinnedDetectorResponseType;
-    typedef vnl_matrix<dataType>    MaterialAttenuationsType;
+    using BinnedDetectorResponseType = vnl_matrix<dataType>;
+    using MaterialAttenuationsType = vnl_matrix<dataType>;
 
     /** Set and Get macros for the additional input information */
     itkGetConstReferenceMacro(BinnedDetectorResponse, BinnedDetectorResponseType)

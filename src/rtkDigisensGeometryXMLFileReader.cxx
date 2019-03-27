@@ -76,8 +76,8 @@ void
 DigisensGeometryXMLFileReader::
 EndElement(const char *name)
 {
-  typedef itk::Vector<double, 3> VectorThreeDType;
-  typedef itk::Vector<double, 4> Vector4DType;
+  using VectorThreeDType = itk::Vector<double, 3>;
+  using Vector4DType = itk::Vector<double, 4>;
 
 #define ENCAPLULATE_META_DATA_3D(section, metaName) \
   if(m_CurrentSection == section && itksys::SystemTools::Strucmp(name, metaName) == 0) \

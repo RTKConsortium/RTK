@@ -78,7 +78,7 @@ DisplacedDetectorForOffsetFieldOfViewImageFilter<TInputImage, TOutputImage>
                              << "or using the nodisplaced flag of the application you are running");
     }
 
-  typedef typename rtk::FieldOfViewImageFilter<OutputImageType, OutputImageType> FOVFilterType;
+  using FOVFilterType = typename rtk::FieldOfViewImageFilter<OutputImageType, OutputImageType>;
   typename FOVFilterType::Pointer fieldofview = FOVFilterType::New();
   fieldofview->SetProjectionsStack( inputPtr.GetPointer() );
   fieldofview->SetGeometry( this->GetGeometry() );

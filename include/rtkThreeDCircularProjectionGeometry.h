@@ -50,18 +50,18 @@ namespace rtk
 class RTK_EXPORT ThreeDCircularProjectionGeometry : public ProjectionGeometry<3>
 {
 public:
-  typedef ThreeDCircularProjectionGeometry Self;
-  typedef ProjectionGeometry<3>            Superclass;
-  typedef itk::SmartPointer< Self >        Pointer;
-  typedef itk::SmartPointer< const Self >  ConstPointer;
+  using Self = ThreeDCircularProjectionGeometry;
+  using Superclass = ProjectionGeometry<3>;
+  using Pointer = itk::SmartPointer< Self >;
+  using ConstPointer = itk::SmartPointer< const Self >;
 
-  typedef itk::Vector<double, 3>           VectorType;
-  typedef itk::Vector<double, 4>           HomogeneousVectorType;
-  typedef itk::Matrix<double, 3, 3 >       TwoDHomogeneousMatrixType;
-  typedef itk::Matrix<double, 4, 4 >       ThreeDHomogeneousMatrixType;
-  typedef itk::Point<double, 3>            PointType;
-  typedef itk::Matrix<double, 3, 3>        Matrix3x3Type;
-  typedef Superclass::MatrixType           HomogeneousProjectionMatrixType;
+  using VectorType = itk::Vector<double, 3>;
+  using HomogeneousVectorType = itk::Vector<double, 4>;
+  using TwoDHomogeneousMatrixType = itk::Matrix<double, 3, 3 >;
+  using ThreeDHomogeneousMatrixType = itk::Matrix<double, 4, 4 >;
+  using PointType = itk::Point<double, 3>;
+  using Matrix3x3Type = itk::Matrix<double, 3, 3>;
+  using HomogeneousProjectionMatrixType = Superclass::MatrixType;
 
   /** Method for creation through the object factory. */
   itkNewMacro( Self );

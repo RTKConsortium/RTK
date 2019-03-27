@@ -135,34 +135,34 @@ class ITK_EXPORT SARTConeBeamReconstructionFilter :
   public rtk::IterativeConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>
 {
 public:
-  /** Standard class typedefs. */
-  typedef SARTConeBeamReconstructionFilter                                      Self;
-  typedef IterativeConeBeamReconstructionFilter<TVolumeImage, TProjectionImage> Superclass;
-  typedef itk::SmartPointer<Self>                                               Pointer;
-  typedef itk::SmartPointer<const Self>                                         ConstPointer;
+  /** Standard class type alias. */
+  using Self = SARTConeBeamReconstructionFilter;
+  using Superclass = IterativeConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
-  /** Some convenient typedefs. */
-  typedef TVolumeImage     VolumeType;
-  typedef TProjectionImage ProjectionType;
+  /** Some convenient type alias. */
+  using VolumeType = TVolumeImage;
+  using ProjectionType = TProjectionImage;
 
   /** Typedefs of each subfilter of this composite filter */
-  typedef itk::ExtractImageFilter< ProjectionType, ProjectionType >                          ExtractFilterType;
-  typedef itk::MultiplyImageFilter< ProjectionType, ProjectionType, ProjectionType >         MultiplyFilterType;
-  typedef rtk::ForwardProjectionImageFilter< ProjectionType, VolumeType >                    ForwardProjectionFilterType;
-  typedef itk::SubtractImageFilter< ProjectionType, ProjectionType >                         SubtractFilterType;
-  typedef itk::AddImageFilter< VolumeType, VolumeType >                                      AddFilterType;
-  typedef rtk::BackProjectionImageFilter< VolumeType, ProjectionType >                       BackProjectionFilterType;
-  typedef rtk::RayBoxIntersectionImageFilter<ProjectionType, ProjectionType>                 RayBoxIntersectionFilterType;
-  typedef itk::DivideOrZeroOutImageFilter<ProjectionType, ProjectionType, ProjectionType>    DivideProjectionFilterType;
-  typedef itk::DivideOrZeroOutImageFilter<VolumeType, VolumeType, VolumeType>                DivideVolumeFilterType;
-  typedef rtk::ConstantImageSource<VolumeType>                                               ConstantVolumeSourceType;
-  typedef rtk::ConstantImageSource<ProjectionType>                                           ConstantProjectionSourceType;
-  typedef itk::ThresholdImageFilter<VolumeType>                                              ThresholdFilterType;
-  typedef rtk::DisplacedDetectorImageFilter<ProjectionType>                                  DisplacedDetectorFilterType;
-  typedef itk::MultiplyImageFilter<ProjectionType,ProjectionType, ProjectionType>            GatingWeightsFilterType;
+  using ExtractFilterType = itk::ExtractImageFilter< ProjectionType, ProjectionType >;
+  using MultiplyFilterType = itk::MultiplyImageFilter< ProjectionType, ProjectionType, ProjectionType >;
+  using ForwardProjectionFilterType = rtk::ForwardProjectionImageFilter< ProjectionType, VolumeType >;
+  using SubtractFilterType = itk::SubtractImageFilter< ProjectionType, ProjectionType >;
+  using AddFilterType = itk::AddImageFilter< VolumeType, VolumeType >;
+  using BackProjectionFilterType = rtk::BackProjectionImageFilter< VolumeType, ProjectionType >;
+  using RayBoxIntersectionFilterType = rtk::RayBoxIntersectionImageFilter<ProjectionType, ProjectionType>;
+  using DivideProjectionFilterType = itk::DivideOrZeroOutImageFilter<ProjectionType, ProjectionType, ProjectionType>;
+  using DivideVolumeFilterType = itk::DivideOrZeroOutImageFilter<VolumeType, VolumeType, VolumeType>;
+  using ConstantVolumeSourceType = rtk::ConstantImageSource<VolumeType>;
+  using ConstantProjectionSourceType = rtk::ConstantImageSource<ProjectionType>;
+  using ThresholdFilterType = itk::ThresholdImageFilter<VolumeType>;
+  using DisplacedDetectorFilterType = rtk::DisplacedDetectorImageFilter<ProjectionType>;
+  using GatingWeightsFilterType = itk::MultiplyImageFilter<ProjectionType,ProjectionType, ProjectionType>;
 
-  typedef typename Superclass::ForwardProjectionType ForwardProjectionType;
-  typedef typename Superclass::BackProjectionType    BackProjectionType;
+  using ForwardProjectionType = typename Superclass::ForwardProjectionType;
+  using BackProjectionType = typename Superclass::BackProjectionType;
 
   /** Standard New method. */
   itkNewMacro(Self);

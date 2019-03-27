@@ -47,11 +47,11 @@ template< class TInput, class TOutput >
 class LUT
 {
 public:
-  typedef itk::Image<TOutput,1>                                                   LookupTableType;
-  typedef typename LookupTableType::Pointer                                       LookupTablePointer;
-  typedef typename LookupTableType::PixelType*                                    LookupTableDataPointer;
-  typedef typename itk::LinearInterpolateImageFunction< LookupTableType, double > InterpolatorType;
-  typedef typename InterpolatorType::Pointer                                      InterpolatorPointer;
+  using LookupTableType = itk::Image<TOutput,1>;
+  using LookupTablePointer = typename LookupTableType::Pointer;
+  using LookupTableDataPointer = typename LookupTableType::PixelType*;
+  using InterpolatorType = typename itk::LinearInterpolateImageFunction< LookupTableType, double >;
+  using InterpolatorPointer = typename InterpolatorType::Pointer;
 
   LUT():
     m_LookupTableDataPointer(ITK_NULLPTR),
@@ -142,14 +142,14 @@ class ITK_EXPORT LookupTableImageFilter : public
 
 public:
   /** Lookup table type definition. */
-  typedef Functor::LUT< typename TInputImage::PixelType, typename TOutputImage::PixelType > FunctorType;
-  typedef typename FunctorType::LookupTableType                                                     LookupTableType;
+  using FunctorType = Functor::LUT< typename TInputImage::PixelType, typename TOutputImage::PixelType >;
+  using LookupTableType = typename FunctorType::LookupTableType;
 
-  /** Standard class typedefs. */
-  typedef LookupTableImageFilter                                                Self;
-  typedef itk::UnaryFunctorImageFilter<TInputImage, TOutputImage, FunctorType > Superclass;
-  typedef itk::SmartPointer<Self>                                               Pointer;
-  typedef itk::SmartPointer<const Self>                                         ConstPointer;
+  /** Standard class type alias. */
+  using Self = LookupTableImageFilter;
+  using Superclass = itk::UnaryFunctorImageFilter<TInputImage, TOutputImage, FunctorType >;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);

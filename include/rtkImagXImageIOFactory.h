@@ -37,11 +37,11 @@ namespace rtk
 class RTK_EXPORT ImagXImageIOFactory : public itk::ObjectFactoryBase
 {
 public:
-  /** Standard class typedefs. */
-  typedef ImagXImageIOFactory           Self;
-  typedef itk::ObjectFactoryBase        Superclass;
-  typedef itk::SmartPointer<Self>       Pointer;
-  typedef itk::SmartPointer<const Self> ConstPointer;
+  /** Standard class type alias. */
+  using Self = ImagXImageIOFactory;
+  using Superclass = itk::ObjectFactoryBase;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
   /** Class methods used to interface with the registered factories. */
   const char* GetITKSourceVersion(void) const ITK_OVERRIDE {
@@ -66,7 +66,7 @@ public:
 protected:
   ImagXImageIOFactory();
   virtual ~ImagXImageIOFactory() ITK_OVERRIDE {}
-  typedef ImagXImageIOFactory myProductType;
+  using myProductType = ImagXImageIOFactory;
   const myProductType* m_MyProduct;
 private:
   ImagXImageIOFactory(const Self&); //purposely not implemented

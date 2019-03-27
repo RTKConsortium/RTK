@@ -30,11 +30,11 @@
 int main(int, char** )
 {
   const unsigned int Dimension = 3;
-  typedef float                                    OutputPixelType;
+  using OutputPixelType = float;
 #ifdef USE_CUDA
-  typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
+  using OutputImageType = itk::CudaImage< OutputPixelType, Dimension >;
 #else
-  typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
+  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
 #endif
 
 #if FAST_TESTS_NO_CHECKS
@@ -44,7 +44,7 @@ int main(int, char** )
 #endif
 
   // Constant image sources
-  typedef rtk::ConstantImageSource< OutputImageType > ConstantImageSourceType;
+  using ConstantImageSourceType = rtk::ConstantImageSource< OutputImageType >;
   ConstantImageSourceType::PointType origin;
   ConstantImageSourceType::SizeType size;
   ConstantImageSourceType::SpacingType spacing;
@@ -100,13 +100,13 @@ int main(int, char** )
   std::cout << "\n\n****** Case 1: No streaming ******" << std::endl;
 
   // Geometry object
-  typedef rtk::ThreeDCircularProjectionGeometry GeometryType;
+  using GeometryType = rtk::ThreeDCircularProjectionGeometry;
   GeometryType::Pointer geometry = GeometryType::New();
   for(unsigned int noProj=0; noProj<NumberOfProjectionImages; noProj++)
     geometry->AddProjection(600., 1200., noProj*360./NumberOfProjectionImages, 0, 0, 0, 0, 20, 15);
 
   // Shepp Logan projections filter
-  typedef rtk::SheppLoganPhantomFilter<OutputImageType, OutputImageType> SLPType;
+  using SLPType = rtk::SheppLoganPhantomFilter<OutputImageType, OutputImageType>;
   SLPType::Pointer slp=SLPType::New();
   slp->SetInput( projectionsSource->GetOutput() );
   slp->SetGeometry(geometry);
@@ -114,7 +114,7 @@ int main(int, char** )
   TRY_AND_EXIT_ON_ITK_EXCEPTION( slp->Update() );
 
   // Create a reference object (in this case a 3D phantom reference).
-  typedef rtk::DrawSheppLoganFilter<OutputImageType, OutputImageType> DSLType;
+  using DSLType = rtk::DrawSheppLoganFilter<OutputImageType, OutputImageType>;
   DSLType::Pointer dsl = DSLType::New();
   dsl->SetInput( tomographySource->GetOutput() );
   dsl->SetPhantomScale(116);
@@ -122,9 +122,9 @@ int main(int, char** )
 
   // FDK reconstruction filtering
 #ifdef USE_CUDA
-  typedef rtk::CudaFDKConeBeamReconstructionFilter                FDKType;
+  using FDKType = rtk::CudaFDKConeBeamReconstructionFilter;
 #else
-  typedef rtk::FDKConeBeamReconstructionFilter< OutputImageType > FDKType;
+  using FDKType = rtk::FDKConeBeamReconstructionFilter< OutputImageType >;
 #endif
   FDKType::Pointer feldkamp = FDKType::New();
   feldkamp->SetInput( 0, tomographySource->GetOutput() );
@@ -134,7 +134,7 @@ int main(int, char** )
 
 
   // FOV
-  typedef rtk::FieldOfViewImageFilter<OutputImageType, OutputImageType> FOVFilterType;
+  using FOVFilterType = rtk::FieldOfViewImageFilter<OutputImageType, OutputImageType>;
   FOVFilterType::Pointer fov=FOVFilterType::New();
   fov->SetInput(0, feldkamp->GetOutput());
   fov->SetProjectionsStack(slp->GetOutput());
@@ -195,7 +195,7 @@ int main(int, char** )
   // Make sure that the data will be recomputed by releasing them
   fov->GetOutput()->ReleaseData();
 
-  typedef itk::StreamingImageFilter<OutputImageType, OutputImageType> StreamingType;
+  using StreamingType = itk::StreamingImageFilter<OutputImageType, OutputImageType>;
   StreamingType::Pointer streamer = StreamingType::New();
   streamer->SetInput(0, fov->GetOutput());
   streamer->SetNumberOfStreamDivisions(8);

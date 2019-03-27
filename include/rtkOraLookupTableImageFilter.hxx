@@ -56,7 +56,7 @@ OraLookupTableImageFilter<TOutputImage>
 
   // Retrieve and set slope / intercept
   double slope = 1.;
-  typedef itk::MetaDataObject< double > MetaDataDoubleType;
+  using MetaDataDoubleType = itk::MetaDataObject< double >;
   const MetaDataDoubleType *slopeMeta = dynamic_cast<const MetaDataDoubleType *>( dic["rescale_slope"]);
   if(slopeMeta!=ITK_NULLPTR)
     {

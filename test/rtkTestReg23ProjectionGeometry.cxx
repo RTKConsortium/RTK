@@ -36,7 +36,7 @@ void PrintHelp(char *binaryName)
   std::cerr << "\n\n***************************************************\n\n";
 }
 
-typedef rtk::Reg23ProjectionGeometry GeometryType;
+using GeometryType = rtk::Reg23ProjectionGeometry;
 
 /**
  * @brief Intersect detector plane with line between source and a specified
@@ -104,9 +104,9 @@ int main(int argc, char *argv[])
 
   VERBOSE(<< "\n\nStart testing ora::Reg23ProjectionGeometry\n\n")
 
-  typedef itk::Statistics::MersenneTwisterRandomVariateGenerator RandomType;
-  typedef itk::Euler3DTransform<double> EulerType;
-  typedef itk::Point<double, 2> Point2DType;
+  using RandomType = itk::Statistics::MersenneTwisterRandomVariateGenerator;
+  using EulerType = itk::Euler3DTransform<double>;
+  using Point2DType = itk::Point<double, 2>;
 
   GeometryType::PointType sourcePosition;
   GeometryType::PointType detectorPosition;

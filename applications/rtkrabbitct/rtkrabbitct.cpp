@@ -90,7 +90,7 @@ FNCSIGN bool RCTUnloadAlgorithm(RabbitCtGlobalData* rcgd)
   vol->SetImportPointer(rcgd->f_L, rcgd->L * rcgd->L * rcgd->L, false);
 
   // Write
-  typedef itk::ImageFileWriter<  itk::Image<float,3> > WriterType;
+  using WriterType = itk::ImageFileWriter<  itk::Image<float,3> >;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( "rtkrabbitct.mhd" );
   writer->SetInput( vol->GetOutput() );

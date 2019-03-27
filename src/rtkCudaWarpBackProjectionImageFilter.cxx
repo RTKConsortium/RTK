@@ -117,7 +117,7 @@ CudaWarpBackProjectionImageFilter
       }
     else
       {
-      typedef DVFType::RegionType DisplacementRegionType;
+      using DisplacementRegionType = DVFType::RegionType;
 
       DisplacementRegionType fieldRequestedRegion = itk::ImageAlgorithm::EnlargeRegionOverBox(outputPtr->GetRequestedRegion(),
                                                                                          outputPtr.GetPointer(),

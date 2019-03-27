@@ -32,15 +32,15 @@
 int main(int , char** )
 {
   const unsigned int Dimension = 3;
-  typedef float                                    OutputPixelType;
+  using OutputPixelType = float;
 
 #ifdef USE_CUDA
-  typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
+  using OutputImageType = itk::CudaImage< OutputPixelType, Dimension >;
 #else
-  typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
+  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
 #endif
 
-  typedef itk::Vector<double, 3>                   VectorType;
+  using VectorType = itk::Vector<double, 3>;
 #if FAST_TESTS_NO_CHECKS
   const unsigned int NumberOfProjectionImages = 3;
 #else
@@ -48,7 +48,7 @@ int main(int , char** )
 #endif
 
   // Constant image sources
-  typedef rtk::ConstantImageSource< OutputImageType > ConstantImageSourceType;
+  using ConstantImageSourceType = rtk::ConstantImageSource< OutputImageType >;
   ConstantImageSourceType::PointType origin;
   ConstantImageSourceType::SizeType size;
   ConstantImageSourceType::SpacingType spacing;
@@ -112,9 +112,9 @@ int main(int , char** )
 
   // Joseph Forward Projection filter
 #ifdef USE_CUDA
-  typedef rtk::CudaForwardProjectionImageFilter<OutputImageType, OutputImageType> JFPType;
+  using JFPType = rtk::CudaForwardProjectionImageFilter<OutputImageType, OutputImageType>;
 #else
-  typedef rtk::JosephForwardAttenuatedProjectionImageFilter<OutputImageType, OutputImageType> JFPType;
+  using JFPType = rtk::JosephForwardAttenuatedProjectionImageFilter<OutputImageType, OutputImageType>;
 #endif
   JFPType::Pointer jfp = JFPType::New();
   jfp->InPlaceOff();
@@ -123,7 +123,7 @@ int main(int , char** )
   jfp->SetInput(2, attenuationInput->GetOutput() );
 
   // Ray Box Intersection filter (reference)
-  typedef rtk::RayBoxIntersectionImageFilter<OutputImageType, OutputImageType> RBIType;
+  using RBIType = rtk::RayBoxIntersectionImageFilter<OutputImageType, OutputImageType>;
 #ifdef USE_CUDA
   jfp->SetStepSize(10);
 #endif
@@ -141,7 +141,7 @@ int main(int , char** )
   rbi->SetBoxMax(boxMax);
 
   // Streaming filter to test for unusual regions
-  typedef itk::StreamingImageFilter<OutputImageType, OutputImageType> StreamingFilterType;
+  using StreamingFilterType = itk::StreamingImageFilter<OutputImageType, OutputImageType>;
   StreamingFilterType::Pointer stream = StreamingFilterType::New();
   stream->SetInput(jfp->GetOutput());
 
@@ -154,7 +154,7 @@ int main(int , char** )
   // The circle is divided in 4 quarters
   for(int q=0; q<4; q++) {
     // Geometry
-    typedef rtk::ThreeDCircularProjectionGeometry GeometryType;
+    using GeometryType = rtk::ThreeDCircularProjectionGeometry;
     GeometryType::Pointer geometry = GeometryType::New();
     for(unsigned int i=0; i<NumberOfProjectionImages;i++)
       {
@@ -165,7 +165,7 @@ int main(int , char** )
     if(q==0) {
       rbi->SetGeometry( geometry );
       rbi->Update();
-      typedef itk::ImageRegionIterator<OutputImageType> ImageIterator;
+      using ImageIterator = itk::ImageRegionIterator<OutputImageType>;
       ImageIterator itRbi( rbi->GetOutput(), rbi->GetOutput()->GetBufferedRegion() );
 
       itRbi.GoToBegin();

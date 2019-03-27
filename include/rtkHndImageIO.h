@@ -45,11 +45,11 @@ namespace rtk {
 class HndImageIO : public itk::ImageIOBase
 {
 public:
-/** Standard class typedefs. */
-  typedef HndImageIO              Self;
-  typedef itk::ImageIOBase        Superclass;
-  typedef itk::SmartPointer<Self> Pointer;
-  typedef signed short int        PixelType;
+/** Standard class type alias. */
+  using Self = HndImageIO;
+  using Superclass = itk::ImageIOBase;
+  using Pointer = itk::SmartPointer<Self>;
+  using PixelType = signed short int;
 
   typedef struct hnd_header {
     char sFileType[32];

@@ -35,7 +35,7 @@ HilbertImageFilter<TInputImage, TOutputImage>
 ::GenerateData()
 {
   // Take the FFT of the input
-  typedef typename itk::ForwardFFTImageFilter< TInputImage, TOutputImage > FFTFilterType;
+  using FFTFilterType = typename itk::ForwardFFTImageFilter< TInputImage, TOutputImage >;
   typename FFTFilterType::Pointer fftFilt = FFTFilterType::New();
   fftFilt->SetInput( this->GetInput() );
   fftFilt->Update();
@@ -44,7 +44,7 @@ HilbertImageFilter<TInputImage, TOutputImage>
 
   // Weights according to
   // [Marple, IEEE Trans Sig Proc, 1999]
-  typedef typename itk::ImageRegionIteratorWithIndex<TOutputImage> IteratorType;
+  using IteratorType = typename itk::ImageRegionIteratorWithIndex<TOutputImage>;
   IteratorType it(fft, fft->GetLargestPossibleRegion());
   it.Set(it.Get());
   ++it;
@@ -78,7 +78,7 @@ HilbertImageFilter<TInputImage, TOutputImage>
     }
 #endif
 
-  typedef typename itk::ComplexToComplexFFTImageFilter<TOutputImage> InverseFFTFilterType;
+  using InverseFFTFilterType = typename itk::ComplexToComplexFFTImageFilter<TOutputImage>;
   typename InverseFFTFilterType::Pointer invFilt = InverseFFTFilterType::New();
   invFilt->SetTransformDirection(InverseFFTFilterType::FORWARD);
   invFilt->SetInput(fft);

@@ -98,17 +98,17 @@ ProjectionsRegionConstIteratorRayBased< TImage >
       {
       itkGenericExceptionMacro(<< "Parallel geometry assumes a flat panel detector.");
       }
-    typedef ProjectionsRegionConstIteratorRayBasedParallel<TImage> IteratorType;
+    using IteratorType = ProjectionsRegionConstIteratorRayBasedParallel<TImage>;
     return new IteratorType(ptr, region, geometry, postMat);
     }
   else if(geometry->GetRadiusCylindricalDetector() == 0.)
     {
-    typedef ProjectionsRegionConstIteratorRayBasedWithFlatPanel<TImage> IteratorType;
+    using IteratorType = ProjectionsRegionConstIteratorRayBasedWithFlatPanel<TImage>;
     return new IteratorType(ptr, region, geometry, postMat);
     }
   else
     {
-    typedef ProjectionsRegionConstIteratorRayBasedWithCylindricalPanel<TImage> IteratorType;
+    using IteratorType = ProjectionsRegionConstIteratorRayBasedWithCylindricalPanel<TImage>;
     return new IteratorType(ptr, region, geometry, postMat);
     }
 }

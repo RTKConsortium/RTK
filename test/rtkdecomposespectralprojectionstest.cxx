@@ -29,22 +29,22 @@ int main(int argc, char*argv[])
     return EXIT_FAILURE;
   }
 
-  typedef float PixelValueType;
+  using PixelValueType = float;
   const unsigned int Dimension = 3;
-  typedef itk::Image< PixelValueType, Dimension > OutputImageType;
+  using OutputImageType = itk::Image< PixelValueType, Dimension >;
 
-  typedef itk::VectorImage< PixelValueType, Dimension > DecomposedProjectionType;
+  using DecomposedProjectionType = itk::VectorImage< PixelValueType, Dimension >;
 
-  typedef itk::VectorImage< PixelValueType, Dimension > SpectralProjectionsType;
+  using SpectralProjectionsType = itk::VectorImage< PixelValueType, Dimension >;
 
-  typedef itk::VectorImage< PixelValueType, Dimension-1 > IncidentSpectrumImageType;
-  typedef itk::ImageFileReader<IncidentSpectrumImageType> IncidentSpectrumReaderType;
+  using IncidentSpectrumImageType = itk::VectorImage< PixelValueType, Dimension-1 >;
+  using IncidentSpectrumReaderType = itk::ImageFileReader<IncidentSpectrumImageType>;
 
-  typedef itk::Image< PixelValueType, Dimension-1 > DetectorResponseImageType;
-  typedef itk::ImageFileReader<DetectorResponseImageType> DetectorResponseReaderType;
+  using DetectorResponseImageType = itk::Image< PixelValueType, Dimension-1 >;
+  using DetectorResponseReaderType = itk::ImageFileReader<DetectorResponseImageType>;
 
-  typedef itk::Image< PixelValueType, Dimension-1 > MaterialAttenuationsImageType;
-  typedef itk::ImageFileReader<MaterialAttenuationsImageType> MaterialAttenuationsReaderType;
+  using MaterialAttenuationsImageType = itk::Image< PixelValueType, Dimension-1 >;
+  using MaterialAttenuationsReaderType = itk::ImageFileReader<MaterialAttenuationsImageType>;
 
   // Read all inputs
   IncidentSpectrumReaderType::Pointer incidentSpectrumReader = IncidentSpectrumReaderType::New();
@@ -66,7 +66,7 @@ int main(int argc, char*argv[])
 #endif
 
   // Constant image source for the analytical projections calculation
-  typedef rtk::ConstantImageSource< OutputImageType > ConstantImageSourceType;
+  using ConstantImageSourceType = rtk::ConstantImageSource< OutputImageType >;
   ConstantImageSourceType::PointType origin;
   ConstantImageSourceType::SizeType size;
   ConstantImageSourceType::SpacingType spacing;
@@ -109,13 +109,13 @@ int main(int argc, char*argv[])
   decomposed->Allocate();
 
   // Geometry object
-  typedef rtk::ThreeDCircularProjectionGeometry GeometryType;
+  using GeometryType = rtk::ThreeDCircularProjectionGeometry;
   GeometryType::Pointer geometry = GeometryType::New();
   for(unsigned int noProj=0; noProj<NumberOfProjectionImages; noProj++)
     geometry->AddProjection(600., 1200., noProj*360./NumberOfProjectionImages);
 
   // Generate 3 phantoms, one per material
-  typedef rtk::RayEllipsoidIntersectionImageFilter<OutputImageType, OutputImageType> REIType;
+  using REIType = rtk::RayEllipsoidIntersectionImageFilter<OutputImageType, OutputImageType>;
   REIType::Pointer rei;
   rei = REIType::New();
   for (unsigned int material=0; material<3; material++)
@@ -172,7 +172,7 @@ int main(int argc, char*argv[])
   thresholds[6] = 180;
 
   // Apply the forward model to the multi-material projections
-  typedef rtk::SpectralForwardModelImageFilter<DecomposedProjectionType, SpectralProjectionsType, IncidentSpectrumImageType> SpectralForwardFilterType;
+  using SpectralForwardFilterType = rtk::SpectralForwardModelImageFilter<DecomposedProjectionType, SpectralProjectionsType, IncidentSpectrumImageType>;
   SpectralForwardFilterType::Pointer forward = SpectralForwardFilterType::New();
   forward->SetInputDecomposedProjections(decomposed);
   forward->SetInputMeasuredProjections(photonCounts);
@@ -198,7 +198,7 @@ int main(int argc, char*argv[])
   initialDecomposedProjections->FillBuffer(initPixel);
 
   // Create and set the simplex filter to perform the decomposition
-  typedef rtk::SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionType, SpectralProjectionsType, IncidentSpectrumImageType> SimplexFilterType;
+  using SimplexFilterType = rtk::SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionType, SpectralProjectionsType, IncidentSpectrumImageType>;
   SimplexFilterType::Pointer simplex = SimplexFilterType::New();
   simplex->SetInputDecomposedProjections(initialDecomposedProjections);
   simplex->SetInputMeasuredProjections(forward->GetOutput());

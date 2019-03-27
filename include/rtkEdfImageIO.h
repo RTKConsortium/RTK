@@ -38,10 +38,10 @@ namespace rtk {
 class EdfImageIO : public itk::ImageIOBase
 {
 public:
-  /** Standard class typedefs. */
-  typedef EdfImageIO              Self;
-  typedef itk::ImageIOBase        Superclass;
-  typedef itk::SmartPointer<Self> Pointer;
+  /** Standard class type alias. */
+  using Self = EdfImageIO;
+  using Superclass = itk::ImageIOBase;
+  using Pointer = itk::SmartPointer<Self>;
 
   EdfImageIO() : Superclass() {
   }

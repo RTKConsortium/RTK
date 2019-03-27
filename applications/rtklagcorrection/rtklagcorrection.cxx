@@ -40,14 +40,14 @@ int main(int argc, char * argv[])
 
   const unsigned int Dimension = 3;
 #ifdef RTK_USE_CUDA
-  typedef itk::CudaImage< unsigned short, Dimension >          OutputImageType;
+  using OutputImageType = itk::CudaImage< unsigned short, Dimension >;
 #else
-  typedef itk::Image< unsigned short, Dimension >              OutputImageType;
+  using OutputImageType = itk::Image< unsigned short, Dimension >;
 #endif
-  typedef itk::Vector<float, ModelOrder> VectorType;     // Parameter type always float/double
+  using VectorType = itk::Vector<float, ModelOrder>;     // Parameter type always float/double
 
   // Projections reader
-  typedef rtk::ProjectionsReader< OutputImageType > ReaderType;
+  using ReaderType = rtk::ProjectionsReader< OutputImageType >;
   ReaderType::Pointer reader = ReaderType::New();
   rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtklagcorrection>(reader, args_info);
   reader->ComputeLineIntegralOff();   // Don't want to preprocess data
@@ -68,9 +68,9 @@ int main(int argc, char * argv[])
     }
 
 #ifdef RTK_USE_CUDA
-  typedef rtk::CudaLagCorrectionImageFilter LagType;
+  using LagType = rtk::CudaLagCorrectionImageFilter;
 #else
-  typedef rtk::LagCorrectionImageFilter<OutputImageType, ModelOrder> LagType;
+  using LagType = rtk::LagCorrectionImageFilter<OutputImageType, ModelOrder>;
 #endif
   LagType::Pointer lagfilter = LagType::New();
   lagfilter->SetInput(reader->GetOutput());
@@ -79,13 +79,13 @@ int main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION( lagfilter->Update() )
 
   // Streaming filter
-  typedef itk::StreamingImageFilter<OutputImageType, OutputImageType> StreamerType;
+  using StreamerType = itk::StreamingImageFilter<OutputImageType, OutputImageType>;
   StreamerType::Pointer streamer = StreamerType::New();
   streamer->SetInput(lagfilter->GetOutput());
   streamer->SetNumberOfStreamDivisions(100);
 
   // Save corrected projections
-  typedef itk::ImageFileWriter<OutputImageType> WriterType;
+  using WriterType = itk::ImageFileWriter<OutputImageType>;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName(args_info.output_arg);
   writer->SetInput(streamer->GetOutput());

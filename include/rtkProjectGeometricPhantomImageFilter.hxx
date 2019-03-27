@@ -50,7 +50,7 @@ void ProjectGeometricPhantomImageFilter< TInputImage, TOutputImage >::GenerateDa
     {
     if(m_IsForbildConfigFile)
       {
-      typedef rtk::ForbildPhantomFileReader ReaderType;
+      using ReaderType = rtk::ForbildPhantomFileReader;
       ReaderType::Pointer reader = ReaderType::New();
       reader->SetFilename(m_ConfigFile);
       reader->GenerateOutputInformation();
@@ -58,7 +58,7 @@ void ProjectGeometricPhantomImageFilter< TInputImage, TOutputImage >::GenerateDa
       }
     else
       {
-      typedef rtk::GeometricPhantomFileReader ReaderType;
+      using ReaderType = rtk::GeometricPhantomFileReader;
       ReaderType::Pointer reader = ReaderType::New();
       reader->SetFilename(m_ConfigFile);
       reader->GenerateOutputInformation();
@@ -82,7 +82,7 @@ void ProjectGeometricPhantomImageFilter< TInputImage, TOutputImage >::GenerateDa
 
     if( projectors.size() )
       {
-      typedef RayConvexIntersectionImageFilter<TOutputImage, TOutputImage>  RCOIType;
+      using RCOIType = RayConvexIntersectionImageFilter<TOutputImage, TOutputImage>;
       typename RCOIType::Pointer rcoi = RCOIType::New();
       rcoi->SetInput(projectors.back()->GetOutput());
       rcoi->SetGeometry(this->GetGeometry());
@@ -91,7 +91,7 @@ void ProjectGeometricPhantomImageFilter< TInputImage, TOutputImage >::GenerateDa
       }
     else
       {
-      typedef RayConvexIntersectionImageFilter<TInputImage, TOutputImage>  RCOIType;
+      using RCOIType = RayConvexIntersectionImageFilter<TInputImage, TOutputImage>;
       typename RCOIType::Pointer rcoi = RCOIType::New();
       rcoi->SetInput(this->GetInput());
       rcoi->SetGeometry(this->GetGeometry());

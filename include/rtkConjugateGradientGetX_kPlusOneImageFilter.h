@@ -36,13 +36,13 @@ class ConjugateGradientGetX_kPlusOneImageFilter : public itk::ImageToImageFilter
 {
 public:
 
-  /** Standard class typedefs. */
-  typedef ConjugateGradientGetX_kPlusOneImageFilter          Self;
-  typedef itk::ImageToImageFilter< TInputImage, TInputImage> Superclass;
-  typedef itk::SmartPointer< Self >                          Pointer;
-  typedef typename TInputImage::RegionType                   OutputImageRegionType;
-  typedef itk::Image<typename TInputImage::InternalPixelType,
-                              TInputImage::ImageDimension>    AlphaImage;
+  /** Standard class type alias. */
+  using Self = ConjugateGradientGetX_kPlusOneImageFilter;
+  using Superclass = itk::ImageToImageFilter< TInputImage, TInputImage>;
+  using Pointer = itk::SmartPointer< Self >;
+  using OutputImageRegionType = typename TInputImage::RegionType;
+  using AlphaImage = itk::Image<typename TInputImage::InternalPixelType,
+                              TInputImage::ImageDimension>;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self)
@@ -58,8 +58,8 @@ public:
   itkSetMacro(Alphak, double)
 
   /** Typedefs for sub filters */
-  typedef itk::AddImageFilter<TInputImage>                               AddFilterType;
-  typedef itk::MultiplyImageFilter<TInputImage, AlphaImage, TInputImage> MultiplyFilterType;
+  using AddFilterType = itk::AddImageFilter<TInputImage>;
+  using MultiplyFilterType = itk::MultiplyImageFilter<TInputImage, AlphaImage, TInputImage>;
 
 protected:
   ConjugateGradientGetX_kPlusOneImageFilter();

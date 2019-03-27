@@ -38,11 +38,11 @@ template< typename TInputImage>
 class ConjugateGradientGetR_kPlusOneImageFilter : public itk::ImageToImageFilter< TInputImage, TInputImage>
 {
 public:
-    /** Standard class typedefs. */
-    typedef ConjugateGradientGetR_kPlusOneImageFilter          Self;
-    typedef itk::ImageToImageFilter< TInputImage, TInputImage> Superclass;
-    typedef itk::SmartPointer< Self >                          Pointer;
-    typedef typename TInputImage::RegionType                   OutputImageRegionType;
+    /** Standard class type alias. */
+    using Self = ConjugateGradientGetR_kPlusOneImageFilter;
+    using Superclass = itk::ImageToImageFilter< TInputImage, TInputImage>;
+    using Pointer = itk::SmartPointer< Self >;
+    using OutputImageRegionType = typename TInputImage::RegionType;
 
     /** Method for creation through the object factory. */
     itkNewMacro(Self)

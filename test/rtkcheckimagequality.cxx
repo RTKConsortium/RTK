@@ -15,8 +15,8 @@
 int main(int argc, char** argv)
 {
   const unsigned int Dimension = 2;
-  typedef float                              PixelType;
-  typedef itk::Image< PixelType, Dimension > ImageType;
+  using PixelType = float;
+  using ImageType = itk::Image< PixelType, Dimension >;
 
   if(argc < 2)
     {
@@ -24,7 +24,7 @@ int main(int argc, char** argv)
     return EXIT_FAILURE;
     }
 
-  typedef itk::ImageFileReader<ImageType> ReaderType;
+  using ReaderType = itk::ImageFileReader<ImageType>;
   ReaderType::Pointer reader = ReaderType::New();
   reader->SetFileName(argv[1]);
 
@@ -38,7 +38,7 @@ int main(int argc, char** argv)
     return EXIT_FAILURE;
     }
 
-  typedef itk::MinimumMaximumImageCalculator<ImageType> CalculatorType;
+  using CalculatorType = itk::MinimumMaximumImageCalculator<ImageType>;
   CalculatorType::Pointer calculator = CalculatorType::New();
   calculator->SetImage(reader->GetOutput());
   calculator->Compute();

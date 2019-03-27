@@ -36,10 +36,10 @@ template< class TVectorImage,
 class BlockDiagonalMatrixVectorMultiplyImageFilter : public itk::ImageToImageFilter<TVectorImage, TVectorImage>
 {
 public:
-    /** Standard class typedefs. */
-    typedef BlockDiagonalMatrixVectorMultiplyImageFilter                    Self;
-    typedef itk::ImageToImageFilter<TVectorImage, TVectorImage> Superclass;
-    typedef itk::SmartPointer< Self >                     Pointer;
+    /** Standard class type alias. */
+    using Self = BlockDiagonalMatrixVectorMultiplyImageFilter;
+    using Superclass = itk::ImageToImageFilter<TVectorImage, TVectorImage>;
+    using Pointer = itk::SmartPointer< Self >;
 
     /** Method for creation through the object factory. */
     itkNewMacro(Self)
@@ -50,8 +50,8 @@ public:
     /** Convenient parameters extracted from template types */
     itkStaticConstMacro(nChannels, unsigned int, TVectorImage::PixelType::Dimension);
 
-    /** Convenient typedef */
-    typedef typename TVectorImage::PixelType::ValueType dataType;
+    /** Convenient type alias */
+    using dataType = typename TVectorImage::PixelType::ValueType;
 
     /** Set methods for all inputs, since they have different types */
     void SetInput1(const TVectorImage* vector);

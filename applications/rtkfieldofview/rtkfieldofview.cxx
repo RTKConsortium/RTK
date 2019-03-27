@@ -37,7 +37,7 @@ int main(int argc, char * argv[])
 {
   GGO(rtkfieldofview, args_info);
 
-  typedef float OutputPixelType;
+  using OutputPixelType = float;
   const unsigned int Dimension = 3;
 
   // Check on hardware parameter
@@ -50,13 +50,13 @@ int main(int argc, char * argv[])
 #endif
 
 #ifdef RTK_USE_CUDA
-  typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
+  using OutputImageType = itk::CudaImage< OutputPixelType, Dimension >;
 #else
-  typedef itk::Image< OutputPixelType, Dimension >     OutputImageType;
+  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
 #endif
 
   // Projections reader
-  typedef rtk::ProjectionsReader< OutputImageType > ReaderType;
+  using ReaderType = rtk::ProjectionsReader< OutputImageType >;
   ReaderType::Pointer reader = ReaderType::New();
   rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkfieldofview>(reader, args_info);
 
@@ -73,14 +73,14 @@ int main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION( geometryReader->GenerateOutputInformation() )
 
   // Reconstruction reader
-  typedef itk::ImageFileReader<  OutputImageType > ImageReaderType;
+  using ImageReaderType = itk::ImageFileReader<  OutputImageType >;
   ImageReaderType::Pointer unmasked_reconstruction = ImageReaderType::New();
   unmasked_reconstruction->SetFileName(args_info.reconstruction_arg);
 
   if(!args_info.bp_flag)
     {
     // FOV filter
-    typedef rtk::FieldOfViewImageFilter<OutputImageType, OutputImageType> FOVFilterType;
+    using FOVFilterType = rtk::FieldOfViewImageFilter<OutputImageType, OutputImageType>;
     FOVFilterType::Pointer fieldofview=FOVFilterType::New();
     fieldofview->SetMask(args_info.mask_flag);
     fieldofview->SetInput(0, unmasked_reconstruction->GetOutput());
@@ -90,7 +90,7 @@ int main(int argc, char * argv[])
     TRY_AND_EXIT_ON_ITK_EXCEPTION( fieldofview->Update() )
 
     // Write
-    typedef itk::ImageFileWriter<  OutputImageType > WriterType;
+    using WriterType = itk::ImageFileWriter<  OutputImageType >;
     WriterType::Pointer writer = WriterType::New();
     writer->SetFileName( args_info.output_arg );
     writer->SetInput( fieldofview->GetOutput() );
@@ -108,11 +108,11 @@ int main(int argc, char * argv[])
     TRY_AND_EXIT_ON_ITK_EXCEPTION( unmasked_reconstruction->UpdateOutputInformation() )
 
 #ifdef RTK_USE_CUDA
-    typedef itk::CudaImage<float, 3> MaskImgType;
+    using MaskImgType = itk::CudaImage<float, 3>;
 #else
-    typedef itk::Image<unsigned short, 3> MaskImgType;
+    using MaskImgType = itk::Image<unsigned short, 3>;
 #endif
-    typedef rtk::ConstantImageSource<MaskImgType> ConstantType;
+    using ConstantType = rtk::ConstantImageSource<MaskImgType>;
     ConstantType::Pointer ones = ConstantType::New();
     ones->SetConstant(1);
     ones->SetInformationFromImage(reader->GetOutput());
@@ -121,10 +121,10 @@ int main(int argc, char * argv[])
     zeroVol->SetConstant(0.);
     zeroVol->SetInformationFromImage(unmasked_reconstruction->GetOutput());
 
-    typedef rtk::BackProjectionImageFilter<MaskImgType, MaskImgType> BPType;
+    using BPType = rtk::BackProjectionImageFilter<MaskImgType, MaskImgType>;
     BPType::Pointer bp = BPType::New();
 #ifdef RTK_USE_CUDA
-    typedef rtk::CudaBackProjectionImageFilter<MaskImgType> BPCudaType;
+    using BPCudaType = rtk::CudaBackProjectionImageFilter<MaskImgType>;
     if(!strcmp(args_info.hardware_arg, "cuda") )
       bp = BPCudaType::New();
 #endif
@@ -132,7 +132,7 @@ int main(int argc, char * argv[])
     bp->SetInput(1, ones->GetOutput());
     bp->SetGeometry(geometryReader->GetOutputObject());
 
-    typedef itk::ThresholdImageFilter<MaskImgType> ThreshType;
+    using ThreshType = itk::ThresholdImageFilter<MaskImgType>;
     ThreshType::Pointer thresh = ThreshType::New();
     thresh->SetInput( bp->GetOutput() );
     thresh->ThresholdBelow( geometryReader->GetOutputObject()->GetGantryAngles().size()-1 );
@@ -140,12 +140,12 @@ int main(int argc, char * argv[])
 
     if(args_info.mask_flag)
       {
-      typedef itk::DivideImageFilter<MaskImgType, MaskImgType,  MaskImgType> DivideType;
+      using DivideType = itk::DivideImageFilter<MaskImgType, MaskImgType,  MaskImgType>;
       DivideType::Pointer div = DivideType::New();
       div->SetInput( thresh->GetOutput() );
       div->SetConstant2( geometryReader->GetOutputObject()->GetGantryAngles().size() );
 
-      typedef itk::ImageFileWriter<  MaskImgType > WriterType;
+      using WriterType = itk::ImageFileWriter<  MaskImgType >;
       WriterType::Pointer writer = WriterType::New();
       writer->SetFileName( args_info.output_arg );
       writer->SetInput( div->GetOutput() );

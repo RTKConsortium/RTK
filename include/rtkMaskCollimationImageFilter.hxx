@@ -58,19 +58,19 @@ MaskCollimationImageFilter<TInputImage,TOutputImage>
 #endif
 {
   // Iterators on input and output
-  typedef ProjectionsRegionConstIteratorRayBased<TInputImage> InputRegionIterator;
+  using InputRegionIterator = ProjectionsRegionConstIteratorRayBased<TInputImage>;
   InputRegionIterator *itIn;
   itIn = InputRegionIterator::New(this->GetInput(),
                                   outputRegionForThread,
                                   m_Geometry);
-  typedef itk::ImageRegionIteratorWithIndex<TOutputImage> OutputRegionIterator;
+  using OutputRegionIterator = itk::ImageRegionIteratorWithIndex<TOutputImage>;
   OutputRegionIterator itOut(this->GetOutput(), outputRegionForThread);
 
   // Go over each projection
   unsigned int npixperslice;
   npixperslice = outputRegionForThread.GetSize(0) *
                  outputRegionForThread.GetSize(1);
-  typedef typename OutputImageRegionType::SizeValueType SizeValueType;
+  using SizeValueType = typename OutputImageRegionType::SizeValueType;
   for(SizeValueType iProj=outputRegionForThread.GetIndex(2);
                     iProj<outputRegionForThread.GetIndex(2)+
                           outputRegionForThread.GetSize(2);
@@ -80,7 +80,7 @@ MaskCollimationImageFilter<TInputImage,TOutputImage>
                      pix<npixperslice;
                      pix++, itIn->Next(), ++itOut)
       {
-      typedef typename InputRegionIterator::PointType PointType;
+      using PointType = typename InputRegionIterator::PointType;
       PointType source = itIn->GetSourcePosition();
       double sourceNorm = source.GetNorm();
       PointType pixel = itIn->GetPixelPosition();

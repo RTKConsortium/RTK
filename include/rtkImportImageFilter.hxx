@@ -202,7 +202,7 @@ ImportImageFilter< TImage >
                                                    m_Size, false);
 
 #ifdef RTK_USE_CUDA
-  typedef itk::CudaImage<typename TImage::PixelType, TImage::ImageDimension> TCudaImage;
+  using TCudaImage = itk::CudaImage<typename TImage::PixelType, TImage::ImageDimension>;
   if (TCudaImage* cudaOutputPtr = dynamic_cast<TCudaImage*>(outputPtr.GetPointer()))
     {
     cudaOutputPtr->GetModifiableDataManager()->SetBufferSize(m_Size * sizeof(typename TImage::PixelType));

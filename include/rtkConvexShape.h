@@ -46,18 +46,18 @@ namespace rtk
 class RTK_EXPORT ConvexShape: public itk::DataObject
 {
 public:
-  /** Standard class typedefs. */
-  typedef ConvexShape                   Self;
-  typedef itk::DataObject               Superclass;
-  typedef itk::SmartPointer<Self>       Pointer;
-  typedef itk::SmartPointer<const Self> ConstPointer;
+  /** Standard class type alias. */
+  using Self = ConvexShape;
+  using Superclass = itk::DataObject;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
-  /** Convenient typedefs. */
+  /** Convenient type alias. */
   itkStaticConstMacro(Dimension, unsigned int, 3);
-  typedef double                                          ScalarType;
-  typedef itk::Vector< ScalarType, Dimension >            PointType;
-  typedef itk::Vector< ScalarType, Dimension >            VectorType;
-  typedef itk::Matrix< ScalarType, Dimension, Dimension > RotationMatrixType;
+  using ScalarType = double;
+  using PointType = itk::Vector< ScalarType, Dimension >;
+  using VectorType = itk::Vector< ScalarType, Dimension >;
+  using RotationMatrixType = itk::Matrix< ScalarType, Dimension, Dimension >;
 
   /** Method for creation through the object factory. */
   itkNewMacro ( Self );

@@ -35,30 +35,30 @@ int main(int argc, char * argv[])
 {
   GGO(rtktotalvariationdenoising, args_info);
 
-  typedef float OutputPixelType;
+  using OutputPixelType = float;
   const unsigned int Dimension = 3; // Number of dimensions of the input image
 
 #ifdef RTK_USE_CUDA
-  typedef itk::CudaImage< OutputPixelType, Dimension >          OutputImageType;
-  typedef itk::CudaImage< itk::CovariantVector
-      < OutputPixelType, Dimension >, Dimension >               GradientOutputImageType;
-  typedef rtk::CudaTotalVariationDenoisingBPDQImageFilter       TVDenoisingFilterType;
+  using OutputImageType = itk::CudaImage< OutputPixelType, Dimension >;
+  using GradientOutputImageType = itk::CudaImage< itk::CovariantVector
+      < OutputPixelType, Dimension >, Dimension >;
+  using TVDenoisingFilterType = rtk::CudaTotalVariationDenoisingBPDQImageFilter;
 #else
-  typedef itk::Image< OutputPixelType, Dimension >              OutputImageType;
-  typedef itk::Image< itk::CovariantVector
-      < OutputPixelType, Dimension >, Dimension >               GradientOutputImageType;
-  typedef rtk::TotalVariationDenoisingBPDQImageFilter
-      <OutputImageType, GradientOutputImageType>                TVDenoisingFilterType;
+  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
+  using GradientOutputImageType = itk::Image< itk::CovariantVector
+      < OutputPixelType, Dimension >, Dimension >;
+  using TVDenoisingFilterType = rtk::TotalVariationDenoisingBPDQImageFilter
+      <OutputImageType, GradientOutputImageType>;
 #endif
 
   // Read input
-  typedef itk::ImageFileReader<OutputImageType>                 ReaderType;
+  using ReaderType = itk::ImageFileReader<OutputImageType>;
   ReaderType::Pointer reader = ReaderType::New();
   reader->SetFileName( args_info.input_arg );
   reader->Update();
 
   // Compute total variation before denoising
-  typedef rtk::TotalVariationImageFilter<OutputImageType>       TVFilterType;
+  using TVFilterType = rtk::TotalVariationImageFilter<OutputImageType>;
   TVFilterType::Pointer tv = TVFilterType::New();
   tv->SetInput(reader->GetOutput());
   if (args_info.verbose_flag)
@@ -74,7 +74,7 @@ int main(int argc, char * argv[])
   tvdenoising->SetNumberOfIterations(args_info.niter_arg);
 
   // Write
-  typedef itk::ImageFileWriter<OutputImageType> WriterType;
+  using WriterType = itk::ImageFileWriter<OutputImageType>;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
   writer->SetInput(tvdenoising->GetOutput());

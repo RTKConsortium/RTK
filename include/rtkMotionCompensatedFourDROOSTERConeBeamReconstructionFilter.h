@@ -130,28 +130,28 @@ template<typename VolumeSeriesType, typename ProjectionStackType>
 class MotionCompensatedFourDROOSTERConeBeamReconstructionFilter : public rtk::FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 {
 public:
-  /** Standard class typedefs. */
-  typedef MotionCompensatedFourDROOSTERConeBeamReconstructionFilter                             Self;
-  typedef rtk::FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>  Superclass;
-  typedef itk::SmartPointer< Self >                                                             Pointer;
-  typedef ProjectionStackType                                                                   VolumeType;
-  typedef itk::CovariantVector< typename VolumeSeriesType::ValueType, VolumeSeriesType::ImageDimension - 1> CovariantVectorForSpatialGradient;
-  typedef itk::CovariantVector< typename VolumeSeriesType::ValueType, 1>                                    CovariantVectorForTemporalGradient;
-  typedef CovariantVectorForSpatialGradient                                                                 DVFVectorType;
+  /** Standard class type alias. */
+  using Self = MotionCompensatedFourDROOSTERConeBeamReconstructionFilter;
+  using Superclass = rtk::FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>;
+  using Pointer = itk::SmartPointer< Self >;
+  using VolumeType = ProjectionStackType;
+  using CovariantVectorForSpatialGradient = itk::CovariantVector< typename VolumeSeriesType::ValueType, VolumeSeriesType::ImageDimension - 1>;
+  using CovariantVectorForTemporalGradient = itk::CovariantVector< typename VolumeSeriesType::ValueType, 1>;
+  using DVFVectorType = CovariantVectorForSpatialGradient;
 
-  typedef typename Superclass::ForwardProjectionType ForwardProjectionType;
-  typedef typename Superclass::BackProjectionType    BackProjectionType;
+  using ForwardProjectionType = typename Superclass::ForwardProjectionType;
+  using BackProjectionType = typename Superclass::BackProjectionType;
 
 #ifdef RTK_USE_CUDA
-  typedef itk::CudaImage<CovariantVectorForSpatialGradient, VolumeSeriesType::ImageDimension>   SpatialGradientImageType;
-  typedef itk::CudaImage<CovariantVectorForTemporalGradient, VolumeSeriesType::ImageDimension>  TemporalGradientImageType;
-  typedef itk::CudaImage<DVFVectorType, VolumeSeriesType::ImageDimension>                       DVFSequenceImageType;
-  typedef itk::CudaImage<DVFVectorType, VolumeSeriesType::ImageDimension - 1>                   DVFImageType;
+  using SpatialGradientImageType = itk::CudaImage<CovariantVectorForSpatialGradient, VolumeSeriesType::ImageDimension>;
+  using TemporalGradientImageType = itk::CudaImage<CovariantVectorForTemporalGradient, VolumeSeriesType::ImageDimension>;
+  using DVFSequenceImageType = itk::CudaImage<DVFVectorType, VolumeSeriesType::ImageDimension>;
+  using DVFImageType = itk::CudaImage<DVFVectorType, VolumeSeriesType::ImageDimension - 1>;
 #else
-  typedef itk::Image<CovariantVectorForSpatialGradient, VolumeSeriesType::ImageDimension>       SpatialGradientImageType;
-  typedef itk::Image<CovariantVectorForTemporalGradient, VolumeSeriesType::ImageDimension>      TemporalGradientImageType;
-  typedef itk::Image<DVFVectorType, VolumeSeriesType::ImageDimension>                           DVFSequenceImageType;
-  typedef itk::Image<DVFVectorType, VolumeSeriesType::ImageDimension - 1>                       DVFImageType;
+  using SpatialGradientImageType = itk::Image<CovariantVectorForSpatialGradient, VolumeSeriesType::ImageDimension>;
+  using TemporalGradientImageType = itk::Image<CovariantVectorForTemporalGradient, VolumeSeriesType::ImageDimension>;
+  using DVFSequenceImageType = itk::Image<DVFVectorType, VolumeSeriesType::ImageDimension>;
+  using DVFImageType = itk::Image<DVFVectorType, VolumeSeriesType::ImageDimension - 1>;
 #endif
 
   /** Method for creation through the object factory. */
@@ -160,8 +160,8 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(MotionCompensatedFourDROOSTERConeBeamReconstructionFilter, rtk::FourDROOSTERConeBeamReconstructionFilter)
 
-  typedef rtk::MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter
-    <VolumeSeriesType, ProjectionStackType>    MotionCompensatedFourDCGFilterType;
+  using MotionCompensatedFourDCGFilterType = rtk::MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter
+    <VolumeSeriesType, ProjectionStackType>;
 
   /** Neither the forward nor the back projection filter can be set by the user */
   void SetForwardProjectionFilter(ForwardProjectionType itkNotUsed(fwtype)) ITK_OVERRIDE {itkExceptionMacro(<< "ForwardProjection cannot be changed");}

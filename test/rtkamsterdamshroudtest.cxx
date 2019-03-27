@@ -29,10 +29,10 @@
 int main(int argc, char*argv[])
 {
   const unsigned int Dimension = 3;
-  typedef double                                     reg1DPixelType;
-  typedef float                                      OutputPixelType;
-  typedef itk::Image< OutputPixelType, Dimension >   OutputImageType;
-  typedef itk::Image< reg1DPixelType, Dimension-2 >  reg1DImageType;
+  using reg1DPixelType = double;
+  using OutputPixelType = float;
+  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
+  using reg1DImageType = itk::Image< reg1DPixelType, Dimension-2 >;
 #if FAST_TESTS_NO_CHECKS
   const unsigned int NumberOfProjectionImages = 3;
 #else
@@ -46,13 +46,13 @@ int main(int argc, char*argv[])
     return EXIT_FAILURE;
   }
 
-  typedef rtk::ThreeDCircularProjectionGeometry GeometryType;
+  using GeometryType = rtk::ThreeDCircularProjectionGeometry;
   GeometryType::Pointer geometryMain = GeometryType::New();
   for(unsigned int noProj=0; noProj<NumberOfProjectionImages; noProj++)
     geometryMain->AddProjection(600., 1200., noProj*360./NumberOfProjectionImages);
 
   // Create a stack of empty projection images
-  typedef rtk::ConstantImageSource< OutputImageType > ConstantImageSourceType;
+  using ConstantImageSourceType = rtk::ConstantImageSource< OutputImageType >;
   ConstantImageSourceType::PointType origin;
   ConstantImageSourceType::SizeType sizeOutput;
   ConstantImageSourceType::SpacingType spacing;
@@ -90,7 +90,7 @@ int main(int argc, char*argv[])
   constantImageSource->SetSize( sizeOutput );
   constantImageSource->SetConstant( 0. );
 
-  typedef itk::PasteImageFilter <OutputImageType, OutputImageType, OutputImageType > PasteImageFilterType;
+  using PasteImageFilterType = itk::PasteImageFilter <OutputImageType, OutputImageType, OutputImageType >;
   OutputImageType::IndexType destinationIndex;
   destinationIndex[0] = 0;
   destinationIndex[1] = 0;
@@ -99,7 +99,7 @@ int main(int argc, char*argv[])
   PasteImageFilterType::Pointer pasteFilter = PasteImageFilterType::New();
 
   // Single projection
-  typedef rtk::RayEllipsoidIntersectionImageFilter<OutputImageType, OutputImageType> REIType;
+  using REIType = rtk::RayEllipsoidIntersectionImageFilter<OutputImageType, OutputImageType>;
   double             size   = 80.;
   double             sinus  = 0.;
   const unsigned int Cycles = 4;
@@ -197,7 +197,7 @@ int main(int argc, char*argv[])
   std::cout << "\n\n****** Case 0: Amsterdam Shroud Image with crop ******" << std::endl;
 
   // Amsterdam shroud
-  typedef rtk::AmsterdamShroudImageFilter<OutputImageType> ShroudFilterType;
+  using ShroudFilterType = rtk::AmsterdamShroudImageFilter<OutputImageType>;
   ShroudFilterType::Pointer shroudFilter = ShroudFilterType::New();
   shroudFilter->SetInput( pasteFilter->GetOutput() );
   shroudFilter->SetGeometry(geometryFull);
@@ -214,7 +214,7 @@ int main(int argc, char*argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION(shroudFilter->Update());
 
   // Read reference object
-  typedef itk::ImageFileReader< ShroudFilterType::OutputImageType > ReaderAmsterdamType;
+  using ReaderAmsterdamType = itk::ImageFileReader< ShroudFilterType::OutputImageType >;
   ReaderAmsterdamType::Pointer reader2 = ReaderAmsterdamType::New();
   reader2->SetFileName(argv[1]);
   reader2->Update();
@@ -238,7 +238,7 @@ int main(int argc, char*argv[])
   std::cout << "\n\n****** Case 2: Breathing signal calculated by reg1D algorithm ******\n" << std::endl;
 
   //Estimation of breathing signal
-  typedef rtk::Reg1DExtractShroudSignalImageFilter< reg1DPixelType, reg1DPixelType > reg1DFilterType;
+  using reg1DFilterType = rtk::Reg1DExtractShroudSignalImageFilter< reg1DPixelType, reg1DPixelType >;
   reg1DImageType::Pointer  reg1DSignal;
   reg1DFilterType::Pointer reg1DFilter = reg1DFilterType::New();
   reg1DFilter->SetInput( reader2->GetOutput() );
@@ -276,7 +276,7 @@ int main(int argc, char*argv[])
   std::cout << "\n\n****** Case 3: Breathing signal calculated by DP algorithm ******\n" << std::endl;
 
   //Estimation of breathing signal
-  typedef rtk::DPExtractShroudSignalImageFilter< reg1DPixelType, reg1DPixelType > DPFilterType;
+  using DPFilterType = rtk::DPExtractShroudSignalImageFilter< reg1DPixelType, reg1DPixelType >;
   reg1DImageType::Pointer  DPSignal;
   DPFilterType::Pointer DPFilter = DPFilterType::New();
   DPFilter->SetInput( reader2->GetOutput() );
@@ -312,7 +312,7 @@ int main(int argc, char*argv[])
   std::cout << "\n\n****** Extract phase from case 3 ******\n" << std::endl;
 
   //Check phase
-  typedef rtk::ExtractPhaseImageFilter< reg1DImageType > PhaseType;
+  using PhaseType = rtk::ExtractPhaseImageFilter< reg1DImageType >;
   PhaseType::Pointer phaseFilt = PhaseType::New();
   phaseFilt->SetInput( DPSignal );
   phaseFilt->SetUnsharpMaskSize( 53 );

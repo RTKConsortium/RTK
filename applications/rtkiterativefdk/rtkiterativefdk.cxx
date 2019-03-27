@@ -32,17 +32,17 @@ int main(int argc, char * argv[])
 {
   GGO(rtkiterativefdk, args_info);
 
-  typedef float OutputPixelType;
+  using OutputPixelType = float;
   const unsigned int Dimension = 3;
 
 #ifdef RTK_USE_CUDA
-  typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
+  using OutputImageType = itk::CudaImage< OutputPixelType, Dimension >;
 #else
-  typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
+  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
 #endif
 
   // Projections reader
-  typedef rtk::ProjectionsReader< OutputImageType > ReaderType;
+  using ReaderType = rtk::ProjectionsReader< OutputImageType >;
   ReaderType::Pointer reader = ReaderType::New();
   rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkiterativefdk>(reader, args_info);
 
@@ -62,7 +62,7 @@ int main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION( geometryReader->GenerateOutputInformation() )
 
   // Create reconstructed image
-  typedef rtk::ConstantImageSource< OutputImageType > ConstantImageSourceType;
+  using ConstantImageSourceType = rtk::ConstantImageSource< OutputImageType >;
   ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
   rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkiterativefdk>(constantImageSource, args_info);
 
@@ -91,10 +91,10 @@ int main(int argc, char * argv[])
   f->SetDisableDisplacedDetectorFilter(args_info.nodisplaced_flag);
 
   // Create Iterative FDK filter and connect it
-  typedef rtk::IterativeFDKConeBeamReconstructionFilter<OutputImageType, OutputImageType, double> IFDKCPUType;
+  using IFDKCPUType = rtk::IterativeFDKConeBeamReconstructionFilter<OutputImageType, OutputImageType, double>;
   IFDKCPUType::Pointer ifdk;
 #ifdef RTK_USE_CUDA
-  typedef rtk::CudaIterativeFDKConeBeamReconstructionFilter IFDKCUDAType;
+  using IFDKCUDAType = rtk::CudaIterativeFDKConeBeamReconstructionFilter;
   IFDKCUDAType::Pointer ifdkCUDA;
 #endif
 
@@ -115,7 +115,7 @@ int main(int argc, char * argv[])
 #endif
 
   // Write
-  typedef itk::ImageFileWriter<OutputImageType> WriterType;
+  using WriterType = itk::ImageFileWriter<OutputImageType>;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
   writer->SetInput( IFDKOutputPointer );

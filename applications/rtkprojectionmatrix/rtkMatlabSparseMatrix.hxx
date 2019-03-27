@@ -29,7 +29,7 @@ rtk::MatlabSparseMatrix::MatlabSparseMatrix(const vnl_sparse_matrix<double>& spa
   //Compute the column index
   //Store elements in std::vector and sort them according 1\ index of column and 2\ index of row
   unsigned int nonZeroElement(0);
-  typedef std::vector<std::pair<unsigned int, double> > sparseMatrixColumn;
+  using sparseMatrixColumn = std::vector<std::pair<unsigned int, double> >;
   sparseMatrixColumn* columnsVector = new sparseMatrixColumn[nbColumn];
   sparseMatrix.reset();
   while(sparseMatrix.next()) {

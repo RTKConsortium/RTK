@@ -37,10 +37,10 @@ namespace rtk
 class ImagXImageIO : public itk::ImageIOBase
 {
 public:
-  /** Standard class typedefs. */
-  typedef ImagXImageIO            Self;
-  typedef itk::ImageIOBase        Superclass;
-  typedef itk::SmartPointer<Self> Pointer;
+  /** Standard class type alias. */
+  using Self = ImagXImageIO;
+  using Superclass = itk::ImageIOBase;
+  using Pointer = itk::SmartPointer<Self>;
 
   ImagXImageIO() : Superclass() {}
 

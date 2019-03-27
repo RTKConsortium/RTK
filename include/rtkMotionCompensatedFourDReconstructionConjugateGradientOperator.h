@@ -96,18 +96,18 @@ template< typename VolumeSeriesType, typename ProjectionStackType>
 class MotionCompensatedFourDReconstructionConjugateGradientOperator : public FourDReconstructionConjugateGradientOperator< VolumeSeriesType, ProjectionStackType>
 {
 public:
-    /** Standard class typedefs. */
-    typedef MotionCompensatedFourDReconstructionConjugateGradientOperator                         Self;
-    typedef FourDReconstructionConjugateGradientOperator< VolumeSeriesType, ProjectionStackType>  Superclass;
-    typedef itk::SmartPointer< Self >                                                             Pointer;
+    /** Standard class type alias. */
+    using Self = MotionCompensatedFourDReconstructionConjugateGradientOperator;
+    using Superclass = FourDReconstructionConjugateGradientOperator< VolumeSeriesType, ProjectionStackType>;
+    using Pointer = itk::SmartPointer< Self >;
 
-    /** Convenient typedef */
-    typedef ProjectionStackType                                                                                 VolumeType;
-    typedef itk::CovariantVector< typename VolumeSeriesType::ValueType, VolumeSeriesType::ImageDimension - 1>   VectorForDVF;
+    /** Convenient type alias */
+    using VolumeType = ProjectionStackType;
+    using VectorForDVF = itk::CovariantVector< typename VolumeSeriesType::ValueType, VolumeSeriesType::ImageDimension - 1>;
 
-    /** SFINAE typedef, depending on whether a CUDA image is used. */
-    typedef typename itk::Image< typename VolumeSeriesType::PixelType,
-                                 VolumeSeriesType::ImageDimension>        CPUVolumeSeriesType;
+    /** SFINAE type alias, depending on whether a CUDA image is used. */
+    using CPUVolumeSeriesType = typename itk::Image< typename VolumeSeriesType::PixelType,
+                                 VolumeSeriesType::ImageDimension>;
 #ifdef RTK_USE_CUDA
     typedef typename std::conditional< std::is_same< VolumeSeriesType, CPUVolumeSeriesType >::value,
                                        itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension>,
@@ -126,21 +126,21 @@ public:
                                        CudaWarpBackProjectionImageFilter >::type
                                                                           WarpBackProjectionImageFilterType;
 #else
-    typedef itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension>    DVFSequenceImageType;
-    typedef itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension-1>  DVFImageType;
-    typedef JosephForwardProjectionImageFilter<ProjectionStackType,
-                                               ProjectionStackType>       WarpForwardProjectionImageFilterType;
-    typedef BackProjectionImageFilter<VolumeType, VolumeType>             WarpBackProjectionImageFilterType;
+    using DVFSequenceImageType = itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension>;
+    using DVFImageType = itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension-1>;
+    using WarpForwardProjectionImageFilterType = JosephForwardProjectionImageFilter<ProjectionStackType,
+                                               ProjectionStackType>;
+    using WarpBackProjectionImageFilterType = BackProjectionImageFilter<VolumeType, VolumeType>;
 #endif
-    typedef CyclicDeformationImageFilter< DVFSequenceImageType,
-                                          DVFImageType>                   CPUDVFInterpolatorType;
+    using CPUDVFInterpolatorType = CyclicDeformationImageFilter< DVFSequenceImageType,
+                                          DVFImageType>;
 #ifdef RTK_USE_CUDA
     typedef typename std::conditional< std::is_same< VolumeSeriesType, CPUVolumeSeriesType >::value,
                                        CPUDVFInterpolatorType,
                                        CudaCyclicDeformationImageFilter >::type
                                                                           CudaCyclicDeformationImageFilterType;
 #else
-    typedef CPUDVFInterpolatorType                                        CudaCyclicDeformationImageFilterType;
+    using CudaCyclicDeformationImageFilterType = CPUDVFInterpolatorType;
 #endif
 
     /** Method for creation through the object factory. */

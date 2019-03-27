@@ -18,8 +18,8 @@ void CheckImageQuality(typename TImage1::Pointer itkNotUsed(recon), typename TIm
 #else
 void CheckImageQuality(typename TImage1::Pointer recon, typename TImage2::Pointer ref)
 {
-  typedef itk::ImageRegionConstIterator<TImage1> ImageIteratorType1;
-  typedef itk::ImageRegionConstIterator<TImage2> ImageIteratorType2;
+  using ImageIteratorType1 = itk::ImageRegionConstIterator<TImage1>;
+  using ImageIteratorType2 = itk::ImageRegionConstIterator<TImage2>;
   ImageIteratorType1 itTest( recon, recon->GetBufferedRegion() );
   ImageIteratorType2 itRef( ref, ref->GetBufferedRegion() );
 
@@ -32,7 +32,7 @@ void CheckImageQuality(typename TImage1::Pointer recon, typename TImage2::Pointe
     }
   mean /= ref->GetBufferedRegion().GetNumberOfPixels();
 
-  typedef double ErrorType;
+  using ErrorType = double;
   ErrorType TestError = 0.;
   ErrorType EnerError = 0.;
 
@@ -107,14 +107,14 @@ void CheckImageQuality(typename TImage1::Pointer recon, typename TImage2::Pointe
 int main(int, char** )
 {
   const unsigned int Dimension = 3;
-  typedef float                                    OutputPixelType;
+  using OutputPixelType = float;
 
-  typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
+  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
 
   // Random and constant image sources
-  typedef itk::RandomImageSource< OutputImageType > RandomImageSourceType;
+  using RandomImageSourceType = itk::RandomImageSource< OutputImageType >;
   RandomImageSourceType::Pointer randomVolumeSource  = RandomImageSourceType::New();
-  typedef rtk::ConstantImageSource< OutputImageType > ConstantImageSourceType;
+  using ConstantImageSourceType = rtk::ConstantImageSource< OutputImageType >;
   ConstantImageSourceType::Pointer constantVolumeSource  = ConstantImageSourceType::New();
 
   // Image meta data
@@ -162,7 +162,7 @@ int main(int, char** )
   TRY_AND_EXIT_ON_ITK_EXCEPTION( constantVolumeSource->Update() );
 
   // Create and set the gradient and divergence filters
-  typedef rtk::ForwardDifferenceGradientImageFilter<OutputImageType> GradientFilterType;
+  using GradientFilterType = rtk::ForwardDifferenceGradientImageFilter<OutputImageType>;
   GradientFilterType::Pointer gradientFilter = GradientFilterType::New();
   gradientFilter->SetInput(randomVolumeSource->GetOutput());
   bool dimsProcessed[Dimension];
@@ -171,7 +171,7 @@ int main(int, char** )
     dimsProcessed[i] = true;
     }
   gradientFilter->SetDimensionsProcessed(dimsProcessed);
-  typedef rtk::BackwardDifferenceDivergenceImageFilter<GradientFilterType::OutputImageType> DivergenceFilterType;
+  using DivergenceFilterType = rtk::BackwardDifferenceDivergenceImageFilter<GradientFilterType::OutputImageType>;
   DivergenceFilterType::Pointer divergenceFilter = DivergenceFilterType::New();
   divergenceFilter->SetInput(gradientFilter->GetOutput());
 
@@ -180,10 +180,10 @@ int main(int, char** )
 
   // Create and set the conjugate gradient optimizer
   // It uses the operator DivergenceOfGradientConjugateGradientOperator
-  typedef rtk::ConjugateGradientImageFilter<OutputImageType> CGFilterType;
+  using CGFilterType = rtk::ConjugateGradientImageFilter<OutputImageType>;
   CGFilterType::Pointer cg = CGFilterType::New();
 
-  typedef rtk::DivergenceOfGradientConjugateGradientOperator<OutputImageType> CGoperatorType;
+  using CGoperatorType = rtk::DivergenceOfGradientConjugateGradientOperator<OutputImageType>;
   CGoperatorType::Pointer cg_op = CGoperatorType::New();
   cg->SetA(cg_op.GetPointer());
   cg->SetX(constantVolumeSource->GetOutput());

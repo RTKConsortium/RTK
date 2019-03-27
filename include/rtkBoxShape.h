@@ -45,19 +45,19 @@ class RTK_EXPORT BoxShape:
     public ConvexShape
 {
 public:
-  /** Standard class typedefs. */
-  typedef BoxShape                      Self;
-  typedef ConvexShape                   Superclass;
-  typedef itk::SmartPointer<Self>       Pointer;
-  typedef itk::SmartPointer<const Self> ConstPointer;
+  /** Standard class type alias. */
+  using Self = BoxShape;
+  using Superclass = ConvexShape;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
-  /** Convenient typedefs. */
+  /** Convenient type alias. */
   itkStaticConstMacro(Dimension, unsigned int, Superclass::Dimension);
-  typedef Superclass::ScalarType         ScalarType;
-  typedef Superclass::PointType          PointType;
-  typedef Superclass::VectorType         VectorType;
-  typedef Superclass::RotationMatrixType RotationMatrixType;
-  typedef itk::ImageBase<Dimension>      ImageBaseType;
+  using ScalarType = Superclass::ScalarType;
+  using PointType = Superclass::PointType;
+  using VectorType = Superclass::VectorType;
+  using RotationMatrixType = Superclass::RotationMatrixType;
+  using ImageBaseType = itk::ImageBase<Dimension>;
 
   /** Method for creation through the object factory. */
   itkNewMacro ( Self );

@@ -44,10 +44,10 @@ class SeparableQuadraticSurrogateRegularizationImageFilter : public itk::ImageTo
 {
 public:
 
-  /** Standard class typedefs. */
-  typedef SeparableQuadraticSurrogateRegularizationImageFilter      Self;
-  typedef itk::ImageToImageFilter< TImage, TImage>                  Superclass;
-  typedef itk::SmartPointer< Self >                                 Pointer;
+  /** Standard class type alias. */
+  using Self = SeparableQuadraticSurrogateRegularizationImageFilter;
+  using Superclass = itk::ImageToImageFilter< TImage, TImage>;
+  using Pointer = itk::SmartPointer< Self >;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self)

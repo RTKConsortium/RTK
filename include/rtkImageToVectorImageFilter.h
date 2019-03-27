@@ -47,12 +47,12 @@ template< typename InputImageType, typename OutputImageType>
 class ImageToVectorImageFilter : public itk::ImageToImageFilter< InputImageType, OutputImageType >
 {
 public:
-    /** Standard class typedefs. */
-    typedef ImageToVectorImageFilter                                    Self;
-    typedef itk::ImageToImageFilter< InputImageType, OutputImageType >  Superclass;
-    typedef itk::SmartPointer< Self >                                   Pointer;
+    /** Standard class type alias. */
+    using Self = ImageToVectorImageFilter;
+    using Superclass = itk::ImageToImageFilter< InputImageType, OutputImageType >;
+    using Pointer = itk::SmartPointer< Self >;
 
-    typedef typename OutputImageType::RegionType                        OutputImageRegionType;
+    using OutputImageRegionType = typename OutputImageType::RegionType;
 
     /** Method for creation through the object factory. */
     itkNewMacro(Self)

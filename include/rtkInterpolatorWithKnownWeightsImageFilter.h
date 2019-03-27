@@ -64,10 +64,10 @@ template< typename VolumeType, typename VolumeSeriesType>
 class InterpolatorWithKnownWeightsImageFilter : public itk::InPlaceImageFilter< VolumeType, VolumeType >
 {
 public:
-    /** Standard class typedefs. */
-    typedef InterpolatorWithKnownWeightsImageFilter             Self;
-    typedef itk::ImageToImageFilter< VolumeType, VolumeType >   Superclass;
-    typedef itk::SmartPointer< Self >                           Pointer;
+    /** Standard class type alias. */
+    using Self = InterpolatorWithKnownWeightsImageFilter;
+    using Superclass = itk::ImageToImageFilter< VolumeType, VolumeType >;
+    using Pointer = itk::SmartPointer< Self >;
 
     /** Method for creation through the object factory. */
     itkNewMacro(Self)

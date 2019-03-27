@@ -43,27 +43,27 @@ class ITK_EXPORT ScatterGlareCorrectionImageFilter :
     public rtk::FFTProjectionsConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 {
 public:
-  /** Standard class typedefs. */
-  typedef ScatterGlareCorrectionImageFilter                  Self;
-  typedef rtk::FFTProjectionsConvolutionImageFilter< TInputImage,
+  /** Standard class type alias. */
+  using Self = ScatterGlareCorrectionImageFilter;
+  using Superclass = rtk::FFTProjectionsConvolutionImageFilter< TInputImage,
                                           TOutputImage,
-                                          TFFTPrecision>     Superclass;
-  typedef itk::SmartPointer<Self>                            Pointer;
-  typedef itk::SmartPointer<const Self>                      ConstPointer;
+                                          TFFTPrecision>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
-  /** Some convenient typedefs. */
-  typedef TInputImage                                       InputImageType;
-  typedef TOutputImage                                      OutputImageType;
-  typedef TFFTPrecision                                     FFTPrecisionType;
-  typedef typename InputImageType::IndexType                IndexType;
-  typedef typename InputImageType::SizeType                 SizeType;
+  /** Some convenient type alias. */
+  using InputImageType = TInputImage;
+  using OutputImageType = TOutputImage;
+  using FFTPrecisionType = TFFTPrecision;
+  using IndexType = typename InputImageType::IndexType;
+  using SizeType = typename InputImageType::SizeType;
 
-  typedef typename Superclass::FFTInputImageType            FFTInputImageType;
-  typedef typename FFTInputImageType::Pointer               FFTInputImagePointer;
-  typedef typename Superclass::FFTOutputImageType           FFTOutputImageType;
-  typedef typename FFTOutputImageType::Pointer              FFTOutputImagePointer;
+  using FFTInputImageType = typename Superclass::FFTInputImageType;
+  using FFTInputImagePointer = typename FFTInputImageType::Pointer;
+  using FFTOutputImageType = typename Superclass::FFTOutputImageType;
+  using FFTOutputImagePointer = typename FFTOutputImageType::Pointer;
 
-  typedef typename std::vector<float>                       CoefficientVectorType;
+  using CoefficientVectorType = typename std::vector<float>;
 
   /** Standard New method. */
   itkNewMacro(Self);

@@ -121,35 +121,35 @@ class ITK_EXPORT FourDSARTConeBeamReconstructionFilter :
   public rtk::IterativeConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 {
 public:
-  /** Standard class typedefs. */
-  typedef FourDSARTConeBeamReconstructionFilter                                     Self;
-  typedef IterativeConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType> Superclass;
-  typedef itk::SmartPointer<Self>                                                   Pointer;
-  typedef itk::SmartPointer<const Self>                                             ConstPointer;
+  /** Standard class type alias. */
+  using Self = FourDSARTConeBeamReconstructionFilter;
+  using Superclass = IterativeConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
-  /** Some convenient typedefs. */
-  typedef VolumeSeriesType      InputImageType;
-  typedef VolumeSeriesType      OutputImageType;
-  typedef ProjectionStackType   VolumeType;
+  /** Some convenient type alias. */
+  using InputImageType = VolumeSeriesType;
+  using OutputImageType = VolumeSeriesType;
+  using VolumeType = ProjectionStackType;
 
-  typedef typename Superclass::ForwardProjectionType ForwardProjectionType;
-  typedef typename Superclass::BackProjectionType    BackProjectionType;
+  using ForwardProjectionType = typename Superclass::ForwardProjectionType;
+  using BackProjectionType = typename Superclass::BackProjectionType;
 
   /** Typedefs of each subfilter of this composite filter */
-  typedef itk::ExtractImageFilter< ProjectionStackType, ProjectionStackType >                             ExtractFilterType;
-  typedef rtk::ForwardProjectionImageFilter< ProjectionStackType, ProjectionStackType >                   ForwardProjectionFilterType;
-  typedef rtk::FourDToProjectionStackImageFilter < ProjectionStackType, VolumeSeriesType >                FourDToProjectionStackFilterType;
-  typedef itk::SubtractImageFilter< ProjectionStackType, ProjectionStackType >                            SubtractFilterType;
-  typedef itk::MultiplyImageFilter< ProjectionStackType, ProjectionStackType, ProjectionStackType >       MultiplyFilterType;
-  typedef itk::AddImageFilter< VolumeSeriesType, VolumeSeriesType >                                       AddFilterType;
-  typedef rtk::BackProjectionImageFilter< VolumeType, VolumeType >                                        BackProjectionFilterType;
-  typedef rtk::ProjectionStackToFourDImageFilter < VolumeSeriesType, ProjectionStackType >                ProjectionStackToFourDFilterType;
-  typedef rtk::RayBoxIntersectionImageFilter<ProjectionStackType, ProjectionStackType>                    RayBoxIntersectionFilterType;
-  typedef itk::DivideOrZeroOutImageFilter<ProjectionStackType, ProjectionStackType, ProjectionStackType>  DivideFilterType;
-  typedef rtk::DisplacedDetectorImageFilter<ProjectionStackType>                                          DisplacedDetectorFilterType;
-  typedef rtk::ConstantImageSource<VolumeSeriesType>                                                      ConstantVolumeSeriesSourceType;
-  typedef rtk::ConstantImageSource<ProjectionStackType>                                                   ConstantProjectionStackSourceType;
-  typedef itk::ThresholdImageFilter<VolumeSeriesType>                                                     ThresholdFilterType;
+  using ExtractFilterType = itk::ExtractImageFilter< ProjectionStackType, ProjectionStackType >;
+  using ForwardProjectionFilterType = rtk::ForwardProjectionImageFilter< ProjectionStackType, ProjectionStackType >;
+  using FourDToProjectionStackFilterType = rtk::FourDToProjectionStackImageFilter < ProjectionStackType, VolumeSeriesType >;
+  using SubtractFilterType = itk::SubtractImageFilter< ProjectionStackType, ProjectionStackType >;
+  using MultiplyFilterType = itk::MultiplyImageFilter< ProjectionStackType, ProjectionStackType, ProjectionStackType >;
+  using AddFilterType = itk::AddImageFilter< VolumeSeriesType, VolumeSeriesType >;
+  using BackProjectionFilterType = rtk::BackProjectionImageFilter< VolumeType, VolumeType >;
+  using ProjectionStackToFourDFilterType = rtk::ProjectionStackToFourDImageFilter < VolumeSeriesType, ProjectionStackType >;
+  using RayBoxIntersectionFilterType = rtk::RayBoxIntersectionImageFilter<ProjectionStackType, ProjectionStackType>;
+  using DivideFilterType = itk::DivideOrZeroOutImageFilter<ProjectionStackType, ProjectionStackType, ProjectionStackType>;
+  using DisplacedDetectorFilterType = rtk::DisplacedDetectorImageFilter<ProjectionStackType>;
+  using ConstantVolumeSeriesSourceType = rtk::ConstantImageSource<VolumeSeriesType>;
+  using ConstantProjectionStackSourceType = rtk::ConstantImageSource<ProjectionStackType>;
+  using ThresholdFilterType = itk::ThresholdImageFilter<VolumeSeriesType>;
 
   /** Standard New method. */
   itkNewMacro(Self);

@@ -38,14 +38,14 @@ class ITK_EXPORT SumOfSquaresImageFilter :
   public itk::InPlaceImageFilter<TOutputImage>
 {
 public:
-  /** Standard class typedefs. */
-  typedef SumOfSquaresImageFilter                     Self;
-  typedef itk::InPlaceImageFilter<TOutputImage>                  Superclass;
-  typedef itk::SmartPointer<Self>                                Pointer;
-  typedef itk::SmartPointer<const Self>                          ConstPointer;
-  typedef typename TOutputImage::PixelType                       OutputPixelType;
-  typedef typename TOutputImage::RegionType                      OutputImageRegionType;
-  typedef typename TOutputImage::InternalPixelType               OutputInternalPixelType;
+  /** Standard class type alias. */
+  using Self = SumOfSquaresImageFilter;
+  using Superclass = itk::InPlaceImageFilter<TOutputImage>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
+  using OutputPixelType = typename TOutputImage::PixelType;
+  using OutputImageRegionType = typename TOutputImage::RegionType;
+  using OutputInternalPixelType = typename TOutputImage::InternalPixelType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);

@@ -62,19 +62,19 @@ public:
   itkStaticConstMacro(OutputImageDimension, unsigned int,
                       TOuputImage::ImageDimension);
 
-  /** Standard class typedefs. */
-  typedef ForwardDifferenceGradientImageFilter Self;
+  /** Standard class type alias. */
+  using Self = ForwardDifferenceGradientImageFilter;
 
-  /** Convenient typedefs for simplifying declarations. */
-  typedef TInputImage                       InputImageType;
-  typedef typename InputImageType::Pointer  InputImagePointer;
-  typedef TOuputImage                       OutputImageType;
-  typedef typename OutputImageType::Pointer OutputImagePointer;
+  /** Convenient type alias for simplifying declarations. */
+  using InputImageType = TInputImage;
+  using InputImagePointer = typename InputImageType::Pointer;
+  using OutputImageType = TOuputImage;
+  using OutputImagePointer = typename OutputImageType::Pointer;
 
-  /** Standard class typedefs. */
-  typedef itk::ImageToImageFilter< InputImageType, OutputImageType > Superclass;
-  typedef itk::SmartPointer< Self >                                  Pointer;
-  typedef itk::SmartPointer< const Self >                            ConstPointer;
+  /** Standard class type alias. */
+  using Superclass = itk::ImageToImageFilter< InputImageType, OutputImageType >;
+  using Pointer = itk::SmartPointer< Self >;
+  using ConstPointer = itk::SmartPointer< const Self >;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -82,12 +82,12 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(ForwardDifferenceGradientImageFilter, ImageToImageFilter);
 
-  /** Image typedef support. */
-  typedef TOperatorValueType                    OperatorValueType;
-  typedef TOuputValue                           OutputValueType;
-  typedef typename InputImageType::PixelType    InputPixelType;
-  typedef typename OutputImageType::PixelType   CovariantVectorType;
-  typedef typename OutputImageType::RegionType  OutputImageRegionType;
+  /** Image type alias support. */
+  using OperatorValueType = TOperatorValueType;
+  using OutputValueType = TOuputValue;
+  using InputPixelType = typename InputImageType::PixelType;
+  using CovariantVectorType = typename OutputImageType::PixelType;
+  using OutputImageRegionType = typename OutputImageType::RegionType;
 
   /** ForwardDifferenceGradientImageFilter needs a larger input requested region than
    * the output requested region.  As such, ForwardDifferenceGradientImageFilter needs

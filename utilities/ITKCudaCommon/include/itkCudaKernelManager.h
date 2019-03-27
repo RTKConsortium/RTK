@@ -48,10 +48,10 @@ public:
     const void *m_Arg;
     };
 
-  typedef CudaKernelManager        Self;
-  typedef LightObject              Superclass;
-  typedef SmartPointer<Self>       Pointer;
-  typedef SmartPointer<const Self> ConstPointer;
+  using Self = CudaKernelManager;
+  using Superclass = LightObject;
+  using Pointer = SmartPointer<Self>;
+  using ConstPointer = SmartPointer<const Self>;
 
   itkNewMacro(Self);
   itkTypeMacro(CudaKernelManager, LightObject);

@@ -85,13 +85,13 @@ itk::UnaryFunctorImageFilter<TInputImage,TOutputImage,
   typename TOutputImage::PixelType>   >
 {
 public:
-  /** Standard class typedefs. */
-  typedef VarianObiRawImageFilter  Self;
-  typedef itk::UnaryFunctorImageFilter<TInputImage,TOutputImage,
+  /** Standard class type alias. */
+  using Self = VarianObiRawImageFilter;
+  using Superclass = itk::UnaryFunctorImageFilter<TInputImage,TOutputImage,
                                        Function::ObiAttenuation< typename TInputImage::PixelType,
-                                                      typename TOutputImage::PixelType> >  Superclass;
-  typedef itk::SmartPointer<Self>        Pointer;
-  typedef itk::SmartPointer<const Self>  ConstPointer;
+                                                      typename TOutputImage::PixelType> >;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);

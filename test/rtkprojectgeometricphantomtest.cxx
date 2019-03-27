@@ -32,17 +32,17 @@ int main(int argc, char*argv[])
   }
 
   const unsigned int Dimension = 3;
-  typedef float                                    OutputPixelType;
-  typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
+  using OutputPixelType = float;
+  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
 #if FAST_TESTS_NO_CHECKS
   const unsigned int NumberOfProjectionImages = 3;
 #else
   const unsigned int NumberOfProjectionImages = 180;
 #endif
-  typedef rtk::ThreeDCircularProjectionGeometry GeometryType;
+  using GeometryType = rtk::ThreeDCircularProjectionGeometry;
 
   // Constant image sources
-  typedef rtk::ConstantImageSource< OutputImageType > ConstantImageSourceType;
+  using ConstantImageSourceType = rtk::ConstantImageSource< OutputImageType >;
   ConstantImageSourceType::PointType origin;
   ConstantImageSourceType::SizeType size;
   ConstantImageSourceType::SpacingType spacing;
@@ -72,20 +72,20 @@ int main(int argc, char*argv[])
   projectionsSource->SetConstant( 0. );
 
   // Geometry object
-  typedef rtk::ThreeDCircularProjectionGeometry GeometryType;
+  using GeometryType = rtk::ThreeDCircularProjectionGeometry;
   GeometryType::Pointer geometry = GeometryType::New();
   for(unsigned int noProj=0; noProj<NumberOfProjectionImages; noProj++)
     geometry->AddProjection(600., 1200., noProj*360./NumberOfProjectionImages);
 
   // Shepp Logan projections filter
-  typedef rtk::SheppLoganPhantomFilter<OutputImageType, OutputImageType> SLPType;
+  using SLPType = rtk::SheppLoganPhantomFilter<OutputImageType, OutputImageType>;
   SLPType::Pointer slp=SLPType::New();
   slp->SetInput( projectionsSource->GetOutput() );
   slp->SetGeometry(geometry);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( slp->Update() );
 
   // Shepp Logan projections filter from Configuration File
-  typedef rtk::ProjectGeometricPhantomImageFilter<OutputImageType, OutputImageType> PGPType;
+  using PGPType = rtk::ProjectGeometricPhantomImageFilter<OutputImageType, OutputImageType>;
   PGPType::Pointer pgp=PGPType::New();
   pgp->SetInput( projectionsSource->GetOutput() );
   pgp->SetGeometry(geometry);

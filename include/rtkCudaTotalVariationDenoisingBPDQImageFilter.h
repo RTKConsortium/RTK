@@ -45,13 +45,13 @@ class RTK_EXPORT CudaTotalVariationDenoisingBPDQImageFilter :
   TotalVariationDenoisingBPDQImageFilter< itk::CudaImage<float,3>, itk::CudaImage< itk::CovariantVector < float, 3 >, 3 > > >
 {
 public:
-  /** Standard class typedefs. */
-  typedef rtk::CudaTotalVariationDenoisingBPDQImageFilter                               Self;
-  typedef itk::CudaImage<float,3>                                                       OutputImageType;
-  typedef itk::CudaImage< itk::CovariantVector < float, 3 >, 3 >                        GradientType;
-  typedef rtk::TotalVariationDenoisingBPDQImageFilter< OutputImageType, GradientType >  Superclass;
-  typedef itk::SmartPointer<Self>                                                       Pointer;
-  typedef itk::SmartPointer<const Self>                                                 ConstPointer;
+  /** Standard class type alias. */
+  using Self = rtk::CudaTotalVariationDenoisingBPDQImageFilter;
+  using OutputImageType = itk::CudaImage<float,3>;
+  using GradientType = itk::CudaImage< itk::CovariantVector < float, 3 >, 3 >;
+  using Superclass = rtk::TotalVariationDenoisingBPDQImageFilter< OutputImageType, GradientType >;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
   /** Standard New method. */
   itkNewMacro(Self)

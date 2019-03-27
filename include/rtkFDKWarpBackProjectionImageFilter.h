@@ -49,22 +49,22 @@ class ITK_EXPORT FDKWarpBackProjectionImageFilter :
   public FDKBackProjectionImageFilter<TInputImage,TOutputImage>
 {
 public:
-  /** Standard class typedefs. */
-  typedef FDKWarpBackProjectionImageFilter                       Self;
-  typedef FDKBackProjectionImageFilter<TInputImage,TOutputImage> Superclass;
-  typedef itk::SmartPointer<Self>                                Pointer;
-  typedef itk::SmartPointer<const Self>                          ConstPointer;
-  typedef typename TInputImage::PixelType                        InputPixelType;
-  typedef typename TOutputImage::RegionType                      OutputImageRegionType;
+  /** Standard class type alias. */
+  using Self = FDKWarpBackProjectionImageFilter;
+  using Superclass = FDKBackProjectionImageFilter<TInputImage,TOutputImage>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
+  using InputPixelType = typename TInputImage::PixelType;
+  using OutputImageRegionType = typename TOutputImage::RegionType;
 
-  typedef TDeformation                      DeformationType;
-  typedef typename DeformationType::Pointer DeformationPointer;
+  using DeformationType = TDeformation;
+  using DeformationPointer = typename DeformationType::Pointer;
 
-  typedef rtk::ProjectionGeometry<TOutputImage::ImageDimension>     GeometryType;
-  typedef typename GeometryType::Pointer                            GeometryPointer;
-  typedef typename GeometryType::MatrixType                         ProjectionMatrixType;
-  typedef itk::Image<InputPixelType, TInputImage::ImageDimension-1> ProjectionImageType;
-  typedef typename ProjectionImageType::Pointer                     ProjectionImagePointer;
+  using GeometryType = rtk::ProjectionGeometry<TOutputImage::ImageDimension>;
+  using GeometryPointer = typename GeometryType::Pointer;
+  using ProjectionMatrixType = typename GeometryType::MatrixType;
+  using ProjectionImageType = itk::Image<InputPixelType, TInputImage::ImageDimension-1>;
+  using ProjectionImagePointer = typename ProjectionImageType::Pointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);

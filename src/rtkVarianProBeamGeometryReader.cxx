@@ -45,7 +45,7 @@ rtk::VarianProBeamGeometryReader
 
   // Constants used to generate projection matrices
   itk::MetaDataDictionary &dic = *(proBeamXmlReader->GetOutputObject() );
-  typedef itk::MetaDataObject< double > MetaDataDoubleType;
+  using MetaDataDoubleType = itk::MetaDataObject< double >;
   const double sdd = dynamic_cast<MetaDataDoubleType *>(dic["SID"].GetPointer() )->GetMetaDataObjectValue();
   const double sid = dynamic_cast<MetaDataDoubleType *>(dic["SAD"].GetPointer() )->GetMetaDataObjectValue();
 
@@ -54,10 +54,10 @@ rtk::VarianProBeamGeometryReader
   // Projection matrices
   for(unsigned int noProj=0; noProj<m_ProjectionsFileNames.size(); noProj++)
     {
-    typedef unsigned int                    InputPixelType;
-    typedef itk::Image< InputPixelType, 2 > InputImageType;
+    using InputPixelType = unsigned int;
+    using InputImageType = itk::Image< InputPixelType, 2 >;
 
-    typedef itk::ImageFileReader< InputImageType > ReaderType;
+    using ReaderType = itk::ImageFileReader< InputImageType >;
     ReaderType::Pointer reader = ReaderType::New();
     reader->SetFileName( m_ProjectionsFileNames[noProj] );
     reader->UpdateOutputInformation();

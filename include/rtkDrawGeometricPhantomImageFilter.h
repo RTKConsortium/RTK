@@ -40,17 +40,17 @@ class DrawGeometricPhantomImageFilter :
   public itk::InPlaceImageFilter<TInputImage,TOutputImage>
 {
 public:
-  /** Standard class typedefs. */
-  typedef DrawGeometricPhantomImageFilter                   Self;
-  typedef itk::InPlaceImageFilter<TInputImage,TOutputImage> Superclass;
-  typedef itk::SmartPointer<Self>                           Pointer;
-  typedef itk::SmartPointer<const Self>                     ConstPointer;
+  /** Standard class type alias. */
+  using Self = DrawGeometricPhantomImageFilter;
+  using Superclass = itk::InPlaceImageFilter<TInputImage,TOutputImage>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
-  /** Convenient typedefs. */
-  typedef GeometricPhantom::ConstPointer  GeometricPhantomConstPointer;
-  typedef std::string                     StringType;
-  typedef ConvexShape::VectorType         VectorType;
-  typedef ConvexShape::RotationMatrixType RotationMatrixType;
+  /** Convenient type alias. */
+  using GeometricPhantomConstPointer = GeometricPhantom::ConstPointer;
+  using StringType = std::string;
+  using VectorType = ConvexShape::VectorType;
+  using RotationMatrixType = ConvexShape::RotationMatrixType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);

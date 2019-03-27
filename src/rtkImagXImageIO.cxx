@@ -37,9 +37,9 @@ void rtk::ImagXImageIO::ReadImageInformation()
 
   itk::MetaDataDictionary &dic = *(xmlReader->GetOutputObject() );
 
-  typedef itk::MetaDataObject< double >      MetaDataDoubleType;
-  typedef itk::MetaDataObject< std::string > MetaDataStringType;
-  typedef itk::MetaDataObject< int >         MetaDataIntType;
+  using MetaDataDoubleType = itk::MetaDataObject< double >;
+  using MetaDataStringType = itk::MetaDataObject< std::string >;
+  using MetaDataIntType = itk::MetaDataObject< int >;
 
   std::string pixelType = dynamic_cast<MetaDataStringType*>(dic["pixelFormat"].GetPointer() )->GetMetaDataObjectValue();
   if(pixelType=="Type_uint8")

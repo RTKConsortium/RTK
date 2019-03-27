@@ -10,7 +10,7 @@
 
 #include <itkRegularExpressionSeriesFileNames.h>
 
-typedef rtk::ThreeDCircularProjectionGeometry GeometryType;
+using GeometryType = rtk::ThreeDCircularProjectionGeometry;
 
 /**
  * \file rtkdrawgeometricphantomtest.cxx
@@ -36,11 +36,11 @@ int main(int argc, char*argv[])
   }
 
     const unsigned int Dimension = 3;
-    typedef float                                    OutputPixelType;
-    typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
+    using OutputPixelType = float;
+    using OutputImageType = itk::Image< OutputPixelType, Dimension >;
 
     // Constant image sources
-    typedef rtk::ConstantImageSource< OutputImageType > ConstantImageSourceType;
+    using ConstantImageSourceType = rtk::ConstantImageSource< OutputImageType >;
     ConstantImageSourceType::PointType origin;
     ConstantImageSourceType::SizeType size;
     ConstantImageSourceType::SpacingType spacing;
@@ -74,7 +74,7 @@ int main(int argc, char*argv[])
     //////////////////////////////////
 
     // Shepp Logan reference filter
-    typedef rtk::DrawSheppLoganFilter<OutputImageType, OutputImageType> DSLType;
+    using DSLType = rtk::DrawSheppLoganFilter<OutputImageType, OutputImageType>;
     DSLType::Pointer dsl=DSLType::New();
     dsl->SetInput( tomographySource->GetOutput() );
     dsl->SetPhantomScale(128.);
@@ -82,7 +82,7 @@ int main(int argc, char*argv[])
     TRY_AND_EXIT_ON_ITK_EXCEPTION( dsl->Update() );
 
     // Shepp Logan reference filter from Configuration File
-    typedef rtk::DrawGeometricPhantomImageFilter<OutputImageType, OutputImageType> DGPType;
+    using DGPType = rtk::DrawGeometricPhantomImageFilter<OutputImageType, OutputImageType>;
     DGPType::Pointer dgp=DGPType::New();
     dgp->SetInput( tomographySource->GetOutput() );
     dgp->InPlaceOff();
@@ -114,7 +114,7 @@ int main(int argc, char*argv[])
 //    center.push_back(2.);
 
     // Draw CYLINDER
-    typedef rtk::DrawCylinderImageFilter<OutputImageType, OutputImageType> DCType;
+    using DCType = rtk::DrawCylinderImageFilter<OutputImageType, OutputImageType>;
     DCType::Pointer dcl = DCType::New();
 
     DCType::VectorType axis, center;
@@ -138,7 +138,7 @@ int main(int argc, char*argv[])
     axis[1] = -50.;
     axis[2] = 25.;
 
-    typedef rtk::DrawConeImageFilter<OutputImageType, OutputImageType> DCOType;
+    using DCOType = rtk::DrawConeImageFilter<OutputImageType, OutputImageType>;
     DCOType::Pointer dco = DCOType::New();
     dco->SetInput( tomographySource->GetOutput() );
     dco->SetAxis(axis);
@@ -147,7 +147,7 @@ int main(int argc, char*argv[])
     dco->SetDensity(-0.54);
 
     //Add Image Filter used to concatenate the different figures obtained on each iteration
-    typedef itk::AddImageFilter <OutputImageType, OutputImageType, OutputImageType> AddImageFilterType;
+    using AddImageFilterType = itk::AddImageFilter <OutputImageType, OutputImageType, OutputImageType>;
     AddImageFilterType::Pointer addFilter = AddImageFilterType::New();
 
     addFilter->SetInput1(dcl->GetOutput());

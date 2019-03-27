@@ -59,13 +59,13 @@ class ITK_EXPORT CudaForwardProjectionImageFilter :
   ForwardProjectionImageFilter< TInputImage, TOutputImage > >
 {
 public:
-  /** Standard class typedefs. */
-  typedef CudaForwardProjectionImageFilter                                    Self;
-  typedef ForwardProjectionImageFilter<TInputImage, TOutputImage>             Superclass;
-  typedef itk::CudaInPlaceImageFilter<TInputImage, TOutputImage, Superclass > GPUSuperclass;
-  typedef itk::SmartPointer<Self>                                             Pointer;
-  typedef itk::SmartPointer<const Self>                                       ConstPointer;
-  typedef itk::Vector<float,3>                                                VectorType;
+  /** Standard class type alias. */
+  using Self = CudaForwardProjectionImageFilter;
+  using Superclass = ForwardProjectionImageFilter<TInputImage, TOutputImage>;
+  using GPUSuperclass = itk::CudaInPlaceImageFilter<TInputImage, TOutputImage, Superclass >;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
+  using VectorType = itk::Vector<float,3>;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);

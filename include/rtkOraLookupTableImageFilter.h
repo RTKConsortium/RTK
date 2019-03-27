@@ -45,18 +45,18 @@ class ITK_EXPORT OraLookupTableImageFilter:
 {
 
 public:
-  /** Standard class typedefs. */
-  typedef OraLookupTableImageFilter                                           Self;
-  typedef LookupTableImageFilter<itk::Image<unsigned short,
+  /** Standard class type alias. */
+  using Self = OraLookupTableImageFilter;
+  using Superclass = LookupTableImageFilter<itk::Image<unsigned short,
                                             TOutputImage::ImageDimension>,
-                                 TOutputImage>                                Superclass;
-  typedef itk::SmartPointer<Self>                                             Pointer;
-  typedef itk::SmartPointer<const Self>                                       ConstPointer;
+                                 TOutputImage>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
-  typedef unsigned short                                    InputImagePixelType;
-  typedef typename TOutputImage::PixelType                  OutputImagePixelType;
-  typedef typename Superclass::FunctorType::LookupTableType LookupTableType;
-  typedef std::vector<std::string>                          FileNamesContainer;
+  using InputImagePixelType = unsigned short;
+  using OutputImagePixelType = typename TOutputImage::PixelType;
+  using LookupTableType = typename Superclass::FunctorType::LookupTableType;
+  using FileNamesContainer = std::vector<std::string>;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);

@@ -35,32 +35,32 @@ int main(int argc, char * argv[])
 {
   GGO(rtkspectralonestep, args_info);
 
-  typedef float dataType;
+  using dataType = float;
   const unsigned int Dimension = 3;
   const unsigned int nBins = 5;
   const unsigned int nMaterials = 3;
 
   // Define types for the input images
 #ifdef RTK_USE_CUDA
-  typedef itk::CudaImage< itk::Vector<dataType, nMaterials>, Dimension > MaterialVolumesType;
-  typedef itk::CudaImage< itk::Vector<dataType, nBins>, Dimension > PhotonCountsType;
-  typedef itk::CudaImage< dataType, Dimension > IncidentSpectrumType;
-  typedef itk::CudaImage< dataType, 2 > DetectorResponseType;
-  typedef itk::CudaImage< dataType, 2 > MaterialAttenuationsType;
+  using MaterialVolumesType = itk::CudaImage< itk::Vector<dataType, nMaterials>, Dimension >;
+  using PhotonCountsType = itk::CudaImage< itk::Vector<dataType, nBins>, Dimension >;
+  using IncidentSpectrumType = itk::CudaImage< dataType, Dimension >;
+  using DetectorResponseType = itk::CudaImage< dataType, 2 >;
+  using MaterialAttenuationsType = itk::CudaImage< dataType, 2 >;
 #else
-  typedef itk::Image< itk::Vector<dataType, nMaterials>, Dimension > MaterialVolumesType;
-  typedef itk::Image< itk::Vector<dataType, nBins>, Dimension > PhotonCountsType;
-  typedef itk::Image< dataType, Dimension > IncidentSpectrumType;
-  typedef itk::Image< dataType, 2 > DetectorResponseType;
-  typedef itk::Image< dataType, 2 > MaterialAttenuationsType;
+  using MaterialVolumesType = itk::Image< itk::Vector<dataType, nMaterials>, Dimension >;
+  using PhotonCountsType = itk::Image< itk::Vector<dataType, nBins>, Dimension >;
+  using IncidentSpectrumType = itk::Image< dataType, Dimension >;
+  using DetectorResponseType = itk::Image< dataType, 2 >;
+  using MaterialAttenuationsType = itk::Image< dataType, 2 >;
 #endif
 
   // Define types for the readers
-  typedef itk::ImageFileReader<MaterialVolumesType> MaterialVolumesReaderType;
-  typedef itk::ImageFileReader<PhotonCountsType> PhotonCountsReaderType;
-  typedef itk::ImageFileReader<IncidentSpectrumType> IncidentSpectrumReaderType;
-  typedef itk::ImageFileReader<DetectorResponseType> DetectorResponseReaderType;
-  typedef itk::ImageFileReader<MaterialAttenuationsType> MaterialAttenuationsReaderType;
+  using MaterialVolumesReaderType = itk::ImageFileReader<MaterialVolumesType>;
+  using PhotonCountsReaderType = itk::ImageFileReader<PhotonCountsType>;
+  using IncidentSpectrumReaderType = itk::ImageFileReader<IncidentSpectrumType>;
+  using DetectorResponseReaderType = itk::ImageFileReader<DetectorResponseType>;
+  using MaterialAttenuationsReaderType = itk::ImageFileReader<MaterialAttenuationsType>;
 
   // Instantiate and update the readers
   PhotonCountsReaderType::Pointer photonCountsReader = PhotonCountsReaderType::New();
@@ -98,7 +98,7 @@ int main(int argc, char * argv[])
   else
     {
     // Create new empty volume
-    typedef rtk::ConstantImageSource< MaterialVolumesType > ConstantImageSourceType;
+    using ConstantImageSourceType = rtk::ConstantImageSource< MaterialVolumesType >;
     ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
     rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkspectralonestep>(constantImageSource, args_info);
     inputFilter = constantImageSource;
@@ -181,9 +181,9 @@ int main(int argc, char * argv[])
     regulWeights.Fill(0);
 
   // Set the forward and back projection filters to be used
-  typedef rtk::MechlemOneStepSpectralReconstructionFilter<MaterialVolumesType,
+  using MechlemFilterType = rtk::MechlemOneStepSpectralReconstructionFilter<MaterialVolumesType,
                                                           PhotonCountsType,
-                                                          IncidentSpectrumType> MechlemFilterType;
+                                                          IncidentSpectrumType>;
   MechlemFilterType::Pointer mechlemOneStep = MechlemFilterType::New();
   SetForwardProjectionFromGgo(args_info, mechlemOneStep.GetPointer());
   SetBackProjectionFromGgo(args_info, mechlemOneStep.GetPointer());
@@ -204,7 +204,7 @@ int main(int argc, char * argv[])
   // a random permutation
   if (args_info.subsets_arg != 1)
     {
-    typedef rtk::ReorderProjectionsImageFilter<PhotonCountsType> ReorderProjectionsFilterType;
+    using ReorderProjectionsFilterType = rtk::ReorderProjectionsImageFilter<PhotonCountsType>;
     ReorderProjectionsFilterType::Pointer reorder = ReorderProjectionsFilterType::New();
     reorder->SetInput(photonCountsReader->GetOutput());
     reorder->SetInputGeometry(geometryReader->GetOutputObject());
@@ -222,7 +222,7 @@ int main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION( mechlemOneStep->Update() )
 
   // Write
-  typedef itk::ImageFileWriter< MaterialVolumesType > WriterType;
+  using WriterType = itk::ImageFileWriter< MaterialVolumesType >;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
   writer->SetInput( mechlemOneStep->GetOutput() );

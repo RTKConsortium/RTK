@@ -47,21 +47,21 @@ class ForwardWarpImageFilter :
   public itk::WarpImageFilter< TInputImage, TOutputImage, TDVF >
 {
 public:
-  /** Standard class typedefs. */
-  typedef ForwardWarpImageFilter                                  Self;
-  typedef itk::WarpImageFilter<TInputImage, TOutputImage, TDVF>   Superclass;
-  typedef itk::SmartPointer<Self>                                 Pointer;
-  typedef itk::SmartPointer<const Self>                           ConstPointer;
+  /** Standard class type alias. */
+  using Self = ForwardWarpImageFilter;
+  using Superclass = itk::WarpImageFilter<TInputImage, TOutputImage, TDVF>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
   /** Displacement type */
-  typedef TDVF                                      DisplacementFieldType;
-  typedef typename DisplacementFieldType::Pointer   DisplacementFieldPointer;
-  typedef typename DisplacementFieldType::ConstPointer   DisplacementFieldConstPointer;
-  typedef typename DisplacementFieldType::PixelType DisplacementType;
+  using DisplacementFieldType = TDVF;
+  using DisplacementFieldPointer = typename DisplacementFieldType::Pointer;
+  using DisplacementFieldConstPointer = typename DisplacementFieldType::ConstPointer;
+  using DisplacementType = typename DisplacementFieldType::PixelType;
 
   /** Point type */
-  typedef double                                                   CoordRepType;
-  typedef itk::Point< CoordRepType, itkGetStaticConstMacro(ImageDimension) > PointType;
+  using CoordRepType = double;
+  using PointType = itk::Point< CoordRepType, itkGetStaticConstMacro(ImageDimension) >;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self)

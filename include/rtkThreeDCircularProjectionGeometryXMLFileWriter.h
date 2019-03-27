@@ -42,10 +42,10 @@ class RTK_EXPORT ThreeDCircularProjectionGeometryXMLFileWriter :
   public itk::XMLWriterBase< ThreeDCircularProjectionGeometry >
 {
 public:
-  /** standard typedefs */
-  typedef itk::XMLWriterBase< ThreeDCircularProjectionGeometry > Superclass;
-  typedef ThreeDCircularProjectionGeometryXMLFileWriter          Self;
-  typedef itk::SmartPointer<Self>                                Pointer;
+  /** standard type alias */
+  using Superclass = itk::XMLWriterBase< ThreeDCircularProjectionGeometry >;
+  using Self = ThreeDCircularProjectionGeometryXMLFileWriter;
+  using Pointer = itk::SmartPointer<Self>;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);

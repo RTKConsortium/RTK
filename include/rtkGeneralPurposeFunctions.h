@@ -68,7 +68,7 @@ void
 WriteImage(typename ImageType::ConstPointer input, std::string name)
 {
   //Create an itk::ImageFileWriter
-  typedef itk::ImageFileWriter<ImageType> WriterType;
+  using WriterType = itk::ImageFileWriter<ImageType>;
   typename WriterType::Pointer writer = WriterType::New();
   writer->SetInput(input);
   writer->SetFileName(name);

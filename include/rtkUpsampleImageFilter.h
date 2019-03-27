@@ -39,11 +39,11 @@ class ITK_EXPORT UpsampleImageFilter:
     public itk::ImageToImageFilter<TInputImage,TOutputImage>
 {
 public:
-  /** Standard class typedefs. */
-  typedef UpsampleImageFilter                                   Self;
-  typedef itk::ImageToImageFilter<TInputImage,TOutputImage>     Superclass;
-  typedef itk::SmartPointer<Self>                               Pointer;
-  typedef itk::SmartPointer<const Self>                         ConstPointer;
+  /** Standard class type alias. */
+  using Self = UpsampleImageFilter;
+  using Superclass = itk::ImageToImageFilter<TInputImage,TOutputImage>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -52,14 +52,14 @@ public:
   itkTypeMacro(UpsampleImageFilter, ImageToImageFilter);
 
   /** Typedef to images */
-  typedef TOutputImage                                OutputImageType;
-  typedef TInputImage                                 InputImageType;
-  typedef typename OutputImageType::Pointer           OutputImagePointer;
-  typedef typename InputImageType::Pointer            InputImagePointer;
-  typedef typename InputImageType::ConstPointer       InputImageConstPointer;
+  using OutputImageType = TOutputImage;
+  using InputImageType = TInputImage;
+  using OutputImagePointer = typename OutputImageType::Pointer;
+  using InputImagePointer = typename InputImageType::Pointer;
+  using InputImageConstPointer = typename InputImageType::ConstPointer;
 
   /** Typedef to describe the output image region type. */
-  typedef typename TOutputImage::RegionType OutputImageRegionType;
+  using OutputImageRegionType = typename TOutputImage::RegionType;
 
   /** ImageDimension enumeration. */
   itkStaticConstMacro(ImageDimension, unsigned int,

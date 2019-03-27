@@ -109,7 +109,7 @@ MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType,
 #ifdef RTK_USE_CUDA
   CudaWarpForwardProjectionImageFilter* wfp;
   wfp = dynamic_cast< CudaWarpForwardProjectionImageFilter* > (this->m_ForwardProjectionFilter.GetPointer());
-  typedef itk::CudaImage<VectorForDVF, VolumeSeriesType::ImageDimension - 1> CudaDVFImageType;
+  using CudaDVFImageType = itk::CudaImage<VectorForDVF, VolumeSeriesType::ImageDimension - 1>;
   CudaDVFImageType* cudvf;
   cudvf = dynamic_cast< CudaDVFImageType* > (m_InverseDVFInterpolatorFilter->GetOutput());
   wfp->SetDisplacementField( cudvf );

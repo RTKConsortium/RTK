@@ -45,11 +45,11 @@ rtk::VarianObiGeometryReader
 
   // Constants used to generate projection matrices
   itk::MetaDataDictionary &dic = *(obiXmlReader->GetOutputObject() );
-  typedef itk::MetaDataObject< double > MetaDataDoubleType;
+  using MetaDataDoubleType = itk::MetaDataObject< double >;
   const double sdd = dynamic_cast<MetaDataDoubleType *>(dic["CalibratedSID"].GetPointer() )->GetMetaDataObjectValue();
   const double sid = dynamic_cast<MetaDataDoubleType *>(dic["CalibratedSAD"].GetPointer() )->GetMetaDataObjectValue();
 
-  typedef itk::MetaDataObject< std::string > MetaDataStringType;
+  using MetaDataStringType = itk::MetaDataObject< std::string >;
   double offsetx;
   std::string fanType = dynamic_cast<const MetaDataStringType *>(dic["FanType"].GetPointer() )->GetMetaDataObjectValue();
   if(itksys::SystemTools::Strucmp(fanType.c_str(), "HalfFan") == 0)
@@ -74,10 +74,10 @@ rtk::VarianObiGeometryReader
   // Projection matrices
   for(unsigned int noProj=0; noProj<m_ProjectionsFileNames.size(); noProj++)
     {
-    typedef unsigned int                    InputPixelType;
-    typedef itk::Image< InputPixelType, 2 > InputImageType;
+    using InputPixelType = unsigned int;
+    using InputImageType = itk::Image< InputPixelType, 2 >;
 
-    typedef itk::ImageFileReader< InputImageType > ReaderType;
+    using ReaderType = itk::ImageFileReader< InputImageType >;
     ReaderType::Pointer reader = ReaderType::New();
     reader->SetFileName( m_ProjectionsFileNames[noProj] );
     reader->UpdateOutputInformation();

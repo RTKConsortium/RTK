@@ -39,13 +39,13 @@ class ITK_EXPORT Reg1DExtractShroudSignalImageFilter :
   public itk::ImageToImageFilter<itk::Image<TInputPixel, 2>, itk::Image<TOutputPixel, 1> >
 {
 public:
-  /** Standard class typedefs. */
-  typedef itk::Image<TInputPixel, 2>                            TInputImage;
-  typedef itk::Image<TOutputPixel, 1>                           TOutputImage;
-  typedef Reg1DExtractShroudSignalImageFilter                   Self;
-  typedef itk::ImageToImageFilter<TInputImage, TOutputImage>    Superclass;
-  typedef itk::SmartPointer<Self>                               Pointer;
-  typedef itk::SmartPointer<const Self>                         ConstPointer;
+  /** Standard class type alias. */
+  using TInputImage = itk::Image<TInputPixel, 2>;
+  using TOutputImage = itk::Image<TOutputPixel, 1>;
+  using Self = Reg1DExtractShroudSignalImageFilter;
+  using Superclass = itk::ImageToImageFilter<TInputImage, TOutputImage>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
   /** ImageDimension constants */
   itkStaticConstMacro(InputImageDimension, unsigned int,
@@ -73,7 +73,7 @@ private:
   Reg1DExtractShroudSignalImageFilter(const Self&);  //purposely not implemented
   void operator=(const Self&);                  //purposely not implemented
 
-  typedef itk::Image<TInputPixel, 1>    RegisterImageType;
+  using RegisterImageType = itk::Image<TInputPixel, 1>;
   TOutputPixel register1D(const RegisterImageType*, const RegisterImageType*);
 
 }; // end of class

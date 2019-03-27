@@ -55,12 +55,12 @@ RayConvexIntersectionImageFilter<TInputImage,TOutputImage>
 #endif
 {
   // Iterators on input and output
-  typedef ProjectionsRegionConstIteratorRayBased<TInputImage> InputRegionIterator;
+  using InputRegionIterator = ProjectionsRegionConstIteratorRayBased<TInputImage>;
   InputRegionIterator *itIn;
   itIn = InputRegionIterator::New(this->GetInput(),
                                   outputRegionForThread,
                                   m_Geometry);
-  typedef itk::ImageRegionIteratorWithIndex<TOutputImage> OutputRegionIterator;
+  using OutputRegionIterator = itk::ImageRegionIteratorWithIndex<TOutputImage>;
   OutputRegionIterator itOut(this->GetOutput(), outputRegionForThread);
 
   // Go over each projection

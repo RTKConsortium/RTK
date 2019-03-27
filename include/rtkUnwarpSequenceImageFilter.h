@@ -80,10 +80,10 @@ namespace rtk
 class UnwarpSequenceImageFilter : public itk::ImageToImageFilter<TImageSequence, TImageSequence>
 {
 public:
-    /** Standard class typedefs. */
-    typedef UnwarpSequenceImageFilter                                 Self;
-    typedef itk::ImageToImageFilter<TImageSequence, TImageSequence>   Superclass;
-    typedef itk::SmartPointer< Self >                                 Pointer;
+    /** Standard class type alias. */
+    using Self = UnwarpSequenceImageFilter;
+    using Superclass = itk::ImageToImageFilter<TImageSequence, TImageSequence>;
+    using Pointer = itk::SmartPointer< Self >;
 
     /** Method for creation through the object factory. */
     itkNewMacro(Self)
@@ -91,19 +91,19 @@ public:
     /** Run-time type information (and related methods). */
     itkTypeMacro(UnwarpSequenceImageFilter, ImageToImageFilter)
 
-    typedef UnwarpSequenceConjugateGradientOperator< TImageSequence,
+    using CGOperatorFilterType = UnwarpSequenceConjugateGradientOperator< TImageSequence,
                                                      TDVFImageSequence,
                                                      TImage,
-                                                     TDVFImage>       CGOperatorFilterType;
-    typedef WarpSequenceImageFilter< TImageSequence,
+                                                     TDVFImage>;
+    using WarpForwardFilterType = WarpSequenceImageFilter< TImageSequence,
                                      TDVFImageSequence,
                                      TImage,
-                                     TDVFImage>                       WarpForwardFilterType;
-    typedef ConjugateGradientImageFilter<TImageSequence>              ConjugateGradientFilterType;
+                                     TDVFImage>;
+    using ConjugateGradientFilterType = ConjugateGradientImageFilter<TImageSequence>;
 
-    /** SFINAE typedef, depending on whether a CUDA image is used. */
-    typedef typename itk::Image< typename TImageSequence::PixelType,
-                                 TImageSequence::ImageDimension>      CPUImageSequence;
+    /** SFINAE type alias, depending on whether a CUDA image is used. */
+    using CPUImageSequence = typename itk::Image< typename TImageSequence::PixelType,
+                                 TImageSequence::ImageDimension>;
 #ifdef RTK_USE_CUDA
     typedef typename std::conditional< std::is_same< TImageSequence, CPUImageSequence >::value,
                                        ConstantImageSource<TImageSequence>,
@@ -114,8 +114,8 @@ public:
                                        CudaConjugateGradientImageFilter<TImageSequence> >::type
                                                                       CudaConjugateGradientType;
 #else
-    typedef ConstantImageSource<TImageSequence>                       ConstantSourceType;
-    typedef ConjugateGradientFilterType                               CudaConjugateGradientType;
+    using ConstantSourceType = ConstantImageSource<TImageSequence>;
+    using CudaConjugateGradientType = ConjugateGradientFilterType;
 #endif
 
     /** Set the motion vector field used in input 1 */

@@ -35,10 +35,10 @@ namespace rtk
 class DCMImagXImageIO : public itk::GDCMImageIO
 {
 public:
-  /** Standard class typedefs. */
-  typedef DCMImagXImageIO         Self;
-  typedef itk::GDCMImageIO        Superclass;
-  typedef itk::SmartPointer<Self> Pointer;
+  /** Standard class type alias. */
+  using Self = DCMImagXImageIO;
+  using Superclass = itk::GDCMImageIO;
+  using Pointer = itk::SmartPointer<Self>;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);

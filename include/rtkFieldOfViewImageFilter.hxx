@@ -78,7 +78,7 @@ bool FieldOfViewImageFilter<TInputImage, TOutputImage>
     double b[NCORNERS];
     double c[NCORNERS];
     double d[NCORNERS];
-    typedef ProjectionsRegionConstIteratorRayBased<TInputImage> InputRegionIterator;
+    using InputRegionIterator = ProjectionsRegionConstIteratorRayBased<TInputImage>;
     InputRegionIterator *itIn;
     typename InputRegionIterator::PointType corners[NCORNERS];
     for(unsigned int i=0; i<NCORNERS; i++)
@@ -276,10 +276,10 @@ void FieldOfViewImageFilter<TInputImage, TOutputImage>
       pointIncrement[i] -= pointBase[i];
 
     // Iterators
-    typedef itk::ImageRegionConstIterator<TInputImage> InputConstIterator;
+    using InputConstIterator = itk::ImageRegionConstIterator<TInputImage>;
     InputConstIterator itIn(this->GetInput(0), outputRegionForThread);
     itIn.GoToBegin();
-    typedef itk::ImageRegionIterator<TOutputImage> OutputIterator;
+    using OutputIterator = itk::ImageRegionIterator<TOutputImage>;
     OutputIterator itOut(this->GetOutput(), outputRegionForThread);
     itOut.GoToBegin();
 
@@ -320,10 +320,10 @@ void FieldOfViewImageFilter<TInputImage, TOutputImage>
     }
   else
     {
-    typedef itk::ImageRegionConstIteratorWithIndex<TInputImage> InputConstIterator;
+    using InputConstIterator = itk::ImageRegionConstIteratorWithIndex<TInputImage>;
     InputConstIterator itIn(this->GetInput(0), outputRegionForThread);
 
-    typedef itk::ImageRegionIterator<TOutputImage> OutputIterator;
+    using OutputIterator = itk::ImageRegionIterator<TOutputImage>;
     OutputIterator itOut(this->GetOutput(), outputRegionForThread);
 
     typename TInputImage::PointType point;
@@ -372,7 +372,7 @@ FieldOfViewImageFilter<TInputImage, TOutputImage>
       }
 
     //Compute 3D position of jaws
-    typedef typename GeometryType::VectorType PointType;
+    using PointType = typename GeometryType::VectorType;
     typename GeometryType::HomogeneousVectorType sourceH = m_Geometry->GetSourcePosition(iProj);
     PointType source(0.);
     source[0] = sourceH[0];

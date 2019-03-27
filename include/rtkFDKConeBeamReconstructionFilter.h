@@ -64,22 +64,22 @@ class ITK_EXPORT FDKConeBeamReconstructionFilter :
   public itk::InPlaceImageFilter<TInputImage, TOutputImage>
 {
 public:
-  /** Standard class typedefs. */
-  typedef FDKConeBeamReconstructionFilter                    Self;
-  typedef itk::ImageToImageFilter<TInputImage, TOutputImage> Superclass;
-  typedef itk::SmartPointer<Self>                            Pointer;
-  typedef itk::SmartPointer<const Self>                      ConstPointer;
+  /** Standard class type alias. */
+  using Self = FDKConeBeamReconstructionFilter;
+  using Superclass = itk::ImageToImageFilter<TInputImage, TOutputImage>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
-  /** Some convenient typedefs. */
-  typedef TInputImage  InputImageType;
-  typedef TOutputImage OutputImageType;
+  /** Some convenient type alias. */
+  using InputImageType = TInputImage;
+  using OutputImageType = TOutputImage;
 
   /** Typedefs of each subfilter of this composite filter */
-  typedef itk::ExtractImageFilter<InputImageType, OutputImageType>                 ExtractFilterType;
-  typedef rtk::FDKWeightProjectionFilter<InputImageType, OutputImageType>          WeightFilterType;
-  typedef rtk::FFTRampImageFilter<OutputImageType, OutputImageType, TFFTPrecision> RampFilterType;
-  typedef rtk::FDKBackProjectionImageFilter<OutputImageType, OutputImageType>      BackProjectionFilterType;
-  typedef typename BackProjectionFilterType::Pointer                               BackProjectionFilterPointer;
+  using ExtractFilterType = itk::ExtractImageFilter<InputImageType, OutputImageType>;
+  using WeightFilterType = rtk::FDKWeightProjectionFilter<InputImageType, OutputImageType>;
+  using RampFilterType = rtk::FFTRampImageFilter<OutputImageType, OutputImageType, TFFTPrecision>;
+  using BackProjectionFilterType = rtk::FDKBackProjectionImageFilter<OutputImageType, OutputImageType>;
+  using BackProjectionFilterPointer = typename BackProjectionFilterType::Pointer;
 
   /** Standard New method. */
   itkNewMacro(Self);

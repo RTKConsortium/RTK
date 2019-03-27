@@ -27,7 +27,7 @@ int main(int argc, char * argv[])
   GGO(rtkdigisensgeometry, args_info);
 
   // RTK geometry object
-  typedef rtk::ThreeDCircularProjectionGeometry GeometryType;
+  using GeometryType = rtk::ThreeDCircularProjectionGeometry;
   GeometryType::Pointer geometry = GeometryType::New();
 
   // Create geometry reader

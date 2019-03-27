@@ -41,15 +41,15 @@ class ITK_EXPORT WaterPrecorrectionImageFilter:
     public itk::InPlaceImageFilter<TInputImage, TOutputImage>
 {
 public:
-  /** Standard class typedefs. */
-  typedef WaterPrecorrectionImageFilter                     Self;
-  typedef itk::InPlaceImageFilter<TInputImage,TOutputImage> Superclass;
-  typedef itk::SmartPointer< Self >                         Pointer;
-  typedef itk::SmartPointer< const Self >                   ConstPointer;
+  /** Standard class type alias. */
+  using Self = WaterPrecorrectionImageFilter;
+  using Superclass = itk::InPlaceImageFilter<TInputImage,TOutputImage>;
+  using Pointer = itk::SmartPointer< Self >;
+  using ConstPointer = itk::SmartPointer< const Self >;
 
-  /** Convenient typedefs. */
-  typedef typename TOutputImage::RegionType OutputImageRegionType;
-  typedef std::vector< double >             VectorType;
+  /** Convenient type alias. */
+  using OutputImageRegionType = typename TOutputImage::RegionType;
+  using VectorType = std::vector< double >;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);

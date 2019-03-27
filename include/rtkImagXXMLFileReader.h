@@ -42,10 +42,10 @@ namespace rtk
 class ImagXXMLFileReader : public itk::XMLReader<itk::MetaDataDictionary>
 {
 public:
-  /** Standard typedefs */
-  typedef ImagXXMLFileReader                      Self;
-  typedef itk::XMLReader<itk::MetaDataDictionary> Superclass;
-  typedef itk::SmartPointer<Self>                 Pointer;
+  /** Standard type alias */
+  using Self = ImagXXMLFileReader;
+  using Superclass = itk::XMLReader<itk::MetaDataDictionary>;
+  using Pointer = itk::SmartPointer<Self>;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(ImagXXMLFileReader, itk::XMLReader);

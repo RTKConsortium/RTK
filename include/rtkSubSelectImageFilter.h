@@ -64,10 +64,10 @@ template< typename ProjectionStackType>
 class SubSelectImageFilter : public itk::ImageToImageFilter<ProjectionStackType, ProjectionStackType>
 {
 public:
-  /** Standard class typedefs. */
-  typedef SubSelectImageFilter                                              Self;
-  typedef itk::ImageToImageFilter<ProjectionStackType, ProjectionStackType> Superclass;
-  typedef itk::SmartPointer< Self >                                         Pointer;
+  /** Standard class type alias. */
+  using Self = SubSelectImageFilter;
+  using Superclass = itk::ImageToImageFilter<ProjectionStackType, ProjectionStackType>;
+  using Pointer = itk::SmartPointer< Self >;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(SubSelectImageFilter, itk::ImageToImageFilter)
@@ -76,10 +76,10 @@ public:
   void SetInputProjectionStack(const ProjectionStackType* Projections);
   typename ProjectionStackType::ConstPointer GetInputProjectionStack();
 
-  typedef itk::PasteImageFilter<ProjectionStackType>                        PasteFilterType;
-  typedef itk::ExtractImageFilter<ProjectionStackType, ProjectionStackType> ExtractFilterType;
-  typedef rtk::ConstantImageSource<ProjectionStackType>                     EmptyProjectionStackSourceType;
-  typedef rtk::ThreeDCircularProjectionGeometry                             GeometryType;
+  using PasteFilterType = itk::PasteImageFilter<ProjectionStackType>;
+  using ExtractFilterType = itk::ExtractImageFilter<ProjectionStackType, ProjectionStackType>;
+  using EmptyProjectionStackSourceType = rtk::ConstantImageSource<ProjectionStackType>;
+  using GeometryType = rtk::ThreeDCircularProjectionGeometry;
 
   itkSetObjectMacro(InputGeometry, GeometryType)
   itkGetModifiableObjectMacro(InputGeometry, GeometryType)

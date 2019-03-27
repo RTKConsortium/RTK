@@ -40,16 +40,16 @@ namespace rtk
 class RTK_EXPORT SheppLoganPhantom: public GeometricPhantom
 {
 public:
-  /** Standard class typedefs. */
-  typedef SheppLoganPhantom             Self;
-  typedef itk::DataObject               Superclass;
-  typedef itk::SmartPointer<Self>       Pointer;
-  typedef itk::SmartPointer<const Self> ConstPointer;
+  /** Standard class type alias. */
+  using Self = SheppLoganPhantom;
+  using Superclass = itk::DataObject;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
-  /** Convenient typedefs. */
-  typedef QuadricShape::ScalarType ScalarType;
-  typedef QuadricShape::PointType  PointType;
-  typedef QuadricShape::VectorType VectorType;
+  /** Convenient type alias. */
+  using ScalarType = QuadricShape::ScalarType;
+  using PointType = QuadricShape::PointType;
+  using VectorType = QuadricShape::VectorType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);

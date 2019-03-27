@@ -38,14 +38,14 @@ class ForwardProjectionImageFilter :
   public itk::InPlaceImageFilter<TInputImage,TOutputImage>
 {
 public:
-  /** Standard class typedefs. */
-  typedef ForwardProjectionImageFilter                      Self;
-  typedef itk::InPlaceImageFilter<TInputImage,TOutputImage> Superclass;
-  typedef itk::SmartPointer<Self>                           Pointer;
-  typedef itk::SmartPointer<const Self>                     ConstPointer;
+  /** Standard class type alias. */
+  using Self = ForwardProjectionImageFilter;
+  using Superclass = itk::InPlaceImageFilter<TInputImage,TOutputImage>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
-  typedef rtk::ThreeDCircularProjectionGeometry             GeometryType;
-  typedef typename GeometryType::ConstPointer               GeometryPointer;
+  using GeometryType = rtk::ThreeDCircularProjectionGeometry;
+  using GeometryPointer = typename GeometryType::ConstPointer;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(ForwardProjectionImageFilter, itk::InPlaceImageFilter);

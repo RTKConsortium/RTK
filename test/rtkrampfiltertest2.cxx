@@ -19,13 +19,13 @@
 int main(int , char** )
 {
   const unsigned int Dimension = 3;
-  typedef float                                         PixelType;
+  using PixelType = float;
 #ifdef USE_CUDA
-  typedef itk::CudaImage< PixelType, Dimension >        ImageType;
-  typedef rtk::CudaFFTRampImageFilter                   RampFilterType;
+  using ImageType = itk::CudaImage< PixelType, Dimension >;
+  using RampFilterType = rtk::CudaFFTRampImageFilter;
 #else
-  typedef itk::Image< PixelType, Dimension >            ImageType;
-  typedef rtk::FFTRampImageFilter<ImageType,ImageType>  RampFilterType;
+  using ImageType = itk::Image< PixelType, Dimension >;
+  using RampFilterType = rtk::FFTRampImageFilter<ImageType,ImageType>;
 #endif
 
   ImageType::Pointer image = ImageType::New();

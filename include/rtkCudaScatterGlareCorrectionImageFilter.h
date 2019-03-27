@@ -46,13 +46,13 @@ class CudaScatterGlareCorrectionImageFilter :
                                                                                       float > >
 {
 public:
-  /** Standard class typedefs. */
-  typedef CudaScatterGlareCorrectionImageFilter                       Self;
-  typedef ScatterGlareCorrectionImageFilter< itk::CudaImage<float,3>,
+  /** Standard class type alias. */
+  using Self = CudaScatterGlareCorrectionImageFilter;
+  using Superclass = ScatterGlareCorrectionImageFilter< itk::CudaImage<float,3>,
                                              itk::CudaImage<float,3>,
-                                             float >                  Superclass;
-  typedef itk::SmartPointer<Self>                                     Pointer;
-  typedef itk::SmartPointer<const Self>                               ConstPointer;
+                                             float >;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
   /** Standard New method. */
   itkNewMacro(Self);

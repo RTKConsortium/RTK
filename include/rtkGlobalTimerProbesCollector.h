@@ -38,10 +38,10 @@ namespace rtk
 class GlobalTimerProbesCollector
 {
 public:
-  typedef std::string                    IdType;
-  typedef std::vector< IdType >          IdVector;
-  typedef std::vector< itk::TimeProbe >  ProbeVector;
-  typedef std::vector< unsigned int >    IndentVector;
+  using IdType = std::string;
+  using IdVector = std::vector< IdType >;
+  using ProbeVector = std::vector< itk::TimeProbe >;
+  using IndentVector = std::vector< unsigned int >;
 
   /** constructor */
   GlobalTimerProbesCollector();

@@ -54,14 +54,14 @@ class RTK_EXPORT BioscanGeometryReader:
     public itk::LightProcessObject
 {
 public:
-  /** Standard typedefs */
-  typedef BioscanGeometryReader   Self;
-  typedef itk::LightProcessObject Superclass;
-  typedef itk::SmartPointer<Self> Pointer;
+  /** Standard type alias */
+  using Self = BioscanGeometryReader;
+  using Superclass = itk::LightProcessObject;
+  using Pointer = itk::SmartPointer<Self>;
 
-  /** Convenient typedefs */
-  typedef ThreeDCircularProjectionGeometry GeometryType;
-  typedef GeometryType::Pointer            GeometryPointer;
+  /** Convenient type alias */
+  using GeometryType = ThreeDCircularProjectionGeometry;
+  using GeometryPointer = GeometryType::Pointer;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(BioscanGeometryReader, itk::LightProcessObject);
@@ -72,8 +72,8 @@ public:
   /** Get the pointer to the generated geometry object. */
   itkGetModifiableObjectMacro(Geometry, GeometryType);
 
-  /** Some convenient typedefs. */
-  typedef std::vector<std::string>            FileNamesContainer;
+  /** Some convenient type alias. */
+  using FileNamesContainer = std::vector<std::string>;
 
   /** Set the vector of strings that contains the projection file names. Files
    * are processed in sequential order. */

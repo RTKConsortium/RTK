@@ -42,16 +42,16 @@ class LaplacianImageFilter : public itk::ImageToImageFilter< OutputImageType, Ou
 {
 public:
 
-  /** Standard class typedefs. */
-  typedef LaplacianImageFilter                                                              Self;
-  typedef itk::ImageToImageFilter< OutputImageType, OutputImageType>                        Superclass;
-  typedef itk::SmartPointer< Self >                                                         Pointer;
-  typedef typename OutputImageType::Pointer                                                 OutputImagePointer;
-  typedef rtk::ForwardDifferenceGradientImageFilter<OutputImageType,
+  /** Standard class type alias. */
+  using Self = LaplacianImageFilter;
+  using Superclass = itk::ImageToImageFilter< OutputImageType, OutputImageType>;
+  using Pointer = itk::SmartPointer< Self >;
+  using OutputImagePointer = typename OutputImageType::Pointer;
+  using GradientFilterType = rtk::ForwardDifferenceGradientImageFilter<OutputImageType,
                                                     typename OutputImageType::ValueType,
                                                     typename OutputImageType::ValueType,
-                                                    GradientImageType>                      GradientFilterType;
-  typedef rtk::BackwardDifferenceDivergenceImageFilter<GradientImageType, OutputImageType>  DivergenceFilterType;
+                                                    GradientImageType>;
+  using DivergenceFilterType = rtk::BackwardDifferenceDivergenceImageFilter<GradientImageType, OutputImageType>;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self)

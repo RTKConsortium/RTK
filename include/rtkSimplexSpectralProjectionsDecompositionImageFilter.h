@@ -46,22 +46,22 @@ class ITK_EXPORT SimplexSpectralProjectionsDecompositionImageFilter :
   public itk::ImageToImageFilter<DecomposedProjectionsType, DecomposedProjectionsType>
 {
 public:
-  /** Standard class typedefs. */
-  typedef SimplexSpectralProjectionsDecompositionImageFilter                             Self;
-  typedef itk::ImageToImageFilter<DecomposedProjectionsType, DecomposedProjectionsType>  Superclass;
-  typedef itk::SmartPointer<Self>                                                        Pointer;
-  typedef itk::SmartPointer<const Self>                                                  ConstPointer;
+  /** Standard class type alias. */
+  using Self = SimplexSpectralProjectionsDecompositionImageFilter;
+  using Superclass = itk::ImageToImageFilter<DecomposedProjectionsType, DecomposedProjectionsType>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
-  /** Some convenient typedefs. */
-  typedef DecomposedProjectionsType       InputImageType;
-  typedef DecomposedProjectionsType       OutputImageType;
+  /** Some convenient type alias. */
+  using InputImageType = DecomposedProjectionsType;
+  using OutputImageType = DecomposedProjectionsType;
 
   /** Convenient information */
-  typedef itk::VariableLengthVector<int>                    ThresholdsType;
-  typedef itk::VariableSizeMatrix<double>                   MeanAttenuationInBinType;
-  typedef vnl_matrix<double>                                DetectorResponseType;
-  typedef vnl_matrix<double>                                MaterialAttenuationsType;
-  typedef ProjectionsDecompositionNegativeLogLikelihood     CostFunctionType;
+  using ThresholdsType = itk::VariableLengthVector<int>;
+  using MeanAttenuationInBinType = itk::VariableSizeMatrix<double>;
+  using DetectorResponseType = vnl_matrix<double>;
+  using MaterialAttenuationsType = vnl_matrix<double>;
+  using CostFunctionType = ProjectionsDecompositionNegativeLogLikelihood;
 
   /** Standard New method. */
   itkNewMacro(Self)
@@ -141,7 +141,7 @@ protected:
 #endif
 
   /**  Create the Output */
-  typedef itk::ProcessObject::DataObjectPointerArraySizeType DataObjectPointerArraySizeType;
+  using DataObjectPointerArraySizeType = itk::ProcessObject::DataObjectPointerArraySizeType;
   using Superclass::MakeOutput;
   itk::DataObject::Pointer MakeOutput(DataObjectPointerArraySizeType idx) ITK_OVERRIDE;
 

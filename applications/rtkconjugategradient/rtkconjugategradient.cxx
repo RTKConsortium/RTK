@@ -35,20 +35,20 @@ int main(int argc, char * argv[])
 {
   GGO(rtkconjugategradient, args_info);
 
-  typedef float OutputPixelType;
+  using OutputPixelType = float;
   const unsigned int Dimension = 3;
   std::vector<double> costs;
   std::ostream_iterator<double> costs_it(std::cout,"\n");
 
-  typedef itk::Image< OutputPixelType, Dimension >     CPUOutputImageType;
+  using CPUOutputImageType = itk::Image< OutputPixelType, Dimension >;
 #ifdef RTK_USE_CUDA
-  typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
+  using OutputImageType = itk::CudaImage< OutputPixelType, Dimension >;
 #else
-  typedef CPUOutputImageType                           OutputImageType;
+  using OutputImageType = CPUOutputImageType;
 #endif
 
   // Projections reader
-  typedef rtk::ProjectionsReader< OutputImageType > ReaderType;
+  using ReaderType = rtk::ProjectionsReader< OutputImageType >;
   ReaderType::Pointer reader = ReaderType::New();
   rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkconjugategradient>(reader, args_info);
 
@@ -68,7 +68,7 @@ int main(int argc, char * argv[])
   if(args_info.input_given)
     {
     // Read an existing image to initialize the volume
-    typedef itk::ImageFileReader<  OutputImageType > InputReaderType;
+    using InputReaderType = itk::ImageFileReader<  OutputImageType >;
     InputReaderType::Pointer inputReader = InputReaderType::New();
     inputReader->SetFileName( args_info.input_arg );
     inputFilter = inputReader;
@@ -76,7 +76,7 @@ int main(int argc, char * argv[])
   else
     {
     // Create new empty volume
-    typedef rtk::ConstantImageSource< OutputImageType > ConstantImageSourceType;
+    using ConstantImageSourceType = rtk::ConstantImageSource< OutputImageType >;
     ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
     rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkconjugategradient>(constantImageSource, args_info);
     inputFilter = constantImageSource;
@@ -86,14 +86,14 @@ int main(int argc, char * argv[])
   itk::ImageSource< OutputImageType >::Pointer weightsSource;
   if(args_info.weights_given)
     {
-    typedef itk::ImageFileReader<  OutputImageType > WeightsReaderType;
+    using WeightsReaderType = itk::ImageFileReader<  OutputImageType >;
     WeightsReaderType::Pointer weightsReader = WeightsReaderType::New();
     weightsReader->SetFileName( args_info.weights_arg );
     weightsSource = weightsReader;
     }
   else
     {
-    typedef rtk::ConstantImageSource< OutputImageType > ConstantWeightsSourceType;
+    using ConstantWeightsSourceType = rtk::ConstantImageSource< OutputImageType >;
     ConstantWeightsSourceType::Pointer constantWeightsSource = ConstantWeightsSourceType::New();
 
     // Set the weights to be like the projections
@@ -107,14 +107,14 @@ int main(int argc, char * argv[])
   itk::ImageSource< OutputImageType >::Pointer supportmaskSource;
   if(args_info.mask_given)
     {
-    typedef itk::ImageFileReader<  OutputImageType > MaskReaderType;
+    using MaskReaderType = itk::ImageFileReader<  OutputImageType >;
     MaskReaderType::Pointer supportmaskReader = MaskReaderType::New();
     supportmaskReader->SetFileName( args_info.mask_arg );
     supportmaskSource = supportmaskReader;
     }
 
   // Set the forward and back projection filters to be used
-  typedef rtk::ConjugateGradientConeBeamReconstructionFilter<OutputImageType> ConjugateGradientFilterType;
+  using ConjugateGradientFilterType = rtk::ConjugateGradientConeBeamReconstructionFilter<OutputImageType>;
   ConjugateGradientFilterType::Pointer conjugategradient = ConjugateGradientFilterType::New();
   SetForwardProjectionFromGgo(args_info, conjugategradient.GetPointer());
   SetBackProjectionFromGgo(args_info, conjugategradient.GetPointer());
@@ -147,7 +147,7 @@ int main(int argc, char * argv[])
     }
 
   // Write
-  typedef itk::ImageFileWriter< OutputImageType > WriterType;
+  using WriterType = itk::ImageFileWriter< OutputImageType >;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
   writer->SetInput( conjugategradient->GetOutput() );

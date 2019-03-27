@@ -49,20 +49,20 @@ class ITK_EXPORT SpectralForwardModelImageFilter :
   public itk::InPlaceImageFilter<MeasuredProjectionsType, MeasuredProjectionsType>
 {
 public:
-  /** Standard class typedefs. */
-  typedef SpectralForwardModelImageFilter                                                Self;
-  typedef itk::ImageToImageFilter<MeasuredProjectionsType, MeasuredProjectionsType>      Superclass;
-  typedef itk::SmartPointer<Self>                                                        Pointer;
-  typedef itk::SmartPointer<const Self>                                                  ConstPointer;
+  /** Standard class type alias. */
+  using Self = SpectralForwardModelImageFilter;
+  using Superclass = itk::ImageToImageFilter<MeasuredProjectionsType, MeasuredProjectionsType>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
-  /** Some convenient typedefs. */
-  typedef MeasuredProjectionsType       InputImageType;
-  typedef MeasuredProjectionsType       OutputImageType;
+  /** Some convenient type alias. */
+  using InputImageType = MeasuredProjectionsType;
+  using OutputImageType = MeasuredProjectionsType;
 
   /** Convenient information */
-  typedef itk::VariableLengthVector<int>       ThresholdsType;
-  typedef vnl_matrix<double>                   DetectorResponseType;
-  typedef vnl_matrix<double>                   MaterialAttenuationsType;
+  using ThresholdsType = itk::VariableLengthVector<int>;
+  using DetectorResponseType = vnl_matrix<double>;
+  using MaterialAttenuationsType = vnl_matrix<double>;
 
   /** Standard New method. */
   itkNewMacro(Self)
@@ -115,7 +115,7 @@ protected:
   virtual ~SpectralForwardModelImageFilter() ITK_OVERRIDE {}
 
   /**  Create the Output */
-  typedef itk::ProcessObject::DataObjectPointerArraySizeType DataObjectPointerArraySizeType;
+  using DataObjectPointerArraySizeType = itk::ProcessObject::DataObjectPointerArraySizeType;
   using Superclass::MakeOutput;
   itk::DataObject::Pointer MakeOutput(DataObjectPointerArraySizeType idx) ITK_OVERRIDE;
 

@@ -3,14 +3,14 @@
 int main(int , char **)
 {
   // Define the type of pixel and the image dimension
-  typedef float OutputPixelType;
+  using OutputPixelType = float;
   const unsigned int Dimension = 3;
 
   // Define the type of image
-  typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
+  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
 
   // Define and allocate the FDK Back Projection Filter
-  typedef rtk::FDKBackProjectionImageFilter<OutputImageType, OutputImageType> BPType;
+  using BPType = rtk::FDKBackProjectionImageFilter<OutputImageType, OutputImageType>;
   BPType::Pointer p = BPType::New();
 
   std::cout << "RTK Hello World!" << std::endl;

@@ -36,19 +36,19 @@ namespace rtk
 class RTK_EXPORT GeometricPhantom: public itk::DataObject
 {
 public:
-  /** Standard class typedefs. */
-  typedef GeometricPhantom              Self;
-  typedef itk::DataObject               Superclass;
-  typedef itk::SmartPointer<Self>       Pointer;
-  typedef itk::SmartPointer<const Self> ConstPointer;
+  /** Standard class type alias. */
+  using Self = GeometricPhantom;
+  using Superclass = itk::DataObject;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
-  /** Convenient typedefs. */
-  typedef ConvexShape::Pointer            ConvexShapePointer;
-  typedef std::vector<ConvexShapePointer> ConvexShapeVector;
-  typedef ConvexShape::PointType          PointType;
-  typedef ConvexShape::VectorType         VectorType;
-  typedef ConvexShape::ScalarType         ScalarType;
-  typedef ConvexShape::RotationMatrixType RotationMatrixType;
+  /** Convenient type alias. */
+  using ConvexShapePointer = ConvexShape::Pointer;
+  using ConvexShapeVector = std::vector<ConvexShapePointer>;
+  using PointType = ConvexShape::PointType;
+  using VectorType = ConvexShape::VectorType;
+  using ScalarType = ConvexShape::ScalarType;
+  using RotationMatrixType = ConvexShape::RotationMatrixType;
 
 
   /** Method for creation through the object factory. */

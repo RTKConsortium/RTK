@@ -27,16 +27,16 @@ int main(int argc, char * argv[])
 {
   GGO(rtkdrawgeometricphantom, args_info);
 
-  typedef float OutputPixelType;
+  using OutputPixelType = float;
   const unsigned int Dimension = 3;
-  typedef itk::Image< OutputPixelType, Dimension >  OutputImageType;
+  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
 
   // Empty volume image
-  typedef rtk::ConstantImageSource< OutputImageType > ConstantImageSourceType;
+  using ConstantImageSourceType = rtk::ConstantImageSource< OutputImageType >;
   ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
   rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkdrawgeometricphantom>(constantImageSource, args_info);
 
-  typedef rtk::DrawGeometricPhantomImageFilter<OutputImageType, OutputImageType> DQType;
+  using DQType = rtk::DrawGeometricPhantomImageFilter<OutputImageType, OutputImageType>;
 
   // Offset, scale, rotation
   DQType::VectorType offset(0.);
@@ -93,7 +93,7 @@ int main(int argc, char * argv[])
   OutputImageType::Pointer output = dq->GetOutput();
   if(args_info.noise_given)
   {
-    typedef rtk::AdditiveGaussianNoiseImageFilter< OutputImageType > NIFType;
+    using NIFType = rtk::AdditiveGaussianNoiseImageFilter< OutputImageType >;
     NIFType::Pointer noisy=NIFType::New();
     noisy->SetInput( output );
     noisy->SetMean( 0.0 );
@@ -103,7 +103,7 @@ int main(int argc, char * argv[])
   }
 
   // Write
-  typedef itk::ImageFileWriter<  OutputImageType > WriterType;
+  using WriterType = itk::ImageFileWriter<  OutputImageType >;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
   writer->SetInput( output );

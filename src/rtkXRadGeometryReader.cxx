@@ -47,7 +47,7 @@ rtk::XRadGeometryReader
   reader->ReadImageInformation();
 
   std::string sectionName, paramName;
-  typedef itk::MetaDataObject< std::string > MetaDataStringType;
+  using MetaDataStringType = itk::MetaDataObject< std::string >;
   itk::MetaDataDictionary &dic = reader->GetMetaDataDictionary();
 
   for(unsigned int i=0; i<reader->GetDimensions(2); i++)

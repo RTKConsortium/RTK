@@ -25,7 +25,7 @@
 #include "itkCudaContextManager.h"
 #include "itkCudaImageOps.h"
 
-typedef itk::CudaImage<float, 2> ItkImage1f;
+using ItkImage1f = itk::CudaImage<float, 2>;
 
 
 int itkCudaImageTest(int argc, char *argv[])

@@ -11,8 +11,8 @@
  * \author Sebastien Brousmiche
  */
 
-typedef itk::Image<unsigned short, 2> ShortImageType;
-typedef itk::Image<float, 2> FloatImageType;
+using ShortImageType = itk::Image<unsigned short, 2>;
+using FloatImageType = itk::Image<float, 2>;
 
 void fillImageWithRawData(ShortImageType::Pointer image, unsigned short I0)
 {
@@ -29,7 +29,7 @@ void fillImageWithRawData(ShortImageType::Pointer image, unsigned short I0)
 
 int main(int, char** )
 {
-  typedef rtk::LUTbasedVariableI0RawToAttenuationImageFilter<ShortImageType, FloatImageType> ConvertFilterType;
+  using ConvertFilterType = rtk::LUTbasedVariableI0RawToAttenuationImageFilter<ShortImageType, FloatImageType>;
   ConvertFilterType::Pointer convert = ConvertFilterType::New();
 
   // Constant image sources

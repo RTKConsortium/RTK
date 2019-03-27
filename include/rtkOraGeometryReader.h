@@ -39,17 +39,17 @@ namespace rtk
 class RTK_EXPORT OraGeometryReader : public itk::LightProcessObject
 {
 public:
-  /** Standard typedefs */
-  typedef OraGeometryReader       Self;
-  typedef itk::LightProcessObject Superclass;
-  typedef itk::SmartPointer<Self> Pointer;
+  /** Standard type alias */
+  using Self = OraGeometryReader;
+  using Superclass = itk::LightProcessObject;
+  using Pointer = itk::SmartPointer<Self>;
 
-  /** Convenient typedefs */
-  typedef ThreeDCircularProjectionGeometry GeometryType;
-  typedef GeometryType::PointType          PointType;
-  typedef GeometryType::Matrix3x3Type      Matrix3x3Type;
-  typedef GeometryType::VectorType         VectorType;
-  typedef itk::Vector<double, 4>           MarginVectorType;
+  /** Convenient type alias */
+  using GeometryType = ThreeDCircularProjectionGeometry;
+  using PointType = GeometryType::PointType;
+  using Matrix3x3Type = GeometryType::Matrix3x3Type;
+  using VectorType = GeometryType::VectorType;
+  using MarginVectorType = itk::Vector<double, 4>;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(OraGeometryReader, itk::LightProcessObject);
@@ -60,8 +60,8 @@ public:
   /** Get the pointer to the generated geometry object. */
   itkGetModifiableObjectMacro(Geometry, GeometryType);
 
-  /** Some convenient typedefs. */
-  typedef std::vector<std::string>            FileNamesContainer;
+  /** Some convenient type alias. */
+  using FileNamesContainer = std::vector<std::string>;
 
   /** Set the vector of strings that contains the projection file names. Files
    * are processed in sequential order. */

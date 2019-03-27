@@ -46,11 +46,11 @@ class CudaConjugateGradientImageFilter :
          ConjugateGradientImageFilter< TImage > >
 {
 public:
-  /** Standard class typedefs. */
-  typedef rtk::CudaConjugateGradientImageFilter<TImage>      Self;
-  typedef rtk::ConjugateGradientImageFilter< TImage >        Superclass;
-  typedef itk::SmartPointer<Self>                            Pointer;
-  typedef itk::SmartPointer<const Self>                      ConstPointer;
+  /** Standard class type alias. */
+  using Self = rtk::CudaConjugateGradientImageFilter<TImage>;
+  using Superclass = rtk::ConjugateGradientImageFilter< TImage >;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
   /** Standard New method. */
   itkNewMacro(Self)

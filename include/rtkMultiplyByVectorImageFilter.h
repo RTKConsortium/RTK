@@ -40,10 +40,10 @@ template< class TInputImage>
 class MultiplyByVectorImageFilter : public itk::ImageToImageFilter<TInputImage, TInputImage>
 {
 public:
-    /** Standard class typedefs. */
-    typedef MultiplyByVectorImageFilter                         Self;
-    typedef itk::ImageToImageFilter<TInputImage, TInputImage>   Superclass;
-    typedef itk::SmartPointer< Self >                           Pointer;
+    /** Standard class type alias. */
+    using Self = MultiplyByVectorImageFilter;
+    using Superclass = itk::ImageToImageFilter<TInputImage, TInputImage>;
+    using Pointer = itk::SmartPointer< Self >;
 
     /** Method for creation through the object factory. */
     itkNewMacro(Self);

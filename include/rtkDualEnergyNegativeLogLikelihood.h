@@ -44,21 +44,21 @@ class DualEnergyNegativeLogLikelihood : public rtk::ProjectionsDecompositionNega
 {
 public:
 
-  typedef DualEnergyNegativeLogLikelihood                       Self;
-  typedef rtk::ProjectionsDecompositionNegativeLogLikelihood    Superclass;
-  typedef itk::SmartPointer<Self>                               Pointer;
-  typedef itk::SmartPointer<const Self>                         ConstPointer;
+  using Self = DualEnergyNegativeLogLikelihood;
+  using Superclass = rtk::ProjectionsDecompositionNegativeLogLikelihood;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
   itkNewMacro( Self );
   itkTypeMacro( DualEnergyNegativeLogLikelihood, rtk::ProjectionsDecompositionNegativeLogLikelihood );
 
-  typedef Superclass::ParametersType                ParametersType;
-  typedef Superclass::DerivativeType                DerivativeType;
-  typedef Superclass::MeasureType                   MeasureType;
+  using ParametersType = Superclass::ParametersType;
+  using DerivativeType = Superclass::DerivativeType;
+  using MeasureType = Superclass::MeasureType;
 
-  typedef Superclass::DetectorResponseType          DetectorResponseType;
-  typedef Superclass::MaterialAttenuationsType      MaterialAttenuationsType;
-  typedef Superclass::MeasuredDataType              MeasuredDataType;
-  typedef Superclass::IncidentSpectrumType          IncidentSpectrumType;
+  using DetectorResponseType = Superclass::DetectorResponseType;
+  using MaterialAttenuationsType = Superclass::MaterialAttenuationsType;
+  using MeasuredDataType = Superclass::MeasuredDataType;
+  using IncidentSpectrumType = Superclass::IncidentSpectrumType;
 
   // Constructor
   DualEnergyNegativeLogLikelihood()

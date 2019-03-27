@@ -40,11 +40,11 @@ namespace rtk
 class RTK_EXPORT OraImageIOFactory: public itk::ObjectFactoryBase
 {
 public:
-  /** Standard class typedefs. */
-  typedef OraImageIOFactory             Self;
-  typedef itk::ObjectFactoryBase        Superclass;
-  typedef itk::SmartPointer<Self>       Pointer;
-  typedef itk::SmartPointer<const Self> ConstPointer;
+  /** Standard class type alias. */
+  using Self = OraImageIOFactory;
+  using Superclass = itk::ObjectFactoryBase;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
   /** Class methods used to interface with the registered factories. */
   const char* GetITKSourceVersion(void) const ITK_OVERRIDE {
@@ -69,7 +69,7 @@ public:
 protected:
   OraImageIOFactory();
   virtual ~OraImageIOFactory() ITK_OVERRIDE {};
-  typedef OraImageIOFactory myProductType;
+  using myProductType = OraImageIOFactory;
   const myProductType* m_MyProduct;
 
 private:

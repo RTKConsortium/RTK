@@ -50,16 +50,16 @@ class RTK_EXPORT CudaPolynomialGainCorrectionImageFilter :
     PolynomialGainCorrectionImageFilter <itk::CudaImage<unsigned short, 3>, itk::CudaImage<float, 3> > >
 {
 public:
-  /** Convenience typedefs **/
-  typedef itk::CudaImage<float, 3>                                                 ImageType;
-  typedef PolynomialGainCorrectionImageFilter< itk::CudaImage<unsigned short, 3>,
-                                               itk::CudaImage<float, 3> >          CPUPolyGainFilterType;
+  /** Convenience type alias **/
+  using ImageType = itk::CudaImage<float, 3>;
+  using CPUPolyGainFilterType = PolynomialGainCorrectionImageFilter< itk::CudaImage<unsigned short, 3>,
+                                               itk::CudaImage<float, 3> >;
 
-  /** Standard class typedefs. */
-  typedef CudaPolynomialGainCorrectionImageFilter                                  Self;
-  typedef itk::CudaInPlaceImageFilter<ImageType, ImageType, CPUPolyGainFilterType> Superclass;
-  typedef itk::SmartPointer<Self>                                                  Pointer;
-  typedef itk::SmartPointer<const Self>                                            ConstPointer;
+  /** Standard class type alias. */
+  using Self = CudaPolynomialGainCorrectionImageFilter;
+  using Superclass = itk::CudaInPlaceImageFilter<ImageType, ImageType, CPUPolyGainFilterType>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);

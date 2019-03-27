@@ -108,29 +108,29 @@ class ITK_EXPORT IterativeFDKConeBeamReconstructionFilter :
   public rtk::IterativeConeBeamReconstructionFilter<TInputImage, TOutputImage>
 {
 public:
-  /** Standard class typedefs. */
-  typedef IterativeFDKConeBeamReconstructionFilter                         Self;
-  typedef IterativeConeBeamReconstructionFilter<TInputImage, TOutputImage> Superclass;
-  typedef itk::SmartPointer<Self>                                          Pointer;
-  typedef itk::SmartPointer<const Self>                                    ConstPointer;
+  /** Standard class type alias. */
+  using Self = IterativeFDKConeBeamReconstructionFilter;
+  using Superclass = IterativeConeBeamReconstructionFilter<TInputImage, TOutputImage>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
-  /** Some convenient typedefs. */
-  typedef TInputImage  InputImageType;
-  typedef TOutputImage OutputImageType;
+  /** Some convenient type alias. */
+  using InputImageType = TInputImage;
+  using OutputImageType = TOutputImage;
 
-  typedef typename Superclass::ForwardProjectionType ForwardProjectionType;
-  typedef typename Superclass::BackProjectionType    BackProjectionType;
+  using ForwardProjectionType = typename Superclass::ForwardProjectionType;
+  using BackProjectionType = typename Superclass::BackProjectionType;
 
   /** Typedefs of each subfilter of this composite filter */
-  typedef rtk::DisplacedDetectorImageFilter<OutputImageType, OutputImageType>                       DisplacedDetectorFilterType;
-  typedef rtk::ParkerShortScanImageFilter<OutputImageType, OutputImageType>                         ParkerFilterType;
-  typedef rtk::FDKConeBeamReconstructionFilter<OutputImageType, OutputImageType, TFFTPrecision>     FDKFilterType;
-  typedef itk::MultiplyImageFilter< OutputImageType, OutputImageType, OutputImageType >             MultiplyFilterType;
-  typedef itk::SubtractImageFilter< OutputImageType, OutputImageType >                              SubtractFilterType;
-  typedef rtk::ConstantImageSource<OutputImageType>                                                 ConstantImageSourceType;
-  typedef itk::ThresholdImageFilter<OutputImageType>                                                ThresholdFilterType;
-  typedef itk::DivideOrZeroOutImageFilter<OutputImageType>                                          DivideFilterType;
-  typedef rtk::RayBoxIntersectionImageFilter<OutputImageType, OutputImageType>                      RayBoxIntersectionFilterType;
+  using DisplacedDetectorFilterType = rtk::DisplacedDetectorImageFilter<OutputImageType, OutputImageType>;
+  using ParkerFilterType = rtk::ParkerShortScanImageFilter<OutputImageType, OutputImageType>;
+  using FDKFilterType = rtk::FDKConeBeamReconstructionFilter<OutputImageType, OutputImageType, TFFTPrecision>;
+  using MultiplyFilterType = itk::MultiplyImageFilter< OutputImageType, OutputImageType, OutputImageType >;
+  using SubtractFilterType = itk::SubtractImageFilter< OutputImageType, OutputImageType >;
+  using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
+  using ThresholdFilterType = itk::ThresholdImageFilter<OutputImageType>;
+  using DivideFilterType = itk::DivideOrZeroOutImageFilter<OutputImageType>;
+  using RayBoxIntersectionFilterType = rtk::RayBoxIntersectionImageFilter<OutputImageType, OutputImageType>;
 
   /** Standard New method. */
   itkNewMacro(Self);

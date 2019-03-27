@@ -41,11 +41,11 @@ class ITK_EXPORT DrawSheppLoganFilter:
   public DrawGeometricPhantomImageFilter<TInputImage,TOutputImage>
 {
 public:
-  /** Standard class typedefs. */
-  typedef DrawSheppLoganFilter                                      Self;
-  typedef DrawGeometricPhantomImageFilter<TInputImage,TOutputImage> Superclass;
-  typedef itk::SmartPointer<Self>                                   Pointer;
-  typedef itk::SmartPointer<const Self>                             ConstPointer;
+  /** Standard class type alias. */
+  using Self = DrawSheppLoganFilter;
+  using Superclass = DrawGeometricPhantomImageFilter<TInputImage,TOutputImage>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);

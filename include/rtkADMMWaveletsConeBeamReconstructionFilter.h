@@ -142,10 +142,10 @@ template< typename TOutputImage>
 class ADMMWaveletsConeBeamReconstructionFilter : public rtk::IterativeConeBeamReconstructionFilter<TOutputImage, TOutputImage>
 {
 public:
-    /** Standard class typedefs. */
-    typedef ADMMWaveletsConeBeamReconstructionFilter                            Self;
-    typedef IterativeConeBeamReconstructionFilter<TOutputImage, TOutputImage>   Superclass;
-    typedef itk::SmartPointer< Self >                                           Pointer;
+    /** Standard class type alias. */
+    using Self = ADMMWaveletsConeBeamReconstructionFilter;
+    using Superclass = IterativeConeBeamReconstructionFilter<TOutputImage, TOutputImage>;
+    using Pointer = itk::SmartPointer< Self >;
 
     /** Method for creation through the object factory. */
     itkNewMacro(Self)
@@ -159,18 +159,18 @@ public:
 //    /** The gated measured projections */
 //    void SetInputProjectionStack(const TOutputImage* Projection);
 
-    typedef rtk::ForwardProjectionImageFilter< TOutputImage, TOutputImage >               ForwardProjectionFilterType;
-    typedef rtk::BackProjectionImageFilter< TOutputImage, TOutputImage >                  BackProjectionFilterType;
-    typedef rtk::ConjugateGradientImageFilter<TOutputImage>                               ConjugateGradientFilterType;
-    typedef itk::SubtractImageFilter<TOutputImage>                                        SubtractFilterType;
-    typedef itk::AddImageFilter<TOutputImage>                                             AddFilterType;
-    typedef itk::MultiplyImageFilter<TOutputImage>                                        MultiplyFilterType;
-    typedef rtk::ADMMWaveletsConjugateGradientOperator<TOutputImage>                      CGOperatorFilterType;
-    typedef rtk::DeconstructSoftThresholdReconstructImageFilter<TOutputImage>             SoftThresholdFilterType;
-    typedef rtk::DisplacedDetectorImageFilter<TOutputImage>                               DisplacedDetectorFilterType;
+    using ForwardProjectionFilterType = rtk::ForwardProjectionImageFilter< TOutputImage, TOutputImage >;
+    using BackProjectionFilterType = rtk::BackProjectionImageFilter< TOutputImage, TOutputImage >;
+    using ConjugateGradientFilterType = rtk::ConjugateGradientImageFilter<TOutputImage>;
+    using SubtractFilterType = itk::SubtractImageFilter<TOutputImage>;
+    using AddFilterType = itk::AddImageFilter<TOutputImage>;
+    using MultiplyFilterType = itk::MultiplyImageFilter<TOutputImage>;
+    using CGOperatorFilterType = rtk::ADMMWaveletsConjugateGradientOperator<TOutputImage>;
+    using SoftThresholdFilterType = rtk::DeconstructSoftThresholdReconstructImageFilter<TOutputImage>;
+    using DisplacedDetectorFilterType = rtk::DisplacedDetectorImageFilter<TOutputImage>;
 
-    typedef typename Superclass::ForwardProjectionType ForwardProjectionType;
-    typedef typename Superclass::BackProjectionType    BackProjectionType;
+    using ForwardProjectionType = typename Superclass::ForwardProjectionType;
+    using BackProjectionType = typename Superclass::BackProjectionType;
 
     /** Pass the ForwardProjection filter to the conjugate gradient operator */
     void SetForwardProjectionFilter (ForwardProjectionType _arg) ITK_OVERRIDE;

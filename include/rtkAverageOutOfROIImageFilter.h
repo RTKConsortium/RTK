@@ -53,11 +53,11 @@ template< class TInputImage,
 class AverageOutOfROIImageFilter : public itk::InPlaceImageFilter<TInputImage, TInputImage>
 {
 public:
-    /** Standard class typedefs. */
-    typedef AverageOutOfROIImageFilter                        Self;
-    typedef itk::ImageToImageFilter<TInputImage, TInputImage> Superclass;
-    typedef itk::SmartPointer< Self >                         Pointer;
-    typedef itk::Image<typename TInputImage::PixelType, TInputImage::ImageDimension - 1>       LowerDimImage;
+    /** Standard class type alias. */
+    using Self = AverageOutOfROIImageFilter;
+    using Superclass = itk::ImageToImageFilter<TInputImage, TInputImage>;
+    using Pointer = itk::SmartPointer< Self >;
+    using LowerDimImage = itk::Image<typename TInputImage::PixelType, TInputImage::ImageDimension - 1>;
 
     /** Method for creation through the object factory. */
     itkNewMacro(Self)

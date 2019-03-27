@@ -39,21 +39,21 @@ int main(int argc, char * argv[])
 {
   GGO(rtkspectralrooster, args_info);
 
-  typedef float PixelValueType;
+  using PixelValueType = float;
   const unsigned int Dimension = 3;
 
-  typedef itk::VectorImage< PixelValueType, Dimension > DecomposedProjectionType;
-  typedef itk::ImageFileReader<DecomposedProjectionType> DecomposedProjectionReaderType;
+  using DecomposedProjectionType = itk::VectorImage< PixelValueType, Dimension >;
+  using DecomposedProjectionReaderType = itk::ImageFileReader<DecomposedProjectionType>;
 
-  typedef itk::VectorImage< PixelValueType, Dimension > MaterialsVolumeType;
-  typedef itk::ImageFileReader< MaterialsVolumeType > MaterialsVolumeReaderType;
+  using MaterialsVolumeType = itk::VectorImage< PixelValueType, Dimension >;
+  using MaterialsVolumeReaderType = itk::ImageFileReader< MaterialsVolumeType >;
 
 #ifdef RTK_USE_CUDA
-  typedef itk::CudaImage< PixelValueType, Dimension + 1 > VolumeSeriesType;
-  typedef itk::CudaImage< PixelValueType, Dimension > ProjectionStackType;
+  using VolumeSeriesType = itk::CudaImage< PixelValueType, Dimension + 1 >;
+  using ProjectionStackType = itk::CudaImage< PixelValueType, Dimension >;
 #else
-  typedef itk::Image< PixelValueType, Dimension + 1 > VolumeSeriesType;
-  typedef itk::Image< PixelValueType, Dimension > ProjectionStackType;
+  using VolumeSeriesType = itk::Image< PixelValueType, Dimension + 1 >;
+  using ProjectionStackType = itk::Image< PixelValueType, Dimension >;
 #endif
 
   // Projections reader
@@ -77,7 +77,7 @@ int main(int argc, char * argv[])
   // Create 4D input. Fill it either with an existing materials volume read from a file or a blank image
   VolumeSeriesType::Pointer input;
 
-  typedef rtk::VectorImageToImageFilter<MaterialsVolumeType, VolumeSeriesType> VectorVolumeToVolumeSeriesFilterType;
+  using VectorVolumeToVolumeSeriesFilterType = rtk::VectorImageToImageFilter<MaterialsVolumeType, VolumeSeriesType>;
   VectorVolumeToVolumeSeriesFilterType::Pointer vecVol2VolSeries = VectorVolumeToVolumeSeriesFilterType::New();
 
   if(args_info.input_given)
@@ -99,7 +99,7 @@ int main(int argc, char * argv[])
     vecVol2VolSeries->SetInput(referenceReader->GetOutput());
     vecVol2VolSeries->UpdateOutputInformation();
 
-    typedef rtk::ConstantImageSource< VolumeSeriesType > ConstantImageSourceType;
+    using ConstantImageSourceType = rtk::ConstantImageSource< VolumeSeriesType >;
     ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
     constantImageSource->SetInformationFromImage(vecVol2VolSeries->GetOutput());
     constantImageSource->Update();
@@ -108,7 +108,7 @@ int main(int argc, char * argv[])
   else
     {
     // Create new empty volume
-    typedef rtk::ConstantImageSource< VolumeSeriesType > ConstantImageSourceType;
+    using ConstantImageSourceType = rtk::ConstantImageSource< VolumeSeriesType >;
     ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
 
     VolumeSeriesType::SizeType inputSize;
@@ -188,7 +188,7 @@ int main(int argc, char * argv[])
     }
 
   // Projections
-  typedef rtk::VectorImageToImageFilter<DecomposedProjectionType, ProjectionStackType> VectorProjectionsToProjectionsFilterType;
+  using VectorProjectionsToProjectionsFilterType = rtk::VectorImageToImageFilter<DecomposedProjectionType, ProjectionStackType>;
   VectorProjectionsToProjectionsFilterType::Pointer vproj2proj = VectorProjectionsToProjectionsFilterType::New();
   vproj2proj->SetInput(projectionsReader->GetOutput());
   TRY_AND_EXIT_ON_ITK_EXCEPTION( vproj2proj->Update() )
@@ -203,7 +203,7 @@ int main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION( signalToInterpolationWeights->Update() )
 
   // Set the forward and back projection filters to be used
-  typedef rtk::FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType> ROOSTERFilterType;
+  using ROOSTERFilterType = rtk::FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>;
   ROOSTERFilterType::Pointer rooster = ROOSTERFilterType::New();
   SetForwardProjectionFromGgo(args_info, rooster.GetPointer());
   SetBackProjectionFromGgo(args_info, rooster.GetPointer());
@@ -285,13 +285,13 @@ int main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION( rooster->Update() )
 
   // Convert to result to a vector image
-  typedef rtk::ImageToVectorImageFilter<VolumeSeriesType, MaterialsVolumeType> VolumeSeriesToVectorVolumeFilterType;
+  using VolumeSeriesToVectorVolumeFilterType = rtk::ImageToVectorImageFilter<VolumeSeriesType, MaterialsVolumeType>;
   VolumeSeriesToVectorVolumeFilterType::Pointer volSeries2VecVol = VolumeSeriesToVectorVolumeFilterType::New();
   volSeries2VecVol->SetInput(rooster->GetOutput());
   TRY_AND_EXIT_ON_ITK_EXCEPTION( volSeries2VecVol->Update() )
 
   // Write
-  typedef itk::ImageFileWriter< MaterialsVolumeType > WriterType;
+  using WriterType = itk::ImageFileWriter< MaterialsVolumeType >;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
   writer->SetInput( volSeries2VecVol->GetOutput() );

@@ -46,21 +46,21 @@ class ITK_EXPORT ReorderProjectionsImageFilter :
   public itk::ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-  /** Standard class typedefs. */
-  typedef ReorderProjectionsImageFilter Self;
+  /** Standard class type alias. */
+  using Self = ReorderProjectionsImageFilter;
 
-  typedef itk::ImageToImageFilter<TInputImage, TOutputImage>  Superclass;
-  typedef itk::SmartPointer<Self>                             Pointer;
-  typedef itk::SmartPointer<const Self>                       ConstPointer;
+  using Superclass = itk::ImageToImageFilter<TInputImage, TOutputImage>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
-  /** Some convenient typedefs. */
-  typedef TInputImage                             InputImageType;
-  typedef TOutputImage                            OutputImageType;
-  typedef typename OutputImageType::RegionType    OutputImageRegionType;
-  typedef enum {NONE=0, SORT=1, SHUFFLE=2}        PermutationType;
+  /** Some convenient type alias. */
+  using InputImageType = TInputImage;
+  using OutputImageType = TOutputImage;
+  using OutputImageRegionType = typename OutputImageType::RegionType;
+  using PermutationType = enum {NONE=0, SORT=1, SHUFFLE=2};
 
-  typedef ThreeDCircularProjectionGeometry        GeometryType;
-  typedef GeometryType::Pointer                   GeometryPointer;
+  using GeometryType = ThreeDCircularProjectionGeometry;
+  using GeometryPointer = GeometryType::Pointer;
 
   /** Standard New method. */
   itkNewMacro(Self);

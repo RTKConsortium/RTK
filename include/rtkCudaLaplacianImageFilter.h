@@ -43,13 +43,13 @@ class RTK_EXPORT CudaLaplacianImageFilter :
   LaplacianImageFilter< itk::CudaImage<float,3>, itk::CudaImage<itk::CovariantVector<float, 3>,3> > >
 {
 public:
-  /** Standard class typedefs. */
-  typedef rtk::CudaLaplacianImageFilter                                   Self;
-  typedef itk::CudaImage<float,3>                                         OutputImageType;
-  typedef itk::CudaImage<itk::CovariantVector<float, 3>,3>                GradientImageType;
-  typedef rtk::LaplacianImageFilter< OutputImageType, GradientImageType>  Superclass;
-  typedef itk::SmartPointer<Self>                                         Pointer;
-  typedef itk::SmartPointer<const Self>                                   ConstPointer;
+  /** Standard class type alias. */
+  using Self = rtk::CudaLaplacianImageFilter;
+  using OutputImageType = itk::CudaImage<float,3>;
+  using GradientImageType = itk::CudaImage<itk::CovariantVector<float, 3>,3>;
+  using Superclass = rtk::LaplacianImageFilter< OutputImageType, GradientImageType>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
   /** Standard New method. */
   itkNewMacro(Self)

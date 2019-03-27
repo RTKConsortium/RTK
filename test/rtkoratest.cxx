@@ -48,12 +48,12 @@ int main(int argc, char*argv[])
   // ******* COMPARING projections *******
   std::cout << "Testing attenuation conversion..." << std::endl;
 
-  typedef float OutputPixelType;
+  using OutputPixelType = float;
   const unsigned int Dimension = 3;
-  typedef itk::Image< OutputPixelType, Dimension > ImageType;
+  using ImageType = itk::Image< OutputPixelType, Dimension >;
 
   // Elekta projections reader
-  typedef rtk::ProjectionsReader< ImageType > ReaderType;
+  using ReaderType = rtk::ProjectionsReader< ImageType >;
   ReaderType::Pointer reader = ReaderType::New();
   reader->SetFileNames( filenames );
   ReaderType::OutputImageSpacingType spacing;
@@ -68,7 +68,7 @@ int main(int argc, char*argv[])
   reader->SetDirection(direction);
 
   // Create projection image filter
-  typedef rtk::MaskCollimationImageFilter<ImageType, ImageType> OFMType;
+  using OFMType = rtk::MaskCollimationImageFilter<ImageType, ImageType>;
   OFMType::Pointer ofm = OFMType::New();
   ofm->SetInput( reader->GetOutput() );
   ofm->SetGeometry( geoTargReader->GetModifiableGeometry() );

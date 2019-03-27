@@ -71,24 +71,24 @@ class ITK_EXPORT MotionCompensatedFourDConjugateGradientConeBeamReconstructionFi
   public rtk::FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 {
 public:
-  /** Standard class typedefs. */
-  typedef MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter                           Self;
-  typedef FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>     Superclass;
-  typedef itk::SmartPointer<Self>                                                                       Pointer;
-  typedef itk::SmartPointer<const Self>                                                                 ConstPointer;
+  /** Standard class type alias. */
+  using Self = MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter;
+  using Superclass = FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
-  /** Some convenient typedefs. */
-  typedef VolumeSeriesType      InputImageType;
-  typedef VolumeSeriesType      OutputImageType;
-  typedef ProjectionStackType   VolumeType;
-  typedef itk::CovariantVector< typename VolumeSeriesType::ValueType, VolumeSeriesType::ImageDimension - 1>   VectorForDVF;
+  /** Some convenient type alias. */
+  using InputImageType = VolumeSeriesType;
+  using OutputImageType = VolumeSeriesType;
+  using VolumeType = ProjectionStackType;
+  using VectorForDVF = itk::CovariantVector< typename VolumeSeriesType::ValueType, VolumeSeriesType::ImageDimension - 1>;
 
-  typedef typename Superclass::ForwardProjectionType ForwardProjectionType;
-  typedef typename Superclass::BackProjectionType    BackProjectionType;
+  using ForwardProjectionType = typename Superclass::ForwardProjectionType;
+  using BackProjectionType = typename Superclass::BackProjectionType;
 
-  /** SFINAE typedef, depending on whether a CUDA image is used. */
-  typedef typename itk::Image< typename VolumeSeriesType::PixelType,
-                               VolumeSeriesType::ImageDimension>        CPUVolumeSeriesType;
+  /** SFINAE type alias, depending on whether a CUDA image is used. */
+  using CPUVolumeSeriesType = typename itk::Image< typename VolumeSeriesType::PixelType,
+                               VolumeSeriesType::ImageDimension>;
 #ifdef RTK_USE_CUDA
   typedef typename std::conditional< std::is_same< VolumeSeriesType, CPUVolumeSeriesType >::value,
                                      itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension>,
@@ -99,8 +99,8 @@ public:
                                      itk::CudaImage<VectorForDVF, VolumeSeriesType::ImageDimension - 1> >::type
                                                                         DVFImageType;
 #else
-  typedef itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension>    DVFSequenceImageType;
-  typedef itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension-1>  DVFImageType;
+  using DVFSequenceImageType = itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension>;
+  using DVFImageType = itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension-1>;
 #endif
 
   /** Typedefs of each subfilter of this composite filter */
@@ -124,9 +124,9 @@ public:
   /** Set the vector containing the signal in the sub-filters */
   void SetSignal(const std::vector<double> signal) ITK_OVERRIDE;
 
-  // Sub filters typedefs
-  typedef rtk::WarpProjectionStackToFourDImageFilter< VolumeSeriesType, ProjectionStackType>                        MCProjStackToFourDType;
-  typedef rtk::MotionCompensatedFourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType> MCCGOperatorType;
+  // Sub filters type alias
+  using MCProjStackToFourDType = rtk::WarpProjectionStackToFourDImageFilter< VolumeSeriesType, ProjectionStackType>;
+  using MCCGOperatorType = rtk::MotionCompensatedFourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType>;
 
   /** Set and Get for the UseCudaCyclicDeformation variable */
   itkSetMacro(UseCudaCyclicDeformation, bool)

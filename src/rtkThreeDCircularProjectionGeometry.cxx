@@ -137,7 +137,7 @@ AddProjection(const PointType &sourcePosition,
               const VectorType &detectorRowVector,
               const VectorType &detectorColumnVector)
 {
-  typedef itk::Euler3DTransform<double> EulerType;
+  using EulerType = itk::Euler3DTransform<double>;
 
   // these parameters relate absolutely to the WCS (IEC-based):
   const VectorType &r = detectorRowVector; // row dir
@@ -267,7 +267,7 @@ AddProjection(const HomogeneousProjectionMatrixType &pMat)
   Matrix3x3Type R = invK*A;
 
   //Declare a 3D euler transform in order to properly extract angles
-  typedef itk::Euler3DTransform<double> EulerType;
+  using EulerType = itk::Euler3DTransform<double>;
   EulerType::Pointer euler = EulerType::New();
   euler->SetComputeZYX(false); // ZXY order
 
@@ -460,7 +460,7 @@ ComputeRotationHomogeneousMatrix(double angleX,
                                  double angleY,
                                  double angleZ)
 {
-  typedef itk::CenteredEuler3DTransform<double> ThreeDTransformType;
+  using ThreeDTransformType = itk::CenteredEuler3DTransform<double>;
   ThreeDTransformType::Pointer xfm = ThreeDTransformType::New();
   xfm->SetIdentity();
   xfm->SetRotation( angleX, angleY, angleZ );
@@ -611,7 +611,7 @@ VerifyAngles(const double outOfPlaneAngleRAD,
      inPlaneAngleRAD != inPlaneAngleRAD)
     return false;
 
-  typedef itk::Euler3DTransform<double> EulerType;
+  using EulerType = itk::Euler3DTransform<double>;
 
   const Matrix3x3Type &rm = referenceMatrix; // shortcut
   const double EPSILON = 1e-5; // internal tolerance for comparison

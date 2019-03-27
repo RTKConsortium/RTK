@@ -158,11 +158,11 @@ class ITK_EXPORT AdditiveGaussianNoiseImageFilter :
     public itk::ImageToImageFilter< TInputImage, TInputImage >
 {
 public:
-  /** Standard class typedefs. */
-  typedef AdditiveGaussianNoiseImageFilter                  Self;
-  typedef itk::ImageToImageFilter<TInputImage, TInputImage> Superclass;
-  typedef itk::SmartPointer<Self>                           Pointer;
-  typedef itk::SmartPointer<const Self>                     ConstPointer;
+  /** Standard class type alias. */
+  using Self = AdditiveGaussianNoiseImageFilter;
+  using Superclass = itk::ImageToImageFilter<TInputImage, TInputImage>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
   /** Method for creation through the object factory */
   itkNewMacro(Self);
@@ -170,17 +170,17 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(AdditiveGaussianNoiseImageFilter, ImageToImageFilter);
 
-  /** Superclass typedefs. */
-  typedef typename Superclass::OutputImageRegionType OutputImageRegionType;
-  typedef typename Superclass::OutputImagePointer    OutputImagePointer;
+  /** Superclass type alias. */
+  using OutputImageRegionType = typename Superclass::OutputImageRegionType;
+  using OutputImagePointer = typename Superclass::OutputImagePointer;
 
-  /** Some convenient typedefs. */
-  typedef TInputImage                           InputImageType;
-  typedef typename InputImageType::Pointer      InputImagePointer;
-  typedef typename InputImageType::ConstPointer InputImageConstPointer;
-  typedef typename InputImageType::RegionType   InputImageRegionType;
-  typedef typename InputImageType::PixelType    InputImagePixelType;
-  typedef typename InputImageType::PixelType    InputPixelType;
+  /** Some convenient type alias. */
+  using InputImageType = TInputImage;
+  using InputImagePointer = typename InputImageType::Pointer;
+  using InputImageConstPointer = typename InputImageType::ConstPointer;
+  using InputImageRegionType = typename InputImageType::RegionType;
+  using InputImagePixelType = typename InputImageType::PixelType;
+  using InputPixelType = typename InputImageType::PixelType;
 
   /** ImageDimension constants */
   itkStaticConstMacro(InputImageDimension, unsigned int,
@@ -289,9 +289,8 @@ private:
 
 public:
 
-  typedef itk::UnaryFunctorImageFilter< InputImageType, InputImageType,
-                                       NormalVariateNoiseFunctor< typename InputImageType::PixelType > >
-                                       NoiseFilterType;
+  using NoiseFilterType = itk::UnaryFunctorImageFilter< InputImageType, InputImageType,
+                                       NormalVariateNoiseFunctor< typename InputImageType::PixelType > >;
 
 private:
 

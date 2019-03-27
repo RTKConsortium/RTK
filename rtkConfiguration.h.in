@@ -25,13 +25,13 @@
 #include <itkIntTypes.h>
 namespace rtk
 {
-  typedef itk::ThreadIdType ThreadIdType;
+  using ThreadIdType = itk::ThreadIdType;
 }
 
 #if ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR < 5
 namespace itk
 {
-  typedef double SpacePrecisionType;
+  using SpacePrecisionType = double;
 }
 #endif
 

@@ -113,28 +113,28 @@ class ITK_EXPORT OSEMConeBeamReconstructionFilter :
     public rtk::IterativeConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>
 {
 public:
-  /** Standard class typedefs. */
+  /** Standard class type alias. */
   typedef OSEMConeBeamReconstructionFilter					Self;
-  typedef IterativeConeBeamReconstructionFilter<TVolumeImage, TProjectionImage> Superclass;
+  using Superclass = IterativeConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>;
   typedef itk::SmartPointer<Self>						Pointer;
   typedef itk::SmartPointer<const Self>						ConstPointer;
 
-  /** Some convenient typedefs. */
-  typedef TVolumeImage	   VolumeType;
-  typedef TProjectionImage ProjectionType;
+  /** Some convenient type alias. */
+  using VolumeType = TVolumeImage	;
+  using ProjectionType = TProjectionImage;
 
   /** Typedefs of each subfilter of this composite filter */
-  typedef itk::ExtractImageFilter< ProjectionType, ProjectionType >                          ExtractFilterType;
-  typedef itk::MultiplyImageFilter< VolumeType, VolumeType, VolumeType >                     MultiplyFilterType;
-  typedef rtk::ForwardProjectionImageFilter< ProjectionType, VolumeType >                    ForwardProjectionFilterType;
-  typedef rtk::BackProjectionImageFilter< VolumeType, ProjectionType >                       BackProjectionFilterType;
-  typedef itk::DivideOrZeroOutImageFilter<ProjectionType, ProjectionType, ProjectionType>    DivideProjectionFilterType;
-  typedef itk::DivideOrZeroOutImageFilter<VolumeType, VolumeType, VolumeType>                DivideVolumeFilterType;
-  typedef rtk::ConstantImageSource<VolumeType>                                               ConstantVolumeSourceType;
-  typedef rtk::ConstantImageSource<ProjectionType>                                           ConstantProjectionSourceType;
+  using ExtractFilterType = itk::ExtractImageFilter< ProjectionType, ProjectionType >;
+  using MultiplyFilterType = itk::MultiplyImageFilter< VolumeType, VolumeType, VolumeType >;
+  using ForwardProjectionFilterType = rtk::ForwardProjectionImageFilter< ProjectionType, VolumeType >;
+  using BackProjectionFilterType = rtk::BackProjectionImageFilter< VolumeType, ProjectionType >;
+  using DivideProjectionFilterType = itk::DivideOrZeroOutImageFilter<ProjectionType, ProjectionType, ProjectionType>;
+  using DivideVolumeFilterType = itk::DivideOrZeroOutImageFilter<VolumeType, VolumeType, VolumeType>;
+  using ConstantVolumeSourceType = rtk::ConstantImageSource<VolumeType>;
+  using ConstantProjectionSourceType = rtk::ConstantImageSource<ProjectionType>;
 
-  typedef typename Superclass::ForwardProjectionType ForwardProjectionType;
-  typedef typename Superclass::BackProjectionType    BackProjectionType;
+  using ForwardProjectionType = typename Superclass::ForwardProjectionType;
+  using BackProjectionType = typename Superclass::BackProjectionType;
 
   /** Standard New method. */
   itkNewMacro(Self);

@@ -44,20 +44,20 @@ template< unsigned int TDimension = 3 >
 class ProjectionGeometry : public itk::DataObject
 {
 public:
-  typedef ProjectionGeometry<TDimension>  Self;
-  typedef itk::DataObject                 Superclass;
-  typedef itk::SmartPointer< Self >       Pointer;
-  typedef itk::SmartPointer< const Self > ConstPointer;
+  using Self = ProjectionGeometry<TDimension>;
+  using Superclass = itk::DataObject;
+  using Pointer = itk::SmartPointer< Self >;
+  using ConstPointer = itk::SmartPointer< const Self >;
 
   /** Method for creation through the object factory. */
   itkNewMacro( Self );
 
-  /** Convenient typedefs */
-  typedef typename itk::ImageBase<TDimension>::SizeType    SizeType;
-  typedef typename itk::ImageBase<TDimension>::PointType   PointType;
-  typedef typename itk::ImageBase<TDimension>::SpacingType SpacingType;
+  /** Convenient type alias */
+  using SizeType = typename itk::ImageBase<TDimension>::SizeType;
+  using PointType = typename itk::ImageBase<TDimension>::PointType;
+  using SpacingType = typename itk::ImageBase<TDimension>::SpacingType;
 
-  typedef typename itk::Matrix< double, TDimension, TDimension+1 > MatrixType;
+  using MatrixType = typename itk::Matrix< double, TDimension, TDimension+1 >;
 
   /** Get the vector of projection matrices.
    * A projection matrix is a M x (M+1) homogeneous matrix.

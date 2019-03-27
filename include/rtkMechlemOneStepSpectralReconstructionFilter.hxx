@@ -161,7 +161,7 @@ MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectr
 ::InstantiateSingleComponentForwardProjectionFilter (int fwtype)
 {
   // Define the type of image to be back projected
-  typedef typename MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectrum>::SingleComponentImageType TSingleComponent;
+  using TSingleComponent = typename MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectrum>::SingleComponentImageType;
 
   // Declare the pointer
   typename MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectrum>::SingleComponentForwardProjectionFilterType::Pointer fw;
@@ -190,7 +190,7 @@ MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectr
 ::InstantiateHessiansBackProjectionFilter(int bptype)
 {
   // Define the type of image to be back projected
-  typedef typename MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectrum>::THessiansImage THessians;
+  using THessians = typename MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectrum>::THessiansImage;
 
   // Declare the pointer
   typename MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectrum>::HessiansBackProjectionFilterType::Pointer bp;

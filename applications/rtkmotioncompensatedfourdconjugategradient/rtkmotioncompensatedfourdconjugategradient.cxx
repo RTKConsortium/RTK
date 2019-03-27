@@ -33,24 +33,24 @@ int main(int argc, char * argv[])
 {
   GGO(rtkmotioncompensatedfourdconjugategradient, args_info);
 
-  typedef float OutputPixelType;
-  typedef itk::CovariantVector< OutputPixelType, 3 > DVFVectorType;
+  using OutputPixelType = float;
+  using DVFVectorType = itk::CovariantVector< OutputPixelType, 3 >;
 
 #ifdef RTK_USE_CUDA
-  typedef itk::CudaImage< OutputPixelType, 4 >  VolumeSeriesType;
-  typedef itk::CudaImage< OutputPixelType, 3 >  ProjectionStackType;
-  typedef itk::CudaImage<DVFVectorType, VolumeSeriesType::ImageDimension> DVFSequenceImageType;
-  typedef itk::CudaImage<DVFVectorType, VolumeSeriesType::ImageDimension - 1> DVFImageType;
+  using VolumeSeriesType = itk::CudaImage< OutputPixelType, 4 >;
+  using ProjectionStackType = itk::CudaImage< OutputPixelType, 3 >;
+  using DVFSequenceImageType = itk::CudaImage<DVFVectorType, VolumeSeriesType::ImageDimension>;
+  using DVFImageType = itk::CudaImage<DVFVectorType, VolumeSeriesType::ImageDimension - 1>;
 #else
-  typedef itk::Image< OutputPixelType, 4 > VolumeSeriesType;
-  typedef itk::Image< OutputPixelType, 3 > ProjectionStackType;
-  typedef itk::Image<DVFVectorType, VolumeSeriesType::ImageDimension> DVFSequenceImageType;
-  typedef itk::Image<DVFVectorType, VolumeSeriesType::ImageDimension - 1> DVFImageType;
+  using VolumeSeriesType = itk::Image< OutputPixelType, 4 >;
+  using ProjectionStackType = itk::Image< OutputPixelType, 3 >;
+  using DVFSequenceImageType = itk::Image<DVFVectorType, VolumeSeriesType::ImageDimension>;
+  using DVFImageType = itk::Image<DVFVectorType, VolumeSeriesType::ImageDimension - 1>;
 #endif
-  typedef itk::ImageFileReader<  DVFSequenceImageType > DVFReaderType;
+  using DVFReaderType = itk::ImageFileReader<  DVFSequenceImageType >;
 
   // Projections reader
-  typedef rtk::ProjectionsReader< ProjectionStackType > ReaderType;
+  using ReaderType = rtk::ProjectionsReader< ProjectionStackType >;
   ReaderType::Pointer reader = ReaderType::New();
   rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkmotioncompensatedfourdconjugategradient>(reader, args_info);
 
@@ -70,7 +70,7 @@ int main(int argc, char * argv[])
   if(args_info.input_given)
     {
     // Read an existing image to initialize the volume
-    typedef itk::ImageFileReader<  VolumeSeriesType > InputReaderType;
+    using InputReaderType = itk::ImageFileReader<  VolumeSeriesType >;
     InputReaderType::Pointer inputReader = InputReaderType::New();
     inputReader->SetFileName( args_info.input_arg );
     inputFilter = inputReader;
@@ -78,7 +78,7 @@ int main(int argc, char * argv[])
   else
     {
     // Create new empty volume
-    typedef rtk::ConstantImageSource< VolumeSeriesType > ConstantImageSourceType;
+    using ConstantImageSourceType = rtk::ConstantImageSource< VolumeSeriesType >;
     ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
     rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkmotioncompensatedfourdconjugategradient>(constantImageSource, args_info);
 
@@ -103,7 +103,7 @@ int main(int argc, char * argv[])
 
 
   // Create the mcfourdcg filter, connect the basic inputs, and set the basic parameters
-  typedef rtk::MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType> MCFourDCGFilterType;
+  using MCFourDCGFilterType = rtk::MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>;
   MCFourDCGFilterType::Pointer mcfourdcg = MCFourDCGFilterType::New();
   mcfourdcg->SetInputVolumeSeries(inputFilter->GetOutput() );
   mcfourdcg->SetInputProjectionStack(reader->GetOutput());
@@ -129,14 +129,14 @@ int main(int argc, char * argv[])
 
   // The mcfourdcg filter reconstructs a static 4D volume (if the DVFs perfectly model the actual motion)
   // Warp this sequence with the inverse DVF so as to obtain a result similar to the classical 4D CG filter
-  typedef rtk::WarpSequenceImageFilter<VolumeSeriesType, DVFSequenceImageType, ProjectionStackType, DVFImageType> WarpSequenceFilterType;
+  using WarpSequenceFilterType = rtk::WarpSequenceImageFilter<VolumeSeriesType, DVFSequenceImageType, ProjectionStackType, DVFImageType>;
   WarpSequenceFilterType::Pointer warp = WarpSequenceFilterType::New();
   warp->SetInput(mcfourdcg->GetOutput());
   warp->SetDisplacementField(idvfReader->GetOutput());
   TRY_AND_EXIT_ON_ITK_EXCEPTION( warp->Update() )
 
   // Write
-  typedef itk::ImageFileWriter< VolumeSeriesType > WriterType;
+  using WriterType = itk::ImageFileWriter< VolumeSeriesType >;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
   writer->SetInput( warp->GetOutput() );

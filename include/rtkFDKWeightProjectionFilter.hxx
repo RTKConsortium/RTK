@@ -73,9 +73,9 @@ FDKWeightProjectionFilter<TInputImage, TOutputImage>
     pointIncrement[i] -= pointBase[i];
 
   // Iterators
-  typedef itk::ImageRegionConstIterator<InputImageType> InputConstIterator;
+  using InputConstIterator = itk::ImageRegionConstIterator<InputImageType>;
   InputConstIterator itI(this->GetInput(), outputRegionForThread);
-  typedef itk::ImageRegionIterator<OutputImageType> OutputIterator;
+  using OutputIterator = itk::ImageRegionIterator<OutputImageType>;
   OutputIterator itO(this->GetOutput(), outputRegionForThread);
   itI.GoToBegin();
   itO.GoToBegin();

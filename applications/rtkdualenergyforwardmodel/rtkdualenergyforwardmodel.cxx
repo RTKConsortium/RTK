@@ -30,23 +30,23 @@ int main(int argc, char * argv[])
 {
   GGO(rtkdualenergyforwardmodel, args_info);
 
-  typedef float PixelValueType;
+  using PixelValueType = float;
   const unsigned int Dimension = 3;
 
-  typedef itk::VectorImage< PixelValueType, Dimension > DecomposedProjectionType;
-  typedef itk::ImageFileReader<DecomposedProjectionType> DecomposedProjectionReaderType;
+  using DecomposedProjectionType = itk::VectorImage< PixelValueType, Dimension >;
+  using DecomposedProjectionReaderType = itk::ImageFileReader<DecomposedProjectionType>;
 
-  typedef itk::VectorImage< PixelValueType, Dimension > DualEnergyProjectionsType;
-  typedef itk::ImageFileWriter< DualEnergyProjectionsType > DualEnergyProjectionWriterType;
+  using DualEnergyProjectionsType = itk::VectorImage< PixelValueType, Dimension >;
+  using DualEnergyProjectionWriterType = itk::ImageFileWriter< DualEnergyProjectionsType >;
 
-  typedef itk::VectorImage< PixelValueType, Dimension-1 > IncidentSpectrumImageType;
-  typedef itk::ImageFileReader<IncidentSpectrumImageType> IncidentSpectrumReaderType;
+  using IncidentSpectrumImageType = itk::VectorImage< PixelValueType, Dimension-1 >;
+  using IncidentSpectrumReaderType = itk::ImageFileReader<IncidentSpectrumImageType>;
 
-  typedef itk::Image< PixelValueType, Dimension-1 > DetectorResponseImageType;
-  typedef itk::ImageFileReader<DetectorResponseImageType> DetectorResponseReaderType;
+  using DetectorResponseImageType = itk::Image< PixelValueType, Dimension-1 >;
+  using DetectorResponseReaderType = itk::ImageFileReader<DetectorResponseImageType>;
 
-  typedef itk::Image< PixelValueType, Dimension-1 > MaterialAttenuationsImageType;
-  typedef itk::ImageFileReader<MaterialAttenuationsImageType> MaterialAttenuationsReaderType;
+  using MaterialAttenuationsImageType = itk::Image< PixelValueType, Dimension-1 >;
+  using MaterialAttenuationsReaderType = itk::ImageFileReader<MaterialAttenuationsImageType>;
 
   // Read all inputs
   DecomposedProjectionReaderType::Pointer decomposedProjectionReader = DecomposedProjectionReaderType::New();
@@ -111,7 +111,7 @@ int main(int argc, char * argv[])
                              << MaximumEnergy);
 
   // Create and set the filter
-  typedef rtk::SpectralForwardModelImageFilter<DecomposedProjectionType, DualEnergyProjectionsType> ForwardModelFilterType;
+  using ForwardModelFilterType = rtk::SpectralForwardModelImageFilter<DecomposedProjectionType, DualEnergyProjectionsType>;
   ForwardModelFilterType::Pointer forward = ForwardModelFilterType::New();
   forward->SetInputDecomposedProjections(decomposedProjectionReader->GetOutput());
   forward->SetInputMeasuredProjections(dualEnergyProjections);

@@ -41,16 +41,16 @@ class ITK_EXPORT MaskCollimationImageFilter :
   public itk::InPlaceImageFilter<TInputImage,TOutputImage>
 {
 public:
-  /** Standard class typedefs. */
-  typedef MaskCollimationImageFilter                        Self;
-  typedef itk::InPlaceImageFilter<TInputImage,TOutputImage> Superclass;
-  typedef itk::SmartPointer<Self>                           Pointer;
-  typedef itk::SmartPointer<const Self>                     ConstPointer;
+  /** Standard class type alias. */
+  using Self = MaskCollimationImageFilter;
+  using Superclass = itk::InPlaceImageFilter<TInputImage,TOutputImage>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
-  typedef typename TOutputImage::RegionType               OutputImageRegionType;
-  typedef rtk::ThreeDCircularProjectionGeometry           GeometryType;
-  typedef typename GeometryType::Pointer                  GeometryPointer;
-  typedef std::vector<std::string>                        FileNamesContainer;
+  using OutputImageRegionType = typename TOutputImage::RegionType;
+  using GeometryType = rtk::ThreeDCircularProjectionGeometry;
+  using GeometryPointer = typename GeometryType::Pointer;
+  using FileNamesContainer = std::vector<std::string>;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);

@@ -44,10 +44,10 @@ namespace rtk
 class VarianObiXMLFileReader : public itk::XMLReader<itk::MetaDataDictionary>
 {
 public:
-  /** Standard typedefs */
-  typedef VarianObiXMLFileReader                  Self;
-  typedef itk::XMLReader<itk::MetaDataDictionary> Superclass;
-  typedef itk::SmartPointer<Self>                 Pointer;
+  /** Standard type alias */
+  using Self = VarianObiXMLFileReader;
+  using Superclass = itk::XMLReader<itk::MetaDataDictionary>;
+  using Pointer = itk::SmartPointer<Self>;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(VarianObiXMLFileReader, itk::XMLReader);

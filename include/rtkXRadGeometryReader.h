@@ -40,13 +40,13 @@ class RTK_EXPORT XRadGeometryReader :
   public itk::LightProcessObject
 {
 public:
-  /** Standard typedefs */
-  typedef XRadGeometryReader      Self;
-  typedef itk::LightProcessObject Superclass;
-  typedef itk::SmartPointer<Self> Pointer;
+  /** Standard type alias */
+  using Self = XRadGeometryReader;
+  using Superclass = itk::LightProcessObject;
+  using Pointer = itk::SmartPointer<Self>;
 
-  /** Convenient typedefs */
-  typedef Reg23ProjectionGeometry GeometryType;
+  /** Convenient type alias */
+  using GeometryType = Reg23ProjectionGeometry;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(XRadGeometryReader, LightProcessObject);

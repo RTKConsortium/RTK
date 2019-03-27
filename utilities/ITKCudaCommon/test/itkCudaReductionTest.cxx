@@ -38,7 +38,7 @@ int itkCudaReductionTest(int argc, char *argv[])
     }
 
   // create input
-  typedef int ElementType;
+  using ElementType = int;
 
   itk::CudaReduction<ElementType>::Pointer summer = itk::CudaReduction<ElementType>::New();
   summer->InitializeKernel(numPixels);

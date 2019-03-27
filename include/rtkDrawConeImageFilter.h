@@ -39,14 +39,14 @@ class DrawConeImageFilter:
 public DrawEllipsoidImageFilter< TInputImage, TOutputImage >
 {
 public:
-  /** Standard class typedefs. */
-  typedef DrawConeImageFilter                                Self;
-  typedef DrawEllipsoidImageFilter<TInputImage,TOutputImage> Superclass;
-  typedef itk::SmartPointer<Self>                            Pointer;
-  typedef itk::SmartPointer<const Self>                      ConstPointer;
+  /** Standard class type alias. */
+  using Self = DrawConeImageFilter;
+  using Superclass = DrawEllipsoidImageFilter<TInputImage,TOutputImage>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
-  /** Convenient typedefs. */
-  typedef ConvexShape::ScalarType ScalarType;
+  /** Convenient type alias. */
+  using ScalarType = ConvexShape::ScalarType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);

@@ -23,8 +23,8 @@
 int main(int , char** )
 {
   const unsigned int Dimension = 3;
-  typedef float                                    OutputPixelType;
-  typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
+  using OutputPixelType = float;
+  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
 #if FAST_TESTS_NO_CHECKS
   const unsigned int NumberOfProjectionImages = 3;
 #else
@@ -32,7 +32,7 @@ int main(int , char** )
 #endif
 
   // Constant image sources
-  typedef rtk::ConstantImageSource< OutputImageType > ConstantImageSourceType;
+  using ConstantImageSourceType = rtk::ConstantImageSource< OutputImageType >;
   ConstantImageSourceType::PointType origin;
   ConstantImageSourceType::SizeType size;
   ConstantImageSourceType::SpacingType spacing;
@@ -98,13 +98,13 @@ int main(int , char** )
   std::cout << "\n\n****** Case 1: centered detector ******" << std::endl;
 
   // Geometry
-  typedef rtk::ThreeDCircularProjectionGeometry GeometryType;
+  using GeometryType = rtk::ThreeDCircularProjectionGeometry;
   GeometryType::Pointer geometry = GeometryType::New();
   for(unsigned int noProj=0; noProj<NumberOfProjectionImages; noProj++)
     geometry->AddProjection(600, 1200., noProj*360./NumberOfProjectionImages);
 
   // FOV
-  typedef rtk::FieldOfViewImageFilter<OutputImageType, OutputImageType> FOVFilterType;
+  using FOVFilterType = rtk::FieldOfViewImageFilter<OutputImageType, OutputImageType>;
   FOVFilterType::Pointer fov=FOVFilterType::New();
   fov->SetInput(0, fovInput->GetOutput());
   fov->SetProjectionsStack(projectionsSource->GetOutput());
@@ -112,14 +112,14 @@ int main(int , char** )
   fov->Update();
 
   // Backprojection reconstruction filter
-  typedef rtk::BackProjectionImageFilter< OutputImageType, OutputImageType > BPType;
+  using BPType = rtk::BackProjectionImageFilter< OutputImageType, OutputImageType >;
   BPType::Pointer bp = BPType::New();
   bp->SetInput( 0, bpInput->GetOutput() );
   bp->SetInput( 1, projectionsSource->GetOutput() );
   bp->SetGeometry( geometry.GetPointer() );
 
   // Thresholded to the number of projections
-  typedef itk::BinaryThresholdImageFilter< OutputImageType, OutputImageType > ThresholdType;
+  using ThresholdType = itk::BinaryThresholdImageFilter< OutputImageType, OutputImageType >;
   ThresholdType::Pointer threshold = ThresholdType::New();
   threshold->SetInput(bp->GetOutput());
   threshold->SetOutsideValue(0.);

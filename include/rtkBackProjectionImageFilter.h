@@ -51,20 +51,20 @@ class BackProjectionImageFilter :
   public itk::InPlaceImageFilter<TInputImage,TOutputImage>
 {
 public:
-  /** Standard class typedefs. */
-  typedef BackProjectionImageFilter                         Self;
-  typedef itk::ImageToImageFilter<TInputImage,TOutputImage> Superclass;
-  typedef itk::SmartPointer<Self>                           Pointer;
-  typedef itk::SmartPointer<const Self>                     ConstPointer;
-  typedef typename TInputImage::PixelType                   InputPixelType;
-  typedef typename TInputImage::InternalPixelType           InternalInputPixelType;
-  typedef typename TOutputImage::RegionType                 OutputImageRegionType;
+  /** Standard class type alias. */
+  using Self = BackProjectionImageFilter;
+  using Superclass = itk::ImageToImageFilter<TInputImage,TOutputImage>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
+  using InputPixelType = typename TInputImage::PixelType;
+  using InternalInputPixelType = typename TInputImage::InternalPixelType;
+  using OutputImageRegionType = typename TOutputImage::RegionType;
 
-  typedef rtk::ThreeDCircularProjectionGeometry                     GeometryType;
-  typedef typename GeometryType::ConstPointer                       GeometryConstPointer;
-  typedef typename GeometryType::MatrixType                         ProjectionMatrixType;
-  typedef itk::Image<InputPixelType, TInputImage::ImageDimension-1> ProjectionImageType;
-  typedef typename ProjectionImageType::Pointer                     ProjectionImagePointer;
+  using GeometryType = rtk::ThreeDCircularProjectionGeometry;
+  using GeometryConstPointer = typename GeometryType::ConstPointer;
+  using ProjectionMatrixType = typename GeometryType::MatrixType;
+  using ProjectionImageType = itk::Image<InputPixelType, TInputImage::ImageDimension-1>;
+  using ProjectionImagePointer = typename ProjectionImageType::Pointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);

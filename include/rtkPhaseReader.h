@@ -34,11 +34,11 @@ namespace rtk
 class ITK_EXPORT PhaseReader:public itk::CSVFileReaderBase
 {
 public:
-    /** Standard class typedefs */
-    typedef PhaseReader                     Self;
-    typedef CSVFileReaderBase               Superclass;
-    typedef itk::SmartPointer<Self>         Pointer;
-    typedef itk::SmartPointer<const Self>   ConstPointer;
+    /** Standard class type alias */
+    using Self = PhaseReader;
+    using Superclass = CSVFileReaderBase;
+    using Pointer = itk::SmartPointer<Self>;
+    using ConstPointer = itk::SmartPointer<const Self>;
 
     /** Standard New method. */
     itkNewMacro(Self)
@@ -47,7 +47,7 @@ public:
     itkTypeMacro(Self,Superclass)
 
     /** The value type of the dataset. */
-    typedef float ValueType;
+    using ValueType = float;
 
     /** Parses the data from the file. Gets the phases of the projections
   * into a vector, then generate an Array2D object containing the interpolation weights  */

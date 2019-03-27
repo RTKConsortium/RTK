@@ -51,16 +51,16 @@ class RTK_EXPORT CudaDisplacedDetectorImageFilter :
             rtk::DisplacedDetectorImageFilter<itk::CudaImage<float, 3> > >
 {
 public:
-  /** Convenience typedefs **/
-  typedef itk::CudaImage<float,3>                       ImageType;
-  typedef rtk::DisplacedDetectorImageFilter<ImageType>  CPUWeightFilterType;
+  /** Convenience type alias **/
+  using ImageType = itk::CudaImage<float,3>;
+  using CPUWeightFilterType = rtk::DisplacedDetectorImageFilter<ImageType>;
 
-  /** Standard class typedefs. */
-  typedef CudaDisplacedDetectorImageFilter                      Self;
-  typedef itk::CudaInPlaceImageFilter<ImageType, ImageType,
-    CPUWeightFilterType>                                        Superclass;
-  typedef itk::SmartPointer<Self>                               Pointer;
-  typedef itk::SmartPointer<const Self>                         ConstPointer;
+  /** Standard class type alias. */
+  using Self = CudaDisplacedDetectorImageFilter;
+  using Superclass = itk::CudaInPlaceImageFilter<ImageType, ImageType,
+    CPUWeightFilterType>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);

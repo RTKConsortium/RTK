@@ -126,10 +126,10 @@ template< typename TOutputImage, typename TPhotonCounts, typename TSpectrum >
 class MechlemOneStepSpectralReconstructionFilter : public rtk::IterativeConeBeamReconstructionFilter<TOutputImage, TOutputImage>
 {
 public:
-    /** Standard class typedefs. */
-    typedef MechlemOneStepSpectralReconstructionFilter                          Self;
-    typedef IterativeConeBeamReconstructionFilter<TOutputImage, TOutputImage>   Superclass;
-    typedef itk::SmartPointer< Self >                                           Pointer;
+    /** Standard class type alias. */
+    using Self = MechlemOneStepSpectralReconstructionFilter;
+    using Superclass = IterativeConeBeamReconstructionFilter<TOutputImage, TOutputImage>;
+    using Pointer = itk::SmartPointer< Self >;
 
     /** Method for creation through the object factory. */
     itkNewMacro(Self)
@@ -137,14 +137,14 @@ public:
     /** Run-time type information (and related methods). */
     itkTypeMacro(MechlemOneStepSpectralReconstructionFilter, itk::ImageToImageFilter)
 
-    /** Internal typedefs and parameters */
+    /** Internal type alias and parameters */
     itkStaticConstMacro(nBins, unsigned int, TPhotonCounts::PixelType::Dimension);
     itkStaticConstMacro(nMaterials, unsigned int, TOutputImage::PixelType::Dimension);
-    typedef typename TOutputImage::PixelType::ValueType dataType;
+    using dataType = typename TOutputImage::PixelType::ValueType;
 
-    /** SFINAE typedef, depending on whether a CUDA image is used. */
-    typedef typename itk::Image< typename TOutputImage::PixelType,
-                                 TOutputImage::ImageDimension>                         CPUOutputImageType;
+    /** SFINAE type alias, depending on whether a CUDA image is used. */
+    using CPUOutputImageType = typename itk::Image< typename TOutputImage::PixelType,
+                                 TOutputImage::ImageDimension>;
 #ifdef RTK_USE_CUDA
     typedef typename std::conditional< std::is_same< TOutputImage, CPUOutputImageType >::value,
                                        itk::Image< itk::Vector<dataType, nMaterials * nMaterials>, TOutputImage::ImageDimension >,
@@ -155,9 +155,9 @@ public:
                                        itk::CudaImage<dataType, TOutputImage::ImageDimension> >::type
                                                                                        SingleComponentImageType;
 #else
-    typedef typename itk::Image< itk::Vector<dataType, nMaterials * nMaterials>,
-                                 TOutputImage::ImageDimension >                        THessiansImage;
-    typedef typename itk::Image<dataType, TOutputImage::ImageDimension>                SingleComponentImageType;
+    using THessiansImage = typename itk::Image< itk::Vector<dataType, nMaterials * nMaterials>,
+                                 TOutputImage::ImageDimension >;
+    using SingleComponentImageType = typename itk::Image<dataType, TOutputImage::ImageDimension>;
 #endif
 
 #if !defined( ITK_WRAPPING_PARSER )
@@ -175,35 +175,35 @@ public:
                                        CudaBackProjectionImageFilter<THessiansImage> >::type
                                                                                        CudaHessiansBackProjectionImageFilterType;
 #else
-    typedef WeidingerForwardModelImageFilter<TOutputImage, TPhotonCounts, TSpectrum>   WeidingerForwardModelType;
-    typedef JosephForwardProjectionImageFilter<SingleComponentImageType,
-                                               SingleComponentImageType>               CudaSingleComponentForwardProjectionImageFilterType;
-    typedef BackProjectionImageFilter<THessiansImage, THessiansImage>                  CudaHessiansBackProjectionImageFilterType;
+    using WeidingerForwardModelType = WeidingerForwardModelImageFilter<TOutputImage, TPhotonCounts, TSpectrum>;
+    using CudaSingleComponentForwardProjectionImageFilterType = JosephForwardProjectionImageFilter<SingleComponentImageType,
+                                               SingleComponentImageType>;
+    using CudaHessiansBackProjectionImageFilterType = BackProjectionImageFilter<THessiansImage, THessiansImage>;
 #endif
-    typedef TOutputImage TGradientsImage;
+    using TGradientsImage = TOutputImage;
 #endif
 
-    typedef typename Superclass::ForwardProjectionType ForwardProjectionType;
-    typedef typename Superclass::BackProjectionType    BackProjectionType;
+    using ForwardProjectionType = typename Superclass::ForwardProjectionType;
+    using BackProjectionType = typename Superclass::BackProjectionType;
 
 #if !defined( ITK_WRAPPING_PARSER )
-    /** Filter typedefs */
-    typedef itk::ExtractImageFilter<TPhotonCounts, TPhotonCounts>                      ExtractPhotonCountsFilterType;
-    typedef itk::AddImageFilter<TGradientsImage>                                       AddFilterType;
-    typedef rtk::ForwardProjectionImageFilter< SingleComponentImageType,
-                                               SingleComponentImageType >              SingleComponentForwardProjectionFilterType;
-    typedef rtk::ForwardProjectionImageFilter< TOutputImage, TOutputImage >            ForwardProjectionFilterType;
-    typedef rtk::BackProjectionImageFilter< TGradientsImage, TGradientsImage >         GradientsBackProjectionFilterType;
-    typedef rtk::BackProjectionImageFilter< THessiansImage, THessiansImage >           HessiansBackProjectionFilterType;
-    typedef rtk::NesterovUpdateImageFilter<TOutputImage>                               NesterovFilterType;
-    typedef rtk::ConstantImageSource<SingleComponentImageType>                         SingleComponentImageSourceType;
-    typedef rtk::ConstantImageSource<TOutputImage>                                     MaterialProjectionsSourceType;
-    typedef rtk::ConstantImageSource<TGradientsImage>                                  GradientsSourceType;
-    typedef rtk::ConstantImageSource<THessiansImage>                                   HessiansSourceType;
-    typedef rtk::SeparableQuadraticSurrogateRegularizationImageFilter<TGradientsImage> SQSRegularizationType;
-    typedef rtk::AddMatrixAndDiagonalImageFilter<TGradientsImage, THessiansImage>      AddMatrixAndDiagonalFilterType;
-    typedef rtk::GetNewtonUpdateImageFilter<TGradientsImage, THessiansImage>           NewtonFilterType;
-    typedef itk::MultiplyImageFilter<TOutputImage, SingleComponentImageType>           MultiplyFilterType;
+    /** Filter type alias */
+    using ExtractPhotonCountsFilterType = itk::ExtractImageFilter<TPhotonCounts, TPhotonCounts>;
+    using AddFilterType = itk::AddImageFilter<TGradientsImage>;
+    using SingleComponentForwardProjectionFilterType = rtk::ForwardProjectionImageFilter< SingleComponentImageType,
+                                               SingleComponentImageType >;
+    using ForwardProjectionFilterType = rtk::ForwardProjectionImageFilter< TOutputImage, TOutputImage >;
+    using GradientsBackProjectionFilterType = rtk::BackProjectionImageFilter< TGradientsImage, TGradientsImage >;
+    using HessiansBackProjectionFilterType = rtk::BackProjectionImageFilter< THessiansImage, THessiansImage >;
+    using NesterovFilterType = rtk::NesterovUpdateImageFilter<TOutputImage>;
+    using SingleComponentImageSourceType = rtk::ConstantImageSource<SingleComponentImageType>;
+    using MaterialProjectionsSourceType = rtk::ConstantImageSource<TOutputImage>;
+    using GradientsSourceType = rtk::ConstantImageSource<TGradientsImage>;
+    using HessiansSourceType = rtk::ConstantImageSource<THessiansImage>;
+    using SQSRegularizationType = rtk::SeparableQuadraticSurrogateRegularizationImageFilter<TGradientsImage>;
+    using AddMatrixAndDiagonalFilterType = rtk::AddMatrixAndDiagonalImageFilter<TGradientsImage, THessiansImage>;
+    using NewtonFilterType = rtk::GetNewtonUpdateImageFilter<TGradientsImage, THessiansImage>;
+    using MultiplyFilterType = itk::MultiplyImageFilter<TOutputImage, SingleComponentImageType>;
 #endif
 
     /** Instantiate the forward projection filters */
@@ -247,8 +247,8 @@ public:
 
     /** Set methods forwarding the detector response and material attenuation
      * matrices to the internal WeidingerForwardModel filter */
-    typedef vnl_matrix<dataType>  BinnedDetectorResponseType;
-    typedef vnl_matrix<dataType>  MaterialAttenuationsType;
+    using BinnedDetectorResponseType = vnl_matrix<dataType>;
+    using MaterialAttenuationsType = vnl_matrix<dataType>;
     virtual void SetBinnedDetectorResponse(const BinnedDetectorResponseType & detResp);
     virtual void SetMaterialAttenuations(const MaterialAttenuationsType & matAtt);
 

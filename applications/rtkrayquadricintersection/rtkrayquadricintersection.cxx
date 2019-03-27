@@ -29,10 +29,10 @@ int main(int argc, char * argv[])
 {
   GGO(rtkrayquadricintersection, args_info);
 
-  typedef float OutputPixelType;
+  using OutputPixelType = float;
   const unsigned int Dimension = 3;
 
-  typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
+  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
 
   // Geometry
   if(args_info.verbose_flag)
@@ -46,7 +46,7 @@ int main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION( geometryReader->GenerateOutputInformation() )
 
   // Create a stack of empty projection images
-  typedef rtk::ConstantImageSource< OutputImageType > ConstantImageSourceType;
+  using ConstantImageSourceType = rtk::ConstantImageSource< OutputImageType >;
   ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
   rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkrayquadricintersection>(constantImageSource, args_info);
 
@@ -58,7 +58,7 @@ int main(int argc, char * argv[])
   constantImageSource->SetSize( sizeOutput );
 
   // Create projection image filter
-  typedef rtk::RayQuadricIntersectionImageFilter<OutputImageType, OutputImageType> RQIType;
+  using RQIType = rtk::RayQuadricIntersectionImageFilter<OutputImageType, OutputImageType>;
   RQIType::Pointer rqi = RQIType::New();
   rqi->SetInput( constantImageSource->GetOutput() );
   if(args_info.parameters_given>0) rqi->SetA(args_info.parameters_arg[0]);
@@ -89,7 +89,7 @@ int main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION( rqi->Update() )
 
   // Write
-  typedef itk::ImageFileWriter<  OutputImageType > WriterType;
+  using WriterType = itk::ImageFileWriter<  OutputImageType >;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
   writer->SetInput( rqi->GetOutput() );

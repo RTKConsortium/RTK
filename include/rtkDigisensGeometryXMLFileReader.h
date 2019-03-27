@@ -41,11 +41,11 @@ namespace rtk
 class DigisensGeometryXMLFileReader : public itk::XMLReader<itk::MetaDataDictionary>
 {
 public:
-  /** Standard typedefs */
-  typedef DigisensGeometryXMLFileReader                           Self;
-  typedef itk::XMLReader<itk::MetaDataDictionary>                 Superclass;
-  typedef itk::SmartPointer<Self>                                 Pointer;
-  typedef enum {NONE,ROTATION,XRAY,CAMERA,RADIOS,GRID,PROCESSING} CurrentSectionType;
+  /** Standard type alias */
+  using Self = DigisensGeometryXMLFileReader;
+  using Superclass = itk::XMLReader<itk::MetaDataDictionary>;
+  using Pointer = itk::SmartPointer<Self>;
+  using CurrentSectionType = enum {NONE,ROTATION,XRAY,CAMERA,RADIOS,GRID,PROCESSING};
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(DigisensGeometryXMLFileReader, itk::XMLReader);

@@ -37,17 +37,17 @@ class ITK_EXPORT XRadRawToAttenuationImageFilter :
   public itk::ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-  /** Standard class typedefs. */
-  typedef XRadRawToAttenuationImageFilter                    Self;
-  typedef itk::ImageToImageFilter<TInputImage, TOutputImage> Superclass;
-  typedef itk::SmartPointer<Self>                            Pointer;
-  typedef itk::SmartPointer<const Self>                      ConstPointer;
+  /** Standard class type alias. */
+  using Self = XRadRawToAttenuationImageFilter;
+  using Superclass = itk::ImageToImageFilter<TInputImage, TOutputImage>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
-  /** Some convenient typedefs. */
-  typedef TInputImage                       InputImageType;
-  typedef TOutputImage                      OutputImageType;
-  typedef typename OutputImageType::Pointer OutputImagePointer;
-  typedef typename TOutputImage::RegionType OutputImageRegionType;
+  /** Some convenient type alias. */
+  using InputImageType = TInputImage;
+  using OutputImageType = TOutputImage;
+  using OutputImagePointer = typename OutputImageType::Pointer;
+  using OutputImageRegionType = typename TOutputImage::RegionType;
 
   /** Standard New method. */
   itkNewMacro(Self);

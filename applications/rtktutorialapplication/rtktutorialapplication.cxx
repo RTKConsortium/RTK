@@ -68,18 +68,18 @@ int main(int argc, char * argv[])
   // function. You can see how it is used in
   // rtkSARTConeBeamReconstructionFilter.hxx
 
-  typedef float OutputPixelType;
+  using OutputPixelType = float;
   const unsigned int Dimension = 3;
 
-  typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
+  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
 
   // Read the input volume
-  typedef itk::ImageFileReader<  OutputImageType > InputReaderType;
+  using InputReaderType = itk::ImageFileReader<  OutputImageType >;
   InputReaderType::Pointer inputReader = InputReaderType::New();
   inputReader->SetFileName( args_info.input_arg );
 
   // Create the Add filter
-  typedef itk::AddImageFilter<OutputImageType> AddFilterType;
+  using AddFilterType = itk::AddImageFilter<OutputImageType>;
   AddFilterType::Pointer add = AddFilterType::New();
   add->SetInput1(inputReader->GetOutput());
   add->SetConstant2( args_info.constant_arg );
@@ -87,7 +87,7 @@ int main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION( add->Update() )
 
   // Write
-  typedef itk::ImageFileWriter< OutputImageType > WriterType;
+  using WriterType = itk::ImageFileWriter< OutputImageType >;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
   writer->SetInput( add->GetOutput() );

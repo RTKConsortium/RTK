@@ -41,13 +41,13 @@ class RTK_EXPORT DigisensGeometryReader :
   public itk::LightProcessObject
 {
 public:
-  /** Standard typedefs */
-  typedef DigisensGeometryReader  Self;
-  typedef itk::LightProcessObject Superclass;
-  typedef itk::SmartPointer<Self> Pointer;
+  /** Standard type alias */
+  using Self = DigisensGeometryReader;
+  using Superclass = itk::LightProcessObject;
+  using Pointer = itk::SmartPointer<Self>;
 
-  /** Convenient typedefs */
-  typedef ThreeDCircularProjectionGeometry GeometryType;
+  /** Convenient type alias */
+  using GeometryType = ThreeDCircularProjectionGeometry;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(DigisensGeometryReader, LightProcessObject);

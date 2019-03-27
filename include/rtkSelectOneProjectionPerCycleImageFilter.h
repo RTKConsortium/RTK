@@ -39,10 +39,10 @@ template< typename ProjectionStackType>
 class SelectOneProjectionPerCycleImageFilter : public SubSelectImageFilter<ProjectionStackType>
 {
 public:
-  /** Standard class typedefs. */
-  typedef SelectOneProjectionPerCycleImageFilter    Self;
-  typedef SubSelectImageFilter<ProjectionStackType> Superclass;
-  typedef itk::SmartPointer< Self >                 Pointer;
+  /** Standard class type alias. */
+  using Self = SelectOneProjectionPerCycleImageFilter;
+  using Superclass = SubSelectImageFilter<ProjectionStackType>;
+  using Pointer = itk::SmartPointer< Self >;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self)

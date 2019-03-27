@@ -43,10 +43,10 @@ template< class TGradient,
 class GetNewtonUpdateImageFilter : public itk::ImageToImageFilter<TGradient, TGradient>
 {
 public:
-    /** Standard class typedefs. */
-    typedef GetNewtonUpdateImageFilter                    Self;
-    typedef itk::ImageToImageFilter<TGradient, TGradient> Superclass;
-    typedef itk::SmartPointer< Self >                     Pointer;
+    /** Standard class type alias. */
+    using Self = GetNewtonUpdateImageFilter;
+    using Superclass = itk::ImageToImageFilter<TGradient, TGradient>;
+    using Pointer = itk::SmartPointer< Self >;
 
     /** Method for creation through the object factory. */
     itkNewMacro(Self)
@@ -57,8 +57,8 @@ public:
     /** Convenient parameters extracted from template types */
     itkStaticConstMacro(nChannels, unsigned int, TGradient::PixelType::Dimension);
 
-    /** Convenient typedef */
-    typedef typename TGradient::PixelType::ValueType dataType;
+    /** Convenient type alias */
+    using dataType = typename TGradient::PixelType::ValueType;
 
     /** Set methods for all inputs, since they have different types */
     void SetInputGradient(const TGradient* gradient);

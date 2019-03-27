@@ -48,9 +48,9 @@ void OraGeometryReader::GenerateData()
     reader->ReadImageInformation();
     itk::MetaDataDictionary &dic = reader->GetMetaDataDictionary();
 
-    typedef itk::MetaDataObject< VectorType >    MetaDataVectorType;
-    typedef itk::MetaDataObject< Matrix3x3Type > MetaDataMatrixType;
-    typedef itk::MetaDataObject< double >        MetaDataDoubleType;
+    using MetaDataVectorType = itk::MetaDataObject< VectorType >;
+    using MetaDataMatrixType = itk::MetaDataObject< Matrix3x3Type >;
+    using MetaDataDoubleType = itk::MetaDataObject< double >;
 
     // Source position
     MetaDataVectorType *spMeta = dynamic_cast<MetaDataVectorType *>(dic["SourcePosition"].GetPointer() );

@@ -51,20 +51,20 @@ template <typename TOutputImage>
 class ITK_EXPORT ConstantImageSource : public itk::ImageSource<TOutputImage>
 {
 public:
-  /** Standard class typedefs. */
-  typedef ConstantImageSource            Self;
-  typedef itk::ImageSource<TOutputImage> Superclass;
-  typedef itk::SmartPointer<Self>        Pointer;
-  typedef itk::SmartPointer<const Self>  ConstPointer;
+  /** Standard class type alias. */
+  using Self = ConstantImageSource;
+  using Superclass = itk::ImageSource<TOutputImage>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
   /** Typedef for the output image type. */
-  typedef TOutputImage OutputImageType;
+  using OutputImageType = TOutputImage;
 
   /** Typedefs for the output image PixelType. */
-  typedef typename TOutputImage::PixelType          OutputImagePixelType;
+  using OutputImagePixelType = typename TOutputImage::PixelType;
 
   /** Typedef to describe the output image region type. */
-  typedef typename TOutputImage::RegionType OutputImageRegionType;
+  using OutputImageRegionType = typename TOutputImage::RegionType;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(ConstantImageSource, itk::ImageSource);
@@ -73,17 +73,17 @@ public:
   itkNewMacro(Self);
 
   /** Basic types from the OutputImageType */
-  typedef typename TOutputImage::SizeType         SizeType;
-  typedef typename TOutputImage::IndexType        IndexType;
-  typedef typename TOutputImage::SpacingType      SpacingType;
-  typedef typename TOutputImage::PointType        PointType;
-  typedef typename SizeType::SizeValueType        SizeValueType;
+  using SizeType = typename TOutputImage::SizeType;
+  using IndexType = typename TOutputImage::IndexType;
+  using SpacingType = typename TOutputImage::SpacingType;
+  using PointType = typename TOutputImage::PointType;
+  using SizeValueType = typename SizeType::SizeValueType;
   typedef SizeValueType                           SizeValueArrayType[TOutputImage::ImageDimension];
-  typedef typename TOutputImage::SpacingValueType SpacingValueType;
+  using SpacingValueType = typename TOutputImage::SpacingValueType;
   typedef SpacingValueType                        SpacingValueArrayType[TOutputImage::ImageDimension];
-  typedef typename TOutputImage::PointValueType   PointValueType;
+  using PointValueType = typename TOutputImage::PointValueType;
   typedef PointValueType                          PointValueArrayType[TOutputImage::ImageDimension];
-  typedef typename TOutputImage::DirectionType    DirectionType;
+  using DirectionType = typename TOutputImage::DirectionType;
 
   /** Set/Get size of the output image */
   itkSetMacro( Size, SizeType );

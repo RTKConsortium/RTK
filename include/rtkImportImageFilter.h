@@ -45,15 +45,15 @@ class ImportImageFilter : public itk::ImageSource<TImage>
 {
 public:
   /** Typedef for the output image.   */
-  typedef typename TImage::Pointer        OutputImagePointer;
-  typedef typename TImage::SpacingType    SpacingType;
-  typedef typename TImage::PointType      OriginType;
+  using OutputImagePointer = typename TImage::Pointer;
+  using SpacingType = typename TImage::SpacingType;
+  using OriginType = typename TImage::PointType;
 
-  /** Standard class typedefs. */
-  typedef ImportImageFilter                Self;
-  typedef itk::ImageSource<TImage>         Superclass;
-  typedef itk::SmartPointer< Self >        Pointer;
-  typedef itk::SmartPointer< const Self >  ConstPointer;
+  /** Standard class type alias. */
+  using Self = ImportImageFilter;
+  using Superclass = itk::ImageSource<TImage>;
+  using Pointer = itk::SmartPointer< Self >;
+  using ConstPointer = itk::SmartPointer< const Self >;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -61,19 +61,19 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(ImportImageFilter, ImageSource);
 
-  /** Index typedef support. An index is used to access pixel values. */
-  typedef itk::Index< TImage::ImageDimension > IndexType;
+  /** Index type alias support. An index is used to access pixel values. */
+  using IndexType = itk::Index< TImage::ImageDimension >;
 
-  /** Size typedef support. A size is used to define region bounds. */
-  typedef itk::Size< TImage::ImageDimension > SizeType;
-  typedef typename SizeType::SizeValueType    SizeValueType;
+  /** Size type alias support. A size is used to define region bounds. */
+  using SizeType = itk::Size< TImage::ImageDimension >;
+  using SizeValueType = typename SizeType::SizeValueType;
 
-  /** Region typedef support. A region is used to specify a
+  /** Region type alias support. A region is used to specify a
    * subset of an image. */
-  typedef itk::ImageRegion< TImage::ImageDimension > RegionType;
+  using RegionType = itk::ImageRegion< TImage::ImageDimension >;
 
   /** Type of the output image pixel type. */
-  typedef typename TImage::PixelType PixelType;
+  using PixelType = typename TImage::PixelType;
 
   /** Get the pointer from which the image data is imported. */
   PixelType * GetImportPointer();
@@ -114,7 +114,7 @@ public:
   itkGetConstReferenceMacro(Origin, OriginType);
   itkSetVectorMacro(Origin, const float, TImage::ImageDimension);
 
-  typedef itk::Matrix< double, TImage::ImageDimension, TImage::ImageDimension > DirectionType;
+  using DirectionType = itk::Matrix< double, TImage::ImageDimension, TImage::ImageDimension >;
 
   /** Set the direction of the image
    * \sa GetDirection() */

@@ -28,17 +28,17 @@ int main(int argc, char * argv[])
 {
   GGO(rtkspectraldenoiseprojections, args_info);
 
-  typedef float OutputPixelType;
+  using OutputPixelType = float;
   const unsigned int Dimension = 3;
-  typedef itk::VectorImage< OutputPixelType, Dimension > OutputImageType;
+  using OutputImageType = itk::VectorImage< OutputPixelType, Dimension >;
 
   // Reader
-  typedef itk::ImageFileReader<  OutputImageType > ReaderType;
+  using ReaderType = itk::ImageFileReader<  OutputImageType >;
   ReaderType::Pointer reader = ReaderType::New();
   reader->SetFileName( args_info.input_arg );
 
   // Remove aberrant pixels
-  typedef rtk::ConditionalMedianImageFilter<OutputImageType> MedianType;
+  using MedianType = rtk::ConditionalMedianImageFilter<OutputImageType>;
   MedianType::Pointer median = MedianType::New();
   median->SetThresholdMultiplier(args_info.multiplier_arg);
   MedianType::MedianRadiusType radius;
@@ -52,7 +52,7 @@ int main(int argc, char * argv[])
   median->SetInput(reader->GetOutput());
 
   // Write
-  typedef itk::ImageFileWriter<  OutputImageType > WriterType;
+  using WriterType = itk::ImageFileWriter<  OutputImageType >;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
   writer->SetInput( median->GetOutput() );

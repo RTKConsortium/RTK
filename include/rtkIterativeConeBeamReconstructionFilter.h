@@ -54,14 +54,14 @@ class ITK_EXPORT IterativeConeBeamReconstructionFilter :
   public itk::ImageToImageFilter<TOutputImage, TOutputImage>
 {
 public:
-  /** Standard class typedefs. */
-  typedef IterativeConeBeamReconstructionFilter               Self;
-  typedef itk::ImageToImageFilter<TOutputImage, TOutputImage> Superclass;
-  typedef itk::SmartPointer<Self>                             Pointer;
-  typedef itk::SmartPointer<const Self>                       ConstPointer;
+  /** Standard class type alias. */
+  using Self = IterativeConeBeamReconstructionFilter;
+  using Superclass = itk::ImageToImageFilter<TOutputImage, TOutputImage>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
-  /** Convenient typedefs */
-  typedef ProjectionStackType          VolumeType;
+  /** Convenient type alias */
+  using VolumeType = ProjectionStackType;
   typedef enum {FP_UNKNOWN=-1,
                 FP_JOSEPH=0,
                 FP_CUDARAYCAST=2,
@@ -74,10 +74,10 @@ public:
                 BP_JOSEPHATTENUATED=5} BackProjectionType;
 
   /** Typedefs of each subfilter of this composite filter */
-  typedef rtk::ForwardProjectionImageFilter< VolumeType, ProjectionStackType >    ForwardProjectionFilterType;
-  typedef rtk::BackProjectionImageFilter< ProjectionStackType, VolumeType >       BackProjectionFilterType;
-  typedef typename ForwardProjectionFilterType::Pointer                           ForwardProjectionPointerType;
-  typedef typename BackProjectionFilterType::Pointer                              BackProjectionPointerType;
+  using ForwardProjectionFilterType = rtk::ForwardProjectionImageFilter< VolumeType, ProjectionStackType >;
+  using BackProjectionFilterType = rtk::BackProjectionImageFilter< ProjectionStackType, VolumeType >;
+  using ForwardProjectionPointerType = typename ForwardProjectionFilterType::Pointer;
+  using BackProjectionPointerType = typename BackProjectionFilterType::Pointer;
 
   /** Standard New method. */
   itkNewMacro(Self)
@@ -109,7 +109,7 @@ protected:
   BackProjectionType    m_CurrentBackProjectionConfiguration;
 
   /** Instantiate forward and back projectors using SFINAE. */
-  typedef typename itk::Image<typename ProjectionStackType::PixelType, ProjectionStackType::ImageDimension> CPUImageType;
+  using CPUImageType = typename itk::Image<typename ProjectionStackType::PixelType, ProjectionStackType::ImageDimension>;
   template < typename ImageType >
   using EnableCudaScalarAndVectorType  = typename std::enable_if< !std::is_same< CPUImageType, ImageType >::value &&
                                                                   std::is_same< typename itk::PixelTraits<typename ImageType::PixelType>::ValueType, float >::value &&

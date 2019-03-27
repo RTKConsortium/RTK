@@ -25,9 +25,9 @@ int main(int argc, char*argv[])
     return EXIT_FAILURE;
   }
 
-  typedef float OutputPixelType;
+  using OutputPixelType = float;
   const unsigned int Dimension = 3;
-  typedef itk::Image< OutputPixelType, Dimension > ImageType;
+  using ImageType = itk::Image< OutputPixelType, Dimension >;
 
   // Generate projections names
   std::vector<std::string> FileNames;
@@ -52,7 +52,7 @@ int main(int argc, char*argv[])
   std::cout << "Checking one projection in xml format..." << std::endl;
 
   // ImagX projections reader
-  typedef rtk::ProjectionsReader< ImageType > ReaderType;
+  using ReaderType = rtk::ProjectionsReader< ImageType >;
   ReaderType::ShrinkFactorsType binning;
   binning.Fill(2);
   binning[2] = 1;

@@ -40,25 +40,25 @@ class ProjectionsDecompositionNegativeLogLikelihood : public itk::SingleValuedCo
 {
 public:
 
-  typedef ProjectionsDecompositionNegativeLogLikelihood     Self;
-  typedef itk::SingleValuedCostFunction                     Superclass;
-  typedef itk::SmartPointer<Self>                           Pointer;
-  typedef itk::SmartPointer<const Self>                     ConstPointer;
+  using Self = ProjectionsDecompositionNegativeLogLikelihood;
+  using Superclass = itk::SingleValuedCostFunction;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
   itkNewMacro( Self );
   itkTypeMacro( ProjectionsDecompositionNegativeLogLikelihood, SingleValuedCostFunction );
 
 //  enum { SpaceDimension=m_NumberOfMaterials };
 
-  typedef Superclass::ParametersType      ParametersType;
-  typedef Superclass::DerivativeType      DerivativeType;
-  typedef Superclass::MeasureType         MeasureType;
+  using ParametersType = Superclass::ParametersType;
+  using DerivativeType = Superclass::DerivativeType;
+  using MeasureType = Superclass::MeasureType;
 
-  typedef vnl_matrix<double>                        DetectorResponseType;
-  typedef vnl_matrix<double>                        MaterialAttenuationsType;
-  typedef vnl_matrix<float>                         IncidentSpectrumType;
-  typedef itk::VariableLengthVector<double>         MeasuredDataType;
-  typedef itk::VariableLengthVector<int>            ThresholdsType;
-  typedef itk::VariableSizeMatrix<double>           MeanAttenuationInBinType;
+  using DetectorResponseType = vnl_matrix<double>;
+  using MaterialAttenuationsType = vnl_matrix<double>;
+  using IncidentSpectrumType = vnl_matrix<float>;
+  using MeasuredDataType = itk::VariableLengthVector<double>;
+  using ThresholdsType = itk::VariableLengthVector<int>;
+  using MeanAttenuationInBinType = itk::VariableSizeMatrix<double>;
 
   // Constructor
   ProjectionsDecompositionNegativeLogLikelihood()

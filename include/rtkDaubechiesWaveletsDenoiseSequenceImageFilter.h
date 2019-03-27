@@ -73,10 +73,10 @@ template< typename TImageSequence >
 class DaubechiesWaveletsDenoiseSequenceImageFilter : public itk::ImageToImageFilter<TImageSequence, TImageSequence>
 {
 public:
-    /** Standard class typedefs. */
-    typedef DaubechiesWaveletsDenoiseSequenceImageFilter                 Self;
-    typedef itk::ImageToImageFilter<TImageSequence, TImageSequence>  Superclass;
-    typedef itk::SmartPointer< Self >                                Pointer;
+    /** Standard class type alias. */
+    using Self = DaubechiesWaveletsDenoiseSequenceImageFilter;
+    using Superclass = itk::ImageToImageFilter<TImageSequence, TImageSequence>;
+    using Pointer = itk::SmartPointer< Self >;
 
     /** Method for creation through the object factory. */
     itkNewMacro(Self)
@@ -97,13 +97,13 @@ public:
     itkSetMacro(Threshold, float)
 
     /** Typedefs of internal filters */
-    typedef itk::Image<typename TImageSequence::PixelType,
-                                TImageSequence::ImageDimension - 1>         TImage;
-    typedef rtk::DeconstructSoftThresholdReconstructImageFilter<TImage>     WaveletsDenoisingFilterType;
-    typedef itk::ExtractImageFilter<TImageSequence, TImage>                 ExtractFilterType;
-    typedef itk::PasteImageFilter<TImageSequence,TImageSequence>            PasteFilterType;
-    typedef itk::CastImageFilter<TImage, TImageSequence>                    CastFilterType;
-    typedef rtk::ConstantImageSource<TImageSequence>                        ConstantImageSourceType;
+    using TImage = itk::Image<typename TImageSequence::PixelType,
+                                TImageSequence::ImageDimension - 1>;
+    using WaveletsDenoisingFilterType = rtk::DeconstructSoftThresholdReconstructImageFilter<TImage>;
+    using ExtractFilterType = itk::ExtractImageFilter<TImageSequence, TImage>;
+    using PasteFilterType = itk::PasteImageFilter<TImageSequence,TImageSequence>;
+    using CastFilterType = itk::CastImageFilter<TImage, TImageSequence>;
+    using ConstantImageSourceType = rtk::ConstantImageSource<TImageSequence>;
 
 protected:
     DaubechiesWaveletsDenoiseSequenceImageFilter();

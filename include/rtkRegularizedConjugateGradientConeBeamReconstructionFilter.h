@@ -102,20 +102,20 @@ template< typename TImage>
 class RegularizedConjugateGradientConeBeamReconstructionFilter : public rtk::IterativeConeBeamReconstructionFilter<TImage, TImage>
 {
 public:
-  /** Standard class typedefs. */
-  typedef RegularizedConjugateGradientConeBeamReconstructionFilter                      Self;
-  typedef rtk::IterativeConeBeamReconstructionFilter<TImage, TImage>                    Superclass;
-  typedef itk::SmartPointer< Self >                                                     Pointer;
-  typedef itk::CovariantVector< typename TImage::ValueType, TImage::ImageDimension>     CovariantVectorForSpatialGradient;
+  /** Standard class type alias. */
+  using Self = RegularizedConjugateGradientConeBeamReconstructionFilter;
+  using Superclass = rtk::IterativeConeBeamReconstructionFilter<TImage, TImage>;
+  using Pointer = itk::SmartPointer< Self >;
+  using CovariantVectorForSpatialGradient = itk::CovariantVector< typename TImage::ValueType, TImage::ImageDimension>;
 
 #ifdef RTK_USE_CUDA
-  typedef itk::CudaImage<CovariantVectorForSpatialGradient, TImage::ImageDimension>   GradientImageType;
+  using GradientImageType = itk::CudaImage<CovariantVectorForSpatialGradient, TImage::ImageDimension>;
 #else
-  typedef itk::Image<CovariantVectorForSpatialGradient, TImage::ImageDimension>       GradientImageType;
+  using GradientImageType = itk::Image<CovariantVectorForSpatialGradient, TImage::ImageDimension>;
 #endif
 
-  typedef typename Superclass::ForwardProjectionType ForwardProjectionType;
-  typedef typename Superclass::BackProjectionType    BackProjectionType;
+  using ForwardProjectionType = typename Superclass::ForwardProjectionType;
+  using BackProjectionType = typename Superclass::BackProjectionType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self)
@@ -139,11 +139,11 @@ public:
   void SetSupportMask(const TImage *SupportMask);
   typename TImage::ConstPointer GetSupportMask();
 
-  typedef rtk::ConjugateGradientConeBeamReconstructionFilter<TImage>                    CGFilterType;
-  typedef itk::ThresholdImageFilter<TImage>                                             ThresholdFilterType;
-  typedef rtk::TotalVariationDenoisingBPDQImageFilter<TImage, GradientImageType>        TVDenoisingFilterType;
-  typedef rtk::DeconstructSoftThresholdReconstructImageFilter<TImage>                   WaveletsDenoisingFilterType;
-  typedef rtk::SoftThresholdImageFilter<TImage, TImage>                                 SoftThresholdFilterType;
+  using CGFilterType = rtk::ConjugateGradientConeBeamReconstructionFilter<TImage>;
+  using ThresholdFilterType = itk::ThresholdImageFilter<TImage>;
+  using TVDenoisingFilterType = rtk::TotalVariationDenoisingBPDQImageFilter<TImage, GradientImageType>;
+  using WaveletsDenoisingFilterType = rtk::DeconstructSoftThresholdReconstructImageFilter<TImage>;
+  using SoftThresholdFilterType = rtk::SoftThresholdImageFilter<TImage, TImage>;
 
   /** Pass the ForwardProjection filter to SingleProjectionToFourDFilter */
   void SetForwardProjectionFilter(ForwardProjectionType fwtype) ITK_OVERRIDE;

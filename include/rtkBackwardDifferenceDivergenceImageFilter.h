@@ -45,14 +45,14 @@ public:
     itkStaticConstMacro(InputImageDimension, unsigned int,
                         TInputImage::ImageDimension);
 
-    /** Convenient typedefs for simplifying declarations. */
-    typedef TInputImage InputImageType;
+    /** Convenient type alias for simplifying declarations. */
+    using InputImageType = TInputImage;
 
-    /** Standard class typedefs. */
-    typedef BackwardDifferenceDivergenceImageFilter                Self;
-    typedef itk::ImageToImageFilter< InputImageType, TOutputImage> Superclass;
-    typedef itk::SmartPointer<Self>                                Pointer;
-    typedef itk::SmartPointer<const Self>                          ConstPointer;
+    /** Standard class type alias. */
+    using Self = BackwardDifferenceDivergenceImageFilter;
+    using Superclass = itk::ImageToImageFilter< InputImageType, TOutputImage>;
+    using Pointer = itk::SmartPointer<Self>;
+    using ConstPointer = itk::SmartPointer<const Self>;
 
     /** Method for creation through the object factory. */
     itkNewMacro(Self)
@@ -82,11 +82,11 @@ public:
     /** Allows to change the default boundary condition */
     void OverrideBoundaryCondition(itk::ImageBoundaryCondition< TInputImage >* boundaryCondition);
 
-    /** Image typedef support. */
-    typedef typename InputImageType::PixelType  InputPixelType;
-    typedef typename InputImageType::RegionType InputImageRegionType;
-    typedef typename InputImageType::SizeType   InputSizeType;
-    typedef itk::CovariantVector< InputPixelType, InputImageDimension > CovariantVectorType;
+    /** Image type alias support. */
+    using InputPixelType = typename InputImageType::PixelType;
+    using InputImageRegionType = typename InputImageType::RegionType;
+    using InputSizeType = typename InputImageType::SizeType;
+    using CovariantVectorType = itk::CovariantVector< InputPixelType, InputImageDimension >;
 
 protected:
     BackwardDifferenceDivergenceImageFilter();

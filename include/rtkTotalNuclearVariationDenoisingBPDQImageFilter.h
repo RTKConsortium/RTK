@@ -114,11 +114,11 @@ class TotalNuclearVariationDenoisingBPDQImageFilter :
 {
 public:
 
-  /** Standard class typedefs. */
-  typedef TotalNuclearVariationDenoisingBPDQImageFilter                 Self;
-  typedef rtk::DenoisingBPDQImageFilter< TOutputImage, TGradientImage > Superclass;
-  typedef itk::SmartPointer<Self>                                       Pointer;
-  typedef itk::SmartPointer<const Self>                                 ConstPointer;
+  /** Standard class type alias. */
+  using Self = TotalNuclearVariationDenoisingBPDQImageFilter;
+  using Superclass = rtk::DenoisingBPDQImageFilter< TOutputImage, TGradientImage >;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self)
@@ -127,7 +127,7 @@ public:
   itkTypeMacro(TotalNuclearVariationDenoisingBPDQImageFilter, DenoisingBPDQImageFilter)
 
   /** Sub filter type definitions */
-  typedef SingularValueThresholdImageFilter<TGradientImage>             SingularValueThresholdFilterType;
+  using SingularValueThresholdFilterType = SingularValueThresholdImageFilter<TGradientImage>;
 
 protected:
   TotalNuclearVariationDenoisingBPDQImageFilter();

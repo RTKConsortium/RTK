@@ -39,10 +39,10 @@ namespace rtk {
 class XRadImageIO : public itk::ImageIOBase
 {
 public:
-  /** Standard class typedefs. */
-  typedef XRadImageIO             Self;
-  typedef itk::ImageIOBase        Superclass;
-  typedef itk::SmartPointer<Self> Pointer;
+  /** Standard class type alias. */
+  using Self = XRadImageIO;
+  using Superclass = itk::ImageIOBase;
+  using Pointer = itk::SmartPointer<Self>;
 
   XRadImageIO(): Superclass() {}
 

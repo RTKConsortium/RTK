@@ -45,21 +45,21 @@ class PolynomialGainCorrectionImageFilter :
 public itk::ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-  /** Standard class typedefs. */
-  typedef PolynomialGainCorrectionImageFilter                Self;
-  typedef itk::ImageToImageFilter<TInputImage, TOutputImage> Superclass;
-  typedef itk::SmartPointer<Self>                            Pointer;
-  typedef itk::SmartPointer<const Self>                      ConstPointer;
+  /** Standard class type alias. */
+  using Self = PolynomialGainCorrectionImageFilter;
+  using Superclass = itk::ImageToImageFilter<TInputImage, TOutputImage>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
-  /** Some convenient typedefs. */
-  typedef TInputImage                          InputImageType;
-  typedef TOutputImage                         OutputImageType;
-  typedef typename InputImageType::Pointer     InputImagePointer;
-  typedef typename OutputImageType::Pointer    OutputImagePointer;
-  typedef typename InputImageType::RegionType  InputImageRegionType;
-  typedef typename TOutputImage::RegionType    OutputImageRegionType;
-  typedef typename std::vector< float >        VectorType;
-  typedef typename OutputImageType::SizeType   OutputSizeType;
+  /** Some convenient type alias. */
+  using InputImageType = TInputImage;
+  using OutputImageType = TOutputImage;
+  using InputImagePointer = typename InputImageType::Pointer;
+  using OutputImagePointer = typename OutputImageType::Pointer;
+  using InputImageRegionType = typename InputImageType::RegionType;
+  using OutputImageRegionType = typename TOutputImage::RegionType;
+  using VectorType = typename std::vector< float >;
+  using OutputSizeType = typename OutputImageType::SizeType;
 
   /** Standard New method. */
   itkNewMacro(Self);

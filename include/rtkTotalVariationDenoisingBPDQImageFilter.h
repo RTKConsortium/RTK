@@ -111,11 +111,11 @@ class TotalVariationDenoisingBPDQImageFilter :
 {
 public:
 
-  /** Standard class typedefs. */
-  typedef TotalVariationDenoisingBPDQImageFilter                        Self;
-  typedef rtk::DenoisingBPDQImageFilter< TOutputImage, TGradientImage > Superclass;
-  typedef itk::SmartPointer<Self>                                       Pointer;
-  typedef itk::SmartPointer<const Self>                                 ConstPointer;
+  /** Standard class type alias. */
+  using Self = TotalVariationDenoisingBPDQImageFilter;
+  using Superclass = rtk::DenoisingBPDQImageFilter< TOutputImage, TGradientImage >;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self)
@@ -124,7 +124,7 @@ public:
   itkTypeMacro(TotalVariationDenoisingBPDQImageFilter, DenoisingBPDQImageFilter)
 
   /** Sub filter type definitions */
-  typedef MagnitudeThresholdImageFilter<TGradientImage>                 MagnitudeThresholdFilterType;
+  using MagnitudeThresholdFilterType = MagnitudeThresholdImageFilter<TGradientImage>;
 
   void SetDimensionsProcessed(bool* arg);
 

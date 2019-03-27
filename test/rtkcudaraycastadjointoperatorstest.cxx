@@ -21,12 +21,12 @@
 int main(int, char** )
 {
   const unsigned int Dimension = 3;
-  typedef float                                    OutputPixelType;
+  using OutputPixelType = float;
 
 #ifdef USE_CUDA
-  typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
+  using OutputImageType = itk::CudaImage< OutputPixelType, Dimension >;
 #else
-  typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
+  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
 #endif
 
 #if FAST_TESTS_NO_CHECKS
@@ -37,12 +37,12 @@ int main(int, char** )
 
 
   // Random image sources
-  typedef itk::RandomImageSource< OutputImageType > RandomImageSourceType;
+  using RandomImageSourceType = itk::RandomImageSource< OutputImageType >;
   RandomImageSourceType::Pointer randomVolumeSource  = RandomImageSourceType::New();
   RandomImageSourceType::Pointer randomProjectionsSource = RandomImageSourceType::New();
 
   // Constant sources
-  typedef rtk::ConstantImageSource< OutputImageType > ConstantImageSourceType;
+  using ConstantImageSourceType = rtk::ConstantImageSource< OutputImageType >;
   ConstantImageSourceType::Pointer constantVolumeSource = ConstantImageSourceType::New();
   ConstantImageSourceType::Pointer constantProjectionsSource = ConstantImageSourceType::New();
 
@@ -119,14 +119,14 @@ int main(int, char** )
   TRY_AND_EXIT_ON_ITK_EXCEPTION( constantProjectionsSource->Update() );
 
   // Geometry object
-  typedef rtk::ThreeDCircularProjectionGeometry GeometryType;
+  using GeometryType = rtk::ThreeDCircularProjectionGeometry;
   GeometryType::Pointer geometry = GeometryType::New();
   for(unsigned int noProj=0; noProj<NumberOfProjectionImages; noProj++)
     geometry->AddProjection(600., 1200., noProj*360./NumberOfProjectionImages);
 
   std::cout << "\n\n****** CUDA ray cast Forward projector, flat panel detector ******" << std::endl;
 
-  typedef rtk::CudaForwardProjectionImageFilter<OutputImageType, OutputImageType> ForwardProjectorType;
+  using ForwardProjectorType = rtk::CudaForwardProjectionImageFilter<OutputImageType, OutputImageType>;
   ForwardProjectorType::Pointer fw = ForwardProjectorType::New();
   fw->SetInput(0, constantProjectionsSource->GetOutput());
   fw->SetInput(1, randomVolumeSource->GetOutput());
@@ -135,7 +135,7 @@ int main(int, char** )
 
   std::cout << "\n\n****** CUDA ray cast Back projector, flat panel detector ******" << std::endl;
 
-  typedef rtk::CudaRayCastBackProjectionImageFilter BackProjectorType;
+  using BackProjectorType = rtk::CudaRayCastBackProjectionImageFilter;
   BackProjectorType::Pointer bp = BackProjectorType::New();
   bp->SetInput(0, constantVolumeSource->GetOutput());
   bp->SetInput(1, randomProjectionsSource->GetOutput());

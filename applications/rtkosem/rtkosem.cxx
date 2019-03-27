@@ -33,17 +33,17 @@ int main(int argc, char * argv[])
 {
   GGO(rtkosem, args_info);
 
-  typedef float OutputPixelType;
+  using OutputPixelType = float;
   const unsigned int Dimension = 3;
 
 #ifdef RTK_USE_CUDA
-  typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
+  using OutputImageType = itk::CudaImage< OutputPixelType, Dimension >;
 #else
-  typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
+  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
 #endif
 
   // Projections reader
-  typedef rtk::ProjectionsReader< OutputImageType > ReaderType;
+  using ReaderType = rtk::ProjectionsReader< OutputImageType >;
   ReaderType::Pointer reader = ReaderType::New();
   rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkosem>(reader, args_info);
 
@@ -63,7 +63,7 @@ int main(int argc, char * argv[])
   if(args_info.input_given)
     {
     // Read an existing image to initialize the volume
-    typedef itk::ImageFileReader<  OutputImageType > InputReaderType;
+    using InputReaderType = itk::ImageFileReader<  OutputImageType >;
     InputReaderType::Pointer inputReader = InputReaderType::New();
     inputReader->SetFileName( args_info.input_arg );
     inputFilter = inputReader;
@@ -71,7 +71,7 @@ int main(int argc, char * argv[])
   else
     {
     // Create new empty volume
-    typedef rtk::ConstantImageSource< OutputImageType > ConstantImageSourceType;
+    using ConstantImageSourceType = rtk::ConstantImageSource< OutputImageType >;
     ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
     rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkosem>(constantImageSource, args_info);
     constantImageSource->SetConstant(1.);
@@ -82,7 +82,7 @@ int main(int argc, char * argv[])
   if(args_info.attenuationmap_given)
     {
     // Read an existing image to initialize the attenuation map
-    typedef itk::ImageFileReader<  OutputImageType > AttenuationReaderType;
+    using AttenuationReaderType = itk::ImageFileReader<  OutputImageType >;
     AttenuationReaderType::Pointer attenuationReader = AttenuationReaderType::New();
     attenuationReader->SetFileName( args_info.attenuationmap_arg );
     attenuationFilter = attenuationReader;
@@ -105,7 +105,7 @@ int main(int argc, char * argv[])
   osem->SetNumberOfProjectionsPerSubset( args_info.nprojpersubset_arg );
 
   // Write
-  typedef itk::ImageFileWriter< OutputImageType > WriterType;
+  using WriterType = itk::ImageFileWriter< OutputImageType >;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
   writer->SetInput( osem->GetOutput() );

@@ -44,10 +44,10 @@ namespace rtk
 class OraImageIO : public itk::MetaImageIO
 {
 public:
-  /** Standard class typedefs. */
-  typedef OraImageIO              Self;
-  typedef itk::MetaImageIO        Superclass;
-  typedef itk::SmartPointer<Self> Pointer;
+  /** Standard class type alias. */
+  using Self = OraImageIO;
+  using Superclass = itk::MetaImageIO;
+  using Pointer = itk::SmartPointer<Self>;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);

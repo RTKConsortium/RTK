@@ -46,11 +46,11 @@ class RTK_EXPORT CudaSplatImageFilter :
 
 {
 public:
-  /** Standard class typedefs. */
-  typedef rtk::CudaSplatImageFilter                             Self;
-  typedef rtk::SplatWithKnownWeightsImageFilter< OutputImageType, InputImageType > Superclass;
-  typedef itk::SmartPointer<Self>                            Pointer;
-  typedef itk::SmartPointer<const Self>                      ConstPointer;
+  /** Standard class type alias. */
+  using Self = rtk::CudaSplatImageFilter;
+  using Superclass = rtk::SplatWithKnownWeightsImageFilter< OutputImageType, InputImageType >;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
   /** Standard New method. */
   itkNewMacro(Self)

@@ -32,23 +32,23 @@ int main(int argc, char * argv[])
 {
   GGO(rtkwarpedbackprojectsequence, args_info);
 
-  typedef float OutputPixelType;
-  typedef itk::CovariantVector< OutputPixelType, 3 > DVFVectorType;
+  using OutputPixelType = float;
+  using DVFVectorType = itk::CovariantVector< OutputPixelType, 3 >;
 
 #ifdef RTK_USE_CUDA
-  typedef itk::CudaImage< OutputPixelType, 4 >  VolumeSeriesType;
-  typedef itk::CudaImage< OutputPixelType, 3 >  ProjectionStackType;
-  typedef itk::CudaImage<DVFVectorType, VolumeSeriesType::ImageDimension> DVFSequenceImageType;
-  typedef itk::CudaImage<DVFVectorType, VolumeSeriesType::ImageDimension - 1> DVFImageType;
+  using VolumeSeriesType = itk::CudaImage< OutputPixelType, 4 >;
+  using ProjectionStackType = itk::CudaImage< OutputPixelType, 3 >;
+  using DVFSequenceImageType = itk::CudaImage<DVFVectorType, VolumeSeriesType::ImageDimension>;
+  using DVFImageType = itk::CudaImage<DVFVectorType, VolumeSeriesType::ImageDimension - 1>;
 #else
-  typedef itk::Image< OutputPixelType, 4 > VolumeSeriesType;
-  typedef itk::Image< OutputPixelType, 3 > ProjectionStackType;
-  typedef itk::Image<DVFVectorType, VolumeSeriesType::ImageDimension> DVFSequenceImageType;
+  using VolumeSeriesType = itk::Image< OutputPixelType, 4 >;
+  using ProjectionStackType = itk::Image< OutputPixelType, 3 >;
+  using DVFSequenceImageType = itk::Image<DVFVectorType, VolumeSeriesType::ImageDimension>;
 #endif
-  typedef itk::ImageFileReader<  DVFSequenceImageType > DVFReaderType;
+  using DVFReaderType = itk::ImageFileReader<  DVFSequenceImageType >;
 
   // Projections reader
-  typedef rtk::ProjectionsReader< ProjectionStackType > ReaderType;
+  using ReaderType = rtk::ProjectionsReader< ProjectionStackType >;
   ReaderType::Pointer reader = ReaderType::New();
   rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkwarpedbackprojectsequence>(reader, args_info);
 
@@ -68,7 +68,7 @@ int main(int argc, char * argv[])
   if(args_info.input_given)
     {
     // Read an existing image to initialize the volume
-    typedef itk::ImageFileReader<  VolumeSeriesType > InputReaderType;
+    using InputReaderType = itk::ImageFileReader<  VolumeSeriesType >;
     InputReaderType::Pointer inputReader = InputReaderType::New();
     inputReader->SetFileName( args_info.input_arg );
     inputFilter = inputReader;
@@ -76,7 +76,7 @@ int main(int argc, char * argv[])
   else
     {
     // Create new empty volume sequence
-    typedef rtk::ConstantImageSource< VolumeSeriesType > ConstantImageSourceType;
+    using ConstantImageSourceType = rtk::ConstantImageSource< VolumeSeriesType >;
     ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
     rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkwarpedbackprojectsequence>(constantImageSource, args_info);
 
@@ -100,8 +100,8 @@ int main(int argc, char * argv[])
   phaseReader->Update();
 
   // Create the main filter, connect the basic inputs, and set the basic parameters
-  typedef rtk::WarpProjectionStackToFourDImageFilter<VolumeSeriesType,
-                                                     ProjectionStackType> WarpForwardProjectSequenceFilterType;
+  using WarpForwardProjectSequenceFilterType = rtk::WarpProjectionStackToFourDImageFilter<VolumeSeriesType,
+                                                     ProjectionStackType>;
   WarpForwardProjectSequenceFilterType::Pointer warpbackprojectsequence = WarpForwardProjectSequenceFilterType::New();
   warpbackprojectsequence->SetInputVolumeSeries(inputFilter->GetOutput() );
   warpbackprojectsequence->SetInputProjectionStack(reader->GetOutput());
@@ -118,7 +118,7 @@ int main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION( warpbackprojectsequence->Update() )
 
   // Write
-  typedef itk::ImageFileWriter< VolumeSeriesType > WriterType;
+  using WriterType = itk::ImageFileWriter< VolumeSeriesType >;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
   writer->SetInput( warpbackprojectsequence->GetOutput() );

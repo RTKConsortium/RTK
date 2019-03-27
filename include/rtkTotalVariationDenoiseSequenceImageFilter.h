@@ -78,10 +78,10 @@ template< typename TImageSequence >
 class TotalVariationDenoiseSequenceImageFilter : public itk::ImageToImageFilter<TImageSequence, TImageSequence>
 {
 public:
-    /** Standard class typedefs. */
-    typedef TotalVariationDenoiseSequenceImageFilter                 Self;
-    typedef itk::ImageToImageFilter<TImageSequence, TImageSequence>  Superclass;
-    typedef itk::SmartPointer< Self >                                Pointer;
+    /** Standard class type alias. */
+    using Self = TotalVariationDenoiseSequenceImageFilter;
+    using Superclass = itk::ImageToImageFilter<TImageSequence, TImageSequence>;
+    using Pointer = itk::SmartPointer< Self >;
 
     /** Method for creation through the object factory. */
     itkNewMacro(Self)
@@ -100,16 +100,16 @@ public:
 
     /** Typedefs of internal filters */
 #ifdef RTK_USE_CUDA
-    typedef itk::CudaImage<typename TImageSequence::PixelType, TImageSequence::ImageDimension - 1>   TImage;
-    typedef rtk::CudaTotalVariationDenoisingBPDQImageFilter                             TVDenoisingFilterType;
+    using TImage = itk::CudaImage<typename TImageSequence::PixelType, TImageSequence::ImageDimension - 1>;
+    using TVDenoisingFilterType = rtk::CudaTotalVariationDenoisingBPDQImageFilter;
 #else
-    typedef itk::Image<typename TImageSequence::PixelType, TImageSequence::ImageDimension - 1>   TImage;
-    typedef rtk::TotalVariationDenoisingBPDQImageFilter<TImage>                         TVDenoisingFilterType;
+    using TImage = itk::Image<typename TImageSequence::PixelType, TImageSequence::ImageDimension - 1>;
+    using TVDenoisingFilterType = rtk::TotalVariationDenoisingBPDQImageFilter<TImage>;
 #endif
-    typedef itk::ExtractImageFilter<TImageSequence, TImage>         ExtractFilterType;
-    typedef itk::PasteImageFilter<TImageSequence,TImageSequence>    PasteFilterType;
-    typedef itk::CastImageFilter<TImage, TImageSequence>            CastFilterType;
-    typedef rtk::ConstantImageSource<TImageSequence>                ConstantImageSourceType;
+    using ExtractFilterType = itk::ExtractImageFilter<TImageSequence, TImage>;
+    using PasteFilterType = itk::PasteImageFilter<TImageSequence,TImageSequence>;
+    using CastFilterType = itk::CastImageFilter<TImage, TImageSequence>;
+    using ConstantImageSourceType = rtk::ConstantImageSource<TImageSequence>;
 
 protected:
     TotalVariationDenoiseSequenceImageFilter();

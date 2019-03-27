@@ -48,18 +48,18 @@ class RTK_EXPORT CudaFDKBackProjectionImageFilter :
   FDKBackProjectionImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3> > >
 {
 public:
-  /** Standard class typedefs. */
-  typedef itk::CudaImage<float,3>                              ImageType;
-  typedef FDKBackProjectionImageFilter< ImageType, ImageType>  FDKBackProjectionImageFilterType;
-  typedef CudaFDKBackProjectionImageFilter                     Self;
-  typedef itk::CudaInPlaceImageFilter<ImageType, ImageType,
-                     FDKBackProjectionImageFilterType>         Superclass;
-  typedef itk::SmartPointer<Self>                              Pointer;
-  typedef itk::SmartPointer<const Self>                        ConstPointer;
+  /** Standard class type alias. */
+  using ImageType = itk::CudaImage<float,3>;
+  using FDKBackProjectionImageFilterType = FDKBackProjectionImageFilter< ImageType, ImageType>;
+  using Self = CudaFDKBackProjectionImageFilter;
+  using Superclass = itk::CudaInPlaceImageFilter<ImageType, ImageType,
+                     FDKBackProjectionImageFilterType>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
-  typedef ImageType::RegionType            OutputImageRegionType;
-  typedef itk::CudaImage<float, 2>         ProjectionImageType;
-  typedef ProjectionImageType::Pointer     ProjectionImagePointer;
+  using OutputImageRegionType = ImageType::RegionType;
+  using ProjectionImageType = itk::CudaImage<float, 2>;
+  using ProjectionImagePointer = ProjectionImageType::Pointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);

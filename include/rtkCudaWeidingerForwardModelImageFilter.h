@@ -48,12 +48,12 @@ class ITK_EXPORT CudaWeidingerForwardModelImageFilter :
   WeidingerForwardModelImageFilter< TMaterialProjections, TPhotonCounts, TSpectrum, TProjections > >
 {
 public:
-  /** Standard class typedefs. */
-  typedef CudaWeidingerForwardModelImageFilter                                                            Self;
-  typedef WeidingerForwardModelImageFilter<TMaterialProjections, TPhotonCounts, TSpectrum, TProjections>  Superclass;
-  typedef itk::CudaImageToImageFilter<TMaterialProjections, TMaterialProjections, Superclass >            GPUSuperclass;
-  typedef itk::SmartPointer<Self>                                                                         Pointer;
-  typedef itk::SmartPointer<const Self>                                                                   ConstPointer;
+  /** Standard class type alias. */
+  using Self = CudaWeidingerForwardModelImageFilter;
+  using Superclass = WeidingerForwardModelImageFilter<TMaterialProjections, TPhotonCounts, TSpectrum, TProjections>;
+  using GPUSuperclass = itk::CudaImageToImageFilter<TMaterialProjections, TMaterialProjections, Superclass >;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);

@@ -41,13 +41,13 @@ template< typename TInputImage >
 class ImagXGeometryReader : public itk::LightProcessObject
 {
 public:
-  /** Standard typedefs */
-  typedef ImagXGeometryReader         Self;
-  typedef itk::LightProcessObject     Superclass;
-  typedef itk::SmartPointer<Self>     Pointer;
+  /** Standard type alias */
+  using Self = ImagXGeometryReader;
+  using Superclass = itk::LightProcessObject;
+  using Pointer = itk::SmartPointer<Self>;
 
-  /** Convenient typedefs */
-  typedef ThreeDCircularProjectionGeometry GeometryType;
+  /** Convenient type alias */
+  using GeometryType = ThreeDCircularProjectionGeometry;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(ImagXGeometryReader, itk::LightProcessObject);
@@ -58,12 +58,12 @@ public:
   /** Get the pointer to the generated geometry object. */
   itkGetMacro(Geometry, GeometryType::Pointer);
 
-  /** Some convenient typedefs. */
-  typedef TInputImage                         InputImageType;
-  typedef typename InputImageType::Pointer    InputImagePointer;
-  typedef typename InputImageType::RegionType InputImageRegionType;
-  typedef typename InputImageType::PixelType  InputImagePixelType;
-  typedef std::vector<std::string>            FileNamesContainer;
+  /** Some convenient type alias. */
+  using InputImageType = TInputImage;
+  using InputImagePointer = typename InputImageType::Pointer;
+  using InputImageRegionType = typename InputImageType::RegionType;
+  using InputImagePixelType = typename InputImageType::PixelType;
+  using FileNamesContainer = std::vector<std::string>;
 
   /** Set the iMagX calibration xml file
     */

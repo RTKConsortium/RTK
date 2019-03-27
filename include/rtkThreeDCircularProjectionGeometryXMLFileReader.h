@@ -45,14 +45,14 @@ class RTK_EXPORT ThreeDCircularProjectionGeometryXMLFileReader :
   public itk::XMLReader< ThreeDCircularProjectionGeometry >
 {
 public:
-  /** Standard typedefs */
-  typedef ThreeDCircularProjectionGeometryXMLFileReader      Self;
-  typedef itk::XMLReader< ThreeDCircularProjectionGeometry > Superclass;
-  typedef itk::SmartPointer<Self>                            Pointer;
+  /** Standard type alias */
+  using Self = ThreeDCircularProjectionGeometryXMLFileReader;
+  using Superclass = itk::XMLReader< ThreeDCircularProjectionGeometry >;
+  using Pointer = itk::SmartPointer<Self>;
 
-  /** Convenient typedefs */
-  typedef ThreeDCircularProjectionGeometry GeometryType;
-  typedef GeometryType::Pointer            GeometryPointer;
+  /** Convenient type alias */
+  using GeometryType = ThreeDCircularProjectionGeometry;
+  using GeometryPointer = GeometryType::Pointer;
 
   /** Latest version */
   static const unsigned int CurrentVersion = 3;

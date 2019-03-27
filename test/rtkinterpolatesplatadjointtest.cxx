@@ -34,10 +34,10 @@ int main(int argc, char*argv[])
   }
 
   const unsigned int Dimension = 3;
-  typedef float                                    OutputPixelType;
+  using OutputPixelType = float;
 
-  typedef itk::Image< OutputPixelType, Dimension > VolumeType;
-  typedef itk::Image< OutputPixelType, Dimension + 1 > VolumeSeriesType;
+  using VolumeType = itk::Image< OutputPixelType, Dimension >;
+  using VolumeSeriesType = itk::Image< OutputPixelType, Dimension + 1 >;
 
 #if FAST_TESTS_NO_CHECKS
   const unsigned int NumberOfSlices = 2;
@@ -47,17 +47,17 @@ int main(int argc, char*argv[])
 
 
   // Random image sources
-  typedef itk::RandomImageSource< VolumeType > RandomVolumeSourceType;
+  using RandomVolumeSourceType = itk::RandomImageSource< VolumeType >;
   RandomVolumeSourceType::Pointer randomVolumeSource  = RandomVolumeSourceType::New();
 
-  typedef itk::RandomImageSource< VolumeSeriesType > RandomVolumeSeriesSourceType;
+  using RandomVolumeSeriesSourceType = itk::RandomImageSource< VolumeSeriesType >;
   RandomVolumeSeriesSourceType::Pointer randomVolumeSeriesSource  = RandomVolumeSeriesSourceType::New();
 
   // Constant sources
-  typedef rtk::ConstantImageSource< VolumeType > ConstantVolumeSourceType;
+  using ConstantVolumeSourceType = rtk::ConstantImageSource< VolumeType >;
   ConstantVolumeSourceType::Pointer constantVolumeSource  = ConstantVolumeSourceType::New();
 
-  typedef rtk::ConstantImageSource< VolumeSeriesType > ConstantVolumeSeriesSourceType;
+  using ConstantVolumeSeriesSourceType = rtk::ConstantImageSource< VolumeSeriesType >;
   ConstantVolumeSeriesSourceType::Pointer constantVolumeSeriesSource  = ConstantVolumeSeriesSourceType::New();
 
   // Volume metadata
@@ -147,7 +147,7 @@ int main(int argc, char*argv[])
 
   std::cout << "\n\n****** 4D to 3D (interpolation) ******" << std::endl;
 
-  typedef rtk::InterpolatorWithKnownWeightsImageFilter<VolumeType, VolumeSeriesType> InterpolateFilterType;
+  using InterpolateFilterType = rtk::InterpolatorWithKnownWeightsImageFilter<VolumeType, VolumeSeriesType>;
   InterpolateFilterType::Pointer interp = InterpolateFilterType::New();
   interp->SetInputVolume(constantVolumeSource->GetOutput());
   interp->SetInputVolumeSeries(randomVolumeSeriesSource->GetOutput());
@@ -156,7 +156,7 @@ int main(int argc, char*argv[])
 
   std::cout << "\n\n****** 3D to 4D (splat) ******" << std::endl;
 
-  typedef rtk::SplatWithKnownWeightsImageFilter<VolumeSeriesType, VolumeType> SplatFilterType;
+  using SplatFilterType = rtk::SplatWithKnownWeightsImageFilter<VolumeSeriesType, VolumeType>;
   SplatFilterType::Pointer splat = SplatFilterType::New();
   splat->SetInputVolumeSeries(constantVolumeSeriesSource->GetOutput());
   splat->SetInputVolume(randomVolumeSource->GetOutput());

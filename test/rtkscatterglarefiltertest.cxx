@@ -42,9 +42,9 @@
 
 const unsigned int Dimension = 3;
 #ifdef USE_CUDA
-typedef itk::CudaImage< float, Dimension > ImageType;
+using ImageType = itk::CudaImage< float, Dimension >;
 #else
-typedef itk::Image< float, Dimension >     ImageType;
+using ImageType = itk::Image< float, Dimension >;
 #endif
 
 const float spikeValue = 12.341;
@@ -107,9 +107,9 @@ ImageType::Pointer createInputImage(const std::vector<float> & coef)
 int main(int , char** )
 {
 #ifdef USE_CUDA
-  typedef rtk::CudaScatterGlareCorrectionImageFilter                           ScatterCorrectionType;
+  using ScatterCorrectionType = rtk::CudaScatterGlareCorrectionImageFilter;
 #else
-  typedef rtk::ScatterGlareCorrectionImageFilter<ImageType, ImageType, float>  ScatterCorrectionType;
+  using ScatterCorrectionType = rtk::ScatterGlareCorrectionImageFilter<ImageType, ImageType, float>;
 #endif
   ScatterCorrectionType::Pointer SFilter = ScatterCorrectionType::New();
 

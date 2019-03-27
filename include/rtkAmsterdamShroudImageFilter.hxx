@@ -165,7 +165,7 @@ AmsterdamShroudImageFilter<TInputImage>
   typename TInputImage::RegionType reg;
   reg = m_DerivativeFilter->GetOutput()->GetRequestedRegion();
 
-  typedef typename itk::ImageRegionIterator<TInputImage> OutputIterator;
+  using OutputIterator = typename itk::ImageRegionIterator<TInputImage>;
   OutputIterator it(m_DerivativeFilter->GetOutput(), reg);
 
   // Prepare the 8 corners of the box

@@ -67,11 +67,11 @@ template< typename VolumeSeriesType, typename VolumeType>
 class SplatWithKnownWeightsImageFilter : public itk::InPlaceImageFilter< VolumeSeriesType, VolumeSeriesType >
 {
 public:
-    /** Standard class typedefs. */
-    typedef SplatWithKnownWeightsImageFilter                              Self;
-    typedef itk::ImageToImageFilter< VolumeSeriesType, VolumeSeriesType > Superclass;
-    typedef itk::SmartPointer< Self >                                     Pointer;
-    typedef typename VolumeSeriesType::RegionType                         OutputImageRegionType;
+    /** Standard class type alias. */
+    using Self = SplatWithKnownWeightsImageFilter;
+    using Superclass = itk::ImageToImageFilter< VolumeSeriesType, VolumeSeriesType >;
+    using Pointer = itk::SmartPointer< Self >;
+    using OutputImageRegionType = typename VolumeSeriesType::RegionType;
 
     /** Method for creation through the object factory. */
     itkNewMacro(Self)

@@ -20,12 +20,12 @@
 int main(int, char** )
 {
   const unsigned int Dimension = 3;
-  typedef float                                    OutputPixelType;
-  typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
+  using OutputPixelType = float;
+  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
   const unsigned int NumberOfProjectionImages = 24;
 
   // Constant image sources
-  typedef rtk::ConstantImageSource< OutputImageType > ConstantImageSourceType;
+  using ConstantImageSourceType = rtk::ConstantImageSource< OutputImageType >;
   ConstantImageSourceType::PointType origin;
   ConstantImageSourceType::SizeType size;
   ConstantImageSourceType::SpacingType spacing;
@@ -59,13 +59,13 @@ int main(int, char** )
   oneProjectionSource->SetConstant( 0. );
 
   // Geometry objects
-  typedef rtk::ThreeDCircularProjectionGeometry GeometryType;
+  using GeometryType = rtk::ThreeDCircularProjectionGeometry;
   GeometryType::Pointer geometry = GeometryType::New();
   GeometryType::Pointer geometryRef = GeometryType::New();
 
   // Projections
-  typedef rtk::RayEllipsoidIntersectionImageFilter<OutputImageType, OutputImageType> REIType;
-  typedef itk::PasteImageFilter <OutputImageType, OutputImageType, OutputImageType > PasteImageFilterType;
+  using REIType = rtk::RayEllipsoidIntersectionImageFilter<OutputImageType, OutputImageType>;
+  using PasteImageFilterType = itk::PasteImageFilter <OutputImageType, OutputImageType, OutputImageType >;
   OutputImageType::IndexType destinationIndex, destinationIndexRef;
   destinationIndex.Fill(0);
   destinationIndexRef.Fill(0);
@@ -141,7 +141,7 @@ int main(int, char** )
     }
 
   // Select
-  typedef rtk::SelectOneProjectionPerCycleImageFilter<OutputImageType> SelectionType;
+  using SelectionType = rtk::SelectOneProjectionPerCycleImageFilter<OutputImageType>;
   SelectionType::Pointer select = SelectionType::New();
   select->SetInput(wholeImage);
   select->SetInputGeometry(geometry);

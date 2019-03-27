@@ -120,11 +120,11 @@ class DeconstructImageFilter
     : public itk::ImageToImageFilter<TImage, TImage>
 {
 public:
-    /** Standard class typedefs. */
-    typedef DeconstructImageFilter                  Self;
-    typedef itk::ImageToImageFilter<TImage,TImage>  Superclass;
-    typedef itk::SmartPointer<Self>                 Pointer;
-    typedef itk::SmartPointer<const Self>           ConstPointer;
+    /** Standard class type alias. */
+    using Self = DeconstructImageFilter;
+    using Superclass = itk::ImageToImageFilter<TImage,TImage>;
+    using Pointer = itk::SmartPointer<Self>;
+    using ConstPointer = itk::SmartPointer<const Self>;
 
     /** Method for creation through the object factory. */
     itkNewMacro(Self)
@@ -136,18 +136,18 @@ public:
     itkStaticConstMacro(ImageDimension, unsigned int, TImage::ImageDimension);
 
     /** Inherit types from Superclass. */
-    typedef typename Superclass::InputImageType         InputImageType;
-    typedef typename Superclass::OutputImageType        OutputImageType;
-    typedef typename Superclass::InputImagePointer      InputImagePointer;
-    typedef typename Superclass::OutputImagePointer     OutputImagePointer;
-    typedef typename Superclass::InputImageConstPointer InputImageConstPointer;
-    typedef typename TImage::PixelType                  PixelType;
-    typedef typename TImage::InternalPixelType          InternalPixelType;
+    using InputImageType = typename Superclass::InputImageType;
+    using OutputImageType = typename Superclass::OutputImageType;
+    using InputImagePointer = typename Superclass::InputImagePointer;
+    using OutputImagePointer = typename Superclass::OutputImagePointer;
+    using InputImageConstPointer = typename Superclass::InputImageConstPointer;
+    using PixelType = typename TImage::PixelType;
+    using InternalPixelType = typename TImage::InternalPixelType;
 
     /** Typedefs for pipeline's subfilters */
-    typedef itk::MirrorPadImageFilter<InputImageType, InputImageType>             PadFilterType;
-    typedef rtk::DaubechiesWaveletsConvolutionImageFilter<InputImageType>        ConvolutionFilterType;
-    typedef rtk::DownsampleImageFilter<InputImageType>           DownsampleImageFilterType;
+    using PadFilterType = itk::MirrorPadImageFilter<InputImageType, InputImageType>;
+    using ConvolutionFilterType = rtk::DaubechiesWaveletsConvolutionImageFilter<InputImageType>;
+    using DownsampleImageFilterType = rtk::DownsampleImageFilter<InputImageType>;
 
     /** Set the number of input levels. */
     virtual void SetNumberOfLevels(unsigned int levels)

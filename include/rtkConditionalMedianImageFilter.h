@@ -49,11 +49,11 @@ template< typename TInputImage>
 class ConditionalMedianImageFilter : public itk::InPlaceImageFilter<TInputImage>
 {
 public:
-    /** Standard class typedefs. */
-    typedef ConditionalMedianImageFilter                                        Self;
-    typedef itk::InPlaceImageFilter<TInputImage>                                Superclass;
-    typedef itk::SmartPointer< Self >                                           Pointer;
-    typedef typename itk::ConstNeighborhoodIterator<TInputImage>::RadiusType    MedianRadiusType;
+    /** Standard class type alias. */
+    using Self = ConditionalMedianImageFilter;
+    using Superclass = itk::InPlaceImageFilter<TInputImage>;
+    using Pointer = itk::SmartPointer< Self >;
+    using MedianRadiusType = typename itk::ConstNeighborhoodIterator<TInputImage>::RadiusType;
 
     /** Method for creation through the object factory. */
     itkNewMacro(Self)

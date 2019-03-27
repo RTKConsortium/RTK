@@ -37,11 +37,11 @@ namespace rtk
 class RTK_EXPORT GlobalTimer:public itk::Object
 {
 public:
-  /** Standard class typedefs. */
-  typedef GlobalTimer                     Self;
-  typedef itk::Object                     Superclass;
-  typedef itk::SmartPointer< Self >       Pointer;
-  typedef itk::SmartPointer< const Self > ConstPointer;
+  /** Standard class type alias. */
+  using Self = GlobalTimer;
+  using Superclass = itk::Object;
+  using Pointer = itk::SmartPointer< Self >;
+  using ConstPointer = itk::SmartPointer< const Self >;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(GlobalTimer, itk::Object)

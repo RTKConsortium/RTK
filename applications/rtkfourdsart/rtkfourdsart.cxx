@@ -35,18 +35,18 @@ int main(int argc, char * argv[])
 {
   GGO(rtkfourdsart, args_info);
 
-  typedef float OutputPixelType;
+  using OutputPixelType = float;
 
 #ifdef RTK_USE_CUDA
-  typedef itk::CudaImage< OutputPixelType, 4 >  VolumeSeriesType;
-  typedef itk::CudaImage< OutputPixelType, 3 >  ProjectionStackType;
+  using VolumeSeriesType = itk::CudaImage< OutputPixelType, 4 >;
+  using ProjectionStackType = itk::CudaImage< OutputPixelType, 3 >;
 #else
-  typedef itk::Image< OutputPixelType, 4 > VolumeSeriesType;
-  typedef itk::Image< OutputPixelType, 3 > ProjectionStackType;
+  using VolumeSeriesType = itk::Image< OutputPixelType, 4 >;
+  using ProjectionStackType = itk::Image< OutputPixelType, 3 >;
 #endif
 
   // Projections reader
-  typedef rtk::ProjectionsReader< ProjectionStackType > ReaderType;
+  using ReaderType = rtk::ProjectionsReader< ProjectionStackType >;
   ReaderType::Pointer reader = ReaderType::New();
   rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkfourdsart>(reader, args_info);
 
@@ -66,7 +66,7 @@ int main(int argc, char * argv[])
   if(args_info.input_given)
     {
     // Read an existing image to initialize the volume
-    typedef itk::ImageFileReader<  VolumeSeriesType > InputReaderType;
+    using InputReaderType = itk::ImageFileReader<  VolumeSeriesType >;
     InputReaderType::Pointer inputReader = InputReaderType::New();
     inputReader->SetFileName( args_info.input_arg );
     inputFilter = inputReader;
@@ -74,7 +74,7 @@ int main(int argc, char * argv[])
   else
     {
     // Create new empty volume
-    typedef rtk::ConstantImageSource< VolumeSeriesType > ConstantImageSourceType;
+    using ConstantImageSourceType = rtk::ConstantImageSource< VolumeSeriesType >;
     ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
     rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkfourdsart>(constantImageSource, args_info);
 
@@ -122,7 +122,7 @@ int main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION( fourdsart->Update() )
 
   // Write
-  typedef itk::ImageFileWriter< VolumeSeriesType > WriterType;
+  using WriterType = itk::ImageFileWriter< VolumeSeriesType >;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
   writer->SetInput( fourdsart->GetOutput() );

@@ -45,12 +45,12 @@ namespace rtk {
 class XimImageIO : public itk::ImageIOBase
 {
 public:
-/** Standard class typedefs. */
-  typedef XimImageIO              Self;
-  typedef itk::ImageIOBase        Superclass;
-  typedef itk::SmartPointer<Self> Pointer;
-  typedef signed short int        PixelType;
-  typedef itk::int32_t            Int4; // int of 4 bytes as in xim docs
+/** Standard class type alias. */
+  using Self = XimImageIO;
+  using Superclass = itk::ImageIOBase;
+  using Pointer = itk::SmartPointer<Self>;
+  using PixelType = signed short int;
+  using Int4 = itk::int32_t; // int of 4 bytes as in xim docs
 
   typedef struct xim_header {
     //Actual Header:

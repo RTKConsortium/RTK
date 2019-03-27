@@ -29,10 +29,10 @@ int main(int argc, char * argv[])
 {
   GGO(rtkprojectgeometricphantom, args_info);
 
-  typedef float OutputPixelType;
+  using OutputPixelType = float;
   const unsigned int Dimension = 3;
 
-  typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
+  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
 
   // Geometry
   if(args_info.verbose_flag)
@@ -47,7 +47,7 @@ int main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION( geometryReader->GenerateOutputInformation() )
 
   // Create a stack of empty projection images
-  typedef rtk::ConstantImageSource< OutputImageType > ConstantImageSourceType;
+  using ConstantImageSourceType = rtk::ConstantImageSource< OutputImageType >;
   ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
   rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkprojectgeometricphantom>(constantImageSource, args_info);
 
@@ -58,7 +58,7 @@ int main(int argc, char * argv[])
   sizeOutput[2] = geometryReader->GetOutputObject()->GetGantryAngles().size();
   constantImageSource->SetSize( sizeOutput );
 
-  typedef rtk::ProjectGeometricPhantomImageFilter<OutputImageType, OutputImageType> PPCType;
+  using PPCType = rtk::ProjectGeometricPhantomImageFilter<OutputImageType, OutputImageType>;
 
   // Offset, scale, rotation
   PPCType::VectorType offset(0.);
@@ -111,7 +111,7 @@ int main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION( ppc->Update() )
 
   // Write
-  typedef itk::ImageFileWriter<  OutputImageType > WriterType;
+  using WriterType = itk::ImageFileWriter<  OutputImageType >;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
   writer->SetInput( ppc->GetOutput() );

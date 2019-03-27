@@ -34,10 +34,10 @@ template< typename ProjectionStackType>
 class PhaseGatingImageFilter : public SubSelectImageFilter<ProjectionStackType>
 {
 public:
-    /** Standard class typedefs. */
-    typedef PhaseGatingImageFilter                    Self;
-    typedef SubSelectImageFilter<ProjectionStackType> Superclass;
-    typedef itk::SmartPointer< Self >                 Pointer;
+    /** Standard class type alias. */
+    using Self = PhaseGatingImageFilter;
+    using Superclass = SubSelectImageFilter<ProjectionStackType>;
+    using Pointer = itk::SmartPointer< Self >;
 
     /** Method for creation through the object factory. */
     itkNewMacro(Self)

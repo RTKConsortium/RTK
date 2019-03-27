@@ -83,13 +83,13 @@ TSumAlongRay>
   volPPToIndex = GetPhysicalPointToIndexMatrix( this->GetInput(1) );
 
   // Iterators on input and output projections
-  typedef ProjectionsRegionConstIteratorRayBased<TInputImage> InputRegionIterator;
+  using InputRegionIterator = ProjectionsRegionConstIteratorRayBased<TInputImage>;
   InputRegionIterator *itIn;
   itIn = InputRegionIterator::New(this->GetInput(),
                                   outputRegionForThread,
                                   geometry,
                                   volPPToIndex);
-  typedef itk::ImageRegionIteratorWithIndex<TOutputImage> OutputRegionIterator;
+  using OutputRegionIterator = itk::ImageRegionIteratorWithIndex<TOutputImage>;
   OutputRegionIterator itOut(this->GetOutput(), outputRegionForThread);
 
   // Create intersection functions, one for each possible main direction

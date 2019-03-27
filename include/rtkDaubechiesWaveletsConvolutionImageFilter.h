@@ -58,23 +58,23 @@ public:
     };
 
 
-    /** Standard class typedefs. */
-    typedef DaubechiesWaveletsConvolutionImageFilter  Self;
-    typedef itk::ImageToImageFilter<TImage, TImage>   Superclass;
-    typedef itk::SmartPointer<Self>                   Pointer;
-    typedef itk::SmartPointer<const Self>             ConstPointer;
+    /** Standard class type alias. */
+    using Self = DaubechiesWaveletsConvolutionImageFilter;
+    using Superclass = itk::ImageToImageFilter<TImage, TImage>;
+    using Pointer = itk::SmartPointer<Self>;
+    using ConstPointer = itk::SmartPointer<const Self>;
 
     /** Typedef for the output image type. */
-    typedef TImage OutputImageType;
+    using OutputImageType = TImage;
 
     /** Typedef for the output image PixelType. */
-    typedef typename TImage::PixelType OutputImagePixelType;
+    using OutputImagePixelType = typename TImage::PixelType;
 
     /** Typedef to describe the output image region type. */
-    typedef typename TImage::RegionType OutputImageRegionType;
+    using OutputImageRegionType = typename TImage::RegionType;
 
     /** Typedef for the "pass" vector (high pass or low pass along each dimension). */
-    typedef typename itk::Vector<typename Self::Pass, TImage::ImageDimension> PassVector;
+    using PassVector = typename itk::Vector<typename Self::Pass, TImage::ImageDimension>;
 
     /** Run-time type information (and related methods). */
     itkTypeMacro(DaubechiesWaveletsConvolutionImageFilter, itk::ImageSource)
@@ -83,7 +83,7 @@ public:
     itkNewMacro(Self)
 
     /** Typedef for the internal convolution filter */
-    typedef typename itk::ConvolutionImageFilter<TImage> ConvolutionFilterType;
+    using ConvolutionFilterType = typename itk::ConvolutionImageFilter<TImage>;
 
     /** Sets the filter to return coefficients for low pass, deconstruct. */
     void SetDeconstruction();
@@ -106,7 +106,7 @@ protected:
     DaubechiesWaveletsConvolutionImageFilter();
     virtual ~DaubechiesWaveletsConvolutionImageFilter() ITK_OVERRIDE;
 
-    typedef std::vector<typename TImage::PixelType> CoefficientVector;
+    using CoefficientVector = std::vector<typename TImage::PixelType>;
 
     /** Calculates CoefficientsVector coefficients. */
     CoefficientVector GenerateCoefficients();

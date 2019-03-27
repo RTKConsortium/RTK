@@ -43,13 +43,13 @@ class NesterovUpdateImageFilter : public itk::InPlaceImageFilter< TImage,  TImag
 {
 public:
 
-  /** Standard class typedefs. */
-  typedef NesterovUpdateImageFilter                        Self;
-  typedef itk::InPlaceImageFilter< TImage, TImage>         Superclass;
-  typedef itk::SmartPointer< Self >                        Pointer;
+  /** Standard class type alias. */
+  using Self = NesterovUpdateImageFilter;
+  using Superclass = itk::InPlaceImageFilter< TImage, TImage>;
+  using Pointer = itk::SmartPointer< Self >;
 
-  /** Convenient typedef */
-  typedef typename Superclass::OutputImageType::RegionType OutputImageRegionType;
+  /** Convenient type alias */
+  using OutputImageRegionType = typename Superclass::OutputImageType::RegionType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self)

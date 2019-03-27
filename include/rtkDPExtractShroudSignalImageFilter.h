@@ -39,13 +39,13 @@ class ITK_EXPORT DPExtractShroudSignalImageFilter :
   public itk::ImageToImageFilter<itk::Image<TInputPixel, 2>, itk::Image<TOutputPixel, 1> >
 {
 public:
-  /** Standard class typedefs. */
-  typedef itk::Image<TInputPixel, 2>                            TInputImage;
-  typedef itk::Image<TOutputPixel, 1>                           TOutputImage;
-  typedef DPExtractShroudSignalImageFilter                      Self;
-  typedef itk::ImageToImageFilter<TInputImage, TOutputImage>    Superclass;
-  typedef itk::SmartPointer<Self>                               Pointer;
-  typedef itk::SmartPointer<const Self>                         ConstPointer;
+  /** Standard class type alias. */
+  using TInputImage = itk::Image<TInputPixel, 2>;
+  using TOutputImage = itk::Image<TOutputPixel, 1>;
+  using Self = DPExtractShroudSignalImageFilter;
+  using Superclass = itk::ImageToImageFilter<TInputImage, TOutputImage>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
   /** ImageDimension constants */
   itkStaticConstMacro(InputImageDimension, unsigned int,

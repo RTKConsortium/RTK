@@ -27,12 +27,12 @@
 int main(int, char** )
 {
   const unsigned int Dimension = 3;
-  typedef float                                    OutputPixelType;
+  using OutputPixelType = float;
 
 #ifdef RTK_USE_CUDA
-  typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
+  using OutputImageType = itk::CudaImage< OutputPixelType, Dimension >;
 #else
-  typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
+  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
 #endif
 
 #if FAST_TESTS_NO_CHECKS
@@ -43,7 +43,7 @@ int main(int, char** )
 
 
   // Constant image sources
-  typedef rtk::ConstantImageSource< OutputImageType > ConstantImageSourceType;
+  using ConstantImageSourceType = rtk::ConstantImageSource< OutputImageType >;
   ConstantImageSourceType::PointType origin;
   ConstantImageSourceType::SizeType size;
   ConstantImageSourceType::SpacingType spacing;
@@ -108,13 +108,13 @@ int main(int, char** )
   projectionsSource->SetConstant( 0. );
 
   // Geometry object
-  typedef rtk::ThreeDCircularProjectionGeometry GeometryType;
+  using GeometryType = rtk::ThreeDCircularProjectionGeometry;
   GeometryType::Pointer geometry = GeometryType::New();
   for(unsigned int noProj=0; noProj<NumberOfProjectionImages; noProj++)
     geometry->AddProjection(600., 1200., noProj*360./NumberOfProjectionImages);
 
   // Create ellipsoid PROJECTIONS
-  typedef rtk::RayEllipsoidIntersectionImageFilter<OutputImageType, OutputImageType> REIType;
+  using REIType = rtk::RayEllipsoidIntersectionImageFilter<OutputImageType, OutputImageType>;
   REIType::Pointer rei;
 
   rei = REIType::New();
@@ -133,21 +133,21 @@ int main(int, char** )
   TRY_AND_EXIT_ON_ITK_EXCEPTION( rei->Update() );
 
   // Create REFERENCE object (3D ellipsoid).
-  typedef rtk::DrawEllipsoidImageFilter<OutputImageType, OutputImageType> DEType;
+  using DEType = rtk::DrawEllipsoidImageFilter<OutputImageType, OutputImageType>;
   DEType::Pointer dsl = DEType::New();
   dsl->SetInput( tomographySource->GetOutput() );
   dsl->SetAxis(semiprincipalaxis);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( dsl->Update() );
 
   // Create attenuation map according to the reference object
-  typedef itk::MaskImageFilter< OutputImageType, OutputImageType > MaskFilterType;
+  using MaskFilterType = itk::MaskImageFilter< OutputImageType, OutputImageType >;
   MaskFilterType::Pointer maskFilter = MaskFilterType::New();
   maskFilter->SetInput(attenuationInput->GetOutput());
   maskFilter->SetMaskImage(dsl->GetOutput());
   TRY_AND_EXIT_ON_ITK_EXCEPTION( maskFilter->Update() );
 
   // OSEM reconstruction filtering
-  typedef rtk::OSEMConeBeamReconstructionFilter< OutputImageType > OSEMType;
+  using OSEMType = rtk::OSEMConeBeamReconstructionFilter< OutputImageType >;
   OSEMType::Pointer osem = OSEMType::New();
   osem->SetInput(0, volumeSource->GetOutput() );
   osem->SetInput(1, rei->GetOutput());
@@ -197,7 +197,7 @@ int main(int, char** )
   std::cout << "\n\nTest PASSED! " << std::endl;
 #endif
 
-  typedef itk::ImageRegionIterator<OutputImageType> ImageIterator;
+  using ImageIterator = itk::ImageRegionIterator<OutputImageType>;
   ImageIterator itRei( rei->GetOutput(), rei->GetOutput()->GetBufferedRegion() );
 
   itRei.GoToBegin();

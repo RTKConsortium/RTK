@@ -40,13 +40,13 @@ class RTK_EXPORT ElektaSynergyGeometryReader :
   public itk::LightProcessObject
 {
 public:
-  /** Standard typedefs */
-  typedef ElektaSynergyGeometryReader Self;
-  typedef itk::LightProcessObject     Superclass;
-  typedef itk::SmartPointer<Self>     Pointer;
+  /** Standard type alias */
+  using Self = ElektaSynergyGeometryReader;
+  using Superclass = itk::LightProcessObject;
+  using Pointer = itk::SmartPointer<Self>;
 
-  /** Convenient typedefs */
-  typedef ThreeDCircularProjectionGeometry GeometryType;
+  /** Convenient type alias */
+  using GeometryType = ThreeDCircularProjectionGeometry;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(ElektaSynergyGeometryReader, LightProcessObject);

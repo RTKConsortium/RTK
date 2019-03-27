@@ -82,18 +82,18 @@ class ITK_EXPORT AmsterdamShroudImageFilter :
   public itk::ImageToImageFilter<TInputImage, itk::Image<double, TInputImage::ImageDimension-1> >
 {
 public:
-  /** Standard class typedefs. */
-  typedef AmsterdamShroudImageFilter                                                  Self;
-  typedef itk::ImageToImageFilter<TInputImage,
-                                  itk::Image<double, TInputImage::ImageDimension-1> > Superclass;
-  typedef itk::SmartPointer<Self>                                                     Pointer;
-  typedef itk::SmartPointer<const Self>                                               ConstPointer;
+  /** Standard class type alias. */
+  using Self = AmsterdamShroudImageFilter;
+  using Superclass = itk::ImageToImageFilter<TInputImage,
+                                  itk::Image<double, TInputImage::ImageDimension-1> >;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
-  /** Convenient typedefs. */
-  typedef itk::Image<double, TInputImage::ImageDimension-1> TOutputImage;
-  typedef itk::Point<double, 3>                             PointType;
-  typedef rtk::ThreeDCircularProjectionGeometry             GeometryType;
-  typedef typename GeometryType::Pointer                    GeometryPointer;
+  /** Convenient type alias. */
+  using TOutputImage = itk::Image<double, TInputImage::ImageDimension-1>;
+  using PointType = itk::Point<double, 3>;
+  using GeometryType = rtk::ThreeDCircularProjectionGeometry;
+  using GeometryPointer = typename GeometryType::Pointer;
 
   /** ImageDimension constants */
   itkStaticConstMacro(InputImageDimension, unsigned int,
@@ -148,13 +148,13 @@ private:
   AmsterdamShroudImageFilter(const Self&); //purposely not implemented
   void operator=(const Self&);             //purposely not implemented
 
-  typedef itk::RecursiveGaussianImageFilter< TInputImage, TInputImage >          DerivativeType;
-  typedef itk::MultiplyImageFilter< TInputImage, TInputImage, TInputImage >      NegativeType;
-  typedef itk::ThresholdImageFilter< TInputImage >                               ThresholdType;
-  typedef itk::SumProjectionImageFilter< TInputImage, TOutputImage >             SumType;
-  typedef itk::ConvolutionImageFilter< TOutputImage, TOutputImage >              ConvolutionType;
-  typedef itk::SubtractImageFilter< TOutputImage, TOutputImage >                 SubtractType;
-  typedef itk::PermuteAxesImageFilter< TOutputImage >                            PermuteType;
+  using DerivativeType = itk::RecursiveGaussianImageFilter< TInputImage, TInputImage >;
+  using NegativeType = itk::MultiplyImageFilter< TInputImage, TInputImage, TInputImage >;
+  using ThresholdType = itk::ThresholdImageFilter< TInputImage >;
+  using SumType = itk::SumProjectionImageFilter< TInputImage, TOutputImage >;
+  using ConvolutionType = itk::ConvolutionImageFilter< TOutputImage, TOutputImage >;
+  using SubtractType = itk::SubtractImageFilter< TOutputImage, TOutputImage >;
+  using PermuteType = itk::PermuteAxesImageFilter< TOutputImage >;
 
   typename DerivativeType::Pointer  m_DerivativeFilter;
   typename NegativeType::Pointer    m_NegativeFilter;

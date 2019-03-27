@@ -51,14 +51,14 @@ class ITK_EXPORT CyclicDeformationImageFilter:
   public itk::ImageToImageFilter<TInputImage, TOutputImage >
 {
 public:
-  /** Standard class typedefs. */
-  typedef CyclicDeformationImageFilter                              Self;
-  typedef TInputImage                                               InputImageType;
-  typedef TOutputImage                                              OutputImageType;
-  typedef itk::ImageToImageFilter<InputImageType, OutputImageType>  Superclass;
-  typedef itk::SmartPointer<Self>                                   Pointer;
-  typedef itk::SmartPointer<const Self>                             ConstPointer;
-  typedef typename OutputImageType::RegionType                      OutputImageRegionType;
+  /** Standard class type alias. */
+  using Self = CyclicDeformationImageFilter;
+  using InputImageType = TInputImage;
+  using OutputImageType = TOutputImage;
+  using Superclass = itk::ImageToImageFilter<InputImageType, OutputImageType>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
+  using OutputImageRegionType = typename OutputImageType::RegionType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);

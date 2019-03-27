@@ -42,11 +42,11 @@ class ITK_EXPORT CudaReduction :
   public Object
 {
 public:
-  /** Standard class typedefs. */
-  typedef CudaReduction              Self;
-  typedef Object                     Superclass;
-  typedef SmartPointer< Self >       Pointer;
-  typedef SmartPointer< const Self > ConstPointer;
+  /** Standard class type alias. */
+  using Self = CudaReduction;
+  using Superclass = Object;
+  using Pointer = SmartPointer< Self >;
+  using ConstPointer = SmartPointer< const Self >;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -54,7 +54,7 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(CudaReduction, Object);
 
-  typedef CudaDataManager::Pointer CudaDataPointer;
+  using CudaDataPointer = CudaDataManager::Pointer;
 
   itkGetMacro(CudaDataManager, CudaDataPointer);
   itkGetMacro(GPUResult, TElement);

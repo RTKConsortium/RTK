@@ -39,14 +39,14 @@ class RTK_EXPORT GeometricPhantomFileReader :
     public itk::LightProcessObject
 {
 public:
-  /** Standard class typedefs. */
-  typedef GeometricPhantomFileReader     Self;
-  typedef itk::Object                    Superclass;
-  typedef itk::SmartPointer<Self>        Pointer;
-  typedef itk::SmartPointer<const Self>  ConstPointer;
+  /** Standard class type alias. */
+  using Self = GeometricPhantomFileReader;
+  using Superclass = itk::Object;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
-  /** Convenient typedefs. */
-  typedef GeometricPhantom::Pointer      GeometricPhantomPointer;
+  /** Convenient type alias. */
+  using GeometricPhantomPointer = GeometricPhantom::Pointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);

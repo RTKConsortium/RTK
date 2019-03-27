@@ -94,10 +94,10 @@ void JosephBackProjectionImageFilter<TInputImage,
   if(this->GetInput() != this->GetOutput() )
     {
     // Iterators on volume input and output
-    typedef itk::ImageRegionConstIterator<TInputImage> InputRegionIterator;
+    using InputRegionIterator = itk::ImageRegionConstIterator<TInputImage>;
     InputRegionIterator itVolIn(this->GetInput(0), this->GetInput()->GetBufferedRegion());
 
-    typedef itk::ImageRegionIteratorWithIndex<TOutputImage> OutputRegionIterator;
+    using OutputRegionIterator = itk::ImageRegionIteratorWithIndex<TOutputImage>;
     OutputRegionIterator itVolOut(this->GetOutput(), this->GetInput()->GetBufferedRegion());
 
     while(!itVolIn.IsAtEnd() )
@@ -109,7 +109,7 @@ void JosephBackProjectionImageFilter<TInputImage,
     }
 
   // Iterators on projections input
-  typedef ProjectionsRegionConstIteratorRayBased<TInputImage> InputRegionIterator;
+  using InputRegionIterator = ProjectionsRegionConstIteratorRayBased<TInputImage>;
   InputRegionIterator *itIn;
   itIn = InputRegionIterator::New(this->GetInput(1),
                                   buffReg,

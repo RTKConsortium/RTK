@@ -38,14 +38,14 @@ namespace rtk
 class HisImageIO : public itk::ImageIOBase
 {
 public:
-  /** Standard class typedefs. */
-  typedef HisImageIO              Self;
-  typedef itk::ImageIOBase        Superclass;
-  typedef itk::SmartPointer<Self> Pointer;
-  typedef signed short int        PixelType;
+  /** Standard class type alias. */
+  using Self = HisImageIO;
+  using Superclass = itk::ImageIOBase;
+  using Pointer = itk::SmartPointer<Self>;
+  using PixelType = signed short int;
 
   HisImageIO() : Superclass() {
-    ;
+;
   }
 
   /** Method for creation through the object factory. */
@@ -63,7 +63,7 @@ public:
 
   /*-------- This part of the interfaces deals with writing data. ----- */
   virtual void WriteImageInformation(bool /*keepOfStream*/) {
-    ;
+;
   }
 
   void WriteImageInformation() ITK_OVERRIDE {

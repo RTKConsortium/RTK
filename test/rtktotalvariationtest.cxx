@@ -6,7 +6,7 @@
 template<class TImage>
 void CheckTotalVariation(typename TImage::Pointer before, typename TImage::Pointer after)
 {
-  typedef rtk::TotalVariationImageFilter<TImage> TotalVariationFilterType;
+  using TotalVariationFilterType = rtk::TotalVariationImageFilter<TImage>;
   typename TotalVariationFilterType::Pointer tv = TotalVariationFilterType::New();
 
   double totalVariationBefore;
@@ -48,21 +48,21 @@ void CheckTotalVariation(typename TImage::Pointer before, typename TImage::Point
 
 int main(int, char** )
 {
-  typedef float OutputPixelType;
+  using OutputPixelType = float;
   const unsigned int Dimension = 3;
 
 #ifdef USE_CUDA
-  typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
-  typedef itk::CudaImage< itk::CovariantVector
-      < OutputPixelType, Dimension >, Dimension >                GradientOutputImageType;
+  using OutputImageType = itk::CudaImage< OutputPixelType, Dimension >;
+  using GradientOutputImageType = itk::CudaImage< itk::CovariantVector
+      < OutputPixelType, Dimension >, Dimension >;
 #else
-  typedef itk::Image< OutputPixelType, Dimension >     OutputImageType;
-  typedef itk::Image< itk::CovariantVector
-      < OutputPixelType, Dimension >, Dimension >                GradientOutputImageType;
+  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
+  using GradientOutputImageType = itk::Image< itk::CovariantVector
+      < OutputPixelType, Dimension >, Dimension >;
 #endif
 
   // Random image sources
-  typedef itk::RandomImageSource< OutputImageType > RandomImageSourceType;
+  using RandomImageSourceType = itk::RandomImageSource< OutputImageType >;
   RandomImageSourceType::Pointer randomVolumeSource  = RandomImageSourceType::New();
 
   // Image meta data
@@ -102,8 +102,8 @@ int main(int, char** )
   TRY_AND_EXIT_ON_ITK_EXCEPTION( randomVolumeSource->Update() );
 
   // Create and set the TV denoising filter
-  typedef rtk::TotalVariationDenoisingBPDQImageFilter
-    <OutputImageType, GradientOutputImageType>                TVDenoisingFilterType;
+  using TVDenoisingFilterType = rtk::TotalVariationDenoisingBPDQImageFilter
+    <OutputImageType, GradientOutputImageType>;
   TVDenoisingFilterType::Pointer TVdenoising = TVDenoisingFilterType::New();
   TVdenoising->SetInput(randomVolumeSource->GetOutput());
   TVdenoising->SetNumberOfIterations(100);

@@ -47,13 +47,13 @@ class ConjugateGradientImageFilter : public itk::InPlaceImageFilter< OutputImage
 {
 public:
 
-  /** Standard class typedefs. */
-  typedef ConjugateGradientImageFilter                                              Self;
-  typedef itk::InPlaceImageFilter< OutputImageType, OutputImageType>                Superclass;
-  typedef itk::SmartPointer< Self >                                                 Pointer;
-  typedef ConjugateGradientOperator<OutputImageType>                                ConjugateGradientOperatorType;
-  typedef typename ConjugateGradientOperatorType::Pointer                           ConjugateGradientOperatorPointerType;
-  typedef typename OutputImageType::Pointer                                         OutputImagePointer;
+  /** Standard class type alias. */
+  using Self = ConjugateGradientImageFilter;
+  using Superclass = itk::InPlaceImageFilter< OutputImageType, OutputImageType>;
+  using Pointer = itk::SmartPointer< Self >;
+  using ConjugateGradientOperatorType = ConjugateGradientOperator<OutputImageType>;
+  using ConjugateGradientOperatorPointerType = typename ConjugateGradientOperatorType::Pointer;
+  using OutputImagePointer = typename OutputImageType::Pointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self)

@@ -46,16 +46,16 @@ class RTK_EXPORT QuadricShape:
     public ConvexShape
 {
 public:
-  /** Standard class typedefs. */
-  typedef QuadricShape                  Self;
-  typedef ConvexShape                   Superclass;
-  typedef itk::SmartPointer<Self>       Pointer;
-  typedef itk::SmartPointer<const Self> ConstPointer;
+  /** Standard class type alias. */
+  using Self = QuadricShape;
+  using Superclass = ConvexShape;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
-  /** Convenient typedefs. */
-  typedef Superclass::ScalarType ScalarType;
-  typedef Superclass::PointType  PointType;
-  typedef Superclass::VectorType VectorType;
+  /** Convenient type alias. */
+  using ScalarType = Superclass::ScalarType;
+  using PointType = Superclass::PointType;
+  using VectorType = Superclass::VectorType;
 
   /** Method for creation through the object factory. */
   itkNewMacro ( Self );

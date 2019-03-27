@@ -40,18 +40,18 @@ class DrawBoxImageFilter :
 public DrawConvexImageFilter< TInputImage, TOutputImage >
 {
 public:
-  /** Standard class typedefs. */
-  typedef DrawBoxImageFilter                              Self;
-  typedef DrawConvexImageFilter<TInputImage,TOutputImage> Superclass;
-  typedef itk::SmartPointer<Self>                         Pointer;
-  typedef itk::SmartPointer<const Self>                   ConstPointer;
+  /** Standard class type alias. */
+  using Self = DrawBoxImageFilter;
+  using Superclass = DrawConvexImageFilter<TInputImage,TOutputImage>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
-  /** Convenient typedefs. */
-  typedef BoxShape::PointType          PointType;
-  typedef BoxShape::VectorType         VectorType;
-  typedef BoxShape::ScalarType         ScalarType;
-  typedef BoxShape::RotationMatrixType RotationMatrixType;
-  typedef BoxShape::ImageBaseType      ImageBaseType;
+  /** Convenient type alias. */
+  using PointType = BoxShape::PointType;
+  using VectorType = BoxShape::VectorType;
+  using ScalarType = BoxShape::ScalarType;
+  using RotationMatrixType = BoxShape::RotationMatrixType;
+  using ImageBaseType = BoxShape::ImageBaseType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);

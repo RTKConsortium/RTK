@@ -46,11 +46,11 @@ class RTK_EXPORT CudaAverageOutOfROIImageFilter :
 
 {
 public:
-  /** Standard class typedefs. */
-  typedef rtk::CudaAverageOutOfROIImageFilter                                 Self;
-  typedef rtk::AverageOutOfROIImageFilter< OutputImageType, InputImageType >  Superclass;
-  typedef itk::SmartPointer<Self>                                             Pointer;
-  typedef itk::SmartPointer<const Self>                                       ConstPointer;
+  /** Standard class type alias. */
+  using Self = rtk::CudaAverageOutOfROIImageFilter;
+  using Superclass = rtk::AverageOutOfROIImageFilter< OutputImageType, InputImageType >;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
   /** Standard New method. */
   itkNewMacro(Self)

@@ -33,10 +33,10 @@ class ConjugateGradientOperator : public itk::ImageToImageFilter< OutputImageTyp
 {
 public:
 
-  /** Standard class typedefs. */
-  typedef ConjugateGradientOperator                                   Self;
-  typedef itk::ImageToImageFilter< OutputImageType, OutputImageType > Superclass;
-  typedef itk::SmartPointer< Self >                                   Pointer;
+  /** Standard class type alias. */
+  using Self = ConjugateGradientOperator;
+  using Superclass = itk::ImageToImageFilter< OutputImageType, OutputImageType >;
+  using Pointer = itk::SmartPointer< Self >;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self)

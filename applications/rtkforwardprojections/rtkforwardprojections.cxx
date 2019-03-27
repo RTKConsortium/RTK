@@ -33,13 +33,13 @@ int main(int argc, char * argv[])
 {
   GGO(rtkforwardprojections, args_info);
 
-  typedef float OutputPixelType;
+  using OutputPixelType = float;
   const unsigned int Dimension = 3;
 
   #ifdef RTK_USE_CUDA
-    typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
+    using OutputImageType = itk::CudaImage< OutputPixelType, Dimension >;
   #else
-    typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
+    using OutputImageType = itk::Image< OutputPixelType, Dimension >;
   #endif
 
   // Geometry
@@ -56,7 +56,7 @@ int main(int argc, char * argv[])
     std::cout << " done." << std::endl;
 
   // Create a stack of empty projection images
-  typedef rtk::ConstantImageSource< OutputImageType > ConstantImageSourceType;
+  using ConstantImageSourceType = rtk::ConstantImageSource< OutputImageType >;
   ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
   rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkforwardprojections>(constantImageSource, args_info);
 
@@ -73,7 +73,7 @@ int main(int argc, char * argv[])
               << args_info.input_arg
               << "..."
               << std::endl;
-  typedef itk::ImageFileReader<  OutputImageType > ReaderType;
+  using ReaderType = itk::ImageFileReader<  OutputImageType >;
   ReaderType::Pointer reader = ReaderType::New();
   reader->SetFileName( args_info.input_arg );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->Update() )
@@ -87,7 +87,7 @@ int main(int argc, char * argv[])
               << "..."
               << std::endl;
     // Read an existing image to initialize the attenuation map
-    typedef itk::ImageFileReader<  OutputImageType > AttenuationReaderType;
+    using AttenuationReaderType = itk::ImageFileReader<  OutputImageType >;
     AttenuationReaderType::Pointer attenuationReader = AttenuationReaderType::New();
     attenuationReader->SetFileName( args_info.attenuationmap_arg );
     attenuationFilter = attenuationReader;
@@ -133,7 +133,7 @@ int main(int argc, char * argv[])
   // Write
   if(args_info.verbose_flag)
     std::cout << "Writing... " << std::endl;
-  typedef itk::ImageFileWriter<  OutputImageType > WriterType;
+  using WriterType = itk::ImageFileWriter<  OutputImageType >;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
   writer->SetInput( forwardProjection->GetOutput() );

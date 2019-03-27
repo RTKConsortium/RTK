@@ -28,10 +28,10 @@ int main(int argc, char * argv[])
 {
   GGO(rtkrayboxintersection, args_info);
 
-  typedef float OutputPixelType;
+  using OutputPixelType = float;
   const unsigned int Dimension = 3;
 
-  typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
+  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
 
   // Geometry
   if(args_info.verbose_flag)
@@ -45,7 +45,7 @@ int main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION( geometryReader->GenerateOutputInformation() )
 
   // Create a stack of empty projection images
-  typedef rtk::ConstantImageSource< OutputImageType > ConstantImageSourceType;
+  using ConstantImageSourceType = rtk::ConstantImageSource< OutputImageType >;
   ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
   rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkrayboxintersection>(constantImageSource, args_info);
 
@@ -57,13 +57,13 @@ int main(int argc, char * argv[])
   constantImageSource->SetSize( sizeOutput );
 
   // Input reader
-  typedef itk::ImageFileReader<  OutputImageType > ReaderType;
+  using ReaderType = itk::ImageFileReader<  OutputImageType >;
   ReaderType::Pointer reader = ReaderType::New();
   reader->SetFileName( args_info.input_arg );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->UpdateOutputInformation() )
 
   // Create projection image filter
-  typedef rtk::RayBoxIntersectionImageFilter<OutputImageType, OutputImageType> RBIType;
+  using RBIType = rtk::RayBoxIntersectionImageFilter<OutputImageType, OutputImageType>;
   RBIType::Pointer rbi = RBIType::New();
   rbi->SetInput( constantImageSource->GetOutput() );
   rbi->SetBoxFromImage( reader->GetOutput() );
@@ -71,7 +71,7 @@ int main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION( rbi->Update() )
 
   // Write
-  typedef itk::ImageFileWriter<  OutputImageType > WriterType;
+  using WriterType = itk::ImageFileWriter<  OutputImageType >;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
   writer->SetInput( rbi->GetOutput() );

@@ -42,20 +42,20 @@ class RTK_EXPORT ForbildPhantomFileReader :
     public itk::LightProcessObject
 {
 public:
-  /** Standard class typedefs. */
-  typedef ForbildPhantomFileReader       Self;
-  typedef itk::Object                    Superclass;
-  typedef itk::SmartPointer<Self>        Pointer;
-  typedef itk::SmartPointer<const Self>  ConstPointer;
+  /** Standard class type alias. */
+  using Self = ForbildPhantomFileReader;
+  using Superclass = itk::Object;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
-  /** Convenient typedefs. */
+  /** Convenient type alias. */
   itkStaticConstMacro(Dimension, unsigned int, ConvexShape::Dimension);
-  typedef GeometricPhantom::Pointer           GeometricPhantomPointer;
-  typedef ConvexShape::ScalarType             ScalarType;
-  typedef ConvexShape::PointType              PointType;
-  typedef ConvexShape::VectorType             VectorType;
-  typedef ConvexShape::RotationMatrixType     RotationMatrixType;
-  typedef GeometricPhantom::ConvexShapeVector ConvexShapeVectorType;
+  using GeometricPhantomPointer = GeometricPhantom::Pointer;
+  using ScalarType = ConvexShape::ScalarType;
+  using PointType = ConvexShape::PointType;
+  using VectorType = ConvexShape::VectorType;
+  using RotationMatrixType = ConvexShape::RotationMatrixType;
+  using ConvexShapeVectorType = GeometricPhantom::ConvexShapeVector;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);

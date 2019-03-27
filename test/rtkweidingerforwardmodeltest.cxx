@@ -30,50 +30,50 @@ int main(int argc, char*argv[])
   const unsigned int nBins=5;
   const unsigned int nMaterials=3;
   const unsigned int nEnergies=150;
-  typedef double dataType;
-  typedef itk::Image<itk::Vector<dataType, nMaterials>, 3> TMaterialProjections;
-  typedef itk::Image<itk::Vector<dataType, nBins>, 3> TPhotonCounts;
-  typedef itk::Image<dataType, 3> TSpectrum;
-  typedef itk::Image<dataType, 3> TProjections;
-  typedef itk::Image<itk::Vector<dataType, nMaterials>, 3> TOutput1;
-  typedef itk::Image<itk::Vector<dataType, nMaterials * nMaterials>, 3> TOutput2;
+  using dataType = double;
+  using TMaterialProjections = itk::Image<itk::Vector<dataType, nMaterials>, 3>;
+  using TPhotonCounts = itk::Image<itk::Vector<dataType, nBins>, 3>;
+  using TSpectrum = itk::Image<dataType, 3>;
+  using TProjections = itk::Image<dataType, 3>;
+  using TOutput1 = itk::Image<itk::Vector<dataType, nMaterials>, 3>;
+  using TOutput2 = itk::Image<itk::Vector<dataType, nMaterials * nMaterials>, 3>;
 
   vnl_matrix<dataType> detectorResponse(nBins, nEnergies);
   vnl_matrix<dataType> materialAttenuations(nEnergies, nMaterials);
 
   // Define, instantiate, set and update readers
-  typedef itk::ImageFileReader<TMaterialProjections> MaterialProjectionsReaderType;
+  using MaterialProjectionsReaderType = itk::ImageFileReader<TMaterialProjections>;
   MaterialProjectionsReaderType::Pointer materialProjectionsReader = MaterialProjectionsReaderType::New();
   materialProjectionsReader->SetFileName(argv[1]);
   materialProjectionsReader->Update();
 
-  typedef itk::ImageFileReader<TPhotonCounts> PhotonCountsReaderType;
+  using PhotonCountsReaderType = itk::ImageFileReader<TPhotonCounts>;
   PhotonCountsReaderType::Pointer photonCountsReader = PhotonCountsReaderType::New();
   photonCountsReader->SetFileName(argv[2]);
   photonCountsReader->Update();
 
-  typedef itk::ImageFileReader<TSpectrum> SpectrumReaderType;
+  using SpectrumReaderType = itk::ImageFileReader<TSpectrum>;
   SpectrumReaderType::Pointer spectrumReader = SpectrumReaderType::New();
   spectrumReader->SetFileName(argv[3]);
   spectrumReader->Update();
 
-  typedef itk::ImageFileReader<TProjections> ProjectionsReaderType;
+  using ProjectionsReaderType = itk::ImageFileReader<TProjections>;
   ProjectionsReaderType::Pointer projectionsReader = ProjectionsReaderType::New();
   projectionsReader->SetFileName(argv[4]);
   projectionsReader->Update();
 
-  typedef itk::ImageFileReader<TOutput1> Output1ReaderType;
+  using Output1ReaderType = itk::ImageFileReader<TOutput1>;
   Output1ReaderType::Pointer output1Reader = Output1ReaderType::New();
   output1Reader->SetFileName(argv[7]);
   output1Reader->Update();
 
-  typedef itk::ImageFileReader<TOutput2> Output2ReaderType;
+  using Output2ReaderType = itk::ImageFileReader<TOutput2>;
   Output2ReaderType::Pointer output2Reader = Output2ReaderType::New();
   output2Reader->SetFileName(argv[8]);
   output2Reader->Update();
 
   // Read binned detector response
-  typedef itk::CSVArray2DFileReader<dataType> CSVReaderType;
+  using CSVReaderType = itk::CSVArray2DFileReader<dataType>;
   CSVReaderType::Pointer csvReader = CSVReaderType::New();
   csvReader->SetFieldDelimiterCharacter( ',' );
   csvReader->HasColumnHeadersOff();
@@ -95,10 +95,10 @@ int main(int argc, char*argv[])
       materialAttenuations[r][c] = csvReader->GetOutput()->GetData(r, c);
 
   // Create the filter
-  typedef rtk::WeidingerForwardModelImageFilter< TMaterialProjections,
+  using WeidingerForwardModelType = rtk::WeidingerForwardModelImageFilter< TMaterialProjections,
                                                  TPhotonCounts,
                                                  TSpectrum,
-                                                 TProjections> WeidingerForwardModelType;
+                                                 TProjections>;
   WeidingerForwardModelType::Pointer weidingerForward = WeidingerForwardModelType::New();
 
   // Set its inputs

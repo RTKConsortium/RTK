@@ -39,15 +39,15 @@ class DrawQuadricImageFilter:
 public DrawConvexImageFilter< TInputImage, TOutputImage >
 {
 public:
-  /** Standard class typedefs. */
-  typedef DrawQuadricImageFilter                          Self;
-  typedef DrawConvexImageFilter<TInputImage,TOutputImage> Superclass;
-  typedef itk::SmartPointer<Self>                         Pointer;
-  typedef itk::SmartPointer<const Self>                   ConstPointer;
+  /** Standard class type alias. */
+  using Self = DrawQuadricImageFilter;
+  using Superclass = DrawConvexImageFilter<TInputImage,TOutputImage>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
-  /** Convenient typedefs. */
-  typedef ConvexShape::VectorType VectorType;
-  typedef ConvexShape::ScalarType ScalarType;
+  /** Convenient type alias. */
+  using VectorType = ConvexShape::VectorType;
+  using ScalarType = ConvexShape::ScalarType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);

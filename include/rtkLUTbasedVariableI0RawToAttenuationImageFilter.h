@@ -79,18 +79,18 @@ class LUTbasedVariableI0RawToAttenuationImageFilter:
   public LookupTableImageFilter<TInputImage, TOutputImage>
 {
 public:
-  /** Standard class typedefs. */
-  typedef LUTbasedVariableI0RawToAttenuationImageFilter           Self;
-  typedef LookupTableImageFilter<TInputImage, TOutputImage>       Superclass;
-  typedef itk::SmartPointer< Self >                               Pointer;
-  typedef itk::SmartPointer< const Self >                         ConstPointer;
+  /** Standard class type alias. */
+  using Self = LUTbasedVariableI0RawToAttenuationImageFilter;
+  using Superclass = LookupTableImageFilter<TInputImage, TOutputImage>;
+  using Pointer = itk::SmartPointer< Self >;
+  using ConstPointer = itk::SmartPointer< const Self >;
 
-  typedef typename TInputImage::PixelType                                InputImagePixelType;
-  typedef typename TOutputImage::PixelType                               OutputImagePixelType;
-  typedef typename Superclass::FunctorType::LookupTableType              LookupTableType;
-  typedef typename itk::SubtractImageFilter<LookupTableType>             SubtractLUTFilterType;
-  typedef typename itk::ThresholdImageFilter<LookupTableType>            ThresholdLUTFilterType;
-  typedef typename itk::LogImageFilter<LookupTableType, LookupTableType> LogLUTFilterType;
+  using InputImagePixelType = typename TInputImage::PixelType;
+  using OutputImagePixelType = typename TOutputImage::PixelType;
+  using LookupTableType = typename Superclass::FunctorType::LookupTableType;
+  using SubtractLUTFilterType = typename itk::SubtractImageFilter<LookupTableType>;
+  using ThresholdLUTFilterType = typename itk::ThresholdImageFilter<LookupTableType>;
+  using LogLUTFilterType = typename itk::LogImageFilter<LookupTableType, LookupTableType>;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);

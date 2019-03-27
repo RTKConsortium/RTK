@@ -39,14 +39,14 @@ class RTK_EXPORT VarianProBeamGeometryReader :
   public itk::LightProcessObject
 {
 public:
-  /** Standard typedefs */
-  typedef VarianProBeamGeometryReader Self;
-  typedef itk::LightProcessObject     Superclass;
-  typedef itk::SmartPointer<Self>     Pointer;
+  /** Standard type alias */
+  using Self = VarianProBeamGeometryReader;
+  using Superclass = itk::LightProcessObject;
+  using Pointer = itk::SmartPointer<Self>;
 
-  /** Convenient typedefs */
-  typedef ThreeDCircularProjectionGeometry GeometryType;
-  typedef std::vector<std::string>         FileNamesContainer;
+  /** Convenient type alias */
+  using GeometryType = ThreeDCircularProjectionGeometry;
+  using FileNamesContainer = std::vector<std::string>;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(VarianProBeamGeometryReader, LightProcessObject);

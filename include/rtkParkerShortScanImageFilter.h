@@ -49,20 +49,20 @@ class ITK_EXPORT ParkerShortScanImageFilter :
   public itk::InPlaceImageFilter<TInputImage, TOutputImage>
 {
 public:
-  /** Standard class typedefs. */
-  typedef ParkerShortScanImageFilter                         Self;
-  typedef itk::ImageToImageFilter<TInputImage, TOutputImage> Superclass;
-  typedef itk::SmartPointer<Self>                            Pointer;
-  typedef itk::SmartPointer<const Self>                      ConstPointer;
+  /** Standard class type alias. */
+  using Self = ParkerShortScanImageFilter;
+  using Superclass = itk::ImageToImageFilter<TInputImage, TOutputImage>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
-  /** Some convenient typedefs. */
-  typedef TInputImage                                     InputImageType;
-  typedef TOutputImage                                    OutputImageType;
-  typedef typename OutputImageType::RegionType            OutputImageRegionType;
-  typedef itk::Image<typename TOutputImage::PixelType, 1> WeightImageType;
+  /** Some convenient type alias. */
+  using InputImageType = TInputImage;
+  using OutputImageType = TOutputImage;
+  using OutputImageRegionType = typename OutputImageType::RegionType;
+  using WeightImageType = itk::Image<typename TOutputImage::PixelType, 1>;
 
-  typedef ThreeDCircularProjectionGeometry GeometryType;
-  typedef GeometryType::Pointer            GeometryPointer;
+  using GeometryType = ThreeDCircularProjectionGeometry;
+  using GeometryPointer = GeometryType::Pointer;
 
   /** Standard New method. */
   itkNewMacro(Self);
