@@ -87,7 +87,7 @@ public:
 
 
 protected:
-  OraGeometryReader(): m_Geometry(ITK_NULLPTR), m_CollimationMargin(0.) {};
+  OraGeometryReader(): m_Geometry(nullptr), m_CollimationMargin(0.) {};
 
   virtual ~OraGeometryReader() ITK_OVERRIDE {}
 

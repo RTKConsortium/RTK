@@ -225,7 +225,7 @@ int main(int argc, char*argv[])
   std::cout << "\n\n****** Case 1: Amsterdam Shroud Image without crop ******" << std::endl;
 
   // Amsterdam shroud
-  shroudFilter->SetGeometry(ITK_NULLPTR);
+  shroudFilter->SetGeometry(nullptr);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(shroudFilter->Update());
 
   // Read reference object

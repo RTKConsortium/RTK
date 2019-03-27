@@ -58,7 +58,7 @@ void
 FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 ::UpdateFFTProjectionsConvolutionKernel(const SizeType s)
 {
-  if(this->m_KernelFFT.GetPointer() != ITK_NULLPTR && s == this->m_PreviousKernelUpdateSize)
+  if(this->m_KernelFFT.GetPointer() != nullptr && s == this->m_PreviousKernelUpdateSize)
     {
     return;
     }

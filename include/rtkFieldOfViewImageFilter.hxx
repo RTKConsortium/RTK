@@ -35,7 +35,7 @@ namespace rtk
 template<class TInputImage, class TOutputImage>
 FieldOfViewImageFilter<TInputImage, TOutputImage>
 ::FieldOfViewImageFilter():
-  m_Geometry(ITK_NULLPTR),
+  m_Geometry(nullptr),
   m_Mask(false),
   m_Radius(-1),
   m_CenterX(0.),
@@ -59,7 +59,7 @@ bool FieldOfViewImageFilter<TInputImage, TOutputImage>
   // Build model for lpsolve with 3 variables: x, z and r
   const int Ncol = 3;
   lprec *lp = make_lp(0, Ncol);
-  if(lp == ITK_NULLPTR)
+  if(lp == nullptr)
     itkExceptionMacro(<< "Couldn't construct 2 new models for the simplex solver");
 
   // Objective: maximize r

@@ -33,7 +33,7 @@ namespace rtk
 template <class TInputImage, class TOutputImage>
 MaskCollimationImageFilter<TInputImage,TOutputImage>
 ::MaskCollimationImageFilter():
-  m_Geometry(ITK_NULLPTR)
+  m_Geometry(nullptr)
 {
 }
 

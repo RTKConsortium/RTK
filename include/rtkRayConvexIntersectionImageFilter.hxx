@@ -31,7 +31,7 @@ namespace rtk
 template <class TInputImage, class TOutputImage>
 RayConvexIntersectionImageFilter<TInputImage,TOutputImage>
 ::RayConvexIntersectionImageFilter():
-  m_Geometry(ITK_NULLPTR)
+  m_Geometry(nullptr)
 {
 }
 

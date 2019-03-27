@@ -106,7 +106,7 @@ CudaFFTProjectionsConvolutionImageFilter<TParentImageFilter>
   // compatible with itk::CudaImage + ITK 3.20.
   typename Superclass::FFTOutputImageType::SizeType s = paddedImage->GetLargestPossibleRegion().GetSize();
   this->UpdateFFTProjectionsConvolutionKernel(s);
-  if(this->m_KernelFFTCUDA.GetPointer() == ITK_NULLPTR ||
+  if(this->m_KernelFFTCUDA.GetPointer() == nullptr ||
      this->m_KernelFFTCUDA->GetTimeStamp() < this->m_KernelFFT->GetTimeStamp())
     {
 

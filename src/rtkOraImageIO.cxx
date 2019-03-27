@@ -37,7 +37,7 @@ rtk::OraImageIO::ReadImageInformation()
   // Retrieve MHD file name
   using MetaDataStringType = itk::MetaDataObject< std::string >;
   MetaDataStringType *mhdMeta = dynamic_cast<MetaDataStringType *>(this->GetMetaDataDictionary()["MHD_File"].GetPointer() );
-  if(mhdMeta==ITK_NULLPTR)
+  if(mhdMeta==nullptr)
     {
     itkExceptionMacro(<< "No MHD_File in " << oraFileName);
     }

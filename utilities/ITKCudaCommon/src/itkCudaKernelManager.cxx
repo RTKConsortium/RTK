@@ -112,7 +112,7 @@ bool CudaKernelManager::PushKernelArg(int kernelIdx, const void* argVal)
   m_KernelArgumentReady[kernelIdx].resize(argIdx+1);
   m_KernelArgumentReady[kernelIdx][argIdx].m_Arg = argVal;
   m_KernelArgumentReady[kernelIdx][argIdx].m_IsReady = true;
-  m_KernelArgumentReady[kernelIdx][argIdx].m_CudaDataManager = (CudaDataManager *)ITK_NULLPTR;
+  m_KernelArgumentReady[kernelIdx][argIdx].m_CudaDataManager = (CudaDataManager *)nullptr;
 
   return true;
 }
@@ -124,7 +124,7 @@ bool CudaKernelManager::SetKernelArg(int kernelIdx, int argIdx, size_t itkNotUse
   m_KernelArgumentReady[kernelIdx].resize(argIdx+1);
   m_KernelArgumentReady[kernelIdx][argIdx].m_Arg = argVal;
   m_KernelArgumentReady[kernelIdx][argIdx].m_IsReady = true;
-  m_KernelArgumentReady[kernelIdx][argIdx].m_CudaDataManager = (CudaDataManager *)ITK_NULLPTR;
+  m_KernelArgumentReady[kernelIdx][argIdx].m_CudaDataManager = (CudaDataManager *)nullptr;
 
   return true;
 }
@@ -175,7 +175,7 @@ void CudaKernelManager::ResetArguments(int kernelIdx)
   for (int i = 0; i < nArg; i++)
     {
     m_KernelArgumentReady[kernelIdx][i].m_IsReady = false;
-    m_KernelArgumentReady[kernelIdx][i].m_CudaDataManager = (CudaDataManager *)ITK_NULLPTR;
+    m_KernelArgumentReady[kernelIdx][i].m_CudaDataManager = (CudaDataManager *)nullptr;
     }
 }
 

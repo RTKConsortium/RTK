@@ -89,12 +89,12 @@ if ( !strcmp(m_ImageIO->GetComponentTypeAsString(m_ImageIO->GetComponentType()).
   using InputImageType = itk::Image< InputPixelType, OutputImageDimension >; \
   using RawType = typename itk::ImageSeriesReader< InputImageType >; \
   RawType *raw = dynamic_cast<RawType*>(m_RawDataReader.GetPointer()); \
-  assert(raw != ITK_NULLPTR); \
+  assert(raw != nullptr); \
   raw->SetFileNames( this->GetFileNames() ); \
   raw->SetImageIO( m_ImageIO ); \
   using VectorComponentSelectionType = itk::VectorIndexSelectionCastImageFilter<InputImageType, OutputImageType>; \
   VectorComponentSelectionType *vectorComponentSelectionFilter = dynamic_cast<VectorComponentSelectionType*>(m_VectorComponentSelectionFilter.GetPointer()); \
-  assert(vectorComponentSelectionFilter != ITK_NULLPTR); \
+  assert(vectorComponentSelectionFilter != nullptr); \
   vectorComponentSelectionFilter->SetInput(raw->GetOutput()); \
   output = vectorComponentSelectionFilter->GetOutput(); \
   }
@@ -106,7 +106,7 @@ namespace rtk
 template <class TOutputImage>
 ProjectionsReader<TOutputImage>
 ::ProjectionsReader():
-  m_ImageIO(ITK_NULLPTR),
+  m_ImageIO(nullptr),
   m_AirThreshold(32000),
   m_ScatterToPrimaryRatio(0.),
   m_NonNegativityConstraintThreshold( itk::NumericTraits<double>::NonpositiveMin() ),
@@ -165,17 +165,17 @@ void ProjectionsReader<TOutputImage>
     // In this block, we create the filters used depending on the input type
 
     // Reset
-    m_RawDataReader = ITK_NULLPTR;
-    m_VectorComponentSelectionFilter = ITK_NULLPTR;
-    m_ChangeInformationFilter = ITK_NULLPTR;
-    m_ElektaRawFilter = ITK_NULLPTR;
-    m_CropFilter = ITK_NULLPTR;
-    m_ConditionalMedianFilter = ITK_NULLPTR;
-    m_BinningFilter = ITK_NULLPTR;
-    m_ScatterFilter = ITK_NULLPTR;
-    m_I0EstimationFilter = ITK_NULLPTR;
-    m_RawToAttenuationFilter = ITK_NULLPTR;
-    m_RawCastFilter = ITK_NULLPTR;
+    m_RawDataReader = nullptr;
+    m_VectorComponentSelectionFilter = nullptr;
+    m_ChangeInformationFilter = nullptr;
+    m_ElektaRawFilter = nullptr;
+    m_CropFilter = nullptr;
+    m_ConditionalMedianFilter = nullptr;
+    m_BinningFilter = nullptr;
+    m_ScatterFilter = nullptr;
+    m_I0EstimationFilter = nullptr;
+    m_RawToAttenuationFilter = nullptr;
+    m_RawCastFilter = nullptr;
 
     // Start creation
     if( (!strcmp(imageIO->GetNameOfClass(), "EdfImageIO") &&
@@ -446,10 +446,10 @@ void ProjectionsReader<TOutputImage>
 ::PropagateParametersToMiniPipeline()
 {
   TInputImage *nextInput;
-  OutputImageType *output = ITK_NULLPTR;
+  OutputImageType *output = nullptr;
 
   // Vector component selection
-  if(m_VectorComponentSelectionFilter.GetPointer() != ITK_NULLPTR)
+  if(m_VectorComponentSelectionFilter.GetPointer() != nullptr)
     {
     PROPAGATE_INPUT_IMAGE_VECTOR_TYPE(float, 1)
     PROPAGATE_INPUT_IMAGE_VECTOR_TYPE(float, 2)
@@ -469,7 +469,7 @@ void ProjectionsReader<TOutputImage>
     // Raw
     using RawType = typename itk::ImageSeriesReader< TInputImage>;
     RawType *raw = dynamic_cast<RawType*>(m_RawDataReader.GetPointer());
-    assert(raw != ITK_NULLPTR);
+    assert(raw != nullptr);
     raw->SetFileNames( this->GetFileNames() );
     raw->SetImageIO( m_ImageIO );
     nextInput = raw->GetOutput();
@@ -483,7 +483,7 @@ void ProjectionsReader<TOutputImage>
     defaultDirection.Fill( itk::NumericTraits<typename OutputImageType::PointValueType>::max() );
     if(m_Spacing != defaultSpacing || m_Origin != defaultOrigin || m_Direction != defaultDirection)
       {
-      if(m_ChangeInformationFilter.GetPointer() == ITK_NULLPTR)
+      if(m_ChangeInformationFilter.GetPointer() == nullptr)
         {
           itkGenericExceptionMacro(<< "Can not change image information with this input (not implemented)");
         }
@@ -491,7 +491,7 @@ void ProjectionsReader<TOutputImage>
         {
         using ChangeInfoType = itk::ChangeInformationImageFilter< TInputImage >;
         ChangeInfoType *cif = dynamic_cast<ChangeInfoType*>(m_ChangeInformationFilter.GetPointer());
-        assert(cif != ITK_NULLPTR);
+        assert(cif != nullptr);
         if(m_Spacing != defaultSpacing)
           {
           cif->SetOutputSpacing(m_Spacing);
@@ -517,7 +517,7 @@ void ProjectionsReader<TOutputImage>
     defaultCropSize.Fill(0);
     if(m_LowerBoundaryCropSize != defaultCropSize || m_UpperBoundaryCropSize != defaultCropSize)
       {
-      if(m_CropFilter.GetPointer() == ITK_NULLPTR)
+      if(m_CropFilter.GetPointer() == nullptr)
         {
           itkGenericExceptionMacro(<< "Can not crop images read with this input (not implemented)");
         }
@@ -525,7 +525,7 @@ void ProjectionsReader<TOutputImage>
         {
         using CropType = itk::CropImageFilter< TInputImage, TInputImage >;
         CropType *crop = dynamic_cast<CropType*>(m_CropFilter.GetPointer());
-        assert(crop != ITK_NULLPTR);
+        assert(crop != nullptr);
         crop->SetLowerBoundaryCropSize(m_LowerBoundaryCropSize);
         crop->SetUpperBoundaryCropSize(m_UpperBoundaryCropSize);
         crop->SetInput(nextInput);
@@ -535,17 +535,17 @@ void ProjectionsReader<TOutputImage>
 
     // Elekta raw data converter
     itk::ImageBase<OutputImageDimension> *nextInputBase = dynamic_cast<itk::ImageBase<OutputImageDimension> *>(nextInput);
-    assert(nextInputBase != ITK_NULLPTR);
+    assert(nextInputBase != nullptr);
     ConnectElektaRawFilter(&nextInputBase);
     nextInput = dynamic_cast<TInputImage *>(nextInputBase);
-    assert(nextInput != ITK_NULLPTR);
+    assert(nextInput != nullptr);
 
     // Conditional median
     MedianRadiusType defaultMedianRadius;
     defaultMedianRadius.Fill(0);
     if(m_MedianRadius != defaultMedianRadius)
       {
-      if(m_ConditionalMedianFilter.GetPointer() == ITK_NULLPTR)
+      if(m_ConditionalMedianFilter.GetPointer() == nullptr)
         {
           itkGenericExceptionMacro(<< "Can not apply conditional median filter on this input (not implemented)");
         }
@@ -553,7 +553,7 @@ void ProjectionsReader<TOutputImage>
         {
         using ConditionalMedianType = rtk::ConditionalMedianImageFilter< TInputImage >;
         ConditionalMedianType *cond = dynamic_cast<ConditionalMedianType*>(m_ConditionalMedianFilter.GetPointer());
-        assert(cond != ITK_NULLPTR);
+        assert(cond != nullptr);
         cond->SetRadius(m_MedianRadius);
         cond->SetInput(nextInput);
         cond->SetThresholdMultiplier(m_ConditionalMedianThresholdMultiplier);
@@ -566,7 +566,7 @@ void ProjectionsReader<TOutputImage>
     defaultShrinkFactors.Fill(1);
     if(m_ShrinkFactors != defaultShrinkFactors)
       {
-      if(m_BinningFilter.GetPointer() == ITK_NULLPTR)
+      if(m_BinningFilter.GetPointer() == nullptr)
         {
           itkGenericExceptionMacro(<< "Can not bin / shrink images read with this input (not implemented)");
         }
@@ -574,7 +574,7 @@ void ProjectionsReader<TOutputImage>
         {
         using BinType = itk::BinShrinkImageFilter< TInputImage, TInputImage >;
         BinType *bin = dynamic_cast<BinType*>(m_BinningFilter.GetPointer());
-        assert(bin != ITK_NULLPTR);
+        assert(bin != nullptr);
         bin->SetShrinkFactors(m_ShrinkFactors);
         bin->SetInput(nextInput);
         nextInput = bin->GetOutput();
@@ -585,7 +585,7 @@ void ProjectionsReader<TOutputImage>
     if(m_NonNegativityConstraintThreshold != itk::NumericTraits<double>::NonpositiveMin() ||
        m_ScatterToPrimaryRatio != 0.)
       {
-      if(m_ScatterFilter.GetPointer() == ITK_NULLPTR)
+      if(m_ScatterFilter.GetPointer() == nullptr)
         {
           itkGenericExceptionMacro(<< "Can not use Boellaard scatter correction with this input (not implemented)");
         }
@@ -593,7 +593,7 @@ void ProjectionsReader<TOutputImage>
         {
         using ScatterFilterType = rtk::BoellaardScatterCorrectionImageFilter<TInputImage, TInputImage>;
         ScatterFilterType *scatter = dynamic_cast<ScatterFilterType*>(m_ScatterFilter.GetPointer());
-        assert(scatter != ITK_NULLPTR);
+        assert(scatter != nullptr);
         scatter->SetAirThreshold(m_AirThreshold);
         scatter->SetScatterToPrimaryRatio(m_ScatterToPrimaryRatio);
         if(m_NonNegativityConstraintThreshold != itk::NumericTraits<double>::NonpositiveMin())
@@ -606,27 +606,27 @@ void ProjectionsReader<TOutputImage>
     // LUTbasedVariableI0RawToAttenuationImageFilter
     if( m_I0 != itk::NumericTraits<double>::NonpositiveMin() )
       {
-      if(m_RawToAttenuationFilter.GetPointer() == ITK_NULLPTR)
+      if(m_RawToAttenuationFilter.GetPointer() == nullptr)
         {
         itkGenericExceptionMacro(<< "Can not use I0 in LUTbasedVariableI0RawToAttenuationImageFilter with this input (not implemented)");
         }
       else
         {
         nextInputBase = dynamic_cast<itk::ImageBase<OutputImageDimension> *>(nextInput);
-        assert(nextInputBase != ITK_NULLPTR);
+        assert(nextInputBase != nullptr);
         PropagateI0(&nextInputBase);
         nextInput = dynamic_cast<TInputImage *>(nextInputBase);
-        assert(nextInput != ITK_NULLPTR);
+        assert(nextInput != nullptr);
         }
       }
 
     // Raw to attenuation or cast filter, change of type
-    if(m_RawToAttenuationFilter.GetPointer() != ITK_NULLPTR)
+    if(m_RawToAttenuationFilter.GetPointer() != nullptr)
       {
       // Check if Ora pointer
       using OraRawType = rtk::OraLookupTableImageFilter< OutputImageType >;
       OraRawType *oraraw = dynamic_cast<OraRawType*>( m_RawToAttenuationFilter.GetPointer() );
-      if(oraraw != ITK_NULLPTR)
+      if(oraraw != nullptr)
         {
         oraraw->SetComputeLineIntegral(m_ComputeLineIntegral);
         oraraw->SetFileNames(m_FileNames);
@@ -634,12 +634,12 @@ void ProjectionsReader<TOutputImage>
 
       // Cast or convert to line integral depending on m_ComputeLineIntegral
       using IToIFilterType = itk::ImageToImageFilter<TInputImage, OutputImageType>;
-      IToIFilterType * itoi = ITK_NULLPTR;
-      if(m_ComputeLineIntegral || oraraw != ITK_NULLPTR)
+      IToIFilterType * itoi = nullptr;
+      if(m_ComputeLineIntegral || oraraw != nullptr)
         itoi = dynamic_cast<IToIFilterType*>( m_RawToAttenuationFilter.GetPointer() );
       else
         itoi = dynamic_cast<IToIFilterType*>( m_RawCastFilter.GetPointer() );
-      assert(itoi != ITK_NULLPTR);
+      assert(itoi != nullptr);
       itoi->SetInput(nextInput);
       output = itoi->GetOutput();
 
@@ -649,7 +649,7 @@ void ProjectionsReader<TOutputImage>
     else
       {
       output = dynamic_cast<OutputImageType *>(nextInput);
-      assert(output != ITK_NULLPTR);
+      assert(output != nullptr);
       }
 
     // ESRF raw to attenuation converter also needs the filenames
@@ -675,12 +675,12 @@ template <class TOutputImage>
 void ProjectionsReader<TOutputImage>
 ::ConnectElektaRawFilter(itk::ImageBase<OutputImageDimension> **nextInputBase)
 {
-  if(m_ElektaRawFilter.GetPointer() != ITK_NULLPTR)
+  if(m_ElektaRawFilter.GetPointer() != nullptr)
     {
     using ElektaRawType = rtk::ElektaSynergyRawLookupTableImageFilter< itk::Image<unsigned short, OutputImageDimension>,
                                                          itk::Image<unsigned short, OutputImageDimension> >;
     ElektaRawType *elektaRaw = dynamic_cast<ElektaRawType*>(m_ElektaRawFilter.GetPointer());
-    assert(elektaRaw != ITK_NULLPTR);
+    assert(elektaRaw != nullptr);
     using InputImageType = typename itk::Image<unsigned short, OutputImageDimension>;
     InputImageType *nextInput = dynamic_cast<InputImageType*>(*nextInputBase);
     elektaRaw->SetInput(nextInput);
@@ -695,13 +695,13 @@ void ProjectionsReader<TOutputImage>
 {
   using UnsignedShortImageType = itk::Image<unsigned short, OutputImageDimension>;
   UnsignedShortImageType *nextInputUShort = dynamic_cast<UnsignedShortImageType*>(*nextInputBase);
-  if(nextInputUShort != ITK_NULLPTR)
+  if(nextInputUShort != nullptr)
     {
     if(m_I0==0)
       {
       using I0EstimationType = rtk::I0EstimationProjectionFilter< UnsignedShortImageType, UnsignedShortImageType >;
       I0EstimationType *i0est = dynamic_cast<I0EstimationType*>(m_I0EstimationFilter.GetPointer());
-      assert(i0est != ITK_NULLPTR);
+      assert(i0est != nullptr);
       i0est->SetInput(nextInputUShort);
       *nextInputBase = i0est->GetOutput();
       }
@@ -713,13 +713,13 @@ void ProjectionsReader<TOutputImage>
 
   using UnsignedIntImageType = itk::Image<unsigned int, OutputImageDimension>;
   UnsignedIntImageType *nextInputUInt = dynamic_cast<UnsignedIntImageType*>(*nextInputBase);
-  if(nextInputUInt != ITK_NULLPTR)
+  if(nextInputUInt != nullptr)
     {
     if(m_I0==0)
       {
       using I0EstimationType = rtk::I0EstimationProjectionFilter< UnsignedIntImageType, UnsignedIntImageType >;
       I0EstimationType *i0est = dynamic_cast<I0EstimationType*>(m_I0EstimationFilter.GetPointer());
-      assert(i0est != ITK_NULLPTR);
+      assert(i0est != nullptr);
       i0est->SetInput(nextInputUInt);
       *nextInputBase = i0est->GetOutput();
       }

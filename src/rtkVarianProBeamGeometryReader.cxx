@@ -26,7 +26,7 @@
 
 rtk::VarianProBeamGeometryReader
 ::VarianProBeamGeometryReader():
-  m_Geometry(ITK_NULLPTR)
+  m_Geometry(nullptr)
 {
 }
 

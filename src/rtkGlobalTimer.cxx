@@ -20,7 +20,7 @@
 
 namespace rtk
 {
-GlobalTimer::Pointer GlobalTimer::m_Instance = ITK_NULLPTR;
+GlobalTimer::Pointer GlobalTimer::m_Instance = nullptr;
 
 /**
  * Prompting off by default

@@ -44,13 +44,13 @@ void
 RayBoxIntersectionImageFilter<TInputImage, TOutputImage>
 ::BeforeThreadedGenerateData()
 {
-  if( this->GetConvexShape() == ITK_NULLPTR )
+  if( this->GetConvexShape() == nullptr )
     this->SetConvexShape( BoxShape::New().GetPointer() );
 
   Superclass::BeforeThreadedGenerateData();
 
   BoxShape * qo = dynamic_cast< BoxShape * >( this->GetModifiableConvexShape() );
-  if( qo == ITK_NULLPTR )
+  if( qo == nullptr )
     {
     itkExceptionMacro("This is not a BoxShape!");
     }
@@ -75,10 +75,10 @@ void
 RayBoxIntersectionImageFilter<TInputImage,TOutputImage>
 ::SetBoxFromImage(const ImageBaseType *_arg, bool /*bWithExternalHalfPixelBorder*/ )
 {
-  if( this->GetConvexShape() == ITK_NULLPTR )
+  if( this->GetConvexShape() == nullptr )
     this->SetConvexShape( BoxShape::New().GetPointer() );
   BoxShape * qo = dynamic_cast< BoxShape * >( this->GetModifiableConvexShape() );
-  if( qo == ITK_NULLPTR )
+  if( qo == nullptr )
     {
     itkExceptionMacro("This is not a BoxShape!");
     }

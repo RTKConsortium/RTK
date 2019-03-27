@@ -43,13 +43,13 @@ void
 DrawBoxImageFilter<TInputImage, TOutputImage>
 ::BeforeThreadedGenerateData()
 {
-  if( this->GetConvexObject() == ITK_NULLPTR )
+  if( this->GetConvexObject() == nullptr )
     this->SetConvexObject( BoxShape::New().GetPointer() );
 
   Superclass::BeforeThreadedGenerateData();
 
   BoxShape * qo = dynamic_cast< BoxShape * >( this->GetConvexObject() );
-  if( qo == ITK_NULLPTR )
+  if( qo == nullptr )
     {
     itkExceptionMacro("This is not a BoxShape!");
     }
@@ -74,10 +74,10 @@ void
 DrawBoxImageFilter<TInputImage,TOutputImage>
 ::SetBoxFromImage(const ImageBaseType *_arg, bool bWithExternalHalfPixelBorder )
 {
-  if( this->GetConvexObject() == ITK_NULLPTR )
+  if( this->GetConvexObject() == nullptr )
     this->SetConvexObject( BoxShape::New().GetPointer() );
   BoxShape * qo = dynamic_cast< BoxShape * >( this->GetConvexObject() );
-  if( qo == ITK_NULLPTR )
+  if( qo == nullptr )
     {
     itkExceptionMacro("This is not a BoxShape!");
     }

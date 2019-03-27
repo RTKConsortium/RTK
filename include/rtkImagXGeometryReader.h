@@ -91,7 +91,7 @@ public:
 
 protected:
   ImagXGeometryReader()
-     : m_Geometry(ITK_NULLPTR), m_CalibrationXMLFileName(""), m_RoomXMLFileName("") {};
+     : m_Geometry(nullptr), m_CalibrationXMLFileName(""), m_RoomXMLFileName("") {};
 
   virtual ~ImagXGeometryReader() ITK_OVERRIDE {}
 

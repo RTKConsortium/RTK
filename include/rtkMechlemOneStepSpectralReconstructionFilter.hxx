@@ -324,7 +324,7 @@ MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectr
   m_NesterovFilter->SetInput(1, m_NewtonFilter->GetOutput());
 
   typename TOutputImage::Pointer lastOutput = m_NesterovFilter->GetOutput();
-  if(this->GetSupportMask().GetPointer() != ITK_NULLPTR)
+  if(this->GetSupportMask().GetPointer() != nullptr)
     {
     m_MultiplySupportFilter->SetInput1( m_NesterovFilter->GetOutput() );
     m_MultiplySupportFilter->SetInput2( this->GetSupportMask() );
@@ -403,7 +403,7 @@ MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectr
       m_ProjectionsSource->SetInformationFromImage(m_ExtractPhotonCountsFilter->GetOutput());
 
       // Update the most downstream filter
-      if(this->GetSupportMask().GetPointer() != ITK_NULLPTR)
+      if(this->GetSupportMask().GetPointer() != nullptr)
         {
         m_MultiplySupportFilter->Update();
         Next_Zk = m_MultiplySupportFilter->GetOutput();

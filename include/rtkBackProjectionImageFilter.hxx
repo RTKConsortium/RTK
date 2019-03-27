@@ -61,7 +61,7 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
     }
 
   typename TInputImage::RegionType reqRegion = inputPtr1->GetLargestPossibleRegion();
-  if(m_Geometry.GetPointer() == ITK_NULLPTR || m_Geometry->GetRadiusCylindricalDetector() != 0 )
+  if(m_Geometry.GetPointer() == nullptr || m_Geometry->GetRadiusCylindricalDetector() != 0 )
     {
     inputPtr1->SetRequestedRegion( inputPtr1->GetLargestPossibleRegion() );
     return;

@@ -97,7 +97,7 @@ ForbildPhantomFileReader
       m_GeometricPhantom->AddConvexShape(m_ConvexShape);
       FindClipPlanes(line);
       FindUnions(line);
-      m_ConvexShape = ConvexShape::Pointer(ITK_NULLPTR);
+      m_ConvexShape = ConvexShape::Pointer(nullptr);
       }
     }
   for(size_t i=0; i<m_Unions.size(); i++)

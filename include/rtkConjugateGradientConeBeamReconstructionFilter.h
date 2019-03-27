@@ -241,10 +241,10 @@ protected:
     typename TOutputImage::ConstPointer   GetInputProjectionStack();
     typename TWeightsImage::ConstPointer  GetInputWeights();
 
-    template < typename ImageType, typename IterativeConeBeamReconstructionFilter<TOutputImage>::template EnableCudaScalarAndVectorType<ImageType>* = ITK_NULLPTR >
+    template < typename ImageType, typename IterativeConeBeamReconstructionFilter<TOutputImage>::template EnableCudaScalarAndVectorType<ImageType>* = nullptr >
     ConjugateGradientFilterPointer InstantiateCudaConjugateGradientImageFilter();
 
-    template < typename ImageType, typename IterativeConeBeamReconstructionFilter<TOutputImage>::template DisableCudaScalarAndVectorType<ImageType>* = ITK_NULLPTR >
+    template < typename ImageType, typename IterativeConeBeamReconstructionFilter<TOutputImage>::template DisableCudaScalarAndVectorType<ImageType>* = nullptr >
     ConjugateGradientFilterPointer InstantiateCudaConjugateGradientImageFilter();
 
 private:

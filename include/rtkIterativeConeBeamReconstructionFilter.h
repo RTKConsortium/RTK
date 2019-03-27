@@ -133,7 +133,7 @@ protected:
   template < typename ImageType >
   using DisableVectorType = typename std::enable_if< itk::PixelTraits<typename ImageType::PixelType>::Dimension == 1 >::type;
 
-  template < typename ImageType, EnableCudaScalarAndVectorType<ImageType>* = ITK_NULLPTR >
+  template < typename ImageType, EnableCudaScalarAndVectorType<ImageType>* = nullptr >
   ForwardProjectionPointerType InstantiateCudaForwardProjection()
     {
     ForwardProjectionPointerType fw;
@@ -144,23 +144,23 @@ protected:
     }
 
 
-  template < typename ImageType, DisableCudaScalarAndVectorType<ImageType>* = ITK_NULLPTR >
+  template < typename ImageType, DisableCudaScalarAndVectorType<ImageType>* = nullptr >
   ForwardProjectionPointerType InstantiateCudaForwardProjection()
     {
     itkGenericExceptionMacro(<< "CudaRayCastBackProjectionImageFilter only available with 3D CudaImage of float or itk::Vector<float,3>.");
-    return ITK_NULLPTR;
+    return nullptr;
     }
 
 
-  template < typename ImageType, EnableVectorType<ImageType>* = ITK_NULLPTR >
+  template < typename ImageType, EnableVectorType<ImageType>* = nullptr >
   ForwardProjectionPointerType InstantiateJosephForwardAttenuatedProjection()
     {
     itkGenericExceptionMacro(<< "JosephForwardAttenuatedProjectionImageFilter only available with scalar pixel types.");
-    return ITK_NULLPTR;
+    return nullptr;
     }
 
 
-  template < typename ImageType, DisableVectorType<ImageType>* = ITK_NULLPTR >
+  template < typename ImageType, DisableVectorType<ImageType>* = nullptr >
   ForwardProjectionPointerType InstantiateJosephForwardAttenuatedProjection()
     {
     ForwardProjectionPointerType fw;
@@ -169,7 +169,7 @@ protected:
     }
 
 
-  template < typename ImageType, EnableCudaScalarAndVectorType<ImageType>* = ITK_NULLPTR >
+  template < typename ImageType, EnableCudaScalarAndVectorType<ImageType>* = nullptr >
   BackProjectionPointerType InstantiateCudaBackProjection()
     {
     BackProjectionPointerType bp;
@@ -180,15 +180,15 @@ protected:
     }
 
 
-  template < typename ImageType, DisableCudaScalarAndVectorType<ImageType>* = ITK_NULLPTR >
+  template < typename ImageType, DisableCudaScalarAndVectorType<ImageType>* = nullptr >
   BackProjectionPointerType InstantiateCudaBackProjection()
     {
     itkGenericExceptionMacro(<< "CudaBackProjectionImageFilter only available with 3D CudaImage of float or itk::Vector<float,3>.");
-    return ITK_NULLPTR;
+    return nullptr;
     }
 
 
-  template < typename ImageType, EnableCudaScalarType<ImageType>* = ITK_NULLPTR >
+  template < typename ImageType, EnableCudaScalarType<ImageType>* = nullptr >
   BackProjectionPointerType InstantiateCudaRayCastBackProjection()
     {
     BackProjectionPointerType bp;
@@ -199,23 +199,23 @@ protected:
     }
 
 
-  template < typename ImageType, DisableCudaScalarType<ImageType>* = ITK_NULLPTR >
+  template < typename ImageType, DisableCudaScalarType<ImageType>* = nullptr >
   BackProjectionPointerType InstantiateCudaRayCastBackProjection()
     {
     itkGenericExceptionMacro(<< "CudaRayCastBackProjectionImageFilter only available with 3D CudaImage of float.");
-    return ITK_NULLPTR;
+    return nullptr;
     }
 
 
-  template < typename ImageType, EnableVectorType<ImageType>* = ITK_NULLPTR >
+  template < typename ImageType, EnableVectorType<ImageType>* = nullptr >
   BackProjectionPointerType InstantiateJosephBackAttenuatedProjection()
     {
     itkGenericExceptionMacro(<< "JosephBackAttenuatedProjectionImageFilter only available with scalar pixel types.");
-    return ITK_NULLPTR;
+    return nullptr;
     }
 
 
-  template < typename ImageType, DisableVectorType<ImageType>* = ITK_NULLPTR >
+  template < typename ImageType, DisableVectorType<ImageType>* = nullptr >
   BackProjectionPointerType InstantiateJosephBackAttenuatedProjection()
     {
     BackProjectionPointerType bp;

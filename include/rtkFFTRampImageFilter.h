@@ -37,7 +37,7 @@ CLANG_SUPPRESS_Wfloat_equal                         \
       {                                             \
       this->m_##name = _arg;                        \
       this->Modified();                             \
-      this->m_KernelFFT = ITK_NULLPTR;              \
+      this->m_KernelFFT = nullptr;                  \
       }                                             \
 CLANG_PRAGMA_POP                                    \
     }

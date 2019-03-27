@@ -174,7 +174,7 @@ OSEMConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>
 
   // For the same reason, set geometry now
   // Check and set geometry
-  if(this->GetGeometry() == ITK_NULLPTR)
+  if(this->GetGeometry() == nullptr)
   {
     itkGenericExceptionMacro(<< "The geometry of the reconstruction has not been set");
   }
