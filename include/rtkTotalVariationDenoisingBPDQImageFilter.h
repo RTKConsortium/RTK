@@ -133,7 +133,7 @@ public:
 
 protected:
   TotalVariationDenoisingBPDQImageFilter();
-  virtual ~TotalVariationDenoisingBPDQImageFilter() override {}
+  ~TotalVariationDenoisingBPDQImageFilter() override {}
 
   void GenerateOutputInformation() override;
 

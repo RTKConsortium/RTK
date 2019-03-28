@@ -59,7 +59,7 @@ public:
 
 protected:
   VarianProBeamXMLFileReader(){m_OutputObject = &m_Dictionary;};
-  virtual ~VarianProBeamXMLFileReader() override {};
+  ~VarianProBeamXMLFileReader() override {};
 
   void StartElement(const char * name,const char **atts) override;
 

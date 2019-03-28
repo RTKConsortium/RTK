@@ -78,7 +78,7 @@ public:
 
 protected:
   FDKWarpBackProjectionImageFilter();
-  virtual ~FDKWarpBackProjectionImageFilter() override {}
+  ~FDKWarpBackProjectionImageFilter() override {}
 
   void BeforeThreadedGenerateData() override;
 

@@ -89,7 +89,7 @@ public:
 protected:
   OraGeometryReader(): m_Geometry(nullptr), m_CollimationMargin(0.) {};
 
-  virtual ~OraGeometryReader() override {}
+  ~OraGeometryReader() override {}
 
 private:
   //purposely not implemented

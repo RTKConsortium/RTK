@@ -64,24 +64,24 @@ public:
   itkTypeMacro(QuadricShape, ConvexShape);
 
   /** See rtk::ConvexShape::IsInside. */
-  virtual bool IsInside(const PointType & point) const override;
+  bool IsInside(const PointType & point) const override;
 
   /** See rtk::ConvexShape::IsIntersectedByRay for the goal and
    * http://www.siggraph.org/education/materials/HyperGraph/raytrace/rtinter4.htm
    * for the computation. */
-  virtual bool IsIntersectedByRay(const PointType & rayOrigin,
+  bool IsIntersectedByRay(const PointType & rayOrigin,
                                   const VectorType & rayDirection,
                                   double & nearDist,
                                   double & farDist) const override;
 
   /** Rescale object along each direction by a 3D vector. */
-  virtual void Rescale(const VectorType &r) override;
+  void Rescale(const VectorType &r) override;
 
   /** Translate object by a given 3D vector. */
-  virtual void Translate(const VectorType &t) override;
+  void Translate(const VectorType &t) override;
 
   /** Rotate object by a given 3D vector. */
-  virtual void Rotate(const RotationMatrixType &r) override;
+  void Rotate(const RotationMatrixType &r) override;
 
   itkGetConstMacro(A, ScalarType);
   itkSetMacro(A, ScalarType);
@@ -106,7 +106,7 @@ public:
 
   void SetEllipsoid(const PointType &center, const VectorType &axis, const ScalarType &yangle=0);
 
-  virtual itk::LightObject::Pointer InternalClone() const override;
+  itk::LightObject::Pointer InternalClone() const override;
 
 private:
   QuadricShape();

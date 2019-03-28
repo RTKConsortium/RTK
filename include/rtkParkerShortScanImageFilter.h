@@ -80,7 +80,7 @@ public:
 
 protected:
   ParkerShortScanImageFilter();
-  virtual ~ParkerShortScanImageFilter() override {}
+  ~ParkerShortScanImageFilter() override {}
 
 #if ITK_VERSION_MAJOR<5
   void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId) override;

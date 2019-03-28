@@ -67,7 +67,7 @@ public:
   }
 
   // Destructor
-  virtual ~DualEnergyNegativeLogLikelihood() override
+  ~DualEnergyNegativeLogLikelihood() override
   {
   }
 

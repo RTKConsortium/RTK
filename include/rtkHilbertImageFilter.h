@@ -59,7 +59,7 @@ public:
 
 protected:
   HilbertImageFilter(){}
-  virtual ~HilbertImageFilter() override {}
+  ~HilbertImageFilter() override {}
 
   void GenerateData() override;
 

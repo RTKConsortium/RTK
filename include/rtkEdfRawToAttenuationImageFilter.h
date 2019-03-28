@@ -77,7 +77,7 @@ public:
 
 protected:
   EdfRawToAttenuationImageFilter();
-  virtual ~EdfRawToAttenuationImageFilter() override {}
+  ~EdfRawToAttenuationImageFilter() override {}
 
   void BeforeThreadedGenerateData() override;
 

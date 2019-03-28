@@ -116,7 +116,7 @@ public:
 
 protected:
   ConstantImageSource();
-  virtual ~ConstantImageSource() override;
+  ~ConstantImageSource() override;
   void PrintSelf(std::ostream& os, itk::Indent indent) const override;
 
 #if ITK_VERSION_MAJOR<5

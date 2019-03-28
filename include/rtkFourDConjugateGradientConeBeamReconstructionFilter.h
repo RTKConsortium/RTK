@@ -156,10 +156,10 @@ public:
   typename ProjectionStackType::ConstPointer GetInputProjectionStack();
 
   /** Pass the ForwardProjection filter to the conjugate gradient operator */
-  virtual void SetForwardProjectionFilter (ForwardProjectionType _arg) override;
+  void SetForwardProjectionFilter (ForwardProjectionType _arg) override;
 
   /** Pass the backprojection filter to the conjugate gradient operator and to the filter generating the B of AX=B */
-  virtual void SetBackProjectionFilter (BackProjectionType _arg) override;
+  void SetBackProjectionFilter (BackProjectionType _arg) override;
 
   /** Pass the interpolation weights to subfilters */
   void SetWeights(const itk::Array2D<float> _arg);
@@ -172,7 +172,7 @@ public:
   itkGetMacro(DisableDisplacedDetectorFilter, bool)
 protected:
   FourDConjugateGradientConeBeamReconstructionFilter();
-  virtual ~FourDConjugateGradientConeBeamReconstructionFilter() override {}
+  ~FourDConjugateGradientConeBeamReconstructionFilter() override {}
 
   void GenerateOutputInformation() override;
 

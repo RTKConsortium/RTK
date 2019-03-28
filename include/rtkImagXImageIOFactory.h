@@ -65,7 +65,7 @@ public:
 
 protected:
   ImagXImageIOFactory();
-  virtual ~ImagXImageIOFactory() override {}
+  ~ImagXImageIOFactory() override {}
   using myProductType = ImagXImageIOFactory;
   const myProductType* m_MyProduct;
 private:

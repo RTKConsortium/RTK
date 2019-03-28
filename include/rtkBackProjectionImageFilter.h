@@ -84,7 +84,7 @@ protected:
   BackProjectionImageFilter() : m_Geometry(nullptr), m_Transpose(false) {
     this->SetNumberOfRequiredInputs(2); this->SetInPlace( true );
   };
-  virtual ~BackProjectionImageFilter() override {}
+  ~BackProjectionImageFilter() override {}
 
   /** Apply changes to the input image requested region. */
   void GenerateInputRequestedRegion() override;

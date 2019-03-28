@@ -217,7 +217,7 @@ public:
 
 protected:
   JosephBackAttenuatedProjectionImageFilter();
-  virtual ~JosephBackAttenuatedProjectionImageFilter() override {}
+  ~JosephBackAttenuatedProjectionImageFilter() override {}
 
   /** Apply changes to the input image requested region. */
   void GenerateInputRequestedRegion() override;

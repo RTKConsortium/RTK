@@ -65,7 +65,7 @@ public:
 
 protected:
   SeparableQuadraticSurrogateRegularizationImageFilter();
-  virtual ~SeparableQuadraticSurrogateRegularizationImageFilter() override {}
+  ~SeparableQuadraticSurrogateRegularizationImageFilter() override {}
 
   /** Creates the Outputs */
   itk::ProcessObject::DataObjectPointer MakeOutput(itk::ProcessObject::DataObjectPointerArraySizeType idx) override;

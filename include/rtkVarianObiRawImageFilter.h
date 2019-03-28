@@ -110,7 +110,7 @@ public:
 
 protected:
   VarianObiRawImageFilter();
-  virtual ~VarianObiRawImageFilter() override {}
+  ~VarianObiRawImageFilter() override {}
 
 private:
   VarianObiRawImageFilter(const Self&); //purposely not implemented

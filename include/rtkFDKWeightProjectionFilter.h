@@ -75,7 +75,7 @@ public:
 
 protected:
   FDKWeightProjectionFilter()  {}
-  virtual ~FDKWeightProjectionFilter() override {}
+  ~FDKWeightProjectionFilter() override {}
 
   void BeforeThreadedGenerateData() override;
 

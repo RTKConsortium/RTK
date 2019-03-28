@@ -65,7 +65,7 @@ public:
 
 protected:
   ElektaSynergyLookupTableImageFilter();
-  ~ElektaSynergyLookupTableImageFilter() {}
+  ~ElektaSynergyLookupTableImageFilter() override {}
 
 private:
   ElektaSynergyLookupTableImageFilter(const Self&); //purposely not implemented

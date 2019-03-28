@@ -86,7 +86,7 @@ public:
 
 protected:
   ConjugateGradientImageFilter();
-  virtual ~ConjugateGradientImageFilter() override {}
+  ~ConjugateGradientImageFilter() override {}
 
   OutputImagePointer GetX();
   OutputImagePointer GetB();

@@ -69,7 +69,7 @@ public:
   }
 
   // Destructor
-  virtual ~Schlomka2008NegativeLogLikelihood() override
+  ~Schlomka2008NegativeLogLikelihood() override
   {
   }
 

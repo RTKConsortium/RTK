@@ -216,7 +216,7 @@ public:
 
 protected:
     FourDReconstructionConjugateGradientOperator();
-    virtual ~FourDReconstructionConjugateGradientOperator() override {}
+    ~FourDReconstructionConjugateGradientOperator() override {}
 
     /** Builds the pipeline and computes output information */
     void GenerateOutputInformation() override;

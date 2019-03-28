@@ -144,7 +144,7 @@ public:
 
 protected:
     UnwarpSequenceImageFilter();
-    virtual ~UnwarpSequenceImageFilter() override {}
+    ~UnwarpSequenceImageFilter() override {}
 
     /** Does the real work. */
     void GenerateData() override;

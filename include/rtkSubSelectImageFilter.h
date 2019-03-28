@@ -90,7 +90,7 @@ public:
 
 protected:
   SubSelectImageFilter();
-  virtual ~SubSelectImageFilter() override {}
+  ~SubSelectImageFilter() override {}
 
   void GenerateInputRequestedRegion() override;
 

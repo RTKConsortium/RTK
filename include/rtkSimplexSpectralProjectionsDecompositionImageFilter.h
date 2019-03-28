@@ -127,7 +127,7 @@ public:
 
 protected:
   SimplexSpectralProjectionsDecompositionImageFilter();
-  virtual ~SimplexSpectralProjectionsDecompositionImageFilter() override {}
+  ~SimplexSpectralProjectionsDecompositionImageFilter() override {}
 
   void GenerateOutputInformation() override;
 

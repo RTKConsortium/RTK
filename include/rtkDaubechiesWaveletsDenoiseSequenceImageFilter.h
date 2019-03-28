@@ -107,7 +107,7 @@ public:
 
 protected:
     DaubechiesWaveletsDenoiseSequenceImageFilter();
-    virtual ~DaubechiesWaveletsDenoiseSequenceImageFilter() override {}
+    ~DaubechiesWaveletsDenoiseSequenceImageFilter() override {}
 
     /** Does the real work. */
     void GenerateData() override;

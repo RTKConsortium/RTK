@@ -115,7 +115,7 @@ public:
 
 protected:
   FFTProjectionsConvolutionImageFilter();
-  virtual ~FFTProjectionsConvolutionImageFilter() override {}
+  ~FFTProjectionsConvolutionImageFilter() override {}
 
   void GenerateInputRequestedRegion() override;
 

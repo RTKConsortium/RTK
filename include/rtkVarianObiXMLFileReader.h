@@ -60,7 +60,7 @@ public:
 
 protected:
   VarianObiXMLFileReader(){m_OutputObject = &m_Dictionary;};
-  virtual ~VarianObiXMLFileReader() override {}
+  ~VarianObiXMLFileReader() override {}
 
   void StartElement(const char * name,const char **atts) override;
 

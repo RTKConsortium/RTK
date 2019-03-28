@@ -200,7 +200,7 @@ public:
 
 protected:
     DeconstructImageFilter();
-    virtual ~DeconstructImageFilter() override {}
+    ~DeconstructImageFilter() override {}
     void PrintSelf(std::ostream&os, itk::Indent indent) const override;
 
     /** Modifies the storage for Input and Output images.

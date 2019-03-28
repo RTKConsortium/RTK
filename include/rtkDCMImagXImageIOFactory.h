@@ -65,7 +65,7 @@ public:
 
 protected:
   DCMImagXImageIOFactory();
-  virtual ~DCMImagXImageIOFactory() override {}
+  ~DCMImagXImageIOFactory() override {}
   using myProductType = DCMImagXImageIOFactory;
   const myProductType* m_MyProduct;
 

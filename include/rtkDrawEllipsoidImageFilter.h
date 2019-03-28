@@ -81,7 +81,7 @@ public:
 
 protected:
   DrawEllipsoidImageFilter();
-  virtual ~DrawEllipsoidImageFilter() override {}
+  ~DrawEllipsoidImageFilter() override {}
 
   void BeforeThreadedGenerateData() override;
 

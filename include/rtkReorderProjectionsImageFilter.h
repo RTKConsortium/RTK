@@ -83,7 +83,7 @@ public:
 protected:
   ReorderProjectionsImageFilter();
 
-  virtual ~ReorderProjectionsImageFilter() override {}
+  ~ReorderProjectionsImageFilter() override {}
 
   void GenerateData() override;
 

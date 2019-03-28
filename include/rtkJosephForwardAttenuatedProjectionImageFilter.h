@@ -240,7 +240,7 @@ public:
 
 protected:
   JosephForwardAttenuatedProjectionImageFilter();
-  virtual ~JosephForwardAttenuatedProjectionImageFilter() override {}
+  ~JosephForwardAttenuatedProjectionImageFilter() override {}
 
   /** Apply changes to the input image requested region. */
   void GenerateInputRequestedRegion() override;

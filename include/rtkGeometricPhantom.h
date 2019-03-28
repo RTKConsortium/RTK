@@ -78,7 +78,7 @@ public:
 
 protected:
   GeometricPhantom() {}
-  ~GeometricPhantom() {}
+  ~GeometricPhantom() override {}
 
 private:
   GeometricPhantom(const Self&); //purposely not implemented

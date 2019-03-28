@@ -52,7 +52,7 @@ public:
 
 protected:
   DCMImagXImageIO() {}
-  virtual ~DCMImagXImageIO() override {}
+  ~DCMImagXImageIO() override {}
 };
 
 } // end namespace

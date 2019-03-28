@@ -86,7 +86,7 @@ public:
 
 protected:
   RayEllipsoidIntersectionImageFilter();
-  virtual ~RayEllipsoidIntersectionImageFilter() override {}
+  ~RayEllipsoidIntersectionImageFilter() override {}
 
   void BeforeThreadedGenerateData() override;
 

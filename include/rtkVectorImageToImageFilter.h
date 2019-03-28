@@ -62,7 +62,7 @@ public:
 
 protected:
     VectorImageToImageFilter();
-    virtual ~VectorImageToImageFilter() override {}
+    ~VectorImageToImageFilter() override {}
 
     void GenerateOutputInformation() override;
     void GenerateInputRequestedRegion() override;

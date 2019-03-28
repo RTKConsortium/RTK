@@ -113,7 +113,7 @@ public:
 
 protected:
     TotalVariationDenoiseSequenceImageFilter();
-    virtual ~TotalVariationDenoiseSequenceImageFilter() override {}
+    ~TotalVariationDenoiseSequenceImageFilter() override {}
 
     /** Does the real work. */
     void GenerateData() override;

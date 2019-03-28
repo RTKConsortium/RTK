@@ -203,7 +203,7 @@ public:
 
 protected:
   FourDSARTConeBeamReconstructionFilter();
-  virtual ~FourDSARTConeBeamReconstructionFilter() override {}
+  ~FourDSARTConeBeamReconstructionFilter() override {}
 
   void GenerateInputRequestedRegion() override;
 

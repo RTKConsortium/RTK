@@ -61,7 +61,7 @@ public:
 
 protected:
   LaplacianImageFilter();
-  virtual ~LaplacianImageFilter() override {}
+  ~LaplacianImageFilter() override {}
 
   /** Does the real work. */
   void GenerateData() override;

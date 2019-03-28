@@ -250,7 +250,7 @@ public:
 
 protected:
   ProjectionsReader();
-  virtual ~ProjectionsReader() override {}
+  ~ProjectionsReader() override {}
   void PrintSelf(std::ostream& os, itk::Indent indent) const override;
 
   /** Does the real work. */

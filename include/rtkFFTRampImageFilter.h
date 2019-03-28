@@ -127,7 +127,7 @@ public:
 
 protected:
   FFTRampImageFilter();
-  virtual ~FFTRampImageFilter() override {}
+  ~FFTRampImageFilter() override {}
 
   void GenerateInputRequestedRegion() override;
 

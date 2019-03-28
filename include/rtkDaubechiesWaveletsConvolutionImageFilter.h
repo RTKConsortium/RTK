@@ -104,7 +104,7 @@ public:
 
 protected:
     DaubechiesWaveletsConvolutionImageFilter();
-    virtual ~DaubechiesWaveletsConvolutionImageFilter() override;
+    ~DaubechiesWaveletsConvolutionImageFilter() override;
 
     using CoefficientVector = std::vector<typename TImage::PixelType>;
 

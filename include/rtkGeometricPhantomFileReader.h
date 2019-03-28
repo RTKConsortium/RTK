@@ -71,7 +71,7 @@ protected:
   GeometricPhantomFileReader() {};
 
   /// Destructor
-  virtual ~GeometricPhantomFileReader() override {}
+  ~GeometricPhantomFileReader() override {}
 
 private:
   GeometricPhantomFileReader( const Self& ); //purposely not implemented

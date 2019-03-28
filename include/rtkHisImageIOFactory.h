@@ -69,7 +69,7 @@ public:
 
 protected:
   HisImageIOFactory();
-  virtual ~HisImageIOFactory() override {}
+  ~HisImageIOFactory() override {}
   using myProductType = HisImageIOFactory;
   const myProductType* m_MyProduct;
 

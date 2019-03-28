@@ -60,7 +60,7 @@ public:
 
 protected:
   SelectOneProjectionPerCycleImageFilter();
-  virtual ~SelectOneProjectionPerCycleImageFilter() override {}
+  ~SelectOneProjectionPerCycleImageFilter() override {}
 
   void GenerateOutputInformation() override;
 

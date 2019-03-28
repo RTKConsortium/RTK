@@ -76,7 +76,7 @@ public:
 
 protected:
     SignalToInterpolationWeights();
-    virtual ~SignalToInterpolationWeights () override {}
+    ~SignalToInterpolationWeights () override {}
 
     /** Print the reader. */
     void PrintSelf(std::ostream & os, itk::Indent indent) const override;

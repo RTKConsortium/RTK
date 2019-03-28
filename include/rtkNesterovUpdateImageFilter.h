@@ -63,7 +63,7 @@ public:
 
 protected:
   NesterovUpdateImageFilter();
-  virtual ~NesterovUpdateImageFilter() override;
+  ~NesterovUpdateImageFilter() override;
 
   /** Does the real work. */
   void BeforeThreadedGenerateData() override;

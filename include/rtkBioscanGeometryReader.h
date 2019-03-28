@@ -96,7 +96,7 @@ protected:
   double GetFloatTagValue(const gdcm::DataSet & ds, itk::uint16_t group, itk::uint16_t element) const;
 
   BioscanGeometryReader(): m_Geometry(nullptr) {};
-  ~BioscanGeometryReader() {}
+  ~BioscanGeometryReader() override {}
 
 private:
   //purposely not implemented

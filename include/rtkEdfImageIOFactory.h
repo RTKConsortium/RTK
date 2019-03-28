@@ -65,7 +65,7 @@ public:
 
 protected:
   EdfImageIOFactory();
-  virtual ~EdfImageIOFactory() override {}
+  ~EdfImageIOFactory() override {}
 
   using myProductType = EdfImageIOFactory;
   const myProductType* m_MyProduct;

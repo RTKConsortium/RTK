@@ -61,7 +61,7 @@ public:
 
 protected:
   ThreeDCircularProjectionGeometryXMLFileWriter() {}
-  ~ThreeDCircularProjectionGeometryXMLFileWriter() {}
+  ~ThreeDCircularProjectionGeometryXMLFileWriter() override {}
 
   /** If all values are equal in v, write first value (if not 0.) in
       output file with parameter value s and return true. Return false

@@ -61,7 +61,7 @@ public:
 
 protected:
     ConjugateGradientGetR_kPlusOneImageFilter();
-    virtual ~ConjugateGradientGetR_kPlusOneImageFilter() override {}
+    ~ConjugateGradientGetR_kPlusOneImageFilter() override {}
 
     typename TInputImage::Pointer GetRk();
     typename TInputImage::Pointer GetPk();

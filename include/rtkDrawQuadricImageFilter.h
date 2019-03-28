@@ -89,7 +89,7 @@ public:
 
 protected:
   DrawQuadricImageFilter();
-  virtual ~DrawQuadricImageFilter() override {}
+  ~DrawQuadricImageFilter() override {}
 
   void BeforeThreadedGenerateData ( ) override;
 

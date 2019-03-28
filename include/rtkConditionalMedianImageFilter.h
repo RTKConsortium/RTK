@@ -71,7 +71,7 @@ public:
 
 protected:
     ConditionalMedianImageFilter();
-    virtual ~ConditionalMedianImageFilter() override {}
+    ~ConditionalMedianImageFilter() override {}
 
     void GenerateInputRequestedRegion() override;
 

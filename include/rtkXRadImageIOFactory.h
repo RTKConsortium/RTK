@@ -65,7 +65,7 @@ public:
 
 protected:
   XRadImageIOFactory();
-  virtual ~XRadImageIOFactory() override {}
+  ~XRadImageIOFactory() override {}
 
   using myProductType = XRadImageIOFactory;
   const myProductType* m_MyProduct;

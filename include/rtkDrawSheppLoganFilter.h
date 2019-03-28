@@ -55,7 +55,7 @@ public:
 
 protected:
   DrawSheppLoganFilter();
-  virtual ~DrawSheppLoganFilter() override {}
+  ~DrawSheppLoganFilter() override {}
 
   void GenerateData() override;
 

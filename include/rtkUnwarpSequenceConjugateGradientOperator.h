@@ -100,7 +100,7 @@ public:
 
 protected:
     UnwarpSequenceConjugateGradientOperator();
-    virtual ~UnwarpSequenceConjugateGradientOperator() override {}
+    ~UnwarpSequenceConjugateGradientOperator() override {}
 
     /** Does the real work. */
     void GenerateData() override;

@@ -55,7 +55,7 @@ public:
 
 protected:
   OraXMLFileReader();
-  virtual ~OraXMLFileReader() override {};
+  ~OraXMLFileReader() override {};
 
   void StartElement(const char * name,const char **atts) override;
 

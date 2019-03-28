@@ -205,7 +205,7 @@ public:
 
 protected:
   SARTConeBeamReconstructionFilter();
-  virtual ~SARTConeBeamReconstructionFilter() override {}
+  ~SARTConeBeamReconstructionFilter() override {}
 
   void GenerateInputRequestedRegion() override;
 

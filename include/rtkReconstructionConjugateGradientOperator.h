@@ -184,7 +184,7 @@ public:
 
 protected:
   ReconstructionConjugateGradientOperator();
-  virtual ~ReconstructionConjugateGradientOperator() override {}
+  ~ReconstructionConjugateGradientOperator() override {}
 
   /** Does the real work. */
   void GenerateData() override;

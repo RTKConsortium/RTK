@@ -79,7 +79,7 @@ protected:
   ForbildPhantomFileReader() {};
 
   /// Destructor
-  ~ForbildPhantomFileReader() {}
+  ~ForbildPhantomFileReader() override {}
 
   void CreateForbildSphere(const std::string &s);
   void CreateForbildBox(const std::string &s);

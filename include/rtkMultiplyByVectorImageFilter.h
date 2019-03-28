@@ -56,7 +56,7 @@ public:
 
 protected:
     MultiplyByVectorImageFilter();
-    virtual ~MultiplyByVectorImageFilter() override {}
+    ~MultiplyByVectorImageFilter() override {}
 
     /** Does the real work. */
 #if ITK_VERSION_MAJOR<5

@@ -72,7 +72,7 @@ public:
 
 protected:
   XimImageIOFactory();
-  virtual ~XimImageIOFactory() override {};
+  ~XimImageIOFactory() override {};
   using myProductType = XimImageIOFactory;
   const myProductType* m_MyProduct;
 

@@ -58,7 +58,7 @@ public:
 
 protected:
   DigisensGeometryXMLFileReader();
-  virtual ~DigisensGeometryXMLFileReader() override {}
+  ~DigisensGeometryXMLFileReader() override {}
 
   void StartElement(const char * name,const char **atts) override;
 

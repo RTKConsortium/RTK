@@ -106,7 +106,7 @@ protected:
                        ScalarType & nearDist,
                        ScalarType & farDist) const;
   bool ApplyClipPlanes(const PointType & point) const;
-  virtual itk::LightObject::Pointer InternalClone() const override;
+  itk::LightObject::Pointer InternalClone() const override;
 
 private:
   ConvexShape(const Self&);    //purposely not implemented

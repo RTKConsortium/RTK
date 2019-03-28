@@ -59,7 +59,7 @@ public:
 
 protected:
   FDKBackProjectionImageFilter() {};
-  virtual ~FDKBackProjectionImageFilter() override {}
+  ~FDKBackProjectionImageFilter() override {}
 
   void GenerateOutputInformation() override;
 

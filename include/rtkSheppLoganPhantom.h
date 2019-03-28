@@ -59,7 +59,7 @@ public:
 
 protected:
   SheppLoganPhantom();
-  ~SheppLoganPhantom() {}
+  ~SheppLoganPhantom() override {}
 
 private:
   SheppLoganPhantom(const Self&); //purposely not implemented

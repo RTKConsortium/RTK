@@ -69,7 +69,7 @@ public:
   }
 
   // Destructor
-  virtual ~ProjectionsDecompositionNegativeLogLikelihood() override
+  ~ProjectionsDecompositionNegativeLogLikelihood() override
   {
   }
 

@@ -59,7 +59,7 @@ public:
 
 protected:
     BlockDiagonalMatrixVectorMultiplyImageFilter();
-    ~BlockDiagonalMatrixVectorMultiplyImageFilter() {}
+    ~BlockDiagonalMatrixVectorMultiplyImageFilter() override {}
 
     void GenerateInputRequestedRegion() override;
 

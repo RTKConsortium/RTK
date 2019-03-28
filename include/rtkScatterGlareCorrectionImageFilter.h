@@ -83,7 +83,7 @@ public:
 
 protected:
   ScatterGlareCorrectionImageFilter();
-  virtual ~ScatterGlareCorrectionImageFilter() override {}
+  ~ScatterGlareCorrectionImageFilter() override {}
 
   /** Create the deconvolution kernel
   */

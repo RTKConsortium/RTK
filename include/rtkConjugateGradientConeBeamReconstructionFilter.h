@@ -204,7 +204,7 @@ public:
 
 protected:
     ConjugateGradientConeBeamReconstructionFilter();
-    virtual ~ConjugateGradientConeBeamReconstructionFilter() override {}
+    ~ConjugateGradientConeBeamReconstructionFilter() override {}
 
     /** Does the real work. */
     void GenerateData() override;

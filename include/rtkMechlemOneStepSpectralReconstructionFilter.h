@@ -254,7 +254,7 @@ public:
 
 protected:
     MechlemOneStepSpectralReconstructionFilter();
-    virtual ~MechlemOneStepSpectralReconstructionFilter() override {}
+    ~MechlemOneStepSpectralReconstructionFilter() override {}
 
     /** Does the real work. */
     void GenerateData() override;

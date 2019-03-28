@@ -91,7 +91,7 @@ public:
 
 protected:
   DownsampleImageFilter();
-  virtual ~DownsampleImageFilter() override {}
+  ~DownsampleImageFilter() override {}
 
   /** DownsampleImageFilter can be implemented as a multithreaded filter.
    * Therefore, this implementation provides a ThreadedGenerateData() routine

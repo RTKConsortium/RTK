@@ -110,7 +110,7 @@ public:
 
 protected:
   FDKConeBeamReconstructionFilter();
-  virtual ~FDKConeBeamReconstructionFilter() override {}
+  ~FDKConeBeamReconstructionFilter() override {}
 
   void GenerateInputRequestedRegion() override;
 

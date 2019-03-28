@@ -87,7 +87,7 @@ public:
 
 protected:
   DrawGeometricPhantomImageFilter();
-  virtual ~DrawGeometricPhantomImageFilter() override {}
+  ~DrawGeometricPhantomImageFilter() override {}
 
   void GenerateData() override;
 

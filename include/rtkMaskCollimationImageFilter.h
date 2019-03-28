@@ -64,7 +64,7 @@ public:
 
 protected:
   MaskCollimationImageFilter();
-  virtual ~MaskCollimationImageFilter() override {};
+  ~MaskCollimationImageFilter() override {};
 
   void BeforeThreadedGenerateData() override;
 

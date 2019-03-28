@@ -217,7 +217,7 @@ public:
 
 protected:
   JosephBackProjectionImageFilter();
-  virtual ~JosephBackProjectionImageFilter() override {}
+  ~JosephBackProjectionImageFilter() override {}
 
   void GenerateData() override;
 

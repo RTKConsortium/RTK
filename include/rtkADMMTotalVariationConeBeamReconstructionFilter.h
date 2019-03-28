@@ -203,7 +203,7 @@ public:
 
 protected:
     ADMMTotalVariationConeBeamReconstructionFilter();
-    virtual ~ADMMTotalVariationConeBeamReconstructionFilter() override {}
+    ~ADMMTotalVariationConeBeamReconstructionFilter() override {}
 
     /** Does the real work. */
     void GenerateData() override;

@@ -130,7 +130,7 @@ public:
   itkTypeMacro(AmsterdamShroudImageFilter, itk::ImageToImageFilter);
 protected:
   AmsterdamShroudImageFilter();
-  virtual ~AmsterdamShroudImageFilter() override {}
+  ~AmsterdamShroudImageFilter() override {}
 
   void GenerateOutputInformation() override;
   void GenerateInputRequestedRegion() override;

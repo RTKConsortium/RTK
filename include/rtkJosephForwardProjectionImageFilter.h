@@ -225,7 +225,7 @@ public:
 
 protected:
   JosephForwardProjectionImageFilter();
-  virtual ~JosephForwardProjectionImageFilter() override {}
+  ~JosephForwardProjectionImageFilter() override {}
 
   void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) override;
 

@@ -126,7 +126,7 @@ public:
 
 protected:
   ImportImageFilter();
-  ~ImportImageFilter();
+  ~ImportImageFilter() override;
   void PrintSelf(std::ostream & os, itk::Indent indent) const override;
 
   /** This filter does not actually "produce" any data, rather it "wraps"

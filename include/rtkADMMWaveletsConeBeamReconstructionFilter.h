@@ -205,7 +205,7 @@ public:
 
 protected:
     ADMMWaveletsConeBeamReconstructionFilter();
-    virtual ~ADMMWaveletsConeBeamReconstructionFilter() override {}
+    ~ADMMWaveletsConeBeamReconstructionFilter() override {}
 
     /** Does the real work. */
     void GenerateData() override;

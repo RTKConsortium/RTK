@@ -109,7 +109,7 @@ public:
 protected:
   DisplacedDetectorImageFilter();
 
-  virtual ~DisplacedDetectorImageFilter() override {}
+  ~DisplacedDetectorImageFilter() override {}
 
   /** Retrieve computed inferior and superior corners */
   itkGetMacro(InferiorCorner, double);
