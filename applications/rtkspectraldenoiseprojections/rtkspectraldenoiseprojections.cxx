@@ -29,7 +29,7 @@ int main(int argc, char * argv[])
   GGO(rtkspectraldenoiseprojections, args_info);
 
   using OutputPixelType = float;
-  const unsigned int Dimension = 3;
+  constexpr unsigned int Dimension = 3;
   using OutputImageType = itk::VectorImage< OutputPixelType, Dimension >;
 
   // Reader

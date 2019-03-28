@@ -32,7 +32,7 @@ int main(int argc, char*argv[])
   }
 
   using OutputPixelType = float;
-  const unsigned int Dimension = 3;
+  constexpr unsigned int Dimension = 3;
 
 #ifdef USE_CUDA
   using OutputImageType = itk::CudaImage< OutputPixelType, Dimension >;
@@ -45,9 +45,9 @@ int main(int argc, char*argv[])
 #endif
 
 #if FAST_TESTS_NO_CHECKS
-  const unsigned int NumberOfProjectionImages = 3;
+  constexpr unsigned int NumberOfProjectionImages = 3;
 #else
-  const unsigned int NumberOfProjectionImages = 90;
+  constexpr unsigned int NumberOfProjectionImages = 90;
 #endif
 
 

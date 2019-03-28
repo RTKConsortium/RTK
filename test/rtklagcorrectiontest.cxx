@@ -22,7 +22,7 @@ const unsigned Nprojections = 10;
 
 int main(int , char **)
 {
-  const unsigned int Dimension = 3;
+  constexpr unsigned int Dimension = 3;
 
   using VectorType = itk::Vector<float, ModelOrder>;     // Parameter type always float/double
 #ifdef USE_CUDA

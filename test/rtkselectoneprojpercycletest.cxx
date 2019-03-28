@@ -19,10 +19,10 @@
 
 int main(int, char** )
 {
-  const unsigned int Dimension = 3;
+  constexpr unsigned int Dimension = 3;
   using OutputPixelType = float;
   using OutputImageType = itk::Image< OutputPixelType, Dimension >;
-  const unsigned int NumberOfProjectionImages = 24;
+  constexpr unsigned int NumberOfProjectionImages = 24;
 
   // Constant image sources
   using ConstantImageSourceType = rtk::ConstantImageSource< OutputImageType >;

@@ -31,13 +31,13 @@ int main(int argc, char*argv[])
     return EXIT_FAILURE;
   }
 
-  const unsigned int Dimension = 3;
+  constexpr unsigned int Dimension = 3;
   using OutputPixelType = float;
   using OutputImageType = itk::Image< OutputPixelType, Dimension >;
 #if FAST_TESTS_NO_CHECKS
-  const unsigned int NumberOfProjectionImages = 3;
+  constexpr unsigned int NumberOfProjectionImages = 3;
 #else
-  const unsigned int NumberOfProjectionImages = 180;
+  constexpr unsigned int NumberOfProjectionImages = 180;
 #endif
   using GeometryType = rtk::ThreeDCircularProjectionGeometry;
 

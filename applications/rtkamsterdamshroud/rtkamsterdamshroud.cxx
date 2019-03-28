@@ -30,7 +30,7 @@ int main(int argc, char * argv[])
   GGO(rtkamsterdamshroud, args_info);
 
   using OutputPixelType = double;
-  const unsigned int Dimension = 3;
+  constexpr unsigned int Dimension = 3;
 
   using OutputImageType = itk::Image< OutputPixelType, Dimension >;
 

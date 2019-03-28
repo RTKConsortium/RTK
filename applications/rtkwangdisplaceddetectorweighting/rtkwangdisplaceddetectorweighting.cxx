@@ -41,7 +41,7 @@ int main(int argc, char * argv[])
 #endif
 
   using OutputPixelType = float;
-  const unsigned int Dimension = 3;
+  constexpr unsigned int Dimension = 3;
 
 #ifdef RTK_USE_CUDA
   using OutputImageType = itk::CudaImage< OutputPixelType, Dimension >;

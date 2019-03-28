@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
   GGO(rtki0estimation, args_info);
 
   using InputPixelType = unsigned short;
-  const unsigned int Dimension = 3;
+  constexpr unsigned int Dimension = 3;
   using InputImageType = itk::Image< InputPixelType, Dimension >;
 
   using ReaderType = rtk::ProjectionsReader< InputImageType >;

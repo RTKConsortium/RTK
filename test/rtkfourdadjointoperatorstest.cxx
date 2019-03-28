@@ -33,7 +33,7 @@ int main(int argc, char*argv[])
     return EXIT_FAILURE;
   }
 
-  const unsigned int Dimension = 3;
+  constexpr unsigned int Dimension = 3;
   using OutputPixelType = float;
 
 #ifdef RTK_USE_CUDA
@@ -45,9 +45,9 @@ int main(int argc, char*argv[])
 #endif
 
 #if FAST_TESTS_NO_CHECKS
-  const unsigned int NumberOfProjectionImages = 3;
+  constexpr unsigned int NumberOfProjectionImages = 3;
 #else
-  const unsigned int NumberOfProjectionImages = 64;
+  constexpr unsigned int NumberOfProjectionImages = 64;
 #endif
 
 

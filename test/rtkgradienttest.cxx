@@ -82,7 +82,7 @@ void CheckGradient(typename TImage::Pointer im, typename TGradient::Pointer grad
 
 int main(int, char** )
 {
-  const unsigned int Dimension = 3;
+  constexpr unsigned int Dimension = 3;
   using OutputPixelType = double;
 
   using CovVecType = itk::CovariantVector<OutputPixelType, 2>;

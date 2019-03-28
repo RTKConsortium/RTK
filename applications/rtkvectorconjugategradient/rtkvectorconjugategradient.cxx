@@ -35,8 +35,8 @@ int main(int argc, char * argv[])
 {
   GGO(rtkvectorconjugategradient, args_info);
 
-  const unsigned int Dimension = 3;
-  const unsigned int nMaterials = 3;
+  constexpr unsigned int Dimension = 3;
+  constexpr unsigned int nMaterials = 3;
 
   using DataType = float;
   using PixelType = itk::Vector<DataType, nMaterials>;

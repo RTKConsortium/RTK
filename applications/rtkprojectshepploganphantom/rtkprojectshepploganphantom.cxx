@@ -31,7 +31,7 @@ int main(int argc, char * argv[])
   GGO(rtkprojectshepploganphantom, args_info);
 
   using OutputPixelType = float;
-  const unsigned int Dimension = 3;
+  constexpr unsigned int Dimension = 3;
 
   using OutputImageType = itk::Image< OutputPixelType, Dimension >;
 

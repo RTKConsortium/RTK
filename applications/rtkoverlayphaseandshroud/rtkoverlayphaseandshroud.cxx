@@ -35,7 +35,7 @@ int main(int argc, char * argv[])
 
   using InputPixelType = double;
   using RGBPixelType = itk::RGBPixel< unsigned char >;
-  const unsigned int Dimension = 2;
+  constexpr unsigned int Dimension = 2;
 
   using InputImageType = itk::Image< InputPixelType, Dimension >;
   using OutputImageType = itk::Image< RGBPixelType, Dimension >;

@@ -36,7 +36,7 @@ int main(int argc, char * argv[])
   GGO(rtkconjugategradient, args_info);
 
   using OutputPixelType = float;
-  const unsigned int Dimension = 3;
+  constexpr unsigned int Dimension = 3;
   std::vector<double> costs;
   std::ostream_iterator<double> costs_it(std::cout,"\n");
 

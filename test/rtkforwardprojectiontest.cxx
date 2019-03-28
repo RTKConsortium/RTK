@@ -28,7 +28,7 @@
 
 int main(int , char** )
 {
-  const unsigned int Dimension = 3;
+  constexpr unsigned int Dimension = 3;
   using OutputPixelType = float;
 
 #ifdef USE_CUDA
@@ -39,9 +39,9 @@ int main(int , char** )
 
   using VectorType = itk::Vector<double, 3>;
 #if FAST_TESTS_NO_CHECKS
-  const unsigned int NumberOfProjectionImages = 3;
+  constexpr unsigned int NumberOfProjectionImages = 3;
 #else
-  const unsigned int NumberOfProjectionImages = 45;
+  constexpr unsigned int NumberOfProjectionImages = 45;
 #endif
 
   // Constant image sources

@@ -33,7 +33,7 @@ int main(int argc, char * argv[])
   GGO(rtkiterativefdk, args_info);
 
   using OutputPixelType = float;
-  const unsigned int Dimension = 3;
+  constexpr unsigned int Dimension = 3;
 
 #ifdef RTK_USE_CUDA
   using OutputImageType = itk::CudaImage< OutputPixelType, Dimension >;

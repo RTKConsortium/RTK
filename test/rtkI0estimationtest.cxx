@@ -13,7 +13,7 @@
 
 int main(int, char** )
 {
-  const unsigned int Dimension = 3;
+  constexpr unsigned int Dimension = 3;
   using ImageType = itk::Image<unsigned short, Dimension>;
 
   using I0FilterType = rtk::I0EstimationProjectionFilter<ImageType, ImageType, 3>;

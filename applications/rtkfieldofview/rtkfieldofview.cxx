@@ -38,7 +38,7 @@ int main(int argc, char * argv[])
   GGO(rtkfieldofview, args_info);
 
   using OutputPixelType = float;
-  const unsigned int Dimension = 3;
+  constexpr unsigned int Dimension = 3;
 
   // Check on hardware parameter
 #ifndef RTK_USE_CUDA

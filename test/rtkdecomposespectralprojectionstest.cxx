@@ -30,7 +30,7 @@ int main(int argc, char*argv[])
   }
 
   using PixelValueType = float;
-  const unsigned int Dimension = 3;
+  constexpr unsigned int Dimension = 3;
   using OutputImageType = itk::Image< PixelValueType, Dimension >;
 
   using DecomposedProjectionType = itk::VectorImage< PixelValueType, Dimension >;
@@ -60,9 +60,9 @@ int main(int argc, char*argv[])
   materialAttenuationsReader->Update();
 
 #if FAST_TESTS_NO_CHECKS
-  const unsigned int NumberOfProjectionImages = 1;
+  constexpr unsigned int NumberOfProjectionImages = 1;
 #else
-  const unsigned int NumberOfProjectionImages = 64;
+  constexpr unsigned int NumberOfProjectionImages = 64;
 #endif
 
   // Constant image source for the analytical projections calculation

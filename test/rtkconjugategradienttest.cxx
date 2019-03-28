@@ -106,7 +106,7 @@ void CheckImageQuality(typename TImage1::Pointer recon, typename TImage2::Pointe
 
 int main(int, char** )
 {
-  const unsigned int Dimension = 3;
+  constexpr unsigned int Dimension = 3;
   using OutputPixelType = float;
 
   using OutputImageType = itk::Image< OutputPixelType, Dimension >;

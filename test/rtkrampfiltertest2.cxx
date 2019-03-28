@@ -18,7 +18,7 @@
 
 int main(int , char** )
 {
-  const unsigned int Dimension = 3;
+  constexpr unsigned int Dimension = 3;
   using PixelType = float;
 #ifdef USE_CUDA
   using ImageType = itk::CudaImage< PixelType, Dimension >;

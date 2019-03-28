@@ -13,7 +13,7 @@
 
 int main(int , char** )
 {
-  const unsigned int Dimension = 2;
+  constexpr unsigned int Dimension = 2;
   using OutputPixelType = float;
   using OutputImageType = itk::Image< OutputPixelType, Dimension >;
 

@@ -30,7 +30,7 @@ int main(int argc, char*argv[])
   }
 
   using OutputPixelType = float;
-  const unsigned int Dimension = 3;
+  constexpr unsigned int Dimension = 3;
 
 #ifdef USE_CUDA
   using OutputImageType = itk::CudaImage< OutputPixelType, Dimension >;

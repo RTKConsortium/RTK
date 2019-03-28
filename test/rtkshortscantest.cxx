@@ -26,7 +26,7 @@
 
 int main(int , char** )
 {
-  const unsigned int Dimension = 3;
+  constexpr unsigned int Dimension = 3;
   using OutputPixelType = float;
 #ifdef USE_CUDA
   using OutputImageType = itk::CudaImage< OutputPixelType, Dimension >;
@@ -35,11 +35,11 @@ int main(int , char** )
 #endif
 
 #if FAST_TESTS_NO_CHECKS
-  const unsigned int NumberOfProjectionImages = 3;
+  constexpr unsigned int NumberOfProjectionImages = 3;
 #else
-  const unsigned int NumberOfProjectionImages = 110;
+  constexpr unsigned int NumberOfProjectionImages = 110;
 #endif
-  const double ArcSize = 240.;
+  constexpr double ArcSize = 240.;
 
   // Constant image sources
   using ConstantImageSourceType = rtk::ConstantImageSource< OutputImageType >;

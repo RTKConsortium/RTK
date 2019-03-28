@@ -50,7 +50,7 @@ WriteFile()
     itkGenericExceptionMacro(<< "Geometry object is empty, cannot write it");
 
   std::ofstream output(this->m_Filename.c_str() );
-  const int     maxDigits = 15;
+  constexpr int maxDigits = 15;
 
   output.precision(maxDigits);
   std::string indent("  ");

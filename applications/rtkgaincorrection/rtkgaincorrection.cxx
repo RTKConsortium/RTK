@@ -35,7 +35,7 @@ int main(int argc, char * argv[])
 {
   GGO(rtkgaincorrection, args_info);
 
-  const unsigned int Dimension = 3;
+  constexpr unsigned int Dimension = 3;
 #ifdef RTK_USE_CUDA
   using InputImageType = itk::CudaImage< unsigned short, Dimension >;
   using OutputImageType = itk::CudaImage< float, Dimension >;

@@ -24,7 +24,7 @@ int main(int argc, char*argv[])
   }
 
   using OutputPixelType = float;
-  const unsigned int Dimension = 3;
+  constexpr unsigned int Dimension = 3;
   using ImageType = itk::Image< OutputPixelType, Dimension >;
 
   // 1. ESRF / Edf projections reader

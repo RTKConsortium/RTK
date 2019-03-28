@@ -26,7 +26,7 @@ int main(int argc, char*argv[])
   }
 
   // Define types
-  const unsigned int nMaterials=3;
+  constexpr unsigned int nMaterials = 3;
   using dataType = double;
   using TGradient = itk::Image<itk::Vector<dataType, nMaterials>, 3>;
   using THessian = itk::Image<itk::Vector<dataType, nMaterials * nMaterials>, 3>;

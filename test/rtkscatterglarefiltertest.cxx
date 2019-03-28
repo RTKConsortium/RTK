@@ -40,14 +40,14 @@
  * \author Sebastien Brousmiche
  */
 
-const unsigned int Dimension = 3;
+constexpr unsigned int Dimension = 3;
 #ifdef USE_CUDA
 using ImageType = itk::CudaImage< float, Dimension >;
 #else
 using ImageType = itk::Image< float, Dimension >;
 #endif
 
-const float spikeValue = 12.341;
+constexpr float spikeValue = 12.341;
 
 ImageType::Pointer createInputImage(const std::vector<float> & coef)
 {

@@ -46,7 +46,7 @@ int main(int argc, char * argv[])
 
   using InputPixelType = double;
   using OutputPixelType = double;
-  const unsigned int Dimension = 2;
+  constexpr unsigned int Dimension = 2;
 
   using InputImageType = itk::Image< InputPixelType, Dimension >;
   using OutputImageType = itk::Image< OutputPixelType, Dimension - 1 >;

@@ -33,16 +33,16 @@ int main(int argc, char*argv[])
     return EXIT_FAILURE;
   }
 
-  const unsigned int Dimension = 3;
+  constexpr unsigned int Dimension = 3;
   using OutputPixelType = float;
 
   using VolumeType = itk::Image< OutputPixelType, Dimension >;
   using VolumeSeriesType = itk::Image< OutputPixelType, Dimension + 1 >;
 
 #if FAST_TESTS_NO_CHECKS
-  const unsigned int NumberOfSlices = 2;
+  constexpr unsigned int NumberOfSlices = 2;
 #else
-  const unsigned int NumberOfSlices = 64;
+  constexpr unsigned int NumberOfSlices = 64;
 #endif
 
 

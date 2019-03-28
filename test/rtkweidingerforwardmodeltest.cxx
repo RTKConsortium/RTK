@@ -27,9 +27,9 @@ int main(int argc, char*argv[])
   }
 
   // Define types
-  const unsigned int nBins=5;
-  const unsigned int nMaterials=3;
-  const unsigned int nEnergies=150;
+  constexpr unsigned int nBins = 5;
+  constexpr unsigned int nMaterials = 3;
+  constexpr unsigned int nEnergies = 150;
   using dataType = double;
   using TMaterialProjections = itk::Image<itk::Vector<dataType, nMaterials>, 3>;
   using TPhotonCounts = itk::Image<itk::Vector<dataType, nBins>, 3>;

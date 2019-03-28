@@ -36,9 +36,9 @@ int main(int argc, char * argv[])
   GGO(rtkspectralonestep, args_info);
 
   using dataType = float;
-  const unsigned int Dimension = 3;
-  const unsigned int nBins = 5;
-  const unsigned int nMaterials = 3;
+  constexpr unsigned int Dimension = 3;
+  constexpr unsigned int nBins = 5;
+  constexpr unsigned int nMaterials = 3;
 
   // Define types for the input images
 #ifdef RTK_USE_CUDA

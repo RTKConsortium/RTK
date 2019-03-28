@@ -4,7 +4,7 @@ int main(int , char **)
 {
   // Define the type of pixel and the image dimension
   using OutputPixelType = float;
-  const unsigned int Dimension = 3;
+  constexpr unsigned int Dimension = 3;
 
   // Define the type of image
   using OutputImageType = itk::Image< OutputPixelType, Dimension >;

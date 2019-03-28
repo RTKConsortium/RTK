@@ -41,9 +41,9 @@ int main(int, char** )
 #endif
 
 #if FAST_TESTS_NO_CHECKS
-  const unsigned int NumberOfProjectionImages = 5;
+  constexpr unsigned int NumberOfProjectionImages = 5;
 #else
-  const unsigned int NumberOfProjectionImages = 64;
+  constexpr unsigned int NumberOfProjectionImages = 64;
 #endif
 
   // Constant image sources

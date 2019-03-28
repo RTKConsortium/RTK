@@ -31,7 +31,7 @@
 
 int main(int , char** )
 {
-  const unsigned int Dimension = 3;
+  constexpr unsigned int Dimension = 3;
   using OutputPixelType = float;
 
 #ifdef USE_CUDA
@@ -42,9 +42,9 @@ int main(int , char** )
 
   using VectorType = itk::Vector<double, 3>;
 #if FAST_TESTS_NO_CHECKS
-  const unsigned int NumberOfProjectionImages = 3;
+  constexpr unsigned int NumberOfProjectionImages = 3;
 #else
-  const unsigned int NumberOfProjectionImages = 45;
+  constexpr unsigned int NumberOfProjectionImages = 45;
 #endif
 
   // Constant image sources
@@ -52,7 +52,7 @@ int main(int , char** )
   ConstantImageSourceType::PointType origin;
   ConstantImageSourceType::SizeType size;
   ConstantImageSourceType::SpacingType spacing;
-  const double att = 0.0154;
+  constexpr double att = 0.0154;
 
   // Create Joseph Forward Projector volume input.
   const ConstantImageSourceType::Pointer volInput = ConstantImageSourceType::New();

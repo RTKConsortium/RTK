@@ -30,7 +30,7 @@ int main(int argc, char * argv[])
   GGO(rtkspectralforwardmodel, args_info);
 
   using PixelValueType = float;
-  const unsigned int Dimension = 3;
+  constexpr unsigned int Dimension = 3;
 
   using DecomposedProjectionType = itk::VectorImage< PixelValueType, Dimension >;
   using DecomposedProjectionReaderType = itk::ImageFileReader<DecomposedProjectionType>;

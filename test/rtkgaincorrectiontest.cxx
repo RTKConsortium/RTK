@@ -40,7 +40,7 @@
  * \author Sebastien Brousmiche
  */
 
-const unsigned int Dimension = 3;
+constexpr unsigned int Dimension = 3;
 #ifdef RTK_USE_CUDA
 using InputImageType = itk::CudaImage< unsigned short, Dimension >;
 using OutputImageType = itk::CudaImage< float, Dimension >;
@@ -49,8 +49,8 @@ using InputImageType = itk::Image< unsigned short, Dimension >;
 using OutputImageType = itk::Image< float, Dimension >;
 #endif
 
-const int modelOrder = 3;
-const int sizeI = 100;
+constexpr int modelOrder = 3;
+constexpr int sizeI = 100;
 
 InputImageType::Pointer createDarkImage()
 {

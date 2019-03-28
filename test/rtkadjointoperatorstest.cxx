@@ -27,7 +27,7 @@
 
 int main(int, char** )
 {
-  const unsigned int Dimension = 3;
+  constexpr unsigned int Dimension = 3;
 
 #ifdef USE_CUDA
   using OutputPixelType = float;
@@ -38,9 +38,9 @@ int main(int, char** )
 #endif
 
 #if FAST_TESTS_NO_CHECKS
-  const unsigned int NumberOfProjectionImages = 3;
+  constexpr unsigned int NumberOfProjectionImages = 3;
 #else
-  const unsigned int NumberOfProjectionImages = 60;
+  constexpr unsigned int NumberOfProjectionImages = 60;
 #endif
 
   // Random image sources

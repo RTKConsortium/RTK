@@ -118,7 +118,7 @@ int main(int argc, char *argv[])
   lok = true;
   {
     // determine a few random phantom markers around isocenter
-    const int NUM_PHANTOM_MARKERS = 5;
+    constexpr int NUM_PHANTOM_MARKERS = 5;
     RandomType::Pointer generator = RandomType::New();
     generator->Initialize(123456);
     GeometryType::PointType p;
@@ -199,7 +199,7 @@ int main(int argc, char *argv[])
     gantryAngles.insert(gantryAngles.end(), criticalAngles.begin(), criticalAngles.end());
     outOfPlaneAngles.insert(outOfPlaneAngles.end(), criticalAngles.begin(), criticalAngles.end());
     // randomly sample further angles in [-180;+180] deg range:
-    const int NUM_RANDOM_ANGLES = 100;
+    constexpr int NUM_RANDOM_ANGLES = 100;
     for (int u = 0; u < NUM_RANDOM_ANGLES; u++)
     {
       inPlaneAngles.push_back(generator->GetUniformVariate(-180, 180));

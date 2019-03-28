@@ -36,10 +36,10 @@ int main(int argc, char*argv[])
     return EXIT_FAILURE;
   }
 
-  const unsigned int Dimension = 3;
-  const unsigned int nBins = 5;
-  const unsigned int nMaterials = 3;
-  const unsigned int nEnergies = 150;
+  constexpr unsigned int Dimension = 3;
+  constexpr unsigned int nBins = 5;
+  constexpr unsigned int nMaterials = 3;
+  constexpr unsigned int nEnergies = 150;
   using DataType = float;
   using MaterialPixelType = itk::Vector<DataType, nMaterials>;
   using PhotonCountsPixelType = itk::Vector<DataType, nBins>;
@@ -85,9 +85,9 @@ int main(int argc, char*argv[])
   materialAttenuationsReader->Update();
 
 #if FAST_TESTS_NO_CHECKS
-  const unsigned int NumberOfProjectionImages = 4;
+  constexpr unsigned int NumberOfProjectionImages = 4;
 #else
-  const unsigned int NumberOfProjectionImages = 64;
+  constexpr unsigned int NumberOfProjectionImages = 64;
 #endif
 
   // Define the material concentrations

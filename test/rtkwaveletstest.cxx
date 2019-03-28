@@ -76,7 +76,7 @@ void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer 
 int main(int, char** )
 {
   using OutputPixelType = float;
-  const unsigned int Dimension = 3;
+  constexpr unsigned int Dimension = 3;
 
   using OutputImageType = itk::Image< OutputPixelType, Dimension >;
   // Random image sources

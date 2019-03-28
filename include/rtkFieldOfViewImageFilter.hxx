@@ -57,7 +57,7 @@ bool FieldOfViewImageFilter<TInputImage, TOutputImage>
   dumImg->CopyInformation(m_ProjectionsStack);
 
   // Build model for lpsolve with 3 variables: x, z and r
-  const int Ncol = 3;
+  constexpr int Ncol = 3;
   lprec *lp = make_lp(0, Ncol);
   if(lp == nullptr)
     itkExceptionMacro(<< "Couldn't construct 2 new models for the simplex solver");
@@ -73,7 +73,7 @@ bool FieldOfViewImageFilter<TInputImage, TOutputImage>
   REAL row[Ncol];
   for(unsigned int iProj=0; iProj<m_Geometry->GetGantryAngles().size(); iProj++)
     {
-    const unsigned int NCORNERS = 4;
+    constexpr unsigned int NCORNERS = 4;
     double a[NCORNERS];
     double b[NCORNERS];
     double c[NCORNERS];
@@ -353,7 +353,7 @@ void
 FieldOfViewImageFilter<TInputImage, TOutputImage>
 ::AddCollimationConstraints(const FOVRadiusType type, _lprec *lp)
 {
-  const int Ncol = 3;
+  constexpr int Ncol = 3;
   int colno[Ncol] = {1, 2, 3};
   REAL row[Ncol];
   for(unsigned int iProj=0; iProj<m_Geometry->GetGantryAngles().size(); iProj++)

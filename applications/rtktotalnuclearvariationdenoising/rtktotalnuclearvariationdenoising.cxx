@@ -31,8 +31,8 @@ int main(int argc, char * argv[])
   GGO(rtktotalnuclearvariationdenoising, args_info);
 
   using OutputPixelType = float;
-  const unsigned int Dimension = 4; // Number of dimensions of the input image
-  const unsigned int DimensionsProcessed = 3; // Number of dimensions along which the gradient is computed
+  constexpr unsigned int Dimension = 4; // Number of dimensions of the input image
+  constexpr unsigned int DimensionsProcessed = 3; // Number of dimensions along which the gradient is computed
 
   using OutputImageType = itk::Image< OutputPixelType, Dimension >;
   using GradientOutputImageType = itk::Image< itk::CovariantVector

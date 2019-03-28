@@ -28,15 +28,15 @@
  */
 int main(int argc, char*argv[])
 {
-  const unsigned int Dimension = 3;
+  constexpr unsigned int Dimension = 3;
   using reg1DPixelType = double;
   using OutputPixelType = float;
   using OutputImageType = itk::Image< OutputPixelType, Dimension >;
   using reg1DImageType = itk::Image< reg1DPixelType, Dimension-2 >;
 #if FAST_TESTS_NO_CHECKS
-  const unsigned int NumberOfProjectionImages = 3;
+  constexpr unsigned int NumberOfProjectionImages = 3;
 #else
-  const unsigned int NumberOfProjectionImages = 100;
+  constexpr unsigned int NumberOfProjectionImages = 100;
 #endif
 
   if (argc < 3)
@@ -102,7 +102,7 @@ int main(int argc, char*argv[])
   using REIType = rtk::RayEllipsoidIntersectionImageFilter<OutputImageType, OutputImageType>;
   double             size   = 80.;
   double             sinus  = 0.;
-  const unsigned int Cycles = 4;
+  constexpr unsigned int Cycles = 4;
 
   OutputImageType::Pointer wholeImage = constantImageSource->GetOutput();
   GeometryType::Pointer geometryFull = GeometryType::New();

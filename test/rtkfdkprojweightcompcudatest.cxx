@@ -21,7 +21,7 @@
 
 int main(int, char** )
 {
-  const unsigned int Dimension = 3;
+  constexpr unsigned int Dimension = 3;
   using OutputPixelType = float;
   using OutputImageType = itk::CudaImage< OutputPixelType, Dimension >;
 
