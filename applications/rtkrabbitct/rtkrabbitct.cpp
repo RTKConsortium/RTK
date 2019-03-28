@@ -6,7 +6,7 @@
 // include the required header files
 #include <iostream>
 #include <fstream>
-#include <stdio.h>
+#include <cstdio>
 
 #include "rabbitct.h"
 

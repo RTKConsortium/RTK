@@ -1,9 +1,9 @@
 //
 //std
-#include <stdlib.h>
+#include <cstdlib>
 #include <iostream>
 #include <vector>
-#include <math.h>
+#include <cmath>
 //ITK
 #include <itkMersenneTwisterRandomVariateGenerator.h>
 #include <itkEuler3DTransform.h>

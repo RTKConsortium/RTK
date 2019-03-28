@@ -26,7 +26,7 @@
 //SR: taken from
 //#include "msinttypes/stdint.h"
 #else
-#include <stdint.h>
+#include <cstdint>
 #endif
 
 #include "rtkMacro.h"

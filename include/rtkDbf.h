@@ -23,7 +23,7 @@
 #include <fstream>
 #include <vector>
 #include <map>
-#include <stdlib.h>
+#include <cstdlib>
 
 namespace rtk
 {

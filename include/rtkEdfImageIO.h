@@ -21,7 +21,7 @@
 
 #include <itkImageIOBase.h>
 #include <fstream>
-#include <string.h>
+#include <cstring>
 
 #include "rtkMacro.h"
 

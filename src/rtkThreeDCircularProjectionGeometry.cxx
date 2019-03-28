@@ -20,7 +20,7 @@
 #include "rtkMacro.h"
 
 #include <algorithm>
-#include <math.h>
+#include <cmath>
 
 #include <itkCenteredEuler3DTransform.h>
 #include <itkEuler3DTransform.h>

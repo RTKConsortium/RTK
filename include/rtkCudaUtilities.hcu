@@ -20,7 +20,7 @@
 #define __rtkCudaUtilities_hcu
 
 #ifdef _WIN32
-# include <math.h>
+# include <cmath>
 # define __CUDA_INTERNAL_COMPILATION__
 # include <math_functions.h>
 # undef __CUDA_INTERNAL_COMPILATION__

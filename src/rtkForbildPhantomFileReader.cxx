@@ -17,7 +17,7 @@
  *=========================================================================*/
 
 #include <fstream>
-#include <stdlib.h>
+#include <cstdlib>
 #include <itksys/RegularExpression.hxx>
 #include "rtkForbildPhantomFileReader.h"
 #include "rtkQuadricShape.h"

@@ -20,7 +20,7 @@
 #include "rtkTestConfiguration.h"
 #include "rtkMacro.h"
 
-#include <math.h>
+#include <cmath>
 #include <itkImageRegionConstIterator.h>
 #include <itkImageRegionIteratorWithIndex.h>
 

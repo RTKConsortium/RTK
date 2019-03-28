@@ -17,7 +17,7 @@
  *=========================================================================*/
 
 // std include
-#include <stdio.h>
+#include <cstdio>
 #include <valarray>
 #include <numeric>
 

@@ -8,7 +8,7 @@
 #include <itkStreamingImageFilter.h>
 #include <itkImageRegionSplitterDirection.h>
 #include <itkImageRegionIterator.h>
-#include <math.h>
+#include <cmath>
 
 
 #ifdef USE_CUDA
