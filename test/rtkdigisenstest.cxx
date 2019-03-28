@@ -53,14 +53,14 @@ int main(int argc, char*argv[])
   using ReaderType = rtk::ProjectionsReader< ImageType >;
   ReaderType::Pointer reader = ReaderType::New();
   std::vector<std::string> fileNames;
-  fileNames.push_back(argv[2]);
+  fileNames.emplace_back(argv[2]);
   reader->SetFileNames( fileNames );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->Update() );
 
   // Reference projections reader
   ReaderType::Pointer readerRef = ReaderType::New();
   std::vector<std::string> fileNamesRef;
-  fileNamesRef.push_back(argv[4]);
+  fileNamesRef.emplace_back(argv[4]);
   readerRef->SetFileNames( fileNamesRef );
   TRY_AND_EXIT_ON_ITK_EXCEPTION(readerRef->Update());
 

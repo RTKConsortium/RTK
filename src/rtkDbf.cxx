@@ -73,7 +73,7 @@ DbfFile::DbfFile(std::string fileName)
     m_Stream.read( (char*)&fldLength, sizeof(fldLength) );
 
     // Add field and go to next
-    m_Fields.push_back(DbfField(fldName, fldType, fldLength, fldRecOffset) );
+    m_Fields.emplace_back(fldName, fldType, fldLength, fldRecOffset );
     m_MapFieldNameIndex[m_Fields.back().GetName()] = i;
 
     fldRecOffset += fldLength;

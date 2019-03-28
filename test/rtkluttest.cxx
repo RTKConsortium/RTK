@@ -30,7 +30,7 @@ int main(int argc, char*argv[])
   using ReaderType = rtk::ProjectionsReader< ShortImageType >;
   ReaderType::Pointer r = ReaderType::New();
   std::vector<std::string> fileNames;
-  fileNames.push_back( argv[1] );
+  fileNames.emplace_back(argv[1] );
   r->SetFileNames( fileNames );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( r->Update() );
 

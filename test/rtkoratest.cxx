@@ -30,7 +30,7 @@ int main(int argc, char*argv[])
 
   // Ora geometry
   std::vector<std::string> filenames;
-  filenames.push_back(argv[1]);
+  filenames.emplace_back(argv[1]);
   rtk::OraGeometryReader::Pointer geoTargReader;
   geoTargReader = rtk::OraGeometryReader::New();
   geoTargReader->SetProjectionsFileNames( filenames );
@@ -78,7 +78,7 @@ int main(int argc, char*argv[])
   // Reference projections reader
   ReaderType::Pointer readerRef = ReaderType::New();
   filenames.clear();
-  filenames.push_back(argv[3]);
+  filenames.emplace_back(argv[3]);
   readerRef->SetFileNames( filenames );
   TRY_AND_EXIT_ON_ITK_EXCEPTION(readerRef->Update());
 

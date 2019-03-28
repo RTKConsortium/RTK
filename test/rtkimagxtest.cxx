@@ -31,7 +31,7 @@ int main(int argc, char*argv[])
 
   // Generate projections names
   std::vector<std::string> FileNames;
-  FileNames.push_back(argv[1]);
+  FileNames.emplace_back(argv[1]);
 
   // Create geometry reader
   rtk::ImagXGeometryReader<ImageType>::Pointer imagxReader = rtk::ImagXGeometryReader<ImageType>::New();
@@ -61,7 +61,7 @@ int main(int argc, char*argv[])
   crop[2] = 0;
   ReaderType::Pointer reader = ReaderType::New();
   std::vector<std::string> fileNames;
-  fileNames.push_back(argv[4]);
+  fileNames.emplace_back(argv[4]);
   reader->SetFileNames( fileNames );
   reader->SetShrinkFactors(binning);
   reader->SetLowerBoundaryCropSize(crop);
@@ -73,7 +73,7 @@ int main(int argc, char*argv[])
   // Reference projections reader
   ReaderType::Pointer readerRef = ReaderType::New();
   fileNames.clear();
-  fileNames.push_back(argv[6]);
+  fileNames.emplace_back(argv[6]);
   readerRef->SetFileNames( fileNames );
   TRY_AND_EXIT_ON_ITK_EXCEPTION(readerRef->Update());
 
@@ -82,7 +82,7 @@ int main(int argc, char*argv[])
 
   std::cout << std::endl << std::endl << "Checking one projection in dcm format..." << std::endl;
   fileNames.clear();
-  fileNames.push_back(argv[1]);
+  fileNames.emplace_back(argv[1]);
   reader->SetFileNames( fileNames );
   reader->SetShrinkFactors(binning);
   reader->SetLowerBoundaryCropSize(crop);
@@ -93,7 +93,7 @@ int main(int argc, char*argv[])
 
   // Reference projections reader
   fileNames.clear();
-  fileNames.push_back(argv[7]);
+  fileNames.emplace_back(argv[7]);
   readerRef->SetFileNames( fileNames );
   TRY_AND_EXIT_ON_ITK_EXCEPTION(readerRef->Update());
 
