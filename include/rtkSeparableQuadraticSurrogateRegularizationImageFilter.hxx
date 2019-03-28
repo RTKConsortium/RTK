@@ -60,7 +60,7 @@ SeparableQuadraticSurrogateRegularizationImageFilter<TImage>
       break;
     default:
       std::cerr << "No output " << idx << std::endl;
-      output = NULL;
+      output = nullptr;
       break;
     }
   return output.GetPointer();
