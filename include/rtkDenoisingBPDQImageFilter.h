@@ -75,7 +75,7 @@ public:
 
 protected:
   DenoisingBPDQImageFilter();
-  ~DenoisingBPDQImageFilter() override {}
+  ~DenoisingBPDQImageFilter() override = default;
 
   void GenerateData() override;
 

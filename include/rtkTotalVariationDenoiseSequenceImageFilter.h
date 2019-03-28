@@ -113,7 +113,7 @@ public:
 
 protected:
     TotalVariationDenoiseSequenceImageFilter();
-    ~TotalVariationDenoiseSequenceImageFilter() override {}
+    ~TotalVariationDenoiseSequenceImageFilter() override = default;
 
     /** Does the real work. */
     void GenerateData() override;

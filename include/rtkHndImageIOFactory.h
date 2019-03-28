@@ -71,7 +71,7 @@ public:
 
 protected:
   HndImageIOFactory();
-  ~HndImageIOFactory() override {}
+  ~HndImageIOFactory() override = default;
   using myProductType = HndImageIOFactory;
   const myProductType* m_MyProduct;
 

@@ -64,7 +64,7 @@ public:
 
 protected:
   ConjugateGradientGetP_kPlusOneImageFilter();
-  ~ConjugateGradientGetP_kPlusOneImageFilter() override {}
+  ~ConjugateGradientGetP_kPlusOneImageFilter() override = default;
 
   typename TInputImage::Pointer GetR_kPlusOne();
   typename TInputImage::Pointer GetRk();

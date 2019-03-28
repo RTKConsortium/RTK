@@ -71,7 +71,7 @@ public:
 
 protected:
   ThreeDCircularProjectionGeometryXMLFileReader();
-  ~ThreeDCircularProjectionGeometryXMLFileReader() override {}
+  ~ThreeDCircularProjectionGeometryXMLFileReader() override = default;
 
   /** Callback function -- called from XML parser with start-of-element
    * information.

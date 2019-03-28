@@ -51,8 +51,8 @@ public:
   bool CanWriteFile(const char* filename) override;
 
 protected:
-  DCMImagXImageIO() {}
-  ~DCMImagXImageIO() override {}
+  DCMImagXImageIO() = default;
+  ~DCMImagXImageIO() override = default;
 };
 
 } // end namespace

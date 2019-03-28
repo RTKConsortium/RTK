@@ -62,7 +62,7 @@ public:
 
 protected:
     PhaseGatingImageFilter();
-    ~PhaseGatingImageFilter() override {}
+    ~PhaseGatingImageFilter() override = default;
 
     void GenerateOutputInformation() override;
 

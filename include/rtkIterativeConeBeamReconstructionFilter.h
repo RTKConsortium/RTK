@@ -93,7 +93,7 @@ public:
 
 protected:
   IterativeConeBeamReconstructionFilter();
-  ~IterativeConeBeamReconstructionFilter() override {}
+  ~IterativeConeBeamReconstructionFilter() override = default;
 
   /** Creates and returns an instance of the back projection filter.
    * To be used in SetBackProjectionFilter. */

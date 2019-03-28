@@ -67,7 +67,7 @@ public:
 
 protected:
   DPExtractShroudSignalImageFilter();
-  ~DPExtractShroudSignalImageFilter() override {}
+  ~DPExtractShroudSignalImageFilter() override = default;
 
   void GenerateOutputInformation() override;
   void GenerateInputRequestedRegion() override;

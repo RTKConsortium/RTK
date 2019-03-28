@@ -67,9 +67,7 @@ public:
   }
 
   // Destructor
-  ~DualEnergyNegativeLogLikelihood() override
-  {
-  }
+  ~DualEnergyNegativeLogLikelihood() override = default;
 
   void Initialize() override
   {

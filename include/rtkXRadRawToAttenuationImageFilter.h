@@ -57,7 +57,7 @@ public:
 
 protected:
   XRadRawToAttenuationImageFilter();
-  ~XRadRawToAttenuationImageFilter() override {}
+  ~XRadRawToAttenuationImageFilter() override = default;
 
   void BeforeThreadedGenerateData() override;
 

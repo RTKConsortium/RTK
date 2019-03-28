@@ -138,7 +138,7 @@ public:
 
 protected:
     ADMMWaveletsConjugateGradientOperator();
-    ~ADMMWaveletsConjugateGradientOperator() override {}
+    ~ADMMWaveletsConjugateGradientOperator() override = default;
 
     /** Does the real work. */
     void GenerateData() override;

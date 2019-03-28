@@ -155,7 +155,7 @@ public:
 
 protected:
     WarpFourDToProjectionStackImageFilter();
-    ~WarpFourDToProjectionStackImageFilter() override {}
+    ~WarpFourDToProjectionStackImageFilter() override = default;
 
     /** Does the real work. */
     void GenerateData() override;

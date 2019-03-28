@@ -90,7 +90,7 @@ public:
 
 protected:
     InterpolatorWithKnownWeightsImageFilter();
-    ~InterpolatorWithKnownWeightsImageFilter() override {}
+    ~InterpolatorWithKnownWeightsImageFilter() override = default;
 
     typename VolumeType::ConstPointer GetInputVolume();
     typename VolumeSeriesType::Pointer GetInputVolumeSeries();

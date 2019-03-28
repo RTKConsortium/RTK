@@ -44,7 +44,7 @@ public:
     m_AttenuationPixel = 0;
   }
 
-  ~InterpolationWeightMultiplicationAttenuatedBackProjection() {}
+  ~InterpolationWeightMultiplicationAttenuatedBackProjection() = default;
   bool operator!=( const InterpolationWeightMultiplicationAttenuatedBackProjection & ) const {
     return false;
   }
@@ -90,7 +90,7 @@ public:
     m_ex1 = 1;
   }
 
-  ~ComputeAttenuationCorrectionBackProjection() {}
+  ~ComputeAttenuationCorrectionBackProjection() = default;
   bool operator!=( const ComputeAttenuationCorrectionBackProjection & ) const
   {
     return false;
@@ -146,8 +146,8 @@ template< class TInput, class TCoordRepType, class TOutput=TCoordRepType >
 class SplatWeightMultiplicationAttenuated
 {
 public:
-  SplatWeightMultiplicationAttenuated() {}
-  ~SplatWeightMultiplicationAttenuated() {}
+  SplatWeightMultiplicationAttenuated() = default;
+  ~SplatWeightMultiplicationAttenuated() = default;
   bool operator!=( const SplatWeightMultiplicationAttenuated & ) const
   {
     return false;
@@ -217,7 +217,7 @@ public:
 
 protected:
   JosephBackAttenuatedProjectionImageFilter();
-  ~JosephBackAttenuatedProjectionImageFilter() override {}
+  ~JosephBackAttenuatedProjectionImageFilter() override = default;
 
   /** Apply changes to the input image requested region. */
   void GenerateInputRequestedRegion() override;

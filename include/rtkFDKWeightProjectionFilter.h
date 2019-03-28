@@ -74,8 +74,8 @@ public:
   itkSetObjectMacro(Geometry, ThreeDCircularProjectionGeometry);
 
 protected:
-  FDKWeightProjectionFilter()  {}
-  ~FDKWeightProjectionFilter() override {}
+  FDKWeightProjectionFilter()  = default;
+  ~FDKWeightProjectionFilter() override = default;
 
   void BeforeThreadedGenerateData() override;
 

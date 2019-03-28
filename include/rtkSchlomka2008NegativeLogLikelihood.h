@@ -69,9 +69,7 @@ public:
   }
 
   // Destructor
-  ~Schlomka2008NegativeLogLikelihood() override
-  {
-  }
+  ~Schlomka2008NegativeLogLikelihood() override = default;
 
   void Initialize() override
   {

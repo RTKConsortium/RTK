@@ -83,7 +83,7 @@ public:
 
 protected:
   DrawBoxImageFilter();
-  ~DrawBoxImageFilter() {}
+  ~DrawBoxImageFilter() = default;
 
   void BeforeThreadedGenerateData ( ) override;
 

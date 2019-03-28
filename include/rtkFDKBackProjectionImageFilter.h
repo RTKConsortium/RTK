@@ -58,8 +58,8 @@ public:
   itkTypeMacro(FDKBackProjectionImageFilter, ImageToImageFilter);
 
 protected:
-  FDKBackProjectionImageFilter() {};
-  ~FDKBackProjectionImageFilter() override {}
+  FDKBackProjectionImageFilter() = default;
+  ~FDKBackProjectionImageFilter() override = default;
 
   void GenerateOutputInformation() override;
 

@@ -65,7 +65,7 @@ public:
 
 protected:
   DisplacedDetectorForOffsetFieldOfViewImageFilter();
-  ~DisplacedDetectorForOffsetFieldOfViewImageFilter() override {}
+  ~DisplacedDetectorForOffsetFieldOfViewImageFilter() override = default;
 
   void GenerateOutputInformation() override;
 

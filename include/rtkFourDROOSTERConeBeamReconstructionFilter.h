@@ -357,7 +357,7 @@ public:
 
 protected:
   FourDROOSTERConeBeamReconstructionFilter();
-  ~FourDROOSTERConeBeamReconstructionFilter() override {}
+  ~FourDROOSTERConeBeamReconstructionFilter() override = default;
 
   /** Does the real work. */
   void GenerateData() override;

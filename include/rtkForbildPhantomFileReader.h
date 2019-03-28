@@ -76,10 +76,10 @@ public:
 
 protected:
   /// Constructor
-  ForbildPhantomFileReader() {};
+  ForbildPhantomFileReader() = default;
 
   /// Destructor
-  ~ForbildPhantomFileReader() override {}
+  ~ForbildPhantomFileReader() override = default;
 
   void CreateForbildSphere(const std::string &s);
   void CreateForbildBox(const std::string &s);

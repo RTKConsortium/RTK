@@ -83,7 +83,7 @@ public:
 
 protected:
   RayBoxIntersectionImageFilter();
-  ~RayBoxIntersectionImageFilter() override {}
+  ~RayBoxIntersectionImageFilter() override = default;
 
   void BeforeThreadedGenerateData ( ) override;
 

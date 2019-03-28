@@ -69,9 +69,7 @@ public:
   }
 
   // Destructor
-  ~ProjectionsDecompositionNegativeLogLikelihood() override
-  {
-  }
+  ~ProjectionsDecompositionNegativeLogLikelihood() override = default;
 
   MeasureType GetValue( const ParametersType & itkNotUsed(parameters)) const override {
   long double measure = 0;

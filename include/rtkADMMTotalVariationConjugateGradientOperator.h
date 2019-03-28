@@ -154,7 +154,7 @@ public:
 
 protected:
     ADMMTotalVariationConjugateGradientOperator();
-    ~ADMMTotalVariationConjugateGradientOperator() override {}
+    ~ADMMTotalVariationConjugateGradientOperator() override = default;
 
     /** Does the real work. */
     void GenerateData() override;

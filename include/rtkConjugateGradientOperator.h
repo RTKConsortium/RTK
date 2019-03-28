@@ -49,7 +49,7 @@ public:
 
 protected:
   ConjugateGradientOperator();
-  ~ConjugateGradientOperator() override {}
+  ~ConjugateGradientOperator() override = default;
 
 private:
   ConjugateGradientOperator(const Self &); //purposely not implemented

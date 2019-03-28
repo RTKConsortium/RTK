@@ -73,7 +73,7 @@ public:
 
 protected:
   DivergenceOfGradientConjugateGradientOperator();
-  ~DivergenceOfGradientConjugateGradientOperator() override {}
+  ~DivergenceOfGradientConjugateGradientOperator() override = default;
 
   void GenerateData() override;
 

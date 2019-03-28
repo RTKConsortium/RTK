@@ -91,7 +91,7 @@ public:
 
 protected:
   RayQuadricIntersectionImageFilter();
-  ~RayQuadricIntersectionImageFilter() override {}
+  ~RayQuadricIntersectionImageFilter() override = default;
 
   void BeforeThreadedGenerateData ( ) override;
 

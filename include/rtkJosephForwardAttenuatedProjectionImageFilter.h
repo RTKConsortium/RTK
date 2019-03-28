@@ -53,7 +53,7 @@ public:
       }
   }
 
-  ~InterpolationWeightMultiplicationAttenuated() {}
+  ~InterpolationWeightMultiplicationAttenuated() = default;
   bool operator!=( const InterpolationWeightMultiplicationAttenuated & ) const {
     return false;
   }
@@ -101,8 +101,8 @@ class ComputeAttenuationCorrection
 public:
   using VectorType = itk::Vector<double, 3>;
 
-  ComputeAttenuationCorrection(){}
-  ~ComputeAttenuationCorrection() {}
+  ComputeAttenuationCorrection()= default;
+  ~ComputeAttenuationCorrection() = default;
   bool operator!=( const ComputeAttenuationCorrection & ) const
   {
     return false;
@@ -157,8 +157,8 @@ class ProjectedValueAccumulationAttenuated
 public:
   using VectorType = itk::Vector<double, 3>;
 
-  ProjectedValueAccumulationAttenuated() {}
-  ~ProjectedValueAccumulationAttenuated() {}
+  ProjectedValueAccumulationAttenuated() = default;
+  ~ProjectedValueAccumulationAttenuated() = default;
   bool operator!=( const ProjectedValueAccumulationAttenuated & ) const
   {
     return false;
@@ -240,7 +240,7 @@ public:
 
 protected:
   JosephForwardAttenuatedProjectionImageFilter();
-  ~JosephForwardAttenuatedProjectionImageFilter() override {}
+  ~JosephForwardAttenuatedProjectionImageFilter() override = default;
 
   /** Apply changes to the input image requested region. */
   void GenerateInputRequestedRegion() override;

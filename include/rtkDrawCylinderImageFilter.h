@@ -59,8 +59,8 @@ public:
   itkTypeMacro(DrawCylinderImageFilter, DrawCylinderImageFilter);
 
 protected:
-  DrawCylinderImageFilter() {}
-  ~DrawCylinderImageFilter() override {}
+  DrawCylinderImageFilter() = default;
+  ~DrawCylinderImageFilter() override = default;
 
   void BeforeThreadedGenerateData() override;
 

@@ -107,7 +107,7 @@ public:
 
 protected:
     DaubechiesWaveletsDenoiseSequenceImageFilter();
-    ~DaubechiesWaveletsDenoiseSequenceImageFilter() override {}
+    ~DaubechiesWaveletsDenoiseSequenceImageFilter() override = default;
 
     /** Does the real work. */
     void GenerateData() override;

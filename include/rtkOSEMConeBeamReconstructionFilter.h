@@ -161,7 +161,7 @@ public:
   void SetBackProjectionFilter (BackProjectionType _arg) override;
 protected:
   OSEMConeBeamReconstructionFilter();
-  ~OSEMConeBeamReconstructionFilter() override {}
+  ~OSEMConeBeamReconstructionFilter() override = default;
 
   void GenerateInputRequestedRegion() override;
 

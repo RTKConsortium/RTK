@@ -175,7 +175,7 @@ public:
 
 protected:
     ProjectionStackToFourDImageFilter();
-    ~ProjectionStackToFourDImageFilter() override {}
+    ~ProjectionStackToFourDImageFilter() override = default;
 
     /** Does the real work. */
     void GenerateData() override;

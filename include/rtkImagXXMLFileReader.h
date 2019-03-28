@@ -58,7 +58,7 @@ public:
 
 protected:
   ImagXXMLFileReader() {m_OutputObject = &m_Dictionary;}
-  ~ImagXXMLFileReader() override {}
+  ~ImagXXMLFileReader() override = default;
 
   void StartElement(const char * name,const char **atts) override;
 

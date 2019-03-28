@@ -69,7 +69,7 @@ public:
 
 protected:
   HisImageIOFactory();
-  ~HisImageIOFactory() override {}
+  ~HisImageIOFactory() override = default;
   using myProductType = HisImageIOFactory;
   const myProductType* m_MyProduct;
 

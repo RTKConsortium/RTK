@@ -83,7 +83,7 @@ public:
 
 protected:
   ScatterGlareCorrectionImageFilter();
-  ~ScatterGlareCorrectionImageFilter() override {}
+  ~ScatterGlareCorrectionImageFilter() override = default;
 
   /** Create the deconvolution kernel
   */

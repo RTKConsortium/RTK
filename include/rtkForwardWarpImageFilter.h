@@ -71,7 +71,7 @@ public:
 
 protected:
   ForwardWarpImageFilter();
-  ~ForwardWarpImageFilter() override {}
+  ~ForwardWarpImageFilter() override = default;
 
   void GenerateData() override;
 

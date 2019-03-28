@@ -70,7 +70,7 @@ public:
 
 protected:
   ElektaSynergyRawLookupTableImageFilter();
-  ~ElektaSynergyRawLookupTableImageFilter() override {}
+  ~ElektaSynergyRawLookupTableImageFilter() override = default;
 
 private:
   ElektaSynergyRawLookupTableImageFilter(const Self&); //purposely not implemented

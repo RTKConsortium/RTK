@@ -172,7 +172,7 @@ public:
 
 protected:
   MotionCompensatedFourDROOSTERConeBeamReconstructionFilter();
-  ~MotionCompensatedFourDROOSTERConeBeamReconstructionFilter() override {}
+  ~MotionCompensatedFourDROOSTERConeBeamReconstructionFilter() override = default;
 
   /** Does the real work. */
   void GenerateData() override;

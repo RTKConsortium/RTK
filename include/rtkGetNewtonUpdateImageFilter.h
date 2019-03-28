@@ -66,7 +66,7 @@ public:
 
 protected:
     GetNewtonUpdateImageFilter();
-    ~GetNewtonUpdateImageFilter() override {}
+    ~GetNewtonUpdateImageFilter() override = default;
 
     void GenerateInputRequestedRegion() override;
 

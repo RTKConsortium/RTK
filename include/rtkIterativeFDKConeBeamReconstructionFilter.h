@@ -182,7 +182,7 @@ public:
 
 protected:
   IterativeFDKConeBeamReconstructionFilter();
-  ~IterativeFDKConeBeamReconstructionFilter() override {}
+  ~IterativeFDKConeBeamReconstructionFilter() override = default;
 
   void GenerateInputRequestedRegion() override;
 

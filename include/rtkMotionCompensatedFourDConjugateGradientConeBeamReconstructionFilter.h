@@ -134,7 +134,7 @@ public:
 
 protected:
   MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter();
-  ~MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter() override {}
+  ~MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter() override = default;
 
   void GenerateOutputInformation() override;
   void GenerateInputRequestedRegion() override;

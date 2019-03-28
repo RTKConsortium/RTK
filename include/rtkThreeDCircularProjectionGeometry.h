@@ -276,7 +276,7 @@ public:
 
 protected:
   ThreeDCircularProjectionGeometry();
-  ~ThreeDCircularProjectionGeometry() override {}
+  ~ThreeDCircularProjectionGeometry() override = default;
 
   virtual void AddProjectionTranslationMatrix(const TwoDHomogeneousMatrixType &m){
     this->m_ProjectionTranslationMatrices.push_back(m);

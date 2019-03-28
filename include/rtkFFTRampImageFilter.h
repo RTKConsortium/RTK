@@ -127,7 +127,7 @@ public:
 
 protected:
   FFTRampImageFilter();
-  ~FFTRampImageFilter() override {}
+  ~FFTRampImageFilter() override = default;
 
   void GenerateInputRequestedRegion() override;
 

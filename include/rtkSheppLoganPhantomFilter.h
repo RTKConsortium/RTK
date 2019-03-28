@@ -55,7 +55,7 @@ public:
 
 protected:
   SheppLoganPhantomFilter();
-  ~SheppLoganPhantomFilter() override {}
+  ~SheppLoganPhantomFilter() override = default;
 
   void GenerateData() override;
 

@@ -101,7 +101,7 @@ public:
 
 protected:
   I0EstimationProjectionFilter();
-  ~I0EstimationProjectionFilter() override {}
+  ~I0EstimationProjectionFilter() override = default;
 
   void BeforeThreadedGenerateData() override;
 

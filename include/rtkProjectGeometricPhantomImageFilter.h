@@ -94,7 +94,7 @@ public:
 
 protected:
   ProjectGeometricPhantomImageFilter();
-  ~ProjectGeometricPhantomImageFilter() override {}
+  ~ProjectGeometricPhantomImageFilter() override = default;
 
   void GenerateData() override;
 

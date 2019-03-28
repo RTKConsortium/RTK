@@ -73,7 +73,7 @@ public:
 
 protected:
   ElektaXVI5GeometryXMLFileReader();
-  ~ElektaXVI5GeometryXMLFileReader() override {}
+  ~ElektaXVI5GeometryXMLFileReader() override = default;
 
   /** Callback function -- called from XML parser with start-of-element
    * information.

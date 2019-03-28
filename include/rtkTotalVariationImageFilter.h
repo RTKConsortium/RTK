@@ -122,7 +122,7 @@ public:
 
 protected:
   TotalVariationImageFilter();
-  ~TotalVariationImageFilter() override {}
+  ~TotalVariationImageFilter() override = default;
   void PrintSelf(std::ostream & os, itk::Indent indent) const override;
 
   /** Pass the input through unmodified. Do this by Grafting in the

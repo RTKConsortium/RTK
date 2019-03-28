@@ -47,7 +47,7 @@ public:
     {
     m_Threshold = itk::NumericTraits<TInput>::Zero;
     }
-  ~SoftThreshold() {};
+  ~SoftThreshold() = default;
 
   void SetThreshold( const TInput & thresh )
     { m_Threshold = thresh; }
@@ -125,7 +125,7 @@ public:
 
 protected:
   SoftThresholdImageFilter();
-  ~SoftThresholdImageFilter() override {}
+  ~SoftThresholdImageFilter() override = default;
 
 private:
   SoftThresholdImageFilter(const Self&); //purposely not implemented

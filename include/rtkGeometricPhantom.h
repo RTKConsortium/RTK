@@ -77,8 +77,8 @@ public:
   void AddClipPlane(const VectorType & dir, const ScalarType & pos);
 
 protected:
-  GeometricPhantom() {}
-  ~GeometricPhantom() override {}
+  GeometricPhantom() = default;
+  ~GeometricPhantom() override = default;
 
 private:
   GeometricPhantom(const Self&); //purposely not implemented

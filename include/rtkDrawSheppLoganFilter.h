@@ -55,7 +55,7 @@ public:
 
 protected:
   DrawSheppLoganFilter();
-  ~DrawSheppLoganFilter() override {}
+  ~DrawSheppLoganFilter() override = default;
 
   void GenerateData() override;
 

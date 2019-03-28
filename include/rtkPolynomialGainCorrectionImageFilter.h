@@ -80,7 +80,7 @@ public:
 
 protected:
   PolynomialGainCorrectionImageFilter();
-  ~PolynomialGainCorrectionImageFilter() override {}
+  ~PolynomialGainCorrectionImageFilter() override = default;
 
   void GenerateOutputInformation() override;
 

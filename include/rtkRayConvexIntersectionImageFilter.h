@@ -71,7 +71,7 @@ public:
 
 protected:
   RayConvexIntersectionImageFilter();
-  ~RayConvexIntersectionImageFilter() override {}
+  ~RayConvexIntersectionImageFilter() override = default;
 
   /** ConvexShape must be created in the BeforeThreadedGenerateData in the
    * daugter classes. */

@@ -48,7 +48,7 @@ public:
 
 protected:
     SubSelectFromListImageFilter();
-    ~SubSelectFromListImageFilter(){}
+    ~SubSelectFromListImageFilter()= default;
 
 private:
     SubSelectFromListImageFilter(const Self &); //purposely not implemented

@@ -55,8 +55,8 @@ public:
   itkTypeMacro(DrawConeImageFilter, DrawConeImageFilter);
 
 protected:
-  DrawConeImageFilter() {}
-  ~DrawConeImageFilter() override {}
+  DrawConeImageFilter() = default;
+  ~DrawConeImageFilter() override = default;
 
   void BeforeThreadedGenerateData() override;
 

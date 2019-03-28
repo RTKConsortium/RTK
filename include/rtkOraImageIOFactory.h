@@ -68,7 +68,7 @@ public:
 
 protected:
   OraImageIOFactory();
-  ~OraImageIOFactory() override {};
+  ~OraImageIOFactory() override = default;
   using myProductType = OraImageIOFactory;
   const myProductType* m_MyProduct;
 

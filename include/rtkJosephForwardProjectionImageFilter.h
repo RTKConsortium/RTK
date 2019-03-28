@@ -43,8 +43,8 @@ template< class TInput, class TCoordRepType, class TOutput=TInput >
 class InterpolationWeightMultiplication
 {
 public:
-  InterpolationWeightMultiplication() {};
-  ~InterpolationWeightMultiplication() {};
+  InterpolationWeightMultiplication() = default;
+  ~InterpolationWeightMultiplication() = default;
   bool operator!=( const InterpolationWeightMultiplication & ) const {
     return false;
   }
@@ -76,8 +76,8 @@ class SumAlongRay
 public:
   using VectorType = itk::Vector<double, 3>;
 
-  SumAlongRay(){};
-  ~SumAlongRay() {};
+  SumAlongRay()= default;
+  ~SumAlongRay() = default;
   bool operator!=( const SumAlongRay & ) const
   {
     return false;
@@ -108,8 +108,8 @@ class ProjectedValueAccumulation
 public:
   using VectorType = itk::Vector<double, 3>;
 
-  ProjectedValueAccumulation() {};
-  ~ProjectedValueAccumulation() {};
+  ProjectedValueAccumulation() = default;
+  ~ProjectedValueAccumulation() = default;
   bool operator!=( const ProjectedValueAccumulation & ) const
     {
     return false;
@@ -225,7 +225,7 @@ public:
 
 protected:
   JosephForwardProjectionImageFilter();
-  ~JosephForwardProjectionImageFilter() override {}
+  ~JosephForwardProjectionImageFilter() override = default;
 
   void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) override;
 

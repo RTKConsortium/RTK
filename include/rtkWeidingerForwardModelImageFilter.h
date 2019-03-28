@@ -97,7 +97,7 @@ public:
 
 protected:
     WeidingerForwardModelImageFilter();
-    ~WeidingerForwardModelImageFilter() override {}
+    ~WeidingerForwardModelImageFilter() override = default;
 
     void GenerateInputRequestedRegion() override;
 #if ITK_VERSION_MAJOR<5

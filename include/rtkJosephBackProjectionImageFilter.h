@@ -41,8 +41,8 @@ template< class TInput, class TCoordRepType, class TOutput=TInput >
 class InterpolationWeightMultiplicationBackProjection
 {
 public:
-  InterpolationWeightMultiplicationBackProjection() {};
-  ~InterpolationWeightMultiplicationBackProjection() {};
+  InterpolationWeightMultiplicationBackProjection() = default;
+  ~InterpolationWeightMultiplicationBackProjection() = default;
   bool operator!=( const InterpolationWeightMultiplicationBackProjection & ) const {
     return false;
   }
@@ -73,8 +73,8 @@ class ValueAlongRay
 public:
   using VectorType = itk::Vector<double, 3>;
 
-  ValueAlongRay(){};
-  ~ValueAlongRay() {};
+  ValueAlongRay()= default;
+  ~ValueAlongRay() = default;
   bool operator!=( const ValueAlongRay & ) const
   {
     return false;
@@ -104,8 +104,8 @@ template< class TInput, class TCoordRepType, class TOutput=TCoordRepType >
 class SplatWeightMultiplication
 {
 public:
-  SplatWeightMultiplication() {};
-  ~SplatWeightMultiplication() {};
+  SplatWeightMultiplication() = default;
+  ~SplatWeightMultiplication() = default;
   bool operator!=( const SplatWeightMultiplication & ) const
     {
     return false;
@@ -217,7 +217,7 @@ public:
 
 protected:
   JosephBackProjectionImageFilter();
-  ~JosephBackProjectionImageFilter() override {}
+  ~JosephBackProjectionImageFilter() override = default;
 
   void GenerateData() override;
 

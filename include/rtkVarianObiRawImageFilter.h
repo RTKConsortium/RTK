@@ -44,8 +44,8 @@ template< class TInput, class TOutput>
 class ObiAttenuation
 {
 public:
-  ObiAttenuation() {}
-  ~ObiAttenuation() {}
+  ObiAttenuation() = default;
+  ~ObiAttenuation() = default;
   bool operator!=( const ObiAttenuation & ) const
     {
     return false;
@@ -110,7 +110,7 @@ public:
 
 protected:
   VarianObiRawImageFilter();
-  ~VarianObiRawImageFilter() override {}
+  ~VarianObiRawImageFilter() override = default;
 
 private:
   VarianObiRawImageFilter(const Self&); //purposely not implemented

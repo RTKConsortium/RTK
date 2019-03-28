@@ -58,8 +58,8 @@ public:
   itkTypeMacro(HilbertImageFilter, itk::ImageToImageFilter);
 
 protected:
-  HilbertImageFilter(){}
-  ~HilbertImageFilter() override {}
+  HilbertImageFilter()= default;
+  ~HilbertImageFilter() override = default;
 
   void GenerateData() override;
 

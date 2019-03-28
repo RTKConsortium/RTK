@@ -205,7 +205,7 @@ public:
 
 protected:
     ADMMWaveletsConeBeamReconstructionFilter();
-    ~ADMMWaveletsConeBeamReconstructionFilter() override {}
+    ~ADMMWaveletsConeBeamReconstructionFilter() override = default;
 
     /** Does the real work. */
     void GenerateData() override;

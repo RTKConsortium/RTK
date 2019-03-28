@@ -68,10 +68,10 @@ public:
 protected:
 
   /// Constructor
-  GeometricPhantomFileReader() {};
+  GeometricPhantomFileReader() = default;
 
   /// Destructor
-  ~GeometricPhantomFileReader() override {}
+  ~GeometricPhantomFileReader() override = default;
 
 private:
   GeometricPhantomFileReader( const Self& ); //purposely not implemented

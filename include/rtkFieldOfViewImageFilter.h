@@ -109,7 +109,7 @@ public:
 
 protected:
   FieldOfViewImageFilter();
-  ~FieldOfViewImageFilter() override {}
+  ~FieldOfViewImageFilter() override = default;
 
   void BeforeThreadedGenerateData() override;
 

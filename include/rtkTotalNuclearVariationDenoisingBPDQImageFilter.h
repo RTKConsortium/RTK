@@ -131,7 +131,7 @@ public:
 
 protected:
   TotalNuclearVariationDenoisingBPDQImageFilter();
-  ~TotalNuclearVariationDenoisingBPDQImageFilter() override {}
+  ~TotalNuclearVariationDenoisingBPDQImageFilter() override = default;
 
   void GenerateOutputInformation() override;
 

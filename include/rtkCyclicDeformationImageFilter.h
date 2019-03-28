@@ -79,7 +79,7 @@ public:
 
 protected:
   CyclicDeformationImageFilter(): m_Frame(0) {}
-  ~CyclicDeformationImageFilter() override {}
+  ~CyclicDeformationImageFilter() override = default;
 
   void GenerateOutputInformation() override;
   void GenerateInputRequestedRegion() override;

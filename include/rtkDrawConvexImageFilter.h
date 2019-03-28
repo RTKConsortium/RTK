@@ -70,7 +70,7 @@ public:
 
 protected:
   DrawConvexImageFilter();
-  ~DrawConvexImageFilter() override {}
+  ~DrawConvexImageFilter() override = default;
 
   /** ConvexShape must be created in the BeforeThreadedGenerateData in the
    * daugter classes. */

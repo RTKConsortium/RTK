@@ -164,7 +164,7 @@ public:
 
 protected:
     WarpSequenceImageFilter();
-    ~WarpSequenceImageFilter() override {}
+    ~WarpSequenceImageFilter() override = default;
 
     /** Does the real work. */
     void GenerateData() override;

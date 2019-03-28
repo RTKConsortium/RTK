@@ -65,7 +65,7 @@ public:
 
 protected:
     LastDimensionL0GradientDenoisingImageFilter();
-    ~LastDimensionL0GradientDenoisingImageFilter() override {}
+    ~LastDimensionL0GradientDenoisingImageFilter() override = default;
 
     void GenerateInputRequestedRegion() override;
 

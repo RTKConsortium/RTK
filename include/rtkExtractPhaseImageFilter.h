@@ -96,7 +96,7 @@ public:
 
 protected:
   ExtractPhaseImageFilter();
-  ~ExtractPhaseImageFilter() override {}
+  ~ExtractPhaseImageFilter() override = default;
 
   void GenerateData() override;
 

@@ -65,7 +65,7 @@ public:
 
 protected:
     AddMatrixAndDiagonalImageFilter();
-    ~AddMatrixAndDiagonalImageFilter() override {}
+    ~AddMatrixAndDiagonalImageFilter() override = default;
 
     void GenerateInputRequestedRegion() override;
 

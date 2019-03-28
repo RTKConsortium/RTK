@@ -197,7 +197,7 @@ public:
 
 protected:
     ReconstructImageFilter();
-    ~ReconstructImageFilter() override {}
+    ~ReconstructImageFilter() override = default;
 
     void PrintSelf(std::ostream&os, itk::Indent indent) const override;
 

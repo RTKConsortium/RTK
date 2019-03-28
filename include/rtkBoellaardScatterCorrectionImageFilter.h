@@ -76,7 +76,7 @@ public:
 
 protected:
   BoellaardScatterCorrectionImageFilter();
-  ~BoellaardScatterCorrectionImageFilter() override {}
+  ~BoellaardScatterCorrectionImageFilter() override = default;
 
   /** Requires full projection images to estimate scatter */
   void EnlargeOutputRequestedRegion(itk::DataObject *itkNotUsed(output)) override;

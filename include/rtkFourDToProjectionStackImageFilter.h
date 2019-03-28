@@ -145,7 +145,7 @@ public:
 
 protected:
     FourDToProjectionStackImageFilter();
-    ~FourDToProjectionStackImageFilter() override {}
+    ~FourDToProjectionStackImageFilter() override = default;
 
     typename VolumeSeriesType::ConstPointer GetInputVolumeSeries();
     typename ProjectionStackType::Pointer GetInputProjectionStack();

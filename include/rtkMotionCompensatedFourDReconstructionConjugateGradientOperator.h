@@ -168,7 +168,7 @@ public:
 
 protected:
     MotionCompensatedFourDReconstructionConjugateGradientOperator();
-    ~MotionCompensatedFourDReconstructionConjugateGradientOperator() override {}
+    ~MotionCompensatedFourDReconstructionConjugateGradientOperator() override = default;
 
     /** Builds the pipeline and computes output information */
     void GenerateOutputInformation() override;

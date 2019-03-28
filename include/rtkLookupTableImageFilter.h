@@ -57,7 +57,7 @@ public:
     m_LookupTableDataPointer(nullptr),
     m_Interpolator(InterpolatorType::New())
   {};
-  ~LUT() {};
+  ~LUT() = default;
 
   /** Get/Set the lookup table. */
   LookupTablePointer GetLookupTable() {
@@ -176,8 +176,8 @@ public:
   void BeforeThreadedGenerateData() override;
 
 protected:
-  LookupTableImageFilter() {}
-  ~LookupTableImageFilter() override {}
+  LookupTableImageFilter() = default;
+  ~LookupTableImageFilter() override = default;
   typename LookupTableType::Pointer m_LookupTable;
 
 private:

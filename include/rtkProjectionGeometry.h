@@ -78,8 +78,8 @@ public:
   virtual void Clear();
 
 protected:
-  ProjectionGeometry(){};
-  ~ProjectionGeometry() override {}
+  ProjectionGeometry()= default;
+  ~ProjectionGeometry() override = default;
 
   void PrintSelf( std::ostream& os, itk::Indent indent ) const override;
 

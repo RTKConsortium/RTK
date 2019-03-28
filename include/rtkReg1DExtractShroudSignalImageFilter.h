@@ -63,7 +63,7 @@ public:
 
 protected:
   Reg1DExtractShroudSignalImageFilter();
-  ~Reg1DExtractShroudSignalImageFilter() override {}
+  ~Reg1DExtractShroudSignalImageFilter() override = default;
 
   void GenerateOutputInformation() override;
   void GenerateInputRequestedRegion() override;
