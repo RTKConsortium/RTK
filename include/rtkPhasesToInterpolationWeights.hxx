@@ -78,8 +78,8 @@ void PhasesToInterpolationWeights::Parse()
       }
     else
       {
-      for (unsigned int i=0; i<m_SelectedProjections.size(); i++)
-        if (m_SelectedProjections[i]) NumberOfProjections += 1;
+      for (const bool m_SelectedProjection : m_SelectedProjections)
+        if (m_SelectedProjection) NumberOfProjections += 1;
       }
     }
   this->m_Array2D.SetSize(this->m_NumberOfReconstructedFrames, NumberOfProjections);

@@ -140,13 +140,13 @@ GetProjectionsFileNamesFromGgo(const TArgsInfo &args_info)
       }
 
     // Store the full filename and the selected sub expression match
-    for(size_t i=0; i<names->GetFileNames().size(); i++)
+    for(const std::string & name : names->GetFileNames())
       {
-      reg.find( names->GetFileNames()[i] );
+      reg.find( name );
       if (reg.match(args_info.submatch_arg) == std::string(""))
         {
         itkGenericExceptionMacro(<< "Cannot find submatch " << args_info.submatch_arg
-                                 << " in " << names->GetFileNames()[i]
+                                 << " in " << name
                                  << " from regular expression " << args_info.regexp_arg);
         }
       }

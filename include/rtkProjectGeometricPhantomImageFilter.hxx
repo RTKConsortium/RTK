@@ -73,9 +73,9 @@ void ProjectGeometricPhantomImageFilter< TInputImage, TOutputImage >::GenerateDa
 
   // Create one add filter per convex object
   std::vector< typename itk::ImageSource<TOutputImage>::Pointer > projectors;
-  for(size_t i=0; i<cov.size(); i++)
+  for(const auto & convexShape : cov)
     {
-    ConvexShape::Pointer co = cov[i]->Clone();
+    ConvexShape::Pointer co = convexShape->Clone();
     co->Rotate( m_RotationMatrix );
     co->Translate( m_OriginOffset );
     co->Rescale( m_PhantomScale );

@@ -35,16 +35,16 @@ void OraGeometryReader::GenerateData()
 {
   m_Geometry = GeometryType::New();
   RegisterIOFactories();
-  for(size_t noProj=0; noProj < m_ProjectionsFileNames.size(); noProj++)
+  for(const std::string & projectionsFileName : m_ProjectionsFileNames)
     {
     itk::ImageIOBase::Pointer reader;
-    reader = itk::ImageIOFactory::CreateImageIO(m_ProjectionsFileNames[noProj].c_str(),
+    reader = itk::ImageIOFactory::CreateImageIO(projectionsFileName.c_str(),
                                                 itk::ImageIOFactory::ReadMode);
     if (!reader)
       {
-      itkExceptionMacro("Error reading file " << m_ProjectionsFileNames[noProj]);
+      itkExceptionMacro("Error reading file " << projectionsFileName);
       }
-    reader->SetFileName( m_ProjectionsFileNames[noProj].c_str() );
+    reader->SetFileName( projectionsFileName.c_str() );
     reader->ReadImageInformation();
     itk::MetaDataDictionary &dic = reader->GetMetaDataDictionary();
 
@@ -56,7 +56,7 @@ void OraGeometryReader::GenerateData()
     MetaDataVectorType *spMeta = dynamic_cast<MetaDataVectorType *>(dic["SourcePosition"].GetPointer() );
     if(spMeta==nullptr)
       {
-      itkExceptionMacro(<< "No SourcePosition in " << m_ProjectionsFileNames[noProj]);
+      itkExceptionMacro(<< "No SourcePosition in " << projectionsFileName);
       }
     PointType sp(&(spMeta->GetMetaDataObjectValue()[0]));
 
@@ -64,7 +64,7 @@ void OraGeometryReader::GenerateData()
     MetaDataVectorType *dpMeta = dynamic_cast<MetaDataVectorType *>(dic["Origin"].GetPointer() );
     if(dpMeta == nullptr)
       {
-      itkExceptionMacro(<< "No Origin in " << m_ProjectionsFileNames[noProj]);
+      itkExceptionMacro(<< "No Origin in " << projectionsFileName);
       }
     PointType dp(&(dpMeta->GetMetaDataObjectValue()[0]));
 
@@ -72,7 +72,7 @@ void OraGeometryReader::GenerateData()
     MetaDataMatrixType *matMeta = dynamic_cast<MetaDataMatrixType *>(dic["Direction"].GetPointer() );
     if(matMeta == nullptr)
       {
-      itkExceptionMacro(<< "No Direction in " << m_ProjectionsFileNames[noProj]);
+      itkExceptionMacro(<< "No Direction in " << projectionsFileName);
       }
     Matrix3x3Type mat = matMeta->GetMetaDataObjectValue();
 
@@ -80,7 +80,7 @@ void OraGeometryReader::GenerateData()
     MetaDataDoubleType *thMeta = dynamic_cast<MetaDataDoubleType *>(dic["table_axis_distance_cm"].GetPointer() );
     if(thMeta == nullptr)
       {
-      itkExceptionMacro(<< "No table_axis_distance_cm in " << m_ProjectionsFileNames[noProj]);
+      itkExceptionMacro(<< "No table_axis_distance_cm in " << projectionsFileName);
       }
     double th = thMeta->GetMetaDataObjectValue();
     sp[2] -= th*10.;
@@ -90,7 +90,7 @@ void OraGeometryReader::GenerateData()
     MetaDataDoubleType *axMeta = dynamic_cast<MetaDataDoubleType *>(dic["longitudinalposition_cm"].GetPointer() );
     if(axMeta == nullptr)
       {
-      itkExceptionMacro(<< "No longitudinalposition_cm in " << m_ProjectionsFileNames[noProj]);
+      itkExceptionMacro(<< "No longitudinalposition_cm in " << projectionsFileName);
       }
     double ax = axMeta->GetMetaDataObjectValue();
     sp[1] -= ax*10.;

@@ -64,11 +64,10 @@ EdfRawToAttenuationImageFilter<TInputImage, TOutputImage>
   m_ReferenceProjectionsReader->Update();
 
   m_ReferenceIndices.clear();
-  for(unsigned int i=0; i<refNames->GetFileNames().size(); i++)
+  for(const std::string & name : refNames->GetFileNames())
     {
-    const std::string            name = refNames->GetFileNames()[i];
     const std::string::size_type nameSize = name.size();
-    std::string                  indexStr(name, nameSize-8, 4);
+    const std::string indexStr(name, nameSize-8, 4);
     m_ReferenceIndices.push_back( atoi( indexStr.c_str() ) );
     }
 

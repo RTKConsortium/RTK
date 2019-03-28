@@ -24,9 +24,9 @@ void
 GeometricPhantom
 ::Rescale(const VectorType &r)
 {
-  for(size_t i=0; i<m_ConvexShapes.size(); i++)
+  for(auto & convexShape : m_ConvexShapes)
     {
-    m_ConvexShapes[i]->Rescale(r);
+    convexShape->Rescale(r);
     }
 }
 
@@ -34,9 +34,9 @@ void
 GeometricPhantom
 ::Translate(const VectorType &t)
 {
-  for(size_t i=0; i<m_ConvexShapes.size(); i++)
+  for(auto & convexShape : m_ConvexShapes)
     {
-    m_ConvexShapes[i]->Translate(t);
+    convexShape->Translate(t);
     }
 }
 
@@ -44,9 +44,9 @@ void
 GeometricPhantom
 ::Rotate(const RotationMatrixType &r)
 {
-  for(size_t i=0; i<m_ConvexShapes.size(); i++)
+  for(auto & convexShape : m_ConvexShapes)
     {
-    m_ConvexShapes[i]->Rotate(r);
+    convexShape->Rotate(r);
     }
 }
 
@@ -70,8 +70,8 @@ GeometricPhantom
      }
   m_PlaneDirections.push_back(dir);
   m_PlanePositions.push_back(pos);
-  for(size_t i=0; i<m_ConvexShapes.size(); i++)
-    m_ConvexShapes[i]->AddClipPlane(dir, pos);
+  for(auto & convexShape : m_ConvexShapes)
+    convexShape->AddClipPlane(dir, pos);
 }
 
 }

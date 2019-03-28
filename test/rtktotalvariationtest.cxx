@@ -110,9 +110,9 @@ int main(int, char** )
   TVdenoising->SetGamma(0.3);
 
   bool dimsProcessed[Dimension];
-  for (unsigned int i=0; i<Dimension; i++)
+  for (bool & dimProcessed : dimsProcessed)
     {
-    dimsProcessed[i] = true;
+    dimProcessed = true;
     }
   TVdenoising->SetDimensionsProcessed(dimsProcessed);
 

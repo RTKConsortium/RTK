@@ -52,14 +52,14 @@ rtk::VarianProBeamGeometryReader
   // Projections reader (for angle)
   rtk::XimImageIOFactory::RegisterOneFactory();
   // Projection matrices
-  for(unsigned int noProj=0; noProj<m_ProjectionsFileNames.size(); noProj++)
+  for(const std::string & projectionsFileName : m_ProjectionsFileNames)
     {
     using InputPixelType = unsigned int;
     using InputImageType = itk::Image< InputPixelType, 2 >;
 
     using ReaderType = itk::ImageFileReader< InputImageType >;
     ReaderType::Pointer reader = ReaderType::New();
-    reader->SetFileName( m_ProjectionsFileNames[noProj] );
+    reader->SetFileName( projectionsFileName );
     reader->UpdateOutputInformation();
 
     const double angle =

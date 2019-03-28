@@ -84,13 +84,13 @@ BioscanGeometryReader::
 GenerateData()
 {
   m_Geometry = GeometryType::New();
-  for(size_t noProj=0; noProj < m_ProjectionsFileNames.size(); noProj++)
+  for(const std::string & m_ProjectionsFileName : m_ProjectionsFileNames)
     {
     gdcm::Reader reader;
-    reader.SetFileName( m_ProjectionsFileNames[noProj].c_str() );
+    reader.SetFileName( m_ProjectionsFileName.c_str() );
     if ( !reader.Read() )
       {
-      itkExceptionMacro(<< "Cannot read requested file: " << m_ProjectionsFileNames[noProj]);
+      itkExceptionMacro(<< "Cannot read requested file: " << m_ProjectionsFileName);
       }
     const gdcm::DataSet & ds =  reader.GetFile().GetDataSet();
 

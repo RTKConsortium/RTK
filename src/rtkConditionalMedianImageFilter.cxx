@@ -36,8 +36,8 @@ itk::ImageRegionIterator<TInputImage> outIt(this->GetOutput(), outputRegionForTh
 // Build a vector in which all pixel of the neighborhood will be temporarily stored
 std::vector< std::vector< TInputImage::InternalPixelType > > pixels;
 pixels.resize(this->GetInput()->GetVectorLength());
-for (unsigned int mat = 0; mat<pixels.size(); mat++)
-  pixels[mat].resize(nIt.Size());
+for (auto & pixel : pixels)
+  pixel.resize(nIt.Size());
 
 itk::VariableLengthVector<float> vlv;
 vlv.SetSize(this->GetInput()->GetVectorLength());
