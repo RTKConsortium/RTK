@@ -49,7 +49,7 @@ public:
 
   itkTypeMacro(CudaImage, Image);
 
-  itkStaticConstMacro(ImageDimension, unsigned int, VImageDimension);
+  static constexpr unsigned int ImageDimension = VImageDimension;
 
   using PixelType = typename Superclass::PixelType;
   using ValueType = typename Superclass::ValueType;

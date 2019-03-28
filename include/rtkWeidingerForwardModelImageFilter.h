@@ -57,8 +57,8 @@ public:
     itkTypeMacro(WeidingerForwardModelImageFilter, itk::ImageToImageFilter)
 
     /** Convenient parameters extracted from template types */
-    itkStaticConstMacro(nBins, unsigned int, TPhotonCounts::PixelType::Dimension);
-    itkStaticConstMacro(nMaterials, unsigned int, TMaterialProjections::PixelType::Dimension);
+    static constexpr unsigned int nBins = TPhotonCounts::PixelType::Dimension;
+    static constexpr unsigned int nMaterials = TMaterialProjections::PixelType::Dimension;
 
     /** Convenient type alias */
     using dataType = typename TMaterialProjections::PixelType::ValueType;

@@ -138,8 +138,8 @@ public:
     itkTypeMacro(MechlemOneStepSpectralReconstructionFilter, itk::ImageToImageFilter)
 
     /** Internal type alias and parameters */
-    itkStaticConstMacro(nBins, unsigned int, TPhotonCounts::PixelType::Dimension);
-    itkStaticConstMacro(nMaterials, unsigned int, TOutputImage::PixelType::Dimension);
+    static constexpr unsigned int nBins = TPhotonCounts::PixelType::Dimension;
+    static constexpr unsigned int nMaterials = TOutputImage::PixelType::Dimension;
     using dataType = typename TOutputImage::PixelType::ValueType;
 
     /** SFINAE type alias, depending on whether a CUDA image is used. */

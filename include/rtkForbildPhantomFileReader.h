@@ -49,7 +49,7 @@ public:
   using ConstPointer = itk::SmartPointer<const Self>;
 
   /** Convenient type alias. */
-  itkStaticConstMacro(Dimension, unsigned int, ConvexShape::Dimension);
+  static constexpr unsigned int Dimension = ConvexShape::Dimension;
   using GeometricPhantomPointer = GeometricPhantom::Pointer;
   using ScalarType = ConvexShape::ScalarType;
   using PointType = ConvexShape::PointType;

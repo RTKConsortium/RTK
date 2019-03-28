@@ -54,7 +54,7 @@ public:
     itkTypeMacro(AddMatrixAndDiagonalImageFilter, itk::ImageToImageFilter)
 
     /** Convenient parameters extracted from template types */
-    itkStaticConstMacro(nChannels, unsigned int, TDiagonal::PixelType::Dimension);
+    static constexpr unsigned int nChannels = TDiagonal::PixelType::Dimension;
 
     /** Convenient type alias */
     using dataType = typename TDiagonal::PixelType::ValueType;

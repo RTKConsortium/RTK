@@ -48,7 +48,7 @@ public:
     itkTypeMacro(BlockDiagonalMatrixVectorMultiplyImageFilter, itk::ImageToImageFilter)
 
     /** Convenient parameters extracted from template types */
-    itkStaticConstMacro(nChannels, unsigned int, TVectorImage::PixelType::Dimension);
+    static constexpr unsigned int nChannels = TVectorImage::PixelType::Dimension;
 
     /** Convenient type alias */
     using dataType = typename TVectorImage::PixelType::ValueType;

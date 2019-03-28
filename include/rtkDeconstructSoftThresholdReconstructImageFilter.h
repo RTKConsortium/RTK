@@ -60,7 +60,7 @@ public:
     itkTypeMacro(DeconstructSoftThresholdReconstructImageFilter, ImageToImageFilter)
 
     /** ImageDimension enumeration. */
-    itkStaticConstMacro(ImageDimension, unsigned int, TImage::ImageDimension);
+    static constexpr unsigned int ImageDimension = TImage::ImageDimension;
 
     /** Inherit types from Superclass. */
     using InputImageType = typename Superclass::InputImageType;

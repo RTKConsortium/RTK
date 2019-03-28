@@ -46,7 +46,7 @@ public:
   using ConstPointer = itk::SmartPointer<const Self>;
 
   /** Convenient type alias. */
-  itkStaticConstMacro(Dimension, unsigned int, Superclass::Dimension);
+  static constexpr unsigned int Dimension = Superclass::Dimension;
   using ConvexShapePointer = ConvexShape::Pointer;
   using ConvexShapeVector = std::vector<ConvexShapePointer>;
   using ScalarType = Superclass::ScalarType;

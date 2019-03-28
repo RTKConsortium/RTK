@@ -53,7 +53,7 @@ public:
   using ConstPointer = itk::SmartPointer<const Self>;
 
   /** Convenient type alias. */
-  itkStaticConstMacro(Dimension, unsigned int, 3);
+  static constexpr unsigned int Dimension = 3;
   using ScalarType = double;
   using PointType = itk::Vector< ScalarType, Dimension >;
   using VectorType = itk::Vector< ScalarType, Dimension >;
