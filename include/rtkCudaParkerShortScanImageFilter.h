@@ -51,6 +51,8 @@ class RTK_EXPORT CudaParkerShortScanImageFilter :
             rtk::ParkerShortScanImageFilter<itk::CudaImage<float, 3> > >
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(CudaParkerShortScanImageFilter);
+
   /** Convenience type alias **/
   using ImageType = itk::CudaImage<float,3>;
   using CPUWeightFilterType = rtk::ParkerShortScanImageFilter<ImageType>;
@@ -76,11 +78,6 @@ protected:
 
   virtual void GPUGenerateData();
 
-private:
-  /** purposely not implemented **/
-  CudaParkerShortScanImageFilter(const Self&);
-  /** purposely not implemented **/
-  void operator=(const Self&);
 };
 
 }

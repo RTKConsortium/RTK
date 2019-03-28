@@ -39,6 +39,8 @@ namespace rtk
 class OraXMLFileReader : public itk::XMLReader<itk::MetaDataDictionary>
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(OraXMLFileReader);
+
   /** Standard type alias */
   using Self = OraXMLFileReader;
   using Superclass = itk::XMLReader<itk::MetaDataDictionary>;
@@ -69,9 +71,6 @@ protected:
   void EncapsulateString(const char *metaName, const char *name);
 
 private:
-  OraXMLFileReader(const Self&); //purposely not implemented
-  void operator=(const Self&);         //purposely not implemented
-
   itk::MetaDataDictionary  m_Dictionary;
   std::string              m_CurCharacterData;
 };

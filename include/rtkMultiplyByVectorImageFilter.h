@@ -40,6 +40,8 @@ template< class TInputImage>
 class MultiplyByVectorImageFilter : public itk::ImageToImageFilter<TInputImage, TInputImage>
 {
 public:
+    ITK_DISALLOW_COPY_AND_ASSIGN(MultiplyByVectorImageFilter);
+
     /** Standard class type alias. */
     using Self = MultiplyByVectorImageFilter;
     using Superclass = itk::ImageToImageFilter<TInputImage, TInputImage>;
@@ -66,9 +68,6 @@ protected:
 #endif
 
 private:
-    MultiplyByVectorImageFilter(const Self &); //purposely not implemented
-    void operator=(const Self &);  //purposely not implemented
-
     std::vector<float> m_Vector;
 
 };

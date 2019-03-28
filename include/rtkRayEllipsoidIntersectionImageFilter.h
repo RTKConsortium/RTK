@@ -44,6 +44,8 @@ class ITK_EXPORT RayEllipsoidIntersectionImageFilter :
   public RayConvexIntersectionImageFilter<TInputImage,TOutputImage>
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(RayEllipsoidIntersectionImageFilter);
+
   /** Standard class type alias. */
   using Self = RayEllipsoidIntersectionImageFilter;
   using Superclass = RayConvexIntersectionImageFilter<TInputImage,TOutputImage>;
@@ -91,9 +93,6 @@ protected:
   void BeforeThreadedGenerateData() override;
 
 private:
-  RayEllipsoidIntersectionImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);            //purposely not implemented
-
   ScalarType              m_Density;
   std::vector<VectorType> m_PlaneDirections;
   std::vector<ScalarType> m_PlanePositions;

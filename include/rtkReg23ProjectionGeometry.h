@@ -64,6 +64,8 @@ class RTK_EXPORT Reg23ProjectionGeometry :
     public rtk::ThreeDCircularProjectionGeometry
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(Reg23ProjectionGeometry);
+
   /** General type alias **/
   using Self = Reg23ProjectionGeometry;
   using Superclass = rtk::ThreeDCircularProjectionGeometry;
@@ -93,12 +95,6 @@ protected:
   Reg23ProjectionGeometry();
   /** Destructor. **/
   ~Reg23ProjectionGeometry() override;
-
-private:
-  /** Purposely not implemented. **/
-  Reg23ProjectionGeometry(const Self&);
-  /** Purposely not implemented. **/
-  void operator=(const Self&);
 
 };
 

@@ -44,6 +44,8 @@ template< unsigned int TDimension = 3 >
 class ProjectionGeometry : public itk::DataObject
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(ProjectionGeometry);
+
   using Self = ProjectionGeometry<TDimension>;
   using Superclass = itk::DataObject;
   using Pointer = itk::SmartPointer< Self >;
@@ -90,9 +92,6 @@ protected:
   }
 
 private:
-  ProjectionGeometry(const Self&); //purposely not implemented
-  void operator=(const Self&);     //purposely not implemented
-
   /** Projection matrices */
   std::vector<MatrixType> m_Matrices;
 };

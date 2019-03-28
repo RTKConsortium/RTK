@@ -50,6 +50,8 @@ class RTK_EXPORT CudaLagCorrectionImageFilter :
   LagCorrectionImageFilter < itk::CudaImage<unsigned short, 3>, 4> >
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(CudaLagCorrectionImageFilter);
+
   /** Convenience type alias **/
   using ImageType = itk::CudaImage<unsigned short, 3>;
   using CPULagFilterType = LagCorrectionImageFilter <ImageType, 4>;
@@ -74,11 +76,6 @@ protected:
 
   virtual void GPUGenerateData();
 
-private:
-  /** purposely not implemented **/
-  CudaLagCorrectionImageFilter(const Self&);
-  /** purposely not implemented **/
-  void operator=(const Self&);
 };
 
 }

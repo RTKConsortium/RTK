@@ -42,6 +42,8 @@ template< class TDiagonal,
 class AddMatrixAndDiagonalImageFilter : public itk::ImageToImageFilter<TMatrix, TMatrix>
 {
 public:
+    ITK_DISALLOW_COPY_AND_ASSIGN(AddMatrixAndDiagonalImageFilter);
+
     /** Standard class type alias. */
     using Self = AddMatrixAndDiagonalImageFilter;
     using Superclass = itk::ImageToImageFilter<TMatrix, TMatrix>;
@@ -79,10 +81,6 @@ protected:
     /** Getters for the inputs */
     typename TDiagonal::ConstPointer GetInputDiagonal();
     typename TMatrix::ConstPointer GetInputMatrix();
-
-private:
-    AddMatrixAndDiagonalImageFilter(const Self &); //purposely not implemented
-    void operator=(const Self &);  //purposely not implemented
 
 };
 } //namespace RTK

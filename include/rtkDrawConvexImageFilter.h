@@ -43,8 +43,9 @@ template < class TInputImage,
 class DrawConvexImageFilter :
   public itk::InPlaceImageFilter<TInputImage,TOutputImage>
 {
-
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(DrawConvexImageFilter);
+
   /** Standard class type alias. */
   using Self = DrawConvexImageFilter;
   using Superclass = itk::InPlaceImageFilter<TInputImage,TOutputImage>;
@@ -85,9 +86,6 @@ protected:
 #endif
 
 private:
-  DrawConvexImageFilter ( const Self& ); //purposely not implemented
-  void operator=(const Self&);           //purposely not implemented
-
   ConvexShapePointer m_ConvexShape;
 };
 

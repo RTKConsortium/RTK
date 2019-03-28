@@ -51,6 +51,8 @@ class RTK_EXPORT CudaRayCastBackProjectionImageFilter :
   BackProjectionImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3> > >
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(CudaRayCastBackProjectionImageFilter);
+
   /** Standard class type alias. */
   using ImageType = itk::CudaImage<float,3>;
   using BackProjectionImageFilterType = BackProjectionImageFilter< ImageType, ImageType>;
@@ -87,9 +89,6 @@ protected:
   virtual void GPUGenerateData();
 
 private:
-  CudaRayCastBackProjectionImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);                   //purposely not implemented
-
   double             m_StepSize;
   bool               m_Normalize;
 };

@@ -35,6 +35,7 @@ template< typename TInputImage>
 class ConjugateGradientGetP_kPlusOneImageFilter : public itk::ImageToImageFilter< TInputImage, TInputImage>
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(ConjugateGradientGetP_kPlusOneImageFilter);
 
   /** Standard class type alias. */
   using Self = ConjugateGradientGetP_kPlusOneImageFilter;
@@ -76,9 +77,6 @@ protected:
   void GenerateOutputInformation() override;
 
 private:
-  ConjugateGradientGetP_kPlusOneImageFilter(const Self &); //purposely not implemented
-  void operator=(const Self &);  //purposely not implemented
-
   double m_SquaredNormR_k;
   double m_SquaredNormR_kPlusOne;
   double m_Betak;

@@ -38,6 +38,8 @@ template< typename TInputImage>
 class ConjugateGradientGetR_kPlusOneImageFilter : public itk::ImageToImageFilter< TInputImage, TInputImage>
 {
 public:
+    ITK_DISALLOW_COPY_AND_ASSIGN(ConjugateGradientGetR_kPlusOneImageFilter);
+
     /** Standard class type alias. */
     using Self = ConjugateGradientGetR_kPlusOneImageFilter;
     using Superclass = itk::ImageToImageFilter< TInputImage, TInputImage>;
@@ -81,8 +83,6 @@ protected:
     void AfterThreadedGenerateData() override;
 
 private:
-    ConjugateGradientGetR_kPlusOneImageFilter(const Self &); //purposely not implemented
-    void operator=(const Self &);  //purposely not implemented
     double m_Alphak;
     double m_SquaredNormR_k;
     double m_SquaredNormR_kPlusOne;

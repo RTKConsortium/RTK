@@ -40,6 +40,8 @@ class DrawGeometricPhantomImageFilter :
   public itk::InPlaceImageFilter<TInputImage,TOutputImage>
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(DrawGeometricPhantomImageFilter);
+
   /** Standard class type alias. */
   using Self = DrawGeometricPhantomImageFilter;
   using Superclass = itk::InPlaceImageFilter<TInputImage,TOutputImage>;
@@ -92,9 +94,6 @@ protected:
   void GenerateData() override;
 
 private:
-  DrawGeometricPhantomImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);                     //purposely not implemented
-
   GeometricPhantomConstPointer m_GeometricPhantom;
   StringType                   m_ConfigFile;
   VectorType                   m_PhantomScale;

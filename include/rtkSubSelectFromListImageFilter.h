@@ -33,6 +33,8 @@ template< typename ProjectionStackType>
 class SubSelectFromListImageFilter : public SubSelectImageFilter<ProjectionStackType>
 {
 public:
+    ITK_DISALLOW_COPY_AND_ASSIGN(SubSelectFromListImageFilter);
+
     /** Standard class type alias. */
     using Self = SubSelectFromListImageFilter;
     using Superclass = SubSelectImageFilter<ProjectionStackType>;
@@ -49,11 +51,6 @@ public:
 protected:
     SubSelectFromListImageFilter();
     ~SubSelectFromListImageFilter()= default;
-
-private:
-    SubSelectFromListImageFilter(const Self &); //purposely not implemented
-    void operator=(const Self &);  //purposely not implemented
-
 };
 } //namespace ITK
 

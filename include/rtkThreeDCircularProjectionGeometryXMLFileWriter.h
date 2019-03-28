@@ -42,6 +42,8 @@ class RTK_EXPORT ThreeDCircularProjectionGeometryXMLFileWriter :
   public itk::XMLWriterBase< ThreeDCircularProjectionGeometry >
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(ThreeDCircularProjectionGeometryXMLFileWriter);
+
   /** standard type alias */
   using Superclass = itk::XMLWriterBase< ThreeDCircularProjectionGeometry >;
   using Self = ThreeDCircularProjectionGeometryXMLFileWriter;
@@ -75,12 +77,6 @@ protected:
   /** Write projection specific parameter with name s. */
   void WriteLocalParameter(std::ofstream &output, const std::string &indent,
                            const double &v, const std::string &s);
-
-private:
-   //purposely not implemented
-  ThreeDCircularProjectionGeometryXMLFileWriter(const Self&);
-  void operator=(const Self&);
-
 };
 }
 

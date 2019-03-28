@@ -42,6 +42,8 @@ class CudaFFTRampImageFilter :
   public CudaFFTProjectionsConvolutionImageFilter< FFTRampImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>, float > >
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(CudaFFTRampImageFilter);
+
   /** Standard class type alias. */
   using Self = CudaFFTRampImageFilter;
   using Superclass = FFTRampImageFilter< CudaImageType, CudaImageType, float >;
@@ -58,9 +60,6 @@ protected:
   CudaFFTRampImageFilter(){}
   ~CudaFFTRampImageFilter(){}
 
-private:
-  CudaFFTRampImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);         //purposely not implemented
 }; // end of class
 
 } // end namespace rtk

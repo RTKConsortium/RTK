@@ -110,6 +110,7 @@ class TotalVariationDenoisingBPDQImageFilter :
         public rtk::DenoisingBPDQImageFilter< TOutputImage, TGradientImage >
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(TotalVariationDenoisingBPDQImageFilter);
 
   /** Standard class type alias. */
   using Self = TotalVariationDenoisingBPDQImageFilter;
@@ -143,10 +144,6 @@ protected:
   {
     return dynamic_cast<typename Superclass::ThresholdFilterType*>(this->m_ThresholdFilter.GetPointer());
   }
-
-private:
-  TotalVariationDenoisingBPDQImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&); //purposely not implemented
 };
 
 } // end namespace itk

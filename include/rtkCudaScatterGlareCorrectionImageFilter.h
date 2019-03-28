@@ -46,6 +46,8 @@ class CudaScatterGlareCorrectionImageFilter :
                                                                                       float > >
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(CudaScatterGlareCorrectionImageFilter);
+
   /** Standard class type alias. */
   using Self = CudaScatterGlareCorrectionImageFilter;
   using Superclass = ScatterGlareCorrectionImageFilter< itk::CudaImage<float,3>,
@@ -64,9 +66,6 @@ protected:
   CudaScatterGlareCorrectionImageFilter(){}
   ~CudaScatterGlareCorrectionImageFilter(){}
 
-private:
-  CudaScatterGlareCorrectionImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);                        //purposely not implemented
 }; // end of class
 
 } // end namespace rtk

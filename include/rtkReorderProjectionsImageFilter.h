@@ -46,6 +46,8 @@ class ITK_EXPORT ReorderProjectionsImageFilter :
   public itk::ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(ReorderProjectionsImageFilter);
+
   /** Standard class type alias. */
   using Self = ReorderProjectionsImageFilter;
 
@@ -88,9 +90,6 @@ protected:
   void GenerateData() override;
 
 private:
-  ReorderProjectionsImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);               //purposely not implemented
-
   /** RTK geometry objects */
   GeometryPointer m_InputGeometry;
   GeometryPointer m_OutputGeometry;

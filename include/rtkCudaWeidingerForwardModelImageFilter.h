@@ -48,6 +48,8 @@ class ITK_EXPORT CudaWeidingerForwardModelImageFilter :
   WeidingerForwardModelImageFilter< TMaterialProjections, TPhotonCounts, TSpectrum, TProjections > >
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(CudaWeidingerForwardModelImageFilter);
+
   /** Standard class type alias. */
   using Self = CudaWeidingerForwardModelImageFilter;
   using Superclass = WeidingerForwardModelImageFilter<TMaterialProjections, TPhotonCounts, TSpectrum, TProjections>;
@@ -67,10 +69,6 @@ protected:
 
   virtual void GPUGenerateData();
 
-private:
-  //purposely not implemented
-  CudaWeidingerForwardModelImageFilter(const Self&);
-  void operator=(const Self&);
 }; // end of class
 
 } // end namespace rtk

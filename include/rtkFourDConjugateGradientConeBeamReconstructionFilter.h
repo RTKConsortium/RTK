@@ -96,6 +96,8 @@ class ITK_EXPORT FourDConjugateGradientConeBeamReconstructionFilter :
   public rtk::IterativeConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(FourDConjugateGradientConeBeamReconstructionFilter);
+
   /** Standard class type alias. */
   using Self = FourDConjugateGradientConeBeamReconstructionFilter;
   using Superclass = IterativeConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>;
@@ -202,10 +204,6 @@ protected:
   bool                    m_DisableDisplacedDetectorFilter;
 
 private:
-  //purposely not implemented
-  FourDConjugateGradientConeBeamReconstructionFilter(const Self&);
-  void operator=(const Self&);
-
   /** Geometry object */
   ThreeDCircularProjectionGeometry::ConstPointer m_Geometry;
 

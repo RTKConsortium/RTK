@@ -126,6 +126,8 @@ template< typename TOutputImage, typename TPhotonCounts, typename TSpectrum >
 class MechlemOneStepSpectralReconstructionFilter : public rtk::IterativeConeBeamReconstructionFilter<TOutputImage, TOutputImage>
 {
 public:
+    ITK_DISALLOW_COPY_AND_ASSIGN(MechlemOneStepSpectralReconstructionFilter);
+
     /** Standard class type alias. */
     using Self = MechlemOneStepSpectralReconstructionFilter;
     using Superclass = IterativeConeBeamReconstructionFilter<TOutputImage, TOutputImage>;
@@ -319,10 +321,7 @@ protected:
     typename TOutputImage::PixelType               m_RegularizationWeights;
     typename TOutputImage::RegionType::SizeType    m_RegularizationRadius;
 
-private:
-    MechlemOneStepSpectralReconstructionFilter(const Self &); //purposely not implemented
-    void operator=(const Self &);  //purposely not implemented
-
+// private:
 //    bool                         m_IterationCosts;
 };
 } //namespace ITK

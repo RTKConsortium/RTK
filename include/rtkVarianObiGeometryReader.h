@@ -39,6 +39,8 @@ class RTK_EXPORT VarianObiGeometryReader :
   public itk::LightProcessObject
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(VarianObiGeometryReader);
+
   /** Standard type alias */
   using Self = VarianObiGeometryReader;
   using Superclass = itk::LightProcessObject;
@@ -81,10 +83,6 @@ protected:
 
 
 private:
-  //purposely not implemented
-  VarianObiGeometryReader(const Self&);
-  void operator=(const Self&);
-
   void GenerateData() override;
 
   GeometryType::Pointer m_Geometry;

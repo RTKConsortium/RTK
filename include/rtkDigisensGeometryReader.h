@@ -41,6 +41,8 @@ class RTK_EXPORT DigisensGeometryReader :
   public itk::LightProcessObject
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(DigisensGeometryReader);
+
   /** Standard type alias */
   using Self = DigisensGeometryReader;
   using Superclass = itk::LightProcessObject;
@@ -67,10 +69,6 @@ protected:
 
 
 private:
-  //purposely not implemented
-  DigisensGeometryReader(const Self&);
-  void operator=(const Self&);
-
   void GenerateData() override;
 
   GeometryType::Pointer m_Geometry;

@@ -43,6 +43,8 @@ template< class TInputImage >
 class LastDimensionL0GradientDenoisingImageFilter : public itk::InPlaceImageFilter<TInputImage, TInputImage>
 {
 public:
+    ITK_DISALLOW_COPY_AND_ASSIGN(LastDimensionL0GradientDenoisingImageFilter);
+
     /** Standard class type alias. */
     using Self = LastDimensionL0GradientDenoisingImageFilter;
     using Superclass = itk::InPlaceImageFilter<TInputImage, TInputImage>;
@@ -80,10 +82,6 @@ protected:
 
     double              m_Lambda;
     unsigned int        m_NumberOfIterations;
-
-private:
-    LastDimensionL0GradientDenoisingImageFilter(const Self &); //purposely not implemented
-    void operator=(const Self &);  //purposely not implemented
 
 };
 } //namespace RTK

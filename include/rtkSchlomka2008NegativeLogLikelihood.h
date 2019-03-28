@@ -45,6 +45,7 @@ namespace rtk
 class Schlomka2008NegativeLogLikelihood : public rtk::ProjectionsDecompositionNegativeLogLikelihood
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(Schlomka2008NegativeLogLikelihood);
 
   using Self = Schlomka2008NegativeLogLikelihood;
   using Superclass = rtk::ProjectionsDecompositionNegativeLogLikelihood;
@@ -172,10 +173,6 @@ public:
       }
     }
   }
-
-private:
-  Schlomka2008NegativeLogLikelihood(const Self &); //purposely not implemented
-  void operator = (const Self &); //purposely not implemented
 
 };
 

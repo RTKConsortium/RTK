@@ -39,6 +39,8 @@ template< typename ProjectionStackType>
 class SelectOneProjectionPerCycleImageFilter : public SubSelectImageFilter<ProjectionStackType>
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(SelectOneProjectionPerCycleImageFilter);
+
   /** Standard class type alias. */
   using Self = SelectOneProjectionPerCycleImageFilter;
   using Superclass = SubSelectImageFilter<ProjectionStackType>;
@@ -65,9 +67,6 @@ protected:
   void GenerateOutputInformation() override;
 
 private:
-  SelectOneProjectionPerCycleImageFilter(const Self &); //purposely not implemented
-  void operator=(const Self &);                         //purposely not implemented
-
   std::string         m_SignalFilename;
   double              m_Phase;
   std::vector<double> m_Signal;

@@ -40,6 +40,8 @@ class ITK_EXPORT FDKBackProjectionImageFilter :
   public BackProjectionImageFilter<TInputImage,TOutputImage>
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(FDKBackProjectionImageFilter);
+
   /** Standard class type alias. */
   using Self = FDKBackProjectionImageFilter;
   using Superclass = BackProjectionImageFilter<TInputImage,TOutputImage>;
@@ -79,9 +81,6 @@ protected:
   void OptimizedBackprojectionY(const OutputImageRegionType& region, const ProjectionMatrixType& matrix,
                                         const ProjectionImagePointer projection) override;
 
-private:
-  FDKBackProjectionImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);               //purposely not implemented
 };
 
 } // end namespace rtk

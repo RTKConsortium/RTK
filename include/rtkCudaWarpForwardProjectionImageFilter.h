@@ -49,6 +49,8 @@ class RTK_EXPORT CudaWarpForwardProjectionImageFilter :
   ForwardProjectionImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3> > >
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(CudaWarpForwardProjectionImageFilter);
+
   /** Standard class type alias. */
   using InputImageType = itk::CudaImage<float, 3>;
   using DisplacementVectorType = itk::CovariantVector<float, 3>;
@@ -90,10 +92,6 @@ protected:
   virtual void GPUGenerateData();
 
 private:
-  //purposely not implemented
-  CudaWarpForwardProjectionImageFilter(const Self&);
-  void operator=(const Self&);
-
   double             m_StepSize;
 }; // end of class
 

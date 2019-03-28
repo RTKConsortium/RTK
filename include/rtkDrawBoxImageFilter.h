@@ -40,6 +40,8 @@ class DrawBoxImageFilter :
 public DrawConvexImageFilter< TInputImage, TOutputImage >
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(DrawBoxImageFilter);
+
   /** Standard class type alias. */
   using Self = DrawBoxImageFilter;
   using Superclass = DrawConvexImageFilter<TInputImage,TOutputImage>;
@@ -88,9 +90,6 @@ protected:
   void BeforeThreadedGenerateData ( ) override;
 
 private:
-  DrawBoxImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);     //purposely not implemented
-
   ScalarType              m_Density;
   std::vector<VectorType> m_PlaneDirections;
   std::vector<ScalarType> m_PlanePositions;

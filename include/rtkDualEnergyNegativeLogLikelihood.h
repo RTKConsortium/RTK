@@ -43,6 +43,7 @@ namespace rtk
 class DualEnergyNegativeLogLikelihood : public rtk::ProjectionsDecompositionNegativeLogLikelihood
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(DualEnergyNegativeLogLikelihood);
 
   using Self = DualEnergyNegativeLogLikelihood;
   using Superclass = rtk::ProjectionsDecompositionNegativeLogLikelihood;
@@ -133,10 +134,6 @@ public:
 
 protected:
   itk::VariableSizeMatrix<float>    m_Fischer;
-
-private:
-  DualEnergyNegativeLogLikelihood(const Self &); //purposely not implemented
-  void operator = (const Self &); //purposely not implemented
 
 };
 

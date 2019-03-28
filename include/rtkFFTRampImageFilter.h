@@ -63,6 +63,8 @@ class ITK_EXPORT FFTRampImageFilter :
   public rtk::FFTProjectionsConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(FFTRampImageFilter);
+
   /** Standard class type alias. */
   using Self = FFTRampImageFilter;
   using Superclass = rtk::FFTProjectionsConvolutionImageFilter< TInputImage,
@@ -136,9 +138,6 @@ protected:
   void UpdateFFTProjectionsConvolutionKernel(const SizeType size) override;
 
 private:
-  FFTRampImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);     //purposely not implemented
-
   /**
    * Cut frequency of Hann, Cosine and Hamming windows. The first one which is
    * non-zero is used.

@@ -45,6 +45,8 @@ class RTK_EXPORT CudaTotalVariationDenoisingBPDQImageFilter :
   TotalVariationDenoisingBPDQImageFilter< itk::CudaImage<float,3>, itk::CudaImage< itk::CovariantVector < float, 3 >, 3 > > >
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(CudaTotalVariationDenoisingBPDQImageFilter);
+
   /** Standard class type alias. */
   using Self = rtk::CudaTotalVariationDenoisingBPDQImageFilter;
   using OutputImageType = itk::CudaImage<float,3>;
@@ -65,10 +67,6 @@ protected:
   }
 
   virtual void GPUGenerateData();
-
-private:
-  CudaTotalVariationDenoisingBPDQImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);         //purposely not implemented
 
 }; // end of class
 

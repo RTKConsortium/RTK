@@ -41,6 +41,7 @@ template< typename OutputImageType, typename GradientImageType>
 class LaplacianImageFilter : public itk::ImageToImageFilter< OutputImageType, OutputImageType>
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(LaplacianImageFilter);
 
   /** Standard class type alias. */
   using Self = LaplacianImageFilter;
@@ -71,10 +72,6 @@ protected:
 
   typename GradientFilterType::Pointer    m_Gradient;
   typename DivergenceFilterType::Pointer  m_Divergence;
-
-private:
-  LaplacianImageFilter(const Self &); //purposely not implemented
-  void operator=(const Self &);  //purposely not implemented
 
 };
 } //namespace RTK

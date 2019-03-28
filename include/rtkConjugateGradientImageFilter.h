@@ -46,6 +46,7 @@ template< typename OutputImageType>
 class ConjugateGradientImageFilter : public itk::InPlaceImageFilter< OutputImageType,  OutputImageType>
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(ConjugateGradientImageFilter);
 
   /** Standard class type alias. */
   using Self = ConjugateGradientImageFilter;
@@ -104,10 +105,6 @@ protected:
   bool                m_IterationCosts;
   std::vector<double> m_ResidualCosts;
   double              m_C;
-
-private:
-  ConjugateGradientImageFilter(const Self &); //purposely not implemented
-  void operator=(const Self &);  //purposely not implemented
 };
 } //namespace RTK
 

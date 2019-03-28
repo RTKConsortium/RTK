@@ -45,6 +45,8 @@ class ITK_EXPORT ElektaSynergyRawLookupTableImageFilter :
 {
 
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(ElektaSynergyRawLookupTableImageFilter);
+
   /** Standard class type alias. */
   using Self = ElektaSynergyRawLookupTableImageFilter;
   using Superclass = LookupTableImageFilter< TInputImage,
@@ -71,11 +73,6 @@ public:
 protected:
   ElektaSynergyRawLookupTableImageFilter();
   ~ElektaSynergyRawLookupTableImageFilter() override = default;
-
-private:
-  ElektaSynergyRawLookupTableImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);                         //purposely not implemented
-
 };
 
 } // end namespace rtk

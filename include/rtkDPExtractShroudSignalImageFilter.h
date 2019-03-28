@@ -39,6 +39,8 @@ class ITK_EXPORT DPExtractShroudSignalImageFilter :
   public itk::ImageToImageFilter<itk::Image<TInputPixel, 2>, itk::Image<TOutputPixel, 1> >
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(DPExtractShroudSignalImageFilter);
+
   /** Standard class type alias. */
   using TInputImage = itk::Image<TInputPixel, 2>;
   using TOutputImage = itk::Image<TOutputPixel, 1>;
@@ -74,9 +76,6 @@ protected:
   void GenerateData() override;
 
 private:
-  DPExtractShroudSignalImageFilter(const Self&);  //purposely not implemented
-  void operator=(const Self&);                  //purposely not implemented
-
   double    m_Amplitude;
 
 }; // end of class

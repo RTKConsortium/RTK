@@ -52,6 +52,8 @@ class CudaFFTProjectionsConvolutionImageFilter:
                                       TParentImageFilter >
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(CudaFFTProjectionsConvolutionImageFilter);
+
   /** Standard class type alias. */
   using Self = CudaFFTProjectionsConvolutionImageFilter;
   using Superclass = TParentImageFilter;
@@ -77,9 +79,6 @@ protected:
   virtual FFTInputImagePointer PadInputImageRegion(const RegionType &inputRegion);
 
 private:
-  CudaFFTProjectionsConvolutionImageFilter(const Self&); // purposely not implemented
-  void operator=(const Self&);                // purposely not implemented
-
   CudaFFTOutputImagePointer m_KernelFFTCUDA;
 }; // end of class
 

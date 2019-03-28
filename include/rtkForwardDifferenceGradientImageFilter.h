@@ -56,6 +56,8 @@ class ForwardDifferenceGradientImageFilter:
   public itk::ImageToImageFilter< TInputImage, TOuputImage >
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(ForwardDifferenceGradientImageFilter);
+
   /** Extract dimension from input image. */
   itkStaticConstMacro(InputImageDimension, unsigned int,
                       TInputImage::ImageDimension);
@@ -168,9 +170,6 @@ protected:
   void GenerateOutputInformation() override;
 
 private:
-  ForwardDifferenceGradientImageFilter(const Self &); //purposely not implemented
-  void operator=(const Self &);      //purposely not implemented
-
 //  // An overloaded method which may transform the gradient to a
 //  // physical vector and converts to the correct output pixel type.
 //  template <typename TValue>

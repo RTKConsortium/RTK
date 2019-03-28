@@ -86,6 +86,8 @@ namespace rtk
 class WarpFourDToProjectionStackImageFilter : public rtk::FourDToProjectionStackImageFilter<ProjectionStackType, VolumeSeriesType>
 {
 public:
+    ITK_DISALLOW_COPY_AND_ASSIGN(WarpFourDToProjectionStackImageFilter);
+
     /** Standard class type alias. */
     using Self = WarpFourDToProjectionStackImageFilter;
     using Superclass = rtk::FourDToProjectionStackImageFilter< ProjectionStackType,
@@ -176,10 +178,6 @@ protected:
     typename CPUDVFInterpolatorType::Pointer m_DVFInterpolatorFilter;
     std::vector<double>                      m_Signal;
     bool                                     m_UseCudaCyclicDeformation;
-
-private:
-    WarpFourDToProjectionStackImageFilter(const Self &); //purposely not implemented
-    void operator=(const Self &);  //purposely not implemented
 
 };
 } //namespace ITK

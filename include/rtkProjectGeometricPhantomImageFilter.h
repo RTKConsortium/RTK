@@ -41,6 +41,8 @@ class ProjectGeometricPhantomImageFilter :
   public itk::InPlaceImageFilter<TInputImage,TOutputImage>
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(ProjectGeometricPhantomImageFilter);
+
   /** Standard class type alias. */
   using Self = ProjectGeometricPhantomImageFilter;
   using Superclass = itk::InPlaceImageFilter<TInputImage,TOutputImage>;
@@ -99,9 +101,6 @@ protected:
   void GenerateData() override;
 
 private:
-  ProjectGeometricPhantomImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);                     //purposely not implemented
-
   GeometricPhantomConstPointer m_GeometricPhantom;
   GeometryConstPointer         m_Geometry;
   StringType                   m_ConfigFile;

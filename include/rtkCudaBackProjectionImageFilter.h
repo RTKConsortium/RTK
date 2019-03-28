@@ -52,6 +52,8 @@ class ITK_EXPORT CudaBackProjectionImageFilter :
   BackProjectionImageFilter< ImageType, ImageType> >
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(CudaBackProjectionImageFilter);
+
   /** Standard class type alias. */
   using BackProjectionImageFilterType = BackProjectionImageFilter< ImageType, ImageType>;
   using Self = CudaBackProjectionImageFilter;
@@ -76,9 +78,6 @@ protected:
 
   virtual void GPUGenerateData();
 
-private:
-  CudaBackProjectionImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);                   //purposely not implemented
 };
 
 } // end namespace rtk

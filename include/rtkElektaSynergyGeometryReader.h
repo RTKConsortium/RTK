@@ -40,6 +40,8 @@ class RTK_EXPORT ElektaSynergyGeometryReader :
   public itk::LightProcessObject
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(ElektaSynergyGeometryReader);
+
   /** Standard type alias */
   using Self = ElektaSynergyGeometryReader;
   using Superclass = itk::LightProcessObject;
@@ -76,10 +78,6 @@ protected:
 
 
 private:
-  //purposely not implemented
-  ElektaSynergyGeometryReader(const Self&);
-  void operator=(const Self&);
-
   std::string GetImageIDFromDicomUID();
   void GetProjInfoFromDB(const std::string &imageID,
                          std::vector<float> &projAngle,

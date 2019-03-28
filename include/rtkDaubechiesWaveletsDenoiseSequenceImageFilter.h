@@ -73,6 +73,8 @@ template< typename TImageSequence >
 class DaubechiesWaveletsDenoiseSequenceImageFilter : public itk::ImageToImageFilter<TImageSequence, TImageSequence>
 {
 public:
+    ITK_DISALLOW_COPY_AND_ASSIGN(DaubechiesWaveletsDenoiseSequenceImageFilter);
+
     /** Standard class type alias. */
     using Self = DaubechiesWaveletsDenoiseSequenceImageFilter;
     using Superclass = itk::ImageToImageFilter<TImageSequence, TImageSequence>;
@@ -130,9 +132,6 @@ protected:
     float           m_Threshold;
     unsigned int    m_NumberOfLevels;
 
-private:
-    DaubechiesWaveletsDenoiseSequenceImageFilter(const Self &); //purposely not implemented
-    void operator=(const Self &);  //purposely not implemented
 };
 } //namespace ITK
 

@@ -49,6 +49,8 @@ class ITK_EXPORT ParkerShortScanImageFilter :
   public itk::InPlaceImageFilter<TInputImage, TOutputImage>
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(ParkerShortScanImageFilter);
+
   /** Standard class type alias. */
   using Self = ParkerShortScanImageFilter;
   using Superclass = itk::ImageToImageFilter<TInputImage, TOutputImage>;
@@ -89,9 +91,6 @@ protected:
 #endif
 
 private:
-  ParkerShortScanImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);             //purposely not implemented
-
   /** RTK geometry object */
   GeometryPointer m_Geometry;
 

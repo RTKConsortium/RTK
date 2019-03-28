@@ -39,6 +39,8 @@ namespace rtk
 class RTK_EXPORT OraGeometryReader : public itk::LightProcessObject
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(OraGeometryReader);
+
   /** Standard type alias */
   using Self = OraGeometryReader;
   using Superclass = itk::LightProcessObject;
@@ -92,10 +94,6 @@ protected:
   ~OraGeometryReader() override = default;
 
 private:
-  //purposely not implemented
-  OraGeometryReader(const Self&);
-  void operator=(const Self&);
-
   void GenerateData() override;
 
   GeometryType::Pointer m_Geometry;

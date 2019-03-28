@@ -34,6 +34,8 @@ namespace rtk
 class ITK_EXPORT PhaseReader:public itk::CSVFileReaderBase
 {
 public:
+    ITK_DISALLOW_COPY_AND_ASSIGN(PhaseReader);
+
     /** Standard class type alias */
     using Self = PhaseReader;
     using Superclass = CSVFileReaderBase;
@@ -72,9 +74,6 @@ protected:
 private:
 
     std::vector<float> m_Phases;
-
-    PhaseReader(const Self &);  //purposely not implemented
-    void operator=(const Self &);          //purposely not implemented
 };
 
 } //end namespace rtk

@@ -52,6 +52,8 @@ class RTK_EXPORT CudaFDKWeightProjectionFilter :
           rtk::FDKWeightProjectionFilter<itk::CudaImage<float, 3> > >
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(CudaFDKWeightProjectionFilter);
+
   /** Convenience type alias **/
   using ImageType = itk::CudaImage<float,3>;
   using CPUWeightFilterType = rtk::FDKWeightProjectionFilter<ImageType>;
@@ -76,12 +78,6 @@ protected:
   virtual ~CudaFDKWeightProjectionFilter();
 
   virtual void GPUGenerateData();
-
-private:
-  /** purposely not implemented **/
-  CudaFDKWeightProjectionFilter(const Self&);
-  /** purposely not implemented **/
-  void operator=(const Self&);
 
 }; // end of class
 

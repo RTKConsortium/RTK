@@ -45,6 +45,8 @@ class ITK_EXPORT HilbertImageFilter :
   public itk::ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(HilbertImageFilter);
+
   /** Standard class type alias. */
   using Self = HilbertImageFilter;
   using Superclass = itk::ImageToImageFilter<TInputImage, TOutputImage>;
@@ -63,9 +65,6 @@ protected:
 
   void GenerateData() override;
 
-private:
-  HilbertImageFilter(const Self&);  //purposely not implemented
-  void operator=(const Self&);      //purposely not implemented
 }; // end of class
 
 } // end of namespace rtk

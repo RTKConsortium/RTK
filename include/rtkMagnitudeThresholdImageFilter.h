@@ -43,6 +43,7 @@ class ITK_EXPORT MagnitudeThresholdImageFilter:
         public itk::InPlaceImageFilter< TInputImage, TOutputImage >
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(MagnitudeThresholdImageFilter);
 
   /** Standard class type alias. */
   using Self = MagnitudeThresholdImageFilter;
@@ -108,9 +109,6 @@ protected:
 
 private:
   TRealType m_Threshold;
-
-  MagnitudeThresholdImageFilter(const Self &); //purposely not implemented
-  void operator=(const Self &);                     //purposely not implemented
 };
 } // end namespace itk
 

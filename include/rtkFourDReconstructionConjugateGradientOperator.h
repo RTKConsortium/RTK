@@ -129,6 +129,8 @@ template< typename VolumeSeriesType, typename ProjectionStackType>
 class FourDReconstructionConjugateGradientOperator : public ConjugateGradientOperator< VolumeSeriesType>
 {
 public:
+    ITK_DISALLOW_COPY_AND_ASSIGN(FourDReconstructionConjugateGradientOperator);
+
     /** Standard class type alias. */
     using Self = FourDReconstructionConjugateGradientOperator;
     using Superclass = ConjugateGradientOperator< VolumeSeriesType>;
@@ -248,10 +250,6 @@ protected:
     itk::Array2D<float>                                   m_Weights;
     std::vector<double>                                   m_Signal;
     bool                                                  m_DisableDisplacedDetectorFilter;
-
-private:
-    FourDReconstructionConjugateGradientOperator(const Self &); //purposely not implemented
-    void operator=(const Self &);  //purposely not implemented
 };
 } //namespace ITK
 

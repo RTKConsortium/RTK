@@ -43,8 +43,9 @@ class ITK_EXPORT ElektaSynergyLookupTableImageFilter:
     public LookupTableImageFilter< itk::Image<unsigned short, TOutputImage::ImageDimension>,
                                    TOutputImage >
 {
-
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(ElektaSynergyLookupTableImageFilter);
+
   /** Standard class type alias. */
   using Self = ElektaSynergyLookupTableImageFilter;
   using Superclass = LookupTableImageFilter<itk::Image<unsigned short,
@@ -66,10 +67,6 @@ public:
 protected:
   ElektaSynergyLookupTableImageFilter();
   ~ElektaSynergyLookupTableImageFilter() override = default;
-
-private:
-  ElektaSynergyLookupTableImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);              //purposely not implemented
 
 };
 

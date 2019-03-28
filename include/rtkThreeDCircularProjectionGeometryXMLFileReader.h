@@ -45,6 +45,8 @@ class RTK_EXPORT ThreeDCircularProjectionGeometryXMLFileReader :
   public itk::XMLReader< ThreeDCircularProjectionGeometry >
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(ThreeDCircularProjectionGeometryXMLFileReader);
+
   /** Standard type alias */
   using Self = ThreeDCircularProjectionGeometryXMLFileReader;
   using Superclass = itk::XMLReader< ThreeDCircularProjectionGeometry >;
@@ -85,10 +87,6 @@ protected:
   void CharacterDataHandler(const char *inData, int inLength) override;
 
 private:
-   //purposely not implemented
-  ThreeDCircularProjectionGeometryXMLFileReader(const Self&);
-  void operator=(const Self&);
-
   GeometryPointer m_Geometry;
 
   std::string m_CurCharacterData;

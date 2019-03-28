@@ -40,6 +40,8 @@ class ITKIOImageBase_HIDDEN EdfRawToAttenuationImageFilter :
   public itk::ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(EdfRawToAttenuationImageFilter);
+
   /** Standard class type alias. */
   using Self = EdfRawToAttenuationImageFilter;
   using Superclass = itk::ImageToImageFilter<TInputImage, TOutputImage>;
@@ -88,10 +90,6 @@ protected:
 #endif
 
 private:
-  //purposely not implemented
-  EdfRawToAttenuationImageFilter(const Self&);
-  void operator=(const Self&);
-
   using EdfImageSeries = itk::ImageSeriesReader< InputImageType >;
   typename EdfImageSeries::Pointer m_DarkProjectionsReader;
   typename EdfImageSeries::Pointer m_ReferenceProjectionsReader;

@@ -42,6 +42,7 @@ template< typename TImage>
 class NesterovUpdateImageFilter : public itk::InPlaceImageFilter< TImage,  TImage>
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(NesterovUpdateImageFilter);
 
   /** Standard class type alias. */
   using Self = NesterovUpdateImageFilter;
@@ -88,9 +89,6 @@ protected:
   typename TImage::Pointer m_Vk;
   typename TImage::Pointer m_Alphak;
 
-private:
-  NesterovUpdateImageFilter(const Self &); //purposely not implemented
-  void operator=(const Self &);  //purposely not implemented
 };
 } //namespace RTK
 

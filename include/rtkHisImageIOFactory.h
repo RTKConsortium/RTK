@@ -41,6 +41,8 @@ namespace rtk
 class RTK_EXPORT HisImageIOFactory : public itk::ObjectFactoryBase
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(HisImageIOFactory);
+
   /** Standard class type alias. */
   using Self = HisImageIOFactory;
   using Superclass = itk::ObjectFactoryBase;
@@ -72,10 +74,6 @@ protected:
   ~HisImageIOFactory() override = default;
   using myProductType = HisImageIOFactory;
   const myProductType* m_MyProduct;
-
-private:
-  HisImageIOFactory(const Self&); //purposely not implemented
-  void operator=(const Self&);    //purposely not implemented
 
 };
 

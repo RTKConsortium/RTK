@@ -36,6 +36,8 @@ template< class TVectorImage,
 class BlockDiagonalMatrixVectorMultiplyImageFilter : public itk::ImageToImageFilter<TVectorImage, TVectorImage>
 {
 public:
+    ITK_DISALLOW_COPY_AND_ASSIGN(BlockDiagonalMatrixVectorMultiplyImageFilter);
+
     /** Standard class type alias. */
     using Self = BlockDiagonalMatrixVectorMultiplyImageFilter;
     using Superclass = itk::ImageToImageFilter<TVectorImage, TVectorImage>;
@@ -73,11 +75,6 @@ protected:
     /** Getters for the inputs */
     typename TVectorImage::ConstPointer GetInput1();
     typename TMatrixImage::ConstPointer GetInput2();
-
-private:
-    BlockDiagonalMatrixVectorMultiplyImageFilter(const Self &); //purposely not implemented
-    void operator=(const Self &);  //purposely not implemented
-
 };
 } //namespace RTK
 

@@ -46,6 +46,8 @@ class ITK_EXPORT FFTProjectionsConvolutionImageFilter :
   public itk::ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(FFTProjectionsConvolutionImageFilter);
+
   /** Standard class type alias. */
   using Self = FFTProjectionsConvolutionImageFilter;
   using Superclass = itk::ImageToImageFilter<TInputImage, TOutputImage>;
@@ -164,9 +166,6 @@ protected:
   FFTOutputImagePointer m_KernelFFT;
 
 private:
-  FFTProjectionsConvolutionImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);                       //purposely not implemented
-
   /** Percentage of the image width which is feathered with data to correct for truncation.
     * 0 (default) means no correction.
     */

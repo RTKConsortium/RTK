@@ -43,6 +43,8 @@ class ITK_EXPORT ScatterGlareCorrectionImageFilter :
     public rtk::FFTProjectionsConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(ScatterGlareCorrectionImageFilter);
+
   /** Standard class type alias. */
   using Self = ScatterGlareCorrectionImageFilter;
   using Superclass = rtk::FFTProjectionsConvolutionImageFilter< TInputImage,
@@ -90,9 +92,6 @@ protected:
   void UpdateFFTProjectionsConvolutionKernel(const SizeType size) override;
 
 private:
-  ScatterGlareCorrectionImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);     //purposely not implemented
-
   CoefficientVectorType m_Coefficients;
   CoefficientVectorType m_PreviousCoefficients;
 }; // end of class

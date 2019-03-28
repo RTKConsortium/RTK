@@ -49,6 +49,8 @@ class ITK_EXPORT FDKWarpBackProjectionImageFilter :
   public FDKBackProjectionImageFilter<TInputImage,TOutputImage>
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(FDKWarpBackProjectionImageFilter);
+
   /** Standard class type alias. */
   using Self = FDKWarpBackProjectionImageFilter;
   using Superclass = FDKBackProjectionImageFilter<TInputImage,TOutputImage>;
@@ -85,9 +87,6 @@ protected:
   void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) override;
 
 private:
-  FDKWarpBackProjectionImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);                   //purposely not implemented
-
   DeformationPointer    m_Deformation;
   itk::Barrier::Pointer m_Barrier;
   bool                  m_DeformationUpdateError;

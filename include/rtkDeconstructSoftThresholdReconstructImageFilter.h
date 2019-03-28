@@ -47,6 +47,8 @@ class DeconstructSoftThresholdReconstructImageFilter
     : public itk::ImageToImageFilter<TImage,TImage>
 {
 public:
+    ITK_DISALLOW_COPY_AND_ASSIGN(DeconstructSoftThresholdReconstructImageFilter);
+
     /** Standard class type alias. */
     using Self = DeconstructSoftThresholdReconstructImageFilter;
     using Superclass = itk::ImageToImageFilter<TImage,TImage>;
@@ -101,9 +103,6 @@ protected:
     void GenerateInputRequestedRegion() override;
 
 private:
-    DeconstructSoftThresholdReconstructImageFilter(const Self&);     //purposely not implemented
-    void operator=(const Self&);            //purposely not implemented
-
     unsigned int    m_Order;
     float           m_Threshold;
     bool            m_PipelineConstructed;

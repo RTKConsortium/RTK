@@ -45,6 +45,8 @@ class RTK_EXPORT CudaInterpolateImageFilter :
     InterpolatorWithKnownWeightsImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,4> > >
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(CudaInterpolateImageFilter);
+
   /** Standard class type alias. */
   using Self = rtk::CudaInterpolateImageFilter;
   using Superclass = rtk::InterpolatorWithKnownWeightsImageFilter< OutputImageType, InputImageType >;
@@ -63,10 +65,6 @@ protected:
   }
 
   virtual void GPUGenerateData();
-
-private:
-  CudaInterpolateImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);         //purposely not implemented
 
 }; // end of class
 

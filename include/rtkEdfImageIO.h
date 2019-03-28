@@ -38,6 +38,8 @@ namespace rtk {
 class EdfImageIO : public itk::ImageIOBase
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(EdfImageIO);
+
   /** Standard class type alias. */
   using Self = EdfImageIO;
   using Superclass = itk::ImageIOBase;

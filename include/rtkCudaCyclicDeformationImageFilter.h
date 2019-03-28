@@ -47,6 +47,8 @@ public itk::CudaImageToImageFilter< itk::CudaImage<itk::CovariantVector<float,3>
                                     CyclicDeformationImageFilter< itk::CudaImage<itk::CovariantVector<float, 3>, 4>, itk::CudaImage<itk::CovariantVector<float, 3>, 3> > >
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(CudaCyclicDeformationImageFilter);
+
   /** Standard class type alias. */
   using Self = rtk::CudaCyclicDeformationImageFilter;
   using InputImageType = itk::CudaImage<itk::CovariantVector<float,3>, 4>;
@@ -67,10 +69,6 @@ protected:
   }
 
   virtual void GPUGenerateData();
-
-private:
-  CudaCyclicDeformationImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);         //purposely not implemented
 
 }; // end of class
 

@@ -37,6 +37,8 @@ namespace rtk
 class RTK_EXPORT GlobalTimer:public itk::Object
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(GlobalTimer);
+
   /** Standard class type alias. */
   using Self = GlobalTimer;
   using Superclass = itk::Object;
@@ -91,9 +93,6 @@ protected:
   std::vector<rtk::WatcherForTimer*> m_Watchers;
 
 private:
-  GlobalTimer(const Self &);   //purposely not implemented
-  void operator=(const Self &); //purposely not implemented
-
   static Pointer m_Instance;
   std::mutex     m_Mutex;
 

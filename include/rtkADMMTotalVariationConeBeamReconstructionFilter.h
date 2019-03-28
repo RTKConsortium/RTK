@@ -134,6 +134,8 @@ template< typename TOutputImage, typename TGradientOutputImage =
 class ADMMTotalVariationConeBeamReconstructionFilter : public rtk::IterativeConeBeamReconstructionFilter<TOutputImage, TOutputImage>
 {
 public:
+    ITK_DISALLOW_COPY_AND_ASSIGN(ADMMTotalVariationConeBeamReconstructionFilter);
+
     /** Standard class type alias. */
     using Self = ADMMTotalVariationConeBeamReconstructionFilter;
     using Superclass = IterativeConeBeamReconstructionFilter<TOutputImage, TOutputImage>;
@@ -249,9 +251,6 @@ protected:
     bool                m_DisableDisplacedDetectorFilter;
 
 private:
-    ADMMTotalVariationConeBeamReconstructionFilter(const Self &); //purposely not implemented
-    void operator=(const Self &);  //purposely not implemented
-
     float           m_Alpha;
     float           m_Beta;
     unsigned int    m_AL_iterations;

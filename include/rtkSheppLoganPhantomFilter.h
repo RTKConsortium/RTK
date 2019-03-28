@@ -41,6 +41,8 @@ class ITK_EXPORT SheppLoganPhantomFilter:
   public ProjectGeometricPhantomImageFilter<TInputImage,TOutputImage>
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(SheppLoganPhantomFilter);
+
   /** Standard class type alias. */
   using Self = SheppLoganPhantomFilter;
   using Superclass = ProjectGeometricPhantomImageFilter<TInputImage,TOutputImage>;
@@ -58,10 +60,6 @@ protected:
   ~SheppLoganPhantomFilter() override = default;
 
   void GenerateData() override;
-
-private:
-  SheppLoganPhantomFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);          //purposely not implemented
 
 };
 

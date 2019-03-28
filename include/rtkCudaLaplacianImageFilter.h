@@ -43,6 +43,8 @@ class RTK_EXPORT CudaLaplacianImageFilter :
   LaplacianImageFilter< itk::CudaImage<float,3>, itk::CudaImage<itk::CovariantVector<float, 3>,3> > >
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(CudaLaplacianImageFilter);
+
   /** Standard class type alias. */
   using Self = rtk::CudaLaplacianImageFilter;
   using OutputImageType = itk::CudaImage<float,3>;
@@ -62,10 +64,6 @@ protected:
   ~CudaLaplacianImageFilter(){}
 
   virtual void GPUGenerateData();
-
-private:
-  CudaLaplacianImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);         //purposely not implemented
 
 }; // end of class
 

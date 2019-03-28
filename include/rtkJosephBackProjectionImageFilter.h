@@ -152,6 +152,8 @@ class ITK_EXPORT JosephBackProjectionImageFilter :
   public BackProjectionImageFilter<TInputImage,TOutputImage>
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(JosephBackProjectionImageFilter);
+
   /** Standard class type alias. */
   using Self = JosephBackProjectionImageFilter;
   using Superclass = BackProjectionImageFilter<TInputImage,TOutputImage>;
@@ -287,10 +289,6 @@ protected:
   TSumAlongRay                       m_SumAlongRay;
   double                             m_InferiorClip;
   double                             m_SuperiorClip;
-
-private:
-  JosephBackProjectionImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);                  //purposely not implemented
 
 };
 

@@ -45,6 +45,8 @@ class PolynomialGainCorrectionImageFilter :
 public itk::ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(PolynomialGainCorrectionImageFilter);
+
   /** Standard class type alias. */
   using Self = PolynomialGainCorrectionImageFilter;
   using Superclass = itk::ImageToImageFilter<TInputImage, TOutputImage>;
@@ -92,12 +94,6 @@ protected:
   void DynamicThreadedGenerateData( const OutputImageRegionType& outputRegionForThread) override;
 #endif
 
-private:
-  //purposely not implemented
-  PolynomialGainCorrectionImageFilter(const Self&);
-  void operator=(const Self&);
-
-protected:
   bool               m_MapsLoaded;        // True if gain maps loaded
   int                m_ModelOrder;        // Polynomial correction order
   float              m_K;                 // Scaling constant, a 0 means no correction

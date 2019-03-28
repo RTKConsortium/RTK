@@ -43,8 +43,9 @@ class ITK_EXPORT OraLookupTableImageFilter:
     public LookupTableImageFilter< itk::Image<unsigned short, TOutputImage::ImageDimension>,
                                    TOutputImage >
 {
-
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(OraLookupTableImageFilter);
+
   /** Standard class type alias. */
   using Self = OraLookupTableImageFilter;
   using Superclass = LookupTableImageFilter<itk::Image<unsigned short,
@@ -92,9 +93,6 @@ protected:
   ~OraLookupTableImageFilter() override = default;
 
 private:
-  OraLookupTableImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);            //purposely not implemented
-
   bool                      m_ComputeLineIntegral;
 
   /** A list of filenames to be processed. */

@@ -102,6 +102,8 @@ template< typename TImage>
 class RegularizedConjugateGradientConeBeamReconstructionFilter : public rtk::IterativeConeBeamReconstructionFilter<TImage, TImage>
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(RegularizedConjugateGradientConeBeamReconstructionFilter);
+
   /** Standard class type alias. */
   using Self = RegularizedConjugateGradientConeBeamReconstructionFilter;
   using Superclass = rtk::IterativeConeBeamReconstructionFilter<TImage, TImage>;
@@ -270,10 +272,6 @@ protected:
 
   // Geometry
   typename rtk::ThreeDCircularProjectionGeometry::Pointer m_Geometry;
-
-private:
-  RegularizedConjugateGradientConeBeamReconstructionFilter(const Self &); //purposely not implemented
-  void operator=(const Self &);  //purposely not implemented
 };
 } //namespace ITK
 

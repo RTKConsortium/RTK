@@ -37,6 +37,8 @@ class ITK_EXPORT XRadRawToAttenuationImageFilter :
   public itk::ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(XRadRawToAttenuationImageFilter);
+
   /** Standard class type alias. */
   using Self = XRadRawToAttenuationImageFilter;
   using Superclass = itk::ImageToImageFilter<TInputImage, TOutputImage>;
@@ -68,10 +70,6 @@ protected:
 #endif
 
 private:
-  //purposely not implemented
-  XRadRawToAttenuationImageFilter(const Self&);
-  void operator=(const Self&);
-
   OutputImagePointer m_DarkImage;
   OutputImagePointer m_FlatImage;
   std::string        m_DarkImageFileName;

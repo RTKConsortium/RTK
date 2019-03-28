@@ -37,6 +37,8 @@ namespace rtk
 class RTK_EXPORT DCMImagXImageIOFactory: public itk::ObjectFactoryBase
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(DCMImagXImageIOFactory);
+
   /** Standard class type alias. */
   using Self = DCMImagXImageIOFactory;
   using Superclass = itk::ObjectFactoryBase;
@@ -69,9 +71,6 @@ protected:
   using myProductType = DCMImagXImageIOFactory;
   const myProductType* m_MyProduct;
 
-private:
-  DCMImagXImageIOFactory(const Self&); //purposely not implemented
-  void operator=(const Self&);      //purposely not implemented
 };
 
 } // end namespace

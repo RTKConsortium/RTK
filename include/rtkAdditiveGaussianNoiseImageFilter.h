@@ -158,6 +158,8 @@ class ITK_EXPORT AdditiveGaussianNoiseImageFilter :
     public itk::ImageToImageFilter< TInputImage, TInputImage >
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(AdditiveGaussianNoiseImageFilter);
+
   /** Standard class type alias. */
   using Self = AdditiveGaussianNoiseImageFilter;
   using Superclass = itk::ImageToImageFilter<TInputImage, TInputImage>;
@@ -281,11 +283,6 @@ protected:
   AdditiveGaussianNoiseImageFilter();
 
   void PrintSelf(std::ostream& os, itk::Indent indent) const override;
-
-private:
-
-  AdditiveGaussianNoiseImageFilter(const Self&);  // intentionally not implemented
-  void operator=(const Self&);      // intentionally not implemented
 
 public:
 

@@ -48,6 +48,8 @@ class ITK_EXPORT ExtractPhaseImageFilter :
   public itk::InPlaceImageFilter<TImage>
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(ExtractPhaseImageFilter);
+
   /** Standard class type alias. */
   using Self = ExtractPhaseImageFilter;
   using Superclass = itk::InPlaceImageFilter<TImage>;
@@ -101,9 +103,6 @@ protected:
   void GenerateData() override;
 
 private:
-  ExtractPhaseImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);          //purposely not implemented
-
   void ComputeLinearPhaseBetweenPositions(const PositionsListType & positions);
 
   KernelSizeType    m_MovingAverageSize;

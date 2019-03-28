@@ -43,6 +43,8 @@ class DrawCylinderImageFilter:
 public DrawEllipsoidImageFilter< TInputImage, TOutputImage >
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(DrawCylinderImageFilter);
+
   /** Standard class type alias. */
   using Self = DrawCylinderImageFilter;
   using Superclass = DrawEllipsoidImageFilter<TInputImage,TOutputImage>;
@@ -63,10 +65,6 @@ protected:
   ~DrawCylinderImageFilter() override = default;
 
   void BeforeThreadedGenerateData() override;
-
-private:
-  DrawCylinderImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);          //purposely not implemented
 };
 
 } // end namespace rtk

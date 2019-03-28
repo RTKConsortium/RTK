@@ -38,6 +38,8 @@ namespace rtk
 class ITK_EXPORT PhasesToInterpolationWeights:public itk::CSVFileReaderBase
 {
 public:
+    ITK_DISALLOW_COPY_AND_ASSIGN(PhasesToInterpolationWeights);
+
     /** Standard class type alias */
     using Self = PhasesToInterpolationWeights;
     using Superclass = CSVFileReaderBase;
@@ -98,9 +100,6 @@ private:
     int                 m_NumberOfReconstructedFrames;
     bool                m_UnevenTemporalSpacing;
     std::vector<bool>   m_SelectedProjections;
-
-    PhasesToInterpolationWeights(const Self &);  //purposely not implemented
-    void operator=(const Self &);          //purposely not implemented
 };
 
 } //end namespace rtk

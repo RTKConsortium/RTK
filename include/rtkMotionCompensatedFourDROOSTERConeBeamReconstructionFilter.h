@@ -130,6 +130,8 @@ template<typename VolumeSeriesType, typename ProjectionStackType>
 class MotionCompensatedFourDROOSTERConeBeamReconstructionFilter : public rtk::FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(MotionCompensatedFourDROOSTERConeBeamReconstructionFilter);
+
   /** Standard class type alias. */
   using Self = MotionCompensatedFourDROOSTERConeBeamReconstructionFilter;
   using Superclass = rtk::FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>;
@@ -180,10 +182,6 @@ protected:
   void GenerateOutputInformation() override;
 
   void GenerateInputRequestedRegion() override;
-
-private:
-  MotionCompensatedFourDROOSTERConeBeamReconstructionFilter(const Self &); //purposely not implemented
-  void operator=(const Self &);  //purposely not implemented
 
 };
 } //namespace ITK

@@ -79,6 +79,8 @@ class LUTbasedVariableI0RawToAttenuationImageFilter:
   public LookupTableImageFilter<TInputImage, TOutputImage>
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(LUTbasedVariableI0RawToAttenuationImageFilter);
+
   /** Standard class type alias. */
   using Self = LUTbasedVariableI0RawToAttenuationImageFilter;
   using Superclass = LookupTableImageFilter<TInputImage, TOutputImage>;
@@ -115,9 +117,6 @@ protected:
   ~LUTbasedVariableI0RawToAttenuationImageFilter() override = default;
 
 private:
-  LUTbasedVariableI0RawToAttenuationImageFilter(const Self &); //purposely not implemented
-  void operator=(const Self &);                                //purposely not implemented
-
   double                                   m_I0;
   double                                   m_IDark;
   typename SubtractLUTFilterType::Pointer  m_SubtractRampFilter;

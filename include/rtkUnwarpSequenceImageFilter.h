@@ -80,6 +80,8 @@ namespace rtk
 class UnwarpSequenceImageFilter : public itk::ImageToImageFilter<TImageSequence, TImageSequence>
 {
 public:
+    ITK_DISALLOW_COPY_AND_ASSIGN(UnwarpSequenceImageFilter);
+
     /** Standard class type alias. */
     using Self = UnwarpSequenceImageFilter;
     using Superclass = itk::ImageToImageFilter<TImageSequence, TImageSequence>;
@@ -177,9 +179,6 @@ protected:
     bool m_UseCudaCyclicDeformation;
 
 private:
-    UnwarpSequenceImageFilter(const Self &); //purposely not implemented
-    void operator=(const Self &);  //purposely not implemented
-
     unsigned int    m_NumberOfIterations;
 };
 } //namespace ITK

@@ -40,6 +40,8 @@ class RTK_EXPORT XRadGeometryReader :
   public itk::LightProcessObject
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(XRadGeometryReader);
+
   /** Standard type alias */
   using Self = XRadGeometryReader;
   using Superclass = itk::LightProcessObject;
@@ -65,10 +67,6 @@ protected:
   XRadGeometryReader();
 
 private:
-  //purposely not implemented
-  XRadGeometryReader(const Self&);
-  void operator=(const Self&);
-
   void GenerateData() override;
 
   GeometryType::Pointer m_Geometry;

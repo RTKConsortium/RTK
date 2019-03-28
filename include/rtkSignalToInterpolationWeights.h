@@ -39,6 +39,8 @@ namespace rtk
 class ITK_EXPORT SignalToInterpolationWeights:public itk::CSVFileReaderBase
 {
 public:
+    ITK_DISALLOW_COPY_AND_ASSIGN(SignalToInterpolationWeights);
+
     /** Standard class type alias */
     using Self = SignalToInterpolationWeights;
     using Superclass = CSVFileReaderBase;
@@ -85,9 +87,6 @@ private:
     Array2DType           m_Array2D;
     int                   m_NumberOfReconstructedFrames;
     std::vector<double>   m_Signal;
-
-    SignalToInterpolationWeights(const Self &);  //purposely not implemented
-    void operator=(const Self &);          //purposely not implemented
 };
 
 } //end namespace rtk

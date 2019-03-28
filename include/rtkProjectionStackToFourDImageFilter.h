@@ -105,6 +105,8 @@ template< typename VolumeSeriesType, typename ProjectionStackType, typename TFFT
 class ProjectionStackToFourDImageFilter : public itk::ImageToImageFilter< VolumeSeriesType, VolumeSeriesType >
 {
 public:
+    ITK_DISALLOW_COPY_AND_ASSIGN(ProjectionStackToFourDImageFilter);
+
     /** Standard class type alias. */
     using Self = ProjectionStackToFourDImageFilter;
     using Superclass = itk::ImageToImageFilter< VolumeSeriesType, VolumeSeriesType >;
@@ -199,10 +201,6 @@ protected:
     bool                                             m_UseCudaSplat;
     bool                                             m_UseCudaSources;
     std::vector<double>                              m_Signal;
-
-private:
-    ProjectionStackToFourDImageFilter(const Self &); //purposely not implemented
-    void operator=(const Self &);  //purposely not implemented
 
 };
 } //namespace ITK

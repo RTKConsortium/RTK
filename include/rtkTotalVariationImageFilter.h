@@ -51,6 +51,8 @@ class TotalVariationImageFilter:
   public itk::ImageToImageFilter< TInputImage, TInputImage >
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(TotalVariationImageFilter);
+
   /** Standard Self type alias */
   using Self = TotalVariationImageFilter;
   using Superclass = itk::ImageToImageFilter< TInputImage, TInputImage >;
@@ -151,9 +153,6 @@ protected:
   bool                        m_UseImageSpacing;
 
 private:
-  TotalVariationImageFilter(const Self &); //purposely not implemented
-  void operator=(const Self &);        //purposely not implemented
-
   itk::Array< RealType >       m_SumOfSquareRoots;
 }; // end of class
 } // end namespace rtk

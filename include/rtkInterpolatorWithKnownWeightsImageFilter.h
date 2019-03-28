@@ -64,6 +64,8 @@ template< typename VolumeType, typename VolumeSeriesType>
 class InterpolatorWithKnownWeightsImageFilter : public itk::InPlaceImageFilter< VolumeType, VolumeType >
 {
 public:
+    ITK_DISALLOW_COPY_AND_ASSIGN(InterpolatorWithKnownWeightsImageFilter);
+
     /** Standard class type alias. */
     using Self = InterpolatorWithKnownWeightsImageFilter;
     using Superclass = itk::ImageToImageFilter< VolumeType, VolumeType >;
@@ -106,11 +108,6 @@ protected:
 
     itk::Array2D<float> m_Weights;
     int                 m_ProjectionNumber;
-
-private:
-    InterpolatorWithKnownWeightsImageFilter(const Self &); //purposely not implemented
-    void operator=(const Self &);  //purposely not implemented
-
 
 };
 } //namespace ITK

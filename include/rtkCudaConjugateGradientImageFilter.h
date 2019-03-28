@@ -46,6 +46,8 @@ class CudaConjugateGradientImageFilter :
          ConjugateGradientImageFilter< TImage > >
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(CudaConjugateGradientImageFilter);
+
   /** Standard class type alias. */
   using Self = rtk::CudaConjugateGradientImageFilter<TImage>;
   using Superclass = rtk::ConjugateGradientImageFilter< TImage >;
@@ -64,10 +66,6 @@ protected:
   }
 
   virtual void GPUGenerateData();
-
-private:
-  CudaConjugateGradientImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);         //purposely not implemented
 
 }; // end of class
 

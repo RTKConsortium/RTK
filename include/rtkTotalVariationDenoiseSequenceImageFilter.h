@@ -78,6 +78,8 @@ template< typename TImageSequence >
 class TotalVariationDenoiseSequenceImageFilter : public itk::ImageToImageFilter<TImageSequence, TImageSequence>
 {
 public:
+    ITK_DISALLOW_COPY_AND_ASSIGN(TotalVariationDenoiseSequenceImageFilter);
+
     /** Standard class type alias. */
     using Self = TotalVariationDenoiseSequenceImageFilter;
     using Superclass = itk::ImageToImageFilter<TImageSequence, TImageSequence>;
@@ -135,10 +137,6 @@ protected:
     double m_Gamma;
     int    m_NumberOfIterations;
     bool   m_DimensionsProcessed[TImage::ImageDimension];
-
-private:
-    TotalVariationDenoiseSequenceImageFilter(const Self &); //purposely not implemented
-    void operator=(const Self &);  //purposely not implemented
 };
 } //namespace ITK
 

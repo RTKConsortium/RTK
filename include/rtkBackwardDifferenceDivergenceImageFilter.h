@@ -41,6 +41,8 @@ class BackwardDifferenceDivergenceImageFilter :
         public itk::ImageToImageFilter< TInputImage, TOutputImage >
 {
 public:
+    ITK_DISALLOW_COPY_AND_ASSIGN(BackwardDifferenceDivergenceImageFilter);
+
     /** Extract dimension from input and output image. */
     itkStaticConstMacro(InputImageDimension, unsigned int,
                         TInputImage::ImageDimension);
@@ -105,9 +107,6 @@ protected:
     void AfterThreadedGenerateData() override;
 
 private:
-    BackwardDifferenceDivergenceImageFilter(const Self&); //purposely not implemented
-    void operator=(const Self&); //purposely not implemented
-
     bool                              m_UseImageSpacing;
     typename TInputImage::SpacingType m_InvSpacingCoeffs;
 

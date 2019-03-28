@@ -113,6 +113,8 @@ class ITK_EXPORT OSEMConeBeamReconstructionFilter :
     public rtk::IterativeConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(OSEMConeBeamReconstructionFilter);
+
   /** Standard class type alias. */
   typedef OSEMConeBeamReconstructionFilter					Self;
   using Superclass = IterativeConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>;
@@ -192,10 +194,6 @@ protected:
 private:
   /** Number of projections processed before the volume is updated (several for OS-EM) */
   unsigned int m_NumberOfProjectionsPerSubset;
-
-  //purposely not implemented
-  OSEMConeBeamReconstructionFilter(const Self&);
-  void operator=(const Self&);
 
   /** Geometry object */
   ThreeDCircularProjectionGeometry::Pointer m_Geometry;

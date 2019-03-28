@@ -44,6 +44,8 @@ template< typename TImage >
 class ImportImageFilter : public itk::ImageSource<TImage>
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(ImportImageFilter);
+
   /** Typedef for the output image.   */
   using OutputImagePointer = typename TImage::Pointer;
   using SpacingType = typename TImage::SpacingType;
@@ -148,9 +150,6 @@ protected:
   void EnlargeOutputRequestedRegion(itk::DataObject *output) override;
 
 private:
-  ImportImageFilter(const ImportImageFilter &); //purposely not implemented
-  void operator=(const ImportImageFilter &);    //purposely not implemented
-
   RegionType    m_Region;
   SpacingType   m_Spacing;
   OriginType    m_Origin;

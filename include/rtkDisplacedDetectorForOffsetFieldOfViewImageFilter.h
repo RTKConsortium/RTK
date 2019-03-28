@@ -42,6 +42,8 @@ class ITK_EXPORT DisplacedDetectorForOffsetFieldOfViewImageFilter :
   public rtk::DisplacedDetectorImageFilter<TInputImage, TOutputImage>
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(DisplacedDetectorForOffsetFieldOfViewImageFilter);
+
   /** Standard class type alias. */
   using Self = DisplacedDetectorForOffsetFieldOfViewImageFilter;
   using Superclass = rtk::DisplacedDetectorImageFilter<TInputImage, TOutputImage>;
@@ -76,9 +78,6 @@ protected:
 #endif
 
 private:
-  DisplacedDetectorForOffsetFieldOfViewImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);               //purposely not implemented
-
   /**
    * Center coordinates and size of the FOV cylinder.
    */

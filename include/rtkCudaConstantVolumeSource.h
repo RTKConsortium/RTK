@@ -45,6 +45,8 @@ class RTK_EXPORT CudaConstantVolumeSource :
          ConstantImageSource< itk::CudaImage<float,3> > >
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(CudaConstantVolumeSource);
+
   /** Standard class type alias. */
   using Self = rtk::CudaConstantVolumeSource;
   using OutputImageType = itk::CudaImage<float,3>;
@@ -64,10 +66,6 @@ protected:
   }
 
   virtual void GPUGenerateData();
-
-private:
-  CudaConstantVolumeSource(const Self&); //purposely not implemented
-  void operator=(const Self&);         //purposely not implemented
 
 }; // end of class
 

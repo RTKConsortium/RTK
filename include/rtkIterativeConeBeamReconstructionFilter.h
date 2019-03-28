@@ -54,6 +54,8 @@ class ITK_EXPORT IterativeConeBeamReconstructionFilter :
   public itk::ImageToImageFilter<TOutputImage, TOutputImage>
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(IterativeConeBeamReconstructionFilter);
+
   /** Standard class type alias. */
   using Self = IterativeConeBeamReconstructionFilter;
   using Superclass = itk::ImageToImageFilter<TOutputImage, TOutputImage>;
@@ -223,10 +225,6 @@ protected:
     return bp;
     }
 
-private:
-  //purposely not implemented
-  IterativeConeBeamReconstructionFilter(const Self&);
-  void operator=(const Self&);
 }; // end of class
 
 } // end namespace rtk

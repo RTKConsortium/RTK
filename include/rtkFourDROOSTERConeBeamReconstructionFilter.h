@@ -196,6 +196,8 @@ template< typename VolumeSeriesType, typename ProjectionStackType>
 class FourDROOSTERConeBeamReconstructionFilter : public rtk::IterativeConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(FourDROOSTERConeBeamReconstructionFilter);
+
   /** Standard class type alias. */
   using Self = FourDROOSTERConeBeamReconstructionFilter;
   using Superclass = rtk::IterativeConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>;
@@ -435,10 +437,6 @@ protected:
 
   // Signal
   std::vector<double>                            m_Signal;
-
-private:
-  FourDROOSTERConeBeamReconstructionFilter(const Self &); //purposely not implemented
-  void operator=(const Self &);  //purposely not implemented
 
 };
 } //namespace ITK

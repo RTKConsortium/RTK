@@ -121,6 +121,8 @@ class ITK_EXPORT FourDSARTConeBeamReconstructionFilter :
   public rtk::IterativeConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(FourDSARTConeBeamReconstructionFilter);
+
   /** Standard class type alias. */
   using Self = FourDSARTConeBeamReconstructionFilter;
   using Superclass = IterativeConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>;
@@ -249,10 +251,6 @@ private:
   /** Number of projections processed before the volume is updated (1 for SART,
    * several for OS-SART, all for SIRT) */
   unsigned int m_NumberOfProjectionsPerSubset;
-
-  //purposely not implemented
-  FourDSARTConeBeamReconstructionFilter(const Self&);
-  void operator=(const Self&);
 
   /** Geometry object */
   ThreeDCircularProjectionGeometry::Pointer m_Geometry;

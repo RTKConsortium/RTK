@@ -37,6 +37,8 @@ namespace rtk {
 class RTK_EXPORT EdfImageIOFactory : public itk::ObjectFactoryBase
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(EdfImageIOFactory);
+
   /** Standard class type alias. */
   using Self = EdfImageIOFactory;
   using Superclass = itk::ObjectFactoryBase;
@@ -69,9 +71,6 @@ protected:
 
   using myProductType = EdfImageIOFactory;
   const myProductType* m_MyProduct;
-private:
-  EdfImageIOFactory(const Self&); //purposely not implemented
-  void operator=(const Self&);    //purposely not implemented
 
 };
 

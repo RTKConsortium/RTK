@@ -44,6 +44,8 @@ namespace rtk
 class VarianObiXMLFileReader : public itk::XMLReader<itk::MetaDataDictionary>
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(VarianObiXMLFileReader);
+
   /** Standard type alias */
   using Self = VarianObiXMLFileReader;
   using Superclass = itk::XMLReader<itk::MetaDataDictionary>;
@@ -69,9 +71,6 @@ protected:
   void CharacterDataHandler(const char *inData, int inLength) override;
 
 private:
-  VarianObiXMLFileReader(const Self&); //purposely not implemented
-  void operator=(const Self&);         //purposely not implemented
-
   itk::MetaDataDictionary m_Dictionary;
   std::string             m_CurCharacterData;
 };

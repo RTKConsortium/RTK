@@ -37,6 +37,8 @@ namespace rtk {
 class RTK_EXPORT XRadImageIOFactory : public itk::ObjectFactoryBase
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(XRadImageIOFactory);
+
   /** Standard class type alias. */
   using Self = XRadImageIOFactory;
   using Superclass = itk::ObjectFactoryBase;
@@ -69,9 +71,6 @@ protected:
 
   using myProductType = XRadImageIOFactory;
   const myProductType* m_MyProduct;
-private:
-  XRadImageIOFactory(const Self&); //purposely not implemented
-  void operator=(const Self&);    //purposely not implemented
 
 };
 

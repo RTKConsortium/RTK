@@ -55,6 +55,7 @@ class LagCorrectionImageFilter
 : public itk::InPlaceImageFilter < TImage, TImage >
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(LagCorrectionImageFilter);
 
   /** Standard class type alias. */
   using Self = LagCorrectionImageFilter;
@@ -116,9 +117,6 @@ protected:
   FloatVectorType m_S;                      // State variable
 
 private:
-  LagCorrectionImageFilter(const Self &); // purposely not implemented
-  void operator=(const Self &);           // purposely not implemented
-
   bool            m_NewParamJustReceived;   // For state/correction initialization
   IndexType       m_StartIdx;               // To account for cropping
 };

@@ -38,6 +38,8 @@ class ForwardProjectionImageFilter :
   public itk::InPlaceImageFilter<TInputImage,TOutputImage>
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(ForwardProjectionImageFilter);
+
   /** Standard class type alias. */
   using Self = ForwardProjectionImageFilter;
   using Superclass = itk::InPlaceImageFilter<TInputImage,TOutputImage>;
@@ -73,9 +75,6 @@ protected:
 #endif
 
 private:
-  ForwardProjectionImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);            //purposely not implemented
-
   /** RTK geometry object */
   GeometryPointer m_Geometry;
 };

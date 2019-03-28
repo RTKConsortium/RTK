@@ -48,6 +48,8 @@ class ITK_EXPORT SoftThresholdTVImageFilter:
         public itk::ImageToImageFilter< TInputImage, TOutputImage >
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(SoftThresholdTVImageFilter);
+
   /** Standard class type alias. */
   using Self = SoftThresholdTVImageFilter;
   using Superclass = itk::ImageToImageFilter< TInputImage, TOutputImage >;
@@ -131,9 +133,6 @@ protected:
 private:
   float        m_Threshold;
   ThreadIdType m_RequestedNumberOfThreads;
-
-  SoftThresholdTVImageFilter(const Self &); //purposely not implemented
-  void operator=(const Self &);                     //purposely not implemented
 };
 } // end namespace itk
 

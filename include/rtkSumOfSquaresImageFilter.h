@@ -38,6 +38,8 @@ class ITK_EXPORT SumOfSquaresImageFilter :
   public itk::InPlaceImageFilter<TOutputImage>
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(SumOfSquaresImageFilter);
+
   /** Standard class type alias. */
   using Self = SumOfSquaresImageFilter;
   using Superclass = itk::InPlaceImageFilter<TOutputImage>;
@@ -66,10 +68,6 @@ protected:
 
   OutputInternalPixelType m_SumOfSquares;
   std::vector<OutputInternalPixelType> m_VectorOfPartialSSs;
-
-private:
-  SumOfSquaresImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);                     //purposely not implemented
 };
 
 } // end namespace rtk

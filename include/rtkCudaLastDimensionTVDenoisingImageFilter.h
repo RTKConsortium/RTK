@@ -46,6 +46,8 @@ class RTK_EXPORT CudaLastDimensionTVDenoisingImageFilter :
   TotalVariationDenoisingBPDQImageFilter< itk::CudaImage<float,4>, itk::CudaImage< itk::CovariantVector < float, 1 >, 4 > > >
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(CudaLastDimensionTVDenoisingImageFilter);
+
   /** Standard class type alias. */
   using Self = rtk::CudaLastDimensionTVDenoisingImageFilter;
   using OutputImageType = itk::CudaImage<float,4>;
@@ -65,10 +67,6 @@ protected:
   ~CudaLastDimensionTVDenoisingImageFilter(){}
 
   virtual void GPUGenerateData();
-
-private:
-  CudaLastDimensionTVDenoisingImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);         //purposely not implemented
 
 }; // end of class
 

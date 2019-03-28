@@ -49,6 +49,8 @@ class ITK_EXPORT FieldOfViewImageFilter:
   public itk::InPlaceImageFilter<TInputImage,TOutputImage>
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(FieldOfViewImageFilter);
+
   /** Standard class type alias. */
   using Self = FieldOfViewImageFilter;
   using Superclass = itk::ImageToImageFilter<TInputImage,TOutputImage>;
@@ -122,9 +124,6 @@ protected:
 #endif
 
 private:
-  FieldOfViewImageFilter(const Self&);      //purposely not implemented
-  void operator=(const Self&); //purposely not implemented
-
   GeometryConstPointer    m_Geometry;
   bool                    m_Mask;
   ProjectionsStackPointer m_ProjectionsStack;

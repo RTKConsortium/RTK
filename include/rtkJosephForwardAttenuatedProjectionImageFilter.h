@@ -218,6 +218,8 @@ class ITK_EXPORT JosephForwardAttenuatedProjectionImageFilter :
     public JosephForwardProjectionImageFilter<TInputImage,TOutputImage,TInterpolationWeightMultiplication, TProjectedValueAccumulation, TSumAlongRay>
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(JosephForwardAttenuatedProjectionImageFilter);
+
   /** Standard class type alias. */
   using Self = JosephForwardAttenuatedProjectionImageFilter;
   using Superclass = JosephForwardProjectionImageFilter<TInputImage,TOutputImage,TInterpolationWeightMultiplication, TProjectedValueAccumulation, TSumAlongRay>;
@@ -255,9 +257,6 @@ protected:
   void VerifyInputInformation() const override;
 #endif
 
-private:
-  JosephForwardAttenuatedProjectionImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);                     //purposely not implemented
 };
 } // end namespace rtk
 

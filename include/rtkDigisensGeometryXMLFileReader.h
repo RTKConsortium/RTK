@@ -41,6 +41,8 @@ namespace rtk
 class DigisensGeometryXMLFileReader : public itk::XMLReader<itk::MetaDataDictionary>
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(DigisensGeometryXMLFileReader);
+
   /** Standard type alias */
   using Self = DigisensGeometryXMLFileReader;
   using Superclass = itk::XMLReader<itk::MetaDataDictionary>;
@@ -67,9 +69,6 @@ protected:
   void CharacterDataHandler(const char *inData, int inLength) override;
 
 private:
-  DigisensGeometryXMLFileReader(const Self&); //purposely not implemented
-  void operator=(const Self&);                //purposely not implemented
-
   itk::MetaDataDictionary m_Dictionary;
   std::string             m_CurCharacterData;
   int                     m_NumberOfFiles;

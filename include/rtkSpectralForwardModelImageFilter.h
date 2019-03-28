@@ -49,6 +49,8 @@ class ITK_EXPORT SpectralForwardModelImageFilter :
   public itk::InPlaceImageFilter<MeasuredProjectionsType, MeasuredProjectionsType>
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(SpectralForwardModelImageFilter);
+
   /** Standard class type alias. */
   using Self = SpectralForwardModelImageFilter;
   using Superclass = itk::ImageToImageFilter<MeasuredProjectionsType, MeasuredProjectionsType>;
@@ -151,11 +153,6 @@ protected:
   bool         m_OptimizeWithRestarts;
   bool         m_IsSpectralCT; // If not, it is dual energy CT
   bool         m_ComputeVariances; // Only implemented for dual energy CT
-
-private:
-  //purposely not implemented
-  SpectralForwardModelImageFilter(const Self&);
-  void operator=(const Self&);
 
 }; // end of class
 

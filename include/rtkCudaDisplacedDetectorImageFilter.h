@@ -51,6 +51,8 @@ class RTK_EXPORT CudaDisplacedDetectorImageFilter :
             rtk::DisplacedDetectorImageFilter<itk::CudaImage<float, 3> > >
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(CudaDisplacedDetectorImageFilter);
+
   /** Convenience type alias **/
   using ImageType = itk::CudaImage<float,3>;
   using CPUWeightFilterType = rtk::DisplacedDetectorImageFilter<ImageType>;
@@ -75,12 +77,6 @@ protected:
   virtual ~CudaDisplacedDetectorImageFilter();
 
   virtual void GPUGenerateData();
-
-private:
-  /** purposely not implemented **/
-  CudaDisplacedDetectorImageFilter(const Self&);
-  /** purposely not implemented **/
-  void operator=(const Self&);
 };
 
 }

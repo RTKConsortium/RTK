@@ -82,6 +82,8 @@ class ITK_EXPORT AmsterdamShroudImageFilter :
   public itk::ImageToImageFilter<TInputImage, itk::Image<double, TInputImage::ImageDimension-1> >
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(AmsterdamShroudImageFilter);
+
   /** Standard class type alias. */
   using Self = AmsterdamShroudImageFilter;
   using Superclass = itk::ImageToImageFilter<TInputImage,
@@ -145,9 +147,6 @@ protected:
   virtual void CropOutsideProjectedBox();
 
 private:
-  AmsterdamShroudImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);             //purposely not implemented
-
   using DerivativeType = itk::RecursiveGaussianImageFilter< TInputImage, TInputImage >;
   using NegativeType = itk::MultiplyImageFilter< TInputImage, TInputImage, TInputImage >;
   using ThresholdType = itk::ThresholdImageFilter< TInputImage >;

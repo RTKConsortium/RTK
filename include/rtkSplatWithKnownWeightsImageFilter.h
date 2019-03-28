@@ -67,6 +67,8 @@ template< typename VolumeSeriesType, typename VolumeType>
 class SplatWithKnownWeightsImageFilter : public itk::InPlaceImageFilter< VolumeSeriesType, VolumeSeriesType >
 {
 public:
+    ITK_DISALLOW_COPY_AND_ASSIGN(SplatWithKnownWeightsImageFilter);
+
     /** Standard class type alias. */
     using Self = SplatWithKnownWeightsImageFilter;
     using Superclass = itk::ImageToImageFilter< VolumeSeriesType, VolumeSeriesType >;
@@ -109,10 +111,6 @@ protected:
     itk::Array2D<float>                         m_Weights;
     int                                         m_ProjectionNumber;
 
-
-private:
-    SplatWithKnownWeightsImageFilter(const Self &); //purposely not implemented
-    void operator=(const Self &);  //purposely not implemented
 };
 } //namespace ITK
 

@@ -51,6 +51,8 @@ class BackProjectionImageFilter :
   public itk::InPlaceImageFilter<TInputImage,TOutputImage>
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(BackProjectionImageFilter);
+
   /** Standard class type alias. */
   using Self = BackProjectionImageFilter;
   using Superclass = itk::ImageToImageFilter<TInputImage,TOutputImage>;
@@ -140,9 +142,6 @@ protected:
   GeometryConstPointer m_Geometry;
 
 private:
-  BackProjectionImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);            //purposely not implemented
-
   /** Flip projection flag: infludences GetProjection and
     GetIndexToIndexProjectionMatrix for optimization */
   bool m_Transpose;

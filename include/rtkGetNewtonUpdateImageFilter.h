@@ -43,6 +43,8 @@ template< class TGradient,
 class GetNewtonUpdateImageFilter : public itk::ImageToImageFilter<TGradient, TGradient>
 {
 public:
+    ITK_DISALLOW_COPY_AND_ASSIGN(GetNewtonUpdateImageFilter);
+
     /** Standard class type alias. */
     using Self = GetNewtonUpdateImageFilter;
     using Superclass = itk::ImageToImageFilter<TGradient, TGradient>;
@@ -80,10 +82,6 @@ protected:
     /** Getters for the inputs */
     typename TGradient::ConstPointer GetInputGradient();
     typename THessian::ConstPointer GetInputHessian();
-
-private:
-    GetNewtonUpdateImageFilter(const Self &); //purposely not implemented
-    void operator=(const Self &);  //purposely not implemented
 
 };
 } //namespace RTK

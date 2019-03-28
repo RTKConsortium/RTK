@@ -42,6 +42,7 @@ class DenoisingBPDQImageFilter :
         public itk::InPlaceImageFilter< TOutputImage, TOutputImage >
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(DenoisingBPDQImageFilter);
 
   /** Standard class type alias. */
   using Self = DenoisingBPDQImageFilter;
@@ -97,9 +98,6 @@ protected:
   bool   m_DimensionsProcessed[TOutputImage::ImageDimension];
 
 private:
-  DenoisingBPDQImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&); //purposely not implemented
-
   virtual void SetPipelineForFirstIteration();
   virtual void SetPipelineAfterFirstIteration();
 };

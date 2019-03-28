@@ -39,6 +39,8 @@ class RTK_EXPORT GeometricPhantomFileReader :
     public itk::LightProcessObject
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(GeometricPhantomFileReader);
+
   /** Standard class type alias. */
   using Self = GeometricPhantomFileReader;
   using Superclass = itk::Object;
@@ -74,9 +76,6 @@ protected:
   ~GeometricPhantomFileReader() override = default;
 
 private:
-  GeometricPhantomFileReader( const Self& ); //purposely not implemented
-  void operator=( const Self& );             //purposely not implemented
-
   GeometricPhantomPointer m_GeometricPhantom;
   std::string             m_Filename;
 };

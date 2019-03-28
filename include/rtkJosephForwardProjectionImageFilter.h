@@ -161,6 +161,8 @@ class ITK_EXPORT JosephForwardProjectionImageFilter :
   public ForwardProjectionImageFilter<TInputImage,TOutputImage>
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(JosephForwardProjectionImageFilter);
+
   /** Standard class type alias. */
   using Self = JosephForwardProjectionImageFilter;
   using Superclass = ForwardProjectionImageFilter<TInputImage,TOutputImage>;
@@ -264,9 +266,6 @@ protected:
                                                const double maxy);
 
 private:
-  JosephForwardProjectionImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);                     //purposely not implemented
-
   // Functors
   TInterpolationWeightMultiplication m_InterpolationWeightMultiplication;
   TProjectedValueAccumulation        m_ProjectedValueAccumulation;

@@ -39,6 +39,7 @@ class DivergenceOfGradientConjugateGradientOperator :
         public ConjugateGradientOperator< TInputImage >
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(DivergenceOfGradientConjugateGradientOperator);
 
   /** Extract dimension from input and output image. */
   itkStaticConstMacro(InputImageDimension, unsigned int,
@@ -85,9 +86,6 @@ protected:
 
   bool m_DimensionsProcessed[TInputImage::ImageDimension];
 
-private:
-  DivergenceOfGradientConjugateGradientOperator(const Self&); //purposely not implemented
-  void operator=(const Self&); //purposely not implemented
 };
 
 } // end namespace itk

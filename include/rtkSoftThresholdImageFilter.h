@@ -85,6 +85,8 @@ itk::UnaryFunctorImageFilter<TInputImage,TOutputImage,
   typename TOutputImage::PixelType> >
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(SoftThresholdImageFilter);
+
   /** Standard class type alias. */
   using Self = SoftThresholdImageFilter;
   typedef itk::UnaryFunctorImageFilter
@@ -126,10 +128,6 @@ public:
 protected:
   SoftThresholdImageFilter();
   ~SoftThresholdImageFilter() override = default;
-
-private:
-  SoftThresholdImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&); //purposely not implemented
 
 };
 

@@ -139,8 +139,9 @@ class ITK_EXPORT LookupTableImageFilter : public
                                 Functor::LUT< typename TInputImage::PixelType,
                                               typename TOutputImage::PixelType> >
 {
-
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(LookupTableImageFilter);
+
   /** Lookup table type definition. */
   using FunctorType = Functor::LUT< typename TInputImage::PixelType, typename TOutputImage::PixelType >;
   using LookupTableType = typename FunctorType::LookupTableType;
@@ -179,10 +180,6 @@ protected:
   LookupTableImageFilter() = default;
   ~LookupTableImageFilter() override = default;
   typename LookupTableType::Pointer m_LookupTable;
-
-private:
-  LookupTableImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&); //purposely not implemented
 
 };
 

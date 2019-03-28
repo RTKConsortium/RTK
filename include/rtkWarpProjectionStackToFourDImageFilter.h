@@ -84,6 +84,8 @@ template< typename VolumeSeriesType, typename ProjectionStackType>
 class WarpProjectionStackToFourDImageFilter : public ProjectionStackToFourDImageFilter< VolumeSeriesType, ProjectionStackType>
 {
 public:
+    ITK_DISALLOW_COPY_AND_ASSIGN(WarpProjectionStackToFourDImageFilter);
+
     /** Standard class type alias. */
     using Self = WarpProjectionStackToFourDImageFilter;
     using Superclass = ProjectionStackToFourDImageFilter< VolumeSeriesType,
@@ -169,10 +171,6 @@ protected:
     typename CPUDVFInterpolatorType::Pointer m_DVFInterpolatorFilter;
     std::vector<double>                      m_Signal;
     bool                                     m_UseCudaCyclicDeformation;
-
-private:
-    WarpProjectionStackToFourDImageFilter(const Self &); //purposely not implemented
-    void operator=(const Self &);  //purposely not implemented
 
 };
 } //namespace ITK

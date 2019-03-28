@@ -53,6 +53,8 @@ template< class TInputImage,
 class AverageOutOfROIImageFilter : public itk::InPlaceImageFilter<TInputImage, TInputImage>
 {
 public:
+    ITK_DISALLOW_COPY_AND_ASSIGN(AverageOutOfROIImageFilter);
+
     /** Standard class type alias. */
     using Self = AverageOutOfROIImageFilter;
     using Superclass = itk::ImageToImageFilter<TInputImage, TInputImage>;
@@ -83,11 +85,6 @@ protected:
     /** Splits the OutputRequestedRegion along the first direction, not the last */
     const itk::ImageRegionSplitterBase* GetImageRegionSplitter(void) const override;
     itk::ImageRegionSplitterDirection::Pointer  m_Splitter;
-
-private:
-    AverageOutOfROIImageFilter(const Self &); //purposely not implemented
-    void operator=(const Self &);  //purposely not implemented
-
 };
 } //namespace RTK
 

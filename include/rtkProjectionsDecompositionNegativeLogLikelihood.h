@@ -39,6 +39,7 @@ namespace rtk
 class ProjectionsDecompositionNegativeLogLikelihood : public itk::SingleValuedCostFunction
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(ProjectionsDecompositionNegativeLogLikelihood);
 
   using Self = ProjectionsDecompositionNegativeLogLikelihood;
   using Superclass = itk::SingleValuedCostFunction;
@@ -252,10 +253,6 @@ protected:
   unsigned int                      m_NumberOfSpectralBins;
   bool                              m_Initialized;
   itk::VariableSizeMatrix<float>    m_Fischer;
-
-private:
-  ProjectionsDecompositionNegativeLogLikelihood(const Self &); //purposely not implemented
-  void operator = (const Self &); //purposely not implemented
 
 };
 

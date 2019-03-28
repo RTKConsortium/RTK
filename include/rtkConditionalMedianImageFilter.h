@@ -49,6 +49,8 @@ template< typename TInputImage>
 class ConditionalMedianImageFilter : public itk::InPlaceImageFilter<TInputImage>
 {
 public:
+    ITK_DISALLOW_COPY_AND_ASSIGN(ConditionalMedianImageFilter);
+
     /** Standard class type alias. */
     using Self = ConditionalMedianImageFilter;
     using Superclass = itk::InPlaceImageFilter<TInputImage>;
@@ -84,11 +86,6 @@ protected:
 
     MedianRadiusType  m_Radius;
     double            m_ThresholdMultiplier;
-
-private:
-    ConditionalMedianImageFilter(const Self &); //purposely not implemented
-    void operator=(const Self &);  //purposely not implemented
-
 };
 
 template <>

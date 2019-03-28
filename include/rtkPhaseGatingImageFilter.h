@@ -34,6 +34,8 @@ template< typename ProjectionStackType>
 class PhaseGatingImageFilter : public SubSelectImageFilter<ProjectionStackType>
 {
 public:
+    ITK_DISALLOW_COPY_AND_ASSIGN(PhaseGatingImageFilter);
+
     /** Standard class type alias. */
     using Self = PhaseGatingImageFilter;
     using Superclass = SubSelectImageFilter<ProjectionStackType>;
@@ -83,10 +85,6 @@ protected:
     float                     m_GatingWindowCenter;
     int                       m_GatingWindowShape;
     std::string               m_PhasesFileName;
-
-private:
-    PhaseGatingImageFilter(const Self &); //purposely not implemented
-    void operator=(const Self &);  //purposely not implemented
 
 };
 } //namespace ITK

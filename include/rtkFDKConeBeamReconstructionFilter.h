@@ -64,6 +64,8 @@ class ITK_EXPORT FDKConeBeamReconstructionFilter :
   public itk::InPlaceImageFilter<TInputImage, TOutputImage>
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(FDKConeBeamReconstructionFilter);
+
   /** Standard class type alias. */
   using Self = FDKConeBeamReconstructionFilter;
   using Superclass = itk::ImageToImageFilter<TInputImage, TOutputImage>;
@@ -133,10 +135,6 @@ protected:
   BackProjectionFilterPointer         m_BackProjectionFilter;
 
 private:
-  //purposely not implemented
-  FDKConeBeamReconstructionFilter(const Self&);
-  void operator=(const Self&);
-
   /** Number of projections processed at a time. */
   unsigned int m_ProjectionSubsetSize;
 

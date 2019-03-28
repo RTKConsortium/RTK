@@ -39,6 +39,8 @@ class RTK_EXPORT VarianProBeamGeometryReader :
   public itk::LightProcessObject
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(VarianProBeamGeometryReader);
+
   /** Standard type alias */
   using Self = VarianProBeamGeometryReader;
   using Superclass = itk::LightProcessObject;
@@ -81,10 +83,6 @@ protected:
 
 
 private:
-  //purposely not implemented
-  VarianProBeamGeometryReader(const Self&);
-  void operator=(const Self&);
-
   void GenerateData() override;
 
   GeometryType::Pointer m_Geometry;

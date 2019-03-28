@@ -61,6 +61,8 @@ class ITK_EXPORT DisplacedDetectorImageFilter :
   public itk::InPlaceImageFilter<TInputImage, TOutputImage>
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(DisplacedDetectorImageFilter);
+
   /** Standard class type alias. */
   using Self = DisplacedDetectorImageFilter;
 
@@ -129,9 +131,6 @@ protected:
   bool m_PadOnTruncatedSide;
 
 private:
-  DisplacedDetectorImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);               //purposely not implemented
-
   /** RTK geometry object */
   GeometryConstPointer m_Geometry;
 

@@ -39,6 +39,8 @@ class ITK_EXPORT Reg1DExtractShroudSignalImageFilter :
   public itk::ImageToImageFilter<itk::Image<TInputPixel, 2>, itk::Image<TOutputPixel, 1> >
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(Reg1DExtractShroudSignalImageFilter);
+
   /** Standard class type alias. */
   using TInputImage = itk::Image<TInputPixel, 2>;
   using TOutputImage = itk::Image<TOutputPixel, 1>;
@@ -70,9 +72,6 @@ protected:
   void GenerateData() override;
 
 private:
-  Reg1DExtractShroudSignalImageFilter(const Self&);  //purposely not implemented
-  void operator=(const Self&);                  //purposely not implemented
-
   using RegisterImageType = itk::Image<TInputPixel, 1>;
   TOutputPixel register1D(const RegisterImageType*, const RegisterImageType*);
 

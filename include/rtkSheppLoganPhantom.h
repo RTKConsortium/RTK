@@ -40,6 +40,8 @@ namespace rtk
 class RTK_EXPORT SheppLoganPhantom: public GeometricPhantom
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(SheppLoganPhantom);
+
   /** Standard class type alias. */
   using Self = SheppLoganPhantom;
   using Superclass = itk::DataObject;
@@ -62,9 +64,6 @@ protected:
   ~SheppLoganPhantom() override = default;
 
 private:
-  SheppLoganPhantom(const Self&); //purposely not implemented
-  void operator=(const Self&);   //purposely not implemented
-
   void SetEllipsoid(ScalarType spax,    ScalarType spay,    ScalarType spaz,
                     ScalarType centerx, ScalarType centery, ScalarType centerz,
                     ScalarType angle, ScalarType density);

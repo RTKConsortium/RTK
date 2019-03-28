@@ -51,6 +51,8 @@ class ITK_EXPORT CyclicDeformationImageFilter:
   public itk::ImageToImageFilter<TInputImage, TOutputImage >
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(CyclicDeformationImageFilter);
+
   /** Standard class type alias. */
   using Self = CyclicDeformationImageFilter;
   using InputImageType = TInputImage;
@@ -98,9 +100,6 @@ protected:
   double       m_WeightSup;
 
 private:
-  CyclicDeformationImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);            //purposely not implemented
-
   unsigned int m_Frame;
 
   std::string         m_SignalFilename;

@@ -46,6 +46,8 @@ class RTK_EXPORT CudaSplatImageFilter :
 
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(CudaSplatImageFilter);
+
   /** Standard class type alias. */
   using Self = rtk::CudaSplatImageFilter;
   using Superclass = rtk::SplatWithKnownWeightsImageFilter< OutputImageType, InputImageType >;
@@ -64,10 +66,6 @@ protected:
   }
 
   virtual void GPUGenerateData();
-
-private:
-  CudaSplatImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);         //purposely not implemented
 
 }; // end of class
 

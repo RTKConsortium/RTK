@@ -98,6 +98,8 @@ template< typename TOutputImage >
 class ADMMWaveletsConjugateGradientOperator : public ConjugateGradientOperator< TOutputImage >
 {
 public:
+    ITK_DISALLOW_COPY_AND_ASSIGN(ADMMWaveletsConjugateGradientOperator);
+
     /** Standard class type alias. */
     using Self = ADMMWaveletsConjugateGradientOperator;
     using Superclass = ConjugateGradientOperator< TOutputImage >;
@@ -169,11 +171,6 @@ protected:
     */
     void GenerateInputRequestedRegion() override;
     void GenerateOutputInformation() override;
-
-private:
-    ADMMWaveletsConjugateGradientOperator(const Self &); //purposely not implemented
-    void operator=(const Self &);  //purposely not implemented
-
 };
 } //namespace RTK
 

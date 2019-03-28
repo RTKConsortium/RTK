@@ -52,6 +52,8 @@ class ITK_EXPORT FDKWeightProjectionFilter :
   public itk::InPlaceImageFilter<TInputImage, TOutputImage>
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(FDKWeightProjectionFilter);
+
   /** Standard class type alias. */
   using Self = FDKWeightProjectionFilter;
   using Superclass = itk::ImageToImageFilter<TInputImage, TOutputImage>;
@@ -86,9 +88,6 @@ protected:
 #endif
 
 private:
-  FDKWeightProjectionFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);            //purposely not implemented
-
   /** Angular weights for each projection */
   std::vector<double> m_ConstantProjectionFactor;
 

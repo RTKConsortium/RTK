@@ -46,6 +46,8 @@ namespace rtk
 class RTK_EXPORT ConvexShape: public itk::DataObject
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(ConvexShape);
+
   /** Standard class type alias. */
   using Self = ConvexShape;
   using Superclass = itk::DataObject;
@@ -109,9 +111,6 @@ protected:
   itk::LightObject::Pointer InternalClone() const override;
 
 private:
-  ConvexShape(const Self&);    //purposely not implemented
-  void operator=(const Self&); //purposely not implemented
-
   ScalarType              m_Density;
   std::vector<VectorType> m_PlaneDirections;
   std::vector<ScalarType> m_PlanePositions;

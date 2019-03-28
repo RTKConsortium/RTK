@@ -39,6 +39,8 @@ class DrawConeImageFilter:
 public DrawEllipsoidImageFilter< TInputImage, TOutputImage >
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(DrawConeImageFilter);
+
   /** Standard class type alias. */
   using Self = DrawConeImageFilter;
   using Superclass = DrawEllipsoidImageFilter<TInputImage,TOutputImage>;
@@ -59,10 +61,6 @@ protected:
   ~DrawConeImageFilter() override = default;
 
   void BeforeThreadedGenerateData() override;
-
-private:
-  DrawConeImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);      //purposely not implemented
 };
 
 } // end namespace rtk

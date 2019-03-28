@@ -59,6 +59,8 @@ class ITK_EXPORT CudaForwardProjectionImageFilter :
   ForwardProjectionImageFilter< TInputImage, TOutputImage > >
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(CudaForwardProjectionImageFilter);
+
   /** Standard class type alias. */
   using Self = CudaForwardProjectionImageFilter;
   using Superclass = ForwardProjectionImageFilter<TInputImage, TOutputImage>;
@@ -84,10 +86,6 @@ protected:
   virtual void GPUGenerateData();
 
 private:
-  //purposely not implemented
-  CudaForwardProjectionImageFilter(const Self&);
-  void operator=(const Self&);
-
   double             m_StepSize;
 }; // end of class
 

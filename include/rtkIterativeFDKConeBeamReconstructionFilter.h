@@ -108,6 +108,8 @@ class ITK_EXPORT IterativeFDKConeBeamReconstructionFilter :
   public rtk::IterativeConeBeamReconstructionFilter<TInputImage, TOutputImage>
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(IterativeFDKConeBeamReconstructionFilter);
+
   /** Standard class type alias. */
   using Self = IterativeFDKConeBeamReconstructionFilter;
   using Superclass = IterativeConeBeamReconstructionFilter<TInputImage, TOutputImage>;
@@ -218,10 +220,6 @@ protected:
   bool   m_DisableDisplacedDetectorFilter;
 
 private:
-  //purposely not implemented
-  IterativeFDKConeBeamReconstructionFilter(const Self&);
-  void operator=(const Self&);
-
   /** Geometry object */
   ThreeDCircularProjectionGeometry::Pointer m_Geometry;
 

@@ -50,6 +50,8 @@ namespace rtk
 class RTK_EXPORT ThreeDCircularProjectionGeometry : public ProjectionGeometry<3>
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(ThreeDCircularProjectionGeometry);
+
   using Self = ThreeDCircularProjectionGeometry;
   using Superclass = ProjectionGeometry<3>;
   using Pointer = itk::SmartPointer< Self >;
@@ -373,10 +375,6 @@ protected:
   std::vector<Superclass::MatrixType>            m_MagnificationMatrices;
   std::vector<ThreeDHomogeneousMatrixType>       m_RotationMatrices;
   std::vector<ThreeDHomogeneousMatrixType>       m_SourceTranslationMatrices;
-
-private:
-  ThreeDCircularProjectionGeometry(const Self&); //purposely not implemented
-  void operator=(const Self&);                   //purposely not implemented
 };
 }
 

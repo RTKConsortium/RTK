@@ -39,6 +39,8 @@ class ITK_EXPORT UpsampleImageFilter:
     public itk::ImageToImageFilter<TInputImage,TOutputImage>
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(UpsampleImageFilter);
+
   /** Standard class type alias. */
   using Self = UpsampleImageFilter;
   using Superclass = itk::ImageToImageFilter<TInputImage,TOutputImage>;
@@ -137,9 +139,6 @@ protected:
 //  void AfterThreadedGenerateData();
 
 private:
-  UpsampleImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);          //purposely not implemented
-
   unsigned int                      m_Factors[ImageDimension];
   unsigned int                      m_Order;
   typename TOutputImage::SizeType   m_OutputSize;

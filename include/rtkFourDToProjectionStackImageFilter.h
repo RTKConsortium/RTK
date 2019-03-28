@@ -99,6 +99,8 @@ template< typename ProjectionStackType, typename VolumeSeriesType>
 class FourDToProjectionStackImageFilter : public itk::ImageToImageFilter<ProjectionStackType, ProjectionStackType>
 {
 public:
+    ITK_DISALLOW_COPY_AND_ASSIGN(FourDToProjectionStackImageFilter);
+
     /** Standard class type alias. */
     using Self = FourDToProjectionStackImageFilter;
     using Superclass = itk::ImageToImageFilter<ProjectionStackType, ProjectionStackType>;
@@ -169,10 +171,6 @@ protected:
     GeometryType::Pointer                                               m_Geometry;
     typename ConstantProjectionStackSourceType::OutputImageRegionType   m_PasteRegion;
     std::vector<double>                                                 m_Signal;
-
-private:
-    FourDToProjectionStackImageFilter(const Self &); //purposely not implemented
-    void operator=(const Self &);  //purposely not implemented
 
 };
 } //namespace ITK

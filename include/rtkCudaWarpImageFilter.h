@@ -48,6 +48,8 @@ class RTK_EXPORT CudaWarpImageFilter :
     itk::WarpImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>, itk::CudaImage<itk::CovariantVector<float, 3>, 3> > >
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(CudaWarpImageFilter);
+
   /** Standard class type alias. */
   using ImageType = itk::CudaImage<float,3>;
   using DisplacementVectorType = itk::CovariantVector<float, 3>;
@@ -73,9 +75,6 @@ protected:
 
   virtual void GPUGenerateData();
 
-private:
-  CudaWarpImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);                   //purposely not implemented
 };
 
 } // end namespace rtk

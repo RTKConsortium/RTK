@@ -135,6 +135,8 @@ class ITK_EXPORT SARTConeBeamReconstructionFilter :
   public rtk::IterativeConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(SARTConeBeamReconstructionFilter);
+
   /** Standard class type alias. */
   using Self = SARTConeBeamReconstructionFilter;
   using Superclass = IterativeConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>;
@@ -248,10 +250,6 @@ private:
   /** Number of projections processed before the volume is updated (1 for SART,
    * several for OS-SART, all for SIRT) */
   unsigned int m_NumberOfProjectionsPerSubset;
-
-  //purposely not implemented
-  SARTConeBeamReconstructionFilter(const Self&);
-  void operator=(const Self&);
 
   /** Geometry object */
   ThreeDCircularProjectionGeometry::Pointer m_Geometry;

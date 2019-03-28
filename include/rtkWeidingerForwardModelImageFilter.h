@@ -45,6 +45,8 @@ template< class TMaterialProjections,
 class WeidingerForwardModelImageFilter : public itk::ImageToImageFilter<TMaterialProjections, TMaterialProjections>
 {
 public:
+    ITK_DISALLOW_COPY_AND_ASSIGN(WeidingerForwardModelImageFilter);
+
     /** Standard class type alias. */
     using Self = WeidingerForwardModelImageFilter;
     using Superclass = itk::ImageToImageFilter<TMaterialProjections, TMaterialProjections>;
@@ -126,10 +128,6 @@ protected:
     /** Additional input parameters */
     BinnedDetectorResponseType  m_BinnedDetectorResponse;
     MaterialAttenuationsType    m_MaterialAttenuations;
-
-private:
-    WeidingerForwardModelImageFilter(const Self &); //purposely not implemented
-    void operator=(const Self &);  //purposely not implemented
 
 };
 } //namespace RTK

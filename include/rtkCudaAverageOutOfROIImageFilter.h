@@ -46,6 +46,8 @@ class RTK_EXPORT CudaAverageOutOfROIImageFilter :
 
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(CudaAverageOutOfROIImageFilter);
+
   /** Standard class type alias. */
   using Self = rtk::CudaAverageOutOfROIImageFilter;
   using Superclass = rtk::AverageOutOfROIImageFilter< OutputImageType, InputImageType >;
@@ -64,10 +66,6 @@ protected:
   }
 
   virtual void GPUGenerateData();
-
-private:
-  CudaAverageOutOfROIImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);         //purposely not implemented
 
 }; // end of class
 

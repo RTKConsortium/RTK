@@ -40,6 +40,8 @@ namespace rtk
 class RTK_EXPORT OraImageIOFactory: public itk::ObjectFactoryBase
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(OraImageIOFactory);
+
   /** Standard class type alias. */
   using Self = OraImageIOFactory;
   using Superclass = itk::ObjectFactoryBase;
@@ -71,10 +73,6 @@ protected:
   ~OraImageIOFactory() override = default;
   using myProductType = OraImageIOFactory;
   const myProductType* m_MyProduct;
-
-private:
-  OraImageIOFactory(const Self&); //purposely not implemented
-  void operator=(const Self&);    //purposely not implemented
 
 };
 

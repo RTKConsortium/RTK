@@ -50,6 +50,8 @@ class RTK_EXPORT CudaPolynomialGainCorrectionImageFilter :
     PolynomialGainCorrectionImageFilter <itk::CudaImage<unsigned short, 3>, itk::CudaImage<float, 3> > >
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(CudaPolynomialGainCorrectionImageFilter);
+
   /** Convenience type alias **/
   using ImageType = itk::CudaImage<float, 3>;
   using CPUPolyGainFilterType = PolynomialGainCorrectionImageFilter< itk::CudaImage<unsigned short, 3>,
@@ -75,11 +77,6 @@ protected:
 
   virtual void GPUGenerateData();
 
-private:
-  /** purposely not implemented **/
-  CudaPolynomialGainCorrectionImageFilter(const Self&);
-  /** purposely not implemented **/
-  void operator=(const Self&);
 };
 
 }

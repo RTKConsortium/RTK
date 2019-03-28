@@ -51,6 +51,8 @@ template <typename TOutputImage>
 class ITK_EXPORT ConstantImageSource : public itk::ImageSource<TOutputImage>
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(ConstantImageSource);
+
   /** Standard class type alias. */
   using Self = ConstantImageSource;
   using Superclass = itk::ImageSource<TOutputImage>;
@@ -134,10 +136,6 @@ protected:
   IndexType      m_Index;
 
   OutputImagePixelType  m_Constant;
-
-private:
-  ConstantImageSource(const ConstantImageSource&); //purposely not implemented
-  void operator=(const ConstantImageSource&); //purposely not implemented
 };
 
 } // end namespace rtk

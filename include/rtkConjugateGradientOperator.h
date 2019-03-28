@@ -32,6 +32,7 @@ template< typename OutputImageType>
 class ConjugateGradientOperator : public itk::ImageToImageFilter< OutputImageType, OutputImageType>
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(ConjugateGradientOperator);
 
   /** Standard class type alias. */
   using Self = ConjugateGradientOperator;
@@ -50,11 +51,6 @@ public:
 protected:
   ConjugateGradientOperator();
   ~ConjugateGradientOperator() override = default;
-
-private:
-  ConjugateGradientOperator(const Self &); //purposely not implemented
-  void operator=(const Self &);  //purposely not implemented
-
 };
 } //namespace ITK
 

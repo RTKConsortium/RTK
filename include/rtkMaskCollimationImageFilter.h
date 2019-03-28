@@ -41,6 +41,8 @@ class ITK_EXPORT MaskCollimationImageFilter :
   public itk::InPlaceImageFilter<TInputImage,TOutputImage>
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(MaskCollimationImageFilter);
+
   /** Standard class type alias. */
   using Self = MaskCollimationImageFilter;
   using Superclass = itk::InPlaceImageFilter<TInputImage,TOutputImage>;
@@ -85,9 +87,6 @@ protected:
 #endif
 
 private:
-  MaskCollimationImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);          //purposely not implemented
-
   /** RTK geometry object */
   GeometryPointer m_Geometry;
 

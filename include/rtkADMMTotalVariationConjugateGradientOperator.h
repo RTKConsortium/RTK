@@ -105,6 +105,8 @@ template< typename TOutputImage, typename TGradientOutputImage =
 class ADMMTotalVariationConjugateGradientOperator : public ConjugateGradientOperator< TOutputImage >
 {
 public:
+    ITK_DISALLOW_COPY_AND_ASSIGN(ADMMTotalVariationConjugateGradientOperator);
+
     /** Standard class type alias. */
     using Self = ADMMTotalVariationConjugateGradientOperator;
     using Superclass = ConjugateGradientOperator< TOutputImage >;
@@ -194,11 +196,6 @@ protected:
     */
     void GenerateInputRequestedRegion() override;
     void GenerateOutputInformation() override;
-
-private:
-    ADMMTotalVariationConjugateGradientOperator(const Self &); //purposely not implemented
-    void operator=(const Self &);  //purposely not implemented
-
 };
 } //namespace RTK
 

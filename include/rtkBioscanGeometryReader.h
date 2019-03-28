@@ -54,6 +54,8 @@ class RTK_EXPORT BioscanGeometryReader:
     public itk::LightProcessObject
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(BioscanGeometryReader);
+
   /** Standard type alias */
   using Self = BioscanGeometryReader;
   using Superclass = itk::LightProcessObject;
@@ -99,10 +101,6 @@ protected:
   ~BioscanGeometryReader() override = default;
 
 private:
-  //purposely not implemented
-  BioscanGeometryReader(const Self&);
-  void operator=(const Self&);
-
   void GenerateData() override;
 
   GeometryPointer    m_Geometry;

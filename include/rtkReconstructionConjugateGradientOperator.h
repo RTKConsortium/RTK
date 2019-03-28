@@ -120,6 +120,8 @@ template< typename TOutputImage,
 class ReconstructionConjugateGradientOperator : public ConjugateGradientOperator< TOutputImage >
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(ReconstructionConjugateGradientOperator);
+
   /** Standard class type alias. */
   using Self = ReconstructionConjugateGradientOperator;
   using Superclass = ConjugateGradientOperator< TOutputImage >;
@@ -236,10 +238,6 @@ protected:
   typename TOutputImage::ConstPointer   GetInputVolume();
   typename TOutputImage::ConstPointer   GetInputProjectionStack();
   typename TWeightsImage::ConstPointer  GetInputWeights();
-
-private:
-  ReconstructionConjugateGradientOperator(const Self &); //purposely not implemented
-  void operator=(const Self &);  //purposely not implemented
 
 };
 } //namespace RTK

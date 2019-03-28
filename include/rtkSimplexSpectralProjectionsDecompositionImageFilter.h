@@ -46,6 +46,8 @@ class ITK_EXPORT SimplexSpectralProjectionsDecompositionImageFilter :
   public itk::ImageToImageFilter<DecomposedProjectionsType, DecomposedProjectionsType>
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(SimplexSpectralProjectionsDecompositionImageFilter);
+
   /** Standard class type alias. */
   using Self = SimplexSpectralProjectionsDecompositionImageFilter;
   using Superclass = itk::ImageToImageFilter<DecomposedProjectionsType, DecomposedProjectionsType>;
@@ -168,11 +170,6 @@ protected:
   unsigned int               m_NumberOfMaterials;
   unsigned int               m_NumberOfEnergies;
   unsigned int               m_NumberOfSpectralBins;
-
-private:
-  //purposely not implemented
-  SimplexSpectralProjectionsDecompositionImageFilter(const Self&);
-  void operator=(const Self&);
 
 }; // end of class
 

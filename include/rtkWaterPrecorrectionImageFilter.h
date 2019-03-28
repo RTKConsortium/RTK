@@ -41,6 +41,8 @@ class ITK_EXPORT WaterPrecorrectionImageFilter:
     public itk::InPlaceImageFilter<TInputImage, TOutputImage>
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(WaterPrecorrectionImageFilter);
+
   /** Standard class type alias. */
   using Self = WaterPrecorrectionImageFilter;
   using Superclass = itk::InPlaceImageFilter<TInputImage,TOutputImage>;
@@ -80,9 +82,6 @@ protected:
 #endif
 
 private:
-  WaterPrecorrectionImageFilter(const Self &); //purposely not implemented
-  void operator=(const Self &);                //purposely not implemented
-
   VectorType m_Coefficients;      // Correction coefficients
 };
 } // end namespace rtk

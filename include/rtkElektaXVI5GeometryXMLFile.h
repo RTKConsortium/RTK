@@ -47,6 +47,8 @@ class RTK_EXPORT ElektaXVI5GeometryXMLFileReader :
   public itk::XMLReader< ThreeDCircularProjectionGeometry >
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(ElektaXVI5GeometryXMLFileReader);
+
   /** Standard type alias */
   using Self = ElektaXVI5GeometryXMLFileReader;
   using Superclass = itk::XMLReader< ThreeDCircularProjectionGeometry >;
@@ -87,10 +89,6 @@ protected:
   void CharacterDataHandler(const char *inData, int inLength) override;
 
 private:
-   //purposely not implemented
-  ElektaXVI5GeometryXMLFileReader(const Self&);
-  void operator=(const Self&);
-
   GeometryPointer m_Geometry;
 
   std::string m_CurCharacterData;

@@ -115,6 +115,8 @@ class ReconstructImageFilter
     : public itk::ImageToImageFilter<TImage, TImage>
 {
 public:
+    ITK_DISALLOW_COPY_AND_ASSIGN(ReconstructImageFilter);
+
     /** Standard class type alias. */
     using Self = ReconstructImageFilter;
     using Superclass = itk::ImageToImageFilter<TImage,TImage>;
@@ -216,9 +218,6 @@ protected:
     void GeneratePassVectors();
 
 private:
-    ReconstructImageFilter(const Self&);    //purposely not implemented
-    void operator=(const Self&);                    //purposely not implemented
-
     unsigned int m_NumberOfLevels;        // Holds the number of Reconstruction levels
     unsigned int m_Order;                 // Holds the order of the wavelet filters
     bool         m_PipelineConstructed;   // Filters instantiated by GenerateOutputInformation() should be instantiated only once

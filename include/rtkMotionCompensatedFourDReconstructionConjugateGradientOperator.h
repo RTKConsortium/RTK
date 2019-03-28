@@ -96,6 +96,8 @@ template< typename VolumeSeriesType, typename ProjectionStackType>
 class MotionCompensatedFourDReconstructionConjugateGradientOperator : public FourDReconstructionConjugateGradientOperator< VolumeSeriesType, ProjectionStackType>
 {
 public:
+    ITK_DISALLOW_COPY_AND_ASSIGN(MotionCompensatedFourDReconstructionConjugateGradientOperator);
+
     /** Standard class type alias. */
     using Self = MotionCompensatedFourDReconstructionConjugateGradientOperator;
     using Superclass = FourDReconstructionConjugateGradientOperator< VolumeSeriesType, ProjectionStackType>;
@@ -188,10 +190,6 @@ protected:
     typename CPUDVFInterpolatorType::Pointer            m_InverseDVFInterpolatorFilter;
     std::vector<double>                                 m_Signal;
     bool                                                m_UseCudaCyclicDeformation;
-
-private:
-    MotionCompensatedFourDReconstructionConjugateGradientOperator(const Self &); //purposely not implemented
-    void operator=(const Self &);  //purposely not implemented
 };
 } //namespace ITK
 

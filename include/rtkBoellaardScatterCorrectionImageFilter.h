@@ -41,6 +41,8 @@ class ITK_EXPORT BoellaardScatterCorrectionImageFilter :
   public itk::InPlaceImageFilter<TInputImage, TOutputImage>
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(BoellaardScatterCorrectionImageFilter);
+
   /** Standard class type alias. */
   using Self = BoellaardScatterCorrectionImageFilter;
   using Superclass = itk::ImageToImageFilter<TInputImage, TOutputImage>;
@@ -89,9 +91,6 @@ protected:
   virtual int SplitRequestedRegion(int i, int num, OutputImageRegionType& splitRegion);
 
 private:
-  BoellaardScatterCorrectionImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);               //purposely not implemented
-
   /** Air threshold on projection images. */
   double m_AirThreshold;
 

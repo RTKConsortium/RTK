@@ -108,6 +108,8 @@ template< typename TOutputImage,
 class ConjugateGradientConeBeamReconstructionFilter : public IterativeConeBeamReconstructionFilter<TOutputImage>
 {
 public:
+    ITK_DISALLOW_COPY_AND_ASSIGN(ConjugateGradientConeBeamReconstructionFilter);
+
     /** Standard class type alias. */
     using Self = ConjugateGradientConeBeamReconstructionFilter;
     using Superclass = IterativeConeBeamReconstructionFilter<TOutputImage>;
@@ -248,9 +250,6 @@ protected:
     ConjugateGradientFilterPointer InstantiateCudaConjugateGradientImageFilter();
 
 private:
-    ConjugateGradientConeBeamReconstructionFilter(const Self &); //purposely not implemented
-    void operator=(const Self &);  //purposely not implemented
-
     ThreeDCircularProjectionGeometry::ConstPointer m_Geometry;
 
     int                          m_NumberOfIterations;

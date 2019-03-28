@@ -97,6 +97,8 @@ template< typename TImageSequence,
 class WarpSequenceImageFilter : public itk::ImageToImageFilter<TImageSequence, TImageSequence>
 {
 public:
+    ITK_DISALLOW_COPY_AND_ASSIGN(WarpSequenceImageFilter);
+
     /** Standard class type alias. */
     using Self = WarpSequenceImageFilter;
     using Superclass = itk::ImageToImageFilter<TImageSequence, TImageSequence>;
@@ -201,9 +203,6 @@ protected:
     bool m_UseNearestNeighborInterpolationInWarping; //Default is false, linear interpolation is used instead
     bool m_UseCudaCyclicDeformation;
 
-private:
-    WarpSequenceImageFilter(const Self &); //purposely not implemented
-    void operator=(const Self &);  //purposely not implemented
 };
 } //namespace ITK
 

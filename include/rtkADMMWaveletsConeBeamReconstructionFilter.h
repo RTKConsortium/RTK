@@ -142,6 +142,8 @@ template< typename TOutputImage>
 class ADMMWaveletsConeBeamReconstructionFilter : public rtk::IterativeConeBeamReconstructionFilter<TOutputImage, TOutputImage>
 {
 public:
+    ITK_DISALLOW_COPY_AND_ASSIGN(ADMMWaveletsConeBeamReconstructionFilter);
+
     /** Standard class type alias. */
     using Self = ADMMWaveletsConeBeamReconstructionFilter;
     using Superclass = IterativeConeBeamReconstructionFilter<TOutputImage, TOutputImage>;
@@ -240,9 +242,6 @@ protected:
     void GenerateOutputInformation() override;
 
 private:
-    ADMMWaveletsConeBeamReconstructionFilter(const Self &); //purposely not implemented
-    void operator=(const Self &);  //purposely not implemented
-
     float           m_Alpha;
     float           m_Beta;
     unsigned int    m_AL_iterations;

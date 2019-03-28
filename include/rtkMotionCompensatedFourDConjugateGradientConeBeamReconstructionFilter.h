@@ -71,6 +71,8 @@ class ITK_EXPORT MotionCompensatedFourDConjugateGradientConeBeamReconstructionFi
   public rtk::FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter);
+
   /** Standard class type alias. */
   using Self = MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter;
   using Superclass = FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>;
@@ -141,10 +143,6 @@ protected:
 
   bool                                                m_UseCudaCyclicDeformation;
 
-private:
-  //purposely not implemented
-  MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter(const Self&);
-  void operator=(const Self&);
 }; // end of class
 
 } // end namespace rtk

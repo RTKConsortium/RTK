@@ -39,6 +39,8 @@ class RayQuadricIntersectionImageFilter :
 public RayConvexIntersectionImageFilter< TInputImage, TOutputImage >
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(RayQuadricIntersectionImageFilter);
+
   /** Standard class type alias. */
   using Self = RayQuadricIntersectionImageFilter;
   using Superclass = RayConvexIntersectionImageFilter<TInputImage,TOutputImage>;
@@ -96,9 +98,6 @@ protected:
   void BeforeThreadedGenerateData ( ) override;
 
 private:
-  RayQuadricIntersectionImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);         //purposely not implemented
-
   ScalarType              m_Density;
   std::vector<VectorType> m_PlaneDirections;
   std::vector<ScalarType> m_PlanePositions;

@@ -43,6 +43,7 @@ template<typename TImage>
 class SeparableQuadraticSurrogateRegularizationImageFilter : public itk::ImageToImageFilter<TImage, TImage>
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(SeparableQuadraticSurrogateRegularizationImageFilter);
 
   /** Standard class type alias. */
   using Self = SeparableQuadraticSurrogateRegularizationImageFilter;
@@ -88,10 +89,6 @@ protected:
   typename itk::PixelTraits<typename TImage::PixelType>::ValueType  m_c1;
   typename itk::PixelTraits<typename TImage::PixelType>::ValueType  m_c2;
   typename TImage::PixelType                                        m_RegularizationWeights;
-
-private:
-  SeparableQuadraticSurrogateRegularizationImageFilter(const Self &); //purposely not implemented
-  void operator=(const Self &);  //purposely not implemented
 
 };
 } //namespace RTK

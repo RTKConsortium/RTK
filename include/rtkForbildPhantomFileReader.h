@@ -42,6 +42,8 @@ class RTK_EXPORT ForbildPhantomFileReader :
     public itk::LightProcessObject
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(ForbildPhantomFileReader);
+
   /** Standard class type alias. */
   using Self = ForbildPhantomFileReader;
   using Superclass = itk::Object;
@@ -96,9 +98,6 @@ protected:
   void FindUnions(const std::string &s);
 
 private:
-  ForbildPhantomFileReader( const Self& ); //purposely not implemented
-  void operator=( const Self& );             //purposely not implemented
-
   GeometricPhantomPointer m_GeometricPhantom;
   std::string             m_Filename;
   PointType               m_Center;

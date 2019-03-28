@@ -53,6 +53,7 @@ class ITK_EXPORT SingularValueThresholdImageFilter:
         public itk::InPlaceImageFilter< TInputImage, TOutputImage >
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(SingularValueThresholdImageFilter);
 
   /** Standard class type alias. */
   using Self = SingularValueThresholdImageFilter;
@@ -119,8 +120,6 @@ protected:
 private:
   TRealType m_Threshold;
 
-  SingularValueThresholdImageFilter(const Self &); //purposely not implemented
-  void operator=(const Self &);                     //purposely not implemented
 };
 } // end namespace itk
 

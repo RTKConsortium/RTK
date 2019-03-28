@@ -68,6 +68,8 @@ namespace rtk
 class UnwarpSequenceConjugateGradientOperator : public ConjugateGradientOperator< TImageSequence >
 {
 public:
+    ITK_DISALLOW_COPY_AND_ASSIGN(UnwarpSequenceConjugateGradientOperator);
+
     /** Standard class type alias. */
     using Self = UnwarpSequenceConjugateGradientOperator;
     using Superclass = ConjugateGradientOperator< TImageSequence >;
@@ -127,10 +129,6 @@ protected:
     void GenerateOutputInformation() override;
 
     bool m_UseCudaCyclicDeformation;
-
-private:
-    UnwarpSequenceConjugateGradientOperator(const Self &); //purposely not implemented
-    void operator=(const Self &);  //purposely not implemented
 
 };
 } //namespace RTK

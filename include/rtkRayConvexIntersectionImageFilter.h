@@ -41,6 +41,8 @@ class RayConvexIntersectionImageFilter :
   public itk::InPlaceImageFilter<TInputImage,TOutputImage>
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(RayConvexIntersectionImageFilter);
+
   /** Standard class type alias. */
   using Self = RayConvexIntersectionImageFilter;
   using Superclass = itk::InPlaceImageFilter<TInputImage,TOutputImage>;
@@ -86,9 +88,6 @@ protected:
 #endif
 
 private:
-  RayConvexIntersectionImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);                   //purposely not implemented
-
   ConvexShapePointer   m_ConvexShape;
   GeometryConstPointer m_Geometry;
 };

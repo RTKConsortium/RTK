@@ -41,6 +41,8 @@ template< typename TInputImage >
 class ImagXGeometryReader : public itk::LightProcessObject
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(ImagXGeometryReader);
+
   /** Standard type alias */
   using Self = ImagXGeometryReader;
   using Superclass = itk::LightProcessObject;
@@ -97,10 +99,6 @@ protected:
 
 
 private:
-  //purposely not implemented
-  ImagXGeometryReader(const Self&);
-  void operator=(const Self&);
-
   void GenerateData() override;
 
   // DICOM tag for AI versions

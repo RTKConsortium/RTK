@@ -47,6 +47,8 @@ template< typename InputImageType, typename OutputImageType>
 class VectorImageToImageFilter : public itk::ImageToImageFilter< InputImageType, OutputImageType >
 {
 public:
+    ITK_DISALLOW_COPY_AND_ASSIGN(VectorImageToImageFilter);
+
     /** Standard class type alias. */
     using Self = VectorImageToImageFilter;
     using Superclass = itk::ImageToImageFilter< InputImageType, OutputImageType >;
@@ -74,9 +76,6 @@ protected:
     const itk::ImageRegionSplitterBase* GetImageRegionSplitter(void) const override;
     itk::ImageRegionSplitterDirection::Pointer  m_Splitter;
 
-private:
-    VectorImageToImageFilter(const Self &); //purposely not implemented
-    void operator=(const Self &);  //purposely not implemented
 };
 } //namespace ITK
 

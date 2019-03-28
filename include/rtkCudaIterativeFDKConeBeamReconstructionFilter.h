@@ -53,6 +53,8 @@ class RTK_EXPORT CudaIterativeFDKConeBeamReconstructionFilter :
   IterativeFDKConeBeamReconstructionFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>, float > >
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(CudaIterativeFDKConeBeamReconstructionFilter);
+
   /** Standard class type alias. */
   using Self = CudaIterativeFDKConeBeamReconstructionFilter;
   using Superclass = IterativeFDKConeBeamReconstructionFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>, float >;
@@ -77,10 +79,6 @@ protected:
 
   virtual void GPUGenerateData();
 
-private:
-  //purposely not implemented
-  CudaIterativeFDKConeBeamReconstructionFilter(const Self&);
-  void operator=(const Self&);
 }; // end of class
 
 } // end namespace rtk

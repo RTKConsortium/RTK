@@ -120,6 +120,8 @@ template <class TOutputImage>
 class ITK_EXPORT ProjectionsReader : public itk::ImageSource<TOutputImage>
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(ProjectionsReader);
+
   /** Standard class type alias. */
   using Self = ProjectionsReader;
   using Superclass = itk::ImageSource<TOutputImage>;
@@ -260,9 +262,6 @@ protected:
   FileNamesContainer m_FileNames;
 
 private:
-  ProjectionsReader(const Self&); //purposely not implemented
-  void operator=(const Self&);    //purposely not implemented
-
   /** Function that checks and propagates the parameters of the class to the
    * mini-pipeline. Due to concept checking, i0 propagation can only be done
    * with unsigned shorts and is left apart without template. */

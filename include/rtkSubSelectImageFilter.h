@@ -64,6 +64,8 @@ template< typename ProjectionStackType>
 class SubSelectImageFilter : public itk::ImageToImageFilter<ProjectionStackType, ProjectionStackType>
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(SubSelectImageFilter);
+
   /** Standard class type alias. */
   using Self = SubSelectImageFilter;
   using Superclass = itk::ImageToImageFilter<ProjectionStackType, ProjectionStackType>;
@@ -106,9 +108,6 @@ protected:
   int                       m_NbSelectedProjs;
 
 private:
-  SubSelectImageFilter(const Self &); // purposely not implemented
-  void operator=(const Self &);       // purposely not implemented
-
   typename EmptyProjectionStackSourceType::Pointer m_EmptyProjectionStackSource;
   typename ExtractFilterType::Pointer              m_ExtractFilter;
   typename PasteFilterType::Pointer                m_PasteFilter;

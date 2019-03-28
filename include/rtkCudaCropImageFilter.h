@@ -50,6 +50,8 @@ class RTK_EXPORT CudaCropImageFilter :
   itk::CropImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3> > >
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(CudaCropImageFilter);
+
   /** Standard class type alias. */
   using ImageType = itk::CudaImage<float,3>;
   using Self = CudaCropImageFilter;
@@ -69,10 +71,6 @@ protected:
   virtual ~CudaCropImageFilter() {};
 
   virtual void GPUGenerateData();
-
-private:
-  CudaCropImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);  //purposely not implemented
 
 }; // end of class
 } // end namespace rtk

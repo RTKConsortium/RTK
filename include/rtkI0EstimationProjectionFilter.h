@@ -47,6 +47,8 @@ class ITK_EXPORT I0EstimationProjectionFilter:
   public         itk::InPlaceImageFilter<TInputImage, TOutputImage>
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(I0EstimationProjectionFilter);
+
   /** Standard class type alias. */
   using Self = I0EstimationProjectionFilter<TInputImage, TOutputImage, bitShift>;
   using Superclass = itk::InPlaceImageFilter<TInputImage, TOutputImage>;
@@ -110,9 +112,6 @@ protected:
   void AfterThreadedGenerateData() override;
 
 private:
-  I0EstimationProjectionFilter(const Self &); //purposely not implemented
-  void operator=(const Self &);               //purposely not implemented
-
   // Input variables
   InputImagePixelType m_ExpectedI0;       // Expected I0 value (as a result of a
                                           // detector calibration)

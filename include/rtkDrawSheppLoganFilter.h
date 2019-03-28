@@ -41,6 +41,8 @@ class ITK_EXPORT DrawSheppLoganFilter:
   public DrawGeometricPhantomImageFilter<TInputImage,TOutputImage>
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(DrawSheppLoganFilter);
+
   /** Standard class type alias. */
   using Self = DrawSheppLoganFilter;
   using Superclass = DrawGeometricPhantomImageFilter<TInputImage,TOutputImage>;
@@ -59,9 +61,6 @@ protected:
 
   void GenerateData() override;
 
-private:
-  DrawSheppLoganFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);          //purposely not implemented
 };
 
 } // end namespace rtk

@@ -47,6 +47,8 @@ class ForwardWarpImageFilter :
   public itk::WarpImageFilter< TInputImage, TOutputImage, TDVF >
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(ForwardWarpImageFilter);
+
   /** Standard class type alias. */
   using Self = ForwardWarpImageFilter;
   using Superclass = itk::WarpImageFilter<TInputImage, TOutputImage, TDVF>;
@@ -80,10 +82,6 @@ protected:
   bool                                m_Protected_DefFieldSizeSame;
   typename TOutputImage::IndexType    m_Protected_StartIndex;
   typename TOutputImage::IndexType    m_Protected_EndIndex;
-
-private:
-  ForwardWarpImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);                   //purposely not implemented
 };
 
 } // end namespace rtk

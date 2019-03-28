@@ -36,6 +36,8 @@ namespace rtk
 class RTK_EXPORT GeometricPhantom: public itk::DataObject
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(GeometricPhantom);
+
   /** Standard class type alias. */
   using Self = GeometricPhantom;
   using Superclass = itk::DataObject;
@@ -81,9 +83,6 @@ protected:
   ~GeometricPhantom() override = default;
 
 private:
-  GeometricPhantom(const Self&); //purposely not implemented
-  void operator=(const Self&);   //purposely not implemented
-
   ConvexShapeVector       m_ConvexShapes;
   std::vector<VectorType> m_PlaneDirections;
   std::vector<ScalarType> m_PlanePositions;

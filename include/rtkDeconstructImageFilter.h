@@ -120,6 +120,8 @@ class DeconstructImageFilter
     : public itk::ImageToImageFilter<TImage, TImage>
 {
 public:
+    ITK_DISALLOW_COPY_AND_ASSIGN(DeconstructImageFilter);
+
     /** Standard class type alias. */
     using Self = DeconstructImageFilter;
     using Superclass = itk::ImageToImageFilter<TImage,TImage>;
@@ -218,9 +220,6 @@ protected:
     void GeneratePassVectors();
 
 private:
-    DeconstructImageFilter(const Self&);    //purposely not implemented
-    void operator=(const Self&);                    //purposely not implemented
-
     unsigned int m_NumberOfLevels;        // Holds the number of deconstruction levels
     unsigned int m_Order;                 // Holds the order of the wavelet filters
     bool         m_PipelineConstructed;   // Filters instantiated by GenerateOutputInformation() should be instantiated only once
