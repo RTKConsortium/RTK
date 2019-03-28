@@ -68,7 +68,7 @@ void DrawGeometricPhantomImageFilter< TInputImage, TOutputImage >::GenerateData(
 
   //Check that it's not empty
   const GeometricPhantom::ConvexShapeVector &cov = m_GeometricPhantom->GetConvexShapes();
-  if( cov.size() == 0 )
+  if( cov.empty() )
     itkExceptionMacro(<< "Empty phantom");
 
   // Create one add filter per convex object
@@ -80,7 +80,7 @@ void DrawGeometricPhantomImageFilter< TInputImage, TOutputImage >::GenerateData(
     co->Translate( m_OriginOffset );
     co->Rescale( m_PhantomScale );
 
-    if( drawers.size() )
+    if( !drawers.empty() )
       {
       using RCOIType = DrawConvexImageFilter<TOutputImage, TOutputImage>;
       typename RCOIType::Pointer rcoi = RCOIType::New();

@@ -68,7 +68,7 @@ void rtk::ThreeDCircularProjectionGeometry::AddProjectionInRadians(
   const double sourceOffsetX, const double sourceOffsetY)
 {
   // Check parallel / divergent projections consistency
-  if( m_GantryAngles.size() )
+  if( !m_GantryAngles.empty() )
     {
     if( sdd == 0. && m_SourceToDetectorDistances[0] != 0. )
       {

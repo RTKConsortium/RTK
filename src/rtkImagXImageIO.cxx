@@ -107,7 +107,7 @@ void rtk::ImagXImageIO::ReadImageInformation()
 
   // Prepare raw file name
   m_RawFileName = itksys::SystemTools::GetFilenamePath(m_FileName);
-  if(m_RawFileName != "")
+  if(!m_RawFileName.empty())
     m_RawFileName += std::string("/");
   m_RawFileName += dynamic_cast<MetaDataStringType*>(dic["rawFile"].GetPointer() )->GetMetaDataObjectValue();
 } ////

@@ -221,7 +221,7 @@ ImagXGeometryReader<TInputImage>::GetGeometryForAI2p1()
             flexmapFoundAndLoaded = false; // One flexmap already loaded
             }
 
-          if (F.anglesDeg.size() == 0) {
+          if (F.anglesDeg.empty()) {
             flexmapFoundAndLoaded = false;
             }
           }

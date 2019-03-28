@@ -88,7 +88,7 @@ ProjectionsRegionConstIteratorRayBased< TImage >
       const ThreeDCircularProjectionGeometry *geometry,
       const MatrixType &postMat)
 {
-  if(geometry->GetSourceToDetectorDistances().size() == 0)
+  if(geometry->GetSourceToDetectorDistances().empty())
     {
     itkGenericExceptionMacro(<< "Geometry is empty, cannot determine iterator type.");
     }

@@ -120,7 +120,7 @@ ExtractPhaseImageFilter<TImage>
     prev = curr;
     }
 
-  if(m_MinimaPositions.size() == 0 || m_MaximaPositions.size() == 0)
+  if(m_MinimaPositions.empty() || m_MaximaPositions.empty())
     itkExceptionMacro(<< "Problem detecting extremas");
 
   const typename TImage::PixelType *sig = this->GetInput()->GetBufferPointer();

@@ -68,7 +68,7 @@ void ProjectGeometricPhantomImageFilter< TInputImage, TOutputImage >::GenerateDa
 
   //Check that it's not empty
   const GeometricPhantom::ConvexShapeVector &cov = m_GeometricPhantom->GetConvexShapes();
-  if( cov.size() == 0 )
+  if( cov.empty() )
     itkExceptionMacro(<< "Empty phantom");
 
   // Create one add filter per convex object
@@ -80,7 +80,7 @@ void ProjectGeometricPhantomImageFilter< TInputImage, TOutputImage >::GenerateDa
     co->Translate( m_OriginOffset );
     co->Rescale( m_PhantomScale );
 
-    if( projectors.size() )
+    if( !projectors.empty() )
       {
       using RCOIType = RayConvexIntersectionImageFilter<TOutputImage, TOutputImage>;
       typename RCOIType::Pointer rcoi = RCOIType::New();

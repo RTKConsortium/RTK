@@ -148,7 +148,7 @@ template <class TOutputImage>
 void ProjectionsReader<TOutputImage>
 ::GenerateOutputInformation(void)
 {
-  if (m_FileNames.size() == 0)
+  if (m_FileNames.empty())
     return;
 
   static bool firstTime = true;
@@ -659,7 +659,7 @@ void ProjectionsReader<TOutputImage>
       edf->SetFileNames( this->GetFileNames() );
 
     // Water coefficients
-    if(m_WaterPrecorrectionCoefficients.size() != 0)
+    if(!m_WaterPrecorrectionCoefficients.empty())
       {
       m_WaterPrecorrectionFilter->SetCoefficients(m_WaterPrecorrectionCoefficients);
       m_WaterPrecorrectionFilter->SetInput(output);
