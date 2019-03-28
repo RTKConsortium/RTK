@@ -127,30 +127,30 @@ public:
 
 protected:
   SimplexSpectralProjectionsDecompositionImageFilter();
-  virtual ~SimplexSpectralProjectionsDecompositionImageFilter() ITK_OVERRIDE {}
+  virtual ~SimplexSpectralProjectionsDecompositionImageFilter() override {}
 
-  void GenerateOutputInformation() ITK_OVERRIDE;
+  void GenerateOutputInformation() override;
 
-  void GenerateInputRequestedRegion() ITK_OVERRIDE;
+  void GenerateInputRequestedRegion() override;
 
-  void BeforeThreadedGenerateData() ITK_OVERRIDE;
+  void BeforeThreadedGenerateData() override;
 #if ITK_VERSION_MAJOR<5
-  void ThreadedGenerateData(const typename DecomposedProjectionsType::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) ITK_OVERRIDE;
+  void ThreadedGenerateData(const typename DecomposedProjectionsType::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) override;
 #else
-  void DynamicThreadedGenerateData(const typename DecomposedProjectionsType::RegionType& outputRegionForThread) ITK_OVERRIDE;
+  void DynamicThreadedGenerateData(const typename DecomposedProjectionsType::RegionType& outputRegionForThread) override;
 #endif
 
   /**  Create the Output */
   using DataObjectPointerArraySizeType = itk::ProcessObject::DataObjectPointerArraySizeType;
   using Superclass::MakeOutput;
-  itk::DataObject::Pointer MakeOutput(DataObjectPointerArraySizeType idx) ITK_OVERRIDE;
+  itk::DataObject::Pointer MakeOutput(DataObjectPointerArraySizeType idx) override;
 
   /** The inputs should not be in the same space so there is nothing
    * to verify. */
 #if ITK_VERSION_MAJOR<5
-  void VerifyInputInformation() ITK_OVERRIDE {}
+  void VerifyInputInformation() override {}
 #else
-  void VerifyInputInformation() const ITK_OVERRIDE {}
+  void VerifyInputInformation() const override {}
 #endif
 
   /** Parameters */

@@ -107,13 +107,13 @@ public:
 
 protected:
   SingularValueThresholdImageFilter();
-  virtual ~SingularValueThresholdImageFilter() ITK_OVERRIDE {}
+  virtual ~SingularValueThresholdImageFilter() override {}
 
   void ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread,
-                            itk::ThreadIdType threadId) ITK_OVERRIDE;
+                            itk::ThreadIdType threadId) override;
 
   /** Splits the OutputRequestedRegion along the first direction, not the last */
-  const itk::ImageRegionSplitterBase* GetImageRegionSplitter(void) const ITK_OVERRIDE;
+  const itk::ImageRegionSplitterBase* GetImageRegionSplitter(void) const override;
   itk::ImageRegionSplitterDirection::Pointer  m_Splitter;
 
 private:

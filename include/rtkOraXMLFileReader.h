@@ -51,17 +51,17 @@ public:
   itkNewMacro(Self);
 
   /** Determine if a file can be read */
-  int CanReadFile(const char* name) ITK_OVERRIDE;
+  int CanReadFile(const char* name) override;
 
 protected:
   OraXMLFileReader();
-  virtual ~OraXMLFileReader() ITK_OVERRIDE {};
+  virtual ~OraXMLFileReader() override {};
 
-  void StartElement(const char * name,const char **atts) ITK_OVERRIDE;
+  void StartElement(const char * name,const char **atts) override;
 
-  void EndElement(const char *name) ITK_OVERRIDE;
+  void EndElement(const char *name) override;
 
-  void CharacterDataHandler(const char *inData, int inLength) ITK_OVERRIDE;
+  void CharacterDataHandler(const char *inData, int inLength) override;
 
   void EncapsulatePoint(const char *metaName, const char *name);
   void EncapsulateMatrix3x3(const char *metaName, const char *name);

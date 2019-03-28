@@ -276,10 +276,10 @@ public:
   using BackProjectionType = typename Superclass::BackProjectionType;
 
   /** Pass the ForwardProjection filter to SingleProjectionToFourDFilter */
-  void SetForwardProjectionFilter(ForwardProjectionType fwtype) ITK_OVERRIDE;
+  void SetForwardProjectionFilter(ForwardProjectionType fwtype) override;
 
   /** Pass the backprojection filter to ProjectionStackToFourD*/
-  void SetBackProjectionFilter(BackProjectionType bptype) ITK_OVERRIDE;
+  void SetBackProjectionFilter(BackProjectionType bptype) override;
 
   /** Pass the interpolation weights to SingleProjectionToFourDFilter */
   virtual void SetWeights(const itk::Array2D<float> _arg);
@@ -357,21 +357,21 @@ public:
 
 protected:
   FourDROOSTERConeBeamReconstructionFilter();
-  virtual ~FourDROOSTERConeBeamReconstructionFilter() ITK_OVERRIDE {}
+  virtual ~FourDROOSTERConeBeamReconstructionFilter() override {}
 
   /** Does the real work. */
-  void GenerateData() ITK_OVERRIDE;
+  void GenerateData() override;
 
-  void GenerateOutputInformation() ITK_OVERRIDE;
+  void GenerateOutputInformation() override;
 
-  void GenerateInputRequestedRegion() ITK_OVERRIDE;
+  void GenerateInputRequestedRegion() override;
 
   // Inputs are not supposed to occupy the same physical space,
   // so there is nothing to verify
 #if ITK_VERSION_MAJOR<5
-  void VerifyInputInformation() ITK_OVERRIDE {}
+  void VerifyInputInformation() override {}
 #else
-  void VerifyInputInformation() const ITK_OVERRIDE {}
+  void VerifyInputInformation() const override {}
 #endif
 
   /** Member pointers to the filters used internally (for convenience)*/

@@ -56,13 +56,13 @@ public:
 
 protected:
     MultiplyByVectorImageFilter();
-    virtual ~MultiplyByVectorImageFilter() ITK_OVERRIDE {}
+    virtual ~MultiplyByVectorImageFilter() override {}
 
     /** Does the real work. */
 #if ITK_VERSION_MAJOR<5
-    void ThreadedGenerateData(const typename TInputImage::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) ITK_OVERRIDE;
+    void ThreadedGenerateData(const typename TInputImage::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) override;
 #else
-    void DynamicThreadedGenerateData(const typename TInputImage::RegionType& outputRegionForThread) ITK_OVERRIDE;
+    void DynamicThreadedGenerateData(const typename TInputImage::RegionType& outputRegionForThread) override;
 #endif
 
 private:

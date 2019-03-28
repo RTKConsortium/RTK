@@ -64,7 +64,7 @@ public:
   /** Runtime information support. */
   itkTypeMacro(OraLookupTableImageFilter, LookupTableImageFilter);
 
-  void BeforeThreadedGenerateData() ITK_OVERRIDE;
+  void BeforeThreadedGenerateData() override;
 
   /** Convert the projection data to line integrals after pre-processing.
   ** Default is on. */
@@ -89,7 +89,7 @@ public:
 
 protected:
   OraLookupTableImageFilter(): m_ComputeLineIntegral(true){}
-  virtual ~OraLookupTableImageFilter() ITK_OVERRIDE {}
+  virtual ~OraLookupTableImageFilter() override {}
 
 private:
   OraLookupTableImageFilter(const Self&); //purposely not implemented

@@ -60,9 +60,9 @@ public:
 
 protected:
   DrawCylinderImageFilter() {}
-  ~DrawCylinderImageFilter() ITK_OVERRIDE {}
+  ~DrawCylinderImageFilter() override {}
 
-  void BeforeThreadedGenerateData() ITK_OVERRIDE;
+  void BeforeThreadedGenerateData() override;
 
 private:
   DrawCylinderImageFilter(const Self&); //purposely not implemented

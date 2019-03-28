@@ -79,16 +79,16 @@ public:
 
 protected:
   CyclicDeformationImageFilter(): m_Frame(0) {}
-  virtual ~CyclicDeformationImageFilter() ITK_OVERRIDE {}
+  virtual ~CyclicDeformationImageFilter() override {}
 
-  void GenerateOutputInformation() ITK_OVERRIDE;
-  void GenerateInputRequestedRegion() ITK_OVERRIDE;
-  void BeforeThreadedGenerateData() ITK_OVERRIDE;
+  void GenerateOutputInformation() override;
+  void GenerateInputRequestedRegion() override;
+  void BeforeThreadedGenerateData() override;
 #if ITK_VERSION_MAJOR<5
   void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread,
-                                     ThreadIdType threadId ) ITK_OVERRIDE;
+                                     ThreadIdType threadId ) override;
 #else
-  void DynamicThreadedGenerateData(const OutputImageRegionType& outputRegionForThread) ITK_OVERRIDE;
+  void DynamicThreadedGenerateData(const OutputImageRegionType& outputRegionForThread) override;
 #endif
 
   // Linear interpolation position and weights

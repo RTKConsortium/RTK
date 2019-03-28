@@ -81,9 +81,9 @@ public:
 
 protected:
   DrawEllipsoidImageFilter();
-  virtual ~DrawEllipsoidImageFilter() ITK_OVERRIDE {}
+  virtual ~DrawEllipsoidImageFilter() override {}
 
-  void BeforeThreadedGenerateData() ITK_OVERRIDE;
+  void BeforeThreadedGenerateData() override;
 
 private:
   DrawEllipsoidImageFilter(const Self&); //purposely not implemented

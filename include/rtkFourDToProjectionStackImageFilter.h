@@ -145,17 +145,17 @@ public:
 
 protected:
     FourDToProjectionStackImageFilter();
-    virtual ~FourDToProjectionStackImageFilter() ITK_OVERRIDE {}
+    virtual ~FourDToProjectionStackImageFilter() override {}
 
     typename VolumeSeriesType::ConstPointer GetInputVolumeSeries();
     typename ProjectionStackType::Pointer GetInputProjectionStack();
 
     /** Does the real work. */
-    void GenerateData() ITK_OVERRIDE;
+    void GenerateData() override;
 
-    void GenerateOutputInformation() ITK_OVERRIDE;
+    void GenerateOutputInformation() override;
 
-    void GenerateInputRequestedRegion() ITK_OVERRIDE;
+    void GenerateInputRequestedRegion() override;
 
     /** Member pointers to the filters used internally (for convenience)*/
     typename PasteFilterType::Pointer                       m_PasteFilter;

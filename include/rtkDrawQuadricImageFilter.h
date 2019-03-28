@@ -89,9 +89,9 @@ public:
 
 protected:
   DrawQuadricImageFilter();
-  virtual ~DrawQuadricImageFilter() ITK_OVERRIDE {}
+  virtual ~DrawQuadricImageFilter() override {}
 
-  void BeforeThreadedGenerateData ( ) ITK_OVERRIDE;
+  void BeforeThreadedGenerateData ( ) override;
 
 private:
   DrawQuadricImageFilter(const Self&); //purposely not implemented

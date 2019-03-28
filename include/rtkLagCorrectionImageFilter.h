@@ -93,18 +93,18 @@ public:
 
 protected:
   LagCorrectionImageFilter();
-  virtual ~LagCorrectionImageFilter() ITK_OVERRIDE {}
+  virtual ~LagCorrectionImageFilter() override {}
 
-  void GenerateOutputInformation() ITK_OVERRIDE;
+  void GenerateOutputInformation() override;
 
-  void GenerateInputRequestedRegion() ITK_OVERRIDE;
+  void GenerateInputRequestedRegion() override;
 
-  void ThreadedGenerateData(const ImageRegionType & outputRegionForThread, itk::ThreadIdType threadId) ITK_OVERRIDE;
+  void ThreadedGenerateData(const ImageRegionType & outputRegionForThread, itk::ThreadIdType threadId) override;
 
   /** The correction is applied along the third (stack) dimension.
       Therefore, we must avoid splitting along the stack.
       The split is done along the second dimension. */
-  unsigned int SplitRequestedRegion(unsigned int i, unsigned int num, OutputImageRegionType& splitRegion) ITK_OVERRIDE;
+  unsigned int SplitRequestedRegion(unsigned int i, unsigned int num, OutputImageRegionType& splitRegion) override;
   virtual int SplitRequestedRegion(int i, int num, OutputImageRegionType& splitRegion);
 
   VectorType m_A;           // a_n coefficients (lag rates)

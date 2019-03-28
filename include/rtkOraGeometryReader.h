@@ -89,14 +89,14 @@ public:
 protected:
   OraGeometryReader(): m_Geometry(nullptr), m_CollimationMargin(0.) {};
 
-  virtual ~OraGeometryReader() ITK_OVERRIDE {}
+  virtual ~OraGeometryReader() override {}
 
 private:
   //purposely not implemented
   OraGeometryReader(const Self&);
   void operator=(const Self&);
 
-  void GenerateData() ITK_OVERRIDE;
+  void GenerateData() override;
 
   GeometryType::Pointer m_Geometry;
   FileNamesContainer    m_ProjectionsFileNames;

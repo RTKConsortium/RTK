@@ -61,7 +61,7 @@ public:
 
 protected:
     ConjugateGradientGetR_kPlusOneImageFilter();
-    virtual ~ConjugateGradientGetR_kPlusOneImageFilter() ITK_OVERRIDE {}
+    virtual ~ConjugateGradientGetR_kPlusOneImageFilter() override {}
 
     typename TInputImage::Pointer GetRk();
     typename TInputImage::Pointer GetPk();
@@ -70,15 +70,15 @@ protected:
     /** Initialize the thread synchronization barrier before the threads run,
         and create a few vectors in which each thread will store temporary
         accumulation results */
-    void BeforeThreadedGenerateData() ITK_OVERRIDE;
+    void BeforeThreadedGenerateData() override;
 
     /** Do the real work */
     void ThreadedGenerateData(const typename TInputImage::RegionType &
                                outputRegionForThread,
-                               ThreadIdType threadId) ITK_OVERRIDE;
+                               ThreadIdType threadId) override;
 
     /**  Set m_alphak to its correct value as it has to be passed to other filters */
-    void AfterThreadedGenerateData() ITK_OVERRIDE;
+    void AfterThreadedGenerateData() override;
 
 private:
     ConjugateGradientGetR_kPlusOneImageFilter(const Self &); //purposely not implemented

@@ -60,9 +60,9 @@ public:
 
 protected:
   SelectOneProjectionPerCycleImageFilter();
-  virtual ~SelectOneProjectionPerCycleImageFilter() ITK_OVERRIDE {}
+  virtual ~SelectOneProjectionPerCycleImageFilter() override {}
 
-  void GenerateOutputInformation() ITK_OVERRIDE;
+  void GenerateOutputInformation() override;
 
 private:
   SelectOneProjectionPerCycleImageFilter(const Self &); //purposely not implemented

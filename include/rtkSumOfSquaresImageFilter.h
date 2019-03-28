@@ -58,10 +58,10 @@ public:
 
 protected:
   SumOfSquaresImageFilter();
-  ~SumOfSquaresImageFilter() ITK_OVERRIDE {}
+  ~SumOfSquaresImageFilter() override {}
 
   void BeforeThreadedGenerateData();
-  void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, itk::ThreadIdType threadId ) ITK_OVERRIDE;
+  void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, itk::ThreadIdType threadId ) override;
   void AfterThreadedGenerateData();
 
   OutputInternalPixelType m_SumOfSquares;

@@ -85,7 +85,7 @@ protected:
   DrawBoxImageFilter();
   ~DrawBoxImageFilter() {}
 
-  void BeforeThreadedGenerateData ( ) ITK_OVERRIDE;
+  void BeforeThreadedGenerateData ( ) override;
 
 private:
   DrawBoxImageFilter(const Self&); //purposely not implemented

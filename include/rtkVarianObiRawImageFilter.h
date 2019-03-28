@@ -106,11 +106,11 @@ public:
   itkGetMacro(IDark, double);
   itkSetMacro(IDark, double);
 
-  void BeforeThreadedGenerateData() ITK_OVERRIDE;
+  void BeforeThreadedGenerateData() override;
 
 protected:
   VarianObiRawImageFilter();
-  virtual ~VarianObiRawImageFilter() ITK_OVERRIDE {}
+  virtual ~VarianObiRawImageFilter() override {}
 
 private:
   VarianObiRawImageFilter(const Self&); //purposely not implemented

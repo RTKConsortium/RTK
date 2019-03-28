@@ -56,9 +56,9 @@ public:
 
 protected:
   DrawConeImageFilter() {}
-  ~DrawConeImageFilter() ITK_OVERRIDE {}
+  ~DrawConeImageFilter() override {}
 
-  void BeforeThreadedGenerateData() ITK_OVERRIDE;
+  void BeforeThreadedGenerateData() override;
 
 private:
   DrawConeImageFilter(const Self&); //purposely not implemented

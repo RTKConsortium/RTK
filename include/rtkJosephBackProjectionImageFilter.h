@@ -217,16 +217,16 @@ public:
 
 protected:
   JosephBackProjectionImageFilter();
-  virtual ~JosephBackProjectionImageFilter() ITK_OVERRIDE {}
+  virtual ~JosephBackProjectionImageFilter() override {}
 
-  void GenerateData() ITK_OVERRIDE;
+  void GenerateData() override;
 
   /** The two inputs should not be in the same space so there is nothing
    * to verify. */
 #if ITK_VERSION_MAJOR<5
-  void VerifyInputInformation() ITK_OVERRIDE {}
+  void VerifyInputInformation() override {}
 #else
-  void VerifyInputInformation() const ITK_OVERRIDE {}
+  void VerifyInputInformation() const override {}
 #endif
 
   inline void BilinearSplat(const InputPixelType &rayValue,

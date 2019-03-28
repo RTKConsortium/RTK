@@ -101,7 +101,7 @@ public:
 
 protected:
   SoftThresholdTVImageFilter();
-  virtual ~SoftThresholdTVImageFilter() ITK_OVERRIDE {}
+  virtual ~SoftThresholdTVImageFilter() override {}
 
   /** Do any necessary casting/copying of the input data.  Input pixel types
      whose value types are not real number types must be cast to real number
@@ -121,9 +121,9 @@ protected:
    *     ImageToImageFilter::GenerateData() */
 #if ITK_VERSION_MAJOR<5
   void ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread,
-                              ThreadIdType threadId) ITK_OVERRIDE;
+                              ThreadIdType threadId) override;
 #else
-  void DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread) ITK_OVERRIDE;
+  void DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread) override;
 #endif
 
 //    using ImageBaseType = typename InputImageType::Superclass;

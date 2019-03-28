@@ -71,7 +71,7 @@ protected:
   GeometricPhantomFileReader() {};
 
   /// Destructor
-  virtual ~GeometricPhantomFileReader() ITK_OVERRIDE {}
+  virtual ~GeometricPhantomFileReader() override {}
 
 private:
   GeometricPhantomFileReader( const Self& ); //purposely not implemented

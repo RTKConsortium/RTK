@@ -207,10 +207,10 @@ public:
 #endif
 
     /** Instantiate the forward projection filters */
-    void SetForwardProjectionFilter (ForwardProjectionType _arg) ITK_OVERRIDE;
+    void SetForwardProjectionFilter (ForwardProjectionType _arg) override;
 
     /** Instantiate the back projection filters */
-    void SetBackProjectionFilter (BackProjectionType _arg) ITK_OVERRIDE;
+    void SetBackProjectionFilter (BackProjectionType _arg) override;
 
     /** Pass the geometry to all filters needing it */
     itkSetConstObjectMacro(Geometry, ThreeDCircularProjectionGeometry)
@@ -254,10 +254,10 @@ public:
 
 protected:
     MechlemOneStepSpectralReconstructionFilter();
-    virtual ~MechlemOneStepSpectralReconstructionFilter() ITK_OVERRIDE {}
+    virtual ~MechlemOneStepSpectralReconstructionFilter() override {}
 
     /** Does the real work. */
-    void GenerateData() ITK_OVERRIDE;
+    void GenerateData() override;
 
 #if !defined( ITK_WRAPPING_PARSER )
     /** Member pointers to the filters used internally (for convenience)*/
@@ -284,15 +284,15 @@ protected:
     * It is normal that they do not occupy the same physical space. Therefore this check
     * must be removed */
 #if ITK_VERSION_MAJOR<5
-    void VerifyInputInformation() ITK_OVERRIDE {}
+    void VerifyInputInformation() override {}
 #else
-    void VerifyInputInformation() const ITK_OVERRIDE {}
+    void VerifyInputInformation() const override {}
 #endif
 
     /** The volume and the projections must have different requested regions
     */
-    void GenerateInputRequestedRegion() ITK_OVERRIDE;
-    void GenerateOutputInformation() ITK_OVERRIDE;
+    void GenerateInputRequestedRegion() override;
+    void GenerateOutputInformation() override;
 
     /** Getters for the inputs */
     typename TOutputImage::ConstPointer GetInputMaterialVolumes();

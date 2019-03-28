@@ -83,9 +83,9 @@ public:
 protected:
   ReorderProjectionsImageFilter();
 
-  virtual ~ReorderProjectionsImageFilter() ITK_OVERRIDE {}
+  virtual ~ReorderProjectionsImageFilter() override {}
 
-  void GenerateData() ITK_OVERRIDE;
+  void GenerateData() override;
 
 private:
   ReorderProjectionsImageFilter(const Self&); //purposely not implemented

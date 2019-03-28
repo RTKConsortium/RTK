@@ -240,19 +240,19 @@ public:
 
 protected:
   JosephForwardAttenuatedProjectionImageFilter();
-  virtual ~JosephForwardAttenuatedProjectionImageFilter() ITK_OVERRIDE {}
+  virtual ~JosephForwardAttenuatedProjectionImageFilter() override {}
 
   /** Apply changes to the input image requested region. */
-  void GenerateInputRequestedRegion() ITK_OVERRIDE;
+  void GenerateInputRequestedRegion() override;
 
-  void BeforeThreadedGenerateData() ITK_OVERRIDE;
+  void BeforeThreadedGenerateData() override;
 
   /** Only the last two inputs should be in the same space so we need
    * to overwrite the method. */
  #if ITK_VERSION_MAJOR<5
-  void VerifyInputInformation() ITK_OVERRIDE;
+  void VerifyInputInformation() override;
 #else
-  void VerifyInputInformation() const ITK_OVERRIDE;
+  void VerifyInputInformation() const override;
 #endif
 
 private:

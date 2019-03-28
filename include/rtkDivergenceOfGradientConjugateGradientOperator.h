@@ -75,9 +75,9 @@ protected:
   DivergenceOfGradientConjugateGradientOperator();
   ~DivergenceOfGradientConjugateGradientOperator() {}
 
-  void GenerateData() ITK_OVERRIDE;
+  void GenerateData() override;
 
-  void GenerateOutputInformation() ITK_OVERRIDE;
+  void GenerateOutputInformation() override;
 
   /** Sub filter pointers */
   typename GradientFilterType::Pointer             m_GradientFilter;

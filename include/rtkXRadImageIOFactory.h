@@ -44,11 +44,11 @@ public:
   using ConstPointer = itk::SmartPointer<const Self>;
 
   /** Class methods used to interface with the registered factories. */
-  const char* GetITKSourceVersion(void) const ITK_OVERRIDE {
+  const char* GetITKSourceVersion(void) const override {
     return ITK_SOURCE_VERSION;
   }
 
-  const char* GetDescription(void) const ITK_OVERRIDE {
+  const char* GetDescription(void) const override {
     return "XRad ImageIO Factory, allows the loading of XRad images into insight";
   }
 
@@ -65,7 +65,7 @@ public:
 
 protected:
   XRadImageIOFactory();
-  virtual ~XRadImageIOFactory() ITK_OVERRIDE {}
+  virtual ~XRadImageIOFactory() override {}
 
   using myProductType = XRadImageIOFactory;
   const myProductType* m_MyProduct;

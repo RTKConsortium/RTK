@@ -63,11 +63,11 @@ public:
 
 protected:
   Reg1DExtractShroudSignalImageFilter();
-  virtual ~Reg1DExtractShroudSignalImageFilter() ITK_OVERRIDE {}
+  virtual ~Reg1DExtractShroudSignalImageFilter() override {}
 
-  void GenerateOutputInformation() ITK_OVERRIDE;
-  void GenerateInputRequestedRegion() ITK_OVERRIDE;
-  void GenerateData() ITK_OVERRIDE;
+  void GenerateOutputInformation() override;
+  void GenerateInputRequestedRegion() override;
+  void GenerateData() override;
 
 private:
   Reg1DExtractShroudSignalImageFilter(const Self&);  //purposely not implemented

@@ -68,16 +68,16 @@ public:
 
 protected:
     ImageToVectorImageFilter();
-    virtual ~ImageToVectorImageFilter() ITK_OVERRIDE {}
+    virtual ~ImageToVectorImageFilter() override {}
 
-    void GenerateOutputInformation() ITK_OVERRIDE;
-    void GenerateInputRequestedRegion() ITK_OVERRIDE;
+    void GenerateOutputInformation() override;
+    void GenerateInputRequestedRegion() override;
 
     /** Does the real work. */
-    void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) ITK_OVERRIDE;
+    void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) override;
 
     /** Splits the OutputRequestedRegion along the first direction, not the last */
-    const itk::ImageRegionSplitterBase* GetImageRegionSplitter(void) const ITK_OVERRIDE;
+    const itk::ImageRegionSplitterBase* GetImageRegionSplitter(void) const override;
     itk::ImageRegionSplitterDirection::Pointer  m_Splitter;
 
     unsigned int m_NumberOfChannels;

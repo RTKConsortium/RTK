@@ -87,9 +87,9 @@ public:
 
 protected:
   DrawGeometricPhantomImageFilter();
-  virtual ~DrawGeometricPhantomImageFilter() ITK_OVERRIDE {}
+  virtual ~DrawGeometricPhantomImageFilter() override {}
 
-  void GenerateData() ITK_OVERRIDE;
+  void GenerateData() override;
 
 private:
   DrawGeometricPhantomImageFilter(const Self&); //purposely not implemented

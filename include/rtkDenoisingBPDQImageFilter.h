@@ -75,11 +75,11 @@ public:
 
 protected:
   DenoisingBPDQImageFilter();
-  virtual ~DenoisingBPDQImageFilter() ITK_OVERRIDE {}
+  virtual ~DenoisingBPDQImageFilter() override {}
 
-  void GenerateData() ITK_OVERRIDE;
+  void GenerateData() override;
 
-  void GenerateOutputInformation() ITK_OVERRIDE;
+  void GenerateOutputInformation() override;
 
   virtual ThresholdFilterType* GetThresholdFilter(){return nullptr;}
 

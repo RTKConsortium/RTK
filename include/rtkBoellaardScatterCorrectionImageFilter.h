@@ -76,16 +76,16 @@ public:
 
 protected:
   BoellaardScatterCorrectionImageFilter();
-  virtual ~BoellaardScatterCorrectionImageFilter() ITK_OVERRIDE {}
+  virtual ~BoellaardScatterCorrectionImageFilter() override {}
 
   /** Requires full projection images to estimate scatter */
-  void EnlargeOutputRequestedRegion(itk::DataObject *itkNotUsed(output)) ITK_OVERRIDE;
-  void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) ITK_OVERRIDE;
+  void EnlargeOutputRequestedRegion(itk::DataObject *itkNotUsed(output)) override;
+  void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) override;
 
   /** Split the output's RequestedRegion into "num" pieces, returning
    * region "i" as "splitRegion". Reimplemented from ImageSource to ensure
    * that each thread covers entire projections. */
-  unsigned int SplitRequestedRegion(unsigned int i, unsigned int num, OutputImageRegionType& splitRegion) ITK_OVERRIDE;
+  unsigned int SplitRequestedRegion(unsigned int i, unsigned int num, OutputImageRegionType& splitRegion) override;
   virtual int SplitRequestedRegion(int i, int num, OutputImageRegionType& splitRegion);
 
 private:

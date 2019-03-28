@@ -160,7 +160,7 @@ public:
     typename DVFSequenceImageType::ConstPointer GetDisplacementField();
 
     /** Set the vector containing the signal in the sub-filters */
-    void SetSignal(const std::vector<double> signal) ITK_OVERRIDE;
+    void SetSignal(const std::vector<double> signal) override;
 
     /** Set and Get for the UseCudaCyclicDeformation variable */
     itkSetMacro(UseCudaCyclicDeformation, bool)
@@ -168,20 +168,20 @@ public:
 
 protected:
     MotionCompensatedFourDReconstructionConjugateGradientOperator();
-    virtual ~MotionCompensatedFourDReconstructionConjugateGradientOperator() ITK_OVERRIDE {}
+    virtual ~MotionCompensatedFourDReconstructionConjugateGradientOperator() override {}
 
     /** Builds the pipeline and computes output information */
-    void GenerateOutputInformation() ITK_OVERRIDE;
+    void GenerateOutputInformation() override;
 
     /** The inputs should not be in the same space so there is nothing to verify */
 #if ITK_VERSION_MAJOR<5
-    void VerifyInputInformation() ITK_OVERRIDE {}
+    void VerifyInputInformation() override {}
 #else
-    void VerifyInputInformation() const ITK_OVERRIDE {}
+    void VerifyInputInformation() const override {}
 #endif
 
     /** Does the real work. */
-    void GenerateData() ITK_OVERRIDE;
+    void GenerateData() override;
 
     /** Member pointers to the filters used internally (for convenience)*/
     typename CPUDVFInterpolatorType::Pointer            m_DVFInterpolatorFilter;

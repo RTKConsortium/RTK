@@ -44,11 +44,11 @@ public:
   using ConstPointer = itk::SmartPointer<const Self>;
 
   /** Class methods used to interface with the registered factories. */
-  const char* GetITKSourceVersion(void) const ITK_OVERRIDE {
+  const char* GetITKSourceVersion(void) const override {
     return ITK_SOURCE_VERSION;
   }
 
-  const char* GetDescription(void) const ITK_OVERRIDE {
+  const char* GetDescription(void) const override {
     return "ImagX ImageIO Factory, allows the loading of ImagX images into insight";
   }
 
@@ -65,7 +65,7 @@ public:
 
 protected:
   DCMImagXImageIOFactory();
-  virtual ~DCMImagXImageIOFactory() ITK_OVERRIDE {}
+  virtual ~DCMImagXImageIOFactory() override {}
   using myProductType = DCMImagXImageIOFactory;
   const myProductType* m_MyProduct;
 

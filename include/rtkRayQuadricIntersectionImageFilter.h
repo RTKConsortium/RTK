@@ -91,9 +91,9 @@ public:
 
 protected:
   RayQuadricIntersectionImageFilter();
-  virtual ~RayQuadricIntersectionImageFilter() ITK_OVERRIDE {}
+  virtual ~RayQuadricIntersectionImageFilter() override {}
 
-  void BeforeThreadedGenerateData ( ) ITK_OVERRIDE;
+  void BeforeThreadedGenerateData ( ) override;
 
 private:
   RayQuadricIntersectionImageFilter(const Self&); //purposely not implemented

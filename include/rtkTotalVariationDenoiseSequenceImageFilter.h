@@ -113,13 +113,13 @@ public:
 
 protected:
     TotalVariationDenoiseSequenceImageFilter();
-    virtual ~TotalVariationDenoiseSequenceImageFilter() ITK_OVERRIDE {}
+    virtual ~TotalVariationDenoiseSequenceImageFilter() override {}
 
     /** Does the real work. */
-    void GenerateData() ITK_OVERRIDE;
+    void GenerateData() override;
 
-    void GenerateOutputInformation() ITK_OVERRIDE;
-    void GenerateInputRequestedRegion() ITK_OVERRIDE;
+    void GenerateOutputInformation() override;
+    void GenerateInputRequestedRegion() override;
 
     /** Member pointers to the filters used internally (for convenience)*/
     typename TVDenoisingFilterType::Pointer   m_TVDenoisingFilter;

@@ -65,15 +65,15 @@ public:
 
 protected:
     LastDimensionL0GradientDenoisingImageFilter();
-    virtual ~LastDimensionL0GradientDenoisingImageFilter() ITK_OVERRIDE {}
+    virtual ~LastDimensionL0GradientDenoisingImageFilter() override {}
 
-    void GenerateInputRequestedRegion() ITK_OVERRIDE;
+    void GenerateInputRequestedRegion() override;
 
     /** Does the real work. */
-    void ThreadedGenerateData(const typename TInputImage::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) ITK_OVERRIDE;
+    void ThreadedGenerateData(const typename TInputImage::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) override;
 
     /** Splits the OutputRequestedRegion along the first direction, not the last */
-    const itk::ImageRegionSplitterBase* GetImageRegionSplitter(void) const ITK_OVERRIDE;
+    const itk::ImageRegionSplitterBase* GetImageRegionSplitter(void) const override;
     itk::ImageRegionSplitterDirection::Pointer  m_Splitter;
 
     virtual void OneDimensionMinimizeL0NormOfGradient(InputPixelType* input, unsigned int length, double lambda, unsigned int nbIters);

@@ -80,14 +80,14 @@ public:
    * the pipeline execution model.  The original documentation of this
    * method is below.
    * \sa ProcessObject::GenerateOutputInformaton() */
-  void GenerateOutputInformation() ITK_OVERRIDE;
+  void GenerateOutputInformation() override;
 
   /** UpsampleImageFilter needs a larger input requested region than the output
    * requested region.  As such, UpsampleImageFilter needs to provide an
    * implementation for GenerateInputRequestedRegion() in order to inform the
    * pipeline execution model.
    * \sa ProcessObject::GenerateInputRequestedRegion() */
-  void GenerateInputRequestedRegion() ITK_OVERRIDE;
+  void GenerateInputRequestedRegion() override;
 
   /** Set/Get the order of the wavelet filter
    * This is required because some information about the index of the image
@@ -116,7 +116,7 @@ public:
 
 protected:
   UpsampleImageFilter();
-  virtual ~UpsampleImageFilter() ITK_OVERRIDE {}
+  virtual ~UpsampleImageFilter() override {}
 
   /** UpsampleImageFilter can be implemented as a multithreaded filter.
    * Therefore, this implementation provides a ThreadedGenerateData() routine
@@ -130,9 +130,9 @@ protected:
    *     ImageToImageFilter::GenerateData() */
 //  void BeforeThreadedGenerateData();
 #if ITK_VERSION_MAJOR<5
-  void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) ITK_OVERRIDE;
+  void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) override;
 #else
-  void DynamicThreadedGenerateData(const OutputImageRegionType& outputRegionForThread) ITK_OVERRIDE;
+  void DynamicThreadedGenerateData(const OutputImageRegionType& outputRegionForThread) override;
 #endif
 //  void AfterThreadedGenerateData();
 

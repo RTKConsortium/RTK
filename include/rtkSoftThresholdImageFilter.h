@@ -125,7 +125,7 @@ public:
 
 protected:
   SoftThresholdImageFilter();
-  virtual ~SoftThresholdImageFilter() ITK_OVERRIDE {}
+  virtual ~SoftThresholdImageFilter() override {}
 
 private:
   SoftThresholdImageFilter(const Self&); //purposely not implemented

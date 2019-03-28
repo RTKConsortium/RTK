@@ -156,10 +156,10 @@ public:
   typename ProjectionStackType::ConstPointer GetInputProjectionStack();
 
   /** Pass the ForwardProjection filter to the conjugate gradient operator */
-  virtual void SetForwardProjectionFilter (ForwardProjectionType _arg) ITK_OVERRIDE;
+  virtual void SetForwardProjectionFilter (ForwardProjectionType _arg) override;
 
   /** Pass the backprojection filter to the conjugate gradient operator and to the filter generating the B of AX=B */
-  virtual void SetBackProjectionFilter (BackProjectionType _arg) ITK_OVERRIDE;
+  virtual void SetBackProjectionFilter (BackProjectionType _arg) override;
 
   /** Pass the interpolation weights to subfilters */
   void SetWeights(const itk::Array2D<float> _arg);
@@ -172,20 +172,20 @@ public:
   itkGetMacro(DisableDisplacedDetectorFilter, bool)
 protected:
   FourDConjugateGradientConeBeamReconstructionFilter();
-  virtual ~FourDConjugateGradientConeBeamReconstructionFilter() ITK_OVERRIDE {}
+  virtual ~FourDConjugateGradientConeBeamReconstructionFilter() override {}
 
-  void GenerateOutputInformation() ITK_OVERRIDE;
+  void GenerateOutputInformation() override;
 
-  void GenerateInputRequestedRegion() ITK_OVERRIDE;
+  void GenerateInputRequestedRegion() override;
 
-  void GenerateData() ITK_OVERRIDE;
+  void GenerateData() override;
 
   /** The two inputs should not be in the same space so there is nothing
    * to verify. */
 #if ITK_VERSION_MAJOR<5
-  void VerifyInputInformation() ITK_OVERRIDE {}
+  void VerifyInputInformation() override {}
 #else
-  void VerifyInputInformation() const ITK_OVERRIDE {}
+  void VerifyInputInformation() const override {}
 #endif
 
   /** Pointers to each subfilter of this composite filter */

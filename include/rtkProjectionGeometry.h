@@ -79,9 +79,9 @@ public:
 
 protected:
   ProjectionGeometry(){};
-  virtual ~ProjectionGeometry() ITK_OVERRIDE {}
+  virtual ~ProjectionGeometry() override {}
 
-  void PrintSelf( std::ostream& os, itk::Indent indent ) const ITK_OVERRIDE;
+  void PrintSelf( std::ostream& os, itk::Indent indent ) const override;
 
   /** Add projection matrix */
   virtual void AddMatrix(const MatrixType &m){

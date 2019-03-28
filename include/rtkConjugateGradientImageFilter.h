@@ -86,17 +86,17 @@ public:
 
 protected:
   ConjugateGradientImageFilter();
-  virtual ~ConjugateGradientImageFilter() ITK_OVERRIDE {}
+  virtual ~ConjugateGradientImageFilter() override {}
 
   OutputImagePointer GetX();
   OutputImagePointer GetB();
 
   /** Does the real work. */
-  void GenerateData() ITK_OVERRIDE;
+  void GenerateData() override;
 
   /** Conjugate gradient requires the whole image */
-  void GenerateInputRequestedRegion() ITK_OVERRIDE;
-  void GenerateOutputInformation() ITK_OVERRIDE;
+  void GenerateInputRequestedRegion() override;
+  void GenerateOutputInformation() override;
 
   ConjugateGradientOperatorPointerType m_A;
 

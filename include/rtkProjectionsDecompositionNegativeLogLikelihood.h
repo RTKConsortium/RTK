@@ -69,16 +69,16 @@ public:
   }
 
   // Destructor
-  virtual ~ProjectionsDecompositionNegativeLogLikelihood() ITK_OVERRIDE
+  virtual ~ProjectionsDecompositionNegativeLogLikelihood() override
   {
   }
 
-  MeasureType GetValue( const ParametersType & itkNotUsed(parameters)) const ITK_OVERRIDE {
+  MeasureType GetValue( const ParametersType & itkNotUsed(parameters)) const override {
   long double measure = 0;
   return measure;
   }
   void GetDerivative( const ParametersType & itkNotUsed(lineIntegrals),
-                      DerivativeType & itkNotUsed(derivatives)) const ITK_OVERRIDE {itkExceptionMacro(<< "Not implemented");}
+                      DerivativeType & itkNotUsed(derivatives)) const override {itkExceptionMacro(<< "Not implemented");}
   virtual void Initialize() {}
 
   virtual itk::VariableLengthVector<float> GetInverseCramerRaoLowerBound()
@@ -108,7 +108,7 @@ public:
 
   virtual void ComputeFischerMatrix(const ParametersType & itkNotUsed(lineIntegrals)) {}
 
-  unsigned int GetNumberOfParameters(void) const ITK_OVERRIDE
+  unsigned int GetNumberOfParameters(void) const override
   {
   return m_NumberOfMaterials;
   }

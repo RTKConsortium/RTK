@@ -101,13 +101,13 @@ public:
 
 protected:
   I0EstimationProjectionFilter();
-  virtual ~I0EstimationProjectionFilter() ITK_OVERRIDE {}
+  virtual ~I0EstimationProjectionFilter() override {}
 
-  void BeforeThreadedGenerateData() ITK_OVERRIDE;
+  void BeforeThreadedGenerateData() override;
 
-  void ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, ThreadIdType threadId) ITK_OVERRIDE;
+  void ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, ThreadIdType threadId) override;
 
-  void AfterThreadedGenerateData() ITK_OVERRIDE;
+  void AfterThreadedGenerateData() override;
 
 private:
   I0EstimationProjectionFilter(const Self &); //purposely not implemented

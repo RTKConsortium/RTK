@@ -59,9 +59,9 @@ public:
 
 protected:
   HilbertImageFilter(){}
-  virtual ~HilbertImageFilter() ITK_OVERRIDE {}
+  virtual ~HilbertImageFilter() override {}
 
-  void GenerateData() ITK_OVERRIDE;
+  void GenerateData() override;
 
 private:
   HilbertImageFilter(const Self&);  //purposely not implemented

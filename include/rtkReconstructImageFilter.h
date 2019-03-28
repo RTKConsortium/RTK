@@ -161,24 +161,24 @@ public:
      *  than the input image. As such, we reimplement GenerateOutputInformation()
      *  in order to inform the pipeline execution model.
      */
-    void GenerateOutputInformation() ITK_OVERRIDE;
+    void GenerateOutputInformation() override;
 
 
     /** ReconstructImageFilter requests the largest possible region of all its inputs.
      */
-    void GenerateInputRequestedRegion() ITK_OVERRIDE;
+    void GenerateInputRequestedRegion() override;
 
     /** ReconstructImageFilter uses input images of different sizes, therefore the
      * VerifyInputInformation method has to be reimplemented.
      */
 #if ITK_VERSION_MAJOR<5
 #if ITK_VERSION_MAJOR<5
-    void VerifyInputInformation() ITK_OVERRIDE {}
+    void VerifyInputInformation() override {}
 #else
-    void VerifyInputInformation() const ITK_OVERRIDE {}
+    void VerifyInputInformation() const override {}
 #endif
 #else
-    void VerifyInputInformation() const ITK_OVERRIDE {}
+    void VerifyInputInformation() const override {}
 #endif
 
     void SetSizes(typename InputImageType::SizeType *sizesVector)
@@ -197,9 +197,9 @@ public:
 
 protected:
     ReconstructImageFilter();
-    virtual ~ReconstructImageFilter() ITK_OVERRIDE {}
+    virtual ~ReconstructImageFilter() override {}
 
-    void PrintSelf(std::ostream&os, itk::Indent indent) const ITK_OVERRIDE;
+    void PrintSelf(std::ostream&os, itk::Indent indent) const override;
 
     /** Modifies the storage for Input and Output images.
       * Should be called after changes to levels, bands,
@@ -207,7 +207,7 @@ protected:
     void ModifyInputOutputStorage();
 
     /** Does the real work. */
-    void GenerateData() ITK_OVERRIDE;
+    void GenerateData() override;
 
     /** Calculates the number of ProcessObject output images */
     virtual unsigned int CalculateNumberOfInputs();

@@ -89,16 +89,16 @@ public:
 
 protected:
     DeconstructSoftThresholdReconstructImageFilter();
-    virtual ~DeconstructSoftThresholdReconstructImageFilter() ITK_OVERRIDE {}
-    void PrintSelf(std::ostream&os, itk::Indent indent) const ITK_OVERRIDE;
+    virtual ~DeconstructSoftThresholdReconstructImageFilter() override {}
+    void PrintSelf(std::ostream&os, itk::Indent indent) const override;
 
     /** Generate the output data. */
-    void GenerateData() ITK_OVERRIDE;
+    void GenerateData() override;
 
     /** Compute the information on output's size and index */
-    void GenerateOutputInformation() ITK_OVERRIDE;
+    void GenerateOutputInformation() override;
 
-    void GenerateInputRequestedRegion() ITK_OVERRIDE;
+    void GenerateInputRequestedRegion() override;
 
 private:
     DeconstructSoftThresholdReconstructImageFilter(const Self&);     //purposely not implemented

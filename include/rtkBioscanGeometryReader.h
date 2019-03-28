@@ -103,7 +103,7 @@ private:
   BioscanGeometryReader(const Self&);
   void operator=(const Self&);
 
-  void GenerateData() ITK_OVERRIDE;
+  void GenerateData() override;
 
   GeometryPointer    m_Geometry;
   FileNamesContainer m_ProjectionsFileNames;

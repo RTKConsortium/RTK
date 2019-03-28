@@ -164,22 +164,22 @@ public:
     <VolumeSeriesType, ProjectionStackType>;
 
   /** Neither the forward nor the back projection filter can be set by the user */
-  void SetForwardProjectionFilter(ForwardProjectionType itkNotUsed(fwtype)) ITK_OVERRIDE {itkExceptionMacro(<< "ForwardProjection cannot be changed");}
-  void SetBackProjectionFilter(BackProjectionType itkNotUsed(bptype)) ITK_OVERRIDE {itkExceptionMacro(<< "BackProjection cannot be changed");}
+  void SetForwardProjectionFilter(ForwardProjectionType itkNotUsed(fwtype)) override {itkExceptionMacro(<< "ForwardProjection cannot be changed");}
+  void SetBackProjectionFilter(BackProjectionType itkNotUsed(bptype)) override {itkExceptionMacro(<< "BackProjection cannot be changed");}
 
   /** Set the vector containing the signal in the sub-filters */
-  void SetSignal(const std::vector<double> signal) ITK_OVERRIDE;
+  void SetSignal(const std::vector<double> signal) override;
 
 protected:
   MotionCompensatedFourDROOSTERConeBeamReconstructionFilter();
-  virtual ~MotionCompensatedFourDROOSTERConeBeamReconstructionFilter() ITK_OVERRIDE {}
+  virtual ~MotionCompensatedFourDROOSTERConeBeamReconstructionFilter() override {}
 
   /** Does the real work. */
-  void GenerateData() ITK_OVERRIDE;
+  void GenerateData() override;
 
-  void GenerateOutputInformation() ITK_OVERRIDE;
+  void GenerateOutputInformation() override;
 
-  void GenerateInputRequestedRegion() ITK_OVERRIDE;
+  void GenerateInputRequestedRegion() override;
 
 private:
   MotionCompensatedFourDROOSTERConeBeamReconstructionFilter(const Self &); //purposely not implemented

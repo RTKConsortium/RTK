@@ -109,16 +109,16 @@ public:
 
 protected:
   FieldOfViewImageFilter();
-  virtual ~FieldOfViewImageFilter() ITK_OVERRIDE {}
+  virtual ~FieldOfViewImageFilter() override {}
 
-  void BeforeThreadedGenerateData() ITK_OVERRIDE;
+  void BeforeThreadedGenerateData() override;
 
   /** Generates a FOV mask which is applied to the reconstruction
    * A call to this function will assume modification of the function.*/
 #if ITK_VERSION_MAJOR<5
-  void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) ITK_OVERRIDE;
+  void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) override;
 #else
-  void DynamicThreadedGenerateData(const OutputImageRegionType& outputRegionForThread) ITK_OVERRIDE;
+  void DynamicThreadedGenerateData(const OutputImageRegionType& outputRegionForThread) override;
 #endif
 
 private:

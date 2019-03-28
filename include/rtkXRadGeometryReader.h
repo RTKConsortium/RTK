@@ -69,7 +69,7 @@ private:
   XRadGeometryReader(const Self&);
   void operator=(const Self&);
 
-  void GenerateData() ITK_OVERRIDE;
+  void GenerateData() override;
 
   GeometryType::Pointer m_Geometry;
   std::string           m_ImageFileName;

@@ -49,7 +49,7 @@ public:
 
 protected:
   ConjugateGradientOperator();
-  virtual ~ConjugateGradientOperator() ITK_OVERRIDE {}
+  virtual ~ConjugateGradientOperator() override {}
 
 private:
   ConjugateGradientOperator(const Self &); //purposely not implemented

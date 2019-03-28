@@ -64,25 +64,25 @@ public:
   itkNewMacro(Self);
 
   /** Determine if a file can be read */
-  int CanReadFile(const char* name) ITK_OVERRIDE;
+  int CanReadFile(const char* name) override;
 
   /** Get smart pointer to projection geometry. */
   itkGetModifiableObjectMacro(Geometry, GeometryType);
 
 protected:
   ThreeDCircularProjectionGeometryXMLFileReader();
-  virtual ~ThreeDCircularProjectionGeometryXMLFileReader() ITK_OVERRIDE {}
+  virtual ~ThreeDCircularProjectionGeometryXMLFileReader() override {}
 
   /** Callback function -- called from XML parser with start-of-element
    * information.
    */
-  void StartElement(const char * name,const char **atts) ITK_OVERRIDE;
+  void StartElement(const char * name,const char **atts) override;
 
   void StartElement(const char * name);
 
-  void EndElement(const char *name) ITK_OVERRIDE;
+  void EndElement(const char *name) override;
 
-  void CharacterDataHandler(const char *inData, int inLength) ITK_OVERRIDE;
+  void CharacterDataHandler(const char *inData, int inLength) override;
 
 private:
    //purposely not implemented

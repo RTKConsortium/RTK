@@ -123,20 +123,20 @@ public:
   itkTypeMacro(HndImageIO, itk::ImageIOBase);
 
   /*-------- This part of the interface deals with reading data. ------ */
-  void ReadImageInformation() ITK_OVERRIDE;
+  void ReadImageInformation() override;
 
-  bool CanReadFile( const char* FileNameToRead ) ITK_OVERRIDE;
+  bool CanReadFile( const char* FileNameToRead ) override;
 
-  void Read(void * buffer) ITK_OVERRIDE;
+  void Read(void * buffer) override;
 
   /*-------- This part of the interfaces deals with writing data. ----- */
   virtual void WriteImageInformation(bool /*keepOfStream*/) { }
 
-  void WriteImageInformation() ITK_OVERRIDE { WriteImageInformation(false); }
+  void WriteImageInformation() override { WriteImageInformation(false); }
 
-  bool CanWriteFile(const char* filename) ITK_OVERRIDE;
+  bool CanWriteFile(const char* filename) override;
 
-  void Write(const void* buffer) ITK_OVERRIDE;
+  void Write(const void* buffer) override;
 
 }; // end class HndImageIO
 

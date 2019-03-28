@@ -93,7 +93,7 @@ protected:
   ImagXGeometryReader()
      : m_Geometry(nullptr), m_CalibrationXMLFileName(""), m_RoomXMLFileName("") {};
 
-  virtual ~ImagXGeometryReader() ITK_OVERRIDE {}
+  virtual ~ImagXGeometryReader() override {}
 
 
 private:
@@ -101,7 +101,7 @@ private:
   ImagXGeometryReader(const Self&);
   void operator=(const Self&);
 
-  void GenerateData() ITK_OVERRIDE;
+  void GenerateData() override;
 
   // DICOM tag for AI versions
   static const std::string m_AI_VERSION_1p2;

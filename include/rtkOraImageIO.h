@@ -59,15 +59,15 @@ public:
 
   /** Determine the file type. Returns true if this ImageIO can read the
    * file specified. */
-  bool CanReadFile( const char* FileNameToRead ) ITK_OVERRIDE;
+  bool CanReadFile( const char* FileNameToRead ) override;
 
   /** Set the spacing and dimension information for the set filename. */
-  void ReadImageInformation() ITK_OVERRIDE;
+  void ReadImageInformation() override;
 
   /** Reads the data from disk into the memory buffer provided. */
-  void Read(void *buffer) ITK_OVERRIDE;
+  void Read(void *buffer) override;
 
-  bool CanWriteFile(const char* filename) ITK_OVERRIDE;
+  bool CanWriteFile(const char* filename) override;
 
 protected:
   std::string m_MetaFileName;

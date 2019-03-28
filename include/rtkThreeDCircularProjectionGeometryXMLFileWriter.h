@@ -54,10 +54,10 @@ public:
   itkTypeMacro(ThreeDCircularProjectionGeometryXMLFileWriter, itk::XMLWriterBase)
 
   /** Test whether a file is writable. */
-  int CanWriteFile(const char* name) ITK_OVERRIDE;
+  int CanWriteFile(const char* name) override;
 
   /** Actually write out the file in question */
-  int WriteFile() ITK_OVERRIDE;
+  int WriteFile() override;
 
 protected:
   ThreeDCircularProjectionGeometryXMLFileWriter() {}

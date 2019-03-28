@@ -130,15 +130,15 @@ public:
   itkTypeMacro(AmsterdamShroudImageFilter, itk::ImageToImageFilter);
 protected:
   AmsterdamShroudImageFilter();
-  virtual ~AmsterdamShroudImageFilter() ITK_OVERRIDE {}
+  virtual ~AmsterdamShroudImageFilter() override {}
 
-  void GenerateOutputInformation() ITK_OVERRIDE;
-  void GenerateInputRequestedRegion() ITK_OVERRIDE;
+  void GenerateOutputInformation() override;
+  void GenerateInputRequestedRegion() override;
   void UpdateUnsharpMaskKernel();
 
   /** Single-threaded version of GenerateData.  This filter delegates
    * to other filters. */
-  void GenerateData() ITK_OVERRIDE;
+  void GenerateData() override;
 
   /** Function that actually projects the 3D box defined by m_Corner1 and
    * m_Corner2 and set everything outside to 0. */

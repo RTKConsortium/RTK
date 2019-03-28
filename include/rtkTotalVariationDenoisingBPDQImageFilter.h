@@ -133,13 +133,13 @@ public:
 
 protected:
   TotalVariationDenoisingBPDQImageFilter();
-  virtual ~TotalVariationDenoisingBPDQImageFilter() ITK_OVERRIDE {}
+  virtual ~TotalVariationDenoisingBPDQImageFilter() override {}
 
-  void GenerateOutputInformation() ITK_OVERRIDE;
+  void GenerateOutputInformation() override;
 
   /** Sub filter pointers */
   typename MagnitudeThresholdFilterType::Pointer   m_ThresholdFilter;
-  typename Superclass::ThresholdFilterType* GetThresholdFilter() ITK_OVERRIDE
+  typename Superclass::ThresholdFilterType* GetThresholdFilter() override
   {
     return dynamic_cast<typename Superclass::ThresholdFilterType*>(this->m_ThresholdFilter.GetPointer());
   }

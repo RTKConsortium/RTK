@@ -175,14 +175,14 @@ public:
 
 protected:
     ProjectionStackToFourDImageFilter();
-    virtual ~ProjectionStackToFourDImageFilter() ITK_OVERRIDE {}
+    virtual ~ProjectionStackToFourDImageFilter() override {}
 
     /** Does the real work. */
-    void GenerateData() ITK_OVERRIDE;
+    void GenerateData() override;
 
-    void GenerateOutputInformation() ITK_OVERRIDE;
+    void GenerateOutputInformation() override;
 
-    void GenerateInputRequestedRegion() ITK_OVERRIDE;
+    void GenerateInputRequestedRegion() override;
 
     void InitializeConstantSource();
 

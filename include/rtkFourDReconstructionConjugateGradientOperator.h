@@ -216,16 +216,16 @@ public:
 
 protected:
     FourDReconstructionConjugateGradientOperator();
-    virtual ~FourDReconstructionConjugateGradientOperator() ITK_OVERRIDE {}
+    virtual ~FourDReconstructionConjugateGradientOperator() override {}
 
     /** Builds the pipeline and computes output information */
-    void GenerateOutputInformation() ITK_OVERRIDE;
+    void GenerateOutputInformation() override;
 
     /** Computes the requested region of input images */
-    void GenerateInputRequestedRegion() ITK_OVERRIDE;
+    void GenerateInputRequestedRegion() override;
 
     /** Does the real work. */
-    void GenerateData() ITK_OVERRIDE;
+    void GenerateData() override;
 
     /** Initialize the ConstantImageSourceFilter */
     void InitializeConstantSources();

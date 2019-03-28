@@ -166,9 +166,9 @@ public:
      *  than the input image. As such, we reimplement GenerateOutputInformation()
      *  in order to inform the pipeline execution model.
      */
-    void GenerateOutputInformation() ITK_OVERRIDE;
+    void GenerateOutputInformation() override;
 
-    void GenerateInputRequestedRegion() ITK_OVERRIDE;
+    void GenerateInputRequestedRegion() override;
 
     /** Get/Set the order of the wavelet filters */
     itkGetMacro(Order, unsigned int)
@@ -200,8 +200,8 @@ public:
 
 protected:
     DeconstructImageFilter();
-    virtual ~DeconstructImageFilter() ITK_OVERRIDE {}
-    void PrintSelf(std::ostream&os, itk::Indent indent) const ITK_OVERRIDE;
+    virtual ~DeconstructImageFilter() override {}
+    void PrintSelf(std::ostream&os, itk::Indent indent) const override;
 
     /** Modifies the storage for Input and Output images.
       * Should be called after changes to levels, bands,
@@ -209,7 +209,7 @@ protected:
     void ModifyInputOutputStorage();
 
     /** Does the real work. */
-    void GenerateData() ITK_OVERRIDE;
+    void GenerateData() override;
 
     /** Calculates the number of ProcessObject output images */
     virtual unsigned int CalculateNumberOfOutputs();

@@ -97,13 +97,13 @@ public:
 
 protected:
   MagnitudeThresholdImageFilter();
-  virtual ~MagnitudeThresholdImageFilter() ITK_OVERRIDE {}
+  virtual ~MagnitudeThresholdImageFilter() override {}
 
 #if ITK_VERSION_MAJOR<5
   void ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread,
-                            itk::ThreadIdType threadId) ITK_OVERRIDE;
+                            itk::ThreadIdType threadId) override;
 #else
-  void DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread) ITK_OVERRIDE;
+  void DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread) override;
 #endif
 
 private:

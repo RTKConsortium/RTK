@@ -71,15 +71,15 @@ public:
 
 protected:
     ConditionalMedianImageFilter();
-    virtual ~ConditionalMedianImageFilter() ITK_OVERRIDE {}
+    virtual ~ConditionalMedianImageFilter() override {}
 
-    void GenerateInputRequestedRegion() ITK_OVERRIDE;
+    void GenerateInputRequestedRegion() override;
 
     /** Does the real work. */
 #if ITK_VERSION_MAJOR<5
-    void ThreadedGenerateData(const typename TInputImage::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) ITK_OVERRIDE;
+    void ThreadedGenerateData(const typename TInputImage::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) override;
 #else
-    void DynamicThreadedGenerateData(const typename TInputImage::RegionType& outputRegionForThread) ITK_OVERRIDE;
+    void DynamicThreadedGenerateData(const typename TInputImage::RegionType& outputRegionForThread) override;
 #endif
 
     MedianRadiusType  m_Radius;

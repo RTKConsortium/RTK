@@ -184,10 +184,10 @@ public:
 
 protected:
   ReconstructionConjugateGradientOperator();
-  virtual ~ReconstructionConjugateGradientOperator() ITK_OVERRIDE {}
+  virtual ~ReconstructionConjugateGradientOperator() override {}
 
   /** Does the real work. */
-  void GenerateData() ITK_OVERRIDE;
+  void GenerateData() override;
 
   template < typename ImageType >
   typename std::enable_if< std::is_same< TSingleComponentImage, ImageType >::value, ImageType >::type::Pointer
@@ -223,14 +223,14 @@ protected:
   /** When the inputs have the same type, ITK checks whether they occupy the
    * same physical space or not. Obviously they dont, so we have to remove this check */
 #if ITK_VERSION_MAJOR<5
-  void VerifyInputInformation() ITK_OVERRIDE {}
+  void VerifyInputInformation() override {}
 #else
-  void VerifyInputInformation() const ITK_OVERRIDE {}
+  void VerifyInputInformation() const override {}
 #endif
 
   /** The volume and the projections must have different requested regions */
-  void GenerateInputRequestedRegion() ITK_OVERRIDE;
-  void GenerateOutputInformation() ITK_OVERRIDE;
+  void GenerateInputRequestedRegion() override;
+  void GenerateOutputInformation() override;
 
   /** Getters for the inputs */
   typename TOutputImage::ConstPointer   GetInputVolume();

@@ -86,7 +86,7 @@ private:
                          std::vector<float> &projFlexX,
                          std::vector<float> &projFlexY);
 
-  void GenerateData() ITK_OVERRIDE;
+  void GenerateData() override;
 
   GeometryType::Pointer m_Geometry;
   std::string           m_DicomUID;

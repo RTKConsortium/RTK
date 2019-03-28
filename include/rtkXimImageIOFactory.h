@@ -51,11 +51,11 @@ public:
   using ConstPointer = itk::SmartPointer<const Self>;
 
   /** Class methods used to interface with the registered factories. */
-  const char* GetITKSourceVersion(void) const ITK_OVERRIDE {
+  const char* GetITKSourceVersion(void) const override {
     return ITK_SOURCE_VERSION;
   }
 
-  const char* GetDescription(void) const ITK_OVERRIDE {
+  const char* GetDescription(void) const override {
     return "Xim ImageIO Factory, allows the loading of Xim images into insight";
   }
 
@@ -72,7 +72,7 @@ public:
 
 protected:
   XimImageIOFactory();
-  virtual ~XimImageIOFactory() ITK_OVERRIDE {};
+  virtual ~XimImageIOFactory() override {};
   using myProductType = XimImageIOFactory;
   const myProductType* m_MyProduct;
 

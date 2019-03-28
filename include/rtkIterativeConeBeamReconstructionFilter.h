@@ -93,7 +93,7 @@ public:
 
 protected:
   IterativeConeBeamReconstructionFilter();
-  virtual ~IterativeConeBeamReconstructionFilter() ITK_OVERRIDE {}
+  virtual ~IterativeConeBeamReconstructionFilter() override {}
 
   /** Creates and returns an instance of the back projection filter.
    * To be used in SetBackProjectionFilter. */

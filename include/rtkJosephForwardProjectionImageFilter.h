@@ -225,16 +225,16 @@ public:
 
 protected:
   JosephForwardProjectionImageFilter();
-  virtual ~JosephForwardProjectionImageFilter() ITK_OVERRIDE {}
+  virtual ~JosephForwardProjectionImageFilter() override {}
 
-  void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) ITK_OVERRIDE;
+  void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) override;
 
   /** The two inputs should not be in the same space so there is nothing
    * to verify. */
 #if ITK_VERSION_MAJOR<5
-  void VerifyInputInformation() ITK_OVERRIDE {}
+  void VerifyInputInformation() override {}
 #else
-  void VerifyInputInformation() const ITK_OVERRIDE {}
+  void VerifyInputInformation() const override {}
 #endif
 
   inline OutputPixelType BilinearInterpolation(const ThreadIdType threadId,

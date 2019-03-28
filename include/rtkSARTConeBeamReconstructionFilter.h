@@ -191,10 +191,10 @@ public:
   itkSetMacro(EnforcePositivity, bool);
 
   /** Select the ForwardProjection filter */
-  void SetForwardProjectionFilter (ForwardProjectionType _arg) ITK_OVERRIDE;
+  void SetForwardProjectionFilter (ForwardProjectionType _arg) override;
 
   /** Select the backprojection filter */
-  void SetBackProjectionFilter (BackProjectionType _arg) ITK_OVERRIDE;
+  void SetBackProjectionFilter (BackProjectionType _arg) override;
 
   /** In the case of a gated SART, set the gating weights */
   void SetGatingWeights(std::vector<float> weights);
@@ -205,20 +205,20 @@ public:
 
 protected:
   SARTConeBeamReconstructionFilter();
-  virtual ~SARTConeBeamReconstructionFilter() ITK_OVERRIDE {}
+  virtual ~SARTConeBeamReconstructionFilter() override {}
 
-  void GenerateInputRequestedRegion() ITK_OVERRIDE;
+  void GenerateInputRequestedRegion() override;
 
-  void GenerateOutputInformation() ITK_OVERRIDE;
+  void GenerateOutputInformation() override;
 
-  void GenerateData() ITK_OVERRIDE;
+  void GenerateData() override;
 
   /** The two inputs should not be in the same space so there is nothing
    * to verify. */
 #if ITK_VERSION_MAJOR<5
-  void VerifyInputInformation() ITK_OVERRIDE {}
+  void VerifyInputInformation() override {}
 #else
-  void VerifyInputInformation() const ITK_OVERRIDE {}
+  void VerifyInputInformation() const override {}
 #endif
 
   /** Pointers to each subfilter of this composite filter */

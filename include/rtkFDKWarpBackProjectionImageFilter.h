@@ -78,11 +78,11 @@ public:
 
 protected:
   FDKWarpBackProjectionImageFilter();
-  virtual ~FDKWarpBackProjectionImageFilter() ITK_OVERRIDE {}
+  virtual ~FDKWarpBackProjectionImageFilter() override {}
 
-  void BeforeThreadedGenerateData() ITK_OVERRIDE;
+  void BeforeThreadedGenerateData() override;
 
-  void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) ITK_OVERRIDE;
+  void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) override;
 
 private:
   FDKWarpBackProjectionImageFilter(const Self&); //purposely not implemented

@@ -46,13 +46,13 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(DCMImagXImageIO, itk::GDCMImageIO);
 
-  void ReadImageInformation() ITK_OVERRIDE;
-  bool CanReadFile( const char* FileNameToRead ) ITK_OVERRIDE;
-  bool CanWriteFile(const char* filename) ITK_OVERRIDE;
+  void ReadImageInformation() override;
+  bool CanReadFile( const char* FileNameToRead ) override;
+  bool CanWriteFile(const char* filename) override;
 
 protected:
   DCMImagXImageIO() {}
-  virtual ~DCMImagXImageIO() ITK_OVERRIDE {}
+  virtual ~DCMImagXImageIO() override {}
 };
 
 } // end namespace

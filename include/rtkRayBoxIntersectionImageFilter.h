@@ -83,9 +83,9 @@ public:
 
 protected:
   RayBoxIntersectionImageFilter();
-  ~RayBoxIntersectionImageFilter() ITK_OVERRIDE {}
+  ~RayBoxIntersectionImageFilter() override {}
 
-  void BeforeThreadedGenerateData ( ) ITK_OVERRIDE;
+  void BeforeThreadedGenerateData ( ) override;
 
 private:
   RayBoxIntersectionImageFilter(const Self&); //purposely not implemented

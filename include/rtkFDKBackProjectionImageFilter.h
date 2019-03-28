@@ -59,25 +59,25 @@ public:
 
 protected:
   FDKBackProjectionImageFilter() {};
-  virtual ~FDKBackProjectionImageFilter() ITK_OVERRIDE {}
+  virtual ~FDKBackProjectionImageFilter() override {}
 
-  void GenerateOutputInformation() ITK_OVERRIDE;
+  void GenerateOutputInformation() override;
 
 #if ITK_VERSION_MAJOR<5
-  void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) ITK_OVERRIDE;
+  void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) override;
 #else
-  void DynamicThreadedGenerateData(const OutputImageRegionType& outputRegionForThread) ITK_OVERRIDE;
+  void DynamicThreadedGenerateData(const OutputImageRegionType& outputRegionForThread) override;
 #endif
 
   /** Optimized version when the rotation is parallel to X, i.e. matrix[1][0]
     and matrix[2][0] are zeros. */
   void OptimizedBackprojectionX(const OutputImageRegionType& region, const ProjectionMatrixType& matrix,
-                                        const ProjectionImagePointer projection) ITK_OVERRIDE;
+                                        const ProjectionImagePointer projection) override;
 
   /** Optimized version when the rotation is parallel to Y, i.e. matrix[1][1]
     and matrix[2][1] are zeros. */
   void OptimizedBackprojectionY(const OutputImageRegionType& region, const ProjectionMatrixType& matrix,
-                                        const ProjectionImagePointer projection) ITK_OVERRIDE;
+                                        const ProjectionImagePointer projection) override;
 
 private:
   FDKBackProjectionImageFilter(const Self&); //purposely not implemented

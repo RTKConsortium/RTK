@@ -50,11 +50,11 @@ public:
   using ConstPointer = itk::SmartPointer<const Self>;
 
   /** Class methods used to interface with the registered factories. */
-  const char* GetITKSourceVersion(void) const ITK_OVERRIDE {
+  const char* GetITKSourceVersion(void) const override {
     return ITK_SOURCE_VERSION;
   }
 
-  const char* GetDescription(void) const ITK_OVERRIDE {
+  const char* GetDescription(void) const override {
     return "His ImageIO Factory, allows the loading of His images into insight";
   }
 
@@ -71,7 +71,7 @@ public:
 
 protected:
   HndImageIOFactory();
-  virtual ~HndImageIOFactory() ITK_OVERRIDE {}
+  virtual ~HndImageIOFactory() override {}
   using myProductType = HndImageIOFactory;
   const myProductType* m_MyProduct;
 

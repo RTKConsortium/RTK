@@ -94,9 +94,9 @@ public:
 
 protected:
   ProjectGeometricPhantomImageFilter();
-  virtual ~ProjectGeometricPhantomImageFilter() ITK_OVERRIDE {}
+  virtual ~ProjectGeometricPhantomImageFilter() override {}
 
-  void GenerateData() ITK_OVERRIDE;
+  void GenerateData() override;
 
 private:
   ProjectGeometricPhantomImageFilter(const Self&); //purposely not implemented

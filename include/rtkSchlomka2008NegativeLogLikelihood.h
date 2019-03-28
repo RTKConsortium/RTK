@@ -69,11 +69,11 @@ public:
   }
 
   // Destructor
-  virtual ~Schlomka2008NegativeLogLikelihood() ITK_OVERRIDE
+  virtual ~Schlomka2008NegativeLogLikelihood() override
   {
   }
 
-  void Initialize() ITK_OVERRIDE
+  void Initialize() override
   {
   // This method computes the combined m_IncidentSpectrumAndDetectorResponseProduct
   // from m_DetectorResponse and m_IncidentSpectrum
@@ -90,7 +90,7 @@ public:
   // Not used with a simplex optimizer, but may be useful later
   // for gradient based methods
   void GetDerivative( const ParametersType & lineIntegrals,
-                      DerivativeType & derivatives ) const ITK_OVERRIDE
+                      DerivativeType & derivatives ) const override
   {
   // Set the size of the derivatives vector
   derivatives.set_size(m_NumberOfMaterials);
@@ -123,7 +123,7 @@ public:
   }
 
   // Main method
-  MeasureType  GetValue( const ParametersType & parameters ) const ITK_OVERRIDE
+  MeasureType  GetValue( const ParametersType & parameters ) const override
   {
   // Forward model: compute the expected number of counts in each bin
   vnl_vector<double> forward = ForwardModel(parameters);
@@ -135,7 +135,7 @@ public:
   return measure;
   }
 
-  void ComputeFischerMatrix(const ParametersType & lineIntegrals) ITK_OVERRIDE
+  void ComputeFischerMatrix(const ParametersType & lineIntegrals) override
   {
   // Get some required data
   vnl_vector<double> attenuationFactors;

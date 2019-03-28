@@ -100,10 +100,10 @@ public:
 
 protected:
     UnwarpSequenceConjugateGradientOperator();
-    virtual ~UnwarpSequenceConjugateGradientOperator() ITK_OVERRIDE {}
+    virtual ~UnwarpSequenceConjugateGradientOperator() override {}
 
     /** Does the real work. */
-    void GenerateData() ITK_OVERRIDE;
+    void GenerateData() override;
 
     /** Member pointers to the filters used internally (for convenience)*/
     typename WarpSequenceFilterType::Pointer              m_WarpSequenceBackwardFilter;
@@ -116,15 +116,15 @@ protected:
     * same physical space or not. Obviously they dont, so we have to remove this check
     */
 #if ITK_VERSION_MAJOR<5
-    void VerifyInputInformation() ITK_OVERRIDE {}
+    void VerifyInputInformation() override {}
 #else
-    void VerifyInputInformation() const ITK_OVERRIDE {}
+    void VerifyInputInformation() const override {}
 #endif
 
     /** The volume and the projections must have different requested regions
     */
-    void GenerateInputRequestedRegion() ITK_OVERRIDE;
-    void GenerateOutputInformation() ITK_OVERRIDE;
+    void GenerateInputRequestedRegion() override;
+    void GenerateOutputInformation() override;
 
     bool m_UseCudaCyclicDeformation;
 

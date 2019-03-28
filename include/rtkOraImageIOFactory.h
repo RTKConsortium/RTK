@@ -47,11 +47,11 @@ public:
   using ConstPointer = itk::SmartPointer<const Self>;
 
   /** Class methods used to interface with the registered factories. */
-  const char* GetITKSourceVersion(void) const ITK_OVERRIDE {
+  const char* GetITKSourceVersion(void) const override {
     return ITK_SOURCE_VERSION;
   }
 
-  const char* GetDescription(void) const ITK_OVERRIDE {
+  const char* GetDescription(void) const override {
     return "Ora ImageIO Factory, allows the loading of Ora images into insight";
   }
 
@@ -68,7 +68,7 @@ public:
 
 protected:
   OraImageIOFactory();
-  virtual ~OraImageIOFactory() ITK_OVERRIDE {};
+  virtual ~OraImageIOFactory() override {};
   using myProductType = OraImageIOFactory;
   const myProductType* m_MyProduct;
 

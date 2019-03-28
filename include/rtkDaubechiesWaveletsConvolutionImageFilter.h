@@ -92,7 +92,7 @@ public:
     void SetReconstruction();
 
     /** Prints some debugging information. */
-    void PrintSelf(std::ostream& os, itk::Indent i) const ITK_OVERRIDE;
+    void PrintSelf(std::ostream& os, itk::Indent i) const override;
 
     /** Set and Get macro for the wavelet order */
     itkSetMacro(Order, unsigned int);
@@ -104,7 +104,7 @@ public:
 
 protected:
     DaubechiesWaveletsConvolutionImageFilter();
-    virtual ~DaubechiesWaveletsConvolutionImageFilter() ITK_OVERRIDE;
+    virtual ~DaubechiesWaveletsConvolutionImageFilter() override;
 
     using CoefficientVector = std::vector<typename TImage::PixelType>;
 
@@ -112,10 +112,10 @@ protected:
     CoefficientVector GenerateCoefficients();
 
     /** Does the real work */
-    void GenerateData() ITK_OVERRIDE;
+    void GenerateData() override;
 
     /** Defines the size, spacing, ... of the output kernel image */
-    void GenerateOutputInformation() ITK_OVERRIDE;
+    void GenerateOutputInformation() override;
 
 private:
 

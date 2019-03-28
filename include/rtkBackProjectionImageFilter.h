@@ -84,17 +84,17 @@ protected:
   BackProjectionImageFilter() : m_Geometry(nullptr), m_Transpose(false) {
     this->SetNumberOfRequiredInputs(2); this->SetInPlace( true );
   };
-  virtual ~BackProjectionImageFilter() ITK_OVERRIDE {}
+  virtual ~BackProjectionImageFilter() override {}
 
   /** Apply changes to the input image requested region. */
-  void GenerateInputRequestedRegion() ITK_OVERRIDE;
+  void GenerateInputRequestedRegion() override;
 
-  void BeforeThreadedGenerateData() ITK_OVERRIDE;
+  void BeforeThreadedGenerateData() override;
 
 #if ITK_VERSION_MAJOR<5
-  void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) ITK_OVERRIDE;
+  void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) override;
 #else
-  void DynamicThreadedGenerateData(const OutputImageRegionType& outputRegionForThread) ITK_OVERRIDE;
+  void DynamicThreadedGenerateData(const OutputImageRegionType& outputRegionForThread) override;
 #endif
 
   /** Special case when the detector is cylindrical and centered on source */
@@ -116,9 +116,9 @@ protected:
   /** The two inputs should not be in the same space so there is nothing
    * to verify. */
 #if ITK_VERSION_MAJOR<5
-  void VerifyInputInformation() ITK_OVERRIDE {}
+  void VerifyInputInformation() override {}
 #else
-  void VerifyInputInformation() const ITK_OVERRIDE {}
+  void VerifyInputInformation() const override {}
 #endif
 
   /** The input is a stack of projections, we need to interpolate in one projection

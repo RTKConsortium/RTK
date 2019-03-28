@@ -83,11 +83,11 @@ public:
 
 protected:
   ScatterGlareCorrectionImageFilter();
-  virtual ~ScatterGlareCorrectionImageFilter() ITK_OVERRIDE {}
+  virtual ~ScatterGlareCorrectionImageFilter() override {}
 
   /** Create the deconvolution kernel
   */
-  void UpdateFFTProjectionsConvolutionKernel(const SizeType size) ITK_OVERRIDE;
+  void UpdateFFTProjectionsConvolutionKernel(const SizeType size) override;
 
 private:
   ScatterGlareCorrectionImageFilter(const Self&); //purposely not implemented

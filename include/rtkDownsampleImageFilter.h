@@ -80,18 +80,18 @@ public:
    * the pipeline execution model.  The original documentation of this
    * method is below.
    * \sa ProcessObject::GenerateOutputInformaton() */
-  void GenerateOutputInformation() ITK_OVERRIDE;
+  void GenerateOutputInformation() override;
 
   /** DownsampleImageFilter needs a larger input requested region than the output
    * requested region.  As such, DownsampleImageFilter needs to provide an
    * implementation for GenerateInputRequestedRegion() in order to inform the
    * pipeline execution model.
    * \sa ProcessObject::GenerateInputRequestedRegion() */
-  void GenerateInputRequestedRegion() ITK_OVERRIDE;
+  void GenerateInputRequestedRegion() override;
 
 protected:
   DownsampleImageFilter();
-  virtual ~DownsampleImageFilter() ITK_OVERRIDE {}
+  virtual ~DownsampleImageFilter() override {}
 
   /** DownsampleImageFilter can be implemented as a multithreaded filter.
    * Therefore, this implementation provides a ThreadedGenerateData() routine
@@ -105,9 +105,9 @@ protected:
    *     ImageToImageFilter::GenerateData() */
 //  virtual void BeforeThreadedGenerateData();
 #if ITK_VERSION_MAJOR<5
-  void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) ITK_OVERRIDE;
+  void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) override;
 #else
-  void DynamicThreadedGenerateData(const OutputImageRegionType& outputRegionForThread) ITK_OVERRIDE;
+  void DynamicThreadedGenerateData(const OutputImageRegionType& outputRegionForThread) override;
 #endif
 //  virtual void AfterThreadedGenerateData();
 

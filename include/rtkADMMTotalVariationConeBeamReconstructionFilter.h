@@ -171,10 +171,10 @@ public:
     using GatingWeightsFilterType = rtk::MultiplyByVectorImageFilter<TOutputImage>;
 
     /** Pass the ForwardProjection filter to the conjugate gradient operator */
-    void SetForwardProjectionFilter (ForwardProjectionType _arg) ITK_OVERRIDE;
+    void SetForwardProjectionFilter (ForwardProjectionType _arg) override;
 
     /** Pass the backprojection filter to the conjugate gradient operator and to the back projection filter generating the B of AX=B */
-    void SetBackProjectionFilter (BackProjectionType _arg) ITK_OVERRIDE;
+    void SetBackProjectionFilter (BackProjectionType _arg) override;
 
     /** Pass the geometry to all filters needing it */
     itkSetObjectMacro(Geometry, ThreeDCircularProjectionGeometry)
@@ -203,10 +203,10 @@ public:
 
 protected:
     ADMMTotalVariationConeBeamReconstructionFilter();
-    virtual ~ADMMTotalVariationConeBeamReconstructionFilter() ITK_OVERRIDE {}
+    virtual ~ADMMTotalVariationConeBeamReconstructionFilter() override {}
 
     /** Does the real work. */
-    void GenerateData() ITK_OVERRIDE;
+    void GenerateData() override;
 
     /** Member pointers to the filters used internally (for convenience)*/
     typename SubtractGradientsFilterType::Pointer                               m_SubtractFilter1;
@@ -232,15 +232,15 @@ protected:
     * It is normal that they do not occupy the same physical space. Therefore this check
     * must be removed */
 #if ITK_VERSION_MAJOR<5
-    void VerifyInputInformation() ITK_OVERRIDE {}
+    void VerifyInputInformation() override {}
 #else
-    void VerifyInputInformation() const ITK_OVERRIDE {}
+    void VerifyInputInformation() const override {}
 #endif
 
     /** The volume and the projections must have different requested regions
     */
-    void GenerateInputRequestedRegion() ITK_OVERRIDE;
-    void GenerateOutputInformation() ITK_OVERRIDE;
+    void GenerateInputRequestedRegion() override;
+    void GenerateOutputInformation() override;
 
     /** Have gating weights been set ? If so, apply them, otherwise ignore
      * the gating weights filter */

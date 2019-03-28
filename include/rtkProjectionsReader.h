@@ -246,15 +246,15 @@ public:
 
   /** Prepare the allocation of the output image during the first back
    * propagation of the pipeline. */
-  void GenerateOutputInformation(void) ITK_OVERRIDE;
+  void GenerateOutputInformation(void) override;
 
 protected:
   ProjectionsReader();
-  virtual ~ProjectionsReader() ITK_OVERRIDE {}
-  void PrintSelf(std::ostream& os, itk::Indent indent) const ITK_OVERRIDE;
+  virtual ~ProjectionsReader() override {}
+  void PrintSelf(std::ostream& os, itk::Indent indent) const override;
 
   /** Does the real work. */
-  void GenerateData() ITK_OVERRIDE;
+  void GenerateData() override;
 
   /** A list of filenames to be processed. */
   FileNamesContainer m_FileNames;

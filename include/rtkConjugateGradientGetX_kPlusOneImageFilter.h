@@ -63,15 +63,15 @@ public:
 
 protected:
   ConjugateGradientGetX_kPlusOneImageFilter();
-  virtual ~ConjugateGradientGetX_kPlusOneImageFilter() ITK_OVERRIDE {}
+  virtual ~ConjugateGradientGetX_kPlusOneImageFilter() override {}
 
   typename TInputImage::Pointer GetXk();
   typename TInputImage::Pointer GetPk();
 
   /** Does the real work. */
-  void GenerateData() ITK_OVERRIDE;
+  void GenerateData() override;
 
-  void GenerateOutputInformation() ITK_OVERRIDE;
+  void GenerateOutputInformation() override;
 
 private:
   ConjugateGradientGetX_kPlusOneImageFilter(const Self &); //purposely not implemented

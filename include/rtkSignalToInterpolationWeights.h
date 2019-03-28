@@ -58,7 +58,7 @@ public:
     using ValueType = float;
 
     /** Required, but not used */
-    void Parse() ITK_OVERRIDE {}
+    void Parse() override {}
 
     /** Does the real work */
     virtual void Update();
@@ -76,10 +76,10 @@ public:
 
 protected:
     SignalToInterpolationWeights();
-    virtual ~SignalToInterpolationWeights () ITK_OVERRIDE {}
+    virtual ~SignalToInterpolationWeights () override {}
 
     /** Print the reader. */
-    void PrintSelf(std::ostream & os, itk::Indent indent) const ITK_OVERRIDE;
+    void PrintSelf(std::ostream & os, itk::Indent indent) const override;
 
 private:
     Array2DType           m_Array2D;

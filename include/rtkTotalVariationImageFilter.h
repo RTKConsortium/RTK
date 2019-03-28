@@ -96,7 +96,7 @@ public:
    * output. */
   using DataObjectPointerArraySizeType = itk::ProcessObject::DataObjectPointerArraySizeType;
   using Superclass::MakeOutput;
-  DataObjectPointer MakeOutput(DataObjectPointerArraySizeType idx) ITK_OVERRIDE;
+  DataObjectPointer MakeOutput(DataObjectPointerArraySizeType idx) override;
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
@@ -122,31 +122,31 @@ public:
 
 protected:
   TotalVariationImageFilter();
-  virtual ~TotalVariationImageFilter() ITK_OVERRIDE {}
-  void PrintSelf(std::ostream & os, itk::Indent indent) const ITK_OVERRIDE;
+  virtual ~TotalVariationImageFilter() override {}
+  void PrintSelf(std::ostream & os, itk::Indent indent) const override;
 
   /** Pass the input through unmodified. Do this by Grafting in the
    *  AllocateOutputs method.
    */
-  void AllocateOutputs() ITK_OVERRIDE;
+  void AllocateOutputs() override;
 
   /** Initialize some accumulators before the threads run. */
-  void BeforeThreadedGenerateData() ITK_OVERRIDE;
+  void BeforeThreadedGenerateData() override;
 
   /** Do final mean and variance computation from data accumulated in threads.
    */
-  void AfterThreadedGenerateData() ITK_OVERRIDE;
+  void AfterThreadedGenerateData() override;
 
   /** Multi-thread version GenerateData. */
   void  ThreadedGenerateData(const RegionType &
                              outputRegionForThread,
-                             itk::ThreadIdType threadId) ITK_OVERRIDE;
+                             itk::ThreadIdType threadId) override;
 
   // Override since the filter needs all the data for the algorithm
-  void GenerateInputRequestedRegion() ITK_OVERRIDE;
+  void GenerateInputRequestedRegion() override;
 
   // Override since the filter produces all of its output
-  void EnlargeOutputRequestedRegion(itk::DataObject *data) ITK_OVERRIDE;
+  void EnlargeOutputRequestedRegion(itk::DataObject *data) override;
 
   bool                        m_UseImageSpacing;
 

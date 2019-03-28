@@ -55,9 +55,9 @@ public:
 
 protected:
   SheppLoganPhantomFilter();
-  virtual ~SheppLoganPhantomFilter() ITK_OVERRIDE {}
+  virtual ~SheppLoganPhantomFilter() override {}
 
-  void GenerateData() ITK_OVERRIDE;
+  void GenerateData() override;
 
 private:
   SheppLoganPhantomFilter(const Self&); //purposely not implemented

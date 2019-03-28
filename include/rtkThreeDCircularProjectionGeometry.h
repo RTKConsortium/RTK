@@ -104,7 +104,7 @@ public:
   bool AddProjection(const HomogeneousProjectionMatrixType &pMat);
 
   /** Empty the geometry object. */
-  void Clear() ITK_OVERRIDE;
+  void Clear() override;
 
   /** Get the vector of geometry parameters (one per projection). Angles are
    * in radians.*/
@@ -276,7 +276,7 @@ public:
 
 protected:
   ThreeDCircularProjectionGeometry();
-  virtual ~ThreeDCircularProjectionGeometry() ITK_OVERRIDE {}
+  virtual ~ThreeDCircularProjectionGeometry() override {}
 
   virtual void AddProjectionTranslationMatrix(const TwoDHomogeneousMatrixType &m){
     this->m_ProjectionTranslationMatrices.push_back(m);
@@ -338,7 +338,7 @@ protected:
                  const Matrix3x3Type &referenceMatrix) const;
 
   /** Clone the geometry object in a new one. */
-  itk::LightObject::Pointer InternalClone() const ITK_OVERRIDE;
+  itk::LightObject::Pointer InternalClone() const override;
 
   /** Circular geometry parameters per projection (angles in degrees between 0
     and 360). */

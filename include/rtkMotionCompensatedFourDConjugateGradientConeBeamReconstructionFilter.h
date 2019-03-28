@@ -112,8 +112,8 @@ public:
   itkTypeMacro(MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter, FourDConjugateGradientConeBeamReconstructionFilter)
 
   /** Neither the Forward nor the Back projection filters can be set by the user */
-  void SetForwardProjectionFilter (ForwardProjectionType itkNotUsed(_arg)) ITK_OVERRIDE {itkExceptionMacro(<< "ForwardProjection cannot be changed");}
-  void SetBackProjectionFilter (BackProjectionType itkNotUsed(_arg)) ITK_OVERRIDE {itkExceptionMacro(<< "BackProjection cannot be changed");}
+  void SetForwardProjectionFilter (ForwardProjectionType itkNotUsed(_arg)) override {itkExceptionMacro(<< "ForwardProjection cannot be changed");}
+  void SetBackProjectionFilter (BackProjectionType itkNotUsed(_arg)) override {itkExceptionMacro(<< "BackProjection cannot be changed");}
 
   /** The ND + time motion vector field */
   void SetDisplacementField(const DVFSequenceImageType* DVFs);
@@ -122,7 +122,7 @@ public:
   typename DVFSequenceImageType::ConstPointer GetInverseDisplacementField();
 
   /** Set the vector containing the signal in the sub-filters */
-  void SetSignal(const std::vector<double> signal) ITK_OVERRIDE;
+  void SetSignal(const std::vector<double> signal) override;
 
   // Sub filters type alias
   using MCProjStackToFourDType = rtk::WarpProjectionStackToFourDImageFilter< VolumeSeriesType, ProjectionStackType>;
@@ -134,10 +134,10 @@ public:
 
 protected:
   MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter();
-  virtual ~MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter() ITK_OVERRIDE {}
+  virtual ~MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter() override {}
 
-  void GenerateOutputInformation() ITK_OVERRIDE;
-  void GenerateInputRequestedRegion() ITK_OVERRIDE;
+  void GenerateOutputInformation() override;
+  void GenerateInputRequestedRegion() override;
 
   bool                                                m_UseCudaCyclicDeformation;
 

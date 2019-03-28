@@ -61,13 +61,13 @@ public:
   itkTypeMacro(IntersectionOfConvexShapes, ConvexShape);
 
   /** See rtk::ConvexShape::IsInside. */
-  virtual bool IsInside(const PointType & point) const ITK_OVERRIDE;
+  virtual bool IsInside(const PointType & point) const override;
 
   /** See rtk::ConvexShape::IsIntersectedByRay. */
   virtual bool IsIntersectedByRay(const PointType & rayOrigin,
                                   const VectorType & rayDirection,
                                   ScalarType & nearDist,
-                                  ScalarType & farDist) const ITK_OVERRIDE;
+                                  ScalarType & farDist) const override;
 
   /** Add convex object to phantom. */
   void AddConvexShape(const ConvexShapePointer &co);
@@ -75,15 +75,15 @@ public:
   virtual void SetConvexShapes(const ConvexShapeVector &_arg);
 
   /** Rescale object along each direction by a 3D vector. */
-  virtual void Rescale(const VectorType &r) ITK_OVERRIDE;
+  virtual void Rescale(const VectorType &r) override;
 
   /** Translate object by a given 3D vector. */
-  virtual void Translate(const VectorType &t) ITK_OVERRIDE;
+  virtual void Translate(const VectorType &t) override;
 
   /** Rotate object according to a 3D rotation matrix. */
-  virtual void Rotate(const RotationMatrixType &r) ITK_OVERRIDE;
+  virtual void Rotate(const RotationMatrixType &r) override;
 
-  virtual itk::LightObject::Pointer InternalClone() const ITK_OVERRIDE;
+  virtual itk::LightObject::Pointer InternalClone() const override;
 
 private:
   IntersectionOfConvexShapes();

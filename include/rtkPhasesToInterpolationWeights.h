@@ -62,7 +62,7 @@ public:
 
     /** Parses the data from the file. Gets the phases of the projections
   * into a vector, then generate an Array2D object containing the interpolation weights  */
-    void Parse() ITK_OVERRIDE;
+    void Parse() override;
 
     /** Aliased to the Parse() method to be consistent with the rest of the
    * pipeline. */
@@ -87,10 +87,10 @@ public:
 protected:
 
     PhasesToInterpolationWeights();
-    virtual ~PhasesToInterpolationWeights () ITK_OVERRIDE {}
+    virtual ~PhasesToInterpolationWeights () override {}
 
     /** Print the reader. */
-    void PrintSelf(std::ostream & os, itk::Indent indent) const ITK_OVERRIDE;
+    void PrintSelf(std::ostream & os, itk::Indent indent) const override;
 
 private:
 

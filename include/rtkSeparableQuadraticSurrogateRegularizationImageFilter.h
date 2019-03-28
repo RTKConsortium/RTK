@@ -65,7 +65,7 @@ public:
 
 protected:
   SeparableQuadraticSurrogateRegularizationImageFilter();
-  virtual ~SeparableQuadraticSurrogateRegularizationImageFilter() ITK_OVERRIDE {}
+  virtual ~SeparableQuadraticSurrogateRegularizationImageFilter() override {}
 
   /** Creates the Outputs */
   itk::ProcessObject::DataObjectPointer MakeOutput(itk::ProcessObject::DataObjectPointerArraySizeType idx) override;
@@ -73,11 +73,11 @@ protected:
 
   /** Does the real work. */
 #if ITK_VERSION_MAJOR<5
-  void ThreadedGenerateData(const typename TImage::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) ITK_OVERRIDE;
+  void ThreadedGenerateData(const typename TImage::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) override;
 #else
-  void DynamicThreadedGenerateData(const typename TImage::RegionType& outputRegionForThread) ITK_OVERRIDE;
+  void DynamicThreadedGenerateData(const typename TImage::RegionType& outputRegionForThread) override;
 #endif
-  void GenerateInputRequestedRegion() ITK_OVERRIDE;
+  void GenerateInputRequestedRegion() override;
 
   /** Derivatives of the absolute value approximation */
   typename TImage::PixelType GreenPriorFirstDerivative(typename TImage::PixelType pix);

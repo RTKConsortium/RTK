@@ -115,18 +115,18 @@ public:
 
 protected:
   FFTProjectionsConvolutionImageFilter();
-  virtual ~FFTProjectionsConvolutionImageFilter() ITK_OVERRIDE {}
+  virtual ~FFTProjectionsConvolutionImageFilter() override {}
 
-  void GenerateInputRequestedRegion() ITK_OVERRIDE;
+  void GenerateInputRequestedRegion() override;
 
-  void BeforeThreadedGenerateData() ITK_OVERRIDE;
+  void BeforeThreadedGenerateData() override;
 
-  void AfterThreadedGenerateData() ITK_OVERRIDE;
+  void AfterThreadedGenerateData() override;
 
 #if ITK_VERSION_MAJOR<5
-  void ThreadedGenerateData( const RegionType& outputRegionForThread, ThreadIdType threadId ) ITK_OVERRIDE;
+  void ThreadedGenerateData( const RegionType& outputRegionForThread, ThreadIdType threadId ) override;
 #else
-  void DynamicThreadedGenerateData( const RegionType& outputRegionForThread) ITK_OVERRIDE;
+  void DynamicThreadedGenerateData( const RegionType& outputRegionForThread) override;
 #endif
 
   /** Pad the inputRegion region of the input image and returns a pointer to the new padded image.
@@ -136,7 +136,7 @@ protected:
   virtual FFTInputImagePointer PadInputImageRegion(const RegionType &inputRegion);
   RegionType GetPaddedImageRegion(const RegionType &inputRegion);
 
-  void PrintSelf(std::ostream& os, itk::Indent indent) const ITK_OVERRIDE;
+  void PrintSelf(std::ostream& os, itk::Indent indent) const override;
 
   bool IsPrime( int n ) const;
 
