@@ -24,6 +24,6 @@ rtk::DCMImagXImageIOFactory::DCMImagXImageIOFactory()
   this->RegisterOverride("itkImageIOBase",
                          "DCMImagXImageIO",
                          "ImagX Image IO for its DICOM file format",
-                         1,
+                         true,
                          itk::CreateObjectFunction<DCMImagXImageIO>::New() );
 }
