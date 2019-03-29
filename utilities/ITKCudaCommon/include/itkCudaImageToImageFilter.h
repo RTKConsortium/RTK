@@ -53,7 +53,7 @@ public:
   itkTypeMacro(CudaImageToImageFilter, TParentImageFilter);
 
   /** Superclass type alias. */
-  using  = typename Superclass::DataObjectIdentifierType DataObjectIdentifierType;
+  using DataObjectIdentifierType = typename Superclass::DataObjectIdentifierType;
   using OutputImageRegionType = typename Superclass::OutputImageRegionType;
   using OutputImagePixelType = typename Superclass::OutputImagePixelType;
 
