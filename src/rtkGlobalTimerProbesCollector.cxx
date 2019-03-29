@@ -74,7 +74,7 @@ GlobalTimerProbesCollector
 ::Report(std::ostream & os) const
 {
   unsigned int pos=0;
-  if ( m_Probes.size() == 0 )
+  if ( m_Probes.empty() )
     {
     os << "No probes have been created" << std::endl;
     return;

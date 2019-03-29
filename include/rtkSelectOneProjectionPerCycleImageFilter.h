@@ -39,10 +39,12 @@ template< typename ProjectionStackType>
 class SelectOneProjectionPerCycleImageFilter : public SubSelectImageFilter<ProjectionStackType>
 {
 public:
-  /** Standard class typedefs. */
-  typedef SelectOneProjectionPerCycleImageFilter    Self;
-  typedef SubSelectImageFilter<ProjectionStackType> Superclass;
-  typedef itk::SmartPointer< Self >                 Pointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(SelectOneProjectionPerCycleImageFilter);
+
+  /** Standard class type alias. */
+  using Self = SelectOneProjectionPerCycleImageFilter;
+  using Superclass = SubSelectImageFilter<ProjectionStackType>;
+  using Pointer = itk::SmartPointer< Self >;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self)
@@ -60,14 +62,11 @@ public:
 
 protected:
   SelectOneProjectionPerCycleImageFilter();
-  virtual ~SelectOneProjectionPerCycleImageFilter() ITK_OVERRIDE {}
+  ~SelectOneProjectionPerCycleImageFilter() override = default;
 
-  void GenerateOutputInformation() ITK_OVERRIDE;
+  void GenerateOutputInformation() override;
 
 private:
-  SelectOneProjectionPerCycleImageFilter(const Self &); //purposely not implemented
-  void operator=(const Self &);                         //purposely not implemented
-
   std::string         m_SignalFilename;
   double              m_Phase;
   std::vector<double> m_Signal;

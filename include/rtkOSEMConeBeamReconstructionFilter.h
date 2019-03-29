@@ -113,28 +113,30 @@ class ITK_EXPORT OSEMConeBeamReconstructionFilter :
     public rtk::IterativeConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>
 {
 public:
-  /** Standard class typedefs. */
+  ITK_DISALLOW_COPY_AND_ASSIGN(OSEMConeBeamReconstructionFilter);
+
+  /** Standard class type alias. */
   typedef OSEMConeBeamReconstructionFilter					Self;
-  typedef IterativeConeBeamReconstructionFilter<TVolumeImage, TProjectionImage> Superclass;
+  using Superclass = IterativeConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>;
   typedef itk::SmartPointer<Self>						Pointer;
   typedef itk::SmartPointer<const Self>						ConstPointer;
 
-  /** Some convenient typedefs. */
-  typedef TVolumeImage	   VolumeType;
-  typedef TProjectionImage ProjectionType;
+  /** Some convenient type alias. */
+  using VolumeType = TVolumeImage	;
+  using ProjectionType = TProjectionImage;
 
   /** Typedefs of each subfilter of this composite filter */
-  typedef itk::ExtractImageFilter< ProjectionType, ProjectionType >                          ExtractFilterType;
-  typedef itk::MultiplyImageFilter< VolumeType, VolumeType, VolumeType >                     MultiplyFilterType;
-  typedef rtk::ForwardProjectionImageFilter< ProjectionType, VolumeType >                    ForwardProjectionFilterType;
-  typedef rtk::BackProjectionImageFilter< VolumeType, ProjectionType >                       BackProjectionFilterType;
-  typedef itk::DivideOrZeroOutImageFilter<ProjectionType, ProjectionType, ProjectionType>    DivideProjectionFilterType;
-  typedef itk::DivideOrZeroOutImageFilter<VolumeType, VolumeType, VolumeType>                DivideVolumeFilterType;
-  typedef rtk::ConstantImageSource<VolumeType>                                               ConstantVolumeSourceType;
-  typedef rtk::ConstantImageSource<ProjectionType>                                           ConstantProjectionSourceType;
+  using ExtractFilterType = itk::ExtractImageFilter< ProjectionType, ProjectionType >;
+  using MultiplyFilterType = itk::MultiplyImageFilter< VolumeType, VolumeType, VolumeType >;
+  using ForwardProjectionFilterType = rtk::ForwardProjectionImageFilter< ProjectionType, VolumeType >;
+  using BackProjectionFilterType = rtk::BackProjectionImageFilter< VolumeType, ProjectionType >;
+  using DivideProjectionFilterType = itk::DivideOrZeroOutImageFilter<ProjectionType, ProjectionType, ProjectionType>;
+  using DivideVolumeFilterType = itk::DivideOrZeroOutImageFilter<VolumeType, VolumeType, VolumeType>;
+  using ConstantVolumeSourceType = rtk::ConstantImageSource<VolumeType>;
+  using ConstantProjectionSourceType = rtk::ConstantImageSource<ProjectionType>;
 
-  typedef typename Superclass::ForwardProjectionType ForwardProjectionType;
-  typedef typename Superclass::BackProjectionType    BackProjectionType;
+  using ForwardProjectionType = typename Superclass::ForwardProjectionType;
+  using BackProjectionType = typename Superclass::BackProjectionType;
 
   /** Standard New method. */
   itkNewMacro(Self);
@@ -155,26 +157,26 @@ public:
   itkSetMacro(NumberOfProjectionsPerSubset, unsigned int);
 
   /** Select the ForwardProjection filter */
-  void SetForwardProjectionFilter (ForwardProjectionType _arg) ITK_OVERRIDE;
+  void SetForwardProjectionFilter (ForwardProjectionType _arg) override;
 
   /** Select the backprojection filter */
-  void SetBackProjectionFilter (BackProjectionType _arg) ITK_OVERRIDE;
+  void SetBackProjectionFilter (BackProjectionType _arg) override;
 protected:
   OSEMConeBeamReconstructionFilter();
-  ~OSEMConeBeamReconstructionFilter() {}
+  ~OSEMConeBeamReconstructionFilter() override = default;
 
-  void GenerateInputRequestedRegion() ITK_OVERRIDE;
+  void GenerateInputRequestedRegion() override;
 
-  void GenerateOutputInformation() ITK_OVERRIDE;
+  void GenerateOutputInformation() override;
 
-  void GenerateData() ITK_OVERRIDE;
+  void GenerateData() override;
 
   /** The two inputs should not be in the same space so there is nothing
    * to verify. */
 #if ITK_VERSION_MAJOR<5
-  void VerifyInputInformation() ITK_OVERRIDE {}
+  void VerifyInputInformation() override {}
 #else
-  void VerifyInputInformation() const ITK_OVERRIDE {}
+  void VerifyInputInformation() const override {}
 #endif
 
   /** Pointers to each subfilter of this composite filter */
@@ -192,10 +194,6 @@ protected:
 private:
   /** Number of projections processed before the volume is updated (several for OS-EM) */
   unsigned int m_NumberOfProjectionsPerSubset;
-
-  //purposely not implemented
-  OSEMConeBeamReconstructionFilter(const Self&);
-  void operator=(const Self&);
 
   /** Geometry object */
   ThreeDCircularProjectionGeometry::Pointer m_Geometry;

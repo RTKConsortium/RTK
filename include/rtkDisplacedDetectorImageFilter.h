@@ -61,22 +61,24 @@ class ITK_EXPORT DisplacedDetectorImageFilter :
   public itk::InPlaceImageFilter<TInputImage, TOutputImage>
 {
 public:
-  /** Standard class typedefs. */
-  typedef DisplacedDetectorImageFilter Self;
+  ITK_DISALLOW_COPY_AND_ASSIGN(DisplacedDetectorImageFilter);
 
-  typedef itk::ImageToImageFilter<TInputImage, TOutputImage> Superclass;
+  /** Standard class type alias. */
+  using Self = DisplacedDetectorImageFilter;
 
-  typedef itk::SmartPointer<Self>       Pointer;
-  typedef itk::SmartPointer<const Self> ConstPointer;
+  using Superclass = itk::ImageToImageFilter<TInputImage, TOutputImage>;
 
-  /** Some convenient typedefs. */
-  typedef TInputImage                                     InputImageType;
-  typedef TOutputImage                                    OutputImageType;
-  typedef typename OutputImageType::RegionType            OutputImageRegionType;
-  typedef itk::Image<typename TOutputImage::InternalPixelType, 1> WeightImageType;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
-  typedef ThreeDCircularProjectionGeometry GeometryType;
-  typedef GeometryType::ConstPointer       GeometryConstPointer;
+  /** Some convenient type alias. */
+  using InputImageType = TInputImage;
+  using OutputImageType = TOutputImage;
+  using OutputImageRegionType = typename OutputImageType::RegionType;
+  using WeightImageType = itk::Image<typename TOutputImage::InternalPixelType, 1>;
+
+  using GeometryType = ThreeDCircularProjectionGeometry;
+  using GeometryConstPointer = GeometryType::ConstPointer;
 
   /** Standard New method. */
   itkNewMacro(Self);
@@ -109,29 +111,26 @@ public:
 protected:
   DisplacedDetectorImageFilter();
 
-  virtual ~DisplacedDetectorImageFilter() ITK_OVERRIDE {}
+  ~DisplacedDetectorImageFilter() override = default;
 
   /** Retrieve computed inferior and superior corners */
   itkGetMacro(InferiorCorner, double);
   itkGetMacro(SuperiorCorner, double);
 
-  void GenerateInputRequestedRegion() ITK_OVERRIDE;
+  void GenerateInputRequestedRegion() override;
 
-  void GenerateOutputInformation() ITK_OVERRIDE;
+  void GenerateOutputInformation() override;
 
 #if ITK_VERSION_MAJOR<5
-  void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) ITK_OVERRIDE;
+  void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) override;
 #else
-  void DynamicThreadedGenerateData(const OutputImageRegionType& outputRegionForThread) ITK_OVERRIDE;
+  void DynamicThreadedGenerateData(const OutputImageRegionType& outputRegionForThread) override;
 #endif
 
   // Iterative filters do not need padding
   bool m_PadOnTruncatedSide;
 
 private:
-  DisplacedDetectorImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);               //purposely not implemented
-
   /** RTK geometry object */
   GeometryConstPointer m_Geometry;
 

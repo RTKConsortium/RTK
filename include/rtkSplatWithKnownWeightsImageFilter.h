@@ -67,11 +67,13 @@ template< typename VolumeSeriesType, typename VolumeType>
 class SplatWithKnownWeightsImageFilter : public itk::InPlaceImageFilter< VolumeSeriesType, VolumeSeriesType >
 {
 public:
-    /** Standard class typedefs. */
-    typedef SplatWithKnownWeightsImageFilter                              Self;
-    typedef itk::ImageToImageFilter< VolumeSeriesType, VolumeSeriesType > Superclass;
-    typedef itk::SmartPointer< Self >                                     Pointer;
-    typedef typename VolumeSeriesType::RegionType                         OutputImageRegionType;
+    ITK_DISALLOW_COPY_AND_ASSIGN(SplatWithKnownWeightsImageFilter);
+
+    /** Standard class type alias. */
+    using Self = SplatWithKnownWeightsImageFilter;
+    using Superclass = itk::ImageToImageFilter< VolumeSeriesType, VolumeSeriesType >;
+    using Pointer = itk::SmartPointer< Self >;
+    using OutputImageRegionType = typename VolumeSeriesType::RegionType;
 
     /** Method for creation through the object factory. */
     itkNewMacro(Self)
@@ -94,25 +96,21 @@ public:
 
 protected:
     SplatWithKnownWeightsImageFilter();
-    virtual ~SplatWithKnownWeightsImageFilter() ITK_OVERRIDE {}
+    ~SplatWithKnownWeightsImageFilter() override = default;
 
     typename VolumeSeriesType::ConstPointer GetInputVolumeSeries();
     typename VolumeType::Pointer GetInputVolume();
 
     /** Does the real work. */
-    void ThreadedGenerateData(const typename VolumeSeriesType::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) ITK_OVERRIDE;
+    void ThreadedGenerateData(const typename VolumeSeriesType::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) override;
 
     /** Splits the OutputRequestedRegion along the first direction, not the last */
-    const itk::ImageRegionSplitterBase* GetImageRegionSplitter(void) const ITK_OVERRIDE;
+    const itk::ImageRegionSplitterBase* GetImageRegionSplitter(void) const override;
     itk::ImageRegionSplitterDirection::Pointer  m_Splitter;
 
     itk::Array2D<float>                         m_Weights;
     int                                         m_ProjectionNumber;
 
-
-private:
-    SplatWithKnownWeightsImageFilter(const Self &); //purposely not implemented
-    void operator=(const Self &);  //purposely not implemented
 };
 } //namespace ITK
 

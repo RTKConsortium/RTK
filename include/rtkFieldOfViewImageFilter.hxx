@@ -35,7 +35,7 @@ namespace rtk
 template<class TInputImage, class TOutputImage>
 FieldOfViewImageFilter<TInputImage, TOutputImage>
 ::FieldOfViewImageFilter():
-  m_Geometry(ITK_NULLPTR),
+  m_Geometry(nullptr),
   m_Mask(false),
   m_Radius(-1),
   m_CenterX(0.),
@@ -57,9 +57,9 @@ bool FieldOfViewImageFilter<TInputImage, TOutputImage>
   dumImg->CopyInformation(m_ProjectionsStack);
 
   // Build model for lpsolve with 3 variables: x, z and r
-  const int Ncol = 3;
+  constexpr int Ncol = 3;
   lprec *lp = make_lp(0, Ncol);
-  if(lp == ITK_NULLPTR)
+  if(lp == nullptr)
     itkExceptionMacro(<< "Couldn't construct 2 new models for the simplex solver");
 
   // Objective: maximize r
@@ -73,12 +73,12 @@ bool FieldOfViewImageFilter<TInputImage, TOutputImage>
   REAL row[Ncol];
   for(unsigned int iProj=0; iProj<m_Geometry->GetGantryAngles().size(); iProj++)
     {
-    const unsigned int NCORNERS = 4;
+    constexpr unsigned int NCORNERS = 4;
     double a[NCORNERS];
     double b[NCORNERS];
     double c[NCORNERS];
     double d[NCORNERS];
-    typedef ProjectionsRegionConstIteratorRayBased<TInputImage> InputRegionIterator;
+    using InputRegionIterator = ProjectionsRegionConstIteratorRayBased<TInputImage>;
     InputRegionIterator *itIn;
     typename InputRegionIterator::PointType corners[NCORNERS];
     for(unsigned int i=0; i<NCORNERS; i++)
@@ -276,10 +276,10 @@ void FieldOfViewImageFilter<TInputImage, TOutputImage>
       pointIncrement[i] -= pointBase[i];
 
     // Iterators
-    typedef itk::ImageRegionConstIterator<TInputImage> InputConstIterator;
+    using InputConstIterator = itk::ImageRegionConstIterator<TInputImage>;
     InputConstIterator itIn(this->GetInput(0), outputRegionForThread);
     itIn.GoToBegin();
-    typedef itk::ImageRegionIterator<TOutputImage> OutputIterator;
+    using OutputIterator = itk::ImageRegionIterator<TOutputImage>;
     OutputIterator itOut(this->GetOutput(), outputRegionForThread);
     itOut.GoToBegin();
 
@@ -320,10 +320,10 @@ void FieldOfViewImageFilter<TInputImage, TOutputImage>
     }
   else
     {
-    typedef itk::ImageRegionConstIteratorWithIndex<TInputImage> InputConstIterator;
+    using InputConstIterator = itk::ImageRegionConstIteratorWithIndex<TInputImage>;
     InputConstIterator itIn(this->GetInput(0), outputRegionForThread);
 
-    typedef itk::ImageRegionIterator<TOutputImage> OutputIterator;
+    using OutputIterator = itk::ImageRegionIterator<TOutputImage>;
     OutputIterator itOut(this->GetOutput(), outputRegionForThread);
 
     typename TInputImage::PointType point;
@@ -353,7 +353,7 @@ void
 FieldOfViewImageFilter<TInputImage, TOutputImage>
 ::AddCollimationConstraints(const FOVRadiusType type, _lprec *lp)
 {
-  const int Ncol = 3;
+  constexpr int Ncol = 3;
   int colno[Ncol] = {1, 2, 3};
   REAL row[Ncol];
   for(unsigned int iProj=0; iProj<m_Geometry->GetGantryAngles().size(); iProj++)
@@ -372,7 +372,7 @@ FieldOfViewImageFilter<TInputImage, TOutputImage>
       }
 
     //Compute 3D position of jaws
-    typedef typename GeometryType::VectorType PointType;
+    using PointType = typename GeometryType::VectorType;
     typename GeometryType::HomogeneousVectorType sourceH = m_Geometry->GetSourcePosition(iProj);
     PointType source(0.);
     source[0] = sourceH[0];

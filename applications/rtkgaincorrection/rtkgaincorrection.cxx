@@ -35,16 +35,16 @@ int main(int argc, char * argv[])
 {
   GGO(rtkgaincorrection, args_info);
 
-  const unsigned int Dimension = 3;
+  constexpr unsigned int Dimension = 3;
 #ifdef RTK_USE_CUDA
-  typedef itk::CudaImage< unsigned short, Dimension > InputImageType;
-  typedef itk::CudaImage< float, Dimension >          OutputImageType;
+  using InputImageType = itk::CudaImage< unsigned short, Dimension >;
+  using OutputImageType = itk::CudaImage< float, Dimension >;
 #else
-  typedef itk::Image< unsigned short, Dimension >     InputImageType;
-  typedef itk::Image< float, Dimension >              OutputImageType;
+  using InputImageType = itk::Image< unsigned short, Dimension >;
+  using OutputImageType = itk::Image< float, Dimension >;
 #endif
 
-  typedef rtk::ProjectionsReader< InputImageType > ReaderType;
+  using ReaderType = rtk::ProjectionsReader< InputImageType >;
   ReaderType::Pointer reader = ReaderType::New();
   rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkgaincorrection>(reader, args_info);
   reader->ComputeLineIntegralOff();   // Don't want to preprocess data
@@ -65,7 +65,7 @@ int main(int argc, char * argv[])
   darkFile.append(args_info.Dark_arg);
 
   InputImageType::Pointer darkImage;
-  typedef itk::ImageFileReader<InputImageType> DarkReaderType;
+  using DarkReaderType = itk::ImageFileReader<InputImageType>;
   DarkReaderType::Pointer readerDark = DarkReaderType::New();
   readerDark->SetFileName(darkFile);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( readerDark->Update() )
@@ -78,7 +78,7 @@ int main(int argc, char * argv[])
   gainFile.append(args_info.Gain_arg);
 
   OutputImageType::Pointer gainImage;
-  typedef itk::ImageFileReader<OutputImageType> GainReaderType;
+  using GainReaderType = itk::ImageFileReader<OutputImageType>;
   GainReaderType::Pointer readerGain = GainReaderType::New();
   readerGain->SetFileName(gainFile);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( readerGain->Update() )
@@ -86,9 +86,9 @@ int main(int argc, char * argv[])
   gainImage->DisconnectPipeline();
 
 #ifdef RTK_USE_CUDA
-  typedef rtk::CudaPolynomialGainCorrectionImageFilter GainType;
+  using GainType = rtk::CudaPolynomialGainCorrectionImageFilter;
 #else
-  typedef rtk::PolynomialGainCorrectionImageFilter<InputImageType, OutputImageType> GainType;
+  using GainType = rtk::PolynomialGainCorrectionImageFilter<InputImageType, OutputImageType>;
 #endif
 
   GainType::Pointer gainfilter = GainType::New();
@@ -97,12 +97,12 @@ int main(int argc, char * argv[])
   gainfilter->SetK(args_info.K_arg);
 
   // Create empty volume for storing processed images
-  typedef rtk::ConstantImageSource< OutputImageType > ConstantImageSourceType;
+  using ConstantImageSourceType = rtk::ConstantImageSource< OutputImageType >;
   ConstantImageSourceType::Pointer constantSource = ConstantImageSourceType::New();
 
-  typedef itk::ExtractImageFilter<InputImageType, InputImageType> ExtractType;
+  using ExtractType = itk::ExtractImageFilter<InputImageType, InputImageType>;
 
-  typedef itk::PasteImageFilter<OutputImageType, OutputImageType> PasteType;
+  using PasteType = itk::PasteImageFilter<OutputImageType, OutputImageType>;
   PasteType::Pointer pasteFilter = PasteType::New();
   pasteFilter->SetDestinationImage(constantSource->GetOutput());
 
@@ -176,7 +176,7 @@ int main(int argc, char * argv[])
     TRY_AND_EXIT_ON_ITK_EXCEPTION( pasteFilter->Update() )
     }
 
-  typedef itk::ImageFileWriter<OutputImageType> WriterType;
+  using WriterType = itk::ImageFileWriter<OutputImageType>;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName(args_info.output_arg);
   writer->SetInput(pasteFilter->GetOutput());

@@ -41,13 +41,15 @@ class RTK_EXPORT DigisensGeometryReader :
   public itk::LightProcessObject
 {
 public:
-  /** Standard typedefs */
-  typedef DigisensGeometryReader  Self;
-  typedef itk::LightProcessObject Superclass;
-  typedef itk::SmartPointer<Self> Pointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(DigisensGeometryReader);
 
-  /** Convenient typedefs */
-  typedef ThreeDCircularProjectionGeometry GeometryType;
+  /** Standard type alias */
+  using Self = DigisensGeometryReader;
+  using Superclass = itk::LightProcessObject;
+  using Pointer = itk::SmartPointer<Self>;
+
+  /** Convenient type alias */
+  using GeometryType = ThreeDCircularProjectionGeometry;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(DigisensGeometryReader, LightProcessObject);
@@ -67,11 +69,7 @@ protected:
 
 
 private:
-  //purposely not implemented
-  DigisensGeometryReader(const Self&);
-  void operator=(const Self&);
-
-  void GenerateData() ITK_OVERRIDE;
+  void GenerateData() override;
 
   GeometryType::Pointer m_Geometry;
   std::string           m_XMLFileName;

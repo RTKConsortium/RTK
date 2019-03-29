@@ -36,10 +36,12 @@ template< class TVectorImage,
 class BlockDiagonalMatrixVectorMultiplyImageFilter : public itk::ImageToImageFilter<TVectorImage, TVectorImage>
 {
 public:
-    /** Standard class typedefs. */
-    typedef BlockDiagonalMatrixVectorMultiplyImageFilter                    Self;
-    typedef itk::ImageToImageFilter<TVectorImage, TVectorImage> Superclass;
-    typedef itk::SmartPointer< Self >                     Pointer;
+    ITK_DISALLOW_COPY_AND_ASSIGN(BlockDiagonalMatrixVectorMultiplyImageFilter);
+
+    /** Standard class type alias. */
+    using Self = BlockDiagonalMatrixVectorMultiplyImageFilter;
+    using Superclass = itk::ImageToImageFilter<TVectorImage, TVectorImage>;
+    using Pointer = itk::SmartPointer< Self >;
 
     /** Method for creation through the object factory. */
     itkNewMacro(Self)
@@ -48,10 +50,10 @@ public:
     itkTypeMacro(BlockDiagonalMatrixVectorMultiplyImageFilter, itk::ImageToImageFilter)
 
     /** Convenient parameters extracted from template types */
-    itkStaticConstMacro(nChannels, unsigned int, TVectorImage::PixelType::Dimension);
+    static constexpr unsigned int nChannels = TVectorImage::PixelType::Dimension;
 
-    /** Convenient typedef */
-    typedef typename TVectorImage::PixelType::ValueType dataType;
+    /** Convenient type alias */
+    using dataType = typename TVectorImage::PixelType::ValueType;
 
     /** Set methods for all inputs, since they have different types */
     void SetInput1(const TVectorImage* vector);
@@ -59,25 +61,20 @@ public:
 
 protected:
     BlockDiagonalMatrixVectorMultiplyImageFilter();
-    ~BlockDiagonalMatrixVectorMultiplyImageFilter() {}
+    ~BlockDiagonalMatrixVectorMultiplyImageFilter() override = default;
 
-    void GenerateInputRequestedRegion() ITK_OVERRIDE;
+    void GenerateInputRequestedRegion() override;
 
     /** Does the real work. */
 #if ITK_VERSION_MAJOR<5
-    void ThreadedGenerateData(const typename TVectorImage::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) ITK_OVERRIDE;
+    void ThreadedGenerateData(const typename TVectorImage::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) override;
 #else
-    void DynamicThreadedGenerateData(const typename TVectorImage::RegionType& outputRegionForThread) ITK_OVERRIDE;
+    void DynamicThreadedGenerateData(const typename TVectorImage::RegionType& outputRegionForThread) override;
 #endif
 
     /** Getters for the inputs */
     typename TVectorImage::ConstPointer GetInput1();
     typename TMatrixImage::ConstPointer GetInput2();
-
-private:
-    BlockDiagonalMatrixVectorMultiplyImageFilter(const Self &); //purposely not implemented
-    void operator=(const Self &);  //purposely not implemented
-
 };
 } //namespace RTK
 

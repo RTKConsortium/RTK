@@ -43,11 +43,12 @@ template<typename TImage>
 class SeparableQuadraticSurrogateRegularizationImageFilter : public itk::ImageToImageFilter<TImage, TImage>
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(SeparableQuadraticSurrogateRegularizationImageFilter);
 
-  /** Standard class typedefs. */
-  typedef SeparableQuadraticSurrogateRegularizationImageFilter      Self;
-  typedef itk::ImageToImageFilter< TImage, TImage>                  Superclass;
-  typedef itk::SmartPointer< Self >                                 Pointer;
+  /** Standard class type alias. */
+  using Self = SeparableQuadraticSurrogateRegularizationImageFilter;
+  using Superclass = itk::ImageToImageFilter< TImage, TImage>;
+  using Pointer = itk::SmartPointer< Self >;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self)
@@ -65,7 +66,7 @@ public:
 
 protected:
   SeparableQuadraticSurrogateRegularizationImageFilter();
-  virtual ~SeparableQuadraticSurrogateRegularizationImageFilter() ITK_OVERRIDE {}
+  ~SeparableQuadraticSurrogateRegularizationImageFilter() override = default;
 
   /** Creates the Outputs */
   itk::ProcessObject::DataObjectPointer MakeOutput(itk::ProcessObject::DataObjectPointerArraySizeType idx) override;
@@ -73,11 +74,11 @@ protected:
 
   /** Does the real work. */
 #if ITK_VERSION_MAJOR<5
-  void ThreadedGenerateData(const typename TImage::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) ITK_OVERRIDE;
+  void ThreadedGenerateData(const typename TImage::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) override;
 #else
-  void DynamicThreadedGenerateData(const typename TImage::RegionType& outputRegionForThread) ITK_OVERRIDE;
+  void DynamicThreadedGenerateData(const typename TImage::RegionType& outputRegionForThread) override;
 #endif
-  void GenerateInputRequestedRegion() ITK_OVERRIDE;
+  void GenerateInputRequestedRegion() override;
 
   /** Derivatives of the absolute value approximation */
   typename TImage::PixelType GreenPriorFirstDerivative(typename TImage::PixelType pix);
@@ -88,10 +89,6 @@ protected:
   typename itk::PixelTraits<typename TImage::PixelType>::ValueType  m_c1;
   typename itk::PixelTraits<typename TImage::PixelType>::ValueType  m_c2;
   typename TImage::PixelType                                        m_RegularizationWeights;
-
-private:
-  SeparableQuadraticSurrogateRegularizationImageFilter(const Self &); //purposely not implemented
-  void operator=(const Self &);  //purposely not implemented
 
 };
 } //namespace RTK

@@ -35,28 +35,28 @@ int main(int argc, char * argv[])
 {
   GGO(rtkvectorconjugategradient, args_info);
 
-  const unsigned int Dimension = 3;
-  const unsigned int nMaterials = 3;
+  constexpr unsigned int Dimension = 3;
+  constexpr unsigned int nMaterials = 3;
 
-  typedef float DataType;
-  typedef itk::Vector<DataType, nMaterials> PixelType;
-  typedef itk::Vector<DataType, nMaterials * nMaterials> WeightsType;
+  using DataType = float;
+  using PixelType = itk::Vector<DataType, nMaterials>;
+  using WeightsType = itk::Vector<DataType, nMaterials * nMaterials>;
 
   std::vector<double> costs;
   std::ostream_iterator<double> costs_it(std::cout << std::setprecision(15),"\n");
 
 #ifdef RTK_USE_CUDA
-  typedef itk::CudaImage< DataType, Dimension > SingleComponentImageType;
-  typedef itk::CudaImage< PixelType, Dimension > OutputImageType;
-  typedef itk::CudaImage< WeightsType, Dimension > WeightsImageType;
+  using SingleComponentImageType = itk::CudaImage< DataType, Dimension >;
+  using OutputImageType = itk::CudaImage< PixelType, Dimension >;
+  using WeightsImageType = itk::CudaImage< WeightsType, Dimension >;
 #else
-  typedef itk::Image< DataType, Dimension > SingleComponentImageType;
-  typedef itk::Image< PixelType, Dimension > OutputImageType;
-  typedef itk::Image< WeightsType, Dimension > WeightsImageType;
+  using SingleComponentImageType = itk::Image< DataType, Dimension >;
+  using OutputImageType = itk::Image< PixelType, Dimension >;
+  using WeightsImageType = itk::Image< WeightsType, Dimension >;
 #endif
 
   // Projections reader
-  typedef itk::ImageFileReader< OutputImageType > ReaderType;
+  using ReaderType = itk::ImageFileReader< OutputImageType >;
   ReaderType::Pointer reader = ReaderType::New();
   reader->SetFileName(args_info.projections_arg);
   reader->Update();
@@ -77,7 +77,7 @@ int main(int argc, char * argv[])
   if(args_info.input_given)
     {
     // Read an existing image to initialize the volume
-    typedef itk::ImageFileReader<  OutputImageType > InputReaderType;
+    using InputReaderType = itk::ImageFileReader<  OutputImageType >;
     InputReaderType::Pointer inputReader = InputReaderType::New();
     inputReader->SetFileName( args_info.input_arg );
     inputFilter = inputReader;
@@ -85,7 +85,7 @@ int main(int argc, char * argv[])
   else
     {
     // Create new empty volume
-    typedef rtk::ConstantImageSource< OutputImageType > ConstantImageSourceType;
+    using ConstantImageSourceType = rtk::ConstantImageSource< OutputImageType >;
     ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
     rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkvectorconjugategradient>(constantImageSource, args_info);
     inputFilter = constantImageSource;
@@ -96,14 +96,14 @@ int main(int argc, char * argv[])
   itk::ImageSource< WeightsImageType >::Pointer weightsSource;
   if(args_info.weights_given)
     {
-    typedef itk::ImageFileReader<  WeightsImageType > WeightsReaderType;
+    using WeightsReaderType = itk::ImageFileReader<  WeightsImageType >;
     WeightsReaderType::Pointer weightsReader = WeightsReaderType::New();
     weightsReader->SetFileName( args_info.weights_arg );
     weightsSource = weightsReader;
     }
   else
     {
-    typedef rtk::ConstantImageSource< WeightsImageType > ConstantWeightsSourceType;
+    using ConstantWeightsSourceType = rtk::ConstantImageSource< WeightsImageType >;
     ConstantWeightsSourceType::Pointer constantWeightsSource = ConstantWeightsSourceType::New();
 
     // Set the weights to the identity matrix
@@ -121,14 +121,14 @@ int main(int argc, char * argv[])
   itk::ImageSource< SingleComponentImageType >::Pointer supportmaskSource;
   if(args_info.mask_given)
     {
-    typedef itk::ImageFileReader<  SingleComponentImageType > MaskReaderType;
+    using MaskReaderType = itk::ImageFileReader<  SingleComponentImageType >;
     MaskReaderType::Pointer supportmaskReader = MaskReaderType::New();
     supportmaskReader->SetFileName( args_info.mask_arg );
     supportmaskSource = supportmaskReader;
     }
 
   // Set the forward and back projection filters to be used
-  typedef rtk::ConjugateGradientConeBeamReconstructionFilter<OutputImageType, SingleComponentImageType, WeightsImageType> ConjugateGradientFilterType;
+  using ConjugateGradientFilterType = rtk::ConjugateGradientConeBeamReconstructionFilter<OutputImageType, SingleComponentImageType, WeightsImageType>;
   ConjugateGradientFilterType::Pointer conjugategradient = ConjugateGradientFilterType::New();
 //  conjugategradient->SetForwardProjectionFilter(ConjugateGradientFilterType::FP_JOSEPH);
 //  conjugategradient->SetBackProjectionFilter(ConjugateGradientFilterType::BP_JOSEPH);
@@ -175,7 +175,7 @@ int main(int argc, char * argv[])
     }
 
   // Write
-  typedef itk::ImageFileWriter< OutputImageType > WriterType;
+  using WriterType = itk::ImageFileWriter< OutputImageType >;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
   writer->SetInput( conjugategradient->GetOutput() );

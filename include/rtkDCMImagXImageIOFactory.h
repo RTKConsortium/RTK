@@ -37,18 +37,20 @@ namespace rtk
 class RTK_EXPORT DCMImagXImageIOFactory: public itk::ObjectFactoryBase
 {
 public:
-  /** Standard class typedefs. */
-  typedef DCMImagXImageIOFactory        Self;
-  typedef itk::ObjectFactoryBase        Superclass;
-  typedef itk::SmartPointer<Self>       Pointer;
-  typedef itk::SmartPointer<const Self> ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(DCMImagXImageIOFactory);
+
+  /** Standard class type alias. */
+  using Self = DCMImagXImageIOFactory;
+  using Superclass = itk::ObjectFactoryBase;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
   /** Class methods used to interface with the registered factories. */
-  const char* GetITKSourceVersion(void) const ITK_OVERRIDE {
+  const char* GetITKSourceVersion(void) const override {
     return ITK_SOURCE_VERSION;
   }
 
-  const char* GetDescription(void) const ITK_OVERRIDE {
+  const char* GetDescription(void) const override {
     return "ImagX ImageIO Factory, allows the loading of ImagX images into insight";
   }
 
@@ -65,13 +67,10 @@ public:
 
 protected:
   DCMImagXImageIOFactory();
-  virtual ~DCMImagXImageIOFactory() ITK_OVERRIDE {}
-  typedef DCMImagXImageIOFactory myProductType;
+  ~DCMImagXImageIOFactory() override = default;
+  using myProductType = DCMImagXImageIOFactory;
   const myProductType* m_MyProduct;
 
-private:
-  DCMImagXImageIOFactory(const Self&); //purposely not implemented
-  void operator=(const Self&);      //purposely not implemented
 };
 
 } // end namespace

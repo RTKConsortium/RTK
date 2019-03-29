@@ -17,7 +17,7 @@
  *=========================================================================*/
 
 #include <fstream>
-#include <stdlib.h>
+#include <cstdlib>
 #include <itksys/RegularExpression.hxx>
 #include "rtkForbildPhantomFileReader.h"
 #include "rtkQuadricShape.h"
@@ -81,15 +81,15 @@ ForbildPhantomFileReader
 
     // Density
     ScalarType density = rho;
-    for(size_t i=0; i<m_GeometricPhantom->GetConvexShapes().size(); i++)
+    for(const auto & convexShape : m_GeometricPhantom->GetConvexShapes())
       {
-      if(m_GeometricPhantom->GetConvexShapes()[i]->IsInside(m_Center))
-        density -= m_GeometricPhantom->GetConvexShapes()[i]->GetDensity();
+      if(convexShape->IsInside(m_Center))
+        density -= convexShape->GetDensity();
       }
-    for(size_t i=0; i<m_Unions.size(); i++)
+    for(const auto & m_Union : m_Unions)
       {
-      if(m_Unions[i]->IsInside(m_Center))
-        density -= m_Unions[i]->GetDensity();
+      if(m_Union->IsInside(m_Center))
+        density -= m_Union->GetDensity();
       }
     if(m_ConvexShape.IsNotNull())
       {
@@ -97,11 +97,11 @@ ForbildPhantomFileReader
       m_GeometricPhantom->AddConvexShape(m_ConvexShape);
       FindClipPlanes(line);
       FindUnions(line);
-      m_ConvexShape = ConvexShape::Pointer(ITK_NULLPTR);
+      m_ConvexShape = ConvexShape::Pointer(nullptr);
       }
     }
-  for(size_t i=0; i<m_Unions.size(); i++)
-    m_GeometricPhantom->AddConvexShape(m_Unions[i]);
+  for(const auto & m_Union : m_Unions)
+    m_GeometricPhantom->AddConvexShape(m_Union);
   myFile.close();
 }
 

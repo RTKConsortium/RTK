@@ -43,20 +43,21 @@ template < class TInputImage,
 class DrawConvexImageFilter :
   public itk::InPlaceImageFilter<TInputImage,TOutputImage>
 {
-
 public:
-  /** Standard class typedefs. */
-  typedef DrawConvexImageFilter                             Self;
-  typedef itk::InPlaceImageFilter<TInputImage,TOutputImage> Superclass;
-  typedef itk::SmartPointer<Self>                           Pointer;
-  typedef itk::SmartPointer<const Self>                     ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(DrawConvexImageFilter);
 
-  /** Convenient typedefs. */
-  typedef typename TOutputImage::RegionType OutputImageRegionType;
-  typedef ConvexShape::Pointer              ConvexShapePointer;
-  typedef ConvexShape::ScalarType           ScalarType;
-  typedef ConvexShape::PointType            PointType;
-  typedef ConvexShape::VectorType           VectorType;
+  /** Standard class type alias. */
+  using Self = DrawConvexImageFilter;
+  using Superclass = itk::InPlaceImageFilter<TInputImage,TOutputImage>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
+
+  /** Convenient type alias. */
+  using OutputImageRegionType = typename TOutputImage::RegionType;
+  using ConvexShapePointer = ConvexShape::Pointer;
+  using ScalarType = ConvexShape::ScalarType;
+  using PointType = ConvexShape::PointType;
+  using VectorType = ConvexShape::VectorType;
 
   /** Method for creation through the object factory. */
   itkNewMacro ( Self );
@@ -70,24 +71,21 @@ public:
 
 protected:
   DrawConvexImageFilter();
-  ~DrawConvexImageFilter() {}
+  ~DrawConvexImageFilter() override = default;
 
   /** ConvexShape must be created in the BeforeThreadedGenerateData in the
    * daugter classes. */
-  void BeforeThreadedGenerateData() ITK_OVERRIDE;
+  void BeforeThreadedGenerateData() override;
 
   /** Apply changes to the input image requested region. */
 #if ITK_VERSION_MAJOR<5
   void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread,
-                             ThreadIdType threadId ) ITK_OVERRIDE;
+                             ThreadIdType threadId ) override;
 #else
-  void DynamicThreadedGenerateData( const OutputImageRegionType& outputRegionForThread ) ITK_OVERRIDE;
+  void DynamicThreadedGenerateData( const OutputImageRegionType& outputRegionForThread ) override;
 #endif
 
 private:
-  DrawConvexImageFilter ( const Self& ); //purposely not implemented
-  void operator=(const Self&);           //purposely not implemented
-
   ConvexShapePointer m_ConvexShape;
 };
 

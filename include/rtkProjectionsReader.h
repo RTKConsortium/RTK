@@ -120,10 +120,12 @@ template <class TOutputImage>
 class ITK_EXPORT ProjectionsReader : public itk::ImageSource<TOutputImage>
 {
 public:
-  /** Standard class typedefs. */
-  typedef ProjectionsReader              Self;
-  typedef itk::ImageSource<TOutputImage> Superclass;
-  typedef itk::SmartPointer<Self>        Pointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(ProjectionsReader);
+
+  /** Standard class type alias. */
+  using Self = ProjectionsReader;
+  using Superclass = itk::ImageSource<TOutputImage>;
+  using Pointer = itk::SmartPointer<Self>;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -131,25 +133,25 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(ProjectionsReader, itk::ImageSource);
 
-  /** Some convenient typedefs. */
-  typedef TOutputImage                             OutputImageType;
-  typedef typename OutputImageType::Pointer        OutputImagePointer;
-  typedef typename OutputImageType::RegionType     OutputImageRegionType;
-  typedef typename OutputImageType::PixelType      OutputImagePixelType;
-  typedef typename OutputImageType::DirectionType  OutputImageDirectionType;
-  typedef typename OutputImageType::SpacingType    OutputImageSpacingType;
-  typedef typename OutputImageType::PointType      OutputImagePointType;
-  typedef typename OutputImageType::SizeType       OutputImageSizeType;
+  /** Some convenient type alias. */
+  using OutputImageType = TOutputImage;
+  using OutputImagePointer = typename OutputImageType::Pointer;
+  using OutputImageRegionType = typename OutputImageType::RegionType;
+  using OutputImagePixelType = typename OutputImageType::PixelType;
+  using OutputImageDirectionType = typename OutputImageType::DirectionType;
+  using OutputImageSpacingType = typename OutputImageType::SpacingType;
+  using OutputImagePointType = typename OutputImageType::PointType;
+  using OutputImageSizeType = typename OutputImageType::SizeType;
 
-  typedef std::vector<std::string>                                                    FileNamesContainer;
-  typedef itk::FixedArray< unsigned int, TOutputImage::ImageDimension >               ShrinkFactorsType;
-  typedef typename rtk::ConditionalMedianImageFilter<TOutputImage>::MedianRadiusType  MedianRadiusType;
-  typedef std::vector< double >                                                       WaterPrecorrectionVectorType;
+  using FileNamesContainer = std::vector<std::string>;
+  using ShrinkFactorsType = itk::FixedArray< unsigned int, TOutputImage::ImageDimension >;
+  using MedianRadiusType = typename rtk::ConditionalMedianImageFilter<TOutputImage>::MedianRadiusType;
+  using WaterPrecorrectionVectorType = std::vector< double >;
 
   /** Typdefs of filters of the mini-pipeline that do not depend on the raw
    * data type. */
-  typedef rtk::WaterPrecorrectionImageFilter<TOutputImage, TOutputImage> WaterPrecorrectionType;
-  typedef itk::StreamingImageFilter<TOutputImage, TOutputImage>          StreamingType;
+  using WaterPrecorrectionType = rtk::WaterPrecorrectionImageFilter<TOutputImage, TOutputImage>;
+  using StreamingType = itk::StreamingImageFilter<TOutputImage, TOutputImage>;
 
   /** ImageDimension constant */
   itkStaticConstMacro(OutputImageDimension, unsigned int,
@@ -246,23 +248,20 @@ public:
 
   /** Prepare the allocation of the output image during the first back
    * propagation of the pipeline. */
-  void GenerateOutputInformation(void) ITK_OVERRIDE;
+  void GenerateOutputInformation(void) override;
 
 protected:
   ProjectionsReader();
-  virtual ~ProjectionsReader() ITK_OVERRIDE {}
-  void PrintSelf(std::ostream& os, itk::Indent indent) const ITK_OVERRIDE;
+  ~ProjectionsReader() override = default;
+  void PrintSelf(std::ostream& os, itk::Indent indent) const override;
 
   /** Does the real work. */
-  void GenerateData() ITK_OVERRIDE;
+  void GenerateData() override;
 
   /** A list of filenames to be processed. */
   FileNamesContainer m_FileNames;
 
 private:
-  ProjectionsReader(const Self&); //purposely not implemented
-  void operator=(const Self&);    //purposely not implemented
-
   /** Function that checks and propagates the parameters of the class to the
    * mini-pipeline. Due to concept checking, i0 propagation can only be done
    * with unsigned shorts and is left apart without template. */

@@ -47,11 +47,13 @@ class ITK_EXPORT I0EstimationProjectionFilter:
   public         itk::InPlaceImageFilter<TInputImage, TOutputImage>
 {
 public:
-  /** Standard class typedefs. */
-  typedef I0EstimationProjectionFilter<TInputImage, TOutputImage, bitShift> Self;
-  typedef itk::InPlaceImageFilter<TInputImage, TOutputImage>                Superclass;
-  typedef itk::SmartPointer<Self>                                           Pointer;
-  typedef itk::SmartPointer<const Self>                                     ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(I0EstimationProjectionFilter);
+
+  /** Standard class type alias. */
+  using Self = I0EstimationProjectionFilter<TInputImage, TOutputImage, bitShift>;
+  using Superclass = itk::InPlaceImageFilter<TInputImage, TOutputImage>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -59,12 +61,12 @@ public:
   /** Runtime information support. */
   itkTypeMacro(I0EstimationProjectionFilter, ImageToImageFilter);
 
-  /** Some convenient typedefs. */
-  typedef TInputImage                                InputImageType;
-  typedef typename InputImageType::Pointer           ImagePointer;
-  typedef typename InputImageType::ConstPointer      ImageConstPointer;
-  typedef typename Superclass::OutputImageRegionType OutputImageRegionType;
-  typedef typename InputImageType::PixelType         InputImagePixelType;
+  /** Some convenient type alias. */
+  using InputImageType = TInputImage;
+  using ImagePointer = typename InputImageType::Pointer;
+  using ImageConstPointer = typename InputImageType::ConstPointer;
+  using OutputImageRegionType = typename Superclass::OutputImageRegionType;
+  using InputImagePixelType = typename InputImageType::PixelType;
 
   itkConceptMacro(InputImagePixelTypeIsInteger, (itk::Concept::IsInteger<InputImagePixelType>) );
 
@@ -101,18 +103,15 @@ public:
 
 protected:
   I0EstimationProjectionFilter();
-  virtual ~I0EstimationProjectionFilter() ITK_OVERRIDE {}
+  ~I0EstimationProjectionFilter() override = default;
 
-  void BeforeThreadedGenerateData() ITK_OVERRIDE;
+  void BeforeThreadedGenerateData() override;
 
-  void ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, ThreadIdType threadId) ITK_OVERRIDE;
+  void ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, ThreadIdType threadId) override;
 
-  void AfterThreadedGenerateData() ITK_OVERRIDE;
+  void AfterThreadedGenerateData() override;
 
 private:
-  I0EstimationProjectionFilter(const Self &); //purposely not implemented
-  void operator=(const Self &);               //purposely not implemented
-
   // Input variables
   InputImagePixelType m_ExpectedI0;       // Expected I0 value (as a result of a
                                           // detector calibration)

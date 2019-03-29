@@ -37,18 +37,20 @@ namespace rtk {
 class RTK_EXPORT EdfImageIOFactory : public itk::ObjectFactoryBase
 {
 public:
-  /** Standard class typedefs. */
-  typedef EdfImageIOFactory             Self;
-  typedef itk::ObjectFactoryBase        Superclass;
-  typedef itk::SmartPointer<Self>       Pointer;
-  typedef itk::SmartPointer<const Self> ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(EdfImageIOFactory);
+
+  /** Standard class type alias. */
+  using Self = EdfImageIOFactory;
+  using Superclass = itk::ObjectFactoryBase;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
   /** Class methods used to interface with the registered factories. */
-  const char* GetITKSourceVersion(void) const ITK_OVERRIDE {
+  const char* GetITKSourceVersion(void) const override {
     return ITK_SOURCE_VERSION;
   }
 
-  const char* GetDescription(void) const ITK_OVERRIDE {
+  const char* GetDescription(void) const override {
     return "Edf ImageIO Factory, allows the loading of Edf images into insight";
   }
 
@@ -65,13 +67,10 @@ public:
 
 protected:
   EdfImageIOFactory();
-  virtual ~EdfImageIOFactory() ITK_OVERRIDE {}
+  ~EdfImageIOFactory() override = default;
 
-  typedef EdfImageIOFactory myProductType;
+  using myProductType = EdfImageIOFactory;
   const myProductType* m_MyProduct;
-private:
-  EdfImageIOFactory(const Self&); //purposely not implemented
-  void operator=(const Self&);    //purposely not implemented
 
 };
 

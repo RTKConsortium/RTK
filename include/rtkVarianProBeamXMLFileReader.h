@@ -43,10 +43,12 @@ namespace rtk
 class VarianProBeamXMLFileReader : public itk::XMLReader<itk::MetaDataDictionary>
 {
 public:
-  /** Standard typedefs */
-  typedef VarianProBeamXMLFileReader              Self;
-  typedef itk::XMLReader<itk::MetaDataDictionary> Superclass;
-  typedef itk::SmartPointer<Self>                 Pointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(VarianProBeamXMLFileReader);
+
+  /** Standard type alias */
+  using Self = VarianProBeamXMLFileReader;
+  using Superclass = itk::XMLReader<itk::MetaDataDictionary>;
+  using Pointer = itk::SmartPointer<Self>;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(VarianProBeamXMLFileReader, itk::XMLReader);
@@ -55,22 +57,19 @@ public:
   itkNewMacro(Self);
 
   /** Determine if a file can be read */
-  int CanReadFile(const char* name) ITK_OVERRIDE;
+  int CanReadFile(const char* name) override;
 
 protected:
   VarianProBeamXMLFileReader(){m_OutputObject = &m_Dictionary;};
-  virtual ~VarianProBeamXMLFileReader() ITK_OVERRIDE {};
+  ~VarianProBeamXMLFileReader() override = default;
 
-  void StartElement(const char * name,const char **atts) ITK_OVERRIDE;
+  void StartElement(const char * name,const char **atts) override;
 
-  void EndElement(const char *name) ITK_OVERRIDE;
+  void EndElement(const char *name) override;
 
-  void CharacterDataHandler(const char *inData, int inLength) ITK_OVERRIDE;
+  void CharacterDataHandler(const char *inData, int inLength) override;
 
 private:
-  VarianProBeamXMLFileReader(const Self&); //purposely not implemented
-  void operator=(const Self&);         //purposely not implemented
-
   itk::MetaDataDictionary m_Dictionary;
   std::string             m_CurCharacterData;
 };

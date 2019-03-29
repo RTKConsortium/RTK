@@ -38,12 +38,12 @@ class ITK_EXPORT CudaUnaryFunctorImageFilter : public CudaInPlaceImageFilter< TI
                                                                             TParentImageFilter >
 {
 public:
-  /** Standard class typedefs. */
-  typedef CudaUnaryFunctorImageFilter                         Self;
-  typedef TParentImageFilter                                  CPUSuperclass;
-  typedef CudaInPlaceImageFilter< TInputImage, TOutputImage > GPUSuperclass;
-  typedef SmartPointer< Self >                                Pointer;
-  typedef SmartPointer< const Self >                          ConstPointer;
+  /** Standard class type alias. */
+  using Self = CudaUnaryFunctorImageFilter;
+  using CPUSuperclass = TParentImageFilter;
+  using GPUSuperclass = CudaInPlaceImageFilter< TInputImage, TOutputImage >;
+  using Pointer = SmartPointer< Self >;
+  using ConstPointer = SmartPointer< const Self >;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -51,18 +51,18 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(CudaUnaryFunctorImageFilter, CudaInPlaceImageFilter);
 
-  /** Some typedefs. */
-  typedef TFunction FunctorType;
+  /** Some type alias. */
+  using FunctorType = TFunction;
 
-  typedef TInputImage                              InputImageType;
-  typedef typename    InputImageType::ConstPointer InputImagePointer;
-  typedef typename    InputImageType::RegionType   InputImageRegionType;
-  typedef typename    InputImageType::PixelType    InputImagePixelType;
+  using InputImageType = TInputImage;
+  using InputImagePointer = typename    InputImageType::ConstPointer;
+  using InputImageRegionType = typename    InputImageType::RegionType;
+  using InputImagePixelType = typename    InputImageType::PixelType;
 
-  typedef TOutputImage                             OutputImageType;
-  typedef typename     OutputImageType::Pointer    OutputImagePointer;
-  typedef typename     OutputImageType::RegionType OutputImageRegionType;
-  typedef typename     OutputImageType::PixelType  OutputImagePixelType;
+  using OutputImageType = TOutputImage;
+  using OutputImagePointer = typename     OutputImageType::Pointer;
+  using OutputImageRegionType = typename     OutputImageType::RegionType;
+  using OutputImagePixelType = typename     OutputImageType::PixelType;
 
   FunctorType & GetFunctor() {
     return m_Functor;

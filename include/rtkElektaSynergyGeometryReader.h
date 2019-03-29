@@ -40,13 +40,15 @@ class RTK_EXPORT ElektaSynergyGeometryReader :
   public itk::LightProcessObject
 {
 public:
-  /** Standard typedefs */
-  typedef ElektaSynergyGeometryReader Self;
-  typedef itk::LightProcessObject     Superclass;
-  typedef itk::SmartPointer<Self>     Pointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(ElektaSynergyGeometryReader);
 
-  /** Convenient typedefs */
-  typedef ThreeDCircularProjectionGeometry GeometryType;
+  /** Standard type alias */
+  using Self = ElektaSynergyGeometryReader;
+  using Superclass = itk::LightProcessObject;
+  using Pointer = itk::SmartPointer<Self>;
+
+  /** Convenient type alias */
+  using GeometryType = ThreeDCircularProjectionGeometry;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(ElektaSynergyGeometryReader, LightProcessObject);
@@ -76,17 +78,13 @@ protected:
 
 
 private:
-  //purposely not implemented
-  ElektaSynergyGeometryReader(const Self&);
-  void operator=(const Self&);
-
   std::string GetImageIDFromDicomUID();
   void GetProjInfoFromDB(const std::string &imageID,
                          std::vector<float> &projAngle,
                          std::vector<float> &projFlexX,
                          std::vector<float> &projFlexY);
 
-  void GenerateData() ITK_OVERRIDE;
+  void GenerateData() override;
 
   GeometryType::Pointer m_Geometry;
   std::string           m_DicomUID;

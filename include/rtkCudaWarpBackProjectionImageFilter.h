@@ -49,19 +49,21 @@ class RTK_EXPORT CudaWarpBackProjectionImageFilter :
   BackProjectionImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3> > >
 {
 public:
-  /** Standard class typedefs. */
-  typedef itk::CudaImage<float,3>                             ImageType;
-  typedef itk::CudaImage<itk::CovariantVector<float, 3>, 3>   DVFType;
-  typedef BackProjectionImageFilter< ImageType, ImageType>    BackProjectionImageFilterType;
-  typedef CudaWarpBackProjectionImageFilter                   Self;
-  typedef itk::CudaInPlaceImageFilter<ImageType, ImageType,
-                     BackProjectionImageFilterType>           Superclass;
-  typedef itk::SmartPointer<Self>                             Pointer;
-  typedef itk::SmartPointer<const Self>                       ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(CudaWarpBackProjectionImageFilter);
 
-  typedef ImageType::RegionType            OutputImageRegionType;
-  typedef itk::CudaImage<float, 2>         ProjectionImageType;
-  typedef ProjectionImageType::Pointer     ProjectionImagePointer;
+  /** Standard class type alias. */
+  using ImageType = itk::CudaImage<float,3>;
+  using DVFType = itk::CudaImage<itk::CovariantVector<float, 3>, 3>;
+  using BackProjectionImageFilterType = BackProjectionImageFilter< ImageType, ImageType>;
+  using Self = CudaWarpBackProjectionImageFilter;
+  using Superclass = itk::CudaInPlaceImageFilter<ImageType, ImageType,
+                     BackProjectionImageFilterType>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
+
+  using OutputImageRegionType = ImageType::RegionType;
+  using ProjectionImageType = itk::CudaImage<float, 2>;
+  using ProjectionImagePointer = ProjectionImageType::Pointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -89,9 +91,6 @@ protected:
 
   virtual void GPUGenerateData();
 
-private:
-  CudaWarpBackProjectionImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);                   //purposely not implemented
 };
 
 } // end namespace rtk

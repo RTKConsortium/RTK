@@ -40,16 +40,18 @@ namespace rtk
 class RTK_EXPORT SheppLoganPhantom: public GeometricPhantom
 {
 public:
-  /** Standard class typedefs. */
-  typedef SheppLoganPhantom             Self;
-  typedef itk::DataObject               Superclass;
-  typedef itk::SmartPointer<Self>       Pointer;
-  typedef itk::SmartPointer<const Self> ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(SheppLoganPhantom);
 
-  /** Convenient typedefs. */
-  typedef QuadricShape::ScalarType ScalarType;
-  typedef QuadricShape::PointType  PointType;
-  typedef QuadricShape::VectorType VectorType;
+  /** Standard class type alias. */
+  using Self = SheppLoganPhantom;
+  using Superclass = itk::DataObject;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
+
+  /** Convenient type alias. */
+  using ScalarType = QuadricShape::ScalarType;
+  using PointType = QuadricShape::PointType;
+  using VectorType = QuadricShape::VectorType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -59,12 +61,9 @@ public:
 
 protected:
   SheppLoganPhantom();
-  ~SheppLoganPhantom() {}
+  ~SheppLoganPhantom() override = default;
 
 private:
-  SheppLoganPhantom(const Self&); //purposely not implemented
-  void operator=(const Self&);   //purposely not implemented
-
   void SetEllipsoid(ScalarType spax,    ScalarType spay,    ScalarType spaz,
                     ScalarType centerx, ScalarType centery, ScalarType centerz,
                     ScalarType angle, ScalarType density);

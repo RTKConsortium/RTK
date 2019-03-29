@@ -54,7 +54,7 @@ ExtractPhaseImageFilter<TImage>
   kernel->Allocate();
   kernel->FillBuffer(1./m_MovingAverageSize);
 
-  typedef itk::ConvolutionImageFilter< TImage, TImage > ConvolutionType;
+  using ConvolutionType = itk::ConvolutionImageFilter< TImage, TImage >;
   typename ConvolutionType::Pointer conv = ConvolutionType::New();
   conv->SetInput( this->GetInput() );
   conv->SetKernelImage( kernel );
@@ -70,7 +70,7 @@ ExtractPhaseImageFilter<TImage>
   conv2->SetInput( conv->GetOutput() );
   conv2->SetKernelImage( kernel2 );
 
-  typedef itk::SubtractImageFilter<TImage, TImage> SubtractType;
+  using SubtractType = itk::SubtractImageFilter<TImage, TImage>;
   typename SubtractType::Pointer sub = SubtractType::New();
   sub->SetInput1(conv->GetOutput());
   sub->SetInput2(conv2->GetOutput());
@@ -78,16 +78,16 @@ ExtractPhaseImageFilter<TImage>
   sub->Update();
 
   // Define FFT output type (complex)
-  typedef std::complex<double>       ComplexType;
-  typedef itk::Image<ComplexType, 1> ComplexSignalType;
+  using ComplexType = std::complex<double>;
+  using ComplexSignalType = itk::Image<ComplexType, 1>;
 
   // Hilbert transform
-  typedef rtk::HilbertImageFilter<TImage, ComplexSignalType> HilbertType;
+  using HilbertType = rtk::HilbertImageFilter<TImage, ComplexSignalType>;
   typename HilbertType::Pointer hilbert = HilbertType::New();
   hilbert->SetInput( sub->GetOutput() );
 
   // Take the linear phase of this signal
-  typedef itk::ComplexToPhaseImageFilter< ComplexSignalType, TImage > PhaseType;
+  using PhaseType = itk::ComplexToPhaseImageFilter< ComplexSignalType, TImage >;
   typename PhaseType::Pointer phase = PhaseType::New();
   phase->SetInput( hilbert->GetOutput() );
   phase->Update();
@@ -95,7 +95,7 @@ ExtractPhaseImageFilter<TImage>
   // Find extrema at 0 and pi
   m_MinimaPositions.clear();
   m_MaximaPositions.clear();
-  typedef typename itk::ImageRegionIteratorWithIndex<TImage> IteratorType;
+  using IteratorType = typename itk::ImageRegionIteratorWithIndex<TImage>;
   IteratorType it(phase->GetOutput(), phase->GetOutput()->GetLargestPossibleRegion());
   typename TImage::PixelType curr, prev = it.Get();
   ++it;
@@ -120,7 +120,7 @@ ExtractPhaseImageFilter<TImage>
     prev = curr;
     }
 
-  if(m_MinimaPositions.size() == 0 || m_MaximaPositions.size() == 0)
+  if(m_MinimaPositions.empty() || m_MaximaPositions.empty())
     itkExceptionMacro(<< "Problem detecting extremas");
 
   const typename TImage::PixelType *sig = this->GetInput()->GetBufferPointer();
@@ -208,7 +208,7 @@ ExtractPhaseImageFilter<TImage>
 
  this->AllocateOutputs();
 
- typedef typename itk::ImageRegionIteratorWithIndex<TImage> IteratorType;
+ using IteratorType = typename itk::ImageRegionIteratorWithIndex<TImage>;
  IteratorType it(this->GetOutput(), this->GetOutput()->GetLargestPossibleRegion());
  typename TImage::PixelType phase = 0.;
 

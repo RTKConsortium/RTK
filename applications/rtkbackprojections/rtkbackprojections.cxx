@@ -38,12 +38,12 @@ int main(int argc, char * argv[])
 {
   GGO(rtkbackprojections, args_info);
 
-  typedef float OutputPixelType;
-  const unsigned int Dimension = 3;
+  using OutputPixelType = float;
+  constexpr unsigned int Dimension = 3;
 #ifdef RTK_USE_CUDA
-  typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
+  using OutputImageType = itk::CudaImage< OutputPixelType, Dimension >;
 #else
-  typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
+  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
 #endif
   // Geometry
   if(args_info.verbose_flag)
@@ -59,12 +59,12 @@ int main(int argc, char * argv[])
     std::cout << " done." << std::endl;
 
   // Create an empty volume
-  typedef rtk::ConstantImageSource< OutputImageType > ConstantImageSourceType;
+  using ConstantImageSourceType = rtk::ConstantImageSource< OutputImageType >;
   ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
   rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkbackprojections>(constantImageSource, args_info);
 
   // Projections reader
-  typedef rtk::ProjectionsReader< OutputImageType > ReaderType;
+  using ReaderType = rtk::ProjectionsReader< OutputImageType >;
   ReaderType::Pointer reader = ReaderType::New();
   rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkbackprojections>(reader, args_info);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->Update() )
@@ -78,7 +78,7 @@ int main(int argc, char * argv[])
               << "..."
               << std::endl;
     // Read an existing image to initialize the attenuation map
-    typedef itk::ImageFileReader<  OutputImageType > AttenuationReaderType;
+    using AttenuationReaderType = itk::ImageFileReader<  OutputImageType >;
     AttenuationReaderType::Pointer attenuationReader = AttenuationReaderType::New();
     attenuationReader->SetFileName( args_info.attenuationmap_arg );
     attenuationFilter = attenuationReader;
@@ -90,11 +90,11 @@ int main(int argc, char * argv[])
   rtk::BackProjectionImageFilter<OutputImageType, OutputImageType>::Pointer bp;
 
   // In case warp backprojection is used, we create a deformation
-  typedef itk::Vector<float,3> DVFPixelType;
-  typedef itk::Image< DVFPixelType, 4 > DVFImageSequenceType;
-  typedef itk::Image< DVFPixelType, 3 > DVFImageType;
-  typedef rtk::CyclicDeformationImageFilter< DVFImageSequenceType, DVFImageType > DeformationType;
-  typedef itk::ImageFileReader<DeformationType::InputImageType> DVFReaderType;
+  using DVFPixelType = itk::Vector<float,3>;
+  using DVFImageSequenceType = itk::Image< DVFPixelType, 4 >;
+  using DVFImageType = itk::Image< DVFPixelType, 3 >;
+  using DeformationType = rtk::CyclicDeformationImageFilter< DVFImageSequenceType, DVFImageType >;
+  using DVFReaderType = itk::ImageFileReader<DeformationType::InputImageType>;
   DVFReaderType::Pointer dvfReader = DVFReaderType::New();
   DeformationType::Pointer def = DeformationType::New();
   def->SetInput(dvfReader->GetOutput());
@@ -165,7 +165,7 @@ int main(int argc, char * argv[])
   // Write
   if(args_info.verbose_flag)
     std::cout << "Writing... " << std::endl;
-  typedef itk::ImageFileWriter<  OutputImageType > WriterType;
+  using WriterType = itk::ImageFileWriter<  OutputImageType >;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
   writer->SetInput( bp->GetOutput() );

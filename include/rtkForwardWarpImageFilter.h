@@ -47,21 +47,23 @@ class ForwardWarpImageFilter :
   public itk::WarpImageFilter< TInputImage, TOutputImage, TDVF >
 {
 public:
-  /** Standard class typedefs. */
-  typedef ForwardWarpImageFilter                                  Self;
-  typedef itk::WarpImageFilter<TInputImage, TOutputImage, TDVF>   Superclass;
-  typedef itk::SmartPointer<Self>                                 Pointer;
-  typedef itk::SmartPointer<const Self>                           ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(ForwardWarpImageFilter);
+
+  /** Standard class type alias. */
+  using Self = ForwardWarpImageFilter;
+  using Superclass = itk::WarpImageFilter<TInputImage, TOutputImage, TDVF>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
   /** Displacement type */
-  typedef TDVF                                      DisplacementFieldType;
-  typedef typename DisplacementFieldType::Pointer   DisplacementFieldPointer;
-  typedef typename DisplacementFieldType::ConstPointer   DisplacementFieldConstPointer;
-  typedef typename DisplacementFieldType::PixelType DisplacementType;
+  using DisplacementFieldType = TDVF;
+  using DisplacementFieldPointer = typename DisplacementFieldType::Pointer;
+  using DisplacementFieldConstPointer = typename DisplacementFieldType::ConstPointer;
+  using DisplacementType = typename DisplacementFieldType::PixelType;
 
   /** Point type */
-  typedef double                                                   CoordRepType;
-  typedef itk::Point< CoordRepType, itkGetStaticConstMacro(ImageDimension) > PointType;
+  using CoordRepType = double;
+  using PointType = itk::Point< CoordRepType, itkGetStaticConstMacro(ImageDimension) >;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self)
@@ -71,19 +73,15 @@ public:
 
 protected:
   ForwardWarpImageFilter();
-  virtual ~ForwardWarpImageFilter() ITK_OVERRIDE {}
+  ~ForwardWarpImageFilter() override = default;
 
-  void GenerateData() ITK_OVERRIDE;
+  void GenerateData() override;
 
   // Redefine stuff that is private in the Superclass
   void Protected_EvaluateDisplacementAtPhysicalPoint(const PointType & p, DisplacementType &output);
   bool                                m_Protected_DefFieldSizeSame;
   typename TOutputImage::IndexType    m_Protected_StartIndex;
   typename TOutputImage::IndexType    m_Protected_EndIndex;
-
-private:
-  ForwardWarpImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);                   //purposely not implemented
 };
 
 } // end namespace rtk

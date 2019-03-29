@@ -51,14 +51,16 @@ class ITK_EXPORT CyclicDeformationImageFilter:
   public itk::ImageToImageFilter<TInputImage, TOutputImage >
 {
 public:
-  /** Standard class typedefs. */
-  typedef CyclicDeformationImageFilter                              Self;
-  typedef TInputImage                                               InputImageType;
-  typedef TOutputImage                                              OutputImageType;
-  typedef itk::ImageToImageFilter<InputImageType, OutputImageType>  Superclass;
-  typedef itk::SmartPointer<Self>                                   Pointer;
-  typedef itk::SmartPointer<const Self>                             ConstPointer;
-  typedef typename OutputImageType::RegionType                      OutputImageRegionType;
+  ITK_DISALLOW_COPY_AND_ASSIGN(CyclicDeformationImageFilter);
+
+  /** Standard class type alias. */
+  using Self = CyclicDeformationImageFilter;
+  using InputImageType = TInputImage;
+  using OutputImageType = TOutputImage;
+  using Superclass = itk::ImageToImageFilter<InputImageType, OutputImageType>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
+  using OutputImageRegionType = typename OutputImageType::RegionType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -79,16 +81,16 @@ public:
 
 protected:
   CyclicDeformationImageFilter(): m_Frame(0) {}
-  virtual ~CyclicDeformationImageFilter() ITK_OVERRIDE {}
+  ~CyclicDeformationImageFilter() override = default;
 
-  void GenerateOutputInformation() ITK_OVERRIDE;
-  void GenerateInputRequestedRegion() ITK_OVERRIDE;
-  void BeforeThreadedGenerateData() ITK_OVERRIDE;
+  void GenerateOutputInformation() override;
+  void GenerateInputRequestedRegion() override;
+  void BeforeThreadedGenerateData() override;
 #if ITK_VERSION_MAJOR<5
   void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread,
-                                     ThreadIdType threadId ) ITK_OVERRIDE;
+                                     ThreadIdType threadId ) override;
 #else
-  void DynamicThreadedGenerateData(const OutputImageRegionType& outputRegionForThread) ITK_OVERRIDE;
+  void DynamicThreadedGenerateData(const OutputImageRegionType& outputRegionForThread) override;
 #endif
 
   // Linear interpolation position and weights
@@ -98,9 +100,6 @@ protected:
   double       m_WeightSup;
 
 private:
-  CyclicDeformationImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);            //purposely not implemented
-
   unsigned int m_Frame;
 
   std::string         m_SignalFilename;

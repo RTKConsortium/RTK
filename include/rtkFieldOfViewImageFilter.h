@@ -49,18 +49,20 @@ class ITK_EXPORT FieldOfViewImageFilter:
   public itk::InPlaceImageFilter<TInputImage,TOutputImage>
 {
 public:
-  /** Standard class typedefs. */
-  typedef FieldOfViewImageFilter                            Self;
-  typedef itk::ImageToImageFilter<TInputImage,TOutputImage> Superclass;
-  typedef itk::SmartPointer<Self>                           Pointer;
-  typedef itk::SmartPointer<const Self>                     ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(FieldOfViewImageFilter);
 
-  typedef typename TOutputImage::RegionType                 OutputImageRegionType;
-  typedef typename TInputImage::Superclass                  ProjectionsStackType;
-  typedef typename ProjectionsStackType::Pointer            ProjectionsStackPointer;
-  typedef rtk::ThreeDCircularProjectionGeometry             GeometryType;
-  typedef typename GeometryType::ConstPointer               GeometryConstPointer;
-  typedef enum {RADIUSINF,RADIUSSUP,RADIUSBOTH}             FOVRadiusType;
+  /** Standard class type alias. */
+  using Self = FieldOfViewImageFilter;
+  using Superclass = itk::ImageToImageFilter<TInputImage,TOutputImage>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
+
+  using OutputImageRegionType = typename TOutputImage::RegionType;
+  using ProjectionsStackType = typename TInputImage::Superclass;
+  using ProjectionsStackPointer = typename ProjectionsStackType::Pointer;
+  using GeometryType = rtk::ThreeDCircularProjectionGeometry;
+  using GeometryConstPointer = typename GeometryType::ConstPointer;
+  using FOVRadiusType = enum {RADIUSINF,RADIUSSUP,RADIUSBOTH};
 
 
   /** Method for creation through the object factory. */
@@ -109,22 +111,19 @@ public:
 
 protected:
   FieldOfViewImageFilter();
-  virtual ~FieldOfViewImageFilter() ITK_OVERRIDE {}
+  ~FieldOfViewImageFilter() override = default;
 
-  void BeforeThreadedGenerateData() ITK_OVERRIDE;
+  void BeforeThreadedGenerateData() override;
 
   /** Generates a FOV mask which is applied to the reconstruction
    * A call to this function will assume modification of the function.*/
 #if ITK_VERSION_MAJOR<5
-  void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) ITK_OVERRIDE;
+  void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) override;
 #else
-  void DynamicThreadedGenerateData(const OutputImageRegionType& outputRegionForThread) ITK_OVERRIDE;
+  void DynamicThreadedGenerateData(const OutputImageRegionType& outputRegionForThread) override;
 #endif
 
 private:
-  FieldOfViewImageFilter(const Self&);      //purposely not implemented
-  void operator=(const Self&); //purposely not implemented
-
   GeometryConstPointer    m_Geometry;
   bool                    m_Mask;
   ProjectionsStackPointer m_ProjectionsStack;

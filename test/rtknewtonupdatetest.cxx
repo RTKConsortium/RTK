@@ -26,29 +26,29 @@ int main(int argc, char*argv[])
   }
 
   // Define types
-  const unsigned int nMaterials=3;
-  typedef double dataType;
-  typedef itk::Image<itk::Vector<dataType, nMaterials>, 3> TGradient;
-  typedef itk::Image<itk::Vector<dataType, nMaterials * nMaterials>, 3> THessian;
+  constexpr unsigned int nMaterials = 3;
+  using dataType = double;
+  using TGradient = itk::Image<itk::Vector<dataType, nMaterials>, 3>;
+  using THessian = itk::Image<itk::Vector<dataType, nMaterials * nMaterials>, 3>;
 
   // Define, instantiate, set and update readers
-  typedef itk::ImageFileReader<TGradient> GradientReaderType;
+  using GradientReaderType = itk::ImageFileReader<TGradient>;
   GradientReaderType::Pointer gradientReader = GradientReaderType::New();
   gradientReader->SetFileName(argv[1]);
   gradientReader->Update();
 
-  typedef itk::ImageFileReader<THessian> HessianReaderType;
+  using HessianReaderType = itk::ImageFileReader<THessian>;
   HessianReaderType::Pointer hessianReader = HessianReaderType::New();
   hessianReader->SetFileName(argv[2]);
   hessianReader->Update();
 
-  typedef itk::ImageFileReader<TGradient> OutputReaderType;
+  using OutputReaderType = itk::ImageFileReader<TGradient>;
   OutputReaderType::Pointer outputReader = OutputReaderType::New();
   outputReader->SetFileName(argv[3]);
   outputReader->Update();
 
   // Create the filter
-  typedef rtk::GetNewtonUpdateImageFilter< TGradient, THessian> NewtonUpdateFilterType;
+  using NewtonUpdateFilterType = rtk::GetNewtonUpdateImageFilter< TGradient, THessian>;
   NewtonUpdateFilterType::Pointer newtonUpdate = NewtonUpdateFilterType::New();
 
   // Set its inputs

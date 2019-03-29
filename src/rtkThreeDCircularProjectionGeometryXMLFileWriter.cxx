@@ -46,11 +46,11 @@ int
 ThreeDCircularProjectionGeometryXMLFileWriter::
 WriteFile()
 {
-  if(this->m_InputObject->GetGantryAngles().size() == 0)
+  if(this->m_InputObject->GetGantryAngles().empty())
     itkGenericExceptionMacro(<< "Geometry object is empty, cannot write it");
 
   std::ofstream output(this->m_Filename.c_str() );
-  const int     maxDigits = 15;
+  constexpr int maxDigits = 15;
 
   output.precision(maxDigits);
   std::string indent("  ");

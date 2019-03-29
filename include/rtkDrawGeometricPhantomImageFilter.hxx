@@ -27,8 +27,8 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 
 namespace rtk
 {
@@ -50,7 +50,7 @@ void DrawGeometricPhantomImageFilter< TInputImage, TOutputImage >::GenerateData(
     {
     if(m_IsForbildConfigFile)
       {
-      typedef rtk::ForbildPhantomFileReader ReaderType;
+      using ReaderType = rtk::ForbildPhantomFileReader;
       ReaderType::Pointer reader = ReaderType::New();
       reader->SetFilename(m_ConfigFile);
       reader->GenerateOutputInformation();
@@ -58,7 +58,7 @@ void DrawGeometricPhantomImageFilter< TInputImage, TOutputImage >::GenerateData(
       }
     else
       {
-      typedef rtk::GeometricPhantomFileReader ReaderType;
+      using ReaderType = rtk::GeometricPhantomFileReader;
       ReaderType::Pointer reader = ReaderType::New();
       reader->SetFilename(m_ConfigFile);
       reader->GenerateOutputInformation();
@@ -68,21 +68,21 @@ void DrawGeometricPhantomImageFilter< TInputImage, TOutputImage >::GenerateData(
 
   //Check that it's not empty
   const GeometricPhantom::ConvexShapeVector &cov = m_GeometricPhantom->GetConvexShapes();
-  if( cov.size() == 0 )
+  if( cov.empty() )
     itkExceptionMacro(<< "Empty phantom");
 
   // Create one add filter per convex object
   std::vector< typename itk::ImageSource<TOutputImage>::Pointer > drawers;
-  for(size_t i=0; i<cov.size(); i++)
+  for(const auto & convexShape : cov)
     {
-    ConvexShape::Pointer co = cov[i]->Clone();
+    ConvexShape::Pointer co = convexShape->Clone();
     co->Rotate( m_RotationMatrix );
     co->Translate( m_OriginOffset );
     co->Rescale( m_PhantomScale );
 
-    if( drawers.size() )
+    if( !drawers.empty() )
       {
-      typedef DrawConvexImageFilter<TOutputImage, TOutputImage>  RCOIType;
+      using RCOIType = DrawConvexImageFilter<TOutputImage, TOutputImage>;
       typename RCOIType::Pointer rcoi = RCOIType::New();
       rcoi->SetInput(drawers.back()->GetOutput());
       rcoi->SetConvexShape(co);
@@ -90,7 +90,7 @@ void DrawGeometricPhantomImageFilter< TInputImage, TOutputImage >::GenerateData(
       }
     else
       {
-      typedef DrawConvexImageFilter<TInputImage, TOutputImage>  RCOIType;
+      using RCOIType = DrawConvexImageFilter<TInputImage, TOutputImage>;
       typename RCOIType::Pointer rcoi = RCOIType::New();
       rcoi->SetInput(this->GetInput());
       rcoi->SetConvexShape(co);

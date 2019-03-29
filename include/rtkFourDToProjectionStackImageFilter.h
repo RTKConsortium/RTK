@@ -99,13 +99,15 @@ template< typename ProjectionStackType, typename VolumeSeriesType>
 class FourDToProjectionStackImageFilter : public itk::ImageToImageFilter<ProjectionStackType, ProjectionStackType>
 {
 public:
-    /** Standard class typedefs. */
-    typedef FourDToProjectionStackImageFilter             Self;
-    typedef itk::ImageToImageFilter<ProjectionStackType, ProjectionStackType> Superclass;
-    typedef itk::SmartPointer< Self >        Pointer;
+    ITK_DISALLOW_COPY_AND_ASSIGN(FourDToProjectionStackImageFilter);
 
-    /** Convenient typedefs */
-    typedef ProjectionStackType VolumeType;
+    /** Standard class type alias. */
+    using Self = FourDToProjectionStackImageFilter;
+    using Superclass = itk::ImageToImageFilter<ProjectionStackType, ProjectionStackType>;
+    using Pointer = itk::SmartPointer< Self >;
+
+    /** Convenient type alias */
+    using VolumeType = ProjectionStackType;
 
     /** Method for creation through the object factory. */
     itkNewMacro(Self)
@@ -121,12 +123,12 @@ public:
     void SetInputProjectionStack(const ProjectionStackType* Projection);
 
     /** Typedefs for the sub filters */
-    typedef rtk::ForwardProjectionImageFilter< ProjectionStackType, ProjectionStackType >   ForwardProjectionFilterType;
-    typedef itk::PasteImageFilter<ProjectionStackType, ProjectionStackType>                 PasteFilterType;
-    typedef rtk::InterpolatorWithKnownWeightsImageFilter< VolumeType, VolumeSeriesType>     InterpolatorFilterType;
-    typedef rtk::ConstantImageSource<VolumeType>                                            ConstantVolumeSourceType;
-    typedef rtk::ConstantImageSource<ProjectionStackType>                                   ConstantProjectionStackSourceType;
-    typedef rtk::ThreeDCircularProjectionGeometry                                           GeometryType;
+    using ForwardProjectionFilterType = rtk::ForwardProjectionImageFilter< ProjectionStackType, ProjectionStackType >;
+    using PasteFilterType = itk::PasteImageFilter<ProjectionStackType, ProjectionStackType>;
+    using InterpolatorFilterType = rtk::InterpolatorWithKnownWeightsImageFilter< VolumeType, VolumeSeriesType>;
+    using ConstantVolumeSourceType = rtk::ConstantImageSource<VolumeType>;
+    using ConstantProjectionStackSourceType = rtk::ConstantImageSource<ProjectionStackType>;
+    using GeometryType = rtk::ThreeDCircularProjectionGeometry;
 
     /** Set the ForwardProjection filter */
     void SetForwardProjectionFilter (const typename ForwardProjectionFilterType::Pointer _arg);
@@ -145,17 +147,17 @@ public:
 
 protected:
     FourDToProjectionStackImageFilter();
-    virtual ~FourDToProjectionStackImageFilter() ITK_OVERRIDE {}
+    ~FourDToProjectionStackImageFilter() override = default;
 
     typename VolumeSeriesType::ConstPointer GetInputVolumeSeries();
     typename ProjectionStackType::Pointer GetInputProjectionStack();
 
     /** Does the real work. */
-    void GenerateData() ITK_OVERRIDE;
+    void GenerateData() override;
 
-    void GenerateOutputInformation() ITK_OVERRIDE;
+    void GenerateOutputInformation() override;
 
-    void GenerateInputRequestedRegion() ITK_OVERRIDE;
+    void GenerateInputRequestedRegion() override;
 
     /** Member pointers to the filters used internally (for convenience)*/
     typename PasteFilterType::Pointer                       m_PasteFilter;
@@ -169,10 +171,6 @@ protected:
     GeometryType::Pointer                                               m_Geometry;
     typename ConstantProjectionStackSourceType::OutputImageRegionType   m_PasteRegion;
     std::vector<double>                                                 m_Signal;
-
-private:
-    FourDToProjectionStackImageFilter(const Self &); //purposely not implemented
-    void operator=(const Self &);  //purposely not implemented
 
 };
 } //namespace ITK

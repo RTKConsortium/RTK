@@ -24,6 +24,6 @@ rtk::XRadImageIOFactory::XRadImageIOFactory()
   this->RegisterOverride("itkImageIOBase",
                          "XRadImageIO",
                          "XRad Image IO",
-                         1,
+                         true,
                          itk::CreateObjectFunction<XRadImageIO>::New() );
 }

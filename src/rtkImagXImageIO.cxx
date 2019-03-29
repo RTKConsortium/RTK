@@ -37,9 +37,9 @@ void rtk::ImagXImageIO::ReadImageInformation()
 
   itk::MetaDataDictionary &dic = *(xmlReader->GetOutputObject() );
 
-  typedef itk::MetaDataObject< double >      MetaDataDoubleType;
-  typedef itk::MetaDataObject< std::string > MetaDataStringType;
-  typedef itk::MetaDataObject< int >         MetaDataIntType;
+  using MetaDataDoubleType = itk::MetaDataObject< double >;
+  using MetaDataStringType = itk::MetaDataObject< std::string >;
+  using MetaDataIntType = itk::MetaDataObject< int >;
 
   std::string pixelType = dynamic_cast<MetaDataStringType*>(dic["pixelFormat"].GetPointer() )->GetMetaDataObjectValue();
   if(pixelType=="Type_uint8")
@@ -57,7 +57,7 @@ void rtk::ImagXImageIO::ReadImageInformation()
   if(pixelType=="Type_float")
     SetComponentType(itk::ImageIOBase::FLOAT);
 
-  if( dic["dimensions"].GetPointer() == ITK_NULLPTR )
+  if( dic["dimensions"].GetPointer() == nullptr )
     SetNumberOfDimensions(3);
   else
     SetNumberOfDimensions( ( dynamic_cast<MetaDataIntType *>(dic["dimensions"].GetPointer() )->GetMetaDataObjectValue() ) );
@@ -78,7 +78,7 @@ void rtk::ImagXImageIO::ReadImageInformation()
     }
 
   itk::Matrix<double, 4, 4> matrix;
-  if(dic["matrixTransform"].GetPointer() == ITK_NULLPTR)
+  if(dic["matrixTransform"].GetPointer() == nullptr)
     matrix.SetIdentity();
   else
     {
@@ -107,7 +107,7 @@ void rtk::ImagXImageIO::ReadImageInformation()
 
   // Prepare raw file name
   m_RawFileName = itksys::SystemTools::GetFilenamePath(m_FileName);
-  if(m_RawFileName != "")
+  if(!m_RawFileName.empty())
     m_RawFileName += std::string("/");
   m_RawFileName += dynamic_cast<MetaDataStringType*>(dic["rawFile"].GetPointer() )->GetMetaDataObjectValue();
 } ////

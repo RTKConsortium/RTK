@@ -48,18 +48,20 @@ class RTK_EXPORT CudaWarpImageFilter :
     itk::WarpImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>, itk::CudaImage<itk::CovariantVector<float, 3>, 3> > >
 {
 public:
-  /** Standard class typedefs. */
-  typedef itk::CudaImage<float,3>                              ImageType;
-  typedef itk::CovariantVector<float, 3>                       DisplacementVectorType;
-  typedef itk::CudaImage<DisplacementVectorType, 3>            DVFType;
-  typedef itk::WarpImageFilter< ImageType, ImageType, DVFType> WarpImageFilterType;
-  typedef CudaWarpImageFilter                                  Self;
-  typedef itk::CudaInPlaceImageFilter<ImageType, ImageType,
-                     WarpImageFilterType>                      Superclass;
-  typedef itk::SmartPointer<Self>                              Pointer;
-  typedef itk::SmartPointer<const Self>                        ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(CudaWarpImageFilter);
 
-  typedef ImageType::RegionType            OutputImageRegionType;
+  /** Standard class type alias. */
+  using ImageType = itk::CudaImage<float,3>;
+  using DisplacementVectorType = itk::CovariantVector<float, 3>;
+  using DVFType = itk::CudaImage<DisplacementVectorType, 3>;
+  using WarpImageFilterType = itk::WarpImageFilter< ImageType, ImageType, DVFType>;
+  using Self = CudaWarpImageFilter;
+  using Superclass = itk::CudaInPlaceImageFilter<ImageType, ImageType,
+                     WarpImageFilterType>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
+
+  using OutputImageRegionType = ImageType::RegionType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -73,9 +75,6 @@ protected:
 
   virtual void GPUGenerateData();
 
-private:
-  CudaWarpImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);                   //purposely not implemented
 };
 
 } // end namespace rtk

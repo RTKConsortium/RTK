@@ -46,21 +46,23 @@ class ITK_EXPORT ReorderProjectionsImageFilter :
   public itk::ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-  /** Standard class typedefs. */
-  typedef ReorderProjectionsImageFilter Self;
+  ITK_DISALLOW_COPY_AND_ASSIGN(ReorderProjectionsImageFilter);
 
-  typedef itk::ImageToImageFilter<TInputImage, TOutputImage>  Superclass;
-  typedef itk::SmartPointer<Self>                             Pointer;
-  typedef itk::SmartPointer<const Self>                       ConstPointer;
+  /** Standard class type alias. */
+  using Self = ReorderProjectionsImageFilter;
 
-  /** Some convenient typedefs. */
-  typedef TInputImage                             InputImageType;
-  typedef TOutputImage                            OutputImageType;
-  typedef typename OutputImageType::RegionType    OutputImageRegionType;
-  typedef enum {NONE=0, SORT=1, SHUFFLE=2}        PermutationType;
+  using Superclass = itk::ImageToImageFilter<TInputImage, TOutputImage>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
-  typedef ThreeDCircularProjectionGeometry        GeometryType;
-  typedef GeometryType::Pointer                   GeometryPointer;
+  /** Some convenient type alias. */
+  using InputImageType = TInputImage;
+  using OutputImageType = TOutputImage;
+  using OutputImageRegionType = typename OutputImageType::RegionType;
+  using PermutationType = enum {NONE=0, SORT=1, SHUFFLE=2};
+
+  using GeometryType = ThreeDCircularProjectionGeometry;
+  using GeometryPointer = GeometryType::Pointer;
 
   /** Standard New method. */
   itkNewMacro(Self);
@@ -83,14 +85,11 @@ public:
 protected:
   ReorderProjectionsImageFilter();
 
-  virtual ~ReorderProjectionsImageFilter() ITK_OVERRIDE {}
+  ~ReorderProjectionsImageFilter() override = default;
 
-  void GenerateData() ITK_OVERRIDE;
+  void GenerateData() override;
 
 private:
-  ReorderProjectionsImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);               //purposely not implemented
-
   /** RTK geometry objects */
   GeometryPointer m_InputGeometry;
   GeometryPointer m_OutputGeometry;

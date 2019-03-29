@@ -30,10 +30,10 @@ int main(int argc, char * argv[])
 {
   GGO(rtkprojectshepploganphantom, args_info);
 
-  typedef float OutputPixelType;
-  const unsigned int Dimension = 3;
+  using OutputPixelType = float;
+  constexpr unsigned int Dimension = 3;
 
-  typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
+  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
 
   // Geometry
   if(args_info.verbose_flag)
@@ -48,7 +48,7 @@ int main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION( geometryReader->GenerateOutputInformation() )
 
   // Create a stack of empty projection images
-  typedef rtk::ConstantImageSource< OutputImageType > ConstantImageSourceType;
+  using ConstantImageSourceType = rtk::ConstantImageSource< OutputImageType >;
   ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
   rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkprojectshepploganphantom>(constantImageSource, args_info);
 
@@ -59,7 +59,7 @@ int main(int argc, char * argv[])
   sizeOutput[2] = geometryReader->GetOutputObject()->GetGantryAngles().size();
   constantImageSource->SetSize( sizeOutput );
 
-  typedef rtk::SheppLoganPhantomFilter<OutputImageType, OutputImageType> SLPType;
+  using SLPType = rtk::SheppLoganPhantomFilter<OutputImageType, OutputImageType>;
   SLPType::Pointer slp=SLPType::New();
   SLPType::VectorType offset(0.);
   SLPType::VectorType scale;
@@ -85,7 +85,7 @@ int main(int argc, char * argv[])
   OutputImageType::Pointer output = slp->GetOutput();
   if(args_info.noise_given)
   {
-    typedef rtk::AdditiveGaussianNoiseImageFilter< OutputImageType > NIFType;
+    using NIFType = rtk::AdditiveGaussianNoiseImageFilter< OutputImageType >;
     NIFType::Pointer noisy=NIFType::New();
     noisy->SetInput( slp->GetOutput() );
     noisy->SetMean( 0.0 );
@@ -95,7 +95,7 @@ int main(int argc, char * argv[])
   }
 
   // Write
-  typedef itk::ImageFileWriter< OutputImageType > WriterType;
+  using WriterType = itk::ImageFileWriter< OutputImageType >;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
   writer->SetInput( output );

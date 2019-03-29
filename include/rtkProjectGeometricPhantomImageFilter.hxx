@@ -27,8 +27,8 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 
 namespace rtk
 {
@@ -50,7 +50,7 @@ void ProjectGeometricPhantomImageFilter< TInputImage, TOutputImage >::GenerateDa
     {
     if(m_IsForbildConfigFile)
       {
-      typedef rtk::ForbildPhantomFileReader ReaderType;
+      using ReaderType = rtk::ForbildPhantomFileReader;
       ReaderType::Pointer reader = ReaderType::New();
       reader->SetFilename(m_ConfigFile);
       reader->GenerateOutputInformation();
@@ -58,7 +58,7 @@ void ProjectGeometricPhantomImageFilter< TInputImage, TOutputImage >::GenerateDa
       }
     else
       {
-      typedef rtk::GeometricPhantomFileReader ReaderType;
+      using ReaderType = rtk::GeometricPhantomFileReader;
       ReaderType::Pointer reader = ReaderType::New();
       reader->SetFilename(m_ConfigFile);
       reader->GenerateOutputInformation();
@@ -68,21 +68,21 @@ void ProjectGeometricPhantomImageFilter< TInputImage, TOutputImage >::GenerateDa
 
   //Check that it's not empty
   const GeometricPhantom::ConvexShapeVector &cov = m_GeometricPhantom->GetConvexShapes();
-  if( cov.size() == 0 )
+  if( cov.empty() )
     itkExceptionMacro(<< "Empty phantom");
 
   // Create one add filter per convex object
   std::vector< typename itk::ImageSource<TOutputImage>::Pointer > projectors;
-  for(size_t i=0; i<cov.size(); i++)
+  for(const auto & convexShape : cov)
     {
-    ConvexShape::Pointer co = cov[i]->Clone();
+    ConvexShape::Pointer co = convexShape->Clone();
     co->Rotate( m_RotationMatrix );
     co->Translate( m_OriginOffset );
     co->Rescale( m_PhantomScale );
 
-    if( projectors.size() )
+    if( !projectors.empty() )
       {
-      typedef RayConvexIntersectionImageFilter<TOutputImage, TOutputImage>  RCOIType;
+      using RCOIType = RayConvexIntersectionImageFilter<TOutputImage, TOutputImage>;
       typename RCOIType::Pointer rcoi = RCOIType::New();
       rcoi->SetInput(projectors.back()->GetOutput());
       rcoi->SetGeometry(this->GetGeometry());
@@ -91,7 +91,7 @@ void ProjectGeometricPhantomImageFilter< TInputImage, TOutputImage >::GenerateDa
       }
     else
       {
-      typedef RayConvexIntersectionImageFilter<TInputImage, TOutputImage>  RCOIType;
+      using RCOIType = RayConvexIntersectionImageFilter<TInputImage, TOutputImage>;
       typename RCOIType::Pointer rcoi = RCOIType::New();
       rcoi->SetInput(this->GetInput());
       rcoi->SetGeometry(this->GetGeometry());

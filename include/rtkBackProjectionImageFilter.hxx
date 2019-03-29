@@ -61,7 +61,7 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
     }
 
   typename TInputImage::RegionType reqRegion = inputPtr1->GetLargestPossibleRegion();
-  if(m_Geometry.GetPointer() == ITK_NULLPTR || m_Geometry->GetRadiusCylindricalDetector() != 0 )
+  if(m_Geometry.GetPointer() == nullptr || m_Geometry->GetRadiusCylindricalDetector() != 0 )
     {
     inputPtr1->SetRequestedRegion( inputPtr1->GetLargestPossibleRegion() );
     return;
@@ -181,13 +181,13 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
   const unsigned int iFirstProj = this->GetInput(1)->GetLargestPossibleRegion().GetIndex(Dimension-1);
 
   // Create interpolator, could be any interpolation
-  typedef itk::LinearInterpolateImageFunction< ProjectionImageType, double > InterpolatorType;
+  using InterpolatorType = itk::LinearInterpolateImageFunction< ProjectionImageType, double >;
   typename InterpolatorType::Pointer interpolator = InterpolatorType::New();
 
   // Iterators on volume input and output
-  typedef itk::ImageRegionConstIterator<TInputImage> InputRegionIterator;
+  using InputRegionIterator = itk::ImageRegionConstIterator<TInputImage>;
   InputRegionIterator itIn(this->GetInput(), outputRegionForThread);
-  typedef itk::ImageRegionIteratorWithIndex<TOutputImage> OutputRegionIterator;
+  using OutputRegionIterator = itk::ImageRegionIteratorWithIndex<TOutputImage>;
   OutputRegionIterator itOut(this->GetOutput(), outputRegionForThread);
 
   // Initialize output region with input region in case the filter is not in
@@ -276,13 +276,13 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
                                                     const itk::Matrix<double, TInputImage::ImageDimension, TInputImage::ImageDimension>& projPPToProjIndex,
                                                     const ProjectionImagePointer projection)
 {
-  typedef itk::ImageRegionIteratorWithIndex<TOutputImage> OutputRegionIterator;
+  using OutputRegionIterator = itk::ImageRegionIteratorWithIndex<TOutputImage>;
   OutputRegionIterator itOut(this->GetOutput(), region);
 
   const unsigned int Dimension = TInputImage::ImageDimension;
 
   // Create interpolator, could be any interpolation
-  typedef itk::LinearInterpolateImageFunction< ProjectionImageType, double > InterpolatorType;
+  using InterpolatorType = itk::LinearInterpolateImageFunction< ProjectionImageType, double >;
   typename InterpolatorType::Pointer interpolator = InterpolatorType::New();
   interpolator->SetInputImage(projection);
 
@@ -374,7 +374,7 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
       v = v*w-pIndex[1];
       du = w * matrix[0][0];
 
-      typedef typename itk::PixelTraits<typename TInputImage::PixelType>::ValueType ComponentType;
+      using ComponentType = typename itk::PixelTraits<typename TInputImage::PixelType>::ValueType;
       ComponentType u1, u2, v1, v2;
       vi = itk::Math::floor(v);
       if(vi>=0 && vi<(int)pSize[1]-1)
@@ -448,7 +448,7 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
           ui = itk::Math::floor(u);
           if(ui>=0 && ui<(int)pSize[0]-1)
             {
-            typedef typename itk::PixelTraits<typename TInputImage::PixelType>::ValueType ComponentType;
+            using ComponentType = typename itk::PixelTraits<typename TInputImage::PixelType>::ValueType;
             ComponentType u1, u2, v1, v2;
             pProj = projection->GetBufferPointer() + vi * pSize[0] + ui;
             v1 = v-vi;

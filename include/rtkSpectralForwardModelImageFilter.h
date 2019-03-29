@@ -49,20 +49,22 @@ class ITK_EXPORT SpectralForwardModelImageFilter :
   public itk::InPlaceImageFilter<MeasuredProjectionsType, MeasuredProjectionsType>
 {
 public:
-  /** Standard class typedefs. */
-  typedef SpectralForwardModelImageFilter                                                Self;
-  typedef itk::ImageToImageFilter<MeasuredProjectionsType, MeasuredProjectionsType>      Superclass;
-  typedef itk::SmartPointer<Self>                                                        Pointer;
-  typedef itk::SmartPointer<const Self>                                                  ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(SpectralForwardModelImageFilter);
 
-  /** Some convenient typedefs. */
-  typedef MeasuredProjectionsType       InputImageType;
-  typedef MeasuredProjectionsType       OutputImageType;
+  /** Standard class type alias. */
+  using Self = SpectralForwardModelImageFilter;
+  using Superclass = itk::ImageToImageFilter<MeasuredProjectionsType, MeasuredProjectionsType>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
+
+  /** Some convenient type alias. */
+  using InputImageType = MeasuredProjectionsType;
+  using OutputImageType = MeasuredProjectionsType;
 
   /** Convenient information */
-  typedef itk::VariableLengthVector<int>       ThresholdsType;
-  typedef vnl_matrix<double>                   DetectorResponseType;
-  typedef vnl_matrix<double>                   MaterialAttenuationsType;
+  using ThresholdsType = itk::VariableLengthVector<int>;
+  using DetectorResponseType = vnl_matrix<double>;
+  using MaterialAttenuationsType = vnl_matrix<double>;
 
   /** Standard New method. */
   itkNewMacro(Self)
@@ -112,30 +114,30 @@ public:
 
 protected:
   SpectralForwardModelImageFilter();
-  virtual ~SpectralForwardModelImageFilter() ITK_OVERRIDE {}
+  ~SpectralForwardModelImageFilter() override = default;
 
   /**  Create the Output */
-  typedef itk::ProcessObject::DataObjectPointerArraySizeType DataObjectPointerArraySizeType;
+  using DataObjectPointerArraySizeType = itk::ProcessObject::DataObjectPointerArraySizeType;
   using Superclass::MakeOutput;
-  itk::DataObject::Pointer MakeOutput(DataObjectPointerArraySizeType idx) ITK_OVERRIDE;
+  itk::DataObject::Pointer MakeOutput(DataObjectPointerArraySizeType idx) override;
 
-  void GenerateOutputInformation() ITK_OVERRIDE;
+  void GenerateOutputInformation() override;
 
-  void GenerateInputRequestedRegion() ITK_OVERRIDE;
+  void GenerateInputRequestedRegion() override;
 
-  void BeforeThreadedGenerateData() ITK_OVERRIDE;
+  void BeforeThreadedGenerateData() override;
 #if ITK_VERSION_MAJOR<5
-  void ThreadedGenerateData(const typename OutputImageType::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) ITK_OVERRIDE;
+  void ThreadedGenerateData(const typename OutputImageType::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) override;
 #else
-  void DynamicThreadedGenerateData(const typename OutputImageType::RegionType& outputRegionForThread) ITK_OVERRIDE;
+  void DynamicThreadedGenerateData(const typename OutputImageType::RegionType& outputRegionForThread) override;
 #endif
 
   /** The inputs should not be in the same space so there is nothing
    * to verify. */
 #if ITK_VERSION_MAJOR<5
-  void VerifyInputInformation() ITK_OVERRIDE {}
+  void VerifyInputInformation() override {}
 #else
-  void VerifyInputInformation() const ITK_OVERRIDE {}
+  void VerifyInputInformation() const override {}
 #endif
 
   ThresholdsType             m_Thresholds;
@@ -151,11 +153,6 @@ protected:
   bool         m_OptimizeWithRestarts;
   bool         m_IsSpectralCT; // If not, it is dual energy CT
   bool         m_ComputeVariances; // Only implemented for dual energy CT
-
-private:
-  //purposely not implemented
-  SpectralForwardModelImageFilter(const Self&);
-  void operator=(const Self&);
 
 }; // end of class
 

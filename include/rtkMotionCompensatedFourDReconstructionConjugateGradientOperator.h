@@ -96,18 +96,20 @@ template< typename VolumeSeriesType, typename ProjectionStackType>
 class MotionCompensatedFourDReconstructionConjugateGradientOperator : public FourDReconstructionConjugateGradientOperator< VolumeSeriesType, ProjectionStackType>
 {
 public:
-    /** Standard class typedefs. */
-    typedef MotionCompensatedFourDReconstructionConjugateGradientOperator                         Self;
-    typedef FourDReconstructionConjugateGradientOperator< VolumeSeriesType, ProjectionStackType>  Superclass;
-    typedef itk::SmartPointer< Self >                                                             Pointer;
+    ITK_DISALLOW_COPY_AND_ASSIGN(MotionCompensatedFourDReconstructionConjugateGradientOperator);
 
-    /** Convenient typedef */
-    typedef ProjectionStackType                                                                                 VolumeType;
-    typedef itk::CovariantVector< typename VolumeSeriesType::ValueType, VolumeSeriesType::ImageDimension - 1>   VectorForDVF;
+    /** Standard class type alias. */
+    using Self = MotionCompensatedFourDReconstructionConjugateGradientOperator;
+    using Superclass = FourDReconstructionConjugateGradientOperator< VolumeSeriesType, ProjectionStackType>;
+    using Pointer = itk::SmartPointer< Self >;
 
-    /** SFINAE typedef, depending on whether a CUDA image is used. */
-    typedef typename itk::Image< typename VolumeSeriesType::PixelType,
-                                 VolumeSeriesType::ImageDimension>        CPUVolumeSeriesType;
+    /** Convenient type alias */
+    using VolumeType = ProjectionStackType;
+    using VectorForDVF = itk::CovariantVector< typename VolumeSeriesType::ValueType, VolumeSeriesType::ImageDimension - 1>;
+
+    /** SFINAE type alias, depending on whether a CUDA image is used. */
+    using CPUVolumeSeriesType = typename itk::Image< typename VolumeSeriesType::PixelType,
+                                 VolumeSeriesType::ImageDimension>;
 #ifdef RTK_USE_CUDA
     typedef typename std::conditional< std::is_same< VolumeSeriesType, CPUVolumeSeriesType >::value,
                                        itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension>,
@@ -126,21 +128,21 @@ public:
                                        CudaWarpBackProjectionImageFilter >::type
                                                                           WarpBackProjectionImageFilterType;
 #else
-    typedef itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension>    DVFSequenceImageType;
-    typedef itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension-1>  DVFImageType;
-    typedef JosephForwardProjectionImageFilter<ProjectionStackType,
-                                               ProjectionStackType>       WarpForwardProjectionImageFilterType;
-    typedef BackProjectionImageFilter<VolumeType, VolumeType>             WarpBackProjectionImageFilterType;
+    using DVFSequenceImageType = itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension>;
+    using DVFImageType = itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension-1>;
+    using WarpForwardProjectionImageFilterType = JosephForwardProjectionImageFilter<ProjectionStackType,
+                                               ProjectionStackType>;
+    using WarpBackProjectionImageFilterType = BackProjectionImageFilter<VolumeType, VolumeType>;
 #endif
-    typedef CyclicDeformationImageFilter< DVFSequenceImageType,
-                                          DVFImageType>                   CPUDVFInterpolatorType;
+    using CPUDVFInterpolatorType = CyclicDeformationImageFilter< DVFSequenceImageType,
+                                          DVFImageType>;
 #ifdef RTK_USE_CUDA
     typedef typename std::conditional< std::is_same< VolumeSeriesType, CPUVolumeSeriesType >::value,
                                        CPUDVFInterpolatorType,
                                        CudaCyclicDeformationImageFilter >::type
                                                                           CudaCyclicDeformationImageFilterType;
 #else
-    typedef CPUDVFInterpolatorType                                        CudaCyclicDeformationImageFilterType;
+    using CudaCyclicDeformationImageFilterType = CPUDVFInterpolatorType;
 #endif
 
     /** Method for creation through the object factory. */
@@ -160,7 +162,7 @@ public:
     typename DVFSequenceImageType::ConstPointer GetDisplacementField();
 
     /** Set the vector containing the signal in the sub-filters */
-    void SetSignal(const std::vector<double> signal) ITK_OVERRIDE;
+    void SetSignal(const std::vector<double> signal) override;
 
     /** Set and Get for the UseCudaCyclicDeformation variable */
     itkSetMacro(UseCudaCyclicDeformation, bool)
@@ -168,30 +170,26 @@ public:
 
 protected:
     MotionCompensatedFourDReconstructionConjugateGradientOperator();
-    virtual ~MotionCompensatedFourDReconstructionConjugateGradientOperator() ITK_OVERRIDE {}
+    ~MotionCompensatedFourDReconstructionConjugateGradientOperator() override = default;
 
     /** Builds the pipeline and computes output information */
-    void GenerateOutputInformation() ITK_OVERRIDE;
+    void GenerateOutputInformation() override;
 
     /** The inputs should not be in the same space so there is nothing to verify */
 #if ITK_VERSION_MAJOR<5
-    void VerifyInputInformation() ITK_OVERRIDE {}
+    void VerifyInputInformation() override {}
 #else
-    void VerifyInputInformation() const ITK_OVERRIDE {}
+    void VerifyInputInformation() const override {}
 #endif
 
     /** Does the real work. */
-    void GenerateData() ITK_OVERRIDE;
+    void GenerateData() override;
 
     /** Member pointers to the filters used internally (for convenience)*/
     typename CPUDVFInterpolatorType::Pointer            m_DVFInterpolatorFilter;
     typename CPUDVFInterpolatorType::Pointer            m_InverseDVFInterpolatorFilter;
     std::vector<double>                                 m_Signal;
     bool                                                m_UseCudaCyclicDeformation;
-
-private:
-    MotionCompensatedFourDReconstructionConjugateGradientOperator(const Self &); //purposely not implemented
-    void operator=(const Self &);  //purposely not implemented
 };
 } //namespace ITK
 

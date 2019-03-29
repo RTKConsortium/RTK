@@ -45,19 +45,19 @@ class RTK_EXPORT BoxShape:
     public ConvexShape
 {
 public:
-  /** Standard class typedefs. */
-  typedef BoxShape                      Self;
-  typedef ConvexShape                   Superclass;
-  typedef itk::SmartPointer<Self>       Pointer;
-  typedef itk::SmartPointer<const Self> ConstPointer;
+  /** Standard class type alias. */
+  using Self = BoxShape;
+  using Superclass = ConvexShape;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
-  /** Convenient typedefs. */
-  itkStaticConstMacro(Dimension, unsigned int, Superclass::Dimension);
-  typedef Superclass::ScalarType         ScalarType;
-  typedef Superclass::PointType          PointType;
-  typedef Superclass::VectorType         VectorType;
-  typedef Superclass::RotationMatrixType RotationMatrixType;
-  typedef itk::ImageBase<Dimension>      ImageBaseType;
+  /** Convenient type alias. */
+  static constexpr unsigned int Dimension = Superclass::Dimension;
+  using ScalarType = Superclass::ScalarType;
+  using PointType = Superclass::PointType;
+  using VectorType = Superclass::VectorType;
+  using RotationMatrixType = Superclass::RotationMatrixType;
+  using ImageBaseType = itk::ImageBase<Dimension>;
 
   /** Method for creation through the object factory. */
   itkNewMacro ( Self );
@@ -66,24 +66,24 @@ public:
   itkTypeMacro(BoxShape, ConvexShape);
 
   /** See rtk::ConvexShape::IsInside. */
-  virtual bool IsInside(const PointType & point) const ITK_OVERRIDE;
+  bool IsInside(const PointType & point) const override;
 
   /** See rtk::ConvexShape::IsIntersectedByRay for the goal and
    * http://www.siggraph.org/education/materials/HyperGraph/raytrace/rtinter4.htm
    * for the computation. */
-  virtual bool IsIntersectedByRay(const PointType & rayOrigin,
+  bool IsIntersectedByRay(const PointType & rayOrigin,
                                   const VectorType & rayDirection,
                                   double &nearDist,
-                                  double &farDist) const ITK_OVERRIDE;
+                                  double &farDist) const override;
 
   /** Rescale object along each direction by a 3D vector. */
-  virtual void Rescale(const VectorType &r) ITK_OVERRIDE;
+  void Rescale(const VectorType &r) override;
 
   /** Translate object by a given 3D vector. */
-  virtual void Translate(const VectorType &t) ITK_OVERRIDE;
+  void Translate(const VectorType &t) override;
 
   /** Translate object by a given 3D vector. */
-  virtual void Rotate(const RotationMatrixType &r) ITK_OVERRIDE;
+  void Rotate(const RotationMatrixType &r) override;
 
   /** Get / Set the box inferior corner. Every corner coordinate must be
    * inferior to those of the superior corner. */
@@ -100,7 +100,7 @@ public:
   itkGetConstMacro(Direction, RotationMatrixType);
   itkSetMacro(Direction, RotationMatrixType);
 
-  virtual itk::LightObject::Pointer InternalClone() const ITK_OVERRIDE;
+  itk::LightObject::Pointer InternalClone() const override;
 
   /** Set the 3D box is the portion of space defined by the LargestPossibleRegion.
    * bWithExternalHalfPixelBorder can be used to include or exclude a half voxel

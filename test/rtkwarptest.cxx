@@ -26,12 +26,12 @@
 
 int main(int, char** )
 {
-  const unsigned int Dimension = 3;
-  typedef float                                    OutputPixelType;
-  typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
+  constexpr unsigned int Dimension = 3;
+  using OutputPixelType = float;
+  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
 
   // Constant image sources
-  typedef rtk::ConstantImageSource< OutputImageType > ConstantImageSourceType;
+  using ConstantImageSourceType = rtk::ConstantImageSource< OutputImageType >;
   ConstantImageSourceType::PointType origin;
   ConstantImageSourceType::SizeType size;
   ConstantImageSourceType::SpacingType spacing;
@@ -61,9 +61,9 @@ int main(int, char** )
   tomographySource->SetConstant( 0. );
 
   // Create vector field
-  typedef itk::Vector<float,3>                                                 DVFPixelType;
-  typedef itk::Image< DVFPixelType, 3 >                                        DVFImageType;
-  typedef itk::ImageRegionIteratorWithIndex< DVFImageType> IteratorType;
+  using DVFPixelType = itk::Vector<float,3>;
+  using DVFImageType = itk::Image< DVFPixelType, 3 >;
+  using IteratorType = itk::ImageRegionIteratorWithIndex< DVFImageType>;
 
   DVFImageType::Pointer deformationField = DVFImageType::New();
 
@@ -99,7 +99,7 @@ int main(int, char** )
 
   // Create a reference object (in this case a 3D phantom reference).
   // Ellipse 1
-  typedef rtk::DrawEllipsoidImageFilter<OutputImageType, OutputImageType> DEType;
+  using DEType = rtk::DrawEllipsoidImageFilter<OutputImageType, OutputImageType>;
   DEType::Pointer e1 = DEType::New();
   e1->SetInput( tomographySource->GetOutput() );
   e1->SetDensity(2.);
@@ -127,7 +127,7 @@ int main(int, char** )
   e2->InPlaceOff();
   TRY_AND_EXIT_ON_ITK_EXCEPTION( e2->Update() )
 
-  typedef itk::WarpImageFilter<OutputImageType, OutputImageType, DVFImageType> WarpFilterType;
+  using WarpFilterType = itk::WarpImageFilter<OutputImageType, OutputImageType, DVFImageType>;
   WarpFilterType::Pointer warp = WarpFilterType::New();
   warp->SetInput(e2->GetOutput());
   warp->SetDisplacementField( deformationField );
@@ -135,7 +135,7 @@ int main(int, char** )
 
   TRY_AND_EXIT_ON_ITK_EXCEPTION( warp->Update() );
 
-  typedef rtk::ForwardWarpImageFilter<OutputImageType, OutputImageType, DVFImageType> ForwardWarpFilterType;
+  using ForwardWarpFilterType = rtk::ForwardWarpImageFilter<OutputImageType, OutputImageType, DVFImageType>;
   ForwardWarpFilterType::Pointer forwardWarp = ForwardWarpFilterType::New();
   forwardWarp->SetInput(warp->GetOutput());
   forwardWarp->SetDisplacementField( deformationField );

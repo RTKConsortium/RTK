@@ -66,22 +66,22 @@ int main(int argc, char*argv[])
   std::cout << "Testing his file processing..." << std::endl;
 
   // ******* COMPARING projections *******
-  typedef float OutputPixelType;
-  const unsigned int Dimension = 3;
-  typedef itk::Image< OutputPixelType, Dimension > ImageType;
+  using OutputPixelType = float;
+  constexpr unsigned int Dimension = 3;
+  using ImageType = itk::Image< OutputPixelType, Dimension >;
 
   // Elekta projections reader
-  typedef rtk::ProjectionsReader< ImageType > ReaderType;
+  using ReaderType = rtk::ProjectionsReader< ImageType >;
   ReaderType::Pointer reader = ReaderType::New();
   std::vector<std::string> fileNames;
-  fileNames.push_back(argv[3]);
+  fileNames.emplace_back(argv[3]);
   reader->SetFileNames( fileNames );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->Update() );
 
   // Reference projections reader
   ReaderType::Pointer readerRef = ReaderType::New();
   fileNames.clear();
-  fileNames.push_back(argv[6]);
+  fileNames.emplace_back(argv[6]);
   readerRef->SetFileNames( fileNames );
   TRY_AND_EXIT_ON_ITK_EXCEPTION(readerRef->Update());
 
@@ -89,24 +89,24 @@ int main(int argc, char*argv[])
   CheckImageQuality< ImageType >(reader->GetOutput(), readerRef->GetOutput(), 1.6e-7, 100, 2.0);
 
   // ******* Test split of lookup table ******
-  typedef unsigned short InputPixelType;
-  typedef itk::Image< InputPixelType, 3 > InputImageType;
-  typedef itk::ImageFileReader< InputImageType> RawReaderType;
+  using InputPixelType = unsigned short;
+  using InputImageType = itk::Image< InputPixelType, 3 >;
+  using RawReaderType = itk::ImageFileReader< InputImageType>;
   RawReaderType::Pointer r = RawReaderType::New();
   r->SetFileName(argv[3]);
   r->Update();
 
-  typedef rtk::ElektaSynergyLookupTableImageFilter<ImageType> FullLUTType;
+  using FullLUTType = rtk::ElektaSynergyLookupTableImageFilter<ImageType>;
   FullLUTType::Pointer full = FullLUTType::New();
   full->SetInput(r->GetOutput());
   full->Update();
 
-  typedef rtk::ElektaSynergyRawLookupTableImageFilter<InputImageType, InputImageType> RawLUTType;
+  using RawLUTType = rtk::ElektaSynergyRawLookupTableImageFilter<InputImageType, InputImageType>;
   RawLUTType::Pointer raw = RawLUTType::New();
   raw->SetInput(r->GetOutput());
   raw->Update();
 
-  typedef rtk::LUTbasedVariableI0RawToAttenuationImageFilter<InputImageType,ImageType> LogLUTType;
+  using LogLUTType = rtk::LUTbasedVariableI0RawToAttenuationImageFilter<InputImageType,ImageType>;
   LogLUTType::Pointer log = LogLUTType::New();
   log->SetInput(raw->GetOutput());
   log->SetI0(log->GetI0()+1.);

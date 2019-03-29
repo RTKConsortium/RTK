@@ -47,12 +47,14 @@ template< typename InputImageType, typename OutputImageType>
 class ImageToVectorImageFilter : public itk::ImageToImageFilter< InputImageType, OutputImageType >
 {
 public:
-    /** Standard class typedefs. */
-    typedef ImageToVectorImageFilter                                    Self;
-    typedef itk::ImageToImageFilter< InputImageType, OutputImageType >  Superclass;
-    typedef itk::SmartPointer< Self >                                   Pointer;
+    ITK_DISALLOW_COPY_AND_ASSIGN(ImageToVectorImageFilter);
 
-    typedef typename OutputImageType::RegionType                        OutputImageRegionType;
+    /** Standard class type alias. */
+    using Self = ImageToVectorImageFilter;
+    using Superclass = itk::ImageToImageFilter< InputImageType, OutputImageType >;
+    using Pointer = itk::SmartPointer< Self >;
+
+    using OutputImageRegionType = typename OutputImageType::RegionType;
 
     /** Method for creation through the object factory. */
     itkNewMacro(Self)
@@ -68,23 +70,19 @@ public:
 
 protected:
     ImageToVectorImageFilter();
-    virtual ~ImageToVectorImageFilter() ITK_OVERRIDE {}
+    ~ImageToVectorImageFilter() override = default;
 
-    void GenerateOutputInformation() ITK_OVERRIDE;
-    void GenerateInputRequestedRegion() ITK_OVERRIDE;
+    void GenerateOutputInformation() override;
+    void GenerateInputRequestedRegion() override;
 
     /** Does the real work. */
-    void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) ITK_OVERRIDE;
+    void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) override;
 
     /** Splits the OutputRequestedRegion along the first direction, not the last */
-    const itk::ImageRegionSplitterBase* GetImageRegionSplitter(void) const ITK_OVERRIDE;
+    const itk::ImageRegionSplitterBase* GetImageRegionSplitter(void) const override;
     itk::ImageRegionSplitterDirection::Pointer  m_Splitter;
 
     unsigned int m_NumberOfChannels;
-
-private:
-    ImageToVectorImageFilter(const Self &); //purposely not implemented
-    void operator=(const Self &);  //purposely not implemented
 };
 } //namespace ITK
 

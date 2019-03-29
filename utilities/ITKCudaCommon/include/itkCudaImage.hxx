@@ -183,8 +183,8 @@ template <class TPixel, unsigned int VImageDimension>
 CudaDataManager::Pointer
 CudaImage< TPixel, VImageDimension >::GetCudaDataManager() const
 {
-  typedef typename CudaImageDataManager< CudaImage >::Superclass CudaImageDataSuperclass;
-  typedef typename CudaImageDataSuperclass::Pointer             CudaImageDataSuperclassPointer;
+  using CudaImageDataSuperclass = typename CudaImageDataManager< CudaImage >::Superclass;
+  using CudaImageDataSuperclassPointer = typename CudaImageDataSuperclass::Pointer;
 
   return static_cast< CudaImageDataSuperclassPointer >(m_DataManager.GetPointer());
 }
@@ -193,7 +193,7 @@ template <class TPixel, unsigned int VImageDimension>
 void
 CudaImage< TPixel, VImageDimension >::Graft(const Self *data)
 {
-  typedef CudaImageDataManager< CudaImage >             CudaImageDataManagerType;
+  using CudaImageDataManagerType = CudaImageDataManager< CudaImage >;
 
   // call the superclass' implementation
   Superclass::Graft(dynamic_cast<const DataObject *>(data));

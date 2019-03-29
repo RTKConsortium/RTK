@@ -50,11 +50,11 @@ void
 ConvexShape
 ::Rescale(const VectorType &r)
 {
-  for(size_t i=0; i<m_PlaneDirections.size(); i++)
+  for(VectorType & m_PlaneDirection : m_PlaneDirections)
     {
     for(unsigned int j=0; j<Dimension; j++)
       {
-      m_PlaneDirections[i][j] /= r[j];
+      m_PlaneDirection[j] /= r[j];
       }
     }
 }
@@ -73,9 +73,9 @@ void
 ConvexShape
 ::Rotate(const RotationMatrixType &r)
 {
-  for(size_t i=0; i<m_PlaneDirections.size(); i++)
+  for(VectorType & m_PlaneDirection : m_PlaneDirections)
     {
-    m_PlaneDirections[i] = r * m_PlaneDirections[i];
+    m_PlaneDirection = r * m_PlaneDirection;
     }
 }
 

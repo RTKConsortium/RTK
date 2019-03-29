@@ -40,18 +40,20 @@ class ITKIOImageBase_HIDDEN EdfRawToAttenuationImageFilter :
   public itk::ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-  /** Standard class typedefs. */
-  typedef EdfRawToAttenuationImageFilter                     Self;
-  typedef itk::ImageToImageFilter<TInputImage, TOutputImage> Superclass;
-  typedef itk::SmartPointer<Self>                            Pointer;
-  typedef itk::SmartPointer<const Self>                      ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(EdfRawToAttenuationImageFilter);
 
-  /** Some convenient typedefs. */
-  typedef TInputImage                       InputImageType;
-  typedef TOutputImage                      OutputImageType;
-  typedef typename TOutputImage::RegionType OutputImageRegionType;
+  /** Standard class type alias. */
+  using Self = EdfRawToAttenuationImageFilter;
+  using Superclass = itk::ImageToImageFilter<TInputImage, TOutputImage>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
-  typedef  std::vector<std::string> FileNamesContainer;
+  /** Some convenient type alias. */
+  using InputImageType = TInputImage;
+  using OutputImageType = TOutputImage;
+  using OutputImageRegionType = typename TOutputImage::RegionType;
+
+  using FileNamesContainer = std::vector<std::string>;
 
   /** Standard New method. */
   itkNewMacro(Self);
@@ -77,22 +79,18 @@ public:
 
 protected:
   EdfRawToAttenuationImageFilter();
-  virtual ~EdfRawToAttenuationImageFilter() ITK_OVERRIDE {}
+  ~EdfRawToAttenuationImageFilter() override = default;
 
-  void BeforeThreadedGenerateData() ITK_OVERRIDE;
+  void BeforeThreadedGenerateData() override;
 
 #if ITK_VERSION_MAJOR<5
-  void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) ITK_OVERRIDE;
+  void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) override;
 #else
-  void DynamicThreadedGenerateData( const OutputImageRegionType& outputRegionForThread) ITK_OVERRIDE;
+  void DynamicThreadedGenerateData( const OutputImageRegionType& outputRegionForThread) override;
 #endif
 
 private:
-  //purposely not implemented
-  EdfRawToAttenuationImageFilter(const Self&);
-  void operator=(const Self&);
-
-  typedef itk::ImageSeriesReader< InputImageType > EdfImageSeries;
+  using EdfImageSeries = itk::ImageSeriesReader< InputImageType >;
   typename EdfImageSeries::Pointer m_DarkProjectionsReader;
   typename EdfImageSeries::Pointer m_ReferenceProjectionsReader;
 

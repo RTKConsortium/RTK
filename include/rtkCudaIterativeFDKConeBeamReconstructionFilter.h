@@ -53,17 +53,19 @@ class RTK_EXPORT CudaIterativeFDKConeBeamReconstructionFilter :
   IterativeFDKConeBeamReconstructionFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>, float > >
 {
 public:
-  /** Standard class typedefs. */
-  typedef CudaIterativeFDKConeBeamReconstructionFilter                                                        Self;
-  typedef IterativeFDKConeBeamReconstructionFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>, float > Superclass;
-  typedef itk::SmartPointer<Self>                                                                             Pointer;
-  typedef itk::SmartPointer<const Self>                                                                       ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(CudaIterativeFDKConeBeamReconstructionFilter);
+
+  /** Standard class type alias. */
+  using Self = CudaIterativeFDKConeBeamReconstructionFilter;
+  using Superclass = IterativeFDKConeBeamReconstructionFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>, float >;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
   /** Typedefs of subfilters which have been implemented with CUDA */
-  typedef rtk::CudaDisplacedDetectorImageFilter     DisplacedDetectorFilterType;
-  typedef rtk::CudaParkerShortScanImageFilter       ParkerFilterType;
-  typedef rtk::CudaFDKConeBeamReconstructionFilter  FDKFilterType;
-  typedef rtk::CudaConstantVolumeSource             ConstantImageSourceType;
+  using DisplacedDetectorFilterType = rtk::CudaDisplacedDetectorImageFilter;
+  using ParkerFilterType = rtk::CudaParkerShortScanImageFilter;
+  using FDKFilterType = rtk::CudaFDKConeBeamReconstructionFilter;
+  using ConstantImageSourceType = rtk::CudaConstantVolumeSource;
 
   /** Standard New method. */
   itkNewMacro(Self);
@@ -77,10 +79,6 @@ protected:
 
   virtual void GPUGenerateData();
 
-private:
-  //purposely not implemented
-  CudaIterativeFDKConeBeamReconstructionFilter(const Self&);
-  void operator=(const Self&);
 }; // end of class
 
 } // end namespace rtk

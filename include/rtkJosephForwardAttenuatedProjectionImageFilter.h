@@ -24,7 +24,7 @@
 #include "rtkJosephForwardProjectionImageFilter.h"
 #include "rtkMacro.h"
 #include <itkPixelTraits.h>
-#include <math.h>
+#include <cmath>
 #include <vector>
 
 namespace rtk
@@ -53,7 +53,7 @@ public:
       }
   }
 
-  ~InterpolationWeightMultiplicationAttenuated() {}
+  ~InterpolationWeightMultiplicationAttenuated() = default;
   bool operator!=( const InterpolationWeightMultiplicationAttenuated & ) const {
     return false;
   }
@@ -99,10 +99,10 @@ template< class TInput, class TOutput>
 class ComputeAttenuationCorrection
 {
 public:
-  typedef itk::Vector<double, 3> VectorType;
+  using VectorType = itk::Vector<double, 3>;
 
-  ComputeAttenuationCorrection(){}
-  ~ComputeAttenuationCorrection() {}
+  ComputeAttenuationCorrection()= default;
+  ~ComputeAttenuationCorrection() = default;
   bool operator!=( const ComputeAttenuationCorrection & ) const
   {
     return false;
@@ -129,7 +129,7 @@ public:
       wf  = m_ex1[threadId]*stepInMM.GetNorm();
       }
 
-    m_ex1[threadId] = ex2 ;
+    m_ex1[threadId] = ex2;
     m_AttenuationPixel[threadId] = 0;
     return wf *volumeValue;
   }
@@ -155,10 +155,10 @@ template< class TInput, class TOutput >
 class ProjectedValueAccumulationAttenuated
 {
 public:
-  typedef itk::Vector<double, 3> VectorType;
+  using VectorType = itk::Vector<double, 3>;
 
-  ProjectedValueAccumulationAttenuated() {}
-  ~ProjectedValueAccumulationAttenuated() {}
+  ProjectedValueAccumulationAttenuated() = default;
+  ~ProjectedValueAccumulationAttenuated() = default;
   bool operator!=( const ProjectedValueAccumulationAttenuated & ) const
   {
     return false;
@@ -179,7 +179,7 @@ public:
                           const VectorType &itkNotUsed(nearestPoint),
                           const VectorType &itkNotUsed(farthestPoint) )
   {
-    output = input + rayCastValue ;
+    output = input + rayCastValue;
     m_Attenuation[threadId] = 0;
     m_ex1[threadId] = 1;
   }
@@ -218,16 +218,18 @@ class ITK_EXPORT JosephForwardAttenuatedProjectionImageFilter :
     public JosephForwardProjectionImageFilter<TInputImage,TOutputImage,TInterpolationWeightMultiplication, TProjectedValueAccumulation, TSumAlongRay>
 {
 public:
-  /** Standard class typedefs. */
-  typedef JosephForwardAttenuatedProjectionImageFilter           Self;
-  typedef JosephForwardProjectionImageFilter<TInputImage,TOutputImage,TInterpolationWeightMultiplication, TProjectedValueAccumulation, TSumAlongRay> Superclass;
-  typedef itk::SmartPointer<Self>                                Pointer;
-  typedef itk::SmartPointer<const Self>                          ConstPointer;
-  typedef typename TInputImage::PixelType                        InputPixelType;
-  typedef typename TOutputImage::PixelType                       OutputPixelType;
-  typedef typename TOutputImage::RegionType                      OutputImageRegionType;
-  typedef double                                                 CoordRepType;
-  typedef itk::Vector<CoordRepType, TInputImage::ImageDimension> VectorType;
+  ITK_DISALLOW_COPY_AND_ASSIGN(JosephForwardAttenuatedProjectionImageFilter);
+
+  /** Standard class type alias. */
+  using Self = JosephForwardAttenuatedProjectionImageFilter;
+  using Superclass = JosephForwardProjectionImageFilter<TInputImage,TOutputImage,TInterpolationWeightMultiplication, TProjectedValueAccumulation, TSumAlongRay>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
+  using InputPixelType = typename TInputImage::PixelType;
+  using OutputPixelType = typename TOutputImage::PixelType;
+  using OutputImageRegionType = typename TOutputImage::RegionType;
+  using CoordRepType = double;
+  using VectorType = itk::Vector<CoordRepType, TInputImage::ImageDimension>;
 
   /** ImageDimension constants */
   static constexpr unsigned int InputImageDimension = TInputImage::ImageDimension;
@@ -240,24 +242,21 @@ public:
 
 protected:
   JosephForwardAttenuatedProjectionImageFilter();
-  virtual ~JosephForwardAttenuatedProjectionImageFilter() ITK_OVERRIDE {}
+  ~JosephForwardAttenuatedProjectionImageFilter() override = default;
 
   /** Apply changes to the input image requested region. */
-  void GenerateInputRequestedRegion() ITK_OVERRIDE;
+  void GenerateInputRequestedRegion() override;
 
-  void BeforeThreadedGenerateData() ITK_OVERRIDE;
+  void BeforeThreadedGenerateData() override;
 
   /** Only the last two inputs should be in the same space so we need
    * to overwrite the method. */
  #if ITK_VERSION_MAJOR<5
-  void VerifyInputInformation() ITK_OVERRIDE;
+  void VerifyInputInformation() override;
 #else
-  void VerifyInputInformation() const ITK_OVERRIDE;
+  void VerifyInputInformation() const override;
 #endif
 
-private:
-  JosephForwardAttenuatedProjectionImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);                     //purposely not implemented
 };
 } // end namespace rtk
 

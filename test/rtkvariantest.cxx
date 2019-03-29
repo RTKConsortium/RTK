@@ -30,7 +30,7 @@ int main(int argc, char*argv[])
   }
 
   std::vector<std::string> fileNames;
-  fileNames.push_back(argv[1]);
+  fileNames.emplace_back(argv[1]);
 
   // Varian geometry
   rtk::VarianObiGeometryReader::Pointer geoTargReader;
@@ -49,12 +49,12 @@ int main(int argc, char*argv[])
   CheckGeometries(geoTargReader->GetGeometry(), geoRefReader->GetOutputObject() );
 
   // ******* COMPARING projections *******
-  typedef float OutputPixelType;
-  const unsigned int Dimension = 3;
-  typedef itk::Image< OutputPixelType, Dimension > ImageType;
+  using OutputPixelType = float;
+  constexpr unsigned int Dimension = 3;
+  using ImageType = itk::Image< OutputPixelType, Dimension >;
 
   // Varian projections reader
-  typedef rtk::ProjectionsReader< ImageType > ReaderType;
+  using ReaderType = rtk::ProjectionsReader< ImageType >;
   ReaderType::Pointer reader = ReaderType::New();
   reader->SetFileNames( fileNames );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->Update() );
@@ -62,7 +62,7 @@ int main(int argc, char*argv[])
   // Reference projections reader
   ReaderType::Pointer readerRef = ReaderType::New();
   fileNames.clear();
-  fileNames.push_back(argv[5]);
+  fileNames.emplace_back(argv[5]);
   readerRef->SetFileNames( fileNames );
   TRY_AND_EXIT_ON_ITK_EXCEPTION(readerRef->Update());
 
@@ -71,7 +71,7 @@ int main(int argc, char*argv[])
 
   ///////////////////// Xim file format
   fileNames.clear();
-  fileNames.push_back(argv[3]);
+  fileNames.emplace_back(argv[3]);
 
   // Varian geometry
   rtk::VarianProBeamGeometryReader::Pointer geoProBeamReader;
@@ -94,7 +94,7 @@ int main(int argc, char*argv[])
 
   // Reference projections reader
   fileNames.clear();
-  fileNames.push_back(argv[8]);
+  fileNames.emplace_back(argv[8]);
   readerRef->SetFileNames( fileNames );
   TRY_AND_EXIT_ON_ITK_EXCEPTION(readerRef->Update());
 

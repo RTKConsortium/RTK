@@ -39,16 +39,18 @@ class RayQuadricIntersectionImageFilter :
 public RayConvexIntersectionImageFilter< TInputImage, TOutputImage >
 {
 public:
-  /** Standard class typedefs. */
-  typedef RayQuadricIntersectionImageFilter                          Self;
-  typedef RayConvexIntersectionImageFilter<TInputImage,TOutputImage> Superclass;
-  typedef itk::SmartPointer<Self>                                    Pointer;
-  typedef itk::SmartPointer<const Self>                              ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(RayQuadricIntersectionImageFilter);
 
-  /** Convenient typedefs. */
-  typedef ConvexShape::PointType  PointType;
-  typedef ConvexShape::VectorType VectorType;
-  typedef ConvexShape::ScalarType ScalarType;
+  /** Standard class type alias. */
+  using Self = RayQuadricIntersectionImageFilter;
+  using Superclass = RayConvexIntersectionImageFilter<TInputImage,TOutputImage>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
+
+  /** Convenient type alias. */
+  using PointType = ConvexShape::PointType;
+  using VectorType = ConvexShape::VectorType;
+  using ScalarType = ConvexShape::ScalarType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -91,14 +93,11 @@ public:
 
 protected:
   RayQuadricIntersectionImageFilter();
-  virtual ~RayQuadricIntersectionImageFilter() ITK_OVERRIDE {}
+  ~RayQuadricIntersectionImageFilter() override = default;
 
-  void BeforeThreadedGenerateData ( ) ITK_OVERRIDE;
+  void BeforeThreadedGenerateData ( ) override;
 
 private:
-  RayQuadricIntersectionImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);         //purposely not implemented
-
   ScalarType              m_Density;
   std::vector<VectorType> m_PlaneDirections;
   std::vector<ScalarType> m_PlanePositions;

@@ -17,12 +17,12 @@
 
 int main(int , char** )
 {
-  const unsigned int Dimension = 2;
-  typedef unsigned short                           OutputPixelType;
-  typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
+  constexpr unsigned int Dimension = 2;
+  using OutputPixelType = unsigned short;
+  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
 
   // Constant image sources
-  typedef rtk::ConstantImageSource< OutputImageType > ConstantImageSourceType;
+  using ConstantImageSourceType = rtk::ConstantImageSource< OutputImageType >;
   ConstantImageSourceType::PointType origin;
   ConstantImageSourceType::SizeType size, sizeRef;
   ConstantImageSourceType::SpacingType spacing, spacingRef;
@@ -56,7 +56,7 @@ int main(int , char** )
   imgRef->UpdateLargestPossibleRegion();
 
   // Binning filter
-  typedef itk::BinShrinkImageFilter<OutputImageType, OutputImageType> BINType;
+  using BINType = itk::BinShrinkImageFilter<OutputImageType, OutputImageType>;
   BINType::Pointer bin = BINType::New();
 
   std::cout << "\n\n****** Case 1: binning 2x2 ******" << std::endl;

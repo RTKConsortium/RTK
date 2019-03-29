@@ -32,17 +32,17 @@ int main(int argc, char * argv[])
 {
   GGO(rtkramp, args_info);
 
-  typedef float OutputPixelType;
-  const unsigned int Dimension = 3;
+  using OutputPixelType = float;
+  constexpr unsigned int Dimension = 3;
 
 #ifdef RTK_USE_CUDA
-  typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
+  using OutputImageType = itk::CudaImage< OutputPixelType, Dimension >;
 #else
-  typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
+  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
 #endif
 
   // Projections reader
-  typedef rtk::ProjectionsReader< OutputImageType > ReaderType;
+  using ReaderType = rtk::ProjectionsReader< OutputImageType >;
   ReaderType::Pointer reader = ReaderType::New();
   rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkramp>(reader, args_info);
   if(!args_info.lowmem_flag)
@@ -56,10 +56,10 @@ int main(int argc, char * argv[])
 
   // Ramp filter
 #ifdef RTK_USE_CUDA
-  typedef rtk::CudaFFTRampImageFilter CudaRampFilterType;
+  using CudaRampFilterType = rtk::CudaFFTRampImageFilter;
   CudaRampFilterType::Pointer cudaRampFilter;
 #endif
-  typedef rtk::FFTRampImageFilter<OutputImageType, OutputImageType, double > CPURampFilterType;
+  using CPURampFilterType = rtk::FFTRampImageFilter<OutputImageType, OutputImageType, double >;
   CPURampFilterType::Pointer rampFilter;
   if( !strcmp(args_info.hardware_arg, "cuda") )
     {
@@ -84,7 +84,7 @@ int main(int argc, char * argv[])
     }
 
   // Streaming filter
-  typedef itk::StreamingImageFilter<OutputImageType, OutputImageType> StreamerType;
+  using StreamerType = itk::StreamingImageFilter<OutputImageType, OutputImageType>;
   StreamerType::Pointer streamer = StreamerType::New();
 #ifdef RTK_USE_CUDA
   if( !strcmp(args_info.hardware_arg, "cuda") )
@@ -97,7 +97,7 @@ int main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION( streamer->Update() )
 
   // Write
-  typedef itk::ImageFileWriter<  OutputImageType > WriterType;
+  using WriterType = itk::ImageFileWriter<  OutputImageType >;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
   writer->SetInput( streamer->GetOutput() );

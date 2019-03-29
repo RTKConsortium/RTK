@@ -97,11 +97,11 @@ TOutputPixel
 Reg1DExtractShroudSignalImageFilter<TInputPixel, TOutputPixel>
 ::register1D(const RegisterImageType* f, const RegisterImageType* m)
 {
-  typedef itk::TranslationTransform<TOutputPixel, 1>                                TransformType;
-  typedef itk::RegularStepGradientDescentOptimizer                                  OptimizerType;
-  typedef itk::MeanSquaresImageToImageMetric<RegisterImageType, RegisterImageType>  MetricType;
-  typedef itk::LinearInterpolateImageFunction<RegisterImageType, TOutputPixel>      InterpolatorType;
-  typedef itk::ImageRegistrationMethod<RegisterImageType, RegisterImageType>        RegistrationType;
+  using TransformType = itk::TranslationTransform<TOutputPixel, 1>;
+  using OptimizerType = itk::RegularStepGradientDescentOptimizer;
+  using MetricType = itk::MeanSquaresImageToImageMetric<RegisterImageType, RegisterImageType>;
+  using InterpolatorType = itk::LinearInterpolateImageFunction<RegisterImageType, TOutputPixel>;
+  using RegistrationType = itk::ImageRegistrationMethod<RegisterImageType, RegisterImageType>;
 
   typename MetricType::Pointer metric = MetricType::New();
   typename TransformType::Pointer transform = TransformType::New();
@@ -118,7 +118,7 @@ Reg1DExtractShroudSignalImageFilter<TInputPixel, TOutputPixel>
   registration->SetMovingImage(m);
   registration->SetFixedImageRegion(f->GetLargestPossibleRegion());
 
-  typedef typename RegistrationType::ParametersType ParametersType;
+  using ParametersType = typename RegistrationType::ParametersType;
   ParametersType initialParameters(transform->GetNumberOfParameters());
   // Initial offset along X
   initialParameters[0] = itk::NumericTraits<TOutputPixel>::Zero;
@@ -142,8 +142,8 @@ Reg1DExtractShroudSignalImageFilter<TInputPixel, TOutputPixel>
 {
   this->AllocateOutputs();
 
-  typedef itk::ExtractImageFilter<TInputImage, RegisterImageType>  ExtractFilterType;
-  typedef itk::ImageDuplicator<RegisterImageType>                  DuplicatorType;
+  using ExtractFilterType = itk::ExtractImageFilter<TInputImage, RegisterImageType>;
+  using DuplicatorType = itk::ImageDuplicator<RegisterImageType>;
 
   typename TInputImage::ConstPointer input = this->GetInput();
   typename TInputImage::RegionType inputRegion = input->GetLargestPossibleRegion();

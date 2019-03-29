@@ -133,7 +133,7 @@ void ConjugateGradientImageFilter<OutputImageType>
 ::GenerateData()
 {
   typename OutputImageType::RegionType largest = this->GetOutput()->GetLargestPossibleRegion();
-  typedef typename itk::PixelTraits<typename OutputImageType::PixelType>::ValueType DataType;
+  using DataType = typename itk::PixelTraits<typename OutputImageType::PixelType>::ValueType;
 
   // Create and allocate images
   typename OutputImageType::Pointer Pk = OutputImageType::New();

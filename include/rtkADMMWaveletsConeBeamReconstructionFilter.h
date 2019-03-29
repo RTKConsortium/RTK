@@ -142,10 +142,12 @@ template< typename TOutputImage>
 class ADMMWaveletsConeBeamReconstructionFilter : public rtk::IterativeConeBeamReconstructionFilter<TOutputImage, TOutputImage>
 {
 public:
-    /** Standard class typedefs. */
-    typedef ADMMWaveletsConeBeamReconstructionFilter                            Self;
-    typedef IterativeConeBeamReconstructionFilter<TOutputImage, TOutputImage>   Superclass;
-    typedef itk::SmartPointer< Self >                                           Pointer;
+    ITK_DISALLOW_COPY_AND_ASSIGN(ADMMWaveletsConeBeamReconstructionFilter);
+
+    /** Standard class type alias. */
+    using Self = ADMMWaveletsConeBeamReconstructionFilter;
+    using Superclass = IterativeConeBeamReconstructionFilter<TOutputImage, TOutputImage>;
+    using Pointer = itk::SmartPointer< Self >;
 
     /** Method for creation through the object factory. */
     itkNewMacro(Self)
@@ -159,24 +161,24 @@ public:
 //    /** The gated measured projections */
 //    void SetInputProjectionStack(const TOutputImage* Projection);
 
-    typedef rtk::ForwardProjectionImageFilter< TOutputImage, TOutputImage >               ForwardProjectionFilterType;
-    typedef rtk::BackProjectionImageFilter< TOutputImage, TOutputImage >                  BackProjectionFilterType;
-    typedef rtk::ConjugateGradientImageFilter<TOutputImage>                               ConjugateGradientFilterType;
-    typedef itk::SubtractImageFilter<TOutputImage>                                        SubtractFilterType;
-    typedef itk::AddImageFilter<TOutputImage>                                             AddFilterType;
-    typedef itk::MultiplyImageFilter<TOutputImage>                                        MultiplyFilterType;
-    typedef rtk::ADMMWaveletsConjugateGradientOperator<TOutputImage>                      CGOperatorFilterType;
-    typedef rtk::DeconstructSoftThresholdReconstructImageFilter<TOutputImage>             SoftThresholdFilterType;
-    typedef rtk::DisplacedDetectorImageFilter<TOutputImage>                               DisplacedDetectorFilterType;
+    using ForwardProjectionFilterType = rtk::ForwardProjectionImageFilter< TOutputImage, TOutputImage >;
+    using BackProjectionFilterType = rtk::BackProjectionImageFilter< TOutputImage, TOutputImage >;
+    using ConjugateGradientFilterType = rtk::ConjugateGradientImageFilter<TOutputImage>;
+    using SubtractFilterType = itk::SubtractImageFilter<TOutputImage>;
+    using AddFilterType = itk::AddImageFilter<TOutputImage>;
+    using MultiplyFilterType = itk::MultiplyImageFilter<TOutputImage>;
+    using CGOperatorFilterType = rtk::ADMMWaveletsConjugateGradientOperator<TOutputImage>;
+    using SoftThresholdFilterType = rtk::DeconstructSoftThresholdReconstructImageFilter<TOutputImage>;
+    using DisplacedDetectorFilterType = rtk::DisplacedDetectorImageFilter<TOutputImage>;
 
-    typedef typename Superclass::ForwardProjectionType ForwardProjectionType;
-    typedef typename Superclass::BackProjectionType    BackProjectionType;
+    using ForwardProjectionType = typename Superclass::ForwardProjectionType;
+    using BackProjectionType = typename Superclass::BackProjectionType;
 
     /** Pass the ForwardProjection filter to the conjugate gradient operator */
-    void SetForwardProjectionFilter (ForwardProjectionType _arg) ITK_OVERRIDE;
+    void SetForwardProjectionFilter (ForwardProjectionType _arg) override;
 
     /** Pass the backprojection filter to the conjugate gradient operator and to the back projection filter generating the B of AX=B */
-    void SetBackProjectionFilter (BackProjectionType _arg) ITK_OVERRIDE;
+    void SetBackProjectionFilter (BackProjectionType _arg) override;
 
     /** Pass the geometry to all filters needing it */
     itkSetObjectMacro(Geometry, ThreeDCircularProjectionGeometry)
@@ -205,10 +207,10 @@ public:
 
 protected:
     ADMMWaveletsConeBeamReconstructionFilter();
-    virtual ~ADMMWaveletsConeBeamReconstructionFilter() ITK_OVERRIDE {}
+    ~ADMMWaveletsConeBeamReconstructionFilter() override = default;
 
     /** Does the real work. */
-    void GenerateData() ITK_OVERRIDE;
+    void GenerateData() override;
 
     /** Member pointers to the filters used internally (for convenience)*/
     typename SubtractFilterType::Pointer                                        m_SubtractFilter1;
@@ -229,20 +231,17 @@ protected:
     * It is normal that they do not occupy the same physical space. Therefore this check
     * must be removed */
 #if ITK_VERSION_MAJOR<5
-    void VerifyInputInformation() ITK_OVERRIDE {}
+    void VerifyInputInformation() override {}
 #else
-    void VerifyInputInformation() const ITK_OVERRIDE {}
+    void VerifyInputInformation() const override {}
 #endif
 
     /** The volume and the projections must have different requested regions
     */
-    void GenerateInputRequestedRegion() ITK_OVERRIDE;
-    void GenerateOutputInformation() ITK_OVERRIDE;
+    void GenerateInputRequestedRegion() override;
+    void GenerateOutputInformation() override;
 
 private:
-    ADMMWaveletsConeBeamReconstructionFilter(const Self &); //purposely not implemented
-    void operator=(const Self &);  //purposely not implemented
-
     float           m_Alpha;
     float           m_Beta;
     unsigned int    m_AL_iterations;

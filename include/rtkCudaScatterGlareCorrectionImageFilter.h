@@ -46,13 +46,15 @@ class CudaScatterGlareCorrectionImageFilter :
                                                                                       float > >
 {
 public:
-  /** Standard class typedefs. */
-  typedef CudaScatterGlareCorrectionImageFilter                       Self;
-  typedef ScatterGlareCorrectionImageFilter< itk::CudaImage<float,3>,
+  ITK_DISALLOW_COPY_AND_ASSIGN(CudaScatterGlareCorrectionImageFilter);
+
+  /** Standard class type alias. */
+  using Self = CudaScatterGlareCorrectionImageFilter;
+  using Superclass = ScatterGlareCorrectionImageFilter< itk::CudaImage<float,3>,
                                              itk::CudaImage<float,3>,
-                                             float >                  Superclass;
-  typedef itk::SmartPointer<Self>                                     Pointer;
-  typedef itk::SmartPointer<const Self>                               ConstPointer;
+                                             float >;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
   /** Standard New method. */
   itkNewMacro(Self);
@@ -64,9 +66,6 @@ protected:
   CudaScatterGlareCorrectionImageFilter(){}
   ~CudaScatterGlareCorrectionImageFilter(){}
 
-private:
-  CudaScatterGlareCorrectionImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);                        //purposely not implemented
 }; // end of class
 
 } // end namespace rtk

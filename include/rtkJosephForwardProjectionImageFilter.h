@@ -43,8 +43,8 @@ template< class TInput, class TCoordRepType, class TOutput=TInput >
 class InterpolationWeightMultiplication
 {
 public:
-  InterpolationWeightMultiplication() {};
-  ~InterpolationWeightMultiplication() {};
+  InterpolationWeightMultiplication() = default;
+  ~InterpolationWeightMultiplication() = default;
   bool operator!=( const InterpolationWeightMultiplication & ) const {
     return false;
   }
@@ -74,10 +74,10 @@ template< class TInput, class TOutput>
 class SumAlongRay
 {
 public:
-  typedef itk::Vector<double, 3> VectorType;
+  using VectorType = itk::Vector<double, 3>;
 
-  SumAlongRay(){};
-  ~SumAlongRay() {};
+  SumAlongRay()= default;
+  ~SumAlongRay() = default;
   bool operator!=( const SumAlongRay & ) const
   {
     return false;
@@ -106,10 +106,10 @@ template< class TInput, class TOutput >
 class ProjectedValueAccumulation
 {
 public:
-  typedef itk::Vector<double, 3> VectorType;
+  using VectorType = itk::Vector<double, 3>;
 
-  ProjectedValueAccumulation() {};
-  ~ProjectedValueAccumulation() {};
+  ProjectedValueAccumulation() = default;
+  ~ProjectedValueAccumulation() = default;
   bool operator!=( const ProjectedValueAccumulation & ) const
     {
     return false;
@@ -161,16 +161,18 @@ class ITK_EXPORT JosephForwardProjectionImageFilter :
   public ForwardProjectionImageFilter<TInputImage,TOutputImage>
 {
 public:
-  /** Standard class typedefs. */
-  typedef JosephForwardProjectionImageFilter                     Self;
-  typedef ForwardProjectionImageFilter<TInputImage,TOutputImage> Superclass;
-  typedef itk::SmartPointer<Self>                                Pointer;
-  typedef itk::SmartPointer<const Self>                          ConstPointer;
-  typedef typename TInputImage::PixelType                        InputPixelType;
-  typedef typename TOutputImage::PixelType                       OutputPixelType;
-  typedef typename TOutputImage::RegionType                      OutputImageRegionType;
-  typedef double                                                 CoordRepType;
-  typedef itk::Vector<CoordRepType, TInputImage::ImageDimension> VectorType;
+  ITK_DISALLOW_COPY_AND_ASSIGN(JosephForwardProjectionImageFilter);
+
+  /** Standard class type alias. */
+  using Self = JosephForwardProjectionImageFilter;
+  using Superclass = ForwardProjectionImageFilter<TInputImage,TOutputImage>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
+  using InputPixelType = typename TInputImage::PixelType;
+  using OutputPixelType = typename TOutputImage::PixelType;
+  using OutputImageRegionType = typename TOutputImage::RegionType;
+  using CoordRepType = double;
+  using VectorType = itk::Vector<CoordRepType, TInputImage::ImageDimension>;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -225,16 +227,16 @@ public:
 
 protected:
   JosephForwardProjectionImageFilter();
-  virtual ~JosephForwardProjectionImageFilter() ITK_OVERRIDE {}
+  ~JosephForwardProjectionImageFilter() override = default;
 
-  void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) ITK_OVERRIDE;
+  void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) override;
 
   /** The two inputs should not be in the same space so there is nothing
    * to verify. */
 #if ITK_VERSION_MAJOR<5
-  void VerifyInputInformation() ITK_OVERRIDE {}
+  void VerifyInputInformation() override {}
 #else
-  void VerifyInputInformation() const ITK_OVERRIDE {}
+  void VerifyInputInformation() const override {}
 #endif
 
   inline OutputPixelType BilinearInterpolation(const ThreadIdType threadId,
@@ -264,9 +266,6 @@ protected:
                                                const double maxy);
 
 private:
-  JosephForwardProjectionImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);                     //purposely not implemented
-
   // Functors
   TInterpolationWeightMultiplication m_InterpolationWeightMultiplication;
   TProjectedValueAccumulation        m_ProjectedValueAccumulation;

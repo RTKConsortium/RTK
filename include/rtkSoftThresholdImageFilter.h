@@ -47,7 +47,7 @@ public:
     {
     m_Threshold = itk::NumericTraits<TInput>::Zero;
     }
-  ~SoftThreshold() {};
+  ~SoftThreshold() = default;
 
   void SetThreshold( const TInput & thresh )
     { m_Threshold = thresh; }
@@ -85,14 +85,16 @@ itk::UnaryFunctorImageFilter<TInputImage,TOutputImage,
   typename TOutputImage::PixelType> >
 {
 public:
-  /** Standard class typedefs. */
-  typedef SoftThresholdImageFilter                            Self;
+  ITK_DISALLOW_COPY_AND_ASSIGN(SoftThresholdImageFilter);
+
+  /** Standard class type alias. */
+  using Self = SoftThresholdImageFilter;
   typedef itk::UnaryFunctorImageFilter
   <TInputImage,TOutputImage,
   Functor::SoftThreshold< typename TInputImage::PixelType,
                           typename TOutputImage::PixelType> > Superclass;
-  typedef itk::SmartPointer<Self>                             Pointer;
-  typedef itk::SmartPointer<const Self>                       ConstPointer;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -101,11 +103,11 @@ public:
   itkTypeMacro(SoftThresholdImageFilter, UnaryFunctorImageFilter);
 
   /** Pixel types. */
-  typedef typename TInputImage::PixelType  InputPixelType;
-  typedef typename TOutputImage::PixelType OutputPixelType;
+  using InputPixelType = typename TInputImage::PixelType;
+  using OutputPixelType = typename TOutputImage::PixelType;
 
   /** Type of DataObjects to use for scalar inputs */
-  typedef itk::SimpleDataObjectDecorator<InputPixelType> InputPixelObjectType;
+  using InputPixelObjectType = itk::SimpleDataObjectDecorator<InputPixelType>;
 
   /** Set the threshold */
   virtual void SetThreshold(const InputPixelType threshold);
@@ -125,11 +127,7 @@ public:
 
 protected:
   SoftThresholdImageFilter();
-  virtual ~SoftThresholdImageFilter() ITK_OVERRIDE {}
-
-private:
-  SoftThresholdImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&); //purposely not implemented
+  ~SoftThresholdImageFilter() override = default;
 
 };
 

@@ -31,28 +31,28 @@ int main(int argc, char*argv[])
     return EXIT_FAILURE;
   }
 
-  typedef float OutputPixelType;
-  const unsigned int Dimension = 3;
+  using OutputPixelType = float;
+  constexpr unsigned int Dimension = 3;
 
 #ifdef USE_CUDA
-  typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
-  typedef itk::CudaImage< itk::CovariantVector
-      < OutputPixelType, Dimension >, Dimension >                GradientOutputImageType;
+  using OutputImageType = itk::CudaImage< OutputPixelType, Dimension >;
+  using GradientOutputImageType = itk::CudaImage< itk::CovariantVector
+      < OutputPixelType, Dimension >, Dimension >;
 #else
-  typedef itk::Image< OutputPixelType, Dimension >     OutputImageType;
-  typedef itk::Image< itk::CovariantVector
-      < OutputPixelType, Dimension >, Dimension >                GradientOutputImageType;
+  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
+  using GradientOutputImageType = itk::Image< itk::CovariantVector
+      < OutputPixelType, Dimension >, Dimension >;
 #endif
 
 #if FAST_TESTS_NO_CHECKS
-  const unsigned int NumberOfProjectionImages = 3;
+  constexpr unsigned int NumberOfProjectionImages = 3;
 #else
-  const unsigned int NumberOfProjectionImages = 90;
+  constexpr unsigned int NumberOfProjectionImages = 90;
 #endif
 
 
   // Constant image sources
-  typedef rtk::ConstantImageSource< OutputImageType > ConstantImageSourceType;
+  using ConstantImageSourceType = rtk::ConstantImageSource< OutputImageType >;
   ConstantImageSourceType::PointType origin;
   ConstantImageSourceType::SizeType size;
   ConstantImageSourceType::SpacingType spacing;
@@ -106,13 +106,13 @@ int main(int argc, char*argv[])
   projectionsSource->SetConstant( 0. );
 
   // Geometry object
-  typedef rtk::ThreeDCircularProjectionGeometry GeometryType;
+  using GeometryType = rtk::ThreeDCircularProjectionGeometry;
   GeometryType::Pointer geometry = GeometryType::New();
   for(unsigned int noProj=0; noProj<NumberOfProjectionImages; noProj++)
     geometry->AddProjection(600., 1200., noProj*360./NumberOfProjectionImages);
 
   // Create ellipsoid PROJECTIONS
-  typedef rtk::RayEllipsoidIntersectionImageFilter<OutputImageType, OutputImageType> REIType;
+  using REIType = rtk::RayEllipsoidIntersectionImageFilter<OutputImageType, OutputImageType>;
   REIType::Pointer rei;
 
   rei = REIType::New();
@@ -131,14 +131,14 @@ int main(int argc, char*argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION( rei->Update() );
 
   // Create REFERENCE object (3D ellipsoid).
-  typedef rtk::DrawEllipsoidImageFilter<OutputImageType, OutputImageType> DEType;
+  using DEType = rtk::DrawEllipsoidImageFilter<OutputImageType, OutputImageType>;
   DEType::Pointer dsl = DEType::New();
   dsl->SetInput( tomographySource->GetOutput() );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( dsl->Update() )
 
   // ADMMTotalVariation reconstruction filtering
-  typedef rtk::ADMMTotalVariationConeBeamReconstructionFilter
-    <OutputImageType, GradientOutputImageType>                ADMMTotalVariationType;
+  using ADMMTotalVariationType = rtk::ADMMTotalVariationConeBeamReconstructionFilter
+    <OutputImageType, GradientOutputImageType>;
   ADMMTotalVariationType::Pointer admmtotalvariation = ADMMTotalVariationType::New();
   admmtotalvariation->SetInput( tomographySource->GetOutput() );
   admmtotalvariation->SetInput(1, rei->GetOutput());
@@ -184,7 +184,7 @@ int main(int argc, char*argv[])
   admmtotalvariation->SetBackProjectionFilter(ADMMTotalVariationType::BP_VOXELBASED);
 
   // Generate arbitrary gating weights (select every third projection)
-  typedef rtk::PhaseGatingImageFilter<OutputImageType> PhaseGatingFilterType;
+  using PhaseGatingFilterType = rtk::PhaseGatingImageFilter<OutputImageType>;
   PhaseGatingFilterType::Pointer phaseGating = PhaseGatingFilterType::New();
 #if FAST_TESTS_NO_CHECKS
   phaseGating->SetPhasesFileName(argv[2]);

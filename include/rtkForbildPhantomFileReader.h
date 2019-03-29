@@ -42,20 +42,22 @@ class RTK_EXPORT ForbildPhantomFileReader :
     public itk::LightProcessObject
 {
 public:
-  /** Standard class typedefs. */
-  typedef ForbildPhantomFileReader       Self;
-  typedef itk::Object                    Superclass;
-  typedef itk::SmartPointer<Self>        Pointer;
-  typedef itk::SmartPointer<const Self>  ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(ForbildPhantomFileReader);
 
-  /** Convenient typedefs. */
-  itkStaticConstMacro(Dimension, unsigned int, ConvexShape::Dimension);
-  typedef GeometricPhantom::Pointer           GeometricPhantomPointer;
-  typedef ConvexShape::ScalarType             ScalarType;
-  typedef ConvexShape::PointType              PointType;
-  typedef ConvexShape::VectorType             VectorType;
-  typedef ConvexShape::RotationMatrixType     RotationMatrixType;
-  typedef GeometricPhantom::ConvexShapeVector ConvexShapeVectorType;
+  /** Standard class type alias. */
+  using Self = ForbildPhantomFileReader;
+  using Superclass = itk::Object;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
+
+  /** Convenient type alias. */
+  static constexpr unsigned int Dimension = ConvexShape::Dimension;
+  using GeometricPhantomPointer = GeometricPhantom::Pointer;
+  using ScalarType = ConvexShape::ScalarType;
+  using PointType = ConvexShape::PointType;
+  using VectorType = ConvexShape::VectorType;
+  using RotationMatrixType = ConvexShape::RotationMatrixType;
+  using ConvexShapeVectorType = GeometricPhantom::ConvexShapeVector;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -76,10 +78,10 @@ public:
 
 protected:
   /// Constructor
-  ForbildPhantomFileReader() {};
+  ForbildPhantomFileReader() = default;
 
   /// Destructor
-  ~ForbildPhantomFileReader() {}
+  ~ForbildPhantomFileReader() override = default;
 
   void CreateForbildSphere(const std::string &s);
   void CreateForbildBox(const std::string &s);
@@ -96,9 +98,6 @@ protected:
   void FindUnions(const std::string &s);
 
 private:
-  ForbildPhantomFileReader( const Self& ); //purposely not implemented
-  void operator=( const Self& );             //purposely not implemented
-
   GeometricPhantomPointer m_GeometricPhantom;
   std::string             m_Filename;
   PointType               m_Center;

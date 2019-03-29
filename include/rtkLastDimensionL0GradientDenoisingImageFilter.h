@@ -43,11 +43,13 @@ template< class TInputImage >
 class LastDimensionL0GradientDenoisingImageFilter : public itk::InPlaceImageFilter<TInputImage, TInputImage>
 {
 public:
-    /** Standard class typedefs. */
-    typedef LastDimensionL0GradientDenoisingImageFilter                        Self;
-    typedef itk::InPlaceImageFilter<TInputImage, TInputImage> Superclass;
-    typedef itk::SmartPointer< Self >                         Pointer;
-    typedef typename TInputImage::PixelType                   InputPixelType;
+    ITK_DISALLOW_COPY_AND_ASSIGN(LastDimensionL0GradientDenoisingImageFilter);
+
+    /** Standard class type alias. */
+    using Self = LastDimensionL0GradientDenoisingImageFilter;
+    using Superclass = itk::InPlaceImageFilter<TInputImage, TInputImage>;
+    using Pointer = itk::SmartPointer< Self >;
+    using InputPixelType = typename TInputImage::PixelType;
 
     /** Method for creation through the object factory. */
     itkNewMacro(Self)
@@ -65,25 +67,21 @@ public:
 
 protected:
     LastDimensionL0GradientDenoisingImageFilter();
-    virtual ~LastDimensionL0GradientDenoisingImageFilter() ITK_OVERRIDE {}
+    ~LastDimensionL0GradientDenoisingImageFilter() override = default;
 
-    void GenerateInputRequestedRegion() ITK_OVERRIDE;
+    void GenerateInputRequestedRegion() override;
 
     /** Does the real work. */
-    void ThreadedGenerateData(const typename TInputImage::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) ITK_OVERRIDE;
+    void ThreadedGenerateData(const typename TInputImage::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) override;
 
     /** Splits the OutputRequestedRegion along the first direction, not the last */
-    const itk::ImageRegionSplitterBase* GetImageRegionSplitter(void) const ITK_OVERRIDE;
+    const itk::ImageRegionSplitterBase* GetImageRegionSplitter(void) const override;
     itk::ImageRegionSplitterDirection::Pointer  m_Splitter;
 
     virtual void OneDimensionMinimizeL0NormOfGradient(InputPixelType* input, unsigned int length, double lambda, unsigned int nbIters);
 
     double              m_Lambda;
     unsigned int        m_NumberOfIterations;
-
-private:
-    LastDimensionL0GradientDenoisingImageFilter(const Self &); //purposely not implemented
-    void operator=(const Self &);  //purposely not implemented
 
 };
 } //namespace RTK

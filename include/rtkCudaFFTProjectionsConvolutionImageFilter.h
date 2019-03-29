@@ -52,18 +52,20 @@ class CudaFFTProjectionsConvolutionImageFilter:
                                       TParentImageFilter >
 {
 public:
-  /** Standard class typedefs. */
-  typedef CudaFFTProjectionsConvolutionImageFilter Self;
-  typedef TParentImageFilter                       Superclass;
-  typedef itk::SmartPointer<Self>                  Pointer;
-  typedef itk::SmartPointer<const Self>            ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(CudaFFTProjectionsConvolutionImageFilter);
 
-  /** Convenient typedefs. */
-  typedef typename TParentImageFilter::RegionType           RegionType;
-  typedef typename TParentImageFilter::FFTInputImagePointer FFTInputImagePointer;
-  typedef itk::CudaImage<float,3>                           CudaImageType;
-  typedef itk::CudaImage< std::complex<float>, 3 >          CudaFFTOutputImageType;
-  typedef CudaFFTOutputImageType::Pointer                   CudaFFTOutputImagePointer;
+  /** Standard class type alias. */
+  using Self = CudaFFTProjectionsConvolutionImageFilter;
+  using Superclass = TParentImageFilter;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
+
+  /** Convenient type alias. */
+  using RegionType = typename TParentImageFilter::RegionType;
+  using FFTInputImagePointer = typename TParentImageFilter::FFTInputImagePointer;
+  using CudaImageType = itk::CudaImage<float,3>;
+  using CudaFFTOutputImageType = itk::CudaImage< std::complex<float>, 3 >;
+  using CudaFFTOutputImagePointer = CudaFFTOutputImageType::Pointer;
 
   /** Runtime information support. */
   itkTypeMacro(CudaFFTProjectionsConvolutionImageFilter, TParentImageFilter);
@@ -77,9 +79,6 @@ protected:
   virtual FFTInputImagePointer PadInputImageRegion(const RegionType &inputRegion);
 
 private:
-  CudaFFTProjectionsConvolutionImageFilter(const Self&); // purposely not implemented
-  void operator=(const Self&);                // purposely not implemented
-
   CudaFFTOutputImagePointer m_KernelFFTCUDA;
 }; // end of class
 

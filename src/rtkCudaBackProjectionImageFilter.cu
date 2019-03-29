@@ -29,10 +29,10 @@
 /*****************
 *  C   #includes *
 *****************/
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <math.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <cmath>
 
 /*****************
 * CUDA #includes *
@@ -153,9 +153,9 @@ CUDA_back_project(int projSize[3],
   cudaMemcpyToSymbol(c_projPPToProjIndex, &(projPPToProjIndex[0]), 9 * sizeof(float));
 
   // Thread Block Dimensions
-  const int tBlock_x = 16;
-  const int tBlock_y = 4;
-  const int tBlock_z = 4;
+  constexpr int tBlock_x = 16;
+  constexpr int tBlock_y = 4;
+  constexpr int tBlock_z = 4;
 
   // Each element in the volume (each voxel) gets 1 thread
   unsigned int  blocksInX = (volSize[0]-1)/tBlock_x + 1;

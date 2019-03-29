@@ -68,10 +68,12 @@ namespace rtk
 class UnwarpSequenceConjugateGradientOperator : public ConjugateGradientOperator< TImageSequence >
 {
 public:
-    /** Standard class typedefs. */
-    typedef UnwarpSequenceConjugateGradientOperator       Self;
-    typedef ConjugateGradientOperator< TImageSequence >   Superclass;
-    typedef itk::SmartPointer< Self >                     Pointer;
+    ITK_DISALLOW_COPY_AND_ASSIGN(UnwarpSequenceConjugateGradientOperator);
+
+    /** Standard class type alias. */
+    using Self = UnwarpSequenceConjugateGradientOperator;
+    using Superclass = ConjugateGradientOperator< TImageSequence >;
+    using Pointer = itk::SmartPointer< Self >;
 
     /** Method for creation through the object factory. */
     itkNewMacro(Self)
@@ -79,7 +81,7 @@ public:
     /** Run-time type information (and related methods). */
     itkTypeMacro(rtkUnwarpSequenceConjugateGradientOperator, ConjugateGradientOperator)
 
-    typedef rtk::WarpSequenceImageFilter<TImageSequence, TDVFImageSequence, TImage, TDVFImage> WarpSequenceFilterType;
+    using WarpSequenceFilterType = rtk::WarpSequenceImageFilter<TImageSequence, TDVFImageSequence, TImage, TDVFImage>;
 
     /** Set the motion vector field used in input 1 */
     void SetDisplacementField(const TDVFImageSequence* DVFs);
@@ -100,10 +102,10 @@ public:
 
 protected:
     UnwarpSequenceConjugateGradientOperator();
-    virtual ~UnwarpSequenceConjugateGradientOperator() ITK_OVERRIDE {}
+    ~UnwarpSequenceConjugateGradientOperator() override = default;
 
     /** Does the real work. */
-    void GenerateData() ITK_OVERRIDE;
+    void GenerateData() override;
 
     /** Member pointers to the filters used internally (for convenience)*/
     typename WarpSequenceFilterType::Pointer              m_WarpSequenceBackwardFilter;
@@ -116,21 +118,17 @@ protected:
     * same physical space or not. Obviously they dont, so we have to remove this check
     */
 #if ITK_VERSION_MAJOR<5
-    void VerifyInputInformation() ITK_OVERRIDE {}
+    void VerifyInputInformation() override {}
 #else
-    void VerifyInputInformation() const ITK_OVERRIDE {}
+    void VerifyInputInformation() const override {}
 #endif
 
     /** The volume and the projections must have different requested regions
     */
-    void GenerateInputRequestedRegion() ITK_OVERRIDE;
-    void GenerateOutputInformation() ITK_OVERRIDE;
+    void GenerateInputRequestedRegion() override;
+    void GenerateOutputInformation() override;
 
     bool m_UseCudaCyclicDeformation;
-
-private:
-    UnwarpSequenceConjugateGradientOperator(const Self &); //purposely not implemented
-    void operator=(const Self &);  //purposely not implemented
 
 };
 } //namespace RTK

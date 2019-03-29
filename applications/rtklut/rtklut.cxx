@@ -27,32 +27,32 @@ int main(int argc, char * argv[])
 {
   GGO(rtklut, args_info);
 
-  typedef float OutputPixelType;
-  const unsigned int Dimension = 3;
+  using OutputPixelType = float;
+  constexpr unsigned int Dimension = 3;
 
-  typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
+  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
 
   // Projections reader
-  typedef rtk::ProjectionsReader< OutputImageType > ReaderType;
+  using ReaderType = rtk::ProjectionsReader< OutputImageType >;
   ReaderType::Pointer reader = ReaderType::New();
   rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtklut>(reader, args_info);
 
   // Read lookup table
-  typedef itk::Image<OutputPixelType, 1> LUTType;
-  typedef itk::ImageFileReader<LUTType> LUTReaderType;
+  using LUTType = itk::Image<OutputPixelType, 1>;
+  using LUTReaderType = itk::ImageFileReader<LUTType>;
   LUTReaderType::Pointer lutReader = LUTReaderType::New();
   lutReader->SetFileName(args_info.lut_arg);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( lutReader->Update() )
 
   // Apply lookup table
-  typedef rtk::LookupTableImageFilter<OutputImageType, OutputImageType> LUTFilterType;
+  using LUTFilterType = rtk::LookupTableImageFilter<OutputImageType, OutputImageType>;
   LUTFilterType::Pointer lutFilter = LUTFilterType::New();
   lutFilter->SetInput(reader->GetOutput());
   lutFilter->SetLookupTable(lutReader->GetOutput());
   TRY_AND_EXIT_ON_ITK_EXCEPTION( lutFilter->Update() )
 
   // Write
-  typedef itk::ImageFileWriter<  OutputImageType > WriterType;
+  using WriterType = itk::ImageFileWriter<  OutputImageType >;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
   writer->SetInput( lutFilter->GetOutput() );

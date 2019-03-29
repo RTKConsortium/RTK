@@ -46,26 +46,28 @@ class ITK_EXPORT FFTProjectionsConvolutionImageFilter :
   public itk::ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-  /** Standard class typedefs. */
-  typedef FFTProjectionsConvolutionImageFilter               Self;
-  typedef itk::ImageToImageFilter<TInputImage, TOutputImage> Superclass;
-  typedef itk::SmartPointer<Self>                            Pointer;
-  typedef itk::SmartPointer<const Self>                      ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(FFTProjectionsConvolutionImageFilter);
 
-  /** Some convenient typedefs. */
-  typedef TInputImage                                       InputImageType;
-  typedef TOutputImage                                      OutputImageType;
-  typedef typename InputImageType::RegionType               RegionType;
-  typedef typename InputImageType::IndexType                IndexType;
-  typedef typename InputImageType::SizeType                 SizeType;
+  /** Standard class type alias. */
+  using Self = FFTProjectionsConvolutionImageFilter;
+  using Superclass = itk::ImageToImageFilter<TInputImage, TOutputImage>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
-  typedef typename itk::Image<TFFTPrecision,
-                              TInputImage::ImageDimension > FFTInputImageType;
-  typedef typename FFTInputImageType::Pointer               FFTInputImagePointer;
-  typedef typename itk::Image<std::complex<TFFTPrecision>,
-                              TInputImage::ImageDimension > FFTOutputImageType;
-  typedef typename FFTOutputImageType::Pointer              FFTOutputImagePointer;
-  typedef itk::Vector<int,2>                                ZeroPadFactorsType;
+  /** Some convenient type alias. */
+  using InputImageType = TInputImage;
+  using OutputImageType = TOutputImage;
+  using RegionType = typename InputImageType::RegionType;
+  using IndexType = typename InputImageType::IndexType;
+  using SizeType = typename InputImageType::SizeType;
+
+  using FFTInputImageType = typename itk::Image<TFFTPrecision,
+                              TInputImage::ImageDimension >;
+  using FFTInputImagePointer = typename FFTInputImageType::Pointer;
+  using FFTOutputImageType = typename itk::Image<std::complex<TFFTPrecision>,
+                              TInputImage::ImageDimension >;
+  using FFTOutputImagePointer = typename FFTOutputImageType::Pointer;
+  using ZeroPadFactorsType = itk::Vector<int,2>;
 
   /** ImageDimension constants */
   itkStaticConstMacro(ImageDimension, unsigned int,
@@ -115,18 +117,18 @@ public:
 
 protected:
   FFTProjectionsConvolutionImageFilter();
-  virtual ~FFTProjectionsConvolutionImageFilter() ITK_OVERRIDE {}
+  ~FFTProjectionsConvolutionImageFilter() override = default;
 
-  void GenerateInputRequestedRegion() ITK_OVERRIDE;
+  void GenerateInputRequestedRegion() override;
 
-  void BeforeThreadedGenerateData() ITK_OVERRIDE;
+  void BeforeThreadedGenerateData() override;
 
-  void AfterThreadedGenerateData() ITK_OVERRIDE;
+  void AfterThreadedGenerateData() override;
 
 #if ITK_VERSION_MAJOR<5
-  void ThreadedGenerateData( const RegionType& outputRegionForThread, ThreadIdType threadId ) ITK_OVERRIDE;
+  void ThreadedGenerateData( const RegionType& outputRegionForThread, ThreadIdType threadId ) override;
 #else
-  void DynamicThreadedGenerateData( const RegionType& outputRegionForThread) ITK_OVERRIDE;
+  void DynamicThreadedGenerateData( const RegionType& outputRegionForThread) override;
 #endif
 
   /** Pad the inputRegion region of the input image and returns a pointer to the new padded image.
@@ -136,7 +138,7 @@ protected:
   virtual FFTInputImagePointer PadInputImageRegion(const RegionType &inputRegion);
   RegionType GetPaddedImageRegion(const RegionType &inputRegion);
 
-  void PrintSelf(std::ostream& os, itk::Indent indent) const ITK_OVERRIDE;
+  void PrintSelf(std::ostream& os, itk::Indent indent) const override;
 
   bool IsPrime( int n ) const;
 
@@ -164,9 +166,6 @@ protected:
   FFTOutputImagePointer m_KernelFFT;
 
 private:
-  FFTProjectionsConvolutionImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);                       //purposely not implemented
-
   /** Percentage of the image width which is feathered with data to correct for truncation.
     * 0 (default) means no correction.
     */

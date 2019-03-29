@@ -50,18 +50,20 @@ namespace rtk
 class RTK_EXPORT ThreeDCircularProjectionGeometry : public ProjectionGeometry<3>
 {
 public:
-  typedef ThreeDCircularProjectionGeometry Self;
-  typedef ProjectionGeometry<3>            Superclass;
-  typedef itk::SmartPointer< Self >        Pointer;
-  typedef itk::SmartPointer< const Self >  ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(ThreeDCircularProjectionGeometry);
 
-  typedef itk::Vector<double, 3>           VectorType;
-  typedef itk::Vector<double, 4>           HomogeneousVectorType;
-  typedef itk::Matrix<double, 3, 3 >       TwoDHomogeneousMatrixType;
-  typedef itk::Matrix<double, 4, 4 >       ThreeDHomogeneousMatrixType;
-  typedef itk::Point<double, 3>            PointType;
-  typedef itk::Matrix<double, 3, 3>        Matrix3x3Type;
-  typedef Superclass::MatrixType           HomogeneousProjectionMatrixType;
+  using Self = ThreeDCircularProjectionGeometry;
+  using Superclass = ProjectionGeometry<3>;
+  using Pointer = itk::SmartPointer< Self >;
+  using ConstPointer = itk::SmartPointer< const Self >;
+
+  using VectorType = itk::Vector<double, 3>;
+  using HomogeneousVectorType = itk::Vector<double, 4>;
+  using TwoDHomogeneousMatrixType = itk::Matrix<double, 3, 3 >;
+  using ThreeDHomogeneousMatrixType = itk::Matrix<double, 4, 4 >;
+  using PointType = itk::Point<double, 3>;
+  using Matrix3x3Type = itk::Matrix<double, 3, 3>;
+  using HomogeneousProjectionMatrixType = Superclass::MatrixType;
 
   /** Method for creation through the object factory. */
   itkNewMacro( Self );
@@ -104,7 +106,7 @@ public:
   bool AddProjection(const HomogeneousProjectionMatrixType &pMat);
 
   /** Empty the geometry object. */
-  void Clear() ITK_OVERRIDE;
+  void Clear() override;
 
   /** Get the vector of geometry parameters (one per projection). Angles are
    * in radians.*/
@@ -276,7 +278,7 @@ public:
 
 protected:
   ThreeDCircularProjectionGeometry();
-  virtual ~ThreeDCircularProjectionGeometry() ITK_OVERRIDE {}
+  ~ThreeDCircularProjectionGeometry() override = default;
 
   virtual void AddProjectionTranslationMatrix(const TwoDHomogeneousMatrixType &m){
     this->m_ProjectionTranslationMatrices.push_back(m);
@@ -338,7 +340,7 @@ protected:
                  const Matrix3x3Type &referenceMatrix) const;
 
   /** Clone the geometry object in a new one. */
-  itk::LightObject::Pointer InternalClone() const ITK_OVERRIDE;
+  itk::LightObject::Pointer InternalClone() const override;
 
   /** Circular geometry parameters per projection (angles in degrees between 0
     and 360). */
@@ -373,10 +375,6 @@ protected:
   std::vector<Superclass::MatrixType>            m_MagnificationMatrices;
   std::vector<ThreeDHomogeneousMatrixType>       m_RotationMatrices;
   std::vector<ThreeDHomogeneousMatrixType>       m_SourceTranslationMatrices;
-
-private:
-  ThreeDCircularProjectionGeometry(const Self&); //purposely not implemented
-  void operator=(const Self&);                   //purposely not implemented
 };
 }
 

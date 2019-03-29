@@ -32,29 +32,29 @@ int main(int argc, char * argv[])
 {
   GGO(rtkwarpedforwardprojectsequence, args_info);
 
-  typedef float OutputPixelType;
-  typedef itk::CovariantVector< OutputPixelType, 3 > DVFVectorType;
+  using OutputPixelType = float;
+  using DVFVectorType = itk::CovariantVector< OutputPixelType, 3 >;
 
 #ifdef RTK_USE_CUDA
-  typedef itk::CudaImage< OutputPixelType, 4 >  VolumeSeriesType;
-  typedef itk::CudaImage< OutputPixelType, 3 >  ProjectionStackType;
-  typedef itk::CudaImage<DVFVectorType, VolumeSeriesType::ImageDimension> DVFSequenceImageType;
-  typedef itk::CudaImage<DVFVectorType, VolumeSeriesType::ImageDimension - 1> DVFImageType;
+  using VolumeSeriesType = itk::CudaImage< OutputPixelType, 4 >;
+  using ProjectionStackType = itk::CudaImage< OutputPixelType, 3 >;
+  using DVFSequenceImageType = itk::CudaImage<DVFVectorType, VolumeSeriesType::ImageDimension>;
+  using DVFImageType = itk::CudaImage<DVFVectorType, VolumeSeriesType::ImageDimension - 1>;
 #else
-  typedef itk::Image< OutputPixelType, 4 > VolumeSeriesType;
-  typedef itk::Image< OutputPixelType, 3 > ProjectionStackType;
-  typedef itk::Image<DVFVectorType, VolumeSeriesType::ImageDimension> DVFSequenceImageType;
+  using VolumeSeriesType = itk::Image< OutputPixelType, 4 >;
+  using ProjectionStackType = itk::Image< OutputPixelType, 3 >;
+  using DVFSequenceImageType = itk::Image<DVFVectorType, VolumeSeriesType::ImageDimension>;
 #endif
-  typedef itk::ImageFileReader<  DVFSequenceImageType > DVFReaderType;
+  using DVFReaderType = itk::ImageFileReader<  DVFSequenceImageType >;
 
   // Create a stack of empty projection images
-  typedef rtk::ConstantImageSource< ProjectionStackType > ConstantImageSourceType;
+  using ConstantImageSourceType = rtk::ConstantImageSource< ProjectionStackType >;
   ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
   rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkwarpedforwardprojectsequence>(constantImageSource, args_info);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( constantImageSource->Update() )
 
   // Read the input volume sequence
-  typedef itk::ImageFileReader<  VolumeSeriesType > volumeSeriesReaderType;
+  using volumeSeriesReaderType = itk::ImageFileReader<  VolumeSeriesType >;
   volumeSeriesReaderType::Pointer volumeSeriesReader = volumeSeriesReaderType::New();
   volumeSeriesReader->SetFileName( args_info.input_arg );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( volumeSeriesReader->Update() )
@@ -84,7 +84,7 @@ int main(int argc, char * argv[])
   if(args_info.verbose_flag)
     std::cout << "Projecting volume sequence..." << std::endl;
 
-  typedef rtk::WarpFourDToProjectionStackImageFilter< VolumeSeriesType, ProjectionStackType> WarpForwardProjectType;
+  using WarpForwardProjectType = rtk::WarpFourDToProjectionStackImageFilter< VolumeSeriesType, ProjectionStackType>;
   WarpForwardProjectType::Pointer forwardProjection = WarpForwardProjectType::New();
 
   forwardProjection->SetInputProjectionStack( constantImageSource->GetOutput() );
@@ -98,7 +98,7 @@ int main(int argc, char * argv[])
   // Write
   if(args_info.verbose_flag)
     std::cout << "Writing... " << std::endl;
-  typedef itk::ImageFileWriter< ProjectionStackType > WriterType;
+  using WriterType = itk::ImageFileWriter< ProjectionStackType >;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
   writer->SetInput( forwardProjection->GetOutput() );

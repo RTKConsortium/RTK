@@ -30,7 +30,7 @@ GeometricPhantomFileReader
   m_GeometricPhantom = GeometricPhantom::New();
 
   //Admitted figures
-  const unsigned int NFIGURES = 4;
+  constexpr unsigned int NFIGURES = 4;
   const std::string search_fig[NFIGURES] = {"Ellipsoid", "Cylinder", "Cone", "Box"};
   size_t            offset        = 0;
   std::string       line;

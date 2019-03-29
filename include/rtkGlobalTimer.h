@@ -37,11 +37,13 @@ namespace rtk
 class RTK_EXPORT GlobalTimer:public itk::Object
 {
 public:
-  /** Standard class typedefs. */
-  typedef GlobalTimer                     Self;
-  typedef itk::Object                     Superclass;
-  typedef itk::SmartPointer< Self >       Pointer;
-  typedef itk::SmartPointer< const Self > ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(GlobalTimer);
+
+  /** Standard class type alias. */
+  using Self = GlobalTimer;
+  using Superclass = itk::Object;
+  using Pointer = itk::SmartPointer< Self >;
+  using ConstPointer = itk::SmartPointer< const Self >;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(GlobalTimer, itk::Object)
@@ -82,8 +84,8 @@ public:
 
 protected:
   GlobalTimer();
-  virtual ~GlobalTimer();
-  virtual void PrintSelf(std::ostream & os, Indent indent) const ITK_OVERRIDE;
+  ~GlobalTimer() override;
+  void PrintSelf(std::ostream & os, Indent indent) const override;
   bool m_Verbose;
 
 //  rtk::GlobalTimerProbesCollector m_GlobalTimerProbesCollector;
@@ -91,9 +93,6 @@ protected:
   std::vector<rtk::WatcherForTimer*> m_Watchers;
 
 private:
-  GlobalTimer(const Self &);   //purposely not implemented
-  void operator=(const Self &); //purposely not implemented
-
   static Pointer m_Instance;
   std::mutex     m_Mutex;
 

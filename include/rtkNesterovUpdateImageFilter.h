@@ -42,14 +42,15 @@ template< typename TImage>
 class NesterovUpdateImageFilter : public itk::InPlaceImageFilter< TImage,  TImage>
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(NesterovUpdateImageFilter);
 
-  /** Standard class typedefs. */
-  typedef NesterovUpdateImageFilter                        Self;
-  typedef itk::InPlaceImageFilter< TImage, TImage>         Superclass;
-  typedef itk::SmartPointer< Self >                        Pointer;
+  /** Standard class type alias. */
+  using Self = NesterovUpdateImageFilter;
+  using Superclass = itk::InPlaceImageFilter< TImage, TImage>;
+  using Pointer = itk::SmartPointer< Self >;
 
-  /** Convenient typedef */
-  typedef typename Superclass::OutputImageType::RegionType OutputImageRegionType;
+  /** Convenient type alias */
+  using OutputImageRegionType = typename Superclass::OutputImageType::RegionType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self)
@@ -63,18 +64,18 @@ public:
 
 protected:
   NesterovUpdateImageFilter();
-  virtual ~NesterovUpdateImageFilter() ITK_OVERRIDE;
+  ~NesterovUpdateImageFilter() override;
 
   /** Does the real work. */
-  void BeforeThreadedGenerateData() ITK_OVERRIDE;
+  void BeforeThreadedGenerateData() override;
 #if ITK_VERSION_MAJOR<5
-  void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) ITK_OVERRIDE;
+  void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) override;
 #else
-  void DynamicThreadedGenerateData(const OutputImageRegionType& outputRegionForThread) ITK_OVERRIDE;
+  void DynamicThreadedGenerateData(const OutputImageRegionType& outputRegionForThread) override;
 #endif
-  void AfterThreadedGenerateData() ITK_OVERRIDE;
+  void AfterThreadedGenerateData() override;
 
-  void GenerateInputRequestedRegion() ITK_OVERRIDE;
+  void GenerateInputRequestedRegion() override;
 
   int                                   m_NumberOfIterations;
   int                                   m_CurrentIteration;
@@ -88,9 +89,6 @@ protected:
   typename TImage::Pointer m_Vk;
   typename TImage::Pointer m_Alphak;
 
-private:
-  NesterovUpdateImageFilter(const Self &); //purposely not implemented
-  void operator=(const Self &);  //purposely not implemented
 };
 } //namespace RTK
 

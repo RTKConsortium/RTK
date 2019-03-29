@@ -35,10 +35,10 @@ namespace itk
 class GPUMemPointer: public Object
 {
 public:
-  typedef GPUMemPointer            Self;
-  typedef Object                   Superclass;
-  typedef SmartPointer<Self>       Pointer;
-  typedef SmartPointer<const Self> ConstPointer;
+  using Self = GPUMemPointer;
+  using Superclass = Object;
+  using Pointer = SmartPointer<Self>;
+  using ConstPointer = SmartPointer<const Self>;
 
   itkNewMacro(Self);
   itkTypeMacro(GPUMemPointer, Object);
@@ -120,11 +120,11 @@ class ITKCudaCommon_EXPORT CudaDataManager : public Object
 
 public:
 
-  typedef CudaDataManager          Self;
-  typedef Object                   Superclass;
-  typedef SmartPointer<Self>       Pointer;
-  typedef SmartPointer<const Self> ConstPointer;
-  typedef unsigned long            ModifiedTimeType;
+  using Self = CudaDataManager;
+  using Superclass = Object;
+  using Pointer = SmartPointer<Self>;
+  using ConstPointer = SmartPointer<const Self>;
+  using ModifiedTimeType = unsigned long;
 
   itkNewMacro(Self);
   itkTypeMacro(CudaDataManager, Object);

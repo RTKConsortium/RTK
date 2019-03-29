@@ -30,7 +30,7 @@ int main(int argc, char*argv[])
 
   // Ora geometry
   std::vector<std::string> filenames;
-  filenames.push_back(argv[1]);
+  filenames.emplace_back(argv[1]);
   rtk::OraGeometryReader::Pointer geoTargReader;
   geoTargReader = rtk::OraGeometryReader::New();
   geoTargReader->SetProjectionsFileNames( filenames );
@@ -48,12 +48,12 @@ int main(int argc, char*argv[])
   // ******* COMPARING projections *******
   std::cout << "Testing attenuation conversion..." << std::endl;
 
-  typedef float OutputPixelType;
-  const unsigned int Dimension = 3;
-  typedef itk::Image< OutputPixelType, Dimension > ImageType;
+  using OutputPixelType = float;
+  constexpr unsigned int Dimension = 3;
+  using ImageType = itk::Image< OutputPixelType, Dimension >;
 
   // Elekta projections reader
-  typedef rtk::ProjectionsReader< ImageType > ReaderType;
+  using ReaderType = rtk::ProjectionsReader< ImageType >;
   ReaderType::Pointer reader = ReaderType::New();
   reader->SetFileNames( filenames );
   ReaderType::OutputImageSpacingType spacing;
@@ -68,7 +68,7 @@ int main(int argc, char*argv[])
   reader->SetDirection(direction);
 
   // Create projection image filter
-  typedef rtk::MaskCollimationImageFilter<ImageType, ImageType> OFMType;
+  using OFMType = rtk::MaskCollimationImageFilter<ImageType, ImageType>;
   OFMType::Pointer ofm = OFMType::New();
   ofm->SetInput( reader->GetOutput() );
   ofm->SetGeometry( geoTargReader->GetModifiableGeometry() );
@@ -78,7 +78,7 @@ int main(int argc, char*argv[])
   // Reference projections reader
   ReaderType::Pointer readerRef = ReaderType::New();
   filenames.clear();
-  filenames.push_back(argv[3]);
+  filenames.emplace_back(argv[3]);
   readerRef->SetFileNames( filenames );
   TRY_AND_EXIT_ON_ITK_EXCEPTION(readerRef->Update());
 

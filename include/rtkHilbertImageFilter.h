@@ -45,11 +45,13 @@ class ITK_EXPORT HilbertImageFilter :
   public itk::ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-  /** Standard class typedefs. */
-  typedef HilbertImageFilter                                 Self;
-  typedef itk::ImageToImageFilter<TInputImage, TOutputImage> Superclass;
-  typedef itk::SmartPointer<Self>                            Pointer;
-  typedef itk::SmartPointer<const Self>                      ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(HilbertImageFilter);
+
+  /** Standard class type alias. */
+  using Self = HilbertImageFilter;
+  using Superclass = itk::ImageToImageFilter<TInputImage, TOutputImage>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
   /** Standard New method. */
   itkNewMacro(Self);
@@ -58,14 +60,11 @@ public:
   itkTypeMacro(HilbertImageFilter, itk::ImageToImageFilter);
 
 protected:
-  HilbertImageFilter(){}
-  virtual ~HilbertImageFilter() ITK_OVERRIDE {}
+  HilbertImageFilter()= default;
+  ~HilbertImageFilter() override = default;
 
-  void GenerateData() ITK_OVERRIDE;
+  void GenerateData() override;
 
-private:
-  HilbertImageFilter(const Self&);  //purposely not implemented
-  void operator=(const Self&);      //purposely not implemented
 }; // end of class
 
 } // end of namespace rtk

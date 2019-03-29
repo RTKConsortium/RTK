@@ -43,7 +43,7 @@ void
 CudaConjugateGradientImageFilter<TImage>
 ::GPUGenerateData()
 {
-  typedef typename itk::PixelTraits<typename TImage::PixelType>::ValueType DataType;
+  using DataType = typename itk::PixelTraits<typename TImage::PixelType>::ValueType;
   long int numberOfElements = this->GetOutput()->GetLargestPossibleRegion().GetNumberOfPixels() * itk::PixelTraits<typename TImage::PixelType>::Dimension;
 
   // Create and allocate images

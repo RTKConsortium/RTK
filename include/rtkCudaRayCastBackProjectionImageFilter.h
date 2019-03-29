@@ -51,20 +51,22 @@ class RTK_EXPORT CudaRayCastBackProjectionImageFilter :
   BackProjectionImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3> > >
 {
 public:
-  /** Standard class typedefs. */
-  typedef itk::CudaImage<float,3>                           ImageType;
-  typedef BackProjectionImageFilter< ImageType, ImageType>  BackProjectionImageFilterType;
-  typedef CudaRayCastBackProjectionImageFilter              Self;
-  typedef itk::CudaInPlaceImageFilter<ImageType, ImageType,
-                     BackProjectionImageFilterType>         Superclass;
-  typedef itk::SmartPointer<Self>                           Pointer;
-  typedef itk::SmartPointer<const Self>                     ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(CudaRayCastBackProjectionImageFilter);
 
-  typedef ImageType::RegionType                             OutputImageRegionType;
-  typedef itk::CudaImage<float, 2>                          ProjectionImageType;
-  typedef ProjectionImageType::Pointer                      ProjectionImagePointer;
-  typedef rtk::ThreeDCircularProjectionGeometry             GeometryType;
-  typedef GeometryType::Pointer                             GeometryPointer;
+  /** Standard class type alias. */
+  using ImageType = itk::CudaImage<float,3>;
+  using BackProjectionImageFilterType = BackProjectionImageFilter< ImageType, ImageType>;
+  using Self = CudaRayCastBackProjectionImageFilter;
+  using Superclass = itk::CudaInPlaceImageFilter<ImageType, ImageType,
+                     BackProjectionImageFilterType>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
+
+  using OutputImageRegionType = ImageType::RegionType;
+  using ProjectionImageType = itk::CudaImage<float, 2>;
+  using ProjectionImagePointer = ProjectionImageType::Pointer;
+  using GeometryType = rtk::ThreeDCircularProjectionGeometry;
+  using GeometryPointer = GeometryType::Pointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -87,9 +89,6 @@ protected:
   virtual void GPUGenerateData();
 
 private:
-  CudaRayCastBackProjectionImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);                   //purposely not implemented
-
   double             m_StepSize;
   bool               m_Normalize;
 };

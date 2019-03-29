@@ -33,17 +33,17 @@ int main(int argc, char * argv[])
 {
   GGO(rtkadmmtotalvariation, args_info);
 
-  typedef float OutputPixelType;
-  const unsigned int Dimension = 3;
+  using OutputPixelType = float;
+  constexpr unsigned int Dimension = 3;
 
 #ifdef RTK_USE_CUDA
-  typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
-  typedef itk::CudaImage< itk::CovariantVector
-      < OutputPixelType, Dimension >, Dimension >                GradientOutputImageType;
+  using OutputImageType = itk::CudaImage< OutputPixelType, Dimension >;
+  using GradientOutputImageType = itk::CudaImage< itk::CovariantVector
+      < OutputPixelType, Dimension >, Dimension >;
 #else
-  typedef itk::Image< OutputPixelType, Dimension >     OutputImageType;
-  typedef itk::Image< itk::CovariantVector
-      < OutputPixelType, Dimension >, Dimension >                GradientOutputImageType;
+  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
+  using GradientOutputImageType = itk::Image< itk::CovariantVector
+      < OutputPixelType, Dimension >, Dimension >;
 #endif
 
   //////////////////////////////////////////////////////////////////////////////////////////
@@ -51,7 +51,7 @@ int main(int argc, char * argv[])
   //////////////////////////////////////////////////////////////////////////////////////////
 
   // Projections reader
-  typedef rtk::ProjectionsReader< OutputImageType > projectionsReaderType;
+  using projectionsReaderType = rtk::ProjectionsReader< OutputImageType >;
   projectionsReaderType::Pointer projectionsReader = projectionsReaderType::New();
   rtk::SetProjectionsReaderFromGgo<projectionsReaderType,
       args_info_rtkadmmtotalvariation>(projectionsReader, args_info);
@@ -68,7 +68,7 @@ int main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION( geometryReader->GenerateOutputInformation() );
 
   // Phase gating weights reader
-  typedef rtk::PhaseGatingImageFilter<OutputImageType> PhaseGatingFilterType;
+  using PhaseGatingFilterType = rtk::PhaseGatingImageFilter<OutputImageType>;
   PhaseGatingFilterType::Pointer phaseGating = PhaseGatingFilterType::New();
   if (args_info.phases_given)
     {
@@ -86,7 +86,7 @@ int main(int argc, char * argv[])
   if(args_info.input_given)
     {
     // Read an existing image to initialize the volume
-    typedef itk::ImageFileReader<  OutputImageType > InputReaderType;
+    using InputReaderType = itk::ImageFileReader<  OutputImageType >;
     InputReaderType::Pointer inputReader = InputReaderType::New();
     inputReader->SetFileName( args_info.input_arg );
     inputFilter = inputReader;
@@ -94,7 +94,7 @@ int main(int argc, char * argv[])
   else
     {
     // Create new empty volume
-    typedef rtk::ConstantImageSource< OutputImageType > ConstantImageSourceType;
+    using ConstantImageSourceType = rtk::ConstantImageSource< OutputImageType >;
     ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
     rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkadmmtotalvariation>(constantImageSource, args_info);
     inputFilter = constantImageSource;
@@ -137,7 +137,7 @@ int main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION( admmFilter->Update() )
 
   // Set writer and write the output
-  typedef itk::ImageFileWriter<  OutputImageType > WriterType;
+  using WriterType = itk::ImageFileWriter<  OutputImageType >;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
   writer->SetInput( admmFilter->GetOutput() );

@@ -40,10 +40,12 @@ template< class TInputImage>
 class MultiplyByVectorImageFilter : public itk::ImageToImageFilter<TInputImage, TInputImage>
 {
 public:
-    /** Standard class typedefs. */
-    typedef MultiplyByVectorImageFilter                         Self;
-    typedef itk::ImageToImageFilter<TInputImage, TInputImage>   Superclass;
-    typedef itk::SmartPointer< Self >                           Pointer;
+    ITK_DISALLOW_COPY_AND_ASSIGN(MultiplyByVectorImageFilter);
+
+    /** Standard class type alias. */
+    using Self = MultiplyByVectorImageFilter;
+    using Superclass = itk::ImageToImageFilter<TInputImage, TInputImage>;
+    using Pointer = itk::SmartPointer< Self >;
 
     /** Method for creation through the object factory. */
     itkNewMacro(Self);
@@ -56,19 +58,16 @@ public:
 
 protected:
     MultiplyByVectorImageFilter();
-    virtual ~MultiplyByVectorImageFilter() ITK_OVERRIDE {}
+    ~MultiplyByVectorImageFilter() override = default;
 
     /** Does the real work. */
 #if ITK_VERSION_MAJOR<5
-    void ThreadedGenerateData(const typename TInputImage::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) ITK_OVERRIDE;
+    void ThreadedGenerateData(const typename TInputImage::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) override;
 #else
-    void DynamicThreadedGenerateData(const typename TInputImage::RegionType& outputRegionForThread) ITK_OVERRIDE;
+    void DynamicThreadedGenerateData(const typename TInputImage::RegionType& outputRegionForThread) override;
 #endif
 
 private:
-    MultiplyByVectorImageFilter(const Self &); //purposely not implemented
-    void operator=(const Self &);  //purposely not implemented
-
     std::vector<float> m_Vector;
 
 };

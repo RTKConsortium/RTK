@@ -15,7 +15,7 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#include <assert.h>
+#include <cassert>
 #include "itkCudaContextManager.h"
 #include "cuda.h"
 #include "cuda_runtime_api.h"

@@ -40,17 +40,17 @@ int main(int argc, char * argv[])
     }
 #endif
 
-  typedef float OutputPixelType;
-  const unsigned int Dimension = 3;
+  using OutputPixelType = float;
+  constexpr unsigned int Dimension = 3;
 
 #ifdef RTK_USE_CUDA
-  typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
+  using OutputImageType = itk::CudaImage< OutputPixelType, Dimension >;
 #else
-  typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
+  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
 #endif
 
   // Projections reader
-  typedef rtk::ProjectionsReader< OutputImageType > ReaderType;
+  using ReaderType = rtk::ProjectionsReader< OutputImageType >;
   ReaderType::Pointer reader = ReaderType::New();
   rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkparkershortscanweighting>(reader, args_info);
 
@@ -66,11 +66,11 @@ int main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION( geometryReader->GenerateOutputInformation() )
 
   // Short scan image filter
-  typedef rtk::ParkerShortScanImageFilter< OutputImageType > PSSFCPUType;
+  using PSSFCPUType = rtk::ParkerShortScanImageFilter< OutputImageType >;
 #ifdef RTK_USE_CUDA
-  typedef rtk::CudaParkerShortScanImageFilter PSSFType;
+  using PSSFType = rtk::CudaParkerShortScanImageFilter;
 #else
-  typedef rtk::ParkerShortScanImageFilter< OutputImageType > PSSFType;
+  using PSSFType = rtk::ParkerShortScanImageFilter< OutputImageType >;
 #endif
   PSSFCPUType::Pointer pssf;
   if(!strcmp(args_info.hardware_arg, "cuda") )
@@ -82,7 +82,7 @@ int main(int argc, char * argv[])
   pssf->InPlaceOff();
 
   // Write
-  typedef itk::ImageFileWriter<  OutputImageType > WriterType;
+  using WriterType = itk::ImageFileWriter<  OutputImageType >;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
   writer->SetInput( pssf->GetOutput() );

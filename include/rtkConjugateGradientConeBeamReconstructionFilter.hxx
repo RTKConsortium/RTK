@@ -375,7 +375,7 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage,
 ::InstantiateCudaConjugateGradientImageFilter()
 {
   itkGenericExceptionMacro(<< "CudaConjugateGradientImageFilter only available with 3D CudaImage of float or itk::Vector<float,3>.");
-  return ITK_NULLPTR;
+  return nullptr;
 }
 
 }// end namespace

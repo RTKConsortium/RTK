@@ -50,15 +50,17 @@ class RTK_EXPORT CudaLagCorrectionImageFilter :
   LagCorrectionImageFilter < itk::CudaImage<unsigned short, 3>, 4> >
 {
 public:
-  /** Convenience typedefs **/
-  typedef itk::CudaImage<unsigned short, 3>                    ImageType;
-  typedef LagCorrectionImageFilter <ImageType, 4>              CPULagFilterType;
+  ITK_DISALLOW_COPY_AND_ASSIGN(CudaLagCorrectionImageFilter);
 
-  /** Standard class typedefs. */
-  typedef CudaLagCorrectionImageFilter                                        Self;
-  typedef itk::CudaInPlaceImageFilter<ImageType, ImageType, CPULagFilterType> Superclass;
-  typedef itk::SmartPointer<Self>                                             Pointer;
-  typedef itk::SmartPointer<const Self>                                       ConstPointer;
+  /** Convenience type alias **/
+  using ImageType = itk::CudaImage<unsigned short, 3>;
+  using CPULagFilterType = LagCorrectionImageFilter <ImageType, 4>;
+
+  /** Standard class type alias. */
+  using Self = CudaLagCorrectionImageFilter;
+  using Superclass = itk::CudaInPlaceImageFilter<ImageType, ImageType, CPULagFilterType>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -74,11 +76,6 @@ protected:
 
   virtual void GPUGenerateData();
 
-private:
-  /** purposely not implemented **/
-  CudaLagCorrectionImageFilter(const Self&);
-  /** purposely not implemented **/
-  void operator=(const Self&);
 };
 
 }

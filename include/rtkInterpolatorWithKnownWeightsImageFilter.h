@@ -64,10 +64,12 @@ template< typename VolumeType, typename VolumeSeriesType>
 class InterpolatorWithKnownWeightsImageFilter : public itk::InPlaceImageFilter< VolumeType, VolumeType >
 {
 public:
-    /** Standard class typedefs. */
-    typedef InterpolatorWithKnownWeightsImageFilter             Self;
-    typedef itk::ImageToImageFilter< VolumeType, VolumeType >   Superclass;
-    typedef itk::SmartPointer< Self >                           Pointer;
+    ITK_DISALLOW_COPY_AND_ASSIGN(InterpolatorWithKnownWeightsImageFilter);
+
+    /** Standard class type alias. */
+    using Self = InterpolatorWithKnownWeightsImageFilter;
+    using Superclass = itk::ImageToImageFilter< VolumeType, VolumeType >;
+    using Pointer = itk::SmartPointer< Self >;
 
     /** Method for creation through the object factory. */
     itkNewMacro(Self)
@@ -90,27 +92,22 @@ public:
 
 protected:
     InterpolatorWithKnownWeightsImageFilter();
-    virtual ~InterpolatorWithKnownWeightsImageFilter() ITK_OVERRIDE {}
+    ~InterpolatorWithKnownWeightsImageFilter() override = default;
 
     typename VolumeType::ConstPointer GetInputVolume();
     typename VolumeSeriesType::Pointer GetInputVolumeSeries();
 
-    void GenerateInputRequestedRegion() ITK_OVERRIDE;
+    void GenerateInputRequestedRegion() override;
 
     /** Does the real work. */
 #if ITK_VERSION_MAJOR<5
-    void ThreadedGenerateData( const typename VolumeType::RegionType& outputRegionForThread, ThreadIdType threadId ) ITK_OVERRIDE;
+    void ThreadedGenerateData( const typename VolumeType::RegionType& outputRegionForThread, ThreadIdType threadId ) override;
 #else
-    void DynamicThreadedGenerateData( const typename VolumeType::RegionType& outputRegionForThread) ITK_OVERRIDE;
+    void DynamicThreadedGenerateData( const typename VolumeType::RegionType& outputRegionForThread) override;
 #endif
 
     itk::Array2D<float> m_Weights;
     int                 m_ProjectionNumber;
-
-private:
-    InterpolatorWithKnownWeightsImageFilter(const Self &); //purposely not implemented
-    void operator=(const Self &);  //purposely not implemented
-
 
 };
 } //namespace ITK

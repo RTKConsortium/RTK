@@ -79,7 +79,7 @@ void
 LUTbasedVariableI0RawToAttenuationImageFilter<TInputImage, TOutputImage>
 ::BeforeThreadedGenerateData()
 {
-  typedef rtk::I0EstimationProjectionFilter<TInputImage> I0EstimationType;
+  using I0EstimationType = rtk::I0EstimationProjectionFilter<TInputImage>;
   I0EstimationType * i0est = dynamic_cast<I0EstimationType*>( this->GetInput()->GetSource().GetPointer() );
   if(i0est)
     {

@@ -41,18 +41,20 @@ class BackwardDifferenceDivergenceImageFilter :
         public itk::ImageToImageFilter< TInputImage, TOutputImage >
 {
 public:
+    ITK_DISALLOW_COPY_AND_ASSIGN(BackwardDifferenceDivergenceImageFilter);
+
     /** Extract dimension from input and output image. */
     itkStaticConstMacro(InputImageDimension, unsigned int,
                         TInputImage::ImageDimension);
 
-    /** Convenient typedefs for simplifying declarations. */
-    typedef TInputImage InputImageType;
+    /** Convenient type alias for simplifying declarations. */
+    using InputImageType = TInputImage;
 
-    /** Standard class typedefs. */
-    typedef BackwardDifferenceDivergenceImageFilter                Self;
-    typedef itk::ImageToImageFilter< InputImageType, TOutputImage> Superclass;
-    typedef itk::SmartPointer<Self>                                Pointer;
-    typedef itk::SmartPointer<const Self>                          ConstPointer;
+    /** Standard class type alias. */
+    using Self = BackwardDifferenceDivergenceImageFilter;
+    using Superclass = itk::ImageToImageFilter< InputImageType, TOutputImage>;
+    using Pointer = itk::SmartPointer<Self>;
+    using ConstPointer = itk::SmartPointer<const Self>;
 
     /** Method for creation through the object factory. */
     itkNewMacro(Self)
@@ -82,32 +84,29 @@ public:
     /** Allows to change the default boundary condition */
     void OverrideBoundaryCondition(itk::ImageBoundaryCondition< TInputImage >* boundaryCondition);
 
-    /** Image typedef support. */
-    typedef typename InputImageType::PixelType  InputPixelType;
-    typedef typename InputImageType::RegionType InputImageRegionType;
-    typedef typename InputImageType::SizeType   InputSizeType;
-    typedef itk::CovariantVector< InputPixelType, InputImageDimension > CovariantVectorType;
+    /** Image type alias support. */
+    using InputPixelType = typename InputImageType::PixelType;
+    using InputImageRegionType = typename InputImageType::RegionType;
+    using InputSizeType = typename InputImageType::SizeType;
+    using CovariantVectorType = itk::CovariantVector< InputPixelType, InputImageDimension >;
 
 protected:
     BackwardDifferenceDivergenceImageFilter();
-    virtual ~BackwardDifferenceDivergenceImageFilter() ITK_OVERRIDE;
+    ~BackwardDifferenceDivergenceImageFilter() override;
 
-    void GenerateInputRequestedRegion() ITK_OVERRIDE;
+    void GenerateInputRequestedRegion() override;
 
-    void BeforeThreadedGenerateData() ITK_OVERRIDE;
+    void BeforeThreadedGenerateData() override;
 
 #if ITK_VERSION_MAJOR<5
-    void ThreadedGenerateData(const typename InputImageType::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) ITK_OVERRIDE;
+    void ThreadedGenerateData(const typename InputImageType::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) override;
 #else
-    void DynamicThreadedGenerateData(const typename InputImageType::RegionType& outputRegionForThread) ITK_OVERRIDE;
+    void DynamicThreadedGenerateData(const typename InputImageType::RegionType& outputRegionForThread) override;
 #endif
 
-    void AfterThreadedGenerateData() ITK_OVERRIDE;
+    void AfterThreadedGenerateData() override;
 
 private:
-    BackwardDifferenceDivergenceImageFilter(const Self&); //purposely not implemented
-    void operator=(const Self&); //purposely not implemented
-
     bool                              m_UseImageSpacing;
     typename TInputImage::SpacingType m_InvSpacingCoeffs;
 

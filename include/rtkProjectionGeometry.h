@@ -44,20 +44,22 @@ template< unsigned int TDimension = 3 >
 class ProjectionGeometry : public itk::DataObject
 {
 public:
-  typedef ProjectionGeometry<TDimension>  Self;
-  typedef itk::DataObject                 Superclass;
-  typedef itk::SmartPointer< Self >       Pointer;
-  typedef itk::SmartPointer< const Self > ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(ProjectionGeometry);
+
+  using Self = ProjectionGeometry<TDimension>;
+  using Superclass = itk::DataObject;
+  using Pointer = itk::SmartPointer< Self >;
+  using ConstPointer = itk::SmartPointer< const Self >;
 
   /** Method for creation through the object factory. */
   itkNewMacro( Self );
 
-  /** Convenient typedefs */
-  typedef typename itk::ImageBase<TDimension>::SizeType    SizeType;
-  typedef typename itk::ImageBase<TDimension>::PointType   PointType;
-  typedef typename itk::ImageBase<TDimension>::SpacingType SpacingType;
+  /** Convenient type alias */
+  using SizeType = typename itk::ImageBase<TDimension>::SizeType;
+  using PointType = typename itk::ImageBase<TDimension>::PointType;
+  using SpacingType = typename itk::ImageBase<TDimension>::SpacingType;
 
-  typedef typename itk::Matrix< double, TDimension, TDimension+1 > MatrixType;
+  using MatrixType = typename itk::Matrix< double, TDimension, TDimension+1 >;
 
   /** Get the vector of projection matrices.
    * A projection matrix is a M x (M+1) homogeneous matrix.
@@ -78,10 +80,10 @@ public:
   virtual void Clear();
 
 protected:
-  ProjectionGeometry(){};
-  virtual ~ProjectionGeometry() ITK_OVERRIDE {}
+  ProjectionGeometry()= default;
+  ~ProjectionGeometry() override = default;
 
-  void PrintSelf( std::ostream& os, itk::Indent indent ) const ITK_OVERRIDE;
+  void PrintSelf( std::ostream& os, itk::Indent indent ) const override;
 
   /** Add projection matrix */
   virtual void AddMatrix(const MatrixType &m){
@@ -90,9 +92,6 @@ protected:
   }
 
 private:
-  ProjectionGeometry(const Self&); //purposely not implemented
-  void operator=(const Self&);     //purposely not implemented
-
   /** Projection matrices */
   std::vector<MatrixType> m_Matrices;
 };

@@ -79,13 +79,13 @@ int main(int argc, char * argv[])
 {
   GGO(rtkprojectionmatrix, args_info);
 
-  typedef float OutputPixelType;
-  const unsigned int Dimension = 3;
+  using OutputPixelType = float;
+  constexpr unsigned int Dimension = 3;
 
-  typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
+  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
 
   // Projections reader
-  typedef rtk::ProjectionsReader< OutputImageType > ReaderType;
+  using ReaderType = rtk::ProjectionsReader< OutputImageType >;
   ReaderType::Pointer reader = ReaderType::New();
   rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkprojectionmatrix>(reader, args_info);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->Update() )
@@ -117,7 +117,7 @@ int main(int argc, char * argv[])
     std::cout << " done." << std::endl;
 
   // Create reconstructed image
-  typedef rtk::ConstantImageSource< OutputImageType > ConstantImageSourceType;
+  using ConstantImageSourceType = rtk::ConstantImageSource< OutputImageType >;
   ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
   rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkprojectionmatrix>(constantImageSource, args_info);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( constantImageSource->Update() )
@@ -147,11 +147,10 @@ int main(int argc, char * argv[])
   if(args_info.verbose_flag)
     std::cout << "Backprojecting volume and recording matrix values..." << std::endl;
 
-  typedef rtk::JosephBackProjectionImageFilter<OutputImageType,
+  using JosephType = rtk::JosephBackProjectionImageFilter<OutputImageType,
                                                OutputImageType,
                                                rtk::Functor::InterpolationWeightMultiplicationBackProjection<OutputPixelType, OutputPixelType>,
-                                               rtk::Functor::StoreSparseMatrixSplatWeightMultiplication<OutputPixelType, double, OutputPixelType> >
-                                                 JosephType;
+                                               rtk::Functor::StoreSparseMatrixSplatWeightMultiplication<OutputPixelType, double, OutputPixelType> >;
   JosephType::Pointer backProjection = JosephType::New();
   backProjection->SetInput( constantImageSource->GetOutput() );
   backProjection->SetInput( 1, reader->GetOutput() );

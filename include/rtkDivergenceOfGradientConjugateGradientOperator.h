@@ -39,19 +39,20 @@ class DivergenceOfGradientConjugateGradientOperator :
         public ConjugateGradientOperator< TInputImage >
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(DivergenceOfGradientConjugateGradientOperator);
 
   /** Extract dimension from input and output image. */
   itkStaticConstMacro(InputImageDimension, unsigned int,
                       TInputImage::ImageDimension);
 
-  /** Convenient typedefs for simplifying declarations. */
-  typedef TInputImage InputImageType;
+  /** Convenient type alias for simplifying declarations. */
+  using InputImageType = TInputImage;
 
-  /** Standard class typedefs. */
-  typedef DivergenceOfGradientConjugateGradientOperator            Self;
-  typedef itk::ImageToImageFilter< InputImageType, InputImageType> Superclass;
-  typedef itk::SmartPointer<Self>                                  Pointer;
-  typedef itk::SmartPointer<const Self>                            ConstPointer;
+  /** Standard class type alias. */
+  using Self = DivergenceOfGradientConjugateGradientOperator;
+  using Superclass = itk::ImageToImageFilter< InputImageType, InputImageType>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self)
@@ -59,25 +60,25 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(DivergenceOfGradientConjugateGradientOperator, ImageToImageFilter)
 
-  /** Image typedef support. */
-  typedef typename InputImageType::PixelType  InputPixelType;
-  typedef typename InputImageType::RegionType InputImageRegionType;
-  typedef typename InputImageType::SizeType   InputSizeType;
+  /** Image type alias support. */
+  using InputPixelType = typename InputImageType::PixelType;
+  using InputImageRegionType = typename InputImageType::RegionType;
+  using InputSizeType = typename InputImageType::SizeType;
 
   /** Sub filter type definitions */
-  typedef ForwardDifferenceGradientImageFilter<TInputImage>          GradientFilterType;
-  typedef typename GradientFilterType::OutputImageType               GradientImageType;
-  typedef BackwardDifferenceDivergenceImageFilter<GradientImageType> DivergenceFilterType;
+  using GradientFilterType = ForwardDifferenceGradientImageFilter<TInputImage>;
+  using GradientImageType = typename GradientFilterType::OutputImageType;
+  using DivergenceFilterType = BackwardDifferenceDivergenceImageFilter<GradientImageType>;
 
   void SetDimensionsProcessed(bool* arg);
 
 protected:
   DivergenceOfGradientConjugateGradientOperator();
-  ~DivergenceOfGradientConjugateGradientOperator() {}
+  ~DivergenceOfGradientConjugateGradientOperator() override = default;
 
-  void GenerateData() ITK_OVERRIDE;
+  void GenerateData() override;
 
-  void GenerateOutputInformation() ITK_OVERRIDE;
+  void GenerateOutputInformation() override;
 
   /** Sub filter pointers */
   typename GradientFilterType::Pointer             m_GradientFilter;
@@ -85,9 +86,6 @@ protected:
 
   bool m_DimensionsProcessed[TInputImage::ImageDimension];
 
-private:
-  DivergenceOfGradientConjugateGradientOperator(const Self&); //purposely not implemented
-  void operator=(const Self&); //purposely not implemented
 };
 
 } // end namespace itk

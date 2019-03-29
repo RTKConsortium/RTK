@@ -37,7 +37,7 @@ unsigned short *dev_proj_out,
 float *state
 )
 {
-  const int modelOrder = 4;
+  constexpr int modelOrder = 4;
 
   // compute thread index
   int3 tIdx;

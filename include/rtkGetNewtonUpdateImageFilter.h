@@ -43,10 +43,12 @@ template< class TGradient,
 class GetNewtonUpdateImageFilter : public itk::ImageToImageFilter<TGradient, TGradient>
 {
 public:
-    /** Standard class typedefs. */
-    typedef GetNewtonUpdateImageFilter                    Self;
-    typedef itk::ImageToImageFilter<TGradient, TGradient> Superclass;
-    typedef itk::SmartPointer< Self >                     Pointer;
+    ITK_DISALLOW_COPY_AND_ASSIGN(GetNewtonUpdateImageFilter);
+
+    /** Standard class type alias. */
+    using Self = GetNewtonUpdateImageFilter;
+    using Superclass = itk::ImageToImageFilter<TGradient, TGradient>;
+    using Pointer = itk::SmartPointer< Self >;
 
     /** Method for creation through the object factory. */
     itkNewMacro(Self)
@@ -55,10 +57,10 @@ public:
     itkTypeMacro(GetNewtonUpdateImageFilter, itk::ImageToImageFilter)
 
     /** Convenient parameters extracted from template types */
-    itkStaticConstMacro(nChannels, unsigned int, TGradient::PixelType::Dimension);
+    static constexpr unsigned int nChannels = TGradient::PixelType::Dimension;
 
-    /** Convenient typedef */
-    typedef typename TGradient::PixelType::ValueType dataType;
+    /** Convenient type alias */
+    using dataType = typename TGradient::PixelType::ValueType;
 
     /** Set methods for all inputs, since they have different types */
     void SetInputGradient(const TGradient* gradient);
@@ -66,24 +68,20 @@ public:
 
 protected:
     GetNewtonUpdateImageFilter();
-    ~GetNewtonUpdateImageFilter() {}
+    ~GetNewtonUpdateImageFilter() override = default;
 
-    void GenerateInputRequestedRegion() ITK_OVERRIDE;
+    void GenerateInputRequestedRegion() override;
 
     /** Does the real work. */
 #if ITK_VERSION_MAJOR<5
-    void ThreadedGenerateData(const typename TGradient::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) ITK_OVERRIDE;
+    void ThreadedGenerateData(const typename TGradient::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) override;
 #else
-    void DynamicThreadedGenerateData(const typename TGradient::RegionType& outputRegionForThread) ITK_OVERRIDE;
+    void DynamicThreadedGenerateData(const typename TGradient::RegionType& outputRegionForThread) override;
 #endif
 
     /** Getters for the inputs */
     typename TGradient::ConstPointer GetInputGradient();
     typename THessian::ConstPointer GetInputHessian();
-
-private:
-    GetNewtonUpdateImageFilter(const Self &); //purposely not implemented
-    void operator=(const Self &);  //purposely not implemented
 
 };
 } //namespace RTK

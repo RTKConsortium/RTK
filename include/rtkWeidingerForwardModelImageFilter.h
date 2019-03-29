@@ -45,10 +45,12 @@ template< class TMaterialProjections,
 class WeidingerForwardModelImageFilter : public itk::ImageToImageFilter<TMaterialProjections, TMaterialProjections>
 {
 public:
-    /** Standard class typedefs. */
-    typedef WeidingerForwardModelImageFilter                                    Self;
-    typedef itk::ImageToImageFilter<TMaterialProjections, TMaterialProjections> Superclass;
-    typedef itk::SmartPointer< Self >                                           Pointer;
+    ITK_DISALLOW_COPY_AND_ASSIGN(WeidingerForwardModelImageFilter);
+
+    /** Standard class type alias. */
+    using Self = WeidingerForwardModelImageFilter;
+    using Superclass = itk::ImageToImageFilter<TMaterialProjections, TMaterialProjections>;
+    using Pointer = itk::SmartPointer< Self >;
 
     /** Method for creation through the object factory. */
     itkNewMacro(Self)
@@ -57,22 +59,22 @@ public:
     itkTypeMacro(WeidingerForwardModelImageFilter, itk::ImageToImageFilter)
 
     /** Convenient parameters extracted from template types */
-    itkStaticConstMacro(nBins, unsigned int, TPhotonCounts::PixelType::Dimension);
-    itkStaticConstMacro(nMaterials, unsigned int, TMaterialProjections::PixelType::Dimension);
+    static constexpr unsigned int nBins = TPhotonCounts::PixelType::Dimension;
+    static constexpr unsigned int nMaterials = TMaterialProjections::PixelType::Dimension;
 
-    /** Convenient typedef */
-    typedef typename TMaterialProjections::PixelType::ValueType dataType;
+    /** Convenient type alias */
+    using dataType = typename TMaterialProjections::PixelType::ValueType;
 
     /** Define types for output images:
      * - one n-vector per pixel
      * - one nxn-matrix per pixel, but stored as one nxn-vector
     to allow vector back projection */
-    typedef TMaterialProjections TOutputImage1;
-    typedef itk::Vector<dataType, nMaterials * nMaterials> TPixelOutput2;
+    using TOutputImage1 = TMaterialProjections;
+    using TPixelOutput2 = itk::Vector<dataType, nMaterials * nMaterials>;
 #ifdef RTK_USE_CUDA
-    typedef itk::CudaImage<TPixelOutput2, TMaterialProjections::ImageDimension > TOutputImage2;
+    using TOutputImage2 = itk::CudaImage<TPixelOutput2, TMaterialProjections::ImageDimension >;
 #else
-    typedef itk::Image<TPixelOutput2, TMaterialProjections::ImageDimension > TOutputImage2;
+    using TOutputImage2 = itk::Image<TPixelOutput2, TMaterialProjections::ImageDimension >;
 #endif
 
     /** Define the getters for the outputs, with correct types */
@@ -86,8 +88,8 @@ public:
     void SetInputProjectionsOfOnes(const TProjections* projectionsOfOnes);
 
     /** Typedefs for additional input information */
-    typedef vnl_matrix<dataType>    BinnedDetectorResponseType;
-    typedef vnl_matrix<dataType>    MaterialAttenuationsType;
+    using BinnedDetectorResponseType = vnl_matrix<dataType>;
+    using MaterialAttenuationsType = vnl_matrix<dataType>;
 
     /** Set and Get macros for the additional input information */
     itkGetConstReferenceMacro(BinnedDetectorResponse, BinnedDetectorResponseType)
@@ -97,20 +99,20 @@ public:
 
 protected:
     WeidingerForwardModelImageFilter();
-    ~WeidingerForwardModelImageFilter() {}
+    ~WeidingerForwardModelImageFilter() override = default;
 
-    void GenerateInputRequestedRegion() ITK_OVERRIDE;
+    void GenerateInputRequestedRegion() override;
 #if ITK_VERSION_MAJOR<5
-    void VerifyInputInformation() ITK_OVERRIDE {}
+    void VerifyInputInformation() override {}
 #else
-    void VerifyInputInformation() const ITK_OVERRIDE {}
+    void VerifyInputInformation() const override {}
 #endif
 
     /** Does the real work. */
 #if ITK_VERSION_MAJOR<5
-    void ThreadedGenerateData(const typename TOutputImage1::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) ITK_OVERRIDE;
+    void ThreadedGenerateData(const typename TOutputImage1::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) override;
 #else
-    void DynamicThreadedGenerateData(const typename TOutputImage1::RegionType& outputRegionForThread) ITK_OVERRIDE;
+    void DynamicThreadedGenerateData(const typename TOutputImage1::RegionType& outputRegionForThread) override;
 #endif
 
     /** Creates the Outputs */
@@ -126,10 +128,6 @@ protected:
     /** Additional input parameters */
     BinnedDetectorResponseType  m_BinnedDetectorResponse;
     MaterialAttenuationsType    m_MaterialAttenuations;
-
-private:
-    WeidingerForwardModelImageFilter(const Self &); //purposely not implemented
-    void operator=(const Self &);  //purposely not implemented
 
 };
 } //namespace RTK

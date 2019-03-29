@@ -37,7 +37,7 @@ CLANG_SUPPRESS_Wfloat_equal                         \
       {                                             \
       this->m_##name = _arg;                        \
       this->Modified();                             \
-      this->m_KernelFFT = ITK_NULLPTR;              \
+      this->m_KernelFFT = nullptr;                  \
       }                                             \
 CLANG_PRAGMA_POP                                    \
     }
@@ -63,25 +63,27 @@ class ITK_EXPORT FFTRampImageFilter :
   public rtk::FFTProjectionsConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 {
 public:
-  /** Standard class typedefs. */
-  typedef FFTRampImageFilter                                        Self;
-  typedef rtk::FFTProjectionsConvolutionImageFilter< TInputImage,
+  ITK_DISALLOW_COPY_AND_ASSIGN(FFTRampImageFilter);
+
+  /** Standard class type alias. */
+  using Self = FFTRampImageFilter;
+  using Superclass = rtk::FFTProjectionsConvolutionImageFilter< TInputImage,
                                                      TOutputImage,
-                                                     TFFTPrecision> Superclass;
-  typedef itk::SmartPointer<Self>                                   Pointer;
-  typedef itk::SmartPointer<const Self>                             ConstPointer;
+                                                     TFFTPrecision>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
-  /** Some convenient typedefs. */
-  typedef TInputImage                                       InputImageType;
-  typedef TOutputImage                                      OutputImageType;
-  typedef TFFTPrecision                                     FFTPrecisionType;
-  typedef typename InputImageType::IndexType                IndexType;
-  typedef typename InputImageType::SizeType                 SizeType;
+  /** Some convenient type alias. */
+  using InputImageType = TInputImage;
+  using OutputImageType = TOutputImage;
+  using FFTPrecisionType = TFFTPrecision;
+  using IndexType = typename InputImageType::IndexType;
+  using SizeType = typename InputImageType::SizeType;
 
-  typedef typename Superclass::FFTInputImageType            FFTInputImageType;
-  typedef typename FFTInputImageType::Pointer               FFTInputImagePointer;
-  typedef typename Superclass::FFTOutputImageType           FFTOutputImageType;
-  typedef typename FFTOutputImageType::Pointer              FFTOutputImagePointer;
+  using FFTInputImageType = typename Superclass::FFTInputImageType;
+  using FFTInputImagePointer = typename FFTInputImageType::Pointer;
+  using FFTOutputImageType = typename Superclass::FFTOutputImageType;
+  using FFTOutputImagePointer = typename FFTOutputImageType::Pointer;
 
   /** Standard New method. */
   itkNewMacro(Self);
@@ -127,18 +129,15 @@ public:
 
 protected:
   FFTRampImageFilter();
-  virtual ~FFTRampImageFilter() ITK_OVERRIDE {}
+  ~FFTRampImageFilter() override = default;
 
-  void GenerateInputRequestedRegion() ITK_OVERRIDE;
+  void GenerateInputRequestedRegion() override;
 
   /** Creates and return a pointer to one line of the ramp kernel in Fourier space.
    *  Used in generate data functions.  */
-  void UpdateFFTProjectionsConvolutionKernel(const SizeType size) ITK_OVERRIDE;
+  void UpdateFFTProjectionsConvolutionKernel(const SizeType size) override;
 
 private:
-  FFTRampImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);     //purposely not implemented
-
   /**
    * Cut frequency of Hann, Cosine and Hamming windows. The first one which is
    * non-zero is used.

@@ -46,14 +46,15 @@ template< typename OutputImageType>
 class ConjugateGradientImageFilter : public itk::InPlaceImageFilter< OutputImageType,  OutputImageType>
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(ConjugateGradientImageFilter);
 
-  /** Standard class typedefs. */
-  typedef ConjugateGradientImageFilter                                              Self;
-  typedef itk::InPlaceImageFilter< OutputImageType, OutputImageType>                Superclass;
-  typedef itk::SmartPointer< Self >                                                 Pointer;
-  typedef ConjugateGradientOperator<OutputImageType>                                ConjugateGradientOperatorType;
-  typedef typename ConjugateGradientOperatorType::Pointer                           ConjugateGradientOperatorPointerType;
-  typedef typename OutputImageType::Pointer                                         OutputImagePointer;
+  /** Standard class type alias. */
+  using Self = ConjugateGradientImageFilter;
+  using Superclass = itk::InPlaceImageFilter< OutputImageType, OutputImageType>;
+  using Pointer = itk::SmartPointer< Self >;
+  using ConjugateGradientOperatorType = ConjugateGradientOperator<OutputImageType>;
+  using ConjugateGradientOperatorPointerType = typename ConjugateGradientOperatorType::Pointer;
+  using OutputImagePointer = typename OutputImageType::Pointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self)
@@ -86,17 +87,17 @@ public:
 
 protected:
   ConjugateGradientImageFilter();
-  virtual ~ConjugateGradientImageFilter() ITK_OVERRIDE {}
+  ~ConjugateGradientImageFilter() override = default;
 
   OutputImagePointer GetX();
   OutputImagePointer GetB();
 
   /** Does the real work. */
-  void GenerateData() ITK_OVERRIDE;
+  void GenerateData() override;
 
   /** Conjugate gradient requires the whole image */
-  void GenerateInputRequestedRegion() ITK_OVERRIDE;
-  void GenerateOutputInformation() ITK_OVERRIDE;
+  void GenerateInputRequestedRegion() override;
+  void GenerateOutputInformation() override;
 
   ConjugateGradientOperatorPointerType m_A;
 
@@ -104,10 +105,6 @@ protected:
   bool                m_IterationCosts;
   std::vector<double> m_ResidualCosts;
   double              m_C;
-
-private:
-  ConjugateGradientImageFilter(const Self &); //purposely not implemented
-  void operator=(const Self &);  //purposely not implemented
 };
 } //namespace RTK
 

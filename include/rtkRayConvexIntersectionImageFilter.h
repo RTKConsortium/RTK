@@ -41,19 +41,21 @@ class RayConvexIntersectionImageFilter :
   public itk::InPlaceImageFilter<TInputImage,TOutputImage>
 {
 public:
-  /** Standard class typedefs. */
-  typedef RayConvexIntersectionImageFilter                  Self;
-  typedef itk::InPlaceImageFilter<TInputImage,TOutputImage> Superclass;
-  typedef itk::SmartPointer<Self>                           Pointer;
-  typedef itk::SmartPointer<const Self>                     ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(RayConvexIntersectionImageFilter);
 
-  /** Convenient typedefs. */
-  typedef typename TOutputImage::RegionType     OutputImageRegionType;
-  typedef rtk::ThreeDCircularProjectionGeometry GeometryType;
-  typedef typename GeometryType::ConstPointer   GeometryConstPointer;
-  typedef ConvexShape::Pointer                  ConvexShapePointer;
-  typedef ConvexShape::ScalarType               ScalarType;
-  typedef ConvexShape::PointType                PointType;
+  /** Standard class type alias. */
+  using Self = RayConvexIntersectionImageFilter;
+  using Superclass = itk::InPlaceImageFilter<TInputImage,TOutputImage>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
+
+  /** Convenient type alias. */
+  using OutputImageRegionType = typename TOutputImage::RegionType;
+  using GeometryType = rtk::ThreeDCircularProjectionGeometry;
+  using GeometryConstPointer = typename GeometryType::ConstPointer;
+  using ConvexShapePointer = ConvexShape::Pointer;
+  using ScalarType = ConvexShape::ScalarType;
+  using PointType = ConvexShape::PointType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -71,24 +73,21 @@ public:
 
 protected:
   RayConvexIntersectionImageFilter();
-  ~RayConvexIntersectionImageFilter() {}
+  ~RayConvexIntersectionImageFilter() override = default;
 
   /** ConvexShape must be created in the BeforeThreadedGenerateData in the
    * daugter classes. */
-  void BeforeThreadedGenerateData() ITK_OVERRIDE;
+  void BeforeThreadedGenerateData() override;
 
   /** Apply changes to the input image requested region. */
 #if ITK_VERSION_MAJOR<5
   void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread,
-                             ThreadIdType threadId ) ITK_OVERRIDE;
+                             ThreadIdType threadId ) override;
 #else
-  void DynamicThreadedGenerateData( const OutputImageRegionType& outputRegionForThread ) ITK_OVERRIDE;
+  void DynamicThreadedGenerateData( const OutputImageRegionType& outputRegionForThread ) override;
 #endif
 
 private:
-  RayConvexIntersectionImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);                   //purposely not implemented
-
   ConvexShapePointer   m_ConvexShape;
   GeometryConstPointer m_Geometry;
 };

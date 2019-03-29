@@ -43,14 +43,16 @@ class DrawCylinderImageFilter:
 public DrawEllipsoidImageFilter< TInputImage, TOutputImage >
 {
 public:
-  /** Standard class typedefs. */
-  typedef DrawCylinderImageFilter                            Self;
-  typedef DrawEllipsoidImageFilter<TInputImage,TOutputImage> Superclass;
-  typedef itk::SmartPointer<Self>                            Pointer;
-  typedef itk::SmartPointer<const Self>                      ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(DrawCylinderImageFilter);
 
-  /** Convenient typedefs. */
-  typedef ConvexShape::ScalarType ScalarType;
+  /** Standard class type alias. */
+  using Self = DrawCylinderImageFilter;
+  using Superclass = DrawEllipsoidImageFilter<TInputImage,TOutputImage>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
+
+  /** Convenient type alias. */
+  using ScalarType = ConvexShape::ScalarType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -59,14 +61,10 @@ public:
   itkTypeMacro(DrawCylinderImageFilter, DrawCylinderImageFilter);
 
 protected:
-  DrawCylinderImageFilter() {}
-  ~DrawCylinderImageFilter() ITK_OVERRIDE {}
+  DrawCylinderImageFilter() = default;
+  ~DrawCylinderImageFilter() override = default;
 
-  void BeforeThreadedGenerateData() ITK_OVERRIDE;
-
-private:
-  DrawCylinderImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);          //purposely not implemented
+  void BeforeThreadedGenerateData() override;
 };
 
 } // end namespace rtk

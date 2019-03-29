@@ -41,13 +41,15 @@ template< typename TInputImage >
 class ImagXGeometryReader : public itk::LightProcessObject
 {
 public:
-  /** Standard typedefs */
-  typedef ImagXGeometryReader         Self;
-  typedef itk::LightProcessObject     Superclass;
-  typedef itk::SmartPointer<Self>     Pointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(ImagXGeometryReader);
 
-  /** Convenient typedefs */
-  typedef ThreeDCircularProjectionGeometry GeometryType;
+  /** Standard type alias */
+  using Self = ImagXGeometryReader;
+  using Superclass = itk::LightProcessObject;
+  using Pointer = itk::SmartPointer<Self>;
+
+  /** Convenient type alias */
+  using GeometryType = ThreeDCircularProjectionGeometry;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(ImagXGeometryReader, itk::LightProcessObject);
@@ -58,12 +60,12 @@ public:
   /** Get the pointer to the generated geometry object. */
   itkGetMacro(Geometry, GeometryType::Pointer);
 
-  /** Some convenient typedefs. */
-  typedef TInputImage                         InputImageType;
-  typedef typename InputImageType::Pointer    InputImagePointer;
-  typedef typename InputImageType::RegionType InputImageRegionType;
-  typedef typename InputImageType::PixelType  InputImagePixelType;
-  typedef std::vector<std::string>            FileNamesContainer;
+  /** Some convenient type alias. */
+  using InputImageType = TInputImage;
+  using InputImagePointer = typename InputImageType::Pointer;
+  using InputImageRegionType = typename InputImageType::RegionType;
+  using InputImagePixelType = typename InputImageType::PixelType;
+  using FileNamesContainer = std::vector<std::string>;
 
   /** Set the iMagX calibration xml file
     */
@@ -91,17 +93,13 @@ public:
 
 protected:
   ImagXGeometryReader()
-     : m_Geometry(ITK_NULLPTR), m_CalibrationXMLFileName(""), m_RoomXMLFileName("") {};
+     : m_Geometry(nullptr), m_CalibrationXMLFileName(""), m_RoomXMLFileName("") {};
 
-  virtual ~ImagXGeometryReader() ITK_OVERRIDE {}
+  ~ImagXGeometryReader() override = default;
 
 
 private:
-  //purposely not implemented
-  ImagXGeometryReader(const Self&);
-  void operator=(const Self&);
-
-  void GenerateData() ITK_OVERRIDE;
+  void GenerateData() override;
 
   // DICOM tag for AI versions
   static const std::string m_AI_VERSION_1p2;

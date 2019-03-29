@@ -41,16 +41,18 @@ class ITK_EXPORT MaskCollimationImageFilter :
   public itk::InPlaceImageFilter<TInputImage,TOutputImage>
 {
 public:
-  /** Standard class typedefs. */
-  typedef MaskCollimationImageFilter                        Self;
-  typedef itk::InPlaceImageFilter<TInputImage,TOutputImage> Superclass;
-  typedef itk::SmartPointer<Self>                           Pointer;
-  typedef itk::SmartPointer<const Self>                     ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(MaskCollimationImageFilter);
 
-  typedef typename TOutputImage::RegionType               OutputImageRegionType;
-  typedef rtk::ThreeDCircularProjectionGeometry           GeometryType;
-  typedef typename GeometryType::Pointer                  GeometryPointer;
-  typedef std::vector<std::string>                        FileNamesContainer;
+  /** Standard class type alias. */
+  using Self = MaskCollimationImageFilter;
+  using Superclass = itk::InPlaceImageFilter<TInputImage,TOutputImage>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
+
+  using OutputImageRegionType = typename TOutputImage::RegionType;
+  using GeometryType = rtk::ThreeDCircularProjectionGeometry;
+  using GeometryPointer = typename GeometryType::Pointer;
+  using FileNamesContainer = std::vector<std::string>;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -64,30 +66,27 @@ public:
 
 protected:
   MaskCollimationImageFilter();
-  virtual ~MaskCollimationImageFilter() ITK_OVERRIDE {};
+  ~MaskCollimationImageFilter() override = default;
 
-  void BeforeThreadedGenerateData() ITK_OVERRIDE;
+  void BeforeThreadedGenerateData() override;
 
   /** Apply changes to the input image requested region. */
 #if ITK_VERSION_MAJOR<5
   void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread,
-                             ThreadIdType threadId ) ITK_OVERRIDE;
+                             ThreadIdType threadId ) override;
 #else
-  void DynamicThreadedGenerateData( const OutputImageRegionType& outputRegionForThread ) ITK_OVERRIDE;
+  void DynamicThreadedGenerateData( const OutputImageRegionType& outputRegionForThread ) override;
 #endif
 
   /** The two inputs should not be in the same space so there is nothing
    * to verify. */
 #if ITK_VERSION_MAJOR<5
-  void VerifyInputInformation() ITK_OVERRIDE {}
+  void VerifyInputInformation() override {}
 #else
-  void VerifyInputInformation() const ITK_OVERRIDE {}
+  void VerifyInputInformation() const override {}
 #endif
 
 private:
-  MaskCollimationImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);          //purposely not implemented
-
   /** RTK geometry object */
   GeometryPointer m_Geometry;
 

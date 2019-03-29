@@ -121,7 +121,7 @@ void ConjugateGradientGetR_kPlusOneImageFilter<TInputType>
   double eps=1e-8;
 
   // Prepare iterators
-  typedef itk::ImageRegionIterator<TInputType> RegionIterator;
+  using RegionIterator = itk::ImageRegionIterator<TInputType>;
 
   // Compute Norm(r_k)²
   RegionIterator r_k_It(this->GetRk(), outputRegionForThread);

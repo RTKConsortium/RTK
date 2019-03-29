@@ -40,16 +40,18 @@ class ITK_EXPORT FDKBackProjectionImageFilter :
   public BackProjectionImageFilter<TInputImage,TOutputImage>
 {
 public:
-  /** Standard class typedefs. */
-  typedef FDKBackProjectionImageFilter                        Self;
-  typedef BackProjectionImageFilter<TInputImage,TOutputImage> Superclass;
-  typedef itk::SmartPointer<Self>                             Pointer;
-  typedef itk::SmartPointer<const Self>                       ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(FDKBackProjectionImageFilter);
 
-  typedef typename Superclass::ProjectionMatrixType ProjectionMatrixType;
-  typedef typename TOutputImage::RegionType         OutputImageRegionType;
-  typedef typename Superclass::ProjectionImageType  ProjectionImageType;
-  typedef typename ProjectionImageType::Pointer     ProjectionImagePointer;
+  /** Standard class type alias. */
+  using Self = FDKBackProjectionImageFilter;
+  using Superclass = BackProjectionImageFilter<TInputImage,TOutputImage>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
+
+  using ProjectionMatrixType = typename Superclass::ProjectionMatrixType;
+  using OutputImageRegionType = typename TOutputImage::RegionType;
+  using ProjectionImageType = typename Superclass::ProjectionImageType;
+  using ProjectionImagePointer = typename ProjectionImageType::Pointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -58,30 +60,27 @@ public:
   itkTypeMacro(FDKBackProjectionImageFilter, ImageToImageFilter);
 
 protected:
-  FDKBackProjectionImageFilter() {};
-  virtual ~FDKBackProjectionImageFilter() ITK_OVERRIDE {}
+  FDKBackProjectionImageFilter() = default;
+  ~FDKBackProjectionImageFilter() override = default;
 
-  void GenerateOutputInformation() ITK_OVERRIDE;
+  void GenerateOutputInformation() override;
 
 #if ITK_VERSION_MAJOR<5
-  void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) ITK_OVERRIDE;
+  void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) override;
 #else
-  void DynamicThreadedGenerateData(const OutputImageRegionType& outputRegionForThread) ITK_OVERRIDE;
+  void DynamicThreadedGenerateData(const OutputImageRegionType& outputRegionForThread) override;
 #endif
 
   /** Optimized version when the rotation is parallel to X, i.e. matrix[1][0]
     and matrix[2][0] are zeros. */
   void OptimizedBackprojectionX(const OutputImageRegionType& region, const ProjectionMatrixType& matrix,
-                                        const ProjectionImagePointer projection) ITK_OVERRIDE;
+                                        const ProjectionImagePointer projection) override;
 
   /** Optimized version when the rotation is parallel to Y, i.e. matrix[1][1]
     and matrix[2][1] are zeros. */
   void OptimizedBackprojectionY(const OutputImageRegionType& region, const ProjectionMatrixType& matrix,
-                                        const ProjectionImagePointer projection) ITK_OVERRIDE;
+                                        const ProjectionImagePointer projection) override;
 
-private:
-  FDKBackProjectionImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);               //purposely not implemented
 };
 
 } // end namespace rtk

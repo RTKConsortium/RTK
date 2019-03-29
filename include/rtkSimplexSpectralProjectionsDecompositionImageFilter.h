@@ -46,22 +46,24 @@ class ITK_EXPORT SimplexSpectralProjectionsDecompositionImageFilter :
   public itk::ImageToImageFilter<DecomposedProjectionsType, DecomposedProjectionsType>
 {
 public:
-  /** Standard class typedefs. */
-  typedef SimplexSpectralProjectionsDecompositionImageFilter                             Self;
-  typedef itk::ImageToImageFilter<DecomposedProjectionsType, DecomposedProjectionsType>  Superclass;
-  typedef itk::SmartPointer<Self>                                                        Pointer;
-  typedef itk::SmartPointer<const Self>                                                  ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(SimplexSpectralProjectionsDecompositionImageFilter);
 
-  /** Some convenient typedefs. */
-  typedef DecomposedProjectionsType       InputImageType;
-  typedef DecomposedProjectionsType       OutputImageType;
+  /** Standard class type alias. */
+  using Self = SimplexSpectralProjectionsDecompositionImageFilter;
+  using Superclass = itk::ImageToImageFilter<DecomposedProjectionsType, DecomposedProjectionsType>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
+
+  /** Some convenient type alias. */
+  using InputImageType = DecomposedProjectionsType;
+  using OutputImageType = DecomposedProjectionsType;
 
   /** Convenient information */
-  typedef itk::VariableLengthVector<int>                    ThresholdsType;
-  typedef itk::VariableSizeMatrix<double>                   MeanAttenuationInBinType;
-  typedef vnl_matrix<double>                                DetectorResponseType;
-  typedef vnl_matrix<double>                                MaterialAttenuationsType;
-  typedef ProjectionsDecompositionNegativeLogLikelihood     CostFunctionType;
+  using ThresholdsType = itk::VariableLengthVector<int>;
+  using MeanAttenuationInBinType = itk::VariableSizeMatrix<double>;
+  using DetectorResponseType = vnl_matrix<double>;
+  using MaterialAttenuationsType = vnl_matrix<double>;
+  using CostFunctionType = ProjectionsDecompositionNegativeLogLikelihood;
 
   /** Standard New method. */
   itkNewMacro(Self)
@@ -127,30 +129,30 @@ public:
 
 protected:
   SimplexSpectralProjectionsDecompositionImageFilter();
-  virtual ~SimplexSpectralProjectionsDecompositionImageFilter() ITK_OVERRIDE {}
+  ~SimplexSpectralProjectionsDecompositionImageFilter() override = default;
 
-  void GenerateOutputInformation() ITK_OVERRIDE;
+  void GenerateOutputInformation() override;
 
-  void GenerateInputRequestedRegion() ITK_OVERRIDE;
+  void GenerateInputRequestedRegion() override;
 
-  void BeforeThreadedGenerateData() ITK_OVERRIDE;
+  void BeforeThreadedGenerateData() override;
 #if ITK_VERSION_MAJOR<5
-  void ThreadedGenerateData(const typename DecomposedProjectionsType::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) ITK_OVERRIDE;
+  void ThreadedGenerateData(const typename DecomposedProjectionsType::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) override;
 #else
-  void DynamicThreadedGenerateData(const typename DecomposedProjectionsType::RegionType& outputRegionForThread) ITK_OVERRIDE;
+  void DynamicThreadedGenerateData(const typename DecomposedProjectionsType::RegionType& outputRegionForThread) override;
 #endif
 
   /**  Create the Output */
-  typedef itk::ProcessObject::DataObjectPointerArraySizeType DataObjectPointerArraySizeType;
+  using DataObjectPointerArraySizeType = itk::ProcessObject::DataObjectPointerArraySizeType;
   using Superclass::MakeOutput;
-  itk::DataObject::Pointer MakeOutput(DataObjectPointerArraySizeType idx) ITK_OVERRIDE;
+  itk::DataObject::Pointer MakeOutput(DataObjectPointerArraySizeType idx) override;
 
   /** The inputs should not be in the same space so there is nothing
    * to verify. */
 #if ITK_VERSION_MAJOR<5
-  void VerifyInputInformation() ITK_OVERRIDE {}
+  void VerifyInputInformation() override {}
 #else
-  void VerifyInputInformation() const ITK_OVERRIDE {}
+  void VerifyInputInformation() const override {}
 #endif
 
   /** Parameters */
@@ -168,11 +170,6 @@ protected:
   unsigned int               m_NumberOfMaterials;
   unsigned int               m_NumberOfEnergies;
   unsigned int               m_NumberOfSpectralBins;
-
-private:
-  //purposely not implemented
-  SimplexSpectralProjectionsDecompositionImageFilter(const Self&);
-  void operator=(const Self&);
 
 }; // end of class
 

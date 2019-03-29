@@ -29,7 +29,7 @@ rtk::MatlabSparseMatrix::MatlabSparseMatrix(const vnl_sparse_matrix<double>& spa
   //Compute the column index
   //Store elements in std::vector and sort them according 1\ index of column and 2\ index of row
   unsigned int nonZeroElement(0);
-  typedef std::vector<std::pair<unsigned int, double> > sparseMatrixColumn;
+  using sparseMatrixColumn = std::vector<std::pair<unsigned int, double> >;
   sparseMatrixColumn* columnsVector = new sparseMatrixColumn[nbColumn];
   sparseMatrix.reset();
   while(sparseMatrix.next()) {
@@ -92,9 +92,9 @@ rtk::MatlabSparseMatrix::MatlabSparseMatrix(const vnl_sparse_matrix<double>& spa
   unsigned int elementIndex(0);
   for (unsigned int i=0; i<m_MatlabSparseMatrix.s_dimensionNbColumn; ++i) {
     m_MatlabSparseMatrix.s_columnIndex[i] = elementIndex;
-    for (sparseMatrixColumn::iterator it = columnsVector[i].begin(); it != columnsVector[i].end(); ++it) {
-      m_MatlabSparseMatrix.s_rowIndex[elementIndex] = it->first;
-      m_MatlabSparseMatrix.s_value[elementIndex] = it->second;
+    for (const auto & it : columnsVector[i]) {
+      m_MatlabSparseMatrix.s_rowIndex[elementIndex] = it.first;
+      m_MatlabSparseMatrix.s_value[elementIndex] = it.second;
       ++elementIndex;
     }
   }

@@ -27,14 +27,14 @@
 
 int main(int, char** )
 {
-  typedef itk::CovariantVector<float, 3>        OutputPixelType;
+  using OutputPixelType = itk::CovariantVector<float, 3>;
 
 #ifdef RTK_USE_CUDA
-  typedef itk::CudaImage< OutputPixelType, 4 >  DVFSequenceImageType;
-  typedef itk::CudaImage< OutputPixelType, 3 >  DVFImageType;
+  using DVFSequenceImageType = itk::CudaImage< OutputPixelType, 4 >;
+  using DVFImageType = itk::CudaImage< OutputPixelType, 3 >;
 #else
-  typedef itk::Image< OutputPixelType, 4 >  DVFSequenceImageType;
-  typedef itk::Image< OutputPixelType, 3 >  DVFImageType;
+  using DVFSequenceImageType = itk::Image< OutputPixelType, 4 >;
+  using DVFImageType = itk::Image< OutputPixelType, 3 >;
 #endif
 
   DVFSequenceImageType::PointType fourDOrigin;
@@ -66,7 +66,7 @@ int main(int, char** )
 #endif
 
   // Create a vector field and its (very rough) inverse
-  typedef itk::ImageRegionIteratorWithIndex< DVFSequenceImageType > IteratorType;
+  using IteratorType = itk::ImageRegionIteratorWithIndex< DVFSequenceImageType >;
 
   DVFSequenceImageType::Pointer deformationField = DVFSequenceImageType::New();
 
@@ -133,7 +133,7 @@ int main(int, char** )
   signalFile << "0.3" << std::endl;
 
   // Set the forward and back projection filters to be used
-  typedef rtk::CyclicDeformationImageFilter<DVFSequenceImageType, DVFImageType> CyclicDeformationType;
+  using CyclicDeformationType = rtk::CyclicDeformationImageFilter<DVFSequenceImageType, DVFImageType>;
 
   std::cout << "\n\n****** Case 1: CPU cyclic deformation field ******" << std::endl;
 

@@ -52,16 +52,18 @@ class ITK_EXPORT FDKWeightProjectionFilter :
   public itk::InPlaceImageFilter<TInputImage, TOutputImage>
 {
 public:
-  /** Standard class typedefs. */
-  typedef FDKWeightProjectionFilter                          Self;
-  typedef itk::ImageToImageFilter<TInputImage, TOutputImage> Superclass;
-  typedef itk::SmartPointer<Self>                            Pointer;
-  typedef itk::SmartPointer<const Self>                      ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(FDKWeightProjectionFilter);
 
-  /** Some convenient typedefs. */
-  typedef TInputImage                          InputImageType;
-  typedef TOutputImage                         OutputImageType;
-  typedef typename OutputImageType::RegionType OutputImageRegionType;
+  /** Standard class type alias. */
+  using Self = FDKWeightProjectionFilter;
+  using Superclass = itk::ImageToImageFilter<TInputImage, TOutputImage>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
+
+  /** Some convenient type alias. */
+  using InputImageType = TInputImage;
+  using OutputImageType = TOutputImage;
+  using OutputImageRegionType = typename OutputImageType::RegionType;
 
   /** Standard New method. */
   itkNewMacro(Self);
@@ -74,21 +76,18 @@ public:
   itkSetObjectMacro(Geometry, ThreeDCircularProjectionGeometry);
 
 protected:
-  FDKWeightProjectionFilter()  {}
-  virtual ~FDKWeightProjectionFilter() ITK_OVERRIDE {}
+  FDKWeightProjectionFilter()  = default;
+  ~FDKWeightProjectionFilter() override = default;
 
-  void BeforeThreadedGenerateData() ITK_OVERRIDE;
+  void BeforeThreadedGenerateData() override;
 
 #if ITK_VERSION_MAJOR<5
-  void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId) ITK_OVERRIDE;
+  void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId) override;
 #else
-  void DynamicThreadedGenerateData(const OutputImageRegionType& outputRegionForThread) ITK_OVERRIDE;
+  void DynamicThreadedGenerateData(const OutputImageRegionType& outputRegionForThread) override;
 #endif
 
 private:
-  FDKWeightProjectionFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);            //purposely not implemented
-
   /** Angular weights for each projection */
   std::vector<double> m_ConstantProjectionFactor;
 

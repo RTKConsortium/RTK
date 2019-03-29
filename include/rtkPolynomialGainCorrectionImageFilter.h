@@ -45,21 +45,23 @@ class PolynomialGainCorrectionImageFilter :
 public itk::ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-  /** Standard class typedefs. */
-  typedef PolynomialGainCorrectionImageFilter                Self;
-  typedef itk::ImageToImageFilter<TInputImage, TOutputImage> Superclass;
-  typedef itk::SmartPointer<Self>                            Pointer;
-  typedef itk::SmartPointer<const Self>                      ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(PolynomialGainCorrectionImageFilter);
 
-  /** Some convenient typedefs. */
-  typedef TInputImage                          InputImageType;
-  typedef TOutputImage                         OutputImageType;
-  typedef typename InputImageType::Pointer     InputImagePointer;
-  typedef typename OutputImageType::Pointer    OutputImagePointer;
-  typedef typename InputImageType::RegionType  InputImageRegionType;
-  typedef typename TOutputImage::RegionType    OutputImageRegionType;
-  typedef typename std::vector< float >        VectorType;
-  typedef typename OutputImageType::SizeType   OutputSizeType;
+  /** Standard class type alias. */
+  using Self = PolynomialGainCorrectionImageFilter;
+  using Superclass = itk::ImageToImageFilter<TInputImage, TOutputImage>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
+
+  /** Some convenient type alias. */
+  using InputImageType = TInputImage;
+  using OutputImageType = TOutputImage;
+  using InputImagePointer = typename InputImageType::Pointer;
+  using OutputImagePointer = typename OutputImageType::Pointer;
+  using InputImageRegionType = typename InputImageType::RegionType;
+  using OutputImageRegionType = typename TOutputImage::RegionType;
+  using VectorType = typename std::vector< float >;
+  using OutputSizeType = typename OutputImageType::SizeType;
 
   /** Standard New method. */
   itkNewMacro(Self);
@@ -80,24 +82,18 @@ public:
 
 protected:
   PolynomialGainCorrectionImageFilter();
-  virtual ~PolynomialGainCorrectionImageFilter() ITK_OVERRIDE {}
+  ~PolynomialGainCorrectionImageFilter() override = default;
 
-  void GenerateOutputInformation() ITK_OVERRIDE;
+  void GenerateOutputInformation() override;
 
-  void GenerateInputRequestedRegion() ITK_OVERRIDE;
+  void GenerateInputRequestedRegion() override;
 
 #if ITK_VERSION_MAJOR<5
-  void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, itk::ThreadIdType threadId ) ITK_OVERRIDE;
+  void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, itk::ThreadIdType threadId ) override;
 #else
-  void DynamicThreadedGenerateData( const OutputImageRegionType& outputRegionForThread) ITK_OVERRIDE;
+  void DynamicThreadedGenerateData( const OutputImageRegionType& outputRegionForThread) override;
 #endif
 
-private:
-  //purposely not implemented
-  PolynomialGainCorrectionImageFilter(const Self&);
-  void operator=(const Self&);
-
-protected:
   bool               m_MapsLoaded;        // True if gain maps loaded
   int                m_ModelOrder;        // Polynomial correction order
   float              m_K;                 // Scaling constant, a 0 means no correction

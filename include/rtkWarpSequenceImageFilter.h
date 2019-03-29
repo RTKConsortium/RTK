@@ -97,18 +97,20 @@ template< typename TImageSequence,
 class WarpSequenceImageFilter : public itk::ImageToImageFilter<TImageSequence, TImageSequence>
 {
 public:
-    /** Standard class typedefs. */
-    typedef WarpSequenceImageFilter                                  Self;
-    typedef itk::ImageToImageFilter<TImageSequence, TImageSequence>  Superclass;
-    typedef itk::SmartPointer< Self >                                Pointer;
+    ITK_DISALLOW_COPY_AND_ASSIGN(WarpSequenceImageFilter);
+
+    /** Standard class type alias. */
+    using Self = WarpSequenceImageFilter;
+    using Superclass = itk::ImageToImageFilter<TImageSequence, TImageSequence>;
+    using Pointer = itk::SmartPointer< Self >;
 
     /** Method for creation through the object factory. */
     itkNewMacro(Self)
 
-    /** SFINAE typedef, depending on whether a CUDA image is used. */
-    typedef typename itk::Image< typename TImage::PixelType,
-                                 TImage::ImageDimension>             CPUImageType;
-    typedef typename itk::WarpImageFilter<TImage, TImage, TDVFImage> CPUWarpFilterType;
+    /** SFINAE type alias, depending on whether a CUDA image is used. */
+    using CPUImageType = typename itk::Image< typename TImage::PixelType,
+                                 TImage::ImageDimension>;
+    using CPUWarpFilterType = typename itk::WarpImageFilter<TImage, TImage, TDVFImage>;
 #ifdef RTK_USE_CUDA
     typedef typename std::conditional< std::is_same< TImage, CPUImageType >::value,
                                        CPUWarpFilterType,
@@ -122,10 +124,10 @@ public:
                                        CudaCyclicDeformationImageFilter >::type
                                                                      CudaCyclicDeformationImageFilterType;
 #else
-    typedef CPUWarpFilterType                                        WarpFilterType;
-    typedef ForwardWarpImageFilter<TImage, TImage, TDVFImage>        ForwardWarpFilterType;
-    typedef CyclicDeformationImageFilter<TDVFImageSequence,
-                                         TDVFImage>                  CudaCyclicDeformationImageFilterType;
+    using WarpFilterType = CPUWarpFilterType;
+    using ForwardWarpFilterType = ForwardWarpImageFilter<TImage, TImage, TDVFImage>;
+    using CudaCyclicDeformationImageFilterType = CyclicDeformationImageFilter<TDVFImageSequence,
+                                         TDVFImage>;
 #endif
 
     /** Run-time type information (and related methods). */
@@ -154,20 +156,20 @@ public:
     itkGetMacro(UseCudaCyclicDeformation, bool)
 
     /** Typedefs of internal filters */
-    typedef itk::LinearInterpolateImageFunction<TImage, double >              LinearInterpolatorType;
-    typedef itk::NearestNeighborInterpolateImageFunction<TImage, double >     NearestNeighborInterpolatorType;
-    typedef itk::ExtractImageFilter<TImageSequence, TImage>                   ExtractFilterType;
-    typedef rtk::CyclicDeformationImageFilter<TDVFImageSequence, TDVFImage>   DVFInterpolatorType;
-    typedef itk::PasteImageFilter<TImageSequence,TImageSequence>              PasteFilterType;
-    typedef itk::CastImageFilter<TImage, TImageSequence>                      CastFilterType;
-    typedef rtk::ConstantImageSource<TImageSequence>                          ConstantImageSourceType;
+    using LinearInterpolatorType = itk::LinearInterpolateImageFunction<TImage, double >;
+    using NearestNeighborInterpolatorType = itk::NearestNeighborInterpolateImageFunction<TImage, double >;
+    using ExtractFilterType = itk::ExtractImageFilter<TImageSequence, TImage>;
+    using DVFInterpolatorType = rtk::CyclicDeformationImageFilter<TDVFImageSequence, TDVFImage>;
+    using PasteFilterType = itk::PasteImageFilter<TImageSequence,TImageSequence>;
+    using CastFilterType = itk::CastImageFilter<TImage, TImageSequence>;
+    using ConstantImageSourceType = rtk::ConstantImageSource<TImageSequence>;
 
 protected:
     WarpSequenceImageFilter();
-    virtual ~WarpSequenceImageFilter() ITK_OVERRIDE {}
+    ~WarpSequenceImageFilter() override = default;
 
     /** Does the real work. */
-    void GenerateData() ITK_OVERRIDE;
+    void GenerateData() override;
 
     /** Member pointers to the filters used internally (for convenience)*/
     typename CPUWarpFilterType::Pointer       m_WarpFilter;
@@ -188,22 +190,19 @@ protected:
     * It is normal that they do not occupy the same physical space. Therefore this check
     * must be removed */
 #if ITK_VERSION_MAJOR<5
-    void VerifyInputInformation() ITK_OVERRIDE {}
+    void VerifyInputInformation() override {}
 #else
-    void VerifyInputInformation() const ITK_OVERRIDE {}
+    void VerifyInputInformation() const override {}
 #endif
 
     /** The volume and the projections must have different requested regions
     */
-    void GenerateOutputInformation() ITK_OVERRIDE;
-    void GenerateInputRequestedRegion() ITK_OVERRIDE;
+    void GenerateOutputInformation() override;
+    void GenerateInputRequestedRegion() override;
 
     bool m_UseNearestNeighborInterpolationInWarping; //Default is false, linear interpolation is used instead
     bool m_UseCudaCyclicDeformation;
 
-private:
-    WarpSequenceImageFilter(const Self &); //purposely not implemented
-    void operator=(const Self &);  //purposely not implemented
 };
 } //namespace ITK
 

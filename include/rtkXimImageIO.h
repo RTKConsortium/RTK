@@ -28,7 +28,7 @@
 //SR: taken from
 //#include "msinttypes/stdint.h"
 #else
-#include <stdint.h>
+#include <cstdint>
 #endif
 
 namespace rtk {
@@ -45,12 +45,12 @@ namespace rtk {
 class XimImageIO : public itk::ImageIOBase
 {
 public:
-/** Standard class typedefs. */
-  typedef XimImageIO              Self;
-  typedef itk::ImageIOBase        Superclass;
-  typedef itk::SmartPointer<Self> Pointer;
-  typedef signed short int        PixelType;
-  typedef itk::int32_t            Int4; // int of 4 bytes as in xim docs
+/** Standard class type alias. */
+  using Self = XimImageIO;
+  using Superclass = itk::ImageIOBase;
+  using Pointer = itk::SmartPointer<Self>;
+  using PixelType = signed short int;
+  using Int4 = itk::int32_t; // int of 4 bytes as in xim docs
 
   typedef struct xim_header {
     //Actual Header:
@@ -105,20 +105,20 @@ public:
   itkTypeMacro(XimImageIO, itk::ImageIOBase);
 
   /*-------- This part of the interface deals with reading data. ------ */
-  void ReadImageInformation() ITK_OVERRIDE;
+  void ReadImageInformation() override;
 
-  bool CanReadFile( const char* FileNameToRead ) ITK_OVERRIDE;
+  bool CanReadFile( const char* FileNameToRead ) override;
 
-  void Read(void * buffer) ITK_OVERRIDE;
+  void Read(void * buffer) override;
 
   /*-------- This part of the interfaces deals with writing data. ----- */
   virtual void WriteImageInformation(bool /*keepOfStream*/) { }
 
-  void WriteImageInformation()  ITK_OVERRIDE { WriteImageInformation(false); }
+  void WriteImageInformation()  override { WriteImageInformation(false); }
 
-  bool CanWriteFile(const char* filename) ITK_OVERRIDE;
+  bool CanWriteFile(const char* filename) override;
 
-  void Write(const void* buffer) ITK_OVERRIDE;
+  void Write(const void* buffer) override;
 
 private:
   template<typename T> size_t SetPropertyValue(char *property_name, Int4 value_length, FILE *fp, Xim_header *xim);

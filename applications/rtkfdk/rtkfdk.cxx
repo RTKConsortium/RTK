@@ -41,18 +41,18 @@ int main(int argc, char * argv[])
 {
   GGO(rtkfdk, args_info);
 
-  typedef float OutputPixelType;
-  const unsigned int Dimension = 3;
+  using OutputPixelType = float;
+  constexpr unsigned int Dimension = 3;
 
-  typedef itk::Image< OutputPixelType, Dimension >     CPUOutputImageType;
+  using CPUOutputImageType = itk::Image< OutputPixelType, Dimension >;
 #ifdef RTK_USE_CUDA
-  typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
+  using OutputImageType = itk::CudaImage< OutputPixelType, Dimension >;
 #else
-  typedef CPUOutputImageType                           OutputImageType;
+  using OutputImageType = CPUOutputImageType;
 #endif
 
   // Projections reader
-  typedef rtk::ProjectionsReader< OutputImageType > ReaderType;
+  using ReaderType = rtk::ProjectionsReader< OutputImageType >;
   ReaderType::Pointer reader = ReaderType::New();
   rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkfdk>(reader, args_info);
 
@@ -84,12 +84,12 @@ int main(int argc, char * argv[])
 #endif
 
   // Displaced detector weighting
-  typedef rtk::DisplacedDetectorImageFilter< OutputImageType >                     DDFCPUType;
-  typedef rtk::DisplacedDetectorForOffsetFieldOfViewImageFilter< OutputImageType > DDFOFFFOVType;
+  using DDFCPUType = rtk::DisplacedDetectorImageFilter< OutputImageType >;
+  using DDFOFFFOVType = rtk::DisplacedDetectorForOffsetFieldOfViewImageFilter< OutputImageType >;
 #ifdef RTK_USE_CUDA
-  typedef rtk::CudaDisplacedDetectorImageFilter DDFType;
+  using DDFType = rtk::CudaDisplacedDetectorImageFilter;
 #else
-  typedef rtk::DisplacedDetectorForOffsetFieldOfViewImageFilter< OutputImageType > DDFType;
+  using DDFType = rtk::DisplacedDetectorForOffsetFieldOfViewImageFilter< OutputImageType >;
 #endif
   DDFCPUType::Pointer ddf;
   if(!strcmp(args_info.hardware_arg, "cuda") )
@@ -101,11 +101,11 @@ int main(int argc, char * argv[])
   ddf->SetDisable(args_info.nodisplaced_flag);
 
   // Short scan image filter
-  typedef rtk::ParkerShortScanImageFilter< OutputImageType > PSSFCPUType;
+  using PSSFCPUType = rtk::ParkerShortScanImageFilter< OutputImageType >;
 #ifdef RTK_USE_CUDA
-  typedef rtk::CudaParkerShortScanImageFilter PSSFType;
+  using PSSFType = rtk::CudaParkerShortScanImageFilter;
 #else
-  typedef rtk::ParkerShortScanImageFilter< OutputImageType > PSSFType;
+  using PSSFType = rtk::ParkerShortScanImageFilter< OutputImageType >;
 #endif
   PSSFCPUType::Pointer pssf;
   if(!strcmp(args_info.hardware_arg, "cuda") )
@@ -118,7 +118,7 @@ int main(int argc, char * argv[])
   pssf->SetAngularGapThreshold(args_info.short_arg*itk::Math::pi/180.);
 
   // Create reconstructed image
-  typedef rtk::ConstantImageSource< OutputImageType > ConstantImageSourceType;
+  using ConstantImageSourceType = rtk::ConstantImageSource< OutputImageType >;
   ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
   rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkfdk>(constantImageSource, args_info);
 
@@ -126,15 +126,15 @@ int main(int argc, char * argv[])
   // Although these will only be used if the command line options for motion
   // compensation are set, we still create the object before hand to avoid auto
   // destruction.
-  typedef itk::Vector<float,3> DVFPixelType;
-  typedef itk::Image< DVFPixelType, 4 > DVFImageSequenceType;
-  typedef itk::Image< DVFPixelType, 3 > DVFImageType;
-  typedef rtk::CyclicDeformationImageFilter< DVFImageSequenceType, DVFImageType > DeformationType;
-  typedef itk::ImageFileReader<DeformationType::InputImageType> DVFReaderType;
+  using DVFPixelType = itk::Vector<float,3>;
+  using DVFImageSequenceType = itk::Image< DVFPixelType, 4 >;
+  using DVFImageType = itk::Image< DVFPixelType, 3 >;
+  using DeformationType = rtk::CyclicDeformationImageFilter< DVFImageSequenceType, DVFImageType >;
+  using DVFReaderType = itk::ImageFileReader<DeformationType::InputImageType>;
   DVFReaderType::Pointer dvfReader = DVFReaderType::New();
   DeformationType::Pointer def = DeformationType::New();
   def->SetInput(dvfReader->GetOutput());
-  typedef rtk::FDKWarpBackProjectionImageFilter<OutputImageType, OutputImageType, DeformationType> WarpBPType;
+  using WarpBPType = rtk::FDKWarpBackProjectionImageFilter<OutputImageType, OutputImageType, DeformationType>;
   WarpBPType::Pointer bp = WarpBPType::New();
   bp->SetDeformation(def);
   bp->SetGeometry( geometryReader->GetOutputObject() );
@@ -151,13 +151,13 @@ int main(int argc, char * argv[])
     f->SetProjectionSubsetSize(args_info.subsetsize_arg)
 
   // FDK reconstruction filtering
-  typedef rtk::FDKConeBeamReconstructionFilter< OutputImageType > FDKCPUType;
+  using FDKCPUType = rtk::FDKConeBeamReconstructionFilter< OutputImageType >;
   FDKCPUType::Pointer feldkamp;
 #ifdef RTK_USE_CUDA
-  typedef rtk::CudaFDKConeBeamReconstructionFilter FDKCUDAType;
+  using FDKCUDAType = rtk::CudaFDKConeBeamReconstructionFilter;
   FDKCUDAType::Pointer feldkampCUDA;
 #endif
-  itk::Image< OutputPixelType, Dimension > *pfeldkamp = ITK_NULLPTR;
+  itk::Image< OutputPixelType, Dimension > *pfeldkamp = nullptr;
   if(!strcmp(args_info.hardware_arg, "cpu") )
     {
     feldkamp = FDKCPUType::New();
@@ -189,7 +189,7 @@ int main(int argc, char * argv[])
 #endif
 
   // Streaming depending on streaming capability of writer
-  typedef itk::StreamingImageFilter<CPUOutputImageType, CPUOutputImageType> StreamerType;
+  using StreamerType = itk::StreamingImageFilter<CPUOutputImageType, CPUOutputImageType>;
   StreamerType::Pointer streamerBP = StreamerType::New();
   streamerBP->SetInput( pfeldkamp );
   streamerBP->SetNumberOfStreamDivisions( args_info.divisions_arg );
@@ -198,7 +198,7 @@ int main(int argc, char * argv[])
   streamerBP->SetRegionSplitter(splitter);
 
   // Write
-  typedef itk::ImageFileWriter<CPUOutputImageType> WriterType;
+  using WriterType = itk::ImageFileWriter<CPUOutputImageType>;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
   writer->SetInput( streamerBP->GetOutput() );

@@ -45,16 +45,18 @@ class ITK_EXPORT ElektaSynergyRawLookupTableImageFilter :
 {
 
 public:
-  /** Standard class typedefs. */
-  typedef ElektaSynergyRawLookupTableImageFilter Self;
-  typedef LookupTableImageFilter< TInputImage,
-                                  TOutputImage > Superclass;
-  typedef itk::SmartPointer<Self>                Pointer;
-  typedef itk::SmartPointer<const Self>          ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(ElektaSynergyRawLookupTableImageFilter);
 
-  typedef typename TInputImage::PixelType        InputImagePixelType;
-  typedef typename TOutputImage::PixelType       OutputImagePixelType;
-  typedef typename Superclass::FunctorType::LookupTableType LookupTableType;
+  /** Standard class type alias. */
+  using Self = ElektaSynergyRawLookupTableImageFilter;
+  using Superclass = LookupTableImageFilter< TInputImage,
+                                  TOutputImage >;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
+
+  using InputImagePixelType = typename TInputImage::PixelType;
+  using OutputImagePixelType = typename TOutputImage::PixelType;
+  using LookupTableType = typename Superclass::FunctorType::LookupTableType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -70,12 +72,7 @@ public:
 
 protected:
   ElektaSynergyRawLookupTableImageFilter();
-  virtual ~ElektaSynergyRawLookupTableImageFilter() ITK_OVERRIDE {}
-
-private:
-  ElektaSynergyRawLookupTableImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);                         //purposely not implemented
-
+  ~ElektaSynergyRawLookupTableImageFilter() override = default;
 };
 
 } // end namespace rtk

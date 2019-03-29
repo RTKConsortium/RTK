@@ -50,13 +50,15 @@ class RTK_EXPORT CudaCropImageFilter :
   itk::CropImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3> > >
 {
 public:
-  /** Standard class typedefs. */
-  typedef itk::CudaImage<float,3>                                                                    ImageType;
-  typedef CudaCropImageFilter                                                                        Self;
-  typedef itk::CropImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3> >                   Superclass;
-  typedef itk::CudaImageToImageFilter<itk::CudaImage<float,3>, itk::CudaImage<float,3>, Superclass > GPUSuperclass;
-  typedef itk::SmartPointer< Self >                                                                  Pointer;
-  typedef itk::SmartPointer< const Self >                                                            ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(CudaCropImageFilter);
+
+  /** Standard class type alias. */
+  using ImageType = itk::CudaImage<float,3>;
+  using Self = CudaCropImageFilter;
+  using Superclass = itk::CropImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3> >;
+  using GPUSuperclass = itk::CudaImageToImageFilter<itk::CudaImage<float,3>, itk::CudaImage<float,3>, Superclass >;
+  using Pointer = itk::SmartPointer< Self >;
+  using ConstPointer = itk::SmartPointer< const Self >;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -69,10 +71,6 @@ protected:
   virtual ~CudaCropImageFilter() {};
 
   virtual void GPUGenerateData();
-
-private:
-  CudaCropImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);  //purposely not implemented
 
 }; // end of class
 } // end namespace rtk

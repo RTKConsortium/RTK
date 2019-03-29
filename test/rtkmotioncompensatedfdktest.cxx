@@ -26,17 +26,17 @@
 
 int main(int, char** )
 {
-  const unsigned int Dimension = 3;
-  typedef float                                    OutputPixelType;
-  typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
+  constexpr unsigned int Dimension = 3;
+  using OutputPixelType = float;
+  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
 #if FAST_TESTS_NO_CHECKS
-  const unsigned int NumberOfProjectionImages = 3;
+  constexpr unsigned int NumberOfProjectionImages = 3;
 #else
-  const unsigned int NumberOfProjectionImages = 128;
+  constexpr unsigned int NumberOfProjectionImages = 128;
 #endif
 
   // Constant image sources
-  typedef rtk::ConstantImageSource< OutputImageType > ConstantImageSourceType;
+  using ConstantImageSourceType = rtk::ConstantImageSource< OutputImageType >;
   ConstantImageSourceType::PointType origin;
   ConstantImageSourceType::SizeType size;
   ConstantImageSourceType::SpacingType spacing;
@@ -97,12 +97,12 @@ int main(int, char** )
   oneProjectionSource->SetConstant( 0. );
 
   // Geometry object
-  typedef rtk::ThreeDCircularProjectionGeometry GeometryType;
+  using GeometryType = rtk::ThreeDCircularProjectionGeometry;
   GeometryType::Pointer geometry = GeometryType::New();
 
   // Projections
-  typedef rtk::RayEllipsoidIntersectionImageFilter<OutputImageType, OutputImageType> REIType;
-  typedef itk::PasteImageFilter <OutputImageType, OutputImageType, OutputImageType > PasteImageFilterType;
+  using REIType = rtk::RayEllipsoidIntersectionImageFilter<OutputImageType, OutputImageType>;
+  using PasteImageFilterType = itk::PasteImageFilter <OutputImageType, OutputImageType, OutputImageType >;
   OutputImageType::IndexType destinationIndex;
   destinationIndex[0] = 0;
   destinationIndex[1] = 0;
@@ -161,11 +161,11 @@ int main(int, char** )
     }
 
   // Create vector field
-  typedef itk::Vector<float,3>                                                     DVFPixelType;
-  typedef itk::Image< DVFPixelType, 4 >                                            DVFImageSequenceType;
-  typedef itk::Image< DVFPixelType, 3 >                                            DVFImageType;
-  typedef rtk::CyclicDeformationImageFilter< DVFImageSequenceType, DVFImageType >  DeformationType;
-  typedef itk::ImageRegionIteratorWithIndex< DeformationType::InputImageType >     IteratorType;
+  using DVFPixelType = itk::Vector<float,3>;
+  using DVFImageSequenceType = itk::Image< DVFPixelType, 4 >;
+  using DVFImageType = itk::Image< DVFPixelType, 3 >;
+  using DeformationType = rtk::CyclicDeformationImageFilter< DVFImageSequenceType, DVFImageType >;
+  using IteratorType = itk::ImageRegionIteratorWithIndex< DeformationType::InputImageType >;
 
   DeformationType::InputImageType::Pointer deformationField;
   deformationField = DeformationType::InputImageType::New();
@@ -208,16 +208,16 @@ int main(int, char** )
   // Create cyclic deformation
   DeformationType::Pointer def = DeformationType::New();
   def->SetInput(deformationField);
-  typedef rtk::FDKWarpBackProjectionImageFilter<OutputImageType, OutputImageType, DeformationType> WarpBPType;
+  using WarpBPType = rtk::FDKWarpBackProjectionImageFilter<OutputImageType, OutputImageType, DeformationType>;
   WarpBPType::Pointer bp = WarpBPType::New();
   bp->SetDeformation(def);
   bp->SetGeometry( geometry.GetPointer() );
 
   // FDK reconstruction filtering
 #ifdef USE_CUDA
-  typedef rtk::CudaFDKConeBeamReconstructionFilter                FDKType;
+  using FDKType = rtk::CudaFDKConeBeamReconstructionFilter;
 #else
-  typedef rtk::FDKConeBeamReconstructionFilter< OutputImageType > FDKType;
+  using FDKType = rtk::FDKConeBeamReconstructionFilter< OutputImageType >;
 #endif
   FDKType::Pointer feldkamp = FDKType::New();
   feldkamp->SetInput( 0, tomographySource->GetOutput() );
@@ -228,7 +228,7 @@ int main(int, char** )
   TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkamp->Update() );
 
   // FOV
-  typedef rtk::FieldOfViewImageFilter<OutputImageType, OutputImageType> FOVFilterType;
+  using FOVFilterType = rtk::FieldOfViewImageFilter<OutputImageType, OutputImageType>;
   FOVFilterType::Pointer fov=FOVFilterType::New();
   fov->SetInput(0, feldkamp->GetOutput());
   fov->SetProjectionsStack( wholeImage.GetPointer() );
@@ -237,7 +237,7 @@ int main(int, char** )
 
   // Create a reference object (in this case a 3D phantom reference).
   // Ellipse 1
-  typedef rtk::DrawEllipsoidImageFilter<OutputImageType, OutputImageType> DEType;
+  using DEType = rtk::DrawEllipsoidImageFilter<OutputImageType, OutputImageType>;
   DEType::Pointer e1 = DEType::New();
   e1->SetInput( tomographySource->GetOutput() );
   e1->SetDensity(2.);

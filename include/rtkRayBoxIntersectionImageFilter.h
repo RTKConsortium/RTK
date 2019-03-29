@@ -40,18 +40,20 @@ class RayBoxIntersectionImageFilter :
 public RayConvexIntersectionImageFilter< TInputImage, TOutputImage >
 {
 public:
-  /** Standard class typedefs. */
-  typedef RayBoxIntersectionImageFilter                              Self;
-  typedef RayConvexIntersectionImageFilter<TInputImage,TOutputImage> Superclass;
-  typedef itk::SmartPointer<Self>                                    Pointer;
-  typedef itk::SmartPointer<const Self>                              ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(RayBoxIntersectionImageFilter);
 
-  /** Convenient typedefs. */
-  typedef BoxShape::PointType          PointType;
-  typedef BoxShape::VectorType         VectorType;
-  typedef BoxShape::ScalarType         ScalarType;
-  typedef BoxShape::RotationMatrixType RotationMatrixType;
-  typedef BoxShape::ImageBaseType      ImageBaseType;
+  /** Standard class type alias. */
+  using Self = RayBoxIntersectionImageFilter;
+  using Superclass = RayConvexIntersectionImageFilter<TInputImage,TOutputImage>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
+
+  /** Convenient type alias. */
+  using PointType = BoxShape::PointType;
+  using VectorType = BoxShape::VectorType;
+  using ScalarType = BoxShape::ScalarType;
+  using RotationMatrixType = BoxShape::RotationMatrixType;
+  using ImageBaseType = BoxShape::ImageBaseType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -83,14 +85,11 @@ public:
 
 protected:
   RayBoxIntersectionImageFilter();
-  ~RayBoxIntersectionImageFilter() ITK_OVERRIDE {}
+  ~RayBoxIntersectionImageFilter() override = default;
 
-  void BeforeThreadedGenerateData ( ) ITK_OVERRIDE;
+  void BeforeThreadedGenerateData ( ) override;
 
 private:
-  RayBoxIntersectionImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);         //purposely not implemented
-
   ScalarType              m_Density;
   std::vector<VectorType> m_PlaneDirections;
   std::vector<ScalarType> m_PlanePositions;

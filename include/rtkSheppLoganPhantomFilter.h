@@ -41,11 +41,13 @@ class ITK_EXPORT SheppLoganPhantomFilter:
   public ProjectGeometricPhantomImageFilter<TInputImage,TOutputImage>
 {
 public:
-  /** Standard class typedefs. */
-  typedef SheppLoganPhantomFilter                                      Self;
-  typedef ProjectGeometricPhantomImageFilter<TInputImage,TOutputImage> Superclass;
-  typedef itk::SmartPointer<Self>                                      Pointer;
-  typedef itk::SmartPointer<const Self>                                ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(SheppLoganPhantomFilter);
+
+  /** Standard class type alias. */
+  using Self = SheppLoganPhantomFilter;
+  using Superclass = ProjectGeometricPhantomImageFilter<TInputImage,TOutputImage>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -55,13 +57,9 @@ public:
 
 protected:
   SheppLoganPhantomFilter();
-  virtual ~SheppLoganPhantomFilter() ITK_OVERRIDE {}
+  ~SheppLoganPhantomFilter() override = default;
 
-  void GenerateData() ITK_OVERRIDE;
-
-private:
-  SheppLoganPhantomFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);          //purposely not implemented
+  void GenerateData() override;
 
 };
 

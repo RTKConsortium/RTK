@@ -20,7 +20,7 @@
 #include "rtkTestConfiguration.h"
 #include "rtkMacro.h"
 
-#include <math.h>
+#include <cmath>
 #include <itkImageRegionConstIterator.h>
 #include <itkImageRegionIteratorWithIndex.h>
 
@@ -40,17 +40,17 @@
  * \author Sebastien Brousmiche
  */
 
-const unsigned int Dimension = 3;
+constexpr unsigned int Dimension = 3;
 #ifdef RTK_USE_CUDA
-typedef itk::CudaImage< unsigned short, Dimension > InputImageType;
-typedef itk::CudaImage< float, Dimension >          OutputImageType;
+using InputImageType = itk::CudaImage< unsigned short, Dimension >;
+using OutputImageType = itk::CudaImage< float, Dimension >;
 #else
-typedef itk::Image< unsigned short, Dimension >     InputImageType;
-typedef itk::Image< float, Dimension >              OutputImageType;
+using InputImageType = itk::Image< unsigned short, Dimension >;
+using OutputImageType = itk::Image< float, Dimension >;
 #endif
 
-const int modelOrder = 3;
-const int sizeI = 100;
+constexpr int modelOrder = 3;
+constexpr int sizeI = 100;
 
 InputImageType::Pointer createDarkImage()
 {
@@ -237,9 +237,9 @@ int main(int , char** )
 {
   const float K = 0.5f;
 #ifdef RTK_USE_CUDA
-  typedef rtk::CudaPolynomialGainCorrectionImageFilter                              GainCorrectionType;
+  using GainCorrectionType = rtk::CudaPolynomialGainCorrectionImageFilter;
 #else
-  typedef rtk::PolynomialGainCorrectionImageFilter<InputImageType, OutputImageType> GainCorrectionType;
+  using GainCorrectionType = rtk::PolynomialGainCorrectionImageFilter<InputImageType, OutputImageType>;
 #endif
   GainCorrectionType::Pointer gainfilter = GainCorrectionType::New();
 

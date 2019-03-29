@@ -51,13 +51,13 @@ void
 DrawQuadricImageFilter<TInputImage, TOutputImage>
 ::BeforeThreadedGenerateData()
 {
-  if( this->GetConvexObject() == ITK_NULLPTR )
+  if( this->GetConvexObject() == nullptr )
     this->SetConvexObject( QuadricShape::New().GetPointer() );
 
   Superclass::BeforeThreadedGenerateData();
 
   QuadricShape * qo = dynamic_cast< QuadricShape* >( this->GetConvexObject() );
-  if( qo == ITK_NULLPTR )
+  if( qo == nullptr )
     {
     itkExceptionMacro("This is not a QuadricShape!");
     }

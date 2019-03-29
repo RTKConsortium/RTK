@@ -53,11 +53,13 @@ template< class TInputImage,
 class AverageOutOfROIImageFilter : public itk::InPlaceImageFilter<TInputImage, TInputImage>
 {
 public:
-    /** Standard class typedefs. */
-    typedef AverageOutOfROIImageFilter                        Self;
-    typedef itk::ImageToImageFilter<TInputImage, TInputImage> Superclass;
-    typedef itk::SmartPointer< Self >                         Pointer;
-    typedef itk::Image<typename TInputImage::PixelType, TInputImage::ImageDimension - 1>       LowerDimImage;
+    ITK_DISALLOW_COPY_AND_ASSIGN(AverageOutOfROIImageFilter);
+
+    /** Standard class type alias. */
+    using Self = AverageOutOfROIImageFilter;
+    using Superclass = itk::ImageToImageFilter<TInputImage, TInputImage>;
+    using Pointer = itk::SmartPointer< Self >;
+    using LowerDimImage = itk::Image<typename TInputImage::PixelType, TInputImage::ImageDimension - 1>;
 
     /** Method for creation through the object factory. */
     itkNewMacro(Self)
@@ -70,24 +72,19 @@ public:
 
 protected:
     AverageOutOfROIImageFilter();
-    virtual ~AverageOutOfROIImageFilter() ITK_OVERRIDE {}
+    ~AverageOutOfROIImageFilter() override = default;
 
     typename TROI::Pointer GetROI();
 
-    void GenerateOutputInformation() ITK_OVERRIDE;
-    void GenerateInputRequestedRegion() ITK_OVERRIDE;
+    void GenerateOutputInformation() override;
+    void GenerateInputRequestedRegion() override;
 
     /** Does the real work. */
-    void ThreadedGenerateData(const typename TInputImage::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) ITK_OVERRIDE;
+    void ThreadedGenerateData(const typename TInputImage::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) override;
 
     /** Splits the OutputRequestedRegion along the first direction, not the last */
-    const itk::ImageRegionSplitterBase* GetImageRegionSplitter(void) const ITK_OVERRIDE;
+    const itk::ImageRegionSplitterBase* GetImageRegionSplitter(void) const override;
     itk::ImageRegionSplitterDirection::Pointer  m_Splitter;
-
-private:
-    AverageOutOfROIImageFilter(const Self &); //purposely not implemented
-    void operator=(const Self &);  //purposely not implemented
-
 };
 } //namespace RTK
 

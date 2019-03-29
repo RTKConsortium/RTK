@@ -96,37 +96,39 @@ class ITK_EXPORT FourDConjugateGradientConeBeamReconstructionFilter :
   public rtk::IterativeConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 {
 public:
-  /** Standard class typedefs. */
-  typedef FourDConjugateGradientConeBeamReconstructionFilter                   Self;
-  typedef IterativeConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>     Superclass;
-  typedef itk::SmartPointer<Self>                            Pointer;
-  typedef itk::SmartPointer<const Self>                      ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(FourDConjugateGradientConeBeamReconstructionFilter);
 
-  /** Some convenient typedefs. */
-  typedef VolumeSeriesType      InputImageType;
-  typedef VolumeSeriesType      OutputImageType;
-  typedef ProjectionStackType   VolumeType;
+  /** Standard class type alias. */
+  using Self = FourDConjugateGradientConeBeamReconstructionFilter;
+  using Superclass = IterativeConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
+
+  /** Some convenient type alias. */
+  using InputImageType = VolumeSeriesType;
+  using OutputImageType = VolumeSeriesType;
+  using VolumeType = ProjectionStackType;
 
   /** Typedefs of each subfilter of this composite filter */
-  typedef ForwardProjectionImageFilter< VolumeType, ProjectionStackType >                      ForwardProjectionFilterType;
-  typedef BackProjectionImageFilter< ProjectionStackType, VolumeType >                         BackProjectionFilterType;
-  typedef ConjugateGradientImageFilter<VolumeSeriesType>                                       ConjugateGradientFilterType;
-  typedef FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType>  CGOperatorFilterType;
-  typedef ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType>             ProjStackToFourDFilterType;
-  typedef DisplacedDetectorImageFilter<ProjectionStackType>                                    DisplacedDetectorFilterType;
+  using ForwardProjectionFilterType = ForwardProjectionImageFilter< VolumeType, ProjectionStackType >;
+  using BackProjectionFilterType = BackProjectionImageFilter< ProjectionStackType, VolumeType >;
+  using ConjugateGradientFilterType = ConjugateGradientImageFilter<VolumeSeriesType>;
+  using CGOperatorFilterType = FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType>;
+  using ProjStackToFourDFilterType = ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType>;
+  using DisplacedDetectorFilterType = DisplacedDetectorImageFilter<ProjectionStackType>;
 
-  typedef typename Superclass::ForwardProjectionType ForwardProjectionType;
-  typedef typename Superclass::BackProjectionType    BackProjectionType;
+  using ForwardProjectionType = typename Superclass::ForwardProjectionType;
+  using BackProjectionType = typename Superclass::BackProjectionType;
 
-  /** SFINAE typedef, depending on whether a CUDA image is used. */
-  typedef typename itk::Image< typename VolumeSeriesType::PixelType,
-                               VolumeSeriesType::ImageDimension>                               CPUVolumeSeriesType;
+  /** SFINAE type alias, depending on whether a CUDA image is used. */
+  using CPUVolumeSeriesType = typename itk::Image< typename VolumeSeriesType::PixelType,
+                               VolumeSeriesType::ImageDimension>;
 #ifdef RTK_USE_CUDA
   typedef typename std::conditional<std::is_same< VolumeSeriesType, CPUVolumeSeriesType >::value,
                                     ConjugateGradientImageFilter<VolumeSeriesType>,
                                     CudaConjugateGradientImageFilter<VolumeSeriesType> >::type CudaConjugateGradientImageFilterType;
 #else
-  typedef ConjugateGradientImageFilter<VolumeSeriesType>                                       CudaConjugateGradientImageFilterType;
+  using CudaConjugateGradientImageFilterType = ConjugateGradientImageFilter<VolumeSeriesType>;
 #endif
 
   /** Standard New method. */
@@ -156,10 +158,10 @@ public:
   typename ProjectionStackType::ConstPointer GetInputProjectionStack();
 
   /** Pass the ForwardProjection filter to the conjugate gradient operator */
-  virtual void SetForwardProjectionFilter (ForwardProjectionType _arg) ITK_OVERRIDE;
+  void SetForwardProjectionFilter (ForwardProjectionType _arg) override;
 
   /** Pass the backprojection filter to the conjugate gradient operator and to the filter generating the B of AX=B */
-  virtual void SetBackProjectionFilter (BackProjectionType _arg) ITK_OVERRIDE;
+  void SetBackProjectionFilter (BackProjectionType _arg) override;
 
   /** Pass the interpolation weights to subfilters */
   void SetWeights(const itk::Array2D<float> _arg);
@@ -172,20 +174,20 @@ public:
   itkGetMacro(DisableDisplacedDetectorFilter, bool)
 protected:
   FourDConjugateGradientConeBeamReconstructionFilter();
-  virtual ~FourDConjugateGradientConeBeamReconstructionFilter() ITK_OVERRIDE {}
+  ~FourDConjugateGradientConeBeamReconstructionFilter() override = default;
 
-  void GenerateOutputInformation() ITK_OVERRIDE;
+  void GenerateOutputInformation() override;
 
-  void GenerateInputRequestedRegion() ITK_OVERRIDE;
+  void GenerateInputRequestedRegion() override;
 
-  void GenerateData() ITK_OVERRIDE;
+  void GenerateData() override;
 
   /** The two inputs should not be in the same space so there is nothing
    * to verify. */
 #if ITK_VERSION_MAJOR<5
-  void VerifyInputInformation() ITK_OVERRIDE {}
+  void VerifyInputInformation() override {}
 #else
-  void VerifyInputInformation() const ITK_OVERRIDE {}
+  void VerifyInputInformation() const override {}
 #endif
 
   /** Pointers to each subfilter of this composite filter */
@@ -202,10 +204,6 @@ protected:
   bool                    m_DisableDisplacedDetectorFilter;
 
 private:
-  //purposely not implemented
-  FourDConjugateGradientConeBeamReconstructionFilter(const Self&);
-  void operator=(const Self&);
-
   /** Geometry object */
   ThreeDCircularProjectionGeometry::ConstPointer m_Geometry;
 

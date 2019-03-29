@@ -135,34 +135,36 @@ class ITK_EXPORT SARTConeBeamReconstructionFilter :
   public rtk::IterativeConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>
 {
 public:
-  /** Standard class typedefs. */
-  typedef SARTConeBeamReconstructionFilter                                      Self;
-  typedef IterativeConeBeamReconstructionFilter<TVolumeImage, TProjectionImage> Superclass;
-  typedef itk::SmartPointer<Self>                                               Pointer;
-  typedef itk::SmartPointer<const Self>                                         ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(SARTConeBeamReconstructionFilter);
 
-  /** Some convenient typedefs. */
-  typedef TVolumeImage     VolumeType;
-  typedef TProjectionImage ProjectionType;
+  /** Standard class type alias. */
+  using Self = SARTConeBeamReconstructionFilter;
+  using Superclass = IterativeConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
+
+  /** Some convenient type alias. */
+  using VolumeType = TVolumeImage;
+  using ProjectionType = TProjectionImage;
 
   /** Typedefs of each subfilter of this composite filter */
-  typedef itk::ExtractImageFilter< ProjectionType, ProjectionType >                          ExtractFilterType;
-  typedef itk::MultiplyImageFilter< ProjectionType, ProjectionType, ProjectionType >         MultiplyFilterType;
-  typedef rtk::ForwardProjectionImageFilter< ProjectionType, VolumeType >                    ForwardProjectionFilterType;
-  typedef itk::SubtractImageFilter< ProjectionType, ProjectionType >                         SubtractFilterType;
-  typedef itk::AddImageFilter< VolumeType, VolumeType >                                      AddFilterType;
-  typedef rtk::BackProjectionImageFilter< VolumeType, ProjectionType >                       BackProjectionFilterType;
-  typedef rtk::RayBoxIntersectionImageFilter<ProjectionType, ProjectionType>                 RayBoxIntersectionFilterType;
-  typedef itk::DivideOrZeroOutImageFilter<ProjectionType, ProjectionType, ProjectionType>    DivideProjectionFilterType;
-  typedef itk::DivideOrZeroOutImageFilter<VolumeType, VolumeType, VolumeType>                DivideVolumeFilterType;
-  typedef rtk::ConstantImageSource<VolumeType>                                               ConstantVolumeSourceType;
-  typedef rtk::ConstantImageSource<ProjectionType>                                           ConstantProjectionSourceType;
-  typedef itk::ThresholdImageFilter<VolumeType>                                              ThresholdFilterType;
-  typedef rtk::DisplacedDetectorImageFilter<ProjectionType>                                  DisplacedDetectorFilterType;
-  typedef itk::MultiplyImageFilter<ProjectionType,ProjectionType, ProjectionType>            GatingWeightsFilterType;
+  using ExtractFilterType = itk::ExtractImageFilter< ProjectionType, ProjectionType >;
+  using MultiplyFilterType = itk::MultiplyImageFilter< ProjectionType, ProjectionType, ProjectionType >;
+  using ForwardProjectionFilterType = rtk::ForwardProjectionImageFilter< ProjectionType, VolumeType >;
+  using SubtractFilterType = itk::SubtractImageFilter< ProjectionType, ProjectionType >;
+  using AddFilterType = itk::AddImageFilter< VolumeType, VolumeType >;
+  using BackProjectionFilterType = rtk::BackProjectionImageFilter< VolumeType, ProjectionType >;
+  using RayBoxIntersectionFilterType = rtk::RayBoxIntersectionImageFilter<ProjectionType, ProjectionType>;
+  using DivideProjectionFilterType = itk::DivideOrZeroOutImageFilter<ProjectionType, ProjectionType, ProjectionType>;
+  using DivideVolumeFilterType = itk::DivideOrZeroOutImageFilter<VolumeType, VolumeType, VolumeType>;
+  using ConstantVolumeSourceType = rtk::ConstantImageSource<VolumeType>;
+  using ConstantProjectionSourceType = rtk::ConstantImageSource<ProjectionType>;
+  using ThresholdFilterType = itk::ThresholdImageFilter<VolumeType>;
+  using DisplacedDetectorFilterType = rtk::DisplacedDetectorImageFilter<ProjectionType>;
+  using GatingWeightsFilterType = itk::MultiplyImageFilter<ProjectionType,ProjectionType, ProjectionType>;
 
-  typedef typename Superclass::ForwardProjectionType ForwardProjectionType;
-  typedef typename Superclass::BackProjectionType    BackProjectionType;
+  using ForwardProjectionType = typename Superclass::ForwardProjectionType;
+  using BackProjectionType = typename Superclass::BackProjectionType;
 
   /** Standard New method. */
   itkNewMacro(Self);
@@ -191,10 +193,10 @@ public:
   itkSetMacro(EnforcePositivity, bool);
 
   /** Select the ForwardProjection filter */
-  void SetForwardProjectionFilter (ForwardProjectionType _arg) ITK_OVERRIDE;
+  void SetForwardProjectionFilter (ForwardProjectionType _arg) override;
 
   /** Select the backprojection filter */
-  void SetBackProjectionFilter (BackProjectionType _arg) ITK_OVERRIDE;
+  void SetBackProjectionFilter (BackProjectionType _arg) override;
 
   /** In the case of a gated SART, set the gating weights */
   void SetGatingWeights(std::vector<float> weights);
@@ -205,20 +207,20 @@ public:
 
 protected:
   SARTConeBeamReconstructionFilter();
-  virtual ~SARTConeBeamReconstructionFilter() ITK_OVERRIDE {}
+  ~SARTConeBeamReconstructionFilter() override = default;
 
-  void GenerateInputRequestedRegion() ITK_OVERRIDE;
+  void GenerateInputRequestedRegion() override;
 
-  void GenerateOutputInformation() ITK_OVERRIDE;
+  void GenerateOutputInformation() override;
 
-  void GenerateData() ITK_OVERRIDE;
+  void GenerateData() override;
 
   /** The two inputs should not be in the same space so there is nothing
    * to verify. */
 #if ITK_VERSION_MAJOR<5
-  void VerifyInputInformation() ITK_OVERRIDE {}
+  void VerifyInputInformation() override {}
 #else
-  void VerifyInputInformation() const ITK_OVERRIDE {}
+  void VerifyInputInformation() const override {}
 #endif
 
   /** Pointers to each subfilter of this composite filter */
@@ -248,10 +250,6 @@ private:
   /** Number of projections processed before the volume is updated (1 for SART,
    * several for OS-SART, all for SIRT) */
   unsigned int m_NumberOfProjectionsPerSubset;
-
-  //purposely not implemented
-  SARTConeBeamReconstructionFilter(const Self&);
-  void operator=(const Self&);
 
   /** Geometry object */
   ThreeDCircularProjectionGeometry::Pointer m_Geometry;

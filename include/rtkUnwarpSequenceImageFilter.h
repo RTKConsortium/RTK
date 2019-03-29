@@ -80,10 +80,12 @@ namespace rtk
 class UnwarpSequenceImageFilter : public itk::ImageToImageFilter<TImageSequence, TImageSequence>
 {
 public:
-    /** Standard class typedefs. */
-    typedef UnwarpSequenceImageFilter                                 Self;
-    typedef itk::ImageToImageFilter<TImageSequence, TImageSequence>   Superclass;
-    typedef itk::SmartPointer< Self >                                 Pointer;
+    ITK_DISALLOW_COPY_AND_ASSIGN(UnwarpSequenceImageFilter);
+
+    /** Standard class type alias. */
+    using Self = UnwarpSequenceImageFilter;
+    using Superclass = itk::ImageToImageFilter<TImageSequence, TImageSequence>;
+    using Pointer = itk::SmartPointer< Self >;
 
     /** Method for creation through the object factory. */
     itkNewMacro(Self)
@@ -91,19 +93,19 @@ public:
     /** Run-time type information (and related methods). */
     itkTypeMacro(UnwarpSequenceImageFilter, ImageToImageFilter)
 
-    typedef UnwarpSequenceConjugateGradientOperator< TImageSequence,
+    using CGOperatorFilterType = UnwarpSequenceConjugateGradientOperator< TImageSequence,
                                                      TDVFImageSequence,
                                                      TImage,
-                                                     TDVFImage>       CGOperatorFilterType;
-    typedef WarpSequenceImageFilter< TImageSequence,
+                                                     TDVFImage>;
+    using WarpForwardFilterType = WarpSequenceImageFilter< TImageSequence,
                                      TDVFImageSequence,
                                      TImage,
-                                     TDVFImage>                       WarpForwardFilterType;
-    typedef ConjugateGradientImageFilter<TImageSequence>              ConjugateGradientFilterType;
+                                     TDVFImage>;
+    using ConjugateGradientFilterType = ConjugateGradientImageFilter<TImageSequence>;
 
-    /** SFINAE typedef, depending on whether a CUDA image is used. */
-    typedef typename itk::Image< typename TImageSequence::PixelType,
-                                 TImageSequence::ImageDimension>      CPUImageSequence;
+    /** SFINAE type alias, depending on whether a CUDA image is used. */
+    using CPUImageSequence = typename itk::Image< typename TImageSequence::PixelType,
+                                 TImageSequence::ImageDimension>;
 #ifdef RTK_USE_CUDA
     typedef typename std::conditional< std::is_same< TImageSequence, CPUImageSequence >::value,
                                        ConstantImageSource<TImageSequence>,
@@ -114,8 +116,8 @@ public:
                                        CudaConjugateGradientImageFilter<TImageSequence> >::type
                                                                       CudaConjugateGradientType;
 #else
-    typedef ConstantImageSource<TImageSequence>                       ConstantSourceType;
-    typedef ConjugateGradientFilterType                               CudaConjugateGradientType;
+    using ConstantSourceType = ConstantImageSource<TImageSequence>;
+    using CudaConjugateGradientType = ConjugateGradientFilterType;
 #endif
 
     /** Set the motion vector field used in input 1 */
@@ -144,10 +146,10 @@ public:
 
 protected:
     UnwarpSequenceImageFilter();
-    virtual ~UnwarpSequenceImageFilter() ITK_OVERRIDE {}
+    ~UnwarpSequenceImageFilter() override = default;
 
     /** Does the real work. */
-    void GenerateData() ITK_OVERRIDE;
+    void GenerateData() override;
 
     /** Member pointers to the filters used internally (for convenience)*/
     typename ConjugateGradientFilterType::Pointer m_ConjugateGradientFilter;
@@ -162,24 +164,21 @@ protected:
     * It is normal that they do not occupy the same physical space. Therefore this check
     * must be removed */
 #if ITK_VERSION_MAJOR<5
-    void VerifyInputInformation() ITK_OVERRIDE {}
+    void VerifyInputInformation() override {}
 #else
-    void VerifyInputInformation() const ITK_OVERRIDE {}
+    void VerifyInputInformation() const override {}
 #endif
 
     /** The volume and the projections must have different requested regions
     */
-    void GenerateInputRequestedRegion() ITK_OVERRIDE;
-    void GenerateOutputInformation() ITK_OVERRIDE;
+    void GenerateInputRequestedRegion() override;
+    void GenerateOutputInformation() override;
 
     bool m_UseNearestNeighborInterpolationInWarping; //Default is false, linear interpolation is used instead
     bool m_CudaConjugateGradient;
     bool m_UseCudaCyclicDeformation;
 
 private:
-    UnwarpSequenceImageFilter(const Self &); //purposely not implemented
-    void operator=(const Self &);  //purposely not implemented
-
     unsigned int    m_NumberOfIterations;
 };
 } //namespace ITK

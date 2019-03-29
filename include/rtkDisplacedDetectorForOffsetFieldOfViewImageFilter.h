@@ -42,20 +42,22 @@ class ITK_EXPORT DisplacedDetectorForOffsetFieldOfViewImageFilter :
   public rtk::DisplacedDetectorImageFilter<TInputImage, TOutputImage>
 {
 public:
-  /** Standard class typedefs. */
-  typedef DisplacedDetectorForOffsetFieldOfViewImageFilter             Self;
-  typedef rtk::DisplacedDetectorImageFilter<TInputImage, TOutputImage> Superclass;
-  typedef itk::SmartPointer<Self>                                      Pointer;
-  typedef itk::SmartPointer<const Self>                                ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(DisplacedDetectorForOffsetFieldOfViewImageFilter);
 
-  /** Some convenient typedefs. */
-  typedef TInputImage                                     InputImageType;
-  typedef TOutputImage                                    OutputImageType;
-  typedef typename OutputImageType::RegionType            OutputImageRegionType;
-  typedef itk::Image<typename TOutputImage::PixelType, 1> WeightImageType;
+  /** Standard class type alias. */
+  using Self = DisplacedDetectorForOffsetFieldOfViewImageFilter;
+  using Superclass = rtk::DisplacedDetectorImageFilter<TInputImage, TOutputImage>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
-  typedef ThreeDCircularProjectionGeometry GeometryType;
-  typedef GeometryType::Pointer            GeometryPointer;
+  /** Some convenient type alias. */
+  using InputImageType = TInputImage;
+  using OutputImageType = TOutputImage;
+  using OutputImageRegionType = typename OutputImageType::RegionType;
+  using WeightImageType = itk::Image<typename TOutputImage::PixelType, 1>;
+
+  using GeometryType = ThreeDCircularProjectionGeometry;
+  using GeometryPointer = GeometryType::Pointer;
 
   /** Standard New method. */
   itkNewMacro(Self);
@@ -65,20 +67,17 @@ public:
 
 protected:
   DisplacedDetectorForOffsetFieldOfViewImageFilter();
-  virtual ~DisplacedDetectorForOffsetFieldOfViewImageFilter() ITK_OVERRIDE {}
+  ~DisplacedDetectorForOffsetFieldOfViewImageFilter() override = default;
 
-  void GenerateOutputInformation() ITK_OVERRIDE;
+  void GenerateOutputInformation() override;
 
 #if ITK_VERSION_MAJOR<5
-  void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) ITK_OVERRIDE;
+  void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) override;
 #else
-  void DynamicThreadedGenerateData(const OutputImageRegionType& outputRegionForThread) ITK_OVERRIDE;
+  void DynamicThreadedGenerateData(const OutputImageRegionType& outputRegionForThread) override;
 #endif
 
 private:
-  DisplacedDetectorForOffsetFieldOfViewImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);               //purposely not implemented
-
   /**
    * Center coordinates and size of the FOV cylinder.
    */

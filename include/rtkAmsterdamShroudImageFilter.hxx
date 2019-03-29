@@ -32,7 +32,7 @@ template <class TInputImage>
 AmsterdamShroudImageFilter<TInputImage>
 ::AmsterdamShroudImageFilter():
   m_UnsharpMaskSize(17),
-  m_Geometry(ITK_NULLPTR),
+  m_Geometry(nullptr),
   m_Corner1(0.),
   m_Corner2(0.)
 {
@@ -165,7 +165,7 @@ AmsterdamShroudImageFilter<TInputImage>
   typename TInputImage::RegionType reg;
   reg = m_DerivativeFilter->GetOutput()->GetRequestedRegion();
 
-  typedef typename itk::ImageRegionIterator<TInputImage> OutputIterator;
+  using OutputIterator = typename itk::ImageRegionIterator<TInputImage>;
   OutputIterator it(m_DerivativeFilter->GetOutput(), reg);
 
   // Prepare the 8 corners of the box

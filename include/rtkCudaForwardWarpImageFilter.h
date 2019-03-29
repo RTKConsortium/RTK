@@ -49,18 +49,20 @@ class RTK_EXPORT CudaForwardWarpImageFilter :
     rtk::ForwardWarpImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>, itk::CudaImage<itk::CovariantVector<float, 3>, 3> > >
 {
 public:
-  /** Standard class typedefs. */
-  typedef itk::CudaImage<float,3>                                 ImageType;
-  typedef itk::CovariantVector<float, 3>                          DisplacementVectorType;
-  typedef itk::CudaImage<DisplacementVectorType, 3>               DVFType;
-  typedef ForwardWarpImageFilter< ImageType, ImageType, DVFType>  ForwardWarpImageFilterType;
-  typedef CudaForwardWarpImageFilter                              Self;
-  typedef itk::CudaInPlaceImageFilter<ImageType, ImageType,
-                     ForwardWarpImageFilterType>                  Superclass;
-  typedef itk::SmartPointer<Self>                                 Pointer;
-  typedef itk::SmartPointer<const Self>                           ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(CudaForwardWarpImageFilter);
 
-  typedef ImageType::RegionType                                   OutputImageRegionType;
+  /** Standard class type alias. */
+  using ImageType = itk::CudaImage<float,3>;
+  using DisplacementVectorType = itk::CovariantVector<float, 3>;
+  using DVFType = itk::CudaImage<DisplacementVectorType, 3>;
+  using ForwardWarpImageFilterType = ForwardWarpImageFilter< ImageType, ImageType, DVFType>;
+  using Self = CudaForwardWarpImageFilter;
+  using Superclass = itk::CudaInPlaceImageFilter<ImageType, ImageType,
+                     ForwardWarpImageFilterType>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
+
+  using OutputImageRegionType = ImageType::RegionType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -74,9 +76,6 @@ protected:
 
   virtual void GPUGenerateData();
 
-private:
-  CudaForwardWarpImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);                   //purposely not implemented
 };
 
 } // end namespace rtk

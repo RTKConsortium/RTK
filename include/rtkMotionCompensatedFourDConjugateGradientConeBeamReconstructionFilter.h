@@ -71,24 +71,26 @@ class ITK_EXPORT MotionCompensatedFourDConjugateGradientConeBeamReconstructionFi
   public rtk::FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 {
 public:
-  /** Standard class typedefs. */
-  typedef MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter                           Self;
-  typedef FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>     Superclass;
-  typedef itk::SmartPointer<Self>                                                                       Pointer;
-  typedef itk::SmartPointer<const Self>                                                                 ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter);
 
-  /** Some convenient typedefs. */
-  typedef VolumeSeriesType      InputImageType;
-  typedef VolumeSeriesType      OutputImageType;
-  typedef ProjectionStackType   VolumeType;
-  typedef itk::CovariantVector< typename VolumeSeriesType::ValueType, VolumeSeriesType::ImageDimension - 1>   VectorForDVF;
+  /** Standard class type alias. */
+  using Self = MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter;
+  using Superclass = FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
-  typedef typename Superclass::ForwardProjectionType ForwardProjectionType;
-  typedef typename Superclass::BackProjectionType    BackProjectionType;
+  /** Some convenient type alias. */
+  using InputImageType = VolumeSeriesType;
+  using OutputImageType = VolumeSeriesType;
+  using VolumeType = ProjectionStackType;
+  using VectorForDVF = itk::CovariantVector< typename VolumeSeriesType::ValueType, VolumeSeriesType::ImageDimension - 1>;
 
-  /** SFINAE typedef, depending on whether a CUDA image is used. */
-  typedef typename itk::Image< typename VolumeSeriesType::PixelType,
-                               VolumeSeriesType::ImageDimension>        CPUVolumeSeriesType;
+  using ForwardProjectionType = typename Superclass::ForwardProjectionType;
+  using BackProjectionType = typename Superclass::BackProjectionType;
+
+  /** SFINAE type alias, depending on whether a CUDA image is used. */
+  using CPUVolumeSeriesType = typename itk::Image< typename VolumeSeriesType::PixelType,
+                               VolumeSeriesType::ImageDimension>;
 #ifdef RTK_USE_CUDA
   typedef typename std::conditional< std::is_same< VolumeSeriesType, CPUVolumeSeriesType >::value,
                                      itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension>,
@@ -99,8 +101,8 @@ public:
                                      itk::CudaImage<VectorForDVF, VolumeSeriesType::ImageDimension - 1> >::type
                                                                         DVFImageType;
 #else
-  typedef itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension>    DVFSequenceImageType;
-  typedef itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension-1>  DVFImageType;
+  using DVFSequenceImageType = itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension>;
+  using DVFImageType = itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension-1>;
 #endif
 
   /** Typedefs of each subfilter of this composite filter */
@@ -112,8 +114,8 @@ public:
   itkTypeMacro(MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter, FourDConjugateGradientConeBeamReconstructionFilter)
 
   /** Neither the Forward nor the Back projection filters can be set by the user */
-  void SetForwardProjectionFilter (ForwardProjectionType itkNotUsed(_arg)) ITK_OVERRIDE {itkExceptionMacro(<< "ForwardProjection cannot be changed");}
-  void SetBackProjectionFilter (BackProjectionType itkNotUsed(_arg)) ITK_OVERRIDE {itkExceptionMacro(<< "BackProjection cannot be changed");}
+  void SetForwardProjectionFilter (ForwardProjectionType itkNotUsed(_arg)) override {itkExceptionMacro(<< "ForwardProjection cannot be changed");}
+  void SetBackProjectionFilter (BackProjectionType itkNotUsed(_arg)) override {itkExceptionMacro(<< "BackProjection cannot be changed");}
 
   /** The ND + time motion vector field */
   void SetDisplacementField(const DVFSequenceImageType* DVFs);
@@ -122,11 +124,11 @@ public:
   typename DVFSequenceImageType::ConstPointer GetInverseDisplacementField();
 
   /** Set the vector containing the signal in the sub-filters */
-  void SetSignal(const std::vector<double> signal) ITK_OVERRIDE;
+  void SetSignal(const std::vector<double> signal) override;
 
-  // Sub filters typedefs
-  typedef rtk::WarpProjectionStackToFourDImageFilter< VolumeSeriesType, ProjectionStackType>                        MCProjStackToFourDType;
-  typedef rtk::MotionCompensatedFourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType> MCCGOperatorType;
+  // Sub filters type alias
+  using MCProjStackToFourDType = rtk::WarpProjectionStackToFourDImageFilter< VolumeSeriesType, ProjectionStackType>;
+  using MCCGOperatorType = rtk::MotionCompensatedFourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType>;
 
   /** Set and Get for the UseCudaCyclicDeformation variable */
   itkSetMacro(UseCudaCyclicDeformation, bool)
@@ -134,17 +136,13 @@ public:
 
 protected:
   MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter();
-  virtual ~MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter() ITK_OVERRIDE {}
+  ~MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter() override = default;
 
-  void GenerateOutputInformation() ITK_OVERRIDE;
-  void GenerateInputRequestedRegion() ITK_OVERRIDE;
+  void GenerateOutputInformation() override;
+  void GenerateInputRequestedRegion() override;
 
   bool                                                m_UseCudaCyclicDeformation;
 
-private:
-  //purposely not implemented
-  MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter(const Self&);
-  void operator=(const Self&);
 }; // end of class
 
 } // end namespace rtk

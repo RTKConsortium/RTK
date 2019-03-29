@@ -45,7 +45,7 @@ rtk::DigisensGeometryReader
   itk::MetaDataDictionary &dic = *(digisensXmlReader->GetOutputObject() );
 
   // Getting elements positions
-  typedef itk::MetaDataObject< GeometryType::VectorType > MetaDataVectorType;
+  using MetaDataVectorType = itk::MetaDataObject< GeometryType::VectorType >;
   GeometryType::VectorType rotationAxis       =
     dynamic_cast<MetaDataVectorType *>(dic["ROTATIONaxis"].GetPointer() )->GetMetaDataObjectValue();
   GeometryType::VectorType rotationCenter     =
@@ -78,10 +78,10 @@ rtk::DigisensGeometryReader
   double sid = fabs(sourcePosition[2] - rotationCenter[2]);
 
   // Scaling
-  typedef itk::MetaDataObject< int > MetaDataIntegerType;
+  using MetaDataIntegerType = itk::MetaDataObject< int >;
   //int pixelWidth = dynamic_cast<MetaDataIntegerType *>(dic["CAMERApixelWidth"].GetPointer() )->GetMetaDataObjectValue();
   //int pixelHeight = dynamic_cast<MetaDataIntegerType *>(dic["CAMERApixelHeight"].GetPointer() )->GetMetaDataObjectValue();
-  typedef itk::MetaDataObject< double > MetaDataDoubleType;
+  using MetaDataDoubleType = itk::MetaDataObject< double >;
   //double totalWidth = dynamic_cast<MetaDataDoubleType *>(dic["CAMERAtotalWidth"].GetPointer() )->GetMetaDataObjectValue();
   //double totalHeight = dynamic_cast<MetaDataDoubleType *>(dic["CAMERAtotalHeight"].GetPointer() )->GetMetaDataObjectValue();
   //double projectionScalingX = detectorHorizontal[0] * totalWidth / (pixelWidth-1);
@@ -107,7 +107,7 @@ rtk::DigisensGeometryReader
     itk::Versor<double> xfm3DVersor;
     xfm3DVersor.Set(rotationAxis, angle*degreesToRadians);
 
-    typedef itk::CenteredEuler3DTransform<double> ThreeDTransformType;
+    using ThreeDTransformType = itk::CenteredEuler3DTransform<double>;
     ThreeDTransformType::Pointer xfm3D = ThreeDTransformType::New();
     xfm3D->SetMatrix(xfm3DVersor.GetMatrix());
 

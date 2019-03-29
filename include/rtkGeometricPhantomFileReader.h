@@ -39,14 +39,16 @@ class RTK_EXPORT GeometricPhantomFileReader :
     public itk::LightProcessObject
 {
 public:
-  /** Standard class typedefs. */
-  typedef GeometricPhantomFileReader     Self;
-  typedef itk::Object                    Superclass;
-  typedef itk::SmartPointer<Self>        Pointer;
-  typedef itk::SmartPointer<const Self>  ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(GeometricPhantomFileReader);
 
-  /** Convenient typedefs. */
-  typedef GeometricPhantom::Pointer      GeometricPhantomPointer;
+  /** Standard class type alias. */
+  using Self = GeometricPhantomFileReader;
+  using Superclass = itk::Object;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
+
+  /** Convenient type alias. */
+  using GeometricPhantomPointer = GeometricPhantom::Pointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -68,15 +70,12 @@ public:
 protected:
 
   /// Constructor
-  GeometricPhantomFileReader() {};
+  GeometricPhantomFileReader() = default;
 
   /// Destructor
-  virtual ~GeometricPhantomFileReader() ITK_OVERRIDE {}
+  ~GeometricPhantomFileReader() override = default;
 
 private:
-  GeometricPhantomFileReader( const Self& ); //purposely not implemented
-  void operator=( const Self& );             //purposely not implemented
-
   GeometricPhantomPointer m_GeometricPhantom;
   std::string             m_Filename;
 };

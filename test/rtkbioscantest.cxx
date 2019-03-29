@@ -28,7 +28,7 @@ int main(int argc, char*argv[])
 
   // Ora geometry
   std::vector<std::string> filenames;
-  filenames.push_back(argv[1]);
+  filenames.emplace_back(argv[1]);
   rtk::BioscanGeometryReader::Pointer geoTargReader;
   geoTargReader = rtk::BioscanGeometryReader::New();
   geoTargReader->SetProjectionsFileNames( filenames );

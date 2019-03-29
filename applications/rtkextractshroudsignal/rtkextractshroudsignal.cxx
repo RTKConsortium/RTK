@@ -44,12 +44,12 @@ int main(int argc, char * argv[])
 {
   GGO(rtkextractshroudsignal, args_info);
 
-  typedef double InputPixelType;
-  typedef double OutputPixelType;
-  const unsigned int Dimension = 2;
+  using InputPixelType = double;
+  using OutputPixelType = double;
+  constexpr unsigned int Dimension = 2;
 
-  typedef itk::Image< InputPixelType, Dimension > InputImageType;
-  typedef itk::Image< OutputPixelType, Dimension - 1 > OutputImageType;
+  using InputImageType = itk::Image< InputPixelType, Dimension >;
+  using OutputImageType = itk::Image< OutputPixelType, Dimension - 1 >;
 
   // Read
   itk::ImageFileReader<InputImageType>::Pointer reader = itk::ImageFileReader<InputImageType>::New();
@@ -64,7 +64,7 @@ int main(int argc, char * argv[])
       std::cerr << "You must supply a maximum amplitude to look for." << std::endl;
       return 1;
     }
-    typedef rtk::DPExtractShroudSignalImageFilter<InputPixelType, OutputPixelType> shroudFilterType;
+    using shroudFilterType = rtk::DPExtractShroudSignalImageFilter<InputPixelType, OutputPixelType>;
     shroudFilterType::Pointer shroudFilter = shroudFilterType::New();
     shroudFilter->SetInput( reader->GetOutput() );
     shroudFilter->SetAmplitude( args_info.amplitude_arg );
@@ -73,7 +73,7 @@ int main(int argc, char * argv[])
   }
   else if (std::string(args_info.method_arg) == "Reg1D")
   {
-    typedef rtk::Reg1DExtractShroudSignalImageFilter<InputPixelType, OutputPixelType> shroudFilterType;
+    using shroudFilterType = rtk::Reg1DExtractShroudSignalImageFilter<InputPixelType, OutputPixelType>;
     shroudFilterType::Pointer shroudFilter = shroudFilterType::New();
     shroudFilter->SetInput( reader->GetOutput() );
     TRY_AND_EXIT_ON_ITK_EXCEPTION( shroudFilter->Update() )
@@ -91,7 +91,7 @@ int main(int argc, char * argv[])
   // Process phase signal if required
   if(args_info.phase_given)
     {
-    typedef rtk::ExtractPhaseImageFilter<OutputImageType> PhaseFilter;
+    using PhaseFilter = rtk::ExtractPhaseImageFilter<OutputImageType>;
     PhaseFilter::Pointer phase = PhaseFilter::New();
     phase->SetInput(shroudSignal);
     phase->SetMovingAverageSize(args_info.movavg_arg);

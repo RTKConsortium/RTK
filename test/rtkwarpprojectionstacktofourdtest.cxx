@@ -28,35 +28,35 @@
 
 int main(int, char** )
 {
-  typedef float                             OutputPixelType;
+  using OutputPixelType = float;
 
-  typedef itk::CovariantVector< OutputPixelType, 3 > DVFVectorType;
+  using DVFVectorType = itk::CovariantVector< OutputPixelType, 3 >;
 
 #ifdef RTK_USE_CUDA
-  typedef itk::CudaImage< OutputPixelType, 4 >  VolumeSeriesType;
-  typedef itk::CudaImage< OutputPixelType, 3 >  ProjectionStackType;
-  typedef itk::CudaImage< OutputPixelType, 3 >  VolumeType;
-  typedef itk::CudaImage<DVFVectorType, VolumeSeriesType::ImageDimension> DVFSequenceImageType;
+  using VolumeSeriesType = itk::CudaImage< OutputPixelType, 4 >;
+  using ProjectionStackType = itk::CudaImage< OutputPixelType, 3 >;
+  using VolumeType = itk::CudaImage< OutputPixelType, 3 >;
+  using DVFSequenceImageType = itk::CudaImage<DVFVectorType, VolumeSeriesType::ImageDimension>;
 #else
-  typedef itk::Image< OutputPixelType, 4 >  VolumeSeriesType;
-  typedef itk::Image< OutputPixelType, 3 >  ProjectionStackType;
-  typedef itk::Image< OutputPixelType, 3 >  VolumeType;
-  typedef itk::Image<DVFVectorType, VolumeSeriesType::ImageDimension> DVFSequenceImageType;
+  using VolumeSeriesType = itk::Image< OutputPixelType, 4 >;
+  using ProjectionStackType = itk::Image< OutputPixelType, 3 >;
+  using VolumeType = itk::Image< OutputPixelType, 3 >;
+  using DVFSequenceImageType = itk::Image<DVFVectorType, VolumeSeriesType::ImageDimension>;
 #endif
 
 #if FAST_TESTS_NO_CHECKS
-  const unsigned int NumberOfProjectionImages = 5;
+  constexpr unsigned int NumberOfProjectionImages = 5;
 #else
-  const unsigned int NumberOfProjectionImages = 64;
+  constexpr unsigned int NumberOfProjectionImages = 64;
 #endif
 
   // Constant image sources
-  typedef rtk::ConstantImageSource< VolumeType > ConstantImageSourceType;
+  using ConstantImageSourceType = rtk::ConstantImageSource< VolumeType >;
   ConstantImageSourceType::PointType origin;
   ConstantImageSourceType::SizeType size;
   ConstantImageSourceType::SpacingType spacing;
 
-  typedef rtk::ConstantImageSource< VolumeSeriesType > FourDSourceType;
+  using FourDSourceType = rtk::ConstantImageSource< VolumeSeriesType >;
   FourDSourceType::PointType fourDOrigin;
   FourDSourceType::SizeType fourDSize;
   FourDSourceType::SpacingType fourDSpacing;
@@ -148,12 +148,12 @@ int main(int, char** )
   for (double radius=0; radius<2; radius++)
     {
     // Geometry object
-    typedef rtk::ThreeDCircularProjectionGeometry GeometryType;
+    using GeometryType = rtk::ThreeDCircularProjectionGeometry;
     GeometryType::Pointer geometry = GeometryType::New();
 
     // Projections
-    typedef rtk::RayEllipsoidIntersectionImageFilter<VolumeType, ProjectionStackType> REIType;
-    typedef itk::PasteImageFilter <ProjectionStackType, ProjectionStackType, ProjectionStackType > PasteImageFilterType;
+    using REIType = rtk::RayEllipsoidIntersectionImageFilter<VolumeType, ProjectionStackType>;
+    using PasteImageFilterType = itk::PasteImageFilter <ProjectionStackType, ProjectionStackType, ProjectionStackType >;
     ProjectionStackType::IndexType destinationIndex;
     destinationIndex[0] = 0;
     destinationIndex[1] = 0;
@@ -249,7 +249,7 @@ int main(int, char** )
       }
 
     // Create a vector field and its (very rough) inverse
-    typedef itk::ImageRegionIteratorWithIndex< DVFSequenceImageType > IteratorType;
+    using IteratorType = itk::ImageRegionIteratorWithIndex< DVFSequenceImageType >;
 
     DVFSequenceImageType::Pointer deformationField = DVFSequenceImageType::New();
     DVFSequenceImageType::Pointer inverseDeformationField = DVFSequenceImageType::New();
@@ -320,7 +320,7 @@ int main(int, char** )
       }
 
     // Input 4D volume sequence
-    typedef itk::JoinSeriesImageFilter<VolumeType, VolumeSeriesType> JoinFilterType;
+    using JoinFilterType = itk::JoinSeriesImageFilter<VolumeType, VolumeSeriesType>;
     JoinFilterType::Pointer join = JoinFilterType::New();
 
     // Read the phases file
@@ -330,7 +330,7 @@ int main(int, char** )
     phaseReader->Update();
 
     // The CPU voxel-based static 3D back projection used as a reference for comparison
-    typedef rtk::BackProjectionImageFilter<VolumeType,VolumeType> StaticBackProjectionFilterType;
+    using StaticBackProjectionFilterType = rtk::BackProjectionImageFilter<VolumeType,VolumeType>;
     StaticBackProjectionFilterType::Pointer backprojection = StaticBackProjectionFilterType::New();
     backprojection->SetInput(0, tomographySource->GetOutput());
     backprojection->SetInput(1, pasteFilterStaticProjections->GetOutput());
@@ -339,7 +339,7 @@ int main(int, char** )
 
     // Divide the result by the number of volumes in the 4D sequence,
     // for the attenuation results to approximately match
-    typedef itk::DivideImageFilter<VolumeType, VolumeType, VolumeType> DivideFilterType;
+    using DivideFilterType = itk::DivideImageFilter<VolumeType, VolumeType, VolumeType>;
     DivideFilterType::Pointer divide = DivideFilterType::New();
     divide->SetInput1(backprojection->GetOutput());
     divide->SetConstant2(fourDSize[3]);
@@ -352,7 +352,7 @@ int main(int, char** )
     join->Update();
 
     // Create and set the warped forward projection filter
-    typedef rtk::WarpProjectionStackToFourDImageFilter<VolumeSeriesType, VolumeType> WarpProjectionStackToFourDType;
+    using WarpProjectionStackToFourDType = rtk::WarpProjectionStackToFourDImageFilter<VolumeSeriesType, VolumeType>;
     WarpProjectionStackToFourDType::Pointer warpbackproject = WarpProjectionStackToFourDType::New();
     warpbackproject->SetInputVolumeSeries(fourdSource->GetOutput() );
     warpbackproject->SetInputProjectionStack(pasteFilter->GetOutput());

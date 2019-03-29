@@ -41,19 +41,21 @@ class ProjectGeometricPhantomImageFilter :
   public itk::InPlaceImageFilter<TInputImage,TOutputImage>
 {
 public:
-  /** Standard class typedefs. */
-  typedef ProjectGeometricPhantomImageFilter                Self;
-  typedef itk::InPlaceImageFilter<TInputImage,TOutputImage> Superclass;
-  typedef itk::SmartPointer<Self>                           Pointer;
-  typedef itk::SmartPointer<const Self>                     ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(ProjectGeometricPhantomImageFilter);
 
-  /** Convenient typedefs. */
-  typedef rtk::ThreeDCircularProjectionGeometry           GeometryType;
-  typedef typename GeometryType::ConstPointer             GeometryConstPointer;
-  typedef GeometricPhantom::ConstPointer                  GeometricPhantomConstPointer;
-  typedef std::string                                     StringType;
-  typedef ConvexShape::VectorType                         VectorType;
-  typedef ConvexShape::RotationMatrixType                 RotationMatrixType;
+  /** Standard class type alias. */
+  using Self = ProjectGeometricPhantomImageFilter;
+  using Superclass = itk::InPlaceImageFilter<TInputImage,TOutputImage>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
+
+  /** Convenient type alias. */
+  using GeometryType = rtk::ThreeDCircularProjectionGeometry;
+  using GeometryConstPointer = typename GeometryType::ConstPointer;
+  using GeometricPhantomConstPointer = GeometricPhantom::ConstPointer;
+  using StringType = std::string;
+  using VectorType = ConvexShape::VectorType;
+  using RotationMatrixType = ConvexShape::RotationMatrixType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -94,14 +96,11 @@ public:
 
 protected:
   ProjectGeometricPhantomImageFilter();
-  virtual ~ProjectGeometricPhantomImageFilter() ITK_OVERRIDE {}
+  ~ProjectGeometricPhantomImageFilter() override = default;
 
-  void GenerateData() ITK_OVERRIDE;
+  void GenerateData() override;
 
 private:
-  ProjectGeometricPhantomImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);                     //purposely not implemented
-
   GeometricPhantomConstPointer m_GeometricPhantom;
   GeometryConstPointer         m_Geometry;
   StringType                   m_ConfigFile;

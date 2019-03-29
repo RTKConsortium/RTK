@@ -67,7 +67,7 @@ void PhasesToInterpolationWeights::Parse()
   unsigned int NumberOfProjections = 0;
 
   // If m_SelectedProjections has not been set, use all projections
-  if (m_SelectedProjections.size() == 0)
+  if (m_SelectedProjections.empty())
     NumberOfProjections = rows+1;
   else
     {
@@ -78,8 +78,8 @@ void PhasesToInterpolationWeights::Parse()
       }
     else
       {
-      for (unsigned int i=0; i<m_SelectedProjections.size(); i++)
-        if (m_SelectedProjections[i]) NumberOfProjections += 1;
+      for (const bool m_SelectedProjection : m_SelectedProjections)
+        if (m_SelectedProjection) NumberOfProjections += 1;
       }
     }
   this->m_Array2D.SetSize(this->m_NumberOfReconstructedFrames, NumberOfProjections);
@@ -94,7 +94,7 @@ void PhasesToInterpolationWeights::Parse()
   for (unsigned int j = 0; j < rows+1; j++)
     {
     this->GetNextField(entry);
-    if ((m_SelectedProjections.size() == 0) || (m_SelectedProjections[j]))
+    if ((m_SelectedProjections.empty()) || (m_SelectedProjections[j]))
       projectionPhases.push_back(itk::Math::Round<float>(atof(entry.c_str()) * 1000. ) / 1000.);
     }
 

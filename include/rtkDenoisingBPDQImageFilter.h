@@ -42,12 +42,13 @@ class DenoisingBPDQImageFilter :
         public itk::InPlaceImageFilter< TOutputImage, TOutputImage >
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(DenoisingBPDQImageFilter);
 
-  /** Standard class typedefs. */
-  typedef DenoisingBPDQImageFilter                              Self;
-  typedef itk::InPlaceImageFilter< TOutputImage, TOutputImage>  Superclass;
-  typedef itk::SmartPointer<Self>                               Pointer;
-  typedef itk::SmartPointer<const Self>                         ConstPointer;
+  /** Standard class type alias. */
+  using Self = DenoisingBPDQImageFilter;
+  using Superclass = itk::InPlaceImageFilter< TOutputImage, TOutputImage>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self)
@@ -61,11 +62,11 @@ public:
              typename TOutputImage::ValueType,
              typename TOutputImage::ValueType,
              TGradientImage>                                                      GradientFilterType;
-  typedef itk::MultiplyImageFilter<TOutputImage>                                  MultiplyFilterType;
-  typedef itk::SubtractImageFilter<TOutputImage>                                  SubtractImageFilterType;
-  typedef itk::SubtractImageFilter<TGradientImage>                                SubtractGradientFilterType;
-  typedef itk::InPlaceImageFilter<TGradientImage>                                 ThresholdFilterType;
-  typedef BackwardDifferenceDivergenceImageFilter<TGradientImage, TOutputImage>   DivergenceFilterType;
+  using MultiplyFilterType = itk::MultiplyImageFilter<TOutputImage>;
+  using SubtractImageFilterType = itk::SubtractImageFilter<TOutputImage>;
+  using SubtractGradientFilterType = itk::SubtractImageFilter<TGradientImage>;
+  using ThresholdFilterType = itk::InPlaceImageFilter<TGradientImage>;
+  using DivergenceFilterType = BackwardDifferenceDivergenceImageFilter<TGradientImage, TOutputImage>;
 
   itkGetMacro(NumberOfIterations, int)
   itkSetMacro(NumberOfIterations, int)
@@ -75,13 +76,13 @@ public:
 
 protected:
   DenoisingBPDQImageFilter();
-  virtual ~DenoisingBPDQImageFilter() ITK_OVERRIDE {}
+  ~DenoisingBPDQImageFilter() override = default;
 
-  void GenerateData() ITK_OVERRIDE;
+  void GenerateData() override;
 
-  void GenerateOutputInformation() ITK_OVERRIDE;
+  void GenerateOutputInformation() override;
 
-  virtual ThresholdFilterType* GetThresholdFilter(){return ITK_NULLPTR;}
+  virtual ThresholdFilterType* GetThresholdFilter(){return nullptr;}
 
   /** Sub filter pointers */
   typename GradientFilterType::Pointer                  m_GradientFilter;
@@ -97,9 +98,6 @@ protected:
   bool   m_DimensionsProcessed[TOutputImage::ImageDimension];
 
 private:
-  DenoisingBPDQImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&); //purposely not implemented
-
   virtual void SetPipelineForFirstIteration();
   virtual void SetPipelineAfterFirstIteration();
 };

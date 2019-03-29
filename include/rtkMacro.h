@@ -42,18 +42,6 @@
 //--------------------------------------------------------------------
 
 //--------------------------------------------------------------------
-#ifndef ITK_NULLPTR
-# define ITK_NULLPTR NULL
-#endif
-//--------------------------------------------------------------------
-
-//--------------------------------------------------------------------
-#ifndef ITK_OVERRIDE
-# define ITK_OVERRIDE
-#endif
-//--------------------------------------------------------------------
-
-//--------------------------------------------------------------------
 /** \brief Debugging macro, displays name and content of a variable
  *
  * \author Simon Rit
@@ -134,7 +122,7 @@
       if( rInv->GetDataObject()->GetSource() )                             \
         {                                                                  \
         std::cerr << "Invalid requested region error triggered by "        \
-                  << rInv->GetDataObject()->GetSource()->GetNameOfClass() \
+                  << rInv->GetDataObject()->GetSource()->GetNameOfClass()  \
                   << std::endl;                                            \
       }                                                                    \
       itk::ImageBase<3> *img;                                              \
@@ -164,15 +152,15 @@
   static Pointer New(void)                                                           \
     {                                                                                \
     Pointer smartPtr = ::itk::ObjectFactory< x >::Create();                          \
-    if ( smartPtr.GetPointer() == ITK_NULLPTR )                                      \
+    if ( smartPtr.GetPointer() == nullptr )                                          \
       {                                                                              \
       smartPtr = new x;                                                              \
       }                                                                              \
     smartPtr->UnRegister();                                                          \
     /* If smartPtr is a ProcessObject, watch it */                                   \
-    itk::ProcessObject* processObjectPointer = ITK_NULLPTR;                                 \
+    itk::ProcessObject* processObjectPointer = nullptr;                              \
     processObjectPointer = dynamic_cast<itk::ProcessObject*>(smartPtr.GetPointer()); \
-    if (processObjectPointer != ITK_NULLPTR)                                                \
+    if (processObjectPointer != nullptr)                                             \
       {                                                                              \
       rtk::GlobalTimer::GetInstance()->Watch(processObjectPointer);                  \
       }                                                                              \
@@ -181,7 +169,7 @@
 
 #undef itkCreateAnotherMacro
 #define itkCreateAnotherMacro(x)                                            \
-  virtual::itk::LightObject::Pointer CreateAnother(void) const ITK_OVERRIDE \
+  virtual::itk::LightObject::Pointer CreateAnother(void) const override     \
     {                                                                       \
     ::itk::LightObject::Pointer smartPtr;                                   \
     smartPtr = x::New().GetPointer();                                       \
@@ -197,15 +185,15 @@
     smartPtr = rawPtr;                                                               \
     rawPtr->UnRegister();                                                            \
     /* If smartPtr is a ProcessObject, watch it */                                   \
-    itk::ProcessObject* processObjectPointer = ITK_NULLPTR;                                 \
+    itk::ProcessObject* processObjectPointer = nullptr;                              \
     processObjectPointer = dynamic_cast<itk::ProcessObject*>(smartPtr.GetPointer()); \
-    if (processObjectPointer != ITK_NULLPTR)                                                \
+    if (processObjectPointer != nullptr)                                             \
       {                                                                              \
       rtk::GlobalTimer::GetInstance()->Watch(processObjectPointer);                  \
       }                                                                              \
     return smartPtr;                                                                 \
     }                                                                                \
-  virtual::itk::LightObject::Pointer CreateAnother(void) const ITK_OVERRIDE          \
+  virtual::itk::LightObject::Pointer CreateAnother(void) const override              \
     {                                                                                \
     ::itk::LightObject::Pointer smartPtr;                                            \
     smartPtr = x::New().GetPointer();                                                \

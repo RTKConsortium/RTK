@@ -42,11 +42,13 @@ class CudaFFTRampImageFilter :
   public CudaFFTProjectionsConvolutionImageFilter< FFTRampImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>, float > >
 {
 public:
-  /** Standard class typedefs. */
-  typedef CudaFFTRampImageFilter                                     Self;
-  typedef FFTRampImageFilter< CudaImageType, CudaImageType, float >  Superclass;
-  typedef itk::SmartPointer<Self>                                    Pointer;
-  typedef itk::SmartPointer<const Self>                              ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(CudaFFTRampImageFilter);
+
+  /** Standard class type alias. */
+  using Self = CudaFFTRampImageFilter;
+  using Superclass = FFTRampImageFilter< CudaImageType, CudaImageType, float >;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
   /** Standard New method. */
   itkNewMacro(Self);
@@ -58,9 +60,6 @@ protected:
   CudaFFTRampImageFilter(){}
   ~CudaFFTRampImageFilter(){}
 
-private:
-  CudaFFTRampImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);         //purposely not implemented
 }; // end of class
 
 } // end namespace rtk

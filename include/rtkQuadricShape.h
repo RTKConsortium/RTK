@@ -46,16 +46,16 @@ class RTK_EXPORT QuadricShape:
     public ConvexShape
 {
 public:
-  /** Standard class typedefs. */
-  typedef QuadricShape                  Self;
-  typedef ConvexShape                   Superclass;
-  typedef itk::SmartPointer<Self>       Pointer;
-  typedef itk::SmartPointer<const Self> ConstPointer;
+  /** Standard class type alias. */
+  using Self = QuadricShape;
+  using Superclass = ConvexShape;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
-  /** Convenient typedefs. */
-  typedef Superclass::ScalarType ScalarType;
-  typedef Superclass::PointType  PointType;
-  typedef Superclass::VectorType VectorType;
+  /** Convenient type alias. */
+  using ScalarType = Superclass::ScalarType;
+  using PointType = Superclass::PointType;
+  using VectorType = Superclass::VectorType;
 
   /** Method for creation through the object factory. */
   itkNewMacro ( Self );
@@ -64,24 +64,24 @@ public:
   itkTypeMacro(QuadricShape, ConvexShape);
 
   /** See rtk::ConvexShape::IsInside. */
-  virtual bool IsInside(const PointType & point) const ITK_OVERRIDE;
+  bool IsInside(const PointType & point) const override;
 
   /** See rtk::ConvexShape::IsIntersectedByRay for the goal and
    * http://www.siggraph.org/education/materials/HyperGraph/raytrace/rtinter4.htm
    * for the computation. */
-  virtual bool IsIntersectedByRay(const PointType & rayOrigin,
+  bool IsIntersectedByRay(const PointType & rayOrigin,
                                   const VectorType & rayDirection,
                                   double & nearDist,
-                                  double & farDist) const ITK_OVERRIDE;
+                                  double & farDist) const override;
 
   /** Rescale object along each direction by a 3D vector. */
-  virtual void Rescale(const VectorType &r) ITK_OVERRIDE;
+  void Rescale(const VectorType &r) override;
 
   /** Translate object by a given 3D vector. */
-  virtual void Translate(const VectorType &t) ITK_OVERRIDE;
+  void Translate(const VectorType &t) override;
 
   /** Rotate object by a given 3D vector. */
-  virtual void Rotate(const RotationMatrixType &r) ITK_OVERRIDE;
+  void Rotate(const RotationMatrixType &r) override;
 
   itkGetConstMacro(A, ScalarType);
   itkSetMacro(A, ScalarType);
@@ -106,7 +106,7 @@ public:
 
   void SetEllipsoid(const PointType &center, const VectorType &axis, const ScalarType &yangle=0);
 
-  virtual itk::LightObject::Pointer InternalClone() const ITK_OVERRIDE;
+  itk::LightObject::Pointer InternalClone() const override;
 
 private:
   QuadricShape();

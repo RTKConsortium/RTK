@@ -30,24 +30,24 @@ int main(int argc, char * argv[])
 {
   GGO(rtkdualenergysimplexdecomposition, args_info);
 
-  typedef float PixelValueType;
-  const unsigned int Dimension = 3;
+  using PixelValueType = float;
+  constexpr unsigned int Dimension = 3;
 
-  typedef itk::VectorImage< PixelValueType, Dimension > DecomposedProjectionType;
-  typedef itk::ImageFileReader<DecomposedProjectionType> DecomposedProjectionReaderType;
-  typedef itk::ImageFileWriter<DecomposedProjectionType> DecomposedProjectionWriterType;
+  using DecomposedProjectionType = itk::VectorImage< PixelValueType, Dimension >;
+  using DecomposedProjectionReaderType = itk::ImageFileReader<DecomposedProjectionType>;
+  using DecomposedProjectionWriterType = itk::ImageFileWriter<DecomposedProjectionType>;
 
-  typedef itk::VectorImage< PixelValueType, Dimension > DualEnergyProjectionsType;
-  typedef itk::ImageFileReader< DualEnergyProjectionsType > DualEnergyProjectionReaderType;
+  using DualEnergyProjectionsType = itk::VectorImage< PixelValueType, Dimension >;
+  using DualEnergyProjectionReaderType = itk::ImageFileReader< DualEnergyProjectionsType >;
 
-  typedef itk::VectorImage< PixelValueType, Dimension-1 > IncidentSpectrumImageType;
-  typedef itk::ImageFileReader<IncidentSpectrumImageType> IncidentSpectrumReaderType;
+  using IncidentSpectrumImageType = itk::VectorImage< PixelValueType, Dimension-1 >;
+  using IncidentSpectrumReaderType = itk::ImageFileReader<IncidentSpectrumImageType>;
 
-  typedef itk::Image< PixelValueType, Dimension-1 > DetectorResponseImageType;
-  typedef itk::ImageFileReader<DetectorResponseImageType> DetectorResponseReaderType;
+  using DetectorResponseImageType = itk::Image< PixelValueType, Dimension-1 >;
+  using DetectorResponseReaderType = itk::ImageFileReader<DetectorResponseImageType>;
 
-  typedef itk::Image< PixelValueType, Dimension-1 > MaterialAttenuationsImageType;
-  typedef itk::ImageFileReader<MaterialAttenuationsImageType> MaterialAttenuationsReaderType;
+  using MaterialAttenuationsImageType = itk::Image< PixelValueType, Dimension-1 >;
+  using MaterialAttenuationsReaderType = itk::ImageFileReader<MaterialAttenuationsImageType>;
 
   // Read all inputs
   DecomposedProjectionReaderType::Pointer decomposedProjectionReader = DecomposedProjectionReaderType::New();
@@ -110,11 +110,11 @@ int main(int argc, char * argv[])
                              << MaximumEnergy);
 
   // Create and set the filter
-  typedef rtk::SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionType,
+  using SimplexFilterType = rtk::SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionType,
                                                                     DualEnergyProjectionsType,
                                                                     IncidentSpectrumImageType,
                                                                     DetectorResponseImageType,
-                                                                    MaterialAttenuationsImageType> SimplexFilterType;
+                                                                    MaterialAttenuationsImageType>;
   SimplexFilterType::Pointer simplex = SimplexFilterType::New();
   simplex->SetInputDecomposedProjections(decomposedProjectionReader->GetOutput());
   simplex->SetGuessInitialization(args_info.guess_flag);

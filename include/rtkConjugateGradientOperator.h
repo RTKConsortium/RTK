@@ -32,11 +32,12 @@ template< typename OutputImageType>
 class ConjugateGradientOperator : public itk::ImageToImageFilter< OutputImageType, OutputImageType>
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(ConjugateGradientOperator);
 
-  /** Standard class typedefs. */
-  typedef ConjugateGradientOperator                                   Self;
-  typedef itk::ImageToImageFilter< OutputImageType, OutputImageType > Superclass;
-  typedef itk::SmartPointer< Self >                                   Pointer;
+  /** Standard class type alias. */
+  using Self = ConjugateGradientOperator;
+  using Superclass = itk::ImageToImageFilter< OutputImageType, OutputImageType >;
+  using Pointer = itk::SmartPointer< Self >;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self)
@@ -49,12 +50,7 @@ public:
 
 protected:
   ConjugateGradientOperator();
-  virtual ~ConjugateGradientOperator() ITK_OVERRIDE {}
-
-private:
-  ConjugateGradientOperator(const Self &); //purposely not implemented
-  void operator=(const Self &);  //purposely not implemented
-
+  ~ConjugateGradientOperator() override = default;
 };
 } //namespace ITK
 

@@ -46,18 +46,20 @@ namespace rtk
 class RTK_EXPORT ConvexShape: public itk::DataObject
 {
 public:
-  /** Standard class typedefs. */
-  typedef ConvexShape                   Self;
-  typedef itk::DataObject               Superclass;
-  typedef itk::SmartPointer<Self>       Pointer;
-  typedef itk::SmartPointer<const Self> ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(ConvexShape);
 
-  /** Convenient typedefs. */
-  itkStaticConstMacro(Dimension, unsigned int, 3);
-  typedef double                                          ScalarType;
-  typedef itk::Vector< ScalarType, Dimension >            PointType;
-  typedef itk::Vector< ScalarType, Dimension >            VectorType;
-  typedef itk::Matrix< ScalarType, Dimension, Dimension > RotationMatrixType;
+  /** Standard class type alias. */
+  using Self = ConvexShape;
+  using Superclass = itk::DataObject;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
+
+  /** Convenient type alias. */
+  static constexpr unsigned int Dimension = 3;
+  using ScalarType = double;
+  using PointType = itk::Vector< ScalarType, Dimension >;
+  using VectorType = itk::Vector< ScalarType, Dimension >;
+  using RotationMatrixType = itk::Matrix< ScalarType, Dimension, Dimension >;
 
   /** Method for creation through the object factory. */
   itkNewMacro ( Self );
@@ -106,12 +108,9 @@ protected:
                        ScalarType & nearDist,
                        ScalarType & farDist) const;
   bool ApplyClipPlanes(const PointType & point) const;
-  virtual itk::LightObject::Pointer InternalClone() const ITK_OVERRIDE;
+  itk::LightObject::Pointer InternalClone() const override;
 
 private:
-  ConvexShape(const Self&);    //purposely not implemented
-  void operator=(const Self&); //purposely not implemented
-
   ScalarType              m_Density;
   std::vector<VectorType> m_PlaneDirections;
   std::vector<ScalarType> m_PlanePositions;

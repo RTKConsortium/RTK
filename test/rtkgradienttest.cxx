@@ -20,7 +20,7 @@ void CheckGradient(typename TImage::Pointer im, typename TGradient::Pointer grad
     if(dimensionsProcessed[dim]) dimsToProcess.push_back(dim);
     }
 
-  typedef itk::ImageRegionConstIterator<TGradient> GradientIteratorType;
+  using GradientIteratorType = itk::ImageRegionConstIterator<TGradient>;
   GradientIteratorType itGrad( grad, grad->GetBufferedRegion() );
 
   const int ImageDimension = TImage::ImageDimension;
@@ -82,20 +82,20 @@ void CheckGradient(typename TImage::Pointer im, typename TGradient::Pointer grad
 
 int main(int, char** )
 {
-  const unsigned int Dimension = 3;
-  typedef double                                    OutputPixelType;
+  constexpr unsigned int Dimension = 3;
+  using OutputPixelType = double;
 
-  typedef itk::CovariantVector<OutputPixelType, 2> CovVecType;
+  using CovVecType = itk::CovariantVector<OutputPixelType, 2>;
 #ifdef USE_CUDA
-  typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
-  typedef itk::CudaImage<CovVecType, Dimension> GradientImageType;
+  using OutputImageType = itk::CudaImage< OutputPixelType, Dimension >;
+  using GradientImageType = itk::CudaImage<CovVecType, Dimension>;
 #else
-  typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
-  typedef itk::Image<CovVecType, Dimension> GradientImageType;
+  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
+  using GradientImageType = itk::Image<CovVecType, Dimension>;
 #endif
 
   // Random image sources
-  typedef itk::RandomImageSource< OutputImageType > RandomImageSourceType;
+  using RandomImageSourceType = itk::RandomImageSource< OutputImageType >;
   RandomImageSourceType::Pointer randomVolumeSource  = RandomImageSourceType::New();
 
   // Image meta data
@@ -131,7 +131,7 @@ int main(int, char** )
   // Update all sources
   TRY_AND_EXIT_ON_ITK_EXCEPTION( randomVolumeSource->Update() );
 
-  typedef rtk::ForwardDifferenceGradientImageFilter<OutputImageType, OutputPixelType, OutputPixelType, GradientImageType> GradientFilterType;
+  using GradientFilterType = rtk::ForwardDifferenceGradientImageFilter<OutputImageType, OutputPixelType, OutputPixelType, GradientImageType>;
   GradientFilterType::Pointer grad = GradientFilterType::New();
   grad->SetInput(randomVolumeSource->GetOutput());
 

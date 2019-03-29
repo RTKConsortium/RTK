@@ -42,14 +42,14 @@ class ITK_EXPORT CudaImageDataManager : public CudaDataManager
   friend class CudaKernelManager;
 
 public:
-  typedef CudaImageDataManager      Self;
-  typedef CudaDataManager           Superclass;
-  typedef SmartPointer<Self>        Pointer;
-  typedef SmartPointer<const Self>  ConstPointer;
+  using Self = CudaImageDataManager;
+  using Superclass = CudaDataManager;
+  using Pointer = SmartPointer<Self>;
+  using ConstPointer = SmartPointer<const Self>;
 
-  typedef typename ImageType::RegionType RegionType;
-  typedef typename ImageType::IndexType  IndexType;
-  typedef typename ImageType::SizeType   SizeType;
+  using RegionType = typename ImageType::RegionType;
+  using IndexType = typename ImageType::IndexType;
+  using SizeType = typename ImageType::SizeType;
 
   itkNewMacro(Self);
   itkTypeMacro(CudaImageDataManager, CudaDataManager);

@@ -152,9 +152,9 @@ void InterpolatorWithKnownWeightsImageFilter<VolumeType, VolumeSeriesType>
   typename VolumeSeriesType::SizeType volumeSeriesSize;
   typename VolumeSeriesType::IndexType volumeSeriesIndex;
 
-  typedef itk::ImageRegionIterator<VolumeType>        VolumeRegionIterator;
-  typedef itk::ImageRegionConstIterator<VolumeType>   VolumeRegionConstIterator;
-  typedef itk::ImageRegionIterator<VolumeSeriesType>  VolumeSeriesRegionIterator;
+  using VolumeRegionIterator = itk::ImageRegionIterator<VolumeType>;
+  using VolumeRegionConstIterator = itk::ImageRegionConstIterator<VolumeType>;
+  using VolumeSeriesRegionIterator = itk::ImageRegionIterator<VolumeSeriesType>;
 
   float weight;
 

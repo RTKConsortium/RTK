@@ -38,11 +38,13 @@ namespace rtk
 class ITK_EXPORT PhasesToInterpolationWeights:public itk::CSVFileReaderBase
 {
 public:
-    /** Standard class typedefs */
-    typedef PhasesToInterpolationWeights      Self;
-    typedef CSVFileReaderBase                 Superclass;
-    typedef itk::SmartPointer<Self>           Pointer;
-    typedef itk::SmartPointer<const Self>     ConstPointer;
+    ITK_DISALLOW_COPY_AND_ASSIGN(PhasesToInterpolationWeights);
+
+    /** Standard class type alias */
+    using Self = PhasesToInterpolationWeights;
+    using Superclass = CSVFileReaderBase;
+    using Pointer = itk::SmartPointer<Self>;
+    using ConstPointer = itk::SmartPointer<const Self>;
 
     /** Standard New method. */
     itkNewMacro(Self)
@@ -51,10 +53,10 @@ public:
     itkTypeMacro(Self,Superclass)
 
     /** DataFrame Object types */
-    typedef itk::Array2D<float>    Array2DType;
+    using Array2DType = itk::Array2D<float>;
 
     /** The value type of the dataset. */
-    typedef float ValueType;
+    using ValueType = float;
 
     //  /** This method can be used to get the data frame object once the data from
     //  * the file has been parsed. */
@@ -62,7 +64,7 @@ public:
 
     /** Parses the data from the file. Gets the phases of the projections
   * into a vector, then generate an Array2D object containing the interpolation weights  */
-    void Parse() ITK_OVERRIDE;
+    void Parse() override;
 
     /** Aliased to the Parse() method to be consistent with the rest of the
    * pipeline. */
@@ -87,10 +89,10 @@ public:
 protected:
 
     PhasesToInterpolationWeights();
-    virtual ~PhasesToInterpolationWeights () ITK_OVERRIDE {}
+    ~PhasesToInterpolationWeights () override = default;
 
     /** Print the reader. */
-    void PrintSelf(std::ostream & os, itk::Indent indent) const ITK_OVERRIDE;
+    void PrintSelf(std::ostream & os, itk::Indent indent) const override;
 
 private:
 
@@ -98,9 +100,6 @@ private:
     int                 m_NumberOfReconstructedFrames;
     bool                m_UnevenTemporalSpacing;
     std::vector<bool>   m_SelectedProjections;
-
-    PhasesToInterpolationWeights(const Self &);  //purposely not implemented
-    void operator=(const Self &);          //purposely not implemented
 };
 
 } //end namespace rtk

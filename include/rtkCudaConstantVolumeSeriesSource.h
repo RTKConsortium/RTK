@@ -45,12 +45,14 @@ class RTK_EXPORT CudaConstantVolumeSeriesSource :
          ConstantImageSource< itk::CudaImage<float,4> > >
 {
 public:
-  /** Standard class typedefs. */
-  typedef rtk::CudaConstantVolumeSeriesSource                               Self;
-  typedef itk::CudaImage<float,3>                                     OutputImageType;
-  typedef rtk::ConstantImageSource< OutputImageType >                 Superclass;
-  typedef itk::SmartPointer<Self>                                     Pointer;
-  typedef itk::SmartPointer<const Self>                               ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(CudaConstantVolumeSeriesSource);
+
+  /** Standard class type alias. */
+  using Self = rtk::CudaConstantVolumeSeriesSource;
+  using OutputImageType = itk::CudaImage<float,3>;
+  using Superclass = rtk::ConstantImageSource< OutputImageType >;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
   /** Standard New method. */
   itkNewMacro(Self)
@@ -64,10 +66,6 @@ protected:
   }
 
   virtual void GPUGenerateData();
-
-private:
-  CudaConstantVolumeSeriesSource(const Self&); //purposely not implemented
-  void operator=(const Self&);         //purposely not implemented
 
 }; // end of class
 

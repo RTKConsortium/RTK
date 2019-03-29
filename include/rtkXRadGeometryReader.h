@@ -40,13 +40,15 @@ class RTK_EXPORT XRadGeometryReader :
   public itk::LightProcessObject
 {
 public:
-  /** Standard typedefs */
-  typedef XRadGeometryReader      Self;
-  typedef itk::LightProcessObject Superclass;
-  typedef itk::SmartPointer<Self> Pointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(XRadGeometryReader);
 
-  /** Convenient typedefs */
-  typedef Reg23ProjectionGeometry GeometryType;
+  /** Standard type alias */
+  using Self = XRadGeometryReader;
+  using Superclass = itk::LightProcessObject;
+  using Pointer = itk::SmartPointer<Self>;
+
+  /** Convenient type alias */
+  using GeometryType = Reg23ProjectionGeometry;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(XRadGeometryReader, LightProcessObject);
@@ -65,11 +67,7 @@ protected:
   XRadGeometryReader();
 
 private:
-  //purposely not implemented
-  XRadGeometryReader(const Self&);
-  void operator=(const Self&);
-
-  void GenerateData() ITK_OVERRIDE;
+  void GenerateData() override;
 
   GeometryType::Pointer m_Geometry;
   std::string           m_ImageFileName;

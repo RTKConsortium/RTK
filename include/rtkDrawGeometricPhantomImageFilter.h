@@ -40,17 +40,19 @@ class DrawGeometricPhantomImageFilter :
   public itk::InPlaceImageFilter<TInputImage,TOutputImage>
 {
 public:
-  /** Standard class typedefs. */
-  typedef DrawGeometricPhantomImageFilter                   Self;
-  typedef itk::InPlaceImageFilter<TInputImage,TOutputImage> Superclass;
-  typedef itk::SmartPointer<Self>                           Pointer;
-  typedef itk::SmartPointer<const Self>                     ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(DrawGeometricPhantomImageFilter);
 
-  /** Convenient typedefs. */
-  typedef GeometricPhantom::ConstPointer  GeometricPhantomConstPointer;
-  typedef std::string                     StringType;
-  typedef ConvexShape::VectorType         VectorType;
-  typedef ConvexShape::RotationMatrixType RotationMatrixType;
+  /** Standard class type alias. */
+  using Self = DrawGeometricPhantomImageFilter;
+  using Superclass = itk::InPlaceImageFilter<TInputImage,TOutputImage>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
+
+  /** Convenient type alias. */
+  using GeometricPhantomConstPointer = GeometricPhantom::ConstPointer;
+  using StringType = std::string;
+  using VectorType = ConvexShape::VectorType;
+  using RotationMatrixType = ConvexShape::RotationMatrixType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -87,14 +89,11 @@ public:
 
 protected:
   DrawGeometricPhantomImageFilter();
-  virtual ~DrawGeometricPhantomImageFilter() ITK_OVERRIDE {}
+  ~DrawGeometricPhantomImageFilter() override = default;
 
-  void GenerateData() ITK_OVERRIDE;
+  void GenerateData() override;
 
 private:
-  DrawGeometricPhantomImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);                     //purposely not implemented
-
   GeometricPhantomConstPointer m_GeometricPhantom;
   StringType                   m_ConfigFile;
   VectorType                   m_PhantomScale;

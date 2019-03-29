@@ -76,7 +76,7 @@ template <class TImageType>
 itk::Matrix<double, TImageType::ImageDimension + 1, TImageType::ImageDimension + 1>
 GetPhysicalPointToIndexMatrix(const TImageType *image)
 {
-  typedef itk::Matrix<double, TImageType::ImageDimension + 1, TImageType::ImageDimension + 1> MatrixType;
+  using MatrixType = itk::Matrix<double, TImageType::ImageDimension + 1, TImageType::ImageDimension + 1>;
   return MatrixType(GetIndexToPhysicalPointMatrix<TImageType>(image).GetInverse() );
 };
 

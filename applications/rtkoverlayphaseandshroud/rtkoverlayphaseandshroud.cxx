@@ -33,12 +33,12 @@ int main(int argc, char * argv[])
 {
   GGO(rtkoverlayphaseandshroud, args_info);
 
-  typedef double InputPixelType;
-  typedef itk::RGBPixel< unsigned char > RGBPixelType;
-  const unsigned int Dimension = 2;
+  using InputPixelType = double;
+  using RGBPixelType = itk::RGBPixel< unsigned char >;
+  constexpr unsigned int Dimension = 2;
 
-  typedef itk::Image< InputPixelType, Dimension > InputImageType;
-  typedef itk::Image< RGBPixelType, Dimension > OutputImageType;
+  using InputImageType = itk::Image< InputPixelType, Dimension >;
+  using OutputImageType = itk::Image< RGBPixelType, Dimension >;
 
   // Read
   itk::ImageFileReader<InputImageType>::Pointer reader = itk::ImageFileReader<InputImageType>::New();
@@ -46,7 +46,7 @@ int main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->Update() )
 
   // Read signal file
-  typedef itk::CSVArray2DFileReader<double> ReaderType;
+  using ReaderType = itk::CSVArray2DFileReader<double>;
   ReaderType::Pointer signalReader = ReaderType::New();
   signalReader->SetFileName( args_info.signal_arg );
   signalReader->SetFieldDelimiterCharacter( ';' );
@@ -107,7 +107,7 @@ int main(int argc, char * argv[])
     ++itOut;
     }
 
-  typedef itk::ImageFileWriter<OutputImageType> WriterType;
+  using WriterType = itk::ImageFileWriter<OutputImageType>;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName(args_info.output_arg);
   writer->SetInput(RGBout);

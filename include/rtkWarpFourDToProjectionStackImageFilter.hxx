@@ -75,7 +75,7 @@ WarpFourDToProjectionStackImageFilter< VolumeSeriesType, ProjectionStackType>
     {
     CudaWarpForwardProjectionImageFilter* wfp;
     wfp = dynamic_cast< CudaWarpForwardProjectionImageFilter* > (this->m_ForwardProjectionFilter.GetPointer());
-    typedef itk::CudaImage<VectorForDVF, VolumeSeriesType::ImageDimension - 1> CudaDVFImageType;
+    using CudaDVFImageType = itk::CudaImage<VectorForDVF, VolumeSeriesType::ImageDimension - 1>;
     CudaDVFImageType* cudvf;
     cudvf = dynamic_cast< CudaDVFImageType* > (m_DVFInterpolatorFilter->GetOutput());
     wfp->SetDisplacementField( cudvf );

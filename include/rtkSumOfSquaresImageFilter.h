@@ -38,14 +38,16 @@ class ITK_EXPORT SumOfSquaresImageFilter :
   public itk::InPlaceImageFilter<TOutputImage>
 {
 public:
-  /** Standard class typedefs. */
-  typedef SumOfSquaresImageFilter                     Self;
-  typedef itk::InPlaceImageFilter<TOutputImage>                  Superclass;
-  typedef itk::SmartPointer<Self>                                Pointer;
-  typedef itk::SmartPointer<const Self>                          ConstPointer;
-  typedef typename TOutputImage::PixelType                       OutputPixelType;
-  typedef typename TOutputImage::RegionType                      OutputImageRegionType;
-  typedef typename TOutputImage::InternalPixelType               OutputInternalPixelType;
+  ITK_DISALLOW_COPY_AND_ASSIGN(SumOfSquaresImageFilter);
+
+  /** Standard class type alias. */
+  using Self = SumOfSquaresImageFilter;
+  using Superclass = itk::InPlaceImageFilter<TOutputImage>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
+  using OutputPixelType = typename TOutputImage::PixelType;
+  using OutputImageRegionType = typename TOutputImage::RegionType;
+  using OutputInternalPixelType = typename TOutputImage::InternalPixelType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -58,18 +60,14 @@ public:
 
 protected:
   SumOfSquaresImageFilter();
-  ~SumOfSquaresImageFilter() ITK_OVERRIDE {}
+  ~SumOfSquaresImageFilter() override = default;
 
   void BeforeThreadedGenerateData();
-  void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, itk::ThreadIdType threadId ) ITK_OVERRIDE;
+  void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, itk::ThreadIdType threadId ) override;
   void AfterThreadedGenerateData();
 
   OutputInternalPixelType m_SumOfSquares;
   std::vector<OutputInternalPixelType> m_VectorOfPartialSSs;
-
-private:
-  SumOfSquaresImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);                     //purposely not implemented
 };
 
 } // end namespace rtk

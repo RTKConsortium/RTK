@@ -20,13 +20,13 @@
 
 int main(int, char** )
 {
-  const unsigned int Dimension = 3;
-  typedef float OutputPixelType;
-  typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
+  constexpr unsigned int Dimension = 3;
+  using OutputPixelType = float;
+  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
 
 
   // Constant image sources
-  typedef rtk::ConstantImageSource< OutputImageType > ConstantImageSourceType;
+  using ConstantImageSourceType = rtk::ConstantImageSource< OutputImageType >;
   ConstantImageSourceType::PointType origin;
   ConstantImageSourceType::SizeType size;
   ConstantImageSourceType::SpacingType spacing;
@@ -47,7 +47,7 @@ int main(int, char** )
   projSource->SetSize( size );
 
   // Geometry
-  typedef rtk::ThreeDCircularProjectionGeometry GeometryType;
+  using GeometryType = rtk::ThreeDCircularProjectionGeometry;
   GeometryType::Pointer geometry = GeometryType::New();
   geometry->AddProjection(600., 560.,   0., 3., 0., 0., 0., 2., 0.);
   geometry->AddProjection(500., 545.,  90., 2., 0., 0., 0., 4., 0.);
@@ -55,7 +55,7 @@ int main(int, char** )
   geometry->AddProjection(900., 935., 270., 4., 0., 0., 0., 8., 0.);
 
   // Projections
-  typedef rtk::SheppLoganPhantomFilter<OutputImageType, OutputImageType> SLPType;
+  using SLPType = rtk::SheppLoganPhantomFilter<OutputImageType, OutputImageType>;
   SLPType::Pointer slp=SLPType::New();
   slp->SetInput( projSource->GetOutput() );
   slp->SetGeometry(geometry);
@@ -69,14 +69,14 @@ int main(int, char** )
       std::cout << "not";
     std::cout << " in place ******" << std::endl;
 
-    typedef rtk::DisplacedDetectorForOffsetFieldOfViewImageFilter<OutputImageType> OffsetDDFType;
+    using OffsetDDFType = rtk::DisplacedDetectorForOffsetFieldOfViewImageFilter<OutputImageType>;
     OffsetDDFType::Pointer cudaddf = OffsetDDFType::New();
     cudaddf->SetInput( slp->GetOutput() );
     cudaddf->SetGeometry(geometry);
     cudaddf->InPlaceOff();
     TRY_AND_EXIT_ON_ITK_EXCEPTION( cudaddf->Update() );
 
-    typedef rtk::DisplacedDetectorImageFilter<OutputImageType> CPUDDFType;
+    using CPUDDFType = rtk::DisplacedDetectorImageFilter<OutputImageType>;
     CPUDDFType::Pointer cpuddf = CPUDDFType::New();
     cpuddf->SetInput( slp->GetOutput() );
     cpuddf->SetGeometry(geometry);
@@ -96,7 +96,7 @@ int main(int, char** )
     cudaddf->SetGeometry(geometry);
     cudaddf->InPlaceOff();
 
-    typedef itk::StreamingImageFilter<OutputImageType, OutputImageType> StreamingType;
+    using StreamingType = itk::StreamingImageFilter<OutputImageType, OutputImageType>;
     StreamingType::Pointer streamingCUDA = StreamingType::New();
     streamingCUDA->SetInput( cudaddf->GetOutput() );
     streamingCUDA->SetNumberOfStreamDivisions(2);

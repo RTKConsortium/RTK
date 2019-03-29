@@ -41,8 +41,8 @@ template< class TInput, class TCoordRepType, class TOutput=TInput >
 class InterpolationWeightMultiplicationBackProjection
 {
 public:
-  InterpolationWeightMultiplicationBackProjection() {};
-  ~InterpolationWeightMultiplicationBackProjection() {};
+  InterpolationWeightMultiplicationBackProjection() = default;
+  ~InterpolationWeightMultiplicationBackProjection() = default;
   bool operator!=( const InterpolationWeightMultiplicationBackProjection & ) const {
     return false;
   }
@@ -71,10 +71,10 @@ template< class TInput, class TOutput>
 class ValueAlongRay
 {
 public:
-  typedef itk::Vector<double, 3> VectorType;
+  using VectorType = itk::Vector<double, 3>;
 
-  ValueAlongRay(){};
-  ~ValueAlongRay() {};
+  ValueAlongRay()= default;
+  ~ValueAlongRay() = default;
   bool operator!=( const ValueAlongRay & ) const
   {
     return false;
@@ -104,8 +104,8 @@ template< class TInput, class TCoordRepType, class TOutput=TCoordRepType >
 class SplatWeightMultiplication
 {
 public:
-  SplatWeightMultiplication() {};
-  ~SplatWeightMultiplication() {};
+  SplatWeightMultiplication() = default;
+  ~SplatWeightMultiplication() = default;
   bool operator!=( const SplatWeightMultiplication & ) const
     {
     return false;
@@ -152,18 +152,20 @@ class ITK_EXPORT JosephBackProjectionImageFilter :
   public BackProjectionImageFilter<TInputImage,TOutputImage>
 {
 public:
-  /** Standard class typedefs. */
-  typedef JosephBackProjectionImageFilter                        Self;
-  typedef BackProjectionImageFilter<TInputImage,TOutputImage>    Superclass;
-  typedef itk::SmartPointer<Self>                                Pointer;
-  typedef itk::SmartPointer<const Self>                          ConstPointer;
-  typedef typename TInputImage::PixelType                        InputPixelType;
-  typedef typename TOutputImage::PixelType                       OutputPixelType;
-  typedef typename TOutputImage::RegionType                      OutputImageRegionType;
-  typedef double                                                 CoordRepType;
-  typedef itk::Vector<CoordRepType, TInputImage::ImageDimension> VectorType;
-  typedef rtk::ThreeDCircularProjectionGeometry                  GeometryType;
-  typedef typename GeometryType::Pointer                         GeometryPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(JosephBackProjectionImageFilter);
+
+  /** Standard class type alias. */
+  using Self = JosephBackProjectionImageFilter;
+  using Superclass = BackProjectionImageFilter<TInputImage,TOutputImage>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
+  using InputPixelType = typename TInputImage::PixelType;
+  using OutputPixelType = typename TOutputImage::PixelType;
+  using OutputImageRegionType = typename TOutputImage::RegionType;
+  using CoordRepType = double;
+  using VectorType = itk::Vector<CoordRepType, TInputImage::ImageDimension>;
+  using GeometryType = rtk::ThreeDCircularProjectionGeometry;
+  using GeometryPointer = typename GeometryType::Pointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -217,16 +219,16 @@ public:
 
 protected:
   JosephBackProjectionImageFilter();
-  virtual ~JosephBackProjectionImageFilter() ITK_OVERRIDE {}
+  ~JosephBackProjectionImageFilter() override = default;
 
-  void GenerateData() ITK_OVERRIDE;
+  void GenerateData() override;
 
   /** The two inputs should not be in the same space so there is nothing
    * to verify. */
 #if ITK_VERSION_MAJOR<5
-  void VerifyInputInformation() ITK_OVERRIDE {}
+  void VerifyInputInformation() override {}
 #else
-  void VerifyInputInformation() const ITK_OVERRIDE {}
+  void VerifyInputInformation() const override {}
 #endif
 
   inline void BilinearSplat(const InputPixelType &rayValue,
@@ -287,10 +289,6 @@ protected:
   TSumAlongRay                       m_SumAlongRay;
   double                             m_InferiorClip;
   double                             m_SuperiorClip;
-
-private:
-  JosephBackProjectionImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);                  //purposely not implemented
 
 };
 

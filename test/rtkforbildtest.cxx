@@ -17,18 +17,18 @@
 
 int main(int, char** )
 {
-  const unsigned int Dimension = 3;
-  typedef float                                    OutputPixelType;
-  typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
+  constexpr unsigned int Dimension = 3;
+  using OutputPixelType = float;
+  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
 
 #if FAST_TESTS_NO_CHECKS
-  const unsigned int NumberOfProjectionImages = 3;
+  constexpr unsigned int NumberOfProjectionImages = 3;
 #else
-  const unsigned int NumberOfProjectionImages = 45;
+  constexpr unsigned int NumberOfProjectionImages = 45;
 #endif
 
   // Constant image sources
-  typedef rtk::ConstantImageSource< OutputImageType > ConstantImageSourceType;
+  using ConstantImageSourceType = rtk::ConstantImageSource< OutputImageType >;
   ConstantImageSourceType::PointType origin;
   ConstantImageSourceType::SizeType size;
   ConstantImageSourceType::SpacingType spacing;
@@ -89,7 +89,7 @@ int main(int, char** )
   rotMat[2][1] = -1.;
 
   // Geometry object
-  typedef rtk::ThreeDCircularProjectionGeometry GeometryType;
+  using GeometryType = rtk::ThreeDCircularProjectionGeometry;
   GeometryType::Pointer geometry = GeometryType::New();
   for(unsigned int noProj=0; noProj<NumberOfProjectionImages; noProj++)
     geometry->AddProjection(600., 0., noProj*360./NumberOfProjectionImages);
@@ -99,7 +99,7 @@ int main(int, char** )
 
   // Shepp Logan projections filter
   std::cout << "\n\n****** Projecting ******" << std::endl;
-  typedef rtk::ProjectGeometricPhantomImageFilter<OutputImageType, OutputImageType> ProjectGPType;
+  using ProjectGPType = rtk::ProjectGeometricPhantomImageFilter<OutputImageType, OutputImageType>;
   ProjectGPType::Pointer pgp = ProjectGPType::New();
   pgp->SetInput( projectionsSource->GetOutput() );
   pgp->SetGeometry(geometry);
@@ -111,7 +111,7 @@ int main(int, char** )
 
   // Create a reference object (in this case a 3D phantom reference).
   std::cout << "\n\n****** Drawing ******" << std::endl;
-  typedef rtk::DrawGeometricPhantomImageFilter<OutputImageType, OutputImageType> DrawGPType;
+  using DrawGPType = rtk::DrawGeometricPhantomImageFilter<OutputImageType, OutputImageType>;
   DrawGPType::Pointer dgp = DrawGPType::New();
   dgp->SetInput( tomographySource->GetOutput() );
   dgp->SetPhantomScale(1.2);
@@ -122,7 +122,7 @@ int main(int, char** )
 
   // FDK reconstruction filtering
   std::cout << "\n\n****** Reconstructing ******" << std::endl;
-  typedef rtk::FDKConeBeamReconstructionFilter< OutputImageType > FDKType;
+  using FDKType = rtk::FDKConeBeamReconstructionFilter< OutputImageType >;
   FDKType::Pointer feldkamp = FDKType::New();
   feldkamp->SetInput( 0, tomographySource->GetOutput() );
   feldkamp->SetInput( 1, pgp->GetOutput() );

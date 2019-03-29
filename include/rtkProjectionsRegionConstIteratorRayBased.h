@@ -55,22 +55,22 @@ class ProjectionsRegionConstIteratorRayBased:
     public itk::ImageConstIteratorWithIndex< TImage >
 {
 public:
-  /** Standard class typedefs. */
-  typedef ProjectionsRegionConstIteratorRayBased      Self;
-  typedef itk::ImageConstIteratorWithIndex< TImage >  Superclass;
+  /** Standard class type alias. */
+  using Self = ProjectionsRegionConstIteratorRayBased;
+  using Superclass = itk::ImageConstIteratorWithIndex< TImage >;
 
   /**
-   * Index typedef support. While these were already typdef'ed in the superclass
+   * Index type alias support While these were already typdef'ed in the superclass
    * they need to be redone here for this subclass to compile properly with gcc.
    */
   /** Types inherited from the Superclass */
-  typedef typename Superclass::OffsetValueType OffsetValueType;
-  typedef typename Superclass::RegionType      RegionType;
-  typedef typename itk::Vector<double, 3>      PointType;
-  typedef typename Superclass::IndexValueType  IndexValueType;
+  using OffsetValueType = typename Superclass::OffsetValueType;
+  using RegionType = typename Superclass::RegionType;
+  using PointType = typename itk::Vector<double, 3>;
+  using IndexValueType = typename Superclass::IndexValueType;
 
-  typedef itk::Matrix< double, 3, 4 >          MatrixType;
-  typedef itk::Matrix< double, 4, 4 >          HomogeneousMatrixType;
+  using MatrixType = itk::Matrix< double, 3, 4 >;
+  using HomogeneousMatrixType = itk::Matrix< double, 4, 4 >;
 
   /** Constructor establishes an iterator to walk a particular image and a
    * particular region of that image.

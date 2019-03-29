@@ -48,15 +48,17 @@ class ITK_EXPORT ExtractPhaseImageFilter :
   public itk::InPlaceImageFilter<TImage>
 {
 public:
-  /** Standard class typedefs. */
-  typedef ExtractPhaseImageFilter         Self;
-  typedef itk::InPlaceImageFilter<TImage> Superclass;
-  typedef itk::SmartPointer<Self>         Pointer;
-  typedef itk::SmartPointer<const Self>   ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(ExtractPhaseImageFilter);
 
-  /** Convenient typedefs. */
-  typedef typename TImage::SizeType::SizeValueType KernelSizeType;
-  typedef std::vector<int>                         PositionsListType;
+  /** Standard class type alias. */
+  using Self = ExtractPhaseImageFilter;
+  using Superclass = itk::InPlaceImageFilter<TImage>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
+
+  /** Convenient type alias. */
+  using KernelSizeType = typename TImage::SizeType::SizeValueType;
+  using PositionsListType = std::vector<int>;
   typedef enum {LOCAL_PHASE=0,
                 LINEAR_BETWEEN_MINIMA,
                 LINEAR_BETWEEN_MAXIMA}             ModelType;
@@ -96,14 +98,11 @@ public:
 
 protected:
   ExtractPhaseImageFilter();
-  virtual ~ExtractPhaseImageFilter() ITK_OVERRIDE {}
+  ~ExtractPhaseImageFilter() override = default;
 
-  void GenerateData() ITK_OVERRIDE;
+  void GenerateData() override;
 
 private:
-  ExtractPhaseImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);          //purposely not implemented
-
   void ComputeLinearPhaseBetweenPositions(const PositionsListType & positions);
 
   KernelSizeType    m_MovingAverageSize;

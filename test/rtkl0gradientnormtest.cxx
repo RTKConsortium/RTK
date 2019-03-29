@@ -98,8 +98,8 @@ void CheckL0NormOfGradient(typename TInputImage::Pointer before, typename TInput
 
 int main(int, char** )
 {
-  typedef float                             OutputPixelType;
-  typedef itk::Image< OutputPixelType, 4 >  VolumeSeriesType;
+  using OutputPixelType = float;
+  using VolumeSeriesType = itk::Image< OutputPixelType, 4 >;
 
   // Constant image sources
   VolumeSeriesType::PointType origin;
@@ -201,7 +201,7 @@ int main(int, char** )
   delete [] signal;
 
    // Perform regularization
-  typedef rtk::LastDimensionL0GradientDenoisingImageFilter<VolumeSeriesType> DenoisingFilterType;
+  using DenoisingFilterType = rtk::LastDimensionL0GradientDenoisingImageFilter<VolumeSeriesType>;
   DenoisingFilterType::Pointer denoising = DenoisingFilterType::New();
   denoising->SetInput(input);
   denoising->SetLambda(0.3);

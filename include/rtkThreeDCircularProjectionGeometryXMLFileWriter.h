@@ -42,10 +42,12 @@ class RTK_EXPORT ThreeDCircularProjectionGeometryXMLFileWriter :
   public itk::XMLWriterBase< ThreeDCircularProjectionGeometry >
 {
 public:
-  /** standard typedefs */
-  typedef itk::XMLWriterBase< ThreeDCircularProjectionGeometry > Superclass;
-  typedef ThreeDCircularProjectionGeometryXMLFileWriter          Self;
-  typedef itk::SmartPointer<Self>                                Pointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(ThreeDCircularProjectionGeometryXMLFileWriter);
+
+  /** standard type alias */
+  using Superclass = itk::XMLWriterBase< ThreeDCircularProjectionGeometry >;
+  using Self = ThreeDCircularProjectionGeometryXMLFileWriter;
+  using Pointer = itk::SmartPointer<Self>;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -54,14 +56,14 @@ public:
   itkTypeMacro(ThreeDCircularProjectionGeometryXMLFileWriter, itk::XMLWriterBase)
 
   /** Test whether a file is writable. */
-  int CanWriteFile(const char* name) ITK_OVERRIDE;
+  int CanWriteFile(const char* name) override;
 
   /** Actually write out the file in question */
-  int WriteFile() ITK_OVERRIDE;
+  int WriteFile() override;
 
 protected:
-  ThreeDCircularProjectionGeometryXMLFileWriter() {}
-  ~ThreeDCircularProjectionGeometryXMLFileWriter() {}
+  ThreeDCircularProjectionGeometryXMLFileWriter() = default;
+  ~ThreeDCircularProjectionGeometryXMLFileWriter() override = default;
 
   /** If all values are equal in v, write first value (if not 0.) in
       output file with parameter value s and return true. Return false
@@ -75,12 +77,6 @@ protected:
   /** Write projection specific parameter with name s. */
   void WriteLocalParameter(std::ofstream &output, const std::string &indent,
                            const double &v, const std::string &s);
-
-private:
-   //purposely not implemented
-  ThreeDCircularProjectionGeometryXMLFileWriter(const Self&);
-  void operator=(const Self&);
-
 };
 }
 

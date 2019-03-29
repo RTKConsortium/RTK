@@ -29,19 +29,19 @@ int main(int argc, char*argv[])
     return EXIT_FAILURE;
   }
 
-  typedef float OutputPixelType;
-  const unsigned int Dimension = 3;
+  using OutputPixelType = float;
+  constexpr unsigned int Dimension = 3;
 
 #ifdef USE_CUDA
-  typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
-  typedef itk::CudaImage<itk::CovariantVector<OutputPixelType, Dimension >, Dimension > GradientImageType;
+  using OutputImageType = itk::CudaImage< OutputPixelType, Dimension >;
+  using GradientImageType = itk::CudaImage<itk::CovariantVector<OutputPixelType, Dimension >, Dimension >;
 #else
-  typedef itk::Image< OutputPixelType, Dimension >     OutputImageType;
-  typedef itk::Image<itk::CovariantVector<OutputPixelType, Dimension >, Dimension > GradientImageType;
+  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
+  using GradientImageType = itk::Image<itk::CovariantVector<OutputPixelType, Dimension >, Dimension >;
 #endif
 
   // Constant image sources
-  typedef rtk::ConstantImageSource< OutputImageType > ConstantImageSourceType;
+  using ConstantImageSourceType = rtk::ConstantImageSource< OutputImageType >;
   ConstantImageSourceType::PointType origin;
   ConstantImageSourceType::SizeType size;
   ConstantImageSourceType::SpacingType spacing;
@@ -71,7 +71,7 @@ int main(int argc, char*argv[])
   tomographySource->SetConstant( 0. );
 
   // Generate a shepp logan phantom
-  typedef rtk::DrawSheppLoganFilter<OutputImageType, OutputImageType> DSLType;
+  using DSLType = rtk::DrawSheppLoganFilter<OutputImageType, OutputImageType>;
   DSLType::Pointer dsl=DSLType::New();
   dsl->SetInput( tomographySource->GetOutput() );
   dsl->SetPhantomScale(128.);
@@ -80,7 +80,7 @@ int main(int argc, char*argv[])
 
 
   // Read a reference image
-  typedef itk::ImageFileReader<OutputImageType> ReaderType;
+  using ReaderType = itk::ImageFileReader<OutputImageType>;
   ReaderType::Pointer readerRef = ReaderType::New();
   readerRef->SetFileName(argv[1]);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(readerRef->Update());
@@ -89,7 +89,7 @@ int main(int argc, char*argv[])
   std::cout << "\n\n****** Case 1: CPU laplacian ******" << std::endl;
 
   // Create and set the laplacian filter
-  typedef rtk::LaplacianImageFilter<OutputImageType, GradientImageType>                LaplacianFilterType;
+  using LaplacianFilterType = rtk::LaplacianImageFilter<OutputImageType, GradientImageType>;
   LaplacianFilterType::Pointer laplacian = LaplacianFilterType::New();
   laplacian->SetInput(dsl->GetOutput());
 

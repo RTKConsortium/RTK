@@ -43,18 +43,18 @@ int main(int argc, char * argv[])
 {
   GGO(rtkfourdfdk, args_info);
 
-  typedef float OutputPixelType;
-  const unsigned int Dimension = 3;
+  using OutputPixelType = float;
+  constexpr unsigned int Dimension = 3;
 
-  typedef itk::Image< OutputPixelType, Dimension >     CPUOutputImageType;
+  using CPUOutputImageType = itk::Image< OutputPixelType, Dimension >;
 #ifdef RTK_USE_CUDA
-  typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
+  using OutputImageType = itk::CudaImage< OutputPixelType, Dimension >;
 #else
-  typedef CPUOutputImageType                           OutputImageType;
+  using OutputImageType = CPUOutputImageType;
 #endif
 
   // Projections reader
-  typedef rtk::ProjectionsReader< OutputImageType > ReaderType;
+  using ReaderType = rtk::ProjectionsReader< OutputImageType >;
   ReaderType::Pointer reader = ReaderType::New();
   rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkfourdfdk>(reader, args_info);
 
@@ -70,7 +70,7 @@ int main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION( geometryReader->GenerateOutputInformation() )
 
   // Part specific to 4D
-  typedef rtk::SelectOneProjectionPerCycleImageFilter<OutputImageType> SelectorType;
+  using SelectorType = rtk::SelectOneProjectionPerCycleImageFilter<OutputImageType>;
   SelectorType::Pointer selector = SelectorType::New();
   selector->SetInput( reader->GetOutput() );
   selector->SetInputGeometry( geometryReader->GetOutputObject() );
@@ -86,12 +86,12 @@ int main(int argc, char * argv[])
 #endif
 
   // Displaced detector weighting
-  typedef rtk::DisplacedDetectorImageFilter< OutputImageType >                     DDFCPUType;
-  typedef rtk::DisplacedDetectorForOffsetFieldOfViewImageFilter< OutputImageType > DDFOFFFOVType;
+  using DDFCPUType = rtk::DisplacedDetectorImageFilter< OutputImageType >;
+  using DDFOFFFOVType = rtk::DisplacedDetectorForOffsetFieldOfViewImageFilter< OutputImageType >;
 #ifdef RTK_USE_CUDA
-  typedef rtk::CudaDisplacedDetectorImageFilter DDFType;
+  using DDFType = rtk::CudaDisplacedDetectorImageFilter;
 #else
-  typedef rtk::DisplacedDetectorForOffsetFieldOfViewImageFilter< OutputImageType > DDFType;
+  using DDFType = rtk::DisplacedDetectorForOffsetFieldOfViewImageFilter< OutputImageType >;
 #endif
   DDFCPUType::Pointer ddf;
   if(!strcmp(args_info.hardware_arg, "cuda") )
@@ -102,11 +102,11 @@ int main(int argc, char * argv[])
   ddf->SetGeometry( selector->GetOutputGeometry() );
 
   // Short scan image filter
-  typedef rtk::ParkerShortScanImageFilter< OutputImageType > PSSFCPUType;
+  using PSSFCPUType = rtk::ParkerShortScanImageFilter< OutputImageType >;
 #ifdef RTK_USE_CUDA
-  typedef rtk::CudaParkerShortScanImageFilter PSSFType;
+  using PSSFType = rtk::CudaParkerShortScanImageFilter;
 #else
-  typedef rtk::ParkerShortScanImageFilter< OutputImageType > PSSFType;
+  using PSSFType = rtk::ParkerShortScanImageFilter< OutputImageType >;
 #endif
   PSSFCPUType::Pointer pssf;
   if(!strcmp(args_info.hardware_arg, "cuda") )
@@ -118,7 +118,7 @@ int main(int argc, char * argv[])
   pssf->InPlaceOff();
 
   // Create one frame of the reconstructed image
-  typedef rtk::ConstantImageSource< OutputImageType > ConstantImageSourceType;
+  using ConstantImageSourceType = rtk::ConstantImageSource< OutputImageType >;
   ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
   rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkfourdfdk>(constantImageSource, args_info);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(constantImageSource->Update())
@@ -135,13 +135,13 @@ int main(int argc, char * argv[])
     f->SetProjectionSubsetSize(args_info.subsetsize_arg)
 
   // FDK reconstruction filtering
-  typedef rtk::FDKConeBeamReconstructionFilter< OutputImageType > FDKCPUType;
+  using FDKCPUType = rtk::FDKConeBeamReconstructionFilter< OutputImageType >;
   FDKCPUType::Pointer feldkamp;
 #ifdef RTK_USE_CUDA
-  typedef rtk::CudaFDKConeBeamReconstructionFilter FDKCUDAType;
+  using FDKCUDAType = rtk::CudaFDKConeBeamReconstructionFilter;
   FDKCUDAType::Pointer feldkampCUDA;
 #endif
-  itk::Image< OutputPixelType, Dimension > *pfeldkamp = ITK_NULLPTR;
+  itk::Image< OutputPixelType, Dimension > *pfeldkamp = nullptr;
   if(!strcmp(args_info.hardware_arg, "cpu") )
     {
     feldkamp = FDKCPUType::New();
@@ -159,15 +159,15 @@ int main(int argc, char * argv[])
 #endif
 
   // Streaming depending on streaming capability of writer
-  typedef itk::StreamingImageFilter<CPUOutputImageType, CPUOutputImageType> StreamerType;
+  using StreamerType = itk::StreamingImageFilter<CPUOutputImageType, CPUOutputImageType>;
   StreamerType::Pointer streamerBP = StreamerType::New();
   streamerBP->SetInput( pfeldkamp );
   streamerBP->SetNumberOfStreamDivisions( args_info.divisions_arg );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( streamerBP->UpdateOutputInformation() )
 
   // Create empty 4D image
-  typedef itk::Image< OutputPixelType, Dimension+1 >       FourDOutputImageType;
-  typedef rtk::ConstantImageSource< FourDOutputImageType > FourDConstantImageSourceType;
+  using FourDOutputImageType = itk::Image< OutputPixelType, Dimension+1 >;
+  using FourDConstantImageSourceType = rtk::ConstantImageSource< FourDOutputImageType >;
   FourDConstantImageSourceType::Pointer fourDConstantImageSource = FourDConstantImageSourceType::New();
   rtk::SetConstantImageSourceFromGgo<FourDConstantImageSourceType, args_info_rtkfourdfdk>(fourDConstantImageSource, args_info);
 
@@ -210,7 +210,7 @@ int main(int argc, char * argv[])
     }
 
   // Write
-  typedef itk::ImageFileWriter<FourDOutputImageType> WriterType;
+  using WriterType = itk::ImageFileWriter<FourDOutputImageType>;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
   writer->SetInput( fourDConstantImageSource->GetOutput() );

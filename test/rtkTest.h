@@ -41,11 +41,11 @@ void CheckImageQuality(typename TImage::Pointer recon,
                        double PSNRTolerance,
                        double RefValueForPSNR)
 {
-  typedef itk::ImageRegionConstIterator<TImage> ImageIteratorType;
+  using ImageIteratorType = itk::ImageRegionConstIterator<TImage>;
   ImageIteratorType itTest( recon, recon->GetBufferedRegion() );
   ImageIteratorType itRef( ref, ref->GetBufferedRegion() );
 
-  typedef double ErrorType;
+  using ErrorType = double;
   ErrorType TestError = 0.;
   ErrorType EnerError = 0.;
 
@@ -78,7 +78,7 @@ void CheckImageQuality(typename TImage::Pointer recon,
 //   // to understand why a given test fails. This portion of code
 //   // does that. It should be left here but commented out, since
 //   // it is only useful in specific debugging tasks
-//   typedef itk::ImageFileWriter<TImage> FileWriterType;
+//   using FileWriterType = itk::ImageFileWriter<TImage>;
 //   typename FileWriterType::Pointer writer = FileWriterType::New();
 //   writer->SetInput(recon);
 //   writer->SetFileName("Reconstruction.mhd");
@@ -121,11 +121,11 @@ void CheckVectorImageQuality(typename TImage::Pointer recon,
                              double PSNRTolerance,
                              double RefValueForPSNR)
 {
-  typedef itk::ImageRegionConstIterator<TImage> ImageIteratorType;
+  using ImageIteratorType = itk::ImageRegionConstIterator<TImage>;
   ImageIteratorType itTest( recon, recon->GetBufferedRegion() );
   ImageIteratorType itRef( ref, ref->GetBufferedRegion() );
 
-  typedef double ErrorType;
+  using ErrorType = double;
   ErrorType TestError = 0.;
   ErrorType EnerError = 0.;
 
@@ -158,7 +158,7 @@ void CheckVectorImageQuality(typename TImage::Pointer recon,
 //   // to understand why a given test fails. This portion of code
 //   // does that. It should be left here but commented out, since
 //   // it is only useful in specific debugging tasks
-//   typedef itk::ImageFileWriter<TImage> FileWriterType;
+//   using FileWriterType = itk::ImageFileWriter<TImage>;
 //   typename FileWriterType::Pointer writer = FileWriterType::New();
 //   writer->SetInput(recon);
 //   writer->SetFileName("Reconstruction.mhd");
@@ -209,11 +209,11 @@ void CheckVariableLengthVectorImageQuality(typename TImage::Pointer recon,
     exit( EXIT_FAILURE);
     }
 
-  typedef itk::ImageRegionConstIterator<TImage> ImageIteratorType;
+  using ImageIteratorType = itk::ImageRegionConstIterator<TImage>;
   ImageIteratorType itTest( recon, recon->GetBufferedRegion() );
   ImageIteratorType itRef( ref, ref->GetBufferedRegion() );
 
-  typedef double ErrorType;
+  using ErrorType = double;
   ErrorType TestError = 0.;
   ErrorType EnerError = 0.;
 
@@ -251,7 +251,7 @@ void CheckVariableLengthVectorImageQuality(typename TImage::Pointer recon,
 //   // to understand why a given test fails. This portion of code
 //   // does that. It should be left here but commented out, since
 //   // it is only useful in specific debugging tasks
-//   typedef itk::ImageFileWriter<TImage> FileWriterType;
+//   using FileWriterType = itk::ImageFileWriter<TImage>;
 //   typename FileWriterType::Pointer writer = FileWriterType::New();
 //   writer->SetInput(recon);
 //   writer->SetFileName("Reconstruction.mhd");
@@ -366,8 +366,8 @@ void CheckScalarProducts(typename TImage1::Pointer im1A,
                          typename TImage2::Pointer im2A,
                          typename TImage2::Pointer im2B)
 {
-  typedef itk::ImageRegionConstIterator<TImage1> Image1IteratorType;
-  typedef itk::ImageRegionConstIterator<TImage2> Image2IteratorType;
+  using Image1IteratorType = itk::ImageRegionConstIterator<TImage1>;
+  using Image2IteratorType = itk::ImageRegionConstIterator<TImage2>;
   Image1IteratorType itIm1A( im1A, im1A->GetLargestPossibleRegion() );
   Image1IteratorType itIm1B( im1B, im1B->GetLargestPossibleRegion() );
   Image2IteratorType itIm2A( im2A, im2A->GetLargestPossibleRegion() );
@@ -399,7 +399,7 @@ void CheckScalarProducts(typename TImage1::Pointer im1A,
 //  // to understand why a given test fails. This portion of code
 //  // does that. It should be left here but commented out, since
 //  // it is only useful in specific debugging tasks
-//  typedef itk::ImageFileWriter<TImage1> FileWriterType1;
+//  using FileWriterType1 = itk::ImageFileWriter<TImage1>;
 //  typename FileWriterType1::Pointer writer = FileWriterType1::New();
 //  writer->SetInput(im1A);
 //  writer->SetFileName("im1A.mhd");
@@ -408,7 +408,7 @@ void CheckScalarProducts(typename TImage1::Pointer im1A,
 //  writer->SetFileName("im1B.mhd");
 //  writer->Update();
 
-//  typedef itk::ImageFileWriter<TImage2> FileWriterType2;
+//  using FileWriterType2 = itk::ImageFileWriter<TImage2>;
 //  typename FileWriterType2::Pointer writer2 = FileWriterType2::New();
 //  writer2->SetInput(im2A);
 //  writer2->SetFileName("im2A.mhd");
@@ -443,8 +443,8 @@ void CheckVectorScalarProducts(typename TImage1::Pointer im1A,
                                typename TImage2::Pointer im2A,
                                typename TImage2::Pointer im2B)
 {
-  typedef itk::ImageRegionConstIterator<TImage1> Image1IteratorType;
-  typedef itk::ImageRegionConstIterator<TImage2> Image2IteratorType;
+  using Image1IteratorType = itk::ImageRegionConstIterator<TImage1>;
+  using Image2IteratorType = itk::ImageRegionConstIterator<TImage2>;
   Image1IteratorType itIm1A( im1A, im1A->GetLargestPossibleRegion() );
   Image1IteratorType itIm1B( im1B, im1B->GetLargestPossibleRegion() );
   Image2IteratorType itIm2A( im2A, im2A->GetLargestPossibleRegion() );
@@ -479,7 +479,7 @@ void CheckVectorScalarProducts(typename TImage1::Pointer im1A,
 //  // to understand why a given test fails. This portion of code
 //  // does that. It should be left here but commented out, since
 //  // it is only useful in specific debugging tasks
-//  typedef itk::ImageFileWriter<TImage1> FileWriterType1;
+//  using FileWriterType1 = itk::ImageFileWriter<TImage1>;
 //  typename FileWriterType1::Pointer writer = FileWriterType1::New();
 //  writer->SetInput(im1A);
 //  writer->SetFileName("im1A.mhd");
@@ -488,7 +488,7 @@ void CheckVectorScalarProducts(typename TImage1::Pointer im1A,
 //  writer->SetFileName("im1B.mhd");
 //  writer->Update();
 
-//  typedef itk::ImageFileWriter<TImage2> FileWriterType2;
+//  using FileWriterType2 = itk::ImageFileWriter<TImage2>;
 //  typename FileWriterType2::Pointer writer2 = FileWriterType2::New();
 //  writer2->SetInput(im2A);
 //  writer2->SetFileName("im2A.mhd");

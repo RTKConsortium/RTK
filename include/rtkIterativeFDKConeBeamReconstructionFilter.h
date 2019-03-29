@@ -108,29 +108,31 @@ class ITK_EXPORT IterativeFDKConeBeamReconstructionFilter :
   public rtk::IterativeConeBeamReconstructionFilter<TInputImage, TOutputImage>
 {
 public:
-  /** Standard class typedefs. */
-  typedef IterativeFDKConeBeamReconstructionFilter                         Self;
-  typedef IterativeConeBeamReconstructionFilter<TInputImage, TOutputImage> Superclass;
-  typedef itk::SmartPointer<Self>                                          Pointer;
-  typedef itk::SmartPointer<const Self>                                    ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(IterativeFDKConeBeamReconstructionFilter);
 
-  /** Some convenient typedefs. */
-  typedef TInputImage  InputImageType;
-  typedef TOutputImage OutputImageType;
+  /** Standard class type alias. */
+  using Self = IterativeFDKConeBeamReconstructionFilter;
+  using Superclass = IterativeConeBeamReconstructionFilter<TInputImage, TOutputImage>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
-  typedef typename Superclass::ForwardProjectionType ForwardProjectionType;
-  typedef typename Superclass::BackProjectionType    BackProjectionType;
+  /** Some convenient type alias. */
+  using InputImageType = TInputImage;
+  using OutputImageType = TOutputImage;
+
+  using ForwardProjectionType = typename Superclass::ForwardProjectionType;
+  using BackProjectionType = typename Superclass::BackProjectionType;
 
   /** Typedefs of each subfilter of this composite filter */
-  typedef rtk::DisplacedDetectorImageFilter<OutputImageType, OutputImageType>                       DisplacedDetectorFilterType;
-  typedef rtk::ParkerShortScanImageFilter<OutputImageType, OutputImageType>                         ParkerFilterType;
-  typedef rtk::FDKConeBeamReconstructionFilter<OutputImageType, OutputImageType, TFFTPrecision>     FDKFilterType;
-  typedef itk::MultiplyImageFilter< OutputImageType, OutputImageType, OutputImageType >             MultiplyFilterType;
-  typedef itk::SubtractImageFilter< OutputImageType, OutputImageType >                              SubtractFilterType;
-  typedef rtk::ConstantImageSource<OutputImageType>                                                 ConstantImageSourceType;
-  typedef itk::ThresholdImageFilter<OutputImageType>                                                ThresholdFilterType;
-  typedef itk::DivideOrZeroOutImageFilter<OutputImageType>                                          DivideFilterType;
-  typedef rtk::RayBoxIntersectionImageFilter<OutputImageType, OutputImageType>                      RayBoxIntersectionFilterType;
+  using DisplacedDetectorFilterType = rtk::DisplacedDetectorImageFilter<OutputImageType, OutputImageType>;
+  using ParkerFilterType = rtk::ParkerShortScanImageFilter<OutputImageType, OutputImageType>;
+  using FDKFilterType = rtk::FDKConeBeamReconstructionFilter<OutputImageType, OutputImageType, TFFTPrecision>;
+  using MultiplyFilterType = itk::MultiplyImageFilter< OutputImageType, OutputImageType, OutputImageType >;
+  using SubtractFilterType = itk::SubtractImageFilter< OutputImageType, OutputImageType >;
+  using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
+  using ThresholdFilterType = itk::ThresholdImageFilter<OutputImageType>;
+  using DivideFilterType = itk::DivideOrZeroOutImageFilter<OutputImageType>;
+  using RayBoxIntersectionFilterType = rtk::RayBoxIntersectionImageFilter<OutputImageType, OutputImageType>;
 
   /** Standard New method. */
   itkNewMacro(Self);
@@ -155,10 +157,10 @@ public:
   itkSetMacro(EnforcePositivity, bool);
 
   /** Select the ForwardProjection filter */
-  void SetForwardProjectionFilter (ForwardProjectionType _arg) ITK_OVERRIDE;
+  void SetForwardProjectionFilter (ForwardProjectionType _arg) override;
 
   /** Select the backprojection filter */
-  void SetBackProjectionFilter (BackProjectionType itkNotUsed(_arg)) ITK_OVERRIDE {itkExceptionMacro(<< "Backprojection cannot be changed");}
+  void SetBackProjectionFilter (BackProjectionType itkNotUsed(_arg)) override {itkExceptionMacro(<< "Backprojection cannot be changed");}
 
   /** Get / Set the truncation correction */
   itkGetMacro(TruncationCorrection, double);
@@ -182,20 +184,20 @@ public:
 
 protected:
   IterativeFDKConeBeamReconstructionFilter();
-  virtual ~IterativeFDKConeBeamReconstructionFilter() ITK_OVERRIDE {}
+  ~IterativeFDKConeBeamReconstructionFilter() override = default;
 
-  void GenerateInputRequestedRegion() ITK_OVERRIDE;
+  void GenerateInputRequestedRegion() override;
 
-  void GenerateOutputInformation() ITK_OVERRIDE;
+  void GenerateOutputInformation() override;
 
-  void GenerateData() ITK_OVERRIDE;
+  void GenerateData() override;
 
   /** The two inputs should not be in the same space so there is nothing
    * to verify. */
 #if ITK_VERSION_MAJOR<5
-  void VerifyInputInformation() ITK_OVERRIDE {}
+  void VerifyInputInformation() override {}
 #else
-  void VerifyInputInformation() const ITK_OVERRIDE {}
+  void VerifyInputInformation() const override {}
 #endif
 
   /** Pointers to each subfilter of this composite filter */
@@ -218,10 +220,6 @@ protected:
   bool   m_DisableDisplacedDetectorFilter;
 
 private:
-  //purposely not implemented
-  IterativeFDKConeBeamReconstructionFilter(const Self&);
-  void operator=(const Self&);
-
   /** Geometry object */
   ThreeDCircularProjectionGeometry::Pointer m_Geometry;
 

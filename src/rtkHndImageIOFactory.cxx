@@ -26,6 +26,6 @@ rtk::HndImageIOFactory::HndImageIOFactory()
   this->RegisterOverride("itkImageIOBase",
                          "HndImageIO",
                          "Hnd Image IO",
-                         1,
+                         true,
                          itk::CreateObjectFunction<HndImageIO>::New() );
 }

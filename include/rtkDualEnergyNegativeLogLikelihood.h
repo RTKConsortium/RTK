@@ -43,22 +43,23 @@ namespace rtk
 class DualEnergyNegativeLogLikelihood : public rtk::ProjectionsDecompositionNegativeLogLikelihood
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(DualEnergyNegativeLogLikelihood);
 
-  typedef DualEnergyNegativeLogLikelihood                       Self;
-  typedef rtk::ProjectionsDecompositionNegativeLogLikelihood    Superclass;
-  typedef itk::SmartPointer<Self>                               Pointer;
-  typedef itk::SmartPointer<const Self>                         ConstPointer;
+  using Self = DualEnergyNegativeLogLikelihood;
+  using Superclass = rtk::ProjectionsDecompositionNegativeLogLikelihood;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
   itkNewMacro( Self );
   itkTypeMacro( DualEnergyNegativeLogLikelihood, rtk::ProjectionsDecompositionNegativeLogLikelihood );
 
-  typedef Superclass::ParametersType                ParametersType;
-  typedef Superclass::DerivativeType                DerivativeType;
-  typedef Superclass::MeasureType                   MeasureType;
+  using ParametersType = Superclass::ParametersType;
+  using DerivativeType = Superclass::DerivativeType;
+  using MeasureType = Superclass::MeasureType;
 
-  typedef Superclass::DetectorResponseType          DetectorResponseType;
-  typedef Superclass::MaterialAttenuationsType      MaterialAttenuationsType;
-  typedef Superclass::MeasuredDataType              MeasuredDataType;
-  typedef Superclass::IncidentSpectrumType          IncidentSpectrumType;
+  using DetectorResponseType = Superclass::DetectorResponseType;
+  using MaterialAttenuationsType = Superclass::MaterialAttenuationsType;
+  using MeasuredDataType = Superclass::MeasuredDataType;
+  using IncidentSpectrumType = Superclass::IncidentSpectrumType;
 
   // Constructor
   DualEnergyNegativeLogLikelihood()
@@ -67,11 +68,9 @@ public:
   }
 
   // Destructor
-  virtual ~DualEnergyNegativeLogLikelihood() ITK_OVERRIDE
-  {
-  }
+  ~DualEnergyNegativeLogLikelihood() override = default;
 
-  void Initialize() ITK_OVERRIDE
+  void Initialize() override
   {
   // This method computes the combined m_IncidentSpectrumAndDetectorResponseProduct
   // from m_DetectorResponse and m_IncidentSpectrum
@@ -92,13 +91,13 @@ public:
   // Not used with a simplex optimizer, but may be useful later
   // for gradient based methods
   void GetDerivative( const ParametersType & itkNotUsed(lineIntegrals),
-                      DerivativeType & itkNotUsed(derivatives)) const ITK_OVERRIDE
+                      DerivativeType & itkNotUsed(derivatives)) const override
   {
   itkExceptionMacro(<< "Not implemented");
   }
 
   // Main method
-  MeasureType  GetValue( const ParametersType & parameters ) const ITK_OVERRIDE
+  MeasureType  GetValue( const ParametersType & parameters ) const override
   {
   // Forward model: compute the expected total energy measured by the detector for each spectrum
   vnl_vector<double> forward = ForwardModel(parameters);
@@ -118,7 +117,7 @@ public:
   return measure;
   }
 
-  vnl_vector<double>  GetVariances( const ParametersType & lineIntegrals ) const ITK_OVERRIDE
+  vnl_vector<double>  GetVariances( const ParametersType & lineIntegrals ) const override
   {
   vnl_vector<double> attenuationFactors;
   attenuationFactors.set_size(m_NumberOfEnergies);
@@ -135,10 +134,6 @@ public:
 
 protected:
   itk::VariableSizeMatrix<float>    m_Fischer;
-
-private:
-  DualEnergyNegativeLogLikelihood(const Self &); //purposely not implemented
-  void operator = (const Self &); //purposely not implemented
 
 };
 

@@ -17,10 +17,10 @@ int main(int argc, char **argv)
     }
 
   // Defines the image type
-  typedef itk::Image< float, 3 > ImageType;
+  using ImageType = itk::Image< float, 3 >;
 
   // Defines the RTK geometry object
-  typedef rtk::ThreeDCircularProjectionGeometry GeometryType;
+  using GeometryType = rtk::ThreeDCircularProjectionGeometry;
   GeometryType::Pointer geometry = GeometryType::New();
   unsigned int numberOfProjections = 360;
   double firstAngle = 0;
@@ -41,7 +41,7 @@ int main(int argc, char **argv)
   xmlWriter->WriteFile();
 
   // Create a stack of empty projection images
-  typedef rtk::ConstantImageSource< ImageType > ConstantImageSourceType;
+  using ConstantImageSourceType = rtk::ConstantImageSource< ImageType >;
   ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
   ConstantImageSourceType::PointType origin;
   ConstantImageSourceType::SpacingType spacing;
@@ -63,7 +63,7 @@ int main(int argc, char **argv)
   constantImageSource->SetConstant(0.);
 
    // Create projections of an ellipse
-  typedef rtk::RayEllipsoidIntersectionImageFilter<ImageType, ImageType> REIType;
+  using REIType = rtk::RayEllipsoidIntersectionImageFilter<ImageType, ImageType>;
   REIType::Pointer rei = REIType::New();
   REIType::VectorType semiprincipalaxis, center;
   semiprincipalaxis.Fill(50.);
@@ -88,7 +88,7 @@ int main(int argc, char **argv)
 
   // FDK reconstruction
   std::cout << "Reconstructing..." << std::endl;
-  typedef rtk::FDKConeBeamReconstructionFilter< ImageType > FDKCPUType;
+  using FDKCPUType = rtk::FDKConeBeamReconstructionFilter< ImageType >;
   FDKCPUType::Pointer feldkamp = FDKCPUType::New();
   feldkamp->SetInput(0, constantImageSource2->GetOutput());
   feldkamp->SetInput(1, rei->GetOutput());
@@ -97,7 +97,7 @@ int main(int argc, char **argv)
   feldkamp->GetRampFilter()->SetHannCutFrequency(0.0);
 
   // Field-of-view masking
-  typedef rtk::FieldOfViewImageFilter<ImageType, ImageType> FOVFilterType;
+  using FOVFilterType = rtk::FieldOfViewImageFilter<ImageType, ImageType>;
   FOVFilterType::Pointer fieldofview = FOVFilterType::New();
   fieldofview->SetInput(0, feldkamp->GetOutput());
   fieldofview->SetProjectionsStack(rei->GetOutput());
@@ -105,7 +105,7 @@ int main(int argc, char **argv)
 
   // Writer
   std::cout << "Writing output image..." << std::endl;
-  typedef itk::ImageFileWriter<ImageType> WriterType;
+  using WriterType = itk::ImageFileWriter<ImageType>;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName(argv[1]);
   writer->SetInput(fieldofview->GetOutput());

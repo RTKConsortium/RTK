@@ -36,19 +36,21 @@ namespace rtk
 class RTK_EXPORT GeometricPhantom: public itk::DataObject
 {
 public:
-  /** Standard class typedefs. */
-  typedef GeometricPhantom              Self;
-  typedef itk::DataObject               Superclass;
-  typedef itk::SmartPointer<Self>       Pointer;
-  typedef itk::SmartPointer<const Self> ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(GeometricPhantom);
 
-  /** Convenient typedefs. */
-  typedef ConvexShape::Pointer            ConvexShapePointer;
-  typedef std::vector<ConvexShapePointer> ConvexShapeVector;
-  typedef ConvexShape::PointType          PointType;
-  typedef ConvexShape::VectorType         VectorType;
-  typedef ConvexShape::ScalarType         ScalarType;
-  typedef ConvexShape::RotationMatrixType RotationMatrixType;
+  /** Standard class type alias. */
+  using Self = GeometricPhantom;
+  using Superclass = itk::DataObject;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
+
+  /** Convenient type alias. */
+  using ConvexShapePointer = ConvexShape::Pointer;
+  using ConvexShapeVector = std::vector<ConvexShapePointer>;
+  using PointType = ConvexShape::PointType;
+  using VectorType = ConvexShape::VectorType;
+  using ScalarType = ConvexShape::ScalarType;
+  using RotationMatrixType = ConvexShape::RotationMatrixType;
 
 
   /** Method for creation through the object factory. */
@@ -77,13 +79,10 @@ public:
   void AddClipPlane(const VectorType & dir, const ScalarType & pos);
 
 protected:
-  GeometricPhantom() {}
-  ~GeometricPhantom() {}
+  GeometricPhantom() = default;
+  ~GeometricPhantom() override = default;
 
 private:
-  GeometricPhantom(const Self&); //purposely not implemented
-  void operator=(const Self&);   //purposely not implemented
-
   ConvexShapeVector       m_ConvexShapes;
   std::vector<VectorType> m_PlaneDirections;
   std::vector<ScalarType> m_PlanePositions;

@@ -49,11 +49,13 @@ template< typename TInputImage>
 class ConditionalMedianImageFilter : public itk::InPlaceImageFilter<TInputImage>
 {
 public:
-    /** Standard class typedefs. */
-    typedef ConditionalMedianImageFilter                                        Self;
-    typedef itk::InPlaceImageFilter<TInputImage>                                Superclass;
-    typedef itk::SmartPointer< Self >                                           Pointer;
-    typedef typename itk::ConstNeighborhoodIterator<TInputImage>::RadiusType    MedianRadiusType;
+    ITK_DISALLOW_COPY_AND_ASSIGN(ConditionalMedianImageFilter);
+
+    /** Standard class type alias. */
+    using Self = ConditionalMedianImageFilter;
+    using Superclass = itk::InPlaceImageFilter<TInputImage>;
+    using Pointer = itk::SmartPointer< Self >;
+    using MedianRadiusType = typename itk::ConstNeighborhoodIterator<TInputImage>::RadiusType;
 
     /** Method for creation through the object factory. */
     itkNewMacro(Self)
@@ -71,24 +73,19 @@ public:
 
 protected:
     ConditionalMedianImageFilter();
-    virtual ~ConditionalMedianImageFilter() ITK_OVERRIDE {}
+    ~ConditionalMedianImageFilter() override = default;
 
-    void GenerateInputRequestedRegion() ITK_OVERRIDE;
+    void GenerateInputRequestedRegion() override;
 
     /** Does the real work. */
 #if ITK_VERSION_MAJOR<5
-    void ThreadedGenerateData(const typename TInputImage::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) ITK_OVERRIDE;
+    void ThreadedGenerateData(const typename TInputImage::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) override;
 #else
-    void DynamicThreadedGenerateData(const typename TInputImage::RegionType& outputRegionForThread) ITK_OVERRIDE;
+    void DynamicThreadedGenerateData(const typename TInputImage::RegionType& outputRegionForThread) override;
 #endif
 
     MedianRadiusType  m_Radius;
     double            m_ThresholdMultiplier;
-
-private:
-    ConditionalMedianImageFilter(const Self &); //purposely not implemented
-    void operator=(const Self &);  //purposely not implemented
-
 };
 
 template <>

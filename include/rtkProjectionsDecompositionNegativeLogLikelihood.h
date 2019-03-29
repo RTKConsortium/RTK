@@ -39,26 +39,27 @@ namespace rtk
 class ProjectionsDecompositionNegativeLogLikelihood : public itk::SingleValuedCostFunction
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(ProjectionsDecompositionNegativeLogLikelihood);
 
-  typedef ProjectionsDecompositionNegativeLogLikelihood     Self;
-  typedef itk::SingleValuedCostFunction                     Superclass;
-  typedef itk::SmartPointer<Self>                           Pointer;
-  typedef itk::SmartPointer<const Self>                     ConstPointer;
+  using Self = ProjectionsDecompositionNegativeLogLikelihood;
+  using Superclass = itk::SingleValuedCostFunction;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
   itkNewMacro( Self );
   itkTypeMacro( ProjectionsDecompositionNegativeLogLikelihood, SingleValuedCostFunction );
 
 //  enum { SpaceDimension=m_NumberOfMaterials };
 
-  typedef Superclass::ParametersType      ParametersType;
-  typedef Superclass::DerivativeType      DerivativeType;
-  typedef Superclass::MeasureType         MeasureType;
+  using ParametersType = Superclass::ParametersType;
+  using DerivativeType = Superclass::DerivativeType;
+  using MeasureType = Superclass::MeasureType;
 
-  typedef vnl_matrix<double>                        DetectorResponseType;
-  typedef vnl_matrix<double>                        MaterialAttenuationsType;
-  typedef vnl_matrix<float>                         IncidentSpectrumType;
-  typedef itk::VariableLengthVector<double>         MeasuredDataType;
-  typedef itk::VariableLengthVector<int>            ThresholdsType;
-  typedef itk::VariableSizeMatrix<double>           MeanAttenuationInBinType;
+  using DetectorResponseType = vnl_matrix<double>;
+  using MaterialAttenuationsType = vnl_matrix<double>;
+  using IncidentSpectrumType = vnl_matrix<float>;
+  using MeasuredDataType = itk::VariableLengthVector<double>;
+  using ThresholdsType = itk::VariableLengthVector<int>;
+  using MeanAttenuationInBinType = itk::VariableSizeMatrix<double>;
 
   // Constructor
   ProjectionsDecompositionNegativeLogLikelihood()
@@ -69,16 +70,14 @@ public:
   }
 
   // Destructor
-  virtual ~ProjectionsDecompositionNegativeLogLikelihood() ITK_OVERRIDE
-  {
-  }
+  ~ProjectionsDecompositionNegativeLogLikelihood() override = default;
 
-  MeasureType GetValue( const ParametersType & itkNotUsed(parameters)) const ITK_OVERRIDE {
+  MeasureType GetValue( const ParametersType & itkNotUsed(parameters)) const override {
   long double measure = 0;
   return measure;
   }
   void GetDerivative( const ParametersType & itkNotUsed(lineIntegrals),
-                      DerivativeType & itkNotUsed(derivatives)) const ITK_OVERRIDE {itkExceptionMacro(<< "Not implemented");}
+                      DerivativeType & itkNotUsed(derivatives)) const override {itkExceptionMacro(<< "Not implemented");}
   virtual void Initialize() {}
 
   virtual itk::VariableLengthVector<float> GetInverseCramerRaoLowerBound()
@@ -108,7 +107,7 @@ public:
 
   virtual void ComputeFischerMatrix(const ParametersType & itkNotUsed(lineIntegrals)) {}
 
-  unsigned int GetNumberOfParameters(void) const ITK_OVERRIDE
+  unsigned int GetNumberOfParameters(void) const override
   {
   return m_NumberOfMaterials;
   }
@@ -254,10 +253,6 @@ protected:
   unsigned int                      m_NumberOfSpectralBins;
   bool                              m_Initialized;
   itk::VariableSizeMatrix<float>    m_Fischer;
-
-private:
-  ProjectionsDecompositionNegativeLogLikelihood(const Self &); //purposely not implemented
-  void operator = (const Self &); //purposely not implemented
 
 };
 

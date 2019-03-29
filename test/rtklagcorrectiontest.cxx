@@ -22,17 +22,17 @@ const unsigned Nprojections = 10;
 
 int main(int , char **)
 {
-  const unsigned int Dimension = 3;
+  constexpr unsigned int Dimension = 3;
 
-  typedef itk::Vector<float, ModelOrder> VectorType;     // Parameter type always float/double
+  using VectorType = itk::Vector<float, ModelOrder>;     // Parameter type always float/double
 #ifdef USE_CUDA
-  typedef unsigned short PixelType;
-  typedef itk::CudaImage< PixelType, Dimension > ImageType;
-  typedef rtk::CudaLagCorrectionImageFilter LCImageFilterType;
+  using PixelType = unsigned short;
+  using ImageType = itk::CudaImage< PixelType, Dimension >;
+  using LCImageFilterType = rtk::CudaLagCorrectionImageFilter;
 #else
-  typedef float PixelType;
-  typedef itk::Image< PixelType, Dimension > ImageType;
-  typedef rtk::LagCorrectionImageFilter< ImageType, ModelOrder> LCImageFilterType;
+  using PixelType = float;
+  using ImageType = itk::Image< PixelType, Dimension >;
+  using LCImageFilterType = rtk::LagCorrectionImageFilter< ImageType, ModelOrder>;
 #endif
 
   LCImageFilterType::Pointer lagcorr = LCImageFilterType::New();

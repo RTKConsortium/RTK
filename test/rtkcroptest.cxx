@@ -8,9 +8,9 @@
  */
 int main(int , char** )
 {
-  const unsigned int Dimension = 3;
-  typedef float PixelType;
-  typedef itk::CudaImage< PixelType, Dimension > ImageType;
+  constexpr unsigned int Dimension = 3;
+  using PixelType = float;
+  using ImageType = itk::CudaImage< PixelType, Dimension >;
 
   ImageType::Pointer image = ImageType::New();
   ImageType::RegionType region;
@@ -23,7 +23,7 @@ int main(int , char** )
   image->Allocate();
   image->FillBuffer(12.3);
 
-  typedef rtk::CudaCropImageFilter CropImageFilter;
+  using CropImageFilter = rtk::CudaCropImageFilter;
   CropImageFilter::Pointer crop = CropImageFilter::New();
   crop->SetInput(image);
 

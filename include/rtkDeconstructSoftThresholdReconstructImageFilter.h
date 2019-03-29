@@ -47,11 +47,13 @@ class DeconstructSoftThresholdReconstructImageFilter
     : public itk::ImageToImageFilter<TImage,TImage>
 {
 public:
-    /** Standard class typedefs. */
-    typedef DeconstructSoftThresholdReconstructImageFilter                   Self;
-    typedef itk::ImageToImageFilter<TImage,TImage>  Superclass;
-    typedef itk::SmartPointer<Self>                 Pointer;
-    typedef itk::SmartPointer<const Self>           ConstPointer;
+    ITK_DISALLOW_COPY_AND_ASSIGN(DeconstructSoftThresholdReconstructImageFilter);
+
+    /** Standard class type alias. */
+    using Self = DeconstructSoftThresholdReconstructImageFilter;
+    using Superclass = itk::ImageToImageFilter<TImage,TImage>;
+    using Pointer = itk::SmartPointer<Self>;
+    using ConstPointer = itk::SmartPointer<const Self>;
 
     /** Method for creation through the object factory. */
     itkNewMacro(Self)
@@ -60,21 +62,21 @@ public:
     itkTypeMacro(DeconstructSoftThresholdReconstructImageFilter, ImageToImageFilter)
 
     /** ImageDimension enumeration. */
-    itkStaticConstMacro(ImageDimension, unsigned int, TImage::ImageDimension);
+    static constexpr unsigned int ImageDimension = TImage::ImageDimension;
 
     /** Inherit types from Superclass. */
-    typedef typename Superclass::InputImageType         InputImageType;
-    typedef typename Superclass::OutputImageType        OutputImageType;
-    typedef typename Superclass::InputImagePointer      InputImagePointer;
-    typedef typename Superclass::OutputImagePointer     OutputImagePointer;
-    typedef typename Superclass::InputImageConstPointer InputImageConstPointer;
-    typedef typename TImage::PixelType                  PixelType;
-    typedef typename TImage::InternalPixelType          InternalPixelType;
+    using InputImageType = typename Superclass::InputImageType;
+    using OutputImageType = typename Superclass::OutputImageType;
+    using InputImagePointer = typename Superclass::InputImagePointer;
+    using OutputImagePointer = typename Superclass::OutputImagePointer;
+    using InputImageConstPointer = typename Superclass::InputImageConstPointer;
+    using PixelType = typename TImage::PixelType;
+    using InternalPixelType = typename TImage::InternalPixelType;
 
     /** Define the types of subfilters */
-    typedef rtk::DeconstructImageFilter<InputImageType>       DeconstructFilterType;
-    typedef rtk::ReconstructImageFilter<InputImageType>       ReconstructFilterType;
-    typedef rtk::SoftThresholdImageFilter<InputImageType, InputImageType>   SoftThresholdFilterType;
+    using DeconstructFilterType = rtk::DeconstructImageFilter<InputImageType>;
+    using ReconstructFilterType = rtk::ReconstructImageFilter<InputImageType>;
+    using SoftThresholdFilterType = rtk::SoftThresholdImageFilter<InputImageType, InputImageType>;
 
     /** Set the number of levels of the deconstruction and reconstruction */
     void SetNumberOfLevels(unsigned int levels);
@@ -89,21 +91,18 @@ public:
 
 protected:
     DeconstructSoftThresholdReconstructImageFilter();
-    virtual ~DeconstructSoftThresholdReconstructImageFilter() ITK_OVERRIDE {}
-    void PrintSelf(std::ostream&os, itk::Indent indent) const ITK_OVERRIDE;
+    ~DeconstructSoftThresholdReconstructImageFilter() override = default;
+    void PrintSelf(std::ostream&os, itk::Indent indent) const override;
 
     /** Generate the output data. */
-    void GenerateData() ITK_OVERRIDE;
+    void GenerateData() override;
 
     /** Compute the information on output's size and index */
-    void GenerateOutputInformation() ITK_OVERRIDE;
+    void GenerateOutputInformation() override;
 
-    void GenerateInputRequestedRegion() ITK_OVERRIDE;
+    void GenerateInputRequestedRegion() override;
 
 private:
-    DeconstructSoftThresholdReconstructImageFilter(const Self&);     //purposely not implemented
-    void operator=(const Self&);            //purposely not implemented
-
     unsigned int    m_Order;
     float           m_Threshold;
     bool            m_PipelineConstructed;

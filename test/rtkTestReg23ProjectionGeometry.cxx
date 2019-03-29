@@ -1,9 +1,9 @@
 //
 //std
-#include <stdlib.h>
+#include <cstdlib>
 #include <iostream>
 #include <vector>
-#include <math.h>
+#include <cmath>
 //ITK
 #include <itkMersenneTwisterRandomVariateGenerator.h>
 #include <itkEuler3DTransform.h>
@@ -36,7 +36,7 @@ void PrintHelp(char *binaryName)
   std::cerr << "\n\n***************************************************\n\n";
 }
 
-typedef rtk::Reg23ProjectionGeometry GeometryType;
+using GeometryType = rtk::Reg23ProjectionGeometry;
 
 /**
  * @brief Intersect detector plane with line between source and a specified
@@ -89,7 +89,7 @@ int main(int argc, char *argv[])
     sarg = std::string(argv[i]);
     if (sarg == "-h" || sarg == "--help")
     {
-      PrintHelp(argc > 0 ? argv[0] : ITK_NULLPTR);
+      PrintHelp(argc > 0 ? argv[0] : nullptr);
       return EXIT_SUCCESS;
     }
     if (sarg == "-v" || sarg == "--verbose")
@@ -104,9 +104,9 @@ int main(int argc, char *argv[])
 
   VERBOSE(<< "\n\nStart testing ora::Reg23ProjectionGeometry\n\n")
 
-  typedef itk::Statistics::MersenneTwisterRandomVariateGenerator RandomType;
-  typedef itk::Euler3DTransform<double> EulerType;
-  typedef itk::Point<double, 2> Point2DType;
+  using RandomType = itk::Statistics::MersenneTwisterRandomVariateGenerator;
+  using EulerType = itk::Euler3DTransform<double>;
+  using Point2DType = itk::Point<double, 2>;
 
   GeometryType::PointType sourcePosition;
   GeometryType::PointType detectorPosition;
@@ -118,7 +118,7 @@ int main(int argc, char *argv[])
   lok = true;
   {
     // determine a few random phantom markers around isocenter
-    const int NUM_PHANTOM_MARKERS = 5;
+    constexpr int NUM_PHANTOM_MARKERS = 5;
     RandomType::Pointer generator = RandomType::New();
     generator->Initialize(123456);
     GeometryType::PointType p;
@@ -199,7 +199,7 @@ int main(int argc, char *argv[])
     gantryAngles.insert(gantryAngles.end(), criticalAngles.begin(), criticalAngles.end());
     outOfPlaneAngles.insert(outOfPlaneAngles.end(), criticalAngles.begin(), criticalAngles.end());
     // randomly sample further angles in [-180;+180] deg range:
-    const int NUM_RANDOM_ANGLES = 100;
+    constexpr int NUM_RANDOM_ANGLES = 100;
     for (int u = 0; u < NUM_RANDOM_ANGLES; u++)
     {
       inPlaneAngles.push_back(generator->GetUniformVariate(-180, 180));
@@ -207,18 +207,18 @@ int main(int argc, char *argv[])
       outOfPlaneAngles.push_back(generator->GetUniformVariate(-180, 180));
     }
 
-    for (std::size_t ga = 0; ga < gantryAngles.size(); ++ga)
+    for (const double gantryAngle : gantryAngles)
     {
-      for (std::size_t oa = 0; oa < outOfPlaneAngles.size(); ++oa)
+      for (const double outOfPlaneAngle : outOfPlaneAngles)
       {
-        for (std::size_t ia = 0; ia < inPlaneAngles.size(); ++ia)
+        for (const double inPlaneAngle : inPlaneAngles)
         {
           rtkProjectionsList->Clear(); // reduce required memory
 
           // "swirl" the device around (not only circular trajectory, spherical):
-          eu->SetRotation(outOfPlaneAngles[oa] * degreesToRadians,
-                          gantryAngles[ga] * degreesToRadians,
-                          inPlaneAngles[ia] * degreesToRadians);
+          eu->SetRotation(outOfPlaneAngle * degreesToRadians,
+                          gantryAngle * degreesToRadians,
+                          inPlaneAngle * degreesToRadians);
           locSourcePosition = eu->TransformPoint(sourcePosition);
           locDetectorPosition = eu->TransformPoint(detectorPosition);
           locDetectorRowDirection = eu->TransformVector(detectorRowDirection);
@@ -234,10 +234,10 @@ int main(int argc, char *argv[])
 
           // compute analytically the relative 2D projection position related to the
           // detector position:
-          for (std::size_t k = 0; k < phantomMarkers.size(); k++)
+          for (const GeometryType::PointType & phantomMarker : phantomMarkers)
           {
             n = itk::CrossProduct(locDetectorRowDirection, locDetectorColumnDirection);
-            IntersectPlaneWithLine(locSourcePosition, phantomMarkers[k], n,
+            IntersectPlaneWithLine(locSourcePosition, phantomMarker, n,
                                    locDetectorPosition, X);
             p2d[0] = X * locDetectorRowDirection
                 - locDetectorPositionVec * locDetectorRowDirection;
@@ -258,11 +258,11 @@ int main(int argc, char *argv[])
 
           // compute RTK projection for each marker:
           rtkMatrix = rtkProjectionsList->GetMatrices()[rtkProjectionsList->GetMatrices().size() - 1];
-          for (std::size_t k = 0; k < phantomMarkers.size(); k++)
+          for (const GeometryType::PointType & phantomMarker : phantomMarkers)
           {
-            hv[0] = phantomMarkers[k][0];
-            hv[1] = phantomMarkers[k][1];
-            hv[2] = phantomMarkers[k][2];
+            hv[0] = phantomMarker[0];
+            hv[1] = phantomMarker[1];
+            hv[2] = phantomMarker[2];
             hv[3] = 1.;
             tmp = rtkMatrix * hv;
             p2d[0] = tmp[0] / tmp[2]; // perspective divide
@@ -271,9 +271,9 @@ int main(int argc, char *argv[])
             rtkMarkerProjections.push_back(p2d);
 
             // for possible error output later on:
-            aaa[0] = outOfPlaneAngles[oa];
-            aaa[1] = gantryAngles[ga];
-            aaa[2] = inPlaneAngles[ia];
+            aaa[0] = outOfPlaneAngle;
+            aaa[1] = gantryAngle;
+            aaa[2] = inPlaneAngle;
             anglesList.push_back(aaa);
           }
         }

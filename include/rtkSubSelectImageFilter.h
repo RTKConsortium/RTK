@@ -64,10 +64,12 @@ template< typename ProjectionStackType>
 class SubSelectImageFilter : public itk::ImageToImageFilter<ProjectionStackType, ProjectionStackType>
 {
 public:
-  /** Standard class typedefs. */
-  typedef SubSelectImageFilter                                              Self;
-  typedef itk::ImageToImageFilter<ProjectionStackType, ProjectionStackType> Superclass;
-  typedef itk::SmartPointer< Self >                                         Pointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(SubSelectImageFilter);
+
+  /** Standard class type alias. */
+  using Self = SubSelectImageFilter;
+  using Superclass = itk::ImageToImageFilter<ProjectionStackType, ProjectionStackType>;
+  using Pointer = itk::SmartPointer< Self >;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(SubSelectImageFilter, itk::ImageToImageFilter)
@@ -76,10 +78,10 @@ public:
   void SetInputProjectionStack(const ProjectionStackType* Projections);
   typename ProjectionStackType::ConstPointer GetInputProjectionStack();
 
-  typedef itk::PasteImageFilter<ProjectionStackType>                        PasteFilterType;
-  typedef itk::ExtractImageFilter<ProjectionStackType, ProjectionStackType> ExtractFilterType;
-  typedef rtk::ConstantImageSource<ProjectionStackType>                     EmptyProjectionStackSourceType;
-  typedef rtk::ThreeDCircularProjectionGeometry                             GeometryType;
+  using PasteFilterType = itk::PasteImageFilter<ProjectionStackType>;
+  using ExtractFilterType = itk::ExtractImageFilter<ProjectionStackType, ProjectionStackType>;
+  using EmptyProjectionStackSourceType = rtk::ConstantImageSource<ProjectionStackType>;
+  using GeometryType = rtk::ThreeDCircularProjectionGeometry;
 
   itkSetObjectMacro(InputGeometry, GeometryType)
   itkGetModifiableObjectMacro(InputGeometry, GeometryType)
@@ -90,14 +92,14 @@ public:
 
 protected:
   SubSelectImageFilter();
-  virtual ~SubSelectImageFilter() ITK_OVERRIDE {}
+  ~SubSelectImageFilter() override = default;
 
-  void GenerateInputRequestedRegion() ITK_OVERRIDE;
+  void GenerateInputRequestedRegion() override;
 
-  void GenerateOutputInformation() ITK_OVERRIDE;
+  void GenerateOutputInformation() override;
 
   /** Does the real work. */
-  void GenerateData() ITK_OVERRIDE;
+  void GenerateData() override;
 
   /** Member variables */
   GeometryType::Pointer     m_InputGeometry;
@@ -106,9 +108,6 @@ protected:
   int                       m_NbSelectedProjs;
 
 private:
-  SubSelectImageFilter(const Self &); // purposely not implemented
-  void operator=(const Self &);       // purposely not implemented
-
   typename EmptyProjectionStackSourceType::Pointer m_EmptyProjectionStackSource;
   typename ExtractFilterType::Pointer              m_ExtractFilter;
   typename PasteFilterType::Pointer                m_PasteFilter;

@@ -31,10 +31,10 @@ void CheckError(typename TImage::Pointer recon,
                 double PSNRTolerance,
                 double RefValueForPSNR)
 {
-  typedef itk::ImageRegionConstIterator<TImage> ImageIteratorType;
+  using ImageIteratorType = itk::ImageRegionConstIterator<TImage>;
   ImageIteratorType itTest( recon, recon->GetBufferedRegion() );
 
-  typedef double ErrorType;
+  using ErrorType = double;
   ErrorType TestError = 0.;
   ErrorType EnerError = 0.;
 

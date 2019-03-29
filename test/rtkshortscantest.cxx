@@ -26,23 +26,23 @@
 
 int main(int , char** )
 {
-  const unsigned int Dimension = 3;
-  typedef float                                    OutputPixelType;
+  constexpr unsigned int Dimension = 3;
+  using OutputPixelType = float;
 #ifdef USE_CUDA
-  typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
+  using OutputImageType = itk::CudaImage< OutputPixelType, Dimension >;
 #else
-  typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
+  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
 #endif
 
 #if FAST_TESTS_NO_CHECKS
-  const unsigned int NumberOfProjectionImages = 3;
+  constexpr unsigned int NumberOfProjectionImages = 3;
 #else
-  const unsigned int NumberOfProjectionImages = 110;
+  constexpr unsigned int NumberOfProjectionImages = 110;
 #endif
-  const double ArcSize = 240.;
+  constexpr double ArcSize = 240.;
 
   // Constant image sources
-  typedef rtk::ConstantImageSource< OutputImageType > ConstantImageSourceType;
+  using ConstantImageSourceType = rtk::ConstantImageSource< OutputImageType >;
   ConstantImageSourceType::PointType origin;
   ConstantImageSourceType::SizeType size;
   ConstantImageSourceType::SpacingType spacing;
@@ -96,13 +96,13 @@ int main(int , char** )
   projectionsSource->SetConstant( 0. );
 
   // Geometry object
-  typedef rtk::ThreeDCircularProjectionGeometry GeometryType;
+  using GeometryType = rtk::ThreeDCircularProjectionGeometry;
   GeometryType::Pointer geometry = GeometryType::New();
   for(unsigned int noProj=0; noProj<NumberOfProjectionImages; noProj++)
     geometry->AddProjection(600., 1200., noProj*ArcSize/NumberOfProjectionImages);
 
   // Shepp Logan projections filter
-  typedef rtk::SheppLoganPhantomFilter<OutputImageType, OutputImageType> SLPType;
+  using SLPType = rtk::SheppLoganPhantomFilter<OutputImageType, OutputImageType>;
   SLPType::Pointer slp=SLPType::New();
   slp->SetInput( projectionsSource->GetOutput() );
   slp->SetGeometry(geometry);
@@ -111,9 +111,9 @@ int main(int , char** )
 
   // Short scan image filter
 #ifdef USE_CUDA
-  typedef rtk::CudaParkerShortScanImageFilter                PSSFType;
+  using PSSFType = rtk::CudaParkerShortScanImageFilter;
 #else
-  typedef rtk::ParkerShortScanImageFilter< OutputImageType > PSSFType;
+  using PSSFType = rtk::ParkerShortScanImageFilter< OutputImageType >;
 #endif
   PSSFType::Pointer pssf = PSSFType::New();
   pssf->SetInput( slp->GetOutput() );
@@ -122,14 +122,14 @@ int main(int , char** )
   pssf->Update();
 
   // Create a reference object (in this case a 3D phantom reference).
-  typedef rtk::DrawSheppLoganFilter<OutputImageType, OutputImageType> DSLType;
+  using DSLType = rtk::DrawSheppLoganFilter<OutputImageType, OutputImageType>;
   DSLType::Pointer dsl = DSLType::New();
   dsl->SetInput( tomographySource->GetOutput() );
   dsl->SetPhantomScale(116);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( dsl->Update() )
 
   // FDK reconstruction filtering
-  typedef rtk::FDKConeBeamReconstructionFilter< OutputImageType > FDKCPUType;
+  using FDKCPUType = rtk::FDKConeBeamReconstructionFilter< OutputImageType >;
   FDKCPUType::Pointer feldkamp = FDKCPUType::New();
   feldkamp->SetInput( 0, tomographySource->GetOutput() );
   feldkamp->SetInput( 1, pssf->GetOutput() );

@@ -43,20 +43,21 @@ class ITK_EXPORT OraLookupTableImageFilter:
     public LookupTableImageFilter< itk::Image<unsigned short, TOutputImage::ImageDimension>,
                                    TOutputImage >
 {
-
 public:
-  /** Standard class typedefs. */
-  typedef OraLookupTableImageFilter                                           Self;
-  typedef LookupTableImageFilter<itk::Image<unsigned short,
-                                            TOutputImage::ImageDimension>,
-                                 TOutputImage>                                Superclass;
-  typedef itk::SmartPointer<Self>                                             Pointer;
-  typedef itk::SmartPointer<const Self>                                       ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(OraLookupTableImageFilter);
 
-  typedef unsigned short                                    InputImagePixelType;
-  typedef typename TOutputImage::PixelType                  OutputImagePixelType;
-  typedef typename Superclass::FunctorType::LookupTableType LookupTableType;
-  typedef std::vector<std::string>                          FileNamesContainer;
+  /** Standard class type alias. */
+  using Self = OraLookupTableImageFilter;
+  using Superclass = LookupTableImageFilter<itk::Image<unsigned short,
+                                            TOutputImage::ImageDimension>,
+                                 TOutputImage>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
+
+  using InputImagePixelType = unsigned short;
+  using OutputImagePixelType = typename TOutputImage::PixelType;
+  using LookupTableType = typename Superclass::FunctorType::LookupTableType;
+  using FileNamesContainer = std::vector<std::string>;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -64,7 +65,7 @@ public:
   /** Runtime information support. */
   itkTypeMacro(OraLookupTableImageFilter, LookupTableImageFilter);
 
-  void BeforeThreadedGenerateData() ITK_OVERRIDE;
+  void BeforeThreadedGenerateData() override;
 
   /** Convert the projection data to line integrals after pre-processing.
   ** Default is on. */
@@ -89,12 +90,9 @@ public:
 
 protected:
   OraLookupTableImageFilter(): m_ComputeLineIntegral(true){}
-  virtual ~OraLookupTableImageFilter() ITK_OVERRIDE {}
+  ~OraLookupTableImageFilter() override = default;
 
 private:
-  OraLookupTableImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);            //purposely not implemented
-
   bool                      m_ComputeLineIntegral;
 
   /** A list of filenames to be processed. */

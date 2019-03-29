@@ -49,7 +49,7 @@ CudaRayCastBackProjectionImageFilter
     {
     itkGenericExceptionMacro(<< "Error, ThreeDCircularProjectionGeometry expected");
     }
-  const unsigned int Dimension = 3;
+  constexpr unsigned int Dimension = 3;
   const unsigned int iFirstProj = this->GetInput(1)->GetRequestedRegion().GetIndex(Dimension-1);
   const unsigned int nProj = this->GetInput(1)->GetRequestedRegion().GetSize(Dimension-1);
   const unsigned int nPixelsPerProj = this->GetInput(1)->GetBufferedRegion().GetSize(0) *

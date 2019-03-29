@@ -79,7 +79,7 @@ OraXMLFileReader
 {
   if(itksys::SystemTools::Strucmp(name, metaName) == 0)
     {
-    typedef itk::Vector<double, 3> PointType;
+    using PointType = itk::Vector<double, 3>;
     PointType p;
     std::istringstream iss(m_CurCharacterData);
     for(int i=0; i<3; i++)
@@ -97,7 +97,7 @@ OraXMLFileReader
 {
   if(itksys::SystemTools::Strucmp(name, metaName) == 0)
     {
-    typedef itk::Matrix<double, 3, 3> Matrix3x3Type;
+    using Matrix3x3Type = itk::Matrix<double, 3, 3>;
     Matrix3x3Type m;
     std::istringstream iss(m_CurCharacterData);
     for(int i=0; i<3; i++)

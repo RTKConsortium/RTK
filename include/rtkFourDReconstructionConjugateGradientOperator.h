@@ -129,13 +129,15 @@ template< typename VolumeSeriesType, typename ProjectionStackType>
 class FourDReconstructionConjugateGradientOperator : public ConjugateGradientOperator< VolumeSeriesType>
 {
 public:
-    /** Standard class typedefs. */
-    typedef FourDReconstructionConjugateGradientOperator        Self;
-    typedef ConjugateGradientOperator< VolumeSeriesType>        Superclass;
-    typedef itk::SmartPointer< Self >                           Pointer;
+    ITK_DISALLOW_COPY_AND_ASSIGN(FourDReconstructionConjugateGradientOperator);
 
-  /** Convenient typedef */
-    typedef ProjectionStackType                                 VolumeType;
+    /** Standard class type alias. */
+    using Self = FourDReconstructionConjugateGradientOperator;
+    using Superclass = ConjugateGradientOperator< VolumeSeriesType>;
+    using Pointer = itk::SmartPointer< Self >;
+
+  /** Convenient type alias */
+    using VolumeType = ProjectionStackType;
 
     /** Method for creation through the object factory. */
     itkNewMacro(Self)
@@ -151,17 +153,17 @@ public:
     void SetInputProjectionStack(const ProjectionStackType* Projections);
     typename ProjectionStackType::ConstPointer GetInputProjectionStack();
 
-    typedef BackProjectionImageFilter< ProjectionStackType, ProjectionStackType >    BackProjectionFilterType;
-    typedef ForwardProjectionImageFilter< ProjectionStackType, ProjectionStackType > ForwardProjectionFilterType;
-    typedef InterpolatorWithKnownWeightsImageFilter<VolumeType, VolumeSeriesType>    InterpolationFilterType;
-    typedef SplatWithKnownWeightsImageFilter<VolumeSeriesType, VolumeType>           SplatFilterType;
-    typedef ConstantImageSource<VolumeType>                                          ConstantVolumeSourceType;
-    typedef ConstantImageSource<ProjectionStackType>                                 ConstantProjectionStackSourceType;
-    typedef ConstantImageSource<VolumeSeriesType>                                    ConstantVolumeSeriesSourceType;
+    using BackProjectionFilterType = BackProjectionImageFilter< ProjectionStackType, ProjectionStackType >;
+    using ForwardProjectionFilterType = ForwardProjectionImageFilter< ProjectionStackType, ProjectionStackType >;
+    using InterpolationFilterType = InterpolatorWithKnownWeightsImageFilter<VolumeType, VolumeSeriesType>;
+    using SplatFilterType = SplatWithKnownWeightsImageFilter<VolumeSeriesType, VolumeType>;
+    using ConstantVolumeSourceType = ConstantImageSource<VolumeType>;
+    using ConstantProjectionStackSourceType = ConstantImageSource<ProjectionStackType>;
+    using ConstantVolumeSeriesSourceType = ConstantImageSource<VolumeSeriesType>;
 
-    /** SFINAE typedef, depending on whether a CUDA image is used. */
-    typedef typename itk::Image< typename ProjectionStackType::PixelType,
-                                 ProjectionStackType::ImageDimension>                CPUProjectionStackType;
+    /** SFINAE type alias, depending on whether a CUDA image is used. */
+    using CPUProjectionStackType = typename itk::Image< typename ProjectionStackType::PixelType,
+                                 ProjectionStackType::ImageDimension>;
 #ifdef RTK_USE_CUDA
     typedef typename std::conditional< std::is_same< ProjectionStackType, CPUProjectionStackType >::value,
                                        DisplacedDetectorImageFilter<ProjectionStackType>,
@@ -179,11 +181,11 @@ public:
                                        ConstantVolumeSeriesSourceType,
                                        CudaConstantVolumeSeriesSource >::type        CudaConstantVolumeSeriesSourceType;
 #else
-    typedef DisplacedDetectorImageFilter<ProjectionStackType>                        DisplacedDetectorFilterType;
-    typedef InterpolationFilterType                                                  CudaInterpolateImageFilterType;
-    typedef SplatFilterType                                                          CudaSplatImageFilterType;
-    typedef ConstantVolumeSourceType                                                 CudaConstantVolumeSourceType;
-    typedef ConstantVolumeSeriesSourceType                                           CudaConstantVolumeSeriesSourceType;
+    using DisplacedDetectorFilterType = DisplacedDetectorImageFilter<ProjectionStackType>;
+    using CudaInterpolateImageFilterType = InterpolationFilterType;
+    using CudaSplatImageFilterType = SplatFilterType;
+    using CudaConstantVolumeSourceType = ConstantVolumeSourceType;
+    using CudaConstantVolumeSeriesSourceType = ConstantVolumeSeriesSourceType;
 #endif
 
     /** Pass the backprojection filter to ProjectionStackToFourD*/
@@ -216,16 +218,16 @@ public:
 
 protected:
     FourDReconstructionConjugateGradientOperator();
-    virtual ~FourDReconstructionConjugateGradientOperator() ITK_OVERRIDE {}
+    ~FourDReconstructionConjugateGradientOperator() override = default;
 
     /** Builds the pipeline and computes output information */
-    void GenerateOutputInformation() ITK_OVERRIDE;
+    void GenerateOutputInformation() override;
 
     /** Computes the requested region of input images */
-    void GenerateInputRequestedRegion() ITK_OVERRIDE;
+    void GenerateInputRequestedRegion() override;
 
     /** Does the real work. */
-    void GenerateData() ITK_OVERRIDE;
+    void GenerateData() override;
 
     /** Initialize the ConstantImageSourceFilter */
     void InitializeConstantSources();
@@ -248,10 +250,6 @@ protected:
     itk::Array2D<float>                                   m_Weights;
     std::vector<double>                                   m_Signal;
     bool                                                  m_DisableDisplacedDetectorFilter;
-
-private:
-    FourDReconstructionConjugateGradientOperator(const Self &); //purposely not implemented
-    void operator=(const Self &);  //purposely not implemented
 };
 } //namespace ITK
 

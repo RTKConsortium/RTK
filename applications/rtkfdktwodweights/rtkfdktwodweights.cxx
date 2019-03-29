@@ -28,13 +28,13 @@ int main(int argc, char * argv[])
 {
   GGO(rtkfdktwodweights, args_info);
 
-  typedef float OutputPixelType;
-  const unsigned int Dimension = 3;
+  using OutputPixelType = float;
+  constexpr unsigned int Dimension = 3;
 
-  typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
+  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
 
   // Projections reader
-  typedef rtk::ProjectionsReader< OutputImageType > ReaderType;
+  using ReaderType = rtk::ProjectionsReader< OutputImageType >;
   ReaderType::Pointer reader = ReaderType::New();
   rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkfdktwodweights>(reader, args_info);
 
@@ -50,7 +50,7 @@ int main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION( geometryReader->GenerateOutputInformation() )
 
   // Weights filter
-  typedef rtk::FDKWeightProjectionFilter< OutputImageType > WeightType;
+  using WeightType = rtk::FDKWeightProjectionFilter< OutputImageType >;
   WeightType::Pointer wf = WeightType::New();
   wf->SetInput( reader->GetOutput() );
   wf->SetGeometry( geometryReader->GetOutputObject() );
@@ -62,7 +62,7 @@ int main(int argc, char * argv[])
   wf->InPlaceOff();
 
   // Write
-  typedef itk::ImageFileWriter<  OutputImageType > WriterType;
+  using WriterType = itk::ImageFileWriter<  OutputImageType >;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
   writer->SetInput( wf->GetOutput() );

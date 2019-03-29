@@ -39,11 +39,13 @@ namespace rtk
 class ITK_EXPORT SignalToInterpolationWeights:public itk::CSVFileReaderBase
 {
 public:
-    /** Standard class typedefs */
-    typedef SignalToInterpolationWeights      Self;
-    typedef CSVFileReaderBase                 Superclass;
-    typedef itk::SmartPointer<Self>           Pointer;
-    typedef itk::SmartPointer<const Self>     ConstPointer;
+    ITK_DISALLOW_COPY_AND_ASSIGN(SignalToInterpolationWeights);
+
+    /** Standard class type alias */
+    using Self = SignalToInterpolationWeights;
+    using Superclass = CSVFileReaderBase;
+    using Pointer = itk::SmartPointer<Self>;
+    using ConstPointer = itk::SmartPointer<const Self>;
 
     /** Standard New method. */
     itkNewMacro(Self)
@@ -52,13 +54,13 @@ public:
     itkTypeMacro(Self,Superclass)
 
     /** DataFrame Object types */
-    typedef itk::Array2D<float>    Array2DType;
+    using Array2DType = itk::Array2D<float>;
 
     /** The value type of the dataset. */
-    typedef float ValueType;
+    using ValueType = float;
 
     /** Required, but not used */
-    void Parse() ITK_OVERRIDE {}
+    void Parse() override {}
 
     /** Does the real work */
     virtual void Update();
@@ -76,18 +78,15 @@ public:
 
 protected:
     SignalToInterpolationWeights();
-    virtual ~SignalToInterpolationWeights () ITK_OVERRIDE {}
+    ~SignalToInterpolationWeights () override = default;
 
     /** Print the reader. */
-    void PrintSelf(std::ostream & os, itk::Indent indent) const ITK_OVERRIDE;
+    void PrintSelf(std::ostream & os, itk::Indent indent) const override;
 
 private:
     Array2DType           m_Array2D;
     int                   m_NumberOfReconstructedFrames;
     std::vector<double>   m_Signal;
-
-    SignalToInterpolationWeights(const Self &);  //purposely not implemented
-    void operator=(const Self &);          //purposely not implemented
 };
 
 } //end namespace rtk

@@ -13,12 +13,12 @@
 
 int main(int , char** )
 {
-  const unsigned int Dimension = 2;
-  typedef float                                    OutputPixelType;
-  typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
+  constexpr unsigned int Dimension = 2;
+  using OutputPixelType = float;
+  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
 
   // Constant image sources
-  typedef rtk::ConstantImageSource< OutputImageType > ConstantImageSourceType;
+  using ConstantImageSourceType = rtk::ConstantImageSource< OutputImageType >;
   ConstantImageSourceType::PointType origin;
   ConstantImageSourceType::SizeType size;
   ConstantImageSourceType::SpacingType spacing;
@@ -50,7 +50,7 @@ int main(int , char** )
 
   std::cout << "\n\n****** Case 1: order 2 ******" << std::endl;
 
-  typedef rtk::WaterPrecorrectionImageFilter<OutputImageType, OutputImageType> WPCType;
+  using WPCType = rtk::WaterPrecorrectionImageFilter<OutputImageType, OutputImageType>;
   WPCType::Pointer model2 = WPCType::New();
 
   // Update median filter

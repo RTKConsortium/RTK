@@ -30,18 +30,18 @@ int main(int argc, char * argv[])
 {
   GGO(rtktotalnuclearvariationdenoising, args_info);
 
-  typedef float OutputPixelType;
-  const unsigned int Dimension = 4; // Number of dimensions of the input image
-  const unsigned int DimensionsProcessed = 3; // Number of dimensions along which the gradient is computed
+  using OutputPixelType = float;
+  constexpr unsigned int Dimension = 4; // Number of dimensions of the input image
+  constexpr unsigned int DimensionsProcessed = 3; // Number of dimensions along which the gradient is computed
 
-  typedef itk::Image< OutputPixelType, Dimension >     OutputImageType;
-  typedef itk::Image< itk::CovariantVector
-      < OutputPixelType, DimensionsProcessed >, Dimension >                GradientOutputImageType;
-  typedef rtk::TotalNuclearVariationDenoisingBPDQImageFilter
-      <OutputImageType, GradientOutputImageType>                           TVDenoisingFilterType;
+  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
+  using GradientOutputImageType = itk::Image< itk::CovariantVector
+      < OutputPixelType, DimensionsProcessed >, Dimension >;
+  using TVDenoisingFilterType = rtk::TotalNuclearVariationDenoisingBPDQImageFilter
+      <OutputImageType, GradientOutputImageType>;
 
   // Read input
-  typedef itk::ImageFileReader<OutputImageType> ReaderType;
+  using ReaderType = itk::ImageFileReader<OutputImageType>;
   ReaderType::Pointer reader = ReaderType::New();
   reader->SetFileName( args_info.input_arg );
 //  reader->ReleaseDataFlagOn();
@@ -54,7 +54,7 @@ int main(int argc, char * argv[])
 //  tv->ReleaseDataFlagOn();
 
   // Write
-  typedef itk::ImageFileWriter<OutputImageType> WriterType;
+  using WriterType = itk::ImageFileWriter<OutputImageType>;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
   writer->SetInput(tv->GetOutput());

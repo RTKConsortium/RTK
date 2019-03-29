@@ -41,15 +41,15 @@ int main(int argc, char *argv[])
 {
   GGO(rtkscatterglarecorrection, args_info);
 
-  typedef float InputPixelType;
-  const unsigned int Dimension = 3;
+  using InputPixelType = float;
+  constexpr unsigned int Dimension = 3;
 #ifdef RTK_USE_CUDA
-  typedef itk::CudaImage< InputPixelType, Dimension > InputImageType;
+  using InputImageType = itk::CudaImage< InputPixelType, Dimension >;
 #else
-  typedef itk::Image< InputPixelType, Dimension > InputImageType;
+  using InputImageType = itk::Image< InputPixelType, Dimension >;
 #endif
 
-  typedef rtk::ProjectionsReader< InputImageType > ReaderType;  // Warning: preprocess images
+  using ReaderType = rtk::ProjectionsReader< InputImageType >;  // Warning: preprocess images
   ReaderType::Pointer reader = ReaderType::New();
   reader->SetFileNames( rtk::GetProjectionsFileNamesFromGgo(args_info) );
   reader->ComputeLineIntegralOff();
@@ -73,18 +73,18 @@ int main(int argc, char *argv[])
     }
 
 #ifdef RTK_USE_CUDA
-  typedef rtk::CudaScatterGlareCorrectionImageFilter ScatterCorrectionType;
+  using ScatterCorrectionType = rtk::CudaScatterGlareCorrectionImageFilter;
 #else
-  typedef rtk::ScatterGlareCorrectionImageFilter<InputImageType, InputImageType, float>   ScatterCorrectionType;
+  using ScatterCorrectionType = rtk::ScatterGlareCorrectionImageFilter<InputImageType, InputImageType, float>;
 #endif
   ScatterCorrectionType::Pointer SFilter = ScatterCorrectionType::New();
   SFilter->SetTruncationCorrection(0.0);
   SFilter->SetCoefficients(coef);
 
-  typedef rtk::ConstantImageSource<InputImageType> ConstantImageSourceType;
+  using ConstantImageSourceType = rtk::ConstantImageSource<InputImageType>;
   ConstantImageSourceType::Pointer constantSource = ConstantImageSourceType::New();
 
-  typedef itk::PasteImageFilter <InputImageType, InputImageType > PasteImageFilterType;
+  using PasteImageFilterType = itk::PasteImageFilter <InputImageType, InputImageType >;
   PasteImageFilterType::Pointer paste = PasteImageFilterType::New();
   paste->SetSourceImage(SFilter->GetOutput());
   paste->SetDestinationImage(constantSource->GetOutput());
@@ -105,7 +105,7 @@ int main(int argc, char *argv[])
     desiredRegionA.SetSize(sizeA);
     desiredRegionA.SetIndex(start);
 
-    typedef itk::ExtractImageFilter< InputImageType, InputImageType > ExtractFilterType;
+    using ExtractFilterType = itk::ExtractImageFilter< InputImageType, InputImageType >;
     ExtractFilterType::Pointer extract = ExtractFilterType::New();
     extract->SetDirectionCollapseToIdentity();
     extract->SetExtractionRegion(desiredRegionA);
@@ -125,7 +125,7 @@ int main(int argc, char *argv[])
     InputImageType::Pointer outImage;
     if (args_info.difference_flag)
       {
-      typedef itk::SubtractImageFilter <InputImageType, InputImageType> SubtractImageFilterType;
+      using SubtractImageFilterType = itk::SubtractImageFilter <InputImageType, InputImageType>;
       SubtractImageFilterType::Pointer subtractFilter = SubtractImageFilterType::New();
       subtractFilter->SetInput1(image);
       subtractFilter->SetInput2(procImage);
@@ -172,7 +172,7 @@ int main(int argc, char *argv[])
     projid += curBufferSize;
     }
 
-  typedef itk::ImageFileWriter<InputImageType> FileWriterType;
+  using FileWriterType = itk::ImageFileWriter<InputImageType>;
   FileWriterType::Pointer writer = FileWriterType::New();
   if (args_info.output_given)
     {

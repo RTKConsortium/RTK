@@ -47,14 +47,16 @@ class RTK_EXPORT ElektaXVI5GeometryXMLFileReader :
   public itk::XMLReader< ThreeDCircularProjectionGeometry >
 {
 public:
-  /** Standard typedefs */
-  typedef ElektaXVI5GeometryXMLFileReader                    Self;
-  typedef itk::XMLReader< ThreeDCircularProjectionGeometry > Superclass;
-  typedef itk::SmartPointer<Self>                            Pointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(ElektaXVI5GeometryXMLFileReader);
 
-  /** Convenient typedefs */
-  typedef ThreeDCircularProjectionGeometry GeometryType;
-  typedef GeometryType::Pointer            GeometryPointer;
+  /** Standard type alias */
+  using Self = ElektaXVI5GeometryXMLFileReader;
+  using Superclass = itk::XMLReader< ThreeDCircularProjectionGeometry >;
+  using Pointer = itk::SmartPointer<Self>;
+
+  /** Convenient type alias */
+  using GeometryType = ThreeDCircularProjectionGeometry;
+  using GeometryPointer = GeometryType::Pointer;
 
   /** Latest version */
   static const unsigned int CurrentVersion = 2;
@@ -66,31 +68,27 @@ public:
   itkNewMacro(Self);
 
   /** Determine if a file can be read */
-  int CanReadFile(const char* name) ITK_OVERRIDE;
+  int CanReadFile(const char* name) override;
 
   /** Get smart pointer to projection geometry. */
   itkGetMacro(Geometry, GeometryPointer);
 
 protected:
   ElektaXVI5GeometryXMLFileReader();
-  virtual ~ElektaXVI5GeometryXMLFileReader() ITK_OVERRIDE {}
+  ~ElektaXVI5GeometryXMLFileReader() override = default;
 
   /** Callback function -- called from XML parser with start-of-element
    * information.
    */
-  void StartElement(const char * name,const char **atts) ITK_OVERRIDE;
+  void StartElement(const char * name,const char **atts) override;
 
   void StartElement(const char * name);
 
-  void EndElement(const char *name) ITK_OVERRIDE;
+  void EndElement(const char *name) override;
 
-  void CharacterDataHandler(const char *inData, int inLength) ITK_OVERRIDE;
+  void CharacterDataHandler(const char *inData, int inLength) override;
 
 private:
-   //purposely not implemented
-  ElektaXVI5GeometryXMLFileReader(const Self&);
-  void operator=(const Self&);
-
   GeometryPointer m_Geometry;
 
   std::string m_CurCharacterData;

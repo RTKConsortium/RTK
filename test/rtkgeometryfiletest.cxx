@@ -3,7 +3,7 @@
 #include "rtkMacro.h"
 #include <itksys/SystemTools.hxx>
 
-typedef rtk::ThreeDCircularProjectionGeometry GeometryType;
+using GeometryType = rtk::ThreeDCircularProjectionGeometry;
 
 void WriteReadAndCheck(GeometryType *geometry)
 {

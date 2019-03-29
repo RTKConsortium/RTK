@@ -26,6 +26,6 @@ rtk::HisImageIOFactory::HisImageIOFactory()
   this->RegisterOverride("itkImageIOBase",
                          "HisImageIO",
                          "His Image IO",
-                         1,
+                         true,
                          itk::CreateObjectFunction<HisImageIO>::New() );
 }

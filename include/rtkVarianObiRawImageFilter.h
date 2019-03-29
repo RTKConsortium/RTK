@@ -44,8 +44,8 @@ template< class TInput, class TOutput>
 class ObiAttenuation
 {
 public:
-  ObiAttenuation() {}
-  ~ObiAttenuation() {}
+  ObiAttenuation() = default;
+  ~ObiAttenuation() = default;
   bool operator!=( const ObiAttenuation & ) const
     {
     return false;
@@ -85,13 +85,15 @@ itk::UnaryFunctorImageFilter<TInputImage,TOutputImage,
   typename TOutputImage::PixelType>   >
 {
 public:
-  /** Standard class typedefs. */
-  typedef VarianObiRawImageFilter  Self;
-  typedef itk::UnaryFunctorImageFilter<TInputImage,TOutputImage,
+  ITK_DISALLOW_COPY_AND_ASSIGN(VarianObiRawImageFilter);
+
+  /** Standard class type alias. */
+  using Self = VarianObiRawImageFilter;
+  using Superclass = itk::UnaryFunctorImageFilter<TInputImage,TOutputImage,
                                        Function::ObiAttenuation< typename TInputImage::PixelType,
-                                                      typename TOutputImage::PixelType> >  Superclass;
-  typedef itk::SmartPointer<Self>        Pointer;
-  typedef itk::SmartPointer<const Self>  ConstPointer;
+                                                      typename TOutputImage::PixelType> >;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -106,16 +108,13 @@ public:
   itkGetMacro(IDark, double);
   itkSetMacro(IDark, double);
 
-  void BeforeThreadedGenerateData() ITK_OVERRIDE;
+  void BeforeThreadedGenerateData() override;
 
 protected:
   VarianObiRawImageFilter();
-  virtual ~VarianObiRawImageFilter() ITK_OVERRIDE {}
+  ~VarianObiRawImageFilter() override = default;
 
 private:
-  VarianObiRawImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&); //purposely not implemented
-
   double m_I0;
   double m_IDark;
 };

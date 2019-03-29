@@ -37,8 +37,8 @@ CudaUnaryFunctorImageFilter< TInputImage, TOutputImage, TFunction, TParentImageF
 ::GPUGenerateData()
 {
     // Applying functor using GPU kernel
-  typedef typename itk::CudaTraits< TInputImage >::Type  GPUInputImage;
-  typedef typename itk::CudaTraits< TOutputImage >::Type GPUOutputImage;
+  using GPUInputImage = typename itk::CudaTraits< TInputImage >::Type;
+  using GPUOutputImage = typename itk::CudaTraits< TOutputImage >::Type;
 
   typename GPUInputImage::Pointer  inPtr =  dynamic_cast< GPUInputImage * >( this->ProcessObject::GetInput(0) );
   typename GPUOutputImage::Pointer otPtr =  dynamic_cast< GPUOutputImage * >( this->ProcessObject::GetOutput(0) );

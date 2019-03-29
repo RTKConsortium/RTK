@@ -90,7 +90,7 @@ ScatterGlareCorrectionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
     }
 
   // FFT kernel
-  typedef itk::RealToHalfHermitianForwardFFTImageFilter< FFTInputImageType, FFTOutputImageType > ForwardFFTType;
+  using ForwardFFTType = itk::RealToHalfHermitianForwardFFTImageFilter< FFTInputImageType, FFTOutputImageType >;
   typename ForwardFFTType::Pointer fftK = ForwardFFTType::New();
   fftK->SetInput(kernel);
 #if ITK_VERSION_MAJOR<5
@@ -101,7 +101,7 @@ ScatterGlareCorrectionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
   fftK->Update();
 
   // Inverse
-  typedef itk::DivideImageFilter<FFTOutputImageType, FFTOutputImageType, FFTOutputImageType> DivideType;
+  using DivideType = itk::DivideImageFilter<FFTOutputImageType, FFTOutputImageType, FFTOutputImageType>;
   typename DivideType::Pointer div = DivideType::New();
   div->SetConstant1(1.);
   div->SetInput(1, fftK->GetOutput() );

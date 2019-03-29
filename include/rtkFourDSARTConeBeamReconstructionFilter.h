@@ -121,35 +121,37 @@ class ITK_EXPORT FourDSARTConeBeamReconstructionFilter :
   public rtk::IterativeConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 {
 public:
-  /** Standard class typedefs. */
-  typedef FourDSARTConeBeamReconstructionFilter                                     Self;
-  typedef IterativeConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType> Superclass;
-  typedef itk::SmartPointer<Self>                                                   Pointer;
-  typedef itk::SmartPointer<const Self>                                             ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(FourDSARTConeBeamReconstructionFilter);
 
-  /** Some convenient typedefs. */
-  typedef VolumeSeriesType      InputImageType;
-  typedef VolumeSeriesType      OutputImageType;
-  typedef ProjectionStackType   VolumeType;
+  /** Standard class type alias. */
+  using Self = FourDSARTConeBeamReconstructionFilter;
+  using Superclass = IterativeConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
-  typedef typename Superclass::ForwardProjectionType ForwardProjectionType;
-  typedef typename Superclass::BackProjectionType    BackProjectionType;
+  /** Some convenient type alias. */
+  using InputImageType = VolumeSeriesType;
+  using OutputImageType = VolumeSeriesType;
+  using VolumeType = ProjectionStackType;
+
+  using ForwardProjectionType = typename Superclass::ForwardProjectionType;
+  using BackProjectionType = typename Superclass::BackProjectionType;
 
   /** Typedefs of each subfilter of this composite filter */
-  typedef itk::ExtractImageFilter< ProjectionStackType, ProjectionStackType >                             ExtractFilterType;
-  typedef rtk::ForwardProjectionImageFilter< ProjectionStackType, ProjectionStackType >                   ForwardProjectionFilterType;
-  typedef rtk::FourDToProjectionStackImageFilter < ProjectionStackType, VolumeSeriesType >                FourDToProjectionStackFilterType;
-  typedef itk::SubtractImageFilter< ProjectionStackType, ProjectionStackType >                            SubtractFilterType;
-  typedef itk::MultiplyImageFilter< ProjectionStackType, ProjectionStackType, ProjectionStackType >       MultiplyFilterType;
-  typedef itk::AddImageFilter< VolumeSeriesType, VolumeSeriesType >                                       AddFilterType;
-  typedef rtk::BackProjectionImageFilter< VolumeType, VolumeType >                                        BackProjectionFilterType;
-  typedef rtk::ProjectionStackToFourDImageFilter < VolumeSeriesType, ProjectionStackType >                ProjectionStackToFourDFilterType;
-  typedef rtk::RayBoxIntersectionImageFilter<ProjectionStackType, ProjectionStackType>                    RayBoxIntersectionFilterType;
-  typedef itk::DivideOrZeroOutImageFilter<ProjectionStackType, ProjectionStackType, ProjectionStackType>  DivideFilterType;
-  typedef rtk::DisplacedDetectorImageFilter<ProjectionStackType>                                          DisplacedDetectorFilterType;
-  typedef rtk::ConstantImageSource<VolumeSeriesType>                                                      ConstantVolumeSeriesSourceType;
-  typedef rtk::ConstantImageSource<ProjectionStackType>                                                   ConstantProjectionStackSourceType;
-  typedef itk::ThresholdImageFilter<VolumeSeriesType>                                                     ThresholdFilterType;
+  using ExtractFilterType = itk::ExtractImageFilter< ProjectionStackType, ProjectionStackType >;
+  using ForwardProjectionFilterType = rtk::ForwardProjectionImageFilter< ProjectionStackType, ProjectionStackType >;
+  using FourDToProjectionStackFilterType = rtk::FourDToProjectionStackImageFilter < ProjectionStackType, VolumeSeriesType >;
+  using SubtractFilterType = itk::SubtractImageFilter< ProjectionStackType, ProjectionStackType >;
+  using MultiplyFilterType = itk::MultiplyImageFilter< ProjectionStackType, ProjectionStackType, ProjectionStackType >;
+  using AddFilterType = itk::AddImageFilter< VolumeSeriesType, VolumeSeriesType >;
+  using BackProjectionFilterType = rtk::BackProjectionImageFilter< VolumeType, VolumeType >;
+  using ProjectionStackToFourDFilterType = rtk::ProjectionStackToFourDImageFilter < VolumeSeriesType, ProjectionStackType >;
+  using RayBoxIntersectionFilterType = rtk::RayBoxIntersectionImageFilter<ProjectionStackType, ProjectionStackType>;
+  using DivideFilterType = itk::DivideOrZeroOutImageFilter<ProjectionStackType, ProjectionStackType, ProjectionStackType>;
+  using DisplacedDetectorFilterType = rtk::DisplacedDetectorImageFilter<ProjectionStackType>;
+  using ConstantVolumeSeriesSourceType = rtk::ConstantImageSource<VolumeSeriesType>;
+  using ConstantProjectionStackSourceType = rtk::ConstantImageSource<ProjectionStackType>;
+  using ThresholdFilterType = itk::ThresholdImageFilter<VolumeSeriesType>;
 
   /** Standard New method. */
   itkNewMacro(Self);
@@ -186,10 +188,10 @@ public:
   itkSetMacro(EnforcePositivity, bool);
 
   /** Select the ForwardProjection filter */
-  void SetForwardProjectionFilter (ForwardProjectionType _arg) ITK_OVERRIDE;
+  void SetForwardProjectionFilter (ForwardProjectionType _arg) override;
 
   /** Select the backprojection filter */
-  void SetBackProjectionFilter (BackProjectionType _arg) ITK_OVERRIDE;
+  void SetBackProjectionFilter (BackProjectionType _arg) override;
 
   /** Pass the interpolation weights to subfilters */
   void SetWeights(const itk::Array2D<float> _arg);
@@ -203,20 +205,20 @@ public:
 
 protected:
   FourDSARTConeBeamReconstructionFilter();
-  virtual ~FourDSARTConeBeamReconstructionFilter() ITK_OVERRIDE {}
+  ~FourDSARTConeBeamReconstructionFilter() override = default;
 
-  void GenerateInputRequestedRegion() ITK_OVERRIDE;
+  void GenerateInputRequestedRegion() override;
 
-  void GenerateOutputInformation() ITK_OVERRIDE;
+  void GenerateOutputInformation() override;
 
-  void GenerateData() ITK_OVERRIDE;
+  void GenerateData() override;
 
   /** The two inputs should not be in the same space so there is nothing
    * to verify. */
 #if ITK_VERSION_MAJOR<5
-  void VerifyInputInformation() ITK_OVERRIDE {}
+  void VerifyInputInformation() override {}
 #else
-  void VerifyInputInformation() const ITK_OVERRIDE {}
+  void VerifyInputInformation() const override {}
 #endif
 
   /** Pointers to each subfilter of this composite filter */
@@ -249,10 +251,6 @@ private:
   /** Number of projections processed before the volume is updated (1 for SART,
    * several for OS-SART, all for SIRT) */
   unsigned int m_NumberOfProjectionsPerSubset;
-
-  //purposely not implemented
-  FourDSARTConeBeamReconstructionFilter(const Self&);
-  void operator=(const Self&);
 
   /** Geometry object */
   ThreeDCircularProjectionGeometry::Pointer m_Geometry;

@@ -27,29 +27,29 @@
 
 int main(int, char** )
 {
-  const unsigned int Dimension = 3;
+  constexpr unsigned int Dimension = 3;
 
 #ifdef USE_CUDA
-  typedef float                                        OutputPixelType;
-  typedef itk::CudaImage< OutputPixelType, Dimension > OutputImageType;
+  using OutputPixelType = float;
+  using OutputImageType = itk::CudaImage< OutputPixelType, Dimension >;
 #else
-  typedef double                                   OutputPixelType;
-  typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
+  using OutputPixelType = double;
+  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
 #endif
 
 #if FAST_TESTS_NO_CHECKS
-  const unsigned int NumberOfProjectionImages = 3;
+  constexpr unsigned int NumberOfProjectionImages = 3;
 #else
-  const unsigned int NumberOfProjectionImages = 60;
+  constexpr unsigned int NumberOfProjectionImages = 60;
 #endif
 
   // Random image sources
-  typedef itk::RandomImageSource< OutputImageType > RandomImageSourceType;
+  using RandomImageSourceType = itk::RandomImageSource< OutputImageType >;
   RandomImageSourceType::Pointer randomVolumeSource  = RandomImageSourceType::New();
   RandomImageSourceType::Pointer randomProjectionsSource = RandomImageSourceType::New();
 
   // Constant sources
-  typedef rtk::ConstantImageSource< OutputImageType > ConstantImageSourceType;
+  using ConstantImageSourceType = rtk::ConstantImageSource< OutputImageType >;
   ConstantImageSourceType::Pointer constantVolumeSource = ConstantImageSourceType::New();
   ConstantImageSourceType::Pointer constantProjectionsSource = ConstantImageSourceType::New();
   ConstantImageSourceType::Pointer constantAttenuationSource = ConstantImageSourceType::New();
@@ -141,7 +141,7 @@ int main(int, char** )
   TRY_AND_EXIT_ON_ITK_EXCEPTION( constantProjectionsSource->Update() );
 
   // Geometry object
-  typedef rtk::ThreeDCircularProjectionGeometry GeometryType;
+  using GeometryType = rtk::ThreeDCircularProjectionGeometry;
   GeometryType::Pointer geometry = GeometryType::New();
   for(unsigned int noProj=0; noProj<NumberOfProjectionImages; noProj++)
     geometry->AddProjection(600., 1200., noProj*360./NumberOfProjectionImages);
@@ -158,7 +158,7 @@ int main(int, char** )
 
       std::cout << "\n\n****** Joseph Forward projector ******" << std::endl;
 
-      typedef rtk::JosephForwardProjectionImageFilter<OutputImageType, OutputImageType> JosephForwardProjectorType;
+      using JosephForwardProjectorType = rtk::JosephForwardProjectionImageFilter<OutputImageType, OutputImageType>;
       JosephForwardProjectorType::Pointer fw = JosephForwardProjectorType::New();
       fw->SetInput(0, constantProjectionsSource->GetOutput());
       fw->SetInput(1, randomVolumeSource->GetOutput());
@@ -167,7 +167,7 @@ int main(int, char** )
 
       std::cout << "\n\n****** Joseph Back projector ******" << std::endl;
 
-      typedef rtk::JosephBackProjectionImageFilter<OutputImageType, OutputImageType> JosephBackProjectorType;
+      using JosephBackProjectorType = rtk::JosephBackProjectionImageFilter<OutputImageType, OutputImageType>;
       JosephBackProjectorType::Pointer bp = JosephBackProjectorType::New();
       bp->SetInput(0, constantVolumeSource->GetOutput());
       bp->SetInput(1, randomProjectionsSource->GetOutput());
@@ -178,7 +178,7 @@ int main(int, char** )
       CheckScalarProducts<OutputImageType, OutputImageType>(randomVolumeSource->GetOutput(), bp->GetOutput(), randomProjectionsSource->GetOutput(), fw->GetOutput());
       std::cout << "\n\nTest PASSED! " << std::endl;
 
-      typedef itk::Image<itk::Vector<OutputPixelType, 3>, Dimension> VectorImageType;
+      using VectorImageType = itk::Image<itk::Vector<OutputPixelType, 3>, Dimension>;
       VectorImageType::Pointer vectorRandomProjections = VectorImageType::New();
       VectorImageType::Pointer vectorConstantProjections = VectorImageType::New();
       VectorImageType::Pointer vectorRandomVolume = VectorImageType::New();
@@ -248,10 +248,9 @@ int main(int, char** )
 
       std::cout << "\n\n****** Joseph Vector Forward projector ******" << std::endl;
 
-      typedef rtk::JosephForwardProjectionImageFilter
+      using VectorJosephForwardProjectorType = rtk::JosephForwardProjectionImageFilter
       <VectorImageType,
-       VectorImageType>
-      VectorJosephForwardProjectorType;
+       VectorImageType>;
 
       VectorJosephForwardProjectorType::Pointer vfw = VectorJosephForwardProjectorType::New();
       vfw->SetInput(0, vectorConstantProjections);
@@ -260,8 +259,8 @@ int main(int, char** )
       TRY_AND_EXIT_ON_ITK_EXCEPTION( vfw->Update() );
 
       std::cout << "\n\n****** Joseph Vector Back projector ******" << std::endl;
-      typedef rtk::JosephBackProjectionImageFilter<VectorImageType,
-                                                   VectorImageType> VectorJosephBackProjectorType;
+      using VectorJosephBackProjectorType = rtk::JosephBackProjectionImageFilter<VectorImageType,
+                                                   VectorImageType>;
       VectorJosephBackProjectorType::Pointer vbp = VectorJosephBackProjectorType::New();
       vbp->SetInput(0, vectorConstantVolume);
       vbp->SetInput(1, vectorRandomProjections);
@@ -273,7 +272,7 @@ int main(int, char** )
 
       std::cout << "\n\n****** Attenuated Joseph Forward projector ******" << std::endl;
 
-      typedef rtk::JosephForwardAttenuatedProjectionImageFilter<OutputImageType, OutputImageType> JosephForwardAttenuatedProjectorType;
+      using JosephForwardAttenuatedProjectorType = rtk::JosephForwardAttenuatedProjectionImageFilter<OutputImageType, OutputImageType>;
       JosephForwardAttenuatedProjectorType::Pointer attfw = JosephForwardAttenuatedProjectorType::New();
       attfw->SetInput(0, constantProjectionsSource->GetOutput());
       attfw->SetInput(1, randomVolumeSource->GetOutput());
@@ -283,7 +282,7 @@ int main(int, char** )
 
       std::cout << "\n\n****** Attenuated Joseph Back projector ******" << std::endl;
 
-      typedef rtk::JosephBackAttenuatedProjectionImageFilter<OutputImageType, OutputImageType> JosephBackAttenuatedProjectorType;
+      using JosephBackAttenuatedProjectorType = rtk::JosephBackAttenuatedProjectionImageFilter<OutputImageType, OutputImageType>;
       JosephBackAttenuatedProjectorType::Pointer attbp = JosephBackAttenuatedProjectorType::New();
       attbp->SetInput(0, constantVolumeSource->GetOutput());
       attbp->SetInput(1, randomProjectionsSource->GetOutput());
@@ -299,7 +298,7 @@ int main(int, char** )
     #ifdef USE_CUDA
       std::cout << "\n\n****** Cuda Ray Cast Forward projector ******" << std::endl;
 
-      typedef rtk::CudaForwardProjectionImageFilter<OutputImageType, OutputImageType> CudaForwardProjectorType;
+      using CudaForwardProjectorType = rtk::CudaForwardProjectionImageFilter<OutputImageType, OutputImageType>;
       CudaForwardProjectorType::Pointer cfw = CudaForwardProjectorType::New();
       cfw->SetInput(0, constantProjectionsSource->GetOutput());
       cfw->SetInput(1, randomVolumeSource->GetOutput());
@@ -308,7 +307,7 @@ int main(int, char** )
 
       std::cout << "\n\n****** Cuda Ray Cast Back projector ******" << std::endl;
 
-      typedef rtk::CudaRayCastBackProjectionImageFilter CudaRayCastBackProjectorType;
+      using CudaRayCastBackProjectorType = rtk::CudaRayCastBackProjectionImageFilter;
       CudaRayCastBackProjectorType::Pointer cbp = CudaRayCastBackProjectorType::New();
       cbp->SetInput(0, constantVolumeSource->GetOutput());
       cbp->SetInput(1, randomProjectionsSource->GetOutput());

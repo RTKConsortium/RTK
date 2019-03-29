@@ -46,11 +46,13 @@ class RTK_EXPORT CudaSplatImageFilter :
 
 {
 public:
-  /** Standard class typedefs. */
-  typedef rtk::CudaSplatImageFilter                             Self;
-  typedef rtk::SplatWithKnownWeightsImageFilter< OutputImageType, InputImageType > Superclass;
-  typedef itk::SmartPointer<Self>                            Pointer;
-  typedef itk::SmartPointer<const Self>                      ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(CudaSplatImageFilter);
+
+  /** Standard class type alias. */
+  using Self = rtk::CudaSplatImageFilter;
+  using Superclass = rtk::SplatWithKnownWeightsImageFilter< OutputImageType, InputImageType >;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
   /** Standard New method. */
   itkNewMacro(Self)
@@ -64,10 +66,6 @@ protected:
   }
 
   virtual void GPUGenerateData();
-
-private:
-  CudaSplatImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);         //purposely not implemented
 
 }; // end of class
 

@@ -29,18 +29,18 @@ int main(int argc, char * argv[])
 {
   GGO(rtkamsterdamshroud, args_info);
 
-  typedef double OutputPixelType;
-  const unsigned int Dimension = 3;
+  using OutputPixelType = double;
+  constexpr unsigned int Dimension = 3;
 
-  typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
+  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
 
   // Projections reader
-  typedef rtk::ProjectionsReader< OutputImageType > ReaderType;
+  using ReaderType = rtk::ProjectionsReader< OutputImageType >;
   ReaderType::Pointer reader = ReaderType::New();
   rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkamsterdamshroud>(reader, args_info);
 
   // Amsterdam shroud
-  typedef rtk::AmsterdamShroudImageFilter<OutputImageType> ShroudFilterType;
+  using ShroudFilterType = rtk::AmsterdamShroudImageFilter<OutputImageType>;
   ShroudFilterType::Pointer shroudFilter = ShroudFilterType::New();
   shroudFilter->SetInput( reader->GetOutput() );
   shroudFilter->SetUnsharpMaskSize(args_info.unsharp_arg);
@@ -81,7 +81,7 @@ int main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION( shroudFilter->UpdateOutputInformation() )
 
   // Write
-  typedef itk::ImageFileWriter< ShroudFilterType::OutputImageType > WriterType;
+  using WriterType = itk::ImageFileWriter< ShroudFilterType::OutputImageType >;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
   writer->SetInput( shroudFilter->GetOutput() );

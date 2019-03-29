@@ -32,18 +32,18 @@ int main(int argc, char * argv[])
 {
   GGO(rtkdrawshepploganphantom, args_info);
 
-  typedef float OutputPixelType;
-  const unsigned int Dimension = 3;
+  using OutputPixelType = float;
+  constexpr unsigned int Dimension = 3;
 
-  typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
+  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
 
   // Create a stack of empty projection images
-  typedef rtk::ConstantImageSource< OutputImageType > ConstantImageSourceType;
+  using ConstantImageSourceType = rtk::ConstantImageSource< OutputImageType >;
   ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
   rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkdrawshepploganphantom>(constantImageSource, args_info);
 
   // Create a reference object (in this case a 3D phantom reference).
-  typedef rtk::DrawSheppLoganFilter<OutputImageType, OutputImageType> DSLType;
+  using DSLType = rtk::DrawSheppLoganFilter<OutputImageType, OutputImageType>;
   DSLType::VectorType offset(0.);
   DSLType::VectorType scale;
   for(unsigned int i=0; i<std::min(args_info.offset_given, Dimension); i++)
@@ -61,7 +61,7 @@ int main(int argc, char * argv[])
   OutputImageType::Pointer output = dsl->GetOutput();
   if(args_info.noise_given)
     {
-    typedef rtk::AdditiveGaussianNoiseImageFilter< OutputImageType > NIFType;
+    using NIFType = rtk::AdditiveGaussianNoiseImageFilter< OutputImageType >;
     NIFType::Pointer noisy=NIFType::New();
     noisy->SetInput( output );
     noisy->SetMean( 0.0 );
@@ -71,7 +71,7 @@ int main(int argc, char * argv[])
     }
 
   // Write
-  typedef itk::ImageFileWriter< OutputImageType > WriterType;
+  using WriterType = itk::ImageFileWriter< OutputImageType >;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
   writer->SetInput( output );

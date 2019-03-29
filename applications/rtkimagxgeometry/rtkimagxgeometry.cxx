@@ -26,9 +26,9 @@ int main(int argc, char * argv[])
   GGO(rtkimagxgeometry, args_info);
 
   // Image Type
-  typedef float OutputPixelType;
-  const unsigned int Dimension = 3;
-  typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
+  using OutputPixelType = float;
+  constexpr unsigned int Dimension = 3;
+  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
 
   // Create geometry reader
   rtk::ImagXGeometryReader<OutputImageType>::Pointer imagxReader = rtk::ImagXGeometryReader<OutputImageType>::New();

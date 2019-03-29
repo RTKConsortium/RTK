@@ -13,11 +13,11 @@ void CheckImageQuality(typename TImage::Pointer itkNotUsed(recon), typename TIma
 #else
 void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer ref)
 {
-  typedef itk::ImageRegionConstIterator<TImage> ImageIteratorType;
+  using ImageIteratorType = itk::ImageRegionConstIterator<TImage>;
   ImageIteratorType itTest( recon, recon->GetBufferedRegion() );
   ImageIteratorType itRef( ref, ref->GetBufferedRegion() );
 
-  typedef double ErrorType;
+  using ErrorType = double;
   ErrorType TestError = 0.;
   ErrorType EnerError = 0.;
 
@@ -75,12 +75,12 @@ void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer 
 
 int main(int, char** )
 {
-  typedef float OutputPixelType;
-  const unsigned int Dimension = 3;
+  using OutputPixelType = float;
+  constexpr unsigned int Dimension = 3;
 
-  typedef itk::Image< OutputPixelType, Dimension >     OutputImageType;
+  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
   // Random image sources
-  typedef itk::RandomImageSource< OutputImageType > RandomImageSourceType;
+  using RandomImageSourceType = itk::RandomImageSource< OutputImageType >;
   RandomImageSourceType::Pointer randomVolumeSource  = RandomImageSourceType::New();
 
   // Image meta data

@@ -299,8 +299,8 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
     m_AverageOutOfROIFilter->SetROI(m_ResampleFilter->GetOutput());
 
     // Set the resample filter
-    typedef itk::IdentityTransform<double, Dimension> TransformType;
-    typedef itk::NearestNeighborInterpolateImageFunction<VolumeType, double> InterpolatorType;
+    using TransformType = itk::IdentityTransform<double, Dimension>;
+    using InterpolatorType = itk::NearestNeighborInterpolateImageFunction<VolumeType, double>;
     m_ResampleFilter->SetInterpolator(InterpolatorType::New());
     m_ResampleFilter->SetTransform(TransformType::New());
     typename VolumeType::SizeType VolumeSize;

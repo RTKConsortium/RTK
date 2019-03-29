@@ -55,12 +55,13 @@ class LagCorrectionImageFilter
 : public itk::InPlaceImageFilter < TImage, TImage >
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(LagCorrectionImageFilter);
 
-  /** Standard class typedefs. */
-  typedef LagCorrectionImageFilter                   Self;
-  typedef itk::InPlaceImageFilter< TImage, TImage >  Superclass;
-  typedef itk::SmartPointer< Self >                  Pointer;
-  typedef itk::SmartPointer< const Self >            ConstPointer;
+  /** Standard class type alias. */
+  using Self = LagCorrectionImageFilter;
+  using Superclass = itk::InPlaceImageFilter< TImage, TImage >;
+  using Pointer = itk::SmartPointer< Self >;
+  using ConstPointer = itk::SmartPointer< const Self >;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self)
@@ -68,13 +69,13 @@ public:
   /** Run-time type information (and related methods). */
   itkTypeMacro(LagCorrectionImageFilter, ImageToImageFilter)
 
-  typedef typename TImage::RegionType                  ImageRegionType;
-  typedef typename TImage::SizeType                    ImageSizeType;
-  typedef typename TImage::PixelType                   PixelType;
-  typedef typename TImage::IndexType                   IndexType;
-  typedef typename itk::Vector<float, ModelOrder>      VectorType;
-  typedef typename std::vector<float>                  FloatVectorType;
-  typedef typename TImage::RegionType                  OutputImageRegionType;
+  using ImageRegionType = typename TImage::RegionType;
+  using ImageSizeType = typename TImage::SizeType;
+  using PixelType = typename TImage::PixelType;
+  using IndexType = typename TImage::IndexType;
+  using VectorType = typename itk::Vector<float, ModelOrder>;
+  using FloatVectorType = typename std::vector<float>;
+  using OutputImageRegionType = typename TImage::RegionType;
 
   /** Get / Set the model parameters A and B*/
   itkGetMacro(A, VectorType)
@@ -93,18 +94,18 @@ public:
 
 protected:
   LagCorrectionImageFilter();
-  virtual ~LagCorrectionImageFilter() ITK_OVERRIDE {}
+  ~LagCorrectionImageFilter() override = default;
 
-  void GenerateOutputInformation() ITK_OVERRIDE;
+  void GenerateOutputInformation() override;
 
-  void GenerateInputRequestedRegion() ITK_OVERRIDE;
+  void GenerateInputRequestedRegion() override;
 
-  void ThreadedGenerateData(const ImageRegionType & outputRegionForThread, itk::ThreadIdType threadId) ITK_OVERRIDE;
+  void ThreadedGenerateData(const ImageRegionType & outputRegionForThread, itk::ThreadIdType threadId) override;
 
   /** The correction is applied along the third (stack) dimension.
       Therefore, we must avoid splitting along the stack.
       The split is done along the second dimension. */
-  unsigned int SplitRequestedRegion(unsigned int i, unsigned int num, OutputImageRegionType& splitRegion) ITK_OVERRIDE;
+  unsigned int SplitRequestedRegion(unsigned int i, unsigned int num, OutputImageRegionType& splitRegion) override;
   virtual int SplitRequestedRegion(int i, int num, OutputImageRegionType& splitRegion);
 
   VectorType m_A;           // a_n coefficients (lag rates)
@@ -116,9 +117,6 @@ protected:
   FloatVectorType m_S;                      // State variable
 
 private:
-  LagCorrectionImageFilter(const Self &); // purposely not implemented
-  void operator=(const Self &);           // purposely not implemented
-
   bool            m_NewParamJustReceived;   // For state/correction initialization
   IndexType       m_StartIdx;               // To account for cropping
 };

@@ -37,18 +37,20 @@ namespace rtk {
 class RTK_EXPORT XRadImageIOFactory : public itk::ObjectFactoryBase
 {
 public:
-  /** Standard class typedefs. */
-  typedef XRadImageIOFactory            Self;
-  typedef itk::ObjectFactoryBase        Superclass;
-  typedef itk::SmartPointer<Self>       Pointer;
-  typedef itk::SmartPointer<const Self> ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(XRadImageIOFactory);
+
+  /** Standard class type alias. */
+  using Self = XRadImageIOFactory;
+  using Superclass = itk::ObjectFactoryBase;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
   /** Class methods used to interface with the registered factories. */
-  const char* GetITKSourceVersion(void) const ITK_OVERRIDE {
+  const char* GetITKSourceVersion(void) const override {
     return ITK_SOURCE_VERSION;
   }
 
-  const char* GetDescription(void) const ITK_OVERRIDE {
+  const char* GetDescription(void) const override {
     return "XRad ImageIO Factory, allows the loading of XRad images into insight";
   }
 
@@ -65,13 +67,10 @@ public:
 
 protected:
   XRadImageIOFactory();
-  virtual ~XRadImageIOFactory() ITK_OVERRIDE {}
+  ~XRadImageIOFactory() override = default;
 
-  typedef XRadImageIOFactory myProductType;
+  using myProductType = XRadImageIOFactory;
   const myProductType* m_MyProduct;
-private:
-  XRadImageIOFactory(const Self&); //purposely not implemented
-  void operator=(const Self&);    //purposely not implemented
 
 };
 

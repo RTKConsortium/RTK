@@ -45,11 +45,13 @@ class RTK_EXPORT CudaInterpolateImageFilter :
     InterpolatorWithKnownWeightsImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,4> > >
 {
 public:
-  /** Standard class typedefs. */
-  typedef rtk::CudaInterpolateImageFilter                             Self;
-  typedef rtk::InterpolatorWithKnownWeightsImageFilter< OutputImageType, InputImageType > Superclass;
-  typedef itk::SmartPointer<Self>                            Pointer;
-  typedef itk::SmartPointer<const Self>                      ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(CudaInterpolateImageFilter);
+
+  /** Standard class type alias. */
+  using Self = rtk::CudaInterpolateImageFilter;
+  using Superclass = rtk::InterpolatorWithKnownWeightsImageFilter< OutputImageType, InputImageType >;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
   /** Standard New method. */
   itkNewMacro(Self)
@@ -63,10 +65,6 @@ protected:
   }
 
   virtual void GPUGenerateData();
-
-private:
-  CudaInterpolateImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);         //purposely not implemented
 
 }; // end of class
 

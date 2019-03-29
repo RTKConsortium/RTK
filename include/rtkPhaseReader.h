@@ -34,11 +34,13 @@ namespace rtk
 class ITK_EXPORT PhaseReader:public itk::CSVFileReaderBase
 {
 public:
-    /** Standard class typedefs */
-    typedef PhaseReader                     Self;
-    typedef CSVFileReaderBase               Superclass;
-    typedef itk::SmartPointer<Self>         Pointer;
-    typedef itk::SmartPointer<const Self>   ConstPointer;
+    ITK_DISALLOW_COPY_AND_ASSIGN(PhaseReader);
+
+    /** Standard class type alias */
+    using Self = PhaseReader;
+    using Superclass = CSVFileReaderBase;
+    using Pointer = itk::SmartPointer<Self>;
+    using ConstPointer = itk::SmartPointer<const Self>;
 
     /** Standard New method. */
     itkNewMacro(Self)
@@ -47,11 +49,11 @@ public:
     itkTypeMacro(Self,Superclass)
 
     /** The value type of the dataset. */
-    typedef float ValueType;
+    using ValueType = float;
 
     /** Parses the data from the file. Gets the phases of the projections
   * into a vector, then generate an Array2D object containing the interpolation weights  */
-    void Parse() ITK_OVERRIDE;
+    void Parse() override;
 
     /** Aliased to the Parse() method to be consistent with the rest of the
    * pipeline. */
@@ -64,17 +66,14 @@ public:
 protected:
 
     PhaseReader();
-    virtual ~PhaseReader () ITK_OVERRIDE {}
+    ~PhaseReader () override = default;
 
     /** Print the reader. */
-    void PrintSelf(std::ostream & os, itk::Indent indent) const ITK_OVERRIDE;
+    void PrintSelf(std::ostream & os, itk::Indent indent) const override;
 
 private:
 
     std::vector<float> m_Phases;
-
-    PhaseReader(const Self &);  //purposely not implemented
-    void operator=(const Self &);          //purposely not implemented
 };
 
 } //end namespace rtk

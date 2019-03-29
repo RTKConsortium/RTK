@@ -41,9 +41,9 @@ bool
 IntersectionOfConvexShapes
 ::IsInside(const PointType& point) const
 {
-  for(size_t i=0; i<m_ConvexShapes.size(); i++)
+  for(const auto & convexShape : m_ConvexShapes)
     {
-    if( !m_ConvexShapes[i]->IsInside(point) )
+    if( !convexShape->IsInside(point) )
       return false;
     }
   return true;
@@ -58,10 +58,10 @@ IntersectionOfConvexShapes
 {
   nearDist = itk::NumericTraits< ScalarType >::NonpositiveMin();
   farDist = itk::NumericTraits< ScalarType >::max();
-  for(size_t i=0; i<m_ConvexShapes.size(); i++)
+  for(const auto & convexShape : m_ConvexShapes)
     {
     ScalarType n, f;
-    if( !m_ConvexShapes[i]->IsIntersectedByRay(rayOrigin, rayDirection, n, f) )
+    if( !convexShape->IsIntersectedByRay(rayOrigin, rayDirection, n, f) )
       return false;
     nearDist = std::max(nearDist, n);
     farDist = std::min(farDist, f);
@@ -76,8 +76,8 @@ IntersectionOfConvexShapes
 ::Rescale(const VectorType &r)
 {
   Superclass::Rescale(r);
-  for(size_t i=0; i<m_ConvexShapes.size(); i++)
-    m_ConvexShapes[i]->Rescale(r);
+  for(auto & convexShape : m_ConvexShapes)
+    convexShape->Rescale(r);
 }
 
 void
@@ -85,8 +85,8 @@ IntersectionOfConvexShapes
 ::Translate(const VectorType &t)
 {
   Superclass::Translate(t);
-  for(size_t i=0; i<m_ConvexShapes.size(); i++)
-    m_ConvexShapes[i]->Translate(t);
+  for(auto & convexShape : m_ConvexShapes)
+    convexShape->Translate(t);
 }
 
 void
@@ -94,8 +94,8 @@ IntersectionOfConvexShapes
 ::Rotate(const RotationMatrixType &r)
 {
   Superclass::Rotate(r);
-  for(size_t i=0; i<m_ConvexShapes.size(); i++)
-    m_ConvexShapes[i]->Rotate(r);
+  for(auto & convexShape : m_ConvexShapes)
+    convexShape->Rotate(r);
 }
 
 void

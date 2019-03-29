@@ -31,12 +31,12 @@ int main(int argc, char * argv[])
 {
   GGO(rtksubselect, args_info);
 
-  typedef float OutputPixelType;
-  const unsigned int Dimension = 3;
-  typedef itk::Image< OutputPixelType, Dimension > OutputImageType;
+  using OutputPixelType = float;
+  constexpr unsigned int Dimension = 3;
+  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
 
   // Projections reader
-  typedef rtk::ProjectionsReader< OutputImageType > ReaderType;
+  using ReaderType = rtk::ProjectionsReader< OutputImageType >;
   ReaderType::Pointer reader = ReaderType::New();
   rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtksubselect>(reader, args_info);
   TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->Update() )
@@ -69,11 +69,11 @@ int main(int argc, char * argv[])
       }
 
   // Output RTK geometry object
-  typedef rtk::ThreeDCircularProjectionGeometry GeometryType;
+  using GeometryType = rtk::ThreeDCircularProjectionGeometry;
   GeometryType::Pointer outputGeometry = GeometryType::New();
 
   // Output projections object
-  typedef rtk::ConstantImageSource< OutputImageType > SourceType;
+  using SourceType = rtk::ConstantImageSource< OutputImageType >;
   SourceType::Pointer source = SourceType::New();
   source->SetInformationFromImage(reader->GetOutput());
   OutputImageType::SizeType outputSize = reader->GetOutput()->GetLargestPossibleRegion().GetSize();
@@ -83,7 +83,7 @@ int main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION( source->Update() )
 
   // Fill in the outputGeometry and the output projections
-  typedef itk::PasteImageFilter<OutputImageType> PasteType;
+  using PasteType = itk::PasteImageFilter<OutputImageType>;
   PasteType::Pointer paste = PasteType::New();
   paste->SetSourceImage(reader->GetOutput());
   paste->SetDestinationImage(source->GetOutput());
@@ -142,7 +142,7 @@ int main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION( xmlWriter->WriteFile() )
 
   // Write
-  typedef itk::ImageFileWriter<  OutputImageType > WriterType;
+  using WriterType = itk::ImageFileWriter<  OutputImageType >;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.out_proj_arg );
   writer->SetInput( paste->GetOutput() );

@@ -65,19 +65,19 @@ ImagXGeometryReader<TInputImage>::GetGeometryForAI2p1()
   bool FPOffsetfFound = false;
   bool gantryParametersFound = false;
   itk::DOMNode::AttributesListType list;
-  for (unsigned int i = 0; i < list_child.size(); i++)
+  for (const auto & child : list_child)
     {
-    std::string tagName = list_child[i]->GetName();
+    std::string tagName = child->GetName();
 
     // 1. From all available arcs, find the active one
     if (!tagName.compare("arc") && !arcFound)
       {
       list.clear();
-      list_child[i]->GetAllAttributes(list);
-      for (list_it = list.begin(); list_it != list.end(); list_it++)
+      child->GetAllAttributes(list);
+      for (const auto & list_it : list)
         {
-        std::string subTagName = (*list_it).first.c_str();
-        std::string tagValue = (*list_it).second.c_str();
+        std::string subTagName = list_it.first.c_str();
+        std::string tagValue = list_it.second.c_str();
         if (!subTagName.compare("name") ) {
           F.activeArcName = tagValue;
           }
@@ -98,11 +98,11 @@ ImagXGeometryReader<TInputImage>::GetGeometryForAI2p1()
       bool xPlusFound = false;
       bool xMinusFound = false;
       list.clear();
-      list_child[i]->GetAllAttributes(list);
-      for (list_it = list.begin(); list_it != list.end(); list_it++)
+      child->GetAllAttributes(list);
+      for (const auto & list_it : list)
         {
-        std::string subTagName = (*list_it).first.c_str();
-        std::string tagValue = (*list_it).second.c_str();
+        std::string subTagName = list_it.first.c_str();
+        std::string tagValue = list_it.second.c_str();
         if (!subTagName.compare("xPlus") ) {
           F.xPlus = std::atof(tagValue.c_str() );
           xPlusFound = true;
@@ -124,11 +124,11 @@ ImagXGeometryReader<TInputImage>::GetGeometryForAI2p1()
       bool sadFound = false;
       bool angleOffsetFound = false;
       list.clear();
-      list_child[i]->GetAllAttributes(list);
-      for (list_it = list.begin(); list_it != list.end(); list_it++)
+      child->GetAllAttributes(list);
+      for (const auto & list_it : list)
         {
-        std::string subTagName = (*list_it).first.c_str();
-        std::string subTagValue = (*list_it).second.c_str();
+        std::string subTagName = list_it.first.c_str();
+        std::string subTagValue = list_it.second.c_str();
         if (!subTagName.compare("sid") )
           {
           F.sdd = std::atof(subTagValue.c_str() );
@@ -165,19 +165,19 @@ ImagXGeometryReader<TInputImage>::GetGeometryForAI2p1()
       }
 
     // Get flexmap
-    for (unsigned int i = 0; i < list_child.size(); i++)
+    for (const auto & child : list_child)
       {
-      if (list_child[i]->GetName() == "geometricalCalibrationModels")
+      if (child->GetName() == "geometricalCalibrationModels")
         {
         itk::DOMNode::ConstChildrenListType list_geocals;
-        list_child[i]->GetAllChildren(list_geocals);
+        child->GetAllChildren(list_geocals);
 
-        for (unsigned int gid = 0; gid < list_geocals.size(); gid++)
+        for (const auto & list_geocal : list_geocals)
           {
-          if (list_geocals[gid]->GetName() == "geoCalModel")
+          if (list_geocal->GetName() == "geoCalModel")
             {
             list.clear();
-            list_geocals[gid]->GetAllAttributes(list);
+            list_geocal->GetAllAttributes(list);
             for (list_it = list.begin(); list_it != list.end(); list_it++)
               {
               std::string tagName = (*list_it).first.c_str();
@@ -191,11 +191,11 @@ ImagXGeometryReader<TInputImage>::GetGeometryForAI2p1()
           if (flexmapFoundAndLoaded)
             {
             itk::DOMNode::ConstChildrenListType list_flexmap;
-            list_geocals[gid]->GetAllChildren(list_flexmap);
+            list_geocal->GetAllChildren(list_flexmap);
 
-            for (unsigned int flist_id = 0; flist_id < list_flexmap.size(); flist_id++)
+            for (const auto & flexmap : list_flexmap)
               {
-              std::string str = dynamic_cast<const itk::DOMTextNode*>(list_flexmap[flist_id])->GetText();
+              std::string str = dynamic_cast<const itk::DOMTextNode*>(flexmap)->GetText();
               std::stringstream iss(str);
               std::vector<float> v;
               while (iss.good() )
@@ -221,7 +221,7 @@ ImagXGeometryReader<TInputImage>::GetGeometryForAI2p1()
             flexmapFoundAndLoaded = false; // One flexmap already loaded
             }
 
-          if (F.anglesDeg.size() == 0) {
+          if (F.anglesDeg.empty()) {
             flexmapFoundAndLoaded = false;
             }
           }
@@ -260,7 +260,7 @@ ImagXGeometryReader<TInputImage>::GetGeometryForAI1p5()
   dynamic_cast<itk::GDCMImageIO*>(imageIO.GetPointer() )->LoadPrivateTagsOn();
 
   // Define, create and set projection reader
-  typedef itk::ImageFileReader< TInputImage > ReaderType;
+  using ReaderType = itk::ImageFileReader< TInputImage >;
   typename ReaderType::Pointer reader = ReaderType::New();
   reader->SetImageIO(imageIO);
   reader->SetFileName(m_ProjectionsFileNames[0]);
@@ -345,9 +345,9 @@ ImagXGeometryReader<TInputImage>::GetGeometryForAI1p5FromXMLFiles()
   itk::DOMNode::ConstChildrenListType list_child;
   XMLFile->GetAllChildren(list_child);
 
-  for (unsigned int i = 0; i < list_child.size(); i++)
+  for (const auto & child : list_child)
     {
-    list_child[i]->GetAllAttributes(list);
+    child->GetAllAttributes(list);
     unsigned int k = 0;
     for (list_it = list.begin(); list_it != list.end(); list_it++, k++)
       {
@@ -359,11 +359,11 @@ ImagXGeometryReader<TInputImage>::GetGeometryForAI1p5FromXMLFiles()
     if (axisName == std::string("CBCT") )
       {
       itk::DOMNode::ConstChildrenListType list_child2;
-      list_child[i]->GetAllChildren(list_child2);
-      for (unsigned int l = 0; l < list_child2.size(); l++)
+      child->GetAllChildren(list_child2);
+      for (const auto & child2 : list_child2)
         {
         itk::DOMNode::ConstChildrenListType list_child3;
-        list_child2[l]->GetAllChildren(list_child3);
+        child2->GetAllChildren(list_child3);
         unsigned int p = 0;
         for (unsigned int n = 0; n < list_child3.size(); n++, p++)
           {
@@ -414,9 +414,9 @@ ImagXGeometryReader<TInputImage>::GetGeometryForAI1p5FromXMLFiles()
   XMLFile = readerXML->GetOutput();
   XMLFile->GetAllChildren(list_child);
 
-  for (unsigned int i = 0; i < list_child.size(); i++)
+  for (const auto & child : list_child)
     {
-    list_child[i]->GetAllAttributes(list);
+    child->GetAllAttributes(list);
     unsigned int k = 0;
     for (list_it = list.begin(); list_it != list.end(); list_it++, k++)
       {
@@ -428,11 +428,11 @@ ImagXGeometryReader<TInputImage>::GetGeometryForAI1p5FromXMLFiles()
     if (axisName == std::string("CBCT") )
       {
       itk::DOMNode::ConstChildrenListType list_child2;
-      list_child[i]->GetAllChildren(list_child2);
-      for (unsigned int l = 0; l < list_child2.size(); l++)
+      child->GetAllChildren(list_child2);
+      for (const auto & child2 : list_child2)
         {
         itk::DOMNode::AttributesListType list2;
-        list_child2[l]->GetAllAttributes(list2);
+        child2->GetAllAttributes(list2);
         for (list_it = list2.begin(); list_it != list2.end(); list_it++, k++)
           {
           if ( (*list_it).first.c_str() == std::string("sdd") )
@@ -460,7 +460,7 @@ std::string ImagXGeometryReader<TInputImage>::getAIversion()
   dynamic_cast<itk::GDCMImageIO*>(imageIO.GetPointer() )->LoadPrivateTagsOn();
 
   // Define, create and set projection reader
-  typedef itk::ImageFileReader< TInputImage > ReaderType;
+  using ReaderType = itk::ImageFileReader< TInputImage >;
   typename ReaderType::Pointer reader = ReaderType::New();
   reader->SetImageIO(imageIO);
   reader->SetFileName(m_ProjectionsFileNames[0]);
@@ -522,7 +522,7 @@ void ImagXGeometryReader<TInputImage>::GenerateData()
     {
     itk::ImageIOBase::Pointer imageIO = itk::ImageIOFactory::CreateImageIO(
         m_ProjectionsFileNames[0].c_str(), itk::ImageIOFactory::ReadMode);
-    typedef itk::ImageFileReader< TInputImage > ReaderType;
+    using ReaderType = itk::ImageFileReader< TInputImage >;
     typename ReaderType::Pointer reader = ReaderType::New();
     reader->SetFileName(m_ProjectionsFileNames[noProj]);
     imageIO = itk::GDCMImageIO::New();

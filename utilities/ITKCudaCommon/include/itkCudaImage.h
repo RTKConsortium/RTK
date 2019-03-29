@@ -39,47 +39,47 @@ template <class TPixel, unsigned int VImageDimension = 2>
 class ITK_EXPORT CudaImage : public Image<TPixel,VImageDimension>
 {
 public:
-  typedef CudaImage                     Self;
-  typedef Image<TPixel,VImageDimension> Superclass;
-  typedef SmartPointer<Self>            Pointer;
-  typedef SmartPointer<const Self>      ConstPointer;
-  typedef WeakPointer<const Self>       ConstWeakPointer;
+  using Self = CudaImage;
+  using Superclass = Image<TPixel,VImageDimension>;
+  using Pointer = SmartPointer<Self>;
+  using ConstPointer = SmartPointer<const Self>;
+  using ConstWeakPointer = WeakPointer<const Self>;
 
   itkNewMacro(Self);
 
   itkTypeMacro(CudaImage, Image);
 
-  itkStaticConstMacro(ImageDimension, unsigned int, VImageDimension);
+  static constexpr unsigned int ImageDimension = VImageDimension;
 
-  typedef typename Superclass::PixelType         PixelType;
-  typedef typename Superclass::ValueType         ValueType;
-  typedef typename Superclass::InternalPixelType InternalPixelType;
-  typedef typename Superclass::IOPixelType       IOPixelType;
-  typedef typename Superclass::DirectionType     DirectionType;
-  typedef typename Superclass::SpacingType       SpacingType;
-  typedef typename Superclass::PixelContainer    PixelContainer;
-  typedef typename Superclass::SizeType          SizeType;
-  typedef typename Superclass::IndexType         IndexType;
-  typedef typename Superclass::OffsetType        OffsetType;
-  typedef typename Superclass::RegionType        RegionType;
-  typedef typename PixelContainer::Pointer       PixelContainerPointer;
-  typedef typename PixelContainer::ConstPointer  PixelContainerConstPointer;
-  typedef typename Superclass::AccessorType      AccessorType;
+  using PixelType = typename Superclass::PixelType;
+  using ValueType = typename Superclass::ValueType;
+  using InternalPixelType = typename Superclass::InternalPixelType;
+  using IOPixelType = typename Superclass::IOPixelType;
+  using DirectionType = typename Superclass::DirectionType;
+  using SpacingType = typename Superclass::SpacingType;
+  using PixelContainer = typename Superclass::PixelContainer;
+  using SizeType = typename Superclass::SizeType;
+  using IndexType = typename Superclass::IndexType;
+  using OffsetType = typename Superclass::OffsetType;
+  using RegionType = typename Superclass::RegionType;
+  using PixelContainerPointer = typename PixelContainer::Pointer;
+  using PixelContainerConstPointer = typename PixelContainer::ConstPointer;
+  using AccessorType = typename Superclass::AccessorType;
 
-  typedef unsigned long                         ModifiedTimeType;
-  typedef DefaultPixelAccessorFunctor< Self >   AccessorFunctorType;
+  using ModifiedTimeType = unsigned long;
+  using AccessorFunctorType = DefaultPixelAccessorFunctor< Self >;
 
-  typedef NeighborhoodAccessorFunctor< Self >   NeighborhoodAccessorFunctorType;
+  using NeighborhoodAccessorFunctorType = NeighborhoodAccessorFunctor< Self >;
 
   /**
    * example usage:
-   * typedef typename ImageType::template Rebind< float >::Type OutputImageType;
+   * using OutputImageType = typename ImageType::template Rebind< float >::Type;
    *
    */
   template <typename UPixelType, unsigned int UImageDimension = VImageDimension>
   struct Rebind
     {
-      typedef itk::CudaImage<UPixelType, UImageDimension>  Type;
+      using Type = itk::CudaImage<UPixelType, UImageDimension>;
     };
 
   //
@@ -201,10 +201,10 @@ private:
 class CudaImageFactory : public itk::ObjectFactoryBase
 {
 public:
-  typedef CudaImageFactory              Self;
-  typedef itk::ObjectFactoryBase        Superclass;
-  typedef itk::SmartPointer<Self>       Pointer;
-  typedef itk::SmartPointer<const Self> ConstPointer;
+  using Self = CudaImageFactory;
+  using Superclass = itk::ObjectFactoryBase;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
   /** Class methods used to interface with the registered factories. */
   virtual const char* GetITKSourceVersion() const {
@@ -273,14 +273,14 @@ template <class T>
 class CudaTraits
 {
 public:
-  typedef T Type;
+  using Type = T;
 };
 
 template <class TPixelType, unsigned int NDimension>
 class CudaTraits< Image< TPixelType, NDimension > >
 {
 public:
-  typedef CudaImage<TPixelType,NDimension> Type;
+  using Type = CudaImage<TPixelType,NDimension>;
 };
 
 } // end namespace itk

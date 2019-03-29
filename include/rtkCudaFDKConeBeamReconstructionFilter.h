@@ -51,16 +51,18 @@ class RTK_EXPORT CudaFDKConeBeamReconstructionFilter :
   FDKConeBeamReconstructionFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>, float > >
 {
 public:
-  /** Standard class typedefs. */
-  typedef CudaFDKConeBeamReconstructionFilter                                                        Self;
-  typedef FDKConeBeamReconstructionFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>, float > Superclass;
-  typedef itk::SmartPointer<Self>                                                                    Pointer;
-  typedef itk::SmartPointer<const Self>                                                              ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(CudaFDKConeBeamReconstructionFilter);
+
+  /** Standard class type alias. */
+  using Self = CudaFDKConeBeamReconstructionFilter;
+  using Superclass = FDKConeBeamReconstructionFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>, float >;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
   /** Typedefs of subfilters which have been implemented with CUDA */
-  typedef rtk::CudaFDKWeightProjectionFilter    WeightFilterType;
-  typedef rtk::CudaFFTRampImageFilter           RampFilterType;
-  typedef rtk::CudaFDKBackProjectionImageFilter BackProjectionFilterType;
+  using WeightFilterType = rtk::CudaFDKWeightProjectionFilter;
+  using RampFilterType = rtk::CudaFFTRampImageFilter;
+  using BackProjectionFilterType = rtk::CudaFDKBackProjectionImageFilter;
 
   /** Standard New method. */
   itkNewMacro(Self);
@@ -74,10 +76,6 @@ protected:
 
   virtual void GPUGenerateData();
 
-private:
-  //purposely not implemented
-  CudaFDKConeBeamReconstructionFilter(const Self&);
-  void operator=(const Self&);
 }; // end of class
 
 } // end namespace rtk

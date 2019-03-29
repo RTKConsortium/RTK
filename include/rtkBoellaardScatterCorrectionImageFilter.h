@@ -41,16 +41,18 @@ class ITK_EXPORT BoellaardScatterCorrectionImageFilter :
   public itk::InPlaceImageFilter<TInputImage, TOutputImage>
 {
 public:
-  /** Standard class typedefs. */
-  typedef BoellaardScatterCorrectionImageFilter              Self;
-  typedef itk::ImageToImageFilter<TInputImage, TOutputImage> Superclass;
-  typedef itk::SmartPointer<Self>                            Pointer;
-  typedef itk::SmartPointer<const Self>                      ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(BoellaardScatterCorrectionImageFilter);
 
-  /** Some convenient typedefs. */
-  typedef TInputImage                                     InputImageType;
-  typedef TOutputImage                                    OutputImageType;
-  typedef typename OutputImageType::RegionType            OutputImageRegionType;
+  /** Standard class type alias. */
+  using Self = BoellaardScatterCorrectionImageFilter;
+  using Superclass = itk::ImageToImageFilter<TInputImage, TOutputImage>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
+
+  /** Some convenient type alias. */
+  using InputImageType = TInputImage;
+  using OutputImageType = TOutputImage;
+  using OutputImageRegionType = typename OutputImageType::RegionType;
 
   /** Standard New method. */
   itkNewMacro(Self);
@@ -76,22 +78,19 @@ public:
 
 protected:
   BoellaardScatterCorrectionImageFilter();
-  virtual ~BoellaardScatterCorrectionImageFilter() ITK_OVERRIDE {}
+  ~BoellaardScatterCorrectionImageFilter() override = default;
 
   /** Requires full projection images to estimate scatter */
-  void EnlargeOutputRequestedRegion(itk::DataObject *itkNotUsed(output)) ITK_OVERRIDE;
-  void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) ITK_OVERRIDE;
+  void EnlargeOutputRequestedRegion(itk::DataObject *itkNotUsed(output)) override;
+  void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) override;
 
   /** Split the output's RequestedRegion into "num" pieces, returning
    * region "i" as "splitRegion". Reimplemented from ImageSource to ensure
    * that each thread covers entire projections. */
-  unsigned int SplitRequestedRegion(unsigned int i, unsigned int num, OutputImageRegionType& splitRegion) ITK_OVERRIDE;
+  unsigned int SplitRequestedRegion(unsigned int i, unsigned int num, OutputImageRegionType& splitRegion) override;
   virtual int SplitRequestedRegion(int i, int num, OutputImageRegionType& splitRegion);
 
 private:
-  BoellaardScatterCorrectionImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);               //purposely not implemented
-
   /** Air threshold on projection images. */
   double m_AirThreshold;
 

@@ -115,11 +115,13 @@ class ReconstructImageFilter
     : public itk::ImageToImageFilter<TImage, TImage>
 {
 public:
-    /** Standard class typedefs. */
-    typedef ReconstructImageFilter                  Self;
-    typedef itk::ImageToImageFilter<TImage,TImage>  Superclass;
-    typedef itk::SmartPointer<Self>                 Pointer;
-    typedef itk::SmartPointer<const Self>           ConstPointer;
+    ITK_DISALLOW_COPY_AND_ASSIGN(ReconstructImageFilter);
+
+    /** Standard class type alias. */
+    using Self = ReconstructImageFilter;
+    using Superclass = itk::ImageToImageFilter<TImage,TImage>;
+    using Pointer = itk::SmartPointer<Self>;
+    using ConstPointer = itk::SmartPointer<const Self>;
 
     /** Method for creation through the object factory. */
     itkNewMacro(Self)
@@ -128,21 +130,21 @@ public:
     itkTypeMacro(ReconstructImageFilter, ImageToImageFilter)
 
     /** ImageDimension enumeration. */
-    itkStaticConstMacro(ImageDimension, unsigned int, TImage::ImageDimension);
+    static constexpr unsigned int ImageDimension = TImage::ImageDimension;
 
     /** Inherit types from Superclass. */
-    typedef typename Superclass::InputImageType         InputImageType;
-    typedef typename Superclass::OutputImageType        OutputImageType;
-    typedef typename Superclass::InputImagePointer      InputImagePointer;
-    typedef typename Superclass::OutputImagePointer     OutputImagePointer;
-    typedef typename Superclass::InputImageConstPointer InputImageConstPointer;
-    typedef typename TImage::PixelType                  PixelType;
-    typedef typename TImage::InternalPixelType          InternalPixelType;
+    using InputImageType = typename Superclass::InputImageType;
+    using OutputImageType = typename Superclass::OutputImageType;
+    using InputImagePointer = typename Superclass::InputImagePointer;
+    using OutputImagePointer = typename Superclass::OutputImagePointer;
+    using InputImageConstPointer = typename Superclass::InputImageConstPointer;
+    using PixelType = typename TImage::PixelType;
+    using InternalPixelType = typename TImage::InternalPixelType;
 
     /** Typedefs for pipeline's subfilters */
-    typedef itk::NaryAddImageFilter<InputImageType, InputImageType>   AddFilterType;
-    typedef rtk::DaubechiesWaveletsConvolutionImageFilter<InputImageType>        ConvolutionFilterType;
-    typedef rtk::UpsampleImageFilter<InputImageType>             UpsampleImageFilterType;
+    using AddFilterType = itk::NaryAddImageFilter<InputImageType, InputImageType>;
+    using ConvolutionFilterType = rtk::DaubechiesWaveletsConvolutionImageFilter<InputImageType>;
+    using UpsampleImageFilterType = rtk::UpsampleImageFilter<InputImageType>;
 
     /** Set the number of input levels. */
     virtual void SetNumberOfLevels(unsigned int levels)
@@ -161,24 +163,24 @@ public:
      *  than the input image. As such, we reimplement GenerateOutputInformation()
      *  in order to inform the pipeline execution model.
      */
-    void GenerateOutputInformation() ITK_OVERRIDE;
+    void GenerateOutputInformation() override;
 
 
     /** ReconstructImageFilter requests the largest possible region of all its inputs.
      */
-    void GenerateInputRequestedRegion() ITK_OVERRIDE;
+    void GenerateInputRequestedRegion() override;
 
     /** ReconstructImageFilter uses input images of different sizes, therefore the
      * VerifyInputInformation method has to be reimplemented.
      */
 #if ITK_VERSION_MAJOR<5
 #if ITK_VERSION_MAJOR<5
-    void VerifyInputInformation() ITK_OVERRIDE {}
+    void VerifyInputInformation() override {}
 #else
-    void VerifyInputInformation() const ITK_OVERRIDE {}
+    void VerifyInputInformation() const override {}
 #endif
 #else
-    void VerifyInputInformation() const ITK_OVERRIDE {}
+    void VerifyInputInformation() const override {}
 #endif
 
     void SetSizes(typename InputImageType::SizeType *sizesVector)
@@ -197,9 +199,9 @@ public:
 
 protected:
     ReconstructImageFilter();
-    virtual ~ReconstructImageFilter() ITK_OVERRIDE {}
+    ~ReconstructImageFilter() override = default;
 
-    void PrintSelf(std::ostream&os, itk::Indent indent) const ITK_OVERRIDE;
+    void PrintSelf(std::ostream&os, itk::Indent indent) const override;
 
     /** Modifies the storage for Input and Output images.
       * Should be called after changes to levels, bands,
@@ -207,7 +209,7 @@ protected:
     void ModifyInputOutputStorage();
 
     /** Does the real work. */
-    void GenerateData() ITK_OVERRIDE;
+    void GenerateData() override;
 
     /** Calculates the number of ProcessObject output images */
     virtual unsigned int CalculateNumberOfInputs();
@@ -216,9 +218,6 @@ protected:
     void GeneratePassVectors();
 
 private:
-    ReconstructImageFilter(const Self&);    //purposely not implemented
-    void operator=(const Self&);                    //purposely not implemented
-
     unsigned int m_NumberOfLevels;        // Holds the number of Reconstruction levels
     unsigned int m_Order;                 // Holds the order of the wavelet filters
     bool         m_PipelineConstructed;   // Filters instantiated by GenerateOutputInformation() should be instantiated only once

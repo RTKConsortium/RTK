@@ -41,11 +41,13 @@ namespace rtk
 class DigisensGeometryXMLFileReader : public itk::XMLReader<itk::MetaDataDictionary>
 {
 public:
-  /** Standard typedefs */
-  typedef DigisensGeometryXMLFileReader                           Self;
-  typedef itk::XMLReader<itk::MetaDataDictionary>                 Superclass;
-  typedef itk::SmartPointer<Self>                                 Pointer;
-  typedef enum {NONE,ROTATION,XRAY,CAMERA,RADIOS,GRID,PROCESSING} CurrentSectionType;
+  ITK_DISALLOW_COPY_AND_ASSIGN(DigisensGeometryXMLFileReader);
+
+  /** Standard type alias */
+  using Self = DigisensGeometryXMLFileReader;
+  using Superclass = itk::XMLReader<itk::MetaDataDictionary>;
+  using Pointer = itk::SmartPointer<Self>;
+  using CurrentSectionType = enum {NONE,ROTATION,XRAY,CAMERA,RADIOS,GRID,PROCESSING};
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(DigisensGeometryXMLFileReader, itk::XMLReader);
@@ -54,22 +56,19 @@ public:
   itkNewMacro(Self);
 
   /** Determine if a file can be read */
-  int CanReadFile(const char* name) ITK_OVERRIDE;
+  int CanReadFile(const char* name) override;
 
 protected:
   DigisensGeometryXMLFileReader();
-  virtual ~DigisensGeometryXMLFileReader() ITK_OVERRIDE {}
+  ~DigisensGeometryXMLFileReader() override = default;
 
-  void StartElement(const char * name,const char **atts) ITK_OVERRIDE;
+  void StartElement(const char * name,const char **atts) override;
 
-  void EndElement(const char *name) ITK_OVERRIDE;
+  void EndElement(const char *name) override;
 
-  void CharacterDataHandler(const char *inData, int inLength) ITK_OVERRIDE;
+  void CharacterDataHandler(const char *inData, int inLength) override;
 
 private:
-  DigisensGeometryXMLFileReader(const Self&); //purposely not implemented
-  void operator=(const Self&);                //purposely not implemented
-
   itk::MetaDataDictionary m_Dictionary;
   std::string             m_CurCharacterData;
   int                     m_NumberOfFiles;

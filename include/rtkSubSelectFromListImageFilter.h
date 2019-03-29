@@ -33,10 +33,12 @@ template< typename ProjectionStackType>
 class SubSelectFromListImageFilter : public SubSelectImageFilter<ProjectionStackType>
 {
 public:
-    /** Standard class typedefs. */
-    typedef SubSelectFromListImageFilter              Self;
-    typedef SubSelectImageFilter<ProjectionStackType> Superclass;
-    typedef itk::SmartPointer< Self >                 Pointer;
+    ITK_DISALLOW_COPY_AND_ASSIGN(SubSelectFromListImageFilter);
+
+    /** Standard class type alias. */
+    using Self = SubSelectFromListImageFilter;
+    using Superclass = SubSelectImageFilter<ProjectionStackType>;
+    using Pointer = itk::SmartPointer< Self >;
 
     /** Method for creation through the object factory. */
     itkNewMacro(Self)
@@ -48,12 +50,7 @@ public:
 
 protected:
     SubSelectFromListImageFilter();
-    ~SubSelectFromListImageFilter(){}
-
-private:
-    SubSelectFromListImageFilter(const Self &); //purposely not implemented
-    void operator=(const Self &);  //purposely not implemented
-
+    ~SubSelectFromListImageFilter()= default;
 };
 } //namespace ITK
 

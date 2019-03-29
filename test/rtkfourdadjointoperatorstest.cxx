@@ -33,36 +33,36 @@ int main(int argc, char*argv[])
     return EXIT_FAILURE;
   }
 
-  const unsigned int Dimension = 3;
-  typedef float                                    OutputPixelType;
+  constexpr unsigned int Dimension = 3;
+  using OutputPixelType = float;
 
 #ifdef RTK_USE_CUDA
-  typedef itk::CudaImage< OutputPixelType, Dimension > ProjectionStackType;
-  typedef itk::CudaImage< OutputPixelType, Dimension + 1 > VolumeSeriesType;
+  using ProjectionStackType = itk::CudaImage< OutputPixelType, Dimension >;
+  using VolumeSeriesType = itk::CudaImage< OutputPixelType, Dimension + 1 >;
 #else
-  typedef itk::Image< OutputPixelType, Dimension > ProjectionStackType;
-  typedef itk::Image< OutputPixelType, Dimension + 1 > VolumeSeriesType;
+  using ProjectionStackType = itk::Image< OutputPixelType, Dimension >;
+  using VolumeSeriesType = itk::Image< OutputPixelType, Dimension + 1 >;
 #endif
 
 #if FAST_TESTS_NO_CHECKS
-  const unsigned int NumberOfProjectionImages = 3;
+  constexpr unsigned int NumberOfProjectionImages = 3;
 #else
-  const unsigned int NumberOfProjectionImages = 64;
+  constexpr unsigned int NumberOfProjectionImages = 64;
 #endif
 
 
   // Random image sources
-  typedef itk::RandomImageSource< ProjectionStackType > RandomProjectionStackSourceType;
+  using RandomProjectionStackSourceType = itk::RandomImageSource< ProjectionStackType >;
   RandomProjectionStackSourceType::Pointer randomProjectionStackSource  = RandomProjectionStackSourceType::New();
 
-  typedef itk::RandomImageSource< VolumeSeriesType > RandomVolumeSeriesSourceType;
+  using RandomVolumeSeriesSourceType = itk::RandomImageSource< VolumeSeriesType >;
   RandomVolumeSeriesSourceType::Pointer randomVolumeSeriesSource  = RandomVolumeSeriesSourceType::New();
 
   // Constant sources
-  typedef rtk::ConstantImageSource< ProjectionStackType > ConstantProjectionStackSourceType;
+  using ConstantProjectionStackSourceType = rtk::ConstantImageSource< ProjectionStackType >;
   ConstantProjectionStackSourceType::Pointer constantProjectionStackSource  = ConstantProjectionStackSourceType::New();
 
-  typedef rtk::ConstantImageSource< VolumeSeriesType > ConstantVolumeSeriesSourceType;
+  using ConstantVolumeSeriesSourceType = rtk::ConstantImageSource< VolumeSeriesType >;
   ConstantVolumeSeriesSourceType::Pointer constantVolumeSeriesSource  = ConstantVolumeSeriesSourceType::New();
 
   // Volume metadata
@@ -145,7 +145,7 @@ int main(int argc, char*argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION( constantProjectionStackSource->Update() );
 
   // Geometry object
-  typedef rtk::ThreeDCircularProjectionGeometry GeometryType;
+  using GeometryType = rtk::ThreeDCircularProjectionGeometry;
   GeometryType::Pointer geometry = GeometryType::New();
   for(unsigned int noProj=0; noProj<NumberOfProjectionImages; noProj++)
     geometry->AddProjection(600., 1200., noProj*360./NumberOfProjectionImages);
@@ -158,10 +158,10 @@ int main(int argc, char*argv[])
 
   std::cout << "\n\n****** 4D to projection stack ******" << std::endl;
 
-  typedef rtk::JosephForwardProjectionImageFilter<ProjectionStackType, ProjectionStackType> JosephForwardProjectorType;
+  using JosephForwardProjectorType = rtk::JosephForwardProjectionImageFilter<ProjectionStackType, ProjectionStackType>;
   JosephForwardProjectorType::Pointer jfw = JosephForwardProjectorType::New();
 
-  typedef rtk::FourDToProjectionStackImageFilter<ProjectionStackType, VolumeSeriesType> FourDToProjectionStackFilterType;
+  using FourDToProjectionStackFilterType = rtk::FourDToProjectionStackImageFilter<ProjectionStackType, VolumeSeriesType>;
   FourDToProjectionStackFilterType::Pointer fw = FourDToProjectionStackFilterType::New();
   fw->SetInputProjectionStack(constantProjectionStackSource->GetOutput());
   fw->SetInputVolumeSeries(randomVolumeSeriesSource->GetOutput());
@@ -173,10 +173,10 @@ int main(int argc, char*argv[])
 
   std::cout << "\n\n****** Projection stack to 4D ******" << std::endl;
 
-  typedef rtk::JosephBackProjectionImageFilter<ProjectionStackType, ProjectionStackType> JosephBackProjectorType;
+  using JosephBackProjectorType = rtk::JosephBackProjectionImageFilter<ProjectionStackType, ProjectionStackType>;
   JosephBackProjectorType::Pointer jbp = JosephBackProjectorType::New();
 
-  typedef rtk::ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType> ProjectionStackToFourDFilterType;
+  using ProjectionStackToFourDFilterType = rtk::ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType>;
   ProjectionStackToFourDFilterType::Pointer bp = ProjectionStackToFourDFilterType::New();
   bp->SetInputVolumeSeries(constantVolumeSeriesSource->GetOutput());
   bp->SetInputProjectionStack(randomProjectionStackSource->GetOutput());

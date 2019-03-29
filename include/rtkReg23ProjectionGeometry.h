@@ -64,11 +64,13 @@ class RTK_EXPORT Reg23ProjectionGeometry :
     public rtk::ThreeDCircularProjectionGeometry
 {
 public:
-  /** General typedefs **/
-  typedef Reg23ProjectionGeometry               Self;
-  typedef rtk::ThreeDCircularProjectionGeometry Superclass;
-  typedef itk::SmartPointer<Self>               Pointer;
-  typedef itk::SmartPointer<const Self>         ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(Reg23ProjectionGeometry);
+
+  /** General type alias **/
+  using Self = Reg23ProjectionGeometry;
+  using Superclass = rtk::ThreeDCircularProjectionGeometry;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self)
@@ -92,13 +94,7 @@ protected:
   /** Standard constructor. **/
   Reg23ProjectionGeometry();
   /** Destructor. **/
-  virtual ~Reg23ProjectionGeometry() ITK_OVERRIDE;
-
-private:
-  /** Purposely not implemented. **/
-  Reg23ProjectionGeometry(const Self&);
-  /** Purposely not implemented. **/
-  void operator=(const Self&);
+  ~Reg23ProjectionGeometry() override;
 
 };
 

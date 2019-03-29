@@ -31,7 +31,7 @@ ReconstructionConjugateGradientOperator<TOutputImage,
                                         TSingleComponentImage,
                                         TWeightsImage>
 ::ReconstructionConjugateGradientOperator():
-  m_Geometry(ITK_NULLPTR),
+  m_Geometry(nullptr),
   m_Gamma(0),
   m_Tikhonov(0)
 {
@@ -331,7 +331,7 @@ ReconstructionConjugateGradientOperator<TOutputImage,
                                         TWeightsImage>
 ::ConnectGradientRegularization()
 {
-  typedef rtk::LaplacianImageFilter<TOutputImage, GradientImageType> LaplacianFilterType;
+  using LaplacianFilterType = rtk::LaplacianImageFilter<TOutputImage, GradientImageType>;
   m_LaplacianFilter = LaplacianFilterType::New();
   m_LaplacianFilter->SetInput(m_FloatingInputPointer);
   m_MultiplyLaplacianFilter = MultiplyFilterType::New();

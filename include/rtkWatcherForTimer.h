@@ -76,7 +76,7 @@ protected:
 private:
   itk::ProcessObject*         m_Process;
 
-  typedef SimpleMemberCommand< WatcherForTimer > CommandType;
+  using CommandType = SimpleMemberCommand< WatcherForTimer >;
   CommandType::Pointer m_StartFilterCommand;
   CommandType::Pointer m_EndFilterCommand;
   CommandType::Pointer m_DeleteFilterCommand;

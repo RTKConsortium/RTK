@@ -52,17 +52,19 @@ class ITK_EXPORT CudaBackProjectionImageFilter :
   BackProjectionImageFilter< ImageType, ImageType> >
 {
 public:
-  /** Standard class typedefs. */
-  typedef BackProjectionImageFilter< ImageType, ImageType> BackProjectionImageFilterType;
-  typedef CudaBackProjectionImageFilter                    Self;
-  typedef itk::CudaInPlaceImageFilter<ImageType, ImageType,
-                     BackProjectionImageFilterType>        Superclass;
-  typedef itk::SmartPointer<Self>                          Pointer;
-  typedef itk::SmartPointer<const Self>                    ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(CudaBackProjectionImageFilter);
 
-  typedef typename ImageType::RegionType   OutputImageRegionType;
-  typedef itk::CudaImage<float, 2>         ProjectionImageType;
-  typedef ProjectionImageType::Pointer     ProjectionImagePointer;
+  /** Standard class type alias. */
+  using BackProjectionImageFilterType = BackProjectionImageFilter< ImageType, ImageType>;
+  using Self = CudaBackProjectionImageFilter;
+  using Superclass = itk::CudaInPlaceImageFilter<ImageType, ImageType,
+                     BackProjectionImageFilterType>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
+
+  using OutputImageRegionType = typename ImageType::RegionType;
+  using ProjectionImageType = itk::CudaImage<float, 2>;
+  using ProjectionImagePointer = ProjectionImageType::Pointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -76,9 +78,6 @@ protected:
 
   virtual void GPUGenerateData();
 
-private:
-  CudaBackProjectionImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);                   //purposely not implemented
 };
 
 } // end namespace rtk

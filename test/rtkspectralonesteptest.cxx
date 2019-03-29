@@ -36,36 +36,36 @@ int main(int argc, char*argv[])
     return EXIT_FAILURE;
   }
 
-  const unsigned int Dimension = 3;
-  const unsigned int nBins = 5;
-  const unsigned int nMaterials = 3;
-  const unsigned int nEnergies = 150;
-  typedef float                               DataType;
-  typedef itk::Vector<DataType, nMaterials>   MaterialPixelType;
-  typedef itk::Vector<DataType, nBins>        PhotonCountsPixelType;
+  constexpr unsigned int Dimension = 3;
+  constexpr unsigned int nBins = 5;
+  constexpr unsigned int nMaterials = 3;
+  constexpr unsigned int nEnergies = 150;
+  using DataType = float;
+  using MaterialPixelType = itk::Vector<DataType, nMaterials>;
+  using PhotonCountsPixelType = itk::Vector<DataType, nBins>;
 
-  typedef itk::VectorImage<DataType, Dimension>           MaterialProjectionsType;
-  typedef itk::VectorImage<DataType, Dimension - 1>       vIncidentSpectrum;
+  using MaterialProjectionsType = itk::VectorImage<DataType, Dimension>;
+  using vIncidentSpectrum = itk::VectorImage<DataType, Dimension - 1>;
 #ifdef RTK_USE_CUDA
-  typedef itk::CudaImage<MaterialPixelType, Dimension>        MaterialVolumeType;
-  typedef itk::CudaImage<PhotonCountsPixelType, Dimension>    PhotonCountsType;
-  typedef itk::CudaImage<DataType, Dimension >                IncidentSpectrumImageType;
-  typedef itk::CudaImage<DataType, Dimension-1 >              DetectorResponseImageType;
-  typedef itk::CudaImage<DataType, Dimension-1 >              MaterialAttenuationsImageType;
-  typedef itk::CudaImage<DataType, Dimension>                 SingleComponentImageType;
+  using MaterialVolumeType = itk::CudaImage<MaterialPixelType, Dimension>;
+  using PhotonCountsType = itk::CudaImage<PhotonCountsPixelType, Dimension>;
+  using IncidentSpectrumImageType = itk::CudaImage<DataType, Dimension >;
+  using DetectorResponseImageType = itk::CudaImage<DataType, Dimension-1 >;
+  using MaterialAttenuationsImageType = itk::CudaImage<DataType, Dimension-1 >;
+  using SingleComponentImageType = itk::CudaImage<DataType, Dimension>;
 #else
-  typedef itk::Image<MaterialPixelType, Dimension>        MaterialVolumeType;
-  typedef itk::Image<PhotonCountsPixelType, Dimension>    PhotonCountsType;
-  typedef itk::Image<DataType, Dimension >                IncidentSpectrumImageType;
-  typedef itk::Image<DataType, Dimension-1 >              DetectorResponseImageType;
-  typedef itk::Image<DataType, Dimension-1 >              MaterialAttenuationsImageType;
-  typedef itk::Image<DataType, Dimension>                 SingleComponentImageType;
+  using MaterialVolumeType = itk::Image<MaterialPixelType, Dimension>;
+  using PhotonCountsType = itk::Image<PhotonCountsPixelType, Dimension>;
+  using IncidentSpectrumImageType = itk::Image<DataType, Dimension >;
+  using DetectorResponseImageType = itk::Image<DataType, Dimension-1 >;
+  using MaterialAttenuationsImageType = itk::Image<DataType, Dimension-1 >;
+  using SingleComponentImageType = itk::Image<DataType, Dimension>;
 #endif
 
-  typedef itk::ImageFileReader<IncidentSpectrumImageType> IncidentSpectrumReaderType;
-  typedef itk::ImageFileReader<vIncidentSpectrum> vIncidentSpectrumReaderType;
-  typedef itk::ImageFileReader<DetectorResponseImageType> DetectorResponseReaderType;
-  typedef itk::ImageFileReader<MaterialAttenuationsImageType> MaterialAttenuationsReaderType;
+  using IncidentSpectrumReaderType = itk::ImageFileReader<IncidentSpectrumImageType>;
+  using vIncidentSpectrumReaderType = itk::ImageFileReader<vIncidentSpectrum>;
+  using DetectorResponseReaderType = itk::ImageFileReader<DetectorResponseImageType>;
+  using MaterialAttenuationsReaderType = itk::ImageFileReader<MaterialAttenuationsImageType>;
 
   // Read all inputs
   IncidentSpectrumReaderType::Pointer incidentSpectrumReader = IncidentSpectrumReaderType::New();
@@ -85,9 +85,9 @@ int main(int argc, char*argv[])
   materialAttenuationsReader->Update();
 
 #if FAST_TESTS_NO_CHECKS
-  const unsigned int NumberOfProjectionImages = 4;
+  constexpr unsigned int NumberOfProjectionImages = 4;
 #else
-  const unsigned int NumberOfProjectionImages = 64;
+  constexpr unsigned int NumberOfProjectionImages = 64;
 #endif
 
   // Define the material concentrations
@@ -97,7 +97,7 @@ int main(int argc, char*argv[])
   concentrations[2] = 1;    // Water
 
   // Constant image sources
-  typedef rtk::ConstantImageSource< SingleComponentImageType > ConstantImageSourceType;
+  using ConstantImageSourceType = rtk::ConstantImageSource< SingleComponentImageType >;
   ConstantImageSourceType::PointType origin;
   ConstantImageSourceType::SizeType size;
   ConstantImageSourceType::SpacingType spacing;
@@ -132,7 +132,7 @@ int main(int argc, char*argv[])
   tomographySource->Update();
 
   // Generate a blank set of material volumes
-  typedef rtk::ConstantImageSource< MaterialVolumeType > MaterialVolumeSourceType;
+  using MaterialVolumeSourceType = rtk::ConstantImageSource< MaterialVolumeType >;
   MaterialVolumeSourceType::Pointer materialVolumeSource = MaterialVolumeSourceType::New();
   materialVolumeSource->SetInformationFromImage(tomographySource->GetOutput());
   materialVolumeSource->SetConstant( itk::NumericTraits<MaterialPixelType>::ZeroValue() );
@@ -167,7 +167,7 @@ int main(int argc, char*argv[])
   projectionsSource->Update();
 
   // Create a vectorImage of blank photon counts
-  typedef itk::VectorImage<DataType, Dimension> vPhotonCountsType;
+  using vPhotonCountsType = itk::VectorImage<DataType, Dimension>;
   vPhotonCountsType::Pointer vPhotonCounts = vPhotonCountsType::New();
   vPhotonCounts->CopyInformation(projectionsSource->GetOutput());
   vPhotonCounts->SetVectorLength(nBins);
@@ -179,13 +179,13 @@ int main(int argc, char*argv[])
   vPhotonCounts->FillBuffer(vZeros);
 
   // Geometry object
-  typedef rtk::ThreeDCircularProjectionGeometry GeometryType;
+  using GeometryType = rtk::ThreeDCircularProjectionGeometry;
   GeometryType::Pointer geometry = GeometryType::New();
   for(unsigned int noProj=0; noProj<NumberOfProjectionImages; noProj++)
     geometry->AddProjection(600., 1200., noProj*360./NumberOfProjectionImages);
 
   // Create ellipsoid PROJECTIONS
-  typedef rtk::RayEllipsoidIntersectionImageFilter<SingleComponentImageType, SingleComponentImageType> REIType;
+  using REIType = rtk::RayEllipsoidIntersectionImageFilter<SingleComponentImageType, SingleComponentImageType>;
   REIType::Pointer rei;
 
   rei = REIType::New();
@@ -199,16 +199,16 @@ int main(int argc, char*argv[])
   rei->SetGeometry( geometry );
 
   // Create reference volume (3D ellipsoid).
-  typedef rtk::DrawEllipsoidImageFilter<SingleComponentImageType, SingleComponentImageType> DEType;
+  using DEType = rtk::DrawEllipsoidImageFilter<SingleComponentImageType, SingleComponentImageType>;
   DEType::Pointer dsl = DEType::New();
   dsl->SetInput( tomographySource->GetOutput() );
 
   // Generate one set of projections and one reference volume per material, and assemble them
   SingleComponentImageType::Pointer projs[nMaterials];
   SingleComponentImageType::Pointer vols[nMaterials];
-  typedef itk::ComposeImageFilter<SingleComponentImageType> ComposeProjectionsFilterType;
+  using ComposeProjectionsFilterType = itk::ComposeImageFilter<SingleComponentImageType>;
   ComposeProjectionsFilterType::Pointer composeProjs = ComposeProjectionsFilterType::New();
-  typedef itk::ComposeImageFilter<SingleComponentImageType, MaterialVolumeType> ComposeVolumesFilterType;
+  using ComposeVolumesFilterType = itk::ComposeImageFilter<SingleComponentImageType, MaterialVolumeType>;
   ComposeVolumesFilterType::Pointer composeVols = ComposeVolumesFilterType::New();
   for (unsigned int mat=0; mat<nMaterials; mat++)
     {
@@ -228,7 +228,7 @@ int main(int argc, char*argv[])
   composeVols->Update();
 
   // Apply spectral forward model to turn material projections into photon counts
-  typedef rtk::SpectralForwardModelImageFilter<MaterialProjectionsType, vPhotonCountsType, vIncidentSpectrum> ForwardModelFilterType;
+  using ForwardModelFilterType = rtk::SpectralForwardModelImageFilter<MaterialProjectionsType, vPhotonCountsType, vIncidentSpectrum>;
   ForwardModelFilterType::Pointer forward = ForwardModelFilterType::New();
   forward->SetInputDecomposedProjections(composeProjs->GetOutput());
   forward->SetInputMeasuredProjections(vPhotonCounts);
@@ -249,9 +249,9 @@ int main(int argc, char*argv[])
 
   // Convert the itk::VectorImage<> returned by "forward" into
   // an itk::Image<itk::Vector<>>
-  typedef itk::VectorIndexSelectionCastImageFilter<vPhotonCountsType, SingleComponentImageType> IndexSelectionType;
+  using IndexSelectionType = itk::VectorIndexSelectionCastImageFilter<vPhotonCountsType, SingleComponentImageType>;
   IndexSelectionType::Pointer selectors[nBins];
-  typedef itk::ComposeImageFilter<SingleComponentImageType, PhotonCountsType> ComposePhotonCountsType;
+  using ComposePhotonCountsType = itk::ComposeImageFilter<SingleComponentImageType, PhotonCountsType>;
   ComposePhotonCountsType::Pointer composePhotonCounts = ComposePhotonCountsType::New();
   for (unsigned int bin=0; bin<nBins; bin++)
     {
@@ -297,7 +297,7 @@ int main(int argc, char*argv[])
     }
 
   // Reconstruct using Mechlem
-  typedef rtk::MechlemOneStepSpectralReconstructionFilter<MaterialVolumeType, PhotonCountsType, IncidentSpectrumImageType> MechlemType;
+  using MechlemType = rtk::MechlemOneStepSpectralReconstructionFilter<MaterialVolumeType, PhotonCountsType, IncidentSpectrumImageType>;
   MechlemType::Pointer mechlemOneStep = MechlemType::New();
   mechlemOneStep->SetForwardProjectionFilter( MechlemType::FP_JOSEPH ); // Joseph
   mechlemOneStep->SetInputMaterialVolumes( materialVolumeSource->GetOutput() );
@@ -326,7 +326,7 @@ int main(int argc, char*argv[])
 
   std::cout << "\n\n****** Case 3: Voxel-based Backprojector, 4 subsets, with regularization  ******" << std::endl;
 
-  typedef rtk::ReorderProjectionsImageFilter<PhotonCountsType> ReorderProjectionsFilterType;
+  using ReorderProjectionsFilterType = rtk::ReorderProjectionsImageFilter<PhotonCountsType>;
   ReorderProjectionsFilterType::Pointer reorder = ReorderProjectionsFilterType::New();
   reorder->SetInput(composePhotonCounts->GetOutput());
   reorder->SetInputGeometry(geometry);

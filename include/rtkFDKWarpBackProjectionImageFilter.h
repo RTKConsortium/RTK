@@ -49,22 +49,24 @@ class ITK_EXPORT FDKWarpBackProjectionImageFilter :
   public FDKBackProjectionImageFilter<TInputImage,TOutputImage>
 {
 public:
-  /** Standard class typedefs. */
-  typedef FDKWarpBackProjectionImageFilter                       Self;
-  typedef FDKBackProjectionImageFilter<TInputImage,TOutputImage> Superclass;
-  typedef itk::SmartPointer<Self>                                Pointer;
-  typedef itk::SmartPointer<const Self>                          ConstPointer;
-  typedef typename TInputImage::PixelType                        InputPixelType;
-  typedef typename TOutputImage::RegionType                      OutputImageRegionType;
+  ITK_DISALLOW_COPY_AND_ASSIGN(FDKWarpBackProjectionImageFilter);
 
-  typedef TDeformation                      DeformationType;
-  typedef typename DeformationType::Pointer DeformationPointer;
+  /** Standard class type alias. */
+  using Self = FDKWarpBackProjectionImageFilter;
+  using Superclass = FDKBackProjectionImageFilter<TInputImage,TOutputImage>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
+  using InputPixelType = typename TInputImage::PixelType;
+  using OutputImageRegionType = typename TOutputImage::RegionType;
 
-  typedef rtk::ProjectionGeometry<TOutputImage::ImageDimension>     GeometryType;
-  typedef typename GeometryType::Pointer                            GeometryPointer;
-  typedef typename GeometryType::MatrixType                         ProjectionMatrixType;
-  typedef itk::Image<InputPixelType, TInputImage::ImageDimension-1> ProjectionImageType;
-  typedef typename ProjectionImageType::Pointer                     ProjectionImagePointer;
+  using DeformationType = TDeformation;
+  using DeformationPointer = typename DeformationType::Pointer;
+
+  using GeometryType = rtk::ProjectionGeometry<TOutputImage::ImageDimension>;
+  using GeometryPointer = typename GeometryType::Pointer;
+  using ProjectionMatrixType = typename GeometryType::MatrixType;
+  using ProjectionImageType = itk::Image<InputPixelType, TInputImage::ImageDimension-1>;
+  using ProjectionImagePointer = typename ProjectionImageType::Pointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -78,16 +80,13 @@ public:
 
 protected:
   FDKWarpBackProjectionImageFilter();
-  virtual ~FDKWarpBackProjectionImageFilter() ITK_OVERRIDE {}
+  ~FDKWarpBackProjectionImageFilter() override = default;
 
-  void BeforeThreadedGenerateData() ITK_OVERRIDE;
+  void BeforeThreadedGenerateData() override;
 
-  void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) ITK_OVERRIDE;
+  void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) override;
 
 private:
-  FDKWarpBackProjectionImageFilter(const Self&); //purposely not implemented
-  void operator=(const Self&);                   //purposely not implemented
-
   DeformationPointer    m_Deformation;
   itk::Barrier::Pointer m_Barrier;
   bool                  m_DeformationUpdateError;

@@ -26,6 +26,6 @@ rtk::OraImageIOFactory::OraImageIOFactory()
   this->RegisterOverride("itkImageIOBase",
                          "OraImageIO",
                          "Ora Image IO",
-                         1,
+                         true,
                          itk::CreateObjectFunction<OraImageIO>::New() );
 }

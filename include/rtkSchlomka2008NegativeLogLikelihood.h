@@ -45,22 +45,23 @@ namespace rtk
 class Schlomka2008NegativeLogLikelihood : public rtk::ProjectionsDecompositionNegativeLogLikelihood
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(Schlomka2008NegativeLogLikelihood);
 
-  typedef Schlomka2008NegativeLogLikelihood                     Self;
-  typedef rtk::ProjectionsDecompositionNegativeLogLikelihood    Superclass;
-  typedef itk::SmartPointer<Self>                               Pointer;
-  typedef itk::SmartPointer<const Self>                         ConstPointer;
+  using Self = Schlomka2008NegativeLogLikelihood;
+  using Superclass = rtk::ProjectionsDecompositionNegativeLogLikelihood;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
   itkNewMacro( Self );
   itkTypeMacro( Schlomka2008NegativeLogLikelihood, rtk::ProjectionsDecompositionNegativeLogLikelihood );
 
-  typedef Superclass::ParametersType                ParametersType;
-  typedef Superclass::DerivativeType                DerivativeType;
-  typedef Superclass::MeasureType                   MeasureType;
+  using ParametersType = Superclass::ParametersType;
+  using DerivativeType = Superclass::DerivativeType;
+  using MeasureType = Superclass::MeasureType;
 
-  typedef Superclass::DetectorResponseType          DetectorResponseType;
-  typedef Superclass::MaterialAttenuationsType      MaterialAttenuationsType;
-  typedef Superclass::MeasuredDataType              MeasuredDataType;
-  typedef Superclass::IncidentSpectrumType          IncidentSpectrumType;
+  using DetectorResponseType = Superclass::DetectorResponseType;
+  using MaterialAttenuationsType = Superclass::MaterialAttenuationsType;
+  using MeasuredDataType = Superclass::MeasuredDataType;
+  using IncidentSpectrumType = Superclass::IncidentSpectrumType;
 
   // Constructor
   Schlomka2008NegativeLogLikelihood()
@@ -69,11 +70,9 @@ public:
   }
 
   // Destructor
-  virtual ~Schlomka2008NegativeLogLikelihood() ITK_OVERRIDE
-  {
-  }
+  ~Schlomka2008NegativeLogLikelihood() override = default;
 
-  void Initialize() ITK_OVERRIDE
+  void Initialize() override
   {
   // This method computes the combined m_IncidentSpectrumAndDetectorResponseProduct
   // from m_DetectorResponse and m_IncidentSpectrum
@@ -90,7 +89,7 @@ public:
   // Not used with a simplex optimizer, but may be useful later
   // for gradient based methods
   void GetDerivative( const ParametersType & lineIntegrals,
-                      DerivativeType & derivatives ) const ITK_OVERRIDE
+                      DerivativeType & derivatives ) const override
   {
   // Set the size of the derivatives vector
   derivatives.set_size(m_NumberOfMaterials);
@@ -123,7 +122,7 @@ public:
   }
 
   // Main method
-  MeasureType  GetValue( const ParametersType & parameters ) const ITK_OVERRIDE
+  MeasureType  GetValue( const ParametersType & parameters ) const override
   {
   // Forward model: compute the expected number of counts in each bin
   vnl_vector<double> forward = ForwardModel(parameters);
@@ -135,7 +134,7 @@ public:
   return measure;
   }
 
-  void ComputeFischerMatrix(const ParametersType & lineIntegrals) ITK_OVERRIDE
+  void ComputeFischerMatrix(const ParametersType & lineIntegrals) override
   {
   // Get some required data
   vnl_vector<double> attenuationFactors;
@@ -174,10 +173,6 @@ public:
       }
     }
   }
-
-private:
-  Schlomka2008NegativeLogLikelihood(const Self &); //purposely not implemented
-  void operator = (const Self &); //purposely not implemented
 
 };
 

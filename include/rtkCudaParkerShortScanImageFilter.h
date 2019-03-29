@@ -51,16 +51,18 @@ class RTK_EXPORT CudaParkerShortScanImageFilter :
             rtk::ParkerShortScanImageFilter<itk::CudaImage<float, 3> > >
 {
 public:
-  /** Convenience typedefs **/
-  typedef itk::CudaImage<float,3>                     ImageType;
-  typedef rtk::ParkerShortScanImageFilter<ImageType>  CPUWeightFilterType;
+  ITK_DISALLOW_COPY_AND_ASSIGN(CudaParkerShortScanImageFilter);
 
-  /** Standard class typedefs. */
-  typedef CudaParkerShortScanImageFilter                        Self;
-  typedef itk::CudaInPlaceImageFilter<ImageType, ImageType,
-    CPUWeightFilterType>                                        Superclass;
-  typedef itk::SmartPointer<Self>                               Pointer;
-  typedef itk::SmartPointer<const Self>                         ConstPointer;
+  /** Convenience type alias **/
+  using ImageType = itk::CudaImage<float,3>;
+  using CPUWeightFilterType = rtk::ParkerShortScanImageFilter<ImageType>;
+
+  /** Standard class type alias. */
+  using Self = CudaParkerShortScanImageFilter;
+  using Superclass = itk::CudaInPlaceImageFilter<ImageType, ImageType,
+    CPUWeightFilterType>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -76,11 +78,6 @@ protected:
 
   virtual void GPUGenerateData();
 
-private:
-  /** purposely not implemented **/
-  CudaParkerShortScanImageFilter(const Self&);
-  /** purposely not implemented **/
-  void operator=(const Self&);
 };
 
 }

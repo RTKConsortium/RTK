@@ -6,7 +6,7 @@
 // include the required header files
 #include <iostream>
 #include <fstream>
-#include <stdio.h>
+#include <cstdio>
 
 #include "rabbitct.h"
 
@@ -90,7 +90,7 @@ FNCSIGN bool RCTUnloadAlgorithm(RabbitCtGlobalData* rcgd)
   vol->SetImportPointer(rcgd->f_L, rcgd->L * rcgd->L * rcgd->L, false);
 
   // Write
-  typedef itk::ImageFileWriter<  itk::Image<float,3> > WriterType;
+  using WriterType = itk::ImageFileWriter<  itk::Image<float,3> >;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( "rtkrabbitct.mhd" );
   writer->SetInput( vol->GetOutput() );
@@ -99,7 +99,7 @@ FNCSIGN bool RCTUnloadAlgorithm(RabbitCtGlobalData* rcgd)
 
   // delete the previously allocated volume
   delete [] (rcgd->f_L);
-  rcgd->f_L = ITK_NULLPTR;
+  rcgd->f_L = nullptr;
   return true;
 }
 

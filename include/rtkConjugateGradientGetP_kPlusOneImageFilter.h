@@ -35,14 +35,15 @@ template< typename TInputImage>
 class ConjugateGradientGetP_kPlusOneImageFilter : public itk::ImageToImageFilter< TInputImage, TInputImage>
 {
 public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(ConjugateGradientGetP_kPlusOneImageFilter);
 
-  /** Standard class typedefs. */
-  typedef ConjugateGradientGetP_kPlusOneImageFilter           Self;
-  typedef itk::ImageToImageFilter< TInputImage, TInputImage>  Superclass;
-  typedef itk::SmartPointer< Self >                           Pointer;
-  typedef typename TInputImage::RegionType                    OutputImageRegionType;
-  typedef itk::Image<typename TInputImage::InternalPixelType,
-                              TInputImage::ImageDimension>    BetaImage;
+  /** Standard class type alias. */
+  using Self = ConjugateGradientGetP_kPlusOneImageFilter;
+  using Superclass = itk::ImageToImageFilter< TInputImage, TInputImage>;
+  using Pointer = itk::SmartPointer< Self >;
+  using OutputImageRegionType = typename TInputImage::RegionType;
+  using BetaImage = itk::Image<typename TInputImage::InternalPixelType,
+                              TInputImage::ImageDimension>;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self)
@@ -59,26 +60,23 @@ public:
   itkSetMacro(SquaredNormR_kPlusOne, double)
 
   /** Typedefs for sub filters */
-  typedef itk::AddImageFilter<TInputImage>                              AddFilterType;
-  typedef itk::MultiplyImageFilter<TInputImage, BetaImage, TInputImage> MultiplyFilterType;
+  using AddFilterType = itk::AddImageFilter<TInputImage>;
+  using MultiplyFilterType = itk::MultiplyImageFilter<TInputImage, BetaImage, TInputImage>;
 
 protected:
   ConjugateGradientGetP_kPlusOneImageFilter();
-  virtual ~ConjugateGradientGetP_kPlusOneImageFilter() ITK_OVERRIDE {}
+  ~ConjugateGradientGetP_kPlusOneImageFilter() override = default;
 
   typename TInputImage::Pointer GetR_kPlusOne();
   typename TInputImage::Pointer GetRk();
   typename TInputImage::Pointer GetPk();
 
   /** Does the real work. */
-  void GenerateData() ITK_OVERRIDE;
+  void GenerateData() override;
 
-  void GenerateOutputInformation() ITK_OVERRIDE;
+  void GenerateOutputInformation() override;
 
 private:
-  ConjugateGradientGetP_kPlusOneImageFilter(const Self &); //purposely not implemented
-  void operator=(const Self &);  //purposely not implemented
-
   double m_SquaredNormR_k;
   double m_SquaredNormR_kPlusOne;
   double m_Betak;

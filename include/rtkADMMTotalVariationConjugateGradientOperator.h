@@ -105,10 +105,12 @@ template< typename TOutputImage, typename TGradientOutputImage =
 class ADMMTotalVariationConjugateGradientOperator : public ConjugateGradientOperator< TOutputImage >
 {
 public:
-    /** Standard class typedefs. */
-    typedef ADMMTotalVariationConjugateGradientOperator   Self;
-    typedef ConjugateGradientOperator< TOutputImage >     Superclass;
-    typedef itk::SmartPointer< Self >                     Pointer;
+    ITK_DISALLOW_COPY_AND_ASSIGN(ADMMTotalVariationConjugateGradientOperator);
+
+    /** Standard class type alias. */
+    using Self = ADMMTotalVariationConjugateGradientOperator;
+    using Superclass = ConjugateGradientOperator< TOutputImage >;
+    using Pointer = itk::SmartPointer< Self >;
 
     /** Method for creation through the object factory. */
     itkNewMacro(Self)
@@ -116,22 +118,22 @@ public:
     /** Run-time type information (and related methods). */
     itkTypeMacro(rtkADMMTotalVariationConjugateGradientOperator, ConjugateGradientOperator)
 
-    typedef rtk::BackProjectionImageFilter< TOutputImage, TOutputImage >    BackProjectionFilterType;
-    typedef typename BackProjectionFilterType::Pointer                      BackProjectionFilterPointer;
+    using BackProjectionFilterType = rtk::BackProjectionImageFilter< TOutputImage, TOutputImage >;
+    using BackProjectionFilterPointer = typename BackProjectionFilterType::Pointer;
 
-    typedef rtk::ForwardProjectionImageFilter< TOutputImage, TOutputImage > ForwardProjectionFilterType;
-    typedef typename ForwardProjectionFilterType::Pointer                   ForwardProjectionFilterPointer;
+    using ForwardProjectionFilterType = rtk::ForwardProjectionImageFilter< TOutputImage, TOutputImage >;
+    using ForwardProjectionFilterPointer = typename ForwardProjectionFilterType::Pointer;
 
-    typedef itk::MultiplyImageFilter<TOutputImage>                          MultiplyFilterType;
-    typedef itk::SubtractImageFilter<TOutputImage>                          SubtractFilterType;
-    typedef ForwardDifferenceGradientImageFilter<TOutputImage,
+    using MultiplyFilterType = itk::MultiplyImageFilter<TOutputImage>;
+    using SubtractFilterType = itk::SubtractImageFilter<TOutputImage>;
+    using GradientFilterType = ForwardDifferenceGradientImageFilter<TOutputImage,
             typename TOutputImage::ValueType,
             typename TOutputImage::ValueType,
-            TGradientOutputImage>                                           GradientFilterType;
-    typedef rtk::BackwardDifferenceDivergenceImageFilter
-        <TGradientOutputImage, TOutputImage>                                DivergenceFilterType;
-    typedef rtk::DisplacedDetectorImageFilter<TOutputImage>                 DisplacedDetectorFilterType;
-    typedef rtk::MultiplyByVectorImageFilter<TOutputImage>                  GatingWeightsFilterType;
+            TGradientOutputImage>;
+    using DivergenceFilterType = rtk::BackwardDifferenceDivergenceImageFilter
+        <TGradientOutputImage, TOutputImage>;
+    using DisplacedDetectorFilterType = rtk::DisplacedDetectorImageFilter<TOutputImage>;
+    using GatingWeightsFilterType = rtk::MultiplyByVectorImageFilter<TOutputImage>;
 
     /** Set the backprojection filter*/
     void SetBackProjectionFilter (const BackProjectionFilterPointer _arg);
@@ -154,10 +156,10 @@ public:
 
 protected:
     ADMMTotalVariationConjugateGradientOperator();
-    virtual ~ADMMTotalVariationConjugateGradientOperator() ITK_OVERRIDE {}
+    ~ADMMTotalVariationConjugateGradientOperator() override = default;
 
     /** Does the real work. */
-    void GenerateData() ITK_OVERRIDE;
+    void GenerateData() override;
 
     /** Member pointers to the filters used internally (for convenience)*/
     BackProjectionFilterPointer            m_BackProjectionFilter;
@@ -185,20 +187,15 @@ protected:
     * same physical space or not. Obviously they dont, so we have to remove this check
     */
 #if ITK_VERSION_MAJOR<5
-    void VerifyInputInformation() ITK_OVERRIDE {}
+    void VerifyInputInformation() override {}
 #else
-    void VerifyInputInformation() const ITK_OVERRIDE {}
+    void VerifyInputInformation() const override {}
 #endif
 
     /** The volume and the projections must have different requested regions
     */
-    void GenerateInputRequestedRegion() ITK_OVERRIDE;
-    void GenerateOutputInformation() ITK_OVERRIDE;
-
-private:
-    ADMMTotalVariationConjugateGradientOperator(const Self &); //purposely not implemented
-    void operator=(const Self &);  //purposely not implemented
-
+    void GenerateInputRequestedRegion() override;
+    void GenerateOutputInformation() override;
 };
 } //namespace RTK
 

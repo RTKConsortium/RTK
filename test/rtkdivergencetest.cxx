@@ -27,20 +27,20 @@
 
 int main(int, char** )
 {
-  const unsigned int Dimension = 3;
-  typedef double                                    OutputPixelType;
+  constexpr unsigned int Dimension = 3;
+  using OutputPixelType = double;
 
-  typedef itk::CovariantVector<OutputPixelType, 2> CovVecType;
+  using CovVecType = itk::CovariantVector<OutputPixelType, 2>;
 #ifdef USE_CUDA
-  typedef itk::CudaImage< OutputPixelType, Dimension > ImageType;
-  typedef itk::CudaImage<CovVecType, Dimension> GradientImageType;
+  using ImageType = itk::CudaImage< OutputPixelType, Dimension >;
+  using GradientImageType = itk::CudaImage<CovVecType, Dimension>;
 #else
-  typedef itk::Image< OutputPixelType, Dimension > ImageType;
-  typedef itk::Image<CovVecType, Dimension> GradientImageType;
+  using ImageType = itk::Image< OutputPixelType, Dimension >;
+  using GradientImageType = itk::Image<CovVecType, Dimension>;
 #endif
 
   // Random image sources
-  typedef itk::RandomImageSource< ImageType > RandomImageSourceType;
+  using RandomImageSourceType = itk::RandomImageSource< ImageType >;
   RandomImageSourceType::Pointer randomVolumeSource1  = RandomImageSourceType::New();
   RandomImageSourceType::Pointer randomVolumeSource2  = RandomImageSourceType::New();
 
@@ -92,7 +92,7 @@ int main(int, char** )
   computeGradientAlongDim[2] = true;
 
   // Compute the gradient of both volumes
-  typedef rtk::ForwardDifferenceGradientImageFilter<ImageType, OutputPixelType, OutputPixelType, GradientImageType> GradientFilterType;
+  using GradientFilterType = rtk::ForwardDifferenceGradientImageFilter<ImageType, OutputPixelType, OutputPixelType, GradientImageType>;
   GradientFilterType::Pointer grad1 = GradientFilterType::New();
   grad1->SetInput(randomVolumeSource1->GetOutput());
   grad1->SetDimensionsProcessed(computeGradientAlongDim);
@@ -102,13 +102,13 @@ int main(int, char** )
   grad2->SetDimensionsProcessed(computeGradientAlongDim);
 
   // Now compute MINUS the divergence of grad2
-  typedef rtk::BackwardDifferenceDivergenceImageFilter
-      <GradientImageType, ImageType> DivergenceFilterType;
+  using DivergenceFilterType = rtk::BackwardDifferenceDivergenceImageFilter
+      <GradientImageType, ImageType>;
   DivergenceFilterType::Pointer div = DivergenceFilterType::New();
   div->SetInput(grad2->GetOutput());
   div->SetDimensionsProcessed(computeGradientAlongDim);
 
-  typedef itk::MultiplyImageFilter<ImageType> MultiplyFilterType;
+  using MultiplyFilterType = itk::MultiplyImageFilter<ImageType>;
   MultiplyFilterType::Pointer multiply = MultiplyFilterType::New();
   multiply->SetInput1(div->GetOutput());
   multiply->SetConstant2(-1);

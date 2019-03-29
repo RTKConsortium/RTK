@@ -62,13 +62,13 @@ FDKBackProjectionImageFilter<TInputImage,TOutputImage>
   const unsigned int iFirstProj = this->GetInput(1)->GetLargestPossibleRegion().GetIndex(Dimension-1);
 
   // Create interpolator, could be any interpolation
-  typedef itk::LinearInterpolateImageFunction< ProjectionImageType, double > InterpolatorType;
+  using InterpolatorType = itk::LinearInterpolateImageFunction< ProjectionImageType, double >;
   typename InterpolatorType::Pointer interpolator = InterpolatorType::New();
 
   // Iterators on volume input and output
-  typedef itk::ImageRegionConstIterator<TInputImage> InputRegionIterator;
+  using InputRegionIterator = itk::ImageRegionConstIterator<TInputImage>;
   InputRegionIterator itIn(this->GetInput(), outputRegionForThread);
-  typedef itk::ImageRegionIteratorWithIndex<TOutputImage> OutputRegionIterator;
+  using OutputRegionIterator = itk::ImageRegionIteratorWithIndex<TOutputImage>;
   OutputRegionIterator itOut(this->GetOutput(), outputRegionForThread);
 
   // Initialize output region with input region in case the filter is not in

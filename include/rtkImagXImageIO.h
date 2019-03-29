@@ -21,7 +21,7 @@
 
 #include <itkImageIOBase.h>
 #include <fstream>
-#include <string.h>
+#include <cstring>
 
 #include "rtkMacro.h"
 
@@ -37,10 +37,10 @@ namespace rtk
 class ImagXImageIO : public itk::ImageIOBase
 {
 public:
-  /** Standard class typedefs. */
-  typedef ImagXImageIO            Self;
-  typedef itk::ImageIOBase        Superclass;
-  typedef itk::SmartPointer<Self> Pointer;
+  /** Standard class type alias. */
+  using Self = ImagXImageIO;
+  using Superclass = itk::ImageIOBase;
+  using Pointer = itk::SmartPointer<Self>;
 
   ImagXImageIO() : Superclass() {}
 
@@ -51,19 +51,19 @@ public:
   itkTypeMacro(ImagXImageIO, ImageIOBase);
 
   /*-------- This part of the interface deals with reading data. ------ */
-  void ReadImageInformation() ITK_OVERRIDE;
+  void ReadImageInformation() override;
 
-  bool CanReadFile( const char* FileNameToRead ) ITK_OVERRIDE;
+  bool CanReadFile( const char* FileNameToRead ) override;
 
-  void Read(void * buffer) ITK_OVERRIDE;
+  void Read(void * buffer) override;
 
   /*-------- This part of the interfaces deals with writing data. ----- */
   virtual void WriteImageInformation(bool keepOfStream);
 
-  void WriteImageInformation() ITK_OVERRIDE { WriteImageInformation(false); }
-  bool CanWriteFile(const char* filename) ITK_OVERRIDE;
+  void WriteImageInformation() override { WriteImageInformation(false); }
+  bool CanWriteFile(const char* filename) override;
 
-  void Write(const void* buffer) ITK_OVERRIDE;
+  void Write(const void* buffer) override;
 
 protected:
   std::string m_RawFileName;

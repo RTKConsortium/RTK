@@ -51,11 +51,13 @@ class TotalVariationImageFilter:
   public itk::ImageToImageFilter< TInputImage, TInputImage >
 {
 public:
-  /** Standard Self typedef */
-  typedef TotalVariationImageFilter                           Self;
-  typedef itk::ImageToImageFilter< TInputImage, TInputImage > Superclass;
-  typedef itk::SmartPointer< Self >                           Pointer;
-  typedef itk::SmartPointer< const Self >                     ConstPointer;
+  ITK_DISALLOW_COPY_AND_ASSIGN(TotalVariationImageFilter);
+
+  /** Standard Self type alias */
+  using Self = TotalVariationImageFilter;
+  using Superclass = itk::ImageToImageFilter< TInputImage, TInputImage >;
+  using Pointer = itk::SmartPointer< Self >;
+  using ConstPointer = itk::SmartPointer< const Self >;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -63,27 +65,27 @@ public:
   /** Runtime information support. */
   itkTypeMacro(TotalVariationImageFilter, ImageToImageFilter);
 
-  /** Image related typedefs. */
-  typedef typename TInputImage::Pointer InputImagePointer;
+  /** Image related type alias. */
+  using InputImagePointer = typename TInputImage::Pointer;
 
-  typedef typename TInputImage::RegionType RegionType;
-  typedef typename TInputImage::SizeType   SizeType;
-  typedef typename TInputImage::IndexType  IndexType;
-  typedef typename TInputImage::PixelType  PixelType;
+  using RegionType = typename TInputImage::RegionType;
+  using SizeType = typename TInputImage::SizeType;
+  using IndexType = typename TInputImage::IndexType;
+  using PixelType = typename TInputImage::PixelType;
 
-  /** Image related typedefs. */
+  /** Image related type alias. */
   itkStaticConstMacro(ImageDimension, unsigned int,
                       TInputImage::ImageDimension);
 
   /** Type to use for computations. */
-  typedef typename itk::NumericTraits< PixelType >::RealType RealType;
+  using RealType = typename itk::NumericTraits< PixelType >::RealType;
 
   /** Smart Pointer type to a DataObject. */
-  typedef typename itk::DataObject::Pointer DataObjectPointer;
+  using DataObjectPointer = typename itk::DataObject::Pointer;
 
   /** Type of DataObjects used for scalar outputs */
-  typedef itk::SimpleDataObjectDecorator< RealType >  RealObjectType;
-//  typedef SimpleDataObjectDecorator< PixelType > PixelObjectType;
+  using RealObjectType = itk::SimpleDataObjectDecorator< RealType >;
+//  using PixelObjectType = SimpleDataObjectDecorator< PixelType >;
 
   /** Return the computed Minimum. */
   RealType GetTotalVariation() const
@@ -94,9 +96,9 @@ public:
 
   /** Make a DataObject of the correct type to be used as the specified
    * output. */
-  typedef itk::ProcessObject::DataObjectPointerArraySizeType DataObjectPointerArraySizeType;
+  using DataObjectPointerArraySizeType = itk::ProcessObject::DataObjectPointerArraySizeType;
   using Superclass::MakeOutput;
-  DataObjectPointer MakeOutput(DataObjectPointerArraySizeType idx) ITK_OVERRIDE;
+  DataObjectPointer MakeOutput(DataObjectPointerArraySizeType idx) override;
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
@@ -122,38 +124,35 @@ public:
 
 protected:
   TotalVariationImageFilter();
-  virtual ~TotalVariationImageFilter() ITK_OVERRIDE {}
-  void PrintSelf(std::ostream & os, itk::Indent indent) const ITK_OVERRIDE;
+  ~TotalVariationImageFilter() override = default;
+  void PrintSelf(std::ostream & os, itk::Indent indent) const override;
 
   /** Pass the input through unmodified. Do this by Grafting in the
    *  AllocateOutputs method.
    */
-  void AllocateOutputs() ITK_OVERRIDE;
+  void AllocateOutputs() override;
 
   /** Initialize some accumulators before the threads run. */
-  void BeforeThreadedGenerateData() ITK_OVERRIDE;
+  void BeforeThreadedGenerateData() override;
 
   /** Do final mean and variance computation from data accumulated in threads.
    */
-  void AfterThreadedGenerateData() ITK_OVERRIDE;
+  void AfterThreadedGenerateData() override;
 
   /** Multi-thread version GenerateData. */
   void  ThreadedGenerateData(const RegionType &
                              outputRegionForThread,
-                             itk::ThreadIdType threadId) ITK_OVERRIDE;
+                             itk::ThreadIdType threadId) override;
 
   // Override since the filter needs all the data for the algorithm
-  void GenerateInputRequestedRegion() ITK_OVERRIDE;
+  void GenerateInputRequestedRegion() override;
 
   // Override since the filter produces all of its output
-  void EnlargeOutputRequestedRegion(itk::DataObject *data) ITK_OVERRIDE;
+  void EnlargeOutputRequestedRegion(itk::DataObject *data) override;
 
   bool                        m_UseImageSpacing;
 
 private:
-  TotalVariationImageFilter(const Self &); //purposely not implemented
-  void operator=(const Self &);        //purposely not implemented
-
   itk::Array< RealType >       m_SumOfSquareRoots;
 }; // end of class
 } // end namespace rtk

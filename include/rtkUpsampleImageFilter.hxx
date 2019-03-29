@@ -94,8 +94,8 @@ UpsampleImageFilter<TInputImage,TOutputImage>
 
   //Define/declare an iterator that will walk the output region for this
   //thread.
-  typedef itk::ImageRegionIterator<TOutputImage>      OutputIterator;
-  typedef itk::ImageRegionConstIterator<TInputImage>  InputIterator;
+  using OutputIterator = itk::ImageRegionIterator<TOutputImage>;
+  using InputIterator = itk::ImageRegionConstIterator<TInputImage>;
   OutputIterator outIt(outputPtr, outputRegionForThread);
 
   //Fill the output region with zeros
