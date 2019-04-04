@@ -19,7 +19,8 @@
 #ifndef rtkUpsampleImageFilter_h
 #define rtkUpsampleImageFilter_h
 
-#include "itkImageToImageFilter.h"
+#include <itkImageToImageFilter.h>
+#include <itkImageRegionSplitterDirection.h>
 
 namespace rtk
 {
@@ -130,19 +131,20 @@ protected:
    *
    * \sa ImageToImageFilter::ThreadedGenerateData(),
    *     ImageToImageFilter::GenerateData() */
-//  void BeforeThreadedGenerateData();
 #if ITK_VERSION_MAJOR<5
   void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) override;
 #else
   void DynamicThreadedGenerateData(const OutputImageRegionType& outputRegionForThread) override;
 #endif
-//  void AfterThreadedGenerateData();
 
 private:
   unsigned int                      m_Factors[ImageDimension];
   unsigned int                      m_Order;
   typename TOutputImage::SizeType   m_OutputSize;
   typename TOutputImage::IndexType  m_OutputIndex;
+
+  const itk::ImageRegionSplitterBase* GetImageRegionSplitter(void) const override;
+  itk::ImageRegionSplitterDirection::Pointer m_Splitter;
 };
 
 

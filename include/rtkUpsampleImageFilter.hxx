@@ -34,10 +34,17 @@ template <class TInputImage, class TOutputImage>
 UpsampleImageFilter<TInputImage,TOutputImage>
 ::UpsampleImageFilter()
 {
+#if ITK_VERSION_MAJOR>4
+  this->DynamicMultiThreadingOff();
+#endif
   this->SetNumberOfRequiredInputs(1);
   this->m_Order = 0;
   this->m_OutputSize.Fill(0);
   this->m_OutputIndex.Fill(0);
+
+  // Set the direction along which the output requested region should NOT be split
+  m_Splitter = itk::ImageRegionSplitterDirection::New();
+  m_Splitter->SetDirection(0);
 }
 
 template <class TInputImage, class TOutputImage>
@@ -254,6 +261,13 @@ UpsampleImageFilter<TInputImage,TOutputImage>
   outputPtr->SetOrigin(inputPtr->GetOrigin());
 }
 
+template <class TInputImage, class TOutputImage>
+const itk::ImageRegionSplitterBase*
+UpsampleImageFilter<TInputImage,TOutputImage>
+::GetImageRegionSplitter(void) const
+{
+  return m_Splitter;
+}
 } // end namespace rtk
 
 #endif

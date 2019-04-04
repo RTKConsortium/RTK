@@ -127,15 +127,19 @@ DisplacedDetectorForOffsetFieldOfViewImageFilter<TInputImage, TOutputImage>
 #endif
 {
   // Compute overlap between input and output
+  itk::ImageRegionIterator<OutputImageType> itOut(this->GetOutput(), outputRegionForThread);
   OutputImageRegionType overlapRegion = outputRegionForThread;
-
-  overlapRegion.Crop(this->GetInput()->GetLargestPossibleRegion() );
-
-  // Input / ouput iterators
+  if( !overlapRegion.Crop( this->GetInput()->GetLargestPossibleRegion() ) )
+    {
+    // No overlap, set output region to 0
+    while(!itOut.IsAtEnd() )
+      {
+      itOut.Set( 0. );
+      ++itOut;
+      }
+    return;
+    }
   itk::ImageRegionConstIterator<InputImageType> itIn(this->GetInput(), overlapRegion);
-  itk::ImageRegionIterator<OutputImageType>     itOut(this->GetOutput(), outputRegionForThread);
-  itIn.GoToBegin();
-  itOut.GoToBegin();
 
   // Not displaced, nothing to do
   if( this->GetInput()->GetLargestPossibleRegion().GetSize()[0] ==

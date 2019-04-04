@@ -174,11 +174,7 @@ public:
      * VerifyInputInformation method has to be reimplemented.
      */
 #if ITK_VERSION_MAJOR<5
-#if ITK_VERSION_MAJOR<5
     void VerifyInputInformation() override {}
-#else
-    void VerifyInputInformation() const override {}
-#endif
 #else
     void VerifyInputInformation() const override {}
 #endif

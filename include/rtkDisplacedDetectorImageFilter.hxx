@@ -191,15 +191,19 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>
   itk::NumericTraits<typename TOutputImage::PixelType>::SetLength(pix, this->GetInput()->GetNumberOfComponentsPerPixel());
 
   // Compute overlap between input and output
+  itk::ImageRegionIterator<OutputImageType> itOut(this->GetOutput(), outputRegionForThread);
   OutputImageRegionType overlapRegion = outputRegionForThread;
-
-  overlapRegion.Crop(this->GetInput()->GetLargestPossibleRegion() );
-
-  // Input / ouput iterators
+  if( !overlapRegion.Crop( this->GetInput()->GetLargestPossibleRegion() ) )
+    {
+    // No overlap, set output region to 0
+    while(!itOut.IsAtEnd() )
+      {
+      itOut.Set( 0. );
+      ++itOut;
+      }
+    return;
+    }
   itk::ImageRegionConstIterator<InputImageType> itIn(this->GetInput(), overlapRegion);
-  itk::ImageRegionIterator<OutputImageType>     itOut(this->GetOutput(), outputRegionForThread);
-  itIn.GoToBegin();
-  itOut.GoToBegin();
 
   // Not displaced, nothing to do
   if( (fabs(m_InferiorCorner+m_SuperiorCorner) < 0.1*fabs(m_SuperiorCorner-m_InferiorCorner)) || m_Disable)
@@ -235,7 +239,6 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>
   typename itk::ImageRegionIteratorWithIndex<WeightImageType> itWeights(weights, weights->GetLargestPossibleRegion() );
 
   double theta = std::min(-1*m_InferiorCorner, m_SuperiorCorner);
-
   for(unsigned int k=0; k<overlapRegion.GetSize(2); k++)
     {
     // Prepare weights for current slice (depends on ProjectionOffsetsX)
