@@ -96,9 +96,10 @@ endif()
 # --------------------------------------------------------
 # Shared libraries option
 if(NOT ITK_SOURCE_DIR)
-  set(BUILD_SHARED_LIBS ${ITK_BUILD_SHARED})
+  set(RTK_BUILD_SHARED_LIBS ${ITK_BUILD_SHARED})
+else()
+  set(RTK_BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS})
 endif()
-set(RTK_BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS})
 
 # ----------------------------------------------------------------------------
 # Set RTK_DATA_ROOT
