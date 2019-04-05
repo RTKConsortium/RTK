@@ -34,13 +34,7 @@ namespace rtk
 
 template <class TInputImage, class TOutputImage, class TFFTPrecision>
 FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
-::FFTRampImageFilter() :
-  m_HannCutFrequency(0.),
-  m_CosineCutFrequency(0.),
-  m_HammingFrequency(0.),
-  m_HannCutFrequencyY(0.),
-  m_RamLakCutFrequency(0.),
-  m_SheppLoganCutFrequency(0.)
+::FFTRampImageFilter()
 {
 }
 

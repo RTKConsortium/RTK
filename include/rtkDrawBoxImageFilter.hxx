@@ -30,10 +30,7 @@ namespace rtk
 
 template <class TInputImage, class TOutputImage>
 DrawBoxImageFilter<TInputImage, TOutputImage>
-::DrawBoxImageFilter():
-  m_Density(1.),
-  m_BoxMin(0.),
-  m_BoxMax(0.)
+::DrawBoxImageFilter()
 {
   m_Direction.SetIdentity();
 }

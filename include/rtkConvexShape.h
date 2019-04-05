@@ -111,7 +111,7 @@ protected:
   itk::LightObject::Pointer InternalClone() const override;
 
 private:
-  ScalarType              m_Density;
+  ScalarType              m_Density{0.};
   std::vector<VectorType> m_PlaneDirections;
   std::vector<ScalarType> m_PlanePositions;
 };

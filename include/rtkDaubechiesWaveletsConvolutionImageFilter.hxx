@@ -31,9 +31,7 @@ namespace rtk
 
 template<typename TImage>
 DaubechiesWaveletsConvolutionImageFilter<TImage>
-::DaubechiesWaveletsConvolutionImageFilter():
-  m_Order(3),
-  m_Pass(PassVector(typename PassVector::ComponentType(0)))
+::DaubechiesWaveletsConvolutionImageFilter()
 {
   this->SetDeconstruction();
 }

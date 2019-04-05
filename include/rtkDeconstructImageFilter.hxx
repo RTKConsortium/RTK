@@ -27,10 +27,7 @@ namespace rtk
 /////////////////////////////////////////////////////////
 //Default Constructor
 template <class TImage>
-DeconstructImageFilter<TImage>::DeconstructImageFilter():
-  m_NumberOfLevels(5),
-  m_Order(3),
-  m_PipelineConstructed(false)
+DeconstructImageFilter<TImage>::DeconstructImageFilter()
 {
 }
 

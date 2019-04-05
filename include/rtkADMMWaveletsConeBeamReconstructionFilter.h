@@ -242,12 +242,12 @@ protected:
     void GenerateOutputInformation() override;
 
 private:
-    float           m_Alpha;
-    float           m_Beta;
-    unsigned int    m_AL_iterations;
-    unsigned int    m_CG_iterations;
-    unsigned int    m_Order;
-    unsigned int    m_NumberOfLevels;
+    float           m_Alpha{1};
+    float           m_Beta{1};
+    unsigned int    m_AL_iterations{10};
+    unsigned int    m_CG_iterations{3};
+    unsigned int    m_Order{3};
+    unsigned int    m_NumberOfLevels{5};
     bool            m_DisableDisplacedDetectorFilter;
 
     ThreeDCircularProjectionGeometry::Pointer m_Geometry;

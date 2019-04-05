@@ -89,11 +89,11 @@ public:
     }
 
 protected:
-  OraLookupTableImageFilter(): m_ComputeLineIntegral(true){}
+  OraLookupTableImageFilter() {}
   ~OraLookupTableImageFilter() override = default;
 
 private:
-  bool                      m_ComputeLineIntegral;
+  bool                      m_ComputeLineIntegral{true};
 
   /** A list of filenames to be processed. */
   FileNamesContainer        m_FileNames;

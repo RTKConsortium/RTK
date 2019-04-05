@@ -25,8 +25,7 @@
 #include <itkCenteredEuler3DTransform.h>
 #include <itkEuler3DTransform.h>
 
-rtk::ThreeDCircularProjectionGeometry::ThreeDCircularProjectionGeometry():
-    m_RadiusCylindricalDetector(0.)
+rtk::ThreeDCircularProjectionGeometry::ThreeDCircularProjectionGeometry()
 {
 }
 

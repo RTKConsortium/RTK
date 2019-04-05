@@ -76,7 +76,7 @@ protected:
   void GenerateData() override;
 
 private:
-  double    m_Amplitude;
+  double    m_Amplitude{0.};
 
 }; // end of class
 

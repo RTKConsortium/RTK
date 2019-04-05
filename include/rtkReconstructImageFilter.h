@@ -218,9 +218,9 @@ protected:
     void GeneratePassVectors();
 
 private:
-    unsigned int m_NumberOfLevels;        // Holds the number of Reconstruction levels
-    unsigned int m_Order;                 // Holds the order of the wavelet filters
-    bool         m_PipelineConstructed;   // Filters instantiated by GenerateOutputInformation() should be instantiated only once
+    unsigned int m_NumberOfLevels{5};         // Holds the number of Reconstruction levels
+    unsigned int m_Order{3};                  // Holds the order of the wavelet filters
+    bool         m_PipelineConstructed{false};// Filters instantiated by GenerateOutputInformation() should be instantiated only once
 
     typename InputImageType::SizeType                                  *m_Sizes; //Holds the size of sub-images at each level
     typename InputImageType::IndexType                                 *m_Indices; //Holds the size of sub-images at each level

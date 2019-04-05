@@ -27,9 +27,7 @@ namespace rtk
 
 template <class TInputImage, class TOutputImage>
 RayEllipsoidIntersectionImageFilter<TInputImage, TOutputImage>
-::RayEllipsoidIntersectionImageFilter():
-    m_Density(1.),
-    m_Angle(0.)
+::RayEllipsoidIntersectionImageFilter()
 {
   m_Center.Fill(0.);
   m_Axis.Fill(0.);

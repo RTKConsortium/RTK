@@ -22,8 +22,7 @@ namespace rtk
 {
 
 ConvexShape
-::ConvexShape():
-    m_Density(0.)
+::ConvexShape()
 {
 }
 

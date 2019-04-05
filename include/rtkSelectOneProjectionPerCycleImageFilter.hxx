@@ -26,8 +26,7 @@ namespace rtk
 
 template<typename ProjectionStackType>
 SelectOneProjectionPerCycleImageFilter<ProjectionStackType>
-::SelectOneProjectionPerCycleImageFilter():
-  m_Phase(0.)
+::SelectOneProjectionPerCycleImageFilter()
 {
 }
 

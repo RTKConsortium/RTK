@@ -89,7 +89,7 @@ protected:
 private:
   DeformationPointer    m_Deformation;
   itk::Barrier::Pointer m_Barrier;
-  bool                  m_DeformationUpdateError;
+  bool                  m_DeformationUpdateError{false};
 };
 
 } // end namespace rtk

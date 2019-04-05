@@ -27,9 +27,7 @@ namespace rtk
 
 template< typename TInputImage, typename TOutputImage >
 VarianObiRawImageFilter< TInputImage, TOutputImage >
-::VarianObiRawImageFilter():
-  m_I0(139000.),
-  m_IDark(0.)
+::VarianObiRawImageFilter()
 {
 }
 

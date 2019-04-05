@@ -31,10 +31,7 @@ namespace rtk
 
 template <class TInputImage, class TOutputImage>
 RayBoxIntersectionImageFilter<TInputImage, TOutputImage>
-::RayBoxIntersectionImageFilter():
-  m_Density(1.),
-  m_BoxMin(0.),
-  m_BoxMax(0.)
+::RayBoxIntersectionImageFilter()
 {
   m_Direction.SetIdentity();
 }

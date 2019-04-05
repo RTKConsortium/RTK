@@ -158,7 +158,7 @@ protected:
 
     /** Must be set to fix whether the kernel is 1D or 2D. Will have an effect on
    * the padded region and the input requested region. */
-  int m_KernelDimension;
+  int m_KernelDimension{1};
 
   /**
     * FFT of the convolution kernel that each daughter class must update.
@@ -169,7 +169,7 @@ private:
   /** Percentage of the image width which is feathered with data to correct for truncation.
     * 0 (default) means no correction.
     */
-  double m_TruncationCorrection;
+  double m_TruncationCorrection{0.};
   int GetTruncationCorrectionExtent();
 
   /** Zero padding factors in x and y directions. Accepted values are either 1
@@ -180,8 +180,8 @@ private:
   /**
    * Greatest prime factor of the FFT input.
    */
-  int m_GreatestPrimeFactor;
-  int m_BackupNumberOfThreads;
+  int m_GreatestPrimeFactor{2};
+  int m_BackupNumberOfThreads{1};
 }; // end of class
 
 } // end namespace rtk

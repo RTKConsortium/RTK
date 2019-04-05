@@ -31,9 +31,7 @@ namespace rtk
 
 template <class TInputImage, class TOutputImage>
 DrawEllipsoidImageFilter<TInputImage, TOutputImage>
-::DrawEllipsoidImageFilter():
-    m_Density(1.),
-    m_Angle(0.)
+::DrawEllipsoidImageFilter()
 {
   m_Center.Fill(0.);
   m_Axis.Fill(90.);

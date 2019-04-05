@@ -127,10 +127,10 @@ private:
     CoefficientVector GenerateCoefficientsHighpassReconstruct();
 
     /** Specifies the wavelet type name */
-    unsigned int m_Order;
+    unsigned int m_Order{3};
 
     /** Specifies the filter pass along each dimension */
-    PassVector m_Pass;
+    PassVector m_Pass{PassVector(typename PassVector::ComponentType(0))};
 
     /** Specifies the filter type */
     Type m_Type;

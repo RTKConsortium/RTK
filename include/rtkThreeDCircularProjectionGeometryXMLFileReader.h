@@ -87,30 +87,30 @@ protected:
   void CharacterDataHandler(const char *inData, int inLength) override;
 
 private:
-  GeometryPointer m_Geometry;
+  GeometryPointer m_Geometry{GeometryType::New()};
 
-  std::string m_CurCharacterData;
+  std::string m_CurCharacterData{""};
 
   /** Projection parameters */
-  double m_InPlaneAngle;
-  double m_OutOfPlaneAngle;
-  double m_GantryAngle;
-  double m_SourceToIsocenterDistance;
-  double m_SourceOffsetX;
-  double m_SourceOffsetY;
-  double m_SourceToDetectorDistance;
-  double m_ProjectionOffsetX;
-  double m_ProjectionOffsetY;
-  double m_CollimationUInf;
-  double m_CollimationUSup;
-  double m_CollimationVInf;
-  double m_CollimationVSup;
+  double m_InPlaneAngle{0.};
+  double m_OutOfPlaneAngle{0.};
+  double m_GantryAngle{0.};
+  double m_SourceToIsocenterDistance{0.};
+  double m_SourceOffsetX{0.};
+  double m_SourceOffsetY{0.};
+  double m_SourceToDetectorDistance{0.};
+  double m_ProjectionOffsetX{0.};
+  double m_ProjectionOffsetY{0.};
+  double m_CollimationUInf{std::numeric_limits< double >::max()};
+  double m_CollimationUSup{std::numeric_limits< double >::max()};
+  double m_CollimationVInf{std::numeric_limits< double >::max()};
+  double m_CollimationVSup{std::numeric_limits< double >::max()};
 
   /** Projection matrix */
   ThreeDCircularProjectionGeometry::MatrixType m_Matrix;
 
   /** File format version */
-  unsigned int m_Version;
+  unsigned int m_Version{0};
 };
 }
 #endif

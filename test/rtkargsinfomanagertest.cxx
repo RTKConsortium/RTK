@@ -5,10 +5,9 @@
 class args_info_test
 {
 public:
-  int testVar;
-  int verbose_flag;
-  args_info_test() : testVar(true), verbose_flag(0)
-  {}
+  int testVar{true};
+  int verbose_flag{0};
+  args_info_test(){}
 };
 
 class cleanup_functor

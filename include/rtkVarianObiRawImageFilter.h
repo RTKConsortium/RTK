@@ -115,8 +115,8 @@ protected:
   ~VarianObiRawImageFilter() override = default;
 
 private:
-  double m_I0;
-  double m_IDark;
+  double m_I0{139000.};
+  double m_IDark{0.};
 };
 
 } // end namespace rtk

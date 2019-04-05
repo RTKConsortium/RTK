@@ -356,7 +356,7 @@ protected:
   std::vector<double> m_ProjectionOffsetsY;
 
   /** Radius of curved detector. The default is 0 and it means a flat detector. */
-  double m_RadiusCylindricalDetector;
+  double m_RadiusCylindricalDetector{0.};
 
   /** Parameters of the collimation jaws.
    * The collimation position is with respect to the distance of the m_RotationCenter along
