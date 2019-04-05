@@ -270,8 +270,8 @@ private:
   TInterpolationWeightMultiplication m_InterpolationWeightMultiplication;
   TProjectedValueAccumulation        m_ProjectedValueAccumulation;
   TSumAlongRay                       m_SumAlongRay;
-  double                             m_InferiorClip;
-  double                             m_SuperiorClip;
+  double                             m_InferiorClip{0.};
+  double                             m_SuperiorClip{1.};
 };
 
 } // end namespace rtk

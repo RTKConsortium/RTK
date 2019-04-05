@@ -34,10 +34,7 @@ namespace rtk
 {
 template <class TInputImage, class TOutputImage>
 ProjectGeometricPhantomImageFilter<TInputImage, TOutputImage>
-::ProjectGeometricPhantomImageFilter():
-m_PhantomScale(1.),
-m_OriginOffset(0.),
-m_IsForbildConfigFile(false)
+::ProjectGeometricPhantomImageFilter()
 {
   m_RotationMatrix.SetIdentity();
 }

@@ -92,13 +92,13 @@ protected:
 
 private:
   /** Air threshold on projection images. */
-  double m_AirThreshold;
+  double m_AirThreshold{32000};
 
   /** Scatter to primary ratio */
-  double m_ScatterToPrimaryRatio;
+  double m_ScatterToPrimaryRatio{0.};
 
   /** Non-negativity constraint threshold */
-  double m_NonNegativityConstraintThreshold;
+  double m_NonNegativityConstraintThreshold{20};
 }; // end of class
 
 } // end namespace rtk

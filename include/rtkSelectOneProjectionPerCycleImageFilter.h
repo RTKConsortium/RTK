@@ -68,7 +68,7 @@ protected:
 
 private:
   std::string         m_SignalFilename;
-  double              m_Phase;
+  double              m_Phase{0.};
   std::vector<double> m_Signal;
 };
 } //namespace ITK

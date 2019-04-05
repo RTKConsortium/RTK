@@ -30,10 +30,7 @@ namespace rtk
 
 template<class TInputImage, class TOutputImage>
 PolynomialGainCorrectionImageFilter<TInputImage, TOutputImage>
-::PolynomialGainCorrectionImageFilter():
-    m_MapsLoaded(false),
-    m_ModelOrder(1),
-    m_K(1.0f)
+::PolynomialGainCorrectionImageFilter()
 {
 }
 

@@ -31,8 +31,7 @@ namespace rtk
 
 template <class TInputImage, class TOutputImage, class TDeformation>
 FDKWarpBackProjectionImageFilter<TInputImage,TOutputImage,TDeformation>
-::FDKWarpBackProjectionImageFilter():
-    m_DeformationUpdateError(false)
+::FDKWarpBackProjectionImageFilter()
 {
 #if ITK_VERSION_MAJOR>4
   this->DynamicMultiThreadingOff();

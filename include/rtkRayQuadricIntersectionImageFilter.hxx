@@ -31,18 +31,7 @@ namespace rtk
 
 template <class TInputImage, class TOutputImage>
 RayQuadricIntersectionImageFilter<TInputImage, TOutputImage>
-::RayQuadricIntersectionImageFilter():
-  m_Density(1.),
-  m_A(0.),
-  m_B(0.),
-  m_C(0.),
-  m_D(0.),
-  m_E(0.),
-  m_F(0.),
-  m_G(0.),
-  m_H(0.),
-  m_I(0.),
-  m_J(0.)
+::RayQuadricIntersectionImageFilter()
 {
 }
 

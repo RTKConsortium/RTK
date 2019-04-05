@@ -29,10 +29,7 @@ namespace rtk
 {
 
 template< typename TInputType>
-ConjugateGradientGetR_kPlusOneImageFilter<TInputType>::ConjugateGradientGetR_kPlusOneImageFilter():
-    m_Alphak(0.),
-    m_SquaredNormR_k(0.),
-    m_SquaredNormR_kPlusOne(0.)
+ConjugateGradientGetR_kPlusOneImageFilter<TInputType>::ConjugateGradientGetR_kPlusOneImageFilter()
 {
 #if ITK_VERSION_MAJOR>4
   this->DynamicMultiThreadingOff();

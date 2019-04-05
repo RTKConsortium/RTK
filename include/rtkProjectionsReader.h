@@ -297,7 +297,7 @@ private:
   typename StreamingType::Pointer          m_StreamingFilter;
 
   /** Image IO object which is stored to create the pipe only when required */
-  itk::ImageIOBase::Pointer m_ImageIO;
+  itk::ImageIOBase::Pointer m_ImageIO{nullptr};
 
   /** Copy of parameters for the mini-pipeline. Parameters are checked and
    * propagated when required in the GenerateOutputInformation. Refer to the
@@ -309,15 +309,15 @@ private:
   OutputImageSizeType          m_UpperBoundaryCropSize;
   ShrinkFactorsType            m_ShrinkFactors;
   MedianRadiusType             m_MedianRadius;
-  double                       m_AirThreshold;
-  double                       m_ScatterToPrimaryRatio;
-  double                       m_NonNegativityConstraintThreshold;
-  double                       m_I0;
-  double                       m_IDark;
-  double                       m_ConditionalMedianThresholdMultiplier;
+  double                       m_AirThreshold{32000};
+  double                       m_ScatterToPrimaryRatio{0.};
+  double                       m_NonNegativityConstraintThreshold{itk::NumericTraits<double>::NonpositiveMin()};
+  double                       m_I0{itk::NumericTraits<double>::NonpositiveMin()};
+  double                       m_IDark{0.};
+  double                       m_ConditionalMedianThresholdMultiplier{1.};
   WaterPrecorrectionVectorType m_WaterPrecorrectionCoefficients;
-  bool                         m_ComputeLineIntegral;
-  unsigned int                 m_VectorComponent;
+  bool                         m_ComputeLineIntegral{true};
+  unsigned int                 m_VectorComponent{0};
 };
 
 } //namespace rtk

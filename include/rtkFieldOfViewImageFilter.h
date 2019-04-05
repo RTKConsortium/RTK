@@ -124,17 +124,17 @@ protected:
 #endif
 
 private:
-  GeometryConstPointer    m_Geometry;
-  bool                    m_Mask;
+  GeometryConstPointer    m_Geometry{nullptr};
+  bool                    m_Mask{false};
   ProjectionsStackPointer m_ProjectionsStack;
-  double                  m_Radius;
-  double                  m_CenterX;
-  double                  m_CenterZ;
+  double                  m_Radius{-1};
+  double                  m_CenterX{0.};
+  double                  m_CenterZ{0.};
   double                  m_HatTangentInf;
   double                  m_HatTangentSup;
   double                  m_HatHeightInf;
   double                  m_HatHeightSup;
-  bool                    m_DisplacedDetector;
+  bool                    m_DisplacedDetector{false};
 };
 
 } // end namespace rtk

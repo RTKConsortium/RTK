@@ -83,7 +83,7 @@ public:
   itkSetMacro(Transpose, bool);
 
 protected:
-  BackProjectionImageFilter() : m_Geometry(nullptr), m_Transpose(false) {
+  BackProjectionImageFilter() : m_Geometry(nullptr) {
     this->SetNumberOfRequiredInputs(2); this->SetInPlace( true );
   };
   ~BackProjectionImageFilter() override = default;
@@ -144,7 +144,7 @@ protected:
 private:
   /** Flip projection flag: infludences GetProjection and
     GetIndexToIndexProjectionMatrix for optimization */
-  bool m_Transpose;
+  bool m_Transpose{false};
 };
 
 } // end namespace rtk

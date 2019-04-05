@@ -27,10 +27,7 @@ namespace rtk
 
 template< typename TImageSequence>
 DaubechiesWaveletsDenoiseSequenceImageFilter< TImageSequence>
-::DaubechiesWaveletsDenoiseSequenceImageFilter():
-  m_Order(5),
-  m_Threshold(1),
-  m_NumberOfLevels(3)
+::DaubechiesWaveletsDenoiseSequenceImageFilter()
 {
   // Create the filters
   m_WaveletsDenoisingFilter = WaveletsDenoisingFilterType::New();

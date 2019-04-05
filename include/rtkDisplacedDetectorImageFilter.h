@@ -128,7 +128,7 @@ protected:
 #endif
 
   // Iterative filters do not need padding
-  bool m_PadOnTruncatedSide;
+  bool m_PadOnTruncatedSide{true};
 
 private:
   /** RTK geometry object */
@@ -139,24 +139,24 @@ private:
    * If a priori known, these values can be given as input. Otherwise, they are computed from the
    * complete geometry.
    */
-  double m_MinimumOffset;
-  double m_MaximumOffset;
+  double m_MinimumOffset{0.};
+  double m_MaximumOffset{0.};
 
   /**
    * Flag used to know if the user has entered the min/max values of the detector offset.
    */
-  bool m_OffsetsSet;
+  bool m_OffsetsSet{false};
 
   /** Superior and inferior position of the detector along the weighting
    *  direction, i.e., the virtual detector described in ToUntiltedCoordinate.
    */
-  double m_InferiorCorner;
-  double m_SuperiorCorner;
+  double m_InferiorCorner{0.};
+  double m_SuperiorCorner{0.};
 
   /** When using a geometry that the displaced detector cannot manage,
    * it has to be disabled
    */
-  bool m_Disable;
+  bool m_Disable{false};
 
 }; // end of class
 

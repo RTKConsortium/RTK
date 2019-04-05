@@ -128,9 +128,9 @@ protected:
     typename TImageSequence::RegionType             m_ExtractAndPasteRegion;
 
     /** Information for the wavelets denoising filter */
-    unsigned int    m_Order;
-    float           m_Threshold;
-    unsigned int    m_NumberOfLevels;
+    unsigned int    m_Order{5};
+    float           m_Threshold{1};
+    unsigned int    m_NumberOfLevels{3};
 
 };
 } //namespace ITK

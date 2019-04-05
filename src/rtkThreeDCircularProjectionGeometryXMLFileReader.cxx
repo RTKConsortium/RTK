@@ -31,23 +31,7 @@ namespace rtk
 {
 
 ThreeDCircularProjectionGeometryXMLFileReader::
-ThreeDCircularProjectionGeometryXMLFileReader():
-  m_Geometry(GeometryType::New() ),
-  m_CurCharacterData(""),
-  m_InPlaneAngle(0.),
-  m_OutOfPlaneAngle(0.),
-  m_GantryAngle(0.),
-  m_SourceToIsocenterDistance(0.),
-  m_SourceOffsetX(0.),
-  m_SourceOffsetY(0.),
-  m_SourceToDetectorDistance(0.),
-  m_ProjectionOffsetX(0.),
-  m_ProjectionOffsetY(0.),
-  m_CollimationUInf(std::numeric_limits< double >::max()),
-  m_CollimationUSup(std::numeric_limits< double >::max()),
-  m_CollimationVInf(std::numeric_limits< double >::max()),
-  m_CollimationVSup(std::numeric_limits< double >::max()),
-  m_Version(0)
+ThreeDCircularProjectionGeometryXMLFileReader()
 {
   this->m_OutputObject = &(*m_Geometry);
 }

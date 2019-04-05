@@ -34,11 +34,7 @@ namespace rtk
 
 template <class TInputImage, class TOutputImage, class TFFTPrecision>
 FFTProjectionsConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
-::FFTProjectionsConvolutionImageFilter() :
-  m_KernelDimension(1),
-  m_TruncationCorrection(0.),
-  m_GreatestPrimeFactor(2),
-  m_BackupNumberOfThreads(1)
+::FFTProjectionsConvolutionImageFilter()
 {
 #if defined(USE_FFTWD)
   if(typeid(TFFTPrecision).name() == typeid(double).name() )

@@ -81,9 +81,9 @@ private:
   /**
    * Center coordinates and size of the FOV cylinder.
    */
-  double m_FOVRadius;
-  double m_FOVCenterX;
-  double m_FOVCenterZ;
+  double m_FOVRadius{-1.};
+  double m_FOVCenterX{0.};
+  double m_FOVCenterZ{0.};
 }; // end of class
 
 } // end namespace rtk

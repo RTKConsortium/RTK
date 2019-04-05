@@ -26,13 +26,7 @@ namespace rtk
 
 template< typename TOutputImage >
 ADMMWaveletsConeBeamReconstructionFilter<TOutputImage>
-::ADMMWaveletsConeBeamReconstructionFilter():
-  m_Alpha(1),
-  m_Beta(1),
-  m_AL_iterations(10),
-  m_CG_iterations(3),
-  m_Order(3),
-  m_NumberOfLevels(5)
+::ADMMWaveletsConeBeamReconstructionFilter()
 {
   this->SetNumberOfRequiredInputs(2);
 

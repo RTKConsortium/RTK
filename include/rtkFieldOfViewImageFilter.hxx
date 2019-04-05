@@ -34,13 +34,7 @@ namespace rtk
 
 template<class TInputImage, class TOutputImage>
 FieldOfViewImageFilter<TInputImage, TOutputImage>
-::FieldOfViewImageFilter():
-  m_Geometry(nullptr),
-  m_Mask(false),
-  m_Radius(-1),
-  m_CenterX(0.),
-  m_CenterZ(0.),
-  m_DisplacedDetector(false)
+::FieldOfViewImageFilter()
 {
 }
 

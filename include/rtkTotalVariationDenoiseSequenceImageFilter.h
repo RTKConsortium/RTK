@@ -134,8 +134,8 @@ protected:
     typename TImageSequence::RegionType       m_ExtractAndPasteRegion;
 
     /** Information for the total variation denoising filter */
-    double m_Gamma;
-    int    m_NumberOfIterations;
+    double m_Gamma{1.};
+    int    m_NumberOfIterations{1};
     bool   m_DimensionsProcessed[TImage::ImageDimension];
 };
 } //namespace ITK

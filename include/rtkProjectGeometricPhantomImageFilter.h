@@ -104,9 +104,9 @@ private:
   GeometricPhantomConstPointer m_GeometricPhantom;
   GeometryConstPointer         m_Geometry;
   StringType                   m_ConfigFile;
-  VectorType                   m_PhantomScale;
-  VectorType                   m_OriginOffset;
-  bool                         m_IsForbildConfigFile;
+  VectorType                   m_PhantomScale{1.};
+  VectorType                   m_OriginOffset{0.};
+  bool                         m_IsForbildConfigFile{false};
   RotationMatrixType           m_RotationMatrix;
 };
 

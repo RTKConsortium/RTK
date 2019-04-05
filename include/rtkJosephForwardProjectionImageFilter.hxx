@@ -40,9 +40,7 @@ TOutputImage,
 TInterpolationWeightMultiplication,
 TProjectedValueAccumulation,
 TSumAlongRay>
-::JosephForwardProjectionImageFilter():
-  m_InferiorClip(0.),
-  m_SuperiorClip(1.)
+::JosephForwardProjectionImageFilter()
 {
 #if ITK_VERSION_MAJOR>4
   this->DynamicMultiThreadingOff();
