@@ -177,7 +177,7 @@ protected:
     /** Member pointers to the filters used internally (for convenience)*/
     typename CPUDVFInterpolatorType::Pointer m_DVFInterpolatorFilter;
     std::vector<double>                      m_Signal;
-    bool                                     m_UseCudaCyclicDeformation;
+    bool                                     m_UseCudaCyclicDeformation{false};
 
 };
 } //namespace ITK

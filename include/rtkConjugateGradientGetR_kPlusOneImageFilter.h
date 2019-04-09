@@ -83,9 +83,9 @@ protected:
     void AfterThreadedGenerateData() override;
 
 private:
-    double m_Alphak;
-    double m_SquaredNormR_k;
-    double m_SquaredNormR_kPlusOne;
+    double m_Alphak{0.};
+    double m_SquaredNormR_k{0.};
+    double m_SquaredNormR_kPlusOne{0.};
 
     // Thread synchronization tool
     itk::Barrier::Pointer m_Barrier;

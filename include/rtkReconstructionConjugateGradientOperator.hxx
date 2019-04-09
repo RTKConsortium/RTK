@@ -30,10 +30,7 @@ template< typename TOutputImage,
 ReconstructionConjugateGradientOperator<TOutputImage,
                                         TSingleComponentImage,
                                         TWeightsImage>
-::ReconstructionConjugateGradientOperator():
-  m_Geometry(nullptr),
-  m_Gamma(0),
-  m_Tikhonov(0)
+::ReconstructionConjugateGradientOperator()
 {
   this->SetNumberOfRequiredInputs(3);
 

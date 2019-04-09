@@ -21,9 +21,6 @@ else ()
     string (REPLACE " " "," TMP "${TMP}")
     set (CUDA_CXX_FLAGS ${CUDA_CXX_FLAGS} ${TMP})
   endif ()
-
-  # GCS 2012-05-07: Workaround for poor, troubled FindCUDA
-  set (CUDA_ATTACH_VS_BUILD_RULE_TO_CUDA_FILE FALSE)
   find_package (CUDA QUIET)
 endif ()
 

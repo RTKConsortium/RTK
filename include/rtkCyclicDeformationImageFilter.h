@@ -80,7 +80,7 @@ public:
   itkSetMacro(Frame, unsigned int);
 
 protected:
-  CyclicDeformationImageFilter(): m_Frame(0) {}
+  CyclicDeformationImageFilter() {}
   ~CyclicDeformationImageFilter() override = default;
 
   void GenerateOutputInformation() override;
@@ -100,7 +100,7 @@ protected:
   double       m_WeightSup;
 
 private:
-  unsigned int m_Frame;
+  unsigned int m_Frame{0};
 
   std::string         m_SignalFilename;
   std::vector<double> m_Signal;

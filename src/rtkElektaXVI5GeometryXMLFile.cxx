@@ -28,19 +28,7 @@ namespace rtk
 {
 
 ElektaXVI5GeometryXMLFileReader::
-  ElektaXVI5GeometryXMLFileReader() :
-  m_Geometry(GeometryType::New() ),
-  m_CurCharacterData(""),
-  m_InPlaneAngle(0.),
-  m_OutOfPlaneAngle(0.),
-  m_GantryAngle(0.),
-  m_SourceToIsocenterDistance(1000.),
-  m_SourceOffsetX(0.),
-  m_SourceOffsetY(0.),
-  m_SourceToDetectorDistance(1536.),
-  m_ProjectionOffsetX(0.),
-  m_ProjectionOffsetY(0.),
-  m_Version(0)
+  ElektaXVI5GeometryXMLFileReader()
 {
   this->m_OutputObject = &(*m_Geometry);
 }

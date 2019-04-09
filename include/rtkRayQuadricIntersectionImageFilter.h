@@ -98,20 +98,20 @@ protected:
   void BeforeThreadedGenerateData ( ) override;
 
 private:
-  ScalarType              m_Density;
+  ScalarType              m_Density{1.};
   std::vector<VectorType> m_PlaneDirections;
   std::vector<ScalarType> m_PlanePositions;
 
-  ScalarType m_A;
-  ScalarType m_B;
-  ScalarType m_C;
-  ScalarType m_D;
-  ScalarType m_E;
-  ScalarType m_F;
-  ScalarType m_G;
-  ScalarType m_H;
-  ScalarType m_I;
-  ScalarType m_J;
+  ScalarType m_A{0.};
+  ScalarType m_B{0.};
+  ScalarType m_C{0.};
+  ScalarType m_D{0.};
+  ScalarType m_E{0.};
+  ScalarType m_F{0.};
+  ScalarType m_G{0.};
+  ScalarType m_H{0.};
+  ScalarType m_I{0.};
+  ScalarType m_J{0.};
 };
 
 } // end namespace rtk

@@ -32,10 +32,7 @@ namespace rtk
 
 template <class TInputImage, class TOutputImage>
 DisplacedDetectorForOffsetFieldOfViewImageFilter<TInputImage, TOutputImage>
-::DisplacedDetectorForOffsetFieldOfViewImageFilter():
-  m_FOVRadius(-1.),
-  m_FOVCenterX(0.),
-  m_FOVCenterZ(0.)
+::DisplacedDetectorForOffsetFieldOfViewImageFilter()
 {
 }
 

@@ -287,8 +287,8 @@ protected:
   TSplatWeightMultiplication         m_SplatWeightMultiplication;
   TInterpolationWeightMultiplication m_InterpolationWeightMultiplication;
   TSumAlongRay                       m_SumAlongRay;
-  double                             m_InferiorClip;
-  double                             m_SuperiorClip;
+  double                             m_InferiorClip{0.};
+  double                             m_SuperiorClip{1.};
 
 };
 

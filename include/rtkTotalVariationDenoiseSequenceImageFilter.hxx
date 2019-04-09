@@ -27,9 +27,7 @@ namespace rtk
 
 template< typename TImageSequence>
 TotalVariationDenoiseSequenceImageFilter< TImageSequence>
-::TotalVariationDenoiseSequenceImageFilter():
-  m_Gamma(1.),
-  m_NumberOfIterations(1)
+::TotalVariationDenoiseSequenceImageFilter()
 {
   // Create the filters
   m_TVDenoisingFilter = TVDenoisingFilterType::New();

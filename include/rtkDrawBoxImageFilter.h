@@ -90,12 +90,12 @@ protected:
   void BeforeThreadedGenerateData ( ) override;
 
 private:
-  ScalarType              m_Density;
+  ScalarType              m_Density{1.};
   std::vector<VectorType> m_PlaneDirections;
   std::vector<ScalarType> m_PlanePositions;
 
-  VectorType         m_BoxMin;
-  VectorType         m_BoxMax;
+  VectorType         m_BoxMin{0.};
+  VectorType         m_BoxMax{0.};
   RotationMatrixType m_Direction;
 };
 

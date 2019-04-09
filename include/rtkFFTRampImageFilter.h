@@ -142,15 +142,15 @@ private:
    * Cut frequency of Hann, Cosine and Hamming windows. The first one which is
    * non-zero is used.
    */
-  double m_HannCutFrequency;
-  double m_CosineCutFrequency;
-  double m_HammingFrequency;
-  double m_HannCutFrequencyY;
+  double m_HannCutFrequency{0.};
+  double m_CosineCutFrequency{0.};
+  double m_HammingFrequency{0.};
+  double m_HannCutFrequencyY{0.};
 
   /** Cut frequency of Ram-Lak and Shepp-Logan
     */
-  double m_RamLakCutFrequency;
-  double m_SheppLoganCutFrequency;
+  double m_RamLakCutFrequency{0.};
+  double m_SheppLoganCutFrequency{0.};
 
   SizeType m_PreviousKernelUpdateSize;
 }; // end of class

@@ -88,13 +88,13 @@ protected:
   void BeforeThreadedGenerateData() override;
 
 private:
-  ScalarType              m_Density;
+  ScalarType              m_Density{1.};
   std::vector<VectorType> m_PlaneDirections;
   std::vector<ScalarType> m_PlanePositions;
 
   PointType  m_Center;
   VectorType m_Axis;
-  ScalarType m_Angle;
+  ScalarType m_Angle{0.};
 };
 
 } // end namespace rtk

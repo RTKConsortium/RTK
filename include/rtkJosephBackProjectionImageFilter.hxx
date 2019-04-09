@@ -42,9 +42,7 @@ JosephBackProjectionImageFilter<TInputImage,
                                 TInterpolationWeightMultiplication,
                                 TSplatWeightMultiplication,
                                 TSumAlongRay >
-::JosephBackProjectionImageFilter():
-    m_InferiorClip(0.),
-    m_SuperiorClip(1.)
+::JosephBackProjectionImageFilter()
 {
 }
 

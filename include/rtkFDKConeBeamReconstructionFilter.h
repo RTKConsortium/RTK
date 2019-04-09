@@ -136,7 +136,7 @@ protected:
 
 private:
   /** Number of projections processed at a time. */
-  unsigned int m_ProjectionSubsetSize;
+  unsigned int m_ProjectionSubsetSize{16};
 
   /** Geometry propagated to subfilters of the mini-pipeline. */
   ThreeDCircularProjectionGeometry::Pointer m_Geometry;

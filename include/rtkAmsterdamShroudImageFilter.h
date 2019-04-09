@@ -162,10 +162,10 @@ private:
   typename ConvolutionType::Pointer m_ConvolutionFilter;
   typename SubtractType::Pointer    m_SubtractFilter;
   typename PermuteType::Pointer     m_PermuteFilter;
-  unsigned int                      m_UnsharpMaskSize;
-  GeometryPointer                   m_Geometry;
-  PointType                         m_Corner1;
-  PointType                         m_Corner2;
+  unsigned int                      m_UnsharpMaskSize{17};
+  GeometryPointer                   m_Geometry{nullptr};
+  PointType                         m_Corner1{0.};
+  PointType                         m_Corner2{0.};
 }; // end of class
 
 } // end namespace rtk

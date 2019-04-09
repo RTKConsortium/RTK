@@ -105,16 +105,7 @@ namespace rtk
 //--------------------------------------------------------------------
 template <class TOutputImage>
 ProjectionsReader<TOutputImage>
-::ProjectionsReader():
-  m_ImageIO(nullptr),
-  m_AirThreshold(32000),
-  m_ScatterToPrimaryRatio(0.),
-  m_NonNegativityConstraintThreshold( itk::NumericTraits<double>::NonpositiveMin() ),
-  m_I0( itk::NumericTraits<double>::NonpositiveMin() ),
-  m_IDark( 0. ),
-  m_ConditionalMedianThresholdMultiplier( 1. ),
-  m_ComputeLineIntegral(true),
-  m_VectorComponent(0)
+::ProjectionsReader()
 {
   // Filters common to all input types and that do not depend on the input image type.
   m_WaterPrecorrectionFilter = WaterPrecorrectionType::New();
