@@ -131,11 +131,7 @@ protected:
    *
    * \sa ImageToImageFilter::ThreadedGenerateData(),
    *     ImageToImageFilter::GenerateData() */
-#if ITK_VERSION_MAJOR<5
   void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) override;
-#else
-  void DynamicThreadedGenerateData(const OutputImageRegionType& outputRegionForThread) override;
-#endif
 
 private:
   unsigned int                      m_Factors[ImageDimension];

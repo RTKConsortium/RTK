@@ -89,11 +89,7 @@ UpsampleImageFilter<TInputImage,TOutputImage>
 template <class TInputImage, class TOutputImage>
 void
 UpsampleImageFilter<TInputImage,TOutputImage>
-#if ITK_VERSION_MAJOR<5
 ::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId))
-#else
-::DynamicThreadedGenerateData(const OutputImageRegionType& outputRegionForThread)
-#endif
 {
   //Get the input and output pointers
   InputImageConstPointer  inputPtr    = this->GetInput();
