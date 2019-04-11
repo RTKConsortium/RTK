@@ -296,4 +296,6 @@ rtk_add_test(rtkBioscanTest rtkbioscantest.cxx
   DATA{Input/Bioscan/bioscan.dcm}
   DATA{Baseline/Bioscan/geometry.xml})
 
-itk_python_add_test(NAME rtkFirstReconstructionPythonTest COMMAND rtkFirstReconstruction.py ${CMAKE_CURRENT_BINARY_DIR}/rtkFirstReconstruction.mha)
+if(ITK_WRAP_PYTHON)
+  itk_python_add_test(NAME rtkFirstReconstructionPythonTest COMMAND rtkFirstReconstruction.py ${CMAKE_CURRENT_BINARY_DIR}/rtkFirstReconstruction.mha)
+endif()
