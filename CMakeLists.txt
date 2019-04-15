@@ -235,6 +235,9 @@ else()
   itk_module_impl()
 endif()
 
+# Install configuration file
+install(FILES ${RTK_BINARY_DIR}/rtkConfiguration.h DESTINATION ${RTK_INSTALL_INCLUDE_DIR})
+
 #=========================================================
 # Build applications
 #=========================================================
