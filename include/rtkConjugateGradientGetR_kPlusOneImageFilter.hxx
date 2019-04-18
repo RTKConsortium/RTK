@@ -31,10 +31,6 @@ namespace rtk
 template< typename TInputType>
 ConjugateGradientGetR_kPlusOneImageFilter<TInputType>::ConjugateGradientGetR_kPlusOneImageFilter()
 {
-#if ITK_VERSION_MAJOR>4
-  this->DynamicMultiThreadingOff();
-  this->SetNumberOfWorkUnits( itk::MultiThreaderBase::GetGlobalDefaultNumberOfThreads() );
-#endif
   this->SetNumberOfRequiredInputs(3);
 }
 
@@ -79,119 +75,123 @@ typename TInputType::Pointer ConjugateGradientGetR_kPlusOneImageFilter<TInputTyp
 
 template< typename TInputType>
 void ConjugateGradientGetR_kPlusOneImageFilter<TInputType>
-::BeforeThreadedGenerateData()
+::GenerateData()
 {
-  // Instead of using GetNumberOfThreads, we need to split the image into the
-  // number of regions that will actually be returned by
-  // itkImageSource::SplitRequestedRegion. Sometimes this number is less than
-  // the number of threads requested.
-  OutputImageRegionType dummy;
-#if ITK_VERSION_MAJOR<5
-  unsigned int actualThreads = this->SplitRequestedRegion(0, this->GetNumberOfThreads(), dummy);
-#else
-  unsigned int actualThreads = this->SplitRequestedRegion(0, this->GetNumberOfWorkUnits(), dummy);
-#endif
-
-  m_Barrier = itk::Barrier::New();
-  m_Barrier->Initialize(actualThreads);
-
-  m_SquaredNormR_kVector.clear();
-  m_SquaredNormR_kPlusOneVector.clear();
-  m_PktApkVector.clear();
-
-#if ITK_VERSION_MAJOR<5
-  for (unsigned int i=0; i<this->GetNumberOfThreads(); i++)
-#else
-  for (unsigned int i=0; i<this->GetNumberOfWorkUnits(); i++)
-#endif
-    {
-    m_SquaredNormR_kVector.push_back(0);
-    m_SquaredNormR_kPlusOneVector.push_back(0);
-    m_PktApkVector.push_back(0);
-    }
-}
-
-template< typename TInputType>
-void ConjugateGradientGetR_kPlusOneImageFilter<TInputType>
-::ThreadedGenerateData(const typename TInputType::RegionType & outputRegionForThread, ThreadIdType threadId)
-{
-  double eps=1e-8;
+  this->AllocateOutputs();
 
   // Prepare iterators
   using RegionIterator = itk::ImageRegionIterator<TInputType>;
 
-  // Compute Norm(r_k)²
-  RegionIterator r_k_It(this->GetRk(), outputRegionForThread);
-  r_k_It.GoToBegin();
-  while(!r_k_It.IsAtEnd())
-    {
-    m_SquaredNormR_kVector[threadId] += r_k_It.Get() * r_k_It.Get();
-    ++r_k_It;
-    }
-
-  // Compute p_k_t_A_p_k
-  RegionIterator p_k_It(this->GetPk(), outputRegionForThread);
-  p_k_It.GoToBegin();
-  RegionIterator A_p_k_It(this->GetAPk(), outputRegionForThread);
-  A_p_k_It.GoToBegin();
-  while(!p_k_It.IsAtEnd())
-    {
-    m_PktApkVector[threadId] += p_k_It.Get() * A_p_k_It.Get();
-    ++p_k_It;
-    ++A_p_k_It;
-    }
-  m_Barrier->Wait();
-
-  // Each thread computes alpha_k
-  double squaredNormR_k = 0;
-  double p_k_t_A_p_k = 0;
-#if ITK_VERSION_MAJOR<5
-  for (unsigned int i=0; i<this->GetNumberOfThreads(); i++)
-#else
-  for (unsigned int i=0; i<this->GetNumberOfWorkUnits(); i++)
+#if ITK_VERSION_MAJOR>4
+  std::mutex accumulationLock;
 #endif
-    {
-    squaredNormR_k += m_SquaredNormR_kVector[i];
-    p_k_t_A_p_k += m_PktApkVector[i];
-    }
-  typename itk::PixelTraits<typename TInputType::PixelType>::ValueType alphak = squaredNormR_k / (p_k_t_A_p_k + eps);
-
-  // Compute Rk+1 and write it on the output
-  RegionIterator outputIt(this->GetOutput(), outputRegionForThread);
-  outputIt.GoToBegin();
-  A_p_k_It.GoToBegin();
-  r_k_It.GoToBegin();
-  while(!outputIt.IsAtEnd())
-    {
-    outputIt.Set(r_k_It.Get() - alphak * A_p_k_It.Get());
-    m_SquaredNormR_kPlusOneVector[threadId] += outputIt.Get() * outputIt.Get();
-    ++r_k_It;
-    ++A_p_k_It;
-    ++outputIt;
-    }
-}
-
-template< typename TInputType>
-void ConjugateGradientGetR_kPlusOneImageFilter<TInputType>
-::AfterThreadedGenerateData()
-{
-  double eps=1e-8;
-
-  // Set the members m_Alphak, m_SquaredNormR_k and
-  // m_SquaredNormR_kPlusOne, as they will be passed to other filters
   m_SquaredNormR_k = 0;
-  m_SquaredNormR_kPlusOne = 0;
   double p_k_t_A_p_k = 0;
-#if ITK_VERSION_MAJOR<5
-  for (unsigned int i=0; i<this->GetNumberOfThreads(); i++)
+#if ITK_VERSION_MAJOR>4
+  this->GetMultiThreader()->SetNumberOfWorkUnits( this->GetNumberOfWorkUnits() );
+  this->GetMultiThreader()->template ParallelizeImageRegion<TInputType::ImageDimension>
+    (
+    this->GetOutput()->GetRequestedRegion(),
+    [this, &p_k_t_A_p_k, &accumulationLock](const typename TInputType::RegionType & outputRegionForThread)
+      {
 #else
-  for (unsigned int i=0; i<this->GetNumberOfWorkUnits(); i++)
+      {
+      typename TInputType::RegionType outputRegionForThread;
+      outputRegionForThread = this->GetOutput()->GetRequestedRegion();
 #endif
-    {
-    m_SquaredNormR_k += m_SquaredNormR_kVector[i];
-    m_SquaredNormR_kPlusOne += m_SquaredNormR_kPlusOneVector[i];
-    p_k_t_A_p_k += m_PktApkVector[i];
-    }
+      // Compute Norm(r_k)²
+#if ITK_VERSION_MAJOR>4
+      double squaredNormR_kThread = 0.;
+#endif
+      RegionIterator r_k_It(this->GetRk(), outputRegionForThread);
+      r_k_It.GoToBegin();
+      while(!r_k_It.IsAtEnd())
+        {
+#if ITK_VERSION_MAJOR>4
+        squaredNormR_kThread += r_k_It.Get() * r_k_It.Get();
+#else
+        this->m_SquaredNormR_k += r_k_It.Get() * r_k_It.Get();
+#endif
+        ++r_k_It;
+        }
+
+      // Compute p_k_t_A_p_k
+#if ITK_VERSION_MAJOR>4
+      double p_k_t_A_p_kThread = 0.;
+#endif
+      RegionIterator p_k_It(this->GetPk(), outputRegionForThread);
+      p_k_It.GoToBegin();
+      RegionIterator A_p_k_It(this->GetAPk(), outputRegionForThread);
+      A_p_k_It.GoToBegin();
+      while(!p_k_It.IsAtEnd())
+        {
+#if ITK_VERSION_MAJOR>4
+        p_k_t_A_p_kThread += p_k_It.Get() * A_p_k_It.Get();
+#else
+        p_k_t_A_p_k += p_k_It.Get() * A_p_k_It.Get();
+#endif
+        ++p_k_It;
+        ++A_p_k_It;
+        }
+#if ITK_VERSION_MAJOR>4
+      std::lock_guard<std::mutex> mutexHolder(accumulationLock);
+      this->m_SquaredNormR_k += squaredNormR_kThread;
+      p_k_t_A_p_k += p_k_t_A_p_kThread;
+      },
+    nullptr
+    );
+#else
+      }
+#endif
+
+  const double eps=1e-8;
+  typename itk::PixelTraits<typename TInputType::PixelType>::ValueType alphak = m_SquaredNormR_k / (p_k_t_A_p_k + eps);
+
+  m_SquaredNormR_kPlusOne = 0;
+#if ITK_VERSION_MAJOR>4
+  this->GetMultiThreader()->SetNumberOfWorkUnits( this->GetNumberOfWorkUnits() );
+  this->GetMultiThreader()->template ParallelizeImageRegion<TInputType::ImageDimension>
+    (
+    this->GetOutput()->GetRequestedRegion(),
+    [this, alphak, &accumulationLock](const typename TInputType::RegionType & outputRegionForThread)
+      {
+#else
+      {
+      typename TInputType::RegionType outputRegionForThread;
+      outputRegionForThread = this->GetOutput()->GetRequestedRegion();
+#endif
+      // Compute Rk+1 and write it on the output
+#if ITK_VERSION_MAJOR>4
+      double squaredNormR_kPlusOneVectorThread = 0.;
+#endif
+      RegionIterator outputIt(this->GetOutput(), outputRegionForThread);
+      outputIt.GoToBegin();
+      RegionIterator A_p_k_It(this->GetAPk(), outputRegionForThread);
+      A_p_k_It.GoToBegin();
+      RegionIterator r_k_It(this->GetRk(), outputRegionForThread);
+      r_k_It.GoToBegin();
+      while(!outputIt.IsAtEnd())
+        {
+        outputIt.Set(r_k_It.Get() - alphak * A_p_k_It.Get());
+#if ITK_VERSION_MAJOR>4
+        squaredNormR_kPlusOneVectorThread += outputIt.Get() * outputIt.Get();
+#else
+        this->m_SquaredNormR_kPlusOne += outputIt.Get() * outputIt.Get();
+#endif
+        ++r_k_It;
+        ++A_p_k_It;
+        ++outputIt;
+        }
+#if ITK_VERSION_MAJOR>4
+      std::lock_guard<std::mutex> mutexHolder(accumulationLock);
+      this->m_SquaredNormR_kPlusOne += squaredNormR_kPlusOneVectorThread;
+      },
+    nullptr
+    );
+#else
+      }
+#endif
+
   m_Alphak = m_SquaredNormR_k / (p_k_t_A_p_k + eps);
 }
 

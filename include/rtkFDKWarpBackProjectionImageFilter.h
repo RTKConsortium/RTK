@@ -21,8 +21,6 @@
 
 #include "rtkFDKBackProjectionImageFilter.h"
 
-#include <itkBarrier.h>
-
 namespace rtk
 {
 
@@ -82,14 +80,10 @@ protected:
   FDKWarpBackProjectionImageFilter();
   ~FDKWarpBackProjectionImageFilter() override = default;
 
-  void BeforeThreadedGenerateData() override;
-
-  void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) override;
+  void GenerateData() override;
 
 private:
   DeformationPointer    m_Deformation;
-  itk::Barrier::Pointer m_Barrier;
-  bool                  m_DeformationUpdateError{false};
 };
 
 } // end namespace rtk

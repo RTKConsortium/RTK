@@ -21,7 +21,6 @@
 
 #include <itkImageToImageFilter.h>
 #include <itkVectorImage.h>
-#include <itkBarrier.h>
 
 #include "rtkConfiguration.h"
 #include "rtkMacro.h"
@@ -69,41 +68,13 @@ protected:
     typename TInputImage::Pointer GetPk();
     typename TInputImage::Pointer GetAPk();
 
-    /** Initialize the thread synchronization barrier before the threads run,
-        and create a few vectors in which each thread will store temporary
-        accumulation results */
-    void BeforeThreadedGenerateData() override;
-
-    /** Do the real work */
-    void ThreadedGenerateData(const typename TInputImage::RegionType &
-                               outputRegionForThread,
-                               ThreadIdType threadId) override;
-
-    /**  Set m_alphak to its correct value as it has to be passed to other filters */
-    void AfterThreadedGenerateData() override;
+    void GenerateData() override;
 
 private:
     double m_Alphak{0.};
     double m_SquaredNormR_k{0.};
     double m_SquaredNormR_kPlusOne{0.};
-
-    // Thread synchronization tool
-    itk::Barrier::Pointer m_Barrier;
-
-    // These vector store one accumulation value per thread
-    // The values are then sumed
-    std::vector<double> m_SquaredNormR_kVector;
-    std::vector<double> m_SquaredNormR_kPlusOneVector;
-    std::vector<double> m_PktApkVector;
-
 };
-
-template<>
-void
-ConjugateGradientGetR_kPlusOneImageFilter<itk::VectorImage<double, 3>>
-::ThreadedGenerateData(const itk::VectorImage<double, 3>::RegionType &
-                           outputRegionForThread,
-                           ThreadIdType threadId);
 
 } //namespace RTK
 
