@@ -128,7 +128,7 @@ for (unsigned int component = 0; component < nComponents; component++)
     cudaMalloc3DArray((cudaArray**)& componentArrays[component], &channelDesc, volExtent);
 
   // Fill it with the current singleComponent
-  cudaMemcpy3DParms CopyParams = {0};
+  cudaMemcpy3DParms CopyParams = cudaMemcpy3DParms();
   CopyParams.srcPtr   = make_cudaPitchedPtr(singleComponent, size[0] * sizeof(float), size[0], size[1]);
   CopyParams.dstArray = (cudaArray*) componentArrays[component];
   CopyParams.extent   = volExtent;

@@ -186,7 +186,7 @@ CUDA_reconstruct_conebeam(
   CUDA_CHECK_ERROR;
 
   // Copy data to 3D array
-  cudaMemcpy3DParms copyParams = {0};
+  cudaMemcpy3DParms copyParams = cudaMemcpy3DParms();
   copyParams.srcPtr   = make_cudaPitchedPtr(dev_proj, proj_size[0]*sizeof(float), proj_size[0], proj_size[1]);
   copyParams.dstArray = (cudaArray*)array_proj;
   copyParams.extent   = projExtent;

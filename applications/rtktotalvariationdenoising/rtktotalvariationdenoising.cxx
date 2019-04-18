@@ -40,8 +40,6 @@ int main(int argc, char * argv[])
 
 #ifdef RTK_USE_CUDA
   using OutputImageType = itk::CudaImage< OutputPixelType, Dimension >;
-  using GradientOutputImageType = itk::CudaImage< itk::CovariantVector
-      < OutputPixelType, Dimension >, Dimension >;
   using TVDenoisingFilterType = rtk::CudaTotalVariationDenoisingBPDQImageFilter;
 #else
   using OutputImageType = itk::Image< OutputPixelType, Dimension >;

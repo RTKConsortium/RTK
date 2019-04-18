@@ -345,7 +345,7 @@ void rtk::XimImageIO::Read(void * buffer)
     itkGenericExceptionMacro(<< "Could not read LUT size from: " << m_FileName);
   }
   auto m_lookup_table = std::valarray<unsigned char>(lookUpTableSize);
-  if (lookUpTableSize != fread((void *)&m_lookup_table[0], sizeof(unsigned char), lookUpTableSize, fp)){
+  if (lookUpTableSize != (Int4)fread((void *)&m_lookup_table[0], sizeof(unsigned char), lookUpTableSize, fp)){
       itkGenericExceptionMacro(<< "Could not read lookup table from Xim file: " << m_FileName);
     }
 

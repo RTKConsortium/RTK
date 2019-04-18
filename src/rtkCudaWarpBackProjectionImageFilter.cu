@@ -363,7 +363,7 @@ CUDA_warp_back_project(int projSize[3],
   CUDA_CHECK_ERROR;
 
   // Copy data to 3D array
-  cudaMemcpy3DParms copyParams = {0};
+  cudaMemcpy3DParms copyParams = cudaMemcpy3DParms();
   copyParams.srcPtr   = make_cudaPitchedPtr(dev_proj, projSize[0]*sizeof(float), projSize[0], projSize[1]);
   copyParams.dstArray = (cudaArray*)array_proj;
   copyParams.extent   = projExtent;
@@ -417,7 +417,7 @@ CUDA_warp_back_project(int projSize[3],
 
     // Allocate the cudaArray and fill it with the current DVFcomponent
     cudaMalloc3DArray((cudaArray**)& DVFcomponentArrays[component], &channelDesc, dvfExtent);
-    cudaMemcpy3DParms CopyParams = {0};
+    cudaMemcpy3DParms CopyParams = cudaMemcpy3DParms();
     CopyParams.srcPtr   = make_cudaPitchedPtr(DVFcomponent, dvf_size[0] * sizeof(float), dvf_size[0], dvf_size[1]);
     CopyParams.dstArray = (cudaArray*) DVFcomponentArrays[component];
     CopyParams.extent   = dvfExtent;

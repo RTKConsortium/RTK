@@ -223,7 +223,7 @@ CUDA_warp(int input_vol_dim[3],
 
     // Allocate the cudaArray and fill it with the current DVFcomponent
     cudaMalloc3DArray((cudaArray**)& DVFcomponentArrays[component], &channelDesc, dvfExtent);
-    cudaMemcpy3DParms CopyParams = {0};
+    cudaMemcpy3DParms CopyParams = cudaMemcpy3DParms();
     CopyParams.srcPtr   = make_cudaPitchedPtr(DVFcomponent, input_dvf_dim[0] * sizeof(float), input_dvf_dim[0], input_dvf_dim[1]);
     CopyParams.dstArray = (cudaArray*) DVFcomponentArrays[component];
     CopyParams.extent   = dvfExtent;
@@ -263,7 +263,7 @@ CUDA_warp(int input_vol_dim[3],
   CUDA_CHECK_ERROR;
 
   // Copy image data to array
-  cudaMemcpy3DParms inputCopyParams = {0};
+  cudaMemcpy3DParms inputCopyParams = cudaMemcpy3DParms();
   inputCopyParams.srcPtr   = make_cudaPitchedPtr(dev_input_vol, input_vol_dim[0]*sizeof(float), input_vol_dim[0], input_vol_dim[1]);
   inputCopyParams.dstArray = (cudaArray*)array_input_vol;
   inputCopyParams.extent   = volExtent;

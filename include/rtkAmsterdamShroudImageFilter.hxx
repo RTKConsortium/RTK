@@ -191,6 +191,8 @@ AmsterdamShroudImageFilter<TInputImage>
     {
     // Project and keep the inferior and superior 2d corner
     itk::ContinuousIndex<double, 3> pCornerInf, pCornerSup;
+    pCornerInf.Fill(0.); //Useless but removes warning
+    pCornerSup.Fill(0.); //Useless but removes warning
     GeometryType::MatrixType matrix;
     matrix = m_Geometry->GetMatrices()[iProj].GetVnlMatrix();
     for(unsigned int ci=0; ci<8; ci++)

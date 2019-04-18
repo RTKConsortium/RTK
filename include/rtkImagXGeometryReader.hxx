@@ -57,7 +57,6 @@ ImagXGeometryReader<TInputImage>::GetGeometryForAI2p1()
   readerXML->Update();
   const itk::DOMNodeXMLReader::OutputType* XMLFile = readerXML->GetOutput();
 
-  itk::DOMNode::AttributesListType::const_iterator list_it;
   itk::DOMNode::ConstChildrenListType list_child;
   XMLFile->GetAllChildren(list_child);
 
@@ -178,10 +177,10 @@ ImagXGeometryReader<TInputImage>::GetGeometryForAI2p1()
             {
             list.clear();
             list_geocal->GetAllAttributes(list);
-            for (list_it = list.begin(); list_it != list.end(); list_it++)
+            for (const auto & list_it : list)
               {
-              std::string tagName = (*list_it).first.c_str();
-              std::string tagValue = (*list_it).second.c_str();
+              std::string tagName = list_it.first.c_str();
+              std::string tagValue = list_it.second.c_str();
               if (tagName == "uid" && tagValue == F.activeGeocalUID) {
                 flexmapFoundAndLoaded = true;
                 }
@@ -341,7 +340,6 @@ ImagXGeometryReader<TInputImage>::GetGeometryForAI1p5FromXMLFiles()
   const itk::DOMNodeXMLReader::OutputType* XMLFile = readerXML->GetOutput();
 
   itk::DOMNode::AttributesListType list;
-  itk::DOMNode::AttributesListType::const_iterator list_it;
   itk::DOMNode::ConstChildrenListType list_child;
   XMLFile->GetAllChildren(list_child);
 
@@ -349,7 +347,7 @@ ImagXGeometryReader<TInputImage>::GetGeometryForAI1p5FromXMLFiles()
     {
     child->GetAllAttributes(list);
     unsigned int k = 0;
-    for (list_it = list.begin(); list_it != list.end(); list_it++, k++)
+    for (auto list_it = list.begin(); list_it != list.end(); list_it++, k++)
       {
       if ( (*list_it).first.c_str() == std::string("axis") )
         axisName = (*list_it).second.c_str();
@@ -370,7 +368,7 @@ ImagXGeometryReader<TInputImage>::GetGeometryForAI1p5FromXMLFiles()
           itk::DOMNode::AttributesListType list2;
           list_child3[n]->GetAllAttributes(list2);
           unsigned int m = 0;
-          for (list_it = list2.begin(); list_it != list2.end(); list_it++, m++)
+          for (auto list_it = list2.begin(); list_it != list2.end(); list_it++, m++)
             {
             if ( (list_child3[n]->GetName() == std::string("Px") ) &&
                  ( (*list_it).first.c_str() != std::string("MSE") ) )
@@ -418,7 +416,7 @@ ImagXGeometryReader<TInputImage>::GetGeometryForAI1p5FromXMLFiles()
     {
     child->GetAllAttributes(list);
     unsigned int k = 0;
-    for (list_it = list.begin(); list_it != list.end(); list_it++, k++)
+    for (auto list_it = list.begin(); list_it != list.end(); list_it++, k++)
       {
       if ( (*list_it).first.c_str() == std::string("axis") )
         axisName = (*list_it).second.c_str();
@@ -433,7 +431,7 @@ ImagXGeometryReader<TInputImage>::GetGeometryForAI1p5FromXMLFiles()
         {
         itk::DOMNode::AttributesListType list2;
         child2->GetAllAttributes(list2);
-        for (list_it = list2.begin(); list_it != list2.end(); list_it++, k++)
+        for (auto list_it = list2.begin(); list_it != list2.end(); list_it++, k++)
           {
           if ( (*list_it).first.c_str() == std::string("sdd") )
             sdd_s = (*list_it).second.c_str();

@@ -431,7 +431,7 @@ CUDA_ForwardWarp(int input_vol_dim[3],
 
   // Copy image data to arrays. For a nice explanation on make_cudaPitchedPtr, checkout
   // http://stackoverflow.com/questions/16119943/how-and-when-should-i-use-pitched-pointer-with-the-cuda-api
-  cudaMemcpy3DParms xCopyParams = {0};
+  cudaMemcpy3DParms xCopyParams = cudaMemcpy3DParms();
   xCopyParams.srcPtr   = make_cudaPitchedPtr(dev_input_xdvf, input_dvf_dim[0] * sizeof(float), input_dvf_dim[0], input_dvf_dim[1]);
   xCopyParams.dstArray = (cudaArray*)array_xdvf;
   xCopyParams.extent   = dvfExtent;
@@ -439,7 +439,7 @@ CUDA_ForwardWarp(int input_vol_dim[3],
   cudaMemcpy3D(&xCopyParams);
   CUDA_CHECK_ERROR;
 
-  cudaMemcpy3DParms yCopyParams = {0};
+  cudaMemcpy3DParms yCopyParams = cudaMemcpy3DParms();
   yCopyParams.srcPtr   = make_cudaPitchedPtr(dev_input_ydvf, input_dvf_dim[0] * sizeof(float), input_dvf_dim[0], input_dvf_dim[1]);
   yCopyParams.dstArray = (cudaArray*)array_ydvf;
   yCopyParams.extent   = dvfExtent;
@@ -447,7 +447,7 @@ CUDA_ForwardWarp(int input_vol_dim[3],
   cudaMemcpy3D(&yCopyParams);
   CUDA_CHECK_ERROR;
 
-  cudaMemcpy3DParms zCopyParams = {0};
+  cudaMemcpy3DParms zCopyParams = cudaMemcpy3DParms();
   zCopyParams.srcPtr   = make_cudaPitchedPtr(dev_input_zdvf, input_dvf_dim[0] * sizeof(float), input_dvf_dim[0], input_dvf_dim[1]);
   zCopyParams.dstArray = (cudaArray*)array_zdvf;
   zCopyParams.extent   = dvfExtent;

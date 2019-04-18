@@ -15,7 +15,7 @@ void CheckGradient(typename TImage::Pointer im, typename TGradient::Pointer grad
 {
   // Generate a list of indices of the dimensions to process
   std::vector<int> dimsToProcess;
-  for (int dim = 0; dim < TImage::ImageDimension; dim++)
+  for (unsigned int dim = 0; dim < TImage::ImageDimension; dim++)
     {
     if(dimensionsProcessed[dim]) dimsToProcess.push_back(dim);
     }

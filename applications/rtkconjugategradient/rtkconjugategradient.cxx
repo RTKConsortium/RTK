@@ -40,11 +40,10 @@ int main(int argc, char * argv[])
   std::vector<double> costs;
   std::ostream_iterator<double> costs_it(std::cout,"\n");
 
-  using CPUOutputImageType = itk::Image< OutputPixelType, Dimension >;
 #ifdef RTK_USE_CUDA
   using OutputImageType = itk::CudaImage< OutputPixelType, Dimension >;
 #else
-  using OutputImageType = CPUOutputImageType;
+  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
 #endif
 
   // Projections reader

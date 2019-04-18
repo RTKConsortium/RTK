@@ -39,7 +39,6 @@ int main(int argc, char * argv[])
   using VolumeSeriesType = itk::CudaImage< OutputPixelType, 4 >;
   using ProjectionStackType = itk::CudaImage< OutputPixelType, 3 >;
   using DVFSequenceImageType = itk::CudaImage<DVFVectorType, VolumeSeriesType::ImageDimension>;
-  using DVFImageType = itk::CudaImage<DVFVectorType, VolumeSeriesType::ImageDimension - 1>;
 #else
   using VolumeSeriesType = itk::Image< OutputPixelType, 4 >;
   using ProjectionStackType = itk::Image< OutputPixelType, 3 >;

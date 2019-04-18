@@ -97,10 +97,10 @@ CudaConjugateGradientImageFilter<TImage>
     AOut = this->m_A->GetOutput();
     AOut->DisconnectPipeline();
 
-    DataType *pX = *(DataType**)( this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer() );
-    DataType *pR = *(DataType**)( R_k->GetCudaDataManager()->GetGPUBufferPointer() );
-    DataType *pP = *(DataType**)( P_k->GetCudaDataManager()->GetGPUBufferPointer() );
-    DataType *pAOut = *(DataType**)( AOut->GetCudaDataManager()->GetGPUBufferPointer() );
+    pX = *(DataType**)( this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer() );
+    pR = *(DataType**)( R_k->GetCudaDataManager()->GetGPUBufferPointer() );
+    pP = *(DataType**)( P_k->GetCudaDataManager()->GetGPUBufferPointer() );
+    pAOut = *(DataType**)( AOut->GetCudaDataManager()->GetGPUBufferPointer() );
 
     // Compute, on GPU, alpha_k (only on GPU), X_k+1 (output), R_k+1, beta_k (only on GPU), P_k+1
     // The inputs are replaced by their next iterate
