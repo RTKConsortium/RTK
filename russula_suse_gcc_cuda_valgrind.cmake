@@ -6,7 +6,7 @@ set(CTEST_CMAKE_GENERATOR "Unix Makefiles")
 set(dashboard_binary_name "RTK_lin64_gcc_cuda_system_itk4_valgrind")
 set(ENV{ITK_DIR} "/home/srit/src/itk/lin64-RelWithDebInfo")
 set(CTEST_BUILD_FLAGS -j16)
-set(ENV{CUDA_BIN_PATH} "/home/srit/Download/cuda80/bin")
+set(ENV{CUDA_BIN_PATH} "/home/srit/Downloads/cuda80/bin")
 set(ENV{CXXFLAGS} "-fPIC -std=c++11 --param=max-vartrack-size=60000000")
 
 set(ENV{VALGRIND_LIB} "/usr/lib64/valgrind")

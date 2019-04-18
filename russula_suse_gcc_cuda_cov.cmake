@@ -6,7 +6,7 @@ set(CTEST_CMAKE_GENERATOR "Unix Makefiles")
 set(dashboard_binary_name "RTK_lin64_gcc_cuda_system_itk4_cov")
 set(ENV{ITK_DIR} "/home/srit/src/itk/lin64-Debug")
 set(CTEST_BUILD_FLAGS -j16)
-set(ENV{CUDA_BIN_PATH} "/home/srit/Download/cuda80/bin")
+set(ENV{CUDA_BIN_PATH} "/home/srit/Downloads/cuda80/bin")
 
 # Coverage
 SET(CTEST_COVERAGE_COMMAND "/usr/bin/gcov")
