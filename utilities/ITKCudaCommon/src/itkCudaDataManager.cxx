@@ -44,8 +44,8 @@ CudaDataManager::CudaDataManager()
   m_ReleaseDirtyGPUBuffer = true;
   std::string relString;
   if( itksys::SystemTools::GetEnv("ITK_RELEASE_DIRTY_GPU_BUFFERS",relString) &&
-      (itksys::SystemTools::LowerCase(relString) == "false" ||
-       atoi( relString.c_str() ) !=0) )
+      ( itksys::SystemTools::LowerCase(relString) == "false" ||
+        atoi(relString.c_str()) != 0 ) )
     {
 #ifdef VERBOSE
     std::cout << "Releasing dirty GPU buffer" << std::endl;

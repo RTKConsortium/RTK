@@ -15,8 +15,8 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef __itkCudaFunctorBase_h
-#define __itkCudaFunctorBase_h
+#ifndef itkCudaFunctorBase_h
+#define itkCudaFunctorBase_h
 
 #include "itkCudaKernelManager.h"
 

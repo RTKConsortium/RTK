@@ -15,8 +15,8 @@
 *  limitations under the License.
 *
 *=========================================================================*/
-#ifndef __itkCudaKernelManager_h
-#define __itkCudaKernelManager_h
+#ifndef itkCudaKernelManager_h
+#define itkCudaKernelManager_h
 
 #include <vector>
 #include <itkLightObject.h>

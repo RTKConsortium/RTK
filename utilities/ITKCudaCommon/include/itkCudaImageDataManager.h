@@ -15,8 +15,8 @@
 *  limitations under the License.
 *
 *=========================================================================*/
-#ifndef __itkCudaImageDataManager_h
-#define __itkCudaImageDataManager_h
+#ifndef itkCudaImageDataManager_h
+#define itkCudaImageDataManager_h
 
 #include <itkObject.h>
 #include <itkLightObject.h>

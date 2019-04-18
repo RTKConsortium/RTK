@@ -15,8 +15,8 @@
 *  limitations under the License.
 *
 *=========================================================================*/
-#ifndef __itkCudaDataManager_h
-#define __itkCudaDataManager_h
+#ifndef itkCudaDataManager_h
+#define itkCudaDataManager_h
 
 #include "itkObject.h"
 #include "itkDataObject.h"
@@ -98,7 +98,7 @@ protected:
     m_BufferSize = 0;
     }
 
-  void* m_GPUBuffer;
+  void*  m_GPUBuffer;
   size_t m_BufferSize;
 };
 
@@ -214,7 +214,7 @@ protected:
 
   /** buffer pointers */
   GPUMemPointer::Pointer m_GPUBuffer;
-  void* m_CPUBuffer;
+  void*                  m_CPUBuffer;
 
   /** checks if buffer needs to be updated */
   bool m_IsGPUBufferDirty;

@@ -15,25 +15,23 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef __itkCudaImageOps_h
-#define __itkCudaImageOps_h
+#ifndef itkCudaImageOps_h
+#define itkCudaImageOps_h
 
 #include "itkMacro.h"
 #include "itkCudaUtil.h"
 
 namespace itk
 {
+/** Create a helper Cuda Kernel class for CudaImageOps */
+itkCudaKernelClassMacro(CudaImageOpsKernel);
+
 /** \class CudaImageOps
  *
  * \brief Provides the kernels for some basic Cuda Image Operations
  *
  * \ingroup ITKCudaCommon
  */
-
-/** Create a helper Cuda Kernel class for CudaImageOps */
-itkCudaKernelClassMacro(CudaImageOpsKernel);
-
-/** CudaImageOps class definition */
 class ITK_EXPORT CudaImageOps
 {
 public:

@@ -15,8 +15,8 @@
 *  limitations under the License.
 *
 *=========================================================================*/
-#ifndef __itkCudaImage_h
-#define __itkCudaImage_h
+#ifndef itkCudaImage_h
+#define itkCudaImage_h
 
 #include "itkImage.h"
 #include "itkCudaImageDataManager.h"
@@ -76,10 +76,10 @@ public:
    * using OutputImageType = typename ImageType::template Rebind< float >::Type;
    *
    */
-  template <typename UPixelType, unsigned int UImageDimension = VImageDimension>
+  template <typename TRebindPixel, unsigned int VRebindImageDimension = VImageDimension>
   struct Rebind
     {
-      using Type = itk::CudaImage<UPixelType, UImageDimension>;
+      using Type = itk::CudaImage<TRebindPixel, VRebindImageDimension>;
     };
 
   //

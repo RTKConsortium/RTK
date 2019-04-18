@@ -15,8 +15,8 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef __itkCudaUtil_h
-#define __itkCudaUtil_h
+#ifndef itkCudaUtil_h
+#define itkCudaUtil_h
 
 #include <cstring>
 #include <cstdlib>
@@ -38,9 +38,8 @@
 namespace itk
 {
 
-/** Construct a non-templatized helper class that
- * provides the GPU kernel source code as a const char*
- */
+// Construct a non-templatized helper class that
+// provides the GPU kernel source code as a const char
 #define itkCudaKernelClassMacro(kernel)  \
 class ITKCudaCommon_EXPORT kernel                  \
   {                                      \

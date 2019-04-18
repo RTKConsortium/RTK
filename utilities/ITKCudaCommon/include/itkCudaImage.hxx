@@ -15,8 +15,8 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef __itkCudaImage_hxx
-#define __itkCudaImage_hxx
+#ifndef itkCudaImage_hxx
+#define itkCudaImage_hxx
 
 #include "itkCudaImage.h"
 

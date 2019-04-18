@@ -15,8 +15,8 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef __itkCudaUnaryFunctorImageFilter_h
-#define __itkCudaUnaryFunctorImageFilter_h
+#ifndef itkCudaUnaryFunctorImageFilter_h
+#define itkCudaUnaryFunctorImageFilter_h
 
 #include "itkCudaFunctorBase.h"
 #include "itkCudaInPlaceImageFilter.h"

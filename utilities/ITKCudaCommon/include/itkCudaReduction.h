@@ -15,8 +15,8 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef __itkCudaReduction_h
-#define __itkCudaReduction_h
+#ifndef itkCudaReduction_h
+#define itkCudaReduction_h
 
 #include "itkObject.h"
 #include "itkCudaDataManager.h"

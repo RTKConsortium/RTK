@@ -15,8 +15,8 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef __itkCudaContextManager_h
-#define __itkCudaContextManager_h
+#ifndef itkCudaContextManager_h
+#define itkCudaContextManager_h
 
 #include "itkCudaUtil.h"
 #include <itkLightObject.h>
@@ -52,12 +52,12 @@ private:
   ~CudaContextManager();
 
   CUcontext m_Context;
-  int m_Device;
-  int m_DeviceIdx;
-  int m_NumberOfDevices;
+  int       m_Device;
+  int       m_DeviceIdx;
+  int       m_NumberOfDevices;
 
   static CudaContextManager* m_Instance;
-  static bool m_Initialized;
+  static bool                m_Initialized;
 };
 } // namespace itk
 

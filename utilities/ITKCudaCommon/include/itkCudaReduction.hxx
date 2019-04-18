@@ -15,8 +15,8 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef __itkCudaReduction_hxx
-#define __itkCudaReduction_hxx
+#ifndef itkCudaReduction_hxx
+#define itkCudaReduction_hxx
 
 #include "itkMacro.h"
 #include "itkCudaReduction.h"

@@ -15,8 +15,8 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef __itkCudaImageToImageFilter_hxx
-#define __itkCudaImageToImageFilter_hxx
+#ifndef itkCudaImageToImageFilter_hxx
+#define itkCudaImageToImageFilter_hxx
 
 #include "itkCudaImageToImageFilter.h"
 
