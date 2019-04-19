@@ -145,20 +145,20 @@ FDKWarpBackProjectionImageFilter<TInputImage,TOutputImage,TDeformation>
             point = point + warpInterpolator->Evaluate(point);
 
           // Compute projection index
-          itk::ContinuousIndex<double, Dimension-1> pointProj;
-          for(unsigned int i=0; i<Dimension-1; i++)
+          itk::ContinuousIndex<double, TOutputImage::ImageDimension-1> pointProj;
+          for(unsigned int i=0; i<TOutputImage::ImageDimension-1; i++)
             {
-            pointProj[i] = matrix[i][Dimension];
-            for(unsigned int j=0; j<Dimension; j++)
+            pointProj[i] = matrix[i][TOutputImage::ImageDimension];
+            for(unsigned int j=0; j<TOutputImage::ImageDimension; j++)
               pointProj[i] += matrix[i][j] * point[j];
             }
 
           // Apply perspective
-          double perspFactor_local = matrix[Dimension-1][Dimension];
-          for(unsigned int j=0; j<Dimension; j++)
-            perspFactor_local += matrix[Dimension-1][j] * point[j];
+          double perspFactor_local = matrix[TOutputImage::ImageDimension-1][TOutputImage::ImageDimension];
+          for(unsigned int j=0; j<TOutputImage::ImageDimension; j++)
+            perspFactor_local += matrix[TOutputImage::ImageDimension-1][j] * point[j];
           perspFactor_local = 1/perspFactor_local;
-          for(unsigned int i=0; i<Dimension-1; i++)
+          for(unsigned int i=0; i<TOutputImage::ImageDimension-1; i++)
             pointProj[i] = pointProj[i]*perspFactor_local;
 
           // Interpolate if in projection
