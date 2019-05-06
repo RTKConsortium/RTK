@@ -238,6 +238,9 @@ endif()
 
 # Install configuration file
 install(FILES ${RTK_BINARY_DIR}/rtkConfiguration.h DESTINATION ${RTK_INSTALL_INCLUDE_DIR})
+install(FILES ${RTK_BINARY_DIR}/RTKConfig.cmake
+              ${RTK_BINARY_DIR}/RTKConfigVersion.cmake
+        DESTINATION ${ITK_INSTALL_PACKAGE_DIR})
 
 #=========================================================
 # Build applications
