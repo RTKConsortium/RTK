@@ -198,29 +198,41 @@ set(RTK_SYSTEM_INCLUDE_DIRS ${RTK_INCLUDE_DIRS})
 #=========================================================
 # Generate RTKConfig.cmake for the build tree.
 set(RTK_MODULE_PATH_CONFIG ${CMAKE_MODULE_PATH})
-set(RTK_USE_FILE "${RTK_SOURCE_DIR}/cmake/UseRTK.cmake")
 set(RTK_LIBRARY_DIRS ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
 
 set(RTK_EXPORT_CODE_BUILD "
-  # The RTK version number
-  set(RTK_VERSION_MAJOR ${RTK_VERSION_MAJOR})
-  set(RTK_VERSION_MINOR ${RTK_VERSION_MINOR})
-  set(RTK_VERSION_PATCH ${RTK_VERSION_PATCH})
+# The RTK version number
+set(RTK_VERSION_MAJOR ${RTK_VERSION_MAJOR})
+set(RTK_VERSION_MINOR ${RTK_VERSION_MINOR})
+set(RTK_VERSION_PATCH ${RTK_VERSION_PATCH})
 
-  # Whether the compiled version of RTK uses CUDA
-  set(RTK_USE_CUDA ${RTK_USE_CUDA})
+# Whether the compiled version of RTK uses CUDA
+set(RTK_USE_CUDA ${RTK_USE_CUDA})
 
-  if(${RTK_USE_CUDA})
-    set(CMAKE_MODULE_PATH ${RTK_MODULE_PATH_CONFIG} ${CMAKE_MODULE_PATH})
-    # if we are using CUDA, make sure CUDA libraries are available
-    find_package(CUDA_wrap REQUIRED)
-    include_directories(${CUDA_INCLUDE_DIRS})
-    set(RTK_CUDA_PROJECTIONS_SLAB_SIZE \"16\" CACHE STRING \"Number of projections processed simultaneously in CUDA forward and back projections\")
-  endif()
-  ")
+if(${RTK_USE_CUDA})
+  set(CMAKE_MODULE_PATH ${RTK_MODULE_PATH_CONFIG} ${CMAKE_MODULE_PATH})
+  # if we are using CUDA, make sure CUDA libraries are available
+  find_package(CUDA_wrap REQUIRED)
+  include_directories(${CUDA_INCLUDE_DIRS})
+  set(RTK_CUDA_PROJECTIONS_SLAB_SIZE \"16\" CACHE STRING \"Number of projections processed simultaneously in CUDA forward and back projections\")
+endif()
+")
 
-configure_file(cmake/RTKConfig.cmake.in RTKConfig.cmake @ONLY)
-configure_file(cmake/RTKConfigVersion.cmake.in RTKConfigVersion.cmake @ONLY)
+set(RTK_EXPORT_CODE_INSTALL "
+# The RTK version number
+set(RTK_VERSION_MAJOR ${RTK_VERSION_MAJOR})
+set(RTK_VERSION_MINOR ${RTK_VERSION_MINOR})
+set(RTK_VERSION_PATCH ${RTK_VERSION_PATCH})
+
+# Whether the compiled version of RTK uses CUDA
+set(RTK_USE_CUDA ${RTK_USE_CUDA})
+
+if(${RTK_USE_CUDA})
+  # if we are using CUDA, make sure CUDA libraries are available
+  find_package(CUDA_wrap REQUIRED)
+  set(RTK_CUDA_PROJECTIONS_SLAB_SIZE \"16\" CACHE STRING \"Number of projections processed simultaneously in CUDA forward and back projections\")
+endif()
+")
 
 #=========================================================
 # Configure and build ITK external module
@@ -238,9 +250,16 @@ endif()
 
 # Install configuration file
 install(FILES ${RTK_BINARY_DIR}/rtkConfiguration.h DESTINATION ${RTK_INSTALL_INCLUDE_DIR})
-install(FILES ${RTK_BINARY_DIR}/RTKConfig.cmake
-              ${RTK_BINARY_DIR}/RTKConfigVersion.cmake
+install(FILES ${RTK_SOURCE_DIR}/cmake/FindCUDA_wrap.cmake
+              ${RTK_SOURCE_DIR}/cmake/FindGengetopt.cmake
+              ${RTK_SOURCE_DIR}/cmake/GetGitRevisionDescription.cmake
+              ${RTK_SOURCE_DIR}/cmake/GetGitRevisionDescription.cmake.in
+              ${RTK_SOURCE_DIR}/cmake/has_cuda_gpu.cxx
+              ${RTK_SOURCE_DIR}/cmake/nvcc-check.cmake
         DESTINATION ${ITK_INSTALL_PACKAGE_DIR})
+if(NOT ITK_SOURCE_DIR)
+  install(CODE "MESSAGE(FATAL_ERROR \"Cannot install, RTK is compiled separately from ITK. Installation is only functional if RTK is compiled within ITK.\")")
+endif()
 
 #=========================================================
 # Build applications
