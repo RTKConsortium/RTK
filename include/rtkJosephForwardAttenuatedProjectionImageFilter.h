@@ -27,6 +27,10 @@
 #include <cmath>
 #include <vector>
 
+#if ITK_VERSION_MAJOR>4 && defined ( ITK_FUTURE_LEGACY_REMOVE )
+  using itk::ITK_MAX_THREADS;
+#endif
+
 namespace rtk
 {
 namespace Functor
