@@ -59,7 +59,7 @@ public:
   using OutputImageType = DecomposedProjectionsType;
 
   /** Convenient information */
-  using ThresholdsType = itk::VariableLengthVector<int>;
+  using ThresholdsType = itk::VariableLengthVector<double>;
   using MeanAttenuationInBinType = itk::VariableSizeMatrix<double>;
   using DetectorResponseType = vnl_matrix<double>;
   using MaterialAttenuationsType = vnl_matrix<double>;

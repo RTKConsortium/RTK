@@ -235,7 +235,7 @@ int main(int argc, char*argv[])
   forward->SetInputIncidentSpectrum(vIncidentSpectrumReader->GetOutput());
   forward->SetDetectorResponse(detectorResponseReader->GetOutput());
   forward->SetMaterialAttenuations(materialAttenuationsReader->GetOutput());
-  itk::VariableLengthVector<unsigned int> thresholds;
+  itk::VariableLengthVector<double> thresholds;
   thresholds.SetSize(nBins+1);
   thresholds[0] = 25;
   thresholds[1] = 40;
@@ -276,25 +276,14 @@ int main(int argc, char*argv[])
     }
 
   // Read the detector response image as a matrix, and bin it
-  vnl_matrix<DataType> detectorResponseMatrix(nBins, nEnergies, 0.);
-  DetectorResponseImageType::IndexType indexDet;
-  for (unsigned int energy=0; energy<nEnergies; energy++)
-    {
-    indexDet[0] = energy;
-    for (unsigned int bin=0; bin<nBins; bin++)
-      {
-      for (unsigned int pulseHeight=thresholds[bin]-1; pulseHeight<thresholds[bin+1]; pulseHeight++)
-        {
-        indexDet[1] = pulseHeight;
-        // Linear interpolation on the pulse heights: half of the pulses that have "threshold"
-        // height are considered below threshold, the other half are considered above threshold
-        if ((pulseHeight == thresholds[bin]-1) || (pulseHeight == thresholds[bin+1] - 1))
-          detectorResponseMatrix[bin][energy] += detectorResponseReader->GetOutput()->GetPixel(indexDet) / 2;
-        else
-          detectorResponseMatrix[bin][energy] += detectorResponseReader->GetOutput()->GetPixel(indexDet);
-        }
-      }
-    }
+  typedef rtk::SpectralForwardModelImageFilter<MaterialVolumeType,
+                                               PhotonCountsType,
+                                               IncidentSpectrumImageType,
+                                               DetectorResponseImageType,
+                                               MaterialAttenuationsImageType> SpectralForwardType;
+  vnl_matrix<DataType> drm = rtk::SpectralBinDetectorResponse<DataType>(detectorResponseReader->GetOutput(),
+                                                                        thresholds,
+                                                                        nEnergies);
 
   // Reconstruct using Mechlem
   using MechlemType = rtk::MechlemOneStepSpectralReconstructionFilter<MaterialVolumeType, PhotonCountsType, IncidentSpectrumImageType>;
@@ -303,7 +292,7 @@ int main(int argc, char*argv[])
   mechlemOneStep->SetInputMaterialVolumes( materialVolumeSource->GetOutput() );
   mechlemOneStep->SetInputPhotonCounts(composePhotonCounts->GetOutput());
   mechlemOneStep->SetInputSpectrum(incidentSpectrumReader->GetOutput());
-  mechlemOneStep->SetBinnedDetectorResponse(detectorResponseMatrix);
+  mechlemOneStep->SetBinnedDetectorResponse(drm);
   mechlemOneStep->SetMaterialAttenuations(materialAttenuationsMatrix);
   mechlemOneStep->SetGeometry( geometry );
   mechlemOneStep->SetNumberOfIterations( 20 );

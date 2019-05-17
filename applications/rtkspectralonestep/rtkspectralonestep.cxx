@@ -22,6 +22,7 @@
 #include "rtkMechlemOneStepSpectralReconstructionFilter.h"
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkReorderProjectionsImageFilter.h"
+#include "rtkSpectralForwardModelImageFilter.h"
 
 #include <algorithm>    // std::shuffle
 #include <vector>       // std::vector
@@ -120,39 +121,29 @@ int main(int argc, char * argv[])
     }
 
   // Read the thresholds on command line and check their number
-  itk::Vector<unsigned int, nBins+1> thresholds;
+  typedef rtk::SpectralForwardModelImageFilter<MaterialVolumesType,
+                                               PhotonCountsType,
+                                               IncidentSpectrumType,
+                                               DetectorResponseType,
+                                               MaterialAttenuationsType> SpectralForwardType;
+  SpectralForwardType::ThresholdsType thresholds;
+  thresholds.SetSize(nBins+1);
   if (args_info.thresholds_given == nBins)
     {
     for (unsigned int bin=0; bin<nBins; bin++)
       thresholds[bin] = args_info.thresholds_arg[bin];
 
     // Add the maximum pulse height at the end
-    unsigned int MaximumPulseHeight = detectorResponseReader->GetOutput()->GetLargestPossibleRegion().GetSize()[1];
+    double MaximumPulseHeight = detectorResponseReader->GetOutput()->GetLargestPossibleRegion().GetSize()[1];
     thresholds[nBins] = MaximumPulseHeight;
     }
   else
     itkGenericExceptionMacro(<< "Number of thresholds "<< args_info.thresholds_given << " does not match the number of bins " << nBins);
 
   // Read the detector response image as a matrix, and bin it
-  vnl_matrix<dataType> detectorResponseMatrix(nBins, nEnergies, 0.);
-  DetectorResponseType::IndexType indexDet;
-  for (unsigned int energy=0; energy<nEnergies; energy++)
-    {
-    indexDet[0] = energy;
-    for (unsigned int bin=0; bin<nBins; bin++)
-      {
-      for (unsigned int pulseHeight=thresholds[bin]-1; pulseHeight<thresholds[bin+1]; pulseHeight++)
-        {
-        indexDet[1] = pulseHeight;
-        // Linear interpolation on the pulse heights: half of the pulses that have "threshold"
-        // height are considered below threshold, the other half are considered above threshold
-        if ((pulseHeight == thresholds[bin]-1) || (pulseHeight == thresholds[bin+1] - 1))
-          detectorResponseMatrix[bin][energy] += detectorResponseReader->GetOutput()->GetPixel(indexDet) / 2;
-        else
-          detectorResponseMatrix[bin][energy] += detectorResponseReader->GetOutput()->GetPixel(indexDet);
-        }
-      }
-    }
+  vnl_matrix<dataType> drm = rtk::SpectralBinDetectorResponse<dataType>(detectorResponseReader->GetOutput(),
+                                                                        thresholds,
+                                                                        nEnergies);
 
   // Geometry
   if(args_info.verbose_flag)
@@ -189,7 +180,7 @@ int main(int argc, char * argv[])
   SetBackProjectionFromGgo(args_info, mechlemOneStep.GetPointer());
   mechlemOneStep->SetInputMaterialVolumes( inputFilter->GetOutput() );
   mechlemOneStep->SetInputSpectrum(incidentSpectrumReader->GetOutput());
-  mechlemOneStep->SetBinnedDetectorResponse(detectorResponseMatrix);
+  mechlemOneStep->SetBinnedDetectorResponse(drm);
   mechlemOneStep->SetMaterialAttenuations(materialAttenuationsMatrix);
   mechlemOneStep->SetNumberOfIterations( args_info.niterations_arg );
   mechlemOneStep->SetNumberOfSubsets( args_info.subsets_arg );

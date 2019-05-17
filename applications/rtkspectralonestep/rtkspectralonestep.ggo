@@ -12,7 +12,7 @@ option "detector"       d "Detector response file"                              
 option "incident"       - "Incident spectrum file (mhd image)"                                string yes
 option "attenuations"   a "Material attenuations file"                                        string yes
 option "mask"           m "Apply a support binary mask: reconstruction kept null outside"     string no
-option "thresholds"     t "Lower threshold of bins, expressed in pulse height"                int    yes  multiple
+option "thresholds"     t "Lower threshold of bins, expressed in pulse height"                double yes  multiple
 option "subsets"        - "Number of subsets of projections (should not exceed 6)"            int    no   default="4"
 option "regul_weights"  - "Regularization parameters for each material"                       double multiple no
 option "regul_radius"   - "Radius of the neighborhood for regularization"                     int    multiple no
