@@ -24,6 +24,7 @@
 #include "rtkFDKWarpBackProjectionImageFilter.h"
 #include "rtkJosephBackProjectionImageFilter.h"
 #include "rtkJosephBackAttenuatedProjectionImageFilter.h"
+#include "rtkZengBackProjectionImageFilter.h"
 #ifdef RTK_USE_CUDA
 #  include "rtkCudaFDKBackProjectionImageFilter.h"
 #  include "rtkCudaBackProjectionImageFilter.h"
@@ -126,6 +127,9 @@ int main(int argc, char * argv[])
     case(bp_arg_JosephAttenuated):
       bp = rtk::JosephBackAttenuatedProjectionImageFilter<OutputImageType, OutputImageType>::New();
       break;
+    case(bp_arg_Zeng):
+      bp = rtk::ZengBackProjectionImageFilter<OutputImageType, OutputImageType>::New();
+      break;
     case(bp_arg_CudaFDKBackProjection):
 #ifdef RTK_USE_CUDA
       bp = rtk::CudaFDKBackProjectionImageFilter::New();
@@ -159,6 +163,10 @@ int main(int argc, char * argv[])
   bp->SetInput( 1, reader->GetOutput() );
   if(args_info.attenuationmap_given)
     bp->SetInput(2, attenuationFilter->GetOutput());
+  if(args_info.sigmazero_given && args_info.bp_arg == bp_arg_Zeng)
+    dynamic_cast<rtk::ZengBackProjectionImageFilter<OutputImageType, OutputImageType>*>(bp.GetPointer())->SetSigmaZero(args_info.sigmazero_arg);
+  if(args_info.alphapsf_given && args_info.bp_arg == bp_arg_Zeng)
+    dynamic_cast<rtk::ZengBackProjectionImageFilter<OutputImageType, OutputImageType>*>(bp.GetPointer())->SetAlpha(args_info.alphapsf_arg);
   bp->SetGeometry( geometryReader->GetOutputObject() );
   TRY_AND_EXIT_ON_ITK_EXCEPTION( bp->Update() )
 

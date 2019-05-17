@@ -38,6 +38,8 @@ OSEMConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>::OSEMConeBeamRe
 
   // Set default parameters
   m_NumberOfIterations = 3;
+  m_SigmaZero = -1;
+  m_Alpha = -1;
 
   // Create each filter of the composite filter
   m_ExtractFilter = ExtractFilterType::New();
@@ -126,49 +128,107 @@ OSEMConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>::GenerateOutput
 
   m_BackProjectionFilter->SetInput(0, m_ConstantVolumeSource->GetOutput());
   m_BackProjectionFilter->SetInput(1, m_DivideProjectionFilter->GetOutput());
-  if (this->GetBackProjectionFilter() == this->BP_JOSEPHATTENUATED)
+  if (this->GetBackProjectionFilter() == this->BP_JOSEPHATTENUATED || this->GetBackProjectionFilter() == this->BP_ZENG)
   {
-    if (!(this->GetInput(2)))
+    if (!(this->GetInput(2)) && this->GetBackProjectionFilter() == this->BP_JOSEPHATTENUATED)
     {
       itkExceptionMacro(<< "Set Joseph attenuated backprojection filter but no attenuation map is given");
     }
-    m_BackProjectionFilter->SetInput(2, this->GetInput(2));
+    else
+    {
+      m_BackProjectionFilter->SetInput(2, this->GetInput(2));
+    }
+  }
+  if (m_SigmaZero != -1 || m_Alpha != -1)
+  {
+    if (this->GetBackProjectionFilter() == this->BP_ZENG)
+    {
+      if (m_SigmaZero != -1)
+        dynamic_cast<ZengBackProjectionImageFilter<TVolumeImage, TProjectionImage> *>(
+          m_BackProjectionFilter.GetPointer())
+          ->SetSigmaZero(m_SigmaZero);
+      if (m_Alpha != -1)
+        dynamic_cast<ZengBackProjectionImageFilter<TVolumeImage, TProjectionImage> *>(
+          m_BackProjectionFilter.GetPointer())
+          ->SetAlpha(m_Alpha);
+    }
+    else
+      itkExceptionMacro(<< "PSF correction only available with Zeng projector type");
   }
 
   m_BackProjectionFilter->SetTranspose(false);
 
   m_BackProjectionNormalizationFilter->SetInput(0, m_ConstantVolumeSource->GetOutput());
   m_BackProjectionNormalizationFilter->SetInput(1, m_OneConstantProjectionStackSource->GetOutput());
-  if (this->GetBackProjectionFilter() == this->BP_JOSEPHATTENUATED)
+  if (this->GetBackProjectionFilter() == this->BP_JOSEPHATTENUATED || this->GetBackProjectionFilter() == this->BP_ZENG)
   {
-    if (!(this->GetInput(2)))
+    if (!(this->GetInput(2)) && this->GetBackProjectionFilter() == this->BP_JOSEPHATTENUATED)
     {
       itkExceptionMacro(<< "Set Joseph attenuated backprojection filter but no attenuation map is given");
     }
-    m_BackProjectionNormalizationFilter->SetInput(2, this->GetInput(2));
+    else
+    {
+      m_BackProjectionNormalizationFilter->SetInput(2, this->GetInput(2));
+    }
+  }
+  if (m_SigmaZero != -1 || m_Alpha != -1)
+  {
+    if (this->GetBackProjectionFilter() == this->BP_ZENG)
+    {
+      if (m_SigmaZero != -1)
+        dynamic_cast<ZengBackProjectionImageFilter<TVolumeImage, TProjectionImage> *>(
+          m_BackProjectionNormalizationFilter.GetPointer())
+          ->SetSigmaZero(m_SigmaZero);
+      if (m_Alpha != -1)
+        dynamic_cast<ZengBackProjectionImageFilter<TVolumeImage, TProjectionImage> *>(
+          m_BackProjectionNormalizationFilter.GetPointer())
+          ->SetAlpha(m_Alpha);
+    }
+    else
+      itkExceptionMacro(<< "PSF correction only available with Zeng projector type");
   }
 
   m_BackProjectionNormalizationFilter->SetTranspose(false);
 
   m_DivideVolumeFilter->SetInput1(m_BackProjectionFilter->GetOutput());
   m_DivideVolumeFilter->SetInput2(m_BackProjectionNormalizationFilter->GetOutput());
-  m_DivideVolumeFilter->SetConstant(1);
+  m_DivideVolumeFilter->SetConstant(0);
 
   m_MultiplyFilter->SetInput2(this->GetInput(0));
 
   m_ForwardProjectionFilter->SetInput(0, m_ZeroConstantProjectionStackSource->GetOutput());
   m_ForwardProjectionFilter->SetInput(1, this->GetInput(0));
-  if (this->GetForwardProjectionFilter() == this->FP_JOSEPHATTENUATED)
+  if (this->GetForwardProjectionFilter() == this->FP_JOSEPHATTENUATED ||
+      this->GetForwardProjectionFilter() == this->FP_ZENG)
   {
-    if (!(this->GetInput(2)))
+    if (!(this->GetInput(2)) && this->GetForwardProjectionFilter() == this->FP_JOSEPHATTENUATED)
     {
       itkExceptionMacro(<< "Set Joseph attenuated forward projection filter but no attenuation map is given");
     }
-    m_ForwardProjectionFilter->SetInput(2, this->GetInput(2));
+    else
+    {
+      m_ForwardProjectionFilter->SetInput(2, this->GetInput(2));
+    }
+  }
+  if (m_SigmaZero != -1 || m_Alpha != -1)
+  {
+    if (this->GetForwardProjectionFilter() == this->FP_ZENG)
+    {
+      if (m_SigmaZero != -1)
+        dynamic_cast<ZengForwardProjectionImageFilter<TProjectionImage, TVolumeImage> *>(
+          m_ForwardProjectionFilter.GetPointer())
+          ->SetSigmaZero(m_SigmaZero);
+      if (m_Alpha != -1)
+        dynamic_cast<ZengForwardProjectionImageFilter<TProjectionImage, TVolumeImage> *>(
+          m_ForwardProjectionFilter.GetPointer())
+          ->SetAlpha(m_Alpha);
+    }
+    else
+      itkExceptionMacro(<< "PSF correction only available with Zeng projector type");
   }
 
   m_DivideProjectionFilter->SetInput2(m_ForwardProjectionFilter->GetOutput());
-  m_DivideProjectionFilter->SetConstant(1);
+  m_DivideProjectionFilter->SetConstant(0);
 
   // For the same reason, set geometry now
   // Check and set geometry

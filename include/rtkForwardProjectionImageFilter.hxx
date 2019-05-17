@@ -46,7 +46,7 @@ ForwardProjectionImageFilter<TInputImage, TOutputImage>::GenerateInputRequestedR
     return;
 
   typename TInputImage::RegionType reqRegion = inputPtr1->GetLargestPossibleRegion();
-  inputPtr1->SetRequestedRegion( reqRegion );
+  inputPtr1->SetRequestedRegion(reqRegion);
 }
 
 } // end namespace rtk

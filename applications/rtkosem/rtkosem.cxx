@@ -100,6 +100,10 @@ int main(int argc, char * argv[])
   osem->SetInput(1, reader->GetOutput());
   if(args_info.attenuationmap_given)
     osem->SetInput(2, attenuationFilter->GetOutput());
+  if(args_info.sigmazero_given)
+    osem->SetSigmaZero(args_info.sigmazero_arg);
+  if(args_info.alphapsf_given)
+    osem->SetAlpha(args_info.alphapsf_arg);
   osem->SetGeometry( geometryReader->GetOutputObject() );
 
   osem->SetNumberOfIterations( args_info.niterations_arg );

@@ -305,6 +305,9 @@ SetBackProjectionFromGgo(const TArgsInfo & args_info, TIterativeReconstructionFi
     case (4): // bp_arg_JosephAttenuated
       recon->SetBackProjectionFilter(TIterativeReconstructionFilter::BP_JOSEPHATTENUATED);
       break;
+    case (5): // bp_arg_RotationBased
+      recon->SetBackProjectionFilter(TIterativeReconstructionFilter::BP_ZENG);
+      break;
   }
 }
 
@@ -333,6 +336,9 @@ SetForwardProjectionFromGgo(const TArgsInfo & args_info, TIterativeReconstructio
       break;
     case (2): // fp_arg_JosephAttenuated
       recon->SetForwardProjectionFilter(TIterativeReconstructionFilter::FP_JOSEPHATTENUATED);
+      break;
+    case (3): // fp_arg_RotationBased
+      recon->SetForwardProjectionFilter(TIterativeReconstructionFilter::FP_ZENG);
       break;
   }
 }

@@ -93,6 +93,7 @@ rtk_add_cuda_test(rtkGainCorrectionCudaTest rtkgaincorrectiontest.cxx)
 rtk_add_test(rtkForwardProjectionTest rtkforwardprojectiontest.cxx)
 rtk_add_cuda_test(rtkForwardProjectionCudaTest rtkforwardprojectiontest.cxx)
 rtk_add_test(rtkForwardAttenuatedProjectionTest rtkforwardattenuatedprojectiontest.cxx)
+rtk_add_test(rtkZengProjectionTest rtkzengforwardprojectiontest.cxx)
 
 rtk_add_test(rtkGeometryFileTest rtkgeometryfiletest.cxx)
 
