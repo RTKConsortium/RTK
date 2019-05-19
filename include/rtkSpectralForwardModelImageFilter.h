@@ -153,13 +153,6 @@ protected:
   bool         m_IsSpectralCT; // If not, it is dual energy CT
   bool         m_ComputeVariances; // Only implemented for dual energy CT
 
-<<<<<<< HEAD
-=======
-private:
-  //purposely not implemented
-  SpectralForwardModelImageFilter(const Self&);
-  void operator=(const Self&);
->>>>>>> ThresholdsFloat
 }; // end of class
 
 // Function to bin a detector response matrix according to given energy thresholds
