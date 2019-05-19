@@ -121,12 +121,7 @@ int main(int argc, char * argv[])
     }
 
   // Read the thresholds on command line and check their number
-  typedef rtk::SpectralForwardModelImageFilter<MaterialVolumesType,
-                                               PhotonCountsType,
-                                               IncidentSpectrumType,
-                                               DetectorResponseType,
-                                               MaterialAttenuationsType> SpectralForwardType;
-  SpectralForwardType::ThresholdsType thresholds;
+  itk::VariableLengthVector<double> thresholds;
   thresholds.SetSize(nBins+1);
   if (args_info.thresholds_given == nBins)
     {
