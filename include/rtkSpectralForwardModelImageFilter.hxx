@@ -406,7 +406,7 @@ SpectralBinDetectorResponse(const DetectorResponseImageType *drm,
   for (unsigned int energy=0; energy<numberOfEnergies; energy++)
     {
     indexDet[0] = energy;
-    for (unsigned int bin=0; bin<numberOfSpectralBins; bin++)
+    for (int bin=0; bin<numberOfSpectralBins; bin++)
       {
       // First and last couple of values:
       // use trapezoidal rule with linear interpolation
