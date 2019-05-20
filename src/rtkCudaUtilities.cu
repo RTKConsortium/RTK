@@ -91,7 +91,7 @@ resDesc.resType = cudaResourceTypeArray;
 cudaTextureDesc texDesc;
 memset(&texDesc, 0, sizeof(texDesc));
 texDesc.readMode = cudaReadModeElementType;
-for (unsigned int component = 0; component < nComponents; component++)
+for (int component = 0; component < 3; component++)
   {
   if (isProjections)
     texDesc.addressMode[component] = cudaAddressModeBorder;
