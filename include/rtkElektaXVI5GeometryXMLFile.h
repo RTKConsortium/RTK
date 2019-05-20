@@ -106,9 +106,6 @@ private:
 
   /** Projection matrix */
   ThreeDCircularProjectionGeometry::MatrixType m_Matrix;
-
-  /** File format version */
-  unsigned int m_Version{0};
 };
 }
 

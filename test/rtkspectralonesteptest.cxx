@@ -276,11 +276,6 @@ int main(int argc, char*argv[])
     }
 
   // Read the detector response image as a matrix, and bin it
-  typedef rtk::SpectralForwardModelImageFilter<MaterialVolumeType,
-                                               PhotonCountsType,
-                                               IncidentSpectrumImageType,
-                                               DetectorResponseImageType,
-                                               MaterialAttenuationsImageType> SpectralForwardType;
   vnl_matrix<DataType> drm = rtk::SpectralBinDetectorResponse<DataType>(detectorResponseReader->GetOutput(),
                                                                         thresholds,
                                                                         nEnergies);

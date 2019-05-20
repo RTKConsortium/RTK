@@ -410,12 +410,12 @@ SpectralBinDetectorResponse(const DetectorResponseImageType *drm,
       {
       // First and last couple of values:
       // use trapezoidal rule with linear interpolation
-      int infPulse = itk::Math::floor(thresholds[bin]);
+      unsigned int infPulse = itk::Math::floor(thresholds[bin]);
       if(infPulse<1)
         {
         itkGenericExceptionMacro(<< "Threshold " << thresholds[bin] << " below 0 keV.");
         }
-      int supPulse = itk::Math::floor(thresholds[bin+1]);
+      unsigned int supPulse = itk::Math::floor(thresholds[bin+1]);
       if(double(supPulse)==thresholds[bin+1])
         supPulse--;
       if(supPulse-infPulse<3)
@@ -441,7 +441,7 @@ SpectralBinDetectorResponse(const DetectorResponseImageType *drm,
       binnedResponse[bin][energy] += 0.5*(1.+wSup*(2.-wSup))*drm->GetPixel(indexDet);
 
       // Intermediate values
-      for (int pulseHeight=infPulse+1; pulseHeight<supPulse-1; pulseHeight++)
+      for (unsigned int pulseHeight=infPulse+1; pulseHeight<supPulse-1; pulseHeight++)
         {
         indexDet[1] = pulseHeight;
         binnedResponse[bin][energy] += drm->GetPixel(indexDet);

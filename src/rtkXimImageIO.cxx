@@ -300,13 +300,13 @@ inline T cast_binary_char_to(const unsigned char* bin_vals, const size_t n_bytes
   T out_val = 0;
   switch (n_bytes){
     case 1:
-      out_val = static_cast<T>(*(int8_t*)bin_vals);
+      out_val = static_cast<T>(*(int8_t*)(void*)bin_vals);
       break;
     case 2:
-      out_val = static_cast<T>(*(int16_t*)bin_vals);
+      out_val = static_cast<T>(*(int16_t*)(void*)bin_vals);
       break;
     case 4:
-      out_val = static_cast<T>(*(int32_t*)bin_vals);
+      out_val = static_cast<T>(*(int32_t*)(void*)bin_vals);
       break;
   }
   return out_val;

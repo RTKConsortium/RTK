@@ -70,7 +70,7 @@ RayBoxIntersectionImageFilter<TInputImage, TOutputImage>
 template <class TInputImage, class TOutputImage>
 void
 RayBoxIntersectionImageFilter<TInputImage,TOutputImage>
-::SetBoxFromImage(const ImageBaseType *_arg, bool /*bWithExternalHalfPixelBorder*/ )
+::SetBoxFromImage(const ImageBaseType *_arg, bool bWithExternalHalfPixelBorder)
 {
   if( this->GetConvexShape() == nullptr )
     this->SetConvexShape( BoxShape::New().GetPointer() );
@@ -79,7 +79,7 @@ RayBoxIntersectionImageFilter<TInputImage,TOutputImage>
     {
     itkExceptionMacro("This is not a BoxShape!");
     }
-  qo->SetBoxFromImage(_arg);
+  qo->SetBoxFromImage(_arg, bWithExternalHalfPixelBorder);
   SetBoxMin(qo->GetBoxMin());
   SetBoxMax(qo->GetBoxMax());
   SetDirection(qo->GetDirection());

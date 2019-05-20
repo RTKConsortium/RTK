@@ -78,7 +78,7 @@ DrawBoxImageFilter<TInputImage,TOutputImage>
     {
     itkExceptionMacro("This is not a BoxShape!");
     }
-  qo->SetBoxFromImage(_arg);
+  qo->SetBoxFromImage(_arg, bWithExternalHalfPixelBorder);
   SetBoxMin(qo->GetBoxMin());
   SetBoxMax(qo->GetBoxMin());
   SetDirection(qo->GetDirection());
