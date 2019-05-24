@@ -98,6 +98,14 @@ void rtkspectralonestep(const args_info_rtkspectralonestep &args_info)
     supportmaskReader->SetFileName( args_info.mask_arg );
     }
 
+  // Read spatial regularization weights if given
+  IncidentSpectrumReaderType::Pointer spatialRegulWeighsReader;
+  if(args_info.regul_spatial_weights_given)
+    {
+    spatialRegulWeighsReader = IncidentSpectrumReaderType::New();
+    spatialRegulWeighsReader->SetFileName( args_info.regul_spatial_weights_arg );
+    }
+
   // Create input: either an existing volume read from a file or a blank image
   typename itk::ImageSource< MaterialVolumesType >::Pointer inputFilter;
   if(args_info.input_given)
@@ -198,6 +206,8 @@ void rtkspectralonestep(const args_info_rtkspectralonestep &args_info)
     mechlemOneStep->SetResetNesterovEvery( args_info.reset_nesterov_arg );
   if(args_info.mask_given)
     mechlemOneStep->SetSupportMask( supportmaskReader->GetOutput() );
+  if(args_info.regul_spatial_weights_given)
+    mechlemOneStep->SetSpatialRegularizationWeights( spatialRegulWeighsReader->GetOutput() );
 
   // If subsets are used, reorder projections and geometry according to
   // a random permutation

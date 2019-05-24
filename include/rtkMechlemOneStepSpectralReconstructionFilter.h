@@ -60,6 +60,8 @@ namespace rtk
    * Input2 [shape=Mdiamond];
    * Input3 [label="Input 3 (Support mask)"];
    * Input3 [shape=Mdiamond];
+   * Input4 [label="Input 4 (Spatial Regularization Weights)"];
+   * Input4 [shape=Mdiamond];
    * Output [label="Output (Material volumes)"];
    * Output [shape=Mdiamond];
    *
@@ -76,6 +78,8 @@ namespace rtk
    * BackProjectionHessians [ label="rtk::BackProjectionImageFilter (hessians)" URL="\ref rtk::BackProjectionImageFilter"];
    * Weidinger [ label="rtk::WeidingerForwardModelImageFilter" URL="\ref rtk::WeidingerForwardModelImageFilter"];
    * SQSRegul [ label="rtk::SeparableQuadraticSurrogateRegularizationImageFilter" URL="\ref rtk::SeparableQuadraticSurrogateRegularizationImageFilter"];
+   * MultiplyRegulGradient [ label="itk::MultiplyImageFilter" URL="\ref itk::MultiplyImageFilter" style=dashed];
+   * MultiplyRegulHessian [ label="itk::MultiplyImageFilter" URL="\ref itk::MultiplyImageFilter" style=dashed];
    * AddGradients [ label="itk::AddImageFilter" URL="\ref itk::AddImageFilter"];
    * AddHessians [ label="rtk::AddMatrixAndDiagonalImageFilter" URL="\ref rtk::AddMatrixAndDiagonalImageFilter"];
    * Newton [ label="rtk::GetNewtonUpdateImageFilter" URL="\ref rtk::GetNewtonUpdateImageFilter"];
@@ -99,10 +103,14 @@ namespace rtk
    * SingleComponentForwardProjection -> Weidinger;
    * Weidinger -> BackProjectionGradients;
    * Weidinger -> BackProjectionHessians;
-   * SQSRegul -> AddGradients;
+   * Input4 -> MultiplyRegulGradient;
+   * SQSRegul -> MultiplyRegulGradient;
+   * MultiplyRegulGradient -> AddGradients;
    * BackProjectionGradients -> AddGradients;
    * AddGradients -> Newton;
-   * SQSRegul -> AddHessians;
+   * Input4 -> MultiplyRegulHessian;
+   * SQSRegul -> MultiplyRegulHessian;
+   * MultiplyRegulHessian -> AddHessians;
    * BackProjectionHessians -> AddHessians;
    * AddHessians -> Newton;
    * Newton -> Nesterov;
@@ -206,6 +214,7 @@ public:
     using AddMatrixAndDiagonalFilterType = rtk::AddMatrixAndDiagonalImageFilter<TGradientsImage, THessiansImage>;
     using NewtonFilterType = rtk::GetNewtonUpdateImageFilter<TGradientsImage, THessiansImage>;
     using MultiplyFilterType = itk::MultiplyImageFilter<TOutputImage, SingleComponentImageType>;
+    using MultiplyGradientFilterType = itk::MultiplyImageFilter<TGradientsImage, SingleComponentImageType>;
 #endif
 
     /** Instantiate the forward projection filters */
@@ -235,6 +244,7 @@ public:
     void SetInputPhotonCounts(const TPhotonCounts* photonCounts);
     void SetInputSpectrum(const TSpectrum* spectrum);
     void SetSupportMask(const SingleComponentImageType* support);
+    void SetSpatialRegularizationWeights(const SingleComponentImageType* regweights);
 
     /** Set/Get for the regularization weights */
     itkSetMacro(RegularizationWeights, typename TOutputImage::PixelType)
@@ -280,6 +290,8 @@ protected:
     typename GradientsBackProjectionFilterType::Pointer                      m_GradientsBackProjectionFilter;
     typename HessiansBackProjectionFilterType::Pointer                       m_HessiansBackProjectionFilter;
     typename MultiplyFilterType::Pointer                                     m_MultiplySupportFilter;
+    typename MultiplyGradientFilterType::Pointer                             m_MultiplyRegulGradientsFilter;
+    typename MultiplyGradientFilterType::Pointer                             m_MultiplyRegulHessiansFilter;
 #endif
 
     /** The inputs of this filter have the same type but not the same meaning
@@ -301,6 +313,7 @@ protected:
     typename TPhotonCounts::ConstPointer GetInputPhotonCounts();
     typename TSpectrum::ConstPointer GetInputSpectrum();
     typename SingleComponentImageType::ConstPointer GetSupportMask();
+    typename SingleComponentImageType::ConstPointer GetSpatialRegularizationWeights();
 
 #if !defined( ITK_WRAPPING_PARSER )
     /** Functions to instantiate forward and back projection filters with a different
