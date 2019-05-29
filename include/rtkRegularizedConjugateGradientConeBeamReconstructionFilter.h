@@ -42,11 +42,11 @@ namespace rtk
    * \dot
    * digraph RegularizedConjugateGradientConeBeamReconstructionFilter {
    *
-   * PrimaryInput [label="Primary input (4D sequence of volumes)"];
+   * PrimaryInput [label="Primary input (3D image)"];
    * PrimaryInput [shape=Mdiamond];
    * InputProjectionStack [label="Input projection stack"];
    * InputProjectionStack [shape=Mdiamond];
-   * Output [label="Output (Reconstruction: 4D sequence of volumes)"];
+   * Output [label="Output (Reconstruction: 3D image)"];
    * Output [shape=Mdiamond];
    *
    * node [shape=box];
