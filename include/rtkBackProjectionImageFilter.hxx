@@ -314,7 +314,7 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
 
     // Apply correction for cylindrical centered on source
     const double u = pointProj[0];
-    pointProj[0] = radius * atan(u / radius);
+    pointProj[0] = radius * atan2(u, radius);
     pointProj[1] = pointProj[1] * radius / sqrt(radius * radius + u * u);
 
     // Convert to projection index

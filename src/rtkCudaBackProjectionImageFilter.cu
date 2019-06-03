@@ -55,7 +55,7 @@ template<unsigned int vectorLength, bool isCylindrical>
 __global__
 void kernel_backProject(float *dev_vol_in,
                         float * dev_vol_out,
-                        double radius,
+                        float radius,
                         cudaTextureObject_t* dev_tex_proj)
 {
   itk::SizeValueType i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
@@ -88,13 +88,13 @@ void kernel_backProject(float *dev_vol_in,
       pp.y = pp.y * pp.z;
 
       // Apply correction for cylindrical detector
-      double u = pp.x;
-      pp.x = radius * atan(u / radius);
+      const float u = pp.x;
+      pp.x = radius * atan2(u, radius);
       pp.y = pp.y * radius / sqrt(radius * radius + u * u);
 
       // Get projection index
-      ip.x = c_projPPToProjIndex[0 * 3 + 0] * pp.x + c_projPPToProjIndex[0 * 3 + 1] * pp.y + c_projPPToProjIndex[0 * 3 + 2];
-      ip.y = c_projPPToProjIndex[1 * 3 + 0] * pp.x + c_projPPToProjIndex[1 * 3 + 1] * pp.y + c_projPPToProjIndex[1 * 3 + 2];
+      ip.x = c_projPPToProjIndex[0] * pp.x + c_projPPToProjIndex[1] * pp.y + c_projPPToProjIndex[2];
+      ip.y = c_projPPToProjIndex[3] * pp.x + c_projPPToProjIndex[4] * pp.y + c_projPPToProjIndex[5];
       }
     else
       {
@@ -193,23 +193,23 @@ CUDA_back_project(int projSize[3],
     {
     case 1:
       if (radiusCylindricalDetector == 0)
-        kernel_backProject<1, false> <<< dimGrid, dimBlock >>> (dev_vol_in, dev_vol_out, radiusCylindricalDetector, dev_tex_proj);
+        kernel_backProject<1, false> <<< dimGrid, dimBlock >>> (dev_vol_in, dev_vol_out, (float)radiusCylindricalDetector, dev_tex_proj);
       else
-        kernel_backProject<1, true> <<< dimGrid, dimBlock >>> (dev_vol_in, dev_vol_out, radiusCylindricalDetector, dev_tex_proj);
+        kernel_backProject<1, true> <<< dimGrid, dimBlock >>> (dev_vol_in, dev_vol_out, (float)radiusCylindricalDetector, dev_tex_proj);
       break;
 
     case 3:
       if (radiusCylindricalDetector == 0)
-        kernel_backProject<3, false> <<< dimGrid, dimBlock >>> (dev_vol_in, dev_vol_out, radiusCylindricalDetector, dev_tex_proj);
+        kernel_backProject<3, false> <<< dimGrid, dimBlock >>> (dev_vol_in, dev_vol_out, (float)radiusCylindricalDetector, dev_tex_proj);
       else
-        kernel_backProject<3, true> <<< dimGrid, dimBlock >>> (dev_vol_in, dev_vol_out, radiusCylindricalDetector, dev_tex_proj);
+        kernel_backProject<3, true> <<< dimGrid, dimBlock >>> (dev_vol_in, dev_vol_out, (float)radiusCylindricalDetector, dev_tex_proj);
       break;
 
     case 9:
       if (radiusCylindricalDetector == 0)
-        kernel_backProject<9, false> <<< dimGrid, dimBlock >>> (dev_vol_in, dev_vol_out, radiusCylindricalDetector, dev_tex_proj);
+        kernel_backProject<9, false> <<< dimGrid, dimBlock >>> (dev_vol_in, dev_vol_out, (float)radiusCylindricalDetector, dev_tex_proj);
       else
-        kernel_backProject<9, true> <<< dimGrid, dimBlock >>> (dev_vol_in, dev_vol_out, radiusCylindricalDetector, dev_tex_proj);
+        kernel_backProject<9, true> <<< dimGrid, dimBlock >>> (dev_vol_in, dev_vol_out, (float)radiusCylindricalDetector, dev_tex_proj);
       break;
 
     default:

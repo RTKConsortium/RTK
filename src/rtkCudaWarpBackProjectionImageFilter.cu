@@ -123,7 +123,7 @@ void kernel_warp_back_project(float *dev_vol_in, float * dev_vol_out, unsigned i
 }
 
 __global__
-void kernel_warp_back_project_cylindrical_detector(float *dev_vol_in, float * dev_vol_out, unsigned int Blocks_Y, double radius)
+void kernel_warp_back_project_cylindrical_detector(float *dev_vol_in, float * dev_vol_out, unsigned int Blocks_Y, float radius)
 {
   // CUDA 2.0 does not allow for a 3D grid, which severely
   // limits the manipulation of large 3D arrays of data.  The
@@ -171,13 +171,13 @@ void kernel_warp_back_project_cylindrical_detector(float *dev_vol_in, float * de
     pp.y = pp.y * pp.z;
 
     // Apply correction for cylindrical detector
-    double u = pp.x;
-    pp.x = radius * atan(u / radius);
+    const float u = pp.x;
+    pp.x = radius * atan2(u, radius);
     pp.y = pp.y * radius / sqrt(radius * radius + u * u);
 
     // Get projection index
-    ip.x = c_projPPToProjIndex[0 * 3 + 0] * pp.x + c_projPPToProjIndex[0 * 3 + 1] * pp.y + c_projPPToProjIndex[0 * 3 + 2];
-    ip.y = c_projPPToProjIndex[1 * 3 + 0] * pp.x + c_projPPToProjIndex[1 * 3 + 1] * pp.y + c_projPPToProjIndex[1 * 3 + 2];
+    ip.x = c_projPPToProjIndex[0] * pp.x + c_projPPToProjIndex[1] * pp.y + c_projPPToProjIndex[2];
+    ip.y = c_projPPToProjIndex[3] * pp.x + c_projPPToProjIndex[4] * pp.y + c_projPPToProjIndex[5];
 
     // Get texture point, clip left to GPU
     voxel_data += tex3D(tex_proj_3D, ip.x, ip.y, proj + 0.5);
@@ -238,7 +238,7 @@ void kernel_warp_back_project_3Dgrid(float *dev_vol_in, float * dev_vol_out)
 }
 
 __global__
-void kernel_warp_back_project_3Dgrid_cylindrical_detector(float *dev_vol_in, float * dev_vol_out, double radius)
+void kernel_warp_back_project_3Dgrid_cylindrical_detector(float *dev_vol_in, float * dev_vol_out, float radius)
 {
   unsigned int i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
   unsigned int j = __umul24(blockIdx.y, blockDim.y) + threadIdx.y;
@@ -280,13 +280,13 @@ void kernel_warp_back_project_3Dgrid_cylindrical_detector(float *dev_vol_in, flo
     pp.y = pp.y * pp.z;
 
     // Apply correction for cylindrical detector
-    double u = pp.x;
-    pp.x = radius * atan(u / radius);
+    const float u = pp.x;
+    pp.x = radius * atan2(u, radius);
     pp.y = pp.y * radius / sqrt(radius * radius + u * u);
 
     // Get projection index
-    ip.x = c_projPPToProjIndex[0 * 3 + 0] * pp.x + c_projPPToProjIndex[0 * 3 + 1] * pp.y + c_projPPToProjIndex[0 * 3 + 2];
-    ip.y = c_projPPToProjIndex[1 * 3 + 0] * pp.x + c_projPPToProjIndex[1 * 3 + 1] * pp.y + c_projPPToProjIndex[1 * 3 + 2];
+    ip.x = c_projPPToProjIndex[0] * pp.x + c_projPPToProjIndex[1] * pp.y + c_projPPToProjIndex[2];
+    ip.y = c_projPPToProjIndex[3] * pp.x + c_projPPToProjIndex[4] * pp.y + c_projPPToProjIndex[5];
 
     // Get texture point, clip left to GPU
     voxel_data += tex2DLayered(tex_proj, ip.x, ip.y, proj);
@@ -470,7 +470,7 @@ CUDA_warp_back_project(int projSize[3],
       kernel_warp_back_project_cylindrical_detector <<< dimGrid, dimBlock >>> ( dev_vol_in,
                                                                                 dev_vol_out,
                                                                                 blocksInY,
-                                                                                radiusCylindricalDetector);
+                                                                                (float)radiusCylindricalDetector);
 
     // Unbind the image and projection matrix textures
     cudaUnbindTexture (tex_proj_3D);
@@ -496,7 +496,7 @@ CUDA_warp_back_project(int projSize[3],
     else
       kernel_warp_back_project_3Dgrid_cylindrical_detector <<< dimGrid, dimBlock >>> ( dev_vol_in,
                                                                                        dev_vol_out,
-                                                                                       radiusCylindricalDetector);
+                                                                                       (float)radiusCylindricalDetector);
     // Unbind the image and projection matrix textures
     cudaUnbindTexture (tex_proj);
     CUDA_CHECK_ERROR;
