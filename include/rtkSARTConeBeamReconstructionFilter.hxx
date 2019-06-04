@@ -273,7 +273,7 @@ SARTConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>
 
   for(unsigned int i = 0; i < nProj; i++)
     projOrder[i] = i;
-  std::random_shuffle( projOrder.begin(), projOrder.end() );
+  std::shuffle( projOrder.begin(), projOrder.end(), Superclass::m_DefaultRandomEngine );
 
   m_MultiplyFilter->SetInput1( (const float) m_Lambda );
 
