@@ -219,7 +219,7 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
     if (m_Geometry->GetRadiusCylindricalDetector() != 0)
       {
       ProjectionMatrixType volIndexToProjPP = GetVolumeIndexToProjectionPhysicalPointMatrix(iProj);
-      itk::Matrix<double, TInputImage::ImageDimension, TInputImage::ImageDimension> projPPToProjIndex = GetProjectionPhysicalPointToProjectionIndexMatrix();
+      itk::Matrix<double, TInputImage::ImageDimension, TInputImage::ImageDimension> projPPToProjIndex = GetProjectionPhysicalPointToProjectionIndexMatrix(iProj);
       CylindricalDetectorCenteredOnSourceBackprojection( outputRegionForThread, volIndexToProjPP, projPPToProjIndex, projection);
       continue;
       }
@@ -532,7 +532,7 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
     GetVolumeIndexToProjectionPhysicalPointMatrix(iProj);
 
   itk::Matrix<double, Dimension, Dimension> ProjectionPhysicalPointToProjectionIndexMatrix =
-    GetProjectionPhysicalPointToProjectionIndexMatrix();
+    GetProjectionPhysicalPointToProjectionIndexMatrix(iProj);
 
   return ProjectionMatrixType(ProjectionPhysicalPointToProjectionIndexMatrix.GetVnlMatrix() *
                               VolumeIndexToProjectionPhysicalPointMatrix.GetVnlMatrix() );
@@ -548,14 +548,16 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
   itk::Matrix<double, Dimension+1, Dimension+1> matrixVol =
     GetIndexToPhysicalPointMatrix< TOutputImage >( this->GetOutput() );
 
-  return ProjectionMatrixType(this->m_Geometry->GetMatrices()[iProj].GetVnlMatrix() *
+  return ProjectionMatrixType(this->m_Geometry->GetMagnificationMatrices()[iProj].GetVnlMatrix() *
+                              this->m_Geometry->GetSourceTranslationMatrices()[iProj].GetVnlMatrix()*
+                              this->m_Geometry->GetRotationMatrices()[iProj].GetVnlMatrix() *
                               matrixVol.GetVnlMatrix() );
 }
 
 template <class TInputImage, class TOutputImage>
 itk::Matrix<double, TInputImage::ImageDimension, TInputImage::ImageDimension>
 BackProjectionImageFilter<TInputImage,TOutputImage>
-::GetProjectionPhysicalPointToProjectionIndexMatrix()
+::GetProjectionPhysicalPointToProjectionIndexMatrix(const unsigned int iProj)
 {
   const unsigned int Dimension = TInputImage::ImageDimension;
 
@@ -582,7 +584,8 @@ BackProjectionImageFilter<TInputImage,TOutputImage>
 
   return itk::Matrix<double, TInputImage::ImageDimension, TInputImage::ImageDimension>
           (matrixFlip.GetVnlMatrix() *
-           matrixProj.GetVnlMatrix());
+           matrixProj.GetVnlMatrix() *
+           this->m_Geometry->GetProjectionTranslationMatrices()[iProj].GetVnlMatrix());
 }
 
 

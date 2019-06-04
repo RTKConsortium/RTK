@@ -92,9 +92,6 @@ CudaBackProjectionImageFilter<ImageType>
   float *fvolIndexToProjPP = new float[12 * nProj];
   float *fprojPPToProjIndex = new float[9];
 
-  // Projection physical point to projection index matrix
-  itk::Matrix<double, 3, 3> projPPToProjIndex = this->GetProjectionPhysicalPointToProjectionIndexMatrix();
-
   // Correction for non-zero indices in the projections
   itk::Matrix<double, 3, 3> matrixIdxProj;
   matrixIdxProj.SetIdentity();
@@ -102,14 +99,15 @@ CudaBackProjectionImageFilter<ImageType>
     //SR: 0.5 for 2D texture
     matrixIdxProj[i][2] = -1*(this->GetInput(1)->GetBufferedRegion().GetIndex()[i])+0.5;
 
-  projPPToProjIndex = matrixIdxProj.GetVnlMatrix() * projPPToProjIndex.GetVnlMatrix();
-
-  for (int j = 0; j < 9; j++)
-    fprojPPToProjIndex[j] = projPPToProjIndex[j/3][j%3];
-
   // Go over each projection
   for(unsigned int iProj=iFirstProj; iProj<iFirstProj+nProj; iProj++)
     {
+    // Projection physical point to projection index matrix
+    itk::Matrix<double, 3, 3> projPPToProjIndex = this->GetProjectionPhysicalPointToProjectionIndexMatrix(iProj);
+    projPPToProjIndex = matrixIdxProj.GetVnlMatrix() * projPPToProjIndex.GetVnlMatrix();
+    for (int j = 0; j < 9; j++)
+      fprojPPToProjIndex[j] = projPPToProjIndex[j/3][j%3];
+
     // Volume index to projection physical point matrix
     // normalized to have a correct backprojection weight
     // (1 at the isocenter)

@@ -136,7 +136,7 @@ protected:
 
   ProjectionMatrixType GetVolumeIndexToProjectionPhysicalPointMatrix(const unsigned int iProj);
 
-  itk::Matrix<double, TInputImage::ImageDimension, TInputImage::ImageDimension> GetProjectionPhysicalPointToProjectionIndexMatrix();
+  itk::Matrix<double, TInputImage::ImageDimension, TInputImage::ImageDimension> GetProjectionPhysicalPointToProjectionIndexMatrix(const unsigned int iProj);
 
   /** RTK geometry object */
   GeometryConstPointer m_Geometry;

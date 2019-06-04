@@ -209,13 +209,15 @@ Each matrix, accessible via \p GetMatrices, is constructed with:
 
 In addition to flat panel detectors, some of the forward and back projectors in
 RTK can handle cylindrical detectors. The radius of the cylindrical detector is
-stored only once, as the variable RadiusCylindricalDetector. The default value for
-RadiusCylindricalDetector is 0, and indicates that the detector is a flat panel
-(i.e. infinite radius, but 0 is easier to deal with). When the value is
+stored only once, as the variable RadiusCylindricalDetector. The default value
+for RadiusCylindricalDetector is 0, and indicates that the detector is a flat
+panel (i.e. infinite radius, but 0 is easier to deal with). When the value is
 non-zero, then the flat detector is curved according to the radius and remain
 tangent to the corresponding flat detector along the line defined by the
-detector origin \f$(0,0)\f$ and second axis of the detector. This is
-illustrated in the following scheme:
+detector origin \f$(0,0)\f$ and second axis of the detector without accouting
+for the parameters ProjectionOffsetX and ProjectionOffsetY. The latter two
+allow to modify the Origin of each projection as is the case for a flat panel.
+The cylindrical detector geometry is illustrated in the following scheme:
 
 \image html http://www.openrtk.org/RTK/img/ThreeDCircularProjectionGeometry_cylindrical.svg
 
