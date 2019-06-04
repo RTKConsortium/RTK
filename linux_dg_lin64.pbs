@@ -1,5 +1,5 @@
 #PBS -N rtk_dashboard
-#PBS -l walltime=10:00:00,nodes=1:ppn=12:gpus=1:shared,mem=16gb
+#PBS -l walltime=10:00:00,nodes=linux25.dg.creatis.insa-lyon.fr:ppn=12:gpus=1,mem=16gb
 #PBS -o /home/srit/tmp/rtk_dashboard.out
 #PBS -e /home/srit/tmp/rtk_dashboard.err
 #PBS -q gpu
@@ -16,17 +16,17 @@ export CUDA_INCLUDE_DIRS=/usr/include/cuda
 export CUDA_BIN_PATH=/usr/bin
 export CUDA_INC_PATH=/usr/include/cuda
 
-/bin/time ctest -VV -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_cuda_system_itk4.cmake -V
+/bin/time ctest -VV -S /home/srit/src/rtk/rtk-dashboard/linux_dg_fedora_gcc_cuda_system_itk4.cmake -V
 
 rm -fr /tmp/RTK_dashboard
 mkdir /tmp/RTK_dashboard
 git clone git://github.com/SimonRit/RTK.git /tmp/RTK_dashboard/RTK
 
-/bin/time ctest -VV -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_nocuda_system_itk4.cmake -V
-/bin/time ctest -VV -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_cuda_system_itk4_cov.cmake -V
-/bin/time ctest -VV -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_cuda_system_itk4_nofftw.cmake -V
-/bin/time ctest -VV -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_cuda_system_itk4_valgrind.cmake -V
-/bin/time ctest -VV -S /home/srit/src/rtk/rtk-dashboard/linux15_fedora_gcc_nocuda_system_itk4_valgrind.cmake -V
+/bin/time ctest -VV -S /home/srit/src/rtk/rtk-dashboard/linux_dg_fedora_gcc_nocuda_system_itk4.cmake -V
+/bin/time ctest -VV -S /home/srit/src/rtk/rtk-dashboard/linux_dg_fedora_gcc_cuda_system_itk4_cov.cmake -V
+/bin/time ctest -VV -S /home/srit/src/rtk/rtk-dashboard/linux_dg_fedora_gcc_cuda_system_itk4_nofftw.cmake -V
+/bin/time ctest -VV -S /home/srit/src/rtk/rtk-dashboard/linux_dg_fedora_gcc_cuda_system_itk4_valgrind.cmake -V
+/bin/time ctest -VV -S /home/srit/src/rtk/rtk-dashboard/linux_dg_fedora_gcc_nocuda_system_itk4_valgrind.cmake -V
 
 # Generate a script to perform a cuda-memcheck on all tests
 grep Command /tmp/RTK_dashboard/RTK_lin64_gcc_cuda_system_itk4/Testing/Temporary/LastTest_*.log | sed 's/Command:/cuda-memcheck --error-exitcode 1 --leak-check full/g' > /tmp/RTK_dashboard/cudamemchecks.sh

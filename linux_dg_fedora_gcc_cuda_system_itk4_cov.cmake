@@ -1,5 +1,5 @@
 # client maintainer: simon.rit@creatis.insa-lyon.fr
-set(CTEST_SITE "linux15.dg.creatis.insa-lyon.fr")
+set(CTEST_SITE "linux.dg.creatis.insa-lyon.fr")
 set(CTEST_BUILD_NAME "Linux-64bit-gcc-cuda-system-itk4-cov")
 set(CTEST_BUILD_CONFIGURATION Debug)
 set(CTEST_CMAKE_GENERATOR "Unix Makefiles")
