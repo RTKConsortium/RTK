@@ -205,7 +205,7 @@ FourDSARTConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
       m_ProjectionsOrder.push_back(i);
       }
 
-    std::random_shuffle( m_ProjectionsOrder.begin(), m_ProjectionsOrder.end() );
+    std::shuffle( m_ProjectionsOrder.begin(), m_ProjectionsOrder.end(), Superclass::m_dre );
     m_ProjectionsOrderInitialized = true;
     }
 

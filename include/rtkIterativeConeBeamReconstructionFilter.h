@@ -33,6 +33,9 @@
 # include "rtkCudaRayCastBackProjectionImageFilter.h"
 #endif
 
+#include <random>
+#include <algorithm>
+
 namespace rtk
 {
 
@@ -109,6 +112,10 @@ protected:
     and back projection methods */
   ForwardProjectionType m_CurrentForwardProjectionConfiguration;
   BackProjectionType    m_CurrentBackProjectionConfiguration;
+
+  /** A random generating engine is needed to use the C++17 comliant code for std::shuffle.
+   */
+  std::default_random_engine m_dre = std::default_random_engine{};
 
   /** Instantiate forward and back projectors using SFINAE. */
   using CPUImageType = typename itk::Image<typename ProjectionStackType::PixelType, ProjectionStackType::ImageDimension>;
