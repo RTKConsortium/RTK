@@ -46,15 +46,7 @@ ForwardProjectionImageFilter<TInputImage, TOutputImage>::GenerateInputRequestedR
     return;
 
   typename TInputImage::RegionType reqRegion = inputPtr1->GetLargestPossibleRegion();
-  inputPtr1->SetRequestedRegion(reqRegion);
-
-  // Input 2 is the attenuation map relative to the volume
-  typename Superclass::InputImagePointer inputPtr2 = const_cast<TInputImage *>(this->GetInput(2));
-  if (!inputPtr2)
-    return;
-
-  typename TInputImage::RegionType reqRegion2 = inputPtr2->GetLargestPossibleRegion();
-  inputPtr2->SetRequestedRegion(reqRegion2);
+  inputPtr1->SetRequestedRegion( reqRegion );
 }
 
 } // end namespace rtk
