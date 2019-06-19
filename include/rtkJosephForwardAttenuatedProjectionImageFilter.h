@@ -45,7 +45,7 @@ class InterpolationWeightMultiplicationAttenuated
 public:
   InterpolationWeightMultiplicationAttenuated()
   {
-    for (std::size_t i = 0; i < ITK_MAX_THREADS; i++)
+    for (std::size_t i = 0; i < itk::ITK_MAX_THREADS; i++)
       {
       m_AttenuationRay[i] = 0;
       m_AttenuationPixel[i] = 0;
@@ -83,9 +83,9 @@ public:
 
 private:
   std::ptrdiff_t m_AttenuationMinusEmissionMapsPtrDiff;
-  TInput m_AttenuationRay[ITK_MAX_THREADS];
-  TInput m_AttenuationPixel[ITK_MAX_THREADS];
-  TInput m_ex1[ITK_MAX_THREADS];
+  TInput m_AttenuationRay[itk::ITK_MAX_THREADS];
+  TInput m_AttenuationPixel[itk::ITK_MAX_THREADS];
+  TInput m_ex1[itk::ITK_MAX_THREADS];
 };
 
 /** \class ComputeAttenuationCorrection
