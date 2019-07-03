@@ -45,7 +45,7 @@
 
 // CONSTANTS //////////////////////////////////////////////////////////////
 __constant__ int3 c_projSize;
-__constant__ float c_materialAttenuations[3 * 150];
+__constant__ float c_materialAttenuations[2 * 150];
 __constant__ float c_binnedDetectorResponse[5 * 150];
 ////////////////////////////////////////////////////////////////////////////
 
@@ -198,9 +198,9 @@ cudaMemset((void *)pOut2, 0, projectionSize[0] * projectionSize[1] * projectionS
 dim3 dimBlock  = dim3(4, 4, 4);
 dim3 dimGrid = dim3(iDivUp(projectionSize[0], dimBlock.x), iDivUp(projectionSize[1], dimBlock.y), iDivUp(projectionSize[2], dimBlock.z));
 
-if (nBins==5 && nEnergies == 150 && nMaterials == 3)
-  kernel_forward_model<5, 150, 3> <<< dimGrid, dimBlock >>> (pMatProj, pPhoCount, pSpectrum, pProjOnes, pOut1, pOut2);
+if (nBins==5 && nEnergies == 150 && nMaterials == 2)
+  kernel_forward_model<5, 150, 2> <<< dimGrid, dimBlock >>> (pMatProj, pPhoCount, pSpectrum, pProjOnes, pOut1, pOut2);
 else
-  itkGenericExceptionMacro(<< "The CUDA version of WeidingerForwardModel works with hard-coded parameters, currently set to nBins=5, nEnergies=150 and nMaterials=3")
+  itkGenericExceptionMacro(<< "The CUDA version of WeidingerForwardModel works with hard-coded parameters, currently set to nBins=5, nEnergies=150 and nMaterials=2")
 CUDA_CHECK_ERROR;
 }

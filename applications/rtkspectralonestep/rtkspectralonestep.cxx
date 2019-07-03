@@ -39,7 +39,7 @@ int main(int argc, char * argv[])
   using dataType = float;
   constexpr unsigned int Dimension = 3;
   constexpr unsigned int nBins = 5;
-  constexpr unsigned int nMaterials = 3;
+  constexpr unsigned int nMaterials = 2;
 
   // Define types for the input images
 #ifdef RTK_USE_CUDA
@@ -161,7 +161,7 @@ int main(int argc, char * argv[])
 
   MaterialVolumesType::PixelType regulWeights;
   if(args_info.regul_weights_given)
-    for(unsigned int i=0; i<Dimension; i++)
+    for(unsigned int i=0; i<nMaterials; i++)
       regulWeights[i] = args_info.regul_weights_arg[i];
   else
     regulWeights.Fill(0);

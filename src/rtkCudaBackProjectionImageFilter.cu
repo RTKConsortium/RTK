@@ -198,11 +198,25 @@ CUDA_back_project(int projSize[3],
         kernel_backProject<1, true> <<< dimGrid, dimBlock >>> (dev_vol_in, dev_vol_out, (float)radiusCylindricalDetector, dev_tex_proj);
       break;
 
+    case 2:
+      if (radiusCylindricalDetector == 0)
+        kernel_backProject<2, false> <<< dimGrid, dimBlock >>> (dev_vol_in, dev_vol_out, (float)radiusCylindricalDetector, dev_tex_proj);
+      else
+        kernel_backProject<2, true> <<< dimGrid, dimBlock >>> (dev_vol_in, dev_vol_out, (float)radiusCylindricalDetector, dev_tex_proj);
+      break;
+
     case 3:
       if (radiusCylindricalDetector == 0)
         kernel_backProject<3, false> <<< dimGrid, dimBlock >>> (dev_vol_in, dev_vol_out, (float)radiusCylindricalDetector, dev_tex_proj);
       else
         kernel_backProject<3, true> <<< dimGrid, dimBlock >>> (dev_vol_in, dev_vol_out, (float)radiusCylindricalDetector, dev_tex_proj);
+      break;
+
+    case 4:
+      if (radiusCylindricalDetector == 0)
+        kernel_backProject<4, false> <<< dimGrid, dimBlock >>> (dev_vol_in, dev_vol_out, (float)radiusCylindricalDetector, dev_tex_proj);
+      else
+        kernel_backProject<4, true> <<< dimGrid, dimBlock >>> (dev_vol_in, dev_vol_out, (float)radiusCylindricalDetector, dev_tex_proj);
       break;
 
     case 9:
