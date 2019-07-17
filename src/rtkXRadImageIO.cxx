@@ -17,9 +17,8 @@
  *=========================================================================*/
 
 #include "rtkXRadImageIO.h"
-
-#include <itkRawImageIO.h>
 #include <itkMetaDataObject.h>
+#include <itkByteSwapper.h>
 
 //--------------------------------------------------------------------
 // Read Image Information
@@ -124,21 +123,33 @@ void rtk::XRadImageIO::Read(void * buffer)
     }
   itkDebugMacro(<< "Reading Done");
 
-  // Adapted from itkRawImageIO
-    {
-    using namespace itk;
-    // Swap bytes if necessary
-    if itkReadRawBytesAfterSwappingMacro( unsigned short, USHORT )
-    else if itkReadRawBytesAfterSwappingMacro( short, SHORT )
-    else if itkReadRawBytesAfterSwappingMacro( char, CHAR )
-    else if itkReadRawBytesAfterSwappingMacro( unsigned char, UCHAR )
-    else if itkReadRawBytesAfterSwappingMacro( unsigned int, UINT )
-    else if itkReadRawBytesAfterSwappingMacro( int, INT )
-    else if itkReadRawBytesAfterSwappingMacro( unsigned int, ULONG )
-    else if itkReadRawBytesAfterSwappingMacro( int, LONG )
-    else if itkReadRawBytesAfterSwappingMacro( float, FLOAT )
-    else if itkReadRawBytesAfterSwappingMacro( double, DOUBLE );
+#define itkReadRawBytesAfterSwappingMacro(StrongType, WeakType)   \
+  ( this->GetComponentType() == WeakType )                        \
+    {                                                             \
+    using InternalByteSwapperType = itk::ByteSwapper<StrongType>; \
+    if ( m_ByteOrder == LittleEndian )                            \
+      {                                                           \
+      InternalByteSwapperType::SwapRangeFromSystemToLittleEndian( \
+        (StrongType *)buffer, this->GetImageSizeInComponents() ); \
+      }                                                           \
+    else if ( m_ByteOrder == BigEndian )                          \
+      {                                                           \
+      InternalByteSwapperType::SwapRangeFromSystemToBigEndian(    \
+        (StrongType *)buffer, this->GetImageSizeInComponents() ); \
+      }                                                           \
     }
+
+  // Swap bytes if necessary
+  if itkReadRawBytesAfterSwappingMacro( unsigned short, USHORT )
+  else if itkReadRawBytesAfterSwappingMacro( short, SHORT )
+  else if itkReadRawBytesAfterSwappingMacro( char, CHAR )
+  else if itkReadRawBytesAfterSwappingMacro( unsigned char, UCHAR )
+  else if itkReadRawBytesAfterSwappingMacro( unsigned int, UINT )
+  else if itkReadRawBytesAfterSwappingMacro( int, INT )
+  else if itkReadRawBytesAfterSwappingMacro( unsigned int, ULONG )
+  else if itkReadRawBytesAfterSwappingMacro( int, LONG )
+  else if itkReadRawBytesAfterSwappingMacro( float, FLOAT )
+  else if itkReadRawBytesAfterSwappingMacro( double, DOUBLE );
 }
 
 //--------------------------------------------------------------------
