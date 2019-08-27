@@ -254,7 +254,7 @@ ImagXGeometryReader<TInputImage>::GetGeometryForAI1p5()
 
   // Create and set ImageIO
   itk::ImageIOBase::Pointer imageIO = itk::ImageIOFactory::CreateImageIO(
-      m_ProjectionsFileNames[0].c_str(), itk::ImageIOFactory::ReadMode);
+      m_ProjectionsFileNames[0].c_str(), itk::ImageIOFactory::FileModeType::ReadMode);
   imageIO = itk::GDCMImageIO::New();
   dynamic_cast<itk::GDCMImageIO*>(imageIO.GetPointer() )->LoadPrivateTagsOn();
 
@@ -452,7 +452,7 @@ std::string ImagXGeometryReader<TInputImage>::getAIversion()
 {
   // Create and set ImageIO
   itk::ImageIOBase::Pointer imageIO = itk::ImageIOFactory::CreateImageIO(
-      m_ProjectionsFileNames[0].c_str(), itk::ImageIOFactory::ReadMode);
+      m_ProjectionsFileNames[0].c_str(), itk::ImageIOFactory::FileModeType::ReadMode);
 
   imageIO = itk::GDCMImageIO::New();
   dynamic_cast<itk::GDCMImageIO*>(imageIO.GetPointer() )->LoadPrivateTagsOn();
@@ -519,7 +519,7 @@ void ImagXGeometryReader<TInputImage>::GenerateData()
   for (unsigned int noProj = 0; noProj < m_ProjectionsFileNames.size(); noProj++)
     {
     itk::ImageIOBase::Pointer imageIO = itk::ImageIOFactory::CreateImageIO(
-        m_ProjectionsFileNames[0].c_str(), itk::ImageIOFactory::ReadMode);
+        m_ProjectionsFileNames[0].c_str(), itk::ImageIOFactory::FileModeType::ReadMode);
     using ReaderType = itk::ImageFileReader< TInputImage >;
     typename ReaderType::Pointer reader = ReaderType::New();
     reader->SetFileName(m_ProjectionsFileNames[noProj]);

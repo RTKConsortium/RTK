@@ -40,7 +40,7 @@ rtk::XRadGeometryReader
   // Read image information which contains geometry information
   rtk::XRadImageIOFactory::RegisterOneFactory();
   itk::ImageIOBase::Pointer reader =
-        itk::ImageIOFactory::CreateImageIO(m_ImageFileName.c_str(), itk::ImageIOFactory::ReadMode);
+        itk::ImageIOFactory::CreateImageIO(m_ImageFileName.c_str(), itk::ImageIOFactory::FileModeType::ReadMode);
   if(!reader)
     itkExceptionMacro(<< m_ImageFileName << " is not an XRad file.");
   reader->SetFileName(m_ImageFileName);

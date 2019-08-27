@@ -158,7 +158,7 @@ GetProjectionsFileNamesFromGgo(const TArgsInfo &args_info)
   size_t i = 0;
   for (const auto& fn : fileNames) {
     itk::ImageIOBase::Pointer imageio = itk::ImageIOFactory::CreateImageIO(
-      fn.c_str(), itk::ImageIOFactory::ReadMode);
+      fn.c_str(), itk::ImageIOFactory::FileModeType::ReadMode);
 
     if (imageio.IsNull()) {
       std::cerr << "Ignoring file: " << fn << "\n";

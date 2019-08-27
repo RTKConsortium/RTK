@@ -45,7 +45,7 @@ OraLookupTableImageFilter<TOutputImage>
   int fileIdx = this->GetOutput()->GetRequestedRegion().GetIndex()[2];
   itk::ImageIOBase::Pointer reader;
   reader = itk::ImageIOFactory::CreateImageIO(m_FileNames[fileIdx].c_str(),
-                                              itk::ImageIOFactory::ReadMode);
+                                              itk::ImageIOFactory::FileModeType::ReadMode);
   if (!reader)
     {
     itkExceptionMacro("Error reading file " << m_FileNames[fileIdx]);

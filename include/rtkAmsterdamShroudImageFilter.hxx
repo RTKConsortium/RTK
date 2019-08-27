@@ -48,7 +48,7 @@ AmsterdamShroudImageFilter<TInputImage>
   m_SubtractFilter->SetInput2( m_ConvolutionFilter->GetOutput() );
   m_PermuteFilter->SetInput( m_SubtractFilter->GetOutput() );
 
-  m_DerivativeFilter->SetOrder(DerivativeType::FirstOrder);
+  m_DerivativeFilter->SetOrder(DerivativeType::OrderEnumType::FirstOrder);
   m_DerivativeFilter->SetDirection(1);
   m_DerivativeFilter->SetSigma(4);
 

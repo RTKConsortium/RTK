@@ -38,8 +38,9 @@ void OraGeometryReader::GenerateData()
   for(const std::string & projectionsFileName : m_ProjectionsFileNames)
     {
     itk::ImageIOBase::Pointer reader;
+
     reader = itk::ImageIOFactory::CreateImageIO(projectionsFileName.c_str(),
-                                                itk::ImageIOFactory::ReadMode);
+                                                itk::ImageIOFactory::FileModeType::ReadMode);
     if (!reader)
       {
       itkExceptionMacro("Error reading file " << projectionsFileName);
