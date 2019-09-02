@@ -41,11 +41,6 @@ if (CUDA_FOUND)
   cuda_include_directories (${CMAKE_CURRENT_SOURCE_DIR})
 endif ()
 
-# JAS 08.25.2010
-#   Check to make sure nvcc has gcc-4.3 for compiling.
-#   This script will modify CUDA_NVCC_FLAGS if system default is not gcc-4.3
-include (nvcc-check)
-
 if("${CUDA_VERSION}" VERSION_LESS 8.0)
  set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS}
      -gencode arch=compute_20,code=sm_20
