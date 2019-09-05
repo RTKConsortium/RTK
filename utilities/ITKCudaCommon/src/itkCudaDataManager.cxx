@@ -81,13 +81,35 @@ void CudaDataManager::Allocate()
 
 void CudaDataManager::Free()
 {
+  std::string exceptionDetails;
+  bool exceptionOccured = false;
   m_Mutex.lock();
   if (m_GPUBuffer->GetBufferSize() > 0)
     {
-    m_GPUBuffer->Free();
+    try
+      {
+      CUDA_CHECK(cuCtxSetCurrent(*(this->m_ContextManager->GetCurrentContext()))); // This is necessary when running multithread to bind the host CPU thread to the right context
+      m_GPUBuffer->Free();
+      }
+    catch(itk::ExceptionObject &e)
+      {
+      exceptionOccured = true;
+      exceptionDetails = e.what();
+      }
     m_IsGPUBufferDirty = true;
     }
   m_Mutex.unlock();
+  if( exceptionOccured )
+    {
+    if( exceptionDetails.empty() )
+      {
+      itkExceptionMacro("Exception occurred during CudaDataManager::Free");
+      }
+    else
+      {
+      itkExceptionMacro(<< "Exception occurred during CudaDataManager::Free" << std::endl << exceptionDetails);
+      }
+    }
 }
 
 void CudaDataManager::SetCPUBufferPointer(void* ptr)
@@ -123,6 +145,8 @@ void CudaDataManager::SetCPUBufferDirty()
 
 void CudaDataManager::UpdateCPUBuffer()
 {
+  std::string exceptionDetails;
+  bool exceptionOccured = false;
   m_Mutex.lock();
   if(m_IsGPUBufferDirty)
     {
@@ -130,15 +154,33 @@ void CudaDataManager::UpdateCPUBuffer()
     }
   else if(m_IsCPUBufferDirty && m_GPUBuffer && m_CPUBuffer)
     {
+    try
+      {
 #ifdef VERBOSE
     std::cout << this << "::UpdateCPUBuffer GPU->CPU data copy " << m_GPUBuffer->GetPointer() << "->" << m_CPUBuffer << " : " << m_BufferSize << std::endl;
 #endif
-
-    CUDA_CHECK(cuCtxSetCurrent(*(this->m_ContextManager->GetCurrentContext()))); // This is necessary when running multithread to bind the host CPU thread to the right context
-    CUDA_CHECK(cudaMemcpy(m_CPUBuffer, m_GPUBuffer->GetPointer(), m_BufferSize, cudaMemcpyDeviceToHost));
-    m_IsCPUBufferDirty = false;
+      CUDA_CHECK(cuCtxSetCurrent(*(this->m_ContextManager->GetCurrentContext()))); // This is necessary when running multithread to bind the host CPU thread to the right context
+      CUDA_CHECK(cudaMemcpy(m_CPUBuffer, m_GPUBuffer->GetPointer(), m_BufferSize, cudaMemcpyDeviceToHost));
+      m_IsCPUBufferDirty = false;
+      }
+    catch(itk::ExceptionObject &e)
+      {
+      exceptionOccured = true;
+      exceptionDetails = e.what();
+      }
     }
   m_Mutex.unlock();
+  if( exceptionOccured )
+    {
+    if( exceptionDetails.empty() )
+      {
+      itkExceptionMacro("Exception occurred during CudaDataManager::UpdateCPUBuffer");
+      }
+    else
+      {
+      itkExceptionMacro(<< "Exception occurred during CudaDataManager::UpdateCPUBuffer" << std::endl << exceptionDetails);
+      }
+    }
 }
 
 void CudaDataManager::UpdateGPUBuffer()
