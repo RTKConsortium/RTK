@@ -255,7 +255,6 @@ install(FILES ${RTK_SOURCE_DIR}/cmake/FindCUDA_wrap.cmake
               ${RTK_SOURCE_DIR}/cmake/GetGitRevisionDescription.cmake
               ${RTK_SOURCE_DIR}/cmake/GetGitRevisionDescription.cmake.in
               ${RTK_SOURCE_DIR}/cmake/has_cuda_gpu.cxx
-              ${RTK_SOURCE_DIR}/cmake/nvcc-check.cmake
         DESTINATION ${ITK_INSTALL_PACKAGE_DIR})
 if(NOT ITK_SOURCE_DIR)
   install(CODE "MESSAGE(FATAL_ERROR \"Cannot install, RTK is compiled separately from ITK. Installation is only functional if RTK is compiled within ITK.\")")
