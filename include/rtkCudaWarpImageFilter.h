@@ -27,7 +27,7 @@
 
 #include <itkCudaImage.h>
 #include <itkWarpImageFilter.h>
-#include <itkCudaInPlaceImageFilter.h>
+#include <itkCudaImageToImageFilter.h>
 
 namespace rtk
 {
@@ -44,7 +44,7 @@ namespace rtk
  * \ingroup RTK CudaImageToImageFilter
  */
 class RTK_EXPORT CudaWarpImageFilter :
-  public itk::CudaInPlaceImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>,
+  public itk::CudaImageToImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>,
     itk::WarpImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>, itk::CudaImage<itk::CovariantVector<float, 3>, 3> > >
 {
 public:
@@ -56,7 +56,7 @@ public:
   using DVFType = itk::CudaImage<DisplacementVectorType, 3>;
   using WarpImageFilterType = itk::WarpImageFilter< ImageType, ImageType, DVFType>;
   using Self = CudaWarpImageFilter;
-  using Superclass = itk::CudaInPlaceImageFilter<ImageType, ImageType,
+  using Superclass = itk::CudaImageToImageFilter<ImageType, ImageType,
                      WarpImageFilterType>;
   using Pointer = itk::SmartPointer<Self>;
   using ConstPointer = itk::SmartPointer<const Self>;

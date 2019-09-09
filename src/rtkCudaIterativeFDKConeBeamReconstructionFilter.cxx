@@ -35,5 +35,5 @@ void
 rtk::CudaIterativeFDKConeBeamReconstructionFilter
 ::GPUGenerateData()
 {
-  CPUSuperclass::GenerateData();
+  Superclass::GenerateData();
 }

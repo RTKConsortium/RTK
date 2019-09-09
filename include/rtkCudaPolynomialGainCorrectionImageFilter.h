@@ -27,7 +27,7 @@
 #include "RTKExport.h"
 
 #include <itkCudaImage.h>
-#include <itkCudaInPlaceImageFilter.h>
+#include <itkCudaImageToImageFilter.h>
 
 #include "rtkConfiguration.h"
 
@@ -46,7 +46,7 @@ namespace rtk
  * \ingroup RTK
  */
 class RTK_EXPORT CudaPolynomialGainCorrectionImageFilter :
-    public  itk::CudaInPlaceImageFilter < itk::CudaImage<unsigned short, 3>, itk::CudaImage<float, 3>,
+    public  itk::CudaImageToImageFilter < itk::CudaImage<unsigned short, 3>, itk::CudaImage<float, 3>,
     PolynomialGainCorrectionImageFilter <itk::CudaImage<unsigned short, 3>, itk::CudaImage<float, 3> > >
 {
 public:
@@ -59,7 +59,7 @@ public:
 
   /** Standard class type alias. */
   using Self = CudaPolynomialGainCorrectionImageFilter;
-  using Superclass = itk::CudaInPlaceImageFilter<ImageType, ImageType, CPUPolyGainFilterType>;
+  using Superclass = itk::CudaImageToImageFilter<ImageType, ImageType, CPUPolyGainFilterType>;
   using Pointer = itk::SmartPointer<Self>;
   using ConstPointer = itk::SmartPointer<const Self>;
 

@@ -49,7 +49,7 @@ namespace rtk
  * \ingroup RTK ReconstructionAlgorithm CudaImageToImageFilter
  */
 class RTK_EXPORT CudaIterativeFDKConeBeamReconstructionFilter :
-  public itk::CudaInPlaceImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>,
+  public itk::CudaImageToImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>,
   IterativeFDKConeBeamReconstructionFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>, float > >
 {
 public:
