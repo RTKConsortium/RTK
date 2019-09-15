@@ -32,39 +32,49 @@
 
 #include <itkImageFileWriter.h>
 
-int main(int argc, char * argv[])
+itk::ImageIOBase::Pointer GetFileHeader(const std::string &filename)
 {
-  GGO(rtkspectralonestep, args_info);
+  itk::ImageIOBase::Pointer reader =
+    itk::ImageIOFactory::CreateImageIO(filename.c_str(), itk::ImageIOFactory::FileModeType::ReadMode);
+  if (!reader)
+    {
+    itkGenericExceptionMacro(<< "Could not read " << filename);
+    }
+  reader->SetFileName(filename);
+  reader->ReadImageInformation();
+  return reader;
+}
 
+template <unsigned int VNumberOfBins, unsigned int VNumberOfMaterials>
+void rtkspectralonestep(const args_info_rtkspectralonestep &args_info)
+{
   using dataType = float;
   constexpr unsigned int Dimension = 3;
-  constexpr unsigned int nBins = 5;
-  constexpr unsigned int nMaterials = 2;
 
   // Define types for the input images
 #ifdef RTK_USE_CUDA
-  using MaterialVolumesType = itk::CudaImage< itk::Vector<dataType, nMaterials>, Dimension >;
-  using PhotonCountsType = itk::CudaImage< itk::Vector<dataType, nBins>, Dimension >;
+  using MaterialVolumesType = typename itk::CudaImage< itk::Vector<dataType, VNumberOfMaterials>, Dimension >;
+  using PhotonCountsType = typename itk::CudaImage< itk::Vector<dataType, VNumberOfBins>, Dimension >;
   using IncidentSpectrumType = itk::CudaImage< dataType, Dimension >;
   using DetectorResponseType = itk::CudaImage< dataType, 2 >;
   using MaterialAttenuationsType = itk::CudaImage< dataType, 2 >;
 #else
-  using MaterialVolumesType = itk::Image< itk::Vector<dataType, nMaterials>, Dimension >;
-  using PhotonCountsType = itk::Image< itk::Vector<dataType, nBins>, Dimension >;
+  using MaterialVolumesType = typename itk::Image< itk::Vector<dataType, VNumberOfMaterials>, Dimension >;
+  using PhotonCountsType = typename itk::Image< itk::Vector<dataType, VNumberOfBins>, Dimension >;
   using IncidentSpectrumType = itk::Image< dataType, Dimension >;
   using DetectorResponseType = itk::Image< dataType, 2 >;
   using MaterialAttenuationsType = itk::Image< dataType, 2 >;
 #endif
 
   // Define types for the readers
-  using MaterialVolumesReaderType = itk::ImageFileReader<MaterialVolumesType>;
-  using PhotonCountsReaderType = itk::ImageFileReader<PhotonCountsType>;
+  using MaterialVolumesReaderType = typename itk::ImageFileReader<MaterialVolumesType>;
+  using PhotonCountsReaderType = typename itk::ImageFileReader<PhotonCountsType>;
   using IncidentSpectrumReaderType = itk::ImageFileReader<IncidentSpectrumType>;
   using DetectorResponseReaderType = itk::ImageFileReader<DetectorResponseType>;
-  using MaterialAttenuationsReaderType = itk::ImageFileReader<MaterialAttenuationsType>;
+  using MaterialAttenuationsReaderType = typename itk::ImageFileReader<MaterialAttenuationsType>;
 
   // Instantiate and update the readers
-  PhotonCountsReaderType::Pointer photonCountsReader = PhotonCountsReaderType::New();
+  typename PhotonCountsReaderType::Pointer photonCountsReader = PhotonCountsReaderType::New();
   photonCountsReader->SetFileName(args_info.spectral_arg);
   photonCountsReader->Update();
 
@@ -89,18 +99,18 @@ int main(int argc, char * argv[])
     }
 
   // Create input: either an existing volume read from a file or a blank image
-  itk::ImageSource< MaterialVolumesType >::Pointer inputFilter;
+  typename itk::ImageSource< MaterialVolumesType >::Pointer inputFilter;
   if(args_info.input_given)
     {
-    MaterialVolumesReaderType::Pointer materialVolumesReader = MaterialVolumesReaderType::New();
+    typename MaterialVolumesReaderType::Pointer materialVolumesReader = MaterialVolumesReaderType::New();
     materialVolumesReader->SetFileName(args_info.input_arg);
     inputFilter = materialVolumesReader;
     }
   else
     {
     // Create new empty volume
-    using ConstantImageSourceType = rtk::ConstantImageSource< MaterialVolumesType >;
-    ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
+    using ConstantImageSourceType = typename rtk::ConstantImageSource< MaterialVolumesType >;
+    typename ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
     rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkspectralonestep>(constantImageSource, args_info);
     inputFilter = constantImageSource;
     }
@@ -109,11 +119,11 @@ int main(int argc, char * argv[])
   // Read the material attenuations image as a matrix
   MaterialAttenuationsType::IndexType indexMat;
   unsigned int nEnergies = materialAttenuationsReader->GetOutput()->GetLargestPossibleRegion().GetSize()[1];
-  vnl_matrix<dataType> materialAttenuationsMatrix(nEnergies, nMaterials);
+  vnl_matrix<dataType> materialAttenuationsMatrix(nEnergies, VNumberOfMaterials);
   for (unsigned int energy=0; energy<nEnergies; energy++)
     {
     indexMat[1] = energy;
-    for (unsigned int material=0; material<nMaterials; material++)
+    for (unsigned int material=0; material<VNumberOfMaterials; material++)
       {
       indexMat[0] = material;
       materialAttenuationsMatrix[energy][material] = materialAttenuationsReader->GetOutput()->GetPixel(indexMat);
@@ -122,18 +132,21 @@ int main(int argc, char * argv[])
 
   // Read the thresholds on command line and check their number
   itk::VariableLengthVector<double> thresholds;
-  thresholds.SetSize(nBins+1);
-  if (args_info.thresholds_given == nBins)
+  thresholds.SetSize(VNumberOfBins+1);
+  if (args_info.thresholds_given == VNumberOfBins)
     {
-    for (unsigned int bin=0; bin<nBins; bin++)
+    for (unsigned int bin=0; bin<VNumberOfBins; bin++)
       thresholds[bin] = args_info.thresholds_arg[bin];
 
     // Add the maximum pulse height at the end
     double MaximumPulseHeight = detectorResponseReader->GetOutput()->GetLargestPossibleRegion().GetSize()[1];
-    thresholds[nBins] = MaximumPulseHeight;
+    thresholds[VNumberOfBins] = MaximumPulseHeight;
     }
   else
-    itkGenericExceptionMacro(<< "Number of thresholds "<< args_info.thresholds_given << " does not match the number of bins " << nBins);
+    {
+    itkGenericExceptionMacro(<< "Number of thresholds " << args_info.thresholds_given
+                             << " does not match the number of bins " << VNumberOfBins);
+    }
 
   // Read the detector response image as a matrix, and bin it
   vnl_matrix<dataType> drm = rtk::SpectralBinDetectorResponse<dataType>(detectorResponseReader->GetOutput(),
@@ -149,28 +162,28 @@ int main(int argc, char * argv[])
   rtk::ThreeDCircularProjectionGeometryXMLFileReader::Pointer geometryReader;
   geometryReader = rtk::ThreeDCircularProjectionGeometryXMLFileReader::New();
   geometryReader->SetFilename(args_info.geometry_arg);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( geometryReader->GenerateOutputInformation() )
+  geometryReader->GenerateOutputInformation();
 
   // Read the regularization parameters
-  MaterialVolumesType::RegionType::SizeType regulRadius;
+  typename MaterialVolumesType::RegionType::SizeType regulRadius;
   if(args_info.regul_radius_given)
     for(unsigned int i=0; i<Dimension; i++)
       regulRadius[i] = args_info.regul_radius_arg[i];
   else
     regulRadius.Fill(0);
 
-  MaterialVolumesType::PixelType regulWeights;
+  typename MaterialVolumesType::PixelType regulWeights;
   if(args_info.regul_weights_given)
-    for(unsigned int i=0; i<nMaterials; i++)
+    for(unsigned int i=0; i<VNumberOfMaterials; i++)
       regulWeights[i] = args_info.regul_weights_arg[i];
   else
     regulWeights.Fill(0);
 
   // Set the forward and back projection filters to be used
-  using MechlemFilterType = rtk::MechlemOneStepSpectralReconstructionFilter<MaterialVolumesType,
-                                                          PhotonCountsType,
-                                                          IncidentSpectrumType>;
-  MechlemFilterType::Pointer mechlemOneStep = MechlemFilterType::New();
+  using MechlemFilterType = typename rtk::MechlemOneStepSpectralReconstructionFilter<MaterialVolumesType,
+                                                                                     PhotonCountsType,
+                                                                                     IncidentSpectrumType>;
+  typename MechlemFilterType::Pointer mechlemOneStep = MechlemFilterType::New();
   SetForwardProjectionFromGgo(args_info, mechlemOneStep.GetPointer());
   SetBackProjectionFromGgo(args_info, mechlemOneStep.GetPointer());
   mechlemOneStep->SetInputMaterialVolumes( inputFilter->GetOutput() );
@@ -191,11 +204,11 @@ int main(int argc, char * argv[])
   if (args_info.subsets_arg != 1)
     {
     using ReorderProjectionsFilterType = rtk::ReorderProjectionsImageFilter<PhotonCountsType>;
-    ReorderProjectionsFilterType::Pointer reorder = ReorderProjectionsFilterType::New();
+    typename ReorderProjectionsFilterType::Pointer reorder = ReorderProjectionsFilterType::New();
     reorder->SetInput(photonCountsReader->GetOutput());
     reorder->SetInputGeometry(geometryReader->GetOutputObject());
     reorder->SetPermutation(rtk::ReorderProjectionsImageFilter<PhotonCountsType>::SHUFFLE);
-    TRY_AND_EXIT_ON_ITK_EXCEPTION( reorder->Update() )
+    reorder->Update();
     mechlemOneStep->SetInputPhotonCounts(reorder->GetOutput());
     mechlemOneStep->SetGeometry(reorder->GetOutputGeometry());
     }
@@ -205,14 +218,44 @@ int main(int argc, char * argv[])
     mechlemOneStep->SetGeometry(geometryReader->GetOutputObject());
     }
 
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( mechlemOneStep->Update() )
+  mechlemOneStep->Update();
 
   // Write
   using WriterType = itk::ImageFileWriter< MaterialVolumesType >;
-  WriterType::Pointer writer = WriterType::New();
+  typename WriterType::Pointer writer = WriterType::New();
   writer->SetFileName( args_info.output_arg );
   writer->SetInput( mechlemOneStep->GetOutput() );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() )
+  writer->Update();
+}
 
+int main(int argc, char * argv[])
+{
+  GGO(rtkspectralonestep, args_info);
+  try
+    {
+    itk::ImageIOBase::Pointer headerInputPhotonCounts = GetFileHeader(args_info.spectral_arg);
+    unsigned int nBins = headerInputPhotonCounts->GetNumberOfComponents();
+    itk::ImageIOBase::Pointer headerAttenuations = GetFileHeader(args_info.attenuations_arg);
+    unsigned int nMaterials = headerAttenuations->GetDimensions(0);
+
+    if(nMaterials == 2 && nBins == 2)
+      rtkspectralonestep<2,2>(args_info);
+    else if(nMaterials == 2 && nBins == 5)
+      rtkspectralonestep<5,2>(args_info);
+    else if(nMaterials == 3 && nBins == 5)
+      rtkspectralonestep<5,3>(args_info);
+    else
+      {
+      std::cerr << nMaterials << " materials and " << nBins << " bins is not handled" << std::endl;
+      return EXIT_FAILURE;
+      }
+    }
+  catch( itk::ExceptionObject & err )
+    {
+    std::cerr << "ExceptionObject caught in rtkspectraleonestep." << std::endl;
+    std::cerr << err << std::endl;
+    exit(EXIT_FAILURE);
+    }
   return EXIT_SUCCESS;
 }
+
