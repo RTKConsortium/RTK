@@ -11,12 +11,6 @@ set(CTEST_NOTES_FILES "${CTEST_SCRIPT_DIRECTORY}/${CTEST_SCRIPT_NAME}")
 set(ENV{ITK_DIR} "/home/srit/src/itk/lin64")
 set(ENV{CUDA_BIN_PATH} "/home/srit/Downloads/cuda80/bin")
 
-file(WRITE ${CTEST_BINARY_DIRECTORY}/CTestCustom.cmake
-  "set(CTEST_CUSTOM_WARNING_EXCEPTION ${CTEST_CUSTOM_WARNING_EXCEPTION}
-  \".*warning: unable to resolve reference to `rtk::Cuda.*\"
-  )")
-CTEST_READ_CUSTOM_FILES("${CTEST_BINARY_DIRECTORY}")
-
 set(CTEST_TEST_TIMEOUT "200")
 ctest_empty_binary_directory(${CTEST_BINARY_DIRECTORY})
 
@@ -33,7 +27,11 @@ BUILD_DOCUMENTATION:BOOL=ON
 ")
 
 ctest_configure(OPTIONS "${cfg_options}")
+CTEST_READ_CUSTOM_FILES("${CTEST_BINARY_DIRECTORY}")
+set(CTEST_CUSTOM_WARNING_EXCEPTION ${CTEST_CUSTOM_WARNING_EXCEPTION}
+  ".*warning: unable to resolve reference to `rtk::Cuda.*"
+  ".*warning: Internal inconsistency: scope for class.*")
+
 ctest_build(BUILD ${CTEST_BINARY_DIRECTORY} TARGET Documentation)
 ctest_submit()
-
 

@@ -16,6 +16,8 @@ set(CTEST_CUSTOM_MEMCHECK_IGNORE "RTKInDoxygenGroup")
 set(CONFIGURE_OPTIONS -DRTK_USE_CUDA=FALSE 
                       -DFAST_TESTS_NO_CHECKS=TRUE)
 set(dashboard_do_memcheck true)
+set(CTEST_CUSTOM_WARNING_EXCEPTION ${CTEST_CUSTOM_WARNING_EXCEPTION}
+    ".* Warning: type of symbol `randomseed' changed from 1 to 2.*")
 
 include("${CTEST_SCRIPT_DIRECTORY}/rtk_common.cmake")
 

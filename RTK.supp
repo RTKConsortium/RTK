@@ -105,6 +105,13 @@
    ...
 }
 {
+   CUDA
+   Memcheck:Leak
+   ...
+   fun:__cudaPushCallConfiguration
+   ...
+}
+{
    lpsolve
    Memcheck:Leak
    ...
@@ -117,5 +124,28 @@
    nifti
    Memcheck:Addr4
    fun:nifti_findhdrname
+   ...
+}
+{
+   libcublas
+   Memcheck:Leak
+   fun:malloc
+   obj:*
+   fun:call_init.part.0
+   ...
+}
+{
+   cudart_threadState
+   Memcheck:Leak
+   fun:malloc
+   fun:_ZN6cudart11threadStateC1EP9cudaError
+   ...
+}
+{
+   cudart_threadState
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:_ZN6cudart14getThreadStateEPNS_14threadStateRefE
    ...
 }
