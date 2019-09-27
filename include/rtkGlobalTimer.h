@@ -19,7 +19,6 @@
 #define rtkGlobalTimer_h
 
 #include <itkProcessObject.h>
-#include "rtkGlobalTimerProbesCollector.h"
 #include "rtkTimeProbesCollectorBase.h"
 #include "rtkWatcherForTimer.h"
 #include "RTKExport.h"
@@ -88,7 +87,6 @@ protected:
   void PrintSelf(std::ostream & os, Indent indent) const override;
   bool m_Verbose;
 
-//  rtk::GlobalTimerProbesCollector m_GlobalTimerProbesCollector;
   rtk::TimeProbesCollectorBase       m_TimeProbesCollectorBase;
   std::vector<rtk::WatcherForTimer*> m_Watchers;
 

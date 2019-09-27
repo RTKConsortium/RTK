@@ -16,7 +16,6 @@ set(RTK_SRCS
   rtkGeometricPhantom.cxx
   rtkGeometricPhantomFileReader.cxx
   rtkGlobalTimer.cxx
-  rtkGlobalTimerProbesCollector.cxx
   rtkHisImageIO.cxx
   rtkHisImageIOFactory.cxx
   rtkHndImageIO.cxx
