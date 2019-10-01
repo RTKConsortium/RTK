@@ -15,15 +15,15 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef rtkWatcherForTimer_h
-#define rtkWatcherForTimer_h
+#ifndef rtkWatcherForResourceProbe_h
+#define rtkWatcherForResourceProbe_h
 
 #include <itkCommand.h>
 #include <itkProcessObject.h>
 
 namespace rtk
 {
-/** \class WatcherForTimer
+/** \class WatcherForResourceProbe
  * \brief Very light watcher to monitor Start and End events
  * on all filters
  *
@@ -34,24 +34,24 @@ namespace rtk
 
 using namespace itk;
 
-class WatcherForTimer
+class WatcherForResourceProbe
 {
 public:
   /** Constructor. Takes a ProcessObject to monitor and an optional
    * comment string that is prepended to each event message. */
-  WatcherForTimer(itk::ProcessObject* o);
+  WatcherForResourceProbe(itk::ProcessObject* o);
 
   /** Copy constructor */
-  WatcherForTimer(const WatcherForTimer &);
+  WatcherForResourceProbe(const WatcherForResourceProbe &);
 
   /** operator=  */
-  WatcherForTimer & operator=(const WatcherForTimer &);
+  WatcherForResourceProbe & operator=(const WatcherForResourceProbe &);
 
   /** Destructor. */
-  virtual ~WatcherForTimer();
+  virtual ~WatcherForResourceProbe();
 
   /** Method to get the name of the class being monitored by this
-   *  WatcherForTimer */
+   *  WatcherForResourceProbe */
   const char * GetNameOfClass()
   {
     return ( m_Process? m_Process->GetNameOfClass() : "None" );
@@ -76,7 +76,7 @@ protected:
 private:
   itk::ProcessObject*         m_Process;
 
-  using CommandType = SimpleMemberCommand< WatcherForTimer >;
+  using CommandType = SimpleMemberCommand< WatcherForResourceProbe >;
   CommandType::Pointer m_StartFilterCommand;
   CommandType::Pointer m_EndFilterCommand;
   CommandType::Pointer m_DeleteFilterCommand;

@@ -146,7 +146,7 @@
  * \ingroup RTK Macro
  */
 
-#ifdef RTK_TIME_EACH_FILTER
+#ifdef RTK_PROBE_EACH_FILTER
 #undef itkSimpleNewMacro
 #define itkSimpleNewMacro(x)                                                         \
   static Pointer New(void)                                                           \
@@ -162,7 +162,7 @@
     processObjectPointer = dynamic_cast<itk::ProcessObject*>(smartPtr.GetPointer()); \
     if (processObjectPointer != nullptr)                                             \
       {                                                                              \
-      rtk::GlobalTimer::GetInstance()->Watch(processObjectPointer);                  \
+      rtk::GlobalResourceProbe::GetInstance()->Watch(processObjectPointer);          \
       }                                                                              \
     return smartPtr;                                                                 \
     }
@@ -189,7 +189,7 @@
     processObjectPointer = dynamic_cast<itk::ProcessObject*>(smartPtr.GetPointer()); \
     if (processObjectPointer != nullptr)                                             \
       {                                                                              \
-      rtk::GlobalTimer::GetInstance()->Watch(processObjectPointer);                  \
+      rtk::GlobalResourceProbe::GetInstance()->Watch(processObjectPointer);          \
       }                                                                              \
     return smartPtr;                                                                 \
     }                                                                                \
@@ -199,7 +199,7 @@
     smartPtr = x::New().GetPointer();                                                \
     return smartPtr;                                                                 \
     }
-#endif //RTK_TIME_EACH_FILTER
+#endif //RTK_PROBE_EACH_FILTER
 
 
 #endif

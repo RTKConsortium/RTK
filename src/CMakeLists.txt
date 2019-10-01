@@ -15,7 +15,7 @@ set(RTK_SRCS
   rtkForbildPhantomFileReader.cxx
   rtkGeometricPhantom.cxx
   rtkGeometricPhantomFileReader.cxx
-  rtkGlobalTimer.cxx
+  rtkGlobalResourceProbe.cxx
   rtkHisImageIO.cxx
   rtkHisImageIOFactory.cxx
   rtkHndImageIO.cxx
@@ -35,12 +35,12 @@ set(RTK_SRCS
   rtkThreeDCircularProjectionGeometry.cxx
   rtkThreeDCircularProjectionGeometryXMLFileReader.cxx
   rtkThreeDCircularProjectionGeometryXMLFileWriter.cxx
-  rtkTimeProbesCollectorBase.cxx
+  rtkResourceProbesCollector.cxx
   rtkVarianObiGeometryReader.cxx
   rtkVarianObiXMLFileReader.cxx
   rtkVarianProBeamGeometryReader.cxx
   rtkVarianProBeamXMLFileReader.cxx
-  rtkWatcherForTimer.cxx
+  rtkWatcherForResourceProbe.cxx
   rtkXimImageIO.cxx
   rtkXimImageIOFactory.cxx
   rtkXRadGeometryReader.cxx

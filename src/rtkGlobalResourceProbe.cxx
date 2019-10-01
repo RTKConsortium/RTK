@@ -15,24 +15,24 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#include "rtkGlobalTimer.h"
+#include "rtkGlobalResourceProbe.h"
 #include "itkObjectFactory.h"
 
 namespace rtk
 {
-GlobalTimer::Pointer GlobalTimer::m_Instance = nullptr;
+GlobalResourceProbe::Pointer GlobalResourceProbe::m_Instance = nullptr;
 
 /**
  * Prompting off by default
  */
-GlobalTimer
-::GlobalTimer()
+GlobalResourceProbe
+::GlobalResourceProbe()
 {
   m_Verbose=false;
 }
 
-GlobalTimer
-::~GlobalTimer()
+GlobalResourceProbe
+::~GlobalResourceProbe()
 {
   if(m_Verbose)
     this->Report(std::cout);
@@ -40,66 +40,66 @@ GlobalTimer
 }
 
 void
-GlobalTimer
+GlobalResourceProbe
 ::PrintSelf(std::ostream & os, Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
 
-  os << indent << "GlobalTimer (single instance): "
-     << (void *)GlobalTimer::m_Instance << std::endl;
+  os << indent << "GlobalResourceProbe (single instance): "
+     << (void *)GlobalResourceProbe::m_Instance << std::endl;
 }
 
 /**
- * Return the single instance of the GlobalTimer
+ * Return the single instance of the GlobalResourceProbe
  */
-GlobalTimer::Pointer
-GlobalTimer
+GlobalResourceProbe::Pointer
+GlobalResourceProbe
 ::GetInstance()
 {
-  if ( !GlobalTimer::m_Instance )
+  if ( !GlobalResourceProbe::m_Instance )
     {
     // Try the factory first
-    GlobalTimer::m_Instance  = ObjectFactory< Self >::Create();
+    GlobalResourceProbe::m_Instance  = ObjectFactory< Self >::Create();
     // if the factory did not provide one, then create it here
-    if ( !GlobalTimer::m_Instance )
+    if ( !GlobalResourceProbe::m_Instance )
       {
-      GlobalTimer::m_Instance = new GlobalTimer;
+      GlobalResourceProbe::m_Instance = new GlobalResourceProbe;
       // Remove extra reference from construction.
-      GlobalTimer::m_Instance->UnRegister();
+      GlobalResourceProbe::m_Instance->UnRegister();
       }
     }
   /**
    * return the instance
    */
-  return GlobalTimer::m_Instance;
+  return GlobalResourceProbe::m_Instance;
 }
 
 /**
  * This just calls GetInstance
  */
-GlobalTimer::Pointer
-GlobalTimer
+GlobalResourceProbe::Pointer
+GlobalResourceProbe
 ::New()
 {
   return GetInstance();
 }
 
 void
-GlobalTimer
+GlobalResourceProbe
 ::Watch(ProcessObject *o)
 {
   m_Mutex.lock();
-  rtk::WatcherForTimer *w = new rtk::WatcherForTimer(o);
+  rtk::WatcherForResourceProbe *w = new rtk::WatcherForResourceProbe(o);
   m_Watchers.push_back(w);
   m_Mutex.unlock();
 }
 
 void
-GlobalTimer
-::Remove(const rtk::WatcherForTimer *w)
+GlobalResourceProbe
+::Remove(const rtk::WatcherForResourceProbe *w)
 {
   m_Mutex.lock();
-  std::vector<rtk::WatcherForTimer*>::iterator itw = std::find( m_Watchers.begin(), m_Watchers.end(), w);
+  std::vector<rtk::WatcherForResourceProbe*>::iterator itw = std::find( m_Watchers.begin(), m_Watchers.end(), w);
   if(itw != m_Watchers.end())
     {
     delete *itw;
@@ -109,36 +109,36 @@ GlobalTimer
 }
 
 void
-GlobalTimer
+GlobalResourceProbe
 ::Start(const char *id)
 {
   m_Mutex.lock();
-  m_TimeProbesCollectorBase.Start(id);
+  m_ResourceProbesCollector.Start(id);
   m_Mutex.unlock();
 }
 
 void
-GlobalTimer
+GlobalResourceProbe
 ::Stop(const char *id)
 {
   m_Mutex.lock();
-  m_TimeProbesCollectorBase.Stop(id);
+  m_ResourceProbesCollector.Stop(id);
   m_Mutex.unlock();
 }
 
 void
-GlobalTimer
+GlobalResourceProbe
 ::Report(std::ostream & os) const
 {
-  m_TimeProbesCollectorBase.ConstReport(os);
+  m_ResourceProbesCollector.Report(os);
 }
 
 void
-GlobalTimer
+GlobalResourceProbe
 ::Clear(void)
 {
   m_Mutex.lock();
-  m_TimeProbesCollectorBase.Clear();
+  m_ResourceProbesCollector.Clear();
   m_Watchers.clear();
   m_Mutex.unlock();
 }

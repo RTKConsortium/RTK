@@ -15,13 +15,13 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#include "rtkWatcherForTimer.h"
-#include "rtkGlobalTimer.h"
+#include "rtkWatcherForResourceProbe.h"
+#include "rtkGlobalResourceProbe.h"
 
 namespace rtk
 {
-WatcherForTimer
-::WatcherForTimer(ProcessObject *o)
+WatcherForResourceProbe
+::WatcherForResourceProbe(ProcessObject *o)
 {
   // Initialize state
   m_Process = o;
@@ -33,11 +33,11 @@ WatcherForTimer
 
   // Assign the callbacks
   m_StartFilterCommand->SetCallbackFunction(this,
-                                            &WatcherForTimer::StartFilter);
+                                            &WatcherForResourceProbe::StartFilter);
   m_EndFilterCommand->SetCallbackFunction(this,
-                                          &WatcherForTimer::EndFilter);
+                                          &WatcherForResourceProbe::EndFilter);
   m_DeleteFilterCommand->SetCallbackFunction(this,
-                                             &WatcherForTimer::DeleteFilter);
+                                             &WatcherForResourceProbe::DeleteFilter);
 
   // Add the commands as observers
   m_StartTag = m_Process->AddObserver(StartEvent(), m_StartFilterCommand);
@@ -46,21 +46,21 @@ WatcherForTimer
 }
 
 void
-WatcherForTimer
+WatcherForResourceProbe
 ::StartFilter()
 {
-  rtk::GlobalTimer::GetInstance()->Start(m_Process->GetNameOfClass());
+  rtk::GlobalResourceProbe::GetInstance()->Start(m_Process->GetNameOfClass());
 }
 
 void
-WatcherForTimer
+WatcherForResourceProbe
 ::EndFilter()
 {
-  rtk::GlobalTimer::GetInstance()->Stop(m_Process->GetNameOfClass());
+  rtk::GlobalResourceProbe::GetInstance()->Stop(m_Process->GetNameOfClass());
 }
 
 void
-WatcherForTimer
+WatcherForResourceProbe
 ::DeleteFilter()
 {
   if ( m_StartFilterCommand )
@@ -75,11 +75,11 @@ WatcherForTimer
     {
     m_Process->RemoveObserver(m_DeleteTag);
     }
-  rtk::GlobalTimer::GetInstance()->Remove(this);
+  rtk::GlobalResourceProbe::GetInstance()->Remove(this);
 }
 
-WatcherForTimer
-::WatcherForTimer(const WatcherForTimer & watch)
+WatcherForResourceProbe
+::WatcherForResourceProbe(const WatcherForResourceProbe & watch)
 {
   // Remove any observers we have on the old process object
   if ( m_Process )
@@ -113,11 +113,11 @@ WatcherForTimer
 
     // Assign the callbacks
     m_StartFilterCommand->SetCallbackFunction(this,
-                                              &WatcherForTimer::StartFilter);
+                                              &WatcherForResourceProbe::StartFilter);
     m_EndFilterCommand->SetCallbackFunction(this,
-                                            &WatcherForTimer::EndFilter);
+                                            &WatcherForResourceProbe::EndFilter);
     m_DeleteFilterCommand->SetCallbackFunction(this,
-                                               &WatcherForTimer::DeleteFilter);
+                                               &WatcherForResourceProbe::DeleteFilter);
 
     // Add the commands as observers
     m_StartTag = m_Process->AddObserver(StartEvent(), m_StartFilterCommand);
@@ -126,9 +126,9 @@ WatcherForTimer
     }
 }
 
-WatcherForTimer &
-WatcherForTimer
-::operator=(const WatcherForTimer & watch)
+WatcherForResourceProbe &
+WatcherForResourceProbe
+::operator=(const WatcherForResourceProbe & watch)
 {
   if(this != &watch)
     {
@@ -165,11 +165,11 @@ WatcherForTimer
 
       // Assign the callbacks
       m_StartFilterCommand->SetCallbackFunction(this,
-                                                &WatcherForTimer::StartFilter);
+                                                &WatcherForResourceProbe::StartFilter);
       m_EndFilterCommand->SetCallbackFunction(this,
-                                              &WatcherForTimer::EndFilter);
+                                              &WatcherForResourceProbe::EndFilter);
       m_DeleteFilterCommand->SetCallbackFunction(this,
-                                                 &WatcherForTimer::DeleteFilter);
+                                                 &WatcherForResourceProbe::DeleteFilter);
 
       // Add the commands as observers
       m_StartTag = m_Process->AddObserver(StartEvent(), m_StartFilterCommand);
@@ -180,8 +180,8 @@ WatcherForTimer
   return *this;
 }
 
-WatcherForTimer
-::~WatcherForTimer()
+WatcherForResourceProbe
+::~WatcherForResourceProbe()
 {
 }
 
