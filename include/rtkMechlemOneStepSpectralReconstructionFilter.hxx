@@ -389,18 +389,47 @@ MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectr
         m_ForwardProjectionFilter->SetInput(1, Next_Zk);
         m_SQSRegul->SetInput(Next_Zk);
         m_NesterovFilter->SetInput(Next_Zk);
+
+        m_GradientsBackProjectionFilter->SetInput(0, m_GradientsSource->GetOutput());
+        m_HessiansBackProjectionFilter->SetInput(0, m_HessiansSource->GetOutput());
         }
+#ifdef RTK_USE_CUDA
+      constexpr int NProjPerExtract = SLAB_SIZE;
+#else
+      constexpr int NProjPerExtract = 16;
+#endif
+      for(int i=0; i<m_NumberOfProjectionsInSubset[subset]; i+=NProjPerExtract)
+        {
+        // Set the extract filter's region
+        typename TPhotonCounts::RegionType extractionRegion = this->GetInputPhotonCounts()->GetLargestPossibleRegion();
+        extractionRegion.SetSize(TPhotonCounts::ImageDimension - 1, std::min(16, m_NumberOfProjectionsInSubset[subset]-i));
+        extractionRegion.SetIndex(TPhotonCounts::ImageDimension - 1, subset * m_NumberOfProjectionsPerSubset+i);
+        m_ExtractPhotonCountsFilter->SetExtractionRegion(extractionRegion);
+        m_ExtractPhotonCountsFilter->UpdateOutputInformation();
 
-      // Set the extract filter's region
-      typename TPhotonCounts::RegionType extractionRegion = this->GetInputPhotonCounts()->GetLargestPossibleRegion();
-      extractionRegion.SetSize(TPhotonCounts::ImageDimension - 1, m_NumberOfProjectionsInSubset[subset]);
-      extractionRegion.SetIndex(TPhotonCounts::ImageDimension - 1, subset * m_NumberOfProjectionsPerSubset);
-      m_ExtractPhotonCountsFilter->SetExtractionRegion(extractionRegion);
-      m_ExtractPhotonCountsFilter->UpdateOutputInformation();
+        // Set the projection sources accordingly
+        m_SingleComponentProjectionsSource->SetInformationFromImage(m_ExtractPhotonCountsFilter->GetOutput());
+        m_ProjectionsSource->SetInformationFromImage(m_ExtractPhotonCountsFilter->GetOutput());
 
-      // Set the projection sources accordingly
-      m_SingleComponentProjectionsSource->SetInformationFromImage(m_ExtractPhotonCountsFilter->GetOutput());
-      m_ProjectionsSource->SetInformationFromImage(m_ExtractPhotonCountsFilter->GetOutput());
+        if(i < m_NumberOfProjectionsInSubset[subset]-NProjPerExtract)
+          {
+          // Backproject gradient and hessian of that projection
+          m_GradientsBackProjectionFilter->Update();
+          m_HessiansBackProjectionFilter->Update();
+          typename TGradientsImage::Pointer gBP = m_GradientsBackProjectionFilter->GetOutput();
+          typename THessiansImage::Pointer hBP = m_HessiansBackProjectionFilter->GetOutput();
+          gBP->DisconnectPipeline();
+          hBP->DisconnectPipeline();
+          m_GradientsBackProjectionFilter->SetInput(gBP);
+          m_HessiansBackProjectionFilter->SetInput(hBP);
+          }
+        else
+          {
+          // Restore original pipeline
+          m_AddGradients->SetInput2(m_GradientsBackProjectionFilter->GetOutput());
+          m_AddHessians->SetInputMatrix(m_HessiansBackProjectionFilter->GetOutput());
+          }
+        }
 
       // Update the most downstream filter
       if(this->GetSupportMask().GetPointer() != nullptr)
