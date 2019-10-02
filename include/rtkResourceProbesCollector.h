@@ -15,60 +15,63 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef rtkGlobalTimerProbesCollector_h
-#define rtkGlobalTimerProbesCollector_h
 
+#ifndef rtkResourceProbesCollector_h
+#define rtkResourceProbesCollector_h
 
-#include "itkTimeProbe.h"
-#include "itkMemoryUsageObserver.h"
+#include "rtkConfiguration.h"
+#include <itkTimeProbe.h>
+#include <itkMemoryProbe.h>
+
+#ifdef RTK_USE_CUDA
+#include <itkCudaMemoryProbe.h>
+#endif
 
 namespace rtk
 {
-/** \class GlobalTimerProbesCollector
- *  \brief Aggregates a set of probes.
+/** \class ResourceProbesCollector
+ *  \brief Aggregates a set of time, memory and cuda memory probes.
  *
- *  This class defines a set of ResourceProbes and assign names to them.
- *  The user can start and stop each one of the probes by addressing them by name.
- *
- *  \sa ResourceProbe
- *
- * \ingroup RTK ITKCommon
+ * \ingroup RTK
  */
-
-class GlobalTimerProbesCollector
+class ResourceProbesCollector
 {
 public:
   using IdType = std::string;
-  using IdVector = std::vector< IdType >;
-  using ProbeVector = std::vector< itk::TimeProbe >;
-  using IndentVector = std::vector< unsigned int >;
-
-  /** constructor */
-  GlobalTimerProbesCollector();
+  using TimeMapType = std::map<IdType, itk::TimeProbe>;
+  using MemoryMapType = std::map<IdType, itk::MemoryProbe>;
+#ifdef RTK_USE_CUDA
+  using CudaMemoryMapType = std::map<IdType, itk::CudaMemoryProbe>;
+#endif
 
   /** destructor */
-  virtual ~GlobalTimerProbesCollector();
+  virtual ~ResourceProbesCollector() = default;
 
   /** Start a probe with a particular name. If the time probe does not
    * exist, it will be created */
-  virtual unsigned int Start(const char *name);
+  virtual void
+  Start(const char * name);
 
   /** Stop a time probe identified with a name */
-  virtual void Stop(unsigned int pos);
+  virtual void
+  Stop(const char * name);
 
-  /** Report the summary of results from the probes */
-  virtual void Report(std::ostream & os = std::cout) const;
+  /** Report the summary of results from all probes */
+  virtual void
+  Report(std::ostream & os = std::cout) const;
 
   /** Destroy the set of probes. New probes can be created after invoking this
     method. */
-  virtual void Clear(void);
+  virtual void
+  Clear();
 
 protected:
-  ProbeVector  m_Probes;
-  IdVector     m_Ids;
-  IndentVector m_Indent;
-  unsigned int m_CurrentIndent;
+  TimeMapType m_TimeProbes;
+  MemoryMapType m_MemoryProbes;
+#ifdef RTK_USE_CUDA
+  CudaMemoryMapType m_CudaMemoryProbes;
+#endif
 };
 } // end namespace itk
 
-#endif //rtkGlobalTimerProbesCollector_h
+#endif // rtkResourceProbesCollector_h

@@ -10,7 +10,7 @@ RTK is a module of [ITK](http://www.itk.org), the Insight Toolkit. Follow the in
 * `RTK_BUILD_APPLICATIONS`: Activates the compilation of RTK's command line tools. Although RTK is mainly a toolkit, we also provide several command line tools for doing most of the available processing. These command line tools use [gengetopt](https://www.gnu.org/software/gengetopt/gengetopt.html). Several examples are available on the [Applications](http://wiki.openrtk.org/index.php/RTK_wiki_help#Applications) section of the [wiki](http://wikiopenrtk.org).
 * `RTK_USE_CUDA`: Activates CUDA computation. Default is `ON` if CMake has automatically found the CUDA package and a CUDA-compatible GPU, and `OFF` otherwise.
 * `RTK_CUDA_PROJECTIONS_SLAB_SIZE`: Set the number of projections processed at once in CUDA processing. Default is 16.
-* `RTK_TIME_EACH_FILTER`: Activates the timing of each filter. Defaults is `OFF`. When activated, each filter processing is timed and a summary can be displayed. All command line applications display the result of this timing with `--verbose`.
+* `RTK_PROBE_EACH_FILTER`: Activates the timing, CPU and CUDA memory consumption of each filter. Defaults is `OFF`. When activated, each filter processing is probed and a summary can be displayed. All command line applications display the result with `--verbose`.
 
 RTK will automatically be installed when installing ITK.
 

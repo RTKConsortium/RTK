@@ -1,6 +1,6 @@
 /*=========================================================================
  *
- *  Copyright RTK Consortium
+ *  Copyright Insight Software Consortium
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -15,29 +15,24 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef rtkTimeProbesCollectorBase_h
-#define rtkTimeProbesCollectorBase_h
+#include "itkCudaMemoryProbe.h"
+#include "itkCudaUtil.h"
+#include <cuda_runtime_api.h>
 
-#include <itkTimeProbesCollectorBase.h>
-#include "RTKExport.h"
+namespace itk
+{
+CudaMemoryProbe ::CudaMemoryProbe()
+  : ResourceProbe<CudaMemoryProbe::CudaMemoryLoadType, double>("Cuda memory", "kB")
+{}
 
-namespace rtk
+CudaMemoryProbe ::~CudaMemoryProbe() = default;
+
+CudaMemoryProbe::CudaMemoryLoadType
+CudaMemoryProbe ::GetInstantValue() const
 {
-/** \class TimeProbesCollectorBase
- * \brief Aggregates a set of time probes.
- *
- * Derives from itk::TimeProbesCollectorBase but improves the report output.
- *
- * \author Cyril Mory
- *
- * \ingroup RTK
- */
-class RTK_EXPORT TimeProbesCollectorBase: public itk::TimeProbesCollectorBase
-{
-public:
-  /** Report the summary of results from the probes */
-  virtual void ConstReport(std::ostream & os = std::cout) const;
-};
+  size_t free;
+  size_t total;
+  CUDA_CHECK( cudaMemGetInfo(&free, &total) );
+  return static_cast<CudaMemoryLoadType>((OffsetValueType(total) - OffsetValueType(free))/1024.);
 }
-
-#endif //rtkTimeProbesCollectorBase_h
+} // end namespace itk

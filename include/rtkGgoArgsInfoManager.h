@@ -19,8 +19,8 @@
 #define rtkGgoArgsInfoManager_h
 
 #include "rtkConfiguration.h"
-#ifdef RTK_TIME_EACH_FILTER
-# include "rtkGlobalTimer.h"
+#ifdef RTK_PROBE_EACH_FILTER
+# include "rtkGlobalResourceProbe.h"
 #endif
 
 namespace rtk
@@ -39,8 +39,8 @@ class args_info_manager
       {
       this->args_info_pointer = &args_info;
       this->cleanup_function = cf;
-#ifdef RTK_TIME_EACH_FILTER
-      rtk::GlobalTimer::GetInstance()->SetVerbose(args_info.verbose_flag);
+#ifdef RTK_PROBE_EACH_FILTER
+      rtk::GlobalResourceProbe::GetInstance()->SetVerbose(args_info.verbose_flag);
 #endif
       }
     ~args_info_manager()

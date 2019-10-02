@@ -3,6 +3,7 @@ set(ITKCudaCommon_SRC
     itkCudaDataManager.cxx
     itkCudaKernelManager.cxx
     itkCudaUtil.cxx
+    itkCudaMemoryProbe.cxx
   )
 
 include_directories(${CUDA_INCLUDE_DIRS})

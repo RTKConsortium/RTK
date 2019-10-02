@@ -15,41 +15,40 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef rtkGlobalTimer_h
-#define rtkGlobalTimer_h
+#ifndef rtkGlobalResourceProbe_h
+#define rtkGlobalResourceProbe_h
 
 #include <itkProcessObject.h>
-#include "rtkGlobalTimerProbesCollector.h"
-#include "rtkTimeProbesCollectorBase.h"
-#include "rtkWatcherForTimer.h"
+#include "rtkResourceProbesCollector.h"
+#include "rtkWatcherForResourceProbe.h"
 #include "RTKExport.h"
 #include <mutex>
 
 namespace rtk
 {
-/** \class GlobalTimer
+/** \class GlobalResourceProbe
  * \brief
  *
  * \ingroup RTK OSSystemObjects
  * \ingroup RTK ITKCommon
  */
 
-class RTK_EXPORT GlobalTimer:public itk::Object
+class RTK_EXPORT GlobalResourceProbe:public itk::Object
 {
 public:
-  ITK_DISALLOW_COPY_AND_ASSIGN(GlobalTimer);
+  ITK_DISALLOW_COPY_AND_ASSIGN(GlobalResourceProbe);
 
   /** Standard class type alias. */
-  using Self = GlobalTimer;
+  using Self = GlobalResourceProbe;
   using Superclass = itk::Object;
   using Pointer = itk::SmartPointer< Self >;
   using ConstPointer = itk::SmartPointer< const Self >;
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(GlobalTimer, itk::Object)
+  itkTypeMacro(GlobalResourceProbe, itk::Object)
 
   /** This is a singleton pattern New.  There will only be ONE
-   * reference to a GlobalTimer object per process.  Clients that
+   * reference to a GlobalResourceProbe object per process.  Clients that
    * call this must call Delete on the object so that the reference
    * counting will work.   The single instance will be unreferenced when
    * the program exits. */
@@ -80,17 +79,16 @@ public:
   virtual void Watch(itk::ProcessObject *o);
 
   /** Remove a watcher */
-  virtual void Remove(const rtk::WatcherForTimer *w);
+  virtual void Remove(const rtk::WatcherForResourceProbe *w);
 
 protected:
-  GlobalTimer();
-  ~GlobalTimer() override;
+  GlobalResourceProbe();
+  ~GlobalResourceProbe() override;
   void PrintSelf(std::ostream & os, Indent indent) const override;
   bool m_Verbose;
 
-//  rtk::GlobalTimerProbesCollector m_GlobalTimerProbesCollector;
-  rtk::TimeProbesCollectorBase       m_TimeProbesCollectorBase;
-  std::vector<rtk::WatcherForTimer*> m_Watchers;
+  ResourceProbesCollector                    m_ResourceProbesCollector;
+  std::vector<rtk::WatcherForResourceProbe*> m_Watchers;
 
 private:
   static Pointer m_Instance;
