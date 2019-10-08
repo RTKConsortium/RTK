@@ -53,7 +53,7 @@ namespace rtk
 itkCudaKernelClassMacro(rtkCudaForwardProjectionImageFilterKernel);
 
 template <class TInputImage = itk::CudaImage<float,3>,
-          class TOutputImage = itk::CudaImage<float,3> >
+          class TOutputImage = TInputImage >
 class ITK_EXPORT CudaForwardProjectionImageFilter :
   public itk::CudaInPlaceImageFilter< TInputImage, TOutputImage,
   ForwardProjectionImageFilter< TInputImage, TOutputImage > >

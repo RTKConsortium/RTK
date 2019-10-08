@@ -33,7 +33,7 @@ namespace rtk
  *
  * \ingroup RTK Projector
  */
-template <class TInputImage, class TOutputImage>
+template <class TInputImage, class TOutputImage=TInputImage>
 class ForwardProjectionImageFilter :
   public itk::InPlaceImageFilter<TInputImage,TOutputImage>
 {
