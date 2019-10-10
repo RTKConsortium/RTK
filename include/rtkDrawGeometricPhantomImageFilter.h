@@ -53,6 +53,7 @@ public:
   using StringType = std::string;
   using VectorType = ConvexShape::VectorType;
   using RotationMatrixType = ConvexShape::RotationMatrixType;
+  using ScalarType = ConvexShape::ScalarType;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -87,6 +88,11 @@ public:
   itkSetMacro(RotationMatrix, RotationMatrixType);
   itkGetMacro(RotationMatrix, RotationMatrixType);
 
+  /** Add clipping plane to the object. The plane is defined by the equation
+   * dir * (x,y,z)' + pos = 0. */
+  void AddClipPlane(const VectorType & dir, const ScalarType & pos);
+  void SetClipPlanes(const std::vector<VectorType> & dir, const std::vector<ScalarType> & pos);
+
 protected:
   DrawGeometricPhantomImageFilter();
   ~DrawGeometricPhantomImageFilter() override = default;
@@ -100,6 +106,8 @@ private:
   VectorType                   m_OriginOffset{0.};
   bool                         m_IsForbildConfigFile{false};
   RotationMatrixType           m_RotationMatrix;
+  std::vector<VectorType>      m_PlaneDirections;
+  std::vector<ScalarType>      m_PlanePositions;
 };
 
 } // end namespace rtk

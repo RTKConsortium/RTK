@@ -76,6 +76,8 @@ void ProjectGeometricPhantomImageFilter< TInputImage, TOutputImage >::GenerateDa
     co->Rotate( m_RotationMatrix );
     co->Translate( m_OriginOffset );
     co->Rescale( m_PhantomScale );
+    for(size_t i=0; i<m_PlaneDirections.size(); i++)
+      co->AddClipPlane( m_PlaneDirections[i], m_PlanePositions[i] );
 
     if( !projectors.empty() )
       {
@@ -100,6 +102,29 @@ void ProjectGeometricPhantomImageFilter< TInputImage, TOutputImage >::GenerateDa
   projectors.back()->GetOutput()->SetRequestedRegion( this->GetOutput()->GetRequestedRegion() );
   projectors.back()->Update();
   this->GraftOutput( projectors.back()->GetOutput() );
+}
+
+template< class TInputImage, class TOutputImage >
+void
+ProjectGeometricPhantomImageFilter< TInputImage, TOutputImage >
+::AddClipPlane(const VectorType & dir, const ScalarType & pos)
+{
+  for(size_t i=0; i<m_PlaneDirections.size(); i++)
+    {
+    if(dir==m_PlaneDirections[i] && pos==m_PlanePositions[i])
+      return;
+    }
+  m_PlaneDirections.push_back(dir);
+  m_PlanePositions.push_back(pos);
+}
+
+template< class TInputImage, class TOutputImage >
+void
+ProjectGeometricPhantomImageFilter< TInputImage, TOutputImage >
+::SetClipPlanes(const std::vector<VectorType> & dir, const std::vector<ScalarType> & pos)
+{
+  m_PlaneDirections = dir;
+  m_PlanePositions = pos;
 }
 
 } // end namespace rtk
