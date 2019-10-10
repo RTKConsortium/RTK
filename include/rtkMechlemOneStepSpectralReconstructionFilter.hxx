@@ -48,6 +48,8 @@ MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectr
   m_GradientsSource = GradientsSourceType::New();
   m_HessiansSource = HessiansSourceType::New();
   m_SQSRegul = SQSRegularizationType::New();
+  m_MultiplyRegulGradientsFilter = MultiplyGradientFilterType::New();
+  m_MultiplyRegulHessiansFilter = MultiplyGradientFilterType::New();
   m_WeidingerForward = WeidingerForwardModelType::New();
   m_NewtonFilter = NewtonFilterType::New();
   m_NesterovFilter = NesterovFilterType::New();
@@ -94,6 +96,14 @@ MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectr
 }
 
 template< class TOutputImage, class TPhotonCounts, class TSpectrum>
+void
+MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectrum>
+::SetSpatialRegularizationWeights(const SingleComponentImageType* regweights)
+{
+  this->SetNthInput(4, const_cast<SingleComponentImageType*>(regweights));
+}
+
+template< class TOutputImage, class TPhotonCounts, class TSpectrum>
 typename TOutputImage::ConstPointer
 MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectrum>
 ::GetInputMaterialVolumes()
@@ -127,6 +137,15 @@ MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectr
 {
   return static_cast< const SingleComponentImageType* >
          ( this->itk::ProcessObject::GetInput(3) );
+}
+
+template< class TOutputImage, class TPhotonCounts, class TSpectrum>
+typename MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectrum>::SingleComponentImageType::ConstPointer
+MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectrum>
+::GetSpatialRegularizationWeights()
+{
+  return static_cast< const SingleComponentImageType* >
+         ( this->itk::ProcessObject::GetInput(4) );
 }
 
 template< class TOutputImage, class TPhotonCounts, class TSpectrum>
@@ -263,9 +282,14 @@ MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectr
   // Input 3 is the support (optional)
   typename SingleComponentImageType::Pointer inputPtr3 =
           const_cast< SingleComponentImageType * >( this->GetSupportMask().GetPointer() );
-  if ( !inputPtr3 )
-      return;
-  inputPtr3->SetRequestedRegion( inputPtr0->GetRequestedRegion() );
+  if ( inputPtr3 )
+    inputPtr3->SetRequestedRegion( inputPtr0->GetRequestedRegion() );
+
+  // Input 4 is the image of weights for the regularization (optional)
+  typename SingleComponentImageType::Pointer inputPtr4 =
+          const_cast< SingleComponentImageType * >( this->GetSpatialRegularizationWeights().GetPointer() );
+  if ( inputPtr4 )
+    inputPtr4->SetRequestedRegion( inputPtr0->GetRequestedRegion() );
 }
 
 template< class TOutputImage, class TPhotonCounts, class TSpectrum>
@@ -311,10 +335,22 @@ MechlemOneStepSpectralReconstructionFilter< TOutputImage, TPhotonCounts, TSpectr
 
   m_SQSRegul->SetInput(this->GetInputMaterialVolumes());
 
-  m_AddGradients->SetInput1(m_SQSRegul->GetOutput(0));
-  m_AddGradients->SetInput2(m_GradientsBackProjectionFilter->GetOutput());
+  if(this->GetSpatialRegularizationWeights().GetPointer() != nullptr)
+    {
+    m_MultiplyRegulGradientsFilter->SetInput1( m_SQSRegul->GetOutput(0) );
+    m_MultiplyRegulGradientsFilter->SetInput2( this->GetSpatialRegularizationWeights() );
+    m_MultiplyRegulHessiansFilter->SetInput1( m_SQSRegul->GetOutput(1) );
+    m_MultiplyRegulHessiansFilter->SetInput2( this->GetSpatialRegularizationWeights() );
+    m_AddGradients->SetInput1(m_MultiplyRegulGradientsFilter->GetOutput());
+    m_AddHessians->SetInputDiagonal(m_MultiplyRegulHessiansFilter->GetOutput());
+    }
+  else
+    {
+    m_AddGradients->SetInput1(m_SQSRegul->GetOutput(0));
+    m_AddHessians->SetInputDiagonal(m_SQSRegul->GetOutput(1));
+    }
 
-  m_AddHessians->SetInputDiagonal(m_SQSRegul->GetOutput(1));
+  m_AddGradients->SetInput2(m_GradientsBackProjectionFilter->GetOutput());
   m_AddHessians->SetInputMatrix(m_HessiansBackProjectionFilter->GetOutput());
 
   m_NewtonFilter->SetInputGradient(m_AddGradients->GetOutput());
