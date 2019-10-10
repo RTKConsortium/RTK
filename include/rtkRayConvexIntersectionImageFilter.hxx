@@ -64,12 +64,18 @@ RayConvexIntersectionImageFilter<TInputImage,TOutputImage>
   OutputRegionIterator itOut(this->GetOutput(), outputRegionForThread);
 
   // Go over each projection
+  const double r = m_ConvexShape->GetDensity() / m_Attenuation;
   for(unsigned int pix=0; pix<outputRegionForThread.GetNumberOfPixels(); pix++, itIn->Next(), ++itOut)
     {
     // Compute ray intersection length
     ConvexShape::ScalarType nearDist, farDist;
     if( m_ConvexShape->IsIntersectedByRay(itIn->GetSourcePosition(), itIn->GetDirection(), nearDist, farDist) )
-      itOut.Set( itIn->Get() + m_ConvexShape->GetDensity() * ( farDist - nearDist ) );
+      {
+      if( m_Attenuation == 0. )
+        itOut.Set( itIn->Get() + m_ConvexShape->GetDensity() * ( farDist - nearDist ) );
+      else
+        itOut.Set( itIn->Get() + r * ( std::exp( m_Attenuation * farDist ) - std::exp( m_Attenuation * nearDist ) ) );
+      }
     else
       itOut.Set( itIn->Get() );
     }

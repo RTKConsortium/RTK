@@ -71,6 +71,21 @@ public:
   itkGetConstObjectMacro(Geometry, GeometryType);
   itkSetConstObjectMacro(Geometry, GeometryType);
 
+  /** Get / Set the attenuation \f$\mu\f$ to simulate the attenuated line integral. Default is 0.
+   * The attenuated line integral model is
+   * \f[
+   * p=\int f(\underline s+r\underline{d})\exp(\mu r)\mathrm{d}r
+   * \f]
+   * with \f$\underline s\f$ and \f$\underline d\f$ the ray source and direction. The value is therefore:
+   * \f{eqnarray*}{
+   * p&=&\int_{n}^{f} d\exp(\mu r)\mathrm{d}r\\
+   * &=&\dfrac{d}{\mu}\left(\exp(\mu {f})-\exp(\mu n)\right)
+   * \f}
+   * with \f$n\f$ and \f$f\f$ the distances from source to intersection points near and far from the source and \f$d\f$ m_Density.
+   */
+  itkGetMacro(Attenuation, double);
+  itkSetMacro(Attenuation, double);
+
 protected:
   RayConvexIntersectionImageFilter();
   ~RayConvexIntersectionImageFilter() override = default;
@@ -90,6 +105,7 @@ protected:
 private:
   ConvexShapePointer   m_ConvexShape;
   GeometryConstPointer m_Geometry;
+  double               m_Attenuation = 0.;
 };
 
 } // end namespace rtk
