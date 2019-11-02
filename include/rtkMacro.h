@@ -46,7 +46,7 @@
  *
  * \author Simon Rit
  *
- * \ingroup RTK Macro
+ * \ingroup RTK
  */
 #ifndef DD
 #  define DD(a) std::cout << #a " = [ " << a << " ]" << std::endl;
@@ -58,7 +58,7 @@
  *
  * \author Simon Rit
  *
- * \ingroup RTK Macro
+ * \ingroup RTK
  */
 #define GGO(ggo_filename, args_info)                                                                       \
   args_info_##ggo_filename args_info;                                                                      \
@@ -101,7 +101,7 @@
  *
  * \author Simon Rit
  *
- * \ingroup RTK Macro
+ * \ingroup RTK
  */
 #define TRY_AND_EXIT_ON_ITK_EXCEPTION(execFunc)                            \
   try                                                                      \
@@ -143,7 +143,7 @@
  *
  * \author Cyril Mory
  *
- * \ingroup RTK Macro
+ * \ingroup RTK
  */
 
 #ifdef RTK_PROBE_EACH_FILTER
