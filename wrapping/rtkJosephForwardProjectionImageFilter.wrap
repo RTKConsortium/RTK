@@ -1,7 +1,7 @@
 itk_wrap_class("rtk::JosephForwardProjectionImageFilter" POINTER)
   foreach(t ${WRAP_ITK_REAL})
     itk_wrap_template("I${ITKM_${t}}3I${ITKM_${t}}3" "itk::Image<${ITKT_${t}}, 3>, itk::Image<${ITKT_${t}}, 3>")
-    foreach(nmat 3)
+    foreach(nmat 2 3)
       itk_wrap_template("I${ITKM_V${ITKM_${t}}${nmat}}3" "itk::Image<itk::Vector<${ITKT_${t}},${nmat}>,3>, itk::Image<itk::Vector<${ITKT_${t}},${nmat}>,3>")
     endforeach()
   endforeach()

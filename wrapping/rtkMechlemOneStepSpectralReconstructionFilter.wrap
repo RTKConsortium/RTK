@@ -1,5 +1,5 @@
 itk_wrap_class("rtk::MechlemOneStepSpectralReconstructionFilter" POINTER)
-  foreach(nmat 3)
+  foreach(nmat 2 3)
     foreach(nbin ${ITK_WRAP_VECTOR_COMPONENTS})
       if(RTK_USE_CUDA)
         itk_wrap_template("CI${ITKM_V${ITKM_F}${nmat}}3CI${ITKM_V${ITKM_F}${nbin}}3CI${ITKM_F}3" "itk::CudaImage<itk::Vector<${ITKT_F},${nmat}>,3>, itk::CudaImage<itk::Vector<${ITKT_F},${nbin}>,3>, itk::CudaImage<${ITKT_F},3>")
