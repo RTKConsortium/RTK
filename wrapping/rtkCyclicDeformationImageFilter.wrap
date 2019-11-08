@@ -1,8 +1,19 @@
 itk_wrap_class("rtk::CyclicDeformationImageFilter"  POINTER)
   set(INPUT_IMAGE_DIMS 4)
   set(OUTPUT_IMAGE_DIMS 3)
+
   itk_wrap_template("IF${INPUT_IMAGE_DIMS}IF${OUTPUT_IMAGE_DIMS}"
       "itk::Image<${ITKT_F}, ${INPUT_IMAGE_DIMS}>, itk::Image<${ITKT_F}, ${OUTPUT_IMAGE_DIMS}>")
-  itk_wrap_template("I${ITKM_VF3}${INPUT_IMAGE_DIMS}I${ITKM_VF3}${OUTPUT_IMAGE_DIMS}"
-      "itk::Image<${ITKT_VF3}, ${INPUT_IMAGE_DIMS}>, itk::Image<${ITKT_VF3}, ${OUTPUT_IMAGE_DIMS}>") #Wrap vector types
+
+  # Force VECTOR_COMPONENTS to "2;3;4;5"
+  set(vectorComponents 2 3 4 5)
+  foreach(component ${vectorComponents})
+    foreach(vt ${WRAP_ITK_VECTOR_REAL})
+
+      itk_wrap_template("I${ITKM_${vt}${component}}${INPUT_IMAGE_DIMS}I${ITKM_${vt}${component}}${OUTPUT_IMAGE_DIMS}"
+        "itk::Image<${ITKT_${vt}${component}}, ${INPUT_IMAGE_DIMS}>, itk::Image<${ITKT_${vt}${component}}, ${OUTPUT_IMAGE_DIMS}>")
+
+    endforeach()
+  endforeach()
+
 itk_end_wrap_class()

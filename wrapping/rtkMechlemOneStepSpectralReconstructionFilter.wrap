@@ -1,10 +1,20 @@
 itk_wrap_class("rtk::MechlemOneStepSpectralReconstructionFilter" POINTER)
-  foreach(nmat 2 3)
-    foreach(nbin ${ITK_WRAP_VECTOR_COMPONENTS})
-      if(RTK_USE_CUDA)
-        itk_wrap_template("CI${ITKM_V${ITKM_F}${nmat}}3CI${ITKM_V${ITKM_F}${nbin}}3CI${ITKM_F}3" "itk::CudaImage<itk::Vector<${ITKT_F},${nmat}>,3>, itk::CudaImage<itk::Vector<${ITKT_F},${nbin}>,3>, itk::CudaImage<${ITKT_F},3>")
-      endif()
-      itk_wrap_template("I${ITKM_V${ITKM_F}${nmat}}3I${ITKM_V${ITKM_F}${nbin}}3I${ITKM_F}3" "itk::Image<itk::Vector<${ITKT_F},${nmat}>,3>, itk::Image<itk::Vector<${ITKT_F},${nbin}>,3>, itk::Image<${ITKT_F},3>")
+
+  # Force VECTOR_COMPONENTS to contain "2;3;4;5"
+  UNIQUE(vectorComponents "${ITK_WRAP_VECTOR_COMPONENTS};2;3;4;5")
+
+  foreach(nmat ${vectorComponents})
+    foreach(nbin ${vectorComponents})
+      foreach(vt ${WRAP_ITK_VECTOR_REAL})
+
+        itk_wrap_template("I${ITKM_${vt}${nmat}}3I${ITKM_${vt}${nbin}}3I${ITKM_F}3" "itk::Image<${ITKT_${vt}${nmat}},3>, itk::Image<${ITKT_${vt}${nbin}},3>, itk::Image<${ITKT_F},3>")
+
+        if(RTK_USE_CUDA)
+          itk_wrap_template("CI${ITKM_${vt}${nmat}}3CI${ITKM_${vt}${nbin}}3CI${ITKM_F}3" "itk::CudaImage<${ITKT_${vt}${nmat}},3>, itk::CudaImage<${ITKT_${vt}${nbin}},3>, itk::CudaImage<${ITKT_F},3>")
+        endif()
+
+      endforeach()
     endforeach()
   endforeach()
+
 itk_end_wrap_class()
