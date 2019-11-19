@@ -38,7 +38,7 @@ WarpProjectionStackToFourDImageFilter< VolumeSeriesType, ProjectionStackType>::W
 
   this->m_BackProjectionFilter = WarpBackProjectionImageFilter::New();
   if( std::is_same< VolumeSeriesType, CPUVolumeSeriesType >::value )
-    itkWarningMacro("The warp back project image filter exists only in CUDA. Ignoring the displacement vector field and using CPU voxel-based back projection")
+    itkWarningMacro("The warp back project image filter exists only in CUDA. Ignoring the displacement vector field and using CPU voxel-based back projection");
 }
 
 template< typename VolumeSeriesType, typename ProjectionStackType>

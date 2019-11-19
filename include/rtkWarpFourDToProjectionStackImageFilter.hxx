@@ -30,7 +30,7 @@ WarpFourDToProjectionStackImageFilter< VolumeSeriesType, ProjectionStackType>::W
 
   this->m_ForwardProjectionFilter = WarpForwardProjectionImageFilterType::New();
   if( std::is_same< VolumeSeriesType, CPUVolumeSeriesType >::value )
-    itkWarningMacro("The warp Forward project image filter exists only in CUDA. Ignoring the displacement vector field and using CPU Joseph forward projection")
+    itkWarningMacro("The warp Forward project image filter exists only in CUDA. Ignoring the displacement vector field and using CPU Joseph forward projection");
 }
 
 template< typename VolumeSeriesType, typename ProjectionStackType>

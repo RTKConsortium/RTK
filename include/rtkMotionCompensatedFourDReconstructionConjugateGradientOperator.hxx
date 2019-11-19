@@ -38,7 +38,7 @@ MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType,
   if( std::is_same< VolumeSeriesType, CPUVolumeSeriesType >::value )
     itkWarningMacro("The warp forward and back project image filters exist only"
             << " in CUDA. Ignoring the displacement vector field and using CPU"
-            << "Joseph forward projection and CPU voxel-based back projection")
+            << "Joseph forward projection and CPU voxel-based back projection");
 }
 
 template< typename VolumeSeriesType, typename ProjectionStackType>

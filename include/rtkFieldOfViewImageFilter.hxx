@@ -362,7 +362,7 @@ FieldOfViewImageFilter<TInputImage, TOutputImage>
     if(X1 == std::numeric_limits<double>::max() ||
        X2 == std::numeric_limits<double>::max())
       {
-      itkWarningMacro("Having only one jaw that is not at the default value is unexpected.")
+      itkWarningMacro("Having only one jaw that is not at the default value is unexpected.");
       }
 
     //Compute 3D position of jaws
