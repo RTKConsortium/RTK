@@ -18,6 +18,8 @@ set(RTK_SRCS
   rtkGlobalResourceProbe.cxx
   rtkHisImageIO.cxx
   rtkHisImageIOFactory.cxx
+  rtkHncImageIO.cxx
+  rtkHncImageIOFactory.cxx
   rtkHndImageIO.cxx
   rtkHndImageIOFactory.cxx
   rtkImagXImageIO.cxx
@@ -134,3 +136,7 @@ target_link_libraries(RTK LINK_PUBLIC lpsolve55)
 if (RTK_USE_CUDA)
   target_link_libraries( RTK LINK_PUBLIC ITKCudaCommon ${CUDA_LIBRARIES} ${CUDA_CUDA_LIBRARY} ${CUDA_cufft_LIBRARY} ${CUDA_CUBLAS_LIBRARIES} )
 endif ()
+
+if (RTK_USE_BZIP2)
+  TARGET_LINK_LIBRARIES(RTK ${BZIP2_LIBRARIES})
+endif()
