@@ -145,8 +145,12 @@ void ProjectionsReader<TOutputImage>
   static bool firstTime = true;
   if(firstTime)
     rtk::RegisterIOFactories();
+  firstTime = false;
 
   itk::ImageIOBase::Pointer imageIO = itk::ImageIOFactory::CreateImageIO( m_FileNames[0].c_str(), itk::ImageIOFactory::FileModeType::ReadMode );
+
+  if(imageIO == nullptr)
+    itkGenericExceptionMacro(<< "Cannot create ImageIOFactory for file " << m_FileNames[0].c_str());
 
   if(m_ImageIO != imageIO)
     {
