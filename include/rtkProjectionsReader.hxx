@@ -702,11 +702,11 @@ void ProjectionsReader<TOutputImage>
     if(edf)
       edf->SetFileNames( this->GetFileNames() );
 
-	// HNC raw to attenuation converter needs filenames for path to flood field
-	using HncRawFilterType rtk::VarianObiHncRawToAttenuationImageFilter<TInputImage, OutputImageType>;
-	HncRawFilterType* hnc = dynamic_cast<HncRawFilterType*>(m_RawToAttenuationFilter.GetPointer());
-	if (hnc)
-		hnc->SetProjectionFileName(this->GetFileNames()[0]);
+	//// HNC raw to attenuation converter needs filenames for path to flood field
+	//using HncRawFilterType rtk::VarianObiHncRawToAttenuationImageFilter<TInputImage, OutputImageType>;
+	//HncRawFilterType* hnc = dynamic_cast<HncRawFilterType*>(m_RawToAttenuationFilter.GetPointer());
+	//if (hnc)
+	//	hnc->SetProjectionFileName(this->GetFileNames()[0]);
 
     // Water coefficients
     if(!m_WaterPrecorrectionCoefficients.empty())
