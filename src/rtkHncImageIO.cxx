@@ -264,6 +264,7 @@ void rtk::HncImageIO::Read(void * buffer)
     }
   else if( fileExt == ".hnc.bz2" )
     {
+#ifdef RTK_USE_BZIP2
 	  BZFILE* bp;
 	  int nBuf;
 	  int bzerror;
@@ -278,6 +279,9 @@ void rtk::HncImageIO::Read(void * buffer)
 	  nBuf = BZ2_bzRead ( &bzerror, bp, buffer, sizeof(unsigned short int) * GetDimensions(0) * GetDimensions(1));
 	  
 	  BZ2_bzReadClose ( &bzerror, bp );
+#else
+itkGenericExceptionMacro(<< "Could not read file with bzip2 extension (not linked in build):" << m_FileName);
+#endif
   	}
 
 /*  file.seekg(512, std::ios::beg);
