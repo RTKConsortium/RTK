@@ -147,7 +147,7 @@ JosephForwardAttenuatedProjectionImageFilter<TInputImage,
 
         if ( !inputPtr1->GetOrigin().GetVnlVector().is_equal(inputPtrN->GetOrigin().GetVnlVector(), coordinateTol) ||
              !inputPtr1->GetSpacing().GetVnlVector().is_equal(inputPtrN->GetSpacing().GetVnlVector(), coordinateTol) ||
-             !inputPtr1->GetDirection().GetVnlMatrix().as_ref().is_equal(inputPtrN->GetDirection().GetVnlMatrix(), Self::GetGlobalDefaultDirectionTolerance()) )
+             !inputPtr1->GetDirection().GetVnlMatrix().as_ref().is_equal(inputPtrN->GetDirection().GetVnlMatrix().as_ref(), Self::GetGlobalDefaultDirectionTolerance()) )
           {
           std::ostringstream originString, spacingString, directionString;
           if ( !inputPtr1->GetOrigin().GetVnlVector().is_equal(inputPtrN->GetOrigin().GetVnlVector(), coordinateTol) )
@@ -166,7 +166,7 @@ JosephForwardAttenuatedProjectionImageFilter<TInputImage,
                           << ", InputImage" << it.GetName() << " Spacing: " << inputPtrN->GetSpacing() << std::endl;
             spacingString << "\tTolerance: " << coordinateTol << std::endl;
             }
-          if ( !inputPtr1->GetDirection().GetVnlMatrix().as_ref().is_equal(inputPtrN->GetDirection().GetVnlMatrix(), Self::GetGlobalDefaultDirectionTolerance()) )
+          if ( !inputPtr1->GetDirection().GetVnlMatrix().as_ref().is_equal(inputPtrN->GetDirection().GetVnlMatrix().as_ref(), Self::GetGlobalDefaultDirectionTolerance()) )
             {
             directionString.setf( std::ios::scientific );
             directionString.precision( 7 );
