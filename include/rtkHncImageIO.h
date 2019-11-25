@@ -25,11 +25,6 @@
 
 #include <fstream>
 
-#ifdef RTK_USE_BZIP2
-// bzip2 for compressed files
-#include <bzlib.h>
-#endif
-
 namespace rtk {
 
 /** \class HncImageIO
