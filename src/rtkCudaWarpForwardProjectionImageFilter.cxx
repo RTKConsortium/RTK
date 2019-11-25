@@ -115,7 +115,7 @@ CudaWarpForwardProjectionImageFilter
     bool DefFieldSameInformation =
        (inputPtr->GetOrigin().GetVnlVector().is_equal(fieldPtr->GetOrigin().GetVnlVector(), coordinateTol))
     && (inputPtr->GetSpacing().GetVnlVector().is_equal(fieldPtr->GetSpacing().GetVnlVector(), coordinateTol))
-    && (inputPtr->GetDirection().GetVnlMatrix().as_ref().is_equal(fieldPtr->GetDirection().GetVnlMatrix(), this->GetDirectionTolerance()));
+    && (inputPtr->GetDirection().GetVnlMatrix().as_ref().is_equal(fieldPtr->GetDirection().GetVnlMatrix().as_ref(), this->GetDirectionTolerance()));
 
     if (DefFieldSameInformation)
       {
