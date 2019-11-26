@@ -8,6 +8,5 @@ set(dashboard_source_name "RTK sources")
 set(dashboard_git_branch "SpacesInSourceAndBinaryDirectories")
 set(ENV{ITK_DIR} "/home/srit/src/itk/lin64")
 set(CTEST_BUILD_FLAGS -j16)
-set(ENV{CUDA_BIN_PATH} "/home/srit/Downloads/cuda80/bin")
 include("${CTEST_SCRIPT_DIRECTORY}/rtk_common.cmake")
 

@@ -1,5 +1,9 @@
 #!/bin/bash -x
 export CXXFLAGS="-fPIC -std=c++11"
+export CUDA_BIN_PATH=/home/srit/Downloads/cuda102/bin
+export CUDA_LIB_PATH=/home/srit/Downloads/cuda102/lib64
+export LD_LIBRARY_PATH=$CUDA_LIB_PATH:$LD_LIBRARY_PATH
+
 ctest -R "(rtk|RTK)" -S /home/srit/src/rtk/rtk-dashboard/russula_build_rtk_in_itk.cmake -V
 ctest -R "(rtk|RTK)" -S /home/srit/src/rtk/rtk-dashboard/russula_tbb.cmake -V
 ctest -S /home/srit/src/rtk/rtk-dashboard/russula_suse_gcc.cmake -V
