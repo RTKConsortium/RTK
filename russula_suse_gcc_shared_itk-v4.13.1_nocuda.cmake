@@ -8,7 +8,7 @@ set(ENV{ITK_DIR} "/home/srit/src/itk/lin64-itk-v4.13.1-SharedLibs-Release")
 set(CTEST_BUILD_FLAGS -j16)
 set(CONFIGURE_OPTIONS -DRTK_USE_CUDA=FALSE) 
 set(CTEST_CUSTOM_WARNING_EXCEPTION ${CTEST_CUSTOM_WARNING_EXCEPTION}
-    ".* Warning: type of symbol `randomseed' changed from 1 to 2.*")
+    ".* warning: type of symbol `randomseed' changed from 1 to 2.*")
 
 include("${CTEST_SCRIPT_DIRECTORY}/rtk_common.cmake")
 
