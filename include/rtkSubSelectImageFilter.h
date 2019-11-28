@@ -72,7 +72,7 @@ public:
   using Pointer = itk::SmartPointer< Self >;
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(SubSelectImageFilter, itk::ImageToImageFilter)
+  itkTypeMacro(SubSelectImageFilter, itk::ImageToImageFilter);
 
   /** The set of projections from which a subset will be extracted */
   void SetInputProjectionStack(const ProjectionStackType* Projections);
@@ -83,10 +83,10 @@ public:
   using EmptyProjectionStackSourceType = rtk::ConstantImageSource<ProjectionStackType>;
   using GeometryType = rtk::ThreeDCircularProjectionGeometry;
 
-  itkSetObjectMacro(InputGeometry, GeometryType)
-  itkGetModifiableObjectMacro(InputGeometry, GeometryType)
+  itkSetObjectMacro(InputGeometry, GeometryType);
+  itkGetModifiableObjectMacro(InputGeometry, GeometryType);
 
-  itkGetMacro(SelectedProjections, std::vector<bool>)
+  itkGetMacro(SelectedProjections, std::vector<bool>);
 
   GeometryType::Pointer GetOutputGeometry();
 

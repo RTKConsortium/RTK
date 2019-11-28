@@ -116,10 +116,10 @@ public:
   using VolumeType = ProjectionStackType;
 
     /** Method for creation through the object factory. */
-    itkNewMacro(Self)
+    itkNewMacro(Self);
 
     /** Run-time type information (and related methods). */
-    itkTypeMacro(ProjectionStackToFourDImageFilter, itk::ImageToImageFilter)
+    itkTypeMacro(ProjectionStackToFourDImageFilter, itk::ImageToImageFilter);
 
     /** Set/Get the 4D image to be updated.*/
     void SetInputVolumeSeries(const VolumeSeriesType* VolumeSeries);
@@ -160,17 +160,17 @@ public:
     void SetBackProjectionFilter (const typename BackProjectionFilterType::Pointer _arg);
 
     /** Pass the geometry to SingleProjectionToFourDFilter */
-    itkSetConstObjectMacro(Geometry, GeometryType)
+    itkSetConstObjectMacro(Geometry, GeometryType);
 
     /** Use CUDA splat / sources */
-    itkSetMacro(UseCudaSplat, bool)
-    itkGetMacro(UseCudaSplat, bool)
-    itkSetMacro(UseCudaSources, bool)
-    itkGetMacro(UseCudaSources, bool)
+    itkSetMacro(UseCudaSplat, bool);
+    itkGetMacro(UseCudaSplat, bool);
+    itkSetMacro(UseCudaSources, bool);
+    itkGetMacro(UseCudaSources, bool);
 
     /** Macros that take care of implementing the Get and Set methods for Weights */
-    itkGetMacro(Weights, itk::Array2D<float>)
-    itkSetMacro(Weights, itk::Array2D<float>)
+    itkGetMacro(Weights, itk::Array2D<float>);
+    itkSetMacro(Weights, itk::Array2D<float>);
 
     /** Store the phase signal in a member variable */
     virtual void SetSignal(const std::vector<double> signal);

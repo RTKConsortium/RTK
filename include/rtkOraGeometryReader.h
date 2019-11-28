@@ -84,8 +84,8 @@ public:
    * collimator shadow. A positive value means less collimation. Default is 0.
    * The order is uinf, usup, vinf, vsup.
    * */
-  itkGetMacro(CollimationMargin, MarginVectorType)
-  itkSetMacro(CollimationMargin, MarginVectorType)
+  itkGetMacro(CollimationMargin, MarginVectorType);
+  itkSetMacro(CollimationMargin, MarginVectorType);
 
 
 protected:

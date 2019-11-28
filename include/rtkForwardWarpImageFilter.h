@@ -66,10 +66,10 @@ public:
   using PointType = itk::Point< CoordRepType, itkGetStaticConstMacro(ImageDimension) >;
 
   /** Method for creation through the object factory. */
-  itkNewMacro(Self)
+  itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(ForwardWarpImageFilter, Superclass)
+  itkTypeMacro(ForwardWarpImageFilter, Superclass);
 
 protected:
   ForwardWarpImageFilter();

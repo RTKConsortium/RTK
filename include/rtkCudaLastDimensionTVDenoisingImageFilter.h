@@ -57,10 +57,10 @@ public:
   using ConstPointer = itk::SmartPointer<const Self>;
 
   /** Standard New method. */
-  itkNewMacro(Self)
+  itkNewMacro(Self);
 
   /** Runtime information support. */
-  itkTypeMacro(CudaLastDimensionTVDenoisingImageFilter, TotalVariationDenoisingBPDQImageFilter)
+  itkTypeMacro(CudaLastDimensionTVDenoisingImageFilter, TotalVariationDenoisingBPDQImageFilter);
 
 protected:
   CudaLastDimensionTVDenoisingImageFilter();

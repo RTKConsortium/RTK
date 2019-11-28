@@ -120,10 +120,10 @@ public:
   using BackProjectionType = typename Superclass::BackProjectionType;
 
   /** Method for creation through the object factory. */
-  itkNewMacro(Self)
+  itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(RegularizedConjugateGradientConeBeamReconstructionFilter, itk::ImageToImageFilter)
+  itkTypeMacro(RegularizedConjugateGradientConeBeamReconstructionFilter, itk::ImageToImageFilter);
 
   /** The image to be updated.*/
   void SetInputVolume(const TImage* Volume);
@@ -154,64 +154,64 @@ public:
   void SetBackProjectionFilter(BackProjectionType bptype) override;
 
   // Regularization steps to perform
-  itkSetMacro(PerformPositivity, bool)
-  itkGetMacro(PerformPositivity, bool)
-  itkSetMacro(PerformTVSpatialDenoising, bool)
-  itkGetMacro(PerformTVSpatialDenoising, bool)
-  itkSetMacro(PerformWaveletsSpatialDenoising, bool)
-  itkGetMacro(PerformWaveletsSpatialDenoising, bool)
-  itkSetMacro(PerformSoftThresholdOnImage, bool)
-  itkGetMacro(PerformSoftThresholdOnImage, bool)
+  itkSetMacro(PerformPositivity, bool);
+  itkGetMacro(PerformPositivity, bool);
+  itkSetMacro(PerformTVSpatialDenoising, bool);
+  itkGetMacro(PerformTVSpatialDenoising, bool);
+  itkSetMacro(PerformWaveletsSpatialDenoising, bool);
+  itkGetMacro(PerformWaveletsSpatialDenoising, bool);
+  itkSetMacro(PerformSoftThresholdOnImage, bool);
+  itkGetMacro(PerformSoftThresholdOnImage, bool);
 
   // Regularization parameters
-  itkSetMacro(GammaTV, float)
-  itkGetMacro(GammaTV, float)
-  itkSetMacro(SoftThresholdWavelets, float)
-  itkGetMacro(SoftThresholdWavelets, float)
-  itkSetMacro(SoftThresholdOnImage, float)
-  itkGetMacro(SoftThresholdOnImage, float)
+  itkSetMacro(GammaTV, float);
+  itkGetMacro(GammaTV, float);
+  itkSetMacro(SoftThresholdWavelets, float);
+  itkGetMacro(SoftThresholdWavelets, float);
+  itkSetMacro(SoftThresholdOnImage, float);
+  itkGetMacro(SoftThresholdOnImage, float);
 
   /** Set the number of levels of the wavelets decomposition */
-  itkGetMacro(NumberOfLevels, unsigned int)
-  itkSetMacro(NumberOfLevels, unsigned int)
+  itkGetMacro(NumberOfLevels, unsigned int);
+  itkSetMacro(NumberOfLevels, unsigned int);
 
   /** Sets the order of the Daubechies wavelet used to deconstruct/reconstruct the image pyramid */
-  itkGetMacro(Order, unsigned int)
-  itkSetMacro(Order, unsigned int)
+  itkGetMacro(Order, unsigned int);
+  itkSetMacro(Order, unsigned int);
 
   /** Displays the conjugate gradient cost function at each iteration. */
-  itkSetMacro(IterationCosts, bool)
-  itkGetMacro(IterationCosts, bool)
+  itkSetMacro(IterationCosts, bool);
+  itkGetMacro(IterationCosts, bool);
 
   // Iterations
-  itkSetMacro(MainLoop_iterations, int)
-  itkGetMacro(MainLoop_iterations, int)
-  itkSetMacro(CG_iterations, int)
-  itkGetMacro(CG_iterations, int)
-  itkSetMacro(TV_iterations, int)
-  itkGetMacro(TV_iterations, int)
+  itkSetMacro(MainLoop_iterations, int);
+  itkGetMacro(MainLoop_iterations, int);
+  itkSetMacro(CG_iterations, int);
+  itkGetMacro(CG_iterations, int);
+  itkSetMacro(TV_iterations, int);
+  itkGetMacro(TV_iterations, int);
 
   // Geometry
-  itkSetObjectMacro(Geometry, ThreeDCircularProjectionGeometry)
-  itkGetModifiableObjectMacro(Geometry, ThreeDCircularProjectionGeometry)
+  itkSetObjectMacro(Geometry, ThreeDCircularProjectionGeometry);
+  itkGetModifiableObjectMacro(Geometry, ThreeDCircularProjectionGeometry);
 
   /** Preconditioning flag for the conjugate gradient filter */
-  itkSetMacro(Preconditioned, bool)
-  itkGetMacro(Preconditioned, bool)
+  itkSetMacro(Preconditioned, bool);
+  itkGetMacro(Preconditioned, bool);
 
   /** Quadratic regularization for the conjugate gradient filter */
-  itkSetMacro(Tikhonov, float)
-  itkGetMacro(Tikhonov, float)
-  itkSetMacro(Gamma, float)
-  itkGetMacro(Gamma, float)
+  itkSetMacro(Tikhonov, float);
+  itkGetMacro(Tikhonov, float);
+  itkSetMacro(Gamma, float);
+  itkGetMacro(Gamma, float);
 
   /** Perform CG operations on GPU ? */
-  itkSetMacro(CudaConjugateGradient, bool)
-  itkGetMacro(CudaConjugateGradient, bool)
+  itkSetMacro(CudaConjugateGradient, bool);
+  itkGetMacro(CudaConjugateGradient, bool);
 
   /** Set / Get whether the displaced detector filter should be disabled */
-  itkSetMacro(DisableDisplacedDetectorFilter, bool)
-  itkGetMacro(DisableDisplacedDetectorFilter, bool)
+  itkSetMacro(DisableDisplacedDetectorFilter, bool);
+  itkGetMacro(DisableDisplacedDetectorFilter, bool);
 
 protected:
   RegularizedConjugateGradientConeBeamReconstructionFilter();

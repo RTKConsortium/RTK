@@ -40,10 +40,10 @@ public:
   using Pointer = itk::SmartPointer< Self >;
 
   /** Method for creation through the object factory. */
-  itkNewMacro(Self)
+  itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(ConjugateGradientOperator, itk::ImageToImageFilter)
+  itkTypeMacro(ConjugateGradientOperator, itk::ImageToImageFilter);
 
   /** The image to be updated.*/
   virtual void SetX(const OutputImageType* OutputImage);

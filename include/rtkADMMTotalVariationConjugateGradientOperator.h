@@ -113,10 +113,10 @@ public:
     using Pointer = itk::SmartPointer< Self >;
 
     /** Method for creation through the object factory. */
-    itkNewMacro(Self)
+    itkNewMacro(Self);
 
     /** Run-time type information (and related methods). */
-    itkTypeMacro(rtkADMMTotalVariationConjugateGradientOperator, ConjugateGradientOperator)
+    itkTypeMacro(rtkADMMTotalVariationConjugateGradientOperator, ConjugateGradientOperator);
 
     using BackProjectionFilterType = rtk::BackProjectionImageFilter< TOutputImage, TOutputImage >;
     using BackProjectionFilterPointer = typename BackProjectionFilterType::Pointer;
@@ -142,17 +142,17 @@ public:
     void SetForwardProjectionFilter (const ForwardProjectionFilterPointer _arg);
 
     /** Pass the geometry to all filters needing it */
-    itkSetObjectMacro(Geometry, ThreeDCircularProjectionGeometry)
+    itkSetObjectMacro(Geometry, ThreeDCircularProjectionGeometry);
 
     /** Set the regularization parameter */
-    itkSetMacro(Beta, float)
+    itkSetMacro(Beta, float);
 
     /** In the case of a gated reconstruction, set the gating weights */
     void SetGatingWeights(std::vector<float> weights);
 
     /** Set / Get whether the displaced detector filter should be disabled */
-    itkSetMacro(DisableDisplacedDetectorFilter, bool)
-    itkGetMacro(DisableDisplacedDetectorFilter, bool)
+    itkSetMacro(DisableDisplacedDetectorFilter, bool);
+    itkGetMacro(DisableDisplacedDetectorFilter, bool);
 
 protected:
     ADMMTotalVariationConjugateGradientOperator();

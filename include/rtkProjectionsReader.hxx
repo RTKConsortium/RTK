@@ -61,7 +61,7 @@
 // Ora (medPhoton) image files
 #include "rtkOraLookupTableImageFilter.h"
 
-// Macro to handle input images with vector pixel type in GenerateOutputInformation()
+// Macro to handle input images with vector pixel type in GenerateOutputInformation();
 #define SET_INPUT_IMAGE_VECTOR_TYPE(componentType, numberOfComponents) \
 if ( !strcmp(imageIO->GetComponentTypeAsString(imageIO->GetComponentType()).c_str(), #componentType) \
   && (imageIO->GetNumberOfComponents() == numberOfComponents) ) \
@@ -80,7 +80,7 @@ if ( !strcmp(imageIO->GetComponentTypeAsString(imageIO->GetComponentType()).c_st
   m_VectorComponentSelectionFilter = vectorComponentSelectionFilter; \
   }
 
-// Macro to handle input images with vector pixel type in PropagateParametersToMiniPipeline()
+// Macro to handle input images with vector pixel type in PropagateParametersToMiniPipeline();
 #define PROPAGATE_INPUT_IMAGE_VECTOR_TYPE(componentType, numberOfComponents) \
 if ( !strcmp(m_ImageIO->GetComponentTypeAsString(m_ImageIO->GetComponentType()).c_str(), #componentType) \
   && (m_ImageIO->GetNumberOfComponents() == numberOfComponents) ) \

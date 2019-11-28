@@ -66,10 +66,10 @@ public:
   using CostFunctionType = ProjectionsDecompositionNegativeLogLikelihood;
 
   /** Standard New method. */
-  itkNewMacro(Self)
+  itkNewMacro(Self);
 
   /** Runtime information support. */
-  itkTypeMacro(SimplexSpectralProjectionsDecompositionImageFilter, ImageToImageFilter)
+  itkTypeMacro(SimplexSpectralProjectionsDecompositionImageFilter, ImageToImageFilter);
 
   /** Set/Get the input material-decomposed stack of projections (only used for initialization) */
   void SetInputDecomposedProjections(const DecomposedProjectionsType* DecomposedProjections);
@@ -94,38 +94,38 @@ public:
   typename IncidentSpectrumImageType::ConstPointer GetInputSecondIncidentSpectrum();
 
   /** Get / Set the number of iterations. Default is 300. */
-  itkGetMacro(NumberOfIterations, unsigned int)
-  itkSetMacro(NumberOfIterations, unsigned int)
+  itkGetMacro(NumberOfIterations, unsigned int);
+  itkSetMacro(NumberOfIterations, unsigned int);
 
-  itkSetMacro(NumberOfEnergies, unsigned int)
-  itkGetMacro(NumberOfEnergies, unsigned int)
+  itkSetMacro(NumberOfEnergies, unsigned int);
+  itkGetMacro(NumberOfEnergies, unsigned int);
 
-  itkSetMacro(NumberOfMaterials, unsigned int)
-  itkGetMacro(NumberOfMaterials, unsigned int)
+  itkSetMacro(NumberOfMaterials, unsigned int);
+  itkGetMacro(NumberOfMaterials, unsigned int);
 
-  itkSetMacro(OptimizeWithRestarts, bool)
-  itkGetMacro(OptimizeWithRestarts, bool)
+  itkSetMacro(OptimizeWithRestarts, bool);
+  itkGetMacro(OptimizeWithRestarts, bool);
 
-  itkSetMacro(Thresholds, ThresholdsType)
-  itkGetMacro(Thresholds, ThresholdsType)
+  itkSetMacro(Thresholds, ThresholdsType);
+  itkGetMacro(Thresholds, ThresholdsType);
 
-  itkSetMacro(NumberOfSpectralBins, unsigned int)
-  itkGetMacro(NumberOfSpectralBins, unsigned int)
+  itkSetMacro(NumberOfSpectralBins, unsigned int);
+  itkGetMacro(NumberOfSpectralBins, unsigned int);
 
-  itkSetMacro(OutputInverseCramerRaoLowerBound, bool)
-  itkGetMacro(OutputInverseCramerRaoLowerBound, bool)
+  itkSetMacro(OutputInverseCramerRaoLowerBound, bool);
+  itkGetMacro(OutputInverseCramerRaoLowerBound, bool);
 
-  itkSetMacro(OutputFischerMatrix, bool)
-  itkGetMacro(OutputFischerMatrix, bool)
+  itkSetMacro(OutputFischerMatrix, bool);
+  itkGetMacro(OutputFischerMatrix, bool);
 
-  itkSetMacro(LogTransformEachBin, bool)
-  itkGetMacro(LogTransformEachBin, bool)
+  itkSetMacro(LogTransformEachBin, bool);
+  itkGetMacro(LogTransformEachBin, bool);
 
-  itkSetMacro(GuessInitialization, bool)
-  itkGetMacro(GuessInitialization, bool)
+  itkSetMacro(GuessInitialization, bool);
+  itkGetMacro(GuessInitialization, bool);
 
-  itkSetMacro(IsSpectralCT, bool)
-  itkGetMacro(IsSpectralCT, bool)
+  itkSetMacro(IsSpectralCT, bool);
+  itkGetMacro(IsSpectralCT, bool);
 
 protected:
   SimplexSpectralProjectionsDecompositionImageFilter();

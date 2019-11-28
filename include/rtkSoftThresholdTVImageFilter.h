@@ -98,8 +98,8 @@ public:
   /** End concept checking */
 #endif
 
-  itkGetMacro(Threshold, float)
-  itkSetMacro(Threshold, float)
+  itkGetMacro(Threshold, float);
+  itkSetMacro(Threshold, float);
 
 protected:
   SoftThresholdTVImageFilter();

@@ -124,10 +124,10 @@ public:
     using ConstPointer = itk::SmartPointer<const Self>;
 
     /** Method for creation through the object factory. */
-    itkNewMacro(Self)
+    itkNewMacro(Self);
 
     /** Run-time type information (and related methods). */
-    itkTypeMacro(ReconstructImageFilter, ImageToImageFilter)
+    itkTypeMacro(ReconstructImageFilter, ImageToImageFilter);
 
     /** ImageDimension enumeration. */
     static constexpr unsigned int ImageDimension = TImage::ImageDimension;
@@ -190,8 +190,8 @@ public:
     }
 
     /** Get/Set the order of the wavelet filters */
-    itkGetMacro(Order, unsigned int)
-    itkSetMacro(Order, unsigned int)
+    itkGetMacro(Order, unsigned int);
+    itkSetMacro(Order, unsigned int);
 
 protected:
     ReconstructImageFilter();

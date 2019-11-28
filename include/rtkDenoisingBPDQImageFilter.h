@@ -51,10 +51,10 @@ public:
   using ConstPointer = itk::SmartPointer<const Self>;
 
   /** Method for creation through the object factory. */
-  itkNewMacro(Self)
+  itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(DenoisingBPDQImageFilter, ImageToImageFilter)
+  itkTypeMacro(DenoisingBPDQImageFilter, ImageToImageFilter);
 
   /** Sub filter type definitions */
   typedef ForwardDifferenceGradientImageFilter
@@ -68,11 +68,11 @@ public:
   using ThresholdFilterType = itk::InPlaceImageFilter<TGradientImage>;
   using DivergenceFilterType = BackwardDifferenceDivergenceImageFilter<TGradientImage, TOutputImage>;
 
-  itkGetMacro(NumberOfIterations, int)
-  itkSetMacro(NumberOfIterations, int)
+  itkGetMacro(NumberOfIterations, int);
+  itkSetMacro(NumberOfIterations, int);
 
-  itkSetMacro(Gamma, double)
-  itkGetMacro(Gamma, double)
+  itkSetMacro(Gamma, double);
+  itkGetMacro(Gamma, double);
 
 protected:
   DenoisingBPDQImageFilter();

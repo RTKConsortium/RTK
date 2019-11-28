@@ -85,10 +85,10 @@ public:
   using BackProjectionPointerType = typename BackProjectionFilterType::Pointer;
 
   /** Standard New method. */
-  itkNewMacro(Self)
+  itkNewMacro(Self);
 
   /** Runtime information support. */
-  itkTypeMacro(IterativeConeBeamReconstructionFilter, itk::ImageToImageFilter)
+  itkTypeMacro(IterativeConeBeamReconstructionFilter, itk::ImageToImageFilter);
 
   /** Accessors to forward and backprojection types. */
   virtual void SetForwardProjectionFilter (ForwardProjectionType fwtype);

@@ -223,7 +223,9 @@ CUDA_forward_project(int projSize[3],
     break;
 
     default:
-      itkGenericExceptionMacro("Vector length " << vectorLength << " is not supported.")
+      {
+      itkGenericExceptionMacro("Vector length " << vectorLength << " is not supported.");
+      }
     }
   CUDA_CHECK_ERROR;
 

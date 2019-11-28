@@ -76,10 +76,10 @@ public:
     using Pointer = itk::SmartPointer< Self >;
 
     /** Method for creation through the object factory. */
-    itkNewMacro(Self)
+    itkNewMacro(Self);
 
     /** Run-time type information (and related methods). */
-    itkTypeMacro(rtkUnwarpSequenceConjugateGradientOperator, ConjugateGradientOperator)
+    itkTypeMacro(rtkUnwarpSequenceConjugateGradientOperator, ConjugateGradientOperator);
 
     using WarpSequenceFilterType = rtk::WarpSequenceImageFilter<TImageSequence, TDVFImageSequence, TImage, TDVFImage>;
 
@@ -90,15 +90,15 @@ public:
     typename TDVFImageSequence::Pointer GetDisplacementField();
 
     /** Phase shift to simulate phase estimation errors */
-    itkSetMacro(PhaseShift, float)
-    itkGetMacro(PhaseShift, float)
+    itkSetMacro(PhaseShift, float);
+    itkGetMacro(PhaseShift, float);
 
-    itkSetMacro(UseNearestNeighborInterpolationInWarping, bool)
-    itkGetMacro(UseNearestNeighborInterpolationInWarping, bool)
+    itkSetMacro(UseNearestNeighborInterpolationInWarping, bool);
+    itkGetMacro(UseNearestNeighborInterpolationInWarping, bool);
 
     /** Set and Get for the UseCudaCyclicDeformation variable */
-    itkSetMacro(UseCudaCyclicDeformation, bool)
-    itkGetMacro(UseCudaCyclicDeformation, bool)
+    itkSetMacro(UseCudaCyclicDeformation, bool);
+    itkGetMacro(UseCudaCyclicDeformation, bool);
 
 protected:
     UnwarpSequenceConjugateGradientOperator();

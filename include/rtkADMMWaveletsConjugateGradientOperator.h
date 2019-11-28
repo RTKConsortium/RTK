@@ -106,10 +106,10 @@ public:
     using Pointer = itk::SmartPointer< Self >;
 
     /** Method for creation through the object factory. */
-    itkNewMacro(Self)
+    itkNewMacro(Self);
 
     /** Run-time type information (and related methods). */
-    itkTypeMacro(rtkADMMWaveletsConjugateGradientOperator, ConjugateGradientOperator)
+    itkTypeMacro(rtkADMMWaveletsConjugateGradientOperator, ConjugateGradientOperator);
 
     using BackProjectionFilterType = rtk::BackProjectionImageFilter< TOutputImage, TOutputImage >;
     using BackProjectionFilterPointer = typename BackProjectionFilterType::Pointer;
@@ -132,11 +132,11 @@ public:
     void SetGeometry(const ThreeDCircularProjectionGeometry::Pointer _arg);
 
     /** Set the regularization parameter */
-    itkSetMacro(Beta, float)
+    itkSetMacro(Beta, float);
 
     /** Set / Get whether the displaced detector filter should be disabled */
-    itkSetMacro(DisableDisplacedDetectorFilter, bool)
-    itkGetMacro(DisableDisplacedDetectorFilter, bool)
+    itkSetMacro(DisableDisplacedDetectorFilter, bool);
+    itkGetMacro(DisableDisplacedDetectorFilter, bool);
 
 protected:
     ADMMWaveletsConjugateGradientOperator();

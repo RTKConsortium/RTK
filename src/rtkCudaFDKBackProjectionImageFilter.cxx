@@ -41,7 +41,9 @@ CudaFDKBackProjectionImageFilter
   const unsigned int nProj = this->GetInput(1)->GetLargestPossibleRegion().GetSize(Dimension-1);
   const unsigned int iFirstProj = this->GetInput(1)->GetLargestPossibleRegion().GetIndex(Dimension-1);
   if (nProj>1024)
-    itkGenericExceptionMacro("The CUDA voxel based back projection image filter can only handle stacks of at most 1024 projections")
+    {
+    itkGenericExceptionMacro("The CUDA voxel based back projection image filter can only handle stacks of at most 1024 projections");
+    }
 
   // Rotation center (assumed to be at 0 yet)
   ImageType::PointType rotCenterPoint;

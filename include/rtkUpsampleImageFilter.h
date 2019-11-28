@@ -97,16 +97,16 @@ public:
    * is lost during downsampling, and the upsampling filter can't guess
    * what the exact index should be.
    */
-  itkSetMacro(Order, unsigned int)
-  itkGetMacro(Order, unsigned int)
+  itkSetMacro(Order, unsigned int);
+  itkGetMacro(Order, unsigned int);
 
   /** Set/Get the size of the output image
    * This is required because some information about the size of the image
    * is lost during downsampling, and the upsampling filter can't guess
    * what the exact size should be.
    */
-  itkSetMacro(OutputSize, typename TOutputImage::SizeType)
-  itkGetMacro(OutputSize, typename TOutputImage::SizeType)
+  itkSetMacro(OutputSize, typename TOutputImage::SizeType);
+  itkGetMacro(OutputSize, typename TOutputImage::SizeType);
 
   /** Set/Get the index of the output image
    * This is required because some information about the index of the image
@@ -114,8 +114,8 @@ public:
    * what the exact index should be. The output index is actually set to
    * OutputIndex + 1.
    */
-  itkSetMacro(OutputIndex, typename TOutputImage::IndexType)
-  itkGetMacro(OutputIndex, typename TOutputImage::IndexType)
+  itkSetMacro(OutputIndex, typename TOutputImage::IndexType);
+  itkGetMacro(OutputIndex, typename TOutputImage::IndexType);
 
 protected:
   UpsampleImageFilter();

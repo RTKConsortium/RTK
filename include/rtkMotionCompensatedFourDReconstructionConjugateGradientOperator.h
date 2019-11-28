@@ -146,10 +146,10 @@ public:
 #endif
 
     /** Method for creation through the object factory. */
-    itkNewMacro(Self)
+    itkNewMacro(Self);
 
     /** Run-time type information (and related methods). */
-    itkTypeMacro(MotionCompensatedFourDReconstructionConjugateGradientOperator, FourDReconstructionConjugateGradientOperator)
+    itkTypeMacro(MotionCompensatedFourDReconstructionConjugateGradientOperator, FourDReconstructionConjugateGradientOperator);
 
     /** The forward and back projection filters cannot be set by the user */
     void SetForwardProjectionFilter (const typename Superclass::ForwardProjectionFilterType::Pointer itkNotUsed(_arg)) {itkExceptionMacro(<< "ForwardProjection cannot be changed");}
@@ -165,8 +165,8 @@ public:
     void SetSignal(const std::vector<double> signal) override;
 
     /** Set and Get for the UseCudaCyclicDeformation variable */
-    itkSetMacro(UseCudaCyclicDeformation, bool)
-    itkGetMacro(UseCudaCyclicDeformation, bool)
+    itkSetMacro(UseCudaCyclicDeformation, bool);
+    itkGetMacro(UseCudaCyclicDeformation, bool);
 
 protected:
     MotionCompensatedFourDReconstructionConjugateGradientOperator();

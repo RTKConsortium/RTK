@@ -140,10 +140,10 @@ public:
     using VolumeType = ProjectionStackType;
 
     /** Method for creation through the object factory. */
-    itkNewMacro(Self)
+    itkNewMacro(Self);
 
     /** Run-time type information (and related methods). */
-    itkTypeMacro(FourDReconstructionConjugateGradientOperator, ConjugateGradientOperator)
+    itkTypeMacro(FourDReconstructionConjugateGradientOperator, ConjugateGradientOperator);
 
     /** Set/Get the 4D image to be updated.*/
     void SetInputVolumeSeries(const VolumeSeriesType* VolumeSeries);
@@ -195,26 +195,26 @@ public:
     void SetForwardProjectionFilter (const typename ForwardProjectionFilterType::Pointer _arg);
 
     /** Pass the geometry to all filters needing it */
-    itkSetConstObjectMacro(Geometry, ThreeDCircularProjectionGeometry)
+    itkSetConstObjectMacro(Geometry, ThreeDCircularProjectionGeometry);
 
     /** Use CUDA interpolation/splat filters */
-    itkSetMacro(UseCudaInterpolation, bool)
-    itkGetMacro(UseCudaInterpolation, bool)
-    itkSetMacro(UseCudaSplat, bool)
-    itkGetMacro(UseCudaSplat, bool)
-    itkSetMacro(UseCudaSources, bool)
-    itkGetMacro(UseCudaSources, bool)
+    itkSetMacro(UseCudaInterpolation, bool);
+    itkGetMacro(UseCudaInterpolation, bool);
+    itkSetMacro(UseCudaSplat, bool);
+    itkGetMacro(UseCudaSplat, bool);
+    itkSetMacro(UseCudaSources, bool);
+    itkGetMacro(UseCudaSources, bool);
 
     /** Macros that take care of implementing the Get and Set methods for Weights.*/
-    itkGetMacro(Weights, itk::Array2D<float>)
-    itkSetMacro(Weights, itk::Array2D<float>)
+    itkGetMacro(Weights, itk::Array2D<float>);
+    itkSetMacro(Weights, itk::Array2D<float>);
 
     /** Store the phase signal in a member variable */
     virtual void SetSignal(const std::vector<double> signal);
 
     /** Set / Get whether the displaced detector filter should be disabled */
-    itkSetMacro(DisableDisplacedDetectorFilter, bool)
-    itkGetMacro(DisableDisplacedDetectorFilter, bool)
+    itkSetMacro(DisableDisplacedDetectorFilter, bool);
+    itkGetMacro(DisableDisplacedDetectorFilter, bool);
 
 protected:
     FourDReconstructionConjugateGradientOperator();

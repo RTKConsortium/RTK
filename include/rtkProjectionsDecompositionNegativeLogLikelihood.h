@@ -217,29 +217,29 @@ public:
   return(meaninglessResult);
   }
 
-  itkSetMacro(MeasuredData, MeasuredDataType)
-  itkGetMacro(MeasuredData, MeasuredDataType)
+  itkSetMacro(MeasuredData, MeasuredDataType);
+  itkGetMacro(MeasuredData, MeasuredDataType);
 
-  itkSetMacro(DetectorResponse, DetectorResponseType)
-  itkGetMacro(DetectorResponse, DetectorResponseType)
+  itkSetMacro(DetectorResponse, DetectorResponseType);
+  itkGetMacro(DetectorResponse, DetectorResponseType);
 
-  itkSetMacro(MaterialAttenuations, MaterialAttenuationsType)
-  itkGetMacro(MaterialAttenuations, MaterialAttenuationsType)
+  itkSetMacro(MaterialAttenuations, MaterialAttenuationsType);
+  itkGetMacro(MaterialAttenuations, MaterialAttenuationsType);
 
-  itkSetMacro(NumberOfEnergies, unsigned int)
-  itkGetMacro(NumberOfEnergies, unsigned int)
+  itkSetMacro(NumberOfEnergies, unsigned int);
+  itkGetMacro(NumberOfEnergies, unsigned int);
 
-  itkSetMacro(NumberOfMaterials, unsigned int)
-  itkGetMacro(NumberOfMaterials, unsigned int)
+  itkSetMacro(NumberOfMaterials, unsigned int);
+  itkGetMacro(NumberOfMaterials, unsigned int);
 
-  itkSetMacro(IncidentSpectrum, IncidentSpectrumType)
-  itkGetMacro(IncidentSpectrum, IncidentSpectrumType)
+  itkSetMacro(IncidentSpectrum, IncidentSpectrumType);
+  itkGetMacro(IncidentSpectrum, IncidentSpectrumType);
 
-  itkSetMacro(NumberOfSpectralBins, unsigned int)
-  itkGetMacro(NumberOfSpectralBins, unsigned int)
+  itkSetMacro(NumberOfSpectralBins, unsigned int);
+  itkGetMacro(NumberOfSpectralBins, unsigned int);
 
-  itkSetMacro(Thresholds, ThresholdsType)
-  itkGetMacro(Thresholds, ThresholdsType)
+  itkSetMacro(Thresholds, ThresholdsType);
+  itkGetMacro(Thresholds, ThresholdsType);
 
 protected:
   MaterialAttenuationsType          m_MaterialAttenuations;

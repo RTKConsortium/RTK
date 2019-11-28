@@ -47,18 +47,18 @@ public:
   using Pointer = itk::SmartPointer< Self >;
 
   /** Method for creation through the object factory. */
-  itkNewMacro(Self)
+  itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(SelectOneProjectionPerCycleImageFilter, SubSelectImageFilter)
+  itkTypeMacro(SelectOneProjectionPerCycleImageFilter, SubSelectImageFilter);
 
   /** File name of a text file with one phase value between 0 and 1 per line. */
   itkGetMacro(SignalFilename, std::string);
   itkSetMacro(SignalFilename, std::string);
 
   /** Phase value for which we want the closest projection image per cycle. */
-  itkSetMacro(Phase, double)
-  itkGetMacro(Phase, double)
+  itkSetMacro(Phase, double);
+  itkGetMacro(Phase, double);
 
 protected:
   SelectOneProjectionPerCycleImageFilter();

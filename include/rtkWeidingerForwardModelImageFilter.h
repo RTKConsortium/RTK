@@ -53,10 +53,10 @@ public:
     using Pointer = itk::SmartPointer< Self >;
 
     /** Method for creation through the object factory. */
-    itkNewMacro(Self)
+    itkNewMacro(Self);
 
     /** Run-time type information (and related methods). */
-    itkTypeMacro(WeidingerForwardModelImageFilter, itk::ImageToImageFilter)
+    itkTypeMacro(WeidingerForwardModelImageFilter, itk::ImageToImageFilter);
 
     /** Convenient parameters extracted from template types */
     static constexpr unsigned int nBins = TPhotonCounts::PixelType::Dimension;
@@ -92,8 +92,8 @@ public:
     using MaterialAttenuationsType = vnl_matrix<dataType>;
 
     /** Set and Get macros for the additional input information */
-    itkGetConstReferenceMacro(BinnedDetectorResponse, BinnedDetectorResponseType)
-    itkGetConstReferenceMacro(MaterialAttenuations, MaterialAttenuationsType)
+    itkGetConstReferenceMacro(BinnedDetectorResponse, BinnedDetectorResponseType);
+    itkGetConstReferenceMacro(MaterialAttenuations, MaterialAttenuationsType);
     virtual void SetBinnedDetectorResponse(const BinnedDetectorResponseType & detResp);
     virtual void SetMaterialAttenuations(const MaterialAttenuationsType & matAtt);
 

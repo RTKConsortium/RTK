@@ -42,7 +42,9 @@ rtk::CudaCyclicDeformationImageFilter
   for (unsigned int i=0; i<3; i++)
     {
     if(this->GetOutput()->GetRequestedRegion().GetSize()[i] != inputSize[i])
-      itkExceptionMacro("In rtk::CudaCyclicDeformationImageFilter: the output's requested region must have the same size as the input's buffered region on the first 3 dimensions")
+      {
+      itkExceptionMacro("In rtk::CudaCyclicDeformationImageFilter: the output's requested region must have the same size as the input's buffered region on the first 3 dimensions");
+      }
     }
 
   float *pin = *(float**)( this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer() );

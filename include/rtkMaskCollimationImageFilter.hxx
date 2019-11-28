@@ -44,7 +44,7 @@ MaskCollimationImageFilter<TInputImage,TOutputImage>
 {
   if(this->GetGeometry()->GetGantryAngles().size() !=
           this->GetOutput()->GetLargestPossibleRegion().GetSize()[2])
-    itkExceptionMacro(<<"Number of projections in the input stack and the geometry object differ.")
+    itkExceptionMacro(<<"Number of projections in the input stack and the geometry object differ.");
 }
 
 template <class TInputImage, class TOutputImage>

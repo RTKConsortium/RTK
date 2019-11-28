@@ -39,7 +39,7 @@ DrawConvexImageFilter<TInputImage,TOutputImage>
 ::BeforeThreadedGenerateData()
 {
   if( this->m_ConvexShape.IsNull() )
-    itkExceptionMacro(<<"ConvexShape has not been set.")
+    itkExceptionMacro(<<"ConvexShape has not been set.");
 }
 
 template <class TInputImage, class TOutputImage>

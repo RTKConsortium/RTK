@@ -48,10 +48,10 @@ public:
     using ConstPointer = itk::SmartPointer<const Self>;
 
     /** Standard New method. */
-    itkNewMacro(Self)
+    itkNewMacro(Self);
 
     /** Run-time type information (and related methods) */
-    itkTypeMacro(Self,Superclass)
+    itkTypeMacro(Self,Superclass);
 
     /** DataFrame Object types */
     using Array2DType = itk::Array2D<float>;
@@ -70,8 +70,8 @@ public:
     virtual Array2DType GetOutput();
 
     /** Configure the filter to use uneven temporal spacing (finer temporal resolution during systole) */
-    itkSetMacro(NumberOfReconstructedFrames, int)
-    itkGetMacro(NumberOfReconstructedFrames, int)
+    itkSetMacro(NumberOfReconstructedFrames, int);
+    itkGetMacro(NumberOfReconstructedFrames, int);
 
     /** Set the input signal */
     void SetSignal(const std::vector<double> signal);

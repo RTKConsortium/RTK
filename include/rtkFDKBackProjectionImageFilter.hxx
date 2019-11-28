@@ -37,7 +37,7 @@ FDKBackProjectionImageFilter<TInputImage,TOutputImage>
   // Check if detector is cylindrical
   if(this->m_Geometry->GetRadiusCylindricalDetector() != 0)
     {
-    itkGenericExceptionMacro(<< "Voxel-based FDK back projector can currently not handle cylindrical detectors")
+    itkGenericExceptionMacro(<< "Voxel-based FDK back projector can currently not handle cylindrical detectors");
     }
 
   // Run superclass' GenerateOutputInformation

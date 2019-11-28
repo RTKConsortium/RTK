@@ -31,7 +31,7 @@ DrawCylinderImageFilter<TInputImage, TOutputImage>
 {
   if(this->GetAxis()[0] * this->GetAxis()[1] * this->GetAxis()[2] != itk::NumericTraits<ScalarType>::ZeroValue() )
     {
-    itkExceptionMacro(<< "Axis " << this->GetAxis() << " does not contain any 0 value as a cylinder should.")
+    itkExceptionMacro(<< "Axis " << this->GetAxis() << " does not contain any 0 value as a cylinder should.");
     }
   Superclass::BeforeThreadedGenerateData();
 }

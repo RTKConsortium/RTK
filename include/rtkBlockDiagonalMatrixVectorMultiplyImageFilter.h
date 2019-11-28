@@ -44,10 +44,10 @@ public:
     using Pointer = itk::SmartPointer< Self >;
 
     /** Method for creation through the object factory. */
-    itkNewMacro(Self)
+    itkNewMacro(Self);
 
     /** Run-time type information (and related methods). */
-    itkTypeMacro(BlockDiagonalMatrixVectorMultiplyImageFilter, itk::ImageToImageFilter)
+    itkTypeMacro(BlockDiagonalMatrixVectorMultiplyImageFilter, itk::ImageToImageFilter);
 
     /** Convenient parameters extracted from template types */
     static constexpr unsigned int nChannels = TVectorImage::PixelType::Dimension;

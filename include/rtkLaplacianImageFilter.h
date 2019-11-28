@@ -55,10 +55,10 @@ public:
   using DivergenceFilterType = rtk::BackwardDifferenceDivergenceImageFilter<GradientImageType, OutputImageType>;
 
   /** Method for creation through the object factory. */
-  itkNewMacro(Self)
+  itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(LaplacianImageFilter, itk::ImageToImageFilter)
+  itkTypeMacro(LaplacianImageFilter, itk::ImageToImageFilter);
 
 protected:
   LaplacianImageFilter();

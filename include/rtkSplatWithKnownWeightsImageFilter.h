@@ -76,10 +76,10 @@ public:
     using OutputImageRegionType = typename VolumeSeriesType::RegionType;
 
     /** Method for creation through the object factory. */
-    itkNewMacro(Self)
+    itkNewMacro(Self);
 
     /** Run-time type information (and related methods). */
-    itkTypeMacro(SplatWithKnownWeightsImageFilter, itk::ImageToImageFilter)
+    itkTypeMacro(SplatWithKnownWeightsImageFilter, itk::ImageToImageFilter);
 
     /** The 4D image to be updated.*/
     void SetInputVolumeSeries(const VolumeSeriesType* VolumeSeries);
@@ -88,10 +88,10 @@ public:
     void SetInputVolume(const VolumeType* Volume);
 
     /** Macros that take care of implementing the Get and Set methods for Weights and projectionNumber.*/
-    itkGetMacro(Weights, itk::Array2D<float>)
-    itkSetMacro(Weights, itk::Array2D<float>)
+    itkGetMacro(Weights, itk::Array2D<float>);
+    itkSetMacro(Weights, itk::Array2D<float>);
 
-    itkGetMacro(ProjectionNumber, int)
+    itkGetMacro(ProjectionNumber, int);
     void SetProjectionNumber(int n);
 
 protected:

@@ -71,23 +71,23 @@ public:
   itkConceptMacro(InputImagePixelTypeIsInteger, (itk::Concept::IsInteger<InputImagePixelType>) );
 
   /** Main Output: estimation result. */
-  itkGetMacro(I0, InputImagePixelType)
-  itkGetMacro(I0fwhm, InputImagePixelType)
-  itkGetMacro(I0rls, InputImagePixelType)
+  itkGetMacro(I0, InputImagePixelType);
+  itkGetMacro(I0fwhm, InputImagePixelType);
+  itkGetMacro(I0rls, InputImagePixelType);
 
   /** Maximum encodable detector value if different from (2^16-1). The default
    * is the minimum between 2^24-1 and the numerical limit of the input pixel
    * type. This allows to limit histogram size to 2^(24-bitShift)-1. */
-  itkSetMacro(MaxPixelValue, InputImagePixelType)
-  itkGetMacro(MaxPixelValue, InputImagePixelType)
+  itkSetMacro(MaxPixelValue, InputImagePixelType);
+  itkGetMacro(MaxPixelValue, InputImagePixelType);
 
   /** Expected I0 value (as a result of a detector calibration) */
-  itkSetMacro(ExpectedI0, InputImagePixelType)
-  itkGetMacro(ExpectedI0, InputImagePixelType)
+  itkSetMacro(ExpectedI0, InputImagePixelType);
+  itkGetMacro(ExpectedI0, InputImagePixelType);
 
   /** RSL estimate coefficient */
-  itkSetMacro(Lambda, float)
-  itkGetMacro(Lambda, float)
+  itkSetMacro(Lambda, float);
+  itkGetMacro(Lambda, float);
 
   /** Write Histograms in a csv file
    * Is false by default */

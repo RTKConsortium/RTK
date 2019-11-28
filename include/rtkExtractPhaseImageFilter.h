@@ -71,20 +71,20 @@ public:
 
   /** The input signal may be smoothed before taking the phase of the Hilbert
    * transform. This parameter sets the number of samples for this smoothing. */
-  itkSetMacro(MovingAverageSize, KernelSizeType)
-  itkGetMacro(MovingAverageSize, KernelSizeType)
+  itkSetMacro(MovingAverageSize, KernelSizeType);
+  itkGetMacro(MovingAverageSize, KernelSizeType);
 
   /** Low frequencies of the signal are removed before taking the phase of the
    * Hilbert transform using an unsharp mask, i.e., the difference of the
    * signal and its moving average. This parameter sets the number of samples
    * used for the moving average, default is 55. */
-  itkSetMacro(UnsharpMaskSize, KernelSizeType)
-  itkGetMacro(UnsharpMaskSize, KernelSizeType)
+  itkSetMacro(UnsharpMaskSize, KernelSizeType);
+  itkGetMacro(UnsharpMaskSize, KernelSizeType);
 
   /** During the update, extrema are extracted and can be retrieved after an
    * update of the output. */
-  itkGetMacro(MinimaPositions, PositionsListType)
-  itkGetMacro(MaximaPositions, PositionsListType)
+  itkGetMacro(MinimaPositions, PositionsListType);
+  itkGetMacro(MaximaPositions, PositionsListType);
 
   /** After smoothing and unsharping, you can chose the model for the phase
    * extraction which describes the position in the respiratory cycle by a
@@ -93,8 +93,8 @@ public:
    * - LINEAR_BETWEEN_MINIMA (LINEAR_BETWEEN_MAXIMA): phase phase is linear
    * between two consecutive minima (maxima), with the minima (maxima) at 0.
    * Default is LINEAR_BETWEEN_MINIMA. */
-  itkSetMacro(Model, ModelType)
-  itkGetMacro(Model, ModelType)
+  itkSetMacro(Model, ModelType);
+  itkGetMacro(Model, ModelType);
 
 protected:
   ExtractPhaseImageFilter();

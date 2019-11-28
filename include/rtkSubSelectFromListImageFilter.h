@@ -41,10 +41,10 @@ public:
     using Pointer = itk::SmartPointer< Self >;
 
     /** Method for creation through the object factory. */
-    itkNewMacro(Self)
+    itkNewMacro(Self);
 
     /** Run-time type information (and related methods). */
-    itkTypeMacro(SubSelectFromListImageFilter, SubSelectImageFilter)
+    itkTypeMacro(SubSelectFromListImageFilter, SubSelectImageFilter);
 
     void SetSelectedProjections(std::vector<bool> sprojs);
 

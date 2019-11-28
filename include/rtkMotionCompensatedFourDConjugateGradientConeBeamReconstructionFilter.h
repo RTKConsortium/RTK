@@ -108,10 +108,10 @@ public:
   /** Typedefs of each subfilter of this composite filter */
 
   /** Standard New method. */
-  itkNewMacro(Self)
+  itkNewMacro(Self);
 
   /** Runtime information support. */
-  itkTypeMacro(MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter, FourDConjugateGradientConeBeamReconstructionFilter)
+  itkTypeMacro(MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter, FourDConjugateGradientConeBeamReconstructionFilter);
 
   /** Neither the Forward nor the Back projection filters can be set by the user */
   void SetForwardProjectionFilter (ForwardProjectionType itkNotUsed(_arg)) override {itkExceptionMacro(<< "ForwardProjection cannot be changed");}
@@ -131,8 +131,8 @@ public:
   using MCCGOperatorType = rtk::MotionCompensatedFourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType>;
 
   /** Set and Get for the UseCudaCyclicDeformation variable */
-  itkSetMacro(UseCudaCyclicDeformation, bool)
-  itkGetMacro(UseCudaCyclicDeformation, bool)
+  itkSetMacro(UseCudaCyclicDeformation, bool);
+  itkGetMacro(UseCudaCyclicDeformation, bool);
 
 protected:
   MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter();

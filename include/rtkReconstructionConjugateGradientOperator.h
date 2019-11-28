@@ -133,7 +133,7 @@ public:
 #endif
 
   /** Method for creation through the object factory. */
-  itkNewMacro(Self)
+  itkNewMacro(Self);
 
   /** Setters for the inputs */
   void SetInputVolume(const TOutputImage* vol);
@@ -141,7 +141,7 @@ public:
   void SetInputWeights(const TWeightsImage* weights);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(rtkReconstructionConjugateGradientOperator, ConjugateGradientOperator)
+  itkTypeMacro(rtkReconstructionConjugateGradientOperator, ConjugateGradientOperator);
 
   using BackProjectionFilterType = rtk::BackProjectionImageFilter< TOutputImage, TOutputImage >;
   using BackProjectionFilterPointer = typename BackProjectionFilterType::Pointer;
@@ -175,14 +175,14 @@ public:
   typename TSingleComponentImage::ConstPointer GetSupportMask();
 
   /** Set the geometry of both m_BackProjectionFilter and m_ForwardProjectionFilter */
-  itkSetConstObjectMacro(Geometry, ThreeDCircularProjectionGeometry)
+  itkSetConstObjectMacro(Geometry, ThreeDCircularProjectionGeometry);
 
   /** Perform laplacian-based and/or Tikhonov regularization during
   *  reconstruction (gamma is the strength of laplacian the regularization) */
-  itkSetMacro(Gamma, float)
-  itkGetMacro(Gamma, float)
-  itkSetMacro(Tikhonov, float)
-  itkGetMacro(Tikhonov, float)
+  itkSetMacro(Gamma, float);
+  itkGetMacro(Gamma, float);
+  itkSetMacro(Tikhonov, float);
+  itkGetMacro(Tikhonov, float);
 
 protected:
   ReconstructionConjugateGradientOperator();

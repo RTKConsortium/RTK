@@ -52,10 +52,10 @@ public:
     using InputPixelType = typename TInputImage::PixelType;
 
     /** Method for creation through the object factory. */
-    itkNewMacro(Self)
+    itkNewMacro(Self);
 
     /** Run-time type information (and related methods). */
-    itkTypeMacro(LastDimensionL0GradientDenoisingImageFilter, itk::InPlaceImageFilter)
+    itkTypeMacro(LastDimensionL0GradientDenoisingImageFilter, itk::InPlaceImageFilter);
 
     /** Get / Set the threshold. Default is 0.001 */
     itkGetMacro(Lambda, double);

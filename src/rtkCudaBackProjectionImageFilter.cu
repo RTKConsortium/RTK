@@ -141,7 +141,9 @@ CUDA_back_project(int projSize[3],
   int device;
   cudaGetDevice(&device);
   if(GetCudaComputeCapability(device).first<=1)
-    itkGenericExceptionMacro(<< "RTK no longer supports GPUs with CudaComputeCapability < 2.0")
+    {
+    itkGenericExceptionMacro(<< "RTK no longer supports GPUs with CudaComputeCapability < 2.0");
+    }
 
   // Copy the size of inputs into constant memory
   cudaMemcpyToSymbol(c_projSize, projSize, sizeof(int3));
@@ -227,7 +229,9 @@ CUDA_back_project(int projSize[3],
       break;
 
     default:
-      itkGenericExceptionMacro("Vector length " << vectorLength << " is not supported.")
+      {
+      itkGenericExceptionMacro("Vector length " << vectorLength << " is not supported.");
+      }
     }
   CUDA_CHECK_ERROR;
 

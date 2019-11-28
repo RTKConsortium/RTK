@@ -51,10 +51,10 @@ public:
     using Pointer = itk::SmartPointer< Self >;
 
     /** Method for creation through the object factory. */
-    itkNewMacro(Self)
+    itkNewMacro(Self);
 
     /** Run-time type information (and related methods). */
-    itkTypeMacro(GetNewtonUpdateImageFilter, itk::ImageToImageFilter)
+    itkTypeMacro(GetNewtonUpdateImageFilter, itk::ImageToImageFilter);
 
     /** Convenient parameters extracted from template types */
     static constexpr unsigned int nChannels = TGradient::PixelType::Dimension;

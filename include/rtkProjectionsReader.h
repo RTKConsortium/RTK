@@ -240,8 +240,8 @@ public:
 
   /** Set/Get the index of the component to be extracted
    * if the projection data contains vectors instead of scalars. */
-  itkGetMacro(VectorComponent, unsigned int)
-  itkSetMacro(VectorComponent, unsigned int)
+  itkGetMacro(VectorComponent, unsigned int);
+  itkSetMacro(VectorComponent, unsigned int);
 
   /** Get the image IO that was used for reading the projection. */
   itkGetMacro(ImageIO,  itk::ImageIOBase::Pointer);

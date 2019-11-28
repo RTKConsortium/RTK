@@ -64,10 +64,10 @@ public:
   using ConstPointer = itk::SmartPointer< const Self >;
 
   /** Method for creation through the object factory. */
-  itkNewMacro(Self)
+  itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(LagCorrectionImageFilter, ImageToImageFilter)
+  itkTypeMacro(LagCorrectionImageFilter, ImageToImageFilter);
 
   using ImageRegionType = typename TImage::RegionType;
   using ImageSizeType = typename TImage::SizeType;
@@ -78,8 +78,8 @@ public:
   using OutputImageRegionType = typename TImage::RegionType;
 
   /** Get / Set the model parameters A and B*/
-  itkGetMacro(A, VectorType)
-  itkGetMacro(B, VectorType)
+  itkGetMacro(A, VectorType);
+  itkGetMacro(B, VectorType);
   virtual void SetCoefficients(const VectorType A, const VectorType B)
   {
     if ((this->m_A != A) && (this->m_B != B))

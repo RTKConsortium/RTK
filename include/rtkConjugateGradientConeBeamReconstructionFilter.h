@@ -116,10 +116,10 @@ public:
     using Pointer = itk::SmartPointer< Self >;
 
     /** Method for creation through the object factory. */
-    itkNewMacro(Self)
+    itkNewMacro(Self);
 
     /** Run-time type information (and related methods). */
-    itkTypeMacro(ConjugateGradientConeBeamReconstructionFilter, itk::ImageToImageFilter)
+    itkTypeMacro(ConjugateGradientConeBeamReconstructionFilter, itk::ImageToImageFilter);
 
     /** Setters for the inputs */
     void SetInputVolume(const TOutputImage* vol);
@@ -178,28 +178,28 @@ public:
     typename TSingleComponentImage::ConstPointer GetSupportMask();
 
     /** Pass the geometry to all filters needing it */
-    itkSetConstObjectMacro(Geometry, ThreeDCircularProjectionGeometry)
+    itkSetConstObjectMacro(Geometry, ThreeDCircularProjectionGeometry);
 
-    itkSetMacro(NumberOfIterations, int)
-    itkGetMacro(NumberOfIterations, int)
+    itkSetMacro(NumberOfIterations, int);
+    itkGetMacro(NumberOfIterations, int);
 
-    itkSetMacro(IterationCosts, bool)
-    itkGetMacro(IterationCosts, bool)
+    itkSetMacro(IterationCosts, bool);
+    itkGetMacro(IterationCosts, bool);
 
     /** Set / Get whether the displaced detector filter should be disabled */
-    itkSetMacro(DisableDisplacedDetectorFilter, bool)
-    itkGetMacro(DisableDisplacedDetectorFilter, bool)
+    itkSetMacro(DisableDisplacedDetectorFilter, bool);
+    itkGetMacro(DisableDisplacedDetectorFilter, bool);
 
     /** If Regularized, perform laplacian-based regularization during
      *  reconstruction (gamma is the strength of the regularization) */
-    itkSetMacro(Tikhonov, float)
-    itkGetMacro(Tikhonov, float)
-    itkSetMacro(Gamma, float)
-    itkGetMacro(Gamma, float)
+    itkSetMacro(Tikhonov, float);
+    itkGetMacro(Tikhonov, float);
+    itkSetMacro(Gamma, float);
+    itkGetMacro(Gamma, float);
 
     /** Get / Set whether conjugate gradient should be performed on GPU */
-    itkGetMacro(CudaConjugateGradient, bool)
-    itkSetMacro(CudaConjugateGradient, bool)
+    itkGetMacro(CudaConjugateGradient, bool);
+    itkSetMacro(CudaConjugateGradient, bool);
 
     /** Getter for ResidualCosts storing array **/
     const std::vector<double> &GetResidualCosts();

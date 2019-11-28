@@ -78,10 +78,10 @@ public:
     using PassVector = typename itk::Vector<typename Self::Pass, TImage::ImageDimension>;
 
     /** Run-time type information (and related methods). */
-    itkTypeMacro(DaubechiesWaveletsConvolutionImageFilter, itk::ImageSource)
+    itkTypeMacro(DaubechiesWaveletsConvolutionImageFilter, itk::ImageSource);
 
     /** Method for creation through the object factory. */
-    itkNewMacro(Self)
+    itkNewMacro(Self);
 
     /** Typedef for the internal convolution filter */
     using ConvolutionFilterType = typename itk::ConvolutionImageFilter<TImage>;

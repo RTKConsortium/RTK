@@ -46,17 +46,17 @@ public:
                               TInputImage::ImageDimension>;
 
   /** Method for creation through the object factory. */
-  itkNewMacro(Self)
+  itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(ConjugateGradientGetX_kPlusOneImageFilter, itk::ImageToImageFilter)
+  itkTypeMacro(ConjugateGradientGetX_kPlusOneImageFilter, itk::ImageToImageFilter);
 
   /** Functions to set the inputs */
   void SetXk(const TInputImage* Xk);
   void SetPk(const TInputImage* Pk);
 
-  itkGetMacro(Alphak, double)
-  itkSetMacro(Alphak, double)
+  itkGetMacro(Alphak, double);
+  itkSetMacro(Alphak, double);
 
   /** Typedefs for sub filters */
   using AddFilterType = itk::AddImageFilter<TInputImage>;

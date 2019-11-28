@@ -145,10 +145,10 @@ public:
     using BackProjectionType = typename Superclass::BackProjectionType;
 
     /** Method for creation through the object factory. */
-    itkNewMacro(Self)
+    itkNewMacro(Self);
 
     /** Run-time type information (and related methods). */
-    itkTypeMacro(ADMMTotalVariationConeBeamReconstructionFilter, IterativeConeBeamReconstructionFilter)
+    itkTypeMacro(ADMMTotalVariationConeBeamReconstructionFilter, IterativeConeBeamReconstructionFilter);
 
     using ForwardProjectionFilterType = rtk::ForwardProjectionImageFilter< TOutputImage, TOutputImage >;
     using ForwardProjectionFilterPointer = typename ForwardProjectionFilterType::Pointer;
@@ -179,7 +179,7 @@ public:
     void SetBackProjectionFilter (BackProjectionType _arg) override;
 
     /** Pass the geometry to all filters needing it */
-    itkSetObjectMacro(Geometry, ThreeDCircularProjectionGeometry)
+    itkSetObjectMacro(Geometry, ThreeDCircularProjectionGeometry);
 
     /** Increase the value of Beta at each iteration */
     void SetBetaForCurrentIteration(int iter);
@@ -187,21 +187,21 @@ public:
     /** In the case of a gated reconstruction, set the gating weights */
     void SetGatingWeights(std::vector<float> weights);
 
-    itkSetMacro(Alpha, float)
-    itkGetMacro(Alpha, float)
+    itkSetMacro(Alpha, float);
+    itkGetMacro(Alpha, float);
 
-    itkSetMacro(Beta, float)
-    itkGetMacro(Beta, float)
+    itkSetMacro(Beta, float);
+    itkGetMacro(Beta, float);
 
-    itkSetMacro(AL_iterations, float)
-    itkGetMacro(AL_iterations, float)
+    itkSetMacro(AL_iterations, float);
+    itkGetMacro(AL_iterations, float);
 
-    itkSetMacro(CG_iterations, float)
-    itkGetMacro(CG_iterations, float)
+    itkSetMacro(CG_iterations, float);
+    itkGetMacro(CG_iterations, float);
 
     /** Set / Get whether the displaced detector filter should be disabled */
-    itkSetMacro(DisableDisplacedDetectorFilter, bool)
-    itkGetMacro(DisableDisplacedDetectorFilter, bool)
+    itkSetMacro(DisableDisplacedDetectorFilter, bool);
+    itkGetMacro(DisableDisplacedDetectorFilter, bool);
 
 protected:
     ADMMTotalVariationConeBeamReconstructionFilter();

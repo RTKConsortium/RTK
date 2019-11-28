@@ -51,18 +51,18 @@ public:
   using Pointer = itk::SmartPointer< Self >;
 
   /** Method for creation through the object factory. */
-  itkNewMacro(Self)
+  itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(SeparableQuadraticSurrogateRegularizationImageFilter, itk::ImageToImageFilter)
+  itkTypeMacro(SeparableQuadraticSurrogateRegularizationImageFilter, itk::ImageToImageFilter);
 
   /** Set/Get for the radius */
-  itkSetMacro(Radius, typename TImage::RegionType::SizeType)
-  itkGetMacro(Radius, typename TImage::RegionType::SizeType)
+  itkSetMacro(Radius, typename TImage::RegionType::SizeType);
+  itkGetMacro(Radius, typename TImage::RegionType::SizeType);
 
   /** Set/Get for the regularization weights */
-  itkSetMacro(RegularizationWeights, typename TImage::PixelType)
-  itkGetMacro(RegularizationWeights, typename TImage::PixelType)
+  itkSetMacro(RegularizationWeights, typename TImage::PixelType);
+  itkGetMacro(RegularizationWeights, typename TImage::PixelType);
 
 protected:
   SeparableQuadraticSurrogateRegularizationImageFilter();

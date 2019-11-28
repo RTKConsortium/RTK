@@ -66,10 +66,10 @@ public:
   using MaterialAttenuationsType = vnl_matrix<double>;
 
   /** Standard New method. */
-  itkNewMacro(Self)
+  itkNewMacro(Self);
 
   /** Runtime information support. */
-  itkTypeMacro(SpectralForwardModelImageFilter, InPlaceImageFilter)
+  itkTypeMacro(SpectralForwardModelImageFilter, InPlaceImageFilter);
 
   /** Set/Get the incident spectrum input images */
   void SetInputIncidentSpectrum(const IncidentSpectrumImageType* IncidentSpectrum);
@@ -93,23 +93,23 @@ public:
   void SetMaterialAttenuations(const MaterialAttenuationsImageType* MaterialAttenuations);
   typename MaterialAttenuationsImageType::ConstPointer GetMaterialAttenuations();
 
-  itkSetMacro(Thresholds, ThresholdsType)
-  itkGetMacro(Thresholds, ThresholdsType)
+  itkSetMacro(Thresholds, ThresholdsType);
+  itkGetMacro(Thresholds, ThresholdsType);
 
-  itkSetMacro(NumberOfSpectralBins, unsigned int)
-  itkGetMacro(NumberOfSpectralBins, unsigned int)
+  itkSetMacro(NumberOfSpectralBins, unsigned int);
+  itkGetMacro(NumberOfSpectralBins, unsigned int);
 
-  itkSetMacro(NumberOfMaterials, unsigned int)
-  itkGetMacro(NumberOfMaterials, unsigned int)
+  itkSetMacro(NumberOfMaterials, unsigned int);
+  itkGetMacro(NumberOfMaterials, unsigned int);
 
-  itkSetMacro(NumberOfEnergies, unsigned int)
-  itkGetMacro(NumberOfEnergies, unsigned int)
+  itkSetMacro(NumberOfEnergies, unsigned int);
+  itkGetMacro(NumberOfEnergies, unsigned int);
 
-  itkSetMacro(IsSpectralCT, bool)
-  itkGetMacro(IsSpectralCT, bool)
+  itkSetMacro(IsSpectralCT, bool);
+  itkGetMacro(IsSpectralCT, bool);
 
-  itkSetMacro(ComputeVariances, bool)
-  itkGetMacro(ComputeVariances, bool)
+  itkSetMacro(ComputeVariances, bool);
+  itkGetMacro(ComputeVariances, bool);
 
 protected:
   SpectralForwardModelImageFilter();

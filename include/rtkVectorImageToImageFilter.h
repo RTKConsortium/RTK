@@ -57,10 +57,10 @@ public:
     using OutputImageRegionType = typename OutputImageType::RegionType;
 
     /** Method for creation through the object factory. */
-    itkNewMacro(Self)
+    itkNewMacro(Self);
 
     /** Run-time type information (and related methods). */
-    itkTypeMacro(VectorImageToImageFilter, itk::ImageToImageFilter)
+    itkTypeMacro(VectorImageToImageFilter, itk::ImageToImageFilter);
 
 protected:
     VectorImageToImageFilter();

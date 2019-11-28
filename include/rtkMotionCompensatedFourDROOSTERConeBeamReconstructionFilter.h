@@ -157,10 +157,10 @@ public:
 #endif
 
   /** Method for creation through the object factory. */
-  itkNewMacro(Self)
+  itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(MotionCompensatedFourDROOSTERConeBeamReconstructionFilter, rtk::FourDROOSTERConeBeamReconstructionFilter)
+  itkTypeMacro(MotionCompensatedFourDROOSTERConeBeamReconstructionFilter, rtk::FourDROOSTERConeBeamReconstructionFilter);
 
   using MotionCompensatedFourDCGFilterType = rtk::MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter
     <VolumeSeriesType, ProjectionStackType>;

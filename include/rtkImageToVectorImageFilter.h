@@ -57,16 +57,16 @@ public:
     using OutputImageRegionType = typename OutputImageType::RegionType;
 
     /** Method for creation through the object factory. */
-    itkNewMacro(Self)
+    itkNewMacro(Self);
 
     /** Run-time type information (and related methods). */
-    itkTypeMacro(ImageToVectorImageFilter, itk::ImageToImageFilter)
+    itkTypeMacro(ImageToVectorImageFilter, itk::ImageToImageFilter);
 
     /** When the input and output dimensions are equal, the filter
      * cannot guess the number of channels. Set/Get methods to
      * pass it */
-    itkSetMacro(NumberOfChannels, unsigned int)
-    itkGetMacro(NumberOfChannels, unsigned int)
+    itkSetMacro(NumberOfChannels, unsigned int);
+    itkGetMacro(NumberOfChannels, unsigned int);
 
 protected:
     ImageToVectorImageFilter();

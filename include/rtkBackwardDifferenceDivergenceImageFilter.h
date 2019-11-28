@@ -57,10 +57,10 @@ public:
     using ConstPointer = itk::SmartPointer<const Self>;
 
     /** Method for creation through the object factory. */
-    itkNewMacro(Self)
+    itkNewMacro(Self);
 
     /** Run-time type information (and related methods). */
-    itkTypeMacro(BackwardDifferenceDivergenceImageFilter, ImageToImageFilter)
+    itkTypeMacro(BackwardDifferenceDivergenceImageFilter, ImageToImageFilter);
 
     /** Use the image spacing information in calculations. Use this option if you
      *  want derivatives in physical space. Default is UseImageSpacingOn. */

@@ -132,22 +132,22 @@ public:
 #endif
 
   /** Standard New method. */
-  itkNewMacro(Self)
+  itkNewMacro(Self);
 
   /** Runtime information support. */
-  itkTypeMacro(FourDConjugateGradientConeBeamReconstructionFilter, itk::ImageToImageFilter)
+  itkTypeMacro(FourDConjugateGradientConeBeamReconstructionFilter, itk::ImageToImageFilter);
 
   /** Get / Set the object pointer to projection geometry */
-  itkGetConstObjectMacro(Geometry, ThreeDCircularProjectionGeometry)
-  itkSetConstObjectMacro(Geometry, ThreeDCircularProjectionGeometry)
+  itkGetConstObjectMacro(Geometry, ThreeDCircularProjectionGeometry);
+  itkSetConstObjectMacro(Geometry, ThreeDCircularProjectionGeometry);
 
   /** Get / Set the number of iterations. Default is 3. */
-  itkGetMacro(NumberOfIterations, unsigned int)
-  itkSetMacro(NumberOfIterations, unsigned int)
+  itkGetMacro(NumberOfIterations, unsigned int);
+  itkSetMacro(NumberOfIterations, unsigned int);
 
   /** Get / Set whether conjugate gradient should be performed on GPU */
-  itkGetMacro(CudaConjugateGradient, bool)
-  itkSetMacro(CudaConjugateGradient, bool)
+  itkGetMacro(CudaConjugateGradient, bool);
+  itkSetMacro(CudaConjugateGradient, bool);
 
   /** Set/Get the 4D image to be updated.*/
   void SetInputVolumeSeries(const VolumeSeriesType* VolumeSeries);
@@ -170,8 +170,8 @@ public:
   virtual void SetSignal(const std::vector<double> signal);
 
   /** Set / Get whether the displaced detector filter should be disabled */
-  itkSetMacro(DisableDisplacedDetectorFilter, bool)
-  itkGetMacro(DisableDisplacedDetectorFilter, bool)
+  itkSetMacro(DisableDisplacedDetectorFilter, bool);
+  itkGetMacro(DisableDisplacedDetectorFilter, bool);
 protected:
   FourDConjugateGradientConeBeamReconstructionFilter();
   ~FourDConjugateGradientConeBeamReconstructionFilter() override = default;

@@ -72,10 +72,10 @@ public:
     using Pointer = itk::SmartPointer< Self >;
 
     /** Method for creation through the object factory. */
-    itkNewMacro(Self)
+    itkNewMacro(Self);
 
     /** Run-time type information (and related methods). */
-    itkTypeMacro(InterpolatorWithKnownWeightsImageFilter, itk::InPlaceImageFilter)
+    itkTypeMacro(InterpolatorWithKnownWeightsImageFilter, itk::InPlaceImageFilter);
 
     /** The 3D image to be updated.*/
     void SetInputVolume(const VolumeType* Volume);
@@ -84,10 +84,10 @@ public:
     void SetInputVolumeSeries(const VolumeSeriesType* VolumeSeries);
 
     /** Macros that take care of implementing the Get and Set methods for Weights and ProjectionNumber.*/
-    itkGetMacro(Weights, itk::Array2D<float>)
-    itkSetMacro(Weights, itk::Array2D<float>)
+    itkGetMacro(Weights, itk::Array2D<float>);
+    itkSetMacro(Weights, itk::Array2D<float>);
 
-    itkGetMacro(ProjectionNumber, int)
+    itkGetMacro(ProjectionNumber, int);
     void SetProjectionNumber(int n);
 
 protected:

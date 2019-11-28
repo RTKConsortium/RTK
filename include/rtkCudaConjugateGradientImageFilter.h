@@ -55,10 +55,10 @@ public:
   using ConstPointer = itk::SmartPointer<const Self>;
 
   /** Standard New method. */
-  itkNewMacro(Self)
+  itkNewMacro(Self);
 
   /** Runtime information support. */
-  itkTypeMacro(CudaConjugateGradientImageFilter, ConjugateGradientImageFilter)
+  itkTypeMacro(CudaConjugateGradientImageFilter, ConjugateGradientImageFilter);
 
 protected:
   CudaConjugateGradientImageFilter();

@@ -200,8 +200,8 @@ public:
   virtual void SetSignal(const std::vector<double> signal);
 
   /** Set / Get whether the displaced detector filter should be disabled */
-  itkSetMacro(DisableDisplacedDetectorFilter, bool)
-  itkGetMacro(DisableDisplacedDetectorFilter, bool)
+  itkSetMacro(DisableDisplacedDetectorFilter, bool);
+  itkGetMacro(DisableDisplacedDetectorFilter, bool);
 
 protected:
   FourDSARTConeBeamReconstructionFilter();

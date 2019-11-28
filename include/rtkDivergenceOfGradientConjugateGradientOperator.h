@@ -55,10 +55,10 @@ public:
   using ConstPointer = itk::SmartPointer<const Self>;
 
   /** Method for creation through the object factory. */
-  itkNewMacro(Self)
+  itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(DivergenceOfGradientConjugateGradientOperator, ImageToImageFilter)
+  itkTypeMacro(DivergenceOfGradientConjugateGradientOperator, ImageToImageFilter);
 
   /** Image type alias support. */
   using InputPixelType = typename InputImageType::PixelType;

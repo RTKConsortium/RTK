@@ -93,8 +93,8 @@ public:
   /** End concept checking */
 #endif
 
-  itkGetMacro(Threshold, TRealType)
-  itkSetMacro(Threshold, TRealType)
+  itkGetMacro(Threshold, TRealType);
+  itkSetMacro(Threshold, TRealType);
 
 protected:
   MagnitudeThresholdImageFilter();

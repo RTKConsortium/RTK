@@ -142,10 +142,10 @@ public:
     using Pointer = itk::SmartPointer< Self >;
 
     /** Method for creation through the object factory. */
-    itkNewMacro(Self)
+    itkNewMacro(Self);
 
     /** Run-time type information (and related methods). */
-    itkTypeMacro(MechlemOneStepSpectralReconstructionFilter, itk::ImageToImageFilter)
+    itkTypeMacro(MechlemOneStepSpectralReconstructionFilter, itk::ImageToImageFilter);
 
     /** Internal type alias and parameters */
     static constexpr unsigned int nBins = TPhotonCounts::PixelType::Dimension;
@@ -224,20 +224,20 @@ public:
     void SetBackProjectionFilter (BackProjectionType _arg) override;
 
     /** Pass the geometry to all filters needing it */
-    itkSetConstObjectMacro(Geometry, ThreeDCircularProjectionGeometry)
+    itkSetConstObjectMacro(Geometry, ThreeDCircularProjectionGeometry);
 
-    itkSetMacro(NumberOfIterations, int)
-    itkGetMacro(NumberOfIterations, int)
+    itkSetMacro(NumberOfIterations, int);
+    itkGetMacro(NumberOfIterations, int);
 
     /** Number of subsets per iteration. */
-    itkSetMacro(NumberOfSubsets, int)
-    itkGetMacro(NumberOfSubsets, int)
+    itkSetMacro(NumberOfSubsets, int);
+    itkGetMacro(NumberOfSubsets, int);
 
     /** Parameter to trigger Nesterov's reset. The value is a number of subsets
     ** which can be larger than the number of subsets per iteration. 1 means no
     ** Nesterov acceleration. */
-    itkSetMacro(ResetNesterovEvery, int)
-    itkGetMacro(ResetNesterovEvery, int)
+    itkSetMacro(ResetNesterovEvery, int);
+    itkGetMacro(ResetNesterovEvery, int);
 
     /** Set methods for all inputs, since they have different types */
     void SetInputMaterialVolumes(const TOutputImage* materialVolumes);
@@ -247,15 +247,15 @@ public:
     void SetSpatialRegularizationWeights(const SingleComponentImageType* regweights);
 
     /** Set/Get for the regularization weights */
-    itkSetMacro(RegularizationWeights, typename TOutputImage::PixelType)
-    itkGetMacro(RegularizationWeights, typename TOutputImage::PixelType)
+    itkSetMacro(RegularizationWeights, typename TOutputImage::PixelType);
+    itkGetMacro(RegularizationWeights, typename TOutputImage::PixelType);
 
     /** Set/Get for the radius */
-    itkSetMacro(RegularizationRadius, typename TOutputImage::RegionType::SizeType)
-    itkGetMacro(RegularizationRadius, typename TOutputImage::RegionType::SizeType)
+    itkSetMacro(RegularizationRadius, typename TOutputImage::RegionType::SizeType);
+    itkGetMacro(RegularizationRadius, typename TOutputImage::RegionType::SizeType);
 
-//    itkSetMacro(IterationCosts, bool)
-//    itkGetMacro(IterationCosts, bool)
+//    itkSetMacro(IterationCosts, bool);
+//    itkGetMacro(IterationCosts, bool);
 
     /** Set methods forwarding the detector response and material attenuation
      * matrices to the internal WeidingerForwardModel filter */

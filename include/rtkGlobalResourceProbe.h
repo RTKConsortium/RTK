@@ -45,7 +45,7 @@ public:
   using ConstPointer = itk::SmartPointer< const Self >;
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(GlobalResourceProbe, itk::Object)
+  itkTypeMacro(GlobalResourceProbe, itk::Object);
 
   /** This is a singleton pattern New.  There will only be ONE
    * reference to a GlobalResourceProbe object per process.  Clients that
@@ -58,8 +58,8 @@ public:
   static Pointer GetInstance();
 
   /** Set / Get macro for verbosity */
-  itkSetMacro(Verbose, bool)
-  itkGetMacro(Verbose, bool)
+  itkSetMacro(Verbose, bool);
+  itkGetMacro(Verbose, bool);
 
   /** Start a probe with a particular name. If the time probe does not
    * exist, it will be created */

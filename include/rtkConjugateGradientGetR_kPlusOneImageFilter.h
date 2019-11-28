@@ -46,19 +46,19 @@ public:
     using OutputImageRegionType = typename TInputImage::RegionType;
 
     /** Method for creation through the object factory. */
-    itkNewMacro(Self)
+    itkNewMacro(Self);
 
     /** Run-time type information (and related methods). */
-    itkTypeMacro(ConjugateGradientGetR_kPlusOneImageFilter, itk::ImageToImageFilter)
+    itkTypeMacro(ConjugateGradientGetR_kPlusOneImageFilter, itk::ImageToImageFilter);
 
     /** Functions to set the inputs */
     void SetRk(const TInputImage* Rk);
     void SetPk(const TInputImage* Pk);
     void SetAPk(const TInputImage* APk);
 
-    itkGetMacro(Alphak, double)
-    itkGetMacro(SquaredNormR_k, double)
-    itkGetMacro(SquaredNormR_kPlusOne, double)
+    itkGetMacro(Alphak, double);
+    itkGetMacro(SquaredNormR_k, double);
+    itkGetMacro(SquaredNormR_kPlusOne, double);
 
 protected:
     ConjugateGradientGetR_kPlusOneImageFilter();

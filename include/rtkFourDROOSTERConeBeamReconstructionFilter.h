@@ -239,10 +239,10 @@ public:
 #endif
 
   /** Method for creation through the object factory. */
-  itkNewMacro(Self)
+  itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(FourDROOSTERConeBeamReconstructionFilter, itk::ImageToImageFilter)
+  itkTypeMacro(FourDROOSTERConeBeamReconstructionFilter, itk::ImageToImageFilter);
 
   /** The 4D image to be updated.*/
   void SetInputVolumeSeries(const VolumeSeriesType* VolumeSeries);
@@ -287,72 +287,72 @@ public:
   virtual void SetWeights(const itk::Array2D<float> _arg);
 
   /** Set / Get whether the displaced detector filter should be disabled */
-  itkSetMacro(DisableDisplacedDetectorFilter, bool)
-  itkGetMacro(DisableDisplacedDetectorFilter, bool)
+  itkSetMacro(DisableDisplacedDetectorFilter, bool);
+  itkGetMacro(DisableDisplacedDetectorFilter, bool);
 
   // Regularization steps to perform
-  itkSetMacro(PerformPositivity, bool)
-  itkGetMacro(PerformPositivity, bool)
-  itkSetMacro(PerformMotionMask, bool)
-  itkGetMacro(PerformMotionMask, bool)
-  itkSetMacro(PerformTVSpatialDenoising, bool)
-  itkGetMacro(PerformTVSpatialDenoising, bool)
-  itkSetMacro(PerformWaveletsSpatialDenoising, bool)
-  itkGetMacro(PerformWaveletsSpatialDenoising, bool)
-  itkSetMacro(PerformWarping, bool)
-  itkGetMacro(PerformWarping, bool)
-  itkSetMacro(PerformTVTemporalDenoising, bool)
-  itkGetMacro(PerformTVTemporalDenoising, bool)
-  itkSetMacro(PerformL0TemporalDenoising, bool)
-  itkGetMacro(PerformL0TemporalDenoising, bool)
-  itkSetMacro(PerformTNVDenoising, bool)
-  itkGetMacro(PerformTNVDenoising, bool)
-  itkSetMacro(ComputeInverseWarpingByConjugateGradient, bool)
-  itkGetMacro(ComputeInverseWarpingByConjugateGradient, bool)
-  itkSetMacro(UseNearestNeighborInterpolationInWarping, bool)
-  itkGetMacro(UseNearestNeighborInterpolationInWarping, bool)
-  itkGetMacro(CudaConjugateGradient, bool)
-  itkSetMacro(CudaConjugateGradient, bool)
+  itkSetMacro(PerformPositivity, bool);
+  itkGetMacro(PerformPositivity, bool);
+  itkSetMacro(PerformMotionMask, bool);
+  itkGetMacro(PerformMotionMask, bool);
+  itkSetMacro(PerformTVSpatialDenoising, bool);
+  itkGetMacro(PerformTVSpatialDenoising, bool);
+  itkSetMacro(PerformWaveletsSpatialDenoising, bool);
+  itkGetMacro(PerformWaveletsSpatialDenoising, bool);
+  itkSetMacro(PerformWarping, bool);
+  itkGetMacro(PerformWarping, bool);
+  itkSetMacro(PerformTVTemporalDenoising, bool);
+  itkGetMacro(PerformTVTemporalDenoising, bool);
+  itkSetMacro(PerformL0TemporalDenoising, bool);
+  itkGetMacro(PerformL0TemporalDenoising, bool);
+  itkSetMacro(PerformTNVDenoising, bool);
+  itkGetMacro(PerformTNVDenoising, bool);
+  itkSetMacro(ComputeInverseWarpingByConjugateGradient, bool);
+  itkGetMacro(ComputeInverseWarpingByConjugateGradient, bool);
+  itkSetMacro(UseNearestNeighborInterpolationInWarping, bool);
+  itkGetMacro(UseNearestNeighborInterpolationInWarping, bool);
+  itkGetMacro(CudaConjugateGradient, bool);
+  itkSetMacro(CudaConjugateGradient, bool);
 
   /** Set and Get for the UseCudaCyclicDeformation variable */
-  itkSetMacro(UseCudaCyclicDeformation, bool)
-  itkGetMacro(UseCudaCyclicDeformation, bool)
+  itkSetMacro(UseCudaCyclicDeformation, bool);
+  itkGetMacro(UseCudaCyclicDeformation, bool);
 
   // Regularization parameters
-  itkSetMacro(GammaTVSpace, float)
-  itkGetMacro(GammaTVSpace, float)
-  itkSetMacro(GammaTVTime, float)
-  itkGetMacro(GammaTVTime, float)
-  itkSetMacro(GammaTNV, float)
-  itkGetMacro(GammaTNV, float)
-  itkSetMacro(LambdaL0Time, float)
-  itkGetMacro(LambdaL0Time, float)
-  itkSetMacro(SoftThresholdWavelets, float)
-  itkGetMacro(SoftThresholdWavelets, float)
-  itkSetMacro(PhaseShift, float)
-  itkGetMacro(PhaseShift, float)
+  itkSetMacro(GammaTVSpace, float);
+  itkGetMacro(GammaTVSpace, float);
+  itkSetMacro(GammaTVTime, float);
+  itkGetMacro(GammaTVTime, float);
+  itkSetMacro(GammaTNV, float);
+  itkGetMacro(GammaTNV, float);
+  itkSetMacro(LambdaL0Time, float);
+  itkGetMacro(LambdaL0Time, float);
+  itkSetMacro(SoftThresholdWavelets, float);
+  itkGetMacro(SoftThresholdWavelets, float);
+  itkSetMacro(PhaseShift, float);
+  itkGetMacro(PhaseShift, float);
 
   /** Set the number of levels of the wavelets decomposition */
-  itkGetMacro(NumberOfLevels, unsigned int)
-  itkSetMacro(NumberOfLevels, unsigned int)
+  itkGetMacro(NumberOfLevels, unsigned int);
+  itkSetMacro(NumberOfLevels, unsigned int);
 
   /** Sets the order of the Daubechies wavelet used to deconstruct/reconstruct the image pyramid */
-  itkGetMacro(Order, unsigned int)
-  itkSetMacro(Order, unsigned int)
+  itkGetMacro(Order, unsigned int);
+  itkSetMacro(Order, unsigned int);
 
   // Iterations
-  itkSetMacro(MainLoop_iterations, int)
-  itkGetMacro(MainLoop_iterations, int)
-  itkSetMacro(CG_iterations, int)
-  itkGetMacro(CG_iterations, int)
-  itkSetMacro(TV_iterations, int)
-  itkGetMacro(TV_iterations, int)
-  itkSetMacro(L0_iterations, int)
-  itkGetMacro(L0_iterations, int)
+  itkSetMacro(MainLoop_iterations, int);
+  itkGetMacro(MainLoop_iterations, int);
+  itkSetMacro(CG_iterations, int);
+  itkGetMacro(CG_iterations, int);
+  itkSetMacro(TV_iterations, int);
+  itkGetMacro(TV_iterations, int);
+  itkSetMacro(L0_iterations, int);
+  itkGetMacro(L0_iterations, int);
 
   // Geometry
-  itkSetConstObjectMacro(Geometry, ThreeDCircularProjectionGeometry)
-  itkGetConstObjectMacro(Geometry, ThreeDCircularProjectionGeometry)
+  itkSetConstObjectMacro(Geometry, ThreeDCircularProjectionGeometry);
+  itkGetConstObjectMacro(Geometry, ThreeDCircularProjectionGeometry);
 
   /** Store the phase signal in a member variable */
   virtual void SetSignal(const std::vector<double> signal);

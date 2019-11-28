@@ -129,10 +129,10 @@ public:
     using ConstPointer = itk::SmartPointer<const Self>;
 
     /** Method for creation through the object factory. */
-    itkNewMacro(Self)
+    itkNewMacro(Self);
 
     /** Run-time type information (and related methods). */
-    itkTypeMacro(DeconstructImageFilter, ImageToImageFilter)
+    itkTypeMacro(DeconstructImageFilter, ImageToImageFilter);
 
     /** ImageDimension enumeration. */
     static constexpr unsigned int ImageDimension = TImage::ImageDimension;
@@ -173,8 +173,8 @@ public:
     void GenerateInputRequestedRegion() override;
 
     /** Get/Set the order of the wavelet filters */
-    itkGetMacro(Order, unsigned int)
-    itkSetMacro(Order, unsigned int)
+    itkGetMacro(Order, unsigned int);
+    itkSetMacro(Order, unsigned int);
 
     /** Get the size of each convolution filter's output
      * This is required because the downsampling implies

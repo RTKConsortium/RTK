@@ -122,10 +122,10 @@ public:
   using ConstPointer = itk::SmartPointer<const Self>;
 
   /** Method for creation through the object factory. */
-  itkNewMacro(Self)
+  itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(TotalNuclearVariationDenoisingBPDQImageFilter, DenoisingBPDQImageFilter)
+  itkTypeMacro(TotalNuclearVariationDenoisingBPDQImageFilter, DenoisingBPDQImageFilter);
 
   /** Sub filter type definitions */
   using SingularValueThresholdFilterType = SingularValueThresholdImageFilter<TGradientImage>;

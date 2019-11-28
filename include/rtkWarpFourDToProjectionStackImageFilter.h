@@ -135,10 +135,10 @@ public:
 #endif
 
     /** Method for creation through the object factory. */
-    itkNewMacro(Self)
+    itkNewMacro(Self);
 
     /** Run-time type information (and related methods). */
-    itkTypeMacro(WarpFourDToProjectionStackImageFilter, rtk::FourDToProjectionStackImageFilter)
+    itkTypeMacro(WarpFourDToProjectionStackImageFilter, rtk::FourDToProjectionStackImageFilter);
 
     using SignalVectorType = std::vector<double>;
 
@@ -152,8 +152,8 @@ public:
     void SetSignal(const std::vector<double> signal) override;
 
     /** Set and Get for the UseCudaCyclicDeformation variable */
-    itkSetMacro(UseCudaCyclicDeformation, bool)
-    itkGetMacro(UseCudaCyclicDeformation, bool)
+    itkSetMacro(UseCudaCyclicDeformation, bool);
+    itkGetMacro(UseCudaCyclicDeformation, bool);
 
 protected:
     WarpFourDToProjectionStackImageFilter();

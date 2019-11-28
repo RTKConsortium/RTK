@@ -211,11 +211,15 @@ if (nBins==5 && nEnergies == 150)
       break;
       
     default:
-      itkGenericExceptionMacro(<< "The CUDA version of WeidingerForwardModel works with hard-coded parameters, currently set to nMaterials=2 or 3, nMaterials= " << nMaterials << " is not supported.")
+      {
+      itkGenericExceptionMacro(<< "The CUDA version of WeidingerForwardModel works with hard-coded parameters, currently set to nMaterials=2 or 3, nMaterials= " << nMaterials << " is not supported.");
+      }
   } 
   CUDA_CHECK_ERROR;
 }
 else
-  itkGenericExceptionMacro(<< "The CUDA version of WeidingerForwardModel works with hard-coded parameters, currently set to nBins=5, nEnergies=150 and nMaterials=2 or 3")
+  {
+  itkGenericExceptionMacro(<< "The CUDA version of WeidingerForwardModel works with hard-coded parameters, currently set to nBins=5, nEnergies=150 and nMaterials=2 or 3");
+  }
 CUDA_CHECK_ERROR;
 }

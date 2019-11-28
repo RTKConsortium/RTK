@@ -150,10 +150,10 @@ public:
     using Pointer = itk::SmartPointer< Self >;
 
     /** Method for creation through the object factory. */
-    itkNewMacro(Self)
+    itkNewMacro(Self);
 
     /** Run-time type information (and related methods). */
-    itkTypeMacro(ADMMWaveletsConeBeamReconstructionFilter, itk::ImageToImageFilter)
+    itkTypeMacro(ADMMWaveletsConeBeamReconstructionFilter, itk::ImageToImageFilter);
 
 //    /** The 3D image to be updated */
 //    void SetInputVolume(const TOutputImage* Volume);
@@ -181,29 +181,29 @@ public:
     void SetBackProjectionFilter (BackProjectionType _arg) override;
 
     /** Pass the geometry to all filters needing it */
-    itkSetObjectMacro(Geometry, ThreeDCircularProjectionGeometry)
+    itkSetObjectMacro(Geometry, ThreeDCircularProjectionGeometry);
 
-    itkSetMacro(Alpha, float)
-    itkGetMacro(Alpha, float)
+    itkSetMacro(Alpha, float);
+    itkGetMacro(Alpha, float);
 
-    itkSetMacro(Beta, float)
-    itkGetMacro(Beta, float)
+    itkSetMacro(Beta, float);
+    itkGetMacro(Beta, float);
 
-    itkSetMacro(AL_iterations, float)
-    itkGetMacro(AL_iterations, float)
+    itkSetMacro(AL_iterations, float);
+    itkGetMacro(AL_iterations, float);
 
-    itkSetMacro(CG_iterations, float)
-    itkGetMacro(CG_iterations, float)
+    itkSetMacro(CG_iterations, float);
+    itkGetMacro(CG_iterations, float);
 
-    itkSetMacro(Order, unsigned int)
-    itkGetMacro(Order, unsigned int)
+    itkSetMacro(Order, unsigned int);
+    itkGetMacro(Order, unsigned int);
 
-    itkSetMacro(NumberOfLevels, unsigned int)
-    itkGetMacro(NumberOfLevels, unsigned int)
+    itkSetMacro(NumberOfLevels, unsigned int);
+    itkGetMacro(NumberOfLevels, unsigned int);
 
     /** Set / Get whether the displaced detector filter should be disabled */
-    itkSetMacro(DisableDisplacedDetectorFilter, bool)
-    itkGetMacro(DisableDisplacedDetectorFilter, bool)
+    itkSetMacro(DisableDisplacedDetectorFilter, bool);
+    itkGetMacro(DisableDisplacedDetectorFilter, bool);
 
 protected:
     ADMMWaveletsConeBeamReconstructionFilter();

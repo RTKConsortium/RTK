@@ -57,18 +57,18 @@ public:
   using OutputImagePointer = typename OutputImageType::Pointer;
 
   /** Method for creation through the object factory. */
-  itkNewMacro(Self)
+  itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(ConjugateGradientImageFilter, itk::InPlaceImageFilter)
+  itkTypeMacro(ConjugateGradientImageFilter, itk::InPlaceImageFilter);
 
   /** Get and Set macro*/
-  itkGetMacro(NumberOfIterations, int)
-  itkSetMacro(NumberOfIterations, int)
+  itkGetMacro(NumberOfIterations, int);
+  itkSetMacro(NumberOfIterations, int);
 
   /** Displays the conjugate gradient cost function at each iteration. */
-  itkGetMacro(IterationCosts, bool)
-  itkSetMacro(IterationCosts, bool)
+  itkGetMacro(IterationCosts, bool);
+  itkSetMacro(IterationCosts, bool);
 
   void SetA(ConjugateGradientOperatorPointerType _arg );
 

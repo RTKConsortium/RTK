@@ -81,22 +81,22 @@ public:
     using Pointer = itk::SmartPointer< Self >;
 
     /** Method for creation through the object factory. */
-    itkNewMacro(Self)
+    itkNewMacro(Self);
 
     /** Run-time type information (and related methods). */
-    itkTypeMacro(DaubechiesWaveletsDenoiseSequenceImageFilter, ImageToImageFilter)
+    itkTypeMacro(DaubechiesWaveletsDenoiseSequenceImageFilter, ImageToImageFilter);
 
     /** Set the number of levels of the deconstruction and reconstruction */
-    itkGetMacro(NumberOfLevels, unsigned int)
-    itkSetMacro(NumberOfLevels, unsigned int)
+    itkGetMacro(NumberOfLevels, unsigned int);
+    itkSetMacro(NumberOfLevels, unsigned int);
 
     /** Sets the order of the Daubechies wavelet used to deconstruct/reconstruct the image pyramid */
-    itkGetMacro(Order, unsigned int)
-    itkSetMacro(Order, unsigned int)
+    itkGetMacro(Order, unsigned int);
+    itkSetMacro(Order, unsigned int);
 
     /** Sets the threshold used in soft thresholding */
-    itkGetMacro(Threshold, float)
-    itkSetMacro(Threshold, float)
+    itkGetMacro(Threshold, float);
+    itkSetMacro(Threshold, float);
 
     /** Typedefs of internal filters */
     using TImage = itk::Image<typename TImageSequence::PixelType,

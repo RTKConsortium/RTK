@@ -58,18 +58,18 @@ public:
     using MedianRadiusType = typename itk::ConstNeighborhoodIterator<TInputImage>::RadiusType;
 
     /** Method for creation through the object factory. */
-    itkNewMacro(Self)
+    itkNewMacro(Self);
 
     /** Run-time type information (and related methods). */
-    itkTypeMacro(ConditionalMedianImageFilter, itk::InPlaceImageFilter)
+    itkTypeMacro(ConditionalMedianImageFilter, itk::InPlaceImageFilter);
 
     /** Set/Get neighborhood radius */
-    itkSetMacro(Radius, MedianRadiusType)
-    itkGetMacro(Radius, MedianRadiusType)
+    itkSetMacro(Radius, MedianRadiusType);
+    itkGetMacro(Radius, MedianRadiusType);
 
     /** Set/Get neighborhood radius */
-    itkSetMacro(ThresholdMultiplier, double)
-    itkGetMacro(ThresholdMultiplier, double)
+    itkSetMacro(ThresholdMultiplier, double);
+    itkGetMacro(ThresholdMultiplier, double);
 
 protected:
     ConditionalMedianImageFilter();

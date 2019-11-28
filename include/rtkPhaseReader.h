@@ -43,10 +43,10 @@ public:
     using ConstPointer = itk::SmartPointer<const Self>;
 
     /** Standard New method. */
-    itkNewMacro(Self)
+    itkNewMacro(Self);
 
     /** Run-time type information (and related methods) */
-    itkTypeMacro(Self,Superclass)
+    itkTypeMacro(Self,Superclass);
 
     /** The value type of the dataset. */
     using ValueType = float;

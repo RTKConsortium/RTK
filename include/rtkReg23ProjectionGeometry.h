@@ -73,7 +73,7 @@ public:
   using ConstPointer = itk::SmartPointer<const Self>;
 
   /** Method for creation through the object factory. */
-  itkNewMacro(Self)
+  itkNewMacro(Self);
 
   /**
    * @brief Add a REG23-based geometry set to the RTK projections list.

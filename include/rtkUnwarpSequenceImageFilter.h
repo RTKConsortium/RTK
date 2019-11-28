@@ -88,10 +88,10 @@ public:
     using Pointer = itk::SmartPointer< Self >;
 
     /** Method for creation through the object factory. */
-    itkNewMacro(Self)
+    itkNewMacro(Self);
 
     /** Run-time type information (and related methods). */
-    itkTypeMacro(UnwarpSequenceImageFilter, ImageToImageFilter)
+    itkTypeMacro(UnwarpSequenceImageFilter, ImageToImageFilter);
 
     using CGOperatorFilterType = UnwarpSequenceConjugateGradientOperator< TImageSequence,
                                                      TDVFImageSequence,
@@ -127,22 +127,22 @@ public:
     typename TDVFImageSequence::Pointer GetDisplacementField();
 
     /** Number of conjugate gradient iterations */
-    itkSetMacro(NumberOfIterations, float)
-    itkGetMacro(NumberOfIterations, float)
+    itkSetMacro(NumberOfIterations, float);
+    itkGetMacro(NumberOfIterations, float);
 
     /** Phase shift to simulate phase estimation errors */
-    itkSetMacro(PhaseShift, float)
-    itkGetMacro(PhaseShift, float)
+    itkSetMacro(PhaseShift, float);
+    itkGetMacro(PhaseShift, float);
 
-    itkSetMacro(UseNearestNeighborInterpolationInWarping, bool)
-    itkGetMacro(UseNearestNeighborInterpolationInWarping, bool)
+    itkSetMacro(UseNearestNeighborInterpolationInWarping, bool);
+    itkGetMacro(UseNearestNeighborInterpolationInWarping, bool);
 
-    itkSetMacro(CudaConjugateGradient, bool)
-    itkGetMacro(CudaConjugateGradient, bool)
+    itkSetMacro(CudaConjugateGradient, bool);
+    itkGetMacro(CudaConjugateGradient, bool);
 
     /** Set and Get for the UseCudaCyclicDeformation variable */
-    itkSetMacro(UseCudaCyclicDeformation, bool)
-    itkGetMacro(UseCudaCyclicDeformation, bool)
+    itkSetMacro(UseCudaCyclicDeformation, bool);
+    itkGetMacro(UseCudaCyclicDeformation, bool);
 
 protected:
     UnwarpSequenceImageFilter();

@@ -105,7 +105,7 @@ public:
     using Pointer = itk::SmartPointer< Self >;
 
     /** Method for creation through the object factory. */
-    itkNewMacro(Self)
+    itkNewMacro(Self);
 
     /** SFINAE type alias, depending on whether a CUDA image is used. */
     using CPUImageType = typename itk::Image< typename TImage::PixelType,
@@ -131,7 +131,7 @@ public:
 #endif
 
     /** Run-time type information (and related methods). */
-    itkTypeMacro(WarpSequenceImageFilter, IterativeConeBeamReconstructionFilter)
+    itkTypeMacro(WarpSequenceImageFilter, IterativeConeBeamReconstructionFilter);
 
     /** Set the motion vector field used in input 1 */
     void SetDisplacementField(const TDVFImageSequence* DVFs);
@@ -140,20 +140,20 @@ public:
     typename TDVFImageSequence::Pointer GetDisplacementField();
 
     /** Set/Get for m_ForwardWarp */
-    itkGetMacro(ForwardWarp, bool)
-    itkSetMacro(ForwardWarp, bool)
+    itkGetMacro(ForwardWarp, bool);
+    itkSetMacro(ForwardWarp, bool);
 
     /** Phase shift to simulate phase estimation errors */
-    itkSetMacro(PhaseShift, float)
-    itkGetMacro(PhaseShift, float)
+    itkSetMacro(PhaseShift, float);
+    itkGetMacro(PhaseShift, float);
 
     /** Information for the CUDA warp filter, to avoid using RTTI */
-    itkSetMacro(UseNearestNeighborInterpolationInWarping, bool)
-    itkGetMacro(UseNearestNeighborInterpolationInWarping, bool)
+    itkSetMacro(UseNearestNeighborInterpolationInWarping, bool);
+    itkGetMacro(UseNearestNeighborInterpolationInWarping, bool);
 
     /** Set and Get for the UseCudaCyclicDeformation variable */
-    itkSetMacro(UseCudaCyclicDeformation, bool)
-    itkGetMacro(UseCudaCyclicDeformation, bool)
+    itkSetMacro(UseCudaCyclicDeformation, bool);
+    itkGetMacro(UseCudaCyclicDeformation, bool);
 
     /** Typedefs of internal filters */
     using LinearInterpolatorType = itk::LinearInterpolateImageFunction<TImage, double >;

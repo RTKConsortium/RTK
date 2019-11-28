@@ -42,22 +42,22 @@ public:
     using Pointer = itk::SmartPointer< Self >;
 
     /** Method for creation through the object factory. */
-    itkNewMacro(Self)
+    itkNewMacro(Self);
 
     /** Run-time type information (and related methods). */
-    itkTypeMacro(PhaseGatingImageFilter, SubSelectImageFilter)
+    itkTypeMacro(PhaseGatingImageFilter, SubSelectImageFilter);
 
-    itkSetMacro(PhasesFileName, std::string)
-    itkGetMacro(PhasesFileName, std::string)
+    itkSetMacro(PhasesFileName, std::string);
+    itkGetMacro(PhasesFileName, std::string);
 
-    itkSetMacro(GatingWindowWidth, float)
-    itkGetMacro(GatingWindowWidth, float)
+    itkSetMacro(GatingWindowWidth, float);
+    itkGetMacro(GatingWindowWidth, float);
 
-    itkSetMacro(GatingWindowCenter, float)
-    itkGetMacro(GatingWindowCenter, float)
+    itkSetMacro(GatingWindowCenter, float);
+    itkGetMacro(GatingWindowCenter, float);
 
-    itkSetMacro(GatingWindowShape, int)
-    itkGetMacro(GatingWindowShape, int)
+    itkSetMacro(GatingWindowShape, int);
+    itkGetMacro(GatingWindowShape, int);
 
     std::vector<float> GetGatingWeights();
     std::vector<float> GetGatingWeightsOnSelectedProjections();

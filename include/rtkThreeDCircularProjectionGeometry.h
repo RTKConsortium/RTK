@@ -273,8 +273,8 @@ public:
 
   /** Accessor for the radius of curved detector. The default is 0 and it means
    * a flat detector. */
-  itkGetConstMacro(RadiusCylindricalDetector, double)
-  itkSetMacro(RadiusCylindricalDetector, double)
+  itkGetConstMacro(RadiusCylindricalDetector, double);
+  itkSetMacro(RadiusCylindricalDetector, double);
 
 protected:
   ThreeDCircularProjectionGeometry();

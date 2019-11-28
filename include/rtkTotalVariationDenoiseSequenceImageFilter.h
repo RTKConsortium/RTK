@@ -86,17 +86,17 @@ public:
     using Pointer = itk::SmartPointer< Self >;
 
     /** Method for creation through the object factory. */
-    itkNewMacro(Self)
+    itkNewMacro(Self);
 
     /** Run-time type information (and related methods). */
-    itkTypeMacro(TotalVariationDenoiseSequenceImageFilter, ImageToImageFilter)
+    itkTypeMacro(TotalVariationDenoiseSequenceImageFilter, ImageToImageFilter);
 
     /** Set/Get for the TotalVariationDenoisingBPDQImageFilter */
-    itkGetMacro(Gamma, double)
-    itkSetMacro(Gamma, double)
+    itkGetMacro(Gamma, double);
+    itkSetMacro(Gamma, double);
 
-    itkGetMacro(NumberOfIterations, int)
-    itkSetMacro(NumberOfIterations, int)
+    itkGetMacro(NumberOfIterations, int);
+    itkSetMacro(NumberOfIterations, int);
 
     void SetDimensionsProcessed(bool* arg);
 

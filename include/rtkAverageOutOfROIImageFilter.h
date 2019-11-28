@@ -62,10 +62,10 @@ public:
     using LowerDimImage = itk::Image<typename TInputImage::PixelType, TInputImage::ImageDimension - 1>;
 
     /** Method for creation through the object factory. */
-    itkNewMacro(Self)
+    itkNewMacro(Self);
 
     /** Run-time type information (and related methods). */
-    itkTypeMacro(AverageOutOfROIImageFilter, itk::InPlaceImageFilter)
+    itkTypeMacro(AverageOutOfROIImageFilter, itk::InPlaceImageFilter);
 
     /** The image containing the weights applied to the temporal components */
     void SetROI(const TROI* Map);

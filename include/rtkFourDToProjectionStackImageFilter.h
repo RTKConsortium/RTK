@@ -110,10 +110,10 @@ public:
     using VolumeType = ProjectionStackType;
 
     /** Method for creation through the object factory. */
-    itkNewMacro(Self)
+    itkNewMacro(Self);
 
     /** Run-time type information (and related methods). */
-    itkTypeMacro(FourDToProjectionStackImageFilter, itk::ImageToImageFilter)
+    itkTypeMacro(FourDToProjectionStackImageFilter, itk::ImageToImageFilter);
 
     /** The 4D image to be updated.*/
     void SetInputVolumeSeries(const VolumeSeriesType* VolumeSeries);

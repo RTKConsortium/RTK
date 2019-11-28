@@ -53,14 +53,14 @@ public:
   using OutputImageRegionType = typename Superclass::OutputImageType::RegionType;
 
   /** Method for creation through the object factory. */
-  itkNewMacro(Self)
+  itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(NesterovUpdateImageFilter, itk::InPlaceImageFilter)
+  itkTypeMacro(NesterovUpdateImageFilter, itk::InPlaceImageFilter);
 
   /** Get and Set macro*/
-  itkGetMacro(NumberOfIterations, int)
-  itkSetMacro(NumberOfIterations, int)
+  itkGetMacro(NumberOfIterations, int);
+  itkSetMacro(NumberOfIterations, int);
 
 protected:
   NesterovUpdateImageFilter();

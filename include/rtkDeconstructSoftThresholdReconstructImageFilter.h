@@ -56,10 +56,10 @@ public:
     using ConstPointer = itk::SmartPointer<const Self>;
 
     /** Method for creation through the object factory. */
-    itkNewMacro(Self)
+    itkNewMacro(Self);
 
     /** Run-time type information (and related methods). */
-    itkTypeMacro(DeconstructSoftThresholdReconstructImageFilter, ImageToImageFilter)
+    itkTypeMacro(DeconstructSoftThresholdReconstructImageFilter, ImageToImageFilter);
 
     /** ImageDimension enumeration. */
     static constexpr unsigned int ImageDimension = TImage::ImageDimension;
@@ -82,12 +82,12 @@ public:
     void SetNumberOfLevels(unsigned int levels);
 
     /** Sets the order of the Daubechies wavelet used to deconstruct/reconstruct the image pyramid */
-    itkGetMacro(Order, unsigned int)
-    itkSetMacro(Order, unsigned int)
+    itkGetMacro(Order, unsigned int);
+    itkSetMacro(Order, unsigned int);
 
     /** Sets the threshold used in soft thresholding */
-    itkGetMacro(Threshold, float)
-    itkSetMacro(Threshold, float)
+    itkGetMacro(Threshold, float);
+    itkSetMacro(Threshold, float);
 
 protected:
     DeconstructSoftThresholdReconstructImageFilter();
