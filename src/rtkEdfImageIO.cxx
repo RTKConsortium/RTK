@@ -232,6 +232,19 @@ bool rtk::EdfImageIO::CanReadFile(const char* FileNameToRead)
   return true;
 } ////
 
+// Define itk::ReadRawBytesAfterSwapping for ITK_VERSION VERSION_LESS v5.1.0
+/** Utility function for reading RAW bytes */
+namespace itk
+{
+#ifndef ReadRawBytesAfterSwapping
+extern void
+ReadRawBytesAfterSwapping(ImageIOBase::IOComponentType componentType,
+                          void *                       buffer,
+                          ImageIOBase::ByteOrder       byteOrder,
+                          SizeValueType                numberOfComponents);
+#endif
+} //namespace itk
+
 //--------------------------------------------------------------------
 // Read Image Content
 void rtk::EdfImageIO::Read(void * buffer)
@@ -253,33 +266,9 @@ void rtk::EdfImageIO::Read(void * buffer)
   gzclose(inp);
 
   // Adapted from itkRawImageIO
-#define itkReadRawBytesAfterSwappingMacro(StrongType, WeakType)   \
-  ( this->GetComponentType() == WeakType )                        \
-    {                                                             \
-    using InternalByteSwapperType = itk::ByteSwapper<StrongType>; \
-    if ( m_ByteOrder == LittleEndian )                            \
-      {                                                           \
-      InternalByteSwapperType::SwapRangeFromSystemToLittleEndian( \
-        (StrongType *)buffer, this->GetImageSizeInComponents() ); \
-      }                                                           \
-    else if ( m_ByteOrder == BigEndian )                          \
-      {                                                           \
-      InternalByteSwapperType::SwapRangeFromSystemToBigEndian(    \
-        (StrongType *)buffer, this->GetImageSizeInComponents() ); \
-      }                                                           \
-    }
-
-  // Swap bytes if necessary
-  if itkReadRawBytesAfterSwappingMacro( unsigned short, USHORT )
-  else if itkReadRawBytesAfterSwappingMacro( short, SHORT )
-  else if itkReadRawBytesAfterSwappingMacro( char, CHAR )
-  else if itkReadRawBytesAfterSwappingMacro( unsigned char, UCHAR )
-  else if itkReadRawBytesAfterSwappingMacro( unsigned int, UINT )
-  else if itkReadRawBytesAfterSwappingMacro( int, INT )
-  else if itkReadRawBytesAfterSwappingMacro( unsigned int, UINT )
-  else if itkReadRawBytesAfterSwappingMacro( int, INT )
-  else if itkReadRawBytesAfterSwappingMacro( float, FLOAT )
-  else if itkReadRawBytesAfterSwappingMacro( double, DOUBLE );
+  const auto componentType = this->GetComponentType();
+  const SizeValueType numberOfComponents = this->GetImageSizeInComponents();
+  ReadRawBytesAfterSwapping(componentType, buffer, m_ByteOrder, numberOfComponents);
 }
 
 //--------------------------------------------------------------------

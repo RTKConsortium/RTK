@@ -61,6 +61,14 @@ endforeach()
 set_directory_properties(PROPERTIES COMPILE_DEFINITIONS "${defComSansVTK}")
 
 #=========================================================
+# Backward compatibility 
+#=========================================================
+if(${ITK_VERSION} VERSION_LESS 5.1.0)
+  set(RTK_SRCS ${RTK_SRCS}
+    itkRawImageIOUtilities.cxx)
+endif()
+
+#=========================================================
 # CUDA library
 #=========================================================
 if (RTK_USE_CUDA)
@@ -125,7 +133,7 @@ if (RTK_USE_CUDA)
     rtkCudaWarpImageFilter.cxx
     ${RTK_CUDA_WRAPPERS}
     ${RTK_CUDA_FILES})
-endif ()
+endif()
 #=========================================================
 
 itk_module_add_library(RTK ${RTK_SRCS})
