@@ -29,17 +29,14 @@ namespace rtk
 {
 
 template <class TInputImage, class TOutputImage>
-XRadRawToAttenuationImageFilter<TInputImage, TOutputImage>
-::XRadRawToAttenuationImageFilter() :
-  m_DarkImageFileName(std::string(RTK_DATA_ROOT) + std::string("/Input/XRad/dark.header")),
-  m_FlatImageFileName(std::string(RTK_DATA_ROOT) + std::string("/Input/XRad/flat.header"))
-{
-}
+XRadRawToAttenuationImageFilter<TInputImage, TOutputImage>::XRadRawToAttenuationImageFilter()
+  : m_DarkImageFileName(std::string(RTK_DATA_ROOT) + std::string("/Input/XRad/dark.header"))
+  , m_FlatImageFileName(std::string(RTK_DATA_ROOT) + std::string("/Input/XRad/flat.header"))
+{}
 
-template<class TInputImage, class TOutputImage>
+template <class TInputImage, class TOutputImage>
 void
-XRadRawToAttenuationImageFilter<TInputImage, TOutputImage>
-::BeforeThreadedGenerateData()
+XRadRawToAttenuationImageFilter<TInputImage, TOutputImage>::BeforeThreadedGenerateData()
 {
   using ReaderType = itk::ImageFileReader<OutputImageType>;
   typename ReaderType::Pointer reader = ReaderType::New();
@@ -55,30 +52,30 @@ XRadRawToAttenuationImageFilter<TInputImage, TOutputImage>
   m_FlatImage->DisconnectPipeline();
 }
 
-template<class TInputImage, class TOutputImage>
+template <class TInputImage, class TOutputImage>
 void
 XRadRawToAttenuationImageFilter<TInputImage, TOutputImage>
-#if ITK_VERSION_MAJOR<5
-::ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType itkNotUsed(threadId) )
+#if ITK_VERSION_MAJOR < 5
+  ::ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, ThreadIdType itkNotUsed(threadId))
 #else
-::DynamicThreadedGenerateData( const OutputImageRegionType& outputRegionForThread)
+  ::DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread)
 #endif
 {
   // Dark and flat image iterator
   OutputImageRegionType darkRegion = outputRegionForThread;
-  darkRegion.SetSize(2,1);
-  darkRegion.SetIndex(2,1);
+  darkRegion.SetSize(2, 1);
+  darkRegion.SetIndex(2, 1);
   itk::ImageRegionConstIterator<OutputImageType> itDark(m_DarkImage, darkRegion);
   itk::ImageRegionConstIterator<OutputImageType> itFlat(m_FlatImage, darkRegion);
 
   // Projection regions
   OutputImageRegionType outputRegionSlice = outputRegionForThread;
-  outputRegionSlice.SetSize(2,1);
-  for(int k = outputRegionForThread.GetIndex(2);
-          k < outputRegionForThread.GetIndex(2) + (int)outputRegionForThread.GetSize(2);
-          k++)
-    {
-    outputRegionSlice.SetIndex(2,k);
+  outputRegionSlice.SetSize(2, 1);
+  for (int k = outputRegionForThread.GetIndex(2);
+       k < outputRegionForThread.GetIndex(2) + (int)outputRegionForThread.GetSize(2);
+       k++)
+  {
+    outputRegionSlice.SetIndex(2, k);
 
     // Create iterators
     itk::ImageRegionConstIterator<InputImageType> itIn(this->GetInput(), outputRegionSlice);
@@ -86,25 +83,25 @@ XRadRawToAttenuationImageFilter<TInputImage, TOutputImage>
 
     itDark.GoToBegin();
     itFlat.GoToBegin();
-    while( !itIn.IsAtEnd() )
-      {
+    while (!itIn.IsAtEnd())
+    {
       double den = itFlat.Get() - (double)itDark.Get();
-      if(den==0.)
+      if (den == 0.)
         itOut.Set(0.);
       else
-        {
-        double ratio = (itIn.Get()  - (double)itDark.Get()) / den;
-        if(ratio<=0.)
+      {
+        double ratio = (itIn.Get() - (double)itDark.Get()) / den;
+        if (ratio <= 0.)
           itOut.Set(0.);
         else
-          itOut.Set( -log(ratio) );
-        }
+          itOut.Set(-log(ratio));
+      }
       ++itIn;
       ++itOut;
       ++itDark;
       ++itFlat;
-      }
     }
+  }
 }
 
 } // end namespace rtk

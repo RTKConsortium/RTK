@@ -37,7 +37,7 @@ namespace rtk
  *
  * \ingroup RTK
  */
-class RTK_EXPORT OraImageIOFactory: public itk::ObjectFactoryBase
+class RTK_EXPORT OraImageIOFactory : public itk::ObjectFactoryBase
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(OraImageIOFactory);
@@ -49,11 +49,15 @@ public:
   using ConstPointer = itk::SmartPointer<const Self>;
 
   /** Class methods used to interface with the registered factories. */
-  const char* GetITKSourceVersion(void) const override {
+  const char *
+  GetITKSourceVersion(void) const override
+  {
     return ITK_SOURCE_VERSION;
   }
 
-  const char* GetDescription(void) const override {
+  const char *
+  GetDescription(void) const override
+  {
     return "Ora ImageIO Factory, allows the loading of Ora images into insight";
   }
 
@@ -64,18 +68,19 @@ public:
   itkTypeMacro(OraImageIOFactory, itk::ObjectFactoryBase);
 
   /** Register one factory of this type  */
-  static void RegisterOneFactory(void) {
-    ObjectFactoryBase::RegisterFactory( Self::New() );
+  static void
+  RegisterOneFactory(void)
+  {
+    ObjectFactoryBase::RegisterFactory(Self::New());
   }
 
 protected:
   OraImageIOFactory();
   ~OraImageIOFactory() override = default;
   using myProductType = OraImageIOFactory;
-  const myProductType* m_MyProduct;
-
+  const myProductType * m_MyProduct;
 };
 
-} // end namespace
+} // namespace rtk
 
 #endif /* end #define rtkOraImageIOFactory_h */

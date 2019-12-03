@@ -26,11 +26,12 @@
 
 #define PROPERTY_NAME_MAX_LENGTH 256
 
-template<typename T>
-size_t rtk::XimImageIO::SetPropertyValue(char *property_name, Int4 value_length, FILE *fp, Xim_header *xim)
+template <typename T>
+size_t
+rtk::XimImageIO::SetPropertyValue(char * property_name, Int4 value_length, FILE * fp, Xim_header * xim)
 {
-  T property_value;
-  T * unused_property_value;
+  T      property_value;
+  T *    unused_property_value;
   size_t addNelements = 0;
 
   if (value_length > 1)
@@ -49,7 +50,7 @@ size_t rtk::XimImageIO::SetPropertyValue(char *property_name, Int4 value_length,
     xim->dCouchLng = property_value;
   else if (strncmp(property_name, "CouchVrt", 8) == 0)
     xim->dCouchVrt = property_value;
-  else if (strncmp(property_name,"DataOffset", 10) == 0)
+  else if (strncmp(property_name, "DataOffset", 10) == 0)
     xim->nPixelOffset = property_value;
   else if (strncmp(property_name, "KVSourceRtn", 11) == 0)
     xim->dCTProjectionAngle = property_value;
@@ -100,19 +101,20 @@ size_t rtk::XimImageIO::SetPropertyValue(char *property_name, Int4 value_length,
 
 //--------------------------------------------------------------------
 // Read Image Information
-void rtk::XimImageIO::ReadImageInformation()
+void
+rtk::XimImageIO::ReadImageInformation()
 {
   Xim_header xim;
   FILE *     fp;
 
-  fp = fopen (m_FileName.c_str(), "rb");
+  fp = fopen(m_FileName.c_str(), "rb");
   if (fp == nullptr)
     itkGenericExceptionMacro(<< "Could not open file (for reading): " << m_FileName);
   size_t nelements = 0;
-  nelements += fread ( (void *) xim.sFileType, sizeof(char), 8, fp);
-  nelements += fread ( (void *) &xim.FileVersion, sizeof(Int4), 1, fp);
-  nelements += fread ( (void *) &xim.SizeX, sizeof(Int4), 1, fp);
-  nelements += fread ( (void *) &xim.SizeY, sizeof(Int4), 1, fp);
+  nelements += fread((void *)xim.sFileType, sizeof(char), 8, fp);
+  nelements += fread((void *)&xim.FileVersion, sizeof(Int4), 1, fp);
+  nelements += fread((void *)&xim.SizeX, sizeof(Int4), 1, fp);
+  nelements += fread((void *)&xim.SizeY, sizeof(Int4), 1, fp);
 
   nelements += fread((void *)&xim.dBitsPerPixel, sizeof(Int4), 1, fp);
   nelements += fread((void *)&xim.dBytesPerPixel, sizeof(Int4), 1, fp);
@@ -126,14 +128,14 @@ void rtk::XimImageIO::ReadImageInformation()
     nelements += fread((void *)&xim.compressedPixelBufferSize, sizeof(Int4), 1, fp);
     fseek(fp, xim.compressedPixelBufferSize, SEEK_CUR);
     nelements += fread((void *)&xim.unCompressedPixelBufferSize, sizeof(Int4), 1, fp);
-    if (nelements != /*char*/8 +/*Int4*/9)
+    if (nelements != /*char*/ 8 + /*Int4*/ 9)
       itkGenericExceptionMacro(<< "Could not read header data in " << m_FileName);
   }
   else
   {
     nelements += fread((void *)&xim.unCompressedPixelBufferSize, sizeof(Int4), 1, fp);
     fseek(fp, xim.unCompressedPixelBufferSize, SEEK_CUR);
-    if (nelements != /*char*/8 +/*Int4*/7)
+    if (nelements != /*char*/ 8 + /*Int4*/ 7)
       itkGenericExceptionMacro(<< "Could not read header data in " << m_FileName);
   }
 
@@ -156,16 +158,16 @@ void rtk::XimImageIO::ReadImageInformation()
 
   // Properties Readding:
   nelements += fread((void *)&xim.numberOfProperties, sizeof(Int4), 1, fp);
-  Int4 property_name_length;
-  char property_name[PROPERTY_NAME_MAX_LENGTH];
-  Int4 property_type;
-  Int4 property_value_length = 0;
+  Int4   property_name_length;
+  char   property_name[PROPERTY_NAME_MAX_LENGTH];
+  Int4   property_type;
+  Int4   property_value_length = 0;
   size_t theoretical_nelements = nelements; // Same as reseting
 
   for (Int4 i = 0; i < xim.numberOfProperties; i++)
-    {
+  {
     nelements += fread((void *)&property_name_length, sizeof(Int4), 1, fp);
-    if(property_name_length>PROPERTY_NAME_MAX_LENGTH)
+    if (property_name_length > PROPERTY_NAME_MAX_LENGTH)
       itkGenericExceptionMacro(<< "Property name is too long, i.e., " << property_name_length);
     nelements += fread((void *)&property_name, sizeof(char), property_name_length, fp);
     nelements += fread((void *)&property_type, sizeof(Int4), 1, fp);
@@ -173,39 +175,41 @@ void rtk::XimImageIO::ReadImageInformation()
 
     switch (property_type)
     {
-    case 0://property_value type = uint32
-      nelements += SetPropertyValue<Int4>(property_name, 1, fp, &xim);
-      theoretical_nelements++;
-      break;
-    case 1://property_value type = double
-      theoretical_nelements++;
-      nelements += SetPropertyValue<double>(property_name, 1, fp, &xim);
-      break;
-    case 2://property_value type = length * char
-      nelements += fread((void *)&property_value_length, sizeof(Int4), 1, fp);
-      theoretical_nelements += property_value_length+1;
-      nelements += SetPropertyValue<char>(property_name, property_value_length, fp, &xim);
-      break;
-    case 4://property_value type = length * double
-      nelements += fread((void *)&property_value_length, sizeof(Int4), 1, fp);
-      nelements += SetPropertyValue<double>(property_name, property_value_length/8, fp, &xim);
-      theoretical_nelements += property_value_length/8+1;
-      break;
-    case 5://property_value type = length * uint32
-      nelements += fread((void *)&property_value_length, sizeof(Int4), 1, fp);
-      nelements += SetPropertyValue<Int4>(property_name, property_value_length/4, fp, &xim);
-      theoretical_nelements += property_value_length/4+1;
-      break;
-    default:
-      std::cout << "\n\nProperty name: " << property_name << ", type: " << property_type << ", is not supported! ABORTING decoding!";
-      return;
+      case 0: // property_value type = uint32
+        nelements += SetPropertyValue<Int4>(property_name, 1, fp, &xim);
+        theoretical_nelements++;
+        break;
+      case 1: // property_value type = double
+        theoretical_nelements++;
+        nelements += SetPropertyValue<double>(property_name, 1, fp, &xim);
+        break;
+      case 2: // property_value type = length * char
+        nelements += fread((void *)&property_value_length, sizeof(Int4), 1, fp);
+        theoretical_nelements += property_value_length + 1;
+        nelements += SetPropertyValue<char>(property_name, property_value_length, fp, &xim);
+        break;
+      case 4: // property_value type = length * double
+        nelements += fread((void *)&property_value_length, sizeof(Int4), 1, fp);
+        nelements += SetPropertyValue<double>(property_name, property_value_length / 8, fp, &xim);
+        theoretical_nelements += property_value_length / 8 + 1;
+        break;
+      case 5: // property_value type = length * uint32
+        nelements += fread((void *)&property_value_length, sizeof(Int4), 1, fp);
+        nelements += SetPropertyValue<Int4>(property_name, property_value_length / 4, fp, &xim);
+        theoretical_nelements += property_value_length / 4 + 1;
+        break;
+      default:
+        std::cout << "\n\nProperty name: " << property_name << ", type: " << property_type
+                  << ", is not supported! ABORTING decoding!";
+        return;
     }
   }
-  if (nelements != theoretical_nelements){
+  if (nelements != theoretical_nelements)
+  {
     std::cout << nelements << " != " << theoretical_nelements << std::endl;
     itkGenericExceptionMacro(<< "Could not read properties of " << m_FileName);
   }
-  if(fclose (fp) != 0)
+  if (fclose(fp) != 0)
     itkGenericExceptionMacro(<< "Could not close file: " << m_FileName);
 
   /* Convert xim to ITK image information */
@@ -215,32 +219,37 @@ void rtk::XimImageIO::ReadImageInformation()
 
   this->SetSpacing(0, xim.dIDUResolutionX); // set to PixelHeight/Width
   this->SetSpacing(1, xim.dIDUResolutionY);
-  this->SetOrigin(0, -0.5 * (xim.SizeX - 1) * xim.dIDUResolutionX); //SR: assumed centered
-  this->SetOrigin(1, -0.5 * (xim.SizeY - 1) * xim.dIDUResolutionY); //SR: assumed centered
+  this->SetOrigin(0, -0.5 * (xim.SizeX - 1) * xim.dIDUResolutionX); // SR: assumed centered
+  this->SetOrigin(1, -0.5 * (xim.SizeY - 1) * xim.dIDUResolutionY); // SR: assumed centered
 
   this->SetPixelType(itk::ImageIOBase::SCALAR);
   this->SetComponentType(itk::ImageIOBase::UINT); // 32 bit ints
 
   /* Store important meta information in the meta data dictionary */
-  if (xim.SizeX * xim.SizeY != 0){
+  if (xim.SizeX * xim.SizeY != 0)
+  {
     itk::EncapsulateMetaData<double>(this->GetMetaDataDictionary(), "dCTProjectionAngle", xim.dCTProjectionAngle);
-    itk::EncapsulateMetaData<double>(this->GetMetaDataDictionary(), "dDetectorOffsetX", xim.dDetectorOffsetX * 10.0); //cm->mm Lat
-    itk::EncapsulateMetaData<double>(this->GetMetaDataDictionary(), "dDetectorOffsetY", xim.dDetectorOffsetY * 10.0); //cm->mm Lng
+    itk::EncapsulateMetaData<double>(
+      this->GetMetaDataDictionary(), "dDetectorOffsetX", xim.dDetectorOffsetX * 10.0); // cm->mm Lat
+    itk::EncapsulateMetaData<double>(
+      this->GetMetaDataDictionary(), "dDetectorOffsetY", xim.dDetectorOffsetY * 10.0); // cm->mm Lng
   }
-  else {
+  else
+  {
     itk::ImageIORegion ioreg;
     ioreg.SetIndex(0, 0);
     ioreg.SetIndex(1, 0);
     ioreg.SetSize(0, 0);
     ioreg.SetSize(1, 0);
     this->SetIORegion(ioreg);
-    unsigned int imdim[] = {0, 0};
+    unsigned int imdim[] = { 0, 0 };
     this->Resize(2, imdim);
     itk::EncapsulateMetaData<double>(this->GetMetaDataDictionary(), "dCTProjectionAngle", 6000);
   }
 }
 //--------------------------------------------------------------------
-bool rtk::XimImageIO::CanReadFile(const char* FileNameToRead)
+bool
+rtk::XimImageIO::CanReadFile(const char * FileNameToRead)
 {
   std::string                  filename(FileNameToRead);
   const std::string::size_type it = filename.find_last_of('.');
@@ -249,44 +258,39 @@ bool rtk::XimImageIO::CanReadFile(const char* FileNameToRead)
   if (fileExt != std::string("xim"))
     return false;
 
-  FILE* fp;
+  FILE * fp;
   fp = fopen(filename.c_str(), "rb");
-  if (fp == nullptr) {
-    std::cerr << "Could not open file (for reading): "
-      << m_FileName
-      << std::endl;
+  if (fp == nullptr)
+  {
+    std::cerr << "Could not open file (for reading): " << m_FileName << std::endl;
     return false;
   }
 
   size_t nelements = 0;
-  char sfiletype[8];
-  Int4 fileversion, sizex = 0, sizey = 0;
+  char   sfiletype[8];
+  Int4   fileversion, sizex = 0, sizey = 0;
 
   nelements += fread((void *)&sfiletype[0], sizeof(char), 8, fp);
   nelements += fread((void *)&fileversion, sizeof(Int4), 1, fp);
   nelements += fread((void *)&sizex, sizeof(Int4), 1, fp);
   nelements += fread((void *)&sizey, sizeof(Int4), 1, fp);
 
-  if (nelements != 8 + 3) {
-    std::cerr << "Could not read initial header data in "
-      << m_FileName
-      << std::endl;
+  if (nelements != 8 + 3)
+  {
+    std::cerr << "Could not read initial header data in " << m_FileName << std::endl;
     fclose(fp);
     return false;
   }
-  if (sizex*sizey <= 0) {
-    std::cerr << "Imagedata was of size (x, y)=("
-      << sizex << ", "
-      << sizey << ") in "
-      << filename << std::endl;
+  if (sizex * sizey <= 0)
+  {
+    std::cerr << "Imagedata was of size (x, y)=(" << sizex << ", " << sizey << ") in " << filename << std::endl;
     fclose(fp);
     return false;
   }
 
-  if (fclose(fp) != 0) {
-    std::cerr << "Could not close file (after reading): "
-      << m_FileName
-      << std::endl;
+  if (fclose(fp) != 0)
+  {
+    std::cerr << "Could not close file (after reading): " << m_FileName << std::endl;
     return false;
   }
 
@@ -295,25 +299,31 @@ bool rtk::XimImageIO::CanReadFile(const char* FileNameToRead)
 
 
 //--------------------------------------------------------------------
-template<typename T>
-inline T cast_binary_char_to(const unsigned char* bin_vals, const size_t n_bytes){
+template <typename T>
+inline T
+cast_binary_char_to(const unsigned char * bin_vals, const size_t n_bytes)
+{
   T out_val = 0;
-  switch (n_bytes){
+  switch (n_bytes)
+  {
     case 1:
-      out_val = static_cast<T>(*(int8_t*)(void*)bin_vals);
+      out_val = static_cast<T>(*(int8_t *)(void *)bin_vals);
       break;
     case 2:
-      out_val = static_cast<T>(*(int16_t*)(void*)bin_vals);
+      out_val = static_cast<T>(*(int16_t *)(void *)bin_vals);
       break;
     case 4:
-      out_val = static_cast<T>(*(int32_t*)(void*)bin_vals);
+      out_val = static_cast<T>(*(int32_t *)(void *)bin_vals);
       break;
   }
   return out_val;
 }
 
-inline size_t lut_to_bytes(const char val){
-  switch (val){
+inline size_t
+lut_to_bytes(const char val)
+{
+  switch (val)
+  {
     case 0:
       return 1;
     case 1:
@@ -322,15 +332,16 @@ inline size_t lut_to_bytes(const char val){
       return 4;
     default: // only 0, 1 & 2 should be possible
       return 8;
-    }
+  }
 }
 
 // Read Image Content
-void rtk::XimImageIO::Read(void * buffer)
+void
+rtk::XimImageIO::Read(void * buffer)
 {
-  FILE *fp;
+  FILE * fp;
   // Long is only garanteed to be AT LEAST 32 bits, it could be 64 bit
-  Int4 *buf = (Int4*)buffer;
+  Int4 * buf = (Int4 *)buffer;
 
   fp = fopen(m_FileName.c_str(), "rb");
   if (fp == nullptr)
@@ -341,44 +352,49 @@ void rtk::XimImageIO::Read(void * buffer)
 
   Int4 lookUpTableSize;
   // De"compress" image
-  if (1 != fread((void *)&lookUpTableSize, sizeof(Int4), 1, fp)){
+  if (1 != fread((void *)&lookUpTableSize, sizeof(Int4), 1, fp))
+  {
     itkGenericExceptionMacro(<< "Could not read LUT size from: " << m_FileName);
   }
   auto m_lookup_table = std::valarray<unsigned char>(lookUpTableSize);
-  if (lookUpTableSize != (Int4)fread((void *)&m_lookup_table[0], sizeof(unsigned char), lookUpTableSize, fp)){
-      itkGenericExceptionMacro(<< "Could not read lookup table from Xim file: " << m_FileName);
-    }
+  if (lookUpTableSize != (Int4)fread((void *)&m_lookup_table[0], sizeof(unsigned char), lookUpTableSize, fp))
+  {
+    itkGenericExceptionMacro(<< "Could not read lookup table from Xim file: " << m_FileName);
+  }
 
   Int4 compressedPixelBufferSize;
-  if (1 != fread((void *)&compressedPixelBufferSize, sizeof(Int4), 1, fp)){
+  if (1 != fread((void *)&compressedPixelBufferSize, sizeof(Int4), 1, fp))
+  {
     itkGenericExceptionMacro(<< "Could not get compressed pixel buffer size from: " << m_FileName);
   }
 
   const auto xdim = GetDimensions(0);
   const auto ydim = GetDimensions(1);
-  if (xdim*ydim == 0) {
+  if (xdim * ydim == 0)
+  {
     itkGenericExceptionMacro(<< "Dimensions of image was 0 in: " << m_FileName);
   }
 
   if ((xdim + 1) != fread(&buf[0], sizeof(Int4), xdim + 1, fp))
     itkGenericExceptionMacro(<< "Could not read first row +1 in: " << m_FileName);
 
-  auto byte_table_expr = m_lookup_table.apply([](const unsigned char &v){
+  auto byte_table_expr = m_lookup_table.apply([](const unsigned char & v) {
     unsigned char bytes = 0;
-    bytes += lut_to_bytes( v & 0b00000011);       // 0x03
+    bytes += lut_to_bytes(v & 0b00000011);        // 0x03
     bytes += lut_to_bytes((v & 0b00001100) >> 2); // 0x0C
     bytes += lut_to_bytes((v & 0b00110000) >> 4); // 0x30
     bytes += lut_to_bytes((v & 0b11000000) >> 6); // 0xC0
     return bytes;
-    });
+  });
 
   std::valarray<unsigned char> byte_table(byte_table_expr);
-  const auto total_bytes = std::accumulate(std::begin(byte_table), std::end(byte_table), 0ull);
+  const auto                   total_bytes = std::accumulate(std::begin(byte_table), std::end(byte_table), 0ull);
 
 
   auto compr_img_buffer = std::valarray<unsigned char>(total_bytes);
   // total_bytes - 3 because the last two bits can be redundant (according to Xim docs)
-  if ((total_bytes - 3) > fread((void*)&compr_img_buffer[0], sizeof(unsigned char), total_bytes, fp)){
+  if ((total_bytes - 3) > fread((void *)&compr_img_buffer[0], sizeof(unsigned char), total_bytes, fp))
+  {
     itkGenericExceptionMacro(<< "Could not read image buffer of Xim file: " << m_FileName);
   }
 
@@ -386,9 +402,10 @@ void rtk::XimImageIO::Read(void * buffer)
   size_t i = xdim;
   size_t iminxdim = 0;
 
-  for (auto lut_idx = 0U; lut_idx < static_cast<size_t>(lookUpTableSize); ++lut_idx) {
+  for (auto lut_idx = 0U; lut_idx < static_cast<size_t>(lookUpTableSize); ++lut_idx)
+  {
     const auto v = m_lookup_table[lut_idx];
-    auto bytes = lut_to_bytes(v & 0b00000011);   // 0x03
+    auto       bytes = lut_to_bytes(v & 0b00000011); // 0x03
     assert(bytes == 1 || bytes == 2 || bytes == 4);
     auto diff1 = cast_binary_char_to<Int4>(&compr_img_buffer[j], bytes);
     j += bytes;
@@ -408,7 +425,7 @@ void rtk::XimImageIO::Read(void * buffer)
     auto diff4 = cast_binary_char_to<Int4>(&compr_img_buffer[j], bytes);
     j += bytes;
 
-    buf[i + 1] = diff1 + buf[i]     + buf[iminxdim + 1] - buf[iminxdim];
+    buf[i + 1] = diff1 + buf[i] + buf[iminxdim + 1] - buf[iminxdim];
     buf[i + 2] = diff2 + buf[i + 1] + buf[iminxdim + 2] - buf[iminxdim + 1];
     buf[i + 3] = diff3 + buf[i + 2] + buf[iminxdim + 3] - buf[iminxdim + 2];
     buf[i + 4] = diff4 + buf[i + 3] + buf[iminxdim + 4] - buf[iminxdim + 3];
@@ -420,20 +437,21 @@ void rtk::XimImageIO::Read(void * buffer)
   assert(j == total_bytes);
   assert(i == (xdim * ydim));
 
-  if(fclose (fp) != 0)
+  if (fclose(fp) != 0)
     itkGenericExceptionMacro(<< "Could not close file: " << m_FileName);
-
 }
 
 //--------------------------------------------------------------------
-bool rtk::XimImageIO::CanWriteFile(const char* itkNotUsed(FileNameToWrite))
+bool
+rtk::XimImageIO::CanWriteFile(const char * itkNotUsed(FileNameToWrite))
 {
   return false;
 }
 
 //--------------------------------------------------------------------
 // Write Image
-void rtk::XimImageIO::Write(const void* itkNotUsed(buffer))
+void
+rtk::XimImageIO::Write(const void * itkNotUsed(buffer))
 {
-  //TODO?
+  // TODO?
 }

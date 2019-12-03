@@ -24,9 +24,9 @@
 namespace rtk
 {
 
-template<typename VolumeSeriesType, typename ProjectionStackType>
-MotionCompensatedFourDROOSTERConeBeamReconstructionFilter< VolumeSeriesType, ProjectionStackType>
-::MotionCompensatedFourDROOSTERConeBeamReconstructionFilter()
+template <typename VolumeSeriesType, typename ProjectionStackType>
+MotionCompensatedFourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::
+  MotionCompensatedFourDROOSTERConeBeamReconstructionFilter()
 {
   // Create the filters
 #ifdef RTK_USE_CUDA
@@ -34,32 +34,32 @@ MotionCompensatedFourDROOSTERConeBeamReconstructionFilter< VolumeSeriesType, Pro
 #endif
 }
 
-template< typename VolumeSeriesType, typename ProjectionStackType>
+template <typename VolumeSeriesType, typename ProjectionStackType>
 void
-MotionCompensatedFourDROOSTERConeBeamReconstructionFilter< VolumeSeriesType, ProjectionStackType>
-::SetSignal(const std::vector<double> signal)
+MotionCompensatedFourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::SetSignal(
+  const std::vector<double> signal)
 {
   this->m_FourDCGFilter->SetSignal(signal);
 }
 
-template<typename VolumeSeriesType, typename ProjectionStackType>
+template <typename VolumeSeriesType, typename ProjectionStackType>
 void
-MotionCompensatedFourDROOSTERConeBeamReconstructionFilter< VolumeSeriesType, ProjectionStackType>
-::GenerateInputRequestedRegion()
+MotionCompensatedFourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType,
+                                                          ProjectionStackType>::GenerateInputRequestedRegion()
 {
   // Set variables so that the superclass' implementation
   // generates the correct input requested regions
   this->m_PerformWarping = true;
   this->m_ComputeInverseWarpingByConjugateGradient = false;
 
-  //Call the superclass' implementation of this method
+  // Call the superclass' implementation of this method
   Superclass::GenerateInputRequestedRegion();
 }
 
-template<typename VolumeSeriesType, typename ProjectionStackType>
+template <typename VolumeSeriesType, typename ProjectionStackType>
 void
-MotionCompensatedFourDROOSTERConeBeamReconstructionFilter< VolumeSeriesType, ProjectionStackType>
-::GenerateOutputInformation()
+MotionCompensatedFourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType,
+                                                          ProjectionStackType>::GenerateOutputInformation()
 {
   // Set m_PerformWarping to false so as not
   // to plug any of the warping filters into the pipeline
@@ -67,18 +67,20 @@ MotionCompensatedFourDROOSTERConeBeamReconstructionFilter< VolumeSeriesType, Pro
   this->m_PerformWarping = false;
 
   // Set the 4D conjugate gradient filter
-  dynamic_cast<MotionCompensatedFourDCGFilterType*>(this->m_FourDCGFilter.GetPointer())->SetDisplacementField(this->GetDisplacementField());
-  dynamic_cast<MotionCompensatedFourDCGFilterType*>(this->m_FourDCGFilter.GetPointer())->SetInverseDisplacementField(this->GetInverseDisplacementField());
-  dynamic_cast<MotionCompensatedFourDCGFilterType*>(this->m_FourDCGFilter.GetPointer())->SetUseCudaCyclicDeformation(this->m_UseCudaCyclicDeformation);
+  dynamic_cast<MotionCompensatedFourDCGFilterType *>(this->m_FourDCGFilter.GetPointer())
+    ->SetDisplacementField(this->GetDisplacementField());
+  dynamic_cast<MotionCompensatedFourDCGFilterType *>(this->m_FourDCGFilter.GetPointer())
+    ->SetInverseDisplacementField(this->GetInverseDisplacementField());
+  dynamic_cast<MotionCompensatedFourDCGFilterType *>(this->m_FourDCGFilter.GetPointer())
+    ->SetUseCudaCyclicDeformation(this->m_UseCudaCyclicDeformation);
 
   // Call the superclass implementation
   Superclass::GenerateOutputInformation();
 }
 
-template<typename VolumeSeriesType, typename ProjectionStackType>
+template <typename VolumeSeriesType, typename ProjectionStackType>
 void
-MotionCompensatedFourDROOSTERConeBeamReconstructionFilter< VolumeSeriesType, ProjectionStackType>
-::GenerateData()
+MotionCompensatedFourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::GenerateData()
 {
   // Set the variables so that the superclass implementation updates the right filters
   this->m_PerformWarping = false;
@@ -87,7 +89,7 @@ MotionCompensatedFourDROOSTERConeBeamReconstructionFilter< VolumeSeriesType, Pro
   Superclass::GenerateData();
 }
 
-}// end namespace
+} // namespace rtk
 
 
 #endif

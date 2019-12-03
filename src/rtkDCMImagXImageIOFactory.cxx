@@ -25,5 +25,5 @@ rtk::DCMImagXImageIOFactory::DCMImagXImageIOFactory()
                          "DCMImagXImageIO",
                          "ImagX Image IO for its DICOM file format",
                          true,
-                         itk::CreateObjectFunction<DCMImagXImageIO>::New() );
+                         itk::CreateObjectFunction<DCMImagXImageIO>::New());
 }

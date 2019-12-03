@@ -36,16 +36,15 @@ __constant__ int4 c_Size;
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
 
-__global__
-void
-average_along_dim_4(float *in, float *out, float *roi, unsigned int strideInFloats)
+__global__ void
+average_along_dim_4(float * in, float * out, float * roi, unsigned int strideInFloats)
 {
   unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
   unsigned int j = blockIdx.y * blockDim.y + threadIdx.y;
   unsigned int k = blockIdx.z * blockDim.z + threadIdx.z;
 
   if (i >= c_Size.x || j >= c_Size.y || k >= c_Size.z)
-      return;
+    return;
 
   // Compute the index of the initial voxel
   long int id = (k * c_Size.y + j) * c_Size.x + i;
@@ -54,10 +53,10 @@ average_along_dim_4(float *in, float *out, float *roi, unsigned int strideInFloa
   // Compute the average along last dimension
   float avg = 0;
   for (unsigned int l = 0; l < c_Size.w; l++)
-    {
-      avg += in[strided_id];
-      strided_id += strideInFloats;
-    }
+  {
+    avg += in[strided_id];
+    strided_id += strideInFloats;
+  }
   avg /= c_Size.w;
 
   // Write to the output. If the ROI is 0, replace by the average. If it is 1,
@@ -66,11 +65,10 @@ average_along_dim_4(float *in, float *out, float *roi, unsigned int strideInFloa
   // without any problem
   strided_id = id;
   for (unsigned int l = 0; l < c_Size.w; l++)
-    {
-      out[strided_id] = in[strided_id] * roi[id] + avg * (1-roi[id]);
-      strided_id += strideInFloats;
-    }
-
+  {
+    out[strided_id] = in[strided_id] * roi[id] + avg * (1 - roi[id]);
+    strided_id += strideInFloats;
+  }
 }
 
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
@@ -79,10 +77,7 @@ average_along_dim_4(float *in, float *out, float *roi, unsigned int strideInFloa
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
 void
-CUDA_average_out_of_ROI(int size[4],
-                        float* input,
-                        float* output,
-                        float* roi)
+CUDA_average_out_of_ROI(int size[4], float * input, float * output, float * roi)
 {
   int4 dev_Size = make_int4(size[0], size[1], size[2], size[3]);
   cudaMemcpyToSymbol(c_Size, &dev_Size, sizeof(int4));
@@ -98,7 +93,7 @@ CUDA_average_out_of_ROI(int size[4],
   int blocksInY = iDivUp(size[1], dimBlock.y);
   int blocksInZ = iDivUp(size[2], dimBlock.z);
 
-  dim3 dimGrid  = dim3(blocksInX, blocksInY, blocksInZ);
+  dim3 dimGrid = dim3(blocksInX, blocksInY, blocksInZ);
 
-  average_along_dim_4 <<< dimGrid, dimBlock >>> ( input, output, roi, strideInFloats);
+  average_along_dim_4<<<dimGrid, dimBlock>>>(input, output, roi, strideInFloats);
 }

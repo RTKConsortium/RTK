@@ -33,16 +33,15 @@ namespace rtk
  *
  * \ingroup RTK Projector
  */
-template <class TInputImage, class TOutputImage=TInputImage>
-class ForwardProjectionImageFilter :
-  public itk::InPlaceImageFilter<TInputImage,TOutputImage>
+template <class TInputImage, class TOutputImage = TInputImage>
+class ForwardProjectionImageFilter : public itk::InPlaceImageFilter<TInputImage, TOutputImage>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(ForwardProjectionImageFilter);
 
   /** Standard class type alias. */
   using Self = ForwardProjectionImageFilter;
-  using Superclass = itk::InPlaceImageFilter<TInputImage,TOutputImage>;
+  using Superclass = itk::InPlaceImageFilter<TInputImage, TOutputImage>;
   using Pointer = itk::SmartPointer<Self>;
   using ConstPointer = itk::SmartPointer<const Self>;
 
@@ -57,21 +56,29 @@ public:
   itkSetConstObjectMacro(Geometry, GeometryType);
 
 protected:
-  ForwardProjectionImageFilter() : m_Geometry(nullptr) {
-    this->SetNumberOfRequiredInputs(2); this->SetInPlace( true );
+  ForwardProjectionImageFilter()
+    : m_Geometry(nullptr)
+  {
+    this->SetNumberOfRequiredInputs(2);
+    this->SetInPlace(true);
   };
 
   ~ForwardProjectionImageFilter() override = default;
 
   /** Apply changes to the input image requested region. */
-  void GenerateInputRequestedRegion() override;
+  void
+  GenerateInputRequestedRegion() override;
 
   /** The two inputs should not be in the same space so there is nothing
    * to verify. */
-#if ITK_VERSION_MAJOR<5
-  void VerifyInputInformation() override {}
+#if ITK_VERSION_MAJOR < 5
+  void
+  VerifyInputInformation() override
+  {}
 #else
-  void VerifyInputInformation() const override {}
+  void
+  VerifyInputInformation() const override
+  {}
 #endif
 
 private:
@@ -82,7 +89,7 @@ private:
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkForwardProjectionImageFilter.hxx"
+#  include "rtkForwardProjectionImageFilter.hxx"
 #endif
 
 #endif

@@ -24,9 +24,8 @@
 namespace rtk
 {
 
-template< typename TOutputImage >
-ADMMWaveletsConjugateGradientOperator<TOutputImage>
-::ADMMWaveletsConjugateGradientOperator()
+template <typename TOutputImage>
+ADMMWaveletsConjugateGradientOperator<TOutputImage>::ADMMWaveletsConjugateGradientOperator()
 {
   this->SetNumberOfRequiredInputs(2);
   this->m_Beta = 0;
@@ -37,7 +36,7 @@ ADMMWaveletsConjugateGradientOperator<TOutputImage>
   m_DisplacedDetectorFilter = DisplacedDetectorFilterType::New();
 
   // Set permanent connections
-  m_AddFilter->SetInput2( m_MultiplyFilter->GetOutput() );
+  m_AddFilter->SetInput2(m_MultiplyFilter->GetOutput());
 
   // Set permanent parameters
   m_ZeroMultiplyProjectionFilter->SetConstant2(itk::NumericTraits<typename TOutputImage::PixelType>::ZeroValue());
@@ -53,20 +52,20 @@ ADMMWaveletsConjugateGradientOperator<TOutputImage>
   m_DisplacedDetectorFilter->ReleaseDataFlagOn();
 }
 
-template< typename TOutputImage >
+template <typename TOutputImage>
 void
-ADMMWaveletsConjugateGradientOperator<TOutputImage>
-::SetBackProjectionFilter (const typename BackProjectionFilterType::Pointer _arg)
+ADMMWaveletsConjugateGradientOperator<TOutputImage>::SetBackProjectionFilter(
+  const typename BackProjectionFilterType::Pointer _arg)
 {
   if (m_BackProjectionFilter != _arg)
     this->Modified();
   m_BackProjectionFilter = _arg;
 }
 
-template< typename TOutputImage >
+template <typename TOutputImage>
 void
-ADMMWaveletsConjugateGradientOperator<TOutputImage>
-::SetForwardProjectionFilter (const typename ForwardProjectionFilterType::Pointer _arg)
+ADMMWaveletsConjugateGradientOperator<TOutputImage>::SetForwardProjectionFilter(
+  const typename ForwardProjectionFilterType::Pointer _arg)
 {
   if (m_ForwardProjectionFilter != _arg)
     this->Modified();
@@ -74,38 +73,35 @@ ADMMWaveletsConjugateGradientOperator<TOutputImage>
 }
 
 
-template< typename TOutputImage >
+template <typename TOutputImage>
 void
-ADMMWaveletsConjugateGradientOperator<TOutputImage>
-::SetGeometry(const ThreeDCircularProjectionGeometry::Pointer _arg)
+ADMMWaveletsConjugateGradientOperator<TOutputImage>::SetGeometry(const ThreeDCircularProjectionGeometry::Pointer _arg)
 {
   m_BackProjectionFilter->SetGeometry(_arg.GetPointer());
   m_ForwardProjectionFilter->SetGeometry(_arg);
   m_DisplacedDetectorFilter->SetGeometry(_arg);
 }
 
-template< typename TOutputImage >
+template <typename TOutputImage>
 void
-ADMMWaveletsConjugateGradientOperator<TOutputImage>
-::GenerateInputRequestedRegion()
+ADMMWaveletsConjugateGradientOperator<TOutputImage>::GenerateInputRequestedRegion()
 {
   // Input 0 is the volume in which we backproject
-  typename Superclass::InputImagePointer inputPtr0 =
-    const_cast< TOutputImage * >( this->GetInput(0) );
-  if ( !inputPtr0 ) return;
-  inputPtr0->SetRequestedRegion( this->GetOutput()->GetRequestedRegion() );
+  typename Superclass::InputImagePointer inputPtr0 = const_cast<TOutputImage *>(this->GetInput(0));
+  if (!inputPtr0)
+    return;
+  inputPtr0->SetRequestedRegion(this->GetOutput()->GetRequestedRegion());
 
   // Input 1 is the stack of projections to backproject
-  typename Superclass::InputImagePointer  inputPtr1 =
-    const_cast< TOutputImage * >( this->GetInput(1) );
-  if ( !inputPtr1 ) return;
-  inputPtr1->SetRequestedRegion( inputPtr1->GetLargestPossibleRegion() );
+  typename Superclass::InputImagePointer inputPtr1 = const_cast<TOutputImage *>(this->GetInput(1));
+  if (!inputPtr1)
+    return;
+  inputPtr1->SetRequestedRegion(inputPtr1->GetLargestPossibleRegion());
 }
 
-template< typename TOutputImage >
+template <typename TOutputImage>
 void
-ADMMWaveletsConjugateGradientOperator<TOutputImage>
-::GenerateOutputInformation()
+ADMMWaveletsConjugateGradientOperator<TOutputImage>::GenerateOutputInformation()
 {
   // Set runtime connections, and connections with
   // forward and back projection filters, which are set
@@ -114,14 +110,14 @@ ADMMWaveletsConjugateGradientOperator<TOutputImage>
   m_DisplacedDetectorFilter->SetInput(m_ForwardProjectionFilter->GetOutput());
   m_BackProjectionFilter->SetInput(0, m_ZeroMultiplyVolumeFilter->GetOutput());
   m_BackProjectionFilter->SetInput(1, m_DisplacedDetectorFilter->GetOutput());
-  m_AddFilter->SetInput1( m_BackProjectionFilter->GetOutput() );
+  m_AddFilter->SetInput1(m_BackProjectionFilter->GetOutput());
   m_ZeroMultiplyVolumeFilter->SetInput1(this->GetInput(0));
   m_ZeroMultiplyProjectionFilter->SetInput1(this->GetInput(1));
   m_ForwardProjectionFilter->SetInput(1, this->GetInput(0));
   m_MultiplyFilter->SetInput1(this->GetInput(0));
 
   // Set runtime parameters
-  m_MultiplyFilter->SetConstant2( m_Beta );
+  m_MultiplyFilter->SetConstant2(m_Beta);
   m_DisplacedDetectorFilter->SetDisable(m_DisableDisplacedDetectorFilter);
 
   // Set memory management parameters for forward
@@ -133,22 +129,21 @@ ADMMWaveletsConjugateGradientOperator<TOutputImage>
   m_AddFilter->UpdateOutputInformation();
 
   // Copy it as the output information of the composite filter
-  this->GetOutput()->CopyInformation( m_AddFilter->GetOutput() );
+  this->GetOutput()->CopyInformation(m_AddFilter->GetOutput());
 }
 
-template< typename TOutputImage >
+template <typename TOutputImage>
 void
-ADMMWaveletsConjugateGradientOperator<TOutputImage>
-::GenerateData()
+ADMMWaveletsConjugateGradientOperator<TOutputImage>::GenerateData()
 {
-    // Execute Pipeline
-    m_AddFilter->Update();
+  // Execute Pipeline
+  m_AddFilter->Update();
 
-    // Get the output
-    this->GraftOutput( m_AddFilter->GetOutput() );
+  // Get the output
+  this->GraftOutput(m_AddFilter->GetOutput());
 }
 
-}// end namespace
+} // namespace rtk
 
 
 #endif

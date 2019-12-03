@@ -33,7 +33,7 @@ namespace rtk
  * \ingroup RTK
  *
  */
-class RTK_EXPORT GeometricPhantom: public itk::DataObject
+class RTK_EXPORT GeometricPhantom : public itk::DataObject
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(GeometricPhantom);
@@ -60,23 +60,28 @@ public:
   itkTypeMacro(GeometricPhantom, itk::DataObject);
 
   /** Rescale object along each direction by a 3D vector. */
-  virtual void Rescale(const VectorType &r);
+  virtual void
+  Rescale(const VectorType & r);
 
   /** Translate object by a given 3D vector. */
-  virtual void Translate(const VectorType &t);
+  virtual void
+  Translate(const VectorType & t);
 
   /** Rotate object according to a 3D rotation matrix. */
-  virtual void Rotate(const RotationMatrixType &r);
+  virtual void
+  Rotate(const RotationMatrixType & r);
 
   /** Get reference to vector of objects. */
   itkGetConstReferenceMacro(ConvexShapes, ConvexShapeVector);
 
   /** Add convex object to phantom. */
-  void AddConvexShape(const ConvexShapePointer &co);
+  void
+  AddConvexShape(const ConvexShapePointer & co);
 
   /** Add clipping plane to the object. The plane is defined by the equation
    * dir * (x,y,z)' + pos = 0. */
-  void AddClipPlane(const VectorType & dir, const ScalarType & pos);
+  void
+  AddClipPlane(const VectorType & dir, const ScalarType & pos);
 
 protected:
   GeometricPhantom() = default;
@@ -88,5 +93,5 @@ private:
   std::vector<ScalarType> m_PlanePositions;
 };
 
-}
+} // namespace rtk
 #endif // rtkGeometricPhantom_h

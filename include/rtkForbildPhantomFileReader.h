@@ -38,8 +38,7 @@ namespace rtk
  *
  * \ingroup RTK
  */
-class RTK_EXPORT ForbildPhantomFileReader :
-    public itk::LightProcessObject
+class RTK_EXPORT ForbildPhantomFileReader : public itk::LightProcessObject
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(ForbildPhantomFileReader);
@@ -74,7 +73,8 @@ public:
   itkSetStringMacro(Filename);
 
   /** do the actual parsing of the input file */
-  virtual void GenerateOutputInformation();
+  virtual void
+  GenerateOutputInformation();
 
 protected:
   /// Constructor
@@ -83,19 +83,31 @@ protected:
   /// Destructor
   ~ForbildPhantomFileReader() override = default;
 
-  void CreateForbildSphere(const std::string &s);
-  void CreateForbildBox(const std::string &s);
-  void CreateForbildCylinder(const std::string &s, const std::string &fig);
-  void CreateForbildElliptCyl(const std::string &s, const std::string &fig);
-  void CreateForbildEllipsoid(const std::string &s, const std::string &fig);
-  void CreateForbildCone(const std::string &s, const std::string &fig);
-  void CreateForbildTetrahedron(const std::string &s);
-  RotationMatrixType ComputeRotationMatrixBetweenVectors(const VectorType& source, const VectorType & dest) const;
+  void
+  CreateForbildSphere(const std::string & s);
+  void
+  CreateForbildBox(const std::string & s);
+  void
+  CreateForbildCylinder(const std::string & s, const std::string & fig);
+  void
+  CreateForbildElliptCyl(const std::string & s, const std::string & fig);
+  void
+  CreateForbildEllipsoid(const std::string & s, const std::string & fig);
+  void
+  CreateForbildCone(const std::string & s, const std::string & fig);
+  void
+  CreateForbildTetrahedron(const std::string & s);
+  RotationMatrixType
+  ComputeRotationMatrixBetweenVectors(const VectorType & source, const VectorType & dest) const;
 
-  bool FindParameterInString(const std::string &name,const std::string &s, ScalarType & param);
-  bool FindVectorInString(const std::string &name,const std::string &s, VectorType & vec);
-  void FindClipPlanes(const std::string &s);
-  void FindUnions(const std::string &s);
+  bool
+  FindParameterInString(const std::string & name, const std::string & s, ScalarType & param);
+  bool
+  FindVectorInString(const std::string & name, const std::string & s, VectorType & vec);
+  void
+  FindClipPlanes(const std::string & s);
+  void
+  FindUnions(const std::string & s);
 
 private:
   GeometricPhantomPointer m_GeometricPhantom;

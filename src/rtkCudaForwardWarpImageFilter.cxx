@@ -29,14 +29,10 @@
 namespace rtk
 {
 
-CudaForwardWarpImageFilter
-::CudaForwardWarpImageFilter()
-{
-}
+CudaForwardWarpImageFilter ::CudaForwardWarpImageFilter() {}
 
 void
-CudaForwardWarpImageFilter
-::GPUGenerateData()
+CudaForwardWarpImageFilter ::GPUGenerateData()
 {
   // Include non-zero index in matrix
   itk::Matrix<double, 4, 4> matrixIdxOutputVol;
@@ -46,11 +42,11 @@ CudaForwardWarpImageFilter
   itk::Matrix<double, 4, 4> PPOutputToIndexOutputMatrix;
   matrixIdxOutputVol.SetIdentity();
   matrixIdxInputVol.SetIdentity();
-  for(unsigned int i=0; i<3; i++)
-    {
+  for (unsigned int i = 0; i < 3; i++)
+  {
     matrixIdxOutputVol[i][3] = this->GetOutput()->GetRequestedRegion().GetIndex()[i];
     matrixIdxInputVol[i][3] = this->GetInput(0)->GetBufferedRegion().GetIndex()[i];
-    }
+  }
 
   // Cuda convenient format for dimensions
   int inputVolumeSize[3];
@@ -69,9 +65,9 @@ CudaForwardWarpImageFilter
   outputVolumeSize[2] = this->GetOutput()->GetBufferedRegion().GetSize()[2];
 
   // Split the DVF into three images (one per component)
-  ImageType::Pointer xCompDVF = ImageType::New();
-  ImageType::Pointer yCompDVF = ImageType::New();
-  ImageType::Pointer zCompDVF = ImageType::New();
+  ImageType::Pointer    xCompDVF = ImageType::New();
+  ImageType::Pointer    yCompDVF = ImageType::New();
+  ImageType::Pointer    zCompDVF = ImageType::New();
   ImageType::RegionType largest = this->GetDisplacementField()->GetLargestPossibleRegion();
   xCompDVF->SetRegions(largest);
   yCompDVF->SetRegions(largest);
@@ -79,71 +75,70 @@ CudaForwardWarpImageFilter
   xCompDVF->Allocate();
   yCompDVF->Allocate();
   zCompDVF->Allocate();
-  itk::ImageRegionIterator<ImageType>      itxComp(xCompDVF, largest);
-  itk::ImageRegionIterator<ImageType>      ityComp(yCompDVF, largest);
-  itk::ImageRegionIterator<ImageType>      itzComp(zCompDVF, largest);
-  itk::ImageRegionConstIterator<DVFType>   itDVF(this->GetDisplacementField(), largest);
-  while(!itDVF.IsAtEnd())
-    {
-      itxComp.Set(itDVF.Get()[0]);
-      ityComp.Set(itDVF.Get()[1]);
-      itzComp.Set(itDVF.Get()[2]);
-      ++itxComp;
-      ++ityComp;
-      ++itzComp;
-      ++itDVF;
-    }
+  itk::ImageRegionIterator<ImageType>    itxComp(xCompDVF, largest);
+  itk::ImageRegionIterator<ImageType>    ityComp(yCompDVF, largest);
+  itk::ImageRegionIterator<ImageType>    itzComp(zCompDVF, largest);
+  itk::ImageRegionConstIterator<DVFType> itDVF(this->GetDisplacementField(), largest);
+  while (!itDVF.IsAtEnd())
+  {
+    itxComp.Set(itDVF.Get()[0]);
+    ityComp.Set(itDVF.Get()[1]);
+    itzComp.Set(itDVF.Get()[2]);
+    ++itxComp;
+    ++ityComp;
+    ++itzComp;
+    ++itDVF;
+  }
 
-  float *pinVol  = *(float**)( this->GetInput(0)->GetCudaDataManager()->GetGPUBufferPointer() );
-  float *poutVol = *(float**)( this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer() );
-  float *pinxDVF = *(float**)( xCompDVF->GetCudaDataManager()->GetGPUBufferPointer() );
-  float *pinyDVF = *(float**)( yCompDVF->GetCudaDataManager()->GetGPUBufferPointer() );
-  float *pinzDVF = *(float**)( zCompDVF->GetCudaDataManager()->GetGPUBufferPointer() );
+  float * pinVol = *(float **)(this->GetInput(0)->GetCudaDataManager()->GetGPUBufferPointer());
+  float * poutVol = *(float **)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
+  float * pinxDVF = *(float **)(xCompDVF->GetCudaDataManager()->GetGPUBufferPointer());
+  float * pinyDVF = *(float **)(yCompDVF->GetCudaDataManager()->GetGPUBufferPointer());
+  float * pinzDVF = *(float **)(zCompDVF->GetCudaDataManager()->GetGPUBufferPointer());
 
   // Transform matrices that we will need during the ForwardWarping process
-  indexInputToPPInputMatrix = rtk::GetIndexToPhysicalPointMatrix( this->GetInput(0) ).GetVnlMatrix()
-                              * matrixIdxInputVol.GetVnlMatrix();
+  indexInputToPPInputMatrix =
+    rtk::GetIndexToPhysicalPointMatrix(this->GetInput(0)).GetVnlMatrix() * matrixIdxInputVol.GetVnlMatrix();
 
-  indexInputToIndexDVFMatrix = rtk::GetPhysicalPointToIndexMatrix( this->GetDisplacementField() ).GetVnlMatrix()
-                              * rtk::GetIndexToPhysicalPointMatrix( this->GetInput(0) ).GetVnlMatrix()
-                              * matrixIdxInputVol.GetVnlMatrix();
+  indexInputToIndexDVFMatrix = rtk::GetPhysicalPointToIndexMatrix(this->GetDisplacementField()).GetVnlMatrix() *
+                               rtk::GetIndexToPhysicalPointMatrix(this->GetInput(0)).GetVnlMatrix() *
+                               matrixIdxInputVol.GetVnlMatrix();
 
-  PPOutputToIndexOutputMatrix = rtk::GetPhysicalPointToIndexMatrix( this->GetOutput() ).GetVnlMatrix();
+  PPOutputToIndexOutputMatrix = rtk::GetPhysicalPointToIndexMatrix(this->GetOutput()).GetVnlMatrix();
 
   // Convert the matrices to arrays of floats (skipping the last line, as we don't care)
   float fIndexInputToPPInputMatrix[12];
   float fIndexInputToIndexDVFMatrix[12];
   float fPPOutputToIndexOutputMatrix[12];
   for (int j = 0; j < 12; j++)
-    {
-    fIndexInputToIndexDVFMatrix[j] = (float) indexInputToIndexDVFMatrix[j/4][j%4];
-    fPPOutputToIndexOutputMatrix[j] = (float) PPOutputToIndexOutputMatrix[j/4][j%4];
-    fIndexInputToPPInputMatrix[j] = (float) indexInputToPPInputMatrix[j/4][j%4];
-    }
+  {
+    fIndexInputToIndexDVFMatrix[j] = (float)indexInputToIndexDVFMatrix[j / 4][j % 4];
+    fPPOutputToIndexOutputMatrix[j] = (float)PPOutputToIndexOutputMatrix[j / 4][j % 4];
+    fIndexInputToPPInputMatrix[j] = (float)indexInputToPPInputMatrix[j / 4][j % 4];
+  }
 
   bool isLinear;
   if (std::string("LinearInterpolateImageFunction").compare(this->GetInterpolator()->GetNameOfClass()) == 0)
     isLinear = true;
-  else if (std::string("NearestNeighborInterpolateImageFunction").compare(this->GetInterpolator()->GetNameOfClass()) == 0)
+  else if (std::string("NearestNeighborInterpolateImageFunction").compare(this->GetInterpolator()->GetNameOfClass()) ==
+           0)
     isLinear = false;
   else
     itkGenericExceptionMacro(<< "In rtkCudaForwardWarpImageFilter: unknown interpolator");
 
   // Run on GPU
-  CUDA_ForwardWarp(
-    inputVolumeSize,
-    inputDVFSize,
-    outputVolumeSize,
-    fIndexInputToPPInputMatrix,
-    fIndexInputToIndexDVFMatrix,
-    fPPOutputToIndexOutputMatrix,
-    pinVol,
-    pinxDVF,
-    pinyDVF,
-    pinzDVF,
-    poutVol,
-    isLinear
-    );
+  CUDA_ForwardWarp(inputVolumeSize,
+                   inputDVFSize,
+                   outputVolumeSize,
+                   fIndexInputToPPInputMatrix,
+                   fIndexInputToIndexDVFMatrix,
+                   fPPOutputToIndexOutputMatrix,
+                   pinVol,
+                   pinxDVF,
+                   pinyDVF,
+                   pinzDVF,
+                   poutVol,
+                   isLinear);
 
   // Get rid of the intermediate images used to split the DVF into three components
   xCompDVF = nullptr;
@@ -151,7 +146,7 @@ CudaForwardWarpImageFilter
   zCompDVF = nullptr;
 
   // The filter is inPlace
-//  pinVol = poutVol;
+  //  pinVol = poutVol;
 }
 
 } // end namespace rtk

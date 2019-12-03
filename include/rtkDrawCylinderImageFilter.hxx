@@ -26,16 +26,15 @@ namespace rtk
 
 template <class TInputImage, class TOutputImage>
 void
-DrawCylinderImageFilter<TInputImage, TOutputImage>
-::BeforeThreadedGenerateData()
+DrawCylinderImageFilter<TInputImage, TOutputImage>::BeforeThreadedGenerateData()
 {
-  if(this->GetAxis()[0] * this->GetAxis()[1] * this->GetAxis()[2] != itk::NumericTraits<ScalarType>::ZeroValue() )
-    {
+  if (this->GetAxis()[0] * this->GetAxis()[1] * this->GetAxis()[2] != itk::NumericTraits<ScalarType>::ZeroValue())
+  {
     itkExceptionMacro(<< "Axis " << this->GetAxis() << " does not contain any 0 value as a cylinder should.");
-    }
+  }
   Superclass::BeforeThreadedGenerateData();
 }
 
-}// end namespace rtk
+} // end namespace rtk
 
 #endif

@@ -28,13 +28,13 @@
 namespace rtk
 {
 
-template<typename ProjectionStackType>
+template <typename ProjectionStackType>
 SubSelectFromListImageFilter<ProjectionStackType>::SubSelectFromListImageFilter()
-{
-}
+{}
 
-template<typename ProjectionStackType>
-void SubSelectFromListImageFilter<ProjectionStackType>::SetSelectedProjections(std::vector<bool> sprojs)
+template <typename ProjectionStackType>
+void
+SubSelectFromListImageFilter<ProjectionStackType>::SetSelectedProjections(std::vector<bool> sprojs)
 {
   // Set the selected projection boolean vector
   this->m_SelectedProjections = sprojs;
@@ -42,13 +42,14 @@ void SubSelectFromListImageFilter<ProjectionStackType>::SetSelectedProjections(s
   // Update the number of selected projections
   this->m_NbSelectedProjs = 0;
   for (unsigned int i = 0; i < this->m_SelectedProjections.size(); i++)
-      if (this->m_SelectedProjections[i]) this->m_NbSelectedProjs += 1;
+    if (this->m_SelectedProjections[i])
+      this->m_NbSelectedProjs += 1;
 
   // Notify the filter that it has been modified
   this->Modified();
 }
 
-}// end namespace
+} // namespace rtk
 
 
 #endif

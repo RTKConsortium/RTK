@@ -37,7 +37,7 @@ namespace rtk
  * \ingroup RTK
  *
  */
-class RTK_EXPORT SheppLoganPhantom: public GeometricPhantom
+class RTK_EXPORT SheppLoganPhantom : public GeometricPhantom
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(SheppLoganPhantom);
@@ -64,10 +64,16 @@ protected:
   ~SheppLoganPhantom() override = default;
 
 private:
-  void SetEllipsoid(ScalarType spax,    ScalarType spay,    ScalarType spaz,
-                    ScalarType centerx, ScalarType centery, ScalarType centerz,
-                    ScalarType angle, ScalarType density);
+  void
+  SetEllipsoid(ScalarType spax,
+               ScalarType spay,
+               ScalarType spaz,
+               ScalarType centerx,
+               ScalarType centery,
+               ScalarType centerz,
+               ScalarType angle,
+               ScalarType density);
 };
 
-}
+} // namespace rtk
 #endif // rtkSheppLoganPhantom_h

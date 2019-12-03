@@ -26,50 +26,44 @@
 namespace rtk
 {
 
-template<class TInputPixel, class TOutputPixel>
-DPExtractShroudSignalImageFilter<TInputPixel, TOutputPixel>
-::DPExtractShroudSignalImageFilter()
-{
-}
+template <class TInputPixel, class TOutputPixel>
+DPExtractShroudSignalImageFilter<TInputPixel, TOutputPixel>::DPExtractShroudSignalImageFilter()
+{}
 
-template<class TInputPixel, class TOutputPixel>
+template <class TInputPixel, class TOutputPixel>
 void
-DPExtractShroudSignalImageFilter<TInputPixel, TOutputPixel>
-::GenerateInputRequestedRegion()
+DPExtractShroudSignalImageFilter<TInputPixel, TOutputPixel>::GenerateInputRequestedRegion()
 {
-  typename Superclass::InputImagePointer  inputPtr =
-    const_cast< TInputImage * >( this->GetInput() );
-  if ( !inputPtr )
-    {
-    return;
-    }
-  inputPtr->SetRequestedRegion(inputPtr->GetLargestPossibleRegion());
-}
-
-template<class TInputPixel, class TOutputPixel>
-void
-DPExtractShroudSignalImageFilter<TInputPixel, TOutputPixel>
-::GenerateOutputInformation()
-{
-  // get pointers to the input and output
-  typename Superclass::InputImageConstPointer inputPtr  = this->GetInput();
-  typename Superclass::OutputImagePointer     outputPtr = this->GetOutput();
-
-  if ( !outputPtr || !inputPtr)
+  typename Superclass::InputImagePointer inputPtr = const_cast<TInputImage *>(this->GetInput());
+  if (!inputPtr)
   {
     return;
   }
-  typename TOutputImage::RegionType outRegion;
-  typename TOutputImage::RegionType::SizeType outSize;
+  inputPtr->SetRequestedRegion(inputPtr->GetLargestPossibleRegion());
+}
+
+template <class TInputPixel, class TOutputPixel>
+void
+DPExtractShroudSignalImageFilter<TInputPixel, TOutputPixel>::GenerateOutputInformation()
+{
+  // get pointers to the input and output
+  typename Superclass::InputImageConstPointer inputPtr = this->GetInput();
+  typename Superclass::OutputImagePointer     outputPtr = this->GetOutput();
+
+  if (!outputPtr || !inputPtr)
+  {
+    return;
+  }
+  typename TOutputImage::RegionType            outRegion;
+  typename TOutputImage::RegionType::SizeType  outSize;
   typename TOutputImage::RegionType::IndexType outIdx;
   outSize[0] = this->GetInput()->GetLargestPossibleRegion().GetSize()[1];
   outIdx[0] = this->GetInput()->GetLargestPossibleRegion().GetIndex()[1];
   outRegion.SetSize(outSize);
   outRegion.SetIndex(outIdx);
 
-  const typename TInputImage::SpacingType &
-    inputSpacing = inputPtr->GetSpacing();
-  typename TOutputImage::SpacingType outputSpacing;
+  const typename TInputImage::SpacingType & inputSpacing = inputPtr->GetSpacing();
+  typename TOutputImage::SpacingType        outputSpacing;
   outputSpacing[0] = inputSpacing[1];
   outputPtr->SetSpacing(outputSpacing);
 
@@ -77,23 +71,21 @@ DPExtractShroudSignalImageFilter<TInputPixel, TOutputPixel>
   outputDirection[0][0] = 1;
   outputPtr->SetDirection(outputDirection);
 
-  const typename TInputImage::PointType &
-    inputOrigin = inputPtr->GetOrigin();
-  typename TOutputImage::PointType outputOrigin;
+  const typename TInputImage::PointType & inputOrigin = inputPtr->GetOrigin();
+  typename TOutputImage::PointType        outputOrigin;
   outputOrigin[0] = inputOrigin[1];
   outputPtr->SetOrigin(outputOrigin);
 
   outputPtr->SetLargestPossibleRegion(outRegion);
 }
 
-template<class TInputPixel, class TOutputPixel>
+template <class TInputPixel, class TOutputPixel>
 void
-DPExtractShroudSignalImageFilter<TInputPixel, TOutputPixel>
-::GenerateData()
+DPExtractShroudSignalImageFilter<TInputPixel, TOutputPixel>::GenerateData()
 {
   this->AllocateOutputs();
 
-  typename TInputImage::ConstPointer input = this->GetInput();
+  typename TInputImage::ConstPointer          input = this->GetInput();
   typename TInputImage::RegionType::IndexType inputIdx = input->GetLargestPossibleRegion().GetIndex();
   typename TInputImage::RegionType::SizeType  inputSize = input->GetLargestPossibleRegion().GetSize();
 
@@ -103,8 +95,8 @@ DPExtractShroudSignalImageFilter<TInputPixel, TOutputPixel>
   from->Allocate();
   int amplitudeInVoxel = m_Amplitude / input->GetSpacing()[0];
 
-  itk::Array<double>* prev = new itk::Array<double>(inputSize[0]);
-  itk::Array<double>* curr = new itk::Array<double>(inputSize[0]);
+  itk::Array<double> * prev = new itk::Array<double>(inputSize[0]);
+  itk::Array<double> * curr = new itk::Array<double>(inputSize[0]);
 
   typename TInputImage::RegionType::IndexType idx = inputIdx;
   for (unsigned i = 0; i < inputSize[0]; ++i)
@@ -146,7 +138,7 @@ DPExtractShroudSignalImageFilter<TInputPixel, TOutputPixel>
   typename Superclass::OutputImagePointer output = this->GetOutput();
   output->Allocate();
   typename TOutputImage::RegionType::IndexType outputIdx;
-  TOutputPixel value = 0;
+  TOutputPixel                                 value = 0;
   outputIdx[0] = idx[1];
   (*output)[outputIdx] = value;
   while (idx[1] != inputIdx[1])

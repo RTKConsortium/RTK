@@ -22,9 +22,6 @@
 #include <vector_types.h>
 
 void
-CUDA_average_out_of_ROI(int size[4],
-                        float* input,
-                        float* output,
-                        float* roi);
+CUDA_average_out_of_ROI(int size[4], float * input, float * output, float * roi);
 
 #endif

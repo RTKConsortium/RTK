@@ -35,7 +35,7 @@ namespace rtk
  *
  * \ingroup RTK
  */
-template< typename ProjectionStackType>
+template <typename ProjectionStackType>
 class SelectOneProjectionPerCycleImageFilter : public SubSelectImageFilter<ProjectionStackType>
 {
 public:
@@ -44,7 +44,7 @@ public:
   /** Standard class type alias. */
   using Self = SelectOneProjectionPerCycleImageFilter;
   using Superclass = SubSelectImageFilter<ProjectionStackType>;
-  using Pointer = itk::SmartPointer< Self >;
+  using Pointer = itk::SmartPointer<Self>;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -64,18 +64,19 @@ protected:
   SelectOneProjectionPerCycleImageFilter();
   ~SelectOneProjectionPerCycleImageFilter() override = default;
 
-  void GenerateOutputInformation() override;
+  void
+  GenerateOutputInformation() override;
 
 private:
   std::string         m_SignalFilename;
-  double              m_Phase{0.};
+  double              m_Phase{ 0. };
   std::vector<double> m_Signal;
 };
-} //namespace ITK
+} // namespace rtk
 
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkSelectOneProjectionPerCycleImageFilter.hxx"
+#  include "rtkSelectOneProjectionPerCycleImageFilter.hxx"
 #endif
 
 #endif

@@ -103,9 +103,9 @@ namespace rtk
  *
  * \ingroup RTK ReconstructionAlgorithm
  */
-template<class TInputImage, class TOutputImage=TInputImage, class TFFTPrecision=double>
-class ITK_EXPORT IterativeFDKConeBeamReconstructionFilter :
-  public rtk::IterativeConeBeamReconstructionFilter<TInputImage, TOutputImage>
+template <class TInputImage, class TOutputImage = TInputImage, class TFFTPrecision = double>
+class ITK_EXPORT IterativeFDKConeBeamReconstructionFilter
+  : public rtk::IterativeConeBeamReconstructionFilter<TInputImage, TOutputImage>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(IterativeFDKConeBeamReconstructionFilter);
@@ -127,8 +127,8 @@ public:
   using DisplacedDetectorFilterType = rtk::DisplacedDetectorImageFilter<OutputImageType, OutputImageType>;
   using ParkerFilterType = rtk::ParkerShortScanImageFilter<OutputImageType, OutputImageType>;
   using FDKFilterType = rtk::FDKConeBeamReconstructionFilter<OutputImageType, OutputImageType, TFFTPrecision>;
-  using MultiplyFilterType = itk::MultiplyImageFilter< OutputImageType, OutputImageType, OutputImageType >;
-  using SubtractFilterType = itk::SubtractImageFilter< OutputImageType, OutputImageType >;
+  using MultiplyFilterType = itk::MultiplyImageFilter<OutputImageType, OutputImageType, OutputImageType>;
+  using SubtractFilterType = itk::SubtractImageFilter<OutputImageType, OutputImageType>;
   using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
   using ThresholdFilterType = itk::ThresholdImageFilter<OutputImageType>;
   using DivideFilterType = itk::DivideOrZeroOutImageFilter<OutputImageType>;
@@ -157,10 +157,15 @@ public:
   itkSetMacro(EnforcePositivity, bool);
 
   /** Select the ForwardProjection filter */
-  void SetForwardProjectionFilter (ForwardProjectionType _arg) override;
+  void
+  SetForwardProjectionFilter(ForwardProjectionType _arg) override;
 
   /** Select the backprojection filter */
-  void SetBackProjectionFilter (BackProjectionType itkNotUsed(_arg)) override {itkExceptionMacro(<< "Backprojection cannot be changed");}
+  void
+  SetBackProjectionFilter(BackProjectionType itkNotUsed(_arg)) override
+  {
+    itkExceptionMacro(<< "Backprojection cannot be changed");
+  }
 
   /** Get / Set the truncation correction */
   itkGetMacro(TruncationCorrection, double);
@@ -186,18 +191,25 @@ protected:
   IterativeFDKConeBeamReconstructionFilter();
   ~IterativeFDKConeBeamReconstructionFilter() override = default;
 
-  void GenerateInputRequestedRegion() override;
+  void
+  GenerateInputRequestedRegion() override;
 
-  void GenerateOutputInformation() override;
+  void
+  GenerateOutputInformation() override;
 
-  void GenerateData() override;
+  void
+  GenerateData() override;
 
   /** The two inputs should not be in the same space so there is nothing
    * to verify. */
-#if ITK_VERSION_MAJOR<5
-  void VerifyInputInformation() override {}
+#if ITK_VERSION_MAJOR < 5
+  void
+  VerifyInputInformation() override
+  {}
 #else
-  void VerifyInputInformation() const override {}
+  void
+  VerifyInputInformation() const override
+  {}
 #endif
 
   /** Pointers to each subfilter of this composite filter */
@@ -233,7 +245,7 @@ private:
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkIterativeFDKConeBeamReconstructionFilter.hxx"
+#  include "rtkIterativeFDKConeBeamReconstructionFilter.hxx"
 #endif
 
 #endif

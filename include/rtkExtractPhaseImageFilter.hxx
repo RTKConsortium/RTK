@@ -31,44 +31,41 @@
 namespace rtk
 {
 
-template<class TImage>
-ExtractPhaseImageFilter<TImage>
-::ExtractPhaseImageFilter():
-  m_MovingAverageSize(1),
-  m_UnsharpMaskSize(55),
-  m_Model(LINEAR_BETWEEN_MINIMA)
-{
-}
+template <class TImage>
+ExtractPhaseImageFilter<TImage>::ExtractPhaseImageFilter()
+  : m_MovingAverageSize(1)
+  , m_UnsharpMaskSize(55)
+  , m_Model(LINEAR_BETWEEN_MINIMA)
+{}
 
-template<class TImage>
+template <class TImage>
 void
-ExtractPhaseImageFilter<TImage>
-::GenerateData()
+ExtractPhaseImageFilter<TImage>::GenerateData()
 {
   // Moving average
   typename TImage::SizeType kernelSz;
   kernelSz[0] = m_MovingAverageSize;
 
   typename TImage::Pointer kernel = TImage::New();
-  kernel->SetRegions( kernelSz );
+  kernel->SetRegions(kernelSz);
   kernel->Allocate();
-  kernel->FillBuffer(1./m_MovingAverageSize);
+  kernel->FillBuffer(1. / m_MovingAverageSize);
 
-  using ConvolutionType = itk::ConvolutionImageFilter< TImage, TImage >;
+  using ConvolutionType = itk::ConvolutionImageFilter<TImage, TImage>;
   typename ConvolutionType::Pointer conv = ConvolutionType::New();
-  conv->SetInput( this->GetInput() );
-  conv->SetKernelImage( kernel );
+  conv->SetInput(this->GetInput());
+  conv->SetKernelImage(kernel);
 
   // Unsharp mask
   kernelSz[0] = m_UnsharpMaskSize;
   typename TImage::Pointer kernel2 = TImage::New();
-  kernel2->SetRegions( kernelSz );
+  kernel2->SetRegions(kernelSz);
   kernel2->Allocate();
-  kernel2->FillBuffer(1./m_UnsharpMaskSize);
+  kernel2->FillBuffer(1. / m_UnsharpMaskSize);
 
   typename ConvolutionType::Pointer conv2 = ConvolutionType::New();
-  conv2->SetInput( conv->GetOutput() );
-  conv2->SetKernelImage( kernel2 );
+  conv2->SetInput(conv->GetOutput());
+  conv2->SetKernelImage(kernel2);
 
   using SubtractType = itk::SubtractImageFilter<TImage, TImage>;
   typename SubtractType::Pointer sub = SubtractType::New();
@@ -84,162 +81,161 @@ ExtractPhaseImageFilter<TImage>
   // Hilbert transform
   using HilbertType = rtk::HilbertImageFilter<TImage, ComplexSignalType>;
   typename HilbertType::Pointer hilbert = HilbertType::New();
-  hilbert->SetInput( sub->GetOutput() );
+  hilbert->SetInput(sub->GetOutput());
 
   // Take the linear phase of this signal
-  using PhaseType = itk::ComplexToPhaseImageFilter< ComplexSignalType, TImage >;
+  using PhaseType = itk::ComplexToPhaseImageFilter<ComplexSignalType, TImage>;
   typename PhaseType::Pointer phase = PhaseType::New();
-  phase->SetInput( hilbert->GetOutput() );
+  phase->SetInput(hilbert->GetOutput());
   phase->Update();
 
   // Find extrema at 0 and pi
   m_MinimaPositions.clear();
   m_MaximaPositions.clear();
   using IteratorType = typename itk::ImageRegionIteratorWithIndex<TImage>;
-  IteratorType it(phase->GetOutput(), phase->GetOutput()->GetLargestPossibleRegion());
+  IteratorType               it(phase->GetOutput(), phase->GetOutput()->GetLargestPossibleRegion());
   typename TImage::PixelType curr, prev = it.Get();
   ++it;
   int prevType = 0; // 1 if maximum, 2 if minimum
-  while( !it.IsAtEnd() )
-    {
+  while (!it.IsAtEnd())
+  {
     curr = it.Get();
-    if(curr*prev <= 0.)
+    if (curr * prev <= 0.)
+    {
+      if (prevType != 1 && curr >= 0. && curr - prev <= itk::Math::pi)
       {
-      if( prevType != 1 && curr>=0. && curr-prev <= itk::Math::pi )
-        {
         m_MaximaPositions.push_back(it.GetIndex()[0]);
         prevType = 1;
-        }
-      else if( prevType != 2 && curr<0. && prev-curr > itk::Math::pi )
-        {
+      }
+      else if (prevType != 2 && curr < 0. && prev - curr > itk::Math::pi)
+      {
         m_MinimaPositions.push_back(it.GetIndex()[0]);
         prevType = 2;
-        }
       }
+    }
     ++it;
     prev = curr;
-    }
+  }
 
-  if(m_MinimaPositions.empty() || m_MaximaPositions.empty())
+  if (m_MinimaPositions.empty() || m_MaximaPositions.empty())
     itkExceptionMacro(<< "Problem detecting extremas");
 
-  const typename TImage::PixelType *sig = this->GetInput()->GetBufferPointer();
-  int nsig = this->GetInput()->GetLargestPossibleRegion().GetSize()[0];
+  const typename TImage::PixelType * sig = this->GetInput()->GetBufferPointer();
+  int                                nsig = this->GetInput()->GetLargestPossibleRegion().GetSize()[0];
 
   // Find minimum between two maxima
   int currMinPos = 0;
-  if(m_MinimaPositions[currMinPos] < m_MaximaPositions.front())
-    {
+  if (m_MinimaPositions[currMinPos] < m_MaximaPositions.front())
+  {
     // Before first maximum
-    for(int i=0; i<m_MaximaPositions.front(); i++)
-      if(sig[i] < sig[ m_MinimaPositions[currMinPos] ])
+    for (int i = 0; i < m_MaximaPositions.front(); i++)
+      if (sig[i] < sig[m_MinimaPositions[currMinPos]])
         m_MinimaPositions[currMinPos] = i;
     currMinPos++;
-    }
-  for(unsigned int j=1; j<m_MaximaPositions.size(); j++, currMinPos++)
-    {
+  }
+  for (unsigned int j = 1; j < m_MaximaPositions.size(); j++, currMinPos++)
+  {
     // Between maxima
-    for(int i=m_MaximaPositions[j-1]; i<m_MaximaPositions[j]; i++)
-      if(sig[i] < sig[ m_MinimaPositions[currMinPos] ])
+    for (int i = m_MaximaPositions[j - 1]; i < m_MaximaPositions[j]; i++)
+      if (sig[i] < sig[m_MinimaPositions[currMinPos]])
         m_MinimaPositions[currMinPos] = i;
-    }
-  if(m_MinimaPositions.back() > m_MaximaPositions.back())
-    {
+  }
+  if (m_MinimaPositions.back() > m_MaximaPositions.back())
+  {
     // After last maximum
-    for(int i=m_MaximaPositions.back(); i<nsig; i++)
-      if(sig[i] < sig[ m_MinimaPositions[currMinPos] ])
+    for (int i = m_MaximaPositions.back(); i < nsig; i++)
+      if (sig[i] < sig[m_MinimaPositions[currMinPos]])
         m_MinimaPositions[currMinPos] = i;
-    }
+  }
 
   // Find maximum between two minima
   int currMaxPos = 0;
-  if(m_MaximaPositions[currMaxPos] < m_MinimaPositions.front())
-    {
+  if (m_MaximaPositions[currMaxPos] < m_MinimaPositions.front())
+  {
     // Before first minimum
-    for(int i=0; i<m_MinimaPositions.front(); i++)
-      if(sig[i] > sig[ m_MaximaPositions[currMaxPos] ])
+    for (int i = 0; i < m_MinimaPositions.front(); i++)
+      if (sig[i] > sig[m_MaximaPositions[currMaxPos]])
         m_MaximaPositions[currMaxPos] = i;
     currMaxPos++;
-    }
-  for(unsigned int j=1; j<m_MinimaPositions.size(); j++, currMaxPos++)
-    {
+  }
+  for (unsigned int j = 1; j < m_MinimaPositions.size(); j++, currMaxPos++)
+  {
     // Between minima
-    for(int i=m_MinimaPositions[j-1]; i<m_MinimaPositions[j]; i++)
-      if(sig[i] > sig[ m_MaximaPositions[currMaxPos] ])
+    for (int i = m_MinimaPositions[j - 1]; i < m_MinimaPositions[j]; i++)
+      if (sig[i] > sig[m_MaximaPositions[currMaxPos]])
         m_MaximaPositions[currMaxPos] = i;
-    }
-  if(m_MaximaPositions.back() > m_MinimaPositions.back())
-    {
+  }
+  if (m_MaximaPositions.back() > m_MinimaPositions.back())
+  {
     // After last minimum
-    for(int i=m_MinimaPositions.back(); i<nsig; i++)
-      if(sig[i] > sig[ m_MaximaPositions[currMaxPos] ])
+    for (int i = m_MinimaPositions.back(); i < nsig; i++)
+      if (sig[i] > sig[m_MaximaPositions[currMaxPos]])
         m_MaximaPositions[currMaxPos] = i;
-    }
+  }
 
-  switch( m_Model )
-    {
-  case(LOCAL_PHASE):
-    it.GoToBegin();
-    while( !it.IsAtEnd() )
+  switch (m_Model)
+  {
+    case (LOCAL_PHASE):
+      it.GoToBegin();
+      while (!it.IsAtEnd())
       {
-      curr = it.Get() / (2.* itk::Math::pi);
-      curr -= itk::Math::Floor<typename TImage::PixelType>(curr);
-      it.Set(curr);
-      ++it;
+        curr = it.Get() / (2. * itk::Math::pi);
+        curr -= itk::Math::Floor<typename TImage::PixelType>(curr);
+        it.Set(curr);
+        ++it;
       }
-    this->GetOutput()->Graft(phase->GetOutput());
-    break;
-  case(LINEAR_BETWEEN_MINIMA):
-    ComputeLinearPhaseBetweenPositions(m_MinimaPositions);
-    break;
-  case(LINEAR_BETWEEN_MAXIMA):
-    ComputeLinearPhaseBetweenPositions(m_MaximaPositions);
-    break;
-    }
+      this->GetOutput()->Graft(phase->GetOutput());
+      break;
+    case (LINEAR_BETWEEN_MINIMA):
+      ComputeLinearPhaseBetweenPositions(m_MinimaPositions);
+      break;
+    case (LINEAR_BETWEEN_MAXIMA):
+      ComputeLinearPhaseBetweenPositions(m_MaximaPositions);
+      break;
+  }
 }
 
-template<class TImage>
+template <class TImage>
 void
-ExtractPhaseImageFilter<TImage>
-::ComputeLinearPhaseBetweenPositions(const PositionsListType & positions)
+ExtractPhaseImageFilter<TImage>::ComputeLinearPhaseBetweenPositions(const PositionsListType & positions)
 {
- if(positions.size() < 2)
-   itkExceptionMacro(<< "Cannot compute linear phase with only one position");
+  if (positions.size() < 2)
+    itkExceptionMacro(<< "Cannot compute linear phase with only one position");
 
- this->AllocateOutputs();
+  this->AllocateOutputs();
 
- using IteratorType = typename itk::ImageRegionIteratorWithIndex<TImage>;
- IteratorType it(this->GetOutput(), this->GetOutput()->GetLargestPossibleRegion());
- typename TImage::PixelType phase = 0.;
+  using IteratorType = typename itk::ImageRegionIteratorWithIndex<TImage>;
+  IteratorType               it(this->GetOutput(), this->GetOutput()->GetLargestPossibleRegion());
+  typename TImage::PixelType phase = 0.;
 
- // Before the first position
- double slope = 1./(positions[1]-positions[0]);
- for(int i=0; i<positions[0]; i++, ++it)
-   {
-   phase = slope * (i-positions[0]);
-   phase -= itk::Math::Floor<typename TImage::PixelType>(phase);
-   it.Set( phase );
-   }
+  // Before the first position
+  double slope = 1. / (positions[1] - positions[0]);
+  for (int i = 0; i < positions[0]; i++, ++it)
+  {
+    phase = slope * (i - positions[0]);
+    phase -= itk::Math::Floor<typename TImage::PixelType>(phase);
+    it.Set(phase);
+  }
 
- // Between positions
- for(unsigned int j=1; j<positions.size(); j++)
-   {
-   slope = 1./(positions[j]-positions[j-1]);
-   for(int i=positions[j-1]; i<positions[j]; i++, ++it)
-     {
-     phase = slope * (i-positions[j-1]);
-     it.Set( phase );
-     }
-   }
+  // Between positions
+  for (unsigned int j = 1; j < positions.size(); j++)
+  {
+    slope = 1. / (positions[j] - positions[j - 1]);
+    for (int i = positions[j - 1]; i < positions[j]; i++, ++it)
+    {
+      phase = slope * (i - positions[j - 1]);
+      it.Set(phase);
+    }
+  }
 
- // After the last position
- slope = 1./(positions.back()-positions[positions.size()-2]);
- for(unsigned int i=positions.back(); i<this->GetOutput()->GetLargestPossibleRegion().GetSize(0); i++, ++it)
-   {
-   phase = slope * (i-positions[positions.size()-2]);
-   phase -= itk::Math::Floor<typename TImage::PixelType>(phase);
-   it.Set( phase );
-   }
+  // After the last position
+  slope = 1. / (positions.back() - positions[positions.size() - 2]);
+  for (unsigned int i = positions.back(); i < this->GetOutput()->GetLargestPossibleRegion().GetSize(0); i++, ++it)
+  {
+    phase = slope * (i - positions[positions.size() - 2]);
+    phase -= itk::Math::Floor<typename TImage::PixelType>(phase);
+    it.Set(phase);
+  }
 }
 
 } // end of namespace rtk

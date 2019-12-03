@@ -20,7 +20,7 @@
 #define rtkThreeDCircularProjectionGeometryXMLFileReader_h
 
 #ifdef _MSC_VER
-#pragma warning ( disable : 4786 )
+#  pragma warning(disable : 4786)
 #endif
 
 #include <itkXMLFile.h>
@@ -41,15 +41,14 @@ namespace rtk
  *
  * \ingroup RTK IOFilters
  */
-class RTK_EXPORT ThreeDCircularProjectionGeometryXMLFileReader :
-  public itk::XMLReader< ThreeDCircularProjectionGeometry >
+class RTK_EXPORT ThreeDCircularProjectionGeometryXMLFileReader : public itk::XMLReader<ThreeDCircularProjectionGeometry>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(ThreeDCircularProjectionGeometryXMLFileReader);
 
   /** Standard type alias */
   using Self = ThreeDCircularProjectionGeometryXMLFileReader;
-  using Superclass = itk::XMLReader< ThreeDCircularProjectionGeometry >;
+  using Superclass = itk::XMLReader<ThreeDCircularProjectionGeometry>;
   using Pointer = itk::SmartPointer<Self>;
 
   /** Convenient type alias */
@@ -66,7 +65,8 @@ public:
   itkNewMacro(Self);
 
   /** Determine if a file can be read */
-  int CanReadFile(const char* name) override;
+  int
+  CanReadFile(const char * name) override;
 
   /** Get smart pointer to projection geometry. */
   itkGetModifiableObjectMacro(Geometry, GeometryType);
@@ -78,39 +78,43 @@ protected:
   /** Callback function -- called from XML parser with start-of-element
    * information.
    */
-  void StartElement(const char * name,const char **atts) override;
+  void
+  StartElement(const char * name, const char ** atts) override;
 
-  void StartElement(const char * name);
+  void
+  StartElement(const char * name);
 
-  void EndElement(const char *name) override;
+  void
+  EndElement(const char * name) override;
 
-  void CharacterDataHandler(const char *inData, int inLength) override;
+  void
+  CharacterDataHandler(const char * inData, int inLength) override;
 
 private:
-  GeometryPointer m_Geometry{GeometryType::New()};
+  GeometryPointer m_Geometry{ GeometryType::New() };
 
-  std::string m_CurCharacterData{""};
+  std::string m_CurCharacterData{ "" };
 
   /** Projection parameters */
-  double m_InPlaneAngle{0.};
-  double m_OutOfPlaneAngle{0.};
-  double m_GantryAngle{0.};
-  double m_SourceToIsocenterDistance{0.};
-  double m_SourceOffsetX{0.};
-  double m_SourceOffsetY{0.};
-  double m_SourceToDetectorDistance{0.};
-  double m_ProjectionOffsetX{0.};
-  double m_ProjectionOffsetY{0.};
-  double m_CollimationUInf{std::numeric_limits< double >::max()};
-  double m_CollimationUSup{std::numeric_limits< double >::max()};
-  double m_CollimationVInf{std::numeric_limits< double >::max()};
-  double m_CollimationVSup{std::numeric_limits< double >::max()};
+  double m_InPlaneAngle{ 0. };
+  double m_OutOfPlaneAngle{ 0. };
+  double m_GantryAngle{ 0. };
+  double m_SourceToIsocenterDistance{ 0. };
+  double m_SourceOffsetX{ 0. };
+  double m_SourceOffsetY{ 0. };
+  double m_SourceToDetectorDistance{ 0. };
+  double m_ProjectionOffsetX{ 0. };
+  double m_ProjectionOffsetY{ 0. };
+  double m_CollimationUInf{ std::numeric_limits<double>::max() };
+  double m_CollimationUSup{ std::numeric_limits<double>::max() };
+  double m_CollimationVInf{ std::numeric_limits<double>::max() };
+  double m_CollimationVSup{ std::numeric_limits<double>::max() };
 
   /** Projection matrix */
   ThreeDCircularProjectionGeometry::MatrixType m_Matrix;
 
   /** File format version */
-  unsigned int m_Version{0};
+  unsigned int m_Version{ 0 };
 };
-}
+} // namespace rtk
 #endif

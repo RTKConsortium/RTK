@@ -26,124 +26,128 @@
 #include <itkCastImageFilter.h>
 
 #ifdef RTK_USE_CUDA
-  #include "rtkCudaTotalVariationDenoisingBPDQImageFilter.h"
+#  include "rtkCudaTotalVariationDenoisingBPDQImageFilter.h"
 #else
-  #include "rtkTotalVariationDenoisingBPDQImageFilter.h"
+#  include "rtkTotalVariationDenoisingBPDQImageFilter.h"
 #endif
 
 namespace rtk
 {
-  /** \class TotalVariationDenoiseSequenceImageFilter
-   * \brief Applies 3D total variation denoising to a 3D + time sequence of images
-   *
-   * Most of the work in this filter is performed by the underlying rtkTotalVariationDenoisingBPDQImageFilter
-   * or its CUDA version
-   *
-   * \dot
-   * digraph TotalVariationDenoiseSequenceImageFilter {
-   *
-   * Input0 [ label="Input 0 (Sequence of images)"];
-   * Input0 [shape=Mdiamond];
-   * Output [label="Output (Sequence of images)"];
-   * Output [shape=Mdiamond];
-   *
-   * node [shape=box];
-   * Extract [label="itk::ExtractImageFilter (for images)" URL="\ref itk::ExtractImageFilter"];
-   * TVDenoising [ label="rtk::TotalVariationDenoisingBPDQImageFilter"
-   *               URL="\ref rtk::TotalVariationDenoisingBPDQImageFilter"];
-   * Cast [ label="itk::CastImageFilter" URL="\ref itk::CastImageFilter"];
-   * Paste [ label="itk::PasteImageFilter" URL="\ref itk::PasteImageFilter"];
-   * ConstantSource [ label="rtk::ConstantImageSource" URL="\ref rtk::ConstantImageSource"];
-   * BeforePaste [label="", fixedsize="false", width=0, height=0, shape=none];
-   * AfterPaste [label="", fixedsize="false", width=0, height=0, shape=none];
-   *
-   * Input0 -> Extract;
-   * Extract -> TVDenoising;
-   * TVDenoising -> Cast;
-   * Cast -> BeforePaste [arrowhead=none];
-   * BeforePaste -> Paste;
-   * Paste -> AfterPaste [arrowhead=none];
-   * AfterPaste -> BeforePaste [style=dashed];
-   * AfterPaste -> Output [style=dashed];
-   * }
-   * \enddot
-   *
-   * \test rtkfourdroostertest.cxx
-   *
-   * \author Cyril Mory
-   *
-   * \ingroup RTK ReconstructionAlgorithm
-   */
+/** \class TotalVariationDenoiseSequenceImageFilter
+ * \brief Applies 3D total variation denoising to a 3D + time sequence of images
+ *
+ * Most of the work in this filter is performed by the underlying rtkTotalVariationDenoisingBPDQImageFilter
+ * or its CUDA version
+ *
+ * \dot
+ * digraph TotalVariationDenoiseSequenceImageFilter {
+ *
+ * Input0 [ label="Input 0 (Sequence of images)"];
+ * Input0 [shape=Mdiamond];
+ * Output [label="Output (Sequence of images)"];
+ * Output [shape=Mdiamond];
+ *
+ * node [shape=box];
+ * Extract [label="itk::ExtractImageFilter (for images)" URL="\ref itk::ExtractImageFilter"];
+ * TVDenoising [ label="rtk::TotalVariationDenoisingBPDQImageFilter"
+ *               URL="\ref rtk::TotalVariationDenoisingBPDQImageFilter"];
+ * Cast [ label="itk::CastImageFilter" URL="\ref itk::CastImageFilter"];
+ * Paste [ label="itk::PasteImageFilter" URL="\ref itk::PasteImageFilter"];
+ * ConstantSource [ label="rtk::ConstantImageSource" URL="\ref rtk::ConstantImageSource"];
+ * BeforePaste [label="", fixedsize="false", width=0, height=0, shape=none];
+ * AfterPaste [label="", fixedsize="false", width=0, height=0, shape=none];
+ *
+ * Input0 -> Extract;
+ * Extract -> TVDenoising;
+ * TVDenoising -> Cast;
+ * Cast -> BeforePaste [arrowhead=none];
+ * BeforePaste -> Paste;
+ * Paste -> AfterPaste [arrowhead=none];
+ * AfterPaste -> BeforePaste [style=dashed];
+ * AfterPaste -> Output [style=dashed];
+ * }
+ * \enddot
+ *
+ * \test rtkfourdroostertest.cxx
+ *
+ * \author Cyril Mory
+ *
+ * \ingroup RTK ReconstructionAlgorithm
+ */
 
-template< typename TImageSequence >
+template <typename TImageSequence>
 class TotalVariationDenoiseSequenceImageFilter : public itk::ImageToImageFilter<TImageSequence, TImageSequence>
 {
 public:
-    ITK_DISALLOW_COPY_AND_ASSIGN(TotalVariationDenoiseSequenceImageFilter);
+  ITK_DISALLOW_COPY_AND_ASSIGN(TotalVariationDenoiseSequenceImageFilter);
 
-    /** Standard class type alias. */
-    using Self = TotalVariationDenoiseSequenceImageFilter;
-    using Superclass = itk::ImageToImageFilter<TImageSequence, TImageSequence>;
-    using Pointer = itk::SmartPointer< Self >;
+  /** Standard class type alias. */
+  using Self = TotalVariationDenoiseSequenceImageFilter;
+  using Superclass = itk::ImageToImageFilter<TImageSequence, TImageSequence>;
+  using Pointer = itk::SmartPointer<Self>;
 
-    /** Method for creation through the object factory. */
-    itkNewMacro(Self);
+  /** Method for creation through the object factory. */
+  itkNewMacro(Self);
 
-    /** Run-time type information (and related methods). */
-    itkTypeMacro(TotalVariationDenoiseSequenceImageFilter, ImageToImageFilter);
+  /** Run-time type information (and related methods). */
+  itkTypeMacro(TotalVariationDenoiseSequenceImageFilter, ImageToImageFilter);
 
-    /** Set/Get for the TotalVariationDenoisingBPDQImageFilter */
-    itkGetMacro(Gamma, double);
-    itkSetMacro(Gamma, double);
+  /** Set/Get for the TotalVariationDenoisingBPDQImageFilter */
+  itkGetMacro(Gamma, double);
+  itkSetMacro(Gamma, double);
 
-    itkGetMacro(NumberOfIterations, int);
-    itkSetMacro(NumberOfIterations, int);
+  itkGetMacro(NumberOfIterations, int);
+  itkSetMacro(NumberOfIterations, int);
 
-    void SetDimensionsProcessed(bool* arg);
+  void
+  SetDimensionsProcessed(bool * arg);
 
-    /** Typedefs of internal filters */
+  /** Typedefs of internal filters */
 #ifdef RTK_USE_CUDA
-    using TImage = itk::CudaImage<typename TImageSequence::PixelType, TImageSequence::ImageDimension - 1>;
-    using TVDenoisingFilterType = rtk::CudaTotalVariationDenoisingBPDQImageFilter;
+  using TImage = itk::CudaImage<typename TImageSequence::PixelType, TImageSequence::ImageDimension - 1>;
+  using TVDenoisingFilterType = rtk::CudaTotalVariationDenoisingBPDQImageFilter;
 #else
-    using TImage = itk::Image<typename TImageSequence::PixelType, TImageSequence::ImageDimension - 1>;
-    using TVDenoisingFilterType = rtk::TotalVariationDenoisingBPDQImageFilter<TImage>;
+  using TImage = itk::Image<typename TImageSequence::PixelType, TImageSequence::ImageDimension - 1>;
+  using TVDenoisingFilterType = rtk::TotalVariationDenoisingBPDQImageFilter<TImage>;
 #endif
-    using ExtractFilterType = itk::ExtractImageFilter<TImageSequence, TImage>;
-    using PasteFilterType = itk::PasteImageFilter<TImageSequence,TImageSequence>;
-    using CastFilterType = itk::CastImageFilter<TImage, TImageSequence>;
-    using ConstantImageSourceType = rtk::ConstantImageSource<TImageSequence>;
+  using ExtractFilterType = itk::ExtractImageFilter<TImageSequence, TImage>;
+  using PasteFilterType = itk::PasteImageFilter<TImageSequence, TImageSequence>;
+  using CastFilterType = itk::CastImageFilter<TImage, TImageSequence>;
+  using ConstantImageSourceType = rtk::ConstantImageSource<TImageSequence>;
 
 protected:
-    TotalVariationDenoiseSequenceImageFilter();
-    ~TotalVariationDenoiseSequenceImageFilter() override = default;
+  TotalVariationDenoiseSequenceImageFilter();
+  ~TotalVariationDenoiseSequenceImageFilter() override = default;
 
-    /** Does the real work. */
-    void GenerateData() override;
+  /** Does the real work. */
+  void
+  GenerateData() override;
 
-    void GenerateOutputInformation() override;
-    void GenerateInputRequestedRegion() override;
+  void
+  GenerateOutputInformation() override;
+  void
+  GenerateInputRequestedRegion() override;
 
-    /** Member pointers to the filters used internally (for convenience)*/
-    typename TVDenoisingFilterType::Pointer   m_TVDenoisingFilter;
-    typename ExtractFilterType::Pointer       m_ExtractFilter;
-    typename PasteFilterType::Pointer         m_PasteFilter;
-    typename CastFilterType::Pointer          m_CastFilter;
-    typename ConstantImageSourceType::Pointer m_ConstantSource;
+  /** Member pointers to the filters used internally (for convenience)*/
+  typename TVDenoisingFilterType::Pointer   m_TVDenoisingFilter;
+  typename ExtractFilterType::Pointer       m_ExtractFilter;
+  typename PasteFilterType::Pointer         m_PasteFilter;
+  typename CastFilterType::Pointer          m_CastFilter;
+  typename ConstantImageSourceType::Pointer m_ConstantSource;
 
-    /** Extraction regions for both extract filters */
-    typename TImageSequence::RegionType       m_ExtractAndPasteRegion;
+  /** Extraction regions for both extract filters */
+  typename TImageSequence::RegionType m_ExtractAndPasteRegion;
 
-    /** Information for the total variation denoising filter */
-    double m_Gamma{1.};
-    int    m_NumberOfIterations{1};
-    bool   m_DimensionsProcessed[TImage::ImageDimension];
+  /** Information for the total variation denoising filter */
+  double m_Gamma{ 1. };
+  int    m_NumberOfIterations{ 1 };
+  bool   m_DimensionsProcessed[TImage::ImageDimension];
 };
-} //namespace ITK
+} // namespace rtk
 
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkTotalVariationDenoiseSequenceImageFilter.hxx"
+#  include "rtkTotalVariationDenoiseSequenceImageFilter.hxx"
 #endif
 
 #endif

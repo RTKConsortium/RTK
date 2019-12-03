@@ -41,9 +41,8 @@ namespace rtk
  * \ingroup RTK ImageToImageFilter
  */
 
-template<class TInputImage, class TOutputImage, class TFFTPrecision>
-class ITK_EXPORT FFTProjectionsConvolutionImageFilter :
-  public itk::ImageToImageFilter<TInputImage, TOutputImage>
+template <class TInputImage, class TOutputImage, class TFFTPrecision>
+class ITK_EXPORT FFTProjectionsConvolutionImageFilter : public itk::ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(FFTProjectionsConvolutionImageFilter);
@@ -61,17 +60,14 @@ public:
   using IndexType = typename InputImageType::IndexType;
   using SizeType = typename InputImageType::SizeType;
 
-  using FFTInputImageType = typename itk::Image<TFFTPrecision,
-                              TInputImage::ImageDimension >;
+  using FFTInputImageType = typename itk::Image<TFFTPrecision, TInputImage::ImageDimension>;
   using FFTInputImagePointer = typename FFTInputImageType::Pointer;
-  using FFTOutputImageType = typename itk::Image<std::complex<TFFTPrecision>,
-                              TInputImage::ImageDimension >;
+  using FFTOutputImageType = typename itk::Image<std::complex<TFFTPrecision>, TInputImage::ImageDimension>;
   using FFTOutputImagePointer = typename FFTOutputImageType::Pointer;
-  using ZeroPadFactorsType = itk::Vector<int,2>;
+  using ZeroPadFactorsType = itk::Vector<int, 2>;
 
   /** ImageDimension constants */
-  itkStaticConstMacro(ImageDimension, unsigned int,
-                      TOutputImage::ImageDimension);
+  itkStaticConstMacro(ImageDimension, unsigned int, TOutputImage::ImageDimension);
 
   /** Runtime information support. */
   itkTypeMacro(FFTProjectionsConvolutionImageFilter, ImageToImageFilter);
@@ -93,101 +89,115 @@ public:
   itkSetMacro(GreatestPrimeFactor, int);
 
   /** Set/Get the percentage of the image widthfeathered with data to correct
-    * for truncation.
-    */
+   * for truncation.
+   */
   itkGetConstMacro(TruncationCorrection, double);
   itkSetMacro(TruncationCorrection, double);
 
   /** Set/Get the zero padding factors in x and y directions. Accepted values
-    * are either 1 and 2. The y value is only used if the convolution kernel is 2D.
-    */
+   * are either 1 and 2. The y value is only used if the convolution kernel is 2D.
+   */
   itkGetConstMacro(ZeroPadFactors, ZeroPadFactorsType);
-  virtual void SetZeroPadFactors (ZeroPadFactorsType _arg)
-    {
+  virtual void
+  SetZeroPadFactors(ZeroPadFactorsType _arg)
+  {
     if (m_ZeroPadFactors != _arg)
-      {
+    {
       m_ZeroPadFactors = _arg;
       m_ZeroPadFactors[0] = std::max(m_ZeroPadFactors[0], 1);
       m_ZeroPadFactors[1] = std::max(m_ZeroPadFactors[1], 1);
       m_ZeroPadFactors[0] = std::min(m_ZeroPadFactors[0], 2);
       m_ZeroPadFactors[1] = std::min(m_ZeroPadFactors[1], 2);
       this->Modified();
-      }
     }
+  }
 
 protected:
   FFTProjectionsConvolutionImageFilter();
   ~FFTProjectionsConvolutionImageFilter() override = default;
 
-  void GenerateInputRequestedRegion() override;
+  void
+  GenerateInputRequestedRegion() override;
 
-  void BeforeThreadedGenerateData() override;
+  void
+  BeforeThreadedGenerateData() override;
 
-  void AfterThreadedGenerateData() override;
+  void
+  AfterThreadedGenerateData() override;
 
-#if ITK_VERSION_MAJOR<5
-  void ThreadedGenerateData( const RegionType& outputRegionForThread, ThreadIdType threadId ) override;
+#if ITK_VERSION_MAJOR < 5
+  void
+  ThreadedGenerateData(const RegionType & outputRegionForThread, ThreadIdType threadId) override;
 #else
-  void DynamicThreadedGenerateData( const RegionType& outputRegionForThread) override;
+  void
+  DynamicThreadedGenerateData(const RegionType & outputRegionForThread) override;
 #endif
 
   /** Pad the inputRegion region of the input image and returns a pointer to the new padded image.
-    * Padding includes a correction for truncation [Ohnesorge, Med Phys, 2000].
-    * centralRegion is the region of the returned image which corresponds to inputRegion.
-    */
-  virtual FFTInputImagePointer PadInputImageRegion(const RegionType &inputRegion);
-  RegionType GetPaddedImageRegion(const RegionType &inputRegion);
+   * Padding includes a correction for truncation [Ohnesorge, Med Phys, 2000].
+   * centralRegion is the region of the returned image which corresponds to inputRegion.
+   */
+  virtual FFTInputImagePointer
+  PadInputImageRegion(const RegionType & inputRegion);
+  RegionType
+  GetPaddedImageRegion(const RegionType & inputRegion);
 
-  void PrintSelf(std::ostream& os, itk::Indent indent) const override;
+  void
+  PrintSelf(std::ostream & os, itk::Indent indent) const override;
 
-  bool IsPrime( int n ) const;
+  bool
+  IsPrime(int n) const;
 
-  int GreatestPrimeFactor( int n ) const;
+  int
+  GreatestPrimeFactor(int n) const;
 
   /** Creates and return a pointer to the convolution kernel. Can be 1D or 2D.
    *  Used in generate data functions, must be implemented in daughter classes.  */
-  virtual void UpdateFFTProjectionsConvolutionKernel(const SizeType size) = 0;
+  virtual void
+  UpdateFFTProjectionsConvolutionKernel(const SizeType size) = 0;
 
   /** Pre compute weights for truncation correction in a lookup table. The index
-    * is the distance to the original image border.
-    * Careful: the function is not thread safe but it does nothing if the weights have
-    * already been computed.
-    */
-  virtual void UpdateTruncationMirrorWeights();
+   * is the distance to the original image border.
+   * Careful: the function is not thread safe but it does nothing if the weights have
+   * already been computed.
+   */
+  virtual void
+                                      UpdateTruncationMirrorWeights();
   typename std::vector<TFFTPrecision> m_TruncationMirrorWeights;
 
-    /** Must be set to fix whether the kernel is 1D or 2D. Will have an effect on
+  /** Must be set to fix whether the kernel is 1D or 2D. Will have an effect on
    * the padded region and the input requested region. */
-  int m_KernelDimension{1};
+  int m_KernelDimension{ 1 };
 
   /**
-    * FFT of the convolution kernel that each daughter class must update.
-    */
+   * FFT of the convolution kernel that each daughter class must update.
+   */
   FFTOutputImagePointer m_KernelFFT;
 
 private:
   /** Percentage of the image width which is feathered with data to correct for truncation.
-    * 0 (default) means no correction.
-    */
-  double m_TruncationCorrection{0.};
-  int GetTruncationCorrectionExtent();
+   * 0 (default) means no correction.
+   */
+  double m_TruncationCorrection{ 0. };
+  int
+  GetTruncationCorrectionExtent();
 
   /** Zero padding factors in x and y directions. Accepted values are either 1
-    * and 2. The y value is only used if the convolution kernel is 2D.
-    */
+   * and 2. The y value is only used if the convolution kernel is 2D.
+   */
   ZeroPadFactorsType m_ZeroPadFactors;
 
   /**
    * Greatest prime factor of the FFT input.
    */
-  int m_GreatestPrimeFactor{2};
-  int m_BackupNumberOfThreads{1};
+  int m_GreatestPrimeFactor{ 2 };
+  int m_BackupNumberOfThreads{ 1 };
 }; // end of class
 
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkFFTProjectionsConvolutionImageFilter.hxx"
+#  include "rtkFFTProjectionsConvolutionImageFilter.hxx"
 #endif
 
 #endif

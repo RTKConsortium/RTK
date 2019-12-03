@@ -41,9 +41,8 @@ namespace rtk
  *
  * \ingroup RTK ImageToImageFilter
  */
-template<class TInputImage, class TOutputImage=TInputImage>
-class ITK_EXPORT ReorderProjectionsImageFilter :
-  public itk::ImageToImageFilter<TInputImage, TOutputImage>
+template <class TInputImage, class TOutputImage = TInputImage>
+class ITK_EXPORT ReorderProjectionsImageFilter : public itk::ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(ReorderProjectionsImageFilter);
@@ -59,7 +58,7 @@ public:
   using InputImageType = TInputImage;
   using OutputImageType = TOutputImage;
   using OutputImageRegionType = typename OutputImageType::RegionType;
-  using PermutationType = enum {NONE=0, SORT=1, SHUFFLE=2};
+  using PermutationType = enum { NONE = 0, SORT = 1, SHUFFLE = 2 };
 
   using GeometryType = ThreeDCircularProjectionGeometry;
   using GeometryPointer = GeometryType::Pointer;
@@ -79,15 +78,18 @@ public:
   itkSetMacro(Permutation, PermutationType);
 
   /** Set the input signal */
-  void SetInputSignal(const std::vector<double> signal);
-  std::vector<double> GetOutputSignal();
+  void
+  SetInputSignal(const std::vector<double> signal);
+  std::vector<double>
+  GetOutputSignal();
 
 protected:
   ReorderProjectionsImageFilter();
 
   ~ReorderProjectionsImageFilter() override = default;
 
-  void GenerateData() override;
+  void
+  GenerateData() override;
 
 private:
   /** RTK geometry objects */
@@ -95,8 +97,8 @@ private:
   GeometryPointer m_OutputGeometry;
 
   /** Input and output signal vectors */
-  std::vector<double>   m_InputSignal;
-  std::vector<double>   m_OutputSignal;
+  std::vector<double> m_InputSignal;
+  std::vector<double> m_OutputSignal;
 
   /** Permutation type */
   PermutationType m_Permutation;
@@ -106,7 +108,7 @@ private:
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkReorderProjectionsImageFilter.hxx"
+#  include "rtkReorderProjectionsImageFilter.hxx"
 #endif
 
 #endif

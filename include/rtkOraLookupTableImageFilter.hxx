@@ -30,76 +30,74 @@ namespace rtk
 
 template <class TOutputImage>
 void
-OraLookupTableImageFilter<TOutputImage>
-::BeforeThreadedGenerateData()
+OraLookupTableImageFilter<TOutputImage>::BeforeThreadedGenerateData()
 {
   // Create the lut
-  typename LookupTableType::Pointer lut = LookupTableType::New();
+  typename LookupTableType::Pointer  lut = LookupTableType::New();
   typename LookupTableType::SizeType size;
-  size[0] = itk::NumericTraits<InputImagePixelType>::max() -
-            itk::NumericTraits<InputImagePixelType>::min() + 1;
-  lut->SetRegions( size );
+  size[0] = itk::NumericTraits<InputImagePixelType>::max() - itk::NumericTraits<InputImagePixelType>::min() + 1;
+  lut->SetRegions(size);
   lut->Allocate();
 
   // Read meta data dictionary from file
-  int fileIdx = this->GetOutput()->GetRequestedRegion().GetIndex()[2];
+  int                       fileIdx = this->GetOutput()->GetRequestedRegion().GetIndex()[2];
   itk::ImageIOBase::Pointer reader;
-  reader = itk::ImageIOFactory::CreateImageIO(m_FileNames[fileIdx].c_str(),
-                                              itk::ImageIOFactory::FileModeType::ReadMode);
+  reader =
+    itk::ImageIOFactory::CreateImageIO(m_FileNames[fileIdx].c_str(), itk::ImageIOFactory::FileModeType::ReadMode);
   if (!reader)
-    {
+  {
     itkExceptionMacro("Error reading file " << m_FileNames[fileIdx]);
-    }
-  reader->SetFileName( m_FileNames[fileIdx].c_str() );
+  }
+  reader->SetFileName(m_FileNames[fileIdx].c_str());
   reader->ReadImageInformation();
-  const itk::MetaDataDictionary &dic = reader->GetMetaDataDictionary();
+  const itk::MetaDataDictionary & dic = reader->GetMetaDataDictionary();
 
   // Retrieve and set slope / intercept
   double slope = 1.;
-  using MetaDataDoubleType = itk::MetaDataObject< double >;
-  const MetaDataDoubleType *slopeMeta = dynamic_cast<const MetaDataDoubleType *>( dic["rescale_slope"]);
-  if(slopeMeta!=nullptr)
-    {
+  using MetaDataDoubleType = itk::MetaDataObject<double>;
+  const MetaDataDoubleType * slopeMeta = dynamic_cast<const MetaDataDoubleType *>(dic["rescale_slope"]);
+  if (slopeMeta != nullptr)
+  {
     slope = slopeMeta->GetMetaDataObjectValue();
-    }
+  }
 
-  double intercept = 0.;
-  const MetaDataDoubleType *interceptMeta = dynamic_cast<const MetaDataDoubleType *>( dic["rescale_intercept"] );
-  if(interceptMeta!=nullptr)
-    {
+  double                     intercept = 0.;
+  const MetaDataDoubleType * interceptMeta = dynamic_cast<const MetaDataDoubleType *>(dic["rescale_intercept"]);
+  if (interceptMeta != nullptr)
+  {
     intercept = interceptMeta->GetMetaDataObjectValue();
-    }
+  }
 
   // Iterate and set lut
-  itk::ImageRegionIteratorWithIndex<LookupTableType> it( lut, lut->GetBufferedRegion() );
+  itk::ImageRegionIteratorWithIndex<LookupTableType> it(lut, lut->GetBufferedRegion());
   it.GoToBegin();
-  if(m_ComputeLineIntegral)
+  if (m_ComputeLineIntegral)
+  {
+    int    negidx = itk::Math::Floor<int, double>(itk::Math::floor(-intercept / slope));
+    double negval = -1. * std::log(slope * (negidx + 1) + intercept);
+    while (!it.IsAtEnd() && (int)it.GetIndex()[0] <= negidx)
     {
-    int negidx = itk::Math::Floor<int, double>(itk::Math::floor(-intercept/slope));
-    double negval = -1. * std::log(slope * (negidx+1) + intercept);
-    while( !it.IsAtEnd() && (int)it.GetIndex()[0] <= negidx )
-      {
       it.Set(negval);
       ++it;
-      }
-    while( !it.IsAtEnd() )
-      {
-      it.Set( -1. * std::log(slope * it.GetIndex()[0] + intercept) );
-      ++it;
-      }
     }
-  else
+    while (!it.IsAtEnd())
     {
-    while( !it.IsAtEnd() )
-      {
-      it.Set( slope * it.GetIndex()[0] + intercept );
+      it.Set(-1. * std::log(slope * it.GetIndex()[0] + intercept));
       ++it;
-      }
     }
-  this->SetLookupTable( lut );
+  }
+  else
+  {
+    while (!it.IsAtEnd())
+    {
+      it.Set(slope * it.GetIndex()[0] + intercept);
+      ++it;
+    }
+  }
+  this->SetLookupTable(lut);
   Superclass::BeforeThreadedGenerateData(); // Update the LUT
 }
 
-}
+} // namespace rtk
 
 #endif

@@ -20,14 +20,14 @@
 #define rtkCudaBackProjectionImageFilter_h
 
 #include "rtkConfiguration.h"
-//Conditional definition of the class to pass ITKHeaderTest
+// Conditional definition of the class to pass ITKHeaderTest
 #ifdef RTK_USE_CUDA
 
-#include "rtkBackProjectionImageFilter.h"
-#include "RTKExport.h"
+#  include "rtkBackProjectionImageFilter.h"
+#  include "RTKExport.h"
 
-#include <itkCudaImage.h>
-#include <itkCudaInPlaceImageFilter.h>
+#  include <itkCudaImage.h>
+#  include <itkCudaInPlaceImageFilter.h>
 
 namespace rtk
 {
@@ -46,19 +46,17 @@ namespace rtk
  * \ingroup RTK Projector CudaImageToImageFilter
  */
 
-template <class ImageType = itk::CudaImage<float,3> >
-class ITK_EXPORT CudaBackProjectionImageFilter :
-  public itk::CudaInPlaceImageFilter< ImageType, ImageType,
-  BackProjectionImageFilter< ImageType, ImageType> >
+template <class ImageType = itk::CudaImage<float, 3>>
+class ITK_EXPORT CudaBackProjectionImageFilter
+  : public itk::CudaInPlaceImageFilter<ImageType, ImageType, BackProjectionImageFilter<ImageType, ImageType>>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(CudaBackProjectionImageFilter);
 
   /** Standard class type alias. */
-  using BackProjectionImageFilterType = BackProjectionImageFilter< ImageType, ImageType>;
+  using BackProjectionImageFilterType = BackProjectionImageFilter<ImageType, ImageType>;
   using Self = CudaBackProjectionImageFilter;
-  using Superclass = itk::CudaInPlaceImageFilter<ImageType, ImageType,
-                     BackProjectionImageFilterType>;
+  using Superclass = itk::CudaInPlaceImageFilter<ImageType, ImageType, BackProjectionImageFilterType>;
   using Pointer = itk::SmartPointer<Self>;
   using ConstPointer = itk::SmartPointer<const Self>;
 
@@ -74,18 +72,18 @@ public:
 
 protected:
   CudaBackProjectionImageFilter();
-  virtual ~CudaBackProjectionImageFilter() {};
+  virtual ~CudaBackProjectionImageFilter(){};
 
-  virtual void GPUGenerateData();
-
+  virtual void
+  GPUGenerateData();
 };
 
 } // end namespace rtk
 
-#ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkCudaBackProjectionImageFilter.hxx"
-#endif
+#  ifndef ITK_MANUAL_INSTANTIATION
+#    include "rtkCudaBackProjectionImageFilter.hxx"
+#  endif
 
-#endif //end conditional definition of the class
+#endif // end conditional definition of the class
 
 #endif

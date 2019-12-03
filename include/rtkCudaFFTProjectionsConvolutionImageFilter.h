@@ -20,11 +20,11 @@
 #define rtkCudaFFTProjectionsConvolutionImageFilter_h
 
 #include "rtkConfiguration.h"
-//Conditional definition of the class to pass ITKHeaderTest
+// Conditional definition of the class to pass ITKHeaderTest
 #ifdef RTK_USE_CUDA
 
-#include <itkCudaImage.h>
-#include <itkCudaImageToImageFilter.h>
+#  include <itkCudaImage.h>
+#  include <itkCudaImageToImageFilter.h>
 
 namespace rtk
 {
@@ -45,11 +45,9 @@ namespace rtk
  *
  * \ingroup RTK CudaImageToImageFilter
  */
-template< class TParentImageFilter >
-class CudaFFTProjectionsConvolutionImageFilter:
-  public itk::CudaImageToImageFilter< itk::CudaImage<float,3>,
-                                      itk::CudaImage<float,3>,
-                                      TParentImageFilter >
+template <class TParentImageFilter>
+class CudaFFTProjectionsConvolutionImageFilter
+  : public itk::CudaImageToImageFilter<itk::CudaImage<float, 3>, itk::CudaImage<float, 3>, TParentImageFilter>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(CudaFFTProjectionsConvolutionImageFilter);
@@ -63,8 +61,8 @@ public:
   /** Convenient type alias. */
   using RegionType = typename TParentImageFilter::RegionType;
   using FFTInputImagePointer = typename TParentImageFilter::FFTInputImagePointer;
-  using CudaImageType = itk::CudaImage<float,3>;
-  using CudaFFTOutputImageType = itk::CudaImage< std::complex<float>, 3 >;
+  using CudaImageType = itk::CudaImage<float, 3>;
+  using CudaFFTOutputImageType = itk::CudaImage<std::complex<float>, 3>;
   using CudaFFTOutputImagePointer = CudaFFTOutputImageType::Pointer;
 
   /** Runtime information support. */
@@ -72,11 +70,13 @@ public:
 
 protected:
   CudaFFTProjectionsConvolutionImageFilter();
-  ~CudaFFTProjectionsConvolutionImageFilter(){}
+  ~CudaFFTProjectionsConvolutionImageFilter() {}
 
-  virtual void GPUGenerateData();
+  virtual void
+  GPUGenerateData();
 
-  virtual FFTInputImagePointer PadInputImageRegion(const RegionType &inputRegion);
+  virtual FFTInputImagePointer
+  PadInputImageRegion(const RegionType & inputRegion);
 
 private:
   CudaFFTOutputImagePointer m_KernelFFTCUDA;
@@ -84,10 +84,10 @@ private:
 
 } // end namespace rtk
 
-#ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkCudaFFTProjectionsConvolutionImageFilter.hxx"
-#endif
+#  ifndef ITK_MANUAL_INSTANTIATION
+#    include "rtkCudaFFTProjectionsConvolutionImageFilter.hxx"
+#  endif
 
-#endif //end conditional definition of the class
+#endif // end conditional definition of the class
 
 #endif

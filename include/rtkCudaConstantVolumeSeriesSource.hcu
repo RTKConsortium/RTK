@@ -22,8 +22,6 @@
 #include <vector_types.h>
 
 void
-CUDA_generate_constant_volume_series(int size[4],
-                                     float* dev_out,
-                                     float constantValue);
+CUDA_generate_constant_volume_series(int size[4], float * dev_out, float constantValue);
 
 #endif

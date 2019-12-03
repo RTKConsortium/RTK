@@ -30,14 +30,14 @@
 namespace rtk
 {
 
-template<class VolumeSeriesType, class ProjectionStackType>
-FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
-::FourDConjugateGradientConeBeamReconstructionFilter()
+template <class VolumeSeriesType, class ProjectionStackType>
+FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::
+  FourDConjugateGradientConeBeamReconstructionFilter()
 {
   this->SetNumberOfRequiredInputs(2); // 4D sequence, projections
 
   // Set the default values of member parameters
-  m_NumberOfIterations=3;
+  m_NumberOfIterations = 3;
   m_CudaConjugateGradient = false; // 4D volumes of usual size only fit on the largest GPUs
 
   // Create the filters
@@ -55,92 +55,94 @@ FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionS
   m_ProjStackToFourDFilter->ReleaseDataFlagOn();
 }
 
-template<class VolumeSeriesType, class ProjectionStackType>
+template <class VolumeSeriesType, class ProjectionStackType>
 void
-FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::SetInputVolumeSeries(const VolumeSeriesType* VolumeSeries)
+FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::SetInputVolumeSeries(
+  const VolumeSeriesType * VolumeSeries)
 {
-  this->SetNthInput(0, const_cast<VolumeSeriesType*>(VolumeSeries));
+  this->SetNthInput(0, const_cast<VolumeSeriesType *>(VolumeSeries));
 }
 
-template<class VolumeSeriesType, class ProjectionStackType>
+template <class VolumeSeriesType, class ProjectionStackType>
 void
-FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::SetInputProjectionStack(const ProjectionStackType *Projections)
+FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::SetInputProjectionStack(
+  const ProjectionStackType * Projections)
 {
-  this->SetNthInput(1, const_cast<ProjectionStackType*>(Projections));
+  this->SetNthInput(1, const_cast<ProjectionStackType *>(Projections));
 }
 
-template<class VolumeSeriesType, class ProjectionStackType>
+template <class VolumeSeriesType, class ProjectionStackType>
 typename VolumeSeriesType::ConstPointer
 FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::GetInputVolumeSeries()
 {
-  return static_cast< const VolumeSeriesType * >
-          ( this->itk::ProcessObject::GetInput(0) );
+  return static_cast<const VolumeSeriesType *>(this->itk::ProcessObject::GetInput(0));
 }
 
-template<class VolumeSeriesType, class ProjectionStackType>
+template <class VolumeSeriesType, class ProjectionStackType>
 typename ProjectionStackType::ConstPointer
 FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::GetInputProjectionStack()
 {
-  return static_cast< const ProjectionStackType * >
-          ( this->itk::ProcessObject::GetInput(1) );
+  return static_cast<const ProjectionStackType *>(this->itk::ProcessObject::GetInput(1));
 }
 
-template<class VolumeSeriesType, class ProjectionStackType>
+template <class VolumeSeriesType, class ProjectionStackType>
 void
-FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
-::SetForwardProjectionFilter (ForwardProjectionType _arg)
+FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::SetForwardProjectionFilter(
+  ForwardProjectionType _arg)
 {
-  if( _arg != this->GetForwardProjectionFilter() )
-    {
-    Superclass::SetForwardProjectionFilter( _arg );
-    m_ForwardProjectionFilter = this->InstantiateForwardProjectionFilter( _arg );
-    m_CGOperator->SetForwardProjectionFilter( m_ForwardProjectionFilter );
-    }
-  if (_arg == 2) // The forward projection filter runs on GPU. It is most efficient to also run the interpolation on GPU, and to use GPU constant image sources
-    {
+  if (_arg != this->GetForwardProjectionFilter())
+  {
+    Superclass::SetForwardProjectionFilter(_arg);
+    m_ForwardProjectionFilter = this->InstantiateForwardProjectionFilter(_arg);
+    m_CGOperator->SetForwardProjectionFilter(m_ForwardProjectionFilter);
+  }
+  if (_arg == 2) // The forward projection filter runs on GPU. It is most efficient to also run the interpolation on
+                 // GPU, and to use GPU constant image sources
+  {
     m_CGOperator->SetUseCudaInterpolation(true);
     m_CGOperator->SetUseCudaSources(true);
-    }
+  }
 }
 
 
-template<class VolumeSeriesType, class ProjectionStackType>
+template <class VolumeSeriesType, class ProjectionStackType>
 void
-FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
-::SetBackProjectionFilter (BackProjectionType _arg)
+FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::SetBackProjectionFilter(
+  BackProjectionType _arg)
 {
-  if( _arg != this->GetBackProjectionFilter() )
-    {
-    Superclass::SetBackProjectionFilter( _arg );
-    m_BackProjectionFilter = this->InstantiateBackProjectionFilter( _arg );
-    m_CGOperator->SetBackProjectionFilter( m_BackProjectionFilter );
+  if (_arg != this->GetBackProjectionFilter())
+  {
+    Superclass::SetBackProjectionFilter(_arg);
+    m_BackProjectionFilter = this->InstantiateBackProjectionFilter(_arg);
+    m_CGOperator->SetBackProjectionFilter(m_BackProjectionFilter);
 
-    m_BackProjectionFilterForB = this->InstantiateBackProjectionFilter( _arg );
+    m_BackProjectionFilterForB = this->InstantiateBackProjectionFilter(_arg);
     m_ProjStackToFourDFilter->SetBackProjectionFilter(m_BackProjectionFilterForB);
-    }
-  if (_arg == 2) // The back projection filter runs on GPU. It is most efficient to also run the splat on GPU, and to use GPU constant image sources
-    {
+  }
+  if (_arg == 2) // The back projection filter runs on GPU. It is most efficient to also run the splat on GPU, and to
+                 // use GPU constant image sources
+  {
     m_CGOperator->SetUseCudaSplat(true);
     m_CGOperator->SetUseCudaSources(true);
     m_ProjStackToFourDFilter->SetUseCudaSplat(true);
     m_ProjStackToFourDFilter->SetUseCudaSources(true);
-    }
+  }
 }
 
-template<class VolumeSeriesType, class ProjectionStackType>
+template <class VolumeSeriesType, class ProjectionStackType>
 void
-FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
-::SetWeights(const itk::Array2D<float> _arg)
+FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::SetWeights(
+  const itk::Array2D<float> _arg)
 {
   m_ProjStackToFourDFilter->SetWeights(_arg);
   m_CGOperator->SetWeights(_arg);
   this->Modified();
 }
 
-template<class VolumeSeriesType, class ProjectionStackType>
+template <class VolumeSeriesType, class ProjectionStackType>
 void
-FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
-::SetSignal(const std::vector<double> signal)
+FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::SetSignal(
+  const std::vector<double> signal)
 {
   m_ProjStackToFourDFilter->SetSignal(signal);
   m_CGOperator->SetSignal(signal);
@@ -148,18 +150,17 @@ FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionS
   this->Modified();
 }
 
-template<class VolumeSeriesType, class ProjectionStackType>
+template <class VolumeSeriesType, class ProjectionStackType>
 void
-FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
-::GenerateOutputInformation()
+FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::GenerateOutputInformation()
 {
   // Set the Conjugate Gradient filter (either on CPU or GPU depending on user's choice)
   if (m_CudaConjugateGradient)
-    {
-    if( std::is_same< VolumeSeriesType, CPUVolumeSeriesType >::value )
+  {
+    if (std::is_same<VolumeSeriesType, CPUVolumeSeriesType>::value)
       itkGenericExceptionMacro(<< "CudaConjugateGradient option only available with itk::CudaImage.");
     m_ConjugateGradientFilter = CudaConjugateGradientImageFilterType::New();
-    }
+  }
 
   m_ConjugateGradientFilter->SetA(m_CGOperator.GetPointer());
 
@@ -175,9 +176,9 @@ FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionS
   m_ConjugateGradientFilter->SetB(m_ProjStackToFourDFilter->GetOutput());
 
   // For the same reason, set geometry now
-  m_CGOperator->SetGeometry( this->GetGeometry() );
-  m_ProjStackToFourDFilter->SetGeometry( this->GetGeometry() );
-  m_DisplacedDetectorFilter->SetGeometry( this->GetGeometry() );
+  m_CGOperator->SetGeometry(this->GetGeometry());
+  m_ProjStackToFourDFilter->SetGeometry(this->GetGeometry());
+  m_DisplacedDetectorFilter->SetGeometry(this->GetGeometry());
 
   // Set runtime parameters
   m_ConjugateGradientFilter->SetNumberOfIterations(this->m_NumberOfIterations);
@@ -188,25 +189,24 @@ FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionS
   m_ConjugateGradientFilter->UpdateOutputInformation();
 
   // Copy it as the output information of the composite filter
-  this->GetOutput()->CopyInformation( m_ConjugateGradientFilter->GetOutput() );
+  this->GetOutput()->CopyInformation(m_ConjugateGradientFilter->GetOutput());
 }
 
 
-template<class VolumeSeriesType, class ProjectionStackType>
+template <class VolumeSeriesType, class ProjectionStackType>
 void
-FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
-::GenerateInputRequestedRegion()
+FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType,
+                                                   ProjectionStackType>::GenerateInputRequestedRegion()
 {
-  //Call the superclass' implementation of this method
+  // Call the superclass' implementation of this method
   Superclass::GenerateInputRequestedRegion();
 
   this->m_ProjStackToFourDFilter->PropagateRequestedRegion(this->m_ProjStackToFourDFilter->GetOutput());
 }
 
-template<class VolumeSeriesType, class ProjectionStackType>
+template <class VolumeSeriesType, class ProjectionStackType>
 void
-FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
-::GenerateData()
+FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::GenerateData()
 {
   m_ProjStackToFourDFilter->Update();
 
@@ -222,7 +222,7 @@ FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionS
   typename VolumeSeriesType::Pointer pimg = m_ConjugateGradientFilter->GetOutput();
   pimg->DisconnectPipeline();
 
-  this->GraftOutput( pimg);
+  this->GraftOutput(pimg);
 }
 
 } // end namespace rtk

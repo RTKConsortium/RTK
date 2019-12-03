@@ -32,17 +32,18 @@ namespace itk
  *
  * \ingroup ITKCudaCommon
  */
-template< class TInputImage, class TOutputImage = TInputImage, class TParentImageFilter =
-            InPlaceImageFilter< TInputImage, TOutputImage > >
-class ITK_EXPORT CudaInPlaceImageFilter : public CudaImageToImageFilter< TInputImage, TOutputImage, TParentImageFilter >
+template <class TInputImage,
+          class TOutputImage = TInputImage,
+          class TParentImageFilter = InPlaceImageFilter<TInputImage, TOutputImage>>
+class ITK_EXPORT CudaInPlaceImageFilter : public CudaImageToImageFilter<TInputImage, TOutputImage, TParentImageFilter>
 {
 public:
   /** Standard class type alias. */
   using Self = CudaInPlaceImageFilter;
-  using GPUSuperclass = CudaImageToImageFilter< TInputImage, TOutputImage, TParentImageFilter >;
+  using GPUSuperclass = CudaImageToImageFilter<TInputImage, TOutputImage, TParentImageFilter>;
   using CPUSuperclass = TParentImageFilter;
-  using Pointer = SmartPointer< Self >;
-  using ConstPointer = SmartPointer< const Self >;
+  using Pointer = SmartPointer<Self>;
+  using ConstPointer = SmartPointer<const Self>;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(CudaInPlaceImageFilter, CudaImageToImageFilter);
@@ -68,7 +69,8 @@ protected:
   CudaInPlaceImageFilter();
   ~CudaInPlaceImageFilter();
 
-  virtual void PrintSelf(std::ostream & os, Indent indent) const;
+  virtual void
+  PrintSelf(std::ostream & os, Indent indent) const;
 
   /** The GenerateData method normally allocates the buffers for all
    * of the outputs of a filter. Since InPlaceImageFilter's can use an
@@ -82,7 +84,8 @@ protected:
    * an InPlaceFilter is not threaded (i.e. it provides an
    * implementation of GenerateData()), then this method (or
    * equivalent) must be called in GenerateData(). */
-  virtual void AllocateOutputs();
+  virtual void
+  AllocateOutputs();
 
   /** InPlaceImageFilter may transfer ownership of the input bulk data
    * to the output object.  Once the output object owns the bulk data
@@ -93,18 +96,19 @@ protected:
    * releases the input that it has overwritten.
    *
    * \sa ProcessObject::ReleaseInputs() */
-  virtual void ReleaseInputs();
+  virtual void
+  ReleaseInputs();
 
 private:
-  CudaInPlaceImageFilter(const Self &); //purposely not implemented
-  void operator=(const Self &);        //purposely not implemented
-
+  CudaInPlaceImageFilter(const Self &); // purposely not implemented
+  void
+  operator=(const Self &); // purposely not implemented
 };
 
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "itkCudaInPlaceImageFilter.hxx"
+#  include "itkCudaInPlaceImageFilter.hxx"
 #endif
 
 #endif

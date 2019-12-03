@@ -29,18 +29,17 @@
 namespace rtk
 {
 
-template<class TInputImage, class TOutputImage>
+template <class TInputImage, class TOutputImage>
 void
-HilbertImageFilter<TInputImage, TOutputImage>
-::GenerateData()
+HilbertImageFilter<TInputImage, TOutputImage>::GenerateData()
 {
   // Take the FFT of the input
-  using FFTFilterType = typename itk::ForwardFFTImageFilter< TInputImage, TOutputImage >;
+  using FFTFilterType = typename itk::ForwardFFTImageFilter<TInputImage, TOutputImage>;
   typename FFTFilterType::Pointer fftFilt = FFTFilterType::New();
-  fftFilt->SetInput( this->GetInput() );
+  fftFilt->SetInput(this->GetInput());
   fftFilt->Update();
 
-  TOutputImage *fft = fftFilt->GetOutput();
+  TOutputImage * fft = fftFilt->GetOutput();
 
   // Weights according to
   // [Marple, IEEE Trans Sig Proc, 1999]
@@ -49,33 +48,33 @@ HilbertImageFilter<TInputImage, TOutputImage>
   it.Set(it.Get());
   ++it;
   int n = fft->GetLargestPossibleRegion().GetSize()[0];
-  for(int i=1; i<n/2-1; i++, ++it)
-    it.Set( 2. * it.Get() );
-  if(n%2 == 1) // Odd
-    it.Set( 2. * it.Get() );
+  for (int i = 1; i < n / 2 - 1; i++, ++it)
+    it.Set(2. * it.Get());
+  if (n % 2 == 1) // Odd
+    it.Set(2. * it.Get());
   else
-    it.Set( 1. * it.Get() );
+    it.Set(1. * it.Get());
   typename TOutputImage::PixelType val = 0.;
-  while( !it.IsAtEnd() )
-    {
+  while (!it.IsAtEnd())
+  {
     val = it.Get();
     it.Set(0.);
     ++it;
-    }
+  }
 
   // Inverse FFT (although I had to set it to FORWARD to obtain the same as in Matlab,
   // I really don't know why)
 #if !defined(USE_FFTWD)
-  if(typeid(typename TOutputImage::PixelType).name() == typeid(double).name() )
-    {
+  if (typeid(typename TOutputImage::PixelType).name() == typeid(double).name())
+  {
     itkExceptionMacro(<< "FFTW with double has not been activated in ITK, cannot run.");
-    }
+  }
 #endif
 #if !defined(USE_FFTWF)
-  if(typeid(typename TOutputImage::PixelType).name() == typeid(float).name() )
-    {
+  if (typeid(typename TOutputImage::PixelType).name() == typeid(float).name())
+  {
     itkExceptionMacro(<< "FFTW with float has not been activated in ITK, cannot run.");
-    }
+  }
 #endif
 
   using InverseFFTFilterType = typename itk::ComplexToComplexFFTImageFilter<TOutputImage>;
@@ -84,7 +83,7 @@ HilbertImageFilter<TInputImage, TOutputImage>
   invFilt->SetInput(fft);
   invFilt->Update();
 
-  this->GraftOutput( invFilt->GetOutput() );
+  this->GraftOutput(invFilt->GetOutput());
 }
 
 } // end of namespace rtk

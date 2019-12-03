@@ -23,71 +23,80 @@
 
 namespace rtk
 {
-  /** \class AddMatrixAndDiagonalImageFilter
-   * \brief For each vector-valued pixel, adds a vector to the diagonal of a matrix
-   *
-   * This filter takes in input an image of vectors of length n (input 1)
-   * and an image of vectors of length n*n (input 2). The vectors in input 2
-   * are used as n*n matrices, and those in input 1 are assumed to be a compact
-   * representation of diagonal matrices of size n*n (thus with only n non-null
-   * values).
-   *
-   * \author Cyril Mory
+/** \class AddMatrixAndDiagonalImageFilter
+ * \brief For each vector-valued pixel, adds a vector to the diagonal of a matrix
+ *
+ * This filter takes in input an image of vectors of length n (input 1)
+ * and an image of vectors of length n*n (input 2). The vectors in input 2
+ * are used as n*n matrices, and those in input 1 are assumed to be a compact
+ * representation of diagonal matrices of size n*n (thus with only n non-null
+ * values).
+ *
+ * \author Cyril Mory
  *
  * \ingroup RTK
-   *
-   */
-template< class TDiagonal,
-          class TMatrix = itk::Image<itk::Vector<typename TDiagonal::PixelType::ValueType, TDiagonal::PixelType::Dimension * TDiagonal::PixelType::Dimension>, TDiagonal::ImageDimension > >
+ *
+ */
+template <class TDiagonal,
+          class TMatrix = itk::Image<itk::Vector<typename TDiagonal::PixelType::ValueType,
+                                                 TDiagonal::PixelType::Dimension * TDiagonal::PixelType::Dimension>,
+                                     TDiagonal::ImageDimension>>
 class AddMatrixAndDiagonalImageFilter : public itk::ImageToImageFilter<TMatrix, TMatrix>
 {
 public:
-    ITK_DISALLOW_COPY_AND_ASSIGN(AddMatrixAndDiagonalImageFilter);
+  ITK_DISALLOW_COPY_AND_ASSIGN(AddMatrixAndDiagonalImageFilter);
 
-    /** Standard class type alias. */
-    using Self = AddMatrixAndDiagonalImageFilter;
-    using Superclass = itk::ImageToImageFilter<TMatrix, TMatrix>;
-    using Pointer = itk::SmartPointer< Self >;
+  /** Standard class type alias. */
+  using Self = AddMatrixAndDiagonalImageFilter;
+  using Superclass = itk::ImageToImageFilter<TMatrix, TMatrix>;
+  using Pointer = itk::SmartPointer<Self>;
 
-    /** Method for creation through the object factory. */
-    itkNewMacro(Self);
+  /** Method for creation through the object factory. */
+  itkNewMacro(Self);
 
-    /** Run-time type information (and related methods). */
-    itkTypeMacro(AddMatrixAndDiagonalImageFilter, itk::ImageToImageFilter);
+  /** Run-time type information (and related methods). */
+  itkTypeMacro(AddMatrixAndDiagonalImageFilter, itk::ImageToImageFilter);
 
-    /** Convenient parameters extracted from template types */
-    static constexpr unsigned int nChannels = TDiagonal::PixelType::Dimension;
+  /** Convenient parameters extracted from template types */
+  static constexpr unsigned int nChannels = TDiagonal::PixelType::Dimension;
 
-    /** Convenient type alias */
-    using dataType = typename TDiagonal::PixelType::ValueType;
+  /** Convenient type alias */
+  using dataType = typename TDiagonal::PixelType::ValueType;
 
-    /** Set methods for all inputs, since they have different types */
-    void SetInputDiagonal(const TDiagonal* gradient);
-    void SetInputMatrix(const TMatrix* hessian);
+  /** Set methods for all inputs, since they have different types */
+  void
+  SetInputDiagonal(const TDiagonal * gradient);
+  void
+  SetInputMatrix(const TMatrix * hessian);
 
 protected:
-    AddMatrixAndDiagonalImageFilter();
-    ~AddMatrixAndDiagonalImageFilter() override = default;
+  AddMatrixAndDiagonalImageFilter();
+  ~AddMatrixAndDiagonalImageFilter() override = default;
 
-    void GenerateInputRequestedRegion() override;
+  void
+  GenerateInputRequestedRegion() override;
 
-    /** Does the real work. */
-#if ITK_VERSION_MAJOR<5
-    void ThreadedGenerateData(const typename TDiagonal::RegionType& outputRegionForThread, itk::ThreadIdType threadId) override;
+  /** Does the real work. */
+#if ITK_VERSION_MAJOR < 5
+  void
+  ThreadedGenerateData(const typename TDiagonal::RegionType & outputRegionForThread,
+                       itk::ThreadIdType                      threadId) override;
 #else
-    void DynamicThreadedGenerateData(const typename TDiagonal::RegionType& outputRegionForThread) override;
+  void
+  DynamicThreadedGenerateData(const typename TDiagonal::RegionType & outputRegionForThread) override;
 #endif
 
-    /** Getters for the inputs */
-    typename TDiagonal::ConstPointer GetInputDiagonal();
-    typename TMatrix::ConstPointer GetInputMatrix();
-
+  /** Getters for the inputs */
+  typename TDiagonal::ConstPointer
+  GetInputDiagonal();
+  typename TMatrix::ConstPointer
+  GetInputMatrix();
 };
-} //namespace RTK
+} // namespace rtk
 
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkAddMatrixAndDiagonalImageFilter.hxx"
+#  include "rtkAddMatrixAndDiagonalImageFilter.hxx"
 #endif
 
 #endif

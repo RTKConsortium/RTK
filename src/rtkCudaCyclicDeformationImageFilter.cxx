@@ -22,14 +22,10 @@
 
 #include <itkMacro.h>
 
-rtk::CudaCyclicDeformationImageFilter
-::CudaCyclicDeformationImageFilter()
-{
-}
+rtk::CudaCyclicDeformationImageFilter ::CudaCyclicDeformationImageFilter() {}
 
 void
-rtk::CudaCyclicDeformationImageFilter
-::GPUGenerateData()
+rtk::CudaCyclicDeformationImageFilter ::GPUGenerateData()
 {
   // Run the superclass method that updates all member variables
   this->Superclass::BeforeThreadedGenerateData();
@@ -37,18 +33,20 @@ rtk::CudaCyclicDeformationImageFilter
   // Prepare the data to perform the linear interpolation on GPU
   unsigned int inputSize[4];
 
-  for (unsigned int i=0; i<4; i++)
+  for (unsigned int i = 0; i < 4; i++)
     inputSize[i] = this->GetInput()->GetBufferedRegion().GetSize()[i];
-  for (unsigned int i=0; i<3; i++)
+  for (unsigned int i = 0; i < 3; i++)
+  {
+    if (this->GetOutput()->GetRequestedRegion().GetSize()[i] != inputSize[i])
     {
-    if(this->GetOutput()->GetRequestedRegion().GetSize()[i] != inputSize[i])
-      {
-      itkExceptionMacro("In rtk::CudaCyclicDeformationImageFilter: the output's requested region must have the same size as the input's buffered region on the first 3 dimensions");
-      }
+      itkExceptionMacro("In rtk::CudaCyclicDeformationImageFilter: the output's requested region must have the same "
+                        "size as the input's buffered region on the first 3 dimensions");
     }
+  }
 
-  float *pin = *(float**)( this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer() );
-  float *pout = *(float**)( this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer() );
+  float * pin = *(float **)(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
+  float * pout = *(float **)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
 
-  CUDA_linear_interpolate_along_fourth_dimension(inputSize, pin, pout, this->m_FrameInf, this->m_FrameSup, this->m_WeightInf, this->m_WeightSup);
+  CUDA_linear_interpolate_along_fourth_dimension(
+    inputSize, pin, pout, this->m_FrameInf, this->m_FrameSup, this->m_WeightInf, this->m_WeightSup);
 }

@@ -26,8 +26,7 @@ namespace rtk
 {
 
 template <class TInputImage, class TOutputImage>
-RayEllipsoidIntersectionImageFilter<TInputImage, TOutputImage>
-::RayEllipsoidIntersectionImageFilter()
+RayEllipsoidIntersectionImageFilter<TInputImage, TOutputImage>::RayEllipsoidIntersectionImageFilter()
 {
   m_Center.Fill(0.);
   m_Axis.Fill(0.);
@@ -35,31 +34,30 @@ RayEllipsoidIntersectionImageFilter<TInputImage, TOutputImage>
 
 template <class TInputImage, class TOutputImage>
 void
-RayEllipsoidIntersectionImageFilter<TInputImage, TOutputImage>
-::BeforeThreadedGenerateData()
+RayEllipsoidIntersectionImageFilter<TInputImage, TOutputImage>::BeforeThreadedGenerateData()
 {
-  if( this->GetConvexShape() == nullptr )
-    this->SetConvexShape( QuadricShape::New().GetPointer() );
+  if (this->GetConvexShape() == nullptr)
+    this->SetConvexShape(QuadricShape::New().GetPointer());
   Superclass::BeforeThreadedGenerateData();
-  QuadricShape * qo = dynamic_cast< QuadricShape * >( this->GetModifiableConvexShape() );
-  if( qo == nullptr )
-    {
+  QuadricShape * qo = dynamic_cast<QuadricShape *>(this->GetModifiableConvexShape());
+  if (qo == nullptr)
+  {
     itkExceptionMacro("This is not a QuadricShape!");
-    }
+  }
   qo->SetEllipsoid(m_Center, m_Axis, m_Angle);
   qo->SetDensity(m_Density);
-  qo->SetClipPlanes( this->GetPlaneDirections(), this->GetPlanePositions() );
+  qo->SetClipPlanes(this->GetPlaneDirections(), this->GetPlanePositions());
 }
 
 template <class TInputImage, class TOutputImage>
 void
-RayEllipsoidIntersectionImageFilter<TInputImage, TOutputImage>
-::AddClipPlane(const VectorType & dir, const ScalarType & pos)
+RayEllipsoidIntersectionImageFilter<TInputImage, TOutputImage>::AddClipPlane(const VectorType & dir,
+                                                                             const ScalarType & pos)
 {
   m_PlaneDirections.push_back(dir);
   m_PlanePositions.push_back(pos);
 }
 
-}// end namespace rtk
+} // end namespace rtk
 
 #endif

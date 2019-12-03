@@ -23,9 +23,6 @@
 //====================================================================
 rtk::XimImageIOFactory::XimImageIOFactory()
 {
-  this->RegisterOverride("itkImageIOBase",
-                         "XimImageIO",
-                         "Xim Image IO",
-                         true,
-                         itk::CreateObjectFunction<XimImageIO>::New() );
+  this->RegisterOverride(
+    "itkImageIOBase", "XimImageIO", "Xim Image IO", true, itk::CreateObjectFunction<XimImageIO>::New());
 }

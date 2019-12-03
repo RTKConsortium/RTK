@@ -34,40 +34,39 @@ namespace rtk
  * \ingroup RTK
  */
 
-inline
-static std::vector<double>
+inline static std::vector<double>
 ReadSignalFile(std::string filename)
 {
   std::vector<double> signalVector;
-  std::ifstream is( filename.c_str() );
-  if( !is.is_open() )
-    {
+  std::ifstream       is(filename.c_str());
+  if (!is.is_open())
+  {
     itkGenericExceptionMacro(<< "Could not open signal file " << filename);
-    }
+  }
 
-  double value;
+  double      value;
   std::string s;
   while (getline(is, s))
-    {
+  {
     if (!s.empty())
-      {
+    {
       std::istringstream tmp(s);
       tmp >> value;
       if (itk::Math::Round<double>(value * 100) / 100 == 1)
         signalVector.push_back(0);
       else
         signalVector.push_back(itk::Math::Round<double>(value * 100) / 100);
-      }
     }
+  }
 
   return signalVector;
 }
 
-template< typename ImageType >
+template <typename ImageType>
 void
 WriteImage(typename ImageType::ConstPointer input, std::string name)
 {
-  //Create an itk::ImageFileWriter
+  // Create an itk::ImageFileWriter
   using WriterType = itk::ImageFileWriter<ImageType>;
   typename WriterType::Pointer writer = WriterType::New();
   writer->SetInput(input);
@@ -75,6 +74,6 @@ WriteImage(typename ImageType::ConstPointer input, std::string name)
   writer->Update();
 }
 
-}
+} // namespace rtk
 
 #endif // rtkGeneralPurposeFunctions_h

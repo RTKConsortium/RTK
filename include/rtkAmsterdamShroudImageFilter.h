@@ -77,33 +77,29 @@ namespace rtk
  *
  * \ingroup RTK ImageToImageFilter
  */
-template<class TInputImage>
-class ITK_EXPORT AmsterdamShroudImageFilter :
-  public itk::ImageToImageFilter<TInputImage, itk::Image<double, TInputImage::ImageDimension-1> >
+template <class TInputImage>
+class ITK_EXPORT AmsterdamShroudImageFilter
+  : public itk::ImageToImageFilter<TInputImage, itk::Image<double, TInputImage::ImageDimension - 1>>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(AmsterdamShroudImageFilter);
 
   /** Standard class type alias. */
   using Self = AmsterdamShroudImageFilter;
-  using Superclass = itk::ImageToImageFilter<TInputImage,
-                                  itk::Image<double, TInputImage::ImageDimension-1> >;
+  using Superclass = itk::ImageToImageFilter<TInputImage, itk::Image<double, TInputImage::ImageDimension - 1>>;
   using Pointer = itk::SmartPointer<Self>;
   using ConstPointer = itk::SmartPointer<const Self>;
 
   /** Convenient type alias. */
-  using TOutputImage = itk::Image<double, TInputImage::ImageDimension-1>;
+  using TOutputImage = itk::Image<double, TInputImage::ImageDimension - 1>;
   using PointType = itk::Point<double, 3>;
   using GeometryType = rtk::ThreeDCircularProjectionGeometry;
   using GeometryPointer = typename GeometryType::Pointer;
 
   /** ImageDimension constants */
-  itkStaticConstMacro(InputImageDimension, unsigned int,
-                      TInputImage::ImageDimension);
-  itkStaticConstMacro(OutputImageDimension, unsigned int,
-                      TOutputImage::ImageDimension);
-  itkStaticConstMacro(ImageDimension, unsigned int,
-                      TOutputImage::ImageDimension);
+  itkStaticConstMacro(InputImageDimension, unsigned int, TInputImage::ImageDimension);
+  itkStaticConstMacro(OutputImageDimension, unsigned int, TOutputImage::ImageDimension);
+  itkStaticConstMacro(ImageDimension, unsigned int, TOutputImage::ImageDimension);
 
   /** Standard New method. */
   itkNewMacro(Self);
@@ -130,30 +126,36 @@ public:
 
   /** Runtime information support. */
   itkTypeMacro(AmsterdamShroudImageFilter, itk::ImageToImageFilter);
+
 protected:
   AmsterdamShroudImageFilter();
   ~AmsterdamShroudImageFilter() override = default;
 
-  void GenerateOutputInformation() override;
-  void GenerateInputRequestedRegion() override;
-  void UpdateUnsharpMaskKernel();
+  void
+  GenerateOutputInformation() override;
+  void
+  GenerateInputRequestedRegion() override;
+  void
+  UpdateUnsharpMaskKernel();
 
   /** Single-threaded version of GenerateData.  This filter delegates
    * to other filters. */
-  void GenerateData() override;
+  void
+  GenerateData() override;
 
   /** Function that actually projects the 3D box defined by m_Corner1 and
    * m_Corner2 and set everything outside to 0. */
-  virtual void CropOutsideProjectedBox();
+  virtual void
+  CropOutsideProjectedBox();
 
 private:
-  using DerivativeType = itk::RecursiveGaussianImageFilter< TInputImage, TInputImage >;
-  using NegativeType = itk::MultiplyImageFilter< TInputImage, TInputImage, TInputImage >;
-  using ThresholdType = itk::ThresholdImageFilter< TInputImage >;
-  using SumType = itk::SumProjectionImageFilter< TInputImage, TOutputImage >;
-  using ConvolutionType = itk::ConvolutionImageFilter< TOutputImage, TOutputImage >;
-  using SubtractType = itk::SubtractImageFilter< TOutputImage, TOutputImage >;
-  using PermuteType = itk::PermuteAxesImageFilter< TOutputImage >;
+  using DerivativeType = itk::RecursiveGaussianImageFilter<TInputImage, TInputImage>;
+  using NegativeType = itk::MultiplyImageFilter<TInputImage, TInputImage, TInputImage>;
+  using ThresholdType = itk::ThresholdImageFilter<TInputImage>;
+  using SumType = itk::SumProjectionImageFilter<TInputImage, TOutputImage>;
+  using ConvolutionType = itk::ConvolutionImageFilter<TOutputImage, TOutputImage>;
+  using SubtractType = itk::SubtractImageFilter<TOutputImage, TOutputImage>;
+  using PermuteType = itk::PermuteAxesImageFilter<TOutputImage>;
 
   typename DerivativeType::Pointer  m_DerivativeFilter;
   typename NegativeType::Pointer    m_NegativeFilter;
@@ -162,16 +164,16 @@ private:
   typename ConvolutionType::Pointer m_ConvolutionFilter;
   typename SubtractType::Pointer    m_SubtractFilter;
   typename PermuteType::Pointer     m_PermuteFilter;
-  unsigned int                      m_UnsharpMaskSize{17};
-  GeometryPointer                   m_Geometry{nullptr};
-  PointType                         m_Corner1{0.};
-  PointType                         m_Corner2{0.};
+  unsigned int                      m_UnsharpMaskSize{ 17 };
+  GeometryPointer                   m_Geometry{ nullptr };
+  PointType                         m_Corner1{ 0. };
+  PointType                         m_Corner2{ 0. };
 }; // end of class
 
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkAmsterdamShroudImageFilter.hxx"
+#  include "rtkAmsterdamShroudImageFilter.hxx"
 #endif
 
 #endif

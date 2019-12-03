@@ -39,15 +39,14 @@ namespace rtk
  * \ingroup RTK InPlaceImageFilter
  */
 template <class TInputImage, class TOutputImage>
-class DrawCylinderImageFilter:
-public DrawEllipsoidImageFilter< TInputImage, TOutputImage >
+class DrawCylinderImageFilter : public DrawEllipsoidImageFilter<TInputImage, TOutputImage>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(DrawCylinderImageFilter);
 
   /** Standard class type alias. */
   using Self = DrawCylinderImageFilter;
-  using Superclass = DrawEllipsoidImageFilter<TInputImage,TOutputImage>;
+  using Superclass = DrawEllipsoidImageFilter<TInputImage, TOutputImage>;
   using Pointer = itk::SmartPointer<Self>;
   using ConstPointer = itk::SmartPointer<const Self>;
 
@@ -64,13 +63,14 @@ protected:
   DrawCylinderImageFilter() = default;
   ~DrawCylinderImageFilter() override = default;
 
-  void BeforeThreadedGenerateData() override;
+  void
+  BeforeThreadedGenerateData() override;
 };
 
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkDrawCylinderImageFilter.hxx"
+#  include "rtkDrawCylinderImageFilter.hxx"
 #endif
 
 #endif

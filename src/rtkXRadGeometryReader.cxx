@@ -23,15 +23,12 @@
 #include <itkImageIOFactory.h>
 #include <itkMetaDataObject.h>
 
-rtk::XRadGeometryReader
-::XRadGeometryReader():
-  m_Geometry(nullptr)
-{
-}
+rtk::XRadGeometryReader ::XRadGeometryReader()
+  : m_Geometry(nullptr)
+{}
 
 void
-rtk::XRadGeometryReader
-::GenerateData()
+rtk::XRadGeometryReader ::GenerateData()
 {
   // Create new RTK geometry object
   m_Geometry = GeometryType::New();
@@ -40,34 +37,36 @@ rtk::XRadGeometryReader
   // Read image information which contains geometry information
   rtk::XRadImageIOFactory::RegisterOneFactory();
   itk::ImageIOBase::Pointer reader =
-        itk::ImageIOFactory::CreateImageIO(m_ImageFileName.c_str(), itk::ImageIOFactory::FileModeType::ReadMode);
-  if(!reader)
+    itk::ImageIOFactory::CreateImageIO(m_ImageFileName.c_str(), itk::ImageIOFactory::FileModeType::ReadMode);
+  if (!reader)
     itkExceptionMacro(<< m_ImageFileName << " is not an XRad file.");
   reader->SetFileName(m_ImageFileName);
   reader->ReadImageInformation();
 
   std::string sectionName, paramName;
-  using MetaDataStringType = itk::MetaDataObject< std::string >;
-  itk::MetaDataDictionary &dic = reader->GetMetaDataDictionary();
+  using MetaDataStringType = itk::MetaDataObject<std::string>;
+  itk::MetaDataDictionary & dic = reader->GetMetaDataDictionary();
 
-  for(unsigned int i=0; i<reader->GetDimensions(2); i++)
-    {
+  for (unsigned int i = 0; i < reader->GetDimensions(2); i++)
+  {
     std::ostringstream os;
     os << "iView3D(Projection " << i << ")";
     sectionName = os.str();
 
     paramName = sectionName + "_CBCT.ProjectionGeometryArray.u_axis";
-    std::istringstream isu(dynamic_cast<MetaDataStringType*>(dic[paramName].GetPointer())->GetMetaDataObjectValue());
+    std::istringstream isu(dynamic_cast<MetaDataStringType *>(dic[paramName].GetPointer())->GetMetaDataObjectValue());
     paramName = sectionName + "_CBCT.ProjectionGeometryArray.v_axis";
-    std::istringstream isv(dynamic_cast<MetaDataStringType*>(dic[paramName].GetPointer())->GetMetaDataObjectValue());
+    std::istringstream isv(dynamic_cast<MetaDataStringType *>(dic[paramName].GetPointer())->GetMetaDataObjectValue());
     paramName = sectionName + "_CBCT.ProjectionGeometryArray.focus";
-    std::istringstream isfocus(dynamic_cast<MetaDataStringType*>(dic[paramName].GetPointer())->GetMetaDataObjectValue());
+    std::istringstream isfocus(
+      dynamic_cast<MetaDataStringType *>(dic[paramName].GetPointer())->GetMetaDataObjectValue());
     paramName = sectionName + "_CBCT.ProjectionGeometryArray.center";
-    std::istringstream iscenter(dynamic_cast<MetaDataStringType*>(dic[paramName].GetPointer())->GetMetaDataObjectValue());
-    itk::Vector<double,3> u,v;
-    itk::Vector<double,3> focus,center;
-    for(unsigned int j=0; j<3; j++)
-      {
+    std::istringstream iscenter(
+      dynamic_cast<MetaDataStringType *>(dic[paramName].GetPointer())->GetMetaDataObjectValue());
+    itk::Vector<double, 3> u, v;
+    itk::Vector<double, 3> focus, center;
+    for (unsigned int j = 0; j < 3; j++)
+    {
       isu >> u[j];
       isv >> v[j];
       isfocus >> focus[j];
@@ -76,7 +75,7 @@ rtk::XRadGeometryReader
       // cm to mm
       focus[j] *= 10.;
       center[j] *= 10.;
-      }
+    }
 
     // Change of coordinate system to IEC
     // The coordinate system of XRad is supposed to be illustrated in figure 1 of
@@ -97,26 +96,24 @@ rtk::XRadGeometryReader
 
     u.Normalize();
     v.Normalize();
-    tmpGeo->AddReg23Projection(&(focus[0]),
-                               &(center[0]),
-                               u, v);
+    tmpGeo->AddReg23Projection(&(focus[0]), &(center[0]), u, v);
 
     paramName = sectionName + "_CBCT.ProjectionGeometryArray.u_off";
-    std::string suoff = dynamic_cast<MetaDataStringType*>(dic[paramName].GetPointer())->GetMetaDataObjectValue();
-    double uoff = atof(suoff.c_str()) * reader->GetSpacing(0);
+    std::string suoff = dynamic_cast<MetaDataStringType *>(dic[paramName].GetPointer())->GetMetaDataObjectValue();
+    double      uoff = atof(suoff.c_str()) * reader->GetSpacing(0);
 
     paramName = sectionName + "_CBCT.ProjectionGeometryArray.v_off";
-    std::string svoff = dynamic_cast<MetaDataStringType*>(dic[paramName].GetPointer())->GetMetaDataObjectValue();
-    double voff = atof(svoff.c_str()) * reader->GetSpacing(1);
+    std::string svoff = dynamic_cast<MetaDataStringType *>(dic[paramName].GetPointer())->GetMetaDataObjectValue();
+    double      voff = atof(svoff.c_str()) * reader->GetSpacing(1);
 
     m_Geometry->AddProjectionInRadians(tmpGeo->GetSourceToIsocenterDistances()[i],
                                        tmpGeo->GetSourceToDetectorDistances()[i],
                                        tmpGeo->GetGantryAngles()[i],
-                                       tmpGeo->GetProjectionOffsetsX()[i]-uoff,
-                                       tmpGeo->GetProjectionOffsetsY()[i]-voff,
+                                       tmpGeo->GetProjectionOffsetsX()[i] - uoff,
+                                       tmpGeo->GetProjectionOffsetsY()[i] - voff,
                                        tmpGeo->GetOutOfPlaneAngles()[i],
                                        tmpGeo->GetInPlaneAngles()[i],
                                        tmpGeo->GetSourceOffsetsX()[i],
                                        tmpGeo->GetSourceOffsetsY()[i]);
-    }
+  }
 }

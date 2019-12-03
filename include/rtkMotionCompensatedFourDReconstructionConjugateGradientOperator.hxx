@@ -25,9 +25,9 @@
 namespace rtk
 {
 
-template< typename VolumeSeriesType, typename ProjectionStackType>
-MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType, ProjectionStackType>
-::MotionCompensatedFourDReconstructionConjugateGradientOperator()
+template <typename VolumeSeriesType, typename ProjectionStackType>
+MotionCompensatedFourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType>::
+  MotionCompensatedFourDReconstructionConjugateGradientOperator()
 {
   this->SetNumberOfRequiredInputs(2);
 
@@ -35,68 +35,68 @@ MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType,
 
   this->m_ForwardProjectionFilter = WarpForwardProjectionImageFilterType::New();
   this->m_BackProjectionFilter = WarpBackProjectionImageFilterType::New();
-  if( std::is_same< VolumeSeriesType, CPUVolumeSeriesType >::value )
+  if (std::is_same<VolumeSeriesType, CPUVolumeSeriesType>::value)
     itkWarningMacro("The warp forward and back project image filters exist only"
-            << " in CUDA. Ignoring the displacement vector field and using CPU"
-            << "Joseph forward projection and CPU voxel-based back projection");
+                    << " in CUDA. Ignoring the displacement vector field and using CPU"
+                    << "Joseph forward projection and CPU voxel-based back projection");
 }
 
-template< typename VolumeSeriesType, typename ProjectionStackType>
+template <typename VolumeSeriesType, typename ProjectionStackType>
 void
-MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType, ProjectionStackType>
-::SetDisplacementField(const DVFSequenceImageType* DisplacementField)
+MotionCompensatedFourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType>::
+  SetDisplacementField(const DVFSequenceImageType * DisplacementField)
 {
-  this->SetNthInput(2, const_cast<DVFSequenceImageType*>(DisplacementField));
+  this->SetNthInput(2, const_cast<DVFSequenceImageType *>(DisplacementField));
 }
 
-template< typename VolumeSeriesType, typename ProjectionStackType>
+template <typename VolumeSeriesType, typename ProjectionStackType>
 void
-MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType, ProjectionStackType>
-::SetInverseDisplacementField(const DVFSequenceImageType* InverseDisplacementField)
+MotionCompensatedFourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType>::
+  SetInverseDisplacementField(const DVFSequenceImageType * InverseDisplacementField)
 {
-  this->SetNthInput(3, const_cast<DVFSequenceImageType*>(InverseDisplacementField));
+  this->SetNthInput(3, const_cast<DVFSequenceImageType *>(InverseDisplacementField));
 }
 
-template< typename VolumeSeriesType, typename ProjectionStackType>
-typename MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType, ProjectionStackType>::DVFSequenceImageType::ConstPointer
-MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType, ProjectionStackType>
-::GetDisplacementField()
+template <typename VolumeSeriesType, typename ProjectionStackType>
+typename MotionCompensatedFourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType>::
+  DVFSequenceImageType::ConstPointer
+  MotionCompensatedFourDReconstructionConjugateGradientOperator<VolumeSeriesType,
+                                                                ProjectionStackType>::GetDisplacementField()
 {
-  return static_cast< const DVFSequenceImageType * >
-          ( this->itk::ProcessObject::GetInput(2) );
+  return static_cast<const DVFSequenceImageType *>(this->itk::ProcessObject::GetInput(2));
 }
 
-template< typename VolumeSeriesType, typename ProjectionStackType>
-typename MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType, ProjectionStackType>::DVFSequenceImageType::ConstPointer
-MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType, ProjectionStackType>
-::GetInverseDisplacementField()
+template <typename VolumeSeriesType, typename ProjectionStackType>
+typename MotionCompensatedFourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType>::
+  DVFSequenceImageType::ConstPointer
+  MotionCompensatedFourDReconstructionConjugateGradientOperator<VolumeSeriesType,
+                                                                ProjectionStackType>::GetInverseDisplacementField()
 {
-  return static_cast< const DVFSequenceImageType * >
-          ( this->itk::ProcessObject::GetInput(3) );
+  return static_cast<const DVFSequenceImageType *>(this->itk::ProcessObject::GetInput(3));
 }
 
-template< typename VolumeSeriesType, typename ProjectionStackType>
+template <typename VolumeSeriesType, typename ProjectionStackType>
 void
-MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType, ProjectionStackType>
-::SetSignal(const std::vector<double> signal)
+MotionCompensatedFourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType>::SetSignal(
+  const std::vector<double> signal)
 {
   this->m_Signal = signal;
 }
 
-template< typename VolumeSeriesType, typename ProjectionStackType>
+template <typename VolumeSeriesType, typename ProjectionStackType>
 void
-MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType, ProjectionStackType>
-::GenerateOutputInformation()
+MotionCompensatedFourDReconstructionConjugateGradientOperator<VolumeSeriesType,
+                                                              ProjectionStackType>::GenerateOutputInformation()
 {
   m_DVFInterpolatorFilter = CPUDVFInterpolatorType::New();
   m_InverseDVFInterpolatorFilter = CPUDVFInterpolatorType::New();
   if (m_UseCudaCyclicDeformation)
-    {
-    if( std::is_same< VolumeSeriesType, CPUVolumeSeriesType >::value )
+  {
+    if (std::is_same<VolumeSeriesType, CPUVolumeSeriesType>::value)
       itkGenericExceptionMacro(<< "UseCudaCyclicDeformation option only available with itk::CudaImage.");
     m_DVFInterpolatorFilter = CudaCyclicDeformationImageFilterType::New();
     m_InverseDVFInterpolatorFilter = CudaCyclicDeformationImageFilterType::New();
-    }
+  }
 
   m_DVFInterpolatorFilter->SetSignalVector(this->m_Signal);
   m_DVFInterpolatorFilter->SetInput(this->GetDisplacementField());
@@ -107,69 +107,68 @@ MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType,
   m_InverseDVFInterpolatorFilter->SetFrame(0);
 
 #ifdef RTK_USE_CUDA
-  CudaWarpForwardProjectionImageFilter* wfp;
-  wfp = dynamic_cast< CudaWarpForwardProjectionImageFilter* > (this->m_ForwardProjectionFilter.GetPointer());
+  CudaWarpForwardProjectionImageFilter * wfp;
+  wfp = dynamic_cast<CudaWarpForwardProjectionImageFilter *>(this->m_ForwardProjectionFilter.GetPointer());
   using CudaDVFImageType = itk::CudaImage<VectorForDVF, VolumeSeriesType::ImageDimension - 1>;
-  CudaDVFImageType* cudvf;
-  cudvf = dynamic_cast< CudaDVFImageType* > (m_InverseDVFInterpolatorFilter->GetOutput());
-  wfp->SetDisplacementField( cudvf );
-  CudaWarpBackProjectionImageFilter* wbp;
-  wbp = dynamic_cast< CudaWarpBackProjectionImageFilter* > (this->m_BackProjectionFilter.GetPointer());
-  cudvf = dynamic_cast< CudaDVFImageType* > (m_DVFInterpolatorFilter->GetOutput());
-  wbp->SetDisplacementField( cudvf );
+  CudaDVFImageType * cudvf;
+  cudvf = dynamic_cast<CudaDVFImageType *>(m_InverseDVFInterpolatorFilter->GetOutput());
+  wfp->SetDisplacementField(cudvf);
+  CudaWarpBackProjectionImageFilter * wbp;
+  wbp = dynamic_cast<CudaWarpBackProjectionImageFilter *>(this->m_BackProjectionFilter.GetPointer());
+  cudvf = dynamic_cast<CudaDVFImageType *>(m_DVFInterpolatorFilter->GetOutput());
+  wbp->SetDisplacementField(cudvf);
 #endif
 
   Superclass::GenerateOutputInformation();
 }
 
-template< typename VolumeSeriesType, typename ProjectionStackType>
+template <typename VolumeSeriesType, typename ProjectionStackType>
 void
-MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType, ProjectionStackType>
-::GenerateData()
+MotionCompensatedFourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType>::GenerateData()
 {
   int Dimension = ProjectionStackType::ImageDimension;
 
   // Prepare the index for the constant projection stack source and the extract filter
   typename ProjectionStackType::RegionType sourceRegion = this->GetInputProjectionStack()->GetLargestPossibleRegion();
-  typename ProjectionStackType::SizeType sourceSize = sourceRegion.GetSize();
-  typename ProjectionStackType::IndexType sourceIndex = sourceRegion.GetIndex();
+  typename ProjectionStackType::SizeType   sourceSize = sourceRegion.GetSize();
+  typename ProjectionStackType::IndexType  sourceIndex = sourceRegion.GetIndex();
 
-  int NumberProjs = this->GetInputProjectionStack()->GetLargestPossibleRegion().GetSize(Dimension-1);
-  int FirstProj = this->GetInputProjectionStack()->GetLargestPossibleRegion().GetIndex(Dimension-1);
+  int NumberProjs = this->GetInputProjectionStack()->GetLargestPossibleRegion().GetSize(Dimension - 1);
+  int FirstProj = this->GetInputProjectionStack()->GetLargestPossibleRegion().GetIndex(Dimension - 1);
 
   // Divide the stack of projections into slabs of projections of identical phase
-  std::vector<int> firstProjectionInSlabs;
+  std::vector<int>          firstProjectionInSlabs;
   std::vector<unsigned int> sizeOfSlabs;
   firstProjectionInSlabs.push_back(FirstProj);
-  if (NumberProjs==1)
+  if (NumberProjs == 1)
     sizeOfSlabs.push_back(1);
   else
+  {
+    for (int proj = FirstProj + 1; proj < FirstProj + NumberProjs; proj++)
     {
-    for (int proj = FirstProj+1; proj < FirstProj+NumberProjs; proj++)
+      if (fabs(m_Signal[proj] - m_Signal[proj - 1]) > 1e-4)
       {
-      if (fabs(m_Signal[proj] - m_Signal[proj-1]) > 1e-4)
-        {
         // Compute the number of projections in the current slab
         sizeOfSlabs.push_back(proj - firstProjectionInSlabs[firstProjectionInSlabs.size() - 1]);
 
         // Update the index of the first projection in the next slab
         firstProjectionInSlabs.push_back(proj);
-        }
       }
-    sizeOfSlabs.push_back(NumberProjs - firstProjectionInSlabs[firstProjectionInSlabs.size() - 1]);
     }
+    sizeOfSlabs.push_back(NumberProjs - firstProjectionInSlabs[firstProjectionInSlabs.size() - 1]);
+  }
 
-  bool firstSlabProcessed = false;
+  bool                               firstSlabProcessed = false;
   typename VolumeSeriesType::Pointer pimg;
 
   // Process the projections in order
   for (unsigned int slab = 0; slab < firstProjectionInSlabs.size(); slab++)
-    {
+  {
     // Set the projection stack source
     sourceIndex[Dimension - 1] = firstProjectionInSlabs[slab];
     sourceSize[Dimension - 1] = sizeOfSlabs[slab];
-    this->m_ConstantProjectionStackSource->SetIndex( sourceIndex );
-    this->m_ConstantProjectionStackSource->SetSize( sourceSize );
+    this->m_ConstantProjectionStackSource->SetIndex(sourceIndex);
+    this->m_ConstantProjectionStackSource->SetSize(sourceSize);
 
     // Set the interpolation filters, including those for the DVFs
     this->m_InterpolationFilter->SetProjectionNumber(firstProjectionInSlabs[slab]);
@@ -178,22 +177,22 @@ MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType,
     m_InverseDVFInterpolatorFilter->SetFrame(firstProjectionInSlabs[slab]);
 
     // After the first update, we need to use the output as input.
-    if(firstSlabProcessed)
-      {
+    if (firstSlabProcessed)
+    {
       pimg = this->m_SplatFilter->GetOutput();
       pimg->DisconnectPipeline();
-      this->m_SplatFilter->SetInputVolumeSeries( pimg );
-      }
+      this->m_SplatFilter->SetInputVolumeSeries(pimg);
+    }
 
     // Update the last filter
     this->m_SplatFilter->Update();
 
     // Update condition
     firstSlabProcessed = true;
-    }
+  }
 
   // Graft its output
-  this->GraftOutput( this->m_SplatFilter->GetOutput() );
+  this->GraftOutput(this->m_SplatFilter->GetOutput());
 
   // Release the data in internal filters
   pimg->ReleaseData();
@@ -212,7 +211,7 @@ MotionCompensatedFourDReconstructionConjugateGradientOperator< VolumeSeriesType,
   this->GetInputVolumeSeries()->GetBufferPointer();
 }
 
-}// end namespace
+} // namespace rtk
 
 
 #endif

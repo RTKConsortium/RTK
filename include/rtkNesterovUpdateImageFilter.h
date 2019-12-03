@@ -36,18 +36,18 @@ namespace rtk
  * \author Cyril Mory
  *
  * \ingroup RTK
-*/
+ */
 
-template< typename TImage>
-class NesterovUpdateImageFilter : public itk::InPlaceImageFilter< TImage,  TImage>
+template <typename TImage>
+class NesterovUpdateImageFilter : public itk::InPlaceImageFilter<TImage, TImage>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(NesterovUpdateImageFilter);
 
   /** Standard class type alias. */
   using Self = NesterovUpdateImageFilter;
-  using Superclass = itk::InPlaceImageFilter< TImage, TImage>;
-  using Pointer = itk::SmartPointer< Self >;
+  using Superclass = itk::InPlaceImageFilter<TImage, TImage>;
+  using Pointer = itk::SmartPointer<Self>;
 
   /** Convenient type alias */
   using OutputImageRegionType = typename Superclass::OutputImageType::RegionType;
@@ -67,15 +67,21 @@ protected:
   ~NesterovUpdateImageFilter() override;
 
   /** Does the real work. */
-  void BeforeThreadedGenerateData() override;
-#if ITK_VERSION_MAJOR<5
-  void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) override;
+  void
+  BeforeThreadedGenerateData() override;
+#if ITK_VERSION_MAJOR < 5
+  void
+  ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread,
+                       itk::ThreadIdType             itkNotUsed(threadId)) override;
 #else
-  void DynamicThreadedGenerateData(const OutputImageRegionType& outputRegionForThread) override;
+  void
+  DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread) override;
 #endif
-  void AfterThreadedGenerateData() override;
+  void
+  AfterThreadedGenerateData() override;
 
-  void GenerateInputRequestedRegion() override;
+  void
+  GenerateInputRequestedRegion() override;
 
   int                                   m_NumberOfIterations;
   int                                   m_CurrentIteration;
@@ -88,13 +94,12 @@ protected:
   // Internal images
   typename TImage::Pointer m_Vk;
   typename TImage::Pointer m_Alphak;
-
 };
-} //namespace RTK
+} // namespace rtk
 
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkNesterovUpdateImageFilter.hxx"
+#  include "rtkNesterovUpdateImageFilter.hxx"
 #endif
 
 #endif

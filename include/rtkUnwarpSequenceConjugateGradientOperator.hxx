@@ -24,9 +24,9 @@
 namespace rtk
 {
 
-template< typename TImageSequence, typename TDVFImageSequence, typename TImage, typename TDVFImage>
-UnwarpSequenceConjugateGradientOperator< TImageSequence, TDVFImageSequence, TImage, TDVFImage>
-::UnwarpSequenceConjugateGradientOperator()
+template <typename TImageSequence, typename TDVFImageSequence, typename TImage, typename TDVFImage>
+UnwarpSequenceConjugateGradientOperator<TImageSequence, TDVFImageSequence, TImage, TDVFImage>::
+  UnwarpSequenceConjugateGradientOperator()
 {
   this->SetNumberOfRequiredInputs(2);
 
@@ -49,43 +49,41 @@ UnwarpSequenceConjugateGradientOperator< TImageSequence, TDVFImageSequence, TIma
   m_WarpSequenceBackwardFilter->ReleaseDataFlagOn();
 }
 
-template< typename TImageSequence, typename TDVFImageSequence, typename TImage, typename TDVFImage>
+template <typename TImageSequence, typename TDVFImageSequence, typename TImage, typename TDVFImage>
 void
-UnwarpSequenceConjugateGradientOperator< TImageSequence, TDVFImageSequence, TImage, TDVFImage>
-::SetDisplacementField(const TDVFImageSequence* DVFs)
+UnwarpSequenceConjugateGradientOperator<TImageSequence, TDVFImageSequence, TImage, TDVFImage>::SetDisplacementField(
+  const TDVFImageSequence * DVFs)
 {
-  this->SetNthInput(1, const_cast<TDVFImageSequence*>(DVFs));
+  this->SetNthInput(1, const_cast<TDVFImageSequence *>(DVFs));
 }
 
-template< typename TImageSequence, typename TDVFImageSequence, typename TImage, typename TDVFImage>
+template <typename TImageSequence, typename TDVFImageSequence, typename TImage, typename TDVFImage>
 typename TDVFImageSequence::Pointer
-UnwarpSequenceConjugateGradientOperator< TImageSequence, TDVFImageSequence, TImage, TDVFImage>
-::GetDisplacementField()
+UnwarpSequenceConjugateGradientOperator<TImageSequence, TDVFImageSequence, TImage, TDVFImage>::GetDisplacementField()
 {
-  return static_cast< TDVFImageSequence * >
-          ( this->itk::ProcessObject::GetInput(1) );
+  return static_cast<TDVFImageSequence *>(this->itk::ProcessObject::GetInput(1));
 }
 
-template< typename TImageSequence, typename TDVFImageSequence, typename TImage, typename TDVFImage>
+template <typename TImageSequence, typename TDVFImageSequence, typename TImage, typename TDVFImage>
 void
-UnwarpSequenceConjugateGradientOperator< TImageSequence, TDVFImageSequence, TImage, TDVFImage>
-::GenerateInputRequestedRegion()
+UnwarpSequenceConjugateGradientOperator<TImageSequence, TDVFImageSequence, TImage, TDVFImage>::
+  GenerateInputRequestedRegion()
 {
-  //Call the superclass' implementation of this method
+  // Call the superclass' implementation of this method
   Superclass::GenerateInputRequestedRegion();
 
-  //Get pointers to the input and output
-  typename TImageSequence::Pointer  inputPtr  = const_cast<TImageSequence *>(this->GetInput(0));
+  // Get pointers to the input and output
+  typename TImageSequence::Pointer inputPtr = const_cast<TImageSequence *>(this->GetInput(0));
   inputPtr->SetRequestedRegionToLargestPossibleRegion();
 
-  typename TDVFImageSequence::Pointer  inputDVFPtr  = this->GetDisplacementField();
+  typename TDVFImageSequence::Pointer inputDVFPtr = this->GetDisplacementField();
   inputDVFPtr->SetRequestedRegionToLargestPossibleRegion();
 }
 
-template< typename TImageSequence, typename TDVFImageSequence, typename TImage, typename TDVFImage>
+template <typename TImageSequence, typename TDVFImageSequence, typename TImage, typename TDVFImage>
 void
-UnwarpSequenceConjugateGradientOperator< TImageSequence, TDVFImageSequence, TImage, TDVFImage>
-::GenerateOutputInformation()
+UnwarpSequenceConjugateGradientOperator<TImageSequence, TDVFImageSequence, TImage, TDVFImage>::
+  GenerateOutputInformation()
 {
   // Set runtime connections, and connections with
   // forward and back projection filters, which are set
@@ -106,22 +104,21 @@ UnwarpSequenceConjugateGradientOperator< TImageSequence, TDVFImageSequence, TIma
   m_WarpSequenceForwardFilter->UpdateOutputInformation();
 
   // Copy it as the output information of the composite filter
-  this->GetOutput()->CopyInformation( m_WarpSequenceForwardFilter->GetOutput() );
+  this->GetOutput()->CopyInformation(m_WarpSequenceForwardFilter->GetOutput());
 }
 
-template< typename TImageSequence, typename TDVFImageSequence, typename TImage, typename TDVFImage>
+template <typename TImageSequence, typename TDVFImageSequence, typename TImage, typename TDVFImage>
 void
-UnwarpSequenceConjugateGradientOperator< TImageSequence, TDVFImageSequence, TImage, TDVFImage>
-::GenerateData()
+UnwarpSequenceConjugateGradientOperator<TImageSequence, TDVFImageSequence, TImage, TDVFImage>::GenerateData()
 {
   // Execute Pipeline
   m_WarpSequenceForwardFilter->Update();
 
   // Get the output
-  this->GraftOutput( m_WarpSequenceForwardFilter->GetOutput() );
+  this->GraftOutput(m_WarpSequenceForwardFilter->GetOutput());
 }
 
-}// end namespace
+} // namespace rtk
 
 
 #endif

@@ -25,18 +25,16 @@
 namespace rtk
 {
 template <class TInputImage, class TOutputImage>
-DrawSheppLoganFilter<TInputImage, TOutputImage>
-::DrawSheppLoganFilter()
+DrawSheppLoganFilter<TInputImage, TOutputImage>::DrawSheppLoganFilter()
 {
   this->SetPhantomScale(ConvexShape::VectorType(128));
 }
 
 template <class TInputImage, class TOutputImage>
 void
-DrawSheppLoganFilter<TInputImage, TOutputImage>
-::GenerateData()
+DrawSheppLoganFilter<TInputImage, TOutputImage>::GenerateData()
 {
-  this->SetGeometricPhantom( SheppLoganPhantom::New().GetPointer() );
+  this->SetGeometricPhantom(SheppLoganPhantom::New().GetPointer());
   this->SetConfigFile("");
   Superclass::GenerateData();
 }

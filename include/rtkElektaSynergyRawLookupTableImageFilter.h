@@ -38,10 +38,8 @@ namespace rtk
  *
  * \ingroup RTK ImageToImageFilter
  */
-template < class TInputImage  = itk::Image<unsigned short, 2>,
-           class TOutputImage = itk::Image<unsigned short, 2> >
-class ITK_EXPORT ElektaSynergyRawLookupTableImageFilter :
-    public LookupTableImageFilter< TInputImage, TOutputImage >
+template <class TInputImage = itk::Image<unsigned short, 2>, class TOutputImage = itk::Image<unsigned short, 2>>
+class ITK_EXPORT ElektaSynergyRawLookupTableImageFilter : public LookupTableImageFilter<TInputImage, TOutputImage>
 {
 
 public:
@@ -49,8 +47,7 @@ public:
 
   /** Standard class type alias. */
   using Self = ElektaSynergyRawLookupTableImageFilter;
-  using Superclass = LookupTableImageFilter< TInputImage,
-                                  TOutputImage >;
+  using Superclass = LookupTableImageFilter<TInputImage, TOutputImage>;
   using Pointer = itk::SmartPointer<Self>;
   using ConstPointer = itk::SmartPointer<const Self>;
 
@@ -66,8 +63,7 @@ public:
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
-  itkConceptMacro( SameTypeCheck,
-                   ( itk::Concept::SameType< InputImagePixelType, unsigned short > ) );
+  itkConceptMacro(SameTypeCheck, (itk::Concept::SameType<InputImagePixelType, unsigned short>));
 #endif
 
 protected:
@@ -78,7 +74,7 @@ protected:
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkElektaSynergyRawLookupTableImageFilter.hxx"
+#  include "rtkElektaSynergyRawLookupTableImageFilter.hxx"
 #endif
 
 #endif

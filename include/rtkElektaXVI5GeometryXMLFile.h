@@ -20,7 +20,7 @@
 #define rtkElektaXVI5GeometryXMLFile_h
 
 #ifdef _MSC_VER
-#pragma warning ( disable : 4786 )
+#  pragma warning(disable : 4786)
 #endif
 
 #include "RTKExport.h"
@@ -32,26 +32,25 @@ namespace rtk
 
 /** \class ElektaXVI5GeometryXMLFileReader
  *
- * Reads an XML-format file of XVI version = 5.0.2  (_Frame.xml in each projection directory). From XVI_v5 on, thre is no need of accessing .DBF files (FRAME.DBF / IMAGE.DBF).
- * This class is basically inspired by ThreeDCircularProjectionGeometryXMLFileReader.
- * Writer is not implemented.
- * SAD = 1000 mm, SID = 1536 mm are hard-coded since _Frame.xml doesn't include these values.
- * Regarding PanelOffset, XVI5 specifies position of the center (UCentre, VCentre) instead of offset.
- * Therefore, negation is required to get classical m_ProjectionOffsetX and m_ProjectionOffsetY values.
+ * Reads an XML-format file of XVI version = 5.0.2  (_Frame.xml in each projection directory). From XVI_v5 on, thre is
+ * no need of accessing .DBF files (FRAME.DBF / IMAGE.DBF). This class is basically inspired by
+ * ThreeDCircularProjectionGeometryXMLFileReader. Writer is not implemented. SAD = 1000 mm, SID = 1536 mm are hard-coded
+ * since _Frame.xml doesn't include these values. Regarding PanelOffset, XVI5 specifies position of the center (UCentre,
+ * VCentre) instead of offset. Therefore, negation is required to get classical m_ProjectionOffsetX and
+ * m_ProjectionOffsetY values.
  *
  * \author Yang K Park (theday79@gmail.com)
  *
  * \ingroup RTK IOFilters
  */
-class RTK_EXPORT ElektaXVI5GeometryXMLFileReader :
-  public itk::XMLReader< ThreeDCircularProjectionGeometry >
+class RTK_EXPORT ElektaXVI5GeometryXMLFileReader : public itk::XMLReader<ThreeDCircularProjectionGeometry>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(ElektaXVI5GeometryXMLFileReader);
 
   /** Standard type alias */
   using Self = ElektaXVI5GeometryXMLFileReader;
-  using Superclass = itk::XMLReader< ThreeDCircularProjectionGeometry >;
+  using Superclass = itk::XMLReader<ThreeDCircularProjectionGeometry>;
   using Pointer = itk::SmartPointer<Self>;
 
   /** Convenient type alias */
@@ -68,7 +67,8 @@ public:
   itkNewMacro(Self);
 
   /** Determine if a file can be read */
-  int CanReadFile(const char* name) override;
+  int
+  CanReadFile(const char * name) override;
 
   /** Get smart pointer to projection geometry. */
   itkGetMacro(Geometry, GeometryPointer);
@@ -80,33 +80,37 @@ protected:
   /** Callback function -- called from XML parser with start-of-element
    * information.
    */
-  void StartElement(const char * name,const char **atts) override;
+  void
+  StartElement(const char * name, const char ** atts) override;
 
-  void StartElement(const char * name);
+  void
+  StartElement(const char * name);
 
-  void EndElement(const char *name) override;
+  void
+  EndElement(const char * name) override;
 
-  void CharacterDataHandler(const char *inData, int inLength) override;
+  void
+  CharacterDataHandler(const char * inData, int inLength) override;
 
 private:
-  GeometryPointer m_Geometry{GeometryType::New()};
+  GeometryPointer m_Geometry{ GeometryType::New() };
 
   std::string m_CurCharacterData;
 
   /** Projection parameters */
-  double m_InPlaneAngle{0.};
-  double m_OutOfPlaneAngle{0.};
-  double m_GantryAngle{0.};
-  double m_SourceToIsocenterDistance{1000.};
-  double m_SourceOffsetX{0.};
-  double m_SourceOffsetY{0.};
-  double m_SourceToDetectorDistance{1536.};
-  double m_ProjectionOffsetX{0.};
-  double m_ProjectionOffsetY{0.};
+  double m_InPlaneAngle{ 0. };
+  double m_OutOfPlaneAngle{ 0. };
+  double m_GantryAngle{ 0. };
+  double m_SourceToIsocenterDistance{ 1000. };
+  double m_SourceOffsetX{ 0. };
+  double m_SourceOffsetY{ 0. };
+  double m_SourceToDetectorDistance{ 1536. };
+  double m_ProjectionOffsetX{ 0. };
+  double m_ProjectionOffsetY{ 0. };
 
   /** Projection matrix */
   ThreeDCircularProjectionGeometry::MatrixType m_Matrix;
 };
-}
+} // namespace rtk
 
 #endif

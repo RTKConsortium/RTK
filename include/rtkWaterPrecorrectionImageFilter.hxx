@@ -26,71 +26,71 @@
 
 namespace rtk
 {
-template <class TInputImage, class  TOutputImage>
-WaterPrecorrectionImageFilter<TInputImage, TOutputImage>
-::WaterPrecorrectionImageFilter()
+template <class TInputImage, class TOutputImage>
+WaterPrecorrectionImageFilter<TInputImage, TOutputImage>::WaterPrecorrectionImageFilter()
 {
-  m_Coefficients.push_back(0.0);  // No correction by default
+  m_Coefficients.push_back(0.0); // No correction by default
   m_Coefficients.push_back(1.0);
 }
 
-template <class TInputImage, class  TOutputImage>
-void WaterPrecorrectionImageFilter<TInputImage,TOutputImage>
-#if ITK_VERSION_MAJOR<5
-::ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, ThreadIdType itkNotUsed(threadId) )
+template <class TInputImage, class TOutputImage>
+void
+WaterPrecorrectionImageFilter<TInputImage, TOutputImage>
+#if ITK_VERSION_MAJOR < 5
+  ::ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, ThreadIdType itkNotUsed(threadId))
 #else
-::DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread)
+  ::DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread)
 #endif
 {
   const int csize = m_Coefficients.size();
 
-  typename itk::ImageRegionConstIterator< TInputImage > itIn(this->GetInput(), outputRegionForThread);
-  typename itk::ImageRegionIterator< TOutputImage >     itOut(this->GetOutput(), outputRegionForThread);
+  typename itk::ImageRegionConstIterator<TInputImage> itIn(this->GetInput(), outputRegionForThread);
+  typename itk::ImageRegionIterator<TOutputImage>     itOut(this->GetOutput(), outputRegionForThread);
 
-  if ( csize >= 3 )
-    {
+  if (csize >= 3)
+  {
     itIn.GoToBegin();
     itOut.GoToBegin();
 
-    while ( !itIn.IsAtEnd() )
-      {
+    while (!itIn.IsAtEnd())
+    {
       float v = itIn.Get();
       float out = m_Coefficients[0] + m_Coefficients[1] * v;
       float bpow = v * v;
 
-      for ( int i = 2; i < csize; i++ )
-        {
+      for (int i = 2; i < csize; i++)
+      {
         out += m_Coefficients[i] * bpow;
         bpow = bpow * v;
-        }
+      }
       itOut.Set(out);
 
       ++itIn;
       ++itOut;
-      }
     }
-  else if ( ( csize == 2 ) && ( ( m_Coefficients[0] != 0 ) || ( m_Coefficients[1] != 1 ) ) )
-    {
+  }
+  else if ((csize == 2) && ((m_Coefficients[0] != 0) || (m_Coefficients[1] != 1)))
+  {
     itIn.GoToBegin();
     itOut.GoToBegin();
-    while ( !itIn.IsAtEnd() )
-      {
-      itOut.Set( m_Coefficients[0] + m_Coefficients[1] * itIn.Get() );
+    while (!itIn.IsAtEnd())
+    {
+      itOut.Set(m_Coefficients[0] + m_Coefficients[1] * itIn.Get());
       ++itIn;
       ++itOut;
-      }
     }
-  else if ( ( csize == 1 ) && ( m_Coefficients[0] != 0 ) )
-    {
+  }
+  else if ((csize == 1) && (m_Coefficients[0] != 0))
+  {
     itIn.GoToBegin();
     itOut.GoToBegin();
-    while ( !itIn.IsAtEnd() )
-      {
-      itOut.Set( m_Coefficients[0]);
+    while (!itIn.IsAtEnd())
+    {
+      itOut.Set(m_Coefficients[0]);
       ++itIn;
       ++itOut;
-      }
     }
+  }
 }
 } // end namespace rtk
 

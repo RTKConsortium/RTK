@@ -36,15 +36,14 @@ namespace rtk
  * \ingroup RTK InPlaceImageFilter
  */
 template <class TInputImage, class TOutputImage>
-class RayBoxIntersectionImageFilter :
-public RayConvexIntersectionImageFilter< TInputImage, TOutputImage >
+class RayBoxIntersectionImageFilter : public RayConvexIntersectionImageFilter<TInputImage, TOutputImage>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(RayBoxIntersectionImageFilter);
 
   /** Standard class type alias. */
   using Self = RayBoxIntersectionImageFilter;
-  using Superclass = RayConvexIntersectionImageFilter<TInputImage,TOutputImage>;
+  using Superclass = RayConvexIntersectionImageFilter<TInputImage, TOutputImage>;
   using Pointer = itk::SmartPointer<Self>;
   using ConstPointer = itk::SmartPointer<const Self>;
 
@@ -70,10 +69,12 @@ public:
   itkGetConstReferenceMacro(PlanePositions, std::vector<ScalarType>);
 
   /** See ConvexShape for the definition of clip planes. */
-  void AddClipPlane(const VectorType & dir, const ScalarType & pos);
+  void
+  AddClipPlane(const VectorType & dir, const ScalarType & pos);
 
   /** Set the box from an image. See rtk::BoxShape::SetBoxFromImage. */
-  void SetBoxFromImage(const ImageBaseType * img, bool bWithExternalHalfPixelBorder=true);
+  void
+  SetBoxFromImage(const ImageBaseType * img, bool bWithExternalHalfPixelBorder = true);
 
   /** Get/Set the box parameters. See rtk::BoxShape. */
   itkGetMacro(BoxMin, PointType);
@@ -87,22 +88,23 @@ protected:
   RayBoxIntersectionImageFilter();
   ~RayBoxIntersectionImageFilter() override = default;
 
-  void BeforeThreadedGenerateData ( ) override;
+  void
+  BeforeThreadedGenerateData() override;
 
 private:
-  ScalarType              m_Density{1.};
+  ScalarType              m_Density{ 1. };
   std::vector<VectorType> m_PlaneDirections;
   std::vector<ScalarType> m_PlanePositions;
 
-  PointType               m_BoxMin{0.};
-  PointType               m_BoxMax{0.};
-  RotationMatrixType      m_Direction;
+  PointType          m_BoxMin{ 0. };
+  PointType          m_BoxMax{ 0. };
+  RotationMatrixType m_Direction;
 };
 
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkRayBoxIntersectionImageFilter.hxx"
+#  include "rtkRayBoxIntersectionImageFilter.hxx"
 #endif
 
 #endif

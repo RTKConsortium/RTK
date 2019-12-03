@@ -37,62 +37,65 @@ namespace rtk
  * \ingroup RTK IntensityImageFilters  Multithreaded
  */
 
-namespace Functor {
+namespace Functor
+{
 
-template< class TInput, class TOutput>
+template <class TInput, class TOutput>
 class SoftThreshold
 {
 public:
-  SoftThreshold()
-    {
-    m_Threshold = itk::NumericTraits<TInput>::Zero;
-    }
+  SoftThreshold() { m_Threshold = itk::NumericTraits<TInput>::Zero; }
   ~SoftThreshold() = default;
 
-  void SetThreshold( const TInput & thresh )
-    { m_Threshold = thresh; }
+  void
+  SetThreshold(const TInput & thresh)
+  {
+    m_Threshold = thresh;
+  }
 
-  bool operator!=( const SoftThreshold & other ) const
+  bool
+  operator!=(const SoftThreshold & other) const
+  {
+    if (m_Threshold != other.m_Threshold)
     {
-    if( m_Threshold != other.m_Threshold )
-      {
       return true;
-      }
+    }
     return false;
-    }
-  bool operator==( const SoftThreshold & other ) const
-    {
+  }
+  bool
+  operator==(const SoftThreshold & other) const
+  {
     return !(*this != other);
-    }
+  }
 
-  inline TOutput operator()( const TInput & A ) const
-    {
+  inline TOutput
+  operator()(const TInput & A) const
+  {
     return (itk::Math::sgn(A) * std::max((TInput)itk::Math::abs(A) - m_Threshold, (TInput)0.0));
-    }
+  }
 
 private:
-  TInput      m_Threshold;
-
+  TInput m_Threshold;
 };
-}
+} // namespace Functor
 
 template <class TInputImage, class TOutputImage>
-class ITK_EXPORT SoftThresholdImageFilter :
-    public
-itk::UnaryFunctorImageFilter<TInputImage,TOutputImage,
-                        Functor::SoftThreshold<
-  typename TInputImage::PixelType,
-  typename TOutputImage::PixelType> >
+class ITK_EXPORT SoftThresholdImageFilter
+  : public itk::UnaryFunctorImageFilter<
+      TInputImage,
+      TOutputImage,
+      Functor::SoftThreshold<typename TInputImage::PixelType, typename TOutputImage::PixelType>>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(SoftThresholdImageFilter);
 
   /** Standard class type alias. */
   using Self = SoftThresholdImageFilter;
-  typedef itk::UnaryFunctorImageFilter
-  <TInputImage,TOutputImage,
-  Functor::SoftThreshold< typename TInputImage::PixelType,
-                          typename TOutputImage::PixelType> > Superclass;
+  typedef itk::UnaryFunctorImageFilter<
+    TInputImage,
+    TOutputImage,
+    Functor::SoftThreshold<typename TInputImage::PixelType, typename TOutputImage::PixelType>>
+    Superclass;
   using Pointer = itk::SmartPointer<Self>;
   using ConstPointer = itk::SmartPointer<const Self>;
 
@@ -110,31 +113,27 @@ public:
   using InputPixelObjectType = itk::SimpleDataObjectDecorator<InputPixelType>;
 
   /** Set the threshold */
-  virtual void SetThreshold(const InputPixelType threshold);
+  virtual void
+  SetThreshold(const InputPixelType threshold);
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   /** Begin concept checking */
-  itkConceptMacro(OutputEqualityComparableCheck,
-                  (itk::Concept::EqualityComparable<OutputPixelType>));
-  itkConceptMacro(InputPixelTypeComparable,
-                  (itk::Concept::Comparable<InputPixelType>));
-  itkConceptMacro(InputOStreamWritableCheck,
-                  (itk::Concept::OStreamWritable<InputPixelType>));
-  itkConceptMacro(OutputOStreamWritableCheck,
-                  (itk::Concept::OStreamWritable<OutputPixelType>));
+  itkConceptMacro(OutputEqualityComparableCheck, (itk::Concept::EqualityComparable<OutputPixelType>));
+  itkConceptMacro(InputPixelTypeComparable, (itk::Concept::Comparable<InputPixelType>));
+  itkConceptMacro(InputOStreamWritableCheck, (itk::Concept::OStreamWritable<InputPixelType>));
+  itkConceptMacro(OutputOStreamWritableCheck, (itk::Concept::OStreamWritable<OutputPixelType>));
   /** End concept checking */
 #endif
 
 protected:
   SoftThresholdImageFilter();
   ~SoftThresholdImageFilter() override = default;
-
 };
 
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkSoftThresholdImageFilter.hxx"
+#  include "rtkSoftThresholdImageFilter.hxx"
 #endif
 
 #endif

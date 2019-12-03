@@ -31,163 +31,163 @@
 
 namespace rtk
 {
-  /** \class UnwarpSequenceImageFilter
-   * \brief Finds the image sequence that, once warped, equals the input image sequence.
-   *
-   * This filter attempts to invert a deformation by Conjugate Gradient optimization.
-   *
-   * \dot
-   * digraph UnwarpSequenceImageFilter {
-   *
-   * Input0 [ label="Input 0 (4D volume sequence)"];
-   * Input0 [shape=Mdiamond];
-   * Input1 [label="Input 1 (4D DVF)"];
-   * Input1 [shape=Mdiamond];
-   * Output [label="Output (4D volume sequence)"];
-   * Output [shape=Mdiamond];
-   *
-   * node [shape=box];
-   * ConstantSource [label="rtk::ConstantImageSource (4D volume sequence)" URL="\ref rtk::WarpSequenceImageFilter"];
-   * WarpSequenceForward [label="rtk::WarpSequenceImageFilter (forward mapping)"
-   *                      URL="\ref rtk::WarpSequenceImageFilter"];
-   * ConjugateGradient[ label="rtk::ConjugateGradientImageFilter" URL="\ref rtk::ConjugateGradientImageFilter"];
-   * CyclicDeformation [label="rtk::CyclicDeformationImageFilter (for DVFs)"
-   *                    URL="\ref rtk::CyclicDeformationImageFilter"];
-   *
-   * Input0 -> WarpSequenceForward;
-   * Input1 -> CyclicDeformation;
-   * CyclicDeformation -> WarpSequenceForward;
-   * ConstantSource -> ConjugateGradient;
-   * WarpSequenceForward -> ConjugateGradient;
-   * ConjugateGradient -> Output;
-   * }
-   * \enddot
-   *
-   * \test rtkunwarpsequencetest.cxx
-   *
-   * \author Cyril Mory
-   *
-   * \ingroup RTK ReconstructionAlgorithm
-   */
+/** \class UnwarpSequenceImageFilter
+ * \brief Finds the image sequence that, once warped, equals the input image sequence.
+ *
+ * This filter attempts to invert a deformation by Conjugate Gradient optimization.
+ *
+ * \dot
+ * digraph UnwarpSequenceImageFilter {
+ *
+ * Input0 [ label="Input 0 (4D volume sequence)"];
+ * Input0 [shape=Mdiamond];
+ * Input1 [label="Input 1 (4D DVF)"];
+ * Input1 [shape=Mdiamond];
+ * Output [label="Output (4D volume sequence)"];
+ * Output [shape=Mdiamond];
+ *
+ * node [shape=box];
+ * ConstantSource [label="rtk::ConstantImageSource (4D volume sequence)" URL="\ref rtk::WarpSequenceImageFilter"];
+ * WarpSequenceForward [label="rtk::WarpSequenceImageFilter (forward mapping)"
+ *                      URL="\ref rtk::WarpSequenceImageFilter"];
+ * ConjugateGradient[ label="rtk::ConjugateGradientImageFilter" URL="\ref rtk::ConjugateGradientImageFilter"];
+ * CyclicDeformation [label="rtk::CyclicDeformationImageFilter (for DVFs)"
+ *                    URL="\ref rtk::CyclicDeformationImageFilter"];
+ *
+ * Input0 -> WarpSequenceForward;
+ * Input1 -> CyclicDeformation;
+ * CyclicDeformation -> WarpSequenceForward;
+ * ConstantSource -> ConjugateGradient;
+ * WarpSequenceForward -> ConjugateGradient;
+ * ConjugateGradient -> Output;
+ * }
+ * \enddot
+ *
+ * \test rtkunwarpsequencetest.cxx
+ *
+ * \author Cyril Mory
+ *
+ * \ingroup RTK ReconstructionAlgorithm
+ */
 
-  template< typename TImageSequence,
-            typename TDVFImageSequence = itk::Image< itk::CovariantVector < typename TImageSequence::ValueType,
-                                                                            TImageSequence::ImageDimension-1 >,
-                                                     TImageSequence::ImageDimension >,
-            typename TImage = itk::Image< typename TImageSequence::ValueType,
-                                          TImageSequence::ImageDimension-1 >,
-            typename TDVFImage = itk::Image<itk::CovariantVector < typename TImageSequence::ValueType,
-                                                                   TImageSequence::ImageDimension - 1 >,
-                                            TImageSequence::ImageDimension - 1> >
+template <typename TImageSequence,
+          typename TDVFImageSequence =
+            itk::Image<itk::CovariantVector<typename TImageSequence::ValueType, TImageSequence::ImageDimension - 1>,
+                       TImageSequence::ImageDimension>,
+          typename TImage = itk::Image<typename TImageSequence::ValueType, TImageSequence::ImageDimension - 1>,
+          typename TDVFImage =
+            itk::Image<itk::CovariantVector<typename TImageSequence::ValueType, TImageSequence::ImageDimension - 1>,
+                       TImageSequence::ImageDimension - 1>>
 class UnwarpSequenceImageFilter : public itk::ImageToImageFilter<TImageSequence, TImageSequence>
 {
 public:
-    ITK_DISALLOW_COPY_AND_ASSIGN(UnwarpSequenceImageFilter);
+  ITK_DISALLOW_COPY_AND_ASSIGN(UnwarpSequenceImageFilter);
 
-    /** Standard class type alias. */
-    using Self = UnwarpSequenceImageFilter;
-    using Superclass = itk::ImageToImageFilter<TImageSequence, TImageSequence>;
-    using Pointer = itk::SmartPointer< Self >;
+  /** Standard class type alias. */
+  using Self = UnwarpSequenceImageFilter;
+  using Superclass = itk::ImageToImageFilter<TImageSequence, TImageSequence>;
+  using Pointer = itk::SmartPointer<Self>;
 
-    /** Method for creation through the object factory. */
-    itkNewMacro(Self);
+  /** Method for creation through the object factory. */
+  itkNewMacro(Self);
 
-    /** Run-time type information (and related methods). */
-    itkTypeMacro(UnwarpSequenceImageFilter, ImageToImageFilter);
+  /** Run-time type information (and related methods). */
+  itkTypeMacro(UnwarpSequenceImageFilter, ImageToImageFilter);
 
-    using CGOperatorFilterType = UnwarpSequenceConjugateGradientOperator< TImageSequence,
-                                                     TDVFImageSequence,
-                                                     TImage,
-                                                     TDVFImage>;
-    using WarpForwardFilterType = WarpSequenceImageFilter< TImageSequence,
-                                     TDVFImageSequence,
-                                     TImage,
-                                     TDVFImage>;
-    using ConjugateGradientFilterType = ConjugateGradientImageFilter<TImageSequence>;
+  using CGOperatorFilterType =
+    UnwarpSequenceConjugateGradientOperator<TImageSequence, TDVFImageSequence, TImage, TDVFImage>;
+  using WarpForwardFilterType = WarpSequenceImageFilter<TImageSequence, TDVFImageSequence, TImage, TDVFImage>;
+  using ConjugateGradientFilterType = ConjugateGradientImageFilter<TImageSequence>;
 
-    /** SFINAE type alias, depending on whether a CUDA image is used. */
-    using CPUImageSequence = typename itk::Image< typename TImageSequence::PixelType,
-                                 TImageSequence::ImageDimension>;
+  /** SFINAE type alias, depending on whether a CUDA image is used. */
+  using CPUImageSequence = typename itk::Image<typename TImageSequence::PixelType, TImageSequence::ImageDimension>;
 #ifdef RTK_USE_CUDA
-    typedef typename std::conditional< std::is_same< TImageSequence, CPUImageSequence >::value,
-                                       ConstantImageSource<TImageSequence>,
-                                       CudaConstantVolumeSeriesSource >::type
-                                                                      ConstantSourceType;
-    typedef typename std::conditional< std::is_same< TImageSequence, CPUImageSequence >::value,
-                                       ConjugateGradientFilterType,
-                                       CudaConjugateGradientImageFilter<TImageSequence> >::type
-                                                                      CudaConjugateGradientType;
+  typedef typename std::conditional<std::is_same<TImageSequence, CPUImageSequence>::value,
+                                    ConstantImageSource<TImageSequence>,
+                                    CudaConstantVolumeSeriesSource>::type                   ConstantSourceType;
+  typedef typename std::conditional<std::is_same<TImageSequence, CPUImageSequence>::value,
+                                    ConjugateGradientFilterType,
+                                    CudaConjugateGradientImageFilter<TImageSequence>>::type CudaConjugateGradientType;
 #else
-    using ConstantSourceType = ConstantImageSource<TImageSequence>;
-    using CudaConjugateGradientType = ConjugateGradientFilterType;
+  using ConstantSourceType = ConstantImageSource<TImageSequence>;
+  using CudaConjugateGradientType = ConjugateGradientFilterType;
 #endif
 
-    /** Set the motion vector field used in input 1 */
-    void SetDisplacementField(const TDVFImageSequence* DVFs);
+  /** Set the motion vector field used in input 1 */
+  void
+  SetDisplacementField(const TDVFImageSequence * DVFs);
 
-    /** Get the motion vector field used in input 1 */
-    typename TDVFImageSequence::Pointer GetDisplacementField();
+  /** Get the motion vector field used in input 1 */
+  typename TDVFImageSequence::Pointer
+  GetDisplacementField();
 
-    /** Number of conjugate gradient iterations */
-    itkSetMacro(NumberOfIterations, float);
-    itkGetMacro(NumberOfIterations, float);
+  /** Number of conjugate gradient iterations */
+  itkSetMacro(NumberOfIterations, float);
+  itkGetMacro(NumberOfIterations, float);
 
-    /** Phase shift to simulate phase estimation errors */
-    itkSetMacro(PhaseShift, float);
-    itkGetMacro(PhaseShift, float);
+  /** Phase shift to simulate phase estimation errors */
+  itkSetMacro(PhaseShift, float);
+  itkGetMacro(PhaseShift, float);
 
-    itkSetMacro(UseNearestNeighborInterpolationInWarping, bool);
-    itkGetMacro(UseNearestNeighborInterpolationInWarping, bool);
+  itkSetMacro(UseNearestNeighborInterpolationInWarping, bool);
+  itkGetMacro(UseNearestNeighborInterpolationInWarping, bool);
 
-    itkSetMacro(CudaConjugateGradient, bool);
-    itkGetMacro(CudaConjugateGradient, bool);
+  itkSetMacro(CudaConjugateGradient, bool);
+  itkGetMacro(CudaConjugateGradient, bool);
 
-    /** Set and Get for the UseCudaCyclicDeformation variable */
-    itkSetMacro(UseCudaCyclicDeformation, bool);
-    itkGetMacro(UseCudaCyclicDeformation, bool);
+  /** Set and Get for the UseCudaCyclicDeformation variable */
+  itkSetMacro(UseCudaCyclicDeformation, bool);
+  itkGetMacro(UseCudaCyclicDeformation, bool);
 
 protected:
-    UnwarpSequenceImageFilter();
-    ~UnwarpSequenceImageFilter() override = default;
+  UnwarpSequenceImageFilter();
+  ~UnwarpSequenceImageFilter() override = default;
 
-    /** Does the real work. */
-    void GenerateData() override;
+  /** Does the real work. */
+  void
+  GenerateData() override;
 
-    /** Member pointers to the filters used internally (for convenience)*/
-    typename ConjugateGradientFilterType::Pointer m_ConjugateGradientFilter;
-    typename CGOperatorFilterType::Pointer        m_CGOperator;
-    typename WarpForwardFilterType::Pointer       m_WarpForwardFilter;
-    typename ConstantSourceType::Pointer          m_ConstantSource;
+  /** Member pointers to the filters used internally (for convenience)*/
+  typename ConjugateGradientFilterType::Pointer m_ConjugateGradientFilter;
+  typename CGOperatorFilterType::Pointer        m_CGOperator;
+  typename WarpForwardFilterType::Pointer       m_WarpForwardFilter;
+  typename ConstantSourceType::Pointer          m_ConstantSource;
 
-    /** Member variables */
-    float m_PhaseShift;
+  /** Member variables */
+  float m_PhaseShift;
 
-    /** The inputs of this filter have the same type (float, 3) but not the same meaning
-    * It is normal that they do not occupy the same physical space. Therefore this check
-    * must be removed */
-#if ITK_VERSION_MAJOR<5
-    void VerifyInputInformation() override {}
+  /** The inputs of this filter have the same type (float, 3) but not the same meaning
+   * It is normal that they do not occupy the same physical space. Therefore this check
+   * must be removed */
+#if ITK_VERSION_MAJOR < 5
+  void
+  VerifyInputInformation() override
+  {}
 #else
-    void VerifyInputInformation() const override {}
+  void
+  VerifyInputInformation() const override
+  {}
 #endif
 
-    /** The volume and the projections must have different requested regions
-    */
-    void GenerateInputRequestedRegion() override;
-    void GenerateOutputInformation() override;
+  /** The volume and the projections must have different requested regions
+   */
+  void
+  GenerateInputRequestedRegion() override;
+  void
+  GenerateOutputInformation() override;
 
-    bool m_UseNearestNeighborInterpolationInWarping; //Default is false, linear interpolation is used instead
-    bool m_CudaConjugateGradient;
-    bool m_UseCudaCyclicDeformation;
+  bool m_UseNearestNeighborInterpolationInWarping; // Default is false, linear interpolation is used instead
+  bool m_CudaConjugateGradient;
+  bool m_UseCudaCyclicDeformation;
 
 private:
-    unsigned int    m_NumberOfIterations;
+  unsigned int m_NumberOfIterations;
 };
-} //namespace ITK
+} // namespace rtk
 
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkUnwarpSequenceImageFilter.hxx"
+#  include "rtkUnwarpSequenceImageFilter.hxx"
 #endif
 
 #endif

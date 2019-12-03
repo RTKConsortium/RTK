@@ -26,18 +26,18 @@ namespace itk
 // Constructor
 //
 template <class TPixel, unsigned int VImageDimension>
-CudaImage< TPixel, VImageDimension >::CudaImage()
+CudaImage<TPixel, VImageDimension>::CudaImage()
 {
-  m_DataManager = CudaImageDataManager< CudaImage< TPixel, VImageDimension > >::New();
+  m_DataManager = CudaImageDataManager<CudaImage<TPixel, VImageDimension>>::New();
 }
 
 template <class TPixel, unsigned int VImageDimension>
-CudaImage< TPixel, VImageDimension >::~CudaImage()
-{
-}
+CudaImage<TPixel, VImageDimension>::~CudaImage()
+{}
 
 template <class TPixel, unsigned int VImageDimension>
-void CudaImage< TPixel, VImageDimension >::Allocate(bool initializePixels)
+void
+CudaImage<TPixel, VImageDimension>::Allocate(bool initializePixels)
 {
   // allocate CPU memory - calling Allocate() in superclass
   Superclass::Allocate(initializePixels);
@@ -45,7 +45,7 @@ void CudaImage< TPixel, VImageDimension >::Allocate(bool initializePixels)
   // allocate Cuda memory
   this->ComputeOffsetTable();
   SizeValueType numPixel = this->GetOffsetTable()[VImageDimension];
-  m_DataManager->SetBufferSize(sizeof(TPixel)*numPixel);
+  m_DataManager->SetBufferSize(sizeof(TPixel) * numPixel);
   m_DataManager->SetImagePointer(this);
   m_DataManager->SetCPUBufferPointer(Superclass::GetBufferPointer());
 
@@ -55,94 +55,100 @@ void CudaImage< TPixel, VImageDimension >::Allocate(bool initializePixels)
   m_DataManager->SetCPUDirtyFlag(true);
 
   // If initialize pixel is set then we set the CPU dirty flag to false
-  if(initializePixels)
-    {
+  if (initializePixels)
+  {
     m_DataManager->SetCPUDirtyFlag(false);
-    }
+  }
 }
 
-template< class TPixel, unsigned int VImageDimension >
-void CudaImage< TPixel, VImageDimension >::Initialize()
+template <class TPixel, unsigned int VImageDimension>
+void
+CudaImage<TPixel, VImageDimension>::Initialize()
 {
   // CPU image initialize
   Superclass::Initialize();
 
-  m_DataManager = CudaImageDataManager< CudaImage< TPixel, VImageDimension > >::New();
+  m_DataManager = CudaImageDataManager<CudaImage<TPixel, VImageDimension>>::New();
 }
 
 template <class TPixel, unsigned int VImageDimension>
-void CudaImage< TPixel, VImageDimension >::SetBufferedRegion(const RegionType & region)
+void
+CudaImage<TPixel, VImageDimension>::SetBufferedRegion(const RegionType & region)
 {
   // If the regions are the same we don't change
   const RegionType currentRegion = this->GetBufferedRegion();
-  bool sameRegions = true;
-  for(unsigned int i=0;i<VImageDimension;i++)
+  bool             sameRegions = true;
+  for (unsigned int i = 0; i < VImageDimension; i++)
+  {
+    if (region.GetSize()[i] != currentRegion.GetSize()[i] || region.GetIndex()[i] != currentRegion.GetIndex()[i])
     {
-    if(region.GetSize()[i] != currentRegion.GetSize()[i]
-       || region.GetIndex()[i] != currentRegion.GetIndex()[i])
-      {
       sameRegions = false;
       break;
-      }
     }
+  }
 
-  if(sameRegions)
-    {
+  if (sameRegions)
+  {
     return;
-    }
+  }
 
   Superclass::SetBufferedRegion(region);
   SizeValueType numPixel = this->GetOffsetTable()[VImageDimension];
-  m_DataManager->SetBufferSize(sizeof(TPixel)*numPixel);
+  m_DataManager->SetBufferSize(sizeof(TPixel) * numPixel);
   m_DataManager->SetCPUDirtyFlag(false); // prevent the GPU to copy to the CPU
   m_DataManager->SetGPUBufferDirty();
 }
 
 
 template <class TPixel, unsigned int VImageDimension>
-void CudaImage< TPixel, VImageDimension >::FillBuffer(const TPixel & value)
+void
+CudaImage<TPixel, VImageDimension>::FillBuffer(const TPixel & value)
 {
   m_DataManager->SetGPUBufferDirty();
   Superclass::FillBuffer(value);
 }
 
 template <class TPixel, unsigned int VImageDimension>
-void CudaImage< TPixel, VImageDimension >::SetPixel(const IndexType & index, const TPixel & value)
+void
+CudaImage<TPixel, VImageDimension>::SetPixel(const IndexType & index, const TPixel & value)
 {
   m_DataManager->SetGPUBufferDirty();
   Superclass::SetPixel(index, value);
 }
 
 template <class TPixel, unsigned int VImageDimension>
-const TPixel & CudaImage< TPixel, VImageDimension >::GetPixel(const IndexType & index) const
+const TPixel &
+CudaImage<TPixel, VImageDimension>::GetPixel(const IndexType & index) const
 {
   m_DataManager->UpdateCPUBuffer();
   return Superclass::GetPixel(index);
 }
 
 template <class TPixel, unsigned int VImageDimension>
-TPixel & CudaImage< TPixel, VImageDimension >::GetPixel(const IndexType & index)
+TPixel &
+CudaImage<TPixel, VImageDimension>::GetPixel(const IndexType & index)
 {
   m_DataManager->UpdateCPUBuffer();
   return Superclass::GetPixel(index);
 }
 
 template <class TPixel, unsigned int VImageDimension>
-TPixel & CudaImage< TPixel, VImageDimension >::operator[] (const IndexType &index)
+TPixel & CudaImage<TPixel, VImageDimension>::operator[](const IndexType & index)
 {
   m_DataManager->UpdateCPUBuffer();
-  return Superclass::operator[] (index);
+  return Superclass::operator[](index);
 }
 
 template <class TPixel, unsigned int VImageDimension>
-const TPixel & CudaImage< TPixel, VImageDimension >::operator[] (const IndexType &index) const
+const TPixel & CudaImage<TPixel, VImageDimension>::operator[](const IndexType & index) const
 {
   m_DataManager->UpdateCPUBuffer();
-  return Superclass::operator[] (index);
+  return Superclass::operator[](index);
 }
 
 template <class TPixel, unsigned int VImageDimension>
-void CudaImage< TPixel, VImageDimension >::SetPixelContainer(PixelContainer *container)
+void
+CudaImage<TPixel, VImageDimension>::SetPixelContainer(PixelContainer * container)
 {
   Superclass::SetPixelContainer(container);
   m_DataManager->SetImagePointer(this);
@@ -150,18 +156,20 @@ void CudaImage< TPixel, VImageDimension >::SetPixelContainer(PixelContainer *con
   m_DataManager->SetCPUDirtyFlag(this->GetBufferPointer() == NULL);
   m_DataManager->SetGPUDirtyFlag(true);
   SizeValueType numPixel = this->GetOffsetTable()[VImageDimension];
-  m_DataManager->SetBufferSize(sizeof(TPixel)*numPixel);
+  m_DataManager->SetBufferSize(sizeof(TPixel) * numPixel);
 }
 
 template <class TPixel, unsigned int VImageDimension>
-void CudaImage< TPixel, VImageDimension >::UpdateBuffers()
+void
+CudaImage<TPixel, VImageDimension>::UpdateBuffers()
 {
   m_DataManager->UpdateCPUBuffer();
   m_DataManager->UpdateGPUBuffer();
 }
 
 template <class TPixel, unsigned int VImageDimension>
-TPixel* CudaImage< TPixel, VImageDimension >::GetBufferPointer()
+TPixel *
+CudaImage<TPixel, VImageDimension>::GetBufferPointer()
 {
   /* less conservative version - if you modify pixel value using
    * this pointer then you must set the image as modified manually!!! */
@@ -171,7 +179,8 @@ TPixel* CudaImage< TPixel, VImageDimension >::GetBufferPointer()
 }
 
 template <class TPixel, unsigned int VImageDimension>
-const TPixel * CudaImage< TPixel, VImageDimension >::GetBufferPointer() const
+const TPixel *
+CudaImage<TPixel, VImageDimension>::GetBufferPointer() const
 {
   // const does not change buffer, but if CPU is dirty then make it up-to-date
   m_DataManager->UpdateCPUBuffer();
@@ -181,46 +190,45 @@ const TPixel * CudaImage< TPixel, VImageDimension >::GetBufferPointer() const
 
 template <class TPixel, unsigned int VImageDimension>
 CudaDataManager::Pointer
-CudaImage< TPixel, VImageDimension >::GetCudaDataManager() const
+CudaImage<TPixel, VImageDimension>::GetCudaDataManager() const
 {
-  using CudaImageDataSuperclass = typename CudaImageDataManager< CudaImage >::Superclass;
+  using CudaImageDataSuperclass = typename CudaImageDataManager<CudaImage>::Superclass;
   using CudaImageDataSuperclassPointer = typename CudaImageDataSuperclass::Pointer;
 
-  return static_cast< CudaImageDataSuperclassPointer >(m_DataManager.GetPointer());
+  return static_cast<CudaImageDataSuperclassPointer>(m_DataManager.GetPointer());
 }
 
 template <class TPixel, unsigned int VImageDimension>
 void
-CudaImage< TPixel, VImageDimension >::Graft(const Self *data)
+CudaImage<TPixel, VImageDimension>::Graft(const Self * data)
 {
-  using CudaImageDataManagerType = CudaImageDataManager< CudaImage >;
+  using CudaImageDataManagerType = CudaImageDataManager<CudaImage>;
 
   // call the superclass' implementation
   Superclass::Graft(dynamic_cast<const DataObject *>(data));
-  m_DataManager = dynamic_cast<CudaImageDataManagerType*>(data->GetCudaDataManager().GetPointer());
+  m_DataManager = dynamic_cast<CudaImageDataManagerType *>(data->GetCudaDataManager().GetPointer());
   return;
 }
 
 template <class TPixel, unsigned int VImageDimension>
 void
-CudaImage< TPixel, VImageDimension >::Graft(const DataObject *data)
+CudaImage<TPixel, VImageDimension>::Graft(const DataObject * data)
 {
-  if ( data )
-    {
+  if (data)
+  {
     // Attempt to cast data to an Image
-    const auto * const cuImgData = dynamic_cast< const Self * >( data );
-    if ( cuImgData != nullptr )
-      {
+    const auto * const cuImgData = dynamic_cast<const Self *>(data);
+    if (cuImgData != nullptr)
+    {
       this->Graft(cuImgData);
-      }
-    else
-      {
-      // pointer could not be cast back down
-      itkExceptionMacro( << "itk::CudaImage::Graft() cannot cast "
-                         << typeid( data ).name() << " to "
-                         << typeid( const Self * ).name() );
-      }
     }
+    else
+    {
+      // pointer could not be cast back down
+      itkExceptionMacro(<< "itk::CudaImage::Graft() cannot cast " << typeid(data).name() << " to "
+                        << typeid(const Self *).name());
+    }
+  }
 }
 
 } // namespace itk

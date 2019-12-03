@@ -37,21 +37,20 @@ namespace rtk
  */
 
 template <class TInputImage, class TOutputImage = TInputImage>
-class ITK_EXPORT WaterPrecorrectionImageFilter:
-    public itk::InPlaceImageFilter<TInputImage, TOutputImage>
+class ITK_EXPORT WaterPrecorrectionImageFilter : public itk::InPlaceImageFilter<TInputImage, TOutputImage>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(WaterPrecorrectionImageFilter);
 
   /** Standard class type alias. */
   using Self = WaterPrecorrectionImageFilter;
-  using Superclass = itk::InPlaceImageFilter<TInputImage,TOutputImage>;
-  using Pointer = itk::SmartPointer< Self >;
-  using ConstPointer = itk::SmartPointer< const Self >;
+  using Superclass = itk::InPlaceImageFilter<TInputImage, TOutputImage>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
   /** Convenient type alias. */
   using OutputImageRegionType = typename TOutputImage::RegionType;
-  using VectorType = std::vector< double >;
+  using VectorType = std::vector<double>;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -60,34 +59,37 @@ public:
   itkTypeMacro(WaterPrecorrectionImageFilter, ImageToImageFilter);
 
   /** Get / Set the Median window that are going to be used during the operation
-    */
+   */
   itkGetMacro(Coefficients, VectorType);
-  virtual void SetCoefficients (const VectorType _arg)
+  virtual void
+  SetCoefficients(const VectorType _arg)
+  {
+    if (this->m_Coefficients != _arg)
     {
-    if ( this->m_Coefficients != _arg )
-      {
       this->m_Coefficients = _arg;
       this->Modified();
-      }
     }
+  }
 
 protected:
   WaterPrecorrectionImageFilter();
   ~WaterPrecorrectionImageFilter() override = default;
 
-#if ITK_VERSION_MAJOR<5
-  void ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, ThreadIdType threadId) override;
+#if ITK_VERSION_MAJOR < 5
+  void
+  ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, ThreadIdType threadId) override;
 #else
-  void DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread) override;
+  void
+  DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread) override;
 #endif
 
 private:
-  VectorType m_Coefficients;      // Correction coefficients
+  VectorType m_Coefficients; // Correction coefficients
 };
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkWaterPrecorrectionImageFilter.hxx"
+#  include "rtkWaterPrecorrectionImageFilter.hxx"
 #endif
 
 #endif

@@ -26,7 +26,8 @@
 
 //--------------------------------------------------------------------
 // Read Image Information
-void rtk::ImagXImageIO::ReadImageInformation()
+void
+rtk::ImagXImageIO::ReadImageInformation()
 {
   rtk::ImagXXMLFileReader::Pointer xmlReader;
 
@@ -34,94 +35,95 @@ void rtk::ImagXImageIO::ReadImageInformation()
   xmlReader->SetFilename(m_FileName);
   xmlReader->GenerateOutputInformation();
 
-  itk::MetaDataDictionary &dic = *(xmlReader->GetOutputObject() );
+  itk::MetaDataDictionary & dic = *(xmlReader->GetOutputObject());
 
-  using MetaDataDoubleType = itk::MetaDataObject< double >;
-  using MetaDataStringType = itk::MetaDataObject< std::string >;
-  using MetaDataIntType = itk::MetaDataObject< int >;
+  using MetaDataDoubleType = itk::MetaDataObject<double>;
+  using MetaDataStringType = itk::MetaDataObject<std::string>;
+  using MetaDataIntType = itk::MetaDataObject<int>;
 
-  std::string pixelType = dynamic_cast<MetaDataStringType*>(dic["pixelFormat"].GetPointer() )->GetMetaDataObjectValue();
-  if(pixelType=="Type_uint8")
+  std::string pixelType = dynamic_cast<MetaDataStringType *>(dic["pixelFormat"].GetPointer())->GetMetaDataObjectValue();
+  if (pixelType == "Type_uint8")
     SetComponentType(itk::ImageIOBase::UCHAR);
-  if(pixelType=="Type_sint8")
+  if (pixelType == "Type_sint8")
     SetComponentType(itk::ImageIOBase::CHAR);
-  if(pixelType=="Type_uint16")
+  if (pixelType == "Type_uint16")
     SetComponentType(itk::ImageIOBase::USHORT);
-  if(pixelType=="Type_sint16")
+  if (pixelType == "Type_sint16")
     SetComponentType(itk::ImageIOBase::SHORT);
-  if(pixelType=="Type_uint32")
+  if (pixelType == "Type_uint32")
     SetComponentType(itk::ImageIOBase::UINT);
-  if(pixelType=="Type_sint32")
+  if (pixelType == "Type_sint32")
     SetComponentType(itk::ImageIOBase::INT);
-  if(pixelType=="Type_float")
+  if (pixelType == "Type_float")
     SetComponentType(itk::ImageIOBase::FLOAT);
 
-  if( dic["dimensions"].GetPointer() == nullptr )
+  if (dic["dimensions"].GetPointer() == nullptr)
     SetNumberOfDimensions(3);
   else
-    SetNumberOfDimensions( ( dynamic_cast<MetaDataIntType *>(dic["dimensions"].GetPointer() )->GetMetaDataObjectValue() ) );
+    SetNumberOfDimensions((dynamic_cast<MetaDataIntType *>(dic["dimensions"].GetPointer())->GetMetaDataObjectValue()));
 
-  SetDimensions(0, dynamic_cast<MetaDataIntType *>(dic["x"].GetPointer() )->GetMetaDataObjectValue() );
-  SetSpacing(0, dynamic_cast<MetaDataDoubleType *>(dic["spacing_x"].GetPointer() )->GetMetaDataObjectValue() );
-  if(GetNumberOfDimensions()>1)
-    {
-    SetDimensions(1, dynamic_cast<MetaDataIntType *>(dic["y"].GetPointer() )->GetMetaDataObjectValue() );
-    SetSpacing(1, dynamic_cast<MetaDataDoubleType *>(dic["spacing_y"].GetPointer() )->GetMetaDataObjectValue() );
-    }
-  if(GetNumberOfDimensions()>2)
-    {
-    SetDimensions(2, dynamic_cast<MetaDataIntType *>(dic["z"].GetPointer() )->GetMetaDataObjectValue() );
-    SetSpacing(2, dynamic_cast<MetaDataDoubleType *>(dic["spacing_z"].GetPointer() )->GetMetaDataObjectValue() );
-    if(GetSpacing(2) == 0)
+  SetDimensions(0, dynamic_cast<MetaDataIntType *>(dic["x"].GetPointer())->GetMetaDataObjectValue());
+  SetSpacing(0, dynamic_cast<MetaDataDoubleType *>(dic["spacing_x"].GetPointer())->GetMetaDataObjectValue());
+  if (GetNumberOfDimensions() > 1)
+  {
+    SetDimensions(1, dynamic_cast<MetaDataIntType *>(dic["y"].GetPointer())->GetMetaDataObjectValue());
+    SetSpacing(1, dynamic_cast<MetaDataDoubleType *>(dic["spacing_y"].GetPointer())->GetMetaDataObjectValue());
+  }
+  if (GetNumberOfDimensions() > 2)
+  {
+    SetDimensions(2, dynamic_cast<MetaDataIntType *>(dic["z"].GetPointer())->GetMetaDataObjectValue());
+    SetSpacing(2, dynamic_cast<MetaDataDoubleType *>(dic["spacing_z"].GetPointer())->GetMetaDataObjectValue());
+    if (GetSpacing(2) == 0)
       SetSpacing(2, 1);
-    }
+  }
 
   itk::Matrix<double, 4, 4> matrix;
-  if(dic["matrixTransform"].GetPointer() == nullptr)
+  if (dic["matrixTransform"].GetPointer() == nullptr)
     matrix.SetIdentity();
   else
-    {
+  {
     std::istringstream iss(
-      dynamic_cast<MetaDataStringType*>(dic["matrixTransform"].GetPointer() )->GetMetaDataObjectValue() );
-    for(unsigned int j=0; j<4; j++)
-      for(unsigned int i=0; i<4; i++)
+      dynamic_cast<MetaDataStringType *>(dic["matrixTransform"].GetPointer())->GetMetaDataObjectValue());
+    for (unsigned int j = 0; j < 4; j++)
+      for (unsigned int i = 0; i < 4; i++)
         iss >> matrix[j][i];
     matrix /= matrix[3][3];
-    }
+  }
 
   std::vector<double> direction;
-  for(unsigned int i=0; i<GetNumberOfDimensions(); i++)
-    {
+  for (unsigned int i = 0; i < GetNumberOfDimensions(); i++)
+  {
     direction.clear();
-    for(unsigned int j=0; j<GetNumberOfDimensions(); j++)
+    for (unsigned int j = 0; j < GetNumberOfDimensions(); j++)
       direction.push_back(matrix[i][j]);
     SetDirection(i, direction);
     SetOrigin(i, matrix[i][3]);
-    }
+  }
 
-  if(std::string("LSB") == dynamic_cast<MetaDataStringType*>(dic["byteOrder"].GetPointer() )->GetMetaDataObjectValue() )
+  if (std::string("LSB") == dynamic_cast<MetaDataStringType *>(dic["byteOrder"].GetPointer())->GetMetaDataObjectValue())
     this->SetByteOrder(LittleEndian);
   else
     this->SetByteOrder(BigEndian);
 
   // Prepare raw file name
   m_RawFileName = itksys::SystemTools::GetFilenamePath(m_FileName);
-  if(!m_RawFileName.empty())
+  if (!m_RawFileName.empty())
     m_RawFileName += std::string("/");
-  m_RawFileName += dynamic_cast<MetaDataStringType*>(dic["rawFile"].GetPointer() )->GetMetaDataObjectValue();
+  m_RawFileName += dynamic_cast<MetaDataStringType *>(dic["rawFile"].GetPointer())->GetMetaDataObjectValue();
 } ////
 
 //--------------------------------------------------------------------
 // Read Image Information
-bool rtk::ImagXImageIO::CanReadFile(const char* FileNameToRead)
+bool
+rtk::ImagXImageIO::CanReadFile(const char * FileNameToRead)
 {
   std::string ext = itksys::SystemTools::GetFilenameLastExtension(FileNameToRead);
 
-  if( ext!=std::string(".xml") )
+  if (ext != std::string(".xml"))
     return false;
 
   std::ifstream is(FileNameToRead);
-  if(!is.is_open() )
+  if (!is.is_open())
     return false;
 
   // If the XML file has "<image name=" at the beginning of the first or second
@@ -129,11 +131,11 @@ bool rtk::ImagXImageIO::CanReadFile(const char* FileNameToRead)
   std::string line;
 
   std::getline(is, line);
-  if(line.substr(0, 12) == std::string("<image name=") )
+  if (line.substr(0, 12) == std::string("<image name="))
     return true;
 
   std::getline(is, line);
-  if(line.substr(0, 12) == std::string("<image name=") )
+  if (line.substr(0, 12) == std::string("<image name="))
     return true;
 
   return false;
@@ -150,49 +152,51 @@ ReadRawBytesAfterSwapping(ImageIOBase::IOComponentType componentType,
                           ImageIOBase::ByteOrder       byteOrder,
                           SizeValueType                numberOfComponents);
 #endif
-} //namespace itk
+} // namespace itk
 
 //--------------------------------------------------------------------
 // Read Image Content
-void rtk::ImagXImageIO::Read(void * buffer)
+void
+rtk::ImagXImageIO::Read(void * buffer)
 {
   // Adapted from itkRawImageIO
   std::ifstream is(m_RawFileName.c_str(), std::ios::binary);
 
-  if(!is.is_open() )
-    itkExceptionMacro(<<"Could not open file " << m_RawFileName);
+  if (!is.is_open())
+    itkExceptionMacro(<< "Could not open file " << m_RawFileName);
 
   unsigned long numberOfBytesToBeRead = GetComponentSize();
-  for(unsigned int i=0; i<GetNumberOfDimensions(); i++) numberOfBytesToBeRead *= GetDimensions(i);
+  for (unsigned int i = 0; i < GetNumberOfDimensions(); i++)
+    numberOfBytesToBeRead *= GetDimensions(i);
 
-  if(!this->ReadBufferAsBinary(is, buffer, numberOfBytesToBeRead) ) {
-    itkExceptionMacro(<<"Read failed: Wanted "
-                      << numberOfBytesToBeRead
-                      << " bytes, but read "
-                      << is.gcount() << " bytes.");
-    }
+  if (!this->ReadBufferAsBinary(is, buffer, numberOfBytesToBeRead))
+  {
+    itkExceptionMacro(<< "Read failed: Wanted " << numberOfBytesToBeRead << " bytes, but read " << is.gcount()
+                      << " bytes.");
+  }
   itkDebugMacro(<< "Reading Done");
 
-  const auto componentType = this->GetComponentType();
+  const auto          componentType = this->GetComponentType();
   const SizeValueType numberOfComponents = this->GetImageSizeInComponents();
   ReadRawBytesAfterSwapping(componentType, buffer, m_ByteOrder, numberOfComponents);
 }
 
 //--------------------------------------------------------------------
 // Write Image Information
-void rtk::ImagXImageIO::WriteImageInformation( bool itkNotUsed(keepOfStream) )
-{
-}
+void
+rtk::ImagXImageIO::WriteImageInformation(bool itkNotUsed(keepOfStream))
+{}
 
 //--------------------------------------------------------------------
 // Write Image Information
-bool rtk::ImagXImageIO::CanWriteFile( const char* itkNotUsed(FileNameToWrite) )
+bool
+rtk::ImagXImageIO::CanWriteFile(const char * itkNotUsed(FileNameToWrite))
 {
   return false;
 }
 
 //--------------------------------------------------------------------
 // Write Image
-void rtk::ImagXImageIO::Write( const void * itkNotUsed(buffer) )
-{
-} ////
+void
+rtk::ImagXImageIO::Write(const void * itkNotUsed(buffer))
+{} ////

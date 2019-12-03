@@ -27,25 +27,22 @@
 #include <cuda.h>
 
 void
-CUDA_laplacian( int size[3],
-                float spacing[3],
-                float* dev_in,
-                float* dev_out)
+CUDA_laplacian(int size[3], float spacing[3], float * dev_in, float * dev_out)
 {
-  int3 dev_Size = make_int3(size[0], size[1], size[2]);
+  int3   dev_Size = make_int3(size[0], size[1], size[2]);
   float3 dev_Spacing = make_float3(spacing[0], spacing[1], spacing[2]);
 
   // Reset output volume
   long int memorySizeOutput = size[0] * size[1] * size[2] * sizeof(float);
-  cudaMemset((void *)dev_out, 0, memorySizeOutput );
+  cudaMemset((void *)dev_out, 0, memorySizeOutput);
 
   // Initialize volumes to store the gradient components
   float * dev_grad_x;
   float * dev_grad_y;
   float * dev_grad_z;
-  cudaMalloc( (void**)&dev_grad_x, memorySizeOutput);
-  cudaMalloc( (void**)&dev_grad_y, memorySizeOutput);
-  cudaMalloc( (void**)&dev_grad_z, memorySizeOutput);
+  cudaMalloc((void **)&dev_grad_x, memorySizeOutput);
+  cudaMalloc((void **)&dev_grad_y, memorySizeOutput);
+  cudaMalloc((void **)&dev_grad_z, memorySizeOutput);
   cudaMemset(dev_grad_x, 0, memorySizeOutput);
   cudaMemset(dev_grad_y, 0, memorySizeOutput);
   cudaMemset(dev_grad_z, 0, memorySizeOutput);
@@ -57,17 +54,17 @@ CUDA_laplacian( int size[3],
   int blocksInY = iDivUp(size[1], dimBlock.y);
   int blocksInZ = iDivUp(size[2], dimBlock.z);
 
-  dim3 dimGrid  = dim3(blocksInX, blocksInY, blocksInZ);
+  dim3 dimGrid = dim3(blocksInX, blocksInY, blocksInZ);
 
-  gradient_kernel <<< dimGrid, dimBlock >>> ( dev_in, dev_grad_x, dev_grad_y, dev_grad_z, dev_Size, dev_Spacing);
+  gradient_kernel<<<dimGrid, dimBlock>>>(dev_in, dev_grad_x, dev_grad_y, dev_grad_z, dev_Size, dev_Spacing);
   CUDA_CHECK_ERROR;
 
-  divergence_kernel <<< dimGrid, dimBlock >>> ( dev_grad_x, dev_grad_y, dev_grad_z, dev_out, dev_Size, dev_Spacing);
+  divergence_kernel<<<dimGrid, dimBlock>>>(dev_grad_x, dev_grad_y, dev_grad_z, dev_out, dev_Size, dev_Spacing);
   CUDA_CHECK_ERROR;
 
   // Cleanup
-  cudaFree (dev_grad_x);
-  cudaFree (dev_grad_y);
-  cudaFree (dev_grad_z);
+  cudaFree(dev_grad_x);
+  cudaFree(dev_grad_y);
+  cudaFree(dev_grad_z);
   CUDA_CHECK_ERROR;
 }

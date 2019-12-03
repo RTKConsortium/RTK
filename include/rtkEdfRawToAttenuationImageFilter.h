@@ -35,9 +35,8 @@ namespace rtk
  * \ingroup RTK ImageToImageFilter
  */
 
-template<class TInputImage, class TOutputImage=TInputImage>
-class ITKIOImageBase_HIDDEN EdfRawToAttenuationImageFilter :
-  public itk::ImageToImageFilter<TInputImage, TOutputImage>
+template <class TInputImage, class TOutputImage = TInputImage>
+class ITKIOImageBase_HIDDEN EdfRawToAttenuationImageFilter : public itk::ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(EdfRawToAttenuationImageFilter);
@@ -63,16 +62,18 @@ public:
 
   /** Set the vector of strings that contains the file names. Files
    * are processed in sequential order. */
-  void SetFileNames(const FileNamesContainer &name)
+  void
+  SetFileNames(const FileNamesContainer & name)
   {
-    if ( m_FileNames != name)
-      {
+    if (m_FileNames != name)
+    {
       m_FileNames = name;
       this->Modified();
-      }
+    }
   }
 
-  const FileNamesContainer & GetFileNames() const
+  const FileNamesContainer &
+  GetFileNames() const
   {
     return m_FileNames;
   }
@@ -81,16 +82,19 @@ protected:
   EdfRawToAttenuationImageFilter();
   ~EdfRawToAttenuationImageFilter() override = default;
 
-  void BeforeThreadedGenerateData() override;
+  void
+  BeforeThreadedGenerateData() override;
 
-#if ITK_VERSION_MAJOR<5
-  void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) override;
+#if ITK_VERSION_MAJOR < 5
+  void
+  ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, ThreadIdType threadId) override;
 #else
-  void DynamicThreadedGenerateData( const OutputImageRegionType& outputRegionForThread) override;
+  void
+  DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread) override;
 #endif
 
 private:
-  using EdfImageSeries = itk::ImageSeriesReader< InputImageType >;
+  using EdfImageSeries = itk::ImageSeriesReader<InputImageType>;
   typename EdfImageSeries::Pointer m_DarkProjectionsReader;
   typename EdfImageSeries::Pointer m_ReferenceProjectionsReader;
 
@@ -104,7 +108,7 @@ private:
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkEdfRawToAttenuationImageFilter.hxx"
+#  include "rtkEdfRawToAttenuationImageFilter.hxx"
 #endif
 
 #endif

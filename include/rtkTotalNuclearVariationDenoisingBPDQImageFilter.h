@@ -110,18 +110,18 @@ namespace rtk
  * \ingroup RTK IntensityImageFilters
  */
 
-template< typename TOutputImage, typename TGradientImage =
-    itk::Image< itk::CovariantVector < typename TOutputImage::ValueType, TOutputImage::ImageDimension - 1>,
-    TOutputImage::ImageDimension > >
-class TotalNuclearVariationDenoisingBPDQImageFilter :
-        public rtk::DenoisingBPDQImageFilter< TOutputImage, TGradientImage >
+template <typename TOutputImage,
+          typename TGradientImage =
+            itk::Image<itk::CovariantVector<typename TOutputImage::ValueType, TOutputImage::ImageDimension - 1>,
+                       TOutputImage::ImageDimension>>
+class TotalNuclearVariationDenoisingBPDQImageFilter : public rtk::DenoisingBPDQImageFilter<TOutputImage, TGradientImage>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(TotalNuclearVariationDenoisingBPDQImageFilter);
 
   /** Standard class type alias. */
   using Self = TotalNuclearVariationDenoisingBPDQImageFilter;
-  using Superclass = rtk::DenoisingBPDQImageFilter< TOutputImage, TGradientImage >;
+  using Superclass = rtk::DenoisingBPDQImageFilter<TOutputImage, TGradientImage>;
   using Pointer = itk::SmartPointer<Self>;
   using ConstPointer = itk::SmartPointer<const Self>;
 
@@ -138,21 +138,22 @@ protected:
   TotalNuclearVariationDenoisingBPDQImageFilter();
   ~TotalNuclearVariationDenoisingBPDQImageFilter() override = default;
 
-  void GenerateOutputInformation() override;
+  void
+  GenerateOutputInformation() override;
 
   /** Sub filter pointers */
-  typename SingularValueThresholdFilterType::Pointer    m_ThresholdFilter;
-  typename Superclass::ThresholdFilterType* GetThresholdFilter() override
+  typename SingularValueThresholdFilterType::Pointer m_ThresholdFilter;
+  typename Superclass::ThresholdFilterType *
+  GetThresholdFilter() override
   {
-    return dynamic_cast<typename Superclass::ThresholdFilterType*>(this->m_ThresholdFilter.GetPointer());
+    return dynamic_cast<typename Superclass::ThresholdFilterType *>(this->m_ThresholdFilter.GetPointer());
   }
-
 };
 
-} // end namespace itk
+} // namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkTotalNuclearVariationDenoisingBPDQImageFilter.hxx"
+#  include "rtkTotalNuclearVariationDenoisingBPDQImageFilter.hxx"
 #endif
 
 #endif //__rtkTotalNuclearVariationDenoisingBPDQImageFilter__

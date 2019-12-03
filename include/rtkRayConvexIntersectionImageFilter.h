@@ -37,15 +37,14 @@ namespace rtk
  * \ingroup RTK InPlaceImageFilter
  */
 template <class TInputImage, class TOutputImage>
-class RayConvexIntersectionImageFilter :
-  public itk::InPlaceImageFilter<TInputImage,TOutputImage>
+class RayConvexIntersectionImageFilter : public itk::InPlaceImageFilter<TInputImage, TOutputImage>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(RayConvexIntersectionImageFilter);
 
   /** Standard class type alias. */
   using Self = RayConvexIntersectionImageFilter;
-  using Superclass = itk::InPlaceImageFilter<TInputImage,TOutputImage>;
+  using Superclass = itk::InPlaceImageFilter<TInputImage, TOutputImage>;
   using Pointer = itk::SmartPointer<Self>;
   using ConstPointer = itk::SmartPointer<const Self>;
 
@@ -81,7 +80,8 @@ public:
    * p&=&\int_{n}^{f} d\exp(\mu r)\mathrm{d}r\\
    * &=&\dfrac{d}{\mu}\left(\exp(\mu {f})-\exp(\mu n)\right)
    * \f}
-   * with \f$n\f$ and \f$f\f$ the distances from source to intersection points near and far from the source and \f$d\f$ m_Density.
+   * with \f$n\f$ and \f$f\f$ the distances from source to intersection points near and far from the source and \f$d\f$
+   * m_Density.
    */
   itkGetMacro(Attenuation, double);
   itkSetMacro(Attenuation, double);
@@ -92,14 +92,16 @@ protected:
 
   /** ConvexShape must be created in the BeforeThreadedGenerateData in the
    * daugter classes. */
-  void BeforeThreadedGenerateData() override;
+  void
+  BeforeThreadedGenerateData() override;
 
   /** Apply changes to the input image requested region. */
-#if ITK_VERSION_MAJOR<5
-  void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread,
-                             ThreadIdType threadId ) override;
+#if ITK_VERSION_MAJOR < 5
+  void
+  ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, ThreadIdType threadId) override;
 #else
-  void DynamicThreadedGenerateData( const OutputImageRegionType& outputRegionForThread ) override;
+  void
+  DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread) override;
 #endif
 
 private:
@@ -111,7 +113,7 @@ private:
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkRayConvexIntersectionImageFilter.hxx"
+#  include "rtkRayConvexIntersectionImageFilter.hxx"
 #endif
 
 #endif

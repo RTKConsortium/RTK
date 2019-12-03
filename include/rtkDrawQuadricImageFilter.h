@@ -35,15 +35,14 @@ namespace rtk
  * \ingroup RTK InPlaceImageFilter
  */
 template <class TInputImage, class TOutputImage>
-class DrawQuadricImageFilter:
-public DrawConvexImageFilter< TInputImage, TOutputImage >
+class DrawQuadricImageFilter : public DrawConvexImageFilter<TInputImage, TOutputImage>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(DrawQuadricImageFilter);
 
   /** Standard class type alias. */
   using Self = DrawQuadricImageFilter;
-  using Superclass = DrawConvexImageFilter<TInputImage,TOutputImage>;
+  using Superclass = DrawConvexImageFilter<TInputImage, TOutputImage>;
   using Pointer = itk::SmartPointer<Self>;
   using ConstPointer = itk::SmartPointer<const Self>;
 
@@ -66,7 +65,8 @@ public:
   itkGetConstReferenceMacro(PlanePositions, std::vector<ScalarType>);
 
   /** See ConvexShape for the definition of clip planes. */
-  void AddClipPlane(const VectorType & dir, const ScalarType & pos);
+  void
+  AddClipPlane(const VectorType & dir, const ScalarType & pos);
 
   itkGetMacro(A, ScalarType);
   itkSetMacro(A, ScalarType);
@@ -93,29 +93,30 @@ protected:
   DrawQuadricImageFilter();
   ~DrawQuadricImageFilter() override = default;
 
-  void BeforeThreadedGenerateData ( ) override;
+  void
+  BeforeThreadedGenerateData() override;
 
 private:
-  ScalarType              m_Density{1.};
+  ScalarType              m_Density{ 1. };
   std::vector<VectorType> m_PlaneDirections;
   std::vector<ScalarType> m_PlanePositions;
 
-  ScalarType m_A{0.};
-  ScalarType m_B{0.};
-  ScalarType m_C{0.};
-  ScalarType m_D{0.};
-  ScalarType m_E{0.};
-  ScalarType m_F{0.};
-  ScalarType m_G{0.};
-  ScalarType m_H{0.};
-  ScalarType m_I{0.};
-  ScalarType m_J{0.};
+  ScalarType m_A{ 0. };
+  ScalarType m_B{ 0. };
+  ScalarType m_C{ 0. };
+  ScalarType m_D{ 0. };
+  ScalarType m_E{ 0. };
+  ScalarType m_F{ 0. };
+  ScalarType m_G{ 0. };
+  ScalarType m_H{ 0. };
+  ScalarType m_I{ 0. };
+  ScalarType m_J{ 0. };
 };
 
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkDrawQuadricImageFilter.hxx"
+#  include "rtkDrawQuadricImageFilter.hxx"
 #endif
 
 #endif

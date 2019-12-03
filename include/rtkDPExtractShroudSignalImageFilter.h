@@ -23,20 +23,20 @@
 
 namespace rtk
 {
-  /** \class DPExtractShroudSignalImageFilter
-   * \brief Extract the signal corresponding to the breathing motion
-   * (1D) from a shroud image (2D).
-   *
-   * \test rtkamsterdamshroudtest.cxx
-   *
-   * \author Vivien Delmon
-   *
-   * \ingroup RTK ImageToImageFilter
-   */
+/** \class DPExtractShroudSignalImageFilter
+ * \brief Extract the signal corresponding to the breathing motion
+ * (1D) from a shroud image (2D).
+ *
+ * \test rtkamsterdamshroudtest.cxx
+ *
+ * \author Vivien Delmon
+ *
+ * \ingroup RTK ImageToImageFilter
+ */
 
-template<class TInputPixel, class TOutputPixel>
-class ITK_EXPORT DPExtractShroudSignalImageFilter :
-  public itk::ImageToImageFilter<itk::Image<TInputPixel, 2>, itk::Image<TOutputPixel, 1> >
+template <class TInputPixel, class TOutputPixel>
+class ITK_EXPORT DPExtractShroudSignalImageFilter
+  : public itk::ImageToImageFilter<itk::Image<TInputPixel, 2>, itk::Image<TOutputPixel, 1>>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(DPExtractShroudSignalImageFilter);
@@ -50,12 +50,9 @@ public:
   using ConstPointer = itk::SmartPointer<const Self>;
 
   /** ImageDimension constants */
-  itkStaticConstMacro(InputImageDimension, unsigned int,
-                      TInputImage::ImageDimension);
-  itkStaticConstMacro(OutputImageDimension, unsigned int,
-                      TOutputImage::ImageDimension);
-  itkStaticConstMacro(ImageDimension, unsigned int,
-                      TOutputImage::ImageDimension);
+  itkStaticConstMacro(InputImageDimension, unsigned int, TInputImage::ImageDimension);
+  itkStaticConstMacro(OutputImageDimension, unsigned int, TOutputImage::ImageDimension);
+  itkStaticConstMacro(ImageDimension, unsigned int, TOutputImage::ImageDimension);
 
   /** Standard New method. */
   itkNewMacro(Self);
@@ -71,19 +68,22 @@ protected:
   DPExtractShroudSignalImageFilter();
   ~DPExtractShroudSignalImageFilter() override = default;
 
-  void GenerateOutputInformation() override;
-  void GenerateInputRequestedRegion() override;
-  void GenerateData() override;
+  void
+  GenerateOutputInformation() override;
+  void
+  GenerateInputRequestedRegion() override;
+  void
+  GenerateData() override;
 
 private:
-  double    m_Amplitude{0.};
+  double m_Amplitude{ 0. };
 
 }; // end of class
 
 } // end of namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkDPExtractShroudSignalImageFilter.hxx"
+#  include "rtkDPExtractShroudSignalImageFilter.hxx"
 #endif
 
 #endif // ! rtkDPExtractShroudSignalImageFilter_h

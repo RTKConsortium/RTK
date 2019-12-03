@@ -24,9 +24,8 @@
 namespace rtk
 {
 
-template< typename TOutputImage, typename TGradientImage>
-DenoisingBPDQImageFilter<TOutputImage, TGradientImage>
-::DenoisingBPDQImageFilter()
+template <typename TOutputImage, typename TGradientImage>
+DenoisingBPDQImageFilter<TOutputImage, TGradientImage>::DenoisingBPDQImageFilter()
 {
   m_Gamma = 1.0;
   m_NumberOfIterations = 1;
@@ -44,7 +43,8 @@ DenoisingBPDQImageFilter<TOutputImage, TGradientImage>
 
   // Set whether the sub filters should release their data during pipeline execution
   m_DivergenceFilter->ReleaseDataFlagOn();
-  m_SubtractFilter->ReleaseDataFlagOn(); // It is the pipeline's output, but it is explicitely computed during the last iteration
+  m_SubtractFilter
+    ->ReleaseDataFlagOn(); // It is the pipeline's output, but it is explicitely computed during the last iteration
   m_GradientFilter->ReleaseDataFlagOn();
   m_MultiplyFilter->ReleaseDataFlagOn();
   m_SubtractGradientFilter->ReleaseDataFlagOn();
@@ -58,10 +58,9 @@ DenoisingBPDQImageFilter<TOutputImage, TGradientImage>
   m_SubtractGradientFilter->SetInPlace(true);
 }
 
-template< typename TOutputImage, typename TGradientImage>
+template <typename TOutputImage, typename TGradientImage>
 void
-DenoisingBPDQImageFilter<TOutputImage, TGradientImage>
-::GenerateOutputInformation()
+DenoisingBPDQImageFilter<TOutputImage, TGradientImage>::GenerateOutputInformation()
 {
   // Set the pipeline for the first iteration
   SetPipelineForFirstIteration();
@@ -70,22 +69,22 @@ DenoisingBPDQImageFilter<TOutputImage, TGradientImage>
   // and set the filters to use them
   double numberOfDimensionsProcessed = 0;
   m_MinSpacing = this->GetInput()->GetSpacing()[0];
-  for (unsigned int dim=0; dim<TOutputImage::ImageDimension; dim++)
-    {
+  for (unsigned int dim = 0; dim < TOutputImage::ImageDimension; dim++)
+  {
     if (m_DimensionsProcessed[dim])
-      {
+    {
       numberOfDimensionsProcessed += 1.0;
       if (this->GetInput()->GetSpacing()[dim] < m_MinSpacing)
         m_MinSpacing = this->GetInput()->GetSpacing()[dim];
-      }
     }
+  }
 
   // Set the gradient and divergence filter to take spacing into account
   m_GradientFilter->SetUseImageSpacingOn();
   m_DivergenceFilter->SetUseImageSpacingOn();
 
   // Beta must be smaller than 1 / (2 ^ NumberOfDimensionsProcessed) for the algorithm to converge
-  m_Beta = 1/pow(2,numberOfDimensionsProcessed) * 0.9 * m_MinSpacing;
+  m_Beta = 1 / pow(2, numberOfDimensionsProcessed) * 0.9 * m_MinSpacing;
 
   m_MultiplyFilter->SetConstant2(m_Beta);
   m_GradientFilter->SetDimensionsProcessed(m_DimensionsProcessed);
@@ -94,23 +93,21 @@ DenoisingBPDQImageFilter<TOutputImage, TGradientImage>
   // Have the last filter calculate its output information,
   // which should update that of the whole pipeline
   this->GetThresholdFilter()->UpdateOutputInformation();
-  this->GetOutput()->CopyInformation( m_MultiplyFilter->GetOutput() );
+  this->GetOutput()->CopyInformation(m_MultiplyFilter->GetOutput());
 }
 
-template< typename TOutputImage, typename TGradientImage>
+template <typename TOutputImage, typename TGradientImage>
 void
-DenoisingBPDQImageFilter<TOutputImage, TGradientImage>
-::SetPipelineForFirstIteration()
+DenoisingBPDQImageFilter<TOutputImage, TGradientImage>::SetPipelineForFirstIteration()
 {
   m_MultiplyFilter->SetInput1(this->GetInput());
   m_GradientFilter->SetInput(m_MultiplyFilter->GetOutput());
   this->GetThresholdFilter()->SetInput(m_GradientFilter->GetOutput());
 }
 
-template< typename TOutputImage, typename TGradientImage>
+template <typename TOutputImage, typename TGradientImage>
 void
-DenoisingBPDQImageFilter<TOutputImage, TGradientImage>
-::SetPipelineAfterFirstIteration()
+DenoisingBPDQImageFilter<TOutputImage, TGradientImage>::SetPipelineAfterFirstIteration()
 {
   m_SubtractFilter->SetInput1(this->GetInput());
   m_SubtractFilter->SetInput2(m_DivergenceFilter->GetOutput());
@@ -126,27 +123,27 @@ DenoisingBPDQImageFilter<TOutputImage, TGradientImage>
   m_MultiplyFilter->SetConstant2(m_Beta * m_MinSpacing);
 }
 
-template< typename TOutputImage, typename TGradientImage>
+template <typename TOutputImage, typename TGradientImage>
 void
-DenoisingBPDQImageFilter<TOutputImage, TGradientImage>
-::GenerateData()
+DenoisingBPDQImageFilter<TOutputImage, TGradientImage>::GenerateData()
 {
   typename TGradientImage::Pointer pimg;
 
   // The first iteration only updates intermediate variables, not the output
   // The output is updated m_NumberOfIterations-1 times, therefore an additional
   // iteration must be performed so that even m_NumberOfIterations=1 has an effect
-  for (int iter=0; iter<m_NumberOfIterations; iter++)
-    {
-    if(iter==1) SetPipelineAfterFirstIteration();
+  for (int iter = 0; iter < m_NumberOfIterations; iter++)
+  {
+    if (iter == 1)
+      SetPipelineAfterFirstIteration();
 
     this->GetThresholdFilter()->Update();
 
     pimg = this->GetThresholdFilter()->GetOutput();
     pimg->DisconnectPipeline();
-    m_DivergenceFilter->SetInput( pimg );
-    m_SubtractGradientFilter->SetInput1( pimg );
-    }
+    m_DivergenceFilter->SetInput(pimg);
+    m_SubtractGradientFilter->SetInput1(pimg);
+  }
   m_DivergenceFilter->Update();
   pimg->ReleaseData();
 

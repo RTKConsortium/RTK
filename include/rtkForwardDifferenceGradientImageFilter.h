@@ -47,22 +47,19 @@ namespace rtk
  * \ingroup RTK
  */
 
-template< typename TInputImage,
+template <typename TInputImage,
           typename TOperatorValueType = float,
           typename TOuputValue = float,
-          typename TOuputImage = itk::Image< itk::CovariantVector
-        < TOuputValue, TInputImage::ImageDimension >, TInputImage::ImageDimension > >
-class ForwardDifferenceGradientImageFilter:
-  public itk::ImageToImageFilter< TInputImage, TOuputImage >
+          typename TOuputImage =
+            itk::Image<itk::CovariantVector<TOuputValue, TInputImage::ImageDimension>, TInputImage::ImageDimension>>
+class ForwardDifferenceGradientImageFilter : public itk::ImageToImageFilter<TInputImage, TOuputImage>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(ForwardDifferenceGradientImageFilter);
 
   /** Extract dimension from input image. */
-  itkStaticConstMacro(InputImageDimension, unsigned int,
-                      TInputImage::ImageDimension);
-  itkStaticConstMacro(OutputImageDimension, unsigned int,
-                      TOuputImage::ImageDimension);
+  itkStaticConstMacro(InputImageDimension, unsigned int, TInputImage::ImageDimension);
+  itkStaticConstMacro(OutputImageDimension, unsigned int, TOuputImage::ImageDimension);
 
   /** Standard class type alias. */
   using Self = ForwardDifferenceGradientImageFilter;
@@ -74,9 +71,9 @@ public:
   using OutputImagePointer = typename OutputImageType::Pointer;
 
   /** Standard class type alias. */
-  using Superclass = itk::ImageToImageFilter< InputImageType, OutputImageType >;
-  using Pointer = itk::SmartPointer< Self >;
-  using ConstPointer = itk::SmartPointer< const Self >;
+  using Superclass = itk::ImageToImageFilter<InputImageType, OutputImageType>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -97,17 +94,24 @@ public:
    * in order to inform the pipeline execution model.
    *
    * \sa ImageToImageFilter::GenerateInputRequestedRegion() */
-  void GenerateInputRequestedRegion() override;
+  void
+  GenerateInputRequestedRegion() override;
 
   /** Use the image spacing information in calculations. Use this option if you
    *  want derivatives in physical space. Default is UseImageSpacingOn. */
-  void SetUseImageSpacingOn()
-  { this->SetUseImageSpacing(true); }
+  void
+  SetUseImageSpacingOn()
+  {
+    this->SetUseImageSpacing(true);
+  }
 
   /** Ignore the image spacing. Use this option if you want derivatives in
       isotropic pixel space.  Default is UseImageSpacingOn. */
-  void SetUseImageSpacingOff()
-  { this->SetUseImageSpacing(false); }
+  void
+  SetUseImageSpacingOff()
+  {
+    this->SetUseImageSpacing(false);
+  }
 
   /** Set/Get whether or not the filter will use the spacing of the input
       image in its calculations */
@@ -117,17 +121,17 @@ public:
   /** Set along which dimensions the gradient computation should be
       performed. The vector components at unprocessed dimensions contain
       undetermined values */
-  void SetDimensionsProcessed(bool* DimensionsProcessed);
+  void
+  SetDimensionsProcessed(bool * DimensionsProcessed);
 
   /** Allows to change the default boundary condition */
-  void OverrideBoundaryCondition(itk::ImageBoundaryCondition< TInputImage >* boundaryCondition);
+  void
+  OverrideBoundaryCondition(itk::ImageBoundaryCondition<TInputImage> * boundaryCondition);
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
-  itkConceptMacro( InputConvertibleToOutputCheck,
-                   ( itk::Concept::Convertible< InputPixelType, OutputValueType > ) );
-  itkConceptMacro( OutputHasNumericTraitsCheck,
-                   ( itk::Concept::HasNumericTraits< OutputValueType > ) );
+  itkConceptMacro(InputConvertibleToOutputCheck, (itk::Concept::Convertible<InputPixelType, OutputValueType>));
+  itkConceptMacro(OutputHasNumericTraitsCheck, (itk::Concept::HasNumericTraits<OutputValueType>));
   // End concept checking
 #endif
 
@@ -148,7 +152,8 @@ public:
 protected:
   ForwardDifferenceGradientImageFilter();
   ~ForwardDifferenceGradientImageFilter() override;
-  void PrintSelf(std::ostream & os, itk::Indent indent) const override;
+  void
+  PrintSelf(std::ostream & os, itk::Indent indent) const override;
 
   /** ForwardDifferenceGradientImageFilter can be implemented as a multithreaded filter.
    * Therefore, this implementation provides a ThreadedGenerateData()
@@ -160,35 +165,39 @@ protected:
    *
    * \sa ImageToImageFilter::ThreadedGenerateData(),
    *     ImageToImageFilter::GenerateData() */
-#if ITK_VERSION_MAJOR<5
-  void ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread,
-                            itk::ThreadIdType threadId) override;
+#if ITK_VERSION_MAJOR < 5
+  void
+  ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, itk::ThreadIdType threadId) override;
 #else
-  void DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread) override;
+  void
+  DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread) override;
 #endif
 
-  void GenerateOutputInformation() override;
+  void
+  GenerateOutputInformation() override;
 
 private:
-//  // An overloaded method which may transform the gradient to a
-//  // physical vector and converts to the correct output pixel type.
-//  template <typename TValue>
-//  void SetOutputPixel( ImageRegionIterator< VectorImage<TValue,OutputImageDimension> > &it, CovariantVectorType &gradient )
-//  {
-//    if ( this->m_UseImageDirection )
-//      {
-//      CovariantVectorType physicalGradient;
-//      it.GetImage()->TransformLocalVectorToPhysicalVector( gradient, physicalGradient );
-//      it.Set( OutputPixelType( physicalGradient.GetDataPointer(), InputImageDimension, false ) );
-//      }
-//    else
-//      {
-//      it.Set( OutputPixelType( gradient.GetDataPointer(), InputImageDimension, false ) );
-//      }
-//  }
+  //  // An overloaded method which may transform the gradient to a
+  //  // physical vector and converts to the correct output pixel type.
+  //  template <typename TValue>
+  //  void SetOutputPixel( ImageRegionIterator< VectorImage<TValue,OutputImageDimension> > &it, CovariantVectorType
+  //  &gradient )
+  //  {
+  //    if ( this->m_UseImageDirection )
+  //      {
+  //      CovariantVectorType physicalGradient;
+  //      it.GetImage()->TransformLocalVectorToPhysicalVector( gradient, physicalGradient );
+  //      it.Set( OutputPixelType( physicalGradient.GetDataPointer(), InputImageDimension, false ) );
+  //      }
+  //    else
+  //      {
+  //      it.Set( OutputPixelType( gradient.GetDataPointer(), InputImageDimension, false ) );
+  //      }
+  //  }
 
-  template <typename T >
-  void SetOutputPixel( itk::ImageRegionIterator< T > &it, CovariantVectorType &gradient )
+  template <typename T>
+  void
+  SetOutputPixel(itk::ImageRegionIterator<T> & it, CovariantVectorType & gradient)
   {
     it.Value() = gradient;
   }
@@ -205,13 +214,13 @@ private:
   // are set to zero
   bool m_DimensionsProcessed[TInputImage::ImageDimension];
 
-  itk::ImageBoundaryCondition< TInputImage, TInputImage >* m_BoundaryCondition;
-  bool                                                     m_IsBoundaryConditionOverriden;
+  itk::ImageBoundaryCondition<TInputImage, TInputImage> * m_BoundaryCondition;
+  bool                                                    m_IsBoundaryConditionOverriden;
 };
-} // end namespace itk
+} // namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkForwardDifferenceGradientImageFilter.hxx"
+#  include "rtkForwardDifferenceGradientImageFilter.hxx"
 #endif
 
 #endif

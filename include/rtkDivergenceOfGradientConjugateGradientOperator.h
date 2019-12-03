@@ -35,22 +35,20 @@ namespace rtk
  * \ingroup RTK IntensityImageFilters
  */
 template <class TInputImage>
-class DivergenceOfGradientConjugateGradientOperator :
-        public ConjugateGradientOperator< TInputImage >
+class DivergenceOfGradientConjugateGradientOperator : public ConjugateGradientOperator<TInputImage>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(DivergenceOfGradientConjugateGradientOperator);
 
   /** Extract dimension from input and output image. */
-  itkStaticConstMacro(InputImageDimension, unsigned int,
-                      TInputImage::ImageDimension);
+  itkStaticConstMacro(InputImageDimension, unsigned int, TInputImage::ImageDimension);
 
   /** Convenient type alias for simplifying declarations. */
   using InputImageType = TInputImage;
 
   /** Standard class type alias. */
   using Self = DivergenceOfGradientConjugateGradientOperator;
-  using Superclass = itk::ImageToImageFilter< InputImageType, InputImageType>;
+  using Superclass = itk::ImageToImageFilter<InputImageType, InputImageType>;
   using Pointer = itk::SmartPointer<Self>;
   using ConstPointer = itk::SmartPointer<const Self>;
 
@@ -70,28 +68,30 @@ public:
   using GradientImageType = typename GradientFilterType::OutputImageType;
   using DivergenceFilterType = BackwardDifferenceDivergenceImageFilter<GradientImageType>;
 
-  void SetDimensionsProcessed(bool* arg);
+  void
+  SetDimensionsProcessed(bool * arg);
 
 protected:
   DivergenceOfGradientConjugateGradientOperator();
   ~DivergenceOfGradientConjugateGradientOperator() override = default;
 
-  void GenerateData() override;
+  void
+  GenerateData() override;
 
-  void GenerateOutputInformation() override;
+  void
+  GenerateOutputInformation() override;
 
   /** Sub filter pointers */
-  typename GradientFilterType::Pointer             m_GradientFilter;
-  typename DivergenceFilterType::Pointer           m_DivergenceFilter;
+  typename GradientFilterType::Pointer   m_GradientFilter;
+  typename DivergenceFilterType::Pointer m_DivergenceFilter;
 
   bool m_DimensionsProcessed[TInputImage::ImageDimension];
-
 };
 
-} // end namespace itk
+} // namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkDivergenceOfGradientConjugateGradientOperator.hxx"
+#  include "rtkDivergenceOfGradientConjugateGradientOperator.hxx"
 #endif
 
 #endif //__rtkDivergenceOfGradientConjugateGradientOperator__

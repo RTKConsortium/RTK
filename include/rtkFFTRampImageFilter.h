@@ -27,20 +27,19 @@
 // The Set macro is redefined to clear the current FFT kernel when a parameter
 // is modified.
 #undef itkSetMacro
-#define itkSetMacro(name, type)                     \
-  virtual void Set##name (const type _arg)          \
-    {                                               \
-    itkDebugMacro("setting " #name " to " << _arg); \
-CLANG_PRAGMA_PUSH                                   \
-CLANG_SUPPRESS_Wfloat_equal                         \
-    if ( this->m_##name != _arg )                   \
-      {                                             \
-      this->m_##name = _arg;                        \
-      this->Modified();                             \
-      this->m_KernelFFT = nullptr;                  \
-      }                                             \
-CLANG_PRAGMA_POP                                    \
-    }
+#define itkSetMacro(name, type)                                                                                        \
+  virtual void Set##name(const type _arg)                                                                              \
+  {                                                                                                                    \
+    itkDebugMacro("setting " #name " to " << _arg);                                                                    \
+    CLANG_PRAGMA_PUSH                                                                                                  \
+    CLANG_SUPPRESS_Wfloat_equal if (this->m_##name != _arg)                                                            \
+    {                                                                                                                  \
+      this->m_##name = _arg;                                                                                           \
+      this->Modified();                                                                                                \
+      this->m_KernelFFT = nullptr;                                                                                     \
+    }                                                                                                                  \
+    CLANG_PRAGMA_POP                                                                                                   \
+  }
 
 namespace rtk
 {
@@ -58,18 +57,16 @@ namespace rtk
  * \ingroup RTK ImageToImageFilter
  */
 
-template<class TInputImage, class TOutputImage=TInputImage, class TFFTPrecision=double>
-class ITK_EXPORT FFTRampImageFilter :
-  public rtk::FFTProjectionsConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
+template <class TInputImage, class TOutputImage = TInputImage, class TFFTPrecision = double>
+class ITK_EXPORT FFTRampImageFilter
+  : public rtk::FFTProjectionsConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(FFTRampImageFilter);
 
   /** Standard class type alias. */
   using Self = FFTRampImageFilter;
-  using Superclass = rtk::FFTProjectionsConvolutionImageFilter< TInputImage,
-                                                     TOutputImage,
-                                                     TFFTPrecision>;
+  using Superclass = rtk::FFTProjectionsConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>;
   using Pointer = itk::SmartPointer<Self>;
   using ConstPointer = itk::SmartPointer<const Self>;
 
@@ -131,26 +128,28 @@ protected:
   FFTRampImageFilter();
   ~FFTRampImageFilter() override = default;
 
-  void GenerateInputRequestedRegion() override;
+  void
+  GenerateInputRequestedRegion() override;
 
   /** Creates and return a pointer to one line of the ramp kernel in Fourier space.
    *  Used in generate data functions.  */
-  void UpdateFFTProjectionsConvolutionKernel(const SizeType size) override;
+  void
+  UpdateFFTProjectionsConvolutionKernel(const SizeType size) override;
 
 private:
   /**
    * Cut frequency of Hann, Cosine and Hamming windows. The first one which is
    * non-zero is used.
    */
-  double m_HannCutFrequency{0.};
-  double m_CosineCutFrequency{0.};
-  double m_HammingFrequency{0.};
-  double m_HannCutFrequencyY{0.};
+  double m_HannCutFrequency{ 0. };
+  double m_CosineCutFrequency{ 0. };
+  double m_HammingFrequency{ 0. };
+  double m_HannCutFrequencyY{ 0. };
 
   /** Cut frequency of Ram-Lak and Shepp-Logan
-    */
-  double m_RamLakCutFrequency{0.};
-  double m_SheppLoganCutFrequency{0.};
+   */
+  double m_RamLakCutFrequency{ 0. };
+  double m_SheppLoganCutFrequency{ 0. };
 
   SizeType m_PreviousKernelUpdateSize;
 }; // end of class
@@ -158,23 +157,22 @@ private:
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkFFTRampImageFilter.hxx"
+#  include "rtkFFTRampImageFilter.hxx"
 #endif
 
 // Rollback to the original definition of the Set macro
 #undef itkSetMacro
-#define itkSetMacro(name, type)                     \
-  virtual void Set##name (const type _arg)          \
-    {                                               \
-    itkDebugMacro("setting " #name " to " << _arg); \
-CLANG_PRAGMA_PUSH                                   \
-CLANG_SUPPRESS_Wfloat_equal                         \
-    if ( this->m_##name != _arg )                   \
-      {                                             \
-      this->m_##name = _arg;                        \
-      this->Modified();                             \
-      }                                             \
-CLANG_PRAGMA_POP                                    \
-    }
+#define itkSetMacro(name, type)                                                                                        \
+  virtual void Set##name(const type _arg)                                                                              \
+  {                                                                                                                    \
+    itkDebugMacro("setting " #name " to " << _arg);                                                                    \
+    CLANG_PRAGMA_PUSH                                                                                                  \
+    CLANG_SUPPRESS_Wfloat_equal if (this->m_##name != _arg)                                                            \
+    {                                                                                                                  \
+      this->m_##name = _arg;                                                                                           \
+      this->Modified();                                                                                                \
+    }                                                                                                                  \
+    CLANG_PRAGMA_POP                                                                                                   \
+  }
 
 #endif

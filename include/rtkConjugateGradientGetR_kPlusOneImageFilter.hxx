@@ -28,140 +28,138 @@
 namespace rtk
 {
 
-template< typename TInputType>
+template <typename TInputType>
 ConjugateGradientGetR_kPlusOneImageFilter<TInputType>::ConjugateGradientGetR_kPlusOneImageFilter()
 {
   this->SetNumberOfRequiredInputs(3);
 }
 
-template< typename TInputType>
-void ConjugateGradientGetR_kPlusOneImageFilter<TInputType>::SetRk(const TInputType* Rk)
+template <typename TInputType>
+void
+ConjugateGradientGetR_kPlusOneImageFilter<TInputType>::SetRk(const TInputType * Rk)
 {
-    this->SetNthInput(0, const_cast<TInputType*>(Rk));
+  this->SetNthInput(0, const_cast<TInputType *>(Rk));
 }
 
-template< typename TInputType>
-void ConjugateGradientGetR_kPlusOneImageFilter<TInputType>::SetPk(const TInputType* Pk)
+template <typename TInputType>
+void
+ConjugateGradientGetR_kPlusOneImageFilter<TInputType>::SetPk(const TInputType * Pk)
 {
-    this->SetNthInput(1, const_cast<TInputType*>(Pk));
+  this->SetNthInput(1, const_cast<TInputType *>(Pk));
 }
 
-template< typename TInputType>
-void ConjugateGradientGetR_kPlusOneImageFilter<TInputType>::SetAPk(const TInputType* APk)
+template <typename TInputType>
+void
+ConjugateGradientGetR_kPlusOneImageFilter<TInputType>::SetAPk(const TInputType * APk)
 {
-    this->SetNthInput(2, const_cast<TInputType*>(APk));
+  this->SetNthInput(2, const_cast<TInputType *>(APk));
 }
 
-template< typename TInputType>
-typename TInputType::Pointer ConjugateGradientGetR_kPlusOneImageFilter<TInputType>::GetRk()
+template <typename TInputType>
+typename TInputType::Pointer
+ConjugateGradientGetR_kPlusOneImageFilter<TInputType>::GetRk()
 {
-    return static_cast< TInputType * >
-            ( this->itk::ProcessObject::GetInput(0) );
+  return static_cast<TInputType *>(this->itk::ProcessObject::GetInput(0));
 }
 
-template< typename TInputType>
-typename TInputType::Pointer ConjugateGradientGetR_kPlusOneImageFilter<TInputType>::GetPk()
+template <typename TInputType>
+typename TInputType::Pointer
+ConjugateGradientGetR_kPlusOneImageFilter<TInputType>::GetPk()
 {
-    return static_cast< TInputType * >
-            ( this->itk::ProcessObject::GetInput(1) );
+  return static_cast<TInputType *>(this->itk::ProcessObject::GetInput(1));
 }
 
-template< typename TInputType>
-typename TInputType::Pointer ConjugateGradientGetR_kPlusOneImageFilter<TInputType>::GetAPk()
+template <typename TInputType>
+typename TInputType::Pointer
+ConjugateGradientGetR_kPlusOneImageFilter<TInputType>::GetAPk()
 {
-    return static_cast< TInputType * >
-            ( this->itk::ProcessObject::GetInput(2) );
+  return static_cast<TInputType *>(this->itk::ProcessObject::GetInput(2));
 }
 
-template< typename TInputType>
-void ConjugateGradientGetR_kPlusOneImageFilter<TInputType>
-::GenerateData()
+template <typename TInputType>
+void
+ConjugateGradientGetR_kPlusOneImageFilter<TInputType>::GenerateData()
 {
   this->AllocateOutputs();
 
   // Prepare iterators
   using RegionIterator = itk::ImageRegionIterator<TInputType>;
 
-#if ITK_VERSION_MAJOR>4
+#if ITK_VERSION_MAJOR > 4
   std::mutex accumulationLock;
 #endif
   m_SquaredNormR_k = 0;
   double p_k_t_A_p_k = 0;
-#if ITK_VERSION_MAJOR>4
-  this->GetMultiThreader()->SetNumberOfWorkUnits( this->GetNumberOfWorkUnits() );
-  this->GetMultiThreader()->template ParallelizeImageRegion<TInputType::ImageDimension>
-    (
+#if ITK_VERSION_MAJOR > 4
+  this->GetMultiThreader()->SetNumberOfWorkUnits(this->GetNumberOfWorkUnits());
+  this->GetMultiThreader()->template ParallelizeImageRegion<TInputType::ImageDimension>(
     this->GetOutput()->GetRequestedRegion(),
-    [this, &p_k_t_A_p_k, &accumulationLock](const typename TInputType::RegionType & outputRegionForThread)
-      {
+    [this, &p_k_t_A_p_k, &accumulationLock](const typename TInputType::RegionType & outputRegionForThread) {
 #else
-      {
-      typename TInputType::RegionType outputRegionForThread;
-      outputRegionForThread = this->GetOutput()->GetRequestedRegion();
+  {
+    typename TInputType::RegionType outputRegionForThread;
+    outputRegionForThread = this->GetOutput()->GetRequestedRegion();
 #endif
-      // Compute Norm(r_k)²
-#if ITK_VERSION_MAJOR>4
+  // Compute Norm(r_k)²
+#if ITK_VERSION_MAJOR > 4
       double squaredNormR_kThread = 0.;
 #endif
       RegionIterator r_k_It(this->GetRk(), outputRegionForThread);
       r_k_It.GoToBegin();
-      while(!r_k_It.IsAtEnd())
-        {
-#if ITK_VERSION_MAJOR>4
+      while (!r_k_It.IsAtEnd())
+      {
+#if ITK_VERSION_MAJOR > 4
         squaredNormR_kThread += r_k_It.Get() * r_k_It.Get();
 #else
-        this->m_SquaredNormR_k += r_k_It.Get() * r_k_It.Get();
+      this->m_SquaredNormR_k += r_k_It.Get() * r_k_It.Get();
 #endif
         ++r_k_It;
-        }
+      }
 
-      // Compute p_k_t_A_p_k
-#if ITK_VERSION_MAJOR>4
+    // Compute p_k_t_A_p_k
+#if ITK_VERSION_MAJOR > 4
       double p_k_t_A_p_kThread = 0.;
 #endif
       RegionIterator p_k_It(this->GetPk(), outputRegionForThread);
       p_k_It.GoToBegin();
       RegionIterator A_p_k_It(this->GetAPk(), outputRegionForThread);
       A_p_k_It.GoToBegin();
-      while(!p_k_It.IsAtEnd())
-        {
-#if ITK_VERSION_MAJOR>4
+      while (!p_k_It.IsAtEnd())
+      {
+#if ITK_VERSION_MAJOR > 4
         p_k_t_A_p_kThread += p_k_It.Get() * A_p_k_It.Get();
 #else
-        p_k_t_A_p_k += p_k_It.Get() * A_p_k_It.Get();
+      p_k_t_A_p_k += p_k_It.Get() * A_p_k_It.Get();
 #endif
         ++p_k_It;
         ++A_p_k_It;
-        }
-#if ITK_VERSION_MAJOR>4
+      }
+#if ITK_VERSION_MAJOR > 4
       std::lock_guard<std::mutex> mutexHolder(accumulationLock);
       this->m_SquaredNormR_k += squaredNormR_kThread;
       p_k_t_A_p_k += p_k_t_A_p_kThread;
-      },
-    nullptr
-    );
+    },
+    nullptr);
 #else
-      }
+  }
 #endif
 
-  const double eps=1e-8;
+  const double                                                         eps = 1e-8;
   typename itk::PixelTraits<typename TInputType::PixelType>::ValueType alphak = m_SquaredNormR_k / (p_k_t_A_p_k + eps);
 
   m_SquaredNormR_kPlusOne = 0;
-#if ITK_VERSION_MAJOR>4
-  this->GetMultiThreader()->SetNumberOfWorkUnits( this->GetNumberOfWorkUnits() );
-  this->GetMultiThreader()->template ParallelizeImageRegion<TInputType::ImageDimension>
-    (
+#if ITK_VERSION_MAJOR > 4
+  this->GetMultiThreader()->SetNumberOfWorkUnits(this->GetNumberOfWorkUnits());
+  this->GetMultiThreader()->template ParallelizeImageRegion<TInputType::ImageDimension>(
     this->GetOutput()->GetRequestedRegion(),
-    [this, alphak, &accumulationLock](const typename TInputType::RegionType & outputRegionForThread)
-      {
+    [this, alphak, &accumulationLock](const typename TInputType::RegionType & outputRegionForThread) {
 #else
-      {
-      typename TInputType::RegionType outputRegionForThread;
-      outputRegionForThread = this->GetOutput()->GetRequestedRegion();
+  {
+    typename TInputType::RegionType outputRegionForThread;
+    outputRegionForThread = this->GetOutput()->GetRequestedRegion();
 #endif
-      // Compute Rk+1 and write it on the output
-#if ITK_VERSION_MAJOR>4
+  // Compute Rk+1 and write it on the output
+#if ITK_VERSION_MAJOR > 4
       double squaredNormR_kPlusOneVectorThread = 0.;
 #endif
       RegionIterator outputIt(this->GetOutput(), outputRegionForThread);
@@ -170,32 +168,31 @@ void ConjugateGradientGetR_kPlusOneImageFilter<TInputType>
       A_p_k_It.GoToBegin();
       RegionIterator r_k_It(this->GetRk(), outputRegionForThread);
       r_k_It.GoToBegin();
-      while(!outputIt.IsAtEnd())
-        {
+      while (!outputIt.IsAtEnd())
+      {
         outputIt.Set(r_k_It.Get() - alphak * A_p_k_It.Get());
-#if ITK_VERSION_MAJOR>4
+#if ITK_VERSION_MAJOR > 4
         squaredNormR_kPlusOneVectorThread += outputIt.Get() * outputIt.Get();
 #else
-        this->m_SquaredNormR_kPlusOne += outputIt.Get() * outputIt.Get();
+      this->m_SquaredNormR_kPlusOne += outputIt.Get() * outputIt.Get();
 #endif
         ++r_k_It;
         ++A_p_k_It;
         ++outputIt;
-        }
-#if ITK_VERSION_MAJOR>4
+      }
+#if ITK_VERSION_MAJOR > 4
       std::lock_guard<std::mutex> mutexHolder(accumulationLock);
       this->m_SquaredNormR_kPlusOne += squaredNormR_kPlusOneVectorThread;
-      },
-    nullptr
-    );
+    },
+    nullptr);
 #else
-      }
+  }
 #endif
 
   m_Alphak = m_SquaredNormR_k / (p_k_t_A_p_k + eps);
 }
 
-}// end namespace
+} // namespace rtk
 
 
 #endif

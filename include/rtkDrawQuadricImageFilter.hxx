@@ -30,29 +30,26 @@ namespace rtk
 {
 
 template <class TInputImage, class TOutputImage>
-DrawQuadricImageFilter<TInputImage, TOutputImage>
-::DrawQuadricImageFilter()
-{
-}
+DrawQuadricImageFilter<TInputImage, TOutputImage>::DrawQuadricImageFilter()
+{}
 
 template <class TInputImage, class TOutputImage>
 void
-DrawQuadricImageFilter<TInputImage, TOutputImage>
-::BeforeThreadedGenerateData()
+DrawQuadricImageFilter<TInputImage, TOutputImage>::BeforeThreadedGenerateData()
 {
-  if( this->GetConvexObject() == nullptr )
-    this->SetConvexObject( QuadricShape::New().GetPointer() );
+  if (this->GetConvexObject() == nullptr)
+    this->SetConvexObject(QuadricShape::New().GetPointer());
 
   Superclass::BeforeThreadedGenerateData();
 
-  QuadricShape * qo = dynamic_cast< QuadricShape* >( this->GetConvexObject() );
-  if( qo == nullptr )
-    {
+  QuadricShape * qo = dynamic_cast<QuadricShape *>(this->GetConvexObject());
+  if (qo == nullptr)
+  {
     itkExceptionMacro("This is not a QuadricShape!");
-    }
+  }
 
-  qo->SetDensity( this->GetDensity() );
-  qo->SetClipPlanes( this->GetPlaneDirections(), this->GetPlanePositions() );
+  qo->SetDensity(this->GetDensity());
+  qo->SetClipPlanes(this->GetPlaneDirections(), this->GetPlanePositions());
   qo->SetA(this->GetA());
   qo->SetB(this->GetB());
   qo->SetC(this->GetC());
@@ -67,13 +64,12 @@ DrawQuadricImageFilter<TInputImage, TOutputImage>
 
 template <class TInputImage, class TOutputImage>
 void
-DrawQuadricImageFilter<TInputImage, TOutputImage>
-::AddClipPlane(const VectorType & dir, const ScalarType & pos)
+DrawQuadricImageFilter<TInputImage, TOutputImage>::AddClipPlane(const VectorType & dir, const ScalarType & pos)
 {
   m_PlaneDirections.push_back(dir);
   m_PlanePositions.push_back(pos);
 }
 
-}// end namespace rtk
+} // end namespace rtk
 
 #endif

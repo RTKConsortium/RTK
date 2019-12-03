@@ -19,34 +19,32 @@
 #ifndef rtkDeconstructSoftThresholdReconstructImageFilter_hxx
 #define rtkDeconstructSoftThresholdReconstructImageFilter_hxx
 
-//rtk Includes
+// rtk Includes
 #include "rtkDeconstructSoftThresholdReconstructImageFilter.h"
 
 namespace rtk
 {
 
 /////////////////////////////////////////////////////////
-//Constructor()
+// Constructor()
 template <class TImage>
-DeconstructSoftThresholdReconstructImageFilter<TImage>
-::DeconstructSoftThresholdReconstructImageFilter()
+DeconstructSoftThresholdReconstructImageFilter<TImage>::DeconstructSoftThresholdReconstructImageFilter()
 {
-    m_DeconstructionFilter = DeconstructFilterType::New();
-    m_ReconstructionFilter = ReconstructFilterType::New();
-    m_Order = 3;
-    m_Threshold = 0;
-    m_PipelineConstructed = false;
+  m_DeconstructionFilter = DeconstructFilterType::New();
+  m_ReconstructionFilter = ReconstructFilterType::New();
+  m_Order = 3;
+  m_Threshold = 0;
+  m_PipelineConstructed = false;
 }
 
 
 /////////////////////////////////////////////////////////
-//PrintSelf()
+// PrintSelf()
 template <class TImage>
 void
-DeconstructSoftThresholdReconstructImageFilter<TImage>
-::PrintSelf(std::ostream& os, itk::Indent indent) const
+DeconstructSoftThresholdReconstructImageFilter<TImage>::PrintSelf(std::ostream & os, itk::Indent indent) const
 {
-    Superclass::PrintSelf(os, indent);
+  Superclass::PrintSelf(os, indent);
 }
 
 /////////////////////////////////////////////////////////
@@ -54,34 +52,31 @@ DeconstructSoftThresholdReconstructImageFilter<TImage>
 // filters
 template <class TImage>
 void
-DeconstructSoftThresholdReconstructImageFilter<TImage>
-::SetNumberOfLevels(unsigned int levels)
+DeconstructSoftThresholdReconstructImageFilter<TImage>::SetNumberOfLevels(unsigned int levels)
 {
-    m_DeconstructionFilter->SetNumberOfLevels(levels);
-    m_ReconstructionFilter->SetNumberOfLevels(levels);
+  m_DeconstructionFilter->SetNumberOfLevels(levels);
+  m_ReconstructionFilter->SetNumberOfLevels(levels);
 }
 
 /////////////////////////////////////////////////////////
-//GenerateInputRequestedRegion()
+// GenerateInputRequestedRegion()
 template <class TImage>
 void
-DeconstructSoftThresholdReconstructImageFilter<TImage>
-::GenerateInputRequestedRegion()
+DeconstructSoftThresholdReconstructImageFilter<TImage>::GenerateInputRequestedRegion()
 {
-  InputImagePointer  inputPtr  = const_cast<TImage *>(this->GetInput());
+  InputImagePointer inputPtr = const_cast<TImage *>(this->GetInput());
   inputPtr->SetRequestedRegionToLargestPossibleRegion();
 }
 
 /////////////////////////////////////////////////////////
-//GenerateOutputInformation()
+// GenerateOutputInformation()
 template <class TImage>
 void
-DeconstructSoftThresholdReconstructImageFilter<TImage>
-::GenerateOutputInformation()
+DeconstructSoftThresholdReconstructImageFilter<TImage>::GenerateOutputInformation()
 {
 
   if (!m_PipelineConstructed)
-    {
+  {
     // Connect the inputs
     m_DeconstructionFilter->SetInput(this->GetInput());
     m_DeconstructionFilter->ReleaseDataFlagOn();
@@ -93,44 +88,43 @@ DeconstructSoftThresholdReconstructImageFilter<TImage>
     m_ReconstructionFilter->SetSizes(m_DeconstructionFilter->GetSizes());
     m_ReconstructionFilter->SetIndices(m_DeconstructionFilter->GetIndices());
 
-    //Create and setup an array of soft threshold filters
-    for (unsigned int index=0; index < m_DeconstructionFilter->GetNumberOfOutputs(); index++)
-      {
+    // Create and setup an array of soft threshold filters
+    for (unsigned int index = 0; index < m_DeconstructionFilter->GetNumberOfOutputs(); index++)
+    {
       // Soft thresholding
       m_SoftTresholdFilters.push_back(SoftThresholdFilterType::New());
       m_SoftTresholdFilters[index]->SetInput(m_DeconstructionFilter->GetOutput(index));
       m_SoftTresholdFilters[index]->SetThreshold(m_Threshold);
       m_SoftTresholdFilters[index]->ReleaseDataFlagOn();
 
-      //Set input for reconstruction
+      // Set input for reconstruction
       m_ReconstructionFilter->SetInput(index, m_SoftTresholdFilters[index]->GetOutput());
-      }
+    }
 
     // The low pass coefficients are not thresholded
     m_SoftTresholdFilters[0]->SetThreshold(0);
-    }
+  }
 
   m_PipelineConstructed = true;
 
   // Have the last filter calculate its output information
   // and copy it as the output information of the composite filter
   m_ReconstructionFilter->UpdateOutputInformation();
-  this->GetOutput()->CopyInformation( m_ReconstructionFilter->GetOutput() );
+  this->GetOutput()->CopyInformation(m_ReconstructionFilter->GetOutput());
 }
 
 /////////////////////////////////////////////////////////
-//GenerateData()
+// GenerateData()
 template <class TImage>
 void
-DeconstructSoftThresholdReconstructImageFilter<TImage>
-::GenerateData()
+DeconstructSoftThresholdReconstructImageFilter<TImage>::GenerateData()
 {
   // Perform reconstruction
   m_ReconstructionFilter->Update();
-  this->GraftOutput( m_ReconstructionFilter->GetOutput() );
+  this->GraftOutput(m_ReconstructionFilter->GetOutput());
 }
 
 
-}// end namespace rtk
+} // end namespace rtk
 
 #endif

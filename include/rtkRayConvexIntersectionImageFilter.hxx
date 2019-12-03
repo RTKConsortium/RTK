@@ -29,56 +29,50 @@ namespace rtk
 {
 
 template <class TInputImage, class TOutputImage>
-RayConvexIntersectionImageFilter<TInputImage,TOutputImage>
-::RayConvexIntersectionImageFilter():
-  m_Geometry(nullptr)
+RayConvexIntersectionImageFilter<TInputImage, TOutputImage>::RayConvexIntersectionImageFilter()
+  : m_Geometry(nullptr)
+{}
+
+template <class TInputImage, class TOutputImage>
+void
+RayConvexIntersectionImageFilter<TInputImage, TOutputImage>::BeforeThreadedGenerateData()
 {
+  if (this->m_ConvexShape.IsNull())
+    itkExceptionMacro(<< "ConvexShape has not been set.");
 }
 
 template <class TInputImage, class TOutputImage>
 void
-RayConvexIntersectionImageFilter<TInputImage,TOutputImage>
-::BeforeThreadedGenerateData()
-{
-  if( this->m_ConvexShape.IsNull() )
-    itkExceptionMacro(<<"ConvexShape has not been set.");
-}
-
-template <class TInputImage, class TOutputImage>
-void
-RayConvexIntersectionImageFilter<TInputImage,TOutputImage>
-#if ITK_VERSION_MAJOR<5
-::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread,
-                       ThreadIdType itkNotUsed(threadId))
+RayConvexIntersectionImageFilter<TInputImage, TOutputImage>
+#if ITK_VERSION_MAJOR < 5
+  ::ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, ThreadIdType itkNotUsed(threadId))
 #else
-::DynamicThreadedGenerateData(const OutputImageRegionType& outputRegionForThread)
+  ::DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread)
 #endif
 {
   // Iterators on input and output
   using InputRegionIterator = ProjectionsRegionConstIteratorRayBased<TInputImage>;
-  InputRegionIterator *itIn;
-  itIn = InputRegionIterator::New(this->GetInput(),
-                                  outputRegionForThread,
-                                  m_Geometry);
+  InputRegionIterator * itIn;
+  itIn = InputRegionIterator::New(this->GetInput(), outputRegionForThread, m_Geometry);
   using OutputRegionIterator = itk::ImageRegionIteratorWithIndex<TOutputImage>;
   OutputRegionIterator itOut(this->GetOutput(), outputRegionForThread);
 
   // Go over each projection
   const double r = m_ConvexShape->GetDensity() / m_Attenuation;
-  for(unsigned int pix=0; pix<outputRegionForThread.GetNumberOfPixels(); pix++, itIn->Next(), ++itOut)
-    {
+  for (unsigned int pix = 0; pix < outputRegionForThread.GetNumberOfPixels(); pix++, itIn->Next(), ++itOut)
+  {
     // Compute ray intersection length
     ConvexShape::ScalarType nearDist, farDist;
-    if( m_ConvexShape->IsIntersectedByRay(itIn->GetSourcePosition(), itIn->GetDirection(), nearDist, farDist) )
-      {
-      if( m_Attenuation == 0. )
-        itOut.Set( itIn->Get() + m_ConvexShape->GetDensity() * ( farDist - nearDist ) );
+    if (m_ConvexShape->IsIntersectedByRay(itIn->GetSourcePosition(), itIn->GetDirection(), nearDist, farDist))
+    {
+      if (m_Attenuation == 0.)
+        itOut.Set(itIn->Get() + m_ConvexShape->GetDensity() * (farDist - nearDist));
       else
-        itOut.Set( itIn->Get() + r * ( std::exp( m_Attenuation * farDist ) - std::exp( m_Attenuation * nearDist ) ) );
-      }
-    else
-      itOut.Set( itIn->Get() );
+        itOut.Set(itIn->Get() + r * (std::exp(m_Attenuation * farDist) - std::exp(m_Attenuation * nearDist)));
     }
+    else
+      itOut.Set(itIn->Get());
+  }
 
   delete itIn;
 }

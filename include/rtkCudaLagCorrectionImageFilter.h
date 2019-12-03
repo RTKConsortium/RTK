@@ -20,16 +20,16 @@
 #define rtkCudaLagCorrectionImageFilter_h
 
 #include "rtkConfiguration.h"
-//Conditional definition of the class to pass ITKHeaderTest
+// Conditional definition of the class to pass ITKHeaderTest
 #ifdef RTK_USE_CUDA
 
-#include "rtkLagCorrectionImageFilter.h"
-#include "RTKExport.h"
+#  include "rtkLagCorrectionImageFilter.h"
+#  include "RTKExport.h"
 
-#include <itkCudaImage.h>
-#include <itkCudaInPlaceImageFilter.h>
+#  include <itkCudaImage.h>
+#  include <itkCudaInPlaceImageFilter.h>
 
-#include "rtkConfiguration.h"
+#  include "rtkConfiguration.h"
 
 namespace rtk
 {
@@ -45,16 +45,17 @@ namespace rtk
  *
  * \ingroup RTK
  */
-class RTK_EXPORT CudaLagCorrectionImageFilter :
-  public  itk::CudaInPlaceImageFilter < itk::CudaImage<unsigned short, 3>, itk::CudaImage<unsigned short, 3>,
-  LagCorrectionImageFilter < itk::CudaImage<unsigned short, 3>, 4> >
+class RTK_EXPORT CudaLagCorrectionImageFilter
+  : public itk::CudaInPlaceImageFilter<itk::CudaImage<unsigned short, 3>,
+                                       itk::CudaImage<unsigned short, 3>,
+                                       LagCorrectionImageFilter<itk::CudaImage<unsigned short, 3>, 4>>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(CudaLagCorrectionImageFilter);
 
   /** Convenience type alias **/
   using ImageType = itk::CudaImage<unsigned short, 3>;
-  using CPULagFilterType = LagCorrectionImageFilter <ImageType, 4>;
+  using CPULagFilterType = LagCorrectionImageFilter<ImageType, 4>;
 
   /** Standard class type alias. */
   using Self = CudaLagCorrectionImageFilter;
@@ -74,12 +75,12 @@ protected:
   /** Destructor **/
   virtual ~CudaLagCorrectionImageFilter();
 
-  virtual void GPUGenerateData();
-
+  virtual void
+  GPUGenerateData();
 };
 
-}
+} // namespace rtk
 
-#endif //end conditional definition of the class
+#endif // end conditional definition of the class
 
 #endif // rtkCudaLagCorrectionImageFilter_h

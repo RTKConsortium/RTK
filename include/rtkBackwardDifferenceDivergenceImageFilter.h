@@ -36,96 +36,108 @@ namespace rtk
  * \ingroup RTK IntensityImageFilters
  */
 
-template <typename TInputImage, typename TOutputImage = itk::Image< float, TInputImage::ImageDimension > >
-class BackwardDifferenceDivergenceImageFilter :
-        public itk::ImageToImageFilter< TInputImage, TOutputImage >
+template <typename TInputImage, typename TOutputImage = itk::Image<float, TInputImage::ImageDimension>>
+class BackwardDifferenceDivergenceImageFilter : public itk::ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-    ITK_DISALLOW_COPY_AND_ASSIGN(BackwardDifferenceDivergenceImageFilter);
+  ITK_DISALLOW_COPY_AND_ASSIGN(BackwardDifferenceDivergenceImageFilter);
 
-    /** Extract dimension from input and output image. */
-    itkStaticConstMacro(InputImageDimension, unsigned int,
-                        TInputImage::ImageDimension);
+  /** Extract dimension from input and output image. */
+  itkStaticConstMacro(InputImageDimension, unsigned int, TInputImage::ImageDimension);
 
-    /** Convenient type alias for simplifying declarations. */
-    using InputImageType = TInputImage;
+  /** Convenient type alias for simplifying declarations. */
+  using InputImageType = TInputImage;
 
-    /** Standard class type alias. */
-    using Self = BackwardDifferenceDivergenceImageFilter;
-    using Superclass = itk::ImageToImageFilter< InputImageType, TOutputImage>;
-    using Pointer = itk::SmartPointer<Self>;
-    using ConstPointer = itk::SmartPointer<const Self>;
+  /** Standard class type alias. */
+  using Self = BackwardDifferenceDivergenceImageFilter;
+  using Superclass = itk::ImageToImageFilter<InputImageType, TOutputImage>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
-    /** Method for creation through the object factory. */
-    itkNewMacro(Self);
+  /** Method for creation through the object factory. */
+  itkNewMacro(Self);
 
-    /** Run-time type information (and related methods). */
-    itkTypeMacro(BackwardDifferenceDivergenceImageFilter, ImageToImageFilter);
+  /** Run-time type information (and related methods). */
+  itkTypeMacro(BackwardDifferenceDivergenceImageFilter, ImageToImageFilter);
 
-    /** Use the image spacing information in calculations. Use this option if you
-     *  want derivatives in physical space. Default is UseImageSpacingOn. */
-    void SetUseImageSpacingOn()
-    { this->SetUseImageSpacing(true); }
+  /** Use the image spacing information in calculations. Use this option if you
+   *  want derivatives in physical space. Default is UseImageSpacingOn. */
+  void
+  SetUseImageSpacingOn()
+  {
+    this->SetUseImageSpacing(true);
+  }
 
-    /** Ignore the image spacing. Use this option if you want derivatives in
-        isotropic pixel space.  Default is UseImageSpacingOn. */
-    void SetUseImageSpacingOff()
-    { this->SetUseImageSpacing(false); }
+  /** Ignore the image spacing. Use this option if you want derivatives in
+      isotropic pixel space.  Default is UseImageSpacingOn. */
+  void
+  SetUseImageSpacingOff()
+  {
+    this->SetUseImageSpacing(false);
+  }
 
-    /** Set/Get whether or not the filter will use the spacing of the input
-        image in its calculations */
-    itkSetMacro(UseImageSpacing, bool);
-    itkGetConstMacro(UseImageSpacing, bool);
+  /** Set/Get whether or not the filter will use the spacing of the input
+      image in its calculations */
+  itkSetMacro(UseImageSpacing, bool);
+  itkGetConstMacro(UseImageSpacing, bool);
 
-    /** Set along which dimensions the gradient computation should be
-        performed. The vector components at unprocessed dimensions are ignored */
-    void SetDimensionsProcessed(bool* DimensionsProcessed);
+  /** Set along which dimensions the gradient computation should be
+      performed. The vector components at unprocessed dimensions are ignored */
+  void
+  SetDimensionsProcessed(bool * DimensionsProcessed);
 
-    /** Allows to change the default boundary condition */
-    void OverrideBoundaryCondition(itk::ImageBoundaryCondition< TInputImage >* boundaryCondition);
+  /** Allows to change the default boundary condition */
+  void
+  OverrideBoundaryCondition(itk::ImageBoundaryCondition<TInputImage> * boundaryCondition);
 
-    /** Image type alias support. */
-    using InputPixelType = typename InputImageType::PixelType;
-    using InputImageRegionType = typename InputImageType::RegionType;
-    using InputSizeType = typename InputImageType::SizeType;
-    using CovariantVectorType = itk::CovariantVector< InputPixelType, InputImageDimension >;
+  /** Image type alias support. */
+  using InputPixelType = typename InputImageType::PixelType;
+  using InputImageRegionType = typename InputImageType::RegionType;
+  using InputSizeType = typename InputImageType::SizeType;
+  using CovariantVectorType = itk::CovariantVector<InputPixelType, InputImageDimension>;
 
 protected:
-    BackwardDifferenceDivergenceImageFilter();
-    ~BackwardDifferenceDivergenceImageFilter() override;
+  BackwardDifferenceDivergenceImageFilter();
+  ~BackwardDifferenceDivergenceImageFilter() override;
 
-    void GenerateInputRequestedRegion() override;
+  void
+  GenerateInputRequestedRegion() override;
 
-    void BeforeThreadedGenerateData() override;
+  void
+  BeforeThreadedGenerateData() override;
 
-#if ITK_VERSION_MAJOR<5
-    void ThreadedGenerateData(const typename InputImageType::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) override;
+#if ITK_VERSION_MAJOR < 5
+  void
+  ThreadedGenerateData(const typename InputImageType::RegionType & outputRegionForThread,
+                       itk::ThreadIdType                           itkNotUsed(threadId)) override;
 #else
-    void DynamicThreadedGenerateData(const typename InputImageType::RegionType& outputRegionForThread) override;
+  void
+  DynamicThreadedGenerateData(const typename InputImageType::RegionType & outputRegionForThread) override;
 #endif
 
-    void AfterThreadedGenerateData() override;
+  void
+  AfterThreadedGenerateData() override;
 
 private:
-    bool                              m_UseImageSpacing;
-    typename TInputImage::SpacingType m_InvSpacingCoeffs;
+  bool                              m_UseImageSpacing;
+  typename TInputImage::SpacingType m_InvSpacingCoeffs;
 
-    // list of the dimensions along which the divergence has
-    // to be computed. The components on other dimensions
-    // are ignored for performance, but the gradient filter
-    // sets them to zero anyway
-    bool m_DimensionsProcessed[TInputImage::ImageDimension];
+  // list of the dimensions along which the divergence has
+  // to be computed. The components on other dimensions
+  // are ignored for performance, but the gradient filter
+  // sets them to zero anyway
+  bool m_DimensionsProcessed[TInputImage::ImageDimension];
 
-    // The default is ConstantBoundaryCondition, but this behavior sometimes needs to be overriden
-    itk::ImageBoundaryCondition< TInputImage, TInputImage >* m_BoundaryCondition;
-    // If so, do not perform boundary processing in AfterThreadedGenerateData
-    bool                                                     m_IsBoundaryConditionOverriden;
+  // The default is ConstantBoundaryCondition, but this behavior sometimes needs to be overriden
+  itk::ImageBoundaryCondition<TInputImage, TInputImage> * m_BoundaryCondition;
+  // If so, do not perform boundary processing in AfterThreadedGenerateData
+  bool m_IsBoundaryConditionOverriden;
 };
 
-} // end namespace itk
+} // namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkBackwardDifferenceDivergenceImageFilter.hxx"
+#  include "rtkBackwardDifferenceDivergenceImageFilter.hxx"
 #endif
 
 #endif //__rtkBackwardDifferenceDivergenceImageFilter__

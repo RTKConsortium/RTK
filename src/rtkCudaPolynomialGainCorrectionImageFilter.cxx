@@ -22,32 +22,27 @@
 namespace rtk
 {
 
-CudaPolynomialGainCorrectionImageFilter
-::CudaPolynomialGainCorrectionImageFilter()
-{
-}
+CudaPolynomialGainCorrectionImageFilter ::CudaPolynomialGainCorrectionImageFilter() {}
 
-CudaPolynomialGainCorrectionImageFilter
-::~CudaPolynomialGainCorrectionImageFilter()
-{
-}
+CudaPolynomialGainCorrectionImageFilter ::~CudaPolynomialGainCorrectionImageFilter() {}
 
 void
-CudaPolynomialGainCorrectionImageFilter
-::GPUGenerateData()
+CudaPolynomialGainCorrectionImageFilter ::GPUGenerateData()
 {
   // compute overlap region by cropping output region with input buffer
   OutputImageRegionType overlapRegion = this->GetOutput()->GetRequestedRegion();
 
   // Put the two data pointers at the same location
-  unsigned short *inBuffer = *static_cast<unsigned short **>(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
+  unsigned short * inBuffer =
+    *static_cast<unsigned short **>(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
   inBuffer += this->GetInput()->ComputeOffset(overlapRegion.GetIndex());
-  float *outBuffer = *static_cast<float **>(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
-  outBuffer += this->GetOutput()->ComputeOffset( this->GetOutput()->GetRequestedRegion().GetIndex() );
+  float * outBuffer = *static_cast<float **>(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
+  outBuffer += this->GetOutput()->ComputeOffset(this->GetOutput()->GetRequestedRegion().GetIndex());
 
-  unsigned short *darkBuffer = *static_cast<unsigned short **>(m_DarkImage->GetCudaDataManager()->GetGPUBufferPointer());
+  unsigned short * darkBuffer =
+    *static_cast<unsigned short **>(m_DarkImage->GetCudaDataManager()->GetGPUBufferPointer());
 
-  float *gainBuffer = *static_cast<float **>(m_GainImage->GetCudaDataManager()->GetGPUBufferPointer());
+  float * gainBuffer = *static_cast<float **>(m_GainImage->GetCudaDataManager()->GetGPUBufferPointer());
 
   int proj_idx_in[3];
   proj_idx_in[0] = overlapRegion.GetIndex()[0];
@@ -79,10 +74,20 @@ CudaPolynomialGainCorrectionImageFilter
 
   float coefficients[2] = { static_cast<float>(m_ModelOrder), m_K };
 
-  int LUT_size = sizeof(float)*m_PowerLut.size();
-  CUDA_gain_correction(
-      proj_idx_in, proj_size_in, proj_size_in_buf, proj_idx_out, proj_size_out, proj_size_out_buf,
-      inBuffer, outBuffer, darkBuffer, gainBuffer, &m_PowerLut[0], LUT_size, coefficients);
+  int LUT_size = sizeof(float) * m_PowerLut.size();
+  CUDA_gain_correction(proj_idx_in,
+                       proj_size_in,
+                       proj_size_in_buf,
+                       proj_idx_out,
+                       proj_size_out,
+                       proj_size_out_buf,
+                       inBuffer,
+                       outBuffer,
+                       darkBuffer,
+                       gainBuffer,
+                       &m_PowerLut[0],
+                       LUT_size,
+                       coefficients);
 }
 
-}
+} // namespace rtk

@@ -36,9 +36,8 @@ namespace rtk
  *
  * \ingroup RTK InPlaceImageFilter
  */
-template<class TInputImage, class TOutputImage=TInputImage>
-class ITK_EXPORT BoellaardScatterCorrectionImageFilter :
-  public itk::InPlaceImageFilter<TInputImage, TOutputImage>
+template <class TInputImage, class TOutputImage = TInputImage>
+class ITK_EXPORT BoellaardScatterCorrectionImageFilter : public itk::InPlaceImageFilter<TInputImage, TOutputImage>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(BoellaardScatterCorrectionImageFilter);
@@ -81,30 +80,34 @@ protected:
   ~BoellaardScatterCorrectionImageFilter() override = default;
 
   /** Requires full projection images to estimate scatter */
-  void EnlargeOutputRequestedRegion(itk::DataObject *itkNotUsed(output)) override;
-  void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) override;
+  void
+  EnlargeOutputRequestedRegion(itk::DataObject * itkNotUsed(output)) override;
+  void
+  ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, ThreadIdType threadId) override;
 
   /** Split the output's RequestedRegion into "num" pieces, returning
    * region "i" as "splitRegion". Reimplemented from ImageSource to ensure
    * that each thread covers entire projections. */
-  unsigned int SplitRequestedRegion(unsigned int i, unsigned int num, OutputImageRegionType& splitRegion) override;
-  virtual int SplitRequestedRegion(int i, int num, OutputImageRegionType& splitRegion);
+  unsigned int
+  SplitRequestedRegion(unsigned int i, unsigned int num, OutputImageRegionType & splitRegion) override;
+  virtual int
+  SplitRequestedRegion(int i, int num, OutputImageRegionType & splitRegion);
 
 private:
   /** Air threshold on projection images. */
-  double m_AirThreshold{32000};
+  double m_AirThreshold{ 32000 };
 
   /** Scatter to primary ratio */
-  double m_ScatterToPrimaryRatio{0.};
+  double m_ScatterToPrimaryRatio{ 0. };
 
   /** Non-negativity constraint threshold */
-  double m_NonNegativityConstraintThreshold{20};
+  double m_NonNegativityConstraintThreshold{ 20 };
 }; // end of class
 
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkBoellaardScatterCorrectionImageFilter.hxx"
+#  include "rtkBoellaardScatterCorrectionImageFilter.hxx"
 #endif
 
 #endif

@@ -24,87 +24,85 @@
 namespace rtk
 {
 
-template<class TOutputImage, class ProjectionStackType>
-IterativeConeBeamReconstructionFilter<TOutputImage, ProjectionStackType>
-::IterativeConeBeamReconstructionFilter()
+template <class TOutputImage, class ProjectionStackType>
+IterativeConeBeamReconstructionFilter<TOutputImage, ProjectionStackType>::IterativeConeBeamReconstructionFilter()
 {
   m_CurrentForwardProjectionConfiguration = FP_UNKNOWN;
   m_CurrentBackProjectionConfiguration = BP_UNKNOWN;
 }
 
-template<class TOutputImage, class ProjectionStackType>
+template <class TOutputImage, class ProjectionStackType>
 typename IterativeConeBeamReconstructionFilter<TOutputImage, ProjectionStackType>::ForwardProjectionPointerType
-IterativeConeBeamReconstructionFilter<TOutputImage, ProjectionStackType>
-::InstantiateForwardProjectionFilter (int fwtype)
+IterativeConeBeamReconstructionFilter<TOutputImage, ProjectionStackType>::InstantiateForwardProjectionFilter(int fwtype)
 {
   ForwardProjectionPointerType fw;
-  switch(fwtype)
-    {
-    case(FP_JOSEPH):
+  switch (fwtype)
+  {
+    case (FP_JOSEPH):
       fw = JosephForwardProjectionImageFilter<VolumeType, ProjectionStackType>::New();
-    break;
-    case(FP_CUDARAYCAST):
+      break;
+    case (FP_CUDARAYCAST):
       fw = InstantiateCudaForwardProjection<ProjectionStackType>();
-    break;
-    case(FP_JOSEPHATTENUATED):
+      break;
+    case (FP_JOSEPHATTENUATED):
       fw = InstantiateJosephForwardAttenuatedProjection<ProjectionStackType>();
-    break;
+      break;
     default:
       itkGenericExceptionMacro(<< "Unhandled --fp value.");
-    }
+  }
   return fw;
 }
 
-template<class TOutputImage, class ProjectionStackType>
+template <class TOutputImage, class ProjectionStackType>
 typename IterativeConeBeamReconstructionFilter<TOutputImage, ProjectionStackType>::BackProjectionPointerType
 IterativeConeBeamReconstructionFilter<TOutputImage, ProjectionStackType>::InstantiateBackProjectionFilter(int bptype)
 {
   BackProjectionPointerType bp;
-  switch(bptype)
-    {
-    case(BP_VOXELBASED):
+  switch (bptype)
+  {
+    case (BP_VOXELBASED):
       bp = BackProjectionImageFilter<ProjectionStackType, VolumeType>::New();
       break;
-    case(BP_JOSEPH):
+    case (BP_JOSEPH):
       bp = JosephBackProjectionImageFilter<ProjectionStackType, VolumeType>::New();
       break;
-    case(BP_CUDAVOXELBASED):
+    case (BP_CUDAVOXELBASED):
       bp = InstantiateCudaBackProjection<ProjectionStackType>();
       break;
-    case(BP_CUDARAYCAST):
+    case (BP_CUDARAYCAST):
       bp = InstantiateCudaRayCastBackProjection<ProjectionStackType>();
       break;
-    case(BP_JOSEPHATTENUATED):
+    case (BP_JOSEPHATTENUATED):
       bp = InstantiateJosephBackAttenuatedProjection<ProjectionStackType>();
       break;
     default:
       itkGenericExceptionMacro(<< "Unhandled --bp value.");
-    }
+  }
   return bp;
 }
 
-template<class TOutputImage, class ProjectionStackType>
+template <class TOutputImage, class ProjectionStackType>
 void
-IterativeConeBeamReconstructionFilter<TOutputImage, ProjectionStackType>
-::SetForwardProjectionFilter (ForwardProjectionType fwtype)
+IterativeConeBeamReconstructionFilter<TOutputImage, ProjectionStackType>::SetForwardProjectionFilter(
+  ForwardProjectionType fwtype)
 {
   if (m_CurrentForwardProjectionConfiguration != fwtype)
-    {
+  {
     m_CurrentForwardProjectionConfiguration = fwtype;
     this->Modified();
-    }
+  }
 }
 
-template<class TOutputImage, class ProjectionStackType>
+template <class TOutputImage, class ProjectionStackType>
 void
-IterativeConeBeamReconstructionFilter<TOutputImage, ProjectionStackType>
-::SetBackProjectionFilter (BackProjectionType bptype)
+IterativeConeBeamReconstructionFilter<TOutputImage, ProjectionStackType>::SetBackProjectionFilter(
+  BackProjectionType bptype)
 {
   if (m_CurrentBackProjectionConfiguration != bptype)
-    {
+  {
     m_CurrentBackProjectionConfiguration = bptype;
     this->Modified();
-    }
+  }
 }
 
 } // end namespace rtk

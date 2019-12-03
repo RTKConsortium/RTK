@@ -22,29 +22,24 @@
 namespace rtk
 {
 
-CudaLagCorrectionImageFilter
-::CudaLagCorrectionImageFilter()
-{
-}
+CudaLagCorrectionImageFilter ::CudaLagCorrectionImageFilter() {}
 
-CudaLagCorrectionImageFilter
-::~CudaLagCorrectionImageFilter()
-{
-}
+CudaLagCorrectionImageFilter ::~CudaLagCorrectionImageFilter() {}
 
 void
-CudaLagCorrectionImageFilter
-::GPUGenerateData()
+CudaLagCorrectionImageFilter ::GPUGenerateData()
 {
   // compute overlap region by cropping output region with input buffer
   OutputImageRegionType overlapRegion = this->GetOutput()->GetRequestedRegion();
-  //overlapRegion.Crop(this->GetInput()->GetBufferedRegion());
+  // overlapRegion.Crop(this->GetInput()->GetBufferedRegion());
 
   // Put the two data pointers at the same location
-  unsigned short *inBuffer = *static_cast<unsigned short **>(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
+  unsigned short * inBuffer =
+    *static_cast<unsigned short **>(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
   inBuffer += this->GetInput()->ComputeOffset(overlapRegion.GetIndex());
-  unsigned short *outBuffer = *static_cast<unsigned short **>(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
-  outBuffer += this->GetOutput()->ComputeOffset( this->GetOutput()->GetRequestedRegion().GetIndex() );
+  unsigned short * outBuffer =
+    *static_cast<unsigned short **>(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
+  outBuffer += this->GetOutput()->ComputeOffset(this->GetOutput()->GetRequestedRegion().GetIndex());
 
   int proj_idx_in[3];
   proj_idx_in[0] = overlapRegion.GetIndex()[0];
@@ -74,12 +69,20 @@ CudaLagCorrectionImageFilter
   proj_size_out[1] = this->GetOutput()->GetRequestedRegion().GetSize()[1];
   proj_size_out[2] = this->GetOutput()->GetRequestedRegion().GetSize()[2];
 
-  float coefficients[9] = { m_B[0], m_B[1], m_B[2], m_B[3], m_ExpmA[0], m_ExpmA[1], m_ExpmA[2], m_ExpmA[3] , m_SumB};
+  float coefficients[9] = { m_B[0], m_B[1], m_B[2], m_B[3], m_ExpmA[0], m_ExpmA[1], m_ExpmA[2], m_ExpmA[3], m_SumB };
 
-  int S_size = sizeof(float)*m_S.size();
-  CUDA_lag_correction(
-      proj_idx_in, proj_size_in, proj_size_in_buf, proj_idx_out, proj_size_out, proj_size_out_buf,
-      inBuffer, outBuffer, &m_S[0], S_size, coefficients);
+  int S_size = sizeof(float) * m_S.size();
+  CUDA_lag_correction(proj_idx_in,
+                      proj_size_in,
+                      proj_size_in_buf,
+                      proj_idx_out,
+                      proj_size_out,
+                      proj_size_out_buf,
+                      inBuffer,
+                      outBuffer,
+                      &m_S[0],
+                      S_size,
+                      coefficients);
 }
 
-}
+} // namespace rtk

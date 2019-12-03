@@ -23,31 +23,32 @@
 namespace rtk
 {
 
-template< typename TImage >
-RegularizedConjugateGradientConeBeamReconstructionFilter<TImage>::RegularizedConjugateGradientConeBeamReconstructionFilter()
+template <typename TImage>
+RegularizedConjugateGradientConeBeamReconstructionFilter<
+  TImage>::RegularizedConjugateGradientConeBeamReconstructionFilter()
 {
   // Set the default values of member parameters
   m_GammaTV = 0.00005;
-  m_Gamma = 0; // Laplacian regularization
+  m_Gamma = 0;    // Laplacian regularization
   m_Tikhonov = 0; // Tikhonov regularization
   m_SoftThresholdWavelets = 0.001;
   m_SoftThresholdOnImage = 0.001;
   m_Preconditioned = false;
   m_RegularizedCG = false;
 
-  m_TV_iterations=10;
-  m_MainLoop_iterations=10;
-  m_CG_iterations=4;
+  m_TV_iterations = 10;
+  m_MainLoop_iterations = 10;
+  m_CG_iterations = 4;
 
   // Default pipeline: CG, positivity, spatial TV
   m_PerformPositivity = true;
   m_PerformTVSpatialDenoising = true;
   m_PerformWaveletsSpatialDenoising = false;
-  m_PerformSoftThresholdOnImage= false;
+  m_PerformSoftThresholdOnImage = false;
 
   // Dimensions processed for TV, default is all
-  for (unsigned int i=0; i<TImage::ImageDimension; i++)
-    m_DimensionsProcessedForTV[i]=true;
+  for (unsigned int i = 0; i < TImage::ImageDimension; i++)
+    m_DimensionsProcessedForTV[i] = true;
 
   // Other parameters
   m_CudaConjugateGradient = true; // 3D volumes of usual size fit on GPUs
@@ -64,104 +65,89 @@ RegularizedConjugateGradientConeBeamReconstructionFilter<TImage>::RegularizedCon
   m_SoftThresholdFilter = SoftThresholdFilterType::New();
 }
 
-template< typename TImage >
+template <typename TImage>
 void
-RegularizedConjugateGradientConeBeamReconstructionFilter<TImage>
-::SetInputVolume(const TImage* Volume)
+RegularizedConjugateGradientConeBeamReconstructionFilter<TImage>::SetInputVolume(const TImage * Volume)
 {
-  this->SetPrimaryInput(const_cast<TImage*>(Volume));
+  this->SetPrimaryInput(const_cast<TImage *>(Volume));
 }
 
-template< typename TImage >
+template <typename TImage>
 void
-RegularizedConjugateGradientConeBeamReconstructionFilter<TImage>
-::SetInputProjectionStack(const TImage* Projection)
+RegularizedConjugateGradientConeBeamReconstructionFilter<TImage>::SetInputProjectionStack(const TImage * Projection)
 {
-  this->SetInput("ProjectionStack", const_cast<TImage*>(Projection));
+  this->SetInput("ProjectionStack", const_cast<TImage *>(Projection));
 }
 
-template< typename TImage >
+template <typename TImage>
 void
-RegularizedConjugateGradientConeBeamReconstructionFilter<TImage>
-::SetInputWeights(const TImage* Weights)
+RegularizedConjugateGradientConeBeamReconstructionFilter<TImage>::SetInputWeights(const TImage * Weights)
 {
-  this->SetInput("Weights", const_cast<TImage*>(Weights));
+  this->SetInput("Weights", const_cast<TImage *>(Weights));
 }
 
-template< typename TOutputImage>
+template <typename TOutputImage>
 void
-RegularizedConjugateGradientConeBeamReconstructionFilter<TOutputImage>::
-SetSupportMask(const TOutputImage *SupportMask)
+RegularizedConjugateGradientConeBeamReconstructionFilter<TOutputImage>::SetSupportMask(const TOutputImage * SupportMask)
 {
-  this->SetInput("SupportMask", const_cast<TOutputImage*>(SupportMask));
+  this->SetInput("SupportMask", const_cast<TOutputImage *>(SupportMask));
 }
 
-template< typename TImage >
+template <typename TImage>
 typename TImage::ConstPointer
-RegularizedConjugateGradientConeBeamReconstructionFilter<TImage>
-::GetInputVolume()
+RegularizedConjugateGradientConeBeamReconstructionFilter<TImage>::GetInputVolume()
 {
-  return static_cast< const TImage * >
-          ( this->itk::ProcessObject::GetInput("Primary") );
+  return static_cast<const TImage *>(this->itk::ProcessObject::GetInput("Primary"));
 }
 
-template< typename TImage >
+template <typename TImage>
 typename TImage::Pointer
-RegularizedConjugateGradientConeBeamReconstructionFilter<TImage>
-::GetInputProjectionStack()
+RegularizedConjugateGradientConeBeamReconstructionFilter<TImage>::GetInputProjectionStack()
 {
-  return static_cast< TImage * >
-          ( this->itk::ProcessObject::GetInput("ProjectionStack") );
+  return static_cast<TImage *>(this->itk::ProcessObject::GetInput("ProjectionStack"));
 }
 
-template< typename TImage >
+template <typename TImage>
 typename TImage::Pointer
-RegularizedConjugateGradientConeBeamReconstructionFilter<TImage>
-::GetInputWeights()
+RegularizedConjugateGradientConeBeamReconstructionFilter<TImage>::GetInputWeights()
 {
-  return static_cast< TImage * >
-          ( this->itk::ProcessObject::GetInput("Weights") );
+  return static_cast<TImage *>(this->itk::ProcessObject::GetInput("Weights"));
 }
 
-template< typename TOutputImage>
+template <typename TOutputImage>
 typename TOutputImage::ConstPointer
-RegularizedConjugateGradientConeBeamReconstructionFilter<TOutputImage>::
-GetSupportMask()
+RegularizedConjugateGradientConeBeamReconstructionFilter<TOutputImage>::GetSupportMask()
 {
-  return static_cast< const TOutputImage * >
-          ( this->itk::ProcessObject::GetInput("SupportMask") );
+  return static_cast<const TOutputImage *>(this->itk::ProcessObject::GetInput("SupportMask"));
 }
 
-template< typename TImage >
+template <typename TImage>
 void
-RegularizedConjugateGradientConeBeamReconstructionFilter<TImage>
-::SetForwardProjectionFilter(ForwardProjectionType _arg)
+RegularizedConjugateGradientConeBeamReconstructionFilter<TImage>::SetForwardProjectionFilter(ForwardProjectionType _arg)
 {
-  if( _arg != this->GetForwardProjectionFilter() )
-    {
-    Superclass::SetForwardProjectionFilter( _arg );
-    m_CGFilter->SetForwardProjectionFilter( _arg );
-    }
+  if (_arg != this->GetForwardProjectionFilter())
+  {
+    Superclass::SetForwardProjectionFilter(_arg);
+    m_CGFilter->SetForwardProjectionFilter(_arg);
+  }
 }
 
-template< typename TImage >
+template <typename TImage>
 void
-RegularizedConjugateGradientConeBeamReconstructionFilter<TImage>
-::SetBackProjectionFilter(BackProjectionType _arg)
+RegularizedConjugateGradientConeBeamReconstructionFilter<TImage>::SetBackProjectionFilter(BackProjectionType _arg)
 {
-  if( _arg != this->GetBackProjectionFilter() )
-    {
-    Superclass::SetBackProjectionFilter( _arg );
-    m_CGFilter->SetBackProjectionFilter( _arg );
-    }
+  if (_arg != this->GetBackProjectionFilter())
+  {
+    Superclass::SetBackProjectionFilter(_arg);
+    m_CGFilter->SetBackProjectionFilter(_arg);
+  }
 }
 
-template< typename TImage >
+template <typename TImage>
 void
-RegularizedConjugateGradientConeBeamReconstructionFilter<TImage>
-::GenerateInputRequestedRegion()
+RegularizedConjugateGradientConeBeamReconstructionFilter<TImage>::GenerateInputRequestedRegion()
 {
-  //Call the superclass' implementation of this method
+  // Call the superclass' implementation of this method
   Superclass::GenerateInputRequestedRegion();
 
   // Let the CG subfilters compute the requested regions for the projections
@@ -169,10 +155,9 @@ RegularizedConjugateGradientConeBeamReconstructionFilter<TImage>
   m_CGFilter->PropagateRequestedRegion(m_CGFilter->GetOutput());
 }
 
-template< typename TImage >
+template <typename TImage>
 void
-RegularizedConjugateGradientConeBeamReconstructionFilter<TImage>
-::GenerateOutputInformation()
+RegularizedConjugateGradientConeBeamReconstructionFilter<TImage>::GenerateOutputInformation()
 {
   // Construct the pipeline, adding regularization filters if the user wants them
   // Connect the last filter's output to the next filter's input using the currentDownstreamFilter pointer
@@ -189,14 +174,14 @@ RegularizedConjugateGradientConeBeamReconstructionFilter<TImage>
   m_CGFilter->SetCudaConjugateGradient(this->GetCudaConjugateGradient());
   m_CGFilter->SetGamma(this->m_Gamma);
   m_CGFilter->SetTikhonov(this->m_Tikhonov);
-//  m_CGFilter->SetIterationCosts(m_IterationCosts);
+  //  m_CGFilter->SetIterationCosts(m_IterationCosts);
   m_CGFilter->SetDisableDisplacedDetectorFilter(m_DisableDisplacedDetectorFilter);
 
   currentDownstreamFilter = m_CGFilter;
 
   // Plug the positivity filter if requested
   if (m_PerformPositivity)
-    {
+  {
     m_PositivityFilter->SetInPlace(false);
 
     m_PositivityFilter->SetOutsideValue(0.0);
@@ -204,10 +189,10 @@ RegularizedConjugateGradientConeBeamReconstructionFilter<TImage>
     m_PositivityFilter->SetInput(currentDownstreamFilter->GetOutput());
 
     currentDownstreamFilter = m_PositivityFilter;
-    }
+  }
 
   if (m_PerformTVSpatialDenoising)
-    {
+  {
     currentDownstreamFilter->ReleaseDataFlagOn();
 
     m_TVDenoising->SetInput(currentDownstreamFilter->GetOutput());
@@ -216,50 +201,49 @@ RegularizedConjugateGradientConeBeamReconstructionFilter<TImage>
     m_TVDenoising->SetDimensionsProcessed(this->m_DimensionsProcessedForTV);
 
     currentDownstreamFilter = m_TVDenoising;
-    }
+  }
 
   if (m_PerformWaveletsSpatialDenoising)
-    {
+  {
     m_WaveletsDenoising->SetInput(currentDownstreamFilter->GetOutput());
     m_WaveletsDenoising->SetOrder(m_Order);
     m_WaveletsDenoising->SetThreshold(m_SoftThresholdWavelets);
     m_WaveletsDenoising->SetNumberOfLevels(m_NumberOfLevels);
 
     currentDownstreamFilter = m_WaveletsDenoising;
-    }
+  }
 
   if (m_PerformSoftThresholdOnImage)
-    {
+  {
     currentDownstreamFilter->ReleaseDataFlagOn();
 
     m_SoftThresholdFilter->SetInput(currentDownstreamFilter->GetOutput());
     m_SoftThresholdFilter->SetThreshold(m_SoftThresholdOnImage);
 
     currentDownstreamFilter = m_SoftThresholdFilter;
-    }
+  }
 
   // Have the last filter calculate its output information
   currentDownstreamFilter->ReleaseDataFlagOff();
   currentDownstreamFilter->UpdateOutputInformation();
 
   // Copy it as the output information of the composite filter
-  this->GetOutput()->CopyInformation( currentDownstreamFilter->GetOutput() );
+  this->GetOutput()->CopyInformation(currentDownstreamFilter->GetOutput());
 }
 
-template< typename TImage >
+template <typename TImage>
 void
-RegularizedConjugateGradientConeBeamReconstructionFilter<TImage>
-::GenerateData()
+RegularizedConjugateGradientConeBeamReconstructionFilter<TImage>::GenerateData()
 {
   // Declare the pointer that will be used to plug the output back as input
   typename itk::ImageToImageFilter<TImage, TImage>::Pointer currentDownstreamFilter;
-  typename TImage::Pointer pimg;
+  typename TImage::Pointer                                  pimg;
 
-  for (int i=0; i<m_MainLoop_iterations; i++)
-    {
+  for (int i = 0; i < m_MainLoop_iterations; i++)
+  {
     // After the first iteration, we need to use the output as input
-    if (i>0)
-      {
+    if (i > 0)
+    {
       pimg = currentDownstreamFilter->GetOutput();
 
       pimg->DisconnectPipeline();
@@ -267,33 +251,33 @@ RegularizedConjugateGradientConeBeamReconstructionFilter<TImage>
 
       // The input volume is no longer needed on the GPU, so we transfer it back to the CPU
       this->GetInputVolume()->GetBufferPointer();
-      }
+    }
 
     currentDownstreamFilter = m_CGFilter;
     if (m_PerformPositivity)
-      {
+    {
       currentDownstreamFilter = m_PositivityFilter;
-      }
+    }
     if (m_PerformTVSpatialDenoising)
-      {
+    {
       currentDownstreamFilter = m_TVDenoising;
-      }
+    }
     if (m_PerformWaveletsSpatialDenoising)
-      {
+    {
       currentDownstreamFilter = m_WaveletsDenoising;
-      }
+    }
     if (m_PerformSoftThresholdOnImage)
-      {
+    {
       currentDownstreamFilter = m_SoftThresholdFilter;
-      }
-
-    currentDownstreamFilter->Update();
     }
 
-  this->GraftOutput( currentDownstreamFilter->GetOutput() );
+    currentDownstreamFilter->Update();
+  }
+
+  this->GraftOutput(currentDownstreamFilter->GetOutput());
 }
 
-}// end namespace
+} // namespace rtk
 
 
 #endif

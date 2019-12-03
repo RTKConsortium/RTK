@@ -20,7 +20,7 @@
 #define rtkImagXXMLFileReader_h
 
 #ifdef _MSC_VER
-#pragma warning ( disable : 4786 )
+#  pragma warning(disable : 4786)
 #endif
 
 #include <itkXMLFile.h>
@@ -56,22 +56,26 @@ public:
   itkNewMacro(Self);
 
   /** Determine if a file can be read */
-  int CanReadFile(const char* name) override;
+  int
+  CanReadFile(const char * name) override;
 
 protected:
-  ImagXXMLFileReader() {m_OutputObject = &m_Dictionary;}
+  ImagXXMLFileReader() { m_OutputObject = &m_Dictionary; }
   ~ImagXXMLFileReader() override = default;
 
-  void StartElement(const char * name,const char **atts) override;
+  void
+  StartElement(const char * name, const char ** atts) override;
 
-  void EndElement(const char *name) override;
+  void
+  EndElement(const char * name) override;
 
-  void CharacterDataHandler(const char *inData, int inLength) override;
+  void
+  CharacterDataHandler(const char * inData, int inLength) override;
 
 private:
   itk::MetaDataDictionary m_Dictionary;
   std::string             m_CurCharacterData;
 };
 
-}
+} // namespace rtk
 #endif

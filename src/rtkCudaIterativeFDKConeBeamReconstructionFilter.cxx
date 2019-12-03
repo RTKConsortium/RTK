@@ -18,8 +18,7 @@
 
 #include "rtkCudaIterativeFDKConeBeamReconstructionFilter.h"
 
-rtk::CudaIterativeFDKConeBeamReconstructionFilter
-::CudaIterativeFDKConeBeamReconstructionFilter()
+rtk::CudaIterativeFDKConeBeamReconstructionFilter ::CudaIterativeFDKConeBeamReconstructionFilter()
 {
   // Create each filter which are specific for cuda
   m_DisplacedDetectorFilter = DisplacedDetectorFilterType::New();
@@ -32,8 +31,7 @@ rtk::CudaIterativeFDKConeBeamReconstructionFilter
 }
 
 void
-rtk::CudaIterativeFDKConeBeamReconstructionFilter
-::GPUGenerateData()
+rtk::CudaIterativeFDKConeBeamReconstructionFilter ::GPUGenerateData()
 {
   Superclass::GenerateData();
 }

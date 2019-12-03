@@ -32,15 +32,16 @@ rtk::OraImageIO::ReadImageInformation()
   xmlReader->SetFilename(oraFileName);
   xmlReader->GenerateOutputInformation();
 
-  this->SetMetaDataDictionary( *(xmlReader->GetOutputObject() ) );
+  this->SetMetaDataDictionary(*(xmlReader->GetOutputObject()));
 
   // Retrieve MHD file name
-  using MetaDataStringType = itk::MetaDataObject< std::string >;
-  MetaDataStringType *mhdMeta = dynamic_cast<MetaDataStringType *>(this->GetMetaDataDictionary()["MHD_File"].GetPointer() );
-  if(mhdMeta==nullptr)
-    {
+  using MetaDataStringType = itk::MetaDataObject<std::string>;
+  MetaDataStringType * mhdMeta =
+    dynamic_cast<MetaDataStringType *>(this->GetMetaDataDictionary()["MHD_File"].GetPointer());
+  if (mhdMeta == nullptr)
+  {
     itkExceptionMacro(<< "No MHD_File in " << oraFileName);
-    }
+  }
   m_MetaFileName = itksys::SystemTools::GetFilenamePath(oraFileName);
   m_MetaFileName += '/';
   m_MetaFileName += mhdMeta->GetMetaDataObjectValue();
@@ -51,21 +52,21 @@ rtk::OraImageIO::ReadImageInformation()
 }
 
 bool
-rtk::OraImageIO::CanReadFile(const char* FileNameToRead)
+rtk::OraImageIO::CanReadFile(const char * FileNameToRead)
 {
   std::string filename(FileNameToRead);
-  if(filename.size()<8)
-      return false;
-  std::string extension = filename.substr(filename.size()-7, 7);
+  if (filename.size() < 8)
+    return false;
+  std::string extension = filename.substr(filename.size() - 7, 7);
 
-  if(extension != std::string("ora.xml") )
+  if (extension != std::string("ora.xml"))
     return false;
 
   return true;
 }
 
 void
-rtk::OraImageIO::Read(void *buffer)
+rtk::OraImageIO::Read(void * buffer)
 {
   std::string oraFileName = this->GetFileName();
   this->SetFileName(m_MetaFileName);
@@ -74,7 +75,7 @@ rtk::OraImageIO::Read(void *buffer)
 }
 
 bool
-rtk::OraImageIO::CanWriteFile( const char* itkNotUsed(FileNameToWrite) )
+rtk::OraImageIO::CanWriteFile(const char * itkNotUsed(FileNameToWrite))
 {
   return false;
 }

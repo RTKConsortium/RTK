@@ -40,7 +40,7 @@ namespace rtk
  *
  * \ingroup RTK Geometry
  */
-template< unsigned int TDimension = 3 >
+template <unsigned int TDimension = 3>
 class ProjectionGeometry : public itk::DataObject
 {
 public:
@@ -48,18 +48,18 @@ public:
 
   using Self = ProjectionGeometry<TDimension>;
   using Superclass = itk::DataObject;
-  using Pointer = itk::SmartPointer< Self >;
-  using ConstPointer = itk::SmartPointer< const Self >;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
   /** Method for creation through the object factory. */
-  itkNewMacro( Self );
+  itkNewMacro(Self);
 
   /** Convenient type alias */
   using SizeType = typename itk::ImageBase<TDimension>::SizeType;
   using PointType = typename itk::ImageBase<TDimension>::PointType;
   using SpacingType = typename itk::ImageBase<TDimension>::SpacingType;
 
-  using MatrixType = typename itk::Matrix< double, TDimension, TDimension+1 >;
+  using MatrixType = typename itk::Matrix<double, TDimension, TDimension + 1>;
 
   /** Get the vector of projection matrices.
    * A projection matrix is a M x (M+1) homogeneous matrix.
@@ -67,26 +67,34 @@ public:
    * with the i-th matrix provides the physical coordinate on
    * the i-th projection.
    */
-  const std::vector<MatrixType> &GetMatrices() const {
+  const std::vector<MatrixType> &
+  GetMatrices() const
+  {
     return this->m_Matrices;
   }
 
   /** Get the i-th projection matrix. */
-  MatrixType GetMatrix(const unsigned int i) const {
+  MatrixType
+  GetMatrix(const unsigned int i) const
+  {
     return this->m_Matrices[i];
   }
 
   /** Empty the geometry object. */
-  virtual void Clear();
+  virtual void
+  Clear();
 
 protected:
-  ProjectionGeometry()= default;
+  ProjectionGeometry() = default;
   ~ProjectionGeometry() override = default;
 
-  void PrintSelf( std::ostream& os, itk::Indent indent ) const override;
+  void
+  PrintSelf(std::ostream & os, itk::Indent indent) const override;
 
   /** Add projection matrix */
-  virtual void AddMatrix(const MatrixType &m){
+  virtual void
+  AddMatrix(const MatrixType & m)
+  {
     this->m_Matrices.push_back(m);
     this->Modified();
   }
@@ -95,7 +103,7 @@ private:
   /** Projection matrices */
   std::vector<MatrixType> m_Matrices;
 };
-}
+} // namespace rtk
 
 #include "rtkProjectionGeometry.hxx"
 

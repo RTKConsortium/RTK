@@ -25,7 +25,8 @@
 #include <itkObjectFactoryBase.h>
 #include <itkVersion.h>
 
-namespace rtk {
+namespace rtk
+{
 
 /** \class EdfImageIOFactory
  * \brief ITK factory for Edf file I/O.
@@ -46,11 +47,15 @@ public:
   using ConstPointer = itk::SmartPointer<const Self>;
 
   /** Class methods used to interface with the registered factories. */
-  const char* GetITKSourceVersion(void) const override {
+  const char *
+  GetITKSourceVersion(void) const override
+  {
     return ITK_SOURCE_VERSION;
   }
 
-  const char* GetDescription(void) const override {
+  const char *
+  GetDescription(void) const override
+  {
     return "Edf ImageIO Factory, allows the loading of Edf images into insight";
   }
 
@@ -61,8 +66,10 @@ public:
   itkTypeMacro(EdfImageIOFactory, ObjectFactoryBase);
 
   /** Register one factory of this type  */
-  static void RegisterOneFactory(void) {
-    ObjectFactoryBase::RegisterFactory( Self::New() );
+  static void
+  RegisterOneFactory(void)
+  {
+    ObjectFactoryBase::RegisterFactory(Self::New());
   }
 
 protected:
@@ -70,10 +77,9 @@ protected:
   ~EdfImageIOFactory() override = default;
 
   using myProductType = EdfImageIOFactory;
-  const myProductType* m_MyProduct;
-
+  const myProductType * m_MyProduct;
 };
 
-} // end namespace
+} // namespace rtk
 
 #endif

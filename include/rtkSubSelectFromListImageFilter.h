@@ -29,34 +29,35 @@ namespace rtk
  *
  * \ingroup RTK
  */
-template< typename ProjectionStackType>
+template <typename ProjectionStackType>
 class SubSelectFromListImageFilter : public SubSelectImageFilter<ProjectionStackType>
 {
 public:
-    ITK_DISALLOW_COPY_AND_ASSIGN(SubSelectFromListImageFilter);
+  ITK_DISALLOW_COPY_AND_ASSIGN(SubSelectFromListImageFilter);
 
-    /** Standard class type alias. */
-    using Self = SubSelectFromListImageFilter;
-    using Superclass = SubSelectImageFilter<ProjectionStackType>;
-    using Pointer = itk::SmartPointer< Self >;
+  /** Standard class type alias. */
+  using Self = SubSelectFromListImageFilter;
+  using Superclass = SubSelectImageFilter<ProjectionStackType>;
+  using Pointer = itk::SmartPointer<Self>;
 
-    /** Method for creation through the object factory. */
-    itkNewMacro(Self);
+  /** Method for creation through the object factory. */
+  itkNewMacro(Self);
 
-    /** Run-time type information (and related methods). */
-    itkTypeMacro(SubSelectFromListImageFilter, SubSelectImageFilter);
+  /** Run-time type information (and related methods). */
+  itkTypeMacro(SubSelectFromListImageFilter, SubSelectImageFilter);
 
-    void SetSelectedProjections(std::vector<bool> sprojs);
+  void
+  SetSelectedProjections(std::vector<bool> sprojs);
 
 protected:
-    SubSelectFromListImageFilter();
-    ~SubSelectFromListImageFilter()= default;
+  SubSelectFromListImageFilter();
+  ~SubSelectFromListImageFilter() = default;
 };
-} //namespace ITK
+} // namespace rtk
 
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkSubSelectFromListImageFilter.hxx"
+#  include "rtkSubSelectFromListImageFilter.hxx"
 #endif
 
 #endif

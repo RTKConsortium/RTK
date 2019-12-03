@@ -36,16 +36,17 @@ namespace itk
  *
  * \ingroup ITKCudaCommon
  */
-template< class TInputImage, class TOutputImage, class TParentImageFilter =
-            ImageToImageFilter< TInputImage, TOutputImage > >
+template <class TInputImage,
+          class TOutputImage,
+          class TParentImageFilter = ImageToImageFilter<TInputImage, TOutputImage>>
 class ITK_EXPORT CudaImageToImageFilter : public TParentImageFilter
 {
 public:
   /** Standard class type alias. */
   using Self = CudaImageToImageFilter;
   using Superclass = TParentImageFilter;
-  using Pointer = SmartPointer< Self >;
-  using ConstPointer = SmartPointer< const Self >;
+  using Pointer = SmartPointer<Self>;
+  using ConstPointer = SmartPointer<const Self>;
 
   itkNewMacro(Self);
 
@@ -73,27 +74,35 @@ public:
   itkGetConstMacro(GPUEnabled, bool);
   itkBooleanMacro(GPUEnabled);
 
-  void GenerateData() override;
-  virtual void GraftOutput(typename itk::CudaTraits< TOutputImage >::Type *output);
-  virtual void GraftOutput(const DataObjectIdentifierType & key, typename itk::CudaTraits< TOutputImage >::Type *output);
+  void
+  GenerateData() override;
+  virtual void
+  GraftOutput(typename itk::CudaTraits<TOutputImage>::Type * output);
+  virtual void
+  GraftOutput(const DataObjectIdentifierType & key, typename itk::CudaTraits<TOutputImage>::Type * output);
 
 protected:
-  void GraftOutput(DataObject *output) override;
-  void GraftOutput(const DataObjectIdentifierType & key, DataObject *output) override;
+  void
+  GraftOutput(DataObject * output) override;
+  void
+  GraftOutput(const DataObjectIdentifierType & key, DataObject * output) override;
   CudaImageToImageFilter();
   ~CudaImageToImageFilter();
 
-  virtual void PrintSelf(std::ostream & os, Indent indent) const;
+  virtual void
+  PrintSelf(std::ostream & os, Indent indent) const;
 
-  virtual void GPUGenerateData() {
-  }
+  virtual void
+  GPUGenerateData()
+  {}
 
   // Cuda kernel manager
   typename CudaKernelManager::Pointer m_CudaKernelManager;
 
 private:
-  CudaImageToImageFilter(const Self &); //purposely not implemented
-  void operator=(const Self &);        //purposely not implemented
+  CudaImageToImageFilter(const Self &); // purposely not implemented
+  void
+  operator=(const Self &); // purposely not implemented
 
   bool m_GPUEnabled;
 };
@@ -101,7 +110,7 @@ private:
 } // end namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "itkCudaImageToImageFilter.hxx"
+#  include "itkCudaImageToImageFilter.hxx"
 #endif
 
 #endif

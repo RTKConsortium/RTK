@@ -24,14 +24,15 @@
 // itk include
 #include <itkImageIOBase.h>
 
-#if defined (_MSC_VER) && (_MSC_VER < 1600)
-//SR: taken from
+#if defined(_MSC_VER) && (_MSC_VER < 1600)
+// SR: taken from
 //#include "msinttypes/stdint.h"
 #else
-#include <cstdint>
+#  include <cstdint>
 #endif
 
-namespace rtk {
+namespace rtk
+{
 
 /** \class XimImageIO
  * \brief Class for reading Xim Image file format
@@ -45,15 +46,16 @@ namespace rtk {
 class XimImageIO : public itk::ImageIOBase
 {
 public:
-/** Standard class type alias. */
+  /** Standard class type alias. */
   using Self = XimImageIO;
   using Superclass = itk::ImageIOBase;
   using Pointer = itk::SmartPointer<Self>;
   using PixelType = signed short int;
   using Int4 = itk::int32_t; // int of 4 bytes as in xim docs
 
-  typedef struct xim_header {
-    //Actual Header:
+  typedef struct xim_header
+  {
+    // Actual Header:
     char sFileType[32];
     Int4 FileVersion;
     Int4 SizeX;
@@ -64,39 +66,41 @@ public:
     Int4 lookUpTableSize;
     Int4 compressedPixelBufferSize;
     Int4 unCompressedPixelBufferSize;
-    //Header after pixel-data:
-    Int4 binsInHistogram;
-    Int4 * histogramData;
-    Int4 numberOfProperties;
+    // Header after pixel-data:
+    Int4         binsInHistogram;
+    Int4 *       histogramData;
+    Int4         numberOfProperties;
     unsigned int nPixelOffset;
-    double dCollX1;
-    double dCollX2;
-    double dCollY1;
-    double dCollY2;
-    double dCollRtn;
-    double dCouchVrt;
-    double dCouchLng;
-    double dCouchLat;
-    double dIDUResolutionX; //MUST BE CALCULATED
-    double dIDUResolutionY; //
-    double dImageResolutionX;//
-    double dImageResolutionY;//
-    double dEnergy;
-    double dDoseRate;
-    double dXRayKV;
-    double dXRayMA;
-    double dCTProjectionAngle; //KVSourceRtn in file
-    double dDetectorOffsetX; // KVDetectorLat
-    double dDetectorOffsetY; // KVDetectorLng
-    double dCTNormChamber;
-    double dGatingTimeTag;
-    double dGating4DInfoX;
-    double dGating4DInfoY;
-    double dGating4DInfoZ;
-    //double dGating4DInfoTime;
-    } Xim_header;
+    double       dCollX1;
+    double       dCollX2;
+    double       dCollY1;
+    double       dCollY2;
+    double       dCollRtn;
+    double       dCouchVrt;
+    double       dCouchLng;
+    double       dCouchLat;
+    double       dIDUResolutionX;   // MUST BE CALCULATED
+    double       dIDUResolutionY;   //
+    double       dImageResolutionX; //
+    double       dImageResolutionY; //
+    double       dEnergy;
+    double       dDoseRate;
+    double       dXRayKV;
+    double       dXRayMA;
+    double       dCTProjectionAngle; // KVSourceRtn in file
+    double       dDetectorOffsetX;   // KVDetectorLat
+    double       dDetectorOffsetY;   // KVDetectorLng
+    double       dCTNormChamber;
+    double       dGatingTimeTag;
+    double       dGating4DInfoX;
+    double       dGating4DInfoY;
+    double       dGating4DInfoZ;
+    // double dGating4DInfoTime;
+  } Xim_header;
 
-  XimImageIO() : Superclass() {}
+  XimImageIO()
+    : Superclass()
+  {}
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -105,29 +109,42 @@ public:
   itkTypeMacro(XimImageIO, itk::ImageIOBase);
 
   /*-------- This part of the interface deals with reading data. ------ */
-  void ReadImageInformation() override;
+  void
+  ReadImageInformation() override;
 
-  bool CanReadFile( const char* FileNameToRead ) override;
+  bool
+  CanReadFile(const char * FileNameToRead) override;
 
-  void Read(void * buffer) override;
+  void
+  Read(void * buffer) override;
 
   /*-------- This part of the interfaces deals with writing data. ----- */
-  virtual void WriteImageInformation(bool /*keepOfStream*/) { }
+  virtual void
+  WriteImageInformation(bool /*keepOfStream*/)
+  {}
 
-  void WriteImageInformation()  override { WriteImageInformation(false); }
+  void
+  WriteImageInformation() override
+  {
+    WriteImageInformation(false);
+  }
 
-  bool CanWriteFile(const char* filename) override;
+  bool
+  CanWriteFile(const char * filename) override;
 
-  void Write(const void* buffer) override;
+  void
+  Write(const void * buffer) override;
 
 private:
-  template<typename T> size_t SetPropertyValue(char *property_name, Int4 value_length, FILE *fp, Xim_header *xim);
+  template <typename T>
+  size_t
+  SetPropertyValue(char * property_name, Int4 value_length, FILE * fp, Xim_header * xim);
 
-  int          m_ImageDataStart;
+  int  m_ImageDataStart;
   Int4 m_BytesPerPixel;
 
 }; // end class XimImageIO
 
-} // end namespace
+} // namespace rtk
 
 #endif /* end #define __rtkXimImageIO_h */

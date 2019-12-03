@@ -39,27 +39,31 @@ namespace Functor
  *
  * \ingroup RTK Functions
  */
-template< class TInput, class TCoordRepType, class TOutput=TInput >
+template <class TInput, class TCoordRepType, class TOutput = TInput>
 class InterpolationWeightMultiplication
 {
 public:
   InterpolationWeightMultiplication() = default;
   ~InterpolationWeightMultiplication() = default;
-  bool operator!=( const InterpolationWeightMultiplication & ) const {
+  bool
+  operator!=(const InterpolationWeightMultiplication &) const
+  {
     return false;
   }
-  bool operator==(const InterpolationWeightMultiplication & other) const
+  bool
+  operator==(const InterpolationWeightMultiplication & other) const
   {
-    return !( *this != other );
+    return !(*this != other);
   }
 
-  inline TOutput operator()( const ThreadIdType itkNotUsed(threadId),
-                             const double itkNotUsed(stepLengthInVoxel),
-                             const TCoordRepType weight,
-                             const TInput *p,
-                             const int i ) const
+  inline TOutput
+  operator()(const ThreadIdType  itkNotUsed(threadId),
+             const double        itkNotUsed(stepLengthInVoxel),
+             const TCoordRepType weight,
+             const TInput *      p,
+             const int           i) const
   {
-    return weight*p[i];
+    return weight * p[i];
   }
 };
 
@@ -70,26 +74,27 @@ public:
  *
  * \ingroup RTK Functions
  */
-template< class TInput, class TOutput>
+template <class TInput, class TOutput>
 class SumAlongRay
 {
 public:
   using VectorType = itk::Vector<double, 3>;
 
-  SumAlongRay()= default;
+  SumAlongRay() = default;
   ~SumAlongRay() = default;
-  bool operator!=( const SumAlongRay & ) const
+  bool
+  operator!=(const SumAlongRay &) const
   {
     return false;
   }
-  bool operator==(const SumAlongRay & other) const
+  bool
+  operator==(const SumAlongRay & other) const
   {
-    return !( *this != other );
+    return !(*this != other);
   }
 
-  inline TOutput operator()(const ThreadIdType itkNotUsed(threadId),
-                            const TInput volumeValue,
-                            const VectorType &itkNotUsed(stepInMM))
+  inline TOutput
+  operator()(const ThreadIdType itkNotUsed(threadId), const TInput volumeValue, const VectorType & itkNotUsed(stepInMM))
   {
     return volumeValue;
   }
@@ -102,7 +107,7 @@ public:
  *
  * \ingroup RTK Functions
  */
-template< class TInput, class TOutput >
+template <class TInput, class TOutput>
 class ProjectedValueAccumulation
 {
 public:
@@ -110,27 +115,30 @@ public:
 
   ProjectedValueAccumulation() = default;
   ~ProjectedValueAccumulation() = default;
-  bool operator!=( const ProjectedValueAccumulation & ) const
-    {
+  bool
+  operator!=(const ProjectedValueAccumulation &) const
+  {
     return false;
-    }
-  bool operator==(const ProjectedValueAccumulation & other) const
-    {
-    return !( *this != other );
-    }
+  }
+  bool
+  operator==(const ProjectedValueAccumulation & other) const
+  {
+    return !(*this != other);
+  }
 
-  inline void operator()( const ThreadIdType itkNotUsed(threadId),
-                          const TInput &input,
-                          TOutput &output,
-                          const TOutput &rayCastValue,
-                          const VectorType &stepInMM,
-                          const VectorType &itkNotUsed(source),
-                          const VectorType &itkNotUsed(sourceToPixel),
-                          const VectorType &itkNotUsed(nearestPoint),
-                          const VectorType &itkNotUsed(farthestPoint)) const
-    {
+  inline void
+  operator()(const ThreadIdType itkNotUsed(threadId),
+             const TInput &     input,
+             TOutput &          output,
+             const TOutput &    rayCastValue,
+             const VectorType & stepInMM,
+             const VectorType & itkNotUsed(source),
+             const VectorType & itkNotUsed(sourceToPixel),
+             const VectorType & itkNotUsed(nearestPoint),
+             const VectorType & itkNotUsed(farthestPoint)) const
+  {
     output = input + rayCastValue * stepInMM.GetNorm();
-    }
+  }
 };
 
 } // end namespace Functor
@@ -153,19 +161,20 @@ public:
 
 template <class TInputImage,
           class TOutputImage,
-          class TInterpolationWeightMultiplication = Functor::InterpolationWeightMultiplication<typename TInputImage::PixelType,typename itk::PixelTraits<typename TInputImage::PixelType>::ValueType>,
-          class TProjectedValueAccumulation        = Functor::ProjectedValueAccumulation<typename TInputImage::PixelType, typename TOutputImage::PixelType>,
-          class TSumAlongRay                       = Functor::SumAlongRay<typename TInputImage::PixelType, typename TOutputImage::PixelType>
-          >
-class ITK_EXPORT JosephForwardProjectionImageFilter :
-  public ForwardProjectionImageFilter<TInputImage,TOutputImage>
+          class TInterpolationWeightMultiplication = Functor::InterpolationWeightMultiplication<
+            typename TInputImage::PixelType,
+            typename itk::PixelTraits<typename TInputImage::PixelType>::ValueType>,
+          class TProjectedValueAccumulation =
+            Functor::ProjectedValueAccumulation<typename TInputImage::PixelType, typename TOutputImage::PixelType>,
+          class TSumAlongRay = Functor::SumAlongRay<typename TInputImage::PixelType, typename TOutputImage::PixelType>>
+class ITK_EXPORT JosephForwardProjectionImageFilter : public ForwardProjectionImageFilter<TInputImage, TOutputImage>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(JosephForwardProjectionImageFilter);
 
   /** Standard class type alias. */
   using Self = JosephForwardProjectionImageFilter;
-  using Superclass = ForwardProjectionImageFilter<TInputImage,TOutputImage>;
+  using Superclass = ForwardProjectionImageFilter<TInputImage, TOutputImage>;
   using Pointer = itk::SmartPointer<Self>;
   using ConstPointer = itk::SmartPointer<const Self>;
   using InputPixelType = typename TInputImage::PixelType;
@@ -181,36 +190,63 @@ public:
   itkTypeMacro(JosephForwardProjectionImageFilter, ForwardProjectionImageFilter);
 
   /** Get/Set the functor that is used to multiply each interpolation value with a volume value */
-  TInterpolationWeightMultiplication &       GetInterpolationWeightMultiplication() { return m_InterpolationWeightMultiplication; }
-  const TInterpolationWeightMultiplication & GetInterpolationWeightMultiplication() const { return m_InterpolationWeightMultiplication; }
-  void SetInterpolationWeightMultiplication(const TInterpolationWeightMultiplication & _arg)
+  TInterpolationWeightMultiplication &
+  GetInterpolationWeightMultiplication()
+  {
+    return m_InterpolationWeightMultiplication;
+  }
+  const TInterpolationWeightMultiplication &
+  GetInterpolationWeightMultiplication() const
+  {
+    return m_InterpolationWeightMultiplication;
+  }
+  void
+  SetInterpolationWeightMultiplication(const TInterpolationWeightMultiplication & _arg)
+  {
+    if (m_InterpolationWeightMultiplication != _arg)
     {
-    if ( m_InterpolationWeightMultiplication != _arg )
-      {
       m_InterpolationWeightMultiplication = _arg;
       this->Modified();
-      }
     }
+  }
 
   /** Get/Set the functor that is used to accumulate values in the projection image after the ray
    * casting has been performed. */
-  TProjectedValueAccumulation &       GetProjectedValueAccumulation() { return m_ProjectedValueAccumulation; }
-  const TProjectedValueAccumulation & GetProjectedValueAccumulation() const { return m_ProjectedValueAccumulation; }
-  void SetProjectedValueAccumulation(const TProjectedValueAccumulation & _arg)
+  TProjectedValueAccumulation &
+  GetProjectedValueAccumulation()
+  {
+    return m_ProjectedValueAccumulation;
+  }
+  const TProjectedValueAccumulation &
+  GetProjectedValueAccumulation() const
+  {
+    return m_ProjectedValueAccumulation;
+  }
+  void
+  SetProjectedValueAccumulation(const TProjectedValueAccumulation & _arg)
+  {
+    if (m_ProjectedValueAccumulation != _arg)
     {
-    if ( m_ProjectedValueAccumulation != _arg )
-      {
       m_ProjectedValueAccumulation = _arg;
       this->Modified();
-      }
     }
+  }
 
   /** Get/Set the functor that is used to compute the sum along the ray*/
-  TSumAlongRay &       GetSumAlongRay() { return m_SumAlongRay; }
-  const TSumAlongRay & GetSumAlongRay() const { return m_SumAlongRay; }
-  void SetSumAlongRay(const TSumAlongRay & _arg)
+  TSumAlongRay &
+  GetSumAlongRay()
   {
-    if ( m_SumAlongRay != _arg )
+    return m_SumAlongRay;
+  }
+  const TSumAlongRay &
+  GetSumAlongRay() const
+  {
+    return m_SumAlongRay;
+  }
+  void
+  SetSumAlongRay(const TSumAlongRay & _arg)
+  {
+    if (m_SumAlongRay != _arg)
     {
       m_SumAlongRay = _arg;
       this->Modified();
@@ -229,55 +265,62 @@ protected:
   JosephForwardProjectionImageFilter();
   ~JosephForwardProjectionImageFilter() override = default;
 
-  void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) override;
+  void
+  ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, ThreadIdType threadId) override;
 
   /** The two inputs should not be in the same space so there is nothing
    * to verify. */
-#if ITK_VERSION_MAJOR<5
-  void VerifyInputInformation() override {}
+#if ITK_VERSION_MAJOR < 5
+  void
+  VerifyInputInformation() override
+  {}
 #else
-  void VerifyInputInformation() const override {}
+  void
+  VerifyInputInformation() const override
+  {}
 #endif
 
-  inline OutputPixelType BilinearInterpolation(const ThreadIdType threadId,
-                                               const double stepLengthInVoxel,
-                                               const InputPixelType *pxiyi,
-                                               const InputPixelType *pxsyi,
-                                               const InputPixelType *pxiys,
-                                               const InputPixelType *pxsys,
-                                               const double x,
-                                               const double y,
-                                               const int ox,
-                                               const int oy);
+  inline OutputPixelType
+  BilinearInterpolation(const ThreadIdType     threadId,
+                        const double           stepLengthInVoxel,
+                        const InputPixelType * pxiyi,
+                        const InputPixelType * pxsyi,
+                        const InputPixelType * pxiys,
+                        const InputPixelType * pxsys,
+                        const double           x,
+                        const double           y,
+                        const int              ox,
+                        const int              oy);
 
-  inline OutputPixelType BilinearInterpolationOnBorders(const ThreadIdType threadId,
-                                               const double stepLengthInVoxel,
-                                               const InputPixelType *pxiyi,
-                                               const InputPixelType *pxsyi,
-                                               const InputPixelType *pxiys,
-                                               const InputPixelType *pxsys,
-                                               const double x,
-                                               const double y,
-                                               const int ox,
-                                               const int oy,
-                                               const double minx,
-                                               const double miny,
-                                               const double maxx,
-                                               const double maxy);
+  inline OutputPixelType
+  BilinearInterpolationOnBorders(const ThreadIdType     threadId,
+                                 const double           stepLengthInVoxel,
+                                 const InputPixelType * pxiyi,
+                                 const InputPixelType * pxsyi,
+                                 const InputPixelType * pxiys,
+                                 const InputPixelType * pxsys,
+                                 const double           x,
+                                 const double           y,
+                                 const int              ox,
+                                 const int              oy,
+                                 const double           minx,
+                                 const double           miny,
+                                 const double           maxx,
+                                 const double           maxy);
 
 private:
   // Functors
   TInterpolationWeightMultiplication m_InterpolationWeightMultiplication;
   TProjectedValueAccumulation        m_ProjectedValueAccumulation;
   TSumAlongRay                       m_SumAlongRay;
-  double                             m_InferiorClip{0.};
-  double                             m_SuperiorClip{1.};
+  double                             m_InferiorClip{ 0. };
+  double                             m_SuperiorClip{ 1. };
 };
 
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkJosephForwardProjectionImageFilter.hxx"
+#  include "rtkJosephForwardProjectionImageFilter.hxx"
 #endif
 
 #endif

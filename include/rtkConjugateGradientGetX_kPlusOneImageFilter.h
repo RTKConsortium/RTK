@@ -31,19 +31,18 @@ namespace rtk
  *
  * \ingroup RTK
  */
-template< typename TInputImage>
-class ConjugateGradientGetX_kPlusOneImageFilter : public itk::ImageToImageFilter< TInputImage, TInputImage>
+template <typename TInputImage>
+class ConjugateGradientGetX_kPlusOneImageFilter : public itk::ImageToImageFilter<TInputImage, TInputImage>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(ConjugateGradientGetX_kPlusOneImageFilter);
 
   /** Standard class type alias. */
   using Self = ConjugateGradientGetX_kPlusOneImageFilter;
-  using Superclass = itk::ImageToImageFilter< TInputImage, TInputImage>;
-  using Pointer = itk::SmartPointer< Self >;
+  using Superclass = itk::ImageToImageFilter<TInputImage, TInputImage>;
+  using Pointer = itk::SmartPointer<Self>;
   using OutputImageRegionType = typename TInputImage::RegionType;
-  using AlphaImage = itk::Image<typename TInputImage::InternalPixelType,
-                              TInputImage::ImageDimension>;
+  using AlphaImage = itk::Image<typename TInputImage::InternalPixelType, TInputImage::ImageDimension>;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -52,8 +51,10 @@ public:
   itkTypeMacro(ConjugateGradientGetX_kPlusOneImageFilter, itk::ImageToImageFilter);
 
   /** Functions to set the inputs */
-  void SetXk(const TInputImage* Xk);
-  void SetPk(const TInputImage* Pk);
+  void
+  SetXk(const TInputImage * Xk);
+  void
+  SetPk(const TInputImage * Pk);
 
   itkGetMacro(Alphak, double);
   itkSetMacro(Alphak, double);
@@ -66,27 +67,30 @@ protected:
   ConjugateGradientGetX_kPlusOneImageFilter();
   ~ConjugateGradientGetX_kPlusOneImageFilter() override = default;
 
-  typename TInputImage::Pointer GetXk();
-  typename TInputImage::Pointer GetPk();
+  typename TInputImage::Pointer
+  GetXk();
+  typename TInputImage::Pointer
+  GetPk();
 
   /** Does the real work. */
-  void GenerateData() override;
+  void
+  GenerateData() override;
 
-  void GenerateOutputInformation() override;
+  void
+  GenerateOutputInformation() override;
 
 private:
   double m_Alphak;
 
   /** Pointers to sub filters */
-  typename AddFilterType::Pointer       m_AddFilter;
-  typename MultiplyFilterType::Pointer  m_MultiplyFilter;
-
+  typename AddFilterType::Pointer      m_AddFilter;
+  typename MultiplyFilterType::Pointer m_MultiplyFilter;
 };
-} //namespace ITK
+} // namespace rtk
 
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkConjugateGradientGetX_kPlusOneImageFilter.hxx"
+#  include "rtkConjugateGradientGetX_kPlusOneImageFilter.hxx"
 #endif
 
 #endif

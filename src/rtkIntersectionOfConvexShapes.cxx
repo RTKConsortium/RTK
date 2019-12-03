@@ -21,97 +21,86 @@
 namespace rtk
 {
 
-IntersectionOfConvexShapes
-::IntersectionOfConvexShapes()
-{
-}
+IntersectionOfConvexShapes ::IntersectionOfConvexShapes() {}
 
 void
-IntersectionOfConvexShapes
-::SetConvexShapes(const ConvexShapeVector &_arg)
+IntersectionOfConvexShapes ::SetConvexShapes(const ConvexShapeVector & _arg)
 {
   if (this->m_ConvexShapes != _arg)
-    {
+  {
     this->m_ConvexShapes = _arg;
     this->Modified();
-    }
+  }
 }
 
 bool
-IntersectionOfConvexShapes
-::IsInside(const PointType& point) const
+IntersectionOfConvexShapes ::IsInside(const PointType & point) const
 {
-  for(const auto & convexShape : m_ConvexShapes)
-    {
-    if( !convexShape->IsInside(point) )
+  for (const auto & convexShape : m_ConvexShapes)
+  {
+    if (!convexShape->IsInside(point))
       return false;
-    }
+  }
   return true;
 }
 
 bool
-IntersectionOfConvexShapes
-::IsIntersectedByRay(const PointType & rayOrigin,
-                     const VectorType & rayDirection,
-                     ScalarType & nearDist,
-                     ScalarType & farDist) const
+IntersectionOfConvexShapes ::IsIntersectedByRay(const PointType &  rayOrigin,
+                                                const VectorType & rayDirection,
+                                                ScalarType &       nearDist,
+                                                ScalarType &       farDist) const
 {
-  nearDist = itk::NumericTraits< ScalarType >::NonpositiveMin();
-  farDist = itk::NumericTraits< ScalarType >::max();
-  for(const auto & convexShape : m_ConvexShapes)
-    {
+  nearDist = itk::NumericTraits<ScalarType>::NonpositiveMin();
+  farDist = itk::NumericTraits<ScalarType>::max();
+  for (const auto & convexShape : m_ConvexShapes)
+  {
     ScalarType n, f;
-    if( !convexShape->IsIntersectedByRay(rayOrigin, rayDirection, n, f) )
+    if (!convexShape->IsIntersectedByRay(rayOrigin, rayDirection, n, f))
       return false;
     nearDist = std::max(nearDist, n);
     farDist = std::min(farDist, f);
-    if(nearDist >= farDist)
+    if (nearDist >= farDist)
       return false;
-    }
+  }
   return true;
 }
 
 void
-IntersectionOfConvexShapes
-::Rescale(const VectorType &r)
+IntersectionOfConvexShapes ::Rescale(const VectorType & r)
 {
   Superclass::Rescale(r);
-  for(auto & convexShape : m_ConvexShapes)
+  for (auto & convexShape : m_ConvexShapes)
     convexShape->Rescale(r);
 }
 
 void
-IntersectionOfConvexShapes
-::Translate(const VectorType &t)
+IntersectionOfConvexShapes ::Translate(const VectorType & t)
 {
   Superclass::Translate(t);
-  for(auto & convexShape : m_ConvexShapes)
+  for (auto & convexShape : m_ConvexShapes)
     convexShape->Translate(t);
 }
 
 void
-IntersectionOfConvexShapes
-::Rotate(const RotationMatrixType &r)
+IntersectionOfConvexShapes ::Rotate(const RotationMatrixType & r)
 {
   Superclass::Rotate(r);
-  for(auto & convexShape : m_ConvexShapes)
+  for (auto & convexShape : m_ConvexShapes)
     convexShape->Rotate(r);
 }
 
 void
-IntersectionOfConvexShapes
-::AddConvexShape(const ConvexShapePointer &co)
+IntersectionOfConvexShapes ::AddConvexShape(const ConvexShapePointer & co)
 {
   ConvexShapePointer clone = co->Clone();
   m_ConvexShapes.push_back(clone);
 }
 
 itk::LightObject::Pointer
-IntersectionOfConvexShapes
-::InternalClone() const
+IntersectionOfConvexShapes ::InternalClone() const
 {
   LightObject::Pointer loPtr = Superclass::InternalClone();
-  Self::Pointer clone = dynamic_cast<Self *>(loPtr.GetPointer());
+  Self::Pointer        clone = dynamic_cast<Self *>(loPtr.GetPointer());
 
   clone->SetConvexShapes(this->GetConvexShapes());
 

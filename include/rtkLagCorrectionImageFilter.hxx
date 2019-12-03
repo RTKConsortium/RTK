@@ -28,10 +28,10 @@
 namespace rtk
 {
 
-template<typename TImage, unsigned ModelOrder>
+template <typename TImage, unsigned ModelOrder>
 LagCorrectionImageFilter<TImage, ModelOrder>::LagCorrectionImageFilter()
 {
-#if ITK_VERSION_MAJOR>4
+#if ITK_VERSION_MAJOR > 4
   this->DynamicMultiThreadingOff();
 #endif
 
@@ -42,15 +42,16 @@ LagCorrectionImageFilter<TImage, ModelOrder>::LagCorrectionImageFilter()
   m_NewParamJustReceived = false;
 }
 
-template<typename TImage, unsigned ModelOrder>
-void LagCorrectionImageFilter<TImage, ModelOrder>
-::GenerateOutputInformation()
+template <typename TImage, unsigned ModelOrder>
+void
+LagCorrectionImageFilter<TImage, ModelOrder>::GenerateOutputInformation()
 {
   // get pointers to the input and output
-  typename TImage::Pointer  inputPtr = const_cast<TImage *>(this->GetInput());
+  typename TImage::Pointer inputPtr = const_cast<TImage *>(this->GetInput());
   typename TImage::Pointer outputPtr = this->GetOutput();
 
-  if (!outputPtr || !inputPtr) {
+  if (!outputPtr || !inputPtr)
+  {
     return;
   }
 
@@ -76,7 +77,8 @@ void LagCorrectionImageFilter<TImage, ModelOrder>
   if (m_NewParamJustReceived && (m_B[0] != 0.f))
   {
     m_SumB = 1.f;
-    for (unsigned int n = 0; n < ModelOrder; n++) {
+    for (unsigned int n = 0; n < ModelOrder; n++)
+    {
       m_ExpmA[n] = expf(-m_A[n]);
       m_SumB += m_B[n];
     }
@@ -88,33 +90,35 @@ void LagCorrectionImageFilter<TImage, ModelOrder>
   }
 }
 
-template<typename TImage, unsigned ModelOrder>
-void LagCorrectionImageFilter<TImage, ModelOrder>
-::GenerateInputRequestedRegion()
+template <typename TImage, unsigned ModelOrder>
+void
+LagCorrectionImageFilter<TImage, ModelOrder>::GenerateInputRequestedRegion()
 {
-  typename Superclass::InputImagePointer  inputPtr = const_cast< TImage * >(this->GetInput());
+  typename Superclass::InputImagePointer  inputPtr = const_cast<TImage *>(this->GetInput());
   typename Superclass::OutputImagePointer outputPtr = this->GetOutput();
 
   if (!inputPtr || !outputPtr)
     return;
 
   typename TImage::RegionType inputRequestedRegion = outputPtr->GetRequestedRegion();
-  inputRequestedRegion.Crop(inputPtr->GetLargestPossibleRegion());     // Because Largest region has been updated
+  inputRequestedRegion.Crop(inputPtr->GetLargestPossibleRegion()); // Because Largest region has been updated
   inputPtr->SetRequestedRegion(inputRequestedRegion);
 }
 
-template<typename TImage, unsigned ModelOrder>
-void LagCorrectionImageFilter<TImage, ModelOrder>
-::ThreadedGenerateData(const ImageRegionType & thRegion, itk::ThreadIdType itkNotUsed(threadId))
+template <typename TImage, unsigned ModelOrder>
+void
+LagCorrectionImageFilter<TImage, ModelOrder>::ThreadedGenerateData(const ImageRegionType & thRegion,
+                                                                   itk::ThreadIdType       itkNotUsed(threadId))
 {
   // Input / ouput iterators
   itk::ImageRegionConstIterator<TImage> itIn(this->GetInput(), thRegion);
-  itk::ImageRegionIterator<TImage>     itOut(this->GetOutput(), thRegion);
+  itk::ImageRegionIterator<TImage>      itOut(this->GetOutput(), thRegion);
 
   itIn.GoToBegin();
   itOut.GoToBegin();
 
-  if (m_B[0] == 0.f) {
+  if (m_B[0] == 0.f)
+  {
     while (!itIn.IsAtEnd())
     {
       itOut.Set(itIn.Get());
@@ -134,14 +138,14 @@ void LagCorrectionImageFilter<TImage, ModelOrder>
       unsigned int ii = thRegion.GetIndex()[0] - m_StartIdx[0];
       for (unsigned int i = 0; i < thRegion.GetSize(0); ++i, ++ii)
       {
-        unsigned idx_s = (jj + ii)*ModelOrder;
+        unsigned idx_s = (jj + ii) * ModelOrder;
 
         // Get measured pixel value y[k]
         float yk = static_cast<float>(itIn.Get());
 
         // Computes correction
-        float xk = yk;         // Initial corrected pixel
-        VectorType Sa;         // Update of the state
+        float      xk = yk; // Initial corrected pixel
+        VectorType Sa;      // Update of the state
         for (unsigned int n = 0; n < ModelOrder; n++)
         {
           // Compute the update of internal state for nth exponential
@@ -155,7 +159,8 @@ void LagCorrectionImageFilter<TImage, ModelOrder>
         xk = xk / m_SumB;
 
         // Update internal state Snk
-        for (unsigned int n = 0; n < ModelOrder; n++) {
+        for (unsigned int n = 0; n < ModelOrder; n++)
+        {
           m_S[idx_s + n] = xk + Sa[n];
         }
 
@@ -172,27 +177,28 @@ void LagCorrectionImageFilter<TImage, ModelOrder>
   }
 }
 
-template<typename TImage, unsigned ModelOrder>
-unsigned int LagCorrectionImageFilter<TImage, ModelOrder>
-::SplitRequestedRegion(unsigned int i, unsigned int num, OutputImageRegionType& splitRegion)
+template <typename TImage, unsigned ModelOrder>
+unsigned int
+LagCorrectionImageFilter<TImage, ModelOrder>::SplitRequestedRegion(unsigned int            i,
+                                                                   unsigned int            num,
+                                                                   OutputImageRegionType & splitRegion)
 {
   return SplitRequestedRegion((int)i, (int)num, splitRegion);
 }
 
-template<typename TImage, unsigned ModelOrder>
-int LagCorrectionImageFilter<TImage, ModelOrder>
-::SplitRequestedRegion(int i, int num, OutputImageRegionType& splitRegion)
+template <typename TImage, unsigned ModelOrder>
+int
+LagCorrectionImageFilter<TImage, ModelOrder>::SplitRequestedRegion(int i, int num, OutputImageRegionType & splitRegion)
 {
   // Split along the "second" direction
 
   // Get the output pointer
-  TImage * outputPtr = this->GetOutput();
-  const typename TImage::SizeType& requestedRegionSize
-    = outputPtr->GetRequestedRegion().GetSize();
+  TImage *                          outputPtr = this->GetOutput();
+  const typename TImage::SizeType & requestedRegionSize = outputPtr->GetRequestedRegion().GetSize();
 
-  int splitAxis;
+  int                        splitAxis;
   typename TImage::IndexType splitIndex;
-  typename TImage::SizeType splitSize;
+  typename TImage::SizeType  splitSize;
 
   // Initialize the splitRegion to the output requested region
   splitRegion = outputPtr->GetRequestedRegion();
@@ -201,25 +207,27 @@ int LagCorrectionImageFilter<TImage, ModelOrder>
 
   // split on the outermost dimension available
   splitAxis = 1;
-  if (requestedRegionSize[splitAxis] == 1) {
+  if (requestedRegionSize[splitAxis] == 1)
+  {
     splitAxis = 0;
   }
 
   // determine the actual number of pieces that will be generated
   typename TImage::SizeType::SizeValueType range = requestedRegionSize[splitAxis];
-  int valuesPerThread = itk::Math::Ceil<int>(range / (double)num);
-  int maxThreadIdUsed = itk::Math::Ceil<int>(range / (double)valuesPerThread) - 1;
+  int                                      valuesPerThread = itk::Math::Ceil<int>(range / (double)num);
+  int                                      maxThreadIdUsed = itk::Math::Ceil<int>(range / (double)valuesPerThread) - 1;
 
   // Split the region
-  if (i < maxThreadIdUsed) {
-    splitIndex[splitAxis] += i*valuesPerThread;
+  if (i < maxThreadIdUsed)
+  {
+    splitIndex[splitAxis] += i * valuesPerThread;
     splitSize[splitAxis] = valuesPerThread;
   }
   if (i == maxThreadIdUsed)
   {
-    splitIndex[splitAxis] += i*valuesPerThread;
+    splitIndex[splitAxis] += i * valuesPerThread;
     // last thread needs to process the "rest" dimension being split
-    splitSize[splitAxis] = splitSize[splitAxis] - i*valuesPerThread;
+    splitSize[splitAxis] = splitSize[splitAxis] - i * valuesPerThread;
   }
 
   // set the split region ivars
@@ -229,6 +237,6 @@ int LagCorrectionImageFilter<TImage, ModelOrder>
   return maxThreadIdUsed + 1;
 }
 
-}
+} // namespace rtk
 
 #endif

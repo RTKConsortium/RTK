@@ -80,68 +80,75 @@ public:
   using SpacingType = typename TOutputImage::SpacingType;
   using PointType = typename TOutputImage::PointType;
   using SizeValueType = typename SizeType::SizeValueType;
-  typedef SizeValueType                           SizeValueArrayType[TOutputImage::ImageDimension];
+  typedef SizeValueType SizeValueArrayType[TOutputImage::ImageDimension];
   using SpacingValueType = typename TOutputImage::SpacingValueType;
-  typedef SpacingValueType                        SpacingValueArrayType[TOutputImage::ImageDimension];
+  typedef SpacingValueType SpacingValueArrayType[TOutputImage::ImageDimension];
   using PointValueType = typename TOutputImage::PointValueType;
-  typedef PointValueType                          PointValueArrayType[TOutputImage::ImageDimension];
+  typedef PointValueType PointValueArrayType[TOutputImage::ImageDimension];
   using DirectionType = typename TOutputImage::DirectionType;
 
   /** Set/Get size of the output image */
-  itkSetMacro( Size, SizeType );
-  itkGetMacro( Size, SizeType );
-  virtual void SetSize( SizeValueArrayType sizeArray );
-  virtual const SizeValueType * GetSize() const;
+  itkSetMacro(Size, SizeType);
+  itkGetMacro(Size, SizeType);
+  virtual void
+  SetSize(SizeValueArrayType sizeArray);
+  virtual const SizeValueType *
+  GetSize() const;
 
   /** Set/Get spacing of the output image */
-  itkSetMacro( Spacing, SpacingType );
-  itkGetMacro( Spacing, SpacingType );
+  itkSetMacro(Spacing, SpacingType);
+  itkGetMacro(Spacing, SpacingType);
 
   /** Set/Get origin of the output image */
-  itkSetMacro( Origin, PointType );
-  itkGetMacro( Origin, PointType );
+  itkSetMacro(Origin, PointType);
+  itkGetMacro(Origin, PointType);
 
   /** Set/Get direction of the output image */
-  itkSetMacro( Direction, DirectionType );
-  itkGetMacro( Direction, DirectionType );
+  itkSetMacro(Direction, DirectionType);
+  itkGetMacro(Direction, DirectionType);
 
   /** Set/Get index of the output image's largest possible region */
-  itkSetMacro( Index, IndexType );
-  itkGetMacro( Index, IndexType );
+  itkSetMacro(Index, IndexType);
+  itkGetMacro(Index, IndexType);
 
   /** Set/Get the pixel value of output */
   itkSetMacro(Constant, OutputImagePixelType);
   itkGetConstMacro(Constant, OutputImagePixelType);
 
   /** Set output image information from an existing image */
-  void SetInformationFromImage(const itk::ImageBase<TOutputImage::ImageDimension>* image);
+  void
+  SetInformationFromImage(const itk::ImageBase<TOutputImage::ImageDimension> * image);
 
 protected:
   ConstantImageSource();
   ~ConstantImageSource() override;
-  void PrintSelf(std::ostream& os, itk::Indent indent) const override;
+  void
+  PrintSelf(std::ostream & os, itk::Indent indent) const override;
 
-#if ITK_VERSION_MAJOR<5
-  void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) override;
+#if ITK_VERSION_MAJOR < 5
+  void
+  ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, ThreadIdType threadId) override;
 #else
-  void DynamicThreadedGenerateData(const OutputImageRegionType& outputRegionForThread) override;
+  void
+  DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread) override;
 #endif
 
-  void GenerateOutputInformation() override;
+  void
+  GenerateOutputInformation() override;
 
-  SizeType       m_Size;
-  SpacingType    m_Spacing;
-  PointType      m_Origin;
-  DirectionType  m_Direction;
-  IndexType      m_Index;
+  SizeType      m_Size;
+  SpacingType   m_Spacing;
+  PointType     m_Origin;
+  DirectionType m_Direction;
+  IndexType     m_Index;
 
-  OutputImagePixelType  m_Constant;
+  OutputImagePixelType m_Constant;
 };
 
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkConstantImageSource.hxx"
+#  include "rtkConstantImageSource.hxx"
 #endif
 
 #endif

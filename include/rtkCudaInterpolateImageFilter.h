@@ -20,13 +20,13 @@
 #define rtkCudaInterpolateImageFilter_h
 
 #include "rtkConfiguration.h"
-//Conditional definition of the class to pass ITKHeaderTest
+// Conditional definition of the class to pass ITKHeaderTest
 #ifdef RTK_USE_CUDA
 
-#include "rtkInterpolatorWithKnownWeightsImageFilter.h"
-#include "itkCudaImage.h"
-#include "itkCudaInPlaceImageFilter.h"
-#include "RTKExport.h"
+#  include "rtkInterpolatorWithKnownWeightsImageFilter.h"
+#  include "itkCudaImage.h"
+#  include "itkCudaInPlaceImageFilter.h"
+#  include "RTKExport.h"
 
 namespace rtk
 {
@@ -40,16 +40,18 @@ namespace rtk
  *
  * \ingroup RTK CudaImageToImageFilter
  */
-class RTK_EXPORT CudaInterpolateImageFilter :
-        public itk::CudaInPlaceImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>,
-    InterpolatorWithKnownWeightsImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,4> > >
+class RTK_EXPORT CudaInterpolateImageFilter
+  : public itk::CudaInPlaceImageFilter<
+      itk::CudaImage<float, 3>,
+      itk::CudaImage<float, 3>,
+      InterpolatorWithKnownWeightsImageFilter<itk::CudaImage<float, 3>, itk::CudaImage<float, 4>>>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(CudaInterpolateImageFilter);
 
   /** Standard class type alias. */
   using Self = rtk::CudaInterpolateImageFilter;
-  using Superclass = rtk::InterpolatorWithKnownWeightsImageFilter< OutputImageType, InputImageType >;
+  using Superclass = rtk::InterpolatorWithKnownWeightsImageFilter<OutputImageType, InputImageType>;
   using Pointer = itk::SmartPointer<Self>;
   using ConstPointer = itk::SmartPointer<const Self>;
 
@@ -61,15 +63,15 @@ public:
 
 protected:
   CudaInterpolateImageFilter();
-  ~CudaInterpolateImageFilter(){
-  }
+  ~CudaInterpolateImageFilter() {}
 
-  virtual void GPUGenerateData();
+  virtual void
+  GPUGenerateData();
 
 }; // end of class
 
 } // end namespace rtk
 
-#endif //end conditional definition of the class
+#endif // end conditional definition of the class
 
 #endif

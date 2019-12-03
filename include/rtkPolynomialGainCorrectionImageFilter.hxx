@@ -28,40 +28,36 @@
 namespace rtk
 {
 
-template<class TInputImage, class TOutputImage>
-PolynomialGainCorrectionImageFilter<TInputImage, TOutputImage>
-::PolynomialGainCorrectionImageFilter()
-{
-}
+template <class TInputImage, class TOutputImage>
+PolynomialGainCorrectionImageFilter<TInputImage, TOutputImage>::PolynomialGainCorrectionImageFilter()
+{}
 
-template<class TInputImage, class TOutputImage>
-void PolynomialGainCorrectionImageFilter<TInputImage, TOutputImage>
-::SetDarkImage(const InputImagePointer darkImage)
+template <class TInputImage, class TOutputImage>
+void
+PolynomialGainCorrectionImageFilter<TInputImage, TOutputImage>::SetDarkImage(const InputImagePointer darkImage)
 {
   m_DarkImage = darkImage;
 }
 
-template<class TInputImage, class TOutputImage>
+template <class TInputImage, class TOutputImage>
 void
-PolynomialGainCorrectionImageFilter<TInputImage, TOutputImage>
-::SetGainCoefficients(const OutputImagePointer gain)
+PolynomialGainCorrectionImageFilter<TInputImage, TOutputImage>::SetGainCoefficients(const OutputImagePointer gain)
 {
   m_GainImage = gain;
 }
 
-template<class TInputImage, class TOutputImage>
+template <class TInputImage, class TOutputImage>
 void
-PolynomialGainCorrectionImageFilter<TInputImage, TOutputImage>
-::GenerateOutputInformation()
+PolynomialGainCorrectionImageFilter<TInputImage, TOutputImage>::GenerateOutputInformation()
 {
   // get pointers to the input and output
   InputImagePointer  inputPtr = const_cast<InputImageType *>(this->GetInput());
   OutputImagePointer outputPtr = this->GetOutput();
 
   if (!outputPtr || !inputPtr)
-    {
+  {
     return;
-    }
+  }
 
   // Copy the meta data for this data type
   outputPtr->SetSpacing(inputPtr->GetSpacing());
@@ -74,57 +70,56 @@ PolynomialGainCorrectionImageFilter<TInputImage, TOutputImage>
   outputPtr->SetRegions(outputLargestPossibleRegion);
 
   // TODO: Do something if input not unsigned 16-bits
-  //if (TInputImage::PixelType != USHORT)
+  // if (TInputImage::PixelType != USHORT)
   //{
   //    itkWarningMacro(<<"Polynomial gain calibration only allow unsigned short pixel format as input" );
   //    m_K = 0.0; // To disable processing
   //}
 
-  //TInputImage::PixelType
+  // TInputImage::PixelType
   if (!m_MapsLoaded && m_K != 0.0)
-    {
+  {
     m_GainSize = m_GainImage->GetLargestPossibleRegion().GetSize();
 
     m_ModelOrder = m_GainSize[2];
     m_MapsLoaded = true;
 
     // Create power LUT: the values for the different orders for the same pixel value are close to each other
-    int npixValues = 65536;   // Input values are 16-bit unsigned
+    int npixValues = 65536; // Input values are 16-bit unsigned
     for (int pid = 0; pid < npixValues; ++pid)
-      {
+    {
       float value = static_cast<float>(pid);
       for (int order = 0; order < m_ModelOrder; ++order)
-        {
+      {
         m_PowerLut.push_back(value);
-        value = value*value;
-        }
+        value = value * value;
       }
     }
+  }
 }
 
-template<class TInputImage, class TOutputImage>
+template <class TInputImage, class TOutputImage>
 void
-PolynomialGainCorrectionImageFilter<TInputImage, TOutputImage>
-::GenerateInputRequestedRegion()
+PolynomialGainCorrectionImageFilter<TInputImage, TOutputImage>::GenerateInputRequestedRegion()
 {
-  typename Superclass::InputImagePointer  inputPtr = const_cast< InputImageType * >(this->GetInput());
+  typename Superclass::InputImagePointer  inputPtr = const_cast<InputImageType *>(this->GetInput());
   typename Superclass::OutputImagePointer outputPtr = this->GetOutput();
 
   if (!inputPtr || !outputPtr)
     return;
 
   InputImageRegionType inputRequestedRegion = outputPtr->GetLargestPossibleRegion();
-  inputRequestedRegion.Crop(inputPtr->GetLargestPossibleRegion());     // Because Largest region has been updated
+  inputRequestedRegion.Crop(inputPtr->GetLargestPossibleRegion()); // Because Largest region has been updated
   inputPtr->SetRegions(inputRequestedRegion);
 }
 
-template<class TInputImage, class TOutputImage>
+template <class TInputImage, class TOutputImage>
 void
 PolynomialGainCorrectionImageFilter<TInputImage, TOutputImage>
-#if ITK_VERSION_MAJOR<5
-::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId))
+#if ITK_VERSION_MAJOR < 5
+  ::ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId))
 #else
-::DynamicThreadedGenerateData(const OutputImageRegionType& outputRegionForThread)
+  ::DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread)
 #endif
 {
   itk::ImageRegionConstIterator<InputImageType> itIn(this->GetInput(), outputRegionForThread);
@@ -134,15 +129,15 @@ PolynomialGainCorrectionImageFilter<TInputImage, TOutputImage>
 
   // K==0 = no weighting requested
   if (m_K == 0.)
-    {
+  {
     while (!itIn.IsAtEnd())
-      {
+    {
       itOut.Set(static_cast<typename TOutputImage::PixelType>(itIn.Get()));
       ++itIn;
       ++itOut;
-      }
-    return;
     }
+    return;
+  }
 
   InputImageRegionType darkRegion = outputRegionForThread;
   darkRegion.SetSize(2, 1);
@@ -150,31 +145,31 @@ PolynomialGainCorrectionImageFilter<TInputImage, TOutputImage>
   itk::ImageRegionConstIterator<InputImageType> itDark(m_DarkImage, darkRegion);
 
   // Get gain map buffer
-  const typename OutputImageType::PixelType *gainBuffer = m_GainImage->GetBufferPointer();
+  const typename OutputImageType::PixelType * gainBuffer = m_GainImage->GetBufferPointer();
 
   int startk = static_cast<int>(outputRegionForThread.GetIndex(2));
   for (int k = startk; k < startk + static_cast<int>(outputRegionForThread.GetSize(2)); k++)
-    {
+  {
     itDark.GoToBegin();
 
     int startj = outputRegionForThread.GetIndex(1);
     for (int j = startj; j < startj + static_cast<int>(outputRegionForThread.GetSize(1)); j++)
-      {
+    {
       int starti = outputRegionForThread.GetIndex(0);
       for (int i = starti; i < starti + static_cast<int>(outputRegionForThread.GetSize(0)); i++)
-        {
+      {
         int darkx = static_cast<int>(itDark.Get());
         int px = static_cast<int>(itIn.Get()) - darkx;
         px = (px >= 0) ? px : 0;
 
         float correctedValue = 0.f;
-        int lutidx = px*m_ModelOrder;
+        int   lutidx = px * m_ModelOrder;
         for (int m = 0; m < m_ModelOrder; ++m)
-          {
-          int gainidx = m*m_GainSize[1]*m_GainSize[0]+j*m_GainSize[0] + i;
+        {
+          int   gainidx = m * m_GainSize[1] * m_GainSize[0] + j * m_GainSize[0] + i;
           float gainM = gainBuffer[gainidx];
-          correctedValue += gainM *m_PowerLut[lutidx + m];
-          }
+          correctedValue += gainM * m_PowerLut[lutidx + m];
+        }
         correctedValue *= m_K;
 
         itOut.Set(static_cast<typename TOutputImage::PixelType>(correctedValue));
@@ -182,11 +177,11 @@ PolynomialGainCorrectionImageFilter<TInputImage, TOutputImage>
         ++itIn;
         ++itOut;
         ++itDark;
-        }
       }
     }
+  }
 }
 
-}
+} // namespace rtk
 
 #endif

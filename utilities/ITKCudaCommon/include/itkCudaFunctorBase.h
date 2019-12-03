@@ -34,19 +34,16 @@ namespace Functor
 class CudaFunctorBase
 {
 public:
-
   // constructor
-  CudaFunctorBase() {
-  }
+  CudaFunctorBase() {}
 
   // destructor
-  ~CudaFunctorBase() {
-  }
+  ~CudaFunctorBase() {}
 
   /** Setup Cuda kernel arguments for this functor.
    * \return Current argument index to set additional arguments in the Cuda kernel. */
-  virtual int SetCudaKernelArguments(CudaKernelManager::Pointer KernelManager, int KernelHandle) = 0;
-
+  virtual int
+  SetCudaKernelArguments(CudaKernelManager::Pointer KernelManager, int KernelHandle) = 0;
 };
 
 } // end of namespace Functor

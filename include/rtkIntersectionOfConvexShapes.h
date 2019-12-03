@@ -35,8 +35,7 @@ namespace rtk
  *
  * \ingroup RTK
  */
-class RTK_EXPORT IntersectionOfConvexShapes:
-    public ConvexShape
+class RTK_EXPORT IntersectionOfConvexShapes : public ConvexShape
 {
 public:
   /** Standard class type alias. */
@@ -55,35 +54,43 @@ public:
   using RotationMatrixType = Superclass::RotationMatrixType;
 
   /** Method for creation through the object factory. */
-  itkNewMacro ( Self );
+  itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(IntersectionOfConvexShapes, ConvexShape);
 
   /** See rtk::ConvexShape::IsInside. */
-  bool IsInside(const PointType & point) const override;
+  bool
+  IsInside(const PointType & point) const override;
 
   /** See rtk::ConvexShape::IsIntersectedByRay. */
-  bool IsIntersectedByRay(const PointType & rayOrigin,
-                                  const VectorType & rayDirection,
-                                  ScalarType & nearDist,
-                                  ScalarType & farDist) const override;
+  bool
+  IsIntersectedByRay(const PointType &  rayOrigin,
+                     const VectorType & rayDirection,
+                     ScalarType &       nearDist,
+                     ScalarType &       farDist) const override;
 
   /** Add convex object to phantom. */
-  void AddConvexShape(const ConvexShapePointer &co);
+  void
+  AddConvexShape(const ConvexShapePointer & co);
   itkGetConstReferenceMacro(ConvexShapes, ConvexShapeVector);
-  virtual void SetConvexShapes(const ConvexShapeVector &_arg);
+  virtual void
+  SetConvexShapes(const ConvexShapeVector & _arg);
 
   /** Rescale object along each direction by a 3D vector. */
-  void Rescale(const VectorType &r) override;
+  void
+  Rescale(const VectorType & r) override;
 
   /** Translate object by a given 3D vector. */
-  void Translate(const VectorType &t) override;
+  void
+  Translate(const VectorType & t) override;
 
   /** Rotate object according to a 3D rotation matrix. */
-  void Rotate(const RotationMatrixType &r) override;
+  void
+  Rotate(const RotationMatrixType & r) override;
 
-  itk::LightObject::Pointer InternalClone() const override;
+  itk::LightObject::Pointer
+  InternalClone() const override;
 
 private:
   IntersectionOfConvexShapes();

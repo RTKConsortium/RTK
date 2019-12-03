@@ -24,7 +24,7 @@
 #include <itkMemoryProbe.h>
 
 #ifdef RTK_USE_CUDA
-#include <itkCudaMemoryProbe.h>
+#  include <itkCudaMemoryProbe.h>
 #endif
 
 namespace rtk
@@ -66,12 +66,12 @@ public:
   Clear();
 
 protected:
-  TimeMapType m_TimeProbes;
+  TimeMapType   m_TimeProbes;
   MemoryMapType m_MemoryProbes;
 #ifdef RTK_USE_CUDA
   CudaMemoryMapType m_CudaMemoryProbes;
 #endif
 };
-} // end namespace itk
+} // namespace rtk
 
 #endif // rtkResourceProbesCollector_h

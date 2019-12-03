@@ -20,14 +20,14 @@
 #define rtkCudaDisplacedDetectorImageFilter_h
 
 #include "rtkConfiguration.h"
-//Conditional definition of the class to pass ITKHeaderTest
+// Conditional definition of the class to pass ITKHeaderTest
 #ifdef RTK_USE_CUDA
 
-#include "rtkDisplacedDetectorImageFilter.h"
-#include "RTKExport.h"
+#  include "rtkDisplacedDetectorImageFilter.h"
+#  include "RTKExport.h"
 
-#include <itkCudaImage.h>
-#include <itkCudaInPlaceImageFilter.h>
+#  include <itkCudaImage.h>
+#  include <itkCudaInPlaceImageFilter.h>
 
 namespace rtk
 {
@@ -46,21 +46,21 @@ namespace rtk
  * \ingroup RTK
  * \version 0.1
  */
-class RTK_EXPORT CudaDisplacedDetectorImageFilter :
-    public  itk::CudaInPlaceImageFilter<itk::CudaImage<float,3>, itk::CudaImage<float,3>,
-            rtk::DisplacedDetectorImageFilter<itk::CudaImage<float, 3> > >
+class RTK_EXPORT CudaDisplacedDetectorImageFilter
+  : public itk::CudaInPlaceImageFilter<itk::CudaImage<float, 3>,
+                                       itk::CudaImage<float, 3>,
+                                       rtk::DisplacedDetectorImageFilter<itk::CudaImage<float, 3>>>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(CudaDisplacedDetectorImageFilter);
 
   /** Convenience type alias **/
-  using ImageType = itk::CudaImage<float,3>;
+  using ImageType = itk::CudaImage<float, 3>;
   using CPUWeightFilterType = rtk::DisplacedDetectorImageFilter<ImageType>;
 
   /** Standard class type alias. */
   using Self = CudaDisplacedDetectorImageFilter;
-  using Superclass = itk::CudaInPlaceImageFilter<ImageType, ImageType,
-    CPUWeightFilterType>;
+  using Superclass = itk::CudaInPlaceImageFilter<ImageType, ImageType, CPUWeightFilterType>;
   using Pointer = itk::SmartPointer<Self>;
   using ConstPointer = itk::SmartPointer<const Self>;
 
@@ -76,11 +76,12 @@ protected:
   /** Destructor **/
   virtual ~CudaDisplacedDetectorImageFilter();
 
-  virtual void GPUGenerateData();
+  virtual void
+  GPUGenerateData();
 };
 
-}
+} // namespace rtk
 
-#endif //end conditional definition of the class
+#endif // end conditional definition of the class
 
 #endif // rtkCudaDisplacedDetectorImageFilter_h

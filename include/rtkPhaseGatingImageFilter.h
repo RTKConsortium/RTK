@@ -30,68 +30,73 @@ namespace rtk
  *
  * \ingroup RTK
  */
-template< typename ProjectionStackType>
+template <typename ProjectionStackType>
 class PhaseGatingImageFilter : public SubSelectImageFilter<ProjectionStackType>
 {
 public:
-    ITK_DISALLOW_COPY_AND_ASSIGN(PhaseGatingImageFilter);
+  ITK_DISALLOW_COPY_AND_ASSIGN(PhaseGatingImageFilter);
 
-    /** Standard class type alias. */
-    using Self = PhaseGatingImageFilter;
-    using Superclass = SubSelectImageFilter<ProjectionStackType>;
-    using Pointer = itk::SmartPointer< Self >;
+  /** Standard class type alias. */
+  using Self = PhaseGatingImageFilter;
+  using Superclass = SubSelectImageFilter<ProjectionStackType>;
+  using Pointer = itk::SmartPointer<Self>;
 
-    /** Method for creation through the object factory. */
-    itkNewMacro(Self);
+  /** Method for creation through the object factory. */
+  itkNewMacro(Self);
 
-    /** Run-time type information (and related methods). */
-    itkTypeMacro(PhaseGatingImageFilter, SubSelectImageFilter);
+  /** Run-time type information (and related methods). */
+  itkTypeMacro(PhaseGatingImageFilter, SubSelectImageFilter);
 
-    itkSetMacro(PhasesFileName, std::string);
-    itkGetMacro(PhasesFileName, std::string);
+  itkSetMacro(PhasesFileName, std::string);
+  itkGetMacro(PhasesFileName, std::string);
 
-    itkSetMacro(GatingWindowWidth, float);
-    itkGetMacro(GatingWindowWidth, float);
+  itkSetMacro(GatingWindowWidth, float);
+  itkGetMacro(GatingWindowWidth, float);
 
-    itkSetMacro(GatingWindowCenter, float);
-    itkGetMacro(GatingWindowCenter, float);
+  itkSetMacro(GatingWindowCenter, float);
+  itkGetMacro(GatingWindowCenter, float);
 
-    itkSetMacro(GatingWindowShape, int);
-    itkGetMacro(GatingWindowShape, int);
+  itkSetMacro(GatingWindowShape, int);
+  itkGetMacro(GatingWindowShape, int);
 
-    std::vector<float> GetGatingWeights();
-    std::vector<float> GetGatingWeightsOnSelectedProjections();
+  std::vector<float>
+  GetGatingWeights();
+  std::vector<float>
+  GetGatingWeightsOnSelectedProjections();
 
 protected:
-    PhaseGatingImageFilter();
-    ~PhaseGatingImageFilter() override = default;
+  PhaseGatingImageFilter();
+  ~PhaseGatingImageFilter() override = default;
 
-    void GenerateOutputInformation() override;
+  void
+  GenerateOutputInformation() override;
 
-    void SelectProjections();
+  void
+  SelectProjections();
 
-    void ComputeWeights();
+  void
+  ComputeWeights();
 
-    void SetPhases(std::vector<float> phases);
+  void
+  SetPhases(std::vector<float> phases);
 
-    /** Member pointers to the filters used internally (for convenience)*/
-    rtk::PhaseReader::Pointer m_PhaseReader;
+  /** Member pointers to the filters used internally (for convenience)*/
+  rtk::PhaseReader::Pointer m_PhaseReader;
 
-    /** Member variables */
-    std::vector<float>        m_GatingWeights;
-    std::vector<float>        m_GatingWeightsOnSelectedProjections;
-    std::vector<float>        m_Phases;
-    float                     m_GatingWindowWidth;
-    float                     m_GatingWindowCenter;
-    int                       m_GatingWindowShape;
-    std::string               m_PhasesFileName;
-
+  /** Member variables */
+  std::vector<float> m_GatingWeights;
+  std::vector<float> m_GatingWeightsOnSelectedProjections;
+  std::vector<float> m_Phases;
+  float              m_GatingWindowWidth;
+  float              m_GatingWindowCenter;
+  int                m_GatingWindowShape;
+  std::string        m_PhasesFileName;
 };
-} //namespace ITK
+} // namespace rtk
 
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkPhaseGatingImageFilter.hxx"
+#  include "rtkPhaseGatingImageFilter.hxx"
 #endif
 
 #endif

@@ -24,22 +24,21 @@
 
 namespace rtk
 {
-template< typename TImage >
-ProjectionsRegionConstIteratorRayBasedWithFlatPanel< TImage >
-::ProjectionsRegionConstIteratorRayBasedWithFlatPanel(const TImage *ptr,
-                                         const RegionType & region,
-                                         const ThreeDCircularProjectionGeometry *geometry,
-                                         const MatrixType &postMat):
-  ProjectionsRegionConstIteratorRayBased< TImage >(ptr, region, geometry, postMat)
+template <typename TImage>
+ProjectionsRegionConstIteratorRayBasedWithFlatPanel<TImage>::ProjectionsRegionConstIteratorRayBasedWithFlatPanel(
+  const TImage *                           ptr,
+  const RegionType &                       region,
+  const ThreeDCircularProjectionGeometry * geometry,
+  const MatrixType &                       postMat)
+  : ProjectionsRegionConstIteratorRayBased<TImage>(ptr, region, geometry, postMat)
 {
   NewProjection();
   NewPixel();
 }
 
-template< typename TImage >
+template <typename TImage>
 void
-ProjectionsRegionConstIteratorRayBasedWithFlatPanel< TImage >
-::NewProjection()
+ProjectionsRegionConstIteratorRayBasedWithFlatPanel<TImage>::NewProjection()
 {
   // Set source position in volume indices
   // GetSourcePosition() returns coordinates in mm. Multiplying by
@@ -48,30 +47,29 @@ ProjectionsRegionConstIteratorRayBasedWithFlatPanel< TImage >
 
   // Compute matrix to transform projection index to volume index
   // IndexToPhysicalPointMatrix maps the 2D index of a projection's pixel to its 2D position on the detector (in mm)
-  // ProjectionCoordinatesToFixedSystemMatrix maps the 2D position of a pixel on the detector to its 3D coordinates in volume's coordinates (still in mm)
-  // volPPToIndex maps 3D volume coordinates to a 3D index
+  // ProjectionCoordinatesToFixedSystemMatrix maps the 2D position of a pixel on the detector to its 3D coordinates in
+  // volume's coordinates (still in mm) volPPToIndex maps 3D volume coordinates to a 3D index
   m_ProjectionIndexTransformMatrix =
-      this->m_PostMultiplyMatrix.GetVnlMatrix() *
-      this->m_Geometry->GetProjectionCoordinatesToFixedSystemMatrix(this->m_PositionIndex[2]).GetVnlMatrix() *
-      GetIndexToPhysicalPointMatrix( this->m_Image.GetPointer() ).GetVnlMatrix();
+    this->m_PostMultiplyMatrix.GetVnlMatrix() *
+    this->m_Geometry->GetProjectionCoordinatesToFixedSystemMatrix(this->m_PositionIndex[2]).GetVnlMatrix() *
+    GetIndexToPhysicalPointMatrix(this->m_Image.GetPointer()).GetVnlMatrix();
 }
 
-template< typename TImage >
+template <typename TImage>
 void
-ProjectionsRegionConstIteratorRayBasedWithFlatPanel< TImage >
-::NewPixel()
+ProjectionsRegionConstIteratorRayBasedWithFlatPanel<TImage>::NewPixel()
 {
   // Compute point coordinate in volume depending on projection index
-  for(unsigned int i=0; i<this->GetImageDimension(); i++)
-    {
+  for (unsigned int i = 0; i < this->GetImageDimension(); i++)
+  {
     this->m_PixelPosition[i] = m_ProjectionIndexTransformMatrix[i][this->GetImageDimension()];
-    for(unsigned int j=0; j<this->GetImageDimension(); j++)
+    for (unsigned int j = 0; j < this->GetImageDimension(); j++)
       this->m_PixelPosition[i] += m_ProjectionIndexTransformMatrix[i][j] * this->m_PositionIndex[j];
-    }
+  }
 
   this->m_SourceToPixel = this->m_PixelPosition - this->m_SourcePosition;
 }
 
-} // end namespace itk
+} // namespace rtk
 
 #endif

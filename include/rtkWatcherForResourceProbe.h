@@ -39,44 +39,52 @@ class WatcherForResourceProbe
 public:
   /** Constructor. Takes a ProcessObject to monitor and an optional
    * comment string that is prepended to each event message. */
-  WatcherForResourceProbe(itk::ProcessObject* o);
+  WatcherForResourceProbe(itk::ProcessObject * o);
 
   /** Copy constructor */
   WatcherForResourceProbe(const WatcherForResourceProbe &);
 
   /** operator=  */
-  WatcherForResourceProbe & operator=(const WatcherForResourceProbe &);
+  WatcherForResourceProbe &
+  operator=(const WatcherForResourceProbe &);
 
   /** Destructor. */
   virtual ~WatcherForResourceProbe();
 
   /** Method to get the name of the class being monitored by this
    *  WatcherForResourceProbe */
-  const char * GetNameOfClass()
+  const char *
+  GetNameOfClass()
   {
-    return ( m_Process? m_Process->GetNameOfClass() : "None" );
+    return (m_Process ? m_Process->GetNameOfClass() : "None");
   }
 
   /** Methods to access member data */
   /** Get a pointer to the process object being watched. */
-  const ProcessObject * GetProcess() const { return m_Process; }
+  const ProcessObject *
+  GetProcess() const
+  {
+    return m_Process;
+  }
 
 protected:
-
   /** Callback method to show the StartEvent */
-  virtual void StartFilter();
+  virtual void
+  StartFilter();
 
   /** Callback method to show the EndEvent */
-  virtual void EndFilter();
+  virtual void
+  EndFilter();
 
   /** Callback method to show the DeleteEvent */
-  virtual void DeleteFilter();
+  virtual void
+  DeleteFilter();
 
 
 private:
-  itk::ProcessObject*         m_Process;
+  itk::ProcessObject * m_Process;
 
-  using CommandType = SimpleMemberCommand< WatcherForResourceProbe >;
+  using CommandType = SimpleMemberCommand<WatcherForResourceProbe>;
   CommandType::Pointer m_StartFilterCommand;
   CommandType::Pointer m_EndFilterCommand;
   CommandType::Pointer m_DeleteFilterCommand;

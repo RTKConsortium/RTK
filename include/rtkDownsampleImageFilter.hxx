@@ -31,8 +31,7 @@ namespace rtk
  *   Constructor
  */
 template <class TInputImage, class TOutputImage>
-DownsampleImageFilter<TInputImage,TOutputImage>
-::DownsampleImageFilter()
+DownsampleImageFilter<TInputImage, TOutputImage>::DownsampleImageFilter()
 {
   this->SetNumberOfRequiredInputs(1);
 }
@@ -42,20 +41,19 @@ DownsampleImageFilter<TInputImage,TOutputImage>
  */
 template <class TInputImage, class TOutputImage>
 void
-DownsampleImageFilter<TInputImage,TOutputImage>
-::SetFactors(unsigned int factors[])
+DownsampleImageFilter<TInputImage, TOutputImage>::SetFactors(unsigned int factors[])
 {
   unsigned int j;
 
   this->Modified();
   for (j = 0; j < ImageDimension; j++)
-    {
+  {
     m_Factors[j] = factors[j];
     if (m_Factors[j] < 1)
-      {
+    {
       m_Factors[j] = 1;
-      }
     }
+  }
 }
 
 /**
@@ -63,32 +61,32 @@ DownsampleImageFilter<TInputImage,TOutputImage>
  */
 template <class TInputImage, class TOutputImage>
 void
-DownsampleImageFilter<TInputImage,TOutputImage>
-::SetFactor(unsigned int dimension, unsigned int factor)
+DownsampleImageFilter<TInputImage, TOutputImage>::SetFactor(unsigned int dimension, unsigned int factor)
 {
   unsigned int j;
 
   this->Modified();
   for (j = 0; j < ImageDimension; j++)
-    {
+  {
     if (j == dimension)
-      {
+    {
       m_Factors[j] = factor;
-      }
-    else
-      {
-      m_Factors[j] = 1;
-      }
     }
+    else
+    {
+      m_Factors[j] = 1;
+    }
+  }
 }
 
 
-//template <class TInputImage, class TOutputImage>
-//void
-//DownsampleImageFilter<TInputImage,TOutputImage>
+// template <class TInputImage, class TOutputImage>
+// void
+// DownsampleImageFilter<TInputImage,TOutputImage>
 //::BeforeThreadedGenerateData()
 //{
-//  std::cout << "In DownsampleImageFilter : BeforeThreadedGenerateData, input size = " << this->GetInput()->GetLargestPossibleRegion().GetSize() << std::endl;
+//  std::cout << "In DownsampleImageFilter : BeforeThreadedGenerateData, input size = " <<
+//  this->GetInput()->GetLargestPossibleRegion().GetSize() << std::endl;
 //}
 
 /**
@@ -96,59 +94,57 @@ DownsampleImageFilter<TInputImage,TOutputImage>
  */
 template <class TInputImage, class TOutputImage>
 void
-DownsampleImageFilter<TInputImage,TOutputImage>
-#if ITK_VERSION_MAJOR<5
-::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId))
+DownsampleImageFilter<TInputImage, TOutputImage>
+#if ITK_VERSION_MAJOR < 5
+  ::ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId))
 #else
-::DynamicThreadedGenerateData(const OutputImageRegionType& outputRegionForThread)
+  ::DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread)
 #endif
 {
-  itkDebugMacro(<<"Actually executing");
+  itkDebugMacro(<< "Actually executing");
 
-  //Get the input and output pointers
-  InputImageConstPointer  inputPtr    = this->GetInput();
-  OutputImagePointer      outputPtr   = this->GetOutput();
+  // Get the input and output pointers
+  InputImageConstPointer inputPtr = this->GetInput();
+  OutputImagePointer     outputPtr = this->GetOutput();
 
-  //Define/declare an iterator that will walk the output region for this
-  //thread.
+  // Define/declare an iterator that will walk the output region for this
+  // thread.
   using OutputIterator = itk::ImageRegionIterator<TOutputImage>;
   using InputIterator = itk::ImageRegionConstIterator<TInputImage>;
 
-  //Define a few indices that will be used to translate from an input pixel
-  //to an output pixel
-  typename TInputImage::IndexType inputStartIndex = inputPtr->GetLargestPossibleRegion().GetIndex();
+  // Define a few indices that will be used to translate from an input pixel
+  // to an output pixel
+  typename TInputImage::IndexType  inputStartIndex = inputPtr->GetLargestPossibleRegion().GetIndex();
   typename TOutputImage::IndexType outputStartIndex = outputPtr->GetLargestPossibleRegion().GetIndex();
 
   typename TOutputImage::OffsetType firstPixelOfOutputRegionForThreadOffset;
-  typename TInputImage::OffsetType firstPixelOfInputRegionForThreadOffset;
+  typename TInputImage::OffsetType  firstPixelOfInputRegionForThreadOffset;
   typename TOutputImage::OffsetType firstPixelOfOutputLineOffset;
-  typename TInputImage::OffsetType firstPixelOfInputLineOffset;
+  typename TInputImage::OffsetType  firstPixelOfInputLineOffset;
   typename TOutputImage::OffsetType offset;
 
-  //Unless the downsampling factor is 1, we always skip the first pixel
-  //Create an offset array to enforce this behavior
-  for (unsigned int i=0; i < TInputImage::ImageDimension; i++)
-    {
+  // Unless the downsampling factor is 1, we always skip the first pixel
+  // Create an offset array to enforce this behavior
+  for (unsigned int i = 0; i < TInputImage::ImageDimension; i++)
+  {
     if (m_Factors[i] == 1)
-      {
-      offset[i] = 0;
-      }
-    else
-      {
-      offset[i] = 1;
-      }
-    }
-
-  //Find the first input pixel that is copied to the output (the one with lowest indices
-  //in all dimensions)
-  firstPixelOfOutputRegionForThreadOffset =
-      outputRegionForThread.GetIndex() - outputStartIndex;
-  for (unsigned int dim=0; dim < TInputImage::ImageDimension; dim++)
     {
-    firstPixelOfInputRegionForThreadOffset[dim] =
-        firstPixelOfOutputRegionForThreadOffset[dim] * m_Factors[dim]
-        + offset[dim];
+      offset[i] = 0;
     }
+    else
+    {
+      offset[i] = 1;
+    }
+  }
+
+  // Find the first input pixel that is copied to the output (the one with lowest indices
+  // in all dimensions)
+  firstPixelOfOutputRegionForThreadOffset = outputRegionForThread.GetIndex() - outputStartIndex;
+  for (unsigned int dim = 0; dim < TInputImage::ImageDimension; dim++)
+  {
+    firstPixelOfInputRegionForThreadOffset[dim] =
+      firstPixelOfOutputRegionForThreadOffset[dim] * m_Factors[dim] + offset[dim];
+  }
 
   // Walk the slice obtained by setting the first coordinate to zero.
   // Each pixel is the beginning of a line (a 1D vector traversing
@@ -159,28 +155,26 @@ DownsampleImageFilter<TInputImage,TOutputImage>
   OutputIterator sliceIt(outputPtr, slice);
 
   while (!sliceIt.IsAtEnd())
-    {
-    //Determine the offset of the current pixel in the slice
+  {
+    // Determine the offset of the current pixel in the slice
     firstPixelOfOutputLineOffset = sliceIt.GetIndex() - outputStartIndex;
 
-    //Calculate the offset of the corresponding input pixel
-    for (unsigned int dim=0; dim < TInputImage::ImageDimension; dim++)
-      {
-      firstPixelOfInputLineOffset[dim] =
-          firstPixelOfOutputLineOffset[dim] * m_Factors[dim]
-          + offset[dim];
-      }
+    // Calculate the offset of the corresponding input pixel
+    for (unsigned int dim = 0; dim < TInputImage::ImageDimension; dim++)
+    {
+      firstPixelOfInputLineOffset[dim] = firstPixelOfOutputLineOffset[dim] * m_Factors[dim] + offset[dim];
+    }
 
     // Create the iterators
     typename TOutputImage::RegionType outputLine = outputRegionForThread;
-    typename TOutputImage::SizeType outputLineSize;
+    typename TOutputImage::SizeType   outputLineSize;
     outputLineSize.Fill(1);
     outputLineSize[0] = outputRegionForThread.GetSize(0);
     outputLine.SetSize(outputLineSize);
     outputLine.SetIndex(sliceIt.GetIndex());
 
     typename TInputImage::RegionType inputLine = inputPtr->GetLargestPossibleRegion();
-    typename TInputImage::SizeType inputLineSize;
+    typename TInputImage::SizeType   inputLineSize;
     inputLineSize.Fill(1);
 
     // Short example of how to calculate the inputLineSize :
@@ -193,25 +187,26 @@ DownsampleImageFilter<TInputImage,TOutputImage>
     inputLine.SetIndex(inputStartIndex + firstPixelOfInputLineOffset);
 
     OutputIterator outIt(outputPtr, outputLine);
-    InputIterator inIt(inputPtr, inputLine);
+    InputIterator  inIt(inputPtr, inputLine);
 
     // Walk the line and copy the pixels
-    while(!outIt.IsAtEnd())
-      {
+    while (!outIt.IsAtEnd())
+    {
       outIt.Set(inIt.Get());
-      for (unsigned int i=0; i<m_Factors[0]; i++) ++inIt;
+      for (unsigned int i = 0; i < m_Factors[0]; i++)
+        ++inIt;
       ++outIt;
-      }
+    }
 
     // Move to next pixel in the slice
     ++sliceIt;
-    }
+  }
 }
 
 
-//template <class TInputImage, class TOutputImage>
-//void
-//DownsampleImageFilter<TInputImage,TOutputImage>
+// template <class TInputImage, class TOutputImage>
+// void
+// DownsampleImageFilter<TInputImage,TOutputImage>
 //::AfterThreadedGenerateData()
 //{
 //  std::cout << "In DownsampleImageFilter : AfterThreadedGenerateData" << std::endl;
@@ -222,20 +217,19 @@ DownsampleImageFilter<TInputImage,TOutputImage>
  */
 template <class TInputImage, class TOutputImage>
 void
-DownsampleImageFilter<TInputImage,TOutputImage>
-::GenerateInputRequestedRegion()
+DownsampleImageFilter<TInputImage, TOutputImage>::GenerateInputRequestedRegion()
 {
-  //Call the superclass' implementation of this method
+  // Call the superclass' implementation of this method
   Superclass::GenerateInputRequestedRegion();
 
-  //Get pointers to the input and output
-  InputImagePointer  inputPtr  = const_cast<TInputImage *>(this->GetInput());
+  // Get pointers to the input and output
+  InputImagePointer  inputPtr = const_cast<TInputImage *>(this->GetInput());
   OutputImagePointer outputPtr = this->GetOutput();
 
   if (!inputPtr || !outputPtr)
-    {
+  {
     return;
-    }
+  }
   inputPtr->SetRequestedRegionToLargestPossibleRegion();
 }
 
@@ -244,43 +238,42 @@ DownsampleImageFilter<TInputImage,TOutputImage>
  */
 template <class TInputImage, class TOutputImage>
 void
-DownsampleImageFilter<TInputImage,TOutputImage>
-::GenerateOutputInformation()
+DownsampleImageFilter<TInputImage, TOutputImage>::GenerateOutputInformation()
 {
-  //Call the superclass' implementation of this method
+  // Call the superclass' implementation of this method
   Superclass::GenerateOutputInformation();
 
-  //Get pointers to the input and output
-  InputImageConstPointer  inputPtr  = this->GetInput();
-  OutputImagePointer      outputPtr = this->GetOutput();
+  // Get pointers to the input and output
+  InputImageConstPointer inputPtr = this->GetInput();
+  OutputImagePointer     outputPtr = this->GetOutput();
 
   if (!inputPtr || !outputPtr)
-    {
+  {
     return;
-    }
+  }
 
-  //We need to compute the output spacing, the output image size, and the
-  //output image start index
-  unsigned int i;
-  const typename TInputImage::SpacingType& inputSpacing = inputPtr->GetSpacing();
-  const typename TInputImage::SizeType& inputSize = inputPtr->GetLargestPossibleRegion().GetSize();
-  const typename TInputImage::IndexType& inputStartIndex = inputPtr->GetLargestPossibleRegion().GetIndex();
+  // We need to compute the output spacing, the output image size, and the
+  // output image start index
+  unsigned int                              i;
+  const typename TInputImage::SpacingType & inputSpacing = inputPtr->GetSpacing();
+  const typename TInputImage::SizeType &    inputSize = inputPtr->GetLargestPossibleRegion().GetSize();
+  const typename TInputImage::IndexType &   inputStartIndex = inputPtr->GetLargestPossibleRegion().GetIndex();
 
-  typename TOutputImage::SpacingType  outputSpacing;
-  typename TOutputImage::SizeType     outputSize;
-  typename TOutputImage::IndexType    outputStartIndex;
+  typename TOutputImage::SpacingType outputSpacing;
+  typename TOutputImage::SizeType    outputSize;
+  typename TOutputImage::IndexType   outputStartIndex;
 
   for (i = 0; i < TOutputImage::ImageDimension; i++)
-    {
+  {
     outputSpacing[i] = inputSpacing[i] * (float)m_Factors[i];
-    outputSize[i] = (unsigned long)floor((float) inputSize[i] / (float)m_Factors[i]);
+    outputSize[i] = (unsigned long)floor((float)inputSize[i] / (float)m_Factors[i]);
     if (outputSize[i] < 1)
-      {
+    {
       outputSize[i] = 1;
-      }
-
-    outputStartIndex[i] = (long)floor((float) inputStartIndex[i] / (float)m_Factors[i]);
     }
+
+    outputStartIndex[i] = (long)floor((float)inputStartIndex[i] / (float)m_Factors[i]);
+  }
 
   outputPtr->SetSpacing(outputSpacing);
 

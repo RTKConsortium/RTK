@@ -31,53 +31,45 @@ namespace rtk
 
 template <class TInputImage, class TOutputImage>
 void
-CyclicDeformationImageFilter<TInputImage, TOutputImage>
-::GenerateOutputInformation()
+CyclicDeformationImageFilter<TInputImage, TOutputImage>::GenerateOutputInformation()
 {
   typename OutputImageType::PointType   origin;
   typename OutputImageType::SpacingType spacing;
   OutputImageRegionType                 region;
-  for(unsigned int i=0; i<OutputImageType::ImageDimension; i++)
-    {
+  for (unsigned int i = 0; i < OutputImageType::ImageDimension; i++)
+  {
     origin[i] = this->GetInput()->GetOrigin()[i];
     spacing[i] = this->GetInput()->GetSpacing()[i];
     region.SetIndex(i, this->GetInput()->GetLargestPossibleRegion().GetIndex(i));
     region.SetSize(i, this->GetInput()->GetLargestPossibleRegion().GetSize(i));
-    }
-  this->GetOutput()->SetOrigin( origin );
-  this->GetOutput()->SetSpacing( spacing );
-  this->GetOutput()->SetLargestPossibleRegion( region );
+  }
+  this->GetOutput()->SetOrigin(origin);
+  this->GetOutput()->SetSpacing(spacing);
+  this->GetOutput()->SetLargestPossibleRegion(region);
 }
 
 template <class TInputImage, class TOutputImage>
 void
-CyclicDeformationImageFilter<TInputImage, TOutputImage>
-::GenerateInputRequestedRegion()
+CyclicDeformationImageFilter<TInputImage, TOutputImage>::GenerateInputRequestedRegion()
 {
-  typename InputImageType::Pointer inputPtr = const_cast< InputImageType * >( this->GetInput() );
-  if ( !inputPtr )
+  typename InputImageType::Pointer inputPtr = const_cast<InputImageType *>(this->GetInput());
+  if (!inputPtr)
     return;
-  inputPtr->SetRequestedRegion( inputPtr->GetLargestPossibleRegion() );
+  inputPtr->SetRequestedRegion(inputPtr->GetLargestPossibleRegion());
 }
 
 template <class TInputImage, class TOutputImage>
 void
-CyclicDeformationImageFilter<TInputImage, TOutputImage>
-::BeforeThreadedGenerateData()
+CyclicDeformationImageFilter<TInputImage, TOutputImage>::BeforeThreadedGenerateData()
 {
   unsigned int nframe = this->GetInput()->GetLargestPossibleRegion().GetSize(OutputImageType::ImageDimension);
-  if( this->GetFrame() > m_Signal.size() )
-    itkGenericExceptionMacro(<< "Frame number #"
-                             << this->GetFrame()
-                             << " is larger than phase signal which has size "
+  if (this->GetFrame() > m_Signal.size())
+    itkGenericExceptionMacro(<< "Frame number #" << this->GetFrame() << " is larger than phase signal which has size "
                              << m_SignalFilename);
 
   double sigValue = m_Signal[this->GetFrame()];
-  if( sigValue<0. || sigValue >=1. )
-    itkGenericExceptionMacro(<< "Signal value #"
-                             << this->GetFrame()
-                             << " is " << sigValue
-                             << " which is not in [0,1)");
+  if (sigValue < 0. || sigValue >= 1.)
+    itkGenericExceptionMacro(<< "Signal value #" << this->GetFrame() << " is " << sigValue << " which is not in [0,1)");
 
   sigValue *= nframe;
   m_FrameInf = itk::Math::Floor<unsigned int, double>(sigValue);
@@ -91,21 +83,20 @@ CyclicDeformationImageFilter<TInputImage, TOutputImage>
 template <class TInputImage, class TOutputImage>
 void
 CyclicDeformationImageFilter<TInputImage, TOutputImage>
-#if ITK_VERSION_MAJOR<5
-::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread,
-                       ThreadIdType itkNotUsed(threadId) )
+#if ITK_VERSION_MAJOR < 5
+  ::ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, ThreadIdType itkNotUsed(threadId))
 #else
-::DynamicThreadedGenerateData(const OutputImageRegionType& outputRegionForThread)
+  ::DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread)
 #endif
 {
   // Prepare inferior input iterator
   typename InputImageType::RegionType inputRegionForThreadInf;
   inputRegionForThreadInf = this->GetInput()->GetLargestPossibleRegion();
-  for(unsigned int i=0; i<OutputImageType::ImageDimension; i++)
-    {
+  for (unsigned int i = 0; i < OutputImageType::ImageDimension; i++)
+  {
     inputRegionForThreadInf.SetIndex(i, outputRegionForThread.GetIndex(i));
     inputRegionForThreadInf.SetSize(i, outputRegionForThread.GetSize(i));
-    }
+  }
   inputRegionForThreadInf.SetSize(OutputImageType::ImageDimension, 1);
   inputRegionForThreadInf.SetIndex(OutputImageType::ImageDimension, m_FrameInf);
   typename itk::ImageRegionConstIterator<InputImageType> itInf(this->GetInput(), inputRegionForThreadInf);
@@ -117,51 +108,49 @@ CyclicDeformationImageFilter<TInputImage, TOutputImage>
 
   // Output iterator
   itk::ImageRegionIterator<OutputImageType> itOut(this->GetOutput(), outputRegionForThread);
-  while( !itOut.IsAtEnd() )
-    {
-    itOut.Set(itInf.Get()*m_WeightInf + itSup.Get()*m_WeightSup);
+  while (!itOut.IsAtEnd())
+  {
+    itOut.Set(itInf.Get() * m_WeightInf + itSup.Get() * m_WeightSup);
     ++itOut;
     ++itInf;
     ++itSup;
-    }
+  }
 }
 
 template <class TInputImage, class TOutputImage>
 void
-CyclicDeformationImageFilter<TInputImage, TOutputImage>
-::SetSignalFilename (const std::string _arg)
+CyclicDeformationImageFilter<TInputImage, TOutputImage>::SetSignalFilename(const std::string _arg)
 {
   itkDebugMacro("setting SignalFilename to " << _arg);
-  if ( this->m_SignalFilename != _arg )
-    {
+  if (this->m_SignalFilename != _arg)
+  {
     this->m_SignalFilename = _arg;
     this->Modified();
 
-    std::ifstream is( _arg.c_str() );
-    if( !is.is_open() )
-      {
+    std::ifstream is(_arg.c_str());
+    if (!is.is_open())
+    {
       itkGenericExceptionMacro(<< "Could not open signal file " << m_SignalFilename);
-      }
+    }
 
     double value;
-    while( !is.eof() )
-      {
+    while (!is.eof())
+    {
       is >> value;
       m_Signal.push_back(value);
-      }
     }
+  }
 }
 
 template <class TInputImage, class TOutputImage>
 void
-CyclicDeformationImageFilter<TInputImage, TOutputImage>
-::SetSignalVector (std::vector<double> _arg)
+CyclicDeformationImageFilter<TInputImage, TOutputImage>::SetSignalVector(std::vector<double> _arg)
 {
-  if ( m_Signal != _arg )
-    {
+  if (m_Signal != _arg)
+  {
     m_Signal = _arg;
     this->Modified();
-    }
+  }
 }
 
 } // end namespace rtk

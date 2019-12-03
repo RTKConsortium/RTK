@@ -27,7 +27,8 @@
 namespace rtk
 {
 /** \class TotalVariationDenoisingBPDQImageFilter
- * \brief Applies a total variation denoising, only alm_SingularValueThresholdFilterong the dimensions specified, on an image.
+ * \brief Applies a total variation denoising, only alm_SingularValueThresholdFilterong the dimensions specified, on an
+ * image.
  *
  * This filter finds the minimum of || f - f_0 ||_2^2 + gamma * TV(f)
  * using basis pursuit dequantization, where f is the current image, f_0 the
@@ -105,18 +106,18 @@ namespace rtk
  * \ingroup RTK IntensityImageFilters
  */
 
-template< typename TOutputImage, typename TGradientImage =
-    itk::Image< itk::CovariantVector < typename TOutputImage::ValueType, TOutputImage::ImageDimension >,
-    TOutputImage::ImageDimension > >
-class TotalVariationDenoisingBPDQImageFilter :
-        public rtk::DenoisingBPDQImageFilter< TOutputImage, TGradientImage >
+template <typename TOutputImage,
+          typename TGradientImage =
+            itk::Image<itk::CovariantVector<typename TOutputImage::ValueType, TOutputImage::ImageDimension>,
+                       TOutputImage::ImageDimension>>
+class TotalVariationDenoisingBPDQImageFilter : public rtk::DenoisingBPDQImageFilter<TOutputImage, TGradientImage>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(TotalVariationDenoisingBPDQImageFilter);
 
   /** Standard class type alias. */
   using Self = TotalVariationDenoisingBPDQImageFilter;
-  using Superclass = rtk::DenoisingBPDQImageFilter< TOutputImage, TGradientImage >;
+  using Superclass = rtk::DenoisingBPDQImageFilter<TOutputImage, TGradientImage>;
   using Pointer = itk::SmartPointer<Self>;
   using ConstPointer = itk::SmartPointer<const Self>;
 
@@ -129,29 +130,33 @@ public:
   /** Sub filter type definitions */
   using MagnitudeThresholdFilterType = MagnitudeThresholdImageFilter<TGradientImage>;
 
-  void SetDimensionsProcessed(bool* arg);
+  void
+  SetDimensionsProcessed(bool * arg);
 
   /** In some cases, regularization must use periodic boundary condition */
-  void SetBoundaryConditionToPeriodic();
+  void
+  SetBoundaryConditionToPeriodic();
 
 protected:
   TotalVariationDenoisingBPDQImageFilter();
   ~TotalVariationDenoisingBPDQImageFilter() override = default;
 
-  void GenerateOutputInformation() override;
+  void
+  GenerateOutputInformation() override;
 
   /** Sub filter pointers */
-  typename MagnitudeThresholdFilterType::Pointer   m_ThresholdFilter;
-  typename Superclass::ThresholdFilterType* GetThresholdFilter() override
+  typename MagnitudeThresholdFilterType::Pointer m_ThresholdFilter;
+  typename Superclass::ThresholdFilterType *
+  GetThresholdFilter() override
   {
-    return dynamic_cast<typename Superclass::ThresholdFilterType*>(this->m_ThresholdFilter.GetPointer());
+    return dynamic_cast<typename Superclass::ThresholdFilterType *>(this->m_ThresholdFilter.GetPointer());
   }
 };
 
-} // end namespace itk
+} // namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkTotalVariationDenoisingBPDQImageFilter.hxx"
+#  include "rtkTotalVariationDenoisingBPDQImageFilter.hxx"
 #endif
 
 #endif //__rtkTotalVariationDenoisingBPDQImageFilter__

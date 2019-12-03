@@ -36,15 +36,14 @@ namespace rtk
  * \ingroup RTK
  */
 template <class TInputImage, class TOutputImage = TInputImage>
-class ITK_EXPORT UpsampleImageFilter:
-    public itk::ImageToImageFilter<TInputImage,TOutputImage>
+class ITK_EXPORT UpsampleImageFilter : public itk::ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(UpsampleImageFilter);
 
   /** Standard class type alias. */
   using Self = UpsampleImageFilter;
-  using Superclass = itk::ImageToImageFilter<TInputImage,TOutputImage>;
+  using Superclass = itk::ImageToImageFilter<TInputImage, TOutputImage>;
   using Pointer = itk::SmartPointer<Self>;
   using ConstPointer = itk::SmartPointer<const Self>;
 
@@ -65,16 +64,17 @@ public:
   using OutputImageRegionType = typename TOutputImage::RegionType;
 
   /** ImageDimension enumeration. */
-  itkStaticConstMacro(ImageDimension, unsigned int,
-                      TInputImage::ImageDimension );
+  itkStaticConstMacro(ImageDimension, unsigned int, TInputImage::ImageDimension);
 
   /** Set the shrink factors. Values are clamped to
    * a minimum value of 1.*/
-  void SetFactors(unsigned int factors[]);
+  void
+  SetFactors(unsigned int factors[]);
 
   /** Sets the shrink factor for the given dimension.
    * All other dimensions are set to 1 */
-  void SetFactor(unsigned int dimension, unsigned int factor);
+  void
+  SetFactor(unsigned int dimension, unsigned int factor);
 
   /** UpsampleImageFilter produces an image which is a different
    * resolution and with a different pixel spacing than its input
@@ -83,14 +83,16 @@ public:
    * the pipeline execution model.  The original documentation of this
    * method is below.
    * \sa ProcessObject::GenerateOutputInformaton() */
-  void GenerateOutputInformation() override;
+  void
+  GenerateOutputInformation() override;
 
   /** UpsampleImageFilter needs a larger input requested region than the output
    * requested region.  As such, UpsampleImageFilter needs to provide an
    * implementation for GenerateInputRequestedRegion() in order to inform the
    * pipeline execution model.
    * \sa ProcessObject::GenerateInputRequestedRegion() */
-  void GenerateInputRequestedRegion() override;
+  void
+  GenerateInputRequestedRegion() override;
 
   /** Set/Get the order of the wavelet filter
    * This is required because some information about the index of the image
@@ -131,15 +133,18 @@ protected:
    *
    * \sa ImageToImageFilter::ThreadedGenerateData(),
    *     ImageToImageFilter::GenerateData() */
-  void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) override;
+  void
+  ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread,
+                       itk::ThreadIdType             itkNotUsed(threadId)) override;
 
 private:
-  unsigned int                      m_Factors[ImageDimension];
-  unsigned int                      m_Order;
-  typename TOutputImage::SizeType   m_OutputSize;
-  typename TOutputImage::IndexType  m_OutputIndex;
+  unsigned int                     m_Factors[ImageDimension];
+  unsigned int                     m_Order;
+  typename TOutputImage::SizeType  m_OutputSize;
+  typename TOutputImage::IndexType m_OutputIndex;
 
-  const itk::ImageRegionSplitterBase* GetImageRegionSplitter(void) const override;
+  const itk::ImageRegionSplitterBase *
+                                             GetImageRegionSplitter(void) const override;
   itk::ImageRegionSplitterDirection::Pointer m_Splitter;
 };
 
@@ -147,7 +152,7 @@ private:
 } // end namespace rtk
 
 #ifndef rtk_MANUAL_INSTANTIATION
-#include "rtkUpsampleImageFilter.hxx"
+#  include "rtkUpsampleImageFilter.hxx"
 #endif
 
 #endif

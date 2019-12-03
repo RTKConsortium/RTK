@@ -46,11 +46,15 @@ public:
   using ConstPointer = itk::SmartPointer<const Self>;
 
   /** Class methods used to interface with the registered factories. */
-  const char* GetITKSourceVersion(void) const override {
+  const char *
+  GetITKSourceVersion(void) const override
+  {
     return ITK_SOURCE_VERSION;
   }
 
-  const char* GetDescription(void) const override {
+  const char *
+  GetDescription(void) const override
+  {
     return "ImagX ImageIO Factory, allows the loading of ImagX images into insight";
   }
 
@@ -61,17 +65,19 @@ public:
   itkTypeMacro(ImagXImageIOFactory, ObjectFactoryBase);
 
   /** Register one factory of this type  */
-  static void RegisterOneFactory(void) {
-    ObjectFactoryBase::RegisterFactory( Self::New() );
+  static void
+  RegisterOneFactory(void)
+  {
+    ObjectFactoryBase::RegisterFactory(Self::New());
   }
 
 protected:
   ImagXImageIOFactory();
   ~ImagXImageIOFactory() override = default;
   using myProductType = ImagXImageIOFactory;
-  const myProductType* m_MyProduct;
+  const myProductType * m_MyProduct;
 };
 
-} // end namespace
+} // namespace rtk
 
 #endif

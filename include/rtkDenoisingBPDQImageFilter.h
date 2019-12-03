@@ -37,16 +37,15 @@ namespace rtk
  * \ingroup RTK IntensityImageFilters
  */
 
-template< typename TOutputImage, typename TGradientImage>
-class DenoisingBPDQImageFilter :
-        public itk::InPlaceImageFilter< TOutputImage, TOutputImage >
+template <typename TOutputImage, typename TGradientImage>
+class DenoisingBPDQImageFilter : public itk::InPlaceImageFilter<TOutputImage, TOutputImage>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(DenoisingBPDQImageFilter);
 
   /** Standard class type alias. */
   using Self = DenoisingBPDQImageFilter;
-  using Superclass = itk::InPlaceImageFilter< TOutputImage, TOutputImage>;
+  using Superclass = itk::InPlaceImageFilter<TOutputImage, TOutputImage>;
   using Pointer = itk::SmartPointer<Self>;
   using ConstPointer = itk::SmartPointer<const Self>;
 
@@ -57,11 +56,11 @@ public:
   itkTypeMacro(DenoisingBPDQImageFilter, ImageToImageFilter);
 
   /** Sub filter type definitions */
-  typedef ForwardDifferenceGradientImageFilter
-            <TOutputImage,
-             typename TOutputImage::ValueType,
-             typename TOutputImage::ValueType,
-             TGradientImage>                                                      GradientFilterType;
+  typedef ForwardDifferenceGradientImageFilter<TOutputImage,
+                                               typename TOutputImage::ValueType,
+                                               typename TOutputImage::ValueType,
+                                               TGradientImage>
+    GradientFilterType;
   using MultiplyFilterType = itk::MultiplyImageFilter<TOutputImage>;
   using SubtractImageFilterType = itk::SubtractImageFilter<TOutputImage>;
   using SubtractGradientFilterType = itk::SubtractImageFilter<TGradientImage>;
@@ -78,18 +77,24 @@ protected:
   DenoisingBPDQImageFilter();
   ~DenoisingBPDQImageFilter() override = default;
 
-  void GenerateData() override;
+  void
+  GenerateData() override;
 
-  void GenerateOutputInformation() override;
+  void
+  GenerateOutputInformation() override;
 
-  virtual ThresholdFilterType* GetThresholdFilter(){return nullptr;}
+  virtual ThresholdFilterType *
+  GetThresholdFilter()
+  {
+    return nullptr;
+  }
 
   /** Sub filter pointers */
-  typename GradientFilterType::Pointer                  m_GradientFilter;
-  typename MultiplyFilterType::Pointer                  m_MultiplyFilter;
-  typename SubtractImageFilterType::Pointer             m_SubtractFilter;
-  typename SubtractGradientFilterType::Pointer          m_SubtractGradientFilter;
-  typename DivergenceFilterType::Pointer                m_DivergenceFilter;
+  typename GradientFilterType::Pointer         m_GradientFilter;
+  typename MultiplyFilterType::Pointer         m_MultiplyFilter;
+  typename SubtractImageFilterType::Pointer    m_SubtractFilter;
+  typename SubtractGradientFilterType::Pointer m_SubtractGradientFilter;
+  typename DivergenceFilterType::Pointer       m_DivergenceFilter;
 
   double m_Gamma;
   double m_Beta;
@@ -98,14 +103,16 @@ protected:
   bool   m_DimensionsProcessed[TOutputImage::ImageDimension];
 
 private:
-  virtual void SetPipelineForFirstIteration();
-  virtual void SetPipelineAfterFirstIteration();
+  virtual void
+  SetPipelineForFirstIteration();
+  virtual void
+  SetPipelineAfterFirstIteration();
 };
 
-} // end namespace itk
+} // namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkDenoisingBPDQImageFilter.hxx"
+#  include "rtkDenoisingBPDQImageFilter.hxx"
 #endif
 
 #endif //__rtkDenoisingBPDQImageFilter__

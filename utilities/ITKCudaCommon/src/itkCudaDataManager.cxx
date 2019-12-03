@@ -1,20 +1,20 @@
 /*=========================================================================
-*
-*  Copyright Insight Software Consortium
-*
-*  Licensed under the Apache License, Version 2.0 (the "License");
-*  you may not use this file except in compliance with the License.
-*  You may obtain a copy of the License at
-*
-*         http://www.apache.org/licenses/LICENSE-2.0.txt
-*
-*  Unless required by applicable law or agreed to in writing, software
-*  distributed under the License is distributed on an "AS IS" BASIS,
-*  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-*  See the License for the specific language governing permissions and
-*  limitations under the License.
-*
-*=========================================================================*/
+ *
+ *  Copyright Insight Software Consortium
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ *=========================================================================*/
 
 #include "itkCudaDataManager.h"
 #include <itksys/SystemTools.hxx>
@@ -33,8 +33,8 @@ CudaDataManager::CudaDataManager()
   // is no CUDA device available, we just do not set the context (SR). This fixes
   // the problem reported here:
   // http://public.kitware.com/pipermail/rtk-users/2015-July/000570.html
-  CUcontext *ctx = m_ContextManager->GetCurrentContext();
-  if(ctx)
+  CUcontext * ctx = m_ContextManager->GetCurrentContext();
+  if (ctx)
     CUDA_CHECK(cuCtxSetCurrent(*ctx));
 
   m_CPUBuffer = NULL;
@@ -43,15 +43,14 @@ CudaDataManager::CudaDataManager()
 
   m_ReleaseDirtyGPUBuffer = true;
   std::string relString;
-  if( itksys::SystemTools::GetEnv("ITK_RELEASE_DIRTY_GPU_BUFFERS",relString) &&
-      ( itksys::SystemTools::LowerCase(relString) == "false" ||
-        atoi(relString.c_str()) != 0 ) )
-    {
+  if (itksys::SystemTools::GetEnv("ITK_RELEASE_DIRTY_GPU_BUFFERS", relString) &&
+      (itksys::SystemTools::LowerCase(relString) == "false" || atoi(relString.c_str()) != 0))
+  {
 #ifdef VERBOSE
     std::cout << "Releasing dirty GPU buffer" << std::endl;
 #endif
     m_ReleaseDirtyGPUBuffer = false;
-    }
+  }
 }
 
 CudaDataManager::~CudaDataManager()
@@ -60,168 +59,191 @@ CudaDataManager::~CudaDataManager()
   CudaContextManager::DestroyInstance();
 }
 
-void CudaDataManager::SetBufferSize(size_t num)
+void
+CudaDataManager::SetBufferSize(size_t num)
 {
   m_BufferSize = num;
 }
 
-void CudaDataManager::SetBufferFlag(int flags)
+void
+CudaDataManager::SetBufferFlag(int flags)
 {
   m_MemFlags = flags;
 }
 
-void CudaDataManager::Allocate()
+void
+CudaDataManager::Allocate()
 {
   if (m_BufferSize > 0 && m_GPUBuffer->GetBufferSize() != m_BufferSize)
-    {
+  {
     m_GPUBuffer->Allocate(m_BufferSize);
     m_IsGPUBufferDirty = true;
-    }
+  }
 }
 
-void CudaDataManager::Free()
+void
+CudaDataManager::Free()
 {
   std::string exceptionDetails;
-  bool exceptionOccured = false;
+  bool        exceptionOccured = false;
   m_Mutex.lock();
   if (m_GPUBuffer->GetBufferSize() > 0)
-    {
+  {
     try
-      {
-      CUDA_CHECK(cuCtxSetCurrent(*(this->m_ContextManager->GetCurrentContext()))); // This is necessary when running multithread to bind the host CPU thread to the right context
+    {
+      CUDA_CHECK(cuCtxSetCurrent(
+        *(this->m_ContextManager->GetCurrentContext()))); // This is necessary when running multithread to bind the host
+                                                          // CPU thread to the right context
       m_GPUBuffer->Free();
-      }
-    catch(itk::ExceptionObject &e)
-      {
+    }
+    catch (itk::ExceptionObject & e)
+    {
       exceptionOccured = true;
       exceptionDetails = e.what();
-      }
+    }
     m_IsGPUBufferDirty = true;
-    }
+  }
   m_Mutex.unlock();
-  if( exceptionOccured )
+  if (exceptionOccured)
+  {
+    if (exceptionDetails.empty())
     {
-    if( exceptionDetails.empty() )
-      {
       itkExceptionMacro("Exception occurred during CudaDataManager::Free");
-      }
-    else
-      {
-      itkExceptionMacro(<< "Exception occurred during CudaDataManager::Free" << std::endl << exceptionDetails);
-      }
     }
+    else
+    {
+      itkExceptionMacro(<< "Exception occurred during CudaDataManager::Free" << std::endl << exceptionDetails);
+    }
+  }
 }
 
-void CudaDataManager::SetCPUBufferPointer(void* ptr)
+void
+CudaDataManager::SetCPUBufferPointer(void * ptr)
 {
   m_CPUBuffer = ptr;
 }
 
-void CudaDataManager::SetCPUDirtyFlag(bool isDirty)
+void
+CudaDataManager::SetCPUDirtyFlag(bool isDirty)
 {
   m_IsCPUBufferDirty = isDirty;
 }
 
-void CudaDataManager::SetGPUDirtyFlag(bool isDirty)
+void
+CudaDataManager::SetGPUDirtyFlag(bool isDirty)
 {
   m_IsGPUBufferDirty = isDirty;
-  if(isDirty && m_ReleaseDirtyGPUBuffer)
+  if (isDirty && m_ReleaseDirtyGPUBuffer)
     this->Free();
 }
 
-void CudaDataManager::SetGPUBufferDirty()
+void
+CudaDataManager::SetGPUBufferDirty()
 {
   this->UpdateCPUBuffer();
   m_IsGPUBufferDirty = true;
-  if(m_ReleaseDirtyGPUBuffer)
+  if (m_ReleaseDirtyGPUBuffer)
     this->Free();
 }
 
-void CudaDataManager::SetCPUBufferDirty()
+void
+CudaDataManager::SetCPUBufferDirty()
 {
   this->UpdateGPUBuffer();
   m_IsCPUBufferDirty = true;
 }
 
-void CudaDataManager::UpdateCPUBuffer()
+void
+CudaDataManager::UpdateCPUBuffer()
 {
   std::string exceptionDetails;
-  bool exceptionOccured = false;
+  bool        exceptionOccured = false;
   m_Mutex.lock();
-  if(m_IsGPUBufferDirty)
-    {
+  if (m_IsGPUBufferDirty)
+  {
     m_IsCPUBufferDirty = false;
-    }
-  else if(m_IsCPUBufferDirty && m_GPUBuffer && m_CPUBuffer)
-    {
+  }
+  else if (m_IsCPUBufferDirty && m_GPUBuffer && m_CPUBuffer)
+  {
     try
-      {
+    {
 #ifdef VERBOSE
-    std::cout << this << "::UpdateCPUBuffer GPU->CPU data copy " << m_GPUBuffer->GetPointer() << "->" << m_CPUBuffer << " : " << m_BufferSize << std::endl;
+      std::cout << this << "::UpdateCPUBuffer GPU->CPU data copy " << m_GPUBuffer->GetPointer() << "->" << m_CPUBuffer
+                << " : " << m_BufferSize << std::endl;
 #endif
-      CUDA_CHECK(cuCtxSetCurrent(*(this->m_ContextManager->GetCurrentContext()))); // This is necessary when running multithread to bind the host CPU thread to the right context
+      CUDA_CHECK(cuCtxSetCurrent(
+        *(this->m_ContextManager->GetCurrentContext()))); // This is necessary when running multithread to bind the host
+                                                          // CPU thread to the right context
       CUDA_CHECK(cudaMemcpy(m_CPUBuffer, m_GPUBuffer->GetPointer(), m_BufferSize, cudaMemcpyDeviceToHost));
       m_IsCPUBufferDirty = false;
-      }
-    catch(itk::ExceptionObject &e)
-      {
+    }
+    catch (itk::ExceptionObject & e)
+    {
       exceptionOccured = true;
       exceptionDetails = e.what();
-      }
     }
+  }
   m_Mutex.unlock();
-  if( exceptionOccured )
+  if (exceptionOccured)
+  {
+    if (exceptionDetails.empty())
     {
-    if( exceptionDetails.empty() )
-      {
       itkExceptionMacro("Exception occurred during CudaDataManager::UpdateCPUBuffer");
-      }
-    else
-      {
-      itkExceptionMacro(<< "Exception occurred during CudaDataManager::UpdateCPUBuffer" << std::endl << exceptionDetails);
-      }
     }
+    else
+    {
+      itkExceptionMacro(<< "Exception occurred during CudaDataManager::UpdateCPUBuffer" << std::endl
+                        << exceptionDetails);
+    }
+  }
 }
 
-void CudaDataManager::UpdateGPUBuffer()
+void
+CudaDataManager::UpdateGPUBuffer()
 {
   m_Mutex.lock();
   if (m_IsGPUBufferDirty && m_GPUBuffer)
-    {
+  {
     this->Allocate(); // do the allocation
 
-    if(!m_IsCPUBufferDirty && m_CPUBuffer)
-      {
+    if (!m_IsCPUBufferDirty && m_CPUBuffer)
+    {
 #ifdef VERBOSE
-      std::cout << this << "::UpdateGPUBuffer CPU->GPU data copy " << m_CPUBuffer << "->" << m_GPUBuffer->GetPointer() << " : " << m_BufferSize << std::endl;
+      std::cout << this << "::UpdateGPUBuffer CPU->GPU data copy " << m_CPUBuffer << "->" << m_GPUBuffer->GetPointer()
+                << " : " << m_BufferSize << std::endl;
 #endif
-      CUDA_CHECK(cuCtxSetCurrent(*(this->m_ContextManager->GetCurrentContext()))); // This is necessary when running multithread to bind the host CPU thread to the right context
+      CUDA_CHECK(cuCtxSetCurrent(
+        *(this->m_ContextManager->GetCurrentContext()))); // This is necessary when running multithread to bind the host
+                                                          // CPU thread to the right context
       CUDA_CHECK(cudaMemcpy(m_GPUBuffer->GetPointer(), m_CPUBuffer, m_BufferSize, cudaMemcpyHostToDevice));
-      }
-    m_IsGPUBufferDirty = false;
     }
+    m_IsGPUBufferDirty = false;
+  }
   m_Mutex.unlock();
 }
 
-void* CudaDataManager::GetGPUBufferPointer()
+void *
+CudaDataManager::GetGPUBufferPointer()
 {
   SetCPUBufferDirty();
   return m_GPUBuffer->GetPointerPtr();
 }
 
-void* CudaDataManager::GetCPUBufferPointer()
+void *
+CudaDataManager::GetCPUBufferPointer()
 {
   SetGPUBufferDirty();
   return m_CPUBuffer;
 }
 
-bool CudaDataManager::Update()
+bool
+CudaDataManager::Update()
 {
   if (m_IsGPUBufferDirty && m_IsCPUBufferDirty)
-    {
+  {
     itkExceptionMacro("Cannot make up-to-date buffer because both CPU and GPU buffers are dirty");
     return false;
-    }
+  }
 
   this->UpdateGPUBuffer();
   this->UpdateCPUBuffer();
@@ -231,29 +253,32 @@ bool CudaDataManager::Update()
   return true;
 }
 
-void CudaDataManager::Graft(const CudaDataManager* data)
+void
+CudaDataManager::Graft(const CudaDataManager * data)
 {
   if (data)
-    {
+  {
     m_BufferSize = data->m_BufferSize;
     m_ContextManager = data->m_ContextManager;
     m_GPUBuffer = data->m_GPUBuffer;
     m_CPUBuffer = data->m_CPUBuffer;
     m_IsCPUBufferDirty = data->m_IsCPUBufferDirty;
     m_IsGPUBufferDirty = data->m_IsGPUBufferDirty;
-    }
+  }
 }
 
-void CudaDataManager::Initialize()
+void
+CudaDataManager::Initialize()
 {
   m_BufferSize = 0;
   m_CPUBuffer = NULL;
-  m_MemFlags  = 0; // default flag
+  m_MemFlags = 0; // default flag
   m_IsGPUBufferDirty = false;
   m_IsCPUBufferDirty = false;
 }
 
-void CudaDataManager::PrintSelf(std::ostream & os, Indent indent) const
+void
+CudaDataManager::PrintSelf(std::ostream & os, Indent indent) const
 {
   os << indent << "CudaDataManager (" << this << ")" << std::endl;
   os << indent << "m_BufferSize: " << m_BufferSize << std::endl;

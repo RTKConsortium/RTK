@@ -22,10 +22,6 @@
 #include <vector_types.h>
 
 void
-CUDA_splat(const int4 &outputSize,
-                   float* input,
-                   float* output,
-                   int projectionNumber,
-                   float **weights);
+CUDA_splat(const int4 & outputSize, float * input, float * output, int projectionNumber, float ** weights);
 
 #endif

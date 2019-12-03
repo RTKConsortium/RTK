@@ -31,133 +31,128 @@ namespace rtk
 {
 
 template <class TInputImage, class TOutputImage>
-EdfRawToAttenuationImageFilter<TInputImage, TOutputImage>
-::EdfRawToAttenuationImageFilter() :
-  m_DarkProjectionsReader( EdfImageSeries::New() ),
-  m_ReferenceProjectionsReader( EdfImageSeries::New() )
-{
-}
+EdfRawToAttenuationImageFilter<TInputImage, TOutputImage>::EdfRawToAttenuationImageFilter()
+  : m_DarkProjectionsReader(EdfImageSeries::New())
+  , m_ReferenceProjectionsReader(EdfImageSeries::New())
+{}
 
-template<class TInputImage, class TOutputImage>
+template <class TInputImage, class TOutputImage>
 void
-EdfRawToAttenuationImageFilter<TInputImage, TOutputImage>
-::BeforeThreadedGenerateData()
+EdfRawToAttenuationImageFilter<TInputImage, TOutputImage>::BeforeThreadedGenerateData()
 {
-  if( m_FileNames.size() != this->GetInput()->GetLargestPossibleRegion().GetSize()[2] )
-    {
+  if (m_FileNames.size() != this->GetInput()->GetLargestPossibleRegion().GetSize()[2])
+  {
     itkGenericExceptionMacro(<< "Error, file names do not correspond to input");
-    }
+  }
 
-  std::string path = itksys::SystemTools::GetFilenamePath(m_FileNames[0]);
+  std::string              path = itksys::SystemTools::GetFilenamePath(m_FileNames[0]);
   std::vector<std::string> pathComponents;
   itksys::SystemTools::SplitPath(m_FileNames[0].c_str(), pathComponents);
   std::string fileName = pathComponents.back();
 
   // Reference images (flood field)
   itk::RegularExpressionSeriesFileNames::Pointer refNames = itk::RegularExpressionSeriesFileNames::New();
-  refNames->SetDirectory(path.c_str() );
+  refNames->SetDirectory(path.c_str());
   refNames->SetNumericSort(false);
   refNames->SetRegularExpression("refHST[0-9]*.edf$");
   refNames->SetSubMatch(0);
 
-  m_ReferenceProjectionsReader->SetFileNames( refNames->GetFileNames() );
+  m_ReferenceProjectionsReader->SetFileNames(refNames->GetFileNames());
   m_ReferenceProjectionsReader->Update();
 
   m_ReferenceIndices.clear();
-  for(const std::string & name : refNames->GetFileNames())
-    {
+  for (const std::string & name : refNames->GetFileNames())
+  {
     const std::string::size_type nameSize = name.size();
-    const std::string indexStr(name, nameSize-8, 4);
-    m_ReferenceIndices.push_back( atoi( indexStr.c_str() ) );
-    }
+    const std::string            indexStr(name, nameSize - 8, 4);
+    m_ReferenceIndices.push_back(atoi(indexStr.c_str()));
+  }
 
   // Dark images
   FileNamesContainer darkFilenames;
-  darkFilenames.push_back( path + std::string("/dark.edf") );
-//  darkFilenames.push_back( path + std::string("/darkend0000.edf") );
-  m_DarkProjectionsReader->SetFileNames( darkFilenames );
+  darkFilenames.push_back(path + std::string("/dark.edf"));
+  //  darkFilenames.push_back( path + std::string("/darkend0000.edf") );
+  m_DarkProjectionsReader->SetFileNames(darkFilenames);
   m_DarkProjectionsReader->Update();
 }
 
-template<class TInputImage, class TOutputImage>
+template <class TInputImage, class TOutputImage>
 void
 EdfRawToAttenuationImageFilter<TInputImage, TOutputImage>
-#if ITK_VERSION_MAJOR<5
-::ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType itkNotUsed(threadId) )
+#if ITK_VERSION_MAJOR < 5
+  ::ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, ThreadIdType itkNotUsed(threadId))
 #else
-::DynamicThreadedGenerateData( const OutputImageRegionType& outputRegionForThread)
+  ::DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread)
 #endif
 {
   // Dark image iterator
   OutputImageRegionType darkRegion = outputRegionForThread;
 
-  darkRegion.SetSize(2,1);
-  darkRegion.SetIndex(2,0);
+  darkRegion.SetSize(2, 1);
+  darkRegion.SetIndex(2, 0);
   itk::ImageRegionConstIterator<InputImageType> itDark(m_DarkProjectionsReader->GetOutput(), darkRegion);
 
   // Ref and projection regions
   OutputImageRegionType refRegion1 = outputRegionForThread;
   OutputImageRegionType refRegion2 = outputRegionForThread;
   OutputImageRegionType outputRegionSlice = outputRegionForThread;
-  refRegion1.SetSize(2,1);
-  refRegion2.SetSize(2,1);
-  outputRegionSlice.SetSize(2,1);
+  refRegion1.SetSize(2, 1);
+  refRegion2.SetSize(2, 1);
+  outputRegionSlice.SetSize(2, 1);
 
-  for(int k = outputRegionForThread.GetIndex(2);
-      k < outputRegionForThread.GetIndex(2) + (int)outputRegionForThread.GetSize(2);
-      k++)
-    {
-    outputRegionSlice.SetIndex(2,k);
+  for (int k = outputRegionForThread.GetIndex(2);
+       k < outputRegionForThread.GetIndex(2) + (int)outputRegionForThread.GetSize(2);
+       k++)
+  {
+    outputRegionSlice.SetIndex(2, k);
 
     // Create iterators
     itk::ImageRegionConstIterator<InputImageType> itIn(this->GetInput(), outputRegionSlice);
     itk::ImageRegionIterator<OutputImageType>     itOut(this->GetOutput(), outputRegionSlice);
 
     // Find index of reference images
-    for(unsigned int i=0; i<m_ReferenceIndices.size(); i++)
-      {
+    for (unsigned int i = 0; i < m_ReferenceIndices.size(); i++)
+    {
       itDark.GoToBegin();
-      if(k == m_ReferenceIndices[i])
-        {
+      if (k == m_ReferenceIndices[i])
+      {
         refRegion1.SetIndex(2, i);
         itk::ImageRegionConstIterator<InputImageType> itRef(m_ReferenceProjectionsReader->GetOutput(), refRegion1);
-        while( !itDark.IsAtEnd() )
-          {
+        while (!itDark.IsAtEnd())
+        {
           // The reference has been exactly acquired at the same position
-          itOut.Set( -log( ( (double)itIn.Get()  - (double)itDark.Get() ) /
-                           ( (double)itRef.Get() - (double)itDark.Get() ) ) );
+          itOut.Set(-log(((double)itIn.Get() - (double)itDark.Get()) / ((double)itRef.Get() - (double)itDark.Get())));
           ++itIn;
           ++itOut;
           ++itDark;
           ++itRef;
-          }
         }
-      else if(i>0 && k>m_ReferenceIndices[i-1] && k<m_ReferenceIndices[i])
-        {
+      }
+      else if (i > 0 && k > m_ReferenceIndices[i - 1] && k < m_ReferenceIndices[i])
+      {
         // The reference must be interpolated
-        refRegion1.SetIndex(2, i-1);
+        refRegion1.SetIndex(2, i - 1);
         refRegion2.SetIndex(2, i);
         itk::ImageRegionConstIterator<InputImageType> itRef1(m_ReferenceProjectionsReader->GetOutput(), refRegion1);
         itk::ImageRegionConstIterator<InputImageType> itRef2(m_ReferenceProjectionsReader->GetOutput(), refRegion2);
 
-        double w1 = 1./(m_ReferenceIndices[i]-m_ReferenceIndices[i-1]);
-        double w2 = w1 * (k - m_ReferenceIndices[i-1]);
+        double w1 = 1. / (m_ReferenceIndices[i] - m_ReferenceIndices[i - 1]);
+        double w2 = w1 * (k - m_ReferenceIndices[i - 1]);
 
         w1 *= (m_ReferenceIndices[i] - k);
-        while( !itDark.IsAtEnd() )
-          {
-          double ref = w1*itRef1.Get() + w2*itRef2.Get();
-          itOut.Set( -log( ( (double)itIn.Get()  - (double)itDark.Get() ) /
-                           (        ref          - (double)itDark.Get() ) ) );
+        while (!itDark.IsAtEnd())
+        {
+          double ref = w1 * itRef1.Get() + w2 * itRef2.Get();
+          itOut.Set(-log(((double)itIn.Get() - (double)itDark.Get()) / (ref - (double)itDark.Get())));
           ++itIn;
           ++itOut;
           ++itDark;
           ++itRef1;
           ++itRef2;
-          }
         }
       }
     }
+  }
 }
 
 } // end namespace rtk

@@ -37,8 +37,7 @@ namespace rtk
  *
  * \ingroup RTK IOFilters
  */
-class RTK_EXPORT DigisensGeometryReader :
-  public itk::LightProcessObject
+class RTK_EXPORT DigisensGeometryReader : public itk::LightProcessObject
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(DigisensGeometryReader);
@@ -69,11 +68,12 @@ protected:
 
 
 private:
-  void GenerateData() override;
+  void
+  GenerateData() override;
 
   GeometryType::Pointer m_Geometry;
   std::string           m_XMLFileName;
 };
 
-}
+} // namespace rtk
 #endif

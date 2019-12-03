@@ -40,11 +40,10 @@ namespace rtk
  * \ingroup RTK InPlaceImageFilter
  */
 
-template<class TInputImage = itk::Image< unsigned short, 3>,
-         class TOutputImage = TInputImage,
-         unsigned char bitShift = 2 >
-class ITK_EXPORT I0EstimationProjectionFilter:
-  public         itk::InPlaceImageFilter<TInputImage, TOutputImage>
+template <class TInputImage = itk::Image<unsigned short, 3>,
+          class TOutputImage = TInputImage,
+          unsigned char bitShift = 2>
+class ITK_EXPORT I0EstimationProjectionFilter : public itk::InPlaceImageFilter<TInputImage, TOutputImage>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(I0EstimationProjectionFilter);
@@ -68,7 +67,7 @@ public:
   using OutputImageRegionType = typename Superclass::OutputImageRegionType;
   using InputImagePixelType = typename InputImageType::PixelType;
 
-  itkConceptMacro(InputImagePixelTypeIsInteger, (itk::Concept::IsInteger<InputImagePixelType>) );
+  itkConceptMacro(InputImagePixelTypeIsInteger, (itk::Concept::IsInteger<InputImagePixelType>));
 
   /** Main Output: estimation result. */
   itkGetMacro(I0, InputImagePixelType);
@@ -105,52 +104,55 @@ protected:
   I0EstimationProjectionFilter();
   ~I0EstimationProjectionFilter() override = default;
 
-  void BeforeThreadedGenerateData() override;
+  void
+  BeforeThreadedGenerateData() override;
 
-  void ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, ThreadIdType threadId) override;
+  void
+  ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, ThreadIdType threadId) override;
 
-  void AfterThreadedGenerateData() override;
+  void
+  AfterThreadedGenerateData() override;
 
 private:
   // Input variables
-  InputImagePixelType m_ExpectedI0;       // Expected I0 value (as a result of a
-                                          // detector calibration)
-  InputImagePixelType m_MaxPixelValue;    // Maximum encodable detector value if
-                                          // different from (2^16-1)
-  float          m_Lambda;                // RLS coefficient
-  bool           m_SaveHistograms;        // Save histograms in a output file
-  bool           m_Reset;                 // Reset counters
+  InputImagePixelType m_ExpectedI0;    // Expected I0 value (as a result of a
+                                       // detector calibration)
+  InputImagePixelType m_MaxPixelValue; // Maximum encodable detector value if
+                                       // different from (2^16-1)
+  float m_Lambda;                      // RLS coefficient
+  bool  m_SaveHistograms;              // Save histograms in a output file
+  bool  m_Reset;                       // Reset counters
 
   // Secondary inputs
   std::vector<unsigned int>::size_type m_NBins; // Histogram size, computed
                                                 // from m_MaxPixelValue and bitshift
 
   // Main variables
-  std::vector< unsigned int > m_Histogram; // compressed (bitshifted) histogram
-  InputImagePixelType         m_I0;        // I0 estimate with no a priori for
-                                           // each new image
-  InputImagePixelType         m_I0rls;     // Updated RLS estimate
-  InputImagePixelType         m_I0fwhm;    // FWHM of the I0 mode
+  std::vector<unsigned int> m_Histogram; // compressed (bitshifted) histogram
+  InputImagePixelType       m_I0;        // I0 estimate with no a priori for
+                                         // each new image
+  InputImagePixelType m_I0rls;           // Updated RLS estimate
+  InputImagePixelType m_I0fwhm;          // FWHM of the I0 mode
 
   // Secondary variables
-  unsigned int m_Np;                      // Number of previously analyzed
-                                          // images
-  InputImagePixelType m_Imin, m_Imax;     // Define the range of consistent
-                                          // pixels in histogram
-  unsigned int m_DynThreshold;            // Detector values with a frequency of
-                                          // less than dynThreshold outside
-                                          // min/max are discarded
-  unsigned int m_LowBound, m_HighBound;   // Lower/Upper bounds of the I0 mode
-                                          // at half width
+  unsigned int m_Np;                    // Number of previously analyzed
+                                        // images
+  InputImagePixelType m_Imin, m_Imax;   // Define the range of consistent
+                                        // pixels in histogram
+  unsigned int m_DynThreshold;          // Detector values with a frequency of
+                                        // less than dynThreshold outside
+                                        // min/max are discarded
+  unsigned int m_LowBound, m_HighBound; // Lower/Upper bounds of the I0 mode
+                                        // at half width
 
-  std::mutex   m_Mutex;
-  int          m_Nsync;
-  int          m_Nthreads;
+  std::mutex m_Mutex;
+  int        m_Nsync;
+  int        m_Nthreads;
 };
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkI0EstimationProjectionFilter.hxx"
+#  include "rtkI0EstimationProjectionFilter.hxx"
 #endif
 
 #endif

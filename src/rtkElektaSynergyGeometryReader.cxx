@@ -21,87 +21,74 @@
 #include "rtkDbf.h"
 #include "rtkMacro.h"
 
-rtk::ElektaSynergyGeometryReader
-::ElektaSynergyGeometryReader():
-  m_Geometry(nullptr),
-  m_DicomUID(""),
-  m_ImageDbfFileName("IMAGE.DBF"),
-  m_FrameDbfFileName("FRAME.DBF")
-{
-}
+rtk::ElektaSynergyGeometryReader ::ElektaSynergyGeometryReader()
+  : m_Geometry(nullptr)
+  , m_DicomUID("")
+  , m_ImageDbfFileName("IMAGE.DBF")
+  , m_FrameDbfFileName("FRAME.DBF")
+{}
 
 std::string
-rtk::ElektaSynergyGeometryReader
-::GetImageIDFromDicomUID()
+rtk::ElektaSynergyGeometryReader ::GetImageIDFromDicomUID()
 {
   // Open frame database file
   rtk::DbfFile dbImage(m_ImageDbfFileName);
-  if( !dbImage.is_open() )
-    itkGenericExceptionMacro( << "Couldn't open "
-                              << m_ImageDbfFileName);
+  if (!dbImage.is_open())
+    itkGenericExceptionMacro(<< "Couldn't open " << m_ImageDbfFileName);
 
   // Search for correct record
   bool bReadOk;
-  do {
+  do
+  {
     bReadOk = dbImage.ReadNextRecord();
-    }
-  while(bReadOk && std::string(m_DicomUID) != dbImage.GetFieldAsString("DICOM_UID") );
+  } while (bReadOk && std::string(m_DicomUID) != dbImage.GetFieldAsString("DICOM_UID"));
 
   // Error message if not found
-  if(!bReadOk)
-    {
-    itkGenericExceptionMacro( << "Couldn't find acquisition with DICOM_UID "
-                              << m_DicomUID
-                              << " in table "
-                              << m_ImageDbfFileName );
-    }
+  if (!bReadOk)
+  {
+    itkGenericExceptionMacro(<< "Couldn't find acquisition with DICOM_UID " << m_DicomUID << " in table "
+                             << m_ImageDbfFileName);
+  }
 
   return dbImage.GetFieldAsString("DBID");
 }
 
 void
-rtk::ElektaSynergyGeometryReader
-::GetProjInfoFromDB(const std::string &imageID,
-                    std::vector<float> &projAngle,
-                    std::vector<float> &projFlexX,
-                    std::vector<float> &projFlexY)
+rtk::ElektaSynergyGeometryReader ::GetProjInfoFromDB(const std::string &  imageID,
+                                                     std::vector<float> & projAngle,
+                                                     std::vector<float> & projFlexX,
+                                                     std::vector<float> & projFlexY)
 {
   // Open frame database file
   rtk::DbfFile dbFrame(m_FrameDbfFileName);
-  if( !dbFrame.is_open() )
-    itkGenericExceptionMacro( << "Couldn't open "
-                              << m_FrameDbfFileName);
+  if (!dbFrame.is_open())
+    itkGenericExceptionMacro(<< "Couldn't open " << m_FrameDbfFileName);
 
   // Go through the database, select correct records and get data
-  while( dbFrame.ReadNextRecord() )
+  while (dbFrame.ReadNextRecord())
+  {
+    if (dbFrame.GetFieldAsString("IMA_DBID") == imageID)
     {
-    if(dbFrame.GetFieldAsString("IMA_DBID") == imageID)
-      {
-      projAngle.push_back(dbFrame.GetFieldAsDouble("PROJ_ANG") );
-      projFlexX.push_back(dbFrame.GetFieldAsDouble("U_CENTRE") );
-      projFlexY.push_back(dbFrame.GetFieldAsDouble("V_CENTRE") );
-      }
+      projAngle.push_back(dbFrame.GetFieldAsDouble("PROJ_ANG"));
+      projFlexX.push_back(dbFrame.GetFieldAsDouble("U_CENTRE"));
+      projFlexY.push_back(dbFrame.GetFieldAsDouble("V_CENTRE"));
     }
+  }
 }
 
 void
-rtk::ElektaSynergyGeometryReader
-::GenerateData()
+rtk::ElektaSynergyGeometryReader ::GenerateData()
 {
   // Create new RTK geometry object
   m_Geometry = GeometryType::New();
 
   // Get information from Synergy database
   std::vector<float> projAngle, projFlexX, projFlexY;
-  GetProjInfoFromDB( GetImageIDFromDicomUID(), projAngle, projFlexX, projFlexY);
+  GetProjInfoFromDB(GetImageIDFromDicomUID(), projAngle, projFlexX, projFlexY);
 
   // Projection matrices
-  for(unsigned int noProj=0; noProj<projAngle.size(); noProj++)
-    {
-    m_Geometry->AddProjection(1000.,
-                            1536.,
-                            projAngle[noProj],
-                            -projFlexX[noProj],
-                            -projFlexY[noProj]);
-    }
+  for (unsigned int noProj = 0; noProj < projAngle.size(); noProj++)
+  {
+    m_Geometry->AddProjection(1000., 1536., projAngle[noProj], -projFlexX[noProj], -projFlexY[noProj]);
+  }
 }

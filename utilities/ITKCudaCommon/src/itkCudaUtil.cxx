@@ -25,7 +25,8 @@ namespace itk
 //
 // Get the block size based on the desired image dimension
 //
-int CudaGetLocalBlockSize(unsigned int ImageDim)
+int
+CudaGetLocalBlockSize(unsigned int ImageDim)
 {
   /**
    * Cuda thread block size for 1/2/3D - needs to be tuned based on the Cuda architecture
@@ -40,28 +41,29 @@ int CudaGetLocalBlockSize(unsigned int ImageDim)
   {
     itkGenericExceptionMacro("Only ImageDimensions up to 3 are supported");
   }
-  return CUDA_BLOCK_SIZE[ImageDim-1];
+  return CUDA_BLOCK_SIZE[ImageDim - 1];
 }
 
 //
 // Get the devices that are available.
 //
-int CudaGetAvailableDevices(std::vector<cudaDeviceProp> &devices)
+int
+CudaGetAvailableDevices(std::vector<cudaDeviceProp> & devices)
 {
   int numAvailableDevices = 0;
   cudaGetDeviceCount(&numAvailableDevices);
 
   if (numAvailableDevices == 0)
-    {
+  {
     return 0;
-    }
+  }
 
   devices.resize(numAvailableDevices);
 
   for (int i = 0; i < numAvailableDevices; ++i)
-    {
+  {
     cudaGetDeviceProperties(&devices[i], i);
-    }
+  }
 
   return numAvailableDevices;
 }
@@ -69,52 +71,55 @@ int CudaGetAvailableDevices(std::vector<cudaDeviceProp> &devices)
 //
 // Get the device that has the maximum FLOPS
 //
-int CudaGetMaxFlopsDev()
+int
+CudaGetMaxFlopsDev()
 {
   std::vector<cudaDeviceProp> devices;
-  int numAvailableDevices = CudaGetAvailableDevices(devices);
+  int                         numAvailableDevices = CudaGetAvailableDevices(devices);
   if (numAvailableDevices == 0)
-    {
+  {
 
     return -1;
-    }
+  }
   int max_flops = 0;
   int max_flops_device = 0;
   for (int i = 0; i < numAvailableDevices; ++i)
-    {
+  {
     int flops = devices[i].multiProcessorCount * devices[i].clockRate;
     if (flops > max_flops)
-      {
+    {
       max_flops = flops;
       max_flops_device = i;
-      }
     }
+  }
 
   return max_flops_device;
 }
 
 
-std::pair<int, int> GetCudaComputeCapability(int device)
+std::pair<int, int>
+GetCudaComputeCapability(int device)
 {
   struct cudaDeviceProp properties;
   if (cudaGetDeviceProperties(&properties, device) != cudaSuccess)
-    {
+  {
     itkGenericExceptionMacro(<< "Unvalid CUDA device");
-    }
+  }
   return std::make_pair(properties.major, properties.minor);
 }
 
 //
 // Print device name & info
 //
-void CudaPrintDeviceInfo(int device, bool verbose)
+void
+CudaPrintDeviceInfo(int device, bool verbose)
 {
   cudaDeviceProp prop;
   if (cudaGetDeviceProperties(&prop, device) != cudaSuccess)
-    {
+  {
     std::cout << "Cuda Error : no device found!" << std::endl;
     return;
-    }
+  }
 
   std::cout << prop.name << std::endl;
   std::cout << "Compute capability: " << prop.major << "." << prop.minor << std::endl;
@@ -122,9 +127,11 @@ void CudaPrintDeviceInfo(int device, bool verbose)
   std::cout << "Global memory: " << prop.totalGlobalMem << std::endl;
   std::cout << "Constant memory: " << prop.totalConstMem << std::endl;
   std::cout << "Number of Multi Processors: " << prop.multiProcessorCount << std::endl;
-  std::cout << "Maximum Thread Dim: { " << prop.maxThreadsDim[0] << ", " << prop.maxThreadsDim[1] << ", " << prop.maxThreadsDim[2] << " }" << std::endl;
+  std::cout << "Maximum Thread Dim: { " << prop.maxThreadsDim[0] << ", " << prop.maxThreadsDim[1] << ", "
+            << prop.maxThreadsDim[2] << " }" << std::endl;
   std::cout << "Maximum Threads per Block: " << prop.maxThreadsPerBlock << std::endl;
-  std::cout << "Maximum Grid Size: { " << prop.maxGridSize[0] << ", " << prop.maxGridSize[1] << ", " << prop.maxGridSize[2] << " }" << std::endl;
+  std::cout << "Maximum Grid Size: { " << prop.maxGridSize[0] << ", " << prop.maxGridSize[1] << ", "
+            << prop.maxGridSize[2] << " }" << std::endl;
 
   if (verbose)
   {
@@ -145,161 +152,156 @@ void CudaPrintDeviceInfo(int device, bool verbose)
 //
 // Find the Cuda platform that matches the "name"
 //
-int CudaSelectPlatform(const char* name)
+int
+CudaSelectPlatform(const char * name)
 {
-  int numAvailableDevices = 0;
+  int                         numAvailableDevices = 0;
   std::vector<cudaDeviceProp> devices;
   numAvailableDevices = CudaGetAvailableDevices(devices);
   if (numAvailableDevices == 0)
-    {
+  {
     std::cout << "Cuda Error : no device found!" << std::endl;
     return -1;
-    }
+  }
 
   for (int i = 0; i < numAvailableDevices; ++i)
-    {
+  {
     if (!strcmp(devices[i].name, name))
-      {
+    {
       return i;
-      }
     }
+  }
 
   return -1;
 }
 
-void CudaCheckError(cudaError_t error, const char* filename, int lineno, const char* location)
+void
+CudaCheckError(cudaError_t error, const char * filename, int lineno, const char * location)
 {
   if (error != cudaSuccess)
-    {
+  {
     // print error message
     std::ostringstream errorMsg;
     errorMsg << "Cuda Error : " << cudaGetErrorString(error) << std::endl;
     std::cerr << filename << ":" << lineno << " @ " << location << " : " << errorMsg.str() << std::endl;
     ::itk::ExceptionObject e_(filename, lineno, errorMsg.str().c_str(), location);
     throw e_;
-    }
+  }
 }
 
 
-void CudaCheckError(CUresult error, const char* filename, int lineno, const char* location)
+void
+CudaCheckError(CUresult error, const char * filename, int lineno, const char * location)
 {
   if (error != CUDA_SUCCESS)
-    {
+  {
     // print error message
     std::ostringstream errorMsg;
     errorMsg << "Cuda Error #" << static_cast<int>(error) << std::endl;
     std::cerr << filename << ":" << lineno << " @ " << location << " : " << errorMsg.str() << std::endl;
     ::itk::ExceptionObject e_(filename, lineno, errorMsg.str().c_str(), location);
     throw e_;
-    }
+  }
 }
 
 
 /** Check if OpenCL-enabled Cuda is present. */
-bool IsCudaAvailable()
+bool
+IsCudaAvailable()
 {
-  int count = 0;
+  int         count = 0;
   cudaError_t err = cudaGetDeviceCount(&count);
   CUDA_CHECK(err)
   return count >= 1;
 }
 
-std::string GetTypename(const std::type_info& intype)
+std::string
+GetTypename(const std::type_info & intype)
 {
   std::string typestr;
-  if (intype == typeid (unsigned char) ||
-       intype == typeid (itk::Vector< unsigned char, 2 >) ||
-       intype == typeid (itk::Vector< unsigned char, 3 >))
-    {
+  if (intype == typeid(unsigned char) || intype == typeid(itk::Vector<unsigned char, 2>) ||
+      intype == typeid(itk::Vector<unsigned char, 3>))
+  {
     typestr = "uc";
-    }
-  else if (intype == typeid (char) ||
-            intype == typeid (itk::Vector< char, 2 >) ||
-            intype == typeid (itk::Vector< char, 3 >))
-    {
+  }
+  else if (intype == typeid(char) || intype == typeid(itk::Vector<char, 2>) || intype == typeid(itk::Vector<char, 3>))
+  {
     typestr = "c";
-    }
-  else if (intype == typeid (short) ||
-            intype == typeid (itk::Vector< short, 2 >) ||
-            intype == typeid (itk::Vector< short, 3 >))
-    {
+  }
+  else if (intype == typeid(short) || intype == typeid(itk::Vector<short, 2>) ||
+           intype == typeid(itk::Vector<short, 3>))
+  {
     typestr = "s";
-    }
-  else if (intype == typeid (int) ||
-            intype == typeid (itk::Vector< int, 2 >) ||
-            intype == typeid (itk::Vector< int, 3 >))
-    {
+  }
+  else if (intype == typeid(int) || intype == typeid(itk::Vector<int, 2>) || intype == typeid(itk::Vector<int, 3>))
+  {
     typestr = "i";
-    }
-  else if (intype == typeid (unsigned int) ||
-            intype == typeid (itk::Vector< unsigned int, 2 >) ||
-            intype == typeid (itk::Vector< unsigned int, 3 >))
-    {
+  }
+  else if (intype == typeid(unsigned int) || intype == typeid(itk::Vector<unsigned int, 2>) ||
+           intype == typeid(itk::Vector<unsigned int, 3>))
+  {
     typestr = "ui";
-    }
-  else if (intype == typeid (long) ||
-            intype == typeid (itk::Vector< long, 2 >) ||
-            intype == typeid (itk::Vector< long, 3 >))
-    {
+  }
+  else if (intype == typeid(long) || intype == typeid(itk::Vector<long, 2>) || intype == typeid(itk::Vector<long, 3>))
+  {
     typestr = "l";
-    }
-  else if (intype == typeid (unsigned long) ||
-            intype == typeid (itk::Vector< unsigned long, 2 >) ||
-            intype == typeid (itk::Vector< unsigned long, 3 >))
-    {
+  }
+  else if (intype == typeid(unsigned long) || intype == typeid(itk::Vector<unsigned long, 2>) ||
+           intype == typeid(itk::Vector<unsigned long, 3>))
+  {
     typestr = "ul";
-    }
-  else if (intype == typeid (long long) ||
-            intype == typeid (itk::Vector< long long, 2 >) ||
-            intype == typeid (itk::Vector< long long, 3 >))
-    {
+  }
+  else if (intype == typeid(long long) || intype == typeid(itk::Vector<long long, 2>) ||
+           intype == typeid(itk::Vector<long long, 3>))
+  {
     typestr = "ll";
-    }
-  else if (intype == typeid (float) ||
-            intype == typeid (itk::Vector< float, 2 >) ||
-            intype == typeid (itk::Vector< float, 3 >))
-    {
+  }
+  else if (intype == typeid(float) || intype == typeid(itk::Vector<float, 2>) ||
+           intype == typeid(itk::Vector<float, 3>))
+  {
     typestr = "f";
-    }
-  else if (intype == typeid (double) ||
-            intype == typeid (itk::Vector< double, 2 >) ||
-            intype == typeid (itk::Vector< double, 3 >))
-    {
+  }
+  else if (intype == typeid(double) || intype == typeid(itk::Vector<double, 2>) ||
+           intype == typeid(itk::Vector<double, 3>))
+  {
     typestr = "d";
-    }
+  }
   else
-    {
-      itkGenericExceptionMacro("Unknown type: " << intype.name());
-    }
+  {
+    itkGenericExceptionMacro("Unknown type: " << intype.name());
+  }
   return typestr;
 }
 
 /** Get Typename in String if a valid type */
-bool GetValidTypename(const std::type_info& intype, const std::vector<std::string>& validtypes, std::string& retTypeName)
+bool
+GetValidTypename(const std::type_info & intype, const std::vector<std::string> & validtypes, std::string & retTypeName)
 {
-  std::string typestr = GetTypename(intype);
-  bool isValid = false;
+  std::string                              typestr = GetTypename(intype);
+  bool                                     isValid = false;
   std::vector<std::string>::const_iterator validPos;
   validPos = std::find(validtypes.begin(), validtypes.end(), typestr);
   if (validPos != validtypes.end())
-    {
-      isValid = true;
-      retTypeName = *validPos;
-    }
+  {
+    isValid = true;
+    retTypeName = *validPos;
+  }
 
   return isValid;
 }
 
 /** Get 64-bit pragma */
-std::string Get64BitPragma()
+std::string
+Get64BitPragma()
 {
   std::ostringstream msg;
-  //msg << "#pragma OPENCL EXTENSION cl_khr_fp64 : enable\n";
-  //msg << "#pragma OPENCL EXTENSION cl_amd_fp64 : enable\n";
+  // msg << "#pragma OPENCL EXTENSION cl_khr_fp64 : enable\n";
+  // msg << "#pragma OPENCL EXTENSION cl_amd_fp64 : enable\n";
   return msg.str();
 }
 
-void GetTypenameInString(const std::type_info& intype, std::ostringstream& ret)
+void
+GetTypenameInString(const std::type_info & intype, std::ostringstream & ret)
 {
   std::string typestr = GetTypename(intype);
   ret << typestr;
@@ -310,42 +312,32 @@ void GetTypenameInString(const std::type_info& intype, std::ostringstream& ret)
     }*/
 }
 
-int GetPixelDimension(const std::type_info& intype)
+int
+GetPixelDimension(const std::type_info & intype)
 {
-  if (intype == typeid (unsigned char) ||
-       intype == typeid (char) ||
-       intype == typeid (short) ||
-       intype == typeid (int) ||
-       intype == typeid (unsigned int) ||
-       intype == typeid (float) ||
-       intype == typeid (double))
-    {
+  if (intype == typeid(unsigned char) || intype == typeid(char) || intype == typeid(short) || intype == typeid(int) ||
+      intype == typeid(unsigned int) || intype == typeid(float) || intype == typeid(double))
+  {
     return 1;
-    }
-  else if (intype == typeid (itk::Vector< unsigned char, 2 >) ||
-           intype == typeid (itk::Vector< char, 2 >) ||
-           intype == typeid (itk::Vector< short, 2 >) ||
-           intype == typeid (itk::Vector< int, 2 >) ||
-           intype == typeid (itk::Vector< unsigned int, 2 >) ||
-           intype == typeid (itk::Vector< float, 2 >) ||
-           intype == typeid (itk::Vector< double, 2 >))
-    {
+  }
+  else if (intype == typeid(itk::Vector<unsigned char, 2>) || intype == typeid(itk::Vector<char, 2>) ||
+           intype == typeid(itk::Vector<short, 2>) || intype == typeid(itk::Vector<int, 2>) ||
+           intype == typeid(itk::Vector<unsigned int, 2>) || intype == typeid(itk::Vector<float, 2>) ||
+           intype == typeid(itk::Vector<double, 2>))
+  {
     return 2;
-    }
-  else if (intype == typeid (itk::Vector< unsigned char, 3 >) ||
-           intype == typeid (itk::Vector< char, 3 >) ||
-           intype == typeid (itk::Vector< short, 3 >) ||
-           intype == typeid (itk::Vector< int, 3 >) ||
-           intype == typeid (itk::Vector< unsigned int, 3 >) ||
-           intype == typeid (itk::Vector< float, 3 >) ||
-           intype == typeid (itk::Vector< double, 3 >))
-    {
+  }
+  else if (intype == typeid(itk::Vector<unsigned char, 3>) || intype == typeid(itk::Vector<char, 3>) ||
+           intype == typeid(itk::Vector<short, 3>) || intype == typeid(itk::Vector<int, 3>) ||
+           intype == typeid(itk::Vector<unsigned int, 3>) || intype == typeid(itk::Vector<float, 3>) ||
+           intype == typeid(itk::Vector<double, 3>))
+  {
     return 3;
-    }
+  }
   else
-    {
+  {
     itkGenericExceptionMacro("Pixeltype is not supported by the filter.");
-    }
+  }
 }
 
 } // end namespace itk

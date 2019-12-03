@@ -28,42 +28,40 @@
 namespace rtk
 {
 
-template< typename TInputImage, typename TRealType, typename TOutputImage >
-MagnitudeThresholdImageFilter< TInputImage, TRealType, TOutputImage >
-::MagnitudeThresholdImageFilter()
+template <typename TInputImage, typename TRealType, typename TOutputImage>
+MagnitudeThresholdImageFilter<TInputImage, TRealType, TOutputImage>::MagnitudeThresholdImageFilter()
 {
   m_Threshold = 0;
 }
 
-template< typename TInputImage, typename TRealType, typename TOutputImage >
+template <typename TInputImage, typename TRealType, typename TOutputImage>
 void
-MagnitudeThresholdImageFilter< TInputImage, TRealType, TOutputImage >
-#if ITK_VERSION_MAJOR<5
-::ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread,
-                       itk::ThreadIdType itkNotUsed(threadId))
+MagnitudeThresholdImageFilter<TInputImage, TRealType, TOutputImage>
+#if ITK_VERSION_MAJOR < 5
+  ::ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId))
 #else
-::DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread)
+  ::DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread)
 #endif
 {
-  itk::ImageRegionConstIterator< TInputImage >                 InputIt;
-  itk::ImageRegionIterator< TOutputImage >                     OutputIt;
+  itk::ImageRegionConstIterator<TInputImage> InputIt;
+  itk::ImageRegionIterator<TOutputImage>     OutputIt;
 
-  InputIt = itk::ImageRegionConstIterator< TInputImage >(this->GetInput(), outputRegionForThread);
-  OutputIt = itk::ImageRegionIterator< TOutputImage >(this->GetOutput(), outputRegionForThread);
+  InputIt = itk::ImageRegionConstIterator<TInputImage>(this->GetInput(), outputRegionForThread);
+  OutputIt = itk::ImageRegionIterator<TOutputImage>(this->GetOutput(), outputRegionForThread);
 
   double norm;
-  while ( !InputIt.IsAtEnd() )
-    {
+  while (!InputIt.IsAtEnd())
+  {
     norm = InputIt.Get().GetNorm();
 
     if (norm > m_Threshold)
-        OutputIt.Set( m_Threshold * InputIt.Get() / norm);
+      OutputIt.Set(m_Threshold * InputIt.Get() / norm);
 
     ++InputIt;
     ++OutputIt;
-    }
+  }
 }
 
-} // end namespace itk
+} // namespace rtk
 
 #endif

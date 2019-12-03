@@ -33,22 +33,22 @@ namespace rtk
  * \brief Analytical projection of ellipsoids
  *
  * \test rtksarttest.cxx, rtkamsterdamshroudtest.cxx,
-*        rtkmotioncompensatedfdktest.cxx, rtkforbildtest.cxx
+ *        rtkmotioncompensatedfdktest.cxx, rtkforbildtest.cxx
  *
  * \author Simon Rit
  *
  * \ingroup RTK InPlaceImageFilter
  */
 template <class TInputImage, class TOutputImage>
-class ITK_EXPORT RayEllipsoidIntersectionImageFilter :
-  public RayConvexIntersectionImageFilter<TInputImage,TOutputImage>
+class ITK_EXPORT RayEllipsoidIntersectionImageFilter
+  : public RayConvexIntersectionImageFilter<TInputImage, TOutputImage>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(RayEllipsoidIntersectionImageFilter);
 
   /** Standard class type alias. */
   using Self = RayEllipsoidIntersectionImageFilter;
-  using Superclass = RayConvexIntersectionImageFilter<TInputImage,TOutputImage>;
+  using Superclass = RayConvexIntersectionImageFilter<TInputImage, TOutputImage>;
   using Pointer = itk::SmartPointer<Self>;
   using ConstPointer = itk::SmartPointer<const Self>;
 
@@ -72,7 +72,8 @@ public:
   itkGetConstReferenceMacro(PlanePositions, std::vector<ScalarType>);
 
   /** See ConvexShape for the definition of clip planes. */
-  void AddClipPlane(const VectorType & dir, const ScalarType & pos);
+  void
+  AddClipPlane(const VectorType & dir, const ScalarType & pos);
 
   /** Get/Set the center of the ellipsoid. */
   itkGetMacro(Center, PointType);
@@ -90,22 +91,23 @@ protected:
   RayEllipsoidIntersectionImageFilter();
   ~RayEllipsoidIntersectionImageFilter() override = default;
 
-  void BeforeThreadedGenerateData() override;
+  void
+  BeforeThreadedGenerateData() override;
 
 private:
-  ScalarType              m_Density{1.};
+  ScalarType              m_Density{ 1. };
   std::vector<VectorType> m_PlaneDirections;
   std::vector<ScalarType> m_PlanePositions;
 
-  PointType               m_Center;
-  VectorType              m_Axis;
-  ScalarType              m_Angle{0.};
+  PointType  m_Center;
+  VectorType m_Axis;
+  ScalarType m_Angle{ 0. };
 };
 
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkRayEllipsoidIntersectionImageFilter.hxx"
+#  include "rtkRayEllipsoidIntersectionImageFilter.hxx"
 #endif
 
 #endif

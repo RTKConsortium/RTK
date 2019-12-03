@@ -20,14 +20,14 @@
 #define rtkCudaWarpBackProjectionImageFilter_h
 
 #include "rtkConfiguration.h"
-//Conditional definition of the class to pass ITKHeaderTest
+// Conditional definition of the class to pass ITKHeaderTest
 #ifdef RTK_USE_CUDA
 
-#include "rtkBackProjectionImageFilter.h"
-#include "RTKExport.h"
+#  include "rtkBackProjectionImageFilter.h"
+#  include "RTKExport.h"
 
-#include <itkCudaImage.h>
-#include <itkCudaInPlaceImageFilter.h>
+#  include <itkCudaImage.h>
+#  include <itkCudaInPlaceImageFilter.h>
 
 namespace rtk
 {
@@ -44,20 +44,20 @@ namespace rtk
  *
  * \ingroup RTK Projector CudaImageToImageFilter
  */
-class RTK_EXPORT CudaWarpBackProjectionImageFilter :
-  public itk::CudaInPlaceImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>,
-  BackProjectionImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3> > >
+class RTK_EXPORT CudaWarpBackProjectionImageFilter
+  : public itk::CudaInPlaceImageFilter<itk::CudaImage<float, 3>,
+                                       itk::CudaImage<float, 3>,
+                                       BackProjectionImageFilter<itk::CudaImage<float, 3>, itk::CudaImage<float, 3>>>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(CudaWarpBackProjectionImageFilter);
 
   /** Standard class type alias. */
-  using ImageType = itk::CudaImage<float,3>;
+  using ImageType = itk::CudaImage<float, 3>;
   using DVFType = itk::CudaImage<itk::CovariantVector<float, 3>, 3>;
-  using BackProjectionImageFilterType = BackProjectionImageFilter< ImageType, ImageType>;
+  using BackProjectionImageFilterType = BackProjectionImageFilter<ImageType, ImageType>;
   using Self = CudaWarpBackProjectionImageFilter;
-  using Superclass = itk::CudaInPlaceImageFilter<ImageType, ImageType,
-                     BackProjectionImageFilterType>;
+  using Superclass = itk::CudaInPlaceImageFilter<ImageType, ImageType, BackProjectionImageFilterType>;
   using Pointer = itk::SmartPointer<Self>;
   using ConstPointer = itk::SmartPointer<const Self>;
 
@@ -72,29 +72,36 @@ public:
   itkTypeMacro(CudaWarpBackProjectionImageFilter, Superclass);
 
   /** Input projection stack */
-  void SetInputProjectionStack(const InputImageType* ProjectionStack);
-  InputImageType::Pointer GetInputProjectionStack();
+  void
+  SetInputProjectionStack(const InputImageType * ProjectionStack);
+  InputImageType::Pointer
+  GetInputProjectionStack();
 
   /** Input displacement vector field */
-  void SetInputVolume(const InputImageType* Volume);
-  InputImageType::Pointer GetInputVolume();
+  void
+  SetInputVolume(const InputImageType * Volume);
+  InputImageType::Pointer
+  GetInputVolume();
 
   /** Input displacement vector field */
-  void SetDisplacementField(const DVFType* MVF);
-  DVFType::Pointer GetDisplacementField();
+  void
+  SetDisplacementField(const DVFType * MVF);
+  DVFType::Pointer
+  GetDisplacementField();
 
 protected:
   CudaWarpBackProjectionImageFilter();
-  ~CudaWarpBackProjectionImageFilter() {};
+  ~CudaWarpBackProjectionImageFilter(){};
 
-  virtual void GenerateInputRequestedRegion();
+  virtual void
+  GenerateInputRequestedRegion();
 
-  virtual void GPUGenerateData();
-
+  virtual void
+  GPUGenerateData();
 };
 
 } // end namespace rtk
 
-#endif //end conditional definition of the class
+#endif // end conditional definition of the class
 
 #endif

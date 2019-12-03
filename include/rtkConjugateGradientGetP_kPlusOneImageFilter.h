@@ -31,19 +31,18 @@ namespace rtk
  *
  * \ingroup RTK
  */
-template< typename TInputImage>
-class ConjugateGradientGetP_kPlusOneImageFilter : public itk::ImageToImageFilter< TInputImage, TInputImage>
+template <typename TInputImage>
+class ConjugateGradientGetP_kPlusOneImageFilter : public itk::ImageToImageFilter<TInputImage, TInputImage>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(ConjugateGradientGetP_kPlusOneImageFilter);
 
   /** Standard class type alias. */
   using Self = ConjugateGradientGetP_kPlusOneImageFilter;
-  using Superclass = itk::ImageToImageFilter< TInputImage, TInputImage>;
-  using Pointer = itk::SmartPointer< Self >;
+  using Superclass = itk::ImageToImageFilter<TInputImage, TInputImage>;
+  using Pointer = itk::SmartPointer<Self>;
   using OutputImageRegionType = typename TInputImage::RegionType;
-  using BetaImage = itk::Image<typename TInputImage::InternalPixelType,
-                              TInputImage::ImageDimension>;
+  using BetaImage = itk::Image<typename TInputImage::InternalPixelType, TInputImage::ImageDimension>;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -52,9 +51,12 @@ public:
   itkTypeMacro(ConjugateGradientGetP_kPlusOneImageFilter, itk::ImageToImageFilter);
 
   /** Functions to set the inputs */
-  void SetR_kPlusOne(const TInputImage* R_kPlusOne);
-  void SetRk(const TInputImage* Rk);
-  void SetPk(const TInputImage* Pk);
+  void
+  SetR_kPlusOne(const TInputImage * R_kPlusOne);
+  void
+  SetRk(const TInputImage * Rk);
+  void
+  SetPk(const TInputImage * Pk);
 
   itkSetMacro(SquaredNormR_k, double);
   itkSetMacro(SquaredNormR_kPlusOne, double);
@@ -67,14 +69,19 @@ protected:
   ConjugateGradientGetP_kPlusOneImageFilter();
   ~ConjugateGradientGetP_kPlusOneImageFilter() override = default;
 
-  typename TInputImage::Pointer GetR_kPlusOne();
-  typename TInputImage::Pointer GetRk();
-  typename TInputImage::Pointer GetPk();
+  typename TInputImage::Pointer
+  GetR_kPlusOne();
+  typename TInputImage::Pointer
+  GetRk();
+  typename TInputImage::Pointer
+  GetPk();
 
   /** Does the real work. */
-  void GenerateData() override;
+  void
+  GenerateData() override;
 
-  void GenerateOutputInformation() override;
+  void
+  GenerateOutputInformation() override;
 
 private:
   double m_SquaredNormR_k;
@@ -82,15 +89,14 @@ private:
   double m_Betak;
 
   /** Pointers to sub filters */
-  typename AddFilterType::Pointer       m_AddFilter;
-  typename MultiplyFilterType::Pointer  m_MultiplyFilter;
-
+  typename AddFilterType::Pointer      m_AddFilter;
+  typename MultiplyFilterType::Pointer m_MultiplyFilter;
 };
-} //namespace ITK
+} // namespace rtk
 
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkConjugateGradientGetP_kPlusOneImageFilter.hxx"
+#  include "rtkConjugateGradientGetP_kPlusOneImageFilter.hxx"
 #endif
 
 #endif

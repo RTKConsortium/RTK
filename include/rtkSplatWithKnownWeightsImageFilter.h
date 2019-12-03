@@ -27,96 +27,103 @@
 
 namespace rtk
 {
-  /** \class SplatWithKnownWeightsImageFilter
-   * \brief Splats (linearly) a 3D volume into a 3D+t sequence of volumes
-   *
-   * See the reference paper: "Cardiac C-arm computed tomography using
-   * a 3D + time ROI reconstruction method with spatial and temporal regularization"
-   * by Mory et al.
-   *
-   * 4D conjugate gradient reconstruction consists in iteratively
-   * minimizing the following cost function:
-   *
-   * Sum_over_theta || R_theta S_theta f - p_theta ||_2^2
-   *
-   * with
-   * - f a 4D series of 3D volumes, each one being the reconstruction
-   * at a given respiratory/cardiac phase
-   * - p_theta is the projection measured at angle theta
-   * - S_theta an interpolation operator which, from the 3D + time sequence f,
-   * estimates the 3D volume through which projection p_theta has been acquired
-   * - R_theta is the X-ray transform (the forward projection operator) for angle theta
-   *
-   * Computing the gradient of this cost function yields:
-   *
-   * S_theta^T R_theta^T R_theta S_theta f - S_theta^T R_theta^T p_theta
-   *
-   * where A^T means the adjoint of operator A.
-   *
-   * SplatWithKnownWeightsImageFilter implements S_theta^T.
-   *
-   *
-   * \test rtkfourdconjugategradienttest.cxx
-   *
-   * \author Cyril Mory
-   *
-   * \ingroup RTK ReconstructionAlgorithm
-   */
+/** \class SplatWithKnownWeightsImageFilter
+ * \brief Splats (linearly) a 3D volume into a 3D+t sequence of volumes
+ *
+ * See the reference paper: "Cardiac C-arm computed tomography using
+ * a 3D + time ROI reconstruction method with spatial and temporal regularization"
+ * by Mory et al.
+ *
+ * 4D conjugate gradient reconstruction consists in iteratively
+ * minimizing the following cost function:
+ *
+ * Sum_over_theta || R_theta S_theta f - p_theta ||_2^2
+ *
+ * with
+ * - f a 4D series of 3D volumes, each one being the reconstruction
+ * at a given respiratory/cardiac phase
+ * - p_theta is the projection measured at angle theta
+ * - S_theta an interpolation operator which, from the 3D + time sequence f,
+ * estimates the 3D volume through which projection p_theta has been acquired
+ * - R_theta is the X-ray transform (the forward projection operator) for angle theta
+ *
+ * Computing the gradient of this cost function yields:
+ *
+ * S_theta^T R_theta^T R_theta S_theta f - S_theta^T R_theta^T p_theta
+ *
+ * where A^T means the adjoint of operator A.
+ *
+ * SplatWithKnownWeightsImageFilter implements S_theta^T.
+ *
+ *
+ * \test rtkfourdconjugategradienttest.cxx
+ *
+ * \author Cyril Mory
+ *
+ * \ingroup RTK ReconstructionAlgorithm
+ */
 
-template< typename VolumeSeriesType, typename VolumeType>
-class SplatWithKnownWeightsImageFilter : public itk::InPlaceImageFilter< VolumeSeriesType, VolumeSeriesType >
+template <typename VolumeSeriesType, typename VolumeType>
+class SplatWithKnownWeightsImageFilter : public itk::InPlaceImageFilter<VolumeSeriesType, VolumeSeriesType>
 {
 public:
-    ITK_DISALLOW_COPY_AND_ASSIGN(SplatWithKnownWeightsImageFilter);
+  ITK_DISALLOW_COPY_AND_ASSIGN(SplatWithKnownWeightsImageFilter);
 
-    /** Standard class type alias. */
-    using Self = SplatWithKnownWeightsImageFilter;
-    using Superclass = itk::ImageToImageFilter< VolumeSeriesType, VolumeSeriesType >;
-    using Pointer = itk::SmartPointer< Self >;
-    using OutputImageRegionType = typename VolumeSeriesType::RegionType;
+  /** Standard class type alias. */
+  using Self = SplatWithKnownWeightsImageFilter;
+  using Superclass = itk::ImageToImageFilter<VolumeSeriesType, VolumeSeriesType>;
+  using Pointer = itk::SmartPointer<Self>;
+  using OutputImageRegionType = typename VolumeSeriesType::RegionType;
 
-    /** Method for creation through the object factory. */
-    itkNewMacro(Self);
+  /** Method for creation through the object factory. */
+  itkNewMacro(Self);
 
-    /** Run-time type information (and related methods). */
-    itkTypeMacro(SplatWithKnownWeightsImageFilter, itk::ImageToImageFilter);
+  /** Run-time type information (and related methods). */
+  itkTypeMacro(SplatWithKnownWeightsImageFilter, itk::ImageToImageFilter);
 
-    /** The 4D image to be updated.*/
-    void SetInputVolumeSeries(const VolumeSeriesType* VolumeSeries);
+  /** The 4D image to be updated.*/
+  void
+  SetInputVolumeSeries(const VolumeSeriesType * VolumeSeries);
 
-    /** The 3D image that will be added, with coefficients, to each 3D volume of the 4D image.*/
-    void SetInputVolume(const VolumeType* Volume);
+  /** The 3D image that will be added, with coefficients, to each 3D volume of the 4D image.*/
+  void
+  SetInputVolume(const VolumeType * Volume);
 
-    /** Macros that take care of implementing the Get and Set methods for Weights and projectionNumber.*/
-    itkGetMacro(Weights, itk::Array2D<float>);
-    itkSetMacro(Weights, itk::Array2D<float>);
+  /** Macros that take care of implementing the Get and Set methods for Weights and projectionNumber.*/
+  itkGetMacro(Weights, itk::Array2D<float>);
+  itkSetMacro(Weights, itk::Array2D<float>);
 
-    itkGetMacro(ProjectionNumber, int);
-    void SetProjectionNumber(int n);
+  itkGetMacro(ProjectionNumber, int);
+  void
+  SetProjectionNumber(int n);
 
 protected:
-    SplatWithKnownWeightsImageFilter();
-    ~SplatWithKnownWeightsImageFilter() override = default;
+  SplatWithKnownWeightsImageFilter();
+  ~SplatWithKnownWeightsImageFilter() override = default;
 
-    typename VolumeSeriesType::ConstPointer GetInputVolumeSeries();
-    typename VolumeType::Pointer GetInputVolume();
+  typename VolumeSeriesType::ConstPointer
+  GetInputVolumeSeries();
+  typename VolumeType::Pointer
+  GetInputVolume();
 
-    /** Does the real work. */
-    void ThreadedGenerateData(const typename VolumeSeriesType::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) override;
+  /** Does the real work. */
+  void
+  ThreadedGenerateData(const typename VolumeSeriesType::RegionType & outputRegionForThread,
+                       itk::ThreadIdType                             itkNotUsed(threadId)) override;
 
-    /** Splits the OutputRequestedRegion along the first direction, not the last */
-    const itk::ImageRegionSplitterBase* GetImageRegionSplitter(void) const override;
-    itk::ImageRegionSplitterDirection::Pointer  m_Splitter;
+  /** Splits the OutputRequestedRegion along the first direction, not the last */
+  const itk::ImageRegionSplitterBase *
+                                             GetImageRegionSplitter(void) const override;
+  itk::ImageRegionSplitterDirection::Pointer m_Splitter;
 
-    itk::Array2D<float>                         m_Weights;
-    int                                         m_ProjectionNumber;
-
+  itk::Array2D<float> m_Weights;
+  int                 m_ProjectionNumber;
 };
-} //namespace ITK
+} // namespace rtk
 
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkSplatWithKnownWeightsImageFilter.hxx"
+#  include "rtkSplatWithKnownWeightsImageFilter.hxx"
 #endif
 
 #endif

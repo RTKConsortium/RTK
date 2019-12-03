@@ -33,7 +33,7 @@ namespace rtk
  * \ingroup RTK ITKCommon
  */
 
-class RTK_EXPORT GlobalResourceProbe:public itk::Object
+class RTK_EXPORT GlobalResourceProbe : public itk::Object
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(GlobalResourceProbe);
@@ -41,8 +41,8 @@ public:
   /** Standard class type alias. */
   using Self = GlobalResourceProbe;
   using Superclass = itk::Object;
-  using Pointer = itk::SmartPointer< Self >;
-  using ConstPointer = itk::SmartPointer< const Self >;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(GlobalResourceProbe, itk::Object);
@@ -52,10 +52,12 @@ public:
    * call this must call Delete on the object so that the reference
    * counting will work.   The single instance will be unreferenced when
    * the program exits. */
-  static Pointer New();
+  static Pointer
+  New();
 
   /** Return the singleton instance with no reference counting. */
-  static Pointer GetInstance();
+  static Pointer
+  GetInstance();
 
   /** Set / Get macro for verbosity */
   itkSetMacro(Verbose, bool);
@@ -63,38 +65,44 @@ public:
 
   /** Start a probe with a particular name. If the time probe does not
    * exist, it will be created */
-  virtual void Start(const char *name);
+  virtual void
+  Start(const char * name);
 
   /** Stop a time probe identified with a name */
-  virtual void Stop(const char *name);
+  virtual void
+  Stop(const char * name);
 
   /** Report the summary of results from the probes */
-  virtual void Report(std::ostream & os = std::cout) const;
+  virtual void
+  Report(std::ostream & os = std::cout) const;
 
   /** Destroy the set of probes. New probes can be created after invoking this
     method. */
-  virtual void Clear(void);
+  virtual void
+  Clear(void);
 
   /** Create a new watcher and store it */
-  virtual void Watch(itk::ProcessObject *o);
+  virtual void
+  Watch(itk::ProcessObject * o);
 
   /** Remove a watcher */
-  virtual void Remove(const rtk::WatcherForResourceProbe *w);
+  virtual void
+  Remove(const rtk::WatcherForResourceProbe * w);
 
 protected:
   GlobalResourceProbe();
   ~GlobalResourceProbe() override;
-  void PrintSelf(std::ostream & os, Indent indent) const override;
+  void
+       PrintSelf(std::ostream & os, Indent indent) const override;
   bool m_Verbose;
 
-  ResourceProbesCollector                    m_ResourceProbesCollector;
-  std::vector<rtk::WatcherForResourceProbe*> m_Watchers;
+  ResourceProbesCollector                     m_ResourceProbesCollector;
+  std::vector<rtk::WatcherForResourceProbe *> m_Watchers;
 
 private:
   static Pointer m_Instance;
   std::mutex     m_Mutex;
-
 };
-} // end namespace itk
+} // namespace rtk
 
 #endif

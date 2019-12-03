@@ -23,33 +23,28 @@
 
 namespace rtk
 {
-OraXMLFileReader
-::OraXMLFileReader()
+OraXMLFileReader ::OraXMLFileReader()
 {
   m_OutputObject = &m_Dictionary;
 }
 
 int
-OraXMLFileReader
-::CanReadFile(const char *name)
+OraXMLFileReader ::CanReadFile(const char * name)
 {
-  if(!itksys::SystemTools::FileExists(name) ||
-     itksys::SystemTools::FileIsDirectory(name) ||
-     itksys::SystemTools::FileLength(name) == 0)
+  if (!itksys::SystemTools::FileExists(name) || itksys::SystemTools::FileIsDirectory(name) ||
+      itksys::SystemTools::FileLength(name) == 0)
     return 0;
   return 1;
 }
 
 void
-OraXMLFileReader
-::StartElement(const char * itkNotUsed(name),const char ** itkNotUsed(atts))
+OraXMLFileReader ::StartElement(const char * itkNotUsed(name), const char ** itkNotUsed(atts))
 {
   m_CurCharacterData = "";
 }
 
 void
-OraXMLFileReader
-::EndElement(const char *name)
+OraXMLFileReader ::EndElement(const char * name)
 {
   EncapsulatePoint("SourcePosition", name);
   EncapsulatePoint("Origin", name);
@@ -66,71 +61,66 @@ OraXMLFileReader
 }
 
 void
-OraXMLFileReader
-::CharacterDataHandler(const char *inData, int inLength)
+OraXMLFileReader ::CharacterDataHandler(const char * inData, int inLength)
 {
-  for(int i = 0; i < inLength; i++)
+  for (int i = 0; i < inLength; i++)
     m_CurCharacterData = m_CurCharacterData + inData[i];
 }
 
 void
-OraXMLFileReader
-::EncapsulatePoint(const char *metaName, const char *name)
+OraXMLFileReader ::EncapsulatePoint(const char * metaName, const char * name)
 {
-  if(itksys::SystemTools::Strucmp(name, metaName) == 0)
-    {
+  if (itksys::SystemTools::Strucmp(name, metaName) == 0)
+  {
     using PointType = itk::Vector<double, 3>;
-    PointType p;
+    PointType          p;
     std::istringstream iss(m_CurCharacterData);
-    for(int i=0; i<3; i++)
-      {
+    for (int i = 0; i < 3; i++)
+    {
       iss >> p[i];
       iss.ignore(1);
-      }
-    itk::EncapsulateMetaData<PointType>(m_Dictionary, metaName, p);
     }
+    itk::EncapsulateMetaData<PointType>(m_Dictionary, metaName, p);
+  }
 }
 
 void
-OraXMLFileReader
-::EncapsulateMatrix3x3(const char *metaName, const char *name)
+OraXMLFileReader ::EncapsulateMatrix3x3(const char * metaName, const char * name)
 {
-  if(itksys::SystemTools::Strucmp(name, metaName) == 0)
-    {
+  if (itksys::SystemTools::Strucmp(name, metaName) == 0)
+  {
     using Matrix3x3Type = itk::Matrix<double, 3, 3>;
-    Matrix3x3Type m;
+    Matrix3x3Type      m;
     std::istringstream iss(m_CurCharacterData);
-    for(int i=0; i<3; i++)
+    for (int i = 0; i < 3; i++)
+    {
+      for (int j = 0; j < 3; j++)
       {
-      for(int j=0; j<3; j++)
-        {
         iss >> m[i][j];
         iss.ignore(1);
-        }
       }
-    itk::EncapsulateMetaData<Matrix3x3Type>(m_Dictionary, metaName, m);
     }
+    itk::EncapsulateMetaData<Matrix3x3Type>(m_Dictionary, metaName, m);
+  }
 }
 
 void
-OraXMLFileReader
-::EncapsulateDouble(const char *metaName, const char *name)
+OraXMLFileReader ::EncapsulateDouble(const char * metaName, const char * name)
 {
-  if(itksys::SystemTools::Strucmp(name, metaName) == 0)
-    {
+  if (itksys::SystemTools::Strucmp(name, metaName) == 0)
+  {
     double d = atof(m_CurCharacterData.c_str());
     itk::EncapsulateMetaData<double>(m_Dictionary, metaName, d);
-    }
+  }
 }
 
 void
-OraXMLFileReader
-::EncapsulateString(const char *metaName, const char *name)
+OraXMLFileReader ::EncapsulateString(const char * metaName, const char * name)
 {
-  if(itksys::SystemTools::Strucmp(name, metaName) == 0)
-    {
+  if (itksys::SystemTools::Strucmp(name, metaName) == 0)
+  {
     itk::EncapsulateMetaData<std::string>(m_Dictionary, metaName, m_CurCharacterData);
-    }
+  }
 }
 
-}
+} // namespace rtk

@@ -34,8 +34,7 @@ namespace rtk
 {
 
 template <class TOutputImage>
-class ITK_EXPORT SumOfSquaresImageFilter :
-  public itk::InPlaceImageFilter<TOutputImage>
+class ITK_EXPORT SumOfSquaresImageFilter : public itk::InPlaceImageFilter<TOutputImage>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(SumOfSquaresImageFilter);
@@ -62,18 +61,21 @@ protected:
   SumOfSquaresImageFilter();
   ~SumOfSquaresImageFilter() override = default;
 
-  void BeforeThreadedGenerateData();
-  void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, itk::ThreadIdType threadId ) override;
-  void AfterThreadedGenerateData();
+  void
+  BeforeThreadedGenerateData();
+  void
+  ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, itk::ThreadIdType threadId) override;
+  void
+  AfterThreadedGenerateData();
 
-  OutputInternalPixelType m_SumOfSquares;
+  OutputInternalPixelType              m_SumOfSquares;
   std::vector<OutputInternalPixelType> m_VectorOfPartialSSs;
 };
 
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkSumOfSquaresImageFilter.hxx"
+#  include "rtkSumOfSquaresImageFilter.hxx"
 #endif
 
 #endif

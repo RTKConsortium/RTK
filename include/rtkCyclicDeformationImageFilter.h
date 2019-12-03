@@ -47,8 +47,7 @@ namespace rtk
  * \ingroup RTK ImageToImageFilter
  */
 template <class TInputImage, class TOutputImage>
-class ITK_EXPORT CyclicDeformationImageFilter:
-  public itk::ImageToImageFilter<TInputImage, TOutputImage >
+class ITK_EXPORT CyclicDeformationImageFilter : public itk::ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(CyclicDeformationImageFilter);
@@ -71,8 +70,10 @@ public:
   /** Get / Set the signal file name relating each frame to a phase position.
       The signal file is a text file containing one line per frame. */
   itkGetMacro(SignalFilename, std::string);
-  virtual void SetSignalFilename (const std::string _arg);
-  virtual void SetSignalVector (std::vector<double> _arg);
+  virtual void
+  SetSignalFilename(const std::string _arg);
+  virtual void
+  SetSignalVector(std::vector<double> _arg);
 
   /** Get / Set the frame number. The number is used to lookup in the signal file
    * which phase value should be used to interpolate. */
@@ -83,14 +84,18 @@ protected:
   CyclicDeformationImageFilter() {}
   ~CyclicDeformationImageFilter() override = default;
 
-  void GenerateOutputInformation() override;
-  void GenerateInputRequestedRegion() override;
-  void BeforeThreadedGenerateData() override;
-#if ITK_VERSION_MAJOR<5
-  void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread,
-                                     ThreadIdType threadId ) override;
+  void
+  GenerateOutputInformation() override;
+  void
+  GenerateInputRequestedRegion() override;
+  void
+  BeforeThreadedGenerateData() override;
+#if ITK_VERSION_MAJOR < 5
+  void
+  ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, ThreadIdType threadId) override;
 #else
-  void DynamicThreadedGenerateData(const OutputImageRegionType& outputRegionForThread) override;
+  void
+  DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread) override;
 #endif
 
   // Linear interpolation position and weights
@@ -100,7 +105,7 @@ protected:
   double       m_WeightSup;
 
 private:
-  unsigned int m_Frame{0};
+  unsigned int m_Frame{ 0 };
 
   std::string         m_SignalFilename;
   std::vector<double> m_Signal;
@@ -109,7 +114,7 @@ private:
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkCyclicDeformationImageFilter.hxx"
+#  include "rtkCyclicDeformationImageFilter.hxx"
 #endif
 
 #endif

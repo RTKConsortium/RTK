@@ -29,9 +29,8 @@ namespace rtk
 {
 
 template <class TInputImage, class TOutputImage>
-ParkerShortScanImageFilter<TInputImage, TOutputImage>
-::ParkerShortScanImageFilter():
-    m_AngularGapThreshold(itk::Math::pi / 9)
+ParkerShortScanImageFilter<TInputImage, TOutputImage>::ParkerShortScanImageFilter()
+  : m_AngularGapThreshold(itk::Math::pi / 9)
 {
   this->SetInPlace(true);
 }
@@ -39,18 +38,18 @@ ParkerShortScanImageFilter<TInputImage, TOutputImage>
 template <class TInputImage, class TOutputImage>
 void
 ParkerShortScanImageFilter<TInputImage, TOutputImage>
-#if ITK_VERSION_MAJOR<5
-::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType itkNotUsed(threadId) )
+#if ITK_VERSION_MAJOR < 5
+  ::ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, ThreadIdType itkNotUsed(threadId))
 #else
-::DynamicThreadedGenerateData(const OutputImageRegionType& outputRegionForThread)
+  ::DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread)
 #endif
 {
   // Get angular gaps and max gap
-  std::vector<double> angularGaps = m_Geometry->GetAngularGapsWithNext( m_Geometry->GetGantryAngles() );
+  std::vector<double> angularGaps = m_Geometry->GetAngularGapsWithNext(m_Geometry->GetGantryAngles());
   int                 nProj = angularGaps.size();
   int                 maxAngularGapPos = 0;
-  for(int iProj=1; iProj<nProj; iProj++)
-    if(angularGaps[iProj] > angularGaps[maxAngularGapPos])
+  for (int iProj = 1; iProj < nProj; iProj++)
+    if (angularGaps[iProj] > angularGaps[maxAngularGapPos])
       maxAngularGapPos = iProj;
 
   // Input / ouput iterators
@@ -61,86 +60,85 @@ ParkerShortScanImageFilter<TInputImage, TOutputImage>
 
   // Not a short scan if less than 20 degrees max gap, => nothing to do
   // FIXME: do nothing in parallel geometry, currently handled with a trick in the geometry object
-  if( m_Geometry->GetSourceToDetectorDistances()[0] == 0. ||
-      angularGaps[maxAngularGapPos] < m_AngularGapThreshold )
-    {
-    if(this->GetInput() != this->GetOutput() ) // If not in place, copy is
+  if (m_Geometry->GetSourceToDetectorDistances()[0] == 0. || angularGaps[maxAngularGapPos] < m_AngularGapThreshold)
+  {
+    if (this->GetInput() != this->GetOutput()) // If not in place, copy is
                                                // required
+    {
+      while (!itIn.IsAtEnd())
       {
-      while(!itIn.IsAtEnd() )
-        {
-        itOut.Set( itIn.Get() );
+        itOut.Set(itIn.Get());
         ++itIn;
         ++itOut;
-        }
       }
-    return;
     }
+    return;
+  }
 
   // Weight image parameters
-  typename WeightImageType::RegionType region;
+  typename WeightImageType::RegionType  region;
   typename WeightImageType::SpacingType spacing;
-  typename WeightImageType::PointType origin;
-  region.SetSize(0, outputRegionForThread.GetSize(0) );
-  region.SetIndex(0, outputRegionForThread.GetIndex(0) );
+  typename WeightImageType::PointType   origin;
+  region.SetSize(0, outputRegionForThread.GetSize(0));
+  region.SetIndex(0, outputRegionForThread.GetIndex(0));
   spacing[0] = this->GetInput()->GetSpacing()[0];
   origin[0] = this->GetInput()->GetOrigin()[0];
 
-  //Create one line of weights
+  // Create one line of weights
   typename WeightImageType::Pointer weights = WeightImageType::New();
-  weights->SetSpacing( spacing );
-  weights->SetOrigin( origin );
-  weights->SetRegions( region );
+  weights->SetSpacing(spacing);
+  weights->SetOrigin(origin);
+  weights->SetRegions(region);
   weights->Allocate();
-  typename itk::ImageRegionIteratorWithIndex<WeightImageType> itWeights(weights, weights->GetLargestPossibleRegion() );
+  typename itk::ImageRegionIteratorWithIndex<WeightImageType> itWeights(weights, weights->GetLargestPossibleRegion());
 
-  const std::vector<double> rotationAngles = m_Geometry->GetGantryAngles();
-  const std::map<double,unsigned int> sortedAngles = m_Geometry->GetUniqueSortedAngles( m_Geometry->GetGantryAngles() );
+  const std::vector<double>            rotationAngles = m_Geometry->GetGantryAngles();
+  const std::map<double, unsigned int> sortedAngles = m_Geometry->GetUniqueSortedAngles(m_Geometry->GetGantryAngles());
 
   // Compute delta between first and last angle where there is weighting required
-  std::map<double,unsigned int>::const_iterator itLastAngle;
+  std::map<double, unsigned int>::const_iterator itLastAngle;
   itLastAngle = sortedAngles.find(rotationAngles[maxAngularGapPos]);
-  std::map<double,unsigned int>::const_iterator itFirstAngle = itLastAngle;
-  itFirstAngle = (++itFirstAngle==sortedAngles.end())?sortedAngles.begin():itFirstAngle;
+  std::map<double, unsigned int>::const_iterator itFirstAngle = itLastAngle;
+  itFirstAngle = (++itFirstAngle == sortedAngles.end()) ? sortedAngles.begin() : itFirstAngle;
   const double firstAngle = itFirstAngle->first;
-  double lastAngle = itLastAngle->first;
-  if(lastAngle<firstAngle)
-    {
-    lastAngle += 2*itk::Math::pi;
-    }
-  //Delta
+  double       lastAngle = itLastAngle->first;
+  if (lastAngle < firstAngle)
+  {
+    lastAngle += 2 * itk::Math::pi;
+  }
+  // Delta
   double delta = 0.5 * (lastAngle - firstAngle - itk::Math::pi);
-  delta = delta - 2*itk::Math::pi*floor( delta / (2*itk::Math::pi) ); // between -2*PI and 2*PI
+  delta = delta - 2 * itk::Math::pi * floor(delta / (2 * itk::Math::pi)); // between -2*PI and 2*PI
 
   // Pre-compute the two corners of the projection images
   typename TInputImage::IndexType id = this->GetInput()->GetLargestPossibleRegion().GetIndex();
   typename TInputImage::SizeType  sz = this->GetInput()->GetLargestPossibleRegion().GetSize();
-  typename TInputImage::SizeType ones;
+  typename TInputImage::SizeType  ones;
   ones.Fill(1);
   typename TInputImage::PointType corner1, corner2;
   this->GetInput()->TransformIndexToPhysicalPoint(id, corner1);
-  this->GetInput()->TransformIndexToPhysicalPoint(id-ones+sz, corner2);
+  this->GetInput()->TransformIndexToPhysicalPoint(id - ones + sz, corner2);
 
   // Go over projection images
-  for(unsigned int k=0; k<outputRegionForThread.GetSize(2); k++)
-    {
+  for (unsigned int k = 0; k < outputRegionForThread.GetSize(2); k++)
+  {
     double sox = m_Geometry->GetSourceOffsetsX()[itIn.GetIndex()[2]];
     double sid = m_Geometry->GetSourceToIsocenterDistances()[itIn.GetIndex()[2]];
-    double invsid = 1./sqrt(sid*sid+sox*sox);
+    double invsid = 1. / sqrt(sid * sid + sox * sox);
 
     // Check that Parker weighting is relevant for this projection
-    double halfDetectorWidth1 = itk::Math::abs( m_Geometry->ToUntiltedCoordinateAtIsocenter(k, corner1[0]) );
-    double halfDetectorWidth2 = itk::Math::abs( m_Geometry->ToUntiltedCoordinateAtIsocenter(k, corner2[0]) );
+    double halfDetectorWidth1 = itk::Math::abs(m_Geometry->ToUntiltedCoordinateAtIsocenter(k, corner1[0]));
+    double halfDetectorWidth2 = itk::Math::abs(m_Geometry->ToUntiltedCoordinateAtIsocenter(k, corner2[0]));
     double halfDetectorWidth = std::min(halfDetectorWidth1, halfDetectorWidth2);
-    if( delta < atan(halfDetectorWidth * invsid) )
-      {
+    if (delta < atan(halfDetectorWidth * invsid))
+    {
       m_WarningMutex.lock();
       itkWarningMacro(<< "You do not have enough data for proper Parker weighting (short scan)"
-                      << " according to projection #" << k << ". Delta is " << delta*180./itk::Math::pi
+                      << " according to projection #" << k << ". Delta is " << delta * 180. / itk::Math::pi
                       << " degrees and should be more than half the beam angle, i.e. "
-                      << atan(halfDetectorWidth * invsid)*180./itk::Math::pi << " degrees.");
+                      << atan(halfDetectorWidth * invsid) * 180. / itk::Math::pi << " degrees.");
       m_WarningMutex.unlock();
-      }
+    }
 
     // Prepare weights for current slice (depends on ProjectionOffsetsX)
     typename WeightImageType::PointType point;
@@ -148,42 +146,42 @@ ParkerShortScanImageFilter<TInputImage, TOutputImage>
 
     // Parker's article assumes that the scan starts at 0, convert projection
     // angle accordingly
-    double beta = rotationAngles[ itIn.GetIndex()[2] ];
+    double beta = rotationAngles[itIn.GetIndex()[2]];
     beta = beta - firstAngle;
-    if (beta<0)
-      beta += 2*itk::Math::pi;
+    if (beta < 0)
+      beta += 2 * itk::Math::pi;
 
     itWeights.GoToBegin();
-    while(!itWeights.IsAtEnd() )
-      {
+    while (!itWeights.IsAtEnd())
+    {
       const double l = m_Geometry->ToUntiltedCoordinateAtIsocenter(itIn.GetIndex()[2], point[0]);
-      double alpha = atan( -1 * l * invsid );
-      if(beta <= 2*delta-2*alpha)
-        itWeights.Set( 2. * pow(sin( (itk::Math::pi*beta) / (4*(delta-alpha) ) ), 2.) );
-      else if(beta <= itk::Math::pi-2*alpha)
-        itWeights.Set( 2. );
-      else if(beta <= itk::Math::pi+2*delta)
-        itWeights.Set( 2. * pow(sin( (itk::Math::pi*(itk::Math::pi+2*delta-beta) ) / (4*(delta+alpha) ) ), 2.) );
+      double       alpha = atan(-1 * l * invsid);
+      if (beta <= 2 * delta - 2 * alpha)
+        itWeights.Set(2. * pow(sin((itk::Math::pi * beta) / (4 * (delta - alpha))), 2.));
+      else if (beta <= itk::Math::pi - 2 * alpha)
+        itWeights.Set(2.);
+      else if (beta <= itk::Math::pi + 2 * delta)
+        itWeights.Set(2. * pow(sin((itk::Math::pi * (itk::Math::pi + 2 * delta - beta)) / (4 * (delta + alpha))), 2.));
       else
-        itWeights.Set( 0. );
+        itWeights.Set(0.);
 
       ++itWeights;
       point[0] += spacing[0];
-      }
+    }
 
     // Multiply each line of the current slice
-    for(unsigned int j=0; j<outputRegionForThread.GetSize(1); j++)
-      {
+    for (unsigned int j = 0; j < outputRegionForThread.GetSize(1); j++)
+    {
       itWeights.GoToBegin();
-      while(!itWeights.IsAtEnd() )
-        {
-        itOut.Set( itIn.Get() * itWeights.Get() );
+      while (!itWeights.IsAtEnd())
+      {
+        itOut.Set(itIn.Get() * itWeights.Get());
         ++itWeights;
         ++itIn;
         ++itOut;
-        }
       }
     }
+  }
 }
 
 } // end namespace rtk

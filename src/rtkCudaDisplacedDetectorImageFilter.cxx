@@ -22,52 +22,50 @@
 namespace rtk
 {
 
-CudaDisplacedDetectorImageFilter
-::CudaDisplacedDetectorImageFilter()
-{
-}
+CudaDisplacedDetectorImageFilter ::CudaDisplacedDetectorImageFilter() {}
 
-CudaDisplacedDetectorImageFilter
-::~CudaDisplacedDetectorImageFilter()
-{
-}
+CudaDisplacedDetectorImageFilter ::~CudaDisplacedDetectorImageFilter() {}
 
 void
-CudaDisplacedDetectorImageFilter
-::GPUGenerateData()
+CudaDisplacedDetectorImageFilter ::GPUGenerateData()
 {
   // compute overlap region by cropping output region with input buffer
   OutputImageRegionType overlapRegion = this->GetOutput()->GetRequestedRegion();
   overlapRegion.Crop(this->GetInput()->GetBufferedRegion());
 
   // Put the two data pointers at the same location
-  float *inBuffer = *static_cast<float **>(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
-  inBuffer += this->GetInput()->ComputeOffset( overlapRegion.GetIndex() );
-  float *outBuffer = *static_cast<float **>(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
-  outBuffer += this->GetOutput()->ComputeOffset( this->GetOutput()->GetRequestedRegion().GetIndex() );
+  float * inBuffer = *static_cast<float **>(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
+  inBuffer += this->GetInput()->ComputeOffset(overlapRegion.GetIndex());
+  float * outBuffer = *static_cast<float **>(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
+  outBuffer += this->GetOutput()->ComputeOffset(this->GetOutput()->GetRequestedRegion().GetIndex());
 
   // nothing to do
-  if ((fabs(this->GetInferiorCorner() + this->GetSuperiorCorner())
-       < 0.1 * fabs(this->GetSuperiorCorner() - this->GetInferiorCorner())) || this->GetDisable())
+  if ((fabs(this->GetInferiorCorner() + this->GetSuperiorCorner()) <
+       0.1 * fabs(this->GetSuperiorCorner() - this->GetInferiorCorner())) ||
+      this->GetDisable())
+  {
+    if (outBuffer != inBuffer)
     {
-    if ( outBuffer != inBuffer )
-      {
       size_t count = this->GetOutput()->GetRequestedRegion().GetSize(0);
       count *= sizeof(ImageType::PixelType);
-      for(unsigned int k=0; k<this->GetOutput()->GetRequestedRegion().GetSize(2); k++)
+      for (unsigned int k = 0; k < this->GetOutput()->GetRequestedRegion().GetSize(2); k++)
+      {
+        for (unsigned int j = 0; j < this->GetOutput()->GetRequestedRegion().GetSize(1); j++)
         {
-        for(unsigned int j=0; j<this->GetOutput()->GetRequestedRegion().GetSize(1); j++)
-          {
           cudaMemcpy(outBuffer, inBuffer, count, cudaMemcpyDeviceToDevice);
           inBuffer += this->GetInput()->GetBufferedRegion().GetSize(0);
           outBuffer += this->GetOutput()->GetBufferedRegion().GetSize(0);
-          }
-        inBuffer += (this->GetInput()->GetBufferedRegion().GetSize(1)-this->GetInput()->GetRequestedRegion().GetSize(1)) * this->GetInput()->GetBufferedRegion().GetSize(0);
-        outBuffer += (this->GetOutput()->GetBufferedRegion().GetSize(1)-this->GetOutput()->GetRequestedRegion().GetSize(1)) * this->GetOutput()->GetBufferedRegion().GetSize(0);
         }
+        inBuffer +=
+          (this->GetInput()->GetBufferedRegion().GetSize(1) - this->GetInput()->GetRequestedRegion().GetSize(1)) *
+          this->GetInput()->GetBufferedRegion().GetSize(0);
+        outBuffer +=
+          (this->GetOutput()->GetBufferedRegion().GetSize(1) - this->GetOutput()->GetRequestedRegion().GetSize(1)) *
+          this->GetOutput()->GetBufferedRegion().GetSize(0);
       }
-    return;
     }
+    return;
+  }
 
   float proj_orig = this->GetOutput()->GetOrigin()[0];
 
@@ -104,7 +102,7 @@ CudaDisplacedDetectorImageFilter
   proj_size_out[2] = this->GetOutput()->GetRequestedRegion().GetSize()[2];
 
   double theta = std::min(-1. * this->GetInferiorCorner(), this->GetSuperiorCorner());
-  bool isPositiveCase = (this->GetSuperiorCorner() + this->GetInferiorCorner() > 0.) ? true : false;
+  bool   isPositiveCase = (this->GetSuperiorCorner() + this->GetInferiorCorner() > 0.) ? true : false;
 
   // 2D matrix (numgeom * 4 values) in one block for memcpy!
   // for each geometry, the following structure is used:
@@ -112,10 +110,10 @@ CudaDisplacedDetectorImageFilter
   // 1: source offset x
   // 2: projection offset x
   // 3: sid
-  int geomIdx = proj_idx_out[2];
-  float *geomMatrix = new float[proj_size_out[2] * 4];
-  if(geomMatrix == nullptr)
-     itkExceptionMacro(<< "Couldn't allocate geomMatrix");
+  int     geomIdx = proj_idx_out[2];
+  float * geomMatrix = new float[proj_size_out[2] * 4];
+  if (geomMatrix == nullptr)
+    itkExceptionMacro(<< "Couldn't allocate geomMatrix");
   for (int g = 0; g < proj_size_out[2]; ++g)
   {
     geomMatrix[g * 4 + 0] = this->GetGeometry()->GetSourceToDetectorDistances()[g + geomIdx];
@@ -125,15 +123,22 @@ CudaDisplacedDetectorImageFilter
   }
 
 
-  CUDA_displaced_weight(
-      proj_idx_in, proj_size_in, proj_size_in_buf, proj_idx_out, proj_size_out, proj_size_out_buf,
-      inBuffer, outBuffer,
-      geomMatrix,
-      theta, isPositiveCase,
-      proj_orig, proj_row, proj_col
-      );
+  CUDA_displaced_weight(proj_idx_in,
+                        proj_size_in,
+                        proj_size_in_buf,
+                        proj_idx_out,
+                        proj_size_out,
+                        proj_size_out_buf,
+                        inBuffer,
+                        outBuffer,
+                        geomMatrix,
+                        theta,
+                        isPositiveCase,
+                        proj_orig,
+                        proj_row,
+                        proj_col);
 
   delete[] geomMatrix;
 }
 
-}
+} // namespace rtk

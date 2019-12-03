@@ -25,7 +25,8 @@
 
 #include "rtkMacro.h"
 
-namespace rtk {
+namespace rtk
+{
 
 /** \class XRadImageIO
  * \brief Class for reading XRad image file format. XRad is the format of
@@ -44,7 +45,9 @@ public:
   using Superclass = itk::ImageIOBase;
   using Pointer = itk::SmartPointer<Self>;
 
-  XRadImageIO(): Superclass() {}
+  XRadImageIO()
+    : Superclass()
+  {}
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -53,27 +56,34 @@ public:
   itkTypeMacro(XRadImageIO, ImageIOBase);
 
   /*-------- This part of the interface deals with reading data. ------ */
-  void ReadImageInformation() override;
+  void
+  ReadImageInformation() override;
 
-  bool CanReadFile( const char* FileNameToRead ) override;
+  bool
+  CanReadFile(const char * FileNameToRead) override;
 
-  void Read(void * buffer) override;
+  void
+  Read(void * buffer) override;
 
   /*-------- This part of the interfaces deals with writing data. ----- */
-  virtual void WriteImageInformation(bool keepOfStream);
+  virtual void
+  WriteImageInformation(bool keepOfStream);
 
-  void WriteImageInformation() override {
+  void
+  WriteImageInformation() override
+  {
     WriteImageInformation(false);
   }
 
-  bool CanWriteFile(const char* filename) override;
+  bool
+  CanWriteFile(const char * filename) override;
 
-  void Write(const void* buffer) override;
+  void
+  Write(const void * buffer) override;
 
 protected:
-
 }; // end class XRadImageIO
 
-} // end namespace
+} // namespace rtk
 
 #endif

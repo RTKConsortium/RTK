@@ -33,7 +33,7 @@ namespace rtk
  * \author Simon Rit
  *
  * \ingroup RTK
-*/
+ */
 class ImagXImageIO : public itk::ImageIOBase
 {
 public:
@@ -42,7 +42,9 @@ public:
   using Superclass = itk::ImageIOBase;
   using Pointer = itk::SmartPointer<Self>;
 
-  ImagXImageIO() : Superclass() {}
+  ImagXImageIO()
+    : Superclass()
+  {}
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -51,24 +53,34 @@ public:
   itkTypeMacro(ImagXImageIO, ImageIOBase);
 
   /*-------- This part of the interface deals with reading data. ------ */
-  void ReadImageInformation() override;
+  void
+  ReadImageInformation() override;
 
-  bool CanReadFile( const char* FileNameToRead ) override;
+  bool
+  CanReadFile(const char * FileNameToRead) override;
 
-  void Read(void * buffer) override;
+  void
+  Read(void * buffer) override;
 
   /*-------- This part of the interfaces deals with writing data. ----- */
-  virtual void WriteImageInformation(bool keepOfStream);
+  virtual void
+  WriteImageInformation(bool keepOfStream);
 
-  void WriteImageInformation() override { WriteImageInformation(false); }
-  bool CanWriteFile(const char* filename) override;
+  void
+  WriteImageInformation() override
+  {
+    WriteImageInformation(false);
+  }
+  bool
+  CanWriteFile(const char * filename) override;
 
-  void Write(const void* buffer) override;
+  void
+  Write(const void * buffer) override;
 
 protected:
   std::string m_RawFileName;
 };
 
-} // end namespace
+} // namespace rtk
 
 #endif

@@ -24,24 +24,23 @@
 
 namespace rtk
 {
-template< typename TImage >
-ProjectionsRegionConstIteratorRayBasedWithCylindricalPanel< TImage >
-::ProjectionsRegionConstIteratorRayBasedWithCylindricalPanel(const TImage *ptr,
-                                                             const RegionType & region,
-                                                             const ThreeDCircularProjectionGeometry *geometry,
-                                                             const MatrixType &postMat):
-  ProjectionsRegionConstIteratorRayBased< TImage >(ptr, region, geometry, postMat),
-  m_Radius(geometry->GetRadiusCylindricalDetector()),
-  m_InverseRadius(1./geometry->GetRadiusCylindricalDetector())
+template <typename TImage>
+ProjectionsRegionConstIteratorRayBasedWithCylindricalPanel<
+  TImage>::ProjectionsRegionConstIteratorRayBasedWithCylindricalPanel(const TImage *                           ptr,
+                                                                      const RegionType &                       region,
+                                                                      const ThreeDCircularProjectionGeometry * geometry,
+                                                                      const MatrixType &                       postMat)
+  : ProjectionsRegionConstIteratorRayBased<TImage>(ptr, region, geometry, postMat)
+  , m_Radius(geometry->GetRadiusCylindricalDetector())
+  , m_InverseRadius(1. / geometry->GetRadiusCylindricalDetector())
 {
   NewProjection();
   NewPixel();
 }
 
-template< typename TImage >
+template <typename TImage>
 void
-ProjectionsRegionConstIteratorRayBasedWithCylindricalPanel< TImage >
-::NewProjection()
+ProjectionsRegionConstIteratorRayBasedWithCylindricalPanel<TImage>::NewProjection()
 {
   // Index of the projection in the stack
   IndexValueType iProj = this->m_PositionIndex[2];
@@ -56,31 +55,29 @@ ProjectionsRegionConstIteratorRayBasedWithCylindricalPanel< TImage >
   // Compute matrix to transform projection index to position on a flat panel
   // if the panel were flat, before accounting for the curvature
   m_ProjectionIndexTransformMatrix =
-      this->m_Geometry->GetProjectionCoordinatesToDetectorSystemMatrix(iProj).GetVnlMatrix() *
-      GetIndexToPhysicalPointMatrix( this->m_Image.GetPointer() ).GetVnlMatrix();
+    this->m_Geometry->GetProjectionCoordinatesToDetectorSystemMatrix(iProj).GetVnlMatrix() *
+    GetIndexToPhysicalPointMatrix(this->m_Image.GetPointer()).GetVnlMatrix();
 
   // Get transformation from coordinate in the (u,v,u^v) coordinate system to
   // the tomography (fixed) coordinate system
   m_VolumeTransformMatrix =
-      this->m_PostMultiplyMatrix.GetVnlMatrix() *
-      this->m_Geometry-> GetRotationMatrices()[iProj].GetInverse();
+    this->m_PostMultiplyMatrix.GetVnlMatrix() * this->m_Geometry->GetRotationMatrices()[iProj].GetInverse();
 }
 
-template< typename TImage >
+template <typename TImage>
 void
-ProjectionsRegionConstIteratorRayBasedWithCylindricalPanel< TImage >
-::NewPixel()
+ProjectionsRegionConstIteratorRayBasedWithCylindricalPanel<TImage>::NewPixel()
 {
   // Position on the projection before applying rotations and m_PostMultiplyMatrix
   PointType posProj;
 
   // Compute point coordinate in volume depending on projection index
-  for(unsigned int i=0; i<this->GetImageDimension(); i++)
-    {
+  for (unsigned int i = 0; i < this->GetImageDimension(); i++)
+  {
     posProj[i] = m_ProjectionIndexTransformMatrix[i][this->GetImageDimension()];
-    for(unsigned int j=0; j<this->GetImageDimension(); j++)
+    for (unsigned int j = 0; j < this->GetImageDimension(); j++)
       posProj[i] += m_ProjectionIndexTransformMatrix[i][j] * this->m_PositionIndex[j];
-    }
+  }
 
   // Convert cylindrical angle to coordinates in the (u,v,u^v) coordinate system
   double a = m_InverseRadius * posProj[0];
@@ -88,16 +85,16 @@ ProjectionsRegionConstIteratorRayBasedWithCylindricalPanel< TImage >
   posProj[2] += (1. - std::cos(a)) * m_Radius;
 
   // Rotate and apply m_PostMultiplyMatrix
-  for(unsigned int i=0; i<this->GetImageDimension(); i++)
-    {
+  for (unsigned int i = 0; i < this->GetImageDimension(); i++)
+  {
     this->m_PixelPosition[i] = m_VolumeTransformMatrix[i][this->GetImageDimension()];
-    for(unsigned int j=0; j<this->GetImageDimension(); j++)
+    for (unsigned int j = 0; j < this->GetImageDimension(); j++)
       this->m_PixelPosition[i] += m_VolumeTransformMatrix[i][j] * posProj[j];
-    }
+  }
 
   this->m_SourceToPixel = this->m_PixelPosition - this->m_SourcePosition;
 }
 
-} // end namespace itk
+} // namespace rtk
 
 #endif

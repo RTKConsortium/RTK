@@ -22,9 +22,10 @@
 #include "RTKExport.h"
 #include "rtkCudaUtilities.hcu"
 
-struct Ray {
-        float3 o;  // origin
-        float3 d;  // direction
+struct Ray
+{
+  float3 o; // origin
+  float3 d; // direction
 };
 
 // Intersection function of a ray with a box, followed "slabs" method
@@ -32,8 +33,8 @@ struct Ray {
 // The function has to be explicitely inlined, otherwise "multiple definition" errors
 // will pop during linking. See http://choorucode.com/2011/03/15/cuda-device-function-in-header-file/
 // for more information
-__forceinline__ __device__
-int intersectBox(Ray r, float *tnear, float *tfar, float3 boxMin, float3 boxMax)
+__forceinline__ __device__ int
+                intersectBox(Ray r, float * tnear, float * tfar, float3 boxMin, float3 boxMax)
 {
   // Compute intersection of ray with all six bbox planes
   float3 invR = make_float3(1.f / r.d.x, 1.f / r.d.y, 1.f / r.d.z);

@@ -28,34 +28,30 @@
 #include <cuda_runtime.h>
 
 void
-CUDA_interpolation(const int4 &inputSize,
-                   float* input,
-                   float* output,
-                   int projectionNumber,
-                   float **weights)
+CUDA_interpolation(const int4 & inputSize, float * input, float * output, int projectionNumber, float ** weights)
 {
-  cublasHandle_t  handle;
+  cublasHandle_t handle;
   cublasCreate(&handle);
 
   // CUDA device pointers
-  int    nVoxelsOutput = inputSize.x * inputSize.y * inputSize.z;
-  int    memorySizeOutput = nVoxelsOutput*sizeof(float);
+  int nVoxelsOutput = inputSize.x * inputSize.y * inputSize.z;
+  int memorySizeOutput = nVoxelsOutput * sizeof(float);
 
   // Reset output volume
-  cudaMemset((void *)output, 0, memorySizeOutput );
+  cudaMemset((void *)output, 0, memorySizeOutput);
 
-  for (int phase=0; phase<inputSize.w; phase++)
-    {
+  for (int phase = 0; phase < inputSize.w; phase++)
+  {
     float weight = weights[phase][projectionNumber];
-    if(weight!=0)
-      {
+    if (weight != 0)
+    {
       // Create a pointer to the "phase"-th volume in the input
       float * p = input + phase * nVoxelsOutput;
 
       // Add "weight" times the "phase"-th volume in the input to the output
       cublasSaxpy(handle, nVoxelsOutput, &weight, p, 1, output, 1);
-      }
     }
+  }
 
   // Destroy Cublas context
   cublasDestroy(handle);

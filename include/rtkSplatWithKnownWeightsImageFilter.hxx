@@ -27,11 +27,10 @@
 namespace rtk
 {
 
-template< typename VolumeSeriesType, typename VolumeType>
-SplatWithKnownWeightsImageFilter<VolumeSeriesType, VolumeType>
-::SplatWithKnownWeightsImageFilter()
+template <typename VolumeSeriesType, typename VolumeType>
+SplatWithKnownWeightsImageFilter<VolumeSeriesType, VolumeType>::SplatWithKnownWeightsImageFilter()
 {
-#if ITK_VERSION_MAJOR>4
+#if ITK_VERSION_MAJOR > 4
   this->DynamicMultiThreadingOff();
 #endif
 
@@ -44,65 +43,70 @@ SplatWithKnownWeightsImageFilter<VolumeSeriesType, VolumeType>
   m_Splitter->SetDirection(VolumeSeriesType::ImageDimension - 1);
 }
 
-template< typename VolumeSeriesType, typename VolumeType>
-void SplatWithKnownWeightsImageFilter<VolumeSeriesType, VolumeType>::SetInputVolumeSeries(const VolumeSeriesType* VolumeSeries)
+template <typename VolumeSeriesType, typename VolumeType>
+void
+SplatWithKnownWeightsImageFilter<VolumeSeriesType, VolumeType>::SetInputVolumeSeries(
+  const VolumeSeriesType * VolumeSeries)
 {
-  this->SetNthInput(0, const_cast<VolumeSeriesType*>(VolumeSeries));
+  this->SetNthInput(0, const_cast<VolumeSeriesType *>(VolumeSeries));
 }
 
-template< typename VolumeSeriesType, typename VolumeType>
-void SplatWithKnownWeightsImageFilter<VolumeSeriesType, VolumeType>::SetInputVolume(const VolumeType* Volume)
+template <typename VolumeSeriesType, typename VolumeType>
+void
+SplatWithKnownWeightsImageFilter<VolumeSeriesType, VolumeType>::SetInputVolume(const VolumeType * Volume)
 {
-  this->SetNthInput(1, const_cast<VolumeType*>(Volume));
+  this->SetNthInput(1, const_cast<VolumeType *>(Volume));
 }
 
-template< typename VolumeSeriesType, typename VolumeType>
-typename VolumeSeriesType::ConstPointer SplatWithKnownWeightsImageFilter<VolumeSeriesType, VolumeType>::GetInputVolumeSeries()
+template <typename VolumeSeriesType, typename VolumeType>
+typename VolumeSeriesType::ConstPointer
+SplatWithKnownWeightsImageFilter<VolumeSeriesType, VolumeType>::GetInputVolumeSeries()
 {
-  return static_cast< const VolumeSeriesType * >
-          ( this->itk::ProcessObject::GetInput(0) );
+  return static_cast<const VolumeSeriesType *>(this->itk::ProcessObject::GetInput(0));
 }
 
-template< typename VolumeSeriesType, typename VolumeType>
-typename VolumeType::Pointer SplatWithKnownWeightsImageFilter<VolumeSeriesType, VolumeType>::GetInputVolume()
+template <typename VolumeSeriesType, typename VolumeType>
+typename VolumeType::Pointer
+SplatWithKnownWeightsImageFilter<VolumeSeriesType, VolumeType>::GetInputVolume()
 {
-  return static_cast< VolumeType * >
-          ( this->itk::ProcessObject::GetInput(1) );
+  return static_cast<VolumeType *>(this->itk::ProcessObject::GetInput(1));
 }
 
-template< typename VolumeType, typename VolumeSeriesType>
-void SplatWithKnownWeightsImageFilter<VolumeType, VolumeSeriesType>::SetProjectionNumber(int n)
+template <typename VolumeType, typename VolumeSeriesType>
+void
+SplatWithKnownWeightsImageFilter<VolumeType, VolumeSeriesType>::SetProjectionNumber(int n)
 {
   // Check whether the weights change from the old projection number to the new one
-  for (unsigned int row=0; row < m_Weights.rows(); row++)
-    {
+  for (unsigned int row = 0; row < m_Weights.rows(); row++)
+  {
     if (m_Weights[row][m_ProjectionNumber] != m_Weights[row][n])
       this->Modified();
-    }
+  }
 
   // Change the member variable whatever the result
   m_ProjectionNumber = n;
 }
 
-template< typename VolumeSeriesType, typename VolumeType>
-const itk::ImageRegionSplitterBase*
-SplatWithKnownWeightsImageFilter< VolumeSeriesType, VolumeType >
-::GetImageRegionSplitter(void) const
+template <typename VolumeSeriesType, typename VolumeType>
+const itk::ImageRegionSplitterBase *
+SplatWithKnownWeightsImageFilter<VolumeSeriesType, VolumeType>::GetImageRegionSplitter(void) const
 {
   return m_Splitter;
 }
 
-template< typename VolumeSeriesType, typename VolumeType>
-void SplatWithKnownWeightsImageFilter<VolumeSeriesType, VolumeType>
-::ThreadedGenerateData(const typename VolumeSeriesType::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId))
+template <typename VolumeSeriesType, typename VolumeType>
+void
+SplatWithKnownWeightsImageFilter<VolumeSeriesType, VolumeType>::ThreadedGenerateData(
+  const typename VolumeSeriesType::RegionType & outputRegionForThread,
+  itk::ThreadIdType                             itkNotUsed(threadId))
 {
   typename VolumeType::Pointer volume = this->GetInputVolume();
 
   unsigned int Dimension = volume->GetImageDimension();
 
   typename VolumeType::RegionType volumeRegion;
-  typename VolumeType::SizeType volumeSize;
-  typename VolumeType::IndexType volumeIndex;
+  typename VolumeType::SizeType   volumeSize;
+  typename VolumeType::IndexType  volumeIndex;
 
   typename VolumeSeriesType::RegionType volumeSeriesRegion;
 
@@ -110,30 +114,30 @@ void SplatWithKnownWeightsImageFilter<VolumeSeriesType, VolumeType>
 
   // Initialize output region with input region in case the filter is not in
   // place
-  if(this->GetInput() != this->GetOutput() )
+  if (this->GetInput() != this->GetOutput())
+  {
+    itk::ImageRegionIterator<VolumeSeriesType>      itOut(this->GetOutput(), outputRegionForThread);
+    itk::ImageRegionConstIterator<VolumeSeriesType> itIn(this->GetInputVolumeSeries(), outputRegionForThread);
+    while (!itOut.IsAtEnd())
     {
-    itk::ImageRegionIterator<VolumeSeriesType>        itOut(this->GetOutput(), outputRegionForThread);
-    itk::ImageRegionConstIterator<VolumeSeriesType>   itIn(this->GetInputVolumeSeries(), outputRegionForThread);
-    while(!itOut.IsAtEnd())
-      {
       itOut.Set(itIn.Get());
       ++itOut;
       ++itIn;
-      }
     }
+  }
 
   // Update each phase
-  for (unsigned int phase=0; phase<m_Weights.rows(); phase++)
-    {
+  for (unsigned int phase = 0; phase < m_Weights.rows(); phase++)
+  {
 
     weight = m_Weights[phase][m_ProjectionNumber];
     volumeRegion = volume->GetLargestPossibleRegion();
 
-    for (unsigned int i=0; i<Dimension; i++)
-      {
+    for (unsigned int i = 0; i < Dimension; i++)
+    {
       volumeSize[i] = outputRegionForThread.GetSize()[i];
       volumeIndex[i] = outputRegionForThread.GetIndex()[i];
-      }
+    }
     volumeRegion.SetSize(volumeSize);
     volumeRegion.SetIndex(volumeIndex);
 
@@ -142,20 +146,18 @@ void SplatWithKnownWeightsImageFilter<VolumeSeriesType, VolumeType>
     volumeSeriesRegion.SetIndex(Dimension, phase);
 
     itk::ImageRegionIterator<VolumeSeriesType> outputIterator(this->GetOutput(), volumeSeriesRegion);
-    itk::ImageRegionIterator<VolumeType> volumeIterator(volume, volumeRegion);
+    itk::ImageRegionIterator<VolumeType>       volumeIterator(volume, volumeRegion);
 
-    while(!volumeIterator.IsAtEnd())
-      {
+    while (!volumeIterator.IsAtEnd())
+    {
       outputIterator.Set(outputIterator.Get() + weight * volumeIterator.Get());
       ++volumeIterator;
       ++outputIterator;
-      }
-
     }
-
+  }
 }
 
-}// end namespace
+} // namespace rtk
 
 
 #endif

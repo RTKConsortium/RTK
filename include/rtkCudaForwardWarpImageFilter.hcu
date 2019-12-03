@@ -20,17 +20,17 @@
 #define __rtkCudaForwardWarpImageFilter_hcu
 
 void
-CUDA_ForwardWarp(int input_vol_dim[3],
-  int input_dvf_dim[3],
-  int output_vol_dim[3],
-  float IndexInputToPPInputMatrix[12],
-  float IndexInputToIndexDVFMatrix[12],
-  float PPOutputToIndexOutputMatrix[12],
-  float *dev_input_vol,
-  float *dev_input_xdvf,
-  float *dev_input_ydvf,
-  float *dev_input_zdvf,
-  float *dev_output_vol,
-  bool isLinear);
+CUDA_ForwardWarp(int     input_vol_dim[3],
+                 int     input_dvf_dim[3],
+                 int     output_vol_dim[3],
+                 float   IndexInputToPPInputMatrix[12],
+                 float   IndexInputToIndexDVFMatrix[12],
+                 float   PPOutputToIndexOutputMatrix[12],
+                 float * dev_input_vol,
+                 float * dev_input_xdvf,
+                 float * dev_input_ydvf,
+                 float * dev_input_zdvf,
+                 float * dev_output_vol,
+                 bool    isLinear);
 
 #endif

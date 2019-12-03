@@ -21,31 +21,24 @@
 
 #include <itkMacro.h>
 
-rtk::CudaAverageOutOfROIImageFilter
-::CudaAverageOutOfROIImageFilter()
-{
-}
+rtk::CudaAverageOutOfROIImageFilter ::CudaAverageOutOfROIImageFilter() {}
 
 void
-rtk::CudaAverageOutOfROIImageFilter
-::GPUGenerateData()
+rtk::CudaAverageOutOfROIImageFilter ::GPUGenerateData()
 {
   int size[4];
 
-  for (int i=0; i<4; i++)
-    {
+  for (int i = 0; i < 4; i++)
+  {
     size[i] = this->GetOutput()->GetBufferedRegion().GetSize()[i];
-    }
+  }
 
-    float *pin = *(float**)( this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer() );
-    float *pout = *(float**)( this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer() );
-    float *proi = *(float**)( this->GetROI()->GetCudaDataManager()->GetGPUBufferPointer() );
+  float * pin = *(float **)(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
+  float * pout = *(float **)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
+  float * proi = *(float **)(this->GetROI()->GetCudaDataManager()->GetGPUBufferPointer());
 
-    CUDA_average_out_of_ROI(size,
-                             pin,
-                             pout,
-                             proi);
+  CUDA_average_out_of_ROI(size, pin, pout, proi);
 
-    //Transfer the ROI volume back to the CPU memory to save space on the GPU
-    this->GetROI()->GetCudaDataManager()->GetCPUBufferPointer();
+  // Transfer the ROI volume back to the CPU memory to save space on the GPU
+  this->GetROI()->GetCudaDataManager()->GetCPUBufferPointer();
 }

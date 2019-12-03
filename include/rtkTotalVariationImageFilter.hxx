@@ -28,11 +28,10 @@
 namespace rtk
 {
 
-template< typename TInputImage >
-TotalVariationImageFilter< TInputImage >
-::TotalVariationImageFilter()
+template <typename TInputImage>
+TotalVariationImageFilter<TInputImage>::TotalVariationImageFilter()
 {
-#if ITK_VERSION_MAJOR>4
+#if ITK_VERSION_MAJOR > 4
   this->DynamicMultiThreadingOff();
 #endif
 
@@ -42,23 +41,21 @@ TotalVariationImageFilter< TInputImage >
 
   // allocate the data object for the output which is
   // just a decorator around real type
-    typename RealObjectType::Pointer output =
-      static_cast< RealObjectType * >( this->MakeOutput(1).GetPointer() );
-    this->itk::ProcessObject::SetNthOutput( 1, output.GetPointer() );
+  typename RealObjectType::Pointer output = static_cast<RealObjectType *>(this->MakeOutput(1).GetPointer());
+  this->itk::ProcessObject::SetNthOutput(1, output.GetPointer());
 
-  this->GetTotalVariationOutput()->Set(itk::NumericTraits< RealType >::Zero);
+  this->GetTotalVariationOutput()->Set(itk::NumericTraits<RealType>::Zero);
 
   // Initialize
   m_UseImageSpacing = true;
 }
 
-template< typename TInputImage >
+template <typename TInputImage>
 itk::DataObject::Pointer
-TotalVariationImageFilter< TInputImage >
-::MakeOutput(DataObjectPointerArraySizeType output)
+TotalVariationImageFilter<TInputImage>::MakeOutput(DataObjectPointerArraySizeType output)
 {
-  switch ( output )
-    {
+  switch (output)
+  {
     case 0:
       return TInputImage::New().GetPointer();
       break;
@@ -69,67 +66,60 @@ TotalVariationImageFilter< TInputImage >
       // might as well make an image
       return TInputImage::New().GetPointer();
       break;
-    }
+  }
 }
 
-template< typename TInputImage >
-typename TotalVariationImageFilter< TInputImage >::RealObjectType *
-TotalVariationImageFilter< TInputImage >
-::GetTotalVariationOutput()
+template <typename TInputImage>
+typename TotalVariationImageFilter<TInputImage>::RealObjectType *
+TotalVariationImageFilter<TInputImage>::GetTotalVariationOutput()
 {
-  return static_cast< RealObjectType * >( this->itk::ProcessObject::GetOutput(1) );
+  return static_cast<RealObjectType *>(this->itk::ProcessObject::GetOutput(1));
 }
 
-template< typename TInputImage >
-const typename TotalVariationImageFilter< TInputImage >::RealObjectType *
-TotalVariationImageFilter< TInputImage >
-::GetTotalVariationOutput() const
+template <typename TInputImage>
+const typename TotalVariationImageFilter<TInputImage>::RealObjectType *
+TotalVariationImageFilter<TInputImage>::GetTotalVariationOutput() const
 {
-  return static_cast< const RealObjectType * >( this->itk::ProcessObject::GetOutput(1) );
+  return static_cast<const RealObjectType *>(this->itk::ProcessObject::GetOutput(1));
 }
 
-template< typename TInputImage >
+template <typename TInputImage>
 void
-TotalVariationImageFilter< TInputImage >
-::GenerateInputRequestedRegion()
+TotalVariationImageFilter<TInputImage>::GenerateInputRequestedRegion()
 {
   Superclass::GenerateInputRequestedRegion();
-  if ( this->GetInput() )
-    {
-    InputImagePointer image =
-      const_cast< typename Superclass::InputImageType * >( this->GetInput() );
+  if (this->GetInput())
+  {
+    InputImagePointer image = const_cast<typename Superclass::InputImageType *>(this->GetInput());
     image->SetRequestedRegionToLargestPossibleRegion();
-    }
+  }
 }
 
-template< typename TInputImage >
+template <typename TInputImage>
 void
-TotalVariationImageFilter< TInputImage >
-::EnlargeOutputRequestedRegion(itk::DataObject *data)
+TotalVariationImageFilter<TInputImage>::EnlargeOutputRequestedRegion(itk::DataObject * data)
 {
   Superclass::EnlargeOutputRequestedRegion(data);
   data->SetRequestedRegionToLargestPossibleRegion();
 }
 
-template< typename TInputImage >
+template <typename TInputImage>
 void
-TotalVariationImageFilter< TInputImage >
-::AllocateOutputs()
+TotalVariationImageFilter<TInputImage>::AllocateOutputs()
 {
   // Pass the input through as the output
-  InputImagePointer image = const_cast< TInputImage * >( this->GetInput() );
+  InputImagePointer image = const_cast<TInputImage *>(this->GetInput());
 
   this->GraftOutput(image);
 
   // Nothing that needs to be allocated for the remaining outputs
 }
 
-template< typename TInputImage >
+template <typename TInputImage>
 void
-TotalVariationImageFilter< TInputImage >
-::BeforeThreadedGenerateData()
+TotalVariationImageFilter<TInputImage>::BeforeThreadedGenerateData()
 {
-#if ITK_VERSION_MAJOR<5
+#if ITK_VERSION_MAJOR < 5
   itk::ThreadIdType numberOfThreads = this->GetNumberOfThreads();
 #else
   itk::ThreadIdType numberOfThreads = this->GetNumberOfWorkUnits();
@@ -139,43 +129,41 @@ TotalVariationImageFilter< TInputImage >
   m_SumOfSquareRoots.SetSize(numberOfThreads);
 
   // Initialize the temporaries
-  m_SumOfSquareRoots.Fill(itk::NumericTraits< RealType >::Zero);
+  m_SumOfSquareRoots.Fill(itk::NumericTraits<RealType>::Zero);
 }
 
-template< typename TInputImage >
+template <typename TInputImage>
 void
-TotalVariationImageFilter< TInputImage >
-::AfterThreadedGenerateData()
+TotalVariationImageFilter<TInputImage>::AfterThreadedGenerateData()
 {
   RealType totalVariation = 0;
-#if ITK_VERSION_MAJOR<5
+#if ITK_VERSION_MAJOR < 5
   itk::ThreadIdType numberOfThreads = this->GetNumberOfThreads();
 #else
   itk::ThreadIdType numberOfThreads = this->GetNumberOfWorkUnits();
 #endif
 
   // Add up the results from all threads
-  for (itk::ThreadIdType i = 0; i < numberOfThreads; i++ )
-    {
+  for (itk::ThreadIdType i = 0; i < numberOfThreads; i++)
+  {
     totalVariation += m_SumOfSquareRoots[i];
-    }
+  }
 
   // Set the output
   this->GetTotalVariationOutput()->Set(totalVariation);
 }
 
-template< typename TInputImage >
+template <typename TInputImage>
 void
-TotalVariationImageFilter< TInputImage >
-::ThreadedGenerateData(const RegionType & outputRegionForThread,
-                       itk::ThreadIdType threadId)
+TotalVariationImageFilter<TInputImage>::ThreadedGenerateData(const RegionType & outputRegionForThread,
+                                                             itk::ThreadIdType  threadId)
 {
   const itk::SizeValueType size0 = outputRegionForThread.GetSize(0);
-  if( size0 == 0)
-    {
+  if (size0 == 0)
+  {
     return;
-    }
-  RealType sumOfSquareRoots = itk::NumericTraits< RealType >::Zero;
+  }
+  RealType                           sumOfSquareRoots = itk::NumericTraits<RealType>::Zero;
   typename TInputImage::ConstPointer input = this->GetInput(0);
 
   itk::Size<ImageDimension> radius;
@@ -186,42 +174,41 @@ TotalVariationImageFilter< TInputImage >
   itk::ZeroFluxNeumannBoundaryCondition<TInputImage> boundaryCondition;
   iit.OverrideBoundaryCondition(&boundaryCondition);
 
-  itk::SizeValueType c = (itk::SizeValueType) (iit.Size() / 2); // get offset of center pixel
-  itk::SizeValueType strides[ImageDimension]; // get offsets to access neighboring pixels
+  itk::SizeValueType                    c = (itk::SizeValueType)(iit.Size() / 2); // get offset of center pixel
+  itk::SizeValueType                    strides[ImageDimension]; // get offsets to access neighboring pixels
   itk::Vector<RealType, ImageDimension> invSpacingCoeffs;
-  for (unsigned int dim=0; dim<ImageDimension; dim++)
-    {
+  for (unsigned int dim = 0; dim < ImageDimension; dim++)
+  {
     strides[dim] = iit.GetStride(dim);
 
     invSpacingCoeffs[dim] = 1;
-    if ( m_UseImageSpacing == true )
-      {
+    if (m_UseImageSpacing == true)
+    {
       invSpacingCoeffs[dim] = 1.0 / this->GetOutput()->GetSpacing()[dim];
-      }
     }
+  }
 
   // Run through the image
-  while(!iit.IsAtEnd())
-    {
+  while (!iit.IsAtEnd())
+  {
     // Compute the local differences around the central pixel
     float difference;
     float sumOfSquaredDifferences = 0;
     for (unsigned int dim = 0; dim < ImageDimension; dim++)
-      {
+    {
       difference = (iit.GetPixel(c + strides[dim]) - iit.GetPixel(c)) * invSpacingCoeffs[dim];
       sumOfSquaredDifferences += difference * difference;
-      }
+    }
     sumOfSquareRoots += sqrt(sumOfSquaredDifferences);
     ++iit;
-    }
+  }
 
   m_SumOfSquareRoots[threadId] = sumOfSquareRoots;
 }
 
-template< typename TInputImage >
+template <typename TInputImage>
 void
-TotalVariationImageFilter< TInputImage >
-::PrintSelf(std::ostream & os, itk::Indent indent) const
+TotalVariationImageFilter<TInputImage>::PrintSelf(std::ostream & os, itk::Indent indent) const
 {
   Superclass::PrintSelf(os, indent);
 

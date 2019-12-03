@@ -54,34 +54,46 @@ public:
 
   using Self = ThreeDCircularProjectionGeometry;
   using Superclass = ProjectionGeometry<3>;
-  using Pointer = itk::SmartPointer< Self >;
-  using ConstPointer = itk::SmartPointer< const Self >;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
   using VectorType = itk::Vector<double, 3>;
   using HomogeneousVectorType = itk::Vector<double, 4>;
-  using TwoDHomogeneousMatrixType = itk::Matrix<double, 3, 3 >;
-  using ThreeDHomogeneousMatrixType = itk::Matrix<double, 4, 4 >;
+  using TwoDHomogeneousMatrixType = itk::Matrix<double, 3, 3>;
+  using ThreeDHomogeneousMatrixType = itk::Matrix<double, 4, 4>;
   using PointType = itk::Point<double, 3>;
   using Matrix3x3Type = itk::Matrix<double, 3, 3>;
   using HomogeneousProjectionMatrixType = Superclass::MatrixType;
 
   /** Method for creation through the object factory. */
-  itkNewMacro( Self );
+  itkNewMacro(Self);
 
   /** Add projection to geometry. One projection is defined with the rotation
    * angle in degrees and the in-plane translation of the detector in physical
    * units (e.g. mm). The rotation axis is assumed to be (0,1,0).
    */
-  void AddProjection(const double sid, const double sdd, const double gantryAngle,
-                     const double projOffsetX=0., const double projOffsetY=0.,
-                     const double outOfPlaneAngle=0., const double inPlaneAngle=0.,
-                     const double sourceOffsetX=0., const double sourceOffsetY=0.);
+  void
+  AddProjection(const double sid,
+                const double sdd,
+                const double gantryAngle,
+                const double projOffsetX = 0.,
+                const double projOffsetY = 0.,
+                const double outOfPlaneAngle = 0.,
+                const double inPlaneAngle = 0.,
+                const double sourceOffsetX = 0.,
+                const double sourceOffsetY = 0.);
 
   /** Idem with angles in radians. */
-  virtual void AddProjectionInRadians(const double sid, const double sdd, const double gantryAngle,
-                                      const double projOffsetX=0., const double projOffsetY=0.,
-                                      const double outOfPlaneAngle=0., const double inPlaneAngle=0.,
-                                      const double sourceOffsetX=0., const double sourceOffsetY=0.);
+  virtual void
+  AddProjectionInRadians(const double sid,
+                         const double sdd,
+                         const double gantryAngle,
+                         const double projOffsetX = 0.,
+                         const double projOffsetY = 0.,
+                         const double outOfPlaneAngle = 0.,
+                         const double inPlaneAngle = 0.,
+                         const double sourceOffsetX = 0.,
+                         const double sourceOffsetY = 0.);
 
   /**
    * @brief Add a REG23-based geometry set to the RTK projections list.
@@ -93,183 +105,234 @@ public:
    * orientation of the detector's columns c (sometimes referred to as v2)
    * @return TRUE if the projection could be added to the RTK projections list
    */
-  bool AddProjection(const PointType &sourcePosition,
-                     const PointType &detectorPosition,
-                     const VectorType &detectorRowVector,
-                     const VectorType &detectorColumnVector);
+  bool
+  AddProjection(const PointType &  sourcePosition,
+                const PointType &  detectorPosition,
+                const VectorType & detectorRowVector,
+                const VectorType & detectorColumnVector);
 
 
   /** Add projection from a projection matrix. A projection matrix is defined
    * up to a scaling factor. The function here Assumes that the input matrix
    * pMat is normalized such that pMat*(x,y,z,1)'=(u,v,1)'.
    * This code assumes that the SourceToDetectorDistance is positive. */
-  bool AddProjection(const HomogeneousProjectionMatrixType &pMat);
+  bool
+  AddProjection(const HomogeneousProjectionMatrixType & pMat);
 
   /** Empty the geometry object. */
-  void Clear() override;
+  void
+  Clear() override;
 
   /** Get the vector of geometry parameters (one per projection). Angles are
    * in radians.*/
-  const std::vector<double> &GetGantryAngles() const {
+  const std::vector<double> &
+  GetGantryAngles() const
+  {
     return this->m_GantryAngles;
   }
-  const std::vector<double> &GetOutOfPlaneAngles() const {
+  const std::vector<double> &
+  GetOutOfPlaneAngles() const
+  {
     return this->m_OutOfPlaneAngles;
   }
-  const std::vector<double> &GetInPlaneAngles() const {
+  const std::vector<double> &
+  GetInPlaneAngles() const
+  {
     return this->m_InPlaneAngles;
   }
-  const std::vector<double> &GetSourceToIsocenterDistances() const {
+  const std::vector<double> &
+  GetSourceToIsocenterDistances() const
+  {
     return this->m_SourceToIsocenterDistances;
   }
-  const std::vector<double> &GetSourceOffsetsX() const {
+  const std::vector<double> &
+  GetSourceOffsetsX() const
+  {
     return this->m_SourceOffsetsX;
   }
-  const std::vector<double> &GetSourceOffsetsY() const {
+  const std::vector<double> &
+  GetSourceOffsetsY() const
+  {
     return this->m_SourceOffsetsY;
   }
-  const std::vector<double> &GetSourceToDetectorDistances() const {
+  const std::vector<double> &
+  GetSourceToDetectorDistances() const
+  {
     return this->m_SourceToDetectorDistances;
   }
-  const std::vector<double> &GetProjectionOffsetsX() const {
+  const std::vector<double> &
+  GetProjectionOffsetsX() const
+  {
     return this->m_ProjectionOffsetsX;
   }
-  const std::vector<double> &GetProjectionOffsetsY() const {
+  const std::vector<double> &
+  GetProjectionOffsetsY() const
+  {
     return this->m_ProjectionOffsetsY;
   }
 
   /** Get a vector containing the source angles in radians. The source angle is
    * defined as the angle between the z-axis and the isocenter-source line
    * projected on the central plane. */
-  const std::vector<double> &GetSourceAngles() const {
+  const std::vector<double> &
+  GetSourceAngles() const
+  {
     return this->m_SourceAngles;
   }
 
   /** Get a vector containing the tilt angles in radians. The tilt angle is
    * defined as the difference between -GantryAngle and the SourceAngle. */
-  const std::vector<double> GetTiltAngles();
+  const std::vector<double>
+  GetTiltAngles();
 
   /** Get a multimap containing all sorted angles in radians and corresponding
    * index. */
-  const std::multimap<double,unsigned int> GetSortedAngles(const std::vector<double> &angles) const;
+  const std::multimap<double, unsigned int>
+  GetSortedAngles(const std::vector<double> & angles) const;
 
   /** Get a map containing unique sorted angles in radians and corresponding
    * index. */
-  const std::map<double,unsigned int> GetUniqueSortedAngles(const std::vector<double> &angles) const;
+  const std::map<double, unsigned int>
+  GetUniqueSortedAngles(const std::vector<double> & angles) const;
 
   /** Get for each projection the angular gaps with next projection in radians. */
-  const std::vector<double> GetAngularGapsWithNext(const std::vector<double> &angles) const;
+  const std::vector<double>
+  GetAngularGapsWithNext(const std::vector<double> & angles) const;
 
   /** Get for each projection half the angular distance between the previous
    *  and the next projection in radians. */
-  const std::vector<double> GetAngularGaps(const std::vector<double> &angles);
+  const std::vector<double>
+  GetAngularGaps(const std::vector<double> & angles);
 
   /** Compute rotation matrix in homogeneous coordinates from 3 angles in
    * degrees. The convention is the default in itk, i.e. ZXY of Euler angles.*/
   static ThreeDHomogeneousMatrixType
-  ComputeRotationHomogeneousMatrix(double angleX,
-                                   double angleY,
-                                   double angleZ);
+  ComputeRotationHomogeneousMatrix(double angleX, double angleY, double angleZ);
 
   /** Compute translation matrix in homogeneous coordinates from translation parameters.*/
   static TwoDHomogeneousMatrixType
-  ComputeTranslationHomogeneousMatrix(double transX,
-                                      double transY);
+  ComputeTranslationHomogeneousMatrix(double transX, double transY);
   static ThreeDHomogeneousMatrixType
-  ComputeTranslationHomogeneousMatrix(double transX,
-                                      double transY,
-                                      double transZ);
+  ComputeTranslationHomogeneousMatrix(double transX, double transY, double transZ);
 
   /** Compute the magnification matrix from 3D to 2D given a source to detector
    * and to isocenter distance. */
-  static Superclass::MatrixType ComputeProjectionMagnificationMatrix(double sdd,
-                                                                     double sid);
+  static Superclass::MatrixType
+  ComputeProjectionMagnificationMatrix(double sdd, double sid);
 
   /** Get the vector containing the sub matrices used to compute the main
    * projection matrix. */
-  const std::vector<TwoDHomogeneousMatrixType> &GetProjectionTranslationMatrices() const {
+  const std::vector<TwoDHomogeneousMatrixType> &
+  GetProjectionTranslationMatrices() const
+  {
     return this->m_ProjectionTranslationMatrices;
   }
-  TwoDHomogeneousMatrixType GetProjectionTranslationMatrix(const unsigned int i) const {
+  TwoDHomogeneousMatrixType
+  GetProjectionTranslationMatrix(const unsigned int i) const
+  {
     return this->m_ProjectionTranslationMatrices[i];
   }
 
-  const std::vector<ThreeDHomogeneousMatrixType> &GetRotationMatrices() const {
+  const std::vector<ThreeDHomogeneousMatrixType> &
+  GetRotationMatrices() const
+  {
     return this->m_RotationMatrices;
   }
-  ThreeDHomogeneousMatrixType GetRotationMatrix(const unsigned int i) const {
+  ThreeDHomogeneousMatrixType
+  GetRotationMatrix(const unsigned int i) const
+  {
     return this->m_RotationMatrices[i];
   }
 
-  const std::vector<ThreeDHomogeneousMatrixType> &GetSourceTranslationMatrices() const {
+  const std::vector<ThreeDHomogeneousMatrixType> &
+  GetSourceTranslationMatrices() const
+  {
     return this->m_SourceTranslationMatrices;
   }
-  ThreeDHomogeneousMatrixType GetSourceTranslationMatrices(const unsigned int i) const {
+  ThreeDHomogeneousMatrixType
+  GetSourceTranslationMatrices(const unsigned int i) const
+  {
     return this->m_SourceTranslationMatrices[i];
   }
 
-  const std::vector<Superclass::MatrixType> &GetMagnificationMatrices() const {
+  const std::vector<Superclass::MatrixType> &
+  GetMagnificationMatrices() const
+  {
     return this->m_MagnificationMatrices;
   }
-  Superclass::MatrixType GetMagnificationMatrices(const unsigned int i) const {
+  Superclass::MatrixType
+  GetMagnificationMatrices(const unsigned int i) const
+  {
     return this->m_MagnificationMatrices[i];
   }
 
 
   /** Get the vector containing the collimation jaw parameters. */
-  const std::vector<double> &GetCollimationUInf() const {
+  const std::vector<double> &
+  GetCollimationUInf() const
+  {
     return this->m_CollimationUInf;
   }
-  const std::vector<double> &GetCollimationUSup() const {
+  const std::vector<double> &
+  GetCollimationUSup() const
+  {
     return this->m_CollimationUSup;
   }
-  const std::vector<double> &GetCollimationVInf() const {
+  const std::vector<double> &
+  GetCollimationVInf() const
+  {
     return this->m_CollimationVInf;
   }
-  const std::vector<double> &GetCollimationVSup() const {
+  const std::vector<double> &
+  GetCollimationVSup() const
+  {
     return this->m_CollimationVSup;
   }
 
   /** Set the collimation of the latest added projection (to be called after
    * AddProjection). */
-  void SetCollimationOfLastProjection(const double uinf,
-                                      const double usup,
-                                      const double vinf,
-                                      const double vsup);
+  void
+  SetCollimationOfLastProjection(const double uinf, const double usup, const double vinf, const double vsup);
 
   /** Get the source position for the ith projection in the fixed reference
    * system and in homogeneous coordinates. */
-  const HomogeneousVectorType GetSourcePosition(const unsigned int i) const;
+  const HomogeneousVectorType
+  GetSourcePosition(const unsigned int i) const;
 
   /** Compute the ith matrix to convert projection coordinates to coordinates
    * in the detector coordinate system (u,v,u^v). Note that the matrix is square but the
    * third element of the projection coordinates is ignored because projection
    * coordinates are 2D. This is meant to manipulate more easily stack of
    * projection images. */
-  const ThreeDHomogeneousMatrixType GetProjectionCoordinatesToDetectorSystemMatrix(const unsigned int i) const;
+  const ThreeDHomogeneousMatrixType
+  GetProjectionCoordinatesToDetectorSystemMatrix(const unsigned int i) const;
 
   /** Compute the ith matrix to convert projection coordinates to coordinates
    * in the fixed coordinate system. Note that the matrix is square but the
    * third element of the projection coordinates is ignored because projection
    * coordinates are 2D. This is meant to manipulate more easily stack of
    * projection images. */
-  const ThreeDHomogeneousMatrixType GetProjectionCoordinatesToFixedSystemMatrix(const unsigned int i) const;
+  const ThreeDHomogeneousMatrixType
+  GetProjectionCoordinatesToFixedSystemMatrix(const unsigned int i) const;
 
   /** This function wraps an angle value between 0 and 360 degrees. */
-  static double ConvertAngleBetween0And360Degrees(const double a);
+  static double
+  ConvertAngleBetween0And360Degrees(const double a);
 
   /** This function wraps an angle value between 0 and 2*PI radians. */
-  static double ConvertAngleBetween0And2PIRadians(const double a);
+  static double
+  ConvertAngleBetween0And2PIRadians(const double a);
 
   /** This function wraps an angle value between -PI and PI radians. */
-  static double ConvertAngleBetweenMinusAndPlusPIRadians(const double a);
+  static double
+  ConvertAngleBetweenMinusAndPlusPIRadians(const double a);
 
   /** Changes the coordinate on the projection image to the coordinate on a
    * virtual detector that is perpendicular to the source to isocenter line and
    * positioned at the isocenter.
    * It is assumed that OutOfPlaneAngle=0 and InPlaneAngle=0.*/
-  double ToUntiltedCoordinateAtIsocenter(const unsigned int noProj,
-                                         const double tiltedCoord) const;
+  double
+  ToUntiltedCoordinateAtIsocenter(const unsigned int noProj, const double tiltedCoord) const;
 
   /** Accessor for the radius of curved detector. The default is 0 and it means
    * a flat detector. */
@@ -280,19 +343,27 @@ protected:
   ThreeDCircularProjectionGeometry();
   ~ThreeDCircularProjectionGeometry() override = default;
 
-  virtual void AddProjectionTranslationMatrix(const TwoDHomogeneousMatrixType &m){
+  virtual void
+  AddProjectionTranslationMatrix(const TwoDHomogeneousMatrixType & m)
+  {
     this->m_ProjectionTranslationMatrices.push_back(m);
     this->Modified();
   }
-  virtual void AddRotationMatrix(const ThreeDHomogeneousMatrixType &m){
+  virtual void
+  AddRotationMatrix(const ThreeDHomogeneousMatrixType & m)
+  {
     this->m_RotationMatrices.push_back(m);
     this->Modified();
   }
-  virtual void AddSourceTranslationMatrix(const ThreeDHomogeneousMatrixType &m){
+  virtual void
+  AddSourceTranslationMatrix(const ThreeDHomogeneousMatrixType & m)
+  {
     this->m_SourceTranslationMatrices.push_back(m);
     this->Modified();
   }
-  virtual void AddMagnificationMatrix(const Superclass::MatrixType &m){
+  virtual void
+  AddMagnificationMatrix(const Superclass::MatrixType & m)
+  {
     this->m_MagnificationMatrices.push_back(m);
     this->Modified();
   }
@@ -313,9 +384,11 @@ protected:
    * @warning {Internally, the matrix check is performed with a tolerance level
    * of 1e-6!}
    */
-  bool VerifyAngles(const double outOfPlaneAngleRAD, const double gantryAngleRAD,
-                    const double inPlaneAngleRAD,
-                    const Matrix3x3Type &referenceMatrix) const;
+  bool
+  VerifyAngles(const double          outOfPlaneAngleRAD,
+               const double          gantryAngleRAD,
+               const double          inPlaneAngleRAD,
+               const Matrix3x3Type & referenceMatrix) const;
 
   /** Try to fix Euler angles, which were found incorrect, to match the specified
    * reference matrix.
@@ -335,12 +408,15 @@ protected:
    * @warning {Internally, the matrix check is performed with a tolerance level
    * of 1e-6!}
    */
-  bool FixAngles(double &outOfPlaneAngleRAD, double &gantryAngleRAD,
-                 double &inPlaneAngleRAD,
-                 const Matrix3x3Type &referenceMatrix) const;
+  bool
+  FixAngles(double &              outOfPlaneAngleRAD,
+            double &              gantryAngleRAD,
+            double &              inPlaneAngleRAD,
+            const Matrix3x3Type & referenceMatrix) const;
 
   /** Clone the geometry object in a new one. */
-  itk::LightObject::Pointer InternalClone() const override;
+  itk::LightObject::Pointer
+  InternalClone() const override;
 
   /** Circular geometry parameters per projection (angles in degrees between 0
     and 360). */
@@ -356,7 +432,7 @@ protected:
   std::vector<double> m_ProjectionOffsetsY;
 
   /** Radius of curved detector. The default is 0 and it means a flat detector. */
-  double m_RadiusCylindricalDetector{0.};
+  double m_RadiusCylindricalDetector{ 0. };
 
   /** Parameters of the collimation jaws.
    * The collimation position is with respect to the distance of the m_RotationCenter along
@@ -371,12 +447,12 @@ protected:
   std::vector<double> m_CollimationVSup;
 
   /** Matrices to change coordiate systems. */
-  std::vector<TwoDHomogeneousMatrixType>         m_ProjectionTranslationMatrices;
-  std::vector<Superclass::MatrixType>            m_MagnificationMatrices;
-  std::vector<ThreeDHomogeneousMatrixType>       m_RotationMatrices;
-  std::vector<ThreeDHomogeneousMatrixType>       m_SourceTranslationMatrices;
+  std::vector<TwoDHomogeneousMatrixType>   m_ProjectionTranslationMatrices;
+  std::vector<Superclass::MatrixType>      m_MagnificationMatrices;
+  std::vector<ThreeDHomogeneousMatrixType> m_RotationMatrices;
+  std::vector<ThreeDHomogeneousMatrixType> m_SourceTranslationMatrices;
 };
-}
+} // namespace rtk
 
 
 #endif // __rtkThreeDCircularProjectionGeometry_h

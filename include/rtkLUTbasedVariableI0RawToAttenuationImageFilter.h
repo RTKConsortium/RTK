@@ -75,8 +75,7 @@ namespace rtk
  */
 
 template <class TInputImage, class TOutputImage>
-class LUTbasedVariableI0RawToAttenuationImageFilter:
-  public LookupTableImageFilter<TInputImage, TOutputImage>
+class LUTbasedVariableI0RawToAttenuationImageFilter : public LookupTableImageFilter<TInputImage, TOutputImage>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(LUTbasedVariableI0RawToAttenuationImageFilter);
@@ -84,8 +83,8 @@ public:
   /** Standard class type alias. */
   using Self = LUTbasedVariableI0RawToAttenuationImageFilter;
   using Superclass = LookupTableImageFilter<TInputImage, TOutputImage>;
-  using Pointer = itk::SmartPointer< Self >;
-  using ConstPointer = itk::SmartPointer< const Self >;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
   using InputImagePixelType = typename TInputImage::PixelType;
   using OutputImagePixelType = typename TOutputImage::PixelType;
@@ -101,16 +100,17 @@ public:
   itkTypeMacro(LUTbasedVariableI0RawToAttenuationImageFilter, LookupTableImageFilter);
 
   /** Air level I0
-    */
+   */
   itkGetMacro(I0, double);
   itkSetMacro(I0, double);
 
   /** Intensity when there is no photons (beam off)
-    */
+   */
   itkGetMacro(IDark, double);
   itkSetMacro(IDark, double);
 
-  void BeforeThreadedGenerateData() override;
+  void
+  BeforeThreadedGenerateData() override;
 
 protected:
   LUTbasedVariableI0RawToAttenuationImageFilter();
@@ -127,7 +127,7 @@ private:
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkLUTbasedVariableI0RawToAttenuationImageFilter.hxx"
+#  include "rtkLUTbasedVariableI0RawToAttenuationImageFilter.hxx"
 #endif
 
 #endif

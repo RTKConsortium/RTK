@@ -24,9 +24,8 @@
 namespace rtk
 {
 
-template< typename TOutputImage >
-ADMMWaveletsConeBeamReconstructionFilter<TOutputImage>
-::ADMMWaveletsConeBeamReconstructionFilter()
+template <typename TOutputImage>
+ADMMWaveletsConeBeamReconstructionFilter<TOutputImage>::ADMMWaveletsConeBeamReconstructionFilter()
 {
   this->SetNumberOfRequiredInputs(2);
 
@@ -45,7 +44,7 @@ ADMMWaveletsConeBeamReconstructionFilter<TOutputImage>
 
   // Set permanent connections
   m_AddFilter1->SetInput2(m_ZeroMultiplyFilter->GetOutput());
-  m_MultiplyFilter->SetInput1( m_AddFilter1->GetOutput() );
+  m_MultiplyFilter->SetInput1(m_AddFilter1->GetOutput());
   m_AddFilter2->SetInput1(m_MultiplyFilter->GetOutput());
   m_ConjugateGradientFilter->SetB(m_AddFilter2->GetOutput());
   m_SubtractFilter1->SetInput1(m_ConjugateGradientFilter->GetOutput());
@@ -65,72 +64,68 @@ ADMMWaveletsConeBeamReconstructionFilter<TOutputImage>
   m_AddFilter2->ReleaseDataFlagOn();
   m_MultiplyFilter->ReleaseDataFlagOn();
   m_ConjugateGradientFilter->ReleaseDataFlagOff(); // Output is f_k+1
-  m_SubtractFilter1->ReleaseDataFlagOff(); // Output used in two filters
-  m_SoftThresholdFilter->ReleaseDataFlagOff(); // Output is g_k+1
-  m_SubtractFilter2->ReleaseDataFlagOff(); //Output is d_k+1
+  m_SubtractFilter1->ReleaseDataFlagOff();         // Output used in two filters
+  m_SoftThresholdFilter->ReleaseDataFlagOff();     // Output is g_k+1
+  m_SubtractFilter2->ReleaseDataFlagOff();         // Output is d_k+1
   m_DisplacedDetectorFilter->ReleaseDataFlagOn();
 }
 
-template< typename TOutputImage >
+template <typename TOutputImage>
 void
-ADMMWaveletsConeBeamReconstructionFilter<TOutputImage>
-::SetForwardProjectionFilter (ForwardProjectionType _arg)
+ADMMWaveletsConeBeamReconstructionFilter<TOutputImage>::SetForwardProjectionFilter(ForwardProjectionType _arg)
 {
-  if( _arg != this->GetForwardProjectionFilter() )
-    {
-    Superclass::SetForwardProjectionFilter( _arg );
-    m_ForwardProjectionFilterForConjugateGradient = this->InstantiateForwardProjectionFilter( _arg );
-    m_CGOperator->SetForwardProjectionFilter( m_ForwardProjectionFilterForConjugateGradient );
-    }
+  if (_arg != this->GetForwardProjectionFilter())
+  {
+    Superclass::SetForwardProjectionFilter(_arg);
+    m_ForwardProjectionFilterForConjugateGradient = this->InstantiateForwardProjectionFilter(_arg);
+    m_CGOperator->SetForwardProjectionFilter(m_ForwardProjectionFilterForConjugateGradient);
+  }
 }
 
-template< typename TOutputImage >
+template <typename TOutputImage>
 void
-ADMMWaveletsConeBeamReconstructionFilter<TOutputImage>
-::SetBackProjectionFilter (BackProjectionType _arg)
+ADMMWaveletsConeBeamReconstructionFilter<TOutputImage>::SetBackProjectionFilter(BackProjectionType _arg)
 {
-  if( _arg != this->GetBackProjectionFilter() )
-    {
-    Superclass::SetBackProjectionFilter( _arg );
-    m_BackProjectionFilter = this->InstantiateBackProjectionFilter( _arg );
-    m_BackProjectionFilterForConjugateGradient = this->InstantiateBackProjectionFilter( _arg );
-    m_CGOperator->SetBackProjectionFilter( m_BackProjectionFilterForConjugateGradient );
-    }
+  if (_arg != this->GetBackProjectionFilter())
+  {
+    Superclass::SetBackProjectionFilter(_arg);
+    m_BackProjectionFilter = this->InstantiateBackProjectionFilter(_arg);
+    m_BackProjectionFilterForConjugateGradient = this->InstantiateBackProjectionFilter(_arg);
+    m_CGOperator->SetBackProjectionFilter(m_BackProjectionFilterForConjugateGradient);
+  }
 }
 
-template< typename TOutputImage >
+template <typename TOutputImage>
 void
-ADMMWaveletsConeBeamReconstructionFilter<TOutputImage>
-::GenerateInputRequestedRegion()
+ADMMWaveletsConeBeamReconstructionFilter<TOutputImage>::GenerateInputRequestedRegion()
 {
   // Input 0 is the volume we update
-  typename Superclass::InputImagePointer inputPtr0 = const_cast< TOutputImage * >( this->GetInput(0) );
-  if ( !inputPtr0 )
-    {
+  typename Superclass::InputImagePointer inputPtr0 = const_cast<TOutputImage *>(this->GetInput(0));
+  if (!inputPtr0)
+  {
     return;
-    }
-  inputPtr0->SetRequestedRegion( this->GetOutput()->GetRequestedRegion() );
+  }
+  inputPtr0->SetRequestedRegion(this->GetOutput()->GetRequestedRegion());
 
   // Input 1 is the stack of projections to backproject
-  typename Superclass::InputImagePointer  inputPtr1 = const_cast< TOutputImage * >( this->GetInput(1) );
-  if ( !inputPtr1 )
-    {
+  typename Superclass::InputImagePointer inputPtr1 = const_cast<TOutputImage *>(this->GetInput(1));
+  if (!inputPtr1)
+  {
     return;
-    }
-  inputPtr1->SetRequestedRegion( inputPtr1->GetLargestPossibleRegion() );
+  }
+  inputPtr1->SetRequestedRegion(inputPtr1->GetLargestPossibleRegion());
 }
 
-template< typename TOutputImage >
+template <typename TOutputImage>
 void
-ADMMWaveletsConeBeamReconstructionFilter<TOutputImage>
-::GenerateOutputInformation()
+ADMMWaveletsConeBeamReconstructionFilter<TOutputImage>::GenerateOutputInformation()
 {
   // Set runtime connections
   m_ZeroMultiplyFilter->SetInput1(this->GetInput(0));
   m_CGOperator->SetInput(1, this->GetInput(1)); // The projections (the conjugate gradient operator needs them)
   m_CGOperator->SetBeta(m_Beta);
   m_ConjugateGradientFilter->SetX(this->GetInput(0));
-  m_MultiplyFilter->SetConstant2( m_Beta );
+  m_MultiplyFilter->SetConstant2(m_Beta);
   m_DisplacedDetectorFilter->SetInput(this->GetInput(1));
 
   // Links with the m_BackProjectionFilter should be set here and not
@@ -149,7 +144,7 @@ ADMMWaveletsConeBeamReconstructionFilter<TOutputImage>
   m_ConjugateGradientFilter->SetNumberOfIterations(this->m_CG_iterations);
   m_SoftThresholdFilter->SetNumberOfLevels(this->GetNumberOfLevels());
   m_SoftThresholdFilter->SetOrder(this->GetOrder());
-  m_SoftThresholdFilter->SetThreshold(m_Alpha/(2 * m_Beta));
+  m_SoftThresholdFilter->SetThreshold(m_Alpha / (2 * m_Beta));
   m_DisplacedDetectorFilter->SetDisable(m_DisableDisplacedDetectorFilter);
   m_CGOperator->SetDisableDisplacedDetectorFilter(m_DisableDisplacedDetectorFilter);
 
@@ -157,23 +152,22 @@ ADMMWaveletsConeBeamReconstructionFilter<TOutputImage>
   m_SubtractFilter2->UpdateOutputInformation();
 
   // Copy it as the output information of the composite filter
-  this->GetOutput()->CopyInformation( m_SubtractFilter2->GetOutput() );
+  this->GetOutput()->CopyInformation(m_SubtractFilter2->GetOutput());
 }
 
-template< typename TOutputImage >
+template <typename TOutputImage>
 void
-ADMMWaveletsConeBeamReconstructionFilter<TOutputImage>
-::GenerateData()
+ADMMWaveletsConeBeamReconstructionFilter<TOutputImage>::GenerateData()
 {
   typename TOutputImage::Pointer f_k_plus_one;
   typename TOutputImage::Pointer W_t_G_k_plus_one;
   typename TOutputImage::Pointer W_t_D_k_plus_one;
 
-  for(unsigned int iter=0; iter < m_AL_iterations; iter++)
-    {
+  for (unsigned int iter = 0; iter < m_AL_iterations; iter++)
+  {
     // After the first update, we need to use some outputs as inputs
-    if(iter>0)
-      {
+    if (iter > 0)
+    {
       f_k_plus_one = m_ConjugateGradientFilter->GetOutput();
       f_k_plus_one->DisconnectPipeline();
       m_ConjugateGradientFilter->SetX(f_k_plus_one);
@@ -190,13 +184,13 @@ ADMMWaveletsConeBeamReconstructionFilter<TOutputImage>
       // Recreate the links destroyed by DisconnectPipeline
       m_SubtractFilter1->SetInput1(m_ConjugateGradientFilter->GetOutput());
       m_SubtractFilter2->SetInput1(m_SoftThresholdFilter->GetOutput());
-      }
-    m_SubtractFilter2->Update();
     }
-  this->GraftOutput( m_ConjugateGradientFilter->GetOutput() );
+    m_SubtractFilter2->Update();
+  }
+  this->GraftOutput(m_ConjugateGradientFilter->GetOutput());
 }
 
-}// end namespace
+} // namespace rtk
 
 
 #endif

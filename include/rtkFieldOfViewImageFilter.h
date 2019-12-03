@@ -45,15 +45,14 @@ namespace rtk
  * \ingroup RTK InPlaceImageFilter
  */
 template <class TInputImage, class TOutputImage>
-class ITK_EXPORT FieldOfViewImageFilter:
-  public itk::InPlaceImageFilter<TInputImage,TOutputImage>
+class ITK_EXPORT FieldOfViewImageFilter : public itk::InPlaceImageFilter<TInputImage, TOutputImage>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(FieldOfViewImageFilter);
 
   /** Standard class type alias. */
   using Self = FieldOfViewImageFilter;
-  using Superclass = itk::ImageToImageFilter<TInputImage,TOutputImage>;
+  using Superclass = itk::ImageToImageFilter<TInputImage, TOutputImage>;
   using Pointer = itk::SmartPointer<Self>;
   using ConstPointer = itk::SmartPointer<const Self>;
 
@@ -62,7 +61,7 @@ public:
   using ProjectionsStackPointer = typename ProjectionsStackType::Pointer;
   using GeometryType = rtk::ThreeDCircularProjectionGeometry;
   using GeometryConstPointer = typename GeometryType::ConstPointer;
-  using FOVRadiusType = enum {RADIUSINF,RADIUSSUP,RADIUSBOTH};
+  using FOVRadiusType = enum { RADIUSINF, RADIUSSUP, RADIUSBOTH };
 
 
   /** Method for creation through the object factory. */
@@ -102,45 +101,50 @@ public:
    * Returns true if it managed to find such a disk and false otherwise.
    * The function may be called without out computing the output, but
    * m_Geometry and ProjectionsStack must be set.*/
-  virtual bool ComputeFOVRadius(const FOVRadiusType type, double &x, double &z, double &r);
+  virtual bool
+  ComputeFOVRadius(const FOVRadiusType type, double & x, double & z, double & r);
 
   /** Add collimation constraints. This function is always called from
    * ComputeFOVRadius but it has an effect only if the geometry has the
    * m_CollimationUInf or m_CollimationUSup which are non infinity (default). */
-  void AddCollimationConstraints(const FOVRadiusType type, _lprec *lp);
+  void
+  AddCollimationConstraints(const FOVRadiusType type, _lprec * lp);
 
 protected:
   FieldOfViewImageFilter();
   ~FieldOfViewImageFilter() override = default;
 
-  void BeforeThreadedGenerateData() override;
+  void
+  BeforeThreadedGenerateData() override;
 
   /** Generates a FOV mask which is applied to the reconstruction
    * A call to this function will assume modification of the function.*/
-#if ITK_VERSION_MAJOR<5
-  void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) override;
+#if ITK_VERSION_MAJOR < 5
+  void
+  ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, ThreadIdType threadId) override;
 #else
-  void DynamicThreadedGenerateData(const OutputImageRegionType& outputRegionForThread) override;
+  void
+  DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread) override;
 #endif
 
 private:
-  GeometryConstPointer    m_Geometry{nullptr};
-  bool                    m_Mask{false};
+  GeometryConstPointer    m_Geometry{ nullptr };
+  bool                    m_Mask{ false };
   ProjectionsStackPointer m_ProjectionsStack;
-  double                  m_Radius{-1};
-  double                  m_CenterX{0.};
-  double                  m_CenterZ{0.};
+  double                  m_Radius{ -1 };
+  double                  m_CenterX{ 0. };
+  double                  m_CenterZ{ 0. };
   double                  m_HatTangentInf;
   double                  m_HatTangentSup;
   double                  m_HatHeightInf;
   double                  m_HatHeightSup;
-  bool                    m_DisplacedDetector{false};
+  bool                    m_DisplacedDetector{ false };
 };
 
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkFieldOfViewImageFilter.hxx"
+#  include "rtkFieldOfViewImageFilter.hxx"
 #endif
 
 #endif

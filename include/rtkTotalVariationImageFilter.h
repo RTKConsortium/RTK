@@ -46,18 +46,17 @@ namespace rtk
  *
  */
 
-template< typename TInputImage >
-class TotalVariationImageFilter:
-  public itk::ImageToImageFilter< TInputImage, TInputImage >
+template <typename TInputImage>
+class TotalVariationImageFilter : public itk::ImageToImageFilter<TInputImage, TInputImage>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(TotalVariationImageFilter);
 
   /** Standard Self type alias */
   using Self = TotalVariationImageFilter;
-  using Superclass = itk::ImageToImageFilter< TInputImage, TInputImage >;
-  using Pointer = itk::SmartPointer< Self >;
-  using ConstPointer = itk::SmartPointer< const Self >;
+  using Superclass = itk::ImageToImageFilter<TInputImage, TInputImage>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -74,48 +73,58 @@ public:
   using PixelType = typename TInputImage::PixelType;
 
   /** Image related type alias. */
-  itkStaticConstMacro(ImageDimension, unsigned int,
-                      TInputImage::ImageDimension);
+  itkStaticConstMacro(ImageDimension, unsigned int, TInputImage::ImageDimension);
 
   /** Type to use for computations. */
-  using RealType = typename itk::NumericTraits< PixelType >::RealType;
+  using RealType = typename itk::NumericTraits<PixelType>::RealType;
 
   /** Smart Pointer type to a DataObject. */
   using DataObjectPointer = typename itk::DataObject::Pointer;
 
   /** Type of DataObjects used for scalar outputs */
-  using RealObjectType = itk::SimpleDataObjectDecorator< RealType >;
-//  using PixelObjectType = SimpleDataObjectDecorator< PixelType >;
+  using RealObjectType = itk::SimpleDataObjectDecorator<RealType>;
+  //  using PixelObjectType = SimpleDataObjectDecorator< PixelType >;
 
   /** Return the computed Minimum. */
-  RealType GetTotalVariation() const
-  { return this->GetTotalVariationOutput()->Get(); }
-  RealObjectType * GetTotalVariationOutput();
+  RealType
+  GetTotalVariation() const
+  {
+    return this->GetTotalVariationOutput()->Get();
+  }
+  RealObjectType *
+  GetTotalVariationOutput();
 
-  const RealObjectType * GetTotalVariationOutput() const;
+  const RealObjectType *
+  GetTotalVariationOutput() const;
 
   /** Make a DataObject of the correct type to be used as the specified
    * output. */
   using DataObjectPointerArraySizeType = itk::ProcessObject::DataObjectPointerArraySizeType;
   using Superclass::MakeOutput;
-  DataObjectPointer MakeOutput(DataObjectPointerArraySizeType idx) override;
+  DataObjectPointer
+  MakeOutput(DataObjectPointerArraySizeType idx) override;
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
-  itkConceptMacro( InputHasNumericTraitsCheck,
-                   ( itk::Concept::HasNumericTraits< PixelType > ) );
+  itkConceptMacro(InputHasNumericTraitsCheck, (itk::Concept::HasNumericTraits<PixelType>));
   // End concept checking
 #endif
 
   /** Use the image spacing information in calculations. Use this option if you
    *  want derivatives in physical space. Default is UseImageSpacingOn. */
-  void SetUseImageSpacingOn()
-  { this->SetUseImageSpacing(true); }
+  void
+  SetUseImageSpacingOn()
+  {
+    this->SetUseImageSpacing(true);
+  }
 
   /** Ignore the image spacing. Use this option if you want derivatives in
       isotropic pixel space.  Default is UseImageSpacingOn. */
-  void SetUseImageSpacingOff()
-  { this->SetUseImageSpacing(false); }
+  void
+  SetUseImageSpacingOff()
+  {
+    this->SetUseImageSpacing(false);
+  }
 
   /** Set/Get whether or not the filter will use the spacing of the input
       image in its calculations */
@@ -125,40 +134,45 @@ public:
 protected:
   TotalVariationImageFilter();
   ~TotalVariationImageFilter() override = default;
-  void PrintSelf(std::ostream & os, itk::Indent indent) const override;
+  void
+  PrintSelf(std::ostream & os, itk::Indent indent) const override;
 
   /** Pass the input through unmodified. Do this by Grafting in the
    *  AllocateOutputs method.
    */
-  void AllocateOutputs() override;
+  void
+  AllocateOutputs() override;
 
   /** Initialize some accumulators before the threads run. */
-  void BeforeThreadedGenerateData() override;
+  void
+  BeforeThreadedGenerateData() override;
 
   /** Do final mean and variance computation from data accumulated in threads.
    */
-  void AfterThreadedGenerateData() override;
+  void
+  AfterThreadedGenerateData() override;
 
   /** Multi-thread version GenerateData. */
-  void  ThreadedGenerateData(const RegionType &
-                             outputRegionForThread,
-                             itk::ThreadIdType threadId) override;
+  void
+  ThreadedGenerateData(const RegionType & outputRegionForThread, itk::ThreadIdType threadId) override;
 
   // Override since the filter needs all the data for the algorithm
-  void GenerateInputRequestedRegion() override;
+  void
+  GenerateInputRequestedRegion() override;
 
   // Override since the filter produces all of its output
-  void EnlargeOutputRequestedRegion(itk::DataObject *data) override;
+  void
+  EnlargeOutputRequestedRegion(itk::DataObject * data) override;
 
-  bool                        m_UseImageSpacing;
+  bool m_UseImageSpacing;
 
 private:
-  itk::Array< RealType >       m_SumOfSquareRoots;
+  itk::Array<RealType> m_SumOfSquareRoots;
 }; // end of class
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkTotalVariationImageFilter.hxx"
+#  include "rtkTotalVariationImageFilter.hxx"
 #endif
 
 #endif

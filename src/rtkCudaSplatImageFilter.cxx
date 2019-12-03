@@ -21,27 +21,19 @@
 
 #include <itkMacro.h>
 
-rtk::CudaSplatImageFilter
-::CudaSplatImageFilter()
-{
-}
+rtk::CudaSplatImageFilter ::CudaSplatImageFilter() {}
 
 void
-rtk::CudaSplatImageFilter
-::GPUGenerateData()
+rtk::CudaSplatImageFilter ::GPUGenerateData()
 {
-    int4 outputSize;
-    outputSize.x = this->GetOutput()->GetLargestPossibleRegion().GetSize()[0];
-    outputSize.y = this->GetOutput()->GetLargestPossibleRegion().GetSize()[1];
-    outputSize.z = this->GetOutput()->GetLargestPossibleRegion().GetSize()[2];
-    outputSize.w = this->GetOutput()->GetLargestPossibleRegion().GetSize()[3];
+  int4 outputSize;
+  outputSize.x = this->GetOutput()->GetLargestPossibleRegion().GetSize()[0];
+  outputSize.y = this->GetOutput()->GetLargestPossibleRegion().GetSize()[1];
+  outputSize.z = this->GetOutput()->GetLargestPossibleRegion().GetSize()[2];
+  outputSize.w = this->GetOutput()->GetLargestPossibleRegion().GetSize()[3];
 
-    float *pvolseries = *(float**)( this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer() );
-    float *pvol = *(float**)( this->GetInputVolume()->GetCudaDataManager()->GetGPUBufferPointer() );
+  float * pvolseries = *(float **)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
+  float * pvol = *(float **)(this->GetInputVolume()->GetCudaDataManager()->GetGPUBufferPointer());
 
-    CUDA_splat(outputSize,
-               pvol,
-               pvolseries,
-               m_ProjectionNumber,
-               m_Weights.data_array());
+  CUDA_splat(outputSize, pvol, pvolseries, m_ProjectionNumber, m_Weights.data_array());
 }

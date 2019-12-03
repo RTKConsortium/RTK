@@ -22,7 +22,7 @@
 #include "rtkImportImageFilter.h"
 #include <itkObjectFactory.h>
 #ifdef RTK_USE_CUDA
-# include <itkCudaImage.h>
+#  include <itkCudaImage.h>
 #endif
 
 namespace rtk
@@ -30,17 +30,16 @@ namespace rtk
 /**
  *
  */
-template< typename TImage >
-ImportImageFilter< TImage >
-::ImportImageFilter()
+template <typename TImage>
+ImportImageFilter<TImage>::ImportImageFilter()
 {
   unsigned int idx;
 
-  for ( idx = 0; idx < TImage::ImageDimension; ++idx )
-    {
+  for (idx = 0; idx < TImage::ImageDimension; ++idx)
+  {
     m_Spacing[idx] = 1.0;
     m_Origin[idx] = 0.0;
-    }
+  }
   m_Direction.SetIdentity();
 
   m_ImportPointer = nullptr;
@@ -51,52 +50,50 @@ ImportImageFilter< TImage >
 /**
  *
  */
-template< typename TImage >
-ImportImageFilter< TImage >
-::~ImportImageFilter()
+template <typename TImage>
+ImportImageFilter<TImage>::~ImportImageFilter()
 {
-  if ( m_ImportPointer && m_FilterManageMemory )
-    {
+  if (m_ImportPointer && m_FilterManageMemory)
+  {
     delete[] m_ImportPointer;
-    }
+  }
 }
 
 /**
  *
  */
-template< typename TImage >
+template <typename TImage>
 void
-ImportImageFilter< TImage >
-::PrintSelf(std::ostream & os, itk::Indent indent) const
+ImportImageFilter<TImage>::PrintSelf(std::ostream & os, itk::Indent indent) const
 {
   int i;
 
   this->Superclass::PrintSelf(os, indent);
 
-  if ( m_ImportPointer )
-    {
-    os << indent << "Imported pointer: (" << m_ImportPointer  << ")" << std::endl;
-    }
+  if (m_ImportPointer)
+  {
+    os << indent << "Imported pointer: (" << m_ImportPointer << ")" << std::endl;
+  }
   else
-    {
+  {
     os << indent << "Imported pointer: (None)" << std::endl;
-    }
+  }
   os << indent << "Import buffer size: " << m_Size << std::endl;
   os << indent << "Import buffer size: " << m_Size << std::endl;
-  os << indent << "Filter manages memory: " << ( m_FilterManageMemory ? "true" : "false" ) << std::endl;
+  os << indent << "Filter manages memory: " << (m_FilterManageMemory ? "true" : "false") << std::endl;
 
   os << indent << "Spacing: [";
-  for ( i = 0; i < static_cast< int >( TImage::ImageDimension ) - 1; i++ )
-    {
+  for (i = 0; i < static_cast<int>(TImage::ImageDimension) - 1; i++)
+  {
     os << m_Spacing[i] << ", ";
-    }
+  }
   os << m_Spacing[i] << "]" << std::endl;
 
   os << indent << "Origin: [";
-  for ( i = 0; i < static_cast< int >( TImage::ImageDimension ) - 1; i++ )
-    {
+  for (i = 0; i < static_cast<int>(TImage::ImageDimension) - 1; i++)
+  {
     os << m_Origin[i] << ", ";
-    }
+  }
   os << m_Origin[i] << "]" << std::endl;
   os << indent << "Direction: " << std::endl << this->GetDirection() << std::endl;
 }
@@ -104,20 +101,19 @@ ImportImageFilter< TImage >
 /**
  *
  */
-template< typename TImage >
+template <typename TImage>
 void
-ImportImageFilter< TImage >
-::SetImportPointer(PixelType *ptr, SizeValueType num, bool LetFilterManageMemory)
+ImportImageFilter<TImage>::SetImportPointer(PixelType * ptr, SizeValueType num, bool LetFilterManageMemory)
 {
-  if ( ptr != m_ImportPointer )
+  if (ptr != m_ImportPointer)
+  {
+    if (m_ImportPointer && m_FilterManageMemory)
     {
-    if ( m_ImportPointer && m_FilterManageMemory )
-      {
       delete[] m_ImportPointer;
-      }
+    }
     m_ImportPointer = ptr;
     this->Modified();
-    }
+  }
   m_FilterManageMemory = LetFilterManageMemory;
   m_Size = num;
 }
@@ -125,10 +121,9 @@ ImportImageFilter< TImage >
 /**
  *
  */
-template< typename TImage >
+template <typename TImage>
 typename TImage::PixelType *
-ImportImageFilter< TImage >
-::GetImportPointer()
+ImportImageFilter<TImage>::GetImportPointer()
 {
   return m_ImportPointer;
 }
@@ -136,10 +131,9 @@ ImportImageFilter< TImage >
 /**
  *
  */
-template< typename TImage >
+template <typename TImage>
 void
-ImportImageFilter< TImage >
-::EnlargeOutputRequestedRegion(itk::DataObject *output)
+ImportImageFilter<TImage>::EnlargeOutputRequestedRegion(itk::DataObject * output)
 {
   // call the superclass' implementation of this method
   Superclass::EnlargeOutputRequestedRegion(output);
@@ -149,16 +143,15 @@ ImportImageFilter< TImage >
 
   // set the requested region to the largest possible region (in this case
   // the amount of data that we have)
-  outputPtr->SetRequestedRegion( outputPtr->GetLargestPossibleRegion() );
+  outputPtr->SetRequestedRegion(outputPtr->GetLargestPossibleRegion());
 }
 
 /**
  *
  */
-template< typename TImage >
+template <typename TImage>
 void
-ImportImageFilter< TImage >
-::GenerateOutputInformation()
+ImportImageFilter<TImage>::GenerateOutputInformation()
 {
   // call the superclass' implementation of this method
   Superclass::GenerateOutputInformation();
@@ -177,10 +170,9 @@ ImportImageFilter< TImage >
 /**
  *
  */
-template< typename TImage >
+template <typename TImage>
 void
-ImportImageFilter< TImage >
-::GenerateData()
+ImportImageFilter<TImage>::GenerateData()
 {
   // Normally, GenerateData() allocates memory.  However, the application
   // provides the memory for this filter via the SetImportPointer() method.
@@ -191,53 +183,51 @@ ImportImageFilter< TImage >
 
   // the output buffer size is set to the size specified by the user via the
   // SetRegion() method.
-  outputPtr->SetBufferedRegion( outputPtr->GetLargestPossibleRegion() );
+  outputPtr->SetBufferedRegion(outputPtr->GetLargestPossibleRegion());
 
   // pass the pointer down to the container during each Update() since
   // a call to Initialize() causes the container to forget the
   // pointer.  Note that we tell the container NOT to manage the
   // memory itself.  This filter will properly manage the memory (as
   // opposed to the container) if the user wants it to.
-  outputPtr->GetPixelContainer()->SetImportPointer(m_ImportPointer,
-                                                   m_Size, false);
+  outputPtr->GetPixelContainer()->SetImportPointer(m_ImportPointer, m_Size, false);
 
 #ifdef RTK_USE_CUDA
   using TCudaImage = itk::CudaImage<typename TImage::PixelType, TImage::ImageDimension>;
-  if (TCudaImage* cudaOutputPtr = dynamic_cast<TCudaImage*>(outputPtr.GetPointer()))
-    {
+  if (TCudaImage * cudaOutputPtr = dynamic_cast<TCudaImage *>(outputPtr.GetPointer()))
+  {
     cudaOutputPtr->GetModifiableDataManager()->SetBufferSize(m_Size * sizeof(typename TImage::PixelType));
     cudaOutputPtr->GetModifiableDataManager()->SetImagePointer(cudaOutputPtr);
     cudaOutputPtr->GetModifiableDataManager()->SetCPUBufferPointer(m_ImportPointer);
     cudaOutputPtr->GetModifiableDataManager()->SetGPUDirtyFlag(true);
     cudaOutputPtr->GetModifiableDataManager()->SetCPUDirtyFlag(false);
-    }
+  }
 #endif
 }
 
 //----------------------------------------------------------------------------
-template< typename TImage >
+template <typename TImage>
 void
-ImportImageFilter< TImage >
-::SetDirection(const DirectionType & direction)
+ImportImageFilter<TImage>::SetDirection(const DirectionType & direction)
 {
   bool modified = false;
 
-  for ( unsigned int r = 0; r < TImage::ImageDimension; r++ )
+  for (unsigned int r = 0; r < TImage::ImageDimension; r++)
+  {
+    for (unsigned int c = 0; c < TImage::ImageDimension; c++)
     {
-    for ( unsigned int c = 0; c < TImage::ImageDimension; c++ )
+      if (m_Direction[r][c] != direction[r][c])
       {
-      if ( m_Direction[r][c] != direction[r][c] )
-        {
         m_Direction[r][c] = direction[r][c];
         modified = true;
-        }
       }
     }
-  if ( modified )
-    {
+  }
+  if (modified)
+  {
     this->Modified();
-    }
+  }
 }
-} // end namespace itk
+} // namespace rtk
 
 #endif

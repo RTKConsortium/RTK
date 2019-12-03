@@ -24,71 +24,78 @@
 
 namespace rtk
 {
-  /** \class LastDimensionL0GradientDenoisingImageFilter
-   * \brief Denoises along the last dimension, reducing the L0 norm of the gradient
-   *
-   * This filter implements the "Fast and Effective L0 Gradient Minimization by Region Fusion"
-   * method, developped by Nguyen and Brown. Their method is computationally demanding, but its
-   * restriction to 1D can be implemented efficiently. This is what this filter does.
-   *
-   * \test rtkl0gradientnormtest
-   *
-   * \author Cyril Mory
+/** \class LastDimensionL0GradientDenoisingImageFilter
+ * \brief Denoises along the last dimension, reducing the L0 norm of the gradient
+ *
+ * This filter implements the "Fast and Effective L0 Gradient Minimization by Region Fusion"
+ * method, developped by Nguyen and Brown. Their method is computationally demanding, but its
+ * restriction to 1D can be implemented efficiently. This is what this filter does.
+ *
+ * \test rtkl0gradientnormtest
+ *
+ * \author Cyril Mory
  *
  * \ingroup RTK
-   *
-   */
-template< class TInputImage >
+ *
+ */
+template <class TInputImage>
 
 class LastDimensionL0GradientDenoisingImageFilter : public itk::InPlaceImageFilter<TInputImage, TInputImage>
 {
 public:
-    ITK_DISALLOW_COPY_AND_ASSIGN(LastDimensionL0GradientDenoisingImageFilter);
+  ITK_DISALLOW_COPY_AND_ASSIGN(LastDimensionL0GradientDenoisingImageFilter);
 
-    /** Standard class type alias. */
-    using Self = LastDimensionL0GradientDenoisingImageFilter;
-    using Superclass = itk::InPlaceImageFilter<TInputImage, TInputImage>;
-    using Pointer = itk::SmartPointer< Self >;
-    using InputPixelType = typename TInputImage::PixelType;
+  /** Standard class type alias. */
+  using Self = LastDimensionL0GradientDenoisingImageFilter;
+  using Superclass = itk::InPlaceImageFilter<TInputImage, TInputImage>;
+  using Pointer = itk::SmartPointer<Self>;
+  using InputPixelType = typename TInputImage::PixelType;
 
-    /** Method for creation through the object factory. */
-    itkNewMacro(Self);
+  /** Method for creation through the object factory. */
+  itkNewMacro(Self);
 
-    /** Run-time type information (and related methods). */
-    itkTypeMacro(LastDimensionL0GradientDenoisingImageFilter, itk::InPlaceImageFilter);
+  /** Run-time type information (and related methods). */
+  itkTypeMacro(LastDimensionL0GradientDenoisingImageFilter, itk::InPlaceImageFilter);
 
-    /** Get / Set the threshold. Default is 0.001 */
-    itkGetMacro(Lambda, double);
-    itkSetMacro(Lambda, double);
+  /** Get / Set the threshold. Default is 0.001 */
+  itkGetMacro(Lambda, double);
+  itkSetMacro(Lambda, double);
 
-    /** Get / Set the number of iterations. Default is 10 */
-    itkGetMacro(NumberOfIterations, unsigned int);
-    itkSetMacro(NumberOfIterations, unsigned int);
+  /** Get / Set the number of iterations. Default is 10 */
+  itkGetMacro(NumberOfIterations, unsigned int);
+  itkSetMacro(NumberOfIterations, unsigned int);
 
 protected:
-    LastDimensionL0GradientDenoisingImageFilter();
-    ~LastDimensionL0GradientDenoisingImageFilter() override = default;
+  LastDimensionL0GradientDenoisingImageFilter();
+  ~LastDimensionL0GradientDenoisingImageFilter() override = default;
 
-    void GenerateInputRequestedRegion() override;
+  void
+  GenerateInputRequestedRegion() override;
 
-    /** Does the real work. */
-    void ThreadedGenerateData(const typename TInputImage::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) override;
+  /** Does the real work. */
+  void
+  ThreadedGenerateData(const typename TInputImage::RegionType & outputRegionForThread,
+                       itk::ThreadIdType                        itkNotUsed(threadId)) override;
 
-    /** Splits the OutputRequestedRegion along the first direction, not the last */
-    const itk::ImageRegionSplitterBase* GetImageRegionSplitter(void) const override;
-    itk::ImageRegionSplitterDirection::Pointer  m_Splitter;
+  /** Splits the OutputRequestedRegion along the first direction, not the last */
+  const itk::ImageRegionSplitterBase *
+                                             GetImageRegionSplitter(void) const override;
+  itk::ImageRegionSplitterDirection::Pointer m_Splitter;
 
-    virtual void OneDimensionMinimizeL0NormOfGradient(InputPixelType* input, unsigned int length, double lambda, unsigned int nbIters);
+  virtual void
+  OneDimensionMinimizeL0NormOfGradient(InputPixelType * input,
+                                       unsigned int     length,
+                                       double           lambda,
+                                       unsigned int     nbIters);
 
-    double              m_Lambda;
-    unsigned int        m_NumberOfIterations;
-
+  double       m_Lambda;
+  unsigned int m_NumberOfIterations;
 };
-} //namespace RTK
+} // namespace rtk
 
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkLastDimensionL0GradientDenoisingImageFilter.hxx"
+#  include "rtkLastDimensionL0GradientDenoisingImageFilter.hxx"
 #endif
 
 #endif

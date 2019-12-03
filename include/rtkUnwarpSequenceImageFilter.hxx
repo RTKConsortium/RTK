@@ -24,14 +24,13 @@
 namespace rtk
 {
 
-template< typename TImageSequence, typename TDVFImageSequence, typename TImage, typename TDVFImage>
-UnwarpSequenceImageFilter< TImageSequence, TDVFImageSequence, TImage, TDVFImage>
-::UnwarpSequenceImageFilter()
+template <typename TImageSequence, typename TDVFImageSequence, typename TImage, typename TDVFImage>
+UnwarpSequenceImageFilter<TImageSequence, TDVFImageSequence, TImage, TDVFImage>::UnwarpSequenceImageFilter()
 {
   this->SetNumberOfRequiredInputs(2);
 
   // Set the default values of member parameters
-  m_NumberOfIterations=2;
+  m_NumberOfIterations = 2;
   m_PhaseShift = 0;
   m_UseNearestNeighborInterpolationInWarping = false;
   m_CudaConjugateGradient = false;
@@ -41,11 +40,11 @@ UnwarpSequenceImageFilter< TImageSequence, TDVFImageSequence, TImage, TDVFImage>
   m_ConjugateGradientFilter = ConjugateGradientFilterType::New();
   m_ConstantSource = ConstantSourceType::New();
   if (m_CudaConjugateGradient)
-    {
-    if( std::is_same< TImageSequence, CPUImageSequence >::value )
+  {
+    if (std::is_same<TImageSequence, CPUImageSequence>::value)
       itkGenericExceptionMacro(<< "CudaConjugateGradient option only available with itk::CudaImage.");
     m_ConjugateGradientFilter = CudaConjugateGradientType::New();
-    }
+  }
 
   m_WarpForwardFilter = WarpForwardFilterType::New();
   m_CGOperator = CGOperatorFilterType::New();
@@ -63,44 +62,40 @@ UnwarpSequenceImageFilter< TImageSequence, TDVFImageSequence, TImage, TDVFImage>
   m_WarpForwardFilter->ReleaseDataFlagOn();
 }
 
-template< typename TImageSequence, typename TDVFImageSequence, typename TImage, typename TDVFImage>
+template <typename TImageSequence, typename TDVFImageSequence, typename TImage, typename TDVFImage>
 void
-UnwarpSequenceImageFilter< TImageSequence, TDVFImageSequence, TImage, TDVFImage>
-::SetDisplacementField(const TDVFImageSequence* DVFs)
+UnwarpSequenceImageFilter<TImageSequence, TDVFImageSequence, TImage, TDVFImage>::SetDisplacementField(
+  const TDVFImageSequence * DVFs)
 {
-  this->SetNthInput(1, const_cast<TDVFImageSequence*>(DVFs));
+  this->SetNthInput(1, const_cast<TDVFImageSequence *>(DVFs));
 }
 
-template< typename TImageSequence, typename TDVFImageSequence, typename TImage, typename TDVFImage>
+template <typename TImageSequence, typename TDVFImageSequence, typename TImage, typename TDVFImage>
 typename TDVFImageSequence::Pointer
-UnwarpSequenceImageFilter< TImageSequence, TDVFImageSequence, TImage, TDVFImage>
-::GetDisplacementField()
+UnwarpSequenceImageFilter<TImageSequence, TDVFImageSequence, TImage, TDVFImage>::GetDisplacementField()
 {
-  return static_cast< TDVFImageSequence * >
-          ( this->itk::ProcessObject::GetInput(1) );
+  return static_cast<TDVFImageSequence *>(this->itk::ProcessObject::GetInput(1));
 }
 
-template< typename TImageSequence, typename TDVFImageSequence, typename TImage, typename TDVFImage>
+template <typename TImageSequence, typename TDVFImageSequence, typename TImage, typename TDVFImage>
 void
-UnwarpSequenceImageFilter< TImageSequence, TDVFImageSequence, TImage, TDVFImage>
-::GenerateInputRequestedRegion()
+UnwarpSequenceImageFilter<TImageSequence, TDVFImageSequence, TImage, TDVFImage>::GenerateInputRequestedRegion()
 {
-  //Call the superclass' implementation of this method
+  // Call the superclass' implementation of this method
   Superclass::GenerateInputRequestedRegion();
 
-  //Get pointers to the input and output
-  typename TImageSequence::Pointer  inputPtr  = const_cast<TImageSequence *>(this->GetInput(0));
+  // Get pointers to the input and output
+  typename TImageSequence::Pointer inputPtr = const_cast<TImageSequence *>(this->GetInput(0));
   inputPtr->SetRequestedRegionToLargestPossibleRegion();
 
-  typename TDVFImageSequence::Pointer  inputDVFPtr  = this->GetDisplacementField();
+  typename TDVFImageSequence::Pointer inputDVFPtr = this->GetDisplacementField();
   inputDVFPtr->SetRequestedRegionToLargestPossibleRegion();
 }
 
 
-template< typename TImageSequence, typename TDVFImageSequence, typename TImage, typename TDVFImage>
+template <typename TImageSequence, typename TDVFImageSequence, typename TImage, typename TDVFImage>
 void
-UnwarpSequenceImageFilter< TImageSequence, TDVFImageSequence, TImage, TDVFImage>
-::GenerateOutputInformation()
+UnwarpSequenceImageFilter<TImageSequence, TDVFImageSequence, TImage, TDVFImage>::GenerateOutputInformation()
 {
   // Set runtime connections
   m_ConstantSource->SetInformationFromImage(this->GetInput(0));
@@ -121,28 +116,27 @@ UnwarpSequenceImageFilter< TImageSequence, TDVFImageSequence, TImage, TDVFImage>
   m_ConjugateGradientFilter->UpdateOutputInformation();
 
   // Copy it as the output information of the composite filter
-  this->GetOutput()->CopyInformation( m_ConjugateGradientFilter->GetOutput() );
+  this->GetOutput()->CopyInformation(m_ConjugateGradientFilter->GetOutput());
 }
 
-template< typename TImageSequence, typename TDVFImageSequence, typename TImage, typename TDVFImage>
+template <typename TImageSequence, typename TDVFImageSequence, typename TImage, typename TDVFImage>
 void
-UnwarpSequenceImageFilter< TImageSequence, TDVFImageSequence, TImage, TDVFImage>
-::GenerateData()
+UnwarpSequenceImageFilter<TImageSequence, TDVFImageSequence, TImage, TDVFImage>::GenerateData()
 {
   m_ConjugateGradientFilter->Update();
 
-  this->GraftOutput( m_ConjugateGradientFilter->GetOutput() );
+  this->GraftOutput(m_ConjugateGradientFilter->GetOutput());
 
   // During mini-pipeline execution, the requested region on the primary input
   // is modified by the extract filters contained in the warp filters. This
-  typename TImageSequence::Pointer  inputPtr  = const_cast<TImageSequence *>(this->GetInput(0));
+  typename TImageSequence::Pointer inputPtr = const_cast<TImageSequence *>(this->GetInput(0));
   inputPtr->SetRequestedRegionToLargestPossibleRegion();
 
-  typename TDVFImageSequence::Pointer  inputDVFPtr  = this->GetDisplacementField();
+  typename TDVFImageSequence::Pointer inputDVFPtr = this->GetDisplacementField();
   inputDVFPtr->SetRequestedRegionToLargestPossibleRegion();
 }
 
-}// end namespace
+} // namespace rtk
 
 
 #endif

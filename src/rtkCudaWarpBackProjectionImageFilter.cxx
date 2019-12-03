@@ -28,60 +28,49 @@
 namespace rtk
 {
 
-CudaWarpBackProjectionImageFilter
-::CudaWarpBackProjectionImageFilter()
+CudaWarpBackProjectionImageFilter ::CudaWarpBackProjectionImageFilter()
 {
   this->SetNumberOfRequiredInputs(1);
 }
 
 void
-CudaWarpBackProjectionImageFilter
-::SetInputVolume(const ImageType* Volume)
+CudaWarpBackProjectionImageFilter ::SetInputVolume(const ImageType * Volume)
 {
-  this->SetInput(0, const_cast<ImageType*>(Volume));
+  this->SetInput(0, const_cast<ImageType *>(Volume));
 }
 
 void
-CudaWarpBackProjectionImageFilter
-::SetInputProjectionStack(const ImageType* ProjectionStack)
+CudaWarpBackProjectionImageFilter ::SetInputProjectionStack(const ImageType * ProjectionStack)
 {
-  this->SetInput(1, const_cast<ImageType*>(ProjectionStack));
+  this->SetInput(1, const_cast<ImageType *>(ProjectionStack));
 }
 
 void
-CudaWarpBackProjectionImageFilter
-::SetDisplacementField(const DVFType* DVF)
+CudaWarpBackProjectionImageFilter ::SetDisplacementField(const DVFType * DVF)
 {
-  this->SetInput("DisplacementField", const_cast<DVFType*>(DVF));
+  this->SetInput("DisplacementField", const_cast<DVFType *>(DVF));
 }
 
 CudaWarpBackProjectionImageFilter::ImageType::Pointer
-CudaWarpBackProjectionImageFilter
-::GetInputVolume()
+CudaWarpBackProjectionImageFilter ::GetInputVolume()
 {
-  return static_cast< ImageType * >
-          ( this->itk::ProcessObject::GetInput(0) );
+  return static_cast<ImageType *>(this->itk::ProcessObject::GetInput(0));
 }
 
 CudaWarpBackProjectionImageFilter::ImageType::Pointer
-CudaWarpBackProjectionImageFilter
-::GetInputProjectionStack()
+CudaWarpBackProjectionImageFilter ::GetInputProjectionStack()
 {
-  return static_cast< ImageType * >
-          ( this->itk::ProcessObject::GetInput(1) );
+  return static_cast<ImageType *>(this->itk::ProcessObject::GetInput(1));
 }
 
 CudaWarpBackProjectionImageFilter::DVFType::Pointer
-CudaWarpBackProjectionImageFilter
-::GetDisplacementField()
+CudaWarpBackProjectionImageFilter ::GetDisplacementField()
 {
-  return static_cast< DVFType * >
-          ( this->itk::ProcessObject::GetInput("DisplacementField") );
+  return static_cast<DVFType *>(this->itk::ProcessObject::GetInput("DisplacementField"));
 }
 
 void
-CudaWarpBackProjectionImageFilter
-::GenerateInputRequestedRegion()
+CudaWarpBackProjectionImageFilter ::GenerateInputRequestedRegion()
 {
   Superclass::GenerateInputRequestedRegion();
 
@@ -98,51 +87,51 @@ CudaWarpBackProjectionImageFilter
   // the smallest region of the deformation field that fully
   // contains the physical space covered by the output's requested
   // region, se we do the easy thing and request the largest possible region
-  DVFType::Pointer    fieldPtr = this->GetDisplacementField();
-  ImageType::Pointer  outputPtr = this->GetOutput();
-  if ( fieldPtr.IsNotNull() )
-    {
+  DVFType::Pointer   fieldPtr = this->GetDisplacementField();
+  ImageType::Pointer outputPtr = this->GetOutput();
+  if (fieldPtr.IsNotNull())
+  {
     // tolerance for origin and spacing depends on the size of pixel
     // tolerance for direction is a fraction of the unit cube.
-    const itk::SpacePrecisionType coordinateTol = this->GetCoordinateTolerance() * outputPtr->GetSpacing()[0]; // use first dimension spacing
+    const itk::SpacePrecisionType coordinateTol =
+      this->GetCoordinateTolerance() * outputPtr->GetSpacing()[0]; // use first dimension spacing
 
     bool DefFieldSameInformation =
-       (outputPtr->GetOrigin().GetVnlVector().is_equal(fieldPtr->GetOrigin().GetVnlVector(), coordinateTol))
-    && (outputPtr->GetSpacing().GetVnlVector().is_equal(fieldPtr->GetSpacing().GetVnlVector(), coordinateTol))
-    && (outputPtr->GetDirection().GetVnlMatrix().as_ref().is_equal(fieldPtr->GetDirection().GetVnlMatrix().as_ref(), this->GetDirectionTolerance()));
+      (outputPtr->GetOrigin().GetVnlVector().is_equal(fieldPtr->GetOrigin().GetVnlVector(), coordinateTol)) &&
+      (outputPtr->GetSpacing().GetVnlVector().is_equal(fieldPtr->GetSpacing().GetVnlVector(), coordinateTol)) &&
+      (outputPtr->GetDirection().GetVnlMatrix().as_ref().is_equal(fieldPtr->GetDirection().GetVnlMatrix().as_ref(),
+                                                                  this->GetDirectionTolerance()));
 
     if (DefFieldSameInformation)
-      {
-      fieldPtr->SetRequestedRegion( outputPtr->GetRequestedRegion() );
-      }
+    {
+      fieldPtr->SetRequestedRegion(outputPtr->GetRequestedRegion());
+    }
     else
-      {
+    {
       using DisplacementRegionType = DVFType::RegionType;
 
-      DisplacementRegionType fieldRequestedRegion = itk::ImageAlgorithm::EnlargeRegionOverBox(outputPtr->GetRequestedRegion(),
-                                                                                         outputPtr.GetPointer(),
-                                                                                         fieldPtr.GetPointer());
-      fieldPtr->SetRequestedRegion( fieldRequestedRegion );
-      }
-    if ( !fieldPtr->VerifyRequestedRegion() )
-      {
-      fieldPtr->SetRequestedRegion( fieldPtr->GetLargestPossibleRegion() );
-      }
+      DisplacementRegionType fieldRequestedRegion = itk::ImageAlgorithm::EnlargeRegionOverBox(
+        outputPtr->GetRequestedRegion(), outputPtr.GetPointer(), fieldPtr.GetPointer());
+      fieldPtr->SetRequestedRegion(fieldRequestedRegion);
     }
+    if (!fieldPtr->VerifyRequestedRegion())
+    {
+      fieldPtr->SetRequestedRegion(fieldPtr->GetLargestPossibleRegion());
+    }
+  }
 }
 
 
 void
-CudaWarpBackProjectionImageFilter
-::GPUGenerateData()
+CudaWarpBackProjectionImageFilter ::GPUGenerateData()
 {
   const unsigned int Dimension = ImageType::ImageDimension;
-  const unsigned int nProj = this->GetInputProjectionStack()->GetLargestPossibleRegion().GetSize(Dimension-1);
-  const unsigned int iFirstProj = this->GetInputProjectionStack()->GetLargestPossibleRegion().GetIndex(Dimension-1);
+  const unsigned int nProj = this->GetInputProjectionStack()->GetLargestPossibleRegion().GetSize(Dimension - 1);
+  const unsigned int iFirstProj = this->GetInputProjectionStack()->GetLargestPossibleRegion().GetIndex(Dimension - 1);
 
   // Ramp factor is the correction for ramp filter which did not account for the
   // divergence of the beam
-//  const GeometryPointer geometry = dynamic_cast<GeometryType *>(this->GetGeometry().GetPointer() );
+  //  const GeometryPointer geometry = dynamic_cast<GeometryType *>(this->GetGeometry().GetPointer() );
 
   // Rotation center (assumed to be at 0 yet)
   ImageType::PointType rotCenterPoint;
@@ -153,11 +142,11 @@ CudaWarpBackProjectionImageFilter
   // Include non-zero index in matrix
   itk::Matrix<double, 4, 4> matrixIdxVol;
   matrixIdxVol.SetIdentity();
-  for(unsigned int i=0; i<3; i++)
-    {
+  for (unsigned int i = 0; i < 3; i++)
+  {
     matrixIdxVol[i][3] = this->GetOutput()->GetRequestedRegion().GetIndex()[i];
     rotCenterIndex[i] -= this->GetOutput()->GetRequestedRegion().GetIndex()[i];
-    }
+  }
 
   // Cuda convenient format for dimensions
   int projectionSize[3];
@@ -179,57 +168,58 @@ CudaWarpBackProjectionImageFilter
   itk::Matrix<double, 4, 4> PPInputToIndexInputMatrix;
   itk::Matrix<double, 4, 4> indexInputToPPInputMatrix;
 
-  indexInputToIndexDVFMatrix = rtk::GetPhysicalPointToIndexMatrix( this->GetDisplacementField().GetPointer() ).GetVnlMatrix()
-                              * rtk::GetIndexToPhysicalPointMatrix( this->GetInputVolume().GetPointer() ).GetVnlMatrix()
-                              * matrixIdxVol.GetVnlMatrix();
+  indexInputToIndexDVFMatrix =
+    rtk::GetPhysicalPointToIndexMatrix(this->GetDisplacementField().GetPointer()).GetVnlMatrix() *
+    rtk::GetIndexToPhysicalPointMatrix(this->GetInputVolume().GetPointer()).GetVnlMatrix() *
+    matrixIdxVol.GetVnlMatrix();
 
-  PPInputToIndexInputMatrix = rtk::GetPhysicalPointToIndexMatrix( this->GetInputVolume().GetPointer() ).GetVnlMatrix();
+  PPInputToIndexInputMatrix = rtk::GetPhysicalPointToIndexMatrix(this->GetInputVolume().GetPointer()).GetVnlMatrix();
 
-  indexInputToPPInputMatrix = rtk::GetIndexToPhysicalPointMatrix( this->GetInputVolume().GetPointer() ).GetVnlMatrix()
-                              * matrixIdxVol.GetVnlMatrix();
+  indexInputToPPInputMatrix = rtk::GetIndexToPhysicalPointMatrix(this->GetInputVolume().GetPointer()).GetVnlMatrix() *
+                              matrixIdxVol.GetVnlMatrix();
 
   // Convert the matrices to arrays of floats (skipping the last line, as we don't care)
   float fIndexInputToIndexDVFMatrix[12];
   float fPPInputToIndexInputMatrix[12];
   float fIndexInputToPPInputMatrix[12];
   for (int j = 0; j < 12; j++)
-    {
-    fIndexInputToIndexDVFMatrix[j] = (float) indexInputToIndexDVFMatrix[j/4][j%4];
-    fPPInputToIndexInputMatrix[j] = (float) PPInputToIndexInputMatrix[j/4][j%4];
-    fIndexInputToPPInputMatrix[j] = (float) indexInputToPPInputMatrix[j/4][j%4];
-    }
+  {
+    fIndexInputToIndexDVFMatrix[j] = (float)indexInputToIndexDVFMatrix[j / 4][j % 4];
+    fPPInputToIndexInputMatrix[j] = (float)PPInputToIndexInputMatrix[j / 4][j % 4];
+    fIndexInputToPPInputMatrix[j] = (float)indexInputToPPInputMatrix[j / 4][j % 4];
+  }
 
   // Load the required images onto the GPU (handled by the CudaDataManager)
-  float *pin  = *(float**)( this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer() );
-  float *pout = *(float**)( this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer() );
-  float *pDVF = *(float**)( this->GetDisplacementField()->GetCudaDataManager()->GetGPUBufferPointer() );
+  float * pin = *(float **)(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
+  float * pout = *(float **)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
+  float * pDVF = *(float **)(this->GetDisplacementField()->GetCudaDataManager()->GetGPUBufferPointer());
 
-  float *stackGPUPointer = *(float**)( this->GetInputProjectionStack()->GetCudaDataManager()->GetGPUBufferPointer() );
+  float *   stackGPUPointer = *(float **)(this->GetInputProjectionStack()->GetCudaDataManager()->GetGPUBufferPointer());
   ptrdiff_t projSize = this->GetInputProjectionStack()->GetBufferedRegion().GetSize()[0] *
                        this->GetInputProjectionStack()->GetBufferedRegion().GetSize()[1];
-  stackGPUPointer += projSize * (iFirstProj-this->GetInputProjectionStack()->GetBufferedRegion().GetIndex()[2]);
+  stackGPUPointer += projSize * (iFirstProj - this->GetInputProjectionStack()->GetBufferedRegion().GetIndex()[2]);
 
   // Allocate a large matrix to hold the matrix of all projections
   // fMatrix is for flat detector, the other two are for cylindrical
-  float *fMatrix = new float[12 * nProj];
-  float *fvolIndexToProjPP = new float[12 * nProj];
-  float *fprojPPToProjIndex = new float[9];
+  float * fMatrix = new float[12 * nProj];
+  float * fvolIndexToProjPP = new float[12 * nProj];
+  float * fprojPPToProjIndex = new float[9];
 
   // Correction for non-zero indices in the projections
   itk::Matrix<double, 3, 3> matrixIdxProj;
   matrixIdxProj.SetIdentity();
-  for(unsigned int i=0; i<2; i++)
-    //SR: 0.5 for 2D texture
-    matrixIdxProj[i][2] = -1*(this->GetInput(1)->GetBufferedRegion().GetIndex()[i])+0.5;
+  for (unsigned int i = 0; i < 2; i++)
+    // SR: 0.5 for 2D texture
+    matrixIdxProj[i][2] = -1 * (this->GetInput(1)->GetBufferedRegion().GetIndex()[i]) + 0.5;
 
   // Go over each projection
-  for(unsigned int iProj=iFirstProj; iProj<iFirstProj+nProj; iProj++)
-    {
+  for (unsigned int iProj = iFirstProj; iProj < iFirstProj + nProj; iProj++)
+  {
     // Projection physical point to projection index matrix
     itk::Matrix<double, 3, 3> projPPToProjIndex = GetProjectionPhysicalPointToProjectionIndexMatrix(iProj);
     projPPToProjIndex = matrixIdxProj.GetVnlMatrix() * projPPToProjIndex.GetVnlMatrix();
     for (int j = 0; j < 9; j++)
-      fprojPPToProjIndex[j] = projPPToProjIndex[j/3][j%3];
+      fprojPPToProjIndex[j] = projPPToProjIndex[j / 3][j % 3];
 
     // Volume index to projection physical point matrix
     // normalized to have a correct backprojection weight
@@ -239,46 +229,46 @@ CudaWarpBackProjectionImageFilter
     // Correction for non-zero indices in the volume
     volIndexToProjPP = volIndexToProjPP.GetVnlMatrix() * matrixIdxVol.GetVnlMatrix();
 
-    double perspFactor = volIndexToProjPP[Dimension-1][Dimension];
-    for(unsigned int j=0; j<Dimension; j++)
-      perspFactor += volIndexToProjPP[Dimension-1][j] * rotCenterIndex[j];
+    double perspFactor = volIndexToProjPP[Dimension - 1][Dimension];
+    for (unsigned int j = 0; j < Dimension; j++)
+      perspFactor += volIndexToProjPP[Dimension - 1][j] * rotCenterIndex[j];
     volIndexToProjPP /= perspFactor;
 
-    ProjectionMatrixType matrix = ProjectionMatrixType(projPPToProjIndex.GetVnlMatrix() * volIndexToProjPP.GetVnlMatrix());
+    ProjectionMatrixType matrix =
+      ProjectionMatrixType(projPPToProjIndex.GetVnlMatrix() * volIndexToProjPP.GetVnlMatrix());
 
     // Fill float arrays with matrices coefficients, to be passed to GPU
     for (int j = 0; j < 12; j++)
-      {
-      fvolIndexToProjPP[j + (iProj-iFirstProj) * 12] = volIndexToProjPP[j/4][j%4];
-      fMatrix[j + (iProj-iFirstProj) * 12] = matrix[j/4][j%4];
-      }
-    }
-
-  for (unsigned int i=0; i<nProj; i+=SLAB_SIZE)
     {
+      fvolIndexToProjPP[j + (iProj - iFirstProj) * 12] = volIndexToProjPP[j / 4][j % 4];
+      fMatrix[j + (iProj - iFirstProj) * 12] = matrix[j / 4][j % 4];
+    }
+  }
+
+  for (unsigned int i = 0; i < nProj; i += SLAB_SIZE)
+  {
     // If nProj is not a multiple of SLAB_SIZE, the last slab will contain less than SLAB_SIZE projections
-    projectionSize[2] = std::min(nProj-i, (unsigned int)SLAB_SIZE);
+    projectionSize[2] = std::min(nProj - i, (unsigned int)SLAB_SIZE);
 
     // Run the back projection with a slab of SLAB_SIZE or less projections
-    CUDA_warp_back_project( projectionSize,
-                            volumeSize,
-                            inputDVFSize,
-                            fMatrix + 12 * i,
-                            fvolIndexToProjPP + 12 * i,
-                            fprojPPToProjIndex,
-                            pin,
-                            pout,
-                            stackGPUPointer + projSize * i,
-                            pDVF,
-                            fIndexInputToIndexDVFMatrix,
-                            fPPInputToIndexInputMatrix,
-                            fIndexInputToPPInputMatrix,
-                            this->m_Geometry->GetRadiusCylindricalDetector()
-                            );
+    CUDA_warp_back_project(projectionSize,
+                           volumeSize,
+                           inputDVFSize,
+                           fMatrix + 12 * i,
+                           fvolIndexToProjPP + 12 * i,
+                           fprojPPToProjIndex,
+                           pin,
+                           pout,
+                           stackGPUPointer + projSize * i,
+                           pDVF,
+                           fIndexInputToIndexDVFMatrix,
+                           fPPInputToIndexInputMatrix,
+                           fIndexInputToPPInputMatrix,
+                           this->m_Geometry->GetRadiusCylindricalDetector());
 
     // Re-use the output as input
     pin = pout;
-    }
+  }
 
   delete[] fMatrix;
   delete[] fvolIndexToProjPP;

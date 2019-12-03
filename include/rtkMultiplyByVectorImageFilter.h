@@ -22,60 +22,63 @@
 
 namespace rtk
 {
-  /** \class MultiplyByVectorImageFilter
-   * \brief Multiplies each (n-1) dimension image by the corresponding
-   * element in a vector
-   *
-   * This filter takes in input a n-D image and a vector. It multiplies
-   * each (n-1) dimension image by the corresponding
-   * element in the vector. The image's size along the last dimension
-   * must be equal to vector's size.
-   *
-   * \author Cyril Mory
+/** \class MultiplyByVectorImageFilter
+ * \brief Multiplies each (n-1) dimension image by the corresponding
+ * element in a vector
+ *
+ * This filter takes in input a n-D image and a vector. It multiplies
+ * each (n-1) dimension image by the corresponding
+ * element in the vector. The image's size along the last dimension
+ * must be equal to vector's size.
+ *
+ * \author Cyril Mory
  *
  * \ingroup RTK
-   *
-   */
-template< class TInputImage>
+ *
+ */
+template <class TInputImage>
 class MultiplyByVectorImageFilter : public itk::ImageToImageFilter<TInputImage, TInputImage>
 {
 public:
-    ITK_DISALLOW_COPY_AND_ASSIGN(MultiplyByVectorImageFilter);
+  ITK_DISALLOW_COPY_AND_ASSIGN(MultiplyByVectorImageFilter);
 
-    /** Standard class type alias. */
-    using Self = MultiplyByVectorImageFilter;
-    using Superclass = itk::ImageToImageFilter<TInputImage, TInputImage>;
-    using Pointer = itk::SmartPointer< Self >;
+  /** Standard class type alias. */
+  using Self = MultiplyByVectorImageFilter;
+  using Superclass = itk::ImageToImageFilter<TInputImage, TInputImage>;
+  using Pointer = itk::SmartPointer<Self>;
 
-    /** Method for creation through the object factory. */
-    itkNewMacro(Self);
+  /** Method for creation through the object factory. */
+  itkNewMacro(Self);
 
-    /** Run-time type information (and related methods). */
-    itkTypeMacro(MultiplyByVectorImageFilter, itk::ImageToImageFilter);
+  /** Run-time type information (and related methods). */
+  itkTypeMacro(MultiplyByVectorImageFilter, itk::ImageToImageFilter);
 
-    /** The image containing the weights applied to the temporal components */
-    void SetVector(std::vector<float> vect);
+  /** The image containing the weights applied to the temporal components */
+  void
+  SetVector(std::vector<float> vect);
 
 protected:
-    MultiplyByVectorImageFilter();
-    ~MultiplyByVectorImageFilter() override = default;
+  MultiplyByVectorImageFilter();
+  ~MultiplyByVectorImageFilter() override = default;
 
-    /** Does the real work. */
-#if ITK_VERSION_MAJOR<5
-    void ThreadedGenerateData(const typename TInputImage::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) override;
+  /** Does the real work. */
+#if ITK_VERSION_MAJOR < 5
+  void
+  ThreadedGenerateData(const typename TInputImage::RegionType & outputRegionForThread,
+                       itk::ThreadIdType                        itkNotUsed(threadId)) override;
 #else
-    void DynamicThreadedGenerateData(const typename TInputImage::RegionType& outputRegionForThread) override;
+  void
+  DynamicThreadedGenerateData(const typename TInputImage::RegionType & outputRegionForThread) override;
 #endif
 
 private:
-    std::vector<float> m_Vector;
-
+  std::vector<float> m_Vector;
 };
-} //namespace RTK
+} // namespace rtk
 
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkMultiplyByVectorImageFilter.hxx"
+#  include "rtkMultiplyByVectorImageFilter.hxx"
 #endif
 
 #endif

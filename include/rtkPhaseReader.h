@@ -31,55 +31,57 @@ namespace rtk
  *
  * \ingroup RTK
  */
-class ITK_EXPORT PhaseReader:public itk::CSVFileReaderBase
+class ITK_EXPORT PhaseReader : public itk::CSVFileReaderBase
 {
 public:
-    ITK_DISALLOW_COPY_AND_ASSIGN(PhaseReader);
+  ITK_DISALLOW_COPY_AND_ASSIGN(PhaseReader);
 
-    /** Standard class type alias */
-    using Self = PhaseReader;
-    using Superclass = CSVFileReaderBase;
-    using Pointer = itk::SmartPointer<Self>;
-    using ConstPointer = itk::SmartPointer<const Self>;
+  /** Standard class type alias */
+  using Self = PhaseReader;
+  using Superclass = CSVFileReaderBase;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
-    /** Standard New method. */
-    itkNewMacro(Self);
+  /** Standard New method. */
+  itkNewMacro(Self);
 
-    /** Run-time type information (and related methods) */
-    itkTypeMacro(Self,Superclass);
+  /** Run-time type information (and related methods) */
+  itkTypeMacro(Self, Superclass);
 
-    /** The value type of the dataset. */
-    using ValueType = float;
+  /** The value type of the dataset. */
+  using ValueType = float;
 
-    /** Parses the data from the file. Gets the phases of the projections
-  * into a vector, then generate an Array2D object containing the interpolation weights  */
-    void Parse() override;
+  /** Parses the data from the file. Gets the phases of the projections
+   * into a vector, then generate an Array2D object containing the interpolation weights  */
+  void
+  Parse() override;
 
-    /** Aliased to the Parse() method to be consistent with the rest of the
+  /** Aliased to the Parse() method to be consistent with the rest of the
    * pipeline. */
-    virtual void Update();
+  virtual void
+  Update();
 
-    /** Aliased to the GetDataFrameObject() method to be consistent with the
+  /** Aliased to the GetDataFrameObject() method to be consistent with the
    *  rest of the pipeline */
-    virtual std::vector<float> GetOutput();
+  virtual std::vector<float>
+  GetOutput();
 
 protected:
+  PhaseReader();
+  ~PhaseReader() override = default;
 
-    PhaseReader();
-    ~PhaseReader () override = default;
-
-    /** Print the reader. */
-    void PrintSelf(std::ostream & os, itk::Indent indent) const override;
+  /** Print the reader. */
+  void
+  PrintSelf(std::ostream & os, itk::Indent indent) const override;
 
 private:
-
-    std::vector<float> m_Phases;
+  std::vector<float> m_Phases;
 };
 
-} //end namespace rtk
+} // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkPhaseReader.hxx"
+#  include "rtkPhaseReader.hxx"
 #endif
 
 #endif

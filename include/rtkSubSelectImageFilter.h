@@ -60,7 +60,7 @@ namespace rtk
  *
  * \ingroup RTK
  */
-template< typename ProjectionStackType>
+template <typename ProjectionStackType>
 class SubSelectImageFilter : public itk::ImageToImageFilter<ProjectionStackType, ProjectionStackType>
 {
 public:
@@ -69,14 +69,16 @@ public:
   /** Standard class type alias. */
   using Self = SubSelectImageFilter;
   using Superclass = itk::ImageToImageFilter<ProjectionStackType, ProjectionStackType>;
-  using Pointer = itk::SmartPointer< Self >;
+  using Pointer = itk::SmartPointer<Self>;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(SubSelectImageFilter, itk::ImageToImageFilter);
 
   /** The set of projections from which a subset will be extracted */
-  void SetInputProjectionStack(const ProjectionStackType* Projections);
-  typename ProjectionStackType::ConstPointer GetInputProjectionStack();
+  void
+  SetInputProjectionStack(const ProjectionStackType * Projections);
+  typename ProjectionStackType::ConstPointer
+  GetInputProjectionStack();
 
   using PasteFilterType = itk::PasteImageFilter<ProjectionStackType>;
   using ExtractFilterType = itk::ExtractImageFilter<ProjectionStackType, ProjectionStackType>;
@@ -88,35 +90,39 @@ public:
 
   itkGetMacro(SelectedProjections, std::vector<bool>);
 
-  GeometryType::Pointer GetOutputGeometry();
+  GeometryType::Pointer
+  GetOutputGeometry();
 
 protected:
   SubSelectImageFilter();
   ~SubSelectImageFilter() override = default;
 
-  void GenerateInputRequestedRegion() override;
+  void
+  GenerateInputRequestedRegion() override;
 
-  void GenerateOutputInformation() override;
+  void
+  GenerateOutputInformation() override;
 
   /** Does the real work. */
-  void GenerateData() override;
+  void
+  GenerateData() override;
 
   /** Member variables */
-  GeometryType::Pointer     m_InputGeometry;
-  GeometryType::Pointer     m_OutputGeometry;
-  std::vector<bool>         m_SelectedProjections;
-  int                       m_NbSelectedProjs;
+  GeometryType::Pointer m_InputGeometry;
+  GeometryType::Pointer m_OutputGeometry;
+  std::vector<bool>     m_SelectedProjections;
+  int                   m_NbSelectedProjs;
 
 private:
   typename EmptyProjectionStackSourceType::Pointer m_EmptyProjectionStackSource;
   typename ExtractFilterType::Pointer              m_ExtractFilter;
   typename PasteFilterType::Pointer                m_PasteFilter;
 };
-} //namespace ITK
+} // namespace rtk
 
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkSubSelectImageFilter.hxx"
+#  include "rtkSubSelectImageFilter.hxx"
 #endif
 
 #endif
