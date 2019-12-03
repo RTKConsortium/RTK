@@ -54,8 +54,10 @@ namespace rtk
    * FourDSource [ label="rtk::ConstantImageSource (4D volume)" URL="\ref rtk::ConstantImageSource"];
    * ProjectionSource [ label="rtk::ConstantImageSource (projections)" URL="\ref rtk::ConstantImageSource"];
    * ForwardProj [ label="rtk::ForwardProjectionImageFilter" URL="\ref rtk::ForwardProjectionImageFilter"];
-   * Interpolation [ label="rtk::InterpolatorWithKnownWeightsImageFilter" URL="\ref rtk::InterpolatorWithKnownWeightsImageFilter"];
-   * CyclicDeformation [label="rtk::CyclicDeformationImageFilter (for DVFs)" URL="\ref rtk::CyclicDeformationImageFilter"];
+   * Interpolation [ label="rtk::InterpolatorWithKnownWeightsImageFilter"
+   *                 URL="\ref rtk::InterpolatorWithKnownWeightsImageFilter"];
+   * CyclicDeformation [label="rtk::CyclicDeformationImageFilter (for DVFs)"
+   *                    URL="\ref rtk::CyclicDeformationImageFilter"];
    * BeforePaste [label="", fixedsize="false", width=0, height=0, shape=none];
    * Paste [ label="itk::PasteImageFilter" URL="\ref itk::PasteImageFilter"];
    * AfterPaste [label="", fixedsize="false", width=0, height=0, shape=none];

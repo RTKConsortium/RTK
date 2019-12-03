@@ -50,16 +50,21 @@ namespace rtk
    * Output [shape=Mdiamond];
    *
    * node [shape=box];
-   * CG [ label="rtk::ConjugateGradientConeBeamReconstructionFilter" URL="\ref rtk::ConjugateGradientConeBeamReconstructionFilter"];
+   * CG [ label="rtk::ConjugateGradientConeBeamReconstructionFilter"
+   *      URL="\ref rtk::ConjugateGradientConeBeamReconstructionFilter"];
    * Positivity [group=regul, label="itk::ThresholdImageFilter (positivity)" URL="\ref itk::ThresholdImageFilter"];
-   * TV [group=regul, label="rtk::TotalVariationDenoisingBPDQImageFilter" URL="\ref rtk::TotalVariationDenoisingBPDQImageFilter"];
-   * Wavelets [group=regul, label="rtk::DeconstructSoftThresholdReconstructImageFilter" URL="\ref rtk::DeconstructSoftThresholdReconstructImageFilter"];
+   * TV [group=regul, label="rtk::TotalVariationDenoisingBPDQImageFilter"
+   *     URL="\ref rtk::TotalVariationDenoisingBPDQImageFilter"];
+   * Wavelets [group=regul, label="rtk::DeconstructSoftThresholdReconstructImageFilter"
+   *           URL="\ref rtk::DeconstructSoftThresholdReconstructImageFilter"];
    * SoftThreshold [group=regul, label="rtk::SoftThresholdImageFilter" URL="\ref rtk::SoftThresholdImageFilter"];
    *
    * AfterPrimaryInput [group=invisible, label="", fixedsize="false", width=0, height=0, shape=none];
    * AfterCG [group=invisible, label="m_PerformPositivity ?", fixedsize="false", width=0, height=0, shape=none];
-   * AfterPositivity [group=invisible, label="m_PerformTVSpatialDenoising ?", fixedsize="false", width=0, height=0, shape=none];
-   * AfterTV [group=invisible, label="m_PerformWaveletsSpatialDenoising ?", fixedsize="false", width=0, height=0, shape=none];
+   * AfterPositivity [group=invisible, label="m_PerformTVSpatialDenoising ?",
+   *                  fixedsize="false", width=0, height=0, shape=none];
+   * AfterTV [group=invisible, label="m_PerformWaveletsSpatialDenoising ?",
+   *          fixedsize="false", width=0, height=0, shape=none];
    * AfterWavelets [group=invisible, label="", fixedsize="false", width=0, height=0, shape=none];
    * AfterSoftThreshold [group=invisible, label="", fixedsize="false", width=0, height=0, shape=none];
    *

@@ -67,17 +67,23 @@ namespace rtk
    *
    * node [shape=box];
    * Extract [ label="itk::ExtractImageFilter" URL="\ref itk::ExtractImageFilter"];
-   * VolumeSource [ label="rtk::ConstantImageSource (1 component volume, full of ones)" URL="\ref rtk::ConstantImageSource"];
-   * SingleComponentProjectionsSource [ label="rtk::ConstantImageSource (1 component projections, full of zeros)" URL="\ref rtk::ConstantImageSource"];
+   * VolumeSource [ label="rtk::ConstantImageSource (1 component volume, full of ones)"
+   *                URL="\ref rtk::ConstantImageSource"];
+   * SingleComponentProjectionsSource [ label="rtk::ConstantImageSource (1 component projections, full of zeros)"
+   *                                    URL="\ref rtk::ConstantImageSource"];
    * VolumeSourceGradients [ label="rtk::ConstantImageSource (m components)" URL="\ref rtk::ConstantImageSource"];
    * VolumeSourceHessians [ label="rtk::ConstantImageSource (m x m components)" URL="\ref rtk::ConstantImageSource"];
    * ProjectionsSource [ label="rtk::ConstantImageSource (m components)" URL="\ref rtk::ConstantImageSource"];
    * ForwardProjection [ label="rtk::ForwardProjectionImageFilter" URL="\ref rtk::ForwardProjectionImageFilter"];
-   * SingleComponentForwardProjection [ label="rtk::ForwardProjectionImageFilter (1 component)" URL="\ref rtk::ForwardProjectionImageFilter"];
-   * BackProjectionGradients [ label="rtk::BackProjectionImageFilter (gradients)" URL="\ref rtk::BackProjectionImageFilter"];
-   * BackProjectionHessians [ label="rtk::BackProjectionImageFilter (hessians)" URL="\ref rtk::BackProjectionImageFilter"];
+   * SingleComponentForwardProjection [ label="rtk::ForwardProjectionImageFilter (1 component)"
+   *                                    URL="\ref rtk::ForwardProjectionImageFilter"];
+   * BackProjectionGradients [ label="rtk::BackProjectionImageFilter (gradients)"
+   *                           URL="\ref rtk::BackProjectionImageFilter"];
+   * BackProjectionHessians [ label="rtk::BackProjectionImageFilter (hessians)"
+   *                          URL="\ref rtk::BackProjectionImageFilter"];
    * Weidinger [ label="rtk::WeidingerForwardModelImageFilter" URL="\ref rtk::WeidingerForwardModelImageFilter"];
-   * SQSRegul [ label="rtk::SeparableQuadraticSurrogateRegularizationImageFilter" URL="\ref rtk::SeparableQuadraticSurrogateRegularizationImageFilter"];
+   * SQSRegul [ label="rtk::SeparableQuadraticSurrogateRegularizationImageFilter"
+   *            URL="\ref rtk::SeparableQuadraticSurrogateRegularizationImageFilter"];
    * MultiplyRegulGradient [ label="itk::MultiplyImageFilter" URL="\ref itk::MultiplyImageFilter" style=dashed];
    * MultiplyRegulHessian [ label="itk::MultiplyImageFilter" URL="\ref itk::MultiplyImageFilter" style=dashed];
    * AddGradients [ label="itk::AddImageFilter" URL="\ref itk::AddImageFilter"];

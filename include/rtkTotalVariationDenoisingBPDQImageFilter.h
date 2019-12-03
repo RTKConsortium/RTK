@@ -51,7 +51,8 @@ namespace rtk
  *
  *   node [shape=box];
  *   FI_Multiply [ label="itk::MultiplyImageFilter (by beta)" URL="\ref itk::MultiplyImageFilter"];
- *   FI_Gradient [ label="rtk::ForwardDifferenceGradientImageFilter" URL="\ref rtk::ForwardDifferenceGradientImageFilter"];
+ *   FI_Gradient [ label="rtk::ForwardDifferenceGradientImageFilter"
+ *                 URL="\ref rtk::ForwardDifferenceGradientImageFilter"];
  *   FI_MagnitudeThreshold [ label="rtk::MagnitudeThresholdImageFilter" URL="\ref rtk::MagnitudeThresholdImageFilter"];
  *   FI_OutOfMagnitudeTreshold [label="", fixedsize="false", width=0, height=0, shape=none];
  *
@@ -71,7 +72,8 @@ namespace rtk
  *   Output [shape=Mdiamond];
  *
  *   node [shape=box];
- *   Divergence [ label="rtk::BackwardDifferenceDivergenceImageFilter" URL="\ref rtk::BackwardDifferenceDivergenceImageFilter"];
+ *   Divergence [ label="rtk::BackwardDifferenceDivergenceImageFilter"
+ *                URL="\ref rtk::BackwardDifferenceDivergenceImageFilter"];
  *   Subtract [ label="itk::SubtractImageFilter" URL="\ref itk::SubtractImageFilter"];
  *   Multiply [ label="itk::MultiplyImageFilter (by beta)" URL="\ref itk::MultiplyImageFilter"];
  *   Gradient [ label="rtk::ForwardDifferenceGradientImageFilter" URL="\ref rtk::ForwardDifferenceGradientImageFilter"];

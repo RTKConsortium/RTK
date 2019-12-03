@@ -48,9 +48,11 @@ namespace rtk
    *
    * node [shape=box];
    * ConstantSource [label="rtk::ConstantImageSource (4D volume sequence)" URL="\ref rtk::WarpSequenceImageFilter"];
-   * WarpSequenceForward [label="rtk::WarpSequenceImageFilter (forward mapping)" URL="\ref rtk::WarpSequenceImageFilter"];
+   * WarpSequenceForward [label="rtk::WarpSequenceImageFilter (forward mapping)"
+   *                      URL="\ref rtk::WarpSequenceImageFilter"];
    * ConjugateGradient[ label="rtk::ConjugateGradientImageFilter" URL="\ref rtk::ConjugateGradientImageFilter"];
-   * CyclicDeformation [label="rtk::CyclicDeformationImageFilter (for DVFs)" URL="\ref rtk::CyclicDeformationImageFilter"];
+   * CyclicDeformation [label="rtk::CyclicDeformationImageFilter (for DVFs)"
+   *                    URL="\ref rtk::CyclicDeformationImageFilter"];
    *
    * Input0 -> WarpSequenceForward;
    * Input1 -> CyclicDeformation;

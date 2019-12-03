@@ -54,10 +54,14 @@ namespace rtk
    * SourceVol2 [ label="rtk::ConstantImageSource (volume)" URL="\ref rtk::ConstantImageSource"];
    * SourceProj [ label="rtk::ConstantImageSource (projections)" URL="\ref rtk::ConstantImageSource"];
    * Source4D [ label="rtk::ConstantImageSource (4D)" URL="\ref rtk::ConstantImageSource"];
-   * CyclicDeformation [label="rtk::CyclicDeformationImageFilter (for DVFs)" URL="\ref rtk::CyclicDeformationImageFilter"];
-   * CyclicDeformationInv [label="rtk::CyclicDeformationImageFilter (for inverse DVFs)" URL="\ref rtk::CyclicDeformationImageFilter"];
-   * ForwardProj [ label="rtk::CudaWarpForwardProjectionImageFilter" URL="\ref rtk::CudaWarpForwardProjectionImageFilter"];
-   * Interpolation [ label="InterpolatorWithKnownWeightsImageFilter" URL="\ref rtk::InterpolatorWithKnownWeightsImageFilter"];
+   * CyclicDeformation [label="rtk::CyclicDeformationImageFilter (for DVFs)"
+   *                    URL="\ref rtk::CyclicDeformationImageFilter"];
+   * CyclicDeformationInv [label="rtk::CyclicDeformationImageFilter (for inverse DVFs)"
+   *                       URL="\ref rtk::CyclicDeformationImageFilter"];
+   * ForwardProj [ label="rtk::CudaWarpForwardProjectionImageFilter"
+   *               URL="\ref rtk::CudaWarpForwardProjectionImageFilter"];
+   * Interpolation [ label="InterpolatorWithKnownWeightsImageFilter"
+   *                 URL="\ref rtk::InterpolatorWithKnownWeightsImageFilter"];
    * BackProj [ label="rtk::CudaWarpBackProjectionImageFilter" URL="\ref rtk::CudaWarpBackProjectionImageFilter"];
    * Splat [ label="rtk::SplatWithKnownWeightsImageFilter" URL="\ref rtk::SplatWithKnownWeightsImageFilter"];
    * AfterSplat [label="", fixedsize="false", width=0, height=0, shape=none];

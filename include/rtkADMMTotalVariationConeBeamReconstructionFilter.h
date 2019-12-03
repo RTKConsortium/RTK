@@ -76,12 +76,14 @@ namespace rtk
    * Displaced [ label="rtk::DisplacedDetectorImageFilter" URL="\ref rtk::DisplacedDetectorImageFilter"];
    * BackProjection [ label="rtk::BackProjectionImageFilter" URL="\ref rtk::BackProjectionImageFilter"];
    * AddGradient [ label="itk::AddImageFilter" URL="\ref itk::AddImageFilter"];
-   * Divergence [ label="rtk::BackwardDifferenceDivergenceImageFilter" URL="\ref rtk::BackwardDifferenceDivergenceImageFilter"];
+   * Divergence [ label="rtk::BackwardDifferenceDivergenceImageFilter"
+   *              URL="\ref rtk::BackwardDifferenceDivergenceImageFilter"];
    * Multiply [ label="itk::MultiplyImageFilter (by beta)" URL="\ref itk::MultiplyImageFilter"];
    * SubtractVolume [ label="itk::SubtractImageFilter" URL="\ref itk::SubtractImageFilter"];
    * ConjugateGradient[ label="rtk::ConjugateGradientImageFilter" URL="\ref rtk::ConjugateGradientImageFilter"];
    * AfterConjugateGradient [label="", fixedsize="false", width=0, height=0, shape=none];
-   * GradientTwo [ label="rtk::ForwardDifferenceGradientImageFilter" URL="\ref rtk::ForwardDifferenceGradientImageFilter"];
+   * GradientTwo [ label="rtk::ForwardDifferenceGradientImageFilter"
+   *               URL="\ref rtk::ForwardDifferenceGradientImageFilter"];
    * Subtract [ label="itk::SubtractImageFilter" URL="\ref itk::SubtractImageFilter"];
    * TVSoftThreshold [ label="rtk::SoftThresholdTVImageFilter" URL="\ref rtk::SoftThresholdTVImageFilter"];
    * BeforeTVSoftThreshold [label="", fixedsize="false", width=0, height=0, shape=none];

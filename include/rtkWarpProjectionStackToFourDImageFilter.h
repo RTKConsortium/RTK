@@ -53,7 +53,8 @@ namespace rtk
    * VolumeSeriesSource [ label="rtk::ConstantImageSource (4D)" URL="\ref rtk::ConstantImageSource"];
    * AfterSource4D [label="", fixedsize="false", width=0, height=0, shape=none];
    * Source [ label="rtk::ConstantImageSource" URL="\ref rtk::ConstantImageSource"];
-   * CyclicDeformation [label="rtk::CyclicDeformationImageFilter (for DVFs)" URL="\ref rtk::CyclicDeformationImageFilter"];
+   * CyclicDeformation [label="rtk::CyclicDeformationImageFilter (for DVFs)"
+   *                    URL="\ref rtk::CyclicDeformationImageFilter"];
    * Backproj [ label="rtk::CudaWarpBackProjectionImageFilter" URL="\ref rtk::CudaWarpBackProjectionImageFilter"];
    * Splat [ label="rtk::SplatWithKnownWeightsImageFilter" URL="\ref rtk::SplatWithKnownWeightsImageFilter"];
    * AfterSplat [label="", fixedsize="false", width=0, height=0, shape=none];

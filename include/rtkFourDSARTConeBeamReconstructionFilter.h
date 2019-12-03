@@ -59,7 +59,8 @@ namespace rtk
  * Output [shape=Mdiamond];
  *
  * node [shape=box];
- * FourDToProjectionStack [ label="rtk::FourDToProjectionStackImageFilter" URL="\ref rtk::FourDToProjectionStackImageFilter"];
+ * FourDToProjectionStack [ label="rtk::FourDToProjectionStackImageFilter"
+ *                          URL="\ref rtk::FourDToProjectionStackImageFilter"];
  * Extract [ label="itk::ExtractImageFilter" URL="\ref itk::ExtractImageFilter"];
  * MultiplyByZero [ label="itk::MultiplyImageFilter (by zero)" URL="\ref itk::MultiplyImageFilter"];
  * AfterExtract [label="", fixedsize="false", width=0, height=0, shape=none];
@@ -71,7 +72,8 @@ namespace rtk
  * ExtractConstantProjection [ label="itk::ExtractImageFilter" URL="\ref itk::ExtractImageFilter"];
  * RayBox [ label="rtk::RayBoxIntersectionImageFilter" URL="\ref rtk::RayBoxIntersectionImageFilter"];
  * ConstantVolume [ label="rtk::ConstantImageSource" URL="\ref rtk::ConstantImageSource"];
- * ProjectionStackToFourD [ label="rtk::ProjectionStackToFourDImageFilter" URL="\ref rtk::ProjectionStackToFourDImageFilter"];
+ * ProjectionStackToFourD [ label="rtk::ProjectionStackToFourDImageFilter"
+ *                          URL="\ref rtk::ProjectionStackToFourDImageFilter"];
  * Add [ label="itk::AddImageFilter (accumulates corrections)" URL="\ref itk::AddImageFilter"];
  * Add2 [ label="itk::AddImageFilter (adds correction to current 4D volume)" URL="\ref itk::AddImageFilter"];
  * OutofInput0 [label="", fixedsize="false", width=0, height=0, shape=none];

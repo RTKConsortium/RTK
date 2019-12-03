@@ -49,7 +49,8 @@ namespace rtk
    *
    * node [shape=box];
    * Extract [label="itk::ExtractImageFilter (for images)" URL="\ref itk::ExtractImageFilter"];
-   * TVDenoising [ label="rtk::TotalVariationDenoisingBPDQImageFilter" URL="\ref rtk::TotalVariationDenoisingBPDQImageFilter"];
+   * TVDenoising [ label="rtk::TotalVariationDenoisingBPDQImageFilter"
+   *               URL="\ref rtk::TotalVariationDenoisingBPDQImageFilter"];
    * Cast [ label="itk::CastImageFilter" URL="\ref itk::CastImageFilter"];
    * Paste [ label="itk::PasteImageFilter" URL="\ref itk::PasteImageFilter"];
    * ConstantSource [ label="rtk::ConstantImageSource" URL="\ref rtk::ConstantImageSource"];

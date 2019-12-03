@@ -54,8 +54,10 @@ namespace rtk
  *
  *   node [shape=box];
  *   FI_Multiply [ label="itk::MultiplyImageFilter (by beta)" URL="\ref itk::MultiplyImageFilter"];
- *   FI_Gradient [ label="rtk::ForwardDifferenceGradientImageFilter" URL="\ref rtk::ForwardDifferenceGradientImageFilter"];
- *   FI_SingularValueThreshold [ label="rtk::SingularValueThresholdImageFilter" URL="\ref rtk::SingularValueThresholdImageFilter"];
+ *   FI_Gradient [ label="rtk::ForwardDifferenceGradientImageFilter"
+ *                 URL="\ref rtk::ForwardDifferenceGradientImageFilter"];
+ *   FI_SingularValueThreshold [ label="rtk::SingularValueThresholdImageFilter"
+ *                               URL="\ref rtk::SingularValueThresholdImageFilter"];
  *   FI_OutOfSingularValueThreshold [label="", fixedsize="false", width=0, height=0, shape=none];
  *
  *   FI_Input -> FI_Multiply;
@@ -74,12 +76,14 @@ namespace rtk
  *   Output [shape=Mdiamond];
  *
  *   node [shape=box];
- *   Divergence [ label="rtk::BackwardDifferenceDivergenceImageFilter" URL="\ref rtk::BackwardDifferenceDivergenceImageFilter"];
+ *   Divergence [ label="rtk::BackwardDifferenceDivergenceImageFilter"
+ *                URL="\ref rtk::BackwardDifferenceDivergenceImageFilter"];
  *   Subtract [ label="itk::SubtractImageFilter" URL="\ref itk::SubtractImageFilter"];
  *   Multiply [ label="itk::MultiplyImageFilter (by beta)" URL="\ref itk::MultiplyImageFilter"];
  *   Gradient [ label="rtk::ForwardDifferenceGradientImageFilter" URL="\ref rtk::ForwardDifferenceGradientImageFilter"];
  *   SubtractGradient [ label="itk::SubtractImageFilter" URL="\ref itk::SubtractImageFilter"];
- *   SingularValueThreshold [ label="rtk::SingularValueThresholdImageFilter" URL="\ref rtk::SingularValueThresholdImageFilter"];
+ *   SingularValueThreshold [ label="rtk::SingularValueThresholdImageFilter"
+ *                            URL="\ref rtk::SingularValueThresholdImageFilter"];
  *   OutOfSubtract [label="", fixedsize="false", width=0, height=0, shape=none];
  *   OutOfSingularValueThreshold [label="", fixedsize="false", width=0, height=0, shape=none];
  *   BeforeDivergence [label="", fixedsize="false", width=0, height=0, shape=none];

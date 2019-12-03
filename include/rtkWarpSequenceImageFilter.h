@@ -56,7 +56,8 @@ namespace rtk
    *
    * node [shape=box];
    * Extract [label="itk::ExtractImageFilter (for images)" URL="\ref itk::ExtractImageFilter"];
-   * CyclicDeformation [label="rtk::CyclicDeformationImageFilter (for DVFs)" URL="\ref rtk::CyclicDeformationImageFilter"];
+   * CyclicDeformation [label="rtk::CyclicDeformationImageFilter (for DVFs)"
+   *                    URL="\ref rtk::CyclicDeformationImageFilter"];
    * Warp [ label="itk::WarpImageFilter" URL="\ref itk::WarpImageFilter"];
    * Cast [ label="itk::CastImageFilter" URL="\ref itk::CastImageFilter"];
    * Paste [ label="itk::PasteImageFilter" URL="\ref itk::PasteImageFilter"];

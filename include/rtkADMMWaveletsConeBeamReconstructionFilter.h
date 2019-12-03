@@ -95,7 +95,8 @@ namespace rtk
    * ConjugateGradient[ label="rtk::ConjugateGradientImageFilter" URL="\ref rtk::ConjugateGradientImageFilter"];
    * AfterConjugateGradient [label="", fixedsize="false", width=0, height=0, shape=none];
    * Subtract [ label="itk::SubtractImageFilter" URL="\ref itk::SubtractImageFilter"];
-   * SoftThreshold [ label="rtk::DeconstructSoftThresholdReconstructImageFilter" URL="\ref rtk::DeconstructSoftThresholdReconstructImageFilter"];
+   * SoftThreshold [ label="rtk::DeconstructSoftThresholdReconstructImageFilter"
+   *                 URL="\ref rtk::DeconstructSoftThresholdReconstructImageFilter"];
    * BeforeSoftThreshold [label="", fixedsize="false", width=0, height=0, shape=none];
    * AfterSoftThreshold [label="", fixedsize="false", width=0, height=0, shape=none];
    * SubtractTwo [ label="itk::SubtractImageFilter" URL="\ref itk::SubtractImageFilter"];

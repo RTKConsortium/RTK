@@ -61,14 +61,22 @@ namespace rtk {
  * node [shape=box];
  * Pad0 [ label="itk::MirrorPadImageFilter" URL="\ref itk::MirrorPadImageFilter"];
  * Pad1 [ label="itk::MirrorPadImageFilter" URL="\ref itk::MirrorPadImageFilter"];
- * Conv0 [ label="rtk::DaubechiesWaveletsConvolutionImageFilter (Lowpass, Lowpass)" URL="\ref rtk::DaubechiesWaveletsConvolutionImageFilter"];
- * Conv1 [ label="rtk::DaubechiesWaveletsConvolutionImageFilter (Lowpass, Highpass)" URL="\ref rtk::DaubechiesWaveletsConvolutionImageFilter"];
- * Conv2 [ label="rtk::DaubechiesWaveletsConvolutionImageFilter (Highpass, Lowpass)" URL="\ref rtk::DaubechiesWaveletsConvolutionImageFilter"];
- * Conv3 [ label="rtk::DaubechiesWaveletsConvolutionImageFilter (Highpass, Highpass)" URL="\ref rtk::DaubechiesWaveletsConvolutionImageFilter"];
- * Conv4 [ label="rtk::DaubechiesWaveletsConvolutionImageFilter (Lowpass, Lowpass)" URL="\ref rtk::DaubechiesWaveletsConvolutionImageFilter"];
- * Conv5 [ label="rtk::DaubechiesWaveletsConvolutionImageFilter (Lowpass, Highpass)" URL="\ref rtk::DaubechiesWaveletsConvolutionImageFilter"];
- * Conv6 [ label="rtk::DaubechiesWaveletsConvolutionImageFilter (Highpass, Lowpass)" URL="\ref rtk::DaubechiesWaveletsConvolutionImageFilter"];
- * Conv7 [ label="rtk::DaubechiesWaveletsConvolutionImageFilter (Highpass, Highpass)" URL="\ref rtk::DaubechiesWaveletsConvolutionImageFilter"];
+ * Conv0 [ label="rtk::DaubechiesWaveletsConvolutionImageFilter (Lowpass, Lowpass)"
+ *         URL="\ref rtk::DaubechiesWaveletsConvolutionImageFilter"];
+ * Conv1 [ label="rtk::DaubechiesWaveletsConvolutionImageFilter (Lowpass, Highpass)"
+ *         URL="\ref rtk::DaubechiesWaveletsConvolutionImageFilter"];
+ * Conv2 [ label="rtk::DaubechiesWaveletsConvolutionImageFilter (Highpass, Lowpass)"
+ *         URL="\ref rtk::DaubechiesWaveletsConvolutionImageFilter"];
+ * Conv3 [ label="rtk::DaubechiesWaveletsConvolutionImageFilter (Highpass, Highpass)"
+ *         URL="\ref rtk::DaubechiesWaveletsConvolutionImageFilter"];
+ * Conv4 [ label="rtk::DaubechiesWaveletsConvolutionImageFilter (Lowpass, Lowpass)"
+ *         URL="\ref rtk::DaubechiesWaveletsConvolutionImageFilter"];
+ * Conv5 [ label="rtk::DaubechiesWaveletsConvolutionImageFilter (Lowpass, Highpass)"
+ *         URL="\ref rtk::DaubechiesWaveletsConvolutionImageFilter"];
+ * Conv6 [ label="rtk::DaubechiesWaveletsConvolutionImageFilter (Highpass, Lowpass)"
+ *         URL="\ref rtk::DaubechiesWaveletsConvolutionImageFilter"];
+ * Conv7 [ label="rtk::DaubechiesWaveletsConvolutionImageFilter (Highpass, Highpass)"
+ *         URL="\ref rtk::DaubechiesWaveletsConvolutionImageFilter"];
  * Down0 [ label="rtk::DownsampleImageFilter (by 2)" URL="\ref rtk::DownsampleImageFilter"];
  * Down1 [ label="rtk::DownsampleImageFilter (by 2)" URL="\ref rtk::DownsampleImageFilter"];
  * Down2 [ label="rtk::DownsampleImageFilter (by 2)" URL="\ref rtk::DownsampleImageFilter"];

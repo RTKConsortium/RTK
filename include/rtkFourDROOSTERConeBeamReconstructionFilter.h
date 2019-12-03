@@ -95,30 +95,40 @@ namespace rtk
    * Output [shape=Mdiamond];
    *
    * node [shape=box];
-   * FourDCG [ label="rtk::FourDConjugateGradientConeBeamReconstructionFilter" URL="\ref rtk::FourDConjugateGradientConeBeamReconstructionFilter"];
+   * FourDCG [ label="rtk::FourDConjugateGradientConeBeamReconstructionFilter"
+   *           URL="\ref rtk::FourDConjugateGradientConeBeamReconstructionFilter"];
    * Positivity [group=regul, label="itk::ThresholdImageFilter (positivity)" URL="\ref itk::ThresholdImageFilter"];
    * Resample [group=regul, label="itk::ResampleImageFilter" URL="\ref itk::ResampleImageFilter"];
    * MotionMask [group=regul, label="rtk::AverageOutOfROIImageFilter" URL="\ref rtk::AverageOutOfROIImageFilter"];
-   * TVSpace [group=regul, label="rtk::TotalVariationDenoisingBPDQImageFilter (in space)" URL="\ref rtk::TotalVariationDenoisingBPDQImageFilter"];
-   * Wavelets [group=regul, label="rtk::DaubechiesWaveletsDenoiseSequenceImageFilter (in space)" URL="\ref rtk::DaubechiesWaveletsDenoiseSequenceImageFilter"];
+   * TVSpace [group=regul, label="rtk::TotalVariationDenoisingBPDQImageFilter (in space)"
+   *          URL="\ref rtk::TotalVariationDenoisingBPDQImageFilter"];
+   * Wavelets [group=regul, label="rtk::DaubechiesWaveletsDenoiseSequenceImageFilter (in space)"
+   *           URL="\ref rtk::DaubechiesWaveletsDenoiseSequenceImageFilter"];
    * Warp [group=regul, label="rtk::WarpSequenceImageFilter (direct field)" URL="\ref rtk::WarpSequenceImageFilter"];
-   * TVTime [group=regul, label="rtk::TotalVariationDenoisingBPDQImageFilter (along time)" URL="\ref rtk::TotalVariationDenoisingBPDQImageFilter"];
-   * L0Time [group=regul, label="rtk::LastDimensionL0GradientDenoisingImageFilter (along time)" URL="\ref rtk::LastDimensionL0GradientDenoisingImageFilter"];
-   * TNV [group=regul, label="rtk::TotalNuclearVariationDenoisingBPDQImageFilter" URL="\ref rtk::TotalNuclearVariationDenoisingBPDQImageFilter"];
+   * TVTime [group=regul, label="rtk::TotalVariationDenoisingBPDQImageFilter (along time)"
+   *         URL="\ref rtk::TotalVariationDenoisingBPDQImageFilter"];
+   * L0Time [group=regul, label="rtk::LastDimensionL0GradientDenoisingImageFilter (along time)"
+   *         URL="\ref rtk::LastDimensionL0GradientDenoisingImageFilter"];
+   * TNV [group=regul, label="rtk::TotalNuclearVariationDenoisingBPDQImageFilter"
+   *      URL="\ref rtk::TotalNuclearVariationDenoisingBPDQImageFilter"];
    * Unwarp [group=regul, label="rtk::UnwarpSequenceImageFilter" URL="\ref rtk::UnwarpSequenceImageFilter"];
    * Subtract [group=invwarp, label="itk::SubtractImageFilter" URL="\ref itk::SubtractImageFilter"];
-   * InverseWarp [group=invwarp, label="rtk::WarpSequenceImageFilter (inverse field)" URL="\ref rtk::WarpSequenceImageFilter"];
+   * InverseWarp [group=invwarp, label="rtk::WarpSequenceImageFilter (inverse field)"
+   *              URL="\ref rtk::WarpSequenceImageFilter"];
    * Add [group=invwarp, label="itk::AddImageFilter" URL="\ref itk::AddImageFilter"];
    *
    * AfterPrimaryInput [group=invisible, label="", fixedsize="false", width=0, height=0, shape=none];
    * AfterFourDCG [group=invisible, label="m_PerformPositivity ?", fixedsize="false", width=0, height=0, shape=none];
    * AfterPositivity [group=invisible, label="m_PerformMotionMask ?", fixedsize="false", width=0, height=0, shape=none];
-   * AfterMotionMask [group=invisible, label="m_PerformTVSpatialDenoising ?", fixedsize="false", width=0, height=0, shape=none];
-   * AfterTVSpace [group=invisible, label="m_PerformWaveletsSpatialDenoising ?", fixedsize="false", width=0, height=0, shape=none];
+   * AfterMotionMask [group=invisible, label="m_PerformTVSpatialDenoising ?",
+   *                  fixedsize="false", width=0, height=0, shape=none];
+   * AfterTVSpace [group=invisible, label="m_PerformWaveletsSpatialDenoising ?",
+   *               fixedsize="false", width=0, height=0, shape=none];
    * AfterWavelets [group=invisible, label="m_PerformWarping ?", fixedsize="false", width=0, height=0, shape=none];
    * AfterWarp [group=invisible, label="m_PerformTVTemporalDenoising ?", fixedsize="false", width=0, height=0, shape=none];
    * AfterTVTime [group=invisible, label="m_PerformL0TemporalDenoising ?", fixedsize="false", width=0, height=0, shape=none];
-   * AfterL0Time [group=invisible, label="m_ComputeInverseWarpingByConjugateGradient ?", fixedsize="false", width=0, height=0, shape=none];
+   * AfterL0Time [group=invisible, label="m_ComputeInverseWarpingByConjugateGradient ?",
+   *              fixedsize="false", width=0, height=0, shape=none];
    * AfterTNV [group=invisible, label="m_PerformTNVDenoising ?", fixedsize="false", width=0, height=0, shape=none];
    * AfterUnwarp [group=invisible, label="", fixedsize="false", width=0, height=0, shape=none];
    *

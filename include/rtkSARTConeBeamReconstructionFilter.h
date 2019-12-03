@@ -80,7 +80,8 @@ namespace rtk
  * Subtract [ label="itk::SubtractImageFilter" URL="\ref itk::SubtractImageFilter"];
  * MultiplyByLambda [ label="itk::MultiplyImageFilter (by lambda)" URL="\ref itk::MultiplyImageFilter"];
  * Divide [ label="itk::DivideOrZeroOutImageFilter" URL="\ref itk::DivideOrZeroOutImageFilter"];
- * GatingWeight [ label="itk::MultiplyImageFilter (by gating weight)" URL="\ref itk::MultiplyImageFilter", style=dashed];
+ * GatingWeight [ label="itk::MultiplyImageFilter (by gating weight)"
+ *                URL="\ref itk::MultiplyImageFilter", style=dashed];
  * Displaced [ label="rtk::DisplacedDetectorImageFilter" URL="\ref rtk::DisplacedDetectorImageFilter"];
  * ConstantProjectionStack [ label="rtk::ConstantImageSource" URL="\ref rtk::ConstantImageSource"];
  * ExtractConstantProjection [ label="itk::ExtractImageFilter" URL="\ref itk::ExtractImageFilter"];

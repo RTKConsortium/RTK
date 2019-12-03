@@ -53,15 +53,20 @@ namespace rtk
  *
  * node [shape=box];
  * Raw [label="itk::ImageSeriesReader" URL="\ref itk::ImageSeriesReader"];
- * ElektaRaw [label="rtk::ElektaSynergyRawLookupTableImageFilter" URL="\ref rtk::ElektaSynergyRawLookupTableImageFilter"];
- * ChangeInformation [label="itk::ChangeInformationImageFilter" URL="\ref itk::ChangeInformationImageFilter" style=dashed];
+ * ElektaRaw [label="rtk::ElektaSynergyRawLookupTableImageFilter"
+ *            URL="\ref rtk::ElektaSynergyRawLookupTableImageFilter"];
+ * ChangeInformation [label="itk::ChangeInformationImageFilter"
+ *                    URL="\ref itk::ChangeInformationImageFilter" style=dashed];
  * Crop [label="itk::CropImageFilter" URL="\ref itk::CropImageFilter" style=dashed];
  * Binning [label="itk::BinShrinkImageFilter" URL="\ref itk::BinShrinkImageFilter" style=dashed];
- * ConditionalMedian [label="rtk::ConditionalMedianImageFilter" URL="\ref rtk::ConditionalMedianImageFilter" style=dashed];
- * Scatter [label="rtk::BoellaardScatterCorrectionImageFilter" URL="\ref rtk::BoellaardScatterCorrectionImageFilter" style=dashed];
+ * ConditionalMedian [label="rtk::ConditionalMedianImageFilter"
+ *                    URL="\ref rtk::ConditionalMedianImageFilter" style=dashed];
+ * Scatter [label="rtk::BoellaardScatterCorrectionImageFilter"
+ *          URL="\ref rtk::BoellaardScatterCorrectionImageFilter" style=dashed];
  * I0est [label="rtk::I0EstimationProjectionFilter" URL="\ref rtk::I0EstimationProjectionFilter" style=dashed];
  * BeforeLUT [label="", fixedsize="false", width=0, height=0, shape=none];
- * LUT [label="rtk::LUTbasedVariableI0RawToAttenuationImageFilter" URL="\ref rtk::LUTbasedVariableI0RawToAttenuationImageFilter"];
+ * LUT [label="rtk::LUTbasedVariableI0RawToAttenuationImageFilter"
+ *      URL="\ref rtk::LUTbasedVariableI0RawToAttenuationImageFilter"];
  * BeforeVarian [label="", fixedsize="false", width=0, height=0, shape=none];
  * Varian [label="rtk::VarianObiRawImageFilter" URL="\ref rtk::VarianObiRawImageFilter"];
  * WPC [label="rtk::WaterPrecorrectionImageFilter" URL="\ref rtk::WaterPrecorrectionImageFilter" style=dashed];

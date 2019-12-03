@@ -44,7 +44,8 @@ namespace rtk
    *
    * node [shape=box];
    * Extract [label="itk::ExtractImageFilter (for images)" URL="\ref itk::ExtractImageFilter"];
-   * WaveletsDenoising [ label="rtk::DeconstructSoftThresholdReconstructImageFilter" URL="\ref rtk::DeconstructSoftThresholdReconstructImageFilter"];
+   * WaveletsDenoising [ label="rtk::DeconstructSoftThresholdReconstructImageFilter"
+   *                     URL="\ref rtk::DeconstructSoftThresholdReconstructImageFilter"];
    * Cast [ label="itk::CastImageFilter" URL="\ref itk::CastImageFilter"];
    * Paste [ label="itk::PasteImageFilter" URL="\ref itk::PasteImageFilter"];
    * ConstantSource [ label="rtk::ConstantImageSource" URL="\ref rtk::ConstantImageSource"];
