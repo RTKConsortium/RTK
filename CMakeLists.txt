@@ -19,6 +19,17 @@ foreach(p ${CMAKE_POLICIES})
   endif()
 endforeach()
 
+## Set the default target properties for RTK
+if(NOT CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 11) # Supported values are ``11``, ``14``, and ``17``.
+endif()
+if(NOT CMAKE_CXX_STANDARD_REQUIRED)
+  set(CMAKE_CXX_STANDARD_REQUIRED ON)
+endif()
+if(NOT CMAKE_CXX_EXTENSIONS)
+  set(CMAKE_CXX_EXTENSIONS OFF)
+endif()
+
 #=========================================================
 # Help function to debug CMake
 macro (DD in)
