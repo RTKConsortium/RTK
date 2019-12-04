@@ -13,7 +13,7 @@ except ImportError:
 
 setup(
     name='itk-rtk',
-    version='2.0.1',
+    version='2.1.0',
     author='RTK Consortium',
     author_email='rtk-users@openrtk.org',
     packages=['itk'],
@@ -44,6 +44,6 @@ setup(
     keywords='RTK Reconstruction Toolkit',
     url=r'https://www.openrtk.org/',
     install_requires=[
-            r'itk>=5.0'
+            r'itk>=5.1'
     ]
     )
