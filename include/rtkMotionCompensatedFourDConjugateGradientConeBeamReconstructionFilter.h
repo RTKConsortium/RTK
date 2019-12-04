@@ -23,52 +23,52 @@
 #include "rtkMotionCompensatedFourDReconstructionConjugateGradientOperator.h"
 #include "rtkWarpProjectionStackToFourDImageFilter.h"
 #ifdef RTK_USE_CUDA
-  #include "rtkCudaWarpForwardProjectionImageFilter.h"
-  #include "rtkCudaWarpBackProjectionImageFilter.h"
+#  include "rtkCudaWarpForwardProjectionImageFilter.h"
+#  include "rtkCudaWarpBackProjectionImageFilter.h"
 #endif
 
 namespace rtk
 {
-  /** \class MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter
-   * \brief Implements motion compensated 4D reconstruction by conjugate gradient
-   *
-   * \dot
-   * digraph MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter {
-   *
-   * Input0 [label="Input 0 (Input: 4D sequence of volumes)"];
-   * Input0 [shape=Mdiamond];
-   * Input1 [label="Input 1 (Projections)"];
-   * Input1 [shape=Mdiamond];
-   * Input2 [label="Input 2 (4D Sequence of DVFs)"];
-   * Input2 [shape=Mdiamond];
-   * Output [label="Output (Reconstruction: 4D sequence of volumes)"];
-   * Output [shape=Mdiamond];
-   *
-   * node [shape=box];
-   * AfterInput0 [label="", fixedsize="false", width=0, height=0, shape=none];
-   * ConjugateGradient [ label="rtk::ConjugateGradientImageFilter" URL="\ref rtk::ConjugateGradientImageFilter"];
-   * PSTFD [ label="rtk::WarpProjectionStackToFourDImageFilter" URL="\ref rtk::WarpProjectionStackToFourDImageFilter"];
-   *
-   * Input0 -> AfterInput0 [arrowhead=none];
-   * AfterInput0 -> ConjugateGradient;
-   * Input0 -> PSTFD;
-   * Input1 -> PSTFD;
-   * Input1 -> PSTFD;
-   * PSTFD -> ConjugateGradient;
-   * ConjugateGradient -> Output;
-   * }
-   * \enddot
-   *
-   * \test rtkmotioncompensatedfourdconjugategradienttest.cxx
-   *
-   * \author Cyril Mory
-   *
-   * \ingroup RTK ReconstructionAlgorithm
-   */
+/** \class MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter
+ * \brief Implements motion compensated 4D reconstruction by conjugate gradient
+ *
+ * \dot
+ * digraph MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter {
+ *
+ * Input0 [label="Input 0 (Input: 4D sequence of volumes)"];
+ * Input0 [shape=Mdiamond];
+ * Input1 [label="Input 1 (Projections)"];
+ * Input1 [shape=Mdiamond];
+ * Input2 [label="Input 2 (4D Sequence of DVFs)"];
+ * Input2 [shape=Mdiamond];
+ * Output [label="Output (Reconstruction: 4D sequence of volumes)"];
+ * Output [shape=Mdiamond];
+ *
+ * node [shape=box];
+ * AfterInput0 [label="", fixedsize="false", width=0, height=0, shape=none];
+ * ConjugateGradient [ label="rtk::ConjugateGradientImageFilter" URL="\ref rtk::ConjugateGradientImageFilter"];
+ * PSTFD [ label="rtk::WarpProjectionStackToFourDImageFilter" URL="\ref rtk::WarpProjectionStackToFourDImageFilter"];
+ *
+ * Input0 -> AfterInput0 [arrowhead=none];
+ * AfterInput0 -> ConjugateGradient;
+ * Input0 -> PSTFD;
+ * Input1 -> PSTFD;
+ * Input1 -> PSTFD;
+ * PSTFD -> ConjugateGradient;
+ * ConjugateGradient -> Output;
+ * }
+ * \enddot
+ *
+ * \test rtkmotioncompensatedfourdconjugategradienttest.cxx
+ *
+ * \author Cyril Mory
+ *
+ * \ingroup RTK ReconstructionAlgorithm
+ */
 
-template< typename VolumeSeriesType, typename ProjectionStackType>
-class ITK_EXPORT MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter :
-  public rtk::FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
+template <typename VolumeSeriesType, typename ProjectionStackType>
+class ITK_EXPORT MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter
+  : public rtk::FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter);
@@ -83,72 +83,89 @@ public:
   using InputImageType = VolumeSeriesType;
   using OutputImageType = VolumeSeriesType;
   using VolumeType = ProjectionStackType;
-  using VectorForDVF = itk::CovariantVector< typename VolumeSeriesType::ValueType, VolumeSeriesType::ImageDimension - 1>;
+  using VectorForDVF = itk::CovariantVector<typename VolumeSeriesType::ValueType, VolumeSeriesType::ImageDimension - 1>;
 
   using ForwardProjectionType = typename Superclass::ForwardProjectionType;
   using BackProjectionType = typename Superclass::BackProjectionType;
 
   /** SFINAE type alias, depending on whether a CUDA image is used. */
-  using CPUVolumeSeriesType = typename itk::Image< typename VolumeSeriesType::PixelType,
-                               VolumeSeriesType::ImageDimension>;
+  using CPUVolumeSeriesType =
+    typename itk::Image<typename VolumeSeriesType::PixelType, VolumeSeriesType::ImageDimension>;
 #ifdef RTK_USE_CUDA
-  typedef typename std::conditional< std::is_same< VolumeSeriesType, CPUVolumeSeriesType >::value,
-                                     itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension>,
-                                     itk::CudaImage<VectorForDVF, VolumeSeriesType::ImageDimension> >::type
-                                                                        DVFSequenceImageType;
-  typedef typename std::conditional< std::is_same< VolumeSeriesType, CPUVolumeSeriesType >::value,
-                                     itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension - 1>,
-                                     itk::CudaImage<VectorForDVF, VolumeSeriesType::ImageDimension - 1> >::type
-                                                                        DVFImageType;
+  typedef typename std::conditional<std::is_same<VolumeSeriesType, CPUVolumeSeriesType>::value,
+                                    itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension>,
+                                    itk::CudaImage<VectorForDVF, VolumeSeriesType::ImageDimension>>::type
+    DVFSequenceImageType;
+  typedef
+    typename std::conditional<std::is_same<VolumeSeriesType, CPUVolumeSeriesType>::value,
+                              itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension - 1>,
+                              itk::CudaImage<VectorForDVF, VolumeSeriesType::ImageDimension - 1>>::type DVFImageType;
 #else
   using DVFSequenceImageType = itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension>;
-  using DVFImageType = itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension-1>;
+  using DVFImageType = itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension - 1>;
 #endif
 
   /** Typedefs of each subfilter of this composite filter */
 
   /** Standard New method. */
-  itkNewMacro(Self)
+  itkNewMacro(Self);
 
   /** Runtime information support. */
-  itkTypeMacro(MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter, FourDConjugateGradientConeBeamReconstructionFilter)
+  itkTypeMacro(MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter,
+               FourDConjugateGradientConeBeamReconstructionFilter);
 
   /** Neither the Forward nor the Back projection filters can be set by the user */
-  void SetForwardProjectionFilter (ForwardProjectionType itkNotUsed(_arg)) override {itkExceptionMacro(<< "ForwardProjection cannot be changed");}
-  void SetBackProjectionFilter (BackProjectionType itkNotUsed(_arg)) override {itkExceptionMacro(<< "BackProjection cannot be changed");}
+  void
+  SetForwardProjectionFilter(ForwardProjectionType itkNotUsed(_arg)) override
+  {
+    itkExceptionMacro(<< "ForwardProjection cannot be changed");
+  }
+  void
+  SetBackProjectionFilter(BackProjectionType itkNotUsed(_arg)) override
+  {
+    itkExceptionMacro(<< "BackProjection cannot be changed");
+  }
 
   /** The ND + time motion vector field */
-  void SetDisplacementField(const DVFSequenceImageType* DVFs);
-  void SetInverseDisplacementField(const DVFSequenceImageType* DVFs);
-  typename DVFSequenceImageType::ConstPointer GetDisplacementField();
-  typename DVFSequenceImageType::ConstPointer GetInverseDisplacementField();
+  void
+  SetDisplacementField(const DVFSequenceImageType * DVFs);
+  void
+  SetInverseDisplacementField(const DVFSequenceImageType * DVFs);
+  typename DVFSequenceImageType::ConstPointer
+  GetDisplacementField();
+  typename DVFSequenceImageType::ConstPointer
+  GetInverseDisplacementField();
 
   /** Set the vector containing the signal in the sub-filters */
-  void SetSignal(const std::vector<double> signal) override;
+  void
+  SetSignal(const std::vector<double> signal) override;
 
   // Sub filters type alias
-  using MCProjStackToFourDType = rtk::WarpProjectionStackToFourDImageFilter< VolumeSeriesType, ProjectionStackType>;
-  using MCCGOperatorType = rtk::MotionCompensatedFourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType>;
+  using MCProjStackToFourDType = rtk::WarpProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType>;
+  using MCCGOperatorType =
+    rtk::MotionCompensatedFourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType>;
 
   /** Set and Get for the UseCudaCyclicDeformation variable */
-  itkSetMacro(UseCudaCyclicDeformation, bool)
-  itkGetMacro(UseCudaCyclicDeformation, bool)
+  itkSetMacro(UseCudaCyclicDeformation, bool);
+  itkGetMacro(UseCudaCyclicDeformation, bool);
 
 protected:
   MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter();
   ~MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter() override = default;
 
-  void GenerateOutputInformation() override;
-  void GenerateInputRequestedRegion() override;
+  void
+  GenerateOutputInformation() override;
+  void
+  GenerateInputRequestedRegion() override;
 
-  bool                                                m_UseCudaCyclicDeformation;
+  bool m_UseCudaCyclicDeformation;
 
 }; // end of class
 
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkMotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter.hxx"
+#  include "rtkMotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter.hxx"
 #endif
 
 #endif

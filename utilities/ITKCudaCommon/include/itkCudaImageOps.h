@@ -45,9 +45,9 @@ private:
   CudaImageOps();
   virtual ~CudaImageOps();
 
-  CudaImageOps(const Self &);                  //purposely not implemented
-  void operator=(const Self &);                //purposely not implemented
-
+  CudaImageOps(const Self &); // purposely not implemented
+  void
+  operator=(const Self &); // purposely not implemented
 };
 
 } // end of namespace itk

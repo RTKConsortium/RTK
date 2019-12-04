@@ -45,64 +45,68 @@ namespace rtk
  * \ingroup RTK
  *
  */
-template< typename TInputImage>
+template <typename TInputImage>
 class ConditionalMedianImageFilter : public itk::InPlaceImageFilter<TInputImage>
 {
 public:
-    ITK_DISALLOW_COPY_AND_ASSIGN(ConditionalMedianImageFilter);
+  ITK_DISALLOW_COPY_AND_ASSIGN(ConditionalMedianImageFilter);
 
-    /** Standard class type alias. */
-    using Self = ConditionalMedianImageFilter;
-    using Superclass = itk::InPlaceImageFilter<TInputImage>;
-    using Pointer = itk::SmartPointer< Self >;
-    using MedianRadiusType = typename itk::ConstNeighborhoodIterator<TInputImage>::RadiusType;
+  /** Standard class type alias. */
+  using Self = ConditionalMedianImageFilter;
+  using Superclass = itk::InPlaceImageFilter<TInputImage>;
+  using Pointer = itk::SmartPointer<Self>;
+  using MedianRadiusType = typename itk::ConstNeighborhoodIterator<TInputImage>::RadiusType;
 
-    /** Method for creation through the object factory. */
-    itkNewMacro(Self)
+  /** Method for creation through the object factory. */
+  itkNewMacro(Self);
 
-    /** Run-time type information (and related methods). */
-    itkTypeMacro(ConditionalMedianImageFilter, itk::InPlaceImageFilter)
+  /** Run-time type information (and related methods). */
+  itkTypeMacro(ConditionalMedianImageFilter, itk::InPlaceImageFilter);
 
-    /** Set/Get neighborhood radius */
-    itkSetMacro(Radius, MedianRadiusType)
-    itkGetMacro(Radius, MedianRadiusType)
+  /** Set/Get neighborhood radius */
+  itkSetMacro(Radius, MedianRadiusType);
+  itkGetMacro(Radius, MedianRadiusType);
 
-    /** Set/Get neighborhood radius */
-    itkSetMacro(ThresholdMultiplier, double)
-    itkGetMacro(ThresholdMultiplier, double)
+  /** Set/Get neighborhood radius */
+  itkSetMacro(ThresholdMultiplier, double);
+  itkGetMacro(ThresholdMultiplier, double);
 
 protected:
-    ConditionalMedianImageFilter();
-    ~ConditionalMedianImageFilter() override = default;
+  ConditionalMedianImageFilter();
+  ~ConditionalMedianImageFilter() override = default;
 
-    void GenerateInputRequestedRegion() override;
+  void
+  GenerateInputRequestedRegion() override;
 
-    /** Does the real work. */
-#if ITK_VERSION_MAJOR<5
-    void ThreadedGenerateData(const typename TInputImage::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) override;
+  /** Does the real work. */
+#if ITK_VERSION_MAJOR < 5
+  void
+  ThreadedGenerateData(const typename TInputImage::RegionType & outputRegionForThread,
+                       itk::ThreadIdType                        itkNotUsed(threadId)) override;
 #else
-    void DynamicThreadedGenerateData(const typename TInputImage::RegionType& outputRegionForThread) override;
+  void
+  DynamicThreadedGenerateData(const typename TInputImage::RegionType & outputRegionForThread) override;
 #endif
 
-    MedianRadiusType  m_Radius;
-    double            m_ThresholdMultiplier;
+  MedianRadiusType m_Radius;
+  double           m_ThresholdMultiplier;
 };
 
 template <>
-RTK_EXPORT
-void
-ConditionalMedianImageFilter<itk::VectorImage<float, 3> >
-#if ITK_VERSION_MAJOR<5
-::ThreadedGenerateData(const itk::VectorImage<float, 3>::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId));
+RTK_EXPORT void
+ConditionalMedianImageFilter<itk::VectorImage<float, 3>>
+#if ITK_VERSION_MAJOR < 5
+  ::ThreadedGenerateData(const itk::VectorImage<float, 3>::RegionType & outputRegionForThread,
+                         itk::ThreadIdType                              itkNotUsed(threadId));
 #else
-::DynamicThreadedGenerateData(const itk::VectorImage<float, 3>::RegionType& outputRegionForThread);
+  ::DynamicThreadedGenerateData(const itk::VectorImage<float, 3>::RegionType & outputRegionForThread);
 #endif
 
-} //namespace rtk
+} // namespace rtk
 
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkConditionalMedianImageFilter.hxx"
+#  include "rtkConditionalMedianImageFilter.hxx"
 #endif
 
 #endif // rtkConditionalMedianImageFilter_h

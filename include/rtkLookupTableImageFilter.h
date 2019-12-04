@@ -43,45 +43,55 @@ namespace rtk
 namespace Functor
 {
 
-template< class TInput, class TOutput >
+template <class TInput, class TOutput>
 class LUT
 {
 public:
-  using LookupTableType = itk::Image<TOutput,1>;
+  using LookupTableType = itk::Image<TOutput, 1>;
   using LookupTablePointer = typename LookupTableType::Pointer;
-  using LookupTableDataPointer = typename LookupTableType::PixelType*;
-  using InterpolatorType = typename itk::LinearInterpolateImageFunction< LookupTableType, double >;
+  using LookupTableDataPointer = typename LookupTableType::PixelType *;
+  using InterpolatorType = typename itk::LinearInterpolateImageFunction<LookupTableType, double>;
   using InterpolatorPointer = typename InterpolatorType::Pointer;
 
-  LUT():
-    m_LookupTableDataPointer(nullptr),
-    m_Interpolator(InterpolatorType::New())
-  {};
+  LUT()
+    : m_LookupTableDataPointer(nullptr)
+    , m_Interpolator(InterpolatorType::New()){};
   ~LUT() = default;
 
   /** Get/Set the lookup table. */
-  LookupTablePointer GetLookupTable() {
+  LookupTablePointer
+  GetLookupTable()
+  {
     return m_LookupTablePointer;
   }
-  void SetLookupTable(LookupTablePointer lut) {
+  void
+  SetLookupTable(LookupTablePointer lut)
+  {
     m_LookupTablePointer = lut;
     m_LookupTableDataPointer = lut->GetBufferPointer();
     m_InverseLUTSpacing = 1. / m_LookupTablePointer->GetSpacing()[0];
     m_Interpolator->SetInputImage(lut);
   }
 
-  LookupTableDataPointer GetLookupTable() const {
+  LookupTableDataPointer
+  GetLookupTable() const
+  {
     return m_LookupTableDataPointer;
   }
 
-  bool operator!=( const LUT & lut ) const {
+  bool
+  operator!=(const LUT & lut) const
+  {
     return m_LookupTableDataPointer != lut.GetLookupTable();
   }
-  bool operator==( const LUT & lut ) const {
+  bool
+  operator==(const LUT & lut) const
+  {
     return m_LookupTableDataPointer == lut.GetLookupTable();
   }
 
-  inline TOutput operator()( const TInput & val ) const;
+  inline TOutput
+  operator()(const TInput & val) const;
 
 private:
   LookupTablePointer     m_LookupTablePointer;
@@ -90,30 +100,28 @@ private:
   double                 m_InverseLUTSpacing;
 };
 
-template< class TInput, class TOutput >
+template <class TInput, class TOutput>
 TOutput
-LUT<TInput, TOutput>
-::operator()( const TInput & val ) const {
+LUT<TInput, TOutput>::operator()(const TInput & val) const
+{
   return m_LookupTableDataPointer[val];
 }
 
-template<>
-inline
-float
-LUT<float, float>
-::operator()( const float & val ) const {
+template <>
+inline float
+LUT<float, float>::operator()(const float & val) const
+{
   InterpolatorType::ContinuousIndexType index;
-  index[0] = m_InverseLUTSpacing * (val  - m_LookupTablePointer->GetOrigin()[0]);
+  index[0] = m_InverseLUTSpacing * (val - m_LookupTablePointer->GetOrigin()[0]);
   return float(m_Interpolator->EvaluateAtContinuousIndex(index));
 }
 
-template<>
-inline
-double
-LUT<double, double>
-::operator()( const double & val ) const {
+template <>
+inline double
+LUT<double, double>::operator()(const double & val) const
+{
   InterpolatorType::ContinuousIndexType index;
-  index[0] = m_InverseLUTSpacing * (val  - m_LookupTablePointer->GetOrigin()[0]);
+  index[0] = m_InverseLUTSpacing * (val - m_LookupTablePointer->GetOrigin()[0]);
   return double(m_Interpolator->EvaluateAtContinuousIndex(index));
 }
 
@@ -133,22 +141,21 @@ LUT<double, double>
  * \ingroup RTK ImageToImageFilter
  */
 template <class TInputImage, class TOutputImage>
-class ITK_EXPORT LookupTableImageFilter : public
-  itk::UnaryFunctorImageFilter< TInputImage,
-                                TOutputImage,
-                                Functor::LUT< typename TInputImage::PixelType,
-                                              typename TOutputImage::PixelType> >
+class ITK_EXPORT LookupTableImageFilter
+  : public itk::UnaryFunctorImageFilter<TInputImage,
+                                        TOutputImage,
+                                        Functor::LUT<typename TInputImage::PixelType, typename TOutputImage::PixelType>>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(LookupTableImageFilter);
 
   /** Lookup table type definition. */
-  using FunctorType = Functor::LUT< typename TInputImage::PixelType, typename TOutputImage::PixelType >;
+  using FunctorType = Functor::LUT<typename TInputImage::PixelType, typename TOutputImage::PixelType>;
   using LookupTableType = typename FunctorType::LookupTableType;
 
   /** Standard class type alias. */
   using Self = LookupTableImageFilter;
-  using Superclass = itk::UnaryFunctorImageFilter<TInputImage, TOutputImage, FunctorType >;
+  using Superclass = itk::UnaryFunctorImageFilter<TInputImage, TOutputImage, FunctorType>;
   using Pointer = itk::SmartPointer<Self>;
   using ConstPointer = itk::SmartPointer<const Self>;
 
@@ -159,14 +166,20 @@ public:
   itkTypeMacro(LookupTableImageFilter, itk::UnaryFunctorImageFilter);
 
   /** Set lookup table. */
-  virtual void SetLookupTable(LookupTableType* _arg) {
-    //Idem as itkSetObjectMacro + call to functor SetLookupTableDataPointer
-    itkDebugMacro("setting " << "LookupTable" " to " << _arg );
-    if (this->m_LookupTable != _arg || ( _arg && _arg->GetTimeStamp()>this->GetTimeStamp() ) ) {
+  virtual void
+  SetLookupTable(LookupTableType * _arg)
+  {
+    // Idem as itkSetObjectMacro + call to functor SetLookupTableDataPointer
+    itkDebugMacro("setting "
+                  << "LookupTable"
+                     " to "
+                  << _arg);
+    if (this->m_LookupTable != _arg || (_arg && _arg->GetTimeStamp() > this->GetTimeStamp()))
+    {
       this->m_LookupTable = _arg;
       this->Modified();
       this->GetFunctor().SetLookupTable(_arg);
-      }
+    }
   }
 
   /** Get lookup table. */
@@ -174,19 +187,19 @@ public:
 
   /** Update the LUT before using it to process the data in case it is the
    * result of a pipeline. */
-  void BeforeThreadedGenerateData() override;
+  void
+  BeforeThreadedGenerateData() override;
 
 protected:
   LookupTableImageFilter() = default;
   ~LookupTableImageFilter() override = default;
   typename LookupTableType::Pointer m_LookupTable;
-
 };
 
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkLookupTableImageFilter.hxx"
+#  include "rtkLookupTableImageFilter.hxx"
 #endif
 
 #endif

@@ -24,15 +24,12 @@
 #include <itkImageFileReader.h>
 #include <itksys/SystemTools.hxx>
 
-rtk::VarianProBeamGeometryReader
-::VarianProBeamGeometryReader():
-  m_Geometry(nullptr)
-{
-}
+rtk::VarianProBeamGeometryReader ::VarianProBeamGeometryReader()
+  : m_Geometry(nullptr)
+{}
 
 void
-rtk::VarianProBeamGeometryReader
-::GenerateData()
+rtk::VarianProBeamGeometryReader ::GenerateData()
 {
   // Create new RTK geometry object
   m_Geometry = GeometryType::New();
@@ -44,37 +41,40 @@ rtk::VarianProBeamGeometryReader
   proBeamXmlReader->GenerateOutputInformation();
 
   // Constants used to generate projection matrices
-  itk::MetaDataDictionary &dic = *(proBeamXmlReader->GetOutputObject() );
-  using MetaDataDoubleType = itk::MetaDataObject< double >;
-  const double sdd = dynamic_cast<MetaDataDoubleType *>(dic["SID"].GetPointer() )->GetMetaDataObjectValue();
-  const double sid = dynamic_cast<MetaDataDoubleType *>(dic["SAD"].GetPointer() )->GetMetaDataObjectValue();
+  itk::MetaDataDictionary & dic = *(proBeamXmlReader->GetOutputObject());
+  using MetaDataDoubleType = itk::MetaDataObject<double>;
+  const double sdd = dynamic_cast<MetaDataDoubleType *>(dic["SID"].GetPointer())->GetMetaDataObjectValue();
+  const double sid = dynamic_cast<MetaDataDoubleType *>(dic["SAD"].GetPointer())->GetMetaDataObjectValue();
 
   // Projections reader (for angle)
   rtk::XimImageIOFactory::RegisterOneFactory();
   // Projection matrices
-  for(const std::string & projectionsFileName : m_ProjectionsFileNames)
-    {
+  for (const std::string & projectionsFileName : m_ProjectionsFileNames)
+  {
     using InputPixelType = unsigned int;
-    using InputImageType = itk::Image< InputPixelType, 2 >;
+    using InputImageType = itk::Image<InputPixelType, 2>;
 
-    using ReaderType = itk::ImageFileReader< InputImageType >;
+    using ReaderType = itk::ImageFileReader<InputImageType>;
     ReaderType::Pointer reader = ReaderType::New();
-    reader->SetFileName( projectionsFileName );
+    reader->SetFileName(projectionsFileName);
     reader->UpdateOutputInformation();
 
     const double angle =
-      dynamic_cast<MetaDataDoubleType *>(reader->GetMetaDataDictionary()["dCTProjectionAngle"].GetPointer())->GetMetaDataObjectValue();
+      dynamic_cast<MetaDataDoubleType *>(reader->GetMetaDataDictionary()["dCTProjectionAngle"].GetPointer())
+        ->GetMetaDataObjectValue();
     if (angle != 6000)
-      {
+    {
       /* Warning: The offsets in the test scans were very small,
       however this configuration improved reconstruction quality slightly.*/
       const double offsetx =
-        dynamic_cast<MetaDataDoubleType *>(reader->GetMetaDataDictionary()["dDetectorOffsetX"].GetPointer())->GetMetaDataObjectValue();
+        dynamic_cast<MetaDataDoubleType *>(reader->GetMetaDataDictionary()["dDetectorOffsetX"].GetPointer())
+          ->GetMetaDataObjectValue();
       const double offsety =
-        dynamic_cast<MetaDataDoubleType *>(reader->GetMetaDataDictionary()["dDetectorOffsetY"].GetPointer())->GetMetaDataObjectValue();
+        dynamic_cast<MetaDataDoubleType *>(reader->GetMetaDataDictionary()["dDetectorOffsetY"].GetPointer())
+          ->GetMetaDataObjectValue();
       /*The angle-direction of RTK is opposite of the Xim properties
       (There doesn't seem to be a flag for direction in neither the xml nor xim file) */
       m_Geometry->AddProjection(sid, sdd, 180.0 - angle, offsetx, offsety);
-      }
+    }
   }
 }

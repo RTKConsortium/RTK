@@ -28,9 +28,9 @@
 #include "rtkJosephBackAttenuatedProjectionImageFilter.h"
 
 #ifdef RTK_USE_CUDA
-# include "rtkCudaForwardProjectionImageFilter.h"
-# include "rtkCudaBackProjectionImageFilter.h"
-# include "rtkCudaRayCastBackProjectionImageFilter.h"
+#  include "rtkCudaForwardProjectionImageFilter.h"
+#  include "rtkCudaBackProjectionImageFilter.h"
+#  include "rtkCudaRayCastBackProjectionImageFilter.h"
 #endif
 
 #include <random>
@@ -51,10 +51,8 @@ namespace rtk
  *
  * \ingroup RTK ReconstructionAlgorithm
  */
-template<class TOutputImage,
-         class ProjectionStackType=TOutputImage>
-class ITK_EXPORT IterativeConeBeamReconstructionFilter :
-  public itk::ImageToImageFilter<TOutputImage, TOutputImage>
+template <class TOutputImage, class ProjectionStackType = TOutputImage>
+class ITK_EXPORT IterativeConeBeamReconstructionFilter : public itk::ImageToImageFilter<TOutputImage, TOutputImage>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(IterativeConeBeamReconstructionFilter);
@@ -67,34 +65,50 @@ public:
 
   /** Convenient type alias */
   using VolumeType = ProjectionStackType;
-  typedef enum {FP_UNKNOWN=-1,
-                FP_JOSEPH=0,
-                FP_CUDARAYCAST=2,
-                FP_JOSEPHATTENUATED=3} ForwardProjectionType;
-  typedef enum {BP_UNKNOWN=-1,
-                BP_VOXELBASED=0,
-                BP_JOSEPH=1,
-                BP_CUDAVOXELBASED=2,
-                BP_CUDARAYCAST=4,
-                BP_JOSEPHATTENUATED=5} BackProjectionType;
+  typedef enum
+  {
+    FP_UNKNOWN = -1,
+    FP_JOSEPH = 0,
+    FP_CUDARAYCAST = 2,
+    FP_JOSEPHATTENUATED = 3
+  } ForwardProjectionType;
+  typedef enum
+  {
+    BP_UNKNOWN = -1,
+    BP_VOXELBASED = 0,
+    BP_JOSEPH = 1,
+    BP_CUDAVOXELBASED = 2,
+    BP_CUDARAYCAST = 4,
+    BP_JOSEPHATTENUATED = 5
+  } BackProjectionType;
 
   /** Typedefs of each subfilter of this composite filter */
-  using ForwardProjectionFilterType = rtk::ForwardProjectionImageFilter< VolumeType, ProjectionStackType >;
-  using BackProjectionFilterType = rtk::BackProjectionImageFilter< ProjectionStackType, VolumeType >;
+  using ForwardProjectionFilterType = rtk::ForwardProjectionImageFilter<VolumeType, ProjectionStackType>;
+  using BackProjectionFilterType = rtk::BackProjectionImageFilter<ProjectionStackType, VolumeType>;
   using ForwardProjectionPointerType = typename ForwardProjectionFilterType::Pointer;
   using BackProjectionPointerType = typename BackProjectionFilterType::Pointer;
 
   /** Standard New method. */
-  itkNewMacro(Self)
+  itkNewMacro(Self);
 
   /** Runtime information support. */
-  itkTypeMacro(IterativeConeBeamReconstructionFilter, itk::ImageToImageFilter)
+  itkTypeMacro(IterativeConeBeamReconstructionFilter, itk::ImageToImageFilter);
 
   /** Accessors to forward and backprojection types. */
-  virtual void SetForwardProjectionFilter (ForwardProjectionType fwtype);
-  ForwardProjectionType GetForwardProjectionFilter () { return m_CurrentForwardProjectionConfiguration; }
-  virtual void SetBackProjectionFilter (BackProjectionType bptype);
-  BackProjectionType GetBackProjectionFilter () { return m_CurrentBackProjectionConfiguration; }
+  virtual void
+  SetForwardProjectionFilter(ForwardProjectionType fwtype);
+  ForwardProjectionType
+  GetForwardProjectionFilter()
+  {
+    return m_CurrentForwardProjectionConfiguration;
+  }
+  virtual void
+  SetBackProjectionFilter(BackProjectionType bptype);
+  BackProjectionType
+  GetBackProjectionFilter()
+  {
+    return m_CurrentBackProjectionConfiguration;
+  }
 
 protected:
   IterativeConeBeamReconstructionFilter();
@@ -102,11 +116,13 @@ protected:
 
   /** Creates and returns an instance of the back projection filter.
    * To be used in SetBackProjectionFilter. */
-  virtual BackProjectionPointerType InstantiateBackProjectionFilter (int bptype);
+  virtual BackProjectionPointerType
+  InstantiateBackProjectionFilter(int bptype);
 
   /** Creates and returns an instance of the forward projection filter.
    * To be used in SetForwardProjectionFilter. */
-  virtual ForwardProjectionPointerType InstantiateForwardProjectionFilter (int fwtype);
+  virtual ForwardProjectionPointerType
+  InstantiateForwardProjectionFilter(int fwtype);
 
   /** Internal variables storing the current forward
     and back projection methods */
@@ -118,128 +134,147 @@ protected:
   std::default_random_engine m_DefaultRandomEngine = std::default_random_engine{};
 
   /** Instantiate forward and back projectors using SFINAE. */
-  using CPUImageType = typename itk::Image<typename ProjectionStackType::PixelType, ProjectionStackType::ImageDimension>;
-  template < typename ImageType >
-  using EnableCudaScalarAndVectorType  = typename std::enable_if< !std::is_same< CPUImageType, ImageType >::value &&
-                                                                  std::is_same< typename itk::PixelTraits<typename ImageType::PixelType>::ValueType, float >::value &&
-                                                                  ( itk::PixelTraits<typename ImageType::PixelType>::Dimension == 1 ||
-                                                                    itk::PixelTraits<typename ImageType::PixelType>::Dimension == 2 ||
-                                                                    itk::PixelTraits<typename ImageType::PixelType>::Dimension == 3 ) >::type;
-  template < typename ImageType >
-  using DisableCudaScalarAndVectorType = typename std::enable_if< std::is_same< CPUImageType, ImageType >::value ||
-                                                                  !std::is_same< typename itk::PixelTraits<typename ImageType::PixelType>::ValueType, float >::value ||
-                                                                  ( itk::PixelTraits<typename ImageType::PixelType>::Dimension != 1 &&
-                                                                    itk::PixelTraits<typename ImageType::PixelType>::Dimension != 2 &&
-                                                                    itk::PixelTraits<typename ImageType::PixelType>::Dimension != 3 ) >::type;
-  template < typename ImageType >
-  using EnableCudaScalarType  = typename std::enable_if< !std::is_same< CPUImageType, ImageType >::value &&
-                                                         std::is_same< typename itk::PixelTraits<typename ImageType::PixelType>::ValueType, float >::value &&
-                                                         itk::PixelTraits<typename ImageType::PixelType>::Dimension == 1 >::type;
-  template < typename ImageType >
-  using DisableCudaScalarType = typename std::enable_if< std::is_same< CPUImageType, ImageType >::value ||
-                                                         !std::is_same< typename itk::PixelTraits<typename ImageType::PixelType>::ValueType, float >::value ||
-                                                         itk::PixelTraits<typename ImageType::PixelType>::Dimension != 1 >::type;
-  template < typename ImageType >
-  using EnableVectorType  = typename std::enable_if< itk::PixelTraits<typename ImageType::PixelType>::Dimension != 1 >::type;
-  template < typename ImageType >
-  using DisableVectorType = typename std::enable_if< itk::PixelTraits<typename ImageType::PixelType>::Dimension == 1 >::type;
+  using CPUImageType =
+    typename itk::Image<typename ProjectionStackType::PixelType, ProjectionStackType::ImageDimension>;
+  template <typename ImageType>
+  using EnableCudaScalarAndVectorType = typename std::enable_if<
+    !std::is_same<CPUImageType, ImageType>::value &&
+    std::is_same<typename itk::PixelTraits<typename ImageType::PixelType>::ValueType, float>::value &&
+    (itk::PixelTraits<typename ImageType::PixelType>::Dimension == 1 ||
+     itk::PixelTraits<typename ImageType::PixelType>::Dimension == 2 ||
+     itk::PixelTraits<typename ImageType::PixelType>::Dimension == 3)>::type;
+  template <typename ImageType>
+  using DisableCudaScalarAndVectorType = typename std::enable_if<
+    std::is_same<CPUImageType, ImageType>::value ||
+    !std::is_same<typename itk::PixelTraits<typename ImageType::PixelType>::ValueType, float>::value ||
+    (itk::PixelTraits<typename ImageType::PixelType>::Dimension != 1 &&
+     itk::PixelTraits<typename ImageType::PixelType>::Dimension != 2 &&
+     itk::PixelTraits<typename ImageType::PixelType>::Dimension != 3)>::type;
+  template <typename ImageType>
+  using EnableCudaScalarType = typename std::enable_if<
+    !std::is_same<CPUImageType, ImageType>::value &&
+    std::is_same<typename itk::PixelTraits<typename ImageType::PixelType>::ValueType, float>::value &&
+    itk::PixelTraits<typename ImageType::PixelType>::Dimension == 1>::type;
+  template <typename ImageType>
+  using DisableCudaScalarType = typename std::enable_if<
+    std::is_same<CPUImageType, ImageType>::value ||
+    !std::is_same<typename itk::PixelTraits<typename ImageType::PixelType>::ValueType, float>::value ||
+    itk::PixelTraits<typename ImageType::PixelType>::Dimension != 1>::type;
+  template <typename ImageType>
+  using EnableVectorType =
+    typename std::enable_if<itk::PixelTraits<typename ImageType::PixelType>::Dimension != 1>::type;
+  template <typename ImageType>
+  using DisableVectorType =
+    typename std::enable_if<itk::PixelTraits<typename ImageType::PixelType>::Dimension == 1>::type;
 
-  template < typename ImageType, EnableCudaScalarAndVectorType<ImageType>* = nullptr >
-  ForwardProjectionPointerType InstantiateCudaForwardProjection()
-    {
+  template <typename ImageType, EnableCudaScalarAndVectorType<ImageType> * = nullptr>
+  ForwardProjectionPointerType
+  InstantiateCudaForwardProjection()
+  {
     ForwardProjectionPointerType fw;
 #ifdef RTK_USE_CUDA
     fw = CudaForwardProjectionImageFilter<ImageType, ImageType>::New();
 #endif
     return fw;
-    }
+  }
 
 
-  template < typename ImageType, DisableCudaScalarAndVectorType<ImageType>* = nullptr >
-  ForwardProjectionPointerType InstantiateCudaForwardProjection()
-    {
-    itkGenericExceptionMacro(<< "CudaRayCastBackProjectionImageFilter only available with 3D CudaImage of float or itk::Vector<float,3>.");
+  template <typename ImageType, DisableCudaScalarAndVectorType<ImageType> * = nullptr>
+  ForwardProjectionPointerType
+  InstantiateCudaForwardProjection()
+  {
+    itkGenericExceptionMacro(
+      << "CudaRayCastBackProjectionImageFilter only available with 3D CudaImage of float or itk::Vector<float,3>.");
     return nullptr;
-    }
+  }
 
 
-  template < typename ImageType, EnableVectorType<ImageType>* = nullptr >
-  ForwardProjectionPointerType InstantiateJosephForwardAttenuatedProjection()
-    {
+  template <typename ImageType, EnableVectorType<ImageType> * = nullptr>
+  ForwardProjectionPointerType
+  InstantiateJosephForwardAttenuatedProjection()
+  {
     itkGenericExceptionMacro(<< "JosephForwardAttenuatedProjectionImageFilter only available with scalar pixel types.");
     return nullptr;
-    }
+  }
 
 
-  template < typename ImageType, DisableVectorType<ImageType>* = nullptr >
-  ForwardProjectionPointerType InstantiateJosephForwardAttenuatedProjection()
-    {
+  template <typename ImageType, DisableVectorType<ImageType> * = nullptr>
+  ForwardProjectionPointerType
+  InstantiateJosephForwardAttenuatedProjection()
+  {
     ForwardProjectionPointerType fw;
     fw = JosephForwardAttenuatedProjectionImageFilter<VolumeType, ProjectionStackType>::New();
     return fw;
-    }
+  }
 
 
-  template < typename ImageType, EnableCudaScalarAndVectorType<ImageType>* = nullptr >
-  BackProjectionPointerType InstantiateCudaBackProjection()
-    {
+  template <typename ImageType, EnableCudaScalarAndVectorType<ImageType> * = nullptr>
+  BackProjectionPointerType
+  InstantiateCudaBackProjection()
+  {
     BackProjectionPointerType bp;
 #ifdef RTK_USE_CUDA
     bp = CudaBackProjectionImageFilter<ImageType>::New();
 #endif
     return bp;
-    }
+  }
 
 
-  template < typename ImageType, DisableCudaScalarAndVectorType<ImageType>* = nullptr >
-  BackProjectionPointerType InstantiateCudaBackProjection()
-    {
-    itkGenericExceptionMacro(<< "CudaBackProjectionImageFilter only available with 3D CudaImage of float or itk::Vector<float,3>.");
+  template <typename ImageType, DisableCudaScalarAndVectorType<ImageType> * = nullptr>
+  BackProjectionPointerType
+  InstantiateCudaBackProjection()
+  {
+    itkGenericExceptionMacro(
+      << "CudaBackProjectionImageFilter only available with 3D CudaImage of float or itk::Vector<float,3>.");
     return nullptr;
-    }
+  }
 
 
-  template < typename ImageType, EnableCudaScalarType<ImageType>* = nullptr >
-  BackProjectionPointerType InstantiateCudaRayCastBackProjection()
-    {
+  template <typename ImageType, EnableCudaScalarType<ImageType> * = nullptr>
+  BackProjectionPointerType
+  InstantiateCudaRayCastBackProjection()
+  {
     BackProjectionPointerType bp;
 #ifdef RTK_USE_CUDA
     bp = CudaRayCastBackProjectionImageFilter::New();
 #endif
     return bp;
-    }
+  }
 
 
-  template < typename ImageType, DisableCudaScalarType<ImageType>* = nullptr >
-  BackProjectionPointerType InstantiateCudaRayCastBackProjection()
-    {
+  template <typename ImageType, DisableCudaScalarType<ImageType> * = nullptr>
+  BackProjectionPointerType
+  InstantiateCudaRayCastBackProjection()
+  {
     itkGenericExceptionMacro(<< "CudaRayCastBackProjectionImageFilter only available with 3D CudaImage of float.");
     return nullptr;
-    }
+  }
 
 
-  template < typename ImageType, EnableVectorType<ImageType>* = nullptr >
-  BackProjectionPointerType InstantiateJosephBackAttenuatedProjection()
-    {
+  template <typename ImageType, EnableVectorType<ImageType> * = nullptr>
+  BackProjectionPointerType
+  InstantiateJosephBackAttenuatedProjection()
+  {
     itkGenericExceptionMacro(<< "JosephBackAttenuatedProjectionImageFilter only available with scalar pixel types.");
     return nullptr;
-    }
+  }
 
 
-  template < typename ImageType, DisableVectorType<ImageType>* = nullptr >
-  BackProjectionPointerType InstantiateJosephBackAttenuatedProjection()
-    {
+  template <typename ImageType, DisableVectorType<ImageType> * = nullptr>
+  BackProjectionPointerType
+  InstantiateJosephBackAttenuatedProjection()
+  {
     BackProjectionPointerType bp;
     bp = JosephBackAttenuatedProjectionImageFilter<ImageType, ImageType>::New();
     return bp;
-    }
+  }
 
 }; // end of class
 
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkIterativeConeBeamReconstructionFilter.hxx"
+#  include "rtkIterativeConeBeamReconstructionFilter.hxx"
 #endif
 
 #endif

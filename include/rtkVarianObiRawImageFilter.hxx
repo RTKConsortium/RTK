@@ -25,23 +25,20 @@
 namespace rtk
 {
 
-template< typename TInputImage, typename TOutputImage >
-VarianObiRawImageFilter< TInputImage, TOutputImage >
-::VarianObiRawImageFilter()
-{
-}
+template <typename TInputImage, typename TOutputImage>
+VarianObiRawImageFilter<TInputImage, TOutputImage>::VarianObiRawImageFilter()
+{}
 
-template< typename TInputImage, typename TOutputImage >
+template <typename TInputImage, typename TOutputImage>
 void
-VarianObiRawImageFilter< TInputImage, TOutputImage >
-::BeforeThreadedGenerateData()
+VarianObiRawImageFilter<TInputImage, TOutputImage>::BeforeThreadedGenerateData()
 {
   using I0EstimationType = rtk::I0EstimationProjectionFilter<TInputImage>;
-  I0EstimationType * i0est = dynamic_cast<I0EstimationType*>( this->GetInput()->GetSource().GetPointer() );
-  if(i0est)
-    {
+  I0EstimationType * i0est = dynamic_cast<I0EstimationType *>(this->GetInput()->GetSource().GetPointer());
+  if (i0est)
+  {
     m_I0 = (double)i0est->GetI0();
-    }
+  }
   this->GetFunctor().SetI0(m_I0);
   this->GetFunctor().SetIDark(m_IDark);
 }

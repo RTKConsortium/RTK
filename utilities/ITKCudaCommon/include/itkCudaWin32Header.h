@@ -21,14 +21,14 @@
 #include "itkConfigure.h"
 
 #if (defined(_WIN32) || defined(WIN32)) && defined(ITK_BUILD_SHARED_LIBS)
-# ifdef ITKCudaCommon_EXPORTS
-#  define ITKCudaCommon_EXPORT __declspec(dllexport)
-# else
-#  define ITKCudaCommon_EXPORT __declspec(dllimport)
-# endif  /* ITK_EXPORT */
+#  ifdef ITKCudaCommon_EXPORTS
+#    define ITKCudaCommon_EXPORT __declspec(dllexport)
+#  else
+#    define ITKCudaCommon_EXPORT __declspec(dllimport)
+#  endif /* ITK_EXPORT */
 #else
 /* unix needs nothing */
-#define ITKCudaCommon_EXPORT
+#  define ITKCudaCommon_EXPORT
 #endif
 
 #endif

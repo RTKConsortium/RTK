@@ -20,13 +20,13 @@
 #define rtkCudaSplatImageFilter_h
 
 #include "rtkConfiguration.h"
-//Conditional definition of the class to pass ITKHeaderTest
+// Conditional definition of the class to pass ITKHeaderTest
 #ifdef RTK_USE_CUDA
 
-#include "rtkSplatWithKnownWeightsImageFilter.h"
-#include "itkCudaImage.h"
-#include "itkCudaInPlaceImageFilter.h"
-#include "RTKExport.h"
+#  include "rtkSplatWithKnownWeightsImageFilter.h"
+#  include "itkCudaImage.h"
+#  include "itkCudaInPlaceImageFilter.h"
+#  include "RTKExport.h"
 
 namespace rtk
 {
@@ -40,9 +40,11 @@ namespace rtk
  *
  * \ingroup RTK CudaImageToImageFilter
  */
-class RTK_EXPORT CudaSplatImageFilter :
-    public itk::CudaInPlaceImageFilter< itk::CudaImage<float,4>, itk::CudaImage<float,4>,
-  SplatWithKnownWeightsImageFilter< itk::CudaImage<float,4>, itk::CudaImage<float,3> > >
+class RTK_EXPORT CudaSplatImageFilter
+  : public itk::CudaInPlaceImageFilter<
+      itk::CudaImage<float, 4>,
+      itk::CudaImage<float, 4>,
+      SplatWithKnownWeightsImageFilter<itk::CudaImage<float, 4>, itk::CudaImage<float, 3>>>
 
 {
 public:
@@ -50,27 +52,27 @@ public:
 
   /** Standard class type alias. */
   using Self = rtk::CudaSplatImageFilter;
-  using Superclass = rtk::SplatWithKnownWeightsImageFilter< OutputImageType, InputImageType >;
+  using Superclass = rtk::SplatWithKnownWeightsImageFilter<OutputImageType, InputImageType>;
   using Pointer = itk::SmartPointer<Self>;
   using ConstPointer = itk::SmartPointer<const Self>;
 
   /** Standard New method. */
-  itkNewMacro(Self)
+  itkNewMacro(Self);
 
   /** Runtime information support. */
-  itkTypeMacro(CudaSplatImageFilter, SplatWithKnownWeightsImageFilter)
+  itkTypeMacro(CudaSplatImageFilter, SplatWithKnownWeightsImageFilter);
 
 protected:
   CudaSplatImageFilter();
-  ~CudaSplatImageFilter(){
-  }
+  ~CudaSplatImageFilter() {}
 
-  virtual void GPUGenerateData();
+  virtual void
+  GPUGenerateData();
 
 }; // end of class
 
 } // end namespace rtk
 
-#endif //end conditional definition of the class
+#endif // end conditional definition of the class
 
 #endif

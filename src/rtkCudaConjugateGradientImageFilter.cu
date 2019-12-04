@@ -28,9 +28,7 @@
 // TEXTURES AND CONSTANTS //
 
 void
-CUDA_copy(long int numberOfElements,
-          float* in,
-          float* out)
+CUDA_copy(long int numberOfElements, float * in, float * out)
 {
   // Copy input volume to output
   long int memorySizeOutput = numberOfElements * sizeof(float);
@@ -38,9 +36,7 @@ CUDA_copy(long int numberOfElements,
 }
 
 void
-CUDA_copy(long int numberOfElements,
-          double* in,
-          double* out)
+CUDA_copy(long int numberOfElements, double * in, double * out)
 {
   // Copy input volume to output
   long int memorySizeOutput = numberOfElements * sizeof(double);
@@ -48,11 +44,9 @@ CUDA_copy(long int numberOfElements,
 }
 
 void
-CUDA_subtract( long int numberOfElements,
-               float* out,
-               float* toBeSubtracted)
+CUDA_subtract(long int numberOfElements, float * out, float * toBeSubtracted)
 {
-  cublasHandle_t  handle;
+  cublasHandle_t handle;
   cublasCreate(&handle);
 
   const float alpha = -1.0;
@@ -65,11 +59,9 @@ CUDA_subtract( long int numberOfElements,
 }
 
 void
-CUDA_subtract( long int numberOfElements,
-               double* out,
-               double* toBeSubtracted)
+CUDA_subtract(long int numberOfElements, double * out, double * toBeSubtracted)
 {
-  cublasHandle_t  handle;
+  cublasHandle_t handle;
   cublasCreate(&handle);
 
   const double alpha = -1.0;
@@ -82,24 +74,20 @@ CUDA_subtract( long int numberOfElements,
 }
 
 void
-CUDA_conjugate_gradient( long int numberOfElements,
-                         float* Xk,
-                         float* Rk,
-                         float* Pk,
-                         float* APk)
+CUDA_conjugate_gradient(long int numberOfElements, float * Xk, float * Rk, float * Pk, float * APk)
 {
-  cublasHandle_t  handle;
+  cublasHandle_t handle;
   cublasCreate(&handle);
 
   float eps = 1e-30;
 
   // Compute Rk_square = sum(Rk(:).^2) by cublas
   float Rk_square = 0;
-  cublasSdot (handle, numberOfElements, Rk, 1, Rk, 1, &Rk_square);
+  cublasSdot(handle, numberOfElements, Rk, 1, Rk, 1, &Rk_square);
 
   // Compute alpha_k = Rk_square / sum(Pk(:) .* APk(:))
   float Pk_APk = 0;
-  cublasSdot (handle, numberOfElements, Pk, 1, APk, 1, &Pk_APk);
+  cublasSdot(handle, numberOfElements, Pk, 1, APk, 1, &Pk_APk);
 
   const float alpha_k = Rk_square / (Pk_APk + eps);
   const float minus_alpha_k = -alpha_k;
@@ -107,12 +95,12 @@ CUDA_conjugate_gradient( long int numberOfElements,
   // Compute Xk+1 = Xk + alpha_k * Pk
   cublasSaxpy(handle, numberOfElements, &alpha_k, Pk, 1, Xk, 1);
 
-   // Compute Rk+1 = Rk - alpha_k * APk
+  // Compute Rk+1 = Rk - alpha_k * APk
   cublasSaxpy(handle, numberOfElements, &minus_alpha_k, APk, 1, Rk, 1);
 
   // Compute beta_k = sum(Rk+1(:).^2) / Rk_square
   float Rkplusone_square = 0;
-  cublasSdot (handle, numberOfElements, Rk, 1, Rk, 1, &Rkplusone_square);
+  cublasSdot(handle, numberOfElements, Rk, 1, Rk, 1, &Rkplusone_square);
 
   float beta_k = Rkplusone_square / (Rk_square + eps);
   float one = 1.0;
@@ -130,24 +118,20 @@ CUDA_conjugate_gradient( long int numberOfElements,
 }
 
 void
-CUDA_conjugate_gradient( long int numberOfElements,
-                         double* Xk,
-                         double* Rk,
-                         double* Pk,
-                         double* APk)
+CUDA_conjugate_gradient(long int numberOfElements, double * Xk, double * Rk, double * Pk, double * APk)
 {
-  cublasHandle_t  handle;
+  cublasHandle_t handle;
   cublasCreate(&handle);
 
   double eps = 1e-30;
 
   // Compute Rk_square = sum(Rk(:).^2) by cublas
   double Rk_square = 0;
-  cublasDdot (handle, numberOfElements, Rk, 1, Rk, 1, &Rk_square);
+  cublasDdot(handle, numberOfElements, Rk, 1, Rk, 1, &Rk_square);
 
   // Compute alpha_k = Rk_square / sum(Pk(:) .* APk(:))
   double Pk_APk = 0;
-  cublasDdot (handle, numberOfElements, Pk, 1, APk, 1, &Pk_APk);
+  cublasDdot(handle, numberOfElements, Pk, 1, APk, 1, &Pk_APk);
 
   const double alpha_k = Rk_square / (Pk_APk + eps);
   const double minus_alpha_k = -alpha_k;
@@ -155,12 +139,12 @@ CUDA_conjugate_gradient( long int numberOfElements,
   // Compute Xk+1 = Xk + alpha_k * Pk
   cublasDaxpy(handle, numberOfElements, &alpha_k, Pk, 1, Xk, 1);
 
-   // Compute Rk+1 = Rk - alpha_k * APk
+  // Compute Rk+1 = Rk - alpha_k * APk
   cublasDaxpy(handle, numberOfElements, &minus_alpha_k, APk, 1, Rk, 1);
 
   // Compute beta_k = sum(Rk+1(:).^2) / Rk_square
   double Rkplusone_square = 0;
-  cublasDdot (handle, numberOfElements, Rk, 1, Rk, 1, &Rkplusone_square);
+  cublasDdot(handle, numberOfElements, Rk, 1, Rk, 1, &Rkplusone_square);
 
   double beta_k = Rkplusone_square / (Rk_square + eps);
   double one = 1.0;

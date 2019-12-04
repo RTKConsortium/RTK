@@ -31,87 +31,79 @@ namespace rtk
 {
 
 std::vector<float>
-BioscanGeometryReader::
-GetVectorTagValue(const gdcm::DataSet & ds, itk::uint16_t group, itk::uint16_t element) const
+BioscanGeometryReader::GetVectorTagValue(const gdcm::DataSet & ds, itk::uint16_t group, itk::uint16_t element) const
 {
   const gdcm::Tag tag(group, element);
-  if( !ds.FindDataElement( tag ) )
-    {
+  if (!ds.FindDataElement(tag))
+  {
     itkExceptionMacro(<< "Cannot find tag " << group << "|" << element);
-    }
-  const gdcm::DataElement & de = ds.GetDataElement(tag);
-  gdcm::Element<gdcm::VR::FL,gdcm::VM::VM1_n> el;
-  el.Set( de.GetValue() );
+  }
+  const gdcm::DataElement &                    de = ds.GetDataElement(tag);
+  gdcm::Element<gdcm::VR::FL, gdcm::VM::VM1_n> el;
+  el.Set(de.GetValue());
   std::vector<float> val;
-  for(unsigned int i=0; i<el.GetLength(); i++)
-    {
+  for (unsigned int i = 0; i < el.GetLength(); i++)
+  {
     val.push_back(el.GetValue(i));
-    }
+  }
   return val;
 }
 
 std::string
-BioscanGeometryReader::
-GetStringTagValue(const gdcm::DataSet & ds, itk::uint16_t group, itk::uint16_t element) const
+BioscanGeometryReader::GetStringTagValue(const gdcm::DataSet & ds, itk::uint16_t group, itk::uint16_t element) const
 {
   const gdcm::Tag tag(group, element);
-  if( !ds.FindDataElement( tag ) )
-    {
+  if (!ds.FindDataElement(tag))
+  {
     itkExceptionMacro(<< "Cannot find tag " << group << "|" << element);
-    }
+  }
   const gdcm::DataElement & de = ds.GetDataElement(tag);
-  const gdcm::ByteValue * bv = de.GetByteValue();
-  return std::string( bv->GetPointer(), bv->GetLength() );
+  const gdcm::ByteValue *   bv = de.GetByteValue();
+  return std::string(bv->GetPointer(), bv->GetLength());
 }
 
 double
-BioscanGeometryReader::
-GetFloatTagValue(const gdcm::DataSet & ds, itk::uint16_t group, itk::uint16_t element) const
+BioscanGeometryReader::GetFloatTagValue(const gdcm::DataSet & ds, itk::uint16_t group, itk::uint16_t element) const
 {
   const gdcm::Tag tag(group, element);
-  if( !ds.FindDataElement( tag ) )
-    {
+  if (!ds.FindDataElement(tag))
+  {
     itkExceptionMacro(<< "Cannot find tag " << group << "|" << element);
-    }
-  const gdcm::DataElement & de = ds.GetDataElement(tag);
-  gdcm::Element<gdcm::VR::FD,gdcm::VM::VM1> el;
-  el.SetFromDataElement( de );
+  }
+  const gdcm::DataElement &                  de = ds.GetDataElement(tag);
+  gdcm::Element<gdcm::VR::FD, gdcm::VM::VM1> el;
+  el.SetFromDataElement(de);
   return el.GetValue();
 }
 
 void
-BioscanGeometryReader::
-GenerateData()
+BioscanGeometryReader::GenerateData()
 {
   m_Geometry = GeometryType::New();
-  for(const std::string & m_ProjectionsFileName : m_ProjectionsFileNames)
-    {
+  for (const std::string & m_ProjectionsFileName : m_ProjectionsFileNames)
+  {
     gdcm::Reader reader;
-    reader.SetFileName( m_ProjectionsFileName.c_str() );
-    if ( !reader.Read() )
-      {
+    reader.SetFileName(m_ProjectionsFileName.c_str());
+    if (!reader.Read())
+    {
       itkExceptionMacro(<< "Cannot read requested file: " << m_ProjectionsFileName);
-      }
-    const gdcm::DataSet & ds =  reader.GetFile().GetDataSet();
+    }
+    const gdcm::DataSet & ds = reader.GetFile().GetDataSet();
 
     // See https://github.com/JStrydhorst/win-cone-ct/blob/master/ct_recon_win.h#L111
     const std::vector<float> zOffsets = GetVectorTagValue(ds, 0x0009, 0x1046);
     const std::vector<float> yOffsets = GetVectorTagValue(ds, 0x0009, 0x1047);
-    const double sdd = atof(GetStringTagValue(ds, 0x0018, 0x1110).c_str());
-    const double sid = atof(GetStringTagValue(ds, 0x0018, 0x1111).c_str());
-    //const double spacing = GetFloatTagValue(ds, 0x0018, 0x9306);
+    const double             sdd = atof(GetStringTagValue(ds, 0x0018, 0x1110).c_str());
+    const double             sid = atof(GetStringTagValue(ds, 0x0018, 0x1111).c_str());
+    // const double spacing = GetFloatTagValue(ds, 0x0018, 0x9306);
     const double angle = GetFloatTagValue(ds, 0x0009, 0x1036);
 
     // See https://github.com/JStrydhorst/win-cone-ct/blob/master/ct_recon_win.h#L222
-    const float yOffset = yOffsets[(itk::Math::Round<int>(angle)+180)%360];
-    const float zOffset = zOffsets[(itk::Math::Round<int>(angle)+180)%360];
-    if(std::string("BLANK SCAN") != GetStringTagValue(ds, 0x0008, 0x0008))
-      m_Geometry->AddProjection(sid,
-                                sdd,
-                                angle,
-                                yOffset,
-                                zOffset);
-    }
+    const float yOffset = yOffsets[(itk::Math::Round<int>(angle) + 180) % 360];
+    const float zOffset = zOffsets[(itk::Math::Round<int>(angle) + 180) % 360];
+    if (std::string("BLANK SCAN") != GetStringTagValue(ds, 0x0008, 0x0008))
+      m_Geometry->AddProjection(sid, sdd, angle, yOffset, zOffset);
+  }
 }
-} //namespace rtk
+} // namespace rtk
 #endif

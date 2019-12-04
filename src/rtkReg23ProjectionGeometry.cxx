@@ -20,17 +20,15 @@
 
 rtk::Reg23ProjectionGeometry::Reg23ProjectionGeometry()
   : rtk::ThreeDCircularProjectionGeometry()
-{
-}
+{}
 
-rtk::Reg23ProjectionGeometry::~Reg23ProjectionGeometry()
-{
-}
+rtk::Reg23ProjectionGeometry::~Reg23ProjectionGeometry() {}
 
-bool rtk::Reg23ProjectionGeometry::AddReg23Projection(
-    const PointType &sourcePosition, const PointType &detectorPosition,
-    const VectorType &detectorRowVector, const VectorType &detectorColumnVector)
+bool
+rtk::Reg23ProjectionGeometry::AddReg23Projection(const PointType &  sourcePosition,
+                                                 const PointType &  detectorPosition,
+                                                 const VectorType & detectorRowVector,
+                                                 const VectorType & detectorColumnVector)
 {
-  return Superclass::AddProjection(sourcePosition, detectorPosition,
-                                   detectorRowVector, detectorColumnVector);
+  return Superclass::AddProjection(sourcePosition, detectorPosition, detectorRowVector, detectorColumnVector);
 }

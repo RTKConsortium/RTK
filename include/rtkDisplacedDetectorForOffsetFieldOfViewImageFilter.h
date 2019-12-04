@@ -37,9 +37,9 @@ namespace rtk
  *
  * \ingroup RTK ImageToImageFilter
  */
-template<class TInputImage, class TOutputImage=TInputImage>
-class ITK_EXPORT DisplacedDetectorForOffsetFieldOfViewImageFilter :
-  public rtk::DisplacedDetectorImageFilter<TInputImage, TOutputImage>
+template <class TInputImage, class TOutputImage = TInputImage>
+class ITK_EXPORT DisplacedDetectorForOffsetFieldOfViewImageFilter
+  : public rtk::DisplacedDetectorImageFilter<TInputImage, TOutputImage>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(DisplacedDetectorForOffsetFieldOfViewImageFilter);
@@ -69,27 +69,30 @@ protected:
   DisplacedDetectorForOffsetFieldOfViewImageFilter();
   ~DisplacedDetectorForOffsetFieldOfViewImageFilter() override = default;
 
-  void GenerateOutputInformation() override;
+  void
+  GenerateOutputInformation() override;
 
-#if ITK_VERSION_MAJOR<5
-  void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) override;
+#if ITK_VERSION_MAJOR < 5
+  void
+  ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, ThreadIdType threadId) override;
 #else
-  void DynamicThreadedGenerateData(const OutputImageRegionType& outputRegionForThread) override;
+  void
+  DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread) override;
 #endif
 
 private:
   /**
    * Center coordinates and size of the FOV cylinder.
    */
-  double m_FOVRadius{-1.};
-  double m_FOVCenterX{0.};
-  double m_FOVCenterZ{0.};
+  double m_FOVRadius{ -1. };
+  double m_FOVCenterX{ 0. };
+  double m_FOVCenterZ{ 0. };
 }; // end of class
 
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkDisplacedDetectorForOffsetFieldOfViewImageFilter.hxx"
+#  include "rtkDisplacedDetectorForOffsetFieldOfViewImageFilter.hxx"
 #endif
 
 #endif

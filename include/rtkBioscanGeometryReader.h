@@ -26,14 +26,13 @@
 // Trick KWStyle with a first declaration of namespace RTK. Style test would
 // not pass otherwise on the gdcm namespace.
 namespace rtk
-{
-}
+{}
 
 // Forward declare class Dataset. This is done to avoid define conflicts in
 // GDCM with lp_solve
 namespace gdcm
 {
-  class DataSet;
+class DataSet;
 }
 
 namespace rtk
@@ -50,8 +49,7 @@ namespace rtk
  * \ingroup RTK IOFilters
  */
 
-class RTK_EXPORT BioscanGeometryReader:
-    public itk::LightProcessObject
+class RTK_EXPORT BioscanGeometryReader : public itk::LightProcessObject
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(BioscanGeometryReader);
@@ -79,34 +77,41 @@ public:
 
   /** Set the vector of strings that contains the projection file names. Files
    * are processed in sequential order. */
-  void SetProjectionsFileNames (const FileNamesContainer &name)
+  void
+  SetProjectionsFileNames(const FileNamesContainer & name)
+  {
+    if (m_ProjectionsFileNames != name)
     {
-    if ( m_ProjectionsFileNames != name)
-      {
       m_ProjectionsFileNames = name;
       this->Modified();
-      }
     }
-  const FileNamesContainer & GetProjectionsFileNames() const
-    {
+  }
+  const FileNamesContainer &
+  GetProjectionsFileNames() const
+  {
     return m_ProjectionsFileNames;
-    }
+  }
 
 protected:
-  std::vector<float> GetVectorTagValue(const gdcm::DataSet & ds, itk::uint16_t group, itk::uint16_t element) const;
-  std::string GetStringTagValue(const gdcm::DataSet & ds, itk::uint16_t group, itk::uint16_t element) const;
-  double GetFloatTagValue(const gdcm::DataSet & ds, itk::uint16_t group, itk::uint16_t element) const;
+  std::vector<float>
+  GetVectorTagValue(const gdcm::DataSet & ds, itk::uint16_t group, itk::uint16_t element) const;
+  std::string
+  GetStringTagValue(const gdcm::DataSet & ds, itk::uint16_t group, itk::uint16_t element) const;
+  double
+  GetFloatTagValue(const gdcm::DataSet & ds, itk::uint16_t group, itk::uint16_t element) const;
 
-  BioscanGeometryReader(): m_Geometry(nullptr) {};
+  BioscanGeometryReader()
+    : m_Geometry(nullptr){};
   ~BioscanGeometryReader() override = default;
 
 private:
-  void GenerateData() override;
+  void
+  GenerateData() override;
 
   GeometryPointer    m_Geometry;
   FileNamesContainer m_ProjectionsFileNames;
 };
 
-}
+} // namespace rtk
 
 #endif // rtkBioscanGeometryReader_h

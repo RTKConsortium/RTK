@@ -39,18 +39,15 @@ namespace rtk
  * \ingroup RTK ImageToImageFilter
  */
 template <class TOutputImage>
-class ITK_EXPORT OraLookupTableImageFilter:
-    public LookupTableImageFilter< itk::Image<unsigned short, TOutputImage::ImageDimension>,
-                                   TOutputImage >
+class ITK_EXPORT OraLookupTableImageFilter
+  : public LookupTableImageFilter<itk::Image<unsigned short, TOutputImage::ImageDimension>, TOutputImage>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(OraLookupTableImageFilter);
 
   /** Standard class type alias. */
   using Self = OraLookupTableImageFilter;
-  using Superclass = LookupTableImageFilter<itk::Image<unsigned short,
-                                            TOutputImage::ImageDimension>,
-                                 TOutputImage>;
+  using Superclass = LookupTableImageFilter<itk::Image<unsigned short, TOutputImage::ImageDimension>, TOutputImage>;
   using Pointer = itk::SmartPointer<Self>;
   using ConstPointer = itk::SmartPointer<const Self>;
 
@@ -65,7 +62,8 @@ public:
   /** Runtime information support. */
   itkTypeMacro(OraLookupTableImageFilter, LookupTableImageFilter);
 
-  void BeforeThreadedGenerateData() override;
+  void
+  BeforeThreadedGenerateData() override;
 
   /** Convert the projection data to line integrals after pre-processing.
   ** Default is on. */
@@ -75,34 +73,36 @@ public:
 
   /** Set the vector of strings that contains the file names. Files
    * are processed in sequential order. */
-  void SetFileNames (const FileNamesContainer &name)
+  void
+  SetFileNames(const FileNamesContainer & name)
+  {
+    if (m_FileNames != name)
     {
-    if ( m_FileNames != name)
-      {
       m_FileNames = name;
       this->Modified();
-      }
     }
-  const FileNamesContainer & GetFileNames() const
-    {
+  }
+  const FileNamesContainer &
+  GetFileNames() const
+  {
     return m_FileNames;
-    }
+  }
 
 protected:
   OraLookupTableImageFilter() {}
   ~OraLookupTableImageFilter() override = default;
 
 private:
-  bool                      m_ComputeLineIntegral{true};
+  bool m_ComputeLineIntegral{ true };
 
   /** A list of filenames to be processed. */
-  FileNamesContainer        m_FileNames;
+  FileNamesContainer m_FileNames;
 };
 
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkOraLookupTableImageFilter.hxx"
+#  include "rtkOraLookupTableImageFilter.hxx"
 #endif
 
 #endif

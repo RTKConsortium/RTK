@@ -108,28 +108,28 @@ namespace rtk
  *
  * \ingroup RTK ReconstructionAlgorithm
  */
-template<class TVolumeImage, class TProjectionImage=TVolumeImage>
-class ITK_EXPORT OSEMConeBeamReconstructionFilter :
-    public rtk::IterativeConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>
+template <class TVolumeImage, class TProjectionImage = TVolumeImage>
+class ITK_EXPORT OSEMConeBeamReconstructionFilter
+  : public rtk::IterativeConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(OSEMConeBeamReconstructionFilter);
 
   /** Standard class type alias. */
-  typedef OSEMConeBeamReconstructionFilter					Self;
+  typedef OSEMConeBeamReconstructionFilter Self;
   using Superclass = IterativeConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>;
-  typedef itk::SmartPointer<Self>						Pointer;
-  typedef itk::SmartPointer<const Self>						ConstPointer;
+  typedef itk::SmartPointer<Self>       Pointer;
+  typedef itk::SmartPointer<const Self> ConstPointer;
 
   /** Some convenient type alias. */
-  using VolumeType = TVolumeImage	;
+  using VolumeType = TVolumeImage;
   using ProjectionType = TProjectionImage;
 
   /** Typedefs of each subfilter of this composite filter */
-  using ExtractFilterType = itk::ExtractImageFilter< ProjectionType, ProjectionType >;
-  using MultiplyFilterType = itk::MultiplyImageFilter< VolumeType, VolumeType, VolumeType >;
-  using ForwardProjectionFilterType = rtk::ForwardProjectionImageFilter< ProjectionType, VolumeType >;
-  using BackProjectionFilterType = rtk::BackProjectionImageFilter< VolumeType, ProjectionType >;
+  using ExtractFilterType = itk::ExtractImageFilter<ProjectionType, ProjectionType>;
+  using MultiplyFilterType = itk::MultiplyImageFilter<VolumeType, VolumeType, VolumeType>;
+  using ForwardProjectionFilterType = rtk::ForwardProjectionImageFilter<ProjectionType, VolumeType>;
+  using BackProjectionFilterType = rtk::BackProjectionImageFilter<VolumeType, ProjectionType>;
   using DivideProjectionFilterType = itk::DivideOrZeroOutImageFilter<ProjectionType, ProjectionType, ProjectionType>;
   using DivideVolumeFilterType = itk::DivideOrZeroOutImageFilter<VolumeType, VolumeType, VolumeType>;
   using ConstantVolumeSourceType = rtk::ConstantImageSource<VolumeType>;
@@ -157,35 +157,45 @@ public:
   itkSetMacro(NumberOfProjectionsPerSubset, unsigned int);
 
   /** Select the ForwardProjection filter */
-  void SetForwardProjectionFilter (ForwardProjectionType _arg) override;
+  void
+  SetForwardProjectionFilter(ForwardProjectionType _arg) override;
 
   /** Select the backprojection filter */
-  void SetBackProjectionFilter (BackProjectionType _arg) override;
+  void
+  SetBackProjectionFilter(BackProjectionType _arg) override;
+
 protected:
   OSEMConeBeamReconstructionFilter();
   ~OSEMConeBeamReconstructionFilter() override = default;
 
-  void GenerateInputRequestedRegion() override;
+  void
+  GenerateInputRequestedRegion() override;
 
-  void GenerateOutputInformation() override;
+  void
+  GenerateOutputInformation() override;
 
-  void GenerateData() override;
+  void
+  GenerateData() override;
 
   /** The two inputs should not be in the same space so there is nothing
    * to verify. */
-#if ITK_VERSION_MAJOR<5
-  void VerifyInputInformation() override {}
+#if ITK_VERSION_MAJOR < 5
+  void
+  VerifyInputInformation() override
+  {}
 #else
-  void VerifyInputInformation() const override {}
+  void
+  VerifyInputInformation() const override
+  {}
 #endif
 
   /** Pointers to each subfilter of this composite filter */
   typename ExtractFilterType::Pointer            m_ExtractFilter;
-  typename ForwardProjectionFilterType::Pointer	 m_ForwardProjectionFilter;
+  typename ForwardProjectionFilterType::Pointer  m_ForwardProjectionFilter;
   typename MultiplyFilterType::Pointer           m_MultiplyFilter;
   typename BackProjectionFilterType::Pointer     m_BackProjectionFilter;
   typename BackProjectionFilterType::Pointer     m_BackProjectionNormalizationFilter;
-  typename DivideProjectionFilterType::Pointer	 m_DivideProjectionFilter;
+  typename DivideProjectionFilterType::Pointer   m_DivideProjectionFilter;
   typename DivideVolumeFilterType::Pointer       m_DivideVolumeFilter;
   typename ConstantProjectionSourceType::Pointer m_ZeroConstantProjectionStackSource;
   typename ConstantProjectionSourceType::Pointer m_OneConstantProjectionStackSource;
@@ -206,7 +216,7 @@ private:
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkOSEMConeBeamReconstructionFilter.hxx"
+#  include "rtkOSEMConeBeamReconstructionFilter.hxx"
 #endif
 
 #endif

@@ -24,15 +24,12 @@
 #include <itkImageFileReader.h>
 #include <itksys/SystemTools.hxx>
 
-rtk::VarianObiGeometryReader
-::VarianObiGeometryReader():
-  m_Geometry(nullptr)
-{
-}
+rtk::VarianObiGeometryReader ::VarianObiGeometryReader()
+  : m_Geometry(nullptr)
+{}
 
 void
-rtk::VarianObiGeometryReader
-::GenerateData()
+rtk::VarianObiGeometryReader ::GenerateData()
 {
   // Create new RTK geometry object
   m_Geometry = GeometryType::New();
@@ -44,47 +41,48 @@ rtk::VarianObiGeometryReader
   obiXmlReader->GenerateOutputInformation();
 
   // Constants used to generate projection matrices
-  itk::MetaDataDictionary &dic = *(obiXmlReader->GetOutputObject() );
-  using MetaDataDoubleType = itk::MetaDataObject< double >;
-  const double sdd = dynamic_cast<MetaDataDoubleType *>(dic["CalibratedSID"].GetPointer() )->GetMetaDataObjectValue();
-  const double sid = dynamic_cast<MetaDataDoubleType *>(dic["CalibratedSAD"].GetPointer() )->GetMetaDataObjectValue();
+  itk::MetaDataDictionary & dic = *(obiXmlReader->GetOutputObject());
+  using MetaDataDoubleType = itk::MetaDataObject<double>;
+  const double sdd = dynamic_cast<MetaDataDoubleType *>(dic["CalibratedSID"].GetPointer())->GetMetaDataObjectValue();
+  const double sid = dynamic_cast<MetaDataDoubleType *>(dic["CalibratedSAD"].GetPointer())->GetMetaDataObjectValue();
 
-  using MetaDataStringType = itk::MetaDataObject< std::string >;
-  double offsetx;
-  std::string fanType = dynamic_cast<const MetaDataStringType *>(dic["FanType"].GetPointer() )->GetMetaDataObjectValue();
-  if(itksys::SystemTools::Strucmp(fanType.c_str(), "HalfFan") == 0)
-    {
+  using MetaDataStringType = itk::MetaDataObject<std::string>;
+  double      offsetx;
+  std::string fanType = dynamic_cast<const MetaDataStringType *>(dic["FanType"].GetPointer())->GetMetaDataObjectValue();
+  if (itksys::SystemTools::Strucmp(fanType.c_str(), "HalfFan") == 0)
+  {
     // Half Fan (offset detector), get lateral offset from XML file
     offsetx =
-      dynamic_cast<MetaDataDoubleType *>(dic["CalibratedDetectorOffsetX"].GetPointer() )->GetMetaDataObjectValue() +
-      dynamic_cast<MetaDataDoubleType *>(dic["DetectorPosLat"].GetPointer() )->GetMetaDataObjectValue();
-    }
+      dynamic_cast<MetaDataDoubleType *>(dic["CalibratedDetectorOffsetX"].GetPointer())->GetMetaDataObjectValue() +
+      dynamic_cast<MetaDataDoubleType *>(dic["DetectorPosLat"].GetPointer())->GetMetaDataObjectValue();
+  }
   else
-    {
+  {
     // Full Fan (centered detector)
     offsetx =
-      dynamic_cast<MetaDataDoubleType *>(dic["CalibratedDetectorOffsetX"].GetPointer() )->GetMetaDataObjectValue();
-    }
+      dynamic_cast<MetaDataDoubleType *>(dic["CalibratedDetectorOffsetX"].GetPointer())->GetMetaDataObjectValue();
+  }
   const double offsety =
-    dynamic_cast<MetaDataDoubleType *>(dic["CalibratedDetectorOffsetY"].GetPointer() )->GetMetaDataObjectValue();
+    dynamic_cast<MetaDataDoubleType *>(dic["CalibratedDetectorOffsetY"].GetPointer())->GetMetaDataObjectValue();
 
   // Projections reader (for angle)
   rtk::HndImageIOFactory::RegisterOneFactory();
 
   // Projection matrices
-  for(const std::string & projectionsFileName : m_ProjectionsFileNames)
-    {
+  for (const std::string & projectionsFileName : m_ProjectionsFileNames)
+  {
     using InputPixelType = unsigned int;
-    using InputImageType = itk::Image< InputPixelType, 2 >;
+    using InputImageType = itk::Image<InputPixelType, 2>;
 
-    using ReaderType = itk::ImageFileReader< InputImageType >;
+    using ReaderType = itk::ImageFileReader<InputImageType>;
     ReaderType::Pointer reader = ReaderType::New();
-    reader->SetFileName( projectionsFileName );
+    reader->SetFileName(projectionsFileName);
     reader->UpdateOutputInformation();
 
     const double angle =
-      dynamic_cast<MetaDataDoubleType *>(reader->GetMetaDataDictionary()["dCTProjectionAngle"].GetPointer())->GetMetaDataObjectValue();
+      dynamic_cast<MetaDataDoubleType *>(reader->GetMetaDataDictionary()["dCTProjectionAngle"].GetPointer())
+        ->GetMetaDataObjectValue();
 
     m_Geometry->AddProjection(sid, sdd, angle, offsetx, offsety);
-    }
+  }
 }

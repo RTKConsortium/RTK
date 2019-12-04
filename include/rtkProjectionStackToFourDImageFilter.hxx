@@ -28,8 +28,9 @@
 namespace rtk
 {
 
-template< typename VolumeSeriesType, typename ProjectionStackType, typename TFFTPrecision>
-ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPrecision>::ProjectionStackToFourDImageFilter()
+template <typename VolumeSeriesType, typename ProjectionStackType, typename TFFTPrecision>
+ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPrecision>::
+  ProjectionStackToFourDImageFilter()
 {
   this->SetNumberOfRequiredInputs(2);
 
@@ -40,110 +41,112 @@ ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPre
   m_ExtractFilter = ExtractFilterType::New();
 }
 
-template< typename VolumeSeriesType, typename ProjectionStackType, typename TFFTPrecision>
-void ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPrecision>::SetInputVolumeSeries(const VolumeSeriesType* VolumeSeries)
-{
-  this->SetNthInput(0, const_cast<VolumeSeriesType*>(VolumeSeries));
-}
-
-template< typename VolumeSeriesType, typename ProjectionStackType, typename TFFTPrecision>
-void ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPrecision>::SetInputProjectionStack(const ProjectionStackType* Projection)
-{
-  this->SetNthInput(1, const_cast<ProjectionStackType*>(Projection));
-}
-
-template< typename VolumeSeriesType, typename ProjectionStackType, typename TFFTPrecision>
-typename VolumeSeriesType::ConstPointer ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPrecision>::GetInputVolumeSeries()
-{
-  return static_cast< const VolumeSeriesType * >
-          ( this->itk::ProcessObject::GetInput(0) );
-}
-
-template< typename VolumeSeriesType, typename ProjectionStackType, typename TFFTPrecision>
-typename ProjectionStackType::ConstPointer ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPrecision>::GetInputProjectionStack()
-{
-  return static_cast< const ProjectionStackType * >
-          ( this->itk::ProcessObject::GetInput(1) );
-}
-
-template< typename VolumeSeriesType, typename ProjectionStackType, typename TFFTPrecision>
+template <typename VolumeSeriesType, typename ProjectionStackType, typename TFFTPrecision>
 void
-ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPrecision>
-::SetBackProjectionFilter (const typename BackProjectionFilterType::Pointer _arg)
+ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPrecision>::SetInputVolumeSeries(
+  const VolumeSeriesType * VolumeSeries)
+{
+  this->SetNthInput(0, const_cast<VolumeSeriesType *>(VolumeSeries));
+}
+
+template <typename VolumeSeriesType, typename ProjectionStackType, typename TFFTPrecision>
+void
+ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPrecision>::SetInputProjectionStack(
+  const ProjectionStackType * Projection)
+{
+  this->SetNthInput(1, const_cast<ProjectionStackType *>(Projection));
+}
+
+template <typename VolumeSeriesType, typename ProjectionStackType, typename TFFTPrecision>
+typename VolumeSeriesType::ConstPointer
+ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPrecision>::GetInputVolumeSeries()
+{
+  return static_cast<const VolumeSeriesType *>(this->itk::ProcessObject::GetInput(0));
+}
+
+template <typename VolumeSeriesType, typename ProjectionStackType, typename TFFTPrecision>
+typename ProjectionStackType::ConstPointer
+ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPrecision>::GetInputProjectionStack()
+{
+  return static_cast<const ProjectionStackType *>(this->itk::ProcessObject::GetInput(1));
+}
+
+template <typename VolumeSeriesType, typename ProjectionStackType, typename TFFTPrecision>
+void
+ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPrecision>::SetBackProjectionFilter(
+  const typename BackProjectionFilterType::Pointer _arg)
 {
   m_BackProjectionFilter = _arg;
   this->Modified();
 }
 
-template< typename VolumeSeriesType, typename ProjectionStackType, typename TFFTPrecision>
+template <typename VolumeSeriesType, typename ProjectionStackType, typename TFFTPrecision>
 void
-ProjectionStackToFourDImageFilter< VolumeSeriesType, ProjectionStackType, TFFTPrecision>
-::SetSignal(const std::vector<double> signal)
+ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPrecision>::SetSignal(
+  const std::vector<double> signal)
 {
   this->m_Signal = signal;
 }
 
-template< typename VolumeSeriesType, typename ProjectionStackType, typename TFFTPrecision>
+template <typename VolumeSeriesType, typename ProjectionStackType, typename TFFTPrecision>
 void
-ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPrecision>
-::InitializeConstantSource()
+ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPrecision>::InitializeConstantSource()
 {
   unsigned int Dimension = 3;
 
   // Configure the constant volume sources
-  typename VolumeType::SizeType ConstantVolumeSourceSize;
-  typename VolumeType::SpacingType ConstantVolumeSourceSpacing;
-  typename VolumeType::PointType ConstantVolumeSourceOrigin;
+  typename VolumeType::SizeType      ConstantVolumeSourceSize;
+  typename VolumeType::SpacingType   ConstantVolumeSourceSpacing;
+  typename VolumeType::PointType     ConstantVolumeSourceOrigin;
   typename VolumeType::DirectionType ConstantVolumeSourceDirection;
 
   ConstantVolumeSourceSize.Fill(0);
   ConstantVolumeSourceSpacing.Fill(0);
   ConstantVolumeSourceOrigin.Fill(0);
 
-  for(unsigned int i=0; i < Dimension; i++)
-    {
+  for (unsigned int i = 0; i < Dimension; i++)
+  {
     ConstantVolumeSourceSize[i] = GetInputVolumeSeries()->GetLargestPossibleRegion().GetSize()[i];
     ConstantVolumeSourceSpacing[i] = GetInputVolumeSeries()->GetSpacing()[i];
     ConstantVolumeSourceOrigin[i] = GetInputVolumeSeries()->GetOrigin()[i];
-    }
+  }
   ConstantVolumeSourceDirection.SetIdentity();
 
-  m_ConstantVolumeSource->SetOrigin( ConstantVolumeSourceOrigin );
-  m_ConstantVolumeSource->SetSpacing( ConstantVolumeSourceSpacing );
-  m_ConstantVolumeSource->SetDirection( ConstantVolumeSourceDirection );
-  m_ConstantVolumeSource->SetSize( ConstantVolumeSourceSize );
-  m_ConstantVolumeSource->SetConstant( 0. );
+  m_ConstantVolumeSource->SetOrigin(ConstantVolumeSourceOrigin);
+  m_ConstantVolumeSource->SetSpacing(ConstantVolumeSourceSpacing);
+  m_ConstantVolumeSource->SetDirection(ConstantVolumeSourceDirection);
+  m_ConstantVolumeSource->SetSize(ConstantVolumeSourceSize);
+  m_ConstantVolumeSource->SetConstant(0.);
 
   // Configure the constant volume series source
   m_ConstantVolumeSeriesSource->SetInformationFromImage(this->GetInputVolumeSeries());
-  m_ConstantVolumeSeriesSource->SetConstant( 0. );
+  m_ConstantVolumeSeriesSource->SetConstant(0.);
   m_ConstantVolumeSeriesSource->ReleaseDataFlagOn();
 }
 
-template< typename VolumeSeriesType, typename ProjectionStackType, typename TFFTPrecision>
+template <typename VolumeSeriesType, typename ProjectionStackType, typename TFFTPrecision>
 void
-ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPrecision>
-::GenerateOutputInformation()
+ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPrecision>::GenerateOutputInformation()
 {
   // Create and set the splat filter
   m_SplatFilter = SplatFilterType::New();
   if (m_UseCudaSplat)
-    {
-    if( std::is_same< VolumeSeriesType, CPUVolumeSeriesType >::value )
+  {
+    if (std::is_same<VolumeSeriesType, CPUVolumeSeriesType>::value)
       itkGenericExceptionMacro(<< "UseCudaSplat option only available with itk::CudaImage.");
     m_SplatFilter = CudaSplatImageFilterType::New();
-    }
+  }
 
   // Create the constant sources (first on CPU, and overwrite with the GPU version if CUDA requested)
   m_ConstantVolumeSource = ConstantVolumeSourceType::New();
   m_ConstantVolumeSeriesSource = ConstantVolumeSeriesSourceType::New();
   if (m_UseCudaSources)
-    {
-    if( std::is_same< VolumeSeriesType, CPUVolumeSeriesType >::value )
+  {
+    if (std::is_same<VolumeSeriesType, CPUVolumeSeriesType>::value)
       itkGenericExceptionMacro(<< "UseCudaSources option only available with itk::CudaImage.");
     m_ConstantVolumeSource = CudaConstantVolumeSourceType::New();
     m_ConstantVolumeSeriesSource = CudaConstantVolumeSeriesSourceType::New();
-    }
+  }
 
   // Set runtime connections
   m_ExtractFilter->SetInput(this->GetInputProjectionStack());
@@ -157,18 +160,18 @@ ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPre
 
   // Prepare the extract filter
   int Dimension = ProjectionStackType::ImageDimension; // Dimension=3
-//  unsigned int NumberProjs = GetInputProjectionStack()->GetLargestPossibleRegion().GetSize(2);
-//  if (NumberProjs != m_Weights.columns())
-//    itkWarningMacro("Size of interpolation weights array does not match the number of projections");
+  //  unsigned int NumberProjs = GetInputProjectionStack()->GetLargestPossibleRegion().GetSize(2);
+  //  if (NumberProjs != m_Weights.columns())
+  //    itkWarningMacro("Size of interpolation weights array does not match the number of projections");
 
   typename ExtractFilterType::InputImageRegionType subsetRegion;
   subsetRegion = GetInputProjectionStack()->GetLargestPossibleRegion();
-  subsetRegion.SetSize(Dimension-1, 1);
+  subsetRegion.SetSize(Dimension - 1, 1);
   m_ExtractFilter->SetExtractionRegion(subsetRegion);
 
   // Set runtime parameters
   m_BackProjectionFilter->SetGeometry(m_Geometry.GetPointer());
-  m_SplatFilter->SetProjectionNumber(subsetRegion.GetIndex(Dimension-1));
+  m_SplatFilter->SetProjectionNumber(subsetRegion.GetIndex(Dimension - 1));
   m_SplatFilter->SetWeights(m_Weights);
 
   // Have the last filter calculate its output information
@@ -179,10 +182,9 @@ ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPre
   this->GetOutput()->CopyInformation(m_SplatFilter->GetOutput());
 }
 
-template< typename VolumeSeriesType, typename ProjectionStackType, typename TFFTPrecision>
+template <typename VolumeSeriesType, typename ProjectionStackType, typename TFFTPrecision>
 void
-ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPrecision>
-::GenerateInputRequestedRegion()
+ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPrecision>::GenerateInputRequestedRegion()
 {
   // The 4D input volume need not be loaded in memory, is it only used to configure the
   // m_ConstantVolumeSeriesSource with the correct information
@@ -192,47 +194,46 @@ ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPre
   this->m_BackProjectionFilter->PropagateRequestedRegion(this->m_BackProjectionFilter->GetOutput());
 }
 
-template< typename VolumeSeriesType, typename ProjectionStackType, typename TFFTPrecision>
+template <typename VolumeSeriesType, typename ProjectionStackType, typename TFFTPrecision>
 void
-ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPrecision>
-::GenerateData()
+ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPrecision>::GenerateData()
 {
   int Dimension = ProjectionStackType::ImageDimension;
 
   // Prepare the index for the constant projection stack source and the extract filter
   typename ProjectionStackType::RegionType extractRegion = this->GetInputProjectionStack()->GetLargestPossibleRegion();
-  typename ProjectionStackType::SizeType extractSize = extractRegion.GetSize();
-  typename ProjectionStackType::IndexType extractIndex = extractRegion.GetIndex();
+  typename ProjectionStackType::SizeType   extractSize = extractRegion.GetSize();
+  typename ProjectionStackType::IndexType  extractIndex = extractRegion.GetIndex();
 
-  int NumberProjs = this->GetInputProjectionStack()->GetLargestPossibleRegion().GetSize(Dimension-1);
-  int FirstProj = this->GetInputProjectionStack()->GetLargestPossibleRegion().GetIndex(Dimension-1);
+  int NumberProjs = this->GetInputProjectionStack()->GetLargestPossibleRegion().GetSize(Dimension - 1);
+  int FirstProj = this->GetInputProjectionStack()->GetLargestPossibleRegion().GetIndex(Dimension - 1);
 
-  std::vector<int> firstProjectionInSlabs;
+  std::vector<int>          firstProjectionInSlabs;
   std::vector<unsigned int> sizeOfSlabs;
   firstProjectionInSlabs.push_back(FirstProj);
-  if (NumberProjs==1)
+  if (NumberProjs == 1)
     sizeOfSlabs.push_back(1);
   else
+  {
+    for (int proj = FirstProj + 1; proj < FirstProj + NumberProjs; proj++)
     {
-    for (int proj = FirstProj+1; proj < FirstProj+NumberProjs; proj++)
+      if (fabs(m_Signal[proj] - m_Signal[proj - 1]) > 1e-4)
       {
-      if (fabs(m_Signal[proj] - m_Signal[proj-1]) > 1e-4)
-        {
         // Compute the number of projections in the current slab
         sizeOfSlabs.push_back(proj - firstProjectionInSlabs[firstProjectionInSlabs.size() - 1]);
 
         // Update the index of the first projection in the next slab
         firstProjectionInSlabs.push_back(proj);
-        }
       }
-    sizeOfSlabs.push_back(NumberProjs - firstProjectionInSlabs[firstProjectionInSlabs.size() - 1]);
     }
-  bool firstSlabProcessed = false;
+    sizeOfSlabs.push_back(NumberProjs - firstProjectionInSlabs[firstProjectionInSlabs.size() - 1]);
+  }
+  bool                               firstSlabProcessed = false;
   typename VolumeSeriesType::Pointer pimg;
 
   // Process the projections in order
   for (unsigned int slab = 0; slab < firstProjectionInSlabs.size(); slab++)
-    {
+  {
     // Set the projection stack source
     extractIndex[Dimension - 1] = firstProjectionInSlabs[slab];
     extractSize[Dimension - 1] = sizeOfSlabs[slab];
@@ -243,32 +244,32 @@ ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPre
     m_SplatFilter->SetProjectionNumber(firstProjectionInSlabs[slab]);
 
     // After the first update, we need to use the output as input.
-    if(firstSlabProcessed)
-      {
+    if (firstSlabProcessed)
+    {
       pimg = this->m_SplatFilter->GetOutput();
       pimg->DisconnectPipeline();
-      this->m_SplatFilter->SetInputVolumeSeries( pimg );
-      }
+      this->m_SplatFilter->SetInputVolumeSeries(pimg);
+    }
 
     // Update the last filter
     m_SplatFilter->Update();
 
     // Update condition
     firstSlabProcessed = true;
-    }
+  }
 
   // Graft its output
-  this->GraftOutput( m_SplatFilter->GetOutput() );
+  this->GraftOutput(m_SplatFilter->GetOutput());
 
   // Release the data in internal filters
-  if(pimg.IsNotNull())
+  if (pimg.IsNotNull())
     pimg->ReleaseData();
   m_BackProjectionFilter->GetOutput()->ReleaseData();
   m_ExtractFilter->GetOutput()->ReleaseData();
   m_ConstantVolumeSource->GetOutput()->ReleaseData();
 }
 
-}// end namespace
+} // namespace rtk
 
 
 #endif

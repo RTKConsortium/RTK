@@ -36,20 +36,17 @@ namespace rtk
  *
  * \ingroup RTK
  */
-template< typename TInputImage,
-          typename TRealType = float,
-          typename TOutputImage = TInputImage>
-class ITK_EXPORT MagnitudeThresholdImageFilter:
-        public itk::InPlaceImageFilter< TInputImage, TOutputImage >
+template <typename TInputImage, typename TRealType = float, typename TOutputImage = TInputImage>
+class ITK_EXPORT MagnitudeThresholdImageFilter : public itk::InPlaceImageFilter<TInputImage, TOutputImage>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(MagnitudeThresholdImageFilter);
 
   /** Standard class type alias. */
   using Self = MagnitudeThresholdImageFilter;
-  using Superclass = itk::ImageToImageFilter< TInputImage, TOutputImage >;
-  using Pointer = itk::SmartPointer< Self >;
-  using ConstPointer = itk::SmartPointer< const Self >;
+  using Superclass = itk::ImageToImageFilter<TInputImage, TOutputImage>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -69,51 +66,48 @@ public:
   using OutputImagePointer = typename OutputImageType::Pointer;
 
   /** The dimensionality of the input and output images. */
-  itkStaticConstMacro(ImageDimension, unsigned int,
-                      TOutputImage::ImageDimension);
+  itkStaticConstMacro(ImageDimension, unsigned int, TOutputImage::ImageDimension);
 
   /** Length of the vector pixel type of the input image. */
-  itkStaticConstMacro(VectorDimension, unsigned int,
-                      InputPixelType::Dimension);
+  itkStaticConstMacro(VectorDimension, unsigned int, InputPixelType::Dimension);
 
   /** Define the data type and the vector of data type used in calculations. */
   using RealType = TRealType;
-  using RealVectorType = itk::Vector< TRealType, InputPixelType::Dimension >;
-  using RealVectorImageType = itk::Image< RealVectorType, TInputImage::ImageDimension >;
+  using RealVectorType = itk::Vector<TRealType, InputPixelType::Dimension>;
+  using RealVectorImageType = itk::Image<RealVectorType, TInputImage::ImageDimension>;
 
   /** Superclass type alias. */
   using OutputImageRegionType = typename Superclass::OutputImageRegionType;
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   /** Begin concept checking */
-  itkConceptMacro( InputHasNumericTraitsCheck,
-                   ( itk::Concept::HasNumericTraits< typename InputPixelType::ValueType > ) );
-  itkConceptMacro( RealTypeHasNumericTraitsCheck,
-                   ( itk::Concept::HasNumericTraits< RealType > ) );
+  itkConceptMacro(InputHasNumericTraitsCheck, (itk::Concept::HasNumericTraits<typename InputPixelType::ValueType>));
+  itkConceptMacro(RealTypeHasNumericTraitsCheck, (itk::Concept::HasNumericTraits<RealType>));
   /** End concept checking */
 #endif
 
-  itkGetMacro(Threshold, TRealType)
-  itkSetMacro(Threshold, TRealType)
+  itkGetMacro(Threshold, TRealType);
+  itkSetMacro(Threshold, TRealType);
 
 protected:
   MagnitudeThresholdImageFilter();
   ~MagnitudeThresholdImageFilter() override = default;
 
-#if ITK_VERSION_MAJOR<5
-  void ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread,
-                            itk::ThreadIdType threadId) override;
+#if ITK_VERSION_MAJOR < 5
+  void
+  ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, itk::ThreadIdType threadId) override;
 #else
-  void DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread) override;
+  void
+  DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread) override;
 #endif
 
 private:
   TRealType m_Threshold;
 };
-} // end namespace itk
+} // namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkMagnitudeThresholdImageFilter.hxx"
+#  include "rtkMagnitudeThresholdImageFilter.hxx"
 #endif
 
 #endif

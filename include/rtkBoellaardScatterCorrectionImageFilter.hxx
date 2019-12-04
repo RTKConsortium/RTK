@@ -28,10 +28,9 @@ namespace rtk
 {
 
 template <class TInputImage, class TOutputImage>
-BoellaardScatterCorrectionImageFilter<TInputImage, TOutputImage>
-::BoellaardScatterCorrectionImageFilter()
+BoellaardScatterCorrectionImageFilter<TInputImage, TOutputImage>::BoellaardScatterCorrectionImageFilter()
 {
-#if ITK_VERSION_MAJOR>4
+#if ITK_VERSION_MAJOR > 4
   this->DynamicMultiThreadingOff();
 #endif
 }
@@ -39,98 +38,101 @@ BoellaardScatterCorrectionImageFilter<TInputImage, TOutputImage>
 // Requires full projection images to estimate scatter.
 template <class TInputImage, class TOutputImage>
 void
-BoellaardScatterCorrectionImageFilter<TInputImage, TOutputImage>
-::EnlargeOutputRequestedRegion(itk::DataObject *)
+BoellaardScatterCorrectionImageFilter<TInputImage, TOutputImage>::EnlargeOutputRequestedRegion(itk::DataObject *)
 {
   typename Superclass::OutputImagePointer outputPtr = this->GetOutput();
-  if ( !outputPtr )
+  if (!outputPtr)
     return;
 
-  const unsigned int Dimension = TInputImage::ImageDimension;
+  const unsigned int                Dimension = TInputImage::ImageDimension;
   typename TOutputImage::RegionType orr = outputPtr->GetRequestedRegion();
   typename TOutputImage::RegionType lpr = outputPtr->GetLargestPossibleRegion();
 
-  for(unsigned int i=0; i<Dimension-1; i++)
-    {
-    orr.SetIndex( i, lpr.GetIndex(i) );
-    orr.SetSize( i, lpr.GetSize(i) );
-    }
+  for (unsigned int i = 0; i < Dimension - 1; i++)
+  {
+    orr.SetIndex(i, lpr.GetIndex(i));
+    orr.SetSize(i, lpr.GetSize(i));
+  }
 
-  outputPtr->SetRequestedRegion( orr );
+  outputPtr->SetRequestedRegion(orr);
 }
 
 template <class TInputImage, class TOutputImage>
 void
-BoellaardScatterCorrectionImageFilter<TInputImage, TOutputImage>
-::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType itkNotUsed(threadId) )
+BoellaardScatterCorrectionImageFilter<TInputImage, TOutputImage>::ThreadedGenerateData(
+  const OutputImageRegionType & outputRegionForThread,
+  ThreadIdType                  itkNotUsed(threadId))
 {
   // Input / ouput iterators
   itk::ImageRegionConstIterator<InputImageType> itIn(this->GetInput(), outputRegionForThread);
   itk::ImageRegionIterator<OutputImageType>     itOut(this->GetOutput(), outputRegionForThread);
 
   const unsigned int Dimension = TInputImage::ImageDimension;
-  unsigned int npixelPerSlice = 1;
-  for(unsigned int i=0; i<Dimension-1; i++)
+  unsigned int       npixelPerSlice = 1;
+  for (unsigned int i = 0; i < Dimension - 1; i++)
     npixelPerSlice *= outputRegionForThread.GetSize(i);
 
   unsigned int start = outputRegionForThread.GetIndex(Dimension - 1);
   unsigned int stop = start + outputRegionForThread.GetSize(Dimension - 1);
-  for (unsigned int slice = start; slice<stop; slice++)
-    {
+  for (unsigned int slice = start; slice < stop; slice++)
+  {
     itk::ImageRegionConstIterator<InputImageType> itInSlice = itIn;
 
     // Retrieve useful characteristics of current slice
     double averageBehindPatient = 0.;
     double smallestValue = itk::NumericTraits<double>::max();
-    for(unsigned int i=0; i<npixelPerSlice; i++)
+    for (unsigned int i = 0; i < npixelPerSlice; i++)
+    {
+      smallestValue = std::min(smallestValue, (double)itInSlice.Get());
+      if (itInSlice.Get() >= m_AirThreshold)
       {
-      smallestValue = std::min(smallestValue, (double)itInSlice.Get() );
-      if(itInSlice.Get()>=m_AirThreshold)
-        {
         averageBehindPatient += itInSlice.Get();
-        }
-      ++itInSlice;
       }
+      ++itInSlice;
+    }
     averageBehindPatient /= npixelPerSlice;
 
     // Compute constant correction
     double correction = averageBehindPatient * m_ScatterToPrimaryRatio;
 
     // Apply non-negativity constraint
-    if(smallestValue-correction<m_NonNegativityConstraintThreshold)
+    if (smallestValue - correction < m_NonNegativityConstraintThreshold)
       correction = smallestValue - m_NonNegativityConstraintThreshold;
 
     // Remove constant factor
-    for(unsigned int i=0; i<npixelPerSlice; i++)
-      {
-      itOut.Set( itIn.Get() - correction );
+    for (unsigned int i = 0; i < npixelPerSlice; i++)
+    {
+      itOut.Set(itIn.Get() - correction);
       ++itIn;
       ++itOut;
-      }
     }
+  }
 }
 
 template <class TInputImage, class TOutputImage>
 unsigned int
-BoellaardScatterCorrectionImageFilter<TInputImage, TOutputImage>
-::SplitRequestedRegion(unsigned int i, unsigned int num, OutputImageRegionType& splitRegion)
+BoellaardScatterCorrectionImageFilter<TInputImage, TOutputImage>::SplitRequestedRegion(
+  unsigned int            i,
+  unsigned int            num,
+  OutputImageRegionType & splitRegion)
 {
   return SplitRequestedRegion((int)i, (int)num, splitRegion);
 }
 
 template <class TInputImage, class TOutputImage>
 int
-BoellaardScatterCorrectionImageFilter<TInputImage, TOutputImage>
-::SplitRequestedRegion(int i, int num, OutputImageRegionType& splitRegion)
+BoellaardScatterCorrectionImageFilter<TInputImage, TOutputImage>::SplitRequestedRegion(
+  int                     i,
+  int                     num,
+  OutputImageRegionType & splitRegion)
 {
   // Get the output pointer
-  OutputImageType * outputPtr = this->GetOutput();
-  const typename TOutputImage::SizeType& requestedRegionSize
-    = outputPtr->GetRequestedRegion().GetSize();
+  OutputImageType *                       outputPtr = this->GetOutput();
+  const typename TOutputImage::SizeType & requestedRegionSize = outputPtr->GetRequestedRegion().GetSize();
 
-  int splitAxis;
+  int                              splitAxis;
   typename TOutputImage::IndexType splitIndex;
-  typename TOutputImage::SizeType splitSize;
+  typename TOutputImage::SizeType  splitSize;
 
   // Initialize the splitRegion to the output requested region
   splitRegion = outputPtr->GetRequestedRegion();
@@ -140,34 +142,34 @@ BoellaardScatterCorrectionImageFilter<TInputImage, TOutputImage>
   // split on the outermost dimension available
   splitAxis = outputPtr->GetImageDimension() - 1;
   if (requestedRegionSize[splitAxis] == 1)
-    { // cannot split
+  { // cannot split
     itkDebugMacro("  Cannot Split");
     return 1;
-    }
+  }
 
   // determine the actual number of pieces that will be generated
   typename TOutputImage::SizeType::SizeValueType range = requestedRegionSize[splitAxis];
-  int valuesPerThread = itk::Math::Ceil<int>(range/(double)num);
-  int maxThreadIdUsed = itk::Math::Ceil<int>(range/(double)valuesPerThread) - 1;
+  int                                            valuesPerThread = itk::Math::Ceil<int>(range / (double)num);
+  int maxThreadIdUsed = itk::Math::Ceil<int>(range / (double)valuesPerThread) - 1;
 
   // Split the region
   if (i < maxThreadIdUsed)
-    {
-    splitIndex[splitAxis] += i*valuesPerThread;
+  {
+    splitIndex[splitAxis] += i * valuesPerThread;
     splitSize[splitAxis] = valuesPerThread;
-    }
+  }
   if (i == maxThreadIdUsed)
-    {
-    splitIndex[splitAxis] += i*valuesPerThread;
+  {
+    splitIndex[splitAxis] += i * valuesPerThread;
     // last thread needs to process the "rest" dimension being split
-    splitSize[splitAxis] = splitSize[splitAxis] - i*valuesPerThread;
-    }
+    splitSize[splitAxis] = splitSize[splitAxis] - i * valuesPerThread;
+  }
 
   // set the split region ivars
-  splitRegion.SetIndex( splitIndex );
-  splitRegion.SetSize( splitSize );
+  splitRegion.SetIndex(splitIndex);
+  splitRegion.SetSize(splitSize);
 
-  itkDebugMacro("  Split Piece: " << splitRegion );
+  itkDebugMacro("  Split Piece: " << splitRegion);
 
   return maxThreadIdUsed + 1;
 }

@@ -35,8 +35,7 @@ namespace rtk
  *
  * \ingroup RTK IOFilters
  */
-class RTK_EXPORT VarianProBeamGeometryReader :
-  public itk::LightProcessObject
+class RTK_EXPORT VarianProBeamGeometryReader : public itk::LightProcessObject
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(VarianProBeamGeometryReader);
@@ -65,30 +64,33 @@ public:
 
   /** Set the vector of strings that contains the projection file names. Files
    * are processed in sequential order. */
-  void SetProjectionsFileNames (const FileNamesContainer &name)
+  void
+  SetProjectionsFileNames(const FileNamesContainer & name)
+  {
+    if (m_ProjectionsFileNames != name)
     {
-    if ( m_ProjectionsFileNames != name)
-      {
       m_ProjectionsFileNames = name;
       this->Modified();
-      }
     }
-  const FileNamesContainer & GetProjectionsFileNames() const
-    {
+  }
+  const FileNamesContainer &
+  GetProjectionsFileNames() const
+  {
     return m_ProjectionsFileNames;
-    }
+  }
 
 protected:
   VarianProBeamGeometryReader();
 
 
 private:
-  void GenerateData() override;
+  void
+  GenerateData() override;
 
   GeometryType::Pointer m_Geometry;
   std::string           m_XMLFileName;
   FileNamesContainer    m_ProjectionsFileNames;
 };
 
-}
+} // namespace rtk
 #endif

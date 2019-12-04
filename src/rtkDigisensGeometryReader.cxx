@@ -23,14 +23,10 @@
 #include <itkVersor.h>
 #include <itkCenteredEuler3DTransform.h>
 
-rtk::DigisensGeometryReader
-::DigisensGeometryReader()
-{
-}
+rtk::DigisensGeometryReader ::DigisensGeometryReader() {}
 
 void
-rtk::DigisensGeometryReader
-::GenerateData()
+rtk::DigisensGeometryReader ::GenerateData()
 {
   // Create new RTK geometry object
   m_Geometry = GeometryType::New();
@@ -42,50 +38,48 @@ rtk::DigisensGeometryReader
   digisensXmlReader->GenerateOutputInformation();
 
   // Constants used to generate projection matrices
-  itk::MetaDataDictionary &dic = *(digisensXmlReader->GetOutputObject() );
+  itk::MetaDataDictionary & dic = *(digisensXmlReader->GetOutputObject());
 
   // Getting elements positions
-  using MetaDataVectorType = itk::MetaDataObject< GeometryType::VectorType >;
-  GeometryType::VectorType rotationAxis       =
-    dynamic_cast<MetaDataVectorType *>(dic["ROTATIONaxis"].GetPointer() )->GetMetaDataObjectValue();
-  GeometryType::VectorType rotationCenter     =
-    dynamic_cast<MetaDataVectorType *>(dic["ROTATIONcenter"].GetPointer() )->GetMetaDataObjectValue();
-  GeometryType::VectorType sourcePosition     =
-    dynamic_cast<MetaDataVectorType *>(dic["XRAYsource"].GetPointer() )->GetMetaDataObjectValue();
-  GeometryType::VectorType detectorPosition   =
-    dynamic_cast<MetaDataVectorType *>(dic["CAMERAreference"].GetPointer() )->GetMetaDataObjectValue();
-  GeometryType::VectorType detectorNormal     =
-    dynamic_cast<MetaDataVectorType *>(dic["CAMERAnormal"].GetPointer() )->GetMetaDataObjectValue();
+  using MetaDataVectorType = itk::MetaDataObject<GeometryType::VectorType>;
+  GeometryType::VectorType rotationAxis =
+    dynamic_cast<MetaDataVectorType *>(dic["ROTATIONaxis"].GetPointer())->GetMetaDataObjectValue();
+  GeometryType::VectorType rotationCenter =
+    dynamic_cast<MetaDataVectorType *>(dic["ROTATIONcenter"].GetPointer())->GetMetaDataObjectValue();
+  GeometryType::VectorType sourcePosition =
+    dynamic_cast<MetaDataVectorType *>(dic["XRAYsource"].GetPointer())->GetMetaDataObjectValue();
+  GeometryType::VectorType detectorPosition =
+    dynamic_cast<MetaDataVectorType *>(dic["CAMERAreference"].GetPointer())->GetMetaDataObjectValue();
+  GeometryType::VectorType detectorNormal =
+    dynamic_cast<MetaDataVectorType *>(dic["CAMERAnormal"].GetPointer())->GetMetaDataObjectValue();
   GeometryType::VectorType detectorHorizontal =
-    dynamic_cast<MetaDataVectorType *>(dic["CAMERAhorizontal"].GetPointer() )->GetMetaDataObjectValue();
-  GeometryType::VectorType detectorVertical   =
-    dynamic_cast<MetaDataVectorType *>(dic["CAMERAvertical"].GetPointer() )->GetMetaDataObjectValue();
+    dynamic_cast<MetaDataVectorType *>(dic["CAMERAhorizontal"].GetPointer())->GetMetaDataObjectValue();
+  GeometryType::VectorType detectorVertical =
+    dynamic_cast<MetaDataVectorType *>(dic["CAMERAvertical"].GetPointer())->GetMetaDataObjectValue();
 
   // Check assumptions
-  if(sourcePosition[0] != 0. ||
-     sourcePosition[1] != 0. ||
-     detectorNormal[0] != 0. ||
-     detectorNormal[1] != 0. ||
-     detectorHorizontal[1] != 0. ||
-     detectorHorizontal[2] != 0. ||
-     detectorVertical[0] != 0. ||
-     detectorVertical[2] != 0.) {
-    itkGenericExceptionMacro( << "Geometric assumptions not verified" );
-    }
+  if (sourcePosition[0] != 0. || sourcePosition[1] != 0. || detectorNormal[0] != 0. || detectorNormal[1] != 0. ||
+      detectorHorizontal[1] != 0. || detectorHorizontal[2] != 0. || detectorVertical[0] != 0. ||
+      detectorVertical[2] != 0.)
+  {
+    itkGenericExceptionMacro(<< "Geometric assumptions not verified");
+  }
 
   // Source / Detector / Center distances
   double sdd = fabs(sourcePosition[2] - detectorPosition[2]);
   double sid = fabs(sourcePosition[2] - rotationCenter[2]);
 
   // Scaling
-  using MetaDataIntegerType = itk::MetaDataObject< int >;
-  //int pixelWidth = dynamic_cast<MetaDataIntegerType *>(dic["CAMERApixelWidth"].GetPointer() )->GetMetaDataObjectValue();
-  //int pixelHeight = dynamic_cast<MetaDataIntegerType *>(dic["CAMERApixelHeight"].GetPointer() )->GetMetaDataObjectValue();
-  using MetaDataDoubleType = itk::MetaDataObject< double >;
-  //double totalWidth = dynamic_cast<MetaDataDoubleType *>(dic["CAMERAtotalWidth"].GetPointer() )->GetMetaDataObjectValue();
-  //double totalHeight = dynamic_cast<MetaDataDoubleType *>(dic["CAMERAtotalHeight"].GetPointer() )->GetMetaDataObjectValue();
-  //double projectionScalingX = detectorHorizontal[0] * totalWidth / (pixelWidth-1);
-  //double projectionScalingY = detectorVertical[1] * totalHeight / (pixelHeight-1);
+  using MetaDataIntegerType = itk::MetaDataObject<int>;
+  // int pixelWidth = dynamic_cast<MetaDataIntegerType *>(dic["CAMERApixelWidth"].GetPointer()
+  // )->GetMetaDataObjectValue(); int pixelHeight = dynamic_cast<MetaDataIntegerType
+  // *>(dic["CAMERApixelHeight"].GetPointer() )->GetMetaDataObjectValue();
+  using MetaDataDoubleType = itk::MetaDataObject<double>;
+  // double totalWidth = dynamic_cast<MetaDataDoubleType *>(dic["CAMERAtotalWidth"].GetPointer()
+  // )->GetMetaDataObjectValue(); double totalHeight = dynamic_cast<MetaDataDoubleType
+  // *>(dic["CAMERAtotalHeight"].GetPointer() )->GetMetaDataObjectValue(); double projectionScalingX =
+  // detectorHorizontal[0] * totalWidth / (pixelWidth-1); double projectionScalingY = detectorVertical[1] * totalHeight /
+  // (pixelHeight-1);
 
   // Projection offset: the offset is given in the volume coordinate system =>
   // convert to
@@ -94,31 +88,31 @@ rtk::DigisensGeometryReader
 
   // Rotation
   double startAngle =
-    dynamic_cast<MetaDataDoubleType *>(dic["RADIOSstartAngle"].GetPointer() )->GetMetaDataObjectValue();
+    dynamic_cast<MetaDataDoubleType *>(dic["RADIOSstartAngle"].GetPointer())->GetMetaDataObjectValue();
   double angularRange =
-    dynamic_cast<MetaDataDoubleType *>(dic["RADIOSangularRange"].GetPointer() )->GetMetaDataObjectValue();
-  int nProj = dynamic_cast<MetaDataIntegerType *>(dic["RADIOSNumberOfFiles"].GetPointer() )->GetMetaDataObjectValue();
-  for(int i=0; i<nProj; i++ )
-    {
+    dynamic_cast<MetaDataDoubleType *>(dic["RADIOSangularRange"].GetPointer())->GetMetaDataObjectValue();
+  int nProj = dynamic_cast<MetaDataIntegerType *>(dic["RADIOSNumberOfFiles"].GetPointer())->GetMetaDataObjectValue();
+  for (int i = 0; i < nProj; i++)
+  {
     // Convert rotation center and rotation axis parameterization to euler angles
-    double angle = - startAngle - i * angularRange / nProj;
+    double angle = -startAngle - i * angularRange / nProj;
 
-    const double degreesToRadians = std::atan(1.0) / 45.0;
+    const double        degreesToRadians = std::atan(1.0) / 45.0;
     itk::Versor<double> xfm3DVersor;
-    xfm3DVersor.Set(rotationAxis, angle*degreesToRadians);
+    xfm3DVersor.Set(rotationAxis, angle * degreesToRadians);
 
     using ThreeDTransformType = itk::CenteredEuler3DTransform<double>;
     ThreeDTransformType::Pointer xfm3D = ThreeDTransformType::New();
     xfm3D->SetMatrix(xfm3DVersor.GetMatrix());
 
-    m_Geometry->AddProjectionInRadians( sid,
-                                        sdd,
-                                        xfm3D->GetAngleY(),
-                                        projectionOffsetX,
-                                        projectionOffsetY,
-                                        xfm3D->GetAngleX(),
-                                        xfm3D->GetAngleZ(),
-                                        rotationCenter[0],
-                                        rotationCenter[1] );
-    }
+    m_Geometry->AddProjectionInRadians(sid,
+                                       sdd,
+                                       xfm3D->GetAngleY(),
+                                       projectionOffsetX,
+                                       projectionOffsetY,
+                                       xfm3D->GetAngleX(),
+                                       xfm3D->GetAngleZ(),
+                                       rotationCenter[0],
+                                       rotationCenter[1]);
+  }
 }

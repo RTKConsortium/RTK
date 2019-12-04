@@ -33,29 +33,28 @@ namespace rtk
 {
 
 template <class TInputImage, class TOutputImage, class TFFTPrecision>
-ScatterGlareCorrectionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
-::ScatterGlareCorrectionImageFilter()
+ScatterGlareCorrectionImageFilter<TInputImage, TOutputImage, TFFTPrecision>::ScatterGlareCorrectionImageFilter()
 {
   this->m_KernelDimension = 2;
 }
 
-template<class TInputImage, class TOutputImage, class TFFTPrecision>
+template <class TInputImage, class TOutputImage, class TFFTPrecision>
 void
-ScatterGlareCorrectionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
-::UpdateFFTProjectionsConvolutionKernel(const SizeType size)
+ScatterGlareCorrectionImageFilter<TInputImage, TOutputImage, TFFTPrecision>::UpdateFFTProjectionsConvolutionKernel(
+  const SizeType size)
 {
-  if(m_Coefficients.size() != 2)
-    {
+  if (m_Coefficients.size() != 2)
+  {
     itkGenericExceptionMacro(<< "Expecting 2 coefficients in m_Coefficients)");
-    }
-  double dx = this->GetInput()->GetSpacing()[0];
-  double dy = this->GetInput()->GetSpacing()[1];
+  }
+  double                dx = this->GetInput()->GetSpacing()[0];
+  double                dy = this->GetInput()->GetSpacing()[1];
   CoefficientVectorType coeffs = m_Coefficients;
   coeffs.push_back(dx);
   coeffs.push_back(dy);
   coeffs.push_back(size[0]);
   coeffs.push_back(size[1]);
-  if(coeffs == m_PreviousCoefficients)
+  if (coeffs == m_PreviousCoefficients)
     return; // Up-to-date
   m_PreviousCoefficients = coeffs;
 
@@ -65,38 +64,38 @@ ScatterGlareCorrectionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 
   double a3 = m_Coefficients[0];
   double b3 = m_Coefficients[1];
-  double b3sq = b3*b3;
-  double halfXSz = size[0]/ 2.;
-  double halfYSz = size[1]/ 2.;
+  double b3sq = b3 * b3;
+  double halfXSz = size[0] / 2.;
+  double halfYSz = size[1] / 2.;
 
   itk::ImageRegionIteratorWithIndex<FFTInputImageType> itK(kernel, kernel->GetLargestPossibleRegion());
   itK.GoToBegin();
 
   // Central value
-  double g = (1 - a3) + a3*dx*dy / (2. * itk::Math::pi * b3sq);
+  double g = (1 - a3) + a3 * dx * dy / (2. * itk::Math::pi * b3sq);
   itK.Set(g);
   ++itK;
 
   typename FFTInputImageType::IndexType idx;
-  while ( !itK.IsAtEnd() )
-    {
+  while (!itK.IsAtEnd())
+  {
     idx = itK.GetIndex();
-    double xx = halfXSz - fabs(halfXSz-idx[0]); // Distance to nearest x border
-    double yy = halfYSz - fabs(halfYSz-idx[1]); // Distance to nearest y border
-    double rr2 = (xx*xx + yy*yy);
-    g = (a3*dx*dy / (2. * itk::Math::pi * b3sq)) / std::pow((1. + rr2 / b3sq), 1.5);
+    double xx = halfXSz - fabs(halfXSz - idx[0]); // Distance to nearest x border
+    double yy = halfYSz - fabs(halfYSz - idx[1]); // Distance to nearest y border
+    double rr2 = (xx * xx + yy * yy);
+    g = (a3 * dx * dy / (2. * itk::Math::pi * b3sq)) / std::pow((1. + rr2 / b3sq), 1.5);
     itK.Set(g);
     ++itK;
-    }
+  }
 
   // FFT kernel
-  using ForwardFFTType = itk::RealToHalfHermitianForwardFFTImageFilter< FFTInputImageType, FFTOutputImageType >;
+  using ForwardFFTType = itk::RealToHalfHermitianForwardFFTImageFilter<FFTInputImageType, FFTOutputImageType>;
   typename ForwardFFTType::Pointer fftK = ForwardFFTType::New();
   fftK->SetInput(kernel);
-#if ITK_VERSION_MAJOR<5
-  fftK->SetNumberOfThreads( this->GetNumberOfThreads() );
+#if ITK_VERSION_MAJOR < 5
+  fftK->SetNumberOfThreads(this->GetNumberOfThreads());
 #else
-  fftK->SetNumberOfWorkUnits( this->GetNumberOfWorkUnits() );
+  fftK->SetNumberOfWorkUnits(this->GetNumberOfWorkUnits());
 #endif
   fftK->Update();
 
@@ -104,11 +103,11 @@ ScatterGlareCorrectionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
   using DivideType = itk::DivideImageFilter<FFTOutputImageType, FFTOutputImageType, FFTOutputImageType>;
   typename DivideType::Pointer div = DivideType::New();
   div->SetConstant1(1.);
-  div->SetInput(1, fftK->GetOutput() );
-#if ITK_VERSION_MAJOR<5
-  div->SetNumberOfThreads( this->GetNumberOfThreads() );
+  div->SetInput(1, fftK->GetOutput());
+#if ITK_VERSION_MAJOR < 5
+  div->SetNumberOfThreads(this->GetNumberOfThreads());
 #else
-  div->SetNumberOfWorkUnits( this->GetNumberOfWorkUnits() );
+  div->SetNumberOfWorkUnits(this->GetNumberOfWorkUnits());
 #endif
   div->Update();
 

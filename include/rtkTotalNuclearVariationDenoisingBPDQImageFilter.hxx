@@ -24,15 +24,15 @@
 namespace rtk
 {
 
-template< typename TOutputImage, typename TGradientImage>
-TotalNuclearVariationDenoisingBPDQImageFilter<TOutputImage, TGradientImage>
-::TotalNuclearVariationDenoisingBPDQImageFilter()
+template <typename TOutputImage, typename TGradientImage>
+TotalNuclearVariationDenoisingBPDQImageFilter<TOutputImage,
+                                              TGradientImage>::TotalNuclearVariationDenoisingBPDQImageFilter()
 {
   // Default behaviour is to process all spatial dimensions, i.e. all but the last one, which contains channels
   for (unsigned int dim = 0; dim < TOutputImage::ImageDimension - 1; dim++)
-    {
+  {
     this->m_DimensionsProcessed[dim] = true;
-    }
+  }
   this->m_DimensionsProcessed[TOutputImage::ImageDimension - 1] = false;
 
   // Create the SingularValueThresholdFilter to replace the generic filter
@@ -40,10 +40,9 @@ TotalNuclearVariationDenoisingBPDQImageFilter<TOutputImage, TGradientImage>
   this->m_ThresholdFilter = SingularValueThresholdFilterType::New();
 }
 
-template< typename TOutputImage, typename TGradientImage>
+template <typename TOutputImage, typename TGradientImage>
 void
-TotalNuclearVariationDenoisingBPDQImageFilter<TOutputImage, TGradientImage>
-::GenerateOutputInformation()
+TotalNuclearVariationDenoisingBPDQImageFilter<TOutputImage, TGradientImage>::GenerateOutputInformation()
 {
   Superclass::GenerateOutputInformation();
 

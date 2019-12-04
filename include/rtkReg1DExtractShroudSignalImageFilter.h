@@ -23,20 +23,20 @@
 
 namespace rtk
 {
-  /** \class Reg1DExtractShroudSignalImageFilter
-   * \brief Reg1DExtract the signal corresponding to the breathing motion
-   * (1D) from a shroud image (2D).
-   *
-   * \test rtkamsterdamshroudtest.cxx
-   *
-   * \author Vivien Delmon
-   *
-   * \ingroup RTK ImageToImageFilter
-   */
+/** \class Reg1DExtractShroudSignalImageFilter
+ * \brief Reg1DExtract the signal corresponding to the breathing motion
+ * (1D) from a shroud image (2D).
+ *
+ * \test rtkamsterdamshroudtest.cxx
+ *
+ * \author Vivien Delmon
+ *
+ * \ingroup RTK ImageToImageFilter
+ */
 
-template<class TInputPixel, class TOutputPixel>
-class ITK_EXPORT Reg1DExtractShroudSignalImageFilter :
-  public itk::ImageToImageFilter<itk::Image<TInputPixel, 2>, itk::Image<TOutputPixel, 1> >
+template <class TInputPixel, class TOutputPixel>
+class ITK_EXPORT Reg1DExtractShroudSignalImageFilter
+  : public itk::ImageToImageFilter<itk::Image<TInputPixel, 2>, itk::Image<TOutputPixel, 1>>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(Reg1DExtractShroudSignalImageFilter);
@@ -50,12 +50,9 @@ public:
   using ConstPointer = itk::SmartPointer<const Self>;
 
   /** ImageDimension constants */
-  itkStaticConstMacro(InputImageDimension, unsigned int,
-                      TInputImage::ImageDimension);
-  itkStaticConstMacro(OutputImageDimension, unsigned int,
-                      TOutputImage::ImageDimension);
-  itkStaticConstMacro(ImageDimension, unsigned int,
-                      TOutputImage::ImageDimension);
+  itkStaticConstMacro(InputImageDimension, unsigned int, TInputImage::ImageDimension);
+  itkStaticConstMacro(OutputImageDimension, unsigned int, TOutputImage::ImageDimension);
+  itkStaticConstMacro(ImageDimension, unsigned int, TOutputImage::ImageDimension);
 
   /** Standard New method. */
   itkNewMacro(Self);
@@ -67,20 +64,24 @@ protected:
   Reg1DExtractShroudSignalImageFilter();
   ~Reg1DExtractShroudSignalImageFilter() override = default;
 
-  void GenerateOutputInformation() override;
-  void GenerateInputRequestedRegion() override;
-  void GenerateData() override;
+  void
+  GenerateOutputInformation() override;
+  void
+  GenerateInputRequestedRegion() override;
+  void
+  GenerateData() override;
 
 private:
   using RegisterImageType = itk::Image<TInputPixel, 1>;
-  TOutputPixel register1D(const RegisterImageType*, const RegisterImageType*);
+  TOutputPixel
+  register1D(const RegisterImageType *, const RegisterImageType *);
 
 }; // end of class
 
 } // end of namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkReg1DExtractShroudSignalImageFilter.hxx"
+#  include "rtkReg1DExtractShroudSignalImageFilter.hxx"
 #endif
 
 #endif // ! rtkReg1DExtractShroudSignalImageFilter_h

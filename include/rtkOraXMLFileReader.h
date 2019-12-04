@@ -53,27 +53,35 @@ public:
   itkNewMacro(Self);
 
   /** Determine if a file can be read */
-  int CanReadFile(const char* name) override;
+  int
+  CanReadFile(const char * name) override;
 
 protected:
   OraXMLFileReader();
   ~OraXMLFileReader() override = default;
 
-  void StartElement(const char * name,const char **atts) override;
+  void
+  StartElement(const char * name, const char ** atts) override;
 
-  void EndElement(const char *name) override;
+  void
+  EndElement(const char * name) override;
 
-  void CharacterDataHandler(const char *inData, int inLength) override;
+  void
+  CharacterDataHandler(const char * inData, int inLength) override;
 
-  void EncapsulatePoint(const char *metaName, const char *name);
-  void EncapsulateMatrix3x3(const char *metaName, const char *name);
-  void EncapsulateDouble(const char *metaName, const char *name);
-  void EncapsulateString(const char *metaName, const char *name);
+  void
+  EncapsulatePoint(const char * metaName, const char * name);
+  void
+  EncapsulateMatrix3x3(const char * metaName, const char * name);
+  void
+  EncapsulateDouble(const char * metaName, const char * name);
+  void
+  EncapsulateString(const char * metaName, const char * name);
 
 private:
-  itk::MetaDataDictionary  m_Dictionary;
-  std::string              m_CurCharacterData;
+  itk::MetaDataDictionary m_Dictionary;
+  std::string             m_CurCharacterData;
 };
 
-}
+} // namespace rtk
 #endif

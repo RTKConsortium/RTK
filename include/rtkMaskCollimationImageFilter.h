@@ -37,15 +37,14 @@ namespace rtk
  * \ingroup RTK InPlaceImageFilter
  */
 template <class TInputImage, class TOutputImage>
-class ITK_EXPORT MaskCollimationImageFilter :
-  public itk::InPlaceImageFilter<TInputImage,TOutputImage>
+class ITK_EXPORT MaskCollimationImageFilter : public itk::InPlaceImageFilter<TInputImage, TOutputImage>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(MaskCollimationImageFilter);
 
   /** Standard class type alias. */
   using Self = MaskCollimationImageFilter;
-  using Superclass = itk::InPlaceImageFilter<TInputImage,TOutputImage>;
+  using Superclass = itk::InPlaceImageFilter<TInputImage, TOutputImage>;
   using Pointer = itk::SmartPointer<Self>;
   using ConstPointer = itk::SmartPointer<const Self>;
 
@@ -68,22 +67,28 @@ protected:
   MaskCollimationImageFilter();
   ~MaskCollimationImageFilter() override = default;
 
-  void BeforeThreadedGenerateData() override;
+  void
+  BeforeThreadedGenerateData() override;
 
   /** Apply changes to the input image requested region. */
-#if ITK_VERSION_MAJOR<5
-  void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread,
-                             ThreadIdType threadId ) override;
+#if ITK_VERSION_MAJOR < 5
+  void
+  ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, ThreadIdType threadId) override;
 #else
-  void DynamicThreadedGenerateData( const OutputImageRegionType& outputRegionForThread ) override;
+  void
+  DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread) override;
 #endif
 
   /** The two inputs should not be in the same space so there is nothing
    * to verify. */
-#if ITK_VERSION_MAJOR<5
-  void VerifyInputInformation() override {}
+#if ITK_VERSION_MAJOR < 5
+  void
+  VerifyInputInformation() override
+  {}
 #else
-  void VerifyInputInformation() const override {}
+  void
+  VerifyInputInformation() const override
+  {}
 #endif
 
 private:
@@ -100,7 +105,7 @@ private:
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkMaskCollimationImageFilter.hxx"
+#  include "rtkMaskCollimationImageFilter.hxx"
 #endif
 
 #endif

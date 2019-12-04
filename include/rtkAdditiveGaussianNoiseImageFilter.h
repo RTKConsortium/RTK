@@ -44,18 +44,17 @@ namespace rtk
 {
 
 /** \class NormalVariateNoiseFunctor
-*
-* \brief Pixel functor that adds Gaussian noise.
-*
-* \author Gavin Baker: gavinb at cs_mu_oz_au
-*
-* \ingroup RTK
-*/
-template < class TPixel >
+ *
+ * \brief Pixel functor that adds Gaussian noise.
+ *
+ * \author Gavin Baker: gavinb at cs_mu_oz_au
+ *
+ * \ingroup RTK
+ */
+template <class TPixel>
 class NormalVariateNoiseFunctor
 {
 public:
-
   NormalVariateNoiseFunctor()
   {
     m_Mean = 0.0;
@@ -63,65 +62,78 @@ public:
 
     m_Generator = itk::Statistics::NormalVariateGenerator::New();
 
-    this->SetSeed( 42 );
+    this->SetSeed(42);
   }
 
-  float GetMean() const
+  float
+  GetMean() const
   {
     return m_Mean;
   }
 
-  void SetMean( float mean )
+  void
+  SetMean(float mean)
   {
     m_Mean = mean;
   }
 
-  float GetStandardDeviation() const
+  float
+  GetStandardDeviation() const
   {
     return m_StandardDeviation;
   }
 
-  void SetStandardDeviation( float stddev )
+  void
+  SetStandardDeviation(float stddev)
   {
     m_StandardDeviation = stddev;
   }
 
-  void SetSeed( unsigned long seed )
+  void
+  SetSeed(unsigned long seed)
   {
-    m_Generator->Initialize( seed );
+    m_Generator->Initialize(seed);
   }
 
-  void SetOutputMinimum( TPixel min ) {
+  void
+  SetOutputMinimum(TPixel min)
+  {
     m_OutputMinimum = min;
   }
 
-  void SetOutputMaximum( TPixel max ) {
+  void
+  SetOutputMaximum(TPixel max)
+  {
     m_OutputMaximum = max;
   }
 
-  TPixel GetOutputMinimum() const {
+  TPixel
+  GetOutputMinimum() const
+  {
     return m_OutputMinimum;
   }
 
-  TPixel GetOutputMaximum() const {
+  TPixel
+  GetOutputMaximum() const
+  {
     return m_OutputMaximum;
   }
 
-  TPixel operator()( TPixel input )
+  TPixel
+  operator()(TPixel input)
   {
     // Get the minimum and maximum output values
-    static const float min = static_cast<float>( m_OutputMinimum );
-    static const float max = static_cast<float>( m_OutputMaximum );
+    static const float min = static_cast<float>(m_OutputMinimum);
+    static const float max = static_cast<float>(m_OutputMaximum);
 
     // Compute the output
-    float output = static_cast<float>( input ) +
-      m_Mean + m_StandardDeviation * m_Generator->GetVariate();
+    float output = static_cast<float>(input) + m_Mean + m_StandardDeviation * m_Generator->GetVariate();
 
     // Clamp the output value in valid range
-    output = ( output < min ? min : output );
-    output = ( output > max ? max : output );
+    output = (output < min ? min : output);
+    output = (output > max ? max : output);
 
-    return static_cast< TPixel > ( output );
+    return static_cast<TPixel>(output);
   }
 
 private:
@@ -153,9 +165,8 @@ private:
  *
  * \ingroup RTK ImageToImageFilter
  */
-template <class TInputImage >
-class ITK_EXPORT AdditiveGaussianNoiseImageFilter :
-    public itk::ImageToImageFilter< TInputImage, TInputImage >
+template <class TInputImage>
+class ITK_EXPORT AdditiveGaussianNoiseImageFilter : public itk::ImageToImageFilter<TInputImage, TInputImage>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(AdditiveGaussianNoiseImageFilter);
@@ -185,12 +196,12 @@ public:
   using InputPixelType = typename InputImageType::PixelType;
 
   /** ImageDimension constants */
-  itkStaticConstMacro(InputImageDimension, unsigned int,
-                      TInputImage::ImageDimension);
+  itkStaticConstMacro(InputImageDimension, unsigned int, TInputImage::ImageDimension);
 
   // virtual void GenerateOutputInformation();
 
-  void GenerateData() override;
+  void
+  GenerateData() override;
 
   // Accessor & Mutator methods
 
@@ -198,9 +209,10 @@ public:
    *    Specifies the average noise added to the image per pixel.
    *    The default is 0.
    */
-  void SetMean( float mean )
+  void
+  SetMean(float mean)
   {
-    m_NoiseFilter->GetFunctor().SetMean( mean );
+    m_NoiseFilter->GetFunctor().SetMean(mean);
     this->Modified();
   }
 
@@ -208,7 +220,8 @@ public:
    *    Returns the average noise added to the image per pixel.
    *    The default is 0.
    */
-  float GetMean() const
+  float
+  GetMean() const
   {
     return m_NoiseFilter->GetFunctor().GetMean();
   }
@@ -217,9 +230,10 @@ public:
    *    Specifies the standard deviation of the noise added to the image.
    *    The default is 1.
    */
-  void SetStandardDeviation( float stddev )
+  void
+  SetStandardDeviation(float stddev)
   {
-    m_NoiseFilter->GetFunctor().SetStandardDeviation( stddev );
+    m_NoiseFilter->GetFunctor().SetStandardDeviation(stddev);
     this->Modified();
   }
 
@@ -227,7 +241,8 @@ public:
    *    Returns the standard deviation of the noise added to the image.
    *    The default is 1.
    */
-  float GetStandardDeviation() const
+  float
+  GetStandardDeviation() const
   {
     return m_NoiseFilter->GetFunctor().GetStandardDeviation();
   }
@@ -238,66 +253,70 @@ public:
    *    reproduce results.  For a higher dose of entropy, initialise with
    *    the current system time (in ms).
    */
-  void SetSeed( unsigned long seed )
+  void
+  SetSeed(unsigned long seed)
   {
-    m_NoiseFilter->GetFunctor().SetSeed( seed );
+    m_NoiseFilter->GetFunctor().SetSeed(seed);
     this->Modified();
   }
 
   /** Set the minimum output value. */
-  void SetOutputMinimum( InputImagePixelType min )
+  void
+  SetOutputMinimum(InputImagePixelType min)
   {
-    if( min == m_NoiseFilter->GetFunctor().GetOutputMinimum() )
-      {
+    if (min == m_NoiseFilter->GetFunctor().GetOutputMinimum())
+    {
       return;
-      }
-    m_NoiseFilter->GetFunctor().SetOutputMinimum( min );
+    }
+    m_NoiseFilter->GetFunctor().SetOutputMinimum(min);
     this->Modified();
   }
 
   /** Get the minimum output value. */
-  InputImagePixelType GetOutputMinimum( )
+  InputImagePixelType
+  GetOutputMinimum()
   {
     return m_NoiseFilter->GetFunctor().GetOutputMinimum();
   }
 
   /** Set the maximum output value. */
-  void SetOutputMaximum( InputImagePixelType max )
+  void
+  SetOutputMaximum(InputImagePixelType max)
   {
-    if( max == m_NoiseFilter->GetFunctor().GetOutputMaximum() )
-      {
+    if (max == m_NoiseFilter->GetFunctor().GetOutputMaximum())
+    {
       return;
-      }
-    m_NoiseFilter->GetFunctor().SetOutputMaximum( max );
+    }
+    m_NoiseFilter->GetFunctor().SetOutputMaximum(max);
     this->Modified();
   }
 
   /** Get the maximum output value. */
-  InputImagePixelType GetOutputMaximum( )
+  InputImagePixelType
+  GetOutputMaximum()
   {
     return m_NoiseFilter->GetFunctor().GetOutputMaximum();
   }
 
 protected:
-
   AdditiveGaussianNoiseImageFilter();
 
-  void PrintSelf(std::ostream& os, itk::Indent indent) const override;
+  void
+  PrintSelf(std::ostream & os, itk::Indent indent) const override;
 
 public:
-
-  using NoiseFilterType = itk::UnaryFunctorImageFilter< InputImageType, InputImageType,
-                                       NormalVariateNoiseFunctor< typename InputImageType::PixelType > >;
+  using NoiseFilterType = itk::UnaryFunctorImageFilter<InputImageType,
+                                                       InputImageType,
+                                                       NormalVariateNoiseFunctor<typename InputImageType::PixelType>>;
 
 private:
-
   typename NoiseFilterType::Pointer m_NoiseFilter;
 };
 
 } /* end namespace rtk */
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkAdditiveGaussianNoiseImageFilter.hxx"
+#  include "rtkAdditiveGaussianNoiseImageFilter.hxx"
 #endif
 
 #endif /* rtkAdditiveGaussianNoiseImageFilter_h */

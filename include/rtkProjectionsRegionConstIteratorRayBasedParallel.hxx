@@ -24,23 +24,22 @@
 
 namespace rtk
 {
-template< typename TImage >
-ProjectionsRegionConstIteratorRayBasedParallel< TImage >
-::ProjectionsRegionConstIteratorRayBasedParallel(const TImage *ptr,
-                                         const RegionType & region,
-                                         const ThreeDCircularProjectionGeometry *geometry,
-                                         const MatrixType &postMat):
-  ProjectionsRegionConstIteratorRayBased< TImage >(ptr, region, geometry, postMat)
+template <typename TImage>
+ProjectionsRegionConstIteratorRayBasedParallel<TImage>::ProjectionsRegionConstIteratorRayBasedParallel(
+  const TImage *                           ptr,
+  const RegionType &                       region,
+  const ThreeDCircularProjectionGeometry * geometry,
+  const MatrixType &                       postMat)
+  : ProjectionsRegionConstIteratorRayBased<TImage>(ptr, region, geometry, postMat)
 {
-  m_PostRotationMatrix = postMat.GetVnlMatrix().extract(3,3);
+  m_PostRotationMatrix = postMat.GetVnlMatrix().extract(3, 3);
   NewProjection();
   NewPixel();
 }
 
-template< typename TImage >
+template <typename TImage>
 void
-ProjectionsRegionConstIteratorRayBasedParallel< TImage >
-::NewProjection()
+ProjectionsRegionConstIteratorRayBasedParallel<TImage>::NewProjection()
 {
   // Set source position in volume indices
   // GetSourcePosition() returns coordinates in mm. Multiplying by
@@ -48,35 +47,34 @@ ProjectionsRegionConstIteratorRayBasedParallel< TImage >
   this->m_SourceToPixel[0] = this->m_Geometry->GetRotationMatrices()[this->m_PositionIndex[2]][2][0];
   this->m_SourceToPixel[1] = this->m_Geometry->GetRotationMatrices()[this->m_PositionIndex[2]][2][1];
   this->m_SourceToPixel[2] = this->m_Geometry->GetRotationMatrices()[this->m_PositionIndex[2]][2][2];
-  this->m_SourceToPixel *= -2. * this->m_Geometry->GetSourceToIsocenterDistances()[ this->m_PositionIndex[2] ];
+  this->m_SourceToPixel *= -2. * this->m_Geometry->GetSourceToIsocenterDistances()[this->m_PositionIndex[2]];
   this->m_SourceToPixel = m_PostRotationMatrix * this->m_SourceToPixel;
 
   // Compute matrix to transform projection index to volume index
   // IndexToPhysicalPointMatrix maps the 2D index of a projection's pixel to its 2D position on the detector (in mm)
-  // ProjectionCoordinatesToFixedSystemMatrix maps the 2D position of a pixel on the detector to its 3D coordinates in volume's coordinates (still in mm)
-  // volPPToIndex maps 3D volume coordinates to a 3D index
+  // ProjectionCoordinatesToFixedSystemMatrix maps the 2D position of a pixel on the detector to its 3D coordinates in
+  // volume's coordinates (still in mm) volPPToIndex maps 3D volume coordinates to a 3D index
   m_ProjectionIndexTransformMatrix =
-      this->m_PostMultiplyMatrix.GetVnlMatrix() *
-      this->m_Geometry->GetProjectionCoordinatesToFixedSystemMatrix(this->m_PositionIndex[2]).GetVnlMatrix() *
-      GetIndexToPhysicalPointMatrix( this->m_Image.GetPointer() ).GetVnlMatrix();
+    this->m_PostMultiplyMatrix.GetVnlMatrix() *
+    this->m_Geometry->GetProjectionCoordinatesToFixedSystemMatrix(this->m_PositionIndex[2]).GetVnlMatrix() *
+    GetIndexToPhysicalPointMatrix(this->m_Image.GetPointer()).GetVnlMatrix();
 }
 
-template< typename TImage >
+template <typename TImage>
 void
-ProjectionsRegionConstIteratorRayBasedParallel< TImage >
-::NewPixel()
+ProjectionsRegionConstIteratorRayBasedParallel<TImage>::NewPixel()
 {
   // Compute point coordinate in volume depending on projection index
-  for(unsigned int i=0; i<this->GetImageDimension(); i++)
-    {
+  for (unsigned int i = 0; i < this->GetImageDimension(); i++)
+  {
     this->m_PixelPosition[i] = m_ProjectionIndexTransformMatrix[i][this->GetImageDimension()];
-    for(unsigned int j=0; j<this->GetImageDimension(); j++)
+    for (unsigned int j = 0; j < this->GetImageDimension(); j++)
       this->m_PixelPosition[i] += m_ProjectionIndexTransformMatrix[i][j] * this->m_PositionIndex[j];
-    }
+  }
 
   this->m_SourcePosition = this->m_PixelPosition - this->m_SourceToPixel;
 }
 
-} // end namespace itk
+} // namespace rtk
 
 #endif

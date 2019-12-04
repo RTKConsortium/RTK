@@ -27,13 +27,12 @@ namespace rtk
 
 template <class TInputImage, class TOutputImage>
 void
-DrawConeImageFilter<TInputImage, TOutputImage>
-::BeforeThreadedGenerateData()
+DrawConeImageFilter<TInputImage, TOutputImage>::BeforeThreadedGenerateData()
 {
   Superclass::BeforeThreadedGenerateData();
   dynamic_cast<QuadricShape *>(this->GetModifiableConvexShape())->SetJ(0.);
 }
 
-}// end namespace rtk
+} // end namespace rtk
 
 #endif

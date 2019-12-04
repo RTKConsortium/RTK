@@ -21,39 +21,33 @@
 
 #include <itkMacro.h>
 
-rtk::CudaLaplacianImageFilter
-::CudaLaplacianImageFilter()
-{
-}
+rtk::CudaLaplacianImageFilter ::CudaLaplacianImageFilter() {}
 
 void
-rtk::CudaLaplacianImageFilter
-::GPUGenerateData()
+rtk::CudaLaplacianImageFilter ::GPUGenerateData()
 {
-  int inputSize[3];
-  int outputSize[3];
+  int   inputSize[3];
+  int   outputSize[3];
   float inputSpacing[3];
   float outputSpacing[3];
 
-  for (int i=0; i<3; i++)
-    {
+  for (int i = 0; i < 3; i++)
+  {
     inputSize[i] = this->GetInput()->GetBufferedRegion().GetSize()[i];
     outputSize[i] = this->GetOutput()->GetBufferedRegion().GetSize()[i];
     inputSpacing[i] = this->GetInput()->GetSpacing()[i];
     outputSpacing[i] = this->GetOutput()->GetSpacing()[i];
 
     if ((inputSize[i] != outputSize[i]) || (inputSpacing[i] != outputSpacing[i]))
-      {
-      std::cerr << "The CUDA laplacian filter can only handle input and output regions of equal size and spacing" << std::endl;
+    {
+      std::cerr << "The CUDA laplacian filter can only handle input and output regions of equal size and spacing"
+                << std::endl;
       exit(1);
-      }
     }
+  }
 
-  float *pin = *(float**)( this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer() );
-  float *pout = *(float**)( this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer() );
+  float * pin = *(float **)(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
+  float * pout = *(float **)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
 
-  CUDA_laplacian(inputSize,
-                 inputSpacing,
-                 pin,
-                 pout);
+  CUDA_laplacian(inputSize, inputSpacing, pin, pout);
 }

@@ -20,16 +20,16 @@
 #define rtkCudaPolynomialGainCorrectionImageFilter_h
 
 #include "rtkConfiguration.h"
-//Conditional definition of the class to pass ITKHeaderTest
+// Conditional definition of the class to pass ITKHeaderTest
 #ifdef RTK_USE_CUDA
 
-#include "rtkPolynomialGainCorrectionImageFilter.h"
-#include "RTKExport.h"
+#  include "rtkPolynomialGainCorrectionImageFilter.h"
+#  include "RTKExport.h"
 
-#include <itkCudaImage.h>
-#include <itkCudaImageToImageFilter.h>
+#  include <itkCudaImage.h>
+#  include <itkCudaImageToImageFilter.h>
 
-#include "rtkConfiguration.h"
+#  include "rtkConfiguration.h"
 
 namespace rtk
 {
@@ -45,17 +45,19 @@ namespace rtk
  *
  * \ingroup RTK
  */
-class RTK_EXPORT CudaPolynomialGainCorrectionImageFilter :
-    public  itk::CudaImageToImageFilter < itk::CudaImage<unsigned short, 3>, itk::CudaImage<float, 3>,
-    PolynomialGainCorrectionImageFilter <itk::CudaImage<unsigned short, 3>, itk::CudaImage<float, 3> > >
+class RTK_EXPORT CudaPolynomialGainCorrectionImageFilter
+  : public itk::CudaImageToImageFilter<
+      itk::CudaImage<unsigned short, 3>,
+      itk::CudaImage<float, 3>,
+      PolynomialGainCorrectionImageFilter<itk::CudaImage<unsigned short, 3>, itk::CudaImage<float, 3>>>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(CudaPolynomialGainCorrectionImageFilter);
 
   /** Convenience type alias **/
   using ImageType = itk::CudaImage<float, 3>;
-  using CPUPolyGainFilterType = PolynomialGainCorrectionImageFilter< itk::CudaImage<unsigned short, 3>,
-                                               itk::CudaImage<float, 3> >;
+  using CPUPolyGainFilterType =
+    PolynomialGainCorrectionImageFilter<itk::CudaImage<unsigned short, 3>, itk::CudaImage<float, 3>>;
 
   /** Standard class type alias. */
   using Self = CudaPolynomialGainCorrectionImageFilter;
@@ -75,12 +77,12 @@ protected:
   /** Destructor **/
   virtual ~CudaPolynomialGainCorrectionImageFilter();
 
-  virtual void GPUGenerateData();
-
+  virtual void
+  GPUGenerateData();
 };
 
-}
+} // namespace rtk
 
-#endif //end conditional definition of the class
+#endif // end conditional definition of the class
 
 #endif // rtkCudaPolynomialGainCorrectionImageFilter_h

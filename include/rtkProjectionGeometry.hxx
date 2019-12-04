@@ -21,30 +21,28 @@
 
 #include "rtkProjectionGeometry.h"
 
-namespace rtk {
+namespace rtk
+{
 
-template< unsigned int TDimension >
+template <unsigned int TDimension>
 void
-ProjectionGeometry< TDimension >
-::PrintSelf( std::ostream& os, itk::Indent indent ) const
+ProjectionGeometry<TDimension>::PrintSelf(std::ostream & os, itk::Indent indent) const
 {
   os << "List of projection matrices:" << std::endl;
-  for(unsigned int i=0; i<m_Matrices.size(); i++)
-    {
-    os << indent << "Matrix #" << i << ": "
-       << m_Matrices[i] << std::endl;
-    }
+  for (unsigned int i = 0; i < m_Matrices.size(); i++)
+  {
+    os << indent << "Matrix #" << i << ": " << m_Matrices[i] << std::endl;
+  }
 }
 
-template< unsigned int TDimension >
+template <unsigned int TDimension>
 void
-ProjectionGeometry< TDimension >
-::Clear()
+ProjectionGeometry<TDimension>::Clear()
 {
   m_Matrices.clear();
   this->Modified();
 }
 
-}
+} // namespace rtk
 
 #endif // rtkProjectionGeometry_hxx

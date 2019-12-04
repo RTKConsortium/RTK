@@ -35,7 +35,7 @@ namespace rtk
  *
  * \ingroup RTK
  */
-template< typename ProjectionStackType>
+template <typename ProjectionStackType>
 class SelectOneProjectionPerCycleImageFilter : public SubSelectImageFilter<ProjectionStackType>
 {
 public:
@@ -44,38 +44,39 @@ public:
   /** Standard class type alias. */
   using Self = SelectOneProjectionPerCycleImageFilter;
   using Superclass = SubSelectImageFilter<ProjectionStackType>;
-  using Pointer = itk::SmartPointer< Self >;
+  using Pointer = itk::SmartPointer<Self>;
 
   /** Method for creation through the object factory. */
-  itkNewMacro(Self)
+  itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(SelectOneProjectionPerCycleImageFilter, SubSelectImageFilter)
+  itkTypeMacro(SelectOneProjectionPerCycleImageFilter, SubSelectImageFilter);
 
   /** File name of a text file with one phase value between 0 and 1 per line. */
   itkGetMacro(SignalFilename, std::string);
   itkSetMacro(SignalFilename, std::string);
 
   /** Phase value for which we want the closest projection image per cycle. */
-  itkSetMacro(Phase, double)
-  itkGetMacro(Phase, double)
+  itkSetMacro(Phase, double);
+  itkGetMacro(Phase, double);
 
 protected:
   SelectOneProjectionPerCycleImageFilter();
   ~SelectOneProjectionPerCycleImageFilter() override = default;
 
-  void GenerateOutputInformation() override;
+  void
+  GenerateOutputInformation() override;
 
 private:
   std::string         m_SignalFilename;
-  double              m_Phase{0.};
+  double              m_Phase{ 0. };
   std::vector<double> m_Signal;
 };
-} //namespace ITK
+} // namespace rtk
 
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkSelectOneProjectionPerCycleImageFilter.hxx"
+#  include "rtkSelectOneProjectionPerCycleImageFilter.hxx"
 #endif
 
 #endif

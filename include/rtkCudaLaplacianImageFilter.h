@@ -20,12 +20,12 @@
 #define rtkCudaLaplacianImageFilter_h
 
 #include "rtkConfiguration.h"
-//Conditional definition of the class to pass ITKHeaderTest
+// Conditional definition of the class to pass ITKHeaderTest
 #ifdef RTK_USE_CUDA
 
-#include "rtkLaplacianImageFilter.h"
-#include <itkCudaInPlaceImageFilter.h>
-#include "RTKExport.h"
+#  include "rtkLaplacianImageFilter.h"
+#  include <itkCudaInPlaceImageFilter.h>
+#  include "RTKExport.h"
 
 namespace rtk
 {
@@ -38,37 +38,40 @@ namespace rtk
  * \ingroup RTK CudaImageToImageFilter
  */
 
-class RTK_EXPORT CudaLaplacianImageFilter :
-  public itk::CudaImageToImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>,
-  LaplacianImageFilter< itk::CudaImage<float,3>, itk::CudaImage<itk::CovariantVector<float, 3>,3> > >
+class RTK_EXPORT CudaLaplacianImageFilter
+  : public itk::CudaImageToImageFilter<
+      itk::CudaImage<float, 3>,
+      itk::CudaImage<float, 3>,
+      LaplacianImageFilter<itk::CudaImage<float, 3>, itk::CudaImage<itk::CovariantVector<float, 3>, 3>>>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(CudaLaplacianImageFilter);
 
   /** Standard class type alias. */
   using Self = rtk::CudaLaplacianImageFilter;
-  using OutputImageType = itk::CudaImage<float,3>;
-  using GradientImageType = itk::CudaImage<itk::CovariantVector<float, 3>,3>;
-  using Superclass = rtk::LaplacianImageFilter< OutputImageType, GradientImageType>;
+  using OutputImageType = itk::CudaImage<float, 3>;
+  using GradientImageType = itk::CudaImage<itk::CovariantVector<float, 3>, 3>;
+  using Superclass = rtk::LaplacianImageFilter<OutputImageType, GradientImageType>;
   using Pointer = itk::SmartPointer<Self>;
   using ConstPointer = itk::SmartPointer<const Self>;
 
   /** Standard New method. */
-  itkNewMacro(Self)
+  itkNewMacro(Self);
 
   /** Runtime information support. */
-  itkTypeMacro(CudaLaplacianImageFilter, LaplacianImageFilter)
+  itkTypeMacro(CudaLaplacianImageFilter, LaplacianImageFilter);
 
 protected:
   CudaLaplacianImageFilter();
-  ~CudaLaplacianImageFilter(){}
+  ~CudaLaplacianImageFilter() {}
 
-  virtual void GPUGenerateData();
+  virtual void
+  GPUGenerateData();
 
 }; // end of class
 
 } // end namespace rtk
 
-#endif //end conditional definition of the class
+#endif // end conditional definition of the class
 
 #endif

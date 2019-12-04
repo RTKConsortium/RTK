@@ -25,8 +25,9 @@ namespace rtk
 {
 
 /** Register all rtk IO factories. */
-void RTK_EXPORT RegisterIOFactories();
+void RTK_EXPORT
+     RegisterIOFactories();
 
-} //namespace rtk
+} // namespace rtk
 
 #endif

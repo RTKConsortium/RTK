@@ -41,8 +41,7 @@ namespace rtk
  * \ingroup RTK
  *
  */
-class RTK_EXPORT BoxShape:
-    public ConvexShape
+class RTK_EXPORT BoxShape : public ConvexShape
 {
 public:
   /** Standard class type alias. */
@@ -60,30 +59,35 @@ public:
   using ImageBaseType = itk::ImageBase<Dimension>;
 
   /** Method for creation through the object factory. */
-  itkNewMacro ( Self );
+  itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(BoxShape, ConvexShape);
 
   /** See rtk::ConvexShape::IsInside. */
-  bool IsInside(const PointType & point) const override;
+  bool
+  IsInside(const PointType & point) const override;
 
   /** See rtk::ConvexShape::IsIntersectedByRay for the goal and
    * http://www.siggraph.org/education/materials/HyperGraph/raytrace/rtinter4.htm
    * for the computation. */
-  bool IsIntersectedByRay(const PointType & rayOrigin,
-                                  const VectorType & rayDirection,
-                                  double &nearDist,
-                                  double &farDist) const override;
+  bool
+  IsIntersectedByRay(const PointType &  rayOrigin,
+                     const VectorType & rayDirection,
+                     double &           nearDist,
+                     double &           farDist) const override;
 
   /** Rescale object along each direction by a 3D vector. */
-  void Rescale(const VectorType &r) override;
+  void
+  Rescale(const VectorType & r) override;
 
   /** Translate object by a given 3D vector. */
-  void Translate(const VectorType &t) override;
+  void
+  Translate(const VectorType & t) override;
 
   /** Translate object by a given 3D vector. */
-  void Rotate(const RotationMatrixType &r) override;
+  void
+  Rotate(const RotationMatrixType & r) override;
 
   /** Get / Set the box inferior corner. Every corner coordinate must be
    * inferior to those of the superior corner. */
@@ -96,16 +100,18 @@ public:
   itkSetMacro(BoxMax, PointType);
 
   /** Direction is the direction of the box, defined in the same sense as in
-    * itk::ImageBase. */
+   * itk::ImageBase. */
   itkGetConstMacro(Direction, RotationMatrixType);
   itkSetMacro(Direction, RotationMatrixType);
 
-  itk::LightObject::Pointer InternalClone() const override;
+  itk::LightObject::Pointer
+  InternalClone() const override;
 
   /** Set the 3D box is the portion of space defined by the LargestPossibleRegion.
    * bWithExternalHalfPixelBorder can be used to include or exclude a half voxel
    * border. */
-  void SetBoxFromImage( const ImageBaseType *img, bool bWithExternalHalfPixelBorder=true );
+  void
+  SetBoxFromImage(const ImageBaseType * img, bool bWithExternalHalfPixelBorder = true);
 
 private:
   BoxShape();

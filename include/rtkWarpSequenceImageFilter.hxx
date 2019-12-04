@@ -29,9 +29,8 @@
 namespace rtk
 {
 
-template< typename TImageSequence, typename TDVFImageSequence, typename TImage, typename TDVFImage>
-WarpSequenceImageFilter< TImageSequence, TDVFImageSequence, TImage, TDVFImage>
-::WarpSequenceImageFilter()
+template <typename TImageSequence, typename TDVFImageSequence, typename TImage, typename TDVFImage>
+WarpSequenceImageFilter<TImageSequence, TDVFImageSequence, TImage, TDVFImage>::WarpSequenceImageFilter()
 {
   this->SetNumberOfRequiredInputs(2);
 
@@ -57,27 +56,24 @@ WarpSequenceImageFilter< TImageSequence, TDVFImageSequence, TImage, TDVFImage>
   m_CastFilter->SetInPlace(false);
 }
 
-template< typename TImageSequence, typename TDVFImageSequence, typename TImage, typename TDVFImage>
+template <typename TImageSequence, typename TDVFImageSequence, typename TImage, typename TDVFImage>
 void
-WarpSequenceImageFilter< TImageSequence, TDVFImageSequence, TImage, TDVFImage>
-::SetDisplacementField(const TDVFImageSequence* DVFs)
+WarpSequenceImageFilter<TImageSequence, TDVFImageSequence, TImage, TDVFImage>::SetDisplacementField(
+  const TDVFImageSequence * DVFs)
 {
-  this->SetNthInput(1, const_cast<TDVFImageSequence*>(DVFs));
+  this->SetNthInput(1, const_cast<TDVFImageSequence *>(DVFs));
 }
 
-template< typename TImageSequence, typename TDVFImageSequence, typename TImage, typename TDVFImage>
+template <typename TImageSequence, typename TDVFImageSequence, typename TImage, typename TDVFImage>
 typename TDVFImageSequence::Pointer
-WarpSequenceImageFilter< TImageSequence, TDVFImageSequence, TImage, TDVFImage>
-::GetDisplacementField()
+WarpSequenceImageFilter<TImageSequence, TDVFImageSequence, TImage, TDVFImage>::GetDisplacementField()
 {
-  return static_cast< TDVFImageSequence * >
-          ( this->itk::ProcessObject::GetInput(1) );
+  return static_cast<TDVFImageSequence *>(this->itk::ProcessObject::GetInput(1));
 }
 
-template< typename TImageSequence, typename TDVFImageSequence, typename TImage, typename TDVFImage>
+template <typename TImageSequence, typename TDVFImageSequence, typename TImage, typename TDVFImage>
 void
-WarpSequenceImageFilter< TImageSequence, TDVFImageSequence, TImage, TDVFImage>
-::GenerateOutputInformation()
+WarpSequenceImageFilter<TImageSequence, TDVFImageSequence, TImage, TDVFImage>::GenerateOutputInformation()
 {
   int Dimension = TImageSequence::ImageDimension;
 
@@ -89,14 +85,15 @@ WarpSequenceImageFilter< TImageSequence, TDVFImageSequence, TImage, TDVFImage>
   else
     m_WarpFilter = WarpFilterType::New();
   if (m_UseCudaCyclicDeformation)
-    {
-    if( std::is_same< TImage, CPUImageType >::value )
+  {
+    if (std::is_same<TImage, CPUImageType>::value)
       itkGenericExceptionMacro(<< "UseCudaCyclicDeformation option only available with itk::CudaImage.");
     m_DVFInterpolatorFilter = CudaCyclicDeformationImageFilterType::New();
-    }
+  }
 
-  typename LinearInterpolatorType::Pointer linearInterpolator = LinearInterpolatorType::New();
-  typename NearestNeighborInterpolatorType::Pointer nearestNeighborInterpolator = NearestNeighborInterpolatorType::New();
+  typename LinearInterpolatorType::Pointer          linearInterpolator = LinearInterpolatorType::New();
+  typename NearestNeighborInterpolatorType::Pointer nearestNeighborInterpolator =
+    NearestNeighborInterpolatorType::New();
 
   if (m_UseNearestNeighborInterpolationInWarping)
     m_WarpFilter->SetInterpolator(nearestNeighborInterpolator);
@@ -105,22 +102,24 @@ WarpSequenceImageFilter< TImageSequence, TDVFImageSequence, TImage, TDVFImage>
 
   // Set runtime connections
   m_WarpFilter->SetInput(m_ExtractFilter->GetOutput());
-  m_WarpFilter->SetDisplacementField( m_DVFInterpolatorFilter->GetOutput() );
+  m_WarpFilter->SetDisplacementField(m_DVFInterpolatorFilter->GetOutput());
   m_CastFilter->SetInput(m_WarpFilter->GetOutput());
   m_ExtractFilter->SetInput(this->GetInput(0));
   m_DVFInterpolatorFilter->SetInput(this->GetDisplacementField());
 
   // Generate a signal and pass it to the DVFInterpolator
   std::vector<double> signal;
-  float temp;
-  int nbFrames = this->GetInput(0)->GetLargestPossibleRegion().GetSize(Dimension - 1);
-  for (int frame = 0; frame < nbFrames; frame ++)
-    {
-    temp = (float) frame / (float) nbFrames + m_PhaseShift;
-    if (temp >= 1) temp = temp - 1;
-    if (temp < 0) temp = temp + 1;
+  float               temp;
+  int                 nbFrames = this->GetInput(0)->GetLargestPossibleRegion().GetSize(Dimension - 1);
+  for (int frame = 0; frame < nbFrames; frame++)
+  {
+    temp = (float)frame / (float)nbFrames + m_PhaseShift;
+    if (temp >= 1)
+      temp = temp - 1;
+    if (temp < 0)
+      temp = temp + 1;
     signal.push_back(temp);
-    }
+  }
   m_DVFInterpolatorFilter->SetSignalVector(signal);
 
   // Initialize the source
@@ -150,44 +149,42 @@ WarpSequenceImageFilter< TImageSequence, TDVFImageSequence, TImage, TDVFImage>
   m_PasteFilter->UpdateOutputInformation();
 
   // Copy it as the output information of the composite filter
-  this->GetOutput()->CopyInformation( m_PasteFilter->GetOutput() );
+  this->GetOutput()->CopyInformation(m_PasteFilter->GetOutput());
 }
 
 
-template< typename TImageSequence, typename TDVFImageSequence, typename TImage, typename TDVFImage>
+template <typename TImageSequence, typename TDVFImageSequence, typename TImage, typename TDVFImage>
 void
-WarpSequenceImageFilter< TImageSequence, TDVFImageSequence, TImage, TDVFImage>
-::GenerateInputRequestedRegion()
+WarpSequenceImageFilter<TImageSequence, TDVFImageSequence, TImage, TDVFImage>::GenerateInputRequestedRegion()
 {
-  //Call the superclass' implementation of this method
+  // Call the superclass' implementation of this method
   Superclass::GenerateInputRequestedRegion();
 
-  //Get pointers to the input and output
-  typename TImageSequence::Pointer  inputPtr  = const_cast<TImageSequence *>(this->GetInput(0));
+  // Get pointers to the input and output
+  typename TImageSequence::Pointer inputPtr = const_cast<TImageSequence *>(this->GetInput(0));
   inputPtr->SetRequestedRegionToLargestPossibleRegion();
 
-  typename TDVFImageSequence::Pointer  inputDVFPtr  = this->GetDisplacementField();
+  typename TDVFImageSequence::Pointer inputDVFPtr = this->GetDisplacementField();
   inputDVFPtr->SetRequestedRegionToLargestPossibleRegion();
 }
 
-template< typename TImageSequence, typename TDVFImageSequence, typename TImage, typename TDVFImage>
+template <typename TImageSequence, typename TDVFImageSequence, typename TImage, typename TDVFImage>
 void
-WarpSequenceImageFilter< TImageSequence, TDVFImageSequence, TImage, TDVFImage>
-::GenerateData()
+WarpSequenceImageFilter<TImageSequence, TDVFImageSequence, TImage, TDVFImage>::GenerateData()
 {
   int Dimension = TImageSequence::ImageDimension;
 
   // Declare an image pointer to disconnect the output of paste
   typename TImageSequence::Pointer pimg;
 
-  for (unsigned int frame=0; frame<this->GetInput(0)->GetLargestPossibleRegion().GetSize(Dimension-1); frame++)
-    {
+  for (unsigned int frame = 0; frame < this->GetInput(0)->GetLargestPossibleRegion().GetSize(Dimension - 1); frame++)
+  {
     if (frame > 0) // After the first frame, use the output of paste as input
-      {
+    {
       pimg = m_PasteFilter->GetOutput();
       pimg->DisconnectPipeline();
       m_PasteFilter->SetDestinationImage(pimg);
-      }
+    }
 
     m_ExtractAndPasteRegion.SetIndex(Dimension - 1, frame);
 
@@ -206,8 +203,8 @@ WarpSequenceImageFilter< TImageSequence, TDVFImageSequence, TImage, TDVFImage>
     m_PasteFilter->SetDestinationIndex(m_ExtractAndPasteRegion.GetIndex());
 
     m_PasteFilter->UpdateLargestPossibleRegion();
-    }
-  this->GraftOutput( m_PasteFilter->GetOutput() );
+  }
+  this->GraftOutput(m_PasteFilter->GetOutput());
 
   m_ExtractFilter->GetOutput()->ReleaseData();
   m_WarpFilter->GetOutput()->ReleaseData();
@@ -215,7 +212,7 @@ WarpSequenceImageFilter< TImageSequence, TDVFImageSequence, TImage, TDVFImage>
 }
 
 
-}// end namespace
+} // namespace rtk
 
 
 #endif

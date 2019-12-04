@@ -28,85 +28,78 @@ namespace rtk
 //
 // Constructor
 //
-template< class TVectorImage, class TMatrixImage>
-BlockDiagonalMatrixVectorMultiplyImageFilter< TVectorImage, TMatrixImage>
-::BlockDiagonalMatrixVectorMultiplyImageFilter()
+template <class TVectorImage, class TMatrixImage>
+BlockDiagonalMatrixVectorMultiplyImageFilter<TVectorImage, TMatrixImage>::BlockDiagonalMatrixVectorMultiplyImageFilter()
 {
   this->SetNumberOfRequiredInputs(2);
 }
 
-template< class TVectorImage, class TMatrixImage>
+template <class TVectorImage, class TMatrixImage>
 void
-BlockDiagonalMatrixVectorMultiplyImageFilter< TVectorImage, TMatrixImage>
-::SetInput1(const TVectorImage* vector)
+BlockDiagonalMatrixVectorMultiplyImageFilter<TVectorImage, TMatrixImage>::SetInput1(const TVectorImage * vector)
 {
-  this->SetNthInput(0, const_cast<TVectorImage*>(vector));
+  this->SetNthInput(0, const_cast<TVectorImage *>(vector));
 }
 
-template< class TVectorImage, class TMatrixImage>
+template <class TVectorImage, class TMatrixImage>
 void
-BlockDiagonalMatrixVectorMultiplyImageFilter< TVectorImage, TMatrixImage>
-::SetInput2(const TMatrixImage* matrix)
+BlockDiagonalMatrixVectorMultiplyImageFilter<TVectorImage, TMatrixImage>::SetInput2(const TMatrixImage * matrix)
 {
-  this->SetNthInput(1, const_cast<TMatrixImage*>(matrix));
+  this->SetNthInput(1, const_cast<TMatrixImage *>(matrix));
 }
 
-template< class TVectorImage, class TMatrixImage>
+template <class TVectorImage, class TMatrixImage>
 typename TVectorImage::ConstPointer
-BlockDiagonalMatrixVectorMultiplyImageFilter< TVectorImage, TMatrixImage>
-::GetInput1()
+BlockDiagonalMatrixVectorMultiplyImageFilter<TVectorImage, TMatrixImage>::GetInput1()
 {
-  return static_cast< const TVectorImage * >
-         ( this->itk::ProcessObject::GetInput(0) );
+  return static_cast<const TVectorImage *>(this->itk::ProcessObject::GetInput(0));
 }
 
-template< class TVectorImage, class TMatrixImage>
+template <class TVectorImage, class TMatrixImage>
 typename TMatrixImage::ConstPointer
-BlockDiagonalMatrixVectorMultiplyImageFilter< TVectorImage, TMatrixImage>
-::GetInput2()
+BlockDiagonalMatrixVectorMultiplyImageFilter<TVectorImage, TMatrixImage>::GetInput2()
 {
-  return static_cast< const TMatrixImage * >
-         ( this->itk::ProcessObject::GetInput(1) );
+  return static_cast<const TMatrixImage *>(this->itk::ProcessObject::GetInput(1));
 }
 
-template< class TVectorImage, class TMatrixImage>
+template <class TVectorImage, class TMatrixImage>
 void
-BlockDiagonalMatrixVectorMultiplyImageFilter< TVectorImage, TMatrixImage>
-::GenerateInputRequestedRegion()
+BlockDiagonalMatrixVectorMultiplyImageFilter<TVectorImage, TMatrixImage>::GenerateInputRequestedRegion()
 {
-  //Call the superclass' implementation of this method
+  // Call the superclass' implementation of this method
   Superclass::GenerateInputRequestedRegion();
 
   // Get the requested regions on both outputs (should be identical)
   typename TVectorImage::RegionType outputRequested = this->GetOutput()->GetRequestedRegion();
 
   // Get pointers to the inputs
-  typename TVectorImage::Pointer input1Ptr = const_cast<TVectorImage*>(this->GetInput1().GetPointer());
-  typename TMatrixImage::Pointer input2Ptr = const_cast<TMatrixImage*>(this->GetInput2().GetPointer());
+  typename TVectorImage::Pointer input1Ptr = const_cast<TVectorImage *>(this->GetInput1().GetPointer());
+  typename TMatrixImage::Pointer input2Ptr = const_cast<TMatrixImage *>(this->GetInput2().GetPointer());
 
   // The first and second input must have the same requested region as the outputs
   input1Ptr->SetRequestedRegion(outputRequested);
   input2Ptr->SetRequestedRegion(outputRequested);
 }
 
-template< class TVectorImage, class TMatrixImage>
+template <class TVectorImage, class TMatrixImage>
 void
-BlockDiagonalMatrixVectorMultiplyImageFilter< TVectorImage, TMatrixImage>
-#if ITK_VERSION_MAJOR<5
-::ThreadedGenerateData(const typename TVectorImage::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId))
+BlockDiagonalMatrixVectorMultiplyImageFilter<TVectorImage, TMatrixImage>
+#if ITK_VERSION_MAJOR < 5
+  ::ThreadedGenerateData(const typename TVectorImage::RegionType & outputRegionForThread,
+                         itk::ThreadIdType                         itkNotUsed(threadId))
 #else
-::DynamicThreadedGenerateData(const typename TVectorImage::RegionType& outputRegionForThread)
+  ::DynamicThreadedGenerateData(const typename TVectorImage::RegionType & outputRegionForThread)
 #endif
 {
   // Create iterators for all inputs and outputs
-  itk::ImageRegionIterator<TVectorImage> outIt(this->GetOutput(), outputRegionForThread);
+  itk::ImageRegionIterator<TVectorImage>      outIt(this->GetOutput(), outputRegionForThread);
   itk::ImageRegionConstIterator<TVectorImage> vectorIt(this->GetInput1(), outputRegionForThread);
   itk::ImageRegionConstIterator<TMatrixImage> matrixIt(this->GetInput2(), outputRegionForThread);
 
   itk::Vector<dataType, nChannels> forOutput;
 
-  while(!outIt.IsAtEnd())
-    {
+  while (!outIt.IsAtEnd())
+  {
     // Make a vnl matrix out of the values read in input 2 (the matrix mat, but stored in a vector)
     vnl_matrix<dataType> mat = vnl_matrix<dataType>(matrixIt.Get().GetDataPointer(), nChannels, nChannels);
 
@@ -117,9 +110,9 @@ BlockDiagonalMatrixVectorMultiplyImageFilter< TVectorImage, TMatrixImage>
     ++outIt;
     ++vectorIt;
     ++matrixIt;
-    }
+  }
 }
 
-} // end namespace itk
+} // namespace rtk
 
 #endif

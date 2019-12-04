@@ -27,49 +27,48 @@ namespace rtk
 {
 template <class TInputImage, class TOutputImage>
 void
-FDKWeightProjectionFilter<TInputImage, TOutputImage>
-::BeforeThreadedGenerateData()
+FDKWeightProjectionFilter<TInputImage, TOutputImage>::BeforeThreadedGenerateData()
 {
   // Get angular weights from geometry
-  m_ConstantProjectionFactor = m_Geometry->GetAngularGaps( m_Geometry->GetSourceAngles() );
+  m_ConstantProjectionFactor = m_Geometry->GetAngularGaps(m_Geometry->GetSourceAngles());
   m_TiltAngles = m_Geometry->GetTiltAngles();
 
-  for(unsigned int k=0; k<m_ConstantProjectionFactor.size(); k++)
-    {
+  for (unsigned int k = 0; k < m_ConstantProjectionFactor.size(); k++)
+  {
     // Add correction factor for ramp filter
-    const double sdd  = m_Geometry->GetSourceToDetectorDistances()[k];
-    if(sdd==0.) // Parallel
+    const double sdd = m_Geometry->GetSourceToDetectorDistances()[k];
+    if (sdd == 0.) // Parallel
       m_ConstantProjectionFactor[k] *= 0.5;
-    else        // Divergent
-      {
+    else // Divergent
+    {
       // See [Rit and Clackdoyle, CT meeting, 2014]
       ThreeDCircularProjectionGeometry::HomogeneousVectorType sp;
       sp = m_Geometry->GetSourcePosition(k);
       sp[3] = 0.;
-      const double sid  = m_Geometry->GetSourceToIsocenterDistances()[k];
+      const double sid = m_Geometry->GetSourceToIsocenterDistances()[k];
       m_ConstantProjectionFactor[k] *= itk::Math::abs(sdd) / (2. * sid * sid);
       m_ConstantProjectionFactor[k] *= sp.GetNorm();
-      }
     }
+  }
 }
 
 template <class TInputImage, class TOutputImage>
 void
 FDKWeightProjectionFilter<TInputImage, TOutputImage>
-#if ITK_VERSION_MAJOR<5
-::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType itkNotUsed(threadId))
+#if ITK_VERSION_MAJOR < 5
+  ::ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, ThreadIdType itkNotUsed(threadId))
 #else
-::DynamicThreadedGenerateData(const OutputImageRegionType& outputRegionForThread)
+  ::DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread)
 #endif
 {
   // Prepare point increment (TransformIndexToPhysicalPoint too slow)
   typename InputImageType::PointType pointBase, pointIncrement;
   typename InputImageType::IndexType index = outputRegionForThread.GetIndex();
-  this->GetInput()->TransformIndexToPhysicalPoint( index, pointBase );
-  for(int i=0; i<3; i++)
+  this->GetInput()->TransformIndexToPhysicalPoint(index, pointBase);
+  for (int i = 0; i < 3; i++)
     index[i]++;
-  this->GetInput()->TransformIndexToPhysicalPoint( index, pointIncrement );
-  for(int i=0; i<3; i++)
+  this->GetInput()->TransformIndexToPhysicalPoint(index, pointIncrement);
+  for (int i = 0; i < 3; i++)
     pointIncrement[i] -= pointBase[i];
 
   // Iterators
@@ -81,55 +80,47 @@ FDKWeightProjectionFilter<TInputImage, TOutputImage>
   itO.GoToBegin();
 
   // Go over output, compute weights and avoid redundant computation
-  for(int k=outputRegionForThread.GetIndex(2);
-          k<outputRegionForThread.GetIndex(2)+(int)outputRegionForThread.GetSize(2);
-          k++)
+  for (int k = outputRegionForThread.GetIndex(2);
+       k < outputRegionForThread.GetIndex(2) + (int)outputRegionForThread.GetSize(2);
+       k++)
+  {
+    const double sdd = m_Geometry->GetSourceToDetectorDistances()[k];
+    if (sdd != 0.) // Divergent
     {
-    const double sdd  = m_Geometry->GetSourceToDetectorDistances()[k];
-    if(sdd != 0.) // Divergent
-      {
       typename InputImageType::PointType point = pointBase;
-      point[1] = pointBase[1]
-                 + m_Geometry->GetProjectionOffsetsY()[k]
-                 - m_Geometry->GetSourceOffsetsY()[k];
+      point[1] = pointBase[1] + m_Geometry->GetProjectionOffsetsY()[k] - m_Geometry->GetSourceOffsetsY()[k];
       const double cosa = cos(m_TiltAngles[k]);
       const double sina = sin(m_TiltAngles[k]);
       const double tana = tan(m_TiltAngles[k]);
-      const double sid  = m_Geometry->GetSourceToIsocenterDistances()[k];
+      const double sid = m_Geometry->GetSourceToIsocenterDistances()[k];
       const double sdd2 = sdd * sdd;
-      const double RD   = sdd - sid;
+      const double RD = sdd - sid;
 
-      const double numpart1 = sdd*(cosa+tana*sina);
+      const double numpart1 = sdd * (cosa + tana * sina);
       const double sddtana = sdd * tana;
 
-      for(unsigned int j=0;
-                       j<outputRegionForThread.GetSize(1);
-                       j++, point[1] += pointIncrement[1])
-        {
-        point[0] = pointBase[0]
-                   + m_Geometry->GetProjectionOffsetsX()[k]
-                   + tana * RD;
-        const double sdd2y2 = sdd2 + point[1]*point[1];
-        for(unsigned int i=0;
-                         i<outputRegionForThread.GetSize(0);
-                         i++, ++itI, ++itO, point[0] += pointIncrement[0])
-          {
-          const double denom = sqrt( sdd2y2 + pow(point[0]-sddtana,2.) );
-          const double cosGamma = (numpart1 - point[0] * sina) / denom;
-          itO.Set( itI.Get() * m_ConstantProjectionFactor[k] * cosGamma );
-          }
-        }
-      }
-    else // Parallel
+      for (unsigned int j = 0; j < outputRegionForThread.GetSize(1); j++, point[1] += pointIncrement[1])
       {
-      double weight = m_ConstantProjectionFactor[k];
-      for(unsigned int j=0; j<outputRegionForThread.GetSize(1); j++)
+        point[0] = pointBase[0] + m_Geometry->GetProjectionOffsetsX()[k] + tana * RD;
+        const double sdd2y2 = sdd2 + point[1] * point[1];
+        for (unsigned int i = 0; i < outputRegionForThread.GetSize(0); i++, ++itI, ++itO, point[0] += pointIncrement[0])
         {
-        for(unsigned int i=0; i<outputRegionForThread.GetSize(0); i++, ++itI, ++itO)
-          itO.Set( itI.Get() * weight);
+          const double denom = sqrt(sdd2y2 + pow(point[0] - sddtana, 2.));
+          const double cosGamma = (numpart1 - point[0] * sina) / denom;
+          itO.Set(itI.Get() * m_ConstantProjectionFactor[k] * cosGamma);
         }
       }
     }
+    else // Parallel
+    {
+      double weight = m_ConstantProjectionFactor[k];
+      for (unsigned int j = 0; j < outputRegionForThread.GetSize(1); j++)
+      {
+        for (unsigned int i = 0; i < outputRegionForThread.GetSize(0); i++, ++itI, ++itO)
+          itO.Set(itI.Get() * weight);
+      }
+    }
+  }
 }
 
 } // end namespace rtk

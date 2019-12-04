@@ -23,26 +23,25 @@
 
 namespace rtk
 {
-  /** \class HilbertImageFilter
-   *
-   * \brief Computes the complex analytic signal of a 1D signal
-   *
-   * The function reproduces the Matlab function "hilbert" which computes the
-   * analytic signal using the Hilbert transform. In Matlab's code, references
-   * are made to:
-   * [Oppenheim and Schafer, Discrete-Time signal processing, 1998]
-   * [Marple, IEEE Trans Sig Proc, 1999]
-   *
-   * \test rtkamsterdamshroudtest
-   *
-   * \author Simon Rit
-   *
-   * \ingroup RTK ImageToImageFilter
-   */
+/** \class HilbertImageFilter
+ *
+ * \brief Computes the complex analytic signal of a 1D signal
+ *
+ * The function reproduces the Matlab function "hilbert" which computes the
+ * analytic signal using the Hilbert transform. In Matlab's code, references
+ * are made to:
+ * [Oppenheim and Schafer, Discrete-Time signal processing, 1998]
+ * [Marple, IEEE Trans Sig Proc, 1999]
+ *
+ * \test rtkamsterdamshroudtest
+ *
+ * \author Simon Rit
+ *
+ * \ingroup RTK ImageToImageFilter
+ */
 
-template<class TInputImage, class TOutputImage>
-class ITK_EXPORT HilbertImageFilter :
-  public itk::ImageToImageFilter<TInputImage, TOutputImage>
+template <class TInputImage, class TOutputImage>
+class ITK_EXPORT HilbertImageFilter : public itk::ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(HilbertImageFilter);
@@ -60,17 +59,18 @@ public:
   itkTypeMacro(HilbertImageFilter, itk::ImageToImageFilter);
 
 protected:
-  HilbertImageFilter()= default;
+  HilbertImageFilter() = default;
   ~HilbertImageFilter() override = default;
 
-  void GenerateData() override;
+  void
+  GenerateData() override;
 
 }; // end of class
 
 } // end of namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkHilbertImageFilter.hxx"
+#  include "rtkHilbertImageFilter.hxx"
 #endif
 
 #endif

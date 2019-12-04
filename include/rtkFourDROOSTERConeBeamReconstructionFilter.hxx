@@ -24,10 +24,11 @@
 namespace rtk
 {
 
-template< typename VolumeSeriesType, typename ProjectionStackType>
-FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::FourDROOSTERConeBeamReconstructionFilter()
+template <typename VolumeSeriesType, typename ProjectionStackType>
+FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType,
+                                         ProjectionStackType>::FourDROOSTERConeBeamReconstructionFilter()
 {
-//   this->SetNumberOfRequiredInputs(2);
+  //   this->SetNumberOfRequiredInputs(2);
 
   // Set the default values of member parameters
   m_GammaTVSpace = 0.00005;
@@ -36,10 +37,10 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>:
   m_LambdaL0Time = 0.005;
   m_SoftThresholdWavelets = 0.001;
 
-  m_TV_iterations=10;
-  m_MainLoop_iterations=10;
-  m_CG_iterations=4;
-  m_L0_iterations=5;
+  m_TV_iterations = 10;
+  m_MainLoop_iterations = 10;
+  m_CG_iterations = 4;
+  m_L0_iterations = 5;
 
   // Default pipeline: 4DCG, positivity, motion mask, spatial TV, temporal TV
   m_PerformPositivity = true;
@@ -50,10 +51,10 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>:
   m_PerformTVTemporalDenoising = true;
   m_PerformL0TemporalDenoising = false;
   m_PerformTNVDenoising = false;
-  m_ComputeInverseWarpingByConjugateGradient=true;
+  m_ComputeInverseWarpingByConjugateGradient = true;
 
   // Other parameters
-  m_UseNearestNeighborInterpolationInWarping=false;
+  m_UseNearestNeighborInterpolationInWarping = false;
   m_PhaseShift = 0;
   m_CudaConjugateGradient = false; // 4D volumes of usual size only fit on the largest GPUs
   m_UseCudaCyclicDeformation = false;
@@ -81,140 +82,128 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>:
   m_DownstreamFilter = m_FourDCGFilter;
 }
 
-template< typename VolumeSeriesType, typename ProjectionStackType>
+template <typename VolumeSeriesType, typename ProjectionStackType>
 void
-FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
-::SetInputVolumeSeries(const VolumeSeriesType* VolumeSeries)
+FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::SetInputVolumeSeries(
+  const VolumeSeriesType * VolumeSeries)
 {
-  this->SetPrimaryInput(const_cast<VolumeSeriesType*>(VolumeSeries));
-//   this->SetPrimaryInputName("VolumeSeries");
+  this->SetPrimaryInput(const_cast<VolumeSeriesType *>(VolumeSeries));
+  //   this->SetPrimaryInputName("VolumeSeries");
 }
 
-template< typename VolumeSeriesType, typename ProjectionStackType>
+template <typename VolumeSeriesType, typename ProjectionStackType>
 void
-FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
-::SetInputProjectionStack(const ProjectionStackType* Projection)
+FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::SetInputProjectionStack(
+  const ProjectionStackType * Projection)
 {
-  this->SetInput("ProjectionStack", const_cast<ProjectionStackType*>(Projection));
+  this->SetInput("ProjectionStack", const_cast<ProjectionStackType *>(Projection));
 }
 
-template< typename VolumeSeriesType, typename ProjectionStackType>
+template <typename VolumeSeriesType, typename ProjectionStackType>
 void
-FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
-::SetMotionMask(const VolumeType* mask)
+FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::SetMotionMask(const VolumeType * mask)
 {
-  this->SetInput("MotionMask", const_cast<VolumeType*>(mask));
+  this->SetInput("MotionMask", const_cast<VolumeType *>(mask));
 }
 
-template< typename VolumeSeriesType, typename ProjectionStackType>
+template <typename VolumeSeriesType, typename ProjectionStackType>
 void
-FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
-::SetDisplacementField(const DVFSequenceImageType* DVFs)
+FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::SetDisplacementField(
+  const DVFSequenceImageType * DVFs)
 {
-  this->SetInput("DisplacementField", const_cast<DVFSequenceImageType*>(DVFs));
+  this->SetInput("DisplacementField", const_cast<DVFSequenceImageType *>(DVFs));
 }
 
-template< typename VolumeSeriesType, typename ProjectionStackType>
+template <typename VolumeSeriesType, typename ProjectionStackType>
 void
-FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
-::SetInverseDisplacementField(const DVFSequenceImageType* DVFs)
+FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::SetInverseDisplacementField(
+  const DVFSequenceImageType * DVFs)
 {
-  this->SetInput("InverseDisplacementField", const_cast<DVFSequenceImageType*>(DVFs));
+  this->SetInput("InverseDisplacementField", const_cast<DVFSequenceImageType *>(DVFs));
 }
 
-template< typename VolumeSeriesType, typename ProjectionStackType>
+template <typename VolumeSeriesType, typename ProjectionStackType>
 typename VolumeSeriesType::ConstPointer
-FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
-::GetInputVolumeSeries()
+FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::GetInputVolumeSeries()
 {
-  return static_cast< const VolumeSeriesType * >
-          ( this->itk::ProcessObject::GetInput("Primary") );
+  return static_cast<const VolumeSeriesType *>(this->itk::ProcessObject::GetInput("Primary"));
 }
 
-template< typename VolumeSeriesType, typename ProjectionStackType>
+template <typename VolumeSeriesType, typename ProjectionStackType>
 typename ProjectionStackType::Pointer
-FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
-::GetInputProjectionStack()
+FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::GetInputProjectionStack()
 {
-  return static_cast< ProjectionStackType * >
-          ( this->itk::ProcessObject::GetInput("ProjectionStack") );
+  return static_cast<ProjectionStackType *>(this->itk::ProcessObject::GetInput("ProjectionStack"));
 }
 
-template< typename VolumeSeriesType, typename ProjectionStackType>
+template <typename VolumeSeriesType, typename ProjectionStackType>
 typename FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::VolumeType::Pointer
-FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
-::GetMotionMask()
+FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::GetMotionMask()
 {
-  return static_cast< VolumeType * >
-          ( this->itk::ProcessObject::GetInput("MotionMask") );
+  return static_cast<VolumeType *>(this->itk::ProcessObject::GetInput("MotionMask"));
 }
 
-template< typename VolumeSeriesType, typename ProjectionStackType>
+template <typename VolumeSeriesType, typename ProjectionStackType>
 typename FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::DVFSequenceImageType::Pointer
-FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
-::GetDisplacementField()
+FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::GetDisplacementField()
 {
-  return static_cast< DVFSequenceImageType * >
-          ( this->itk::ProcessObject::GetInput("DisplacementField") );
+  return static_cast<DVFSequenceImageType *>(this->itk::ProcessObject::GetInput("DisplacementField"));
 }
 
-template< typename VolumeSeriesType, typename ProjectionStackType>
+template <typename VolumeSeriesType, typename ProjectionStackType>
 typename FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::DVFSequenceImageType::Pointer
-FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
-::GetInverseDisplacementField()
+FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::GetInverseDisplacementField()
 {
-  return static_cast< DVFSequenceImageType * >
-          ( this->itk::ProcessObject::GetInput("InverseDisplacementField") );
+  return static_cast<DVFSequenceImageType *>(this->itk::ProcessObject::GetInput("InverseDisplacementField"));
 }
 
-template< typename VolumeSeriesType, typename ProjectionStackType>
+template <typename VolumeSeriesType, typename ProjectionStackType>
 void
-FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
-::SetForwardProjectionFilter(ForwardProjectionType _arg)
+FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::SetForwardProjectionFilter(
+  ForwardProjectionType _arg)
 {
-  if( _arg != this->GetForwardProjectionFilter() )
-    {
-    Superclass::SetForwardProjectionFilter( _arg );
-    m_FourDCGFilter->SetForwardProjectionFilter( _arg );
-    }
+  if (_arg != this->GetForwardProjectionFilter())
+  {
+    Superclass::SetForwardProjectionFilter(_arg);
+    m_FourDCGFilter->SetForwardProjectionFilter(_arg);
+  }
 }
 
-template< typename VolumeSeriesType, typename ProjectionStackType>
+template <typename VolumeSeriesType, typename ProjectionStackType>
 void
-FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
-::SetBackProjectionFilter(BackProjectionType _arg)
+FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::SetBackProjectionFilter(
+  BackProjectionType _arg)
 {
-  if( _arg != this->GetBackProjectionFilter() )
-    {
-    Superclass::SetBackProjectionFilter( _arg );
-    m_FourDCGFilter->SetBackProjectionFilter( _arg );
-    }
+  if (_arg != this->GetBackProjectionFilter())
+  {
+    Superclass::SetBackProjectionFilter(_arg);
+    m_FourDCGFilter->SetBackProjectionFilter(_arg);
+  }
 }
 
-template< typename VolumeSeriesType, typename ProjectionStackType>
+template <typename VolumeSeriesType, typename ProjectionStackType>
 void
-FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
-::SetWeights(const itk::Array2D<float> _arg)
+FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::SetWeights(
+  const itk::Array2D<float> _arg)
 {
   m_FourDCGFilter->SetWeights(_arg);
 }
 
-template< typename VolumeSeriesType, typename ProjectionStackType>
+template <typename VolumeSeriesType, typename ProjectionStackType>
 void
-FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
-::SetSignal(const std::vector<double> signal)
+FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::SetSignal(
+  const std::vector<double> signal)
 {
   m_FourDCGFilter->SetSignal(signal);
   this->m_Signal = signal;
   this->Modified();
 }
 
-template< typename VolumeSeriesType, typename ProjectionStackType>
+template <typename VolumeSeriesType, typename ProjectionStackType>
 void
-FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
-::GenerateInputRequestedRegion()
+FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::GenerateInputRequestedRegion()
 {
-  //Call the superclass' implementation of this method
+  // Call the superclass' implementation of this method
   Superclass::GenerateInputRequestedRegion();
 
   // Let the 4DCG subfilters compute the requested regions for the projections
@@ -223,32 +212,32 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 
   // Set the requested region to the full input for all regularization steps
   if (m_PerformMotionMask)
-    {
+  {
     typename VolumeType::Pointer motionMaskPtr = this->GetMotionMask();
     motionMaskPtr->SetRequestedRegionToLargestPossibleRegion();
-    }
+  }
   else
-    {
+  {
     this->RemoveInput("MotionMask");
-    }
+  }
 
   if (m_PerformWarping)
-    {
-    typename DVFSequenceImageType::Pointer DisplacementFieldPtr  = this->GetDisplacementField();
+  {
+    typename DVFSequenceImageType::Pointer DisplacementFieldPtr = this->GetDisplacementField();
     DisplacementFieldPtr->SetRequestedRegionToLargestPossibleRegion();
 
     if (!m_ComputeInverseWarpingByConjugateGradient)
-      {
-      typename DVFSequenceImageType::Pointer InverseDisplacementFieldPtr  = this->GetInverseDisplacementField();
-      InverseDisplacementFieldPtr->SetRequestedRegionToLargestPossibleRegion();
-      }
-    else
-      {
-      this->RemoveInput("InverseDisplacementField");
-      }
-    }
-  else
     {
+      typename DVFSequenceImageType::Pointer InverseDisplacementFieldPtr = this->GetInverseDisplacementField();
+      InverseDisplacementFieldPtr->SetRequestedRegionToLargestPossibleRegion();
+    }
+    else
+    {
+      this->RemoveInput("InverseDisplacementField");
+    }
+  }
+  else
+  {
     // If the filter is used with m_PerformWarping = true, and then with
     // m_PerformWarping = false, it keeps requesting a region of the
     // input DVF, which by default may be larger than the largest
@@ -257,13 +246,12 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
     // This occurs, for example, in the fourdroostercudatest.
     this->RemoveInput("DisplacementField");
     this->RemoveInput("InverseDisplacementField");
-    }
+  }
 }
 
-template< typename VolumeSeriesType, typename ProjectionStackType>
+template <typename VolumeSeriesType, typename ProjectionStackType>
 void
-FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
-::GenerateOutputInformation()
+FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::GenerateOutputInformation()
 {
   const int Dimension = VolumeType::ImageDimension;
 
@@ -279,7 +267,7 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 
   // Plug the positivity filter if requested
   if (m_PerformPositivity)
-    {
+  {
     m_PositivityFilter->SetInPlace(true);
 
     m_PositivityFilter->SetOutsideValue(0.0);
@@ -287,11 +275,11 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
     m_PositivityFilter->SetInput(m_DownstreamFilter->GetOutput());
 
     m_DownstreamFilter = m_PositivityFilter;
-    }
+  }
 
   // Etc..
   if (m_PerformMotionMask)
-    {
+  {
     m_AverageOutOfROIFilter->SetInPlace(true);
 
     m_AverageOutOfROIFilter->SetInput(m_DownstreamFilter->GetOutput());
@@ -303,50 +291,50 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
     using InterpolatorType = itk::NearestNeighborInterpolateImageFunction<VolumeType, double>;
     m_ResampleFilter->SetInterpolator(InterpolatorType::New());
     m_ResampleFilter->SetTransform(TransformType::New());
-    typename VolumeType::SizeType VolumeSize;
-    typename VolumeType::SpacingType VolumeSpacing;
-    typename VolumeType::PointType VolumeOrigin;
+    typename VolumeType::SizeType      VolumeSize;
+    typename VolumeType::SpacingType   VolumeSpacing;
+    typename VolumeType::PointType     VolumeOrigin;
     typename VolumeType::DirectionType VolumeDirection;
     VolumeSize.Fill(0);
     VolumeSpacing.Fill(0);
     VolumeOrigin.Fill(0);
     VolumeDirection.Fill(0);
-    for (int i=0; i<Dimension; i++)
-      {
+    for (int i = 0; i < Dimension; i++)
+    {
       VolumeSize[i] = this->GetInputVolumeSeries()->GetLargestPossibleRegion().GetSize()[i];
       VolumeSpacing[i] = this->GetInputVolumeSeries()->GetSpacing()[i];
       VolumeOrigin[i] = this->GetInputVolumeSeries()->GetOrigin()[i];
-      for (int j=0; j<Dimension; j++)
-        {
-        VolumeDirection(i,j) = this->GetInputVolumeSeries()->GetDirection()(i,j);
-        }
+      for (int j = 0; j < Dimension; j++)
+      {
+        VolumeDirection(i, j) = this->GetInputVolumeSeries()->GetDirection()(i, j);
       }
+    }
     m_ResampleFilter->SetSize(VolumeSize);
     m_ResampleFilter->SetOutputSpacing(VolumeSpacing);
     m_ResampleFilter->SetOutputOrigin(VolumeOrigin);
     m_ResampleFilter->SetOutputDirection(VolumeDirection);
 
     m_DownstreamFilter = m_AverageOutOfROIFilter;
-    }
+  }
 
   if (m_PerformTVSpatialDenoising)
-    {
+  {
     m_DownstreamFilter->ReleaseDataFlagOn();
 
     m_TVDenoisingSpace->SetInput(m_DownstreamFilter->GetOutput());
     m_TVDenoisingSpace->SetNumberOfIterations(this->m_TV_iterations);
     m_TVDenoisingSpace->SetGamma(this->m_GammaTVSpace);
-    m_DimensionsProcessedForTVSpace[0]=true;
-    m_DimensionsProcessedForTVSpace[1]=true;
-    m_DimensionsProcessedForTVSpace[2]=true;
-    m_DimensionsProcessedForTVSpace[3]=false;
+    m_DimensionsProcessedForTVSpace[0] = true;
+    m_DimensionsProcessedForTVSpace[1] = true;
+    m_DimensionsProcessedForTVSpace[2] = true;
+    m_DimensionsProcessedForTVSpace[3] = false;
     m_TVDenoisingSpace->SetDimensionsProcessed(this->m_DimensionsProcessedForTVSpace);
 
     m_DownstreamFilter = m_TVDenoisingSpace;
-    }
+  }
 
   if (m_PerformWaveletsSpatialDenoising)
-    {
+  {
     m_DownstreamFilter->ReleaseDataFlagOn();
 
     m_WaveletsDenoisingSpace->SetInput(m_DownstreamFilter->GetOutput());
@@ -355,10 +343,10 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
     m_WaveletsDenoisingSpace->SetNumberOfLevels(m_NumberOfLevels);
 
     m_DownstreamFilter = m_WaveletsDenoisingSpace;
-    }
+  }
 
   if (m_PerformWarping)
-    {
+  {
     m_DownstreamFilter->ReleaseDataFlagOff();
 
     m_Warp->SetInput(m_DownstreamFilter->GetOutput());
@@ -368,10 +356,10 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
     m_Warp->SetUseCudaCyclicDeformation(m_UseCudaCyclicDeformation);
 
     m_DownstreamFilter = m_Warp;
-    }
+  }
 
   if (m_PerformTVTemporalDenoising)
-    {
+  {
     m_DownstreamFilter->ReleaseDataFlagOff();
 
     if (m_PerformWarping && !m_ComputeInverseWarpingByConjugateGradient)
@@ -382,18 +370,18 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
     m_TVDenoisingTime->SetInput(m_DownstreamFilter->GetOutput());
     m_TVDenoisingTime->SetNumberOfIterations(this->m_TV_iterations);
     m_TVDenoisingTime->SetGamma(this->m_GammaTVTime);
-    m_DimensionsProcessedForTVTime[0]=false;
-    m_DimensionsProcessedForTVTime[1]=false;
-    m_DimensionsProcessedForTVTime[2]=false;
-    m_DimensionsProcessedForTVTime[3]=true;
+    m_DimensionsProcessedForTVTime[0] = false;
+    m_DimensionsProcessedForTVTime[1] = false;
+    m_DimensionsProcessedForTVTime[2] = false;
+    m_DimensionsProcessedForTVTime[3] = true;
     m_TVDenoisingTime->SetDimensionsProcessed(this->m_DimensionsProcessedForTVTime);
     m_TVDenoisingTime->SetBoundaryConditionToPeriodic();
 
     m_DownstreamFilter = m_TVDenoisingTime;
-    }
+  }
 
   if (m_PerformL0TemporalDenoising)
-    {
+  {
     m_DownstreamFilter->ReleaseDataFlagOff();
 
     if (m_PerformWarping && !m_ComputeInverseWarpingByConjugateGradient && !m_PerformTVTemporalDenoising)
@@ -408,13 +396,14 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
     m_L0DenoisingTime->SetLambda(this->m_LambdaL0Time);
 
     m_DownstreamFilter = m_L0DenoisingTime;
-    }
+  }
 
   if (m_PerformTNVDenoising)
-    {
+  {
     m_DownstreamFilter->ReleaseDataFlagOff();
 
-    if (m_PerformWarping && !m_ComputeInverseWarpingByConjugateGradient && !m_PerformTVTemporalDenoising && !m_PerformL0TemporalDenoising)
+    if (m_PerformWarping && !m_ComputeInverseWarpingByConjugateGradient && !m_PerformTVTemporalDenoising &&
+        !m_PerformL0TemporalDenoising)
       m_TNVDenoising->SetInPlace(false);
     else
       m_TNVDenoising->SetInPlace(true);
@@ -424,12 +413,12 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
     m_TNVDenoising->SetGamma(this->m_GammaTNV);
 
     m_DownstreamFilter = m_TNVDenoising;
-    }
+  }
 
   if (m_PerformWarping)
-    {
+  {
     if (m_ComputeInverseWarpingByConjugateGradient)
-      {
+    {
       m_DownstreamFilter->ReleaseDataFlagOn();
 
       m_Unwarp->SetNumberOfIterations(4);
@@ -441,9 +430,9 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
       m_Unwarp->SetUseCudaCyclicDeformation(m_UseCudaCyclicDeformation);
 
       m_DownstreamFilter = m_Unwarp;
-      }
+    }
     else
-      {
+    {
       m_DownstreamFilter->ReleaseDataFlagOff();
 
       // Compute the correction performed by temporal TV and/or temporal L0 and/or TNV
@@ -467,30 +456,29 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
       m_SubtractFilter->ReleaseDataFlagOn();
       m_InverseWarp->ReleaseDataFlagOn();
       m_AddFilter->ReleaseDataFlagOff();
-      }
     }
+  }
 
   // Have the last filter calculate its output information
   m_DownstreamFilter->ReleaseDataFlagOff();
   m_DownstreamFilter->UpdateOutputInformation();
 
   // Copy it as the output information of the composite filter
-  this->GetOutput()->CopyInformation( m_DownstreamFilter->GetOutput() );
+  this->GetOutput()->CopyInformation(m_DownstreamFilter->GetOutput());
 }
 
-template< typename VolumeSeriesType, typename ProjectionStackType>
+template <typename VolumeSeriesType, typename ProjectionStackType>
 void
-FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
-::GenerateData()
+FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::GenerateData()
 {
   // Declare the pointer that will be used to plug the output back as input
   typename VolumeSeriesType::Pointer pimg;
 
-  for (int i=0; i<m_MainLoop_iterations; i++)
-    {
+  for (int i = 0; i < m_MainLoop_iterations; i++)
+  {
     // After the first iteration, we need to use the output as input
-    if (i>0)
-      {
+    if (i > 0)
+    {
       pimg = m_DownstreamFilter->GetOutput();
 
       pimg->DisconnectPipeline();
@@ -498,15 +486,15 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 
       // The input volume is no longer needed on the GPU, so we transfer it back to the CPU
       this->GetInputVolumeSeries()->GetBufferPointer();
-      }
-
-    m_DownstreamFilter->Update();
     }
 
-  this->GraftOutput( m_DownstreamFilter->GetOutput() );
+    m_DownstreamFilter->Update();
+  }
+
+  this->GraftOutput(m_DownstreamFilter->GetOutput());
 }
 
-}// end namespace
+} // namespace rtk
 
 
 #endif

@@ -20,31 +20,29 @@
 #define rtkCudaConjugateGradientImageFilter_hxx
 
 #include "rtkConfiguration.h"
-//Conditional definition of the class to pass ITKHeaderTest
+// Conditional definition of the class to pass ITKHeaderTest
 #ifdef RTK_USE_CUDA
 
-#include "rtkCudaConjugateGradientImageFilter.h"
-#include "rtkCudaConjugateGradientImageFilter.hcu"
-#include "rtkCudaConstantVolumeSource.h"
+#  include "rtkCudaConjugateGradientImageFilter.h"
+#  include "rtkCudaConjugateGradientImageFilter.hcu"
+#  include "rtkCudaConstantVolumeSource.h"
 
-#include <itkMacro.h>
+#  include <itkMacro.h>
 
 namespace rtk
 {
 
 template <class TImage>
-CudaConjugateGradientImageFilter<TImage>
-::CudaConjugateGradientImageFilter()
-{
-}
+CudaConjugateGradientImageFilter<TImage>::CudaConjugateGradientImageFilter()
+{}
 
 template <class TImage>
 void
-CudaConjugateGradientImageFilter<TImage>
-::GPUGenerateData()
+CudaConjugateGradientImageFilter<TImage>::GPUGenerateData()
 {
   using DataType = typename itk::PixelTraits<typename TImage::PixelType>::ValueType;
-  long int numberOfElements = this->GetOutput()->GetLargestPossibleRegion().GetNumberOfPixels() * itk::PixelTraits<typename TImage::PixelType>::Dimension;
+  long int numberOfElements = this->GetOutput()->GetLargestPossibleRegion().GetNumberOfPixels() *
+                              itk::PixelTraits<typename TImage::PixelType>::Dimension;
 
   // Create and allocate images
   typename TImage::Pointer P_k = TImage::New();
@@ -57,8 +55,8 @@ CudaConjugateGradientImageFilter<TImage>
   R_k->CopyInformation(this->GetOutput());
 
   // Copy the input to the output (X_0 = input)
-  DataType *pin = *(DataType**)( this->GetX()->GetCudaDataManager()->GetGPUBufferPointer() );
-  DataType *pX = *(DataType**)( this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer() );
+  DataType * pin = *(DataType **)(this->GetX()->GetCudaDataManager()->GetGPUBufferPointer());
+  DataType * pX = *(DataType **)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
 
   // On GPU, initialize the output to the input
   CUDA_copy(numberOfElements, pin, pX);
@@ -71,9 +69,9 @@ CudaConjugateGradientImageFilter<TImage>
   typename TImage::Pointer AOut = this->m_A->GetOutput();
   AOut->DisconnectPipeline();
 
-  DataType *pR = *(DataType**)( R_k->GetCudaDataManager()->GetGPUBufferPointer() );
-  DataType *pB = *(DataType**)( this->GetB()->GetCudaDataManager()->GetGPUBufferPointer() );
-  DataType *pAOut = *(DataType**)( AOut->GetCudaDataManager()->GetGPUBufferPointer() );
+  DataType * pR = *(DataType **)(R_k->GetCudaDataManager()->GetGPUBufferPointer());
+  DataType * pB = *(DataType **)(this->GetB()->GetCudaDataManager()->GetGPUBufferPointer());
+  DataType * pAOut = *(DataType **)(AOut->GetCudaDataManager()->GetGPUBufferPointer());
 
   // Compute, on GPU, R_zero = P_zero = this->GetB() - this->m_A->GetOutput()
   CUDA_copy(numberOfElements, pB, pR);
@@ -83,31 +81,31 @@ CudaConjugateGradientImageFilter<TImage>
   // Transfer it back to the CPU memory
   this->GetB()->GetCudaDataManager()->GetCPUBufferPointer();
 
-  DataType *pP = *(DataType**)( P_k->GetCudaDataManager()->GetGPUBufferPointer() );
+  DataType * pP = *(DataType **)(P_k->GetCudaDataManager()->GetGPUBufferPointer());
 
   // P0 = R0
   CUDA_copy(numberOfElements, pR, pP);
 
   // Start iterations
-  for (int iter=0; iter<this->m_NumberOfIterations; iter++)
-    {
+  for (int iter = 0; iter < this->m_NumberOfIterations; iter++)
+  {
     // Compute A * P_k
     this->m_A->SetX(P_k);
     this->m_A->Update();
     AOut = this->m_A->GetOutput();
     AOut->DisconnectPipeline();
 
-    pX = *(DataType**)( this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer() );
-    pR = *(DataType**)( R_k->GetCudaDataManager()->GetGPUBufferPointer() );
-    pP = *(DataType**)( P_k->GetCudaDataManager()->GetGPUBufferPointer() );
-    pAOut = *(DataType**)( AOut->GetCudaDataManager()->GetGPUBufferPointer() );
+    pX = *(DataType **)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
+    pR = *(DataType **)(R_k->GetCudaDataManager()->GetGPUBufferPointer());
+    pP = *(DataType **)(P_k->GetCudaDataManager()->GetGPUBufferPointer());
+    pAOut = *(DataType **)(AOut->GetCudaDataManager()->GetGPUBufferPointer());
 
     // Compute, on GPU, alpha_k (only on GPU), X_k+1 (output), R_k+1, beta_k (only on GPU), P_k+1
     // The inputs are replaced by their next iterate
     CUDA_conjugate_gradient(numberOfElements, pX, pR, pP, pAOut);
 
     P_k->Modified();
-    }
+  }
 
   P_k->ReleaseData();
   R_k->ReleaseData();

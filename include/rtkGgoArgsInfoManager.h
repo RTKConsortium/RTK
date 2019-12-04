@@ -20,7 +20,7 @@
 
 #include "rtkConfiguration.h"
 #ifdef RTK_PROBE_EACH_FILTER
-# include "rtkGlobalResourceProbe.h"
+#  include "rtkGlobalResourceProbe.h"
 #endif
 
 namespace rtk
@@ -31,25 +31,23 @@ namespace rtk
  *
  * \ingroup RTK
  */
-template < class TArgsInfo, class TCleanupFunction = void (*)( TArgsInfo* ) >
+template <class TArgsInfo, class TCleanupFunction = void (*)(TArgsInfo *)>
 class args_info_manager
 {
-  public:
-    args_info_manager( TArgsInfo & args_info, TCleanupFunction cf)
-      {
-      this->args_info_pointer = &args_info;
-      this->cleanup_function = cf;
+public:
+  args_info_manager(TArgsInfo & args_info, TCleanupFunction cf)
+  {
+    this->args_info_pointer = &args_info;
+    this->cleanup_function = cf;
 #ifdef RTK_PROBE_EACH_FILTER
-      rtk::GlobalResourceProbe::GetInstance()->SetVerbose(args_info.verbose_flag);
+    rtk::GlobalResourceProbe::GetInstance()->SetVerbose(args_info.verbose_flag);
 #endif
-      }
-    ~args_info_manager()
-      {
-      this->cleanup_function( this->args_info_pointer );
-      }
-  private:
-    TArgsInfo * args_info_pointer;
-    TCleanupFunction cleanup_function;
+  }
+  ~args_info_manager() { this->cleanup_function(this->args_info_pointer); }
+
+private:
+  TArgsInfo *      args_info_pointer;
+  TCleanupFunction cleanup_function;
 };
-}
+} // namespace rtk
 #endif

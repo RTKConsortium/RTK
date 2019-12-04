@@ -25,96 +25,103 @@
 
 namespace rtk
 {
-  /** \class InterpolatorWithKnownWeightsImageFilter
-   * \brief Interpolates (linearly) in a 3D+t sequence of volumes to get a 3D volume
-   *
-   * See the reference paper: "Cardiac C-arm computed tomography using
-   * a 3D + time ROI reconstruction method with spatial and temporal regularization"
-   * by Mory et al.
-   *
-   * 4D conjugate gradient reconstruction consists in iteratively
-   * minimizing the following cost function:
-   *
-   * Sum_over_theta || R_theta S_theta f - p_theta ||_2^2
-   *
-   * with
-   * - f a 4D series of 3D volumes, each one being the reconstruction
-   * at a given respiratory/cardiac phase
-   * - p_theta is the projection measured at angle theta
-   * - S_theta an interpolation operator which, from the 3D + time sequence f,
-   * estimates the 3D volume through which projection p_theta has been acquired
-   * - R_theta is the X-ray transform (the forward projection operator) for angle theta
-   *
-   * Computing the gradient of this cost function yields:
-   *
-   * S_theta^T R_theta^T R_theta S_theta f - S_theta^T R_theta^T p_theta
-   *
-   * where A^T means the adjoint of operator A.
-   *
-   * InterpolatorWithKnownWeightsImageFilter implements S_theta.
-   *
-   *
-   * \test rtkfourdconjugategradienttest.cxx
-   *
-   * \author Cyril Mory
-   *
-   * \ingroup RTK ReconstructionAlgorithm
-   */
-template< typename VolumeType, typename VolumeSeriesType>
-class InterpolatorWithKnownWeightsImageFilter : public itk::InPlaceImageFilter< VolumeType, VolumeType >
+/** \class InterpolatorWithKnownWeightsImageFilter
+ * \brief Interpolates (linearly) in a 3D+t sequence of volumes to get a 3D volume
+ *
+ * See the reference paper: "Cardiac C-arm computed tomography using
+ * a 3D + time ROI reconstruction method with spatial and temporal regularization"
+ * by Mory et al.
+ *
+ * 4D conjugate gradient reconstruction consists in iteratively
+ * minimizing the following cost function:
+ *
+ * Sum_over_theta || R_theta S_theta f - p_theta ||_2^2
+ *
+ * with
+ * - f a 4D series of 3D volumes, each one being the reconstruction
+ * at a given respiratory/cardiac phase
+ * - p_theta is the projection measured at angle theta
+ * - S_theta an interpolation operator which, from the 3D + time sequence f,
+ * estimates the 3D volume through which projection p_theta has been acquired
+ * - R_theta is the X-ray transform (the forward projection operator) for angle theta
+ *
+ * Computing the gradient of this cost function yields:
+ *
+ * S_theta^T R_theta^T R_theta S_theta f - S_theta^T R_theta^T p_theta
+ *
+ * where A^T means the adjoint of operator A.
+ *
+ * InterpolatorWithKnownWeightsImageFilter implements S_theta.
+ *
+ *
+ * \test rtkfourdconjugategradienttest.cxx
+ *
+ * \author Cyril Mory
+ *
+ * \ingroup RTK ReconstructionAlgorithm
+ */
+template <typename VolumeType, typename VolumeSeriesType>
+class InterpolatorWithKnownWeightsImageFilter : public itk::InPlaceImageFilter<VolumeType, VolumeType>
 {
 public:
-    ITK_DISALLOW_COPY_AND_ASSIGN(InterpolatorWithKnownWeightsImageFilter);
+  ITK_DISALLOW_COPY_AND_ASSIGN(InterpolatorWithKnownWeightsImageFilter);
 
-    /** Standard class type alias. */
-    using Self = InterpolatorWithKnownWeightsImageFilter;
-    using Superclass = itk::ImageToImageFilter< VolumeType, VolumeType >;
-    using Pointer = itk::SmartPointer< Self >;
+  /** Standard class type alias. */
+  using Self = InterpolatorWithKnownWeightsImageFilter;
+  using Superclass = itk::ImageToImageFilter<VolumeType, VolumeType>;
+  using Pointer = itk::SmartPointer<Self>;
 
-    /** Method for creation through the object factory. */
-    itkNewMacro(Self)
+  /** Method for creation through the object factory. */
+  itkNewMacro(Self);
 
-    /** Run-time type information (and related methods). */
-    itkTypeMacro(InterpolatorWithKnownWeightsImageFilter, itk::InPlaceImageFilter)
+  /** Run-time type information (and related methods). */
+  itkTypeMacro(InterpolatorWithKnownWeightsImageFilter, itk::InPlaceImageFilter);
 
-    /** The 3D image to be updated.*/
-    void SetInputVolume(const VolumeType* Volume);
+  /** The 3D image to be updated.*/
+  void
+  SetInputVolume(const VolumeType * Volume);
 
-    /** The 4D image that will be interpolated, with coefficients, generate a 3D volume.*/
-    void SetInputVolumeSeries(const VolumeSeriesType* VolumeSeries);
+  /** The 4D image that will be interpolated, with coefficients, generate a 3D volume.*/
+  void
+  SetInputVolumeSeries(const VolumeSeriesType * VolumeSeries);
 
-    /** Macros that take care of implementing the Get and Set methods for Weights and ProjectionNumber.*/
-    itkGetMacro(Weights, itk::Array2D<float>)
-    itkSetMacro(Weights, itk::Array2D<float>)
+  /** Macros that take care of implementing the Get and Set methods for Weights and ProjectionNumber.*/
+  itkGetMacro(Weights, itk::Array2D<float>);
+  itkSetMacro(Weights, itk::Array2D<float>);
 
-    itkGetMacro(ProjectionNumber, int)
-    void SetProjectionNumber(int n);
+  itkGetMacro(ProjectionNumber, int);
+  void
+  SetProjectionNumber(int n);
 
 protected:
-    InterpolatorWithKnownWeightsImageFilter();
-    ~InterpolatorWithKnownWeightsImageFilter() override = default;
+  InterpolatorWithKnownWeightsImageFilter();
+  ~InterpolatorWithKnownWeightsImageFilter() override = default;
 
-    typename VolumeType::ConstPointer GetInputVolume();
-    typename VolumeSeriesType::Pointer GetInputVolumeSeries();
+  typename VolumeType::ConstPointer
+  GetInputVolume();
+  typename VolumeSeriesType::Pointer
+  GetInputVolumeSeries();
 
-    void GenerateInputRequestedRegion() override;
+  void
+  GenerateInputRequestedRegion() override;
 
-    /** Does the real work. */
-#if ITK_VERSION_MAJOR<5
-    void ThreadedGenerateData( const typename VolumeType::RegionType& outputRegionForThread, ThreadIdType threadId ) override;
+  /** Does the real work. */
+#if ITK_VERSION_MAJOR < 5
+  void
+  ThreadedGenerateData(const typename VolumeType::RegionType & outputRegionForThread, ThreadIdType threadId) override;
 #else
-    void DynamicThreadedGenerateData( const typename VolumeType::RegionType& outputRegionForThread) override;
+  void
+  DynamicThreadedGenerateData(const typename VolumeType::RegionType & outputRegionForThread) override;
 #endif
 
-    itk::Array2D<float> m_Weights;
-    int                 m_ProjectionNumber;
-
+  itk::Array2D<float> m_Weights;
+  int                 m_ProjectionNumber;
 };
-} //namespace ITK
+} // namespace rtk
 
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkInterpolatorWithKnownWeightsImageFilter.hxx"
+#  include "rtkInterpolatorWithKnownWeightsImageFilter.hxx"
 #endif
 
 #endif

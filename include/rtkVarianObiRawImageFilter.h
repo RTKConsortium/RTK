@@ -28,7 +28,8 @@
 namespace rtk
 {
 
-namespace Function {
+namespace Function
+{
 
 /** \class ObiAttenuation
  * \brief Converts a raw value measured by the Varian OBI system to attenuation
@@ -40,32 +41,43 @@ namespace Function {
  *
  * \ingroup RTK Functions
  */
-template< class TInput, class TOutput>
+template <class TInput, class TOutput>
 class ObiAttenuation
 {
 public:
   ObiAttenuation() = default;
   ~ObiAttenuation() = default;
-  bool operator!=( const ObiAttenuation & ) const
-    {
+  bool
+  operator!=(const ObiAttenuation &) const
+  {
     return false;
-    }
-  bool operator==( const ObiAttenuation & other ) const
-    {
+  }
+  bool
+  operator==(const ObiAttenuation & other) const
+  {
     return !(*this != other);
-    }
-  inline TOutput operator()( const TInput & A ) const
-    {
-    return (!A)?0.:TOutput( std::log( (m_I0-m_IDark) / ( A-m_IDark ) ) );
-    }
-  void SetI0(double i0) {m_I0 = i0;}
-  void SetIDark(double idark) {m_IDark = idark;}
+  }
+  inline TOutput
+  operator()(const TInput & A) const
+  {
+    return (!A) ? 0. : TOutput(std::log((m_I0 - m_IDark) / (A - m_IDark)));
+  }
+  void
+  SetI0(double i0)
+  {
+    m_I0 = i0;
+  }
+  void
+  SetIDark(double idark)
+  {
+    m_IDark = idark;
+  }
 
 private:
   double m_I0;
   double m_IDark;
 };
-}
+} // namespace Function
 
 /** \class VarianObiRawImageFilter
  * \brief Converts raw images measured by the Varian OBI system to attenuation
@@ -77,21 +89,21 @@ private:
  * \ingroup RTK ImageToImageFilter
  */
 template <class TInputImage, class TOutputImage>
-class ITK_EXPORT VarianObiRawImageFilter :
-    public
-itk::UnaryFunctorImageFilter<TInputImage,TOutputImage,
-                             Function::ObiAttenuation<
-  typename TInputImage::PixelType,
-  typename TOutputImage::PixelType>   >
+class ITK_EXPORT VarianObiRawImageFilter
+  : public itk::UnaryFunctorImageFilter<
+      TInputImage,
+      TOutputImage,
+      Function::ObiAttenuation<typename TInputImage::PixelType, typename TOutputImage::PixelType>>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(VarianObiRawImageFilter);
 
   /** Standard class type alias. */
   using Self = VarianObiRawImageFilter;
-  using Superclass = itk::UnaryFunctorImageFilter<TInputImage,TOutputImage,
-                                       Function::ObiAttenuation< typename TInputImage::PixelType,
-                                                      typename TOutputImage::PixelType> >;
+  using Superclass = itk::UnaryFunctorImageFilter<
+    TInputImage,
+    TOutputImage,
+    Function::ObiAttenuation<typename TInputImage::PixelType, typename TOutputImage::PixelType>>;
   using Pointer = itk::SmartPointer<Self>;
   using ConstPointer = itk::SmartPointer<const Self>;
 
@@ -99,8 +111,7 @@ public:
   itkNewMacro(Self);
 
   /** Runtime information support. */
-  itkTypeMacro(VarianObiRawImageFilter,
-               itk::UnaryFunctorImageFilter);
+  itkTypeMacro(VarianObiRawImageFilter, itk::UnaryFunctorImageFilter);
 
   itkGetMacro(I0, double);
   itkSetMacro(I0, double);
@@ -108,21 +119,22 @@ public:
   itkGetMacro(IDark, double);
   itkSetMacro(IDark, double);
 
-  void BeforeThreadedGenerateData() override;
+  void
+  BeforeThreadedGenerateData() override;
 
 protected:
   VarianObiRawImageFilter();
   ~VarianObiRawImageFilter() override = default;
 
 private:
-  double m_I0{139000.};
-  double m_IDark{0.};
+  double m_I0{ 139000. };
+  double m_IDark{ 0. };
 };
 
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkVarianObiRawImageFilter.hxx"
+#  include "rtkVarianObiRawImageFilter.hxx"
 #endif
 
 #endif

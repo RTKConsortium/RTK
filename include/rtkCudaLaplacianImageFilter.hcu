@@ -22,9 +22,6 @@
 #include <vector_types.h>
 
 void
-CUDA_laplacian(int size[3],
-               float spacing[3],
-               float* dev_in,
-               float* dev_out);
+CUDA_laplacian(int size[3], float spacing[3], float * dev_in, float * dev_out);
 
 #endif

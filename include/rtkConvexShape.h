@@ -43,7 +43,7 @@ namespace rtk
  * \ingroup RTK
  *
  */
-class RTK_EXPORT ConvexShape: public itk::DataObject
+class RTK_EXPORT ConvexShape : public itk::DataObject
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(ConvexShape);
@@ -57,45 +57,52 @@ public:
   /** Convenient type alias. */
   static constexpr unsigned int Dimension = 3;
   using ScalarType = double;
-  using PointType = itk::Vector< ScalarType, Dimension >;
-  using VectorType = itk::Vector< ScalarType, Dimension >;
-  using RotationMatrixType = itk::Matrix< ScalarType, Dimension, Dimension >;
+  using PointType = itk::Vector<ScalarType, Dimension>;
+  using VectorType = itk::Vector<ScalarType, Dimension>;
+  using RotationMatrixType = itk::Matrix<ScalarType, Dimension, Dimension>;
 
   /** Method for creation through the object factory. */
-  itkNewMacro ( Self );
+  itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(ConvexShape, itk::DataObject);
 
   /** Returns true if a point is inside the object. */
-  virtual bool IsInside(const PointType & point) const;
+  virtual bool
+  IsInside(const PointType & point) const;
 
   /** Returns true if a ray intersects the object. If it does, the parameters
   ** nearDist and farDist get the shape distance from the source in the ray direction.
   ** Note that nearDist<farDist, and nearDist and farDist can be negative. */
-  virtual bool IsIntersectedByRay(const PointType & rayOrigin,
-                                  const VectorType & rayDirection,
-                                  double & nearDist,
-                                  double & farDist) const;
+  virtual bool
+  IsIntersectedByRay(const PointType &  rayOrigin,
+                     const VectorType & rayDirection,
+                     double &           nearDist,
+                     double &           farDist) const;
 
   /** Rescale object along each direction by a 3D vector. */
-  virtual void Rescale(const VectorType &r);
+  virtual void
+  Rescale(const VectorType & r);
 
   /** Translate object by a given 3D vector. */
-  virtual void Translate(const VectorType &t);
+  virtual void
+  Translate(const VectorType & t);
 
   /** Rotate object according to a 3D rotation matrix. */
-  virtual void Rotate(const RotationMatrixType &r);
+  virtual void
+  Rotate(const RotationMatrixType & r);
 
   /** Add clipping plane to the object. The plane is defined by the equation
    * dir * (x,y,z)' + pos = 0. */
-  void AddClipPlane(const VectorType & dir, const ScalarType & pos);
-  void SetClipPlanes(const std::vector<VectorType> & dir, const std::vector<ScalarType> & pos);
+  void
+  AddClipPlane(const VectorType & dir, const ScalarType & pos);
+  void
+  SetClipPlanes(const std::vector<VectorType> & dir, const std::vector<ScalarType> & pos);
 
   /** Volume density, i.e., value in the volume. */
-  itkSetMacro (Density, ScalarType);
-  itkGetConstMacro (Density, ScalarType);
-  itkGetMacro (Density, ScalarType);
+  itkSetMacro(Density, ScalarType);
+  itkGetConstMacro(Density, ScalarType);
+  itkGetMacro(Density, ScalarType);
 
   /** Get reference to vector of plane parameters. */
   itkGetConstReferenceMacro(PlaneDirections, std::vector<VectorType>);
@@ -103,18 +110,21 @@ public:
 
 protected:
   ConvexShape();
-  bool ApplyClipPlanes(const PointType & rayOrigin,
-                       const VectorType & rayDirection,
-                       ScalarType & nearDist,
-                       ScalarType & farDist) const;
-  bool ApplyClipPlanes(const PointType & point) const;
-  itk::LightObject::Pointer InternalClone() const override;
+  bool
+  ApplyClipPlanes(const PointType &  rayOrigin,
+                  const VectorType & rayDirection,
+                  ScalarType &       nearDist,
+                  ScalarType &       farDist) const;
+  bool
+  ApplyClipPlanes(const PointType & point) const;
+  itk::LightObject::Pointer
+  InternalClone() const override;
 
 private:
-  ScalarType              m_Density{0.};
+  ScalarType              m_Density{ 0. };
   std::vector<VectorType> m_PlaneDirections;
   std::vector<ScalarType> m_PlanePositions;
 };
 
-}
+} // namespace rtk
 #endif

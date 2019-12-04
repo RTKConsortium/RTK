@@ -24,7 +24,7 @@
 namespace rtk
 {
 
-template<typename OutputImageType, typename GradientImageType>
+template <typename OutputImageType, typename GradientImageType>
 LaplacianImageFilter<OutputImageType, GradientImageType>::LaplacianImageFilter()
 {
   // Create the filters
@@ -38,9 +38,9 @@ LaplacianImageFilter<OutputImageType, GradientImageType>::LaplacianImageFilter()
   m_Gradient->ReleaseDataFlagOn();
 }
 
-template<typename OutputImageType, typename GradientImageType>
-void LaplacianImageFilter<OutputImageType, GradientImageType>
-::GenerateOutputInformation()
+template <typename OutputImageType, typename GradientImageType>
+void
+LaplacianImageFilter<OutputImageType, GradientImageType>::GenerateOutputInformation()
 {
   Superclass::GenerateOutputInformation();
 
@@ -51,12 +51,12 @@ void LaplacianImageFilter<OutputImageType, GradientImageType>
   m_Divergence->UpdateOutputInformation();
 
   // Copy it as the output information of the composite filter
-  this->GetOutput()->CopyInformation( m_Divergence->GetOutput() );
+  this->GetOutput()->CopyInformation(m_Divergence->GetOutput());
 }
 
-template<typename OutputImageType, typename GradientImageType>
-void LaplacianImageFilter<OutputImageType, GradientImageType>
-::GenerateData()
+template <typename OutputImageType, typename GradientImageType>
+void
+LaplacianImageFilter<OutputImageType, GradientImageType>::GenerateData()
 {
   // Update the last filter
   m_Divergence->Update();
@@ -65,7 +65,7 @@ void LaplacianImageFilter<OutputImageType, GradientImageType>
   this->GraftOutput(m_Divergence->GetOutput());
 }
 
-}// end namespace
+} // namespace rtk
 
 
 #endif

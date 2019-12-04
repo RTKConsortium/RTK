@@ -38,17 +38,15 @@ namespace rtk
  *
  */
 
-template < class TInputImage,
-           class TOutputImage >
-class DrawConvexImageFilter :
-  public itk::InPlaceImageFilter<TInputImage,TOutputImage>
+template <class TInputImage, class TOutputImage>
+class DrawConvexImageFilter : public itk::InPlaceImageFilter<TInputImage, TOutputImage>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(DrawConvexImageFilter);
 
   /** Standard class type alias. */
   using Self = DrawConvexImageFilter;
-  using Superclass = itk::InPlaceImageFilter<TInputImage,TOutputImage>;
+  using Superclass = itk::InPlaceImageFilter<TInputImage, TOutputImage>;
   using Pointer = itk::SmartPointer<Self>;
   using ConstPointer = itk::SmartPointer<const Self>;
 
@@ -60,10 +58,10 @@ public:
   using VectorType = ConvexShape::VectorType;
 
   /** Method for creation through the object factory. */
-  itkNewMacro ( Self );
+  itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro ( DrawConvexImageFilter, itk::InPlaceImageFilter );
+  itkTypeMacro(DrawConvexImageFilter, itk::InPlaceImageFilter);
 
   /** Get / Set the object pointer to the ConvexShape. */
   itkGetModifiableObjectMacro(ConvexShape, ConvexShape);
@@ -75,14 +73,16 @@ protected:
 
   /** ConvexShape must be created in the BeforeThreadedGenerateData in the
    * daugter classes. */
-  void BeforeThreadedGenerateData() override;
+  void
+  BeforeThreadedGenerateData() override;
 
   /** Apply changes to the input image requested region. */
-#if ITK_VERSION_MAJOR<5
-  void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread,
-                             ThreadIdType threadId ) override;
+#if ITK_VERSION_MAJOR < 5
+  void
+  ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, ThreadIdType threadId) override;
 #else
-  void DynamicThreadedGenerateData( const OutputImageRegionType& outputRegionForThread ) override;
+  void
+  DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread) override;
 #endif
 
 private:
@@ -93,7 +93,7 @@ private:
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkDrawConvexImageFilter.hxx"
+#  include "rtkDrawConvexImageFilter.hxx"
 #endif
 
 #endif

@@ -42,8 +42,7 @@ namespace rtk
  * \ingroup RTK
  *
  */
-class RTK_EXPORT QuadricShape:
-    public ConvexShape
+class RTK_EXPORT QuadricShape : public ConvexShape
 {
 public:
   /** Standard class type alias. */
@@ -58,30 +57,35 @@ public:
   using VectorType = Superclass::VectorType;
 
   /** Method for creation through the object factory. */
-  itkNewMacro ( Self );
+  itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(QuadricShape, ConvexShape);
 
   /** See rtk::ConvexShape::IsInside. */
-  bool IsInside(const PointType & point) const override;
+  bool
+  IsInside(const PointType & point) const override;
 
   /** See rtk::ConvexShape::IsIntersectedByRay for the goal and
    * http://www.siggraph.org/education/materials/HyperGraph/raytrace/rtinter4.htm
    * for the computation. */
-  bool IsIntersectedByRay(const PointType & rayOrigin,
-                                  const VectorType & rayDirection,
-                                  double & nearDist,
-                                  double & farDist) const override;
+  bool
+  IsIntersectedByRay(const PointType &  rayOrigin,
+                     const VectorType & rayDirection,
+                     double &           nearDist,
+                     double &           farDist) const override;
 
   /** Rescale object along each direction by a 3D vector. */
-  void Rescale(const VectorType &r) override;
+  void
+  Rescale(const VectorType & r) override;
 
   /** Translate object by a given 3D vector. */
-  void Translate(const VectorType &t) override;
+  void
+  Translate(const VectorType & t) override;
 
   /** Rotate object by a given 3D vector. */
-  void Rotate(const RotationMatrixType &r) override;
+  void
+  Rotate(const RotationMatrixType & r) override;
 
   itkGetConstMacro(A, ScalarType);
   itkSetMacro(A, ScalarType);
@@ -104,23 +108,25 @@ public:
   itkGetConstMacro(J, ScalarType);
   itkSetMacro(J, ScalarType);
 
-  void SetEllipsoid(const PointType &center, const VectorType &axis, const ScalarType &yangle=0);
+  void
+  SetEllipsoid(const PointType & center, const VectorType & axis, const ScalarType & yangle = 0);
 
-  itk::LightObject::Pointer InternalClone() const override;
+  itk::LightObject::Pointer
+  InternalClone() const override;
 
 private:
   QuadricShape();
 
-  ScalarType m_A{0.};
-  ScalarType m_B{0.};
-  ScalarType m_C{0.};
-  ScalarType m_D{0.};
-  ScalarType m_E{0.};
-  ScalarType m_F{0.};
-  ScalarType m_G{0.};
-  ScalarType m_H{0.};
-  ScalarType m_I{0.};
-  ScalarType m_J{0.};
+  ScalarType m_A{ 0. };
+  ScalarType m_B{ 0. };
+  ScalarType m_C{ 0. };
+  ScalarType m_D{ 0. };
+  ScalarType m_E{ 0. };
+  ScalarType m_F{ 0. };
+  ScalarType m_G{ 0. };
+  ScalarType m_H{ 0. };
+  ScalarType m_I{ 0. };
+  ScalarType m_J{ 0. };
 };
 
 } // end namespace rtk

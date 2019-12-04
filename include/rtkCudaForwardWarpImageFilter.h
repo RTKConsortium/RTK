@@ -20,14 +20,14 @@
 #define rtkCudaForwardWarpImageFilter_h
 
 #include "rtkConfiguration.h"
-//Conditional definition of the class to pass ITKHeaderTest
+// Conditional definition of the class to pass ITKHeaderTest
 #ifdef RTK_USE_CUDA
 
-#include "RTKExport.h"
-#include "rtkForwardWarpImageFilter.h"
+#  include "RTKExport.h"
+#  include "rtkForwardWarpImageFilter.h"
 
-#include <itkCudaImage.h>
-#include <itkCudaImageToImageFilter.h>
+#  include <itkCudaImage.h>
+#  include <itkCudaImageToImageFilter.h>
 
 namespace rtk
 {
@@ -44,21 +44,23 @@ namespace rtk
  *
  * \ingroup RTK CudaImageToImageFilter
  */
-class RTK_EXPORT CudaForwardWarpImageFilter :
-  public itk::CudaImageToImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>,
-    rtk::ForwardWarpImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>, itk::CudaImage<itk::CovariantVector<float, 3>, 3> > >
+class RTK_EXPORT CudaForwardWarpImageFilter
+  : public itk::CudaImageToImageFilter<itk::CudaImage<float, 3>,
+                                       itk::CudaImage<float, 3>,
+                                       rtk::ForwardWarpImageFilter<itk::CudaImage<float, 3>,
+                                                                   itk::CudaImage<float, 3>,
+                                                                   itk::CudaImage<itk::CovariantVector<float, 3>, 3>>>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(CudaForwardWarpImageFilter);
 
   /** Standard class type alias. */
-  using ImageType = itk::CudaImage<float,3>;
+  using ImageType = itk::CudaImage<float, 3>;
   using DisplacementVectorType = itk::CovariantVector<float, 3>;
   using DVFType = itk::CudaImage<DisplacementVectorType, 3>;
-  using ForwardWarpImageFilterType = ForwardWarpImageFilter< ImageType, ImageType, DVFType>;
+  using ForwardWarpImageFilterType = ForwardWarpImageFilter<ImageType, ImageType, DVFType>;
   using Self = CudaForwardWarpImageFilter;
-  using Superclass = itk::CudaImageToImageFilter<ImageType, ImageType,
-                     ForwardWarpImageFilterType>;
+  using Superclass = itk::CudaImageToImageFilter<ImageType, ImageType, ForwardWarpImageFilterType>;
   using Pointer = itk::SmartPointer<Self>;
   using ConstPointer = itk::SmartPointer<const Self>;
 
@@ -72,14 +74,14 @@ public:
 
 protected:
   CudaForwardWarpImageFilter();
-  virtual ~CudaForwardWarpImageFilter() {};
+  virtual ~CudaForwardWarpImageFilter(){};
 
-  virtual void GPUGenerateData();
-
+  virtual void
+  GPUGenerateData();
 };
 
 } // end namespace rtk
 
-#endif //end conditional definition of the class
+#endif // end conditional definition of the class
 
 #endif

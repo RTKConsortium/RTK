@@ -19,7 +19,7 @@
 #ifndef rtkReconstructImageFilter_h
 #define rtkReconstructImageFilter_h
 
-//Includes
+// Includes
 #include <itkImageToImageFilter.h>
 #include <itkMacro.h>
 #include <itkNaryAddImageFilter.h>
@@ -27,7 +27,8 @@
 #include "rtkDaubechiesWaveletsConvolutionImageFilter.h"
 #include "rtkUpsampleImageFilter.h"
 
-namespace rtk {
+namespace rtk
+{
 
 /**
  * \class ReconstructImageFilter
@@ -60,14 +61,22 @@ namespace rtk {
  * node [shape=box];
  * Add0 [ label="itk::NaryAddImageFilter" URL="\ref itk::NaryAddImageFilter"];
  * Add1 [ label="itk::NaryAddImageFilter" URL="\ref itk::NaryAddImageFilter"];
- * Conv0 [ label="rtk::DaubechiesWaveletsConvolutionImageFilter (Lowpass, Lowpass)" URL="\ref rtk::DaubechiesWaveletsConvolutionImageFilter"];
- * Conv1 [ label="rtk::DaubechiesWaveletsConvolutionImageFilter (Lowpass, Highpass)" URL="\ref rtk::DaubechiesWaveletsConvolutionImageFilter"];
- * Conv2 [ label="rtk::DaubechiesWaveletsConvolutionImageFilter (Highpass, Lowpass)" URL="\ref rtk::DaubechiesWaveletsConvolutionImageFilter"];
- * Conv3 [ label="rtk::DaubechiesWaveletsConvolutionImageFilter (Highpass, Highpass)" URL="\ref rtk::DaubechiesWaveletsConvolutionImageFilter"];
- * Conv4 [ label="rtk::DaubechiesWaveletsConvolutionImageFilter (Lowpass, Lowpass)" URL="\ref rtk::DaubechiesWaveletsConvolutionImageFilter"];
- * Conv5 [ label="rtk::DaubechiesWaveletsConvolutionImageFilter (Lowpass, Highpass)" URL="\ref rtk::DaubechiesWaveletsConvolutionImageFilter"];
- * Conv6 [ label="rtk::DaubechiesWaveletsConvolutionImageFilter (Highpass, Lowpass)" URL="\ref rtk::DaubechiesWaveletsConvolutionImageFilter"];
- * Conv7 [ label="rtk::DaubechiesWaveletsConvolutionImageFilter (Highpass, Highpass)" URL="\ref rtk::DaubechiesWaveletsConvolutionImageFilter"];
+ * Conv0 [ label="rtk::DaubechiesWaveletsConvolutionImageFilter (Lowpass, Lowpass)"
+ *         URL="\ref rtk::DaubechiesWaveletsConvolutionImageFilter"];
+ * Conv1 [ label="rtk::DaubechiesWaveletsConvolutionImageFilter (Lowpass, Highpass)"
+ *         URL="\ref rtk::DaubechiesWaveletsConvolutionImageFilter"];
+ * Conv2 [ label="rtk::DaubechiesWaveletsConvolutionImageFilter (Highpass, Lowpass)"
+ *         URL="\ref rtk::DaubechiesWaveletsConvolutionImageFilter"];
+ * Conv3 [ label="rtk::DaubechiesWaveletsConvolutionImageFilter (Highpass, Highpass)"
+ *         URL="\ref rtk::DaubechiesWaveletsConvolutionImageFilter"];
+ * Conv4 [ label="rtk::DaubechiesWaveletsConvolutionImageFilter (Lowpass, Lowpass)"
+ *         URL="\ref rtk::DaubechiesWaveletsConvolutionImageFilter"];
+ * Conv5 [ label="rtk::DaubechiesWaveletsConvolutionImageFilter (Lowpass, Highpass)"
+ *         URL="\ref rtk::DaubechiesWaveletsConvolutionImageFilter"];
+ * Conv6 [ label="rtk::DaubechiesWaveletsConvolutionImageFilter (Highpass, Lowpass)"
+ *         URL="\ref rtk::DaubechiesWaveletsConvolutionImageFilter"];
+ * Conv7 [ label="rtk::DaubechiesWaveletsConvolutionImageFilter (Highpass, Highpass)"
+ *         URL="\ref rtk::DaubechiesWaveletsConvolutionImageFilter"];
  * Up0 [ label="rtk::UpsampleImageFilter (by 2)" URL="\ref rtk::UpsampleImageFilter"];
  * Up1 [ label="rtk::UpsampleImageFilter (by 2)" URL="\ref rtk::UpsampleImageFilter"];
  * Up2 [ label="rtk::UpsampleImageFilter (by 2)" URL="\ref rtk::UpsampleImageFilter"];
@@ -111,129 +120,145 @@ namespace rtk {
  * \ingroup RTK
  */
 template <class TImage>
-class ReconstructImageFilter
-    : public itk::ImageToImageFilter<TImage, TImage>
+class ReconstructImageFilter : public itk::ImageToImageFilter<TImage, TImage>
 {
 public:
-    ITK_DISALLOW_COPY_AND_ASSIGN(ReconstructImageFilter);
+  ITK_DISALLOW_COPY_AND_ASSIGN(ReconstructImageFilter);
 
-    /** Standard class type alias. */
-    using Self = ReconstructImageFilter;
-    using Superclass = itk::ImageToImageFilter<TImage,TImage>;
-    using Pointer = itk::SmartPointer<Self>;
-    using ConstPointer = itk::SmartPointer<const Self>;
+  /** Standard class type alias. */
+  using Self = ReconstructImageFilter;
+  using Superclass = itk::ImageToImageFilter<TImage, TImage>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
-    /** Method for creation through the object factory. */
-    itkNewMacro(Self)
+  /** Method for creation through the object factory. */
+  itkNewMacro(Self);
 
-    /** Run-time type information (and related methods). */
-    itkTypeMacro(ReconstructImageFilter, ImageToImageFilter)
+  /** Run-time type information (and related methods). */
+  itkTypeMacro(ReconstructImageFilter, ImageToImageFilter);
 
-    /** ImageDimension enumeration. */
-    static constexpr unsigned int ImageDimension = TImage::ImageDimension;
+  /** ImageDimension enumeration. */
+  static constexpr unsigned int ImageDimension = TImage::ImageDimension;
 
-    /** Inherit types from Superclass. */
-    using InputImageType = typename Superclass::InputImageType;
-    using OutputImageType = typename Superclass::OutputImageType;
-    using InputImagePointer = typename Superclass::InputImagePointer;
-    using OutputImagePointer = typename Superclass::OutputImagePointer;
-    using InputImageConstPointer = typename Superclass::InputImageConstPointer;
-    using PixelType = typename TImage::PixelType;
-    using InternalPixelType = typename TImage::InternalPixelType;
+  /** Inherit types from Superclass. */
+  using InputImageType = typename Superclass::InputImageType;
+  using OutputImageType = typename Superclass::OutputImageType;
+  using InputImagePointer = typename Superclass::InputImagePointer;
+  using OutputImagePointer = typename Superclass::OutputImagePointer;
+  using InputImageConstPointer = typename Superclass::InputImageConstPointer;
+  using PixelType = typename TImage::PixelType;
+  using InternalPixelType = typename TImage::InternalPixelType;
 
-    /** Typedefs for pipeline's subfilters */
-    using AddFilterType = itk::NaryAddImageFilter<InputImageType, InputImageType>;
-    using ConvolutionFilterType = rtk::DaubechiesWaveletsConvolutionImageFilter<InputImageType>;
-    using UpsampleImageFilterType = rtk::UpsampleImageFilter<InputImageType>;
+  /** Typedefs for pipeline's subfilters */
+  using AddFilterType = itk::NaryAddImageFilter<InputImageType, InputImageType>;
+  using ConvolutionFilterType = rtk::DaubechiesWaveletsConvolutionImageFilter<InputImageType>;
+  using UpsampleImageFilterType = rtk::UpsampleImageFilter<InputImageType>;
 
-    /** Set the number of input levels. */
-    virtual void SetNumberOfLevels(unsigned int levels)
-    {
-      this->m_NumberOfLevels = levels;
-      this->ModifyInputOutputStorage();
-    }
+  /** Set the number of input levels. */
+  virtual void
+  SetNumberOfLevels(unsigned int levels)
+  {
+    this->m_NumberOfLevels = levels;
+    this->ModifyInputOutputStorage();
+  }
 
-    /** Get the number of input levels (per image). */
-    virtual unsigned int GetNumberOfLevels()
-    {
-      return this->m_NumberOfLevels;
-    }
+  /** Get the number of input levels (per image). */
+  virtual unsigned int
+  GetNumberOfLevels()
+  {
+    return this->m_NumberOfLevels;
+  }
 
-    /** ReconstructImageFilter produces images which are of different size
-     *  than the input image. As such, we reimplement GenerateOutputInformation()
-     *  in order to inform the pipeline execution model.
-     */
-    void GenerateOutputInformation() override;
+  /** ReconstructImageFilter produces images which are of different size
+   *  than the input image. As such, we reimplement GenerateOutputInformation()
+   *  in order to inform the pipeline execution model.
+   */
+  void
+  GenerateOutputInformation() override;
 
 
-    /** ReconstructImageFilter requests the largest possible region of all its inputs.
-     */
-    void GenerateInputRequestedRegion() override;
+  /** ReconstructImageFilter requests the largest possible region of all its inputs.
+   */
+  void
+  GenerateInputRequestedRegion() override;
 
-    /** ReconstructImageFilter uses input images of different sizes, therefore the
-     * VerifyInputInformation method has to be reimplemented.
-     */
-#if ITK_VERSION_MAJOR<5
-    void VerifyInputInformation() override {}
+  /** ReconstructImageFilter uses input images of different sizes, therefore the
+   * VerifyInputInformation method has to be reimplemented.
+   */
+#if ITK_VERSION_MAJOR < 5
+  void
+  VerifyInputInformation() override
+  {}
 #else
-    void VerifyInputInformation() const override {}
+  void
+  VerifyInputInformation() const override
+  {}
 #endif
 
-    void SetSizes(typename InputImageType::SizeType *sizesVector)
-    {
+  void
+  SetSizes(typename InputImageType::SizeType * sizesVector)
+  {
     m_Sizes = sizesVector;
-    }
+  }
 
-    void SetIndices(typename InputImageType::IndexType *indicesVector)
-    {
+  void
+  SetIndices(typename InputImageType::IndexType * indicesVector)
+  {
     m_Indices = indicesVector;
-    }
+  }
 
-    /** Get/Set the order of the wavelet filters */
-    itkGetMacro(Order, unsigned int)
-    itkSetMacro(Order, unsigned int)
+  /** Get/Set the order of the wavelet filters */
+  itkGetMacro(Order, unsigned int);
+  itkSetMacro(Order, unsigned int);
 
 protected:
-    ReconstructImageFilter();
-    ~ReconstructImageFilter() override = default;
+  ReconstructImageFilter();
+  ~ReconstructImageFilter() override = default;
 
-    void PrintSelf(std::ostream&os, itk::Indent indent) const override;
+  void
+  PrintSelf(std::ostream & os, itk::Indent indent) const override;
 
-    /** Modifies the storage for Input and Output images.
-      * Should be called after changes to levels, bands,
-      * Reconstruct, reconstruct, etc... */
-    void ModifyInputOutputStorage();
+  /** Modifies the storage for Input and Output images.
+   * Should be called after changes to levels, bands,
+   * Reconstruct, reconstruct, etc... */
+  void
+  ModifyInputOutputStorage();
 
-    /** Does the real work. */
-    void GenerateData() override;
+  /** Does the real work. */
+  void
+  GenerateData() override;
 
-    /** Calculates the number of ProcessObject output images */
-    virtual unsigned int CalculateNumberOfInputs();
+  /** Calculates the number of ProcessObject output images */
+  virtual unsigned int
+  CalculateNumberOfInputs();
 
-    /** Creates and sets the kernel sources to generate all kernels. */
-    void GeneratePassVectors();
+  /** Creates and sets the kernel sources to generate all kernels. */
+  void
+  GeneratePassVectors();
 
 private:
-    unsigned int m_NumberOfLevels{5};         // Holds the number of Reconstruction levels
-    unsigned int m_Order{3};                  // Holds the order of the wavelet filters
-    bool         m_PipelineConstructed{false};// Filters instantiated by GenerateOutputInformation() should be instantiated only once
+  unsigned int m_NumberOfLevels{ 5 }; // Holds the number of Reconstruction levels
+  unsigned int m_Order{ 3 };          // Holds the order of the wavelet filters
+  bool         m_PipelineConstructed{
+    false
+  }; // Filters instantiated by GenerateOutputInformation() should be instantiated only once
 
-    typename InputImageType::SizeType                                  *m_Sizes; //Holds the size of sub-images at each level
-    typename InputImageType::IndexType                                 *m_Indices; //Holds the size of sub-images at each level
-    typename std::vector<typename AddFilterType::Pointer>               m_AddFilters; //Holds a vector of add filters
-    typename std::vector<typename ConvolutionFilterType::Pointer>       m_ConvolutionFilters; //Holds a vector of convolution filters
-    typename std::vector<typename UpsampleImageFilterType::Pointer>     m_UpsampleFilters; //Holds a vector of Upsample filters
-    //Holds a vector of PassVectors. A PassVector has Dimension components, each one storing either "High" or "Low"
-    typename std::vector<typename ConvolutionFilterType::PassVector>    m_PassVectors;
-
-
+  typename InputImageType::SizeType * m_Sizes;                        // Holds the size of sub-images at each level
+  typename InputImageType::IndexType * m_Indices;                     // Holds the size of sub-images at each level
+  typename std::vector<typename AddFilterType::Pointer> m_AddFilters; // Holds a vector of add filters
+  typename std::vector<typename ConvolutionFilterType::Pointer>
+    m_ConvolutionFilters; // Holds a vector of convolution filters
+  typename std::vector<typename UpsampleImageFilterType::Pointer>
+    m_UpsampleFilters; // Holds a vector of Upsample filters
+  // Holds a vector of PassVectors. A PassVector has Dimension components, each one storing either "High" or "Low"
+  typename std::vector<typename ConvolutionFilterType::PassVector> m_PassVectors;
 };
 
-}// namespace rtk
+} // namespace rtk
 
-//Include CXX
+// Include CXX
 #ifndef rtk_MANUAL_INSTANTIATION
-#include "rtkReconstructImageFilter.hxx"
+#  include "rtkReconstructImageFilter.hxx"
 #endif
 
 #endif

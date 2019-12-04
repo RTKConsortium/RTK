@@ -24,75 +24,74 @@
 namespace rtk
 {
 void
-GeometricPhantomFileReader
-::GenerateOutputInformation()
+GeometricPhantomFileReader ::GenerateOutputInformation()
 {
   m_GeometricPhantom = GeometricPhantom::New();
 
-  //Admitted figures
+  // Admitted figures
   constexpr unsigned int NFIGURES = 4;
-  const std::string search_fig[NFIGURES] = {"Ellipsoid", "Cylinder", "Cone", "Box"};
-  size_t            offset        = 0;
-  std::string       line;
-  std::ifstream     myFile;
+  const std::string      search_fig[NFIGURES] = { "Ellipsoid", "Cylinder", "Cone", "Box" };
+  size_t                 offset = 0;
+  std::string            line;
+  std::ifstream          myFile;
 
-  myFile.open( m_Filename.c_str() );
-  if ( !myFile.is_open() )
-    {
+  myFile.open(m_Filename.c_str());
+  if (!myFile.is_open())
+  {
     itkGenericExceptionMacro("Error opening File");
-    }
-  while ( !myFile.eof() )
-    {
+  }
+  while (!myFile.eof())
+  {
     getline(myFile, line);
-    for(unsigned int i = 0; i < NFIGURES; i++)
+    for (unsigned int i = 0; i < NFIGURES; i++)
+    {
+      if ((offset = line.find(search_fig[i], 0)) != std::string::npos)
       {
-      if( (offset = line.find(search_fig[i], 0)) != std::string::npos )
-        {
-        const std::string parameterNames[9] = {"Figure", "A=", "B=", "C=", "x=", "y=", "z=", "beta=", "gray=" };
+        const std::string parameterNames[9] = { "Figure", "A=", "B=", "C=", "x=", "y=", "z=", "beta=", "gray=" };
         std::vector<ConvexShape::ScalarType> parameters;
         parameters.push_back((ConvexShape::ScalarType)i);
-        for ( int j = 1; j < 9; j++ )
-          {
+        for (int j = 1; j < 9; j++)
+        {
           double val = 0.;
           offset = line.find(parameterNames[j], 0);
-          if ( offset != std::string::npos )
-            {
+          if (offset != std::string::npos)
+          {
             offset += parameterNames[j].length();
-            std::string s = line.substr(offset,line.length()-offset);
+            std::string        s = line.substr(offset, line.length() - offset);
             std::istringstream ss(s);
             ss >> val;
-            //Saving all parameters for each ellipsoid
-            }
+            // Saving all parameters for each ellipsoid
+          }
           parameters.push_back(val);
-          }
-        ConvexShape::Pointer cs;
+        }
+        ConvexShape::Pointer     cs;
         QuadricShape::VectorType axis;
-        QuadricShape::PointType center;
-        for(int k=0; k<3; k++)
-           {
-          axis[k] = parameters[k+1];
-          center[k] = parameters[k+4];
-          }
-        if(search_fig[i]=="Box")
-          {
+        QuadricShape::PointType  center;
+        for (int k = 0; k < 3; k++)
+        {
+          axis[k] = parameters[k + 1];
+          center[k] = parameters[k + 4];
+        }
+        if (search_fig[i] == "Box")
+        {
           BoxShape::Pointer bs = BoxShape::New();
-          bs->SetBoxMin(center-axis);
-          bs->SetBoxMax(center+axis);
+          bs->SetBoxMin(center - axis);
+          bs->SetBoxMax(center + axis);
           cs = bs.GetPointer();
-          }
+        }
         else
-          {
+        {
           QuadricShape::Pointer qo = QuadricShape::New();
           qo->SetEllipsoid(center, axis, parameters[7]);
-          if(search_fig[i]=="Cone")
+          if (search_fig[i] == "Cone")
             qo->SetJ(0.);
           cs = qo.GetPointer();
-          }
+        }
         cs->SetDensity(parameters[8]);
         m_GeometricPhantom->AddConvexShape(cs);
-        }
       }
     }
+  }
   myFile.close();
 }
 

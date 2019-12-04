@@ -43,15 +43,14 @@ namespace rtk
  * \ingroup RTK Projector
  */
 template <class TInputImage, class TOutputImage, class TDeformation>
-class ITK_EXPORT FDKWarpBackProjectionImageFilter :
-  public FDKBackProjectionImageFilter<TInputImage,TOutputImage>
+class ITK_EXPORT FDKWarpBackProjectionImageFilter : public FDKBackProjectionImageFilter<TInputImage, TOutputImage>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(FDKWarpBackProjectionImageFilter);
 
   /** Standard class type alias. */
   using Self = FDKWarpBackProjectionImageFilter;
-  using Superclass = FDKBackProjectionImageFilter<TInputImage,TOutputImage>;
+  using Superclass = FDKBackProjectionImageFilter<TInputImage, TOutputImage>;
   using Pointer = itk::SmartPointer<Self>;
   using ConstPointer = itk::SmartPointer<const Self>;
   using InputPixelType = typename TInputImage::PixelType;
@@ -63,7 +62,7 @@ public:
   using GeometryType = rtk::ProjectionGeometry<TOutputImage::ImageDimension>;
   using GeometryPointer = typename GeometryType::Pointer;
   using ProjectionMatrixType = typename GeometryType::MatrixType;
-  using ProjectionImageType = itk::Image<InputPixelType, TInputImage::ImageDimension-1>;
+  using ProjectionImageType = itk::Image<InputPixelType, TInputImage::ImageDimension - 1>;
   using ProjectionImagePointer = typename ProjectionImageType::Pointer;
 
   /** Method for creation through the object factory. */
@@ -80,16 +79,17 @@ protected:
   FDKWarpBackProjectionImageFilter();
   ~FDKWarpBackProjectionImageFilter() override = default;
 
-  void GenerateData() override;
+  void
+  GenerateData() override;
 
 private:
-  DeformationPointer    m_Deformation;
+  DeformationPointer m_Deformation;
 };
 
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkFDKWarpBackProjectionImageFilter.hxx"
+#  include "rtkFDKWarpBackProjectionImageFilter.hxx"
 #endif
 
 #endif

@@ -36,8 +36,7 @@ namespace rtk
  *
  * \ingroup RTK IOFilters
  */
-class RTK_EXPORT XRadGeometryReader :
-  public itk::LightProcessObject
+class RTK_EXPORT XRadGeometryReader : public itk::LightProcessObject
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(XRadGeometryReader);
@@ -67,11 +66,12 @@ protected:
   XRadGeometryReader();
 
 private:
-  void GenerateData() override;
+  void
+  GenerateData() override;
 
   GeometryType::Pointer m_Geometry;
   std::string           m_ImageFileName;
 };
 
-}
+} // namespace rtk
 #endif

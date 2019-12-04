@@ -27,11 +27,10 @@ namespace rtk
 //
 // Constructor
 //
-template< class TInputImage, class TROI >
-AverageOutOfROIImageFilter< TInputImage, TROI >
-::AverageOutOfROIImageFilter()
+template <class TInputImage, class TROI>
+AverageOutOfROIImageFilter<TInputImage, TROI>::AverageOutOfROIImageFilter()
 {
-#if ITK_VERSION_MAJOR>4
+#if ITK_VERSION_MAJOR > 4
   this->DynamicMultiThreadingOff();
 #endif
 
@@ -42,103 +41,100 @@ AverageOutOfROIImageFilter< TInputImage, TROI >
   m_Splitter->SetDirection(TInputImage::ImageDimension - 1);
 }
 
-template< class TInputImage, class TROI >
+template <class TInputImage, class TROI>
 void
-AverageOutOfROIImageFilter< TInputImage, TROI >
-::SetROI(const TROI* Map)
+AverageOutOfROIImageFilter<TInputImage, TROI>::SetROI(const TROI * Map)
 {
-  this->SetNthInput(1, const_cast<TROI*>(Map));
+  this->SetNthInput(1, const_cast<TROI *>(Map));
 }
 
-template< class TInputImage, class TROI >
+template <class TInputImage, class TROI>
 typename TROI::Pointer
-AverageOutOfROIImageFilter< TInputImage, TROI >
-::GetROI()
+AverageOutOfROIImageFilter<TInputImage, TROI>::GetROI()
 {
-  return static_cast< TROI* >
-          ( this->itk::ProcessObject::GetInput(1) );
+  return static_cast<TROI *>(this->itk::ProcessObject::GetInput(1));
 }
 
-template< class TInputImage, class TROI >
-const itk::ImageRegionSplitterBase*
-AverageOutOfROIImageFilter< TInputImage, TROI >
-::GetImageRegionSplitter(void) const
+template <class TInputImage, class TROI>
+const itk::ImageRegionSplitterBase *
+AverageOutOfROIImageFilter<TInputImage, TROI>::GetImageRegionSplitter(void) const
 {
   return m_Splitter;
 }
 
-template< class TInputImage, class TROI >
+template <class TInputImage, class TROI>
 void
-AverageOutOfROIImageFilter< TInputImage, TROI >
-::GenerateOutputInformation()
+AverageOutOfROIImageFilter<TInputImage, TROI>::GenerateOutputInformation()
 {
   Superclass::GenerateOutputInformation();
 
   // Check whether the ROI has the same information as the input image
-  typename TROI::SizeType ROISize = this->GetROI()->GetLargestPossibleRegion().GetSize();
-  typename TROI::SpacingType ROISpacing = this->GetROI()->GetSpacing();
-  typename TROI::PointType ROIOrigin = this->GetROI()->GetOrigin();
+  typename TROI::SizeType      ROISize = this->GetROI()->GetLargestPossibleRegion().GetSize();
+  typename TROI::SpacingType   ROISpacing = this->GetROI()->GetSpacing();
+  typename TROI::PointType     ROIOrigin = this->GetROI()->GetOrigin();
   typename TROI::DirectionType ROIDirection = this->GetROI()->GetDirection();
 
   bool isInformationInconsistent;
   isInformationInconsistent = false;
 
-  for (unsigned int dim=0; dim<TROI::ImageDimension; dim++)
-    {
+  for (unsigned int dim = 0; dim < TROI::ImageDimension; dim++)
+  {
     if (ROISize[dim] != this->GetInput(0)->GetLargestPossibleRegion().GetSize()[dim])
       isInformationInconsistent = true;
     if (ROISpacing[dim] != this->GetInput(0)->GetSpacing()[dim])
       isInformationInconsistent = true;
     if (ROIOrigin[dim] != this->GetInput(0)->GetOrigin()[dim])
       isInformationInconsistent = true;
-    for (unsigned int i=0; i<TROI::ImageDimension; i++)
-      {
+    for (unsigned int i = 0; i < TROI::ImageDimension; i++)
+    {
       if (ROIDirection(dim, i) != this->GetInput(0)->GetDirection()(dim, i))
         isInformationInconsistent = true;
-      }
     }
+  }
 
-  if(isInformationInconsistent)
+  if (isInformationInconsistent)
     itkGenericExceptionMacro(<< "In AverageOutOfROIImageFilter: information of ROI image does not match input image");
 
   this->GetOutput()->SetLargestPossibleRegion(this->GetInput(0)->GetLargestPossibleRegion());
 }
 
-template< class TInputImage, class TROI >
+template <class TInputImage, class TROI>
 void
-AverageOutOfROIImageFilter< TInputImage, TROI >
-::GenerateInputRequestedRegion()
+AverageOutOfROIImageFilter<TInputImage, TROI>::GenerateInputRequestedRegion()
 {
-  //Call the superclass' implementation of this method
+  // Call the superclass' implementation of this method
   Superclass::GenerateInputRequestedRegion();
 
   // Compute the requested regions on input and ROI from the output's requested region
   typename TInputImage::RegionType outputRequested = this->GetOutput()->GetRequestedRegion();
 
   typename TInputImage::RegionType inputRequested = outputRequested;
-  inputRequested.SetSize(TInputImage::ImageDimension - 1, this->GetInput(0)->GetLargestPossibleRegion().GetSize(TInputImage::ImageDimension - 1));
-  inputRequested.SetIndex(TInputImage::ImageDimension - 1, this->GetInput(0)->GetLargestPossibleRegion().GetIndex(TInputImage::ImageDimension - 1));
+  inputRequested.SetSize(TInputImage::ImageDimension - 1,
+                         this->GetInput(0)->GetLargestPossibleRegion().GetSize(TInputImage::ImageDimension - 1));
+  inputRequested.SetIndex(TInputImage::ImageDimension - 1,
+                          this->GetInput(0)->GetLargestPossibleRegion().GetIndex(TInputImage::ImageDimension - 1));
 
   typename TROI::RegionType ROIRequested;
-//  for (unsigned int dim = 0; dim<TROI::ImageDimension; dim++)
-//    {
-//    ROIRequested.SetSize(dim, outputRequested.GetSize(dim));
-//    ROIRequested.SetIndex(dim, outputRequested.GetSize(dim));
-//    }
+  //  for (unsigned int dim = 0; dim<TROI::ImageDimension; dim++)
+  //    {
+  //    ROIRequested.SetSize(dim, outputRequested.GetSize(dim));
+  //    ROIRequested.SetIndex(dim, outputRequested.GetSize(dim));
+  //    }
   ROIRequested = outputRequested.Slice(TInputImage::ImageDimension - 1);
 
-  //Get pointers to the input and ROI
-  typename TInputImage::Pointer  inputPtr  = const_cast<TInputImage *>(this->GetInput(0));
+  // Get pointers to the input and ROI
+  typename TInputImage::Pointer inputPtr = const_cast<TInputImage *>(this->GetInput(0));
   inputPtr->SetRequestedRegion(inputRequested);
 
-  typename TROI::Pointer  ROIPtr  = this->GetROI();
+  typename TROI::Pointer ROIPtr = this->GetROI();
   ROIPtr->SetRequestedRegion(ROIRequested);
 }
 
-template< class TInputImage, class TROI >
+template <class TInputImage, class TROI>
 void
-AverageOutOfROIImageFilter< TInputImage, TROI >
-::ThreadedGenerateData(const typename TInputImage::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId))
+AverageOutOfROIImageFilter<TInputImage, TROI>::ThreadedGenerateData(
+  const typename TInputImage::RegionType & outputRegionForThread,
+  itk::ThreadIdType                        itkNotUsed(threadId))
 {
   // Walks the first frame of the outputRegionForThread
   // For each voxel, creates an input iterator that walks
@@ -152,26 +148,26 @@ AverageOutOfROIImageFilter< TInputImage, TROI >
 
   // Create a similar region with TROI image type (last dimension removed)
   typename TROI::RegionType SingleFrameRegion = this->GetROI()->GetLargestPossibleRegion();
-  for (unsigned int dim = 0; dim< TInputImage::ImageDimension - 1; dim++)
-    {
+  for (unsigned int dim = 0; dim < TInputImage::ImageDimension - 1; dim++)
+  {
     SingleFrameRegion.SetSize(dim, FirstFrameRegion.GetSize(dim));
     SingleFrameRegion.SetIndex(dim, FirstFrameRegion.GetIndex(dim));
-    }
+  }
 
   // Iterate on these regions
   itk::ImageRegionIteratorWithIndex<TInputImage> FakeIterator(this->GetOutput(), FirstFrameRegion);
-  itk::ImageRegionIterator<TROI> ROIIterator(this->GetROI(), SingleFrameRegion);
+  itk::ImageRegionIterator<TROI>                 ROIIterator(this->GetROI(), SingleFrameRegion);
 
   // Create a single-voxel region traversing last dimension
   typename TInputImage::RegionType SingleVoxelRegion = outputRegionForThread;
-  for (unsigned int dim = 0; dim< TInputImage::ImageDimension - 1; dim++)
-      SingleVoxelRegion.SetSize(dim, 1);
+  for (unsigned int dim = 0; dim < TInputImage::ImageDimension - 1; dim++)
+    SingleVoxelRegion.SetSize(dim, 1);
 
   // Create a variable to store the average value
   typename TInputImage::PixelType avg;
 
-  while(!ROIIterator.IsAtEnd())
-    {
+  while (!ROIIterator.IsAtEnd())
+  {
     // Configure the SingleVoxelRegion correctly to follow the FakeIterator
     // It is the only purpose of this FakeIterator
     SingleVoxelRegion.SetIndex(FakeIterator.GetIndex());
@@ -180,26 +176,26 @@ AverageOutOfROIImageFilter< TInputImage, TROI >
     itk::ImageRegionConstIterator<TInputImage> inputIterator(this->GetInput(), SingleVoxelRegion);
     avg = 0;
     while (!inputIterator.IsAtEnd())
-      {
+    {
       avg += inputIterator.Get();
       ++inputIterator;
-      }
+    }
     avg /= SingleVoxelRegion.GetSize(TInputImage::ImageDimension - 1);
 
     // Walk the output along last dimension for this voxel,
     // replacing voxel values with their average, if indicated by the value in ROI
     itk::ImageRegionIterator<TInputImage> outputIterator(this->GetOutput(), SingleVoxelRegion);
     while (!outputIterator.IsAtEnd())
-      {
+    {
       outputIterator.Set(ROIIterator.Get() * outputIterator.Get() + avg * (1 - ROIIterator.Get()));
       ++outputIterator;
-      }
+    }
 
     ++FakeIterator;
     ++ROIIterator;
-    }
+  }
 }
 
-} // end namespace itk
+} // namespace rtk
 
 #endif

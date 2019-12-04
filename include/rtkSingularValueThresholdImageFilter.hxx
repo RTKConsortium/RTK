@@ -30,11 +30,10 @@
 namespace rtk
 {
 
-template< typename TInputImage, typename TRealType, typename TOutputImage >
-SingularValueThresholdImageFilter< TInputImage, TRealType, TOutputImage >
-::SingularValueThresholdImageFilter()
+template <typename TInputImage, typename TRealType, typename TOutputImage>
+SingularValueThresholdImageFilter<TInputImage, TRealType, TOutputImage>::SingularValueThresholdImageFilter()
 {
-#if ITK_VERSION_MAJOR>4
+#if ITK_VERSION_MAJOR > 4
   this->DynamicMultiThreadingOff();
 #endif
 
@@ -45,19 +44,18 @@ SingularValueThresholdImageFilter< TInputImage, TRealType, TOutputImage >
   m_Splitter->SetDirection(TInputImage::ImageDimension - 1);
 }
 
-template< typename TInputImage, typename TRealType, typename TOutputImage >
-const itk::ImageRegionSplitterBase*
-SingularValueThresholdImageFilter< TInputImage, TRealType, TOutputImage >
-::GetImageRegionSplitter(void) const
+template <typename TInputImage, typename TRealType, typename TOutputImage>
+const itk::ImageRegionSplitterBase *
+SingularValueThresholdImageFilter<TInputImage, TRealType, TOutputImage>::GetImageRegionSplitter(void) const
 {
   return m_Splitter;
 }
 
-template< typename TInputImage, typename TRealType, typename TOutputImage >
+template <typename TInputImage, typename TRealType, typename TOutputImage>
 void
-SingularValueThresholdImageFilter< TInputImage, TRealType, TOutputImage >
-::ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread,
-                       itk::ThreadIdType /*threadId*/)
+SingularValueThresholdImageFilter<TInputImage, TRealType, TOutputImage>::ThreadedGenerateData(
+  const OutputImageRegionType & outputRegionForThread,
+  itk::ThreadIdType /*threadId*/)
 {
   // Walks the first frame of the outputRegionForThread
   // For each voxel, creates an input iterator that walks
@@ -74,39 +72,40 @@ SingularValueThresholdImageFilter< TInputImage, TRealType, TOutputImage >
 
   // Create a single-voxel region traversing last dimension
   typename TInputImage::RegionType SingleVoxelRegion = outputRegionForThread;
-  for (unsigned int dim = 0; dim< TInputImage::ImageDimension - 1; dim++)
-      SingleVoxelRegion.SetSize(dim, 1);
+  for (unsigned int dim = 0; dim < TInputImage::ImageDimension - 1; dim++)
+    SingleVoxelRegion.SetSize(dim, 1);
 
   // Create a variable to store the jacobian matrix
-  vnl_matrix<double> jacobian (outputRegionForThread.GetSize()[TInputImage::ImageDimension - 1], TInputImage::ImageDimension - 1);
+  vnl_matrix<double> jacobian(outputRegionForThread.GetSize()[TInputImage::ImageDimension - 1],
+                              TInputImage::ImageDimension - 1);
 
-  while(!FakeIterator.IsAtEnd())
-    {
+  while (!FakeIterator.IsAtEnd())
+  {
     // Configure the SingleVoxelRegion correctly to follow the FakeIterator
     // It is the only purpose of this FakeIterator
     SingleVoxelRegion.SetIndex(FakeIterator.GetIndex());
 
     // Walk the input along last dimension for this voxel, filling in the jacobian along the way
     itk::ImageRegionConstIterator<TInputImage> inputIterator(this->GetInput(), SingleVoxelRegion);
-    unsigned int row=0;
+    unsigned int                               row = 0;
     for (inputIterator.GoToBegin(); !inputIterator.IsAtEnd(); ++inputIterator, row++)
-      {
+    {
       typename TInputImage::PixelType gradient = inputIterator.Get();
-      for (unsigned int column=0; column<TInputImage::ImageDimension - 1; column++)
-        {
+      for (unsigned int column = 0; column < TInputImage::ImageDimension - 1; column++)
+      {
         jacobian[row][column] = gradient[column];
-        }
       }
+    }
 
     // Perform the singular value decomposition of the jacobian matrix
     vnl_svd<double> svd(jacobian);
 
     // Threshold the singular values. Since they are sorted in descending order, we
     // can stop as soon as we reach one that is below threshold
-    for (unsigned int i=0; (i<TInputImage::ImageDimension && svd.W(i) > m_Threshold); i++)
-      {
+    for (unsigned int i = 0; (i < TInputImage::ImageDimension && svd.W(i) > m_Threshold); i++)
+    {
       svd.W(i) = m_Threshold;
-      }
+    }
 
     // Reconstruct the jacobian
     jacobian = svd.recompose();
@@ -116,18 +115,18 @@ SingularValueThresholdImageFilter< TInputImage, TRealType, TOutputImage >
     itk::ImageRegionIterator<TInputImage> outputIterator(this->GetOutput(), SingleVoxelRegion);
     row = 0;
     for (outputIterator.GoToBegin(); !outputIterator.IsAtEnd(); ++outputIterator, row++)
-      {
+    {
       typename TInputImage::PixelType vector;
-      for (unsigned int column=0; column<jacobian.cols(); column++)
+      for (unsigned int column = 0; column < jacobian.cols(); column++)
         vector[column] = jacobian[row][column];
 
       outputIterator.Set(vector);
-      }
+    }
 
     ++FakeIterator;
-    }
+  }
 }
 
-} // end namespace itk
+} // namespace rtk
 
 #endif

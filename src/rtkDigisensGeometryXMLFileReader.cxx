@@ -25,8 +25,7 @@
 namespace rtk
 {
 
-DigisensGeometryXMLFileReader::
-DigisensGeometryXMLFileReader()
+DigisensGeometryXMLFileReader::DigisensGeometryXMLFileReader()
 {
   m_OutputObject = &m_Dictionary;
   m_NumberOfFiles = 0;
@@ -35,81 +34,77 @@ DigisensGeometryXMLFileReader()
 }
 
 int
-DigisensGeometryXMLFileReader::
-CanReadFile(const char *name)
+DigisensGeometryXMLFileReader::CanReadFile(const char * name)
 {
-  if(!itksys::SystemTools::FileExists(name) ||
-     itksys::SystemTools::FileIsDirectory(name) ||
-     itksys::SystemTools::FileLength(name) == 0)
+  if (!itksys::SystemTools::FileExists(name) || itksys::SystemTools::FileIsDirectory(name) ||
+      itksys::SystemTools::FileLength(name) == 0)
     return 0;
   return 1;
 }
 
 void
-DigisensGeometryXMLFileReader::
-StartElement(const char * name,const char ** itkNotUsed(atts))
+DigisensGeometryXMLFileReader::StartElement(const char * name, const char ** itkNotUsed(atts))
 {
   m_CurCharacterData = "";
 
-  if(m_TreeLevel==1)
-    {
-    if(itksys::SystemTools::Strucmp(name, "Rotation") == 0)
+  if (m_TreeLevel == 1)
+  {
+    if (itksys::SystemTools::Strucmp(name, "Rotation") == 0)
       m_CurrentSection = ROTATION;
-    else if(itksys::SystemTools::Strucmp(name, "XRay") == 0)
+    else if (itksys::SystemTools::Strucmp(name, "XRay") == 0)
       m_CurrentSection = XRAY;
-    else if(itksys::SystemTools::Strucmp(name, "Camera") == 0)
+    else if (itksys::SystemTools::Strucmp(name, "Camera") == 0)
       m_CurrentSection = CAMERA;
-    else if(itksys::SystemTools::Strucmp(name, "Radios") == 0)
-      {
+    else if (itksys::SystemTools::Strucmp(name, "Radios") == 0)
+    {
       m_CurrentSection = RADIOS;
       m_NumberOfFiles = 0;
-      }
-    else if(itksys::SystemTools::Strucmp(name, "Grid") == 0)
-      m_CurrentSection = GRID;
-    else if(itksys::SystemTools::Strucmp(name, "Processing") == 0)
-      m_CurrentSection = PROCESSING;
     }
+    else if (itksys::SystemTools::Strucmp(name, "Grid") == 0)
+      m_CurrentSection = GRID;
+    else if (itksys::SystemTools::Strucmp(name, "Processing") == 0)
+      m_CurrentSection = PROCESSING;
+  }
   m_TreeLevel++;
 }
 
 void
-DigisensGeometryXMLFileReader::
-EndElement(const char *name)
+DigisensGeometryXMLFileReader::EndElement(const char * name)
 {
   using VectorThreeDType = itk::Vector<double, 3>;
   using Vector4DType = itk::Vector<double, 4>;
 
-#define ENCAPLULATE_META_DATA_3D(section, metaName) \
-  if(m_CurrentSection == section && itksys::SystemTools::Strucmp(name, metaName) == 0) \
-    { \
-    VectorThreeDType vec; \
-    std::istringstream iss(m_CurCharacterData); \
-    iss >> vec; \
-    itk::EncapsulateMetaData<VectorThreeDType>(m_Dictionary, #section metaName, vec); \
-    }
+#define ENCAPLULATE_META_DATA_3D(section, metaName)                                                                    \
+  if (m_CurrentSection == section && itksys::SystemTools::Strucmp(name, metaName) == 0)                                \
+  {                                                                                                                    \
+    VectorThreeDType   vec;                                                                                            \
+    std::istringstream iss(m_CurCharacterData);                                                                        \
+    iss >> vec;                                                                                                        \
+    itk::EncapsulateMetaData<VectorThreeDType>(m_Dictionary, #section metaName, vec);                                  \
+  }
 
-#define ENCAPLULATE_META_DATA_4D(section, metaName) \
-  if(m_CurrentSection == section && itksys::SystemTools::Strucmp(name, metaName) == 0) \
-    { \
-    Vector4DType vec; \
-    std::istringstream iss(m_CurCharacterData); \
-    iss >> vec; \
-    itk::EncapsulateMetaData<Vector4DType>(m_Dictionary, #section metaName, vec); \
-    }
+#define ENCAPLULATE_META_DATA_4D(section, metaName)                                                                    \
+  if (m_CurrentSection == section && itksys::SystemTools::Strucmp(name, metaName) == 0)                                \
+  {                                                                                                                    \
+    Vector4DType       vec;                                                                                            \
+    std::istringstream iss(m_CurCharacterData);                                                                        \
+    iss >> vec;                                                                                                        \
+    itk::EncapsulateMetaData<Vector4DType>(m_Dictionary, #section metaName, vec);                                      \
+  }
 
-#define ENCAPLULATE_META_DATA_INTEGER(section, metaName) \
-  if(m_CurrentSection == section && itksys::SystemTools::Strucmp(name, metaName) == 0) \
-    { \
-    int i = atoi(m_CurCharacterData.c_str() ); \
-    itk::EncapsulateMetaData<int>(m_Dictionary, #section metaName, i); \
-    }
+#define ENCAPLULATE_META_DATA_INTEGER(section, metaName)                                                               \
+  if (m_CurrentSection == section && itksys::SystemTools::Strucmp(name, metaName) == 0)                                \
+  {                                                                                                                    \
+    int i = atoi(m_CurCharacterData.c_str());                                                                          \
+    itk::EncapsulateMetaData<int>(m_Dictionary, #section metaName, i);                                                 \
+  }
 
-#define ENCAPLULATE_META_DATA_DOUBLE(section, metaName) \
-  if(m_CurrentSection == section && itksys::SystemTools::Strucmp(name, metaName) == 0) \
-    { \
-    double d = atof(m_CurCharacterData.c_str() ); \
-    itk::EncapsulateMetaData<double>(m_Dictionary, #section metaName, d); \
-    }
+#define ENCAPLULATE_META_DATA_DOUBLE(section, metaName)                                                                \
+  if (m_CurrentSection == section && itksys::SystemTools::Strucmp(name, metaName) == 0)                                \
+  {                                                                                                                    \
+    double d = atof(m_CurCharacterData.c_str());                                                                       \
+    itk::EncapsulateMetaData<double>(m_Dictionary, #section metaName, d);                                              \
+  }
 
   ENCAPLULATE_META_DATA_4D(GRID, "rotation");
 
@@ -132,21 +127,20 @@ EndElement(const char *name)
   ENCAPLULATE_META_DATA_DOUBLE(RADIOS, "angularRange");
   ENCAPLULATE_META_DATA_DOUBLE(RADIOS, "startAngle");
 
-  if(m_CurrentSection == RADIOS && itksys::SystemTools::Strucmp(name, "files") == 0)
+  if (m_CurrentSection == RADIOS && itksys::SystemTools::Strucmp(name, "files") == 0)
     itk::EncapsulateMetaData<int>(m_Dictionary, "RADIOSNumberOfFiles", m_NumberOfFiles);
 
-  if(itksys::SystemTools::Strucmp(name, "file") == 0)
+  if (itksys::SystemTools::Strucmp(name, "file") == 0)
     m_NumberOfFiles++;
 
   m_TreeLevel--;
 }
 
 void
-DigisensGeometryXMLFileReader::
-CharacterDataHandler(const char *inData, int inLength)
+DigisensGeometryXMLFileReader::CharacterDataHandler(const char * inData, int inLength)
 {
-  for(int i = 0; i < inLength; i++)
+  for (int i = 0; i < inLength; i++)
     m_CurCharacterData = m_CurCharacterData + inData[i];
 }
 
-}
+} // namespace rtk

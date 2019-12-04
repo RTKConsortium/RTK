@@ -25,67 +25,64 @@
 namespace rtk
 {
 
-PhaseReader::PhaseReader()
+PhaseReader::PhaseReader() {}
+
+void
+PhaseReader::PrintSelf(std::ostream & os, itk::Indent indent) const
 {
+  Superclass::PrintSelf(os, indent);
+  for (unsigned int proj = 0; proj < m_Phases.size(); proj++)
+    os << this->m_Phases[proj] << std::endl;
 }
 
-void PhaseReader::PrintSelf(std::ostream & os, itk::Indent indent) const
-{
-  Superclass::PrintSelf(os,indent);
-  for (unsigned int proj=0; proj<m_Phases.size(); proj++)
-      os << this->m_Phases[proj] << std::endl;
-}
-
-void PhaseReader::Parse()
+void
+PhaseReader::Parse()
 {
   this->m_InputStream.clear();
   this->m_InputStream.open(this->m_FileName.c_str());
-  if ( this->m_InputStream.fail() )
-    {
-    itkExceptionMacro(
-                "The file " << this->m_FileName <<" cannot be opened for reading!"
-                << std::endl
-                << "Reason: "
-                << itksys::SystemTools::GetLastSystemError() );
-    }
+  if (this->m_InputStream.fail())
+  {
+    itkExceptionMacro("The file " << this->m_FileName << " cannot be opened for reading!" << std::endl
+                                  << "Reason: " << itksys::SystemTools::GetLastSystemError());
+  }
 
   // Prepare to parse the file
   itk::SizeValueType rows, columns;
-  this->GetDataDimension(rows,columns);
-  if ( columns > 1 )
-    {
-    itkExceptionMacro(
-                "The file " << this->m_FileName <<" should have only one column"
-                << std::endl);
-    }
+  this->GetDataDimension(rows, columns);
+  if (columns > 1)
+  {
+    itkExceptionMacro("The file " << this->m_FileName << " should have only one column" << std::endl);
+  }
   unsigned NumberOfProjections = rows;
 
   // parse the numeric data
   m_Phases.clear();
   std::string entry;
   for (unsigned int j = 0; j < NumberOfProjections; j++)
-    {
+  {
     this->GetNextField(entry);
     m_Phases.push_back(atof(entry.c_str()));
-    }
+  }
 
   this->m_InputStream.close();
 }
 
 /** Update method */
 
-void PhaseReader::Update()
+void
+PhaseReader::Update()
 {
   this->Parse();
 }
 
 /** Get the output */
 
-std::vector<float> PhaseReader::GetOutput()
+std::vector<float>
+PhaseReader::GetOutput()
 {
   return this->m_Phases;
 }
 
-} //end namespace rtk
+} // end namespace rtk
 
 #endif

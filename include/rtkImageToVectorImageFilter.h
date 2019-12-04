@@ -25,70 +25,75 @@
 
 namespace rtk
 {
-  /** \class ImageToVectorImageFilter
-   * \brief Re-writes an image as a vector image
-   *
-   * Depending on the dimensions of the input and output images, the filter
-   * can have two different behaviors:
-   *  - if the dimensions match, the channels of the input image are
-   * obtained by slicing the last dimension. With an input image of size (X, Y*N),
-   * the output is an N-components vector image of size (X,Y)
-   *  - if the input image dimension equals the output dimension plus one,
-   * the additional dimension of the input image is assumed to contain the channels.
-   * With an input image of size (X,Y,N), the output is an N-components
-   * vector image of size (X, Y).
-   *
-   * \author Cyril Mory
+/** \class ImageToVectorImageFilter
+ * \brief Re-writes an image as a vector image
+ *
+ * Depending on the dimensions of the input and output images, the filter
+ * can have two different behaviors:
+ *  - if the dimensions match, the channels of the input image are
+ * obtained by slicing the last dimension. With an input image of size (X, Y*N),
+ * the output is an N-components vector image of size (X,Y)
+ *  - if the input image dimension equals the output dimension plus one,
+ * the additional dimension of the input image is assumed to contain the channels.
+ * With an input image of size (X,Y,N), the output is an N-components
+ * vector image of size (X, Y).
+ *
+ * \author Cyril Mory
  *
  * \ingroup RTK
-   */
+ */
 
-template< typename InputImageType, typename OutputImageType>
-class ImageToVectorImageFilter : public itk::ImageToImageFilter< InputImageType, OutputImageType >
+template <typename InputImageType, typename OutputImageType>
+class ImageToVectorImageFilter : public itk::ImageToImageFilter<InputImageType, OutputImageType>
 {
 public:
-    ITK_DISALLOW_COPY_AND_ASSIGN(ImageToVectorImageFilter);
+  ITK_DISALLOW_COPY_AND_ASSIGN(ImageToVectorImageFilter);
 
-    /** Standard class type alias. */
-    using Self = ImageToVectorImageFilter;
-    using Superclass = itk::ImageToImageFilter< InputImageType, OutputImageType >;
-    using Pointer = itk::SmartPointer< Self >;
+  /** Standard class type alias. */
+  using Self = ImageToVectorImageFilter;
+  using Superclass = itk::ImageToImageFilter<InputImageType, OutputImageType>;
+  using Pointer = itk::SmartPointer<Self>;
 
-    using OutputImageRegionType = typename OutputImageType::RegionType;
+  using OutputImageRegionType = typename OutputImageType::RegionType;
 
-    /** Method for creation through the object factory. */
-    itkNewMacro(Self)
+  /** Method for creation through the object factory. */
+  itkNewMacro(Self);
 
-    /** Run-time type information (and related methods). */
-    itkTypeMacro(ImageToVectorImageFilter, itk::ImageToImageFilter)
+  /** Run-time type information (and related methods). */
+  itkTypeMacro(ImageToVectorImageFilter, itk::ImageToImageFilter);
 
-    /** When the input and output dimensions are equal, the filter
-     * cannot guess the number of channels. Set/Get methods to
-     * pass it */
-    itkSetMacro(NumberOfChannels, unsigned int)
-    itkGetMacro(NumberOfChannels, unsigned int)
+  /** When the input and output dimensions are equal, the filter
+   * cannot guess the number of channels. Set/Get methods to
+   * pass it */
+  itkSetMacro(NumberOfChannels, unsigned int);
+  itkGetMacro(NumberOfChannels, unsigned int);
 
 protected:
-    ImageToVectorImageFilter();
-    ~ImageToVectorImageFilter() override = default;
+  ImageToVectorImageFilter();
+  ~ImageToVectorImageFilter() override = default;
 
-    void GenerateOutputInformation() override;
-    void GenerateInputRequestedRegion() override;
+  void
+  GenerateOutputInformation() override;
+  void
+  GenerateInputRequestedRegion() override;
 
-    /** Does the real work. */
-    void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) override;
+  /** Does the real work. */
+  void
+  ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread,
+                       itk::ThreadIdType             itkNotUsed(threadId)) override;
 
-    /** Splits the OutputRequestedRegion along the first direction, not the last */
-    const itk::ImageRegionSplitterBase* GetImageRegionSplitter(void) const override;
-    itk::ImageRegionSplitterDirection::Pointer  m_Splitter;
+  /** Splits the OutputRequestedRegion along the first direction, not the last */
+  const itk::ImageRegionSplitterBase *
+                                             GetImageRegionSplitter(void) const override;
+  itk::ImageRegionSplitterDirection::Pointer m_Splitter;
 
-    unsigned int m_NumberOfChannels;
+  unsigned int m_NumberOfChannels;
 };
-} //namespace ITK
+} // namespace rtk
 
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkImageToVectorImageFilter.hxx"
+#  include "rtkImageToVectorImageFilter.hxx"
 #endif
 
 #endif

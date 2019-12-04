@@ -40,9 +40,8 @@
 namespace rtk
 {
 
-template<class TInputImage, class TOutputImage>
-class PolynomialGainCorrectionImageFilter :
-public itk::ImageToImageFilter<TInputImage, TOutputImage>
+template <class TInputImage, class TOutputImage>
+class PolynomialGainCorrectionImageFilter : public itk::ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(PolynomialGainCorrectionImageFilter);
@@ -60,7 +59,7 @@ public:
   using OutputImagePointer = typename OutputImageType::Pointer;
   using InputImageRegionType = typename InputImageType::RegionType;
   using OutputImageRegionType = typename TOutputImage::RegionType;
-  using VectorType = typename std::vector< float >;
+  using VectorType = typename std::vector<float>;
   using OutputSizeType = typename OutputImageType::SizeType;
 
   /** Standard New method. */
@@ -70,11 +69,13 @@ public:
   itkTypeMacro(PolynomialGainCorrectionImageFilter, itk::ImageToImageFilter);
 
   /** Dark image, 2D same size of one input projection */
-  void SetDarkImage(const InputImagePointer gain);
+  void
+  SetDarkImage(const InputImagePointer gain);
 
   /** Weights, matrix A from reference paper
    *  3D image: 2D x order. */
-  void SetGainCoefficients(const OutputImagePointer gain);
+  void
+  SetGainCoefficients(const OutputImagePointer gain);
 
   /* if K==0, the filter is bypassed */
   itkSetMacro(K, float);
@@ -84,29 +85,33 @@ protected:
   PolynomialGainCorrectionImageFilter();
   ~PolynomialGainCorrectionImageFilter() override = default;
 
-  void GenerateOutputInformation() override;
+  void
+  GenerateOutputInformation() override;
 
-  void GenerateInputRequestedRegion() override;
+  void
+  GenerateInputRequestedRegion() override;
 
-#if ITK_VERSION_MAJOR<5
-  void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, itk::ThreadIdType threadId ) override;
+#if ITK_VERSION_MAJOR < 5
+  void
+  ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, itk::ThreadIdType threadId) override;
 #else
-  void DynamicThreadedGenerateData( const OutputImageRegionType& outputRegionForThread) override;
+  void
+  DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread) override;
 #endif
 
-  bool               m_MapsLoaded{false};        // True if gain maps loaded
-  int                m_ModelOrder{1};        // Polynomial correction order
-  float              m_K{1.0f};                 // Scaling constant, a 0 means no correction
-  VectorType         m_PowerLut;          // Vector containing I^n
-  InputImagePointer  m_DarkImage;         // Dark image
-  OutputImagePointer m_GainImage;         // Gain coefficients (A matrix)
-  OutputSizeType     m_GainSize;          // Gain map size
-}; // end of class
+  bool               m_MapsLoaded{ false }; // True if gain maps loaded
+  int                m_ModelOrder{ 1 };     // Polynomial correction order
+  float              m_K{ 1.0f };           // Scaling constant, a 0 means no correction
+  VectorType         m_PowerLut;            // Vector containing I^n
+  InputImagePointer  m_DarkImage;           // Dark image
+  OutputImagePointer m_GainImage;           // Gain coefficients (A matrix)
+  OutputSizeType     m_GainSize;            // Gain map size
+};                                          // end of class
 
-}
+} // namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkPolynomialGainCorrectionImageFilter.hxx"
+#  include "rtkPolynomialGainCorrectionImageFilter.hxx"
 #endif
 
 #endif

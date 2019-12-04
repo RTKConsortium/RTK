@@ -28,29 +28,25 @@
 #include <cuda_runtime.h>
 
 void
-CUDA_splat(const int4 &outputSize,
-                   float* input,
-                   float* output,
-                   int projectionNumber,
-                   float **weights)
+CUDA_splat(const int4 & outputSize, float * input, float * output, int projectionNumber, float ** weights)
 {
-  cublasHandle_t  handle;
+  cublasHandle_t handle;
   cublasCreate(&handle);
 
   int numel = outputSize.x * outputSize.y * outputSize.z;
 
-  for (int phase=0; phase<outputSize.w; phase++)
-    {
+  for (int phase = 0; phase < outputSize.w; phase++)
+  {
     float weight = weights[phase][projectionNumber];
-    if(weight!=0)
-      {
+    if (weight != 0)
+    {
       // Create a pointer to the "phase"-th volume in the output
       float * p = output + phase * numel;
 
       // Add "weight" times the input to the "phase"-th volume in the output
       cublasSaxpy(handle, numel, &weight, input, 1, p, 1);
-      }
     }
+  }
 
   // Destroy Cublas context
   cublasDestroy(handle);

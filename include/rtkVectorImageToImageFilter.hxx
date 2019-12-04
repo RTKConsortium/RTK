@@ -27,11 +27,10 @@
 namespace rtk
 {
 
-template< typename InputImageType, typename OutputImageType>
-VectorImageToImageFilter<InputImageType, OutputImageType>
-::VectorImageToImageFilter()
+template <typename InputImageType, typename OutputImageType>
+VectorImageToImageFilter<InputImageType, OutputImageType>::VectorImageToImageFilter()
 {
-#if ITK_VERSION_MAJOR>4
+#if ITK_VERSION_MAJOR > 4
   this->DynamicMultiThreadingOff();
 #endif
 
@@ -40,59 +39,59 @@ VectorImageToImageFilter<InputImageType, OutputImageType>
   m_Splitter->SetDirection(OutputImageType::ImageDimension - 1);
 }
 
-template< typename InputImageType, typename OutputImageType>
-const itk::ImageRegionSplitterBase*
-VectorImageToImageFilter< InputImageType, OutputImageType >
-::GetImageRegionSplitter(void) const
+template <typename InputImageType, typename OutputImageType>
+const itk::ImageRegionSplitterBase *
+VectorImageToImageFilter<InputImageType, OutputImageType>::GetImageRegionSplitter(void) const
 {
   return m_Splitter;
 }
 
-template< typename InputImageType, typename OutputImageType>
-void VectorImageToImageFilter<InputImageType, OutputImageType>
-::GenerateOutputInformation()
+template <typename InputImageType, typename OutputImageType>
+void
+VectorImageToImageFilter<InputImageType, OutputImageType>::GenerateOutputInformation()
 {
   const unsigned int InputDimension = InputImageType::ImageDimension;
   const unsigned int OutputDimension = OutputImageType::ImageDimension;
 
-  if (!( (OutputDimension == InputDimension) || (OutputDimension == (InputDimension + 1)) ))
+  if (!((OutputDimension == InputDimension) || (OutputDimension == (InputDimension + 1))))
     itkGenericExceptionMacro(<< "In VectorImageToImageFilter : input and output image dimensions are not compatible");
 
-  typename OutputImageType::SizeType outputSize;
-  typename OutputImageType::IndexType outputIndex;
-  typename OutputImageType::RegionType outputRegion;
-  typename OutputImageType::SpacingType outputSpacing;
-  typename OutputImageType::PointType outputOrigin;
+  typename OutputImageType::SizeType      outputSize;
+  typename OutputImageType::IndexType     outputIndex;
+  typename OutputImageType::RegionType    outputRegion;
+  typename OutputImageType::SpacingType   outputSpacing;
+  typename OutputImageType::PointType     outputOrigin;
   typename OutputImageType::DirectionType outputDirection;
 
   // If the output has an additional dimension, set the parameters
   // for this new dimension. Fill() is used, but only the last
   // dimension will not be overwritten by the next part
   if (OutputDimension == (InputDimension + 1))
-    {
+  {
     outputSize.Fill(this->GetInput()->GetVectorLength());
     outputIndex.Fill(0);
     outputSpacing.Fill(1);
     outputOrigin.Fill(0);
     outputDirection.SetIdentity();
-    }
+  }
 
   // In all cases
-  for (unsigned int dim=0; dim < InputDimension; dim++)
-    {
+  for (unsigned int dim = 0; dim < InputDimension; dim++)
+  {
     outputSize[dim] = this->GetInput()->GetLargestPossibleRegion().GetSize()[dim];
     outputIndex[dim] = this->GetInput()->GetLargestPossibleRegion().GetIndex()[dim];
     outputSpacing[dim] = this->GetInput()->GetSpacing()[dim];
     outputOrigin[dim] = this->GetInput()->GetOrigin()[dim];
-    for (unsigned int j=0; j < InputDimension; j++)
+    for (unsigned int j = 0; j < InputDimension; j++)
       outputDirection[dim][j] = this->GetInput()->GetDirection()[dim][j];
-    }
+  }
 
   // If dimensions match, overwrite the size on last dimension
   if (OutputDimension == InputDimension)
-    {
-    outputSize[OutputDimension - 1] = this->GetInput()->GetLargestPossibleRegion().GetSize()[OutputDimension - 1] * this->GetInput()->GetVectorLength();
-    }
+  {
+    outputSize[OutputDimension - 1] =
+      this->GetInput()->GetLargestPossibleRegion().GetSize()[OutputDimension - 1] * this->GetInput()->GetVectorLength();
+  }
 
   outputRegion.SetSize(outputSize);
   outputRegion.SetIndex(outputIndex);
@@ -102,54 +101,56 @@ void VectorImageToImageFilter<InputImageType, OutputImageType>
   this->GetOutput()->SetDirection(outputDirection);
 }
 
-template< typename InputImageType, typename OutputImageType>
-void VectorImageToImageFilter<InputImageType, OutputImageType>
-::GenerateInputRequestedRegion()
+template <typename InputImageType, typename OutputImageType>
+void
+VectorImageToImageFilter<InputImageType, OutputImageType>::GenerateInputRequestedRegion()
 {
-  typename InputImageType::Pointer  inputPtr  = const_cast<InputImageType *>(this->GetInput());
+  typename InputImageType::Pointer inputPtr = const_cast<InputImageType *>(this->GetInput());
   inputPtr->SetRequestedRegionToLargestPossibleRegion();
 }
 
-template< typename InputImageType, typename OutputImageType>
-void VectorImageToImageFilter<InputImageType, OutputImageType>
-::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId))
+template <typename InputImageType, typename OutputImageType>
+void
+VectorImageToImageFilter<InputImageType, OutputImageType>::ThreadedGenerateData(
+  const OutputImageRegionType & outputRegionForThread,
+  itk::ThreadIdType             itkNotUsed(threadId))
 {
   const unsigned int InputDimension = InputImageType::ImageDimension;
   const unsigned int OutputDimension = OutputImageType::ImageDimension;
 
-  typename InputImageType::SizeType inputSize;
-  typename InputImageType::IndexType inputIndex;
+  typename InputImageType::SizeType   inputSize;
+  typename InputImageType::IndexType  inputIndex;
   typename InputImageType::RegionType inputRegion;
 
-  for (unsigned int dim=0; dim < InputDimension; dim++)
-    {
+  for (unsigned int dim = 0; dim < InputDimension; dim++)
+  {
     inputSize[dim] = outputRegionForThread.GetSize()[dim];
     inputIndex[dim] = outputRegionForThread.GetIndex()[dim];
-    }
+  }
   if (OutputDimension == InputDimension)
-    {
-    inputSize[OutputDimension - 1] = this->GetInput()->GetLargestPossibleRegion().GetSize()[OutputDimension -1];
-    inputIndex[OutputDimension - 1] = this->GetInput()->GetLargestPossibleRegion().GetIndex()[OutputDimension -1];
-    }
+  {
+    inputSize[OutputDimension - 1] = this->GetInput()->GetLargestPossibleRegion().GetSize()[OutputDimension - 1];
+    inputIndex[OutputDimension - 1] = this->GetInput()->GetLargestPossibleRegion().GetIndex()[OutputDimension - 1];
+  }
   inputRegion.SetSize(inputSize);
   inputRegion.SetIndex(inputIndex);
 
   // Actual copy is the same in both cases
   itk::ImageRegionConstIterator<InputImageType> inIt(this->GetInput(), inputRegion);
-  itk::ImageRegionIterator<OutputImageType> outIt(this->GetOutput(), outputRegionForThread);
-  for (unsigned int channel=0; channel < this->GetInput()->GetVectorLength(); channel++)
-    {
+  itk::ImageRegionIterator<OutputImageType>     outIt(this->GetOutput(), outputRegionForThread);
+  for (unsigned int channel = 0; channel < this->GetInput()->GetVectorLength(); channel++)
+  {
     inIt.GoToBegin();
-    while(!inIt.IsAtEnd())
-      {
+    while (!inIt.IsAtEnd())
+    {
       outIt.Set(inIt.Get()[channel]);
       ++inIt;
       ++outIt;
-      }
     }
+  }
 }
 
-}// end namespace
+} // namespace rtk
 
 
 #endif

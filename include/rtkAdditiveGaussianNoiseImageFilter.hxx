@@ -43,26 +43,24 @@ namespace rtk
 {
 
 template <class TInputImage>
-AdditiveGaussianNoiseImageFilter<TInputImage>
-::AdditiveGaussianNoiseImageFilter()
+AdditiveGaussianNoiseImageFilter<TInputImage>::AdditiveGaussianNoiseImageFilter()
 {
   m_NoiseFilter = NoiseFilterType::New();
-  m_NoiseFilter->GetFunctor().SetOutputMinimum( itk::NumericTraits< InputPixelType >::NonpositiveMin() );
-  m_NoiseFilter->GetFunctor().SetOutputMaximum( itk::NumericTraits< InputPixelType >::max() );
+  m_NoiseFilter->GetFunctor().SetOutputMinimum(itk::NumericTraits<InputPixelType>::NonpositiveMin());
+  m_NoiseFilter->GetFunctor().SetOutputMaximum(itk::NumericTraits<InputPixelType>::max());
 }
 
 
 template <class TInputImage>
 void
-AdditiveGaussianNoiseImageFilter<TInputImage>
-::GenerateData()
+AdditiveGaussianNoiseImageFilter<TInputImage>::GenerateData()
 {
   this->AllocateOutputs();
 
   // Set the global max number of threads to 1
   // NOTE: This is required because there is a bug with this filter,
   // it appears the NormalVariateGenerate is single threaded only.
-#if ITK_VERSION_MAJOR<5
+#if ITK_VERSION_MAJOR < 5
   m_NoiseFilter->SetNumberOfThreads(1);
 #else
   m_NoiseFilter->SetNumberOfWorkUnits(1);
@@ -70,22 +68,17 @@ AdditiveGaussianNoiseImageFilter<TInputImage>
 
 
   // Setup grafted pipeline for composite filter
-  m_NoiseFilter->SetInput( this->GetInput() );
+  m_NoiseFilter->SetInput(this->GetInput());
   m_NoiseFilter->Update();
-  this->GraftOutput( m_NoiseFilter->GetOutput() );
+  this->GraftOutput(m_NoiseFilter->GetOutput());
 }
 
 template <class TInputImage>
 void
-AdditiveGaussianNoiseImageFilter<TInputImage>
-::PrintSelf(std::ostream& os,
-itk::Indent indent) const
+AdditiveGaussianNoiseImageFilter<TInputImage>::PrintSelf(std::ostream & os, itk::Indent indent) const
 {
-  os
-  << indent << "AdditiveGaussianNoiseImageFilter"
-  << "\n Mean: " << this->GetMean()
-  << "\n StandardDeviation: " << this->GetStandardDeviation()
-  << std::endl;
+  os << indent << "AdditiveGaussianNoiseImageFilter"
+     << "\n Mean: " << this->GetMean() << "\n StandardDeviation: " << this->GetStandardDeviation() << std::endl;
 }
 
 } /* namespace rtk */

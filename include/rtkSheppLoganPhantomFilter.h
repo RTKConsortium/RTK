@@ -37,15 +37,14 @@ namespace rtk
  * \ingroup RTK InPlaceImageFilter
  */
 template <class TInputImage, class TOutputImage>
-class ITK_EXPORT SheppLoganPhantomFilter:
-  public ProjectGeometricPhantomImageFilter<TInputImage,TOutputImage>
+class ITK_EXPORT SheppLoganPhantomFilter : public ProjectGeometricPhantomImageFilter<TInputImage, TOutputImage>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(SheppLoganPhantomFilter);
 
   /** Standard class type alias. */
   using Self = SheppLoganPhantomFilter;
-  using Superclass = ProjectGeometricPhantomImageFilter<TInputImage,TOutputImage>;
+  using Superclass = ProjectGeometricPhantomImageFilter<TInputImage, TOutputImage>;
   using Pointer = itk::SmartPointer<Self>;
   using ConstPointer = itk::SmartPointer<const Self>;
 
@@ -59,14 +58,14 @@ protected:
   SheppLoganPhantomFilter();
   ~SheppLoganPhantomFilter() override = default;
 
-  void GenerateData() override;
-
+  void
+  GenerateData() override;
 };
 
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkSheppLoganPhantomFilter.hxx"
+#  include "rtkSheppLoganPhantomFilter.hxx"
 #endif
 
 #endif

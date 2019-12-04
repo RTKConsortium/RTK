@@ -20,14 +20,14 @@
 #define rtkCudaForwardProjectionImageFilter_h
 
 #include "rtkConfiguration.h"
-//Conditional definition of the class to pass ITKHeaderTest
+// Conditional definition of the class to pass ITKHeaderTest
 #ifdef RTK_USE_CUDA
 
-#include "rtkForwardProjectionImageFilter.h"
-#include "itkCudaInPlaceImageFilter.h"
-#include "itkCudaUtil.h"
-#include "itkCudaKernelManager.h"
-#include "RTKExport.h"
+#  include "rtkForwardProjectionImageFilter.h"
+#  include "itkCudaInPlaceImageFilter.h"
+#  include "itkCudaUtil.h"
+#  include "itkCudaKernelManager.h"
+#  include "RTKExport.h"
 
 /** \class CudaForwardProjectionImageFilter
  * \brief Trilinear interpolation forward projection implemented in CUDA
@@ -52,11 +52,10 @@ namespace rtk
 /** Create a helper Cuda Kernel class for CudaImageOps */
 itkCudaKernelClassMacro(rtkCudaForwardProjectionImageFilterKernel);
 
-template <class TInputImage = itk::CudaImage<float,3>,
-          class TOutputImage = TInputImage >
-class ITK_EXPORT CudaForwardProjectionImageFilter :
-  public itk::CudaInPlaceImageFilter< TInputImage, TOutputImage,
-  ForwardProjectionImageFilter< TInputImage, TOutputImage > >
+template <class TInputImage = itk::CudaImage<float, 3>, class TOutputImage = TInputImage>
+class ITK_EXPORT CudaForwardProjectionImageFilter
+  : public itk::
+      CudaInPlaceImageFilter<TInputImage, TOutputImage, ForwardProjectionImageFilter<TInputImage, TOutputImage>>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(CudaForwardProjectionImageFilter);
@@ -64,10 +63,10 @@ public:
   /** Standard class type alias. */
   using Self = CudaForwardProjectionImageFilter;
   using Superclass = ForwardProjectionImageFilter<TInputImage, TOutputImage>;
-  using GPUSuperclass = itk::CudaInPlaceImageFilter<TInputImage, TOutputImage, Superclass >;
+  using GPUSuperclass = itk::CudaInPlaceImageFilter<TInputImage, TOutputImage, Superclass>;
   using Pointer = itk::SmartPointer<Self>;
   using ConstPointer = itk::SmartPointer<const Self>;
-  using VectorType = itk::Vector<float,3>;
+  using VectorType = itk::Vector<float, 3>;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -81,20 +80,21 @@ public:
 
 protected:
   CudaForwardProjectionImageFilter();
-  ~CudaForwardProjectionImageFilter() {};
+  ~CudaForwardProjectionImageFilter(){};
 
-  virtual void GPUGenerateData();
+  virtual void
+  GPUGenerateData();
 
 private:
-  double             m_StepSize;
+  double m_StepSize;
 }; // end of class
 
 } // end namespace rtk
 
-#ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkCudaForwardProjectionImageFilter.hxx"
-#endif
+#  ifndef ITK_MANUAL_INSTANTIATION
+#    include "rtkCudaForwardProjectionImageFilter.hxx"
+#  endif
 
-#endif //end conditional definition of the class
+#endif // end conditional definition of the class
 
 #endif

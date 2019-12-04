@@ -27,8 +27,7 @@ namespace rtk
 {
 
 template <class TOutputImage>
-SumOfSquaresImageFilter<TOutputImage>
-::SumOfSquaresImageFilter()
+SumOfSquaresImageFilter<TOutputImage>::SumOfSquaresImageFilter()
 {
   m_SumOfSquares = 0;
   m_VectorOfPartialSSs.clear();
@@ -37,29 +36,27 @@ SumOfSquaresImageFilter<TOutputImage>
 
 template <class TOutputImage>
 void
-SumOfSquaresImageFilter<TOutputImage>
-::BeforeThreadedGenerateData()
+SumOfSquaresImageFilter<TOutputImage>::BeforeThreadedGenerateData()
 {
   m_VectorOfPartialSSs.clear();
-#if ITK_VERSION_MAJOR<5
-  for (unsigned int thread=0; thread < this->GetNumberOfThreads(); thread++)
+#if ITK_VERSION_MAJOR < 5
+  for (unsigned int thread = 0; thread < this->GetNumberOfThreads(); thread++)
 #else
-  for (unsigned int thread=0; thread < this->GetNumberOfWorkUnits(); thread++)
+  for (unsigned int thread = 0; thread < this->GetNumberOfWorkUnits(); thread++)
 #endif
     m_VectorOfPartialSSs.push_back(0);
 }
 
 template <class TOutputImage>
 void
-SumOfSquaresImageFilter<TOutputImage>
-::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread,
-                       itk::ThreadIdType threadId )
+SumOfSquaresImageFilter<TOutputImage>::ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread,
+                                                            itk::ThreadIdType             threadId)
 {
   itk::ImageRegionConstIterator<TOutputImage> inIt(this->GetInput(), outputRegionForThread);
-  itk::ImageRegionIterator<TOutputImage> outIt(this->GetOutput(), outputRegionForThread);
+  itk::ImageRegionIterator<TOutputImage>      outIt(this->GetOutput(), outputRegionForThread);
 
-  while(!outIt.IsAtEnd())
-    {
+  while (!outIt.IsAtEnd())
+  {
     m_VectorOfPartialSSs[threadId] += inIt.Get() * inIt.Get();
 
     // Pass the first input through unmodified
@@ -68,19 +65,18 @@ SumOfSquaresImageFilter<TOutputImage>
     // Move iterators
     ++inIt;
     ++outIt;
-    }
+  }
 }
 
 template <class TOutputImage>
 void
-SumOfSquaresImageFilter<TOutputImage>
-::AfterThreadedGenerateData()
+SumOfSquaresImageFilter<TOutputImage>::AfterThreadedGenerateData()
 {
   m_SumOfSquares = 0;
-#if ITK_VERSION_MAJOR<5
-  for (unsigned int thread=0; thread < this->GetNumberOfThreads(); thread++)
+#if ITK_VERSION_MAJOR < 5
+  for (unsigned int thread = 0; thread < this->GetNumberOfThreads(); thread++)
 #else
-  for (unsigned int thread=0; thread < this->GetNumberOfWorkUnits(); thread++)
+  for (unsigned int thread = 0; thread < this->GetNumberOfWorkUnits(); thread++)
 #endif
     m_SumOfSquares += m_VectorOfPartialSSs[thread];
 }

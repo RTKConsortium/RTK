@@ -36,15 +36,14 @@ namespace rtk
  * \ingroup RTK Projector
  */
 template <class TInputImage, class TOutputImage>
-class ITK_EXPORT FDKBackProjectionImageFilter :
-  public BackProjectionImageFilter<TInputImage,TOutputImage>
+class ITK_EXPORT FDKBackProjectionImageFilter : public BackProjectionImageFilter<TInputImage, TOutputImage>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(FDKBackProjectionImageFilter);
 
   /** Standard class type alias. */
   using Self = FDKBackProjectionImageFilter;
-  using Superclass = BackProjectionImageFilter<TInputImage,TOutputImage>;
+  using Superclass = BackProjectionImageFilter<TInputImage, TOutputImage>;
   using Pointer = itk::SmartPointer<Self>;
   using ConstPointer = itk::SmartPointer<const Self>;
 
@@ -63,30 +62,36 @@ protected:
   FDKBackProjectionImageFilter() = default;
   ~FDKBackProjectionImageFilter() override = default;
 
-  void GenerateOutputInformation() override;
+  void
+  GenerateOutputInformation() override;
 
-#if ITK_VERSION_MAJOR<5
-  void ThreadedGenerateData( const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) override;
+#if ITK_VERSION_MAJOR < 5
+  void
+  ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, ThreadIdType threadId) override;
 #else
-  void DynamicThreadedGenerateData(const OutputImageRegionType& outputRegionForThread) override;
+  void
+  DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread) override;
 #endif
 
   /** Optimized version when the rotation is parallel to X, i.e. matrix[1][0]
     and matrix[2][0] are zeros. */
-  void OptimizedBackprojectionX(const OutputImageRegionType& region, const ProjectionMatrixType& matrix,
-                                        const ProjectionImagePointer projection) override;
+  void
+  OptimizedBackprojectionX(const OutputImageRegionType & region,
+                           const ProjectionMatrixType &  matrix,
+                           const ProjectionImagePointer  projection) override;
 
   /** Optimized version when the rotation is parallel to Y, i.e. matrix[1][1]
     and matrix[2][1] are zeros. */
-  void OptimizedBackprojectionY(const OutputImageRegionType& region, const ProjectionMatrixType& matrix,
-                                        const ProjectionImagePointer projection) override;
-
+  void
+  OptimizedBackprojectionY(const OutputImageRegionType & region,
+                           const ProjectionMatrixType &  matrix,
+                           const ProjectionImagePointer  projection) override;
 };
 
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkFDKBackProjectionImageFilter.hxx"
+#  include "rtkFDKBackProjectionImageFilter.hxx"
 #endif
 
 #endif

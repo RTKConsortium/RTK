@@ -44,8 +44,10 @@ public:
   using Pointer = itk::SmartPointer<Self>;
   using PixelType = signed short int;
 
-  HisImageIO() : Superclass() {
-;
+  HisImageIO()
+    : Superclass()
+  {
+    ;
   }
 
   /** Method for creation through the object factory. */
@@ -55,29 +57,38 @@ public:
   itkTypeMacro(HisImageIO, itk::ImageIOBase);
 
   /*-------- This part of the interface deals with reading data. ------ */
-  void ReadImageInformation() override;
+  void
+  ReadImageInformation() override;
 
-  bool CanReadFile( const char* FileNameToRead ) override;
+  bool
+  CanReadFile(const char * FileNameToRead) override;
 
-  void Read(void * buffer) override;
+  void
+  Read(void * buffer) override;
 
   /*-------- This part of the interfaces deals with writing data. ----- */
-  virtual void WriteImageInformation(bool /*keepOfStream*/) {
-;
+  virtual void
+  WriteImageInformation(bool /*keepOfStream*/)
+  {
+    ;
   }
 
-  void WriteImageInformation() override {
+  void
+  WriteImageInformation() override
+  {
     WriteImageInformation(false);
   }
 
-  bool CanWriteFile(const char* filename) override;
+  bool
+  CanWriteFile(const char * filename) override;
 
-  void Write(const void* buffer) override;
+  void
+  Write(const void * buffer) override;
 
 protected:
   int m_HeaderSize;
 
 }; // end class HisImageIO
-} // end namespace
+} // namespace rtk
 
 #endif /* end #define rtkHisImageIO_h */

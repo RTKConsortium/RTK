@@ -26,7 +26,8 @@ namespace rtk
 {
 
 /** \class PhasesToInterpolationWeights
- * \brief Parses csv file containing the cardiac or respiratory phases of each projection, and generates interpolation weights for 4D reconstruction.
+ * \brief Parses csv file containing the cardiac or respiratory phases of each projection, and generates interpolation
+ * weights for 4D reconstruction.
  *
  * Useful for 4D reconstruction of beating heart or breathing thorax
  *
@@ -35,77 +36,80 @@ namespace rtk
  * \ingroup RTK
  */
 
-class ITK_EXPORT PhasesToInterpolationWeights:public itk::CSVFileReaderBase
+class ITK_EXPORT PhasesToInterpolationWeights : public itk::CSVFileReaderBase
 {
 public:
-    ITK_DISALLOW_COPY_AND_ASSIGN(PhasesToInterpolationWeights);
+  ITK_DISALLOW_COPY_AND_ASSIGN(PhasesToInterpolationWeights);
 
-    /** Standard class type alias */
-    using Self = PhasesToInterpolationWeights;
-    using Superclass = CSVFileReaderBase;
-    using Pointer = itk::SmartPointer<Self>;
-    using ConstPointer = itk::SmartPointer<const Self>;
+  /** Standard class type alias */
+  using Self = PhasesToInterpolationWeights;
+  using Superclass = CSVFileReaderBase;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
-    /** Standard New method. */
-    itkNewMacro(Self)
+  /** Standard New method. */
+  itkNewMacro(Self);
 
-    /** Run-time type information (and related methods) */
-    itkTypeMacro(Self,Superclass)
+  /** Run-time type information (and related methods) */
+  itkTypeMacro(Self, Superclass);
 
-    /** DataFrame Object types */
-    using Array2DType = itk::Array2D<float>;
+  /** DataFrame Object types */
+  using Array2DType = itk::Array2D<float>;
 
-    /** The value type of the dataset. */
-    using ValueType = float;
+  /** The value type of the dataset. */
+  using ValueType = float;
 
-    //  /** This method can be used to get the data frame object once the data from
-    //  * the file has been parsed. */
-    //  itkGetModifiableObjectMacro(Array2D,Array2DType);
+  //  /** This method can be used to get the data frame object once the data from
+  //  * the file has been parsed. */
+  //  itkGetModifiableObjectMacro(Array2D,Array2DType);
 
-    /** Parses the data from the file. Gets the phases of the projections
-  * into a vector, then generate an Array2D object containing the interpolation weights  */
-    void Parse() override;
+  /** Parses the data from the file. Gets the phases of the projections
+   * into a vector, then generate an Array2D object containing the interpolation weights  */
+  void
+  Parse() override;
 
-    /** Aliased to the Parse() method to be consistent with the rest of the
+  /** Aliased to the Parse() method to be consistent with the rest of the
    * pipeline. */
-    virtual void Update();
+  virtual void
+  Update();
 
-    /** Aliased to the GetDataFrameObject() method to be consistent with the
+  /** Aliased to the GetDataFrameObject() method to be consistent with the
    *  rest of the pipeline */
-    virtual Array2DType GetOutput();
+  virtual Array2DType
+  GetOutput();
 
-    /** Configure the filter to use uneven temporal spacing (finer temporal resolution during systole) */
-    itkSetMacro(UnevenTemporalSpacing, bool)
-    itkGetMacro(UnevenTemporalSpacing, bool)
+  /** Configure the filter to use uneven temporal spacing (finer temporal resolution during systole) */
+  itkSetMacro(UnevenTemporalSpacing, bool);
+  itkGetMacro(UnevenTemporalSpacing, bool);
 
-    /** Configure the filter to use uneven temporal spacing (finer temporal resolution during systole) */
-    itkSetMacro(NumberOfReconstructedFrames, int)
-    itkGetMacro(NumberOfReconstructedFrames, int)
+  /** Configure the filter to use uneven temporal spacing (finer temporal resolution during systole) */
+  itkSetMacro(NumberOfReconstructedFrames, int);
+  itkGetMacro(NumberOfReconstructedFrames, int);
 
-    /** Set/Get for a list of booleans indicating whether or not each projection must be selected */
-    void SetSelectedProjections(std::vector<bool> sprojs);
-    itkGetMacro(SelectedProjections, std::vector<bool>)
+  /** Set/Get for a list of booleans indicating whether or not each projection must be selected */
+  void
+  SetSelectedProjections(std::vector<bool> sprojs);
+  itkGetMacro(SelectedProjections, std::vector<bool>);
 
 protected:
+  PhasesToInterpolationWeights();
+  ~PhasesToInterpolationWeights() override = default;
 
-    PhasesToInterpolationWeights();
-    ~PhasesToInterpolationWeights () override = default;
-
-    /** Print the reader. */
-    void PrintSelf(std::ostream & os, itk::Indent indent) const override;
+  /** Print the reader. */
+  void
+  PrintSelf(std::ostream & os, itk::Indent indent) const override;
 
 private:
-
-    Array2DType         m_Array2D;
-    int                 m_NumberOfReconstructedFrames;
-    bool                m_UnevenTemporalSpacing;
-    std::vector<bool>   m_SelectedProjections;
+  Array2DType       m_Array2D;
+  int               m_NumberOfReconstructedFrames;
+  bool              m_UnevenTemporalSpacing;
+  std::vector<bool> m_SelectedProjections;
 };
 
-} //end namespace rtk
+} // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkPhasesToInterpolationWeights.hxx"
+#  include "rtkPhasesToInterpolationWeights.hxx"
 #endif
 
 #endif

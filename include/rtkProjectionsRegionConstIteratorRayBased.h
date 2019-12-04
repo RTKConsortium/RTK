@@ -43,21 +43,20 @@ namespace rtk
  *
  * \ingroup RTK
  */
-template< typename TImage >
+template <typename TImage>
 class ProjectionsRegionConstIteratorRayBasedWithFlatPanel;
-template< typename TImage >
+template <typename TImage>
 class ProjectionsRegionConstIteratorRayBasedWithCylindricalPanel;
-template< typename TImage >
+template <typename TImage>
 class ProjectionsRegionConstIteratorRayBasedParallel;
 
-template< typename TImage >
-class ProjectionsRegionConstIteratorRayBased:
-    public itk::ImageConstIteratorWithIndex< TImage >
+template <typename TImage>
+class ProjectionsRegionConstIteratorRayBased : public itk::ImageConstIteratorWithIndex<TImage>
 {
 public:
   /** Standard class type alias. */
   using Self = ProjectionsRegionConstIteratorRayBased;
-  using Superclass = itk::ImageConstIteratorWithIndex< TImage >;
+  using Superclass = itk::ImageConstIteratorWithIndex<TImage>;
 
   /**
    * Index type alias support While these were already typdef'ed in the superclass
@@ -69,35 +68,33 @@ public:
   using PointType = typename itk::Vector<double, 3>;
   using IndexValueType = typename Superclass::IndexValueType;
 
-  using MatrixType = itk::Matrix< double, 3, 4 >;
-  using HomogeneousMatrixType = itk::Matrix< double, 4, 4 >;
+  using MatrixType = itk::Matrix<double, 3, 4>;
+  using HomogeneousMatrixType = itk::Matrix<double, 4, 4>;
 
   /** Constructor establishes an iterator to walk a particular image and a
    * particular region of that image.
    * Set the matrix by which the 3D coordinates of the projection can be
    * multiplied. A typical example is the conversion from 3D physical
    * coordinates to voxel indices in an itk Image. */
-  ProjectionsRegionConstIteratorRayBased(const TImage *ptr,
-                                         const RegionType & region,
-                                         const ThreeDCircularProjectionGeometry *geometry,
-                                         const MatrixType &postMat);
+  ProjectionsRegionConstIteratorRayBased(const TImage *                           ptr,
+                                         const RegionType &                       region,
+                                         const ThreeDCircularProjectionGeometry * geometry,
+                                         const MatrixType &                       postMat);
 
   static Self *
-  New(const TImage *ptr,
-      const RegionType & region,
-      const ThreeDCircularProjectionGeometry *geometry,
-      const MatrixType &postMat);
+  New(const TImage *                           ptr,
+      const RegionType &                       region,
+      const ThreeDCircularProjectionGeometry * geometry,
+      const MatrixType &                       postMat);
 
   static Self *
-  New(const TImage *ptr,
-      const RegionType & region,
-      const ThreeDCircularProjectionGeometry *geometry,
-      const HomogeneousMatrixType &postMat);
+  New(const TImage *                           ptr,
+      const RegionType &                       region,
+      const ThreeDCircularProjectionGeometry * geometry,
+      const HomogeneousMatrixType &            postMat);
 
   static Self *
-  New(const TImage *ptr,
-      const RegionType & region,
-      const ThreeDCircularProjectionGeometry *geometry);
+  New(const TImage * ptr, const RegionType & region, const ThreeDCircularProjectionGeometry * geometry);
 
   /** Increment (prefix) the fastest moving dimension of the iterator's index.
    * This operator will constrain the iterator within the region (i.e. the
@@ -106,45 +103,56 @@ public:
    * tries to moves past the last pixel of the region.  Here, the iterator
    * will be set to be one pixel past the end of the region.
    * \sa operator-- */
-  Self & operator++();
+  Self &
+  operator++();
 
   /** Go to the next pixel by simply calling the ++ operator. Should not be
    * the ++ operator should be. The function is provided for cosmetic
    * reasons, because pointers to these iterators will be used more than the
    * iterator itself. */
-  void Next() {++*this;}
+  void
+  Next()
+  {
+    ++*this;
+  }
 
   /** Get ray information. A ray is described by the 3D coordinates of two points,
    * the (current) SourcePosition and the (current) PixelPosition in the
    * projection stack. The difference, SourceToPixel, is also computed and
    * stored for every ray. */
-  const PointType &GetSourcePosition()
-    {
+  const PointType &
+  GetSourcePosition()
+  {
     return this->m_SourcePosition;
-    }
-  const PointType &GetPixelPosition()
-    {
+  }
+  const PointType &
+  GetPixelPosition()
+  {
     return this->m_PixelPosition;
-    }
-  const PointType &GetSourceToPixel()
-    {
+  }
+  const PointType &
+  GetSourceToPixel()
+  {
     return this->m_SourceToPixel;
-    }
+  }
 
   /** Computes and returns a unit vector pointing from the source to the
    * current pixel, i.e., GetSourceToPixel()/||GetSourceToPixel()||. */
-  const PointType GetDirection()
-    {
+  const PointType
+  GetDirection()
+  {
     return m_SourceToPixel / m_SourceToPixel.GetNorm();
-    }
+  }
 
 protected:
   /** Init the parameters common to a new 2D projection in the 3D stack. */
-  virtual void NewProjection() = 0;
+  virtual void
+  NewProjection() = 0;
 
   /** Init a new pixel position in a 2D projection, assuming that the
    * NewProjection method has already been called. */
-  virtual void NewPixel() = 0;
+  virtual void
+  NewPixel() = 0;
 
   ThreeDCircularProjectionGeometry::ConstPointer m_Geometry;
   MatrixType                                     m_PostMultiplyMatrix;
@@ -152,10 +160,10 @@ protected:
   PointType                                      m_PixelPosition;
   PointType                                      m_SourceToPixel;
 };
-} // end namespace itk
+} // namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkProjectionsRegionConstIteratorRayBased.hxx"
+#  include "rtkProjectionsRegionConstIteratorRayBased.hxx"
 #endif
 
 #endif

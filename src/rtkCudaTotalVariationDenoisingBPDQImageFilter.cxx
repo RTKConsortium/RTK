@@ -21,42 +21,35 @@
 
 #include <itkMacro.h>
 
-rtk::CudaTotalVariationDenoisingBPDQImageFilter
-::CudaTotalVariationDenoisingBPDQImageFilter()
-{
-}
+rtk::CudaTotalVariationDenoisingBPDQImageFilter ::CudaTotalVariationDenoisingBPDQImageFilter() {}
 
 void
-rtk::CudaTotalVariationDenoisingBPDQImageFilter
-::GPUGenerateData()
+rtk::CudaTotalVariationDenoisingBPDQImageFilter ::GPUGenerateData()
 {
-    int inputSize[3];
-    int outputSize[3];
-    float inputSpacing[3];
-    float outputSpacing[3];
+  int   inputSize[3];
+  int   outputSize[3];
+  float inputSpacing[3];
+  float outputSpacing[3];
 
-    for (int i=0; i<3; i++)
-      {
-      inputSize[i] = this->GetInput()->GetBufferedRegion().GetSize()[i];
-      outputSize[i] = this->GetOutput()->GetBufferedRegion().GetSize()[i];
-      inputSpacing[i] = this->GetInput()->GetSpacing()[i];
-      outputSpacing[i] = this->GetOutput()->GetSpacing()[i];
+  for (int i = 0; i < 3; i++)
+  {
+    inputSize[i] = this->GetInput()->GetBufferedRegion().GetSize()[i];
+    outputSize[i] = this->GetOutput()->GetBufferedRegion().GetSize()[i];
+    inputSpacing[i] = this->GetInput()->GetSpacing()[i];
+    outputSpacing[i] = this->GetOutput()->GetSpacing()[i];
 
-      if ((inputSize[i] != outputSize[i]) || (inputSpacing[i] != outputSpacing[i]))
-        {
-        std::cerr << "The CUDA Total Variation Denoising BPDQ filter can only handle input and output regions of equal size and spacing" << std::endl;
-        exit(1);
-        }
-      }
+    if ((inputSize[i] != outputSize[i]) || (inputSpacing[i] != outputSpacing[i]))
+    {
+      std::cerr << "The CUDA Total Variation Denoising BPDQ filter can only handle input and output regions of equal "
+                   "size and spacing"
+                << std::endl;
+      exit(1);
+    }
+  }
 
-    float *pin = *(float**)( this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer() );
-    float *pout = *(float**)( this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer() );
+  float * pin = *(float **)(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
+  float * pout = *(float **)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
 
-    CUDA_total_variation(inputSize,
-                         inputSpacing,
-                         pin,
-                         pout,
-                         static_cast<float>(m_Gamma),
-                         static_cast<float>(m_Beta),
-                         m_NumberOfIterations);
+  CUDA_total_variation(
+    inputSize, inputSpacing, pin, pout, static_cast<float>(m_Gamma), static_cast<float>(m_Beta), m_NumberOfIterations);
 }

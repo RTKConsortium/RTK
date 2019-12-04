@@ -24,8 +24,9 @@
 namespace rtk
 {
 
-template< typename VolumeSeriesType, typename ProjectionStackType>
-FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType>::FourDReconstructionConjugateGradientOperator()
+template <typename VolumeSeriesType, typename ProjectionStackType>
+FourDReconstructionConjugateGradientOperator<VolumeSeriesType,
+                                             ProjectionStackType>::FourDReconstructionConjugateGradientOperator()
 {
   this->SetNumberOfRequiredInputs(2);
 
@@ -44,120 +45,118 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
 }
 
 
-template< typename VolumeSeriesType, typename ProjectionStackType>
+template <typename VolumeSeriesType, typename ProjectionStackType>
 void
-FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType>::SetInputVolumeSeries(const VolumeSeriesType* VolumeSeries)
+FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType>::SetInputVolumeSeries(
+  const VolumeSeriesType * VolumeSeries)
 {
-  this->SetNthInput(0, const_cast<VolumeSeriesType*>(VolumeSeries));
+  this->SetNthInput(0, const_cast<VolumeSeriesType *>(VolumeSeries));
 }
 
-template< typename VolumeSeriesType, typename ProjectionStackType>
+template <typename VolumeSeriesType, typename ProjectionStackType>
 void
-FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType>::SetInputProjectionStack(const ProjectionStackType *Projections)
+FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType>::SetInputProjectionStack(
+  const ProjectionStackType * Projections)
 {
-  this->SetNthInput(1, const_cast<ProjectionStackType*>(Projections));
+  this->SetNthInput(1, const_cast<ProjectionStackType *>(Projections));
 }
 
-template< typename VolumeSeriesType, typename ProjectionStackType>
+template <typename VolumeSeriesType, typename ProjectionStackType>
 typename VolumeSeriesType::ConstPointer
 FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType>::GetInputVolumeSeries()
 {
-  return static_cast< const VolumeSeriesType * >
-          ( this->itk::ProcessObject::GetInput(0) );
+  return static_cast<const VolumeSeriesType *>(this->itk::ProcessObject::GetInput(0));
 }
 
-template< typename VolumeSeriesType, typename ProjectionStackType>
+template <typename VolumeSeriesType, typename ProjectionStackType>
 typename ProjectionStackType::ConstPointer
 FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType>::GetInputProjectionStack()
 {
-  return static_cast< const ProjectionStackType * >
-          ( this->itk::ProcessObject::GetInput(1) );
+  return static_cast<const ProjectionStackType *>(this->itk::ProcessObject::GetInput(1));
 }
 
-template< typename VolumeSeriesType, typename ProjectionStackType>
+template <typename VolumeSeriesType, typename ProjectionStackType>
 void
-FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType>
-::SetBackProjectionFilter (const typename BackProjectionFilterType::Pointer _arg)
+FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType>::SetBackProjectionFilter(
+  const typename BackProjectionFilterType::Pointer _arg)
 {
   m_BackProjectionFilter = _arg;
   this->Modified();
 }
 
-template< typename VolumeSeriesType, typename ProjectionStackType>
+template <typename VolumeSeriesType, typename ProjectionStackType>
 void
-FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType>
-::SetForwardProjectionFilter (const typename ForwardProjectionFilterType::Pointer _arg)
+FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType>::SetForwardProjectionFilter(
+  const typename ForwardProjectionFilterType::Pointer _arg)
 {
   m_ForwardProjectionFilter = _arg;
   this->Modified();
 }
 
-template< typename VolumeSeriesType, typename ProjectionStackType>
+template <typename VolumeSeriesType, typename ProjectionStackType>
 void
-FourDReconstructionConjugateGradientOperator< VolumeSeriesType, ProjectionStackType>
-::SetSignal(const std::vector<double> signal)
+FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType>::SetSignal(
+  const std::vector<double> signal)
 {
   this->m_Signal = signal;
 }
 
-template< typename VolumeSeriesType, typename ProjectionStackType>
+template <typename VolumeSeriesType, typename ProjectionStackType>
 void
-FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType>
-::InitializeConstantSources()
+FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType>::InitializeConstantSources()
 {
   unsigned int Dimension = 3;
 
   // Configure the constant volume sources
-  typename VolumeType::SizeType ConstantVolumeSourceSize;
-  typename VolumeType::SpacingType ConstantVolumeSourceSpacing;
-  typename VolumeType::PointType ConstantVolumeSourceOrigin;
+  typename VolumeType::SizeType      ConstantVolumeSourceSize;
+  typename VolumeType::SpacingType   ConstantVolumeSourceSpacing;
+  typename VolumeType::PointType     ConstantVolumeSourceOrigin;
   typename VolumeType::DirectionType ConstantVolumeSourceDirection;
 
   ConstantVolumeSourceSize.Fill(0);
   ConstantVolumeSourceSpacing.Fill(0);
   ConstantVolumeSourceOrigin.Fill(0);
 
-  for(unsigned int i=0; i < Dimension; i++)
-    {
+  for (unsigned int i = 0; i < Dimension; i++)
+  {
     ConstantVolumeSourceSize[i] = GetInputVolumeSeries()->GetLargestPossibleRegion().GetSize()[i];
     ConstantVolumeSourceSpacing[i] = GetInputVolumeSeries()->GetSpacing()[i];
     ConstantVolumeSourceOrigin[i] = GetInputVolumeSeries()->GetOrigin()[i];
-    }
+  }
   ConstantVolumeSourceDirection.SetIdentity();
 
-  m_ConstantVolumeSource1->SetOrigin( ConstantVolumeSourceOrigin );
-  m_ConstantVolumeSource1->SetSpacing( ConstantVolumeSourceSpacing );
-  m_ConstantVolumeSource1->SetDirection( ConstantVolumeSourceDirection );
-  m_ConstantVolumeSource1->SetSize( ConstantVolumeSourceSize );
-  m_ConstantVolumeSource1->SetConstant( 0. );
+  m_ConstantVolumeSource1->SetOrigin(ConstantVolumeSourceOrigin);
+  m_ConstantVolumeSource1->SetSpacing(ConstantVolumeSourceSpacing);
+  m_ConstantVolumeSource1->SetDirection(ConstantVolumeSourceDirection);
+  m_ConstantVolumeSource1->SetSize(ConstantVolumeSourceSize);
+  m_ConstantVolumeSource1->SetConstant(0.);
 
-  m_ConstantVolumeSource2->SetOrigin( ConstantVolumeSourceOrigin );
-  m_ConstantVolumeSource2->SetSpacing( ConstantVolumeSourceSpacing );
-  m_ConstantVolumeSource2->SetDirection( ConstantVolumeSourceDirection );
-  m_ConstantVolumeSource2->SetSize( ConstantVolumeSourceSize );
-  m_ConstantVolumeSource2->SetConstant( 0. );
+  m_ConstantVolumeSource2->SetOrigin(ConstantVolumeSourceOrigin);
+  m_ConstantVolumeSource2->SetSpacing(ConstantVolumeSourceSpacing);
+  m_ConstantVolumeSource2->SetDirection(ConstantVolumeSourceDirection);
+  m_ConstantVolumeSource2->SetSize(ConstantVolumeSourceSize);
+  m_ConstantVolumeSource2->SetConstant(0.);
 
   // Configure the constant projection stack source
   m_ConstantProjectionStackSource->SetInformationFromImage(this->GetInputProjectionStack());
-  typename ProjectionStackType::SizeType ConstantProjectionStackSourceSize
-      = this->GetInputProjectionStack()->GetLargestPossibleRegion().GetSize();
+  typename ProjectionStackType::SizeType ConstantProjectionStackSourceSize =
+    this->GetInputProjectionStack()->GetLargestPossibleRegion().GetSize();
   ConstantProjectionStackSourceSize[Dimension - 1] = 1;
-  m_ConstantProjectionStackSource->SetSize( ConstantProjectionStackSourceSize );
-  m_ConstantProjectionStackSource->SetConstant( 0. );
+  m_ConstantProjectionStackSource->SetSize(ConstantProjectionStackSourceSize);
+  m_ConstantProjectionStackSource->SetConstant(0.);
 
   // Configure the constant volume series source
   m_ConstantVolumeSeriesSource->SetInformationFromImage(this->GetInputVolumeSeries());
-  m_ConstantVolumeSeriesSource->SetConstant( 0. );
+  m_ConstantVolumeSeriesSource->SetConstant(0.);
 
   // Configure memory management options
   m_ConstantProjectionStackSource->ReleaseDataFlagOn();
   m_ConstantVolumeSeriesSource->ReleaseDataFlagOn();
 }
 
-template< typename VolumeSeriesType, typename ProjectionStackType>
+template <typename VolumeSeriesType, typename ProjectionStackType>
 void
-FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType>
-::GenerateOutputInformation()
+FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType>::GenerateOutputInformation()
 {
   // Set runtime parameters
   m_DisplacedDetectorFilter->SetDisable(m_DisableDisplacedDetectorFilter);
@@ -166,20 +165,20 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
   // (first on CPU, and overwrite with the GPU version if CUDA requested)
   m_InterpolationFilter = InterpolationFilterType::New();
   if (m_UseCudaInterpolation)
-    {
-    if( std::is_same< ProjectionStackType, CPUProjectionStackType >::value )
+  {
+    if (std::is_same<ProjectionStackType, CPUProjectionStackType>::value)
       itkGenericExceptionMacro(<< "UseCudaInterpolation option only available with itk::CudaImage.");
     m_InterpolationFilter = CudaInterpolateImageFilterType::New();
-    }
+  }
 
   // Create the splat filter (first on CPU, and overwrite with the GPU version if CUDA requested)
   m_SplatFilter = SplatFilterType::New();
   if (m_UseCudaSplat)
-    {
-    if( std::is_same< ProjectionStackType, CPUProjectionStackType >::value )
+  {
+    if (std::is_same<ProjectionStackType, CPUProjectionStackType>::value)
       itkGenericExceptionMacro(<< "UseCudaSplat option only available with itk::CudaImage.");
     m_SplatFilter = CudaSplatImageFilterType::New();
-    }
+  }
 
   // Create the constant sources (first on CPU, and overwrite with the GPU version if CUDA requested)
   m_ConstantVolumeSource1 = ConstantVolumeSourceType::New();
@@ -187,14 +186,14 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
   m_ConstantProjectionStackSource = ConstantProjectionStackSourceType::New();
   m_ConstantVolumeSeriesSource = ConstantVolumeSeriesSourceType::New();
   if (m_UseCudaSources)
-    {
-    if( std::is_same< ProjectionStackType, CPUProjectionStackType >::value )
+  {
+    if (std::is_same<ProjectionStackType, CPUProjectionStackType>::value)
       itkGenericExceptionMacro(<< "UseCudaSources option only available with itk::CudaImage.");
     m_ConstantVolumeSource1 = CudaConstantVolumeSourceType::New();
     m_ConstantVolumeSource2 = CudaConstantVolumeSourceType::New();
     m_ConstantProjectionStackSource = CudaConstantVolumeSourceType::New();
     m_ConstantVolumeSeriesSource = CudaConstantVolumeSeriesSourceType::New();
-    }
+  }
 
   // Initialize sources
   this->InitializeConstantSources();
@@ -229,90 +228,88 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
   m_SplatFilter->UpdateOutputInformation();
 
   // Copy it as the output information of the composite filter
-  this->GetOutput()->CopyInformation( m_SplatFilter->GetOutput() );
+  this->GetOutput()->CopyInformation(m_SplatFilter->GetOutput());
 }
 
 
-template< typename VolumeSeriesType, typename ProjectionStackType>
+template <typename VolumeSeriesType, typename ProjectionStackType>
 void
-FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType>
-::GenerateInputRequestedRegion()
+FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType>::GenerateInputRequestedRegion()
 {
   // Let the internal filters compute the input requested region
   m_SplatFilter->PropagateRequestedRegion(m_SplatFilter->GetOutput());
   this->m_ForwardProjectionFilter->PropagateRequestedRegion(this->m_ForwardProjectionFilter->GetOutput());
 }
 
-template< typename VolumeSeriesType, typename ProjectionStackType>
+template <typename VolumeSeriesType, typename ProjectionStackType>
 void
-FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType>
-::GenerateData()
+FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType>::GenerateData()
 {
   int Dimension = ProjectionStackType::ImageDimension;
 
   // Prepare the index for the constant projection stack source
   typename ProjectionStackType::RegionType sourceRegion = this->GetInputProjectionStack()->GetLargestPossibleRegion();
-  typename ProjectionStackType::SizeType sourceSize = sourceRegion.GetSize();
-  typename ProjectionStackType::IndexType sourceIndex = sourceRegion.GetIndex();
+  typename ProjectionStackType::SizeType   sourceSize = sourceRegion.GetSize();
+  typename ProjectionStackType::IndexType  sourceIndex = sourceRegion.GetIndex();
 
-  int NumberProjs = this->GetInputProjectionStack()->GetLargestPossibleRegion().GetSize(Dimension-1);
-  int FirstProj = this->GetInputProjectionStack()->GetLargestPossibleRegion().GetIndex(Dimension-1);
+  int NumberProjs = this->GetInputProjectionStack()->GetLargestPossibleRegion().GetSize(Dimension - 1);
+  int FirstProj = this->GetInputProjectionStack()->GetLargestPossibleRegion().GetIndex(Dimension - 1);
 
   // Divide the stack of projections into slabs of projections of identical phase
-  std::vector<int> firstProjectionInSlabs;
+  std::vector<int>          firstProjectionInSlabs;
   std::vector<unsigned int> sizeOfSlabs;
   firstProjectionInSlabs.push_back(FirstProj);
-  if (NumberProjs==1)
+  if (NumberProjs == 1)
     sizeOfSlabs.push_back(1);
   else
+  {
+    for (int proj = FirstProj + 1; proj < FirstProj + NumberProjs; proj++)
     {
-    for (int proj = FirstProj+1; proj < FirstProj+NumberProjs; proj++)
+      if (fabs(m_Signal[proj] - m_Signal[proj - 1]) > 1e-4)
       {
-      if (fabs(m_Signal[proj] - m_Signal[proj-1]) > 1e-4)
-        {
         // Compute the number of projections in the current slab
         sizeOfSlabs.push_back(proj - firstProjectionInSlabs[firstProjectionInSlabs.size() - 1]);
 
         // Update the index of the first projection in the next slab
         firstProjectionInSlabs.push_back(proj);
-        }
       }
-    sizeOfSlabs.push_back(NumberProjs - firstProjectionInSlabs[firstProjectionInSlabs.size() - 1]);
     }
+    sizeOfSlabs.push_back(NumberProjs - firstProjectionInSlabs[firstProjectionInSlabs.size() - 1]);
+  }
 
-  bool firstSlabProcessed = false;
+  bool                               firstSlabProcessed = false;
   typename VolumeSeriesType::Pointer pimg;
 
   // Process the projections in order
   for (unsigned int slab = 0; slab < firstProjectionInSlabs.size(); slab++)
-    {
+  {
     // Set the projection stack source
     sourceIndex[Dimension - 1] = firstProjectionInSlabs[slab];
     sourceSize[Dimension - 1] = sizeOfSlabs[slab];
-    this->m_ConstantProjectionStackSource->SetIndex( sourceIndex );
-    this->m_ConstantProjectionStackSource->SetSize( sourceSize );
+    this->m_ConstantProjectionStackSource->SetIndex(sourceIndex);
+    this->m_ConstantProjectionStackSource->SetSize(sourceSize);
 
     // Set the Interpolation filter
     m_InterpolationFilter->SetProjectionNumber(firstProjectionInSlabs[slab]);
     m_SplatFilter->SetProjectionNumber(firstProjectionInSlabs[slab]);
 
     // After the first update, we need to use the output as input.
-    if(firstSlabProcessed)
-      {
+    if (firstSlabProcessed)
+    {
       pimg = this->m_SplatFilter->GetOutput();
       pimg->DisconnectPipeline();
-      this->m_SplatFilter->SetInputVolumeSeries( pimg );
-      }
+      this->m_SplatFilter->SetInputVolumeSeries(pimg);
+    }
 
     // Update the last filter
     m_SplatFilter->Update();
 
     // Update condition
     firstSlabProcessed = true;
-    }
+  }
 
   // Graft its output
-  this->GraftOutput( m_SplatFilter->GetOutput() );
+  this->GraftOutput(m_SplatFilter->GetOutput());
 
   // Release the data in internal filters
   pimg->ReleaseData();
@@ -329,7 +326,7 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
   this->GetInputVolumeSeries()->GetBufferPointer();
 }
 
-}// end namespace
+} // namespace rtk
 
 
 #endif

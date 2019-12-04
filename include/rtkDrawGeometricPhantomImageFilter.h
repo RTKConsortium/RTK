@@ -36,15 +36,14 @@ namespace rtk
  * \ingroup RTK InPlaceImageFilter
  */
 template <class TInputImage, class TOutputImage>
-class DrawGeometricPhantomImageFilter :
-  public itk::InPlaceImageFilter<TInputImage,TOutputImage>
+class DrawGeometricPhantomImageFilter : public itk::InPlaceImageFilter<TInputImage, TOutputImage>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(DrawGeometricPhantomImageFilter);
 
   /** Standard class type alias. */
   using Self = DrawGeometricPhantomImageFilter;
-  using Superclass = itk::InPlaceImageFilter<TInputImage,TOutputImage>;
+  using Superclass = itk::InPlaceImageFilter<TInputImage, TOutputImage>;
   using Pointer = itk::SmartPointer<Self>;
   using ConstPointer = itk::SmartPointer<const Self>;
 
@@ -90,21 +89,24 @@ public:
 
   /** Add clipping plane to the object. The plane is defined by the equation
    * dir * (x,y,z)' + pos = 0. */
-  void AddClipPlane(const VectorType & dir, const ScalarType & pos);
-  void SetClipPlanes(const std::vector<VectorType> & dir, const std::vector<ScalarType> & pos);
+  void
+  AddClipPlane(const VectorType & dir, const ScalarType & pos);
+  void
+  SetClipPlanes(const std::vector<VectorType> & dir, const std::vector<ScalarType> & pos);
 
 protected:
   DrawGeometricPhantomImageFilter();
   ~DrawGeometricPhantomImageFilter() override = default;
 
-  void GenerateData() override;
+  void
+  GenerateData() override;
 
 private:
   GeometricPhantomConstPointer m_GeometricPhantom;
   StringType                   m_ConfigFile;
-  VectorType                   m_PhantomScale{1.};
-  VectorType                   m_OriginOffset{0.};
-  bool                         m_IsForbildConfigFile{false};
+  VectorType                   m_PhantomScale{ 1. };
+  VectorType                   m_OriginOffset{ 0. };
+  bool                         m_IsForbildConfigFile{ false };
   RotationMatrixType           m_RotationMatrix;
   std::vector<VectorType>      m_PlaneDirections;
   std::vector<ScalarType>      m_PlanePositions;
@@ -113,7 +115,7 @@ private:
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkDrawGeometricPhantomImageFilter.hxx"
+#  include "rtkDrawGeometricPhantomImageFilter.hxx"
 #endif
 
 #endif

@@ -20,15 +20,15 @@
 #define rtkCudaRayCastBackProjectionImageFilter_h
 
 #include "rtkConfiguration.h"
-//Conditional definition of the class to pass ITKHeaderTest
+// Conditional definition of the class to pass ITKHeaderTest
 #ifdef RTK_USE_CUDA
 
-#include "rtkBackProjectionImageFilter.h"
-#include "RTKExport.h"
+#  include "rtkBackProjectionImageFilter.h"
+#  include "RTKExport.h"
 
-#include <itkCudaImage.h>
-#include <itkCudaInPlaceImageFilter.h>
-#include "rtkThreeDCircularProjectionGeometry.h"
+#  include <itkCudaImage.h>
+#  include <itkCudaInPlaceImageFilter.h>
+#  include "rtkThreeDCircularProjectionGeometry.h"
 
 namespace rtk
 {
@@ -46,19 +46,19 @@ namespace rtk
  *
  * \ingroup RTK Projector CudaImageToImageFilter
  */
-class RTK_EXPORT CudaRayCastBackProjectionImageFilter :
-  public itk::CudaInPlaceImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>,
-  BackProjectionImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3> > >
+class RTK_EXPORT CudaRayCastBackProjectionImageFilter
+  : public itk::CudaInPlaceImageFilter<itk::CudaImage<float, 3>,
+                                       itk::CudaImage<float, 3>,
+                                       BackProjectionImageFilter<itk::CudaImage<float, 3>, itk::CudaImage<float, 3>>>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(CudaRayCastBackProjectionImageFilter);
 
   /** Standard class type alias. */
-  using ImageType = itk::CudaImage<float,3>;
-  using BackProjectionImageFilterType = BackProjectionImageFilter< ImageType, ImageType>;
+  using ImageType = itk::CudaImage<float, 3>;
+  using BackProjectionImageFilterType = BackProjectionImageFilter<ImageType, ImageType>;
   using Self = CudaRayCastBackProjectionImageFilter;
-  using Superclass = itk::CudaInPlaceImageFilter<ImageType, ImageType,
-                     BackProjectionImageFilterType>;
+  using Superclass = itk::CudaInPlaceImageFilter<ImageType, ImageType, BackProjectionImageFilterType>;
   using Pointer = itk::SmartPointer<Self>;
   using ConstPointer = itk::SmartPointer<const Self>;
 
@@ -84,17 +84,18 @@ public:
 
 protected:
   CudaRayCastBackProjectionImageFilter();
-  virtual ~CudaRayCastBackProjectionImageFilter() {};
+  virtual ~CudaRayCastBackProjectionImageFilter(){};
 
-  virtual void GPUGenerateData();
+  virtual void
+  GPUGenerateData();
 
 private:
-  double             m_StepSize;
-  bool               m_Normalize;
+  double m_StepSize;
+  bool   m_Normalize;
 };
 
 } // end namespace rtk
 
-#endif //end conditional definition of the class
+#endif // end conditional definition of the class
 
 #endif

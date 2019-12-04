@@ -43,12 +43,28 @@ public:
   DbfField(std::string name, char type, unsigned char length, short recOffset);
 
   /** Basic field properties stored in the header of the dbf file */
-  std::string GetName()           {return m_Name;}
-  char        GetType()           {return m_Type;}
-  short       GetLength()         {return m_Length;}
+  std::string
+  GetName()
+  {
+    return m_Name;
+  }
+  char
+  GetType()
+  {
+    return m_Type;
+  }
+  short
+  GetLength()
+  {
+    return m_Length;
+  }
 
   /** Memory offset from beginning of the record */
-  short       GetRecOffset()      {return m_RecOffset;}
+  short
+  GetRecOffset()
+  {
+    return m_RecOffset;
+  }
 
 private:
   std::string m_Name;
@@ -75,26 +91,40 @@ public:
   ~DbfFile();
 
   /** Return open status of file stream */
-  bool is_open() { return m_Stream.is_open(); }
+  bool
+  is_open()
+  {
+    return m_Stream.is_open();
+  }
 
   /** Number of records contained in the tabe */
-  size_t GetNumberOfRecords()      { return m_Fields.size(); }
+  size_t
+  GetNumberOfRecords()
+  {
+    return m_Fields.size();
+  }
 
   /** Read in memory the next record. Return true if successful and false
     oftherwise. */
-  bool ReadNextRecord();
+  bool
+  ReadNextRecord();
 
   /** Access to field value of field named fldName */
-  std::string GetFieldAsString(std::string fldName);
+  std::string
+  GetFieldAsString(std::string fldName);
 
-  double GetFieldAsDouble(std::string fldName) { return atof(GetFieldAsString(fldName).c_str() ); }
+  double
+  GetFieldAsDouble(std::string fldName)
+  {
+    return atof(GetFieldAsString(fldName).c_str());
+  }
 
 private:
   /** File stream. AFter constructor, positionned to next record to read. */
   std::ifstream m_Stream;
 
   /** Global properties of a dbf file */
-  unsigned int m_NumRecords;
+  unsigned int   m_NumRecords;
   unsigned short m_RecordSize;
   unsigned short m_HeaderSize;
 
@@ -105,8 +135,8 @@ private:
   std::map<std::string, unsigned int> m_MapFieldNameIndex;
 
   /** Current record in memory */
-  char *m_Record;
+  char * m_Record;
 };
-}
+} // namespace rtk
 
 #endif

@@ -22,81 +22,78 @@
 namespace rtk
 {
 
-CudaParkerShortScanImageFilter
-::CudaParkerShortScanImageFilter()
-{
-}
+CudaParkerShortScanImageFilter ::CudaParkerShortScanImageFilter() {}
 
-CudaParkerShortScanImageFilter
-::~CudaParkerShortScanImageFilter()
-{
-}
+CudaParkerShortScanImageFilter ::~CudaParkerShortScanImageFilter() {}
 
 void
-CudaParkerShortScanImageFilter
-::GPUGenerateData()
+CudaParkerShortScanImageFilter ::GPUGenerateData()
 {
   // Put the two data pointers at the same location
-  float *inBuffer = *static_cast<float **>(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
-  inBuffer += this->GetInput()->ComputeOffset( this->GetInput()->GetRequestedRegion().GetIndex() );
-  float *outBuffer = *static_cast<float **>(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
-  outBuffer += this->GetOutput()->ComputeOffset( this->GetOutput()->GetRequestedRegion().GetIndex() );
+  float * inBuffer = *static_cast<float **>(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
+  inBuffer += this->GetInput()->ComputeOffset(this->GetInput()->GetRequestedRegion().GetIndex());
+  float * outBuffer = *static_cast<float **>(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
+  outBuffer += this->GetOutput()->ComputeOffset(this->GetOutput()->GetRequestedRegion().GetIndex());
 
   const std::vector<double> rotationAngles = this->GetGeometry()->GetGantryAngles();
-  std::vector<double> angularGaps = this->GetGeometry()->GetAngularGapsWithNext(rotationAngles);
+  std::vector<double>       angularGaps = this->GetGeometry()->GetAngularGapsWithNext(rotationAngles);
 
   // compute max. angular gap
   int maxAngularGapPos = 0;
   for (unsigned int i = 1; i < angularGaps.size(); i++)
-    if(angularGaps[i] > angularGaps[maxAngularGapPos])
+    if (angularGaps[i] > angularGaps[maxAngularGapPos])
       maxAngularGapPos = i;
 
   // check if it is a short scan
   // NOTE: not a short scan if less than 20 degrees max gap
-  if ( this->GetGeometry()->GetSourceToDetectorDistances()[0] == 0. ||
-       angularGaps[maxAngularGapPos] < this->GetAngularGapThreshold() )
+  if (this->GetGeometry()->GetSourceToDetectorDistances()[0] == 0. ||
+      angularGaps[maxAngularGapPos] < this->GetAngularGapThreshold())
+  {
+    if (outBuffer != inBuffer)
     {
-    if ( outBuffer != inBuffer )
-      {
       size_t count = this->GetOutput()->GetRequestedRegion().GetSize(0);
       count *= sizeof(ImageType::PixelType);
-      for(unsigned int k=0; k<this->GetOutput()->GetRequestedRegion().GetSize(2); k++)
+      for (unsigned int k = 0; k < this->GetOutput()->GetRequestedRegion().GetSize(2); k++)
+      {
+        for (unsigned int j = 0; j < this->GetOutput()->GetRequestedRegion().GetSize(1); j++)
         {
-        for(unsigned int j=0; j<this->GetOutput()->GetRequestedRegion().GetSize(1); j++)
-          {
           cudaMemcpy(outBuffer, inBuffer, count, cudaMemcpyDeviceToDevice);
           inBuffer += this->GetInput()->GetBufferedRegion().GetSize(0);
           outBuffer += this->GetOutput()->GetBufferedRegion().GetSize(0);
-          }
-        inBuffer += (this->GetInput()->GetBufferedRegion().GetSize(1)-this->GetInput()->GetRequestedRegion().GetSize(1)) * this->GetInput()->GetBufferedRegion().GetSize(0);
-        outBuffer += (this->GetOutput()->GetBufferedRegion().GetSize(1)-this->GetOutput()->GetRequestedRegion().GetSize(1)) * this->GetOutput()->GetBufferedRegion().GetSize(0);
         }
+        inBuffer +=
+          (this->GetInput()->GetBufferedRegion().GetSize(1) - this->GetInput()->GetRequestedRegion().GetSize(1)) *
+          this->GetInput()->GetBufferedRegion().GetSize(0);
+        outBuffer +=
+          (this->GetOutput()->GetBufferedRegion().GetSize(1) - this->GetOutput()->GetRequestedRegion().GetSize(1)) *
+          this->GetOutput()->GetBufferedRegion().GetSize(0);
       }
-    return;
     }
+    return;
+  }
 
-  const std::map<double,unsigned int> sortedAngles = this->GetGeometry()->GetUniqueSortedAngles( rotationAngles );
+  const std::map<double, unsigned int> sortedAngles = this->GetGeometry()->GetUniqueSortedAngles(rotationAngles);
 
   // Compute delta between first and last angle where there is weighting required
-  std::map<double,unsigned int>::const_iterator itLastAngle;
+  std::map<double, unsigned int>::const_iterator itLastAngle;
   itLastAngle = sortedAngles.find(rotationAngles[maxAngularGapPos]);
-  std::map<double,unsigned int>::const_iterator itFirstAngle = itLastAngle;
-  itFirstAngle = (++itFirstAngle==sortedAngles.end())?sortedAngles.begin():itFirstAngle;
+  std::map<double, unsigned int>::const_iterator itFirstAngle = itLastAngle;
+  itFirstAngle = (++itFirstAngle == sortedAngles.end()) ? sortedAngles.begin() : itFirstAngle;
   const double firstAngle = itFirstAngle->first;
-  double lastAngle = itLastAngle->first;
+  double       lastAngle = itLastAngle->first;
   if (lastAngle < firstAngle)
-    lastAngle += 2*itk::Math::pi;
-  //Delta
+    lastAngle += 2 * itk::Math::pi;
+  // Delta
   double delta = 0.5 * (lastAngle - firstAngle - itk::Math::pi);
-  delta = delta - 2*itk::Math::pi* floor(delta / (2*itk::Math::pi)); // between -2*PI and 2*PI
+  delta = delta - 2 * itk::Math::pi * floor(delta / (2 * itk::Math::pi)); // between -2*PI and 2*PI
 
   // check for enough data
-  const int geomStart = this->GetInput()->GetBufferedRegion().GetIndex()[2];
-  double sox = this->GetGeometry()->GetSourceOffsetsX()[geomStart];
-  double sid = this->GetGeometry()->GetSourceToIsocenterDistances()[geomStart];
-  const double invsid = 1./sqrt(sid*sid+sox*sox);
-  const double detectorWidth = this->GetInput()->GetSpacing()[0] *
-                               this->GetInput()->GetLargestPossibleRegion().GetSize()[0];
+  const int    geomStart = this->GetInput()->GetBufferedRegion().GetIndex()[2];
+  double       sox = this->GetGeometry()->GetSourceOffsetsX()[geomStart];
+  double       sid = this->GetGeometry()->GetSourceToIsocenterDistances()[geomStart];
+  const double invsid = 1. / sqrt(sid * sid + sox * sox);
+  const double detectorWidth =
+    this->GetInput()->GetSpacing()[0] * this->GetInput()->GetLargestPossibleRegion().GetSize()[0];
   if (delta < atan(0.5 * detectorWidth * invsid))
     itkWarningMacro(<< "You do not have enough data for proper Parker weighting (short scan)"
                     << "Delta is " << delta * 180. / itk::Math::pi
@@ -131,31 +128,33 @@ CudaParkerShortScanImageFilter
   // 0: sdd
   // 1: projection offset x
   // 2: gantry angle
-  int geomIdx = this->GetInput()->GetRequestedRegion().GetIndex()[2];
-  float *geomMatrix = new float[proj_size[2] * 5];
-  if(geomMatrix == nullptr)
-     itkExceptionMacro(<< "Couldn't allocate geomMatrix");
+  int     geomIdx = this->GetInput()->GetRequestedRegion().GetIndex()[2];
+  float * geomMatrix = new float[proj_size[2] * 5];
+  if (geomMatrix == nullptr)
+    itkExceptionMacro(<< "Couldn't allocate geomMatrix");
   for (int g = 0; g < proj_size[2]; ++g)
-    {
+  {
     geomMatrix[g * 5 + 0] = this->GetGeometry()->GetSourceToDetectorDistances()[g + geomIdx];
     geomMatrix[g * 5 + 1] = this->GetGeometry()->GetSourceOffsetsX()[g + geomIdx];
     geomMatrix[g * 5 + 2] = this->GetGeometry()->GetProjectionOffsetsX()[g + geomIdx];
     geomMatrix[g * 5 + 3] = this->GetGeometry()->GetSourceToIsocenterDistances()[g + geomIdx];
     geomMatrix[g * 5 + 4] = this->GetGeometry()->GetGantryAngles()[g + geomIdx];
-    }
+  }
 
-  CUDA_parker_weight(
-      proj_idx,
-      proj_size,
-      proj_size_buf_in,
-      proj_size_buf_out,
-      inBuffer, outBuffer,
-      geomMatrix,
-      delta, firstAngle,
-      proj_orig, proj_row, proj_col
-      );
+  CUDA_parker_weight(proj_idx,
+                     proj_size,
+                     proj_size_buf_in,
+                     proj_size_buf_out,
+                     inBuffer,
+                     outBuffer,
+                     geomMatrix,
+                     delta,
+                     firstAngle,
+                     proj_orig,
+                     proj_row,
+                     proj_col);
 
   delete[] geomMatrix;
 }
 
-}
+} // namespace rtk

@@ -21,50 +21,42 @@
 namespace rtk
 {
 
-BoxShape
-::BoxShape():
-  m_BoxMin(0.),
-  m_BoxMax(0.)
+BoxShape ::BoxShape()
+  : m_BoxMin(0.)
+  , m_BoxMax(0.)
 {
   m_Direction.SetIdentity();
 }
 
 bool
-BoxShape
-::IsInside(const PointType& point) const
+BoxShape ::IsInside(const PointType & point) const
 {
   RotationMatrixType dirt;
   dirt = m_Direction.GetTranspose();
-  PointType t   = dirt * point;
+  PointType t = dirt * point;
   PointType min = dirt * m_BoxMin;
   PointType max = dirt * m_BoxMax;
-  if(t[0] < min[0] ||
-     t[0] > max[0] ||
-     t[1] < min[1] ||
-     t[1] > max[1] ||
-     t[2] < min[2] ||
-     t[2] > max[2])
+  if (t[0] < min[0] || t[0] > max[0] || t[1] < min[1] || t[1] > max[1] || t[2] < min[2] || t[2] > max[2])
     return false;
- return ApplyClipPlanes(point);
+  return ApplyClipPlanes(point);
 }
 
 bool
-BoxShape
-::IsIntersectedByRay(const PointType & rayOrigin,
-                     const VectorType & rayDirection,
-                     double & nearDist,
-                     double & farDist) const
+BoxShape ::IsIntersectedByRay(const PointType &  rayOrigin,
+                              const VectorType & rayDirection,
+                              double &           nearDist,
+                              double &           farDist) const
 {
   // Apply transform
   RotationMatrixType dirt;
   dirt = m_Direction.GetTranspose();
-  PointType org = dirt * rayOrigin;
+  PointType  org = dirt * rayOrigin;
   VectorType dir = dirt * rayDirection;
-  PointType min = dirt * m_BoxMin;
-  PointType max = dirt * m_BoxMax;
-  for(unsigned int i=0; i<Dimension; i++)
-    if(min[i]>max[i])
-      std::swap( min[i], max[i] );
+  PointType  min = dirt * m_BoxMin;
+  PointType  max = dirt * m_BoxMax;
+  for (unsigned int i = 0; i < Dimension; i++)
+    if (min[i] > max[i])
+      std::swap(min[i], max[i]);
 
   // To account for m_Direction, everything (ray source and direction + boxmin/boxmax)
   // is rotated with its inverse, m_DirectionT. Then, the box is aligned with the
@@ -77,43 +69,45 @@ BoxShape
   // Rd <-> dir
   // Tnear <-> nearDist
   // Tfar <-> farDist
-  nearDist = itk::NumericTraits< ScalarType >::NonpositiveMin();
-  farDist = itk::NumericTraits< ScalarType >::max();
+  nearDist = itk::NumericTraits<ScalarType>::NonpositiveMin();
+  farDist = itk::NumericTraits<ScalarType>::max();
   ScalarType T1, T2, invRayDir;
-  for(unsigned int i=0; i<Dimension; i++)
-    {
-    if(dir[i] == itk::NumericTraits< ScalarType >::ZeroValue() &&
-       (org[i]<min[i] || org[i]>max[i]) )
+  for (unsigned int i = 0; i < Dimension; i++)
+  {
+    if (dir[i] == itk::NumericTraits<ScalarType>::ZeroValue() && (org[i] < min[i] || org[i] > max[i]))
       return false;
 
-    invRayDir = 1/dir[i];
+    invRayDir = 1 / dir[i];
     T1 = (min[i] - org[i]) * invRayDir;
     T2 = (max[i] - org[i]) * invRayDir;
-    if(T1>T2) std::swap( T1, T2 );
-    if(T1>nearDist) nearDist = T1;
-    if(T2<farDist) farDist = T2;
-    if(nearDist>farDist) return false;
-    if(farDist<0) return false;
-    }
+    if (T1 > T2)
+      std::swap(T1, T2);
+    if (T1 > nearDist)
+      nearDist = T1;
+    if (T2 < farDist)
+      farDist = T2;
+    if (nearDist > farDist)
+      return false;
+    if (farDist < 0)
+      return false;
+  }
 
   return ApplyClipPlanes(rayOrigin, rayDirection, nearDist, farDist);
 }
 
 void
-BoxShape
-::Rescale(const VectorType &r)
+BoxShape ::Rescale(const VectorType & r)
 {
   Superclass::Rescale(r);
-  for(unsigned int i=0; i<Dimension; i++)
-    {
+  for (unsigned int i = 0; i < Dimension; i++)
+  {
     m_BoxMin[i] *= r[i];
     m_BoxMax[i] *= r[i];
-    }
+  }
 }
 
 void
-BoxShape
-::Translate(const VectorType &t)
+BoxShape ::Translate(const VectorType & t)
 {
   Superclass::Translate(t);
   m_BoxMin += t;
@@ -121,8 +115,7 @@ BoxShape
 }
 
 void
-BoxShape
-::Rotate(const RotationMatrixType &r)
+BoxShape ::Rotate(const RotationMatrixType & r)
 {
   Superclass::Rotate(r);
   m_Direction = m_Direction * r;
@@ -131,11 +124,10 @@ BoxShape
 }
 
 itk::LightObject::Pointer
-BoxShape
-::InternalClone() const
+BoxShape ::InternalClone() const
 {
   LightObject::Pointer loPtr = Superclass::InternalClone();
-  Self::Pointer clone = dynamic_cast<Self *>(loPtr.GetPointer());
+  Self::Pointer        clone = dynamic_cast<Self *>(loPtr.GetPointer());
 
   clone->SetBoxMin(this->GetBoxMin());
   clone->SetBoxMax(this->GetBoxMax());
@@ -145,26 +137,25 @@ BoxShape
 }
 
 void
-BoxShape
-::SetBoxFromImage( const ImageBaseType *img, bool bWithExternalHalfPixelBorder )
+BoxShape ::SetBoxFromImage(const ImageBaseType * img, bool bWithExternalHalfPixelBorder)
 {
-  if(Dimension != img->GetImageDimension())
+  if (Dimension != img->GetImageDimension())
     itkGenericExceptionMacro(<< "BoxShape and image dimensions must agree");
 
   // BoxShape corner 1
   m_BoxMin = img->GetOrigin().GetVectorFromOrigin();
-  if(bWithExternalHalfPixelBorder)
+  if (bWithExternalHalfPixelBorder)
     m_BoxMin -= img->GetDirection() * img->GetSpacing() * 0.5;
 
   // BoxShape corner 2
-  for(unsigned int i=0; i<Dimension; i++)
-    if(bWithExternalHalfPixelBorder)
+  for (unsigned int i = 0; i < Dimension; i++)
+    if (bWithExternalHalfPixelBorder)
       m_BoxMax[i] = img->GetSpacing()[i] * img->GetLargestPossibleRegion().GetSize()[i];
     else
-      m_BoxMax[i] = img->GetSpacing()[i] * (img->GetLargestPossibleRegion().GetSize()[i]-1);
+      m_BoxMax[i] = img->GetSpacing()[i] * (img->GetLargestPossibleRegion().GetSize()[i] - 1);
   m_BoxMax = m_BoxMin + img->GetDirection() * m_BoxMax;
 
-  SetDirection( img->GetDirection() );
+  SetDirection(img->GetDirection());
 }
 
 } // end namespace rtk

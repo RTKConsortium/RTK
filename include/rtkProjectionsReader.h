@@ -53,15 +53,20 @@ namespace rtk
  *
  * node [shape=box];
  * Raw [label="itk::ImageSeriesReader" URL="\ref itk::ImageSeriesReader"];
- * ElektaRaw [label="rtk::ElektaSynergyRawLookupTableImageFilter" URL="\ref rtk::ElektaSynergyRawLookupTableImageFilter"];
- * ChangeInformation [label="itk::ChangeInformationImageFilter" URL="\ref itk::ChangeInformationImageFilter" style=dashed];
+ * ElektaRaw [label="rtk::ElektaSynergyRawLookupTableImageFilter"
+ *            URL="\ref rtk::ElektaSynergyRawLookupTableImageFilter"];
+ * ChangeInformation [label="itk::ChangeInformationImageFilter"
+ *                    URL="\ref itk::ChangeInformationImageFilter" style=dashed];
  * Crop [label="itk::CropImageFilter" URL="\ref itk::CropImageFilter" style=dashed];
  * Binning [label="itk::BinShrinkImageFilter" URL="\ref itk::BinShrinkImageFilter" style=dashed];
- * ConditionalMedian [label="rtk::ConditionalMedianImageFilter" URL="\ref rtk::ConditionalMedianImageFilter" style=dashed];
- * Scatter [label="rtk::BoellaardScatterCorrectionImageFilter" URL="\ref rtk::BoellaardScatterCorrectionImageFilter" style=dashed];
+ * ConditionalMedian [label="rtk::ConditionalMedianImageFilter"
+ *                    URL="\ref rtk::ConditionalMedianImageFilter" style=dashed];
+ * Scatter [label="rtk::BoellaardScatterCorrectionImageFilter"
+ *          URL="\ref rtk::BoellaardScatterCorrectionImageFilter" style=dashed];
  * I0est [label="rtk::I0EstimationProjectionFilter" URL="\ref rtk::I0EstimationProjectionFilter" style=dashed];
  * BeforeLUT [label="", fixedsize="false", width=0, height=0, shape=none];
- * LUT [label="rtk::LUTbasedVariableI0RawToAttenuationImageFilter" URL="\ref rtk::LUTbasedVariableI0RawToAttenuationImageFilter"];
+ * LUT [label="rtk::LUTbasedVariableI0RawToAttenuationImageFilter"
+ *      URL="\ref rtk::LUTbasedVariableI0RawToAttenuationImageFilter"];
  * BeforeVarian [label="", fixedsize="false", width=0, height=0, shape=none];
  * Varian [label="rtk::VarianObiRawImageFilter" URL="\ref rtk::VarianObiRawImageFilter"];
  * WPC [label="rtk::WaterPrecorrectionImageFilter" URL="\ref rtk::WaterPrecorrectionImageFilter" style=dashed];
@@ -144,9 +149,9 @@ public:
   using OutputImageSizeType = typename OutputImageType::SizeType;
 
   using FileNamesContainer = std::vector<std::string>;
-  using ShrinkFactorsType = itk::FixedArray< unsigned int, TOutputImage::ImageDimension >;
+  using ShrinkFactorsType = itk::FixedArray<unsigned int, TOutputImage::ImageDimension>;
   using MedianRadiusType = typename rtk::ConditionalMedianImageFilter<TOutputImage>::MedianRadiusType;
-  using WaterPrecorrectionVectorType = std::vector< double >;
+  using WaterPrecorrectionVectorType = std::vector<double>;
 
   /** Typdefs of filters of the mini-pipeline that do not depend on the raw
    * data type. */
@@ -154,23 +159,24 @@ public:
   using StreamingType = itk::StreamingImageFilter<TOutputImage, TOutputImage>;
 
   /** ImageDimension constant */
-  itkStaticConstMacro(OutputImageDimension, unsigned int,
-                      TOutputImage::ImageDimension);
+  itkStaticConstMacro(OutputImageDimension, unsigned int, TOutputImage::ImageDimension);
 
   /** Set the vector of strings that contains the file names. Files
    * are processed in sequential order. */
-  void SetFileNames (const FileNamesContainer &name)
+  void
+  SetFileNames(const FileNamesContainer & name)
+  {
+    if (m_FileNames != name)
     {
-    if ( m_FileNames != name)
-      {
       m_FileNames = name;
       this->Modified();
-      }
     }
-  const FileNamesContainer & GetFileNames() const
-    {
+  }
+  const FileNamesContainer &
+  GetFileNames() const
+  {
     return m_FileNames;
-    }
+  }
 
   /** Set/Get the new image information for the input projections before any pre-processing. */
   itkSetMacro(Origin, OutputImagePointType);
@@ -223,14 +229,15 @@ public:
 
   /** Get / Set the water precorrection parameters. */
   itkGetMacro(WaterPrecorrectionCoefficients, WaterPrecorrectionVectorType);
-  virtual void SetWaterPrecorrectionCoefficients(const WaterPrecorrectionVectorType _arg)
-    {
+  virtual void
+  SetWaterPrecorrectionCoefficients(const WaterPrecorrectionVectorType _arg)
+  {
     if (this->m_WaterPrecorrectionCoefficients != _arg)
-      {
+    {
       this->m_WaterPrecorrectionCoefficients = _arg;
       this->Modified();
-      }
     }
+  }
 
   /** Convert the projection data to line integrals after pre-processing.
   ** Default is on. */
@@ -240,23 +247,26 @@ public:
 
   /** Set/Get the index of the component to be extracted
    * if the projection data contains vectors instead of scalars. */
-  itkGetMacro(VectorComponent, unsigned int)
-  itkSetMacro(VectorComponent, unsigned int)
+  itkGetMacro(VectorComponent, unsigned int);
+  itkSetMacro(VectorComponent, unsigned int);
 
   /** Get the image IO that was used for reading the projection. */
-  itkGetMacro(ImageIO,  itk::ImageIOBase::Pointer);
+  itkGetMacro(ImageIO, itk::ImageIOBase::Pointer);
 
   /** Prepare the allocation of the output image during the first back
    * propagation of the pipeline. */
-  void GenerateOutputInformation(void) override;
+  void
+  GenerateOutputInformation(void) override;
 
 protected:
   ProjectionsReader();
   ~ProjectionsReader() override = default;
-  void PrintSelf(std::ostream& os, itk::Indent indent) const override;
+  void
+  PrintSelf(std::ostream & os, itk::Indent indent) const override;
 
   /** Does the real work. */
-  void GenerateData() override;
+  void
+  GenerateData() override;
 
   /** A list of filenames to be processed. */
   FileNamesContainer m_FileNames;
@@ -265,9 +275,13 @@ private:
   /** Function that checks and propagates the parameters of the class to the
    * mini-pipeline. Due to concept checking, i0 propagation can only be done
    * with unsigned shorts and is left apart without template. */
-  template<class TInputImage> void PropagateParametersToMiniPipeline();
-  void ConnectElektaRawFilter(itk::ImageBase<OutputImageDimension> **nextInputBase);
-  void PropagateI0(itk::ImageBase<OutputImageDimension> **nextInputBase);
+  template <class TInputImage>
+  void
+  PropagateParametersToMiniPipeline();
+  void
+  ConnectElektaRawFilter(itk::ImageBase<OutputImageDimension> ** nextInputBase);
+  void
+  PropagateI0(itk::ImageBase<OutputImageDimension> ** nextInputBase);
 
   /** The projections reader which template depends on the scanner.
    * It is not typed because we want to keep the data as on disk.
@@ -297,7 +311,7 @@ private:
   typename StreamingType::Pointer          m_StreamingFilter;
 
   /** Image IO object which is stored to create the pipe only when required */
-  itk::ImageIOBase::Pointer m_ImageIO{nullptr};
+  itk::ImageIOBase::Pointer m_ImageIO{ nullptr };
 
   /** Copy of parameters for the mini-pipeline. Parameters are checked and
    * propagated when required in the GenerateOutputInformation. Refer to the
@@ -309,21 +323,21 @@ private:
   OutputImageSizeType          m_UpperBoundaryCropSize;
   ShrinkFactorsType            m_ShrinkFactors;
   MedianRadiusType             m_MedianRadius;
-  double                       m_AirThreshold{32000};
-  double                       m_ScatterToPrimaryRatio{0.};
-  double                       m_NonNegativityConstraintThreshold{itk::NumericTraits<double>::NonpositiveMin()};
-  double                       m_I0{itk::NumericTraits<double>::NonpositiveMin()};
-  double                       m_IDark{0.};
-  double                       m_ConditionalMedianThresholdMultiplier{1.};
+  double                       m_AirThreshold{ 32000 };
+  double                       m_ScatterToPrimaryRatio{ 0. };
+  double                       m_NonNegativityConstraintThreshold{ itk::NumericTraits<double>::NonpositiveMin() };
+  double                       m_I0{ itk::NumericTraits<double>::NonpositiveMin() };
+  double                       m_IDark{ 0. };
+  double                       m_ConditionalMedianThresholdMultiplier{ 1. };
   WaterPrecorrectionVectorType m_WaterPrecorrectionCoefficients;
-  bool                         m_ComputeLineIntegral{true};
-  unsigned int                 m_VectorComponent{0};
+  bool                         m_ComputeLineIntegral{ true };
+  unsigned int                 m_VectorComponent{ 0 };
 };
 
-} //namespace rtk
+} // namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkProjectionsReader.hxx"
+#  include "rtkProjectionsReader.hxx"
 #endif
 
 #endif // rtkProjectionsReader_h

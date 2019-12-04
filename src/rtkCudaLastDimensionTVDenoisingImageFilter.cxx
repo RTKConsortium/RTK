@@ -21,15 +21,13 @@
 
 #include <itkMacro.h>
 
-rtk::CudaLastDimensionTVDenoisingImageFilter
-::CudaLastDimensionTVDenoisingImageFilter()
+rtk::CudaLastDimensionTVDenoisingImageFilter ::CudaLastDimensionTVDenoisingImageFilter()
 {
   this->SetInPlace(true);
 }
 
 void
-rtk::CudaLastDimensionTVDenoisingImageFilter
-::GPUGenerateData()
+rtk::CudaLastDimensionTVDenoisingImageFilter ::GPUGenerateData()
 {
   // Allocate the output image
   this->AllocateOutputs();
@@ -37,30 +35,27 @@ rtk::CudaLastDimensionTVDenoisingImageFilter
   int inputSize[4];
   int outputSize[4];
 
-//   std::cout << "PRINTING INPUT" << std::endl;
-//   this->GetInput()->Print(std::cout);
-//   std::cout << "PRINTING OUTPUT" << std::endl;
-//   this->GetOutput()->Print(std::cout);
+  //   std::cout << "PRINTING INPUT" << std::endl;
+  //   this->GetInput()->Print(std::cout);
+  //   std::cout << "PRINTING OUTPUT" << std::endl;
+  //   this->GetOutput()->Print(std::cout);
 
-  for (int i=0; i<4; i++)
-    {
+  for (int i = 0; i < 4; i++)
+  {
     inputSize[i] = this->GetInput()->GetBufferedRegion().GetSize()[i];
     outputSize[i] = this->GetOutput()->GetBufferedRegion().GetSize()[i];
 
     if (inputSize[i] != outputSize[i])
-      {
+    {
 
-      itkGenericExceptionMacro(<< "The CUDA Last Dimension Total Variation Denoising filter can only handle input and output regions of equal size");
-      }
+      itkGenericExceptionMacro(<< "The CUDA Last Dimension Total Variation Denoising filter can only handle input and "
+                                  "output regions of equal size");
     }
+  }
 
-  float *pin = *(float**)( this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer() );
-  float *pout = *(float**)( this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer() );
+  float * pin = *(float **)(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
+  float * pout = *(float **)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
 
-  CUDA_total_variation_last_dimension(inputSize,
-                                     pin,
-                                     pout,
-                                     static_cast<float>(m_Gamma),
-                                     static_cast<float>(m_Beta),
-                                     m_NumberOfIterations);
+  CUDA_total_variation_last_dimension(
+    inputSize, pin, pout, static_cast<float>(m_Gamma), static_cast<float>(m_Beta), m_NumberOfIterations);
 }

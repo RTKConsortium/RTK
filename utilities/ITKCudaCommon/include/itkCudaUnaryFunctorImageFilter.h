@@ -32,18 +32,20 @@ namespace itk
  *
  * \ingroup   ITKCudaCommon
  */
-template< class TInputImage, class TOutputImage, class TFunction, class TParentImageFilter =
-            InPlaceImageFilter< TInputImage, TOutputImage > >
-class ITK_EXPORT CudaUnaryFunctorImageFilter : public CudaInPlaceImageFilter< TInputImage, TOutputImage,
-                                                                            TParentImageFilter >
+template <class TInputImage,
+          class TOutputImage,
+          class TFunction,
+          class TParentImageFilter = InPlaceImageFilter<TInputImage, TOutputImage>>
+class ITK_EXPORT CudaUnaryFunctorImageFilter
+  : public CudaInPlaceImageFilter<TInputImage, TOutputImage, TParentImageFilter>
 {
 public:
   /** Standard class type alias. */
   using Self = CudaUnaryFunctorImageFilter;
   using CPUSuperclass = TParentImageFilter;
-  using GPUSuperclass = CudaInPlaceImageFilter< TInputImage, TOutputImage >;
-  using Pointer = SmartPointer< Self >;
-  using ConstPointer = SmartPointer< const Self >;
+  using GPUSuperclass = CudaInPlaceImageFilter<TInputImage, TOutputImage>;
+  using Pointer = SmartPointer<Self>;
+  using ConstPointer = SmartPointer<const Self>;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -55,58 +57,63 @@ public:
   using FunctorType = TFunction;
 
   using InputImageType = TInputImage;
-  using InputImagePointer = typename    InputImageType::ConstPointer;
-  using InputImageRegionType = typename    InputImageType::RegionType;
-  using InputImagePixelType = typename    InputImageType::PixelType;
+  using InputImagePointer = typename InputImageType::ConstPointer;
+  using InputImageRegionType = typename InputImageType::RegionType;
+  using InputImagePixelType = typename InputImageType::PixelType;
 
   using OutputImageType = TOutputImage;
-  using OutputImagePointer = typename     OutputImageType::Pointer;
-  using OutputImageRegionType = typename     OutputImageType::RegionType;
-  using OutputImagePixelType = typename     OutputImageType::PixelType;
+  using OutputImagePointer = typename OutputImageType::Pointer;
+  using OutputImageRegionType = typename OutputImageType::RegionType;
+  using OutputImagePixelType = typename OutputImageType::PixelType;
 
-  FunctorType & GetFunctor() {
+  FunctorType &
+  GetFunctor()
+  {
     return m_Functor;
   }
-  const FunctorType & GetFunctor() const {
+  const FunctorType &
+  GetFunctor() const
+  {
     return m_Functor;
   }
 
   /** Set the functor object. */
-  void SetFunctor(const FunctorType & functor)
+  void
+  SetFunctor(const FunctorType & functor)
   {
     if (m_Functor != functor)
-      {
+    {
       m_Functor = functor;
       this->Modified();
-      }
+    }
   }
 
 protected:
-  CudaUnaryFunctorImageFilter() {
-  }
-  virtual ~CudaUnaryFunctorImageFilter() {
-  }
+  CudaUnaryFunctorImageFilter() {}
+  virtual ~CudaUnaryFunctorImageFilter() {}
 
-  virtual void GenerateOutputInformation();
+  virtual void
+  GenerateOutputInformation();
 
-  virtual void GPUGenerateData();
+  virtual void
+  GPUGenerateData();
 
   /** Cuda kernel handle is defined here instead of in the child class
    * because GPUGenerateData() in this base class is used. */
   int m_UnaryFunctorImageFilterCudaKernelHandle;
 
 private:
-  CudaUnaryFunctorImageFilter(const Self &); //purposely not implemented
-  void operator=(const Self &);             //purposely not implemented
+  CudaUnaryFunctorImageFilter(const Self &); // purposely not implemented
+  void
+  operator=(const Self &); // purposely not implemented
 
   FunctorType m_Functor;
-
 };
 
 } // end of namespace itk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "itkCudaUnaryFunctorImageFilter.hxx"
+#  include "itkCudaUnaryFunctorImageFilter.hxx"
 #endif
 
 #endif

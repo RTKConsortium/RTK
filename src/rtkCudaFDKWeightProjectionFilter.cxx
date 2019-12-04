@@ -22,40 +22,32 @@
 namespace rtk
 {
 
-CudaFDKWeightProjectionFilter
-::CudaFDKWeightProjectionFilter()
-{
-}
+CudaFDKWeightProjectionFilter ::CudaFDKWeightProjectionFilter() {}
 
-CudaFDKWeightProjectionFilter
-::~CudaFDKWeightProjectionFilter()
-{
-}
+CudaFDKWeightProjectionFilter ::~CudaFDKWeightProjectionFilter() {}
 
 void
-CudaFDKWeightProjectionFilter
-::GPUGenerateData()
+CudaFDKWeightProjectionFilter ::GPUGenerateData()
 {
   // Get angular weights from geometry
   std::vector<double> constantProjectionFactor =
-      this->GetGeometry()->GetAngularGaps(this->GetGeometry()->GetSourceAngles());
-  std::vector<double> tiltAngles =
-      this->GetGeometry()->GetTiltAngles();
+    this->GetGeometry()->GetAngularGaps(this->GetGeometry()->GetSourceAngles());
+  std::vector<double> tiltAngles = this->GetGeometry()->GetTiltAngles();
 
-  for(unsigned int g = 0; g < constantProjectionFactor.size(); g++)
+  for (unsigned int g = 0; g < constantProjectionFactor.size(); g++)
   {
     // Add correction factor for ramp filter
-    const double sdd  = this->GetGeometry()->GetSourceToDetectorDistances()[g];
-    if(sdd == 0.) // Parallel
+    const double sdd = this->GetGeometry()->GetSourceToDetectorDistances()[g];
+    if (sdd == 0.) // Parallel
       constantProjectionFactor[g] *= 0.5;
-    else        // Divergent
+    else // Divergent
     {
       // See [Rit and Clackdoyle, CT meeting, 2014]
       ThreeDCircularProjectionGeometry::HomogeneousVectorType sp;
       sp = this->GetGeometry()->GetSourcePosition(g);
       sp[3] = 0.;
-      const double sid  = this->GetGeometry()->GetSourceToIsocenterDistances()[g];
-      constantProjectionFactor[g] *= itk::Math::abs(sdd) / (2. * sid *sid);
+      const double sid = this->GetGeometry()->GetSourceToIsocenterDistances()[g];
+      constantProjectionFactor[g] *= itk::Math::abs(sdd) / (2. * sid * sid);
       constantProjectionFactor[g] *= sp.GetNorm();
     }
   }
@@ -98,10 +90,10 @@ CudaFDKWeightProjectionFilter
   // 4: source offset x
   // 5: source offset y
   // 6: weight factor
-  int geomIdx = this->GetInput()->GetRequestedRegion().GetIndex()[2];
-  float *geomMatrix = new float[proj_size[2] * 7];
-  if(geomMatrix == nullptr)
-     itkExceptionMacro(<< "Couldn't allocate geomMatrix");
+  int     geomIdx = this->GetInput()->GetRequestedRegion().GetIndex()[2];
+  float * geomMatrix = new float[proj_size[2] * 7];
+  if (geomMatrix == nullptr)
+    itkExceptionMacro(<< "Couldn't allocate geomMatrix");
   for (int g = 0; g < proj_size[2]; ++g)
   {
     geomMatrix[g * 7 + 0] = this->GetGeometry()->GetSourceToDetectorDistances()[g + geomIdx];
@@ -114,22 +106,23 @@ CudaFDKWeightProjectionFilter
   }
 
   // Put the two data pointers at the same location
-  float *inBuffer = *static_cast<float **>(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
-  inBuffer += this->GetInput()->ComputeOffset( this->GetInput()->GetRequestedRegion().GetIndex() );
-  float *outBuffer = *static_cast<float **>(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
-  outBuffer += this->GetOutput()->ComputeOffset( this->GetOutput()->GetRequestedRegion().GetIndex() );
+  float * inBuffer = *static_cast<float **>(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
+  inBuffer += this->GetInput()->ComputeOffset(this->GetInput()->GetRequestedRegion().GetIndex());
+  float * outBuffer = *static_cast<float **>(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
+  outBuffer += this->GetOutput()->ComputeOffset(this->GetOutput()->GetRequestedRegion().GetIndex());
 
-  CUDA_weight_projection(
-      proj_idx,
-      proj_size,
-      proj_size_buf_in,
-      proj_size_buf_out,
-      inBuffer, outBuffer,
-      geomMatrix,
-      proj_orig, proj_row, proj_col
-      );
+  CUDA_weight_projection(proj_idx,
+                         proj_size,
+                         proj_size_buf_in,
+                         proj_size_buf_out,
+                         inBuffer,
+                         outBuffer,
+                         geomMatrix,
+                         proj_orig,
+                         proj_row,
+                         proj_col);
 
   delete[] geomMatrix;
 }
 
-}
+} // namespace rtk

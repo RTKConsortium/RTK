@@ -23,29 +23,28 @@
 
 namespace rtk
 {
-  /** \class ExtractPhaseImageFilter
-   *
-   * \brief Extracts the phase of a 1D signal
-   *
-   * The filter extracts the phase of a 1D periodic signal, which is useful in
-   * gated CT. There are several ways of defining the phase of a signal and the
-   * filter offers two of them:
-   * - the phase of the complex analytic signal as defined in
-   * rtk::HilbertImageFilter,
-   * - linear between chosen extrema, either minima or maxima.
-   * There are several parameters to the extraction that should be at least
-   * adjusted for every system and possibly for some patients.
-   *
-   * \test rtkamsterdamshroudtest.cxx
-   *
-   * \author Simon Rit
-   *
-   * \ingroup RTK ImageToImageFilter
-   */
+/** \class ExtractPhaseImageFilter
+ *
+ * \brief Extracts the phase of a 1D signal
+ *
+ * The filter extracts the phase of a 1D periodic signal, which is useful in
+ * gated CT. There are several ways of defining the phase of a signal and the
+ * filter offers two of them:
+ * - the phase of the complex analytic signal as defined in
+ * rtk::HilbertImageFilter,
+ * - linear between chosen extrema, either minima or maxima.
+ * There are several parameters to the extraction that should be at least
+ * adjusted for every system and possibly for some patients.
+ *
+ * \test rtkamsterdamshroudtest.cxx
+ *
+ * \author Simon Rit
+ *
+ * \ingroup RTK ImageToImageFilter
+ */
 
-template<class TImage>
-class ITK_EXPORT ExtractPhaseImageFilter :
-  public itk::InPlaceImageFilter<TImage>
+template <class TImage>
+class ITK_EXPORT ExtractPhaseImageFilter : public itk::InPlaceImageFilter<TImage>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(ExtractPhaseImageFilter);
@@ -59,9 +58,12 @@ public:
   /** Convenient type alias. */
   using KernelSizeType = typename TImage::SizeType::SizeValueType;
   using PositionsListType = std::vector<int>;
-  typedef enum {LOCAL_PHASE=0,
-                LINEAR_BETWEEN_MINIMA,
-                LINEAR_BETWEEN_MAXIMA}             ModelType;
+  typedef enum
+  {
+    LOCAL_PHASE = 0,
+    LINEAR_BETWEEN_MINIMA,
+    LINEAR_BETWEEN_MAXIMA
+  } ModelType;
 
   /** Standard New method. */
   itkNewMacro(Self);
@@ -71,20 +73,20 @@ public:
 
   /** The input signal may be smoothed before taking the phase of the Hilbert
    * transform. This parameter sets the number of samples for this smoothing. */
-  itkSetMacro(MovingAverageSize, KernelSizeType)
-  itkGetMacro(MovingAverageSize, KernelSizeType)
+  itkSetMacro(MovingAverageSize, KernelSizeType);
+  itkGetMacro(MovingAverageSize, KernelSizeType);
 
   /** Low frequencies of the signal are removed before taking the phase of the
    * Hilbert transform using an unsharp mask, i.e., the difference of the
    * signal and its moving average. This parameter sets the number of samples
    * used for the moving average, default is 55. */
-  itkSetMacro(UnsharpMaskSize, KernelSizeType)
-  itkGetMacro(UnsharpMaskSize, KernelSizeType)
+  itkSetMacro(UnsharpMaskSize, KernelSizeType);
+  itkGetMacro(UnsharpMaskSize, KernelSizeType);
 
   /** During the update, extrema are extracted and can be retrieved after an
    * update of the output. */
-  itkGetMacro(MinimaPositions, PositionsListType)
-  itkGetMacro(MaximaPositions, PositionsListType)
+  itkGetMacro(MinimaPositions, PositionsListType);
+  itkGetMacro(MaximaPositions, PositionsListType);
 
   /** After smoothing and unsharping, you can chose the model for the phase
    * extraction which describes the position in the respiratory cycle by a
@@ -93,17 +95,19 @@ public:
    * - LINEAR_BETWEEN_MINIMA (LINEAR_BETWEEN_MAXIMA): phase phase is linear
    * between two consecutive minima (maxima), with the minima (maxima) at 0.
    * Default is LINEAR_BETWEEN_MINIMA. */
-  itkSetMacro(Model, ModelType)
-  itkGetMacro(Model, ModelType)
+  itkSetMacro(Model, ModelType);
+  itkGetMacro(Model, ModelType);
 
 protected:
   ExtractPhaseImageFilter();
   ~ExtractPhaseImageFilter() override = default;
 
-  void GenerateData() override;
+  void
+  GenerateData() override;
 
 private:
-  void ComputeLinearPhaseBetweenPositions(const PositionsListType & positions);
+  void
+  ComputeLinearPhaseBetweenPositions(const PositionsListType & positions);
 
   KernelSizeType    m_MovingAverageSize;
   KernelSizeType    m_UnsharpMaskSize;
@@ -115,7 +119,7 @@ private:
 } // end of namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkExtractPhaseImageFilter.hxx"
+#  include "rtkExtractPhaseImageFilter.hxx"
 #endif
 
 #endif

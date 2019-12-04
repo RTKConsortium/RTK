@@ -22,10 +22,6 @@
 #include <vector_types.h>
 
 void
-CUDA_interpolation(const int4 &inputSize,
-                   float* input,
-                   float* output,
-                   int projectionNumber,
-                   float **weights);
+CUDA_interpolation(const int4 & inputSize, float * input, float * output, int projectionNumber, float ** weights);
 
 #endif

@@ -21,9 +21,6 @@
 //====================================================================
 rtk::ImagXImageIOFactory::ImagXImageIOFactory()
 {
-  this->RegisterOverride("itkImageIOBase",
-                         "ImagXImageIO",
-                         "ImagX Image IO",
-                         true,
-                         itk::CreateObjectFunction<ImagXImageIO>::New() );
+  this->RegisterOverride(
+    "itkImageIOBase", "ImagXImageIO", "ImagX Image IO", true, itk::CreateObjectFunction<ImagXImageIO>::New());
 }

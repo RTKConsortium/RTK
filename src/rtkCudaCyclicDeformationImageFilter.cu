@@ -38,18 +38,18 @@ __constant__ int4 c_inputSize;
 
 void
 CUDA_linear_interpolate_along_fourth_dimension(unsigned int inputSize[4],
-                                              float* input,
-                                              float* output,
-                                              unsigned int frameInf,
-                                              unsigned int frameSup,
-                                              double weightInf,
-                                              double weightSup)
+                                               float *      input,
+                                               float *      output,
+                                               unsigned int frameInf,
+                                               unsigned int frameSup,
+                                               double       weightInf,
+                                               double       weightSup)
 {
-  cublasHandle_t  handle;
+  cublasHandle_t handle;
   cublasCreate(&handle);
 
-  float wInf = (float) weightInf;
-  float wSup = (float) weightSup;
+  float wInf = (float)weightInf;
+  float wSup = (float)weightSup;
 
   int numel = inputSize[0] * inputSize[1] * inputSize[2] * 3;
 

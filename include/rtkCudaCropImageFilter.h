@@ -19,14 +19,14 @@
 #define rtkCudaCropImageFilter_h
 
 #include "rtkConfiguration.h"
-//Conditional definition of the class to pass ITKHeaderTest
+// Conditional definition of the class to pass ITKHeaderTest
 #ifdef RTK_USE_CUDA
 
-#include <itkCropImageFilter.h>
-#include "RTKExport.h"
+#  include <itkCropImageFilter.h>
+#  include "RTKExport.h"
 
-#include <itkCudaImage.h>
-#include <itkCudaImageToImageFilter.h>
+#  include <itkCudaImage.h>
+#  include <itkCudaImageToImageFilter.h>
 
 namespace rtk
 {
@@ -45,20 +45,21 @@ namespace rtk
  * \ingroup RTK CudaImageToImageFilter
  *
  */
-class RTK_EXPORT CudaCropImageFilter :
-  public itk::CudaImageToImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>,
-  itk::CropImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3> > >
+class RTK_EXPORT CudaCropImageFilter
+  : public itk::CudaImageToImageFilter<itk::CudaImage<float, 3>,
+                                       itk::CudaImage<float, 3>,
+                                       itk::CropImageFilter<itk::CudaImage<float, 3>, itk::CudaImage<float, 3>>>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(CudaCropImageFilter);
 
   /** Standard class type alias. */
-  using ImageType = itk::CudaImage<float,3>;
+  using ImageType = itk::CudaImage<float, 3>;
   using Self = CudaCropImageFilter;
-  using Superclass = itk::CropImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3> >;
-  using GPUSuperclass = itk::CudaImageToImageFilter<itk::CudaImage<float,3>, itk::CudaImage<float,3>, Superclass >;
-  using Pointer = itk::SmartPointer< Self >;
-  using ConstPointer = itk::SmartPointer< const Self >;
+  using Superclass = itk::CropImageFilter<itk::CudaImage<float, 3>, itk::CudaImage<float, 3>>;
+  using GPUSuperclass = itk::CudaImageToImageFilter<itk::CudaImage<float, 3>, itk::CudaImage<float, 3>, Superclass>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -68,13 +69,14 @@ public:
 
 protected:
   CudaCropImageFilter();
-  virtual ~CudaCropImageFilter() {};
+  virtual ~CudaCropImageFilter(){};
 
-  virtual void GPUGenerateData();
+  virtual void
+  GPUGenerateData();
 
 }; // end of class
 } // end namespace rtk
 
-#endif //end conditional definition of the class
+#endif // end conditional definition of the class
 
 #endif

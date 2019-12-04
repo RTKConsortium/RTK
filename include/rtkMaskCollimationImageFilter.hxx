@@ -31,89 +31,78 @@ namespace rtk
 {
 
 template <class TInputImage, class TOutputImage>
-MaskCollimationImageFilter<TInputImage,TOutputImage>
-::MaskCollimationImageFilter():
-  m_Geometry(nullptr)
+MaskCollimationImageFilter<TInputImage, TOutputImage>::MaskCollimationImageFilter()
+  : m_Geometry(nullptr)
+{}
+
+template <class TInputImage, class TOutputImage>
+void
+MaskCollimationImageFilter<TInputImage, TOutputImage>::BeforeThreadedGenerateData()
 {
+  if (this->GetGeometry()->GetGantryAngles().size() != this->GetOutput()->GetLargestPossibleRegion().GetSize()[2])
+    itkExceptionMacro(<< "Number of projections in the input stack and the geometry object differ.");
 }
 
 template <class TInputImage, class TOutputImage>
 void
-MaskCollimationImageFilter<TInputImage,TOutputImage>
-::BeforeThreadedGenerateData()
-{
-  if(this->GetGeometry()->GetGantryAngles().size() !=
-          this->GetOutput()->GetLargestPossibleRegion().GetSize()[2])
-    itkExceptionMacro(<<"Number of projections in the input stack and the geometry object differ.")
-}
-
-template <class TInputImage, class TOutputImage>
-void
-MaskCollimationImageFilter<TInputImage,TOutputImage>
-#if ITK_VERSION_MAJOR<5
-::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread,
-                       ThreadIdType itkNotUsed(threadId) )
+MaskCollimationImageFilter<TInputImage, TOutputImage>
+#if ITK_VERSION_MAJOR < 5
+  ::ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, ThreadIdType itkNotUsed(threadId))
 #else
-::DynamicThreadedGenerateData(const OutputImageRegionType& outputRegionForThread)
+  ::DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread)
 #endif
 {
   // Iterators on input and output
   using InputRegionIterator = ProjectionsRegionConstIteratorRayBased<TInputImage>;
-  InputRegionIterator *itIn;
-  itIn = InputRegionIterator::New(this->GetInput(),
-                                  outputRegionForThread,
-                                  m_Geometry);
+  InputRegionIterator * itIn;
+  itIn = InputRegionIterator::New(this->GetInput(), outputRegionForThread, m_Geometry);
   using OutputRegionIterator = itk::ImageRegionIteratorWithIndex<TOutputImage>;
   OutputRegionIterator itOut(this->GetOutput(), outputRegionForThread);
 
   // Go over each projection
   unsigned int npixperslice;
-  npixperslice = outputRegionForThread.GetSize(0) *
-                 outputRegionForThread.GetSize(1);
+  npixperslice = outputRegionForThread.GetSize(0) * outputRegionForThread.GetSize(1);
   using SizeValueType = typename OutputImageRegionType::SizeValueType;
-  for(SizeValueType iProj=outputRegionForThread.GetIndex(2);
-                    iProj<outputRegionForThread.GetIndex(2)+
-                          outputRegionForThread.GetSize(2);
-                    iProj++)
+  for (SizeValueType iProj = outputRegionForThread.GetIndex(2);
+       iProj < outputRegionForThread.GetIndex(2) + outputRegionForThread.GetSize(2);
+       iProj++)
+  {
+    for (unsigned int pix = 0; pix < npixperslice; pix++, itIn->Next(), ++itOut)
     {
-    for(unsigned int pix=0;
-                     pix<npixperslice;
-                     pix++, itIn->Next(), ++itOut)
-      {
       using PointType = typename InputRegionIterator::PointType;
       PointType source = itIn->GetSourcePosition();
-      double sourceNorm = source.GetNorm();
+      double    sourceNorm = source.GetNorm();
       PointType pixel = itIn->GetPixelPosition();
-      double sourcey = source[1];
+      double    sourcey = source[1];
       pixel[1] -= sourcey;
       source[1] = 0.;
-      PointType pixelToSource(source-pixel);
-      PointType sourceDir = source/sourceNorm;
+      PointType pixelToSource(source - pixel);
+      PointType sourceDir = source / sourceNorm;
 
       // Get the 3D position of the ray and the main plane
       // (at 0,0,0 and orthogonal to source to center)
-      const double mag = sourceNorm/(pixelToSource*sourceDir);
-      PointType intersection = source - mag*pixelToSource;
+      const double mag = sourceNorm / (pixelToSource * sourceDir);
+      PointType    intersection = source - mag * pixelToSource;
 
       PointType v(0.);
       v[1] = 1.;
 
       PointType u = CrossProduct(v, sourceDir);
-      double ucoord = u*intersection;
-      double vcoord = intersection[1]; // equivalent to v*intersection
-      if( ucoord > -1.*this->GetGeometry()->GetCollimationUInf()[iProj] &&
-          ucoord <     this->GetGeometry()->GetCollimationUSup()[iProj] &&
-          vcoord > -1.*this->GetGeometry()->GetCollimationVInf()[iProj] &&
-          vcoord <     this->GetGeometry()->GetCollimationVSup()[iProj] )
-        {
-        itOut.Set( itIn->Get() );
-        }
+      double    ucoord = u * intersection;
+      double    vcoord = intersection[1]; // equivalent to v*intersection
+      if (ucoord > -1. * this->GetGeometry()->GetCollimationUInf()[iProj] &&
+          ucoord < this->GetGeometry()->GetCollimationUSup()[iProj] &&
+          vcoord > -1. * this->GetGeometry()->GetCollimationVInf()[iProj] &&
+          vcoord < this->GetGeometry()->GetCollimationVSup()[iProj])
+      {
+        itOut.Set(itIn->Get());
+      }
       else
-        {
-        itOut.Set( 0. );
-        }
+      {
+        itOut.Set(0.);
       }
     }
+  }
 
   delete itIn;
 }

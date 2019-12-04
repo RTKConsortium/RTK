@@ -20,8 +20,7 @@
 
 namespace rtk
 {
-SheppLoganPhantom
-::SheppLoganPhantom()
+SheppLoganPhantom ::SheppLoganPhantom()
 {
   SetEllipsoid(0.69, 0.90, 0.92, 0., 0., 0., 0., 2.);
   SetEllipsoid(0.6624, 0.880, 0.874, 0., 0., 0., 0., -0.98);
@@ -36,18 +35,17 @@ SheppLoganPhantom
 }
 
 void
-SheppLoganPhantom
-::SetEllipsoid(ScalarType spax,
-               ScalarType spay,
-               ScalarType spaz,
-               ScalarType centerx,
-               ScalarType centery,
-               ScalarType centerz,
-               ScalarType angle,
-               ScalarType density)
+SheppLoganPhantom ::SetEllipsoid(ScalarType spax,
+                                 ScalarType spay,
+                                 ScalarType spaz,
+                                 ScalarType centerx,
+                                 ScalarType centery,
+                                 ScalarType centerz,
+                                 ScalarType angle,
+                                 ScalarType density)
 {
   VectorType semiprincipalaxis;
-  PointType center;
+  PointType  center;
   semiprincipalaxis[0] = spax;
   semiprincipalaxis[1] = spay;
   semiprincipalaxis[2] = spaz;
@@ -60,4 +58,4 @@ SheppLoganPhantom
   this->AddConvexShape(q.GetPointer());
 }
 
-}
+} // namespace rtk

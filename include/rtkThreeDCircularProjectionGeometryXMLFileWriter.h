@@ -20,7 +20,7 @@
 #define rtkThreeDCircularProjectionGeometryXMLFileWriter_h
 
 #ifdef _MSC_VER
-#pragma warning ( disable : 4786 )
+#  pragma warning(disable : 4786)
 #endif
 
 #include "RTKExport.h"
@@ -38,14 +38,14 @@ namespace rtk
  *
  * \ingroup RTK IOFilters
  */
-class RTK_EXPORT ThreeDCircularProjectionGeometryXMLFileWriter :
-  public itk::XMLWriterBase< ThreeDCircularProjectionGeometry >
+class RTK_EXPORT ThreeDCircularProjectionGeometryXMLFileWriter
+  : public itk::XMLWriterBase<ThreeDCircularProjectionGeometry>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(ThreeDCircularProjectionGeometryXMLFileWriter);
 
   /** standard type alias */
-  using Superclass = itk::XMLWriterBase< ThreeDCircularProjectionGeometry >;
+  using Superclass = itk::XMLWriterBase<ThreeDCircularProjectionGeometry>;
   using Self = ThreeDCircularProjectionGeometryXMLFileWriter;
   using Pointer = itk::SmartPointer<Self>;
 
@@ -53,13 +53,15 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(ThreeDCircularProjectionGeometryXMLFileWriter, itk::XMLWriterBase)
+  itkTypeMacro(ThreeDCircularProjectionGeometryXMLFileWriter, itk::XMLWriterBase);
 
   /** Test whether a file is writable. */
-  int CanWriteFile(const char* name) override;
+  int
+  CanWriteFile(const char * name) override;
 
   /** Actually write out the file in question */
-  int WriteFile() override;
+  int
+  WriteFile() override;
 
 protected:
   ThreeDCircularProjectionGeometryXMLFileWriter() = default;
@@ -69,15 +71,18 @@ protected:
       output file with parameter value s and return true. Return false
       otherwise.
    */
-  bool WriteGlobalParameter(std::ofstream &output, const std::string &indent,
-                            const std::vector<double> &v, const std::string &s,
-                            bool convertToDegrees=false,
-                            double defval=0.);
+  bool
+  WriteGlobalParameter(std::ofstream &             output,
+                       const std::string &         indent,
+                       const std::vector<double> & v,
+                       const std::string &         s,
+                       bool                        convertToDegrees = false,
+                       double                      defval = 0.);
 
   /** Write projection specific parameter with name s. */
-  void WriteLocalParameter(std::ofstream &output, const std::string &indent,
-                           const double &v, const std::string &s);
+  void
+  WriteLocalParameter(std::ofstream & output, const std::string & indent, const double & v, const std::string & s);
 };
-}
+} // namespace rtk
 
 #endif

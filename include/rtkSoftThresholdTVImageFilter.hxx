@@ -28,11 +28,10 @@
 namespace rtk
 {
 
-template< typename TInputImage, typename TRealType, typename TOutputImage >
-SoftThresholdTVImageFilter< TInputImage, TRealType, TOutputImage >
-::SoftThresholdTVImageFilter()
+template <typename TInputImage, typename TRealType, typename TOutputImage>
+SoftThresholdTVImageFilter<TInputImage, TRealType, TOutputImage>::SoftThresholdTVImageFilter()
 {
-#if ITK_VERSION_MAJOR<5
+#if ITK_VERSION_MAJOR < 5
   m_RequestedNumberOfThreads = this->GetNumberOfThreads();
 #else
   m_RequestedNumberOfThreads = this->GetNumberOfWorkUnits();
@@ -40,43 +39,42 @@ SoftThresholdTVImageFilter< TInputImage, TRealType, TOutputImage >
   m_Threshold = 0;
 }
 
-template< typename TInputImage, typename TRealType, typename TOutputImage >
+template <typename TInputImage, typename TRealType, typename TOutputImage>
 void
-SoftThresholdTVImageFilter< TInputImage, TRealType, TOutputImage >
-#if ITK_VERSION_MAJOR<5
-::ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread,
-                       ThreadIdType itkNotUsed(threadId))
+SoftThresholdTVImageFilter<TInputImage, TRealType, TOutputImage>
+#if ITK_VERSION_MAJOR < 5
+  ::ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, ThreadIdType itkNotUsed(threadId))
 #else
-::DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread)
+  ::DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread)
 #endif
 {
-    itk::ImageRegionConstIterator< TInputImage >                     InputIt;
-    itk::ImageRegionIterator< TOutputImage >                     OutputIt;
+  itk::ImageRegionConstIterator<TInputImage> InputIt;
+  itk::ImageRegionIterator<TOutputImage>     OutputIt;
 
-    InputIt = itk::ImageRegionConstIterator< TInputImage >(this->GetInput(), outputRegionForThread);
-    OutputIt = itk::ImageRegionIterator< TOutputImage >(this->GetOutput(), outputRegionForThread);
+  InputIt = itk::ImageRegionConstIterator<TInputImage>(this->GetInput(), outputRegionForThread);
+  OutputIt = itk::ImageRegionIterator<TOutputImage>(this->GetOutput(), outputRegionForThread);
 
-    while ( !InputIt.IsAtEnd() )
+  while (!InputIt.IsAtEnd())
+  {
+    float TV = 0;
+    for (unsigned int i = 0; i < ImageDimension; ++i)
     {
-        float TV = 0;
-        for ( unsigned int i = 0; i < ImageDimension; ++i )
-        {
-            TV += InputIt.Get()[i] * InputIt.Get()[i];
-        }
-        TV = sqrt(TV); // TV is non-negative
-        float ratio;
-        float temp = TV - m_Threshold;
-        if (temp > 0)
-            ratio = temp / TV;
-        else
-            ratio = 0;
-
-        OutputIt.Set( ratio * InputIt.Get());
-        ++InputIt;
-        ++OutputIt;
+      TV += InputIt.Get()[i] * InputIt.Get()[i];
     }
+    TV = sqrt(TV); // TV is non-negative
+    float ratio;
+    float temp = TV - m_Threshold;
+    if (temp > 0)
+      ratio = temp / TV;
+    else
+      ratio = 0;
+
+    OutputIt.Set(ratio * InputIt.Get());
+    ++InputIt;
+    ++OutputIt;
+  }
 }
 
-} // end namespace itk
+} // namespace rtk
 
 #endif

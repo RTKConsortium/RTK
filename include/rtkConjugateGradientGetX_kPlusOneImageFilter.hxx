@@ -24,7 +24,7 @@
 namespace rtk
 {
 
-template< typename TInputType>
+template <typename TInputType>
 ConjugateGradientGetX_kPlusOneImageFilter<TInputType>::ConjugateGradientGetX_kPlusOneImageFilter()
 {
   // Create the subfilters
@@ -41,36 +41,37 @@ ConjugateGradientGetX_kPlusOneImageFilter<TInputType>::ConjugateGradientGetX_kPl
   m_MultiplyFilter->ReleaseDataFlagOn();
 }
 
-template< typename TInputType>
-void ConjugateGradientGetX_kPlusOneImageFilter<TInputType>::SetXk(const TInputType* Xk)
-{
-    this->SetNthInput(0, const_cast<TInputType*>(Xk));
-}
-
-template< typename TInputType>
-void ConjugateGradientGetX_kPlusOneImageFilter<TInputType>::SetPk(const TInputType* Pk)
-{
-    this->SetNthInput(1, const_cast<TInputType*>(Pk));
-}
-
-template< typename TInputType>
-typename TInputType::Pointer ConjugateGradientGetX_kPlusOneImageFilter<TInputType>::GetXk()
-{
-    return static_cast< TInputType * >
-            ( this->itk::ProcessObject::GetInput(0) );
-}
-
-template< typename TInputType>
-typename TInputType::Pointer ConjugateGradientGetX_kPlusOneImageFilter<TInputType>::GetPk()
-{
-    return static_cast< TInputType * >
-            ( this->itk::ProcessObject::GetInput(1) );
-}
-
-template< typename TInputType>
+template <typename TInputType>
 void
-ConjugateGradientGetX_kPlusOneImageFilter<TInputType>
-::GenerateOutputInformation()
+ConjugateGradientGetX_kPlusOneImageFilter<TInputType>::SetXk(const TInputType * Xk)
+{
+  this->SetNthInput(0, const_cast<TInputType *>(Xk));
+}
+
+template <typename TInputType>
+void
+ConjugateGradientGetX_kPlusOneImageFilter<TInputType>::SetPk(const TInputType * Pk)
+{
+  this->SetNthInput(1, const_cast<TInputType *>(Pk));
+}
+
+template <typename TInputType>
+typename TInputType::Pointer
+ConjugateGradientGetX_kPlusOneImageFilter<TInputType>::GetXk()
+{
+  return static_cast<TInputType *>(this->itk::ProcessObject::GetInput(0));
+}
+
+template <typename TInputType>
+typename TInputType::Pointer
+ConjugateGradientGetX_kPlusOneImageFilter<TInputType>::GetPk()
+{
+  return static_cast<TInputType *>(this->itk::ProcessObject::GetInput(1));
+}
+
+template <typename TInputType>
+void
+ConjugateGradientGetX_kPlusOneImageFilter<TInputType>::GenerateOutputInformation()
 {
   // Set inputs
   m_MultiplyFilter->SetInput1(this->GetPk());
@@ -81,13 +82,13 @@ ConjugateGradientGetX_kPlusOneImageFilter<TInputType>
   m_AddFilter->UpdateOutputInformation();
 
   // Copy it as the output information of the composite filter
-  this->GetOutput()->CopyInformation( m_AddFilter->GetOutput() );
+  this->GetOutput()->CopyInformation(m_AddFilter->GetOutput());
 }
 
 
-template< typename TInputType>
-void ConjugateGradientGetX_kPlusOneImageFilter<TInputType>
-::GenerateData()
+template <typename TInputType>
+void
+ConjugateGradientGetX_kPlusOneImageFilter<TInputType>::GenerateData()
 {
   // Run the pipeline
   m_AddFilter->Update();
@@ -99,7 +100,7 @@ void ConjugateGradientGetX_kPlusOneImageFilter<TInputType>
   m_MultiplyFilter->GetOutput()->ReleaseData();
 }
 
-}// end namespace
+} // namespace rtk
 
 
 #endif

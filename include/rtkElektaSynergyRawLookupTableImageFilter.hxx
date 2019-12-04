@@ -25,39 +25,38 @@ namespace rtk
 {
 
 template <class TInputImage, class TOutputImage>
-ElektaSynergyRawLookupTableImageFilter<TInputImage, TOutputImage>
-::ElektaSynergyRawLookupTableImageFilter()
+ElektaSynergyRawLookupTableImageFilter<TInputImage, TOutputImage>::ElektaSynergyRawLookupTableImageFilter()
 {
   // Create the lut
-  typename LookupTableType::Pointer lut = LookupTableType::New();
+  typename LookupTableType::Pointer  lut = LookupTableType::New();
   typename LookupTableType::SizeType size;
-  size[0] = itk::NumericTraits<InputImagePixelType>::max() -
-            itk::NumericTraits<InputImagePixelType>::min() + 1;
-  lut->SetRegions( size );
+  size[0] = itk::NumericTraits<InputImagePixelType>::max() - itk::NumericTraits<InputImagePixelType>::min() + 1;
+  lut->SetRegions(size);
   lut->Allocate();
 
   // Iterate and set lut
-  itk::ImageRegionIteratorWithIndex<LookupTableType> it( lut, lut->GetBufferedRegion() );
+  itk::ImageRegionIteratorWithIndex<LookupTableType> it(lut, lut->GetBufferedRegion());
   it.GoToBegin();
 
-  //First value takes value of pixel #1
-  it.Set( OutputImagePixelType(size[0]-1) );
+  // First value takes value of pixel #1
+  it.Set(OutputImagePixelType(size[0] - 1));
   ++it;
 
-  //Conventional lookup table for the rest
-  while( !it.IsAtEnd() ) {
-    it.Set( OutputImagePixelType(size[0]-it.GetIndex()[0]) );
+  // Conventional lookup table for the rest
+  while (!it.IsAtEnd())
+  {
+    it.Set(OutputImagePixelType(size[0] - it.GetIndex()[0]));
     ++it;
-    }
+  }
 
-  //Last value takes value of pixel #1
+  // Last value takes value of pixel #1
   --it;
-  it.Set( OutputImagePixelType(size[0]-1) );
+  it.Set(OutputImagePixelType(size[0] - 1));
 
   // Set the lut to member and functor
   this->SetLookupTable(lut);
 }
 
-}
+} // namespace rtk
 
 #endif

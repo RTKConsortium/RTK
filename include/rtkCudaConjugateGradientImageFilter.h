@@ -20,12 +20,12 @@
 #define rtkCudaConjugateGradientImageFilter_h
 
 #include "rtkConfiguration.h"
-//Conditional definition of the class to pass ITKHeaderTest
+// Conditional definition of the class to pass ITKHeaderTest
 #ifdef RTK_USE_CUDA
 
-#include "rtkConjugateGradientImageFilter.h"
-#include <itkCudaImageToImageFilter.h>
-#include "RTKExport.h"
+#  include "rtkConjugateGradientImageFilter.h"
+#  include <itkCudaImageToImageFilter.h>
+#  include "RTKExport.h"
 
 namespace rtk
 {
@@ -40,42 +40,41 @@ namespace rtk
  * \ingroup RTK CudaImageToImageFilter
  */
 
-template < class TImage >
-class CudaConjugateGradientImageFilter :
-  public itk::CudaImageToImageFilter< TImage, TImage,
-         ConjugateGradientImageFilter< TImage > >
+template <class TImage>
+class CudaConjugateGradientImageFilter
+  : public itk::CudaImageToImageFilter<TImage, TImage, ConjugateGradientImageFilter<TImage>>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(CudaConjugateGradientImageFilter);
 
   /** Standard class type alias. */
   using Self = rtk::CudaConjugateGradientImageFilter<TImage>;
-  using Superclass = rtk::ConjugateGradientImageFilter< TImage >;
+  using Superclass = rtk::ConjugateGradientImageFilter<TImage>;
   using Pointer = itk::SmartPointer<Self>;
   using ConstPointer = itk::SmartPointer<const Self>;
 
   /** Standard New method. */
-  itkNewMacro(Self)
+  itkNewMacro(Self);
 
   /** Runtime information support. */
-  itkTypeMacro(CudaConjugateGradientImageFilter, ConjugateGradientImageFilter)
+  itkTypeMacro(CudaConjugateGradientImageFilter, ConjugateGradientImageFilter);
 
 protected:
   CudaConjugateGradientImageFilter();
-  ~CudaConjugateGradientImageFilter(){
-  }
+  ~CudaConjugateGradientImageFilter() {}
 
-  virtual void GPUGenerateData();
+  virtual void
+  GPUGenerateData();
 
 }; // end of class
 
 } // end namespace rtk
 
-#ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkCudaConjugateGradientImageFilter.hxx"
-#endif
+#  ifndef ITK_MANUAL_INSTANTIATION
+#    include "rtkCudaConjugateGradientImageFilter.hxx"
+#  endif
 
 
-#endif //end conditional definition of the class
+#endif // end conditional definition of the class
 
 #endif

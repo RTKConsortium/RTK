@@ -35,8 +35,7 @@ namespace rtk
  *
  * \ingroup RTK Functions
  */
-class RTK_EXPORT GeometricPhantomFileReader :
-    public itk::LightProcessObject
+class RTK_EXPORT GeometricPhantomFileReader : public itk::LightProcessObject
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(GeometricPhantomFileReader);
@@ -65,10 +64,10 @@ public:
   itkSetStringMacro(Filename);
 
   /** do the actual parsing of the input file */
-  virtual void GenerateOutputInformation();
+  virtual void
+  GenerateOutputInformation();
 
 protected:
-
   /// Constructor
   GeometricPhantomFileReader() = default;
 

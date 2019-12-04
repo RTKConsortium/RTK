@@ -20,10 +20,10 @@
 #define __rtkCudaUtilities_hcu
 
 #ifdef _WIN32
-# include <cmath>
-# define __CUDA_INTERNAL_COMPILATION__
-# include <math_functions.h>
-# undef __CUDA_INTERNAL_COMPILATION__
+#  include <cmath>
+#  define __CUDA_INTERNAL_COMPILATION__
+#  include <math_functions.h>
+#  undef __CUDA_INTERNAL_COMPILATION__
 #endif
 #include <cuda_runtime_api.h>
 #include <string>
@@ -34,108 +34,124 @@
 #include <cuda.h>
 #include <cublas_v2.h>
 
-#define CUDA_CHECK_ERROR \
-    { \
-    cudaError_t err = cudaGetLastError(); \
-    if (cudaSuccess != err) \
-      itkGenericExceptionMacro(<< "CUDA ERROR: " << cudaGetErrorString(err) << std::endl); \
-    }
+#define CUDA_CHECK_ERROR                                                                                               \
+  {                                                                                                                    \
+    cudaError_t err = cudaGetLastError();                                                                              \
+    if (cudaSuccess != err)                                                                                            \
+      itkGenericExceptionMacro(<< "CUDA ERROR: " << cudaGetErrorString(err) << std::endl);                             \
+  }
 
-#define CUFFT_CHECK_ERROR(result) \
-    { \
-    if (result) \
-      itkGenericExceptionMacro(<< "CUFFT ERROR #" << result << std::endl); \
-    }
+#define CUFFT_CHECK_ERROR(result)                                                                                      \
+  {                                                                                                                    \
+    if (result)                                                                                                        \
+      itkGenericExceptionMacro(<< "CUFFT ERROR #" << result << std::endl);                                             \
+  }
 
-std::vector<int> GetListOfCudaDevices();
-std::pair<int,int> GetCudaComputeCapability(int device);
-size_t GetFreeGPUGlobalMemory(int device);
+std::vector<int>
+GetListOfCudaDevices();
+std::pair<int, int>
+GetCudaComputeCapability(int device);
+size_t
+GetFreeGPUGlobalMemory(int device);
 
-inline __host__ __device__ float3 matrix_multiply(float3 a, float* matrix)
+inline __host__ __device__ float3
+                           matrix_multiply(float3 a, float * matrix)
 {
-    return make_float3(matrix[0] * a.x + matrix[1] * a.y + matrix[2] * a.z + matrix[3],
-                       matrix[4] * a.x + matrix[5] * a.y + matrix[6] * a.z + matrix[7],
-                       matrix[8] * a.x + matrix[9] * a.y + matrix[10] * a.z + matrix[11]);
+  return make_float3(matrix[0] * a.x + matrix[1] * a.y + matrix[2] * a.z + matrix[3],
+                     matrix[4] * a.x + matrix[5] * a.y + matrix[6] * a.z + matrix[7],
+                     matrix[8] * a.x + matrix[9] * a.y + matrix[10] * a.z + matrix[11]);
 }
-inline __host__ __device__ float3 operator-(float3 a, float3 b)
+inline __host__ __device__ float3
+                           operator-(float3 a, float3 b)
 {
-    return make_float3(a.x - b.x, a.y - b.y, a.z - b.z);
+  return make_float3(a.x - b.x, a.y - b.y, a.z - b.z);
 }
-inline __host__ __device__ float3 fminf(float3 a, float3 b)
+inline __host__ __device__ float3
+                           fminf(float3 a, float3 b)
 {
-  return make_float3(fminf(a.x,b.x), fminf(a.y,b.y), fminf(a.z,b.z));
+  return make_float3(fminf(a.x, b.x), fminf(a.y, b.y), fminf(a.z, b.z));
 }
-inline __host__ __device__ float3 fmaxf(float3 a, float3 b)
+inline __host__ __device__ float3
+                           fmaxf(float3 a, float3 b)
 {
-  return make_float3(fmaxf(a.x,b.x), fmaxf(a.y,b.y), fmaxf(a.z,b.z));
+  return make_float3(fmaxf(a.x, b.x), fmaxf(a.y, b.y), fmaxf(a.z, b.z));
 }
-inline __host__ __device__ float dot(float3 a, float3 b)
+inline __host__ __device__ float
+                dot(float3 a, float3 b)
 {
-    return a.x * b.x + a.y * b.y + a.z * b.z;
+  return a.x * b.x + a.y * b.y + a.z * b.z;
 }
-inline __host__ __device__ float3 operator/(float3 a, float3 b)
+inline __host__ __device__ float3
+                           operator/(float3 a, float3 b)
 {
-    return make_float3(a.x / b.x, a.y / b.y, a.z / b.z);
+  return make_float3(a.x / b.x, a.y / b.y, a.z / b.z);
 }
-inline __host__ __device__ float3 operator/(float3 a, float b)
+inline __host__ __device__ float3
+                           operator/(float3 a, float b)
 {
-    return make_float3(a.x / b, a.y / b, a.z / b);
+  return make_float3(a.x / b, a.y / b, a.z / b);
 }
 inline __host__ __device__ float3 operator*(float3 a, float3 b)
 {
-    return make_float3(a.x * b.x, a.y * b.y, a.z * b.z);
+  return make_float3(a.x * b.x, a.y * b.y, a.z * b.z);
 }
 inline __host__ __device__ float3 operator*(float b, float3 a)
 {
-    return make_float3(b * a.x, b * a.y, b * a.z);
+  return make_float3(b * a.x, b * a.y, b * a.z);
 }
-inline __host__ __device__ float3 operator+(float3 a, float3 b)
+inline __host__ __device__ float3
+                           operator+(float3 a, float3 b)
 {
-    return make_float3(a.x + b.x, a.y + b.y, a.z + b.z);
+  return make_float3(a.x + b.x, a.y + b.y, a.z + b.z);
 }
-inline __host__ __device__ float3 operator+(float3 a, float b)
+inline __host__ __device__ float3
+                           operator+(float3 a, float b)
 {
-    return make_float3(a.x + b, a.y + b, a.z + b);
+  return make_float3(a.x + b, a.y + b, a.z + b);
 }
-inline __host__ __device__ void operator+=(float3 &a, float3 b)
+inline __host__ __device__ void
+                operator+=(float3 & a, float3 b)
 {
-    a.x += b.x; a.y += b.y; a.z += b.z;
+  a.x += b.x;
+  a.y += b.y;
+  a.z += b.z;
 }
-inline __host__ __device__ int iDivUp(int a, int b)
+inline __host__ __device__ int
+                iDivUp(int a, int b)
 {
   return (a % b != 0) ? (a / b + 1) : (a / b);
 }
-inline __host__ __device__ float dot_vector(float3 u, float3 v)
+inline __host__ __device__ float
+                dot_vector(float3 u, float3 v)
 {
-    return u.x*v.x + u.y*v.y + u.z*v.z;
+  return u.x * v.x + u.y * v.y + u.z * v.z;
 }
-__host__  void prepareTextureObject(int size[3],
-                                    float *dev_ptr,
-                                    cudaArray **&componentArrays,
-                                    unsigned int nComponents,
-                                    cudaTextureObject_t *tex,
-                                    bool isProjections);
+__host__ void
+prepareTextureObject(int                   size[3],
+                     float *               dev_ptr,
+                     cudaArray **&         componentArrays,
+                     unsigned int          nComponents,
+                     cudaTextureObject_t * tex,
+                     bool                  isProjections);
 
-inline __device__ void matrix_matrix_multiply( float* A, float* B, float* C,
-                                               unsigned int rowsA,
-                                               unsigned int colsB,
-                                               unsigned int colsArowsB)
+inline __device__ void
+matrix_matrix_multiply(float * A, float * B, float * C, unsigned int rowsA, unsigned int colsB, unsigned int colsArowsB)
 {
   unsigned int indexInA, indexInB, indexInC;
-  for (unsigned int rowA=0; rowA < rowsA; rowA++)
+  for (unsigned int rowA = 0; rowA < rowsA; rowA++)
+  {
+    for (unsigned int colB = 0; colB < colsB; colB++)
     {
-    for (unsigned int colB=0; colB < colsB; colB++)
-      {
       indexInC = rowA * colsB + colB;
       C[indexInC] = 0.0f;
-      for (unsigned int colArowB=0; colArowB < colsArowsB; colArowB++)
-        {
+      for (unsigned int colArowB = 0; colArowB < colsArowsB; colArowB++)
+      {
         indexInA = rowA * colsArowsB + colArowB;
         indexInB = colArowB * colsB + colB;
         C[indexInC] += A[indexInA] * B[indexInB];
-        }
       }
     }
+  }
 }
 
 #endif

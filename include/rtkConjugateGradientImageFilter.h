@@ -40,64 +40,75 @@ namespace rtk
  * in http://en.wikipedia.org/wiki/Conjugate_gradient_method
  *
  * \ingroup RTK
-*/
+ */
 
-template< typename OutputImageType>
-class ConjugateGradientImageFilter : public itk::InPlaceImageFilter< OutputImageType,  OutputImageType>
+template <typename OutputImageType>
+class ConjugateGradientImageFilter : public itk::InPlaceImageFilter<OutputImageType, OutputImageType>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(ConjugateGradientImageFilter);
 
   /** Standard class type alias. */
   using Self = ConjugateGradientImageFilter;
-  using Superclass = itk::InPlaceImageFilter< OutputImageType, OutputImageType>;
-  using Pointer = itk::SmartPointer< Self >;
+  using Superclass = itk::InPlaceImageFilter<OutputImageType, OutputImageType>;
+  using Pointer = itk::SmartPointer<Self>;
   using ConjugateGradientOperatorType = ConjugateGradientOperator<OutputImageType>;
   using ConjugateGradientOperatorPointerType = typename ConjugateGradientOperatorType::Pointer;
   using OutputImagePointer = typename OutputImageType::Pointer;
 
   /** Method for creation through the object factory. */
-  itkNewMacro(Self)
+  itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(ConjugateGradientImageFilter, itk::InPlaceImageFilter)
+  itkTypeMacro(ConjugateGradientImageFilter, itk::InPlaceImageFilter);
 
   /** Get and Set macro*/
-  itkGetMacro(NumberOfIterations, int)
-  itkSetMacro(NumberOfIterations, int)
+  itkGetMacro(NumberOfIterations, int);
+  itkSetMacro(NumberOfIterations, int);
 
   /** Displays the conjugate gradient cost function at each iteration. */
-  itkGetMacro(IterationCosts, bool)
-  itkSetMacro(IterationCosts, bool)
+  itkGetMacro(IterationCosts, bool);
+  itkSetMacro(IterationCosts, bool);
 
-  void SetA(ConjugateGradientOperatorPointerType _arg );
+  void
+  SetA(ConjugateGradientOperatorPointerType _arg);
 
   /** The input image to be updated.*/
-  void SetX(const OutputImageType* OutputImage);
+  void
+  SetX(const OutputImageType * OutputImage);
 
   /** The image called "B" in the CG algorithm.*/
-  void SetB(const OutputImageType* OutputImage);
+  void
+  SetB(const OutputImageType * OutputImage);
 
   /** Set and Get the constant quantity BtWB for residual costs calculation */
-  void SetC(const double _arg);
-  double GetC();
+  void
+  SetC(const double _arg);
+  double
+  GetC();
 
   /** Getter for ResidualCosts storing array **/
-  const std::vector<double> &GetResidualCosts();
+  const std::vector<double> &
+  GetResidualCosts();
 
 protected:
   ConjugateGradientImageFilter();
   ~ConjugateGradientImageFilter() override = default;
 
-  OutputImagePointer GetX();
-  OutputImagePointer GetB();
+  OutputImagePointer
+  GetX();
+  OutputImagePointer
+  GetB();
 
   /** Does the real work. */
-  void GenerateData() override;
+  void
+  GenerateData() override;
 
   /** Conjugate gradient requires the whole image */
-  void GenerateInputRequestedRegion() override;
-  void GenerateOutputInformation() override;
+  void
+  GenerateInputRequestedRegion() override;
+  void
+  GenerateOutputInformation() override;
 
   ConjugateGradientOperatorPointerType m_A;
 
@@ -106,11 +117,11 @@ protected:
   std::vector<double> m_ResidualCosts;
   double              m_C;
 };
-} //namespace RTK
+} // namespace rtk
 
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkConjugateGradientImageFilter.hxx"
+#  include "rtkConjugateGradientImageFilter.hxx"
 #endif
 
 #endif

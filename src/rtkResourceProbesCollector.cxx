@@ -60,16 +60,16 @@ void
 ResourceProbesCollector::Report(std::ostream & os) const
 {
   auto tProbe = this->m_TimeProbes.begin();
-  auto tEnd   = this->m_TimeProbes.end();
+  auto tEnd = this->m_TimeProbes.end();
 
-  if ( tProbe == tEnd )
-    {
+  if (tProbe == tEnd)
+  {
     return;
-    }
+  }
 
-  unsigned int maxlength = sizeof("Probe Tag")/sizeof(char);
-  while(tProbe != tEnd)
-    maxlength = std::max(maxlength, (unsigned int) (tProbe++)->first.size());
+  unsigned int maxlength = sizeof("Probe Tag") / sizeof(char);
+  while (tProbe != tEnd)
+    maxlength = std::max(maxlength, (unsigned int)(tProbe++)->first.size());
   maxlength += 2;
   tProbe = this->m_TimeProbes.begin();
 
@@ -79,18 +79,18 @@ ResourceProbesCollector::Report(std::ostream & os) const
 #endif
   os << std::endl << std::endl;
 #ifdef RTK_USE_CUDA
-  os.width(maxlength+10+10+15+15+15);
+  os.width(maxlength + 10 + 10 + 15 + 15 + 15);
 #else
-  os.width(maxlength+10+10+15+15);
+  os.width(maxlength + 10 + 10 + 15 + 15);
 #endif
   os << std::setfill('*') << "" << std::endl << std::setfill(' ');
   os.width(maxlength);
   os << std::left;
-  os <<  "Probe Tag";
+  os << "Probe Tag";
   os.width(10);
-  os <<  "Starts";
+  os << "Starts";
   os.width(10);
-  os <<  "Stops";
+  os << "Stops";
   os.width(15);
   os << std::string(tProbe->second.GetType() + " (" + tProbe->second.GetUnit() + ")");
   os.width(15);
@@ -101,30 +101,30 @@ ResourceProbesCollector::Report(std::ostream & os) const
 #endif
   os << std::endl;
 #ifdef RTK_USE_CUDA
-  os.width(maxlength+10+10+15+15+15);
+  os.width(maxlength + 10 + 10 + 15 + 15 + 15);
 #else
-  os.width(maxlength+10+10+15+15);
+  os.width(maxlength + 10 + 10 + 15 + 15);
 #endif
   os << std::setfill('*') << "" << std::endl << std::setfill(' ');
 
-  while ( tProbe != tEnd )
-    {
+  while (tProbe != tEnd)
+  {
     os.width(maxlength);
-    os <<  tProbe->first;
+    os << tProbe->first;
     os.width(10);
-    os <<  tProbe->second.GetNumberOfStarts();
+    os << tProbe->second.GetNumberOfStarts();
     os.width(10);
-    os <<  tProbe->second.GetNumberOfStops();
+    os << tProbe->second.GetNumberOfStops();
     os.width(15);
-    os <<  tProbe++->second.GetMean();
+    os << tProbe++->second.GetMean();
     os.width(15);
-    os <<  mProbe++->second.GetMean();
+    os << mProbe++->second.GetMean();
 #ifdef RTK_USE_CUDA
     os.width(15);
-    os <<  cProbe++->second.GetMean();
+    os << cProbe++->second.GetMean();
 #endif
     os << std::endl;
-    }
+  }
   os << std::setfill('*') << "" << std::endl << std::setfill(' ');
 }
 
@@ -140,4 +140,3 @@ ResourceProbesCollector::Clear()
 
 
 } // end namespace rtk
-

@@ -34,28 +34,28 @@ namespace rtk
  *
  * \ingroup RTK
  */
-//template <class TPixel, unsigned int VImageDimension>
+// template <class TPixel, unsigned int VImageDimension>
 template <class TImageType>
 itk::Matrix<double, TImageType::ImageDimension + 1, TImageType::ImageDimension + 1>
-GetIndexToPhysicalPointMatrix(const TImageType *image)
+GetIndexToPhysicalPointMatrix(const TImageType * image)
 {
   const unsigned int Dimension = TImageType::ImageDimension;
 
   itk::Matrix<double, Dimension + 1, Dimension + 1> matrix;
   matrix.Fill(0.0);
 
-  itk::Index<Dimension>                                 index;
+  itk::Index<Dimension>         index;
   itk::Point<double, Dimension> point;
 
-  for(unsigned int j=0; j<Dimension; j++)
-    {
+  for (unsigned int j = 0; j < Dimension; j++)
+  {
     index.Fill(0);
     index[j] = 1;
-    image->TransformIndexToPhysicalPoint(index,point);
-    for(unsigned int i=0; i<Dimension; i++)
-      matrix[i][j] = point[i]-image->GetOrigin()[i];
-    }
-  for(unsigned int i=0; i<Dimension; i++)
+    image->TransformIndexToPhysicalPoint(index, point);
+    for (unsigned int i = 0; i < Dimension; i++)
+      matrix[i][j] = point[i] - image->GetOrigin()[i];
+  }
+  for (unsigned int i = 0; i < Dimension; i++)
     matrix[i][Dimension] = image->GetOrigin()[i];
   matrix[Dimension][Dimension] = 1.0;
 
@@ -71,15 +71,15 @@ GetIndexToPhysicalPointMatrix(const TImageType *image)
  *
  * \ingroup RTK
  */
-//template <class TPixel, unsigned int VImageDimension>
+// template <class TPixel, unsigned int VImageDimension>
 template <class TImageType>
 itk::Matrix<double, TImageType::ImageDimension + 1, TImageType::ImageDimension + 1>
-GetPhysicalPointToIndexMatrix(const TImageType *image)
+GetPhysicalPointToIndexMatrix(const TImageType * image)
 {
   using MatrixType = itk::Matrix<double, TImageType::ImageDimension + 1, TImageType::ImageDimension + 1>;
-  return MatrixType(GetIndexToPhysicalPointMatrix<TImageType>(image).GetInverse() );
+  return MatrixType(GetIndexToPhysicalPointMatrix<TImageType>(image).GetInverse());
 };
 
-} // end namespace
+} // namespace rtk
 
 #endif // rtkHomogeneousMatrix_h

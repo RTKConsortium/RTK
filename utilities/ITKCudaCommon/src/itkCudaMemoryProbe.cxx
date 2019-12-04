@@ -32,7 +32,7 @@ CudaMemoryProbe ::GetInstantValue() const
 {
   size_t free;
   size_t total;
-  CUDA_CHECK( cudaMemGetInfo(&free, &total) );
-  return static_cast<CudaMemoryLoadType>((OffsetValueType(total) - OffsetValueType(free))/1024.);
+  CUDA_CHECK(cudaMemGetInfo(&free, &total));
+  return static_cast<CudaMemoryLoadType>((OffsetValueType(total) - OffsetValueType(free)) / 1024.);
 }
 } // end namespace itk

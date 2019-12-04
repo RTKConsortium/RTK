@@ -27,14 +27,13 @@
 #include <itkImageRegionConstIterator.h>
 #include <itkImageRegionIterator.h>
 
-#include <algorithm>    // std::shuffle
-#include <random>       // std::default_random_engine
+#include <algorithm> // std::shuffle
+#include <random>    // std::default_random_engine
 namespace rtk
 {
 
 template <class TInputImage, class TOutputImage>
-ReorderProjectionsImageFilter<TInputImage, TOutputImage>
-::ReorderProjectionsImageFilter()
+ReorderProjectionsImageFilter<TInputImage, TOutputImage>::ReorderProjectionsImageFilter()
 {
   m_OutputGeometry = GeometryType::New();
   m_Permutation = NONE;
@@ -42,8 +41,7 @@ ReorderProjectionsImageFilter<TInputImage, TOutputImage>
 
 template <class TInputImage, class TOutputImage>
 void
-ReorderProjectionsImageFilter<TInputImage, TOutputImage>
-::SetInputSignal(const std::vector<double> signal)
+ReorderProjectionsImageFilter<TInputImage, TOutputImage>::SetInputSignal(const std::vector<double> signal)
 {
   m_InputSignal = signal;
   m_Permutation = SORT;
@@ -51,55 +49,54 @@ ReorderProjectionsImageFilter<TInputImage, TOutputImage>
 
 template <class TInputImage, class TOutputImage>
 std::vector<double>
-ReorderProjectionsImageFilter<TInputImage, TOutputImage>
-::GetOutputSignal()
+ReorderProjectionsImageFilter<TInputImage, TOutputImage>::GetOutputSignal()
 {
   return m_OutputSignal;
 }
 
 template <class TInputImage, class TOutputImage>
 void
-ReorderProjectionsImageFilter<TInputImage, TOutputImage>
-::GenerateData()
+ReorderProjectionsImageFilter<TInputImage, TOutputImage>::GenerateData()
 {
-  unsigned int NumberOfProjections = this->GetInput()->GetLargestPossibleRegion().GetSize()[TInputImage::ImageDimension -1];
+  unsigned int NumberOfProjections =
+    this->GetInput()->GetLargestPossibleRegion().GetSize()[TInputImage::ImageDimension - 1];
   std::vector<unsigned int> permutation;
-  switch(m_Permutation)
+  switch (m_Permutation)
+  {
+    case (NONE):
     {
-    case(NONE):
-      {
       for (unsigned int i = 0; i < NumberOfProjections; i++)
         permutation.push_back(i);
       break;
-      }
-    case(SORT):
-      {
+    }
+    case (SORT):
+    {
       // Define a vector of pairs (signal value, and index)
-      std::vector<std::pair<double, unsigned int> > pairsVector;
+      std::vector<std::pair<double, unsigned int>> pairsVector;
 
       // Fill it with the signal values, and with the integers from 0 to m_InputSignal.size() - 1
       for (unsigned int i = 0; i < NumberOfProjections; i++)
-          pairsVector.push_back(std::make_pair(m_InputSignal[i], i));
+        pairsVector.push_back(std::make_pair(m_InputSignal[i], i));
 
       // Sort it according to values
       std::sort(pairsVector.begin(), pairsVector.end());
 
       // Extract the permutated indices
       for (unsigned int i = 0; i < NumberOfProjections; i++)
-          permutation.push_back(pairsVector[i].second);
+        permutation.push_back(pairsVector[i].second);
       break;
-      }
-    case(SHUFFLE):
-      {
+    }
+    case (SHUFFLE):
+    {
       for (unsigned int i = 0; i < NumberOfProjections; i++)
         permutation.push_back(i);
       std::default_random_engine randomGenerator(0); // The seed is hard-coded to 0 to make the behavior reproducible
       std::shuffle(permutation.begin(), permutation.end(), randomGenerator);
       break;
-      }
+    }
     default:
       itkGenericExceptionMacro(<< "Unhandled projection reordering method");
-    }
+  }
 
   // Allocate the pixels of the output, and at first fill them with zeros
   this->GetOutput()->SetBufferedRegion(this->GetOutput()->GetRequestedRegion());
@@ -118,8 +115,8 @@ ReorderProjectionsImageFilter<TInputImage, TOutputImage>
   m_OutputSignal.clear();
 
   // Perform the copies
-  for (unsigned int proj=0; proj<this->GetOutput()->GetRequestedRegion().GetSize()[2]; proj++)
-    {
+  for (unsigned int proj = 0; proj < this->GetOutput()->GetRequestedRegion().GetSize()[2]; proj++)
+  {
     // Copy the projection data
 
     // Regions
@@ -127,15 +124,15 @@ ReorderProjectionsImageFilter<TInputImage, TOutputImage>
     outputRegion.SetIndex(2, proj);
 
     itk::ImageRegionConstIterator<TInputImage> inputProjsIt(this->GetInput(), inputRegion);
-    itk::ImageRegionIterator<TOutputImage> outputProjsIt(this->GetOutput(), outputRegion);
+    itk::ImageRegionIterator<TOutputImage>     outputProjsIt(this->GetOutput(), outputRegion);
 
     // Actual copy
-    while(!outputProjsIt.IsAtEnd())
-      {
+    while (!outputProjsIt.IsAtEnd())
+    {
       outputProjsIt.Set(inputProjsIt.Get());
       ++outputProjsIt;
       ++inputProjsIt;
-      }
+    }
 
     // Copy the geometry
     m_OutputGeometry->SetRadiusCylindricalDetector(m_InputGeometry->GetRadiusCylindricalDetector());
@@ -156,8 +153,7 @@ ReorderProjectionsImageFilter<TInputImage, TOutputImage>
     // Copy the signal, if any
     if (m_Permutation == SORT)
       m_OutputSignal.push_back(m_InputSignal[permutation[proj]]);
-    }
-
+  }
 }
 
 } // end namespace rtk

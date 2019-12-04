@@ -35,15 +35,14 @@ namespace rtk
  * \ingroup RTK
  */
 template <class TInputImage, class TOutputImage = TInputImage>
-class ITK_EXPORT DownsampleImageFilter:
-    public itk::ImageToImageFilter<TInputImage,TOutputImage>
+class ITK_EXPORT DownsampleImageFilter : public itk::ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(DownsampleImageFilter);
 
   /** Standard class type alias. */
   using Self = DownsampleImageFilter;
-  using Superclass = itk::ImageToImageFilter<TInputImage,TOutputImage>;
+  using Superclass = itk::ImageToImageFilter<TInputImage, TOutputImage>;
   using Pointer = itk::SmartPointer<Self>;
   using ConstPointer = itk::SmartPointer<const Self>;
 
@@ -64,16 +63,17 @@ public:
   using OutputImageRegionType = typename TOutputImage::RegionType;
 
   /** ImageDimension enumeration. */
-  itkStaticConstMacro(ImageDimension, unsigned int,
-                      TInputImage::ImageDimension );
+  itkStaticConstMacro(ImageDimension, unsigned int, TInputImage::ImageDimension);
 
   /** Set the downsample factors. Values are clamped to
    * a minimum value of 1.*/
-  void SetFactors(unsigned int factors[]);
+  void
+  SetFactors(unsigned int factors[]);
 
   /** Sets the downsample factor for the given dimension.
    * All other dimensions are set to 1 */
-  void SetFactor(unsigned int dimension, unsigned int factor);
+  void
+  SetFactor(unsigned int dimension, unsigned int factor);
 
   /** DownsampleImageFilter produces an image which is a different
    * resolution and with a different pixel spacing than its input
@@ -82,14 +82,16 @@ public:
    * the pipeline execution model.  The original documentation of this
    * method is below.
    * \sa ProcessObject::GenerateOutputInformaton() */
-  void GenerateOutputInformation() override;
+  void
+  GenerateOutputInformation() override;
 
   /** DownsampleImageFilter needs a larger input requested region than the output
    * requested region.  As such, DownsampleImageFilter needs to provide an
    * implementation for GenerateInputRequestedRegion() in order to inform the
    * pipeline execution model.
    * \sa ProcessObject::GenerateInputRequestedRegion() */
-  void GenerateInputRequestedRegion() override;
+  void
+  GenerateInputRequestedRegion() override;
 
 protected:
   DownsampleImageFilter();
@@ -106,23 +108,26 @@ protected:
    * \sa ImageToImageFilter::ThreadedGenerateData(),
    *     ImageToImageFilter::GenerateData() */
 //  virtual void BeforeThreadedGenerateData();
-#if ITK_VERSION_MAJOR<5
-  void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) override;
+#if ITK_VERSION_MAJOR < 5
+  void
+  ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread,
+                       itk::ThreadIdType             itkNotUsed(threadId)) override;
 #else
-  void DynamicThreadedGenerateData(const OutputImageRegionType& outputRegionForThread) override;
+  void
+  DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread) override;
 #endif
-//  virtual void AfterThreadedGenerateData();
+  //  virtual void AfterThreadedGenerateData();
 
 private:
-  unsigned int  m_Factors[ImageDimension];
-  int           m_Offsets[ImageDimension];
+  unsigned int m_Factors[ImageDimension];
+  int          m_Offsets[ImageDimension];
 };
 
 
 } // end namespace rtk
 
 #ifndef rtk_MANUAL_INSTANTIATION
-#include "rtkDownsampleImageFilter.hxx"
+#  include "rtkDownsampleImageFilter.hxx"
 #endif
 
 #endif

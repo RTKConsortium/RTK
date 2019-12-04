@@ -29,28 +29,29 @@ namespace rtk
 {
 
 template <class TInputImage, class TOutputImage>
-LUTbasedVariableI0RawToAttenuationImageFilter<TInputImage, TOutputImage>
-::LUTbasedVariableI0RawToAttenuationImageFilter()
+LUTbasedVariableI0RawToAttenuationImageFilter<TInputImage,
+                                              TOutputImage>::LUTbasedVariableI0RawToAttenuationImageFilter()
 {
   // Create the lut
-  typename LookupTableType::Pointer lut = LookupTableType::New();
+  typename LookupTableType::Pointer  lut = LookupTableType::New();
   typename LookupTableType::SizeType size;
-  size[0] = itk::NumericTraits<InputImagePixelType>::max()-itk::NumericTraits<InputImagePixelType>::NonpositiveMin()+1;
-  lut->SetRegions( size );
+  size[0] =
+    itk::NumericTraits<InputImagePixelType>::max() - itk::NumericTraits<InputImagePixelType>::NonpositiveMin() + 1;
+  lut->SetRegions(size);
   lut->Allocate();
 
   // Iterate and set lut
-  itk::ImageRegionIteratorWithIndex<LookupTableType> it( lut, lut->GetBufferedRegion() );
+  itk::ImageRegionIteratorWithIndex<LookupTableType> it(lut, lut->GetBufferedRegion());
   it.Set(0);
   ++it;
-  while( !it.IsAtEnd() )
-    {
-    it.Set( it.GetIndex()[0] );
+  while (!it.IsAtEnd())
+  {
+    it.Set(it.GetIndex()[0]);
     ++it;
-    }
+  }
 
   // Default value for I0 is the numerical max
-  m_I0 = size[0]-1;
+  m_I0 = size[0] - 1;
   m_IDark = 0;
 
   // Mini pipeline for creating the lut.
@@ -67,33 +68,32 @@ LUTbasedVariableI0RawToAttenuationImageFilter<TInputImage, TOutputImage>
   m_ThresholdRampFilter->SetOutsideValue(1.);
   m_LogRampFilter->SetInput(m_ThresholdRampFilter->GetOutput());
 
-  m_SubtractLUTFilter->SetConstant1((OutputImagePixelType) log( std::max(m_I0-m_IDark, 1.) ) );
+  m_SubtractLUTFilter->SetConstant1((OutputImagePixelType)log(std::max(m_I0 - m_IDark, 1.)));
   m_SubtractLUTFilter->SetInput2(m_LogRampFilter->GetOutput());
 
   // Set the lut to member and functor
-  this->SetLookupTable( m_SubtractLUTFilter->GetOutput() );
+  this->SetLookupTable(m_SubtractLUTFilter->GetOutput());
 }
 
 template <class TInputImage, class TOutputImage>
 void
-LUTbasedVariableI0RawToAttenuationImageFilter<TInputImage, TOutputImage>
-::BeforeThreadedGenerateData()
+LUTbasedVariableI0RawToAttenuationImageFilter<TInputImage, TOutputImage>::BeforeThreadedGenerateData()
 {
   using I0EstimationType = rtk::I0EstimationProjectionFilter<TInputImage>;
-  I0EstimationType * i0est = dynamic_cast<I0EstimationType*>( this->GetInput()->GetSource().GetPointer() );
-  if(i0est)
-    {
-    m_SubtractLUTFilter->SetConstant1((OutputImagePixelType) log( std::max((double)i0est->GetI0()-m_IDark, 1.) ) );
-    }
+  I0EstimationType * i0est = dynamic_cast<I0EstimationType *>(this->GetInput()->GetSource().GetPointer());
+  if (i0est)
+  {
+    m_SubtractLUTFilter->SetConstant1((OutputImagePixelType)log(std::max((double)i0est->GetI0() - m_IDark, 1.)));
+  }
   else
-    {
-    m_SubtractLUTFilter->SetConstant1((OutputImagePixelType) log( std::max(m_I0-m_IDark, 1.) ) );
-    }
+  {
+    m_SubtractLUTFilter->SetConstant1((OutputImagePixelType)log(std::max(m_I0 - m_IDark, 1.)));
+  }
   m_SubtractRampFilter->SetInput2(m_IDark);
 
   Superclass::BeforeThreadedGenerateData(); // Update the LUT
 }
 
-}
+} // namespace rtk
 
 #endif

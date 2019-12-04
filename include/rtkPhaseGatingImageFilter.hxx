@@ -28,7 +28,7 @@
 namespace rtk
 {
 
-template<typename ProjectionStackType>
+template <typename ProjectionStackType>
 PhaseGatingImageFilter<ProjectionStackType>::PhaseGatingImageFilter()
 {
   m_PhaseReader = PhaseReader::New();
@@ -39,38 +39,42 @@ PhaseGatingImageFilter<ProjectionStackType>::PhaseGatingImageFilter()
   m_GatingWindowCenter = 0.5;
 }
 
-template<typename ProjectionStackType>
-void PhaseGatingImageFilter<ProjectionStackType>::ComputeWeights()
+template <typename ProjectionStackType>
+void
+PhaseGatingImageFilter<ProjectionStackType>::ComputeWeights()
 {
   m_GatingWeights.clear();
   float distance;
 
   // Compute the gating weights
-  for(unsigned int proj=0; proj<m_Phases.size(); proj++)
+  for (unsigned int proj = 0; proj < m_Phases.size(); proj++)
   {
-  distance = std::min(fabs(m_GatingWindowCenter - 1 - m_Phases[proj]), fabs(m_GatingWindowCenter - m_Phases[proj]));
-  distance = std::min(distance, itk::Math::abs(m_GatingWindowCenter + 1.f - m_Phases[proj]));
+    distance = std::min(fabs(m_GatingWindowCenter - 1 - m_Phases[proj]), fabs(m_GatingWindowCenter - m_Phases[proj]));
+    distance = std::min(distance, itk::Math::abs(m_GatingWindowCenter + 1.f - m_Phases[proj]));
 
-  switch(m_GatingWindowShape)
+    switch (m_GatingWindowShape)
     {
-    case(0): // Rectangular
-      if (2 * distance <= m_GatingWindowWidth) m_GatingWeights.push_back(1);
-      else m_GatingWeights.push_back(0);
-      break;
-    case(1): // Triangular
-      m_GatingWeights.push_back(std::max(1.f - 2.f * distance / m_GatingWindowWidth, 0.f));
-      break;
-    default:
-      std::cerr << "Unhandled gating window shape value." << std::endl;
+      case (0): // Rectangular
+        if (2 * distance <= m_GatingWindowWidth)
+          m_GatingWeights.push_back(1);
+        else
+          m_GatingWeights.push_back(0);
+        break;
+      case (1): // Triangular
+        m_GatingWeights.push_back(std::max(1.f - 2.f * distance / m_GatingWindowWidth, 0.f));
+        break;
+      default:
+        std::cerr << "Unhandled gating window shape value." << std::endl;
     }
   }
 }
 
-template<typename ProjectionStackType>
-void PhaseGatingImageFilter<ProjectionStackType>::GenerateOutputInformation()
+template <typename ProjectionStackType>
+void
+PhaseGatingImageFilter<ProjectionStackType>::GenerateOutputInformation()
 {
   m_PhaseReader->SetFileName(m_PhasesFileName);
-  m_PhaseReader->SetFieldDelimiterCharacter( ';' );
+  m_PhaseReader->SetFieldDelimiterCharacter(';');
   m_PhaseReader->HasRowHeadersOff();
   m_PhaseReader->HasColumnHeadersOff();
   m_PhaseReader->Update();
@@ -81,48 +85,49 @@ void PhaseGatingImageFilter<ProjectionStackType>::GenerateOutputInformation()
   Superclass::GenerateOutputInformation();
 }
 
-template<typename ProjectionStackType>
-void PhaseGatingImageFilter<ProjectionStackType>::SetPhases(std::vector<float> phases)
+template <typename ProjectionStackType>
+void
+PhaseGatingImageFilter<ProjectionStackType>::SetPhases(std::vector<float> phases)
 {
   m_Phases = phases;
 }
 
-template<typename ProjectionStackType>
+template <typename ProjectionStackType>
 std::vector<float>
 PhaseGatingImageFilter<ProjectionStackType>::GetGatingWeights()
 {
   return m_GatingWeights;
 }
 
-template<typename ProjectionStackType>
+template <typename ProjectionStackType>
 std::vector<float>
 PhaseGatingImageFilter<ProjectionStackType>::GetGatingWeightsOnSelectedProjections()
 {
   return m_GatingWeightsOnSelectedProjections;
 }
 
-template<typename ProjectionStackType>
+template <typename ProjectionStackType>
 void
 PhaseGatingImageFilter<ProjectionStackType>::SelectProjections()
 {
-  float eps=0.0001;
+  float eps = 0.0001;
   this->m_SelectedProjections.resize(m_GatingWeights.size(), false);
-  this->m_NbSelectedProjs=0;
+  this->m_NbSelectedProjs = 0;
   m_GatingWeightsOnSelectedProjections.clear();
 
   // Select only those projections that have non-zero weights to speed up computing
-  for (unsigned int i=0; i < m_GatingWeights.size(); i++)
+  for (unsigned int i = 0; i < m_GatingWeights.size(); i++)
+  {
+    if (m_GatingWeights[i] > eps)
     {
-    if (m_GatingWeights[i]>eps)
-      {
-      this->m_SelectedProjections[i]=true;
+      this->m_SelectedProjections[i] = true;
       this->m_NbSelectedProjs++;
       m_GatingWeightsOnSelectedProjections.push_back(m_GatingWeights[i]);
-      }
     }
+  }
 }
 
-}// end namespace
+} // namespace rtk
 
 
 #endif

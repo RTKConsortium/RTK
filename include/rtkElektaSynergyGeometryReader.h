@@ -36,8 +36,7 @@ namespace rtk
  *
  * \ingroup RTK IOFilters
  */
-class RTK_EXPORT ElektaSynergyGeometryReader :
-  public itk::LightProcessObject
+class RTK_EXPORT ElektaSynergyGeometryReader : public itk::LightProcessObject
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(ElektaSynergyGeometryReader);
@@ -78,13 +77,16 @@ protected:
 
 
 private:
-  std::string GetImageIDFromDicomUID();
-  void GetProjInfoFromDB(const std::string &imageID,
-                         std::vector<float> &projAngle,
-                         std::vector<float> &projFlexX,
-                         std::vector<float> &projFlexY);
+  std::string
+  GetImageIDFromDicomUID();
+  void
+  GetProjInfoFromDB(const std::string &  imageID,
+                    std::vector<float> & projAngle,
+                    std::vector<float> & projFlexX,
+                    std::vector<float> & projFlexY);
 
-  void GenerateData() override;
+  void
+  GenerateData() override;
 
   GeometryType::Pointer m_Geometry;
   std::string           m_DicomUID;
@@ -92,5 +94,5 @@ private:
   std::string           m_FrameDbfFileName;
 };
 
-}
+} // namespace rtk
 #endif

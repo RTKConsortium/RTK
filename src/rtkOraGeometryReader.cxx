@@ -31,109 +31,107 @@ namespace rtk
 {
 
 
-void OraGeometryReader::GenerateData()
+void
+OraGeometryReader::GenerateData()
 {
   m_Geometry = GeometryType::New();
   RegisterIOFactories();
-  for(const std::string & projectionsFileName : m_ProjectionsFileNames)
-    {
+  for (const std::string & projectionsFileName : m_ProjectionsFileNames)
+  {
     itk::ImageIOBase::Pointer reader;
 
-    reader = itk::ImageIOFactory::CreateImageIO(projectionsFileName.c_str(),
-                                                itk::ImageIOFactory::FileModeType::ReadMode);
+    reader =
+      itk::ImageIOFactory::CreateImageIO(projectionsFileName.c_str(), itk::ImageIOFactory::FileModeType::ReadMode);
     if (!reader)
-      {
+    {
       itkExceptionMacro("Error reading file " << projectionsFileName);
-      }
-    reader->SetFileName( projectionsFileName.c_str() );
+    }
+    reader->SetFileName(projectionsFileName.c_str());
     reader->ReadImageInformation();
-    itk::MetaDataDictionary &dic = reader->GetMetaDataDictionary();
+    itk::MetaDataDictionary & dic = reader->GetMetaDataDictionary();
 
-    using MetaDataVectorType = itk::MetaDataObject< VectorType >;
-    using MetaDataMatrixType = itk::MetaDataObject< Matrix3x3Type >;
-    using MetaDataDoubleType = itk::MetaDataObject< double >;
+    using MetaDataVectorType = itk::MetaDataObject<VectorType>;
+    using MetaDataMatrixType = itk::MetaDataObject<Matrix3x3Type>;
+    using MetaDataDoubleType = itk::MetaDataObject<double>;
 
     // Source position
-    MetaDataVectorType *spMeta = dynamic_cast<MetaDataVectorType *>(dic["SourcePosition"].GetPointer() );
-    if(spMeta==nullptr)
-      {
+    MetaDataVectorType * spMeta = dynamic_cast<MetaDataVectorType *>(dic["SourcePosition"].GetPointer());
+    if (spMeta == nullptr)
+    {
       itkExceptionMacro(<< "No SourcePosition in " << projectionsFileName);
-      }
+    }
     PointType sp(&(spMeta->GetMetaDataObjectValue()[0]));
 
     // Origin (detector position)
-    MetaDataVectorType *dpMeta = dynamic_cast<MetaDataVectorType *>(dic["Origin"].GetPointer() );
-    if(dpMeta == nullptr)
-      {
+    MetaDataVectorType * dpMeta = dynamic_cast<MetaDataVectorType *>(dic["Origin"].GetPointer());
+    if (dpMeta == nullptr)
+    {
       itkExceptionMacro(<< "No Origin in " << projectionsFileName);
-      }
+    }
     PointType dp(&(dpMeta->GetMetaDataObjectValue()[0]));
 
     // Direction (detector orientation)
-    MetaDataMatrixType *matMeta = dynamic_cast<MetaDataMatrixType *>(dic["Direction"].GetPointer() );
-    if(matMeta == nullptr)
-      {
+    MetaDataMatrixType * matMeta = dynamic_cast<MetaDataMatrixType *>(dic["Direction"].GetPointer());
+    if (matMeta == nullptr)
+    {
       itkExceptionMacro(<< "No Direction in " << projectionsFileName);
-      }
+    }
     Matrix3x3Type mat = matMeta->GetMetaDataObjectValue();
 
     // table_axis_distance_cm
-    MetaDataDoubleType *thMeta = dynamic_cast<MetaDataDoubleType *>(dic["table_axis_distance_cm"].GetPointer() );
-    if(thMeta == nullptr)
-      {
+    MetaDataDoubleType * thMeta = dynamic_cast<MetaDataDoubleType *>(dic["table_axis_distance_cm"].GetPointer());
+    if (thMeta == nullptr)
+    {
       itkExceptionMacro(<< "No table_axis_distance_cm in " << projectionsFileName);
-      }
+    }
     double th = thMeta->GetMetaDataObjectValue();
-    sp[2] -= th*10.;
-    dp[2] -= th*10.;
+    sp[2] -= th * 10.;
+    dp[2] -= th * 10.;
 
     // longitudinalposition_cm
-    MetaDataDoubleType *axMeta = dynamic_cast<MetaDataDoubleType *>(dic["longitudinalposition_cm"].GetPointer() );
-    if(axMeta == nullptr)
-      {
+    MetaDataDoubleType * axMeta = dynamic_cast<MetaDataDoubleType *>(dic["longitudinalposition_cm"].GetPointer());
+    if (axMeta == nullptr)
+    {
       itkExceptionMacro(<< "No longitudinalposition_cm in " << projectionsFileName);
-      }
+    }
     double ax = axMeta->GetMetaDataObjectValue();
-    sp[1] -= ax*10.;
-    dp[1] -= ax*10.;
+    sp[1] -= ax * 10.;
+    dp[1] -= ax * 10.;
 
     // Got it, add to geometry
-    m_Geometry->AddProjection(sp,
-                              dp,
-                              VectorType( &(mat[0][0]) ),
-                              VectorType( &(mat[1][0]) ) );
+    m_Geometry->AddProjection(sp, dp, VectorType(&(mat[0][0])), VectorType(&(mat[1][0])));
 
     // Now add the collimation
     // longitudinalposition_cm
-    double uinf = std::numeric_limits<double>::max();
-    MetaDataDoubleType *uinfMeta = dynamic_cast<MetaDataDoubleType *>(dic["xrayx1_cm"].GetPointer() );
-    if(uinfMeta != nullptr)
-      {
-      uinf = 10.*uinfMeta->GetMetaDataObjectValue()+m_CollimationMargin[0];
-      }
-
-    double usup = std::numeric_limits<double>::max();
-    MetaDataDoubleType *usupMeta = dynamic_cast<MetaDataDoubleType *>(dic["xrayx2_cm"].GetPointer() );
-    if(usupMeta != nullptr)
-      {
-      usup = 10.*usupMeta->GetMetaDataObjectValue()+m_CollimationMargin[1];
-      }
-
-    double vinf = std::numeric_limits<double>::max();
-    MetaDataDoubleType *vinfMeta = dynamic_cast<MetaDataDoubleType *>(dic["xrayy1_cm"].GetPointer() );
-    if(vinfMeta != nullptr)
-      {
-      vinf = 10.*vinfMeta->GetMetaDataObjectValue()+m_CollimationMargin[2];
-      }
-
-    double vsup = std::numeric_limits<double>::max();
-    MetaDataDoubleType *vsupMeta = dynamic_cast<MetaDataDoubleType *>(dic["xrayy2_cm"].GetPointer() );
-    if(vsupMeta != nullptr)
-      {
-      vsup = 10.*vsupMeta->GetMetaDataObjectValue()+m_CollimationMargin[3];
-      }
-    m_Geometry->SetCollimationOfLastProjection(uinf, usup, vinf, vsup);
+    double               uinf = std::numeric_limits<double>::max();
+    MetaDataDoubleType * uinfMeta = dynamic_cast<MetaDataDoubleType *>(dic["xrayx1_cm"].GetPointer());
+    if (uinfMeta != nullptr)
+    {
+      uinf = 10. * uinfMeta->GetMetaDataObjectValue() + m_CollimationMargin[0];
     }
+
+    double               usup = std::numeric_limits<double>::max();
+    MetaDataDoubleType * usupMeta = dynamic_cast<MetaDataDoubleType *>(dic["xrayx2_cm"].GetPointer());
+    if (usupMeta != nullptr)
+    {
+      usup = 10. * usupMeta->GetMetaDataObjectValue() + m_CollimationMargin[1];
+    }
+
+    double               vinf = std::numeric_limits<double>::max();
+    MetaDataDoubleType * vinfMeta = dynamic_cast<MetaDataDoubleType *>(dic["xrayy1_cm"].GetPointer());
+    if (vinfMeta != nullptr)
+    {
+      vinf = 10. * vinfMeta->GetMetaDataObjectValue() + m_CollimationMargin[2];
+    }
+
+    double               vsup = std::numeric_limits<double>::max();
+    MetaDataDoubleType * vsupMeta = dynamic_cast<MetaDataDoubleType *>(dic["xrayy2_cm"].GetPointer());
+    if (vsupMeta != nullptr)
+    {
+      vsup = 10. * vsupMeta->GetMetaDataObjectValue() + m_CollimationMargin[3];
+    }
+    m_Geometry->SetCollimationOfLastProjection(uinf, usup, vinf, vsup);
+  }
 }
-} //namespace rtk
+} // namespace rtk
 #endif

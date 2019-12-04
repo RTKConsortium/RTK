@@ -28,88 +28,81 @@ namespace rtk
 //
 // Constructor
 //
-template< class TDiagonal, class TMatrix>
-AddMatrixAndDiagonalImageFilter< TDiagonal, TMatrix>
-::AddMatrixAndDiagonalImageFilter()
+template <class TDiagonal, class TMatrix>
+AddMatrixAndDiagonalImageFilter<TDiagonal, TMatrix>::AddMatrixAndDiagonalImageFilter()
 {
   this->SetNumberOfRequiredInputs(2);
 }
 
-template< class TDiagonal, class TMatrix>
+template <class TDiagonal, class TMatrix>
 void
-AddMatrixAndDiagonalImageFilter< TDiagonal, TMatrix>
-::SetInputMatrix(const TMatrix* hessian)
+AddMatrixAndDiagonalImageFilter<TDiagonal, TMatrix>::SetInputMatrix(const TMatrix * hessian)
 {
-  this->SetNthInput(0, const_cast<TMatrix*>(hessian));
+  this->SetNthInput(0, const_cast<TMatrix *>(hessian));
 }
 
-template< class TDiagonal, class TMatrix>
+template <class TDiagonal, class TMatrix>
 void
-AddMatrixAndDiagonalImageFilter< TDiagonal, TMatrix>
-::SetInputDiagonal(const TDiagonal* gradient)
+AddMatrixAndDiagonalImageFilter<TDiagonal, TMatrix>::SetInputDiagonal(const TDiagonal * gradient)
 {
-  this->SetNthInput(1, const_cast<TDiagonal*>(gradient));
+  this->SetNthInput(1, const_cast<TDiagonal *>(gradient));
 }
 
-template< class TDiagonal, class TMatrix>
+template <class TDiagonal, class TMatrix>
 typename TMatrix::ConstPointer
-AddMatrixAndDiagonalImageFilter< TDiagonal, TMatrix>
-::GetInputMatrix()
+AddMatrixAndDiagonalImageFilter<TDiagonal, TMatrix>::GetInputMatrix()
 {
-  return static_cast< const TMatrix * >
-         ( this->itk::ProcessObject::GetInput(0) );
+  return static_cast<const TMatrix *>(this->itk::ProcessObject::GetInput(0));
 }
 
-template< class TDiagonal, class TMatrix>
+template <class TDiagonal, class TMatrix>
 typename TDiagonal::ConstPointer
-AddMatrixAndDiagonalImageFilter< TDiagonal, TMatrix>
-::GetInputDiagonal()
+AddMatrixAndDiagonalImageFilter<TDiagonal, TMatrix>::GetInputDiagonal()
 {
-  return static_cast< const TDiagonal * >
-         ( this->itk::ProcessObject::GetInput(1) );
+  return static_cast<const TDiagonal *>(this->itk::ProcessObject::GetInput(1));
 }
 
-template< class TDiagonal, class TMatrix>
+template <class TDiagonal, class TMatrix>
 void
-AddMatrixAndDiagonalImageFilter< TDiagonal, TMatrix>
-::GenerateInputRequestedRegion()
+AddMatrixAndDiagonalImageFilter<TDiagonal, TMatrix>::GenerateInputRequestedRegion()
 {
-  //Call the superclass' implementation of this method
+  // Call the superclass' implementation of this method
   Superclass::GenerateInputRequestedRegion();
 
   // Get the requested regions on both outputs (should be identical)
   typename TDiagonal::RegionType outputRequested = this->GetOutput()->GetRequestedRegion();
 
   // Get pointers to the inputs
-  typename TMatrix::Pointer input0Ptr = const_cast<TMatrix*>(this->GetInputMatrix().GetPointer());
-  typename TDiagonal::Pointer input1Ptr = const_cast<TDiagonal*>(this->GetInputDiagonal().GetPointer());
+  typename TMatrix::Pointer   input0Ptr = const_cast<TMatrix *>(this->GetInputMatrix().GetPointer());
+  typename TDiagonal::Pointer input1Ptr = const_cast<TDiagonal *>(this->GetInputDiagonal().GetPointer());
 
   // The first and second input must have the same requested region as the outputs
   input1Ptr->SetRequestedRegion(outputRequested);
   input0Ptr->SetRequestedRegion(outputRequested);
 }
 
-template< class TDiagonal, class TMatrix>
+template <class TDiagonal, class TMatrix>
 void
-AddMatrixAndDiagonalImageFilter< TDiagonal, TMatrix>
-#if ITK_VERSION_MAJOR<5
-::ThreadedGenerateData(const typename TDiagonal::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId))
+AddMatrixAndDiagonalImageFilter<TDiagonal, TMatrix>
+#if ITK_VERSION_MAJOR < 5
+  ::ThreadedGenerateData(const typename TDiagonal::RegionType & outputRegionForThread,
+                         itk::ThreadIdType                      itkNotUsed(threadId))
 #else
-::DynamicThreadedGenerateData(const typename TDiagonal::RegionType& outputRegionForThread)
+  ::DynamicThreadedGenerateData(const typename TDiagonal::RegionType & outputRegionForThread)
 #endif
 {
   // Create iterators for all inputs and outputs
-  itk::ImageRegionIterator<TMatrix> outIt(this->GetOutput(), outputRegionForThread);
+  itk::ImageRegionIterator<TMatrix>        outIt(this->GetOutput(), outputRegionForThread);
   itk::ImageRegionConstIterator<TDiagonal> diagIt(this->GetInputDiagonal(), outputRegionForThread);
-  itk::ImageRegionConstIterator<TMatrix> matIt(this->GetInputMatrix(), outputRegionForThread);
+  itk::ImageRegionConstIterator<TMatrix>   matIt(this->GetInputMatrix(), outputRegionForThread);
 
   itk::Vector<dataType, nChannels * nChannels> forOutput;
 
-  while(!outIt.IsAtEnd())
-    {
+  while (!outIt.IsAtEnd())
+  {
     // Make a vnl matrix out of the values read in input 2 (the hessian, but stored in a vector)
     forOutput = matIt.Get();
-    for (unsigned int i=0; i<nChannels; i++)
+    for (unsigned int i = 0; i < nChannels; i++)
       forOutput[i * (nChannels + 1)] += diagIt.Get()[i];
 
     outIt.Set(forOutput);
@@ -117,9 +110,9 @@ AddMatrixAndDiagonalImageFilter< TDiagonal, TMatrix>
     ++outIt;
     ++diagIt;
     ++matIt;
-    }
+  }
 }
 
-} // end namespace itk
+} // namespace rtk
 
 #endif

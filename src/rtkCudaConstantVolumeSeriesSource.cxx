@@ -21,25 +21,19 @@
 
 #include <itkMacro.h>
 
-rtk::CudaConstantVolumeSeriesSource
-::CudaConstantVolumeSeriesSource()
-{
-}
+rtk::CudaConstantVolumeSeriesSource ::CudaConstantVolumeSeriesSource() {}
 
 void
-rtk::CudaConstantVolumeSeriesSource
-::GPUGenerateData()
+rtk::CudaConstantVolumeSeriesSource ::GPUGenerateData()
 {
-    int outputSize[4];
+  int outputSize[4];
 
-    for (int i=0; i<4; i++)
-      {
-      outputSize[i] = this->GetOutput()->GetRequestedRegion().GetSize()[i];
-      }
+  for (int i = 0; i < 4; i++)
+  {
+    outputSize[i] = this->GetOutput()->GetRequestedRegion().GetSize()[i];
+  }
 
-    float *pout = *(float**)( this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer() );
+  float * pout = *(float **)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
 
-    CUDA_generate_constant_volume_series(outputSize,
-                                         pout,
-                                         m_Constant);
+  CUDA_generate_constant_volume_series(outputSize, pout, m_Constant);
 }

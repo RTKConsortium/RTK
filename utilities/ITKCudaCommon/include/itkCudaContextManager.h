@@ -37,17 +37,19 @@ namespace itk
 class ITKCudaCommon_EXPORT CudaContextManager : public LightObject
 {
 public:
+  static CudaContextManager *
+  GetInstance();
 
-  static CudaContextManager* GetInstance();
+  static void
+  DestroyInstance();
 
-  static void DestroyInstance();
+  CUcontext *
+  GetCurrentContext();
 
-  CUcontext* GetCurrentContext();
-
-  int GetCurrentDevice();
+  int
+  GetCurrentDevice();
 
 private:
-
   CudaContextManager();
   ~CudaContextManager();
 
@@ -56,8 +58,8 @@ private:
   int       m_DeviceIdx;
   int       m_NumberOfDevices;
 
-  static CudaContextManager* m_Instance;
-  static bool                m_Initialized;
+  static CudaContextManager * m_Instance;
+  static bool                 m_Initialized;
 };
 } // namespace itk
 

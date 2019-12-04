@@ -31,69 +31,69 @@
 #include <itkSubtractImageFilter.h>
 #include <itkMultiplyImageFilter.h>
 #ifdef RTK_USE_CUDA
-  #include "rtkCudaConjugateGradientImageFilter.h"
+#  include "rtkCudaConjugateGradientImageFilter.h"
 #endif
 
 namespace rtk
 {
 
-  /** \class FourDConjugateGradientConeBeamReconstructionFilter
-   * \brief Implements part of the 4D reconstruction by conjugate gradient
-   *
-   * See the reference paper: "Cardiac C-arm computed tomography using
-   * a 3D + time ROI reconstruction method with spatial and temporal regularization"
-   * by Mory et al.
-   *
-   * 4D conjugate gradient reconstruction consists in iteratively
-   * minimizing the following cost function:
-   *
-   * \f[ \sum\limits_{\alpha} \| R_\alpha S_\alpha x - p_\alpha \|_2^2 \f]
-   *
-   * with
-   * - \f$ x \f$ a 4D series of 3D volumes, each one being the reconstruction
-   * at a given respiratory/cardiac phase
-   * - \f$ p_{\alpha} \f$ is the projection measured at angle \f$ \alpha \f$
-   * - \f$ S_{\alpha} \f$ an interpolation operator which, from the 3D + time sequence f,
-   * estimates the 3D volume through which projection \f$ p_{\alpha} \f$ has been acquired
-   * - \f$ R_{\alpha} \f$ is the X-ray transform (the forward projection operator) for angle \f$ \alpha \f$
-   * - \f$ D \f$ the displaced detector weighting matrix
-   *
-   * \dot
-   * digraph FourDConjugateGradientConeBeamReconstructionFilter {
-   *
-   * Input0 [ label="Input 0 (Input: 4D sequence of volumes)"];
-   * Input0 [shape=Mdiamond];
-   * Input1 [label="Input 1 (Projections)"];
-   * Input1 [shape=Mdiamond];
-   * Output [label="Output (Reconstruction: 4D sequence of volumes)"];
-   * Output [shape=Mdiamond];
-   *
-   * node [shape=box];
-   * AfterInput0 [label="", fixedsize="false", width=0, height=0, shape=none];
-   * ConjugateGradient [ label="rtk::ConjugateGradientImageFilter" URL="\ref rtk::ConjugateGradientImageFilter"];
-   * PSTFD [ label="rtk::ProjectionStackToFourDImageFilter" URL="\ref rtk::ProjectionStackToFourDImageFilter"];
-   * Displaced [ label="rtk::DisplacedDetectorImageFilter" URL="\ref rtk::DisplacedDetectorImageFilter"];
-   *
-   * Input0 -> AfterInput0 [arrowhead=none];
-   * AfterInput0 -> ConjugateGradient;
-   * Input0 -> PSTFD;
-   * Input1 -> Displaced;
-   * Displaced -> PSTFD;
-   * PSTFD -> ConjugateGradient;
-   * ConjugateGradient -> Output;
-   * }
-   * \enddot
-   *
-   * \test rtkfourdconjugategradienttest.cxx
-   *
-   * \author Cyril Mory
-   *
-   * \ingroup RTK ReconstructionAlgorithm
-   */
+/** \class FourDConjugateGradientConeBeamReconstructionFilter
+ * \brief Implements part of the 4D reconstruction by conjugate gradient
+ *
+ * See the reference paper: "Cardiac C-arm computed tomography using
+ * a 3D + time ROI reconstruction method with spatial and temporal regularization"
+ * by Mory et al.
+ *
+ * 4D conjugate gradient reconstruction consists in iteratively
+ * minimizing the following cost function:
+ *
+ * \f[ \sum\limits_{\alpha} \| R_\alpha S_\alpha x - p_\alpha \|_2^2 \f]
+ *
+ * with
+ * - \f$ x \f$ a 4D series of 3D volumes, each one being the reconstruction
+ * at a given respiratory/cardiac phase
+ * - \f$ p_{\alpha} \f$ is the projection measured at angle \f$ \alpha \f$
+ * - \f$ S_{\alpha} \f$ an interpolation operator which, from the 3D + time sequence f,
+ * estimates the 3D volume through which projection \f$ p_{\alpha} \f$ has been acquired
+ * - \f$ R_{\alpha} \f$ is the X-ray transform (the forward projection operator) for angle \f$ \alpha \f$
+ * - \f$ D \f$ the displaced detector weighting matrix
+ *
+ * \dot
+ * digraph FourDConjugateGradientConeBeamReconstructionFilter {
+ *
+ * Input0 [ label="Input 0 (Input: 4D sequence of volumes)"];
+ * Input0 [shape=Mdiamond];
+ * Input1 [label="Input 1 (Projections)"];
+ * Input1 [shape=Mdiamond];
+ * Output [label="Output (Reconstruction: 4D sequence of volumes)"];
+ * Output [shape=Mdiamond];
+ *
+ * node [shape=box];
+ * AfterInput0 [label="", fixedsize="false", width=0, height=0, shape=none];
+ * ConjugateGradient [ label="rtk::ConjugateGradientImageFilter" URL="\ref rtk::ConjugateGradientImageFilter"];
+ * PSTFD [ label="rtk::ProjectionStackToFourDImageFilter" URL="\ref rtk::ProjectionStackToFourDImageFilter"];
+ * Displaced [ label="rtk::DisplacedDetectorImageFilter" URL="\ref rtk::DisplacedDetectorImageFilter"];
+ *
+ * Input0 -> AfterInput0 [arrowhead=none];
+ * AfterInput0 -> ConjugateGradient;
+ * Input0 -> PSTFD;
+ * Input1 -> Displaced;
+ * Displaced -> PSTFD;
+ * PSTFD -> ConjugateGradient;
+ * ConjugateGradient -> Output;
+ * }
+ * \enddot
+ *
+ * \test rtkfourdconjugategradienttest.cxx
+ *
+ * \author Cyril Mory
+ *
+ * \ingroup RTK ReconstructionAlgorithm
+ */
 
-template<typename VolumeSeriesType, typename ProjectionStackType>
-class ITK_EXPORT FourDConjugateGradientConeBeamReconstructionFilter :
-  public rtk::IterativeConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
+template <typename VolumeSeriesType, typename ProjectionStackType>
+class ITK_EXPORT FourDConjugateGradientConeBeamReconstructionFilter
+  : public rtk::IterativeConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(FourDConjugateGradientConeBeamReconstructionFilter);
@@ -110,8 +110,8 @@ public:
   using VolumeType = ProjectionStackType;
 
   /** Typedefs of each subfilter of this composite filter */
-  using ForwardProjectionFilterType = ForwardProjectionImageFilter< VolumeType, ProjectionStackType >;
-  using BackProjectionFilterType = BackProjectionImageFilter< ProjectionStackType, VolumeType >;
+  using ForwardProjectionFilterType = ForwardProjectionImageFilter<VolumeType, ProjectionStackType>;
+  using BackProjectionFilterType = BackProjectionImageFilter<ProjectionStackType, VolumeType>;
   using ConjugateGradientFilterType = ConjugateGradientImageFilter<VolumeSeriesType>;
   using CGOperatorFilterType = FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType>;
   using ProjStackToFourDFilterType = ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType>;
@@ -121,87 +121,104 @@ public:
   using BackProjectionType = typename Superclass::BackProjectionType;
 
   /** SFINAE type alias, depending on whether a CUDA image is used. */
-  using CPUVolumeSeriesType = typename itk::Image< typename VolumeSeriesType::PixelType,
-                               VolumeSeriesType::ImageDimension>;
+  using CPUVolumeSeriesType =
+    typename itk::Image<typename VolumeSeriesType::PixelType, VolumeSeriesType::ImageDimension>;
 #ifdef RTK_USE_CUDA
-  typedef typename std::conditional<std::is_same< VolumeSeriesType, CPUVolumeSeriesType >::value,
+  typedef typename std::conditional<std::is_same<VolumeSeriesType, CPUVolumeSeriesType>::value,
                                     ConjugateGradientImageFilter<VolumeSeriesType>,
-                                    CudaConjugateGradientImageFilter<VolumeSeriesType> >::type CudaConjugateGradientImageFilterType;
+                                    CudaConjugateGradientImageFilter<VolumeSeriesType>>::type
+    CudaConjugateGradientImageFilterType;
 #else
   using CudaConjugateGradientImageFilterType = ConjugateGradientImageFilter<VolumeSeriesType>;
 #endif
 
   /** Standard New method. */
-  itkNewMacro(Self)
+  itkNewMacro(Self);
 
   /** Runtime information support. */
-  itkTypeMacro(FourDConjugateGradientConeBeamReconstructionFilter, itk::ImageToImageFilter)
+  itkTypeMacro(FourDConjugateGradientConeBeamReconstructionFilter, itk::ImageToImageFilter);
 
   /** Get / Set the object pointer to projection geometry */
-  itkGetConstObjectMacro(Geometry, ThreeDCircularProjectionGeometry)
-  itkSetConstObjectMacro(Geometry, ThreeDCircularProjectionGeometry)
+  itkGetConstObjectMacro(Geometry, ThreeDCircularProjectionGeometry);
+  itkSetConstObjectMacro(Geometry, ThreeDCircularProjectionGeometry);
 
   /** Get / Set the number of iterations. Default is 3. */
-  itkGetMacro(NumberOfIterations, unsigned int)
-  itkSetMacro(NumberOfIterations, unsigned int)
+  itkGetMacro(NumberOfIterations, unsigned int);
+  itkSetMacro(NumberOfIterations, unsigned int);
 
   /** Get / Set whether conjugate gradient should be performed on GPU */
-  itkGetMacro(CudaConjugateGradient, bool)
-  itkSetMacro(CudaConjugateGradient, bool)
+  itkGetMacro(CudaConjugateGradient, bool);
+  itkSetMacro(CudaConjugateGradient, bool);
 
   /** Set/Get the 4D image to be updated.*/
-  void SetInputVolumeSeries(const VolumeSeriesType* VolumeSeries);
-  typename VolumeSeriesType::ConstPointer GetInputVolumeSeries();
+  void
+  SetInputVolumeSeries(const VolumeSeriesType * VolumeSeries);
+  typename VolumeSeriesType::ConstPointer
+  GetInputVolumeSeries();
 
   /** Set/Get the stack of projections */
-  void SetInputProjectionStack(const ProjectionStackType* Projections);
-  typename ProjectionStackType::ConstPointer GetInputProjectionStack();
+  void
+  SetInputProjectionStack(const ProjectionStackType * Projections);
+  typename ProjectionStackType::ConstPointer
+  GetInputProjectionStack();
 
   /** Pass the ForwardProjection filter to the conjugate gradient operator */
-  void SetForwardProjectionFilter (ForwardProjectionType _arg) override;
+  void
+  SetForwardProjectionFilter(ForwardProjectionType _arg) override;
 
   /** Pass the backprojection filter to the conjugate gradient operator and to the filter generating the B of AX=B */
-  void SetBackProjectionFilter (BackProjectionType _arg) override;
+  void
+  SetBackProjectionFilter(BackProjectionType _arg) override;
 
   /** Pass the interpolation weights to subfilters */
-  void SetWeights(const itk::Array2D<float> _arg);
+  void
+  SetWeights(const itk::Array2D<float> _arg);
 
   /** Store the phase signal in a member variable */
-  virtual void SetSignal(const std::vector<double> signal);
+  virtual void
+  SetSignal(const std::vector<double> signal);
 
   /** Set / Get whether the displaced detector filter should be disabled */
-  itkSetMacro(DisableDisplacedDetectorFilter, bool)
-  itkGetMacro(DisableDisplacedDetectorFilter, bool)
+  itkSetMacro(DisableDisplacedDetectorFilter, bool);
+  itkGetMacro(DisableDisplacedDetectorFilter, bool);
+
 protected:
   FourDConjugateGradientConeBeamReconstructionFilter();
   ~FourDConjugateGradientConeBeamReconstructionFilter() override = default;
 
-  void GenerateOutputInformation() override;
+  void
+  GenerateOutputInformation() override;
 
-  void GenerateInputRequestedRegion() override;
+  void
+  GenerateInputRequestedRegion() override;
 
-  void GenerateData() override;
+  void
+  GenerateData() override;
 
   /** The two inputs should not be in the same space so there is nothing
    * to verify. */
-#if ITK_VERSION_MAJOR<5
-  void VerifyInputInformation() override {}
+#if ITK_VERSION_MAJOR < 5
+  void
+  VerifyInputInformation() override
+  {}
 #else
-  void VerifyInputInformation() const override {}
+  void
+  VerifyInputInformation() const override
+  {}
 #endif
 
   /** Pointers to each subfilter of this composite filter */
-  typename ForwardProjectionFilterType::Pointer     m_ForwardProjectionFilter;
-  typename BackProjectionFilterType::Pointer        m_BackProjectionFilter;
-  typename BackProjectionFilterType::Pointer        m_BackProjectionFilterForB;
-  typename ConjugateGradientFilterType::Pointer     m_ConjugateGradientFilter;
-  typename CGOperatorFilterType::Pointer            m_CGOperator;
-  typename ProjStackToFourDFilterType::Pointer      m_ProjStackToFourDFilter;
-  typename DisplacedDetectorFilterType::Pointer     m_DisplacedDetectorFilter;
+  typename ForwardProjectionFilterType::Pointer m_ForwardProjectionFilter;
+  typename BackProjectionFilterType::Pointer    m_BackProjectionFilter;
+  typename BackProjectionFilterType::Pointer    m_BackProjectionFilterForB;
+  typename ConjugateGradientFilterType::Pointer m_ConjugateGradientFilter;
+  typename CGOperatorFilterType::Pointer        m_CGOperator;
+  typename ProjStackToFourDFilterType::Pointer  m_ProjStackToFourDFilter;
+  typename DisplacedDetectorFilterType::Pointer m_DisplacedDetectorFilter;
 
-  bool                    m_CudaConjugateGradient;
-  std::vector<double>     m_Signal;
-  bool                    m_DisableDisplacedDetectorFilter;
+  bool                m_CudaConjugateGradient;
+  std::vector<double> m_Signal;
+  bool                m_DisableDisplacedDetectorFilter;
 
 private:
   /** Geometry object */
@@ -215,7 +232,7 @@ private:
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkFourDConjugateGradientConeBeamReconstructionFilter.hxx"
+#  include "rtkFourDConjugateGradientConeBeamReconstructionFilter.hxx"
 #endif
 
 #endif

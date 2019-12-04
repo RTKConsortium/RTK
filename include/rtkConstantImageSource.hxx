@@ -26,97 +26,90 @@
 namespace rtk
 {
 template <class TOutputImage>
-ConstantImageSource<TOutputImage>
-::ConstantImageSource()
+ConstantImageSource<TOutputImage>::ConstantImageSource()
 {
-  //Initial image is 64 wide in each direction.
-  for (unsigned int i=0; i<TOutputImage::GetImageDimension(); i++)
-    {
+  // Initial image is 64 wide in each direction.
+  for (unsigned int i = 0; i < TOutputImage::GetImageDimension(); i++)
+  {
     m_Size[i] = 64;
     m_Spacing[i] = 1.0;
     m_Origin[i] = 0.0;
     m_Index[i] = 0;
 
-    for (unsigned int j=0; j<TOutputImage::GetImageDimension(); j++)
-      m_Direction[i][j] = (i==j)?1.:0.;
-    }
+    for (unsigned int j = 0; j < TOutputImage::GetImageDimension(); j++)
+      m_Direction[i][j] = (i == j) ? 1. : 0.;
+  }
 
   m_Constant = itk::NumericTraits<OutputImagePixelType>::ZeroValue(m_Constant);
 }
 
 template <class TOutputImage>
-ConstantImageSource<TOutputImage>
-::~ConstantImageSource()
-{
-}
+ConstantImageSource<TOutputImage>::~ConstantImageSource()
+{}
 
 template <class TOutputImage>
 void
-ConstantImageSource<TOutputImage>
-::SetSize( SizeValueArrayType sizeArray )
+ConstantImageSource<TOutputImage>::SetSize(SizeValueArrayType sizeArray)
 {
   const unsigned int count = TOutputImage::ImageDimension;
-  unsigned int i;
-  for( i=0; i<count; i++ )
+  unsigned int       i;
+  for (i = 0; i < count; i++)
+  {
+    if (sizeArray[i] != this->m_Size[i])
     {
-    if( sizeArray[i] != this->m_Size[i] )
-      {
       break;
-      }
     }
-  if( i < count )
-    {
+  }
+  if (i < count)
+  {
     this->Modified();
-    for( i=0; i<count; i++ )
-      {
+    for (i = 0; i < count; i++)
+    {
       this->m_Size[i] = sizeArray[i];
-      }
     }
+  }
 }
 
 template <class TOutputImage>
 const typename ConstantImageSource<TOutputImage>::SizeValueType *
-ConstantImageSource<TOutputImage>
-::GetSize() const
+ConstantImageSource<TOutputImage>::GetSize() const
 {
   return this->m_Size.GetSize();
 }
 
 template <class TOutputImage>
 void
-ConstantImageSource<TOutputImage>
-::PrintSelf(std::ostream& os, itk::Indent indent) const
+ConstantImageSource<TOutputImage>::PrintSelf(std::ostream & os, itk::Indent indent) const
 {
-  Superclass::PrintSelf(os,indent);
-  os << indent << "Constant: "
-     << static_cast<typename itk::NumericTraits<OutputImagePixelType>::PrintType>(m_Constant)
+  Superclass::PrintSelf(os, indent);
+  os << indent << "Constant: " << static_cast<typename itk::NumericTraits<OutputImagePixelType>::PrintType>(m_Constant)
      << std::endl;
   unsigned int i;
   os << indent << "Origin: [";
-  for (i=0; i < TOutputImage::ImageDimension - 1; i++)
-    {
+  for (i = 0; i < TOutputImage::ImageDimension - 1; i++)
+  {
     os << m_Origin[i] << ", ";
-    }
+  }
   os << m_Origin[i] << "]" << std::endl;
 
   os << indent << "Spacing: [";
-  for (i=0; i < TOutputImage::ImageDimension - 1; i++)
-    {
+  for (i = 0; i < TOutputImage::ImageDimension - 1; i++)
+  {
     os << m_Spacing[i] << ", ";
-    }
+  }
   os << m_Spacing[i] << "]" << std::endl;
 
   os << indent << "Size: [";
-  for (i=0; i < TOutputImage::ImageDimension - 1; i++)
-    {
+  for (i = 0; i < TOutputImage::ImageDimension - 1; i++)
+  {
     os << m_Size[i] << ", ";
-    }
+  }
   os << m_Size[i] << "]" << std::endl;
 }
 
-//template <class TOutputImage>
-//void
-//ConstantImageSource<TOutputImage>
+// template <class TOutputImage>
+// void
+// ConstantImageSource<TOutputImage>
 //::SetInformationFromImage(const typename TOutputImage::Superclass* image)
 //{
 //  this->SetSize( image->GetLargestPossibleRegion().GetSize() );
@@ -128,29 +121,27 @@ ConstantImageSource<TOutputImage>
 
 template <class TOutputImage>
 void
-ConstantImageSource<TOutputImage>
-::SetInformationFromImage(const itk::ImageBase<TOutputImage::ImageDimension>* image)
+ConstantImageSource<TOutputImage>::SetInformationFromImage(const itk::ImageBase<TOutputImage::ImageDimension> * image)
 {
-  this->SetSize( image->GetLargestPossibleRegion().GetSize() );
-  this->SetIndex( image->GetLargestPossibleRegion().GetIndex() );
-  this->SetSpacing( image->GetSpacing() );
-  this->SetOrigin( image->GetOrigin() );
-  this->SetDirection( image->GetDirection() );
+  this->SetSize(image->GetLargestPossibleRegion().GetSize());
+  this->SetIndex(image->GetLargestPossibleRegion().GetIndex());
+  this->SetSpacing(image->GetSpacing());
+  this->SetOrigin(image->GetOrigin());
+  this->SetDirection(image->GetDirection());
 }
 
 //----------------------------------------------------------------------------
 template <class TOutputImage>
 void
-ConstantImageSource<TOutputImage>
-::GenerateOutputInformation()
+ConstantImageSource<TOutputImage>::GenerateOutputInformation()
 {
-  TOutputImage *output;
+  TOutputImage * output;
   output = this->GetOutput(0);
 
   typename TOutputImage::RegionType largestPossibleRegion;
-  largestPossibleRegion.SetSize( this->m_Size );
-  largestPossibleRegion.SetIndex( this->m_Index );
-  output->SetLargestPossibleRegion( largestPossibleRegion );
+  largestPossibleRegion.SetSize(this->m_Size);
+  largestPossibleRegion.SetIndex(this->m_Index);
+  output->SetLargestPossibleRegion(largestPossibleRegion);
 
   output->SetSpacing(m_Spacing);
   output->SetOrigin(m_Origin);
@@ -161,10 +152,10 @@ ConstantImageSource<TOutputImage>
 template <class TOutputImage>
 void
 ConstantImageSource<TOutputImage>
-#if ITK_VERSION_MAJOR<5
-::ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType itkNotUsed(threadId) )
+#if ITK_VERSION_MAJOR < 5
+  ::ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, ThreadIdType itkNotUsed(threadId))
 #else
-::DynamicThreadedGenerateData(const OutputImageRegionType& outputRegionForThread)
+  ::DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread)
 #endif
 {
   itk::ImageRegionIterator<TOutputImage> it(this->GetOutput(), outputRegionForThread);

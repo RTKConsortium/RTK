@@ -21,25 +21,19 @@
 
 #include <itkMacro.h>
 
-rtk::CudaConstantVolumeSource
-::CudaConstantVolumeSource()
-{
-}
+rtk::CudaConstantVolumeSource ::CudaConstantVolumeSource() {}
 
 void
-rtk::CudaConstantVolumeSource
-::GPUGenerateData()
+rtk::CudaConstantVolumeSource ::GPUGenerateData()
 {
-    int outputSize[3];
+  int outputSize[3];
 
-    for (int i=0; i<3; i++)
-      {
-      outputSize[i] = this->GetOutput()->GetRequestedRegion().GetSize()[i];
-      }
+  for (int i = 0; i < 3; i++)
+  {
+    outputSize[i] = this->GetOutput()->GetRequestedRegion().GetSize()[i];
+  }
 
-    float *pout = *(float**)( this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer() );
+  float * pout = *(float **)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
 
-    CUDA_generate_constant_volume(outputSize,
-                                 pout,
-                                 m_Constant);
+  CUDA_generate_constant_volume(outputSize, pout, m_Constant);
 }

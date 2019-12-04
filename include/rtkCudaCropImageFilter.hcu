@@ -22,10 +22,10 @@
 #include <vector_types.h>
 
 void
-CUDA_crop(const long3 &cropIndex,
-          const uint3 &cropSize,
-          const uint3 &inputSize,
-          float *deviceVolume,
-          float *deviceCroppedVolume);
+CUDA_crop(const long3 & cropIndex,
+          const uint3 & cropSize,
+          const uint3 & inputSize,
+          float *       deviceVolume,
+          float *       deviceCroppedVolume);
 
 #endif

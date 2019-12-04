@@ -1,20 +1,20 @@
 /*=========================================================================
-*
-*  Copyright Insight Software Consortium
-*
-*  Licensed under the Apache License, Version 2.0 (the "License");
-*  you may not use this file except in compliance with the License.
-*  You may obtain a copy of the License at
-*
-*         http://www.apache.org/licenses/LICENSE-2.0.txt
-*
-*  Unless required by applicable law or agreed to in writing, software
-*  distributed under the License is distributed on an "AS IS" BASIS,
-*  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-*  See the License for the specific language governing permissions and
-*  limitations under the License.
-*
-*=========================================================================*/
+ *
+ *  Copyright Insight Software Consortium
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ *=========================================================================*/
 #ifndef itkCudaDataManager_h
 #define itkCudaDataManager_h
 
@@ -32,7 +32,7 @@
 
 namespace itk
 {
-class GPUMemPointer: public Object
+class GPUMemPointer : public Object
 {
 public:
   using Self = GPUMemPointer;
@@ -43,62 +43,70 @@ public:
   itkNewMacro(Self);
   itkTypeMacro(GPUMemPointer, Object);
 
-  void Allocate(size_t bufferSize)
-    {
+  void
+  Allocate(size_t bufferSize)
+  {
 #ifdef VERBOSE
-    if(m_GPUBuffer)
-      std::cout << this << "::Freed GPU buffer of size " << m_BufferSize << " Bytes" << " : " << m_GPUBuffer << std::endl;
+    if (m_GPUBuffer)
+      std::cout << this << "::Freed GPU buffer of size " << m_BufferSize << " Bytes"
+                << " : " << m_GPUBuffer << std::endl;
 #endif
     m_BufferSize = bufferSize;
     CUDA_CHECK(cudaFree(m_GPUBuffer));
     CUDA_CHECK(cudaMalloc(&m_GPUBuffer, bufferSize));
 #ifdef VERBOSE
-    std::cout << this << "::Allocate Create GPU buffer of size " << bufferSize << " Bytes" << " : " << m_GPUBuffer << std::endl;
+    std::cout << this << "::Allocate Create GPU buffer of size " << bufferSize << " Bytes"
+              << " : " << m_GPUBuffer << std::endl;
 #endif
-    }
+  }
 
-  void Free()
-    {
+  void
+  Free()
+  {
 #ifdef VERBOSE
-    if(m_GPUBuffer)
-      std::cout << this << "::Freed GPU buffer of size " << m_BufferSize << " Bytes" << " : " << m_GPUBuffer << std::endl;
+    if (m_GPUBuffer)
+      std::cout << this << "::Freed GPU buffer of size " << m_BufferSize << " Bytes"
+                << " : " << m_GPUBuffer << std::endl;
 #endif
     CUDA_CHECK(cudaFree(m_GPUBuffer));
     m_GPUBuffer = 0;
     m_BufferSize = 0;
-    }
+  }
 
   ~GPUMemPointer()
+  {
+    if (m_GPUBuffer)
     {
-    if(m_GPUBuffer)
-      {
       this->Free();
-      }
     }
+  }
 
-  void* GetPointer()
-    {
+  void *
+  GetPointer()
+  {
     return m_GPUBuffer;
-    }
+  }
 
-  void* GetPointerPtr()
-    {
+  void *
+  GetPointerPtr()
+  {
     return &m_GPUBuffer;
-    }
+  }
 
-  size_t GetBufferSize()
-    {
+  size_t
+  GetBufferSize()
+  {
     return m_BufferSize;
-    }
+  }
 
 protected:
   GPUMemPointer()
-    {
+  {
     m_GPUBuffer = 0;
     m_BufferSize = 0;
-    }
+  }
 
-  void*  m_GPUBuffer;
+  void * m_GPUBuffer;
   size_t m_BufferSize;
 };
 
@@ -119,7 +127,6 @@ class ITKCudaCommon_EXPORT CudaDataManager : public Object
   friend class CudaKernelManager;
 
 public:
-
   using Self = CudaDataManager;
   using Superclass = Object;
   using Pointer = SmartPointer<Self>;
@@ -130,91 +137,112 @@ public:
   itkTypeMacro(CudaDataManager, Object);
 
   /** total buffer size in bytes */
-  void SetBufferSize(size_t num);
+  void
+  SetBufferSize(size_t num);
 
-  size_t GetBufferSize()
-    {
+  size_t
+  GetBufferSize()
+  {
     return m_BufferSize;
-    }
+  }
 
-  void SetBufferFlag(int flags);
+  void
+  SetBufferFlag(int flags);
 
-  void SetCPUBufferPointer(void* ptr);
+  void
+  SetCPUBufferPointer(void * ptr);
 
-  void SetCPUDirtyFlag(bool isDirty);
+  void
+  SetCPUDirtyFlag(bool isDirty);
 
-  void SetGPUDirtyFlag(bool isDirty);
+  void
+  SetGPUDirtyFlag(bool isDirty);
 
   /** Make GPU up-to-date and mark CPU as dirty.
    * Call this function when you want to modify CPU data */
-  void SetCPUBufferDirty();
+  void
+  SetCPUBufferDirty();
 
   /** Make CPU up-to-date and mark GPU as dirty.
    * Call this function when you want to modify Cuda data */
-  void SetGPUBufferDirty();
+  void
+  SetGPUBufferDirty();
 
-  bool IsCPUBufferDirty() {
+  bool
+  IsCPUBufferDirty()
+  {
     return m_IsCPUBufferDirty;
   }
 
-  bool IsGPUBufferDirty() {
+  bool
+  IsGPUBufferDirty()
+  {
     return m_IsGPUBufferDirty;
   }
 
   /** actual Cuda->CPU memory copy takes place here */
-  virtual void UpdateCPUBuffer();
+  virtual void
+  UpdateCPUBuffer();
 
   /** actual CPU->Cuda memory copy takes place here */
-  virtual void UpdateGPUBuffer();
+  virtual void
+  UpdateGPUBuffer();
 
-  void Allocate();
-  void Free();
+  void
+  Allocate();
+  void
+  Free();
 
   /** Synchronize CPU and Cuda buffers (using dirty flags) */
-  bool Update();
+  bool
+  Update();
 
   /** Method for grafting the content of one CudaDataManager into another one */
-  virtual void Graft(const CudaDataManager* data);
+  virtual void
+  Graft(const CudaDataManager * data);
 
   /** Initialize CudaDataManager */
-  virtual void Initialize();
+  virtual void
+  Initialize();
 
   /** Get Cuda buffer pointer */
-  void* GetGPUBufferPointer();
+  void *
+  GetGPUBufferPointer();
 
   /** Get CPU buffer pointer */
-  void* GetCPUBufferPointer();
+  void *
+  GetCPUBufferPointer();
 
   /** Get Cuda buffer size without calling GetGPUBufferPointer, which
    * which would trigger an unwanted CPU -> GPU memory transfer */
-  size_t GetGPUBufferSize()
-    {
+  size_t
+  GetGPUBufferSize()
+  {
     return m_GPUBuffer->GetBufferSize();
-    }
+  }
 
 protected:
-
   CudaDataManager();
   virtual ~CudaDataManager();
-  virtual void PrintSelf(std::ostream & os, Indent indent) const;
+  virtual void
+  PrintSelf(std::ostream & os, Indent indent) const;
 
 private:
-
-  CudaDataManager(const Self&);   //purposely not implemented
-  void operator=(const Self&);
+  CudaDataManager(const Self &); // purposely not implemented
+  void
+  operator=(const Self &);
 
 protected:
+  size_t m_BufferSize; // # of bytes
 
-  size_t m_BufferSize;   // # of bytes
-
-  CudaContextManager* m_ContextManager;
+  CudaContextManager * m_ContextManager;
 
   /** buffer type */
   int m_MemFlags;
 
   /** buffer pointers */
   GPUMemPointer::Pointer m_GPUBuffer;
-  void*                  m_CPUBuffer;
+  void *                 m_CPUBuffer;
 
   /** checks if buffer needs to be updated */
   bool m_IsGPUBufferDirty;

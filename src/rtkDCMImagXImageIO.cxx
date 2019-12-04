@@ -21,18 +21,20 @@
 #include <gdcmImageReader.h>
 #include <gdcmAttribute.h>
 
-void rtk::DCMImagXImageIO::ReadImageInformation()
+void
+rtk::DCMImagXImageIO::ReadImageInformation()
 {
   Superclass::ReadImageInformation();
 
-  this->SetOrigin(0, (this->GetDimensions(0)-1)*(-0.5)*this->GetSpacing(0) );
-  this->SetOrigin(1, (this->GetDimensions(1)-1)*(-0.5)*this->GetSpacing(1) );
+  this->SetOrigin(0, (this->GetDimensions(0) - 1) * (-0.5) * this->GetSpacing(0));
+  this->SetOrigin(1, (this->GetDimensions(1) - 1) * (-0.5) * this->GetSpacing(1));
   this->SetOrigin(2, 0.);
 }
 
-bool rtk::DCMImagXImageIO::CanReadFile(const char* FileNameToRead)
+bool
+rtk::DCMImagXImageIO::CanReadFile(const char * FileNameToRead)
 {
-  if(!Superclass::CanReadFile(FileNameToRead))
+  if (!Superclass::CanReadFile(FileNameToRead))
     return false;
 
   // Check IBA label, reading manufacturer's name
@@ -40,15 +42,16 @@ bool rtk::DCMImagXImageIO::CanReadFile(const char* FileNameToRead)
   reader.SetFileName(FileNameToRead);
   reader.Read();
 
-  gdcm::DataSet &ds = reader.GetFile().GetDataSet();
-  gdcm::Attribute<0x8,0x70> at1;
+  gdcm::DataSet &            ds = reader.GetFile().GetDataSet();
+  gdcm::Attribute<0x8, 0x70> at1;
   at1.SetFromDataSet(ds);
   std::string value = at1.GetValue();
 
-  return bool(value=="IBA ");
+  return bool(value == "IBA ");
 }
 
-bool rtk::DCMImagXImageIO::CanWriteFile( const char* itkNotUsed(FileNameToWrite) )
+bool
+rtk::DCMImagXImageIO::CanWriteFile(const char * itkNotUsed(FileNameToWrite))
 {
   return false;
 }

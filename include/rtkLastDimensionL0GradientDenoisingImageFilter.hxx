@@ -27,11 +27,10 @@ namespace rtk
 //
 // Constructor
 //
-template< class TInputImage >
-LastDimensionL0GradientDenoisingImageFilter< TInputImage >
-::LastDimensionL0GradientDenoisingImageFilter()
+template <class TInputImage>
+LastDimensionL0GradientDenoisingImageFilter<TInputImage>::LastDimensionL0GradientDenoisingImageFilter()
 {
-#if ITK_VERSION_MAJOR>4
+#if ITK_VERSION_MAJOR > 4
   this->DynamicMultiThreadingOff();
 #endif
 
@@ -44,110 +43,114 @@ LastDimensionL0GradientDenoisingImageFilter< TInputImage >
   m_Lambda = 0.;
 }
 
-template< class TInputImage >
-const itk::ImageRegionSplitterBase*
-LastDimensionL0GradientDenoisingImageFilter< TInputImage >
-::GetImageRegionSplitter(void) const
+template <class TInputImage>
+const itk::ImageRegionSplitterBase *
+LastDimensionL0GradientDenoisingImageFilter<TInputImage>::GetImageRegionSplitter(void) const
 {
   return m_Splitter;
 }
 
-template< class TInputImage >
+template <class TInputImage>
 void
-LastDimensionL0GradientDenoisingImageFilter< TInputImage >
-::GenerateInputRequestedRegion()
+LastDimensionL0GradientDenoisingImageFilter<TInputImage>::GenerateInputRequestedRegion()
 {
-  //Call the superclass' implementation of this method
+  // Call the superclass' implementation of this method
   Superclass::GenerateInputRequestedRegion();
 
   // Initialize the input requested region to the output requested region, then extend it along the last dimension
   typename TInputImage::RegionType inputRequested = this->GetOutput()->GetRequestedRegion();
-  inputRequested.SetSize(TInputImage::ImageDimension - 1, this->GetInput(0)->GetLargestPossibleRegion().GetSize(TInputImage::ImageDimension - 1));
-  inputRequested.SetIndex(TInputImage::ImageDimension - 1, this->GetInput(0)->GetLargestPossibleRegion().GetIndex(TInputImage::ImageDimension - 1));
+  inputRequested.SetSize(TInputImage::ImageDimension - 1,
+                         this->GetInput(0)->GetLargestPossibleRegion().GetSize(TInputImage::ImageDimension - 1));
+  inputRequested.SetIndex(TInputImage::ImageDimension - 1,
+                          this->GetInput(0)->GetLargestPossibleRegion().GetIndex(TInputImage::ImageDimension - 1));
 
-  //Get pointers to the input and ROI
-  typename TInputImage::Pointer  inputPtr  = const_cast<TInputImage *>(this->GetInput());
+  // Get pointers to the input and ROI
+  typename TInputImage::Pointer inputPtr = const_cast<TInputImage *>(this->GetInput());
   inputPtr->SetRequestedRegion(inputRequested);
 }
 
-template< class TInputImage >
+template <class TInputImage>
 void
-LastDimensionL0GradientDenoisingImageFilter< TInputImage >
-::OneDimensionMinimizeL0NormOfGradient(InputPixelType* input, unsigned int length, double lambda, unsigned int nbIters)
+LastDimensionL0GradientDenoisingImageFilter<TInputImage>::OneDimensionMinimizeL0NormOfGradient(InputPixelType * input,
+                                                                                               unsigned int     length,
+                                                                                               double           lambda,
+                                                                                               unsigned int     nbIters)
 {
   // Initialize
-  float beta = 0;
-  std::vector<unsigned int> firsts(length);
-  std::vector<float> weights(length);
+  float                       beta = 0;
+  std::vector<unsigned int>   firsts(length);
+  std::vector<float>          weights(length);
   std::vector<InputPixelType> values(length);
-  unsigned int nbGroups = length;
+  unsigned int                nbGroups = length;
 
   // Fill in the arrays
-  for (unsigned int i=0; i < length; i++)
-    {
+  for (unsigned int i = 0; i < length; i++)
+  {
     firsts[i] = i;
     weights[i] = 1.0;
     values[i] = input[i];
-    }
+  }
 
   // Main loop
-  for (unsigned int iter=0; iter<nbIters; iter++)
-    {
+  for (unsigned int iter = 0; iter < nbIters; iter++)
+  {
     // Set the threshold for the current iteration (beta increases over time towards lambda)
-    beta = (float) iter / (float) nbIters * lambda;
+    beta = (float)iter / (float)nbIters * lambda;
 
     // Run through all groups
-    unsigned int i=0;
+    unsigned int i = 0;
     while (i < nbGroups - 1)
-      {
+    {
       // Check the right neighbour of the current group
       unsigned int j = (i + 1) % nbGroups;
 
       // Decide whether or not to merge the current group with its right neighbour
-      if ( weights[i] * weights[j] * (values[i] - values[j]) * (values[i] - values[j]) <= beta * (weights[i] + weights[j]) )
-        {
+      if (weights[i] * weights[j] * (values[i] - values[j]) * (values[i] - values[j]) <=
+          beta * (weights[i] + weights[j]))
+      {
         // Perform the fusion
 
         // The merged group's value is the weighted mean between the values of both groups
-        values[i] = ( weights[i] * values[i] + weights[j] * values[j] ) / (weights[i] + weights[j]);
+        values[i] = (weights[i] * values[i] + weights[j] * values[j]) / (weights[i] + weights[j]);
 
         // The merged group's weight is the sum of the weights of both groups
         weights[i] = weights[i] + weights[j];
 
         // Remove j-th element by shifting everything after it
-        for (unsigned int k=j+1; k<length; k++)
-          {
-          firsts[k-1] = firsts[k];
-          values[k-1] = values[k];
-          weights[k-1] = weights[k];
-          }
-        firsts[length-1] = 0;
-        values[length-1] = 0;
-        weights[length-1] = 0;
+        for (unsigned int k = j + 1; k < length; k++)
+        {
+          firsts[k - 1] = firsts[k];
+          values[k - 1] = values[k];
+          weights[k - 1] = weights[k];
+        }
+        firsts[length - 1] = 0;
+        values[length - 1] = 0;
+        weights[length - 1] = 0;
 
         // Decrement the total number of groups
         nbGroups--;
-        }
+      }
 
       // Move to next group
       i++;
-      }
     }
+  }
 
   // Assemble the pieces to create the denoised output (overwriting the input)
-  for (unsigned int i=0; i<nbGroups; i++)
+  for (unsigned int i = 0; i < nbGroups; i++)
+  {
+    for (unsigned int j = firsts[i]; j < firsts[i] + weights[i]; j++)
     {
-    for (unsigned int j=firsts[i]; j< firsts[i] + weights[i]; j++)
-      {
-      input[ j % length ] = values[i];
-      }
+      input[j % length] = values[i];
     }
+  }
 }
 
-template< class TInputImage >
+template <class TInputImage>
 void
-LastDimensionL0GradientDenoisingImageFilter< TInputImage >
-::ThreadedGenerateData(const typename TInputImage::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId))
+LastDimensionL0GradientDenoisingImageFilter<TInputImage>::ThreadedGenerateData(
+  const typename TInputImage::RegionType & outputRegionForThread,
+  itk::ThreadIdType                        itkNotUsed(threadId))
 {
   // Walks the first frame of the outputRegionForThread
   // For each voxel, creates an input iterator that walks
@@ -164,50 +167,54 @@ LastDimensionL0GradientDenoisingImageFilter< TInputImage >
 
   // Create a single-voxel region traversing last dimension
   typename TInputImage::RegionType SingleVoxelRegion = outputRegionForThread;
-  for (unsigned int dim = 0; dim< TInputImage::ImageDimension - 1; dim++)
-    {
+  for (unsigned int dim = 0; dim < TInputImage::ImageDimension - 1; dim++)
+  {
     SingleVoxelRegion.SetSize(dim, 1);
     SingleVoxelRegion.SetIndex(dim, 0);
-    }
+  }
 
-  while(!FakeIterator.IsAtEnd())
-    {
+  while (!FakeIterator.IsAtEnd())
+  {
     // Configure the SingleVoxelRegion correctly to follow the FakeIterator
     // It is the only purpose of this FakeIterator
     SingleVoxelRegion.SetIndex(FakeIterator.GetIndex());
 
     // Walk the input along last dimension for this voxel, filling an array with the values read
     itk::ImageRegionConstIterator<TInputImage> inputIterator(this->GetInput(), SingleVoxelRegion);
-    InputPixelType* toBeRegularized = new InputPixelType[outputRegionForThread.GetSize(TInputImage::ImageDimension - 1)];
+    InputPixelType *                           toBeRegularized =
+      new InputPixelType[outputRegionForThread.GetSize(TInputImage::ImageDimension - 1)];
 
-    unsigned int i=0;
+    unsigned int i = 0;
     while (!inputIterator.IsAtEnd())
-      {
+    {
       toBeRegularized[i] = inputIterator.Get();
       i++;
       ++inputIterator;
-      }
+    }
 
     // Perform regularization (in place) on this array
-    OneDimensionMinimizeL0NormOfGradient(toBeRegularized, outputRegionForThread.GetSize(TInputImage::ImageDimension - 1), this->GetLambda(), this->GetNumberOfIterations());
+    OneDimensionMinimizeL0NormOfGradient(toBeRegularized,
+                                         outputRegionForThread.GetSize(TInputImage::ImageDimension - 1),
+                                         this->GetLambda(),
+                                         this->GetNumberOfIterations());
 
     // Walk the output along last dimension for this voxel,
     // replacing voxel with their regularized value
     itk::ImageRegionIterator<TInputImage> outputIterator(this->GetOutput(), SingleVoxelRegion);
-    i=0;
+    i = 0;
     while (!outputIterator.IsAtEnd())
-      {
+    {
       outputIterator.Set(toBeRegularized[i]);
       i++;
       ++outputIterator;
-      }
+    }
 
-    delete [] toBeRegularized;
+    delete[] toBeRegularized;
 
     ++FakeIterator;
-    }
+  }
 }
 
-} // end namespace itk
+} // namespace rtk
 
 #endif

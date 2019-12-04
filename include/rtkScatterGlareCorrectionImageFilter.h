@@ -38,18 +38,16 @@ namespace rtk
  * \ingroup RTK ImageToImageFilter
  */
 
-template<class TInputImage, class TOutputImage=TInputImage, class TFFTPrecision=double>
-class ITK_EXPORT ScatterGlareCorrectionImageFilter :
-    public rtk::FFTProjectionsConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
+template <class TInputImage, class TOutputImage = TInputImage, class TFFTPrecision = double>
+class ITK_EXPORT ScatterGlareCorrectionImageFilter
+  : public rtk::FFTProjectionsConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(ScatterGlareCorrectionImageFilter);
 
   /** Standard class type alias. */
   using Self = ScatterGlareCorrectionImageFilter;
-  using Superclass = rtk::FFTProjectionsConvolutionImageFilter< TInputImage,
-                                          TOutputImage,
-                                          TFFTPrecision>;
+  using Superclass = rtk::FFTProjectionsConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>;
   using Pointer = itk::SmartPointer<Self>;
   using ConstPointer = itk::SmartPointer<const Self>;
 
@@ -74,22 +72,24 @@ public:
   itkTypeMacro(ScatterGlareCorrectionImageFilter, FFTProjectionsConvolutionImageFilter);
 
   itkGetConstMacro(Coefficients, CoefficientVectorType);
-  virtual void SetCoefficients(const CoefficientVectorType coefficients)
-    {
+  virtual void
+  SetCoefficients(const CoefficientVectorType coefficients)
+  {
     if (this->m_Coefficients != coefficients)
-      {
+    {
       this->m_Coefficients = coefficients;
       this->Modified();
-      }
     }
+  }
 
 protected:
   ScatterGlareCorrectionImageFilter();
   ~ScatterGlareCorrectionImageFilter() override = default;
 
   /** Create the deconvolution kernel
-  */
-  void UpdateFFTProjectionsConvolutionKernel(const SizeType size) override;
+   */
+  void
+  UpdateFFTProjectionsConvolutionKernel(const SizeType size) override;
 
 private:
   CoefficientVectorType m_Coefficients;
@@ -99,7 +99,7 @@ private:
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkScatterGlareCorrectionImageFilter.hxx"
+#  include "rtkScatterGlareCorrectionImageFilter.hxx"
 #endif
 
 #endif

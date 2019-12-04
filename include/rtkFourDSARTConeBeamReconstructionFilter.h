@@ -59,7 +59,8 @@ namespace rtk
  * Output [shape=Mdiamond];
  *
  * node [shape=box];
- * FourDToProjectionStack [ label="rtk::FourDToProjectionStackImageFilter" URL="\ref rtk::FourDToProjectionStackImageFilter"];
+ * FourDToProjectionStack [ label="rtk::FourDToProjectionStackImageFilter"
+ *                          URL="\ref rtk::FourDToProjectionStackImageFilter"];
  * Extract [ label="itk::ExtractImageFilter" URL="\ref itk::ExtractImageFilter"];
  * MultiplyByZero [ label="itk::MultiplyImageFilter (by zero)" URL="\ref itk::MultiplyImageFilter"];
  * AfterExtract [label="", fixedsize="false", width=0, height=0, shape=none];
@@ -71,7 +72,8 @@ namespace rtk
  * ExtractConstantProjection [ label="itk::ExtractImageFilter" URL="\ref itk::ExtractImageFilter"];
  * RayBox [ label="rtk::RayBoxIntersectionImageFilter" URL="\ref rtk::RayBoxIntersectionImageFilter"];
  * ConstantVolume [ label="rtk::ConstantImageSource" URL="\ref rtk::ConstantImageSource"];
- * ProjectionStackToFourD [ label="rtk::ProjectionStackToFourDImageFilter" URL="\ref rtk::ProjectionStackToFourDImageFilter"];
+ * ProjectionStackToFourD [ label="rtk::ProjectionStackToFourDImageFilter"
+ *                          URL="\ref rtk::ProjectionStackToFourDImageFilter"];
  * Add [ label="itk::AddImageFilter (accumulates corrections)" URL="\ref itk::AddImageFilter"];
  * Add2 [ label="itk::AddImageFilter (adds correction to current 4D volume)" URL="\ref itk::AddImageFilter"];
  * OutofInput0 [label="", fixedsize="false", width=0, height=0, shape=none];
@@ -116,9 +118,9 @@ namespace rtk
  *
  * \ingroup RTK ReconstructionAlgorithm
  */
-template<class VolumeSeriesType, class ProjectionStackType>
-class ITK_EXPORT FourDSARTConeBeamReconstructionFilter :
-  public rtk::IterativeConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
+template <class VolumeSeriesType, class ProjectionStackType>
+class ITK_EXPORT FourDSARTConeBeamReconstructionFilter
+  : public rtk::IterativeConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(FourDSARTConeBeamReconstructionFilter);
@@ -138,16 +140,19 @@ public:
   using BackProjectionType = typename Superclass::BackProjectionType;
 
   /** Typedefs of each subfilter of this composite filter */
-  using ExtractFilterType = itk::ExtractImageFilter< ProjectionStackType, ProjectionStackType >;
-  using ForwardProjectionFilterType = rtk::ForwardProjectionImageFilter< ProjectionStackType, ProjectionStackType >;
-  using FourDToProjectionStackFilterType = rtk::FourDToProjectionStackImageFilter < ProjectionStackType, VolumeSeriesType >;
-  using SubtractFilterType = itk::SubtractImageFilter< ProjectionStackType, ProjectionStackType >;
-  using MultiplyFilterType = itk::MultiplyImageFilter< ProjectionStackType, ProjectionStackType, ProjectionStackType >;
-  using AddFilterType = itk::AddImageFilter< VolumeSeriesType, VolumeSeriesType >;
-  using BackProjectionFilterType = rtk::BackProjectionImageFilter< VolumeType, VolumeType >;
-  using ProjectionStackToFourDFilterType = rtk::ProjectionStackToFourDImageFilter < VolumeSeriesType, ProjectionStackType >;
+  using ExtractFilterType = itk::ExtractImageFilter<ProjectionStackType, ProjectionStackType>;
+  using ForwardProjectionFilterType = rtk::ForwardProjectionImageFilter<ProjectionStackType, ProjectionStackType>;
+  using FourDToProjectionStackFilterType =
+    rtk::FourDToProjectionStackImageFilter<ProjectionStackType, VolumeSeriesType>;
+  using SubtractFilterType = itk::SubtractImageFilter<ProjectionStackType, ProjectionStackType>;
+  using MultiplyFilterType = itk::MultiplyImageFilter<ProjectionStackType, ProjectionStackType, ProjectionStackType>;
+  using AddFilterType = itk::AddImageFilter<VolumeSeriesType, VolumeSeriesType>;
+  using BackProjectionFilterType = rtk::BackProjectionImageFilter<VolumeType, VolumeType>;
+  using ProjectionStackToFourDFilterType =
+    rtk::ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType>;
   using RayBoxIntersectionFilterType = rtk::RayBoxIntersectionImageFilter<ProjectionStackType, ProjectionStackType>;
-  using DivideFilterType = itk::DivideOrZeroOutImageFilter<ProjectionStackType, ProjectionStackType, ProjectionStackType>;
+  using DivideFilterType =
+    itk::DivideOrZeroOutImageFilter<ProjectionStackType, ProjectionStackType, ProjectionStackType>;
   using DisplacedDetectorFilterType = rtk::DisplacedDetectorImageFilter<ProjectionStackType>;
   using ConstantVolumeSeriesSourceType = rtk::ConstantImageSource<VolumeSeriesType>;
   using ConstantProjectionStackSourceType = rtk::ConstantImageSource<ProjectionStackType>;
@@ -160,12 +165,16 @@ public:
   itkTypeMacro(FourDSARTConeBeamReconstructionFilter, IterativeConeBeamReconstructionFilter);
 
   /** The 4D image to be updated.*/
-  void SetInputVolumeSeries(const VolumeSeriesType* VolumeSeries);
-  typename VolumeSeriesType::ConstPointer GetInputVolumeSeries();
+  void
+  SetInputVolumeSeries(const VolumeSeriesType * VolumeSeries);
+  typename VolumeSeriesType::ConstPointer
+  GetInputVolumeSeries();
 
   /** The stack of measured projections */
-  void SetInputProjectionStack(const ProjectionStackType* Projection);
-  typename ProjectionStackType::Pointer   GetInputProjectionStack();
+  void
+  SetInputProjectionStack(const ProjectionStackType * Projection);
+  typename ProjectionStackType::Pointer
+  GetInputProjectionStack();
 
   /** Get / Set the object pointer to projection geometry */
   itkGetModifiableObjectMacro(Geometry, ThreeDCircularProjectionGeometry);
@@ -188,64 +197,75 @@ public:
   itkSetMacro(EnforcePositivity, bool);
 
   /** Select the ForwardProjection filter */
-  void SetForwardProjectionFilter (ForwardProjectionType _arg) override;
+  void
+  SetForwardProjectionFilter(ForwardProjectionType _arg) override;
 
   /** Select the backprojection filter */
-  void SetBackProjectionFilter (BackProjectionType _arg) override;
+  void
+  SetBackProjectionFilter(BackProjectionType _arg) override;
 
   /** Pass the interpolation weights to subfilters */
-  void SetWeights(const itk::Array2D<float> _arg);
+  void
+  SetWeights(const itk::Array2D<float> _arg);
 
   /** Store the phase signal in a member variable */
-  virtual void SetSignal(const std::vector<double> signal);
+  virtual void
+  SetSignal(const std::vector<double> signal);
 
   /** Set / Get whether the displaced detector filter should be disabled */
-  itkSetMacro(DisableDisplacedDetectorFilter, bool)
-  itkGetMacro(DisableDisplacedDetectorFilter, bool)
+  itkSetMacro(DisableDisplacedDetectorFilter, bool);
+  itkGetMacro(DisableDisplacedDetectorFilter, bool);
 
 protected:
   FourDSARTConeBeamReconstructionFilter();
   ~FourDSARTConeBeamReconstructionFilter() override = default;
 
-  void GenerateInputRequestedRegion() override;
+  void
+  GenerateInputRequestedRegion() override;
 
-  void GenerateOutputInformation() override;
+  void
+  GenerateOutputInformation() override;
 
-  void GenerateData() override;
+  void
+  GenerateData() override;
 
   /** The two inputs should not be in the same space so there is nothing
    * to verify. */
-#if ITK_VERSION_MAJOR<5
-  void VerifyInputInformation() override {}
+#if ITK_VERSION_MAJOR < 5
+  void
+  VerifyInputInformation() override
+  {}
 #else
-  void VerifyInputInformation() const override {}
+  void
+  VerifyInputInformation() const override
+  {}
 #endif
 
   /** Pointers to each subfilter of this composite filter */
-  typename ExtractFilterType::Pointer                     m_ExtractFilter;
-  typename ExtractFilterType::Pointer                     m_ExtractFilterRayBox;
-  typename MultiplyFilterType::Pointer                    m_ZeroMultiplyFilter;
-  typename ForwardProjectionFilterType::Pointer           m_ForwardProjectionFilter;
-  typename FourDToProjectionStackFilterType::Pointer      m_FourDToProjectionStackFilter;
-  typename SubtractFilterType::Pointer                    m_SubtractFilter;
-  typename AddFilterType::Pointer                         m_AddFilter;
-  typename AddFilterType::Pointer                         m_AddFilter2;
-  typename MultiplyFilterType::Pointer                    m_MultiplyFilter;
-  typename BackProjectionFilterType::Pointer              m_BackProjectionFilter;
-  typename ProjectionStackToFourDFilterType::Pointer      m_ProjectionStackToFourDFilter;
-  typename RayBoxIntersectionFilterType::Pointer          m_RayBoxFilter;
-  typename DivideFilterType::Pointer                      m_DivideFilter;
-  typename DisplacedDetectorFilterType::Pointer           m_DisplacedDetectorFilter;
-  typename ConstantProjectionStackSourceType::Pointer     m_ConstantProjectionStackSource;
-  typename ConstantVolumeSeriesSourceType::Pointer        m_ConstantVolumeSeriesSource;
-  typename ThresholdFilterType::Pointer                   m_ThresholdFilter;
+  typename ExtractFilterType::Pointer                 m_ExtractFilter;
+  typename ExtractFilterType::Pointer                 m_ExtractFilterRayBox;
+  typename MultiplyFilterType::Pointer                m_ZeroMultiplyFilter;
+  typename ForwardProjectionFilterType::Pointer       m_ForwardProjectionFilter;
+  typename FourDToProjectionStackFilterType::Pointer  m_FourDToProjectionStackFilter;
+  typename SubtractFilterType::Pointer                m_SubtractFilter;
+  typename AddFilterType::Pointer                     m_AddFilter;
+  typename AddFilterType::Pointer                     m_AddFilter2;
+  typename MultiplyFilterType::Pointer                m_MultiplyFilter;
+  typename BackProjectionFilterType::Pointer          m_BackProjectionFilter;
+  typename ProjectionStackToFourDFilterType::Pointer  m_ProjectionStackToFourDFilter;
+  typename RayBoxIntersectionFilterType::Pointer      m_RayBoxFilter;
+  typename DivideFilterType::Pointer                  m_DivideFilter;
+  typename DisplacedDetectorFilterType::Pointer       m_DisplacedDetectorFilter;
+  typename ConstantProjectionStackSourceType::Pointer m_ConstantProjectionStackSource;
+  typename ConstantVolumeSeriesSourceType::Pointer    m_ConstantVolumeSeriesSource;
+  typename ThresholdFilterType::Pointer               m_ThresholdFilter;
 
   /** Miscellaneous member variables */
-  std::vector< unsigned int >                    m_ProjectionsOrder;
-  bool                                           m_ProjectionsOrderInitialized;
-  bool                                           m_EnforcePositivity;
-  std::vector<double>                            m_Signal;
-  bool                                           m_DisableDisplacedDetectorFilter;
+  std::vector<unsigned int> m_ProjectionsOrder;
+  bool                      m_ProjectionsOrderInitialized;
+  bool                      m_EnforcePositivity;
+  std::vector<double>       m_Signal;
+  bool                      m_DisableDisplacedDetectorFilter;
 
 private:
   /** Number of projections processed before the volume is updated (1 for SART,
@@ -266,7 +286,7 @@ private:
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkFourDSARTConeBeamReconstructionFilter.hxx"
+#  include "rtkFourDSARTConeBeamReconstructionFilter.hxx"
 #endif
 
 #endif

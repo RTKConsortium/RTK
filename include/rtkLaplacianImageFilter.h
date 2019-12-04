@@ -37,48 +37,49 @@ namespace rtk
  * \ingroup RTK IntensityImageFilters
  */
 
-template< typename OutputImageType, typename GradientImageType>
-class LaplacianImageFilter : public itk::ImageToImageFilter< OutputImageType, OutputImageType>
+template <typename OutputImageType, typename GradientImageType>
+class LaplacianImageFilter : public itk::ImageToImageFilter<OutputImageType, OutputImageType>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(LaplacianImageFilter);
 
   /** Standard class type alias. */
   using Self = LaplacianImageFilter;
-  using Superclass = itk::ImageToImageFilter< OutputImageType, OutputImageType>;
-  using Pointer = itk::SmartPointer< Self >;
+  using Superclass = itk::ImageToImageFilter<OutputImageType, OutputImageType>;
+  using Pointer = itk::SmartPointer<Self>;
   using OutputImagePointer = typename OutputImageType::Pointer;
   using GradientFilterType = rtk::ForwardDifferenceGradientImageFilter<OutputImageType,
-                                                    typename OutputImageType::ValueType,
-                                                    typename OutputImageType::ValueType,
-                                                    GradientImageType>;
+                                                                       typename OutputImageType::ValueType,
+                                                                       typename OutputImageType::ValueType,
+                                                                       GradientImageType>;
   using DivergenceFilterType = rtk::BackwardDifferenceDivergenceImageFilter<GradientImageType, OutputImageType>;
 
   /** Method for creation through the object factory. */
-  itkNewMacro(Self)
+  itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(LaplacianImageFilter, itk::ImageToImageFilter)
+  itkTypeMacro(LaplacianImageFilter, itk::ImageToImageFilter);
 
 protected:
   LaplacianImageFilter();
   ~LaplacianImageFilter() override = default;
 
   /** Does the real work. */
-  void GenerateData() override;
+  void
+  GenerateData() override;
 
   /** Handle regions */
-  void GenerateOutputInformation() override;
+  void
+  GenerateOutputInformation() override;
 
-  typename GradientFilterType::Pointer    m_Gradient;
-  typename DivergenceFilterType::Pointer  m_Divergence;
-
+  typename GradientFilterType::Pointer   m_Gradient;
+  typename DivergenceFilterType::Pointer m_Divergence;
 };
-} //namespace RTK
+} // namespace rtk
 
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkLaplacianImageFilter.hxx"
+#  include "rtkLaplacianImageFilter.hxx"
 #endif
 
 #endif

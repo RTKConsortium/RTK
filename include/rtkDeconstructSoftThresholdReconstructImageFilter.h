@@ -19,16 +19,17 @@
 #ifndef rtkDeconstructSoftThresholdReconstructImageFilter_h
 #define rtkDeconstructSoftThresholdReconstructImageFilter_h
 
-//ITK includes
+// ITK includes
 #include "itkMacro.h"
 #include "itkProgressReporter.h"
 
-//rtk includes
+// rtk includes
 #include "rtkDeconstructImageFilter.h"
 #include "rtkReconstructImageFilter.h"
 #include "rtkSoftThresholdImageFilter.h"
 
-namespace rtk {
+namespace rtk
+{
 
 /**
  * \class DeconstructSoftThresholdReconstructImageFilter
@@ -43,81 +44,85 @@ namespace rtk {
  * \ingroup RTK
  */
 template <class TImage>
-class DeconstructSoftThresholdReconstructImageFilter
-    : public itk::ImageToImageFilter<TImage,TImage>
+class DeconstructSoftThresholdReconstructImageFilter : public itk::ImageToImageFilter<TImage, TImage>
 {
 public:
-    ITK_DISALLOW_COPY_AND_ASSIGN(DeconstructSoftThresholdReconstructImageFilter);
+  ITK_DISALLOW_COPY_AND_ASSIGN(DeconstructSoftThresholdReconstructImageFilter);
 
-    /** Standard class type alias. */
-    using Self = DeconstructSoftThresholdReconstructImageFilter;
-    using Superclass = itk::ImageToImageFilter<TImage,TImage>;
-    using Pointer = itk::SmartPointer<Self>;
-    using ConstPointer = itk::SmartPointer<const Self>;
+  /** Standard class type alias. */
+  using Self = DeconstructSoftThresholdReconstructImageFilter;
+  using Superclass = itk::ImageToImageFilter<TImage, TImage>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
-    /** Method for creation through the object factory. */
-    itkNewMacro(Self)
+  /** Method for creation through the object factory. */
+  itkNewMacro(Self);
 
-    /** Run-time type information (and related methods). */
-    itkTypeMacro(DeconstructSoftThresholdReconstructImageFilter, ImageToImageFilter)
+  /** Run-time type information (and related methods). */
+  itkTypeMacro(DeconstructSoftThresholdReconstructImageFilter, ImageToImageFilter);
 
-    /** ImageDimension enumeration. */
-    static constexpr unsigned int ImageDimension = TImage::ImageDimension;
+  /** ImageDimension enumeration. */
+  static constexpr unsigned int ImageDimension = TImage::ImageDimension;
 
-    /** Inherit types from Superclass. */
-    using InputImageType = typename Superclass::InputImageType;
-    using OutputImageType = typename Superclass::OutputImageType;
-    using InputImagePointer = typename Superclass::InputImagePointer;
-    using OutputImagePointer = typename Superclass::OutputImagePointer;
-    using InputImageConstPointer = typename Superclass::InputImageConstPointer;
-    using PixelType = typename TImage::PixelType;
-    using InternalPixelType = typename TImage::InternalPixelType;
+  /** Inherit types from Superclass. */
+  using InputImageType = typename Superclass::InputImageType;
+  using OutputImageType = typename Superclass::OutputImageType;
+  using InputImagePointer = typename Superclass::InputImagePointer;
+  using OutputImagePointer = typename Superclass::OutputImagePointer;
+  using InputImageConstPointer = typename Superclass::InputImageConstPointer;
+  using PixelType = typename TImage::PixelType;
+  using InternalPixelType = typename TImage::InternalPixelType;
 
-    /** Define the types of subfilters */
-    using DeconstructFilterType = rtk::DeconstructImageFilter<InputImageType>;
-    using ReconstructFilterType = rtk::ReconstructImageFilter<InputImageType>;
-    using SoftThresholdFilterType = rtk::SoftThresholdImageFilter<InputImageType, InputImageType>;
+  /** Define the types of subfilters */
+  using DeconstructFilterType = rtk::DeconstructImageFilter<InputImageType>;
+  using ReconstructFilterType = rtk::ReconstructImageFilter<InputImageType>;
+  using SoftThresholdFilterType = rtk::SoftThresholdImageFilter<InputImageType, InputImageType>;
 
-    /** Set the number of levels of the deconstruction and reconstruction */
-    void SetNumberOfLevels(unsigned int levels);
+  /** Set the number of levels of the deconstruction and reconstruction */
+  void
+  SetNumberOfLevels(unsigned int levels);
 
-    /** Sets the order of the Daubechies wavelet used to deconstruct/reconstruct the image pyramid */
-    itkGetMacro(Order, unsigned int)
-    itkSetMacro(Order, unsigned int)
+  /** Sets the order of the Daubechies wavelet used to deconstruct/reconstruct the image pyramid */
+  itkGetMacro(Order, unsigned int);
+  itkSetMacro(Order, unsigned int);
 
-    /** Sets the threshold used in soft thresholding */
-    itkGetMacro(Threshold, float)
-    itkSetMacro(Threshold, float)
+  /** Sets the threshold used in soft thresholding */
+  itkGetMacro(Threshold, float);
+  itkSetMacro(Threshold, float);
 
 protected:
-    DeconstructSoftThresholdReconstructImageFilter();
-    ~DeconstructSoftThresholdReconstructImageFilter() override = default;
-    void PrintSelf(std::ostream&os, itk::Indent indent) const override;
+  DeconstructSoftThresholdReconstructImageFilter();
+  ~DeconstructSoftThresholdReconstructImageFilter() override = default;
+  void
+  PrintSelf(std::ostream & os, itk::Indent indent) const override;
 
-    /** Generate the output data. */
-    void GenerateData() override;
+  /** Generate the output data. */
+  void
+  GenerateData() override;
 
-    /** Compute the information on output's size and index */
-    void GenerateOutputInformation() override;
+  /** Compute the information on output's size and index */
+  void
+  GenerateOutputInformation() override;
 
-    void GenerateInputRequestedRegion() override;
+  void
+  GenerateInputRequestedRegion() override;
 
 private:
-    unsigned int    m_Order;
-    float           m_Threshold;
-    bool            m_PipelineConstructed;
+  unsigned int m_Order;
+  float        m_Threshold;
+  bool         m_PipelineConstructed;
 
-    typename DeconstructFilterType::Pointer                 m_DeconstructionFilter;
-    typename ReconstructFilterType::Pointer                 m_ReconstructionFilter;
-    std::vector<typename SoftThresholdFilterType::Pointer>  m_SoftTresholdFilters; //Holds an array of soft threshold filters
-
+  typename DeconstructFilterType::Pointer m_DeconstructionFilter;
+  typename ReconstructFilterType::Pointer m_ReconstructionFilter;
+  std::vector<typename SoftThresholdFilterType::Pointer>
+    m_SoftTresholdFilters; // Holds an array of soft threshold filters
 };
 
-}// namespace rtk
+} // namespace rtk
 
-//Include CXX
+// Include CXX
 #ifndef rtk_MANUAL_INSTANTIATION
-#include "rtkDeconstructSoftThresholdReconstructImageFilter.hxx"
+#  include "rtkDeconstructSoftThresholdReconstructImageFilter.hxx"
 #endif
 
 #endif

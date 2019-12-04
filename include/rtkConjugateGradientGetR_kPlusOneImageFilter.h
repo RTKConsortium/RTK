@@ -33,54 +33,61 @@ namespace rtk
  *
  * \ingroup RTK
  */
-template< typename TInputImage>
-class ConjugateGradientGetR_kPlusOneImageFilter : public itk::ImageToImageFilter< TInputImage, TInputImage>
+template <typename TInputImage>
+class ConjugateGradientGetR_kPlusOneImageFilter : public itk::ImageToImageFilter<TInputImage, TInputImage>
 {
 public:
-    ITK_DISALLOW_COPY_AND_ASSIGN(ConjugateGradientGetR_kPlusOneImageFilter);
+  ITK_DISALLOW_COPY_AND_ASSIGN(ConjugateGradientGetR_kPlusOneImageFilter);
 
-    /** Standard class type alias. */
-    using Self = ConjugateGradientGetR_kPlusOneImageFilter;
-    using Superclass = itk::ImageToImageFilter< TInputImage, TInputImage>;
-    using Pointer = itk::SmartPointer< Self >;
-    using OutputImageRegionType = typename TInputImage::RegionType;
+  /** Standard class type alias. */
+  using Self = ConjugateGradientGetR_kPlusOneImageFilter;
+  using Superclass = itk::ImageToImageFilter<TInputImage, TInputImage>;
+  using Pointer = itk::SmartPointer<Self>;
+  using OutputImageRegionType = typename TInputImage::RegionType;
 
-    /** Method for creation through the object factory. */
-    itkNewMacro(Self)
+  /** Method for creation through the object factory. */
+  itkNewMacro(Self);
 
-    /** Run-time type information (and related methods). */
-    itkTypeMacro(ConjugateGradientGetR_kPlusOneImageFilter, itk::ImageToImageFilter)
+  /** Run-time type information (and related methods). */
+  itkTypeMacro(ConjugateGradientGetR_kPlusOneImageFilter, itk::ImageToImageFilter);
 
-    /** Functions to set the inputs */
-    void SetRk(const TInputImage* Rk);
-    void SetPk(const TInputImage* Pk);
-    void SetAPk(const TInputImage* APk);
+  /** Functions to set the inputs */
+  void
+  SetRk(const TInputImage * Rk);
+  void
+  SetPk(const TInputImage * Pk);
+  void
+  SetAPk(const TInputImage * APk);
 
-    itkGetMacro(Alphak, double)
-    itkGetMacro(SquaredNormR_k, double)
-    itkGetMacro(SquaredNormR_kPlusOne, double)
+  itkGetMacro(Alphak, double);
+  itkGetMacro(SquaredNormR_k, double);
+  itkGetMacro(SquaredNormR_kPlusOne, double);
 
 protected:
-    ConjugateGradientGetR_kPlusOneImageFilter();
-    ~ConjugateGradientGetR_kPlusOneImageFilter() override = default;
+  ConjugateGradientGetR_kPlusOneImageFilter();
+  ~ConjugateGradientGetR_kPlusOneImageFilter() override = default;
 
-    typename TInputImage::Pointer GetRk();
-    typename TInputImage::Pointer GetPk();
-    typename TInputImage::Pointer GetAPk();
+  typename TInputImage::Pointer
+  GetRk();
+  typename TInputImage::Pointer
+  GetPk();
+  typename TInputImage::Pointer
+  GetAPk();
 
-    void GenerateData() override;
+  void
+  GenerateData() override;
 
 private:
-    double m_Alphak{0.};
-    double m_SquaredNormR_k{0.};
-    double m_SquaredNormR_kPlusOne{0.};
+  double m_Alphak{ 0. };
+  double m_SquaredNormR_k{ 0. };
+  double m_SquaredNormR_kPlusOne{ 0. };
 };
 
-} //namespace RTK
+} // namespace rtk
 
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkConjugateGradientGetR_kPlusOneImageFilter.hxx"
+#  include "rtkConjugateGradientGetR_kPlusOneImageFilter.hxx"
 #endif
 
 #endif

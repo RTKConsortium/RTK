@@ -27,7 +27,8 @@ namespace rtk
 {
 
 /** \class SeparableQuadraticSurrogateRegularizationImageFilter
- * \brief For one-step inversion of spectral CT data by the method Mechlem2017, computes regularization term's first and second derivatives
+ * \brief For one-step inversion of spectral CT data by the method Mechlem2017, computes regularization term's first and
+ * second derivatives
  *
  * In SQS-based methods (Long2014, Weidinger2016, Mechlem2017), the regularization term is typically
  * the sum of the "absolute values" of the differences between each pixel and its neighbours. Instead of
@@ -39,7 +40,7 @@ namespace rtk
  * \ingroup RTK IntensityImageFilters
  */
 
-template<typename TImage>
+template <typename TImage>
 class SeparableQuadraticSurrogateRegularizationImageFilter : public itk::ImageToImageFilter<TImage, TImage>
 {
 public:
@@ -47,55 +48,62 @@ public:
 
   /** Standard class type alias. */
   using Self = SeparableQuadraticSurrogateRegularizationImageFilter;
-  using Superclass = itk::ImageToImageFilter< TImage, TImage>;
-  using Pointer = itk::SmartPointer< Self >;
+  using Superclass = itk::ImageToImageFilter<TImage, TImage>;
+  using Pointer = itk::SmartPointer<Self>;
 
   /** Method for creation through the object factory. */
-  itkNewMacro(Self)
+  itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(SeparableQuadraticSurrogateRegularizationImageFilter, itk::ImageToImageFilter)
+  itkTypeMacro(SeparableQuadraticSurrogateRegularizationImageFilter, itk::ImageToImageFilter);
 
   /** Set/Get for the radius */
-  itkSetMacro(Radius, typename TImage::RegionType::SizeType)
-  itkGetMacro(Radius, typename TImage::RegionType::SizeType)
+  itkSetMacro(Radius, typename TImage::RegionType::SizeType);
+  itkGetMacro(Radius, typename TImage::RegionType::SizeType);
 
   /** Set/Get for the regularization weights */
-  itkSetMacro(RegularizationWeights, typename TImage::PixelType)
-  itkGetMacro(RegularizationWeights, typename TImage::PixelType)
+  itkSetMacro(RegularizationWeights, typename TImage::PixelType);
+  itkGetMacro(RegularizationWeights, typename TImage::PixelType);
 
 protected:
   SeparableQuadraticSurrogateRegularizationImageFilter();
   ~SeparableQuadraticSurrogateRegularizationImageFilter() override = default;
 
   /** Creates the Outputs */
-  itk::ProcessObject::DataObjectPointer MakeOutput(itk::ProcessObject::DataObjectPointerArraySizeType idx) override;
-  itk::ProcessObject::DataObjectPointer MakeOutput(const itk::ProcessObject::DataObjectIdentifierType &) override;
+  itk::ProcessObject::DataObjectPointer
+  MakeOutput(itk::ProcessObject::DataObjectPointerArraySizeType idx) override;
+  itk::ProcessObject::DataObjectPointer
+  MakeOutput(const itk::ProcessObject::DataObjectIdentifierType &) override;
 
   /** Does the real work. */
-#if ITK_VERSION_MAJOR<5
-  void ThreadedGenerateData(const typename TImage::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) override;
+#if ITK_VERSION_MAJOR < 5
+  void
+  ThreadedGenerateData(const typename TImage::RegionType & outputRegionForThread,
+                       itk::ThreadIdType                   itkNotUsed(threadId)) override;
 #else
-  void DynamicThreadedGenerateData(const typename TImage::RegionType& outputRegionForThread) override;
+  void
+  DynamicThreadedGenerateData(const typename TImage::RegionType & outputRegionForThread) override;
 #endif
-  void GenerateInputRequestedRegion() override;
+  void
+  GenerateInputRequestedRegion() override;
 
   /** Derivatives of the absolute value approximation */
-  typename TImage::PixelType GreenPriorFirstDerivative(typename TImage::PixelType pix);
-  typename TImage::PixelType GreenPriorSecondDerivative(typename TImage::PixelType pix);
+  typename TImage::PixelType
+  GreenPriorFirstDerivative(typename TImage::PixelType pix);
+  typename TImage::PixelType
+  GreenPriorSecondDerivative(typename TImage::PixelType pix);
 
   /** Member variables */
-  typename TImage::RegionType::SizeType                             m_Radius;
-  typename itk::PixelTraits<typename TImage::PixelType>::ValueType  m_c1;
-  typename itk::PixelTraits<typename TImage::PixelType>::ValueType  m_c2;
-  typename TImage::PixelType                                        m_RegularizationWeights;
-
+  typename TImage::RegionType::SizeType                            m_Radius;
+  typename itk::PixelTraits<typename TImage::PixelType>::ValueType m_c1;
+  typename itk::PixelTraits<typename TImage::PixelType>::ValueType m_c2;
+  typename TImage::PixelType                                       m_RegularizationWeights;
 };
-} //namespace RTK
+} // namespace rtk
 
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkSeparableQuadraticSurrogateRegularizationImageFilter.hxx"
+#  include "rtkSeparableQuadraticSurrogateRegularizationImageFilter.hxx"
 #endif
 
 #endif

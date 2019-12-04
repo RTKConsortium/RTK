@@ -20,15 +20,15 @@
 #define rtkCudaIterativeFDKConeBeamReconstructionFilter_h
 
 #include "rtkConfiguration.h"
-//Conditional definition of the class to pass ITKHeaderTest
+// Conditional definition of the class to pass ITKHeaderTest
 #ifdef RTK_USE_CUDA
 
-#include "rtkIterativeFDKConeBeamReconstructionFilter.h"
-#include "rtkCudaFDKConeBeamReconstructionFilter.h"
-#include "rtkCudaDisplacedDetectorImageFilter.h"
-#include "rtkCudaParkerShortScanImageFilter.h"
-#include "rtkCudaConstantVolumeSource.h"
-#include "RTKExport.h"
+#  include "rtkIterativeFDKConeBeamReconstructionFilter.h"
+#  include "rtkCudaFDKConeBeamReconstructionFilter.h"
+#  include "rtkCudaDisplacedDetectorImageFilter.h"
+#  include "rtkCudaParkerShortScanImageFilter.h"
+#  include "rtkCudaConstantVolumeSource.h"
+#  include "RTKExport.h"
 
 namespace rtk
 {
@@ -48,16 +48,19 @@ namespace rtk
  *
  * \ingroup RTK ReconstructionAlgorithm CudaImageToImageFilter
  */
-class RTK_EXPORT CudaIterativeFDKConeBeamReconstructionFilter :
-  public itk::CudaImageToImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>,
-  IterativeFDKConeBeamReconstructionFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>, float > >
+class RTK_EXPORT CudaIterativeFDKConeBeamReconstructionFilter
+  : public itk::CudaImageToImageFilter<
+      itk::CudaImage<float, 3>,
+      itk::CudaImage<float, 3>,
+      IterativeFDKConeBeamReconstructionFilter<itk::CudaImage<float, 3>, itk::CudaImage<float, 3>, float>>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(CudaIterativeFDKConeBeamReconstructionFilter);
 
   /** Standard class type alias. */
   using Self = CudaIterativeFDKConeBeamReconstructionFilter;
-  using Superclass = IterativeFDKConeBeamReconstructionFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>, float >;
+  using Superclass =
+    IterativeFDKConeBeamReconstructionFilter<itk::CudaImage<float, 3>, itk::CudaImage<float, 3>, float>;
   using Pointer = itk::SmartPointer<Self>;
   using ConstPointer = itk::SmartPointer<const Self>;
 
@@ -75,14 +78,15 @@ public:
 
 protected:
   CudaIterativeFDKConeBeamReconstructionFilter();
-  ~CudaIterativeFDKConeBeamReconstructionFilter(){}
+  ~CudaIterativeFDKConeBeamReconstructionFilter() {}
 
-  virtual void GPUGenerateData();
+  virtual void
+  GPUGenerateData();
 
 }; // end of class
 
 } // end namespace rtk
 
-#endif //end conditional definition of the class
+#endif // end conditional definition of the class
 
 #endif

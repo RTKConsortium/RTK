@@ -20,11 +20,11 @@
 #define rtkCudaFFTRampImageFilter_h
 
 #include "rtkConfiguration.h"
-//Conditional definition of the class to pass ITKHeaderTest
+// Conditional definition of the class to pass ITKHeaderTest
 #ifdef RTK_USE_CUDA
 
-#include "rtkCudaFFTProjectionsConvolutionImageFilter.h"
-#include "rtkFFTRampImageFilter.h"
+#  include "rtkCudaFFTProjectionsConvolutionImageFilter.h"
+#  include "rtkFFTRampImageFilter.h"
 
 namespace rtk
 {
@@ -38,15 +38,16 @@ namespace rtk
  *
  * \ingroup RTK CudaImageToImageFilter
  */
-class CudaFFTRampImageFilter :
-  public CudaFFTProjectionsConvolutionImageFilter< FFTRampImageFilter< itk::CudaImage<float,3>, itk::CudaImage<float,3>, float > >
+class CudaFFTRampImageFilter
+  : public CudaFFTProjectionsConvolutionImageFilter<
+      FFTRampImageFilter<itk::CudaImage<float, 3>, itk::CudaImage<float, 3>, float>>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(CudaFFTRampImageFilter);
 
   /** Standard class type alias. */
   using Self = CudaFFTRampImageFilter;
-  using Superclass = FFTRampImageFilter< CudaImageType, CudaImageType, float >;
+  using Superclass = FFTRampImageFilter<CudaImageType, CudaImageType, float>;
   using Pointer = itk::SmartPointer<Self>;
   using ConstPointer = itk::SmartPointer<const Self>;
 
@@ -57,13 +58,13 @@ public:
   itkTypeMacro(CudaFFTRampImageFilter, FFTRampImageFilter);
 
 protected:
-  CudaFFTRampImageFilter(){}
-  ~CudaFFTRampImageFilter(){}
+  CudaFFTRampImageFilter() {}
+  ~CudaFFTRampImageFilter() {}
 
 }; // end of class
 
 } // end namespace rtk
 
-#endif //end conditional definition of the class
+#endif // end conditional definition of the class
 
 #endif

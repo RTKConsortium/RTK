@@ -27,53 +27,51 @@ namespace rtk
 //
 // Constructor
 //
-template< class TInputImage >
-MultiplyByVectorImageFilter< TInputImage >
-::MultiplyByVectorImageFilter()
-{
-}
+template <class TInputImage>
+MultiplyByVectorImageFilter<TInputImage>::MultiplyByVectorImageFilter()
+{}
 
-template< class TInputImage >
+template <class TInputImage>
 void
-MultiplyByVectorImageFilter< TInputImage >
-::SetVector(std::vector<float> vect)
+MultiplyByVectorImageFilter<TInputImage>::SetVector(std::vector<float> vect)
 {
   m_Vector = vect;
   this->Modified();
 }
 
-template< class TInputImage >
+template <class TInputImage>
 void
-MultiplyByVectorImageFilter< TInputImage >
-#if ITK_VERSION_MAJOR<5
-::ThreadedGenerateData(const typename TInputImage::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId))
+MultiplyByVectorImageFilter<TInputImage>
+#if ITK_VERSION_MAJOR < 5
+  ::ThreadedGenerateData(const typename TInputImage::RegionType & outputRegionForThread,
+                         itk::ThreadIdType                        itkNotUsed(threadId))
 #else
-::DynamicThreadedGenerateData(const typename TInputImage::RegionType& outputRegionForThread)
+  ::DynamicThreadedGenerateData(const typename TInputImage::RegionType & outputRegionForThread)
 #endif
 {
   int Dimension = this->GetInput()->GetImageDimension();
 
-  for (unsigned int i=outputRegionForThread.GetIndex()[Dimension-1];
-       i<outputRegionForThread.GetSize()[Dimension-1]
-          + outputRegionForThread.GetIndex()[Dimension-1]; i++)
-    {
+  for (unsigned int i = outputRegionForThread.GetIndex()[Dimension - 1];
+       i < outputRegionForThread.GetSize()[Dimension - 1] + outputRegionForThread.GetIndex()[Dimension - 1];
+       i++)
+  {
     typename TInputImage::RegionType SubRegion;
-    SubRegion=outputRegionForThread;
-    SubRegion.SetSize(Dimension-1, 1);
-    SubRegion.SetIndex(Dimension-1, i);
+    SubRegion = outputRegionForThread;
+    SubRegion.SetSize(Dimension - 1, 1);
+    SubRegion.SetIndex(Dimension - 1, i);
 
-    itk::ImageRegionIterator<TInputImage> outputIterator(this->GetOutput(), SubRegion);
+    itk::ImageRegionIterator<TInputImage>      outputIterator(this->GetOutput(), SubRegion);
     itk::ImageRegionConstIterator<TInputImage> inputIterator(this->GetInput(), SubRegion);
 
-    while(!inputIterator.IsAtEnd())
-      {
+    while (!inputIterator.IsAtEnd())
+    {
       outputIterator.Set(inputIterator.Get() * m_Vector[i]);
       ++outputIterator;
       ++inputIterator;
-      }
     }
+  }
 }
 
-} // end namespace itk
+} // namespace rtk
 
 #endif

@@ -31,14 +31,13 @@ namespace rtk
  *
  * \ingroup RTK
  */
-template< typename TImage >
-class ProjectionsRegionConstIteratorRayBasedWithCylindricalPanel:
-    public ProjectionsRegionConstIteratorRayBased< TImage >
+template <typename TImage>
+class ProjectionsRegionConstIteratorRayBasedWithCylindricalPanel : public ProjectionsRegionConstIteratorRayBased<TImage>
 {
 public:
   /** Standard class type alias. */
   using Self = ProjectionsRegionConstIteratorRayBasedWithCylindricalPanel;
-  using Superclass = ProjectionsRegionConstIteratorRayBased< TImage >;
+  using Superclass = ProjectionsRegionConstIteratorRayBased<TImage>;
 
   /**
    * Index type alias support While these were already typdef'ed in the superclass
@@ -51,25 +50,27 @@ public:
   using IndexValueType = typename Superclass::IndexValueType;
 
   using PointType = typename itk::Vector<double, 3>;
-  using HomogeneousMatrixType = itk::Matrix< double, 4, 4 >;
+  using HomogeneousMatrixType = itk::Matrix<double, 4, 4>;
 
   /** Constructor establishes an iterator to walk a particular image and a
    * particular region of that image.
    * Set the matrix by which the 3D coordinates of the projection can be
    * multiplied. A typical example is the conversion from 3D physical
    * coordinates to voxel indices in an itk Image. */
-  ProjectionsRegionConstIteratorRayBasedWithCylindricalPanel(const TImage *ptr,
-                                                             const RegionType & region,
-                                                             const ThreeDCircularProjectionGeometry *geometry,
-                                                             const MatrixType &postMat);
+  ProjectionsRegionConstIteratorRayBasedWithCylindricalPanel(const TImage *                           ptr,
+                                                             const RegionType &                       region,
+                                                             const ThreeDCircularProjectionGeometry * geometry,
+                                                             const MatrixType &                       postMat);
 
 protected:
   /** Init the parameters common to a new 2D projection in the 3D stack. */
-  inline void NewProjection() override;
+  inline void
+  NewProjection() override;
 
   /** Init a new pixel position in a 2D projection, assuming that the
    * NewProjection method has already been called. */
-  inline void NewPixel() override;
+  inline void
+  NewPixel() override;
 
   HomogeneousMatrixType m_ProjectionIndexTransformMatrix;
   MatrixType            m_VolumeTransformMatrix;
@@ -77,10 +78,10 @@ protected:
   double                m_InverseRadius;
   double                m_SourceToIsocenterDistance;
 };
-} // end namespace itk
+} // namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkProjectionsRegionConstIteratorRayBasedWithCylindricalPanel.hxx"
+#  include "rtkProjectionsRegionConstIteratorRayBasedWithCylindricalPanel.hxx"
 #endif
 
 #endif

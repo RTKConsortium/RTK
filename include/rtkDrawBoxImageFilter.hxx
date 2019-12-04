@@ -29,38 +29,35 @@ namespace rtk
 {
 
 template <class TInputImage, class TOutputImage>
-DrawBoxImageFilter<TInputImage, TOutputImage>
-::DrawBoxImageFilter()
+DrawBoxImageFilter<TInputImage, TOutputImage>::DrawBoxImageFilter()
 {
   m_Direction.SetIdentity();
 }
 
 template <class TInputImage, class TOutputImage>
 void
-DrawBoxImageFilter<TInputImage, TOutputImage>
-::BeforeThreadedGenerateData()
+DrawBoxImageFilter<TInputImage, TOutputImage>::BeforeThreadedGenerateData()
 {
-  if( this->GetConvexObject() == nullptr )
-    this->SetConvexObject( BoxShape::New().GetPointer() );
+  if (this->GetConvexObject() == nullptr)
+    this->SetConvexObject(BoxShape::New().GetPointer());
 
   Superclass::BeforeThreadedGenerateData();
 
-  BoxShape * qo = dynamic_cast< BoxShape * >( this->GetConvexObject() );
-  if( qo == nullptr )
-    {
+  BoxShape * qo = dynamic_cast<BoxShape *>(this->GetConvexObject());
+  if (qo == nullptr)
+  {
     itkExceptionMacro("This is not a BoxShape!");
-    }
+  }
 
-  qo->SetDensity( this->GetDensity() );
-  qo->SetClipPlanes( this->GetPlaneDirections(), this->GetPlanePositions() );
+  qo->SetDensity(this->GetDensity());
+  qo->SetClipPlanes(this->GetPlaneDirections(), this->GetPlanePositions());
   qo->SetBoxMin(this->GetBoxMin());
   qo->SetBoxMax(this->GetBoxMax());
 }
 
 template <class TInputImage, class TOutputImage>
 void
-DrawBoxImageFilter<TInputImage, TOutputImage>
-::AddClipPlane(const VectorType & dir, const ScalarType & pos)
+DrawBoxImageFilter<TInputImage, TOutputImage>::AddClipPlane(const VectorType & dir, const ScalarType & pos)
 {
   m_PlaneDirections.push_back(dir);
   m_PlanePositions.push_back(pos);
@@ -68,22 +65,22 @@ DrawBoxImageFilter<TInputImage, TOutputImage>
 
 template <class TInputImage, class TOutputImage>
 void
-DrawBoxImageFilter<TInputImage,TOutputImage>
-::SetBoxFromImage(const ImageBaseType *_arg, bool bWithExternalHalfPixelBorder )
+DrawBoxImageFilter<TInputImage, TOutputImage>::SetBoxFromImage(const ImageBaseType * _arg,
+                                                               bool                  bWithExternalHalfPixelBorder)
 {
-  if( this->GetConvexObject() == nullptr )
-    this->SetConvexObject( BoxShape::New().GetPointer() );
-  BoxShape * qo = dynamic_cast< BoxShape * >( this->GetConvexObject() );
-  if( qo == nullptr )
-    {
+  if (this->GetConvexObject() == nullptr)
+    this->SetConvexObject(BoxShape::New().GetPointer());
+  BoxShape * qo = dynamic_cast<BoxShape *>(this->GetConvexObject());
+  if (qo == nullptr)
+  {
     itkExceptionMacro("This is not a BoxShape!");
-    }
+  }
   qo->SetBoxFromImage(_arg, bWithExternalHalfPixelBorder);
   SetBoxMin(qo->GetBoxMin());
   SetBoxMax(qo->GetBoxMin());
   SetDirection(qo->GetDirection());
 }
 
-}// end namespace rtk
+} // end namespace rtk
 
 #endif

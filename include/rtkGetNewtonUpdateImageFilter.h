@@ -23,72 +23,81 @@
 
 namespace rtk
 {
-  /** \class GetNewtonUpdateImageFilter
-   * \brief Computes update from gradient and Hessian in Newton's method
-   *
-   * This filter takes in inputs the gradient G (input 1) and the Hessian H (input 2)
-   * of a cost function, and computes the update U (output), by U = H^{-1} * G.
-   * In Newton's method, the quantity to add to the current iterate in order to get the next
-   * iterate is actually -U, so the minus operation has to be handled downstream.
-   * It is assumed that the cost function is separable, so that each pixel can be processed
-   * independently and has its own small G, H and U
-   *
-   * \author Cyril Mory
+/** \class GetNewtonUpdateImageFilter
+ * \brief Computes update from gradient and Hessian in Newton's method
+ *
+ * This filter takes in inputs the gradient G (input 1) and the Hessian H (input 2)
+ * of a cost function, and computes the update U (output), by U = H^{-1} * G.
+ * In Newton's method, the quantity to add to the current iterate in order to get the next
+ * iterate is actually -U, so the minus operation has to be handled downstream.
+ * It is assumed that the cost function is separable, so that each pixel can be processed
+ * independently and has its own small G, H and U
+ *
+ * \author Cyril Mory
  *
  * \ingroup RTK
-   *
-   */
-template< class TGradient,
-          class THessian = itk::Image<itk::Vector<typename TGradient::PixelType::ValueType, TGradient::PixelType::Dimension * TGradient::PixelType::Dimension>, TGradient::ImageDimension > >
+ *
+ */
+template <class TGradient,
+          class THessian = itk::Image<itk::Vector<typename TGradient::PixelType::ValueType,
+                                                  TGradient::PixelType::Dimension * TGradient::PixelType::Dimension>,
+                                      TGradient::ImageDimension>>
 class GetNewtonUpdateImageFilter : public itk::ImageToImageFilter<TGradient, TGradient>
 {
 public:
-    ITK_DISALLOW_COPY_AND_ASSIGN(GetNewtonUpdateImageFilter);
+  ITK_DISALLOW_COPY_AND_ASSIGN(GetNewtonUpdateImageFilter);
 
-    /** Standard class type alias. */
-    using Self = GetNewtonUpdateImageFilter;
-    using Superclass = itk::ImageToImageFilter<TGradient, TGradient>;
-    using Pointer = itk::SmartPointer< Self >;
+  /** Standard class type alias. */
+  using Self = GetNewtonUpdateImageFilter;
+  using Superclass = itk::ImageToImageFilter<TGradient, TGradient>;
+  using Pointer = itk::SmartPointer<Self>;
 
-    /** Method for creation through the object factory. */
-    itkNewMacro(Self)
+  /** Method for creation through the object factory. */
+  itkNewMacro(Self);
 
-    /** Run-time type information (and related methods). */
-    itkTypeMacro(GetNewtonUpdateImageFilter, itk::ImageToImageFilter)
+  /** Run-time type information (and related methods). */
+  itkTypeMacro(GetNewtonUpdateImageFilter, itk::ImageToImageFilter);
 
-    /** Convenient parameters extracted from template types */
-    static constexpr unsigned int nChannels = TGradient::PixelType::Dimension;
+  /** Convenient parameters extracted from template types */
+  static constexpr unsigned int nChannels = TGradient::PixelType::Dimension;
 
-    /** Convenient type alias */
-    using dataType = typename TGradient::PixelType::ValueType;
+  /** Convenient type alias */
+  using dataType = typename TGradient::PixelType::ValueType;
 
-    /** Set methods for all inputs, since they have different types */
-    void SetInputGradient(const TGradient* gradient);
-    void SetInputHessian(const THessian* hessian);
+  /** Set methods for all inputs, since they have different types */
+  void
+  SetInputGradient(const TGradient * gradient);
+  void
+  SetInputHessian(const THessian * hessian);
 
 protected:
-    GetNewtonUpdateImageFilter();
-    ~GetNewtonUpdateImageFilter() override = default;
+  GetNewtonUpdateImageFilter();
+  ~GetNewtonUpdateImageFilter() override = default;
 
-    void GenerateInputRequestedRegion() override;
+  void
+  GenerateInputRequestedRegion() override;
 
-    /** Does the real work. */
-#if ITK_VERSION_MAJOR<5
-    void ThreadedGenerateData(const typename TGradient::RegionType& outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId)) override;
+  /** Does the real work. */
+#if ITK_VERSION_MAJOR < 5
+  void
+  ThreadedGenerateData(const typename TGradient::RegionType & outputRegionForThread,
+                       itk::ThreadIdType                      itkNotUsed(threadId)) override;
 #else
-    void DynamicThreadedGenerateData(const typename TGradient::RegionType& outputRegionForThread) override;
+  void
+  DynamicThreadedGenerateData(const typename TGradient::RegionType & outputRegionForThread) override;
 #endif
 
-    /** Getters for the inputs */
-    typename TGradient::ConstPointer GetInputGradient();
-    typename THessian::ConstPointer GetInputHessian();
-
+  /** Getters for the inputs */
+  typename TGradient::ConstPointer
+  GetInputGradient();
+  typename THessian::ConstPointer
+  GetInputHessian();
 };
-} //namespace RTK
+} // namespace rtk
 
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkGetNewtonUpdateImageFilter.hxx"
+#  include "rtkGetNewtonUpdateImageFilter.hxx"
 #endif
 
 #endif

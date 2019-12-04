@@ -19,11 +19,11 @@
 #ifndef rtkReg23ProjectionGeometry_h
 #define rtkReg23ProjectionGeometry_h
 
-//RTK
+// RTK
 #include "rtkThreeDCircularProjectionGeometry.h"
 #include "RTKExport.h"
 
-//ITK
+// ITK
 #include <itkPoint.h>
 #include <itkMatrix.h>
 
@@ -60,8 +60,7 @@ namespace rtk
  * \ingroup RTK
  * @version 1.0
  */
-class RTK_EXPORT Reg23ProjectionGeometry :
-    public rtk::ThreeDCircularProjectionGeometry
+class RTK_EXPORT Reg23ProjectionGeometry : public rtk::ThreeDCircularProjectionGeometry
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(Reg23ProjectionGeometry);
@@ -73,7 +72,7 @@ public:
   using ConstPointer = itk::SmartPointer<const Self>;
 
   /** Method for creation through the object factory. */
-  itkNewMacro(Self)
+  itkNewMacro(Self);
 
   /**
    * @brief Add a REG23-based geometry set to the RTK projections list.
@@ -85,19 +84,19 @@ public:
    * orientation of the detector's columns c (sometimes referred to as v2)
    * @return TRUE if the projection could be added to the RTK projections list
    */
-  bool AddReg23Projection(const PointType &sourcePosition,
-                          const PointType &detectorPosition,
-                          const VectorType &detectorRowVector,
-                          const VectorType &detectorColumnVector);
+  bool
+  AddReg23Projection(const PointType &  sourcePosition,
+                     const PointType &  detectorPosition,
+                     const VectorType & detectorRowVector,
+                     const VectorType & detectorColumnVector);
 
 protected:
   /** Standard constructor. **/
   Reg23ProjectionGeometry();
   /** Destructor. **/
   ~Reg23ProjectionGeometry() override;
-
 };
 
-}
+} // namespace rtk
 
 #endif // rtkReg23ProjectionGeometry_h

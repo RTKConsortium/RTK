@@ -47,7 +47,7 @@ public:
   using Self = DigisensGeometryXMLFileReader;
   using Superclass = itk::XMLReader<itk::MetaDataDictionary>;
   using Pointer = itk::SmartPointer<Self>;
-  using CurrentSectionType = enum {NONE,ROTATION,XRAY,CAMERA,RADIOS,GRID,PROCESSING};
+  using CurrentSectionType = enum { NONE, ROTATION, XRAY, CAMERA, RADIOS, GRID, PROCESSING };
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(DigisensGeometryXMLFileReader, itk::XMLReader);
@@ -56,17 +56,21 @@ public:
   itkNewMacro(Self);
 
   /** Determine if a file can be read */
-  int CanReadFile(const char* name) override;
+  int
+  CanReadFile(const char * name) override;
 
 protected:
   DigisensGeometryXMLFileReader();
   ~DigisensGeometryXMLFileReader() override = default;
 
-  void StartElement(const char * name,const char **atts) override;
+  void
+  StartElement(const char * name, const char ** atts) override;
 
-  void EndElement(const char *name) override;
+  void
+  EndElement(const char * name) override;
 
-  void CharacterDataHandler(const char *inData, int inLength) override;
+  void
+  CharacterDataHandler(const char * inData, int inLength) override;
 
 private:
   itk::MetaDataDictionary m_Dictionary;
@@ -76,5 +80,5 @@ private:
   int                     m_TreeLevel;
 };
 
-}
+} // namespace rtk
 #endif

@@ -21,7 +21,7 @@
 
 // This is done to avoid any interference with zlib
 #ifdef OF
-# undef OF
+#  undef OF
 #endif
 
 #include <itkMetaImageIO.h>
@@ -59,19 +59,23 @@ public:
 
   /** Determine the file type. Returns true if this ImageIO can read the
    * file specified. */
-  bool CanReadFile( const char* FileNameToRead ) override;
+  bool
+  CanReadFile(const char * FileNameToRead) override;
 
   /** Set the spacing and dimension information for the set filename. */
-  void ReadImageInformation() override;
+  void
+  ReadImageInformation() override;
 
   /** Reads the data from disk into the memory buffer provided. */
-  void Read(void *buffer) override;
+  void
+  Read(void * buffer) override;
 
-  bool CanWriteFile(const char* filename) override;
+  bool
+  CanWriteFile(const char * filename) override;
 
 protected:
   std::string m_MetaFileName;
 }; // end class OraImageIO
-}
+} // namespace rtk
 
 #endif /* end #define rtkOraImageIO_h */

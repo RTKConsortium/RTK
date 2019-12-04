@@ -21,9 +21,6 @@
 //====================================================================
 rtk::EdfImageIOFactory::EdfImageIOFactory()
 {
-  this->RegisterOverride("itkImageIOBase",
-                         "EdfImageIO",
-                         "Edf Image IO",
-                         true,
-                         itk::CreateObjectFunction<EdfImageIO>::New() );
+  this->RegisterOverride(
+    "itkImageIOBase", "EdfImageIO", "Edf Image IO", true, itk::CreateObjectFunction<EdfImageIO>::New());
 }

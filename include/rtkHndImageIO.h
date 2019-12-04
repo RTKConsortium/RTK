@@ -22,16 +22,17 @@
 // itk include
 #include <itkImageIOBase.h>
 
-#if defined (_MSC_VER) && (_MSC_VER < 1600)
-//SR: taken from
+#if defined(_MSC_VER) && (_MSC_VER < 1600)
+// SR: taken from
 //#include "msinttypes/stdint.h"
 #else
-#include <cstdint>
+#  include <cstdint>
 #endif
 
 #include "rtkMacro.h"
 
-namespace rtk {
+namespace rtk
+{
 
 /** \class HndImageIO
  * \brief Class for reading Hnd Image file format
@@ -45,76 +46,79 @@ namespace rtk {
 class HndImageIO : public itk::ImageIOBase
 {
 public:
-/** Standard class type alias. */
+  /** Standard class type alias. */
   using Self = HndImageIO;
   using Superclass = itk::ImageIOBase;
   using Pointer = itk::SmartPointer<Self>;
   using PixelType = signed short int;
 
-  typedef struct hnd_header {
-    char sFileType[32];
+  typedef struct hnd_header
+  {
+    char         sFileType[32];
     unsigned int FileLength;
-    char sChecksumSpec[4];
+    char         sChecksumSpec[4];
     unsigned int nCheckSum;
-    char sCreationDate[8];
-    char sCreationTime[8];
-    char sPatientID[16];
+    char         sCreationDate[8];
+    char         sCreationTime[8];
+    char         sPatientID[16];
     unsigned int nPatientSer;
-    char sSeriesID[16];
+    char         sSeriesID[16];
     unsigned int nSeriesSer;
-    char sSliceID[16];
+    char         sSliceID[16];
     unsigned int nSliceSer;
     unsigned int SizeX;
     unsigned int SizeY;
-    double dSliceZPos;
-    char sModality[16];
+    double       dSliceZPos;
+    char         sModality[16];
     unsigned int nWindow;
     unsigned int nLevel;
     unsigned int nPixelOffset;
-    char sImageType[4];
-    double dGantryRtn;
-    double dSAD;
-    double dSFD;
-    double dCollX1;
-    double dCollX2;
-    double dCollY1;
-    double dCollY2;
-    double dCollRtn;
-    double dFieldX;
-    double dFieldY;
-    double dBladeX1;
-    double dBladeX2;
-    double dBladeY1;
-    double dBladeY2;
-    double dIDUPosLng;
-    double dIDUPosLat;
-    double dIDUPosVrt;
-    double dIDUPosRtn;
-    double dPatientSupportAngle;
-    double dTableTopEccentricAngle;
-    double dCouchVrt;
-    double dCouchLng;
-    double dCouchLat;
-    double dIDUResolutionX;
-    double dIDUResolutionY;
-    double dImageResolutionX;
-    double dImageResolutionY;
-    double dEnergy;
-    double dDoseRate;
-    double dXRayKV;
-    double dXRayMA;
-    double dMetersetExposure;
-    double dAcqAdjustment;
-    double dCTProjectionAngle;
-    double dCTNormChamber;
-    double dGatingTimeTag;
-    double dGating4DInfoX;
-    double dGating4DInfoY;
-    double dGating4DInfoZ;
-    double dGating4DInfoTime;
-    } Hnd_header;
+    char         sImageType[4];
+    double       dGantryRtn;
+    double       dSAD;
+    double       dSFD;
+    double       dCollX1;
+    double       dCollX2;
+    double       dCollY1;
+    double       dCollY2;
+    double       dCollRtn;
+    double       dFieldX;
+    double       dFieldY;
+    double       dBladeX1;
+    double       dBladeX2;
+    double       dBladeY1;
+    double       dBladeY2;
+    double       dIDUPosLng;
+    double       dIDUPosLat;
+    double       dIDUPosVrt;
+    double       dIDUPosRtn;
+    double       dPatientSupportAngle;
+    double       dTableTopEccentricAngle;
+    double       dCouchVrt;
+    double       dCouchLng;
+    double       dCouchLat;
+    double       dIDUResolutionX;
+    double       dIDUResolutionY;
+    double       dImageResolutionX;
+    double       dImageResolutionY;
+    double       dEnergy;
+    double       dDoseRate;
+    double       dXRayKV;
+    double       dXRayMA;
+    double       dMetersetExposure;
+    double       dAcqAdjustment;
+    double       dCTProjectionAngle;
+    double       dCTNormChamber;
+    double       dGatingTimeTag;
+    double       dGating4DInfoX;
+    double       dGating4DInfoY;
+    double       dGating4DInfoZ;
+    double       dGating4DInfoTime;
+  } Hnd_header;
 
-  HndImageIO() : Superclass() {}
+  HndImageIO()
+    : Superclass()
+  {}
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -123,23 +127,34 @@ public:
   itkTypeMacro(HndImageIO, itk::ImageIOBase);
 
   /*-------- This part of the interface deals with reading data. ------ */
-  void ReadImageInformation() override;
+  void
+  ReadImageInformation() override;
 
-  bool CanReadFile( const char* FileNameToRead ) override;
+  bool
+  CanReadFile(const char * FileNameToRead) override;
 
-  void Read(void * buffer) override;
+  void
+  Read(void * buffer) override;
 
   /*-------- This part of the interfaces deals with writing data. ----- */
-  virtual void WriteImageInformation(bool /*keepOfStream*/) { }
+  virtual void
+  WriteImageInformation(bool /*keepOfStream*/)
+  {}
 
-  void WriteImageInformation() override { WriteImageInformation(false); }
+  void
+  WriteImageInformation() override
+  {
+    WriteImageInformation(false);
+  }
 
-  bool CanWriteFile(const char* filename) override;
+  bool
+  CanWriteFile(const char * filename) override;
 
-  void Write(const void* buffer) override;
+  void
+  Write(const void * buffer) override;
 
 }; // end class HndImageIO
 
-} // end namespace
+} // namespace rtk
 
 #endif /* end #define rtkHndImageIO_h */

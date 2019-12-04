@@ -35,16 +35,15 @@ __constant__ int4 c_Size;
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
 
-__global__
-void
-set_volume_series_to_constant(float *out, float value)
+__global__ void
+set_volume_series_to_constant(float * out, float value)
 {
   unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
   unsigned int j = blockIdx.y * blockDim.y + threadIdx.y;
   unsigned int k = blockIdx.z * blockDim.z + threadIdx.z;
 
   if (i >= c_Size.x || j >= c_Size.y || k >= c_Size.z * c_Size.w)
-      return;
+    return;
 
   long int id = (k * c_Size.y + j) * c_Size.x + i;
 
@@ -58,9 +57,7 @@ set_volume_series_to_constant(float *out, float value)
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
 void
-CUDA_generate_constant_volume_series(int size[4],
-                                     float* dev_out,
-                                     float constantValue)
+CUDA_generate_constant_volume_series(int size[4], float * dev_out, float constantValue)
 {
   int4 dev_Size = make_int4(size[0], size[1], size[2], size[3]);
   cudaMemcpyToSymbol(c_Size, &dev_Size, sizeof(int4));
@@ -78,10 +75,10 @@ CUDA_generate_constant_volume_series(int size[4],
 
   // Reset output volume
   long int memorySizeOutput = size[0] * size[1] * size[2] * size[3] * sizeof(float);
-  cudaMemset((void *)dev_out, 0, memorySizeOutput );
+  cudaMemset((void *)dev_out, 0, memorySizeOutput);
 
   if (!(constantValue == 0))
-    {
+  {
     // Thread Block Dimensions
     dim3 dimBlock = dim3(4, 4, 16);
 
@@ -89,10 +86,10 @@ CUDA_generate_constant_volume_series(int size[4],
     int blocksInY = iDivUp(size[1], dimBlock.y);
     int blocksInZ = iDivUp(size[2] * size[3], dimBlock.z);
 
-    dim3 dimGrid  = dim3(blocksInX, blocksInY, blocksInZ);
+    dim3 dimGrid = dim3(blocksInX, blocksInY, blocksInZ);
 
-    set_volume_series_to_constant <<< dimGrid, dimBlock >>> ( dev_out, constantValue);
-    }
+    set_volume_series_to_constant<<<dimGrid, dimBlock>>>(dev_out, constantValue);
+  }
 
   CUDA_CHECK_ERROR;
 }

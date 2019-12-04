@@ -56,9 +56,8 @@ namespace rtk
  *
  * \ingroup RTK ImageToImageFilter
  */
-template<class TInputImage, class TOutputImage=TInputImage>
-class ITK_EXPORT DisplacedDetectorImageFilter :
-  public itk::InPlaceImageFilter<TInputImage, TOutputImage>
+template <class TInputImage, class TOutputImage = TInputImage>
+class ITK_EXPORT DisplacedDetectorImageFilter : public itk::InPlaceImageFilter<TInputImage, TOutputImage>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(DisplacedDetectorImageFilter);
@@ -99,7 +98,8 @@ public:
    * Get / Set the minimum and maximum offsets of the detector along the
    * weighting direction desribed in ToUntiltedCoordinate.
    */
-  void SetOffsets(double minOffset, double maxOffset);
+  void
+  SetOffsets(double minOffset, double maxOffset);
   itkGetMacro(MinimumOffset, double);
   itkGetMacro(MaximumOffset, double);
 
@@ -117,18 +117,22 @@ protected:
   itkGetMacro(InferiorCorner, double);
   itkGetMacro(SuperiorCorner, double);
 
-  void GenerateInputRequestedRegion() override;
+  void
+  GenerateInputRequestedRegion() override;
 
-  void GenerateOutputInformation() override;
+  void
+  GenerateOutputInformation() override;
 
-#if ITK_VERSION_MAJOR<5
-  void ThreadedGenerateData(const OutputImageRegionType& outputRegionForThread, ThreadIdType threadId ) override;
+#if ITK_VERSION_MAJOR < 5
+  void
+  ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, ThreadIdType threadId) override;
 #else
-  void DynamicThreadedGenerateData(const OutputImageRegionType& outputRegionForThread) override;
+  void
+  DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread) override;
 #endif
 
   // Iterative filters do not need padding
-  bool m_PadOnTruncatedSide{true};
+  bool m_PadOnTruncatedSide{ true };
 
 private:
   /** RTK geometry object */
@@ -139,31 +143,31 @@ private:
    * If a priori known, these values can be given as input. Otherwise, they are computed from the
    * complete geometry.
    */
-  double m_MinimumOffset{0.};
-  double m_MaximumOffset{0.};
+  double m_MinimumOffset{ 0. };
+  double m_MaximumOffset{ 0. };
 
   /**
    * Flag used to know if the user has entered the min/max values of the detector offset.
    */
-  bool m_OffsetsSet{false};
+  bool m_OffsetsSet{ false };
 
   /** Superior and inferior position of the detector along the weighting
    *  direction, i.e., the virtual detector described in ToUntiltedCoordinate.
    */
-  double m_InferiorCorner{0.};
-  double m_SuperiorCorner{0.};
+  double m_InferiorCorner{ 0. };
+  double m_SuperiorCorner{ 0. };
 
   /** When using a geometry that the displaced detector cannot manage,
    * it has to be disabled
    */
-  bool m_Disable{false};
+  bool m_Disable{ false };
 
 }; // end of class
 
 } // end namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
-#include "rtkDisplacedDetectorImageFilter.hxx"
+#  include "rtkDisplacedDetectorImageFilter.hxx"
 #endif
 
 #endif

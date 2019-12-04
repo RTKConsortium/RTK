@@ -25,19 +25,15 @@
 namespace rtk
 {
 
-CudaCropImageFilter
-::CudaCropImageFilter()
-{
-}
+CudaCropImageFilter ::CudaCropImageFilter() {}
 
 // CUDA cropping call
 void
-CudaCropImageFilter
-::GPUGenerateData()
+CudaCropImageFilter ::GPUGenerateData()
 {
   OutputImageRegionType croppedRegion = this->GetExtractionRegion();
-  uint3 sz, input_sz;
-  long3 idx;
+  uint3                 sz, input_sz;
+  long3                 idx;
 
   idx.x = croppedRegion.GetIndex()[0] - this->GetInput()->GetBufferedRegion().GetIndex()[0];
   idx.y = croppedRegion.GetIndex()[1] - this->GetInput()->GetBufferedRegion().GetIndex()[1];
@@ -49,19 +45,15 @@ CudaCropImageFilter
   input_sz.y = this->GetInput()->GetBufferedRegion().GetSize()[1];
   input_sz.z = this->GetInput()->GetBufferedRegion().GetSize()[2];
 
-  if(this->GetOutput()->GetBufferedRegion() != this->GetOutput()->GetRequestedRegion())
-    {
+  if (this->GetOutput()->GetBufferedRegion() != this->GetOutput()->GetRequestedRegion())
+  {
     itkExceptionMacro(<< "CudaCropImageFilter assumes that requested and buffered regions are equal.");
-    }
+  }
 
-  float *pin  = *(float**)( this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer() );
-  float *pout = *(float**)( this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer() );
+  float * pin = *(float **)(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
+  float * pout = *(float **)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
 
-  CUDA_crop(idx,
-            sz,
-            input_sz,
-            pin,
-            pout);
+  CUDA_crop(idx, sz, input_sz, pin, pout);
 }
 
 } // end namespace rtk

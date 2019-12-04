@@ -24,50 +24,47 @@
 namespace rtk
 {
 
-template< typename TOutputImage, typename TGradientImage>
-TotalVariationDenoisingBPDQImageFilter<TOutputImage, TGradientImage>
-::TotalVariationDenoisingBPDQImageFilter()
+template <typename TOutputImage, typename TGradientImage>
+TotalVariationDenoisingBPDQImageFilter<TOutputImage, TGradientImage>::TotalVariationDenoisingBPDQImageFilter()
 {
   // Default behaviour is to process all dimensions
   for (unsigned int dim = 0; dim < TOutputImage::ImageDimension; dim++)
-    {
+  {
     this->m_DimensionsProcessed[dim] = true;
-    }
+  }
 
   // Create the sub filters
   m_ThresholdFilter = MagnitudeThresholdFilterType::New();
 }
 
-template< typename TOutputImage, typename TGradientImage>
+template <typename TOutputImage, typename TGradientImage>
 void
-TotalVariationDenoisingBPDQImageFilter<TOutputImage, TGradientImage>
-::SetDimensionsProcessed(bool* arg)
+TotalVariationDenoisingBPDQImageFilter<TOutputImage, TGradientImage>::SetDimensionsProcessed(bool * arg)
 {
-  bool bModif=false;
-  for (unsigned int dim=0; dim<TOutputImage::ImageDimension; dim++)
-    {
+  bool bModif = false;
+  for (unsigned int dim = 0; dim < TOutputImage::ImageDimension; dim++)
+  {
     if (this->m_DimensionsProcessed[dim] != arg[dim])
-      {
+    {
       this->m_DimensionsProcessed[dim] = arg[dim];
       bModif = true;
-      }
     }
-  if(bModif) this->Modified();
+  }
+  if (bModif)
+    this->Modified();
 }
 
-template< typename TOutputImage, typename TGradientImage>
+template <typename TOutputImage, typename TGradientImage>
 void
-TotalVariationDenoisingBPDQImageFilter<TOutputImage, TGradientImage>
-::SetBoundaryConditionToPeriodic()
+TotalVariationDenoisingBPDQImageFilter<TOutputImage, TGradientImage>::SetBoundaryConditionToPeriodic()
 {
   this->m_GradientFilter->OverrideBoundaryCondition(new itk::PeriodicBoundaryCondition<TOutputImage>());
   this->m_DivergenceFilter->OverrideBoundaryCondition(new itk::PeriodicBoundaryCondition<TGradientImage>());
 }
 
-template< typename TOutputImage, typename TGradientImage>
+template <typename TOutputImage, typename TGradientImage>
 void
-TotalVariationDenoisingBPDQImageFilter<TOutputImage, TGradientImage>
-::GenerateOutputInformation()
+TotalVariationDenoisingBPDQImageFilter<TOutputImage, TGradientImage>::GenerateOutputInformation()
 {
   Superclass::GenerateOutputInformation();
 

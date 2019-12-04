@@ -25,9 +25,8 @@
 namespace rtk
 {
 
-template< typename TImageSequence>
-TotalVariationDenoiseSequenceImageFilter< TImageSequence>
-::TotalVariationDenoiseSequenceImageFilter()
+template <typename TImageSequence>
+TotalVariationDenoiseSequenceImageFilter<TImageSequence>::TotalVariationDenoiseSequenceImageFilter()
 {
   // Create the filters
   m_TVDenoisingFilter = TVDenoisingFilterType::New();
@@ -42,8 +41,8 @@ TotalVariationDenoiseSequenceImageFilter< TImageSequence>
   m_PasteFilter->SetSourceImage(m_CastFilter->GetOutput());
 
   // Set default behavior to spatial regularization
-  for (unsigned int dim=0; dim < TImageSequence::ImageDimension-1; dim++)
-    m_DimensionsProcessed[dim]=true;
+  for (unsigned int dim = 0; dim < TImageSequence::ImageDimension - 1; dim++)
+    m_DimensionsProcessed[dim] = true;
 
   // Set permanent parameters
   m_ExtractFilter->SetDirectionCollapseToIdentity();
@@ -52,10 +51,9 @@ TotalVariationDenoiseSequenceImageFilter< TImageSequence>
   m_CastFilter->SetInPlace(false);
 }
 
-template< typename TImageSequence>
+template <typename TImageSequence>
 void
-TotalVariationDenoiseSequenceImageFilter< TImageSequence>
-::GenerateOutputInformation()
+TotalVariationDenoiseSequenceImageFilter<TImageSequence>::GenerateOutputInformation()
 {
   int Dimension = TImageSequence::ImageDimension;
 
@@ -88,58 +86,56 @@ TotalVariationDenoiseSequenceImageFilter< TImageSequence>
   m_PasteFilter->UpdateOutputInformation();
 
   // Copy it as the output information of the composite filter
-  this->GetOutput()->CopyInformation( m_PasteFilter->GetOutput() );
+  this->GetOutput()->CopyInformation(m_PasteFilter->GetOutput());
 }
 
 
-template< typename TImageSequence>
+template <typename TImageSequence>
 void
-TotalVariationDenoiseSequenceImageFilter< TImageSequence>
-::GenerateInputRequestedRegion()
+TotalVariationDenoiseSequenceImageFilter<TImageSequence>::GenerateInputRequestedRegion()
 {
-  //Call the superclass' implementation of this method
+  // Call the superclass' implementation of this method
   Superclass::GenerateInputRequestedRegion();
 
-  //Get pointers to the input and output
-  typename TImageSequence::Pointer  inputPtr  = const_cast<TImageSequence *>(this->GetInput());
+  // Get pointers to the input and output
+  typename TImageSequence::Pointer inputPtr = const_cast<TImageSequence *>(this->GetInput());
   inputPtr->SetRequestedRegionToLargestPossibleRegion();
 }
 
-template< typename TImageSequence>
+template <typename TImageSequence>
 void
-TotalVariationDenoiseSequenceImageFilter< TImageSequence>
-::SetDimensionsProcessed(bool* arg)
+TotalVariationDenoiseSequenceImageFilter<TImageSequence>::SetDimensionsProcessed(bool * arg)
 {
-  bool bModif=false;
-  for (unsigned int dim=0; dim<TImage::ImageDimension; dim++)
-    {
+  bool bModif = false;
+  for (unsigned int dim = 0; dim < TImage::ImageDimension; dim++)
+  {
     if (m_DimensionsProcessed[dim] != arg[dim])
-      {
+    {
       m_DimensionsProcessed[dim] = arg[dim];
       bModif = true;
-      }
     }
-  if(bModif) this->Modified();
+  }
+  if (bModif)
+    this->Modified();
 }
 
-template< typename TImageSequence>
+template <typename TImageSequence>
 void
-TotalVariationDenoiseSequenceImageFilter< TImageSequence>
-::GenerateData()
+TotalVariationDenoiseSequenceImageFilter<TImageSequence>::GenerateData()
 {
   int Dimension = TImageSequence::ImageDimension;
 
   // Declare an image pointer to disconnect the output of paste
   typename TImageSequence::Pointer pimg;
 
-  for (unsigned int frame=0; frame<this->GetInput(0)->GetLargestPossibleRegion().GetSize(Dimension-1); frame++)
-    {
+  for (unsigned int frame = 0; frame < this->GetInput(0)->GetLargestPossibleRegion().GetSize(Dimension - 1); frame++)
+  {
     if (frame > 0) // After the first frame, use the output of paste as input
-      {
+    {
       pimg = m_PasteFilter->GetOutput();
       pimg->DisconnectPipeline();
       m_PasteFilter->SetDestinationImage(pimg);
-      }
+    }
 
     m_ExtractAndPasteRegion.SetIndex(Dimension - 1, frame);
 
@@ -154,8 +150,8 @@ TotalVariationDenoiseSequenceImageFilter< TImageSequence>
     m_PasteFilter->SetDestinationIndex(m_ExtractAndPasteRegion.GetIndex());
 
     m_PasteFilter->UpdateLargestPossibleRegion();
-    }
-  this->GraftOutput( m_PasteFilter->GetOutput() );
+  }
+  this->GraftOutput(m_PasteFilter->GetOutput());
 
   m_ExtractFilter->GetOutput()->ReleaseData();
   m_TVDenoisingFilter->GetOutput()->ReleaseData();
@@ -163,7 +159,7 @@ TotalVariationDenoiseSequenceImageFilter< TImageSequence>
 }
 
 
-}// end namespace
+} // namespace rtk
 
 
 #endif

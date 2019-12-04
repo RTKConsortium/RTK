@@ -25,7 +25,8 @@
 
 #include "rtkMacro.h"
 
-namespace rtk {
+namespace rtk
+{
 
 /** \class EdfImageIO
  * \brief Class for reading Edf image file format. Edf is the format of
@@ -45,8 +46,9 @@ public:
   using Superclass = itk::ImageIOBase;
   using Pointer = itk::SmartPointer<Self>;
 
-  EdfImageIO() : Superclass() {
-  }
+  EdfImageIO()
+    : Superclass()
+  {}
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -55,39 +57,54 @@ public:
   itkTypeMacro(EdfImageIO, ImageIOBase);
 
   /*-------- This part of the interface deals with reading data. ------ */
-  void ReadImageInformation() override;
+  void
+  ReadImageInformation() override;
 
-  bool CanReadFile( const char* FileNameToRead ) override;
+  bool
+  CanReadFile(const char * FileNameToRead) override;
 
-  void Read(void * buffer) override;
+  void
+  Read(void * buffer) override;
 
   /*-------- This part of the interfaces deals with writing data. ----- */
-  virtual void WriteImageInformation(bool keepOfStream);
+  virtual void
+  WriteImageInformation(bool keepOfStream);
 
-  void WriteImageInformation() override {
+  void
+  WriteImageInformation() override
+  {
     WriteImageInformation(false);
   }
 
-  bool CanWriteFile(const char* filename) override;
+  bool
+  CanWriteFile(const char * filename) override;
 
-  void Write(const void* buffer) override;
+  void
+  Write(const void * buffer) override;
 
 protected:
   std::string m_BinaryFileName;
   int         m_BinaryFileSkip;
 
-  static char* edf_findInHeader( char* header, const char* key );
+  static char *
+  edf_findInHeader(char * header, const char * key);
 
   /* List of EDF supported datatypes
    */
-  enum DataType {
-    U_CHAR_DATATYPE = 0, CHAR_DATATYPE,        //  8 bits = 1 B
-    U_SHORT_DATATYPE,    SHORT_DATATYPE,       // 16 bits = 2 B
-    U_INT_DATATYPE,      INT_DATATYPE,         // 32 bits = 4 B
-    U_L_INT_DATATYPE,    L_INT_DATATYPE,       // 32 bits = 4 B
-    FLOAT_DATATYPE,      DOUBLE_DATATYPE,      // 4 B, 8 B
+  enum DataType
+  {
+    U_CHAR_DATATYPE = 0,
+    CHAR_DATATYPE, //  8 bits = 1 B
+    U_SHORT_DATATYPE,
+    SHORT_DATATYPE, // 16 bits = 2 B
+    U_INT_DATATYPE,
+    INT_DATATYPE, // 32 bits = 4 B
+    U_L_INT_DATATYPE,
+    L_INT_DATATYPE, // 32 bits = 4 B
+    FLOAT_DATATYPE,
+    DOUBLE_DATATYPE, // 4 B, 8 B
     UNKNOWN_DATATYPE = -1
-    };
+  };
 
   /* Note - compatibility:
     Unsigned8 = 1,Signed8,  Unsigned16, Signed16,
@@ -100,39 +117,41 @@ protected:
    ***************************************************************************/
 
   // table key-value structure
-  struct table {
-    const char *key;
-    int value;
-    };
+  struct table
+  {
+    const char * key;
+    int          value;
+  };
 
-  struct table3 {
-    const char *key;
-    int value;
-    short sajzof;
-    };
+  struct table3
+  {
+    const char * key;
+    int          value;
+    short        sajzof;
+  };
 
   /* Returns index of the table tbl whose key matches the beginning of the
    * search string search_str.
    * It returns index into the table or -1 if there is no match.
    */
   static int
-  lookup_table_nth( const struct table *tbl, const char *search_str )
+  lookup_table_nth(const struct table * tbl, const char * search_str)
   {
     int k = -1;
 
     while (tbl[++k].key)
-      if (tbl[k].key && !strncmp(search_str, tbl[k].key, strlen(tbl[k].key) ) )
+      if (tbl[k].key && !strncmp(search_str, tbl[k].key, strlen(tbl[k].key)))
         return k;
     return -1; // not found
   }
 
   static int
-  lookup_table3_nth( const struct table3 *tbl, const char *search_str )
+  lookup_table3_nth(const struct table3 * tbl, const char * search_str)
   {
     int k = -1;
 
     while (tbl[++k].key)
-      if (tbl[k].key && !strncmp(search_str, tbl[k].key, strlen(tbl[k].key) ) )
+      if (tbl[k].key && !strncmp(search_str, tbl[k].key, strlen(tbl[k].key)))
         return k;
     return -1; // not found
   }
@@ -141,13 +160,13 @@ protected:
   // * the file. (Determines the scanning direction, or the "fastest" index
   // * of the matrix in the data file.)
   // */
-  //enum EdfRasterAxes {
-  //RASTER_AXES_XrightYdown, // matricial format: rows, columns
-  //RASTER_AXES_XrightYup    // cartesian coordinate system
+  // enum EdfRasterAxes {
+  // RASTER_AXES_XrightYdown, // matricial format: rows, columns
+  // RASTER_AXES_XrightYup    // cartesian coordinate system
   //    // other 6 combinations not available (not needed until now)
   //};
 
-  //static const struct table rasteraxes_table[] =
+  // static const struct table rasteraxes_table[] =
   //{
   //    { "XrightYdown", RASTER_AXES_XrightYdown },
   //    { "XrightYup",   RASTER_AXES_XrightYup },
@@ -156,6 +175,6 @@ protected:
 
 }; // end class EdfImageIO
 
-} // end namespace
+} // namespace rtk
 
 #endif

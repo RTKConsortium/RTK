@@ -40,11 +40,9 @@ namespace rtk
  */
 template <class TInputImage,
           class TOutputImage = TInputImage,
-          class TDVF = itk::Image< itk::CovariantVector<typename TInputImage::PixelType,
-                                                        TInputImage::ImageDimension >,
-                                   TInputImage::ImageDimension > >
-class ForwardWarpImageFilter :
-  public itk::WarpImageFilter< TInputImage, TOutputImage, TDVF >
+          class TDVF = itk::Image<itk::CovariantVector<typename TInputImage::PixelType, TInputImage::ImageDimension>,
+                                  TInputImage::ImageDimension>>
+class ForwardWarpImageFilter : public itk::WarpImageFilter<TInputImage, TOutputImage, TDVF>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(ForwardWarpImageFilter);
@@ -63,31 +61,33 @@ public:
 
   /** Point type */
   using CoordRepType = double;
-  using PointType = itk::Point< CoordRepType, itkGetStaticConstMacro(ImageDimension) >;
+  using PointType = itk::Point<CoordRepType, itkGetStaticConstMacro(ImageDimension)>;
 
   /** Method for creation through the object factory. */
-  itkNewMacro(Self)
+  itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(ForwardWarpImageFilter, Superclass)
+  itkTypeMacro(ForwardWarpImageFilter, Superclass);
 
 protected:
   ForwardWarpImageFilter();
   ~ForwardWarpImageFilter() override = default;
 
-  void GenerateData() override;
+  void
+  GenerateData() override;
 
   // Redefine stuff that is private in the Superclass
-  void Protected_EvaluateDisplacementAtPhysicalPoint(const PointType & p, DisplacementType &output);
-  bool                                m_Protected_DefFieldSizeSame;
-  typename TOutputImage::IndexType    m_Protected_StartIndex;
-  typename TOutputImage::IndexType    m_Protected_EndIndex;
+  void
+                                   Protected_EvaluateDisplacementAtPhysicalPoint(const PointType & p, DisplacementType & output);
+  bool                             m_Protected_DefFieldSizeSame;
+  typename TOutputImage::IndexType m_Protected_StartIndex;
+  typename TOutputImage::IndexType m_Protected_EndIndex;
 };
 
 } // end namespace rtk
 
 #ifndef rtk_MANUAL_INSTANTIATION
-#include "rtkForwardWarpImageFilter.hxx"
+#  include "rtkForwardWarpImageFilter.hxx"
 #endif
 
 #endif

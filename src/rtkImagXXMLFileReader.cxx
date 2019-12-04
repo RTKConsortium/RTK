@@ -26,35 +26,34 @@ namespace rtk
 {
 
 int
-ImagXXMLFileReader::
-CanReadFile(const char *name)
+ImagXXMLFileReader::CanReadFile(const char * name)
 {
-  if(!itksys::SystemTools::FileExists(name) ||
-     itksys::SystemTools::FileIsDirectory(name) ||
-     itksys::SystemTools::FileLength(name) == 0)
+  if (!itksys::SystemTools::FileExists(name) || itksys::SystemTools::FileIsDirectory(name) ||
+      itksys::SystemTools::FileLength(name) == 0)
     return 0;
   return 1;
 }
 
 void
-ImagXXMLFileReader::
-StartElement(const char * name, const char ** atts)
+ImagXXMLFileReader::StartElement(const char * name, const char ** atts)
 {
-#define ENCAPLULATE_META_DATA_INT(metaName) \
-  if(itksys::SystemTools::Strucmp(atts[i], metaName) == 0) { \
-    double d = atof(atts[i+1]); \
-    itk::EncapsulateMetaData<int>(m_Dictionary, metaName, d); \
-    }
+#define ENCAPLULATE_META_DATA_INT(metaName)                                                                            \
+  if (itksys::SystemTools::Strucmp(atts[i], metaName) == 0)                                                            \
+  {                                                                                                                    \
+    double d = atof(atts[i + 1]);                                                                                      \
+    itk::EncapsulateMetaData<int>(m_Dictionary, metaName, d);                                                          \
+  }
 
-#define ENCAPLULATE_META_DATA_STRING(metaName) \
-  if(itksys::SystemTools::Strucmp(atts[i], metaName) == 0) { \
-    itk::EncapsulateMetaData<std::string>(m_Dictionary, metaName, atts[i+1]); \
-    }
+#define ENCAPLULATE_META_DATA_STRING(metaName)                                                                         \
+  if (itksys::SystemTools::Strucmp(atts[i], metaName) == 0)                                                            \
+  {                                                                                                                    \
+    itk::EncapsulateMetaData<std::string>(m_Dictionary, metaName, atts[i + 1]);                                        \
+  }
 
-  if(std::string(name) == std::string("image") )
+  if (std::string(name) == std::string("image"))
+  {
+    for (int i = 0; atts[i] != nullptr; i += 2)
     {
-    for(int i=0; atts[i] != nullptr; i+=2)
-      {
       ENCAPLULATE_META_DATA_STRING("name");
       ENCAPLULATE_META_DATA_INT("bitDepth");
       ENCAPLULATE_META_DATA_STRING("pixelFormat");
@@ -64,46 +63,44 @@ StartElement(const char * name, const char ** atts)
       ENCAPLULATE_META_DATA_INT("dimensions");
       ENCAPLULATE_META_DATA_INT("sequence");
       ENCAPLULATE_META_DATA_STRING("rawFile");
-      }
     }
-  if(std::string(name) == std::string("size") )
+  }
+  if (std::string(name) == std::string("size"))
+  {
+    for (int i = 0; atts[i] != nullptr; i += 2)
     {
-    for(int i=0; atts[i] != nullptr; i+=2)
-      {
       ENCAPLULATE_META_DATA_INT("x");
       ENCAPLULATE_META_DATA_INT("y");
       ENCAPLULATE_META_DATA_INT("z");
-      }
     }
-  if(std::string(name) == std::string("spacing") )
+  }
+  if (std::string(name) == std::string("spacing"))
+  {
+#define ENCAPLULATE_META_DATA_DOUBLE(metaName)                                                                         \
+  if (itksys::SystemTools::Strucmp(atts[i], metaName) == 0)                                                            \
+  {                                                                                                                    \
+    double d = atof(atts[i + 1]);                                                                                      \
+    itk::EncapsulateMetaData<double>(m_Dictionary, std::string("spacing_") + std::string(metaName), d);                \
+  }
+    for (int i = 0; atts[i] != nullptr; i += 2)
     {
-#define ENCAPLULATE_META_DATA_DOUBLE(metaName) \
-  if(itksys::SystemTools::Strucmp(atts[i], metaName) == 0) { \
-    double d = atof(atts[i+1]); \
-    itk::EncapsulateMetaData<double>(m_Dictionary, std::string("spacing_") + std::string(metaName), d); \
-    }
-    for(int i=0; atts[i] != nullptr; i+=2)
-      {
       ENCAPLULATE_META_DATA_DOUBLE("x");
       ENCAPLULATE_META_DATA_DOUBLE("y");
       ENCAPLULATE_META_DATA_DOUBLE("z");
-      }
     }
+  }
   m_CurCharacterData = "";
 }
 
 void
-ImagXXMLFileReader::
-EndElement( const char *itkNotUsed(name) )
-{
-}
+ImagXXMLFileReader::EndElement(const char * itkNotUsed(name))
+{}
 
 void
-ImagXXMLFileReader::
-CharacterDataHandler(const char *inData, int inLength)
+ImagXXMLFileReader::CharacterDataHandler(const char * inData, int inLength)
 {
-  for(int i = 0; i < inLength; i++)
+  for (int i = 0; i < inLength; i++)
     m_CurCharacterData = m_CurCharacterData + inData[i];
 }
 
-}
+} // namespace rtk

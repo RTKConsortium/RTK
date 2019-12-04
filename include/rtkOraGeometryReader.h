@@ -67,40 +67,45 @@ public:
 
   /** Set the vector of strings that contains the projection file names. Files
    * are processed in sequential order. */
-  void SetProjectionsFileNames (const FileNamesContainer &name)
+  void
+  SetProjectionsFileNames(const FileNamesContainer & name)
+  {
+    if (m_ProjectionsFileNames != name)
     {
-    if ( m_ProjectionsFileNames != name)
-      {
       m_ProjectionsFileNames = name;
       this->Modified();
-      }
     }
-  const FileNamesContainer & GetProjectionsFileNames() const
-    {
+  }
+  const FileNamesContainer &
+  GetProjectionsFileNames() const
+  {
     return m_ProjectionsFileNames;
-    }
+  }
 
   /** Collimation margin: adds a small margin to the collimation edge to remove
    * collimator shadow. A positive value means less collimation. Default is 0.
    * The order is uinf, usup, vinf, vsup.
    * */
-  itkGetMacro(CollimationMargin, MarginVectorType)
-  itkSetMacro(CollimationMargin, MarginVectorType)
+  itkGetMacro(CollimationMargin, MarginVectorType);
+  itkSetMacro(CollimationMargin, MarginVectorType);
 
 
 protected:
-  OraGeometryReader(): m_Geometry(nullptr), m_CollimationMargin(0.) {};
+  OraGeometryReader()
+    : m_Geometry(nullptr)
+    , m_CollimationMargin(0.){};
 
   ~OraGeometryReader() override = default;
 
 private:
-  void GenerateData() override;
+  void
+  GenerateData() override;
 
   GeometryType::Pointer m_Geometry;
   FileNamesContainer    m_ProjectionsFileNames;
   MarginVectorType      m_CollimationMargin;
 };
 
-}
+} // namespace rtk
 
 #endif // rtkOraGeometryReader_h
