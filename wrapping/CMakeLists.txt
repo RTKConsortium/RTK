@@ -1,4 +1,5 @@
 itk_wrap_module(RTK)
+
 set(WRAPPER_SUBMODULE_ORDER
   itkFixedArrayRTK
   itkVectorRTK
@@ -17,6 +18,10 @@ set(WRAPPER_SUBMODULE_ORDER
   itkInPlaceImageFilterRTK
   itkCudaInPlaceImageFilter
   rtkForwardProjectionImageFilter
+  itkPyBufferRTK
 )
+
+list(APPEND WRAPPER_SWIG_LIBRARY_FILES "${CMAKE_CURRENT_BINARY_DIR}/PyBufferRTK.i")
+
 itk_auto_load_submodules()
 itk_end_wrap_module()
