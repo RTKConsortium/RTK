@@ -37,7 +37,11 @@ rtk::XRadGeometryReader ::GenerateData()
   // Read image information which contains geometry information
   rtk::XRadImageIOFactory::RegisterOneFactory();
   itk::ImageIOBase::Pointer reader =
+#if (ITK_VERSION_MAJOR==5) && (ITK_VERSION_MINOR>=1)
+    itk::ImageIOFactory::CreateImageIO(m_ImageFileName.c_str(), itk::ImageIOFactory::FileModeEnum::ReadMode);
+#else
     itk::ImageIOFactory::CreateImageIO(m_ImageFileName.c_str(), itk::ImageIOFactory::FileModeType::ReadMode);
+#endif
   if (!reader)
     itkExceptionMacro(<< m_ImageFileName << " is not an XRad file.");
   reader->SetFileName(m_ImageFileName);

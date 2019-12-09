@@ -35,7 +35,11 @@
 itk::ImageIOBase::Pointer GetFileHeader(const std::string &filename)
 {
   itk::ImageIOBase::Pointer reader =
+#if (ITK_VERSION_MAJOR==5) && (ITK_VERSION_MINOR>=1)
+    itk::ImageIOFactory::CreateImageIO(filename.c_str(), itk::ImageIOFactory::FileModeEnum::ReadMode);
+#else
     itk::ImageIOFactory::CreateImageIO(filename.c_str(), itk::ImageIOFactory::FileModeType::ReadMode);
+#endif
   if (!reader)
     {
     itkGenericExceptionMacro(<< "Could not read " << filename);
