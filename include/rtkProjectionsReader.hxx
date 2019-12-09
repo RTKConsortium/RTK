@@ -150,7 +150,11 @@ ProjectionsReader<TOutputImage>::GenerateOutputInformation(void)
   firstTime = false;
 
   itk::ImageIOBase::Pointer imageIO =
+#if (ITK_VERSION_MAJOR==5) && (ITK_VERSION_MINOR>=1)
+    itk::ImageIOFactory::CreateImageIO(m_FileNames[0].c_str(), itk::ImageIOFactory::FileModeEnum::ReadMode);
+#else
     itk::ImageIOFactory::CreateImageIO(m_FileNames[0].c_str(), itk::ImageIOFactory::FileModeType::ReadMode);
+#endif
 
   if (imageIO == nullptr)
     itkGenericExceptionMacro(<< "Cannot create ImageIOFactory for file " << m_FileNames[0].c_str());
