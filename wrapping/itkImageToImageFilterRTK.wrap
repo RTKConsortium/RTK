@@ -58,10 +58,8 @@ itk_wrap_class("itk::ImageToImageFilter" POINTER)
   if(RTK_USE_CUDA)
     itk_wrap_include(itkCudaImage.h)
     foreach(d ${ITK_WRAP_IMAGE_DIMS})
-      foreach(t ${WRAP_ITK_REAL})
-        itk_wrap_template("CI${ITKM_${t}}${d}CI${ITKM_${t}}${d}"
-          "itk::CudaImage<${ITKT_${t}}, ${d}>, itk::CudaImage<${ITKT_${t}}, ${d}>")
-      endforeach()
+      itk_wrap_template("CI${ITKM_F}${d}CI${ITKM_F}${d}"
+        "itk::CudaImage<${ITKT_F}, ${d}>, itk::CudaImage<${ITKT_F}, ${d}>")
     endforeach()
 
     # Wrap ITK dimension 4 missing types

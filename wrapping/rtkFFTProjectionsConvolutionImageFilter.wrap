@@ -10,9 +10,9 @@ itk_wrap_named_class("rtk::FFTProjectionsConvolutionImageFilter" rtkFFTProjectio
       "itk::Image<${ITKT_${t}}, 3>, itk::Image<${ITKT_${t}}, 3>, ${ITKT_D}")
     itk_wrap_template("I${ITKM_${t}}3I${ITKM_${t}}3${ITKM_F}"
       "itk::Image<${ITKT_${t}}, 3>, itk::Image<${ITKT_${t}}, 3>, ${ITKT_F}")
-    if(RTK_USE_CUDA)
-      itk_wrap_template("CI${ITKM_${t}}3CI${ITKM_${t}}3${ITKM_F}"
-        "itk::CudaImage<${ITKT_${t}}, 3>, itk::CudaImage<${ITKT_${t}}, 3>, ${ITKT_F}")
-    endif()
   endforeach()
+  if(RTK_USE_CUDA)
+    itk_wrap_template("CI${ITKM_F}3CI${ITKM_F}3${ITKM_F}"
+      "itk::CudaImage<${ITKT_F}, 3>, itk::CudaImage<${ITKT_F}, 3>, ${ITKT_F}")
+  endif()
 itk_end_wrap_class()

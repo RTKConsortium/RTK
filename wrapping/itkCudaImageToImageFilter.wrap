@@ -3,10 +3,8 @@ if(RTK_USE_CUDA)
 
   itk_wrap_class("itk::CudaImageToImageFilter" POINTER)
     foreach(d ${ITK_WRAP_IMAGE_DIMS})
-      foreach(t ${WRAP_ITK_REAL})
-        itk_wrap_template("CI${ITKM_${t}}${d}CI${ITKM_${t}}${d}"
-          "itk::CudaImage<${ITKT_${t}}, ${d}>, itk::CudaImage<${ITKT_${t}}, ${d}>")
-      endforeach()
+      itk_wrap_template("CI${ITKM_F}${d}CI${ITKM_F}${d}"
+        "itk::CudaImage<${ITKT_F}, ${d}>, itk::CudaImage<${ITKT_F}, ${d}>")
     endforeach()
     foreach(nmat 2 3)
 	    itk_wrap_template("CI${ITKM_VF${nmat}}3CI${ITKM_VF${nmat}}3" "itk::CudaImage<itk::Vector<${ITKT_F},${nmat}>, 3>, itk::CudaImage<itk::Vector<${ITKT_F},${nmat}>, 3>")
