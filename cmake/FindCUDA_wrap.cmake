@@ -64,6 +64,8 @@ else()
      )
 endif()
 
+list(APPEND CUDA_NVCC_FLAGS "-std=c++11")
+
 if(CUDA_FOUND)
   try_run(RUN_RESULT_VAR COMPILE_RESULT_VAR
          ${CMAKE_BINARY_DIR}
