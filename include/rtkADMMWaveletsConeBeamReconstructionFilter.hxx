@@ -21,6 +21,8 @@
 
 #include "rtkADMMWaveletsConeBeamReconstructionFilter.h"
 
+#include <itkIterationReporter.h>
+
 namespace rtk
 {
 
@@ -163,6 +165,8 @@ ADMMWaveletsConeBeamReconstructionFilter<TOutputImage>::GenerateData()
   typename TOutputImage::Pointer W_t_G_k_plus_one;
   typename TOutputImage::Pointer W_t_D_k_plus_one;
 
+  itk::IterationReporter iterationReporter(this, 0, 1);
+
   for (unsigned int iter = 0; iter < m_AL_iterations; iter++)
   {
     // After the first update, we need to use some outputs as inputs
@@ -186,8 +190,9 @@ ADMMWaveletsConeBeamReconstructionFilter<TOutputImage>::GenerateData()
       m_SubtractFilter2->SetInput1(m_SoftThresholdFilter->GetOutput());
     }
     m_SubtractFilter2->Update();
+    this->GraftOutput(m_ConjugateGradientFilter->GetOutput());
+    iterationReporter.CompletedStep();
   }
-  this->GraftOutput(m_ConjugateGradientFilter->GetOutput());
 }
 
 } // namespace rtk

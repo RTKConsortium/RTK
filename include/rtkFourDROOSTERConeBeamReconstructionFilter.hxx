@@ -20,6 +20,7 @@
 
 #include "rtkFourDROOSTERConeBeamReconstructionFilter.h"
 #include <itkImageFileWriter.h>
+#include <itkIterationReporter.h>
 
 namespace rtk
 {
@@ -474,6 +475,8 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>:
   // Declare the pointer that will be used to plug the output back as input
   typename VolumeSeriesType::Pointer pimg;
 
+  itk::IterationReporter iterationReporter(this, 0, 1);
+
   for (int i = 0; i < m_MainLoop_iterations; i++)
   {
     // After the first iteration, we need to use the output as input
@@ -489,9 +492,9 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>:
     }
 
     m_DownstreamFilter->Update();
+    this->GraftOutput(m_DownstreamFilter->GetOutput());
+    iterationReporter.CompletedStep();
   }
-
-  this->GraftOutput(m_DownstreamFilter->GetOutput());
 }
 
 } // namespace rtk

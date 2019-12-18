@@ -23,6 +23,7 @@
 #include "rtkGeneralPurposeFunctions.h"
 
 #include <algorithm>
+#include <itkIterationReporter.h>
 
 namespace rtk
 {
@@ -325,6 +326,8 @@ FourDSARTConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::Ge
   typename VolumeSeriesType::Pointer pimg;
   typename VolumeSeriesType::Pointer pimg2;
 
+  itk::IterationReporter iterationReporter(this, 0, 1);
+
   // For each iteration, go over each projection
   for (unsigned int iter = 0; iter < m_NumberOfIterations; iter++)
   {
@@ -390,15 +393,17 @@ FourDSARTConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::Ge
           m_ThresholdFilter->Update();
         }
       }
+
+      if (m_EnforcePositivity)
+      {
+        this->GraftOutput(m_ThresholdFilter->GetOutput());
+      }
+      else
+      {
+        this->GraftOutput(m_AddFilter2->GetOutput());
+      }
     }
-  }
-  if (m_EnforcePositivity)
-  {
-    this->GraftOutput(m_ThresholdFilter->GetOutput());
-  }
-  else
-  {
-    this->GraftOutput(m_AddFilter2->GetOutput());
+    iterationReporter.CompletedStep();
   }
 }
 

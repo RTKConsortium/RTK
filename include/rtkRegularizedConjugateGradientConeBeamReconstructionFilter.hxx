@@ -20,6 +20,8 @@
 
 #include "rtkRegularizedConjugateGradientConeBeamReconstructionFilter.h"
 
+#include <itkIterationReporter.h>
+
 namespace rtk
 {
 
@@ -239,6 +241,8 @@ RegularizedConjugateGradientConeBeamReconstructionFilter<TImage>::GenerateData()
   typename itk::ImageToImageFilter<TImage, TImage>::Pointer currentDownstreamFilter;
   typename TImage::Pointer                                  pimg;
 
+  itk::IterationReporter iterationReporter(this, 0, 1);
+
   for (int i = 0; i < m_MainLoop_iterations; i++)
   {
     // After the first iteration, we need to use the output as input
@@ -272,9 +276,9 @@ RegularizedConjugateGradientConeBeamReconstructionFilter<TImage>::GenerateData()
     }
 
     currentDownstreamFilter->Update();
+    this->GraftOutput(currentDownstreamFilter->GetOutput());
+    iterationReporter.CompletedStep();
   }
-
-  this->GraftOutput(currentDownstreamFilter->GetOutput());
 }
 
 } // namespace rtk

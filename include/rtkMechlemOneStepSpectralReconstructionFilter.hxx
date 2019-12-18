@@ -21,6 +21,8 @@
 
 #include "rtkMechlemOneStepSpectralReconstructionFilter.h"
 
+#include <itkIterationReporter.h>
+
 namespace rtk
 {
 
@@ -398,6 +400,8 @@ template <class TOutputImage, class TPhotonCounts, class TSpectrum>
 void
 MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectrum>::GenerateData()
 {
+  itk::IterationReporter iterationReporter(this, 0, 1);
+
   // Run the iteration loop
   typename TOutputImage::Pointer Next_Zk;
   for (int iter = 0; iter < m_NumberOfIterations; iter++)
@@ -479,9 +483,10 @@ MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectru
         m_NesterovFilter->Update();
         Next_Zk = m_NesterovFilter->GetOutput();
       }
+      this->GraftOutput(Next_Zk);
+      iterationReporter.CompletedStep();
     }
   }
-  this->GraftOutput(Next_Zk);
 }
 
 } // namespace rtk

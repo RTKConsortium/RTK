@@ -22,6 +22,7 @@
 #include "rtkIterativeFDKConeBeamReconstructionFilter.h"
 
 #include <algorithm>
+#include <itkIterationReporter.h>
 
 namespace rtk
 {
@@ -173,11 +174,16 @@ IterativeFDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecisio
   typename TInputImage::Pointer p_projs;
   typename TInputImage::Pointer p_vol;
 
+  itk::IterationReporter iterationReporter(this, 0, 1);
+
   // Run the first reconstruction
   if (m_EnforcePositivity)
     m_ThresholdFilter->Update();
   else
     m_FDKFilter->Update();
+
+  // first iteration is performed out of the loop
+  iterationReporter.CompletedStep();
 
   // For each iteration over 1, go over each projection
   for (unsigned int iter = 1; iter < m_NumberOfIterations; iter++)
@@ -206,15 +212,18 @@ IterativeFDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecisio
 
     // Run the next reconstruction
     if (m_EnforcePositivity)
+    {
       m_ThresholdFilter->Update();
+      this->GraftOutput(m_ThresholdFilter->GetOutput());
+    }
     else
+    {
       m_FDKFilter->Update();
-  }
+      this->GraftOutput(m_FDKFilter->GetOutput());
+    }
 
-  if (m_EnforcePositivity)
-    this->GraftOutput(m_ThresholdFilter->GetOutput());
-  else
-    this->GraftOutput(m_FDKFilter->GetOutput());
+    iterationReporter.CompletedStep();
+  }
 }
 
 } // end namespace rtk

@@ -98,8 +98,8 @@ int main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION( phaseReader->Update() )
 
   // 4D SART reconstruction filter
-  rtk::FourDSARTConeBeamReconstructionFilter< VolumeSeriesType, ProjectionStackType >::Pointer fourdsart =
-      rtk::FourDSARTConeBeamReconstructionFilter< VolumeSeriesType, ProjectionStackType >::New();
+  using FourDSARTConeBeamReconstructionFilterType = rtk::FourDSARTConeBeamReconstructionFilter< VolumeSeriesType, ProjectionStackType >;
+  FourDSARTConeBeamReconstructionFilterType::Pointer fourdsart = FourDSARTConeBeamReconstructionFilterType::New();
 
   // Set the forward and back projection filters
   SetForwardProjectionFromGgo(args_info, fourdsart.GetPointer());
@@ -118,6 +118,8 @@ int main(int argc, char * argv[])
     {
     fourdsart->SetEnforcePositivity(true);
     }
+
+  REPORT_ITERATIONS(fourdsart, FourDSARTConeBeamReconstructionFilterType, VolumeSeriesType)
 
   TRY_AND_EXIT_ON_ITK_EXCEPTION( fourdsart->Update() )
 

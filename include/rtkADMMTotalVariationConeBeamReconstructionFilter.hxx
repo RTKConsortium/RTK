@@ -21,6 +21,8 @@
 
 #include "rtkADMMTotalVariationConeBeamReconstructionFilter.h"
 
+#include <itkIterationReporter.h>
+
 namespace rtk
 {
 
@@ -213,6 +215,7 @@ template <typename TOutputImage, typename TGradientOutputImage>
 void
 ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImage>::GenerateData()
 {
+  itk::IterationReporter iterationReporter(this, 0, 1);
   for (unsigned int iter = 0; iter < m_AL_iterations; iter++)
   {
     SetBetaForCurrentIteration(iter);
@@ -238,8 +241,9 @@ ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImag
       m_SubtractFilter2->SetInput1(m_SoftThresholdFilter->GetOutput());
     }
     m_SubtractFilter2->Update();
+    this->GraftOutput(m_ConjugateGradientFilter->GetOutput());
+    iterationReporter.CompletedStep();
   }
-  this->GraftOutput(m_ConjugateGradientFilter->GetOutput());
 }
 
 } // namespace rtk

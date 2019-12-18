@@ -20,6 +20,7 @@
 #define rtkConjugateGradientConeBeamReconstructionFilter_hxx
 
 #include "rtkConjugateGradientConeBeamReconstructionFilter.h"
+#include <itkProgressAccumulator.h>
 
 namespace rtk
 {
@@ -27,6 +28,7 @@ namespace rtk
 template <typename TOutputImage, typename TSingleComponentImage, typename TWeightsImage>
 ConjugateGradientConeBeamReconstructionFilter<TOutputImage, TSingleComponentImage, TWeightsImage>::
   ConjugateGradientConeBeamReconstructionFilter()
+  : m_IterationReporter(this, 0, 1) // report every iteration
 {
   this->SetNumberOfRequiredInputs(3);
 
@@ -259,6 +261,10 @@ template <typename TOutputImage, typename TSingleComponentImage, typename TWeigh
 void
 ConjugateGradientConeBeamReconstructionFilter<TOutputImage, TSingleComponentImage, TWeightsImage>::GenerateData()
 {
+  typename itk::MemberCommand<Self>::Pointer callbackCommand = itk::MemberCommand<Self>::New();
+  callbackCommand->SetCallbackFunction(this, &Self::ReportProgress);
+  m_ConjugateGradientFilter->AddObserver(itk::IterationEvent(), callbackCommand);
+
   m_ConjugateGradientFilter->Update();
 
   if (this->GetSupportMask())
@@ -306,7 +312,25 @@ typename ConjugateGradientConeBeamReconstructionFilter<TOutputImage, TSingleComp
   return nullptr;
 }
 
-} // namespace rtk
+template <typename TOutputImage, typename TSingleComponentImage, typename TWeightsImage>
+void
+ConjugateGradientConeBeamReconstructionFilter<TOutputImage, TSingleComponentImage, TWeightsImage>::ReportProgress(
+  itk::Object *            caller,
+  const itk::EventObject & event)
+{
+  if (!itk::IterationEvent().CheckEvent(&event))
+  {
+    return;
+  }
+  auto * cgCaller = dynamic_cast<rtk::ConjugateGradientImageFilter<TOutputImage> *>(caller);
+  if (cgCaller)
+  {
+    this->GraftOutput(cgCaller->GetOutput());
+    m_IterationReporter.CompletedStep();
+  }
+}
+
+} // end namespace rtk
 
 
 #endif

@@ -27,6 +27,8 @@
 
 #include <itkImageFileWriter.h>
 
+#include <itkIterationReporter.h>
+
 namespace rtk
 {
 template <class TVolumeImage, class TProjectionImage>
@@ -215,6 +217,8 @@ OSEMConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>::GenerateData()
   typename TVolumeImage::Pointer pimg;
   typename TVolumeImage::Pointer norm;
 
+  itk::IterationReporter iterationReporter(this, 0, 1);
+
   // For each iteration, go over each projection
   for (unsigned int iter = 0; iter < m_NumberOfIterations; iter++)
   {
@@ -275,8 +279,9 @@ OSEMConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>::GenerateData()
         m_BackProjectionNormalizationFilter->SetInput(0, norm);
       }
     }
+    this->GraftOutput(pimg);
+    iterationReporter.CompletedStep();
   }
-  this->GraftOutput(pimg);
 }
 
 } // end namespace rtk

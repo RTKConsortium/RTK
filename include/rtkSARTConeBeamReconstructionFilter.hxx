@@ -22,6 +22,7 @@
 #include "rtkSARTConeBeamReconstructionFilter.h"
 
 #include <algorithm>
+#include <itkIterationReporter.h>
 
 namespace rtk
 {
@@ -276,6 +277,8 @@ SARTConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>::GenerateData()
   typename TVolumeImage::Pointer pimg;
   typename TVolumeImage::Pointer norm;
 
+  itk::IterationReporter iterationReporter(this, 0, 1); // report every iteration
+
   // For each iteration, go over each projection
   for (unsigned int iter = 0; iter < m_NumberOfIterations; iter++)
   {
@@ -341,8 +344,9 @@ SARTConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>::GenerateData()
         m_BackProjectionNormalizationFilter->SetInput(0, norm);
       }
     }
+    this->GraftOutput(pimg);
+    iterationReporter.CompletedStep();
   }
-  this->GraftOutput(pimg);
 }
 
 } // end namespace rtk
