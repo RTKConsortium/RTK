@@ -38,14 +38,56 @@ itk_wrap_class("itk::Image" POINTER)
   list(FIND ITK_WRAP_IMAGE_DIMS "4" _index)
   if (${_index} EQUAL -1)
     itk_wrap_template("F4" "${ITKT_F}, 4")
-    itk_wrap_template("${ITKM_VF3}4" "${ITKT_VF3}, 4") #rtkCyclicDeformationImageFilter
-    itk_wrap_template("${ITKM_CVF3}4" "${ITKT_CVF3}, 4") #rtkMotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter
     if (ITK_WRAP_double)
       itk_wrap_template("D4" "${ITKT_D}, 4")
-      itk_wrap_template("${ITKM_CVD3}4" "${ITKT_CVD3}, 4") #rtkMotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter
     endif()
     if (ITK_WRAP_unsigned_short)
       itk_wrap_template("US4" "${ITKT_US}, 4")
+    endif()
+  endif()
+
+  # Force ITK_WRAP_IMAGE_DIMS to contain "2;3;4"
+  UNIQUE(imageDimensions "${ITK_WRAP_IMAGE_DIMS};2;3;4")
+  # Force VECTOR_COMPONENTS to contain "2;3;4;5"
+  set(vectorComponents 2 3 4 5)
+  foreach(component ${vectorComponents})
+    list(FIND ITK_WRAP_VECTOR_COMPONENTS "${component}" _index)
+    if (${_index} EQUAL -1)
+      foreach(d ${imageDimensions})
+        foreach(vt ${WRAP_ITK_VECTOR_REAL})
+          itk_wrap_template("${ITKM_${vt}${component}}${d}" "${ITKT_${vt}${component}}, ${d}")
+        endforeach()
+        foreach(cvt ${WRAP_ITK_COV_VECTOR_REAL})
+          itk_wrap_template("${ITKM_${cvt}${component}}${d}" "${ITKT_${cvt}${component}}, ${d}")
+        endforeach()
+      endforeach()
+    endif()
+  endforeach()
+
+  # Force ITK_WRAP_VECTOR_COMPONENTS to contain "2;3;4;5"
+  UNIQUE(vectorComponents "${ITK_WRAP_VECTOR_COMPONENTS};2;3;4;5")
+
+  # Force ITK_WRAP_IMAGE_DIMS to contain "2;3;4"
+  set(imageDimensions 2 3 4)
+  foreach(d ${imageDimensions})
+    list(FIND ITK_WRAP_IMAGE_DIMS "${d}" _index)
+    if (${_index} EQUAL -1)
+      foreach(component ${ITK_WRAP_VECTOR_COMPONENTS})
+        foreach(vt ${WRAP_ITK_VECTOR_REAL})
+          itk_wrap_template("${ITKM_${vt}${component}}${d}" "${ITKT_${vt}${component}}, ${d}")
+        endforeach()
+        foreach(cvt ${WRAP_ITK_COV_VECTOR_REAL})
+          itk_wrap_template("${ITKM_${cvt}${component}}${d}" "${ITKT_${cvt}${component}}, ${d}")
+        endforeach()
+      endforeach()
+    endif()
+  endforeach()
+
+  list(FIND ITK_WRAP_VECTOR_COMPONENTS "5" _index)
+  if (${_index} EQUAL -1)
+    list(FIND WRAP_ITK_COV_VECTOR_REAL "CVD" _index)
+    if (${_index} EQUAL -1)
+      itk_wrap_template("${ITKM_CVD5}3" "itk::CovariantVector<double,5>, 3")
     endif()
   endif()
 
@@ -60,8 +102,8 @@ itk_wrap_simple_type("itk::Image< float, 3 >::ConstPointer" "itkImageF3_ConstPoi
 itk_wrap_simple_type_swig_interface("itk::Image< float, 4 >::ConstPointer" "itkImageF4_ConstPointer")
 itk_wrap_simple_type("itk::Image< float, 4 >::ConstPointer" "itkImageF4_ConstPointer")
 
-itk_wrap_simple_type_swig_interface("itk::Image< itk::CovariantVector< float, 3 >, 4 >::ConstPointer" "itkImageCVF34_ConstPointer")
-itk_wrap_simple_type("itk::Image< itk::CovariantVector< float, 3 >, 4 >::ConstPointer" "itkImageCVF34_ConstPointer")
+#itk_wrap_simple_type_swig_interface("itk::Image< itk::CovariantVector< float, 3 >, 4 >::ConstPointer" "itkImageCVF34_ConstPointer")
+#itk_wrap_simple_type("itk::Image< itk::CovariantVector< float, 3 >, 4 >::ConstPointer" "itkImageCVF34_ConstPointer")
 
 if (ITK_WRAP_double)
   itk_wrap_simple_type_swig_interface("itk::Image< double, 3 >::ConstPointer" "itkImageD3_ConstPointer")
@@ -70,6 +112,16 @@ if (ITK_WRAP_double)
   itk_wrap_simple_type_swig_interface("itk::Image< double, 4 >::ConstPointer" "itkImageD4_ConstPointer")
   itk_wrap_simple_type("itk::Image< double, 4 >::ConstPointer" "itkImageD4_ConstPointer")
 
-  itk_wrap_simple_type_swig_interface("itk::Image< itk::CovariantVector< double, 3 >, 4 >::ConstPointer" "itkImageCVD34_ConstPointer")
-  itk_wrap_simple_type("itk::Image< itk::CovariantVector< double, 3 >, 4 >::ConstPointer" "itkImageCVD34_ConstPointer")
+  #itk_wrap_simple_type_swig_interface("itk::Image< itk::CovariantVector< double, 3 >, 4 >::ConstPointer" "itkImageCVD34_ConstPointer")
+  #itk_wrap_simple_type("itk::Image< itk::CovariantVector< double, 3 >, 4 >::ConstPointer" "itkImageCVD34_ConstPointer")
 endif()
+
+set(vectorComponents 2 3 4 5)
+foreach(v ${vectorComponents})
+  foreach(cvt ${WRAP_ITK_COV_VECTOR_REAL})
+
+    itk_wrap_simple_type_swig_interface("itk::Image< ${ITKT_${cvt}${v}}, 4 >::ConstPointer" "itkImage${ITKM_${cvt}${v}}4_ConstPointer")
+    itk_wrap_simple_type("itk::Image< ${ITKT_${cvt}${v}}, 4 >::ConstPointer" "itkImage${ITKM_${cvt}${v}}4_ConstPointer")
+
+  endforeach()
+endforeach()

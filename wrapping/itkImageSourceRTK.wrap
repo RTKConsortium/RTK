@@ -6,11 +6,6 @@ itk_wrap_class("itk::ImageSource" POINTER)
     itk_wrap_template("ID2" "itk::Image<${ITKT_D}, 2>")
     itk_wrap_template("ID3" "itk::Image<${ITKT_D}, 3>")
   endif()
-  if (ITK_WRAP_double)
-    foreach(nmat 2 3)
-      itk_wrap_template("I${ITKM_VD${nmat}}3" "itk::Image<itk::Vector<${ITKT_D},${nmat}>, 3>")
-    endforeach()
-  endif()
 
   # Wrap ITK unsigned char missing types
   if (NOT ITK_WRAP_unsigned_char)
@@ -47,15 +42,72 @@ itk_wrap_class("itk::ImageSource" POINTER)
     endif()
   endif()
 
+  # Force ITK_WRAP_IMAGE_DIMS to contain "2;3;4"
+  UNIQUE(imageDimensions "${ITK_WRAP_IMAGE_DIMS};2;3;4")
+  set(vectorComponents 2 3 4 5)
+  foreach(component ${vectorComponents})
+    list(FIND ITK_WRAP_VECTOR_COMPONENTS "${component}" _index)
+    if (${_index} EQUAL -1)
+      foreach(vt ${WRAP_ITK_VECTOR_REAL})
+        foreach(d ${imageDimensions})
+          itk_wrap_template("I${ITKM_${vt}${component}}${d}" "itk::Image<${ITKT_${vt}${component}}, ${d}>")
+        endforeach()
+      endforeach()
+    endif()
+  endforeach()
+
+  # Force ITK_WRAP_VECTOR_COMPONENTS to contain "2;3;4;5"
+  UNIQUE(vectorComponents "${ITK_WRAP_VECTOR_COMPONENTS};2;3;4;5")
+
+  # Force ITK_WRAP_IMAGE_DIMS to contain "2;3;4"
+  set(imageDimensions 2 3 4)
+  foreach(d ${imageDimensions})
+    list(FIND ITK_WRAP_IMAGE_DIMS "${d}" _index)
+    if (${_index} EQUAL -1)
+      foreach(vt ${WRAP_ITK_VECTOR_REAL})
+        foreach(component ${ITK_WRAP_VECTOR_COMPONENTS})
+          itk_wrap_template("I${ITKM_${vt}${component}}${d}" "itk::Image<${ITKT_${vt}${component}}, ${d}>")
+        endforeach()
+      endforeach()
+    endif()
+  endforeach()
+
   # Wrap CUDA types
   if(RTK_USE_CUDA)
     itk_wrap_include(itkCudaImage.h)
+
     foreach(d ${ITK_WRAP_IMAGE_DIMS})
       itk_wrap_template("CI${ITKM_F}${d}" "itk::CudaImage<${ITKT_F}, ${d}>")
     endforeach()
-    foreach(nmat 2 3)
-      itk_wrap_template("CI${ITKM_VF${nmat}}3" "itk::CudaImage<itk::Vector<${ITKT_F},${nmat}>, 3>")
+
+    set(vectorComponents 2 3 4 5)
+    foreach(component ${vectorComponents})
+      foreach(vt ${WRAP_ITK_VECTOR_REAL})
+
+        foreach(d ${ITK_WRAP_IMAGE_DIMS})
+          itk_wrap_template("CI${ITKM_${vt}${component}}${d}" "itk::CudaImage<${ITKT_${vt}${component}}, ${d}>")
+        endforeach()
+
+        list(FIND ITK_WRAP_IMAGE_DIMS "4" _index)
+        if(${_index} EQUAL -1)
+          itk_wrap_template("CI${ITKM_${vt}${component}}4" "itk::CudaImage<${ITKT_${vt}${component}}, 4>")
+        endif()
+
+      endforeach()
     endforeach()
+
+  endif()
+
+  # Wrap ITK CovariantVector missing types
+  if (NOT ITK_WRAP_covariant_vector_double)
+
+    set(vectorComponents 2 4 5) # Component 3 handled in ITK
+    foreach(v ${vectorComponents})
+
+      itk_wrap_template("ICVD${v}3" "itk::Image<itk::CovariantVector<${ITKT_D}, ${v}>, 3>")
+
+    endforeach()
+
   endif()
 
 itk_end_wrap_class()

@@ -1,0 +1,16 @@
+itk_wrap_class("itk::ImageFileReader" POINTER)
+
+  # Force ITK_WRAP_VECTOR_COMPONENTS to "2;3;4;5"
+  set(vectorComponents 2 3 4 5)
+  foreach(component ${vectorComponents})
+    list(FIND ITK_WRAP_VECTOR_COMPONENTS "${component}" _index)
+    if (${_index} EQUAL -1)
+      foreach(vt ${WRAP_ITK_VECTOR_REAL})
+        foreach(d ${ITK_WRAP_IMAGE_DIMS})
+          itk_wrap_template("I${ITKM_${vt}${component}}${d}" "itk::Image<${ITKT_${vt}${component}}, ${d}>")
+        endforeach()
+      endforeach()
+    endif()
+  endforeach()
+
+itk_end_wrap_class()

@@ -1,8 +1,10 @@
 itk_wrap_class("rtk::DenoisingBPDQImageFilter" POINTER)
   foreach(d ${ITK_WRAP_IMAGE_DIMS})
     foreach(t ${WRAP_ITK_REAL})
-      itk_wrap_template("I${ITKM_${t}}${d}ICV${ITKM_${t}}${d}${d}"
-        "itk::Image<${ITKT_${t}}, ${d}>, itk::Image< itk::CovariantVector<${ITKT_${t}}, ${d}>, ${d}>")
+      foreach(cvt ${WRAP_ITK_COV_VECTOR_REAL})
+        itk_wrap_template("I${ITKM_${t}}${d}I${ITKM_${cvt}${d}}${d}"
+          "itk::Image<${ITKT_${t}}, ${d}>, itk::Image<${ITKT_${cvt}${d}}, ${d}>")
+      endforeach()
     endforeach()
   endforeach()
 itk_end_wrap_class()
