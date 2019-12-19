@@ -121,8 +121,7 @@
         std::cerr << "Invalid requested region error triggered by "                                                    \
                   << rInv->GetDataObject()->GetSource()->GetNameOfClass() << std::endl;                                \
       }                                                                                                                \
-      itk::ImageBase<3> * img;                                                                                         \
-      img = dynamic_cast<itk::ImageBase<3> *>(rInv->GetDataObject());                                                  \
+      const itk::ImageBase<3> * img = dynamic_cast<const itk::ImageBase<3> *>(rInv->GetDataObject());                  \
       if (img)                                                                                                         \
       {                                                                                                                \
         DD(img->GetRequestedRegion())                                                                                  \
