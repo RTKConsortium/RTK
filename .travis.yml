@@ -56,7 +56,7 @@ before_install:
   - if test "$CUDA" != NONE; then travis_retry sudo apt-get install -y cuda-cufft-${CUDA_APT} cuda-cufft-dev-${CUDA_APT}; fi
   - if test "$CUDA" != NONE; then travis_retry sudo apt-get install -y cuda-cublas-${CUDA_APT} cuda-cublas-dev-${CUDA_APT}; fi
   - if test "$CUDA" != NONE; then travis_retry sudo apt-get clean; fi
-  - if test "$CUDA" != NONE; then export CUDA_TOOLKIT_ROOT_DIR=/usr/local/cuda-${CUDA%%-*}; fi
+  - if test "$CUDA" != NONE; then export CUDA_TOOLKIT_ROOT_DIR=/usr/local/cuda-${CUDA:0:3}; fi
   - if test "$CUDA" != NONE; then export PATH=${CUDA_TOOLKIT_ROOT_DIR}/bin:${PATH}; fi
   - if test $TRAVIS_OS_NAME == osx ; then HOMEBREW_NO_AUTO_UPDATE=1 brew install fftw || true ; brew link --overwrite fftw || true ; fi
   - export PATH=$(echo $PATH | tr ':' "\n" | sed '/\/opt\/python/d' | tr "\n" ":" | sed "s|::|:|g")
@@ -101,6 +101,7 @@ script:
   - cd build
   - CMAKE_OPTIONS="${KWSTYLE_CMAKE_OPTIONS} -DRTK_BUILD_APPLICATIONS=${APPLICATIONS} ${CMAKE_OPTIONS}"
   - CMAKE_OPTIONS="-DBUILD_TESTING=${TESTING} ${CMAKE_OPTIONS}"
+  - if test "$CUDA" != NONE; then CMAKE_OPTIONS="-DRTK_USE_CUDA:BOOL=ON ${CMAKE_OPTIONS}"; fi
   - if [ $DO_BUILD_RTK == true ]; then cmake .. $CMAKE_OPTIONS || travis_terminate 1; fi
   - if [ $DO_BUILD_RTK == true ]; then make --jobs=$NUM_THREADS --keep-going all || travis_terminate 1; fi
   - if [ $DO_BUILD_RTK == true ] && [ "$TESTING" == ON ] && [ "$CUDA" == NONE ]; then make test || travis_terminate 1; fi
