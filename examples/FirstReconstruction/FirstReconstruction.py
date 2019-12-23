@@ -24,8 +24,8 @@ for x in range(0,numberOfProjections):
 # Writing the geometry to disk
 xmlWriter = rtk.ThreeDCircularProjectionGeometryXMLFileWriter.New()
 xmlWriter.SetFilename ( sys.argv[2] )
-xmlWriter.SetObject ( geometry );
-xmlWriter.WriteFile();
+xmlWriter.SetObject ( geometry )
+xmlWriter.WriteFile()
 
 # Create a stack of empty projection images
 ConstantImageSourceType = rtk.ConstantImageSource[ImageType]
@@ -64,11 +64,11 @@ constantImageSource2.SetConstant(0.)
 print("Reconstructing...")
 FDKCPUType = rtk.FDKConeBeamReconstructionFilter[ImageType]
 feldkamp = FDKCPUType.New()
-feldkamp.SetInput(0, constantImageSource2.GetOutput());
-feldkamp.SetInput(1, rei.GetOutput());
-feldkamp.SetGeometry(geometry);
-feldkamp.GetRampFilter().SetTruncationCorrection(0.0);
-feldkamp.GetRampFilter().SetHannCutFrequency(0.0);
+feldkamp.SetInput(0, constantImageSource2.GetOutput())
+feldkamp.SetInput(1, rei.GetOutput())
+feldkamp.SetGeometry(geometry)
+feldkamp.GetRampFilter().SetTruncationCorrection(0.0)
+feldkamp.GetRampFilter().SetHannCutFrequency(0.0)
 
 # Field-of-view masking
 FOVFilterType = rtk.FieldOfViewImageFilter[ImageType, ImageType]
@@ -80,10 +80,10 @@ fieldofview.SetGeometry(geometry)
 # Writer
 print("Writing output image...")
 WriterType = rtk.ImageFileWriter[ImageType]
-writer = WriterType.New();
-writer.SetFileName(sys.argv[1]);
-writer.SetInput(fieldofview.GetOutput());
-writer.Update();
+writer = WriterType.New()
+writer.SetFileName(sys.argv[1])
+writer.SetInput(fieldofview.GetOutput())
+writer.Update()
 
 print("Done!")
 
