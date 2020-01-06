@@ -1,0 +1,3 @@
+section "Iteration reporting"
+option "output-every"   - "Output intermediate reconstruction after some iterations"                                  int    no
+option "iteration-file-name" - "File name to output intermediate iterations with %d as a placeholder for iteration number" string no

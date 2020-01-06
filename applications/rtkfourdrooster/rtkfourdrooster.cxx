@@ -127,6 +127,8 @@ int main(int argc, char * argv[])
   rooster->SetUseCudaCyclicDeformation(args_info.cudadvfinterpolation_flag);
   rooster->SetDisableDisplacedDetectorFilter(args_info.nodisplaced_flag);
 
+  REPORT_ITERATIONS(rooster, ROOSTERFilterType, VolumeSeriesType)
+
   // Set the newly ordered arguments
   rooster->SetInputProjectionStack( reorder->GetOutput() );
   rooster->SetGeometry( reorder->GetOutputGeometry() );

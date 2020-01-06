@@ -24,6 +24,8 @@
 #  include <itkMultiThreaderBase.h>
 #  include <mutex>
 #endif
+#include <itkIterationReporter.h>
+
 namespace rtk
 {
 
@@ -210,7 +212,8 @@ ConjugateGradientImageFilter<OutputImageType>::GenerateData()
     nullptr);
 #endif
 
-  bool stopIterations = false;
+  itk::IterationReporter iterationReporter(this, 0, 1);
+  bool                   stopIterations = false;
   for (int iter = 0; (iter < m_NumberOfIterations) && !stopIterations; iter++)
   {
     // Compute A * Pk
@@ -350,6 +353,7 @@ ConjugateGradientImageFilter<OutputImageType>::GenerateData()
     // Let the m_A filter know that Pk has been modified, and it should
     // recompute its output at the beginning of next iteration
     Pk->Modified();
+    iterationReporter.CompletedStep();
   }
   m_A->GetOutput()->ReleaseData();
 }

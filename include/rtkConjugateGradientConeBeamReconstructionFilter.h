@@ -21,6 +21,10 @@
 
 #include <itkMultiplyImageFilter.h>
 #include <itkDivideOrZeroOutImageFilter.h>
+#include <itkProcessObject.h>
+#include <itkObject.h>
+#include <itkCommand.h>
+#include <itkIterationReporter.h>
 
 #include "rtkConjugateGradientImageFilter.h"
 #include "rtkReconstructionConjugateGradientOperator.h"
@@ -270,6 +274,10 @@ protected:
   ConjugateGradientFilterPointer
   InstantiateCudaConjugateGradientImageFilter();
 
+  /** Iteration reporter */
+  void
+  ReportProgress(itk::Object *, const itk::EventObject &);
+
 private:
   ThreeDCircularProjectionGeometry::ConstPointer m_Geometry;
 
@@ -279,6 +287,9 @@ private:
   bool  m_IterationCosts;
   bool  m_CudaConjugateGradient;
   bool  m_DisableDisplacedDetectorFilter;
+
+  // Iteration reporting
+  itk::IterationReporter m_IterationReporter;
 };
 } // namespace rtk
 

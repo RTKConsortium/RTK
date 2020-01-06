@@ -21,6 +21,7 @@
 
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkConjugateGradientConeBeamReconstructionFilter.h"
+#include "rtkIterationCommands.h"
 
 #include <iostream>
 #include <fstream>
@@ -135,6 +136,8 @@ int main(int argc, char * argv[])
   conjugategradient->SetGeometry( geometryReader->GetOutputObject() );
   conjugategradient->SetNumberOfIterations( args_info.niterations_arg );
   conjugategradient->SetDisableDisplacedDetectorFilter(args_info.nodisplaced_flag);
+
+  REPORT_ITERATIONS(conjugategradient, ConjugateGradientFilterType, OutputImageType)
 
   TRY_AND_EXIT_ON_ITK_EXCEPTION( conjugategradient->Update() )
 

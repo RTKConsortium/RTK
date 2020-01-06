@@ -22,6 +22,7 @@
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkSARTConeBeamReconstructionFilter.h"
 #include "rtkPhaseGatingImageFilter.h"
+#include "rtkIterationCommands.h"
 
 #ifdef RTK_USE_CUDA
   #include "itkCudaImage.h"
@@ -119,6 +120,8 @@ int main(int argc, char * argv[])
     {
     sart->SetEnforcePositivity(true);
     }
+
+  REPORT_ITERATIONS(sart, rtk::SARTConeBeamReconstructionFilter< OutputImageType >, OutputImageType)
 
   TRY_AND_EXIT_ON_ITK_EXCEPTION( sart->Update() )
 

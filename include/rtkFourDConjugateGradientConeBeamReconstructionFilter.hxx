@@ -26,6 +26,7 @@
 #include <algorithm>
 
 #include <itkImageFileWriter.h>
+#include <itkIterationReporter.h>
 
 namespace rtk
 {
@@ -33,6 +34,7 @@ namespace rtk
 template <class VolumeSeriesType, class ProjectionStackType>
 FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::
   FourDConjugateGradientConeBeamReconstructionFilter()
+  : m_IterationReporter(this, 0, 1)
 {
   this->SetNumberOfRequiredInputs(2); // 4D sequence, projections
 
@@ -223,6 +225,26 @@ FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionS
   pimg->DisconnectPipeline();
 
   this->GraftOutput(pimg);
+}
+
+template <class VolumeSeriesType, class ProjectionStackType>
+void
+FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::ReportProgress(
+  itk::Object *            caller,
+  const itk::EventObject & event)
+{
+  {
+    if (!itk::IterationEvent().CheckEvent(&event))
+    {
+      return;
+    }
+    auto * cgCaller = dynamic_cast<rtk::ConjugateGradientImageFilter<VolumeSeriesType> *>(caller);
+    if (cgCaller)
+    {
+      this->GraftOutput(cgCaller->GetOutput());
+      m_IterationReporter.CompletedStep();
+    }
+  }
 }
 
 } // end namespace rtk

@@ -30,6 +30,7 @@
 #include <itkExtractImageFilter.h>
 #include <itkSubtractImageFilter.h>
 #include <itkMultiplyImageFilter.h>
+#include <itkIterationReporter.h>
 #ifdef RTK_USE_CUDA
 #  include "rtkCudaConjugateGradientImageFilter.h"
 #endif
@@ -220,12 +221,19 @@ protected:
   std::vector<double> m_Signal;
   bool                m_DisableDisplacedDetectorFilter;
 
+  // Iteration reporting
+  itk::IterationReporter m_IterationReporter;
+
 private:
   /** Geometry object */
   ThreeDCircularProjectionGeometry::ConstPointer m_Geometry;
 
   /** Number of conjugate gradient descent iterations */
   unsigned int m_NumberOfIterations;
+
+  /** Iteration reporter */
+  void
+  ReportProgress(itk::Object *, const itk::EventObject &);
 
 }; // end of class
 

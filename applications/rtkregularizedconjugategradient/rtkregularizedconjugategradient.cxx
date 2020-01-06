@@ -167,6 +167,8 @@ int main(int argc, char * argv[])
   else
     regularizedConjugateGradient->SetSoftThresholdOnImage(false);
 
+  REPORT_ITERATIONS(regularizedConjugateGradient, ConjugateGradientFilterType, OutputImageType)
+
   TRY_AND_EXIT_ON_ITK_EXCEPTION( regularizedConjugateGradient->Update() )
 
   // Write

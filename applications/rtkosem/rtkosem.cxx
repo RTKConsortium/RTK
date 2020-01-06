@@ -22,6 +22,7 @@
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkOSEMConeBeamReconstructionFilter.h"
 #include "rtkPhaseGatingImageFilter.h"
+#include "rtkIterationCommands.h"
 
 #ifdef RTK_USE_CUDA
   #include "itkCudaImage.h"
@@ -103,6 +104,8 @@ int main(int argc, char * argv[])
 
   osem->SetNumberOfIterations( args_info.niterations_arg );
   osem->SetNumberOfProjectionsPerSubset( args_info.nprojpersubset_arg );
+
+  REPORT_ITERATIONS(osem, rtk::OSEMConeBeamReconstructionFilter< OutputImageType >, OutputImageType)
 
   // Write
   using WriterType = itk::ImageFileWriter< OutputImageType >;

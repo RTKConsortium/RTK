@@ -150,7 +150,7 @@ ProjectionsReader<TOutputImage>::GenerateOutputInformation(void)
   firstTime = false;
 
   itk::ImageIOBase::Pointer imageIO =
-#if (ITK_VERSION_MAJOR==5) && (ITK_VERSION_MINOR>=1)
+#if (ITK_VERSION_MAJOR == 5) && (ITK_VERSION_MINOR >= 1)
     itk::ImageIOFactory::CreateImageIO(m_FileNames[0].c_str(), itk::ImageIOFactory::FileModeEnum::ReadMode);
 #else
     itk::ImageIOFactory::CreateImageIO(m_FileNames[0].c_str(), itk::ImageIOFactory::FileModeType::ReadMode);

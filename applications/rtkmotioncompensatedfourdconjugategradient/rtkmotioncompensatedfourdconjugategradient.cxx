@@ -114,6 +114,8 @@ int main(int argc, char * argv[])
   mcfourdcg->SetSignal(rtk::ReadSignalFile(args_info.signal_arg));
   mcfourdcg->SetDisableDisplacedDetectorFilter(args_info.nodisplaced_flag);
 
+  REPORT_ITERATIONS(mcfourdcg, MCFourDCGFilterType, VolumeSeriesType)
+
   // Read DVF
   DVFReaderType::Pointer dvfReader = DVFReaderType::New();
   dvfReader->SetFileName( args_info.dvf_arg );

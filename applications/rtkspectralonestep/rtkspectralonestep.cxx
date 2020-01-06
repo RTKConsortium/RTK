@@ -232,6 +232,8 @@ void rtkspectralonestep(const args_info_rtkspectralonestep &args_info)
     mechlemOneStep->SetGeometry(geometryReader->GetOutputObject());
     }
 
+  REPORT_ITERATIONS(mechlemOneStep, MechlemFilterType, MaterialVolumesType);
+
   mechlemOneStep->Update();
 
   // Write
