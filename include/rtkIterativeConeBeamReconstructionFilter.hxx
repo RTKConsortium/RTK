@@ -47,6 +47,9 @@ IterativeConeBeamReconstructionFilter<TOutputImage, ProjectionStackType>::Instan
     case (FP_JOSEPHATTENUATED):
       fw = InstantiateJosephForwardAttenuatedProjection<ProjectionStackType>();
       break;
+    case (FP_ZENG):
+      fw = InstantiateZengForwardProjection<ProjectionStackType>();
+      break;
     default:
       itkGenericExceptionMacro(<< "Unhandled --fp value.");
   }
@@ -74,6 +77,9 @@ IterativeConeBeamReconstructionFilter<TOutputImage, ProjectionStackType>::Instan
       break;
     case (BP_JOSEPHATTENUATED):
       bp = InstantiateJosephBackAttenuatedProjection<ProjectionStackType>();
+      break;
+    case (BP_ZENG):
+      bp = InstantiateZengBackProjection<ProjectionStackType>();
       break;
     default:
       itkGenericExceptionMacro(<< "Unhandled --bp value.");

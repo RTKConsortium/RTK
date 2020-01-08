@@ -24,8 +24,10 @@
 // Forward projection filters
 #include "rtkConfiguration.h"
 #include "rtkJosephForwardAttenuatedProjectionImageFilter.h"
+#include "rtkZengForwardProjectionImageFilter.h"
 // Back projection filters
 #include "rtkJosephBackAttenuatedProjectionImageFilter.h"
+#include "rtkZengBackProjectionImageFilter.h"
 
 #ifdef RTK_USE_CUDA
 #  include "rtkCudaForwardProjectionImageFilter.h"
@@ -70,7 +72,8 @@ public:
     FP_UNKNOWN = -1,
     FP_JOSEPH = 0,
     FP_CUDARAYCAST = 2,
-    FP_JOSEPHATTENUATED = 3
+    FP_JOSEPHATTENUATED = 3,
+    FP_ZENG = 4
   } ForwardProjectionType;
   typedef enum
   {
@@ -79,7 +82,8 @@ public:
     BP_JOSEPH = 1,
     BP_CUDAVOXELBASED = 2,
     BP_CUDARAYCAST = 4,
-    BP_JOSEPHATTENUATED = 5
+    BP_JOSEPHATTENUATED = 5,
+    BP_ZENG = 6
   } BackProjectionType;
 
   /** Typedefs of each subfilter of this composite filter */
@@ -207,6 +211,23 @@ protected:
     return fw;
   }
 
+  template <typename ImageType, EnableVectorType<ImageType> * = nullptr>
+  ForwardProjectionPointerType
+  InstantiateZengForwardProjection()
+  {
+    itkGenericExceptionMacro(<< "JosephForwardAttenuatedProjectionImageFilter only available with scalar pixel types.");
+    return nullptr;
+  }
+
+
+  template <typename ImageType, DisableVectorType<ImageType> * = nullptr>
+  ForwardProjectionPointerType
+  InstantiateZengForwardProjection()
+  {
+    ForwardProjectionPointerType fw;
+    fw = ZengForwardProjectionImageFilter<VolumeType, ProjectionStackType>::New();
+    return fw;
+  }
 
   template <typename ImageType, EnableCudaScalarAndVectorType<ImageType> * = nullptr>
   BackProjectionPointerType
@@ -266,6 +287,24 @@ protected:
   {
     BackProjectionPointerType bp;
     bp = JosephBackAttenuatedProjectionImageFilter<ImageType, ImageType>::New();
+    return bp;
+  }
+
+  template <typename ImageType, EnableVectorType<ImageType> * = nullptr>
+  BackProjectionPointerType
+  InstantiateZengBackProjection()
+  {
+    itkGenericExceptionMacro(<< "JosephBackAttenuatedProjectionImageFilter only available with scalar pixel types.");
+    return nullptr;
+  }
+
+
+  template <typename ImageType, DisableVectorType<ImageType> * = nullptr>
+  BackProjectionPointerType
+  InstantiateZengBackProjection()
+  {
+    BackProjectionPointerType bp;
+    bp = ZengBackProjectionImageFilter<ImageType, ImageType>::New();
     return bp;
   }
 

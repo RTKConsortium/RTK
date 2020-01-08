@@ -22,6 +22,7 @@
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkJosephForwardProjectionImageFilter.h"
 #include "rtkJosephForwardAttenuatedProjectionImageFilter.h"
+#include "rtkZengForwardProjectionImageFilter.h"
 #ifdef RTK_USE_CUDA
 #include "rtkCudaForwardProjectionImageFilter.h"
 #endif
@@ -107,6 +108,9 @@ int main(int argc, char * argv[])
   case(fp_arg_JosephAttenuated):
     forwardProjection = rtk::JosephForwardAttenuatedProjectionImageFilter<OutputImageType, OutputImageType>::New();
       break;
+  case(fp_arg_Zeng):
+    forwardProjection = rtk::ZengForwardProjectionImageFilter<OutputImageType, OutputImageType>::New();
+    break;
   case(fp_arg_CudaRayCast):
 #ifdef RTK_USE_CUDA
     forwardProjection = rtk::CudaForwardProjectionImageFilter<OutputImageType, OutputImageType>::New();
@@ -124,6 +128,10 @@ int main(int argc, char * argv[])
   forwardProjection->SetInput( 1, reader->GetOutput() );
   if(args_info.attenuationmap_given)
     forwardProjection->SetInput(2, attenuationFilter->GetOutput());
+  if(args_info.sigmazero_given && args_info.fp_arg == fp_arg_Zeng)
+     dynamic_cast<rtk::ZengForwardProjectionImageFilter<OutputImageType, OutputImageType>*>(forwardProjection.GetPointer())->SetSigmaZero(args_info.sigmazero_arg);
+  if(args_info.alphapsf_given && args_info.fp_arg == fp_arg_Zeng)
+    dynamic_cast<rtk::ZengForwardProjectionImageFilter<OutputImageType, OutputImageType>*>(forwardProjection.GetPointer())->SetAlpha(args_info.alphapsf_arg);
   forwardProjection->SetGeometry( geometryReader->GetOutputObject() );
   if(!args_info.lowmem_flag)
     {

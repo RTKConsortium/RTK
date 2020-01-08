@@ -156,6 +156,14 @@ public:
   itkGetMacro(NumberOfProjectionsPerSubset, unsigned int);
   itkSetMacro(NumberOfProjectionsPerSubset, unsigned int);
 
+  /** Get / Set the sigma zero of the PSF. Default is 1.5417233052142099 */
+  itkGetMacro(SigmaZero, float);
+  itkSetMacro(SigmaZero, float);
+
+  /** Get / Set the alpha of the PSF. Default is 0.016241189545787734 */
+  itkGetMacro(Alpha, float);
+  itkSetMacro(Alpha, float);
+
   /** Select the ForwardProjection filter */
   void
   SetForwardProjectionFilter(ForwardProjectionType _arg) override;
@@ -210,6 +218,10 @@ private:
 
   /** Number of iterations */
   unsigned int m_NumberOfIterations;
+
+  /** PSF correction coefficients */
+  float m_SigmaZero;
+  float m_Alpha;
 
 }; // end of class
 

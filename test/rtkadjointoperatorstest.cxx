@@ -6,6 +6,8 @@
 #include "rtkJosephForwardProjectionImageFilter.h"
 #include "rtkJosephBackAttenuatedProjectionImageFilter.h"
 #include "rtkJosephForwardAttenuatedProjectionImageFilter.h"
+#include "rtkZengBackProjectionImageFilter.h"
+#include "rtkZengForwardProjectionImageFilter.h"
 #ifdef RTK_USE_CUDA
   #include "rtkCudaForwardProjectionImageFilter.h"
   #include "rtkCudaRayCastBackProjectionImageFilter.h"
@@ -60,9 +62,9 @@ int main(int, char** )
   RandomImageSourceType::SpacingType spacing;
 
   // Volume metadata
-  origin[0] = -127.;
-  origin[1] = -127.;
-  origin[2] = -127.;
+  origin[0] = -128.;
+  origin[1] = -128.;
+  origin[2] = -128.;
 #if FAST_TESTS_NO_CHECKS
   size[0] = 2;
   size[1] = 2;
@@ -71,9 +73,9 @@ int main(int, char** )
   spacing[1] = 252.;
   spacing[2] = 252.;
 #else
-  size[0] = 64;
-  size[1] = 64;
-  size[2] = 64;
+  size[0] = 65;
+  size[1] = 65;
+  size[2] = 65;
   spacing[0] = 4.;
   spacing[1] = 4.;
   spacing[2] = 4.;
@@ -100,9 +102,9 @@ int main(int, char** )
   constantAttenuationSource->SetConstant( 0.0154 );
 
   // Projections metadata
-  origin[0] = -255.;
-  origin[1] = -255.;
-  origin[2] = -255.;
+  origin[0] = -128.;
+  origin[1] = -128.;
+  origin[2] = -128.;
 #if FAST_TESTS_NO_CHECKS
   size[0] = 2;
   size[1] = 2;
@@ -111,23 +113,18 @@ int main(int, char** )
   spacing[1] = 504.;
   spacing[2] = 504.;
 #else
-  size[0] = 64;
-  size[1] = 64;
+  size[0] = 65;
+  size[1] = 65;
   size[2] = NumberOfProjectionImages;
-  spacing[0] = 8.;
-  spacing[1] = 8.;
-  spacing[2] = 8.;
+  spacing[0] = 4.;
+  spacing[1] = 4.;
+  spacing[2] = 1;
 #endif
   randomProjectionsSource->SetOrigin( origin );
   randomProjectionsSource->SetSpacing( spacing );
   randomProjectionsSource->SetSize( size );
   randomProjectionsSource->SetMin( 0. );
   randomProjectionsSource->SetMax( 100. );
-#if ITK_VERSION_MAJOR<5
-  randomProjectionsSource->SetNumberOfThreads(2); //With 1, it's deterministic
-#else
-  randomProjectionsSource->SetNumberOfWorkUnits(2); //With 1, it's deterministic
-#endif
 
   constantProjectionsSource->SetOrigin( origin );
   constantProjectionsSource->SetSpacing( spacing );
@@ -135,10 +132,10 @@ int main(int, char** )
   constantProjectionsSource->SetConstant( 0. );
 
   // Update all sources
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( randomVolumeSource->Update() );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( constantVolumeSource->Update() );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( randomProjectionsSource->Update() );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( constantProjectionsSource->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( randomVolumeSource->UpdateLargestPossibleRegion(); );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( constantVolumeSource->UpdateLargestPossibleRegion() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( randomProjectionsSource->UpdateLargestPossibleRegion() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( constantProjectionsSource->UpdateLargestPossibleRegion() );
 
   // Geometry object
   using GeometryType = rtk::ThreeDCircularProjectionGeometry;
@@ -269,6 +266,7 @@ int main(int, char** )
       TRY_AND_EXIT_ON_ITK_EXCEPTION( vbp->Update() );
 
       CheckVectorScalarProducts<VectorImageType, VectorImageType>(vectorRandomVolume, vbp->GetOutput(), vectorRandomProjections, vfw->GetOutput());
+      std::cout << "\n\nTest PASSED! " << std::endl;
 
       std::cout << "\n\n****** Attenuated Joseph Forward projector ******" << std::endl;
 
@@ -292,7 +290,6 @@ int main(int, char** )
       TRY_AND_EXIT_ON_ITK_EXCEPTION( attbp->Update() );
 
       CheckScalarProducts<OutputImageType, OutputImageType>(randomVolumeSource->GetOutput(), attbp->GetOutput(), randomProjectionsSource->GetOutput(), attfw->GetOutput());
-
       std::cout << "\n\nTest PASSED! " << std::endl;
 
     #ifdef USE_CUDA
@@ -320,6 +317,35 @@ int main(int, char** )
       std::cout << "\n\nTest PASSED! " << std::endl;
     #endif
     }
+
+  // Geometry parallel object
+  using GeometryType = rtk::ThreeDCircularProjectionGeometry;
+  GeometryType::Pointer geometry_parallel = GeometryType::New();
+  for(unsigned int noProj=0; noProj<NumberOfProjectionImages; noProj++)
+    geometry_parallel->AddProjection(500., 0., noProj*360./NumberOfProjectionImages);
+
+
+  std::cout << "\n\n******  Zeng Forward projector ******" << std::endl;
+
+  using ZengForwardProjectorType = rtk::ZengForwardProjectionImageFilter<OutputImageType, OutputImageType>;
+  ZengForwardProjectorType::Pointer zfw = ZengForwardProjectorType::New();
+  zfw->SetInput(0, constantProjectionsSource->GetOutput());
+  zfw->SetInput(1, randomVolumeSource->GetOutput());
+  zfw->SetGeometry( geometry_parallel );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( zfw->Update() );
+
+  std::cout << "\n\n****** Zeng Back projector ******" << std::endl;
+
+  using ZengBackProjectorType = rtk::ZengBackProjectionImageFilter<OutputImageType, OutputImageType>;
+  ZengBackProjectorType::Pointer zbp = ZengBackProjectorType::New();
+  zbp->SetInput(0, constantVolumeSource->GetOutput());
+  zbp->SetInput(1, randomProjectionsSource->GetOutput());
+  zbp->SetGeometry( geometry_parallel);
+
+  TRY_AND_EXIT_ON_ITK_EXCEPTION( zbp->Update() );
+
+  CheckScalarProducts<OutputImageType, OutputImageType>(randomVolumeSource->GetOutput(), zbp->GetOutput(), randomProjectionsSource->GetOutput(), zfw->GetOutput());
+  std::cout << "\n\nTest PASSED! " << std::endl;
 
   return EXIT_SUCCESS;
 }
