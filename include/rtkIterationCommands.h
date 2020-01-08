@@ -100,7 +100,7 @@ public:
 
 protected:
   void
-  Run(const TCaller * caller) override
+  Run(const TCaller * itkNotUsed(caller)) override
   {
     std::cout << "Iteration " << this->m_IterationCount << " completed."
               << std::endl; // TODO allow string personnalization
