@@ -443,7 +443,7 @@ MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectru
         // Set the extract filter's region
         typename TPhotonCounts::RegionType extractionRegion = this->GetInputPhotonCounts()->GetLargestPossibleRegion();
         extractionRegion.SetSize(TPhotonCounts::ImageDimension - 1,
-                                 std::min(16, m_NumberOfProjectionsInSubset[subset] - i));
+                                 std::min(NProjPerExtract , m_NumberOfProjectionsInSubset[subset] - i));
         extractionRegion.SetIndex(TPhotonCounts::ImageDimension - 1, subset * m_NumberOfProjectionsPerSubset + i);
         m_ExtractPhotonCountsFilter->SetExtractionRegion(extractionRegion);
         m_ExtractPhotonCountsFilter->UpdateOutputInformation();
