@@ -127,6 +127,8 @@ int main(int argc, char * argv[])
   conjugategradient->SetWeights(signalToInterpolationWeights->GetOutput());
   conjugategradient->SetSignal(reorder->GetOutputSignal());
 
+  REPORT_ITERATIONS(conjugategradient, ConjugateGradientFilterType, VolumeSeriesType);
+
   TRY_AND_EXIT_ON_ITK_EXCEPTION( conjugategradient->Update() )
 
   // Write

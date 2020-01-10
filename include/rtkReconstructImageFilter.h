@@ -243,8 +243,8 @@ private:
     false
   }; // Filters instantiated by GenerateOutputInformation() should be instantiated only once
 
-  typename InputImageType::SizeType * m_Sizes;                        // Holds the size of sub-images at each level
-  typename InputImageType::IndexType * m_Indices;                     // Holds the size of sub-images at each level
+  typename InputImageType::SizeType *                   m_Sizes;      // Holds the size of sub-images at each level
+  typename InputImageType::IndexType *                  m_Indices;    // Holds the size of sub-images at each level
   typename std::vector<typename AddFilterType::Pointer> m_AddFilters; // Holds a vector of add filters
   typename std::vector<typename ConvolutionFilterType::Pointer>
     m_ConvolutionFilters; // Holds a vector of convolution filters

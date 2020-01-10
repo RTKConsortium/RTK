@@ -23,6 +23,7 @@
 #include <itkMacro.h>
 #include <itkImageBase.h>
 #include "rtkGgoArgsInfoManager.h"
+#include "rtkIterationCommands.h"
 
 //--------------------------------------------------------------------
 #ifndef CLANG_PRAGMA_PUSH
@@ -121,8 +122,7 @@
         std::cerr << "Invalid requested region error triggered by "                                                    \
                   << rInv->GetDataObject()->GetSource()->GetNameOfClass() << std::endl;                                \
       }                                                                                                                \
-      itk::ImageBase<3> * img;                                                                                         \
-      img = dynamic_cast<itk::ImageBase<3> *>(rInv->GetDataObject());                                                  \
+      const itk::ImageBase<3> * img = dynamic_cast<const itk::ImageBase<3> *>(rInv->GetDataObject());                  \
       if (img)                                                                                                         \
       {                                                                                                                \
         DD(img->GetRequestedRegion())                                                                                  \
@@ -196,6 +196,43 @@
       return smartPtr;                                                                                                 \
     }
 #endif // RTK_PROBE_EACH_FILTER
+//--------------------------------------------------------------------
+
+//--------------------------------------------------------------------
+/** \brief Manage iteration reporting for filters supporting it.
+ *
+ * If verbose flag is set, outputs a string noticing iteration completion.
+ * If output-every argument is provided, save intermediate output in a file.
+ * If iteration-file-name is provided, the intermediate output is saved in a file
+ * having custom name and location.
+ *
+ * \author Aurélien Coussat
+ *
+ * \ingroup RTK
+ */
+#define REPORT_ITERATIONS(filter, filter_type, output_image_type)                                                      \
+  if (args_info.verbose_flag)                                                                                          \
+  {                                                                                                                    \
+    using VerboseIterationCommandType = rtk::VerboseIterationCommand<filter_type>;                                     \
+    typename VerboseIterationCommandType::Pointer verboseIterationCommand = VerboseIterationCommandType::New();        \
+    filter->AddObserver(itk::IterationEvent(), verboseIterationCommand);                                               \
+  }                                                                                                                    \
+  if (args_info.output_every_given)                                                                                    \
+  {                                                                                                                    \
+    typedef rtk::OutputIterationCommand<filter_type, output_image_type> OutputIterationCommand;                        \
+    typename OutputIterationCommand::Pointer outputIterationCommand = OutputIterationCommand::New();                   \
+    outputIterationCommand->SetTriggerEvery(args_info.output_every_arg);                                               \
+    if (args_info.iteration_file_name_given)                                                                           \
+    {                                                                                                                  \
+      outputIterationCommand->SetFileFormat(args_info.iteration_file_name_arg);                                        \
+    }                                                                                                                  \
+    else                                                                                                               \
+    {                                                                                                                  \
+      outputIterationCommand->SetFileFormat("iter%d.mha");                                                             \
+    }                                                                                                                  \
+    filter->AddObserver(itk::IterationEvent(), outputIterationCommand);                                                \
+  }
+//--------------------------------------------------------------------
 
 
 #endif

@@ -25,6 +25,7 @@
 #ifdef RTK_USE_CUDA
 #  include "rtkCudaIterativeFDKConeBeamReconstructionFilter.h"
 #endif
+
 #include <itkStreamingImageFilter.h>
 #include <itkImageFileWriter.h>
 
@@ -102,6 +103,7 @@ int main(int argc, char * argv[])
   if(!strcmp(args_info.hardware_arg, "cpu") )
     {
     ifdk = IFDKCPUType::New();
+    REPORT_ITERATIONS(ifdk, IFDKCPUType, OutputImageType)
     SET_IFDK_OPTIONS( ifdk );
     IFDKOutputPointer = ifdk->GetOutput();
     }
@@ -109,6 +111,7 @@ int main(int argc, char * argv[])
   else if(!strcmp(args_info.hardware_arg, "cuda") )
     {
     ifdkCUDA = IFDKCUDAType::New();
+    REPORT_ITERATIONS(ifdkCUDA, IFDKCPUType, OutputImageType)
     SET_IFDK_OPTIONS( ifdkCUDA );
     IFDKOutputPointer = ifdkCUDA->GetOutput();
     }

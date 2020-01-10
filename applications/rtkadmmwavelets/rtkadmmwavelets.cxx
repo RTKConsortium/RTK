@@ -118,6 +118,8 @@ int main(int argc, char * argv[])
 
   admmFilter->SetDisableDisplacedDetectorFilter(args_info.nodisplaced_flag);
 
+  REPORT_ITERATIONS(admmFilter, ADMM_Wavelets_FilterType, OutputImageType);
+
   TRY_AND_EXIT_ON_ITK_EXCEPTION( admmFilter->Update() )
 
   // Set writer and write the output

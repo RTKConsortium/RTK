@@ -245,9 +245,9 @@ private:
     false
   }; // Filters instantiated by GenerateOutputInformation() should be instantiated only once
 
-  typename std::vector<typename InputImageType::SizeType> m_Sizes;    // Holds the size of sub-images at each level
-  typename std::vector<typename InputImageType::IndexType> m_Indices; // Holds the size of sub-images at each level
-  typename std::vector<typename PadFilterType::Pointer> m_PadFilters; // Holds a vector of padding filters
+  typename std::vector<typename InputImageType::SizeType>  m_Sizes;      // Holds the size of sub-images at each level
+  typename std::vector<typename InputImageType::IndexType> m_Indices;    // Holds the size of sub-images at each level
+  typename std::vector<typename PadFilterType::Pointer>    m_PadFilters; // Holds a vector of padding filters
   typename std::vector<typename ConvolutionFilterType::Pointer>
     m_ConvolutionFilters; // Holds a vector of convolution filters
   typename std::vector<typename DownsampleImageFilterType::Pointer>

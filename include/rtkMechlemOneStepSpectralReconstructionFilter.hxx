@@ -21,6 +21,8 @@
 
 #include "rtkMechlemOneStepSpectralReconstructionFilter.h"
 
+#include <itkIterationReporter.h>
+
 namespace rtk
 {
 
@@ -431,6 +433,8 @@ template <class TOutputImage, class TPhotonCounts, class TSpectrum>
 void
 MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectrum>::GenerateData()
 {
+  itk::IterationReporter iterationReporter(this, 0, 1);
+
   // Run the iteration loop
   typename TOutputImage::Pointer Next_Zk;
   for (int iter = 0; iter < m_NumberOfIterations; iter++)
@@ -472,7 +476,7 @@ MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectru
         // Set the extract filter's region
         typename TPhotonCounts::RegionType extractionRegion = this->GetInputPhotonCounts()->GetLargestPossibleRegion();
         extractionRegion.SetSize(TPhotonCounts::ImageDimension - 1,
-                                 std::min(16, m_NumberOfProjectionsInSubset[subset] - i));
+                                 std::min(NProjPerExtract , m_NumberOfProjectionsInSubset[subset] - i));
         extractionRegion.SetIndex(TPhotonCounts::ImageDimension - 1, subset * m_NumberOfProjectionsPerSubset + i);
         m_ExtractPhotonCountsFilter->SetExtractionRegion(extractionRegion);
         m_ExtractPhotonCountsFilter->UpdateOutputInformation();
@@ -512,9 +516,10 @@ MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectru
         m_NesterovFilter->Update();
         Next_Zk = m_NesterovFilter->GetOutput();
       }
+      this->GraftOutput(Next_Zk);
+      iterationReporter.CompletedStep();
     }
   }
-  this->GraftOutput(Next_Zk);
 }
 
 } // namespace rtk
