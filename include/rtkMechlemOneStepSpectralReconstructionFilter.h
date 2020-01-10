@@ -62,6 +62,8 @@ namespace rtk
  * Input3 [shape=Mdiamond];
  * Input4 [label="Input 4 (Spatial Regularization Weights)"];
  * Input4 [shape=Mdiamond];
+ * Input5 [label="Input 5 (Projection Weights)"];
+ * Input5 [shape=Mdiamond];
  * Output [label="Output (Material volumes)"];
  * Output [shape=Mdiamond];
  *
@@ -86,6 +88,7 @@ namespace rtk
  *            URL="\ref rtk::SeparableQuadraticSurrogateRegularizationImageFilter"];
  * MultiplyRegulGradient [ label="itk::MultiplyImageFilter" URL="\ref itk::MultiplyImageFilter" style=dashed];
  * MultiplyRegulHessian [ label="itk::MultiplyImageFilter" URL="\ref itk::MultiplyImageFilter" style=dashed];
+ * MultiplyGradientToBeBackProjected [ label="itk::MultiplyImageFilter" URL="\ref itk::MultiplyImageFilter" style=dashed];
  * AddGradients [ label="itk::AddImageFilter" URL="\ref itk::AddImageFilter"];
  * AddHessians [ label="rtk::AddMatrixAndDiagonalImageFilter" URL="\ref rtk::AddMatrixAndDiagonalImageFilter"];
  * Newton [ label="rtk::GetNewtonUpdateImageFilter" URL="\ref rtk::GetNewtonUpdateImageFilter"];
@@ -112,7 +115,9 @@ namespace rtk
  * Input4 -> MultiplyRegulGradient;
  * SQSRegul -> MultiplyRegulGradient;
  * MultiplyRegulGradient -> AddGradients;
- * BackProjectionGradients -> AddGradients;
+ * Input5 -> MultiplyGradientToBeBackProjected;
+ * BackProjectionGradients -> MultiplyGradientToBeBackProjected
+ * MultiplyGradientToBeBackProjected -> AddGradients;
  * AddGradients -> Newton;
  * Input4 -> MultiplyRegulHessian;
  * SQSRegul -> MultiplyRegulHessian;
@@ -259,6 +264,8 @@ public:
   SetSupportMask(const SingleComponentImageType * support);
   void
   SetSpatialRegularizationWeights(const SingleComponentImageType * regweights);
+  void
+  SetProjectionWeights(const SingleComponentImageType * weiprojections);
 
   /** Set/Get for the regularization weights */
   itkSetMacro(RegularizationWeights, typename TOutputImage::PixelType);
@@ -309,6 +316,7 @@ protected:
   typename MultiplyFilterType::Pointer                         m_MultiplySupportFilter;
   typename MultiplyGradientFilterType::Pointer                 m_MultiplyRegulGradientsFilter;
   typename MultiplyGradientFilterType::Pointer                 m_MultiplyRegulHessiansFilter;
+  typename MultiplyGradientFilterType::Pointer                 m_MultiplyGradientToBeBackprojectedFilter;
 #endif
 
   /** The inputs of this filter have the same type but not the same meaning
@@ -342,6 +350,8 @@ protected:
   GetSupportMask();
   typename SingleComponentImageType::ConstPointer
   GetSpatialRegularizationWeights();
+  typename SingleComponentImageType::ConstPointer
+  GetProjectionWeights();
 
 #if !defined(ITK_WRAPPING_PARSER)
   /** Functions to instantiate forward and back projection filters with a different

@@ -110,6 +110,14 @@ void rtkspectralonestep(const args_info_rtkspectralonestep &args_info)
     spatialRegulWeighsReader->SetFileName( args_info.regul_spatial_weights_arg );
     }
 
+  // Read spatial regularization weights if given
+  IncidentSpectrumReaderType::Pointer projectionWeightsReader;
+  if(args_info.projection_weights_given)
+    {
+    projectionWeightsReader = IncidentSpectrumReaderType::New();
+    projectionWeightsReader->SetFileName( args_info.projection_weights_arg );
+    }
+
   // Create input: either an existing volume read from a file or a blank image
   typename itk::ImageSource< MaterialVolumesType >::Pointer inputFilter;
   if(args_info.input_given)
@@ -218,18 +226,33 @@ void rtkspectralonestep(const args_info_rtkspectralonestep &args_info)
   if (args_info.subsets_arg != 1)
     {
     using ReorderProjectionsFilterType = rtk::ReorderProjectionsImageFilter<PhotonCountsType>;
-    typename ReorderProjectionsFilterType::Pointer reorder = ReorderProjectionsFilterType::New();
-    reorder->SetInput(photonCountsReader->GetOutput());
-    reorder->SetInputGeometry(geometryReader->GetOutputObject());
-    reorder->SetPermutation(rtk::ReorderProjectionsImageFilter<PhotonCountsType>::SHUFFLE);
-    reorder->Update();
-    mechlemOneStep->SetInputPhotonCounts(reorder->GetOutput());
-    mechlemOneStep->SetGeometry(reorder->GetOutputGeometry());
+    typename ReorderProjectionsFilterType::Pointer reorder_PhotonsCounts = ReorderProjectionsFilterType::New();
+    reorder_PhotonsCounts->SetInput(photonCountsReader->GetOutput());
+    reorder_PhotonsCounts->SetInputGeometry(geometryReader->GetOutputObject());
+    reorder_PhotonsCounts->SetPermutation(rtk::ReorderProjectionsImageFilter<PhotonCountsType>::SHUFFLE);
+    reorder_PhotonsCounts->Update();
+    mechlemOneStep->SetInputPhotonCounts(reorder_PhotonsCounts->GetOutput());
+    mechlemOneStep->SetGeometry(reorder_PhotonsCounts->GetOutputGeometry());
+    if(args_info.projection_weights_given)
+      {
+      // N.B: The permutation of photon counts and weights correspond because we use the SHUFFLE case mode initialized to zero
+      // (cf case (SHUFFLE): in ReorderProjectionsImageFilter.hxx)
+      using ReorderWeightsFilterType = rtk::ReorderProjectionsImageFilter<IncidentSpectrumType>;
+      typename ReorderWeightsFilterType::Pointer reorder_ProjectionWeights = ReorderWeightsFilterType::New();
+      reorder_ProjectionWeights->SetInput(projectionWeightsReader->GetOutput());
+      // Here we get geometry which has not been shuffled
+      reorder_ProjectionWeights->SetInputGeometry(geometryReader->GetOutputObject());
+      reorder_ProjectionWeights->SetPermutation(rtk::ReorderProjectionsImageFilter<IncidentSpectrumType>::SHUFFLE);
+      reorder_ProjectionWeights->Update();
+      mechlemOneStep->SetProjectionWeights(reorder_ProjectionWeights->GetOutput());
+      }
     }
   else
     {
     mechlemOneStep->SetInputPhotonCounts(photonCountsReader->GetOutput());
     mechlemOneStep->SetGeometry(geometryReader->GetOutputObject());
+    if(args_info.projection_weights_given)
+      mechlemOneStep->SetProjectionWeights(projectionWeightsReader->GetOutput());
     }
 
   mechlemOneStep->Update();
