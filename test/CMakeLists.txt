@@ -47,11 +47,6 @@ if(NOT ITK_SOURCE_DIR)
   set(ExternalData_LINK_CONTENT SHA512)
 endif()
 
-#-----------------------------------------------------------------------------
-# Executable to check the image quality
-add_executable(rtkcheckimagequality rtkcheckimagequality.cxx)
-target_link_libraries(rtkcheckimagequality ${ITK_LIBRARIES} ${RTK_LIBRARIES} ${RTK-Test_LIBRARIES})
-
 rtk_add_test(rtkFDKTest rtkfdktest.cxx)
 rtk_add_cuda_test(rtkFDKCudaTest rtkfdktest.cxx)
 

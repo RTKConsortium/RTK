@@ -1,0 +1,6 @@
+package "rtkcheckimagequality"
+purpose "Checks the MSE of a reconstructed image against a reference."
+
+option  "reference" i "Reference volume"  string  multiple  yes
+option  "reconstruction"  j "Reconstructed volume"  string  multiple  yes
+option  "threshold" t "MSE threshold" int multiple  yes
