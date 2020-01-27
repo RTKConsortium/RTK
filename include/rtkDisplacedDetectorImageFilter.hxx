@@ -124,15 +124,44 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>::GenerateOutputInformati
     // Account for projections offsets
     double minSupUntiltCorner = itk::NumericTraits<double>::max();
     double maxInfUntiltCorner = itk::NumericTraits<double>::NonpositiveMin();
-    for (unsigned int i = 0; i < m_Geometry->GetProjectionOffsetsX().size(); i++)
-    {
-      maxInfUntiltCorner =
-        std::max(maxInfUntiltCorner, m_Geometry->ToUntiltedCoordinateAtIsocenter(i, m_InferiorCorner));
-      minSupUntiltCorner =
-        std::min(minSupUntiltCorner, m_Geometry->ToUntiltedCoordinateAtIsocenter(i, m_SuperiorCorner));
-    }
-    m_InferiorCorner = maxInfUntiltCorner;
-    m_SuperiorCorner = minSupUntiltCorner;
+	if (!m_DualRotation)
+	{
+		for (unsigned int i = 0; i < m_Geometry->GetProjectionOffsetsX().size(); i++)
+		{
+			maxInfUntiltCorner = 
+				std::max(maxInfUntiltCorner, m_Geometry->ToUntiltedCoordinateAtIsocenter(i, m_InferiorCorner));
+			minSupUntiltCorner = 
+				std::min(minSupUntiltCorner, m_Geometry->ToUntiltedCoordinateAtIsocenter(i, m_SuperiorCorner));
+		}
+		m_InferiorCorner = maxInfUntiltCorner;
+		m_SuperiorCorner = minSupUntiltCorner;
+	}
+	else
+	{
+		double minSupUntiltCorner_1 = itk::NumericTraits<double>::max();
+		double maxInfUntiltCorner_2 = itk::NumericTraits<double>::NonpositiveMin();
+		m_InferiorCorner_1 = m_InferiorCorner;//sx
+		m_SuperiorCorner_1 = m_SuperiorCorner;//sx
+		m_InferiorCorner_2 = m_InferiorCorner;//dx
+		m_SuperiorCorner_2 = m_SuperiorCorner;//dx
+
+		for (unsigned int i = 0; i < m_Geometry->GetProjectionOffsetsX().size(); i++)
+		{
+			if (m_Geometry->GetProjectionOffsetsX()[i] < 0)
+				maxInfUntiltCorner = std::max(maxInfUntiltCorner, m_Geometry->ToUntiltedCoordinateAtIsocenter(i, m_InferiorCorner));
+			else
+				minSupUntiltCorner = std::min(minSupUntiltCorner, m_Geometry->ToUntiltedCoordinateAtIsocenter(i, m_SuperiorCorner));
+			maxInfUntiltCorner_2 = std::max(maxInfUntiltCorner_2, m_Geometry->ToUntiltedCoordinateAtIsocenter(i, m_InferiorCorner_2));
+			minSupUntiltCorner_1 = std::min(minSupUntiltCorner_1, m_Geometry->ToUntiltedCoordinateAtIsocenter(i, m_SuperiorCorner_1));
+		}
+		m_InferiorCorner = maxInfUntiltCorner;
+		m_InferiorCorner_2 = maxInfUntiltCorner_2;
+		m_SuperiorCorner = minSupUntiltCorner;
+		m_SuperiorCorner_1 = minSupUntiltCorner_1;
+
+		m_SuperiorCorner_2 = m_SuperiorCorner;
+		m_InferiorCorner_1 = m_InferiorCorner;
+	}
   }
   else
   {
@@ -148,23 +177,29 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>::GenerateOutputInformati
                              << " Corner inf=" << m_InferiorCorner << " and corner sup=" << m_SuperiorCorner);
   }
   // Case 2: Not displaced, or explicit request not to pad: default outputLargestPossibleRegion is fine
-  else if ((fabs(m_InferiorCorner + m_SuperiorCorner) < 0.1 * fabs(m_SuperiorCorner - m_InferiorCorner)) ||
-           !m_PadOnTruncatedSide)
+  else if (((fabs(m_InferiorCorner + m_SuperiorCorner) < 0.1*fabs(m_SuperiorCorner - m_InferiorCorner)) || 
+		   !m_PadOnTruncatedSide) && !m_DualRotation)
   {
     this->SetInPlace(true);
   }
-  else if (m_SuperiorCorner + m_InferiorCorner > 0.)
+  else if (m_SuperiorCorner + m_InferiorCorner > 0. || m_DualRotation)
   {
     this->SetInPlace(false);
     itk::Index<3>::IndexValueType index =
       outputLargestPossibleRegion.GetIndex()[0] - outputLargestPossibleRegion.GetSize()[0];
     outputLargestPossibleRegion.SetIndex(0, index);
-    outputLargestPossibleRegion.SetSize(0, outputLargestPossibleRegion.GetSize()[0] * 2);
+	if (!m_DualRotation)
+		outputLargestPossibleRegion.SetSize(0, outputLargestPossibleRegion.GetSize()[0] * 2);
+	else
+		outputLargestPossibleRegion.SetSize(0, outputLargestPossibleRegion.GetSize()[0] * 3);
   }
   else
   {
     this->SetInPlace(false);
-    outputLargestPossibleRegion.SetSize(0, outputLargestPossibleRegion.GetSize()[0] * 2);
+	if (!m_DualRotation)
+		outputLargestPossibleRegion.SetSize(0, outputLargestPossibleRegion.GetSize()[0] * 2);
+	else
+		outputLargestPossibleRegion.SetSize(0, outputLargestPossibleRegion.GetSize()[0] * 3);
   }
 
   outputPtr->SetLargestPossibleRegion(outputLargestPossibleRegion);
@@ -200,7 +235,7 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>
   itk::ImageRegionConstIterator<InputImageType> itIn(this->GetInput(), overlapRegion);
 
   // Not displaced, nothing to do
-  if ((fabs(m_InferiorCorner + m_SuperiorCorner) < 0.1 * fabs(m_SuperiorCorner - m_InferiorCorner)) || m_Disable)
+  if (((fabs(m_InferiorCorner + m_SuperiorCorner) < 0.1*fabs(m_SuperiorCorner - m_InferiorCorner)) && !m_DualRotation) || m_Disable)
   {
     // If not in place, copy is required
     if (this->GetInput() != this->GetOutput())
@@ -237,6 +272,14 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>
   {
     // Prepare weights for current slice (depends on ProjectionOffsetsX)
     const double sx = m_Geometry->GetSourceOffsetsX()[itIn.GetIndex()[2]];
+	const double off = m_Geometry->GetProjectionOffsetsX()[itIn.GetIndex()[2]];
+	if (m_DualRotation)
+	{
+		if (off > 0)
+			theta = -m_InferiorCorner_2;
+		else
+			theta = m_SuperiorCorner_1;
+	}
     double       sdd = m_Geometry->GetSourceToIsocenterDistances()[itIn.GetIndex()[2]];
     sdd = sqrt(sdd * sdd + sx * sx); // To untilted situation
     double invsdd = 0.;
@@ -249,7 +292,8 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>
     typename WeightImageType::PointType point;
     weights->TransformIndexToPhysicalPoint(itWeights.GetIndex(), point);
 
-    if (m_SuperiorCorner + m_InferiorCorner > 0.)
+    //if (m_SuperiorCorner + m_InferiorCorner > 0.)
+	if (((m_SuperiorCorner + m_InferiorCorner > 0.) && !m_DualRotation) || (m_DualRotation && off > 0))
     {
       itWeights.GoToBegin();
       while (!itWeights.IsAtEnd())

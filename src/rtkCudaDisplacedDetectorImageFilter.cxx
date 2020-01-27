@@ -40,9 +40,9 @@ CudaDisplacedDetectorImageFilter ::GPUGenerateData()
   outBuffer += this->GetOutput()->ComputeOffset(this->GetOutput()->GetRequestedRegion().GetIndex());
 
   // nothing to do
-  if ((fabs(this->GetInferiorCorner() + this->GetSuperiorCorner()) <
-       0.1 * fabs(this->GetSuperiorCorner() - this->GetInferiorCorner())) ||
-      this->GetDisable())
+  if (((fabs(this->GetInferiorCorner() + this->GetSuperiorCorner()) < 
+	  0.1 * fabs(this->GetSuperiorCorner() - this->GetInferiorCorner())) && !this->GetDualRotation()) 
+	  || this->GetDisable())
   {
     if (outBuffer != inBuffer)
     {
@@ -103,6 +103,16 @@ CudaDisplacedDetectorImageFilter ::GPUGenerateData()
 
   double theta = std::min(-1. * this->GetInferiorCorner(), this->GetSuperiorCorner());
   bool   isPositiveCase = (this->GetSuperiorCorner() + this->GetInferiorCorner() > 0.) ? true : false;
+  const double off = this->GetGeometry()->GetProjectionOffsetsX()[0];
+
+  if (this->GetDualRotation())
+  {
+	  if (off > 0)
+		  theta = -this->GetInferiorCorner_2();
+	  else
+		  theta = this->GetSuperiorCorner_1();
+  }
+
 
   // 2D matrix (numgeom * 4 values) in one block for memcpy!
   // for each geometry, the following structure is used:
@@ -122,22 +132,27 @@ CudaDisplacedDetectorImageFilter ::GPUGenerateData()
     geomMatrix[g * 4 + 3] = this->GetGeometry()->GetSourceToIsocenterDistances()[g + geomIdx];
   }
 
-
-  CUDA_displaced_weight(proj_idx_in,
-                        proj_size_in,
-                        proj_size_in_buf,
-                        proj_idx_out,
-                        proj_size_out,
-                        proj_size_out_buf,
-                        inBuffer,
-                        outBuffer,
-                        geomMatrix,
-                        theta,
-                        isPositiveCase,
-                        proj_orig,
-                        proj_row,
-                        proj_col);
-
+  if (this->GetDualRotation())
+  {
+	  CUDA_displaced_weight_dual(
+		  proj_idx_in, proj_size_in, proj_size_in_buf, proj_idx_out, proj_size_out, proj_size_out_buf,
+		  inBuffer, outBuffer,
+		  geomMatrix,
+		  theta, isPositiveCase,
+		  proj_orig, proj_row, proj_col,
+		  this->GetInferiorCorner_2(), this->GetSuperiorCorner_1()
+	  );
+  }
+  else
+  {
+	  CUDA_displaced_weight(
+		  proj_idx_in, proj_size_in, proj_size_in_buf, proj_idx_out, proj_size_out, proj_size_out_buf,
+		  inBuffer, outBuffer,
+		  geomMatrix,
+		  theta, isPositiveCase,
+		  proj_orig, proj_row, proj_col
+	  );
+  }
   delete[] geomMatrix;
 }
 

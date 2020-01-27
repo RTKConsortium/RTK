@@ -108,6 +108,12 @@ public:
   itkGetMacro(Disable, bool);
   itkSetMacro(Disable, bool);
 
+  /** Get / Set the Dual Rotation parameter
+   */
+  itkGetMacro(DualRotation, bool);
+  itkSetMacro(DualRotation, bool);
+
+
 protected:
   DisplacedDetectorImageFilter();
 
@@ -116,6 +122,13 @@ protected:
   /** Retrieve computed inferior and superior corners */
   itkGetMacro(InferiorCorner, double);
   itkGetMacro(SuperiorCorner, double);
+
+  /** Retrieve computed inferior and superior corners - Dual Rotation positive shift */
+  itkGetMacro(InferiorCorner_1, double);
+  itkGetMacro(SuperiorCorner_1, double);
+  /** Retrieve computed inferior and superior corners - Dual Rotation negative shift*/
+  itkGetMacro(InferiorCorner_2, double);
+  itkGetMacro(SuperiorCorner_2, double);
 
   void
   GenerateInputRequestedRegion() override;
@@ -161,6 +174,22 @@ private:
    * it has to be disabled
    */
   bool m_Disable{ false };
+
+  /** When using a dual rotation geometry that the displaced detector cannot manage,
+   * it must be set true
+   */
+  bool m_DualRotation{ false };
+
+  /** Superior and inferior position of the detector along the weighting
+   *  direction, i.e., the virtual detector described in ToUntiltedCoordinate.
+   *  this variables acoount for two possible detector displacements inside the same geometry.
+   */
+
+  double m_InferiorCorner_1{ 0. };
+  double m_SuperiorCorner_1{ 0. };
+  double m_InferiorCorner_2{ 0. };
+  double m_SuperiorCorner_2{ 0. };
+
 
 }; // end of class
 

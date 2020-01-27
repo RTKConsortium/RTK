@@ -35,4 +35,22 @@ CUDA_displaced_weight(int     proj_idx_in[3],
                       float   proj_row,
                       float   proj_col);
 
+void
+CUDA_displaced_weight_dual(int     proj_idx_in[3],
+						   int     proj_dim_in[3],
+						   int     proj_dim_in_buf[2],
+						   int     proj_idx_out[3],
+						   int     proj_dim_out[3],
+						   int     proj_dim_out_buf[2],
+						   float * dev_proj_in,
+						   float * dev_proj_out,
+						   float * geometries,
+						   float   theta,
+						   bool    isPositiveCase,
+						   float   proj_orig,
+						   float   proj_row,
+						   float   proj_col,
+						   float   InferiorCorner_2,
+						   float   SuperiorCorner_1);
+
 #endif //__rtkCudaDisplacedDetectorImageFilter_hcu
