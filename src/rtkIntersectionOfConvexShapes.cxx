@@ -90,7 +90,7 @@ IntersectionOfConvexShapes ::Rotate(const RotationMatrixType & r)
 }
 
 void
-IntersectionOfConvexShapes ::AddConvexShape(const ConvexShapePointer & co)
+IntersectionOfConvexShapes ::AddConvexShape(const ConvexShape *co)
 {
   ConvexShapePointer clone = co->Clone();
   m_ConvexShapes.push_back(clone);

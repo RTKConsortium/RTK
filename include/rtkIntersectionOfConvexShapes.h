@@ -72,7 +72,7 @@ public:
 
   /** Add convex object to phantom. */
   void
-  AddConvexShape(const ConvexShapePointer & co);
+  AddConvexShape(const ConvexShape *co);
   itkGetConstReferenceMacro(ConvexShapes, ConvexShapeVector);
   virtual void
   SetConvexShapes(const ConvexShapeVector & _arg);

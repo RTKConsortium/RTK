@@ -48,9 +48,9 @@ GeometricPhantom ::Rotate(const RotationMatrixType & r)
 }
 
 void
-GeometricPhantom ::AddConvexShape(const ConvexShapePointer & co)
+GeometricPhantom ::AddConvexShape(const ConvexShape *co)
 {
-  m_ConvexShapes.push_back(co);
+  m_ConvexShapes.push_back( co->Clone() );
   for (size_t i = 0; i < m_PlaneDirections.size(); i++)
     m_ConvexShapes.back()->AddClipPlane(m_PlaneDirections[i], m_PlanePositions[i]);
 }
