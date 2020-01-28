@@ -76,7 +76,7 @@ public:
 
   /** Add convex object to phantom. */
   void
-  AddConvexShape(const ConvexShapePointer & co);
+  AddConvexShape(const ConvexShape *co);
 
   /** Add clipping plane to the object. The plane is defined by the equation
    * dir * (x,y,z)' + pos = 0. */
