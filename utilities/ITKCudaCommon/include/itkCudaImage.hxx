@@ -153,7 +153,7 @@ CudaImage<TPixel, VImageDimension>::SetPixelContainer(PixelContainer * container
   Superclass::SetPixelContainer(container);
   m_DataManager->SetImagePointer(this);
   m_DataManager->SetCPUBufferPointer(Superclass::GetBufferPointer());
-  m_DataManager->SetCPUDirtyFlag(this->GetBufferPointer() == NULL);
+  m_DataManager->SetCPUDirtyFlag(this->GetBufferPointer() == nullptr);
   m_DataManager->SetGPUDirtyFlag(true);
   SizeValueType numPixel = this->GetOffsetTable()[VImageDimension];
   m_DataManager->SetBufferSize(sizeof(TPixel) * numPixel);

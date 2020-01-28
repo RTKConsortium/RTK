@@ -1,7 +1,6 @@
 set(ITKCudaCommon_SRC
     itkCudaContextManager.cxx
     itkCudaDataManager.cxx
-    itkCudaKernelManager.cxx
     itkCudaUtil.cxx
     itkCudaMemoryProbe.cxx
   )

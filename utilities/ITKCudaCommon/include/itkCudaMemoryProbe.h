@@ -33,7 +33,7 @@ namespace itk
  *   evaluate the execution over multiple passes. The values of memory are
  *   taken from cudaMemGetInfo.
  *
- * \ingroup ITKCommon
+ * \ingroup ITKCudaCommon
  */
 class ITKCudaCommon_EXPORT CudaMemoryProbe : public ResourceProbe<OffsetValueType, double>
 {

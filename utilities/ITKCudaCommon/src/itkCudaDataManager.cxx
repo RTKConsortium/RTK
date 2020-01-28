@@ -29,7 +29,7 @@ CudaDataManager::CudaDataManager()
   // Creating the context in the constructor allows avoiding a memory leak.
   // However, the cuda data manager is created even if there is no use of CUDA
   // software and sometimes one compiles RTK with CUDA but wants to use it
-  // without CUDA. So if the context pointer is NULL, which indicates that there
+  // without CUDA. So if the context pointer is nullptr, which indicates that there
   // is no CUDA device available, we just do not set the context (SR). This fixes
   // the problem reported here:
   // http://public.kitware.com/pipermail/rtk-users/2015-July/000570.html
@@ -37,7 +37,7 @@ CudaDataManager::CudaDataManager()
   if (ctx)
     CUDA_CHECK(cuCtxSetCurrent(*ctx));
 
-  m_CPUBuffer = NULL;
+  m_CPUBuffer = nullptr;
   m_GPUBuffer = GPUMemPointer::New();
   this->Initialize();
 
@@ -55,7 +55,7 @@ CudaDataManager::CudaDataManager()
 
 CudaDataManager::~CudaDataManager()
 {
-  m_GPUBuffer = NULL;
+  m_GPUBuffer = nullptr;
   CudaContextManager::DestroyInstance();
 }
 
@@ -271,7 +271,7 @@ void
 CudaDataManager::Initialize()
 {
   m_BufferSize = 0;
-  m_CPUBuffer = NULL;
+  m_CPUBuffer = nullptr;
   m_MemFlags = 0; // default flag
   m_IsGPUBufferDirty = false;
   m_IsCPUBufferDirty = false;

@@ -19,7 +19,7 @@
 #define itkCudaImageToImageFilter_h
 
 #include "itkImageToImageFilter.h"
-#include "itkCudaKernelManager.h"
+#include "itkCudaImage.h"
 
 namespace itk
 {
@@ -95,9 +95,6 @@ protected:
   virtual void
   GPUGenerateData()
   {}
-
-  // Cuda kernel manager
-  typename CudaKernelManager::Pointer m_CudaKernelManager;
 
 private:
   CudaImageToImageFilter(const Self &); // purposely not implemented

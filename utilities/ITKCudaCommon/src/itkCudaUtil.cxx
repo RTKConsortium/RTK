@@ -136,15 +136,15 @@ CudaPrintDeviceInfo(int device, bool verbose)
   if (verbose)
   {
     /*cl_uint mem_align;
-    err = clGetDeviceInfo(device, CL_DEVICE_MEM_BASE_ADDR_ALIGN, sizeof(mem_align), &mem_align, NULL);
+    err = clGetDeviceInfo(device, CL_DEVICE_MEM_BASE_ADDR_ALIGN, sizeof(mem_align), &mem_align, nullptr);
     std::cout << "Alignment in bits of the base address : " << mem_align << std::endl;
     prop.ext
     cl_uint min_align;
-    err = clGetDeviceInfo(device, CL_DEVICE_MIN_DATA_TYPE_ALIGN_SIZE, sizeof(min_align), &min_align, NULL);
+    err = clGetDeviceInfo(device, CL_DEVICE_MIN_DATA_TYPE_ALIGN_SIZE, sizeof(min_align), &min_align, nullptr);
     std::cout << "Smallest alignment in bytes for any data type : " << min_align << std::endl;
 
     char device_extensions[1024];
-    err = clGetDeviceInfo(device, CL_DEVICE_EXTENSIONS, sizeof(device_extensions), &device_extensions, NULL);
+    err = clGetDeviceInfo(device, CL_DEVICE_EXTENSIONS, sizeof(device_extensions), &device_extensions, nullptr);
     printf("%s\n", device_extensions);*/
   }
 }
@@ -213,131 +213,6 @@ IsCudaAvailable()
   cudaError_t err = cudaGetDeviceCount(&count);
   CUDA_CHECK(err)
   return count >= 1;
-}
-
-std::string
-GetTypename(const std::type_info & intype)
-{
-  std::string typestr;
-  if (intype == typeid(unsigned char) || intype == typeid(itk::Vector<unsigned char, 2>) ||
-      intype == typeid(itk::Vector<unsigned char, 3>))
-  {
-    typestr = "uc";
-  }
-  else if (intype == typeid(char) || intype == typeid(itk::Vector<char, 2>) || intype == typeid(itk::Vector<char, 3>))
-  {
-    typestr = "c";
-  }
-  else if (intype == typeid(short) || intype == typeid(itk::Vector<short, 2>) ||
-           intype == typeid(itk::Vector<short, 3>))
-  {
-    typestr = "s";
-  }
-  else if (intype == typeid(int) || intype == typeid(itk::Vector<int, 2>) || intype == typeid(itk::Vector<int, 3>))
-  {
-    typestr = "i";
-  }
-  else if (intype == typeid(unsigned int) || intype == typeid(itk::Vector<unsigned int, 2>) ||
-           intype == typeid(itk::Vector<unsigned int, 3>))
-  {
-    typestr = "ui";
-  }
-  else if (intype == typeid(long) || intype == typeid(itk::Vector<long, 2>) || intype == typeid(itk::Vector<long, 3>))
-  {
-    typestr = "l";
-  }
-  else if (intype == typeid(unsigned long) || intype == typeid(itk::Vector<unsigned long, 2>) ||
-           intype == typeid(itk::Vector<unsigned long, 3>))
-  {
-    typestr = "ul";
-  }
-  else if (intype == typeid(long long) || intype == typeid(itk::Vector<long long, 2>) ||
-           intype == typeid(itk::Vector<long long, 3>))
-  {
-    typestr = "ll";
-  }
-  else if (intype == typeid(float) || intype == typeid(itk::Vector<float, 2>) ||
-           intype == typeid(itk::Vector<float, 3>))
-  {
-    typestr = "f";
-  }
-  else if (intype == typeid(double) || intype == typeid(itk::Vector<double, 2>) ||
-           intype == typeid(itk::Vector<double, 3>))
-  {
-    typestr = "d";
-  }
-  else
-  {
-    itkGenericExceptionMacro("Unknown type: " << intype.name());
-  }
-  return typestr;
-}
-
-/** Get Typename in String if a valid type */
-bool
-GetValidTypename(const std::type_info & intype, const std::vector<std::string> & validtypes, std::string & retTypeName)
-{
-  std::string                              typestr = GetTypename(intype);
-  bool                                     isValid = false;
-  std::vector<std::string>::const_iterator validPos;
-  validPos = std::find(validtypes.begin(), validtypes.end(), typestr);
-  if (validPos != validtypes.end())
-  {
-    isValid = true;
-    retTypeName = *validPos;
-  }
-
-  return isValid;
-}
-
-/** Get 64-bit pragma */
-std::string
-Get64BitPragma()
-{
-  std::ostringstream msg;
-  // msg << "#pragma OPENCL EXTENSION cl_khr_fp64 : enable\n";
-  // msg << "#pragma OPENCL EXTENSION cl_amd_fp64 : enable\n";
-  return msg.str();
-}
-
-void
-GetTypenameInString(const std::type_info & intype, std::ostringstream & ret)
-{
-  std::string typestr = GetTypename(intype);
-  ret << typestr;
-  /*if (typestr == "d")
-    {
-    std::string pragmastr = Get64BitPragma();
-    ret << pragmastr;
-    }*/
-}
-
-int
-GetPixelDimension(const std::type_info & intype)
-{
-  if (intype == typeid(unsigned char) || intype == typeid(char) || intype == typeid(short) || intype == typeid(int) ||
-      intype == typeid(unsigned int) || intype == typeid(float) || intype == typeid(double))
-  {
-    return 1;
-  }
-  else if (intype == typeid(itk::Vector<unsigned char, 2>) || intype == typeid(itk::Vector<char, 2>) ||
-           intype == typeid(itk::Vector<short, 2>) || intype == typeid(itk::Vector<int, 2>) ||
-           intype == typeid(itk::Vector<unsigned int, 2>) || intype == typeid(itk::Vector<float, 2>) ||
-           intype == typeid(itk::Vector<double, 2>))
-  {
-    return 2;
-  }
-  else if (intype == typeid(itk::Vector<unsigned char, 3>) || intype == typeid(itk::Vector<char, 3>) ||
-           intype == typeid(itk::Vector<short, 3>) || intype == typeid(itk::Vector<int, 3>) ||
-           intype == typeid(itk::Vector<unsigned int, 3>) || intype == typeid(itk::Vector<float, 3>) ||
-           intype == typeid(itk::Vector<double, 3>))
-  {
-    return 3;
-  }
-  else
-  {
-    itkGenericExceptionMacro("Pixeltype is not supported by the filter.");
-  }
 }
 
 } // end namespace itk

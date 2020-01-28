@@ -26,7 +26,6 @@
 #  include "rtkWeidingerForwardModelImageFilter.h"
 #  include "itkCudaImageToImageFilter.h"
 #  include "itkCudaUtil.h"
-#  include "itkCudaKernelManager.h"
 #  include "RTKExport.h"
 
 /** \class CudaWeidingerForwardModelImageFilter

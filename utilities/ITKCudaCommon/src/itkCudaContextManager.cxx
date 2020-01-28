@@ -23,14 +23,14 @@
 namespace itk
 {
 // static variable initialization
-CudaContextManager * CudaContextManager::m_Instance = NULL;
+CudaContextManager * CudaContextManager::m_Instance = nullptr;
 bool                 CudaContextManager::m_Initialized = false;
 
 
 CudaContextManager *
 CudaContextManager::GetInstance()
 {
-  if (m_Instance == NULL)
+  if (m_Instance == nullptr)
   {
     m_Instance = new CudaContextManager();
   }
@@ -45,7 +45,7 @@ CudaContextManager::DestroyInstance()
   if (m_Instance->GetReferenceCount() == 1)
   {
     m_Instance->Delete();
-    m_Instance = NULL;
+    m_Instance = nullptr;
   }
 }
 
@@ -77,7 +77,7 @@ CudaContextManager::CudaContextManager()
   }
   else
   {
-    m_Context = NULL;
+    m_Context = nullptr;
     m_Device = 0;
     m_DeviceIdx = 0;
   }

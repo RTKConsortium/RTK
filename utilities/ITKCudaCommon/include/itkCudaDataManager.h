@@ -123,9 +123,6 @@ protected:
  */
 class ITKCudaCommon_EXPORT CudaDataManager : public Object
 {
-  /** allow CudaKernelManager to access Cuda buffer pointer */
-  friend class CudaKernelManager;
-
 public:
   using Self = CudaDataManager;
   using Superclass = Object;

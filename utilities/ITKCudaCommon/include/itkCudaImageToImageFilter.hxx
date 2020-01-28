@@ -27,7 +27,6 @@ template <class TInputImage, class TOutputImage, class TParentImageFilter>
 CudaImageToImageFilter<TInputImage, TOutputImage, TParentImageFilter>::CudaImageToImageFilter()
   : m_GPUEnabled(true)
 {
-  m_CudaKernelManager = CudaKernelManager::New();
 }
 
 template <class TInputImage, class TOutputImage, class TParentImageFilter>

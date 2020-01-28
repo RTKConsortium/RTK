@@ -26,7 +26,6 @@
 #  include "rtkForwardProjectionImageFilter.h"
 #  include "itkCudaInPlaceImageFilter.h"
 #  include "itkCudaUtil.h"
-#  include "itkCudaKernelManager.h"
 #  include "RTKExport.h"
 
 /** \class CudaForwardProjectionImageFilter
@@ -48,9 +47,6 @@
 
 namespace rtk
 {
-
-/** Create a helper Cuda Kernel class for CudaImageOps */
-itkCudaKernelClassMacro(rtkCudaForwardProjectionImageFilterKernel);
 
 template <class TInputImage = itk::CudaImage<float, 3>, class TOutputImage = TInputImage>
 class ITK_EXPORT CudaForwardProjectionImageFilter

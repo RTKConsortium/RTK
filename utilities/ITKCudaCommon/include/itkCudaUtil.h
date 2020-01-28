@@ -38,26 +38,6 @@
 namespace itk
 {
 
-// Construct a non-templatized helper class that
-// provides the GPU kernel source code as a const char
-#define itkCudaKernelClassMacro(kernel)                                                                                \
-  class ITKCudaCommon_EXPORT kernel                                                                                    \
-  {                                                                                                                    \
-  public:                                                                                                              \
-    static std::string                                                                                                 \
-    GetCudaPTXSource();                                                                                                \
-                                                                                                                       \
-  private:                                                                                                             \
-    kernel();                                                                                                          \
-    virtual ~kernel();                                                                                                 \
-    kernel(const kernel &);                                                                                            \
-    void                                                                                                               \
-    operator=(const kernel &);                                                                                         \
-  };
-
-#define itkGetCudaPTXSourceMacro(kernel)                                                                               \
-  static std::string GetCudaPTXSource() { return kernel::GetCudaPTXSource(); }
-
 /** Get the local block size based on the desired Image Dimension
  * currently set as follows:
  * Cuda workgroup (block) size for 1/2/3D - needs to be tuned based on the Cuda architecture
@@ -87,9 +67,6 @@ CudaPrintDeviceInfo(int device, bool verbose = false);
 int
 CudaSelectPlatform(const char * name);
 
-int
-CudaGetAvailableDevices(std::vector<cudaDeviceProp> & devices);
-
 /** Check Cuda error */
 void ITKCudaCommon_EXPORT
      CudaCheckError(cudaError_t error, const char * filename = "", int lineno = 0, const char * location = "");
@@ -100,27 +77,6 @@ void ITKCudaCommon_EXPORT
 /** Check if Cuda-enabled Cuda is present. */
 bool
 IsCudaAvailable();
-
-/** Get Typename */
-std::string
-GetTypename(const std::type_info & intype);
-
-/** Get Typename in String if a valid type */
-bool
-GetValidTypename(const std::type_info & intype, const std::vector<std::string> & validtypes, std::string & retTypeName);
-
-/** Get 64-bit pragma */
-std::string
-Get64BitPragma();
-
-/** Get Typename in String */
-void
-GetTypenameInString(const std::type_info & intype, std::ostringstream & ret);
-
-/** Get pixel dimension (number of channels).
- * For high-dimensional pixel format, only itk::Vector< type, 2/3 > is acceptable. */
-int
-GetPixelDimension(const std::type_info & intype);
 
 #define CUDA_CHECK(_err_) CudaCheckError(_err_, __FILE__, __LINE__, ITK_LOCATION);
 } // namespace itk

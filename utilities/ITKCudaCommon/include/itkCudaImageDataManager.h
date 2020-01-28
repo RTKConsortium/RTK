@@ -38,9 +38,6 @@ namespace itk
 template <class ImageType>
 class ITK_EXPORT CudaImageDataManager : public CudaDataManager
 {
-  // allow CudaKernelManager to access Cuda buffer pointer
-  friend class CudaKernelManager;
-
 public:
   using Self = CudaImageDataManager;
   using Superclass = CudaDataManager;
