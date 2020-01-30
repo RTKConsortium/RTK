@@ -115,9 +115,9 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>::GenerateOutputInformati
   m_InferiorCorner = corner[0];
   m_SuperiorCorner = m_InferiorCorner;
   if (inputPtr->GetSpacing()[0] < 0.)
-    m_InferiorCorner += inputPtr->GetSpacing()[0] * (outputLargestPossibleRegion.GetSize(0) - 1);
+    m_InferiorCorner += inputPtr->GetSpacing()[0] * (outputLargestPossibleRegion.GetSize(0));
   else
-    m_SuperiorCorner += inputPtr->GetSpacing()[0] * (outputLargestPossibleRegion.GetSize(0) - 1);
+    m_SuperiorCorner += inputPtr->GetSpacing()[0] * (outputLargestPossibleRegion.GetSize(0));
 
   if (!m_OffsetsSet)
   {
