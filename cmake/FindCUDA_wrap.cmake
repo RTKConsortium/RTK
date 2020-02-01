@@ -64,7 +64,9 @@ else()
      )
 endif()
 
-list(APPEND CUDA_NVCC_FLAGS "-std=c++11")
+if(NOT "-std=c++${CMAKE_CXX_STANDARD}" IN_LIST CUDA_NVCC_FLAGS)
+  list(APPEND CUDA_NVCC_FLAGS "-std=c++${CMAKE_CXX_STANDARD}")
+endif()
 
 if(CUDA_FOUND)
   try_run(RUN_RESULT_VAR COMPILE_RESULT_VAR
