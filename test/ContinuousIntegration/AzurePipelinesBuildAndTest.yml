@@ -127,4 +127,3 @@ jobs:
   - script: |
       $(compilerInitialization)
       ctest -j 2 -V -S dashboard.cmake
-

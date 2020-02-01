@@ -1,0 +1,70 @@
+variables:
+  CMakeBuildType: Release
+
+trigger:
+  batch: true
+  branches:
+    include:
+    - master
+
+jobs:
+
+# Linux Python 3.5
+- job: 'PackageLinux_cp35'
+  timeoutInMinutes: 0
+  cancelTimeoutInMinutes: 300
+  variables:
+    PythonVersion: cp35
+  displayName: "Build Linux Python 3.5 packages"
+  pool:
+    vmImage: 'Ubuntu-16.04'
+  steps:
+  - template: Common/AzurePipelinesLinuxPython_Common.yml
+
+# Linux Python 3.6
+- job: 'PackageLinux_cp36'
+  timeoutInMinutes: 0
+  cancelTimeoutInMinutes: 300
+  variables:
+    PythonVersion: cp36
+  displayName: "Build Linux Python 3.6 packages"
+  pool:
+    vmImage: 'Ubuntu-16.04'
+  steps:
+  - template: Common/AzurePipelinesLinuxPython_Common.yml
+
+# Linux Python 3.7
+- job: 'PackageLinux_cp37'
+  timeoutInMinutes: 0
+  cancelTimeoutInMinutes: 300
+  variables:
+    PythonVersion: cp37
+  displayName: "Build Linux Python 3.7 packages"
+  pool:
+    vmImage: 'Ubuntu-16.04'
+  steps:
+  - template: Common/AzurePipelinesLinuxPython_Common.yml
+
+
+# MacOS Python
+- job: 'PackageMacOS'
+  displayName: "Build macOS Python packages"
+  timeoutInMinutes: 0
+  cancelTimeoutInMinutes: 300
+  pool:
+    vmImage: 'macos-10.14'
+
+  steps:
+  - template: Common/AzurePipelinesMacOSPython_Common.yml
+
+
+# Windows Python
+- job: 'PackageWindows'
+  displayName: "Build Windows Python packages"
+  timeoutInMinutes: 0
+  cancelTimeoutInMinutes: 300
+  pool:
+    vmImage: 'vs2017-win2016'
+
+  steps:
+  - template: Common/AzurePipelinesWindowsPython_Common.yml
