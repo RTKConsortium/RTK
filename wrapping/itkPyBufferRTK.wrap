@@ -1,0 +1,31 @@
+itk_wrap_class("itk::PyBuffer")
+
+  UNIQUE(types "${WRAP_ITK_SCALAR};UC;D;US;UI;UL;SC;SS;SI;SL;F")
+  foreach(t ${types})
+    string(REGEX MATCHALL "(V${t}|CV${t})" VectorTypes "${WRAP_ITK_VECTOR}")
+    set(PixelType ${t})
+    foreach(d ${ITK_WRAP_IMAGE_DIMS})
+      # Image Vector types
+	  set(vectorComponents 2 3 4 5)
+      foreach(vec_dim ${vectorComponents})
+	    list(FIND ITK_WRAP_VECTOR_COMPONENTS "${vec_dim}" _index)
+        if (${_index} EQUAL -1)
+          foreach(vec_type ${VectorTypes})
+
+              set(PyBufferTypes I${vec_type}${vec_dim}${d})
+              configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/PyBufferRTK.i.in
+                         ${CMAKE_CURRENT_BINARY_DIR}/PyBufferRTK.i.temp
+                         @ONLY)
+              file(READ ${CMAKE_CURRENT_BINARY_DIR}/PyBufferRTK.i.temp
+                  PyBufferInterfaceTemp)
+              file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/PyBufferRTK.i
+                  ${PyBufferInterfaceTemp})
+              itk_wrap_template("I${vec_type}${vec_dim}${d}" "itk::Image<${ITKT_${vec_type}${vec_dim}},${d}>")
+
+          endforeach()
+		endif()
+      endforeach()
+    endforeach(d)
+  endforeach(t)
+
+itk_end_wrap_class()
