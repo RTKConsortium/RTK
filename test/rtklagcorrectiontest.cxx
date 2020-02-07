@@ -20,19 +20,20 @@
 const unsigned ModelOrder = 4;
 const unsigned Nprojections = 10;
 
-int main(int , char **)
+int
+main(int, char **)
 {
   constexpr unsigned int Dimension = 3;
 
-  using VectorType = itk::Vector<float, ModelOrder>;     // Parameter type always float/double
+  using VectorType = itk::Vector<float, ModelOrder>; // Parameter type always float/double
 #ifdef USE_CUDA
   using PixelType = unsigned short;
-  using ImageType = itk::CudaImage< PixelType, Dimension >;
+  using ImageType = itk::CudaImage<PixelType, Dimension>;
   using LCImageFilterType = rtk::CudaLagCorrectionImageFilter;
 #else
   using PixelType = float;
-  using ImageType = itk::Image< PixelType, Dimension >;
-  using LCImageFilterType = rtk::LagCorrectionImageFilter< ImageType, ModelOrder>;
+  using ImageType = itk::Image<PixelType, Dimension>;
+  using LCImageFilterType = rtk::LagCorrectionImageFilter<ImageType, ModelOrder>;
 #endif
 
   LCImageFilterType::Pointer lagcorr = LCImageFilterType::New();
@@ -65,7 +66,8 @@ int main(int , char **)
 
   lagcorr->SetCoefficients(a, b);
 
-  for (unsigned i = 0; i < Nprojections; ++i) {
+  for (unsigned i = 0; i < Nprojections; ++i)
+  {
     ImageType::Pointer inputI = ImageType::New();
     inputI->SetRegions(region);
     inputI->Allocate();
@@ -73,7 +75,7 @@ int main(int , char **)
 
     lagcorr->SetInput(inputI.GetPointer());
 
-    TRY_AND_EXIT_ON_ITK_EXCEPTION( lagcorr->Update() )
+    TRY_AND_EXIT_ON_ITK_EXCEPTION(lagcorr->Update())
   }
 
   std::cout << "\n\nTest PASSED! " << std::endl;

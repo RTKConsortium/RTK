@@ -18,20 +18,21 @@
  * \author Simon Rit
  */
 
-int main(int, char** )
+int
+main(int, char **)
 {
   constexpr unsigned int Dimension = 3;
   using OutputPixelType = float;
-  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
+  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
 
 
   // Constant image sources
-  using ConstantImageSourceType = rtk::ConstantImageSource< OutputImageType >;
-  ConstantImageSourceType::PointType origin;
-  ConstantImageSourceType::SizeType size;
+  using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
+  ConstantImageSourceType::PointType   origin;
+  ConstantImageSourceType::SizeType    size;
   ConstantImageSourceType::SpacingType spacing;
 
-  ConstantImageSourceType::Pointer projSource  = ConstantImageSourceType::New();
+  ConstantImageSourceType::Pointer projSource = ConstantImageSourceType::New();
   origin[0] = -508.;
   origin[1] = -3.;
   origin[2] = 0.;
@@ -42,78 +43,78 @@ int main(int, char** )
   spacing[1] = 2.;
   spacing[2] = 2.;
 
-  projSource->SetOrigin( origin );
-  projSource->SetSpacing( spacing );
-  projSource->SetSize( size );
+  projSource->SetOrigin(origin);
+  projSource->SetSpacing(spacing);
+  projSource->SetSize(size);
 
   // Geometry
   using GeometryType = rtk::ThreeDCircularProjectionGeometry;
   GeometryType::Pointer geometry = GeometryType::New();
-  geometry->AddProjection(600., 560.,   0., 3., 0., 0., 0., 2., 0.);
-  geometry->AddProjection(500., 545.,  90., 2., 0., 0., 0., 4., 0.);
+  geometry->AddProjection(600., 560., 0., 3., 0., 0., 0., 2., 0.);
+  geometry->AddProjection(500., 545., 90., 2., 0., 0., 0., 4., 0.);
   geometry->AddProjection(700., 790., 180., 8., 0., 0., 0., 5., 0.);
   geometry->AddProjection(900., 935., 270., 4., 0., 0., 0., 8., 0.);
 
   // Projections
   using SLPType = rtk::SheppLoganPhantomFilter<OutputImageType, OutputImageType>;
-  SLPType::Pointer slp=SLPType::New();
-  slp->SetInput( projSource->GetOutput() );
+  SLPType::Pointer slp = SLPType::New();
+  slp->SetInput(projSource->GetOutput());
   slp->SetGeometry(geometry);
   slp->SetPhantomScale(116);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( slp->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(slp->Update());
 
-  for(int inPlace=0; inPlace<2; inPlace++)
-    {
-    std::cout << "\n\n****** Case " << inPlace*2 << ": no streaming, ";
-    if(!inPlace)
+  for (int inPlace = 0; inPlace < 2; inPlace++)
+  {
+    std::cout << "\n\n****** Case " << inPlace * 2 << ": no streaming, ";
+    if (!inPlace)
       std::cout << "not";
     std::cout << " in place ******" << std::endl;
 
     using OffsetDDFType = rtk::DisplacedDetectorForOffsetFieldOfViewImageFilter<OutputImageType>;
     OffsetDDFType::Pointer cudaddf = OffsetDDFType::New();
-    cudaddf->SetInput( slp->GetOutput() );
+    cudaddf->SetInput(slp->GetOutput());
     cudaddf->SetGeometry(geometry);
     cudaddf->InPlaceOff();
-    TRY_AND_EXIT_ON_ITK_EXCEPTION( cudaddf->Update() );
+    TRY_AND_EXIT_ON_ITK_EXCEPTION(cudaddf->Update());
 
     using CPUDDFType = rtk::DisplacedDetectorImageFilter<OutputImageType>;
     CPUDDFType::Pointer cpuddf = CPUDDFType::New();
-    cpuddf->SetInput( slp->GetOutput() );
+    cpuddf->SetInput(slp->GetOutput());
     cpuddf->SetGeometry(geometry);
     cpuddf->InPlaceOff();
-    TRY_AND_EXIT_ON_ITK_EXCEPTION( cpuddf->Update() );
+    TRY_AND_EXIT_ON_ITK_EXCEPTION(cpuddf->Update());
 
-    CheckImageQuality< OutputImageType >(cudaddf->GetOutput(), cpuddf->GetOutput(), 1.e-6, 100, 1.);
+    CheckImageQuality<OutputImageType>(cudaddf->GetOutput(), cpuddf->GetOutput(), 1.e-6, 100, 1.);
 
-    std::cout << "\n\n****** Case " << inPlace*2+1 << ": with streaming, ";
-    if(!inPlace)
+    std::cout << "\n\n****** Case " << inPlace * 2 + 1 << ": with streaming, ";
+    if (!inPlace)
       std::cout << "not";
     std::cout << " in place ******" << std::endl;
 
     // Idem with streaming
     cudaddf = OffsetDDFType::New();
-    cudaddf->SetInput( slp->GetOutput() );
+    cudaddf->SetInput(slp->GetOutput());
     cudaddf->SetGeometry(geometry);
     cudaddf->InPlaceOff();
 
     using StreamingType = itk::StreamingImageFilter<OutputImageType, OutputImageType>;
     StreamingType::Pointer streamingCUDA = StreamingType::New();
-    streamingCUDA->SetInput( cudaddf->GetOutput() );
+    streamingCUDA->SetInput(cudaddf->GetOutput());
     streamingCUDA->SetNumberOfStreamDivisions(2);
-    TRY_AND_EXIT_ON_ITK_EXCEPTION( streamingCUDA->Update() );
+    TRY_AND_EXIT_ON_ITK_EXCEPTION(streamingCUDA->Update());
 
     cpuddf = CPUDDFType::New();
-    cpuddf->SetInput( slp->GetOutput() );
+    cpuddf->SetInput(slp->GetOutput());
     cpuddf->SetGeometry(geometry);
     cpuddf->InPlaceOff();
 
     StreamingType::Pointer streamingCPU = StreamingType::New();
-    streamingCPU->SetInput( cpuddf->GetOutput() );
+    streamingCPU->SetInput(cpuddf->GetOutput());
     streamingCPU->SetNumberOfStreamDivisions(2);
-    TRY_AND_EXIT_ON_ITK_EXCEPTION( streamingCPU->Update() );
+    TRY_AND_EXIT_ON_ITK_EXCEPTION(streamingCPU->Update());
 
-    CheckImageQuality< OutputImageType >(streamingCUDA->GetOutput(), streamingCPU->GetOutput(), 1.e-6, 100, 1.);
-    }
+    CheckImageQuality<OutputImageType>(streamingCUDA->GetOutput(), streamingCPU->GetOutput(), 1.e-6, 100, 1.);
+  }
 
   // If all succeed
   std::cout << "\n\nTest PASSED! " << std::endl;

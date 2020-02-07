@@ -7,21 +7,22 @@
 //#include "rtkNormalizedJosephBackProjectionImageFilter.h"
 
 #ifdef USE_CUDA
-  #include "itkCudaImage.h"
+#  include "itkCudaImage.h"
 #endif
 #include "rtkADMMWaveletsConeBeamReconstructionFilter.h"
 
-template<class TImage>
+template <class TImage>
 #if FAST_TESTS_NO_CHECKS
-void CheckImageQuality(typename TImage::Pointer itkNotUsed(recon), typename TImage::Pointer itkNotUsed(ref))
-{
-}
+void
+CheckImageQuality(typename TImage::Pointer itkNotUsed(recon), typename TImage::Pointer itkNotUsed(ref))
+{}
 #else
-void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer ref)
+void
+CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer ref)
 {
   using ImageIteratorType = itk::ImageRegionConstIterator<TImage>;
-  ImageIteratorType itTest( recon, recon->GetBufferedRegion() );
-  ImageIteratorType itRef( ref, ref->GetBufferedRegion() );
+  ImageIteratorType itTest(recon, recon->GetBufferedRegion());
+  ImageIteratorType itRef(ref, ref->GetBufferedRegion());
 
   using ErrorType = double;
   ErrorType TestError = 0.;
@@ -30,40 +31,38 @@ void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer 
   itTest.GoToBegin();
   itRef.GoToBegin();
 
-  while( !itRef.IsAtEnd() )
-    {
+  while (!itRef.IsAtEnd())
+  {
     typename TImage::PixelType TestVal = itTest.Get();
     typename TImage::PixelType RefVal = itRef.Get();
     TestError += itk::Math::abs(RefVal - TestVal);
     EnerError += std::pow(ErrorType(RefVal - TestVal), 2.);
     ++itTest;
     ++itRef;
-    }
+  }
   // Error per Pixel
-  ErrorType ErrorPerPixel = TestError/ref->GetBufferedRegion().GetNumberOfPixels();
+  ErrorType ErrorPerPixel = TestError / ref->GetBufferedRegion().GetNumberOfPixels();
   std::cout << "\nError per Pixel = " << ErrorPerPixel << std::endl;
   // MSE
-  ErrorType MSE = EnerError/ref->GetBufferedRegion().GetNumberOfPixels();
+  ErrorType MSE = EnerError / ref->GetBufferedRegion().GetNumberOfPixels();
   std::cout << "MSE = " << MSE << std::endl;
   // PSNR
-  ErrorType PSNR = 20*log10(2.0) - 10*log10(MSE);
+  ErrorType PSNR = 20 * log10(2.0) - 10 * log10(MSE);
   std::cout << "PSNR = " << PSNR << "dB" << std::endl;
   // QI
-  ErrorType QI = (2.0-ErrorPerPixel)/2.0;
+  ErrorType QI = (2.0 - ErrorPerPixel) / 2.0;
   std::cout << "QI = " << QI << std::endl;
 
   // Checking results
   if (ErrorPerPixel > 0.032)
   {
-    std::cerr << "Test Failed, Error per pixel not valid! "
-              << ErrorPerPixel << " instead of 0.08" << std::endl;
-    exit( EXIT_FAILURE);
+    std::cerr << "Test Failed, Error per pixel not valid! " << ErrorPerPixel << " instead of 0.08" << std::endl;
+    exit(EXIT_FAILURE);
   }
   if (PSNR < 28)
   {
-    std::cerr << "Test Failed, PSNR not valid! "
-              << PSNR << " instead of 23" << std::endl;
-    exit( EXIT_FAILURE);
+    std::cerr << "Test Failed, PSNR not valid! " << PSNR << " instead of 23" << std::endl;
+    exit(EXIT_FAILURE);
   }
 }
 #endif
@@ -81,15 +80,16 @@ void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer 
  * \author Cyril Mory
  */
 
-int main(int, char** )
+int
+main(int, char **)
 {
   using OutputPixelType = float;
   constexpr unsigned int Dimension = 3;
 
 #ifdef USE_CUDA
-  using OutputImageType = itk::CudaImage< OutputPixelType, Dimension >;
+  using OutputImageType = itk::CudaImage<OutputPixelType, Dimension>;
 #else
-  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
+  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
 #endif
 
 #if FAST_TESTS_NO_CHECKS
@@ -100,12 +100,12 @@ int main(int, char** )
 
 
   // Constant image sources
-  using ConstantImageSourceType = rtk::ConstantImageSource< OutputImageType >;
-  ConstantImageSourceType::PointType origin;
-  ConstantImageSourceType::SizeType size;
+  using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
+  ConstantImageSourceType::PointType   origin;
+  ConstantImageSourceType::SizeType    size;
   ConstantImageSourceType::SpacingType spacing;
 
-  ConstantImageSourceType::Pointer tomographySource  = ConstantImageSourceType::New();
+  ConstantImageSourceType::Pointer tomographySource = ConstantImageSourceType::New();
   origin[0] = -127.;
   origin[1] = -127.;
   origin[2] = -127.;
@@ -124,10 +124,10 @@ int main(int, char** )
   spacing[1] = 4.;
   spacing[2] = 4.;
 #endif
-  tomographySource->SetOrigin( origin );
-  tomographySource->SetSpacing( spacing );
-  tomographySource->SetSize( size );
-  tomographySource->SetConstant( 0. );
+  tomographySource->SetOrigin(origin);
+  tomographySource->SetSpacing(spacing);
+  tomographySource->SetSize(size);
+  tomographySource->SetConstant(0.);
 
   ConstantImageSourceType::Pointer projectionsSource = ConstantImageSourceType::New();
   origin[0] = -255.;
@@ -148,16 +148,16 @@ int main(int, char** )
   spacing[1] = 8.;
   spacing[2] = 8.;
 #endif
-  projectionsSource->SetOrigin( origin );
-  projectionsSource->SetSpacing( spacing );
-  projectionsSource->SetSize( size );
-  projectionsSource->SetConstant( 0. );
+  projectionsSource->SetOrigin(origin);
+  projectionsSource->SetSpacing(spacing);
+  projectionsSource->SetSize(size);
+  projectionsSource->SetConstant(0.);
 
   // Geometry object
   using GeometryType = rtk::ThreeDCircularProjectionGeometry;
   GeometryType::Pointer geometry = GeometryType::New();
-  for(unsigned int noProj=0; noProj<NumberOfProjectionImages; noProj++)
-    geometry->AddProjection(600., 1200., noProj*360./NumberOfProjectionImages);
+  for (unsigned int noProj = 0; noProj < NumberOfProjectionImages; noProj++)
+    geometry->AddProjection(600., 1200., noProj * 360. / NumberOfProjectionImages);
 
   // Create ellipsoid PROJECTIONS
   using REIType = rtk::RayEllipsoidIntersectionImageFilter<OutputImageType, OutputImageType>;
@@ -172,31 +172,30 @@ int main(int, char** )
   rei->SetCenter(center);
   rei->SetAxis(semiprincipalaxis);
 
-  rei->SetInput( projectionsSource->GetOutput() );
-  rei->SetGeometry( geometry );
+  rei->SetInput(projectionsSource->GetOutput());
+  rei->SetGeometry(geometry);
 
-  //Update
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( rei->Update() );
+  // Update
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(rei->Update());
 
   // Create REFERENCE object (3D ellipsoid).
   using DEType = rtk::DrawEllipsoidImageFilter<OutputImageType, OutputImageType>;
   DEType::Pointer dsl = DEType::New();
-  dsl->SetInput( tomographySource->GetOutput() );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( dsl->Update() )
+  dsl->SetInput(tomographySource->GetOutput());
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(dsl->Update())
 
   // ADMMWavelets reconstruction filtering
-  typedef rtk::ADMMWaveletsConeBeamReconstructionFilter
-      <OutputImageType>  ADMMWaveletsType;
-  ADMMWaveletsType::Pointer admmWavelets = ADMMWaveletsType::New();
-  admmWavelets->SetInput( tomographySource->GetOutput() );
+  typedef rtk::ADMMWaveletsConeBeamReconstructionFilter<OutputImageType> ADMMWaveletsType;
+  ADMMWaveletsType::Pointer                                              admmWavelets = ADMMWaveletsType::New();
+  admmWavelets->SetInput(tomographySource->GetOutput());
   admmWavelets->SetInput(1, rei->GetOutput());
-  admmWavelets->SetGeometry( geometry );
-  admmWavelets->SetAlpha( 10 );
-  admmWavelets->SetBeta( 1000 );
-  admmWavelets->SetAL_iterations( 3 );
-  admmWavelets->SetCG_iterations( 3 );
-  admmWavelets->SetNumberOfLevels( 3 );
-  admmWavelets->SetOrder( 3 );
+  admmWavelets->SetGeometry(geometry);
+  admmWavelets->SetAlpha(10);
+  admmWavelets->SetBeta(1000);
+  admmWavelets->SetAL_iterations(3);
+  admmWavelets->SetCG_iterations(3);
+  admmWavelets->SetNumberOfLevels(3);
+  admmWavelets->SetOrder(3);
 
   // In all cases, use the Joseph forward projector
   admmWavelets->SetForwardProjectionFilter(ADMMWaveletsType::FP_JOSEPH);
@@ -204,7 +203,7 @@ int main(int, char** )
   std::cout << "\n\n****** Case 1: Voxel-Based Backprojector ******" << std::endl;
 
   admmWavelets->SetBackProjectionFilter(ADMMWaveletsType::BP_VOXELBASED);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( admmWavelets->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(admmWavelets->Update());
 
   CheckImageQuality<OutputImageType>(admmWavelets->GetOutput(), dsl->GetOutput());
   std::cout << "\n\nTest PASSED! " << std::endl;
@@ -212,7 +211,7 @@ int main(int, char** )
   std::cout << "\n\n****** Case 2: Joseph Backprojector ******" << std::endl;
 
   admmWavelets->SetBackProjectionFilter(ADMMWaveletsType::BP_JOSEPH);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( admmWavelets->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(admmWavelets->Update());
 
   CheckImageQuality<OutputImageType>(admmWavelets->GetOutput(), dsl->GetOutput());
   std::cout << "\n\nTest PASSED! " << std::endl;
@@ -222,7 +221,7 @@ int main(int, char** )
 
   admmWavelets->SetForwardProjectionFilter(ADMMWaveletsType::FP_CUDARAYCAST);
   admmWavelets->SetBackProjectionFilter(ADMMWaveletsType::BP_CUDAVOXELBASED);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( admmWavelets->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(admmWavelets->Update());
 
   CheckImageQuality<OutputImageType>(admmWavelets->GetOutput(), dsl->GetOutput());
   std::cout << "\n\nTest PASSED! " << std::endl;

@@ -10,26 +10,27 @@
 #include "rtkBackwardDifferenceDivergenceImageFilter.h"
 
 
-template<class TImage1, class TImage2>
+template <class TImage1, class TImage2>
 #if FAST_TESTS_NO_CHECKS
-void CheckImageQuality(typename TImage1::Pointer itkNotUsed(recon), typename TImage2::Pointer itkNotUsed(ref))
-{
-}
+void
+CheckImageQuality(typename TImage1::Pointer itkNotUsed(recon), typename TImage2::Pointer itkNotUsed(ref))
+{}
 #else
-void CheckImageQuality(typename TImage1::Pointer recon, typename TImage2::Pointer ref)
+void
+CheckImageQuality(typename TImage1::Pointer recon, typename TImage2::Pointer ref)
 {
   using ImageIteratorType1 = itk::ImageRegionConstIterator<TImage1>;
   using ImageIteratorType2 = itk::ImageRegionConstIterator<TImage2>;
-  ImageIteratorType1 itTest( recon, recon->GetBufferedRegion() );
-  ImageIteratorType2 itRef( ref, ref->GetBufferedRegion() );
+  ImageIteratorType1 itTest(recon, recon->GetBufferedRegion());
+  ImageIteratorType2 itRef(ref, ref->GetBufferedRegion());
 
   // Compute the mean of the reference image (which cannot be recovered by inverting the gradient)
   double mean = 0;
   while (!itRef.IsAtEnd())
-    {
+  {
     mean += itRef.Get();
     ++itRef;
-    }
+  }
   mean /= ref->GetBufferedRegion().GetNumberOfPixels();
 
   using ErrorType = double;
@@ -39,45 +40,43 @@ void CheckImageQuality(typename TImage1::Pointer recon, typename TImage2::Pointe
   itTest.GoToBegin();
   itRef.GoToBegin();
 
-  while( !itRef.IsAtEnd() )
-    {
+  while (!itRef.IsAtEnd())
+  {
     typename TImage1::PixelType TestVal = itTest.Get();
     typename TImage2::PixelType RefVal = itRef.Get() - mean;
 
-    if( TestVal != RefVal )
-      {
+    if (TestVal != RefVal)
+    {
       TestError += itk::Math::abs(RefVal - TestVal);
       EnerError += std::pow(ErrorType(RefVal - TestVal), 2.);
-      }
+    }
     ++itTest;
     ++itRef;
-    }
+  }
   // Error per Pixel
-  ErrorType ErrorPerPixel = TestError/recon->GetBufferedRegion().GetNumberOfPixels();
+  ErrorType ErrorPerPixel = TestError / recon->GetBufferedRegion().GetNumberOfPixels();
   std::cout << "\nError per Pixel = " << ErrorPerPixel << std::endl;
   // MSE
-  ErrorType MSE = EnerError/ref->GetBufferedRegion().GetNumberOfPixels();
+  ErrorType MSE = EnerError / ref->GetBufferedRegion().GetNumberOfPixels();
   std::cout << "MSE = " << MSE << std::endl;
   // PSNR
-  ErrorType PSNR = 20*log10(255.0) - 10*log10(MSE);
+  ErrorType PSNR = 20 * log10(255.0) - 10 * log10(MSE);
   std::cout << "PSNR = " << PSNR << "dB" << std::endl;
   // QI
-  ErrorType QI = (255.0-ErrorPerPixel)/255.0;
+  ErrorType QI = (255.0 - ErrorPerPixel) / 255.0;
   std::cout << "QI = " << QI << std::endl;
 
   // Checking results
   if (ErrorPerPixel > 1.28)
-    {
-    std::cerr << "Test Failed, Error per pixel not valid! "
-              << ErrorPerPixel << " instead of 1.28" << std::endl;
-    exit( EXIT_FAILURE);
-    }
+  {
+    std::cerr << "Test Failed, Error per pixel not valid! " << ErrorPerPixel << " instead of 1.28" << std::endl;
+    exit(EXIT_FAILURE);
+  }
   if (PSNR < 44.)
-    {
-    std::cerr << "Test Failed, PSNR not valid! "
-              << PSNR << " instead of 44" << std::endl;
-    exit( EXIT_FAILURE);
-    }
+  {
+    std::cerr << "Test Failed, PSNR not valid! " << PSNR << " instead of 44" << std::endl;
+    exit(EXIT_FAILURE);
+  }
 }
 #endif
 
@@ -104,22 +103,23 @@ void CheckImageQuality(typename TImage1::Pointer recon, typename TImage2::Pointe
  * \author Cyril Mory
  */
 
-int main(int, char** )
+int
+main(int, char **)
 {
   constexpr unsigned int Dimension = 3;
   using OutputPixelType = float;
 
-  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
+  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
 
   // Random and constant image sources
-  using RandomImageSourceType = itk::RandomImageSource< OutputImageType >;
-  RandomImageSourceType::Pointer randomVolumeSource  = RandomImageSourceType::New();
-  using ConstantImageSourceType = rtk::ConstantImageSource< OutputImageType >;
-  ConstantImageSourceType::Pointer constantVolumeSource  = ConstantImageSourceType::New();
+  using RandomImageSourceType = itk::RandomImageSource<OutputImageType>;
+  RandomImageSourceType::Pointer randomVolumeSource = RandomImageSourceType::New();
+  using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
+  ConstantImageSourceType::Pointer constantVolumeSource = ConstantImageSourceType::New();
 
   // Image meta data
-  RandomImageSourceType::PointType origin;
-  RandomImageSourceType::SizeType size;
+  RandomImageSourceType::PointType   origin;
+  RandomImageSourceType::SizeType    size;
   RandomImageSourceType::SpacingType spacing;
 
   // Volume metadata
@@ -141,25 +141,25 @@ int main(int, char** )
   spacing[1] = 4.;
   spacing[2] = 4.;
 #endif
-  randomVolumeSource->SetOrigin( origin );
-  randomVolumeSource->SetSpacing( spacing );
-  randomVolumeSource->SetSize( size );
-  randomVolumeSource->SetMin( 0. );
-  randomVolumeSource->SetMax( 1. );
-#if ITK_VERSION_MAJOR<5
-  randomVolumeSource->SetNumberOfThreads(2); //With 1, it's deterministic
+  randomVolumeSource->SetOrigin(origin);
+  randomVolumeSource->SetSpacing(spacing);
+  randomVolumeSource->SetSize(size);
+  randomVolumeSource->SetMin(0.);
+  randomVolumeSource->SetMax(1.);
+#if ITK_VERSION_MAJOR < 5
+  randomVolumeSource->SetNumberOfThreads(2); // With 1, it's deterministic
 #else
-  randomVolumeSource->SetNumberOfWorkUnits(2); //With 1, it's deterministic
+  randomVolumeSource->SetNumberOfWorkUnits(2); // With 1, it's deterministic
 #endif
 
-  constantVolumeSource->SetOrigin( origin );
-  constantVolumeSource->SetSpacing( spacing );
-  constantVolumeSource->SetSize( size );
-  constantVolumeSource->SetConstant( 0. );
+  constantVolumeSource->SetOrigin(origin);
+  constantVolumeSource->SetSpacing(spacing);
+  constantVolumeSource->SetSize(size);
+  constantVolumeSource->SetConstant(0.);
 
   // Update the sources
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( randomVolumeSource->Update() );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( constantVolumeSource->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(randomVolumeSource->Update());
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(constantVolumeSource->Update());
 
   // Create and set the gradient and divergence filters
   using GradientFilterType = rtk::ForwardDifferenceGradientImageFilter<OutputImageType>;
@@ -167,16 +167,16 @@ int main(int, char** )
   gradientFilter->SetInput(randomVolumeSource->GetOutput());
   bool dimsProcessed[Dimension];
   for (bool & dimProcessed : dimsProcessed)
-    {
+  {
     dimProcessed = true;
-    }
+  }
   gradientFilter->SetDimensionsProcessed(dimsProcessed);
   using DivergenceFilterType = rtk::BackwardDifferenceDivergenceImageFilter<GradientFilterType::OutputImageType>;
   DivergenceFilterType::Pointer divergenceFilter = DivergenceFilterType::New();
   divergenceFilter->SetInput(gradientFilter->GetOutput());
 
   // Update the gradient and divergence filters
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( divergenceFilter->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(divergenceFilter->Update());
 
   // Create and set the conjugate gradient optimizer
   // It uses the operator DivergenceOfGradientConjugateGradientOperator
@@ -191,7 +191,7 @@ int main(int, char** )
   cg->SetNumberOfIterations(30);
 
   // Update the conjugate gradient filter
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( cg->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(cg->Update());
 
   CheckImageQuality<OutputImageType, OutputImageType>(cg->GetOutput(), randomVolumeSource->GetOutput());
 

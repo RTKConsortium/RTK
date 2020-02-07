@@ -16,7 +16,8 @@
  * \author Cyril Mory
  */
 
-int main(int argc, char*argv[])
+int
+main(int argc, char * argv[])
 {
   if (argc < 4)
   {
@@ -48,7 +49,7 @@ int main(int argc, char*argv[])
   outputReader->Update();
 
   // Create the filter
-  using NewtonUpdateFilterType = rtk::GetNewtonUpdateImageFilter< TGradient, THessian>;
+  using NewtonUpdateFilterType = rtk::GetNewtonUpdateImageFilter<TGradient, THessian>;
   NewtonUpdateFilterType::Pointer newtonUpdate = NewtonUpdateFilterType::New();
 
   // Set its inputs
@@ -56,10 +57,10 @@ int main(int argc, char*argv[])
   newtonUpdate->SetInputHessian(hessianReader->GetOutput());
 
   // Update the filter
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( newtonUpdate->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(newtonUpdate->Update());
 
   // 2. Compare read projections
-  CheckVectorImageQuality< TGradient >(newtonUpdate->GetOutput(), outputReader->GetOutput(), 1.e-9, 200, 2000.0);
+  CheckVectorImageQuality<TGradient>(newtonUpdate->GetOutput(), outputReader->GetOutput(), 1.e-9, 200, 2000.0);
 
   // If all succeed
   std::cout << "\n\nTest PASSED! " << std::endl;

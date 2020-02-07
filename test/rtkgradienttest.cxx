@@ -5,63 +5,67 @@
 #include "itkRandomImageSource.h"
 #include "rtkForwardDifferenceGradientImageFilter.h"
 
-template<class TImage, class TGradient>
+template <class TImage, class TGradient>
 #if FAST_TESTS_NO_CHECKS
-void CheckGradient(typename TImage::Pointer itkNotUsed(im), typename TGradient::Pointer itkNotUsed(grad), bool* itkNotUsed(dimensionsProcessed))
-{
-}
+void
+CheckGradient(typename TImage::Pointer    itkNotUsed(im),
+              typename TGradient::Pointer itkNotUsed(grad),
+              bool *                      itkNotUsed(dimensionsProcessed))
+{}
 #else
-void CheckGradient(typename TImage::Pointer im, typename TGradient::Pointer grad, bool* dimensionsProcessed)
+void
+CheckGradient(typename TImage::Pointer im, typename TGradient::Pointer grad, bool * dimensionsProcessed)
 {
   // Generate a list of indices of the dimensions to process
   std::vector<int> dimsToProcess;
   for (unsigned int dim = 0; dim < TImage::ImageDimension; dim++)
-    {
-    if(dimensionsProcessed[dim]) dimsToProcess.push_back(dim);
-    }
+  {
+    if (dimensionsProcessed[dim])
+      dimsToProcess.push_back(dim);
+  }
 
   using GradientIteratorType = itk::ImageRegionConstIterator<TGradient>;
-  GradientIteratorType itGrad( grad, grad->GetBufferedRegion() );
+  GradientIteratorType itGrad(grad, grad->GetBufferedRegion());
 
   const int ImageDimension = TImage::ImageDimension;
 
   itk::Size<ImageDimension> radius;
   radius.Fill(1);
 
-  itk::ConstNeighborhoodIterator<TImage> iit(radius, im, im->GetLargestPossibleRegion());
-  itk::ZeroFluxNeumannBoundaryCondition<TImage>* boundaryCondition = new itk::ZeroFluxNeumannBoundaryCondition<TImage>;
+  itk::ConstNeighborhoodIterator<TImage>          iit(radius, im, im->GetLargestPossibleRegion());
+  itk::ZeroFluxNeumannBoundaryCondition<TImage> * boundaryCondition = new itk::ZeroFluxNeumannBoundaryCondition<TImage>;
   iit.OverrideBoundaryCondition(boundaryCondition);
 
-  itk::SizeValueType c = (itk::SizeValueType) (iit.Size() / 2); // get offset of center pixel
-  itk::SizeValueType* strides = new itk::SizeValueType[ImageDimension]; // get offsets to access neighboring pixels
-  for (int dim=0; dim<ImageDimension; dim++)
-    {
+  itk::SizeValueType   c = (itk::SizeValueType)(iit.Size() / 2);         // get offset of center pixel
+  itk::SizeValueType * strides = new itk::SizeValueType[ImageDimension]; // get offsets to access neighboring pixels
+  for (int dim = 0; dim < ImageDimension; dim++)
+  {
     strides[dim] = iit.GetStride(dim);
-    }
+  }
 
   double AbsDiff;
   double epsilon = 1e-7;
 
   // Run through the image
-  while(!iit.IsAtEnd())
+  while (!iit.IsAtEnd())
+  {
+    for (std::vector<int>::size_type k = 0; k < dimsToProcess.size(); k++)
     {
-    for ( std::vector<int>::size_type k = 0; k < dimsToProcess.size(); k++ )
-      {
-      AbsDiff = itk::Math::abs(iit.GetPixel(c + strides[dimsToProcess[k]]) - iit.GetPixel(c) - itGrad.Get()[k] * grad->GetSpacing()[k]);
+      AbsDiff = itk::Math::abs(iit.GetPixel(c + strides[dimsToProcess[k]]) - iit.GetPixel(c) -
+                               itGrad.Get()[k] * grad->GetSpacing()[k]);
 
       // Checking results
       if (AbsDiff > epsilon)
-        {
+      {
         std::cerr << "Test Failed: output of gradient filter not equal to finite difference image." << std::endl;
         std::cerr << "Problem at pixel " << iit.GetIndex() << std::endl;
         std::cerr << "Absolute difference = " << AbsDiff << " instead of " << epsilon << std::endl;
-        exit( EXIT_FAILURE);
-        }
+        exit(EXIT_FAILURE);
       }
+    }
     ++iit;
     ++itGrad;
-    }
-
+  }
 }
 #endif
 
@@ -80,27 +84,28 @@ void CheckGradient(typename TImage::Pointer im, typename TGradient::Pointer grad
  * \author Cyril Mory
  */
 
-int main(int, char** )
+int
+main(int, char **)
 {
   constexpr unsigned int Dimension = 3;
   using OutputPixelType = double;
 
   using CovVecType = itk::CovariantVector<OutputPixelType, 2>;
 #ifdef USE_CUDA
-  using OutputImageType = itk::CudaImage< OutputPixelType, Dimension >;
+  using OutputImageType = itk::CudaImage<OutputPixelType, Dimension>;
   using GradientImageType = itk::CudaImage<CovVecType, Dimension>;
 #else
-  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
+  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
   using GradientImageType = itk::Image<CovVecType, Dimension>;
 #endif
 
   // Random image sources
-  using RandomImageSourceType = itk::RandomImageSource< OutputImageType >;
-  RandomImageSourceType::Pointer randomVolumeSource  = RandomImageSourceType::New();
+  using RandomImageSourceType = itk::RandomImageSource<OutputImageType>;
+  RandomImageSourceType::Pointer randomVolumeSource = RandomImageSourceType::New();
 
   // Image meta data
-  RandomImageSourceType::PointType origin;
-  RandomImageSourceType::SizeType size;
+  RandomImageSourceType::PointType   origin;
+  RandomImageSourceType::SizeType    size;
   RandomImageSourceType::SpacingType spacing;
 
   // Volume metadata
@@ -122,16 +127,17 @@ int main(int, char** )
   spacing[1] = 4.;
   spacing[2] = 4.;
 #endif
-  randomVolumeSource->SetOrigin( origin );
-  randomVolumeSource->SetSpacing( spacing );
-  randomVolumeSource->SetSize( size );
-  randomVolumeSource->SetMin( 0. );
-  randomVolumeSource->SetMax( 1. );
+  randomVolumeSource->SetOrigin(origin);
+  randomVolumeSource->SetSpacing(spacing);
+  randomVolumeSource->SetSize(size);
+  randomVolumeSource->SetMin(0.);
+  randomVolumeSource->SetMax(1.);
 
   // Update all sources
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( randomVolumeSource->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(randomVolumeSource->Update());
 
-  using GradientFilterType = rtk::ForwardDifferenceGradientImageFilter<OutputImageType, OutputPixelType, OutputPixelType, GradientImageType>;
+  using GradientFilterType =
+    rtk::ForwardDifferenceGradientImageFilter<OutputImageType, OutputPixelType, OutputPixelType, GradientImageType>;
   GradientFilterType::Pointer grad = GradientFilterType::New();
   grad->SetInput(randomVolumeSource->GetOutput());
 
@@ -142,9 +148,10 @@ int main(int, char** )
 
   grad->SetDimensionsProcessed(computeGradientAlongDim);
 
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( grad->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(grad->Update());
 
-  CheckGradient<OutputImageType, GradientFilterType::OutputImageType>(randomVolumeSource->GetOutput(), grad->GetOutput(), computeGradientAlongDim);
+  CheckGradient<OutputImageType, GradientFilterType::OutputImageType>(
+    randomVolumeSource->GetOutput(), grad->GetOutput(), computeGradientAlongDim);
   std::cout << "\n\nTest PASSED! " << std::endl;
 
   return EXIT_SUCCESS;

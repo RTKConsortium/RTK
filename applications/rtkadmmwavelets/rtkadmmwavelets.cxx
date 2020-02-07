@@ -29,7 +29,8 @@
 #include "rtkDisplacedDetectorImageFilter.h"
 #include "rtkADMMWaveletsConeBeamReconstructionFilter.h"
 
-int main(int argc, char * argv[])
+int
+main(int argc, char * argv[])
 {
   GGO(rtkadmmwavelets, args_info);
 
@@ -37,9 +38,9 @@ int main(int argc, char * argv[])
   constexpr unsigned int Dimension = 3;
 
 #ifdef RTK_USE_CUDA
-  using OutputImageType = itk::CudaImage< OutputPixelType, Dimension >;
+  using OutputImageType = itk::CudaImage<OutputPixelType, Dimension>;
 #else
-  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
+  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
 #endif
 
   //////////////////////////////////////////////////////////////////////////////////////////
@@ -47,55 +48,51 @@ int main(int argc, char * argv[])
   //////////////////////////////////////////////////////////////////////////////////////////
 
   // Projections reader
-  using projectionsReaderType = rtk::ProjectionsReader< OutputImageType >;
+  using projectionsReaderType = rtk::ProjectionsReader<OutputImageType>;
   projectionsReaderType::Pointer projectionsReader = projectionsReaderType::New();
-  rtk::SetProjectionsReaderFromGgo<projectionsReaderType,
-      args_info_rtkadmmwavelets>(projectionsReader, args_info);
+  rtk::SetProjectionsReaderFromGgo<projectionsReaderType, args_info_rtkadmmwavelets>(projectionsReader, args_info);
 
   // Geometry
-  if(args_info.verbose_flag)
-      std::cout << "Reading geometry information from "
-                << args_info.geometry_arg
-                << "..."
-                << std::endl;
+  if (args_info.verbose_flag)
+    std::cout << "Reading geometry information from " << args_info.geometry_arg << "..." << std::endl;
   rtk::ThreeDCircularProjectionGeometryXMLFileReader::Pointer geometryReader;
   geometryReader = rtk::ThreeDCircularProjectionGeometryXMLFileReader::New();
   geometryReader->SetFilename(args_info.geometry_arg);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( geometryReader->GenerateOutputInformation() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(geometryReader->GenerateOutputInformation());
 
   // Displaced detector weighting
-  using DDFType = rtk::DisplacedDetectorImageFilter< OutputImageType >;
+  using DDFType = rtk::DisplacedDetectorImageFilter<OutputImageType>;
   DDFType::Pointer ddf = DDFType::New();
-  ddf->SetInput( projectionsReader->GetOutput() );
-  ddf->SetGeometry( geometryReader->GetOutputObject() );
+  ddf->SetInput(projectionsReader->GetOutput());
+  ddf->SetGeometry(geometryReader->GetOutputObject());
 
   // Create input: either an existing volume read from a file or a blank image
-  itk::ImageSource< OutputImageType >::Pointer inputFilter;
-  if(args_info.input_given)
-    {
+  itk::ImageSource<OutputImageType>::Pointer inputFilter;
+  if (args_info.input_given)
+  {
     // Read an existing image to initialize the volume
-    using InputReaderType = itk::ImageFileReader<  OutputImageType >;
+    using InputReaderType = itk::ImageFileReader<OutputImageType>;
     InputReaderType::Pointer inputReader = InputReaderType::New();
-    inputReader->SetFileName( args_info.input_arg );
+    inputReader->SetFileName(args_info.input_arg);
     inputFilter = inputReader;
-    }
+  }
   else
-    {
+  {
     // Create new empty volume
-    using ConstantImageSourceType = rtk::ConstantImageSource< OutputImageType >;
+    using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
     ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
-    rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkadmmwavelets>(constantImageSource, args_info);
+    rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkadmmwavelets>(constantImageSource,
+                                                                                           args_info);
     inputFilter = constantImageSource;
-    }
+  }
 
   //////////////////////////////////////////////////////////////////////////////////////////
   // Setup the ADMM filter and run it
   //////////////////////////////////////////////////////////////////////////////////////////
 
   // Set the reconstruction filter
-  typedef rtk::ADMMWaveletsConeBeamReconstructionFilter
-      <OutputImageType> ADMM_Wavelets_FilterType;
-    ADMM_Wavelets_FilterType::Pointer admmFilter = ADMM_Wavelets_FilterType::New();
+  typedef rtk::ADMMWaveletsConeBeamReconstructionFilter<OutputImageType> ADMM_Wavelets_FilterType;
+  ADMM_Wavelets_FilterType::Pointer                                      admmFilter = ADMM_Wavelets_FilterType::New();
 
   // Set the forward and back projection filters to be used inside admmFilter
   SetForwardProjectionFromGgo(args_info, admmFilter.GetPointer());
@@ -113,21 +110,21 @@ int main(int argc, char * argv[])
   admmFilter->SetOrder(args_info.order_arg);
 
   // Set the inputs of the ADMM filter
-  admmFilter->SetInput(0, inputFilter->GetOutput() );
-  admmFilter->SetInput(1, projectionsReader->GetOutput() );
+  admmFilter->SetInput(0, inputFilter->GetOutput());
+  admmFilter->SetInput(1, projectionsReader->GetOutput());
 
   admmFilter->SetDisableDisplacedDetectorFilter(args_info.nodisplaced_flag);
 
   REPORT_ITERATIONS(admmFilter, ADMM_Wavelets_FilterType, OutputImageType);
 
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( admmFilter->Update() )
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(admmFilter->Update())
 
   // Set writer and write the output
-  using WriterType = itk::ImageFileWriter<  OutputImageType >;
+  using WriterType = itk::ImageFileWriter<OutputImageType>;
   WriterType::Pointer writer = WriterType::New();
-  writer->SetFileName( args_info.output_arg );
-  writer->SetInput( admmFilter->GetOutput() );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() )
+  writer->SetFileName(args_info.output_arg);
+  writer->SetInput(admmFilter->GetOutput());
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(writer->Update())
 
   return EXIT_SUCCESS;
 }

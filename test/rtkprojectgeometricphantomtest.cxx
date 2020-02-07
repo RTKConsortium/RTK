@@ -22,7 +22,8 @@
  * \author Marc Vila
  */
 
-int main(int argc, char*argv[])
+int
+main(int argc, char * argv[])
 {
   if (argc < 2)
   {
@@ -33,7 +34,7 @@ int main(int argc, char*argv[])
 
   constexpr unsigned int Dimension = 3;
   using OutputPixelType = float;
-  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
+  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
 #if FAST_TESTS_NO_CHECKS
   constexpr unsigned int NumberOfProjectionImages = 3;
 #else
@@ -42,9 +43,9 @@ int main(int argc, char*argv[])
   using GeometryType = rtk::ThreeDCircularProjectionGeometry;
 
   // Constant image sources
-  using ConstantImageSourceType = rtk::ConstantImageSource< OutputImageType >;
-  ConstantImageSourceType::PointType origin;
-  ConstantImageSourceType::SizeType size;
+  using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
+  ConstantImageSourceType::PointType   origin;
+  ConstantImageSourceType::SizeType    size;
   ConstantImageSourceType::SpacingType spacing;
 
   ConstantImageSourceType::Pointer projectionsSource = ConstantImageSourceType::New();
@@ -66,31 +67,31 @@ int main(int argc, char*argv[])
   spacing[1] = 4.;
   spacing[2] = 4.;
 #endif
-  projectionsSource->SetOrigin( origin );
-  projectionsSource->SetSpacing( spacing );
-  projectionsSource->SetSize( size );
-  projectionsSource->SetConstant( 0. );
+  projectionsSource->SetOrigin(origin);
+  projectionsSource->SetSpacing(spacing);
+  projectionsSource->SetSize(size);
+  projectionsSource->SetConstant(0.);
 
   // Geometry object
   using GeometryType = rtk::ThreeDCircularProjectionGeometry;
   GeometryType::Pointer geometry = GeometryType::New();
-  for(unsigned int noProj=0; noProj<NumberOfProjectionImages; noProj++)
-    geometry->AddProjection(600., 1200., noProj*360./NumberOfProjectionImages);
+  for (unsigned int noProj = 0; noProj < NumberOfProjectionImages; noProj++)
+    geometry->AddProjection(600., 1200., noProj * 360. / NumberOfProjectionImages);
 
   // Shepp Logan projections filter
   using SLPType = rtk::SheppLoganPhantomFilter<OutputImageType, OutputImageType>;
-  SLPType::Pointer slp=SLPType::New();
-  slp->SetInput( projectionsSource->GetOutput() );
+  SLPType::Pointer slp = SLPType::New();
+  slp->SetInput(projectionsSource->GetOutput());
   slp->SetGeometry(geometry);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( slp->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(slp->Update());
 
   // Shepp Logan projections filter from Configuration File
   using PGPType = rtk::ProjectGeometricPhantomImageFilter<OutputImageType, OutputImageType>;
-  PGPType::Pointer pgp=PGPType::New();
-  pgp->SetInput( projectionsSource->GetOutput() );
+  PGPType::Pointer pgp = PGPType::New();
+  pgp->SetInput(projectionsSource->GetOutput());
   pgp->SetGeometry(geometry);
   pgp->SetConfigFile(argv[1]);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( pgp->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(pgp->Update());
 
   CheckImageQuality<OutputImageType>(slp->GetOutput(), pgp->GetOutput(), 0.00055, 88, 255.0);
   std::cout << "Test PASSED! " << std::endl;

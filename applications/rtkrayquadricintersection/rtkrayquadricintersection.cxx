@@ -25,77 +25,86 @@
 #include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>
 
-int main(int argc, char * argv[])
+int
+main(int argc, char * argv[])
 {
   GGO(rtkrayquadricintersection, args_info);
 
   using OutputPixelType = float;
   constexpr unsigned int Dimension = 3;
 
-  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
+  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
 
   // Geometry
-  if(args_info.verbose_flag)
-    std::cout << "Reading geometry information from "
-              << args_info.geometry_arg
-              << "..."
-              << std::endl;
+  if (args_info.verbose_flag)
+    std::cout << "Reading geometry information from " << args_info.geometry_arg << "..." << std::endl;
   rtk::ThreeDCircularProjectionGeometryXMLFileReader::Pointer geometryReader;
   geometryReader = rtk::ThreeDCircularProjectionGeometryXMLFileReader::New();
   geometryReader->SetFilename(args_info.geometry_arg);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( geometryReader->GenerateOutputInformation() )
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(geometryReader->GenerateOutputInformation())
 
   // Create a stack of empty projection images
-  using ConstantImageSourceType = rtk::ConstantImageSource< OutputImageType >;
+  using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
   ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
-  rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkrayquadricintersection>(constantImageSource, args_info);
+  rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkrayquadricintersection>(constantImageSource,
+                                                                                                   args_info);
 
   // Adjust size according to geometry
   ConstantImageSourceType::SizeType sizeOutput;
   sizeOutput[0] = constantImageSource->GetSize()[0];
   sizeOutput[1] = constantImageSource->GetSize()[1];
   sizeOutput[2] = geometryReader->GetOutputObject()->GetGantryAngles().size();
-  constantImageSource->SetSize( sizeOutput );
+  constantImageSource->SetSize(sizeOutput);
 
   // Create projection image filter
   using RQIType = rtk::RayQuadricIntersectionImageFilter<OutputImageType, OutputImageType>;
   RQIType::Pointer rqi = RQIType::New();
-  rqi->SetInput( constantImageSource->GetOutput() );
-  if(args_info.parameters_given>0) rqi->SetA(args_info.parameters_arg[0]);
-  if(args_info.parameters_given>1) rqi->SetB(args_info.parameters_arg[1]);
-  if(args_info.parameters_given>2) rqi->SetC(args_info.parameters_arg[2]);
-  if(args_info.parameters_given>3) rqi->SetD(args_info.parameters_arg[3]);
-  if(args_info.parameters_given>4) rqi->SetE(args_info.parameters_arg[4]);
-  if(args_info.parameters_given>5) rqi->SetF(args_info.parameters_arg[5]);
-  if(args_info.parameters_given>6) rqi->SetG(args_info.parameters_arg[6]);
-  if(args_info.parameters_given>7) rqi->SetH(args_info.parameters_arg[7]);
-  if(args_info.parameters_given>8) rqi->SetI(args_info.parameters_arg[8]);
-  if(args_info.parameters_given>9) rqi->SetJ(args_info.parameters_arg[9]);
+  rqi->SetInput(constantImageSource->GetOutput());
+  if (args_info.parameters_given > 0)
+    rqi->SetA(args_info.parameters_arg[0]);
+  if (args_info.parameters_given > 1)
+    rqi->SetB(args_info.parameters_arg[1]);
+  if (args_info.parameters_given > 2)
+    rqi->SetC(args_info.parameters_arg[2]);
+  if (args_info.parameters_given > 3)
+    rqi->SetD(args_info.parameters_arg[3]);
+  if (args_info.parameters_given > 4)
+    rqi->SetE(args_info.parameters_arg[4]);
+  if (args_info.parameters_given > 5)
+    rqi->SetF(args_info.parameters_arg[5]);
+  if (args_info.parameters_given > 6)
+    rqi->SetG(args_info.parameters_arg[6]);
+  if (args_info.parameters_given > 7)
+    rqi->SetH(args_info.parameters_arg[7]);
+  if (args_info.parameters_given > 8)
+    rqi->SetI(args_info.parameters_arg[8]);
+  if (args_info.parameters_given > 9)
+    rqi->SetJ(args_info.parameters_arg[9]);
   rqi->SetDensity(args_info.mult_arg);
-  rqi->SetGeometry( geometryReader->GetOutputObject() );
-  if(args_info.planes_given)
+  rqi->SetGeometry(geometryReader->GetOutputObject());
+  if (args_info.planes_given)
+  {
+    if (args_info.planes_given % 4 != 0)
     {
-    if(args_info.planes_given % 4 != 0 )
-      {
       std::cerr << "--plane requires four parameters" << std::endl;
       exit(EXIT_FAILURE);
-      }
-    for(unsigned int i=0; i<args_info.planes_given/4; i++)
-      {
-      RQIType::VectorType planeDir(args_info.planes_arg+i*4);
-      rqi->AddClipPlane(planeDir, args_info.planes_arg[i*4+3]);
-      }
     }
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( rqi->Update() )
+    for (unsigned int i = 0; i < args_info.planes_given / 4; i++)
+    {
+      RQIType::VectorType planeDir(args_info.planes_arg + i * 4);
+      rqi->AddClipPlane(planeDir, args_info.planes_arg[i * 4 + 3]);
+    }
+  }
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(rqi->Update())
 
   // Write
-  using WriterType = itk::ImageFileWriter<  OutputImageType >;
+  using WriterType = itk::ImageFileWriter<OutputImageType>;
   WriterType::Pointer writer = WriterType::New();
-  writer->SetFileName( args_info.output_arg );
-  writer->SetInput( rqi->GetOutput() );
-  if(args_info.verbose_flag)
+  writer->SetFileName(args_info.output_arg);
+  writer->SetInput(rqi->GetOutput());
+  if (args_info.verbose_flag)
     std::cout << "Projecting and writing... " << std::flush;
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() )
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(writer->Update())
 
   return EXIT_SUCCESS;
 }

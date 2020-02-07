@@ -29,39 +29,40 @@
 
 #include <fstream>
 
-int main(int argc, char * argv[])
+int
+main(int argc, char * argv[])
 {
   GGO(rtkoverlayphaseandshroud, args_info);
 
   using InputPixelType = double;
-  using RGBPixelType = itk::RGBPixel< unsigned char >;
+  using RGBPixelType = itk::RGBPixel<unsigned char>;
   constexpr unsigned int Dimension = 2;
 
-  using InputImageType = itk::Image< InputPixelType, Dimension >;
-  using OutputImageType = itk::Image< RGBPixelType, Dimension >;
+  using InputImageType = itk::Image<InputPixelType, Dimension>;
+  using OutputImageType = itk::Image<RGBPixelType, Dimension>;
 
   // Read
   itk::ImageFileReader<InputImageType>::Pointer reader = itk::ImageFileReader<InputImageType>::New();
   reader->SetFileName(args_info.input_arg);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->Update() )
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(reader->Update())
 
   // Read signal file
   using ReaderType = itk::CSVArray2DFileReader<double>;
   ReaderType::Pointer signalReader = ReaderType::New();
-  signalReader->SetFileName( args_info.signal_arg );
-  signalReader->SetFieldDelimiterCharacter( ';' );
+  signalReader->SetFileName(args_info.signal_arg);
+  signalReader->SetFieldDelimiterCharacter(';');
   signalReader->HasRowHeadersOff();
   signalReader->HasColumnHeadersOff();
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( signalReader->Update() )
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(signalReader->Update())
   std::vector<double> signal = signalReader->GetArray2DDataObject()->GetColumn(0);
 
   // Locate the minima in the signal
   std::vector<bool> minima;
   minima.push_back(false);
-  for (unsigned int i=1; i<signal.size(); i++)
-    {
-    minima.push_back((signal[i] < signal[i-1]));
-    }
+  for (unsigned int i = 1; i < signal.size(); i++)
+  {
+    minima.push_back((signal[i] < signal[i - 1]));
+  }
 
   // Create output RGB image
   OutputImageType::Pointer RGBout = OutputImageType::New();
@@ -69,49 +70,50 @@ int main(int argc, char * argv[])
   RGBout->Allocate();
 
   // Compute min and max of shroud to scale output
-  itk::ImageRegionConstIterator<InputImageType> itIn(reader->GetOutput(), reader->GetOutput()->GetLargestPossibleRegion());
+  itk::ImageRegionConstIterator<InputImageType>      itIn(reader->GetOutput(),
+                                                     reader->GetOutput()->GetLargestPossibleRegion());
   itk::ImageRegionIteratorWithIndex<OutputImageType> itOut(RGBout, RGBout->GetLargestPossibleRegion());
 
   double min = itk::NumericTraits<double>::max();
-  double max = - itk::NumericTraits<double>::max();
-  while(!itIn.IsAtEnd())
-    {
+  double max = -itk::NumericTraits<double>::max();
+  while (!itIn.IsAtEnd())
+  {
     double currentPixel = itIn.Get();
     if (currentPixel < min)
       min = currentPixel;
     if (currentPixel > max)
       max = currentPixel;
     ++itIn;
-    }
+  }
 
   // Fill the output
   itIn.GoToBegin();
   itOut.GoToBegin();
-  while(!itOut.IsAtEnd())
-    {
+  while (!itOut.IsAtEnd())
+  {
     RGBPixelType pix;
 
-    if(minima[itOut.GetIndex()[1]]) // If it is a minimum, draw a red pixel
-      {
+    if (minima[itOut.GetIndex()[1]]) // If it is a minimum, draw a red pixel
+    {
       pix.Fill(0);
       pix.SetRed(255);
-      }
+    }
     else // Otherwise, copy the input image, scaled to [0 - 255], in all channels
-      {
-      pix.Fill( floor(( itIn.Get() - min ) * 255.0 / (max - min)) );
-      }
+    {
+      pix.Fill(floor((itIn.Get() - min) * 255.0 / (max - min)));
+    }
 
     itOut.Set(pix);
 
     ++itIn;
     ++itOut;
-    }
+  }
 
   using WriterType = itk::ImageFileWriter<OutputImageType>;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName(args_info.output_arg);
   writer->SetInput(RGBout);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() )
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(writer->Update())
 
   return EXIT_SUCCESS;
 }

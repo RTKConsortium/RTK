@@ -29,15 +29,16 @@
  * \author Simon Rit and Marc Vila
  */
 
-int main(int , char** )
+int
+main(int, char **)
 {
   constexpr unsigned int Dimension = 3;
   using OutputPixelType = float;
 
 #ifdef USE_CUDA
-  using OutputImageType = itk::CudaImage< OutputPixelType, Dimension >;
+  using OutputImageType = itk::CudaImage<OutputPixelType, Dimension>;
 #else
-  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
+  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
 #endif
 
   using VectorType = itk::Vector<double, 3>;
@@ -48,11 +49,11 @@ int main(int , char** )
 #endif
 
   // Constant image sources
-  using ConstantImageSourceType = rtk::ConstantImageSource< OutputImageType >;
-  ConstantImageSourceType::PointType origin;
-  ConstantImageSourceType::SizeType size;
+  using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
+  ConstantImageSourceType::PointType   origin;
+  ConstantImageSourceType::SizeType    size;
   ConstantImageSourceType::SpacingType spacing;
-  constexpr double att = 0.0154;
+  constexpr double                     att = 0.0154;
 
   // Create Joseph Forward Projector volume input.
   const ConstantImageSourceType::Pointer volInput = ConstantImageSourceType::New();
@@ -83,19 +84,19 @@ int main(int , char** )
 //  spacing[1] = 4;
 //  spacing[2] = 4;
 #endif
-  volInput->SetOrigin( origin );
-  volInput->SetSpacing( spacing );
-  volInput->SetSize( size );
-  volInput->SetConstant( 1. );
+  volInput->SetOrigin(origin);
+  volInput->SetSpacing(spacing);
+  volInput->SetSize(size);
+  volInput->SetConstant(1.);
   volInput->UpdateOutputInformation();
 
   // Create Joseph Forward Projector attenuation map.
   const ConstantImageSourceType::Pointer attenuationInput = ConstantImageSourceType::New();
 
-  attenuationInput->SetOrigin( origin );
-  attenuationInput->SetSpacing( spacing );
-  attenuationInput->SetSize( size );
-  attenuationInput->SetConstant( att );
+  attenuationInput->SetOrigin(origin);
+  attenuationInput->SetSpacing(spacing);
+  attenuationInput->SetSize(size);
+  attenuationInput->SetConstant(att);
   attenuationInput->UpdateOutputInformation();
 
   size.Fill(1);
@@ -104,10 +105,10 @@ int main(int , char** )
   // Ray Box Intersection Filter in order to initialize the stack of projections.
   const ConstantImageSourceType::Pointer projInput = ConstantImageSourceType::New();
   size[2] = NumberOfProjectionImages;
-  projInput->SetOrigin( origin );
-  projInput->SetSpacing( spacing );
-  projInput->SetSize( size );
-  projInput->SetConstant( 0. );
+  projInput->SetOrigin(origin);
+  projInput->SetSpacing(spacing);
+  projInput->SetSize(size);
+  projInput->SetConstant(0.);
   projInput->Update();
 
   // Joseph Forward Projection filter
@@ -118,9 +119,9 @@ int main(int , char** )
 #endif
   JFPType::Pointer jfp = JFPType::New();
   jfp->InPlaceOff();
-  jfp->SetInput( projInput->GetOutput() );
-  jfp->SetInput( 1, volInput->GetOutput() );
-  jfp->SetInput(2, attenuationInput->GetOutput() );
+  jfp->SetInput(projInput->GetOutput());
+  jfp->SetInput(1, volInput->GetOutput());
+  jfp->SetInput(2, attenuationInput->GetOutput());
 
   // Ray Box Intersection filter (reference)
   using RBIType = rtk::RayBoxIntersectionImageFilter<OutputImageType, OutputImageType>;
@@ -129,14 +130,14 @@ int main(int , char** )
 #endif
   RBIType::Pointer rbi = RBIType::New();
   rbi->InPlaceOff();
-  rbi->SetInput( projInput->GetOutput() );
+  rbi->SetInput(projInput->GetOutput());
   VectorType boxMin, boxMax;
   boxMin[0] = -126;
   boxMin[1] = -126;
   boxMin[2] = -126;
-  boxMax[0] =  126;
-  boxMax[1] =  126;
-  boxMax[2] =  47.6;
+  boxMax[0] = 126;
+  boxMax[1] = 126;
+  boxMax[2] = 47.6;
   rbi->SetBoxMin(boxMin);
   rbi->SetBoxMax(boxMax);
 
@@ -152,31 +153,33 @@ int main(int , char** )
 
   std::cout << "\n\n****** Case 1: inner ray source ******" << std::endl;
   // The circle is divided in 4 quarters
-  for(int q=0; q<4; q++) {
+  for (int q = 0; q < 4; q++)
+  {
     // Geometry
     using GeometryType = rtk::ThreeDCircularProjectionGeometry;
     GeometryType::Pointer geometry = GeometryType::New();
-    for(unsigned int i=0; i<NumberOfProjectionImages;i++)
-      {
-      const double angle = -45. + i*2.;
-      geometry->AddProjection(47.6 / std::cos(angle*itk::Math::pi/180.), 1000., q*90+angle);
-      }
+    for (unsigned int i = 0; i < NumberOfProjectionImages; i++)
+    {
+      const double angle = -45. + i * 2.;
+      geometry->AddProjection(47.6 / std::cos(angle * itk::Math::pi / 180.), 1000., q * 90 + angle);
+    }
 
-    if(q==0) {
-      rbi->SetGeometry( geometry );
+    if (q == 0)
+    {
+      rbi->SetGeometry(geometry);
       rbi->Update();
       using ImageIterator = itk::ImageRegionIterator<OutputImageType>;
-      ImageIterator itRbi( rbi->GetOutput(), rbi->GetOutput()->GetBufferedRegion() );
+      ImageIterator itRbi(rbi->GetOutput(), rbi->GetOutput()->GetBufferedRegion());
 
       itRbi.GoToBegin();
 
-      while( !itRbi.IsAtEnd() )
+      while (!itRbi.IsAtEnd())
       {
         typename OutputImageType::PixelType RefVal = itRbi.Get();
-        if(att == 0)
+        if (att == 0)
           itRbi.Set(RefVal);
         else
-          itRbi.Set((1-exp(-RefVal*att))/(att));
+          itRbi.Set((1 - exp(-RefVal * att)) / (att));
         ++itRbi;
       }
     }

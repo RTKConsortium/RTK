@@ -19,7 +19,8 @@
  * \author Simon Rit
  */
 
-int main(int argc, char*argv[])
+int
+main(int argc, char * argv[])
 {
   if (argc < 5)
   {
@@ -32,39 +33,39 @@ int main(int argc, char*argv[])
   rtk::XRadGeometryReader::Pointer geoTargReader;
   geoTargReader = rtk::XRadGeometryReader::New();
   geoTargReader->SetImageFileName(argv[1]);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( geoTargReader->UpdateOutputData() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(geoTargReader->UpdateOutputData());
 
   // Reference geometry
   rtk::ThreeDCircularProjectionGeometryXMLFileReader::Pointer geoRefReader;
   geoRefReader = rtk::ThreeDCircularProjectionGeometryXMLFileReader::New();
   geoRefReader->SetFilename(argv[3]);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( geoRefReader->GenerateOutputInformation() )
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(geoRefReader->GenerateOutputInformation())
 
   // 1. Check geometries
-  CheckGeometries(geoTargReader->GetGeometry(), geoRefReader->GetOutputObject() );
+  CheckGeometries(geoTargReader->GetGeometry(), geoRefReader->GetOutputObject());
 
   // ******* COMPARING projections *******
   using OutputPixelType = float;
   constexpr unsigned int Dimension = 3;
-  using ImageType = itk::Image< OutputPixelType, Dimension >;
+  using ImageType = itk::Image<OutputPixelType, Dimension>;
 
   // Elekta projections reader
-  using ReaderType = rtk::ProjectionsReader< ImageType >;
-  ReaderType::Pointer reader = ReaderType::New();
+  using ReaderType = rtk::ProjectionsReader<ImageType>;
+  ReaderType::Pointer      reader = ReaderType::New();
   std::vector<std::string> fileNames;
   fileNames.emplace_back(argv[2]);
-  reader->SetFileNames( fileNames );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->Update() );
+  reader->SetFileNames(fileNames);
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(reader->Update());
 
   // Reference projections reader
   ReaderType::Pointer readerRef = ReaderType::New();
   fileNames.clear();
   fileNames.emplace_back(argv[4]);
-  readerRef->SetFileNames( fileNames );
+  readerRef->SetFileNames(fileNames);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(readerRef->Update());
 
   // 2. Compare read projections
-  CheckImageQuality< ImageType >(reader->GetOutput(), readerRef->GetOutput(), 1.6e-7, 100, 2.0);
+  CheckImageQuality<ImageType>(reader->GetOutput(), readerRef->GetOutput(), 1.6e-7, 100, 2.0);
 
   // If both succeed
   std::cout << "\n\nTest PASSED! " << std::endl;

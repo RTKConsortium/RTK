@@ -25,14 +25,15 @@
 #include <string>
 #include <sstream>
 
-int main(int argc, char * argv[])
+int
+main(int argc, char * argv[])
 {
   GGO(rtkwaveletsdenoising, args_info);
 
   using OutputPixelType = float;
   constexpr unsigned int Dimension = 3;
 
-  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
+  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
 
   // Read the input image
   using ReaderType = itk::ImageFileReader<OutputImageType>;
@@ -50,9 +51,9 @@ int main(int argc, char * argv[])
   // Write reconstruction
   using WriterType = itk::ImageFileWriter<OutputImageType>;
   WriterType::Pointer writer = WriterType::New();
-  writer->SetInput( wst->GetOutput() );
+  writer->SetInput(wst->GetOutput());
   writer->SetFileName(args_info.output_arg);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() )
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(writer->Update())
 
   return EXIT_SUCCESS;
 }

@@ -27,67 +27,65 @@
 
 #include <itkImageFileWriter.h>
 
-int main(int argc, char * argv[])
+int
+main(int argc, char * argv[])
 {
   GGO(rtkparkershortscanweighting, args_info);
 
   // Check on hardware parameter
 #ifndef RTK_USE_CUDA
-  if(!strcmp(args_info.hardware_arg, "cuda") )
-    {
+  if (!strcmp(args_info.hardware_arg, "cuda"))
+  {
     std::cerr << "The program has not been compiled with cuda option" << std::endl;
     return EXIT_FAILURE;
-    }
+  }
 #endif
 
   using OutputPixelType = float;
   constexpr unsigned int Dimension = 3;
 
 #ifdef RTK_USE_CUDA
-  using OutputImageType = itk::CudaImage< OutputPixelType, Dimension >;
+  using OutputImageType = itk::CudaImage<OutputPixelType, Dimension>;
 #else
-  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
+  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
 #endif
 
   // Projections reader
-  using ReaderType = rtk::ProjectionsReader< OutputImageType >;
+  using ReaderType = rtk::ProjectionsReader<OutputImageType>;
   ReaderType::Pointer reader = ReaderType::New();
   rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkparkershortscanweighting>(reader, args_info);
 
   // Geometry
-  if(args_info.verbose_flag)
-    std::cout << "Reading geometry information from "
-              << args_info.geometry_arg
-              << "..."
-              << std::endl;
+  if (args_info.verbose_flag)
+    std::cout << "Reading geometry information from " << args_info.geometry_arg << "..." << std::endl;
   rtk::ThreeDCircularProjectionGeometryXMLFileReader::Pointer geometryReader;
   geometryReader = rtk::ThreeDCircularProjectionGeometryXMLFileReader::New();
   geometryReader->SetFilename(args_info.geometry_arg);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( geometryReader->GenerateOutputInformation() )
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(geometryReader->GenerateOutputInformation())
 
   // Short scan image filter
-  using PSSFCPUType = rtk::ParkerShortScanImageFilter< OutputImageType >;
+  using PSSFCPUType = rtk::ParkerShortScanImageFilter<OutputImageType>;
 #ifdef RTK_USE_CUDA
   using PSSFType = rtk::CudaParkerShortScanImageFilter;
 #else
-  using PSSFType = rtk::ParkerShortScanImageFilter< OutputImageType >;
+  using PSSFType = rtk::ParkerShortScanImageFilter<OutputImageType>;
 #endif
   PSSFCPUType::Pointer pssf;
-  if(!strcmp(args_info.hardware_arg, "cuda") )
+  if (!strcmp(args_info.hardware_arg, "cuda"))
     pssf = PSSFType::New();
   else
     pssf = PSSFCPUType::New();
-  pssf->SetInput( reader->GetOutput() );
-  pssf->SetGeometry( geometryReader->GetOutputObject() );
+  pssf->SetInput(reader->GetOutput());
+  pssf->SetGeometry(geometryReader->GetOutputObject());
   pssf->InPlaceOff();
 
   // Write
-  using WriterType = itk::ImageFileWriter<  OutputImageType >;
+  using WriterType = itk::ImageFileWriter<OutputImageType>;
   WriterType::Pointer writer = WriterType::New();
-  writer->SetFileName( args_info.output_arg );
-  writer->SetInput( pssf->GetOutput() );
-  writer->SetNumberOfStreamDivisions( args_info.divisions_arg );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() )
+  writer->SetFileName(args_info.output_arg);
+  writer->SetInput(pssf->GetOutput());
+  writer->SetNumberOfStreamDivisions(args_info.divisions_arg);
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(writer->Update())
 
   return EXIT_SUCCESS;
 }

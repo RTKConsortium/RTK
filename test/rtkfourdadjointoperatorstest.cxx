@@ -24,7 +24,8 @@
  * \author Cyril Mory
  */
 
-int main(int argc, char*argv[])
+int
+main(int argc, char * argv[])
 {
   if (argc < 2)
   {
@@ -37,11 +38,11 @@ int main(int argc, char*argv[])
   using OutputPixelType = float;
 
 #ifdef RTK_USE_CUDA
-  using ProjectionStackType = itk::CudaImage< OutputPixelType, Dimension >;
-  using VolumeSeriesType = itk::CudaImage< OutputPixelType, Dimension + 1 >;
+  using ProjectionStackType = itk::CudaImage<OutputPixelType, Dimension>;
+  using VolumeSeriesType = itk::CudaImage<OutputPixelType, Dimension + 1>;
 #else
-  using ProjectionStackType = itk::Image< OutputPixelType, Dimension >;
-  using VolumeSeriesType = itk::Image< OutputPixelType, Dimension + 1 >;
+  using ProjectionStackType = itk::Image<OutputPixelType, Dimension>;
+  using VolumeSeriesType = itk::Image<OutputPixelType, Dimension + 1>;
 #endif
 
 #if FAST_TESTS_NO_CHECKS
@@ -52,22 +53,22 @@ int main(int argc, char*argv[])
 
 
   // Random image sources
-  using RandomProjectionStackSourceType = itk::RandomImageSource< ProjectionStackType >;
-  RandomProjectionStackSourceType::Pointer randomProjectionStackSource  = RandomProjectionStackSourceType::New();
+  using RandomProjectionStackSourceType = itk::RandomImageSource<ProjectionStackType>;
+  RandomProjectionStackSourceType::Pointer randomProjectionStackSource = RandomProjectionStackSourceType::New();
 
-  using RandomVolumeSeriesSourceType = itk::RandomImageSource< VolumeSeriesType >;
-  RandomVolumeSeriesSourceType::Pointer randomVolumeSeriesSource  = RandomVolumeSeriesSourceType::New();
+  using RandomVolumeSeriesSourceType = itk::RandomImageSource<VolumeSeriesType>;
+  RandomVolumeSeriesSourceType::Pointer randomVolumeSeriesSource = RandomVolumeSeriesSourceType::New();
 
   // Constant sources
-  using ConstantProjectionStackSourceType = rtk::ConstantImageSource< ProjectionStackType >;
-  ConstantProjectionStackSourceType::Pointer constantProjectionStackSource  = ConstantProjectionStackSourceType::New();
+  using ConstantProjectionStackSourceType = rtk::ConstantImageSource<ProjectionStackType>;
+  ConstantProjectionStackSourceType::Pointer constantProjectionStackSource = ConstantProjectionStackSourceType::New();
 
-  using ConstantVolumeSeriesSourceType = rtk::ConstantImageSource< VolumeSeriesType >;
-  ConstantVolumeSeriesSourceType::Pointer constantVolumeSeriesSource  = ConstantVolumeSeriesSourceType::New();
+  using ConstantVolumeSeriesSourceType = rtk::ConstantImageSource<VolumeSeriesType>;
+  ConstantVolumeSeriesSourceType::Pointer constantVolumeSeriesSource = ConstantVolumeSeriesSourceType::New();
 
   // Volume metadata
-  VolumeSeriesType::PointType fourDOrigin;
-  VolumeSeriesType::SizeType fourDSize;
+  VolumeSeriesType::PointType   fourDOrigin;
+  VolumeSeriesType::SizeType    fourDSize;
   VolumeSeriesType::SpacingType fourDSpacing;
 
   fourDOrigin[0] = -127.;
@@ -93,20 +94,20 @@ int main(int argc, char*argv[])
   fourDSpacing[2] = 4.;
   fourDSpacing[3] = 1.;
 #endif
-  randomVolumeSeriesSource->SetOrigin( fourDOrigin );
-  randomVolumeSeriesSource->SetSpacing( fourDSpacing );
-  randomVolumeSeriesSource->SetSize( fourDSize );
-  randomVolumeSeriesSource->SetMin( 0. );
-  randomVolumeSeriesSource->SetMax( 1. );
+  randomVolumeSeriesSource->SetOrigin(fourDOrigin);
+  randomVolumeSeriesSource->SetSpacing(fourDSpacing);
+  randomVolumeSeriesSource->SetSize(fourDSize);
+  randomVolumeSeriesSource->SetMin(0.);
+  randomVolumeSeriesSource->SetMax(1.);
 
-  constantVolumeSeriesSource->SetOrigin( fourDOrigin );
-  constantVolumeSeriesSource->SetSpacing( fourDSpacing );
-  constantVolumeSeriesSource->SetSize( fourDSize );
-  constantVolumeSeriesSource->SetConstant( 0. );
+  constantVolumeSeriesSource->SetOrigin(fourDOrigin);
+  constantVolumeSeriesSource->SetSpacing(fourDSpacing);
+  constantVolumeSeriesSource->SetSize(fourDSize);
+  constantVolumeSeriesSource->SetConstant(0.);
 
   // Projections metadata
-  ProjectionStackType::PointType origin;
-  ProjectionStackType::SizeType size;
+  ProjectionStackType::PointType   origin;
+  ProjectionStackType::SizeType    size;
   ProjectionStackType::SpacingType spacing;
 
   origin[0] = -255.;
@@ -127,33 +128,33 @@ int main(int argc, char*argv[])
   spacing[1] = 8.;
   spacing[2] = 8.;
 #endif
-  randomProjectionStackSource->SetOrigin( origin );
-  randomProjectionStackSource->SetSpacing( spacing );
-  randomProjectionStackSource->SetSize( size );
-  randomProjectionStackSource->SetMin( 0. );
-  randomProjectionStackSource->SetMax( 1. );
+  randomProjectionStackSource->SetOrigin(origin);
+  randomProjectionStackSource->SetSpacing(spacing);
+  randomProjectionStackSource->SetSize(size);
+  randomProjectionStackSource->SetMin(0.);
+  randomProjectionStackSource->SetMax(1.);
 
-  constantProjectionStackSource->SetOrigin( origin );
-  constantProjectionStackSource->SetSpacing( spacing );
-  constantProjectionStackSource->SetSize( size );
-  constantProjectionStackSource->SetConstant( 0. );
+  constantProjectionStackSource->SetOrigin(origin);
+  constantProjectionStackSource->SetSpacing(spacing);
+  constantProjectionStackSource->SetSize(size);
+  constantProjectionStackSource->SetConstant(0.);
 
   // Update all sources
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( randomVolumeSeriesSource->Update() );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( constantVolumeSeriesSource->Update() );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( randomProjectionStackSource->Update() );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( constantProjectionStackSource->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(randomVolumeSeriesSource->Update());
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(constantVolumeSeriesSource->Update());
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(randomProjectionStackSource->Update());
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(constantProjectionStackSource->Update());
 
   // Geometry object
   using GeometryType = rtk::ThreeDCircularProjectionGeometry;
   GeometryType::Pointer geometry = GeometryType::New();
-  for(unsigned int noProj=0; noProj<NumberOfProjectionImages; noProj++)
-    geometry->AddProjection(600., 1200., noProj*360./NumberOfProjectionImages);
+  for (unsigned int noProj = 0; noProj < NumberOfProjectionImages; noProj++)
+    geometry->AddProjection(600., 1200., noProj * 360. / NumberOfProjectionImages);
 
   // Read the phases file
   rtk::PhasesToInterpolationWeights::Pointer phaseReader = rtk::PhasesToInterpolationWeights::New();
   phaseReader->SetFileName(argv[1]);
-  phaseReader->SetNumberOfReconstructedFrames( fourDSize[3] );
+  phaseReader->SetNumberOfReconstructedFrames(fourDSize[3]);
   phaseReader->Update();
 
   std::cout << "\n\n****** 4D to projection stack ******" << std::endl;
@@ -161,32 +162,35 @@ int main(int argc, char*argv[])
   using JosephForwardProjectorType = rtk::JosephForwardProjectionImageFilter<ProjectionStackType, ProjectionStackType>;
   JosephForwardProjectorType::Pointer jfw = JosephForwardProjectorType::New();
 
-  using FourDToProjectionStackFilterType = rtk::FourDToProjectionStackImageFilter<ProjectionStackType, VolumeSeriesType>;
+  using FourDToProjectionStackFilterType =
+    rtk::FourDToProjectionStackImageFilter<ProjectionStackType, VolumeSeriesType>;
   FourDToProjectionStackFilterType::Pointer fw = FourDToProjectionStackFilterType::New();
   fw->SetInputProjectionStack(constantProjectionStackSource->GetOutput());
   fw->SetInputVolumeSeries(randomVolumeSeriesSource->GetOutput());
-  fw->SetForwardProjectionFilter( jfw.GetPointer() );
-  fw->SetGeometry( geometry );
+  fw->SetForwardProjectionFilter(jfw.GetPointer());
+  fw->SetGeometry(geometry);
   fw->SetWeights(phaseReader->GetOutput());
   fw->SetSignal(rtk::ReadSignalFile(argv[1]));
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( fw->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(fw->Update());
 
   std::cout << "\n\n****** Projection stack to 4D ******" << std::endl;
 
   using JosephBackProjectorType = rtk::JosephBackProjectionImageFilter<ProjectionStackType, ProjectionStackType>;
   JosephBackProjectorType::Pointer jbp = JosephBackProjectorType::New();
 
-  using ProjectionStackToFourDFilterType = rtk::ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType>;
+  using ProjectionStackToFourDFilterType =
+    rtk::ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType>;
   ProjectionStackToFourDFilterType::Pointer bp = ProjectionStackToFourDFilterType::New();
   bp->SetInputVolumeSeries(constantVolumeSeriesSource->GetOutput());
   bp->SetInputProjectionStack(randomProjectionStackSource->GetOutput());
-  bp->SetBackProjectionFilter( jbp.GetPointer() );
-  bp->SetGeometry( geometry.GetPointer() );
+  bp->SetBackProjectionFilter(jbp.GetPointer());
+  bp->SetGeometry(geometry.GetPointer());
   bp->SetWeights(phaseReader->GetOutput());
   bp->SetSignal(rtk::ReadSignalFile(argv[1]));
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( bp->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(bp->Update());
 
-  CheckScalarProducts<VolumeSeriesType, ProjectionStackType>(randomVolumeSeriesSource->GetOutput(), bp->GetOutput(), randomProjectionStackSource->GetOutput(), fw->GetOutput());
+  CheckScalarProducts<VolumeSeriesType, ProjectionStackType>(
+    randomVolumeSeriesSource->GetOutput(), bp->GetOutput(), randomProjectionStackSource->GetOutput(), fw->GetOutput());
   std::cout << "\n\nTest PASSED! " << std::endl;
 
   return EXIT_SUCCESS;

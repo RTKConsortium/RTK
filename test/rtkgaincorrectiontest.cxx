@@ -25,9 +25,9 @@
 #include <itkImageRegionIteratorWithIndex.h>
 
 #ifdef RTK_USE_CUDA
-#include "rtkCudaPolynomialGainCorrectionImageFilter.h"
+#  include "rtkCudaPolynomialGainCorrectionImageFilter.h"
 #else
-# include "rtkPolynomialGainCorrectionImageFilter.h"
+#  include "rtkPolynomialGainCorrectionImageFilter.h"
 #endif
 
 #include "rtkTestConfiguration.h"
@@ -42,101 +42,104 @@
 
 constexpr unsigned int Dimension = 3;
 #ifdef RTK_USE_CUDA
-using InputImageType = itk::CudaImage< unsigned short, Dimension >;
-using OutputImageType = itk::CudaImage< float, Dimension >;
+using InputImageType = itk::CudaImage<unsigned short, Dimension>;
+using OutputImageType = itk::CudaImage<float, Dimension>;
 #else
-using InputImageType = itk::Image< unsigned short, Dimension >;
-using OutputImageType = itk::Image< float, Dimension >;
+using InputImageType = itk::Image<unsigned short, Dimension>;
+using OutputImageType = itk::Image<float, Dimension>;
 #endif
 
 constexpr int modelOrder = 3;
 constexpr int sizeI = 100;
 
-InputImageType::Pointer createDarkImage()
+InputImageType::Pointer
+createDarkImage()
 {
-    InputImageType::SizeType size;
-    size[0] = sizeI;
-    size[1] = sizeI;
-    size[2] = 1;
+  InputImageType::SizeType size;
+  size[0] = sizeI;
+  size[1] = sizeI;
+  size[2] = 1;
 
-    InputImageType::SpacingType spacing;
-    spacing.Fill(1.f);
+  InputImageType::SpacingType spacing;
+  spacing.Fill(1.f);
 
-    InputImageType::IndexType start;
-    start.Fill(0);
+  InputImageType::IndexType start;
+  start.Fill(0);
 
-    InputImageType::RegionType region;
-    region.SetSize(size);
-    region.SetIndex(start);
+  InputImageType::RegionType region;
+  region.SetSize(size);
+  region.SetIndex(start);
 
-    InputImageType::Pointer darkImage = InputImageType::New();
-    darkImage->SetRegions(region);
-    darkImage->SetSpacing(spacing);
-    darkImage->Allocate();
-    darkImage->FillBuffer(0.0f);
+  InputImageType::Pointer darkImage = InputImageType::New();
+  darkImage->SetRegions(region);
+  darkImage->SetSpacing(spacing);
+  darkImage->Allocate();
+  darkImage->FillBuffer(0.0f);
 
-    float orig_x = -static_cast<float>(size[0] - 1) / 2.f;
-    float orig_y = -static_cast<float>(size[1] - 1) / 2.f;
+  float orig_x = -static_cast<float>(size[0] - 1) / 2.f;
+  float orig_y = -static_cast<float>(size[1] - 1) / 2.f;
 
-    itk::ImageRegionIteratorWithIndex<InputImageType> itIn(darkImage, darkImage->GetLargestPossibleRegion());
-    itIn.GoToBegin();
-    while (!itIn.IsAtEnd())
-    {
-        InputImageType::IndexType idx = itIn.GetIndex();
-        float xx = static_cast<float>(idx[0]) + orig_x;
-        float yy = static_cast<float>(idx[1]) + orig_y;
-        float rr = std::sqrt(xx*xx + yy*yy);
-        itIn.Set(static_cast<unsigned short>(rr));
-        ++itIn;
-    }
+  itk::ImageRegionIteratorWithIndex<InputImageType> itIn(darkImage, darkImage->GetLargestPossibleRegion());
+  itIn.GoToBegin();
+  while (!itIn.IsAtEnd())
+  {
+    InputImageType::IndexType idx = itIn.GetIndex();
+    float                     xx = static_cast<float>(idx[0]) + orig_x;
+    float                     yy = static_cast<float>(idx[1]) + orig_y;
+    float                     rr = std::sqrt(xx * xx + yy * yy);
+    itIn.Set(static_cast<unsigned short>(rr));
+    ++itIn;
+  }
 
-    return darkImage;
+  return darkImage;
 }
 
-OutputImageType::Pointer createGainImage()
+OutputImageType::Pointer
+createGainImage()
 {
-    OutputImageType::SizeType size;
-    size[0] = sizeI;
-    size[1] = sizeI;
-    size[2] = modelOrder;
+  OutputImageType::SizeType size;
+  size[0] = sizeI;
+  size[1] = sizeI;
+  size[2] = modelOrder;
 
-    OutputImageType::SpacingType spacing;
-    spacing.Fill(1.f);
+  OutputImageType::SpacingType spacing;
+  spacing.Fill(1.f);
 
-    OutputImageType::IndexType start;
-    start.Fill(0);
+  OutputImageType::IndexType start;
+  start.Fill(0);
 
-    OutputImageType::RegionType region;
-    region.SetSize(size);
-    region.SetIndex(start);
+  OutputImageType::RegionType region;
+  region.SetSize(size);
+  region.SetIndex(start);
 
-    OutputImageType::Pointer gainImage = OutputImageType::New();
-    gainImage->SetRegions(region);
-    gainImage->SetSpacing(spacing);
-    gainImage->Allocate();
-    gainImage->FillBuffer(0.0f);
+  OutputImageType::Pointer gainImage = OutputImageType::New();
+  gainImage->SetRegions(region);
+  gainImage->SetSpacing(spacing);
+  gainImage->Allocate();
+  gainImage->FillBuffer(0.0f);
 
-    itk::ImageRegionIteratorWithIndex<OutputImageType> itIn(gainImage, gainImage->GetLargestPossibleRegion());
-    itIn.GoToBegin();
-    while (!itIn.IsAtEnd())
-    {
-        InputImageType::IndexType idx = itIn.GetIndex();
-        float value = 0.f;
-        if (idx[2] == 0)
-            value = 1.2f;
-        else if (idx[2] == 1)
-            value = 0.016f;
-        else if (idx[2] == 3)
-            value = -0.003f;
+  itk::ImageRegionIteratorWithIndex<OutputImageType> itIn(gainImage, gainImage->GetLargestPossibleRegion());
+  itIn.GoToBegin();
+  while (!itIn.IsAtEnd())
+  {
+    InputImageType::IndexType idx = itIn.GetIndex();
+    float                     value = 0.f;
+    if (idx[2] == 0)
+      value = 1.2f;
+    else if (idx[2] == 1)
+      value = 0.016f;
+    else if (idx[2] == 3)
+      value = -0.003f;
 
-        itIn.Set(value);
-        ++itIn;
-    }
+    itIn.Set(value);
+    ++itIn;
+  }
 
-    return gainImage;
+  return gainImage;
 }
 
-InputImageType::Pointer createInputImage()
+InputImageType::Pointer
+createInputImage()
 {
   InputImageType::SizeType size;
   size[0] = sizeI;
@@ -162,78 +165,82 @@ InputImageType::Pointer createInputImage()
   return inputImage;
 }
 
-OutputImageType::Pointer generateExpectedOutput(InputImageType::Pointer inputImage, float K,
-                                                InputImageType::Pointer darkImage, OutputImageType::Pointer gainImage)
+OutputImageType::Pointer
+generateExpectedOutput(InputImageType::Pointer  inputImage,
+                       float                    K,
+                       InputImageType::Pointer  darkImage,
+                       OutputImageType::Pointer gainImage)
 {
-    OutputImageType::SizeType size;
-    size[0] = sizeI;
-    size[1] = sizeI;
-    size[2] = 1;
+  OutputImageType::SizeType size;
+  size[0] = sizeI;
+  size[1] = sizeI;
+  size[2] = 1;
 
-    OutputImageType::SpacingType spacing;
-    spacing.Fill(1.f);
+  OutputImageType::SpacingType spacing;
+  spacing.Fill(1.f);
 
-    OutputImageType::IndexType start;
-    start.Fill(0);
+  OutputImageType::IndexType start;
+  start.Fill(0);
 
-    OutputImageType::RegionType region;
-    region.SetSize(size);
-    region.SetIndex(start);
+  OutputImageType::RegionType region;
+  region.SetSize(size);
+  region.SetIndex(start);
 
-    OutputImageType::Pointer expectedOutput = OutputImageType::New();
-    expectedOutput->SetRegions(region);
-    expectedOutput->SetSpacing(spacing);
-    expectedOutput->Allocate();
-    expectedOutput->FillBuffer(0.0f);
+  OutputImageType::Pointer expectedOutput = OutputImageType::New();
+  expectedOutput->SetRegions(region);
+  expectedOutput->SetSpacing(spacing);
+  expectedOutput->Allocate();
+  expectedOutput->FillBuffer(0.0f);
 
-    itk::ImageRegionConstIterator<InputImageType> itIn(inputImage, inputImage->GetLargestPossibleRegion());
-    itk::ImageRegionIterator<OutputImageType>     itOut(expectedOutput, expectedOutput->GetLargestPossibleRegion());
+  itk::ImageRegionConstIterator<InputImageType> itIn(inputImage, inputImage->GetLargestPossibleRegion());
+  itk::ImageRegionIterator<OutputImageType>     itOut(expectedOutput, expectedOutput->GetLargestPossibleRegion());
 
-    InputImageType::RegionType darkRegion = inputImage->GetLargestPossibleRegion();
-    darkRegion.SetSize(2, 1);
-    darkRegion.SetIndex(2, 0);
-    itk::ImageRegionConstIterator<InputImageType> itDark(darkImage, darkRegion);
+  InputImageType::RegionType darkRegion = inputImage->GetLargestPossibleRegion();
+  darkRegion.SetSize(2, 1);
+  darkRegion.SetIndex(2, 0);
+  itk::ImageRegionConstIterator<InputImageType> itDark(darkImage, darkRegion);
 
-    // Get gain map buffer
-    const float *gainBuffer = gainImage->GetBufferPointer();
+  // Get gain map buffer
+  const float * gainBuffer = gainImage->GetBufferPointer();
 
-    itIn.GoToBegin();
-    itOut.GoToBegin();
-    itDark.GoToBegin();
+  itIn.GoToBegin();
+  itOut.GoToBegin();
+  itDark.GoToBegin();
 
-    float sizeI2 = sizeI*sizeI;
-    for (int j = 0; j < sizeI; ++j)
+  float sizeI2 = sizeI * sizeI;
+  for (int j = 0; j < sizeI; ++j)
+  {
+    for (int i = 0; i < sizeI; ++i)
     {
-        for (int i = 0; i < sizeI; ++i)
-        {
-            int darkx = static_cast<int>(itDark.Get());
-            int px = static_cast<int>(itIn.Get()) - darkx;
-            px = (px >= 0) ? px : 0;
+      int darkx = static_cast<int>(itDark.Get());
+      int px = static_cast<int>(itIn.Get()) - darkx;
+      px = (px >= 0) ? px : 0;
 
-            float correctedValue = 0.f;
-            float powValue = static_cast<float>(px);
-            for (int m = 0; m < modelOrder; ++m)
-            {
-                int gainidx = m*sizeI2 + j*sizeI + i;
-                float Aij = gainBuffer[gainidx];
-                correctedValue += Aij *powValue;
-                powValue *= powValue;
-            }
-            correctedValue *= K;
+      float correctedValue = 0.f;
+      float powValue = static_cast<float>(px);
+      for (int m = 0; m < modelOrder; ++m)
+      {
+        int   gainidx = m * sizeI2 + j * sizeI + i;
+        float Aij = gainBuffer[gainidx];
+        correctedValue += Aij * powValue;
+        powValue *= powValue;
+      }
+      correctedValue *= K;
 
-            itOut.Set(static_cast<float>(correctedValue));
+      itOut.Set(static_cast<float>(correctedValue));
 
-            ++itIn;
-            ++itOut;
-            ++itDark;
-        }
+      ++itIn;
+      ++itOut;
+      ++itDark;
     }
+  }
 
-    return expectedOutput;
+  return expectedOutput;
 }
 
 
-int main(int , char** )
+int
+main(int, char **)
 {
   const float K = 0.5f;
 #ifdef RTK_USE_CUDA
@@ -263,23 +270,23 @@ int main(int , char** )
   OutputImageType::Pointer expectedOutput = generateExpectedOutput(testImage, K, darkImage, gainImage);
 
   // Compare
-  itk::ImageRegionConstIterator<OutputImageType>  itExp(expectedOutput, expectedOutput->GetLargestPossibleRegion());
-  itk::ImageRegionConstIterator<OutputImageType>  itOut(outputImage, outputImage->GetLargestPossibleRegion());
+  itk::ImageRegionConstIterator<OutputImageType> itExp(expectedOutput, expectedOutput->GetLargestPossibleRegion());
+  itk::ImageRegionConstIterator<OutputImageType> itOut(outputImage, outputImage->GetLargestPossibleRegion());
 
   itExp.GoToBegin();
   itOut.GoToBegin();
   float diffValue = 0.f;
   while (!itExp.IsAtEnd())
   {
-      diffValue += itk::Math::abs(itExp.Get() - itOut.Get());
-      ++itExp;
-      ++itOut;
+    diffValue += itk::Math::abs(itExp.Get() - itOut.Get());
+    ++itExp;
+    ++itOut;
   }
-  diffValue /= static_cast<float>(sizeI*sizeI);
+  diffValue /= static_cast<float>(sizeI * sizeI);
   std::cout << diffValue << std::endl;
-  if (!(diffValue< 1.f))
+  if (!(diffValue < 1.f))
   {
-    std::cerr << "Test Failed! "<< std::endl;
+    std::cerr << "Test Failed! " << std::endl;
     exit(EXIT_FAILURE);
   }
 

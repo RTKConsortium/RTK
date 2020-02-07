@@ -28,97 +28,98 @@
 #include <algorithm>
 #include <string>
 
-int main(int argc, char *argv[])
+int
+main(int argc, char * argv[])
 {
   GGO(rtki0estimation, args_info);
 
   using InputPixelType = unsigned short;
   constexpr unsigned int Dimension = 3;
-  using InputImageType = itk::Image< InputPixelType, Dimension >;
+  using InputImageType = itk::Image<InputPixelType, Dimension>;
 
-  using ReaderType = rtk::ProjectionsReader< InputImageType >;
+  using ReaderType = rtk::ProjectionsReader<InputImageType>;
   ReaderType::Pointer reader = ReaderType::New();
-  reader->SetFileNames( rtk::GetProjectionsFileNamesFromGgo(args_info) );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->UpdateOutputInformation() )
+  reader->SetFileNames(rtk::GetProjectionsFileNamesFromGgo(args_info));
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(reader->UpdateOutputInformation())
 
-  using ExtractFilterType = itk::ExtractImageFilter< InputImageType, InputImageType >;
+  using ExtractFilterType = itk::ExtractImageFilter<InputImageType, InputImageType>;
   ExtractFilterType::Pointer extract = ExtractFilterType::New();
   extract->InPlaceOff();
   extract->SetDirectionCollapseToSubmatrix();
-  extract->SetInput( reader->GetOutput() );
+  extract->SetInput(reader->GetOutput());
 
   ExtractFilterType::InputImageRegionType subsetRegion = reader->GetOutput()->GetLargestPossibleRegion();
   subsetRegion = reader->GetOutput()->GetLargestPossibleRegion();
-  extract->SetInput( reader->GetOutput() );
+  extract->SetInput(reader->GetOutput());
   InputImageType::SizeType extractSize = subsetRegion.GetSize();
   extractSize[2] = 1;
   InputImageType::IndexType start = subsetRegion.GetIndex();
 
-  using I0FilterType = rtk::I0EstimationProjectionFilter< InputImageType, InputImageType, 2 >;
+  using I0FilterType = rtk::I0EstimationProjectionFilter<InputImageType, InputImageType, 2>;
 
-  std::vector< unsigned short > I0buffer;
+  std::vector<unsigned short> I0buffer;
 
-  int istep         = 1;
+  int          istep = 1;
   unsigned int imin = 1;
   unsigned int imax = (unsigned int)subsetRegion.GetSize()[2];
-  if ( args_info.range_given )
+  if (args_info.range_given)
+  {
+    if ((args_info.range_arg[0] <= args_info.range_arg[2]) &&
+        (istep <= (args_info.range_arg[2] - args_info.range_arg[0])))
     {
-    if ( ( args_info.range_arg[0] <= args_info.range_arg[2] )
-         && ( istep <= ( args_info.range_arg[2] - args_info.range_arg[0] ) ) )
-      {
       imin = args_info.range_arg[0];
       istep = args_info.range_arg[1];
       imax = std::min(unsigned(args_info.range_arg[2]), imax);
-      }
     }
+  }
 
   I0FilterType::Pointer i0est = I0FilterType::New();
 
-  if ( args_info.lambda_given )
-    {
+  if (args_info.lambda_given)
+  {
     i0est->SetLambda(args_info.lambda_arg);
-    }
-  if ( args_info.expected_arg != 65535 )
-    {
+  }
+  if (args_info.expected_arg != 65535)
+  {
     i0est->SetExpectedI0(args_info.expected_arg);
-    }
+  }
   i0est->SaveHistogramsOn();
 
-  for ( unsigned int i = imin; i < imax; i += istep )
-    {
-    i0est->SetInput( extract->GetOutput() );
+  for (unsigned int i = imin; i < imax; i += istep)
+  {
+    i0est->SetInput(extract->GetOutput());
 
     start[2] = i;
     InputImageType::RegionType desiredRegion(start, extractSize);
     extract->SetExtractionRegion(desiredRegion);
 
     try
-      {
-      TRY_AND_EXIT_ON_ITK_EXCEPTION( i0est->UpdateLargestPossibleRegion() )
-      }
-    catch ( itk::ExceptionObject & err )
-      {
+    {
+      TRY_AND_EXIT_ON_ITK_EXCEPTION(i0est->UpdateLargestPossibleRegion())
+    }
+    catch (itk::ExceptionObject & err)
+    {
       std::cerr << "ExceptionObject caught !" << std::endl;
       std::cerr << err << std::endl;
       return EXIT_FAILURE;
-      }
-
-    I0buffer.push_back( i0est->GetI0() );
-    I0buffer.push_back( i0est->GetI0rls() );
-    I0buffer.push_back( i0est->GetI0fwhm() );
     }
 
-  if ( args_info.debug_given )
-    {
+    I0buffer.push_back(i0est->GetI0());
+    I0buffer.push_back(i0est->GetI0rls());
+    I0buffer.push_back(i0est->GetI0fwhm());
+  }
+
+  if (args_info.debug_given)
+  {
     std::ofstream paramFile;
     paramFile.open(args_info.debug_arg);
-    std::vector< unsigned short >::const_iterator it = I0buffer.begin();
-    for (; it != I0buffer.end(); ++it )
-      {
+    std::vector<unsigned short>::const_iterator it = I0buffer.begin();
+    for (; it != I0buffer.end(); ++it)
+    {
       paramFile << *it << ",";
-      }
-    paramFile.close();
     }
+    paramFile.close();
+  }
 
   return EXIT_SUCCESS;
 }

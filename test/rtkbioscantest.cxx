@@ -15,7 +15,8 @@
  * \author Simon Rit
  */
 
-int main(int argc, char*argv[])
+int
+main(int argc, char * argv[])
 {
   if (argc < 3)
   {
@@ -31,17 +32,17 @@ int main(int argc, char*argv[])
   filenames.emplace_back(argv[1]);
   rtk::BioscanGeometryReader::Pointer geoTargReader;
   geoTargReader = rtk::BioscanGeometryReader::New();
-  geoTargReader->SetProjectionsFileNames( filenames );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( geoTargReader->UpdateOutputData() );
+  geoTargReader->SetProjectionsFileNames(filenames);
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(geoTargReader->UpdateOutputData());
 
   // Reference geometry
   rtk::ThreeDCircularProjectionGeometryXMLFileReader::Pointer geoRefReader;
   geoRefReader = rtk::ThreeDCircularProjectionGeometryXMLFileReader::New();
   geoRefReader->SetFilename(argv[2]);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( geoRefReader->GenerateOutputInformation() )
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(geoRefReader->GenerateOutputInformation())
 
   // Check geometries
-  CheckGeometries(geoTargReader->GetGeometry(), geoRefReader->GetOutputObject() );
+  CheckGeometries(geoTargReader->GetGeometry(), geoRefReader->GetOutputObject());
 
   // If all succeed
   std::cout << "\n\nTest PASSED! " << std::endl;

@@ -26,58 +26,60 @@
 #include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>
 
-int main(int argc, char * argv[])
+int
+main(int argc, char * argv[])
 {
   GGO(rtkdualenergyforwardmodel, args_info);
 
   using PixelValueType = float;
   constexpr unsigned int Dimension = 3;
 
-  using DecomposedProjectionType = itk::VectorImage< PixelValueType, Dimension >;
+  using DecomposedProjectionType = itk::VectorImage<PixelValueType, Dimension>;
   using DecomposedProjectionReaderType = itk::ImageFileReader<DecomposedProjectionType>;
 
-  using DualEnergyProjectionsType = itk::VectorImage< PixelValueType, Dimension >;
-  using DualEnergyProjectionWriterType = itk::ImageFileWriter< DualEnergyProjectionsType >;
+  using DualEnergyProjectionsType = itk::VectorImage<PixelValueType, Dimension>;
+  using DualEnergyProjectionWriterType = itk::ImageFileWriter<DualEnergyProjectionsType>;
 
-  using IncidentSpectrumImageType = itk::VectorImage< PixelValueType, Dimension-1 >;
+  using IncidentSpectrumImageType = itk::VectorImage<PixelValueType, Dimension - 1>;
   using IncidentSpectrumReaderType = itk::ImageFileReader<IncidentSpectrumImageType>;
 
-  using DetectorResponseImageType = itk::Image< PixelValueType, Dimension-1 >;
+  using DetectorResponseImageType = itk::Image<PixelValueType, Dimension - 1>;
   using DetectorResponseReaderType = itk::ImageFileReader<DetectorResponseImageType>;
 
-  using MaterialAttenuationsImageType = itk::Image< PixelValueType, Dimension-1 >;
+  using MaterialAttenuationsImageType = itk::Image<PixelValueType, Dimension - 1>;
   using MaterialAttenuationsReaderType = itk::ImageFileReader<MaterialAttenuationsImageType>;
 
   // Read all inputs
   DecomposedProjectionReaderType::Pointer decomposedProjectionReader = DecomposedProjectionReaderType::New();
-  decomposedProjectionReader->SetFileName( args_info.input_arg );
+  decomposedProjectionReader->SetFileName(args_info.input_arg);
   decomposedProjectionReader->Update();
 
   IncidentSpectrumReaderType::Pointer incidentSpectrumReaderHighEnergy = IncidentSpectrumReaderType::New();
-  incidentSpectrumReaderHighEnergy->SetFileName( args_info.high_arg );
+  incidentSpectrumReaderHighEnergy->SetFileName(args_info.high_arg);
   incidentSpectrumReaderHighEnergy->Update();
 
   IncidentSpectrumReaderType::Pointer incidentSpectrumReaderLowEnergy = IncidentSpectrumReaderType::New();
-  incidentSpectrumReaderLowEnergy->SetFileName( args_info.low_arg );
+  incidentSpectrumReaderLowEnergy->SetFileName(args_info.low_arg);
   incidentSpectrumReaderLowEnergy->Update();
 
   MaterialAttenuationsReaderType::Pointer materialAttenuationsReader = MaterialAttenuationsReaderType::New();
-  materialAttenuationsReader->SetFileName( args_info.attenuations_arg );
+  materialAttenuationsReader->SetFileName(args_info.attenuations_arg);
   materialAttenuationsReader->Update();
 
   // If the detector response is given by the user, use it. Otherwise, assume it is included in the
   // incident spectrum, and fill the response with ones
   DetectorResponseReaderType::Pointer detectorResponseReader = DetectorResponseReaderType::New();
-  DetectorResponseImageType::Pointer detectorImage;
-  if(args_info.detector_given)
-    {
-    detectorResponseReader->SetFileName( args_info.detector_arg );
+  DetectorResponseImageType::Pointer  detectorImage;
+  if (args_info.detector_given)
+  {
+    detectorResponseReader->SetFileName(args_info.detector_arg);
     detectorResponseReader->Update();
     detectorImage = detectorResponseReader->GetOutput();
-    }
+  }
   else
-    {
-    rtk::ConstantImageSource<DetectorResponseImageType>::Pointer detectorSource = rtk::ConstantImageSource<DetectorResponseImageType>::New();
+  {
+    rtk::ConstantImageSource<DetectorResponseImageType>::Pointer detectorSource =
+      rtk::ConstantImageSource<DetectorResponseImageType>::New();
     DetectorResponseImageType::SizeType sourceSize;
     sourceSize[0] = 1;
     sourceSize[1] = incidentSpectrumReaderHighEnergy->GetOutput()->GetVectorLength();
@@ -85,7 +87,7 @@ int main(int argc, char * argv[])
     detectorSource->SetConstant(1.0);
     detectorSource->Update();
     detectorImage = detectorSource->GetOutput();
-    }
+  }
 
   // Get parameters from the images
   const unsigned int MaximumEnergy = incidentSpectrumReaderHighEnergy->GetOutput()->GetVectorLength();
@@ -101,17 +103,16 @@ int main(int argc, char * argv[])
   indexDecomp.Fill(0);
   if (decomposedProjectionReader->GetOutput()->GetVectorLength() != 2)
     itkGenericExceptionMacro(<< "Decomposed projections (i.e. initialization data) image has vector length "
-                             << decomposedProjectionReader->GetOutput()->GetVectorLength()
-                             << ", should be 2");
+                             << decomposedProjectionReader->GetOutput()->GetVectorLength() << ", should be 2");
 
   if (materialAttenuationsReader->GetOutput()->GetLargestPossibleRegion().GetSize()[1] != MaximumEnergy)
     itkGenericExceptionMacro(<< "Material attenuations image has "
                              << materialAttenuationsReader->GetOutput()->GetLargestPossibleRegion().GetSize()[1]
-                             << "energies, should have "
-                             << MaximumEnergy);
+                             << "energies, should have " << MaximumEnergy);
 
   // Create and set the filter
-  using ForwardModelFilterType = rtk::SpectralForwardModelImageFilter<DecomposedProjectionType, DualEnergyProjectionsType>;
+  using ForwardModelFilterType =
+    rtk::SpectralForwardModelImageFilter<DecomposedProjectionType, DualEnergyProjectionsType>;
   ForwardModelFilterType::Pointer forward = ForwardModelFilterType::New();
   forward->SetInputDecomposedProjections(decomposedProjectionReader->GetOutput());
   forward->SetInputMeasuredProjections(dualEnergyProjections);
@@ -132,11 +133,11 @@ int main(int argc, char * argv[])
 
   // If requested, write the variances
   if (args_info.variances_given)
-    {
+  {
     writer->SetInput(forward->GetOutput(1));
     writer->SetFileName(args_info.variances_arg);
     writer->Update();
-    }
+  }
 
   return EXIT_SUCCESS;
 }

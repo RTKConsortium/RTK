@@ -21,31 +21,35 @@
 #include "rtkImagXGeometryReader.h"
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 
-int main(int argc, char * argv[])
+int
+main(int argc, char * argv[])
 {
   GGO(rtkimagxgeometry, args_info);
 
   // Image Type
   using OutputPixelType = float;
   constexpr unsigned int Dimension = 3;
-  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
+  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
 
   // Create geometry reader
   rtk::ImagXGeometryReader<OutputImageType>::Pointer imagxReader = rtk::ImagXGeometryReader<OutputImageType>::New();
-  imagxReader->SetProjectionsFileNames( rtk::GetProjectionsFileNamesFromGgo(args_info) );
-  if (args_info.calibration_given) {
-	  imagxReader->SetCalibrationXMLFileName(args_info.calibration_arg);
+  imagxReader->SetProjectionsFileNames(rtk::GetProjectionsFileNamesFromGgo(args_info));
+  if (args_info.calibration_given)
+  {
+    imagxReader->SetCalibrationXMLFileName(args_info.calibration_arg);
   }
-  if (args_info.room_setup_given) {
-	  imagxReader->SetRoomXMLFileName(args_info.room_setup_arg);
+  if (args_info.room_setup_given)
+  {
+    imagxReader->SetRoomXMLFileName(args_info.room_setup_arg);
   }
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( imagxReader->UpdateOutputData() )
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(imagxReader->UpdateOutputData())
 
   // Write
-  rtk::ThreeDCircularProjectionGeometryXMLFileWriter::Pointer xmlWriter = rtk::ThreeDCircularProjectionGeometryXMLFileWriter::New();
+  rtk::ThreeDCircularProjectionGeometryXMLFileWriter::Pointer xmlWriter =
+    rtk::ThreeDCircularProjectionGeometryXMLFileWriter::New();
   xmlWriter->SetFilename(args_info.output_arg);
-  xmlWriter->SetObject( imagxReader->GetGeometry() );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( xmlWriter->WriteFile() )
+  xmlWriter->SetObject(imagxReader->GetGeometry());
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(xmlWriter->WriteFile())
 
   return EXIT_SUCCESS;
 }

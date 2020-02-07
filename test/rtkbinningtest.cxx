@@ -15,20 +15,21 @@
  * \author Marc Vila
  */
 
-int main(int , char** )
+int
+main(int, char **)
 {
   constexpr unsigned int Dimension = 2;
   using OutputPixelType = unsigned short;
-  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
+  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
 
   // Constant image sources
-  using ConstantImageSourceType = rtk::ConstantImageSource< OutputImageType >;
-  ConstantImageSourceType::PointType origin;
-  ConstantImageSourceType::SizeType size, sizeRef;
+  using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
+  ConstantImageSourceType::PointType   origin;
+  ConstantImageSourceType::SizeType    size, sizeRef;
   ConstantImageSourceType::SpacingType spacing, spacingRef;
 
   // Create constant image of value 2 and reference image.
-  ConstantImageSourceType::Pointer imgIn  = ConstantImageSourceType::New();
+  ConstantImageSourceType::Pointer imgIn = ConstantImageSourceType::New();
   ConstantImageSourceType::Pointer imgRef = ConstantImageSourceType::New();
 
   origin[0] = -7;
@@ -52,7 +53,7 @@ int main(int , char** )
   imgRef->SetOrigin(origin);
   imgRef->SetSpacing(spacingRef);
   imgRef->SetSize(sizeRef);
-  imgRef->SetConstant( 2 );
+  imgRef->SetConstant(2);
   imgRef->UpdateLargestPossibleRegion();
 
   // Binning filter
@@ -62,9 +63,9 @@ int main(int , char** )
   std::cout << "\n\n****** Case 1: binning 2x2 ******" << std::endl;
 
   // Update binning filter
-  itk::Vector<unsigned int,2> binning_factors;
-  binning_factors[0]=2;
-  binning_factors[1]=2;
+  itk::Vector<unsigned int, 2> binning_factors;
+  binning_factors[0] = 2;
+  binning_factors[1] = 2;
   bin->SetInput(imgIn->GetOutput());
   bin->SetShrinkFactors(binning_factors);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(bin->UpdateLargestPossibleRegion());
@@ -87,8 +88,8 @@ int main(int , char** )
   imgRef->UpdateLargestPossibleRegion();
 
   // Update binning filter
-  binning_factors[0]=1;
-  binning_factors[1]=2;
+  binning_factors[0] = 1;
+  binning_factors[1] = 2;
   bin->SetShrinkFactors(binning_factors);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(bin->UpdateLargestPossibleRegion());
 
@@ -110,8 +111,8 @@ int main(int , char** )
   imgRef->UpdateLargestPossibleRegion();
 
   // Update binning filter
-  binning_factors[0]=2;
-  binning_factors[1]=1;
+  binning_factors[0] = 2;
+  binning_factors[1] = 1;
   bin->SetInput(imgIn->GetOutput());
   bin->SetShrinkFactors(binning_factors);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(bin->UpdateLargestPossibleRegion());

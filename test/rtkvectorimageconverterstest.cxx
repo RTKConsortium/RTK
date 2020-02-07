@@ -21,21 +21,22 @@
  * \author Cyril Mory
  */
 
-int main(int, char** )
+int
+main(int, char **)
 {
   using PixelType = float;
-  using HigherDimensionImageType = itk::Image< PixelType, 3 >;
-  using ImageType = itk::Image< PixelType, 2 >;
-  using VectorImageType = itk::VectorImage< PixelType, 2 >;
+  using HigherDimensionImageType = itk::Image<PixelType, 3>;
+  using ImageType = itk::Image<PixelType, 2>;
+  using VectorImageType = itk::VectorImage<PixelType, 2>;
 
   std::cout << "\n\n****** Case 1: 3D image to 2D vector image, and back ******" << std::endl;
 
   // Initialize the first input image
-  HigherDimensionImageType::Pointer higherDimensionInput = HigherDimensionImageType::New();
-  HigherDimensionImageType::SizeType hsize;
-  HigherDimensionImageType::IndexType hindex;
+  HigherDimensionImageType::Pointer     higherDimensionInput = HigherDimensionImageType::New();
+  HigherDimensionImageType::SizeType    hsize;
+  HigherDimensionImageType::IndexType   hindex;
   HigherDimensionImageType::SpacingType hspacing;
-  HigherDimensionImageType::RegionType hregion;
+  HigherDimensionImageType::RegionType  hregion;
 
   hindex.Fill(0);
   hspacing.Fill(1);
@@ -44,25 +45,25 @@ int main(int, char** )
   hsize[2] = 8;
   hregion.SetSize(hsize);
   hregion.SetIndex(hindex);
-  higherDimensionInput->SetSpacing( hspacing );
-  higherDimensionInput->SetRegions( hregion );
+  higherDimensionInput->SetSpacing(hspacing);
+  higherDimensionInput->SetRegions(hregion);
   higherDimensionInput->Allocate();
 
   // Set each pixel's value to its position on the third dimension
   HigherDimensionImageType::RegionType slice;
   slice.SetSize(hsize);
   slice.SetSize(2, 1);
-  for (unsigned int s=0; s<hsize[2]; s++)
-    {
+  for (unsigned int s = 0; s < hsize[2]; s++)
+  {
     slice.SetIndex(hindex);
     slice.SetIndex(2, s);
     itk::ImageRegionIterator<HigherDimensionImageType> sliceIt(higherDimensionInput, slice);
-    while(!sliceIt.IsAtEnd())
-      {
+    while (!sliceIt.IsAtEnd())
+    {
       sliceIt.Set(s);
       ++sliceIt;
-      }
     }
+  }
 
   // Create the filter to convert it to a vector image
   using HigherDimensionToVectorType = rtk::ImageToVectorImageFilter<HigherDimensionImageType, VectorImageType>;
@@ -70,15 +71,16 @@ int main(int, char** )
   higherDimensionToVector->SetInput(higherDimensionInput);
 
   // Perform conversion
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( higherDimensionToVector->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(higherDimensionToVector->Update());
 
-  // Create a reference vector image, equal to the expected output of higherDimensionToVector, and perform the comparison
+  // Create a reference vector image, equal to the expected output of higherDimensionToVector, and perform the
+  // comparison
   VectorImageType::Pointer refVectorImage = VectorImageType::New();
 
-  VectorImageType::SizeType refVectorSize;
-  VectorImageType::IndexType refVectorIndex;
+  VectorImageType::SizeType    refVectorSize;
+  VectorImageType::IndexType   refVectorIndex;
   VectorImageType::SpacingType refVectorSpacing;
-  VectorImageType::RegionType refVectorRegion;
+  VectorImageType::RegionType  refVectorRegion;
 
   refVectorIndex.Fill(0);
   refVectorSpacing.Fill(1);
@@ -86,44 +88,46 @@ int main(int, char** )
   refVectorSize[1] = hsize[1];
   refVectorRegion.SetSize(refVectorSize);
   refVectorRegion.SetIndex(refVectorIndex);
-  refVectorImage->SetSpacing( refVectorSpacing );
-  refVectorImage->SetRegions( refVectorRegion );
+  refVectorImage->SetSpacing(refVectorSpacing);
+  refVectorImage->SetRegions(refVectorRegion);
   refVectorImage->SetVectorLength(hsize[2]);
   refVectorImage->Allocate();
 
   // Construct a vector to fill refVectorImage
   itk::VariableLengthVector<PixelType> vector;
   vector.SetSize(hsize[2]);
-  for (unsigned int i=0; i<hsize[2]; i++)
-    vector[i]=i;
+  for (unsigned int i = 0; i < hsize[2]; i++)
+    vector[i] = i;
   itk::ImageRegionIterator<VectorImageType> vecIt(refVectorImage, refVectorRegion);
-  while(!vecIt.IsAtEnd())
-    {
+  while (!vecIt.IsAtEnd())
+  {
     vecIt.Set(vector);
     ++vecIt;
-    }
+  }
 
   // Perform comparison
-  CheckVariableLengthVectorImageQuality<VectorImageType>(higherDimensionToVector->GetOutput(), refVectorImage, 1e-7, 100, 2.0);
+  CheckVariableLengthVectorImageQuality<VectorImageType>(
+    higherDimensionToVector->GetOutput(), refVectorImage, 1e-7, 100, 2.0);
 
   // Create the filter to convert the result back to an image
   using VectorToHigherDimensionType = rtk::VectorImageToImageFilter<VectorImageType, HigherDimensionImageType>;
   VectorToHigherDimensionType::Pointer vectorToHigherDimension = VectorToHigherDimensionType::New();
   vectorToHigherDimension->SetInput(higherDimensionToVector->GetOutput());
 
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( vectorToHigherDimension->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(vectorToHigherDimension->Update());
 
   // Compare with the initial image
-  CheckImageQuality<HigherDimensionImageType>(vectorToHigherDimension->GetOutput(), higherDimensionInput, 1e-7, 100, 2.0);
+  CheckImageQuality<HigherDimensionImageType>(
+    vectorToHigherDimension->GetOutput(), higherDimensionInput, 1e-7, 100, 2.0);
 
   std::cout << "\n\n****** Case 2: 2D image to 2D vector image, and back ******" << std::endl;
 
   // Initialize the first input image
-  ImageType::Pointer input = ImageType::New();
-  ImageType::SizeType size;
-  ImageType::IndexType index;
+  ImageType::Pointer     input = ImageType::New();
+  ImageType::SizeType    size;
+  ImageType::IndexType   index;
   ImageType::SpacingType spacing;
-  ImageType::RegionType region;
+  ImageType::RegionType  region;
 
   index.Fill(0);
   spacing.Fill(1);
@@ -131,25 +135,25 @@ int main(int, char** )
   size[1] = 64;
   region.SetSize(size);
   region.SetIndex(index);
-  input->SetSpacing( spacing );
-  input->SetRegions( region );
+  input->SetSpacing(spacing);
+  input->SetRegions(region);
   input->Allocate();
 
   // Set each pixel's value to its position on the third dimension
   ImageType::RegionType block;
   block.SetSize(size);
   block.SetSize(1, 8);
-  for (unsigned int b=0; b<8; b++)
-    {
+  for (unsigned int b = 0; b < 8; b++)
+  {
     block.SetIndex(index);
-    block.SetIndex(1, 8*b);
+    block.SetIndex(1, 8 * b);
     itk::ImageRegionIterator<ImageType> blockIt(input, block);
-    while(!blockIt.IsAtEnd())
-      {
+    while (!blockIt.IsAtEnd())
+    {
       blockIt.Set(b);
       ++blockIt;
-      }
     }
+  }
 
   // Create the filter to convert it to a vector image
   using ToVectorType = rtk::ImageToVectorImageFilter<ImageType, VectorImageType>;
@@ -158,7 +162,7 @@ int main(int, char** )
   imageToVector->SetNumberOfChannels(8);
 
   // Perform conversion
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( imageToVector->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(imageToVector->Update());
 
   // Perform comparison
   CheckVariableLengthVectorImageQuality<VectorImageType>(imageToVector->GetOutput(), refVectorImage, 1e-7, 100, 2.0);
@@ -168,7 +172,7 @@ int main(int, char** )
   VectorToType::Pointer vectorToImage = VectorToType::New();
   vectorToImage->SetInput(imageToVector->GetOutput());
 
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( vectorToImage->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(vectorToImage->Update());
 
   // Compare with the initial image
   CheckImageQuality<ImageType>(vectorToImage->GetOutput(), input, 1e-7, 100, 2.0);

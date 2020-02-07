@@ -23,93 +23,95 @@
 #include "rtkAdditiveGaussianNoiseImageFilter.h"
 
 
-int main(int argc, char * argv[])
+int
+main(int argc, char * argv[])
 {
   GGO(rtkdrawgeometricphantom, args_info);
 
   using OutputPixelType = float;
   constexpr unsigned int Dimension = 3;
-  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
+  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
 
   // Empty volume image
-  using ConstantImageSourceType = rtk::ConstantImageSource< OutputImageType >;
+  using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
   ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
-  rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkdrawgeometricphantom>(constantImageSource, args_info);
+  rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkdrawgeometricphantom>(constantImageSource,
+                                                                                                 args_info);
 
   using DQType = rtk::DrawGeometricPhantomImageFilter<OutputImageType, OutputImageType>;
 
   // Offset, scale, rotation
   DQType::VectorType offset(0.);
-  if(args_info.offset_given)
+  if (args_info.offset_given)
+  {
+    if (args_info.offset_given > 3)
     {
-    if(args_info.offset_given>3)
-      {
       std::cerr << "--offset needs up to 3 values" << std::endl;
       exit(EXIT_FAILURE);
-      }
+    }
     offset[0] = args_info.offset_arg[0];
     offset[1] = args_info.offset_arg[1];
     offset[2] = args_info.offset_arg[2];
-    }
+  }
   DQType::VectorType scale;
   scale.Fill(args_info.phantomscale_arg[0]);
-  if(args_info.phantomscale_given)
+  if (args_info.phantomscale_given)
+  {
+    if (args_info.phantomscale_given > 3)
     {
-    if(args_info.phantomscale_given>3)
-      {
       std::cerr << "--phantomscale needs up to 3 values" << std::endl;
       exit(EXIT_FAILURE);
-      }
-    for(unsigned int i=0; i<std::min(args_info.phantomscale_given, Dimension); i++)
-      scale[i] = args_info.phantomscale_arg[i];
     }
+    for (unsigned int i = 0; i < std::min(args_info.phantomscale_given, Dimension); i++)
+      scale[i] = args_info.phantomscale_arg[i];
+  }
   DQType::RotationMatrixType rot;
   rot.SetIdentity();
-  if(args_info.rotation_given)
+  if (args_info.rotation_given)
+  {
+    if (args_info.rotation_given != 9)
     {
-    if(args_info.rotation_given !=9)
-      {
       std::cerr << "--phantomscale needs exactly 9 values" << std::endl;
       exit(EXIT_FAILURE);
-      }
-    for(unsigned int i=0; i<Dimension; i++)
-      for(unsigned int j=0; j<Dimension; j++)
-        rot[i][j] = args_info.rotation_arg[i*3+j];
     }
+    for (unsigned int i = 0; i < Dimension; i++)
+      for (unsigned int j = 0; j < Dimension; j++)
+        rot[i][j] = args_info.rotation_arg[i * 3 + j];
+  }
 
   // Reference
-  if(args_info.verbose_flag)
+  if (args_info.verbose_flag)
     std::cout << "Creating reference... " << std::flush;
   DQType::Pointer dq = DQType::New();
-  dq->SetInput( constantImageSource->GetOutput() );
-  dq->SetPhantomScale( scale );
+  dq->SetInput(constantImageSource->GetOutput());
+  dq->SetPhantomScale(scale);
   dq->SetOriginOffset(offset);
   dq->SetRotationMatrix(rot);
   dq->SetConfigFile(args_info.phantomfile_arg);
   dq->SetIsForbildConfigFile(args_info.forbild_flag);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( dq->Update() )
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(dq->Update())
 
   // Add noise
   OutputImageType::Pointer output = dq->GetOutput();
-  if(args_info.noise_given)
+  if (args_info.noise_given)
   {
-    using NIFType = rtk::AdditiveGaussianNoiseImageFilter< OutputImageType >;
-    NIFType::Pointer noisy=NIFType::New();
-    noisy->SetInput( output );
-    noisy->SetMean( 0.0 );
-    noisy->SetStandardDeviation( args_info.noise_arg );
-    TRY_AND_EXIT_ON_ITK_EXCEPTION( noisy->Update() )
+    using NIFType = rtk::AdditiveGaussianNoiseImageFilter<OutputImageType>;
+    NIFType::Pointer noisy = NIFType::New();
+    noisy->SetInput(output);
+    noisy->SetMean(0.0);
+    noisy->SetStandardDeviation(args_info.noise_arg);
+    TRY_AND_EXIT_ON_ITK_EXCEPTION(noisy->Update())
     output = noisy->GetOutput();
   }
 
   // Write
-  using WriterType = itk::ImageFileWriter<  OutputImageType >;
+  using WriterType = itk::ImageFileWriter<OutputImageType>;
   WriterType::Pointer writer = WriterType::New();
-  writer->SetFileName( args_info.output_arg );
-  writer->SetInput( output );
-  if(args_info.verbose_flag)
+  writer->SetFileName(args_info.output_arg);
+  writer->SetInput(output);
+  if (args_info.verbose_flag)
     std::cout << "Writing reference... " << std::flush;
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() )
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(writer->Update())
 
   return EXIT_SUCCESS;
 }

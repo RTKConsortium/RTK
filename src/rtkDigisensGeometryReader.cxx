@@ -78,8 +78,8 @@ rtk::DigisensGeometryReader ::GenerateData()
   // double totalWidth = dynamic_cast<MetaDataDoubleType *>(dic["CAMERAtotalWidth"].GetPointer()
   // )->GetMetaDataObjectValue(); double totalHeight = dynamic_cast<MetaDataDoubleType
   // *>(dic["CAMERAtotalHeight"].GetPointer() )->GetMetaDataObjectValue(); double projectionScalingX =
-  // detectorHorizontal[0] * totalWidth / (pixelWidth-1); double projectionScalingY = detectorVertical[1] * totalHeight /
-  // (pixelHeight-1);
+  // detectorHorizontal[0] * totalWidth / (pixelWidth-1); double projectionScalingY = detectorVertical[1] * totalHeight
+  // / (pixelHeight-1);
 
   // Projection offset: the offset is given in the volume coordinate system =>
   // convert to

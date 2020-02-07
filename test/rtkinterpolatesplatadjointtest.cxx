@@ -24,7 +24,8 @@
  * \author Cyril Mory
  */
 
-int main(int argc, char*argv[])
+int
+main(int argc, char * argv[])
 {
   if (argc < 2)
   {
@@ -36,8 +37,8 @@ int main(int argc, char*argv[])
   constexpr unsigned int Dimension = 3;
   using OutputPixelType = float;
 
-  using VolumeType = itk::Image< OutputPixelType, Dimension >;
-  using VolumeSeriesType = itk::Image< OutputPixelType, Dimension + 1 >;
+  using VolumeType = itk::Image<OutputPixelType, Dimension>;
+  using VolumeSeriesType = itk::Image<OutputPixelType, Dimension + 1>;
 
 #if FAST_TESTS_NO_CHECKS
   constexpr unsigned int NumberOfSlices = 2;
@@ -47,22 +48,22 @@ int main(int argc, char*argv[])
 
 
   // Random image sources
-  using RandomVolumeSourceType = itk::RandomImageSource< VolumeType >;
-  RandomVolumeSourceType::Pointer randomVolumeSource  = RandomVolumeSourceType::New();
+  using RandomVolumeSourceType = itk::RandomImageSource<VolumeType>;
+  RandomVolumeSourceType::Pointer randomVolumeSource = RandomVolumeSourceType::New();
 
-  using RandomVolumeSeriesSourceType = itk::RandomImageSource< VolumeSeriesType >;
-  RandomVolumeSeriesSourceType::Pointer randomVolumeSeriesSource  = RandomVolumeSeriesSourceType::New();
+  using RandomVolumeSeriesSourceType = itk::RandomImageSource<VolumeSeriesType>;
+  RandomVolumeSeriesSourceType::Pointer randomVolumeSeriesSource = RandomVolumeSeriesSourceType::New();
 
   // Constant sources
-  using ConstantVolumeSourceType = rtk::ConstantImageSource< VolumeType >;
-  ConstantVolumeSourceType::Pointer constantVolumeSource  = ConstantVolumeSourceType::New();
+  using ConstantVolumeSourceType = rtk::ConstantImageSource<VolumeType>;
+  ConstantVolumeSourceType::Pointer constantVolumeSource = ConstantVolumeSourceType::New();
 
-  using ConstantVolumeSeriesSourceType = rtk::ConstantImageSource< VolumeSeriesType >;
-  ConstantVolumeSeriesSourceType::Pointer constantVolumeSeriesSource  = ConstantVolumeSeriesSourceType::New();
+  using ConstantVolumeSeriesSourceType = rtk::ConstantImageSource<VolumeSeriesType>;
+  ConstantVolumeSeriesSourceType::Pointer constantVolumeSeriesSource = ConstantVolumeSeriesSourceType::New();
 
   // Volume metadata
-  VolumeSeriesType::PointType fourDOrigin;
-  VolumeSeriesType::SizeType fourDSize;
+  VolumeSeriesType::PointType   fourDOrigin;
+  VolumeSeriesType::SizeType    fourDSize;
   VolumeSeriesType::SpacingType fourDSpacing;
 
   fourDOrigin[0] = -127.;
@@ -88,20 +89,20 @@ int main(int argc, char*argv[])
   fourDSpacing[2] = 4.;
   fourDSpacing[3] = 1.;
 #endif
-  randomVolumeSeriesSource->SetOrigin( fourDOrigin );
-  randomVolumeSeriesSource->SetSpacing( fourDSpacing );
-  randomVolumeSeriesSource->SetSize( fourDSize );
-  randomVolumeSeriesSource->SetMin( 0. );
-  randomVolumeSeriesSource->SetMax( 1. );
+  randomVolumeSeriesSource->SetOrigin(fourDOrigin);
+  randomVolumeSeriesSource->SetSpacing(fourDSpacing);
+  randomVolumeSeriesSource->SetSize(fourDSize);
+  randomVolumeSeriesSource->SetMin(0.);
+  randomVolumeSeriesSource->SetMax(1.);
 
-  constantVolumeSeriesSource->SetOrigin( fourDOrigin );
-  constantVolumeSeriesSource->SetSpacing( fourDSpacing );
-  constantVolumeSeriesSource->SetSize( fourDSize );
-  constantVolumeSeriesSource->SetConstant( 0. );
+  constantVolumeSeriesSource->SetOrigin(fourDOrigin);
+  constantVolumeSeriesSource->SetSpacing(fourDSpacing);
+  constantVolumeSeriesSource->SetSize(fourDSize);
+  constantVolumeSeriesSource->SetConstant(0.);
 
   // Volume metadata
-  VolumeType::PointType origin;
-  VolumeType::SizeType size;
+  VolumeType::PointType   origin;
+  VolumeType::SizeType    size;
   VolumeType::SpacingType spacing;
 
   origin[0] = -255.;
@@ -122,27 +123,27 @@ int main(int argc, char*argv[])
   spacing[1] = 8.;
   spacing[2] = 8.;
 #endif
-  randomVolumeSource->SetOrigin( origin );
-  randomVolumeSource->SetSpacing( spacing );
-  randomVolumeSource->SetSize( size );
-  randomVolumeSource->SetMin( 0. );
-  randomVolumeSource->SetMax( 1. );
+  randomVolumeSource->SetOrigin(origin);
+  randomVolumeSource->SetSpacing(spacing);
+  randomVolumeSource->SetSize(size);
+  randomVolumeSource->SetMin(0.);
+  randomVolumeSource->SetMax(1.);
 
-  constantVolumeSource->SetOrigin( origin );
-  constantVolumeSource->SetSpacing( spacing );
-  constantVolumeSource->SetSize( size );
-  constantVolumeSource->SetConstant( 0. );
+  constantVolumeSource->SetOrigin(origin);
+  constantVolumeSource->SetSpacing(spacing);
+  constantVolumeSource->SetSize(size);
+  constantVolumeSource->SetConstant(0.);
 
   // Update all sources
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( randomVolumeSeriesSource->Update() );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( constantVolumeSeriesSource->Update() );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( randomVolumeSource->Update() );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( constantVolumeSource->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(randomVolumeSeriesSource->Update());
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(constantVolumeSeriesSource->Update());
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(randomVolumeSource->Update());
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(constantVolumeSource->Update());
 
   // Read the phases file
   rtk::PhasesToInterpolationWeights::Pointer phaseReader = rtk::PhasesToInterpolationWeights::New();
   phaseReader->SetFileName(argv[1]);
-  phaseReader->SetNumberOfReconstructedFrames( fourDSize[3] );
+  phaseReader->SetNumberOfReconstructedFrames(fourDSize[3]);
   phaseReader->Update();
 
   std::cout << "\n\n****** 4D to 3D (interpolation) ******" << std::endl;
@@ -152,7 +153,7 @@ int main(int argc, char*argv[])
   interp->SetInputVolume(constantVolumeSource->GetOutput());
   interp->SetInputVolumeSeries(randomVolumeSeriesSource->GetOutput());
   interp->SetWeights(phaseReader->GetOutput());
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( interp->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(interp->Update());
 
   std::cout << "\n\n****** 3D to 4D (splat) ******" << std::endl;
 
@@ -161,9 +162,10 @@ int main(int argc, char*argv[])
   splat->SetInputVolumeSeries(constantVolumeSeriesSource->GetOutput());
   splat->SetInputVolume(randomVolumeSource->GetOutput());
   splat->SetWeights(phaseReader->GetOutput());
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( splat->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(splat->Update());
 
-  CheckScalarProducts<VolumeSeriesType, VolumeType>(randomVolumeSeriesSource->GetOutput(), splat->GetOutput(), randomVolumeSource->GetOutput(), interp->GetOutput());
+  CheckScalarProducts<VolumeSeriesType, VolumeType>(
+    randomVolumeSeriesSource->GetOutput(), splat->GetOutput(), randomVolumeSource->GetOutput(), interp->GetOutput());
   std::cout << "\n\nTest PASSED! " << std::endl;
 
   return EXIT_SUCCESS;

@@ -5,44 +5,39 @@
 
 using GeometryType = rtk::ThreeDCircularProjectionGeometry;
 
-void WriteReadAndCheck(GeometryType *geometry)
+void
+WriteReadAndCheck(GeometryType * geometry)
 {
-  const char fileName[] = "rtkgeometryfiletest.out";
+  const char   fileName[] = "rtkgeometryfiletest.out";
   const double epsilon = 1e-13;
 
   rtk::ThreeDCircularProjectionGeometryXMLFileWriter::Pointer xmlWriter =
     rtk::ThreeDCircularProjectionGeometryXMLFileWriter::New();
   xmlWriter->SetFilename(fileName);
   xmlWriter->SetObject(geometry);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( xmlWriter->WriteFile() )
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(xmlWriter->WriteFile())
 
   rtk::ThreeDCircularProjectionGeometryXMLFileReader::Pointer xmlReader;
   xmlReader = rtk::ThreeDCircularProjectionGeometryXMLFileReader::New();
   xmlReader->SetFilename(fileName);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( xmlReader->GenerateOutputInformation() )
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(xmlReader->GenerateOutputInformation())
 
   itksys::SystemTools::RemoveFile(fileName);
 
-  GeometryType *geoRead = xmlReader->GetOutputObject();
-  for(unsigned int i=0; i<geometry->GetGantryAngles().size(); i++)
-    {
-#define CHECK_GEOMETRY_PARAMETER(paramName)                                \
-      {                                                                    \
-      double val1 = geoRead->Get##paramName()[i];                          \
-      double val2 = geometry->Get##paramName()[i];                         \
-      if( itk::Math::abs(val1 - val2) > epsilon )                                \
-        {                                                                  \
-        std::cerr << #paramName " differ ["                                \
-                  << val1                                                  \
-                  << "] read from written file vs. ["                      \
-                  << val2                                                  \
-                  << "] for the reference, difference=["                   \
-                  << val1-val2                                             \
-                  << "]."                                                  \
-                  << std::endl;                                            \
-        exit(1);                                                           \
-        }                                                                  \
-      }
+  GeometryType * geoRead = xmlReader->GetOutputObject();
+  for (unsigned int i = 0; i < geometry->GetGantryAngles().size(); i++)
+  {
+#define CHECK_GEOMETRY_PARAMETER(paramName)                                                                            \
+  {                                                                                                                    \
+    double val1 = geoRead->Get##paramName()[i];                                                                        \
+    double val2 = geometry->Get##paramName()[i];                                                                       \
+    if (itk::Math::abs(val1 - val2) > epsilon)                                                                         \
+    {                                                                                                                  \
+      std::cerr << #paramName " differ [" << val1 << "] read from written file vs. [" << val2                          \
+                << "] for the reference, difference=[" << val1 - val2 << "]." << std::endl;                            \
+      exit(1);                                                                                                         \
+    }                                                                                                                  \
+  }
 
     CHECK_GEOMETRY_PARAMETER(GantryAngles);
     CHECK_GEOMETRY_PARAMETER(OutOfPlaneAngles);
@@ -53,7 +48,7 @@ void WriteReadAndCheck(GeometryType *geometry)
     CHECK_GEOMETRY_PARAMETER(SourceToDetectorDistances);
     CHECK_GEOMETRY_PARAMETER(ProjectionOffsetsX);
     CHECK_GEOMETRY_PARAMETER(ProjectionOffsetsY);
-    }
+  }
 }
 
 /**
@@ -67,7 +62,8 @@ void WriteReadAndCheck(GeometryType *geometry)
  * \author Simon Rit
  */
 
-int main(int, char** )
+int
+main(int, char **)
 {
   // Create a geometry object with 1 projection
   GeometryType::Pointer geometry = GeometryType::New();
@@ -76,7 +72,7 @@ int main(int, char** )
 
   // Create a geometry object with 5 projections with similar geometry parameters
   geometry = GeometryType::New();
-  for(int i=0; i<5; i++)
+  for (int i = 0; i < 5; i++)
     geometry->AddProjection(615., 548., 36., 1.3, 1.57, 15.4, 13.48, 5.42, 7.56);
   WriteReadAndCheck(geometry);
 

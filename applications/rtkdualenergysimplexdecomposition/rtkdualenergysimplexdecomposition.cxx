@@ -26,63 +26,65 @@
 #include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>
 
-int main(int argc, char * argv[])
+int
+main(int argc, char * argv[])
 {
   GGO(rtkdualenergysimplexdecomposition, args_info);
 
   using PixelValueType = float;
   constexpr unsigned int Dimension = 3;
 
-  using DecomposedProjectionType = itk::VectorImage< PixelValueType, Dimension >;
+  using DecomposedProjectionType = itk::VectorImage<PixelValueType, Dimension>;
   using DecomposedProjectionReaderType = itk::ImageFileReader<DecomposedProjectionType>;
   using DecomposedProjectionWriterType = itk::ImageFileWriter<DecomposedProjectionType>;
 
-  using DualEnergyProjectionsType = itk::VectorImage< PixelValueType, Dimension >;
-  using DualEnergyProjectionReaderType = itk::ImageFileReader< DualEnergyProjectionsType >;
+  using DualEnergyProjectionsType = itk::VectorImage<PixelValueType, Dimension>;
+  using DualEnergyProjectionReaderType = itk::ImageFileReader<DualEnergyProjectionsType>;
 
-  using IncidentSpectrumImageType = itk::VectorImage< PixelValueType, Dimension-1 >;
+  using IncidentSpectrumImageType = itk::VectorImage<PixelValueType, Dimension - 1>;
   using IncidentSpectrumReaderType = itk::ImageFileReader<IncidentSpectrumImageType>;
 
-  using DetectorResponseImageType = itk::Image< PixelValueType, Dimension-1 >;
+  using DetectorResponseImageType = itk::Image<PixelValueType, Dimension - 1>;
   using DetectorResponseReaderType = itk::ImageFileReader<DetectorResponseImageType>;
 
-  using MaterialAttenuationsImageType = itk::Image< PixelValueType, Dimension-1 >;
+  using MaterialAttenuationsImageType = itk::Image<PixelValueType, Dimension - 1>;
   using MaterialAttenuationsReaderType = itk::ImageFileReader<MaterialAttenuationsImageType>;
 
   // Read all inputs
   DecomposedProjectionReaderType::Pointer decomposedProjectionReader = DecomposedProjectionReaderType::New();
-  decomposedProjectionReader->SetFileName( args_info.input_arg );
+  decomposedProjectionReader->SetFileName(args_info.input_arg);
   decomposedProjectionReader->Update();
 
   DualEnergyProjectionReaderType::Pointer dualEnergyProjectionReader = DualEnergyProjectionReaderType::New();
-  dualEnergyProjectionReader->SetFileName( args_info.dual_arg );
+  dualEnergyProjectionReader->SetFileName(args_info.dual_arg);
   dualEnergyProjectionReader->Update();
 
   IncidentSpectrumReaderType::Pointer incidentSpectrumReaderHighEnergy = IncidentSpectrumReaderType::New();
-  incidentSpectrumReaderHighEnergy->SetFileName( args_info.high_arg );
+  incidentSpectrumReaderHighEnergy->SetFileName(args_info.high_arg);
   incidentSpectrumReaderHighEnergy->Update();
 
   IncidentSpectrumReaderType::Pointer incidentSpectrumReaderLowEnergy = IncidentSpectrumReaderType::New();
-  incidentSpectrumReaderLowEnergy->SetFileName( args_info.low_arg );
+  incidentSpectrumReaderLowEnergy->SetFileName(args_info.low_arg);
   incidentSpectrumReaderLowEnergy->Update();
 
   MaterialAttenuationsReaderType::Pointer materialAttenuationsReader = MaterialAttenuationsReaderType::New();
-  materialAttenuationsReader->SetFileName( args_info.attenuations_arg );
+  materialAttenuationsReader->SetFileName(args_info.attenuations_arg);
   materialAttenuationsReader->Update();
 
   // If the detector response is given by the user, use it. Otherwise, assume it is included in the
   // incident spectrum, and fill the response with ones
   DetectorResponseReaderType::Pointer detectorResponseReader = DetectorResponseReaderType::New();
-  DetectorResponseImageType::Pointer detectorImage;
-  if(args_info.detector_given)
-    {
-    detectorResponseReader->SetFileName( args_info.detector_arg );
+  DetectorResponseImageType::Pointer  detectorImage;
+  if (args_info.detector_given)
+  {
+    detectorResponseReader->SetFileName(args_info.detector_arg);
     detectorResponseReader->Update();
     detectorImage = detectorResponseReader->GetOutput();
-    }
+  }
   else
-    {
-    rtk::ConstantImageSource<DetectorResponseImageType>::Pointer detectorSource = rtk::ConstantImageSource<DetectorResponseImageType>::New();
+  {
+    rtk::ConstantImageSource<DetectorResponseImageType>::Pointer detectorSource =
+      rtk::ConstantImageSource<DetectorResponseImageType>::New();
     DetectorResponseImageType::SizeType sourceSize;
     sourceSize[0] = 1;
     sourceSize[1] = incidentSpectrumReaderHighEnergy->GetOutput()->GetVectorLength();
@@ -90,7 +92,7 @@ int main(int argc, char * argv[])
     detectorSource->SetConstant(1.0);
     detectorSource->Update();
     detectorImage = detectorSource->GetOutput();
-    }
+  }
 
   // Get parameters from the images
   const unsigned int MaximumEnergy = incidentSpectrumReaderHighEnergy->GetOutput()->GetVectorLength();
@@ -100,21 +102,18 @@ int main(int argc, char * argv[])
   if (incidentSpectrumReaderLowEnergy->GetOutput()->GetPixel(indexIncident).Size() != MaximumEnergy)
     itkGenericExceptionMacro(<< "Low energy incident spectrum image has vector size "
                              << incidentSpectrumReaderLowEnergy->GetOutput()->GetPixel(indexIncident).Size()
-                             << ", should be "
-                             << MaximumEnergy);
+                             << ", should be " << MaximumEnergy);
 
   if (detectorImage->GetLargestPossibleRegion().GetSize()[1] != MaximumEnergy)
-    itkGenericExceptionMacro(<< "Detector response image has "
-                             << detectorImage->GetLargestPossibleRegion().GetSize()[1]
-                             << "energies, should have "
-                             << MaximumEnergy);
+    itkGenericExceptionMacro(<< "Detector response image has " << detectorImage->GetLargestPossibleRegion().GetSize()[1]
+                             << "energies, should have " << MaximumEnergy);
 
   // Create and set the filter
   using SimplexFilterType = rtk::SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionType,
-                                                                    DualEnergyProjectionsType,
-                                                                    IncidentSpectrumImageType,
-                                                                    DetectorResponseImageType,
-                                                                    MaterialAttenuationsImageType>;
+                                                                                    DualEnergyProjectionsType,
+                                                                                    IncidentSpectrumImageType,
+                                                                                    DetectorResponseImageType,
+                                                                                    MaterialAttenuationsImageType>;
   SimplexFilterType::Pointer simplex = SimplexFilterType::New();
   simplex->SetInputDecomposedProjections(decomposedProjectionReader->GetOutput());
   simplex->SetGuessInitialization(args_info.guess_flag);

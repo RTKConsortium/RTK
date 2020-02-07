@@ -26,7 +26,7 @@
 #include "rtkFDKConeBeamReconstructionFilter.h"
 #ifdef RTK_USE_CUDA
 #  include "rtkCudaDisplacedDetectorImageFilter.h"
-//TODO #  include "rtkCudaDisplacedDetectorForOffsetFieldOfViewImageFilter.h"
+// TODO #  include "rtkCudaDisplacedDetectorForOffsetFieldOfViewImageFilter.h"
 #  include "rtkCudaParkerShortScanImageFilter.h"
 #  include "rtkCudaFDKConeBeamReconstructionFilter.h"
 #endif
@@ -39,142 +39,141 @@
 #include <itkStreamingImageFilter.h>
 #include <itkImageFileWriter.h>
 
-int main(int argc, char * argv[])
+int
+main(int argc, char * argv[])
 {
   GGO(rtkfourdfdk, args_info);
 
   using OutputPixelType = float;
   constexpr unsigned int Dimension = 3;
 
-  using CPUOutputImageType = itk::Image< OutputPixelType, Dimension >;
+  using CPUOutputImageType = itk::Image<OutputPixelType, Dimension>;
 #ifdef RTK_USE_CUDA
-  using OutputImageType = itk::CudaImage< OutputPixelType, Dimension >;
+  using OutputImageType = itk::CudaImage<OutputPixelType, Dimension>;
 #else
   using OutputImageType = CPUOutputImageType;
 #endif
 
   // Projections reader
-  using ReaderType = rtk::ProjectionsReader< OutputImageType >;
+  using ReaderType = rtk::ProjectionsReader<OutputImageType>;
   ReaderType::Pointer reader = ReaderType::New();
   rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkfourdfdk>(reader, args_info);
 
   // Geometry
-  if(args_info.verbose_flag)
-    std::cout << "Reading geometry information from "
-              << args_info.geometry_arg
-              << "..."
-              << std::endl;
+  if (args_info.verbose_flag)
+    std::cout << "Reading geometry information from " << args_info.geometry_arg << "..." << std::endl;
   rtk::ThreeDCircularProjectionGeometryXMLFileReader::Pointer geometryReader;
   geometryReader = rtk::ThreeDCircularProjectionGeometryXMLFileReader::New();
   geometryReader->SetFilename(args_info.geometry_arg);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( geometryReader->GenerateOutputInformation() )
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(geometryReader->GenerateOutputInformation())
 
   // Part specific to 4D
   using SelectorType = rtk::SelectOneProjectionPerCycleImageFilter<OutputImageType>;
   SelectorType::Pointer selector = SelectorType::New();
-  selector->SetInput( reader->GetOutput() );
-  selector->SetInputGeometry( geometryReader->GetOutputObject() );
-  selector->SetSignalFilename( args_info.signal_arg );
+  selector->SetInput(reader->GetOutput());
+  selector->SetInputGeometry(geometryReader->GetOutputObject());
+  selector->SetSignalFilename(args_info.signal_arg);
 
   // Check on hardware parameter
 #ifndef RTK_USE_CUDA
-  if(!strcmp(args_info.hardware_arg, "cuda") )
-    {
+  if (!strcmp(args_info.hardware_arg, "cuda"))
+  {
     std::cerr << "The program has not been compiled with cuda option" << std::endl;
     return EXIT_FAILURE;
-    }
+  }
 #endif
 
   // Displaced detector weighting
-  using DDFCPUType = rtk::DisplacedDetectorImageFilter< OutputImageType >;
-  using DDFOFFFOVType = rtk::DisplacedDetectorForOffsetFieldOfViewImageFilter< OutputImageType >;
+  using DDFCPUType = rtk::DisplacedDetectorImageFilter<OutputImageType>;
+  using DDFOFFFOVType = rtk::DisplacedDetectorForOffsetFieldOfViewImageFilter<OutputImageType>;
 #ifdef RTK_USE_CUDA
   using DDFType = rtk::CudaDisplacedDetectorImageFilter;
 #else
-  using DDFType = rtk::DisplacedDetectorForOffsetFieldOfViewImageFilter< OutputImageType >;
+  using DDFType = rtk::DisplacedDetectorForOffsetFieldOfViewImageFilter<OutputImageType>;
 #endif
   DDFCPUType::Pointer ddf;
-  if(!strcmp(args_info.hardware_arg, "cuda") )
+  if (!strcmp(args_info.hardware_arg, "cuda"))
     ddf = DDFType::New();
   else
     ddf = DDFOFFFOVType::New();
-  ddf->SetInput( selector->GetOutput() );
-  ddf->SetGeometry( selector->GetOutputGeometry() );
+  ddf->SetInput(selector->GetOutput());
+  ddf->SetGeometry(selector->GetOutputGeometry());
 
   // Short scan image filter
-  using PSSFCPUType = rtk::ParkerShortScanImageFilter< OutputImageType >;
+  using PSSFCPUType = rtk::ParkerShortScanImageFilter<OutputImageType>;
 #ifdef RTK_USE_CUDA
   using PSSFType = rtk::CudaParkerShortScanImageFilter;
 #else
-  using PSSFType = rtk::ParkerShortScanImageFilter< OutputImageType >;
+  using PSSFType = rtk::ParkerShortScanImageFilter<OutputImageType>;
 #endif
   PSSFCPUType::Pointer pssf;
-  if(!strcmp(args_info.hardware_arg, "cuda") )
+  if (!strcmp(args_info.hardware_arg, "cuda"))
     pssf = PSSFType::New();
   else
     pssf = PSSFCPUType::New();
-  pssf->SetInput( ddf->GetOutput() );
-  pssf->SetGeometry( selector->GetOutputGeometry() );
+  pssf->SetInput(ddf->GetOutput());
+  pssf->SetGeometry(selector->GetOutputGeometry());
   pssf->InPlaceOff();
 
   // Create one frame of the reconstructed image
-  using ConstantImageSourceType = rtk::ConstantImageSource< OutputImageType >;
+  using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
   ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
   rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkfourdfdk>(constantImageSource, args_info);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(constantImageSource->Update())
 
   // This macro sets options for fdk filter which I can not see how to do better
   // because TFFTPrecision is not the same, e.g. for CPU and CUDA (SR)
-#define SET_FELDKAMP_OPTIONS(f) \
-    f->SetInput( 0, constantImageSource->GetOutput() ); \
-    f->SetInput( 1, pssf->GetOutput() ); \
-    f->SetGeometry( selector->GetOutputGeometry() ); \
-    f->GetRampFilter()->SetTruncationCorrection(args_info.pad_arg); \
-    f->GetRampFilter()->SetHannCutFrequency(args_info.hann_arg); \
-    f->GetRampFilter()->SetHannCutFrequencyY(args_info.hannY_arg); \
-    f->SetProjectionSubsetSize(args_info.subsetsize_arg)
+#define SET_FELDKAMP_OPTIONS(f)                                                                                        \
+  f->SetInput(0, constantImageSource->GetOutput());                                                                    \
+  f->SetInput(1, pssf->GetOutput());                                                                                   \
+  f->SetGeometry(selector->GetOutputGeometry());                                                                       \
+  f->GetRampFilter()->SetTruncationCorrection(args_info.pad_arg);                                                      \
+  f->GetRampFilter()->SetHannCutFrequency(args_info.hann_arg);                                                         \
+  f->GetRampFilter()->SetHannCutFrequencyY(args_info.hannY_arg);                                                       \
+  f->SetProjectionSubsetSize(args_info.subsetsize_arg)
 
   // FDK reconstruction filtering
-  using FDKCPUType = rtk::FDKConeBeamReconstructionFilter< OutputImageType >;
+  using FDKCPUType = rtk::FDKConeBeamReconstructionFilter<OutputImageType>;
   FDKCPUType::Pointer feldkamp;
 #ifdef RTK_USE_CUDA
   using FDKCUDAType = rtk::CudaFDKConeBeamReconstructionFilter;
   FDKCUDAType::Pointer feldkampCUDA;
 #endif
-  itk::Image< OutputPixelType, Dimension > *pfeldkamp = nullptr;
-  if(!strcmp(args_info.hardware_arg, "cpu") )
-    {
+  itk::Image<OutputPixelType, Dimension> * pfeldkamp = nullptr;
+  if (!strcmp(args_info.hardware_arg, "cpu"))
+  {
     feldkamp = FDKCPUType::New();
-    SET_FELDKAMP_OPTIONS( feldkamp );
+    SET_FELDKAMP_OPTIONS(feldkamp);
 
     pfeldkamp = feldkamp->GetOutput();
-    }
+  }
 #ifdef RTK_USE_CUDA
-  else if(!strcmp(args_info.hardware_arg, "cuda") )
-    {
+  else if (!strcmp(args_info.hardware_arg, "cuda"))
+  {
     feldkampCUDA = FDKCUDAType::New();
-    SET_FELDKAMP_OPTIONS( feldkampCUDA );
+    SET_FELDKAMP_OPTIONS(feldkampCUDA);
     pfeldkamp = feldkampCUDA->GetOutput();
-    }
+  }
 #endif
 
   // Streaming depending on streaming capability of writer
   using StreamerType = itk::StreamingImageFilter<CPUOutputImageType, CPUOutputImageType>;
   StreamerType::Pointer streamerBP = StreamerType::New();
-  streamerBP->SetInput( pfeldkamp );
-  streamerBP->SetNumberOfStreamDivisions( args_info.divisions_arg );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( streamerBP->UpdateOutputInformation() )
+  streamerBP->SetInput(pfeldkamp);
+  streamerBP->SetNumberOfStreamDivisions(args_info.divisions_arg);
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(streamerBP->UpdateOutputInformation())
 
   // Create empty 4D image
-  using FourDOutputImageType = itk::Image< OutputPixelType, Dimension+1 >;
-  using FourDConstantImageSourceType = rtk::ConstantImageSource< FourDOutputImageType >;
+  using FourDOutputImageType = itk::Image<OutputPixelType, Dimension + 1>;
+  using FourDConstantImageSourceType = rtk::ConstantImageSource<FourDOutputImageType>;
   FourDConstantImageSourceType::Pointer fourDConstantImageSource = FourDConstantImageSourceType::New();
-  rtk::SetConstantImageSourceFromGgo<FourDConstantImageSourceType, args_info_rtkfourdfdk>(fourDConstantImageSource, args_info);
+  rtk::SetConstantImageSourceFromGgo<FourDConstantImageSourceType, args_info_rtkfourdfdk>(fourDConstantImageSource,
+                                                                                          args_info);
 
   // GenGetOpt can't handle default arguments for multiple arguments like dimension or spacing.
   // The only default it accepts is to set all components of a multiple argument to the same value.
-  // Default dimension is 256^4, ie the number of reconstructed instants is 256. It has to be set to a more reasonable value
-  // which is why a "frames" argument is introduced
+  // Default dimension is 256^4, ie the number of reconstructed instants is 256. It has to be set to a more reasonable
+  // value which is why a "frames" argument is introduced
   FourDConstantImageSourceType::SizeType fourDInputSize(fourDConstantImageSource->GetSize());
   fourDInputSize[3] = args_info.frames_arg;
   fourDConstantImageSource->SetSize(fourDInputSize);
@@ -182,39 +181,35 @@ int main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION(fourDConstantImageSource->Update())
 
   // Go over each frame, reconstruct 3D frame and paste with iterators in 4D image
-  for(int f=0; f<args_info.frames_arg; f++)
-    {
-    if(args_info.verbose_flag)
-      std::cout << "Reconstructing frame #"
-                << f
-                << "..."
-                << std::endl;
-    selector->SetPhase(f/(double)args_info.frames_arg);
-    TRY_AND_EXIT_ON_ITK_EXCEPTION( streamerBP->UpdateLargestPossibleRegion() )
+  for (int f = 0; f < args_info.frames_arg; f++)
+  {
+    if (args_info.verbose_flag)
+      std::cout << "Reconstructing frame #" << f << "..." << std::endl;
+    selector->SetPhase(f / (double)args_info.frames_arg);
+    TRY_AND_EXIT_ON_ITK_EXCEPTION(streamerBP->UpdateLargestPossibleRegion())
 
     FourDConstantImageSourceType::OutputImageRegionType region;
     region = fourDConstantImageSource->GetOutput()->GetLargestPossibleRegion();
     region.SetIndex(3, f);
     region.SetSize(3, 1);
 
-    itk::ImageRegionIterator<FourDOutputImageType> it4D(fourDConstantImageSource->GetOutput(),
-                                                        region);
+    itk::ImageRegionIterator<FourDOutputImageType> it4D(fourDConstantImageSource->GetOutput(), region);
     itk::ImageRegionIterator<CPUOutputImageType>   it3D(streamerBP->GetOutput(),
-                                                        streamerBP->GetOutput()->GetLargestPossibleRegion() );
-    while(!it3D.IsAtEnd())
-      {
+                                                      streamerBP->GetOutput()->GetLargestPossibleRegion());
+    while (!it3D.IsAtEnd())
+    {
       it4D.Set(it3D.Get());
       ++it4D;
       ++it3D;
-      }
     }
+  }
 
   // Write
   using WriterType = itk::ImageFileWriter<FourDOutputImageType>;
   WriterType::Pointer writer = WriterType::New();
-  writer->SetFileName( args_info.output_arg );
-  writer->SetInput( fourDConstantImageSource->GetOutput() );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() )
+  writer->SetFileName(args_info.output_arg);
+  writer->SetInput(fourDConstantImageSource->GetOutput());
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(writer->Update())
 
   return EXIT_SUCCESS;
 }

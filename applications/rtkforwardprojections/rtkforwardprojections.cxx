@@ -24,132 +24,131 @@
 #include "rtkJosephForwardAttenuatedProjectionImageFilter.h"
 #include "rtkZengForwardProjectionImageFilter.h"
 #ifdef RTK_USE_CUDA
-#include "rtkCudaForwardProjectionImageFilter.h"
+#  include "rtkCudaForwardProjectionImageFilter.h"
 #endif
 
 #include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>
 
-int main(int argc, char * argv[])
+int
+main(int argc, char * argv[])
 {
   GGO(rtkforwardprojections, args_info);
 
   using OutputPixelType = float;
   constexpr unsigned int Dimension = 3;
 
-  #ifdef RTK_USE_CUDA
-    using OutputImageType = itk::CudaImage< OutputPixelType, Dimension >;
-  #else
-    using OutputImageType = itk::Image< OutputPixelType, Dimension >;
-  #endif
+#ifdef RTK_USE_CUDA
+  using OutputImageType = itk::CudaImage<OutputPixelType, Dimension>;
+#else
+  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
+#endif
 
   // Geometry
-  if(args_info.verbose_flag)
-    std::cout << "Reading geometry information from "
-              << args_info.geometry_arg
-              << "..."
-              << std::flush;
+  if (args_info.verbose_flag)
+    std::cout << "Reading geometry information from " << args_info.geometry_arg << "..." << std::flush;
   rtk::ThreeDCircularProjectionGeometryXMLFileReader::Pointer geometryReader;
   geometryReader = rtk::ThreeDCircularProjectionGeometryXMLFileReader::New();
   geometryReader->SetFilename(args_info.geometry_arg);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( geometryReader->GenerateOutputInformation() )
-  if(args_info.verbose_flag)
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(geometryReader->GenerateOutputInformation())
+  if (args_info.verbose_flag)
     std::cout << " done." << std::endl;
 
   // Create a stack of empty projection images
-  using ConstantImageSourceType = rtk::ConstantImageSource< OutputImageType >;
+  using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
   ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
-  rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkforwardprojections>(constantImageSource, args_info);
+  rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkforwardprojections>(constantImageSource,
+                                                                                               args_info);
 
   // Adjust size according to geometry
   ConstantImageSourceType::SizeType sizeOutput;
   sizeOutput[0] = constantImageSource->GetSize()[0];
   sizeOutput[1] = constantImageSource->GetSize()[1];
   sizeOutput[2] = geometryReader->GetOutputObject()->GetGantryAngles().size();
-  constantImageSource->SetSize( sizeOutput );
+  constantImageSource->SetSize(sizeOutput);
 
   // Input reader
-  if(args_info.verbose_flag)
-    std::cout << "Reading input volume "
-              << args_info.input_arg
-              << "..."
-              << std::endl;
-  using ReaderType = itk::ImageFileReader<  OutputImageType >;
+  if (args_info.verbose_flag)
+    std::cout << "Reading input volume " << args_info.input_arg << "..." << std::endl;
+  using ReaderType = itk::ImageFileReader<OutputImageType>;
   ReaderType::Pointer reader = ReaderType::New();
-  reader->SetFileName( args_info.input_arg );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->Update() )
+  reader->SetFileName(args_info.input_arg);
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(reader->Update())
 
-  itk::ImageSource< OutputImageType >::Pointer attenuationFilter;
-  if(args_info.attenuationmap_given)
-    {
-    if(args_info.verbose_flag)
-      std::cout << "Reading attenuation map "
-              << args_info.attenuationmap_arg
-              << "..."
-              << std::endl;
+  itk::ImageSource<OutputImageType>::Pointer attenuationFilter;
+  if (args_info.attenuationmap_given)
+  {
+    if (args_info.verbose_flag)
+      std::cout << "Reading attenuation map " << args_info.attenuationmap_arg << "..." << std::endl;
     // Read an existing image to initialize the attenuation map
-    using AttenuationReaderType = itk::ImageFileReader<  OutputImageType >;
+    using AttenuationReaderType = itk::ImageFileReader<OutputImageType>;
     AttenuationReaderType::Pointer attenuationReader = AttenuationReaderType::New();
-    attenuationReader->SetFileName( args_info.attenuationmap_arg );
+    attenuationReader->SetFileName(args_info.attenuationmap_arg);
     attenuationFilter = attenuationReader;
-    }
+  }
 
   // Create forward projection image filter
-  if(args_info.verbose_flag)
+  if (args_info.verbose_flag)
     std::cout << "Projecting volume..." << std::endl;
 
   rtk::ForwardProjectionImageFilter<OutputImageType, OutputImageType>::Pointer forwardProjection;
 
-  switch(args_info.fp_arg)
+  switch (args_info.fp_arg)
   {
-  case(fp_arg_Joseph):
-    forwardProjection = rtk::JosephForwardProjectionImageFilter<OutputImageType, OutputImageType>::New();
+    case (fp_arg_Joseph):
+      forwardProjection = rtk::JosephForwardProjectionImageFilter<OutputImageType, OutputImageType>::New();
       break;
-  case(fp_arg_JosephAttenuated):
-    forwardProjection = rtk::JosephForwardAttenuatedProjectionImageFilter<OutputImageType, OutputImageType>::New();
+    case (fp_arg_JosephAttenuated):
+      forwardProjection = rtk::JosephForwardAttenuatedProjectionImageFilter<OutputImageType, OutputImageType>::New();
       break;
-  case(fp_arg_Zeng):
-    forwardProjection = rtk::ZengForwardProjectionImageFilter<OutputImageType, OutputImageType>::New();
-    break;
-  case(fp_arg_CudaRayCast):
+    case (fp_arg_Zeng):
+      forwardProjection = rtk::ZengForwardProjectionImageFilter<OutputImageType, OutputImageType>::New();
+      break;
+    case (fp_arg_CudaRayCast):
 #ifdef RTK_USE_CUDA
-    forwardProjection = rtk::CudaForwardProjectionImageFilter<OutputImageType, OutputImageType>::New();
-    dynamic_cast<rtk::CudaForwardProjectionImageFilter<OutputImageType, OutputImageType>*>( forwardProjection.GetPointer() )->SetStepSize(args_info.step_arg);
+      forwardProjection = rtk::CudaForwardProjectionImageFilter<OutputImageType, OutputImageType>::New();
+      dynamic_cast<rtk::CudaForwardProjectionImageFilter<OutputImageType, OutputImageType> *>(
+        forwardProjection.GetPointer())
+        ->SetStepSize(args_info.step_arg);
 #else
-    std::cerr << "The program has not been compiled with cuda option" << std::endl;
-    return EXIT_FAILURE;
+      std::cerr << "The program has not been compiled with cuda option" << std::endl;
+      return EXIT_FAILURE;
 #endif
-    break;
-  default:
-    std::cerr << "Unhandled --method value." << std::endl;
-    return EXIT_FAILURE;
+      break;
+    default:
+      std::cerr << "Unhandled --method value." << std::endl;
+      return EXIT_FAILURE;
   }
-  forwardProjection->SetInput( constantImageSource->GetOutput() );
-  forwardProjection->SetInput( 1, reader->GetOutput() );
-  if(args_info.attenuationmap_given)
+  forwardProjection->SetInput(constantImageSource->GetOutput());
+  forwardProjection->SetInput(1, reader->GetOutput());
+  if (args_info.attenuationmap_given)
     forwardProjection->SetInput(2, attenuationFilter->GetOutput());
-  if(args_info.sigmazero_given && args_info.fp_arg == fp_arg_Zeng)
-     dynamic_cast<rtk::ZengForwardProjectionImageFilter<OutputImageType, OutputImageType>*>(forwardProjection.GetPointer())->SetSigmaZero(args_info.sigmazero_arg);
-  if(args_info.alphapsf_given && args_info.fp_arg == fp_arg_Zeng)
-    dynamic_cast<rtk::ZengForwardProjectionImageFilter<OutputImageType, OutputImageType>*>(forwardProjection.GetPointer())->SetAlpha(args_info.alphapsf_arg);
-  forwardProjection->SetGeometry( geometryReader->GetOutputObject() );
-  if(!args_info.lowmem_flag)
-    {
-    TRY_AND_EXIT_ON_ITK_EXCEPTION( forwardProjection->Update() )
-    }
+  if (args_info.sigmazero_given && args_info.fp_arg == fp_arg_Zeng)
+    dynamic_cast<rtk::ZengForwardProjectionImageFilter<OutputImageType, OutputImageType> *>(
+      forwardProjection.GetPointer())
+      ->SetSigmaZero(args_info.sigmazero_arg);
+  if (args_info.alphapsf_given && args_info.fp_arg == fp_arg_Zeng)
+    dynamic_cast<rtk::ZengForwardProjectionImageFilter<OutputImageType, OutputImageType> *>(
+      forwardProjection.GetPointer())
+      ->SetAlpha(args_info.alphapsf_arg);
+  forwardProjection->SetGeometry(geometryReader->GetOutputObject());
+  if (!args_info.lowmem_flag)
+  {
+    TRY_AND_EXIT_ON_ITK_EXCEPTION(forwardProjection->Update())
+  }
 
   // Write
-  if(args_info.verbose_flag)
+  if (args_info.verbose_flag)
     std::cout << "Writing... " << std::endl;
-  using WriterType = itk::ImageFileWriter<  OutputImageType >;
+  using WriterType = itk::ImageFileWriter<OutputImageType>;
   WriterType::Pointer writer = WriterType::New();
-  writer->SetFileName( args_info.output_arg );
-  writer->SetInput( forwardProjection->GetOutput() );
-  if(args_info.lowmem_flag)
-    {
+  writer->SetFileName(args_info.output_arg);
+  writer->SetInput(forwardProjection->GetOutput());
+  if (args_info.lowmem_flag)
+  {
     writer->SetNumberOfStreamDivisions(sizeOutput[2]);
-    }
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() )
+  }
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(writer->Update())
 
   return EXIT_SUCCESS;
 }

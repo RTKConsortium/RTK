@@ -14,20 +14,23 @@
 using ShortImageType = itk::Image<unsigned short, 2>;
 using FloatImageType = itk::Image<float, 2>;
 
-void fillImageWithRawData(ShortImageType::Pointer image, unsigned short I0)
+void
+fillImageWithRawData(ShortImageType::Pointer image, unsigned short I0)
 {
-  itk::ImageRegionIterator< ShortImageType > it(image, image->GetLargestPossibleRegion());
+  itk::ImageRegionIterator<ShortImageType> it(image, image->GetLargestPossibleRegion());
   it.GoToBegin();
   unsigned short i = 0;
-  while (!it.IsAtEnd()){
-    unsigned short I = (i%I0)+1;
+  while (!it.IsAtEnd())
+  {
+    unsigned short I = (i % I0) + 1;
     it.Set(I);
     ++it;
     ++i;
   }
 }
 
-int main(int, char** )
+int
+main(int, char **)
 {
   using ConvertFilterType = rtk::LUTbasedVariableI0RawToAttenuationImageFilter<ShortImageType, FloatImageType>;
   ConvertFilterType::Pointer convert = ConvertFilterType::New();
@@ -58,7 +61,7 @@ int main(int, char** )
 
     fillImageWithRawData(rawImage, I0);
 
-    convert->SetI0(I0/2);
+    convert->SetI0(I0 / 2);
     convert->Update();
   }
 

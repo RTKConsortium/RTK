@@ -11,20 +11,21 @@
  * \author S. Brousmiche
  */
 
-int main(int , char** )
+int
+main(int, char **)
 {
   constexpr unsigned int Dimension = 2;
   using OutputPixelType = float;
-  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
+  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
 
   // Constant image sources
-  using ConstantImageSourceType = rtk::ConstantImageSource< OutputImageType >;
-  ConstantImageSourceType::PointType origin;
-  ConstantImageSourceType::SizeType size;
+  using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
+  ConstantImageSourceType::PointType   origin;
+  ConstantImageSourceType::SizeType    size;
   ConstantImageSourceType::SpacingType spacing;
 
   // Create constant image of value 2 and reference image.
-  ConstantImageSourceType::Pointer imgIn  = ConstantImageSourceType::New();
+  ConstantImageSourceType::Pointer imgIn = ConstantImageSourceType::New();
   ConstantImageSourceType::Pointer imgRef = ConstantImageSourceType::New();
 
   origin[0] = -126;
@@ -34,16 +35,16 @@ int main(int , char** )
   spacing[0] = 16.;
   spacing[1] = 16.;
 
-  imgIn->SetOrigin( origin );
-  imgIn->SetSpacing( spacing );
-  imgIn->SetSize( size );
-  imgIn->SetConstant( 1.5 );
-  //imgIn->UpdateOutputInformation();
+  imgIn->SetOrigin(origin);
+  imgIn->SetSpacing(spacing);
+  imgIn->SetSize(size);
+  imgIn->SetConstant(1.5);
+  // imgIn->UpdateOutputInformation();
 
-  imgRef->SetOrigin( origin );
-  imgRef->SetSpacing( spacing );
-  imgRef->SetSize( size );
-  imgRef->SetConstant( 5.0 );
+  imgRef->SetOrigin(origin);
+  imgRef->SetSpacing(spacing);
+  imgRef->SetSize(size);
+  imgRef->SetConstant(5.0);
   imgRef->Update();
 
   OutputImageType::Pointer output = imgIn->GetOutput();
@@ -66,7 +67,7 @@ int main(int , char** )
 
   std::cout << "\n\n****** Case 2: order 3 ******" << std::endl;
 
-  WPCType::Pointer model3 = WPCType::New();
+  WPCType::Pointer    model3 = WPCType::New();
   WPCType::VectorType c2;
   c2.push_back(0.05);
   c2.push_back(0.3);

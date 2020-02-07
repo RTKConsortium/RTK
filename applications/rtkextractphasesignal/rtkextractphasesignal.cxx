@@ -25,12 +25,12 @@
 #include <itkRawImageIO.h>
 #include <fstream>
 
-template<class TSignalType>
+template <class TSignalType>
 void
-WriteSignalToTextFile(TSignalType *sig, const std::string &fileName)
+WriteSignalToTextFile(TSignalType * sig, const std::string & fileName)
 {
-  std::ofstream ofs( fileName.c_str() );
-  itk::ImageRegionConstIterator<TSignalType> it( sig, sig->GetLargestPossibleRegion() );
+  std::ofstream                              ofs(fileName.c_str());
+  itk::ImageRegionConstIterator<TSignalType> it(sig, sig->GetLargestPossibleRegion());
   for (it.GoToBegin(); !it.IsAtEnd(); ++it)
   {
     ofs << it.Get() << std::endl;
@@ -38,7 +38,8 @@ WriteSignalToTextFile(TSignalType *sig, const std::string &fileName)
   ofs.close();
 }
 
-int main(int argc, char * argv[])
+int
+main(int argc, char * argv[])
 {
   GGO(rtkextractphasesignal, args_info);
 
@@ -46,8 +47,8 @@ int main(int argc, char * argv[])
   using OutputPixelType = double;
   constexpr unsigned int Dimension = 1;
 
-  using InputImageType = itk::Image< InputPixelType, Dimension >;
-  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
+  using InputImageType = itk::Image<InputPixelType, Dimension>;
+  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
 
   // Read
   itk::ImageFileReader<InputImageType>::Pointer reader = itk::ImageFileReader<InputImageType>::New();
@@ -63,7 +64,7 @@ int main(int argc, char * argv[])
   phase->SetMovingAverageSize(args_info.movavg_arg);
   phase->SetUnsharpMaskSize(args_info.unsharp_arg);
   phase->SetModel((PhaseFilter::ModelType)args_info.model_arg);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( phase->Update() )
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(phase->Update())
 
   // Write output phase
   WriteSignalToTextFile(phase->GetOutput(), args_info.output_arg);

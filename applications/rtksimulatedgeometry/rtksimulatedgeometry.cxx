@@ -21,7 +21,8 @@
 
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 
-int main(int argc, char * argv[])
+int
+main(int argc, char * argv[])
 {
   GGO(rtksimulatedgeometry, args_info);
 
@@ -30,8 +31,8 @@ int main(int argc, char * argv[])
   GeometryType::Pointer geometry = GeometryType::New();
 
   // Projection matrices
-  for(int noProj=0; noProj<args_info.nproj_arg; noProj++)
-    {
+  for (int noProj = 0; noProj < args_info.nproj_arg; noProj++)
+  {
     double angle = args_info.first_angle_arg + noProj * args_info.arc_arg / args_info.nproj_arg;
     geometry->AddProjection(args_info.sid_arg,
                             args_info.sdd_arg,
@@ -42,7 +43,7 @@ int main(int argc, char * argv[])
                             args_info.in_angle_arg,
                             args_info.source_x_arg,
                             args_info.source_y_arg);
-    }
+  }
 
   // Set cylindrical detector radius
   if (args_info.rad_cyl_given)
@@ -52,8 +53,8 @@ int main(int argc, char * argv[])
   rtk::ThreeDCircularProjectionGeometryXMLFileWriter::Pointer xmlWriter =
     rtk::ThreeDCircularProjectionGeometryXMLFileWriter::New();
   xmlWriter->SetFilename(args_info.output_arg);
-  xmlWriter->SetObject(&(*geometry) );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( xmlWriter->WriteFile() )
+  xmlWriter->SetObject(&(*geometry));
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(xmlWriter->WriteFile())
 
   return EXIT_SUCCESS;
 }

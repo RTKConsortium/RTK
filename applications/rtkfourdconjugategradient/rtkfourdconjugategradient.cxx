@@ -25,71 +25,70 @@
 #include "rtkReorderProjectionsImageFilter.h"
 
 #ifdef RTK_USE_CUDA
-  #include "itkCudaImage.h"
-  #include "rtkCudaConstantVolumeSeriesSource.h"
+#  include "itkCudaImage.h"
+#  include "rtkCudaConstantVolumeSeriesSource.h"
 #endif
 
 #include <itkImageFileWriter.h>
 
-int main(int argc, char * argv[])
+int
+main(int argc, char * argv[])
 {
   GGO(rtkfourdconjugategradient, args_info);
 
   using OutputPixelType = float;
 
 #ifdef RTK_USE_CUDA
-  using VolumeSeriesType = itk::CudaImage< OutputPixelType, 4 >;
-  using ProjectionStackType = itk::CudaImage< OutputPixelType, 3 >;
+  using VolumeSeriesType = itk::CudaImage<OutputPixelType, 4>;
+  using ProjectionStackType = itk::CudaImage<OutputPixelType, 3>;
 #else
-  using VolumeSeriesType = itk::Image< OutputPixelType, 4 >;
-  using ProjectionStackType = itk::Image< OutputPixelType, 3 >;
+  using VolumeSeriesType = itk::Image<OutputPixelType, 4>;
+  using ProjectionStackType = itk::Image<OutputPixelType, 3>;
 #endif
 
   // Projections reader
-  using ReaderType = rtk::ProjectionsReader< ProjectionStackType >;
+  using ReaderType = rtk::ProjectionsReader<ProjectionStackType>;
   ReaderType::Pointer reader = ReaderType::New();
   rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkfourdconjugategradient>(reader, args_info);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->UpdateLargestPossibleRegion() )
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(reader->UpdateLargestPossibleRegion())
 
   // Geometry
-  if(args_info.verbose_flag)
-    std::cout << "Reading geometry information from "
-              << args_info.geometry_arg
-              << "..."
-              << std::endl;
+  if (args_info.verbose_flag)
+    std::cout << "Reading geometry information from " << args_info.geometry_arg << "..." << std::endl;
   rtk::ThreeDCircularProjectionGeometryXMLFileReader::Pointer geometryReader;
   geometryReader = rtk::ThreeDCircularProjectionGeometryXMLFileReader::New();
   geometryReader->SetFilename(args_info.geometry_arg);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( geometryReader->GenerateOutputInformation() )
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(geometryReader->GenerateOutputInformation())
 
   // Create input: either an existing volume read from a file or a blank image
-  itk::ImageSource< VolumeSeriesType >::Pointer inputFilter;
-  if(args_info.input_given)
-    {
+  itk::ImageSource<VolumeSeriesType>::Pointer inputFilter;
+  if (args_info.input_given)
+  {
     // Read an existing image to initialize the volume
-    using InputReaderType = itk::ImageFileReader<  VolumeSeriesType >;
+    using InputReaderType = itk::ImageFileReader<VolumeSeriesType>;
     InputReaderType::Pointer inputReader = InputReaderType::New();
-    inputReader->SetFileName( args_info.input_arg );
+    inputReader->SetFileName(args_info.input_arg);
     inputFilter = inputReader;
-    }
+  }
   else
-    {
+  {
     // Create new empty volume
-    using ConstantImageSourceType = rtk::ConstantImageSource< VolumeSeriesType >;
+    using ConstantImageSourceType = rtk::ConstantImageSource<VolumeSeriesType>;
     ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
-    rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkfourdconjugategradient>(constantImageSource, args_info);
+    rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkfourdconjugategradient>(
+      constantImageSource, args_info);
 
     // GenGetOpt can't handle default arguments for multiple arguments like dimension or spacing.
     // The only default it accepts is to set all components of a multiple argument to the same value.
-    // Default dimension is 256^4, ie the number of reconstructed instants is 256. It has to be set to a more reasonable value
-    // which is why a "frames" argument is introduced
+    // Default dimension is 256^4, ie the number of reconstructed instants is 256. It has to be set to a more reasonable
+    // value which is why a "frames" argument is introduced
     ConstantImageSourceType::SizeType inputSize = constantImageSource->GetSize();
     inputSize[3] = args_info.frames_arg;
     constantImageSource->SetSize(inputSize);
 
     inputFilter = constantImageSource;
-    }
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( inputFilter->Update() )
+  }
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(inputFilter->Update())
   inputFilter->ReleaseDataFlagOn();
 
   // Re-order geometry and projections
@@ -100,7 +99,7 @@ int main(int argc, char * argv[])
   reorder->SetInput(reader->GetOutput());
   reorder->SetInputGeometry(geometryReader->GetOutputObject());
   reorder->SetInputSignal(signal);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( reorder->Update() )
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(reorder->Update())
 
   // Release the memory holding the stack of original projections
   reader->GetOutput()->ReleaseData();
@@ -108,35 +107,37 @@ int main(int argc, char * argv[])
   // Compute the interpolation weights
   rtk::SignalToInterpolationWeights::Pointer signalToInterpolationWeights = rtk::SignalToInterpolationWeights::New();
   signalToInterpolationWeights->SetSignal(reorder->GetOutputSignal());
-  signalToInterpolationWeights->SetNumberOfReconstructedFrames(inputFilter->GetOutput()->GetLargestPossibleRegion().GetSize(3));
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( signalToInterpolationWeights->Update() )
+  signalToInterpolationWeights->SetNumberOfReconstructedFrames(
+    inputFilter->GetOutput()->GetLargestPossibleRegion().GetSize(3));
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(signalToInterpolationWeights->Update())
 
   // Set the forward and back projection filters to be used
-  using ConjugateGradientFilterType = rtk::FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>;
+  using ConjugateGradientFilterType =
+    rtk::FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>;
   ConjugateGradientFilterType::Pointer conjugategradient = ConjugateGradientFilterType::New();
   SetForwardProjectionFromGgo(args_info, conjugategradient.GetPointer());
   SetBackProjectionFromGgo(args_info, conjugategradient.GetPointer());
-  conjugategradient->SetInputVolumeSeries(inputFilter->GetOutput() );
-  conjugategradient->SetNumberOfIterations( args_info.niterations_arg );
+  conjugategradient->SetInputVolumeSeries(inputFilter->GetOutput());
+  conjugategradient->SetNumberOfIterations(args_info.niterations_arg);
   conjugategradient->SetCudaConjugateGradient(args_info.cudacg_flag);
   conjugategradient->SetDisableDisplacedDetectorFilter(args_info.nodisplaced_flag);
 
   // Set the newly ordered arguments
-  conjugategradient->SetInputProjectionStack( reorder->GetOutput() );
-  conjugategradient->SetGeometry( reorder->GetOutputGeometry() );
+  conjugategradient->SetInputProjectionStack(reorder->GetOutput());
+  conjugategradient->SetGeometry(reorder->GetOutputGeometry());
   conjugategradient->SetWeights(signalToInterpolationWeights->GetOutput());
   conjugategradient->SetSignal(reorder->GetOutputSignal());
 
   REPORT_ITERATIONS(conjugategradient, ConjugateGradientFilterType, VolumeSeriesType);
 
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( conjugategradient->Update() )
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(conjugategradient->Update())
 
   // Write
-  using WriterType = itk::ImageFileWriter< VolumeSeriesType >;
+  using WriterType = itk::ImageFileWriter<VolumeSeriesType>;
   WriterType::Pointer writer = WriterType::New();
-  writer->SetFileName( args_info.output_arg );
-  writer->SetInput( conjugategradient->GetOutput() );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() )
+  writer->SetFileName(args_info.output_arg);
+  writer->SetInput(conjugategradient->GetOutput());
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(writer->Update())
 
   return EXIT_SUCCESS;
 }

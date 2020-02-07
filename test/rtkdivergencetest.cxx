@@ -25,28 +25,29 @@
  * \author Cyril Mory
  */
 
-int main(int, char** )
+int
+main(int, char **)
 {
   constexpr unsigned int Dimension = 3;
   using OutputPixelType = double;
 
   using CovVecType = itk::CovariantVector<OutputPixelType, 2>;
 #ifdef USE_CUDA
-  using ImageType = itk::CudaImage< OutputPixelType, Dimension >;
+  using ImageType = itk::CudaImage<OutputPixelType, Dimension>;
   using GradientImageType = itk::CudaImage<CovVecType, Dimension>;
 #else
-  using ImageType = itk::Image< OutputPixelType, Dimension >;
+  using ImageType = itk::Image<OutputPixelType, Dimension>;
   using GradientImageType = itk::Image<CovVecType, Dimension>;
 #endif
 
   // Random image sources
-  using RandomImageSourceType = itk::RandomImageSource< ImageType >;
-  RandomImageSourceType::Pointer randomVolumeSource1  = RandomImageSourceType::New();
-  RandomImageSourceType::Pointer randomVolumeSource2  = RandomImageSourceType::New();
+  using RandomImageSourceType = itk::RandomImageSource<ImageType>;
+  RandomImageSourceType::Pointer randomVolumeSource1 = RandomImageSourceType::New();
+  RandomImageSourceType::Pointer randomVolumeSource2 = RandomImageSourceType::New();
 
   // Image meta data
-  RandomImageSourceType::PointType origin;
-  RandomImageSourceType::SizeType size;
+  RandomImageSourceType::PointType   origin;
+  RandomImageSourceType::SizeType    size;
   RandomImageSourceType::SpacingType spacing;
 
   // Volume metadata
@@ -68,21 +69,21 @@ int main(int, char** )
   spacing[1] = 4.;
   spacing[2] = 4.;
 #endif
-  randomVolumeSource1->SetOrigin( origin );
-  randomVolumeSource1->SetSpacing( spacing );
-  randomVolumeSource1->SetSize( size );
-  randomVolumeSource1->SetMin( -7. );
-  randomVolumeSource1->SetMax( 1. );
+  randomVolumeSource1->SetOrigin(origin);
+  randomVolumeSource1->SetSpacing(spacing);
+  randomVolumeSource1->SetSize(size);
+  randomVolumeSource1->SetMin(-7.);
+  randomVolumeSource1->SetMax(1.);
 
-  randomVolumeSource2->SetOrigin( origin );
-  randomVolumeSource2->SetSpacing( spacing );
-  randomVolumeSource2->SetSize( size );
-  randomVolumeSource2->SetMin( -3. );
-  randomVolumeSource2->SetMax( 2. );
+  randomVolumeSource2->SetOrigin(origin);
+  randomVolumeSource2->SetSpacing(spacing);
+  randomVolumeSource2->SetSize(size);
+  randomVolumeSource2->SetMin(-3.);
+  randomVolumeSource2->SetMax(2.);
 
   // Update all sources
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( randomVolumeSource1->Update() );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( randomVolumeSource2->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(randomVolumeSource1->Update());
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(randomVolumeSource2->Update());
 
   // Set the dimensions along which gradient and divergence
   // should be computed
@@ -92,7 +93,8 @@ int main(int, char** )
   computeGradientAlongDim[2] = true;
 
   // Compute the gradient of both volumes
-  using GradientFilterType = rtk::ForwardDifferenceGradientImageFilter<ImageType, OutputPixelType, OutputPixelType, GradientImageType>;
+  using GradientFilterType =
+    rtk::ForwardDifferenceGradientImageFilter<ImageType, OutputPixelType, OutputPixelType, GradientImageType>;
   GradientFilterType::Pointer grad1 = GradientFilterType::New();
   grad1->SetInput(randomVolumeSource1->GetOutput());
   grad1->SetDimensionsProcessed(computeGradientAlongDim);
@@ -102,8 +104,7 @@ int main(int, char** )
   grad2->SetDimensionsProcessed(computeGradientAlongDim);
 
   // Now compute MINUS the divergence of grad2
-  using DivergenceFilterType = rtk::BackwardDifferenceDivergenceImageFilter
-      <GradientImageType, ImageType>;
+  using DivergenceFilterType = rtk::BackwardDifferenceDivergenceImageFilter<GradientImageType, ImageType>;
   DivergenceFilterType::Pointer div = DivergenceFilterType::New();
   div->SetInput(grad2->GetOutput());
   div->SetDimensionsProcessed(computeGradientAlongDim);
@@ -113,14 +114,11 @@ int main(int, char** )
   multiply->SetInput1(div->GetOutput());
   multiply->SetConstant2(-1);
 
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( multiply->Update() );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( grad1->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(multiply->Update());
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(grad1->Update());
 
-  CheckScalarProducts<GradientImageType, ImageType>
-      (grad1->GetOutput(),
-      grad2->GetOutput(),
-      randomVolumeSource1->GetOutput(),
-      multiply->GetOutput());
+  CheckScalarProducts<GradientImageType, ImageType>(
+    grad1->GetOutput(), grad2->GetOutput(), randomVolumeSource1->GetOutput(), multiply->GetOutput());
 
   std::cout << "\n\nTest PASSED! " << std::endl;
 

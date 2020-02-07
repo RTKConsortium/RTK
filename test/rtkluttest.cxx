@@ -16,7 +16,8 @@
  * \author Simon Rit
  */
 
-int main(int argc, char*argv[])
+int
+main(int argc, char * argv[])
 {
   if (argc < 2)
   {
@@ -26,65 +27,65 @@ int main(int argc, char*argv[])
   }
 
   // Elekta projections reader
-  using ShortImageType = itk::Image< unsigned short, 3 >;
-  using ReaderType = rtk::ProjectionsReader< ShortImageType >;
-  ReaderType::Pointer r = ReaderType::New();
+  using ShortImageType = itk::Image<unsigned short, 3>;
+  using ReaderType = rtk::ProjectionsReader<ShortImageType>;
+  ReaderType::Pointer      r = ReaderType::New();
   std::vector<std::string> fileNames;
-  fileNames.emplace_back(argv[1] );
-  r->SetFileNames( fileNames );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( r->Update() );
+  fileNames.emplace_back(argv[1]);
+  r->SetFileNames(fileNames);
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(r->Update());
 
   /***** Float *****/
-  using FloatImageType = itk::Image <float, 3>;
+  using FloatImageType = itk::Image<float, 3>;
   using ShortFloatLUTType = rtk::ElektaSynergyLookupTableImageFilter<FloatImageType>;
   ShortFloatLUTType::Pointer sflut = ShortFloatLUTType::New();
-  sflut->SetInput( r->GetOutput() );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( sflut->Update() );
+  sflut->SetInput(r->GetOutput());
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(sflut->Update());
 
   using FloatCastType = itk::CastImageFilter<ShortImageType, FloatImageType>;
   FloatCastType::Pointer fCast = FloatCastType::New();
-  fCast->SetInput( r->GetOutput() );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( fCast->Update() );
+  fCast->SetInput(r->GetOutput());
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(fCast->Update());
 
-  using FloatLUTType = itk::Image <float, 1>;
+  using FloatLUTType = itk::Image<float, 1>;
   using FloatLUTCastType = itk::CastImageFilter<ShortFloatLUTType::LookupTableType, FloatLUTType>;
   FloatLUTCastType::Pointer flCast = FloatLUTCastType::New();
-  flCast->SetInput( sflut->GetLookupTable() );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( flCast->Update() );
+  flCast->SetInput(sflut->GetLookupTable());
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(flCast->Update());
 
   using FloatLUTTypea = rtk::LookupTableImageFilter<FloatImageType, FloatImageType>;
   FloatLUTTypea::Pointer flut = FloatLUTTypea::New();
-  flut->SetInput( fCast->GetOutput() );
-  flut->SetLookupTable( flCast->GetOutput() );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( flut->Update() );
+  flut->SetInput(fCast->GetOutput());
+  flut->SetLookupTable(flCast->GetOutput());
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(flut->Update());
 
-  CheckImageQuality< FloatImageType >(flut->GetOutput(), sflut->GetOutput(), 1.6e-7, 100, 2.0);
+  CheckImageQuality<FloatImageType>(flut->GetOutput(), sflut->GetOutput(), 1.6e-7, 100, 2.0);
 
   /***** Double *****/
-  using DoubleImageType = itk::Image <float, 3>;
+  using DoubleImageType = itk::Image<float, 3>;
   using ShortDoubleLUTType = rtk::ElektaSynergyLookupTableImageFilter<DoubleImageType>;
   ShortDoubleLUTType::Pointer sdlut = ShortDoubleLUTType::New();
-  sdlut->SetInput( r->GetOutput() );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( sdlut->Update() );
+  sdlut->SetInput(r->GetOutput());
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(sdlut->Update());
 
   using DoubleCastType = itk::CastImageFilter<ShortImageType, DoubleImageType>;
   DoubleCastType::Pointer dCast = DoubleCastType::New();
-  dCast->SetInput( r->GetOutput() );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( dCast->Update() );
+  dCast->SetInput(r->GetOutput());
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(dCast->Update());
 
-  using DoubleLUTType = itk::Image <float, 1>;
+  using DoubleLUTType = itk::Image<float, 1>;
   using DoubleLUTCastType = itk::CastImageFilter<ShortDoubleLUTType::LookupTableType, DoubleLUTType>;
   DoubleLUTCastType::Pointer dlCast = DoubleLUTCastType::New();
-  dlCast->SetInput( sdlut->GetLookupTable() );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( dlCast->Update() );
+  dlCast->SetInput(sdlut->GetLookupTable());
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(dlCast->Update());
 
   using DoubleLUTTypea = rtk::LookupTableImageFilter<DoubleImageType, DoubleImageType>;
   DoubleLUTTypea::Pointer dlut = DoubleLUTTypea::New();
-  dlut->SetInput( dCast->GetOutput() );
-  dlut->SetLookupTable( dlCast->GetOutput() );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( dlut->Update() );
+  dlut->SetInput(dCast->GetOutput());
+  dlut->SetLookupTable(dlCast->GetOutput());
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(dlut->Update());
 
-  CheckImageQuality< DoubleImageType >(dlut->GetOutput(), sdlut->GetOutput(), 1.6e-7, 100, 2.0);
+  CheckImageQuality<DoubleImageType>(dlut->GetOutput(), sdlut->GetOutput(), 1.6e-7, 100, 2.0);
 
   // If all succeed
   std::cout << "\n\nTest PASSED! " << std::endl;

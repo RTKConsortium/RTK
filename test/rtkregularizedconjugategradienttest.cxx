@@ -7,7 +7,7 @@
 #include <itkAdditiveGaussianNoiseImageFilter.h>
 
 #ifdef USE_CUDA
-  #include "itkCudaImage.h"
+#  include "itkCudaImage.h"
 #endif
 
 /**
@@ -23,15 +23,16 @@
  * \author Cyril Mory
  */
 
-int main(int, char** )
+int
+main(int, char **)
 {
   using OutputPixelType = float;
   constexpr unsigned int Dimension = 3;
 
 #ifdef USE_CUDA
-  using OutputImageType = itk::CudaImage< OutputPixelType, Dimension >;
+  using OutputImageType = itk::CudaImage<OutputPixelType, Dimension>;
 #else
-  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
+  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
 #endif
 
 #if FAST_TESTS_NO_CHECKS
@@ -41,12 +42,12 @@ int main(int, char** )
 #endif
 
   // Constant image sources
-  using ConstantImageSourceType = rtk::ConstantImageSource< OutputImageType >;
-  ConstantImageSourceType::PointType origin;
-  ConstantImageSourceType::SizeType size;
+  using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
+  ConstantImageSourceType::PointType   origin;
+  ConstantImageSourceType::SizeType    size;
   ConstantImageSourceType::SpacingType spacing;
 
-  ConstantImageSourceType::Pointer tomographySource  = ConstantImageSourceType::New();
+  ConstantImageSourceType::Pointer tomographySource = ConstantImageSourceType::New();
   origin[0] = -127.;
   origin[1] = -127.;
   origin[2] = -127.;
@@ -65,10 +66,10 @@ int main(int, char** )
   spacing[1] = 4.;
   spacing[2] = 4.;
 #endif
-  tomographySource->SetOrigin( origin );
-  tomographySource->SetSpacing( spacing );
-  tomographySource->SetSize( size );
-  tomographySource->SetConstant( 0. );
+  tomographySource->SetOrigin(origin);
+  tomographySource->SetSpacing(spacing);
+  tomographySource->SetSize(size);
+  tomographySource->SetConstant(0.);
 
   ConstantImageSourceType::Pointer projectionsSource = ConstantImageSourceType::New();
   origin[0] = -255.;
@@ -89,16 +90,16 @@ int main(int, char** )
   spacing[1] = 8.;
   spacing[2] = 8.;
 #endif
-  projectionsSource->SetOrigin( origin );
-  projectionsSource->SetSpacing( spacing );
-  projectionsSource->SetSize( size );
-  projectionsSource->SetConstant( 0. );
+  projectionsSource->SetOrigin(origin);
+  projectionsSource->SetSpacing(spacing);
+  projectionsSource->SetSize(size);
+  projectionsSource->SetConstant(0.);
 
   // Geometry object
   using GeometryType = rtk::ThreeDCircularProjectionGeometry;
   GeometryType::Pointer geometry = GeometryType::New();
-  for(unsigned int noProj=0; noProj<NumberOfProjectionImages; noProj++)
-    geometry->AddProjection(600., 1200., noProj*360./NumberOfProjectionImages);
+  for (unsigned int noProj = 0; noProj < NumberOfProjectionImages; noProj++)
+    geometry->AddProjection(600., 1200., noProj * 360. / NumberOfProjectionImages);
 
   // Create ellipsoid PROJECTIONS
   using REIType = rtk::RayEllipsoidIntersectionImageFilter<OutputImageType, OutputImageType>;
@@ -113,17 +114,17 @@ int main(int, char** )
   rei->SetCenter(center);
   rei->SetAxis(semiprincipalaxis);
 
-  rei->SetInput( projectionsSource->GetOutput() );
-  rei->SetGeometry( geometry );
+  rei->SetInput(projectionsSource->GetOutput());
+  rei->SetGeometry(geometry);
 
-  //Update
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( rei->Update() );
+  // Update
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(rei->Update());
 
   // Create REFERENCE object (3D ellipsoid).
   using DEType = rtk::DrawEllipsoidImageFilter<OutputImageType, OutputImageType>;
   DEType::Pointer dsl = DEType::New();
-  dsl->SetInput( tomographySource->GetOutput() );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( dsl->Update() )
+  dsl->SetInput(tomographySource->GetOutput());
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(dsl->Update())
 
   // Create the weights map
   ConstantImageSourceType::Pointer uniformWeightsSource = ConstantImageSourceType::New();
@@ -133,16 +134,16 @@ int main(int, char** )
   // Regularized CG reconstruction filter
   using RegularizedCGType = rtk::RegularizedConjugateGradientConeBeamReconstructionFilter<OutputImageType>;
   RegularizedCGType::Pointer regularizedConjugateGradient = RegularizedCGType::New();
-  regularizedConjugateGradient->SetInputVolume(tomographySource->GetOutput() );
+  regularizedConjugateGradient->SetInputVolume(tomographySource->GetOutput());
   regularizedConjugateGradient->SetInputProjectionStack(rei->GetOutput());
-  regularizedConjugateGradient->SetInputWeights( uniformWeightsSource->GetOutput());
+  regularizedConjugateGradient->SetInputWeights(uniformWeightsSource->GetOutput());
   regularizedConjugateGradient->SetPreconditioned(false);
-  regularizedConjugateGradient->SetGeometry( geometry );
-  regularizedConjugateGradient->SetMainLoop_iterations( 2 );
+  regularizedConjugateGradient->SetGeometry(geometry);
+  regularizedConjugateGradient->SetMainLoop_iterations(2);
   regularizedConjugateGradient->SetCudaConjugateGradient(false);
 
   regularizedConjugateGradient->SetGammaTV(1);
-  regularizedConjugateGradient->SetTV_iterations( 3 );
+  regularizedConjugateGradient->SetTV_iterations(3);
 
   regularizedConjugateGradient->SetSoftThresholdWavelets(0.1);
   regularizedConjugateGradient->SetOrder(3);
@@ -158,7 +159,7 @@ int main(int, char** )
   regularizedConjugateGradient->SetPerformTVSpatialDenoising(true);
   regularizedConjugateGradient->SetPerformWaveletsSpatialDenoising(false);
 
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( regularizedConjugateGradient->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(regularizedConjugateGradient->Update());
 
   CheckImageQuality<OutputImageType>(regularizedConjugateGradient->GetOutput(), dsl->GetOutput(), 0.05, 23, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
@@ -169,13 +170,15 @@ int main(int, char** )
   regularizedConjugateGradient->SetPerformTVSpatialDenoising(false);
   regularizedConjugateGradient->SetPerformWaveletsSpatialDenoising(true);
 
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( regularizedConjugateGradient->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(regularizedConjugateGradient->Update());
 
   CheckImageQuality<OutputImageType>(regularizedConjugateGradient->GetOutput(), dsl->GetOutput(), 0.05, 23, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 
 #ifdef USE_CUDA
-  std::cout << "\n\n****** Case 3: CUDA Voxel-Based Backprojector and CUDA Forward projector, all regularization steps on ******" << std::endl;
+  std::cout << "\n\n****** Case 3: CUDA Voxel-Based Backprojector and CUDA Forward projector, all regularization steps "
+               "on ******"
+            << std::endl;
 
   regularizedConjugateGradient->SetForwardProjectionFilter(RegularizedCGType::FP_CUDARAYCAST);
   regularizedConjugateGradient->SetBackProjectionFilter(RegularizedCGType::BP_CUDAVOXELBASED);
@@ -184,7 +187,7 @@ int main(int, char** )
   regularizedConjugateGradient->SetPerformTVSpatialDenoising(true);
   regularizedConjugateGradient->SetPerformWaveletsSpatialDenoising(true);
 
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( regularizedConjugateGradient->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(regularizedConjugateGradient->Update());
 
   CheckImageQuality<OutputImageType>(regularizedConjugateGradient->GetOutput(), dsl->GetOutput(), 0.05, 23, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
@@ -211,8 +214,8 @@ int main(int, char** )
   regularizedConjugateGradient->SetPerformSoftThresholdOnImage(true);
   regularizedConjugateGradient->SetSoftThresholdOnImage(0.01);
 
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( regularizedConjugateGradient->Update() );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( dsl->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(regularizedConjugateGradient->Update());
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(dsl->Update());
 
   CheckImageQuality<OutputImageType>(regularizedConjugateGradient->GetOutput(), dsl->GetOutput(), 0.004, 47, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;

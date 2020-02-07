@@ -23,7 +23,8 @@
 #include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>
 
-int main(int argc, char * argv[])
+int
+main(int argc, char * argv[])
 {
   GGO(rtktutorialapplication, args_info);
 
@@ -71,27 +72,27 @@ int main(int argc, char * argv[])
   using OutputPixelType = float;
   constexpr unsigned int Dimension = 3;
 
-  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
+  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
 
   // Read the input volume
-  using InputReaderType = itk::ImageFileReader<  OutputImageType >;
+  using InputReaderType = itk::ImageFileReader<OutputImageType>;
   InputReaderType::Pointer inputReader = InputReaderType::New();
-  inputReader->SetFileName( args_info.input_arg );
+  inputReader->SetFileName(args_info.input_arg);
 
   // Create the Add filter
   using AddFilterType = itk::AddImageFilter<OutputImageType>;
   AddFilterType::Pointer add = AddFilterType::New();
   add->SetInput1(inputReader->GetOutput());
-  add->SetConstant2( args_info.constant_arg );
+  add->SetConstant2(args_info.constant_arg);
 
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( add->Update() )
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(add->Update())
 
   // Write
-  using WriterType = itk::ImageFileWriter< OutputImageType >;
+  using WriterType = itk::ImageFileWriter<OutputImageType>;
   WriterType::Pointer writer = WriterType::New();
-  writer->SetFileName( args_info.output_arg );
-  writer->SetInput( add->GetOutput() );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() )
+  writer->SetFileName(args_info.output_arg);
+  writer->SetInput(add->GetOutput());
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(writer->Update())
 
   return EXIT_SUCCESS;
 }

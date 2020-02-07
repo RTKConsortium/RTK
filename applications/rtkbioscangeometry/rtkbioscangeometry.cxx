@@ -21,20 +21,22 @@
 #include "rtkBioscanGeometryReader.h"
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 
-int main(int argc, char * argv[])
+int
+main(int argc, char * argv[])
 {
   GGO(rtkbioscangeometry, args_info);
 
   // Create geometry reader
   rtk::BioscanGeometryReader::Pointer bioscanReader = rtk::BioscanGeometryReader::New();
-  bioscanReader->SetProjectionsFileNames( rtk::GetProjectionsFileNamesFromGgo(args_info) );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( bioscanReader->UpdateOutputData() )
+  bioscanReader->SetProjectionsFileNames(rtk::GetProjectionsFileNamesFromGgo(args_info));
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(bioscanReader->UpdateOutputData())
 
   // Write
-  rtk::ThreeDCircularProjectionGeometryXMLFileWriter::Pointer xmlWriter = rtk::ThreeDCircularProjectionGeometryXMLFileWriter::New();
+  rtk::ThreeDCircularProjectionGeometryXMLFileWriter::Pointer xmlWriter =
+    rtk::ThreeDCircularProjectionGeometryXMLFileWriter::New();
   xmlWriter->SetFilename(args_info.output_arg);
-  xmlWriter->SetObject( const_cast<rtk::ThreeDCircularProjectionGeometry *>(bioscanReader->GetGeometry()) );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( xmlWriter->WriteFile() )
+  xmlWriter->SetObject(const_cast<rtk::ThreeDCircularProjectionGeometry *>(bioscanReader->GetGeometry()));
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(xmlWriter->WriteFile())
 
   return EXIT_SUCCESS;
 }

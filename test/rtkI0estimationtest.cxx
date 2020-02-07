@@ -11,7 +11,8 @@
  * \author Sebastien Brousmiche
  */
 
-int main(int, char** )
+int
+main(int, char **)
 {
   constexpr unsigned int Dimension = 3;
   using ImageType = itk::Image<unsigned short, Dimension>;
@@ -30,7 +31,7 @@ int main(int, char** )
   region.SetIndex(start);
   region.SetSize(size);
 
-  using RandomImageSourceType = itk::RandomImageSource< ImageType >;
+  using RandomImageSourceType = itk::RandomImageSource<ImageType>;
   RandomImageSourceType::Pointer randomSource = RandomImageSourceType::New();
   randomSource->SetSize(size);
 

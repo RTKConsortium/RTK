@@ -6,7 +6,7 @@
 #include "rtkPhaseGatingImageFilter.h"
 
 #ifdef USE_CUDA
-  #include "itkCudaImage.h"
+#  include "itkCudaImage.h"
 #endif
 
 /**
@@ -22,7 +22,8 @@
  * \author Cyril Mory
  */
 
-int main(int argc, char*argv[])
+int
+main(int argc, char * argv[])
 {
   if (argc < 3)
   {
@@ -35,13 +36,11 @@ int main(int argc, char*argv[])
   constexpr unsigned int Dimension = 3;
 
 #ifdef USE_CUDA
-  using OutputImageType = itk::CudaImage< OutputPixelType, Dimension >;
-  using GradientOutputImageType = itk::CudaImage< itk::CovariantVector
-      < OutputPixelType, Dimension >, Dimension >;
+  using OutputImageType = itk::CudaImage<OutputPixelType, Dimension>;
+  using GradientOutputImageType = itk::CudaImage<itk::CovariantVector<OutputPixelType, Dimension>, Dimension>;
 #else
-  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
-  using GradientOutputImageType = itk::Image< itk::CovariantVector
-      < OutputPixelType, Dimension >, Dimension >;
+  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
+  using GradientOutputImageType = itk::Image<itk::CovariantVector<OutputPixelType, Dimension>, Dimension>;
 #endif
 
 #if FAST_TESTS_NO_CHECKS
@@ -52,12 +51,12 @@ int main(int argc, char*argv[])
 
 
   // Constant image sources
-  using ConstantImageSourceType = rtk::ConstantImageSource< OutputImageType >;
-  ConstantImageSourceType::PointType origin;
-  ConstantImageSourceType::SizeType size;
+  using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
+  ConstantImageSourceType::PointType   origin;
+  ConstantImageSourceType::SizeType    size;
   ConstantImageSourceType::SpacingType spacing;
 
-  ConstantImageSourceType::Pointer tomographySource  = ConstantImageSourceType::New();
+  ConstantImageSourceType::Pointer tomographySource = ConstantImageSourceType::New();
   origin[0] = -127.;
   origin[1] = -127.;
   origin[2] = -127.;
@@ -76,10 +75,10 @@ int main(int argc, char*argv[])
   spacing[1] = 4.;
   spacing[2] = 4.;
 #endif
-  tomographySource->SetOrigin( origin );
-  tomographySource->SetSpacing( spacing );
-  tomographySource->SetSize( size );
-  tomographySource->SetConstant( 0. );
+  tomographySource->SetOrigin(origin);
+  tomographySource->SetSpacing(spacing);
+  tomographySource->SetSize(size);
+  tomographySource->SetConstant(0.);
 
   ConstantImageSourceType::Pointer projectionsSource = ConstantImageSourceType::New();
   origin[0] = -255.;
@@ -100,16 +99,16 @@ int main(int argc, char*argv[])
   spacing[1] = 8.;
   spacing[2] = 8.;
 #endif
-  projectionsSource->SetOrigin( origin );
-  projectionsSource->SetSpacing( spacing );
-  projectionsSource->SetSize( size );
-  projectionsSource->SetConstant( 0. );
+  projectionsSource->SetOrigin(origin);
+  projectionsSource->SetSpacing(spacing);
+  projectionsSource->SetSize(size);
+  projectionsSource->SetConstant(0.);
 
   // Geometry object
   using GeometryType = rtk::ThreeDCircularProjectionGeometry;
   GeometryType::Pointer geometry = GeometryType::New();
-  for(unsigned int noProj=0; noProj<NumberOfProjectionImages; noProj++)
-    geometry->AddProjection(600., 1200., noProj*360./NumberOfProjectionImages);
+  for (unsigned int noProj = 0; noProj < NumberOfProjectionImages; noProj++)
+    geometry->AddProjection(600., 1200., noProj * 360. / NumberOfProjectionImages);
 
   // Create ellipsoid PROJECTIONS
   using REIType = rtk::RayEllipsoidIntersectionImageFilter<OutputImageType, OutputImageType>;
@@ -124,29 +123,29 @@ int main(int argc, char*argv[])
   rei->SetCenter(center);
   rei->SetAxis(semiprincipalaxis);
 
-  rei->SetInput( projectionsSource->GetOutput() );
-  rei->SetGeometry( geometry );
+  rei->SetInput(projectionsSource->GetOutput());
+  rei->SetGeometry(geometry);
 
-  //Update
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( rei->Update() );
+  // Update
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(rei->Update());
 
   // Create REFERENCE object (3D ellipsoid).
   using DEType = rtk::DrawEllipsoidImageFilter<OutputImageType, OutputImageType>;
   DEType::Pointer dsl = DEType::New();
-  dsl->SetInput( tomographySource->GetOutput() );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( dsl->Update() )
+  dsl->SetInput(tomographySource->GetOutput());
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(dsl->Update())
 
   // ADMMTotalVariation reconstruction filtering
-  using ADMMTotalVariationType = rtk::ADMMTotalVariationConeBeamReconstructionFilter
-    <OutputImageType, GradientOutputImageType>;
+  using ADMMTotalVariationType =
+    rtk::ADMMTotalVariationConeBeamReconstructionFilter<OutputImageType, GradientOutputImageType>;
   ADMMTotalVariationType::Pointer admmtotalvariation = ADMMTotalVariationType::New();
-  admmtotalvariation->SetInput( tomographySource->GetOutput() );
+  admmtotalvariation->SetInput(tomographySource->GetOutput());
   admmtotalvariation->SetInput(1, rei->GetOutput());
-  admmtotalvariation->SetGeometry( geometry );
-  admmtotalvariation->SetAlpha( 100 );
-  admmtotalvariation->SetBeta( 1000 );
-  admmtotalvariation->SetAL_iterations( 3 );
-  admmtotalvariation->SetCG_iterations( 2 );
+  admmtotalvariation->SetGeometry(geometry);
+  admmtotalvariation->SetAlpha(100);
+  admmtotalvariation->SetBeta(1000);
+  admmtotalvariation->SetAL_iterations(3);
+  admmtotalvariation->SetCG_iterations(2);
 
   // In all cases except CUDA, use the Joseph forward projector
   admmtotalvariation->SetForwardProjectionFilter(ADMMTotalVariationType::FP_JOSEPH);
@@ -154,7 +153,7 @@ int main(int argc, char*argv[])
   std::cout << "\n\n****** Case 1: Voxel-Based Backprojector ******" << std::endl;
 
   admmtotalvariation->SetBackProjectionFilter(ADMMTotalVariationType::BP_VOXELBASED);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( admmtotalvariation->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(admmtotalvariation->Update());
 
   CheckImageQuality<OutputImageType>(admmtotalvariation->GetOutput(), dsl->GetOutput(), 0.05, 23, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
@@ -162,7 +161,7 @@ int main(int argc, char*argv[])
   std::cout << "\n\n****** Case 2: Joseph Backprojector ******" << std::endl;
 
   admmtotalvariation->SetBackProjectionFilter(ADMMTotalVariationType::BP_JOSEPH);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( admmtotalvariation->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(admmtotalvariation->Update());
 
   CheckImageQuality<OutputImageType>(admmtotalvariation->GetOutput(), dsl->GetOutput(), 0.05, 23, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
@@ -170,9 +169,9 @@ int main(int argc, char*argv[])
 #ifdef USE_CUDA
   std::cout << "\n\n****** Case 3: CUDA Voxel-Based Backprojector and CUDA Forward projector ******" << std::endl;
 
-  admmtotalvariation->SetForwardProjectionFilter( ADMMTotalVariationType::FP_CUDARAYCAST );
-  admmtotalvariation->SetBackProjectionFilter( ADMMTotalVariationType::BP_CUDAVOXELBASED );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( admmtotalvariation->Update() );
+  admmtotalvariation->SetForwardProjectionFilter(ADMMTotalVariationType::FP_CUDARAYCAST);
+  admmtotalvariation->SetBackProjectionFilter(ADMMTotalVariationType::BP_CUDAVOXELBASED);
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(admmtotalvariation->Update());
 
   CheckImageQuality<OutputImageType>(admmtotalvariation->GetOutput(), dsl->GetOutput(), 0.05, 23, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
@@ -199,10 +198,10 @@ int main(int argc, char*argv[])
   phaseGating->Update();
 
   admmtotalvariation->SetInput(1, phaseGating->GetOutput());
-  admmtotalvariation->SetGeometry( phaseGating->GetOutputGeometry() );
-  admmtotalvariation->SetGatingWeights( phaseGating->GetGatingWeightsOnSelectedProjections() );
+  admmtotalvariation->SetGeometry(phaseGating->GetOutputGeometry());
+  admmtotalvariation->SetGatingWeights(phaseGating->GetGatingWeightsOnSelectedProjections());
 
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( admmtotalvariation->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(admmtotalvariation->Update());
 
   CheckImageQuality<OutputImageType>(admmtotalvariation->GetOutput(), dsl->GetOutput(), 0.05, 23, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;

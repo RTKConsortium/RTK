@@ -21,9 +21,9 @@
 #include "rtkConfiguration.h"
 
 #ifdef RTK_USE_CUDA
-  #include "rtkCudaTotalVariationDenoisingBPDQImageFilter.h"
+#  include "rtkCudaTotalVariationDenoisingBPDQImageFilter.h"
 #else
-  #include "rtkTotalVariationDenoisingBPDQImageFilter.h"
+#  include "rtkTotalVariationDenoisingBPDQImageFilter.h"
 #endif
 
 #include "rtkTotalVariationImageFilter.h"
@@ -31,7 +31,8 @@
 #include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>
 
-int main(int argc, char * argv[])
+int
+main(int argc, char * argv[])
 {
   GGO(rtktotalvariationdenoising, args_info);
 
@@ -39,20 +40,18 @@ int main(int argc, char * argv[])
   constexpr unsigned int Dimension = 3; // Number of dimensions of the input image
 
 #ifdef RTK_USE_CUDA
-  using OutputImageType = itk::CudaImage< OutputPixelType, Dimension >;
+  using OutputImageType = itk::CudaImage<OutputPixelType, Dimension>;
   using TVDenoisingFilterType = rtk::CudaTotalVariationDenoisingBPDQImageFilter;
 #else
-  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
-  using GradientOutputImageType = itk::Image< itk::CovariantVector
-      < OutputPixelType, Dimension >, Dimension >;
-  using TVDenoisingFilterType = rtk::TotalVariationDenoisingBPDQImageFilter
-      <OutputImageType, GradientOutputImageType>;
+  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
+  using GradientOutputImageType = itk::Image<itk::CovariantVector<OutputPixelType, Dimension>, Dimension>;
+  using TVDenoisingFilterType = rtk::TotalVariationDenoisingBPDQImageFilter<OutputImageType, GradientOutputImageType>;
 #endif
 
   // Read input
   using ReaderType = itk::ImageFileReader<OutputImageType>;
   ReaderType::Pointer reader = ReaderType::New();
-  reader->SetFileName( args_info.input_arg );
+  reader->SetFileName(args_info.input_arg);
   reader->Update();
 
   // Compute total variation before denoising
@@ -60,10 +59,10 @@ int main(int argc, char * argv[])
   TVFilterType::Pointer tv = TVFilterType::New();
   tv->SetInput(reader->GetOutput());
   if (args_info.verbose_flag)
-    {
+  {
     tv->Update();
     std::cout << "TV before denoising = " << tv->GetTotalVariation() << std::endl;
-    }
+  }
 
   // Apply total variation denoising
   TVDenoisingFilterType::Pointer tvdenoising = TVDenoisingFilterType::New();
@@ -74,18 +73,18 @@ int main(int argc, char * argv[])
   // Write
   using WriterType = itk::ImageFileWriter<OutputImageType>;
   WriterType::Pointer writer = WriterType::New();
-  writer->SetFileName( args_info.output_arg );
+  writer->SetFileName(args_info.output_arg);
   writer->SetInput(tvdenoising->GetOutput());
 
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() )
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(writer->Update())
 
   // Compute total variation after denoising
   if (args_info.verbose_flag)
-    {
+  {
     tv->SetInput(tvdenoising->GetOutput());
     tv->Update();
     std::cout << "TV after denoising = " << tv->GetTotalVariation() << std::endl;
-    }
+  }
 
   return EXIT_SUCCESS;
 }

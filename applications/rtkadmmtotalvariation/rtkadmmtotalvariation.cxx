@@ -29,7 +29,8 @@
 #include "rtkADMMTotalVariationConeBeamReconstructionFilter.h"
 #include "rtkPhaseGatingImageFilter.h"
 
-int main(int argc, char * argv[])
+int
+main(int argc, char * argv[])
 {
   GGO(rtkadmmtotalvariation, args_info);
 
@@ -37,13 +38,11 @@ int main(int argc, char * argv[])
   constexpr unsigned int Dimension = 3;
 
 #ifdef RTK_USE_CUDA
-  using OutputImageType = itk::CudaImage< OutputPixelType, Dimension >;
-  using GradientOutputImageType = itk::CudaImage< itk::CovariantVector
-      < OutputPixelType, Dimension >, Dimension >;
+  using OutputImageType = itk::CudaImage<OutputPixelType, Dimension>;
+  using GradientOutputImageType = itk::CudaImage<itk::CovariantVector<OutputPixelType, Dimension>, Dimension>;
 #else
-  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
-  using GradientOutputImageType = itk::Image< itk::CovariantVector
-      < OutputPixelType, Dimension >, Dimension >;
+  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
+  using GradientOutputImageType = itk::Image<itk::CovariantVector<OutputPixelType, Dimension>, Dimension>;
 #endif
 
   //////////////////////////////////////////////////////////////////////////////////////////
@@ -51,63 +50,61 @@ int main(int argc, char * argv[])
   //////////////////////////////////////////////////////////////////////////////////////////
 
   // Projections reader
-  using projectionsReaderType = rtk::ProjectionsReader< OutputImageType >;
+  using projectionsReaderType = rtk::ProjectionsReader<OutputImageType>;
   projectionsReaderType::Pointer projectionsReader = projectionsReaderType::New();
-  rtk::SetProjectionsReaderFromGgo<projectionsReaderType,
-      args_info_rtkadmmtotalvariation>(projectionsReader, args_info);
+  rtk::SetProjectionsReaderFromGgo<projectionsReaderType, args_info_rtkadmmtotalvariation>(projectionsReader,
+                                                                                           args_info);
 
   // Geometry
-  if(args_info.verbose_flag)
-      std::cout << "Reading geometry information from "
-                << args_info.geometry_arg
-                << "..."
-                << std::endl;
+  if (args_info.verbose_flag)
+    std::cout << "Reading geometry information from " << args_info.geometry_arg << "..." << std::endl;
   rtk::ThreeDCircularProjectionGeometryXMLFileReader::Pointer geometryReader;
   geometryReader = rtk::ThreeDCircularProjectionGeometryXMLFileReader::New();
   geometryReader->SetFilename(args_info.geometry_arg);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( geometryReader->GenerateOutputInformation() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(geometryReader->GenerateOutputInformation());
 
   // Phase gating weights reader
   using PhaseGatingFilterType = rtk::PhaseGatingImageFilter<OutputImageType>;
   PhaseGatingFilterType::Pointer phaseGating = PhaseGatingFilterType::New();
   if (args_info.phases_given)
-    {
+  {
     phaseGating->SetPhasesFileName(args_info.phases_arg);
     phaseGating->SetGatingWindowWidth(args_info.windowwidth_arg);
     phaseGating->SetGatingWindowCenter(args_info.windowcenter_arg);
     phaseGating->SetGatingWindowShape(args_info.windowshape_arg);
     phaseGating->SetInputProjectionStack(projectionsReader->GetOutput());
     phaseGating->SetInputGeometry(geometryReader->GetOutputObject());
-    TRY_AND_EXIT_ON_ITK_EXCEPTION( phaseGating->Update() )
-    }
+    TRY_AND_EXIT_ON_ITK_EXCEPTION(phaseGating->Update())
+  }
 
   // Create input: either an existing volume read from a file or a blank image
-  itk::ImageSource< OutputImageType >::Pointer inputFilter;
-  if(args_info.input_given)
-    {
+  itk::ImageSource<OutputImageType>::Pointer inputFilter;
+  if (args_info.input_given)
+  {
     // Read an existing image to initialize the volume
-    using InputReaderType = itk::ImageFileReader<  OutputImageType >;
+    using InputReaderType = itk::ImageFileReader<OutputImageType>;
     InputReaderType::Pointer inputReader = InputReaderType::New();
-    inputReader->SetFileName( args_info.input_arg );
+    inputReader->SetFileName(args_info.input_arg);
     inputFilter = inputReader;
-    }
+  }
   else
-    {
+  {
     // Create new empty volume
-    using ConstantImageSourceType = rtk::ConstantImageSource< OutputImageType >;
+    using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
     ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
-    rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkadmmtotalvariation>(constantImageSource, args_info);
+    rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkadmmtotalvariation>(constantImageSource,
+                                                                                                 args_info);
     inputFilter = constantImageSource;
-    }
+  }
 
   //////////////////////////////////////////////////////////////////////////////////////////
   // Setup the ADMM filter and run it
   //////////////////////////////////////////////////////////////////////////////////////////
 
   // Set the reconstruction filter
-  typedef rtk::ADMMTotalVariationConeBeamReconstructionFilter
-      <OutputImageType, GradientOutputImageType> ADMM_TV_FilterType;
-    ADMM_TV_FilterType::Pointer admmFilter = ADMM_TV_FilterType::New();
+  typedef rtk::ADMMTotalVariationConeBeamReconstructionFilter<OutputImageType, GradientOutputImageType>
+                              ADMM_TV_FilterType;
+  ADMM_TV_FilterType::Pointer admmFilter = ADMM_TV_FilterType::New();
 
   // Set the forward and back projection filters to be used inside admmFilter
   SetForwardProjectionFromGgo(args_info, admmFilter.GetPointer());
@@ -120,30 +117,30 @@ int main(int argc, char * argv[])
   admmFilter->SetBeta(args_info.beta_arg);
 
   // Set the inputs of the ADMM filter
-  admmFilter->SetInput(0, inputFilter->GetOutput() );
+  admmFilter->SetInput(0, inputFilter->GetOutput());
   if (args_info.phases_given)
-    {
+  {
     admmFilter->SetInput(1, phaseGating->GetOutput());
-    admmFilter->SetGeometry( phaseGating->GetOutputGeometry() );
-    admmFilter->SetGatingWeights( phaseGating->GetGatingWeightsOnSelectedProjections() );
-    }
+    admmFilter->SetGeometry(phaseGating->GetOutputGeometry());
+    admmFilter->SetGatingWeights(phaseGating->GetGatingWeightsOnSelectedProjections());
+  }
   else
-    {
-    admmFilter->SetInput(1, projectionsReader->GetOutput() );
-    admmFilter->SetGeometry( geometryReader->GetOutputObject() );
-    }
+  {
+    admmFilter->SetInput(1, projectionsReader->GetOutput());
+    admmFilter->SetGeometry(geometryReader->GetOutputObject());
+  }
   admmFilter->SetDisableDisplacedDetectorFilter(args_info.nodisplaced_flag);
 
   REPORT_ITERATIONS(admmFilter, ADMM_TV_FilterType, OutputImageType)
 
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( admmFilter->Update() )
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(admmFilter->Update())
 
   // Set writer and write the output
-  using WriterType = itk::ImageFileWriter<  OutputImageType >;
+  using WriterType = itk::ImageFileWriter<OutputImageType>;
   WriterType::Pointer writer = WriterType::New();
-  writer->SetFileName( args_info.output_arg );
-  writer->SetInput( admmFilter->GetOutput() );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() )
+  writer->SetFileName(args_info.output_arg);
+  writer->SetInput(admmFilter->GetOutput());
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(writer->Update())
 
   return EXIT_SUCCESS;
 }

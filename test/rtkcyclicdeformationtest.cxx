@@ -6,9 +6,9 @@
 #include "rtkConstantImageSource.h"
 
 #ifdef RTK_USE_CUDA
-  #include "rtkCudaCyclicDeformationImageFilter.h"
+#  include "rtkCudaCyclicDeformationImageFilter.h"
 #else
-  #include "rtkCyclicDeformationImageFilter.h"
+#  include "rtkCyclicDeformationImageFilter.h"
 #endif
 
 /**
@@ -25,20 +25,21 @@
  * \author Cyril Mory
  */
 
-int main(int, char** )
+int
+main(int, char **)
 {
   using OutputPixelType = itk::CovariantVector<float, 3>;
 
 #ifdef RTK_USE_CUDA
-  using DVFSequenceImageType = itk::CudaImage< OutputPixelType, 4 >;
-  using DVFImageType = itk::CudaImage< OutputPixelType, 3 >;
+  using DVFSequenceImageType = itk::CudaImage<OutputPixelType, 4>;
+  using DVFImageType = itk::CudaImage<OutputPixelType, 3>;
 #else
-  using DVFSequenceImageType = itk::Image< OutputPixelType, 4 >;
-  using DVFImageType = itk::Image< OutputPixelType, 3 >;
+  using DVFSequenceImageType = itk::Image<OutputPixelType, 4>;
+  using DVFImageType = itk::Image<OutputPixelType, 3>;
 #endif
 
-  DVFSequenceImageType::PointType fourDOrigin;
-  DVFSequenceImageType::SizeType fourDSize;
+  DVFSequenceImageType::PointType   fourDOrigin;
+  DVFSequenceImageType::SizeType    fourDSize;
   DVFSequenceImageType::SpacingType fourDSpacing;
 
   fourDOrigin[0] = -63.;
@@ -66,7 +67,7 @@ int main(int, char** )
 #endif
 
   // Create a vector field and its (very rough) inverse
-  using IteratorType = itk::ImageRegionIteratorWithIndex< DVFSequenceImageType >;
+  using IteratorType = itk::ImageRegionIteratorWithIndex<DVFSequenceImageType>;
 
   DVFSequenceImageType::Pointer deformationField = DVFSequenceImageType::New();
 
@@ -86,8 +87,8 @@ int main(int, char** )
   originMotion[2] = -63.;
   originMotion[3] = 0.;
   DVFSequenceImageType::RegionType regionMotion;
-  regionMotion.SetSize( sizeMotion );
-  regionMotion.SetIndex( startMotion );
+  regionMotion.SetSize(sizeMotion);
+  regionMotion.SetIndex(startMotion);
 
   DVFSequenceImageType::SpacingType spacingMotion;
   spacingMotion[0] = fourDSpacing[0];
@@ -95,40 +96,40 @@ int main(int, char** )
   spacingMotion[2] = fourDSpacing[2];
   spacingMotion[3] = fourDSpacing[3];
 
-  deformationField->SetRegions( regionMotion );
+  deformationField->SetRegions(regionMotion);
   deformationField->SetOrigin(originMotion);
   deformationField->SetSpacing(spacingMotion);
   deformationField->Allocate();
 
   // Vector Field initilization
   DVFImageType::PixelType vec;
-  IteratorType dvfIt( deformationField, deformationField->GetLargestPossibleRegion() );
+  IteratorType            dvfIt(deformationField, deformationField->GetLargestPossibleRegion());
 
   DVFSequenceImageType::OffsetType DVFCenter;
-  DVFSequenceImageType::IndexType toCenter;
+  DVFSequenceImageType::IndexType  toCenter;
   DVFCenter.Fill(0);
-  DVFCenter[0] = sizeMotion[0]/2;
-  DVFCenter[1] = sizeMotion[1]/2;
-  DVFCenter[2] = sizeMotion[2]/2;
+  DVFCenter[0] = sizeMotion[0] / 2;
+  DVFCenter[1] = sizeMotion[1] / 2;
+  DVFCenter[2] = sizeMotion[2] / 2;
   while (!dvfIt.IsAtEnd())
-    {
+  {
     vec.Fill(0.);
     toCenter = dvfIt.GetIndex() - DVFCenter;
 
     if (0.3 * toCenter[0] * toCenter[0] + toCenter[1] * toCenter[1] + toCenter[2] * toCenter[2] < 40)
-      {
-      if(dvfIt.GetIndex()[3]==0)
+    {
+      if (dvfIt.GetIndex()[3] == 0)
         vec[0] = -8.;
       else
         vec[0] = 8.;
-      }
+    }
     dvfIt.Set(vec);
 
     ++dvfIt;
-    }
+  }
 
   // Signal
-  std::string signalFileName = "signal_CyclicDeformation.txt";
+  std::string   signalFileName = "signal_CyclicDeformation.txt";
   std::ofstream signalFile(signalFileName.c_str());
   signalFile << "0.3" << std::endl;
 
@@ -140,7 +141,7 @@ int main(int, char** )
   CyclicDeformationType::Pointer cyclic = CyclicDeformationType::New();
   cyclic->SetInput(deformationField);
   cyclic->SetSignalFilename(signalFileName);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( cyclic->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(cyclic->Update());
 
   CheckVectorImageQuality<DVFImageType>(cyclic->GetOutput(), cyclic->GetOutput(), 0.4, 12, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
@@ -151,7 +152,7 @@ int main(int, char** )
   cyclic = rtk::CudaCyclicDeformationImageFilter::New();
   cyclic->SetInput(deformationField);
   cyclic->SetSignalFilename(signalFileName);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( cyclic->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(cyclic->Update());
 
   CheckVectorImageQuality<DVFImageType>(cyclic->GetOutput(), cyclic->GetOutput(), 0.4, 12, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;

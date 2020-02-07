@@ -20,11 +20,12 @@
  * \author Simon Rit and Marc Vila
  */
 
-int main(int , char** )
+int
+main(int, char **)
 {
   constexpr unsigned int Dimension = 3;
   using OutputPixelType = float;
-  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
+  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
 #if FAST_TESTS_NO_CHECKS
   constexpr unsigned int NumberOfProjectionImages = 3;
 #else
@@ -32,9 +33,9 @@ int main(int , char** )
 #endif
 
   // Constant image sources
-  using ConstantImageSourceType = rtk::ConstantImageSource< OutputImageType >;
-  ConstantImageSourceType::PointType origin;
-  ConstantImageSourceType::SizeType size;
+  using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
+  ConstantImageSourceType::PointType   origin;
+  ConstantImageSourceType::SizeType    size;
   ConstantImageSourceType::SpacingType spacing;
 
   // FOV filter Input Volume, it is used as the input to create the fov mask.
@@ -59,16 +60,16 @@ int main(int , char** )
 #endif
 
 
-  fovInput->SetOrigin( origin );
-  fovInput->SetSpacing( spacing );
-  fovInput->SetSize( size );
-  fovInput->SetConstant( 1. );
+  fovInput->SetOrigin(origin);
+  fovInput->SetSpacing(spacing);
+  fovInput->SetSize(size);
+  fovInput->SetConstant(1.);
 
   // BP volume
   const ConstantImageSourceType::Pointer bpInput = ConstantImageSourceType::New();
-  bpInput->SetOrigin( origin );
-  bpInput->SetSpacing( spacing );
-  bpInput->SetSize( size );
+  bpInput->SetOrigin(origin);
+  bpInput->SetSpacing(spacing);
+  bpInput->SetSize(size);
 
   // BackProjection Input Projections, it is used as the input to create the fov mask.
   const ConstantImageSourceType::Pointer projectionsSource = ConstantImageSourceType::New();
@@ -90,43 +91,43 @@ int main(int , char** )
   spacing[1] = 4.;
   spacing[2] = 4.;
 #endif
-  projectionsSource->SetOrigin( origin );
-  projectionsSource->SetSpacing( spacing );
-  projectionsSource->SetSize( size );
-  projectionsSource->SetConstant( 1. );
+  projectionsSource->SetOrigin(origin);
+  projectionsSource->SetSpacing(spacing);
+  projectionsSource->SetSize(size);
+  projectionsSource->SetConstant(1.);
 
   std::cout << "\n\n****** Case 1: centered detector ******" << std::endl;
 
   // Geometry
   using GeometryType = rtk::ThreeDCircularProjectionGeometry;
   GeometryType::Pointer geometry = GeometryType::New();
-  for(unsigned int noProj=0; noProj<NumberOfProjectionImages; noProj++)
-    geometry->AddProjection(600, 1200., noProj*360./NumberOfProjectionImages);
+  for (unsigned int noProj = 0; noProj < NumberOfProjectionImages; noProj++)
+    geometry->AddProjection(600, 1200., noProj * 360. / NumberOfProjectionImages);
 
   // FOV
   using FOVFilterType = rtk::FieldOfViewImageFilter<OutputImageType, OutputImageType>;
-  FOVFilterType::Pointer fov=FOVFilterType::New();
+  FOVFilterType::Pointer fov = FOVFilterType::New();
   fov->SetInput(0, fovInput->GetOutput());
   fov->SetProjectionsStack(projectionsSource->GetOutput());
-  fov->SetGeometry( geometry );
+  fov->SetGeometry(geometry);
   fov->Update();
 
   // Backprojection reconstruction filter
-  using BPType = rtk::BackProjectionImageFilter< OutputImageType, OutputImageType >;
+  using BPType = rtk::BackProjectionImageFilter<OutputImageType, OutputImageType>;
   BPType::Pointer bp = BPType::New();
-  bp->SetInput( 0, bpInput->GetOutput() );
-  bp->SetInput( 1, projectionsSource->GetOutput() );
-  bp->SetGeometry( geometry.GetPointer() );
+  bp->SetInput(0, bpInput->GetOutput());
+  bp->SetInput(1, projectionsSource->GetOutput());
+  bp->SetGeometry(geometry.GetPointer());
 
   // Thresholded to the number of projections
-  using ThresholdType = itk::BinaryThresholdImageFilter< OutputImageType, OutputImageType >;
+  using ThresholdType = itk::BinaryThresholdImageFilter<OutputImageType, OutputImageType>;
   ThresholdType::Pointer threshold = ThresholdType::New();
   threshold->SetInput(bp->GetOutput());
   threshold->SetOutsideValue(0.);
-  threshold->SetLowerThreshold(NumberOfProjectionImages-0.01);
-  threshold->SetUpperThreshold(NumberOfProjectionImages+0.01);
+  threshold->SetLowerThreshold(NumberOfProjectionImages - 0.01);
+  threshold->SetUpperThreshold(NumberOfProjectionImages + 0.01);
   threshold->SetInsideValue(1.);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( threshold->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(threshold->Update());
 
   CheckImageQuality<OutputImageType>(fov->GetOutput(), threshold->GetOutput(), 0.02, 23.5, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
@@ -134,9 +135,9 @@ int main(int , char** )
   std::cout << "\n\n****** Case 2: offset detector ******" << std::endl;
 
   origin[0] = -54.;
-  projectionsSource->SetOrigin( origin );
+  projectionsSource->SetOrigin(origin);
   size[0] = 78;
-  projectionsSource->SetSize( size );
+  projectionsSource->SetSize(size);
   projectionsSource->UpdateOutputInformation();
   projectionsSource->UpdateLargestPossibleRegion();
   fov->SetDisplacedDetector(true);

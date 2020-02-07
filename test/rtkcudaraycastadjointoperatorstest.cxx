@@ -18,15 +18,16 @@
  * \author Cyril Mory
  */
 
-int main(int, char** )
+int
+main(int, char **)
 {
   constexpr unsigned int Dimension = 3;
   using OutputPixelType = float;
 
 #ifdef USE_CUDA
-  using OutputImageType = itk::CudaImage< OutputPixelType, Dimension >;
+  using OutputImageType = itk::CudaImage<OutputPixelType, Dimension>;
 #else
-  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
+  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
 #endif
 
 #if FAST_TESTS_NO_CHECKS
@@ -37,18 +38,18 @@ int main(int, char** )
 
 
   // Random image sources
-  using RandomImageSourceType = itk::RandomImageSource< OutputImageType >;
-  RandomImageSourceType::Pointer randomVolumeSource  = RandomImageSourceType::New();
+  using RandomImageSourceType = itk::RandomImageSource<OutputImageType>;
+  RandomImageSourceType::Pointer randomVolumeSource = RandomImageSourceType::New();
   RandomImageSourceType::Pointer randomProjectionsSource = RandomImageSourceType::New();
 
   // Constant sources
-  using ConstantImageSourceType = rtk::ConstantImageSource< OutputImageType >;
+  using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
   ConstantImageSourceType::Pointer constantVolumeSource = ConstantImageSourceType::New();
   ConstantImageSourceType::Pointer constantProjectionsSource = ConstantImageSourceType::New();
 
   // Image meta data
-  RandomImageSourceType::PointType origin;
-  RandomImageSourceType::SizeType size;
+  RandomImageSourceType::PointType   origin;
+  RandomImageSourceType::SizeType    size;
   RandomImageSourceType::SpacingType spacing;
 
 
@@ -71,16 +72,16 @@ int main(int, char** )
   spacing[1] = 4.;
   spacing[2] = 4.;
 #endif
-  randomVolumeSource->SetOrigin( origin );
-  randomVolumeSource->SetSpacing( spacing );
-  randomVolumeSource->SetSize( size );
-  randomVolumeSource->SetMin( 0. );
-  randomVolumeSource->SetMax( 1. );
+  randomVolumeSource->SetOrigin(origin);
+  randomVolumeSource->SetSpacing(spacing);
+  randomVolumeSource->SetSize(size);
+  randomVolumeSource->SetMin(0.);
+  randomVolumeSource->SetMax(1.);
 
-  constantVolumeSource->SetOrigin( origin );
-  constantVolumeSource->SetSpacing( spacing );
-  constantVolumeSource->SetSize( size );
-  constantVolumeSource->SetConstant( 0. );
+  constantVolumeSource->SetOrigin(origin);
+  constantVolumeSource->SetSpacing(spacing);
+  constantVolumeSource->SetSize(size);
+  constantVolumeSource->SetConstant(0.);
 
   // Projections metadata
   origin[0] = -255.;
@@ -101,28 +102,28 @@ int main(int, char** )
   spacing[1] = 8.;
   spacing[2] = 8.;
 #endif
-  randomProjectionsSource->SetOrigin( origin );
-  randomProjectionsSource->SetSpacing( spacing );
-  randomProjectionsSource->SetSize( size );
-  randomProjectionsSource->SetMin( 0. );
-  randomProjectionsSource->SetMax( 100. );
+  randomProjectionsSource->SetOrigin(origin);
+  randomProjectionsSource->SetSpacing(spacing);
+  randomProjectionsSource->SetSize(size);
+  randomProjectionsSource->SetMin(0.);
+  randomProjectionsSource->SetMax(100.);
 
-  constantProjectionsSource->SetOrigin( origin );
-  constantProjectionsSource->SetSpacing( spacing );
-  constantProjectionsSource->SetSize( size );
-  constantProjectionsSource->SetConstant( 0. );
+  constantProjectionsSource->SetOrigin(origin);
+  constantProjectionsSource->SetSpacing(spacing);
+  constantProjectionsSource->SetSize(size);
+  constantProjectionsSource->SetConstant(0.);
 
   // Update all sources
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( randomVolumeSource->Update() );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( constantVolumeSource->Update() );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( randomProjectionsSource->Update() );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( constantProjectionsSource->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(randomVolumeSource->Update());
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(constantVolumeSource->Update());
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(randomProjectionsSource->Update());
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(constantProjectionsSource->Update());
 
   // Geometry object
   using GeometryType = rtk::ThreeDCircularProjectionGeometry;
   GeometryType::Pointer geometry = GeometryType::New();
-  for(unsigned int noProj=0; noProj<NumberOfProjectionImages; noProj++)
-    geometry->AddProjection(600., 1200., noProj*360./NumberOfProjectionImages);
+  for (unsigned int noProj = 0; noProj < NumberOfProjectionImages; noProj++)
+    geometry->AddProjection(600., 1200., noProj * 360. / NumberOfProjectionImages);
 
   std::cout << "\n\n****** CUDA ray cast Forward projector, flat panel detector ******" << std::endl;
 
@@ -130,8 +131,8 @@ int main(int, char** )
   ForwardProjectorType::Pointer fw = ForwardProjectorType::New();
   fw->SetInput(0, constantProjectionsSource->GetOutput());
   fw->SetInput(1, randomVolumeSource->GetOutput());
-  fw->SetGeometry( geometry );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( fw->Update() );
+  fw->SetGeometry(geometry);
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(fw->Update());
 
   std::cout << "\n\n****** CUDA ray cast Back projector, flat panel detector ******" << std::endl;
 
@@ -139,29 +140,31 @@ int main(int, char** )
   BackProjectorType::Pointer bp = BackProjectorType::New();
   bp->SetInput(0, constantVolumeSource->GetOutput());
   bp->SetInput(1, randomProjectionsSource->GetOutput());
-  bp->SetGeometry( geometry.GetPointer() );
+  bp->SetGeometry(geometry.GetPointer());
   bp->SetNormalize(false);
 
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( bp->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(bp->Update());
 
-  CheckScalarProducts<OutputImageType, OutputImageType>(randomVolumeSource->GetOutput(), bp->GetOutput(), randomProjectionsSource->GetOutput(), fw->GetOutput());
+  CheckScalarProducts<OutputImageType, OutputImageType>(
+    randomVolumeSource->GetOutput(), bp->GetOutput(), randomProjectionsSource->GetOutput(), fw->GetOutput());
   std::cout << "\n\nTest PASSED! " << std::endl;
 
   // Start over with cylindrical detector
   geometry->SetRadiusCylindricalDetector(200);
   std::cout << "\n\n****** CUDA ray cast Forward projector, cylindrical detector ******" << std::endl;
 
-  fw->SetGeometry( geometry );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( fw->Update() );
+  fw->SetGeometry(geometry);
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(fw->Update());
 
   std::cout << "\n\n****** CUDA ray cast Back projector, cylindrical detector ******" << std::endl;
 
-  bp->SetGeometry( geometry.GetPointer() );
+  bp->SetGeometry(geometry.GetPointer());
   bp->SetNormalize(false);
 
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( bp->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(bp->Update());
 
-  CheckScalarProducts<OutputImageType, OutputImageType>(randomVolumeSource->GetOutput(), bp->GetOutput(), randomProjectionsSource->GetOutput(), fw->GetOutput());
+  CheckScalarProducts<OutputImageType, OutputImageType>(
+    randomVolumeSource->GetOutput(), bp->GetOutput(), randomProjectionsSource->GetOutput(), fw->GetOutput());
   std::cout << "\n\nTest PASSED! " << std::endl;
 
   return EXIT_SUCCESS;

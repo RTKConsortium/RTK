@@ -17,12 +17,16 @@
  * \author Cyril Mory
  */
 
-int main(int argc, char*argv[])
+int
+main(int argc, char * argv[])
 {
   if (argc < 9)
   {
     std::cerr << "Usage: " << std::endl;
-    std::cerr << argv[0] << " materialProjections.mha photonCounts.mha spectrum.mha projections.mha DetectorResponse.csv materialAttenuations.csv out1.mha out2.mha" << std::endl;
+    std::cerr << argv[0]
+              << " materialProjections.mha photonCounts.mha spectrum.mha projections.mha DetectorResponse.csv "
+                 "materialAttenuations.csv out1.mha out2.mha"
+              << std::endl;
     return EXIT_FAILURE;
   }
 
@@ -75,30 +79,28 @@ int main(int argc, char*argv[])
   // Read binned detector response
   using CSVReaderType = itk::CSVArray2DFileReader<dataType>;
   CSVReaderType::Pointer csvReader = CSVReaderType::New();
-  csvReader->SetFieldDelimiterCharacter( ',' );
+  csvReader->SetFieldDelimiterCharacter(',');
   csvReader->HasColumnHeadersOff();
   csvReader->HasRowHeadersOff();
 
   std::string filename = argv[5];
-  csvReader->SetFileName( filename );
+  csvReader->SetFileName(filename);
   csvReader->Parse();
-  for (unsigned int r=0; r<nBins; r++)
-    for (unsigned int c=0; c<nEnergies; c++)
+  for (unsigned int r = 0; r < nBins; r++)
+    for (unsigned int c = 0; c < nEnergies; c++)
       detectorResponse[r][c] = csvReader->GetOutput()->GetData(r, c);
 
   // Read material attenuations
   filename = argv[6];
-  csvReader->SetFileName( filename );
+  csvReader->SetFileName(filename);
   csvReader->Parse();
-  for (unsigned int r=0; r<nEnergies; r++)
-    for (unsigned int c=0; c<nMaterials; c++)
+  for (unsigned int r = 0; r < nEnergies; r++)
+    for (unsigned int c = 0; c < nMaterials; c++)
       materialAttenuations[r][c] = csvReader->GetOutput()->GetData(r, c);
 
   // Create the filter
-  using WeidingerForwardModelType = rtk::WeidingerForwardModelImageFilter< TMaterialProjections,
-                                                 TPhotonCounts,
-                                                 TSpectrum,
-                                                 TProjections>;
+  using WeidingerForwardModelType =
+    rtk::WeidingerForwardModelImageFilter<TMaterialProjections, TPhotonCounts, TSpectrum, TProjections>;
   WeidingerForwardModelType::Pointer weidingerForward = WeidingerForwardModelType::New();
 
   // Set its inputs
@@ -110,11 +112,11 @@ int main(int argc, char*argv[])
   weidingerForward->SetMaterialAttenuations(materialAttenuations);
 
   // Update the filter
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( weidingerForward->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(weidingerForward->Update());
 
   // 2. Compare read projections
-  CheckVectorImageQuality< TOutput1 >(weidingerForward->GetOutput1(), output1Reader->GetOutput(), 1.e-9, 200, 2000.0);
-  CheckVectorImageQuality< TOutput2 >(weidingerForward->GetOutput2(), output2Reader->GetOutput(), 1.e-7, 200, 2000.0);
+  CheckVectorImageQuality<TOutput1>(weidingerForward->GetOutput1(), output1Reader->GetOutput(), 1.e-9, 200, 2000.0);
+  CheckVectorImageQuality<TOutput2>(weidingerForward->GetOutput2(), output2Reader->GetOutput(), 1.e-7, 200, 2000.0);
 
   // If all succeed
   std::cout << "\n\nTest PASSED! " << std::endl;

@@ -23,17 +23,18 @@
 #include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>
 
-int main(int argc, char * argv[])
+int
+main(int argc, char * argv[])
 {
   GGO(rtklut, args_info);
 
   using OutputPixelType = float;
   constexpr unsigned int Dimension = 3;
 
-  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
+  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
 
   // Projections reader
-  using ReaderType = rtk::ProjectionsReader< OutputImageType >;
+  using ReaderType = rtk::ProjectionsReader<OutputImageType>;
   ReaderType::Pointer reader = ReaderType::New();
   rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtklut>(reader, args_info);
 
@@ -42,23 +43,23 @@ int main(int argc, char * argv[])
   using LUTReaderType = itk::ImageFileReader<LUTType>;
   LUTReaderType::Pointer lutReader = LUTReaderType::New();
   lutReader->SetFileName(args_info.lut_arg);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( lutReader->Update() )
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(lutReader->Update())
 
   // Apply lookup table
   using LUTFilterType = rtk::LookupTableImageFilter<OutputImageType, OutputImageType>;
   LUTFilterType::Pointer lutFilter = LUTFilterType::New();
   lutFilter->SetInput(reader->GetOutput());
   lutFilter->SetLookupTable(lutReader->GetOutput());
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( lutFilter->Update() )
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(lutFilter->Update())
 
   // Write
-  using WriterType = itk::ImageFileWriter<  OutputImageType >;
+  using WriterType = itk::ImageFileWriter<OutputImageType>;
   WriterType::Pointer writer = WriterType::New();
-  writer->SetFileName( args_info.output_arg );
-  writer->SetInput( lutFilter->GetOutput() );
-  if(args_info.verbose_flag)
+  writer->SetFileName(args_info.output_arg);
+  writer->SetInput(lutFilter->GetOutput());
+  if (args_info.verbose_flag)
     std::cout << "Writing result... " << std::endl;
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() )
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(writer->Update())
 
   return EXIT_SUCCESS;
 }

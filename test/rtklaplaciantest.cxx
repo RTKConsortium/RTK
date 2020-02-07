@@ -7,7 +7,7 @@
 #include "rtkConstantImageSource.h"
 
 #ifdef RTK_USE_CUDA
-#include "rtkCudaLaplacianImageFilter.h"
+#  include "rtkCudaLaplacianImageFilter.h"
 #endif
 
 /**
@@ -20,7 +20,8 @@
  * \author Cyril Mory
  */
 
-int main(int argc, char*argv[])
+int
+main(int argc, char * argv[])
 {
   if (argc < 2)
   {
@@ -33,20 +34,20 @@ int main(int argc, char*argv[])
   constexpr unsigned int Dimension = 3;
 
 #ifdef USE_CUDA
-  using OutputImageType = itk::CudaImage< OutputPixelType, Dimension >;
-  using GradientImageType = itk::CudaImage<itk::CovariantVector<OutputPixelType, Dimension >, Dimension >;
+  using OutputImageType = itk::CudaImage<OutputPixelType, Dimension>;
+  using GradientImageType = itk::CudaImage<itk::CovariantVector<OutputPixelType, Dimension>, Dimension>;
 #else
-  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
-  using GradientImageType = itk::Image<itk::CovariantVector<OutputPixelType, Dimension >, Dimension >;
+  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
+  using GradientImageType = itk::Image<itk::CovariantVector<OutputPixelType, Dimension>, Dimension>;
 #endif
 
   // Constant image sources
-  using ConstantImageSourceType = rtk::ConstantImageSource< OutputImageType >;
-  ConstantImageSourceType::PointType origin;
-  ConstantImageSourceType::SizeType size;
+  using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
+  ConstantImageSourceType::PointType   origin;
+  ConstantImageSourceType::SizeType    size;
   ConstantImageSourceType::SpacingType spacing;
 
-  ConstantImageSourceType::Pointer tomographySource  = ConstantImageSourceType::New();
+  ConstantImageSourceType::Pointer tomographySource = ConstantImageSourceType::New();
   origin[0] = -127.;
   origin[1] = -127.;
   origin[2] = -127.;
@@ -65,18 +66,18 @@ int main(int argc, char*argv[])
   spacing[1] = 8.;
   spacing[2] = 8.;
 #endif
-  tomographySource->SetOrigin( origin );
-  tomographySource->SetSpacing( spacing );
-  tomographySource->SetSize( size );
-  tomographySource->SetConstant( 0. );
+  tomographySource->SetOrigin(origin);
+  tomographySource->SetSpacing(spacing);
+  tomographySource->SetSize(size);
+  tomographySource->SetConstant(0.);
 
   // Generate a shepp logan phantom
   using DSLType = rtk::DrawSheppLoganFilter<OutputImageType, OutputImageType>;
-  DSLType::Pointer dsl=DSLType::New();
-  dsl->SetInput( tomographySource->GetOutput() );
+  DSLType::Pointer dsl = DSLType::New();
+  dsl->SetInput(tomographySource->GetOutput());
   dsl->SetPhantomScale(128.);
   dsl->InPlaceOff();
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( dsl->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(dsl->Update());
 
 
   // Read a reference image
@@ -94,7 +95,7 @@ int main(int argc, char*argv[])
   laplacian->SetInput(dsl->GetOutput());
 
   // Compute the laplacian of the shepp logan
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( laplacian->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(laplacian->Update());
 
   // Compare the result with the reference
   CheckImageQuality<OutputImageType>(laplacian->GetOutput(), readerRef->GetOutput(), 0.00001, 15, 2.0);
@@ -105,12 +106,12 @@ int main(int argc, char*argv[])
   std::cout << "\n\n****** Case 2: CUDA laplacian ******" << std::endl;
 
   // Create and set the laplacian filter
-  typedef rtk::CudaLaplacianImageFilter                		CUDALaplacianFilterType;
-  CUDALaplacianFilterType::Pointer cudaLaplacian = CUDALaplacianFilterType::New();
+  typedef rtk::CudaLaplacianImageFilter CUDALaplacianFilterType;
+  CUDALaplacianFilterType::Pointer      cudaLaplacian = CUDALaplacianFilterType::New();
   cudaLaplacian->SetInput(dsl->GetOutput());
 
   // Compute the laplacian of the shepp logan
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( cudaLaplacian->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(cudaLaplacian->Update());
 
   // Compare the result with the reference
   CheckImageQuality<OutputImageType>(cudaLaplacian->GetOutput(), readerRef->GetOutput(), 0.00001, 15, 2.0);

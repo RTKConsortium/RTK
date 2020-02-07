@@ -28,14 +28,15 @@
  * \author Simon Rit
  */
 
-int main(int , char** )
+int
+main(int, char **)
 {
   constexpr unsigned int Dimension = 3;
   using OutputPixelType = float;
 #ifdef USE_CUDA
-  using OutputImageType = itk::CudaImage< OutputPixelType, Dimension >;
+  using OutputImageType = itk::CudaImage<OutputPixelType, Dimension>;
 #else
-  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
+  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
 #endif
 #if FAST_TESTS_NO_CHECKS
   constexpr unsigned int NumberOfProjectionImages = 3;
@@ -44,12 +45,12 @@ int main(int , char** )
 #endif
 
   // Constant image sources
-  using ConstantImageSourceType = rtk::ConstantImageSource< OutputImageType >;
-  ConstantImageSourceType::PointType origin;
-  ConstantImageSourceType::SizeType size;
+  using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
+  ConstantImageSourceType::PointType   origin;
+  ConstantImageSourceType::SizeType    size;
   ConstantImageSourceType::SpacingType spacing;
 
-  ConstantImageSourceType::Pointer tomographySource  = ConstantImageSourceType::New();
+  ConstantImageSourceType::Pointer tomographySource = ConstantImageSourceType::New();
   origin[0] = -127.;
   origin[1] = -127.;
   origin[2] = -127.;
@@ -68,10 +69,10 @@ int main(int , char** )
   spacing[1] = 2.;
   spacing[2] = 2.;
 #endif
-  tomographySource->SetOrigin( origin );
-  tomographySource->SetSpacing( spacing );
-  tomographySource->SetSize( size );
-  tomographySource->SetConstant( 0. );
+  tomographySource->SetOrigin(origin);
+  tomographySource->SetSpacing(spacing);
+  tomographySource->SetSize(size);
+  tomographySource->SetConstant(0.);
 
   ConstantImageSourceType::Pointer projectionsSource = ConstantImageSourceType::New();
   origin[0] = -254.;
@@ -92,71 +93,71 @@ int main(int , char** )
   spacing[1] = 4.;
   spacing[2] = 4.;
 #endif
-  projectionsSource->SetOrigin( origin );
-  projectionsSource->SetSpacing( spacing );
-  projectionsSource->SetSize( size );
-  projectionsSource->SetConstant( 0. );
+  projectionsSource->SetOrigin(origin);
+  projectionsSource->SetSpacing(spacing);
+  projectionsSource->SetSize(size);
+  projectionsSource->SetConstant(0.);
 
   // Geometry object
   using GeometryType = rtk::ThreeDCircularProjectionGeometry;
   GeometryType::Pointer geometry = GeometryType::New();
-  for(unsigned int noProj=0; noProj<NumberOfProjectionImages; noProj++)
-    geometry->AddProjection(600., 1200., noProj*360./NumberOfProjectionImages);
+  for (unsigned int noProj = 0; noProj < NumberOfProjectionImages; noProj++)
+    geometry->AddProjection(600., 1200., noProj * 360. / NumberOfProjectionImages);
 
   // Shepp Logan projections filter
   using SLPType = rtk::SheppLoganPhantomFilter<OutputImageType, OutputImageType>;
-  SLPType::Pointer slp=SLPType::New();
-  slp->SetInput( projectionsSource->GetOutput() );
+  SLPType::Pointer slp = SLPType::New();
+  slp->SetInput(projectionsSource->GetOutput());
   slp->SetGeometry(geometry);
 
   std::cout << "\n\n****** Test 1: add noise and test Hann window ******" << std::endl;
 
   // Add noise
-  using NIFType = rtk::AdditiveGaussianNoiseImageFilter< OutputImageType >;
-  NIFType::Pointer noisy=NIFType::New();
-  noisy->SetInput( slp->GetOutput() );
-  noisy->SetMean( 0.0 );
-  noisy->SetStandardDeviation( 1. );
+  using NIFType = rtk::AdditiveGaussianNoiseImageFilter<OutputImageType>;
+  NIFType::Pointer noisy = NIFType::New();
+  noisy->SetInput(slp->GetOutput());
+  noisy->SetMean(0.0);
+  noisy->SetStandardDeviation(1.);
 
   // Create a reference object (in this case a 3D phantom reference).
   using DSLType = rtk::DrawSheppLoganFilter<OutputImageType, OutputImageType>;
   DSLType::Pointer dsl = DSLType::New();
-  dsl->SetInput( tomographySource->GetOutput() );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( dsl->Update() );
+  dsl->SetInput(tomographySource->GetOutput());
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(dsl->Update());
 
   // FDK reconstruction filtering
 #ifdef USE_CUDA
   using FDKType = rtk::CudaFDKConeBeamReconstructionFilter;
 #else
-  using FDKType = rtk::FDKConeBeamReconstructionFilter< OutputImageType >;
+  using FDKType = rtk::FDKConeBeamReconstructionFilter<OutputImageType>;
 #endif
   FDKType::Pointer feldkamp = FDKType::New();
-  feldkamp->SetInput( 0, tomographySource->GetOutput() );
-  feldkamp->SetInput( 1, noisy->GetOutput() );
-  feldkamp->SetGeometry( geometry );
+  feldkamp->SetInput(0, tomographySource->GetOutput());
+  feldkamp->SetInput(1, noisy->GetOutput());
+  feldkamp->SetGeometry(geometry);
   feldkamp->GetRampFilter()->SetHannCutFrequency(0.8);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkamp->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(feldkamp->Update());
 
   CheckImageQuality<OutputImageType>(feldkamp->GetOutput(), dsl->GetOutput(), 0.72, 22.4, 2.);
 
   std::cout << "\n\n****** Test 1.5: add noise and test HannY window ******" << std::endl;
   feldkamp->GetRampFilter()->SetHannCutFrequencyY(0.8);
   feldkamp->Modified();
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkamp->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(feldkamp->Update());
   CheckImageQuality<OutputImageType>(feldkamp->GetOutput(), dsl->GetOutput(), 0.74, 21.8, 2.);
 
   std::cout << "\n\n****** Test 2: smaller detector and test data padding for truncation ******" << std::endl;
 
   size[0] = 114;
-  projectionsSource->SetSize( size );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( slp->UpdateLargestPossibleRegion() );
+  projectionsSource->SetSize(size);
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(slp->UpdateLargestPossibleRegion());
 
   FDKType::Pointer feldkampCropped = FDKType::New();
-  feldkampCropped->SetInput( 0, tomographySource->GetOutput() );
-  feldkampCropped->SetInput( 1, slp->GetOutput() );
-  feldkampCropped->SetGeometry( geometry );
+  feldkampCropped->SetInput(0, tomographySource->GetOutput());
+  feldkampCropped->SetInput(1, slp->GetOutput());
+  feldkampCropped->SetGeometry(geometry);
   feldkampCropped->GetRampFilter()->SetTruncationCorrection(0.1);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkampCropped->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(feldkampCropped->Update());
 
   CheckImageQuality<OutputImageType>(feldkampCropped->GetOutput(), dsl->GetOutput(), 0.12, 20.8, 2.);
 

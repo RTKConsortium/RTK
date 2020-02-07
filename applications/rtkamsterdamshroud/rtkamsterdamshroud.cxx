@@ -25,69 +25,69 @@
 
 #include <itkImageFileWriter.h>
 
-int main(int argc, char * argv[])
+int
+main(int argc, char * argv[])
 {
   GGO(rtkamsterdamshroud, args_info);
 
   using OutputPixelType = double;
   constexpr unsigned int Dimension = 3;
 
-  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
+  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
 
   // Projections reader
-  using ReaderType = rtk::ProjectionsReader< OutputImageType >;
+  using ReaderType = rtk::ProjectionsReader<OutputImageType>;
   ReaderType::Pointer reader = ReaderType::New();
   rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkamsterdamshroud>(reader, args_info);
 
   // Amsterdam shroud
   using ShroudFilterType = rtk::AmsterdamShroudImageFilter<OutputImageType>;
   ShroudFilterType::Pointer shroudFilter = ShroudFilterType::New();
-  shroudFilter->SetInput( reader->GetOutput() );
+  shroudFilter->SetInput(reader->GetOutput());
   shroudFilter->SetUnsharpMaskSize(args_info.unsharp_arg);
 
   // Corners (if given)
-  if(args_info.clipbox_given)
+  if (args_info.clipbox_given)
+  {
+    if (args_info.clipbox_given != 6)
     {
-    if(args_info.clipbox_given != 6)
-      {
-      std::cerr << "--clipbox requires 6 values, only"
-                << args_info.clipbox_given << " given." << std::endl;
+      std::cerr << "--clipbox requires 6 values, only" << args_info.clipbox_given << " given." << std::endl;
       return EXIT_FAILURE;
-      }
-    if(!args_info.geometry_given)
-      {
+    }
+    if (!args_info.geometry_given)
+    {
       std::cerr << "You must provide the geometry to use --clipbox." << std::endl;
       return EXIT_FAILURE;
-      }
+    }
     ShroudFilterType::PointType c1, c2;
-    for(int i=0; i<3; i++)
-      {
-      c1[i] = args_info.clipbox_arg[i*2];
-      c2[i] = args_info.clipbox_arg[i*2+1];
-      }
-    shroudFilter->SetCorner1( c1 );
-    shroudFilter->SetCorner2( c2 );
+    for (int i = 0; i < 3; i++)
+    {
+      c1[i] = args_info.clipbox_arg[i * 2];
+      c2[i] = args_info.clipbox_arg[i * 2 + 1];
+    }
+    shroudFilter->SetCorner1(c1);
+    shroudFilter->SetCorner2(c2);
 
     // Geometry
     rtk::ThreeDCircularProjectionGeometryXMLFileReader::Pointer geometryReader;
     geometryReader = rtk::ThreeDCircularProjectionGeometryXMLFileReader::New();
-    if(args_info.geometry_given)
-      {
+    if (args_info.geometry_given)
+    {
       geometryReader->SetFilename(args_info.geometry_arg);
-      TRY_AND_EXIT_ON_ITK_EXCEPTION( geometryReader->GenerateOutputInformation() )
-      shroudFilter->SetGeometry( geometryReader->GetOutputObject() );
-      }
+      TRY_AND_EXIT_ON_ITK_EXCEPTION(geometryReader->GenerateOutputInformation())
+      shroudFilter->SetGeometry(geometryReader->GetOutputObject());
     }
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( shroudFilter->UpdateOutputInformation() )
+  }
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(shroudFilter->UpdateOutputInformation())
 
   // Write
-  using WriterType = itk::ImageFileWriter< ShroudFilterType::OutputImageType >;
+  using WriterType = itk::ImageFileWriter<ShroudFilterType::OutputImageType>;
   WriterType::Pointer writer = WriterType::New();
-  writer->SetFileName( args_info.output_arg );
-  writer->SetInput( shroudFilter->GetOutput() );
-  writer->SetNumberOfStreamDivisions( shroudFilter->GetOutput()->GetLargestPossibleRegion().GetSize(2) );
+  writer->SetFileName(args_info.output_arg);
+  writer->SetInput(shroudFilter->GetOutput());
+  writer->SetNumberOfStreamDivisions(shroudFilter->GetOutput()->GetLargestPossibleRegion().GetSize(2));
 
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() )
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(writer->Update())
 
   return EXIT_SUCCESS;
 }

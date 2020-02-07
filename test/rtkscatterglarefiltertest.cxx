@@ -25,9 +25,9 @@
 #include <itkImageRegionIteratorWithIndex.h>
 
 #ifdef USE_CUDA
-# include "rtkCudaScatterGlareCorrectionImageFilter.h"
+#  include "rtkCudaScatterGlareCorrectionImageFilter.h"
 #else
-# include "rtkScatterGlareCorrectionImageFilter.h"
+#  include "rtkScatterGlareCorrectionImageFilter.h"
 #endif
 
 #include "rtkTestConfiguration.h"
@@ -42,14 +42,15 @@
 
 constexpr unsigned int Dimension = 3;
 #ifdef USE_CUDA
-using ImageType = itk::CudaImage< float, Dimension >;
+using ImageType = itk::CudaImage<float, Dimension>;
 #else
-using ImageType = itk::Image< float, Dimension >;
+using ImageType = itk::Image<float, Dimension>;
 #endif
 
 constexpr float spikeValue = 12.341;
 
-ImageType::Pointer createInputImage(const std::vector<float> & coef)
+ImageType::Pointer
+createInputImage(const std::vector<float> & coef)
 {
   ImageType::SizeType size;
   size[0] = 650;
@@ -78,25 +79,27 @@ ImageType::Pointer createInputImage(const std::vector<float> & coef)
 
   float a3 = coef[0];
   float b3 = coef[1];
-  float b3sq = b3*b3;
+  float b3sq = b3 * b3;
   float dx = spacing[0];
   float dy = spacing[1];
 
   itk::ImageRegionIteratorWithIndex<ImageType> itK(inputI, inputI->GetLargestPossibleRegion());
   itK.GoToBegin();
   ImageType::IndexType idx;
-  float sum = 0.0f;
-  while (!itK.IsAtEnd()) {
+  float                sum = 0.0f;
+  while (!itK.IsAtEnd())
+  {
     idx = itK.GetIndex();
     float xx = (float)idx[0] - (float)size[0] / 2.0f;
     float yy = (float)idx[1] - (float)size[1] / 2.0f;
-    float rr2 = (xx*xx + yy*yy);
-    float g = (a3*dx*dy / (2.0f * itk::Math::pi * b3sq)) * 1.0f / std::pow((1.0f + rr2 / b3sq), 1.5f);
-    if ((2 * idx[0] == (ImageType::IndexValueType)size[0]) && ((2 * idx[1] == (ImageType::IndexValueType)size[1]))) {
+    float rr2 = (xx * xx + yy * yy);
+    float g = (a3 * dx * dy / (2.0f * itk::Math::pi * b3sq)) * 1.0f / std::pow((1.0f + rr2 / b3sq), 1.5f);
+    if ((2 * idx[0] == (ImageType::IndexValueType)size[0]) && ((2 * idx[1] == (ImageType::IndexValueType)size[1])))
+    {
       g += (1 - a3);
     }
     g = spikeValue * g; // The image is a spike at the central pixel convolved with the scatter PSF
-    itK.Set( g);
+    itK.Set(g);
     sum += g;
     ++itK;
   }
@@ -104,7 +107,8 @@ ImageType::Pointer createInputImage(const std::vector<float> & coef)
   return inputI;
 }
 
-int main(int , char** )
+int
+main(int, char **)
 {
 #ifdef USE_CUDA
   using ScatterCorrectionType = rtk::CudaScatterGlareCorrectionImageFilter;
@@ -122,29 +126,33 @@ int main(int , char** )
 
   ImageType::Pointer testImage = createInputImage(coef);
   SFilter->SetInput(testImage);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( SFilter->Update() )
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(SFilter->Update())
 
-  ImageType::Pointer outputI = SFilter->GetOutput();
-  ImageType::SizeType size = outputI->GetLargestPossibleRegion().GetSize();
+  ImageType::Pointer                       outputI = SFilter->GetOutput();
+  ImageType::SizeType                      size = outputI->GetLargestPossibleRegion().GetSize();
   itk::ImageRegionConstIterator<ImageType> itO(outputI, outputI->GetLargestPossibleRegion());
   itO.GoToBegin();
 
   ImageType::IndexType idx;
-  float sumBng = 0.0f;
-  float spikeValueOut = 0.0f;
-  while (!itO.IsAtEnd()) {
+  float                sumBng = 0.0f;
+  float                spikeValueOut = 0.0f;
+  while (!itO.IsAtEnd())
+  {
     idx = itO.GetIndex();
-    if ((2 * idx[0] == (ImageType::IndexValueType)size[0]) && ((2 * idx[1] == (ImageType::IndexValueType)size[1]))) {
+    if ((2 * idx[0] == (ImageType::IndexValueType)size[0]) && ((2 * idx[1] == (ImageType::IndexValueType)size[1])))
+    {
       spikeValueOut += itO.Get();
-    } else {
+    }
+    else
+    {
       sumBng += itO.Get();
     }
     ++itO;
   }
 
-  if (!( (itk::Math::abs(spikeValueOut - spikeValue) < 1e-2)&&(itk::Math::abs(sumBng)<1e-2) ))
+  if (!((itk::Math::abs(spikeValueOut - spikeValue) < 1e-2) && (itk::Math::abs(sumBng) < 1e-2)))
   {
-    std::cerr << "Test Failed! "<< std::endl;
+    std::cerr << "Test Failed! " << std::endl;
     exit(EXIT_FAILURE);
   }
 

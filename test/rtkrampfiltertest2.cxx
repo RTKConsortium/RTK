@@ -3,9 +3,9 @@
 #include "itkImageFileWriter.h"
 
 #ifdef USE_CUDA
-#include "rtkCudaFFTRampImageFilter.h"
+#  include "rtkCudaFFTRampImageFilter.h"
 #else
-#include "rtkFFTRampImageFilter.h"
+#  include "rtkFFTRampImageFilter.h"
 #endif
 
 /**
@@ -16,21 +16,22 @@
  * \author Julien JOmier
  */
 
-int main(int , char** )
+int
+main(int, char **)
 {
   constexpr unsigned int Dimension = 3;
   using PixelType = float;
 #ifdef USE_CUDA
-  using ImageType = itk::CudaImage< PixelType, Dimension >;
+  using ImageType = itk::CudaImage<PixelType, Dimension>;
   using RampFilterType = rtk::CudaFFTRampImageFilter;
 #else
-  using ImageType = itk::Image< PixelType, Dimension >;
-  using RampFilterType = rtk::FFTRampImageFilter<ImageType,ImageType>;
+  using ImageType = itk::Image<PixelType, Dimension>;
+  using RampFilterType = rtk::FFTRampImageFilter<ImageType, ImageType>;
 #endif
 
-  ImageType::Pointer image = ImageType::New();
+  ImageType::Pointer    image = ImageType::New();
   ImageType::RegionType region;
-  ImageType::SizeType size;
+  ImageType::SizeType   size;
   size[0] = 64;
   size[1] = 64;
   size[2] = 64;
@@ -43,14 +44,14 @@ int main(int , char** )
   rampFilter->SetInput(image);
 
   try
-    {
+  {
     rampFilter->Update();
-    }
- catch( itk::ExceptionObject & err )
-    {
+  }
+  catch (itk::ExceptionObject & err)
+  {
     std::cerr << err << std::endl;
     exit(EXIT_FAILURE);
-    }
+  }
 
 
   // Check the results
@@ -60,34 +61,34 @@ int main(int , char** )
   index[2] = 26;
 
   float value = 0.132652;
-  if(fabs(rampFilter->GetOutput()->GetPixel(index)-value)>0.000001)
-    {
-    std::cout << "Output value #0 should be " << value << " found "
-              << rampFilter->GetOutput()->GetPixel(index) << " instead." << std::endl;
+  if (fabs(rampFilter->GetOutput()->GetPixel(index) - value) > 0.000001)
+  {
+    std::cout << "Output value #0 should be " << value << " found " << rampFilter->GetOutput()->GetPixel(index)
+              << " instead." << std::endl;
     return EXIT_FAILURE;
-    }
+  }
 
   // Testing the HannCutFrequency
   rampFilter->SetHannCutFrequency(0.8);
   rampFilter->Update();
   value = 0.149724;
-  if(fabs(rampFilter->GetOutput()->GetPixel(index)-value)>0.000001)
-    {
-    std::cout << "Output value #1 should be " << value << " found "
-              << rampFilter->GetOutput()->GetPixel(index) << " instead." << std::endl;
+  if (fabs(rampFilter->GetOutput()->GetPixel(index) - value) > 0.000001)
+  {
+    std::cout << "Output value #1 should be " << value << " found " << rampFilter->GetOutput()->GetPixel(index)
+              << " instead." << std::endl;
     return EXIT_FAILURE;
-    }
+  }
 
   // Testing the HanncutFrequencyY
   rampFilter->SetHannCutFrequencyY(0.1);
   rampFilter->Update();
   value = 0.150181;
-  if(fabs(rampFilter->GetOutput()->GetPixel(index)-value)>0.000001)
-    {
-    std::cout << "Output value #2 should be " << value << " found "
-              << rampFilter->GetOutput()->GetPixel(index) << " instead." << std::endl;
+  if (fabs(rampFilter->GetOutput()->GetPixel(index) - value) > 0.000001)
+  {
+    std::cout << "Output value #2 should be " << value << " found " << rampFilter->GetOutput()->GetPixel(index)
+              << " instead." << std::endl;
     return EXIT_FAILURE;
-    }
+  }
 
   std::cout << "Test PASSED! " << std::endl;
   return EXIT_SUCCESS;

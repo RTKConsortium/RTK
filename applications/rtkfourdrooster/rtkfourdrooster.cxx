@@ -25,73 +25,72 @@
 #include "rtkReorderProjectionsImageFilter.h"
 
 #ifdef RTK_USE_CUDA
-  #include "itkCudaImage.h"
+#  include "itkCudaImage.h"
 #endif
 #include <itkImageFileWriter.h>
 
-int main(int argc, char * argv[])
+int
+main(int argc, char * argv[])
 {
   GGO(rtkfourdrooster, args_info);
 
   using OutputPixelType = float;
-  using DVFVectorType = itk::CovariantVector< OutputPixelType, 3 >;
+  using DVFVectorType = itk::CovariantVector<OutputPixelType, 3>;
 
 #ifdef RTK_USE_CUDA
-  using VolumeSeriesType = itk::CudaImage< OutputPixelType, 4 >;
-  using ProjectionStackType = itk::CudaImage< OutputPixelType, 3 >;
+  using VolumeSeriesType = itk::CudaImage<OutputPixelType, 4>;
+  using ProjectionStackType = itk::CudaImage<OutputPixelType, 3>;
   using DVFSequenceImageType = itk::CudaImage<DVFVectorType, VolumeSeriesType::ImageDimension>;
 #else
-  using VolumeSeriesType = itk::Image< OutputPixelType, 4 >;
-  using ProjectionStackType = itk::Image< OutputPixelType, 3 >;
+  using VolumeSeriesType = itk::Image<OutputPixelType, 4>;
+  using ProjectionStackType = itk::Image<OutputPixelType, 3>;
   using DVFSequenceImageType = itk::Image<DVFVectorType, VolumeSeriesType::ImageDimension>;
 #endif
   using VolumeType = ProjectionStackType;
-  using DVFReaderType = itk::ImageFileReader<  DVFSequenceImageType >;
+  using DVFReaderType = itk::ImageFileReader<DVFSequenceImageType>;
 
   // Projections reader
-  using ReaderType = rtk::ProjectionsReader< ProjectionStackType >;
+  using ReaderType = rtk::ProjectionsReader<ProjectionStackType>;
   ReaderType::Pointer reader = ReaderType::New();
   rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkfourdrooster>(reader, args_info);
 
   // Geometry
-  if(args_info.verbose_flag)
-    std::cout << "Reading geometry information from "
-              << args_info.geometry_arg
-              << "..."
-              << std::endl;
+  if (args_info.verbose_flag)
+    std::cout << "Reading geometry information from " << args_info.geometry_arg << "..." << std::endl;
   rtk::ThreeDCircularProjectionGeometryXMLFileReader::Pointer geometryReader;
   geometryReader = rtk::ThreeDCircularProjectionGeometryXMLFileReader::New();
   geometryReader->SetFilename(args_info.geometry_arg);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( geometryReader->GenerateOutputInformation() )
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(geometryReader->GenerateOutputInformation())
 
   // Create input: either an existing volume read from a file or a blank image
-  itk::ImageSource< VolumeSeriesType >::Pointer inputFilter;
-  if(args_info.input_given)
-    {
+  itk::ImageSource<VolumeSeriesType>::Pointer inputFilter;
+  if (args_info.input_given)
+  {
     // Read an existing image to initialize the volume
-    using InputReaderType = itk::ImageFileReader<  VolumeSeriesType >;
+    using InputReaderType = itk::ImageFileReader<VolumeSeriesType>;
     InputReaderType::Pointer inputReader = InputReaderType::New();
-    inputReader->SetFileName( args_info.input_arg );
+    inputReader->SetFileName(args_info.input_arg);
     inputFilter = inputReader;
-    }
+  }
   else
-    {
+  {
     // Create new empty volume
-    using ConstantImageSourceType = rtk::ConstantImageSource< VolumeSeriesType >;
+    using ConstantImageSourceType = rtk::ConstantImageSource<VolumeSeriesType>;
     ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
-    rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkfourdrooster>(constantImageSource, args_info);
+    rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkfourdrooster>(constantImageSource,
+                                                                                           args_info);
 
     // GenGetOpt can't handle default arguments for multiple arguments like dimension or spacing.
     // The only default it accepts is to set all components of a multiple argument to the same value.
-    // Default dimension is 256^4, ie the number of reconstructed instants is 256. It has to be set to a more reasonable value
-    // which is why a "frames" argument is introduced
+    // Default dimension is 256^4, ie the number of reconstructed instants is 256. It has to be set to a more reasonable
+    // value which is why a "frames" argument is introduced
     ConstantImageSourceType::SizeType inputSize = constantImageSource->GetSize();
     inputSize[3] = args_info.frames_arg;
     constantImageSource->SetSize(inputSize);
 
     inputFilter = constantImageSource;
-    }
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( inputFilter->Update() )
+  }
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(inputFilter->Update())
   inputFilter->ReleaseDataFlagOn();
 
   // Re-order geometry and projections
@@ -102,7 +101,7 @@ int main(int argc, char * argv[])
   reorder->SetInput(reader->GetOutput());
   reorder->SetInputGeometry(geometryReader->GetOutputObject());
   reorder->SetInputSignal(signal);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( reorder->Update() )
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(reorder->Update())
 
   // Release the memory holding the stack of original projections
   reader->GetOutput()->ReleaseData();
@@ -110,8 +109,9 @@ int main(int argc, char * argv[])
   // Compute the interpolation weights
   rtk::SignalToInterpolationWeights::Pointer signalToInterpolationWeights = rtk::SignalToInterpolationWeights::New();
   signalToInterpolationWeights->SetSignal(reorder->GetOutputSignal());
-  signalToInterpolationWeights->SetNumberOfReconstructedFrames(inputFilter->GetOutput()->GetLargestPossibleRegion().GetSize(3));
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( signalToInterpolationWeights->Update() )
+  signalToInterpolationWeights->SetNumberOfReconstructedFrames(
+    inputFilter->GetOutput()->GetLargestPossibleRegion().GetSize(3));
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(signalToInterpolationWeights->Update())
 
   // Create the 4DROOSTER filter, connect the basic inputs, and set the basic parameters
   // Also set the forward and back projection filters to be used
@@ -119,9 +119,9 @@ int main(int argc, char * argv[])
   ROOSTERFilterType::Pointer rooster = ROOSTERFilterType::New();
   SetForwardProjectionFromGgo(args_info, rooster.GetPointer());
   SetBackProjectionFromGgo(args_info, rooster.GetPointer());
-  rooster->SetInputVolumeSeries(inputFilter->GetOutput() );
-  rooster->SetCG_iterations( args_info.cgiter_arg );
-  rooster->SetMainLoop_iterations( args_info.niter_arg );
+  rooster->SetInputVolumeSeries(inputFilter->GetOutput());
+  rooster->SetCG_iterations(args_info.cgiter_arg);
+  rooster->SetMainLoop_iterations(args_info.niter_arg);
   rooster->SetPhaseShift(args_info.shift_arg);
   rooster->SetCudaConjugateGradient(args_info.cudacg_flag);
   rooster->SetUseCudaCyclicDeformation(args_info.cudadvfinterpolation_flag);
@@ -130,8 +130,8 @@ int main(int argc, char * argv[])
   REPORT_ITERATIONS(rooster, ROOSTERFilterType, VolumeSeriesType)
 
   // Set the newly ordered arguments
-  rooster->SetInputProjectionStack( reorder->GetOutput() );
-  rooster->SetGeometry( reorder->GetOutputGeometry() );
+  rooster->SetInputProjectionStack(reorder->GetOutput());
+  rooster->SetGeometry(reorder->GetOutputGeometry());
   rooster->SetWeights(signalToInterpolationWeights->GetOutput());
   rooster->SetSignal(reorder->GetOutputSignal());
 
@@ -145,103 +145,103 @@ int main(int argc, char * argv[])
     rooster->SetPerformPositivity(true);
 
   // Motion mask
-  using InputReaderType = itk::ImageFileReader<  VolumeType >;
+  using InputReaderType = itk::ImageFileReader<VolumeType>;
   if (args_info.motionmask_given)
-    {
+  {
     InputReaderType::Pointer motionMaskReader = InputReaderType::New();
-    motionMaskReader->SetFileName( args_info.motionmask_arg );
-    TRY_AND_EXIT_ON_ITK_EXCEPTION( motionMaskReader->Update() )
+    motionMaskReader->SetFileName(args_info.motionmask_arg);
+    TRY_AND_EXIT_ON_ITK_EXCEPTION(motionMaskReader->Update())
     rooster->SetMotionMask(motionMaskReader->GetOutput());
     rooster->SetPerformMotionMask(true);
-    }
+  }
   else
     rooster->SetPerformMotionMask(false);
 
   // Spatial TV
   if (args_info.gamma_space_given)
-    {
+  {
     rooster->SetGammaTVSpace(args_info.gamma_space_arg);
     rooster->SetTV_iterations(args_info.tviter_arg);
     rooster->SetPerformTVSpatialDenoising(true);
-    }
+  }
   else
     rooster->SetPerformTVSpatialDenoising(false);
 
   // Spatial wavelets
   if (args_info.threshold_given)
-    {
+  {
     rooster->SetSoftThresholdWavelets(args_info.threshold_arg);
     rooster->SetOrder(args_info.order_arg);
     rooster->SetNumberOfLevels(args_info.levels_arg);
     rooster->SetPerformWaveletsSpatialDenoising(true);
-    }
+  }
   else
     rooster->SetPerformWaveletsSpatialDenoising(false);
 
   // Temporal TV
   if (args_info.gamma_time_given)
-    {
+  {
     rooster->SetGammaTVTime(args_info.gamma_time_arg);
     rooster->SetTV_iterations(args_info.tviter_arg);
     rooster->SetPerformTVTemporalDenoising(true);
-    }
+  }
   else
     rooster->SetPerformTVTemporalDenoising(false);
 
   // Temporal L0
   if (args_info.lambda_time_given)
-    {
+  {
     rooster->SetLambdaL0Time(args_info.lambda_time_arg);
     rooster->SetL0_iterations(args_info.l0iter_arg);
     rooster->SetPerformL0TemporalDenoising(true);
-    }
+  }
   else
     rooster->SetPerformL0TemporalDenoising(false);
 
   // Total nuclear variation
   if (args_info.gamma_tnv_given)
-    {
+  {
     rooster->SetGammaTNV(args_info.gamma_tnv_arg);
     rooster->SetTV_iterations(args_info.tviter_arg);
     rooster->SetPerformTNVDenoising(true);
-    }
+  }
   else
     rooster->SetPerformTNVDenoising(false);
 
   // Warping
   if (args_info.dvf_given)
-    {
+  {
     rooster->SetPerformWarping(true);
 
-    if(args_info.nn_flag)
+    if (args_info.nn_flag)
       rooster->SetUseNearestNeighborInterpolationInWarping(true);
 
     // Read DVF
     DVFReaderType::Pointer dvfReader = DVFReaderType::New();
-    dvfReader->SetFileName( args_info.dvf_arg );
-    TRY_AND_EXIT_ON_ITK_EXCEPTION( dvfReader->Update() )
+    dvfReader->SetFileName(args_info.dvf_arg);
+    TRY_AND_EXIT_ON_ITK_EXCEPTION(dvfReader->Update())
     rooster->SetDisplacementField(dvfReader->GetOutput());
 
     if (args_info.idvf_given)
-      {
+    {
       rooster->SetComputeInverseWarpingByConjugateGradient(false);
 
       // Read inverse DVF if provided
       DVFReaderType::Pointer idvfReader = DVFReaderType::New();
-      idvfReader->SetFileName( args_info.idvf_arg );
-      TRY_AND_EXIT_ON_ITK_EXCEPTION( idvfReader->Update() )
+      idvfReader->SetFileName(args_info.idvf_arg);
+      TRY_AND_EXIT_ON_ITK_EXCEPTION(idvfReader->Update())
       rooster->SetInverseDisplacementField(idvfReader->GetOutput());
-      }
     }
+  }
 
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( rooster->Update() )
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(rooster->Update())
 
   // Write
-  using WriterType = itk::ImageFileWriter< VolumeSeriesType >;
+  using WriterType = itk::ImageFileWriter<VolumeSeriesType>;
   WriterType::Pointer writer = WriterType::New();
-  writer->SetFileName( args_info.output_arg );
-  writer->SetInput( rooster->GetOutput() );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() )
+  writer->SetFileName(args_info.output_arg);
+  writer->SetInput(rooster->GetOutput());
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(writer->Update())
 
   return EXIT_SUCCESS;
 }

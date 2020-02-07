@@ -25,14 +25,15 @@
  * \author Simon Rit and Marc Vila
  */
 
-int main(int, char**)
+int
+main(int, char **)
 {
   constexpr unsigned int Dimension = 3;
   using OutputPixelType = float;
 #ifdef USE_CUDA
-  using OutputImageType = itk::CudaImage< OutputPixelType, Dimension >;
+  using OutputImageType = itk::CudaImage<OutputPixelType, Dimension>;
 #else
-  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
+  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
 #endif
 
 #if FAST_TESTS_NO_CHECKS
@@ -42,12 +43,12 @@ int main(int, char**)
 #endif
 
   // Constant image sources
-  using ConstantImageSourceType = rtk::ConstantImageSource< OutputImageType >;
-  ConstantImageSourceType::PointType origin;
-  ConstantImageSourceType::SizeType size;
+  using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
+  ConstantImageSourceType::PointType   origin;
+  ConstantImageSourceType::SizeType    size;
   ConstantImageSourceType::SpacingType spacing;
 
-  ConstantImageSourceType::Pointer tomographySource  = ConstantImageSourceType::New();
+  ConstantImageSourceType::Pointer tomographySource = ConstantImageSourceType::New();
   origin[0] = -127.;
   origin[1] = -127.;
   origin[2] = -127.;
@@ -66,10 +67,10 @@ int main(int, char**)
   spacing[1] = 2.;
   spacing[2] = 2.;
 #endif
-  tomographySource->SetOrigin( origin );
-  tomographySource->SetSpacing( spacing );
-  tomographySource->SetSize( size );
-  tomographySource->SetConstant( 0. );
+  tomographySource->SetOrigin(origin);
+  tomographySource->SetSpacing(spacing);
+  tomographySource->SetSize(size);
+  tomographySource->SetConstant(0.);
 
   ConstantImageSourceType::Pointer projectionsSource = ConstantImageSourceType::New();
   origin[0] = -254.;
@@ -90,15 +91,15 @@ int main(int, char**)
   spacing[1] = 4.;
   spacing[2] = 4.;
 #endif
-  projectionsSource->SetOrigin( origin );
-  projectionsSource->SetSpacing( spacing );
-  projectionsSource->SetSize( size );
-  projectionsSource->SetConstant( 0. );
+  projectionsSource->SetOrigin(origin);
+  projectionsSource->SetSpacing(spacing);
+  projectionsSource->SetSize(size);
+  projectionsSource->SetConstant(0.);
 
   // Shepp Logan projections filter
   using SLPType = rtk::SheppLoganPhantomFilter<OutputImageType, OutputImageType>;
   SLPType::Pointer slp = SLPType::New();
-  slp->SetInput( projectionsSource->GetOutput() );
+  slp->SetInput(projectionsSource->GetOutput());
 
   // Displaced detector weighting
 #ifdef USE_CUDA
@@ -107,69 +108,69 @@ int main(int, char**)
   using DDFType = rtk::DisplacedDetectorImageFilter<OutputImageType>;
 #endif
   DDFType::Pointer ddf = DDFType::New();
-  ddf->SetInput( slp->GetOutput() );
+  ddf->SetInput(slp->GetOutput());
 
   // Create a reference object (in this case a 3D phantom reference).
   using DSLType = rtk::DrawSheppLoganFilter<OutputImageType, OutputImageType>;
   DSLType::Pointer dsl = DSLType::New();
-  dsl->SetInput( tomographySource->GetOutput() );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( dsl->Update() );
+  dsl->SetInput(tomographySource->GetOutput());
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(dsl->Update());
 
   // FDK reconstruction filtering
   using FDKCPUType = rtk::FDKConeBeamReconstructionFilter<OutputImageType>;
   FDKCPUType::Pointer feldkamp = FDKCPUType::New();
-  feldkamp->SetInput( 0, tomographySource->GetOutput() );
-  feldkamp->SetInput( 1, ddf->GetOutput() );
+  feldkamp->SetInput(0, tomographySource->GetOutput());
+  feldkamp->SetInput(1, ddf->GetOutput());
 
   std::cout << "\n\n****** Case 1: positive offset in geometry ******" << std::endl;
   using GeometryType = rtk::ThreeDCircularProjectionGeometry;
   GeometryType::Pointer geometry = GeometryType::New();
   slp->SetGeometry(geometry);
-  ddf->SetGeometry( geometry );
-  feldkamp->SetGeometry( geometry );
-  for(unsigned int noProj=0; noProj<NumberOfProjectionImages; noProj++)
-    geometry->AddProjection(600., 1200., noProj*360./NumberOfProjectionImages, 120., 0.);
+  ddf->SetGeometry(geometry);
+  feldkamp->SetGeometry(geometry);
+  for (unsigned int noProj = 0; noProj < NumberOfProjectionImages; noProj++)
+    geometry->AddProjection(600., 1200., noProj * 360. / NumberOfProjectionImages, 120., 0.);
   slp->Update();
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkamp->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(feldkamp->Update());
   CheckImageQuality<OutputImageType>(feldkamp->GetOutput(), dsl->GetOutput(), 0.061, 24, 2.0);
 
   std::cout << "\n\n****** Case 2: negative offset in geometry ******" << std::endl;
   geometry = GeometryType::New();
   slp->SetGeometry(geometry);
-  ddf->SetGeometry( geometry );
-  feldkamp->SetGeometry( geometry );
-  for(unsigned int noProj=0; noProj<NumberOfProjectionImages; noProj++)
-    geometry->AddProjection(600., 1200., noProj*360./NumberOfProjectionImages, -120., 0.);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkamp->Update() );
+  ddf->SetGeometry(geometry);
+  feldkamp->SetGeometry(geometry);
+  for (unsigned int noProj = 0; noProj < NumberOfProjectionImages; noProj++)
+    geometry->AddProjection(600., 1200., noProj * 360. / NumberOfProjectionImages, -120., 0.);
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(feldkamp->Update());
   CheckImageQuality<OutputImageType>(feldkamp->GetOutput(), dsl->GetOutput(), 0.061, 24, 2.0);
 
   std::cout << "\n\n****** Case 3: no displacement ******" << std::endl;
   geometry = GeometryType::New();
   slp->SetGeometry(geometry);
-  ddf->SetGeometry( geometry );
-  feldkamp->SetGeometry( geometry );
-  for(unsigned int noProj=0; noProj<NumberOfProjectionImages; noProj++)
-    geometry->AddProjection(600., 1200., noProj*360./NumberOfProjectionImages);
+  ddf->SetGeometry(geometry);
+  feldkamp->SetGeometry(geometry);
+  for (unsigned int noProj = 0; noProj < NumberOfProjectionImages; noProj++)
+    geometry->AddProjection(600., 1200., noProj * 360. / NumberOfProjectionImages);
   projectionsSource->SetOrigin(origin);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkamp->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(feldkamp->Update());
   CheckImageQuality<OutputImageType>(feldkamp->GetOutput(), dsl->GetOutput(), 0.061, 24, 2.0);
 
   std::cout << "\n\n****** Case 4: negative offset in origin ******" << std::endl;
   geometry = GeometryType::New();
   slp->SetGeometry(geometry);
-  ddf->SetGeometry( geometry );
-  feldkamp->SetGeometry( geometry );
-  for(unsigned int noProj=0; noProj<NumberOfProjectionImages; noProj++)
-    geometry->AddProjection(600., 1200., noProj*360./NumberOfProjectionImages);
+  ddf->SetGeometry(geometry);
+  feldkamp->SetGeometry(geometry);
+  for (unsigned int noProj = 0; noProj < NumberOfProjectionImages; noProj++)
+    geometry->AddProjection(600., 1200., noProj * 360. / NumberOfProjectionImages);
   origin[0] = -400;
   projectionsSource->SetOrigin(origin);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkamp->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(feldkamp->Update());
   CheckImageQuality<OutputImageType>(feldkamp->GetOutput(), dsl->GetOutput(), 0.061, 24, 2.0);
 
   std::cout << "\n\n****** Case 5: positive offset in origin ******" << std::endl;
   origin[0] = -100;
   projectionsSource->SetOrigin(origin);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkamp->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(feldkamp->Update());
   CheckImageQuality<OutputImageType>(feldkamp->GetOutput(), dsl->GetOutput(), 0.061, 24, 2.0);
 
   std::cout << "\n\nTest PASSED! " << std::endl;

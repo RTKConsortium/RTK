@@ -15,11 +15,12 @@
  * \author Simon Rit
  */
 
-int main(int, char** )
+int
+main(int, char **)
 {
   constexpr unsigned int Dimension = 3;
   using OutputPixelType = float;
-  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
+  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
 
 #if FAST_TESTS_NO_CHECKS
   constexpr unsigned int NumberOfProjectionImages = 3;
@@ -28,12 +29,12 @@ int main(int, char** )
 #endif
 
   // Constant image sources
-  using ConstantImageSourceType = rtk::ConstantImageSource< OutputImageType >;
-  ConstantImageSourceType::PointType origin;
-  ConstantImageSourceType::SizeType size;
+  using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
+  ConstantImageSourceType::PointType   origin;
+  ConstantImageSourceType::SizeType    size;
   ConstantImageSourceType::SpacingType spacing;
 
-  ConstantImageSourceType::Pointer tomographySource  = ConstantImageSourceType::New();
+  ConstantImageSourceType::Pointer tomographySource = ConstantImageSourceType::New();
   origin[0] = -29.;
   origin[1] = -29.;
   origin[2] = -29.;
@@ -52,10 +53,10 @@ int main(int, char** )
   spacing[1] = 2.;
   spacing[2] = 2.;
 #endif
-  tomographySource->SetOrigin( origin );
-  tomographySource->SetSpacing( spacing );
-  tomographySource->SetSize( size );
-  tomographySource->SetConstant( 0. );
+  tomographySource->SetOrigin(origin);
+  tomographySource->SetSpacing(spacing);
+  tomographySource->SetSize(size);
+  tomographySource->SetConstant(0.);
 
   ConstantImageSourceType::Pointer projectionsSource = ConstantImageSourceType::New();
   origin[0] = -29.;
@@ -76,10 +77,10 @@ int main(int, char** )
   spacing[1] = 2.;
   spacing[2] = 2.;
 #endif
-  projectionsSource->SetOrigin( origin );
-  projectionsSource->SetSpacing( spacing );
-  projectionsSource->SetSize( size );
-  projectionsSource->SetConstant( 0. );
+  projectionsSource->SetOrigin(origin);
+  projectionsSource->SetSpacing(spacing);
+  projectionsSource->SetSize(size);
+  projectionsSource->SetConstant(0.);
 
   // Rotation matrix
   rtk::ThreeDCircularProjectionGeometry::Matrix3x3Type rotMat;
@@ -91,43 +92,42 @@ int main(int, char** )
   // Geometry object
   using GeometryType = rtk::ThreeDCircularProjectionGeometry;
   GeometryType::Pointer geometry = GeometryType::New();
-  for(unsigned int noProj=0; noProj<NumberOfProjectionImages; noProj++)
-    geometry->AddProjection(600., 0., noProj*360./NumberOfProjectionImages);
+  for (unsigned int noProj = 0; noProj < NumberOfProjectionImages; noProj++)
+    geometry->AddProjection(600., 0., noProj * 360. / NumberOfProjectionImages);
 
-  std::string configFileName = std::string(RTK_DATA_ROOT) +
-                               std::string("/Input/Forbild/thorax.txt");
+  std::string configFileName = std::string(RTK_DATA_ROOT) + std::string("/Input/Forbild/thorax.txt");
 
   // Shepp Logan projections filter
   std::cout << "\n\n****** Projecting ******" << std::endl;
   using ProjectGPType = rtk::ProjectGeometricPhantomImageFilter<OutputImageType, OutputImageType>;
   ProjectGPType::Pointer pgp = ProjectGPType::New();
-  pgp->SetInput( projectionsSource->GetOutput() );
+  pgp->SetInput(projectionsSource->GetOutput());
   pgp->SetGeometry(geometry);
   pgp->SetPhantomScale(1.2);
   pgp->SetConfigFile(configFileName);
   pgp->SetIsForbildConfigFile(true);
   pgp->SetRotationMatrix(rotMat);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( pgp->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(pgp->Update());
 
   // Create a reference object (in this case a 3D phantom reference).
   std::cout << "\n\n****** Drawing ******" << std::endl;
   using DrawGPType = rtk::DrawGeometricPhantomImageFilter<OutputImageType, OutputImageType>;
   DrawGPType::Pointer dgp = DrawGPType::New();
-  dgp->SetInput( tomographySource->GetOutput() );
+  dgp->SetInput(tomographySource->GetOutput());
   dgp->SetPhantomScale(1.2);
   dgp->SetConfigFile(configFileName);
   dgp->SetIsForbildConfigFile(true);
   dgp->SetRotationMatrix(rotMat);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( dgp->Update() )
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(dgp->Update())
 
   // FDK reconstruction filtering
   std::cout << "\n\n****** Reconstructing ******" << std::endl;
-  using FDKType = rtk::FDKConeBeamReconstructionFilter< OutputImageType >;
+  using FDKType = rtk::FDKConeBeamReconstructionFilter<OutputImageType>;
   FDKType::Pointer feldkamp = FDKType::New();
-  feldkamp->SetInput( 0, tomographySource->GetOutput() );
-  feldkamp->SetInput( 1, pgp->GetOutput() );
-  feldkamp->SetGeometry( geometry );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( feldkamp->Update() );
+  feldkamp->SetInput(0, tomographySource->GetOutput());
+  feldkamp->SetInput(1, pgp->GetOutput());
+  feldkamp->SetGeometry(geometry);
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(feldkamp->Update());
 
   CheckImageQuality<OutputImageType>(feldkamp->GetOutput(), dgp->GetOutput(), 0.065, 24, 2.0);
   std::cout << "Test PASSED! " << std::endl;

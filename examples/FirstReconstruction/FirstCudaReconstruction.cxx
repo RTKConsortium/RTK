@@ -8,30 +8,31 @@
 // ITK includes
 #include <itkImageFileWriter.h>
 
-int main(int argc, char **argv)
+int
+main(int argc, char ** argv)
 {
-  if(argc<3)
-    {
+  if (argc < 3)
+  {
     std::cout << "Usage: FirstReconstruction <outputimage> <outputgeometry>" << std::endl;
     return EXIT_FAILURE;
-    }
+  }
 
   // Defines the image type
-  using ImageType = itk::CudaImage< float, 3 >;
+  using ImageType = itk::CudaImage<float, 3>;
 
   // Defines the RTK geometry object
   using GeometryType = rtk::ThreeDCircularProjectionGeometry;
   GeometryType::Pointer geometry = GeometryType::New();
-  unsigned int numberOfProjections = 360;
-  double firstAngle = 0;
-  double angularArc = 360;
-  unsigned int sid = 600; // source to isocenter distance
-  unsigned int sdd = 1200; // source to detector distance
-  for(unsigned int noProj=0; noProj<numberOfProjections; noProj++)
-    {
+  unsigned int          numberOfProjections = 360;
+  double                firstAngle = 0;
+  double                angularArc = 360;
+  unsigned int          sid = 600;  // source to isocenter distance
+  unsigned int          sdd = 1200; // source to detector distance
+  for (unsigned int noProj = 0; noProj < numberOfProjections; noProj++)
+  {
     double angle = firstAngle + noProj * angularArc / numberOfProjections;
     geometry->AddProjection(sid, sdd, angle);
-    }
+  }
 
   // Write the geometry to disk
   rtk::ThreeDCircularProjectionGeometryXMLFileWriter::Pointer xmlWriter;
@@ -41,11 +42,11 @@ int main(int argc, char **argv)
   xmlWriter->WriteFile();
 
   // Create a stack of empty projection images
-  using ConstantImageSourceType = rtk::ConstantImageSource< ImageType >;
-  ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
-  ConstantImageSourceType::PointType origin;
+  using ConstantImageSourceType = rtk::ConstantImageSource<ImageType>;
+  ConstantImageSourceType::Pointer     constantImageSource = ConstantImageSourceType::New();
+  ConstantImageSourceType::PointType   origin;
   ConstantImageSourceType::SpacingType spacing;
-  ConstantImageSourceType::SizeType sizeOutput;
+  ConstantImageSourceType::SizeType    sizeOutput;
 
   origin[0] = -127;
   origin[1] = -127;
@@ -62,13 +63,13 @@ int main(int argc, char **argv)
   constantImageSource->SetSize(sizeOutput);
   constantImageSource->SetConstant(0.);
 
-   // Create projections of an ellipse
+  // Create projections of an ellipse
   using REIType = rtk::RayEllipsoidIntersectionImageFilter<ImageType, ImageType>;
-  REIType::Pointer rei = REIType::New();
+  REIType::Pointer    rei = REIType::New();
   REIType::VectorType semiprincipalaxis, center;
   semiprincipalaxis.Fill(50.);
   center.Fill(0.);
-  center[2]=10.;
+  center[2] = 10.;
   rei->SetDensity(2.);
   rei->SetAngle(0.);
   rei->SetCenter(center);
@@ -114,4 +115,3 @@ int main(int argc, char **argv)
   std::cout << "Done!" << std::endl;
   return EXIT_SUCCESS;
 }
-

@@ -10,7 +10,8 @@
 /**
  * \file rtkdecomposespectralprojectionstest.cxx
  *
- * \brief Functional test for the filters performing spectral forward model and spectral projections' material decomposition
+ * \brief Functional test for the filters performing spectral forward model and spectral projections' material
+ * decomposition
  *
  * This test generates analytical projections of a small phantom made of cylinder of water,
  * iodine and gadolinium, computes the expected photon counts in each detector bin in the
@@ -20,7 +21,8 @@
  * \author Cyril Mory
  */
 
-int main(int argc, char*argv[])
+int
+main(int argc, char * argv[])
 {
   if (argc < 4)
   {
@@ -31,19 +33,19 @@ int main(int argc, char*argv[])
 
   using PixelValueType = float;
   constexpr unsigned int Dimension = 3;
-  using OutputImageType = itk::Image< PixelValueType, Dimension >;
+  using OutputImageType = itk::Image<PixelValueType, Dimension>;
 
-  using DecomposedProjectionType = itk::VectorImage< PixelValueType, Dimension >;
+  using DecomposedProjectionType = itk::VectorImage<PixelValueType, Dimension>;
 
-  using SpectralProjectionsType = itk::VectorImage< PixelValueType, Dimension >;
+  using SpectralProjectionsType = itk::VectorImage<PixelValueType, Dimension>;
 
-  using IncidentSpectrumImageType = itk::VectorImage< PixelValueType, Dimension-1 >;
+  using IncidentSpectrumImageType = itk::VectorImage<PixelValueType, Dimension - 1>;
   using IncidentSpectrumReaderType = itk::ImageFileReader<IncidentSpectrumImageType>;
 
-  using DetectorResponseImageType = itk::Image< PixelValueType, Dimension-1 >;
+  using DetectorResponseImageType = itk::Image<PixelValueType, Dimension - 1>;
   using DetectorResponseReaderType = itk::ImageFileReader<DetectorResponseImageType>;
 
-  using MaterialAttenuationsImageType = itk::Image< PixelValueType, Dimension-1 >;
+  using MaterialAttenuationsImageType = itk::Image<PixelValueType, Dimension - 1>;
   using MaterialAttenuationsReaderType = itk::ImageFileReader<MaterialAttenuationsImageType>;
 
   // Read all inputs
@@ -66,9 +68,9 @@ int main(int argc, char*argv[])
 #endif
 
   // Constant image source for the analytical projections calculation
-  using ConstantImageSourceType = rtk::ConstantImageSource< OutputImageType >;
-  ConstantImageSourceType::PointType origin;
-  ConstantImageSourceType::SizeType size;
+  using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
+  ConstantImageSourceType::PointType   origin;
+  ConstantImageSourceType::SizeType    size;
   ConstantImageSourceType::SpacingType spacing;
 
   ConstantImageSourceType::Pointer projectionsSource = ConstantImageSourceType::New();
@@ -90,18 +92,18 @@ int main(int argc, char*argv[])
   spacing[1] = 1.;
   spacing[2] = 1.;
 #endif
-  projectionsSource->SetOrigin( origin );
-  projectionsSource->SetSpacing( spacing );
-  projectionsSource->SetSize( size );
-  projectionsSource->SetConstant( 0. );
+  projectionsSource->SetOrigin(origin);
+  projectionsSource->SetSpacing(spacing);
+  projectionsSource->SetSize(size);
+  projectionsSource->SetConstant(0.);
 
   // Initialize the multi-materials projections
   DecomposedProjectionType::Pointer decomposed = DecomposedProjectionType::New();
   decomposed->SetVectorLength(3);
-  decomposed->SetOrigin( origin );
-  decomposed->SetSpacing( spacing );
+  decomposed->SetOrigin(origin);
+  decomposed->SetSpacing(spacing);
   DecomposedProjectionType::RegionType region;
-  DecomposedProjectionType::IndexType index;
+  DecomposedProjectionType::IndexType  index;
   index.Fill(0);
   region.SetSize(size);
   region.SetIndex(index);
@@ -111,48 +113,48 @@ int main(int argc, char*argv[])
   // Geometry object
   using GeometryType = rtk::ThreeDCircularProjectionGeometry;
   GeometryType::Pointer geometry = GeometryType::New();
-  for(unsigned int noProj=0; noProj<NumberOfProjectionImages; noProj++)
-    geometry->AddProjection(600., 1200., noProj*360./NumberOfProjectionImages);
+  for (unsigned int noProj = 0; noProj < NumberOfProjectionImages; noProj++)
+    geometry->AddProjection(600., 1200., noProj * 360. / NumberOfProjectionImages);
 
   // Generate 3 phantoms, one per material
   using REIType = rtk::RayEllipsoidIntersectionImageFilter<OutputImageType, OutputImageType>;
   REIType::Pointer rei;
   rei = REIType::New();
-  for (unsigned int material=0; material<3; material++)
-    {
+  for (unsigned int material = 0; material < 3; material++)
+  {
     REIType::VectorType semiprincipalaxis, center;
     semiprincipalaxis.Fill(10.);
     center.Fill(0.);
-//    center[0] = (material-1) * 15;
-//    center[2] = (material-1) * 15;
+    //    center[0] = (material-1) * 15;
+    //    center[2] = (material-1) * 15;
     center[0] = 15;
     center[2] = 15;
     rei->SetAngle(0.);
-    if (material==2) //water
+    if (material == 2) // water
       rei->SetDensity(1.);
-    else //iodine and gadolinium
+    else // iodine and gadolinium
       rei->SetDensity(0.01);
     rei->SetCenter(center);
     rei->SetAxis(semiprincipalaxis);
 
     // Compute analytical projections through them
-    rei->SetInput( projectionsSource->GetOutput() );
-    rei->SetGeometry( geometry );
-    TRY_AND_EXIT_ON_ITK_EXCEPTION( rei->Update() );
+    rei->SetInput(projectionsSource->GetOutput());
+    rei->SetGeometry(geometry);
+    TRY_AND_EXIT_ON_ITK_EXCEPTION(rei->Update());
 
     // Merge these projections into the multi-material projections image
     itk::ImageRegionConstIterator<OutputImageType> inIt(rei->GetOutput(), rei->GetOutput()->GetLargestPossibleRegion());
     itk::ImageRegionIterator<DecomposedProjectionType> outIt(decomposed, decomposed->GetLargestPossibleRegion());
     outIt.GoToBegin();
-    while(!outIt.IsAtEnd())
-      {
+    while (!outIt.IsAtEnd())
+    {
       itk::VariableLengthVector<PixelValueType> vector = outIt.Get();
       vector[material] = inIt.Get();
       outIt.Set(vector);
       ++inIt;
       ++outIt;
-      }
     }
+  }
 
   // Generate a set of zero-filled photon count projections
   SpectralProjectionsType::Pointer photonCounts = SpectralProjectionsType::New();
@@ -172,7 +174,8 @@ int main(int argc, char*argv[])
   thresholds[6] = 180;
 
   // Apply the forward model to the multi-material projections
-  using SpectralForwardFilterType = rtk::SpectralForwardModelImageFilter<DecomposedProjectionType, SpectralProjectionsType, IncidentSpectrumImageType>;
+  using SpectralForwardFilterType =
+    rtk::SpectralForwardModelImageFilter<DecomposedProjectionType, SpectralProjectionsType, IncidentSpectrumImageType>;
   SpectralForwardFilterType::Pointer forward = SpectralForwardFilterType::New();
   forward->SetInputDecomposedProjections(decomposed);
   forward->SetInputMeasuredProjections(photonCounts);
@@ -198,7 +201,9 @@ int main(int argc, char*argv[])
   initialDecomposedProjections->FillBuffer(initPixel);
 
   // Create and set the simplex filter to perform the decomposition
-  using SimplexFilterType = rtk::SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionType, SpectralProjectionsType, IncidentSpectrumImageType>;
+  using SimplexFilterType = rtk::SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionType,
+                                                                                    SpectralProjectionsType,
+                                                                                    IncidentSpectrumImageType>;
   SimplexFilterType::Pointer simplex = SimplexFilterType::New();
   simplex->SetInputDecomposedProjections(initialDecomposedProjections);
   simplex->SetInputMeasuredProjections(forward->GetOutput());

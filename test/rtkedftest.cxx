@@ -14,7 +14,8 @@
  * \author Simon Rit
  */
 
-int main(int argc, char*argv[])
+int
+main(int argc, char * argv[])
 {
   if (argc < 3)
   {
@@ -25,25 +26,25 @@ int main(int argc, char*argv[])
 
   using OutputPixelType = float;
   constexpr unsigned int Dimension = 3;
-  using ImageType = itk::Image< OutputPixelType, Dimension >;
+  using ImageType = itk::Image<OutputPixelType, Dimension>;
 
   // 1. ESRF / Edf projections reader
-  using ReaderType = rtk::ProjectionsReader< ImageType >;
-  ReaderType::Pointer reader = ReaderType::New();
+  using ReaderType = rtk::ProjectionsReader<ImageType>;
+  ReaderType::Pointer      reader = ReaderType::New();
   std::vector<std::string> fileNames;
   fileNames.emplace_back(argv[1]);
-  reader->SetFileNames( fileNames );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->Update() );
+  reader->SetFileNames(fileNames);
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(reader->Update());
 
   // Reference projections reader
   ReaderType::Pointer readerRef = ReaderType::New();
   fileNames.clear();
   fileNames.emplace_back(argv[2]);
-  readerRef->SetFileNames( fileNames );
+  readerRef->SetFileNames(fileNames);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(readerRef->Update());
 
   // 2. Compare read projections
-  CheckImageQuality< ImageType >(reader->GetOutput(), readerRef->GetOutput(), 0.00000001, 100, 2.0);
+  CheckImageQuality<ImageType>(reader->GetOutput(), readerRef->GetOutput(), 0.00000001, 100, 2.0);
 
   std::cout << "\n\nTest PASSED! " << std::endl;
   return EXIT_SUCCESS;

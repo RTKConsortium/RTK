@@ -6,15 +6,16 @@
  * \brief Functional test for the classes performing crop filtering
  * \author Julien Jomier
  */
-int main(int , char** )
+int
+main(int, char **)
 {
   constexpr unsigned int Dimension = 3;
   using PixelType = float;
-  using ImageType = itk::CudaImage< PixelType, Dimension >;
+  using ImageType = itk::CudaImage<PixelType, Dimension>;
 
-  ImageType::Pointer image = ImageType::New();
+  ImageType::Pointer    image = ImageType::New();
   ImageType::RegionType region;
-  ImageType::SizeType size;
+  ImageType::SizeType   size;
   size[0] = 50;
   size[1] = 50;
   size[2] = 50;
@@ -28,33 +29,32 @@ int main(int , char** )
   crop->SetInput(image);
 
   ImageType::SizeType upCropSize, lowCropSize;
-  for(unsigned int i=0; i<ImageType::ImageDimension; i++)
-    {
+  for (unsigned int i = 0; i < ImageType::ImageDimension; i++)
+  {
     lowCropSize[i] = 1;
-    upCropSize[i]  = 10;
-    }
+    upCropSize[i] = 10;
+  }
   crop->SetUpperBoundaryCropSize(upCropSize);
   crop->SetLowerBoundaryCropSize(lowCropSize);
 
   try
-    {
+  {
     crop->Update();
-    }
- catch( itk::ExceptionObject & err )
-    {
+  }
+  catch (itk::ExceptionObject & err)
+  {
     std::cerr << err << std::endl;
     exit(EXIT_FAILURE);
-    }
+  }
 
   ImageType::IndexType index;
   index.Fill(2);
 
-  if(fabs(crop->GetOutput()->GetPixel(index)-12.3)>0.0001)
-    {
-    std::cout << "Output should be 12.3. Value Computed = "
-              << crop->GetOutput()->GetPixel(index) << std::endl;
+  if (fabs(crop->GetOutput()->GetPixel(index) - 12.3) > 0.0001)
+  {
+    std::cout << "Output should be 12.3. Value Computed = " << crop->GetOutput()->GetPixel(index) << std::endl;
     return EXIT_FAILURE;
-    }
+  }
 
   std::cout << "Done!" << std::endl;
   std::cout << "\n\nTest PASSED! " << std::endl;

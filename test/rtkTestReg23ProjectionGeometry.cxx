@@ -1,26 +1,28 @@
 //
-//std
+// std
 #include <cstdlib>
 #include <iostream>
 #include <vector>
 #include <cmath>
-//ITK
+// ITK
 #include <itkMersenneTwisterRandomVariateGenerator.h>
 #include <itkEuler3DTransform.h>
 #include <itkVector.h>
 #include <itkPoint.h>
-//RTK/ORA
+// RTK/ORA
 #include "rtkReg23ProjectionGeometry.h"
 
 
 //
 bool Verbose = false; // spam the console
-#define VERBOSE(x) \
-if (Verbose) std::cout x;
+#define VERBOSE(x)                                                                                                     \
+  if (Verbose)                                                                                                         \
+    std::cout x;
 
 
 /** Print command line parameter help. **/
-void PrintHelp(char *binaryName)
+void
+PrintHelp(char * binaryName)
 {
   std::cerr << "\n\n***** TEST: ora::Reg23ProjectionGeometry *****\n\n";
 
@@ -48,11 +50,12 @@ using GeometryType = rtk::Reg23ProjectionGeometry;
  * @param x returned intersection point in WCS
  * @return TRUE if successful intersection was detected
  */
-void IntersectPlaneWithLine(const GeometryType::PointType &S,
-                            const GeometryType::PointType &marker,
-                            const GeometryType::VectorType &n,
-                            const GeometryType::PointType &detectorOrigin,
-                            GeometryType::VectorType &x)
+void
+IntersectPlaneWithLine(const GeometryType::PointType &  S,
+                       const GeometryType::PointType &  marker,
+                       const GeometryType::VectorType & n,
+                       const GeometryType::PointType &  detectorOrigin,
+                       GeometryType::VectorType &       x)
 {
   double num, den;
   double marker1[3];
@@ -61,8 +64,8 @@ void IntersectPlaneWithLine(const GeometryType::PointType &S,
   marker1[1] = marker[1] - S[1];
   marker1[2] = marker[2] - S[2];
 
-  num = (n[0] * detectorOrigin[0] + n[1] * detectorOrigin[1] + n[2] * detectorOrigin[2])
-      - (n[0] * S[0] + n[1] * S[1] + n[2] * S[2]);
+  num = (n[0] * detectorOrigin[0] + n[1] * detectorOrigin[1] + n[2] * detectorOrigin[2]) -
+        (n[0] * S[0] + n[1] * S[1] + n[2] * S[2]);
   den = n[0] * marker1[0] + n[1] * marker1[1] + n[2] * marker1[2];
 
   double t = num / den;
@@ -80,7 +83,8 @@ void IntersectPlaneWithLine(const GeometryType::PointType &S,
  * @param argv run program with "-h" option in order to get more info
  * @return EXIT_SUCCESS if the test approves correctness of the utility class
  */
-int main(int argc, char *argv[])
+int
+main(int argc, char * argv[])
 {
   // parse cmdln args:
   std::string sarg;
@@ -108,17 +112,17 @@ int main(int argc, char *argv[])
   using EulerType = itk::Euler3DTransform<double>;
   using Point2DType = itk::Point<double, 2>;
 
-  GeometryType::PointType sourcePosition;
-  GeometryType::PointType detectorPosition;
-  GeometryType::VectorType detectorRowDirection;
-  GeometryType::VectorType detectorColumnDirection;
+  GeometryType::PointType              sourcePosition;
+  GeometryType::PointType              detectorPosition;
+  GeometryType::VectorType             detectorRowDirection;
+  GeometryType::VectorType             detectorColumnDirection;
   std::vector<GeometryType::PointType> phantomMarkers;
 
   VERBOSE(<< "  * Generating data sets ... ")
   lok = true;
   {
     // determine a few random phantom markers around isocenter
-    constexpr int NUM_PHANTOM_MARKERS = 5;
+    constexpr int       NUM_PHANTOM_MARKERS = 5;
     RandomType::Pointer generator = RandomType::New();
     generator->Initialize(123456);
     GeometryType::PointType p;
@@ -150,30 +154,30 @@ int main(int argc, char *argv[])
   VERBOSE(<< "  * Swirl imaging device, compute reference projections and "
           << "configure RTK projection list ... ")
   lok = true;
-  std::vector<Point2DType> referenceMarkerProjections;
-  std::vector<Point2DType> rtkMarkerProjections;
+  std::vector<Point2DType>             referenceMarkerProjections;
+  std::vector<Point2DType>             rtkMarkerProjections;
   std::vector<GeometryType::PointType> anglesList;
-  GeometryType::PointType aaa;
-  GeometryType::Pointer rtkProjectionsList = GeometryType::New();
+  GeometryType::PointType              aaa;
+  GeometryType::Pointer                rtkProjectionsList = GeometryType::New();
   {
     const double degreesToRadians = atan(1.0) / 45.;
 
     RandomType::Pointer generator = RandomType::New();
     generator->Initialize(123456);
 
-    GeometryType::PointType locSourcePosition;
-    GeometryType::PointType locDetectorPosition;
-    GeometryType::VectorType locDetectorPositionVec;
-    GeometryType::VectorType locDetectorRowDirection;
-    GeometryType::VectorType locDetectorColumnDirection;
-    GeometryType::VectorType n;
-    GeometryType::VectorType X;
-    Point2DType p2d;
-    GeometryType::MatrixType rtkMatrix;
+    GeometryType::PointType             locSourcePosition;
+    GeometryType::PointType             locDetectorPosition;
+    GeometryType::VectorType            locDetectorPositionVec;
+    GeometryType::VectorType            locDetectorRowDirection;
+    GeometryType::VectorType            locDetectorColumnDirection;
+    GeometryType::VectorType            n;
+    GeometryType::VectorType            X;
+    Point2DType                         p2d;
+    GeometryType::MatrixType            rtkMatrix;
     GeometryType::HomogeneousVectorType hv;
-    GeometryType::VectorType tmp;
+    GeometryType::VectorType            tmp;
 
-    EulerType::Pointer eu = EulerType::New();
+    EulerType::Pointer  eu = EulerType::New();
     std::vector<double> gantryAngles;
     std::vector<double> outOfPlaneAngles;
     std::vector<double> inPlaneAngles;
@@ -216,9 +220,8 @@ int main(int argc, char *argv[])
           rtkProjectionsList->Clear(); // reduce required memory
 
           // "swirl" the device around (not only circular trajectory, spherical):
-          eu->SetRotation(outOfPlaneAngle * degreesToRadians,
-                          gantryAngle * degreesToRadians,
-                          inPlaneAngle * degreesToRadians);
+          eu->SetRotation(
+            outOfPlaneAngle * degreesToRadians, gantryAngle * degreesToRadians, inPlaneAngle * degreesToRadians);
           locSourcePosition = eu->TransformPoint(sourcePosition);
           locDetectorPosition = eu->TransformPoint(detectorPosition);
           locDetectorRowDirection = eu->TransformVector(detectorRowDirection);
@@ -237,21 +240,16 @@ int main(int argc, char *argv[])
           for (const GeometryType::PointType & phantomMarker : phantomMarkers)
           {
             n = itk::CrossProduct(locDetectorRowDirection, locDetectorColumnDirection);
-            IntersectPlaneWithLine(locSourcePosition, phantomMarker, n,
-                                   locDetectorPosition, X);
-            p2d[0] = X * locDetectorRowDirection
-                - locDetectorPositionVec * locDetectorRowDirection;
-            p2d[1] = X * locDetectorColumnDirection
-                - locDetectorPositionVec * locDetectorColumnDirection;
+            IntersectPlaneWithLine(locSourcePosition, phantomMarker, n, locDetectorPosition, X);
+            p2d[0] = X * locDetectorRowDirection - locDetectorPositionVec * locDetectorRowDirection;
+            p2d[1] = X * locDetectorColumnDirection - locDetectorPositionVec * locDetectorColumnDirection;
 
             referenceMarkerProjections.push_back(p2d);
           }
 
           // add to RTK projection list using the new method:
-          if (!rtkProjectionsList->AddReg23Projection(locSourcePosition,
-                                                      locDetectorPosition,
-                                                      locDetectorRowDirection,
-                                                      locDetectorColumnDirection))
+          if (!rtkProjectionsList->AddReg23Projection(
+                locSourcePosition, locDetectorPosition, locDetectorRowDirection, locDetectorColumnDirection))
           {
             lok = false;
           }
@@ -288,7 +286,7 @@ int main(int argc, char *argv[])
   lok = true;
   {
     const double EPSILON = 1e-3; // im unit is mm -> correct in um-range
-    std::size_t fails = 0;
+    std::size_t  fails = 0;
     if (referenceMarkerProjections.size() == rtkMarkerProjections.size())
     {
       for (std::size_t i = 0; i < referenceMarkerProjections.size(); ++i)
@@ -296,11 +294,9 @@ int main(int argc, char *argv[])
         if (fabs(referenceMarkerProjections[i][0] - rtkMarkerProjections[i][0]) > EPSILON ||
             fabs(referenceMarkerProjections[i][1] - rtkMarkerProjections[i][1]) > EPSILON)
         {
-          VERBOSE(<< "\nAngle-combination out-of-plane=" << anglesList[i][0]
-                  << ", gantry=" << anglesList[i][1]
+          VERBOSE(<< "\nAngle-combination out-of-plane=" << anglesList[i][0] << ", gantry=" << anglesList[i][1]
                   << ", in-plane=" << anglesList[i][2] << " failed:\n")
-          VERBOSE(<< "  " << referenceMarkerProjections[i] << " vs. "
-                  << rtkMarkerProjections[i] << "\n")
+          VERBOSE(<< "  " << referenceMarkerProjections[i] << " vs. " << rtkMarkerProjections[i] << "\n")
           lok = false;
           fails++;
         }

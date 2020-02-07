@@ -20,15 +20,16 @@
  * \author Antoine Robert
  */
 
-int main(int , char** )
+int
+main(int, char **)
 {
   constexpr unsigned int Dimension = 3;
   using OutputPixelType = float;
 
 #ifdef USE_CUDA
-  using OutputImageType = itk::CudaImage< OutputPixelType, Dimension >;
+  using OutputImageType = itk::CudaImage<OutputPixelType, Dimension>;
 #else
-  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
+  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
 #endif
 
   using VectorType = itk::Vector<double, 3>;
@@ -39,9 +40,9 @@ int main(int , char** )
 #endif
 
   // Constant image sources
-  using ConstantImageSourceType = rtk::ConstantImageSource< OutputImageType >;
-  ConstantImageSourceType::PointType origin;
-  ConstantImageSourceType::SizeType size;
+  using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
+  ConstantImageSourceType::PointType   origin;
+  ConstantImageSourceType::SizeType    size;
   ConstantImageSourceType::SpacingType spacing;
 
   // Create Joseph Forward Projector volume input.
@@ -64,20 +65,20 @@ int main(int , char** )
   spacing[1] = 4.;
   spacing[2] = 4.;
 #endif
-  volInput->SetOrigin( origin );
-  volInput->SetSpacing( spacing );
-  volInput->SetSize( size );
-  volInput->SetConstant( 1. );
+  volInput->SetOrigin(origin);
+  volInput->SetSpacing(spacing);
+  volInput->SetSize(size);
+  volInput->SetConstant(1.);
   volInput->UpdateOutputInformation();
 
   // Initialization Volume, it is used in the Zeng Forward Projector and in the
   // Ray Box Intersection Filter in order to initialize the stack of projections.
   const ConstantImageSourceType::Pointer projInput = ConstantImageSourceType::New();
   size[2] = NumberOfProjectionImages;
-  projInput->SetOrigin( origin );
-  projInput->SetSpacing( spacing );
-  projInput->SetSize( size );
-  projInput->SetConstant( 0. );
+  projInput->SetOrigin(origin);
+  projInput->SetSpacing(spacing);
+  projInput->SetSize(size);
+  projInput->SetConstant(0.);
   projInput->Update();
 
   // Zeng Forward Projection filter
@@ -85,21 +86,21 @@ int main(int , char** )
 
   JFPType::Pointer jfp = JFPType::New();
   jfp->InPlaceOff();
-  jfp->SetInput( projInput->GetOutput() );
-  jfp->SetInput( 1, volInput->GetOutput() );
+  jfp->SetInput(projInput->GetOutput());
+  jfp->SetInput(1, volInput->GetOutput());
 
   // Ray Box Intersection filter (reference)
   using RBIType = rtk::RayBoxIntersectionImageFilter<OutputImageType, OutputImageType>;
   RBIType::Pointer rbi = RBIType::New();
   rbi->InPlaceOff();
-  rbi->SetInput( projInput->GetOutput() );
+  rbi->SetInput(projInput->GetOutput());
   VectorType boxMin, boxMax;
   boxMin[0] = -128;
   boxMin[1] = -128;
   boxMin[2] = -128;
-  boxMax[0] =  128;
-  boxMax[1] =  128;
-  boxMax[2] =  128;
+  boxMax[0] = 128;
+  boxMax[1] = 128;
+  boxMax[2] = 128;
   rbi->SetBoxMin(boxMin);
   rbi->SetBoxMax(boxMax);
 
@@ -107,12 +108,12 @@ int main(int , char** )
 
   using GeometryType = rtk::ThreeDCircularProjectionGeometry;
   GeometryType::Pointer geometry = GeometryType::New();
-  for(unsigned int i=0; i<NumberOfProjectionImages;i++)
+  for (unsigned int i = 0; i < NumberOfProjectionImages; i++)
   {
-    geometry->AddProjection(500, 0, i*360./NumberOfProjectionImages);
+    geometry->AddProjection(500, 0, i * 360. / NumberOfProjectionImages);
   }
 
-  rbi->SetGeometry( geometry );
+  rbi->SetGeometry(geometry);
   rbi->Update();
 
   jfp->SetGeometry(geometry);

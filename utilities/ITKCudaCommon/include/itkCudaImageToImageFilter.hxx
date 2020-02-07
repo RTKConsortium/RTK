@@ -26,8 +26,7 @@ namespace itk
 template <class TInputImage, class TOutputImage, class TParentImageFilter>
 CudaImageToImageFilter<TInputImage, TOutputImage, TParentImageFilter>::CudaImageToImageFilter()
   : m_GPUEnabled(true)
-{
-}
+{}
 
 template <class TInputImage, class TOutputImage, class TParentImageFilter>
 CudaImageToImageFilter<TInputImage, TOutputImage, TParentImageFilter>::~CudaImageToImageFilter()

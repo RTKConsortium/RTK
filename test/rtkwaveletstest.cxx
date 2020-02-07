@@ -5,17 +5,18 @@
 #include "rtkDeconstructSoftThresholdReconstructImageFilter.h"
 #include "rtkMacro.h"
 
-template<class TImage>
+template <class TImage>
 #if FAST_TESTS_NO_CHECKS
-void CheckImageQuality(typename TImage::Pointer itkNotUsed(recon), typename TImage::Pointer itkNotUsed(ref))
-{
-}
+void
+CheckImageQuality(typename TImage::Pointer itkNotUsed(recon), typename TImage::Pointer itkNotUsed(ref))
+{}
 #else
-void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer ref)
+void
+CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer ref)
 {
   using ImageIteratorType = itk::ImageRegionConstIterator<TImage>;
-  ImageIteratorType itTest( recon, recon->GetBufferedRegion() );
-  ImageIteratorType itRef( ref, ref->GetBufferedRegion() );
+  ImageIteratorType itTest(recon, recon->GetBufferedRegion());
+  ImageIteratorType itRef(ref, ref->GetBufferedRegion());
 
   using ErrorType = double;
   ErrorType TestError = 0.;
@@ -24,40 +25,38 @@ void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer 
   itTest.GoToBegin();
   itRef.GoToBegin();
 
-  while( !itRef.IsAtEnd() )
-    {
+  while (!itRef.IsAtEnd())
+  {
     typename TImage::PixelType TestVal = itTest.Get();
     typename TImage::PixelType RefVal = itRef.Get();
     TestError += itk::Math::abs(RefVal - TestVal);
     EnerError += std::pow(ErrorType(RefVal - TestVal), 2.);
     ++itTest;
     ++itRef;
-    }
+  }
   // Error per Pixel
-  ErrorType ErrorPerPixel = TestError/ref->GetBufferedRegion().GetNumberOfPixels();
+  ErrorType ErrorPerPixel = TestError / ref->GetBufferedRegion().GetNumberOfPixels();
   std::cout << "\nError per Pixel = " << ErrorPerPixel << std::endl;
   // MSE
-  ErrorType MSE = EnerError/ref->GetBufferedRegion().GetNumberOfPixels();
+  ErrorType MSE = EnerError / ref->GetBufferedRegion().GetNumberOfPixels();
   std::cout << "MSE = " << MSE << std::endl;
   // PSNR
-  ErrorType PSNR = 20*log10(2.0) - 10*log10(MSE);
+  ErrorType PSNR = 20 * log10(2.0) - 10 * log10(MSE);
   std::cout << "PSNR = " << PSNR << "dB" << std::endl;
   // QI
-  ErrorType QI = (2.0-ErrorPerPixel)/2.0;
+  ErrorType QI = (2.0 - ErrorPerPixel) / 2.0;
   std::cout << "QI = " << QI << std::endl;
 
   // Checking results
   if (ErrorPerPixel > 0.032)
   {
-    std::cerr << "Test Failed, Error per pixel not valid! "
-              << ErrorPerPixel << " instead of 0.08" << std::endl;
-    exit( EXIT_FAILURE);
+    std::cerr << "Test Failed, Error per pixel not valid! " << ErrorPerPixel << " instead of 0.08" << std::endl;
+    exit(EXIT_FAILURE);
   }
   if (PSNR < 28)
   {
-    std::cerr << "Test Failed, PSNR not valid! "
-              << PSNR << " instead of 23" << std::endl;
-    exit( EXIT_FAILURE);
+    std::cerr << "Test Failed, PSNR not valid! " << PSNR << " instead of 23" << std::endl;
+    exit(EXIT_FAILURE);
   }
 }
 #endif
@@ -73,19 +72,20 @@ void CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer 
  * \author Cyril Mory
  */
 
-int main(int, char** )
+int
+main(int, char **)
 {
   using OutputPixelType = float;
   constexpr unsigned int Dimension = 3;
 
-  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
+  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
   // Random image sources
-  using RandomImageSourceType = itk::RandomImageSource< OutputImageType >;
-  RandomImageSourceType::Pointer randomVolumeSource  = RandomImageSourceType::New();
+  using RandomImageSourceType = itk::RandomImageSource<OutputImageType>;
+  RandomImageSourceType::Pointer randomVolumeSource = RandomImageSourceType::New();
 
   // Image meta data
-  RandomImageSourceType::PointType origin;
-  RandomImageSourceType::SizeType size;
+  RandomImageSourceType::PointType   origin;
+  RandomImageSourceType::SizeType    size;
   RandomImageSourceType::SpacingType spacing;
 
   // Volume metadata
@@ -105,29 +105,28 @@ int main(int, char** )
   spacing[2] = 4.;
 #endif
   origin.Fill(0.);
-  randomVolumeSource->SetOrigin( origin );
-  randomVolumeSource->SetSpacing( spacing );
-  randomVolumeSource->SetSize( size );
-  randomVolumeSource->SetMin( 0. );
-  randomVolumeSource->SetMax( 1. );
-#if ITK_VERSION_MAJOR<5
-  randomVolumeSource->SetNumberOfThreads(2); //With 1, it's deterministic
+  randomVolumeSource->SetOrigin(origin);
+  randomVolumeSource->SetSpacing(spacing);
+  randomVolumeSource->SetSize(size);
+  randomVolumeSource->SetMin(0.);
+  randomVolumeSource->SetMax(1.);
+#if ITK_VERSION_MAJOR < 5
+  randomVolumeSource->SetNumberOfThreads(2); // With 1, it's deterministic
 #else
-  randomVolumeSource->SetNumberOfWorkUnits(2); //With 1, it's deterministic
+  randomVolumeSource->SetNumberOfWorkUnits(2); // With 1, it's deterministic
 #endif
 
   // Update the source
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( randomVolumeSource->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(randomVolumeSource->Update());
 
   // Wavelets deconstruction and reconstruction
-  typedef rtk::DeconstructSoftThresholdReconstructImageFilter
-      <OutputImageType>  DeconstructReconstructFilterType;
+  typedef rtk::DeconstructSoftThresholdReconstructImageFilter<OutputImageType> DeconstructReconstructFilterType;
   DeconstructReconstructFilterType::Pointer wavelets = DeconstructReconstructFilterType::New();
-  wavelets->SetInput( randomVolumeSource->GetOutput() );
-  wavelets->SetNumberOfLevels( 3 );
-  wavelets->SetOrder( 3 );
-  wavelets->SetThreshold( 0 );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( wavelets->Update() );
+  wavelets->SetInput(randomVolumeSource->GetOutput());
+  wavelets->SetNumberOfLevels(3);
+  wavelets->SetOrder(3);
+  wavelets->SetThreshold(0);
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(wavelets->Update());
 
   CheckImageQuality<OutputImageType>(wavelets->GetOutput(), randomVolumeSource->GetOutput());
 

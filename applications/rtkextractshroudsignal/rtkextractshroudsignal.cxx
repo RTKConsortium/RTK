@@ -27,12 +27,12 @@
 #include <itkRawImageIO.h>
 #include <fstream>
 
-template<class TSignalType>
+template <class TSignalType>
 void
-WriteSignalToTextFile(TSignalType *sig, const std::string &fileName)
+WriteSignalToTextFile(TSignalType * sig, const std::string & fileName)
 {
-  std::ofstream ofs( fileName.c_str() );
-  itk::ImageRegionConstIterator<TSignalType> it( sig, sig->GetLargestPossibleRegion() );
+  std::ofstream                              ofs(fileName.c_str());
+  itk::ImageRegionConstIterator<TSignalType> it(sig, sig->GetLargestPossibleRegion());
   for (it.GoToBegin(); !it.IsAtEnd(); ++it)
   {
     ofs << it.Get() << std::endl;
@@ -40,7 +40,8 @@ WriteSignalToTextFile(TSignalType *sig, const std::string &fileName)
   ofs.close();
 }
 
-int main(int argc, char * argv[])
+int
+main(int argc, char * argv[])
 {
   GGO(rtkextractshroudsignal, args_info);
 
@@ -48,8 +49,8 @@ int main(int argc, char * argv[])
   using OutputPixelType = double;
   constexpr unsigned int Dimension = 2;
 
-  using InputImageType = itk::Image< InputPixelType, Dimension >;
-  using OutputImageType = itk::Image< OutputPixelType, Dimension - 1 >;
+  using InputImageType = itk::Image<InputPixelType, Dimension>;
+  using OutputImageType = itk::Image<OutputPixelType, Dimension - 1>;
 
   // Read
   itk::ImageFileReader<InputImageType>::Pointer reader = itk::ImageFileReader<InputImageType>::New();
@@ -66,17 +67,17 @@ int main(int argc, char * argv[])
     }
     using shroudFilterType = rtk::DPExtractShroudSignalImageFilter<InputPixelType, OutputPixelType>;
     shroudFilterType::Pointer shroudFilter = shroudFilterType::New();
-    shroudFilter->SetInput( reader->GetOutput() );
-    shroudFilter->SetAmplitude( args_info.amplitude_arg );
-    TRY_AND_EXIT_ON_ITK_EXCEPTION( shroudFilter->Update() )
+    shroudFilter->SetInput(reader->GetOutput());
+    shroudFilter->SetAmplitude(args_info.amplitude_arg);
+    TRY_AND_EXIT_ON_ITK_EXCEPTION(shroudFilter->Update())
     shroudSignal = shroudFilter->GetOutput();
   }
   else if (std::string(args_info.method_arg) == "Reg1D")
   {
     using shroudFilterType = rtk::Reg1DExtractShroudSignalImageFilter<InputPixelType, OutputPixelType>;
     shroudFilterType::Pointer shroudFilter = shroudFilterType::New();
-    shroudFilter->SetInput( reader->GetOutput() );
-    TRY_AND_EXIT_ON_ITK_EXCEPTION( shroudFilter->Update() )
+    shroudFilter->SetInput(reader->GetOutput());
+    TRY_AND_EXIT_ON_ITK_EXCEPTION(shroudFilter->Update())
     shroudSignal = shroudFilter->GetOutput();
   }
   else
@@ -89,18 +90,18 @@ int main(int argc, char * argv[])
   WriteSignalToTextFile(shroudSignal.GetPointer(), args_info.output_arg);
 
   // Process phase signal if required
-  if(args_info.phase_given)
-    {
+  if (args_info.phase_given)
+  {
     using PhaseFilter = rtk::ExtractPhaseImageFilter<OutputImageType>;
     PhaseFilter::Pointer phase = PhaseFilter::New();
     phase->SetInput(shroudSignal);
     phase->SetMovingAverageSize(args_info.movavg_arg);
     phase->SetUnsharpMaskSize(args_info.unsharp_arg);
     phase->SetModel((PhaseFilter::ModelType)args_info.model_arg);
-    TRY_AND_EXIT_ON_ITK_EXCEPTION( phase->Update() )
+    TRY_AND_EXIT_ON_ITK_EXCEPTION(phase->Update())
 
     WriteSignalToTextFile(phase->GetOutput(), args_info.phase_arg);
-    }
+  }
 
   return EXIT_SUCCESS;
 }

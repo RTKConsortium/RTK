@@ -24,7 +24,8 @@
 
 #include <itkRegularExpressionSeriesFileNames.h>
 
-int main(int argc, char * argv[])
+int
+main(int argc, char * argv[])
 {
   GGO(rtkvarianobigeometry, args_info);
 
@@ -32,15 +33,15 @@ int main(int argc, char * argv[])
   rtk::VarianObiGeometryReader::Pointer reader;
   reader = rtk::VarianObiGeometryReader::New();
   reader->SetXMLFileName(args_info.xml_file_arg);
-  reader->SetProjectionsFileNames( rtk::GetProjectionsFileNamesFromGgo(args_info) );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->UpdateOutputData() )
+  reader->SetProjectionsFileNames(rtk::GetProjectionsFileNamesFromGgo(args_info));
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(reader->UpdateOutputData())
 
   // Write
   rtk::ThreeDCircularProjectionGeometryXMLFileWriter::Pointer xmlWriter =
     rtk::ThreeDCircularProjectionGeometryXMLFileWriter::New();
   xmlWriter->SetFilename(args_info.output_arg);
-  xmlWriter->SetObject( reader->GetGeometry() );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( xmlWriter->WriteFile() )
+  xmlWriter->SetObject(reader->GetGeometry());
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(xmlWriter->WriteFile())
 
   return EXIT_SUCCESS;
 }

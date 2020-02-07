@@ -3,8 +3,9 @@
 #include "rtkTotalVariationDenoisingBPDQImageFilter.h"
 #include "rtkMacro.h"
 
-template<class TImage>
-void CheckTotalVariation(typename TImage::Pointer before, typename TImage::Pointer after)
+template <class TImage>
+void
+CheckTotalVariation(typename TImage::Pointer before, typename TImage::Pointer after)
 {
   using TotalVariationFilterType = rtk::TotalVariationImageFilter<TImage>;
   typename TotalVariationFilterType::Pointer tv = TotalVariationFilterType::New();
@@ -23,10 +24,10 @@ void CheckTotalVariation(typename TImage::Pointer before, typename TImage::Point
   std::cout << "Total variation after denoising is " << totalVariationAfter << std::endl;
 
   // Checking results
-  if (totalVariationBefore/2 < totalVariationAfter)
+  if (totalVariationBefore / 2 < totalVariationAfter)
   {
     std::cerr << "Test Failed: total variation was not reduced enough" << std::endl;
-    exit( EXIT_FAILURE);
+    exit(EXIT_FAILURE);
   }
 }
 
@@ -46,28 +47,27 @@ void CheckTotalVariation(typename TImage::Pointer before, typename TImage::Point
  * \author Cyril Mory
  */
 
-int main(int, char** )
+int
+main(int, char **)
 {
   using OutputPixelType = float;
   constexpr unsigned int Dimension = 3;
 
 #ifdef USE_CUDA
-  using OutputImageType = itk::CudaImage< OutputPixelType, Dimension >;
-  using GradientOutputImageType = itk::CudaImage< itk::CovariantVector
-      < OutputPixelType, Dimension >, Dimension >;
+  using OutputImageType = itk::CudaImage<OutputPixelType, Dimension>;
+  using GradientOutputImageType = itk::CudaImage<itk::CovariantVector<OutputPixelType, Dimension>, Dimension>;
 #else
-  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
-  using GradientOutputImageType = itk::Image< itk::CovariantVector
-      < OutputPixelType, Dimension >, Dimension >;
+  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
+  using GradientOutputImageType = itk::Image<itk::CovariantVector<OutputPixelType, Dimension>, Dimension>;
 #endif
 
   // Random image sources
-  using RandomImageSourceType = itk::RandomImageSource< OutputImageType >;
-  RandomImageSourceType::Pointer randomVolumeSource  = RandomImageSourceType::New();
+  using RandomImageSourceType = itk::RandomImageSource<OutputImageType>;
+  RandomImageSourceType::Pointer randomVolumeSource = RandomImageSourceType::New();
 
   // Image meta data
-  RandomImageSourceType::PointType origin;
-  RandomImageSourceType::SizeType size;
+  RandomImageSourceType::PointType   origin;
+  RandomImageSourceType::SizeType    size;
   RandomImageSourceType::SpacingType spacing;
 
   // Volume metadata
@@ -87,23 +87,22 @@ int main(int, char** )
   spacing[2] = 4.;
 #endif
   origin.Fill(0.);
-  randomVolumeSource->SetOrigin( origin );
-  randomVolumeSource->SetSpacing( spacing );
-  randomVolumeSource->SetSize( size );
-  randomVolumeSource->SetMin( 0. );
-  randomVolumeSource->SetMax( 1. );
-#if ITK_VERSION_MAJOR<5
-  randomVolumeSource->SetNumberOfThreads(2); //With 1, it's deterministic
+  randomVolumeSource->SetOrigin(origin);
+  randomVolumeSource->SetSpacing(spacing);
+  randomVolumeSource->SetSize(size);
+  randomVolumeSource->SetMin(0.);
+  randomVolumeSource->SetMax(1.);
+#if ITK_VERSION_MAJOR < 5
+  randomVolumeSource->SetNumberOfThreads(2); // With 1, it's deterministic
 #else
-  randomVolumeSource->SetNumberOfWorkUnits(2); //With 1, it's deterministic
+  randomVolumeSource->SetNumberOfWorkUnits(2); // With 1, it's deterministic
 #endif
 
   // Update the source
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( randomVolumeSource->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(randomVolumeSource->Update());
 
   // Create and set the TV denoising filter
-  using TVDenoisingFilterType = rtk::TotalVariationDenoisingBPDQImageFilter
-    <OutputImageType, GradientOutputImageType>;
+  using TVDenoisingFilterType = rtk::TotalVariationDenoisingBPDQImageFilter<OutputImageType, GradientOutputImageType>;
   TVDenoisingFilterType::Pointer TVdenoising = TVDenoisingFilterType::New();
   TVdenoising->SetInput(randomVolumeSource->GetOutput());
   TVdenoising->SetNumberOfIterations(100);
@@ -111,13 +110,13 @@ int main(int, char** )
 
   bool dimsProcessed[Dimension];
   for (bool & dimProcessed : dimsProcessed)
-    {
+  {
     dimProcessed = true;
-    }
+  }
   TVdenoising->SetDimensionsProcessed(dimsProcessed);
 
   // Update the TV denoising filter
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( TVdenoising->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(TVdenoising->Update());
 
   CheckTotalVariation<OutputImageType>(randomVolumeSource->GetOutput(), TVdenoising->GetOutput());
 

@@ -33,7 +33,8 @@
 #include <itkDivideImageFilter.h>
 #include <itkMaskImageFilter.h>
 
-int main(int argc, char * argv[])
+int
+main(int argc, char * argv[])
 {
   GGO(rtkfieldofview, args_info);
 
@@ -42,70 +43,67 @@ int main(int argc, char * argv[])
 
   // Check on hardware parameter
 #ifndef RTK_USE_CUDA
-  if(!strcmp(args_info.hardware_arg, "cuda") )
-    {
+  if (!strcmp(args_info.hardware_arg, "cuda"))
+  {
     std::cerr << "The program has not been compiled with cuda option" << std::endl;
     return EXIT_FAILURE;
-    }
+  }
 #endif
 
 #ifdef RTK_USE_CUDA
-  using OutputImageType = itk::CudaImage< OutputPixelType, Dimension >;
+  using OutputImageType = itk::CudaImage<OutputPixelType, Dimension>;
 #else
-  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
+  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
 #endif
 
   // Projections reader
-  using ReaderType = rtk::ProjectionsReader< OutputImageType >;
+  using ReaderType = rtk::ProjectionsReader<OutputImageType>;
   ReaderType::Pointer reader = ReaderType::New();
   rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkfieldofview>(reader, args_info);
 
   // Geometry
-  if(args_info.verbose_flag)
-    std::cout << "Reading geometry information from "
-              << args_info.geometry_arg
-              << "..."
-              << std::endl;
+  if (args_info.verbose_flag)
+    std::cout << "Reading geometry information from " << args_info.geometry_arg << "..." << std::endl;
 
   rtk::ThreeDCircularProjectionGeometryXMLFileReader::Pointer geometryReader;
   geometryReader = rtk::ThreeDCircularProjectionGeometryXMLFileReader::New();
   geometryReader->SetFilename(args_info.geometry_arg);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( geometryReader->GenerateOutputInformation() )
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(geometryReader->GenerateOutputInformation())
 
   // Reconstruction reader
-  using ImageReaderType = itk::ImageFileReader<  OutputImageType >;
+  using ImageReaderType = itk::ImageFileReader<OutputImageType>;
   ImageReaderType::Pointer unmasked_reconstruction = ImageReaderType::New();
   unmasked_reconstruction->SetFileName(args_info.reconstruction_arg);
 
-  if(!args_info.bp_flag)
-    {
+  if (!args_info.bp_flag)
+  {
     // FOV filter
     using FOVFilterType = rtk::FieldOfViewImageFilter<OutputImageType, OutputImageType>;
-    FOVFilterType::Pointer fieldofview=FOVFilterType::New();
+    FOVFilterType::Pointer fieldofview = FOVFilterType::New();
     fieldofview->SetMask(args_info.mask_flag);
     fieldofview->SetInput(0, unmasked_reconstruction->GetOutput());
     fieldofview->SetProjectionsStack(reader->GetOutput());
     fieldofview->SetGeometry(geometryReader->GetOutputObject());
     fieldofview->SetDisplacedDetector(args_info.displaced_flag);
-    TRY_AND_EXIT_ON_ITK_EXCEPTION( fieldofview->Update() )
+    TRY_AND_EXIT_ON_ITK_EXCEPTION(fieldofview->Update())
 
     // Write
-    using WriterType = itk::ImageFileWriter<  OutputImageType >;
+    using WriterType = itk::ImageFileWriter<OutputImageType>;
     WriterType::Pointer writer = WriterType::New();
-    writer->SetFileName( args_info.output_arg );
-    writer->SetInput( fieldofview->GetOutput() );
-    TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() )
-    }
+    writer->SetFileName(args_info.output_arg);
+    writer->SetInput(fieldofview->GetOutput());
+    TRY_AND_EXIT_ON_ITK_EXCEPTION(writer->Update())
+  }
   else
+  {
+    if (args_info.displaced_flag)
     {
-    if(args_info.displaced_flag)
-      {
       std::cerr << "Options --displaced and --bp are not compatible (yet)." << std::endl;
       return EXIT_FAILURE;
-      }
+    }
 
-    TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->UpdateOutputInformation() )
-    TRY_AND_EXIT_ON_ITK_EXCEPTION( unmasked_reconstruction->UpdateOutputInformation() )
+    TRY_AND_EXIT_ON_ITK_EXCEPTION(reader->UpdateOutputInformation())
+    TRY_AND_EXIT_ON_ITK_EXCEPTION(unmasked_reconstruction->UpdateOutputInformation())
 
 #ifdef RTK_USE_CUDA
     using MaskImgType = itk::CudaImage<float, 3>;
@@ -125,7 +123,7 @@ int main(int argc, char * argv[])
     BPType::Pointer bp = BPType::New();
 #ifdef RTK_USE_CUDA
     using BPCudaType = rtk::CudaBackProjectionImageFilter<MaskImgType>;
-    if(!strcmp(args_info.hardware_arg, "cuda") )
+    if (!strcmp(args_info.hardware_arg, "cuda"))
       bp = BPCudaType::New();
 #endif
     bp->SetInput(zeroVol->GetOutput());
@@ -134,29 +132,29 @@ int main(int argc, char * argv[])
 
     using ThreshType = itk::ThresholdImageFilter<MaskImgType>;
     ThreshType::Pointer thresh = ThreshType::New();
-    thresh->SetInput( bp->GetOutput() );
-    thresh->ThresholdBelow( geometryReader->GetOutputObject()->GetGantryAngles().size()-1 );
+    thresh->SetInput(bp->GetOutput());
+    thresh->ThresholdBelow(geometryReader->GetOutputObject()->GetGantryAngles().size() - 1);
     thresh->SetOutsideValue(0.);
 
-    if(args_info.mask_flag)
-      {
-      using DivideType = itk::DivideImageFilter<MaskImgType, MaskImgType,  MaskImgType>;
+    if (args_info.mask_flag)
+    {
+      using DivideType = itk::DivideImageFilter<MaskImgType, MaskImgType, MaskImgType>;
       DivideType::Pointer div = DivideType::New();
-      div->SetInput( thresh->GetOutput() );
-      div->SetConstant2( geometryReader->GetOutputObject()->GetGantryAngles().size() );
+      div->SetInput(thresh->GetOutput());
+      div->SetConstant2(geometryReader->GetOutputObject()->GetGantryAngles().size());
 
-      using WriterType = itk::ImageFileWriter<  MaskImgType >;
+      using WriterType = itk::ImageFileWriter<MaskImgType>;
       WriterType::Pointer writer = WriterType::New();
-      writer->SetFileName( args_info.output_arg );
-      writer->SetInput( div->GetOutput() );
-      TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() )
-      }
+      writer->SetFileName(args_info.output_arg);
+      writer->SetInput(div->GetOutput());
+      TRY_AND_EXIT_ON_ITK_EXCEPTION(writer->Update())
+    }
     else
-      {
+    {
       std::cerr << "Option --bp without --mask is not implemented (yet)." << std::endl;
       return EXIT_FAILURE;
-      }
     }
+  }
 
   return EXIT_SUCCESS;
 }

@@ -25,21 +25,22 @@
  * \author Cyril Mory
  */
 
-int main(int, char** )
+int
+main(int, char **)
 {
   using OutputPixelType = float;
 
-  using DVFVectorType = itk::CovariantVector< OutputPixelType, 3 >;
+  using DVFVectorType = itk::CovariantVector<OutputPixelType, 3>;
 
 #ifdef RTK_USE_CUDA
-  using VolumeSeriesType = itk::CudaImage< OutputPixelType, 4 >;
-  using ProjectionStackType = itk::CudaImage< OutputPixelType, 3 >;
-  using VolumeType = itk::CudaImage< OutputPixelType, 3 >;
+  using VolumeSeriesType = itk::CudaImage<OutputPixelType, 4>;
+  using ProjectionStackType = itk::CudaImage<OutputPixelType, 3>;
+  using VolumeType = itk::CudaImage<OutputPixelType, 3>;
   using DVFSequenceImageType = itk::CudaImage<DVFVectorType, VolumeSeriesType::ImageDimension>;
 #else
-  using VolumeSeriesType = itk::Image< OutputPixelType, 4 >;
-  using ProjectionStackType = itk::Image< OutputPixelType, 3 >;
-  using VolumeType = itk::Image< OutputPixelType, 3 >;
+  using VolumeSeriesType = itk::Image<OutputPixelType, 4>;
+  using ProjectionStackType = itk::Image<OutputPixelType, 3>;
+  using VolumeType = itk::Image<OutputPixelType, 3>;
   using DVFSequenceImageType = itk::Image<DVFVectorType, VolumeSeriesType::ImageDimension>;
 #endif
 
@@ -50,17 +51,17 @@ int main(int, char** )
 #endif
 
   // Constant image sources
-  using ConstantImageSourceType = rtk::ConstantImageSource< VolumeType >;
-  ConstantImageSourceType::PointType origin;
-  ConstantImageSourceType::SizeType size;
+  using ConstantImageSourceType = rtk::ConstantImageSource<VolumeType>;
+  ConstantImageSourceType::PointType   origin;
+  ConstantImageSourceType::SizeType    size;
   ConstantImageSourceType::SpacingType spacing;
 
-  using FourDSourceType = rtk::ConstantImageSource< VolumeSeriesType >;
-  FourDSourceType::PointType fourDOrigin;
-  FourDSourceType::SizeType fourDSize;
+  using FourDSourceType = rtk::ConstantImageSource<VolumeSeriesType>;
+  FourDSourceType::PointType   fourDOrigin;
+  FourDSourceType::SizeType    fourDSize;
   FourDSourceType::SpacingType fourDSpacing;
 
-  ConstantImageSourceType::Pointer tomographySource  = ConstantImageSourceType::New();
+  ConstantImageSourceType::Pointer tomographySource = ConstantImageSourceType::New();
   origin[0] = -63.;
   origin[1] = -31.;
   origin[2] = -63.;
@@ -79,12 +80,12 @@ int main(int, char** )
   spacing[1] = 4.;
   spacing[2] = 4.;
 #endif
-  tomographySource->SetOrigin( origin );
-  tomographySource->SetSpacing( spacing );
-  tomographySource->SetSize( size );
-  tomographySource->SetConstant( 0. );
+  tomographySource->SetOrigin(origin);
+  tomographySource->SetSpacing(spacing);
+  tomographySource->SetSize(size);
+  tomographySource->SetConstant(0.);
 
-  FourDSourceType::Pointer fourdSource  = FourDSourceType::New();
+  FourDSourceType::Pointer fourdSource = FourDSourceType::New();
   fourDOrigin[0] = -63.;
   fourDOrigin[1] = -31.;
   fourDOrigin[2] = -63.;
@@ -108,10 +109,10 @@ int main(int, char** )
   fourDSpacing[2] = 4.;
   fourDSpacing[3] = 1.;
 #endif
-  fourdSource->SetOrigin( fourDOrigin );
-  fourdSource->SetSpacing( fourDSpacing );
-  fourdSource->SetSize( fourDSize );
-  fourdSource->SetConstant( 0. );
+  fourdSource->SetOrigin(fourDOrigin);
+  fourdSource->SetSpacing(fourDSpacing);
+  fourdSource->SetSize(fourDSize);
+  fourdSource->SetConstant(0.);
 
   ConstantImageSourceType::Pointer projectionsSource = ConstantImageSourceType::New();
   origin[0] = -254.;
@@ -132,17 +133,17 @@ int main(int, char** )
   spacing[1] = 8.;
   spacing[2] = 1.;
 #endif
-  projectionsSource->SetOrigin( origin );
-  projectionsSource->SetSpacing( spacing );
-  projectionsSource->SetSize( size );
-  projectionsSource->SetConstant( 0. );
+  projectionsSource->SetOrigin(origin);
+  projectionsSource->SetSpacing(spacing);
+  projectionsSource->SetSize(size);
+  projectionsSource->SetConstant(0.);
 
   ConstantImageSourceType::Pointer oneProjectionSource = ConstantImageSourceType::New();
   size[2] = 1;
-  oneProjectionSource->SetOrigin( origin );
-  oneProjectionSource->SetSpacing( spacing );
-  oneProjectionSource->SetSize( size );
-  oneProjectionSource->SetConstant( 0. );
+  oneProjectionSource->SetOrigin(origin);
+  oneProjectionSource->SetSpacing(spacing);
+  oneProjectionSource->SetSize(size);
+  oneProjectionSource->SetConstant(0.);
 
   // Geometry object
   using GeometryType = rtk::ThreeDCircularProjectionGeometry;
@@ -150,7 +151,7 @@ int main(int, char** )
 
   // Projections
   using REIType = rtk::RayEllipsoidIntersectionImageFilter<VolumeType, ProjectionStackType>;
-  using PasteImageFilterType = itk::PasteImageFilter <ProjectionStackType, ProjectionStackType, ProjectionStackType >;
+  using PasteImageFilterType = itk::PasteImageFilter<ProjectionStackType, ProjectionStackType, ProjectionStackType>;
   ProjectionStackType::IndexType destinationIndex;
   destinationIndex[0] = 0;
   destinationIndex[1] = 0;
@@ -161,19 +162,19 @@ int main(int, char** )
   std::string signalFileName = "signal_4DRooster.txt";
 
   std::ofstream signalFile(signalFileName.c_str());
-  for(unsigned int noProj=0; noProj<NumberOfProjectionImages; noProj++)
-    {
-    geometry->AddProjection(600., 1200., noProj*360./NumberOfProjectionImages, 0, 0, 0, 0, 20, 15);
+  for (unsigned int noProj = 0; noProj < NumberOfProjectionImages; noProj++)
+  {
+    geometry->AddProjection(600., 1200., noProj * 360. / NumberOfProjectionImages, 0, 0, 0, 0, 20, 15);
 
     // Geometry object
     GeometryType::Pointer oneProjGeometry = GeometryType::New();
-    oneProjGeometry->AddProjection(600., 1200., noProj*360./NumberOfProjectionImages, 0, 0, 0, 0, 20, 15);
+    oneProjGeometry->AddProjection(600., 1200., noProj * 360. / NumberOfProjectionImages, 0, 0, 0, 0, 20, 15);
 
     // Ellipse 1
-    REIType::Pointer e1 = REIType::New();
+    REIType::Pointer    e1 = REIType::New();
     REIType::VectorType semiprincipalaxis, center;
     semiprincipalaxis.Fill(60.);
-    semiprincipalaxis[1]=30;
+    semiprincipalaxis[1] = 30;
     center.Fill(0.);
     e1->SetInput(oneProjectionSource->GetOutput());
     e1->SetGeometry(oneProjGeometry);
@@ -187,7 +188,7 @@ int main(int, char** )
     // Ellipse 2
     REIType::Pointer e2 = REIType::New();
     semiprincipalaxis.Fill(8.);
-    center[0] = 4*(itk::Math::abs( (4+noProj) % 8 - 4.) - 2.);
+    center[0] = 4 * (itk::Math::abs((4 + noProj) % 8 - 4.) - 2.);
     center[1] = 0.;
     center[2] = 0.;
     e2->SetInput(e1->GetOutput());
@@ -200,11 +201,11 @@ int main(int, char** )
 
     // Adding each projection to the projection stack
     if (noProj > 0) // After the first projection, we use the output as input
-      {
+    {
       ProjectionStackType::Pointer wholeImage = pasteFilter->GetOutput();
       wholeImage->DisconnectPipeline();
       pasteFilter->SetDestinationImage(wholeImage);
-      }
+    }
     pasteFilter->SetSourceImage(e2->GetOutput());
     pasteFilter->SetSourceRegion(e2->GetOutput()->GetLargestPossibleRegion());
     pasteFilter->SetDestinationIndex(destinationIndex);
@@ -213,10 +214,10 @@ int main(int, char** )
 
     // Signal
     signalFile << (noProj % 8) / 8. << std::endl;
-    }
+  }
 
   // Create a vector field and its (very rough) inverse
-  using IteratorType = itk::ImageRegionIteratorWithIndex< DVFSequenceImageType >;
+  using IteratorType = itk::ImageRegionIteratorWithIndex<DVFSequenceImageType>;
 
   DVFSequenceImageType::Pointer deformationField = DVFSequenceImageType::New();
   DVFSequenceImageType::Pointer inverseDeformationField = DVFSequenceImageType::New();
@@ -237,8 +238,8 @@ int main(int, char** )
   originMotion[2] = -63.;
   originMotion[3] = 0.;
   DVFSequenceImageType::RegionType regionMotion;
-  regionMotion.SetSize( sizeMotion );
-  regionMotion.SetIndex( startMotion );
+  regionMotion.SetSize(sizeMotion);
+  regionMotion.SetIndex(startMotion);
 
   DVFSequenceImageType::SpacingType spacingMotion;
   spacingMotion[0] = fourDSpacing[0];
@@ -246,45 +247,45 @@ int main(int, char** )
   spacingMotion[2] = fourDSpacing[2];
   spacingMotion[3] = fourDSpacing[3];
 
-  deformationField->SetRegions( regionMotion );
+  deformationField->SetRegions(regionMotion);
   deformationField->SetOrigin(originMotion);
   deformationField->SetSpacing(spacingMotion);
   deformationField->Allocate();
 
-  inverseDeformationField->SetRegions( regionMotion );
+  inverseDeformationField->SetRegions(regionMotion);
   inverseDeformationField->SetOrigin(originMotion);
   inverseDeformationField->SetSpacing(spacingMotion);
   inverseDeformationField->Allocate();
 
   // Vector Field initilization
   DVFVectorType vec;
-  IteratorType dvfIt( deformationField, deformationField->GetLargestPossibleRegion() );
-  IteratorType idvfIt( inverseDeformationField, inverseDeformationField->GetLargestPossibleRegion() );
+  IteratorType  dvfIt(deformationField, deformationField->GetLargestPossibleRegion());
+  IteratorType  idvfIt(inverseDeformationField, inverseDeformationField->GetLargestPossibleRegion());
 
   DVFSequenceImageType::OffsetType DVFCenter;
-  DVFSequenceImageType::IndexType toCenter;
+  DVFSequenceImageType::IndexType  toCenter;
   DVFCenter.Fill(0);
-  DVFCenter[0] = sizeMotion[0]/2;
-  DVFCenter[1] = sizeMotion[1]/2;
-  DVFCenter[2] = sizeMotion[2]/2;
+  DVFCenter[0] = sizeMotion[0] / 2;
+  DVFCenter[1] = sizeMotion[1] / 2;
+  DVFCenter[2] = sizeMotion[2] / 2;
   while (!dvfIt.IsAtEnd())
-    {
+  {
     vec.Fill(0.);
     toCenter = dvfIt.GetIndex() - DVFCenter;
 
     if (0.3 * toCenter[0] * toCenter[0] + toCenter[1] * toCenter[1] + toCenter[2] * toCenter[2] < 40)
-      {
-      if(dvfIt.GetIndex()[3]==0)
+    {
+      if (dvfIt.GetIndex()[3] == 0)
         vec[0] = -8.;
       else
         vec[0] = 8.;
-      }
+    }
     dvfIt.Set(vec);
     idvfIt.Set(-vec);
 
     ++dvfIt;
     ++idvfIt;
-    }
+  }
 
   // Ground truth
   VolumeType::Pointer * Volumes = new VolumeType::Pointer[fourDSize[3]];
@@ -292,22 +293,22 @@ int main(int, char** )
   JoinFilterType::Pointer join = JoinFilterType::New();
 
   for (itk::SizeValueType n = 0; n < fourDSize[3]; n++)
-    {
+  {
     // Ellipse 1
     using DEType = rtk::DrawEllipsoidImageFilter<VolumeType, VolumeType>;
     DEType::Pointer de1 = DEType::New();
-    de1->SetInput( tomographySource->GetOutput() );
+    de1->SetInput(tomographySource->GetOutput());
     de1->SetDensity(2.);
     DEType::VectorType axis;
     axis.Fill(60.);
-    axis[1]=30;
+    axis[1] = 30;
     de1->SetAxis(axis);
     DEType::VectorType center;
     center.Fill(0.);
     de1->SetCenter(center);
     de1->SetAngle(0.);
     de1->InPlaceOff();
-    TRY_AND_EXIT_ON_ITK_EXCEPTION( de1->Update() )
+    TRY_AND_EXIT_ON_ITK_EXCEPTION(de1->Update())
 
     // Ellipse 2
     DEType::Pointer de2 = DEType::New();
@@ -317,55 +318,55 @@ int main(int, char** )
     axis2.Fill(8.);
     de2->SetAxis(axis2);
     DEType::VectorType center2;
-    center2[0] = 4*(itk::Math::abs( (4+n) % 8 - 4.) - 2.);
+    center2[0] = 4 * (itk::Math::abs((4 + n) % 8 - 4.) - 2.);
     center2[1] = 0.;
     center2[2] = 0.;
     de2->SetCenter(center2);
     de2->SetAngle(0.);
     de2->InPlaceOff();
-    TRY_AND_EXIT_ON_ITK_EXCEPTION( de2->Update() );
+    TRY_AND_EXIT_ON_ITK_EXCEPTION(de2->Update());
 
     Volumes[n] = de2->GetOutput();
     Volumes[n]->DisconnectPipeline();
     join->SetInput(n, Volumes[n]);
-    }
+  }
   join->Update();
 
   // ROI
   using DEType = rtk::DrawEllipsoidImageFilter<VolumeType, VolumeType>;
   DEType::Pointer roi = DEType::New();
-  roi->SetInput( tomographySource->GetOutput() );
+  roi->SetInput(tomographySource->GetOutput());
   roi->SetDensity(1.);
   DEType::VectorType axis;
   axis.Fill(15.);
-  axis[0]=20;
+  axis[0] = 20;
   roi->SetAxis(axis);
   DEType::VectorType center;
   center.Fill(0.);
   roi->SetCenter(center);
   roi->SetAngle(0.);
   roi->InPlaceOff();
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( roi->Update() )
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(roi->Update())
 
   // Read the phases file
   rtk::PhasesToInterpolationWeights::Pointer phaseReader = rtk::PhasesToInterpolationWeights::New();
   phaseReader->SetFileName(signalFileName);
-  phaseReader->SetNumberOfReconstructedFrames( fourDSize[3] );
+  phaseReader->SetNumberOfReconstructedFrames(fourDSize[3]);
   phaseReader->Update();
 
   // Set the forward and back projection filters to be used
   using ROOSTERFilterType = rtk::FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>;
   ROOSTERFilterType::Pointer rooster = ROOSTERFilterType::New();
-  rooster->SetInputVolumeSeries(fourdSource->GetOutput() );
+  rooster->SetInputVolumeSeries(fourdSource->GetOutput());
   rooster->SetInputProjectionStack(pasteFilter->GetOutput());
   rooster->SetGeometry(geometry);
   rooster->SetWeights(phaseReader->GetOutput());
   rooster->SetSignal(rtk::ReadSignalFile(signalFileName));
-  rooster->SetGeometry( geometry );
-  rooster->SetCG_iterations( 2 );
-  rooster->SetMainLoop_iterations( 2);
+  rooster->SetGeometry(geometry);
+  rooster->SetCG_iterations(2);
+  rooster->SetMainLoop_iterations(2);
 
-  rooster->SetTV_iterations( 3 );
+  rooster->SetTV_iterations(3);
   rooster->SetGammaTVSpace(1);
   rooster->SetGammaTVTime(0.1);
 
@@ -376,10 +377,12 @@ int main(int, char** )
   rooster->SetLambdaL0Time(0.1);
   rooster->SetL0_iterations(5);
 
-  std::cout << "\n\n****** Case 1: Joseph forward projector, voxel-based back projector, positivity, motion mask, wavelets spatial denoising, TV temporal denoising, no warping ******" << std::endl;
+  std::cout << "\n\n****** Case 1: Joseph forward projector, voxel-based back projector, positivity, motion mask, "
+               "wavelets spatial denoising, TV temporal denoising, no warping ******"
+            << std::endl;
 
-  rooster->SetBackProjectionFilter( ROOSTERFilterType::BP_VOXELBASED );
-  rooster->SetForwardProjectionFilter( ROOSTERFilterType::FP_JOSEPH );
+  rooster->SetBackProjectionFilter(ROOSTERFilterType::BP_VOXELBASED);
+  rooster->SetForwardProjectionFilter(ROOSTERFilterType::FP_JOSEPH);
 
   rooster->SetPerformPositivity(true);
   rooster->SetPerformMotionMask(true);
@@ -391,15 +394,18 @@ int main(int, char** )
   rooster->SetPerformWarping(false);
   rooster->SetComputeInverseWarpingByConjugateGradient(false);
 
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( rooster->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(rooster->Update());
 
   CheckImageQuality<VolumeSeriesType>(rooster->GetOutput(), join->GetOutput(), 0.25, 15, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 
-  std::cout << "\n\n****** Case 2: Joseph forward projector, voxel-based back projector, positivity, no motion mask, TV spatial denoising, L0 temporal denoising, motion compensation (nearest neighbor interpolation). Inverse warping by conjugate gradient ******" << std::endl;
+  std::cout << "\n\n****** Case 2: Joseph forward projector, voxel-based back projector, positivity, no motion mask, "
+               "TV spatial denoising, L0 temporal denoising, motion compensation (nearest neighbor interpolation). "
+               "Inverse warping by conjugate gradient ******"
+            << std::endl;
 
-  rooster->SetBackProjectionFilter( ROOSTERFilterType::BP_VOXELBASED );
-  rooster->SetForwardProjectionFilter( ROOSTERFilterType::FP_JOSEPH );
+  rooster->SetBackProjectionFilter(ROOSTERFilterType::BP_VOXELBASED);
+  rooster->SetForwardProjectionFilter(ROOSTERFilterType::FP_JOSEPH);
 
   rooster->SetPerformPositivity(true);
   rooster->SetPerformMotionMask(false);
@@ -412,15 +418,18 @@ int main(int, char** )
   rooster->SetComputeInverseWarpingByConjugateGradient(true);
   rooster->SetUseNearestNeighborInterpolationInWarping(true);
 
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( rooster->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(rooster->Update());
 
   CheckImageQuality<VolumeSeriesType>(rooster->GetOutput(), join->GetOutput(), 0.25, 15, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 
-  std::cout << "\n\n****** Case 3: Joseph forward projector, voxel-based back projector, no positivity, motion mask, no spatial denoising, motion compensation and temporal TV denoising. Inverse warping by warping with approximate inverse DVF ******" << std::endl;
+  std::cout << "\n\n****** Case 3: Joseph forward projector, voxel-based back projector, no positivity, motion mask, "
+               "no spatial denoising, motion compensation and temporal TV denoising. Inverse warping by warping with "
+               "approximate inverse DVF ******"
+            << std::endl;
 
-  rooster->SetBackProjectionFilter( ROOSTERFilterType::BP_VOXELBASED );
-  rooster->SetForwardProjectionFilter( ROOSTERFilterType::FP_JOSEPH );
+  rooster->SetBackProjectionFilter(ROOSTERFilterType::BP_VOXELBASED);
+  rooster->SetForwardProjectionFilter(ROOSTERFilterType::FP_JOSEPH);
 
   rooster->SetPerformPositivity(false);
   rooster->SetPerformMotionMask(true);
@@ -435,7 +444,7 @@ int main(int, char** )
   rooster->SetInverseDisplacementField(inverseDeformationField);
   rooster->SetUseNearestNeighborInterpolationInWarping(false);
 
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( rooster->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(rooster->Update());
 
   CheckImageQuality<VolumeSeriesType>(rooster->GetOutput(), join->GetOutput(), 0.25, 15, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
@@ -443,8 +452,8 @@ int main(int, char** )
 #ifdef USE_CUDA
   std::cout << "\n\n****** Case 4: CUDA forward and back projectors, only L0 temporal denoising ******" << std::endl;
 
-  rooster->SetBackProjectionFilter( ROOSTERFilterType::BP_CUDAVOXELBASED ); // Cuda voxel based
-  rooster->SetForwardProjectionFilter( ROOSTERFilterType::FP_CUDARAYCAST ); // Cuda ray cast
+  rooster->SetBackProjectionFilter(ROOSTERFilterType::BP_CUDAVOXELBASED); // Cuda voxel based
+  rooster->SetForwardProjectionFilter(ROOSTERFilterType::FP_CUDARAYCAST); // Cuda ray cast
 
   rooster->SetPerformPositivity(false);
   rooster->SetPerformMotionMask(false);
@@ -456,7 +465,7 @@ int main(int, char** )
   rooster->SetComputeInverseWarpingByConjugateGradient(false);
   rooster->SetUseNearestNeighborInterpolationInWarping(false);
 
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( rooster->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(rooster->Update());
 
   CheckImageQuality<VolumeSeriesType>(rooster->GetOutput(), join->GetOutput(), 0.25, 15, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;

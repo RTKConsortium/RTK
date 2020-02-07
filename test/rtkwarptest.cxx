@@ -24,19 +24,20 @@
  * \author Cyril Mory
  */
 
-int main(int, char** )
+int
+main(int, char **)
 {
   constexpr unsigned int Dimension = 3;
   using OutputPixelType = float;
-  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
+  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
 
   // Constant image sources
-  using ConstantImageSourceType = rtk::ConstantImageSource< OutputImageType >;
-  ConstantImageSourceType::PointType origin;
-  ConstantImageSourceType::SizeType size;
+  using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
+  ConstantImageSourceType::PointType   origin;
+  ConstantImageSourceType::SizeType    size;
   ConstantImageSourceType::SpacingType spacing;
 
-  ConstantImageSourceType::Pointer tomographySource  = ConstantImageSourceType::New();
+  ConstantImageSourceType::Pointer tomographySource = ConstantImageSourceType::New();
   origin[0] = -63.;
   origin[1] = -31.;
   origin[2] = -63.;
@@ -55,15 +56,15 @@ int main(int, char** )
   spacing[1] = 2.;
   spacing[2] = 2.;
 #endif
-  tomographySource->SetOrigin( origin );
-  tomographySource->SetSpacing( spacing );
-  tomographySource->SetSize( size );
-  tomographySource->SetConstant( 0. );
+  tomographySource->SetOrigin(origin);
+  tomographySource->SetSpacing(spacing);
+  tomographySource->SetSize(size);
+  tomographySource->SetConstant(0.);
 
   // Create vector field
-  using DVFPixelType = itk::Vector<float,3>;
-  using DVFImageType = itk::Image< DVFPixelType, 3 >;
-  using IteratorType = itk::ImageRegionIteratorWithIndex< DVFImageType>;
+  using DVFPixelType = itk::Vector<float, 3>;
+  using DVFImageType = itk::Image<DVFPixelType, 3>;
+  using IteratorType = itk::ImageRegionIteratorWithIndex<DVFImageType>;
 
   DVFImageType::Pointer deformationField = DVFImageType::New();
 
@@ -76,32 +77,32 @@ int main(int, char** )
   sizeMotion[1] = 64; // size along Y
   sizeMotion[2] = 64; // size along Z
   DVFImageType::PointType originMotion;
-  originMotion[0] = (sizeMotion[0]-1)*(-0.5); // size along X
-  originMotion[1] = (sizeMotion[1]-1)*(-0.5); // size along Y
-  originMotion[2] = (sizeMotion[2]-1)*(-0.5); // size along Z
+  originMotion[0] = (sizeMotion[0] - 1) * (-0.5); // size along X
+  originMotion[1] = (sizeMotion[1] - 1) * (-0.5); // size along Y
+  originMotion[2] = (sizeMotion[2] - 1) * (-0.5); // size along Z
   DVFImageType::RegionType regionMotion;
-  regionMotion.SetSize( sizeMotion );
-  regionMotion.SetIndex( startMotion );
-  deformationField->SetRegions( regionMotion );
+  regionMotion.SetSize(sizeMotion);
+  regionMotion.SetIndex(startMotion);
+  deformationField->SetRegions(regionMotion);
   deformationField->SetOrigin(originMotion);
   deformationField->Allocate();
 
   // Vector Field initilization
   DVFPixelType vec;
   vec.Fill(0.);
-  IteratorType defIt( deformationField, deformationField->GetLargestPossibleRegion() );
-  for ( defIt.GoToBegin(); !defIt.IsAtEnd(); ++defIt)
-    {
-      vec.Fill(0.);
-      vec[0] = 8.;
-      defIt.Set(vec);
-    }
+  IteratorType defIt(deformationField, deformationField->GetLargestPossibleRegion());
+  for (defIt.GoToBegin(); !defIt.IsAtEnd(); ++defIt)
+  {
+    vec.Fill(0.);
+    vec[0] = 8.;
+    defIt.Set(vec);
+  }
 
   // Create a reference object (in this case a 3D phantom reference).
   // Ellipse 1
   using DEType = rtk::DrawEllipsoidImageFilter<OutputImageType, OutputImageType>;
   DEType::Pointer e1 = DEType::New();
-  e1->SetInput( tomographySource->GetOutput() );
+  e1->SetInput(tomographySource->GetOutput());
   e1->SetDensity(2.);
   DEType::VectorType axis;
   axis.Fill(60.);
@@ -111,7 +112,7 @@ int main(int, char** )
   e1->SetCenter(center);
   e1->SetAngle(0.);
   e1->InPlaceOff();
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( e1->Update() )
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(e1->Update())
 
   // Ellipse 2
   DEType::Pointer e2 = DEType::New();
@@ -125,23 +126,23 @@ int main(int, char** )
   e2->SetCenter(center2);
   e2->SetAngle(0.);
   e2->InPlaceOff();
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( e2->Update() )
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(e2->Update())
 
   using WarpFilterType = itk::WarpImageFilter<OutputImageType, OutputImageType, DVFImageType>;
   WarpFilterType::Pointer warp = WarpFilterType::New();
   warp->SetInput(e2->GetOutput());
-  warp->SetDisplacementField( deformationField );
+  warp->SetDisplacementField(deformationField);
   warp->SetOutputParametersFromImage(e2->GetOutput());
 
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( warp->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(warp->Update());
 
   using ForwardWarpFilterType = rtk::ForwardWarpImageFilter<OutputImageType, OutputImageType, DVFImageType>;
   ForwardWarpFilterType::Pointer forwardWarp = ForwardWarpFilterType::New();
   forwardWarp->SetInput(warp->GetOutput());
-  forwardWarp->SetDisplacementField( deformationField );
+  forwardWarp->SetDisplacementField(deformationField);
   forwardWarp->SetOutputParametersFromImage(warp->GetOutput());
 
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( forwardWarp->Update() );
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(forwardWarp->Update());
 
   CheckImageQuality<OutputImageType>(forwardWarp->GetOutput(), e2->GetOutput(), 0.1, 12, 2.0);
 

@@ -23,31 +23,32 @@
 // #ifdef RTK_USE_CUDA
 //   #include "rtkCudaLastDimensionL0GradientDenoisingImageFilter.h"
 // #else
-  #include "rtkLastDimensionL0GradientDenoisingImageFilter.h"
+#include "rtkLastDimensionL0GradientDenoisingImageFilter.h"
 // #endif
 
 #include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>
 
-int main(int argc, char * argv[])
+int
+main(int argc, char * argv[])
 {
   GGO(rtklastdimensionl0gradientdenoising, args_info);
 
   using OutputPixelType = float;
   constexpr unsigned int Dimension = 4; // Number of dimensions of the input image
 
-// #ifdef RTK_USE_CUDA
-//   using OutputImageType = itk::CudaImage< OutputPixelType, Dimension >;
-//   using DenoisingFilterType = rtk::CudaLastDimensionL0GradientDenoisingImageFilter;
-// #else
-  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
-  using DenoisingFilterType = rtk::LastDimensionL0GradientDenoisingImageFilter <OutputImageType>;
-// #endif
+  // #ifdef RTK_USE_CUDA
+  //   using OutputImageType = itk::CudaImage< OutputPixelType, Dimension >;
+  //   using DenoisingFilterType = rtk::CudaLastDimensionL0GradientDenoisingImageFilter;
+  // #else
+  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
+  using DenoisingFilterType = rtk::LastDimensionL0GradientDenoisingImageFilter<OutputImageType>;
+  // #endif
 
   // Read input
   using ReaderType = itk::ImageFileReader<OutputImageType>;
   ReaderType::Pointer reader = ReaderType::New();
-  reader->SetFileName( args_info.input_arg );
+  reader->SetFileName(args_info.input_arg);
   reader->ReleaseDataFlagOn();
 
   // Apply L0 gradient norm denoising
@@ -60,10 +61,10 @@ int main(int argc, char * argv[])
   // Write
   using WriterType = itk::ImageFileWriter<OutputImageType>;
   WriterType::Pointer writer = WriterType::New();
-  writer->SetFileName( args_info.output_arg );
+  writer->SetFileName(args_info.output_arg);
   writer->SetInput(denoising->GetOutput());
 
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() )
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(writer->Update())
 
   return EXIT_SUCCESS;
 }

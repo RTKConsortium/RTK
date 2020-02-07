@@ -26,40 +26,40 @@
 #include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>
 
-int main(int argc, char * argv[])
+int
+main(int argc, char * argv[])
 {
   GGO(rtktotalnuclearvariationdenoising, args_info);
 
   using OutputPixelType = float;
-  constexpr unsigned int Dimension = 4; // Number of dimensions of the input image
+  constexpr unsigned int Dimension = 4;           // Number of dimensions of the input image
   constexpr unsigned int DimensionsProcessed = 3; // Number of dimensions along which the gradient is computed
 
-  using OutputImageType = itk::Image< OutputPixelType, Dimension >;
-  using GradientOutputImageType = itk::Image< itk::CovariantVector
-      < OutputPixelType, DimensionsProcessed >, Dimension >;
-  using TVDenoisingFilterType = rtk::TotalNuclearVariationDenoisingBPDQImageFilter
-      <OutputImageType, GradientOutputImageType>;
+  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
+  using GradientOutputImageType = itk::Image<itk::CovariantVector<OutputPixelType, DimensionsProcessed>, Dimension>;
+  using TVDenoisingFilterType =
+    rtk::TotalNuclearVariationDenoisingBPDQImageFilter<OutputImageType, GradientOutputImageType>;
 
   // Read input
   using ReaderType = itk::ImageFileReader<OutputImageType>;
   ReaderType::Pointer reader = ReaderType::New();
-  reader->SetFileName( args_info.input_arg );
-//  reader->ReleaseDataFlagOn();
+  reader->SetFileName(args_info.input_arg);
+  //  reader->ReleaseDataFlagOn();
 
   // Apply total nuclear variation denoising
   TVDenoisingFilterType::Pointer tv = TVDenoisingFilterType::New();
   tv->SetInput(reader->GetOutput());
   tv->SetGamma(args_info.gamma_arg);
   tv->SetNumberOfIterations(args_info.niter_arg);
-//  tv->ReleaseDataFlagOn();
+  //  tv->ReleaseDataFlagOn();
 
   // Write
   using WriterType = itk::ImageFileWriter<OutputImageType>;
   WriterType::Pointer writer = WriterType::New();
-  writer->SetFileName( args_info.output_arg );
+  writer->SetFileName(args_info.output_arg);
   writer->SetInput(tv->GetOutput());
 
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->Update() )
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(writer->Update())
 
   return EXIT_SUCCESS;
 }

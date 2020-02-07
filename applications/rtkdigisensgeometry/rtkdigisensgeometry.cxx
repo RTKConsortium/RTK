@@ -22,7 +22,8 @@
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkDigisensGeometryReader.h"
 
-int main(int argc, char * argv[])
+int
+main(int argc, char * argv[])
 {
   GGO(rtkdigisensgeometry, args_info);
 
@@ -33,14 +34,14 @@ int main(int argc, char * argv[])
   // Create geometry reader
   rtk::DigisensGeometryReader::Pointer reader = rtk::DigisensGeometryReader::New();
   reader->SetXMLFileName(args_info.xml_file_arg);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( reader->UpdateOutputData() )
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(reader->UpdateOutputData())
 
   // Write
   rtk::ThreeDCircularProjectionGeometryXMLFileWriter::Pointer xmlWriter =
     rtk::ThreeDCircularProjectionGeometryXMLFileWriter::New();
   xmlWriter->SetFilename(args_info.output_arg);
-  xmlWriter->SetObject(&(*geometry) );
-  TRY_AND_EXIT_ON_ITK_EXCEPTION( xmlWriter->WriteFile() )
+  xmlWriter->SetObject(&(*geometry));
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(xmlWriter->WriteFile())
 
   return EXIT_SUCCESS;
 }
