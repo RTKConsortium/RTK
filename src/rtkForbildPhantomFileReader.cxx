@@ -93,8 +93,8 @@ ForbildPhantomFileReader ::GenerateOutputInformation()
     if (m_ConvexShape.IsNotNull())
     {
       m_ConvexShape->SetDensity(density);
-      m_GeometricPhantom->AddConvexShape(m_ConvexShape);
       FindClipPlanes(line);
+      m_GeometricPhantom->AddConvexShape(m_ConvexShape);
       FindUnions(line);
       m_ConvexShape = ConvexShape::Pointer(nullptr);
     }
