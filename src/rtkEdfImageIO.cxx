@@ -162,11 +162,11 @@ rtk::EdfImageIO::ReadImageInformation()
     }
   }
 
-  static const struct table edf_byteorder_table[] = { { "LowByteFirst", LittleEndian }, /* little endian */
-                                                      { "HighByteFirst", BigEndian },   /* big endian */
+  static const struct table edf_byteorder_table[] = { { "LowByteFirst", static_cast<int>(LittleEndian) }, /* little endian */
+                                                      { "HighByteFirst", static_cast<int>(BigEndian) },   /* big endian */
                                                       { nullptr, -1 } };
 
-  int byteorder = LittleEndian;
+  int byteorder = static_cast<int>(LittleEndian);
   if ((p = edf_findInHeader(header, "ByteOrder")))
   {
     k = lookup_table_nth(edf_byteorder_table, p);
@@ -174,7 +174,7 @@ rtk::EdfImageIO::ReadImageInformation()
     {
 
       byteorder = edf_byteorder_table[k].value;
-      if (byteorder == LittleEndian)
+      if (byteorder == static_cast<int>(LittleEndian))
         this->SetByteOrder(LittleEndian);
       else
         this->SetByteOrder(BigEndian);
