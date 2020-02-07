@@ -125,13 +125,8 @@ protected:
   void
   PrintSelf(std::ostream & os, itk::Indent indent) const override;
 
-#if ITK_VERSION_MAJOR < 5
-  void
-  ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, ThreadIdType threadId) override;
-#else
   void
   DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread) override;
-#endif
 
   void
   GenerateOutputInformation() override;

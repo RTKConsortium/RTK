@@ -36,12 +36,8 @@ MagnitudeThresholdImageFilter<TInputImage, TRealType, TOutputImage>::MagnitudeTh
 
 template <typename TInputImage, typename TRealType, typename TOutputImage>
 void
-MagnitudeThresholdImageFilter<TInputImage, TRealType, TOutputImage>
-#if ITK_VERSION_MAJOR < 5
-  ::ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId))
-#else
-  ::DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread)
-#endif
+MagnitudeThresholdImageFilter<TInputImage, TRealType, TOutputImage>::DynamicThreadedGenerateData(
+  const OutputImageRegionType & outputRegionForThread)
 {
   itk::ImageRegionConstIterator<TInputImage> InputIt;
   itk::ImageRegionIterator<TOutputImage>     OutputIt;

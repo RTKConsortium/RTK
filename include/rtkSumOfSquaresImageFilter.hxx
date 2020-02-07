@@ -39,11 +39,7 @@ void
 SumOfSquaresImageFilter<TOutputImage>::BeforeThreadedGenerateData()
 {
   m_VectorOfPartialSSs.clear();
-#if ITK_VERSION_MAJOR < 5
-  for (unsigned int thread = 0; thread < this->GetNumberOfThreads(); thread++)
-#else
   for (unsigned int thread = 0; thread < this->GetNumberOfWorkUnits(); thread++)
-#endif
     m_VectorOfPartialSSs.push_back(0);
 }
 
@@ -73,11 +69,7 @@ void
 SumOfSquaresImageFilter<TOutputImage>::AfterThreadedGenerateData()
 {
   m_SumOfSquares = 0;
-#if ITK_VERSION_MAJOR < 5
-  for (unsigned int thread = 0; thread < this->GetNumberOfThreads(); thread++)
-#else
   for (unsigned int thread = 0; thread < this->GetNumberOfWorkUnits(); thread++)
-#endif
     m_SumOfSquares += m_VectorOfPartialSSs[thread];
 }
 

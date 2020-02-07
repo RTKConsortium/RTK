@@ -106,14 +106,8 @@ protected:
   void
   BeforeThreadedGenerateData() override;
 
-#if ITK_VERSION_MAJOR < 5
-  void
-  ThreadedGenerateData(const typename InputImageType::RegionType & outputRegionForThread,
-                       itk::ThreadIdType                           itkNotUsed(threadId)) override;
-#else
   void
   DynamicThreadedGenerateData(const typename InputImageType::RegionType & outputRegionForThread) override;
-#endif
 
   void
   AfterThreadedGenerateData() override;

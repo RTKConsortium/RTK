@@ -80,26 +80,13 @@ DownsampleImageFilter<TInputImage, TOutputImage>::SetFactor(unsigned int dimensi
 }
 
 
-// template <class TInputImage, class TOutputImage>
-// void
-// DownsampleImageFilter<TInputImage,TOutputImage>
-//::BeforeThreadedGenerateData()
-//{
-//  std::cout << "In DownsampleImageFilter : BeforeThreadedGenerateData, input size = " <<
-//  this->GetInput()->GetLargestPossibleRegion().GetSize() << std::endl;
-//}
-
 /**
  *
  */
 template <class TInputImage, class TOutputImage>
 void
-DownsampleImageFilter<TInputImage, TOutputImage>
-#if ITK_VERSION_MAJOR < 5
-  ::ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId))
-#else
-  ::DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread)
-#endif
+DownsampleImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerateData(
+  const OutputImageRegionType & outputRegionForThread)
 {
   itkDebugMacro(<< "Actually executing");
 
@@ -203,14 +190,6 @@ DownsampleImageFilter<TInputImage, TOutputImage>
   }
 }
 
-
-// template <class TInputImage, class TOutputImage>
-// void
-// DownsampleImageFilter<TInputImage,TOutputImage>
-//::AfterThreadedGenerateData()
-//{
-//  std::cout << "In DownsampleImageFilter : AfterThreadedGenerateData" << std::endl;
-//}
 
 /**
  *

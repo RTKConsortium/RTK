@@ -31,9 +31,7 @@ namespace rtk
 template <typename InputImageType, typename OutputImageType>
 ImageToVectorImageFilter<InputImageType, OutputImageType>::ImageToVectorImageFilter()
 {
-#if ITK_VERSION_MAJOR > 4
   this->DynamicMultiThreadingOff();
-#endif
 
   m_NumberOfChannels = 1;
 

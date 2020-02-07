@@ -191,15 +191,9 @@ protected:
   /** When the inputs have the same type, ITK checks whether they occupy the
    * same physical space or not. Obviously they dont, so we have to remove this check
    */
-#if ITK_VERSION_MAJOR < 5
-  void
-  VerifyInputInformation() override
-  {}
-#else
   void
   VerifyInputInformation() const override
   {}
-#endif
 
   /** The volume and the projections must have different requested regions
    */

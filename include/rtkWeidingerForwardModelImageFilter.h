@@ -112,25 +112,13 @@ protected:
 
   void
   GenerateInputRequestedRegion() override;
-#if ITK_VERSION_MAJOR < 5
-  void
-  VerifyInputInformation() override
-  {}
-#else
   void
   VerifyInputInformation() const override
   {}
-#endif
 
   /** Does the real work. */
-#if ITK_VERSION_MAJOR < 5
-  void
-  ThreadedGenerateData(const typename TOutputImage1::RegionType & outputRegionForThread,
-                       itk::ThreadIdType                          itkNotUsed(threadId)) override;
-#else
   void
   DynamicThreadedGenerateData(const typename TOutputImage1::RegionType & outputRegionForThread) override;
-#endif
 
   /** Creates the Outputs */
   itk::ProcessObject::DataObjectPointer

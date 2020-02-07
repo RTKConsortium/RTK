@@ -115,12 +115,8 @@ PolynomialGainCorrectionImageFilter<TInputImage, TOutputImage>::GenerateInputReq
 
 template <class TInputImage, class TOutputImage>
 void
-PolynomialGainCorrectionImageFilter<TInputImage, TOutputImage>
-#if ITK_VERSION_MAJOR < 5
-  ::ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId))
-#else
-  ::DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread)
-#endif
+PolynomialGainCorrectionImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerateData(
+  const OutputImageRegionType & outputRegionForThread)
 {
   itk::ImageRegionConstIterator<InputImageType> itIn(this->GetInput(), outputRegionForThread);
   itk::ImageRegionIterator<OutputImageType>     itOut(this->GetOutput(), outputRegionForThread);

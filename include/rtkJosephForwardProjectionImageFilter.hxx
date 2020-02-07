@@ -41,9 +41,7 @@ JosephForwardProjectionImageFilter<TInputImage,
                                    TProjectedValueAccumulation,
                                    TSumAlongRay>::JosephForwardProjectionImageFilter()
 {
-#if ITK_VERSION_MAJOR > 4
   this->DynamicMultiThreadingOff();
-#endif
 }
 
 template <class TInputImage,

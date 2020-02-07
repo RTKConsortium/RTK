@@ -92,11 +92,7 @@ ScatterGlareCorrectionImageFilter<TInputImage, TOutputImage, TFFTPrecision>::Upd
   using ForwardFFTType = itk::RealToHalfHermitianForwardFFTImageFilter<FFTInputImageType, FFTOutputImageType>;
   typename ForwardFFTType::Pointer fftK = ForwardFFTType::New();
   fftK->SetInput(kernel);
-#if ITK_VERSION_MAJOR < 5
-  fftK->SetNumberOfThreads(this->GetNumberOfThreads());
-#else
   fftK->SetNumberOfWorkUnits(this->GetNumberOfWorkUnits());
-#endif
   fftK->Update();
 
   // Inverse
@@ -104,11 +100,7 @@ ScatterGlareCorrectionImageFilter<TInputImage, TOutputImage, TFFTPrecision>::Upd
   typename DivideType::Pointer div = DivideType::New();
   div->SetConstant1(1.);
   div->SetInput(1, fftK->GetOutput());
-#if ITK_VERSION_MAJOR < 5
-  div->SetNumberOfThreads(this->GetNumberOfThreads());
-#else
   div->SetNumberOfWorkUnits(this->GetNumberOfWorkUnits());
-#endif
   div->Update();
 
   this->m_KernelFFT = div->GetOutput();

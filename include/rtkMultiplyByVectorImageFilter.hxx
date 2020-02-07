@@ -41,13 +41,8 @@ MultiplyByVectorImageFilter<TInputImage>::SetVector(std::vector<float> vect)
 
 template <class TInputImage>
 void
-MultiplyByVectorImageFilter<TInputImage>
-#if ITK_VERSION_MAJOR < 5
-  ::ThreadedGenerateData(const typename TInputImage::RegionType & outputRegionForThread,
-                         itk::ThreadIdType                        itkNotUsed(threadId))
-#else
-  ::DynamicThreadedGenerateData(const typename TInputImage::RegionType & outputRegionForThread)
-#endif
+MultiplyByVectorImageFilter<TInputImage>::DynamicThreadedGenerateData(
+  const typename TInputImage::RegionType & outputRegionForThread)
 {
   int Dimension = this->GetInput()->GetImageDimension();
 

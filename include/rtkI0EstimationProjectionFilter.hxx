@@ -31,10 +31,8 @@ namespace rtk
 template <class TInputImage, class TOutputImage, unsigned char bitShift>
 I0EstimationProjectionFilter<TInputImage, TOutputImage, bitShift>::I0EstimationProjectionFilter()
 {
-#if ITK_VERSION_MAJOR > 4
   this->DynamicMultiThreadingOff();
   this->SetNumberOfWorkUnits(itk::MultiThreaderBase::GetGlobalDefaultNumberOfThreads());
-#endif
 
   m_MaxPixelValue = (InputImagePixelType)((1 << 24) - 1);
   m_ExpectedI0 = m_MaxPixelValue;
@@ -67,11 +65,7 @@ I0EstimationProjectionFilter<TInputImage, TOutputImage, bitShift>::BeforeThreade
     *it = 0;
   }
 
-#if ITK_VERSION_MAJOR < 5
-  m_Nthreads = this->GetNumberOfThreads();
-#else
   m_Nthreads = this->GetNumberOfWorkUnits();
-#endif
   m_Nsync = 0;
 
   if (m_Reset)

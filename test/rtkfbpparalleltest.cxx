@@ -1,8 +1,6 @@
 #include <itkImageRegionConstIterator.h>
 #include <itkStreamingImageFilter.h>
-#if ITK_VERSION_MAJOR > 4 || (ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR >= 4)
-#  include <itkImageRegionSplitterDirection.h>
-#endif
+#include <itkImageRegionSplitterDirection.h>
 
 #include "rtkTest.h"
 #include "rtkSheppLoganPhantomFilter.h"

@@ -75,12 +75,7 @@ JosephBackAttenuatedProjectionImageFilter<TInputImage,
                                           TOutputImage,
                                           TInterpolationWeightMultiplication,
                                           TSplatWeightMultiplication,
-                                          TSumAlongRay>
-#if ITK_VERSION_MAJOR < 5
-  ::VerifyInputInformation()
-#else
-  ::VerifyInputInformation() const
-#endif
+                                          TSumAlongRay>::VerifyInputInformation() const
 {
   using ImageBaseType = const itk::ImageBase<InputImageDimension>;
 

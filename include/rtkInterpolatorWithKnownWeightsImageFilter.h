@@ -106,13 +106,8 @@ protected:
   GenerateInputRequestedRegion() override;
 
   /** Does the real work. */
-#if ITK_VERSION_MAJOR < 5
-  void
-  ThreadedGenerateData(const typename VolumeType::RegionType & outputRegionForThread, ThreadIdType threadId) override;
-#else
   void
   DynamicThreadedGenerateData(const typename VolumeType::RegionType & outputRegionForThread) override;
-#endif
 
   itk::Array2D<float> m_Weights;
   int                 m_ProjectionNumber;

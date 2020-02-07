@@ -60,12 +60,7 @@ AdditiveGaussianNoiseImageFilter<TInputImage>::GenerateData()
   // Set the global max number of threads to 1
   // NOTE: This is required because there is a bug with this filter,
   // it appears the NormalVariateGenerate is single threaded only.
-#if ITK_VERSION_MAJOR < 5
-  m_NoiseFilter->SetNumberOfThreads(1);
-#else
   m_NoiseFilter->SetNumberOfWorkUnits(1);
-#endif
-
 
   // Setup grafted pipeline for composite filter
   m_NoiseFilter->SetInput(this->GetInput());

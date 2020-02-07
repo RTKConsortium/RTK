@@ -79,14 +79,8 @@ protected:
   GenerateInputRequestedRegion() override;
 
   /** Does the real work. */
-#if ITK_VERSION_MAJOR < 5
-  void
-  ThreadedGenerateData(const typename TInputImage::RegionType & outputRegionForThread,
-                       itk::ThreadIdType                        itkNotUsed(threadId)) override;
-#else
   void
   DynamicThreadedGenerateData(const typename TInputImage::RegionType & outputRegionForThread) override;
-#endif
 
   MedianRadiusType m_Radius;
   double           m_ThresholdMultiplier;
@@ -94,13 +88,8 @@ protected:
 
 template <>
 RTK_EXPORT void
-ConditionalMedianImageFilter<itk::VectorImage<float, 3>>
-#if ITK_VERSION_MAJOR < 5
-  ::ThreadedGenerateData(const itk::VectorImage<float, 3>::RegionType & outputRegionForThread,
-                         itk::ThreadIdType                              itkNotUsed(threadId));
-#else
-  ::DynamicThreadedGenerateData(const itk::VectorImage<float, 3>::RegionType & outputRegionForThread);
-#endif
+ConditionalMedianImageFilter<itk::VectorImage<float, 3>>::DynamicThreadedGenerateData(
+  const itk::VectorImage<float, 3>::RegionType & outputRegionForThread);
 
 } // namespace rtk
 

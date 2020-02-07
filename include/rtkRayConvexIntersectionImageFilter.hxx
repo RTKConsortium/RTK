@@ -43,12 +43,8 @@ RayConvexIntersectionImageFilter<TInputImage, TOutputImage>::BeforeThreadedGener
 
 template <class TInputImage, class TOutputImage>
 void
-RayConvexIntersectionImageFilter<TInputImage, TOutputImage>
-#if ITK_VERSION_MAJOR < 5
-  ::ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, ThreadIdType itkNotUsed(threadId))
-#else
-  ::DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread)
-#endif
+RayConvexIntersectionImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerateData(
+  const OutputImageRegionType & outputRegionForThread)
 {
   // Iterators on input and output
   using InputRegionIterator = ProjectionsRegionConstIteratorRayBased<TInputImage>;

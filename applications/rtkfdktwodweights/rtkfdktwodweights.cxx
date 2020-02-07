@@ -52,11 +52,7 @@ main(int argc, char * argv[])
   WeightType::Pointer wf = WeightType::New();
   wf->SetInput(reader->GetOutput());
   wf->SetGeometry(geometryReader->GetOutputObject());
-#if ITK_VERSION_MAJOR < 5
-  wf->SetNumberOfThreads(1);
-#else
   wf->SetNumberOfWorkUnits(1);
-#endif
   wf->InPlaceOff();
 
   // Write

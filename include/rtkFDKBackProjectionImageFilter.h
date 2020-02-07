@@ -65,13 +65,8 @@ protected:
   void
   GenerateOutputInformation() override;
 
-#if ITK_VERSION_MAJOR < 5
-  void
-  ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, ThreadIdType threadId) override;
-#else
   void
   DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread) override;
-#endif
 
   /** Optimized version when the rotation is parallel to X, i.e. matrix[1][0]
     and matrix[2][0] are zeros. */

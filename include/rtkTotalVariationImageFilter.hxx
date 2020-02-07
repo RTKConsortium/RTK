@@ -31,9 +31,7 @@ namespace rtk
 template <typename TInputImage>
 TotalVariationImageFilter<TInputImage>::TotalVariationImageFilter()
 {
-#if ITK_VERSION_MAJOR > 4
   this->DynamicMultiThreadingOff();
-#endif
 
   // first output is a copy of the image, DataObject created by
   // superclass
@@ -119,11 +117,7 @@ template <typename TInputImage>
 void
 TotalVariationImageFilter<TInputImage>::BeforeThreadedGenerateData()
 {
-#if ITK_VERSION_MAJOR < 5
-  itk::ThreadIdType numberOfThreads = this->GetNumberOfThreads();
-#else
   itk::ThreadIdType numberOfThreads = this->GetNumberOfWorkUnits();
-#endif
 
   // Resize the thread temporaries
   m_SumOfSquareRoots.SetSize(numberOfThreads);
@@ -136,12 +130,8 @@ template <typename TInputImage>
 void
 TotalVariationImageFilter<TInputImage>::AfterThreadedGenerateData()
 {
-  RealType totalVariation = 0;
-#if ITK_VERSION_MAJOR < 5
-  itk::ThreadIdType numberOfThreads = this->GetNumberOfThreads();
-#else
+  RealType          totalVariation = 0;
   itk::ThreadIdType numberOfThreads = this->GetNumberOfWorkUnits();
-#endif
 
   // Add up the results from all threads
   for (itk::ThreadIdType i = 0; i < numberOfThreads; i++)

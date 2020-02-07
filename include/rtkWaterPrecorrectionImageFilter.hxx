@@ -35,12 +35,8 @@ WaterPrecorrectionImageFilter<TInputImage, TOutputImage>::WaterPrecorrectionImag
 
 template <class TInputImage, class TOutputImage>
 void
-WaterPrecorrectionImageFilter<TInputImage, TOutputImage>
-#if ITK_VERSION_MAJOR < 5
-  ::ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, ThreadIdType itkNotUsed(threadId))
-#else
-  ::DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread)
-#endif
+WaterPrecorrectionImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerateData(
+  const OutputImageRegionType & outputRegionForThread)
 {
   const int csize = m_Coefficients.size();
 

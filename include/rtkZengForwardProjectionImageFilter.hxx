@@ -91,12 +91,7 @@ ZengForwardProjectionImageFilter<TInputImage, TOutputImage>::GenerateInputReques
 
 template <class TInputImage, class TOutputImage>
 void
-ZengForwardProjectionImageFilter<TInputImage, TOutputImage>
-#if ITK_VERSION_MAJOR < 5
-  ::VerifyInputInformation()
-#else
-  ::VerifyInputInformation() const
-#endif
+ZengForwardProjectionImageFilter<TInputImage, TOutputImage>::VerifyInputInformation() const
 {
   using ImageBaseType = const itk::ImageBase<InputImageDimension>;
 

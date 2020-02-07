@@ -253,13 +253,8 @@ WeidingerForwardModelImageFilter<TMaterialProjections, TPhotonCounts, TSpectrum,
 
 template <class TMaterialProjections, class TPhotonCounts, class TSpectrum, class TProjections>
 void
-WeidingerForwardModelImageFilter<TMaterialProjections, TPhotonCounts, TSpectrum, TProjections>
-#if ITK_VERSION_MAJOR < 5
-  ::ThreadedGenerateData(const typename TOutputImage1::RegionType & outputRegionForThread,
-                         itk::ThreadIdType                          itkNotUsed(threadId))
-#else
-  ::DynamicThreadedGenerateData(const typename TOutputImage1::RegionType & outputRegionForThread)
-#endif
+WeidingerForwardModelImageFilter<TMaterialProjections, TPhotonCounts, TSpectrum, TProjections>::
+  DynamicThreadedGenerateData(const typename TOutputImage1::RegionType & outputRegionForThread)
 {
   // Create the region corresponding to outputRegionForThread for the spectrum input
   typename TSpectrum::RegionType spectrumRegion = this->GetInputSpectrum()->GetLargestPossibleRegion();

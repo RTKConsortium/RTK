@@ -91,13 +91,8 @@ FFTProjectionsConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>::
   // per thread.
   if (this->GetOutput()->GetRequestedRegion().GetSize()[2] == 1 && m_KernelDimension == 2)
   {
-#if ITK_VERSION_MAJOR < 5
-    m_BackupNumberOfThreads = this->GetNumberOfThreads();
-    this->SetNumberOfThreads(1);
-#else
     m_BackupNumberOfThreads = this->GetNumberOfWorkUnits();
     this->SetNumberOfWorkUnits(1);
-#endif
   }
   else
     m_BackupNumberOfThreads = 1;
@@ -112,21 +107,13 @@ void
 FFTProjectionsConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>::AfterThreadedGenerateData()
 {
   if (this->GetOutput()->GetRequestedRegion().GetSize()[2] == 1 && m_KernelDimension == 2)
-#if ITK_VERSION_MAJOR < 5
-    this->SetNumberOfThreads(m_BackupNumberOfThreads);
-#else
     this->SetNumberOfWorkUnits(m_BackupNumberOfThreads);
-#endif
 }
 
 template <class TInputImage, class TOutputImage, class TFFTPrecision>
 void
-FFTProjectionsConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
-#if ITK_VERSION_MAJOR < 5
-  ::ThreadedGenerateData(const RegionType & outputRegionForThread, ThreadIdType itkNotUsed(threadId))
-#else
-  ::DynamicThreadedGenerateData(const RegionType & outputRegionForThread)
-#endif
+FFTProjectionsConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>::DynamicThreadedGenerateData(
+  const RegionType & outputRegionForThread)
 {
   // Pad image region enlarged along X
   RegionType enlargedRegionX = outputRegionForThread;
@@ -141,11 +128,7 @@ FFTProjectionsConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
   using FFTType = itk::RealToHalfHermitianForwardFFTImageFilter<FFTInputImageType>;
   typename FFTType::Pointer fftI = FFTType::New();
   fftI->SetInput(paddedImage);
-#if ITK_VERSION_MAJOR < 5
-  fftI->SetNumberOfThreads(m_BackupNumberOfThreads);
-#else
   fftI->SetNumberOfWorkUnits(m_BackupNumberOfThreads);
-#endif
   fftI->Update();
 
   // Multiply line-by-line or projection-by-projection (depends on kernel size)
@@ -168,11 +151,7 @@ FFTProjectionsConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
   using IFFTType = itk::HalfHermitianToRealInverseFFTImageFilter<typename FFTType::OutputImageType>;
   typename IFFTType::Pointer ifft = IFFTType::New();
   ifft->SetInput(fftI->GetOutput());
-#if ITK_VERSION_MAJOR < 5
-  ifft->SetNumberOfThreads(m_BackupNumberOfThreads);
-#else
   ifft->SetNumberOfWorkUnits(m_BackupNumberOfThreads);
-#endif
   ifft->SetReleaseDataFlag(true);
   ifft->SetActualXDimensionIsOdd(paddedImage->GetLargestPossibleRegion().GetSize(0) % 2);
   ifft->Update();

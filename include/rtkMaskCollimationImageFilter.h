@@ -71,25 +71,14 @@ protected:
   BeforeThreadedGenerateData() override;
 
   /** Apply changes to the input image requested region. */
-#if ITK_VERSION_MAJOR < 5
-  void
-  ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, ThreadIdType threadId) override;
-#else
   void
   DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread) override;
-#endif
 
   /** The two inputs should not be in the same space so there is nothing
    * to verify. */
-#if ITK_VERSION_MAJOR < 5
-  void
-  VerifyInputInformation() override
-  {}
-#else
   void
   VerifyInputInformation() const override
   {}
-#endif
 
 private:
   /** RTK geometry object */

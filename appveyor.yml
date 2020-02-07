@@ -21,7 +21,7 @@ platform:
 environment:
   # Environment variables
   APPVEYOR_SAVE_CACHE_ON_ERROR: true
-  ITK_VERSION: v4.12.0
+  ITK_VERSION: v5.0.1
   ITK_SOURCE_DIR: "C:/projects/ITK"
   ITK_BINARY_DIR: "C:/projects/ITK-build"
   BUILD_TYPE: Release

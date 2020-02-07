@@ -11,6 +11,7 @@ RTK is a module of [ITK](http://www.itk.org), the Insight Toolkit. Follow the in
 * `RTK_USE_CUDA`: Activates CUDA computation. Default is `ON` if CMake has automatically found the CUDA package and a CUDA-compatible GPU, and `OFF` otherwise.
 * `RTK_CUDA_PROJECTIONS_SLAB_SIZE`: Set the number of projections processed at once in CUDA processing. Default is 16.
 * `RTK_PROBE_EACH_FILTER`: Activates the timing, CPU and CUDA memory consumption of each filter. Defaults is `OFF`. When activated, each filter processing is probed and a summary can be displayed. All command line applications display the result with `--verbose`.
+* `REMOTE_GIT_TAG_RTK`: Selects RTK version. RTK is only maintained to be backward compatible with the latest ITK release and ITK master branch.
 
 RTK will automatically be installed when installing ITK.
 

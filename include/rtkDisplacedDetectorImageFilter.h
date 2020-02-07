@@ -123,13 +123,8 @@ protected:
   void
   GenerateOutputInformation() override;
 
-#if ITK_VERSION_MAJOR < 5
-  void
-  ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, ThreadIdType threadId) override;
-#else
   void
   DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread) override;
-#endif
 
   // Iterative filters do not need padding
   bool m_PadOnTruncatedSide{ true };

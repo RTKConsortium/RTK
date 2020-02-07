@@ -81,13 +81,8 @@ protected:
   void
   BeforeThreadedGenerateData() override;
 
-#if ITK_VERSION_MAJOR < 5
-  void
-  ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, ThreadIdType threadId) override;
-#else
   void
   DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread) override;
-#endif
 
 private:
   /** Angular weights for each projection */

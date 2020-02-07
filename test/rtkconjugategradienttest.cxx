@@ -146,11 +146,7 @@ main(int, char **)
   randomVolumeSource->SetSize(size);
   randomVolumeSource->SetMin(0.);
   randomVolumeSource->SetMax(1.);
-#if ITK_VERSION_MAJOR < 5
-  randomVolumeSource->SetNumberOfThreads(2); // With 1, it's deterministic
-#else
   randomVolumeSource->SetNumberOfWorkUnits(2); // With 1, it's deterministic
-#endif
 
   constantVolumeSource->SetOrigin(origin);
   constantVolumeSource->SetSpacing(spacing);

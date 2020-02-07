@@ -377,13 +377,8 @@ SpectralForwardModelImageFilter<DecomposedProjectionsType,
                                 MeasuredProjectionsType,
                                 IncidentSpectrumImageType,
                                 DetectorResponseImageType,
-                                MaterialAttenuationsImageType>
-#if ITK_VERSION_MAJOR < 5
-  ::ThreadedGenerateData(const typename OutputImageType::RegionType & outputRegionForThread,
-                         itk::ThreadIdType                            itkNotUsed(threadId))
-#else
-  ::DynamicThreadedGenerateData(const typename OutputImageType::RegionType & outputRegionForThread)
-#endif
+                                MaterialAttenuationsImageType>::
+  DynamicThreadedGenerateData(const typename OutputImageType::RegionType & outputRegionForThread)
 {
   ////////////////////////////////////////////////////////////////////
   // Create a Nelder-Mead simplex optimizer and its cost function

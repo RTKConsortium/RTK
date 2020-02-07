@@ -83,13 +83,8 @@ BlockDiagonalMatrixVectorMultiplyImageFilter<TVectorImage, TMatrixImage>::Genera
 
 template <class TVectorImage, class TMatrixImage>
 void
-BlockDiagonalMatrixVectorMultiplyImageFilter<TVectorImage, TMatrixImage>
-#if ITK_VERSION_MAJOR < 5
-  ::ThreadedGenerateData(const typename TVectorImage::RegionType & outputRegionForThread,
-                         itk::ThreadIdType                         itkNotUsed(threadId))
-#else
-  ::DynamicThreadedGenerateData(const typename TVectorImage::RegionType & outputRegionForThread)
-#endif
+BlockDiagonalMatrixVectorMultiplyImageFilter<TVectorImage, TMatrixImage>::DynamicThreadedGenerateData(
+  const typename TVectorImage::RegionType & outputRegionForThread)
 {
   // Create iterators for all inputs and outputs
   itk::ImageRegionIterator<TVectorImage>      outIt(this->GetOutput(), outputRegionForThread);

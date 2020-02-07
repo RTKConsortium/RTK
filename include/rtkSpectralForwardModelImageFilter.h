@@ -141,26 +141,14 @@ protected:
 
   void
   BeforeThreadedGenerateData() override;
-#if ITK_VERSION_MAJOR < 5
-  void
-  ThreadedGenerateData(const typename OutputImageType::RegionType & outputRegionForThread,
-                       itk::ThreadIdType                            itkNotUsed(threadId)) override;
-#else
   void
   DynamicThreadedGenerateData(const typename OutputImageType::RegionType & outputRegionForThread) override;
-#endif
 
   /** The inputs should not be in the same space so there is nothing
    * to verify. */
-#if ITK_VERSION_MAJOR < 5
-  void
-  VerifyInputInformation() override
-  {}
-#else
   void
   VerifyInputInformation() const override
   {}
-#endif
 
   ThresholdsType m_Thresholds;
   unsigned int   m_NumberOfSpectralBins;

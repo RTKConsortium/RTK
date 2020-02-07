@@ -172,12 +172,8 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>::GenerateOutputInformati
 
 template <class TInputImage, class TOutputImage>
 void
-DisplacedDetectorImageFilter<TInputImage, TOutputImage>
-#if ITK_VERSION_MAJOR < 5
-  ::ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, ThreadIdType itkNotUsed(threadId))
-#else
-  ::DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread)
-#endif
+DisplacedDetectorImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerateData(
+  const OutputImageRegionType & outputRegionForThread)
 {
   // Declare the pixel and initialize it to the right length (for vector images)
   typename TOutputImage::PixelType pix;

@@ -76,14 +76,8 @@ protected:
   MakeOutput(const itk::ProcessObject::DataObjectIdentifierType &) override;
 
   /** Does the real work. */
-#if ITK_VERSION_MAJOR < 5
-  void
-  ThreadedGenerateData(const typename TImage::RegionType & outputRegionForThread,
-                       itk::ThreadIdType                   itkNotUsed(threadId)) override;
-#else
   void
   DynamicThreadedGenerateData(const typename TImage::RegionType & outputRegionForThread) override;
-#endif
   void
   GenerateInputRequestedRegion() override;
 

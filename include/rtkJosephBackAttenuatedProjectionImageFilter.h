@@ -250,13 +250,8 @@ protected:
 
   /** Only the last two inputs should be in the same space so we need
    * to overwrite the method. */
-#if ITK_VERSION_MAJOR < 5
-  void
-  VerifyInputInformation() override;
-#else
   void
   VerifyInputInformation() const override;
-#endif
 
   void
   GenerateData() override;

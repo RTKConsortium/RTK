@@ -72,14 +72,8 @@ protected:
   GenerateInputRequestedRegion() override;
 
   /** Does the real work. */
-#if ITK_VERSION_MAJOR < 5
-  void
-  ThreadedGenerateData(const typename TVectorImage::RegionType & outputRegionForThread,
-                       itk::ThreadIdType                         itkNotUsed(threadId)) override;
-#else
   void
   DynamicThreadedGenerateData(const typename TVectorImage::RegionType & outputRegionForThread) override;
-#endif
 
   /** Getters for the inputs */
   typename TVectorImage::ConstPointer

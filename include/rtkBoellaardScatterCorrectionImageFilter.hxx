@@ -30,9 +30,7 @@ namespace rtk
 template <class TInputImage, class TOutputImage>
 BoellaardScatterCorrectionImageFilter<TInputImage, TOutputImage>::BoellaardScatterCorrectionImageFilter()
 {
-#if ITK_VERSION_MAJOR > 4
   this->DynamicMultiThreadingOff();
-#endif
 }
 
 // Requires full projection images to estimate scatter.

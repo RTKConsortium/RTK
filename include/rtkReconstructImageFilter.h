@@ -185,15 +185,9 @@ public:
   /** ReconstructImageFilter uses input images of different sizes, therefore the
    * VerifyInputInformation method has to be reimplemented.
    */
-#if ITK_VERSION_MAJOR < 5
-  void
-  VerifyInputInformation() override
-  {}
-#else
   void
   VerifyInputInformation() const override
   {}
-#endif
 
   void
   SetSizes(typename InputImageType::SizeType * sizesVector)

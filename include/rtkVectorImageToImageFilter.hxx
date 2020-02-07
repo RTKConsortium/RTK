@@ -30,9 +30,7 @@ namespace rtk
 template <typename InputImageType, typename OutputImageType>
 VectorImageToImageFilter<InputImageType, OutputImageType>::VectorImageToImageFilter()
 {
-#if ITK_VERSION_MAJOR > 4
   this->DynamicMultiThreadingOff();
-#endif
 
   // Set the direction along which the output requested region should NOT be split
   m_Splitter = itk::ImageRegionSplitterDirection::New();

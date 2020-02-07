@@ -46,21 +46,13 @@ FDKWarpBackProjectionImageFilter<TInputImage, TOutputImage, TDeformation>::Gener
 
   // Initialize output region with input region in case the filter is not in
   // place
-#if ITK_VERSION_MAJOR > 4
   this->GetMultiThreader()->SetNumberOfWorkUnits(this->GetNumberOfWorkUnits());
-#endif
   if (this->GetInput() != this->GetOutput())
   {
 
-#if ITK_VERSION_MAJOR > 4
     this->GetMultiThreader()->template ParallelizeImageRegion<TOutputImage::ImageDimension>(
       this->GetOutput()->GetRequestedRegion(),
       [this](const typename TOutputImage::RegionType & outputRegionForThread) {
-#else
-    {
-      typename TOutputImage::RegionType outputRegionForThread;
-      outputRegionForThread = this->GetOutput()->GetRequestedRegion();
-#endif
         // Iterators on volume input and output
         using InputRegionIterator = itk::ImageRegionConstIterator<TInputImage>;
         InputRegionIterator itIn(this->GetInput(), outputRegionForThread);
@@ -74,12 +66,8 @@ FDKWarpBackProjectionImageFilter<TInputImage, TOutputImage, TDeformation>::Gener
           ++itIn;
           ++itOut;
         }
-#if ITK_VERSION_MAJOR > 4
       },
       nullptr);
-#else
-    }
-#endif
   }
 
   // Rotation center (assumed to be at 0 yet)
@@ -114,15 +102,9 @@ FDKWarpBackProjectionImageFilter<TInputImage, TOutputImage, TDeformation>::Gener
       perspFactor += matrix[Dimension - 1][j] * rotCenterPoint[j];
     matrix /= perspFactor;
 
-#if ITK_VERSION_MAJOR > 4
     this->GetMultiThreader()->template ParallelizeImageRegion<TOutputImage::ImageDimension>(
       this->GetOutput()->GetRequestedRegion(),
       [this, warpInterpolator, interpolator, matrix](const typename TOutputImage::RegionType & outputRegionForThread) {
-#else
-    {
-      typename TOutputImage::RegionType outputRegionForThread;
-      outputRegionForThread = this->GetOutput()->GetRequestedRegion();
-#endif
         using OutputRegionIterator = itk::ImageRegionIteratorWithIndex<TOutputImage>;
         OutputRegionIterator itOut(this->GetOutput(), outputRegionForThread);
 
@@ -162,12 +144,8 @@ FDKWarpBackProjectionImageFilter<TInputImage, TOutputImage, TDeformation>::Gener
 
           ++itOut;
         }
-#if ITK_VERSION_MAJOR > 4
       },
       nullptr);
-#else
-    }
-#endif
   }
 }
 

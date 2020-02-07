@@ -62,14 +62,8 @@ protected:
   ~MultiplyByVectorImageFilter() override = default;
 
   /** Does the real work. */
-#if ITK_VERSION_MAJOR < 5
-  void
-  ThreadedGenerateData(const typename TInputImage::RegionType & outputRegionForThread,
-                       itk::ThreadIdType                        itkNotUsed(threadId)) override;
-#else
   void
   DynamicThreadedGenerateData(const typename TInputImage::RegionType & outputRegionForThread) override;
-#endif
 
 private:
   std::vector<float> m_Vector;

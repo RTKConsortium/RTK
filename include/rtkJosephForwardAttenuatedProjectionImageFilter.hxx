@@ -45,9 +45,7 @@ JosephForwardAttenuatedProjectionImageFilter<
   TComputeAttenuationCorrection>::JosephForwardAttenuatedProjectionImageFilter()
 {
   this->SetNumberOfRequiredInputs(3);
-#if ITK_VERSION_MAJOR > 4
   this->DynamicMultiThreadingOff();
-#endif
 }
 
 template <class TInputImage,
@@ -82,12 +80,7 @@ JosephForwardAttenuatedProjectionImageFilter<TInputImage,
                                              TOutputImage,
                                              TInterpolationWeightMultiplication,
                                              TProjectedValueAccumulation,
-                                             TComputeAttenuationCorrection>
-#if ITK_VERSION_MAJOR < 5
-  ::VerifyInputInformation()
-#else
-  ::VerifyInputInformation() const
-#endif
+                                             TComputeAttenuationCorrection>::VerifyInputInformation() const
 {
   using ImageBaseType = const itk::ImageBase<InputImageDimension>;
 

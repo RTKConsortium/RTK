@@ -18,31 +18,24 @@
 
 #ifndef __rtkConfiguration_h
 #define __rtkConfiguration_h
-//This file is interpreted by cmake, to define macros based on the cmake configuration options
+// This file is interpreted by cmake, to define macros based on the cmake configuration options
 //
 
 #include <itkConfigure.h>
 #include <itkIntTypes.h>
 namespace rtk
 {
-  using ThreadIdType = itk::ThreadIdType;
+using ThreadIdType = itk::ThreadIdType;
 }
-
-#if ITK_VERSION_MAJOR == 4 && ITK_VERSION_MINOR < 5
-namespace itk
-{
-  using SpacePrecisionType = double;
-}
-#endif
 
 #ifndef CUDA_FOUND
-#cmakedefine CUDA_FOUND
+#  cmakedefine CUDA_FOUND
 #endif
 #cmakedefine RTK_PROBE_EACH_FILTER
 #cmakedefine RTK_USE_CUDA
 #cmakedefine RTK_BUILD_SHARED_LIBS 1
 #ifndef SLAB_SIZE
-  #define SLAB_SIZE @RTK_CUDA_PROJECTIONS_SLAB_SIZE@
+#  define SLAB_SIZE @RTK_CUDA_PROJECTIONS_SLAB_SIZE@
 #endif
 
 #define RTK_BINARY_DIR "@RTK_BINARY_DIR@"

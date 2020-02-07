@@ -89,12 +89,7 @@ NesterovUpdateImageFilter<TImage>::BeforeThreadedGenerateData()
 
 template <typename TImage>
 void
-NesterovUpdateImageFilter<TImage>
-#if ITK_VERSION_MAJOR < 5
-  ::ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId))
-#else
-  ::DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread)
-#endif
+NesterovUpdateImageFilter<TImage>::DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread)
 {
   if (m_MustInitializeIntermediateImages)
   {

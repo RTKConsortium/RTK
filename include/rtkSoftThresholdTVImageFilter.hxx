@@ -31,22 +31,14 @@ namespace rtk
 template <typename TInputImage, typename TRealType, typename TOutputImage>
 SoftThresholdTVImageFilter<TInputImage, TRealType, TOutputImage>::SoftThresholdTVImageFilter()
 {
-#if ITK_VERSION_MAJOR < 5
-  m_RequestedNumberOfThreads = this->GetNumberOfThreads();
-#else
   m_RequestedNumberOfThreads = this->GetNumberOfWorkUnits();
-#endif
   m_Threshold = 0;
 }
 
 template <typename TInputImage, typename TRealType, typename TOutputImage>
 void
-SoftThresholdTVImageFilter<TInputImage, TRealType, TOutputImage>
-#if ITK_VERSION_MAJOR < 5
-  ::ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, ThreadIdType itkNotUsed(threadId))
-#else
-  ::DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread)
-#endif
+SoftThresholdTVImageFilter<TInputImage, TRealType, TOutputImage>::DynamicThreadedGenerateData(
+  const OutputImageRegionType & outputRegionForThread)
 {
   itk::ImageRegionConstIterator<TInputImage> InputIt;
   itk::ImageRegionIterator<TOutputImage>     OutputIt;

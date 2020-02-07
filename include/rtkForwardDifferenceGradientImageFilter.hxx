@@ -146,12 +146,8 @@ ForwardDifferenceGradientImageFilter<TInputImage, TOperatorValueType, TOuputValu
 
 template <typename TInputImage, typename TOperatorValueType, typename TOuputValue, typename TOuputImage>
 void
-ForwardDifferenceGradientImageFilter<TInputImage, TOperatorValueType, TOuputValue, TOuputImage>
-#if ITK_VERSION_MAJOR < 5
-  ::ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, itk::ThreadIdType itkNotUsed(threadId))
-#else
-  ::DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread)
-#endif
+ForwardDifferenceGradientImageFilter<TInputImage, TOperatorValueType, TOuputValue, TOuputImage>::
+  DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread)
 {
 
   itk::NeighborhoodInnerProduct<InputImageType, OperatorValueType, OutputValueType> SIP;

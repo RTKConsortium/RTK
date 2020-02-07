@@ -33,9 +33,7 @@ namespace rtk
 template <class TInputImage, class TOutputImage>
 UpsampleImageFilter<TInputImage, TOutputImage>::UpsampleImageFilter()
 {
-#if ITK_VERSION_MAJOR > 4
   this->DynamicMultiThreadingOff();
-#endif
   this->SetNumberOfRequiredInputs(1);
   this->m_Order = 0;
   this->m_OutputSize.Fill(0);

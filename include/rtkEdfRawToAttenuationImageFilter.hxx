@@ -78,12 +78,8 @@ EdfRawToAttenuationImageFilter<TInputImage, TOutputImage>::BeforeThreadedGenerat
 
 template <class TInputImage, class TOutputImage>
 void
-EdfRawToAttenuationImageFilter<TInputImage, TOutputImage>
-#if ITK_VERSION_MAJOR < 5
-  ::ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, ThreadIdType itkNotUsed(threadId))
-#else
-  ::DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread)
-#endif
+EdfRawToAttenuationImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerateData(
+  const OutputImageRegionType & outputRegionForThread)
 {
   // Dark image iterator
   OutputImageRegionType darkRegion = outputRegionForThread;

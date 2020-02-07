@@ -33,10 +33,7 @@ namespace rtk
 template <typename TInputImage, typename TRealType, typename TOutputImage>
 SingularValueThresholdImageFilter<TInputImage, TRealType, TOutputImage>::SingularValueThresholdImageFilter()
 {
-#if ITK_VERSION_MAJOR > 4
   this->DynamicMultiThreadingOff();
-#endif
-
   m_Threshold = 0;
 
   // Set the direction along which the output requested region should NOT be split

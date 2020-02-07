@@ -125,13 +125,8 @@ protected:
   void
   AfterThreadedGenerateData() override;
 
-#if ITK_VERSION_MAJOR < 5
-  void
-  ThreadedGenerateData(const RegionType & outputRegionForThread, ThreadIdType threadId) override;
-#else
   void
   DynamicThreadedGenerateData(const RegionType & outputRegionForThread) override;
-#endif
 
   /** Pad the inputRegion region of the input image and returns a pointer to the new padded image.
    * Padding includes a correction for truncation [Ohnesorge, Med Phys, 2000].

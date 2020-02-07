@@ -91,13 +91,8 @@ protected:
   void
   GenerateInputRequestedRegion() override;
 
-#if ITK_VERSION_MAJOR < 5
-  void
-  ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, itk::ThreadIdType threadId) override;
-#else
   void
   DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread) override;
-#endif
 
   bool               m_MapsLoaded{ false }; // True if gain maps loaded
   int                m_ModelOrder{ 1 };     // Polynomial correction order

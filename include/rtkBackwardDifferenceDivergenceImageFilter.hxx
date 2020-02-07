@@ -149,13 +149,8 @@ BackwardDifferenceDivergenceImageFilter<TInputImage, TOutputImage>::BeforeThread
 
 template <class TInputImage, class TOutputImage>
 void
-BackwardDifferenceDivergenceImageFilter<TInputImage, TOutputImage>
-#if ITK_VERSION_MAJOR < 5
-  ::ThreadedGenerateData(const typename TInputImage::RegionType & outputRegionForThread,
-                         itk::ThreadIdType                        itkNotUsed(threadId))
-#else
-  ::DynamicThreadedGenerateData(const typename TInputImage::RegionType & outputRegionForThread)
-#endif
+BackwardDifferenceDivergenceImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerateData(
+  const typename TInputImage::RegionType & outputRegionForThread)
 {
   // Generate a list of indices of the dimensions to process
   std::vector<int> dimsToProcess;
