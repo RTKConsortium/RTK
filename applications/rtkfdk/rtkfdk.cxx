@@ -186,20 +186,12 @@ main(int argc, char * argv[])
   }
 #endif
 
-  // Streaming depending on streaming capability of writer
-  using StreamerType = itk::StreamingImageFilter<CPUOutputImageType, CPUOutputImageType>;
-  StreamerType::Pointer streamerBP = StreamerType::New();
-  streamerBP->SetInput(pfeldkamp);
-  streamerBP->SetNumberOfStreamDivisions(args_info.divisions_arg);
-  itk::ImageRegionSplitterDirection::Pointer splitter = itk::ImageRegionSplitterDirection::New();
-  splitter->SetDirection(2); // Prevent splitting along z axis. As a result, splitting will be performed along y axis
-  streamerBP->SetRegionSplitter(splitter);
-
   // Write
   using WriterType = itk::ImageFileWriter<CPUOutputImageType>;
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName(args_info.output_arg);
-  writer->SetInput(streamerBP->GetOutput());
+  writer->SetInput(pfeldkamp);
+  writer->SetNumberOfStreamDivisions(args_info.divisions_arg);
 
   if (args_info.verbose_flag)
     std::cout << "Reconstructing and writing... " << std::endl;
