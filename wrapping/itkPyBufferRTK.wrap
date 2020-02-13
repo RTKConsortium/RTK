@@ -1,5 +1,6 @@
 itk_wrap_class("itk::PyBuffer")
 
+  file(TOUCH ${CMAKE_CURRENT_BINARY_DIR}/PyBufferRTK.i)
   UNIQUE(types "${WRAP_ITK_SCALAR};UC;D;US;UI;UL;SC;SS;SI;SL;F")
   foreach(t ${types})
     string(REGEX MATCHALL "(V${t}|CV${t})" VectorTypes "${WRAP_ITK_VECTOR}")
