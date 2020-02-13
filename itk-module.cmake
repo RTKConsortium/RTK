@@ -11,6 +11,12 @@ set(RTK_IO_DEPENDS
   ITKIOXML
   )
 
+if(ITK_WRAP_PYTHON)
+  set(RTK_BRIDGE_DEPENDS
+  ITKBridgeNumPy
+  )
+endif()
+
 set(RTK_DEPENDS
   ITKCommon
   ITKConvolution
@@ -20,6 +26,7 @@ set(RTK_DEPENDS
   ITKSmoothing
   ITKImageNoise
   ${RTK_IO_DEPENDS}
+  ${RTK_BRIDGE_DEPENDS}
   )
 
 # -----------------------------------------
