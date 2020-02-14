@@ -18,6 +18,8 @@ set(RTK_SRCS
   rtkGlobalResourceProbe.cxx
   rtkHisImageIO.cxx
   rtkHisImageIOFactory.cxx
+  rtkHncImageIO.cxx
+  rtkHncImageIOFactory.cxx
   rtkHndImageIO.cxx
   rtkHndImageIOFactory.cxx
   rtkImagXImageIO.cxx

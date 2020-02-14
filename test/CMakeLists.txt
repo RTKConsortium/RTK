@@ -126,10 +126,13 @@ rtk_add_test(rtkVarianTest rtkvariantest.cxx
   DATA{Input/Varian/acqui.xml}
   DATA{Input/Varian/Proj_00000.xim}
   DATA{Input/Varian/acqui_probeam.xml}
-  DATA{Baseline/Varian/attenuation.mha}
+  DATA{Input/Varian/image_00052.hnc}
   DATA{Baseline/Varian/geometry.xml}
+  DATA{Baseline/Varian/attenuation.mha}
   DATA{Baseline/Varian/geometryProBeam.xml}
-  DATA{Baseline/Varian/attenuationProBeam.mha})
+  DATA{Baseline/Varian/attenuationProBeam.mha}
+  DATA{Baseline/Varian/geometryHnc.xml}
+  DATA{Baseline/Varian/attenuationHnc.mha})
 
 rtk_add_test(rtkElektaTest rtkelektatest.cxx
   DATA{Input/Elekta/IMAGE.DBF}
