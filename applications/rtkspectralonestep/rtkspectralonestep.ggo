@@ -13,6 +13,7 @@ option "incident"              - "Incident spectrum file (mhd image)"           
 option "attenuations"          a "Material attenuations file"                                        string yes
 option "mask"                  m "Apply a support binary mask: reconstruction kept null outside"     string no
 option "regul_spatial_weights" - "One-component image of spatial regularization weights"             string no
+option "projection_weights"    - "One-component image of projection weights (size of photon counts)" string no
 option "thresholds"            t "Lower threshold of bins, expressed in pulse height"                double yes  multiple
 option "subsets"               - "Number of subsets of projections (should not exceed 6)"            int    no   default="4"
 option "regul_weights"         - "Regularization parameters for each material"                       double multiple no

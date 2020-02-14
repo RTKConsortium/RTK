@@ -53,6 +53,7 @@ MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectru
   m_SQSRegul = SQSRegularizationType::New();
   m_MultiplyRegulGradientsFilter = MultiplyGradientFilterType::New();
   m_MultiplyRegulHessiansFilter = MultiplyGradientFilterType::New();
+  m_MultiplyGradientToBeBackprojectedFilter = MultiplyGradientFilterType::New();
   m_WeidingerForward = WeidingerForwardModelType::New();
   m_NewtonFilter = NewtonFilterType::New();
   m_NesterovFilter = NesterovFilterType::New();
@@ -112,6 +113,14 @@ MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectru
 }
 
 template <class TOutputImage, class TPhotonCounts, class TSpectrum>
+void
+MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectrum>::SetProjectionWeights(
+  const SingleComponentImageType * weiprojections)
+{
+  this->SetNthInput(5, const_cast<SingleComponentImageType *>(weiprojections));
+}
+
+template <class TOutputImage, class TPhotonCounts, class TSpectrum>
 typename TOutputImage::ConstPointer
 MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectrum>::GetInputMaterialVolumes()
 {
@@ -146,6 +155,14 @@ typename MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts,
   MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectrum>::GetSpatialRegularizationWeights()
 {
   return static_cast<const SingleComponentImageType *>(this->itk::ProcessObject::GetInput(4));
+}
+
+template <class TOutputImage, class TPhotonCounts, class TSpectrum>
+typename MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectrum>::SingleComponentImageType::
+  ConstPointer
+  MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectrum>::GetProjectionWeights()
+{
+  return static_cast<const SingleComponentImageType *>(this->itk::ProcessObject::GetInput(5));
 }
 
 template <class TOutputImage, class TPhotonCounts, class TSpectrum>
@@ -293,6 +310,12 @@ MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectru
     const_cast<SingleComponentImageType *>(this->GetSpatialRegularizationWeights().GetPointer());
   if (inputPtr4)
     inputPtr4->SetRequestedRegion(inputPtr0->GetRequestedRegion());
+
+  // Input 5 is the image of weights for the gradient to be backprojected (optional)
+  typename SingleComponentImageType::Pointer inputPtr5 =
+    const_cast<SingleComponentImageType *>(this->GetProjectionWeights().GetPointer());
+  if (inputPtr5)
+    inputPtr5->SetRequestedRegion(inputPtr1->GetRequestedRegion());
 }
 
 template <class TOutputImage, class TPhotonCounts, class TSpectrum>
@@ -331,7 +354,16 @@ MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectru
   m_WeidingerForward->SetInputProjectionsOfOnes(m_SingleComponentForwardProjectionFilter->GetOutput());
 
   m_GradientsBackProjectionFilter->SetInput(0, m_GradientsSource->GetOutput());
-  m_GradientsBackProjectionFilter->SetInput(1, m_WeidingerForward->GetOutput1());
+  if (this->GetProjectionWeights().GetPointer() != nullptr)
+  {
+    m_MultiplyGradientToBeBackprojectedFilter->SetInput1(m_WeidingerForward->GetOutput1());
+    m_MultiplyGradientToBeBackprojectedFilter->SetInput2(this->GetProjectionWeights());
+    m_GradientsBackProjectionFilter->SetInput(1, m_MultiplyGradientToBeBackprojectedFilter->GetOutput());
+  }
+  else
+  {
+    m_GradientsBackProjectionFilter->SetInput(1, m_WeidingerForward->GetOutput1());
+  }
 
   m_HessiansBackProjectionFilter->SetInput(0, m_HessiansSource->GetOutput());
   m_HessiansBackProjectionFilter->SetInput(1, m_WeidingerForward->GetOutput2());
