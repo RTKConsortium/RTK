@@ -193,15 +193,15 @@ private:
                      float                nozzleToRadAngleOffset,
                      float                sid,
                      float                sdd,
-                     std::vector<float> & P,
-                     std::vector<float> & R,
-                     std::vector<float> & T);
+                     std::vector<float> & detTrans,
+                     std::vector<float> & detRot,
+                     std::vector<float> & srcTrans);
 
   void
-  addEntryToGeometry(const FlexmapType & flex, float gantryAngleDegree);
+  addEntryToGeometry(const FlexmapType & f, float gantryAngle);
 
   void
-  addEntryToGeometry(const CalibrationModelType & calibModel, float gantryAngleDegree);
+  addEntryToGeometry(const CalibrationModelType & c, float gantryAngle);
 
   GeometryType::Pointer m_Geometry;
   std::string           m_CalibrationXMLFileName;

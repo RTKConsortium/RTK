@@ -50,11 +50,11 @@ public:
   /** Start a probe with a particular name. If the time probe does not
    * exist, it will be created */
   virtual void
-  Start(const char * name);
+  Start(const char * id);
 
   /** Stop a time probe identified with a name */
   virtual void
-  Stop(const char * name);
+  Stop(const char * id);
 
   /** Report the summary of results from all probes */
   virtual void

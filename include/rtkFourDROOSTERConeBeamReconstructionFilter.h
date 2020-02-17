@@ -312,11 +312,11 @@ public:
 
   /** Pass the ForwardProjection filter to SingleProjectionToFourDFilter */
   void
-  SetForwardProjectionFilter(ForwardProjectionType fwtype) override;
+  SetForwardProjectionFilter(ForwardProjectionType _arg) override;
 
   /** Pass the backprojection filter to ProjectionStackToFourD*/
   void
-  SetBackProjectionFilter(BackProjectionType bptype) override;
+  SetBackProjectionFilter(BackProjectionType _arg) override;
 
   /** Pass the interpolation weights to SingleProjectionToFourDFilter */
   virtual void

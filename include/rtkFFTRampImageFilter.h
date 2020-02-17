@@ -134,7 +134,7 @@ protected:
   /** Creates and return a pointer to one line of the ramp kernel in Fourier space.
    *  Used in generate data functions.  */
   void
-  UpdateFFTProjectionsConvolutionKernel(const SizeType size) override;
+  UpdateFFTProjectionsConvolutionKernel(const SizeType s) override;
 
 private:
   /**

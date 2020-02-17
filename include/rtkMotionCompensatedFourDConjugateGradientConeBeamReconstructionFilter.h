@@ -128,9 +128,9 @@ public:
 
   /** The ND + time motion vector field */
   void
-  SetDisplacementField(const DVFSequenceImageType * DVFs);
+  SetDisplacementField(const DVFSequenceImageType * DisplacementField);
   void
-  SetInverseDisplacementField(const DVFSequenceImageType * DVFs);
+  SetInverseDisplacementField(const DVFSequenceImageType * InverseDisplacementField);
   typename DVFSequenceImageType::ConstPointer
   GetDisplacementField();
   typename DVFSequenceImageType::ConstPointer

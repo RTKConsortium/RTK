@@ -102,7 +102,7 @@ public:
   using DataObjectPointerArraySizeType = itk::ProcessObject::DataObjectPointerArraySizeType;
   using Superclass::MakeOutput;
   DataObjectPointer
-  MakeOutput(DataObjectPointerArraySizeType idx) override;
+  MakeOutput(DataObjectPointerArraySizeType output) override;
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
