@@ -73,7 +73,7 @@ public:
     m_BufferSize = 0;
   }
 
-  ~GPUMemPointer()
+  ~GPUMemPointer() override
   {
     if (m_GPUBuffer)
     {
@@ -220,9 +220,9 @@ public:
 
 protected:
   CudaDataManager();
-  virtual ~CudaDataManager();
-  virtual void
-  PrintSelf(std::ostream & os, Indent indent) const;
+  ~CudaDataManager() override;
+  void
+  PrintSelf(std::ostream & os, Indent indent) const override;
 
 private:
   CudaDataManager(const Self &); // purposely not implemented

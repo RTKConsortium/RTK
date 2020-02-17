@@ -51,7 +51,7 @@ public:
 
 private:
   CudaContextManager();
-  ~CudaContextManager();
+  ~CudaContextManager() override;
 
   CUcontext m_Context;
   int       m_Device;

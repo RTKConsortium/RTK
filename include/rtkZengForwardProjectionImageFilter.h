@@ -115,7 +115,7 @@ public:
 
 protected:
   ZengForwardProjectionImageFilter();
-  virtual ~ZengForwardProjectionImageFilter() ITK_OVERRIDE {}
+  ~ZengForwardProjectionImageFilter() ITK_OVERRIDE {}
 
   void
   GenerateInputRequestedRegion() ITK_OVERRIDE;
