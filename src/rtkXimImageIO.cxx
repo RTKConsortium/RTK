@@ -222,8 +222,13 @@ rtk::XimImageIO::ReadImageInformation()
   this->SetOrigin(0, -0.5 * (xim.SizeX - 1) * xim.dIDUResolutionX); // SR: assumed centered
   this->SetOrigin(1, -0.5 * (xim.SizeY - 1) * xim.dIDUResolutionY); // SR: assumed centered
 
+#if (ITK_VERSION_MAJOR == 5) && (ITK_VERSION_MINOR >= 1)
+  this->SetPixelType(itk::IOPixelEnum::SCALAR);
+  this->SetComponentType(itk::ImageIOBase::IOComponentEnum::UINT); // 32 bit ints
+#else
   this->SetPixelType(itk::ImageIOBase::SCALAR);
   this->SetComponentType(itk::ImageIOBase::UINT); // 32 bit ints
+#endif
 
   /* Store important meta information in the meta data dictionary */
   if (xim.SizeX * xim.SizeY != 0)

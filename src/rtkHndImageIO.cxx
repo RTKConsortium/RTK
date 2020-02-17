@@ -112,7 +112,11 @@ rtk::HndImageIO::ReadImageInformation()
   SetSpacing(1, hnd.dIDUResolutionY);
   SetOrigin(0, -0.5 * (hnd.SizeX - 1) * hnd.dIDUResolutionX); // SR: assumed centered
   SetOrigin(1, -0.5 * (hnd.SizeY - 1) * hnd.dIDUResolutionY); // SR: assumed centered
+#if (ITK_VERSION_MAJOR == 5) && (ITK_VERSION_MINOR >= 1)
+  SetComponentType(itk::ImageIOBase::IOComponentEnum::UINT);
+#else
   SetComponentType(itk::ImageIOBase::UINT);
+#endif
 
   /* Store important meta information in the meta data dictionary */
   itk::EncapsulateMetaData<double>(this->GetMetaDataDictionary(), "dCTProjectionAngle", hnd.dCTProjectionAngle);

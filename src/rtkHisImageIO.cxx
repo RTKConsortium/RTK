@@ -60,13 +60,21 @@ rtk::HisImageIO::ReadImageInformation()
   switch (type)
   {
     case 4:
+#if (ITK_VERSION_MAJOR == 5) && (ITK_VERSION_MINOR >= 1)
+      SetComponentType(itk::ImageIOBase::IOComponentEnum::USHORT);
+#else
       SetComponentType(itk::ImageIOBase::USHORT);
+#endif
       break;
       //    case  8: SetComponentType(itk::ImageIOBase::INT);   break;
       //    case 16: SetComponentType(itk::ImageIOBase::FLOAT); break;
       //    case 32: SetComponentType(itk::ImageIOBase::INT);   break;
     default:
+#if (ITK_VERSION_MAJOR == 5) && (ITK_VERSION_MINOR >= 1)
+      SetComponentType(itk::ImageIOBase::IOComponentEnum::USHORT);
+#else
       SetComponentType(itk::ImageIOBase::USHORT);
+#endif
       break;
   }
 
