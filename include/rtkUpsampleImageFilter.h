@@ -69,7 +69,7 @@ public:
   /** Set the shrink factors. Values are clamped to
    * a minimum value of 1.*/
   void
-  SetFactors(unsigned int factors[]);
+  SetFactors(const unsigned int factors[]);
 
   /** Sets the shrink factor for the given dimension.
    * All other dimensions are set to 1 */

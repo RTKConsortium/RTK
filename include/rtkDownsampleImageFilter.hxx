@@ -41,7 +41,7 @@ DownsampleImageFilter<TInputImage, TOutputImage>::DownsampleImageFilter()
  */
 template <class TInputImage, class TOutputImage>
 void
-DownsampleImageFilter<TInputImage, TOutputImage>::SetFactors(unsigned int factors[])
+DownsampleImageFilter<TInputImage, TOutputImage>::SetFactors(const unsigned int factors[])
 {
   unsigned int j = 0;
 

@@ -94,7 +94,7 @@ public:
   }
 
   size_t
-  GetBufferSize()
+  GetBufferSize() const
   {
     return m_BufferSize;
   }
@@ -138,7 +138,7 @@ public:
   SetBufferSize(size_t num);
 
   size_t
-  GetBufferSize()
+  GetBufferSize() const
   {
     return m_BufferSize;
   }
@@ -166,13 +166,13 @@ public:
   SetGPUBufferDirty();
 
   bool
-  IsCPUBufferDirty()
+  IsCPUBufferDirty() const
   {
     return m_IsCPUBufferDirty;
   }
 
   bool
-  IsGPUBufferDirty()
+  IsGPUBufferDirty() const
   {
     return m_IsGPUBufferDirty;
   }

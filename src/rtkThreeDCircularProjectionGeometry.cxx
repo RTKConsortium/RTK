@@ -354,7 +354,7 @@ rtk::ThreeDCircularProjectionGeometry::Clear()
 }
 
 const std::vector<double>
-rtk::ThreeDCircularProjectionGeometry::GetTiltAngles()
+rtk::ThreeDCircularProjectionGeometry::GetTiltAngles() const
 {
   const std::vector<double> sangles = this->GetSourceAngles();
   const std::vector<double> gangles = this->GetGantryAngles();

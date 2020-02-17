@@ -16,7 +16,7 @@ CheckGradient(typename TImage::Pointer    itkNotUsed(im),
 {}
 #else
 void
-CheckGradient(typename TImage::Pointer im, typename TGradient::Pointer grad, bool * dimensionsProcessed)
+CheckGradient(typename TImage::Pointer im, typename TGradient::Pointer grad, const bool * dimensionsProcessed)
 {
   // Generate a list of indices of the dimensions to process
   std::vector<int> dimsToProcess;
