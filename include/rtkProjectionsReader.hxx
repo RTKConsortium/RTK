@@ -151,7 +151,7 @@ ProjectionsReader<TOutputImage>::GenerateOutputInformation(void)
 
   itk::ImageIOBase::Pointer imageIO =
 #if (ITK_VERSION_MAJOR == 5) && (ITK_VERSION_MINOR >= 1)
-    itk::ImageIOFactory::CreateImageIO(m_FileNames[0].c_str(), itk::ImageIOFactory::FileModeEnum::ReadMode);
+    itk::ImageIOFactory::CreateImageIO(m_FileNames[0].c_str(), itk::ImageIOFactory::IOFileModeEnum::ReadMode);
 #else
     itk::ImageIOFactory::CreateImageIO(m_FileNames[0].c_str(), itk::ImageIOFactory::FileModeType::ReadMode);
 #endif
@@ -180,7 +180,12 @@ ProjectionsReader<TOutputImage>::GenerateOutputInformation(void)
     m_RawCastFilter = nullptr;
 
     // Start creation
+#if (ITK_VERSION_MAJOR == 5) && (ITK_VERSION_MINOR >= 1)
+    if ((!strcmp(imageIO->GetNameOfClass(), "EdfImageIO") &&
+         imageIO->GetComponentType() == itk::ImageIOBase::IOComponentEnum::USHORT) ||
+#else
     if ((!strcmp(imageIO->GetNameOfClass(), "EdfImageIO") && imageIO->GetComponentType() == itk::ImageIOBase::USHORT) ||
+#endif
         !strcmp(imageIO->GetNameOfClass(), "XRadImageIO"))
     {
       using InputPixelType = unsigned short;
@@ -274,7 +279,11 @@ ProjectionsReader<TOutputImage>::GenerateOutputInformation(void)
       typename CastFilterType::Pointer castFilter = CastFilterType::New();
       m_RawCastFilter = castFilter;
     }
+#if (ITK_VERSION_MAJOR == 5) && (ITK_VERSION_MINOR >= 1)
+    else if (imageIO->GetComponentType() == itk::ImageIOBase::IOComponentEnum::USHORT)
+#else
     else if (imageIO->GetComponentType() == itk::ImageIOBase::USHORT)
+#endif
     {
       /////////// Ora, Elekta synergy, IBA / iMagX, unsigned short
       using InputPixelType = unsigned short;
@@ -411,7 +420,11 @@ ProjectionsReader<TOutputImage>::GenerateOutputInformation(void)
   }
 
   // Parameter propagation
+#if (ITK_VERSION_MAJOR == 5) && (ITK_VERSION_MINOR >= 1)
+  if (imageIO->GetComponentType() == itk::ImageIOBase::IOComponentEnum::USHORT)
+#else
   if (imageIO->GetComponentType() == itk::ImageIOBase::USHORT)
+#endif
     PropagateParametersToMiniPipeline<itk::Image<unsigned short, OutputImageDimension>>();
   else if (!strcmp(imageIO->GetNameOfClass(), "HndImageIO") || !strcmp(imageIO->GetNameOfClass(), "XimImageIO"))
     PropagateParametersToMiniPipeline<itk::Image<unsigned int, OutputImageDimension>>();

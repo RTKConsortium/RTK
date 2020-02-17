@@ -23,13 +23,15 @@
 int
 main(int argc, char * argv[])
 {
-  if (argc < 9)
+  if (argc < 12)
   {
     std::cerr << "Usage: " << std::endl;
-    std::cerr << argv[0]
-              << "  projection.hnd acqui.xml ximFile.xim varianGeometry.xml reference.mha  refGeometry.xml "
-                 "refGeometry.xml reference.mha"
-              << std::endl;
+    std::cerr << argv[0] << "  projection.hnd acqui.xml"
+              << " ximFile.xim varianGeometry.xml"
+              << " projection.hnc"
+              << " reference.xml refGeometry.mha"
+              << " referenceXim.xml refGeometryXim.mha"
+              << " referenceHnc.xml refGeometryHnc.mha" << std::endl;
     return EXIT_FAILURE;
   }
 
@@ -66,7 +68,7 @@ main(int argc, char * argv[])
   // Reference projections reader
   ReaderType::Pointer readerRef = ReaderType::New();
   fileNames.clear();
-  fileNames.emplace_back(argv[5]);
+  fileNames.emplace_back(argv[7]);
   readerRef->SetFileNames(fileNames);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(readerRef->Update());
 
@@ -85,7 +87,7 @@ main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION(geoProBeamReader->UpdateOutputData());
 
   // Reference geometry
-  geoRefReader->SetFilename(argv[7]);
+  geoRefReader->SetFilename(argv[8]);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(geoRefReader->GenerateOutputInformation())
 
   // 1. Check geometries
@@ -98,14 +100,45 @@ main(int argc, char * argv[])
 
   // Reference projections reader
   fileNames.clear();
-  fileNames.emplace_back(argv[8]);
+  fileNames.emplace_back(argv[9]);
   readerRef->SetFileNames(fileNames);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(readerRef->Update());
 
   // 2. Compare read projections
   CheckImageQuality<ImageType>(reader->GetOutput(), readerRef->GetOutput(), 1e-8, 100, 2.0);
 
-  // If both succeed
+  ///////////////////// Hnc file format
+  fileNames.clear();
+  fileNames.emplace_back(argv[5]);
+
+  // Varian geometry
+  geoTargReader->SetProjectionsFileNames(fileNames);
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(geoTargReader->UpdateOutputData());
+
+  // Reference geometry
+  geoRefReader = rtk::ThreeDCircularProjectionGeometryXMLFileReader::New();
+  geoRefReader->SetFilename(argv[10]);
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(geoRefReader->GenerateOutputInformation())
+
+  // 1. Check geometries
+  CheckGeometries(geoTargReader->GetGeometry(), geoRefReader->GetOutputObject());
+
+  // ******* COMPARING projections *******
+
+  // Varian projections reader
+  reader->SetFileNames(fileNames);
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(reader->UpdateLargestPossibleRegion());
+
+  // Reference projections reader
+  fileNames.clear();
+  fileNames.emplace_back(argv[11]);
+  readerRef->SetFileNames(fileNames);
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(readerRef->UpdateLargestPossibleRegion());
+
+  // 2. Compare read projections
+  CheckImageQuality<ImageType>(reader->GetOutput(), readerRef->GetOutput(), 1e-8, 100, 2.0);
+
+  // If all succeed
   std::cout << "\n\nTest PASSED! " << std::endl;
   return EXIT_SUCCESS;
 }

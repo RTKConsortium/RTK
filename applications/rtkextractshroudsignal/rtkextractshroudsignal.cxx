@@ -24,7 +24,6 @@
 #include "rtkExtractPhaseImageFilter.h"
 
 #include <itkImageFileReader.h>
-#include <itkRawImageIO.h>
 #include <fstream>
 
 template <class TSignalType>

@@ -42,7 +42,7 @@ OraGeometryReader::GenerateData()
 
     reader =
 #if (ITK_VERSION_MAJOR == 5) && (ITK_VERSION_MINOR >= 1)
-      itk::ImageIOFactory::CreateImageIO(projectionsFileName.c_str(), itk::ImageIOFactory::FileModeEnum::ReadMode);
+      itk::ImageIOFactory::CreateImageIO(projectionsFileName.c_str(), itk::ImageIOFactory::IOFileModeEnum::ReadMode);
 #else
       itk::ImageIOFactory::CreateImageIO(projectionsFileName.c_str(), itk::ImageIOFactory::FileModeType::ReadMode);
 #endif

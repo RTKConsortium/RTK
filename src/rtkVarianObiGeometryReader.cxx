@@ -20,6 +20,7 @@
 #include "rtkVarianObiGeometryReader.h"
 #include "rtkVarianObiXMLFileReader.h"
 #include "rtkHndImageIOFactory.h"
+#include "rtkHncImageIOFactory.h"
 
 #include <itkImageFileReader.h>
 #include <itksys/SystemTools.hxx>
@@ -67,6 +68,7 @@ rtk::VarianObiGeometryReader ::GenerateData()
 
   // Projections reader (for angle)
   rtk::HndImageIOFactory::RegisterOneFactory();
+  rtk::HncImageIOFactory::RegisterOneFactory();
 
   // Projection matrices
   for (const std::string & projectionsFileName : m_ProjectionsFileNames)

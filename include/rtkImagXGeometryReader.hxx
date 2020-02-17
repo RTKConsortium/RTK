@@ -263,7 +263,8 @@ ImagXGeometryReader<TInputImage>::GetGeometryForAI1p5()
   // Create and set ImageIO
   itk::ImageIOBase::Pointer imageIO =
 #if (ITK_VERSION_MAJOR == 5) && (ITK_VERSION_MINOR >= 1)
-    itk::ImageIOFactory::CreateImageIO(m_ProjectionsFileNames[0].c_str(), itk::ImageIOFactory::FileModeEnum::ReadMode);
+    itk::ImageIOFactory::CreateImageIO(m_ProjectionsFileNames[0].c_str(),
+                                       itk::ImageIOFactory::IOFileModeEnum::ReadMode);
 #else
     itk::ImageIOFactory::CreateImageIO(m_ProjectionsFileNames[0].c_str(), itk::ImageIOFactory::FileModeType::ReadMode);
 #endif
@@ -483,7 +484,8 @@ ImagXGeometryReader<TInputImage>::getAIversion()
   // Create and set ImageIO
   itk::ImageIOBase::Pointer imageIO =
 #if (ITK_VERSION_MAJOR == 5) && (ITK_VERSION_MINOR >= 1)
-    itk::ImageIOFactory::CreateImageIO(m_ProjectionsFileNames[0].c_str(), itk::ImageIOFactory::FileModeEnum::ReadMode);
+    itk::ImageIOFactory::CreateImageIO(m_ProjectionsFileNames[0].c_str(),
+                                       itk::ImageIOFactory::IOFileModeEnum::ReadMode);
 #else
     itk::ImageIOFactory::CreateImageIO(m_ProjectionsFileNames[0].c_str(), itk::ImageIOFactory::FileModeType::ReadMode);
 #endif
@@ -554,11 +556,12 @@ ImagXGeometryReader<TInputImage>::GenerateData()
   // Projection matrices
   for (unsigned int noProj = 0; noProj < m_ProjectionsFileNames.size(); noProj++)
   {
-    itk::ImageIOBase::Pointer imageIO = itk::ImageIOFactory::CreateImageIO(m_ProjectionsFileNames[0].c_str(),
+    itk::ImageIOBase::Pointer imageIO =
+      itk::ImageIOFactory::CreateImageIO(m_ProjectionsFileNames[0].c_str(),
 #if (ITK_VERSION_MAJOR == 5) && (ITK_VERSION_MINOR >= 1)
-                                                                           itk::ImageIOFactory::FileModeEnum::ReadMode);
+                                         itk::ImageIOFactory::IOFileModeEnum::ReadMode);
 #else
-                                                                           itk::ImageIOFactory::FileModeType::ReadMode);
+                                         itk::ImageIOFactory::FileModeType::ReadMode);
 #endif
     using ReaderType = itk::ImageFileReader<TInputImage>;
     typename ReaderType::Pointer reader = ReaderType::New();
