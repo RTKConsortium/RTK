@@ -102,8 +102,7 @@ main(int argc, char * argv[])
   //////////////////////////////////////////////////////////////////////////////////////////
 
   // Set the reconstruction filter
-  typedef rtk::ADMMTotalVariationConeBeamReconstructionFilter<OutputImageType, GradientOutputImageType>
-                              ADMM_TV_FilterType;
+  using ADMM_TV_FilterType = rtk::ADMMTotalVariationConeBeamReconstructionFilter<OutputImageType, GradientOutputImageType>;
   ADMM_TV_FilterType::Pointer admmFilter = ADMM_TV_FilterType::New();
 
   // Set the forward and back projection filters to be used inside admmFilter

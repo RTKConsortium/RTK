@@ -185,7 +185,7 @@ main(int, char **)
   TRY_AND_EXIT_ON_ITK_EXCEPTION(dsl->Update())
 
   // ADMMWavelets reconstruction filtering
-  typedef rtk::ADMMWaveletsConeBeamReconstructionFilter<OutputImageType> ADMMWaveletsType;
+  using ADMMWaveletsType = rtk::ADMMWaveletsConeBeamReconstructionFilter<OutputImageType>;
   ADMMWaveletsType::Pointer                                              admmWavelets = ADMMWaveletsType::New();
   admmWavelets->SetInput(tomographySource->GetOutput());
   admmWavelets->SetInput(1, rei->GetOutput());
