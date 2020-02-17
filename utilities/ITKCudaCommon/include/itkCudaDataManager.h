@@ -225,9 +225,9 @@ protected:
   PrintSelf(std::ostream & os, Indent indent) const override;
 
 private:
-  CudaDataManager(const Self &); // purposely not implemented
+  CudaDataManager(const Self &) = delete; // purposely not implemented
   void
-  operator=(const Self &);
+  operator=(const Self &) = delete;
 
 protected:
   size_t m_BufferSize; // # of bytes

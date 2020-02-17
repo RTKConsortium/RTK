@@ -158,9 +158,9 @@ protected:
   BoundaryCondition                  m_BoundsCondition;
 
 private:
-  ZengBackProjectionImageFilter(const Self &); // purposely not implemented
+  ZengBackProjectionImageFilter(const Self &) = delete; // purposely not implemented
   void
-  operator=(const Self &); // purposely not implemented
+  operator=(const Self &) = delete; // purposely not implemented
 
   float      m_SigmaZero;
   float      m_Alpha;

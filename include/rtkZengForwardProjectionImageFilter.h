@@ -149,9 +149,9 @@ protected:
 
 
 private:
-  ZengForwardProjectionImageFilter(const Self &); // purposely not implemented
+  ZengForwardProjectionImageFilter(const Self &) = delete; // purposely not implemented
   void
-  operator=(const Self &); // purposely not implemented
+  operator=(const Self &) = delete; // purposely not implemented
 
   float      m_SigmaZero;
   float      m_Alpha;
