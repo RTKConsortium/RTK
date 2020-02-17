@@ -80,8 +80,8 @@ template <class TInputImage>
 void
 CheckL0NormOfGradient(typename TInputImage::Pointer before, typename TInputImage::Pointer after)
 {
-  unsigned int normBefore;
-  unsigned int normAfter;
+  unsigned int normBefore = 0;
+  unsigned int normAfter = 0;
 
   normBefore = ComputeL0NormAlongLastDimension<TInputImage>(before);
   std::cout << "L0 norm of the gradient before denoising is " << normBefore << std::endl;

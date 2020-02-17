@@ -19,6 +19,8 @@
 #ifndef rtkMagnitudeThresholdImageFilter_hxx
 #define rtkMagnitudeThresholdImageFilter_hxx
 
+#include "math.h"
+
 #include "rtkMagnitudeThresholdImageFilter.h"
 
 #include <itkImageRegionIterator.h>
@@ -45,7 +47,7 @@ MagnitudeThresholdImageFilter<TInputImage, TRealType, TOutputImage>::DynamicThre
   InputIt = itk::ImageRegionConstIterator<TInputImage>(this->GetInput(), outputRegionForThread);
   OutputIt = itk::ImageRegionIterator<TOutputImage>(this->GetOutput(), outputRegionForThread);
 
-  double norm;
+  double norm = NAN;
   while (!InputIt.IsAtEnd())
   {
     norm = InputIt.Get().GetNorm();

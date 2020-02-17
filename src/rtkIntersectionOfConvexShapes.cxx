@@ -16,6 +16,8 @@
  *
  *=========================================================================*/
 
+#include "math.h"
+
 #include "rtkIntersectionOfConvexShapes.h"
 
 namespace rtk
@@ -54,7 +56,7 @@ IntersectionOfConvexShapes ::IsIntersectedByRay(const PointType &  rayOrigin,
   farDist = itk::NumericTraits<ScalarType>::max();
   for (const auto & convexShape : m_ConvexShapes)
   {
-    ScalarType n, f;
+    ScalarType n = NAN, f = NAN;
     if (!convexShape->IsIntersectedByRay(rayOrigin, rayDirection, n, f))
       return false;
     nearDist = std::max(nearDist, n);

@@ -16,6 +16,8 @@
  *
  *=========================================================================*/
 
+#include "math.h"
+
 #include "rtkThreeDCircularProjectionGeometry.h"
 #include "rtkMacro.h"
 
@@ -167,9 +169,9 @@ rtk::ThreeDCircularProjectionGeometry::AddProjection(const PointType &  sourcePo
     return false;
 
   // Euler angles (ZXY convention) from detector orientation in IEC-based WCS:
-  double ga; // gantry angle
-  double oa; // out-of-plane angle
-  double ia; // in-plane angle
+  double ga = NAN; // gantry angle
+  double oa = NAN; // out-of-plane angle
+  double ia = NAN; // in-plane angle
   // extract Euler angles from the orthogonal matrix which is established
   // by the detector orientation; however, we would like RTK to internally
   // store the inverse of this rotation matrix, therefore the corresponding
@@ -652,7 +654,7 @@ rtk::ThreeDCircularProjectionGeometry::FixAngles(double &              outOfPlan
 
   if (fabs(fabs(rm[2][1]) - 1.) > EPSILON)
   {
-    double oa, ga, ia;
+    double oa = NAN, ga = NAN, ia = NAN;
 
     // @see Slabaugh, GG, "Computing Euler angles from a rotation matrix"
     // but their convention is XYZ where we use the YXZ convention
@@ -686,7 +688,7 @@ rtk::ThreeDCircularProjectionGeometry::FixAngles(double &              outOfPlan
   else
   {
     // Gimbal lock, one angle in {ia,oa} has to be set randomly
-    double ia;
+    double ia = NAN;
     ia = 0.;
     if (rm[2][1] < 0.)
     {

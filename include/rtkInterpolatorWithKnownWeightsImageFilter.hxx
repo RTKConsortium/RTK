@@ -18,6 +18,8 @@
 #ifndef rtkInterpolatorWithKnownWeightsImageFilter_hxx
 #define rtkInterpolatorWithKnownWeightsImageFilter_hxx
 
+#include "math.h"
+
 #include "rtkInterpolatorWithKnownWeightsImageFilter.h"
 
 #include "itkObjectFactory.h"
@@ -160,7 +162,7 @@ InterpolatorWithKnownWeightsImageFilter<VolumeType, VolumeSeriesType>::DynamicTh
   using VolumeRegionConstIterator = itk::ImageRegionConstIterator<VolumeType>;
   using VolumeSeriesRegionIterator = itk::ImageRegionIterator<VolumeSeriesType>;
 
-  float weight;
+  float weight = NAN;
 
   // Initialize output region with input region in case the filter is not in
   // place

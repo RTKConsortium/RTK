@@ -48,7 +48,7 @@ template <class TInputImage, class TOutputImage>
 void
 UpsampleImageFilter<TInputImage, TOutputImage>::SetFactors(unsigned int factors[])
 {
-  unsigned int j;
+  unsigned int j = 0;
 
   this->Modified();
   for (j = 0; j < ImageDimension; j++)
@@ -65,7 +65,7 @@ template <class TInputImage, class TOutputImage>
 void
 UpsampleImageFilter<TInputImage, TOutputImage>::SetFactor(unsigned int dimension, unsigned int factor)
 {
-  unsigned int j;
+  unsigned int j = 0;
 
   this->Modified();
   for (j = 0; j < ImageDimension; j++)
@@ -227,7 +227,7 @@ UpsampleImageFilter<TInputImage, TOutputImage>::GenerateOutputInformation()
 
   // We need to compute the output spacing, the output image size, and the
   // output image start index
-  unsigned int                              i;
+  unsigned int                              i = 0;
   const typename TInputImage::SpacingType & inputSpacing = inputPtr->GetSpacing();
 
   typename TOutputImage::SpacingType outputSpacing;

@@ -19,6 +19,8 @@
 #ifndef rtkBackProjectionImageFilter_hxx
 #define rtkBackProjectionImageFilter_hxx
 
+#include "math.h"
+
 #include "rtkBackProjectionImageFilter.h"
 
 #include "rtkHomogeneousMatrix.h"
@@ -342,17 +344,17 @@ BackProjectionImageFilter<TInputImage, TOutputImage>::OptimizedBackprojectionX(c
   typename ProjectionImageType::IndexType   pIndex = projection->GetBufferedRegion().GetIndex();
   typename TOutputImage::SizeType           vBufferSize = this->GetOutput()->GetBufferedRegion().GetSize();
   typename TOutputImage::IndexType          vBufferIndex = this->GetOutput()->GetBufferedRegion().GetIndex();
-  typename TInputImage::InternalPixelType * pProj;
-  typename TOutputImage::InternalPixelType *pVol, *pVolZeroPointer;
+  typename TInputImage::InternalPixelType * pProj = nullptr;
+  typename TOutputImage::InternalPixelType *pVol = nullptr, *pVolZeroPointer = nullptr;
 
   // Pointers in memory to index (0,0,0) which do not necessarily exist
   pVolZeroPointer = this->GetOutput()->GetBufferPointer();
   pVolZeroPointer -= vBufferIndex[0] + vBufferSize[0] * (vBufferIndex[1] + vBufferSize[1] * vBufferIndex[2]);
 
   // Continuous index at which we interpolate
-  double u, v, w;
-  int    ui, vi;
-  double du;
+  double u = NAN, v = NAN, w = NAN;
+  int    ui = 0, vi = 0;
+  double du = NAN;
 
   for (int k = region.GetIndex(2); k < region.GetIndex(2) + (int)region.GetSize(2); k++)
   {
@@ -407,17 +409,17 @@ BackProjectionImageFilter<TInputImage, TOutputImage>::OptimizedBackprojectionY(c
   typename ProjectionImageType::IndexType   pIndex = projection->GetBufferedRegion().GetIndex();
   typename TOutputImage::SizeType           vBufferSize = this->GetOutput()->GetBufferedRegion().GetSize();
   typename TOutputImage::IndexType          vBufferIndex = this->GetOutput()->GetBufferedRegion().GetIndex();
-  typename TInputImage::InternalPixelType * pProj;
-  typename TOutputImage::InternalPixelType *pVol, *pVolZeroPointer;
+  typename TInputImage::InternalPixelType * pProj = nullptr;
+  typename TOutputImage::InternalPixelType *pVol = nullptr, *pVolZeroPointer = nullptr;
 
   // Pointers in memory to index (0,0,0) which do not necessarily exist
   pVolZeroPointer = this->GetOutput()->GetBufferPointer();
   pVolZeroPointer -= vBufferIndex[0] + vBufferSize[0] * (vBufferIndex[1] + vBufferSize[1] * vBufferIndex[2]);
 
   // Continuous index at which we interpolate
-  double u, v, w;
-  int    ui, vi;
-  double du;
+  double u = NAN, v = NAN, w = NAN;
+  int    ui = 0, vi = 0;
+  double du = NAN;
 
   for (int k = region.GetIndex(2); k < region.GetIndex(2) + (int)region.GetSize(2); k++)
   {

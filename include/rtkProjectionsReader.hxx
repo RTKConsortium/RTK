@@ -445,7 +445,7 @@ template <class TInputImage>
 void
 ProjectionsReader<TOutputImage>::PropagateParametersToMiniPipeline()
 {
-  TInputImage *     nextInput;
+  TInputImage *     nextInput = nullptr;
   OutputImageType * output = nullptr;
 
   // Vector component selection

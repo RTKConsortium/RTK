@@ -18,6 +18,8 @@
 #ifndef rtkSplatWithKnownWeightsImageFilter_hxx
 #define rtkSplatWithKnownWeightsImageFilter_hxx
 
+#include "math.h"
+
 #include "rtkSplatWithKnownWeightsImageFilter.h"
 
 #include "itkObjectFactory.h"
@@ -107,7 +109,7 @@ SplatWithKnownWeightsImageFilter<VolumeSeriesType, VolumeType>::ThreadedGenerate
 
   typename VolumeSeriesType::RegionType volumeSeriesRegion;
 
-  float weight;
+  float weight = NAN;
 
   // Initialize output region with input region in case the filter is not in
   // place

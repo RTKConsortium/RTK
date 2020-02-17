@@ -19,6 +19,8 @@
 #ifndef rtkRayConvexIntersectionImageFilter_hxx
 #define rtkRayConvexIntersectionImageFilter_hxx
 
+#include "math.h"
+
 #include "rtkRayConvexIntersectionImageFilter.h"
 #include "rtkProjectionsRegionConstIteratorRayBased.h"
 
@@ -48,7 +50,7 @@ RayConvexIntersectionImageFilter<TInputImage, TOutputImage>::DynamicThreadedGene
 {
   // Iterators on input and output
   using InputRegionIterator = ProjectionsRegionConstIteratorRayBased<TInputImage>;
-  InputRegionIterator * itIn;
+  InputRegionIterator * itIn = nullptr;
   itIn = InputRegionIterator::New(this->GetInput(), outputRegionForThread, m_Geometry);
   using OutputRegionIterator = itk::ImageRegionIteratorWithIndex<TOutputImage>;
   OutputRegionIterator itOut(this->GetOutput(), outputRegionForThread);
@@ -58,7 +60,7 @@ RayConvexIntersectionImageFilter<TInputImage, TOutputImage>::DynamicThreadedGene
   for (unsigned int pix = 0; pix < outputRegionForThread.GetNumberOfPixels(); pix++, itIn->Next(), ++itOut)
   {
     // Compute ray intersection length
-    ConvexShape::ScalarType nearDist, farDist;
+    ConvexShape::ScalarType nearDist = NAN, farDist = NAN;
     if (m_ConvexShape->IsIntersectedByRay(itIn->GetSourcePosition(), itIn->GetDirection(), nearDist, farDist))
     {
       if (m_Attenuation == 0.)

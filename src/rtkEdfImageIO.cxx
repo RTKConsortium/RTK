@@ -43,11 +43,11 @@ rtk::EdfImageIO::edf_findInHeader(char * header, const char * key)
 void
 rtk::EdfImageIO::ReadImageInformation()
 {
-  int    k;
+  int    k = 0;
   char * header = nullptr;
   int    header_size = 0;
-  char * p;
-  gzFile inp;
+  char * p = nullptr;
+  gzFile inp = nullptr;
 
   inp = gzopen(m_FileName.c_str(), "rb");
   if (!inp)
@@ -256,7 +256,7 @@ ReadRawBytesAfterSwapping(ImageIOBase::IOComponentType componentType,
 void
 rtk::EdfImageIO::Read(void * buffer)
 {
-  gzFile inp;
+  gzFile inp = nullptr;
 
   inp = gzopen(m_BinaryFileName.c_str(), "rb");
   if (!inp)

@@ -47,7 +47,7 @@ PhaseReader::Parse()
   }
 
   // Prepare to parse the file
-  itk::SizeValueType rows, columns;
+  itk::SizeValueType rows = 0, columns = 0;
   this->GetDataDimension(rows, columns);
   if (columns > 1)
   {

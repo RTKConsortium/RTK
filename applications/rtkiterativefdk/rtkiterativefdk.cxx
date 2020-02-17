@@ -66,7 +66,7 @@ main(int argc, char * argv[])
   rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkiterativefdk>(constantImageSource,
                                                                                          args_info);
 
-  bool enforcePositivity;
+  bool enforcePositivity = 0;
   if (args_info.positivity_flag)
     enforcePositivity = true;
   else

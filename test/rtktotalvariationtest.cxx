@@ -1,4 +1,6 @@
 #include "itkRandomImageSource.h"
+#include "math.h"
+
 #include "rtkTotalVariationImageFilter.h"
 #include "rtkTotalVariationDenoisingBPDQImageFilter.h"
 #include "rtkMacro.h"
@@ -10,8 +12,8 @@ CheckTotalVariation(typename TImage::Pointer before, typename TImage::Pointer af
   using TotalVariationFilterType = rtk::TotalVariationImageFilter<TImage>;
   typename TotalVariationFilterType::Pointer tv = TotalVariationFilterType::New();
 
-  double totalVariationBefore;
-  double totalVariationAfter;
+  double totalVariationBefore = NAN;
+  double totalVariationAfter = NAN;
 
   tv->SetInput(before);
   tv->Update();

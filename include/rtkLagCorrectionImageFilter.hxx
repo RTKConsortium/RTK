@@ -193,7 +193,7 @@ LagCorrectionImageFilter<TImage, ModelOrder>::SplitRequestedRegion(int i, int nu
   TImage *                          outputPtr = this->GetOutput();
   const typename TImage::SizeType & requestedRegionSize = outputPtr->GetRequestedRegion().GetSize();
 
-  int                        splitAxis;
+  int                        splitAxis = 0;
   typename TImage::IndexType splitIndex;
   typename TImage::SizeType  splitSize;
 

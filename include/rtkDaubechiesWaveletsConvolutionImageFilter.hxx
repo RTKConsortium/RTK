@@ -159,7 +159,7 @@ DaubechiesWaveletsConvolutionImageFilter<TImage>::GenerateCoefficientsHighpassDe
 {
   CoefficientVector coeff = this->GenerateCoefficientsLowpassDeconstruct();
   std::reverse(coeff.begin(), coeff.end());
-  unsigned int it;
+  unsigned int it = 0;
 
   double factor = -1;
   for (it = 0; it < coeff.size(); it++)

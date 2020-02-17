@@ -37,7 +37,7 @@ rtk::ElektaSynergyGeometryReader ::GetImageIDFromDicomUID()
     itkGenericExceptionMacro(<< "Couldn't open " << m_ImageDbfFileName);
 
   // Search for correct record
-  bool bReadOk;
+  bool bReadOk = 0;
   do
   {
     bReadOk = dbImage.ReadNextRecord();

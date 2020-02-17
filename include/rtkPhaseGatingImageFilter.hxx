@@ -18,6 +18,8 @@
 #ifndef rtkPhaseGatingImageFilter_hxx
 #define rtkPhaseGatingImageFilter_hxx
 
+#include "math.h"
+
 #include "rtkPhaseGatingImageFilter.h"
 
 #include <itkImageRegionIterator.h>
@@ -44,7 +46,7 @@ void
 PhaseGatingImageFilter<ProjectionStackType>::ComputeWeights()
 {
   m_GatingWeights.clear();
-  float distance;
+  float distance = NAN;
 
   // Compute the gating weights
   for (unsigned int proj = 0; proj < m_Phases.size(); proj++)

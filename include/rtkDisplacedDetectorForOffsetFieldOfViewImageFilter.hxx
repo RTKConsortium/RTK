@@ -19,6 +19,8 @@
 #ifndef rtkDisplacedDetectorForOffsetFieldOfViewImageFilter_hxx
 #define rtkDisplacedDetectorForOffsetFieldOfViewImageFilter_hxx
 
+#include "math.h"
+
 #include "rtkDisplacedDetectorForOffsetFieldOfViewImageFilter.h"
 
 #include <itkImageRegionIteratorWithIndex.h>
@@ -78,9 +80,9 @@ DisplacedDetectorForOffsetFieldOfViewImageFilter<TInputImage, TOutputImage>::Gen
   fieldofview->SetProjectionsStack(inputPtr.GetPointer());
   fieldofview->SetGeometry(this->GetGeometry());
   bool   hasOverlap = fieldofview->ComputeFOVRadius(FOVFilterType::RADIUSBOTH, m_FOVCenterX, m_FOVCenterZ, m_FOVRadius);
-  double xi, zi, ri;
+  double xi = NAN, zi = NAN, ri = NAN;
   fieldofview->ComputeFOVRadius(FOVFilterType::RADIUSINF, xi, zi, ri);
-  double xs, zs, rs;
+  double xs = NAN, zs = NAN, rs = NAN;
   fieldofview->ComputeFOVRadius(FOVFilterType::RADIUSSUP, xs, zs, rs);
 
   // 4 cases depending on the position of the two corners

@@ -19,6 +19,8 @@
 #ifndef rtkJosephForwardProjectionImageFilter_hxx
 #define rtkJosephForwardProjectionImageFilter_hxx
 
+#include "math.h"
+
 #include "rtkJosephForwardProjectionImageFilter.h"
 
 #include "rtkHomogeneousMatrix.h"
@@ -80,7 +82,7 @@ JosephForwardProjectionImageFilter<TInputImage,
 
   // Iterators on input and output projections
   using InputRegionIterator = ProjectionsRegionConstIteratorRayBased<TInputImage>;
-  InputRegionIterator * itIn;
+  InputRegionIterator * itIn = nullptr;
   itIn = InputRegionIterator::New(this->GetInput(), outputRegionForThread, geometry, volPPToIndex);
   using OutputRegionIterator = itk::ImageRegionIteratorWithIndex<TOutputImage>;
   OutputRegionIterator itOut(this->GetOutput(), outputRegionForThread);
@@ -121,7 +123,7 @@ JosephForwardProjectionImageFilter<TInputImage,
     }
 
     // Test if there is an intersection
-    BoxShape::ScalarType nearDist, farDist;
+    BoxShape::ScalarType nearDist = NAN, farDist = NAN;
     if (box->IsIntersectedByRay(pixelPosition, dirVox, nearDist, farDist) &&
         farDist >= 0. && // check if detector after the source
         nearDist <= 1.)  // check if detector after or in the volume
@@ -155,7 +157,7 @@ JosephForwardProjectionImageFilter<TInputImage,
       const int                              offsetx = offsets[notMainDirInf];
       const int                              offsety = offsets[notMainDirSup];
       const int                              offsetz = offsets[mainDir];
-      const typename TInputImage::PixelType *pxiyi, *pxsyi, *pxiys, *pxsys;
+      const typename TInputImage::PixelType *pxiyi = nullptr, *pxsyi = nullptr, *pxiys = nullptr, *pxsys = nullptr;
 
       pxiyi = beginBuffer + ns * offsetz;
       pxsyi = pxiyi + offsetx;

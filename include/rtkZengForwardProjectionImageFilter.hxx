@@ -21,6 +21,8 @@
 
 #include <math.h>
 
+#include "math.h"
+
 #include "rtkZengForwardProjectionImageFilter.h"
 
 #include "rtkHomogeneousMatrix.h"
@@ -312,7 +314,7 @@ ZengForwardProjectionImageFilter<TInputImage, TOutputImage>::GenerateData()
 
   indexSlice.Fill(0);
   indexProjection.Fill(0);
-  float dist, sigmaSlice, thicknessSlice;
+  float dist = NAN, sigmaSlice = NAN, thicknessSlice = NAN;
   int   nbProjections = 0;
   for (auto & angle : list_angle)
   {
@@ -369,7 +371,7 @@ ZengForwardProjectionImageFilter<TInputImage, TOutputImage>::GenerateData()
     dist = geometry->GetSourceToIsocenterDistances()[nbProjections] -
            pointSlice.GetVectorFromOrigin() * m_VectorOrthogonalDetector;
 
-    unsigned int index;
+    unsigned int index = 0;
     for (index = 1; index < nbSlice; index++)
     {
       if (dist - rotatedVolume->GetSpacing()[2] < 0)

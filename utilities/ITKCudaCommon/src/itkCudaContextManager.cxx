@@ -65,7 +65,7 @@ CudaContextManager::CudaContextManager()
 
   if (m_NumberOfDevices)
   {
-    CUdevice device;
+    CUdevice device = 0;
     m_DeviceIdx = itk::CudaGetMaxFlopsDev();
     CUDA_CHECK(cuDeviceGet(&device, m_DeviceIdx));
 

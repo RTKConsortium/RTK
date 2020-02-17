@@ -110,7 +110,7 @@ AmsterdamShroudImageFilter<TInputImage>::GenerateData()
   if (m_Geometry.GetPointer())
     CropOutsideProjectedBox();
 
-  unsigned int kernelWidth;
+  unsigned int kernelWidth = 0;
   kernelWidth = m_ConvolutionFilter->GetKernelImage()->GetLargestPossibleRegion().GetSize()[1];
   if (kernelWidth != m_UnsharpMaskSize)
     UpdateUnsharpMaskKernel();

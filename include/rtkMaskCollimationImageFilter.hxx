@@ -50,13 +50,13 @@ MaskCollimationImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerateDa
 {
   // Iterators on input and output
   using InputRegionIterator = ProjectionsRegionConstIteratorRayBased<TInputImage>;
-  InputRegionIterator * itIn;
+  InputRegionIterator * itIn = nullptr;
   itIn = InputRegionIterator::New(this->GetInput(), outputRegionForThread, m_Geometry);
   using OutputRegionIterator = itk::ImageRegionIteratorWithIndex<TOutputImage>;
   OutputRegionIterator itOut(this->GetOutput(), outputRegionForThread);
 
   // Go over each projection
-  unsigned int npixperslice;
+  unsigned int npixperslice = 0;
   npixperslice = outputRegionForThread.GetSize(0) * outputRegionForThread.GetSize(1);
   using SizeValueType = typename OutputImageRegionType::SizeValueType;
   for (SizeValueType iProj = outputRegionForThread.GetIndex(2);

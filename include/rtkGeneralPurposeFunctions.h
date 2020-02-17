@@ -20,6 +20,10 @@
 #define rtkGeneralPurposeFunctions_h
 
 #include <vector>
+
+
+#include "math.h"
+
 #include <itkMacro.h>
 #include <itkImageFileWriter.h>
 #include <itkMath.h>
@@ -44,7 +48,7 @@ ReadSignalFile(std::string filename)
     itkGenericExceptionMacro(<< "Could not open signal file " << filename);
   }
 
-  double      value;
+  double      value = NAN;
   std::string s;
   while (getline(is, s))
   {

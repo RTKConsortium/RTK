@@ -51,7 +51,7 @@ ForwardWarpImageFilter<TInputImage, TOutputImage, TDVF>::Protected_EvaluateDispl
 
   itk::ContinuousIndex<double, TDVF::ImageDimension> index;
   fieldPtr->TransformPhysicalPointToContinuousIndex(point, index);
-  unsigned int dim; // index over dimension
+  unsigned int dim = 0; // index over dimension
   /**
    * Compute base index = closest index below point
    * Compute distance from point to base index

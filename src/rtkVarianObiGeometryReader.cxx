@@ -17,6 +17,8 @@
  *=========================================================================*/
 
 
+#include "math.h"
+
 #include "rtkVarianObiGeometryReader.h"
 #include "rtkVarianObiXMLFileReader.h"
 #include "rtkHndImageIOFactory.h"
@@ -47,7 +49,7 @@ rtk::VarianObiGeometryReader ::GenerateData()
   const double sid = dynamic_cast<MetaDataDoubleType *>(dic["CalibratedSAD"].GetPointer())->GetMetaDataObjectValue();
 
   using MetaDataStringType = itk::MetaDataObject<std::string>;
-  double      offsetx;
+  double      offsetx = NAN;
   std::string fanType = dynamic_cast<const MetaDataStringType *>(dic["FanType"].GetPointer())->GetMetaDataObjectValue();
   if (itksys::SystemTools::Strucmp(fanType.c_str(), "HalfFan") == 0)
   {

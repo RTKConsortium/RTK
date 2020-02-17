@@ -1,4 +1,6 @@
+#include "math.h"
 #include <itkImageRegionConstIterator.h>
+
 #include "rtkMacro.h"
 
 #include "rtkTestConfiguration.h"
@@ -43,7 +45,7 @@ CheckGradient(typename TImage::Pointer im, typename TGradient::Pointer grad, boo
     strides[dim] = iit.GetStride(dim);
   }
 
-  double AbsDiff;
+  double AbsDiff = NAN;
   double epsilon = 1e-7;
 
   // Run through the image
