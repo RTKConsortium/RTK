@@ -86,7 +86,7 @@ SplatWithKnownWeightsImageFilter<VolumeType, VolumeSeriesType>::SetProjectionNum
 
 template <typename VolumeSeriesType, typename VolumeType>
 const itk::ImageRegionSplitterBase *
-SplatWithKnownWeightsImageFilter<VolumeSeriesType, VolumeType>::GetImageRegionSplitter(void) const
+SplatWithKnownWeightsImageFilter<VolumeSeriesType, VolumeType>::GetImageRegionSplitter() const
 {
   return m_Splitter;
 }

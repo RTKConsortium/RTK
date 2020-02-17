@@ -79,7 +79,7 @@ public:
   /** Destroy the set of probes. New probes can be created after invoking this
     method. */
   virtual void
-  Clear(void);
+  Clear();
 
   /** Create a new watcher and store it */
   virtual void

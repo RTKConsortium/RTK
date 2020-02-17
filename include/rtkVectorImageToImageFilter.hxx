@@ -39,7 +39,7 @@ VectorImageToImageFilter<InputImageType, OutputImageType>::VectorImageToImageFil
 
 template <typename InputImageType, typename OutputImageType>
 const itk::ImageRegionSplitterBase *
-VectorImageToImageFilter<InputImageType, OutputImageType>::GetImageRegionSplitter(void) const
+VectorImageToImageFilter<InputImageType, OutputImageType>::GetImageRegionSplitter() const
 {
   return m_Splitter;
 }

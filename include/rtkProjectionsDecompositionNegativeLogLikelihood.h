@@ -121,7 +121,7 @@ public:
   {}
 
   unsigned int
-  GetNumberOfParameters(void) const override
+  GetNumberOfParameters() const override
   {
     return m_NumberOfMaterials;
   }

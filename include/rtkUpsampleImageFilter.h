@@ -144,7 +144,7 @@ private:
   typename TOutputImage::IndexType m_OutputIndex;
 
   const itk::ImageRegionSplitterBase *
-                                             GetImageRegionSplitter(void) const override;
+                                             GetImageRegionSplitter() const override;
   itk::ImageRegionSplitterDirection::Pointer m_Splitter;
 };
 

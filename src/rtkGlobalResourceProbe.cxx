@@ -123,7 +123,7 @@ GlobalResourceProbe ::Report(std::ostream & os) const
 }
 
 void
-GlobalResourceProbe ::Clear(void)
+GlobalResourceProbe ::Clear()
 {
   m_Mutex.lock();
   m_ResourceProbesCollector.Clear();

@@ -43,7 +43,7 @@ LastDimensionL0GradientDenoisingImageFilter<TInputImage>::LastDimensionL0Gradien
 
 template <class TInputImage>
 const itk::ImageRegionSplitterBase *
-LastDimensionL0GradientDenoisingImageFilter<TInputImage>::GetImageRegionSplitter(void) const
+LastDimensionL0GradientDenoisingImageFilter<TInputImage>::GetImageRegionSplitter() const
 {
   return m_Splitter;
 }

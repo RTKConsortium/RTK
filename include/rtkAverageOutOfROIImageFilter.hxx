@@ -54,7 +54,7 @@ AverageOutOfROIImageFilter<TInputImage, TROI>::GetROI()
 
 template <class TInputImage, class TROI>
 const itk::ImageRegionSplitterBase *
-AverageOutOfROIImageFilter<TInputImage, TROI>::GetImageRegionSplitter(void) const
+AverageOutOfROIImageFilter<TInputImage, TROI>::GetImageRegionSplitter() const
 {
   return m_Splitter;
 }

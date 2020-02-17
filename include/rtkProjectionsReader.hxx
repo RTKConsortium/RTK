@@ -139,7 +139,7 @@ ProjectionsReader<TOutputImage>::PrintSelf(std::ostream & os, itk::Indent indent
 //--------------------------------------------------------------------
 template <class TOutputImage>
 void
-ProjectionsReader<TOutputImage>::GenerateOutputInformation(void)
+ProjectionsReader<TOutputImage>::GenerateOutputInformation()
 {
   if (m_FileNames.empty())
     return;

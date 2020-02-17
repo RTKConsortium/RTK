@@ -108,7 +108,7 @@ protected:
 
   /** Splits the OutputRequestedRegion along the first direction, not the last */
   const itk::ImageRegionSplitterBase *
-                                             GetImageRegionSplitter(void) const override;
+                                             GetImageRegionSplitter() const override;
   itk::ImageRegionSplitterDirection::Pointer m_Splitter;
 
 private:

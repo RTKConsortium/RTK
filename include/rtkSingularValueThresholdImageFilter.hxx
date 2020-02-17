@@ -43,7 +43,7 @@ SingularValueThresholdImageFilter<TInputImage, TRealType, TOutputImage>::Singula
 
 template <typename TInputImage, typename TRealType, typename TOutputImage>
 const itk::ImageRegionSplitterBase *
-SingularValueThresholdImageFilter<TInputImage, TRealType, TOutputImage>::GetImageRegionSplitter(void) const
+SingularValueThresholdImageFilter<TInputImage, TRealType, TOutputImage>::GetImageRegionSplitter() const
 {
   return m_Splitter;
 }

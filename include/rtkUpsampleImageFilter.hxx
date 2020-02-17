@@ -253,7 +253,7 @@ UpsampleImageFilter<TInputImage, TOutputImage>::GenerateOutputInformation()
 
 template <class TInputImage, class TOutputImage>
 const itk::ImageRegionSplitterBase *
-UpsampleImageFilter<TInputImage, TOutputImage>::GetImageRegionSplitter(void) const
+UpsampleImageFilter<TInputImage, TOutputImage>::GetImageRegionSplitter() const
 {
   return m_Splitter;
 }
