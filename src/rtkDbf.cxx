@@ -16,13 +16,17 @@
  *
  *=========================================================================*/
 
+#include <utility>
+
+
+
 #include "rtkDbf.h"
 
 namespace rtk
 {
 
 DbfField::DbfField(std::string name, char type, unsigned char length, short recOffset)
-  : m_Name(name)
+  : m_Name(std::move(name))
   , m_Type(type)
   , m_Length(length)
   , m_RecOffset(recOffset)
