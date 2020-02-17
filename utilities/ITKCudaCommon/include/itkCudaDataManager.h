@@ -69,7 +69,7 @@ public:
                 << " : " << m_GPUBuffer << std::endl;
 #endif
     CUDA_CHECK(cudaFree(m_GPUBuffer));
-    m_GPUBuffer = 0;
+    m_GPUBuffer = nullptr;
     m_BufferSize = 0;
   }
 
@@ -102,7 +102,7 @@ public:
 protected:
   GPUMemPointer()
   {
-    m_GPUBuffer = 0;
+    m_GPUBuffer = nullptr;
     m_BufferSize = 0;
   }
 
