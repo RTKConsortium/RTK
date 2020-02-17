@@ -552,7 +552,7 @@ ImagXGeometryReader<TInputImage>::GenerateData()
   m_Geometry = GeometryType::New();
 
   // Projection matrices
-  for (unsigned int noProj = 0; noProj < m_ProjectionsFileNames.size(); noProj++)
+  for (auto & m_ProjectionsFileName : m_ProjectionsFileNames)
   {
     itk::ImageIOBase::Pointer imageIO = itk::ImageIOFactory::CreateImageIO(m_ProjectionsFileNames[0].c_str(),
 #if (ITK_VERSION_MAJOR == 5) && (ITK_VERSION_MINOR >= 1)
@@ -562,7 +562,7 @@ ImagXGeometryReader<TInputImage>::GenerateData()
 #endif
     using ReaderType = itk::ImageFileReader<TInputImage>;
     typename ReaderType::Pointer reader = ReaderType::New();
-    reader->SetFileName(m_ProjectionsFileNames[noProj]);
+    reader->SetFileName(m_ProjectionsFileName);
     imageIO = itk::GDCMImageIO::New();
 
     reader->SetImageIO(imageIO);

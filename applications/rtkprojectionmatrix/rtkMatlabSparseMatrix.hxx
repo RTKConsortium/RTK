@@ -51,8 +51,8 @@ rtk::MatlabSparseMatrix::MatlabSparseMatrix(const vnl_sparse_matrix<double>& spa
   std::string headerMatlab("MATLAB 5.0 MAT-file, Platform: GLNXA64, Created on: Fri May 18 14:11:56 2018                                       ");
   for (unsigned int i=0; i<116; ++i)
     m_MatlabSparseMatrix.s_headerMatlab[i] = headerMatlab[i];
-  for (unsigned int i=0; i<8; ++i)
-    m_MatlabSparseMatrix.s_headerOffset[i] = 0;
+  for (unsigned char & i : m_MatlabSparseMatrix.s_headerOffset)
+    i = 0;
   m_MatlabSparseMatrix.s_headerVersion = 0x0100;
   m_MatlabSparseMatrix.s_headerEndian[0] = 'I';
   m_MatlabSparseMatrix.s_headerEndian[1] = 'M';
@@ -70,8 +70,8 @@ rtk::MatlabSparseMatrix::MatlabSparseMatrix(const vnl_sparse_matrix<double>& spa
   m_MatlabSparseMatrix.s_nameLength = 1;
   m_MatlabSparseMatrix.s_nameTag = 1;
   m_MatlabSparseMatrix.s_nameChar = 'A';
-  for (unsigned int i=0; i<3; ++i)
-    m_MatlabSparseMatrix.s_namePadding[i] = 0;
+  for (unsigned char & i : m_MatlabSparseMatrix.s_namePadding)
+    i = 0;
   m_MatlabSparseMatrix.s_dataLength = 64 + nonZeroElement*8 + 4*m_MatlabSparseMatrix.s_arrayNzmax + 4*(m_MatlabSparseMatrix.s_dimensionNbColumn+1);
   if (m_MatlabSparseMatrix.s_arrayNzmax*4%8 != 0)
     m_MatlabSparseMatrix.s_dataLength += 4;
