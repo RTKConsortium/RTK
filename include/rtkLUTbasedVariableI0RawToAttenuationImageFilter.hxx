@@ -80,7 +80,7 @@ void
 LUTbasedVariableI0RawToAttenuationImageFilter<TInputImage, TOutputImage>::BeforeThreadedGenerateData()
 {
   using I0EstimationType = rtk::I0EstimationProjectionFilter<TInputImage>;
-  I0EstimationType * i0est = dynamic_cast<I0EstimationType *>(this->GetInput()->GetSource().GetPointer());
+  auto * i0est = dynamic_cast<I0EstimationType *>(this->GetInput()->GetSource().GetPointer());
   if (i0est)
   {
     m_SubtractLUTFilter->SetConstant1((OutputImagePixelType)log(std::max((double)i0est->GetI0() - m_IDark, 1.)));

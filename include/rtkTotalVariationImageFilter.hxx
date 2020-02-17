@@ -166,7 +166,7 @@ TotalVariationImageFilter<TInputImage>::ThreadedGenerateData(const RegionType & 
   itk::ZeroFluxNeumannBoundaryCondition<TInputImage> boundaryCondition;
   iit.OverrideBoundaryCondition(&boundaryCondition);
 
-  itk::SizeValueType                    c = (itk::SizeValueType)(iit.Size() / 2); // get offset of center pixel
+  auto                    c = (itk::SizeValueType)(iit.Size() / 2); // get offset of center pixel
   itk::SizeValueType                    strides[ImageDimension]; // get offsets to access neighboring pixels
   itk::Vector<RealType, ImageDimension> invSpacingCoeffs;
   for (unsigned int dim = 0; dim < ImageDimension; dim++)

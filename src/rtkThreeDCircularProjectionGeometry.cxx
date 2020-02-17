@@ -468,7 +468,7 @@ rtk::ThreeDCircularProjectionGeometry::GetAngularGaps(const std::vector<double> 
   // FIXME: Trick for the half scan in parallel geometry case
   if (m_SourceToDetectorDistances[0] == 0.)
   {
-    std::vector<double>::iterator it = std::max_element(angularGaps.begin(), angularGaps.end());
+    auto it = std::max_element(angularGaps.begin(), angularGaps.end());
     if (*it > itk::Math::pi_over_2)
     {
       for (it = angularGaps.begin(); it < angularGaps.end(); it++)

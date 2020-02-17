@@ -30,14 +30,14 @@ rtk::MatlabSparseMatrix::MatlabSparseMatrix(const vnl_sparse_matrix<double>& spa
   //Store elements in std::vector and sort them according 1\ index of column and 2\ index of row
   unsigned int nonZeroElement(0);
   using sparseMatrixColumn = std::vector<std::pair<unsigned int, double> >;
-  sparseMatrixColumn* columnsVector = new sparseMatrixColumn[nbColumn];
+  auto* columnsVector = new sparseMatrixColumn[nbColumn];
   sparseMatrix.reset();
   while(sparseMatrix.next()) {
     typename TOutputImage::IndexType idx = output->ComputeIndex(sparseMatrix.getcolumn());
     if(idx[1] != 1)
       continue;
     unsigned int indexColumn = idx[0] + idx[2]*output->GetLargestPossibleRegion().GetSize()[2];
-    sparseMatrixColumn::iterator it = columnsVector[indexColumn].begin();
+    auto it = columnsVector[indexColumn].begin();
     while (it != columnsVector[indexColumn].end()) {
       if ((unsigned int)sparseMatrix.getrow() < it->first)
         break;

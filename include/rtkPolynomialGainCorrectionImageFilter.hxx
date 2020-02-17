@@ -88,7 +88,7 @@ PolynomialGainCorrectionImageFilter<TInputImage, TOutputImage>::GenerateOutputIn
     int npixValues = 65536; // Input values are 16-bit unsigned
     for (int pid = 0; pid < npixValues; ++pid)
     {
-      float value = static_cast<float>(pid);
+      auto value = static_cast<float>(pid);
       for (int order = 0; order < m_ModelOrder; ++order)
       {
         m_PowerLut.push_back(value);

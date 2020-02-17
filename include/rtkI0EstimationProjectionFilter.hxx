@@ -58,7 +58,7 @@ I0EstimationProjectionFilter<TInputImage, TOutputImage, bitShift>::BeforeThreade
   m_Imax = m_MaxPixelValue;
   m_Histogram.resize(m_NBins, 0);
 
-  std::vector<unsigned int>::iterator it = m_Histogram.begin();
+  auto it = m_Histogram.begin();
 
   for (; it != m_Histogram.end(); ++it)
   {
@@ -187,7 +187,7 @@ I0EstimationProjectionFilter<TInputImage, TOutputImage, bitShift>::AfterThreaded
   // If estimated I0 at the boundaries, either startIdx or Imax then we missed
   // smth or no background mode
 
-  InputImagePixelType widthval = (InputImagePixelType)(float)(maxVal >> 1);
+  auto widthval = (InputImagePixelType)(float)(maxVal >> 1);
   unsigned int        lowBound = maxId;
   while ((m_Histogram[lowBound] > widthval) && (lowBound > 0))
   {

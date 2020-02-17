@@ -35,11 +35,11 @@ CheckGradient(typename TImage::Pointer im, typename TGradient::Pointer grad, boo
   radius.Fill(1);
 
   itk::ConstNeighborhoodIterator<TImage>          iit(radius, im, im->GetLargestPossibleRegion());
-  itk::ZeroFluxNeumannBoundaryCondition<TImage> * boundaryCondition = new itk::ZeroFluxNeumannBoundaryCondition<TImage>;
+  auto * boundaryCondition = new itk::ZeroFluxNeumannBoundaryCondition<TImage>;
   iit.OverrideBoundaryCondition(boundaryCondition);
 
-  itk::SizeValueType   c = (itk::SizeValueType)(iit.Size() / 2);         // get offset of center pixel
-  itk::SizeValueType * strides = new itk::SizeValueType[ImageDimension]; // get offsets to access neighboring pixels
+  auto   c = (itk::SizeValueType)(iit.Size() / 2);         // get offset of center pixel
+  auto * strides = new itk::SizeValueType[ImageDimension]; // get offsets to access neighboring pixels
   for (int dim = 0; dim < ImageDimension; dim++)
   {
     strides[dim] = iit.GetStride(dim);

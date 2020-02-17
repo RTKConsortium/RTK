@@ -160,7 +160,7 @@ DeconstructImageFilter<TImage>::GenerateOutputInformation()
 
     // Cascade pipeline
     // Set all the filters and connect them together
-    unsigned int * downsamplingFactors = new unsigned int[dimension];
+    auto * downsamplingFactors = new unsigned int[dimension];
     for (int d = 0; d < dimension; d++)
       downsamplingFactors[d] = 2;
 

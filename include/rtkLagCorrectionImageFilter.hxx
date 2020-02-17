@@ -138,7 +138,7 @@ LagCorrectionImageFilter<TImage, ModelOrder>::ThreadedGenerateData(const ImageRe
         unsigned idx_s = (jj + ii) * ModelOrder;
 
         // Get measured pixel value y[k]
-        float yk = static_cast<float>(itIn.Get());
+        auto yk = static_cast<float>(itIn.Get());
 
         // Computes correction
         float      xk = yk; // Initial corrected pixel

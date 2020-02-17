@@ -134,7 +134,7 @@ SeparableQuadraticSurrogateRegularizationImageFilter<TImage>::DynamicThreadedGen
   itk::ConstNeighborhoodIterator<TImage> nIt(m_Radius, this->GetInput(), outputRegionForThread);
 
   // Precompute the offset of center pixel
-  itk::SizeValueType c = (itk::SizeValueType)(nIt.Size() / 2);
+  auto c = (itk::SizeValueType)(nIt.Size() / 2);
 
   // Declare intermediate variables
   typename TImage::PixelType diff, out1, out2;

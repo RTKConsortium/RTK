@@ -42,7 +42,7 @@ RayQuadricIntersectionImageFilter<TInputImage, TOutputImage>::BeforeThreadedGene
 
   Superclass::BeforeThreadedGenerateData();
 
-  QuadricShape * qo = dynamic_cast<QuadricShape *>(this->GetModifiableConvexShape());
+  auto * qo = dynamic_cast<QuadricShape *>(this->GetModifiableConvexShape());
   if (qo == nullptr)
   {
     itkExceptionMacro("This is not a QuadricShape!");

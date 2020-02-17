@@ -69,7 +69,7 @@ JosephBackProjectionImageFilter<TInputImage,
   offsets[2] =
     this->GetInput(0)->GetBufferedRegion().GetSize()[0] * this->GetInput(0)->GetBufferedRegion().GetSize()[1];
 
-  const GeometryType * geometry = dynamic_cast<const GeometryType *>(this->GetGeometry());
+  const auto * geometry = dynamic_cast<const GeometryType *>(this->GetGeometry());
   if (!geometry)
   {
     itkGenericExceptionMacro(<< "Error, ThreeDCircularProjectionGeometry expected");

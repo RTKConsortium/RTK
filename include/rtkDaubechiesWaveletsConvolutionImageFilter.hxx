@@ -239,7 +239,7 @@ DaubechiesWaveletsConvolutionImageFilter<TImage>::GenerateData()
   int dim = TImage::ImageDimension;
 
   // Create a vector holding the coefficients along each direction
-  CoefficientVector * coeffs = new CoefficientVector[dim];
+  auto * coeffs = new CoefficientVector[dim];
   for (int d = 0; d < dim; d++)
   {
     if (m_Type == Self::Deconstruct)
