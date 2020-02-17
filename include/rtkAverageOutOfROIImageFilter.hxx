@@ -71,7 +71,7 @@ AverageOutOfROIImageFilter<TInputImage, TROI>::GenerateOutputInformation()
   typename TROI::PointType     ROIOrigin = this->GetROI()->GetOrigin();
   typename TROI::DirectionType ROIDirection = this->GetROI()->GetDirection();
 
-  bool isInformationInconsistent = 0;
+  bool isInformationInconsistent = false;
   isInformationInconsistent = false;
 
   for (unsigned int dim = 0; dim < TROI::ImageDimension; dim++)
