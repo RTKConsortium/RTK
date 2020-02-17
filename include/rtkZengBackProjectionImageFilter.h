@@ -123,7 +123,7 @@ public:
 
 protected:
   ZengBackProjectionImageFilter();
-  ~ZengBackProjectionImageFilter() ITK_OVERRIDE {}
+  ~ZengBackProjectionImageFilter() ITK_OVERRIDE = default;
 
   /** Apply changes to the input image requested region. */
   void

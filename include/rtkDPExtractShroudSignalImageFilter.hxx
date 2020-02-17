@@ -28,7 +28,7 @@ namespace rtk
 
 template <class TInputPixel, class TOutputPixel>
 DPExtractShroudSignalImageFilter<TInputPixel, TOutputPixel>::DPExtractShroudSignalImageFilter()
-{}
+= default;
 
 template <class TInputPixel, class TOutputPixel>
 void

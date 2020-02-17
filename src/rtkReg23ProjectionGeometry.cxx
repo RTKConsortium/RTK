@@ -22,7 +22,7 @@ rtk::Reg23ProjectionGeometry::Reg23ProjectionGeometry()
   : rtk::ThreeDCircularProjectionGeometry()
 {}
 
-rtk::Reg23ProjectionGeometry::~Reg23ProjectionGeometry() {}
+rtk::Reg23ProjectionGeometry::~Reg23ProjectionGeometry() = default;
 
 bool
 rtk::Reg23ProjectionGeometry::AddReg23Projection(const PointType &  sourcePosition,

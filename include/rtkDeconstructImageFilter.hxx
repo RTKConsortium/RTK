@@ -28,7 +28,7 @@ namespace rtk
 // Default Constructor
 template <class TImage>
 DeconstructImageFilter<TImage>::DeconstructImageFilter()
-{}
+= default;
 
 /////////////////////////////////////////////////////////
 // PrintSelf()

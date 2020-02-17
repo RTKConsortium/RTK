@@ -31,7 +31,7 @@ namespace rtk
 
 template <class TInputImage, class TOutputImage, class TDeformation>
 FDKWarpBackProjectionImageFilter<TInputImage, TOutputImage, TDeformation>::FDKWarpBackProjectionImageFilter()
-{}
+= default;
 
 template <class TInputImage, class TOutputImage, class TDeformation>
 void

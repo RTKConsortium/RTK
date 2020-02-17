@@ -26,7 +26,7 @@ namespace rtk
 
 template <typename OutputImageType>
 ConjugateGradientOperator<OutputImageType>::ConjugateGradientOperator()
-{}
+= default;
 
 template <typename OutputImageType>
 void

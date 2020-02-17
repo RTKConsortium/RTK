@@ -25,7 +25,7 @@
 namespace rtk
 {
 
-PhaseReader::PhaseReader() {}
+PhaseReader::PhaseReader() = default;
 
 void
 PhaseReader::PrintSelf(std::ostream & os, itk::Indent indent) const

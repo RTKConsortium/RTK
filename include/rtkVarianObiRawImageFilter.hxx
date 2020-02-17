@@ -27,7 +27,7 @@ namespace rtk
 
 template <typename TInputImage, typename TOutputImage>
 VarianObiRawImageFilter<TInputImage, TOutputImage>::VarianObiRawImageFilter()
-{}
+= default;
 
 template <typename TInputImage, typename TOutputImage>
 void

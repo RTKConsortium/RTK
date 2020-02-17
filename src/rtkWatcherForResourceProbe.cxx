@@ -165,6 +165,6 @@ WatcherForResourceProbe ::operator=(const WatcherForResourceProbe & watch)
   return *this;
 }
 
-WatcherForResourceProbe ::~WatcherForResourceProbe() {}
+WatcherForResourceProbe ::~WatcherForResourceProbe() = default;
 
 } // namespace rtk

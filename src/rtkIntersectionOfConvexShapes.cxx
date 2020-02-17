@@ -23,7 +23,7 @@
 namespace rtk
 {
 
-IntersectionOfConvexShapes ::IntersectionOfConvexShapes() {}
+IntersectionOfConvexShapes ::IntersectionOfConvexShapes() = default;
 
 void
 IntersectionOfConvexShapes ::SetConvexShapes(const ConvexShapeVector & _arg)

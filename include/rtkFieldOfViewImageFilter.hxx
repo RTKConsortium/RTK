@@ -36,7 +36,7 @@ namespace rtk
 
 template <class TInputImage, class TOutputImage>
 FieldOfViewImageFilter<TInputImage, TOutputImage>::FieldOfViewImageFilter()
-{}
+= default;
 
 template <class TInputImage, class TOutputImage>
 bool

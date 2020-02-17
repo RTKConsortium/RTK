@@ -34,8 +34,8 @@ template <class TInput, class TCoordRepType, class TOutput = TCoordRepType>
 class StoreSparseMatrixSplatWeightMultiplication
 {
 public:
-  StoreSparseMatrixSplatWeightMultiplication(){};
-  ~StoreSparseMatrixSplatWeightMultiplication(){};
+  StoreSparseMatrixSplatWeightMultiplication()= default;;
+  ~StoreSparseMatrixSplatWeightMultiplication()= default;;
   bool
   operator!=(const StoreSparseMatrixSplatWeightMultiplication &) const
   {

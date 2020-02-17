@@ -81,7 +81,7 @@ public:
   itkSetMacro(Frame, unsigned int);
 
 protected:
-  CyclicDeformationImageFilter() {}
+  CyclicDeformationImageFilter() = default;
   ~CyclicDeformationImageFilter() override = default;
 
   void

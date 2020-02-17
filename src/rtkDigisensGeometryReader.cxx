@@ -23,7 +23,7 @@
 #include <itkVersor.h>
 #include <itkCenteredEuler3DTransform.h>
 
-rtk::DigisensGeometryReader ::DigisensGeometryReader() {}
+rtk::DigisensGeometryReader ::DigisensGeometryReader() = default;
 
 void
 rtk::DigisensGeometryReader ::GenerateData()

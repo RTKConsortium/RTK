@@ -21,7 +21,7 @@
 namespace rtk
 {
 
-QuadricShape ::QuadricShape() {}
+QuadricShape ::QuadricShape() = default;
 
 bool
 QuadricShape ::IsInside(const PointType & point) const

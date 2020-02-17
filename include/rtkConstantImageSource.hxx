@@ -45,7 +45,7 @@ ConstantImageSource<TOutputImage>::ConstantImageSource()
 
 template <class TOutputImage>
 ConstantImageSource<TOutputImage>::~ConstantImageSource()
-{}
+= default;
 
 template <class TOutputImage>
 void
