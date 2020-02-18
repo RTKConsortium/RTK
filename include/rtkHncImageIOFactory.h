@@ -72,6 +72,9 @@ public:
     ObjectFactoryBase::RegisterFactory(Self::New());
   }
 
+  HncImageIOFactory(const Self &) = delete;
+  void operator=(const Self &) = delete;
+
 protected:
   HncImageIOFactory();
   ~HncImageIOFactory() override = default;
