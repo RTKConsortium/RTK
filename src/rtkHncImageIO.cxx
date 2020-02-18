@@ -24,19 +24,6 @@
 #include "rtkHncImageIO.h"
 #include <itkMetaDataObject.h>
 
-static std::string
-GetExtension(const std::string & filename)
-{
-  std::string fileExt(itksys::SystemTools::GetFilenameLastExtension(filename));
-
-  // Check that a valid extension was found.
-  if (fileExt != ".hnc")
-  {
-    return ("");
-  }
-  return (fileExt);
-}
-
 //--------------------------------------------------------------------
 // Read Image Information
 void

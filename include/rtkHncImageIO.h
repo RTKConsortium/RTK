@@ -124,7 +124,7 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(HncImageIO, ImageIOBase);
+  itkTypeMacro(HncImageIO, itk::ImageIOBase);
 
   /*-------- This part of the interface deals with reading data. ------ */
   void
@@ -138,7 +138,7 @@ public:
 
   /*-------- This part of the interfaces deals with writing data. ----- */
   virtual void
-  WriteImageInformation(bool keepOfStream)
+  WriteImageInformation(bool /*keepOfStream*/)
   {}
 
   void
