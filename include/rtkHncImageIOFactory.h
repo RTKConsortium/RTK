@@ -16,15 +16,15 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkHncImageIOFactory_h
-#define __rtkHncImageIOFactory_h
+#ifndef rtkHncImageIOFactory_h
+#define rtkHncImageIOFactory_h
 
 #include "rtkHncImageIO.h"
 
 // itk include
-#include "itkImageIOBase.h"
-#include "itkObjectFactoryBase.h"
-#include "itkVersion.h"
+#include <itkImageIOBase.h>
+#include <itkObjectFactoryBase.h>
+#include <itkVersion.h>
 
 namespace rtk
 {
@@ -48,13 +48,13 @@ public:
 
   /** Class methods used to interface with the registered factories. */
   const char *
-  GetITKSourceVersion(void) const
+  GetITKSourceVersion() const override
   {
     return ITK_SOURCE_VERSION;
   }
 
   const char *
-  GetDescription(void) const
+  GetDescription() const override
   {
     return "Hnc ImageIO Factory, allows the loading of Hnc images into insight";
   }
@@ -63,27 +63,22 @@ public:
   itkFactorylessNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(HncImageIOFactory, ObjectFactoryBase);
+  itkTypeMacro(HncImageIOFactory, itk::ObjectFactoryBase);
 
   /** Register one factory of this type  */
   static void
-  RegisterOneFactory(void)
+  RegisterOneFactory()
   {
     ObjectFactoryBase::RegisterFactory(Self::New());
   }
 
 protected:
   HncImageIOFactory();
-  ~HncImageIOFactory(){};
+  ~HncImageIOFactory() override = default;
   using myProductType = HncImageIOFactory;
   const myProductType * m_MyProduct;
-
-private:
-  HncImageIOFactory(const Self &); // purposely not implemented
-  void
-  operator=(const Self &); // purposely not implemented
 };
 
 } // namespace rtk
 
-#endif // __rtkHncImageIOFactory_h
+#endif // rtkHncImageIOFactory_h
