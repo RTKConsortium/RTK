@@ -19,6 +19,7 @@
 #ifndef rtkHncImageIOFactory_h
 #define rtkHncImageIOFactory_h
 
+#include "RTKExport.h"
 #include "rtkHncImageIO.h"
 
 // itk include

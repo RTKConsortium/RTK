@@ -26,3 +26,23 @@ rtk::HndImageIOFactory::HndImageIOFactory()
   this->RegisterOverride(
     "itkImageIOBase", "HndImageIO", "Hnd Image IO", true, itk::CreateObjectFunction<HndImageIO>::New());
 }
+
+// Undocumented API used to register during static initialization.
+// DO NOT CALL DIRECTLY.
+
+namespace itk
+{
+
+static bool HndImageIOFactoryHasBeenRegistered;
+
+void RTK_EXPORT
+     HndImageIOFactoryRegister__Private()
+{
+  if (!HndImageIOFactoryHasBeenRegistered)
+  {
+    HndImageIOFactoryHasBeenRegistered = true;
+    rtk::HndImageIOFactory::RegisterOneFactory();
+  }
+}
+
+} // end namespace itk

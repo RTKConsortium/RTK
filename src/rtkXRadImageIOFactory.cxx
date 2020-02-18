@@ -24,3 +24,23 @@ rtk::XRadImageIOFactory::XRadImageIOFactory()
   this->RegisterOverride(
     "itkImageIOBase", "XRadImageIO", "XRad Image IO", true, itk::CreateObjectFunction<XRadImageIO>::New());
 }
+
+// Undocumented API used to register during static initialization.
+// DO NOT CALL DIRECTLY.
+
+namespace itk
+{
+
+static bool XRadImageIOFactoryHasBeenRegistered;
+
+void RTK_EXPORT
+     XRadImageIOFactoryRegister__Private()
+{
+  if (!XRadImageIOFactoryHasBeenRegistered)
+  {
+    XRadImageIOFactoryHasBeenRegistered = true;
+    rtk::XRadImageIOFactory::RegisterOneFactory();
+  }
+}
+
+} // end namespace itk

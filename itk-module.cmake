@@ -52,6 +52,15 @@ itk_module(RTK
     ${RTK_DEPENDS}
   TEST_DEPENDS
     ${RTK_TEST_DEPENDS}
+  FACTORY_NAMES
+    ImageIO::DCMImagX
+    ImageIO::His
+    ImageIO::Hnc
+    ImageIO::Hnd
+    ImageIO::ImagX
+    ImageIO::Ora
+    ImageIO::Xim
+    ImageIO::XRad
   DESCRIPTION
     "${DOCUMENTATION}"
   )

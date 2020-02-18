@@ -1,0 +1,2 @@
+itk_wrap_simple_class("rtk::ImagXImageIO" POINTER)
+itk_wrap_simple_class("rtk::ImagXImageIOFactory" POINTER)

@@ -20,9 +20,28 @@
 
 #include <fstream>
 
-//====================================================================
 rtk::HisImageIOFactory::HisImageIOFactory()
 {
   this->RegisterOverride(
     "itkImageIOBase", "HisImageIO", "His Image IO", true, itk::CreateObjectFunction<HisImageIO>::New());
 }
+
+// Undocumented API used to register during static initialization.
+// DO NOT CALL DIRECTLY.
+
+namespace itk
+{
+
+static bool HisImageIOFactoryHasBeenRegistered;
+
+void RTK_EXPORT
+     HisImageIOFactoryRegister__Private()
+{
+  if (!HisImageIOFactoryHasBeenRegistered)
+  {
+    HisImageIOFactoryHasBeenRegistered = true;
+    rtk::HisImageIOFactory::RegisterOneFactory();
+  }
+}
+
+} // end namespace rtk

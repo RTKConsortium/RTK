@@ -26,3 +26,23 @@ rtk::XimImageIOFactory::XimImageIOFactory()
   this->RegisterOverride(
     "itkImageIOBase", "XimImageIO", "Xim Image IO", true, itk::CreateObjectFunction<XimImageIO>::New());
 }
+
+// Undocumented API used to register during static initialization.
+// DO NOT CALL DIRECTLY.
+
+namespace itk
+{
+
+static bool XimImageIOFactoryHasBeenRegistered;
+
+void RTK_EXPORT
+     XimImageIOFactoryRegister__Private()
+{
+  if (!XimImageIOFactoryHasBeenRegistered)
+  {
+    XimImageIOFactoryHasBeenRegistered = true;
+    rtk::XimImageIOFactory::RegisterOneFactory();
+  }
+}
+
+} // end namespace itk
