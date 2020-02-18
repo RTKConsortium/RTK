@@ -49,19 +49,19 @@ public:
     return m_Name;
   }
   char
-  GetType()
+  GetType() const
   {
     return m_Type;
   }
   short
-  GetLength()
+  GetLength() const
   {
     return m_Length;
   }
 
   /** Memory offset from beginning of the record */
   short
-  GetRecOffset()
+  GetRecOffset() const
   {
     return m_RecOffset;
   }

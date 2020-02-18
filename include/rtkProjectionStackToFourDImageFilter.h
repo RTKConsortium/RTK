@@ -129,7 +129,7 @@ public:
 
   /** Set/Get the stack of projections */
   void
-  SetInputProjectionStack(const ProjectionStackType * Projections);
+  SetInputProjectionStack(const ProjectionStackType * Projection);
   typename ProjectionStackType::ConstPointer
   GetInputProjectionStack();
 

@@ -48,7 +48,7 @@ rtk::HisImageIO::ReadImageInformation()
     return;
   }
 
-  int nrframes, type, ulx, uly, brx, bry;
+  int nrframes = 0, type = 0, ulx = 0, uly = 0, brx = 0, bry = 0;
   m_HeaderSize = header[10] + (header[11] << 8);
   ulx = header[12] + (header[13] << 8);
   uly = header[14] + (header[15] << 8);

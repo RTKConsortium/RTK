@@ -123,8 +123,8 @@ public:
   operator()(TPixel input)
   {
     // Get the minimum and maximum output values
-    static const float min = static_cast<float>(m_OutputMinimum);
-    static const float max = static_cast<float>(m_OutputMaximum);
+    static const auto min = static_cast<float>(m_OutputMinimum);
+    static const auto max = static_cast<float>(m_OutputMaximum);
 
     // Compute the output
     float output = static_cast<float>(input) + m_Mean + m_StandardDeviation * m_Generator->GetVariate();

@@ -316,7 +316,7 @@ main(int, char **)
   }
 
   // Input 4D volume sequence
-  VolumeType::Pointer * Volumes = new VolumeType::Pointer[fourDSize[3]];
+  auto * Volumes = new VolumeType::Pointer[fourDSize[3]];
   using JoinFilterType = itk::JoinSeriesImageFilter<VolumeType, VolumeSeriesType>;
   JoinFilterType::Pointer join = JoinFilterType::New();
 

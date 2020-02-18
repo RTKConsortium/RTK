@@ -86,10 +86,10 @@ public:
   // Allocate CPU and Cuda memory space
   //
   void
-  Allocate(bool initializePixels = false);
+  Allocate(bool initializePixels = false) override;
 
-  virtual void
-  Initialize();
+  void
+  Initialize() override;
 
   void
   FillBuffer(const TPixel & value);
@@ -115,10 +115,10 @@ public:
   // Get CPU buffer pointer
   //
   TPixel *
-  GetBufferPointer();
+  GetBufferPointer() override;
 
   const TPixel *
-  GetBufferPointer() const;
+  GetBufferPointer() const override;
 
   /** Return the Pixel Accessor object */
   AccessorType
@@ -180,7 +180,7 @@ public:
   /** Overload the SetBufferedRegion function because if the size changes we need
    *  to invalidated the GPU buffer */
   void
-  SetBufferedRegion(const RegionType & region);
+  SetBufferedRegion(const RegionType & region) override;
 
   /* Override DataHasBeenGenerated() in DataObject class.
    * We need this because CPU time stamp is always bigger
@@ -190,7 +190,7 @@ public:
    * CPU's time stamp will be increased after that.
    */
   void
-  DataHasBeenGenerated()
+  DataHasBeenGenerated() override
   {
     Superclass::DataHasBeenGenerated();
     if (m_DataManager->IsCPUBufferDirty())
@@ -200,7 +200,7 @@ public:
   }
 
   /** Graft the data and information from one CudaImage to another. */
-  virtual void
+  void
   Graft(const Self * data);
 
 protected:
@@ -229,13 +229,13 @@ public:
   using ConstPointer = itk::SmartPointer<const Self>;
 
   /** Class methods used to interface with the registered factories. */
-  virtual const char *
-  GetITKSourceVersion() const
+  const char *
+  GetITKSourceVersion() const override
   {
     return ITK_SOURCE_VERSION;
   }
   const char *
-  GetDescription() const
+  GetDescription() const override
   {
     return "A Factory for CudaImage";
   }

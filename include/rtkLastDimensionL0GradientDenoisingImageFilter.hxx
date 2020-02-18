@@ -43,7 +43,7 @@ LastDimensionL0GradientDenoisingImageFilter<TInputImage>::LastDimensionL0Gradien
 
 template <class TInputImage>
 const itk::ImageRegionSplitterBase *
-LastDimensionL0GradientDenoisingImageFilter<TInputImage>::GetImageRegionSplitter(void) const
+LastDimensionL0GradientDenoisingImageFilter<TInputImage>::GetImageRegionSplitter() const
 {
   return m_Splitter;
 }
@@ -179,7 +179,7 @@ LastDimensionL0GradientDenoisingImageFilter<TInputImage>::ThreadedGenerateData(
 
     // Walk the input along last dimension for this voxel, filling an array with the values read
     itk::ImageRegionConstIterator<TInputImage> inputIterator(this->GetInput(), SingleVoxelRegion);
-    InputPixelType *                           toBeRegularized =
+    auto *                           toBeRegularized =
       new InputPixelType[outputRegionForThread.GetSize(TInputImage::ImageDimension - 1)];
 
     unsigned int i = 0;

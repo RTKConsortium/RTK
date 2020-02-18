@@ -75,7 +75,7 @@ public:
   void
   SetInputIncidentSpectrum(const IncidentSpectrumImageType * IncidentSpectrum);
   void
-  SetInputSecondIncidentSpectrum(const IncidentSpectrumImageType * IncidentSpectrum);
+  SetInputSecondIncidentSpectrum(const IncidentSpectrumImageType * SecondIncidentSpectrum);
   typename IncidentSpectrumImageType::ConstPointer
   GetInputIncidentSpectrum();
   typename IncidentSpectrumImageType::ConstPointer

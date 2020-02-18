@@ -42,7 +42,7 @@ ComputeL0NormAlongLastDimension(typename TInputImage::Pointer in)
   }
 
   unsigned int                      norm = 0;
-  typename TInputImage::PixelType * oned = new typename TInputImage::PixelType[length];
+  auto * oned = new typename TInputImage::PixelType[length];
 
   // Walk the first frame, and for each voxel, set the whole sequence the way we want it
   while (!FakeIterator.IsAtEnd())
@@ -80,8 +80,8 @@ template <class TInputImage>
 void
 CheckL0NormOfGradient(typename TInputImage::Pointer before, typename TInputImage::Pointer after)
 {
-  unsigned int normBefore;
-  unsigned int normAfter;
+  unsigned int normBefore = 0;
+  unsigned int normAfter = 0;
 
   normBefore = ComputeL0NormAlongLastDimension<TInputImage>(before);
   std::cout << "L0 norm of the gradient before denoising is " << normBefore << std::endl;
@@ -151,7 +151,7 @@ main(int, char **)
   // Fill the input image with the values we want
 
   // Determine the values we want
-  OutputPixelType * signal = new OutputPixelType[largest.GetSize(
+  auto * signal = new OutputPixelType[largest.GetSize(
     VolumeSeriesType::ImageDimension - 1)]; // Should be an array of 12 floats, since size[3] = 12
   signal[0] = 0;
   signal[1] = 1;

@@ -174,7 +174,7 @@ BackwardDifferenceDivergenceImageFilter<TInputImage, TOutputImage>::DynamicThrea
   iit.GoToBegin();
   iit.OverrideBoundaryCondition(m_BoundaryCondition);
 
-  const itk::SizeValueType c = (itk::SizeValueType)(iit.Size() / 2); // get offset of center pixel
+  const auto c = (itk::SizeValueType)(iit.Size() / 2); // get offset of center pixel
   itk::SizeValueType       strides[TOutputImage::ImageDimension];    // get offsets to access neighboring pixels
   for (unsigned int dim = 0; dim < TOutputImage::ImageDimension; dim++)
   {

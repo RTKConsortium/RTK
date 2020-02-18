@@ -19,6 +19,8 @@
 #ifndef rtkCyclicDeformationImageFilter_hxx
 #define rtkCyclicDeformationImageFilter_hxx
 
+#include "math.h"
+
 #include "rtkCyclicDeformationImageFilter.h"
 
 #include <itkImageRegionConstIterator.h>
@@ -129,7 +131,7 @@ CyclicDeformationImageFilter<TInputImage, TOutputImage>::SetSignalFilename(const
       itkGenericExceptionMacro(<< "Could not open signal file " << m_SignalFilename);
     }
 
-    double value;
+    double value = NAN;
     while (!is.eof())
     {
       is >> value;

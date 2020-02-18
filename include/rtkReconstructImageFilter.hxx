@@ -29,7 +29,7 @@ namespace rtk
 // Default Constructor
 template <class TImage>
 ReconstructImageFilter<TImage>::ReconstructImageFilter()
-{}
+= default;
 
 
 /////////////////////////////////////////////////////////
@@ -138,7 +138,7 @@ ReconstructImageFilter<TImage>::GenerateOutputInformation()
 
     // Cascade pipeline
     // Set all the filters and connect them together
-    unsigned int * upsamplingFactors = new unsigned int[dimension];
+    auto * upsamplingFactors = new unsigned int[dimension];
     for (int d = 0; d < dimension; d++)
       upsamplingFactors[d] = 2;
 

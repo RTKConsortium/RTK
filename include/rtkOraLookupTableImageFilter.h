@@ -89,7 +89,7 @@ public:
   }
 
 protected:
-  OraLookupTableImageFilter() {}
+  OraLookupTableImageFilter() = default;
   ~OraLookupTableImageFilter() override = default;
 
 private:

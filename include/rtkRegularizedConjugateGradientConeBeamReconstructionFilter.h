@@ -145,7 +145,7 @@ public:
 
   /** The weights map (Weighted least squares optimization in the conjugate gradient filter)*/
   void
-  SetInputWeights(const TImage * Projection);
+  SetInputWeights(const TImage * Weights);
   typename TImage::Pointer
   GetInputWeights();
 
@@ -163,11 +163,11 @@ public:
 
   /** Pass the ForwardProjection filter to SingleProjectionToFourDFilter */
   void
-  SetForwardProjectionFilter(ForwardProjectionType fwtype) override;
+  SetForwardProjectionFilter(ForwardProjectionType _arg) override;
 
   /** Pass the backprojection filter to ProjectionStackToFourD*/
   void
-  SetBackProjectionFilter(BackProjectionType bptype) override;
+  SetBackProjectionFilter(BackProjectionType _arg) override;
 
   // Regularization steps to perform
   itkSetMacro(PerformPositivity, bool);

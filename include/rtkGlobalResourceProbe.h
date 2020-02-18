@@ -66,11 +66,11 @@ public:
   /** Start a probe with a particular name. If the time probe does not
    * exist, it will be created */
   virtual void
-  Start(const char * name);
+  Start(const char * id);
 
   /** Stop a time probe identified with a name */
   virtual void
-  Stop(const char * name);
+  Stop(const char * id);
 
   /** Report the summary of results from the probes */
   virtual void
@@ -79,7 +79,7 @@ public:
   /** Destroy the set of probes. New probes can be created after invoking this
     method. */
   virtual void
-  Clear(void);
+  Clear();
 
   /** Create a new watcher and store it */
   virtual void

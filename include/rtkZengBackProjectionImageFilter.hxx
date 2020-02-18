@@ -21,6 +21,8 @@
 
 #include <math.h>
 
+#include "math.h"
+
 #include "rtkZengBackProjectionImageFilter.h"
 
 #include "rtkHomogeneousMatrix.h"
@@ -324,10 +326,10 @@ ZengBackProjectionImageFilter<TInputImage, TOutputImage>::GenerateData()
   PointType                                                 originRotatedVolume;
 
   indexSlice.Fill(0);
-  float dist, sigmaSlice;
+  float dist = NAN, sigmaSlice = NAN;
   float thicknessSlice = this->GetInput(0)->GetSpacing()[2];
   int   nbProjections = 0;
-  int   startSlice;
+  int   startSlice = 0;
   for (auto & angle : list_angle)
   {
     // Get the center of the rotated volume
@@ -401,7 +403,7 @@ ZengBackProjectionImageFilter<TInputImage, TOutputImage>::GenerateData()
       m_AttenuationMapMultiplyImageFilter->SetInput1(currentSlice);
       m_DiscreteGaussianFilter->SetInput(m_AttenuationMapMultiplyImageFilter->GetOutput());
     }
-    int index;
+    int index = 0;
     for (index = startSlice; index > 0; index--)
     {
       // Compute the distance between the current slice and the detector

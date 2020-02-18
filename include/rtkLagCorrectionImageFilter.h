@@ -106,7 +106,7 @@ protected:
   GenerateInputRequestedRegion() override;
 
   void
-  ThreadedGenerateData(const ImageRegionType & outputRegionForThread, itk::ThreadIdType threadId) override;
+  ThreadedGenerateData(const ImageRegionType & thRegion, itk::ThreadIdType threadId) override;
 
   /** The correction is applied along the third (stack) dimension.
       Therefore, we must avoid splitting along the stack.

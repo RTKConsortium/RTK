@@ -33,7 +33,7 @@ namespace rtk
 template <typename TImage>
 ImportImageFilter<TImage>::ImportImageFilter()
 {
-  unsigned int idx;
+  unsigned int idx = 0;
 
   for (idx = 0; idx < TImage::ImageDimension; ++idx)
   {
@@ -66,7 +66,7 @@ template <typename TImage>
 void
 ImportImageFilter<TImage>::PrintSelf(std::ostream & os, itk::Indent indent) const
 {
-  int i;
+  int i = 0;
 
   this->Superclass::PrintSelf(os, indent);
 

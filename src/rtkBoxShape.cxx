@@ -16,6 +16,8 @@
  *
  *=========================================================================*/
 
+#include "math.h"
+
 #include "rtkBoxShape.h"
 
 namespace rtk
@@ -71,7 +73,7 @@ BoxShape ::IsIntersectedByRay(const PointType &  rayOrigin,
   // Tfar <-> farDist
   nearDist = itk::NumericTraits<ScalarType>::NonpositiveMin();
   farDist = itk::NumericTraits<ScalarType>::max();
-  ScalarType T1, T2, invRayDir;
+  ScalarType T1 = NAN, T2 = NAN, invRayDir = NAN;
   for (unsigned int i = 0; i < Dimension; i++)
   {
     if (dir[i] == itk::NumericTraits<ScalarType>::ZeroValue() && (org[i] < min[i] || org[i] > max[i]))

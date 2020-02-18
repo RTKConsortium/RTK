@@ -30,7 +30,7 @@ void
 rtk::HndImageIO::ReadImageInformation()
 {
   Hnd_header hnd;
-  FILE *     fp;
+  FILE *     fp = nullptr;
 
   fp = fopen(m_FileName.c_str(), "rb");
   if (fp == nullptr)
@@ -176,7 +176,7 @@ lut_to_bytes(const char val)
 void
 rtk::HndImageIO::Read(void * buffer)
 {
-  FILE * fp;
+  FILE * fp = nullptr;
   // Long is only garanteed to be AT LEAST 32 bits, it could be 64 bit
   using Int4 = itk::uint32_t;
   Int4 * buf = (Int4 *)buffer;

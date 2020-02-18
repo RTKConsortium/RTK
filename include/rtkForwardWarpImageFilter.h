@@ -78,7 +78,7 @@ protected:
 
   // Redefine stuff that is private in the Superclass
   void
-                                   Protected_EvaluateDisplacementAtPhysicalPoint(const PointType & p, DisplacementType & output);
+                                   Protected_EvaluateDisplacementAtPhysicalPoint(const PointType & point, DisplacementType & output);
   bool                             m_Protected_DefFieldSizeSame;
   typename TOutputImage::IndexType m_Protected_StartIndex;
   typename TOutputImage::IndexType m_Protected_EndIndex;

@@ -200,7 +200,7 @@ ForwardDifferenceGradientImageFilter<TInputImage, TOperatorValueType, TOuputValu
   typename itk::NeighborhoodAlgorithm::ImageBoundaryFacesCalculator<InputImageType>::FaceListType faceList =
     bC(inputImage, outputRegionForThread, radius);
 
-  typename itk::NeighborhoodAlgorithm::ImageBoundaryFacesCalculator<InputImageType>::FaceListType::iterator fit =
+  auto fit =
     faceList.begin();
 
   // Initialize the x_slice array

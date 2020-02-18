@@ -76,7 +76,7 @@ ReorderProjectionsImageFilter<TInputImage, TOutputImage>::GenerateData()
 
       // Fill it with the signal values, and with the integers from 0 to m_InputSignal.size() - 1
       for (unsigned int i = 0; i < NumberOfProjections; i++)
-        pairsVector.push_back(std::make_pair(m_InputSignal[i], i));
+        pairsVector.emplace_back(m_InputSignal[i], i);
 
       // Sort it according to values
       std::sort(pairsVector.begin(), pairsVector.end());

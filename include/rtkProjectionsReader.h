@@ -256,7 +256,7 @@ public:
   /** Prepare the allocation of the output image during the first back
    * propagation of the pipeline. */
   void
-  GenerateOutputInformation(void) override;
+  GenerateOutputInformation() override;
 
 protected:
   ProjectionsReader();

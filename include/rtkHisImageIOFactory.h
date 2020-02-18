@@ -51,13 +51,13 @@ public:
 
   /** Class methods used to interface with the registered factories. */
   const char *
-  GetITKSourceVersion(void) const override
+  GetITKSourceVersion() const override
   {
     return ITK_SOURCE_VERSION;
   }
 
   const char *
-  GetDescription(void) const override
+  GetDescription() const override
   {
     return "His ImageIO Factory, allows the loading of His images into insight";
   }
@@ -70,7 +70,7 @@ public:
 
   /** Register one factory of this type  */
   static void
-  RegisterOneFactory(void)
+  RegisterOneFactory()
   {
     ObjectFactoryBase::RegisterFactory(Self::New());
   }

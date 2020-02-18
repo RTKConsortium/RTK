@@ -69,11 +69,11 @@ public:
                 << " : " << m_GPUBuffer << std::endl;
 #endif
     CUDA_CHECK(cudaFree(m_GPUBuffer));
-    m_GPUBuffer = 0;
+    m_GPUBuffer = nullptr;
     m_BufferSize = 0;
   }
 
-  ~GPUMemPointer()
+  ~GPUMemPointer() override
   {
     if (m_GPUBuffer)
     {
@@ -94,7 +94,7 @@ public:
   }
 
   size_t
-  GetBufferSize()
+  GetBufferSize() const
   {
     return m_BufferSize;
   }
@@ -102,7 +102,7 @@ public:
 protected:
   GPUMemPointer()
   {
-    m_GPUBuffer = 0;
+    m_GPUBuffer = nullptr;
     m_BufferSize = 0;
   }
 
@@ -138,7 +138,7 @@ public:
   SetBufferSize(size_t num);
 
   size_t
-  GetBufferSize()
+  GetBufferSize() const
   {
     return m_BufferSize;
   }
@@ -166,13 +166,13 @@ public:
   SetGPUBufferDirty();
 
   bool
-  IsCPUBufferDirty()
+  IsCPUBufferDirty() const
   {
     return m_IsCPUBufferDirty;
   }
 
   bool
-  IsGPUBufferDirty()
+  IsGPUBufferDirty() const
   {
     return m_IsGPUBufferDirty;
   }
@@ -220,14 +220,14 @@ public:
 
 protected:
   CudaDataManager();
-  virtual ~CudaDataManager();
-  virtual void
-  PrintSelf(std::ostream & os, Indent indent) const;
+  ~CudaDataManager() override;
+  void
+  PrintSelf(std::ostream & os, Indent indent) const override;
 
 private:
-  CudaDataManager(const Self &); // purposely not implemented
+  CudaDataManager(const Self &) = delete; // purposely not implemented
   void
-  operator=(const Self &);
+  operator=(const Self &) = delete;
 
 protected:
   size_t m_BufferSize; // # of bytes

@@ -7,7 +7,7 @@ class args_info_test
 public:
   int testVar{ true };
   int verbose_flag{ 0 };
-  args_info_test() {}
+  args_info_test() = default;
 };
 
 class cleanup_functor

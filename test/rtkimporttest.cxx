@@ -82,10 +82,10 @@ int
 main(int, char **)
 {
   // Raw vectors
-  unsigned int * vec_uint_2d = new unsigned int[10 * 10];
+  auto * vec_uint_2d = new unsigned int[10 * 10];
   int *          vec_int_2d = new int[10 * 10];
-  float *        vec_float_2d = new float[10 * 10];
-  double *       vec_double_2d = new double[10 * 10];
+  auto *        vec_float_2d = new float[10 * 10];
+  auto *       vec_double_2d = new double[10 * 10];
 
   // Initializing values
   for (unsigned int i = 0; i < 10 * 10; i++)

@@ -138,7 +138,7 @@ LagCorrectionImageFilter<TImage, ModelOrder>::ThreadedGenerateData(const ImageRe
         unsigned idx_s = (jj + ii) * ModelOrder;
 
         // Get measured pixel value y[k]
-        float yk = static_cast<float>(itIn.Get());
+        auto yk = static_cast<float>(itIn.Get());
 
         // Computes correction
         float      xk = yk; // Initial corrected pixel
@@ -193,7 +193,7 @@ LagCorrectionImageFilter<TImage, ModelOrder>::SplitRequestedRegion(int i, int nu
   TImage *                          outputPtr = this->GetOutput();
   const typename TImage::SizeType & requestedRegionSize = outputPtr->GetRequestedRegion().GetSize();
 
-  int                        splitAxis;
+  int                        splitAxis = 0;
   typename TImage::IndexType splitIndex;
   typename TImage::SizeType  splitSize;
 

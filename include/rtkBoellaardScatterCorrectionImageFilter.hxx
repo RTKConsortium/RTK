@@ -128,7 +128,7 @@ BoellaardScatterCorrectionImageFilter<TInputImage, TOutputImage>::SplitRequested
   OutputImageType *                       outputPtr = this->GetOutput();
   const typename TOutputImage::SizeType & requestedRegionSize = outputPtr->GetRequestedRegion().GetSize();
 
-  int                              splitAxis;
+  int                              splitAxis = 0;
   typename TOutputImage::IndexType splitIndex;
   typename TOutputImage::SizeType  splitSize;
 

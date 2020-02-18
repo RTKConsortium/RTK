@@ -71,15 +71,15 @@ public:
   MakeGPUBufferUpToDate();
 
   /** Grafting Cuda Image Data */
-  virtual void
-  Graft(const CudaDataManager * data);
+  void
+  Graft(const CudaDataManager * data) override;
 
 protected:
   CudaImageDataManager() {}
   virtual ~CudaImageDataManager() {}
 
-  virtual void
-  PrintSelf(std::ostream & os, Indent indent) const;
+  void
+  PrintSelf(std::ostream & os, Indent indent) const override;
 
 private:
   CudaImageDataManager(const Self &); // purposely not implemented

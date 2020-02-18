@@ -45,14 +45,14 @@ ConstantImageSource<TOutputImage>::ConstantImageSource()
 
 template <class TOutputImage>
 ConstantImageSource<TOutputImage>::~ConstantImageSource()
-{}
+= default;
 
 template <class TOutputImage>
 void
 ConstantImageSource<TOutputImage>::SetSize(SizeValueArrayType sizeArray)
 {
   const unsigned int count = TOutputImage::ImageDimension;
-  unsigned int       i;
+  unsigned int       i = 0;
   for (i = 0; i < count; i++)
   {
     if (sizeArray[i] != this->m_Size[i])
@@ -84,7 +84,7 @@ ConstantImageSource<TOutputImage>::PrintSelf(std::ostream & os, itk::Indent inde
   Superclass::PrintSelf(os, indent);
   os << indent << "Constant: " << static_cast<typename itk::NumericTraits<OutputImagePixelType>::PrintType>(m_Constant)
      << std::endl;
-  unsigned int i;
+  unsigned int i = 0;
   os << indent << "Origin: [";
   for (i = 0; i < TOutputImage::ImageDimension - 1; i++)
   {
@@ -135,7 +135,7 @@ template <class TOutputImage>
 void
 ConstantImageSource<TOutputImage>::GenerateOutputInformation()
 {
-  TOutputImage * output;
+  TOutputImage * output = nullptr;
   output = this->GetOutput(0);
 
   typename TOutputImage::RegionType largestPossibleRegion;

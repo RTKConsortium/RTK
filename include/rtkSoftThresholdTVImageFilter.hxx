@@ -19,6 +19,8 @@
 #ifndef rtkSoftThresholdTVImageFilter_hxx
 #define rtkSoftThresholdTVImageFilter_hxx
 
+#include "math.h"
+
 #include "rtkSoftThresholdTVImageFilter.h"
 
 #include <itkImageRegionIterator.h>
@@ -54,7 +56,7 @@ SoftThresholdTVImageFilter<TInputImage, TRealType, TOutputImage>::DynamicThreade
       TV += InputIt.Get()[i] * InputIt.Get()[i];
     }
     TV = sqrt(TV); // TV is non-negative
-    float ratio;
+    float ratio = NAN;
     float temp = TV - m_Threshold;
     if (temp > 0)
       ratio = temp / TV;

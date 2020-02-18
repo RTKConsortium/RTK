@@ -139,7 +139,7 @@ ProjectionsReader<TOutputImage>::PrintSelf(std::ostream & os, itk::Indent indent
 //--------------------------------------------------------------------
 template <class TOutputImage>
 void
-ProjectionsReader<TOutputImage>::GenerateOutputInformation(void)
+ProjectionsReader<TOutputImage>::GenerateOutputInformation()
 {
   if (m_FileNames.empty())
     return;
@@ -458,7 +458,7 @@ template <class TInputImage>
 void
 ProjectionsReader<TOutputImage>::PropagateParametersToMiniPipeline()
 {
-  TInputImage *     nextInput;
+  TInputImage *     nextInput = nullptr;
   OutputImageType * output = nullptr;
 
   // Vector component selection
@@ -481,7 +481,7 @@ ProjectionsReader<TOutputImage>::PropagateParametersToMiniPipeline()
   {
     // Raw
     using RawType = typename itk::ImageSeriesReader<TInputImage>;
-    RawType * raw = dynamic_cast<RawType *>(m_RawDataReader.GetPointer());
+    auto * raw = dynamic_cast<RawType *>(m_RawDataReader.GetPointer());
     assert(raw != nullptr);
     raw->SetFileNames(this->GetFileNames());
     raw->SetImageIO(m_ImageIO);
@@ -503,7 +503,7 @@ ProjectionsReader<TOutputImage>::PropagateParametersToMiniPipeline()
       else
       {
         using ChangeInfoType = itk::ChangeInformationImageFilter<TInputImage>;
-        ChangeInfoType * cif = dynamic_cast<ChangeInfoType *>(m_ChangeInformationFilter.GetPointer());
+        auto * cif = dynamic_cast<ChangeInfoType *>(m_ChangeInformationFilter.GetPointer());
         assert(cif != nullptr);
         if (m_Spacing != defaultSpacing)
         {
@@ -537,7 +537,7 @@ ProjectionsReader<TOutputImage>::PropagateParametersToMiniPipeline()
       else
       {
         using CropType = itk::CropImageFilter<TInputImage, TInputImage>;
-        CropType * crop = dynamic_cast<CropType *>(m_CropFilter.GetPointer());
+        auto * crop = dynamic_cast<CropType *>(m_CropFilter.GetPointer());
         assert(crop != nullptr);
         crop->SetLowerBoundaryCropSize(m_LowerBoundaryCropSize);
         crop->SetUpperBoundaryCropSize(m_UpperBoundaryCropSize);
@@ -547,7 +547,7 @@ ProjectionsReader<TOutputImage>::PropagateParametersToMiniPipeline()
     }
 
     // Elekta raw data converter
-    itk::ImageBase<OutputImageDimension> * nextInputBase =
+    auto * nextInputBase =
       dynamic_cast<itk::ImageBase<OutputImageDimension> *>(nextInput);
     assert(nextInputBase != nullptr);
     ConnectElektaRawFilter(&nextInputBase);
@@ -566,7 +566,7 @@ ProjectionsReader<TOutputImage>::PropagateParametersToMiniPipeline()
       else
       {
         using ConditionalMedianType = rtk::ConditionalMedianImageFilter<TInputImage>;
-        ConditionalMedianType * cond = dynamic_cast<ConditionalMedianType *>(m_ConditionalMedianFilter.GetPointer());
+        auto * cond = dynamic_cast<ConditionalMedianType *>(m_ConditionalMedianFilter.GetPointer());
         assert(cond != nullptr);
         cond->SetRadius(m_MedianRadius);
         cond->SetInput(nextInput);
@@ -587,7 +587,7 @@ ProjectionsReader<TOutputImage>::PropagateParametersToMiniPipeline()
       else
       {
         using BinType = itk::BinShrinkImageFilter<TInputImage, TInputImage>;
-        BinType * bin = dynamic_cast<BinType *>(m_BinningFilter.GetPointer());
+        auto * bin = dynamic_cast<BinType *>(m_BinningFilter.GetPointer());
         assert(bin != nullptr);
         bin->SetShrinkFactors(m_ShrinkFactors);
         bin->SetInput(nextInput);
@@ -606,7 +606,7 @@ ProjectionsReader<TOutputImage>::PropagateParametersToMiniPipeline()
       else
       {
         using ScatterFilterType = rtk::BoellaardScatterCorrectionImageFilter<TInputImage, TInputImage>;
-        ScatterFilterType * scatter = dynamic_cast<ScatterFilterType *>(m_ScatterFilter.GetPointer());
+        auto * scatter = dynamic_cast<ScatterFilterType *>(m_ScatterFilter.GetPointer());
         assert(scatter != nullptr);
         scatter->SetAirThreshold(m_AirThreshold);
         scatter->SetScatterToPrimaryRatio(m_ScatterToPrimaryRatio);
@@ -640,7 +640,7 @@ ProjectionsReader<TOutputImage>::PropagateParametersToMiniPipeline()
     {
       // Check if Ora pointer
       using OraRawType = rtk::OraLookupTableImageFilter<OutputImageType>;
-      OraRawType * oraraw = dynamic_cast<OraRawType *>(m_RawToAttenuationFilter.GetPointer());
+      auto * oraraw = dynamic_cast<OraRawType *>(m_RawToAttenuationFilter.GetPointer());
       if (oraraw != nullptr)
       {
         oraraw->SetComputeLineIntegral(m_ComputeLineIntegral);
@@ -669,7 +669,7 @@ ProjectionsReader<TOutputImage>::PropagateParametersToMiniPipeline()
 
     // ESRF raw to attenuation converter also needs the filenames
     using EdfRawFilterType = rtk::EdfRawToAttenuationImageFilter<TInputImage, OutputImageType>;
-    EdfRawFilterType * edf = dynamic_cast<EdfRawFilterType *>(m_RawToAttenuationFilter.GetPointer());
+    auto * edf = dynamic_cast<EdfRawFilterType *>(m_RawToAttenuationFilter.GetPointer());
     if (edf)
       edf->SetFileNames(this->GetFileNames());
 
@@ -694,10 +694,10 @@ ProjectionsReader<TOutputImage>::ConnectElektaRawFilter(itk::ImageBase<OutputIma
   {
     using ElektaRawType = rtk::ElektaSynergyRawLookupTableImageFilter<itk::Image<unsigned short, OutputImageDimension>,
                                                                       itk::Image<unsigned short, OutputImageDimension>>;
-    ElektaRawType * elektaRaw = dynamic_cast<ElektaRawType *>(m_ElektaRawFilter.GetPointer());
+    auto * elektaRaw = dynamic_cast<ElektaRawType *>(m_ElektaRawFilter.GetPointer());
     assert(elektaRaw != nullptr);
     using InputImageType = typename itk::Image<unsigned short, OutputImageDimension>;
-    InputImageType * nextInput = dynamic_cast<InputImageType *>(*nextInputBase);
+    auto * nextInput = dynamic_cast<InputImageType *>(*nextInputBase);
     elektaRaw->SetInput(nextInput);
     *nextInputBase = elektaRaw->GetOutput();
   }
@@ -709,37 +709,37 @@ void
 ProjectionsReader<TOutputImage>::PropagateI0(itk::ImageBase<OutputImageDimension> ** nextInputBase)
 {
   using UnsignedShortImageType = itk::Image<unsigned short, OutputImageDimension>;
-  UnsignedShortImageType * nextInputUShort = dynamic_cast<UnsignedShortImageType *>(*nextInputBase);
+  auto * nextInputUShort = dynamic_cast<UnsignedShortImageType *>(*nextInputBase);
   if (nextInputUShort != nullptr)
   {
     if (m_I0 == 0)
     {
       using I0EstimationType = rtk::I0EstimationProjectionFilter<UnsignedShortImageType, UnsignedShortImageType>;
-      I0EstimationType * i0est = dynamic_cast<I0EstimationType *>(m_I0EstimationFilter.GetPointer());
+      auto * i0est = dynamic_cast<I0EstimationType *>(m_I0EstimationFilter.GetPointer());
       assert(i0est != nullptr);
       i0est->SetInput(nextInputUShort);
       *nextInputBase = i0est->GetOutput();
     }
     using I0Type = rtk::LUTbasedVariableI0RawToAttenuationImageFilter<UnsignedShortImageType, OutputImageType>;
-    I0Type * i0 = dynamic_cast<I0Type *>(m_RawToAttenuationFilter.GetPointer());
+    auto * i0 = dynamic_cast<I0Type *>(m_RawToAttenuationFilter.GetPointer());
     i0->SetI0(m_I0);
     i0->SetIDark(m_IDark);
   }
 
   using UnsignedIntImageType = itk::Image<unsigned int, OutputImageDimension>;
-  UnsignedIntImageType * nextInputUInt = dynamic_cast<UnsignedIntImageType *>(*nextInputBase);
+  auto * nextInputUInt = dynamic_cast<UnsignedIntImageType *>(*nextInputBase);
   if (nextInputUInt != nullptr)
   {
     if (m_I0 == 0)
     {
       using I0EstimationType = rtk::I0EstimationProjectionFilter<UnsignedIntImageType, UnsignedIntImageType>;
-      I0EstimationType * i0est = dynamic_cast<I0EstimationType *>(m_I0EstimationFilter.GetPointer());
+      auto * i0est = dynamic_cast<I0EstimationType *>(m_I0EstimationFilter.GetPointer());
       assert(i0est != nullptr);
       i0est->SetInput(nextInputUInt);
       *nextInputBase = i0est->GetOutput();
     }
     using I0Type = rtk::VarianObiRawImageFilter<UnsignedIntImageType, OutputImageType>;
-    I0Type * i0 = dynamic_cast<I0Type *>(m_RawToAttenuationFilter.GetPointer());
+    auto * i0 = dynamic_cast<I0Type *>(m_RawToAttenuationFilter.GetPointer());
     i0->SetI0(m_I0);
     i0->SetIDark(m_IDark);
   }

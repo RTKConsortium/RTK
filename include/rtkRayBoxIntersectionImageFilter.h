@@ -74,7 +74,7 @@ public:
 
   /** Set the box from an image. See rtk::BoxShape::SetBoxFromImage. */
   void
-  SetBoxFromImage(const ImageBaseType * img, bool bWithExternalHalfPixelBorder = true);
+  SetBoxFromImage(const ImageBaseType * _arg, bool bWithExternalHalfPixelBorder = true);
 
   /** Get/Set the box parameters. See rtk::BoxShape. */
   itkGetMacro(BoxMin, PointType);

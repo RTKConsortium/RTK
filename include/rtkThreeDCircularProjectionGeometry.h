@@ -183,7 +183,7 @@ public:
   /** Get a vector containing the tilt angles in radians. The tilt angle is
    * defined as the difference between -GantryAngle and the SourceAngle. */
   const std::vector<double>
-  GetTiltAngles();
+  GetTiltAngles() const;
 
   /** Get a multimap containing all sorted angles in radians and corresponding
    * index. */

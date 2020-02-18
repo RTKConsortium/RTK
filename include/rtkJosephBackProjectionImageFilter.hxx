@@ -19,6 +19,8 @@
 #ifndef rtkJosephBackProjectionImageFilter_hxx
 #define rtkJosephBackProjectionImageFilter_hxx
 
+#include "math.h"
+
 #include "rtkJosephBackProjectionImageFilter.h"
 
 #include "rtkHomogeneousMatrix.h"
@@ -42,7 +44,7 @@ JosephBackProjectionImageFilter<TInputImage,
                                 TInterpolationWeightMultiplication,
                                 TSplatWeightMultiplication,
                                 TSumAlongRay>::JosephBackProjectionImageFilter()
-{}
+= default;
 
 template <class TInputImage,
           class TOutputImage,
@@ -67,7 +69,7 @@ JosephBackProjectionImageFilter<TInputImage,
   offsets[2] =
     this->GetInput(0)->GetBufferedRegion().GetSize()[0] * this->GetInput(0)->GetBufferedRegion().GetSize()[1];
 
-  const GeometryType * geometry = dynamic_cast<const GeometryType *>(this->GetGeometry());
+  const auto * geometry = dynamic_cast<const GeometryType *>(this->GetGeometry());
   if (!geometry)
   {
     itkGenericExceptionMacro(<< "Error, ThreeDCircularProjectionGeometry expected");
@@ -106,7 +108,7 @@ JosephBackProjectionImageFilter<TInputImage,
 
   // Iterators on projections input
   using InputRegionIterator = ProjectionsRegionConstIteratorRayBased<TInputImage>;
-  InputRegionIterator * itIn;
+  InputRegionIterator * itIn = nullptr;
   itIn = InputRegionIterator::New(this->GetInput(1), buffReg, geometry, volPPToIndex);
 
   // Create intersection functions, one for each possible main direction
@@ -145,7 +147,7 @@ JosephBackProjectionImageFilter<TInputImage,
     }
 
     // Test if there is an intersection
-    BoxShape::ScalarType nearDist, farDist;
+    BoxShape::ScalarType nearDist = NAN, farDist = NAN;
     if (box->IsIntersectedByRay(sourcePosition, dirVox, nearDist, farDist) &&
         farDist >= 0. && // check if detector after the source
         nearDist <= 1.)  // check if detector after or in the volume
@@ -179,7 +181,7 @@ JosephBackProjectionImageFilter<TInputImage,
       const int        offsetx = offsets[notMainDirInf];
       const int        offsety = offsets[notMainDirSup];
       const int        offsetz = offsets[mainDir];
-      OutputPixelType *pxiyi, *pxsyi, *pxiys, *pxsys;
+      OutputPixelType *pxiyi = nullptr, *pxsyi = nullptr, *pxiys = nullptr, *pxsys = nullptr;
 
       pxiyi = beginBuffer + ns * offsetz;
       pxsyi = pxiyi + offsetx;

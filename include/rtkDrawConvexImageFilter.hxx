@@ -29,7 +29,7 @@ namespace rtk
 
 template <class TInputImage, class TOutputImage>
 DrawConvexImageFilter<TInputImage, TOutputImage>::DrawConvexImageFilter()
-{}
+= default;
 
 template <class TInputImage, class TOutputImage>
 void

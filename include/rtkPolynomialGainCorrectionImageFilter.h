@@ -70,7 +70,7 @@ public:
 
   /** Dark image, 2D same size of one input projection */
   void
-  SetDarkImage(const InputImagePointer gain);
+  SetDarkImage(const InputImagePointer darkImage);
 
   /** Weights, matrix A from reference paper
    *  3D image: 2D x order. */

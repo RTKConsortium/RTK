@@ -1,4 +1,6 @@
+#include "math.h"
 #include <itkImageRegionConstIterator.h>
+
 #include "rtkMacro.h"
 
 #include "rtkTestConfiguration.h"
@@ -14,7 +16,7 @@ CheckGradient(typename TImage::Pointer    itkNotUsed(im),
 {}
 #else
 void
-CheckGradient(typename TImage::Pointer im, typename TGradient::Pointer grad, bool * dimensionsProcessed)
+CheckGradient(typename TImage::Pointer im, typename TGradient::Pointer grad, const bool * dimensionsProcessed)
 {
   // Generate a list of indices of the dimensions to process
   std::vector<int> dimsToProcess;
@@ -33,17 +35,17 @@ CheckGradient(typename TImage::Pointer im, typename TGradient::Pointer grad, boo
   radius.Fill(1);
 
   itk::ConstNeighborhoodIterator<TImage>          iit(radius, im, im->GetLargestPossibleRegion());
-  itk::ZeroFluxNeumannBoundaryCondition<TImage> * boundaryCondition = new itk::ZeroFluxNeumannBoundaryCondition<TImage>;
+  auto * boundaryCondition = new itk::ZeroFluxNeumannBoundaryCondition<TImage>;
   iit.OverrideBoundaryCondition(boundaryCondition);
 
-  itk::SizeValueType   c = (itk::SizeValueType)(iit.Size() / 2);         // get offset of center pixel
-  itk::SizeValueType * strides = new itk::SizeValueType[ImageDimension]; // get offsets to access neighboring pixels
+  auto   c = (itk::SizeValueType)(iit.Size() / 2);         // get offset of center pixel
+  auto * strides = new itk::SizeValueType[ImageDimension]; // get offsets to access neighboring pixels
   for (int dim = 0; dim < ImageDimension; dim++)
   {
     strides[dim] = iit.GetStride(dim);
   }
 
-  double AbsDiff;
+  double AbsDiff = NAN;
   double epsilon = 1e-7;
 
   // Run through the image

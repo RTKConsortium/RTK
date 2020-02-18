@@ -82,7 +82,7 @@ void
 GlobalResourceProbe ::Watch(ProcessObject * o)
 {
   m_Mutex.lock();
-  rtk::WatcherForResourceProbe * w = new rtk::WatcherForResourceProbe(o);
+  auto * w = new rtk::WatcherForResourceProbe(o);
   m_Watchers.push_back(w);
   m_Mutex.unlock();
 }
@@ -91,7 +91,7 @@ void
 GlobalResourceProbe ::Remove(const rtk::WatcherForResourceProbe * w)
 {
   m_Mutex.lock();
-  std::vector<rtk::WatcherForResourceProbe *>::iterator itw = std::find(m_Watchers.begin(), m_Watchers.end(), w);
+  auto itw = std::find(m_Watchers.begin(), m_Watchers.end(), w);
   if (itw != m_Watchers.end())
   {
     delete *itw;
@@ -123,7 +123,7 @@ GlobalResourceProbe ::Report(std::ostream & os) const
 }
 
 void
-GlobalResourceProbe ::Clear(void)
+GlobalResourceProbe ::Clear()
 {
   m_Mutex.lock();
   m_ResourceProbesCollector.Clear();

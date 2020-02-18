@@ -16,6 +16,8 @@
  *
  *=========================================================================*/
 
+#include "math.h"
+
 #include "rtkThreeDCircularProjectionGeometry.h"
 #include "rtkMacro.h"
 
@@ -25,7 +27,7 @@
 #include <itkCenteredEuler3DTransform.h>
 #include <itkEuler3DTransform.h>
 
-rtk::ThreeDCircularProjectionGeometry::ThreeDCircularProjectionGeometry() {}
+rtk::ThreeDCircularProjectionGeometry::ThreeDCircularProjectionGeometry() = default;
 
 double
 rtk::ThreeDCircularProjectionGeometry::ConvertAngleBetween0And360Degrees(const double a)
@@ -167,9 +169,9 @@ rtk::ThreeDCircularProjectionGeometry::AddProjection(const PointType &  sourcePo
     return false;
 
   // Euler angles (ZXY convention) from detector orientation in IEC-based WCS:
-  double ga; // gantry angle
-  double oa; // out-of-plane angle
-  double ia; // in-plane angle
+  double ga = NAN; // gantry angle
+  double oa = NAN; // out-of-plane angle
+  double ia = NAN; // in-plane angle
   // extract Euler angles from the orthogonal matrix which is established
   // by the detector orientation; however, we would like RTK to internally
   // store the inverse of this rotation matrix, therefore the corresponding
@@ -352,7 +354,7 @@ rtk::ThreeDCircularProjectionGeometry::Clear()
 }
 
 const std::vector<double>
-rtk::ThreeDCircularProjectionGeometry::GetTiltAngles()
+rtk::ThreeDCircularProjectionGeometry::GetTiltAngles() const
 {
   const std::vector<double> sangles = this->GetSourceAngles();
   const std::vector<double> gangles = this->GetGantryAngles();
@@ -466,7 +468,7 @@ rtk::ThreeDCircularProjectionGeometry::GetAngularGaps(const std::vector<double> 
   // FIXME: Trick for the half scan in parallel geometry case
   if (m_SourceToDetectorDistances[0] == 0.)
   {
-    std::vector<double>::iterator it = std::max_element(angularGaps.begin(), angularGaps.end());
+    auto it = std::max_element(angularGaps.begin(), angularGaps.end());
     if (*it > itk::Math::pi_over_2)
     {
       for (it = angularGaps.begin(); it < angularGaps.end(); it++)
@@ -652,7 +654,7 @@ rtk::ThreeDCircularProjectionGeometry::FixAngles(double &              outOfPlan
 
   if (fabs(fabs(rm[2][1]) - 1.) > EPSILON)
   {
-    double oa, ga, ia;
+    double oa = NAN, ga = NAN, ia = NAN;
 
     // @see Slabaugh, GG, "Computing Euler angles from a rotation matrix"
     // but their convention is XYZ where we use the YXZ convention
@@ -686,7 +688,7 @@ rtk::ThreeDCircularProjectionGeometry::FixAngles(double &              outOfPlan
   else
   {
     // Gimbal lock, one angle in {ia,oa} has to be set randomly
-    double ia;
+    double ia = NAN;
     ia = 0.;
     if (rm[2][1] < 0.)
     {

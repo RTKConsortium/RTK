@@ -216,7 +216,7 @@ main(int, char **)
   //  pasteFilter->GetOutput()->Print(std::cout);
 
   // Ground truth
-  VolumeType::Pointer * Volumes = new VolumeType::Pointer[fourDSize[3]];
+  auto * Volumes = new VolumeType::Pointer[fourDSize[3]];
   using JoinFilterType = itk::JoinSeriesImageFilter<VolumeType, VolumeSeriesType>;
   JoinFilterType::Pointer join = JoinFilterType::New();
 

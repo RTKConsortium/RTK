@@ -19,6 +19,8 @@
 #ifndef rtkFieldOfViewImageFilter_hxx
 #define rtkFieldOfViewImageFilter_hxx
 
+#include "math.h"
+
 #include "rtkFieldOfViewImageFilter.h"
 
 #include <itkImageRegionConstIterator.h>
@@ -34,7 +36,7 @@ namespace rtk
 
 template <class TInputImage, class TOutputImage>
 FieldOfViewImageFilter<TInputImage, TOutputImage>::FieldOfViewImageFilter()
-{}
+= default;
 
 template <class TInputImage, class TOutputImage>
 bool
@@ -74,7 +76,7 @@ FieldOfViewImageFilter<TInputImage, TOutputImage>::ComputeFOVRadius(const FOVRad
     double                 c[NCORNERS];
     double                 d[NCORNERS];
     using InputRegionIterator = ProjectionsRegionConstIteratorRayBased<TInputImage>;
-    InputRegionIterator *                   itIn;
+    InputRegionIterator *                   itIn = nullptr;
     typename InputRegionIterator::PointType corners[NCORNERS];
     for (unsigned int i = 0; i < NCORNERS; i++)
     {
@@ -197,7 +199,7 @@ FieldOfViewImageFilter<TInputImage, TOutputImage>::BeforeThreadedGenerateData()
     if (!ComputeFOVRadius(RADIUSINF, m_CenterX, m_CenterZ, m_Radius))
       m_Radius = -1.;
 
-    double x, z, r;
+    double x = NAN, z = NAN, r = NAN;
     if (ComputeFOVRadius(RADIUSSUP, x, z, r) && r > m_Radius)
     {
       m_Radius = r;

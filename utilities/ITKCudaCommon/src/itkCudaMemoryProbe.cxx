@@ -30,8 +30,8 @@ CudaMemoryProbe ::~CudaMemoryProbe() = default;
 CudaMemoryProbe::CudaMemoryLoadType
 CudaMemoryProbe ::GetInstantValue() const
 {
-  size_t free;
-  size_t total;
+  size_t free = 0;
+  size_t total = 0;
   CUDA_CHECK(cudaMemGetInfo(&free, &total));
   return static_cast<CudaMemoryLoadType>((OffsetValueType(total) - OffsetValueType(free)) / 1024.);
 }

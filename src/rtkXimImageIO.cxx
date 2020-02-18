@@ -31,7 +31,7 @@ size_t
 rtk::XimImageIO::SetPropertyValue(char * property_name, Int4 value_length, FILE * fp, Xim_header * xim)
 {
   T      property_value;
-  T *    unused_property_value;
+  T *    unused_property_value = nullptr;
   size_t addNelements = 0;
 
   if (value_length > 1)
@@ -105,7 +105,7 @@ void
 rtk::XimImageIO::ReadImageInformation()
 {
   Xim_header xim;
-  FILE *     fp;
+  FILE *     fp = nullptr;
 
   fp = fopen(m_FileName.c_str(), "rb");
   if (fp == nullptr)
@@ -158,9 +158,9 @@ rtk::XimImageIO::ReadImageInformation()
 
   // Properties Readding:
   nelements += fread((void *)&xim.numberOfProperties, sizeof(Int4), 1, fp);
-  Int4   property_name_length;
+  Int4   property_name_length = 0;
   char   property_name[PROPERTY_NAME_MAX_LENGTH];
-  Int4   property_type;
+  Int4   property_type = 0;
   Int4   property_value_length = 0;
   size_t theoretical_nelements = nelements; // Same as reseting
 
@@ -263,7 +263,7 @@ rtk::XimImageIO::CanReadFile(const char * FileNameToRead)
   if (fileExt != std::string("xim"))
     return false;
 
-  FILE * fp;
+  FILE * fp = nullptr;
   fp = fopen(filename.c_str(), "rb");
   if (fp == nullptr)
   {
@@ -273,7 +273,7 @@ rtk::XimImageIO::CanReadFile(const char * FileNameToRead)
 
   size_t nelements = 0;
   char   sfiletype[8];
-  Int4   fileversion, sizex = 0, sizey = 0;
+  Int4   fileversion = 0, sizex = 0, sizey = 0;
 
   nelements += fread((void *)&sfiletype[0], sizeof(char), 8, fp);
   nelements += fread((void *)&fileversion, sizeof(Int4), 1, fp);
@@ -344,7 +344,7 @@ lut_to_bytes(const char val)
 void
 rtk::XimImageIO::Read(void * buffer)
 {
-  FILE * fp;
+  FILE * fp = nullptr;
   // Long is only garanteed to be AT LEAST 32 bits, it could be 64 bit
   Int4 * buf = (Int4 *)buffer;
 
@@ -355,7 +355,7 @@ rtk::XimImageIO::Read(void * buffer)
   if (fseek(fp, m_ImageDataStart, SEEK_SET) != 0)
     itkGenericExceptionMacro(<< "Could not seek to image data in: " << m_FileName);
 
-  Int4 lookUpTableSize;
+  Int4 lookUpTableSize = 0;
   // De"compress" image
   if (1 != fread((void *)&lookUpTableSize, sizeof(Int4), 1, fp))
   {
@@ -367,7 +367,7 @@ rtk::XimImageIO::Read(void * buffer)
     itkGenericExceptionMacro(<< "Could not read lookup table from Xim file: " << m_FileName);
   }
 
-  Int4 compressedPixelBufferSize;
+  Int4 compressedPixelBufferSize = 0;
   if (1 != fread((void *)&compressedPixelBufferSize, sizeof(Int4), 1, fp))
   {
     itkGenericExceptionMacro(<< "Could not get compressed pixel buffer size from: " << m_FileName);

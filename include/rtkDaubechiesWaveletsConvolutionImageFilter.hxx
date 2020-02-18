@@ -37,7 +37,7 @@ DaubechiesWaveletsConvolutionImageFilter<TImage>::DaubechiesWaveletsConvolutionI
 
 template <typename TImage>
 DaubechiesWaveletsConvolutionImageFilter<TImage>::~DaubechiesWaveletsConvolutionImageFilter()
-{}
+= default;
 
 template <typename TImage>
 void
@@ -159,7 +159,7 @@ DaubechiesWaveletsConvolutionImageFilter<TImage>::GenerateCoefficientsHighpassDe
 {
   CoefficientVector coeff = this->GenerateCoefficientsLowpassDeconstruct();
   std::reverse(coeff.begin(), coeff.end());
-  unsigned int it;
+  unsigned int it = 0;
 
   double factor = -1;
   for (it = 0; it < coeff.size(); it++)
@@ -239,7 +239,7 @@ DaubechiesWaveletsConvolutionImageFilter<TImage>::GenerateData()
   int dim = TImage::ImageDimension;
 
   // Create a vector holding the coefficients along each direction
-  CoefficientVector * coeffs = new CoefficientVector[dim];
+  auto * coeffs = new CoefficientVector[dim];
   for (int d = 0; d < dim; d++)
   {
     if (m_Type == Self::Deconstruct)

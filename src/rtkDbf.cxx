@@ -16,13 +16,17 @@
  *
  *=========================================================================*/
 
+#include <utility>
+
+
+
 #include "rtkDbf.h"
 
 namespace rtk
 {
 
 DbfField::DbfField(std::string name, char type, unsigned char length, short recOffset)
-  : m_Name(name)
+  : m_Name(std::move(name))
   , m_Type(type)
   , m_Length(length)
   , m_RecOffset(recOffset)
@@ -62,14 +66,14 @@ DbfFile::DbfFile(std::string fileName)
     m_Stream.read(fldName, 11);
 
     // Field types
-    char fldType;
+    char fldType = 0;
     m_Stream.read((char *)&fldType, sizeof(fldType));
 
     // Skip displacement of field in record?
     m_Stream.seekg(4, std::ios_base::cur);
 
     // Field length
-    unsigned char fldLength;
+    unsigned char fldLength = 0;
     m_Stream.read((char *)&fldLength, sizeof(fldLength));
 
     // Add field and go to next

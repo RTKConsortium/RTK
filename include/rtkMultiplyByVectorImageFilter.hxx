@@ -29,7 +29,7 @@ namespace rtk
 //
 template <class TInputImage>
 MultiplyByVectorImageFilter<TInputImage>::MultiplyByVectorImageFilter()
-{}
+= default;
 
 template <class TInputImage>
 void

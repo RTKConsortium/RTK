@@ -16,9 +16,11 @@
  *
  *=========================================================================*/
 
-#include <fstream>
+#include "math.h"
 #include <cstdlib>
+#include <fstream>
 #include <itksys/RegularExpression.hxx>
+
 #include "rtkForbildPhantomFileReader.h"
 #include "rtkQuadricShape.h"
 #include "rtkBoxShape.h"
@@ -54,7 +56,7 @@ ForbildPhantomFileReader ::GenerateOutputInformation()
     const std::string fig = re.match(1);
 
     // Find density
-    ScalarType rho;
+    ScalarType rho = NAN;
     if (!FindParameterInString("rho", line, rho))
       itkGenericExceptionMacro("Could not find rho in " << line);
 

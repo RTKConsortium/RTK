@@ -28,7 +28,7 @@ namespace rtk
 
 template <class TInputPixel, class TOutputPixel>
 DPExtractShroudSignalImageFilter<TInputPixel, TOutputPixel>::DPExtractShroudSignalImageFilter()
-{}
+= default;
 
 template <class TInputPixel, class TOutputPixel>
 void
@@ -95,8 +95,8 @@ DPExtractShroudSignalImageFilter<TInputPixel, TOutputPixel>::GenerateData()
   from->Allocate();
   int amplitudeInVoxel = m_Amplitude / input->GetSpacing()[0];
 
-  itk::Array<double> * prev = new itk::Array<double>(inputSize[0]);
-  itk::Array<double> * curr = new itk::Array<double>(inputSize[0]);
+  auto * prev = new itk::Array<double>(inputSize[0]);
+  auto * curr = new itk::Array<double>(inputSize[0]);
 
   typename TInputImage::RegionType::IndexType idx = inputIdx;
   for (unsigned i = 0; i < inputSize[0]; ++i)

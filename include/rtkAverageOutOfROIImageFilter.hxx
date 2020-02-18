@@ -54,7 +54,7 @@ AverageOutOfROIImageFilter<TInputImage, TROI>::GetROI()
 
 template <class TInputImage, class TROI>
 const itk::ImageRegionSplitterBase *
-AverageOutOfROIImageFilter<TInputImage, TROI>::GetImageRegionSplitter(void) const
+AverageOutOfROIImageFilter<TInputImage, TROI>::GetImageRegionSplitter() const
 {
   return m_Splitter;
 }
@@ -71,7 +71,7 @@ AverageOutOfROIImageFilter<TInputImage, TROI>::GenerateOutputInformation()
   typename TROI::PointType     ROIOrigin = this->GetROI()->GetOrigin();
   typename TROI::DirectionType ROIDirection = this->GetROI()->GetDirection();
 
-  bool isInformationInconsistent;
+  bool isInformationInconsistent = false;
   isInformationInconsistent = false;
 
   for (unsigned int dim = 0; dim < TROI::ImageDimension; dim++)

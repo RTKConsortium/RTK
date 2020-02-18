@@ -21,7 +21,7 @@
 namespace rtk
 {
 
-ConvexShape ::ConvexShape() {}
+ConvexShape ::ConvexShape() = default;
 
 bool
 ConvexShape ::IsInside(const PointType & /*point*/) const

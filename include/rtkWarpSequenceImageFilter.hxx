@@ -19,6 +19,8 @@
 #ifndef rtkWarpSequenceImageFilter_hxx
 #define rtkWarpSequenceImageFilter_hxx
 
+#include "math.h"
+
 #include "rtkWarpSequenceImageFilter.h"
 
 #include <itkImageFileWriter.h>
@@ -109,7 +111,7 @@ WarpSequenceImageFilter<TImageSequence, TDVFImageSequence, TImage, TDVFImage>::G
 
   // Generate a signal and pass it to the DVFInterpolator
   std::vector<double> signal;
-  float               temp;
+  float               temp = NAN;
   int                 nbFrames = this->GetInput(0)->GetLargestPossibleRegion().GetSize(Dimension - 1);
   for (int frame = 0; frame < nbFrames; frame++)
   {

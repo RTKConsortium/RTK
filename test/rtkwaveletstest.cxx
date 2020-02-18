@@ -116,7 +116,7 @@ main(int, char **)
   TRY_AND_EXIT_ON_ITK_EXCEPTION(randomVolumeSource->Update());
 
   // Wavelets deconstruction and reconstruction
-  typedef rtk::DeconstructSoftThresholdReconstructImageFilter<OutputImageType> DeconstructReconstructFilterType;
+  using DeconstructReconstructFilterType = rtk::DeconstructSoftThresholdReconstructImageFilter<OutputImageType>;
   DeconstructReconstructFilterType::Pointer wavelets = DeconstructReconstructFilterType::New();
   wavelets->SetInput(randomVolumeSource->GetOutput());
   wavelets->SetNumberOfLevels(3);

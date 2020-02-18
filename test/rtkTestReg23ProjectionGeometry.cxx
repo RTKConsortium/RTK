@@ -10,6 +10,8 @@
 #include <itkVector.h>
 #include <itkPoint.h>
 // RTK/ORA
+#include "math.h"
+
 #include "rtkReg23ProjectionGeometry.h"
 
 
@@ -57,7 +59,7 @@ IntersectPlaneWithLine(const GeometryType::PointType &  S,
                        const GeometryType::PointType &  detectorOrigin,
                        GeometryType::VectorType &       x)
 {
-  double num, den;
+  double num = NAN, den = NAN;
   double marker1[3];
 
   marker1[0] = marker[0] - S[0];
