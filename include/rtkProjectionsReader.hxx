@@ -547,8 +547,7 @@ ProjectionsReader<TOutputImage>::PropagateParametersToMiniPipeline()
     }
 
     // Elekta raw data converter
-    auto * nextInputBase =
-      dynamic_cast<itk::ImageBase<OutputImageDimension> *>(nextInput);
+    auto * nextInputBase = dynamic_cast<itk::ImageBase<OutputImageDimension> *>(nextInput);
     assert(nextInputBase != nullptr);
     ConnectElektaRawFilter(&nextInputBase);
     nextInput = dynamic_cast<TInputImage *>(nextInputBase);

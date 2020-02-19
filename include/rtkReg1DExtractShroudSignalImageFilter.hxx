@@ -33,8 +33,7 @@ namespace rtk
 {
 
 template <class TInputPixel, class TOutputPixel>
-Reg1DExtractShroudSignalImageFilter<TInputPixel, TOutputPixel>::Reg1DExtractShroudSignalImageFilter()
-= default;
+Reg1DExtractShroudSignalImageFilter<TInputPixel, TOutputPixel>::Reg1DExtractShroudSignalImageFilter() = default;
 
 template <class TInputPixel, class TOutputPixel>
 void

@@ -33,8 +33,7 @@ namespace rtk
 {
 
 template <class TInputImage, class TOutputImage, class TFFTPrecision>
-FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>::FFTRampImageFilter()
-= default;
+FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>::FFTRampImageFilter() = default;
 
 template <class TInputImage, class TOutputImage, class TFFTPrecision>
 void

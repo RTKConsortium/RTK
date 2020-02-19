@@ -1082,7 +1082,7 @@ typedef void   (__WINAPI clear_actionfunc)(int *actionvar, int actionmask);
 
 /* Prototypes for basis inverse/factorization libraries                      */
 /* ------------------------------------------------------------------------- */
-typedef const char   *(BFP_CALLMODEL BFPchar)();
+typedef const char   *(BFP_CALLMODEL BFPchar)(void);
 typedef void   (BFP_CALLMODEL BFP_lp)(lprec *lp);
 typedef void   (BFP_CALLMODEL BFP_lpint)(lprec *lp, int newsize);
 typedef int    (BFP_CALLMODEL BFPint_lp)(lprec *lp);
@@ -1107,7 +1107,7 @@ typedef int    (BFP_CALLMODEL BFPint_lpintrealcbintint)(lprec *lp, int items, ge
 
 /* Prototypes for external language libraries                                */
 /* ------------------------------------------------------------------------- */
-typedef const char   *(XLI_CALLMODEL XLIchar)();
+typedef const char   *(XLI_CALLMODEL XLIchar)(void);
 typedef MYBOOL (XLI_CALLMODEL XLIbool_lpintintint)(lprec* lp, int size, int deltasize, int sizevar);
 typedef MYBOOL (XLI_CALLMODEL XLIbool_lpcharcharcharint)(lprec *lp, const char *modelname, const char *dataname, const char *options, int verbose);
 typedef MYBOOL (XLI_CALLMODEL XLIbool_lpcharcharbool)(lprec *lp, const char *filename, const char *options, MYBOOL results);

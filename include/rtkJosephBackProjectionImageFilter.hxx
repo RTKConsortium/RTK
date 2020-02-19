@@ -43,8 +43,7 @@ JosephBackProjectionImageFilter<TInputImage,
                                 TOutputImage,
                                 TInterpolationWeightMultiplication,
                                 TSplatWeightMultiplication,
-                                TSumAlongRay>::JosephBackProjectionImageFilter()
-= default;
+                                TSumAlongRay>::JosephBackProjectionImageFilter() = default;
 
 template <class TInputImage,
           class TOutputImage,

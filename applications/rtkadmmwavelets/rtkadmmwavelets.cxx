@@ -92,7 +92,7 @@ main(int argc, char * argv[])
 
   // Set the reconstruction filter
   using ADMM_Wavelets_FilterType = rtk::ADMMWaveletsConeBeamReconstructionFilter<OutputImageType>;
-  ADMM_Wavelets_FilterType::Pointer                                      admmFilter = ADMM_Wavelets_FilterType::New();
+  ADMM_Wavelets_FilterType::Pointer admmFilter = ADMM_Wavelets_FilterType::New();
 
   // Set the forward and back projection filters to be used inside admmFilter
   SetForwardProjectionFromGgo(args_info, admmFilter.GetPointer());

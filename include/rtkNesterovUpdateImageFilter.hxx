@@ -37,8 +37,7 @@ NesterovUpdateImageFilter<TImage>::NesterovUpdateImageFilter()
 }
 
 template <typename TImage>
-NesterovUpdateImageFilter<TImage>::~NesterovUpdateImageFilter()
-= default;
+NesterovUpdateImageFilter<TImage>::~NesterovUpdateImageFilter() = default;
 
 template <typename TImage>
 void
