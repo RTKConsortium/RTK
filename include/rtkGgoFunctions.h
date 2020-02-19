@@ -210,7 +210,7 @@ SetProjectionsReaderFromGgo(typename TProjectionsReaderType::Pointer reader, con
   typename TProjectionsReaderType::OutputImagePointType origin;
   if (args_info.neworigin_given)
   {
-    direction.Fill(args_info.neworigin_arg[0]);
+    origin.Fill(args_info.neworigin_arg[0]);
     for (unsigned int i = 0; i < args_info.neworigin_given; i++)
       origin[i] = args_info.neworigin_arg[i];
     reader->SetOrigin(origin);
