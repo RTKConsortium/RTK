@@ -1,12 +1,21 @@
 .git*            export-ignore
+# Custom attribute to mark sources as using our C++/C code style.
+[attr]our-c-style  whitespace=tab-in-indent,no-lf-at-eof  hooks.style=KWStyle,clangformat,uncrustify
+[attr]ignore-style  
 
-*.c              whitespace=tab-in-indent,no-lf-at-eof  hooks.style=KWStyle,uncrustify
-*.h              whitespace=tab-in-indent,no-lf-at-eof  hooks.style=KWStyle,uncrustify
-*.cxx            whitespace=tab-in-indent,no-lf-at-eof  hooks.style=KWStyle,uncrustify
-*.hxx            whitespace=tab-in-indent,no-lf-at-eof  hooks.style=KWStyle,uncrustify
-*.txx            whitespace=tab-in-indent,no-lf-at-eof  hooks.style=KWStyle,uncrustify
+
+*.c              our-c-style
+*.h              our-c-style
+*.cxx            our-c-style
+*.hxx            our-c-style
+*.txx            our-c-style
 *.txt            whitespace=tab-in-indent,no-lf-at-eof
 *.cmake          whitespace=tab-in-indent,no-lf-at-eof
 
 # ExternalData content links must have LF newlines
 *.md5            crlf=input
+
+# Put exclusions last so that when more than one pattern matches the path, a
+# later line overrides an earlier line. This overriding is done per attribute.
+utilities/lp_solve/**   ignore-style
+utilities/gengetopt/**  ignore-style
