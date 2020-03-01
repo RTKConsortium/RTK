@@ -1,7 +1,6 @@
 .git*            export-ignore
 # Custom attribute to mark sources as using our C++/C code style.
 [attr]our-c-style  whitespace=tab-in-indent,no-lf-at-eof  hooks.style=KWStyle,clangformat,uncrustify
-[attr]ignore-style  
 
 
 *.c              our-c-style
@@ -14,8 +13,3 @@
 
 # ExternalData content links must have LF newlines
 *.md5            crlf=input
-
-# Put exclusions last so that when more than one pattern matches the path, a
-# later line overrides an earlier line. This overriding is done per attribute.
-utilities/lp_solve/**   ignore-style
-utilities/gengetopt/**  ignore-style
