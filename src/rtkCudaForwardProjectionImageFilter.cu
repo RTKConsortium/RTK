@@ -62,7 +62,7 @@ __constant__ float c_sourcePos[SLAB_SIZE * 3]; // Can process stacks of at most 
 // KERNEL kernel_forwardProject
 template <unsigned int vectorLength>
 __global__ void
-kernel_forwardProject(float * dev_proj_in, float * dev_proj_out, float * dev_vol, cudaTextureObject_t * dev_tex_vol)
+kernel_forwardProject(float * dev_proj_in, float * dev_proj_out, cudaTextureObject_t * dev_tex_vol)
 {
   unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
   unsigned int j = blockIdx.y * blockDim.y + threadIdx.y;
@@ -217,15 +217,15 @@ CUDA_forward_project(int          projSize[3],
   switch (vectorLength)
   {
     case 1:
-      kernel_forwardProject<1><<<dimGrid, dimBlock>>>(dev_proj_in, dev_proj_out, dev_vol, dev_tex_vol);
+      kernel_forwardProject<1><<<dimGrid, dimBlock>>>(dev_proj_in, dev_proj_out, dev_tex_vol);
       break;
 
     case 2:
-      kernel_forwardProject<2><<<dimGrid, dimBlock>>>(dev_proj_in, dev_proj_out, dev_vol, dev_tex_vol);
+      kernel_forwardProject<2><<<dimGrid, dimBlock>>>(dev_proj_in, dev_proj_out, dev_tex_vol);
       break;
 
     case 3:
-      kernel_forwardProject<3><<<dimGrid, dimBlock>>>(dev_proj_in, dev_proj_out, dev_vol, dev_tex_vol);
+      kernel_forwardProject<3><<<dimGrid, dimBlock>>>(dev_proj_in, dev_proj_out, dev_tex_vol);
       break;
 
     default:
