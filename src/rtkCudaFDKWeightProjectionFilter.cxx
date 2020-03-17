@@ -122,6 +122,11 @@ CudaFDKWeightProjectionFilter ::GPUGenerateData()
                          proj_row,
                          proj_col);
 
+  /* Impossible to get a pixel-wise progress reporting with CUDA
+   * so this filter only reports 0 and 100% completion. */
+  itk::ProgressReporter progress(this, 0, 1);
+  progress.CompletedPixel();
+
   delete[] geomMatrix;
 }
 

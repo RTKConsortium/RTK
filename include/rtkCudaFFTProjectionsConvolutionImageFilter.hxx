@@ -135,6 +135,11 @@ CudaFFTProjectionsConvolutionImageFilter<TParentImageFilter>::GPUGenerateData()
                        *(float **)(cuPadImgP->GetCudaDataManager()->GetGPUBufferPointer()),
                        *(float2 **)(this->m_KernelFFTCUDA->GetCudaDataManager()->GetGPUBufferPointer()));
 
+  /* Impossible to get a pixel-wise progress reporting with CUDA
+   * so this filter only reports 0 and 100% completion. */
+  itk::ProgressReporter progress(this, 0, 1);
+  progress.CompletedPixel();
+
   // CUDA Cropping and Graft Output
   using CropFilter = CudaCropImageFilter;
   CropFilter::Pointer                            cf = CropFilter::New();

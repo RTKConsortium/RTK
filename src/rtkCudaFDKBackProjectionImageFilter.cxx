@@ -24,6 +24,7 @@
 #include <itkImageRegionIteratorWithIndex.h>
 #include <itkLinearInterpolateImageFunction.h>
 #include <itkMacro.h>
+#include <itkProgressReporter.h>
 
 namespace rtk
 {
@@ -103,6 +104,9 @@ CudaFDKBackProjectionImageFilter ::GPUGenerateData()
       fMatrix[j + (iProj - iFirstProj) * 12] = matrix[j / 4][j % 4];
   }
 
+  // Slab-wise progress reporting
+  itk::ProgressReporter progress(this, 0, itk::Math::ceil(double(nProj) / SLAB_SIZE));
+
   for (unsigned int i = 0; i < nProj; i += SLAB_SIZE)
   {
     // If nProj is not a multiple of SLAB_SIZE, the last slab will contain less than SLAB_SIZE projections
@@ -113,6 +117,8 @@ CudaFDKBackProjectionImageFilter ::GPUGenerateData()
 
     // Re-use the output as input
     pin = pout;
+
+    progress.CompletedPixel();
   }
 
   delete[] fMatrix;

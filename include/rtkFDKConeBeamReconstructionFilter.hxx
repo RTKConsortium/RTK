@@ -21,6 +21,8 @@
 
 #include "rtkFDKConeBeamReconstructionFilter.h"
 
+#include <itkProgressAccumulator.h>
+
 namespace rtk
 {
 
@@ -110,6 +112,14 @@ FDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecision>::Gener
   typename ExtractFilterType::InputImageRegionType subsetRegion;
   subsetRegion = this->GetInput(1)->GetLargestPossibleRegion();
   unsigned int nProj = subsetRegion.GetSize(Dimension - 1);
+
+  // The progress accumulator tracks the progress of the pipeline
+  // Each filter is equally weighted across all iterations of the stack
+  itk::ProgressAccumulator::Pointer progress = itk::ProgressAccumulator::New();
+  progress->SetMiniPipelineFilter(this);
+  progress->RegisterInternalFilter(m_WeightFilter, (1.0f/3) / itk::Math::ceil(double(nProj) / m_ProjectionSubsetSize));
+  progress->RegisterInternalFilter(m_RampFilter, (1.0f/3) / itk::Math::ceil(double(nProj) / m_ProjectionSubsetSize));
+  progress->RegisterInternalFilter(m_BackProjectionFilter, (1.0f/3) / itk::Math::ceil(double(nProj) / m_ProjectionSubsetSize));
 
   for (unsigned int i = 0; i < nProj; i += m_ProjectionSubsetSize)
   {
