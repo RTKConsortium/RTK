@@ -26,34 +26,18 @@ jobs:
       SourceFolder: $(Build.SourcesDirectory)
       Contents: '**/*'
 
-# MacOS Python CUDA
-- job: 'PackageMacOS'
-  displayName: "Build macOS Python packages"
-  timeoutInMinutes: 0
-  cancelTimeoutInMinutes: 300
-  pool:
-    name: 'Default'
-    demands: Agent.OS -equals Darwin
-
-  steps:
-  - template: Common/AzurePipelinesMacOSPython_Common.yml
-  - task: DeleteFiles@1
-    inputs:
-      SourceFolder: $(Build.SourcesDirectory)
-      Contents: '**/*'
-
-# Windows Python CUDA
-- job: 'PackageWindows'
-  displayName: "Build Windows Python packages"
-  timeoutInMinutes: 0
-  cancelTimeoutInMinutes: 300
-  pool:
-    name: 'Default'
-    demands: Agent.OS -equals Windows_NT
-
-  steps:
-  - template: Common/AzurePipelinesWindowsPython_Common.yml
-  - task: DeleteFiles@1
-    inputs:
-      SourceFolder: $(Build.SourcesDirectory)
-      Contents: '**/*'
+## Windows Python CUDA
+#- job: 'PackageWindows'
+#  displayName: "Build Windows Python packages"
+#  timeoutInMinutes: 0
+#  cancelTimeoutInMinutes: 300
+#  pool:
+#    name: 'Default'
+#    demands: Agent.OS -equals Windows_NT
+#
+#  steps:
+#  - template: Common/AzurePipelinesWindowsPython_Common.yml
+#  - task: DeleteFiles@1
+#    inputs:
+#      SourceFolder: $(Build.SourcesDirectory)
+#      Contents: '**/*'
