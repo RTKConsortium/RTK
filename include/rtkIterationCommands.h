@@ -54,9 +54,10 @@ public:
   typedef itk::Command            Superclass;
   typedef itk::SmartPointer<Self> Pointer;
 
-  itkSetMacro(TriggerEvery, unsigned int)
+  itkSetMacro(TriggerEvery, unsigned int);
 
-    void Execute(itk::Object * caller, const itk::EventObject & event) override
+  void
+  Execute(itk::Object * caller, const itk::EventObject & event) override
   {
     Execute((const itk::Object *)caller, event);
   }
@@ -128,13 +129,11 @@ public:
   typedef itk::SmartPointer<Self>   Pointer;
   itkNewMacro(Self);
 
-  itkSetMacro(FileFormat, std::string)
+  itkSetMacro(FileFormat, std::string);
 
-    protected
-    :
-
-    /** Output file name, where %d is the current iteration number */
-    std::string m_FileFormat;
+protected:
+  /** Output file name, where %d is the current iteration number */
+  std::string m_FileFormat;
 
   void
   Run(const TCaller * caller) override
