@@ -97,33 +97,6 @@ ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage,
 
 template <typename TOutputImage, typename TGradientOutputImage>
 void
-ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImage>::SetForwardProjectionFilter(
-  ForwardProjectionType _arg)
-{
-  if (_arg != this->GetForwardProjectionFilter())
-  {
-    Superclass::SetForwardProjectionFilter(_arg);
-    m_ForwardProjectionFilter = this->InstantiateForwardProjectionFilter(_arg);
-    m_CGOperator->SetForwardProjectionFilter(m_ForwardProjectionFilter);
-  }
-}
-
-template <typename TOutputImage, typename TGradientOutputImage>
-void
-ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImage>::SetBackProjectionFilter(
-  BackProjectionType _arg)
-{
-  if (_arg != this->GetBackProjectionFilter())
-  {
-    Superclass::SetBackProjectionFilter(_arg);
-    m_BackProjectionFilter = this->InstantiateBackProjectionFilter(_arg);
-    m_BackProjectionFilterForConjugateGradient = this->InstantiateBackProjectionFilter(_arg);
-    m_CGOperator->SetBackProjectionFilter(m_BackProjectionFilterForConjugateGradient);
-  }
-}
-
-template <typename TOutputImage, typename TGradientOutputImage>
-void
 ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImage>::SetBetaForCurrentIteration(int iter)
 {
   float currentBeta = m_Beta * (iter + 1) / (float)m_AL_iterations;
@@ -177,6 +150,19 @@ template <typename TOutputImage, typename TGradientOutputImage>
 void
 ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImage>::GenerateOutputInformation()
 {
+  // Set forward projection filter
+  m_ForwardProjectionFilter = this->InstantiateForwardProjectionFilter(this->m_CurrentForwardProjectionConfiguration);
+  // Pass the ForwardProjection filter to the conjugate gradient operator
+  m_CGOperator->SetForwardProjectionFilter(m_ForwardProjectionFilter);
+
+  // Set back projection filter
+  m_BackProjectionFilter = this->InstantiateBackProjectionFilter(this->m_CurrentBackProjectionConfiguration);
+  // Pass the backprojection filter to the conjugate gradient operator and to the back projection filter generating the
+  // B of AX=B
+  m_BackProjectionFilterForConjugateGradient =
+    this->InstantiateBackProjectionFilter(this->m_CurrentBackProjectionConfiguration);
+  m_CGOperator->SetBackProjectionFilter(m_BackProjectionFilterForConjugateGradient);
+
   // Set runtime connections
   m_GradientFilter1->SetInput(this->GetInput(0));
   m_ZeroMultiplyVolumeFilter->SetInput1(this->GetInput(0));

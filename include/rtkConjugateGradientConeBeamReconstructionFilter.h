@@ -170,15 +170,6 @@ public:
   using ConstantImageSourceType = ConstantImageSource<TOutputImage>;
 #endif
 
-  /** Pass the ForwardProjection filter to the conjugate gradient operator */
-  void
-  SetForwardProjectionFilter(ForwardProjectionType _arg) override;
-
-  /** Pass the backprojection filter to the conjugate gradient operator and to the back projection filter generating the
-   * B of AX=B */
-  void
-  SetBackProjectionFilter(BackProjectionType _arg) override;
-
   /** Set the support mask, if any, for support constraint in reconstruction */
   void
   SetSupportMask(const TSingleComponentImage * SupportMask);

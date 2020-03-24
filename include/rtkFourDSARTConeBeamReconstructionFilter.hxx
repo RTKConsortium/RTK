@@ -113,32 +113,6 @@ FourDSARTConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::Ge
 
 template <class VolumeSeriesType, class ProjectionStackType>
 void
-FourDSARTConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::SetForwardProjectionFilter(
-  ForwardProjectionType _arg)
-{
-  if (_arg != this->GetForwardProjectionFilter())
-  {
-    Superclass::SetForwardProjectionFilter(_arg);
-    m_ForwardProjectionFilter = this->InstantiateForwardProjectionFilter(_arg);
-    m_FourDToProjectionStackFilter->SetForwardProjectionFilter(m_ForwardProjectionFilter);
-  }
-}
-
-template <class VolumeSeriesType, class ProjectionStackType>
-void
-FourDSARTConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::SetBackProjectionFilter(
-  BackProjectionType _arg)
-{
-  if (_arg != this->GetBackProjectionFilter())
-  {
-    Superclass::SetBackProjectionFilter(_arg);
-    m_BackProjectionFilter = this->InstantiateBackProjectionFilter(_arg);
-    m_ProjectionStackToFourDFilter->SetBackProjectionFilter(m_BackProjectionFilter);
-  }
-}
-
-template <class VolumeSeriesType, class ProjectionStackType>
-void
 FourDSARTConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::SetWeights(const itk::Array2D<float> _arg)
 {
   m_ProjectionStackToFourDFilter->SetWeights(_arg);
@@ -194,6 +168,14 @@ FourDSARTConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::Ge
 {
   const unsigned int Dimension = ProjectionStackType::ImageDimension;
   unsigned int numberOfProjections = this->GetInputProjectionStack()->GetLargestPossibleRegion().GetSize(Dimension - 1);
+
+  // Set forward projection filter
+  m_ForwardProjectionFilter = this->InstantiateForwardProjectionFilter(this->m_CurrentForwardProjectionConfiguration);
+  m_FourDToProjectionStackFilter->SetForwardProjectionFilter(m_ForwardProjectionFilter);
+
+  // Set back projection filter
+  m_BackProjectionFilter = this->InstantiateBackProjectionFilter(this->m_CurrentBackProjectionConfiguration);
+  m_ProjectionStackToFourDFilter->SetBackProjectionFilter(m_BackProjectionFilter);
 
   m_DisplacedDetectorFilter->SetDisable(m_DisableDisplacedDetectorFilter);
 

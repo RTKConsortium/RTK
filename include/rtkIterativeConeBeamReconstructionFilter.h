@@ -69,7 +69,6 @@ public:
   using VolumeType = ProjectionStackType;
   typedef enum
   {
-    FP_UNKNOWN = -1,
     FP_JOSEPH = 0,
     FP_CUDARAYCAST = 2,
     FP_JOSEPHATTENUATED = 3,
@@ -77,7 +76,6 @@ public:
   } ForwardProjectionType;
   typedef enum
   {
-    BP_UNKNOWN = -1,
     BP_VOXELBASED = 0,
     BP_JOSEPH = 1,
     BP_CUDAVOXELBASED = 2,

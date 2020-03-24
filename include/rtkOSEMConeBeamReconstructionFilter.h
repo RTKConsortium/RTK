@@ -164,14 +164,6 @@ public:
   itkGetMacro(Alpha, float);
   itkSetMacro(Alpha, float);
 
-  /** Select the ForwardProjection filter */
-  void
-  SetForwardProjectionFilter(ForwardProjectionType _arg) override;
-
-  /** Select the backprojection filter */
-  void
-  SetBackProjectionFilter(BackProjectionType _arg) override;
-
 protected:
   OSEMConeBeamReconstructionFilter();
   ~OSEMConeBeamReconstructionFilter() override = default;

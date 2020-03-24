@@ -28,6 +28,9 @@ rtk::CudaIterativeFDKConeBeamReconstructionFilter ::CudaIterativeFDKConeBeamReco
 
   // Filter parameters
   m_DisplacedDetectorFilter->SetPadOnTruncatedSide(false);
+
+  // Set default projector
+  this->m_CurrentForwardProjectionConfiguration = ForwardProjectionType::FP_CUDARAYCAST;
 }
 
 void

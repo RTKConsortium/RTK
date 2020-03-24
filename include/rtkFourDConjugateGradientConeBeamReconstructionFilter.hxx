@@ -89,50 +89,6 @@ FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionS
 
 template <class VolumeSeriesType, class ProjectionStackType>
 void
-FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::SetForwardProjectionFilter(
-  ForwardProjectionType _arg)
-{
-  if (_arg != this->GetForwardProjectionFilter())
-  {
-    Superclass::SetForwardProjectionFilter(_arg);
-    m_ForwardProjectionFilter = this->InstantiateForwardProjectionFilter(_arg);
-    m_CGOperator->SetForwardProjectionFilter(m_ForwardProjectionFilter);
-  }
-  if (_arg == 2) // The forward projection filter runs on GPU. It is most efficient to also run the interpolation on
-                 // GPU, and to use GPU constant image sources
-  {
-    m_CGOperator->SetUseCudaInterpolation(true);
-    m_CGOperator->SetUseCudaSources(true);
-  }
-}
-
-
-template <class VolumeSeriesType, class ProjectionStackType>
-void
-FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::SetBackProjectionFilter(
-  BackProjectionType _arg)
-{
-  if (_arg != this->GetBackProjectionFilter())
-  {
-    Superclass::SetBackProjectionFilter(_arg);
-    m_BackProjectionFilter = this->InstantiateBackProjectionFilter(_arg);
-    m_CGOperator->SetBackProjectionFilter(m_BackProjectionFilter);
-
-    m_BackProjectionFilterForB = this->InstantiateBackProjectionFilter(_arg);
-    m_ProjStackToFourDFilter->SetBackProjectionFilter(m_BackProjectionFilterForB);
-  }
-  if (_arg == 2) // The back projection filter runs on GPU. It is most efficient to also run the splat on GPU, and to
-                 // use GPU constant image sources
-  {
-    m_CGOperator->SetUseCudaSplat(true);
-    m_CGOperator->SetUseCudaSources(true);
-    m_ProjStackToFourDFilter->SetUseCudaSplat(true);
-    m_ProjStackToFourDFilter->SetUseCudaSources(true);
-  }
-}
-
-template <class VolumeSeriesType, class ProjectionStackType>
-void
 FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::SetWeights(
   const itk::Array2D<float> _arg)
 {
@@ -197,6 +153,35 @@ FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionS
   m_ConjugateGradientFilter->SetNumberOfIterations(this->m_NumberOfIterations);
   m_DisplacedDetectorFilter->SetDisable(m_DisableDisplacedDetectorFilter);
   m_CGOperator->SetDisableDisplacedDetectorFilter(m_DisableDisplacedDetectorFilter);
+
+  // Set forward projection filter
+  m_ForwardProjectionFilter = this->InstantiateForwardProjectionFilter(this->m_CurrentForwardProjectionConfiguration);
+  // Pass the ForwardProjection filter to the conjugate gradient operator
+  m_CGOperator->SetForwardProjectionFilter(m_ForwardProjectionFilter);
+  if (this->m_CurrentForwardProjectionConfiguration ==
+      ForwardProjectionType::FP_CUDARAYCAST) // The forward projection filter runs on GPU. It is most efficient to also
+                                             // run the interpolation on GPU, and to use GPU constant image sources
+  {
+    m_CGOperator->SetUseCudaInterpolation(true);
+    m_CGOperator->SetUseCudaSources(true);
+  }
+
+  // Set back projection filter
+  m_BackProjectionFilter = this->InstantiateBackProjectionFilter(this->m_CurrentBackProjectionConfiguration);
+  m_CGOperator->SetBackProjectionFilter(m_BackProjectionFilter);
+
+  m_BackProjectionFilterForB = this->InstantiateBackProjectionFilter(this->m_CurrentBackProjectionConfiguration);
+  // Pass the backprojection filter to the conjugate gradient operator and to the filter generating the B of AX=B
+  m_ProjStackToFourDFilter->SetBackProjectionFilter(m_BackProjectionFilterForB);
+  if (this->m_CurrentBackProjectionConfiguration ==
+      BackProjectionType::BP_CUDAVOXELBASED) // The back projection filter runs on GPU. It is most efficient to also run
+                                             // the splat on GPU, and to use GPU constant image sources
+  {
+    m_CGOperator->SetUseCudaSplat(true);
+    m_CGOperator->SetUseCudaSources(true);
+    m_ProjStackToFourDFilter->SetUseCudaSplat(true);
+    m_ProjStackToFourDFilter->SetUseCudaSources(true);
+  }
 
   // Have the last filter calculate its output information
   m_ConjugateGradientFilter->UpdateOutputInformation();

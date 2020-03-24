@@ -90,29 +90,6 @@ SARTConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>::SARTConeBeamRe
 
 template <class TVolumeImage, class TProjectionImage>
 void
-SARTConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>::SetForwardProjectionFilter(ForwardProjectionType _arg)
-{
-  if (_arg != this->GetForwardProjectionFilter())
-  {
-    Superclass::SetForwardProjectionFilter(_arg);
-    m_ForwardProjectionFilter = this->InstantiateForwardProjectionFilter(_arg);
-  }
-}
-
-template <class TVolumeImage, class TProjectionImage>
-void
-SARTConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>::SetBackProjectionFilter(BackProjectionType _arg)
-{
-  if (_arg != this->GetBackProjectionFilter())
-  {
-    Superclass::SetBackProjectionFilter(_arg);
-    m_BackProjectionFilter = this->InstantiateBackProjectionFilter(_arg);
-    m_BackProjectionNormalizationFilter = this->InstantiateBackProjectionFilter(_arg);
-  }
-}
-
-template <class TVolumeImage, class TProjectionImage>
-void
 SARTConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>::SetGatingWeights(std::vector<float> weights)
 {
   m_GatingWeights = weights;
@@ -163,6 +140,14 @@ SARTConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>::GenerateOutput
   projRegion = this->GetInput(1)->GetLargestPossibleRegion();
   m_ExtractFilter->SetExtractionRegion(projRegion);
   m_ExtractFilterRayBox->SetExtractionRegion(projRegion);
+
+  // Set forward projection filter
+  m_ForwardProjectionFilter = this->InstantiateForwardProjectionFilter(this->m_CurrentForwardProjectionConfiguration);
+
+  // Set back projection filter
+  m_BackProjectionFilter = this->InstantiateBackProjectionFilter(this->m_CurrentBackProjectionConfiguration);
+  m_BackProjectionNormalizationFilter =
+    this->InstantiateBackProjectionFilter(this->m_CurrentBackProjectionConfiguration);
 
   // Links with the forward and back projection filters should be set here
   // and not in the constructor, as these filters are set at runtime

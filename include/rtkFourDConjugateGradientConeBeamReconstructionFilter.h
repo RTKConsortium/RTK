@@ -163,14 +163,6 @@ public:
   typename ProjectionStackType::ConstPointer
   GetInputProjectionStack();
 
-  /** Pass the ForwardProjection filter to the conjugate gradient operator */
-  void
-  SetForwardProjectionFilter(ForwardProjectionType _arg) override;
-
-  /** Pass the backprojection filter to the conjugate gradient operator and to the filter generating the B of AX=B */
-  void
-  SetBackProjectionFilter(BackProjectionType _arg) override;
-
   /** Pass the interpolation weights to subfilters */
   void
   SetWeights(const itk::Array2D<float> _arg);

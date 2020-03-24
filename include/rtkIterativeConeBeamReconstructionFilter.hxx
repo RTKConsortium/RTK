@@ -27,8 +27,8 @@ namespace rtk
 template <class TOutputImage, class ProjectionStackType>
 IterativeConeBeamReconstructionFilter<TOutputImage, ProjectionStackType>::IterativeConeBeamReconstructionFilter()
 {
-  m_CurrentForwardProjectionConfiguration = FP_UNKNOWN;
-  m_CurrentBackProjectionConfiguration = BP_UNKNOWN;
+  m_CurrentForwardProjectionConfiguration = FP_JOSEPH;
+  m_CurrentBackProjectionConfiguration = BP_VOXELBASED;
 }
 
 template <class TOutputImage, class ProjectionStackType>

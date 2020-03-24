@@ -193,14 +193,6 @@ public:
   itkGetMacro(EnforcePositivity, bool);
   itkSetMacro(EnforcePositivity, bool);
 
-  /** Select the ForwardProjection filter */
-  void
-  SetForwardProjectionFilter(ForwardProjectionType _arg) override;
-
-  /** Select the backprojection filter */
-  void
-  SetBackProjectionFilter(BackProjectionType _arg) override;
-
   /** In the case of a gated SART, set the gating weights */
   void
   SetGatingWeights(std::vector<float> weights);

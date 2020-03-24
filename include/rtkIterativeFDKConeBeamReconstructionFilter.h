@@ -156,10 +156,6 @@ public:
   itkGetMacro(EnforcePositivity, bool);
   itkSetMacro(EnforcePositivity, bool);
 
-  /** Select the ForwardProjection filter */
-  void
-  SetForwardProjectionFilter(ForwardProjectionType _arg) override;
-
   /** Select the backprojection filter */
   void
   SetBackProjectionFilter(BackProjectionType itkNotUsed(_arg)) override
