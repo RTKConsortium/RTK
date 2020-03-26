@@ -10,12 +10,12 @@ trigger:
 jobs:
 
 # Linux Python 3.6 CUDA
-- job: 'PackageLinux'
+- job: 'PackageLinux_cp36'
   timeoutInMinutes: 0
   cancelTimeoutInMinutes: 300
   variables:
     PythonVersion: cp36
-  displayName: "Build Linux Python packages"
+  displayName: "Build Linux Python 3.6 package"
   pool:
     name: 'Default'
     demands: Agent.OS -equals Linux
@@ -26,18 +26,35 @@ jobs:
       SourceFolder: $(Build.SourcesDirectory)
       Contents: '**/*'
 
-## Windows Python CUDA
-#- job: 'PackageWindows'
-#  displayName: "Build Windows Python packages"
-#  timeoutInMinutes: 0
-#  cancelTimeoutInMinutes: 300
-#  pool:
-#    name: 'Default'
-#    demands: Agent.OS -equals Windows_NT
-#
-#  steps:
-#  - template: Common/AzurePipelinesWindowsPython_Common.yml
-#  - task: DeleteFiles@1
-#    inputs:
-#      SourceFolder: $(Build.SourcesDirectory)
-#      Contents: '**/*'
+# Linux Python 3.7 CUDA
+- job: 'PackageLinux_cp37'
+  timeoutInMinutes: 0
+  cancelTimeoutInMinutes: 300
+  variables:
+    PythonVersion: cp37
+  displayName: "Build Linux Python 3.7 package"
+  pool:
+    name: 'Default'
+    demands: Agent.OS -equals Linux
+  steps:
+  - template: Common/AzurePipelinesLinuxPython_Common_CUDA.yml
+  - task: DeleteFiles@1
+    inputs:
+      SourceFolder: $(Build.SourcesDirectory)
+      Contents: '**/*'
+
+# Windows Python CUDA
+- job: 'PackageWindows'
+  displayName: "Build Windows Python packages"
+  timeoutInMinutes: 0
+  cancelTimeoutInMinutes: 300
+  pool:
+    name: 'Default'
+    demands: Agent.OS -equals Windows_NT
+
+  steps:
+  - template: Common/AzurePipelinesWindowsPython_Common.yml
+  - task: DeleteFiles@1
+    inputs:
+      SourceFolder: $(Build.SourcesDirectory)
+      Contents: '**/*'
