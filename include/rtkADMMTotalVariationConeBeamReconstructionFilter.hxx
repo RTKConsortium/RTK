@@ -163,6 +163,16 @@ ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImag
   inputPtr1->SetRequestedRegion(inputPtr1->GetLargestPossibleRegion());
 }
 
+template <class TInputImage, class TOutputImage>
+void
+ADMMTotalVariationConeBeamReconstructionFilter<TInputImage, TOutputImage>::VerifyPreconditions() ITKv5_CONST
+{
+  this->Superclass::VerifyPreconditions();
+
+  if (this->m_Geometry.IsNull())
+    itkExceptionMacro(<< "Geometry has not been set.");
+}
+
 template <typename TOutputImage, typename TGradientOutputImage>
 void
 ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImage>::GenerateOutputInformation()

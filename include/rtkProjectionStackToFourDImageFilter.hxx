@@ -126,6 +126,17 @@ ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPre
 
 template <typename VolumeSeriesType, typename ProjectionStackType, typename TFFTPrecision>
 void
+ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPrecision>::VerifyPreconditions()
+  ITKv5_CONST
+{
+  this->Superclass::VerifyPreconditions();
+
+  if (this->m_Geometry.IsNull())
+    itkExceptionMacro(<< "Geometry has not been set.");
+}
+
+template <typename VolumeSeriesType, typename ProjectionStackType, typename TFFTPrecision>
+void
 ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPrecision>::GenerateOutputInformation()
 {
   // Create and set the splat filter

@@ -154,6 +154,17 @@ FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionS
 
 template <class VolumeSeriesType, class ProjectionStackType>
 void
+FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::VerifyPreconditions()
+  ITKv5_CONST
+{
+  this->Superclass::VerifyPreconditions();
+
+  if (this->m_Geometry.IsNull())
+    itkExceptionMacro(<< "Geometry has not been set.");
+}
+
+template <class VolumeSeriesType, class ProjectionStackType>
+void
 FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::GenerateOutputInformation()
 {
   // Set the Conjugate Gradient filter (either on CPU or GPU depending on user's choice)

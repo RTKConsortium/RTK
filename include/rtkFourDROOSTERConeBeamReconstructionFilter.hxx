@@ -202,6 +202,16 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>:
 
 template <typename VolumeSeriesType, typename ProjectionStackType>
 void
+FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::VerifyPreconditions() ITKv5_CONST
+{
+  this->Superclass::VerifyPreconditions();
+
+  if (this->m_Geometry.IsNull())
+    itkExceptionMacro(<< "Geometry has not been set.");
+}
+
+template <typename VolumeSeriesType, typename ProjectionStackType>
+void
 FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::GenerateInputRequestedRegion()
 {
   // Call the superclass' implementation of this method

@@ -25,6 +25,17 @@
 
 namespace rtk
 {
+
+template <class TInputImage, class TOutputImage>
+void
+FDKWeightProjectionFilter<TInputImage, TOutputImage>::VerifyPreconditions() ITKv5_CONST
+{
+  this->Superclass::VerifyPreconditions();
+
+  if (this->m_Geometry.IsNull())
+    itkExceptionMacro(<< "Geometry has not been set.");
+}
+
 template <class TInputImage, class TOutputImage>
 void
 FDKWeightProjectionFilter<TInputImage, TOutputImage>::BeforeThreadedGenerateData()

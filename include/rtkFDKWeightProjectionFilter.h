@@ -78,6 +78,10 @@ protected:
   FDKWeightProjectionFilter() = default;
   ~FDKWeightProjectionFilter() override = default;
 
+  /** Checks that inputs are correctly set. */
+  void
+  VerifyPreconditions() ITKv5_CONST override;
+
   void
   BeforeThreadedGenerateData() override;
 

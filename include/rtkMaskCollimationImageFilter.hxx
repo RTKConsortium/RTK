@@ -37,6 +37,16 @@ MaskCollimationImageFilter<TInputImage, TOutputImage>::MaskCollimationImageFilte
 
 template <class TInputImage, class TOutputImage>
 void
+MaskCollimationImageFilter<TInputImage, TOutputImage>::VerifyPreconditions() ITKv5_CONST
+{
+  this->Superclass::VerifyPreconditions();
+
+  if (this->m_Geometry.IsNull())
+    itkExceptionMacro(<< "Geometry has not been set.");
+}
+
+template <class TInputImage, class TOutputImage>
+void
 MaskCollimationImageFilter<TInputImage, TOutputImage>::BeforeThreadedGenerateData()
 {
   if (this->GetGeometry()->GetGantryAngles().size() != this->GetOutput()->GetLargestPossibleRegion().GetSize()[2])

@@ -32,6 +32,16 @@ namespace rtk
 
 template <class TInputImage, class TOutputImage>
 void
+ForwardProjectionImageFilter<TInputImage, TOutputImage>::VerifyPreconditions() ITKv5_CONST
+{
+  this->Superclass::VerifyPreconditions();
+
+  if (this->m_Geometry.IsNull())
+    itkExceptionMacro(<< "Geometry has not been set.");
+}
+
+template <class TInputImage, class TOutputImage>
+void
 ForwardProjectionImageFilter<TInputImage, TOutputImage>::GenerateInputRequestedRegion()
 {
   // Input 0 is the stack of projections in which we project

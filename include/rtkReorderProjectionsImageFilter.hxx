@@ -56,6 +56,16 @@ ReorderProjectionsImageFilter<TInputImage, TOutputImage>::GetOutputSignal()
 
 template <class TInputImage, class TOutputImage>
 void
+ReorderProjectionsImageFilter<TInputImage, TOutputImage>::VerifyPreconditions() ITKv5_CONST
+{
+  this->Superclass::VerifyPreconditions();
+
+  if (this->m_InputGeometry.IsNull() || this->m_OutputGeometry.IsNull())
+    itkExceptionMacro(<< "Geometries have not been set.");
+}
+
+template <class TInputImage, class TOutputImage>
+void
 ReorderProjectionsImageFilter<TInputImage, TOutputImage>::GenerateData()
 {
   unsigned int NumberOfProjections =

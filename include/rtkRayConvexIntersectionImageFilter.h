@@ -95,6 +95,9 @@ protected:
   void
   BeforeThreadedGenerateData() override;
 
+  /** Checks that inputs are correctly set. */
+  void VerifyPreconditions() ITKv5_CONST override;
+
   /** Apply changes to the input image requested region. */
   void
   DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread) override;

@@ -279,6 +279,16 @@ MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectru
 
 template <class TOutputImage, class TPhotonCounts, class TSpectrum>
 void
+MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectrum>::VerifyPreconditions() ITKv5_CONST
+{
+  this->Superclass::VerifyPreconditions();
+
+  if (this->m_Geometry.IsNull())
+    itkExceptionMacro(<< "Geometry has not been set.");
+}
+
+template <class TOutputImage, class TPhotonCounts, class TSpectrum>
+void
 MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectrum>::GenerateInputRequestedRegion()
 {
   // Input 0 is the material volumes we update

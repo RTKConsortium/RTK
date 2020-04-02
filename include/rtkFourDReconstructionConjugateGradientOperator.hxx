@@ -156,6 +156,16 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
 
 template <typename VolumeSeriesType, typename ProjectionStackType>
 void
+FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType>::VerifyPreconditions() ITKv5_CONST
+{
+  this->Superclass::VerifyPreconditions();
+
+  if (this->m_Geometry.IsNull())
+    itkExceptionMacro(<< "Geometry has not been set.");
+}
+
+template <typename VolumeSeriesType, typename ProjectionStackType>
+void
 FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType>::GenerateOutputInformation()
 {
   // Set runtime parameters

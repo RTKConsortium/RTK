@@ -147,6 +147,16 @@ RegularizedConjugateGradientConeBeamReconstructionFilter<TImage>::SetBackProject
 
 template <typename TImage>
 void
+RegularizedConjugateGradientConeBeamReconstructionFilter<TImage>::VerifyPreconditions() ITKv5_CONST
+{
+  this->Superclass::VerifyPreconditions();
+
+  if (this->m_Geometry.IsNull())
+    itkExceptionMacro(<< "Geometry has not been set.");
+}
+
+template <typename TImage>
+void
 RegularizedConjugateGradientConeBeamReconstructionFilter<TImage>::GenerateInputRequestedRegion()
 {
   // Call the superclass' implementation of this method

@@ -47,6 +47,16 @@ SubSelectImageFilter<ProjectionStackType>::GetInputProjectionStack()
 
 template <typename ProjectionStackType>
 void
+SubSelectImageFilter<ProjectionStackType>::VerifyPreconditions() ITKv5_CONST
+{
+  this->Superclass::VerifyPreconditions();
+
+  if (this->m_InputGeometry.IsNull() || this->m_OutputGeometry.IsNull())
+    itkExceptionMacro(<< "Geometries have not been set.");
+}
+
+template <typename ProjectionStackType>
+void
 SubSelectImageFilter<ProjectionStackType>::GenerateInputRequestedRegion()
 {
   const unsigned int Dimension = this->InputImageDimension;

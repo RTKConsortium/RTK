@@ -56,6 +56,16 @@ FDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecision>::FDKCo
 
 template <class TInputImage, class TOutputImage, class TFFTPrecision>
 void
+FDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecision>::VerifyPreconditions() ITKv5_CONST
+{
+  this->Superclass::VerifyPreconditions();
+
+  if (this->m_Geometry.IsNull())
+    itkExceptionMacro(<< "Geometry has not been set.");
+}
+
+template <class TInputImage, class TOutputImage, class TFFTPrecision>
+void
 FDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecision>::GenerateInputRequestedRegion()
 {
   typename Superclass::InputImagePointer inputPtr = const_cast<TInputImage *>(this->GetInput());
