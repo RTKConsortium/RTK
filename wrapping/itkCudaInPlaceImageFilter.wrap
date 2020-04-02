@@ -9,7 +9,7 @@ if(RTK_USE_CUDA)
     endforeach()
 
     # Force VECTOR_COMPONENTS to "2;3;4;5"
-    set(vectorComponents 2 3 4 5)
+    UNIQUE(vectorComponents "${ITK_WRAP_VECTOR_COMPONENTS};2;3;4;5")
     foreach(component ${vectorComponents})
       foreach(d ${ITK_WRAP_IMAGE_DIMS})
         itk_wrap_template("CI${ITKM_V${ITKM_F}${component}}${d}CI${ITKM_V${ITKM_F}${component}}${d}"
@@ -25,11 +25,11 @@ if(RTK_USE_CUDA)
     endforeach()
 
     # Force VECTOR_COMPONENTS to "2;3;4;5"
-    set(vectorComponents 2 3 4 5)
+    # Force ITK_WRAP_IMAGE_DIMS to "2;3;4"
+    UNIQUE(imageDimensions "${ITK_WRAP_IMAGE_DIMS};2;3;4")
+    UNIQUE(vectorComponents "${ITK_WRAP_VECTOR_COMPONENTS};2;3;4;5")
     foreach(component ${vectorComponents})
       foreach(vt ${WRAP_ITK_VECTOR_REAL})
-        # Force ITK_WRAP_IMAGE_DIMS to "2;3;4"
-        set(imageDimensions 2 3 4)
         foreach(d ${imageDimensions})
           itk_wrap_template("CI${ITKM_${vt}${component}}${d}CI${ITKM_${vt}${component}}${d}IPIFCI${ITKM_${vt}${component}}${d}"
             "itk::CudaImage<${ITKT_${vt}${component}}, ${d}>, itk::CudaImage<${ITKT_${vt}${component}}, ${d}>, itk::InPlaceImageFilter< itk::CudaImage<${ITKT_${vt}${component}}, ${d}> >")

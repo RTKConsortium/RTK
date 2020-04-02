@@ -14,6 +14,7 @@ itk_wrap_class("itk::ImageSource" POINTER)
 
   # Wrap ITK unsigned short missing types
   if (NOT ITK_WRAP_unsigned_short)
+    itk_wrap_template("IUS1" "itk::Image<${ITKT_US}, 1>")
     itk_wrap_template("IUS2" "itk::Image<${ITKT_US}, 2>")
     itk_wrap_template("IUS3" "itk::Image<${ITKT_US}, 3>")
   endif()
@@ -80,7 +81,7 @@ itk_wrap_class("itk::ImageSource" POINTER)
       itk_wrap_template("CI${ITKM_F}${d}" "itk::CudaImage<${ITKT_F}, ${d}>")
     endforeach()
 
-    set(vectorComponents 2 3 4 5)
+    UNIQUE(vectorComponents "${ITK_WRAP_VECTOR_COMPONENTS};2;3;4;5")
     foreach(component ${vectorComponents})
       foreach(vt ${WRAP_ITK_VECTOR_REAL})
 
