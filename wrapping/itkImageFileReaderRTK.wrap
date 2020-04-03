@@ -13,4 +13,13 @@ itk_wrap_class("itk::ImageFileReader" POINTER)
     endif()
   endforeach()
 
+  # Wrap ITK dimension 1 missing types
+  UNIQUE(image_types "D;UC;US;${WRAP_ITK_REAL}")
+  list(FIND ITK_WRAP_IMAGE_DIMS "1" _index)
+  if (${_index} EQUAL -1)
+    foreach(t ${image_types})
+      itk_wrap_template("I${ITKM_${t}}1" "itk::Image<${ITKT_${t}}, 1>")
+    endforeach()
+  endif()
+
 itk_end_wrap_class()
