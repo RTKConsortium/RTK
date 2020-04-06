@@ -104,7 +104,7 @@
         or a segfault.
         """
 
-        assert ndarr.ndim in ( 2, 3, 4 ), \
+        assert ndarr.ndim in ( 1, 2, 3, 4 ), \
             "Only arrays of 2, 3 or 4 dimensions are supported."
         if( not ndarr.flags['C_CONTIGUOUS'] and not ndarr.flags['F_CONTIGUOUS'] ):
             raise ValueError("Array memory is not contiguous. Try converting your array with "
@@ -115,7 +115,7 @@
                 imgview = itkPyBuffer@PyBufferTypes@._GetImageViewFromArray( ndarr, ndarr.shape[-2::-1], ndarr.shape[-1] )
             else:
                 imgview = itkPyBuffer@PyBufferTypes@._GetImageViewFromArray( ndarr, ndarr.shape[-1:0:-1], ndarr.shape[0] )
-        elif ndarr.ndim in ( 2, 3 ):
+        elif ndarr.ndim in ( 1, 2, 3 ):
             imgview = itkPyBuffer@PyBufferTypes@._GetImageViewFromArray( ndarr, ndarr.shape[::-1], 1)
 
         return imgview
@@ -141,7 +141,10 @@
         same for an array and its transpose. If flipping is desired, see
         *numpy.reshape*.
         """
-        from itkImageDuplicatorPython import itkImageDuplicator@PyBufferTypes@
+        try:
+            from itkImageDuplicatorPython import itkImageDuplicator@PyBufferTypes@
+        except ImportError:
+            from itkImageDuplicatorRTKPython import itkImageDuplicator@PyBufferTypes@
 
         # Create a temporary image view of the array
         imageView = itkPyBuffer@PyBufferTypes@.GetImageViewFromArray(ndarr, is_vector)
