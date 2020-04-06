@@ -32,6 +32,7 @@
 #endif
 #include "rtkFDKWarpBackProjectionImageFilter.h"
 #include "rtkCyclicDeformationImageFilter.h"
+#include "rtkProgressCommands.h"
 
 #include <itkStreamingImageFilter.h>
 #include <itkImageRegionSplitterDirection.h>
@@ -146,7 +147,11 @@ main(int argc, char * argv[])
   f->GetRampFilter()->SetTruncationCorrection(args_info.pad_arg);                                                      \
   f->GetRampFilter()->SetHannCutFrequency(args_info.hann_arg);                                                         \
   f->GetRampFilter()->SetHannCutFrequencyY(args_info.hannY_arg);                                                       \
-  f->SetProjectionSubsetSize(args_info.subsetsize_arg)
+  f->SetProjectionSubsetSize(args_info.subsetsize_arg); \
+  if(args_info.verbose_flag) \
+  { \
+    f->AddObserver(itk::ProgressEvent(), progressCommand); \
+  }
 
   // FDK reconstruction filtering
   using FDKCPUType = rtk::FDKConeBeamReconstructionFilter<OutputImageType>;
@@ -155,9 +160,14 @@ main(int argc, char * argv[])
   using FDKCUDAType = rtk::CudaFDKConeBeamReconstructionFilter;
   FDKCUDAType::Pointer feldkampCUDA;
 #endif
+
   itk::Image<OutputPixelType, Dimension> * pfeldkamp = nullptr;
   if (!strcmp(args_info.hardware_arg, "cpu"))
   {
+    // Progress reporting
+    using PercentageProgressCommandType = rtk::PercentageProgressCommand<FDKCPUType>;
+    PercentageProgressCommandType::Pointer progressCommand = PercentageProgressCommandType::New();
+
     feldkamp = FDKCPUType::New();
     SET_FELDKAMP_OPTIONS(feldkamp);
 
@@ -179,6 +189,10 @@ main(int argc, char * argv[])
       std::cerr << "Motion compensation is not supported in CUDA. Aborting" << std::endl;
       return EXIT_FAILURE;
     }
+
+    // Progress reporting
+    using PercentageProgressCommandType = rtk::PercentageProgressCommand<FDKCUDAType>;
+    PercentageProgressCommandType::Pointer progressCommand = PercentageProgressCommandType::New();
 
     feldkampCUDA = FDKCUDAType::New();
     SET_FELDKAMP_OPTIONS(feldkampCUDA);
