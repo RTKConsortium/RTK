@@ -29,6 +29,9 @@ itk_wrap_class("itk::ImageSource" POINTER)
     if (ITK_WRAP_unsigned_char)
       itk_wrap_template("IUC1" "itk::Image<${ITKT_UC}, 1>")
     endif()
+    if (ITK_WRAP_unsigned_short)
+      itk_wrap_template("IUS1" "itk::Image<${ITKT_US}, 1>")
+    endif()
   endif()
 
   # Wrap ITK dimension 4 missing types
