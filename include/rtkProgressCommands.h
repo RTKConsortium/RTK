@@ -17,7 +17,7 @@
  *=========================================================================*/
 
 #ifndef rtkProgressCommands_h
-#define rtkIterationCommands_h
+#define rtkProgressCommands_h
 
 namespace rtk
 {
