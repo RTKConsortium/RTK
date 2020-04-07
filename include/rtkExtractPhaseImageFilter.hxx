@@ -28,6 +28,7 @@
 #include <itkConvolutionImageFilter.h>
 #include <itkSubtractImageFilter.h>
 #include <itkConvolutionImageFilter.h>
+#include <itkNumericTraits.h>
 namespace rtk
 {
 
@@ -67,7 +68,12 @@ ExtractPhaseImageFilter<TImage>::GenerateData()
   conv2->SetInput(conv->GetOutput());
   conv2->SetKernelImage(kernel2);
 
-  using SubtractType = itk::SubtractImageFilter<TImage, TImage>;
+  // Define real image type for FFT
+  using InputPixelType = typename TImage::PixelType;
+  using RealOutputPixelType = typename itk::NumericTraits<InputPixelType>::RealType;
+  using RealOutputImageType = itk::Image<RealOutputPixelType, 1>;
+
+  using SubtractType = itk::SubtractImageFilter<TImage, TImage, RealOutputImageType>;
   typename SubtractType::Pointer sub = SubtractType::New();
   sub->SetInput1(conv->GetOutput());
   sub->SetInput2(conv2->GetOutput());
@@ -75,11 +81,11 @@ ExtractPhaseImageFilter<TImage>::GenerateData()
   sub->Update();
 
   // Define FFT output type (complex)
-  using ComplexType = std::complex<double>;
+  using ComplexType = std::complex<RealOutputPixelType>;
   using ComplexSignalType = itk::Image<ComplexType, 1>;
 
   // Hilbert transform
-  using HilbertType = rtk::HilbertImageFilter<TImage, ComplexSignalType>;
+  using HilbertType = rtk::HilbertImageFilter<RealOutputImageType, ComplexSignalType>;
   typename HilbertType::Pointer hilbert = HilbertType::New();
   hilbert->SetInput(sub->GetOutput());
 
