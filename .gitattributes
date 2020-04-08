@@ -1,15 +1,20 @@
-.git*            export-ignore
+.git*                                   export-ignore
 # Custom attribute to mark sources as using our C++/C code style.
 [attr]our-c-style  whitespace=tab-in-indent,no-lf-at-eof  hooks.style=KWStyle,clangformat,uncrustify
 
-
-*.c              our-c-style
-*.h              our-c-style
-*.cxx            our-c-style
-*.hxx            our-c-style
-*.txx            our-c-style
-*.txt            whitespace=tab-in-indent,no-lf-at-eof
-*.cmake          whitespace=tab-in-indent,no-lf-at-eof
+cmake/*.cxx                             our-c-style
+include/*.h*                            our-c-style
+src/*.c*                                our-c-style
+applications/**/*.h                     our-c-style
+applications/**/*.cxx                   our-c-style
+applications/**/*.hxx                   our-c-style
+examples/**/*.cxx                       our-c-style
+utilities/ITKCudaCommon/include/*.h*    our-c-style
+utilities/ITKCudaCommon/src/*.cxx       our-c-style
+test/*h                                 our-c-style
+test/*cxx                               our-c-style
+*.txt                                   whitespace=tab-in-indent,no-lf-at-eof
+*.cmake                                 whitespace=tab-in-indent,no-lf-at-eof
 
 # ExternalData content links must have LF newlines
-*.md5            crlf=input
+*.md5                                   crlf=input
