@@ -40,6 +40,9 @@ setup(
         "Operating System :: Unix",
         "Operating System :: MacOS"
         ],
+    scripts=[
+        "lib/rtksimulatedgeometry.py"
+        ],
     license='Apache',
     keywords='RTK Reconstruction Toolkit',
     url=r'https://www.openrtk.org/',
