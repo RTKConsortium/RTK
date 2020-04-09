@@ -18,8 +18,6 @@
 
 #include <utility>
 
-
-
 #include "rtkDbf.h"
 
 namespace rtk

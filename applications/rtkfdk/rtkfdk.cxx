@@ -147,10 +147,10 @@ main(int argc, char * argv[])
   f->GetRampFilter()->SetTruncationCorrection(args_info.pad_arg);                                                      \
   f->GetRampFilter()->SetHannCutFrequency(args_info.hann_arg);                                                         \
   f->GetRampFilter()->SetHannCutFrequencyY(args_info.hannY_arg);                                                       \
-  f->SetProjectionSubsetSize(args_info.subsetsize_arg); \
-  if(args_info.verbose_flag) \
-  { \
-    f->AddObserver(itk::ProgressEvent(), progressCommand); \
+  f->SetProjectionSubsetSize(args_info.subsetsize_arg);                                                                \
+  if (args_info.verbose_flag)                                                                                          \
+  {                                                                                                                    \
+    f->AddObserver(itk::ProgressEvent(), progressCommand);                                                             \
   }
 
   // FDK reconstruction filtering

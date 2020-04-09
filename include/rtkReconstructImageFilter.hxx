@@ -28,8 +28,7 @@ namespace rtk
 /////////////////////////////////////////////////////////
 // Default Constructor
 template <class TImage>
-ReconstructImageFilter<TImage>::ReconstructImageFilter()
-= default;
+ReconstructImageFilter<TImage>::ReconstructImageFilter() = default;
 
 
 /////////////////////////////////////////////////////////

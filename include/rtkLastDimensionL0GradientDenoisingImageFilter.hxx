@@ -179,8 +179,7 @@ LastDimensionL0GradientDenoisingImageFilter<TInputImage>::ThreadedGenerateData(
 
     // Walk the input along last dimension for this voxel, filling an array with the values read
     itk::ImageRegionConstIterator<TInputImage> inputIterator(this->GetInput(), SingleVoxelRegion);
-    auto *                           toBeRegularized =
-      new InputPixelType[outputRegionForThread.GetSize(TInputImage::ImageDimension - 1)];
+    auto * toBeRegularized = new InputPixelType[outputRegionForThread.GetSize(TInputImage::ImageDimension - 1)];
 
     unsigned int i = 0;
     while (!inputIterator.IsAtEnd())

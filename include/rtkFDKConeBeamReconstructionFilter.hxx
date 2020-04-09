@@ -117,9 +117,10 @@ FDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecision>::Gener
   // Each filter is equally weighted across all iterations of the stack
   itk::ProgressAccumulator::Pointer progress = itk::ProgressAccumulator::New();
   progress->SetMiniPipelineFilter(this);
-  progress->RegisterInternalFilter(m_WeightFilter, (1.0f/3) / itk::Math::ceil(double(nProj) / m_ProjectionSubsetSize));
-  progress->RegisterInternalFilter(m_RampFilter, (1.0f/3) / itk::Math::ceil(double(nProj) / m_ProjectionSubsetSize));
-  progress->RegisterInternalFilter(m_BackProjectionFilter, (1.0f/3) / itk::Math::ceil(double(nProj) / m_ProjectionSubsetSize));
+  auto frac = (1.0f / 3) / itk::Math::ceil(double(nProj) / m_ProjectionSubsetSize);
+  progress->RegisterInternalFilter(m_WeightFilter, frac);
+  progress->RegisterInternalFilter(m_RampFilter, frac);
+  progress->RegisterInternalFilter(m_BackProjectionFilter, frac);
 
   for (unsigned int i = 0; i < nProj; i += m_ProjectionSubsetSize)
   {

@@ -28,8 +28,7 @@ namespace rtk
 // Constructor
 //
 template <class TInputImage>
-MultiplyByVectorImageFilter<TInputImage>::MultiplyByVectorImageFilter()
-= default;
+MultiplyByVectorImageFilter<TInputImage>::MultiplyByVectorImageFilter() = default;
 
 template <class TInputImage>
 void

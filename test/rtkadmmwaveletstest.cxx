@@ -186,7 +186,7 @@ main(int, char **)
 
   // ADMMWavelets reconstruction filtering
   using ADMMWaveletsType = rtk::ADMMWaveletsConeBeamReconstructionFilter<OutputImageType>;
-  ADMMWaveletsType::Pointer                                              admmWavelets = ADMMWaveletsType::New();
+  ADMMWaveletsType::Pointer admmWavelets = ADMMWaveletsType::New();
   admmWavelets->SetInput(tomographySource->GetOutput());
   admmWavelets->SetInput(1, rei->GetOutput());
   admmWavelets->SetGeometry(geometry);
