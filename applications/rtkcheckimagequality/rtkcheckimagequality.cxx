@@ -42,19 +42,7 @@ MSE(typename TImage::Pointer reference, typename TImage::Pointer reconstruction)
 int
 main(int argc, char ** argv)
 {
-
-  args_info_rtkcheckimagequality             args_info;
-  cmdline_parser_rtkcheckimagequality_params args_params;
-  cmdline_parser_rtkcheckimagequality_params_init(&args_params);
-  args_params.print_errors = 1;
-  args_params.check_required = 1;
-  args_params.override = 1;
-  args_params.initialize = 1;
-  if (0 != cmdline_parser_rtkcheckimagequality_ext(argc, argv, &args_info, &args_params))
-  {
-    std::cerr << "Error in cmdline_parser_rtkcheckimagequality_ext" << std::endl;
-    exit(1);
-  }
+  GGO(rtkcheckimagequality, args_info);
 
   constexpr unsigned int Dimension = 3;
   using PixelType = float;
