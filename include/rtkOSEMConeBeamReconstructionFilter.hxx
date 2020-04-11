@@ -87,6 +87,16 @@ OSEMConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>::SetBackProject
 
 template <class TVolumeImage, class TProjectionImage>
 void
+OSEMConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>::VerifyPreconditions() ITKv5_CONST
+{
+  this->Superclass::VerifyPreconditions();
+
+  if (this->m_Geometry.IsNull())
+    itkExceptionMacro(<< "Geometry has not been set.");
+}
+
+template <class TVolumeImage, class TProjectionImage>
+void
 OSEMConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>::GenerateInputRequestedRegion()
 {
   typename Superclass::InputImagePointer inputPtr = const_cast<TVolumeImage *>(this->GetInput());
@@ -230,12 +240,6 @@ OSEMConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>::GenerateOutput
   m_DivideProjectionFilter->SetInput2(m_ForwardProjectionFilter->GetOutput());
   m_DivideProjectionFilter->SetConstant(0);
 
-  // For the same reason, set geometry now
-  // Check and set geometry
-  if (this->GetGeometry() == nullptr)
-  {
-    itkGenericExceptionMacro(<< "The geometry of the reconstruction has not been set");
-  }
   m_ForwardProjectionFilter->SetGeometry(this->m_Geometry);
   m_BackProjectionFilter->SetGeometry(this->m_Geometry);
   m_BackProjectionNormalizationFilter->SetGeometry(this->m_Geometry);

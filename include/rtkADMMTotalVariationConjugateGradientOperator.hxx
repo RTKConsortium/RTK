@@ -94,6 +94,16 @@ ADMMTotalVariationConjugateGradientOperator<TOutputImage, TGradientOutputImage>:
   this->Modified();
 }
 
+template <class TInputImage, class TOutputImage>
+void
+ADMMTotalVariationConjugateGradientOperator<TInputImage, TOutputImage>::VerifyPreconditions() ITKv5_CONST
+{
+  this->Superclass::VerifyPreconditions();
+
+  if (this->m_Geometry.IsNull())
+    itkExceptionMacro(<< "Geometry has not been set.");
+}
+
 template <typename TOutputImage, typename TGradientOutputImage>
 void
 ADMMTotalVariationConjugateGradientOperator<TOutputImage, TGradientOutputImage>::GenerateInputRequestedRegion()

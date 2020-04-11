@@ -71,6 +71,16 @@ IterativeFDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecisio
 
 template <class TInputImage, class TOutputImage, class TFFTPrecision>
 void
+IterativeFDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecision>::VerifyPreconditions() ITKv5_CONST
+{
+  this->Superclass::VerifyPreconditions();
+
+  if (this->m_Geometry.IsNull())
+    itkExceptionMacro(<< "Geometry has not been set.");
+}
+
+template <class TInputImage, class TOutputImage, class TFFTPrecision>
+void
 IterativeFDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecision>::GenerateInputRequestedRegion()
 {
   typename Superclass::InputImagePointer inputPtr = const_cast<TInputImage *>(this->GetInput());
@@ -133,11 +143,6 @@ IterativeFDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecisio
   m_DivideFilter->SetInput1(m_MultiplyFilter->GetOutput());
   m_DivideFilter->SetInput2(m_RayBoxFilter->GetOutput());
 
-  // Check and set geometry
-  if (this->GetGeometry() == nullptr)
-  {
-    itkGenericExceptionMacro(<< "The geometry of the reconstruction has not been set");
-  }
   m_DisplacedDetectorFilter->SetGeometry(m_Geometry);
   m_ParkerFilter->SetGeometry(m_Geometry);
   m_FDKFilter->SetGeometry(m_Geometry);

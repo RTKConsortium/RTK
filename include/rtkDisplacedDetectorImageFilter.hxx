@@ -51,6 +51,16 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>::SetOffsets(double minOf
   }
 }
 
+template <class TInputImage, class TOutputImage>
+void
+DisplacedDetectorImageFilter<TInputImage, TOutputImage>::VerifyPreconditions() ITKv5_CONST
+{
+  this->Superclass::VerifyPreconditions();
+
+  if (this->m_Geometry.IsNull())
+    itkExceptionMacro(<< "Geometry has not been set.");
+}
+
 /**
  * Account for the padding computed in GenerateOutputInformation to propagate the
  * requested region.

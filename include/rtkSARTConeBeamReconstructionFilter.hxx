@@ -121,6 +121,16 @@ SARTConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>::SetGatingWeigh
 
 template <class TVolumeImage, class TProjectionImage>
 void
+SARTConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>::VerifyPreconditions() ITKv5_CONST
+{
+  this->Superclass::VerifyPreconditions();
+
+  if (this->m_Geometry.IsNull())
+    itkExceptionMacro(<< "Geometry has not been set.");
+}
+
+template <class TVolumeImage, class TProjectionImage>
+void
 SARTConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>::GenerateInputRequestedRegion()
 {
   typename Superclass::InputImagePointer inputPtr = const_cast<TVolumeImage *>(this->GetInput());
@@ -183,12 +193,6 @@ SARTConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>::GenerateOutput
   m_ExtractFilter->SetInput(this->GetInput(1));
   m_SubtractFilter->SetInput(1, m_ForwardProjectionFilter->GetOutput());
 
-  // For the same reason, set geometry now
-  // Check and set geometry
-  if (this->GetGeometry() == nullptr)
-  {
-    itkGenericExceptionMacro(<< "The geometry of the reconstruction has not been set");
-  }
   m_ForwardProjectionFilter->SetGeometry(this->m_Geometry);
   m_BackProjectionFilter->SetGeometry(this->m_Geometry);
   m_BackProjectionNormalizationFilter->SetGeometry(this->m_Geometry);

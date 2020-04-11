@@ -135,6 +135,17 @@ ReconstructionConjugateGradientOperator<TOutputImage, TSingleComponentImage, TWe
 
 template <typename TOutputImage, typename TSingleComponentImage, typename TWeightsImage>
 void
+ReconstructionConjugateGradientOperator<TOutputImage, TSingleComponentImage, TWeightsImage>::VerifyPreconditions()
+  ITKv5_CONST
+{
+  this->Superclass::VerifyPreconditions();
+
+  if (this->m_Geometry.IsNull())
+    itkExceptionMacro(<< "Geometry has not been set.");
+}
+
+template <typename TOutputImage, typename TSingleComponentImage, typename TWeightsImage>
+void
 ReconstructionConjugateGradientOperator<TOutputImage, TSingleComponentImage, TWeightsImage>::
   GenerateInputRequestedRegion()
 {

@@ -97,6 +97,16 @@ ADMMWaveletsConeBeamReconstructionFilter<TOutputImage>::SetBackProjectionFilter(
   }
 }
 
+template <class TOutputImage>
+void
+ADMMWaveletsConeBeamReconstructionFilter<TOutputImage>::VerifyPreconditions() ITKv5_CONST
+{
+  this->Superclass::VerifyPreconditions();
+
+  if (this->m_Geometry.IsNull())
+    itkExceptionMacro(<< "Geometry has not been set.");
+}
+
 template <typename TOutputImage>
 void
 ADMMWaveletsConeBeamReconstructionFilter<TOutputImage>::GenerateInputRequestedRegion()

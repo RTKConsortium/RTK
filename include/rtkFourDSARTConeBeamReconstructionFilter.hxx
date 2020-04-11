@@ -159,6 +159,16 @@ FourDSARTConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::Se
 
 template <class VolumeSeriesType, class ProjectionStackType>
 void
+FourDSARTConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::VerifyPreconditions() ITKv5_CONST
+{
+  this->Superclass::VerifyPreconditions();
+
+  if (this->m_Geometry.IsNull())
+    itkExceptionMacro(<< "Geometry has not been set.");
+}
+
+template <class VolumeSeriesType, class ProjectionStackType>
+void
 FourDSARTConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::GenerateInputRequestedRegion()
 {
   typename Superclass::InputImagePointer inputPtr = const_cast<VolumeSeriesType *>(this->GetInput());
@@ -234,12 +244,6 @@ FourDSARTConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::Ge
   m_SubtractFilter->SetInput2(m_FourDToProjectionStackFilter->GetOutput());
   m_SubtractFilter->SetInput1(m_ExtractFilter->GetOutput());
 
-  // For the same reason, set geometry now
-  // Check and set geometry
-  if (this->GetGeometry() == nullptr)
-  {
-    itkGenericExceptionMacro(<< "The geometry of the reconstruction has not been set");
-  }
   m_FourDToProjectionStackFilter->SetGeometry(this->m_Geometry);
   m_ProjectionStackToFourDFilter->SetGeometry(this->m_Geometry);
   m_DisplacedDetectorFilter->SetGeometry(this->m_Geometry);

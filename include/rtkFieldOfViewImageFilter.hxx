@@ -190,6 +190,16 @@ FieldOfViewImageFilter<TInputImage, TOutputImage>::ComputeFOVRadius(const FOVRad
 
 template <class TInputImage, class TOutputImage>
 void
+FieldOfViewImageFilter<TInputImage, TOutputImage>::VerifyPreconditions() ITKv5_CONST
+{
+  this->Superclass::VerifyPreconditions();
+
+  if (this->m_Geometry.IsNull())
+    itkExceptionMacro(<< "Geometry has not been set.");
+}
+
+template <class TInputImage, class TOutputImage>
+void
 FieldOfViewImageFilter<TInputImage, TOutputImage>::BeforeThreadedGenerateData()
 {
   // The radius of the FOV is computed with linear programming.
