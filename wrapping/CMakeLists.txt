@@ -5,7 +5,7 @@ set(WRAPPER_SUBMODULE_ORDER
   itkVectorRTK
   itkCovariantVectorRTK
   itkPointRTK
-  #itkContinuousIndexRTK
+  itkContinuousIndexRTK
   itkMatrixRTK
   itkVariableLengthVectorRTK
   itkImageBaseRTK

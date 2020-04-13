@@ -1,29 +1,24 @@
-#-----------------------------------------------------------------------------
-# itk::UnaryFunctorImageFilter<itk::Image<u, d>, itk::Image<t, d>,
-#   rtk::Function::ObiAttenuation<u, t>>
-#-----------------------------------------------------------------------------
+set(WRAPPER_AUTO_INCLUDE_HEADERS OFF)
+itk_wrap_named_class("rtk::Function::ObiAttenuation" "rtkFunctionObiAttenuation")
+  foreach(t ${WRAP_ITK_REAL})
+    itk_wrap_template("${ITKM_UI}${ITKM_${t}}" "${ITKT_UI}, ${ITKT_${t}}")
+  endforeach()
+itk_end_wrap_class()
+set(WRAPPER_AUTO_INCLUDE_HEADERS ON)
+
 itk_wrap_class("itk::UnaryFunctorImageFilter" POINTER)
-  foreach(d ${ITK_WRAP_IMAGE_DIMS})
+  foreach(d 2 3)
     foreach(t ${WRAP_ITK_REAL})
-      foreach(u ${WRAP_ITK_SCALARS})
-        itk_wrap_template("I${ITKM_${u}}${d}I${ITKM_${t}}${d}OA${ITKM_${u}}${ITKM_${t}}" "itk::Image<${ITKT_${u}}, ${d}>, itk::Image<${ITKT_${t}}, ${d}>, rtk::Function::ObiAttenuation< ${ITKM_${u}},${ITKM_${t}} >")
-      endforeach()
+      itk_wrap_template("I${ITKM_UI}${d}I${ITKM_${t}}${d}OA${ITKM_UI}${ITKM_${t}}"
+                        "itk::Image<${ITKT_UI}, ${d}>, itk::Image<${ITKT_${t}}, ${d}>, rtk::Function::ObiAttenuation< ${ITKT_UI},${ITKT_${t}} >")
     endforeach()
   endforeach()
 itk_end_wrap_class()
 
-#-----------------------------------------------------------------------------
-# rtk::VarianObiRawImageFilter
-#-----------------------------------------------------------------------------
-# TInputImage must have integer pixel type because of internal
-#   rtkI0EstimationProjectionFilter concept checking
-
 itk_wrap_class("rtk::VarianObiRawImageFilter" POINTER)
-  foreach(d ${ITK_WRAP_IMAGE_DIMS})
+  foreach(d 2 3)
     foreach(t ${WRAP_ITK_REAL})
-      foreach(u ${WRAP_ITK_SCALARS})
-        itk_wrap_template("I${ITKM_${u}}${d}I${ITKM_${t}}${d}" "itk::Image<${ITKT_${u}}, ${d}>, itk::Image<${ITKT_${t}}, ${d}>")
-      endforeach()
+      itk_wrap_template("I${ITKM_UI}${d}I${ITKM_${t}}${d}" "itk::Image<${ITKT_UI}, ${d}>, itk::Image<${ITKT_${t}}, ${d}>")
     endforeach()
   endforeach()
 itk_end_wrap_class()
