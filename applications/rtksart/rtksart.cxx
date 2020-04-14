@@ -119,6 +119,11 @@ main(int argc, char * argv[])
     sart->SetEnforcePositivity(true);
   }
 
+  if (args_info.divisionthreshold_given)
+  {
+    sart->SetDivisionThreshold(args_info.divisionthreshold_arg);
+  }
+
   REPORT_ITERATIONS(sart, rtk::SARTConeBeamReconstructionFilter<OutputImageType>, OutputImageType)
 
   TRY_AND_EXIT_ON_ITK_EXCEPTION(sart->Update())

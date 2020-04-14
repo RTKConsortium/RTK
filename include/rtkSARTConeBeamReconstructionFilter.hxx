@@ -155,6 +155,7 @@ void
 SARTConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>::GenerateOutputInformation()
 {
   m_DisplacedDetectorFilter->SetDisable(m_DisableDisplacedDetectorFilter);
+  m_DivideProjectionFilter->SetThreshold(m_DivisionThreshold);
 
   // We only set the first sub-stack at that point, the rest will be
   // requested in the GenerateData function
