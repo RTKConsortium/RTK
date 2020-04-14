@@ -174,15 +174,6 @@ public:
   using DisplacedDetectorFilterType = rtk::DisplacedDetectorImageFilter<TOutputImage>;
   using GatingWeightsFilterType = rtk::MultiplyByVectorImageFilter<TOutputImage>;
 
-  /** Pass the ForwardProjection filter to the conjugate gradient operator */
-  void
-  SetForwardProjectionFilter(ForwardProjectionType _arg) override;
-
-  /** Pass the backprojection filter to the conjugate gradient operator and to the back projection filter generating the
-   * B of AX=B */
-  void
-  SetBackProjectionFilter(BackProjectionType _arg) override;
-
   /** Pass the geometry to all filters needing it */
   itkSetObjectMacro(Geometry, ThreeDCircularProjectionGeometry);
 

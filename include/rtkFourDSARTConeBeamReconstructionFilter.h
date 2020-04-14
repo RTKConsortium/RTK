@@ -196,14 +196,6 @@ public:
   itkGetMacro(EnforcePositivity, bool);
   itkSetMacro(EnforcePositivity, bool);
 
-  /** Select the ForwardProjection filter */
-  void
-  SetForwardProjectionFilter(ForwardProjectionType _arg) override;
-
-  /** Select the backprojection filter */
-  void
-  SetBackProjectionFilter(BackProjectionType _arg) override;
-
   /** Pass the interpolation weights to subfilters */
   void
   SetWeights(const itk::Array2D<float> _arg);

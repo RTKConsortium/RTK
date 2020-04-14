@@ -166,33 +166,6 @@ typename MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts,
 }
 
 template <class TOutputImage, class TPhotonCounts, class TSpectrum>
-void
-MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectrum>::SetForwardProjectionFilter(
-  ForwardProjectionType _arg)
-{
-  if (_arg != this->GetForwardProjectionFilter())
-  {
-    Superclass::SetForwardProjectionFilter(_arg);
-    m_ForwardProjectionFilter = this->InstantiateForwardProjectionFilter(_arg); // The multi-component one
-    m_SingleComponentForwardProjectionFilter =
-      InstantiateSingleComponentForwardProjectionFilter(_arg); // The single-component one
-  }
-}
-
-template <class TOutputImage, class TPhotonCounts, class TSpectrum>
-void
-MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectrum>::SetBackProjectionFilter(
-  BackProjectionType _arg)
-{
-  if (_arg != this->GetBackProjectionFilter())
-  {
-    Superclass::SetBackProjectionFilter(_arg);
-    m_GradientsBackProjectionFilter = this->InstantiateBackProjectionFilter(_arg);
-    m_HessiansBackProjectionFilter = this->InstantiateHessiansBackProjectionFilter(_arg);
-  }
-}
-
-template <class TOutputImage, class TPhotonCounts, class TSpectrum>
 typename MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectrum>::
   SingleComponentForwardProjectionFilterType::Pointer
   MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectrum>::
@@ -334,6 +307,17 @@ MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectru
 {
   typename TPhotonCounts::RegionType largest = this->GetInputPhotonCounts()->GetLargestPossibleRegion();
   m_NumberOfProjections = largest.GetSize()[TPhotonCounts::ImageDimension - 1];
+
+  // Set forward projection filter
+  m_ForwardProjectionFilter =
+    this->InstantiateForwardProjectionFilter(this->m_CurrentForwardProjectionConfiguration); // The multi-component one
+  m_SingleComponentForwardProjectionFilter = InstantiateSingleComponentForwardProjectionFilter(
+    this->m_CurrentForwardProjectionConfiguration); // The single-component one
+
+  // Set back projection filter
+  m_GradientsBackProjectionFilter = this->InstantiateBackProjectionFilter(this->m_CurrentBackProjectionConfiguration);
+  m_HessiansBackProjectionFilter =
+    this->InstantiateHessiansBackProjectionFilter(this->m_CurrentBackProjectionConfiguration);
 
   // Pre-compute the number of projections in each subset
   m_NumberOfProjectionsInSubset.clear();

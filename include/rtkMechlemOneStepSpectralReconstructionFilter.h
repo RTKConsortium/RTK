@@ -229,14 +229,6 @@ public:
   using MultiplyGradientFilterType = itk::MultiplyImageFilter<TGradientsImage, SingleComponentImageType>;
 #endif
 
-  /** Instantiate the forward projection filters */
-  void
-  SetForwardProjectionFilter(ForwardProjectionType _arg) override;
-
-  /** Instantiate the back projection filters */
-  void
-  SetBackProjectionFilter(BackProjectionType _arg) override;
-
   /** Pass the geometry to all filters needing it */
   itkSetConstObjectMacro(Geometry, ThreeDCircularProjectionGeometry);
 

@@ -125,33 +125,6 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage, TSingleComponentImag
 
 template <typename TOutputImage, typename TSingleComponentImage, typename TWeightsImage>
 void
-ConjugateGradientConeBeamReconstructionFilter<TOutputImage, TSingleComponentImage, TWeightsImage>::
-  SetForwardProjectionFilter(ForwardProjectionType _arg)
-{
-  if (_arg != this->GetForwardProjectionFilter())
-  {
-    Superclass::SetForwardProjectionFilter(_arg);
-    m_ForwardProjectionFilter = this->InstantiateForwardProjectionFilter(_arg);
-    m_CGOperator->SetForwardProjectionFilter(m_ForwardProjectionFilter);
-  }
-}
-
-template <typename TOutputImage, typename TSingleComponentImage, typename TWeightsImage>
-void
-ConjugateGradientConeBeamReconstructionFilter<TOutputImage, TSingleComponentImage, TWeightsImage>::
-  SetBackProjectionFilter(BackProjectionType _arg)
-{
-  if (_arg != this->GetBackProjectionFilter())
-  {
-    Superclass::SetBackProjectionFilter(_arg);
-    m_BackProjectionFilter = this->InstantiateBackProjectionFilter(_arg);
-    m_BackProjectionFilterForB = this->InstantiateBackProjectionFilter(_arg);
-    m_CGOperator->SetBackProjectionFilter(m_BackProjectionFilter);
-  }
-}
-
-template <typename TOutputImage, typename TSingleComponentImage, typename TWeightsImage>
-void
 ConjugateGradientConeBeamReconstructionFilter<TOutputImage, TSingleComponentImage, TWeightsImage>::VerifyPreconditions()
   ITKv5_CONST
 {
@@ -208,6 +181,18 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage, TSingleComponentImag
 #endif
   m_ConjugateGradientFilter->SetA(m_CGOperator.GetPointer());
   m_ConjugateGradientFilter->SetIterationCosts(m_IterationCosts);
+
+  // Set forward projection filter
+  m_ForwardProjectionFilter = this->InstantiateForwardProjectionFilter(this->m_CurrentForwardProjectionConfiguration);
+  // Pass the ForwardProjection filter to the conjugate gradient operator
+  m_CGOperator->SetForwardProjectionFilter(m_ForwardProjectionFilter);
+
+  // Set back projection filter
+  m_BackProjectionFilter = this->InstantiateBackProjectionFilter(this->m_CurrentBackProjectionConfiguration);
+  // Pass the backprojection filter to the conjugate gradient operator and to the back projection filter generating the
+  // B of AX=B
+  m_BackProjectionFilterForB = this->InstantiateBackProjectionFilter(this->m_CurrentBackProjectionConfiguration);
+  m_CGOperator->SetBackProjectionFilter(m_BackProjectionFilter);
 
   // Set runtime connections
   m_ConstantVolumeSource->SetInformationFromImage(this->GetInputVolume());

@@ -310,14 +310,6 @@ public:
   using ForwardProjectionType = typename Superclass::ForwardProjectionType;
   using BackProjectionType = typename Superclass::BackProjectionType;
 
-  /** Pass the ForwardProjection filter to SingleProjectionToFourDFilter */
-  void
-  SetForwardProjectionFilter(ForwardProjectionType _arg) override;
-
-  /** Pass the backprojection filter to ProjectionStackToFourD*/
-  void
-  SetBackProjectionFilter(BackProjectionType _arg) override;
-
   /** Pass the interpolation weights to SingleProjectionToFourDFilter */
   virtual void
   SetWeights(const itk::Array2D<float> _arg);

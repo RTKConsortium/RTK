@@ -64,29 +64,6 @@ OSEMConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>::OSEMConeBeamRe
 
 template <class TVolumeImage, class TProjectionImage>
 void
-OSEMConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>::SetForwardProjectionFilter(ForwardProjectionType _arg)
-{
-  if (_arg != this->GetForwardProjectionFilter())
-  {
-    Superclass::SetForwardProjectionFilter(_arg);
-    m_ForwardProjectionFilter = this->InstantiateForwardProjectionFilter(_arg);
-  }
-}
-
-template <class TVolumeImage, class TProjectionImage>
-void
-OSEMConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>::SetBackProjectionFilter(BackProjectionType _arg)
-{
-  if (_arg != this->GetBackProjectionFilter())
-  {
-    Superclass::SetBackProjectionFilter(_arg);
-    m_BackProjectionFilter = this->InstantiateBackProjectionFilter(_arg);
-    m_BackProjectionNormalizationFilter = this->InstantiateBackProjectionFilter(_arg);
-  }
-}
-
-template <class TVolumeImage, class TProjectionImage>
-void
 OSEMConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>::VerifyPreconditions() ITKv5_CONST
 {
   this->Superclass::VerifyPreconditions();
@@ -116,6 +93,14 @@ OSEMConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>::GenerateOutput
   // We only set the first sub-stack at that point, the rest will be
   // requested in the GenerateData function
   typename ExtractFilterType::InputImageRegionType projRegion;
+
+  // Set forward projection filter
+  m_ForwardProjectionFilter = this->InstantiateForwardProjectionFilter(this->m_CurrentForwardProjectionConfiguration);
+
+  // Set back projection filter
+  m_BackProjectionFilter = this->InstantiateBackProjectionFilter(this->m_CurrentBackProjectionConfiguration);
+  m_BackProjectionNormalizationFilter =
+    this->InstantiateBackProjectionFilter(this->m_CurrentBackProjectionConfiguration);
 
   projRegion = this->GetInput(1)->GetLargestPossibleRegion();
   m_ExtractFilter->SetExtractionRegion(projRegion);

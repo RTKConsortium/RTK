@@ -59,18 +59,6 @@ IterativeFDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecisio
 
 template <class TInputImage, class TOutputImage, class TFFTPrecision>
 void
-IterativeFDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecision>::SetForwardProjectionFilter(
-  ForwardProjectionType _arg)
-{
-  if (_arg != this->GetForwardProjectionFilter())
-  {
-    Superclass::SetForwardProjectionFilter(_arg);
-    m_ForwardProjectionFilter = this->InstantiateForwardProjectionFilter(_arg);
-  }
-}
-
-template <class TInputImage, class TOutputImage, class TFFTPrecision>
-void
 IterativeFDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecision>::VerifyPreconditions() ITKv5_CONST
 {
   this->Superclass::VerifyPreconditions();
@@ -96,6 +84,9 @@ template <class TInputImage, class TOutputImage, class TFFTPrecision>
 void
 IterativeFDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecision>::GenerateOutputInformation()
 {
+  // Set forward projection filter
+  m_ForwardProjectionFilter = this->InstantiateForwardProjectionFilter(this->m_CurrentForwardProjectionConfiguration);
+
   // Set FDK parameters
   m_FDKFilter->GetRampFilter()->SetTruncationCorrection(m_TruncationCorrection);
   m_FDKFilter->GetRampFilter()->SetHannCutFrequency(m_HannCutFrequency);

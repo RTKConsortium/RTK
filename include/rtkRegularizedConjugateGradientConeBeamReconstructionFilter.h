@@ -161,14 +161,6 @@ public:
   using WaveletsDenoisingFilterType = rtk::DeconstructSoftThresholdReconstructImageFilter<TImage>;
   using SoftThresholdFilterType = rtk::SoftThresholdImageFilter<TImage, TImage>;
 
-  /** Pass the ForwardProjection filter to SingleProjectionToFourDFilter */
-  void
-  SetForwardProjectionFilter(ForwardProjectionType _arg) override;
-
-  /** Pass the backprojection filter to ProjectionStackToFourD*/
-  void
-  SetBackProjectionFilter(BackProjectionType _arg) override;
-
   // Regularization steps to perform
   itkSetMacro(PerformPositivity, bool);
   itkGetMacro(PerformPositivity, bool);

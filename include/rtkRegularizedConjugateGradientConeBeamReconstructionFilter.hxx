@@ -125,28 +125,6 @@ RegularizedConjugateGradientConeBeamReconstructionFilter<TOutputImage>::GetSuppo
 
 template <typename TImage>
 void
-RegularizedConjugateGradientConeBeamReconstructionFilter<TImage>::SetForwardProjectionFilter(ForwardProjectionType _arg)
-{
-  if (_arg != this->GetForwardProjectionFilter())
-  {
-    Superclass::SetForwardProjectionFilter(_arg);
-    m_CGFilter->SetForwardProjectionFilter(_arg);
-  }
-}
-
-template <typename TImage>
-void
-RegularizedConjugateGradientConeBeamReconstructionFilter<TImage>::SetBackProjectionFilter(BackProjectionType _arg)
-{
-  if (_arg != this->GetBackProjectionFilter())
-  {
-    Superclass::SetBackProjectionFilter(_arg);
-    m_CGFilter->SetBackProjectionFilter(_arg);
-  }
-}
-
-template <typename TImage>
-void
 RegularizedConjugateGradientConeBeamReconstructionFilter<TImage>::VerifyPreconditions() ITKv5_CONST
 {
   this->Superclass::VerifyPreconditions();
@@ -174,6 +152,10 @@ RegularizedConjugateGradientConeBeamReconstructionFilter<TImage>::GenerateOutput
   // Construct the pipeline, adding regularization filters if the user wants them
   // Connect the last filter's output to the next filter's input using the currentDownstreamFilter pointer
   typename itk::ImageToImageFilter<TImage, TImage>::Pointer currentDownstreamFilter;
+
+  // Set projection filters
+  m_CGFilter->SetForwardProjectionFilter(this->m_CurrentForwardProjectionConfiguration);
+  m_CGFilter->SetBackProjectionFilter(this->m_CurrentBackProjectionConfiguration);
 
   // The conjugate gradient filter is the only part that must be in the pipeline
   // whatever was the user wants

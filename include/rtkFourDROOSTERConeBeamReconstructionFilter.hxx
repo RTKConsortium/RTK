@@ -160,30 +160,6 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>:
 
 template <typename VolumeSeriesType, typename ProjectionStackType>
 void
-FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::SetForwardProjectionFilter(
-  ForwardProjectionType _arg)
-{
-  if (_arg != this->GetForwardProjectionFilter())
-  {
-    Superclass::SetForwardProjectionFilter(_arg);
-    m_FourDCGFilter->SetForwardProjectionFilter(_arg);
-  }
-}
-
-template <typename VolumeSeriesType, typename ProjectionStackType>
-void
-FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::SetBackProjectionFilter(
-  BackProjectionType _arg)
-{
-  if (_arg != this->GetBackProjectionFilter())
-  {
-    Superclass::SetBackProjectionFilter(_arg);
-    m_FourDCGFilter->SetBackProjectionFilter(_arg);
-  }
-}
-
-template <typename VolumeSeriesType, typename ProjectionStackType>
-void
 FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::SetWeights(
   const itk::Array2D<float> _arg)
 {
@@ -265,6 +241,10 @@ void
 FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::GenerateOutputInformation()
 {
   const int Dimension = VolumeType::ImageDimension;
+
+  // Set projection filters
+  m_FourDCGFilter->SetForwardProjectionFilter(this->m_CurrentForwardProjectionConfiguration);
+  m_FourDCGFilter->SetBackProjectionFilter(this->m_CurrentBackProjectionConfiguration);
 
   // The 4D conjugate gradient filter is the only part that must be in the pipeline
   // whatever was the user wants
