@@ -84,7 +84,8 @@ protected:
   ~ParkerShortScanImageFilter() override = default;
 
   /** Checks that inputs are correctly set. */
-  void VerifyPreconditions() ITKv5_CONST override;
+  void
+  VerifyPreconditions() ITKv5_CONST override;
 
   void
   DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread) override;
