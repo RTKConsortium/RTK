@@ -147,6 +147,7 @@ public:
   /** Some convenient type alias. */
   using VolumeType = TVolumeImage;
   using ProjectionType = TProjectionImage;
+  using ProjectionPixelType = typename ProjectionType::PixelType;
 
   /** Typedefs of each subfilter of this composite filter */
   using ExtractFilterType = itk::ExtractImageFilter<ProjectionType, ProjectionType>;
@@ -201,6 +202,13 @@ public:
   itkSetMacro(DisableDisplacedDetectorFilter, bool);
   itkGetMacro(DisableDisplacedDetectorFilter, bool);
 
+  /** Set the threshold below which pixels in the denominator in the projection space are considered zero. The division
+   * by zero will then be evaluated at zero. Avoid noise magnification from low projections values when working with
+   * noisy and/or simulated data.
+   */
+  itkSetMacro(DivisionThreshold, ProjectionPixelType);
+  itkGetMacro(DivisionThreshold, ProjectionPixelType);
+
 protected:
   SARTConeBeamReconstructionFilter();
   ~SARTConeBeamReconstructionFilter() override = default;
@@ -242,6 +250,8 @@ protected:
   typename ThresholdFilterType::Pointer          m_ThresholdFilter;
   typename DisplacedDetectorFilterType::Pointer  m_DisplacedDetectorFilter;
   typename GatingWeightsFilterType::Pointer      m_GatingWeightsFilter;
+
+  ProjectionPixelType m_DivisionThreshold;
 
   bool m_EnforcePositivity;
   bool m_DisableDisplacedDetectorFilter;
