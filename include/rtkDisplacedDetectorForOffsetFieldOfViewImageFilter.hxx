@@ -34,8 +34,8 @@ namespace rtk
 
 template <class TInputImage, class TOutputImage>
 DisplacedDetectorForOffsetFieldOfViewImageFilter<TInputImage,
-                                                 TOutputImage>::DisplacedDetectorForOffsetFieldOfViewImageFilter()
-= default;
+                                                 TOutputImage>::DisplacedDetectorForOffsetFieldOfViewImageFilter() =
+  default;
 
 /**
  * When the detector is displaced, one needs to zero pad the input data on the

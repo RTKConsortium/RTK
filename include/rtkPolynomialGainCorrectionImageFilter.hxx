@@ -29,8 +29,7 @@ namespace rtk
 {
 
 template <class TInputImage, class TOutputImage>
-PolynomialGainCorrectionImageFilter<TInputImage, TOutputImage>::PolynomialGainCorrectionImageFilter()
-= default;
+PolynomialGainCorrectionImageFilter<TInputImage, TOutputImage>::PolynomialGainCorrectionImageFilter() = default;
 
 template <class TInputImage, class TOutputImage>
 void

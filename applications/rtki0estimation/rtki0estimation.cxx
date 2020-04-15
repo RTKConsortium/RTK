@@ -61,7 +61,7 @@ main(int argc, char * argv[])
 
   int          istep = 1;
   unsigned int imin = 1;
-  auto imax = (unsigned int)subsetRegion.GetSize()[2];
+  auto         imax = (unsigned int)subsetRegion.GetSize()[2];
   if (args_info.range_given)
   {
     if ((args_info.range_arg[0] <= args_info.range_arg[2]) &&

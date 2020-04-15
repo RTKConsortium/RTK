@@ -187,8 +187,8 @@ I0EstimationProjectionFilter<TInputImage, TOutputImage, bitShift>::AfterThreaded
   // If estimated I0 at the boundaries, either startIdx or Imax then we missed
   // smth or no background mode
 
-  auto widthval = (InputImagePixelType)(float)(maxVal >> 1);
-  unsigned int        lowBound = maxId;
+  auto         widthval = (InputImagePixelType)(float)(maxVal >> 1);
+  unsigned int lowBound = maxId;
   while ((m_Histogram[lowBound] > widthval) && (lowBound > 0))
   {
     lowBound--;

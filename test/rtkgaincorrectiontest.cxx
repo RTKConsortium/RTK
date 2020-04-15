@@ -217,7 +217,7 @@ generateExpectedOutput(InputImageType::Pointer  inputImage,
       px = (px >= 0) ? px : 0;
 
       float correctedValue = 0.f;
-      auto powValue = static_cast<float>(px);
+      auto  powValue = static_cast<float>(px);
       for (int m = 0; m < modelOrder; ++m)
       {
         int   gainidx = m * sizeI2 + j * sizeI + i;

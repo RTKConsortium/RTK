@@ -8,9 +8,10 @@ then
     echo "$(basename $0) must be run from the ITK source directory"
 fi
 for i in \
+  ${RTK_DIR}/cmake/*.cxx \
   ${RTK_DIR}/include/*.h* \
   ${RTK_DIR}/src/*.c{xx,u} \
-  ${RTK_DIR}/applications/*/*.{h,cxx} \
+  ${RTK_DIR}/applications/*/*.{h,cxx,hxx} \
   ${RTK_DIR}/examples/FirstReconstruction/*.cxx \
   ${RTK_DIR}/utilities/ITKCudaCommon/include/*.h* \
   ${RTK_DIR}/utilities/ITKCudaCommon/src/*.cxx \

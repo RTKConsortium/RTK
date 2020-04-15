@@ -30,8 +30,7 @@ namespace rtk
 {
 
 template <class TInputImage, class TOutputImage>
-RayQuadricIntersectionImageFilter<TInputImage, TOutputImage>::RayQuadricIntersectionImageFilter()
-= default;
+RayQuadricIntersectionImageFilter<TInputImage, TOutputImage>::RayQuadricIntersectionImageFilter() = default;
 
 template <class TInputImage, class TOutputImage>
 void

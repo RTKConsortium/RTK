@@ -29,8 +29,7 @@ namespace rtk
 {
 
 template <class TInputImage, class TOutputImage>
-DisplacedDetectorImageFilter<TInputImage, TOutputImage>::DisplacedDetectorImageFilter()
-= default;
+DisplacedDetectorImageFilter<TInputImage, TOutputImage>::DisplacedDetectorImageFilter() = default;
 
 template <class TInputImage, class TOutputImage>
 void

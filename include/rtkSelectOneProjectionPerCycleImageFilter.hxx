@@ -25,8 +25,7 @@ namespace rtk
 {
 
 template <typename ProjectionStackType>
-SelectOneProjectionPerCycleImageFilter<ProjectionStackType>::SelectOneProjectionPerCycleImageFilter()
-= default;
+SelectOneProjectionPerCycleImageFilter<ProjectionStackType>::SelectOneProjectionPerCycleImageFilter() = default;
 
 template <typename ProjectionStackType>
 void

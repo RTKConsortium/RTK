@@ -36,8 +36,7 @@ DaubechiesWaveletsConvolutionImageFilter<TImage>::DaubechiesWaveletsConvolutionI
 }
 
 template <typename TImage>
-DaubechiesWaveletsConvolutionImageFilter<TImage>::~DaubechiesWaveletsConvolutionImageFilter()
-= default;
+DaubechiesWaveletsConvolutionImageFilter<TImage>::~DaubechiesWaveletsConvolutionImageFilter() = default;
 
 template <typename TImage>
 void

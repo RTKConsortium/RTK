@@ -74,7 +74,8 @@ public:
   }
 
   HncImageIOFactory(const Self &) = delete;
-  void operator=(const Self &) = delete;
+  void
+  operator=(const Self &) = delete;
 
 protected:
   HncImageIOFactory();

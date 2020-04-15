@@ -44,4 +44,4 @@ void RTK_EXPORT
   }
 }
 
-} // end namespace rtk
+} // namespace itk

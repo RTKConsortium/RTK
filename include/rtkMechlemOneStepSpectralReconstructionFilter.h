@@ -88,7 +88,8 @@ namespace rtk
  *            URL="\ref rtk::SeparableQuadraticSurrogateRegularizationImageFilter"];
  * MultiplyRegulGradient [ label="itk::MultiplyImageFilter" URL="\ref itk::MultiplyImageFilter" style=dashed];
  * MultiplyRegulHessian [ label="itk::MultiplyImageFilter" URL="\ref itk::MultiplyImageFilter" style=dashed];
- * MultiplyGradientToBeBackProjected [ label="itk::MultiplyImageFilter" URL="\ref itk::MultiplyImageFilter" style=dashed];
+ * MultiplyGradientToBeBackProjected [ label="itk::MultiplyImageFilter"
+ *                                     URL="\ref itk::MultiplyImageFilter" style=dashed];
  * AddGradients [ label="itk::AddImageFilter" URL="\ref itk::AddImageFilter"];
  * AddHessians [ label="rtk::AddMatrixAndDiagonalImageFilter" URL="\ref rtk::AddMatrixAndDiagonalImageFilter"];
  * Newton [ label="rtk::GetNewtonUpdateImageFilter" URL="\ref rtk::GetNewtonUpdateImageFilter"];
