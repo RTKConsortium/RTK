@@ -40,6 +40,7 @@ OSEMConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>::OSEMConeBeamRe
   m_NumberOfIterations = 3;
   m_SigmaZero = -1;
   m_Alpha = -1;
+  m_BetaRegularization = 0.01;
 
   // Create each filter of the composite filter
   m_ExtractFilter = ExtractFilterType::New();
@@ -47,6 +48,7 @@ OSEMConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>::OSEMConeBeamRe
   m_ConstantVolumeSource = ConstantVolumeSourceType::New();
   m_ZeroConstantProjectionStackSource = ConstantProjectionSourceType::New();
   m_DivideProjectionFilter = DivideProjectionFilterType::New();
+  m_DePierroRegularizationFilter = DePierroRegularizationFilterType::New();
 
   // Create the filters required for the normalization of the
   // backprojection
@@ -55,7 +57,7 @@ OSEMConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>::OSEMConeBeamRe
 
   // Permanent internal connections
   m_DivideProjectionFilter->SetInput1(m_ExtractFilter->GetOutput());
-  m_MultiplyFilter->SetInput1(m_DivideVolumeFilter->GetOutput());
+  m_DivideVolumeFilter->SetInput1(m_MultiplyFilter->GetOutput());
 
   // Default parameters
   m_ExtractFilter->SetDirectionCollapseToSubmatrix();
@@ -185,11 +187,15 @@ OSEMConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>::GenerateOutput
 
   m_BackProjectionNormalizationFilter->SetTranspose(false);
 
-  m_DivideVolumeFilter->SetInput1(m_BackProjectionFilter->GetOutput());
-  m_DivideVolumeFilter->SetInput2(m_BackProjectionNormalizationFilter->GetOutput());
-  m_DivideVolumeFilter->SetConstant(0);
-
+  m_MultiplyFilter->SetInput1(m_BackProjectionFilter->GetOutput());
   m_MultiplyFilter->SetInput2(this->GetInput(0));
+
+  m_DePierroRegularizationFilter->SetInput(0, this->GetInput(0));
+  m_DePierroRegularizationFilter->SetInput(1, m_MultiplyFilter->GetOutput());
+  m_DePierroRegularizationFilter->SetInput(2, m_BackProjectionNormalizationFilter->GetOutput());
+  m_DePierroRegularizationFilter->SetBeta(m_BetaRegularization);
+  m_DivideVolumeFilter->SetInput2(m_DePierroRegularizationFilter->GetOutput());
+  m_DivideVolumeFilter->SetConstant(0);
 
   m_ForwardProjectionFilter->SetInput(0, m_ZeroConstantProjectionStackSource->GetOutput());
   m_ForwardProjectionFilter->SetInput(1, this->GetInput(0));
@@ -223,23 +229,23 @@ OSEMConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>::GenerateOutput
   }
 
   m_DivideProjectionFilter->SetInput2(m_ForwardProjectionFilter->GetOutput());
-  m_DivideProjectionFilter->SetConstant(0);
+  m_DivideProjectionFilter->SetConstant(1);
 
   m_ForwardProjectionFilter->SetGeometry(this->m_Geometry);
   m_BackProjectionFilter->SetGeometry(this->m_Geometry);
   m_BackProjectionNormalizationFilter->SetGeometry(this->m_Geometry);
 
   // Update output information
-  m_MultiplyFilter->UpdateOutputInformation();
-  this->GetOutput()->SetOrigin(m_MultiplyFilter->GetOutput()->GetOrigin());
-  this->GetOutput()->SetSpacing(m_MultiplyFilter->GetOutput()->GetSpacing());
-  this->GetOutput()->SetDirection(m_MultiplyFilter->GetOutput()->GetDirection());
-  this->GetOutput()->SetLargestPossibleRegion(m_MultiplyFilter->GetOutput()->GetLargestPossibleRegion());
+  m_DivideVolumeFilter->UpdateOutputInformation();
+  this->GetOutput()->SetOrigin(m_DivideVolumeFilter->GetOutput()->GetOrigin());
+  this->GetOutput()->SetSpacing(m_DivideVolumeFilter->GetOutput()->GetSpacing());
+  this->GetOutput()->SetDirection(m_DivideVolumeFilter->GetOutput()->GetDirection());
+  this->GetOutput()->SetLargestPossibleRegion(m_DivideVolumeFilter->GetOutput()->GetLargestPossibleRegion());
 
   // Set memory management flags
   m_ForwardProjectionFilter->ReleaseDataFlagOn();
   m_DivideProjectionFilter->ReleaseDataFlagOn();
-  m_DivideVolumeFilter->ReleaseDataFlagOn();
+  m_MultiplyFilter->ReleaseDataFlagOn();
 }
 
 template <class TVolumeImage, class TProjectionImage>
@@ -298,19 +304,24 @@ OSEMConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>::GenerateData()
       projectionsProcessedInSubset++;
       if ((projectionsProcessedInSubset == m_NumberOfProjectionsPerSubset) || (i == nProj - 1))
       {
-        m_DivideVolumeFilter->SetInput2(m_BackProjectionNormalizationFilter->GetOutput());
-        m_DivideVolumeFilter->SetInput1(m_BackProjectionFilter->GetOutput());
+        m_MultiplyFilter->SetInput1(m_BackProjectionFilter->GetOutput());
 
-        m_MultiplyFilter->SetInput1(m_DivideVolumeFilter->GetOutput());
-        m_MultiplyFilter->Update();
+        m_DivideVolumeFilter->SetInput1(m_MultiplyFilter->GetOutput());
+        m_DePierroRegularizationFilter->SetInput(1, m_MultiplyFilter->GetOutput());
+        m_DePierroRegularizationFilter->SetInput(2, m_BackProjectionNormalizationFilter->GetOutput());
+        m_DePierroRegularizationFilter->Update();
+
+        m_DivideVolumeFilter->SetInput2(m_DePierroRegularizationFilter->GetOutput());
+        m_DivideVolumeFilter->Update();
 
         // To start a new subset:
         // - plug the output of the pipeline back into the Forward projection filter
         // - set the input of the Back projection filter to zero
-        pimg = m_MultiplyFilter->GetOutput();
+        pimg = m_DivideVolumeFilter->GetOutput();
         pimg->DisconnectPipeline();
 
         m_ForwardProjectionFilter->SetInput(1, pimg);
+        m_DePierroRegularizationFilter->SetInput(0, pimg);
         m_MultiplyFilter->SetInput2(pimg);
         m_BackProjectionFilter->SetInput(0, m_ConstantVolumeSource->GetOutput());
         m_BackProjectionNormalizationFilter->SetInput(0, m_ConstantVolumeSource->GetOutput());
