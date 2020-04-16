@@ -287,6 +287,8 @@ SetBackProjectionFromGgo(const TArgsInfo & args_info, TIterativeReconstructionFi
 {
   switch (args_info.bp_arg)
   {
+    case (-1): // bp__NULL, keep default
+      break;
     case (0): // bp_arg_VoxelBasedBackProjection
       recon->SetBackProjectionFilter(TIterativeReconstructionFilter::BP_VOXELBASED);
       break;
@@ -322,6 +324,8 @@ SetForwardProjectionFromGgo(const TArgsInfo & args_info, TIterativeReconstructio
 {
   switch (args_info.fp_arg)
   {
+    case (-1): // fp__NULL, keep default
+      break;
     case (0): // fp_arg_Joseph
       recon->SetForwardProjectionFilter(TIterativeReconstructionFilter::FP_JOSEPH);
       break;
