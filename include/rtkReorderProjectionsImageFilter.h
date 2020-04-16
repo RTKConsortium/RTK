@@ -89,7 +89,8 @@ protected:
   ~ReorderProjectionsImageFilter() override = default;
 
   /** Checks that inputs are correctly set. */
-  void VerifyPreconditions() ITKv5_CONST override;
+  void
+  VerifyPreconditions() ITKv5_CONST override;
 
   void
   GenerateData() override;

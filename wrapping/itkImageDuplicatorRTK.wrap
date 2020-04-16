@@ -1,0 +1,13 @@
+list(FIND ITK_WRAP_IMAGE_DIMS "1" _index)
+if (${_index} EQUAL -1)
+  itk_wrap_class("itk::ImageDuplicator" POINTER)
+    # Making sure that all types wrapped in PyBuffer are also wrapped for ImageDuplicator
+    # as this filter is used in the Python NumPy  bridge.
+    UNIQUE(types "D;UC;US;${WRAP_ITK_REAL}")
+    foreach(t ${types})
+      itk_wrap_template("I${ITKM_${t}}1" "itk::Image<${ITKT_${t}}, 1>")
+    endforeach()
+
+  itk_end_wrap_class()
+endif()
+

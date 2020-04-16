@@ -29,4 +29,21 @@ itk_wrap_class("itk::PyBuffer")
     endforeach(d)
   endforeach(t)
 
+  UNIQUE(types "D;UC;US;${WRAP_ITK_REAL}")
+  list(FIND ITK_WRAP_IMAGE_DIMS "1" _indexdim)
+  foreach(t ${types})
+    if (${_indexdim} EQUAL -1)
+      set(PixelType ${t})
+      set(PyBufferTypes I${t}1)
+      configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/PyBufferRTK.i.in
+                 ${CMAKE_CURRENT_BINARY_DIR}/PyBufferRTK.i.temp
+                 @ONLY)
+      file(READ ${CMAKE_CURRENT_BINARY_DIR}/PyBufferRTK.i.temp
+          PyBufferInterfaceTemp)
+      file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/PyBufferRTK.i
+          ${PyBufferInterfaceTemp})
+      itk_wrap_template("I${t}1" "itk::Image<${ITKT_${t}}, 1>")
+    endif()
+  endforeach()
+
 itk_end_wrap_class()

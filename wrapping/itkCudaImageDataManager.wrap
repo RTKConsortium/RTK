@@ -14,7 +14,7 @@ if(RTK_USE_CUDA)
     endif()
 
     # Force VECTOR_COMPONENTS to "2;3;4;5"
-    set(vectorComponents 2 3 4 5)
+    UNIQUE(vectorComponents "${ITK_WRAP_VECTOR_COMPONENTS};2;3;4;5")
     foreach(component ${vectorComponents})
 
       foreach(d ${ITK_WRAP_IMAGE_DIMS})

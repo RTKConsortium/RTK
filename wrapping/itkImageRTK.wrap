@@ -1,37 +1,32 @@
 itk_wrap_class("itk::Image" POINTER)
 
-  # Wrap ITK double missing types
-  if (NOT ITK_WRAP_double)
-    itk_wrap_template("D1" "${ITKT_D}, 1")
-  endif()
-
-  # Wrap ITK unsigned char missing types
-  if (NOT ITK_WRAP_unsigned_char)
-    itk_wrap_template("UC1" "${ITKT_UC}, 1")
-  endif()
-
   # Wrap ITK unsigned short missing types
-  if (NOT ITK_WRAP_unsigned_short)
-    itk_wrap_template("US2" "${ITKT_US}, 2")
-    itk_wrap_template("US3" "${ITKT_US}, 3")
-    itk_wrap_template("US4" "${ITKT_US}, 4")
-  endif()
+  foreach(d 1 2 3 4)
+    list(FIND ITK_WRAP_IMAGE_DIMS ${d} _index)
+    if (${_index} EQUAL -1 OR NOT ITK_WRAP_unsigned_short)
+      itk_wrap_template("US${d}" "${ITKT_US}, ${d}")
+    endif()
+  endforeach()
 
-  # Wrap ITK short combination (required by : rtkLookupTableImageFilter)
+  # Wrap ITK unsigned int missing types
+  itk_wrap_template("UI2" "${ITKT_UI}, 2")
+  itk_wrap_template("UI3" "${ITKT_UI}, 3")
+
+  # Wrap ITK short combination (required by: rtkLookupTableImageFilter)
   if (NOT ITK_WRAP_signed_short)
     itk_wrap_template("SS3" "${ITKT_SS}, 3")
   endif()
 
   # Wrap ITK dimension 1 missing types
   list(FIND ITK_WRAP_IMAGE_DIMS "1" _index)
-  if (${_index} EQUAL -1)
+  if (${_index} EQUAL -1 OR NOT ITK_WRAP_unsigned_char)
+    itk_wrap_template("UC1" "${ITKT_UC}, 1")
+  endif()
+  if (${_index} EQUAL -1 OR NOT ITK_WRAP_float)
     itk_wrap_template("F1" "${ITKT_F}, 1")
-	if (ITK_WRAP_double)
-      itk_wrap_template("D1" "${ITKT_D}, 1")
-    endif()
-	if (ITK_WRAP_unsigned_char)
-      itk_wrap_template("UC1" "${ITKT_UC}, 1")
-    endif()
+  endif()
+  if (${_index} EQUAL -1)
+    itk_wrap_template("D1" "${ITKT_D}, 1")
   endif()
 
   # Wrap ITK dimension 4 missing types
@@ -40,9 +35,6 @@ itk_wrap_class("itk::Image" POINTER)
     itk_wrap_template("F4" "${ITKT_F}, 4")
     if (ITK_WRAP_double)
       itk_wrap_template("D4" "${ITKT_D}, 4")
-    endif()
-    if (ITK_WRAP_unsigned_short)
-      itk_wrap_template("US4" "${ITKT_US}, 4")
     endif()
   endif()
 
