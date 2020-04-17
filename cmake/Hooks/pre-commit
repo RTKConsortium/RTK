@@ -1,0 +1,5 @@
+#!/bin/sh
+echo 'Your work tree has not been configured for RTK development.
+Paste the following commands into a shell:
+ ./utilities/SetupForDevelopment.sh'
+exit 1
