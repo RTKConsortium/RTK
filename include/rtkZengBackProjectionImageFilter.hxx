@@ -40,12 +40,7 @@ template <class TInputImage, class TOutputImage>
 ZengBackProjectionImageFilter<TInputImage, TOutputImage>::ZengBackProjectionImageFilter()
 {
   // Set default parameters
-  m_SigmaZero = 1.5417233052142099;
-  m_Alpha = 0.016241189545787734;
-  m_VectorOrthogonalDetector[0] = 0;
-  m_VectorOrthogonalDetector[1] = 0;
   m_VectorOrthogonalDetector[2] = 1;
-  m_centerVolume.Fill(0);
 
   // Create each filter of the composite filter
   m_AddImageFilter = AddImageFilterType::New();

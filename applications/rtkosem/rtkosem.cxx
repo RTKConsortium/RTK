@@ -102,6 +102,8 @@ main(int argc, char * argv[])
     osem->SetSigmaZero(args_info.sigmazero_arg);
   if (args_info.alphapsf_given)
     osem->SetAlpha(args_info.alphapsf_arg);
+  if (args_info.betaregularization_given)
+    osem->SetBetaRegularization(args_info.betaregularization_arg);
   osem->SetGeometry(geometryReader->GetOutputObject());
 
   osem->SetNumberOfIterations(args_info.niterations_arg);

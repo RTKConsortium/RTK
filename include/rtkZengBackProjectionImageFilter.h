@@ -123,22 +123,22 @@ public:
 
 protected:
   ZengBackProjectionImageFilter();
-  ~ZengBackProjectionImageFilter() ITK_OVERRIDE = default;
+  ~ZengBackProjectionImageFilter() override = default;
 
   /** Apply changes to the input image requested region. */
   void
   GenerateInputRequestedRegion() override;
 
   void
-  GenerateOutputInformation() ITK_OVERRIDE;
+  GenerateOutputInformation() override;
 
   void
-  GenerateData() ITK_OVERRIDE;
+  GenerateData() override;
 
   /** The two inputs should not be in the same space so there is nothing
    * to verify. */
   void
-  VerifyInputInformation() const ITK_OVERRIDE;
+  VerifyInputInformation() const override;
 
   AddImageFilterPointerType          m_AddImageFilter;
   PasteImageFilterPointerType        m_PasteImageFilter;
@@ -162,10 +162,10 @@ private:
   void
   operator=(const Self &) = delete; // purposely not implemented
 
-  float      m_SigmaZero;
-  float      m_Alpha;
-  VectorType m_VectorOrthogonalDetector;
-  PointType  m_centerVolume;
+  float      m_SigmaZero{ 1.5417233052142099 };
+  float      m_Alpha{ 0.016241189545787734 };
+  VectorType m_VectorOrthogonalDetector{ 0. };
+  PointType  m_centerVolume{ 0 };
 };
 
 } // end namespace rtk
