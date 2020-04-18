@@ -27,8 +27,6 @@ template <class TInputImage, class TOutputImage>
 DePierroRegularizationImageFilter<TInputImage, TOutputImage>::DePierroRegularizationImageFilter()
 {
   this->SetNumberOfRequiredInputs(2);
-  // Set default parameters
-  m_Beta = 0.01;
 
   // Create each filter of the composite filter
   m_MultiplyConstant1ImageFilter = MultiplyImageFilterType::New();

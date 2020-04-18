@@ -142,7 +142,7 @@ protected:
   CustomBinaryFilterPointerType   m_CustomBinaryFilter;
 
 private:
-  float m_Beta;
+  float m_Beta{ 0.01 };
 
 }; // end of class
 

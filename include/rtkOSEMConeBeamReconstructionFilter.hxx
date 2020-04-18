@@ -36,12 +36,6 @@ OSEMConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>::OSEMConeBeamRe
 {
   this->SetNumberOfRequiredInputs(2);
 
-  // Set default parameters
-  m_NumberOfIterations = 3;
-  m_SigmaZero = -1;
-  m_Alpha = -1;
-  m_BetaRegularization = 0.01;
-
   // Create each filter of the composite filter
   m_ExtractFilter = ExtractFilterType::New();
   m_MultiplyFilter = MultiplyFilterType::New();
@@ -61,7 +55,6 @@ OSEMConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>::OSEMConeBeamRe
 
   // Default parameters
   m_ExtractFilter->SetDirectionCollapseToSubmatrix();
-  m_NumberOfProjectionsPerSubset = 1; // Default is the OSEM behavior
 }
 
 template <class TVolumeImage, class TProjectionImage>
