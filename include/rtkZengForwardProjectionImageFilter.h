@@ -115,21 +115,21 @@ public:
 
 protected:
   ZengForwardProjectionImageFilter();
-  ~ZengForwardProjectionImageFilter() ITK_OVERRIDE = default;
+  ~ZengForwardProjectionImageFilter() override = default;
 
   void
-  GenerateInputRequestedRegion() ITK_OVERRIDE;
+  GenerateInputRequestedRegion() override;
 
   void
-  GenerateOutputInformation() ITK_OVERRIDE;
+  GenerateOutputInformation() override;
 
   void
-  GenerateData() ITK_OVERRIDE;
+  GenerateData() override;
 
   /** The two inputs should not be in the same space so there is nothing
    * to verify. */
   void
-  VerifyInputInformation() const ITK_OVERRIDE;
+  VerifyInputInformation() const override;
 
   RegionOfInterestPointerType        m_RegionOfInterest;
   AddImageFilterPointerType          m_AddImageFilter;

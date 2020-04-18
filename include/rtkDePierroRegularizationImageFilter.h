@@ -126,10 +126,10 @@ protected:
   GenerateInputRequestedRegion() override;
 
   void
-  GenerateOutputInformation() ITK_OVERRIDE;
+  GenerateOutputInformation() override;
 
   void
-  GenerateData() ITK_OVERRIDE;
+  GenerateData() override;
 
   MultpiplyImageFilterPointerType m_MultiplyConstant1ImageFilter;
   MultpiplyImageFilterPointerType m_MultiplyConstant2ImageFilter;
