@@ -52,8 +52,8 @@ namespace rtk
  * - each voxel of the back projection must be divided by the value it would take if
  * a projection filled with ones was being reprojected.
  *
- * By default the quadratic penalization describe in [De Pierro, IEEE TMI, 1995] is applied
- * during the iterative process. The hyperparameter for the regularization can be change
+ * By default the quadratic penalization described in [De Pierro, IEEE TMI, 1995] is applied
+ * during the iterative process. The hyperparameter for the regularization can be changed
  * using the SetBetaRegularization method. If the hyperparameter is set to 0 the
  * filter behaves like the classic MLEM/OSEM algorithm.
  *
@@ -164,16 +164,16 @@ public:
   itkSetMacro(NumberOfProjectionsPerSubset, unsigned int);
 
   /** Get / Set the sigma zero of the PSF. Default is 1.5417233052142099 */
-  itkGetMacro(SigmaZero, float);
-  itkSetMacro(SigmaZero, float);
+  itkGetMacro(SigmaZero, double);
+  itkSetMacro(SigmaZero, double);
 
   /** Get / Set the alpha of the PSF. Default is 0.016241189545787734 */
-  itkGetMacro(Alpha, float);
-  itkSetMacro(Alpha, float);
+  itkGetMacro(Alpha, double);
+  itkSetMacro(Alpha, double);
 
   /** Get / Set the hyperparameter for the regularization. Default is 0.01 */
-  itkGetMacro(BetaRegularization, float);
-  itkSetMacro(BetaRegularization, float);
+  itkGetMacro(BetaRegularization, double);
+  itkSetMacro(BetaRegularization, double);
 
 protected:
   OSEMConeBeamReconstructionFilter();
@@ -222,11 +222,11 @@ private:
   unsigned int m_NumberOfIterations{ 3 };
 
   /** PSF correction coefficients */
-  float m_SigmaZero{ -1 };
-  float m_Alpha{ -1 };
+  double m_SigmaZero{ -1. };
+  double m_Alpha{ -1. };
 
   /** Hyperparameter for the regularization */
-  float m_BetaRegularization{ 0.01 };
+  double m_BetaRegularization{ 0.01 };
 
 }; // end of class
 

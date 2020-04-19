@@ -309,8 +309,9 @@ ZengForwardProjectionImageFilter<TInputImage, TOutputImage>::GenerateData()
 
   indexSlice.Fill(0);
   indexProjection.Fill(0);
-  float dist = NAN, sigmaSlice = NAN, thicknessSlice = NAN;
-  int   nbProjections = 0;
+  double dist = NAN, sigmaSlice = NAN;
+  double thicknessSlice = NAN;
+  int    nbProjections = 0;
   for (auto & angle : list_angle)
   {
     // Set the rotation angle.
@@ -374,7 +375,7 @@ ZengForwardProjectionImageFilter<TInputImage, TOutputImage>::GenerateData()
         break;
       }
       // Compute the variance of the PSF for the current slice
-      sigmaSlice = dist * 2 * thicknessSlice * pow(m_Alpha, 2.0) + 2 * thicknessSlice * m_Alpha * m_SigmaZero -
+      sigmaSlice = dist * 2. * thicknessSlice * pow(m_Alpha, 2.0) + 2. * thicknessSlice * m_Alpha * m_SigmaZero -
                    pow(m_Alpha, 2.0) * pow(thicknessSlice, 2.0);
       m_DiscreteGaussianFilter->SetVariance(sigmaSlice);
 
