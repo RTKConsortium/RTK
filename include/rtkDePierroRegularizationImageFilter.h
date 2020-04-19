@@ -33,7 +33,7 @@ namespace rtk
 /** \class DePierroRegularizationImageFilter
  * \brief Implements a regularization for MLEM/OSEM reconstruction.
  *
- * Perform the quadratic penalization describe in [De Pierro, IEEE TMI, 1995] for
+ * Perform the quadratic penalization described in [De Pierro, IEEE TMI, 1995] for
  * MLEM/OSEM reconstruction.
  *
  * This filter takes the k and k+1 updates of the classic MLEM/OSEM algorithm as
@@ -115,8 +115,8 @@ public:
   itkTypeMacro(DePierroRegularizationFilter, itk::ImageToImageFilter);
 
   /** Get / Set the hyper parameter for the regularization */
-  itkGetMacro(Beta, float);
-  itkSetMacro(Beta, float);
+  itkGetMacro(Beta, double);
+  itkSetMacro(Beta, double);
 
 protected:
   DePierroRegularizationImageFilter();
@@ -142,7 +142,7 @@ protected:
   CustomBinaryFilterPointerType   m_CustomBinaryFilter;
 
 private:
-  float m_Beta{ 0.01 };
+  double m_Beta{ 0.01 };
 
 }; // end of class
 

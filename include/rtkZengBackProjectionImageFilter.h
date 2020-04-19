@@ -113,12 +113,12 @@ public:
   itkTypeMacro(ZengBackProjectionImageFilter, BackProjectionImageFilter);
 
   /** Get / Set the sigma zero of the PSF. Default is 1.5417233052142099 */
-  itkGetMacro(SigmaZero, float);
-  itkSetMacro(SigmaZero, float);
+  itkGetMacro(SigmaZero, double);
+  itkSetMacro(SigmaZero, double);
 
   /** Get / Set the alpha of the PSF. Default is 0.016241189545787734 */
-  itkGetMacro(Alpha, float);
-  itkSetMacro(Alpha, float);
+  itkGetMacro(Alpha, double);
+  itkSetMacro(Alpha, double);
 
 
 protected:
@@ -162,8 +162,8 @@ private:
   void
   operator=(const Self &) = delete; // purposely not implemented
 
-  float      m_SigmaZero{ 1.5417233052142099 };
-  float      m_Alpha{ 0.016241189545787734 };
+  double     m_SigmaZero{ 1.5417233052142099 };
+  double     m_Alpha{ 0.016241189545787734 };
   VectorType m_VectorOrthogonalDetector{ 0. };
   PointType  m_centerVolume{ 0 };
 };

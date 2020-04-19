@@ -321,10 +321,10 @@ ZengBackProjectionImageFilter<TInputImage, TOutputImage>::GenerateData()
   PointType                                                 originRotatedVolume;
 
   indexSlice.Fill(0);
-  float dist = NAN, sigmaSlice = NAN;
-  float thicknessSlice = this->GetInput(0)->GetSpacing()[2];
-  int   nbProjections = 0;
-  int   startSlice = 0;
+  double dist = NAN, sigmaSlice = NAN;
+  double thicknessSlice = this->GetInput(0)->GetSpacing()[2];
+  int    nbProjections = 0;
+  int    startSlice = 0;
   for (auto & angle : list_angle)
   {
     // Get the center of the rotated volume
@@ -405,7 +405,7 @@ ZengBackProjectionImageFilter<TInputImage, TOutputImage>::GenerateData()
       indexSlice[Dimension - 1] = index - 1;
       dist += m_ConstantVolumeSource->GetSpacing()[2];
       // Compute the variance of the PSF for the current slice
-      sigmaSlice = dist * 2 * thicknessSlice * pow(m_Alpha, 2.0) + 2 * thicknessSlice * m_Alpha * m_SigmaZero -
+      sigmaSlice = dist * 2. * thicknessSlice * pow(m_Alpha, 2.0) + 2. * thicknessSlice * m_Alpha * m_SigmaZero -
                    pow(m_Alpha, 2.0) * pow(thicknessSlice, 2.0);
       m_DiscreteGaussianFilter->SetVariance(sigmaSlice);
       m_DiscreteGaussianFilter->Update();
