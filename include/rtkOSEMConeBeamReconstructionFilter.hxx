@@ -257,6 +257,11 @@ OSEMConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>::GenerateData()
   // Should be tunable with other solutions.
   std::vector<unsigned int> projOrder(nProj);
 
+  // If m_StoreNormalizationImages is true, the backprojection of
+  // ones will be only computed once during the first iteration.
+  // The result will be stored in an vector and reused for the next iterations.
+  std::vector<typename TVolumeImage::Pointer> vectorNorm;
+
   for (unsigned int i = 0; i < nProj; i++)
     projOrder[i] = i;
   std::shuffle(projOrder.begin(), projOrder.end(), Superclass::m_DefaultRandomEngine);
@@ -271,6 +276,7 @@ OSEMConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>::GenerateData()
   for (unsigned int iter = 0; iter < m_NumberOfIterations; iter++)
   {
     unsigned int projectionsProcessedInSubset = 0;
+    unsigned int currentSubset = 0;
     for (unsigned int i = 0; i < nProj; i++)
     {
       // Change projection subset
@@ -278,30 +284,39 @@ OSEMConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>::GenerateData()
       m_ExtractFilter->SetExtractionRegion(subsetRegion);
       m_ExtractFilter->UpdateOutputInformation();
 
-      m_OneConstantProjectionStackSource->SetInformationFromImage(
-        const_cast<TProjectionImage *>(m_ExtractFilter->GetOutput()));
-
       m_ZeroConstantProjectionStackSource->SetInformationFromImage(
         const_cast<TProjectionImage *>(m_ExtractFilter->GetOutput()));
-
 
       // This is required to reset the full pipeline
       m_BackProjectionFilter->GetOutput()->UpdateOutputInformation();
       m_BackProjectionFilter->GetOutput()->PropagateRequestedRegion();
-      m_BackProjectionNormalizationFilter->GetOutput()->UpdateOutputInformation();
-      m_BackProjectionNormalizationFilter->GetOutput()->PropagateRequestedRegion();
 
       m_BackProjectionFilter->Update();
-      m_BackProjectionNormalizationFilter->Update();
+      if (iter == 0 || !m_StoreNormalizationImages)
+      {
+        m_OneConstantProjectionStackSource->SetInformationFromImage(
+          const_cast<TProjectionImage *>(m_ExtractFilter->GetOutput()));
+        m_BackProjectionNormalizationFilter->GetOutput()->UpdateOutputInformation();
+        m_BackProjectionNormalizationFilter->GetOutput()->PropagateRequestedRegion();
+        m_BackProjectionNormalizationFilter->Update();
+      }
 
       projectionsProcessedInSubset++;
       if ((projectionsProcessedInSubset == m_NumberOfProjectionsPerSubset) || (i == nProj - 1))
       {
+        if (iter == 0 && m_StoreNormalizationImages)
+        {
+          vectorNorm.push_back(m_BackProjectionNormalizationFilter->GetOutput());
+          vectorNorm.back()->DisconnectPipeline();
+        }
         m_MultiplyFilter->SetInput1(m_BackProjectionFilter->GetOutput());
 
         m_DivideVolumeFilter->SetInput1(m_MultiplyFilter->GetOutput());
         m_DePierroRegularizationFilter->SetInput(1, m_MultiplyFilter->GetOutput());
-        m_DePierroRegularizationFilter->SetInput(2, m_BackProjectionNormalizationFilter->GetOutput());
+        if (m_StoreNormalizationImages)
+          m_DePierroRegularizationFilter->SetInput(2, vectorNorm[currentSubset]);
+        else
+          m_DePierroRegularizationFilter->SetInput(2, m_BackProjectionNormalizationFilter->GetOutput());
         m_DePierroRegularizationFilter->Update();
 
         m_DivideVolumeFilter->SetInput2(m_DePierroRegularizationFilter->GetOutput());
@@ -319,6 +334,7 @@ OSEMConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>::GenerateData()
         m_BackProjectionFilter->SetInput(0, m_ConstantVolumeSource->GetOutput());
         m_BackProjectionNormalizationFilter->SetInput(0, m_ConstantVolumeSource->GetOutput());
 
+        currentSubset++;
         projectionsProcessedInSubset = 0;
       }
       // Backproject in the same image otherwise.
@@ -327,14 +343,18 @@ OSEMConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>::GenerateData()
         pimg = m_BackProjectionFilter->GetOutput();
         pimg->DisconnectPipeline();
         m_BackProjectionFilter->SetInput(0, pimg);
-        norm = m_BackProjectionNormalizationFilter->GetOutput();
-        norm->DisconnectPipeline();
-        m_BackProjectionNormalizationFilter->SetInput(0, norm);
+        if (iter == 0 || !m_StoreNormalizationImages)
+        {
+          norm = m_BackProjectionNormalizationFilter->GetOutput();
+          norm->DisconnectPipeline();
+          m_BackProjectionNormalizationFilter->SetInput(0, norm);
+        }
       }
     }
     this->GraftOutput(pimg);
     iterationReporter.CompletedStep();
   }
+  vectorNorm.clear();
 }
 
 } // end namespace rtk
