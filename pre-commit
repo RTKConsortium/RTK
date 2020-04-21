@@ -88,6 +88,12 @@ EOF
 fi
 
 #-----------------------------------------------------------------------------
+# Make sure GIT_DIR is set.
+if test -z "$GIT_DIR"; then
+    export GIT_DIR=$(git rev-parse --git-dir)
+fi
+
+#-----------------------------------------------------------------------------
 # Style hooks.
 . "$GIT_DIR/../cmake/Hooks/pre-commit-style.bash"
 
