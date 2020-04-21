@@ -3,11 +3,7 @@ set(LPSOLVE_VERSION_MINOR 5)
 set(LPSOLVE_VERSION_PATCH 2)
 set(LPSOLVE_VERSION ${LPSOLVE_VERSION_MAJOR}.${LPSOLVE_VERSION_MINOR}.${LPSOLVE_VERSION_PATCH})
 
-if(NOT ITK_SOURCE_DIR)
-  list(APPEND CMAKE_MODULE_PATH ${ITK_CMAKE_DIR})
-  include(ITKModuleMacros)
-endif()
-itk_module_warnings_disable(C CXX)
+rtk_module_warnings_disable(C CXX)
 
 # Set up install directories
 add_library(lpsolve55
