@@ -4,7 +4,7 @@ steps:
     curl -L https://raw.githubusercontent.com/InsightSoftwareConsortium/ITKPythonPackage/master/scripts/windows-download-cache-and-build-module-wheels.ps1 -O
   displayName: 'Fetch build script'
 - script: |
-    call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+    call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat" -vcvars_ver=14.2
     set ITK_PACKAGE_VERSION=$(ITKPythonGitTag)
     set CC=cl.exe
     set CXX=cl.exe
