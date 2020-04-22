@@ -175,6 +175,14 @@ public:
   itkGetMacro(BetaRegularization, double);
   itkSetMacro(BetaRegularization, double);
 
+  /** Get / Set StoreNormalizationImages. If true, the normalizations images
+   * are only computed once during the first iteration and stored to be reused
+   * for the next iterations. This speed up the computation time but it is
+   * more memory consuming than if the normalizations images were computed at
+   * each iteration (false). Default is true */
+  itkGetMacro(StoreNormalizationImages, bool);
+  itkSetMacro(StoreNormalizationImages, bool);
+
 protected:
   OSEMConeBeamReconstructionFilter();
   ~OSEMConeBeamReconstructionFilter() override = default;
@@ -227,6 +235,8 @@ private:
 
   /** Hyperparameter for the regularization */
   double m_BetaRegularization{ 0.01 };
+
+  bool m_StoreNormalizationImages{ true };
 
 }; // end of class
 
