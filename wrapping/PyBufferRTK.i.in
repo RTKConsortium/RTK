@@ -1,24 +1,6 @@
 %extend itkPyBuffer@PyBufferTypes@{
     %pythoncode %{
 
-    import numpy
-    # This is a Mapping from numpy array types to itk pixel types.
-    _np_itk = {"UC":numpy.uint8,
-               "US":numpy.uint16,
-               "UI":numpy.uint32,
-               "UL":numpy.uint64,
-               "SC":numpy.int8,
-               "SS":numpy.int16,
-               "SI":numpy.int32,
-               "SL":numpy.int64,
-               "F":numpy.float32,
-               "D":numpy.float64,
-               }
-    import os
-    if os.name == 'nt':
-        _np_itk['UL'] = numpy.uint32
-        _np_itk['SL'] = numpy.int32
-
     def GetArrayViewFromImage(image, keep_axes=False, update=True):
         """Get a NumPy array view of a ITK Image.
 
@@ -31,7 +13,9 @@
         view after its source image has been deleted can results in corrupt values
         or a segfault.
         """
-        import numpy
+
+        if not HAVE_NUMPY:
+            raise ImportError('Numpy not available.')
 
         if update:
             # Ensure the image regions and image pixel buffer have been updated
@@ -53,7 +37,7 @@
             shape = shape[::-1]
 
         pixelType     = "@PixelType@"
-        numpydatatype = itkPyBuffer@PyBufferTypes@._np_itk[pixelType]
+        numpydatatype = _get_numpy_pixelid(pixelType)
         memview       = itkPyBuffer@PyBufferTypes@._GetArrayViewFromImage(image)
         ndarrview  = numpy.asarray(memview).view(dtype = numpydatatype).reshape(shape).view(numpy.ndarray)
 
@@ -71,7 +55,6 @@
 
         This is a deep copy of the image buffer and is completely safe and without potential side effects.
         """
-        import numpy
 
         arrayView = itkPyBuffer@PyBufferTypes@.GetArrayViewFromImage(image, keep_axes, update)
 
@@ -104,11 +87,13 @@
         or a segfault.
         """
 
+        if not HAVE_NUMPY:
+            raise ImportError('Numpy not available.')
+
         assert ndarr.ndim in ( 1, 2, 3, 4 ), \
-            "Only arrays of 2, 3 or 4 dimensions are supported."
-        if( not ndarr.flags['C_CONTIGUOUS'] and not ndarr.flags['F_CONTIGUOUS'] ):
-            raise ValueError("Array memory is not contiguous. Try converting your array with "
-                  + "`ascontiguousarray()` or `copy()` or use `GetImageFromArray()`")
+            "Only arrays of 1, 2, 3 or 4 dimensions are supported."
+        if not ndarr.flags['C_CONTIGUOUS'] and not ndarr.flags['F_CONTIGUOUS']:
+            ndarr = numpy.ascontiguousarray(ndarr)
 
         if ( ndarr.ndim == 3 and is_vector ) or (ndarr.ndim == 4):
             if( ndarr.flags['C_CONTIGUOUS'] ):
@@ -117,6 +102,9 @@
                 imgview = itkPyBuffer@PyBufferTypes@._GetImageViewFromArray( ndarr, ndarr.shape[-1:0:-1], ndarr.shape[0] )
         elif ndarr.ndim in ( 1, 2, 3 ):
             imgview = itkPyBuffer@PyBufferTypes@._GetImageViewFromArray( ndarr, ndarr.shape[::-1], 1)
+
+        # Keep a reference
+        imgview._SetBase(ndarr)
 
         return imgview
 
@@ -141,10 +129,6 @@
         same for an array and its transpose. If flipping is desired, see
         *numpy.reshape*.
         """
-        try:
-            from itkImageDuplicatorPython import itkImageDuplicator@PyBufferTypes@
-        except ImportError:
-            from itkImageDuplicatorRTKPython import itkImageDuplicator@PyBufferTypes@
 
         # Create a temporary image view of the array
         imageView = itkPyBuffer@PyBufferTypes@.GetImageViewFromArray(ndarr, is_vector)

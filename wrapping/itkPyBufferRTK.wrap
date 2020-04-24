@@ -1,3 +1,7 @@
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/PyBuffer.i.init"
+               "${CMAKE_CURRENT_BINARY_DIR}/PyBufferRTK.i"
+               @ONLY)
+
 itk_wrap_class("itk::PyBuffer")
 
   file(TOUCH ${CMAKE_CURRENT_BINARY_DIR}/PyBufferRTK.i)
@@ -47,3 +51,11 @@ itk_wrap_class("itk::PyBuffer")
   endforeach()
 
 itk_end_wrap_class()
+
+# Add library files to be included at a submodule level and copy them into
+# ITK's wrapping typedef directory.
+set(ITK_WRAP_PYTHON_SWIG_EXT
+  "%include PyBufferRTK.i\n${ITK_WRAP_PYTHON_SWIG_EXT}")
+
+file(COPY "${CMAKE_CURRENT_BINARY_DIR}/PyBufferRTK.i"
+  DESTINATION "${WRAPPER_MASTER_INDEX_OUTPUT_DIR}")
