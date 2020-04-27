@@ -124,10 +124,15 @@ configure_file(${RTK_SOURCE_DIR}/rtkConfiguration.h.in
   ${RTK_BINARY_DIR}/rtkConfiguration.h)
 
 #=========================================================
-# If choose to build documentation, then search for Doxygen executables.
+# If choose to build documentation, then search for Doxygen/Sphinx executables.
 option(RTK_BUILD_DOXYGEN "Build Doxygen Documentation" OFF)
 if(RTK_BUILD_DOXYGEN)
   add_subdirectory(documentation/Doxygen)
+endif()
+
+option(RTK_BUILD_SPHINX "Build Sphinx Documentation" OFF)
+if(RTK_BUILD_SPHINX)
+  add_subdirectory(documentation/docs)
 endif()
 
 # Setup build locations.
