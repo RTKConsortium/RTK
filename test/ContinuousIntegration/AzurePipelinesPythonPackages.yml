@@ -45,6 +45,17 @@ jobs:
   steps:
   - template: Common/AzurePipelinesLinuxPython_Common.yml
 
+# Linux Python 3.8
+- job: 'PackageLinux_cp38'
+  timeoutInMinutes: 0
+  cancelTimeoutInMinutes: 300
+  variables:
+    PythonVersion: cp38
+  displayName: "Build Linux Python 3.8 packages"
+  pool:
+    vmImage: 'Ubuntu-18.04'
+  steps:
+  - template: Common/AzurePipelinesLinuxPython_Common.yml
 
 # MacOS Python
 - job: 'PackageMacOS'
