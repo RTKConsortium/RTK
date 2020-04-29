@@ -46,7 +46,7 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods) */
-  itkTypeMacro(Self, Superclass);
+  itkTypeMacro(PhaseReader, itk::CSVFileReaderBase);
 
   /** The value type of the dataset. */
   using ValueType = float;
