@@ -386,21 +386,22 @@ ZengBackProjectionImageFilter<TInputImage, TOutputImage>::GenerateData()
     currentVolume = m_PasteImageFilter->GetOutput();
     currentVolume->DisconnectPipeline();
     m_PasteImageFilter->SetDestinationImage(currentVolume);
-    if (!this->GetInput(2))
-    {
-      m_DiscreteGaussianFilter->SetInput(currentSlice);
-    }
-    else
-    {
-      desiredRegion.SetIndex(Dimension - 1, startSlice - 1);
-      m_AttenuationMapRegionOfInterest->SetRegionOfInterest(desiredRegion);
-      m_AttenuationMapRegionOfInterest->UpdateOutputInformation();
-      m_AttenuationMapMultiplyImageFilter->SetInput1(currentSlice);
-      m_DiscreteGaussianFilter->SetInput(m_AttenuationMapMultiplyImageFilter->GetOutput());
-    }
+
     int index = 0;
     for (index = startSlice; index > 0; index--)
     {
+      if (!this->GetInput(2))
+      {
+        m_DiscreteGaussianFilter->SetInput(currentSlice);
+      }
+      else
+      {
+        desiredRegion.SetIndex(Dimension - 1, index - 1);
+        m_AttenuationMapRegionOfInterest->SetRegionOfInterest(desiredRegion);
+        m_AttenuationMapRegionOfInterest->UpdateOutputInformation();
+        m_AttenuationMapMultiplyImageFilter->SetInput1(currentSlice);
+        m_DiscreteGaussianFilter->SetInput(m_AttenuationMapMultiplyImageFilter->GetOutput());
+      }
       // Compute the distance between the current slice and the detector
       indexSlice[Dimension - 1] = index - 1;
       dist += m_ConstantVolumeSource->GetSpacing()[2];
@@ -420,18 +421,6 @@ ZengBackProjectionImageFilter<TInputImage, TOutputImage>::GenerateData()
       currentVolume = m_PasteImageFilter->GetOutput();
       currentVolume->DisconnectPipeline();
       m_PasteImageFilter->SetDestinationImage(currentVolume);
-      if (!this->GetInput(2))
-      {
-        m_DiscreteGaussianFilter->SetInput(currentSlice);
-      }
-      else
-      {
-        desiredRegion.SetIndex(Dimension - 1, index - 1);
-        m_AttenuationMapRegionOfInterest->SetRegionOfInterest(desiredRegion);
-        m_AttenuationMapRegionOfInterest->UpdateOutputInformation();
-        m_AttenuationMapMultiplyImageFilter->SetInput1(currentSlice);
-        m_DiscreteGaussianFilter->SetInput(m_AttenuationMapMultiplyImageFilter->GetOutput());
-      }
     }
     // Rotate the volume
     m_ResampleImageFilter->SetInput(currentVolume);
