@@ -90,7 +90,7 @@ template <class TInputImage, class TOutputImage>
 void
 ZengForwardProjectionImageFilter<TInputImage, TOutputImage>::VerifyInputInformation() const
 {
-  using ImageBaseType = const itk::ImageBase<InputImageDimension>;
+  using ImageBaseType = const itk::ImageBase<InputSpaceDimension>;
 
   ImageBaseType * inputPtr1 = nullptr;
 
@@ -174,9 +174,9 @@ ZengForwardProjectionImageFilter<TInputImage, TOutputImage>::GenerateOutputInfor
 {
 
   // Info of the input volume
-  const typename OuputCPUImageType::PointType   originVolume = this->GetInput(1)->GetOrigin();
   const typename OuputCPUImageType::SpacingType spacingVolume = this->GetInput(1)->GetSpacing();
   const typename OuputCPUImageType::SizeType    sizeVolume = this->GetInput(1)->GetLargestPossibleRegion().GetSize();
+  const typename OuputCPUImageType::IndexType   indexVolume = this->GetInput(1)->GetLargestPossibleRegion().GetIndex();
 
   // Info of the input stack of projections
   const typename InputCPUImageType::SpacingType spacingProjections = this->GetInput(0)->GetSpacing();
@@ -184,9 +184,19 @@ ZengForwardProjectionImageFilter<TInputImage, TOutputImage>::GenerateOutputInfor
   const typename OuputCPUImageType::PointType originProjection = this->GetInput(0)->GetOrigin();
 
   // Find the center of the volume
-  m_centerVolume[0] = originVolume[0] + spacingVolume[0] * (double)(sizeVolume[0] - 1) / 2.0;
-  m_centerVolume[1] = originVolume[1] + spacingVolume[1] * (double)(sizeVolume[1] - 1) / 2.0;
-  m_centerVolume[2] = originVolume[2] + spacingVolume[2] * (double)(sizeVolume[2] - 1) / 2.0;
+
+  using CoordRepType = typename PointType ::ValueType;
+  using ContinuousIndexType = itk::ContinuousIndex<CoordRepType, InputSpaceDimension>;
+  using ContinuousIndexValueType = typename ContinuousIndexType::ValueType;
+  ContinuousIndexType centerIndex;
+
+  for (unsigned int k = 0; k < InputSpaceDimension; k++)
+  {
+    centerIndex[k] = static_cast<ContinuousIndexValueType>(indexVolume[k]) +
+                     static_cast<ContinuousIndexValueType>(sizeVolume[k] - 1) / 2.0;
+  }
+
+  this->GetInput(1)->TransformContinuousIndexToPhysicalPoint(centerIndex, m_centerVolume);
 
   PointType centerRotation;
   centerRotation.Fill(0);
@@ -285,7 +295,7 @@ template <class TInputImage, class TOutputImage>
 void
 ZengForwardProjectionImageFilter<TInputImage, TOutputImage>::GenerateData()
 {
-  const unsigned int                                    Dimension = this->InputImageDimension;
+  const unsigned int                                    Dimension = this->InputSpaceDimension;
   const typename Superclass::GeometryType::ConstPointer geometry = this->GetGeometry();
   typename OuputCPUImageType::RegionType                projRegion = this->GetInput(0)->GetLargestPossibleRegion();
   std::vector<double>                                   list_angle;
