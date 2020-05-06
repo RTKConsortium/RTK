@@ -1,6 +1,15 @@
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/PyBuffer.i.init"
-               "${CMAKE_CURRENT_BINARY_DIR}/PyBufferRTK.i"
-               @ONLY)
+# Find PyBuffer swig files from ITKBridgeNumPy sources
+set(ITKBridgeNumpy_WRAP_DIR "${ITKBridgeNumPy_INCLUDE_DIRS}/../wrapping")
+
+file(READ "${ITKBridgeNumpy_WRAP_DIR}/PyBuffer.i.init"
+    PyBufferInit)
+
+# Append imports required by RTK. All overriden types in this class should be
+# defined in itkImageDuplicator as well.
+string(REPLACE "from itkImageDuplicatorPython import *"
+  "from itkImageDuplicatorPython import *\nfrom itkImageDuplicatorRTKPython import *\n"
+  PyBufferInit "${PyBufferInit}")
+file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/PyBufferRTK.i" "${PyBufferInit}")
 
 itk_wrap_class("itk::PyBuffer")
 
@@ -18,7 +27,7 @@ itk_wrap_class("itk::PyBuffer")
           foreach(vec_type ${VectorTypes})
 
               set(PyBufferTypes I${vec_type}${vec_dim}${d})
-              configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/PyBufferRTK.i.in
+              configure_file( ${ITKBridgeNumpy_WRAP_DIR}/PyBuffer.i.in
                          ${CMAKE_CURRENT_BINARY_DIR}/PyBufferRTK.i.temp
                          @ONLY)
               file(READ ${CMAKE_CURRENT_BINARY_DIR}/PyBufferRTK.i.temp
@@ -39,7 +48,7 @@ itk_wrap_class("itk::PyBuffer")
     if (${_indexdim} EQUAL -1)
       set(PixelType ${t})
       set(PyBufferTypes I${t}1)
-      configure_file( ${CMAKE_CURRENT_SOURCE_DIR}/PyBufferRTK.i.in
+      configure_file( ${ITKBridgeNumpy_WRAP_DIR}/PyBuffer.i.in
                  ${CMAKE_CURRENT_BINARY_DIR}/PyBufferRTK.i.temp
                  @ONLY)
       file(READ ${CMAKE_CURRENT_BINARY_DIR}/PyBufferRTK.i.temp
