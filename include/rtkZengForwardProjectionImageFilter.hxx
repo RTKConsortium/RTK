@@ -224,6 +224,7 @@ ZengForwardProjectionImageFilter<TInputImage, TOutputImage>::GenerateOutputInfor
   outputSpacing[1] = spacingProjections[1];
   outputSpacing[2] = spacingVolume[2];
   m_ResampleImageFilter->SetOutputSpacing(outputSpacing);
+  m_ResampleImageFilter->SetOutputDirection(this->GetInput(0)->GetDirection());
   m_ResampleImageFilter->SetInput(this->GetInput(1));
   m_ResampleImageFilter->UpdateOutputInformation();
 
@@ -260,6 +261,7 @@ ZengForwardProjectionImageFilter<TInputImage, TOutputImage>::GenerateOutputInfor
     m_AttenuationMapResampleImageFilter->SetSize(outputSize);
     m_AttenuationMapResampleImageFilter->SetOutputOrigin(outputOrigin);
     m_AttenuationMapResampleImageFilter->SetOutputSpacing(outputSpacing);
+    m_AttenuationMapResampleImageFilter->SetOutputDirection(this->GetInput(0)->GetDirection());
     m_AttenuationMapResampleImageFilter->SetInput(this->GetInput(2));
     m_AttenuationMapResampleImageFilter->UpdateOutputInformation();
 
