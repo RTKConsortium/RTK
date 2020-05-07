@@ -69,7 +69,7 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(Self, Superclass);
+  itkTypeMacro(CudaPolynomialGainCorrectionImageFilter, itk::CudaImageToImageFilter);
 
 protected:
   /** Standard constructor **/

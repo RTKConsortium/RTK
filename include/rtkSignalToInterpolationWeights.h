@@ -51,7 +51,7 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods) */
-  itkTypeMacro(Self, Superclass);
+  itkTypeMacro(SignalToInterpolationWeights, itk::CSVFileReaderBase);
 
   /** DataFrame Object types */
   using Array2DType = itk::Array2D<float>;

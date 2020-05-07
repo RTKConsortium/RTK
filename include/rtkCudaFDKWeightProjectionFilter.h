@@ -69,7 +69,7 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(Self, Superclass);
+  itkTypeMacro(CudaFDKWeightProjectionFilter, itk::CudaInPlaceImageFilter);
 
 protected:
   /** Standard constructor **/

@@ -67,7 +67,7 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(Self, Superclass);
+  itkTypeMacro(CudaLagCorrectionImageFilter, itk::CudaInPlaceImageFilter);
 
 protected:
   /** Standard constructor **/
