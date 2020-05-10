@@ -41,7 +41,7 @@ namespace rtk
  *
  * \ingroup RTK
  */
-template <typename TInputImage, typename TRealType = float, typename TOutputImage = TInputImage>
+template <typename TInputImage, typename TOutputImage = TInputImage>
 class ITK_EXPORT SoftThresholdTVImageFilter : public itk::ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
@@ -76,18 +76,12 @@ public:
   /** Length of the vector pixel type of the input image. */
   itkStaticConstMacro(VectorDimension, unsigned int, InputPixelType::Dimension);
 
-  /** Define the data type and the vector of data type used in calculations. */
-  using RealType = TRealType;
-  using RealVectorType = itk::Vector<TRealType, InputPixelType::Dimension>;
-  using RealVectorImageType = itk::Image<RealVectorType, TInputImage::ImageDimension>;
-
   /** Superclass type alias. */
   using OutputImageRegionType = typename Superclass::OutputImageRegionType;
 
 #ifdef ITK_USE_CONCEPT_CHECKING
   /** Begin concept checking */
   itkConceptMacro(InputHasNumericTraitsCheck, (itk::Concept::HasNumericTraits<typename InputPixelType::ValueType>));
-  itkConceptMacro(RealTypeHasNumericTraitsCheck, (itk::Concept::HasNumericTraits<RealType>));
   /** End concept checking */
 #endif
 
