@@ -8,10 +8,8 @@ if(RTK_USE_CUDA)
     # Force VECTOR_COMPONENTS to "2;3;4;5"
     set(vectorComponents 2 3 4 5)
     foreach(component ${vectorComponents})
-      foreach(vt ${WRAP_ITK_VECTOR_REAL})
-        itk_wrap_template("CI${ITKM_${vt}${component}}3CI${ITKM_${vt}${component}}3FPCI${ITKM_${vt}${component}}3CI${ITKM_${vt}${component}}3"
-          "itk::CudaImage<${ITKT_${vt}${component}}, 3>, itk::CudaImage<${ITKT_${vt}${component}}, 3>, rtk::ForwardProjectionImageFilter< itk::CudaImage<${ITKT_${vt}${component}}, 3>, itk::CudaImage<${ITKT_${vt}${component}}, 3> >")
-      endforeach()
+      itk_wrap_template("CI${ITKM_VF${component}}3CI${ITKM_VF${component}}3FPCI${ITKM_VF${component}}3CI${ITKM_VF${component}}3"
+        "itk::CudaImage<${ITKT_VF${component}}, 3>, itk::CudaImage<${ITKT_VF${component}}, 3>, rtk::ForwardProjectionImageFilter< itk::CudaImage<${ITKT_VF${component}}, 3>, itk::CudaImage<${ITKT_VF${component}}, 3> >")
     endforeach()
 
   itk_end_wrap_class()
@@ -24,10 +22,8 @@ if(RTK_USE_CUDA)
     # Force VECTOR_COMPONENTS to "2;3;4;5"
     set(vectorComponents 2 3 4 5)
     foreach(component ${vectorComponents})
-      foreach(vt ${WRAP_ITK_VECTOR_REAL})
-        itk_wrap_template("CI${ITKM_${vt}${component}}3CI${ITKM_${vt}${component}}3FPCI${ITKM_${vt}${component}}3CI${ITKM_${vt}${component}}3"
-          "itk::CudaImage<${ITKT_${vt}${component}}, 3>, itk::CudaImage<${ITKT_${vt}${component}}, 3>, rtk::ForwardProjectionImageFilter< itk::CudaImage<${ITKT_${vt}${component}}, 3>, itk::CudaImage<${ITKT_${vt}${component}}, 3> >")
-      endforeach()
+      itk_wrap_template("CI${ITKM_VF${component}}3CI${ITKM_VF${component}}3FPCI${ITKM_VF${component}}3CI${ITKM_VF${component}}3"
+        "itk::CudaImage<${ITKT_VF${component}}, 3>, itk::CudaImage<${ITKT_VF${component}}, 3>, rtk::ForwardProjectionImageFilter< itk::CudaImage<${ITKT_VF${component}}, 3>, itk::CudaImage<${ITKT_VF${component}}, 3> >")
     endforeach()
 
   itk_end_wrap_class()
@@ -39,9 +35,7 @@ if(RTK_USE_CUDA)
     # Force VECTOR_COMPONENTS to "2;3;4;5"
     set(vectorComponents 2 3 4 5)
     foreach(component ${vectorComponents})
-      foreach(vt ${WRAP_ITK_VECTOR_REAL})
-        itk_wrap_template("CI${ITKM_${vt}${component}}3" "itk::CudaImage<${ITKT_${vt}${component}}, 3>")
-      endforeach()
+      itk_wrap_template("CI${ITKM_VF${component}}3" "itk::CudaImage<${ITKT_VF${component}}, 3>")
     endforeach()
 
   itk_end_wrap_class()
