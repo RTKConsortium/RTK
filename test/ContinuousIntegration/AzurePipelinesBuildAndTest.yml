@@ -18,20 +18,20 @@ jobs:
   strategy:
     matrix:
       Linux:
-        imageName: 'ubuntu-16.04'
+        imageName: 'ubuntu-18.04'
         cCompiler: gcc
         cxxCompiler: g++
         compilerInitialization: 'g++ --version'
       macOS:
-        imageName: 'macos-10.13'
+        imageName: 'macos-10.15'
         cCompiler: clang
         cxxCompiler: clang++
         compilerInitialization: ''
       Windows:
-        imageName: 'vs2017-win2016'
+        imageName: 'windows-2019'
         cCompiler: cl.exe
         cxxCompiler: cl.exe
-        compilerInitialization: 'call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\VC\Auxiliary\Build\vcvars64.bat"'
+        compilerInitialization: 'call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat"'
 
   pool:
     vmImage: $(imageName)

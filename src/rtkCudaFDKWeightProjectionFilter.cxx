@@ -18,6 +18,7 @@
 
 #include "rtkCudaFDKWeightProjectionFilter.h"
 #include "rtkCudaFDKWeightProjectionFilter.hcu"
+#include <itkProgressReporter.h>
 
 namespace rtk
 {

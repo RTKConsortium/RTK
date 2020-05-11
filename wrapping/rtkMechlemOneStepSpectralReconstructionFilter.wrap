@@ -9,11 +9,11 @@ itk_wrap_class("rtk::MechlemOneStepSpectralReconstructionFilter" POINTER)
 
         itk_wrap_template("I${ITKM_${vt}${nmat}}3I${ITKM_${vt}${nbin}}3I${ITKM_F}3" "itk::Image<${ITKT_${vt}${nmat}},3>, itk::Image<${ITKT_${vt}${nbin}},3>, itk::Image<${ITKT_F},3>")
 
-        if(RTK_USE_CUDA)
-          itk_wrap_template("CI${ITKM_${vt}${nmat}}3CI${ITKM_${vt}${nbin}}3CI${ITKM_F}3" "itk::CudaImage<${ITKT_${vt}${nmat}},3>, itk::CudaImage<${ITKT_${vt}${nbin}},3>, itk::CudaImage<${ITKT_F},3>")
-        endif()
-
       endforeach()
+
+      if(RTK_USE_CUDA)
+        itk_wrap_template("CI${ITKM_VF${nmat}}3CI${ITKM_VF${nbin}}3CI${ITKM_F}3" "itk::CudaImage<${ITKT_VF${nmat}},3>, itk::CudaImage<${ITKT_VF${nbin}},3>, itk::CudaImage<${ITKT_F},3>")
+      endif()
     endforeach()
   endforeach()
 

@@ -11,11 +11,9 @@ if(RTK_USE_CUDA)
     UNIQUE(imageDimensions "${ITK_WRAP_IMAGE_DIMS};2;3;4")
     UNIQUE(vectorComponents "${ITK_WRAP_VECTOR_COMPONENTS};2;3;4;5")
     foreach(component ${vectorComponents})
-      foreach(vt ${WRAP_ITK_VECTOR_REAL})
-        foreach(d ${imageDimensions})
-          itk_wrap_template("CI${ITKM_${vt}${component}}${d}CI${ITKM_${vt}${component}}${d}"
-            "itk::CudaImage<${ITKT_${vt}${component}}, ${d}>, itk::CudaImage<${ITKT_${vt}${component}}, ${d}>")
-        endforeach()
+      foreach(d ${imageDimensions})
+        itk_wrap_template("CI${ITKM_VF${component}}${d}CI${ITKM_VF${component}}${d}"
+          "itk::CudaImage<${ITKT_VF${component}}, ${d}>, itk::CudaImage<${ITKT_VF${component}}, ${d}>")
       endforeach()
     endforeach()
 

@@ -86,20 +86,15 @@ itk_wrap_class("itk::ImageSource" POINTER)
 
     UNIQUE(vectorComponents "${ITK_WRAP_VECTOR_COMPONENTS};2;3;4;5")
     foreach(component ${vectorComponents})
-      foreach(vt ${WRAP_ITK_VECTOR_REAL})
-
-        foreach(d ${ITK_WRAP_IMAGE_DIMS})
-          itk_wrap_template("CI${ITKM_${vt}${component}}${d}" "itk::CudaImage<${ITKT_${vt}${component}}, ${d}>")
-        endforeach()
-
-        list(FIND ITK_WRAP_IMAGE_DIMS "4" _index)
-        if(${_index} EQUAL -1)
-          itk_wrap_template("CI${ITKM_${vt}${component}}4" "itk::CudaImage<${ITKT_${vt}${component}}, 4>")
-        endif()
-
+      foreach(d ${ITK_WRAP_IMAGE_DIMS})
+        itk_wrap_template("CI${ITKM_VF${component}}${d}" "itk::CudaImage<${ITKT_VF${component}}, ${d}>")
       endforeach()
-    endforeach()
 
+      list(FIND ITK_WRAP_IMAGE_DIMS "4" _index)
+      if(${_index} EQUAL -1)
+        itk_wrap_template("CI${ITKM_VF${component}}4" "itk::CudaImage<${ITKT_VF${component}}, 4>")
+      endif()
+    endforeach()
   endif()
 
   # Wrap ITK CovariantVector missing types
