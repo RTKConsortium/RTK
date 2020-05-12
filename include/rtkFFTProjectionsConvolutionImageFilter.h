@@ -112,6 +112,10 @@ public:
     }
   }
 
+#ifdef ITK_USE_CONCEPT_CHECKING
+  itkConceptMacro(ImageDimensionCheck, (itk::Concept::SameDimension<Self::InputImageDimension, 3>));
+#endif
+
 protected:
   FFTProjectionsConvolutionImageFilter();
   ~FFTProjectionsConvolutionImageFilter() override = default;
@@ -126,7 +130,7 @@ protected:
   AfterThreadedGenerateData() override;
 
   void
-  DynamicThreadedGenerateData(const RegionType & outputRegionForThread) override;
+  ThreadedGenerateData(const RegionType & outputRegionForThread, ThreadIdType threadId) override;
 
   /** Pad the inputRegion region of the input image and returns a pointer to the new padded image.
    * Padding includes a correction for truncation [Ohnesorge, Med Phys, 2000].
