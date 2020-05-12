@@ -35,6 +35,7 @@ namespace rtk
 template <class TInputImage, class TOutputImage, class TFFTPrecision>
 FFTProjectionsConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>::FFTProjectionsConvolutionImageFilter()
 {
+  this->DynamicMultiThreadingOff();
 #if defined(USE_FFTWD)
   if (typeid(TFFTPrecision).name() == typeid(double).name())
     m_GreatestPrimeFactor = 13;
@@ -89,7 +90,9 @@ FFTProjectionsConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>::
   // If the following condition is met, multi-threading is left to the (i)fft
   // filter. Otherwise, one splits the image and a separate fft is performed
   // per thread.
-  if (this->GetOutput()->GetRequestedRegion().GetSize()[2] == 1 && m_KernelDimension == 2)
+  auto         reqRegion = this->GetOutput()->GetRequestedRegion();
+  unsigned int nproj = reqRegion.GetNumberOfPixels() / (reqRegion.GetSize()[0] * reqRegion.GetSize()[1]);
+  if ((nproj == 1 && m_KernelDimension == 2) || (reqRegion.GetSize()[0] == reqRegion.GetNumberOfPixels()))
   {
     m_BackupNumberOfThreads = this->GetNumberOfWorkUnits();
     this->SetNumberOfWorkUnits(1);
@@ -106,66 +109,83 @@ template <class TInputImage, class TOutputImage, class TFFTPrecision>
 void
 FFTProjectionsConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>::AfterThreadedGenerateData()
 {
-  if (this->GetOutput()->GetRequestedRegion().GetSize()[2] == 1 && m_KernelDimension == 2)
+  auto         reqRegion = this->GetOutput()->GetRequestedRegion();
+  unsigned int nproj = reqRegion.GetNumberOfPixels() / (reqRegion.GetSize()[0] * reqRegion.GetSize()[1]);
+  if ((nproj == 1 && m_KernelDimension == 2) || (reqRegion.GetSize()[0] == reqRegion.GetNumberOfPixels()))
+  {
     this->SetNumberOfWorkUnits(m_BackupNumberOfThreads);
+  }
 }
 
 template <class TInputImage, class TOutputImage, class TFFTPrecision>
 void
-FFTProjectionsConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>::DynamicThreadedGenerateData(
-  const RegionType & outputRegionForThread)
+FFTProjectionsConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>::ThreadedGenerateData(
+  const RegionType & outputRegionForThread,
+  ThreadIdType       itkNotUsed(threadId))
 {
-  // Pad image region enlarged along X
-  RegionType enlargedRegionX = outputRegionForThread;
-  enlargedRegionX.SetIndex(0, this->GetInput()->GetRequestedRegion().GetIndex(0));
-  enlargedRegionX.SetSize(0, this->GetInput()->GetRequestedRegion().GetSize(0));
-  enlargedRegionX.SetIndex(1, this->GetInput()->GetRequestedRegion().GetIndex(1));
-  enlargedRegionX.SetSize(1, this->GetInput()->GetRequestedRegion().GetSize(1));
-  FFTInputImagePointer paddedImage;
-  paddedImage = PadInputImageRegion(enlargedRegionX);
-
-  // FFT padded image
-  using FFTType = itk::RealToHalfHermitianForwardFFTImageFilter<FFTInputImageType>;
-  typename FFTType::Pointer fftI = FFTType::New();
-  fftI->SetInput(paddedImage);
-  fftI->SetNumberOfWorkUnits(m_BackupNumberOfThreads);
-  fftI->Update();
-
-  // Multiply line-by-line or projection-by-projection (depends on kernel size)
-  itk::ImageRegionIterator<typename FFTType::OutputImageType> itI(fftI->GetOutput(),
-                                                                  fftI->GetOutput()->GetLargestPossibleRegion());
-  itk::ImageRegionConstIterator<FFTOutputImageType>           itK(m_KernelFFT, m_KernelFFT->GetLargestPossibleRegion());
-  itI.GoToBegin();
-  while (!itI.IsAtEnd())
+  unsigned int nproj = outputRegionForThread.GetNumberOfPixels() /
+                       (outputRegionForThread.GetSize()[0] * outputRegionForThread.GetSize()[1]);
+  for (unsigned int i = 0; i < nproj; i++)
   {
-    itK.GoToBegin();
-    while (!itK.IsAtEnd())
+    auto outputRegion = outputRegionForThread;
+    if (outputRegion.GetImageDimension() == 3)
     {
-      itI.Set(itI.Get() * itK.Get());
-      ++itI;
-      ++itK;
+      outputRegion.SetSize(2, 1);
+      outputRegion.SetIndex(2, outputRegionForThread.GetIndex(2) + i);
     }
-  }
 
-  // Inverse FFT image
-  using IFFTType = itk::HalfHermitianToRealInverseFFTImageFilter<typename FFTType::OutputImageType>;
-  typename IFFTType::Pointer ifft = IFFTType::New();
-  ifft->SetInput(fftI->GetOutput());
-  ifft->SetNumberOfWorkUnits(m_BackupNumberOfThreads);
-  ifft->SetReleaseDataFlag(true);
-  ifft->SetActualXDimensionIsOdd(paddedImage->GetLargestPossibleRegion().GetSize(0) % 2);
-  ifft->Update();
+    // Pad image region enlarged along X
+    RegionType enlargedRegionX = outputRegion;
+    enlargedRegionX.SetIndex(0, this->GetInput()->GetRequestedRegion().GetIndex(0));
+    enlargedRegionX.SetSize(0, this->GetInput()->GetRequestedRegion().GetSize(0));
+    enlargedRegionX.SetIndex(1, this->GetInput()->GetRequestedRegion().GetIndex(1));
+    enlargedRegionX.SetSize(1, this->GetInput()->GetRequestedRegion().GetSize(1));
+    FFTInputImagePointer paddedImage;
+    paddedImage = PadInputImageRegion(enlargedRegionX);
 
-  // Crop and paste result
-  itk::ImageRegionConstIterator<FFTInputImageType> itS(ifft->GetOutput(), outputRegionForThread);
-  itk::ImageRegionIterator<OutputImageType>        itD(this->GetOutput(), outputRegionForThread);
-  itS.GoToBegin();
-  itD.GoToBegin();
-  while (!itS.IsAtEnd())
-  {
-    itD.Set(itS.Get());
-    ++itS;
-    ++itD;
+    // FFT padded image
+    using FFTType = itk::RealToHalfHermitianForwardFFTImageFilter<FFTInputImageType>;
+    typename FFTType::Pointer fftI = FFTType::New();
+    fftI->SetInput(paddedImage);
+    fftI->SetNumberOfWorkUnits(m_BackupNumberOfThreads);
+    fftI->Update();
+
+    // Multiply line-by-line or projection-by-projection (depends on kernel size)
+    itk::ImageRegionIterator<typename FFTType::OutputImageType> itI(fftI->GetOutput(),
+                                                                    fftI->GetOutput()->GetLargestPossibleRegion());
+    itk::ImageRegionConstIterator<FFTOutputImageType> itK(m_KernelFFT, m_KernelFFT->GetLargestPossibleRegion());
+    itI.GoToBegin();
+    while (!itI.IsAtEnd())
+    {
+      itK.GoToBegin();
+      while (!itK.IsAtEnd())
+      {
+        itI.Set(itI.Get() * itK.Get());
+        ++itI;
+        ++itK;
+      }
+    }
+
+    // Inverse FFT image
+    using IFFTType = itk::HalfHermitianToRealInverseFFTImageFilter<typename FFTType::OutputImageType>;
+    typename IFFTType::Pointer ifft = IFFTType::New();
+    ifft->SetInput(fftI->GetOutput());
+    ifft->SetNumberOfWorkUnits(m_BackupNumberOfThreads);
+    ifft->SetReleaseDataFlag(true);
+    ifft->SetActualXDimensionIsOdd(paddedImage->GetLargestPossibleRegion().GetSize(0) % 2);
+    ifft->Update();
+
+    // Crop and paste result
+    itk::ImageRegionConstIterator<FFTInputImageType> itS(ifft->GetOutput(), outputRegion);
+    itk::ImageRegionIterator<OutputImageType>        itD(this->GetOutput(), outputRegion);
+    itS.GoToBegin();
+    itD.GoToBegin();
+    while (!itS.IsAtEnd())
+    {
+      itD.Set(itS.Get());
+      ++itS;
+      ++itD;
+    }
   }
 }
 
