@@ -23,6 +23,7 @@
 #include <itkMetaDataObject.h>
 #include <itkMatrix.h>
 #include <itkByteSwapper.h>
+#include <itkRawImageIO.h>
 
 //--------------------------------------------------------------------
 // Read Image Information
@@ -42,7 +43,6 @@ rtk::ImagXImageIO::ReadImageInformation()
   using MetaDataIntType = itk::MetaDataObject<int>;
 
   std::string pixelType = dynamic_cast<MetaDataStringType *>(dic["pixelFormat"].GetPointer())->GetMetaDataObjectValue();
-#if (ITK_VERSION_MAJOR == 5) && (ITK_VERSION_MINOR >= 1)
   if (pixelType == "Type_uint8")
     SetComponentType(itk::ImageIOBase::IOComponentEnum::UCHAR);
   if (pixelType == "Type_sint8")
@@ -57,22 +57,6 @@ rtk::ImagXImageIO::ReadImageInformation()
     SetComponentType(itk::ImageIOBase::IOComponentEnum::INT);
   if (pixelType == "Type_float")
     SetComponentType(itk::ImageIOBase::IOComponentEnum::FLOAT);
-#else
-  if (pixelType == "Type_uint8")
-    SetComponentType(itk::ImageIOBase::UCHAR);
-  if (pixelType == "Type_sint8")
-    SetComponentType(itk::ImageIOBase::CHAR);
-  if (pixelType == "Type_uint16")
-    SetComponentType(itk::ImageIOBase::USHORT);
-  if (pixelType == "Type_sint16")
-    SetComponentType(itk::ImageIOBase::SHORT);
-  if (pixelType == "Type_uint32")
-    SetComponentType(itk::ImageIOBase::UINT);
-  if (pixelType == "Type_sint32")
-    SetComponentType(itk::ImageIOBase::INT);
-  if (pixelType == "Type_float")
-    SetComponentType(itk::ImageIOBase::FLOAT);
-#endif
 
   if (dic["dimensions"].GetPointer() == nullptr)
     SetNumberOfDimensions(3);
@@ -117,17 +101,10 @@ rtk::ImagXImageIO::ReadImageInformation()
     SetOrigin(i, matrix[i][3]);
   }
 
-#if (ITK_VERSION_MAJOR == 5) && (ITK_VERSION_MINOR >= 1)
   if (std::string("LSB") == dynamic_cast<MetaDataStringType *>(dic["byteOrder"].GetPointer())->GetMetaDataObjectValue())
     this->SetByteOrder(IOByteOrderEnum::LittleEndian);
   else
     this->SetByteOrder(IOByteOrderEnum::BigEndian);
-#else
-  if (std::string("LSB") == dynamic_cast<MetaDataStringType *>(dic["byteOrder"].GetPointer())->GetMetaDataObjectValue())
-    this->SetByteOrder(LittleEndian);
-  else
-    this->SetByteOrder(BigEndian);
-#endif
 
   // Prepare raw file name
   m_RawFileName = itksys::SystemTools::GetFilenamePath(m_FileName);
@@ -164,27 +141,6 @@ rtk::ImagXImageIO::CanReadFile(const char * FileNameToRead)
 
   return false;
 } ////
-
-// Define itk::ReadRawBytesAfterSwapping for ITK_VERSION VERSION_LESS v5.1.0
-/** Utility function for reading RAW bytes */
-namespace itk
-{
-#ifndef ReadRawBytesAfterSwapping
-#  if (ITK_VERSION_MAJOR == 5) && (ITK_VERSION_MINOR >= 1)
-extern void
-ReadRawBytesAfterSwapping(IOComponentEnum componentType,
-                          void *          buffer,
-                          IOByteOrderEnum byteOrder,
-                          SizeValueType   numberOfComponents);
-#  else
-extern void
-ReadRawBytesAfterSwapping(ImageIOBase::IOComponentType componentType,
-                          void *                       buffer,
-                          ImageIOBase::ByteOrder       byteOrder,
-                          SizeValueType                numberOfComponents);
-#  endif
-#endif
-} // namespace itk
 
 //--------------------------------------------------------------------
 // Read Image Content

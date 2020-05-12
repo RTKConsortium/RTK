@@ -104,7 +104,7 @@ include(cmake/rtkCompilerFlags.cmake)
 # --------------------------------------------------------
 # Find ITK (required)
 if(NOT ITK_SOURCE_DIR)
-  find_package(ITK 5.0.1 REQUIRED)
+  find_package(ITK 5.1 REQUIRED)
 endif()
 
 # --------------------------------------------------------

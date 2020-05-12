@@ -66,10 +66,8 @@ ZengBackProjectionImageFilter<TInputImage, TOutputImage>::ZengBackProjectionImag
   // Default parameters
   m_DiscreteGaussianFilter->SetMaximumError(0.00001);
   m_DiscreteGaussianFilter->SetFilterDimensionality(2);
-#if (ITK_VERSION_MAJOR == 5) && (ITK_VERSION_MINOR >= 1)
   m_DiscreteGaussianFilter->SetInputBoundaryCondition(&m_BoundsCondition);
   m_DiscreteGaussianFilter->SetRealBoundaryCondition(&m_BoundsCondition);
-#endif
 }
 
 template <class TInputImage, class TOutputImage>
