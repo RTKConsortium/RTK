@@ -261,13 +261,8 @@ ImagXGeometryReader<TInputImage>::GetGeometryForAI1p5()
   Cm.isValid = false;
 
   // Create and set ImageIO
-  itk::ImageIOBase::Pointer imageIO =
-#if (ITK_VERSION_MAJOR == 5) && (ITK_VERSION_MINOR >= 1)
-    itk::ImageIOFactory::CreateImageIO(m_ProjectionsFileNames[0].c_str(),
-                                       itk::ImageIOFactory::IOFileModeEnum::ReadMode);
-#else
-    itk::ImageIOFactory::CreateImageIO(m_ProjectionsFileNames[0].c_str(), itk::ImageIOFactory::FileModeType::ReadMode);
-#endif
+  itk::ImageIOBase::Pointer imageIO = itk::ImageIOFactory::CreateImageIO(m_ProjectionsFileNames[0].c_str(),
+                                                                         itk::ImageIOFactory::IOFileModeEnum::ReadMode);
   imageIO = itk::GDCMImageIO::New();
   dynamic_cast<itk::GDCMImageIO *>(imageIO.GetPointer())->LoadPrivateTagsOn();
 
@@ -482,13 +477,8 @@ std::string
 ImagXGeometryReader<TInputImage>::getAIversion()
 {
   // Create and set ImageIO
-  itk::ImageIOBase::Pointer imageIO =
-#if (ITK_VERSION_MAJOR == 5) && (ITK_VERSION_MINOR >= 1)
-    itk::ImageIOFactory::CreateImageIO(m_ProjectionsFileNames[0].c_str(),
-                                       itk::ImageIOFactory::IOFileModeEnum::ReadMode);
-#else
-    itk::ImageIOFactory::CreateImageIO(m_ProjectionsFileNames[0].c_str(), itk::ImageIOFactory::FileModeType::ReadMode);
-#endif
+  itk::ImageIOBase::Pointer imageIO = itk::ImageIOFactory::CreateImageIO(m_ProjectionsFileNames[0].c_str(),
+                                                                         itk::ImageIOFactory::IOFileModeEnum::ReadMode);
 
   imageIO = itk::GDCMImageIO::New();
   dynamic_cast<itk::GDCMImageIO *>(imageIO.GetPointer())->LoadPrivateTagsOn();
@@ -556,13 +546,8 @@ ImagXGeometryReader<TInputImage>::GenerateData()
   // Projection matrices
   for (auto & m_ProjectionsFileName : m_ProjectionsFileNames)
   {
-    itk::ImageIOBase::Pointer imageIO =
-      itk::ImageIOFactory::CreateImageIO(m_ProjectionsFileNames[0].c_str(),
-#if (ITK_VERSION_MAJOR == 5) && (ITK_VERSION_MINOR >= 1)
-                                         itk::ImageIOFactory::IOFileModeEnum::ReadMode);
-#else
-                                         itk::ImageIOFactory::FileModeType::ReadMode);
-#endif
+    itk::ImageIOBase::Pointer imageIO = itk::ImageIOFactory::CreateImageIO(
+      m_ProjectionsFileNames[0].c_str(), itk::ImageIOFactory::IOFileModeEnum::ReadMode);
     using ReaderType = itk::ImageFileReader<TInputImage>;
     typename ReaderType::Pointer reader = ReaderType::New();
     reader->SetFileName(m_ProjectionsFileName);

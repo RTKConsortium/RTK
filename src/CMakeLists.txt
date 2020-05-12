@@ -63,14 +63,6 @@ endforeach()
 set_directory_properties(PROPERTIES COMPILE_DEFINITIONS "${defComSansVTK}")
 
 #=========================================================
-# Backward compatibility 
-#=========================================================
-if(${ITK_VERSION} VERSION_LESS 5.1.0)
-  set(RTK_SRCS ${RTK_SRCS}
-    itkRawImageIOUtilities.cxx)
-endif()
-
-#=========================================================
 # CUDA library
 #=========================================================
 if (RTK_USE_CUDA)

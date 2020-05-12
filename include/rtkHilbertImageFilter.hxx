@@ -79,11 +79,7 @@ HilbertImageFilter<TInputImage, TOutputImage>::GenerateData()
 
   using InverseFFTFilterType = typename itk::ComplexToComplexFFTImageFilter<TOutputImage>;
   typename InverseFFTFilterType::Pointer invFilt = InverseFFTFilterType::New();
-#if (ITK_VERSION_MAJOR == 5) && (ITK_VERSION_MINOR >= 1)
   invFilt->SetTransformDirection(InverseFFTFilterType::TransformDirectionEnum::FORWARD);
-#else
-  invFilt->SetTransformDirection(InverseFFTFilterType::FORWARD);
-#endif
   invFilt->SetInput(fft);
   invFilt->Update();
 

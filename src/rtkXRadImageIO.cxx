@@ -19,6 +19,7 @@
 #include "rtkXRadImageIO.h"
 #include <itkMetaDataObject.h>
 #include <itkByteSwapper.h>
+#include <itkRawImageIO.h>
 
 //--------------------------------------------------------------------
 // Read Image Information
@@ -57,17 +58,10 @@ rtk::XRadImageIO::ReadImageInformation()
         SetDimensions(2, atoi(paramValue.c_str()));
       else if (paramName == std::string("CBCT.DimensionalAttributes.DataSize"))
       {
-#if (ITK_VERSION_MAJOR == 5) && (ITK_VERSION_MINOR >= 1)
         if (atoi(paramValue.c_str()) == 3)
           SetComponentType(itk::ImageIOBase::IOComponentEnum::FLOAT);
         if (atoi(paramValue.c_str()) == 6)
           SetComponentType(itk::ImageIOBase::IOComponentEnum::USHORT);
-#else
-        if (atoi(paramValue.c_str()) == 3)
-          SetComponentType(itk::ImageIOBase::FLOAT);
-        if (atoi(paramValue.c_str()) == 6)
-          SetComponentType(itk::ImageIOBase::USHORT);
-#endif
       }
       else if (paramName == std::string("CBCT.DimensionalAttributes.PixelDimension_I_cm"))
       {
@@ -106,27 +100,6 @@ rtk::XRadImageIO::CanReadFile(const char * FileNameToRead)
     return false;
   return true;
 } ////
-
-// Define itk::ReadRawBytesAfterSwapping for ITK_VERSION VERSION_LESS v5.1.0
-/** Utility function for reading RAW bytes */
-namespace itk
-{
-#ifndef ReadRawBytesAfterSwapping
-#  if (ITK_VERSION_MAJOR == 5) && (ITK_VERSION_MINOR >= 1)
-extern void
-ReadRawBytesAfterSwapping(IOComponentEnum componentType,
-                          void *          buffer,
-                          IOByteOrderEnum byteOrder,
-                          SizeValueType   numberOfComponents);
-#  else
-extern void
-ReadRawBytesAfterSwapping(ImageIOBase::IOComponentType componentType,
-                          void *                       buffer,
-                          ImageIOBase::ByteOrder       byteOrder,
-                          SizeValueType                numberOfComponents);
-#  endif
-#endif
-} // namespace itk
 
 //--------------------------------------------------------------------
 // Read Image Content

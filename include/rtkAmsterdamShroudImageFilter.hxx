@@ -47,11 +47,7 @@ AmsterdamShroudImageFilter<TInputImage>::AmsterdamShroudImageFilter()
   m_SubtractFilter->SetInput2(m_ConvolutionFilter->GetOutput());
   m_PermuteFilter->SetInput(m_SubtractFilter->GetOutput());
 
-#if (ITK_VERSION_MAJOR == 5) && (ITK_VERSION_MINOR >= 1)
   m_DerivativeFilter->SetOrder(itk::GaussianOrderEnum::FirstOrder);
-#else
-  m_DerivativeFilter->SetOrder(DerivativeType::OrderEnumType::FirstOrder);
-#endif
   m_DerivativeFilter->SetDirection(1);
   m_DerivativeFilter->SetSigma(4);
 

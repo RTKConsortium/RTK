@@ -19,6 +19,7 @@
 #include "rtkEdfImageIO.h"
 #include <itk_zlib.h>
 #include <itkByteSwapper.h>
+#include <itkRawImageIO.h>
 
 //--------------------------------------------------------------------
 /* Find value_ptr as pointer to the parameter of the given key in the header.
@@ -127,7 +128,6 @@ rtk::EdfImageIO::ReadImageInformation()
       itkGenericExceptionMacro(<< "Unknown EDF datatype \"" << p << "\"");
     }
     datalen = edf_datatype_table[k].sajzof;
-#if (ITK_VERSION_MAJOR == 5) && (ITK_VERSION_MINOR >= 1)
     switch (edf_datatype_table[k].value)
     {
       case U_CHAR_DATATYPE:
@@ -161,61 +161,15 @@ rtk::EdfImageIO::ReadImageInformation()
         SetComponentType(itk::ImageIOBase::IOComponentEnum::DOUBLE);
         break;
     }
-#else
-    switch (edf_datatype_table[k].value)
-    {
-      case U_CHAR_DATATYPE:
-        SetComponentType(itk::ImageIOBase::UCHAR);
-        break;
-      case CHAR_DATATYPE:
-        SetComponentType(itk::ImageIOBase::CHAR);
-        break;
-      case U_SHORT_DATATYPE:
-        SetComponentType(itk::ImageIOBase::USHORT);
-        break;
-      case SHORT_DATATYPE:
-        SetComponentType(itk::ImageIOBase::SHORT);
-        break;
-      case U_INT_DATATYPE:
-        SetComponentType(itk::ImageIOBase::UINT);
-        break;
-      case INT_DATATYPE:
-        SetComponentType(itk::ImageIOBase::INT);
-        break;
-      case U_L_INT_DATATYPE:
-        SetComponentType(itk::ImageIOBase::UINT);
-        break;
-      case L_INT_DATATYPE:
-        SetComponentType(itk::ImageIOBase::INT);
-        break;
-      case FLOAT_DATATYPE:
-        SetComponentType(itk::ImageIOBase::FLOAT);
-        break;
-      case DOUBLE_DATATYPE:
-        SetComponentType(itk::ImageIOBase::DOUBLE);
-        break;
-    }
-#endif
   }
 
-#if (ITK_VERSION_MAJOR == 5) && (ITK_VERSION_MINOR >= 1)
   static const struct table edf_byteorder_table[] = {
     { "LowByteFirst", static_cast<int>(IOByteOrderEnum::LittleEndian) }, /* little endian */
     { "HighByteFirst", static_cast<int>(IOByteOrderEnum::BigEndian) },   /* big endian */
     { nullptr, -1 }
   };
-#else
-  static const struct table edf_byteorder_table[] = { { "LowByteFirst",
-                                                        static_cast<int>(LittleEndian) }, /* little endian */
-                                                      { "HighByteFirst", static_cast<int>(BigEndian) }, /* big endian */
-                                                      { nullptr, -1 } };
-#endif
 
-#if (ITK_VERSION_MAJOR == 5) && (ITK_VERSION_MINOR >= 1)
   int byteorder = static_cast<int>(IOByteOrderEnum::LittleEndian);
-#else
-  int byteorder = static_cast<int>(LittleEndian);
-#endif
   if ((p = edf_findInHeader(header, "ByteOrder")))
   {
     k = lookup_table_nth(edf_byteorder_table, p);
@@ -223,17 +177,10 @@ rtk::EdfImageIO::ReadImageInformation()
     {
 
       byteorder = edf_byteorder_table[k].value;
-#if (ITK_VERSION_MAJOR == 5) && (ITK_VERSION_MINOR >= 1)
       if (byteorder == static_cast<int>(IOByteOrderEnum::LittleEndian))
         this->SetByteOrder(IOByteOrderEnum::LittleEndian);
       else
         this->SetByteOrder(IOByteOrderEnum::BigEndian);
-#else
-      if (byteorder == static_cast<int>(LittleEndian))
-        this->SetByteOrder(LittleEndian);
-      else
-        this->SetByteOrder(BigEndian);
-#endif
     }
   }
   else
@@ -293,27 +240,6 @@ rtk::EdfImageIO::CanReadFile(const char * FileNameToRead)
     return false;
   return true;
 } ////
-
-// Define itk::ReadRawBytesAfterSwapping for ITK_VERSION VERSION_LESS v5.1.0
-/** Utility function for reading RAW bytes */
-namespace itk
-{
-#ifndef ReadRawBytesAfterSwapping
-#  if (ITK_VERSION_MAJOR == 5) && (ITK_VERSION_MINOR >= 1)
-extern void
-ReadRawBytesAfterSwapping(IOComponentEnum componentType,
-                          void *          buffer,
-                          IOByteOrderEnum byteOrder,
-                          SizeValueType   numberOfComponents);
-#  else
-extern void
-ReadRawBytesAfterSwapping(ImageIOBase::IOComponentType componentType,
-                          void *                       buffer,
-                          ImageIOBase::ByteOrder       byteOrder,
-                          SizeValueType                numberOfComponents);
-#  endif
-#endif
-} // namespace itk
 
 //--------------------------------------------------------------------
 // Read Image Content
