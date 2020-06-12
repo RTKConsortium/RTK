@@ -206,6 +206,10 @@ template <class VolumeSeriesType, class ProjectionStackType>
 void
 FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::GenerateData()
 {
+  typename itk::MemberCommand<Self>::Pointer callbackCommand = itk::MemberCommand<Self>::New();
+  callbackCommand->SetCallbackFunction(this, &Self::ReportProgress);
+  m_ConjugateGradientFilter->AddObserver(itk::IterationEvent(), callbackCommand);
+
   m_ProjStackToFourDFilter->Update();
 
   if (!m_CudaConjugateGradient)
