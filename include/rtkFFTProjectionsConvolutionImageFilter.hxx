@@ -123,8 +123,8 @@ FFTProjectionsConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>::
   const RegionType & outputRegionForThread,
   ThreadIdType       itkNotUsed(threadId))
 {
-  unsigned int nproj = outputRegionForThread.GetNumberOfPixels() /
-                       (outputRegionForThread.GetSize()[0] * outputRegionForThread.GetSize()[1]);
+  auto nproj = outputRegionForThread.GetNumberOfPixels() /
+               (outputRegionForThread.GetSize()[0] * outputRegionForThread.GetSize()[1]);
   for (unsigned int i = 0; i < nproj; i++)
   {
     auto outputRegion = outputRegionForThread;
@@ -132,6 +132,13 @@ FFTProjectionsConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>::
     {
       outputRegion.SetSize(2, 1);
       outputRegion.SetIndex(2, outputRegionForThread.GetIndex(2) + i);
+    }
+    else if (outputRegion.GetImageDimension() == 4)
+    {
+      outputRegion.SetSize(2, 1);
+      outputRegion.SetSize(3, 1);
+      outputRegion.SetIndex(2, outputRegionForThread.GetIndex(2) + i % outputRegionForThread.GetSize(2));
+      outputRegion.SetIndex(3, outputRegionForThread.GetIndex(3) + i / outputRegionForThread.GetSize(2));
     }
 
     // Pad image region enlarged along X
