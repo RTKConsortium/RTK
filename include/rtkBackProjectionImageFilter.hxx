@@ -88,16 +88,21 @@ BackProjectionImageFilter<TInputImage, TOutputImage>::GenerateInputRequestedRegi
     // Check which part of the projection image will be backprojected in the
     // volume.
     double firstPerspFactor = 0.;
-    for (int cz = 0; cz < 2; cz++)
-      for (int cy = 0; cy < 2; cy++)
-        for (int cx = 0; cx < 2; cx++)
+    int    c[Dimension] = { 0 };
+    for (c[2] = 0; c[2] < 2; c[2]++)
+      for (c[1] = 0; c[1] < 2; c[1]++)
+        for (c[0] = 0; c[0] < 2; c[0]++)
         {
-          // Compute projection index
-          typename TInputImage::IndexType index = this->GetInput()->GetRequestedRegion().GetIndex();
-          index[0] += cx * this->GetInput()->GetRequestedRegion().GetSize(0);
-          index[1] += cy * this->GetInput()->GetRequestedRegion().GetSize(1);
-          index[2] += cz * this->GetInput()->GetRequestedRegion().GetSize(2);
+          // Compute corner index
+          const double                            eps = 1e-4;
+          itk::ContinuousIndex<double, Dimension> index;
+          for (unsigned int i = 0; i < Dimension; i++)
+          {
+            index[i] = this->GetOutput()->GetRequestedRegion().GetIndex()[i] - eps;
+            index[i] += c[i] * (this->GetOutput()->GetRequestedRegion().GetSize(i) - 1 + 2 * eps);
+          }
 
+          // Compute projection index
           itk::ContinuousIndex<double, Dimension - 1> point;
           for (unsigned int i = 0; i < Dimension - 1; i++)
           {
@@ -117,7 +122,7 @@ BackProjectionImageFilter<TInputImage, TOutputImage>::GenerateInputRequestedRegi
           // Check if corners all have the same perspective factor sign.
           // If not, source is too close for easily computing a smaller requested
           // region than the largest possible one.
-          if (cx + cy + cz == 0)
+          if (c[0] + c[1] + c[2] == 0)
             firstPerspFactor = perspFactor;
           if (perspFactor * firstPerspFactor < 0.) // Change of sign
           {
@@ -135,8 +140,8 @@ BackProjectionImageFilter<TInputImage, TOutputImage>::GenerateInputRequestedRegi
   }
   reqRegion.SetIndex(0, itk::Math::floor(cornerInf[0]));
   reqRegion.SetIndex(1, itk::Math::floor(cornerInf[1]));
-  reqRegion.SetSize(0, itk::Math::ceil(cornerSup[0] + 1.) - itk::Math::floor(cornerInf[0]));
-  reqRegion.SetSize(1, itk::Math::ceil(cornerSup[1] + 1.) - itk::Math::floor(cornerInf[1]));
+  reqRegion.SetSize(0, itk::Math::ceil(cornerSup[0] - reqRegion.GetIndex(0)) + 1);
+  reqRegion.SetSize(1, itk::Math::ceil(cornerSup[1] - reqRegion.GetIndex(1)) + 1);
 
   if (reqRegion.Crop(inputPtr1->GetLargestPossibleRegion()))
     inputPtr1->SetRequestedRegion(reqRegion);

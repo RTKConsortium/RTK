@@ -113,7 +113,7 @@ public:
   }
 
 #ifdef ITK_USE_CONCEPT_CHECKING
-  itkConceptMacro(ImageDimensionCheck, (itk::Concept::SameDimensionOrMinusOneOrTwo<Self::InputImageDimension, 3>));
+  itkConceptMacro(ImageDimensionCheck, (itk::Concept::SameDimensionOrMinusOne<Self::InputImageDimension, 3>));
 #endif
 
 protected:
