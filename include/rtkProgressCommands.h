@@ -34,11 +34,6 @@ namespace rtk
 template <typename TCaller>
 class ProgressCommand : public itk::Command
 {
-protected:
-  /** Callback function to be redefined by derived classes. */
-  virtual void
-  Run(const TCaller * caller) = 0;
-
 public:
   /** Standard class typedefs. */
   typedef ProgressCommand         Self;
@@ -54,15 +49,31 @@ public:
   void
   Execute(const itk::Object * caller, const itk::EventObject & event) override
   {
-    if (!itk::ProgressEvent().CheckEvent(&event))
-    {
-      return;
-    }
     const auto * cCaller = dynamic_cast<const TCaller *>(caller);
     if (cCaller)
     {
-      Run(cCaller);
+      if (itk::EndEvent().CheckEvent(&event))
+      {
+        End(cCaller);
+        return;
+      }
+      if (itk::ProgressEvent().CheckEvent(&event))
+      {
+        Run(cCaller);
+      }
     } // TODO fail when cast fails
+  }
+
+
+protected:
+  /** Callback function to be redefined by derived classes. */
+  virtual void
+  Run(const TCaller * caller) = 0;
+
+  /** Callback function executed when filter concludes. */
+  virtual void
+  End(const TCaller * itkNotUsed(caller))
+  { /* Default implementation: do nothing */
   }
 };
 
@@ -93,10 +104,16 @@ protected:
     int newPercentage = (int)(caller->GetProgress() * 100.);
     if (newPercentage > percentage)
     {
-      std::cout << caller->GetNameOfClass() << " " << newPercentage << "% completed."
-                << std::endl; // TODO allow string personnalization
+      // TODO allow string personnalization?
+      std::cout << "\r" << caller->GetNameOfClass() << " " << newPercentage << "% completed." << std::flush;
       percentage = newPercentage;
     }
+  }
+
+  void
+  End(const TCaller * itkNotUsed(caller)) override
+  {
+    std::cout << std::endl; // new line when execution ends
   }
 };
 
