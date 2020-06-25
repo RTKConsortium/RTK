@@ -7,7 +7,7 @@ ADD_DEFINITIONS(-DHAVE_NAMESPACES)
 
 rtk_module_warnings_disable(C CXX)
 
-include(CheckCCompilerFlag)
+include(CheckCXXCompilerFlag)
 CHECK_CXX_COMPILER_FLAG(-fno-var-tracking-assignments HAS_NO_VAR_TRACKING_ASSIGNMENTS)
 if (HAS_NO_VAR_TRACKING_ASSIGNMENTS)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-var-tracking-assignments")
