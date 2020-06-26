@@ -94,6 +94,12 @@ endif()
 set_target_properties(lpsolve55 PROPERTIES VERSION ${LPSOLVE_VERSION}
                                            SOVERSION ${LPSOLVE_VERSION_MAJOR})
 
+if (NOT ITK_SOURCE_DIR)
+  # TODO: export target to find_package(RTK) on build directory ?
+else()
+  itk_module_target_export(lpsolve55)
+endif()
+
 #=========================================================
 if(NOT RTK_INSTALL_NO_LIBRARIES)
   target_include_directories(lpsolve55 PUBLIC $<INSTALL_INTERFACE:${RTK_INSTALL_INCLUDE_DIR}/lpsolve>)
