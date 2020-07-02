@@ -121,10 +121,13 @@ template <class TInputImage, class TOutputImage, class TFFTPrecision>
 void
 FFTProjectionsConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>::ThreadedGenerateData(
   const RegionType & outputRegionForThread,
-  ThreadIdType       itkNotUsed(threadId))
+  ThreadIdType       threadId)
 {
   auto nproj = outputRegionForThread.GetNumberOfPixels() /
                (outputRegionForThread.GetSize()[0] * outputRegionForThread.GetSize()[1]);
+
+  itk::ProgressReporter progress(this, threadId, outputRegionForThread.GetNumberOfPixels(), 100);
+
   for (unsigned int i = 0; i < nproj; i++)
   {
     auto outputRegion = outputRegionForThread;
@@ -192,6 +195,7 @@ FFTProjectionsConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>::
       itD.Set(itS.Get());
       ++itS;
       ++itD;
+      progress.CompletedPixel();
     }
   }
 }
