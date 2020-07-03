@@ -150,7 +150,7 @@ main(int argc, char * argv[])
   f->SetProjectionSubsetSize(args_info.subsetsize_arg);                                                                \
   if (args_info.verbose_flag)                                                                                          \
   {                                                                                                                    \
-    f->AddObserver(itk::ProgressEvent(), progressCommand);                                                             \
+    f->AddObserver(itk::AnyEvent(), progressCommand);                                                                  \
   }
 
   // FDK reconstruction filtering

@@ -215,7 +215,7 @@
   {                                                                                                                    \
     using VerboseIterationCommandType = rtk::VerboseIterationCommand<filter_type>;                                     \
     typename VerboseIterationCommandType::Pointer verboseIterationCommand = VerboseIterationCommandType::New();        \
-    filter->AddObserver(itk::IterationEvent(), verboseIterationCommand);                                               \
+    filter->AddObserver(itk::AnyEvent(), verboseIterationCommand);                                                     \
   }                                                                                                                    \
   if (args_info.output_every_given)                                                                                    \
   {                                                                                                                    \
@@ -233,6 +233,5 @@
     filter->AddObserver(itk::IterationEvent(), outputIterationCommand);                                                \
   }
 //--------------------------------------------------------------------
-
 
 #endif

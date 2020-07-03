@@ -37,17 +37,6 @@ namespace rtk
 template <typename TCaller>
 class IterationCommand : public itk::Command
 {
-protected:
-  /** How many times this command has been executed. */
-  unsigned int m_IterationCount = 0;
-
-  /** Trigger the callback every n iterations. */
-  unsigned int m_TriggerEvery = 1;
-
-  /** Callback function to be redefined by derived classes. */
-  virtual void
-  Run(const TCaller * caller) = 0;
-
 public:
   /** Standard class typedefs. */
   typedef IterationCommand        Self;
@@ -65,19 +54,40 @@ public:
   void
   Execute(const itk::Object * caller, const itk::EventObject & event) override
   {
-    if (!itk::IterationEvent().CheckEvent(&event))
+    const auto * cCaller = dynamic_cast<const TCaller *>(caller);
+    if (cCaller)
     {
-      return;
-    }
-    ++m_IterationCount;
-    if ((m_IterationCount % m_TriggerEvery) == 0)
-    {
-      const auto * cCaller = dynamic_cast<const TCaller *>(caller);
-      if (cCaller)
+      if (itk::EndEvent().CheckEvent(&event))
       {
-        Run(cCaller);
-      } // TODO fail when cast fails
-    }
+        End(cCaller);
+        return;
+      }
+      if (itk::IterationEvent().CheckEvent(&event))
+      {
+        ++m_IterationCount;
+        if ((m_IterationCount % m_TriggerEvery) == 0)
+        {
+          Run(cCaller);
+        }
+      }
+    } // TODO fail when cast fails
+  }
+
+protected:
+  /** How many times this command has been executed. */
+  unsigned int m_IterationCount = 0;
+
+  /** Trigger the callback every n iterations. */
+  unsigned int m_TriggerEvery = 1;
+
+  /** Callback function to be redefined by derived classes. */
+  virtual void
+  Run(const TCaller * caller) = 0;
+
+  /** Callback function executed when filter concludes. */
+  virtual void
+  End(const TCaller * itkNotUsed(caller))
+  { /* Default implementation: do nothing */
   }
 };
 
@@ -103,8 +113,14 @@ protected:
   void
   Run(const TCaller * itkNotUsed(caller)) override
   {
-    std::cout << "Iteration " << this->m_IterationCount << " completed."
-              << std::endl; // TODO allow string personnalization
+    // TODO allow string personnalization?
+    std::cout << "\rIteration " << this->m_IterationCount << " completed." << std::flush;
+  }
+
+  void
+  End(const TCaller * itkNotUsed(caller)) override
+  {
+    std::cout << std::endl; // new line when execution ends
   }
 };
 
