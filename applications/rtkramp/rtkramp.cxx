@@ -27,6 +27,7 @@
 
 #include <itkImageFileWriter.h>
 #include <itkStreamingImageFilter.h>
+#include "rtkProgressCommands.h"
 
 int
 main(int argc, char * argv[])
@@ -95,6 +96,13 @@ main(int argc, char * argv[])
     streamer->SetInput(rampFilter->GetOutput());
   streamer->SetNumberOfStreamDivisions(1 + reader->GetOutput()->GetLargestPossibleRegion().GetSize(2) /
                                              args_info.subsetsize_arg);
+
+  if (args_info.verbose_flag)
+  {
+    using PercentageProgressCommandType = rtk::PercentageProgressCommand<CPURampFilterType>;
+    PercentageProgressCommandType::Pointer progressCommand = PercentageProgressCommandType::New();
+    rampFilter->AddObserver(itk::ProgressEvent(), progressCommand);
+  }
 
   TRY_AND_EXIT_ON_ITK_EXCEPTION(streamer->Update())
 
