@@ -85,7 +85,7 @@ template <class TInputImage, class TOutputImage>
 void
 ZengBackProjectionImageFilter<TInputImage, TOutputImage>::VerifyInputInformation() const
 {
-  using ImageBaseType = const itk::ImageBase<InputImageDimension>;
+  using ImageBaseType = const itk::ImageBase<InputSpaceDimension>;
 
   ImageBaseType * inputPtr1 = nullptr;
 
@@ -169,9 +169,9 @@ ZengBackProjectionImageFilter<TInputImage, TOutputImage>::GenerateOutputInformat
 {
 
   // Info of the input volume
-  const typename InputCPUImageType::PointType   originVolume = this->GetInput(0)->GetOrigin();
   const typename InputCPUImageType::SpacingType spacingVolume = this->GetInput(0)->GetSpacing();
   const typename InputCPUImageType::SizeType    sizeVolume = this->GetInput(0)->GetLargestPossibleRegion().GetSize();
+  const typename InputCPUImageType::IndexType   indexVolume = this->GetInput(0)->GetLargestPossibleRegion().GetIndex();
 
   // Info of the input stack of projections
   const typename OuputCPUImageType::SpacingType spacingProjections = this->GetInput(1)->GetSpacing();
@@ -179,9 +179,18 @@ ZengBackProjectionImageFilter<TInputImage, TOutputImage>::GenerateOutputInformat
   const typename OuputCPUImageType::PointType originProjection = this->GetInput(1)->GetOrigin();
 
   // Find the center of the volume
-  m_centerVolume[0] = originVolume[0] + spacingVolume[0] * (double)(sizeVolume[0] - 1) / 2.0;
-  m_centerVolume[1] = originVolume[1] + spacingVolume[1] * (double)(sizeVolume[1] - 1) / 2.0;
-  m_centerVolume[2] = originVolume[2] + spacingVolume[2] * (double)(sizeVolume[2] - 1) / 2.0;
+  using CoordRepType = typename PointType ::ValueType;
+  using ContinuousIndexType = itk::ContinuousIndex<CoordRepType, InputSpaceDimension>;
+  using ContinuousIndexValueType = typename ContinuousIndexType::ValueType;
+  ContinuousIndexType centerIndex;
+
+  for (unsigned int k = 0; k < InputSpaceDimension; k++)
+  {
+    centerIndex[k] = static_cast<ContinuousIndexValueType>(indexVolume[k]) +
+                     static_cast<ContinuousIndexValueType>(sizeVolume[k] - 1) / 2.0;
+  }
+
+  this->GetInput(0)->TransformContinuousIndexToPhysicalPoint(centerIndex, m_centerVolume);
 
   PointType centerRotation;
   centerRotation.Fill(0);
@@ -243,6 +252,7 @@ ZengBackProjectionImageFilter<TInputImage, TOutputImage>::GenerateOutputInformat
     m_AttenuationMapResampleImageFilter->SetSize(outputSize);
     m_AttenuationMapResampleImageFilter->SetOutputOrigin(outputOrigin);
     m_AttenuationMapResampleImageFilter->SetOutputSpacing(spacingProjections);
+    m_AttenuationMapResampleImageFilter->SetOutputDirection(this->GetInput(1)->GetDirection());
     m_AttenuationMapResampleImageFilter->SetInput(this->GetInput(2));
     m_AttenuationMapResampleImageFilter->UpdateOutputInformation();
 
@@ -268,6 +278,7 @@ ZengBackProjectionImageFilter<TInputImage, TOutputImage>::GenerateOutputInformat
   m_ConstantVolumeSource->SetSpacing(outputSpacing);
   m_ConstantVolumeSource->SetOrigin(outputOrigin);
   m_ConstantVolumeSource->SetSize(outputSize);
+  m_ConstantVolumeSource->SetDirection(this->GetInput(1)->GetDirection());
   m_ConstantVolumeSource->SetConstant(0);
 
   m_PasteImageFilter->SetSourceImage(m_DiscreteGaussianFilter->GetOutput());
@@ -290,7 +301,7 @@ void
 ZengBackProjectionImageFilter<TInputImage, TOutputImage>::GenerateData()
 {
   const typename Superclass::GeometryType::ConstPointer geometry = this->GetGeometry();
-  const unsigned int                                    Dimension = this->InputImageDimension;
+  const unsigned int                                    Dimension = this->InputSpaceDimension;
 
   typename ExtractImageFilterType::InputImageRegionType projRegion;
   projRegion = this->GetInput(1)->GetLargestPossibleRegion();
@@ -384,21 +395,22 @@ ZengBackProjectionImageFilter<TInputImage, TOutputImage>::GenerateData()
     currentVolume = m_PasteImageFilter->GetOutput();
     currentVolume->DisconnectPipeline();
     m_PasteImageFilter->SetDestinationImage(currentVolume);
-    if (!this->GetInput(2))
-    {
-      m_DiscreteGaussianFilter->SetInput(currentSlice);
-    }
-    else
-    {
-      desiredRegion.SetIndex(Dimension - 1, startSlice - 1);
-      m_AttenuationMapRegionOfInterest->SetRegionOfInterest(desiredRegion);
-      m_AttenuationMapRegionOfInterest->UpdateOutputInformation();
-      m_AttenuationMapMultiplyImageFilter->SetInput1(currentSlice);
-      m_DiscreteGaussianFilter->SetInput(m_AttenuationMapMultiplyImageFilter->GetOutput());
-    }
+
     int index = 0;
     for (index = startSlice; index > 0; index--)
     {
+      if (!this->GetInput(2))
+      {
+        m_DiscreteGaussianFilter->SetInput(currentSlice);
+      }
+      else
+      {
+        desiredRegion.SetIndex(Dimension - 1, index - 1);
+        m_AttenuationMapRegionOfInterest->SetRegionOfInterest(desiredRegion);
+        m_AttenuationMapRegionOfInterest->UpdateOutputInformation();
+        m_AttenuationMapMultiplyImageFilter->SetInput1(currentSlice);
+        m_DiscreteGaussianFilter->SetInput(m_AttenuationMapMultiplyImageFilter->GetOutput());
+      }
       // Compute the distance between the current slice and the detector
       indexSlice[Dimension - 1] = index - 1;
       dist += m_ConstantVolumeSource->GetSpacing()[2];
@@ -418,18 +430,6 @@ ZengBackProjectionImageFilter<TInputImage, TOutputImage>::GenerateData()
       currentVolume = m_PasteImageFilter->GetOutput();
       currentVolume->DisconnectPipeline();
       m_PasteImageFilter->SetDestinationImage(currentVolume);
-      if (!this->GetInput(2))
-      {
-        m_DiscreteGaussianFilter->SetInput(currentSlice);
-      }
-      else
-      {
-        desiredRegion.SetIndex(Dimension - 1, index - 1);
-        m_AttenuationMapRegionOfInterest->SetRegionOfInterest(desiredRegion);
-        m_AttenuationMapRegionOfInterest->UpdateOutputInformation();
-        m_AttenuationMapMultiplyImageFilter->SetInput1(currentSlice);
-        m_DiscreteGaussianFilter->SetInput(m_AttenuationMapMultiplyImageFilter->GetOutput());
-      }
     }
     // Rotate the volume
     m_ResampleImageFilter->SetInput(currentVolume);

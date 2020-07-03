@@ -101,7 +101,7 @@ public:
   using RegionOfInterestPointerType = typename RegionOfInterestFilterType::Pointer;
 
   /** ImageDimension constants */
-  static constexpr unsigned int InputImageDimension = TInputImage::ImageDimension;
+  static constexpr unsigned int InputSpaceDimension = TInputImage::ImageDimension;
 
   /** Typedef for the boundary condition */
   using BoundaryCondition = itk::ConstantBoundaryCondition<OuputCPUImageType>;
