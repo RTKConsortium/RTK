@@ -207,7 +207,7 @@ set(RTK_VERSION_PATCH ${RTK_VERSION_PATCH})
 set(RTK_USE_CUDA ${RTK_USE_CUDA})
 
 if(${RTK_USE_CUDA})
-  set(CMAKE_MODULE_PATH ${RTK_MODULE_PATH_CONFIG} ${CMAKE_MODULE_PATH})
+  list(APPEND CMAKE_MODULE_PATH ${RTK_MODULE_PATH_CONFIG})
   # if we are using CUDA, make sure CUDA libraries are available
   find_package(CUDA_wrap REQUIRED)
   include_directories(${CUDA_INCLUDE_DIRS})
