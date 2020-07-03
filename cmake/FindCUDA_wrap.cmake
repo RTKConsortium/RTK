@@ -1,4 +1,5 @@
 # - Wrapper around FindCUDA
+cmake_minimum_required(VERSION 3.3)
 
 if (MINGW)
   # Cuda doesn't work with mingw at all
