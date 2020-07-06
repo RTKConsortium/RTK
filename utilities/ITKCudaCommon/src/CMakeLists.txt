@@ -11,10 +11,13 @@ include_directories(${ITK_INCLUDE_DIRS})
 add_library(ITKCudaCommon ${ITK_LIBRARY_BUILD_TYPE} ${ITKCudaCommon_SRC})
 target_link_libraries(ITKCudaCommon LINK_PUBLIC ${ITKCommon_LIBRARIES} ${CUDA_CUDA_LIBRARY} ${CUDA_LIBRARIES})
 
-# if(ITK_SOURCE_DIR)
+if (NOT ITK_SOURCE_DIR)
+  # TODO: export target to find_package(RTK) on build directory ?
+else()
 #   itk_module_link_dependencies()
 #   itk_module_target(ITKCudaCommon)
-# endif()
+  itk_module_target_export(ITKCudaCommon)
+endif()
 
 if(NOT RTK_INSTALL_NO_LIBRARIES)
   target_include_directories(ITKCudaCommon PUBLIC $<INSTALL_INTERFACE:${ITKCudaCommon_INSTALL_INCLUDE_DIR}>)
