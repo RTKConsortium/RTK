@@ -158,6 +158,7 @@ ImagXGeometryReader<TInputImage>::GetGeometryForAI2p1()
               << std::endl;
 
     // Parse tag and check if 'PLUS' or 'MINUS'
+    F.constantDetectorOffset = 0.f;
     if (F.activeArcName.find("PLUS") != std::string::npos)
     {
       F.constantDetectorOffset = F.xPlus;
