@@ -75,8 +75,8 @@ public:
   itkSetConstObjectMacro(Geometry, GeometryType);
 
   /** Get / Set of the member Mask. If set, all the pixels in the field of view
-   * are set to 1. The data value is kept otherwise. Pixels outside the mask
-   * are set to 0 in any case. */
+   * are set to InsideValue. The data value is kept otherwise. Pixels outside the mask
+   * are set to OutsideValue in any case. */
   itkGetMacro(Mask, bool);
   itkSetMacro(Mask, bool);
 
@@ -90,6 +90,14 @@ public:
    * rtk::DisplacedDetectorImageFilter, has been used. */
   itkGetMacro(DisplacedDetector, bool);
   itkSetMacro(DisplacedDetector, bool);
+
+  /** Inside value when Mask is true. 1 by default */
+  itkGetMacro(InsideValue, double);
+  itkSetMacro(InsideValue, double);
+
+  /** Outside value. 0 by default */
+  itkGetMacro(OutsideValue, double);
+  itkSetMacro(OutsideValue, double);
 
   /** Computes the radius r and the center (x,z) of the disk perpendicular to
    * the y-axis that is covered by:
@@ -138,6 +146,8 @@ private:
   double                  m_HatHeightInf;
   double                  m_HatHeightSup;
   bool                    m_DisplacedDetector{ false };
+  double                  m_InsideValue{ 1. };
+  double                  m_OutsideValue{ 0. };
 };
 
 } // end namespace rtk
