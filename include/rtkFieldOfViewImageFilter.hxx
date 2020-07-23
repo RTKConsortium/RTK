@@ -319,12 +319,12 @@ FieldOfViewImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerateData(
               radius * m_HatTangentSup <= m_HatHeightSup - point[1])
           {
             if (m_Mask)
-              itOut.Set(1.0);
+              itOut.Set(this->m_InsideValue);
             else
               itOut.Set(itIn.Get());
           }
           else
-            itOut.Set(0.);
+            itOut.Set(this->m_OutsideValue);
           ++itIn;
           ++itOut;
           point[0] += pointIncrement[0];
@@ -351,12 +351,12 @@ FieldOfViewImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerateData(
           point[1] >= m_HatHeightInf - radius * m_HatTangentInf)
       {
         if (m_Mask)
-          itOut.Set(1.0);
+          itOut.Set(this->m_InsideValue);
         else
           itOut.Set(itIn.Get());
       }
       else
-        itOut.Set(0.);
+        itOut.Set(this->m_OutsideValue);
       ++itIn;
       ++itOut;
     }
