@@ -94,7 +94,7 @@ public:
   using ExpImageFilterPointerType = typename ExpImageFilterType::Pointer;
 
   /** ImageDimension constants */
-  static constexpr unsigned int InputSpaceDimension = TOutputImage::ImageDimension;
+  static constexpr unsigned int InputImageDimension = TOutputImage::ImageDimension;
 
   /** Typedef for the boundary condition */
   using BoundaryCondition = itk::ConstantBoundaryCondition<OuputCPUImageType>;

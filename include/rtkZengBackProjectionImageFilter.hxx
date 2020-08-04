@@ -87,7 +87,7 @@ template <class TInputImage, class TOutputImage>
 void
 ZengBackProjectionImageFilter<TInputImage, TOutputImage>::VerifyInputInformation() const
 {
-  using ImageBaseType = const itk::ImageBase<InputSpaceDimension>;
+  using ImageBaseType = const itk::ImageBase<InputImageDimension>;
 
   ImageBaseType * inputPtr1 = nullptr;
 
@@ -182,11 +182,11 @@ ZengBackProjectionImageFilter<TInputImage, TOutputImage>::GenerateOutputInformat
 
   // Find the center of the volume
   using CoordRepType = typename PointType ::ValueType;
-  using ContinuousIndexType = itk::ContinuousIndex<CoordRepType, InputSpaceDimension>;
+  using ContinuousIndexType = itk::ContinuousIndex<CoordRepType, InputImageDimension>;
   using ContinuousIndexValueType = typename ContinuousIndexType::ValueType;
   ContinuousIndexType centerIndex;
 
-  for (unsigned int k = 0; k < InputSpaceDimension; k++)
+  for (unsigned int k = 0; k < InputImageDimension; k++)
   {
     centerIndex[k] = static_cast<ContinuousIndexValueType>(indexVolume[k]) +
                      static_cast<ContinuousIndexValueType>(sizeVolume[k] - 1) / 2.0;
@@ -303,7 +303,7 @@ void
 ZengBackProjectionImageFilter<TInputImage, TOutputImage>::GenerateData()
 {
   const typename Superclass::GeometryType::ConstPointer geometry = this->GetGeometry();
-  const unsigned int                                    Dimension = this->InputSpaceDimension;
+  const unsigned int                                    Dimension = this->InputImageDimension;
 
   typename ExtractImageFilterType::InputImageRegionType projRegion;
   projRegion = this->GetInput(1)->GetLargestPossibleRegion();
