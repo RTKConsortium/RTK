@@ -45,7 +45,7 @@ namespace rtk
  * digraph LookupTable {
  *
  *  Input1 [label="index"]
- *  Input2 [label="ln(max(1,m_I0-m_IDark))"]
+ *  Input2 [label="log(max(1,m_I0-m_IDark))"]
  *  Input3 [label="m_IDark"]
  *  Output [label="LookupTable", shape=Mdiamond];
  *
