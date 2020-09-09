@@ -19,6 +19,8 @@
 #ifndef rtkProgressCommands_h
 #define rtkProgressCommands_h
 
+#include <itkCommand.h>
+
 namespace rtk
 {
 
