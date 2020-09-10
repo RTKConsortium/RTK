@@ -74,6 +74,9 @@ set_property(TARGET lpsolve55 APPEND PROPERTY COMPILE_DEFINITIONS
 	PARSER_LP
 	INVERSE_ACTIVE=INVERSE_LUSOL
 	RoleIsExternalInvEngine
+        LoadInverseLib=FALSE
+        LoadLanguageLib=FALSE
+        LoadableBlasLib=0
 )
 
 if(WIN32)
