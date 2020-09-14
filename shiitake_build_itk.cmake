@@ -35,9 +35,9 @@ foreach(ITK_VERSION "master")
            -DITK_USE_FFTWF=${FFTW}
            -DITK_USE_SYSTEM_FFTW=${FFTW}
            -DBUILD_SHARED_LIBS:BOOL=${BUILD_SHARED_LIBS}
-           -DFFTWD_LIB:PATH=D:/src/fftw-3.3.7/build/${DEBUG_RELEASE}/fftw3.lib
+           -DFFTWD_LIBRARIES:PATH=D:/src/fftw-3.3.7/build/${DEBUG_RELEASE}/fftw3.lib
            -DFFTWD_THREADS_LIB:PATH=D:/src/fftw-3.3.7/build/${DEBUG_RELEASE}/fftw3.lib
-           -DFFTWF_LIB:PATH=D:/src/fftw-3.3.7/build/${DEBUG_RELEASE}/fftw3f.lib
+           -DFFTWF_LIBRARIES:PATH=D:/src/fftw-3.3.7/build/${DEBUG_RELEASE}/fftw3f.lib
            -DFFTWF_THREADS_LIB:PATH=D:/src/fftw-3.3.7/build/${DEBUG_RELEASE}/fftw3f.lib
            -DFFTW_INCLUDE_PATH:PATH=D:/src/fftw-3.3.7/api
           )

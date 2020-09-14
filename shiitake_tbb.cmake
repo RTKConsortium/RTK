@@ -29,7 +29,7 @@ set(cfg_options
     -DITK_LEGACY_REMOVE:BOOL=ON
     -DITK_BUILD_DEFAULT_MODULES:BOOL=OFF
     -DModule_RTK:BOOL=ON
-    -DREMOTE_GIT_TAG_RTK:STRING=master
+    -DModule_RTK_GIT_TAG:STRING=master
     -DBUILD_EXAMPLES:BOOL=OFF
     -DBUILD_TESTING:BOOL=ON
     -DBUILD_SHARED_LIBS:BOOL=${BUILD_SHARED_LIBS}
@@ -41,9 +41,9 @@ if("${FFTW}" STREQUAL ON)
       -DITK_USE_FFTWD:BOOL=${FFTW}
       -DITK_USE_FFTWF:BOOL=${FFTW}
       -DITK_USE_SYSTEM_FFTW:BOOL=${FFTW}
-      -DFFTWD_LIB:PATH=D:/src/fftw-3.3.7/build/${DEBUG_RELEASE}/fftw3.lib
+      -DFFTWD_LIBRARIES:PATH=D:/src/fftw-3.3.7/build/${DEBUG_RELEASE}/fftw3.lib
       -DFFTWD_THREADS_LIB:PATH=D:/src/fftw-3.3.7/build/${DEBUG_RELEASE}/fftw3.lib
-      -DFFTWF_LIB:PATH=D:/src/fftw-3.3.7/build/${DEBUG_RELEASE}/fftw3f.lib
+      -DFFTWF_LIBRARIES:PATH=D:/src/fftw-3.3.7/build/${DEBUG_RELEASE}/fftw3f.lib
       -DFFTWF_THREADS_LIB:PATH=D:/src/fftw-3.3.7/build/${DEBUG_RELEASE}/fftw3f.lib
       -DFFTW_INCLUDE_PATH:PATH=D:/src/fftw-3.3.7/api
      )
