@@ -20,7 +20,6 @@
 #define rtkParkerShortScanImageFilter_h
 
 #include <itkInPlaceImageFilter.h>
-#include <mutex>
 
 #include "rtkThreeDCircularProjectionGeometry.h"
 #include "rtkConfiguration.h"
@@ -88,7 +87,19 @@ protected:
   VerifyPreconditions() ITKv5_CONST override;
 
   void
+  GenerateInputRequestedRegion() override;
+
+  void
   DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread) override;
+
+  /** Actual angular gap in the projections */
+  double m_Delta;
+
+  /** First angle of the short scan */
+  double m_FirstAngle;
+
+  /** Internal variable indicating whether this scan is short */
+  bool m_IsShortScan{ false };
 
 private:
   /** RTK geometry object */
@@ -102,8 +113,6 @@ private:
 
   /** Minimum angular gap to automatically detect a short scan. Defaults is pi/9 radians. */
   double m_AngularGapThreshold;
-
-  std::mutex m_WarningMutex;
 }; // end of class
 
 } // end namespace rtk
