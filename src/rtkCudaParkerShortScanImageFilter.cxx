@@ -35,19 +35,7 @@ CudaParkerShortScanImageFilter ::GPUGenerateData()
   float * outBuffer = *static_cast<float **>(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
   outBuffer += this->GetOutput()->ComputeOffset(this->GetOutput()->GetRequestedRegion().GetIndex());
 
-  const std::vector<double> rotationAngles = this->GetGeometry()->GetGantryAngles();
-  std::vector<double>       angularGaps = this->GetGeometry()->GetAngularGapsWithNext(rotationAngles);
-
-  // compute max. angular gap
-  int maxAngularGapPos = 0;
-  for (unsigned int i = 1; i < angularGaps.size(); i++)
-    if (angularGaps[i] > angularGaps[maxAngularGapPos])
-      maxAngularGapPos = i;
-
-  // check if it is a short scan
-  // NOTE: not a short scan if less than 20 degrees max gap
-  if (this->GetGeometry()->GetSourceToDetectorDistances()[0] == 0. ||
-      angularGaps[maxAngularGapPos] < this->GetAngularGapThreshold())
+  if (!m_IsShortScan)
   {
     if (outBuffer != inBuffer)
     {
@@ -72,33 +60,10 @@ CudaParkerShortScanImageFilter ::GPUGenerateData()
     return;
   }
 
-  const std::map<double, unsigned int> sortedAngles = this->GetGeometry()->GetUniqueSortedAngles(rotationAngles);
-
-  // Compute delta between first and last angle where there is weighting required
-  std::map<double, unsigned int>::const_iterator itLastAngle;
-  itLastAngle = sortedAngles.find(rotationAngles[maxAngularGapPos]);
-  std::map<double, unsigned int>::const_iterator itFirstAngle = itLastAngle;
-  itFirstAngle = (++itFirstAngle == sortedAngles.end()) ? sortedAngles.begin() : itFirstAngle;
-  const double firstAngle = itFirstAngle->first;
-  double       lastAngle = itLastAngle->first;
-  if (lastAngle < firstAngle)
-    lastAngle += 2 * itk::Math::pi;
-  // Delta
-  double delta = 0.5 * (lastAngle - firstAngle - itk::Math::pi);
-  delta = delta - 2 * itk::Math::pi * floor(delta / (2 * itk::Math::pi)); // between -2*PI and 2*PI
-
   // check for enough data
-  const int    geomStart = this->GetInput()->GetBufferedRegion().GetIndex()[2];
-  double       sox = this->GetGeometry()->GetSourceOffsetsX()[geomStart];
-  double       sid = this->GetGeometry()->GetSourceToIsocenterDistances()[geomStart];
-  const double invsid = 1. / sqrt(sid * sid + sox * sox);
-  const double detectorWidth =
-    this->GetInput()->GetSpacing()[0] * this->GetInput()->GetLargestPossibleRegion().GetSize()[0];
-  if (delta < atan(0.5 * detectorWidth * invsid))
-    itkWarningMacro(<< "You do not have enough data for proper Parker weighting (short scan)"
-                    << "Delta is " << delta * 180. / itk::Math::pi
-                    << " degrees and should be more than half the beam angle, i.e. "
-                    << atan(0.5 * detectorWidth * invsid) * 180. / itk::Math::pi << " degrees.");
+  const int geomStart = this->GetInput()->GetBufferedRegion().GetIndex()[2];
+  double    sox = this->GetGeometry()->GetSourceOffsetsX()[geomStart];
+  double    sid = this->GetGeometry()->GetSourceToIsocenterDistances()[geomStart];
 
   float proj_orig = this->GetInput()->GetOrigin()[0];
 
@@ -148,8 +113,8 @@ CudaParkerShortScanImageFilter ::GPUGenerateData()
                      inBuffer,
                      outBuffer,
                      geomMatrix,
-                     delta,
-                     firstAngle,
+                     m_Delta,
+                     m_FirstAngle,
                      proj_orig,
                      proj_row,
                      proj_col);
