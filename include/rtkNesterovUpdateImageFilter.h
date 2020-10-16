@@ -80,8 +80,8 @@ protected:
   int                                   m_NumberOfIterations;
   int                                   m_CurrentIteration;
   bool                                  m_MustInitializeIntermediateImages;
-  typename TImage::PixelType::ValueType m_tCoeff;
-  typename TImage::PixelType::ValueType m_tCoeffNext;
+  typename TImage::PixelType::ValueType m_TCoeff;
+  typename TImage::PixelType::ValueType m_TCoeffNext;
   typename TImage::PixelType::ValueType m_Sum;
   typename TImage::PixelType::ValueType m_Ratio;
 

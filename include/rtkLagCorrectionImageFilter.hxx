@@ -28,8 +28,8 @@
 namespace rtk
 {
 
-template <typename TImage, unsigned ModelOrder>
-LagCorrectionImageFilter<TImage, ModelOrder>::LagCorrectionImageFilter()
+template <typename TImage, unsigned VModelOrder>
+LagCorrectionImageFilter<TImage, VModelOrder>::LagCorrectionImageFilter()
 {
   this->DynamicMultiThreadingOff();
   this->SetNumberOfRequiredInputs(1);
@@ -39,9 +39,9 @@ LagCorrectionImageFilter<TImage, ModelOrder>::LagCorrectionImageFilter()
   m_NewParamJustReceived = false;
 }
 
-template <typename TImage, unsigned ModelOrder>
+template <typename TImage, unsigned VModelOrder>
 void
-LagCorrectionImageFilter<TImage, ModelOrder>::GenerateOutputInformation()
+LagCorrectionImageFilter<TImage, VModelOrder>::GenerateOutputInformation()
 {
   // get pointers to the input and output
   typename TImage::Pointer inputPtr = const_cast<TImage *>(this->GetInput());
@@ -74,7 +74,7 @@ LagCorrectionImageFilter<TImage, ModelOrder>::GenerateOutputInformation()
   if (m_NewParamJustReceived && (m_B[0] != 0.f))
   {
     m_SumB = 1.f;
-    for (unsigned int n = 0; n < ModelOrder; n++)
+    for (unsigned int n = 0; n < VModelOrder; n++)
     {
       m_ExpmA[n] = expf(-m_A[n]);
       m_SumB += m_B[n];
@@ -82,14 +82,14 @@ LagCorrectionImageFilter<TImage, ModelOrder>::GenerateOutputInformation()
 
     m_StartIdx = this->GetInput()->GetLargestPossibleRegion().GetIndex();
     ImageSizeType SizeInput = this->GetInput()->GetLargestPossibleRegion().GetSize();
-    m_S.assign(SizeInput[0] * SizeInput[1] * ModelOrder, 0.f);
+    m_S.assign(SizeInput[0] * SizeInput[1] * VModelOrder, 0.f);
     m_NewParamJustReceived = false;
   }
 }
 
-template <typename TImage, unsigned ModelOrder>
+template <typename TImage, unsigned VModelOrder>
 void
-LagCorrectionImageFilter<TImage, ModelOrder>::GenerateInputRequestedRegion()
+LagCorrectionImageFilter<TImage, VModelOrder>::GenerateInputRequestedRegion()
 {
   typename Superclass::InputImagePointer  inputPtr = const_cast<TImage *>(this->GetInput());
   typename Superclass::OutputImagePointer outputPtr = this->GetOutput();
@@ -102,10 +102,10 @@ LagCorrectionImageFilter<TImage, ModelOrder>::GenerateInputRequestedRegion()
   inputPtr->SetRequestedRegion(inputRequestedRegion);
 }
 
-template <typename TImage, unsigned ModelOrder>
+template <typename TImage, unsigned VModelOrder>
 void
-LagCorrectionImageFilter<TImage, ModelOrder>::ThreadedGenerateData(const ImageRegionType & thRegion,
-                                                                   itk::ThreadIdType       itkNotUsed(threadId))
+LagCorrectionImageFilter<TImage, VModelOrder>::ThreadedGenerateData(const ImageRegionType & thRegion,
+                                                                    itk::ThreadIdType       itkNotUsed(threadId))
 {
   // Input / ouput iterators
   itk::ImageRegionConstIterator<TImage> itIn(this->GetInput(), thRegion);
@@ -135,7 +135,7 @@ LagCorrectionImageFilter<TImage, ModelOrder>::ThreadedGenerateData(const ImageRe
       unsigned int ii = thRegion.GetIndex()[0] - m_StartIdx[0];
       for (unsigned int i = 0; i < thRegion.GetSize(0); ++i, ++ii)
       {
-        unsigned idx_s = (jj + ii) * ModelOrder;
+        unsigned idx_s = (jj + ii) * VModelOrder;
 
         // Get measured pixel value y[k]
         auto yk = static_cast<float>(itIn.Get());
@@ -143,7 +143,7 @@ LagCorrectionImageFilter<TImage, ModelOrder>::ThreadedGenerateData(const ImageRe
         // Computes correction
         float      xk = yk; // Initial corrected pixel
         VectorType Sa;      // Update of the state
-        for (unsigned int n = 0; n < ModelOrder; n++)
+        for (unsigned int n = 0; n < VModelOrder; n++)
         {
           // Compute the update of internal state for nth exponential
           Sa[n] = m_ExpmA[n] * m_S[idx_s + n];
@@ -156,7 +156,7 @@ LagCorrectionImageFilter<TImage, ModelOrder>::ThreadedGenerateData(const ImageRe
         xk = xk / m_SumB;
 
         // Update internal state Snk
-        for (unsigned int n = 0; n < ModelOrder; n++)
+        for (unsigned int n = 0; n < VModelOrder; n++)
         {
           m_S[idx_s + n] = xk + Sa[n];
         }
@@ -174,18 +174,18 @@ LagCorrectionImageFilter<TImage, ModelOrder>::ThreadedGenerateData(const ImageRe
   }
 }
 
-template <typename TImage, unsigned ModelOrder>
+template <typename TImage, unsigned VModelOrder>
 unsigned int
-LagCorrectionImageFilter<TImage, ModelOrder>::SplitRequestedRegion(unsigned int            i,
-                                                                   unsigned int            num,
-                                                                   OutputImageRegionType & splitRegion)
+LagCorrectionImageFilter<TImage, VModelOrder>::SplitRequestedRegion(unsigned int            i,
+                                                                    unsigned int            num,
+                                                                    OutputImageRegionType & splitRegion)
 {
   return SplitRequestedRegion((int)i, (int)num, splitRegion);
 }
 
-template <typename TImage, unsigned ModelOrder>
+template <typename TImage, unsigned VModelOrder>
 int
-LagCorrectionImageFilter<TImage, ModelOrder>::SplitRequestedRegion(int i, int num, OutputImageRegionType & splitRegion)
+LagCorrectionImageFilter<TImage, VModelOrder>::SplitRequestedRegion(int i, int num, OutputImageRegionType & splitRegion)
 {
   // Split along the "second" direction
 

@@ -92,7 +92,7 @@ class ComputeAttenuationCorrectionBackProjection
 public:
   using VectorType = itk::Vector<double, 3>;
 
-  ComputeAttenuationCorrectionBackProjection() { m_ex1 = 1; }
+  ComputeAttenuationCorrectionBackProjection() { m_Ex1 = 1; }
 
   ~ComputeAttenuationCorrectionBackProjection() = default;
   bool
@@ -112,21 +112,21 @@ public:
   {
     if (isNewRay)
     {
-      m_ex1 = 1;
+      m_Ex1 = 1;
       isNewRay = false;
     }
     TInput ex2 = exp(-attenuationRay * stepInMM.GetNorm());
     TInput wf;
     if (*m_AttenuationPixel > 0)
     {
-      wf = (m_ex1 - ex2) / *m_AttenuationPixel;
+      wf = (m_Ex1 - ex2) / *m_AttenuationPixel;
     }
     else
     {
-      wf = m_ex1 * stepInMM.GetNorm();
+      wf = m_Ex1 * stepInMM.GetNorm();
     }
 
-    m_ex1 = ex2;
+    m_Ex1 = ex2;
     *m_AttenuationPixel = 0;
     return wf * rayValue;
   }
@@ -138,7 +138,7 @@ public:
   }
 
 private:
-  TInput   m_ex1;
+  TInput   m_Ex1;
   TInput * m_AttenuationPixel;
 };
 

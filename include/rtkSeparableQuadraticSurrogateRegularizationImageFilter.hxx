@@ -38,8 +38,8 @@ SeparableQuadraticSurrogateRegularizationImageFilter<TImage>::SeparableQuadratic
   m_RegularizationWeights.Fill(0);
 
   // Constants used in Green's prior, not modifiable by the user
-  m_c1 = 27.0 / 128.0;
-  m_c2 = 16.0 / (3.0 * std::sqrt(3.0));
+  m_C1 = 27.0 / 128.0;
+  m_C2 = 16.0 / (3.0 * std::sqrt(3.0));
 }
 
 template <typename TImage>
@@ -107,7 +107,7 @@ SeparableQuadraticSurrogateRegularizationImageFilter<TImage>::GreenPriorFirstDer
 {
   typename TImage::PixelType out;
   for (unsigned int i = 0; i < TImage::PixelType::Dimension; i++)
-    out[i] = 2 * m_RegularizationWeights[i] * m_c1 * m_c2 * tanh(m_c2 * pix[i]);
+    out[i] = 2 * m_RegularizationWeights[i] * m_C1 * m_C2 * tanh(m_C2 * pix[i]);
 
   return out;
 }
@@ -118,7 +118,7 @@ SeparableQuadraticSurrogateRegularizationImageFilter<TImage>::GreenPriorSecondDe
 {
   typename TImage::PixelType out;
   for (unsigned int i = 0; i < TImage::PixelType::Dimension; i++)
-    out[i] = 4 * m_RegularizationWeights[i] * m_c1 * m_c2 * m_c2 / (cosh(m_c2 * pix[i]) * cosh(m_c2 * pix[i]));
+    out[i] = 4 * m_RegularizationWeights[i] * m_C1 * m_C2 * m_C2 / (cosh(m_C2 * pix[i]) * cosh(m_C2 * pix[i]));
 
   return out;
 }

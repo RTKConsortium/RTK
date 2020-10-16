@@ -89,8 +89,8 @@ protected:
 
   /** Member variables */
   typename TImage::RegionType::SizeType                            m_Radius;
-  typename itk::PixelTraits<typename TImage::PixelType>::ValueType m_c1;
-  typename itk::PixelTraits<typename TImage::PixelType>::ValueType m_c2;
+  typename itk::PixelTraits<typename TImage::PixelType>::ValueType m_C1;
+  typename itk::PixelTraits<typename TImage::PixelType>::ValueType m_C2;
   typename TImage::PixelType                                       m_RegularizationWeights;
 };
 } // namespace rtk

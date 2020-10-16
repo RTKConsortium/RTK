@@ -51,7 +51,7 @@ namespace rtk
  * \ingroup RTK ImageToImageFilter
  */
 
-template <typename TImage, unsigned ModelOrder>
+template <typename TImage, unsigned VModelOrder>
 class LagCorrectionImageFilter : public itk::InPlaceImageFilter<TImage, TImage>
 {
 public:
@@ -73,7 +73,7 @@ public:
   using ImageSizeType = typename TImage::SizeType;
   using PixelType = typename TImage::PixelType;
   using IndexType = typename TImage::IndexType;
-  using VectorType = typename itk::Vector<float, ModelOrder>;
+  using VectorType = typename itk::Vector<float, VModelOrder>;
   using FloatVectorType = typename std::vector<float>;
   using OutputImageRegionType = typename TImage::RegionType;
 
@@ -85,7 +85,7 @@ public:
   {
     if ((this->m_A != A) && (this->m_B != B))
     {
-      if ((A.Size() == ModelOrder) && (B.Size() == ModelOrder))
+      if ((A.Size() == VModelOrder) && (B.Size() == VModelOrder))
       {
       }
       this->m_A = A;

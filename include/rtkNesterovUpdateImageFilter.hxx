@@ -75,15 +75,15 @@ NesterovUpdateImageFilter<TImage>::BeforeThreadedGenerateData()
     // to keep track of the iteration number
     m_CurrentIteration = 0;
 
-    m_tCoeff = 1.;
+    m_TCoeff = 1.;
     m_Sum = 0.;
     m_Ratio = 0.;
   }
   else
-    m_tCoeff = m_tCoeffNext;
-  m_tCoeffNext = 0.5 * (1. + sqrt(1. + 4. * m_tCoeff * m_tCoeff));
-  m_Sum += m_tCoeffNext;
-  m_Ratio = m_tCoeffNext / m_Sum;
+    m_TCoeff = m_TCoeffNext;
+  m_TCoeffNext = 0.5 * (1. + sqrt(1. + 4. * m_TCoeff * m_TCoeff));
+  m_Sum += m_TCoeffNext;
+  m_Ratio = m_TCoeffNext / m_Sum;
 }
 
 template <typename TImage>
@@ -133,7 +133,7 @@ NesterovUpdateImageFilter<TImage>::DynamicThreadedGenerateData(const OutputImage
     while (!alpha_k_It.IsAtEnd())
     {
       alpha_k_It.Set(z_k_ItIn.Get() - g_k_It.Get());
-      v_k_It.Set(v_k_It.Get() - m_tCoeff * g_k_It.Get());
+      v_k_It.Set(v_k_It.Get() - m_TCoeff * g_k_It.Get());
       z_k_ItOut.Set(alpha_k_It.Get() + m_Ratio * (v_k_It.Get() - alpha_k_It.Get()));
 
       ++alpha_k_It;
