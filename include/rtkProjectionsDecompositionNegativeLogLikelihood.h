@@ -39,7 +39,11 @@ namespace rtk
 class ProjectionsDecompositionNegativeLogLikelihood : public itk::SingleValuedCostFunction
 {
 public:
+#if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
   ITK_DISALLOW_COPY_AND_ASSIGN(ProjectionsDecompositionNegativeLogLikelihood);
+#else
+  ITK_DISALLOW_COPY_AND_MOVE(ProjectionsDecompositionNegativeLogLikelihood);
+#endif
 
   using Self = ProjectionsDecompositionNegativeLogLikelihood;
   using Superclass = itk::SingleValuedCostFunction;

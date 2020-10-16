@@ -39,7 +39,11 @@ class ITK_EXPORT DPExtractShroudSignalImageFilter
   : public itk::ImageToImageFilter<itk::Image<TInputPixel, 2>, itk::Image<TOutputPixel, 1>>
 {
 public:
+#if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
   ITK_DISALLOW_COPY_AND_ASSIGN(DPExtractShroudSignalImageFilter);
+#else
+  ITK_DISALLOW_COPY_AND_MOVE(DPExtractShroudSignalImageFilter);
+#endif
 
   /** Standard class type alias. */
   using TInputImage = itk::Image<TInputPixel, 2>;

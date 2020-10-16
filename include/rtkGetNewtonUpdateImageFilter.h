@@ -45,7 +45,11 @@ template <class TGradient,
 class GetNewtonUpdateImageFilter : public itk::ImageToImageFilter<TGradient, TGradient>
 {
 public:
+#if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
   ITK_DISALLOW_COPY_AND_ASSIGN(GetNewtonUpdateImageFilter);
+#else
+  ITK_DISALLOW_COPY_AND_MOVE(GetNewtonUpdateImageFilter);
+#endif
 
   /** Standard class type alias. */
   using Self = GetNewtonUpdateImageFilter;

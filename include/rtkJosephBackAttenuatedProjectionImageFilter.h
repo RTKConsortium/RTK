@@ -212,7 +212,11 @@ class ITK_EXPORT JosephBackAttenuatedProjectionImageFilter
                                            TSumAlongRay>
 {
 public:
+#if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
   ITK_DISALLOW_COPY_AND_ASSIGN(JosephBackAttenuatedProjectionImageFilter);
+#else
+  ITK_DISALLOW_COPY_AND_MOVE(JosephBackAttenuatedProjectionImageFilter);
+#endif
 
   /** Standard class type alias. */
   using Self = JosephBackAttenuatedProjectionImageFilter;

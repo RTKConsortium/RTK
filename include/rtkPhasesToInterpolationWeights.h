@@ -39,7 +39,11 @@ namespace rtk
 class ITK_EXPORT PhasesToInterpolationWeights : public itk::CSVFileReaderBase
 {
 public:
+#if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
   ITK_DISALLOW_COPY_AND_ASSIGN(PhasesToInterpolationWeights);
+#else
+  ITK_DISALLOW_COPY_AND_MOVE(PhasesToInterpolationWeights);
+#endif
 
   /** Standard class type alias */
   using Self = PhasesToInterpolationWeights;

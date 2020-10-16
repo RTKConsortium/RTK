@@ -38,7 +38,11 @@ namespace rtk
 class RTK_EXPORT VarianProBeamGeometryReader : public itk::LightProcessObject
 {
 public:
+#if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
   ITK_DISALLOW_COPY_AND_ASSIGN(VarianProBeamGeometryReader);
+#else
+  ITK_DISALLOW_COPY_AND_MOVE(VarianProBeamGeometryReader);
+#endif
 
   /** Standard type alias */
   using Self = VarianProBeamGeometryReader;

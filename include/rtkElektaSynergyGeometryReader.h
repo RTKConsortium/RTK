@@ -39,7 +39,11 @@ namespace rtk
 class RTK_EXPORT ElektaSynergyGeometryReader : public itk::LightProcessObject
 {
 public:
+#if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
   ITK_DISALLOW_COPY_AND_ASSIGN(ElektaSynergyGeometryReader);
+#else
+  ITK_DISALLOW_COPY_AND_MOVE(ElektaSynergyGeometryReader);
+#endif
 
   /** Standard type alias */
   using Self = ElektaSynergyGeometryReader;

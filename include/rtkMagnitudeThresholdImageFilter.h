@@ -40,7 +40,11 @@ template <typename TInputImage, typename TRealType = float, typename TOutputImag
 class ITK_EXPORT MagnitudeThresholdImageFilter : public itk::InPlaceImageFilter<TInputImage, TOutputImage>
 {
 public:
+#if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
   ITK_DISALLOW_COPY_AND_ASSIGN(MagnitudeThresholdImageFilter);
+#else
+  ITK_DISALLOW_COPY_AND_MOVE(MagnitudeThresholdImageFilter);
+#endif
 
   /** Standard class type alias. */
   using Self = MagnitudeThresholdImageFilter;

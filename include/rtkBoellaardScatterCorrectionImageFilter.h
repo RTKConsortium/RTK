@@ -40,7 +40,11 @@ template <class TInputImage, class TOutputImage = TInputImage>
 class ITK_EXPORT BoellaardScatterCorrectionImageFilter : public itk::InPlaceImageFilter<TInputImage, TOutputImage>
 {
 public:
+#if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
   ITK_DISALLOW_COPY_AND_ASSIGN(BoellaardScatterCorrectionImageFilter);
+#else
+  ITK_DISALLOW_COPY_AND_MOVE(BoellaardScatterCorrectionImageFilter);
+#endif
 
   /** Standard class type alias. */
   using Self = BoellaardScatterCorrectionImageFilter;

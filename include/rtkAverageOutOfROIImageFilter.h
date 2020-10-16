@@ -52,7 +52,11 @@ template <class TInputImage, class TROI = itk::Image<typename TInputImage::Pixel
 class AverageOutOfROIImageFilter : public itk::InPlaceImageFilter<TInputImage, TInputImage>
 {
 public:
+#if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
   ITK_DISALLOW_COPY_AND_ASSIGN(AverageOutOfROIImageFilter);
+#else
+  ITK_DISALLOW_COPY_AND_MOVE(AverageOutOfROIImageFilter);
+#endif
 
   /** Standard class type alias. */
   using Self = AverageOutOfROIImageFilter;

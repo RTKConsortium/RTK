@@ -170,7 +170,11 @@ template <class TInputImage,
 class ITK_EXPORT JosephForwardProjectionImageFilter : public ForwardProjectionImageFilter<TInputImage, TOutputImage>
 {
 public:
+#if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
   ITK_DISALLOW_COPY_AND_ASSIGN(JosephForwardProjectionImageFilter);
+#else
+  ITK_DISALLOW_COPY_AND_MOVE(JosephForwardProjectionImageFilter);
+#endif
 
   /** Standard class type alias. */
   using Self = JosephForwardProjectionImageFilter;

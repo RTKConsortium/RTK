@@ -52,7 +52,11 @@ class RTK_EXPORT CudaRayCastBackProjectionImageFilter
                                        BackProjectionImageFilter<itk::CudaImage<float, 3>, itk::CudaImage<float, 3>>>
 {
 public:
+#  if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
   ITK_DISALLOW_COPY_AND_ASSIGN(CudaRayCastBackProjectionImageFilter);
+#  else
+  ITK_DISALLOW_COPY_AND_MOVE(CudaRayCastBackProjectionImageFilter);
+#  endif
 
   /** Standard class type alias. */
   using ImageType = itk::CudaImage<float, 3>;

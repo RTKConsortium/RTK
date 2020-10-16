@@ -39,7 +39,11 @@ namespace rtk
 class RTK_EXPORT XRadGeometryReader : public itk::LightProcessObject
 {
 public:
+#if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
   ITK_DISALLOW_COPY_AND_ASSIGN(XRadGeometryReader);
+#else
+  ITK_DISALLOW_COPY_AND_MOVE(XRadGeometryReader);
+#endif
 
   /** Standard type alias */
   using Self = XRadGeometryReader;

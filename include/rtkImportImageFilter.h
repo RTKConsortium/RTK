@@ -44,7 +44,11 @@ template <typename TImage>
 class ImportImageFilter : public itk::ImageSource<TImage>
 {
 public:
+#if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
   ITK_DISALLOW_COPY_AND_ASSIGN(ImportImageFilter);
+#else
+  ITK_DISALLOW_COPY_AND_MOVE(ImportImageFilter);
+#endif
 
   /** Typedef for the output image.   */
   using OutputImagePointer = typename TImage::Pointer;

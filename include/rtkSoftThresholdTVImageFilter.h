@@ -45,7 +45,11 @@ template <typename TInputImage, typename TOutputImage = TInputImage>
 class ITK_EXPORT SoftThresholdTVImageFilter : public itk::ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
+#if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
   ITK_DISALLOW_COPY_AND_ASSIGN(SoftThresholdTVImageFilter);
+#else
+  ITK_DISALLOW_COPY_AND_MOVE(SoftThresholdTVImageFilter);
+#endif
 
   /** Standard class type alias. */
   using Self = SoftThresholdTVImageFilter;

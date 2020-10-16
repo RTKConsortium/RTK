@@ -46,7 +46,11 @@ namespace rtk
 class RTK_EXPORT ElektaXVI5GeometryXMLFileReader : public itk::XMLReader<ThreeDCircularProjectionGeometry>
 {
 public:
+#if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
   ITK_DISALLOW_COPY_AND_ASSIGN(ElektaXVI5GeometryXMLFileReader);
+#else
+  ITK_DISALLOW_COPY_AND_MOVE(ElektaXVI5GeometryXMLFileReader);
+#endif
 
   /** Standard type alias */
   using Self = ElektaXVI5GeometryXMLFileReader;

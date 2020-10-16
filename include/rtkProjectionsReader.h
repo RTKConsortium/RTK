@@ -125,7 +125,11 @@ template <class TOutputImage>
 class ITK_EXPORT ProjectionsReader : public itk::ImageSource<TOutputImage>
 {
 public:
+#if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
   ITK_DISALLOW_COPY_AND_ASSIGN(ProjectionsReader);
+#else
+  ITK_DISALLOW_COPY_AND_MOVE(ProjectionsReader);
+#endif
 
   /** Standard class type alias. */
   using Self = ProjectionsReader;
