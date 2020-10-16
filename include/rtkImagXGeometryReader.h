@@ -41,7 +41,11 @@ template <typename TInputImage>
 class ImagXGeometryReader : public itk::LightProcessObject
 {
 public:
+#if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
   ITK_DISALLOW_COPY_AND_ASSIGN(ImagXGeometryReader);
+#else
+  ITK_DISALLOW_COPY_AND_MOVE(ImagXGeometryReader);
+#endif
 
   /** Standard type alias */
   using Self = ImagXGeometryReader;

@@ -35,7 +35,11 @@ template <typename TInputImage>
 class ConjugateGradientGetP_kPlusOneImageFilter : public itk::ImageToImageFilter<TInputImage, TInputImage>
 {
 public:
+#if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
   ITK_DISALLOW_COPY_AND_ASSIGN(ConjugateGradientGetP_kPlusOneImageFilter);
+#else
+  ITK_DISALLOW_COPY_AND_MOVE(ConjugateGradientGetP_kPlusOneImageFilter);
+#endif
 
   /** Standard class type alias. */
   using Self = ConjugateGradientGetP_kPlusOneImageFilter;

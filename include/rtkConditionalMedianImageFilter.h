@@ -49,7 +49,11 @@ template <typename TInputImage>
 class ConditionalMedianImageFilter : public itk::InPlaceImageFilter<TInputImage>
 {
 public:
+#if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
   ITK_DISALLOW_COPY_AND_ASSIGN(ConditionalMedianImageFilter);
+#else
+  ITK_DISALLOW_COPY_AND_MOVE(ConditionalMedianImageFilter);
+#endif
 
   /** Standard class type alias. */
   using Self = ConditionalMedianImageFilter;

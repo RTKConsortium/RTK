@@ -35,7 +35,11 @@ namespace rtk
 class DCMImagXImageIO : public itk::GDCMImageIO
 {
 public:
+#if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
   ITK_DISALLOW_COPY_AND_ASSIGN(DCMImagXImageIO);
+#else
+  ITK_DISALLOW_COPY_AND_MOVE(DCMImagXImageIO);
+#endif
 
   /** Standard class type alias. */
   using Self = DCMImagXImageIO;

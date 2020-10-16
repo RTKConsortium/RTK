@@ -40,7 +40,11 @@ template <class TInputImage, class TOutputImage>
 class RayConvexIntersectionImageFilter : public itk::InPlaceImageFilter<TInputImage, TOutputImage>
 {
 public:
+#if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
   ITK_DISALLOW_COPY_AND_ASSIGN(RayConvexIntersectionImageFilter);
+#else
+  ITK_DISALLOW_COPY_AND_MOVE(RayConvexIntersectionImageFilter);
+#endif
 
   /** Standard class type alias. */
   using Self = RayConvexIntersectionImageFilter;

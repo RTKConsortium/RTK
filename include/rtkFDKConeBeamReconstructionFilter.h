@@ -63,7 +63,11 @@ template <class TInputImage, class TOutputImage = TInputImage, class TFFTPrecisi
 class ITK_EXPORT FDKConeBeamReconstructionFilter : public itk::InPlaceImageFilter<TInputImage, TOutputImage>
 {
 public:
+#if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
   ITK_DISALLOW_COPY_AND_ASSIGN(FDKConeBeamReconstructionFilter);
+#else
+  ITK_DISALLOW_COPY_AND_MOVE(FDKConeBeamReconstructionFilter);
+#endif
 
   /** Standard class type alias. */
   using Self = FDKConeBeamReconstructionFilter;

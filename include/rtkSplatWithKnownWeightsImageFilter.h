@@ -67,7 +67,11 @@ template <typename VolumeSeriesType, typename VolumeType>
 class SplatWithKnownWeightsImageFilter : public itk::InPlaceImageFilter<VolumeSeriesType, VolumeSeriesType>
 {
 public:
+#if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
   ITK_DISALLOW_COPY_AND_ASSIGN(SplatWithKnownWeightsImageFilter);
+#else
+  ITK_DISALLOW_COPY_AND_MOVE(SplatWithKnownWeightsImageFilter);
+#endif
 
   /** Standard class type alias. */
   using Self = SplatWithKnownWeightsImageFilter;

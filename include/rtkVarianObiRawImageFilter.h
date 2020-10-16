@@ -96,7 +96,11 @@ class ITK_EXPORT VarianObiRawImageFilter
       Function::ObiAttenuation<typename TInputImage::PixelType, typename TOutputImage::PixelType>>
 {
 public:
+#if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
   ITK_DISALLOW_COPY_AND_ASSIGN(VarianObiRawImageFilter);
+#else
+  ITK_DISALLOW_COPY_AND_MOVE(VarianObiRawImageFilter);
+#endif
 
   /** Standard class type alias. */
   using Self = VarianObiRawImageFilter;

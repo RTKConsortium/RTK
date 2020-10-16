@@ -40,7 +40,11 @@ namespace rtk
 class RTK_EXPORT DigisensGeometryReader : public itk::LightProcessObject
 {
 public:
+#if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
   ITK_DISALLOW_COPY_AND_ASSIGN(DigisensGeometryReader);
+#else
+  ITK_DISALLOW_COPY_AND_MOVE(DigisensGeometryReader);
+#endif
 
   /** Standard type alias */
   using Self = DigisensGeometryReader;

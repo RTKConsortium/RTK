@@ -47,7 +47,11 @@ class RTK_EXPORT CudaInterpolateImageFilter
       InterpolatorWithKnownWeightsImageFilter<itk::CudaImage<float, 3>, itk::CudaImage<float, 4>>>
 {
 public:
+#  if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
   ITK_DISALLOW_COPY_AND_ASSIGN(CudaInterpolateImageFilter);
+#  else
+  ITK_DISALLOW_COPY_AND_MOVE(CudaInterpolateImageFilter);
+#  endif
 
   /** Standard class type alias. */
   using Self = rtk::CudaInterpolateImageFilter;

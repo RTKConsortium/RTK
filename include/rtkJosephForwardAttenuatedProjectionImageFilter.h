@@ -49,7 +49,7 @@ public:
     {
       m_AttenuationRay[i] = 0;
       m_AttenuationPixel[i] = 0;
-      m_ex1[i] = 1;
+      m_Ex1[i] = 1;
     }
   }
 
@@ -98,14 +98,14 @@ public:
   TOutput *
   GetEx1()
   {
-    return m_ex1;
+    return m_Ex1;
   }
 
 private:
   std::ptrdiff_t m_AttenuationMinusEmissionMapsPtrDiff;
   TInput         m_AttenuationRay[itk::ITK_MAX_THREADS];
   TInput         m_AttenuationPixel[itk::ITK_MAX_THREADS];
-  TInput         m_ex1[itk::ITK_MAX_THREADS];
+  TInput         m_Ex1[itk::ITK_MAX_THREADS];
 };
 
 /** \class ComputeAttenuationCorrection
@@ -143,14 +143,14 @@ public:
 
     if (m_AttenuationPixel[threadId] > 0)
     {
-      wf = (m_ex1[threadId] - ex2) / m_AttenuationPixel[threadId];
+      wf = (m_Ex1[threadId] - ex2) / m_AttenuationPixel[threadId];
     }
     else
     {
-      wf = m_ex1[threadId] * stepInMM.GetNorm();
+      wf = m_Ex1[threadId] * stepInMM.GetNorm();
     }
 
-    m_ex1[threadId] = ex2;
+    m_Ex1[threadId] = ex2;
     m_AttenuationPixel[threadId] = 0;
     return wf * volumeValue;
   }
@@ -168,13 +168,13 @@ public:
   void
   SetEx1(TInput * ex1)
   {
-    m_ex1 = ex1;
+    m_Ex1 = ex1;
   }
 
 private:
   TInput * m_AttenuationRay;
   TInput * m_AttenuationPixel;
-  TInput * m_ex1;
+  TInput * m_Ex1;
 };
 
 /** \class ProjectedValueAccumulationAttenuated
@@ -217,7 +217,7 @@ public:
   {
     output = input + rayCastValue;
     m_Attenuation[threadId] = 0;
-    m_ex1[threadId] = 1;
+    m_Ex1[threadId] = 1;
   }
 
   void
@@ -228,12 +228,12 @@ public:
   void
   SetEx1(TInput * ex1)
   {
-    m_ex1 = ex1;
+    m_Ex1 = ex1;
   }
 
 private:
   TInput * m_Attenuation;
-  TInput * m_ex1;
+  TInput * m_Ex1;
 };
 } // end namespace Functor
 
@@ -270,7 +270,11 @@ class ITK_EXPORT JosephForwardAttenuatedProjectionImageFilter
                                               TSumAlongRay>
 {
 public:
+#if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
   ITK_DISALLOW_COPY_AND_ASSIGN(JosephForwardAttenuatedProjectionImageFilter);
+#else
+  ITK_DISALLOW_COPY_AND_MOVE(JosephForwardAttenuatedProjectionImageFilter);
+#endif
 
   /** Standard class type alias. */
   using Self = JosephForwardAttenuatedProjectionImageFilter;

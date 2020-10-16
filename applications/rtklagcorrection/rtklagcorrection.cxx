@@ -32,7 +32,7 @@ using namespace rtk;
 
 #include <itkImageFileWriter.h>
 
-const unsigned ModelOrder = 4;
+const unsigned VModelOrder = 4;
 
 int
 main(int argc, char * argv[])
@@ -45,7 +45,7 @@ main(int argc, char * argv[])
 #else
   using OutputImageType = itk::Image<unsigned short, Dimension>;
 #endif
-  using VectorType = itk::Vector<float, ModelOrder>; // Parameter type always float/double
+  using VectorType = itk::Vector<float, VModelOrder>; // Parameter type always float/double
 
   // Projections reader
   using ReaderType = rtk::ProjectionsReader<OutputImageType>;
@@ -55,14 +55,14 @@ main(int argc, char * argv[])
   reader->SetFileNames(rtk::GetProjectionsFileNamesFromGgo(args_info));
   TRY_AND_EXIT_ON_ITK_EXCEPTION(reader->Update())
 
-  if ((args_info.coefficients_given != ModelOrder) && (args_info.rates_given != ModelOrder))
+  if ((args_info.coefficients_given != VModelOrder) && (args_info.rates_given != VModelOrder))
   {
     std::cerr << "Expecting 4 lags rates and coefficients values" << std::endl;
     return EXIT_FAILURE;
   }
 
   VectorType a, b;
-  for (unsigned int i = 0; i < ModelOrder; ++i)
+  for (unsigned int i = 0; i < VModelOrder; ++i)
   {
     a[i] = args_info.rates_arg[i];
     b[i] = args_info.coefficients_arg[i];
@@ -71,7 +71,7 @@ main(int argc, char * argv[])
 #ifdef RTK_USE_CUDA
   using LagType = rtk::CudaLagCorrectionImageFilter;
 #else
-  using LagType = rtk::LagCorrectionImageFilter<OutputImageType, ModelOrder>;
+  using LagType = rtk::LagCorrectionImageFilter<OutputImageType, VModelOrder>;
 #endif
   LagType::Pointer lagfilter = LagType::New();
   lagfilter->SetInput(reader->GetOutput());

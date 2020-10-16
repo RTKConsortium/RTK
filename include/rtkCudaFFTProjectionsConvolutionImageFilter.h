@@ -50,7 +50,11 @@ class CudaFFTProjectionsConvolutionImageFilter
   : public itk::CudaImageToImageFilter<itk::CudaImage<float, 3>, itk::CudaImage<float, 3>, TParentImageFilter>
 {
 public:
+#  if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
   ITK_DISALLOW_COPY_AND_ASSIGN(CudaFFTProjectionsConvolutionImageFilter);
+#  else
+  ITK_DISALLOW_COPY_AND_MOVE(CudaFFTProjectionsConvolutionImageFilter);
+#  endif
 
   /** Standard class type alias. */
   using Self = CudaFFTProjectionsConvolutionImageFilter;

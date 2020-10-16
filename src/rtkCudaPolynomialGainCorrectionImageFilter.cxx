@@ -72,7 +72,7 @@ CudaPolynomialGainCorrectionImageFilter ::GPUGenerateData()
   proj_size_out[1] = this->GetOutput()->GetRequestedRegion().GetSize()[1];
   proj_size_out[2] = this->GetOutput()->GetRequestedRegion().GetSize()[2];
 
-  float coefficients[2] = { static_cast<float>(m_ModelOrder), m_K };
+  float coefficients[2] = { static_cast<float>(m_VModelOrder), m_K };
 
   int LUT_size = sizeof(float) * m_PowerLut.size();
   CUDA_gain_correction(proj_idx_in,

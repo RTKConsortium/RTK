@@ -42,7 +42,11 @@ class RTK_EXPORT ThreeDCircularProjectionGeometryXMLFileWriter
   : public itk::XMLWriterBase<ThreeDCircularProjectionGeometry>
 {
 public:
+#if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
   ITK_DISALLOW_COPY_AND_ASSIGN(ThreeDCircularProjectionGeometryXMLFileWriter);
+#else
+  ITK_DISALLOW_COPY_AND_MOVE(ThreeDCircularProjectionGeometryXMLFileWriter);
+#endif
 
   /** standard type alias */
   using Superclass = itk::XMLWriterBase<ThreeDCircularProjectionGeometry>;

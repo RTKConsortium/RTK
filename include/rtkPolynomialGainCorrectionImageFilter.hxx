@@ -80,7 +80,7 @@ PolynomialGainCorrectionImageFilter<TInputImage, TOutputImage>::GenerateOutputIn
   {
     m_GainSize = m_GainImage->GetLargestPossibleRegion().GetSize();
 
-    m_ModelOrder = m_GainSize[2];
+    m_VModelOrder = m_GainSize[2];
     m_MapsLoaded = true;
 
     // Create power LUT: the values for the different orders for the same pixel value are close to each other
@@ -88,7 +88,7 @@ PolynomialGainCorrectionImageFilter<TInputImage, TOutputImage>::GenerateOutputIn
     for (int pid = 0; pid < npixValues; ++pid)
     {
       auto value = static_cast<float>(pid);
-      for (int order = 0; order < m_ModelOrder; ++order)
+      for (int order = 0; order < m_VModelOrder; ++order)
       {
         m_PowerLut.push_back(value);
         value = value * value;
@@ -158,8 +158,8 @@ PolynomialGainCorrectionImageFilter<TInputImage, TOutputImage>::DynamicThreadedG
         px = (px >= 0) ? px : 0;
 
         float correctedValue = 0.f;
-        int   lutidx = px * m_ModelOrder;
-        for (int m = 0; m < m_ModelOrder; ++m)
+        int   lutidx = px * m_VModelOrder;
+        for (int m = 0; m < m_VModelOrder; ++m)
         {
           int   gainidx = m * m_GainSize[1] * m_GainSize[0] + j * m_GainSize[0] + i;
           float gainM = gainBuffer[gainidx];

@@ -49,7 +49,11 @@ class RTK_EXPORT CudaLastDimensionTVDenoisingImageFilter
                                              itk::CudaImage<itk::CovariantVector<float, 1>, 4>>>
 {
 public:
+#  if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
   ITK_DISALLOW_COPY_AND_ASSIGN(CudaLastDimensionTVDenoisingImageFilter);
+#  else
+  ITK_DISALLOW_COPY_AND_MOVE(CudaLastDimensionTVDenoisingImageFilter);
+#  endif
 
   /** Standard class type alias. */
   using Self = rtk::CudaLastDimensionTVDenoisingImageFilter;

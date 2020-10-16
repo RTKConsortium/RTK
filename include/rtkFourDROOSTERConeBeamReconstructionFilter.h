@@ -208,7 +208,11 @@ class FourDROOSTERConeBeamReconstructionFilter
   : public rtk::IterativeConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 {
 public:
+#if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
   ITK_DISALLOW_COPY_AND_ASSIGN(FourDROOSTERConeBeamReconstructionFilter);
+#else
+  ITK_DISALLOW_COPY_AND_MOVE(FourDROOSTERConeBeamReconstructionFilter);
+#endif
 
   /** Standard class type alias. */
   using Self = FourDROOSTERConeBeamReconstructionFilter;

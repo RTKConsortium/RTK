@@ -38,7 +38,11 @@ namespace rtk
 class RTK_EXPORT EdfImageIOFactory : public itk::ObjectFactoryBase
 {
 public:
+#if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
   ITK_DISALLOW_COPY_AND_ASSIGN(EdfImageIOFactory);
+#else
+  ITK_DISALLOW_COPY_AND_MOVE(EdfImageIOFactory);
+#endif
 
   /** Standard class type alias. */
   using Self = EdfImageIOFactory;

@@ -42,7 +42,11 @@ template <typename TImage>
 class NesterovUpdateImageFilter : public itk::InPlaceImageFilter<TImage, TImage>
 {
 public:
+#if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
   ITK_DISALLOW_COPY_AND_ASSIGN(NesterovUpdateImageFilter);
+#else
+  ITK_DISALLOW_COPY_AND_MOVE(NesterovUpdateImageFilter);
+#endif
 
   /** Standard class type alias. */
   using Self = NesterovUpdateImageFilter;
@@ -80,8 +84,8 @@ protected:
   int                                   m_NumberOfIterations;
   int                                   m_CurrentIteration;
   bool                                  m_MustInitializeIntermediateImages;
-  typename TImage::PixelType::ValueType m_tCoeff;
-  typename TImage::PixelType::ValueType m_tCoeffNext;
+  typename TImage::PixelType::ValueType m_TCoeff;
+  typename TImage::PixelType::ValueType m_TCoeffNext;
   typename TImage::PixelType::ValueType m_Sum;
   typename TImage::PixelType::ValueType m_Ratio;
 

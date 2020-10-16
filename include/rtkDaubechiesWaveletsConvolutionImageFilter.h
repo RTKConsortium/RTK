@@ -45,7 +45,11 @@ template <typename TImage>
 class DaubechiesWaveletsConvolutionImageFilter : public itk::ImageToImageFilter<TImage, TImage>
 {
 public:
+#if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
   ITK_DISALLOW_COPY_AND_ASSIGN(DaubechiesWaveletsConvolutionImageFilter);
+#else
+  ITK_DISALLOW_COPY_AND_MOVE(DaubechiesWaveletsConvolutionImageFilter);
+#endif
 
   enum Pass
   {

@@ -46,7 +46,11 @@ class RTK_EXPORT CudaConstantVolumeSeriesSource
                                        ConstantImageSource<itk::CudaImage<float, 4>>>
 {
 public:
+#  if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
   ITK_DISALLOW_COPY_AND_ASSIGN(CudaConstantVolumeSeriesSource);
+#  else
+  ITK_DISALLOW_COPY_AND_MOVE(CudaConstantVolumeSeriesSource);
+#  endif
 
   /** Standard class type alias. */
   using Self = rtk::CudaConstantVolumeSeriesSource;

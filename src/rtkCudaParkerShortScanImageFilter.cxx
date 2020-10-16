@@ -62,8 +62,6 @@ CudaParkerShortScanImageFilter ::GPUGenerateData()
 
   // check for enough data
   const int geomStart = this->GetInput()->GetBufferedRegion().GetIndex()[2];
-  double    sox = this->GetGeometry()->GetSourceOffsetsX()[geomStart];
-  double    sid = this->GetGeometry()->GetSourceToIsocenterDistances()[geomStart];
 
   float proj_orig = this->GetInput()->GetOrigin()[0];
 

@@ -40,7 +40,11 @@ template <typename TInputImage, typename TOutputImage = itk::Image<float, TInput
 class BackwardDifferenceDivergenceImageFilter : public itk::ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
+#if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
   ITK_DISALLOW_COPY_AND_ASSIGN(BackwardDifferenceDivergenceImageFilter);
+#else
+  ITK_DISALLOW_COPY_AND_MOVE(BackwardDifferenceDivergenceImageFilter);
+#endif
 
   /** Extract dimension from input and output image. */
   itkStaticConstMacro(InputImageDimension, unsigned int, TInputImage::ImageDimension);

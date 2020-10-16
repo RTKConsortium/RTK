@@ -55,7 +55,11 @@ class RTK_EXPORT CudaIterativeFDKConeBeamReconstructionFilter
       IterativeFDKConeBeamReconstructionFilter<itk::CudaImage<float, 3>, itk::CudaImage<float, 3>, float>>
 {
 public:
+#  if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
   ITK_DISALLOW_COPY_AND_ASSIGN(CudaIterativeFDKConeBeamReconstructionFilter);
+#  else
+  ITK_DISALLOW_COPY_AND_MOVE(CudaIterativeFDKConeBeamReconstructionFilter);
+#  endif
 
   /** Standard class type alias. */
   using Self = CudaIterativeFDKConeBeamReconstructionFilter;

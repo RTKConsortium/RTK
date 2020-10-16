@@ -44,7 +44,11 @@ template <class TInputImage, class TOutputImage>
 class PolynomialGainCorrectionImageFilter : public itk::ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
+#if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
   ITK_DISALLOW_COPY_AND_ASSIGN(PolynomialGainCorrectionImageFilter);
+#else
+  ITK_DISALLOW_COPY_AND_MOVE(PolynomialGainCorrectionImageFilter);
+#endif
 
   /** Standard class type alias. */
   using Self = PolynomialGainCorrectionImageFilter;
@@ -95,7 +99,7 @@ protected:
   DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread) override;
 
   bool               m_MapsLoaded{ false }; // True if gain maps loaded
-  int                m_ModelOrder{ 1 };     // Polynomial correction order
+  int                m_VModelOrder{ 1 };    // Polynomial correction order
   float              m_K{ 1.0f };           // Scaling constant, a 0 means no correction
   VectorType         m_PowerLut;            // Vector containing I^n
   InputImagePointer  m_DarkImage;           // Dark image
