@@ -5,10 +5,7 @@ RTK: The Reconstruction ToolKit
 [![PyPI](https://img.shields.io/pypi/v/itk-rtk.svg)](https://pypi.python.org/pypi/itk-rtk)
 [![Wheels](https://img.shields.io/pypi/wheel/itk-rtk.svg)](https://pypi.org/project/itk-rtk)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/SimonRit/RTK/blob/master/LICENSE.TXT)
-[![Build Status](https://dev.azure.com/simonrit/RTK/_apis/build/status/SimonRit.RTK.BuildAndTest?branchName=master)](https://dev.azure.com/simonrit/RTK/_build/latest?definitionId=1&branchName=master)
-![Build Status](https://github.com/SimonRit/RTK/workflows/Build,%20test,%20package/badge.svg)
-
-Python packages: [![Azure Build Status](https://dev.azure.com/simonrit/RTK/_apis/build/status/SimonRit.RTK.PythonPackages?branchName=master)](https://dev.azure.com/simonrit/RTK/_build/latest?definitionId=3&branchName=master)
+![](https://github.com/InsightSoftwareConsortium/ITKTubeTK/workflows/Build,%20test,%20package/badge.svg)
 
 Links
 -----
