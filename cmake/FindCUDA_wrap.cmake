@@ -42,28 +42,19 @@ if (CUDA_FOUND)
   cuda_include_directories (${CMAKE_CURRENT_SOURCE_DIR})
 endif ()
 
-if("${CUDA_VERSION}" VERSION_LESS 8.0)
+if("${CUDA_VERSION}" VERSION_LESS 9.0)
  set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS}
-     -gencode arch=compute_20,code=sm_20
-     -gencode arch=compute_30,code=sm_30
-     -gencode arch=compute_35,code=sm_35
-     -gencode arch=compute_35,code=compute_35
-     )
-elseif("${CUDA_VERSION}" VERSION_LESS 9.0)
- set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS}
-     -Wno-deprecated-gpu-targets
-     -gencode arch=compute_20,code=sm_20
-     -gencode arch=compute_30,code=sm_30
-     -gencode arch=compute_35,code=sm_35
-     -gencode arch=compute_35,code=compute_35
-     )
-else()
- set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS}
-     -gencode arch=compute_30,code=sm_30
-     -gencode arch=compute_35,code=sm_35
-     -gencode arch=compute_35,code=compute_35
-     )
+     -gencode arch=compute_20,code=sm_20)
 endif()
+if("${CUDA_VERSION}" VERSION_LESS 11.0)
+ set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS}
+     -gencode arch=compute_30,code=sm_30)
+endif()
+set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS}
+     -Wno-deprecated-gpu-targets
+     -gencode arch=compute_35,code=sm_35
+     -gencode arch=compute_35,code=compute_35
+     )
 
 if(NOT "-std=c++${CMAKE_CXX_STANDARD}" IN_LIST CUDA_NVCC_FLAGS)
   list(APPEND CUDA_NVCC_FLAGS "-std=c++${CMAKE_CXX_STANDARD}")
