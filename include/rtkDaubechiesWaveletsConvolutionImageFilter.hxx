@@ -147,7 +147,7 @@ DaubechiesWaveletsConvolutionImageFilter<TImage>::GenerateCoefficientsLowpassDec
       coeff.push_back(0.11009943 / itk::Math::sqrt2);
       break;
     default:
-      itkGenericExceptionMacro(<< "In rtkDaubechiesWaveletsConvolutionImageFilter.hxx: Order should be >= 7.");
+      itkGenericExceptionMacro(<< "In rtkDaubechiesWaveletsConvolutionImageFilter.hxx: Order should be <= 7.");
   } // end case(Order)
   return coeff;
 }
