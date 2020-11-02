@@ -18,10 +18,6 @@
 # compiled python files
 *.pyc
 
-# Binary directory
-BUILD*
-build*
-
 # qtcreator
 CMakeLists.txt.user*
 
