@@ -131,6 +131,12 @@ mark_as_advanced(RTK_DATA_ROOT)
 # Initialization
 if(NOT ITK_SOURCE_DIR)
   include(itk-module-init.cmake)
+
+  if(RTK_BUILD_SHARED_LIBS)
+    set(ITK_LIBRARY_BUILD_TYPE "SHARED")
+  else()
+    set(ITK_LIBRARY_BUILD_TYPE "STATIC")
+  endif()
 endif()
 
 # Propagate cmake options in a header file
