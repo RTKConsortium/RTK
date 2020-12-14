@@ -39,6 +39,9 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install ninja
 
+    - name: Get specific of CMake, Ninja
+      uses: lukka/get-cmake@v3.18.3
+
     - name: Download ITK
       run: |
         cd ..
@@ -174,6 +177,9 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+    - name: Get specific of CMake, Ninja
+      uses: lukka/get-cmake@v3.18.3
+
     - name: 'Fetch build script'
       run: |
         curl -L https://raw.githubusercontent.com/InsightSoftwareConsortium/ITKPythonPackage/master/scripts/macpython-download-cache-and-build-module-wheels.sh -O
@@ -201,6 +207,9 @@ jobs:
           - itk-python-git-tag: "v5.1.1.post1"
 
     steps:
+    - name: Get specific of CMake, Ninja
+      uses: lukka/get-cmake@v3.18.3
+
     - uses: actions/checkout@v2
       with:
         path: "im"
