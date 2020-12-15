@@ -177,6 +177,10 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+    - name: 'Specific XCode version'
+      run: |
+        sudo xcode-select -s "/Applications/Xcode_11.7.app"
+
     - name: Get specific of CMake, Ninja
       uses: lukka/get-cmake@v3.18.3
 
