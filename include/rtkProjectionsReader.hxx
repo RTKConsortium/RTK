@@ -78,8 +78,8 @@
       vectorComponentSelectionFilter->SetIndex(m_VectorComponent);                                                     \
     else                                                                                                               \
       itkGenericExceptionMacro(<< "Cannot extract " << m_VectorComponent << "-th component from vector of size "       \
-                               << numberOfComponents) m_VectorComponentSelectionFilter =                               \
-        vectorComponentSelectionFilter;                                                                                \
+                               << numberOfComponents);                                                                 \
+    m_VectorComponentSelectionFilter = vectorComponentSelectionFilter;                                                 \
   }
 
 // Macro to handle input images with vector pixel type in PropagateParametersToMiniPipeline();

@@ -174,7 +174,7 @@ BackProjectionImageFilter<TInputImage, TOutputImage>::BeforeThreadedGenerateData
     itkGenericExceptionMacro(<< "Voxel-based back projector can currently handle a cylindrical detector only when it "
                                 "is centered on the source. "
                              << "Detector radius is " << radius << ", should be "
-                             << this->m_Geometry->GetSourceToDetectorDistances()[0])
+                             << this->m_Geometry->GetSourceToDetectorDistances()[0]);
   }
 }
 
