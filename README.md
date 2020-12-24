@@ -5,7 +5,7 @@ RTK: The Reconstruction ToolKit
 [![PyPI](https://img.shields.io/pypi/v/itk-rtk.svg)](https://pypi.python.org/pypi/itk-rtk)
 [![Wheels](https://img.shields.io/pypi/wheel/itk-rtk.svg)](https://pypi.org/project/itk-rtk)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/SimonRit/RTK/blob/master/LICENSE.TXT)
-![](https://github.com/InsightSoftwareConsortium/ITKTubeTK/workflows/Build,%20test,%20package/badge.svg)
+![](https://github.com/SimonRit/RTK/workflows/Build,%20test,%20package/badge.svg)
 
 Links
 -----
