@@ -47,7 +47,7 @@ namespace rtk
  */
 
 template <class ImageType = itk::CudaImage<float, 3>>
-class ITK_EXPORT CudaBackProjectionImageFilter
+class ITK_TEMPLATE_EXPORT CudaBackProjectionImageFilter
   : public itk::CudaInPlaceImageFilter<ImageType, ImageType, BackProjectionImageFilter<ImageType, ImageType>>
 {
 public:

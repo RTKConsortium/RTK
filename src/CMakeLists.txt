@@ -31,9 +31,12 @@ set(RTK_SRCS
   rtkOraImageIO.cxx
   rtkOraImageIOFactory.cxx
   rtkOraXMLFileReader.cxx
+  rtkPhaseReader.cxx
+  rtkPhasesToInterpolationWeights.cxx
   rtkQuadricShape.cxx
   rtkReg23ProjectionGeometry.cxx
   rtkSheppLoganPhantom.cxx
+  rtkSignalToInterpolationWeights.cxx
   rtkThreeDCircularProjectionGeometry.cxx
   rtkThreeDCircularProjectionGeometryXMLFileReader.cxx
   rtkThreeDCircularProjectionGeometryXMLFileWriter.cxx

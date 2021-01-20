@@ -35,7 +35,7 @@ namespace rtk
  * \ingroup RTK IntensityImageFilters
  */
 template <class TInputImage>
-class DivergenceOfGradientConjugateGradientOperator : public ConjugateGradientOperator<TInputImage>
+class ITK_TEMPLATE_EXPORT DivergenceOfGradientConjugateGradientOperator : public ConjugateGradientOperator<TInputImage>
 {
 public:
 #if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1

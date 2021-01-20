@@ -19,6 +19,7 @@
 #ifndef rtkDigisensGeometryXMLFileReader_h
 #define rtkDigisensGeometryXMLFileReader_h
 
+#include "RTKExport.h"
 #include <itkXMLFile.h>
 #include <itkMetaDataDictionary.h>
 
@@ -38,7 +39,7 @@ namespace rtk
  *
  * \ingroup RTK
  */
-class DigisensGeometryXMLFileReader : public itk::XMLReader<itk::MetaDataDictionary>
+class RTK_EXPORT DigisensGeometryXMLFileReader : public itk::XMLReader<itk::MetaDataDictionary>
 {
 public:
 #if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1

@@ -31,7 +31,7 @@ namespace rtk
  * \ingroup RTK
  */
 template <typename ProjectionStackType>
-class PhaseGatingImageFilter : public SubSelectImageFilter<ProjectionStackType>
+class ITK_TEMPLATE_EXPORT PhaseGatingImageFilter : public SubSelectImageFilter<ProjectionStackType>
 {
 public:
 #if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1

@@ -18,6 +18,7 @@
 #ifndef rtkWatcherForResourceProbe_h
 #define rtkWatcherForResourceProbe_h
 
+#include "RTKExport.h"
 #include <itkCommand.h>
 #include <itkProcessObject.h>
 
@@ -34,7 +35,7 @@ namespace rtk
 
 using namespace itk;
 
-class WatcherForResourceProbe
+class RTK_EXPORT WatcherForResourceProbe
 {
 public:
   /** Constructor. Takes a ProcessObject to monitor and an optional

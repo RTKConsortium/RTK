@@ -40,7 +40,7 @@ namespace rtk
  * \ingroup RTK InPlaceImageFilter
  */
 template <class TInputImage, class TOutputImage>
-class ITK_EXPORT RayEllipsoidIntersectionImageFilter
+class ITK_TEMPLATE_EXPORT RayEllipsoidIntersectionImageFilter
   : public RayConvexIntersectionImageFilter<TInputImage, TOutputImage>
 {
 public:

@@ -35,7 +35,7 @@ namespace rtk
  */
 
 template <class TInputPixel, class TOutputPixel>
-class ITK_EXPORT DPExtractShroudSignalImageFilter
+class ITK_TEMPLATE_EXPORT DPExtractShroudSignalImageFilter
   : public itk::ImageToImageFilter<itk::Image<TInputPixel, 2>, itk::Image<TOutputPixel, 1>>
 {
 public:

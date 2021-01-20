@@ -32,7 +32,7 @@
 
 namespace itk
 {
-class GPUMemPointer : public Object
+class ITKCudaCommon_EXPORT GPUMemPointer : public Object
 {
 public:
   using Self = GPUMemPointer;

@@ -48,7 +48,7 @@ namespace rtk
  * \ingroup RTK ImageSource
  */
 template <typename TOutputImage>
-class ITK_EXPORT ConstantImageSource : public itk::ImageSource<TOutputImage>
+class ITK_TEMPLATE_EXPORT ConstantImageSource : public itk::ImageSource<TOutputImage>
 {
 public:
 #if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1

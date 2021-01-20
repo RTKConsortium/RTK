@@ -34,7 +34,7 @@ namespace rtk
  * \ingroup RTK Projector
  */
 template <class TInputImage, class TOutputImage = TInputImage>
-class ForwardProjectionImageFilter : public itk::InPlaceImageFilter<TInputImage, TOutputImage>
+class ITK_TEMPLATE_EXPORT ForwardProjectionImageFilter : public itk::InPlaceImageFilter<TInputImage, TOutputImage>
 {
 public:
 #if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1

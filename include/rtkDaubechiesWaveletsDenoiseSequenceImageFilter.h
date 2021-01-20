@@ -71,7 +71,8 @@ namespace rtk
  */
 
 template <typename TImageSequence>
-class DaubechiesWaveletsDenoiseSequenceImageFilter : public itk::ImageToImageFilter<TImageSequence, TImageSequence>
+class ITK_TEMPLATE_EXPORT DaubechiesWaveletsDenoiseSequenceImageFilter
+  : public itk::ImageToImageFilter<TImageSequence, TImageSequence>
 {
 public:
 #if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1

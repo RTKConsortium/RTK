@@ -52,7 +52,8 @@ template <typename TInputImage,
           typename TOuputValue = float,
           typename TOuputImage =
             itk::Image<itk::CovariantVector<TOuputValue, TInputImage::ImageDimension>, TInputImage::ImageDimension>>
-class ForwardDifferenceGradientImageFilter : public itk::ImageToImageFilter<TInputImage, TOuputImage>
+class ITK_TEMPLATE_EXPORT ForwardDifferenceGradientImageFilter
+  : public itk::ImageToImageFilter<TInputImage, TOuputImage>
 {
 public:
 #if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1

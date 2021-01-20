@@ -42,7 +42,7 @@ namespace Function
  * \ingroup RTK Functions
  */
 template <class TInput, class TOutput>
-class ObiAttenuation
+class ITK_TEMPLATE_EXPORT ObiAttenuation
 {
 public:
   ObiAttenuation() = default;
@@ -89,7 +89,7 @@ private:
  * \ingroup RTK ImageToImageFilter
  */
 template <class TInputImage, class TOutputImage>
-class ITK_EXPORT VarianObiRawImageFilter
+class ITK_TEMPLATE_EXPORT VarianObiRawImageFilter
   : public itk::UnaryFunctorImageFilter<
       TInputImage,
       TOutputImage,

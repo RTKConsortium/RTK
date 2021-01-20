@@ -35,7 +35,7 @@ namespace rtk
  *
  */
 template <typename TCaller>
-class IterationCommand : public itk::Command
+class ITK_TEMPLATE_EXPORT IterationCommand : public itk::Command
 {
 public:
   /** Standard class typedefs. */
@@ -100,7 +100,7 @@ protected:
  *
  */
 template <typename TCaller>
-class VerboseIterationCommand : public IterationCommand<TCaller>
+class ITK_TEMPLATE_EXPORT VerboseIterationCommand : public IterationCommand<TCaller>
 {
 public:
   /** Standard class typedefs. */
@@ -136,7 +136,7 @@ protected:
  *
  */
 template <typename TCaller, typename TOutputImage>
-class OutputIterationCommand : public IterationCommand<TCaller>
+class ITK_TEMPLATE_EXPORT OutputIterationCommand : public IterationCommand<TCaller>
 {
 public:
   /** Standard class typedefs. */

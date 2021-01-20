@@ -43,7 +43,8 @@ template <class TMaterialProjections,
           class TSpectrum,
           class TProjections =
             itk::Image<typename TMaterialProjections::PixelType::ValueType, TMaterialProjections::ImageDimension>>
-class WeidingerForwardModelImageFilter : public itk::ImageToImageFilter<TMaterialProjections, TMaterialProjections>
+class ITK_TEMPLATE_EXPORT WeidingerForwardModelImageFilter
+  : public itk::ImageToImageFilter<TMaterialProjections, TMaterialProjections>
 {
 public:
 #if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1

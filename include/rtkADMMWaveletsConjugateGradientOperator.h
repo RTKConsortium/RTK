@@ -95,7 +95,7 @@ namespace rtk
  */
 
 template <typename TOutputImage>
-class ADMMWaveletsConjugateGradientOperator : public ConjugateGradientOperator<TOutputImage>
+class ITK_TEMPLATE_EXPORT ADMMWaveletsConjugateGradientOperator : public ConjugateGradientOperator<TOutputImage>
 {
 public:
 #if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1

@@ -38,7 +38,7 @@ namespace rtk
  */
 
 template <typename TOutputImage, typename TGradientImage>
-class DenoisingBPDQImageFilter : public itk::InPlaceImageFilter<TOutputImage, TOutputImage>
+class ITK_TEMPLATE_EXPORT DenoisingBPDQImageFilter : public itk::InPlaceImageFilter<TOutputImage, TOutputImage>
 {
 public:
 #if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1

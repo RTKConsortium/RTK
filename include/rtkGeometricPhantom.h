@@ -19,6 +19,7 @@
 #ifndef rtkGeometricPhantom_h
 #define rtkGeometricPhantom_h
 
+#include "RTKExport.h"
 #include "rtkConvexShape.h"
 
 namespace rtk

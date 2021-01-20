@@ -42,7 +42,7 @@ template <class TGradient,
           class THessian = itk::Image<itk::Vector<typename TGradient::PixelType::ValueType,
                                                   TGradient::PixelType::Dimension * TGradient::PixelType::Dimension>,
                                       TGradient::ImageDimension>>
-class GetNewtonUpdateImageFilter : public itk::ImageToImageFilter<TGradient, TGradient>
+class ITK_TEMPLATE_EXPORT GetNewtonUpdateImageFilter : public itk::ImageToImageFilter<TGradient, TGradient>
 {
 public:
 #if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1

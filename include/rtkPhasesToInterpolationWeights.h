@@ -19,6 +19,7 @@
 #ifndef rtkPhasesToInterpolationWeights_h
 #define rtkPhasesToInterpolationWeights_h
 
+#include "RTKExport.h"
 #include "itkCSVFileReaderBase.h"
 #include "itkArray2D.h"
 
@@ -36,7 +37,7 @@ namespace rtk
  * \ingroup RTK
  */
 
-class ITK_EXPORT PhasesToInterpolationWeights : public itk::CSVFileReaderBase
+class RTK_EXPORT PhasesToInterpolationWeights : public itk::CSVFileReaderBase
 {
 public:
 #if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
@@ -111,9 +112,5 @@ private:
 };
 
 } // end namespace rtk
-
-#ifndef ITK_MANUAL_INSTANTIATION
-#  include "rtkPhasesToInterpolationWeights.hxx"
-#endif
 
 #endif

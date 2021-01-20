@@ -41,7 +41,7 @@ template <class TDiagonal,
           class TMatrix = itk::Image<itk::Vector<typename TDiagonal::PixelType::ValueType,
                                                  TDiagonal::PixelType::Dimension * TDiagonal::PixelType::Dimension>,
                                      TDiagonal::ImageDimension>>
-class AddMatrixAndDiagonalImageFilter : public itk::ImageToImageFilter<TMatrix, TMatrix>
+class ITK_TEMPLATE_EXPORT AddMatrixAndDiagonalImageFilter : public itk::ImageToImageFilter<TMatrix, TMatrix>
 {
 public:
 #if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1

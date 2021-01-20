@@ -21,6 +21,7 @@
 
 #include <itkGDCMImageIO.h>
 
+#include "RTKExport.h"
 #include "rtkMacro.h"
 
 namespace rtk
@@ -32,7 +33,7 @@ namespace rtk
  *
  * \ingroup RTK
  */
-class DCMImagXImageIO : public itk::GDCMImageIO
+class RTK_EXPORT DCMImagXImageIO : public itk::GDCMImageIO
 {
 public:
 #if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1

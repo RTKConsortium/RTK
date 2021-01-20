@@ -204,7 +204,7 @@ namespace rtk
  */
 
 template <typename VolumeSeriesType, typename ProjectionStackType>
-class FourDROOSTERConeBeamReconstructionFilter
+class ITK_TEMPLATE_EXPORT FourDROOSTERConeBeamReconstructionFilter
   : public rtk::IterativeConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 {
 public:

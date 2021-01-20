@@ -44,7 +44,7 @@ namespace rtk
  */
 
 template <class TImage>
-class ITK_EXPORT ExtractPhaseImageFilter : public itk::InPlaceImageFilter<TImage>
+class ITK_TEMPLATE_EXPORT ExtractPhaseImageFilter : public itk::InPlaceImageFilter<TImage>
 {
 public:
 #if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1

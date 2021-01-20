@@ -46,7 +46,7 @@ namespace rtk
  * \ingroup RTK CudaImageToImageFilter
  */
 template <class TParentImageFilter>
-class CudaFFTProjectionsConvolutionImageFilter
+class ITK_TEMPLATE_EXPORT CudaFFTProjectionsConvolutionImageFilter
   : public itk::CudaImageToImageFilter<itk::CudaImage<float, 3>, itk::CudaImage<float, 3>, TParentImageFilter>
 {
 public:

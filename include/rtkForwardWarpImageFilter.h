@@ -42,7 +42,7 @@ template <class TInputImage,
           class TOutputImage = TInputImage,
           class TDVF = itk::Image<itk::CovariantVector<typename TInputImage::PixelType, TInputImage::ImageDimension>,
                                   TInputImage::ImageDimension>>
-class ForwardWarpImageFilter : public itk::WarpImageFilter<TInputImage, TOutputImage, TDVF>
+class ITK_TEMPLATE_EXPORT ForwardWarpImageFilter : public itk::WarpImageFilter<TInputImage, TOutputImage, TDVF>
 {
 public:
 #if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1

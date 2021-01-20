@@ -34,7 +34,8 @@ namespace rtk
  * \ingroup RTK
  */
 template <typename TInputImage>
-class ConjugateGradientGetR_kPlusOneImageFilter : public itk::ImageToImageFilter<TInputImage, TInputImage>
+class ITK_TEMPLATE_EXPORT ConjugateGradientGetR_kPlusOneImageFilter
+  : public itk::ImageToImageFilter<TInputImage, TInputImage>
 {
 public:
 #if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1

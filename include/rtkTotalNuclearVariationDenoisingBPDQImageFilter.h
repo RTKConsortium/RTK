@@ -114,7 +114,8 @@ template <typename TOutputImage,
           typename TGradientImage =
             itk::Image<itk::CovariantVector<typename TOutputImage::ValueType, TOutputImage::ImageDimension - 1>,
                        TOutputImage::ImageDimension>>
-class TotalNuclearVariationDenoisingBPDQImageFilter : public rtk::DenoisingBPDQImageFilter<TOutputImage, TGradientImage>
+class ITK_TEMPLATE_EXPORT TotalNuclearVariationDenoisingBPDQImageFilter
+  : public rtk::DenoisingBPDQImageFilter<TOutputImage, TGradientImage>
 {
 public:
 #if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1

@@ -23,6 +23,7 @@
 #include <fstream>
 #include <cstring>
 
+#include "RTKExport.h"
 #include "rtkMacro.h"
 
 namespace rtk
@@ -34,7 +35,7 @@ namespace rtk
  *
  * \ingroup RTK
  */
-class ImagXImageIO : public itk::ImageIOBase
+class RTK_EXPORT ImagXImageIO : public itk::ImageIOBase
 {
 public:
   /** Standard class type alias. */

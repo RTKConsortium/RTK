@@ -97,7 +97,7 @@ namespace rtk
  */
 
 template <typename VolumeSeriesType, typename ProjectionStackType>
-class MotionCompensatedFourDReconstructionConjugateGradientOperator
+class ITK_TEMPLATE_EXPORT MotionCompensatedFourDReconstructionConjugateGradientOperator
   : public FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType>
 {
 public:

@@ -19,6 +19,7 @@
 #ifndef rtkDbf_h
 #define rtkDbf_h
 
+#include "RTKExport.h"
 #include <string>
 #include <fstream>
 #include <vector>
@@ -36,7 +37,7 @@ namespace rtk
  *
  * \ingroup RTK
  */
-class DbfField
+class RTK_EXPORT DbfField
 {
 public:
   /** Constructor */
@@ -83,7 +84,7 @@ private:
  *
  * \ingroup RTK
  */
-class DbfFile
+class RTK_EXPORT DbfFile
 {
 public:
   /** Constructor initializes the structure and goes to first record */

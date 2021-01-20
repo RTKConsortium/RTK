@@ -115,7 +115,7 @@ namespace rtk
  * \ingroup RTK ReconstructionAlgorithm
  */
 template <class TVolumeImage, class TProjectionImage = TVolumeImage>
-class ITK_EXPORT OSEMConeBeamReconstructionFilter
+class ITK_TEMPLATE_EXPORT OSEMConeBeamReconstructionFilter
   : public rtk::IterativeConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>
 {
 public:

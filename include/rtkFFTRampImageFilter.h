@@ -58,7 +58,7 @@ namespace rtk
  */
 
 template <class TInputImage, class TOutputImage = TInputImage, class TFFTPrecision = double>
-class ITK_EXPORT FFTRampImageFilter
+class ITK_TEMPLATE_EXPORT FFTRampImageFilter
   : public rtk::FFTProjectionsConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 {
 public:

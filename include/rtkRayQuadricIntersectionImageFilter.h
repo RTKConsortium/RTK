@@ -35,7 +35,8 @@ namespace rtk
  * \ingroup RTK InPlaceImageFilter
  */
 template <class TInputImage, class TOutputImage>
-class RayQuadricIntersectionImageFilter : public RayConvexIntersectionImageFilter<TInputImage, TOutputImage>
+class ITK_TEMPLATE_EXPORT RayQuadricIntersectionImageFilter
+  : public RayConvexIntersectionImageFilter<TInputImage, TOutputImage>
 {
 public:
 #if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1

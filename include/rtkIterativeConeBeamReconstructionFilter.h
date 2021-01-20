@@ -54,7 +54,8 @@ namespace rtk
  * \ingroup RTK ReconstructionAlgorithm
  */
 template <class TOutputImage, class ProjectionStackType = TOutputImage>
-class ITK_EXPORT IterativeConeBeamReconstructionFilter : public itk::ImageToImageFilter<TOutputImage, TOutputImage>
+class ITK_TEMPLATE_EXPORT IterativeConeBeamReconstructionFilter
+  : public itk::ImageToImageFilter<TOutputImage, TOutputImage>
 {
 public:
 #if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1

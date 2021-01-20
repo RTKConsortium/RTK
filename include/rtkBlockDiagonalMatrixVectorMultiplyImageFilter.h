@@ -36,7 +36,8 @@ template <class TVectorImage,
             itk::Image<itk::Vector<typename TVectorImage::PixelType::ValueType,
                                    TVectorImage::PixelType::Dimension * TVectorImage::PixelType::Dimension>,
                        TVectorImage::ImageDimension>>
-class BlockDiagonalMatrixVectorMultiplyImageFilter : public itk::ImageToImageFilter<TVectorImage, TVectorImage>
+class ITK_TEMPLATE_EXPORT BlockDiagonalMatrixVectorMultiplyImageFilter
+  : public itk::ImageToImageFilter<TVectorImage, TVectorImage>
 {
 public:
 #if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1

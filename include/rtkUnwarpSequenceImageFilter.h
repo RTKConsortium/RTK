@@ -78,7 +78,7 @@ template <typename TImageSequence,
           typename TDVFImage =
             itk::Image<itk::CovariantVector<typename TImageSequence::ValueType, TImageSequence::ImageDimension - 1>,
                        TImageSequence::ImageDimension - 1>>
-class UnwarpSequenceImageFilter : public itk::ImageToImageFilter<TImageSequence, TImageSequence>
+class ITK_TEMPLATE_EXPORT UnwarpSequenceImageFilter : public itk::ImageToImageFilter<TImageSequence, TImageSequence>
 {
 public:
 #if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1

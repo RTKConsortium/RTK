@@ -44,7 +44,7 @@ namespace Functor
 {
 
 template <class TInput, class TOutput>
-class LUT
+class ITK_TEMPLATE_EXPORT LUT
 {
 public:
   using LookupTableType = itk::Image<TOutput, 1>;
@@ -141,7 +141,7 @@ LUT<double, double>::operator()(const double & val) const
  * \ingroup RTK ImageToImageFilter
  */
 template <class TInputImage, class TOutputImage>
-class ITK_EXPORT LookupTableImageFilter
+class ITK_TEMPLATE_EXPORT LookupTableImageFilter
   : public itk::UnaryFunctorImageFilter<TInputImage,
                                         TOutputImage,
                                         Functor::LUT<typename TInputImage::PixelType, typename TOutputImage::PixelType>>

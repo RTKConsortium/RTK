@@ -39,7 +39,7 @@ namespace itk
 template <class TInputImage,
           class TOutputImage,
           class TParentImageFilter = ImageToImageFilter<TInputImage, TOutputImage>>
-class ITK_EXPORT CudaImageToImageFilter : public TParentImageFilter
+class ITK_TEMPLATE_EXPORT CudaImageToImageFilter : public TParentImageFilter
 {
 public:
   /** Standard class type alias. */

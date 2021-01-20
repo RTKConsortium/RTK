@@ -19,6 +19,7 @@
 #ifndef rtkGeometricPhantomFileReader_h
 #define rtkGeometricPhantomFileReader_h
 
+#include "RTKExport.h"
 #include <itkLightProcessObject.h>
 #include "rtkGeometricPhantom.h"
 

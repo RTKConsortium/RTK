@@ -38,7 +38,7 @@ namespace Functor
  * \ingroup RTK Functions
  */
 template <class TInput, class TCoordRepType, class TOutput = TInput>
-class InterpolationWeightMultiplicationBackProjection
+class ITK_TEMPLATE_EXPORT InterpolationWeightMultiplicationBackProjection
 {
 public:
   InterpolationWeightMultiplicationBackProjection() = default;
@@ -72,7 +72,7 @@ public:
  * \ingroup RTK Functions
  */
 template <class TInput, class TOutput>
-class ValueAlongRay
+class ITK_TEMPLATE_EXPORT ValueAlongRay
 {
 public:
   using VectorType = itk::Vector<double, 3>;
@@ -108,7 +108,7 @@ public:
  * \ingroup RTK Functions
  */
 template <class TInput, class TCoordRepType, class TOutput = TCoordRepType>
-class SplatWeightMultiplication
+class ITK_TEMPLATE_EXPORT SplatWeightMultiplication
 {
 public:
   SplatWeightMultiplication() = default;
@@ -161,7 +161,7 @@ template <
   class TSplatWeightMultiplication =
     Functor::SplatWeightMultiplication<typename TInputImage::PixelType, double, typename TOutputImage::PixelType>,
   class TSumAlongRay = Functor::ValueAlongRay<typename TInputImage::PixelType, typename TOutputImage::PixelType>>
-class ITK_EXPORT JosephBackProjectionImageFilter : public BackProjectionImageFilter<TInputImage, TOutputImage>
+class ITK_TEMPLATE_EXPORT JosephBackProjectionImageFilter : public BackProjectionImageFilter<TInputImage, TOutputImage>
 {
 public:
 #if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1

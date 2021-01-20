@@ -40,7 +40,8 @@ namespace rtk
  */
 template <class TInputImage>
 
-class LastDimensionL0GradientDenoisingImageFilter : public itk::InPlaceImageFilter<TInputImage, TInputImage>
+class ITK_TEMPLATE_EXPORT LastDimensionL0GradientDenoisingImageFilter
+  : public itk::InPlaceImageFilter<TInputImage, TInputImage>
 {
 public:
 #if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1

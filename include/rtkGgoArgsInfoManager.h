@@ -32,7 +32,7 @@ namespace rtk
  * \ingroup RTK
  */
 template <class TArgsInfo, class TCleanupFunction = void (*)(TArgsInfo *)>
-class args_info_manager
+class ITK_TEMPLATE_EXPORT args_info_manager
 {
 public:
   args_info_manager(TArgsInfo & args_info, TCleanupFunction cf)

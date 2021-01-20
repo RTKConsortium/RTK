@@ -26,6 +26,7 @@
 
 #include <itkMetaImageIO.h>
 
+#include "RTKExport.h"
 #include "rtkMacro.h"
 
 namespace rtk
@@ -41,7 +42,7 @@ namespace rtk
  *
  * \ingroup RTK IOFilters
  */
-class OraImageIO : public itk::MetaImageIO
+class RTK_EXPORT OraImageIO : public itk::MetaImageIO
 {
 public:
   /** Standard class type alias. */

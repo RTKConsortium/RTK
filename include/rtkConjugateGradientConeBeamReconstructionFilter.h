@@ -107,7 +107,8 @@ namespace rtk
  */
 
 template <typename TOutputImage, typename TSingleComponentImage = TOutputImage, typename TWeightsImage = TOutputImage>
-class ConjugateGradientConeBeamReconstructionFilter : public IterativeConeBeamReconstructionFilter<TOutputImage>
+class ITK_TEMPLATE_EXPORT ConjugateGradientConeBeamReconstructionFilter
+  : public IterativeConeBeamReconstructionFilter<TOutputImage>
 {
 public:
 #if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1

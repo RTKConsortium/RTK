@@ -41,7 +41,7 @@ namespace rtk
  * \ingroup RTK Geometry
  */
 template <unsigned int TDimension = 3>
-class ProjectionGeometry : public itk::DataObject
+class ITK_TEMPLATE_EXPORT ProjectionGeometry : public itk::DataObject
 {
 public:
 #if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1

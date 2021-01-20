@@ -38,7 +38,7 @@ namespace rtk
  * \ingroup RTK IOFilters
  */
 template <typename TInputImage>
-class ImagXGeometryReader : public itk::LightProcessObject
+class ITK_TEMPLATE_EXPORT ImagXGeometryReader : public itk::LightProcessObject
 {
 public:
 #if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1

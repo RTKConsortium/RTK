@@ -64,7 +64,8 @@ namespace rtk
  */
 
 template <typename VolumeSeriesType, typename VolumeType>
-class SplatWithKnownWeightsImageFilter : public itk::InPlaceImageFilter<VolumeSeriesType, VolumeSeriesType>
+class ITK_TEMPLATE_EXPORT SplatWithKnownWeightsImageFilter
+  : public itk::InPlaceImageFilter<VolumeSeriesType, VolumeSeriesType>
 {
 public:
 #if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1

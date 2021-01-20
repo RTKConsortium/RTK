@@ -54,7 +54,7 @@ namespace rtk
  * \ingroup RTK
  */
 template <class TPixel>
-class NormalVariateNoiseFunctor
+class ITK_TEMPLATE_EXPORT NormalVariateNoiseFunctor
 {
 public:
   NormalVariateNoiseFunctor()
@@ -168,7 +168,7 @@ private:
  * \ingroup RTK ImageToImageFilter
  */
 template <class TInputImage>
-class ITK_EXPORT AdditiveGaussianNoiseImageFilter : public itk::ImageToImageFilter<TInputImage, TInputImage>
+class ITK_TEMPLATE_EXPORT AdditiveGaussianNoiseImageFilter : public itk::ImageToImageFilter<TInputImage, TInputImage>
 {
 public:
 #if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1

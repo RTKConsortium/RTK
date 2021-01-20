@@ -93,7 +93,7 @@ namespace rtk
  */
 
 template <typename VolumeSeriesType, typename ProjectionStackType>
-class ITK_EXPORT FourDConjugateGradientConeBeamReconstructionFilter
+class ITK_TEMPLATE_EXPORT FourDConjugateGradientConeBeamReconstructionFilter
   : public rtk::IterativeConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 {
 public:

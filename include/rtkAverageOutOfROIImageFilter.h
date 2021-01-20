@@ -49,7 +49,7 @@ namespace rtk
  */
 template <class TInputImage, class TROI = itk::Image<typename TInputImage::PixelType, TInputImage::ImageDimension - 1>>
 
-class AverageOutOfROIImageFilter : public itk::InPlaceImageFilter<TInputImage, TInputImage>
+class ITK_TEMPLATE_EXPORT AverageOutOfROIImageFilter : public itk::InPlaceImageFilter<TInputImage, TInputImage>
 {
 public:
 #if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1

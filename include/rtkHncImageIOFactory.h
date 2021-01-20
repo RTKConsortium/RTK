@@ -38,7 +38,7 @@ namespace rtk
  *
  * \ingroup RTK IOFilters
  */
-class HncImageIOFactory : public itk::ObjectFactoryBase
+class RTK_EXPORT HncImageIOFactory : public itk::ObjectFactoryBase
 {
 public:
   /** Standard class type alias. */

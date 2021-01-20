@@ -44,7 +44,7 @@ template <typename DecomposedProjectionsType,
           typename IncidentSpectrumImageType = itk::VectorImage<float, 2>,
           typename DetectorResponseImageType = itk::Image<float, 2>,
           typename MaterialAttenuationsImageType = itk::Image<float, 2>>
-class ITK_EXPORT SpectralForwardModelImageFilter
+class ITK_TEMPLATE_EXPORT SpectralForwardModelImageFilter
   : public itk::InPlaceImageFilter<MeasuredProjectionsType, MeasuredProjectionsType>
 {
 public:
