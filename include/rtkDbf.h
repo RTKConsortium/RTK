@@ -20,6 +20,7 @@
 #define rtkDbf_h
 
 #include "RTKExport.h"
+#include "itkWin32Header.h"
 #include <string>
 #include <fstream>
 #include <vector>
