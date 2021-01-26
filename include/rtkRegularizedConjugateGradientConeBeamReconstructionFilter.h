@@ -104,7 +104,7 @@ namespace rtk
  */
 
 template <typename TImage>
-class RegularizedConjugateGradientConeBeamReconstructionFilter
+class ITK_TEMPLATE_EXPORT RegularizedConjugateGradientConeBeamReconstructionFilter
   : public rtk::IterativeConeBeamReconstructionFilter<TImage, TImage>
 {
 public:

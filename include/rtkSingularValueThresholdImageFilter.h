@@ -47,7 +47,7 @@ namespace rtk
  *
  */
 template <typename TInputImage, typename TRealType = float, typename TOutputImage = TInputImage>
-class ITK_EXPORT SingularValueThresholdImageFilter : public itk::InPlaceImageFilter<TInputImage, TOutputImage>
+class ITK_TEMPLATE_EXPORT SingularValueThresholdImageFilter : public itk::InPlaceImageFilter<TInputImage, TOutputImage>
 {
 public:
 #if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1

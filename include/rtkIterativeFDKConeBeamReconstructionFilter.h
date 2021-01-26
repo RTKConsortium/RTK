@@ -104,7 +104,7 @@ namespace rtk
  * \ingroup RTK ReconstructionAlgorithm
  */
 template <class TInputImage, class TOutputImage = TInputImage, class TFFTPrecision = double>
-class ITK_EXPORT IterativeFDKConeBeamReconstructionFilter
+class ITK_TEMPLATE_EXPORT IterativeFDKConeBeamReconstructionFilter
   : public rtk::IterativeConeBeamReconstructionFilter<TInputImage, TOutputImage>
 {
 public:

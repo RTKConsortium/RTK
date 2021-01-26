@@ -40,7 +40,7 @@ namespace Functor
  * \ingroup RTK Functions
  */
 template <class TInput, class TCoordRepType, class TOutput = TInput>
-class InterpolationWeightMultiplicationAttenuated
+class ITK_TEMPLATE_EXPORT InterpolationWeightMultiplicationAttenuated
 {
 public:
   InterpolationWeightMultiplicationAttenuated()
@@ -116,7 +116,7 @@ private:
  * \ingroup RTK Functions
  */
 template <class TInput, class TOutput>
-class ComputeAttenuationCorrection
+class ITK_TEMPLATE_EXPORT ComputeAttenuationCorrection
 {
 public:
   using VectorType = itk::Vector<double, 3>;
@@ -185,7 +185,7 @@ private:
  * \ingroup RTK Functions
  */
 template <class TInput, class TOutput>
-class ProjectedValueAccumulationAttenuated
+class ITK_TEMPLATE_EXPORT ProjectedValueAccumulationAttenuated
 {
 public:
   using VectorType = itk::Vector<double, 3>;
@@ -262,7 +262,7 @@ template <
     Functor::ProjectedValueAccumulationAttenuated<typename TInputImage::PixelType, typename TOutputImage::PixelType>,
   class TSumAlongRay =
     Functor::ComputeAttenuationCorrection<typename TInputImage::PixelType, typename TOutputImage::PixelType>>
-class ITK_EXPORT JosephForwardAttenuatedProjectionImageFilter
+class ITK_TEMPLATE_EXPORT JosephForwardAttenuatedProjectionImageFilter
   : public JosephForwardProjectionImageFilter<TInputImage,
                                               TOutputImage,
                                               TInterpolationWeightMultiplication,

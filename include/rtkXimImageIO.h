@@ -19,6 +19,7 @@
 #ifndef rtkXimImageIO_h
 #define rtkXimImageIO_h
 
+#include "RTKExport.h"
 #include "rtkMacro.h"
 
 // itk include
@@ -43,7 +44,7 @@ namespace rtk
  *
  * \ingroup RTK IOFilters
  */
-class XimImageIO : public itk::ImageIOBase
+class RTK_EXPORT XimImageIO : public itk::ImageIOBase
 {
 public:
   /** Standard class type alias. */

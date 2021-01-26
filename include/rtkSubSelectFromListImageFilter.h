@@ -30,7 +30,7 @@ namespace rtk
  * \ingroup RTK
  */
 template <typename ProjectionStackType>
-class SubSelectFromListImageFilter : public SubSelectImageFilter<ProjectionStackType>
+class ITK_TEMPLATE_EXPORT SubSelectFromListImageFilter : public SubSelectImageFilter<ProjectionStackType>
 {
 public:
 #if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1

@@ -43,7 +43,8 @@ namespace rtk
  * \ingroup RTK Projector
  */
 template <class TInputImage, class TOutputImage, class TDeformation>
-class ITK_EXPORT FDKWarpBackProjectionImageFilter : public FDKBackProjectionImageFilter<TInputImage, TOutputImage>
+class ITK_TEMPLATE_EXPORT FDKWarpBackProjectionImageFilter
+  : public FDKBackProjectionImageFilter<TInputImage, TOutputImage>
 {
 public:
 #if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1

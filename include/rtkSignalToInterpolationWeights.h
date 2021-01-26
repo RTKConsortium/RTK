@@ -19,6 +19,7 @@
 #ifndef rtkSignalToInterpolationWeights_h
 #define rtkSignalToInterpolationWeights_h
 
+#include "RTKExport.h"
 #include "itkCSVFileReaderBase.h"
 #include "itkArray2D.h"
 
@@ -36,7 +37,7 @@ namespace rtk
  * \ingroup RTK
  */
 
-class ITK_EXPORT SignalToInterpolationWeights : public itk::CSVFileReaderBase
+class RTK_EXPORT SignalToInterpolationWeights : public itk::CSVFileReaderBase
 {
 public:
 #if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
@@ -100,9 +101,5 @@ private:
 };
 
 } // end namespace rtk
-
-#ifndef ITK_MANUAL_INSTANTIATION
-#  include "rtkSignalToInterpolationWeights.hxx"
-#endif
 
 #endif

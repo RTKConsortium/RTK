@@ -19,6 +19,7 @@
 #ifndef rtkSheppLoganPhantom_h
 #define rtkSheppLoganPhantom_h
 
+#include "RTKExport.h"
 #include "rtkGeometricPhantom.h"
 #include "rtkQuadricShape.h"
 

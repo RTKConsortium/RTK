@@ -39,7 +39,8 @@ namespace rtk
  * \ingroup RTK ImageToImageFilter
  */
 template <class TInputImage = itk::Image<unsigned short, 2>, class TOutputImage = itk::Image<unsigned short, 2>>
-class ITK_EXPORT ElektaSynergyRawLookupTableImageFilter : public LookupTableImageFilter<TInputImage, TOutputImage>
+class ITK_TEMPLATE_EXPORT ElektaSynergyRawLookupTableImageFilter
+  : public LookupTableImageFilter<TInputImage, TOutputImage>
 {
 
 public:

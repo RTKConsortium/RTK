@@ -44,7 +44,8 @@ namespace rtk
  * \ingroup RTK
  */
 template <class TImage>
-class DeconstructSoftThresholdReconstructImageFilter : public itk::ImageToImageFilter<TImage, TImage>
+class ITK_TEMPLATE_EXPORT DeconstructSoftThresholdReconstructImageFilter
+  : public itk::ImageToImageFilter<TImage, TImage>
 {
 public:
 #if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1

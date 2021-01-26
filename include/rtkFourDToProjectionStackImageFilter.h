@@ -97,7 +97,8 @@ namespace rtk
  */
 
 template <typename ProjectionStackType, typename VolumeSeriesType>
-class FourDToProjectionStackImageFilter : public itk::ImageToImageFilter<ProjectionStackType, ProjectionStackType>
+class ITK_TEMPLATE_EXPORT FourDToProjectionStackImageFilter
+  : public itk::ImageToImageFilter<ProjectionStackType, ProjectionStackType>
 {
 public:
 #if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1

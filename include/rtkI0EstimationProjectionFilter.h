@@ -43,7 +43,7 @@ namespace rtk
 template <class TInputImage = itk::Image<unsigned short, 3>,
           class TOutputImage = TInputImage,
           unsigned char bitShift = 2>
-class ITK_EXPORT I0EstimationProjectionFilter : public itk::InPlaceImageFilter<TInputImage, TOutputImage>
+class ITK_TEMPLATE_EXPORT I0EstimationProjectionFilter : public itk::InPlaceImageFilter<TInputImage, TOutputImage>
 {
 public:
 #if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1

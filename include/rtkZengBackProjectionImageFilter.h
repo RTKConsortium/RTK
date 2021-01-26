@@ -61,7 +61,7 @@ namespace rtk
  */
 
 template <class TInputImage, class TOutputImage>
-class ITK_EXPORT ZengBackProjectionImageFilter : public BackProjectionImageFilter<TInputImage, TOutputImage>
+class ITK_TEMPLATE_EXPORT ZengBackProjectionImageFilter : public BackProjectionImageFilter<TInputImage, TOutputImage>
 {
 public:
   /** Standard class usings. */

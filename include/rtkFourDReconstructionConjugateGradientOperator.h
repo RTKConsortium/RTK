@@ -127,7 +127,8 @@ namespace rtk
  */
 
 template <typename VolumeSeriesType, typename ProjectionStackType>
-class FourDReconstructionConjugateGradientOperator : public ConjugateGradientOperator<VolumeSeriesType>
+class ITK_TEMPLATE_EXPORT FourDReconstructionConjugateGradientOperator
+  : public ConjugateGradientOperator<VolumeSeriesType>
 {
 public:
 #if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1

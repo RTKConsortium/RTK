@@ -61,7 +61,8 @@ namespace rtk
  * \ingroup RTK ReconstructionAlgorithm
  */
 template <typename VolumeType, typename VolumeSeriesType>
-class InterpolatorWithKnownWeightsImageFilter : public itk::InPlaceImageFilter<VolumeType, VolumeType>
+class ITK_TEMPLATE_EXPORT InterpolatorWithKnownWeightsImageFilter
+  : public itk::InPlaceImageFilter<VolumeType, VolumeType>
 {
 public:
 #if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1

@@ -19,6 +19,7 @@
 #ifndef rtkVarianProBeamGeometryReader_h
 #define rtkVarianProBeamGeometryReader_h
 
+#include "RTKExport.h"
 #include <itkLightProcessObject.h>
 #include "rtkThreeDCircularProjectionGeometry.h"
 

@@ -119,7 +119,7 @@ namespace rtk
  * \ingroup RTK ReconstructionAlgorithm
  */
 template <class VolumeSeriesType, class ProjectionStackType>
-class ITK_EXPORT FourDSARTConeBeamReconstructionFilter
+class ITK_TEMPLATE_EXPORT FourDSARTConeBeamReconstructionFilter
   : public rtk::IterativeConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 {
 public:

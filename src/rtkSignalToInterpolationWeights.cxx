@@ -15,8 +15,6 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef rtkSignalToInterpolationWeights_hxx
-#define rtkSignalToInterpolationWeights_hxx
 
 #include "rtkSignalToInterpolationWeights.h"
 
@@ -101,5 +99,3 @@ SignalToInterpolationWeights ::GetOutput()
 
 
 } // end namespace rtk
-
-#endif

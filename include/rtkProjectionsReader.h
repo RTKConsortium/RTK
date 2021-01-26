@@ -122,7 +122,7 @@ namespace rtk
  * \ingroup RTK ImageSource
  */
 template <class TOutputImage>
-class ITK_EXPORT ProjectionsReader : public itk::ImageSource<TOutputImage>
+class ITK_TEMPLATE_EXPORT ProjectionsReader : public itk::ImageSource<TOutputImage>
 {
 public:
 #if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1

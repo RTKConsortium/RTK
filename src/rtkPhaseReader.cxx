@@ -15,8 +15,6 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef rtkPhaseReader_hxx
-#define rtkPhaseReader_hxx
 
 #include "rtkPhaseReader.h"
 
@@ -84,5 +82,3 @@ PhaseReader::GetOutput()
 }
 
 } // end namespace rtk
-
-#endif

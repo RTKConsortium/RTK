@@ -78,7 +78,7 @@ namespace rtk
  * \ingroup RTK ImageToImageFilter
  */
 template <class TInputImage>
-class ITK_EXPORT AmsterdamShroudImageFilter
+class ITK_TEMPLATE_EXPORT AmsterdamShroudImageFilter
   : public itk::ImageToImageFilter<TInputImage, itk::Image<double, TInputImage::ImageDimension - 1>>
 {
 public:

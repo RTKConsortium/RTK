@@ -51,7 +51,7 @@ template <typename TImage>
 class ProjectionsRegionConstIteratorRayBasedParallel;
 
 template <typename TImage>
-class ProjectionsRegionConstIteratorRayBased : public itk::ImageConstIteratorWithIndex<TImage>
+class ITK_TEMPLATE_EXPORT ProjectionsRegionConstIteratorRayBased : public itk::ImageConstIteratorWithIndex<TImage>
 {
 public:
   /** Standard class type alias. */

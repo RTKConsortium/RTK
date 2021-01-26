@@ -19,6 +19,7 @@
 #ifndef rtkVarianObiGeometryReader_h
 #define rtkVarianObiGeometryReader_h
 
+#include "RTKExport.h"
 #include <itkLightProcessObject.h>
 #include "rtkThreeDCircularProjectionGeometry.h"
 

@@ -140,7 +140,7 @@ namespace rtk
  */
 
 template <typename TOutputImage>
-class ADMMWaveletsConeBeamReconstructionFilter
+class ITK_TEMPLATE_EXPORT ADMMWaveletsConeBeamReconstructionFilter
   : public rtk::IterativeConeBeamReconstructionFilter<TOutputImage, TOutputImage>
 {
 public:

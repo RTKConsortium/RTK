@@ -57,7 +57,7 @@ namespace rtk
  * \ingroup RTK ImageToImageFilter
  */
 template <class TInputImage, class TOutputImage = TInputImage>
-class ITK_EXPORT DisplacedDetectorImageFilter : public itk::InPlaceImageFilter<TInputImage, TOutputImage>
+class ITK_TEMPLATE_EXPORT DisplacedDetectorImageFilter : public itk::InPlaceImageFilter<TInputImage, TOutputImage>
 {
 public:
 #if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1

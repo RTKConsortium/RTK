@@ -39,7 +39,7 @@ namespace rtk
  */
 
 template <typename TImage>
-class NesterovUpdateImageFilter : public itk::InPlaceImageFilter<TImage, TImage>
+class ITK_TEMPLATE_EXPORT NesterovUpdateImageFilter : public itk::InPlaceImageFilter<TImage, TImage>
 {
 public:
 #if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1

@@ -82,7 +82,7 @@ namespace rtk
  */
 
 template <typename VolumeSeriesType, typename ProjectionStackType>
-class WarpProjectionStackToFourDImageFilter
+class ITK_TEMPLATE_EXPORT WarpProjectionStackToFourDImageFilter
   : public ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType>
 {
 public:

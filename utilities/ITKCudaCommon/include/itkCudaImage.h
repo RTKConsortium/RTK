@@ -20,6 +20,7 @@
 
 #include "itkImage.h"
 #include "itkCudaImageDataManager.h"
+#include "itkCudaWin32Header.h"
 #include "itkVersion.h"
 #include "itkObjectFactoryBase.h"
 
@@ -36,7 +37,7 @@ namespace itk
  * \ingroup ITKCudaCommon
  */
 template <class TPixel, unsigned int VImageDimension = 2>
-class ITK_EXPORT CudaImage : public Image<TPixel, VImageDimension>
+class ITK_TEMPLATE_EXPORT CudaImage : public Image<TPixel, VImageDimension>
 {
 public:
   using Self = CudaImage;
@@ -220,7 +221,7 @@ private:
   typename CudaImageDataManager<CudaImage>::Pointer m_DataManager;
 };
 
-class CudaImageFactory : public itk::ObjectFactoryBase
+class ITKCudaCommon_EXPORT CudaImageFactory : public itk::ObjectFactoryBase
 {
 public:
   using Self = CudaImageFactory;
@@ -297,7 +298,7 @@ private:
 };
 
 template <class T>
-class CudaTraits
+class ITK_TEMPLATE_EXPORT CudaTraits
 {
 public:
   using Type = T;

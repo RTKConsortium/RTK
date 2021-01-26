@@ -134,7 +134,7 @@ template <typename TOutputImage,
           typename TGradientOutputImage =
             itk::Image<itk::CovariantVector<typename TOutputImage::ValueType, TOutputImage::ImageDimension>,
                        TOutputImage::ImageDimension>>
-class ADMMTotalVariationConeBeamReconstructionFilter
+class ITK_TEMPLATE_EXPORT ADMMTotalVariationConeBeamReconstructionFilter
   : public rtk::IterativeConeBeamReconstructionFilter<TOutputImage, TOutputImage>
 {
 public:

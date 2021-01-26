@@ -39,7 +39,7 @@ namespace rtk
  * \ingroup RTK InPlaceImageFilter
  */
 template <class TInputImage, class TOutputImage>
-class DrawCylinderImageFilter : public DrawEllipsoidImageFilter<TInputImage, TOutputImage>
+class ITK_TEMPLATE_EXPORT DrawCylinderImageFilter : public DrawEllipsoidImageFilter<TInputImage, TOutputImage>
 {
 public:
 #if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1

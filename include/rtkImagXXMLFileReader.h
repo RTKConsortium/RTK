@@ -28,6 +28,7 @@
 
 #include <map>
 
+#include "RTKExport.h"
 #include "rtkMacro.h"
 
 namespace rtk
@@ -39,7 +40,7 @@ namespace rtk
  *
  * \ingroup RTK
  */
-class ImagXXMLFileReader : public itk::XMLReader<itk::MetaDataDictionary>
+class RTK_EXPORT ImagXXMLFileReader : public itk::XMLReader<itk::MetaDataDictionary>
 {
 public:
 #if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1

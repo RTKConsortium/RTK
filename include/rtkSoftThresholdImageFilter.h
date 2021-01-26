@@ -41,7 +41,7 @@ namespace Functor
 {
 
 template <class TInput, class TOutput>
-class SoftThreshold
+class ITK_TEMPLATE_EXPORT SoftThreshold
 {
 public:
   SoftThreshold() { m_Threshold = itk::NumericTraits<TInput>::Zero; }
@@ -80,7 +80,7 @@ private:
 } // namespace Functor
 
 template <class TInputImage, class TOutputImage>
-class ITK_EXPORT SoftThresholdImageFilter
+class ITK_TEMPLATE_EXPORT SoftThresholdImageFilter
   : public itk::UnaryFunctorImageFilter<
       TInputImage,
       TOutputImage,

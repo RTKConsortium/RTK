@@ -30,6 +30,7 @@
 #  include <cstdint>
 #endif
 
+#include "RTKExport.h"
 #include "rtkMacro.h"
 
 namespace rtk
@@ -43,7 +44,7 @@ namespace rtk
  *
  * \ingroup RTK IOFilters
  */
-class HncImageIO : public itk::ImageIOBase
+class RTK_EXPORT HncImageIO : public itk::ImageIOBase
 {
 public:
   /** Standard class type alias. */

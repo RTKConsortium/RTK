@@ -136,7 +136,7 @@ namespace rtk
  * \ingroup RTK ReconstructionAlgorithm
  */
 template <typename VolumeSeriesType, typename ProjectionStackType>
-class MotionCompensatedFourDROOSTERConeBeamReconstructionFilter
+class ITK_TEMPLATE_EXPORT MotionCompensatedFourDROOSTERConeBeamReconstructionFilter
   : public rtk::FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>
 {
 public:

@@ -104,7 +104,7 @@ template <typename TOutputImage,
           typename TGradientOutputImage =
             itk::Image<itk::CovariantVector<typename TOutputImage::ValueType, TOutputImage::ImageDimension>,
                        TOutputImage::ImageDimension>>
-class ADMMTotalVariationConjugateGradientOperator : public ConjugateGradientOperator<TOutputImage>
+class ITK_TEMPLATE_EXPORT ADMMTotalVariationConjugateGradientOperator : public ConjugateGradientOperator<TOutputImage>
 {
 public:
 #if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1

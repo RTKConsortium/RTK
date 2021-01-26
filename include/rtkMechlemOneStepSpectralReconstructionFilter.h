@@ -143,7 +143,7 @@ namespace rtk
  */
 
 template <typename TOutputImage, typename TPhotonCounts, typename TSpectrum>
-class MechlemOneStepSpectralReconstructionFilter
+class ITK_TEMPLATE_EXPORT MechlemOneStepSpectralReconstructionFilter
   : public rtk::IterativeConeBeamReconstructionFilter<TOutputImage, TOutputImage>
 {
 public:

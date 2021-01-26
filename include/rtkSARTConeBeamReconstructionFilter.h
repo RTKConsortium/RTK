@@ -132,7 +132,7 @@ namespace rtk
  * \ingroup RTK ReconstructionAlgorithm
  */
 template <class TVolumeImage, class TProjectionImage = TVolumeImage>
-class ITK_EXPORT SARTConeBeamReconstructionFilter
+class ITK_TEMPLATE_EXPORT SARTConeBeamReconstructionFilter
   : public rtk::IterativeConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>
 {
 public:

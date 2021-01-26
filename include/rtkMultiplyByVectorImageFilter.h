@@ -37,7 +37,7 @@ namespace rtk
  *
  */
 template <class TInputImage>
-class MultiplyByVectorImageFilter : public itk::ImageToImageFilter<TInputImage, TInputImage>
+class ITK_TEMPLATE_EXPORT MultiplyByVectorImageFilter : public itk::ImageToImageFilter<TInputImage, TInputImage>
 {
 public:
 #if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1

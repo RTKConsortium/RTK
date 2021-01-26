@@ -37,7 +37,8 @@ namespace rtk
  */
 
 template <typename TInputImage, typename TOutputImage = itk::Image<float, TInputImage::ImageDimension>>
-class BackwardDifferenceDivergenceImageFilter : public itk::ImageToImageFilter<TInputImage, TOutputImage>
+class ITK_TEMPLATE_EXPORT BackwardDifferenceDivergenceImageFilter
+  : public itk::ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
 #if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1

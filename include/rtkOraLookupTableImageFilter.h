@@ -39,7 +39,7 @@ namespace rtk
  * \ingroup RTK ImageToImageFilter
  */
 template <class TOutputImage>
-class ITK_EXPORT OraLookupTableImageFilter
+class ITK_TEMPLATE_EXPORT OraLookupTableImageFilter
   : public LookupTableImageFilter<itk::Image<unsigned short, TOutputImage::ImageDimension>, TOutputImage>
 {
 public:

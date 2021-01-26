@@ -38,7 +38,7 @@ namespace rtk
  * \ingroup RTK ImageToImageFilter
  */
 template <class TInputImage, class TOutputImage = TInputImage>
-class ITK_EXPORT DisplacedDetectorForOffsetFieldOfViewImageFilter
+class ITK_TEMPLATE_EXPORT DisplacedDetectorForOffsetFieldOfViewImageFilter
   : public rtk::DisplacedDetectorImageFilter<TInputImage, TOutputImage>
 {
 public:

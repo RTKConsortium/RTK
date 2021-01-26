@@ -75,7 +75,8 @@ namespace rtk
  */
 
 template <class TInputImage, class TOutputImage>
-class LUTbasedVariableI0RawToAttenuationImageFilter : public LookupTableImageFilter<TInputImage, TOutputImage>
+class ITK_TEMPLATE_EXPORT LUTbasedVariableI0RawToAttenuationImageFilter
+  : public LookupTableImageFilter<TInputImage, TOutputImage>
 {
 public:
 #if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1

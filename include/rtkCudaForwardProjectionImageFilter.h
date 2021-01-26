@@ -49,7 +49,7 @@ namespace rtk
 {
 
 template <class TInputImage = itk::CudaImage<float, 3>, class TOutputImage = TInputImage>
-class ITK_EXPORT CudaForwardProjectionImageFilter
+class ITK_TEMPLATE_EXPORT CudaForwardProjectionImageFilter
   : public itk::
       CudaInPlaceImageFilter<TInputImage, TOutputImage, ForwardProjectionImageFilter<TInputImage, TOutputImage>>
 {

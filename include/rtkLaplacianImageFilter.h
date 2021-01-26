@@ -38,7 +38,7 @@ namespace rtk
  */
 
 template <typename OutputImageType, typename GradientImageType>
-class LaplacianImageFilter : public itk::ImageToImageFilter<OutputImageType, OutputImageType>
+class ITK_TEMPLATE_EXPORT LaplacianImageFilter : public itk::ImageToImageFilter<OutputImageType, OutputImageType>
 {
 public:
 #if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1

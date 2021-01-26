@@ -18,6 +18,7 @@
 #ifndef rtkPhaseReader_h
 #define rtkPhaseReader_h
 
+#include "RTKExport.h"
 #include <itkCSVFileReaderBase.h>
 
 namespace rtk
@@ -31,7 +32,7 @@ namespace rtk
  *
  * \ingroup RTK
  */
-class ITK_EXPORT PhaseReader : public itk::CSVFileReaderBase
+class RTK_EXPORT PhaseReader : public itk::CSVFileReaderBase
 {
 public:
 #if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
@@ -83,9 +84,5 @@ private:
 };
 
 } // end namespace rtk
-
-#ifndef ITK_MANUAL_INSTANTIATION
-#  include "rtkPhaseReader.hxx"
-#endif
 
 #endif

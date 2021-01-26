@@ -32,7 +32,8 @@ namespace rtk
  * \ingroup RTK
  */
 template <typename TImage>
-class ProjectionsRegionConstIteratorRayBasedParallel : public ProjectionsRegionConstIteratorRayBased<TImage>
+class ITK_TEMPLATE_EXPORT ProjectionsRegionConstIteratorRayBasedParallel
+  : public ProjectionsRegionConstIteratorRayBased<TImage>
 {
 public:
   /** Standard class type alias. */

@@ -36,7 +36,7 @@ namespace itk
  * \ingroup ITKCudaCommon
  */
 template <class ImageType>
-class ITK_EXPORT CudaImageDataManager : public CudaDataManager
+class ITK_TEMPLATE_EXPORT CudaImageDataManager : public CudaDataManager
 {
 public:
   using Self = CudaImageDataManager;

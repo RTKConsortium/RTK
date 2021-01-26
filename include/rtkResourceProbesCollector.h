@@ -19,6 +19,7 @@
 #ifndef rtkResourceProbesCollector_h
 #define rtkResourceProbesCollector_h
 
+#include "RTKExport.h"
 #include "rtkConfiguration.h"
 #include <itkTimeProbe.h>
 #include <itkMemoryProbe.h>
@@ -34,7 +35,7 @@ namespace rtk
  *
  * \ingroup RTK
  */
-class ResourceProbesCollector
+class RTK_EXPORT ResourceProbesCollector
 {
 public:
   using IdType = std::string;

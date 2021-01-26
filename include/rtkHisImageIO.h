@@ -21,6 +21,7 @@
 
 // itk include
 #include <itkImageIOBase.h>
+#include "RTKExport.h"
 #include "rtkMacro.h"
 
 namespace rtk
@@ -35,7 +36,7 @@ namespace rtk
  *
  * \ingroup RTK IOFilters
  */
-class HisImageIO : public itk::ImageIOBase
+class RTK_EXPORT HisImageIO : public itk::ImageIOBase
 {
 public:
   /** Standard class type alias. */

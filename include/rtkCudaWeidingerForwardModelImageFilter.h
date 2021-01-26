@@ -43,7 +43,7 @@ template <class TMaterialProjections,
           class TSpectrum,
           class TProjections =
             itk::CudaImage<typename TMaterialProjections::PixelType::ValueType, TMaterialProjections::ImageDimension>>
-class ITK_EXPORT CudaWeidingerForwardModelImageFilter
+class ITK_TEMPLATE_EXPORT CudaWeidingerForwardModelImageFilter
   : public itk::CudaImageToImageFilter<
       TMaterialProjections,
       TMaterialProjections,

@@ -34,7 +34,7 @@ namespace rtk
  *
  */
 template <typename TCaller>
-class ProgressCommand : public itk::Command
+class ITK_TEMPLATE_EXPORT ProgressCommand : public itk::Command
 {
 public:
   /** Standard class typedefs. */
@@ -88,7 +88,7 @@ protected:
  *
  */
 template <typename TCaller>
-class PercentageProgressCommand : public ProgressCommand<TCaller>
+class ITK_TEMPLATE_EXPORT PercentageProgressCommand : public ProgressCommand<TCaller>
 {
 public:
   /** Standard class typedefs. */
