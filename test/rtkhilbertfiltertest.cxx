@@ -80,7 +80,7 @@ main(int, char **)
 
   TRY_AND_EXIT_ON_ITK_EXCEPTION(hilbert->Update());
 
-  CheckImageQuality<OutputImageType>(hilbert->GetOutput(), analyticHilbertSignal, .1, 1., 1.);
+  CheckImageQuality<OutputImageType>(hilbert->GetOutput(), analyticHilbertSignal, .035, 27.3, 0.96);
 
   std::cout << "\n\nTest PASSED! " << std::endl;
   return EXIT_SUCCESS;
