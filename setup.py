@@ -13,7 +13,7 @@ except ImportError:
 
 setup(
     name='itk-rtk',
-    version='2.1.0',
+    version='2.2.0',
     author='RTK Consortium',
     author_email='rtk-users@openrtk.org',
     packages=['itk'],
