@@ -29,7 +29,7 @@ struct Ray
 };
 
 // Intersection function of a ray with a box, followed "slabs" method
-// http://www.siggraph.org/education/materials/HyperGraph/raytrace/rtinter3.htm
+// https://education.siggraph.org/static/HyperGraph/raytrace/rtinter3.htm
 // The function has to be explicitely inlined, otherwise "multiple definition" errors
 // will pop during linking. See http://choorucode.com/2011/03/15/cuda-device-function-in-header-file/
 // for more information

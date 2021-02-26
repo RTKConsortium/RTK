@@ -41,7 +41,7 @@ QuadricShape ::IsIntersectedByRay(const PointType &  rayOrigin,
                                   double &           nearDist,
                                   double &           farDist) const
 {
-  // http://www.siggraph.org/education/materials/HyperGraph/raytrace/rtinter4.htm
+  // https://education.siggraph.org/static/HyperGraph/raytrace/rtinter4.htm
   ScalarType Aq = m_A * rayDirection[0] * rayDirection[0] + m_B * rayDirection[1] * rayDirection[1] +
                   m_C * rayDirection[2] * rayDirection[2] + m_D * rayDirection[0] * rayDirection[1] +
                   m_E * rayDirection[0] * rayDirection[2] + m_F * rayDirection[1] * rayDirection[2];

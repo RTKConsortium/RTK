@@ -69,7 +69,7 @@ public:
   IsInside(const PointType & point) const override;
 
   /** See rtk::ConvexShape::IsIntersectedByRay for the goal and
-   * http://www.siggraph.org/education/materials/HyperGraph/raytrace/rtinter4.htm
+   * https://education.siggraph.org/static/HyperGraph/raytrace/rtinter4.htm
    * for the computation. */
   bool
   IsIntersectedByRay(const PointType &  rayOrigin,
