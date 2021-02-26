@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkCudaIntersectBox_hcu
-#define __rtkCudaIntersectBox_hcu
+#ifndef rtkCudaIntersectBox_hcu
+#define rtkCudaIntersectBox_hcu
 
 #include "RTKExport.h"
 #include "rtkCudaUtilities.hcu"

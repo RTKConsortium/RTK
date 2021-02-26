@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkCudaTotalVariationDenoisingBPDQImageFilter_hcu
-#define __rtkCudaTotalVariationDenoisingBPDQImageFilter_hcu
+#ifndef rtkCudaTotalVariationDenoisingBPDQImageFilter_hcu
+#define rtkCudaTotalVariationDenoisingBPDQImageFilter_hcu
 
 #include <vector_types.h>
 

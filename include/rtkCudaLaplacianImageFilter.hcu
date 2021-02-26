@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkCudaLaplacianImageFilter_hcu
-#define __rtkCudaLaplacianImageFilter_hcu
+#ifndef rtkCudaLaplacianImageFilter_hcu
+#define rtkCudaLaplacianImageFilter_hcu
 
 #include <vector_types.h>
 

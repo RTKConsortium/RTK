@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkCudaWeidingerForwardModelImageFilter_hcu
-#define __rtkCudaWeidingerForwardModelImageFilter_hcu
+#ifndef rtkCudaWeidingerForwardModelImageFilter_hcu
+#define rtkCudaWeidingerForwardModelImageFilter_hcu
 
 #include "RTKExport.h"
 

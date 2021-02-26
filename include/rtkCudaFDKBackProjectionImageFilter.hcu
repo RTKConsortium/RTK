@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkCudaFDKBackProjectionImageFilter_hcu
-#define __rtkCudaFDKBackProjectionImageFilter_hcu
+#ifndef rtkCudaFDKBackProjectionImageFilter_hcu
+#define rtkCudaFDKBackProjectionImageFilter_hcu
 
 void
 CUDA_reconstruct_conebeam(int     img_dim[3],

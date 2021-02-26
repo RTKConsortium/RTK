@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkCudaWarpImageFilter_hcu
-#define __rtkCudaWarpImageFilter_hcu
+#ifndef rtkCudaWarpImageFilter_hcu
+#define rtkCudaWarpImageFilter_hcu
 
 void
 CUDA_warp(int     input_vol_dim[3],

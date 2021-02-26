@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkCudaLastDimensionTVDenoisingImageFilter_hcu
-#define __rtkCudaLastDimensionTVDenoisingImageFilter_hcu
+#ifndef rtkCudaLastDimensionTVDenoisingImageFilter_hcu
+#define rtkCudaLastDimensionTVDenoisingImageFilter_hcu
 
 #include <vector_types.h>
 

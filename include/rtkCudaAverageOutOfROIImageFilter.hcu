@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkCudaAverageOutOfROIImageFilter_hcu
-#define __rtkCudaAverageOutOfROIImageFilter_hcu
+#ifndef rtkCudaAverageOutOfROIImageFilter_hcu
+#define rtkCudaAverageOutOfROIImageFilter_hcu
 
 #include <vector_types.h>
 

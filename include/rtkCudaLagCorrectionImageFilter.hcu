@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkCudaLagCorrectionImageFilter_hcu
-#define __rtkCudaLagCorrectionImageFilter_hcu
+#ifndef rtkCudaLagCorrectionImageFilter_hcu
+#define rtkCudaLagCorrectionImageFilter_hcu
 
 void
 CUDA_lag_correction(int              proj_idx_in[3],
@@ -32,4 +32,4 @@ CUDA_lag_correction(int              proj_idx_in[3],
                     int              state_size,
                     float *          coefficients);
 
-#endif //__rtkCudaLagCorrectionImageFilter_hcu
+#endif // rtkCudaLagCorrectionImageFilter_hcu
