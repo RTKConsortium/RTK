@@ -60,6 +60,11 @@ FDKWeightProjectionFilter<TInputImage, TOutputImage>::BeforeThreadedGenerateData
       m_ConstantProjectionFactor[k] *= itk::Math::abs(sdd) / (2. * sid * sid);
       m_ConstantProjectionFactor[k] *= sp.GetNorm();
     }
+    if(this->m_VarianceMode)
+    {
+      // square if in variance mode
+      m_ConstantProjectionFactor[k] = m_ConstantProjectionFactor[k] * m_ConstantProjectionFactor[k];
+    }
   }
 }
 

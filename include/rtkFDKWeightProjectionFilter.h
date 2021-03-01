@@ -78,6 +78,10 @@ public:
   itkGetMacro(Geometry, ThreeDCircularProjectionGeometry::Pointer);
   itkSetObjectMacro(Geometry, ThreeDCircularProjectionGeometry);
 
+  /** Get/ Set variance mode */
+  itkGetMacro(VarianceMode, bool);
+  itkSetMacro(VarianceMode, bool);
+
 protected:
   FDKWeightProjectionFilter() = default;
   ~FDKWeightProjectionFilter() override = default;
@@ -91,6 +95,8 @@ protected:
 
   void
   DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread) override;
+
+  bool m_VarianceMode = false;
 
 private:
   /** Angular weights for each projection */
