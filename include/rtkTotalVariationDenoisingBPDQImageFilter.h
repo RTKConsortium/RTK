@@ -133,7 +133,8 @@ public:
   itkTypeMacro(TotalVariationDenoisingBPDQImageFilter, DenoisingBPDQImageFilter);
 
   /** Sub filter type definitions */
-  using MagnitudeThresholdFilterType = MagnitudeThresholdImageFilter<TGradientImage>;
+  using MagnitudeThresholdFilterType =
+    MagnitudeThresholdImageFilter<TGradientImage, typename TOutputImage::ValueType, TGradientImage>;
 
   void
   SetDimensionsProcessed(bool * arg);
