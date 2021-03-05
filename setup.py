@@ -47,6 +47,6 @@ setup(
     keywords='RTK Reconstruction Toolkit',
     url=r'https://www.openrtk.org/',
     install_requires=[
-            r'itk>=5.2rc2'
+            r'itk>=5.2rc3'
     ]
     )
