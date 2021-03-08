@@ -61,6 +61,7 @@ SARTConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>::SARTConeBeamRe
   // backprojection
   m_OneConstantProjectionStackSource = ConstantProjectionSourceType::New();
   m_DivideVolumeFilter = DivideVolumeFilterType::New();
+  m_DivisionThreshold = m_DivideVolumeFilter->GetThreshold();
 
   // Permanent internal connections
   m_ZeroMultiplyFilter->SetInput1(itk::NumericTraits<typename ProjectionType::PixelType>::ZeroValue());
