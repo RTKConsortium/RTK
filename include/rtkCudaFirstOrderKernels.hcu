@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkCudaFirstOrderKernels_hcu
-#define __rtkCudaFirstOrderKernels_hcu
+#ifndef rtkCudaFirstOrderKernels_hcu
+#define rtkCudaFirstOrderKernels_hcu
 
 __global__ void
 divergence_kernel(float * grad_x, float * grad_y, float * grad_z, float * out, int3 c_Size, float3 c_Spacing);

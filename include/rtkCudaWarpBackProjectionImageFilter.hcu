@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkCudaWarpBackProjectionImageFilter_hcu
-#define __rtkCudaWarpBackProjectionImageFilter_hcu
+#ifndef rtkCudaWarpBackProjectionImageFilter_hcu
+#define rtkCudaWarpBackProjectionImageFilter_hcu
 
 void
 CUDA_warp_back_project(int     projSize[3],

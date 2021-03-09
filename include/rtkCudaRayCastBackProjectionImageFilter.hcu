@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkCudaRayCastBackProjectionImageFilter_hcu
-#define __rtkCudaRayCastBackProjectionImageFilter_hcu
+#ifndef rtkCudaRayCastBackProjectionImageFilter_hcu
+#define rtkCudaRayCastBackProjectionImageFilter_hcu
 
 void
 CUDA_ray_cast_back_project(int      projSize[3],

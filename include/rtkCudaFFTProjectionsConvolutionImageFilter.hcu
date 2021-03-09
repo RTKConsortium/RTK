@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkCudaFFTProjectionsConvolutionImageFilter_hcu
-#define __rtkCudaFFTProjectionsConvolutionImageFilter_hcu
+#ifndef rtkCudaFFTProjectionsConvolutionImageFilter_hcu
+#define rtkCudaFFTProjectionsConvolutionImageFilter_hcu
 
 #include <vector_types.h>
 #include <vector>

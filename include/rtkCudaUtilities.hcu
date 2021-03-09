@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkCudaUtilities_hcu
-#define __rtkCudaUtilities_hcu
+#ifndef rtkCudaUtilities_hcu
+#define rtkCudaUtilities_hcu
 
 #ifdef _WIN32
 #  include <cmath>

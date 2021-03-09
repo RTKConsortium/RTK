@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkCudaCyclicDeformationImageFilter_hcu
-#define __rtkCudaCyclicDeformationImageFilter_hcu
+#ifndef rtkCudaCyclicDeformationImageFilter_hcu
+#define rtkCudaCyclicDeformationImageFilter_hcu
 
 void
 CUDA_linear_interpolate_along_fourth_dimension(unsigned int inputSize[4],

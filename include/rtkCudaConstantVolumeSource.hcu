@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkCudaConstantVolumeSource_hcu
-#define __rtkCudaConstantVolumeSource_hcu
+#ifndef rtkCudaConstantVolumeSource_hcu
+#define rtkCudaConstantVolumeSource_hcu
 
 #include <vector_types.h>
 

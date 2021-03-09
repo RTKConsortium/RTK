@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkCudaCropImageFilter_hcu
-#define __rtkCudaCropImageFilter_hcu
+#ifndef rtkCudaCropImageFilter_hcu
+#define rtkCudaCropImageFilter_hcu
 
 #include <vector_types.h>
 

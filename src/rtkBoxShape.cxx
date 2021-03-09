@@ -63,7 +63,7 @@ BoxShape ::IsIntersectedByRay(const PointType &  rayOrigin,
   // To account for m_Direction, everything (ray source and direction + boxmin/boxmax)
   // is rotated with its inverse, m_DirectionT. Then, the box is aligned with the
   // axes of the coordinate system and the algorithm at this hyperlink used:
-  // http://www.siggraph.org/education/materials/HyperGraph/raytrace/rtinter3.htm
+  // https://education.siggraph.org/static/HyperGraph/raytrace/rtinter3.htm
   // Note that the variables at this page have been renamed:
   // BI <-> min
   // Bh <-> max

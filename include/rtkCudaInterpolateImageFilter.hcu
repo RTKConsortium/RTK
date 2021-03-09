@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkCudaInterpolateImageFilter_hcu
-#define __rtkCudaInterpolateImageFilter_hcu
+#ifndef rtkCudaInterpolateImageFilter_hcu
+#define rtkCudaInterpolateImageFilter_hcu
 
 #include <vector_types.h>
 

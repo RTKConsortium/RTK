@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkCudaSplatImageFilter_hcu
-#define __rtkCudaSplatImageFilter_hcu
+#ifndef rtkCudaSplatImageFilter_hcu
+#define rtkCudaSplatImageFilter_hcu
 
 #include <vector_types.h>
 

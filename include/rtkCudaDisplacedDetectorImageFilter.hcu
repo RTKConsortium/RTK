@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkCudaDisplacedDetectorImageFilter_hcu
-#define __rtkCudaDisplacedDetectorImageFilter_hcu
+#ifndef rtkCudaDisplacedDetectorImageFilter_hcu
+#define rtkCudaDisplacedDetectorImageFilter_hcu
 
 void
 CUDA_displaced_weight(int     proj_idx_in[3],
@@ -35,4 +35,4 @@ CUDA_displaced_weight(int     proj_idx_in[3],
                       float   proj_row,
                       float   proj_col);
 
-#endif //__rtkCudaDisplacedDetectorImageFilter_hcu
+#endif // rtkCudaDisplacedDetectorImageFilter_hcu

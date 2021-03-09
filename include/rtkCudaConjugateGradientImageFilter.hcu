@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkCudaConjugateGradientImageFilter_hcu
-#define __rtkCudaConjugateGradientImageFilter_hcu
+#ifndef rtkCudaConjugateGradientImageFilter_hcu
+#define rtkCudaConjugateGradientImageFilter_hcu
 
 #include "RTKExport.h"
 

@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkCudaFDKWeightProjectionFilter_hcu
-#define __rtkCudaFDKWeightProjectionFilter_hcu
+#ifndef rtkCudaFDKWeightProjectionFilter_hcu
+#define rtkCudaFDKWeightProjectionFilter_hcu
 
 void
 CUDA_weight_projection(int     proj_idx[2],
@@ -31,4 +31,4 @@ CUDA_weight_projection(int     proj_idx[2],
                        float   proj_row[2],
                        float   proj_col[2]);
 
-#endif //__rtkCudaFDKWeightProjectionFilter_hcu
+#endif // rtkCudaFDKWeightProjectionFilter_hcu

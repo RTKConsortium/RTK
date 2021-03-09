@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkCudaBackProjectionImageFilter_hcu
-#define __rtkCudaBackProjectionImageFilter_hcu
+#ifndef rtkCudaBackProjectionImageFilter_hcu
+#define rtkCudaBackProjectionImageFilter_hcu
 
 #include "RTKExport.h"
 
