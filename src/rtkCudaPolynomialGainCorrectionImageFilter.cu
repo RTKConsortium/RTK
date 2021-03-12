@@ -111,7 +111,7 @@ CUDA_gain_correction(int              proj_idx_in[3],      // overlapping input 
   cudaMalloc((void **)&d_powerlut, lut_size);
   if (cudaMemcpy(d_powerlut, h_powerlut, lut_size, cudaMemcpyHostToDevice) != cudaSuccess)
   {
-    std::cout << "Error allocating state" << std::endl;
+    itkGenericExceptionMacro("Error allocating state");
   }
 
   cudaMemcpyToSymbol(cst_coef, coefficients, 2 * sizeof(float));
