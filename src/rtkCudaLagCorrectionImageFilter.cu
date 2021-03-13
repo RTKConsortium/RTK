@@ -114,7 +114,7 @@ CUDA_lag_correction(int              proj_idx_in[3],      // overlapping input r
   cudaMalloc((void **)&d_state, state_size);
   if (cudaMemcpy(d_state, h_state, state_size, cudaMemcpyHostToDevice) != cudaSuccess)
   {
-    std::cout << "Error allocating state" << std::endl;
+    itkGenericExceptionMacro("Error allocating state");
   }
 
   if (coefficients[8] <= 0.0)
