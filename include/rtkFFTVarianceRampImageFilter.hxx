@@ -139,11 +139,12 @@ FFTVarianceRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
   typename FFTType::InputImageType::PixelType sumgc = 0.;
   typename FFTType::InputImageType::PixelType sumg2 = 0.;
   typename FFTType::InputImageType::IndexType idxshifted;
+  unsigned int const widthFFT = KernelIFFT->GetLargestPossibleRegion().GetSize()[0];
   for(; !itiK.IsAtEnd(); ++itiK)
   {
     idxshifted = itiK.GetIndex();
     if(idxshifted[0] == 0)
-      idxshifted[0] = width-1;
+      idxshifted[0] = widthFFT-1;
     else
       idxshifted[0] -= 1;
 
