@@ -1,0 +1,9 @@
+package "rtkhilbertonkappalines"
+purpose "Compute the Hilbert transform of a stack of projections over kappa- lines (see Noo et al., PMB, 2003). Data is rebinned to apply a linear 1D Hilbert transform."
+
+option "verbose"    v "Verbose execution"                                           flag                         off
+option "config"     - "Config file"                                                 string                       no
+option "geometry"   g "XML geometry file name"                                      string                       yes
+option "output"     o "Output file name"                                            string                       yes
+option "hardware"   - "Hardware used for computation"                               values="cpu","cuda"          no   default="cpu"
+

@@ -16,33 +16,52 @@
  *
  *=========================================================================*/
 
-#include "rtksimulatedgeometry_ggo.h"
+#include "rtkhelicalgeometry_ggo.h"
 #include "rtkGgoFunctions.h"
 
-#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
+#include "rtkThreeDHelicalProjectionGeometryXMLFileWriter.h"
 
 int
 main(int argc, char * argv[])
 {
-  GGO(rtksimulatedgeometry, args_info);
+  GGO(rtkhelicalgeometry, args_info);
 
   // RTK geometry object
-  using GeometryType = rtk::ThreeDCircularProjectionGeometry;
+  using GeometryType = rtk::ThreeDHelicalProjectionGeometry;
   GeometryType::Pointer geometry = GeometryType::New();
 
   // Projection matrices
   for (int noProj = 0; noProj < args_info.nproj_arg; noProj++)
   {
-    double angle = args_info.first_angle_arg + noProj * args_info.arc_arg / args_info.nproj_arg;
-    geometry->AddProjection(args_info.sid_arg,
-                            args_info.sdd_arg,
-                            angle,
-                            args_info.proj_iso_x_arg,
-                            args_info.proj_iso_y_arg,
-                            args_info.out_angle_arg,
-                            args_info.in_angle_arg,
-                            args_info.source_x_arg,
-                            args_info.source_y_arg);
+    // Compute the angles
+    double angular_gap = args_info.arc_arg / args_info.nproj_arg;
+    double first_angle = 0.;
+    if (!args_info.first_angle_given)
+    {
+      first_angle = -0.5 * angular_gap * (args_info.nproj_arg - 1);
+    }
+    else
+      first_angle = args_info.first_angle_arg;
+
+    double angle = first_angle + noProj * angular_gap;
+
+
+    // Compute the vertical displacement
+    double vertical_coverage = args_info.arc_arg / 360 * args_info.pitch_arg;
+    double vertical_gap = vertical_coverage / args_info.nproj_arg;
+    double first_sy = 0.;
+    if (!args_info.first_sy_given)
+    {
+      first_sy = -0.5 * vertical_gap * (args_info.nproj_arg - 1);
+    }
+    else
+    {
+      first_sy = args_info.first_sy_arg;
+    }
+
+    double sy = first_sy + noProj * vertical_gap;
+
+    geometry->AddProjection(args_info.sid_arg, args_info.sdd_arg, angle, 0, sy, 0, 0, 0, sy);
   }
 
   // Set cylindrical detector radius
@@ -51,8 +70,8 @@ main(int argc, char * argv[])
 
 
   // Write
-  rtk::ThreeDCircularProjectionGeometryXMLFileWriter::Pointer xmlWriter =
-    rtk::ThreeDCircularProjectionGeometryXMLFileWriter::New();
+  rtk::ThreeDHelicalProjectionGeometryXMLFileWriter::Pointer xmlWriter =
+    rtk::ThreeDHelicalProjectionGeometryXMLFileWriter::New();
   xmlWriter->SetFilename(args_info.output_arg);
   xmlWriter->SetObject(&(*geometry));
   TRY_AND_EXIT_ON_ITK_EXCEPTION(xmlWriter->WriteFile())

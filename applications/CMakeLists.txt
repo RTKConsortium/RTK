@@ -102,6 +102,17 @@ add_subdirectory(rtkxradgeometry)
 add_subdirectory(rtkimagxgeometry)
 add_subdirectory(rtkorageometry)
 add_subdirectory(rtkbioscangeometry)
+
+#All executables below are specific to the tomo reconstruction from projections aquired along a helical trajectory of the gantry
+add_subdirectory(rtkhelicalgeometry)
+add_subdirectory(rtkkatsevichderivative)
+add_subdirectory(rtkkatsevichforwardbinning)
+add_subdirectory(rtkhilbertonkappalines)
+add_subdirectory(rtkpilines)
+add_subdirectory(rtkkatsevich)
+add_subdirectory(rtkkatsevichtrash)
+add_subdirectory(rtkkatsevichrecons)
+
 #=========================================================
 
 #-----------------------------------------------------------------------------

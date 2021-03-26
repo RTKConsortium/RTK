@@ -106,7 +106,7 @@ public:
    * @param detectorRowVector absolute direction vector indicating the
    * orientation of the detector's rows r (sometimes referred to as v1)
    * @param detectorColumnVector absolute direction vector indicating the
-   * orientation of the detector's columns c (sometimes referred to as v2)
+   * orientation of the detector's columns c (sometimes refered to as v2)
    * @return TRUE if the projection could be added to the RTK projections list
    */
   bool

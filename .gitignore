@@ -33,3 +33,6 @@ CMakeLists.txt.user*
 
 # Mac System File
 .DS_Store
+
+
+.project
