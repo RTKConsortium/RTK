@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import print_function
 from os import sys
 
 try:
@@ -47,6 +46,6 @@ setup(
     keywords='RTK Reconstruction Toolkit',
     url=r'https://www.openrtk.org/',
     install_requires=[
-            r'itk>=5.2rc3'
+        r'itk>=5.2.0'
     ]
     )
