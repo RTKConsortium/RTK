@@ -33,12 +33,6 @@ itk_wrap_class("itk::ImageToImageFilter" POINTER)
     endif()
   endif()
 
-  # Wrap ITK unsigned int missing types
-  foreach(t ${WRAP_ITK_REAL})
-    itk_wrap_template("IUI2I${ITKM_${t}}2" "itk::Image<${ITKT_UI}, 2>, itk::Image<${ITKT_${t}}, 2>")
-    itk_wrap_template("IUI3I${ITKM_${t}}3" "itk::Image<${ITKT_UI}, 3>, itk::Image<${ITKT_${t}}, 3>")
-  endforeach()
-
   # Wrap ITK short combination (required by : rtkLookupTableImageFilter)
   if (NOT ITK_WRAP_signed_short)
     itk_wrap_template("ISS3IF3" "itk::Image<${ITKT_SS}, 3>, itk::Image<${ITKT_F}, 3>")

@@ -8,10 +8,6 @@ itk_wrap_class("itk::Image" POINTER)
     endif()
   endforeach()
 
-  # Wrap ITK unsigned int missing types
-  itk_wrap_template("UI2" "${ITKT_UI}, 2")
-  itk_wrap_template("UI3" "${ITKT_UI}, 3")
-
   # Wrap ITK short combination (required by: rtkLookupTableImageFilter)
   if (NOT ITK_WRAP_signed_short)
     itk_wrap_template("SS3" "${ITKT_SS}, 3")
