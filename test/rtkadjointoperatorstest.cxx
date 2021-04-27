@@ -356,5 +356,30 @@ main(int, char **)
     randomVolumeSource->GetOutput(), zbp->GetOutput(), randomProjectionsSource->GetOutput(), zfw->GetOutput());
   std::cout << "\n\nTest PASSED! " << std::endl;
 
+  std::cout << "\n\n******  Attenuated Zeng Forward projector ******" << std::endl;
+
+  using ZengForwardProjectorType = rtk::ZengForwardProjectionImageFilter<OutputImageType, OutputImageType>;
+  ZengForwardProjectorType::Pointer attzfw = ZengForwardProjectorType::New();
+  attzfw->SetInput(0, constantProjectionsSource->GetOutput());
+  attzfw->SetInput(1, randomVolumeSource->GetOutput());
+  attzfw->SetInput(2, constantAttenuationSource->GetOutput());
+  attzfw->SetGeometry(geometry_parallel);
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(attzfw->Update());
+
+  std::cout << "\n\n****** Attenuated Zeng Back projector ******" << std::endl;
+
+  using ZengBackProjectorType = rtk::ZengBackProjectionImageFilter<OutputImageType, OutputImageType>;
+  ZengBackProjectorType::Pointer attzbp = ZengBackProjectorType::New();
+  attzbp->SetInput(0, constantVolumeSource->GetOutput());
+  attzbp->SetInput(1, randomProjectionsSource->GetOutput());
+  attzbp->SetInput(2, constantAttenuationSource->GetOutput());
+  attzbp->SetGeometry(geometry_parallel);
+
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(attzbp->Update());
+
+  CheckScalarProducts<OutputImageType, OutputImageType>(
+    randomVolumeSource->GetOutput(), attzbp->GetOutput(), randomProjectionsSource->GetOutput(), attzfw->GetOutput());
+  std::cout << "\n\nTest PASSED! " << std::endl;
+
   return EXIT_SUCCESS;
 }

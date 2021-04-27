@@ -33,9 +33,9 @@
 #include <itkCenteredEuler3DTransform.h>
 #include <itkChangeInformationImageFilter.h>
 #include <itkExtractImageFilter.h>
-#include <itkExpImageFilter.h>
 #include <itkRegionOfInterestImageFilter.h>
 #include <itkConstantBoundaryCondition.h>
+#include <itkUnaryGeneratorImageFilter.h>
 
 #include "rtkConstantImageSource.h"
 
@@ -95,10 +95,10 @@ public:
   using ConstantVolumeSourcePointerType = typename ConstantVolumeSourceType::Pointer;
   using ExtractImageFilterType = itk::ExtractImageFilter<OuputCPUImageType, OuputCPUImageType>;
   using ExtractImageFilterPointerType = typename ExtractImageFilterType::Pointer;
-  using ExpImageFilterType = itk::ExpImageFilter<OuputCPUImageType, OuputCPUImageType>;
-  using ExpImageFilterPointerType = typename ExpImageFilterType::Pointer;
   using RegionOfInterestFilterType = itk::RegionOfInterestImageFilter<OuputCPUImageType, OuputCPUImageType>;
   using RegionOfInterestPointerType = typename RegionOfInterestFilterType::Pointer;
+  using CustomUnaryFilterType = itk::UnaryGeneratorImageFilter<OuputCPUImageType, OuputCPUImageType>;
+  using CustomUnaryFilterPointerType = typename CustomUnaryFilterType::Pointer;
 
   /** ImageDimension constants */
   static constexpr unsigned int InputImageDimension = TInputImage::ImageDimension;
@@ -148,14 +148,14 @@ protected:
   MultpiplyImageFilterPointerType    m_MultiplyImageFilter;
   ConstantVolumeSourcePointerType    m_ConstantVolumeSource;
   ExtractImageFilterPointerType      m_ExtractImageFilter;
+  ChangeInformationPointerType       m_ChangeInformation;
   MultpiplyImageFilterPointerType    m_AttenuationMapMultiplyImageFilter;
   RegionOfInterestPointerType        m_AttenuationMapRegionOfInterest;
-  ExpImageFilterPointerType          m_AttenuationMapExpImageFilter;
   ResampleImageFilterPointerType     m_AttenuationMapResampleImageFilter;
-  MultpiplyImageFilterPointerType    m_AttenuationMapConstantMultiplyImageFilter;
   ChangeInformationPointerType       m_AttenuationMapChangeInformation;
   TransformPointerType               m_AttenuationMapTransform;
   BoundaryCondition                  m_BoundsCondition;
+  CustomUnaryFilterPointerType       m_CustomUnaryFilter;
 
 private:
   ZengBackProjectionImageFilter(const Self &) = delete; // purposely not implemented

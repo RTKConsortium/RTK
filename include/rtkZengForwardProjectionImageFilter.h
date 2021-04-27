@@ -33,8 +33,8 @@
 #include <itkCenteredEuler3DTransform.h>
 #include <itkChangeInformationImageFilter.h>
 #include <itkRegionOfInterestImageFilter.h>
-#include <itkExpImageFilter.h>
 #include <itkConstantBoundaryCondition.h>
+#include <itkUnaryGeneratorImageFilter.h>
 
 #include <itkVectorImage.h>
 namespace rtk
@@ -91,8 +91,8 @@ public:
   using RegionOfInterestPointerType = typename RegionOfInterestFilterType::Pointer;
   using MultiplyImageFilterType = itk::MultiplyImageFilter<OuputCPUImageType, OuputCPUImageType>;
   using MultpiplyImageFilterPointerType = typename MultiplyImageFilterType::Pointer;
-  using ExpImageFilterType = itk::ExpImageFilter<OuputCPUImageType, OuputCPUImageType>;
-  using ExpImageFilterPointerType = typename ExpImageFilterType::Pointer;
+  using CustomUnaryFilterType = itk::UnaryGeneratorImageFilter<OuputCPUImageType, OuputCPUImageType>;
+  using CustomUnaryFilterPointerType = typename CustomUnaryFilterType::Pointer;
 
   /** ImageDimension constants */
   static constexpr unsigned int InputImageDimension = TOutputImage::ImageDimension;
@@ -142,11 +142,10 @@ protected:
   MultpiplyImageFilterPointerType    m_MultiplyImageFilter;
   MultpiplyImageFilterPointerType    m_AttenuationMapMultiplyImageFilter;
   RegionOfInterestPointerType        m_AttenuationMapRegionOfInterest;
-  ExpImageFilterPointerType          m_AttenuationMapExpImageFilter;
   ResampleImageFilterPointerType     m_AttenuationMapResampleImageFilter;
-  MultpiplyImageFilterPointerType    m_AttenuationMapConstantMultiplyImageFilter;
   ChangeInformationPointerType       m_AttenuationMapChangeInformation;
   BoundaryCondition                  m_BoundsCondition;
+  CustomUnaryFilterPointerType       m_CustomUnaryFilter;
 
 
 private:
