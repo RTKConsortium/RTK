@@ -132,8 +132,8 @@ JosephBackProjectionImageFilter<TInputImage,
   typename BoxShape::VectorType stepMM, np, fp;
   for (unsigned int pix = 0; pix < buffReg.GetNumberOfPixels(); pix++, itIn->Next())
   {
-    typename InputRegionIterator::PointType sourcePosition = itIn->GetSourcePosition();
-    typename InputRegionIterator::PointType dirVox = itIn->GetSourceToPixel();
+    typename InputRegionIterator::PointType pixelPosition = itIn->GetPixelPosition();
+    typename InputRegionIterator::PointType dirVox = -itIn->GetSourceToPixel();
 
     // Select main direction
     unsigned int         mainDir = 0;
@@ -147,7 +147,7 @@ JosephBackProjectionImageFilter<TInputImage,
 
     // Test if there is an intersection
     BoxShape::ScalarType nearDist = NAN, farDist = NAN;
-    if (box->IsIntersectedByRay(sourcePosition, dirVox, nearDist, farDist) &&
+    if (box->IsIntersectedByRay(pixelPosition, dirVox, nearDist, farDist) &&
         farDist >= 0. && // check if detector after the source
         nearDist <= 1.)  // check if detector after or in the volume
     {
@@ -156,10 +156,8 @@ JosephBackProjectionImageFilter<TInputImage,
       farDist = std::min(farDist, superiorClip);
 
       // Compute and sort intersections: (n)earest and (f)arthest (p)points
-      np = sourcePosition + nearDist * dirVox;
-      fp = sourcePosition + farDist * dirVox;
-      if (np[mainDir] > fp[mainDir])
-        std::swap(np, fp);
+      np = pixelPosition + nearDist * dirVox;
+      fp = pixelPosition + farDist * dirVox;
 
       // Compute main nearest and farthest slice indices
       const int ns = itk::Math::rnd(np[mainDir]);
@@ -177,23 +175,31 @@ JosephBackProjectionImageFilter<TInputImage,
       const CoordRepType maxy = box->GetBoxMax()[notMainDirSup];
 
       // Init data pointers to first pixel of slice ns (i)nferior and (s)uperior (x|y) corner
-      const int        offsetx = offsets[notMainDirInf];
-      const int        offsety = offsets[notMainDirSup];
-      const int        offsetz = offsets[mainDir];
-      OutputPixelType *pxiyi = nullptr, *pxsyi = nullptr, *pxiys = nullptr, *pxsys = nullptr;
+      const int offsetx = offsets[notMainDirInf];
+      const int offsety = offsets[notMainDirSup];
+      int       offsetz = offsets[mainDir];
 
-      pxiyi = beginBuffer + ns * offsetz;
-      pxsyi = pxiyi + offsetx;
-      pxiys = pxiyi + offsety;
-      pxsys = pxsyi + offsety;
+      OutputPixelType * pxiyi = beginBuffer + ns * offsetz;
+      OutputPixelType * pxsyi = pxiyi + offsetx;
+      OutputPixelType * pxiys = pxiyi + offsety;
+      OutputPixelType * pxsys = pxsyi + offsety;
 
       // Compute step size and go to first voxel
-      const CoordRepType residual = ns - np[mainDir];
-      const CoordRepType norm = 1 / dirVox[mainDir];
-      const CoordRepType stepx = dirVox[notMainDirInf] * norm;
-      const CoordRepType stepy = dirVox[notMainDirSup] * norm;
-      CoordRepType       currentx = np[notMainDirInf] + residual * stepx;
-      CoordRepType       currenty = np[notMainDirSup] + residual * stepy;
+      CoordRepType       residualB = ns - np[mainDir];
+      CoordRepType       residualE = fp[mainDir] - fs;
+      const CoordRepType norm = itk::NumericTraits<CoordRepType>::One / dirVox[mainDir];
+      CoordRepType       stepx = dirVox[notMainDirInf] * norm;
+      CoordRepType       stepy = dirVox[notMainDirSup] * norm;
+      if (np[mainDir] > fp[mainDir])
+      {
+        residualB *= -1;
+        residualE *= -1;
+        offsetz *= -1;
+        stepx *= -1;
+        stepy *= -1;
+      }
+      CoordRepType currentx = np[notMainDirInf] + residualB * stepx;
+      CoordRepType currenty = np[notMainDirSup] + residualB * stepy;
 
       // Compute voxel to millimeters conversion
       stepMM[notMainDirInf] = this->GetInput(0)->GetSpacing()[notMainDirInf] * stepx;
@@ -205,7 +211,7 @@ JosephBackProjectionImageFilter<TInputImage,
       bool isNewRay = true;
       if (fs == ns) // If the voxel is a corner, we can skip most steps
       {
-        attenuationRay += BilinearInterpolationOnBorders(fp[mainDir] - np[mainDir],
+        attenuationRay += BilinearInterpolationOnBorders(std::abs(fp[mainDir] - np[mainDir]),
                                                          pxiyi,
                                                          pxsyi,
                                                          pxiys,
@@ -221,7 +227,7 @@ JosephBackProjectionImageFilter<TInputImage,
         const typename TInputImage::PixelType & rayValue =
           m_SumAlongRay(itIn->Value(), attenuationRay, stepMM, isNewRay);
         BilinearSplatOnBorders(rayValue,
-                               fp[mainDir] - np[mainDir],
+                               std::abs(fp[mainDir] - np[mainDir]),
                                stepMM.GetNorm(),
                                pxiyi,
                                pxsyi,
@@ -240,13 +246,13 @@ JosephBackProjectionImageFilter<TInputImage,
       {
         // First step
         attenuationRay += BilinearInterpolationOnBorders(
-          residual + 0.5, pxiyi, pxsyi, pxiys, pxsys, currentx, currenty, offsetx, offsety, minx, miny, maxx, maxy);
+          residualB + 0.5, pxiyi, pxsyi, pxiys, pxsys, currentx, currenty, offsetx, offsety, minx, miny, maxx, maxy);
 
         const typename TInputImage::PixelType & rayValueF =
           m_SumAlongRay(itIn->Value(), attenuationRay, stepMM, isNewRay);
 
         BilinearSplatOnBorders(rayValueF,
-                               residual + 0.5,
+                               residualB + 0.5,
                                stepMM.GetNorm(),
                                pxiyi,
                                pxsyi,
@@ -270,10 +276,9 @@ JosephBackProjectionImageFilter<TInputImage,
         currenty += stepy;
 
         // Middle steps
-        for (int i = ns + 1; i < fs; i++)
+        for (int i{ 0 }; i < std::abs(fs - ns) - 1; ++i)
         {
-          attenuationRay +=
-            BilinearInterpolation(1.0, pxiyi, pxsyi, pxiys, pxsys, currentx, currenty, offsetx, offsety);
+          attenuationRay += BilinearInterpolation(1., pxiyi, pxsyi, pxiys, pxsys, currentx, currenty, offsetx, offsety);
 
           const typename TInputImage::PixelType & rayValueM =
             m_SumAlongRay(itIn->Value(), attenuationRay, stepMM, isNewRay);
@@ -291,25 +296,14 @@ JosephBackProjectionImageFilter<TInputImage,
         }
 
         // Last step
-        attenuationRay += BilinearInterpolationOnBorders(fp[mainDir] - fs + 0.5,
-                                                         pxiyi,
-                                                         pxsyi,
-                                                         pxiys,
-                                                         pxsys,
-                                                         currentx,
-                                                         currenty,
-                                                         offsetx,
-                                                         offsety,
-                                                         minx,
-                                                         miny,
-                                                         maxx,
-                                                         maxy);
+        attenuationRay += BilinearInterpolationOnBorders(
+          residualE + 0.5, pxiyi, pxsyi, pxiys, pxsys, currentx, currenty, offsetx, offsety, minx, miny, maxx, maxy);
 
         const typename TInputImage::PixelType & rayValueE =
           m_SumAlongRay(itIn->Value(), attenuationRay, stepMM, isNewRay);
 
         BilinearSplatOnBorders(rayValueE,
-                               fp[mainDir] - fs + 0.5,
+                               residualE + 0.5,
                                stepMM.GetNorm(),
                                pxiyi,
                                pxsyi,
