@@ -184,24 +184,19 @@ list(APPEND RTK_INCLUDE_DIRS
 if(RTK_USE_CUDA)
   if(NOT TARGET ITKCudaCommon)
     add_subdirectory(utilities/ITKCudaCommon)
+    include("${ITK_MODULES_DIR}/ITKCudaCommon.cmake" OPTIONAL)
   endif()
 endif()
-list(APPEND RTK_INCLUDE_DIRS
-  ${ITKCudaCommon_INCLUDE_DIRS})
+
 #=========================================================
 # Include directories
 #=========================================================
 list(APPEND RTK_INCLUDE_DIRS
   ${RTK_BINARY_DIR})
 
-# Export library linking directories (used by LIBPATH)
-set(RTK_SYSTEM_LIBRARY_DIRS ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
-set(RTK_SYSTEM_INCLUDE_DIRS ${RTK_INCLUDE_DIRS})
-
 #=========================================================
 # Generate RTKConfig.cmake for the build tree.
 set(RTK_MODULE_PATH_CONFIG ${CMAKE_MODULE_PATH})
-set(RTK_LIBRARY_DIRS ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
 
 set(RTK_EXPORT_CODE_BUILD "
 # The RTK version number
@@ -221,6 +216,18 @@ if(${RTK_USE_CUDA})
 endif()
 ")
 
+# Make sure ITKCudaCommon install targets are loaded before RTK when consuming
+# the installed external build of RTK.
+# This is required here because of the behavior of _itk_module_config_recurse
+# that doesn't support External modules depending on External modules.
+# Install targets of dependency modules must be loaded before the module
+# itself, but loading the module is required to know about dependencies.
+set(RTK_INCLUDE_TARGETS_FILE "")
+if(NOT ITK_SOURCE_DIR)
+  set(RTK_INCLUDE_TARGETS_FILE
+    "include(\${CMAKE_CURRENT_LIST_DIR}/Targets/ITKCudaCommonTargets.cmake)")
+endif()
+
 set(RTK_EXPORT_CODE_INSTALL "
 # The RTK version number
 set(RTK_VERSION_MAJOR ${RTK_VERSION_MAJOR})
@@ -230,7 +237,9 @@ set(RTK_VERSION_PATCH ${RTK_VERSION_PATCH})
 # Whether the compiled version of RTK uses CUDA
 set(RTK_USE_CUDA ${RTK_USE_CUDA})
 
-if(${RTK_USE_CUDA})
+if(RTK_USE_CUDA)
+  ${RTK_INCLUDE_TARGETS_FILE}
+  list(APPEND CMAKE_MODULE_PATH \"\${ITK_CMAKE_DIR}\")
   # if we are using CUDA, make sure CUDA libraries are available
   find_package(CUDA_wrap REQUIRED)
   set(RTK_CUDA_PROJECTIONS_SLAB_SIZE \"16\" CACHE STRING \"Number of projections processed simultaneously in CUDA forward and back projections\")
@@ -247,6 +256,11 @@ if(NOT ITK_SOURCE_DIR)
 
   list(APPEND CMAKE_MODULE_PATH ${ITK_CMAKE_DIR})
   include(ITKModuleExternal)
+
+  # Add third party to RTK build targets.
+  # This must be done after RTK has been loaded by ITK to make sure
+  # ${itk-module} variables are defined for RTK.
+  itk_module_target_export(lpsolve55)
 else()
   itk_module_impl()
 endif()
@@ -259,9 +273,6 @@ install(FILES ${RTK_SOURCE_DIR}/cmake/FindCUDA_wrap.cmake
               ${RTK_SOURCE_DIR}/cmake/GetGitRevisionDescription.cmake.in
               ${RTK_SOURCE_DIR}/cmake/has_cuda_gpu.cxx
         DESTINATION ${ITK_INSTALL_PACKAGE_DIR})
-if(NOT ITK_SOURCE_DIR)
-  install(CODE "MESSAGE(FATAL_ERROR \"Cannot install, RTK is compiled separately from ITK. Installation is only functional if RTK is compiled within ITK.\")")
-endif()
 
 #=========================================================
 # Build applications

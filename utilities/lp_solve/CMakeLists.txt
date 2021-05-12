@@ -98,7 +98,9 @@ set_target_properties(lpsolve55 PROPERTIES VERSION ${LPSOLVE_VERSION}
                                            SOVERSION ${LPSOLVE_VERSION_MAJOR})
 
 if (NOT ITK_SOURCE_DIR)
-  # TODO: export target to find_package(RTK) on build directory ?
+  # Export to RTK build targets must be done after RTK has been loaded by ITK.
+  # When building externally we must do this after including ITKModuleExternal.
+  # See RTK/CMakeLists.txt.
 else()
   itk_module_target_export(lpsolve55)
 endif()
@@ -106,14 +108,16 @@ endif()
 #=========================================================
 if(NOT RTK_INSTALL_NO_LIBRARIES)
   target_include_directories(lpsolve55 PUBLIC $<INSTALL_INTERFACE:${RTK_INSTALL_INCLUDE_DIR}/lpsolve>)
-  install(TARGETS lpsolve55 EXPORT RTK
-    RUNTIME DESTINATION ${RTK_INSTALL_RUNTIME_DIR} COMPONENT Runtime
-    LIBRARY DESTINATION ${RTK_INSTALL_LIB_DIR} COMPONENT RuntimeLibraries
-    ARCHIVE DESTINATION ${RTK_INSTALL_ARCHIVE_DIR} COMPONENT Development
-    PUBLIC_HEADER DESTINATION "${RTK_INSTALL_INCLUDE_DIR}/lpsolve"
-  )
-  install(TARGETS lpsolve55 EXPORT ITKTargets
-    RUNTIME DESTINATION ${RTK_INSTALL_RUNTIME_DIR} COMPONENT Runtime
+
+  # External modules use their own targets.
+  set(_install_targets RTKTargets)
+  if(ITK_SOURCE_DIR)
+    # Remote modules use ITKTargets.cmake
+    set(_install_targets ITKTargets)
+  endif()
+
+  install(TARGETS lpsolve55 EXPORT ${_install_targets}
+    RUNTIME DESTINATION ${RTK_INSTALL_RUNTIME_DIR} COMPONENT RuntimeLibraries
     LIBRARY DESTINATION ${RTK_INSTALL_LIB_DIR} COMPONENT RuntimeLibraries
     ARCHIVE DESTINATION ${RTK_INSTALL_ARCHIVE_DIR} COMPONENT Development
     PUBLIC_HEADER DESTINATION "${RTK_INSTALL_INCLUDE_DIR}/lpsolve"

@@ -1,3 +1,5 @@
+include(${CMAKE_CURRENT_LIST_DIR}/itk-module-init.cmake)
+
 set(DOCUMENTATION "")
 
 # -----------------------------------------
@@ -37,11 +39,11 @@ set(RTK_TEST_DEPENDS
 
 # # -----------------------------------------
 # # CUDA optional dependencies
-if(ITK_SOURCE_DIR)
+#if(ITK_SOURCE_DIR)
   if(${RTK_USE_CUDA})
     list(APPEND RTK_DEPENDS ITKCudaCommon)
   endif()
-endif()
+#endif()
 
 #=========================================================
 # Module RTK
