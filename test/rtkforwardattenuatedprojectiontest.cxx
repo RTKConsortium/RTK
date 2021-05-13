@@ -1,14 +1,16 @@
 #include "rtkTest.h"
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
-#include "rtkRayBoxIntersectionImageFilter.h"
-#include "rtkSheppLoganPhantomFilter.h"
-#include "rtkDrawSheppLoganFilter.h"
 #include "rtkConstantImageSource.h"
 #include "rtkJosephForwardAttenuatedProjectionImageFilter.h"
+#include "rtkRayEllipsoidIntersectionImageFilter.h"
+#include "rtkDrawEllipsoidImageFilter.h"
 #include <itkStreamingImageFilter.h>
 #include <itkImageRegionSplitterDirection.h>
-#include <itkImageRegionIterator.h>
+#include <itkSubtractImageFilter.h>
+#include <itkCenteredEuler3DTransform.h>
+#include <itkPasteImageFilter.h>
 #include <cmath>
+#include <itkMemoryUsageObserver.h>
 
 
 #ifdef USE_CUDA
@@ -60,9 +62,6 @@ main(int, char **)
   origin[0] = -126;
   origin[1] = -126;
   origin[2] = -126;
-//  origin[0] = -6;
-//  origin[1] = -6;
-//  origin[2] = -6;
 #if FAST_TESTS_NO_CHECKS
   size[0] = 2;
   size[1] = 2;
@@ -77,17 +76,11 @@ main(int, char **)
   spacing[0] = 4.;
   spacing[1] = 4.;
   spacing[2] = 4.;
-//  size[0] = 3;
-//  size[1] = 3;
-//  size[2] = 3;
-//  spacing[0] = 4;
-//  spacing[1] = 4;
-//  spacing[2] = 4;
 #endif
   volInput->SetOrigin(origin);
   volInput->SetSpacing(spacing);
   volInput->SetSize(size);
-  volInput->SetConstant(1.);
+  volInput->SetConstant(0.);
   volInput->UpdateOutputInformation();
 
   // Create Joseph Forward Projector attenuation map.
@@ -96,20 +89,51 @@ main(int, char **)
   attenuationInput->SetOrigin(origin);
   attenuationInput->SetSpacing(spacing);
   attenuationInput->SetSize(size);
-  attenuationInput->SetConstant(att);
-  attenuationInput->UpdateOutputInformation();
+  attenuationInput->SetConstant(0);
 
-  size.Fill(1);
-  origin.Fill(0.);
+  using DEIFType = rtk::DrawEllipsoidImageFilter<OutputImageType, OutputImageType>;
+  DEIFType::Pointer    deif = DEIFType::New();
+  DEIFType::VectorType axis_vol, center_vol, center_att, axis_att;
+  axis_vol.Fill(50);
+  center_vol[0] = 0.;
+  center_vol[1] = 0.;
+  center_vol[2] = -30.;
+  deif->SetInput(volInput->GetOutput());
+  deif->SetCenter(center_vol);
+  deif->SetAxis(axis_vol);
+  deif->SetDensity(1);
+  deif->Update();
+
+  typename OutputImageType::Pointer attenuationMap, volumeSource;
+  volumeSource = deif->GetOutput();
+  volumeSource->DisconnectPipeline();
+
+  axis_att.Fill(90);
+  center_att.Fill(0.);
+  deif->SetCenter(center_att);
+  deif->SetAxis(axis_att);
+  deif->SetDensity(att);
+  deif->Update();
+  attenuationMap = deif->GetOutput();
+  attenuationMap->DisconnectPipeline();
+
   // Initialization Volume, it is used in the Joseph Forward Projector and in the
   // Ray Box Intersection Filter in order to initialize the stack of projections.
   const ConstantImageSourceType::Pointer projInput = ConstantImageSourceType::New();
-  size[2] = NumberOfProjectionImages;
+  size[2] = 1;
   projInput->SetOrigin(origin);
   projInput->SetSpacing(spacing);
   projInput->SetSize(size);
   projInput->SetConstant(0.);
   projInput->Update();
+
+  const ConstantImageSourceType::Pointer projTotal = ConstantImageSourceType::New();
+  size[2] = NumberOfProjectionImages;
+  projTotal->SetOrigin(origin);
+  projTotal->SetSpacing(spacing);
+  projTotal->SetSize(size);
+  projTotal->SetConstant(0.);
+  projTotal->Update();
 
   // Joseph Forward Projection filter
 #ifdef USE_CUDA
@@ -119,27 +143,74 @@ main(int, char **)
 #endif
   JFPType::Pointer jfp = JFPType::New();
   jfp->InPlaceOff();
-  jfp->SetInput(projInput->GetOutput());
-  jfp->SetInput(1, volInput->GetOutput());
-  jfp->SetInput(2, attenuationInput->GetOutput());
+  jfp->SetInput(projTotal->GetOutput());
+  jfp->SetInput(1, volumeSource);
+  jfp->SetInput(2, attenuationMap);
 
-  // Ray Box Intersection filter (reference)
-  using RBIType = rtk::RayBoxIntersectionImageFilter<OutputImageType, OutputImageType>;
 #ifdef USE_CUDA
   jfp->SetStepSize(10);
 #endif
-  RBIType::Pointer rbi = RBIType::New();
-  rbi->InPlaceOff();
-  rbi->SetInput(projInput->GetOutput());
-  VectorType boxMin, boxMax;
-  boxMin[0] = -126;
-  boxMin[1] = -126;
-  boxMin[2] = -126;
-  boxMax[0] = 126;
-  boxMax[1] = 126;
-  boxMax[2] = 47.6;
-  rbi->SetBoxMin(boxMin);
-  rbi->SetBoxMax(boxMax);
+  // Geometry
+  using GeometryType = rtk::ThreeDCircularProjectionGeometry;
+  GeometryType::Pointer geometry_projection = GeometryType::New();
+  double                angle = 0;
+  using REIType = rtk::RayEllipsoidIntersectionImageFilter<OutputImageType, OutputImageType>;
+  REIType::PointType  center_transform;
+  REIType::VectorType clip_plane_direction_init, clip_plane_direction;
+  clip_plane_direction_init[0] = 0.;
+  clip_plane_direction_init[1] = 0.;
+  clip_plane_direction_init[2] = 1.;
+  using TransformType = itk::CenteredEuler3DTransform<double>;
+  typename TransformType::Pointer transform = TransformType::New();
+  using SubtractImageFilterType = itk::SubtractImageFilter<OutputImageType, OutputImageType>;
+  typename SubtractImageFilterType::Pointer subtractImageFilter = SubtractImageFilterType::New();
+  typename OutputImageType::IndexType       indexSlice;
+  typename OutputImageType::Pointer         pimg;
+  indexSlice.Fill(0);
+  using PasteImageFilterType = itk::PasteImageFilter<OutputImageType, OutputImageType>;
+  typename PasteImageFilterType::Pointer pasteImageFilter = PasteImageFilterType::New();
+  pasteImageFilter->SetDestinationImage(projTotal->GetOutput());
+
+  int count = 0;
+  for (unsigned int i = 0; i < NumberOfProjectionImages; i++)
+  {
+    angle = i * 360. / NumberOfProjectionImages;
+    geometry_projection->AddProjection(500, 0., angle);
+    transform->SetRotation(0., angle * itk::Math::pi / 180, 0.);
+    clip_plane_direction = transform->GetMatrix() * clip_plane_direction_init;
+    center_transform = transform->GetMatrix() * center_vol;
+    REIType::Pointer sphere_attenuation = REIType::New();
+    sphere_attenuation->SetAngle(0);
+    sphere_attenuation->SetDensity(1);
+    sphere_attenuation->SetCenter(center_att);
+    sphere_attenuation->SetAxis(axis_att);
+    sphere_attenuation->SetInput(projInput->GetOutput());
+    REIType::Pointer sphere_emission = REIType::New();
+    sphere_emission->SetAngle(0);
+    sphere_emission->SetDensity(1);
+    sphere_emission->SetCenter(center_vol);
+    sphere_emission->SetAxis(axis_vol);
+    sphere_emission->SetInput(projInput->GetOutput());
+    sphere_attenuation->AddClipPlane(clip_plane_direction, center_transform[2]);
+    sphere_attenuation->SetGeometry(geometry_projection);
+    sphere_emission->AddClipPlane(clip_plane_direction, center_transform[2]);
+    sphere_emission->SetGeometry(geometry_projection);
+    indexSlice[2] = count;
+    sphere_attenuation->Update();
+    sphere_emission->Update();
+    subtractImageFilter->SetInput1(sphere_attenuation->GetOutput());
+    subtractImageFilter->SetInput2(sphere_emission->GetOutput());
+    subtractImageFilter->Update();
+    pasteImageFilter->SetSourceImage(subtractImageFilter->GetOutput());
+    pasteImageFilter->SetSourceRegion(subtractImageFilter->GetOutput()->GetLargestPossibleRegion());
+    pasteImageFilter->SetDestinationIndex(indexSlice);
+    pasteImageFilter->Update();
+    pimg = pasteImageFilter->GetOutput();
+    pimg->DisconnectPipeline();
+    pasteImageFilter->SetDestinationImage(pimg);
+    geometry_projection->Clear();
+    count += 1;
+  }
 
   // Streaming filter to test for unusual regions
   using StreamingFilterType = itk::StreamingImageFilter<OutputImageType, OutputImageType>;
@@ -152,44 +223,42 @@ main(int, char **)
   stream->SetRegionSplitter(splitter);
 
   std::cout << "\n\n****** Case 1: inner ray source ******" << std::endl;
-  // The circle is divided in 4 quarters
-  for (int q = 0; q < 4; q++)
+
+  using GeometryType = rtk::ThreeDCircularProjectionGeometry;
+  GeometryType::Pointer geometry = GeometryType::New();
+  for (unsigned int i = 0; i < NumberOfProjectionImages; i++)
   {
-    // Geometry
-    using GeometryType = rtk::ThreeDCircularProjectionGeometry;
-    GeometryType::Pointer geometry = GeometryType::New();
-    for (unsigned int i = 0; i < NumberOfProjectionImages; i++)
-    {
-      const double angle = -45. + i * 2.;
-      geometry->AddProjection(47.6 / std::cos(angle * itk::Math::pi / 180.), 1000., q * 90 + angle);
-    }
-
-    if (q == 0)
-    {
-      rbi->SetGeometry(geometry);
-      rbi->Update();
-      using ImageIterator = itk::ImageRegionIterator<OutputImageType>;
-      ImageIterator itRbi(rbi->GetOutput(), rbi->GetOutput()->GetBufferedRegion());
-
-      itRbi.GoToBegin();
-
-      while (!itRbi.IsAtEnd())
-      {
-        typename OutputImageType::PixelType RefVal = itRbi.Get();
-        if (att == 0)
-          itRbi.Set(RefVal);
-        else
-          itRbi.Set((1 - exp(-RefVal * att)) / (att));
-        ++itRbi;
-      }
-    }
-
-    jfp->SetGeometry(geometry);
-    stream->Update();
-
-    CheckImageQuality<OutputImageType>(stream->GetOutput(), rbi->GetOutput(), 1.28, 44.0, 255.0);
-    std::cout << "\n\nTest of quarter #" << q << " PASSED! " << std::endl;
+    geometry->AddProjection(500, 0., i * 360. / NumberOfProjectionImages);
   }
+  projTotal->Update();
+  using REIType = rtk::RayEllipsoidIntersectionImageFilter<OutputImageType, OutputImageType>;
+  REIType::Pointer rei = REIType::New();
+  rei->InPlaceOff();
+  rei->SetAngle(0);
+  rei->SetDensity(1);
+  rei->SetCenter(center_vol);
+  rei->SetAxis(axis_vol);
+  rei->SetInput(projTotal->GetOutput());
+  rei->SetGeometry(geometry);
+  rei->Update();
 
+  using CustomBinaryFilterType = itk::BinaryGeneratorImageFilter<OutputImageType, OutputImageType, OutputImageType>;
+  typename CustomBinaryFilterType::Pointer customBinaryFilter = CustomBinaryFilterType::New();
+  // Set Lambda function
+  auto customLambda = [att](const typename OutputImageType::PixelType & input1,
+                            const typename OutputImageType::PixelType & input2) -> typename OutputImageType::PixelType
+  {
+    return static_cast<typename OutputImageType::PixelType>((1 - std::exp(-input1 * att)) / att *
+                                                            std::exp(-input2 * att));
+  };
+  customBinaryFilter->SetFunctor(customLambda);
+  customBinaryFilter->SetInput1(rei->GetOutput());
+  customBinaryFilter->SetInput2(pimg);
+  customBinaryFilter->Update();
+  jfp->SetGeometry(geometry);
+  stream->Update();
+
+  CheckImageQuality<OutputImageType>(stream->GetOutput(), customBinaryFilter->GetOutput(), 1.28, 44.0, 255.0);
+  std::cout << "\n\nTest  PASSED! " << std::endl;
   return EXIT_SUCCESS;
 }
