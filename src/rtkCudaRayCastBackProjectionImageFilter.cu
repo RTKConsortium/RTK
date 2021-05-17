@@ -215,9 +215,9 @@ kernel_ray_cast_back_project(float * dev_accumulate_values, float * dev_proj, fl
     {
       for (t = tnear; t <= tfar; t += vStep)
       {
-        floor_pos.x = floor(pos.x);
-        floor_pos.y = floor(pos.y);
-        floor_pos.z = floor(pos.z);
+        floor_pos.x = floorf(pos.x);
+        floor_pos.y = floorf(pos.y);
+        floor_pos.z = floorf(pos.z);
 
         // Compute the weights and the voxel indices, taking into account border conditions (here clamping)
         splat3D_getWeightsAndIndices(pos, floor_pos, c_volSize, weights, indices);
