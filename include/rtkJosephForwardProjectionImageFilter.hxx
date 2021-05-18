@@ -135,8 +135,6 @@ JosephForwardProjectionImageFilter<TInputImage,
       // Compute and sort intersections: (n)earest and (f)arthest (p)points
       np = pixelPosition + nearDist * dirVox;
       fp = pixelPosition + farDist * dirVox;
-      if (np[mainDir] > fp[mainDir])
-        std::swap(np, fp);
 
       // Compute main nearest and farthest slice indices
       const int ns = itk::Math::rnd(np[mainDir]);
@@ -154,23 +152,31 @@ JosephForwardProjectionImageFilter<TInputImage,
       const CoordRepType maxy = box->GetBoxMax()[notMainDirSup];
 
       // Init data pointers to first pixel of slice ns (i)nferior and (s)uperior (x|y) corner
-      const int                              offsetx = offsets[notMainDirInf];
-      const int                              offsety = offsets[notMainDirSup];
-      const int                              offsetz = offsets[mainDir];
-      const typename TInputImage::PixelType *pxiyi = nullptr, *pxsyi = nullptr, *pxiys = nullptr, *pxsys = nullptr;
+      const int offsetx = offsets[notMainDirInf];
+      const int offsety = offsets[notMainDirSup];
+      int       offsetz = offsets[mainDir];
 
-      pxiyi = beginBuffer + ns * offsetz;
-      pxsyi = pxiyi + offsetx;
-      pxiys = pxiyi + offsety;
-      pxsys = pxsyi + offsety;
+      const typename TInputImage::PixelType * pxiyi = beginBuffer + ns * offsetz;
+      const typename TInputImage::PixelType * pxsyi = pxiyi + offsetx;
+      const typename TInputImage::PixelType * pxiys = pxiyi + offsety;
+      const typename TInputImage::PixelType * pxsys = pxsyi + offsety;
 
       // Compute step size and go to first voxel
-      const CoordRepType residual = ns - np[mainDir];
-      const CoordRepType norm = 1 / dirVox[mainDir];
-      const CoordRepType stepx = dirVox[notMainDirInf] * norm;
-      const CoordRepType stepy = dirVox[notMainDirSup] * norm;
-      CoordRepType       currentx = np[notMainDirInf] + residual * stepx;
-      CoordRepType       currenty = np[notMainDirSup] + residual * stepy;
+      CoordRepType       residualB = ns - np[mainDir];
+      CoordRepType       residualE = fp[mainDir] - fs;
+      const CoordRepType norm = itk::NumericTraits<CoordRepType>::One / dirVox[mainDir];
+      CoordRepType       stepx = dirVox[notMainDirInf] * norm;
+      CoordRepType       stepy = dirVox[notMainDirSup] * norm;
+      if (np[mainDir] > fp[mainDir])
+      {
+        residualB *= -1;
+        residualE *= -1;
+        offsetz *= -1;
+        stepx *= -1;
+        stepy *= -1;
+      }
+      CoordRepType currentx = np[notMainDirInf] + residualB * stepx;
+      CoordRepType currenty = np[notMainDirSup] + residualB * stepy;
 
       // Compute voxel to millimeters conversion
       stepMM[notMainDirInf] = this->GetInput(1)->GetSpacing()[notMainDirInf] * stepx;
@@ -184,7 +190,7 @@ JosephForwardProjectionImageFilter<TInputImage,
       if (fs == ns) // If the voxel is a corner, we can skip most steps
       {
         volumeValue = BilinearInterpolationOnBorders(threadId,
-                                                     fp[mainDir] - np[mainDir],
+                                                     std::abs(fp[mainDir] - np[mainDir]),
                                                      pxiyi,
                                                      pxsyi,
                                                      pxiys,
@@ -203,7 +209,7 @@ JosephForwardProjectionImageFilter<TInputImage,
       {
         // First step
         volumeValue = BilinearInterpolationOnBorders(threadId,
-                                                     residual + 0.5,
+                                                     residualB + 0.5,
                                                      pxiyi,
                                                      pxsyi,
                                                      pxiys,
@@ -227,10 +233,10 @@ JosephForwardProjectionImageFilter<TInputImage,
         currenty += stepy;
 
         // Middle steps
-        for (int i = ns + 1; i < fs; i++)
+        for (int i{ 0 }; i < std::abs(fs - ns) - 1; ++i)
         {
           volumeValue =
-            BilinearInterpolation(threadId, 1.0, pxiyi, pxsyi, pxiys, pxsys, currentx, currenty, offsetx, offsety);
+            BilinearInterpolation(threadId, 1., pxiyi, pxsyi, pxiys, pxsys, currentx, currenty, offsetx, offsety);
           sum += m_SumAlongRay(threadId, volumeValue, stepMM);
 
           // Move to next main direction slice
@@ -244,7 +250,7 @@ JosephForwardProjectionImageFilter<TInputImage,
 
         // Last step
         volumeValue = BilinearInterpolationOnBorders(threadId,
-                                                     fp[mainDir] - fs + 0.5,
+                                                     residualE + 0.5,
                                                      pxiyi,
                                                      pxsyi,
                                                      pxiys,
