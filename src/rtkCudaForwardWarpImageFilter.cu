@@ -190,9 +190,9 @@ linearSplat_3Dgrid(float * dev_vol_in, float * dev_vol_out, float * dev_accumula
 
   // Compute the splat weights
   int3 BaseIndexInOutput;
-  BaseIndexInOutput.x = floor(IndexInOutput.x);
-  BaseIndexInOutput.y = floor(IndexInOutput.y);
-  BaseIndexInOutput.z = floor(IndexInOutput.z);
+  BaseIndexInOutput.x = floorf(IndexInOutput.x);
+  BaseIndexInOutput.y = floorf(IndexInOutput.y);
+  BaseIndexInOutput.z = floorf(IndexInOutput.z);
 
   float3 Distance;
   Distance.x = IndexInOutput.x - BaseIndexInOutput.x;
