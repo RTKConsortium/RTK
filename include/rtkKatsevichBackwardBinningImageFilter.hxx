@@ -33,27 +33,6 @@
 namespace rtk
 {
 
-template <class TInputImage, class TOutputImage>
-void
-KatsevichBackwardBinningImageFilter<TInputImage, TOutputImage>::GenerateInputRequestedRegion()
-{
-  //  // Input 0 is Output ie result of forward binning
-  //  typename Superclass::InputImagePointer inputPtr0 = const_cast<TInputImage *>(this->GetInput());
-  //  std::cout << "Input largest : " << this->GetInput()->GetLargestPossibleRegion() << std::endl;
-  //  std::cout << "inputPtr0 : " << inputPtr0->GetRequestedRegion() << std::endl;
-  //  if (!inputPtr0)
-  //    return;
-  //  inputPtr0->SetRequestedRegion(this->GetInput()->GetLargestPossibleRegion());
-  //
-  //  //TO DELETE : SPACING AND ORIGIN ALWAYS (1,1,1) AND (0,0,0) -> NOT OKAY !!!!
-  //  //std::cout<<"Input size: "<<this->GetInput()->GetLargestPossibleRegion().GetSize()<<std::endl;
-  //  //std::cout<<"Input spacing : "<<this->GetInput()->GetSpacing()<<std::endl;
-  //  //std::cout<<"Input origin : "<<this->GetInput()->GetOrigin()<<std::endl;
-  //
-  //
-}
-// Not necessary as GetInput()->GetLargest = inputPtr0->GetRequested before assignment.
-
 template <typename TInputImage, typename TOutputImage>
 void
 KatsevichBackwardBinningImageFilter<TInputImage, TOutputImage>::GenerateOutputInformation()
@@ -109,7 +88,7 @@ KatsevichBackwardBinningImageFilter<TInputImage, TOutputImage>::DynamicThreadedG
   const OutputImageRegionType & outputRegionForThread)
 {
   const unsigned int Dimension = TInputImage::ImageDimension;
-  
+
   // Iterator over output projections (in v)
   OutputSliceIteratorType itOut(this->GetOutput(), outputRegionForThread);
   itOut.SetFirstDirection(1);
@@ -151,8 +130,7 @@ KatsevichBackwardBinningImageFilter<TInputImage, TOutputImage>::DynamicThreadedG
   const double P = m_Geometry->GetHelixPitch();
   const double R = m_Geometry->GetHelixRadius();
 
-  const double alpha_m =
-    atan(0.5 * u_spacing * (det_nu - 1) / D); // Générique mais doit être cohérent avec le fwd binning.
+  const double alpha_m = atan(0.5 * u_spacing * det_nu / D); // Consistent with Forward binning.
   const double r = R * sin(alpha_m);
   const int    L = this->GetInput()->GetLargestPossibleRegion().GetSize(1);
 

@@ -33,16 +33,12 @@ namespace rtk
 {
 
 /** \class rtkKatsevichForwardBinningImageFilter
- * \brief 3D backprojection
+ * \brief Rebinning along kappa-lines
  *
- * Backprojects a stack of projection images (input 1) in a 3D volume (input 0)
- * using linear interpolation according to a specified geometry. The operation
- * is voxel-based, meaning that the center of each voxel is projected in the
- * projection images to determine the interpolation location.
+ * Rebin the projection data along kappa-lines using linear
+ * interpolation according to a specified helical geometry.
  *
- * \test rtkfovtest.cxx
- *
- * \author Simon Rit
+ * \author Jerome Lesaint
  *
  * \ingroup RTK Projector
  */

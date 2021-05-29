@@ -37,7 +37,9 @@ namespace rtk
 /** \class KatsevichDerivativeImageFilter
  * \brief Computes the derivatives of the projections wrt the projection index (the rotation angle).
  *
- * This filter implements the derivative as described in Noo et al., PMB, 2003
+ * This filter implements the derivative formula Eq. 46 (curved det) and Eq. 87 (flat panel)
+ * from Noo et al., PMB, 2003
+ *
  *
  * \author Jerome Lesaint
  *

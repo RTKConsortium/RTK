@@ -1,6 +1,6 @@
 .git*                                   export-ignore
 # Custom attribute to mark sources as using our C++/C code style.
-[attr]our-c-style  whitespace=tab-in-indent,no-lf-at-eof  hooks.style=KWStyle,clangformat
+[attr]our-c-style  whitespace=tab-in-indent,no-lf-at-eof  hooks.style=KWStyle,clangformat,uncrustify
 
 cmake/*.cxx                             our-c-style
 include/*.h*                            our-c-style

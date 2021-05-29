@@ -37,14 +37,12 @@ namespace rtk
 /** \class KatsevichBackwardBinningImageFilter
  * \brief
  *
- * Backprojects a stack of projection images (input 1) in a 3D volume (input 0)
- * using linear interpolation according to a specified geometry. The operation
- * is voxel-based, meaning that the center of each voxel is projected in the
- * projection images to determine the interpolation location.
+ * Resample the Hilbert transformed data back to the original v-coordinate, according
+ * to a specified geometry.
  *
- * \test rtkfovtest.cxx
+ * \test
  *
- * \author Simon Rit
+ * \author Jerome Lesaint
  *
  * \ingroup RTK Projector
  */
@@ -95,10 +93,6 @@ public:
 protected:
   KatsevichBackwardBinningImageFilter() = default;
   ~KatsevichBackwardBinningImageFilter() override = default;
-
-  /** Set up requested region for inputs*/
-  void
-  GenerateInputRequestedRegion() override;
 
   void
   GenerateOutputInformation() override;

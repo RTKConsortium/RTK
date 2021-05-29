@@ -38,9 +38,21 @@ namespace rtk
  *  - Apply 1D Hilbert transform on the resampled psi-direction.
  *  - Resample the data back to the usual vertical coordinates.
  *
+ *  * \dot
+ * digraph HilbertTransformOnKappaLinesImageFilter {
+ * node [shape=box];
+ * 1 [ label="rtk::KatsevichForwardBinningImageFilter" URL="\ref rtk::KatsevichForwardBinningImageFilter"];
+ * 2 [ label="rtk::FFTHilbertImageFilter" URL="\ref rtk::FFTHilbertImageFilter"];
+ * 3 [ label="rtk::KatsevichBackwardBinningImageFilter" URL="\ref rtk::KatsevichBackwardBinningImageFilter"];
+ * 1 -> 2;
+ * 2 -> 3;
+ * }
+ * \enddot
+ *
+ *
  * \author Jerome Lesaint and Alexandre Esa
  *
- * \test katsHilbertTransformOnKappaLines.cxx, katsKatsevitchHelicalReconstructionImageFilterTets.cxx.
+ * \test
  *
  * \ingroup
  */

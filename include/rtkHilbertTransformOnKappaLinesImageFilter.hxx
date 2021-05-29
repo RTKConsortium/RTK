@@ -29,13 +29,8 @@ template <typename TInputImage, typename TOutputImage>
 void
 HilbertTransformOnKappaLinesImageFilter<TInputImage, TOutputImage>::GenerateOutputInformation()
 {
-  // Mettre a jour la taille de l'image de sortie. Ainsi que l'origine.
-  // Sur le modele de itk::ShrinkImageFilter
   // Call the superclass' implementation of this method
   Superclass::GenerateOutputInformation();
-
-  // std::cout << "(Hilbert transf) Input Size : " << this->GetInput()->GetLargestPossibleRegion().GetSize();
-  // std::cout << " Inpu torigin : " << this->GetInput()->GetOrigin() << std::endl;
 }
 
 template <class TInputImage, class TOutputImage>
