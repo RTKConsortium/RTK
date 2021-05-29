@@ -43,23 +43,6 @@ KatsevichBackProjectionImageFilter<TInputImage, TOutputImage>::KatsevichBackProj
   this->SetInPlace(true);
 }
 
-
-// template <class TInputImage, class TOutputImage>
-// void
-// KatsevichBackProjectionImageFilter<TInputImage, TOutputImage>::SetPILines(PILineImageType * image)
-//{
-//  // Process object is not const-correct so the const_cast is required here
-//  this->ProcessObject::SetNthInput(1, const_cast<PILineImageType *>(image));
-//}
-//
-// template <class TInputImage, class TOutputImage>
-// const typename KatsevichBackProjectionImageFilter<TInputImage, TOutputImage>::PILineImageType *
-// KatsevichBackProjectionImageFilter<TInputImage, TOutputImage>::GetPILines() const
-//{
-//  return itkDynamicCastInDebugMode<const PILineImageType *>(m_PILines);
-//}
-
-
 template <class TInputImage, class TOutputImage>
 void
 KatsevichBackProjectionImageFilter<TInputImage, TOutputImage>::GenerateInputRequestedRegion()
@@ -110,7 +93,7 @@ KatsevichBackProjectionImageFilter<TInputImage, TOutputImage>::GenerateInputRequ
   for (unsigned int iProj = iFirstProj; iProj < iFirstProj + nProj; iProj++)
   {
     // Extract the current slice
-    ProjectionMatrixType matrix = GetIndexToIndexProjectionMatrix(iProj);
+    ProjectionMatrixType matrix = this->GetIndexToIndexProjectionMatrix(iProj);
 
     // Check which part of the projection image will be backprojected in the
     // volume.
@@ -266,7 +249,7 @@ KatsevichBackProjectionImageFilter<TInputImage, TOutputImage>::DynamicThreadedGe
   for (unsigned int iProj = iFirstProj; iProj < iFirstProj + nProj; iProj++)
   {
     // Extract the current slice
-    ProjectionImagePointer projection = GetProjection<ProjectionImageType>(iProj);
+    ProjectionImagePointer projection = this->template GetProjection<ProjectionImageType>(iProj);
 
     ProjectionMatrixType matrix = this->GetIndexToIndexProjectionMatrix(iProj);
     interpolator->SetInputImage(projection);
@@ -276,9 +259,9 @@ KatsevichBackProjectionImageFilter<TInputImage, TOutputImage>::DynamicThreadedGe
     // Cylindrical detector centered on source case
     if (m_Geometry->GetRadiusCylindricalDetector() != 0)
     {
-      ProjectionMatrixType volIndexToProjPP = GetVolumeIndexToProjectionPhysicalPointMatrix(iProj);
+      ProjectionMatrixType volIndexToProjPP = this->GetVolumeIndexToProjectionPhysicalPointMatrix(iProj);
       itk::Matrix<double, TInputImage::ImageDimension, TInputImage::ImageDimension> projPPToProjIndex =
-        GetProjectionPhysicalPointToProjectionIndexMatrix(iProj);
+        this->GetProjectionPhysicalPointToProjectionIndexMatrix(iProj);
       CylindricalDetectorCenteredOnSourceBackprojection(
         outputRegionForThread, volIndexToProjPP, projPPToProjIndex, projection, lambda, delta_lambda);
       continue;
@@ -330,19 +313,19 @@ KatsevichBackProjectionImageFilter<TInputImage, TOutputImage>::DynamicThreadedGe
         double d_out = (st - lambda) / delta_lambda;
         // Apply PiLineConditions
 
-        //if (lambda < sb - delta_lambda)
+        // if (lambda < sb - delta_lambda)
         //  rho = 0;
-        //else if (lambda < sb)
+        // else if (lambda < sb)
         //  rho = 0.5 * (d_in + 1) * (d_in + 1);
-        //else if (lambda < sb + delta_lambda)
+        // else if (lambda < sb + delta_lambda)
         //  rho = 0.5 + d_in + 0.5 * d_in * d_in;
-        //else if (lambda < st - delta_lambda)
+        // else if (lambda < st - delta_lambda)
         //  rho = 1;
-        //else if (lambda < st)
+        // else if (lambda < st)
         //  rho = 0.5 + d_out + 0.5 * d_out * d_out;
-        //else if (lambda < st + delta_lambda)
+        // else if (lambda < st + delta_lambda)
         //  rho = 0.5 * (1 + d_out * (1 + d_out));
-        //else
+        // else
         //  rho = 0;
 
         if (lambda < sb)
@@ -447,19 +430,19 @@ KatsevichBackProjectionImageFilter<TInputImage, TOutputImage>::CylindricalDetect
       double d_out = (st - lambda) / delta_lambda;
       // Apply PiLineConditions
 
-      //if (lambda < sb - delta_lambda)
+      // if (lambda < sb - delta_lambda)
       //  rho = 0;
-      //else if (lambda < sb)
+      // else if (lambda < sb)
       //  rho = 0.5 * (d_in + 1) * (d_in + 1);
-      //else if (lambda < sb + delta_lambda)
+      // else if (lambda < sb + delta_lambda)
       //  rho = 0.5 + d_in + 0.5 * d_in * d_in;
-      //else if (lambda < st - delta_lambda)
+      // else if (lambda < st - delta_lambda)
       //  rho = 1;
-      //else if (lambda < st)
+      // else if (lambda < st)
       //  rho = 0.5 + d_out + 0.5 * d_out * d_out;
-      //else if (lambda < st + delta_lambda)
+      // else if (lambda < st + delta_lambda)
       //  rho = 0.5 * (1 + d_out * (1 + d_out));
-      //else
+      // else
       //  rho = 0;
       if (lambda < sb)
         rho = 0.;
@@ -558,19 +541,19 @@ KatsevichBackProjectionImageFilter<TInputImage, TOutputImage>::OptimizedBackproj
             double d_in = (lambda - sb) / delta_lambda;
             double d_out = (st - lambda) / delta_lambda;
             // Apply PiLineConditions
-            //if (lambda < sb - delta_lambda)
+            // if (lambda < sb - delta_lambda)
             //  rho = 0;
-            //else if (lambda < sb)
+            // else if (lambda < sb)
             //  rho = 0.5 * (d_in + 1) * (d_in + 1);
-            //else if (lambda < sb + delta_lambda)
+            // else if (lambda < sb + delta_lambda)
             //  rho = 0.5 + d_in + 0.5 * d_in * d_in;
-            //else if (lambda < st - delta_lambda)
+            // else if (lambda < st - delta_lambda)
             //  rho = 1;
-            //else if (lambda < st)
+            // else if (lambda < st)
             //  rho = 0.5 + d_out + 0.5 * d_out * d_out;
-            //else if (lambda < st + delta_lambda)
+            // else if (lambda < st + delta_lambda)
             //  rho = 0.5 * (1 + d_out * (1 + d_out));
-            //else
+            // else
             //  rho = 0;
 
             if (lambda < sb)
@@ -677,19 +660,19 @@ KatsevichBackProjectionImageFilter<TInputImage, TOutputImage>::OptimizedBackproj
             double d_out = (st - lambda) / delta_lambda;
 
             // Apply PiLineConditions
-            //if (lambda < sb - delta_lambda)
+            // if (lambda < sb - delta_lambda)
             //  rho = 0;
-            //else if (lambda < sb)
+            // else if (lambda < sb)
             //  rho = 0.5 * (d_in + 1) * (d_in + 1);
-            //else if (lambda < sb + delta_lambda)
+            // else if (lambda < sb + delta_lambda)
             //  rho = 0.5 + d_in + 0.5 * d_in * d_in;
-            //else if (lambda < st - delta_lambda)
+            // else if (lambda < st - delta_lambda)
             //  rho = 1;
-            //else if (lambda < st)
+            // else if (lambda < st)
             //  rho = 0.5 + d_out + 0.5 * d_out * d_out;
-            //else if (lambda < st + delta_lambda)
+            // else if (lambda < st + delta_lambda)
             //  rho = 0.5 * (1 + d_out * (1 + d_out));
-            //else
+            // else
             //  rho = 0;
 
             if (lambda < sb)
@@ -715,125 +698,6 @@ KatsevichBackProjectionImageFilter<TInputImage, TOutputImage>::OptimizedBackproj
   }   // k
 }
 
-template <class TInputImage, class TOutputImage>
-template <class TProjectionImage>
-typename TProjectionImage::Pointer
-KatsevichBackProjectionImageFilter<TInputImage, TOutputImage>::GetProjection(const unsigned int iProj)
-{
-
-  typename Superclass::InputImagePointer stack = const_cast<TInputImage *>(this->GetInput(1));
-
-  const int iProjBuff = stack->GetBufferedRegion().GetIndex(ProjectionImageType::ImageDimension);
-
-  typename TProjectionImage::Pointer     projection = TProjectionImage::New();
-  typename TProjectionImage::RegionType  region;
-  typename TProjectionImage::SpacingType spacing;
-  typename TProjectionImage::PointType   origin;
-
-  for (unsigned int i = 0; i < TProjectionImage::ImageDimension; i++)
-  {
-    origin[i] = stack->GetOrigin()[i];
-    spacing[i] = stack->GetSpacing()[i];
-    region.SetSize(i, stack->GetBufferedRegion().GetSize()[i]);
-    region.SetIndex(i, stack->GetBufferedRegion().GetIndex()[i]);
-  }
-  if (this->GetTranspose())
-  {
-    typename TProjectionImage::SizeType  size = region.GetSize();
-    typename TProjectionImage::IndexType index = region.GetIndex();
-    std::swap(size[0], size[1]);
-    std::swap(index[0], index[1]);
-    std::swap(origin[0], origin[1]);
-    std::swap(spacing[0], spacing[1]);
-    region.SetSize(size);
-    region.SetIndex(index);
-  }
-  projection->SetSpacing(spacing);
-  projection->SetOrigin(origin);
-  projection->SetRegions(region);
-  projection->Allocate();
-
-  const unsigned int             npixels = projection->GetBufferedRegion().GetNumberOfPixels();
-  const InternalInputPixelType * pi = stack->GetBufferPointer() + (iProj - iProjBuff) * npixels;
-  InternalInputPixelType *       po = projection->GetBufferPointer();
-
-  // Transpose projection for optimization
-  if (this->GetTranspose())
-  {
-    for (unsigned int j = 0; j < region.GetSize(0); j++, po -= npixels - 1)
-      for (unsigned int i = 0; i < region.GetSize(1); i++, po += region.GetSize(0))
-        *po = *pi++;
-  }
-  else
-    for (unsigned int i = 0; i < npixels; i++)
-      *po++ = *pi++;
-
-  return projection;
-}
-
-template <class TInputImage, class TOutputImage>
-typename KatsevichBackProjectionImageFilter<TInputImage, TOutputImage>::ProjectionMatrixType
-KatsevichBackProjectionImageFilter<TInputImage, TOutputImage>::GetIndexToIndexProjectionMatrix(const unsigned int iProj)
-{
-  const unsigned int Dimension = TInputImage::ImageDimension;
-
-  ProjectionMatrixType VolumeIndexToProjectionPhysicalPointMatrix =
-    GetVolumeIndexToProjectionPhysicalPointMatrix(iProj);
-
-  itk::Matrix<double, Dimension, Dimension> ProjectionPhysicalPointToProjectionIndexMatrix =
-    GetProjectionPhysicalPointToProjectionIndexMatrix(iProj);
-
-  return ProjectionMatrixType(ProjectionPhysicalPointToProjectionIndexMatrix.GetVnlMatrix() *
-                              VolumeIndexToProjectionPhysicalPointMatrix.GetVnlMatrix());
-}
-
-template <class TInputImage, class TOutputImage>
-typename KatsevichBackProjectionImageFilter<TInputImage, TOutputImage>::ProjectionMatrixType
-KatsevichBackProjectionImageFilter<TInputImage, TOutputImage>::GetVolumeIndexToProjectionPhysicalPointMatrix(
-  const unsigned int iProj)
-{
-  const unsigned int Dimension = TInputImage::ImageDimension;
-
-  itk::Matrix<double, Dimension + 1, Dimension + 1> matrixVol =
-    GetIndexToPhysicalPointMatrix<TOutputImage>(this->GetOutput());
-
-  return ProjectionMatrixType(this->m_Geometry->GetMagnificationMatrices()[iProj].GetVnlMatrix() *
-                              this->m_Geometry->GetSourceTranslationMatrices()[iProj].GetVnlMatrix() *
-                              this->m_Geometry->GetRotationMatrices()[iProj].GetVnlMatrix() * matrixVol.GetVnlMatrix());
-}
-
-template <class TInputImage, class TOutputImage>
-itk::Matrix<double, TInputImage::ImageDimension, TInputImage::ImageDimension>
-KatsevichBackProjectionImageFilter<TInputImage, TOutputImage>::GetProjectionPhysicalPointToProjectionIndexMatrix(
-  const unsigned int iProj)
-{
-  const unsigned int Dimension = TInputImage::ImageDimension;
-
-  itk::Matrix<double, Dimension + 1, Dimension + 1> matrixStackProj =
-    GetPhysicalPointToIndexMatrix<TOutputImage>(this->GetInput(1));
-
-  itk::Matrix<double, Dimension, Dimension> matrixProj;
-  matrixProj.SetIdentity();
-  for (unsigned int i = 0; i < Dimension - 1; i++)
-  {
-    matrixProj[i][Dimension - 1] = matrixStackProj[i][Dimension];
-    for (unsigned int j = 0; j < Dimension - 1; j++)
-      matrixProj[i][j] = matrixStackProj[i][j];
-  }
-
-  // Transpose projection for optimization
-  itk::Matrix<double, Dimension, Dimension> matrixFlip;
-  matrixFlip.SetIdentity();
-  if (this->GetTranspose())
-  {
-    std::swap(matrixFlip[0][0], matrixFlip[0][1]);
-    std::swap(matrixFlip[1][0], matrixFlip[1][1]);
-  }
-
-  return itk::Matrix<double, TInputImage::ImageDimension, TInputImage::ImageDimension>(
-    matrixFlip.GetVnlMatrix() * matrixProj.GetVnlMatrix() *
-    this->m_Geometry->GetProjectionTranslationMatrices()[iProj].GetVnlMatrix());
-}
 
 } // end namespace rtk
 

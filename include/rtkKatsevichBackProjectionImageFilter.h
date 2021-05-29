@@ -24,6 +24,7 @@
 #include <itkInPlaceImageFilter.h>
 #include <itkConceptChecking.h>
 
+#include <rtkBackProjectionImageFilter.h>
 #include <rtkThreeDHelicalProjectionGeometry.h>
 #include <rtkPILineImageFilter.h>
 
@@ -48,14 +49,14 @@ namespace rtk
  * \ingroup RTK Projector
  */
 template <class TInputImage, class TOutputImage>
-class KatsevichBackProjectionImageFilter : public itk::InPlaceImageFilter<TInputImage, TOutputImage>
+class KatsevichBackProjectionImageFilter : public rtk::BackProjectionImageFilter<TInputImage, TOutputImage>
 {
 public:
   ITK_DISALLOW_COPY_AND_ASSIGN(KatsevichBackProjectionImageFilter);
 
   /** Standard class type alias. */
   using Self = KatsevichBackProjectionImageFilter;
-  using Superclass = itk::ImageToImageFilter<TInputImage, TOutputImage>;
+  using Superclass = rtk::BackProjectionImageFilter<TInputImage, TOutputImage>;
   using Pointer = itk::SmartPointer<Self>;
   using ConstPointer = itk::SmartPointer<const Self>;
 
@@ -66,7 +67,7 @@ public:
   using GeometryType = rtk::ThreeDHelicalProjectionGeometry;
   using GeometryPointer = typename GeometryType::Pointer;
   using ProjectionMatrixType = typename GeometryType::MatrixType;
-  using ProjectionImageType = itk::Image<InputPixelType, TInputImage::ImageDimension - 1>;
+  using ProjectionImageType = typename Superclass::ProjectionImageType;
   using ProjectionImagePointer = typename ProjectionImageType::Pointer;
   using PILineRealType = float;
   using PILineImageType = itk::Image<itk::Vector<PILineRealType, 2>, TInputImage::ImageDimension>;
@@ -90,10 +91,6 @@ public:
   /** Get / Set the object pointer to projection geometry */
   itkGetModifiableObjectMacro(Geometry, GeometryType);
   itkSetObjectMacro(Geometry, GeometryType);
-
-  ///** Get / Set the object pointer to PILines */
-  // itkGetMacro(PILines, PILinePointer);
-  // itkSetMacro(PILines, PILinePointer);
 
   /** Get / Set the transpose flag for 2D projections (optimization trick) */
   itkGetMacro(Transpose, bool);
@@ -150,25 +147,6 @@ protected:
   void
   VerifyInputInformation() const override
   {}
-
-  /** The input is a stack of projections, we need to interpolate in one projection
-      for efficiency during interpolation. Use of itk::ExtractImageFilter is
-      not threadsafe in ThreadedGenerateData, this one is. The output can be multiplied by a constant.
-      The function is templated to allow getting an itk::CudaImage. */
-  template <class TProjectionImage>
-  typename TProjectionImage::Pointer
-  GetProjection(const unsigned int iProj);
-
-  /** Creates iProj index to index projection matrices with current inputs
-      instead of the physical point to physical point projection matrix provided by Geometry */
-  ProjectionMatrixType
-  GetIndexToIndexProjectionMatrix(const unsigned int iProj);
-
-  ProjectionMatrixType
-  GetVolumeIndexToProjectionPhysicalPointMatrix(const unsigned int iProj);
-
-  itk::Matrix<double, TInputImage::ImageDimension, TInputImage::ImageDimension>
-  GetProjectionPhysicalPointToProjectionIndexMatrix(const unsigned int iProj);
 
   /** RTK geometry object */
   GeometryPointer    m_Geometry;
