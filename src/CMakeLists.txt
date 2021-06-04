@@ -138,4 +138,5 @@ target_link_libraries(RTK LINK_PUBLIC lpsolve55)
 
 if (RTK_USE_CUDA)
   target_link_libraries( RTK LINK_PUBLIC ITKCudaCommon ${CUDA_LIBRARIES} ${CUDA_CUDA_LIBRARY} ${CUDA_cufft_LIBRARY} ${CUDA_CUBLAS_LIBRARIES} )
+  set_property(TARGET RTK PROPERTY CUDA_STANDARD ${CMAKE_CXX_STANDARD})
 endif ()
