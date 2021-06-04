@@ -116,7 +116,7 @@ if(BUILD_TESTING)
   set_tests_properties(rtkappprojectshepploganphantomtest PROPERTIES DEPENDS rtkappsimulatedgeometrytest)
 
   # FDK test
-  if(RTK_USE_CUDA AND CUDA_HAVE_GPU)
+  if(RTK_USE_CUDA)
     add_test(rtkappfdktest ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/rtkfdk -g geo -p . -r sheppy.mha -o fdk.mha --hardware cuda --dimension 21)
   else()
     add_test(rtkappfdktest ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/rtkfdk -g geo -p . -r sheppy.mha -o fdk.mha --dimension 21)

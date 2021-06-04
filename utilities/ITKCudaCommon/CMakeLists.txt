@@ -2,15 +2,14 @@ project(ITKCudaCommon)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/CMake)
 
-find_package(CUDA REQUIRED)
-if(NOT ${CUDA_FOUND})
-     message(FATAL "Could not find CUDA")
-endif()
+enable_language(CUDA)
+find_package(CUDAToolkit REQUIRED)
+include_directories(${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES})
+set(CMAKE_CUDA_RUNTIME_LIBRARY Static)
 
 set(ITKCudaCommon_LIBRARIES ITKCudaCommon)
 set(ITKCudaCommon_SYSTEM_INCLUDE_DIRS ${CUDA_INCLUDE_DIRS})
 set(ITKCudaCommon_SYSTEM_LIBRARY_DIRS ${CUDA_LIBRARIES})
-
 set(ITKCudaCommon_INCLUDE_DIRS ${ITKCudaCommon_SYSTEM_INCLUDE_DIRS}
   ${ITKCudaCommon_SOURCE_DIR}/include PARENT_SCOPE)
 
