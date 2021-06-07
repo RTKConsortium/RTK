@@ -43,7 +43,6 @@ main(int, char **)
   using OutputImageType = itk::Image<OutputPixelType, Dimension>;
 #endif
 
-  using VectorType = itk::Vector<double, 3>;
 #if FAST_TESTS_NO_CHECKS
   constexpr unsigned int NumberOfProjectionImages = 3;
 #else
@@ -245,8 +244,8 @@ main(int, char **)
   using CustomBinaryFilterType = itk::BinaryGeneratorImageFilter<OutputImageType, OutputImageType, OutputImageType>;
   typename CustomBinaryFilterType::Pointer customBinaryFilter = CustomBinaryFilterType::New();
   // Set Lambda function
-  auto customLambda = [att](const typename OutputImageType::PixelType & input1,
-                            const typename OutputImageType::PixelType & input2) -> typename OutputImageType::PixelType
+  auto customLambda = [&](const typename OutputImageType::PixelType & input1,
+                          const typename OutputImageType::PixelType & input2) -> typename OutputImageType::PixelType
   {
     return static_cast<typename OutputImageType::PixelType>((1 - std::exp(-input1 * att)) / att *
                                                             std::exp(-input2 * att));
