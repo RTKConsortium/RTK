@@ -52,6 +52,7 @@ if("${CUDA_VERSION}" VERSION_LESS 11.0)
 endif()
 set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS}
      -Wno-deprecated-gpu-targets
+     -Wno-deprecated-declarations
      -gencode arch=compute_35,code=sm_35
      -gencode arch=compute_35,code=compute_35
      )
