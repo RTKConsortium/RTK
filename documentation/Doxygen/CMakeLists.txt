@@ -1,10 +1,10 @@
-#
-# Build the documentation
-#
-include (${CMAKE_ROOT}/Modules/Documentation.cmake)
-
-find_package(Doxygen)
-if (RTK_BUILD_DOXYGEN)
+if(RTK_BUILD_DOXYGEN)
+  find_package(UnixCommands)
+  find_package(Doxygen)
+  find_package(Gnuplot)
+  find_package(HTMLHelp)
+  find_package(Perl)
+  find_package(Wget)
 
   #
   # Configure the script and the doxyfile, then add target
