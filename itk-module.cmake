@@ -1,3 +1,6 @@
+# Make sure Cuda is found to declare ITKCudaCommon dependency
+include(${CMAKE_CURRENT_LIST_DIR}/itk-module-init.cmake)
+
 set(DOCUMENTATION "")
 
 # -----------------------------------------
@@ -35,12 +38,10 @@ set(RTK_DEPENDS
 set(RTK_TEST_DEPENDS
   ITKTestKernel)
 
-# # -----------------------------------------
-# # CUDA optional dependencies
-if(ITK_SOURCE_DIR)
-  if(${RTK_USE_CUDA})
-    list(APPEND RTK_DEPENDS ITKCudaCommon)
-  endif()
+# -----------------------------------------
+#  CUDA optional dependencies
+if(${RTK_USE_CUDA})
+  list(APPEND RTK_DEPENDS ITKCudaCommon)
 endif()
 
 #=========================================================

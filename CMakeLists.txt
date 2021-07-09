@@ -171,16 +171,6 @@ list(APPEND RTK_INCLUDE_DIRS
   "${LPSOLVE_INCLUDE_DIRS}")
 
 #=========================================================
-# ITKCudaCommon
-#=========================================================
-if(RTK_USE_CUDA)
-  if(NOT TARGET ITKCudaCommon)
-    add_subdirectory(utilities/ITKCudaCommon)
-  endif()
-endif()
-list(APPEND RTK_INCLUDE_DIRS
-  ${ITKCudaCommon_INCLUDE_DIRS})
-#=========================================================
 # Include directories
 #=========================================================
 list(APPEND RTK_INCLUDE_DIRS
