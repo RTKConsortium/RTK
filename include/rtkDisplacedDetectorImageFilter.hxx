@@ -165,7 +165,7 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>::GenerateOutputInformati
   else if (m_SuperiorCorner + m_InferiorCorner > 0.)
   {
     this->SetInPlace(false);
-    itk::Index<3>::IndexValueType index =
+    typename itk::Index<NDimension>::IndexValueType index =
       outputLargestPossibleRegion.GetIndex()[0] - outputLargestPossibleRegion.GetSize()[0];
     outputLargestPossibleRegion.SetIndex(0, index);
     outputLargestPossibleRegion.SetSize(0, outputLargestPossibleRegion.GetSize()[0] * 2);
@@ -237,12 +237,15 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerate
   weights->Allocate();
   typename itk::ImageRegionIteratorWithIndex<WeightImageType> itWeights(weights, weights->GetLargestPossibleRegion());
 
-  double theta = std::min(-1 * m_InferiorCorner, m_SuperiorCorner);
-  for (unsigned int k = 0; k < overlapRegion.GetSize(2); k++)
+  double       theta = std::min(-1 * m_InferiorCorner, m_SuperiorCorner);
+  unsigned int nLinesPerProjection = overlapRegion.GetNumberOfPixels();
+  nLinesPerProjection /= overlapRegion.GetSize(0);
+  nLinesPerProjection /= overlapRegion.GetSize(NDimension - 1);
+  for (unsigned int k = 0; k < overlapRegion.GetSize(NDimension - 1); k++)
   {
     // Prepare weights for current slice (depends on ProjectionOffsetsX)
-    const double sx = m_Geometry->GetSourceOffsetsX()[itIn.GetIndex()[2]];
-    double       sdd = m_Geometry->GetSourceToIsocenterDistances()[itIn.GetIndex()[2]];
+    const double sx = m_Geometry->GetSourceOffsetsX()[itIn.GetIndex()[NDimension - 1]];
+    double       sdd = m_Geometry->GetSourceToIsocenterDistances()[itIn.GetIndex()[NDimension - 1]];
     sdd = sqrt(sdd * sdd + sx * sx); // To untilted situation
     double invsdd = 0.;
     double invden = 0.;
@@ -259,7 +262,7 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerate
       itWeights.GoToBegin();
       while (!itWeights.IsAtEnd())
       {
-        const double l = m_Geometry->ToUntiltedCoordinateAtIsocenter(itIn.GetIndex()[2], point[0]);
+        const double l = m_Geometry->ToUntiltedCoordinateAtIsocenter(itIn.GetIndex()[NDimension - 1], point[0]);
         if (l <= -1 * theta)
           itWeights.Set(0.0);
         else if (l >= theta)
@@ -274,7 +277,7 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerate
     {
       while (!itWeights.IsAtEnd())
       {
-        const double l = m_Geometry->ToUntiltedCoordinateAtIsocenter(itIn.GetIndex()[2], point[0]);
+        const double l = m_Geometry->ToUntiltedCoordinateAtIsocenter(itIn.GetIndex()[NDimension - 1], point[0]);
         if (l <= -1 * theta)
           itWeights.Set(2.0);
         else if (l >= theta)
@@ -286,8 +289,8 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerate
       }
     }
 
-    // Multiply each line of the current slice
-    for (unsigned int j = 0; j < overlapRegion.GetSize(1); j++)
+    // Multiply each line of the current 2D or 3D slice
+    for (unsigned int j = 0; j < nLinesPerProjection; j++)
     {
       // Set outside of overlap to 0 values
       while (itOut.GetIndex()[0] != itIn.GetIndex()[0])

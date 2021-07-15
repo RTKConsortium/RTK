@@ -3,7 +3,7 @@ if(RTK_USE_CUDA)
 endif()
 
 itk_wrap_class("rtk::DisplacedDetectorImageFilter" POINTER)
-  itk_wrap_image_filter("${WRAP_ITK_REAL}" 1 3)
+  itk_wrap_image_filter("${WRAP_ITK_REAL}" 1 3;4)
 
   if(RTK_USE_CUDA)
     foreach(d ${ITK_WRAP_IMAGE_DIMS})

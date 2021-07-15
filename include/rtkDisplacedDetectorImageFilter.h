@@ -68,15 +68,14 @@ public:
 
   /** Standard class type alias. */
   using Self = DisplacedDetectorImageFilter;
-
   using Superclass = itk::ImageToImageFilter<TInputImage, TOutputImage>;
-
   using Pointer = itk::SmartPointer<Self>;
   using ConstPointer = itk::SmartPointer<const Self>;
 
   /** Some convenient type alias. */
   using InputImageType = TInputImage;
   using OutputImageType = TOutputImage;
+  static constexpr unsigned int NDimension = TInputImage::ImageDimension;
   using OutputImageRegionType = typename OutputImageType::RegionType;
   using WeightImageType = itk::Image<typename TOutputImage::InternalPixelType, 1>;
 
