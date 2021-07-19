@@ -28,9 +28,6 @@ namespace rtk
 using ThreadIdType = itk::ThreadIdType;
 }
 
-#ifndef CUDA_FOUND
-#  cmakedefine CUDA_FOUND
-#endif
 #cmakedefine RTK_PROBE_EACH_FILTER
 #cmakedefine RTK_USE_CUDA
 #cmakedefine RTK_BUILD_SHARED_LIBS 1

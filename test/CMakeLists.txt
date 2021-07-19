@@ -28,7 +28,7 @@ endfunction()
 # rtk_add_cuda_test(testname testfile [DATA{}])
 # Add test depending on CUDA
 function(rtk_add_cuda_test testname testfile)
-  if(RTK_USE_CUDA AND CUDA_HAVE_GPU)
+  if(RTK_USE_CUDA)
     add_executable(${testname} ${testfile})
     target_link_libraries( ${testname} ${RTK_LIBRARIES} ${ITK_LIBRARIES})
     itk_add_test(NAME ${testname}

@@ -69,7 +69,32 @@ set_directory_properties(PROPERTIES COMPILE_DEFINITIONS "${defComSansVTK}")
 # CUDA library
 #=========================================================
 if (RTK_USE_CUDA)
-  set(RTK_CUDA_FILES
+  set(RTK_SRCS ${RTK_SRCS}
+    rtkCudaAverageOutOfROIImageFilter.cxx
+    rtkCudaConstantVolumeSeriesSource.cxx
+    rtkCudaConstantVolumeSource.cxx
+    rtkCudaCropImageFilter.cxx
+    rtkCudaCyclicDeformationImageFilter.cxx
+    rtkCudaDisplacedDetectorImageFilter.cxx
+    rtkCudaFDKBackProjectionImageFilter.cxx
+    rtkCudaFDKConeBeamReconstructionFilter.cxx
+    rtkCudaFDKWeightProjectionFilter.cxx
+    rtkCudaForwardWarpImageFilter.cxx
+    rtkCudaInterpolateImageFilter.cxx
+    rtkCudaIterativeFDKConeBeamReconstructionFilter.cxx
+    rtkCudaLagCorrectionImageFilter.cxx
+    rtkCudaLaplacianImageFilter.cxx
+    rtkCudaLastDimensionTVDenoisingImageFilter.cxx
+    rtkCudaParkerShortScanImageFilter.cxx
+    rtkCudaPolynomialGainCorrectionImageFilter.cxx
+    rtkCudaRayCastBackProjectionImageFilter.cxx
+    rtkCudaSplatImageFilter.cxx
+    rtkCudaTotalVariationDenoisingBPDQImageFilter.cxx
+    rtkCudaWarpBackProjectionImageFilter.cxx
+    rtkCudaWarpForwardProjectionImageFilter.cxx
+    rtkCudaWarpImageFilter.cxx)
+
+  set(RTK_SRCS ${RTK_SRCS}
     rtkCudaAverageOutOfROIImageFilter.cu
     rtkCudaBackProjectionImageFilter.cu
     rtkCudaConjugateGradientImageFilter.cu
@@ -99,37 +124,6 @@ if (RTK_USE_CUDA)
     rtkCudaWarpImageFilter.cu
     rtkCudaWeidingerForwardModelImageFilter.cu
     )
-
-  set(CUDA_PROPAGATE_HOST_FLAGS ON)
-  set(CUDA_USE_STATIC_CUDA_RUNTIME OFF)#WARNING: mandatory for defining runtime type \MT vs \MD
-  CUDA_COMPILE(RTK_CUDA_WRAPPERS ${RTK_CUDA_FILES})
-
-  set(RTK_SRCS ${RTK_SRCS}
-    rtkCudaAverageOutOfROIImageFilter.cxx
-    rtkCudaConstantVolumeSeriesSource.cxx
-    rtkCudaConstantVolumeSource.cxx
-    rtkCudaCropImageFilter.cxx
-    rtkCudaCyclicDeformationImageFilter.cxx
-    rtkCudaDisplacedDetectorImageFilter.cxx
-    rtkCudaFDKBackProjectionImageFilter.cxx
-    rtkCudaFDKConeBeamReconstructionFilter.cxx
-    rtkCudaFDKWeightProjectionFilter.cxx
-    rtkCudaForwardWarpImageFilter.cxx
-    rtkCudaInterpolateImageFilter.cxx
-    rtkCudaIterativeFDKConeBeamReconstructionFilter.cxx
-    rtkCudaLagCorrectionImageFilter.cxx
-    rtkCudaLaplacianImageFilter.cxx
-    rtkCudaLastDimensionTVDenoisingImageFilter.cxx
-    rtkCudaParkerShortScanImageFilter.cxx
-    rtkCudaPolynomialGainCorrectionImageFilter.cxx
-    rtkCudaRayCastBackProjectionImageFilter.cxx
-    rtkCudaSplatImageFilter.cxx
-    rtkCudaTotalVariationDenoisingBPDQImageFilter.cxx
-    rtkCudaWarpBackProjectionImageFilter.cxx
-    rtkCudaWarpForwardProjectionImageFilter.cxx
-    rtkCudaWarpImageFilter.cxx
-    ${RTK_CUDA_WRAPPERS}
-    ${RTK_CUDA_FILES})
 endif()
 #=========================================================
 
@@ -137,5 +131,8 @@ itk_module_add_library(RTK ${RTK_SRCS})
 target_link_libraries(RTK LINK_PUBLIC lpsolve55)
 
 if (RTK_USE_CUDA)
-  target_link_libraries( RTK LINK_PUBLIC ITKCudaCommon ${CUDA_LIBRARIES} ${CUDA_CUDA_LIBRARY} ${CUDA_cufft_LIBRARY} ${CUDA_CUBLAS_LIBRARIES} )
+  target_link_libraries(RTK LINK_PUBLIC CUDA::cuda_driver)
+  target_link_libraries(RTK LINK_PUBLIC CUDA::cufft)
+  target_link_libraries(RTK LINK_PUBLIC CUDA::cublas)
+  set_property(TARGET RTK PROPERTY CUDA_STANDARD ${CMAKE_CXX_STANDARD})
 endif ()

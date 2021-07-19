@@ -91,14 +91,6 @@ if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
   endif()
 endif()
 
-#=========================================================
-# Allow for multiple CL.EXE to write to the same .PDB file
-if(RTK_USE_CUDA)
-  if(WIN32)
-    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /FS")
-  endif()
-endif()
-
 include(cmake/rtkCompilerFlags.cmake)
 
 # --------------------------------------------------------
@@ -212,11 +204,7 @@ set(RTK_VERSION_PATCH ${RTK_VERSION_PATCH})
 # Whether the compiled version of RTK uses CUDA
 set(RTK_USE_CUDA ${RTK_USE_CUDA})
 
-if(${RTK_USE_CUDA})
-  list(APPEND CMAKE_MODULE_PATH ${RTK_MODULE_PATH_CONFIG})
-  # if we are using CUDA, make sure CUDA libraries are available
-  find_package(CUDA_wrap REQUIRED)
-  include_directories(${CUDA_INCLUDE_DIRS})
+if(RTK_USE_CUDA)
   set(RTK_CUDA_PROJECTIONS_SLAB_SIZE \"16\" CACHE STRING \"Number of projections processed simultaneously in CUDA forward and back projections\")
 endif()
 ")
@@ -230,9 +218,7 @@ set(RTK_VERSION_PATCH ${RTK_VERSION_PATCH})
 # Whether the compiled version of RTK uses CUDA
 set(RTK_USE_CUDA ${RTK_USE_CUDA})
 
-if(${RTK_USE_CUDA})
-  # if we are using CUDA, make sure CUDA libraries are available
-  find_package(CUDA_wrap REQUIRED)
+if(RTK_USE_CUDA)
   set(RTK_CUDA_PROJECTIONS_SLAB_SIZE \"16\" CACHE STRING \"Number of projections processed simultaneously in CUDA forward and back projections\")
 endif()
 ")
@@ -253,11 +239,9 @@ endif()
 
 # Install configuration file
 install(FILES ${RTK_BINARY_DIR}/rtkConfiguration.h DESTINATION ${RTK_INSTALL_INCLUDE_DIR})
-install(FILES ${RTK_SOURCE_DIR}/cmake/FindCUDA_wrap.cmake
-              ${RTK_SOURCE_DIR}/cmake/FindGengetopt.cmake
+install(FILES ${RTK_SOURCE_DIR}/cmake/FindGengetopt.cmake
               ${RTK_SOURCE_DIR}/cmake/GetGitRevisionDescription.cmake
               ${RTK_SOURCE_DIR}/cmake/GetGitRevisionDescription.cmake.in
-              ${RTK_SOURCE_DIR}/cmake/has_cuda_gpu.cxx
         DESTINATION ${ITK_INSTALL_PACKAGE_DIR})
 if(NOT ITK_SOURCE_DIR)
   install(CODE "MESSAGE(FATAL_ERROR \"Cannot install, RTK is compiled separately from ITK. Installation is only functional if RTK is compiled within ITK.\")")
