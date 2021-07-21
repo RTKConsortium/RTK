@@ -186,14 +186,9 @@ list(APPEND RTK_INCLUDE_DIRS
 list(APPEND RTK_INCLUDE_DIRS
   ${RTK_BINARY_DIR})
 
-# Export library linking directories (used by LIBPATH)
-set(RTK_SYSTEM_LIBRARY_DIRS ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
-set(RTK_SYSTEM_INCLUDE_DIRS ${RTK_INCLUDE_DIRS})
-
 #=========================================================
 # Generate RTKConfig.cmake for the build tree.
 set(RTK_MODULE_PATH_CONFIG ${CMAKE_MODULE_PATH})
-set(RTK_LIBRARY_DIRS ${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
 
 set(RTK_EXPORT_CODE_BUILD "
 # The RTK version number
@@ -233,6 +228,11 @@ if(NOT ITK_SOURCE_DIR)
 
   list(APPEND CMAKE_MODULE_PATH ${ITK_CMAKE_DIR})
   include(ITKModuleExternal)
+
+  # Add third party to RTK build targets.
+  # This must be done after RTK has been loaded by ITK to make sure
+  # ${itk-module} variables are defined for RTK.
+  itk_module_target_export(lpsolve55)
 else()
   itk_module_impl()
 endif()

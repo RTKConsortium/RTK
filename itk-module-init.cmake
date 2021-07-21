@@ -1,7 +1,7 @@
 #
 # Find the packages required by this module
 #
-list(APPEND CMAKE_MODULE_PATH ${RTK_SOURCE_DIR}/cmake)
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake)
 
 include(CheckLanguage)
 check_language(CUDA)
