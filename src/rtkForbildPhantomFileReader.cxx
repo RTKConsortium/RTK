@@ -211,20 +211,39 @@ ForbildPhantomFileReader ::CreateForbildElliptCyl(const std::string & s, const s
   if (fig == "Ellipt_Cyl")
   {
     VectorType a_x;
-    if (!FindVectorInString("a_x", s, a_x))
-      itkExceptionMacro(<< "Could not find a_x in " << s);
-    a_x /= a_x.GetNorm();
+    bool       a_x_Found = FindVectorInString("a_x", s, a_x);
     VectorType a_y;
-    if (!FindVectorInString("a_x", s, a_y))
-      itkExceptionMacro(<< "Could not find a_y in " << s);
-    a_y /= a_y.GetNorm();
-    VectorType         a_z = CrossProduct(a_x, a_y);
+    bool       a_y_Found = FindVectorInString("a_y", s, a_y);
+    VectorType a_z;
+    bool       a_z_Found = FindVectorInString("axis", s, a_z);
+    if (a_x_Found && a_y_Found)
+    {
+      a_x /= a_x.GetNorm();
+      a_y /= a_y.GetNorm();
+      a_z = CrossProduct(a_x, a_y);
+    }
+    else if (a_x_Found && a_z_Found)
+    {
+      a_x /= a_x.GetNorm();
+      a_z /= a_z.GetNorm();
+      a_y = CrossProduct(a_z, a_x);
+    }
+    else if (a_y_Found && a_z_Found)
+    {
+      a_y /= a_y.GetNorm();
+      a_z /= a_z.GetNorm();
+      a_x = CrossProduct(a_y, a_z);
+    }
+    else
+    {
+      itkExceptionMacro(<< "Could not find 2 vectors among a_x, a_y and axis in " << s);
+    }
     RotationMatrixType rot;
     for (unsigned int i = 0; i < Dimension; i++)
     {
-      rot[0][i] = a_x[i];
-      rot[1][i] = a_y[i];
-      rot[2][i] = a_z[i];
+      rot[i][0] = a_x[i];
+      rot[i][1] = a_y[i];
+      rot[i][2] = a_z[i];
     }
     q->Rotate(rot);
   }
