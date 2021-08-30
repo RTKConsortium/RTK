@@ -413,6 +413,7 @@ ForbildPhantomFileReader::FindVectorInString(const std::string & name, const std
 ForbildPhantomFileReader::RotationMatrixType
 ForbildPhantomFileReader::ComputeRotationMatrixBetweenVectors(const VectorType & source, const VectorType & dest) const
 {
+  // https://math.stackexchange.com/questions/180418/calculate-rotation-matrix-to-align-vector-a-to-vector-b-in-3d/476311#476311
   VectorType         s = source / source.GetNorm();
   VectorType         d = dest / dest.GetNorm();
   RotationMatrixType r;
@@ -426,11 +427,11 @@ ForbildPhantomFileReader::ComputeRotationMatrixBetweenVectors(const VectorType &
   ConvexShape::RotationMatrixType vx;
   vx.Fill(0.);
   vx[0][1] = -v[2];
-  vx[1][0] = v[2];
   vx[0][2] = v[1];
+  vx[1][0] = v[2];
+  vx[1][2] = -v[0];
   vx[2][0] = -v[1];
-  vx[1][2] = v[0];
-  vx[2][1] = -v[0];
+  vx[2][1] = v[0];
   r += vx;
   r += vx * vx * 1. / (1. + c);
   return r;
