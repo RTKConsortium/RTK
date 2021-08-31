@@ -120,6 +120,8 @@ private:
   PointType               m_Center;
   ConvexShape::Pointer    m_ConvexShape;
   ConvexShapeVectorType   m_Unions;
+  std::vector<int>        m_UnionWith;
+  std::vector<int>        m_UnionIntersectionPosition;
 };
 
 } // end namespace rtk
