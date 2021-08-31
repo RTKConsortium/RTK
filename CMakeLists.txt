@@ -19,17 +19,6 @@ foreach(p ${CMAKE_POLICIES})
   endif()
 endforeach()
 
-## Set the default target properties for RTK
-if(NOT CMAKE_CXX_STANDARD)
-  set(CMAKE_CXX_STANDARD 11) # Supported values are ``11``, ``14``, and ``17``.
-endif()
-if(NOT CMAKE_CXX_STANDARD_REQUIRED)
-  set(CMAKE_CXX_STANDARD_REQUIRED ON)
-endif()
-if(NOT CMAKE_CXX_EXTENSIONS)
-  set(CMAKE_CXX_EXTENSIONS OFF)
-endif()
-
 #=========================================================
 # Help function to debug CMake
 macro (DD in)
@@ -46,11 +35,6 @@ set(RTK_VERSION_PATCH "0")
 set(RTK_VERSION_STRING "${RTK_VERSION_MAJOR}.${RTK_VERSION_MINOR}")
 
 set(RTK_LIBRARIES RTK)
-
-## Default to release
-if (NOT CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE Release)
-endif ()
 
 #=========================================================
 # Installation variables
@@ -233,6 +217,24 @@ if(NOT ITK_SOURCE_DIR)
   # This must be done after RTK has been loaded by ITK to make sure
   # ${itk-module} variables are defined for RTK.
   itk_module_target_export(lpsolve55)
+
+  if(${ITK_VERSION} VERSION_LESS 5.3)
+    ## Set the default target properties for RTK
+    if(NOT CMAKE_CXX_STANDARD)
+      set(CMAKE_CXX_STANDARD 14) # Supported values are ``11``, ``14``, and ``17``.
+    endif()
+    if(NOT CMAKE_CXX_STANDARD_REQUIRED)
+      set(CMAKE_CXX_STANDARD_REQUIRED ON)
+    endif()
+    if(NOT CMAKE_CXX_EXTENSIONS)
+      set(CMAKE_CXX_EXTENSIONS OFF)
+    endif()
+
+    ## Default to release
+    if (NOT CMAKE_BUILD_TYPE)
+      set(CMAKE_BUILD_TYPE Release)
+    endif()
+  endif()
 else()
   itk_module_impl()
 endif()
