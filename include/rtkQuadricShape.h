@@ -66,6 +66,10 @@ public:
   bool
   IsInside(const PointType & point) const override;
 
+  /** Idem as IsInside without the application of clip planes. */
+  bool
+  IsInsideQuadric(const PointType & point) const;
+
   /** See rtk::ConvexShape::IsIntersectedByRay for the goal and
    * https://education.siggraph.org/static/HyperGraph/raytrace/rtinter4.htm
    * for the computation. */
