@@ -29,7 +29,7 @@
 namespace rtk
 {
 void
-ForbildPhantomFileReader ::GenerateOutputInformation()
+ForbildPhantomFileReader::GenerateOutputInformation()
 {
   m_GeometricPhantom = GeometricPhantom::New();
 
@@ -77,7 +77,7 @@ ForbildPhantomFileReader ::GenerateOutputInformation()
       CreateForbildElliptCyl(line, fig);
     else if (fig.substr(0, 9) == "Ellipsoid")
       CreateForbildEllipsoid(line, fig);
-    else if (fig.substr(0, 9) == "Cone")
+    else if (fig.substr(0, 4) == "Cone")
       CreateForbildCone(line, fig);
 
     // Density
@@ -107,7 +107,7 @@ ForbildPhantomFileReader ::GenerateOutputInformation()
 }
 
 void
-ForbildPhantomFileReader ::CreateForbildSphere(const std::string & s)
+ForbildPhantomFileReader::CreateForbildSphere(const std::string & s)
 {
   ScalarType r = 0.;
   if (!FindParameterInString("r", s, r))
@@ -120,7 +120,7 @@ ForbildPhantomFileReader ::CreateForbildSphere(const std::string & s)
 }
 
 void
-ForbildPhantomFileReader ::CreateForbildBox(const std::string & s)
+ForbildPhantomFileReader::CreateForbildBox(const std::string & s)
 {
   VectorType length;
   if (!FindParameterInString("dx", s, length[0]))
@@ -136,7 +136,7 @@ ForbildPhantomFileReader ::CreateForbildBox(const std::string & s)
 }
 
 void
-ForbildPhantomFileReader ::CreateForbildCylinder(const std::string & s, const std::string & fig)
+ForbildPhantomFileReader::CreateForbildCylinder(const std::string & s, const std::string & fig)
 {
   ScalarType l = 0.;
   if (!FindParameterInString("l", s, l))
@@ -184,7 +184,7 @@ ForbildPhantomFileReader ::CreateForbildCylinder(const std::string & s, const st
 }
 
 void
-ForbildPhantomFileReader ::CreateForbildElliptCyl(const std::string & s, const std::string & fig)
+ForbildPhantomFileReader::CreateForbildElliptCyl(const std::string & s, const std::string & fig)
 {
   ScalarType l = 0.;
   if (!FindParameterInString("l", s, l))
@@ -211,20 +211,39 @@ ForbildPhantomFileReader ::CreateForbildElliptCyl(const std::string & s, const s
   if (fig == "Ellipt_Cyl")
   {
     VectorType a_x;
-    if (!FindVectorInString("a_x", s, a_x))
-      itkExceptionMacro(<< "Could not find a_x in " << s);
-    a_x /= a_x.GetNorm();
+    bool       a_x_Found = FindVectorInString("a_x", s, a_x);
     VectorType a_y;
-    if (!FindVectorInString("a_x", s, a_y))
-      itkExceptionMacro(<< "Could not find a_y in " << s);
-    a_y /= a_y.GetNorm();
-    VectorType         a_z = CrossProduct(a_x, a_y);
+    bool       a_y_Found = FindVectorInString("a_y", s, a_y);
+    VectorType a_z;
+    bool       a_z_Found = FindVectorInString("axis", s, a_z);
+    if (a_x_Found && a_y_Found)
+    {
+      a_x /= a_x.GetNorm();
+      a_y /= a_y.GetNorm();
+      a_z = CrossProduct(a_x, a_y);
+    }
+    else if (a_x_Found && a_z_Found)
+    {
+      a_x /= a_x.GetNorm();
+      a_z /= a_z.GetNorm();
+      a_y = CrossProduct(a_z, a_x);
+    }
+    else if (a_y_Found && a_z_Found)
+    {
+      a_y /= a_y.GetNorm();
+      a_z /= a_z.GetNorm();
+      a_x = CrossProduct(a_y, a_z);
+    }
+    else
+    {
+      itkExceptionMacro(<< "Could not find 2 vectors among a_x, a_y and axis in " << s);
+    }
     RotationMatrixType rot;
     for (unsigned int i = 0; i < Dimension; i++)
     {
-      rot[0][i] = a_x[i];
-      rot[1][i] = a_y[i];
-      rot[2][i] = a_z[i];
+      rot[i][0] = a_x[i];
+      rot[i][1] = a_y[i];
+      rot[i][2] = a_z[i];
     }
     q->Rotate(rot);
   }
@@ -233,7 +252,7 @@ ForbildPhantomFileReader ::CreateForbildElliptCyl(const std::string & s, const s
 }
 
 void
-ForbildPhantomFileReader ::CreateForbildEllipsoid(const std::string & s, const std::string & fig)
+ForbildPhantomFileReader::CreateForbildEllipsoid(const std::string & s, const std::string & fig)
 {
   VectorType axes;
   if (!FindParameterInString("dx", s, axes[0]))
@@ -277,17 +296,91 @@ ForbildPhantomFileReader ::CreateForbildEllipsoid(const std::string & s, const s
 }
 
 void
-ForbildPhantomFileReader ::CreateForbildCone(const std::string & /*s*/, const std::string & /*fig*/)
+ForbildPhantomFileReader::CreateForbildCone(const std::string & s, const std::string & fig)
 {
-  itkExceptionMacro(<< "Cones have not been implemented (yet).");
+  ScalarType l = 0.;
+  if (!FindParameterInString("l", s, l))
+    itkExceptionMacro(<< "Could not find l (length) in " << s);
+  size_t     found = 0;
+  ScalarType r1 = 0.;
+  if (!FindParameterInString("r1", s, r1))
+  {
+    itkExceptionMacro(<< "Missing radius r1 in " << fig << ", " << found << " found in " << s);
+  }
+  ScalarType r2 = 0.;
+  if (!FindParameterInString("r2", s, r2))
+  {
+    itkExceptionMacro(<< "Missing radius r2 in " << fig << ", " << found << " found in " << s);
+  }
+
+  VectorType axes;
+  axes.Fill(r1);
+  VectorType planeDir;
+  planeDir[0] = 0.;
+  planeDir[1] = 0.;
+  planeDir[2] = 1.;
+
+  QuadricShape::Pointer q = QuadricShape::New();
+  PointType             spatialOffset;
+  spatialOffset[0] = 0.;
+  spatialOffset[1] = 0.;
+  if (r2 > r1)
+  {
+    axes[2] = -l * r1 / (r2 - r1);
+    q->AddClipPlane(-1. * planeDir, axes[2]);
+    q->AddClipPlane(planeDir, l - axes[2]);
+    spatialOffset[2] = axes[2] - 0.5 * l;
+  }
+  else
+  {
+    axes[2] = -l * r1 / (r1 - r2);
+    q->AddClipPlane(-1. * planeDir, -axes[2]);
+    q->AddClipPlane(planeDir, l + axes[2]);
+    spatialOffset[2] = -axes[2] - 0.5 * l;
+  }
+  q->SetEllipsoid(VectorType(0.), axes);
+  q->SetJ(0.);
+
+  RotationMatrixType rot;
+  rot.Fill(0.);
+  if (fig == "Cone_x")
+  {
+    rot[0][2] = 1.;
+    rot[1][0] = 1.;
+    rot[2][1] = 1.;
+  }
+  else if (fig == "Cone_y")
+  {
+    rot[0][1] = 1.;
+    rot[1][2] = 1.;
+    rot[2][0] = 1.;
+  }
+  else if (fig == "Cone_z")
+  {
+    rot.SetIdentity();
+  }
+  else if (fig == "Cone")
+  {
+    VectorType dir;
+    if (!FindVectorInString("axis", s, dir))
+      itkExceptionMacro(<< "Could not find axis in " << s);
+    rot = ComputeRotationMatrixBetweenVectors(planeDir, dir);
+  }
+  else
+  {
+    itkExceptionMacro(<< "Unknown figure: " << fig);
+  }
+  q->Rotate(rot);
+  q->Translate(m_Center + rot * spatialOffset);
+  m_ConvexShape = q.GetPointer();
 }
 
 void
-ForbildPhantomFileReader ::CreateForbildTetrahedron(const std::string & /*s*/)
+ForbildPhantomFileReader::CreateForbildTetrahedron(const std::string & /*s*/)
 {}
 
 bool
-ForbildPhantomFileReader ::FindParameterInString(const std::string & name, const std::string & s, ScalarType & param)
+ForbildPhantomFileReader::FindParameterInString(const std::string & name, const std::string & s, ScalarType & param)
 {
   std::string               regex = std::string("  *") + name + std::string(" *= *([-+0-9.]*)");
   itksys::RegularExpression re;
@@ -300,7 +393,7 @@ ForbildPhantomFileReader ::FindParameterInString(const std::string & name, const
 }
 
 bool
-ForbildPhantomFileReader ::FindVectorInString(const std::string & name, const std::string & s, VectorType & vec)
+ForbildPhantomFileReader::FindVectorInString(const std::string & name, const std::string & s, VectorType & vec)
 {
   std::string regex = std::string(" *") + name + std::string(" *\\( *([-+0-9.]*) *, *([-+0-9.]*) *, *([-+0-9.]*) *\\)");
   itksys::RegularExpression re;
@@ -318,8 +411,9 @@ ForbildPhantomFileReader ::FindVectorInString(const std::string & name, const st
 }
 
 ForbildPhantomFileReader::RotationMatrixType
-ForbildPhantomFileReader ::ComputeRotationMatrixBetweenVectors(const VectorType & source, const VectorType & dest) const
+ForbildPhantomFileReader::ComputeRotationMatrixBetweenVectors(const VectorType & source, const VectorType & dest) const
 {
+  // https://math.stackexchange.com/questions/180418/calculate-rotation-matrix-to-align-vector-a-to-vector-b-in-3d/476311#476311
   VectorType         s = source / source.GetNorm();
   VectorType         d = dest / dest.GetNorm();
   RotationMatrixType r;
@@ -333,18 +427,18 @@ ForbildPhantomFileReader ::ComputeRotationMatrixBetweenVectors(const VectorType 
   ConvexShape::RotationMatrixType vx;
   vx.Fill(0.);
   vx[0][1] = -v[2];
-  vx[1][0] = v[2];
   vx[0][2] = v[1];
+  vx[1][0] = v[2];
+  vx[1][2] = -v[0];
   vx[2][0] = -v[1];
-  vx[1][2] = v[0];
-  vx[2][1] = -v[0];
+  vx[2][1] = v[0];
   r += vx;
   r += vx * vx * 1. / (1. + c);
   return r;
 }
 
 void
-ForbildPhantomFileReader ::FindClipPlanes(const std::string & s)
+ForbildPhantomFileReader::FindClipPlanes(const std::string & s)
 {
   // of the form r(x,y,z) > expr
   std::string               regex(" +r *\\( *([-+0-9.]*) *, *([-+0-9.]*) *, *([-+0-9.]*) *\\) *([<>]) *([-+0-9.]*)");
@@ -416,13 +510,15 @@ ForbildPhantomFileReader ::FindClipPlanes(const std::string & s)
 }
 
 void
-ForbildPhantomFileReader ::FindUnions(const std::string & s)
+ForbildPhantomFileReader::FindUnions(const std::string & s)
 {
   std::string               regex(" +union *= *([-0-9]*)");
   itksys::RegularExpression re;
   if (!re.compile(regex.c_str()))
     itkExceptionMacro(<< "Could not compile " << regex);
   const char * currs = s.c_str();
+  m_UnionWith.push_back(-1);
+  m_UnionIntersectionPosition.push_back(-1);
   while (re.find(currs))
   {
     currs += re.end();
@@ -435,7 +531,28 @@ ForbildPhantomFileReader ::FindUnions(const std::string & s)
     if (m_ConvexShape->GetDensity() != m_GeometricPhantom->GetConvexShapes()[pos]->GetDensity())
       itkExceptionMacro(<< "Cannot unionize objects of different density in " << s);
     ico->SetDensity(-1. * m_ConvexShape->GetDensity());
+
+    m_UnionWith.back() = pos;
+    m_UnionIntersectionPosition.back() = m_Unions.size();
     m_Unions.push_back(ico.GetPointer());
+
+    // Handles the union of three objects. Union of more objects would require
+    // the implementation of the inclusion-exclusion formula
+    // https://en.wikipedia.org/wiki/Inclusion%E2%80%93exclusion_principle
+    if (m_UnionWith[pos] != -1)
+    {
+      ico = IntersectionOfConvexShapes::New();
+      ico->AddConvexShape(m_ConvexShape);
+      ico->AddConvexShape(m_GeometricPhantom->GetConvexShapes()[m_UnionWith[pos]]);
+      ico->SetDensity(-1. * m_ConvexShape->GetDensity());
+      m_Unions.push_back(ico.GetPointer());
+
+      ico = IntersectionOfConvexShapes::New();
+      ico->AddConvexShape(m_ConvexShape);
+      ico->AddConvexShape(m_Unions[m_UnionIntersectionPosition[pos]]);
+      ico->SetDensity(m_ConvexShape->GetDensity());
+      m_Unions.push_back(ico.GetPointer());
+    }
   }
 }
 

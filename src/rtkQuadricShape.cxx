@@ -26,13 +26,17 @@ QuadricShape ::QuadricShape() = default;
 bool
 QuadricShape ::IsInside(const PointType & point) const
 {
+  return (IsInsideQuadric(point) && ApplyClipPlanes(point));
+}
+
+bool
+QuadricShape ::IsInsideQuadric(const PointType & point) const
+{
   ScalarType QuadricEllip = this->GetA() * point[0] * point[0] + this->GetB() * point[1] * point[1] +
                             this->GetC() * point[2] * point[2] + this->GetD() * point[0] * point[1] +
                             this->GetE() * point[0] * point[2] + this->GetF() * point[1] * point[2] +
                             this->GetG() * point[0] + this->GetH() * point[1] + this->GetI() * point[2] + this->GetJ();
-  if (QuadricEllip <= 0)
-    return ApplyClipPlanes(point);
-  return false;
+  return (QuadricEllip <= 0);
 }
 
 bool
@@ -48,7 +52,7 @@ QuadricShape ::IsIntersectedByRay(const PointType &  rayOrigin,
   ScalarType Bq = 2 * (m_A * rayOrigin[0] * rayDirection[0] + m_B * rayOrigin[1] * rayDirection[1] +
                        m_C * rayOrigin[2] * rayDirection[2]) +
                   m_D * (rayOrigin[0] * rayDirection[1] + rayOrigin[1] * rayDirection[0]) +
-                  m_E * (rayOrigin[0] * rayDirection[2] + rayOrigin[2] * rayDirection[0]) +
+                  m_E * (rayOrigin[2] * rayDirection[0] + rayOrigin[0] * rayDirection[2]) +
                   m_F * (rayOrigin[1] * rayDirection[2] + rayOrigin[2] * rayDirection[1]) + m_G * rayDirection[0] +
                   m_H * rayDirection[1] + m_I * rayDirection[2];
   ScalarType Cq = m_A * rayOrigin[0] * rayOrigin[0] + m_B * rayOrigin[1] * rayOrigin[1] +
@@ -59,21 +63,69 @@ QuadricShape ::IsIntersectedByRay(const PointType &  rayOrigin,
   const ScalarType zero = itk::NumericTraits<ScalarType>::ZeroValue();
   if (Aq == zero)
   {
+    // Only one intersection with, e.g., a plane: check which half line should be kept
     nearDist = -Cq / Bq;
-    farDist = itk::NumericTraits<ScalarType>::max();
+    auto bOriginIsInside = IsInsideQuadric(rayOrigin);
+    if ((bOriginIsInside && nearDist < 0.) || (!bOriginIsInside && nearDist > 0.))
+      farDist = itk::NumericTraits<ScalarType>::max();
+    else
+    {
+      farDist = nearDist;
+      nearDist = -itk::NumericTraits<ScalarType>::max();
+    }
   }
   else
   {
     ScalarType discriminant = Bq * Bq - 4 * Aq * Cq;
-    if (discriminant < zero)
-      return false;
+    if (discriminant <= zero)
+    {
+      // No intersection but one might be dealing with an infinite line
+      // in the quadric, e.g. a line parallel to and in a cylinder.
+      if (IsInsideQuadric(rayOrigin))
+      {
+        nearDist = -itk::NumericTraits<ScalarType>::max();
+        farDist = itk::NumericTraits<ScalarType>::max();
+        return ApplyClipPlanes(rayOrigin, rayDirection, nearDist, farDist);
+      }
+      else
+        return false;
+    }
     nearDist = (-Bq - sqrt(discriminant)) / (2 * Aq);
     farDist = (-Bq + sqrt(discriminant)) / (2 * Aq);
-
-    // The following condition is equivant to but assumed to be faster
-    // if( itk::Math::abs(nearDist)>itk::Math::abs(farDist) )
-    if ((nearDist - farDist) * (nearDist + farDist) > 0.)
+    if (nearDist > farDist)
       std::swap(nearDist, farDist);
+
+    // Check if the central point between the two intersections is in the quadric
+    if (!IsInsideQuadric(rayOrigin + 0.5 * (farDist + nearDist) * rayDirection))
+    {
+      // If not, one is dealing with a half line, searching for the good one
+      double tmpNearDist = -itk::NumericTraits<ScalarType>::max();
+      double tmpFarDist = itk::NumericTraits<ScalarType>::max();
+      if (!ApplyClipPlanes(rayOrigin, rayDirection, tmpNearDist, tmpFarDist))
+        return false;
+      if (tmpFarDist > farDist)
+      {
+        if (tmpNearDist < nearDist)
+        {
+          itkGenericExceptionMacro(<< "Intersection of the quadric with the line "
+                                   << "gives two half lines, add clip planes to select which one");
+        }
+        else
+        {
+          nearDist = std::max(farDist, tmpNearDist);
+          farDist = tmpFarDist;
+          return true;
+        }
+      }
+      else if (tmpNearDist < nearDist)
+      {
+        farDist = std::min(nearDist, tmpFarDist);
+        nearDist = tmpNearDist;
+        return true;
+      }
+      else
+        return false;
+    }
   }
 
   return ApplyClipPlanes(rayOrigin, rayDirection, nearDist, farDist);
