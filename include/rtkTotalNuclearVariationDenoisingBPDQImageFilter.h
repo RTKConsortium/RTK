@@ -118,11 +118,7 @@ class ITK_TEMPLATE_EXPORT TotalNuclearVariationDenoisingBPDQImageFilter
   : public rtk::DenoisingBPDQImageFilter<TOutputImage, TGradientImage>
 {
 public:
-#if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
-  ITK_DISALLOW_COPY_AND_ASSIGN(TotalNuclearVariationDenoisingBPDQImageFilter);
-#else
   ITK_DISALLOW_COPY_AND_MOVE(TotalNuclearVariationDenoisingBPDQImageFilter);
-#endif
 
   /** Standard class type alias. */
   using Self = TotalNuclearVariationDenoisingBPDQImageFilter;

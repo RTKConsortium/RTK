@@ -40,11 +40,7 @@ namespace rtk
 class RTK_EXPORT EdfImageIO : public itk::ImageIOBase
 {
 public:
-#if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
-  ITK_DISALLOW_COPY_AND_ASSIGN(EdfImageIO);
-#else
   ITK_DISALLOW_COPY_AND_MOVE(EdfImageIO);
-#endif
 
   /** Standard class type alias. */
   using Self = EdfImageIO;

@@ -33,11 +33,7 @@ template <typename ProjectionStackType>
 class ITK_TEMPLATE_EXPORT SubSelectFromListImageFilter : public SubSelectImageFilter<ProjectionStackType>
 {
 public:
-#if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
-  ITK_DISALLOW_COPY_AND_ASSIGN(SubSelectFromListImageFilter);
-#else
   ITK_DISALLOW_COPY_AND_MOVE(SubSelectFromListImageFilter);
-#endif
 
   /** Standard class type alias. */
   using Self = SubSelectFromListImageFilter;

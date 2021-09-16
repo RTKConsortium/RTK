@@ -36,11 +36,7 @@ template <class TInputImage, class TOutputImage = TInputImage>
 class ITK_TEMPLATE_EXPORT XRadRawToAttenuationImageFilter : public itk::ImageToImageFilter<TInputImage, TOutputImage>
 {
 public:
-#if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
-  ITK_DISALLOW_COPY_AND_ASSIGN(XRadRawToAttenuationImageFilter);
-#else
   ITK_DISALLOW_COPY_AND_MOVE(XRadRawToAttenuationImageFilter);
-#endif
 
   /** Standard class type alias. */
   using Self = XRadRawToAttenuationImageFilter;

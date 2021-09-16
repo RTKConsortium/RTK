@@ -38,11 +38,7 @@ template <class TInputImage>
 class ITK_TEMPLATE_EXPORT DivergenceOfGradientConjugateGradientOperator : public ConjugateGradientOperator<TInputImage>
 {
 public:
-#if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
-  ITK_DISALLOW_COPY_AND_ASSIGN(DivergenceOfGradientConjugateGradientOperator);
-#else
   ITK_DISALLOW_COPY_AND_MOVE(DivergenceOfGradientConjugateGradientOperator);
-#endif
 
   /** Extract dimension from input and output image. */
   itkStaticConstMacro(InputImageDimension, unsigned int, TInputImage::ImageDimension);

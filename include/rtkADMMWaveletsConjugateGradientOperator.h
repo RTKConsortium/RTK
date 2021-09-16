@@ -98,11 +98,7 @@ template <typename TOutputImage>
 class ITK_TEMPLATE_EXPORT ADMMWaveletsConjugateGradientOperator : public ConjugateGradientOperator<TOutputImage>
 {
 public:
-#if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
-  ITK_DISALLOW_COPY_AND_ASSIGN(ADMMWaveletsConjugateGradientOperator);
-#else
   ITK_DISALLOW_COPY_AND_MOVE(ADMMWaveletsConjugateGradientOperator);
-#endif
 
   /** Standard class type alias. */
   using Self = ADMMWaveletsConjugateGradientOperator;

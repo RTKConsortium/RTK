@@ -44,11 +44,7 @@ class RTK_EXPORT CudaFFTRampImageFilter
       FFTRampImageFilter<itk::CudaImage<float, 3>, itk::CudaImage<float, 3>, float>>
 {
 public:
-#  if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
-  ITK_DISALLOW_COPY_AND_ASSIGN(CudaFFTRampImageFilter);
-#  else
   ITK_DISALLOW_COPY_AND_MOVE(CudaFFTRampImageFilter);
-#  endif
 
   /** Standard class type alias. */
   using Self = CudaFFTRampImageFilter;

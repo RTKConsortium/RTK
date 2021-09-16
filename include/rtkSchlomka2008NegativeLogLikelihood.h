@@ -45,11 +45,7 @@ namespace rtk
 class Schlomka2008NegativeLogLikelihood : public rtk::ProjectionsDecompositionNegativeLogLikelihood
 {
 public:
-#if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
-  ITK_DISALLOW_COPY_AND_ASSIGN(Schlomka2008NegativeLogLikelihood);
-#else
   ITK_DISALLOW_COPY_AND_MOVE(Schlomka2008NegativeLogLikelihood);
-#endif
 
   using Self = Schlomka2008NegativeLogLikelihood;
   using Superclass = rtk::ProjectionsDecompositionNegativeLogLikelihood;

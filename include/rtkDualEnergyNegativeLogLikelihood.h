@@ -43,11 +43,7 @@ namespace rtk
 class DualEnergyNegativeLogLikelihood : public rtk::ProjectionsDecompositionNegativeLogLikelihood
 {
 public:
-#if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
-  ITK_DISALLOW_COPY_AND_ASSIGN(DualEnergyNegativeLogLikelihood);
-#else
   ITK_DISALLOW_COPY_AND_MOVE(DualEnergyNegativeLogLikelihood);
-#endif
 
   using Self = DualEnergyNegativeLogLikelihood;
   using Superclass = rtk::ProjectionsDecompositionNegativeLogLikelihood;

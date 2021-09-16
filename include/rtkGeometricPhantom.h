@@ -37,11 +37,7 @@ namespace rtk
 class RTK_EXPORT GeometricPhantom : public itk::DataObject
 {
 public:
-#if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
-  ITK_DISALLOW_COPY_AND_ASSIGN(GeometricPhantom);
-#else
   ITK_DISALLOW_COPY_AND_MOVE(GeometricPhantom);
-#endif
 
   /** Standard class type alias. */
   using Self = GeometricPhantom;

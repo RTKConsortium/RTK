@@ -86,11 +86,7 @@ class ITK_TEMPLATE_EXPORT WarpProjectionStackToFourDImageFilter
   : public ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType>
 {
 public:
-#if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
-  ITK_DISALLOW_COPY_AND_ASSIGN(WarpProjectionStackToFourDImageFilter);
-#else
   ITK_DISALLOW_COPY_AND_MOVE(WarpProjectionStackToFourDImageFilter);
-#endif
 
   /** Standard class type alias. */
   using Self = WarpProjectionStackToFourDImageFilter;

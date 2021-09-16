@@ -52,11 +52,7 @@ namespace rtk
 class RTK_EXPORT BioscanGeometryReader : public itk::LightProcessObject
 {
 public:
-#if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
-  ITK_DISALLOW_COPY_AND_ASSIGN(BioscanGeometryReader);
-#else
   ITK_DISALLOW_COPY_AND_MOVE(BioscanGeometryReader);
-#endif
 
   /** Standard type alias */
   using Self = BioscanGeometryReader;

@@ -55,11 +55,7 @@ template <typename TImage, unsigned VModelOrder>
 class ITK_TEMPLATE_EXPORT LagCorrectionImageFilter : public itk::InPlaceImageFilter<TImage, TImage>
 {
 public:
-#if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
-  ITK_DISALLOW_COPY_AND_ASSIGN(LagCorrectionImageFilter);
-#else
   ITK_DISALLOW_COPY_AND_MOVE(LagCorrectionImageFilter);
-#endif
 
   /** Standard class type alias. */
   using Self = LagCorrectionImageFilter;

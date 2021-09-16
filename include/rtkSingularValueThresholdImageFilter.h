@@ -50,11 +50,7 @@ template <typename TInputImage, typename TRealType = float, typename TOutputImag
 class ITK_TEMPLATE_EXPORT SingularValueThresholdImageFilter : public itk::InPlaceImageFilter<TInputImage, TOutputImage>
 {
 public:
-#if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
-  ITK_DISALLOW_COPY_AND_ASSIGN(SingularValueThresholdImageFilter);
-#else
   ITK_DISALLOW_COPY_AND_MOVE(SingularValueThresholdImageFilter);
-#endif
 
   /** Standard class type alias. */
   using Self = SingularValueThresholdImageFilter;

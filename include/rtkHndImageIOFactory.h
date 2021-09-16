@@ -43,11 +43,7 @@ namespace rtk
 class RTK_EXPORT HndImageIOFactory : public itk::ObjectFactoryBase
 {
 public:
-#if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
-  ITK_DISALLOW_COPY_AND_ASSIGN(HndImageIOFactory);
-#else
   ITK_DISALLOW_COPY_AND_MOVE(HndImageIOFactory);
-#endif
 
   /** Standard class type alias. */
   using Self = HndImageIOFactory;

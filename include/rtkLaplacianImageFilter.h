@@ -41,11 +41,7 @@ template <typename OutputImageType, typename GradientImageType>
 class ITK_TEMPLATE_EXPORT LaplacianImageFilter : public itk::ImageToImageFilter<OutputImageType, OutputImageType>
 {
 public:
-#if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
-  ITK_DISALLOW_COPY_AND_ASSIGN(LaplacianImageFilter);
-#else
   ITK_DISALLOW_COPY_AND_MOVE(LaplacianImageFilter);
-#endif
 
   /** Standard class type alias. */
   using Self = LaplacianImageFilter;

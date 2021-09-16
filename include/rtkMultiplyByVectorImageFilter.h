@@ -40,11 +40,7 @@ template <class TInputImage>
 class ITK_TEMPLATE_EXPORT MultiplyByVectorImageFilter : public itk::ImageToImageFilter<TInputImage, TInputImage>
 {
 public:
-#if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
-  ITK_DISALLOW_COPY_AND_ASSIGN(MultiplyByVectorImageFilter);
-#else
   ITK_DISALLOW_COPY_AND_MOVE(MultiplyByVectorImageFilter);
-#endif
 
   /** Standard class type alias. */
   using Self = MultiplyByVectorImageFilter;

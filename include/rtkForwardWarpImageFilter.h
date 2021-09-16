@@ -45,11 +45,7 @@ template <class TInputImage,
 class ITK_TEMPLATE_EXPORT ForwardWarpImageFilter : public itk::WarpImageFilter<TInputImage, TOutputImage, TDVF>
 {
 public:
-#if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
-  ITK_DISALLOW_COPY_AND_ASSIGN(ForwardWarpImageFilter);
-#else
   ITK_DISALLOW_COPY_AND_MOVE(ForwardWarpImageFilter);
-#endif
 
   /** Standard class type alias. */
   using Self = ForwardWarpImageFilter;

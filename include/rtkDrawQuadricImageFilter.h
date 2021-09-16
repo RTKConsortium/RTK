@@ -38,11 +38,7 @@ template <class TInputImage, class TOutputImage>
 class ITK_TEMPLATE_EXPORT DrawQuadricImageFilter : public DrawConvexImageFilter<TInputImage, TOutputImage>
 {
 public:
-#if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
-  ITK_DISALLOW_COPY_AND_ASSIGN(DrawQuadricImageFilter);
-#else
   ITK_DISALLOW_COPY_AND_MOVE(DrawQuadricImageFilter);
-#endif
 
   /** Standard class type alias. */
   using Self = DrawQuadricImageFilter;

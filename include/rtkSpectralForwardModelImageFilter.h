@@ -48,11 +48,7 @@ class ITK_TEMPLATE_EXPORT SpectralForwardModelImageFilter
   : public itk::InPlaceImageFilter<MeasuredProjectionsType, MeasuredProjectionsType>
 {
 public:
-#if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
-  ITK_DISALLOW_COPY_AND_ASSIGN(SpectralForwardModelImageFilter);
-#else
   ITK_DISALLOW_COPY_AND_MOVE(SpectralForwardModelImageFilter);
-#endif
 
   /** Standard class type alias. */
   using Self = SpectralForwardModelImageFilter;

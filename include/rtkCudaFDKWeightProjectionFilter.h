@@ -53,11 +53,7 @@ class RTK_EXPORT CudaFDKWeightProjectionFilter
                                        rtk::FDKWeightProjectionFilter<itk::CudaImage<float, 3>>>
 {
 public:
-#  if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
-  ITK_DISALLOW_COPY_AND_ASSIGN(CudaFDKWeightProjectionFilter);
-#  else
   ITK_DISALLOW_COPY_AND_MOVE(CudaFDKWeightProjectionFilter);
-#  endif
 
   /** Convenience type alias **/
   using ImageType = itk::CudaImage<float, 3>;

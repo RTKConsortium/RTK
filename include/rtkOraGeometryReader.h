@@ -39,11 +39,7 @@ namespace rtk
 class RTK_EXPORT OraGeometryReader : public itk::LightProcessObject
 {
 public:
-#if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
-  ITK_DISALLOW_COPY_AND_ASSIGN(OraGeometryReader);
-#else
   ITK_DISALLOW_COPY_AND_MOVE(OraGeometryReader);
-#endif
 
   /** Standard type alias */
   using Self = OraGeometryReader;

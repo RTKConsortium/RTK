@@ -52,11 +52,7 @@ class RTK_EXPORT CudaParkerShortScanImageFilter
                                        rtk::ParkerShortScanImageFilter<itk::CudaImage<float, 3>>>
 {
 public:
-#  if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
-  ITK_DISALLOW_COPY_AND_ASSIGN(CudaParkerShortScanImageFilter);
-#  else
   ITK_DISALLOW_COPY_AND_MOVE(CudaParkerShortScanImageFilter);
-#  endif
 
   /** Convenience type alias **/
   using ImageType = itk::CudaImage<float, 3>;
