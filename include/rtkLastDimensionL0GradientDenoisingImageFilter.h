@@ -44,11 +44,7 @@ class ITK_TEMPLATE_EXPORT LastDimensionL0GradientDenoisingImageFilter
   : public itk::InPlaceImageFilter<TInputImage, TInputImage>
 {
 public:
-#if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
-  ITK_DISALLOW_COPY_AND_ASSIGN(LastDimensionL0GradientDenoisingImageFilter);
-#else
   ITK_DISALLOW_COPY_AND_MOVE(LastDimensionL0GradientDenoisingImageFilter);
-#endif
 
   /** Standard class type alias. */
   using Self = LastDimensionL0GradientDenoisingImageFilter;

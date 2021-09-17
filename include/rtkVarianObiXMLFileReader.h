@@ -45,11 +45,7 @@ namespace rtk
 class RTK_EXPORT VarianObiXMLFileReader : public itk::XMLReader<itk::MetaDataDictionary>
 {
 public:
-#if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
-  ITK_DISALLOW_COPY_AND_ASSIGN(VarianObiXMLFileReader);
-#else
   ITK_DISALLOW_COPY_AND_MOVE(VarianObiXMLFileReader);
-#endif
 
   /** Standard type alias */
   using Self = VarianObiXMLFileReader;

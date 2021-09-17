@@ -131,11 +131,7 @@ class ITK_TEMPLATE_EXPORT FourDReconstructionConjugateGradientOperator
   : public ConjugateGradientOperator<VolumeSeriesType>
 {
 public:
-#if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
-  ITK_DISALLOW_COPY_AND_ASSIGN(FourDReconstructionConjugateGradientOperator);
-#else
   ITK_DISALLOW_COPY_AND_MOVE(FourDReconstructionConjugateGradientOperator);
-#endif
 
   /** Standard class type alias. */
   using Self = FourDReconstructionConjugateGradientOperator;

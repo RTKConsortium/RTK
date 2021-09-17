@@ -35,11 +35,7 @@ namespace rtk
 class RTK_EXPORT PhaseReader : public itk::CSVFileReaderBase
 {
 public:
-#if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
-  ITK_DISALLOW_COPY_AND_ASSIGN(PhaseReader);
-#else
   ITK_DISALLOW_COPY_AND_MOVE(PhaseReader);
-#endif
 
   /** Standard class type alias */
   using Self = PhaseReader;

@@ -47,11 +47,7 @@ class ITK_TEMPLATE_EXPORT ConjugateGradientImageFilter
   : public itk::InPlaceImageFilter<OutputImageType, OutputImageType>
 {
 public:
-#if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
-  ITK_DISALLOW_COPY_AND_ASSIGN(ConjugateGradientImageFilter);
-#else
   ITK_DISALLOW_COPY_AND_MOVE(ConjugateGradientImageFilter);
-#endif
 
   /** Standard class type alias. */
   using Self = ConjugateGradientImageFilter;

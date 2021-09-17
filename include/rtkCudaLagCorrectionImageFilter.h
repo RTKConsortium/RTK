@@ -51,11 +51,7 @@ class RTK_EXPORT CudaLagCorrectionImageFilter
                                        LagCorrectionImageFilter<itk::CudaImage<unsigned short, 3>, 4>>
 {
 public:
-#  if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
-  ITK_DISALLOW_COPY_AND_ASSIGN(CudaLagCorrectionImageFilter);
-#  else
   ITK_DISALLOW_COPY_AND_MOVE(CudaLagCorrectionImageFilter);
-#  endif
 
   /** Convenience type alias **/
   using ImageType = itk::CudaImage<unsigned short, 3>;

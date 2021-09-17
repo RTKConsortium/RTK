@@ -48,11 +48,7 @@ template <class TInputImage, class TOutputImage>
 class ITK_TEMPLATE_EXPORT FieldOfViewImageFilter : public itk::InPlaceImageFilter<TInputImage, TOutputImage>
 {
 public:
-#if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
-  ITK_DISALLOW_COPY_AND_ASSIGN(FieldOfViewImageFilter);
-#else
   ITK_DISALLOW_COPY_AND_MOVE(FieldOfViewImageFilter);
-#endif
 
   /** Standard class type alias. */
   using Self = FieldOfViewImageFilter;

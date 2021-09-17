@@ -51,11 +51,7 @@ template <class TInputImage, class TOutputImage = TInputImage>
 class ITK_TEMPLATE_EXPORT FDKWeightProjectionFilter : public itk::InPlaceImageFilter<TInputImage, TOutputImage>
 {
 public:
-#if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
-  ITK_DISALLOW_COPY_AND_ASSIGN(FDKWeightProjectionFilter);
-#else
   ITK_DISALLOW_COPY_AND_MOVE(FDKWeightProjectionFilter);
-#endif
 
   /** Standard class type alias. */
   using Self = FDKWeightProjectionFilter;

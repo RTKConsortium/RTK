@@ -39,11 +39,7 @@ namespace rtk
 class RTK_EXPORT VarianObiGeometryReader : public itk::LightProcessObject
 {
 public:
-#if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
-  ITK_DISALLOW_COPY_AND_ASSIGN(VarianObiGeometryReader);
-#else
   ITK_DISALLOW_COPY_AND_MOVE(VarianObiGeometryReader);
-#endif
 
   /** Standard type alias */
   using Self = VarianObiGeometryReader;

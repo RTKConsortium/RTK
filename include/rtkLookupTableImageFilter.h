@@ -147,11 +147,7 @@ class ITK_TEMPLATE_EXPORT LookupTableImageFilter
                                         Functor::LUT<typename TInputImage::PixelType, typename TOutputImage::PixelType>>
 {
 public:
-#if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
-  ITK_DISALLOW_COPY_AND_ASSIGN(LookupTableImageFilter);
-#else
   ITK_DISALLOW_COPY_AND_MOVE(LookupTableImageFilter);
-#endif
 
   /** Lookup table type definition. */
   using FunctorType = Functor::LUT<typename TInputImage::PixelType, typename TOutputImage::PixelType>;

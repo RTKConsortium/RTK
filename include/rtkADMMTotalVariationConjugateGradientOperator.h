@@ -107,11 +107,7 @@ template <typename TOutputImage,
 class ITK_TEMPLATE_EXPORT ADMMTotalVariationConjugateGradientOperator : public ConjugateGradientOperator<TOutputImage>
 {
 public:
-#if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
-  ITK_DISALLOW_COPY_AND_ASSIGN(ADMMTotalVariationConjugateGradientOperator);
-#else
   ITK_DISALLOW_COPY_AND_MOVE(ADMMTotalVariationConjugateGradientOperator);
-#endif
 
   /** Standard class type alias. */
   using Self = ADMMTotalVariationConjugateGradientOperator;

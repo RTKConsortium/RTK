@@ -50,11 +50,7 @@ class ITK_TEMPLATE_EXPORT CudaWeidingerForwardModelImageFilter
       WeidingerForwardModelImageFilter<TMaterialProjections, TPhotonCounts, TSpectrum, TProjections>>
 {
 public:
-#  if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
-  ITK_DISALLOW_COPY_AND_ASSIGN(CudaWeidingerForwardModelImageFilter);
-#  else
   ITK_DISALLOW_COPY_AND_MOVE(CudaWeidingerForwardModelImageFilter);
-#  endif
 
   /** Standard class type alias. */
   using Self = CudaWeidingerForwardModelImageFilter;

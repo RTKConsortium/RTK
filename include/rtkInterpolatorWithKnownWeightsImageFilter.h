@@ -65,11 +65,7 @@ class ITK_TEMPLATE_EXPORT InterpolatorWithKnownWeightsImageFilter
   : public itk::InPlaceImageFilter<VolumeType, VolumeType>
 {
 public:
-#if ITK_VERSION_MAJOR == 5 && ITK_VERSION_MINOR == 1
-  ITK_DISALLOW_COPY_AND_ASSIGN(InterpolatorWithKnownWeightsImageFilter);
-#else
   ITK_DISALLOW_COPY_AND_MOVE(InterpolatorWithKnownWeightsImageFilter);
-#endif
 
   /** Standard class type alias. */
   using Self = InterpolatorWithKnownWeightsImageFilter;
