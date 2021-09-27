@@ -18,7 +18,6 @@
 
 // std include
 #include <cstdio>
-#include <valarray>
 #include <numeric>
 
 #include "rtkHndImageIO.h"
@@ -112,7 +111,19 @@ rtk::HndImageIO::ReadImageInformation()
   SetSpacing(1, hnd.dIDUResolutionY);
   SetOrigin(0, -0.5 * (hnd.SizeX - 1) * hnd.dIDUResolutionX); // SR: assumed centered
   SetOrigin(1, -0.5 * (hnd.SizeY - 1) * hnd.dIDUResolutionY); // SR: assumed centered
-  SetComponentType(itk::ImageIOBase::IOComponentEnum::UINT);
+
+  // We need 32 bytes, on many systems UINT seems to work, but on some it may not.
+  auto component_type = itk::ImageIOBase::IOComponentEnum::UINT;
+  SetComponentType(component_type);
+  if (GetComponentSize() < 4)
+  {
+    component_type = itk::ImageIOBase::IOComponentEnum::ULONG;
+    SetComponentType(component_type);
+    if (GetComponentSize() > 4)
+    {
+      itkGenericExceptionMacro(<< "Could not find a 32bit unsigned integer type");
+    }
+  }
 
   /* Store important meta information in the meta data dictionary */
   itk::EncapsulateMetaData<double>(this->GetMetaDataDictionary(), "dCTProjectionAngle", hnd.dCTProjectionAngle);
@@ -134,19 +145,28 @@ rtk::HndImageIO::CanReadFile(const char * FileNameToRead)
 //--------------------------------------------------------------------
 template <typename T>
 inline T
+load_binary_char_as(const unsigned char * bin_vals, const size_t n_bytes)
+{
+  T tmp_val;
+  std::memcpy(&tmp_val, bin_vals, n_bytes);
+  return tmp_val;
+}
+
+template <typename T>
+inline T
 cast_binary_char_to(const unsigned char * bin_vals, const size_t n_bytes)
 {
   T out_val = 0;
   switch (n_bytes)
   {
     case 1:
-      out_val = static_cast<T>(*(int8_t *)(void *)bin_vals);
+      out_val = static_cast<T>(load_binary_char_as<int8_t>(bin_vals, n_bytes));
       break;
     case 2:
-      out_val = static_cast<T>(*(int16_t *)(void *)bin_vals);
+      out_val = static_cast<T>(load_binary_char_as<int16_t>(bin_vals, n_bytes));
       break;
     case 4:
-      out_val = static_cast<T>(*(int32_t *)(void *)bin_vals);
+      out_val = static_cast<T>(load_binary_char_as<int32_t>(bin_vals, n_bytes));
       break;
   }
   return out_val;
@@ -188,7 +208,7 @@ rtk::HndImageIO::Read(void * buffer)
   const auto   ydim = GetDimensions(1);
   const size_t lookUpTableSize = (ydim - 1) * xdim / 4;
   // De"compress" image
-  auto m_lookup_table = std::valarray<unsigned char>(lookUpTableSize);
+  auto m_lookup_table = std::vector<unsigned char>(lookUpTableSize);
   if (lookUpTableSize != fread((void *)&m_lookup_table[0], sizeof(unsigned char), lookUpTableSize, fp))
   {
     itkGenericExceptionMacro(<< "Could not read lookup table from Hnd file: " << m_FileName);
@@ -202,7 +222,8 @@ rtk::HndImageIO::Read(void * buffer)
   if ((xdim + 1) != fread(&buf[0], sizeof(Int4), xdim + 1, fp))
     itkGenericExceptionMacro(<< "Could not read first row +1 in: " << m_FileName);
 
-  auto byte_table_expr = m_lookup_table.apply([](const unsigned char & v) {
+  std::vector<unsigned char> byte_table(lookUpTableSize);
+  std::transform(m_lookup_table.begin(), m_lookup_table.end(), byte_table.begin(), [](const unsigned char & v) {
     unsigned char bytes = 0;
     bytes += lut_to_bytes(v & 0b00000011);        // 0x03
     bytes += lut_to_bytes((v & 0b00001100) >> 2); // 0x0C
@@ -211,10 +232,9 @@ rtk::HndImageIO::Read(void * buffer)
     return bytes;
   });
 
-  std::valarray<unsigned char> byte_table(byte_table_expr);
-  const auto                   total_bytes = std::accumulate(std::begin(byte_table), std::end(byte_table), 0ull);
+  const auto total_bytes = std::accumulate(std::begin(byte_table), std::end(byte_table), 0ull);
 
-  auto compr_img_buffer = std::valarray<unsigned char>(total_bytes);
+  auto compr_img_buffer = std::vector<unsigned char>(total_bytes);
   // total_bytes - 3 because the last two bits can be redundant (according to Xim docs)
   if ((total_bytes - 3) > fread((void *)&compr_img_buffer[0], sizeof(unsigned char), total_bytes, fp))
   {
@@ -230,28 +250,31 @@ rtk::HndImageIO::Read(void * buffer)
     const auto v = m_lookup_table[lut_idx];
     auto       bytes = lut_to_bytes(v & 0b00000011); // 0x03
     assert(bytes == 1 || bytes == 2 || bytes == 4);
-    auto diff1 = cast_binary_char_to<Int4>(&compr_img_buffer[j], bytes);
+    auto diff1 = cast_binary_char_to<long long>(&compr_img_buffer[j], bytes);
     j += bytes;
 
     bytes = lut_to_bytes((v & 0b00001100) >> 2); // 0x0C
     assert(bytes == 1 || bytes == 2 || bytes == 4);
-    auto diff2 = cast_binary_char_to<Int4>(&compr_img_buffer[j], bytes);
+    auto diff2 = cast_binary_char_to<long long>(&compr_img_buffer[j], bytes);
     j += bytes;
 
     bytes = lut_to_bytes((v & 0b00110000) >> 4); // 0x30
     assert(bytes == 1 || bytes == 2 || bytes == 4);
-    auto diff3 = cast_binary_char_to<Int4>(&compr_img_buffer[j], bytes);
+    auto diff3 = cast_binary_char_to<long long>(&compr_img_buffer[j], bytes);
     j += bytes;
 
     bytes = lut_to_bytes((v & 0b11000000) >> 6); // 0xC0
     assert(bytes == 1 || bytes == 2 || bytes == 4);
-    auto diff4 = cast_binary_char_to<Int4>(&compr_img_buffer[j], bytes);
+    auto diff4 = cast_binary_char_to<long long>(&compr_img_buffer[j], bytes);
     j += bytes;
 
-    buf[i + 1] = diff1 + buf[i] + buf[iminxdim + 1] - buf[iminxdim];
-    buf[i + 2] = diff2 + buf[i + 1] + buf[iminxdim + 2] - buf[iminxdim + 1];
-    buf[i + 3] = diff3 + buf[i + 2] + buf[iminxdim + 3] - buf[iminxdim + 2];
-    buf[i + 4] = diff4 + buf[i + 3] + buf[iminxdim + 4] - buf[iminxdim + 3];
+    buf[i + 1] = static_cast<Int4>(diff1 + buf[i] + buf[iminxdim + 1] - buf[iminxdim]);
+    buf[i + 2] = static_cast<Int4>(diff2 + buf[i + 1] + buf[iminxdim + 2] - buf[iminxdim + 1]);
+    buf[i + 3] = static_cast<Int4>(diff3 + buf[i + 2] + buf[iminxdim + 3] - buf[iminxdim + 2]);
+    if (i + 4 < xdim * ydim)
+    {
+      buf[i + 4] = static_cast<Int4>(diff4 + buf[i + 3] + buf[iminxdim + 4] - buf[iminxdim + 3]);
+    }
 
     i += 4;
     iminxdim += 4;
