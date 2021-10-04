@@ -59,8 +59,8 @@ public:
   ITK_DISALLOW_COPY_AND_MOVE(ForwardDifferenceGradientImageFilter);
 
   /** Extract dimension from input image. */
-  itkStaticConstMacro(InputImageDimension, unsigned int, TInputImage::ImageDimension);
-  itkStaticConstMacro(OutputImageDimension, unsigned int, TOuputImage::ImageDimension);
+  static constexpr unsigned int InputImageDimension = TInputImage::ImageDimension;
+  static constexpr unsigned int OutputImageDimension = TOuputImage::ImageDimension;
 
   /** Standard class type alias. */
   using Self = ForwardDifferenceGradientImageFilter;

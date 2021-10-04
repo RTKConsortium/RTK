@@ -44,7 +44,7 @@ public:
   ITK_DISALLOW_COPY_AND_MOVE(BackwardDifferenceDivergenceImageFilter);
 
   /** Extract dimension from input and output image. */
-  itkStaticConstMacro(InputImageDimension, unsigned int, TInputImage::ImageDimension);
+  static constexpr unsigned int InputImageDimension = TInputImage::ImageDimension;
 
   /** Convenient type alias for simplifying declarations. */
   using InputImageType = TInputImage;
