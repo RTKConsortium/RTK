@@ -198,7 +198,7 @@ public:
   using InputPixelType = typename InputImageType::PixelType;
 
   /** ImageDimension constants */
-  itkStaticConstMacro(InputImageDimension, unsigned int, TInputImage::ImageDimension);
+  static constexpr unsigned int InputImageDimension = TInputImage::ImageDimension;
 
   // virtual void GenerateOutputInformation();
 

@@ -63,7 +63,7 @@ public:
   using OutputImageRegionType = typename TOutputImage::RegionType;
 
   /** ImageDimension enumeration. */
-  itkStaticConstMacro(ImageDimension, unsigned int, TInputImage::ImageDimension);
+  static constexpr unsigned int ImageDimension = TInputImage::ImageDimension;
 
   /** Set the downsample factors. Values are clamped to
    * a minimum value of 1.*/

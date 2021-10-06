@@ -73,7 +73,7 @@ public:
   using PixelType = typename TInputImage::PixelType;
 
   /** Image related type alias. */
-  itkStaticConstMacro(ImageDimension, unsigned int, TInputImage::ImageDimension);
+  static constexpr unsigned int ImageDimension = TInputImage::ImageDimension;
 
   /** Type to use for computations. */
   using RealType = typename itk::NumericTraits<PixelType>::RealType;

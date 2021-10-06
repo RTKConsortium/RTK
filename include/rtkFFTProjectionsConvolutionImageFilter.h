@@ -68,7 +68,7 @@ public:
   using ZeroPadFactorsType = itk::Vector<int, 2>;
 
   /** ImageDimension constants */
-  itkStaticConstMacro(ImageDimension, unsigned int, TOutputImage::ImageDimension);
+  static constexpr unsigned int ImageDimension = TOutputImage::ImageDimension;
 
   /** Runtime information support. */
   itkTypeMacro(FFTProjectionsConvolutionImageFilter, ImageToImageFilter);

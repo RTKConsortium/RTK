@@ -159,7 +159,7 @@ public:
   using StreamingType = itk::StreamingImageFilter<TOutputImage, TOutputImage>;
 
   /** ImageDimension constant */
-  itkStaticConstMacro(OutputImageDimension, unsigned int, TOutputImage::ImageDimension);
+  static constexpr unsigned int OutputImageDimension = TOutputImage::ImageDimension;
 
   /** Set the vector of strings that contains the file names. Files
    * are processed in sequential order. */
