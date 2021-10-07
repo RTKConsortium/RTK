@@ -77,7 +77,10 @@ QuadricShape ::IsIntersectedByRay(const PointType &  rayOrigin,
   else
   {
     ScalarType discriminant = Bq * Bq - 4 * Aq * Cq;
-    if (discriminant <= zero)
+    // The epsilon value allows detection of very close intersections, i.e., a
+    // ray tangent to the quadric
+    static constexpr ScalarType eps = 1e5 * itk::NumericTraits<ScalarType>::epsilon();
+    if (discriminant <= eps)
     {
       // No intersection but one might be dealing with an infinite line
       // in the quadric, e.g. a line parallel to and in a cylinder.
