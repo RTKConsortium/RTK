@@ -40,7 +40,8 @@ setup(
         "Operating System :: MacOS"
         ],
     scripts=[
-        "lib/rtksimulatedgeometry.py"
+        "lib/rtksimulatedgeometry.py",
+        "lib/rtkvarianobigeometry.py"
         ],
     license='Apache',
     keywords='RTK Reconstruction Toolkit',
