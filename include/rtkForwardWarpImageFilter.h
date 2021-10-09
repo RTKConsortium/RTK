@@ -61,7 +61,7 @@ public:
 
   /** Point type */
   using CoordRepType = double;
-  using PointType = itk::Point<CoordRepType, itkGetStaticConstMacro(ImageDimension)>;
+  using PointType = itk::Point<CoordRepType, Self::ImageDimension>;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
