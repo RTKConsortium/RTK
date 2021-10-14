@@ -3,6 +3,16 @@
 #
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake)
 
+# Set default Cuda architecture if not provided. The first case allows for
+# backward compatibility with cmake versions before 3.20 which did not handle
+# CUDAARCHS environment variable.
+if(NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
+  if(DEFINED ENV{CUDAARCHS})
+    set(CMAKE_CUDA_ARCHITECTURES "$ENV{CUDAARCHS}" CACHE STRING "CUDA architectures")
+  else()
+    set(CMAKE_CUDA_ARCHITECTURES "52" CACHE STRING "CUDA architectures")
+  endif()
+endif()
 include(CheckLanguage)
 check_language(CUDA)
 
