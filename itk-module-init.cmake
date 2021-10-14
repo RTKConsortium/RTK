@@ -9,6 +9,7 @@ check_language(CUDA)
 # Determine default value for RTK_USE_CUDA
 set(RTK_USE_CUDA_DEFAULT OFF)
 if (CMAKE_CUDA_COMPILER)
+  set(CUDAToolkit_NVCC_EXECUTABLE ${CMAKE_CUDA_COMPILER})
   find_package(CUDAToolkit)
   if(NOT CUDAToolkit_FOUND)
     message(WARNING "CUDAToolkit not found (available since CMake v3.17). RTK_USE_CUDA set to OFF.")
