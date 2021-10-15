@@ -3,12 +3,23 @@
 #
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/cmake)
 
+# Set default Cuda architecture if not provided. The first case allows for
+# backward compatibility with cmake versions before 3.20 which did not handle
+# CUDAARCHS environment variable.
+if(NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
+  if(DEFINED ENV{CUDAARCHS})
+    set(CMAKE_CUDA_ARCHITECTURES "$ENV{CUDAARCHS}" CACHE STRING "CUDA architectures")
+  else()
+    set(CMAKE_CUDA_ARCHITECTURES "52" CACHE STRING "CUDA architectures")
+  endif()
+endif()
 include(CheckLanguage)
 check_language(CUDA)
 
 # Determine default value for RTK_USE_CUDA
 set(RTK_USE_CUDA_DEFAULT OFF)
 if (CMAKE_CUDA_COMPILER)
+  set(CUDAToolkit_NVCC_EXECUTABLE ${CMAKE_CUDA_COMPILER})
   find_package(CUDAToolkit)
   if(NOT CUDAToolkit_FOUND)
     message(WARNING "CUDAToolkit not found (available since CMake v3.17). RTK_USE_CUDA set to OFF.")
