@@ -40,6 +40,7 @@ setup(
         "Operating System :: MacOS"
         ],
     scripts=[
+        "lib/rtkorageometry.py",
         "lib/rtksimulatedgeometry.py",
         "lib/rtkvarianobigeometry.py"
         ],
