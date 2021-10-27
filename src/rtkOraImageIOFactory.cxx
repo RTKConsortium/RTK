@@ -36,7 +36,7 @@ namespace itk
 static bool OraImageIOFactoryHasBeenRegistered;
 
 void RTK_EXPORT
-     OraImageIOFactoryRegister__Private()
+OraImageIOFactoryRegister__Private()
 {
   if (!OraImageIOFactoryHasBeenRegistered)
   {

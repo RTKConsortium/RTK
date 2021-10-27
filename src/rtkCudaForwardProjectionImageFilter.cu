@@ -40,13 +40,13 @@
 #include <cuda_runtime.h>
 
 // CONSTANTS //
-__constant__ int3 c_projSize;
+__constant__ int3   c_projSize;
 __constant__ float3 c_boxMin;
 __constant__ float3 c_boxMax;
 __constant__ float3 c_spacing;
-__constant__ int3  c_volSize;
-__constant__ float c_tStep;
-__constant__ float c_radius;
+__constant__ int3   c_volSize;
+__constant__ float  c_tStep;
+__constant__ float  c_radius;
 __constant__ float
   c_translatedProjectionIndexTransformMatrices[SLAB_SIZE * 12]; // Can process stacks of at most SLAB_SIZE projections
 __constant__ float
@@ -228,8 +228,7 @@ CUDA_forward_project(int          projSize[3],
       kernel_forwardProject<3><<<dimGrid, dimBlock>>>(dev_proj_in, dev_proj_out, dev_tex_vol);
       break;
 
-    default:
-    {
+    default: {
       itkGenericExceptionMacro("Vector length " << vectorLength << " is not supported.");
     }
   }

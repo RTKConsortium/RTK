@@ -36,7 +36,7 @@ namespace itk
 static bool HndImageIOFactoryHasBeenRegistered;
 
 void RTK_EXPORT
-     HndImageIOFactoryRegister__Private()
+HndImageIOFactoryRegister__Private()
 {
   if (!HndImageIOFactoryHasBeenRegistered)
   {

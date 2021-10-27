@@ -28,7 +28,7 @@
 
 // TEXTURES AND CONSTANTS //
 
-__constant__ int3 c_Size;
+__constant__ int3   c_Size;
 __constant__ float3 c_Spacing;
 
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_

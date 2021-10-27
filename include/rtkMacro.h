@@ -61,38 +61,38 @@
  *
  * \ingroup RTK
  */
-#define GGO(ggo_filename, args_info)                                                                                   \
-  args_info_##ggo_filename               args_info;                                                                    \
-  cmdline_parser_##ggo_filename##_params args_params;                                                                  \
-  cmdline_parser_##ggo_filename##_params_init(&args_params);                                                           \
-  args_params.print_errors = 1;                                                                                        \
-  args_params.check_required = 0;                                                                                      \
-  args_params.override = 1;                                                                                            \
-  args_params.initialize = 1;                                                                                          \
-  if (0 != cmdline_parser_##ggo_filename##_ext(argc, argv, &args_info, &args_params))                                  \
-  {                                                                                                                    \
-    std::cerr << "Error in cmdline_parser_" #ggo_filename "_ext" << std::endl;                                         \
-    exit(1);                                                                                                           \
-  }                                                                                                                    \
-  std::string configFile;                                                                                              \
-  if (args_info.config_given)                                                                                          \
-    configFile = args_info.config_arg;                                                                                 \
-  cmdline_parser_##ggo_filename##_free(&args_info);                                                                    \
-  if (configFile != "")                                                                                                \
-  {                                                                                                                    \
-    if (0 != cmdline_parser_##ggo_filename##_config_file(configFile.c_str(), &args_info, &args_params))                \
-    {                                                                                                                  \
-      std::cerr << "Error in cmdline_parser_" #ggo_filename "_config_file" << std::endl;                               \
-      exit(1);                                                                                                         \
-    }                                                                                                                  \
-    args_params.initialize = 0;                                                                                        \
-  }                                                                                                                    \
-  args_params.check_required = 1;                                                                                      \
-  if (0 != cmdline_parser_##ggo_filename##_ext(argc, argv, &args_info, &args_params))                                  \
-  {                                                                                                                    \
-    std::cerr << "Error in cmdline_parser_" #ggo_filename "_ext" << std::endl;                                         \
-    exit(1);                                                                                                           \
-  }                                                                                                                    \
+#define GGO(ggo_filename, args_info)                                                                    \
+  args_info_##ggo_filename               args_info;                                                     \
+  cmdline_parser_##ggo_filename##_params args_params;                                                   \
+  cmdline_parser_##ggo_filename##_params_init(&args_params);                                            \
+  args_params.print_errors = 1;                                                                         \
+  args_params.check_required = 0;                                                                       \
+  args_params.override = 1;                                                                             \
+  args_params.initialize = 1;                                                                           \
+  if (0 != cmdline_parser_##ggo_filename##_ext(argc, argv, &args_info, &args_params))                   \
+  {                                                                                                     \
+    std::cerr << "Error in cmdline_parser_" #ggo_filename "_ext" << std::endl;                          \
+    exit(1);                                                                                            \
+  }                                                                                                     \
+  std::string configFile;                                                                               \
+  if (args_info.config_given)                                                                           \
+    configFile = args_info.config_arg;                                                                  \
+  cmdline_parser_##ggo_filename##_free(&args_info);                                                     \
+  if (configFile != "")                                                                                 \
+  {                                                                                                     \
+    if (0 != cmdline_parser_##ggo_filename##_config_file(configFile.c_str(), &args_info, &args_params)) \
+    {                                                                                                   \
+      std::cerr << "Error in cmdline_parser_" #ggo_filename "_config_file" << std::endl;                \
+      exit(1);                                                                                          \
+    }                                                                                                   \
+    args_params.initialize = 0;                                                                         \
+  }                                                                                                     \
+  args_params.check_required = 1;                                                                       \
+  if (0 != cmdline_parser_##ggo_filename##_ext(argc, argv, &args_info, &args_params))                   \
+  {                                                                                                     \
+    std::cerr << "Error in cmdline_parser_" #ggo_filename "_ext" << std::endl;                          \
+    exit(1);                                                                                            \
+  }                                                                                                     \
   rtk::args_info_manager<args_info_##ggo_filename> manager_object(args_info, cmdline_parser_##ggo_filename##_free);
 //--------------------------------------------------------------------
 
@@ -103,33 +103,33 @@
  *
  * \ingroup RTK
  */
-#define TRY_AND_EXIT_ON_ITK_EXCEPTION(execFunc)                                                                        \
-  try                                                                                                                  \
-  {                                                                                                                    \
-    execFunc;                                                                                                          \
-  }                                                                                                                    \
-  catch (itk::ExceptionObject & err)                                                                                   \
-  {                                                                                                                    \
-    std::cerr << "ExceptionObject caught with " #execFunc << " in file " << __FILE__ << " line " << __LINE__           \
-              << std::endl;                                                                                            \
-    std::cerr << err << std::endl;                                                                                     \
-    itk::InvalidRequestedRegionError * rInv;                                                                           \
-    rInv = dynamic_cast<itk::InvalidRequestedRegionError *>(&err);                                                     \
-    if (rInv)                                                                                                          \
-    {                                                                                                                  \
-      if (rInv->GetDataObject()->GetSource())                                                                          \
-      {                                                                                                                \
-        std::cerr << "Invalid requested region error triggered by "                                                    \
-                  << rInv->GetDataObject()->GetSource()->GetNameOfClass() << std::endl;                                \
-      }                                                                                                                \
-      const itk::ImageBase<3> * img = dynamic_cast<const itk::ImageBase<3> *>(rInv->GetDataObject());                  \
-      if (img)                                                                                                         \
-      {                                                                                                                \
-        DD(img->GetRequestedRegion())                                                                                  \
-        DD(img->GetLargestPossibleRegion())                                                                            \
-      }                                                                                                                \
-    }                                                                                                                  \
-    exit(EXIT_FAILURE);                                                                                                \
+#define TRY_AND_EXIT_ON_ITK_EXCEPTION(execFunc)                                                              \
+  try                                                                                                        \
+  {                                                                                                          \
+    execFunc;                                                                                                \
+  }                                                                                                          \
+  catch (itk::ExceptionObject & err)                                                                         \
+  {                                                                                                          \
+    std::cerr << "ExceptionObject caught with " #execFunc << " in file " << __FILE__ << " line " << __LINE__ \
+              << std::endl;                                                                                  \
+    std::cerr << err << std::endl;                                                                           \
+    itk::InvalidRequestedRegionError * rInv;                                                                 \
+    rInv = dynamic_cast<itk::InvalidRequestedRegionError *>(&err);                                           \
+    if (rInv)                                                                                                \
+    {                                                                                                        \
+      if (rInv->GetDataObject()->GetSource())                                                                \
+      {                                                                                                      \
+        std::cerr << "Invalid requested region error triggered by "                                          \
+                  << rInv->GetDataObject()->GetSource()->GetNameOfClass() << std::endl;                      \
+      }                                                                                                      \
+      const itk::ImageBase<3> * img = dynamic_cast<const itk::ImageBase<3> *>(rInv->GetDataObject());        \
+      if (img)                                                                                               \
+      {                                                                                                      \
+        DD(img->GetRequestedRegion())                                                                        \
+        DD(img->GetLargestPossibleRegion())                                                                  \
+      }                                                                                                      \
+    }                                                                                                        \
+    exit(EXIT_FAILURE);                                                                                      \
   }
 //--------------------------------------------------------------------
 
@@ -144,56 +144,56 @@
 
 #ifdef RTK_PROBE_EACH_FILTER
 #  undef itkSimpleNewMacro
-#  define itkSimpleNewMacro(x)                                                                                         \
-    static Pointer New(void)                                                                                           \
-    {                                                                                                                  \
-      Pointer smartPtr = ::itk::ObjectFactory<x>::Create();                                                            \
-      if (smartPtr.GetPointer() == nullptr)                                                                            \
-      {                                                                                                                \
-        smartPtr = new x;                                                                                              \
-      }                                                                                                                \
-      smartPtr->UnRegister();                                                                                          \
-      /* If smartPtr is a ProcessObject, watch it */                                                                   \
-      itk::ProcessObject * processObjectPointer = nullptr;                                                             \
-      processObjectPointer = dynamic_cast<itk::ProcessObject *>(smartPtr.GetPointer());                                \
-      if (processObjectPointer != nullptr)                                                                             \
-      {                                                                                                                \
-        rtk::GlobalResourceProbe::GetInstance()->Watch(processObjectPointer);                                          \
-      }                                                                                                                \
-      return smartPtr;                                                                                                 \
+#  define itkSimpleNewMacro(x)                                                          \
+    static Pointer New(void)                                                            \
+    {                                                                                   \
+      Pointer smartPtr = ::itk::ObjectFactory<x>::Create();                             \
+      if (smartPtr.GetPointer() == nullptr)                                             \
+      {                                                                                 \
+        smartPtr = new x;                                                               \
+      }                                                                                 \
+      smartPtr->UnRegister();                                                           \
+      /* If smartPtr is a ProcessObject, watch it */                                    \
+      itk::ProcessObject * processObjectPointer = nullptr;                              \
+      processObjectPointer = dynamic_cast<itk::ProcessObject *>(smartPtr.GetPointer()); \
+      if (processObjectPointer != nullptr)                                              \
+      {                                                                                 \
+        rtk::GlobalResourceProbe::GetInstance()->Watch(processObjectPointer);           \
+      }                                                                                 \
+      return smartPtr;                                                                  \
     }
 
 #  undef itkCreateAnotherMacro
-#  define itkCreateAnotherMacro(x)                                                                                     \
-    virtual ::itk::LightObject::Pointer CreateAnother(void) const override                                             \
-    {                                                                                                                  \
-      ::itk::LightObject::Pointer smartPtr;                                                                            \
-      smartPtr = x::New().GetPointer();                                                                                \
-      return smartPtr;                                                                                                 \
+#  define itkCreateAnotherMacro(x)                                         \
+    virtual ::itk::LightObject::Pointer CreateAnother(void) const override \
+    {                                                                      \
+      ::itk::LightObject::Pointer smartPtr;                                \
+      smartPtr = x::New().GetPointer();                                    \
+      return smartPtr;                                                     \
     }
 
 #  undef itkFactorylessNewMacro
-#  define itkFactorylessNewMacro(x)                                                                                    \
-    static Pointer New(void)                                                                                           \
-    {                                                                                                                  \
-      Pointer smartPtr;                                                                                                \
-      x *     rawPtr = new x;                                                                                          \
-      smartPtr = rawPtr;                                                                                               \
-      rawPtr->UnRegister();                                                                                            \
-      /* If smartPtr is a ProcessObject, watch it */                                                                   \
-      itk::ProcessObject * processObjectPointer = nullptr;                                                             \
-      processObjectPointer = dynamic_cast<itk::ProcessObject *>(smartPtr.GetPointer());                                \
-      if (processObjectPointer != nullptr)                                                                             \
-      {                                                                                                                \
-        rtk::GlobalResourceProbe::GetInstance()->Watch(processObjectPointer);                                          \
-      }                                                                                                                \
-      return smartPtr;                                                                                                 \
-    }                                                                                                                  \
-    virtual ::itk::LightObject::Pointer CreateAnother(void) const override                                             \
-    {                                                                                                                  \
-      ::itk::LightObject::Pointer smartPtr;                                                                            \
-      smartPtr = x::New().GetPointer();                                                                                \
-      return smartPtr;                                                                                                 \
+#  define itkFactorylessNewMacro(x)                                                     \
+    static Pointer New(void)                                                            \
+    {                                                                                   \
+      Pointer smartPtr;                                                                 \
+      x *     rawPtr = new x;                                                           \
+      smartPtr = rawPtr;                                                                \
+      rawPtr->UnRegister();                                                             \
+      /* If smartPtr is a ProcessObject, watch it */                                    \
+      itk::ProcessObject * processObjectPointer = nullptr;                              \
+      processObjectPointer = dynamic_cast<itk::ProcessObject *>(smartPtr.GetPointer()); \
+      if (processObjectPointer != nullptr)                                              \
+      {                                                                                 \
+        rtk::GlobalResourceProbe::GetInstance()->Watch(processObjectPointer);           \
+      }                                                                                 \
+      return smartPtr;                                                                  \
+    }                                                                                   \
+    virtual ::itk::LightObject::Pointer CreateAnother(void) const override              \
+    {                                                                                   \
+      ::itk::LightObject::Pointer smartPtr;                                             \
+      smartPtr = x::New().GetPointer();                                                 \
+      return smartPtr;                                                                  \
     }
 #endif // RTK_PROBE_EACH_FILTER
 //--------------------------------------------------------------------
@@ -210,27 +210,27 @@
  *
  * \ingroup RTK
  */
-#define REPORT_ITERATIONS(filter, filter_type, output_image_type)                                                      \
-  if (args_info.verbose_flag)                                                                                          \
-  {                                                                                                                    \
-    using VerboseIterationCommandType = rtk::VerboseIterationCommand<filter_type>;                                     \
-    typename VerboseIterationCommandType::Pointer verboseIterationCommand = VerboseIterationCommandType::New();        \
-    filter->AddObserver(itk::AnyEvent(), verboseIterationCommand);                                                     \
-  }                                                                                                                    \
-  if (args_info.output_every_given)                                                                                    \
-  {                                                                                                                    \
-    typedef rtk::OutputIterationCommand<filter_type, output_image_type> OutputIterationCommand;                        \
-    typename OutputIterationCommand::Pointer outputIterationCommand = OutputIterationCommand::New();                   \
-    outputIterationCommand->SetTriggerEvery(args_info.output_every_arg);                                               \
-    if (args_info.iteration_file_name_given)                                                                           \
-    {                                                                                                                  \
-      outputIterationCommand->SetFileFormat(args_info.iteration_file_name_arg);                                        \
-    }                                                                                                                  \
-    else                                                                                                               \
-    {                                                                                                                  \
-      outputIterationCommand->SetFileFormat("iter%d.mha");                                                             \
-    }                                                                                                                  \
-    filter->AddObserver(itk::IterationEvent(), outputIterationCommand);                                                \
+#define REPORT_ITERATIONS(filter, filter_type, output_image_type)                                               \
+  if (args_info.verbose_flag)                                                                                   \
+  {                                                                                                             \
+    using VerboseIterationCommandType = rtk::VerboseIterationCommand<filter_type>;                              \
+    typename VerboseIterationCommandType::Pointer verboseIterationCommand = VerboseIterationCommandType::New(); \
+    filter->AddObserver(itk::AnyEvent(), verboseIterationCommand);                                              \
+  }                                                                                                             \
+  if (args_info.output_every_given)                                                                             \
+  {                                                                                                             \
+    typedef rtk::OutputIterationCommand<filter_type, output_image_type> OutputIterationCommand;                 \
+    typename OutputIterationCommand::Pointer outputIterationCommand = OutputIterationCommand::New();            \
+    outputIterationCommand->SetTriggerEvery(args_info.output_every_arg);                                        \
+    if (args_info.iteration_file_name_given)                                                                    \
+    {                                                                                                           \
+      outputIterationCommand->SetFileFormat(args_info.iteration_file_name_arg);                                 \
+    }                                                                                                           \
+    else                                                                                                        \
+    {                                                                                                           \
+      outputIterationCommand->SetFileFormat("iter%d.mha");                                                      \
+    }                                                                                                           \
+    filter->AddObserver(itk::IterationEvent(), outputIterationCommand);                                         \
   }
 //--------------------------------------------------------------------
 

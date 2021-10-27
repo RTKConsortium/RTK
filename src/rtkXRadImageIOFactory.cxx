@@ -34,7 +34,7 @@ namespace itk
 static bool XRadImageIOFactoryHasBeenRegistered;
 
 void RTK_EXPORT
-     XRadImageIOFactoryRegister__Private()
+XRadImageIOFactoryRegister__Private()
 {
   if (!XRadImageIOFactoryHasBeenRegistered)
   {

@@ -43,8 +43,8 @@
 __constant__ float c_matrices[SLAB_SIZE * 12]; // Can process stacks of at most SLAB_SIZE projections
 __constant__ float c_volIndexToProjPP[SLAB_SIZE * 12];
 __constant__ float c_projPPToProjIndex[9];
-__constant__ int3 c_projSize;
-__constant__ int3 c_volSize;
+__constant__ int3  c_projSize;
+__constant__ int3  c_volSize;
 
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 // K E R N E L S -_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
@@ -235,8 +235,7 @@ CUDA_back_project(int          projSize[3],
           <<<dimGrid, dimBlock>>>(dev_vol_in, dev_vol_out, (float)radiusCylindricalDetector, dev_tex_proj);
       break;
 
-    default:
-    {
+    default: {
       itkGenericExceptionMacro("Vector length " << vectorLength << " is not supported.");
     }
   }

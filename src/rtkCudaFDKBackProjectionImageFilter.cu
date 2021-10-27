@@ -45,8 +45,8 @@ texture<float, 3, cudaReadModeElementType> tex_proj_3D;
 
 // Constant memory
 __constant__ float c_matrices[SLAB_SIZE * 12]; // Can process stacks of at most SLAB_SIZE projections
-__constant__ int3 c_projSize;
-__constant__ int3 c_vol_size;
+__constant__ int3  c_projSize;
+__constant__ int3  c_vol_size;
 
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 // K E R N E L S -_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_

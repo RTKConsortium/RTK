@@ -43,34 +43,34 @@ VarianProBeamXMLFileReader::StartElement(const char * itkNotUsed(name), const ch
 void
 VarianProBeamXMLFileReader::EndElement(const char * name)
 {
-#define ENCAPLULATE_META_DATA_DOUBLE(metaName)                                                                         \
-  if (itksys::SystemTools::Strucmp(name, metaName) == 0)                                                               \
-  {                                                                                                                    \
-    double d = atof(m_CurCharacterData.c_str());                                                                       \
-    itk::EncapsulateMetaData<double>(m_Dictionary, metaName, d);                                                       \
+#define ENCAPLULATE_META_DATA_DOUBLE(metaName)                   \
+  if (itksys::SystemTools::Strucmp(name, metaName) == 0)         \
+  {                                                              \
+    double d = atof(m_CurCharacterData.c_str());                 \
+    itk::EncapsulateMetaData<double>(m_Dictionary, metaName, d); \
   }
 
-#define ENCAPLULATE_META_DATA_DOUBLE_AS(metaName, encapsulatedName)                                                    \
-  if (itksys::SystemTools::Strucmp(name, metaName) == 0)                                                               \
-  {                                                                                                                    \
-    double d = atof(m_CurCharacterData.c_str());                                                                       \
-    itk::EncapsulateMetaData<double>(m_Dictionary, encapsulatedName, d);                                               \
+#define ENCAPLULATE_META_DATA_DOUBLE_AS(metaName, encapsulatedName)      \
+  if (itksys::SystemTools::Strucmp(name, metaName) == 0)                 \
+  {                                                                      \
+    double d = atof(m_CurCharacterData.c_str());                         \
+    itk::EncapsulateMetaData<double>(m_Dictionary, encapsulatedName, d); \
   }
 
-#define MODIFY_META_DATA_DOUBLE_MULTIPLY(metaName, encapsulatedName)                                                   \
-  if (itksys::SystemTools::Strucmp(name, metaName) == 0)                                                               \
-  {                                                                                                                    \
-    double d = atof(m_CurCharacterData.c_str());                                                                       \
-    using MetaDataDoubleType = itk::MetaDataObject<double>;                                                            \
-    const double multiplier =                                                                                          \
-      dynamic_cast<MetaDataDoubleType *>(m_Dictionary[encapsulatedName].GetPointer())->GetMetaDataObjectValue();       \
-    itk::EncapsulateMetaData<double>(m_Dictionary, encapsulatedName, d * multiplier);                                  \
+#define MODIFY_META_DATA_DOUBLE_MULTIPLY(metaName, encapsulatedName)                                             \
+  if (itksys::SystemTools::Strucmp(name, metaName) == 0)                                                         \
+  {                                                                                                              \
+    double d = atof(m_CurCharacterData.c_str());                                                                 \
+    using MetaDataDoubleType = itk::MetaDataObject<double>;                                                      \
+    const double multiplier =                                                                                    \
+      dynamic_cast<MetaDataDoubleType *>(m_Dictionary[encapsulatedName].GetPointer())->GetMetaDataObjectValue(); \
+    itk::EncapsulateMetaData<double>(m_Dictionary, encapsulatedName, d * multiplier);                            \
   }
 
-#define ENCAPLULATE_META_DATA_STRING(metaName)                                                                         \
-  if (itksys::SystemTools::Strucmp(name, metaName) == 0)                                                               \
-  {                                                                                                                    \
-    itk::EncapsulateMetaData<std::string>(m_Dictionary, metaName, m_CurCharacterData);                                 \
+#define ENCAPLULATE_META_DATA_STRING(metaName)                                         \
+  if (itksys::SystemTools::Strucmp(name, metaName) == 0)                               \
+  {                                                                                    \
+    itk::EncapsulateMetaData<std::string>(m_Dictionary, metaName, m_CurCharacterData); \
   }
 
   ENCAPLULATE_META_DATA_DOUBLE("Velocity");

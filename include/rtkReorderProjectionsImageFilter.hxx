@@ -73,14 +73,12 @@ ReorderProjectionsImageFilter<TInputImage, TOutputImage>::GenerateData()
   std::vector<unsigned int> permutation;
   switch (m_Permutation)
   {
-    case (NONE):
-    {
+    case (NONE): {
       for (unsigned int i = 0; i < NumberOfProjections; i++)
         permutation.push_back(i);
       break;
     }
-    case (SORT):
-    {
+    case (SORT): {
       // Define a vector of pairs (signal value, and index)
       std::vector<std::pair<double, unsigned int>> pairsVector;
 
@@ -96,8 +94,7 @@ ReorderProjectionsImageFilter<TInputImage, TOutputImage>::GenerateData()
         permutation.push_back(pairsVector[i].second);
       break;
     }
-    case (SHUFFLE):
-    {
+    case (SHUFFLE): {
       for (unsigned int i = 0; i < NumberOfProjections; i++)
         permutation.push_back(i);
       std::default_random_engine randomGenerator(0); // The seed is hard-coded to 0 to make the behavior reproducible

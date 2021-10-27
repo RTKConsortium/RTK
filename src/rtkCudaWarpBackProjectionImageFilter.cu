@@ -54,7 +54,7 @@ texture<float, 3, cudaReadModeElementType> tex_zdvf;
 __constant__ float c_matrices[SLAB_SIZE * 12]; // Can process stacks of at most SLAB_SIZE projections
 __constant__ float c_volIndexToProjPP[SLAB_SIZE * 12];
 __constant__ float c_projPPToProjIndex[9];
-__constant__ int3 c_projSize;
+__constant__ int3  c_projSize;
 __constant__ int3  c_volSize;
 __constant__ float c_IndexInputToIndexDVFMatrix[12];
 __constant__ float c_PPInputToIndexInputMatrix[12];

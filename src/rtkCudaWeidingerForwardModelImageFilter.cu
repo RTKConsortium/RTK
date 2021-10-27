@@ -205,8 +205,7 @@ CUDA_WeidingerForwardModel(int          projectionSize[3],
         kernel_forward_model<5, 150, 3><<<dimGrid, dimBlock>>>(pMatProj, pPhoCount, pSpectrum, pProjOnes, pOut1, pOut2);
         break;
 
-      default:
-      {
+      default: {
         itkGenericExceptionMacro(<< "The CUDA version of WeidingerForwardModel works with hard-coded parameters, "
                                     "currently set to nMaterials=2 or 3, nMaterials= "
                                  << nMaterials << " is not supported.");

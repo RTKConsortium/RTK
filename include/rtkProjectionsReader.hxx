@@ -62,44 +62,44 @@
 #include "rtkOraLookupTableImageFilter.h"
 
 // Macro to handle input images with vector pixel type in GenerateOutputInformation();
-#define SET_INPUT_IMAGE_VECTOR_TYPE(componentType, numberOfComponents)                                                 \
-  if (!strcmp(imageIO->GetComponentTypeAsString(imageIO->GetComponentType()).c_str(), #componentType) &&               \
-      (imageIO->GetNumberOfComponents() == numberOfComponents))                                                        \
-  {                                                                                                                    \
-    using InputPixelType = itk::Vector<componentType, numberOfComponents>;                                             \
-    using InputImageType = itk::Image<InputPixelType, OutputImageDimension>;                                           \
-    using ReaderType = itk::ImageSeriesReader<InputImageType>;                                                         \
-    typename ReaderType::Pointer reader = ReaderType::New();                                                           \
-    m_RawDataReader = reader;                                                                                          \
-    using VectorComponentSelectionType = itk::VectorIndexSelectionCastImageFilter<InputImageType, OutputImageType>;    \
-    typename VectorComponentSelectionType::Pointer vectorComponentSelectionFilter =                                    \
-      VectorComponentSelectionType::New();                                                                             \
-    if (m_VectorComponent < numberOfComponents)                                                                        \
-      vectorComponentSelectionFilter->SetIndex(m_VectorComponent);                                                     \
-    else                                                                                                               \
-      itkGenericExceptionMacro(<< "Cannot extract " << m_VectorComponent << "-th component from vector of size "       \
-                               << numberOfComponents);                                                                 \
-    m_VectorComponentSelectionFilter = vectorComponentSelectionFilter;                                                 \
+#define SET_INPUT_IMAGE_VECTOR_TYPE(componentType, numberOfComponents)                                              \
+  if (!strcmp(imageIO->GetComponentTypeAsString(imageIO->GetComponentType()).c_str(), #componentType) &&            \
+      (imageIO->GetNumberOfComponents() == numberOfComponents))                                                     \
+  {                                                                                                                 \
+    using InputPixelType = itk::Vector<componentType, numberOfComponents>;                                          \
+    using InputImageType = itk::Image<InputPixelType, OutputImageDimension>;                                        \
+    using ReaderType = itk::ImageSeriesReader<InputImageType>;                                                      \
+    typename ReaderType::Pointer reader = ReaderType::New();                                                        \
+    m_RawDataReader = reader;                                                                                       \
+    using VectorComponentSelectionType = itk::VectorIndexSelectionCastImageFilter<InputImageType, OutputImageType>; \
+    typename VectorComponentSelectionType::Pointer vectorComponentSelectionFilter =                                 \
+      VectorComponentSelectionType::New();                                                                          \
+    if (m_VectorComponent < numberOfComponents)                                                                     \
+      vectorComponentSelectionFilter->SetIndex(m_VectorComponent);                                                  \
+    else                                                                                                            \
+      itkGenericExceptionMacro(<< "Cannot extract " << m_VectorComponent << "-th component from vector of size "    \
+                               << numberOfComponents);                                                              \
+    m_VectorComponentSelectionFilter = vectorComponentSelectionFilter;                                              \
   }
 
 // Macro to handle input images with vector pixel type in PropagateParametersToMiniPipeline();
-#define PROPAGATE_INPUT_IMAGE_VECTOR_TYPE(componentType, numberOfComponents)                                           \
-  if (!strcmp(m_ImageIO->GetComponentTypeAsString(m_ImageIO->GetComponentType()).c_str(), #componentType) &&           \
-      (m_ImageIO->GetNumberOfComponents() == numberOfComponents))                                                      \
-  {                                                                                                                    \
-    using InputPixelType = itk::Vector<componentType, numberOfComponents>;                                             \
-    using InputImageType = itk::Image<InputPixelType, OutputImageDimension>;                                           \
-    using RawType = typename itk::ImageSeriesReader<InputImageType>;                                                   \
-    RawType * raw = dynamic_cast<RawType *>(m_RawDataReader.GetPointer());                                             \
-    assert(raw != nullptr);                                                                                            \
-    raw->SetFileNames(this->GetFileNames());                                                                           \
-    raw->SetImageIO(m_ImageIO);                                                                                        \
-    using VectorComponentSelectionType = itk::VectorIndexSelectionCastImageFilter<InputImageType, OutputImageType>;    \
-    VectorComponentSelectionType * vectorComponentSelectionFilter =                                                    \
-      dynamic_cast<VectorComponentSelectionType *>(m_VectorComponentSelectionFilter.GetPointer());                     \
-    assert(vectorComponentSelectionFilter != nullptr);                                                                 \
-    vectorComponentSelectionFilter->SetInput(raw->GetOutput());                                                        \
-    output = vectorComponentSelectionFilter->GetOutput();                                                              \
+#define PROPAGATE_INPUT_IMAGE_VECTOR_TYPE(componentType, numberOfComponents)                                        \
+  if (!strcmp(m_ImageIO->GetComponentTypeAsString(m_ImageIO->GetComponentType()).c_str(), #componentType) &&        \
+      (m_ImageIO->GetNumberOfComponents() == numberOfComponents))                                                   \
+  {                                                                                                                 \
+    using InputPixelType = itk::Vector<componentType, numberOfComponents>;                                          \
+    using InputImageType = itk::Image<InputPixelType, OutputImageDimension>;                                        \
+    using RawType = typename itk::ImageSeriesReader<InputImageType>;                                                \
+    RawType * raw = dynamic_cast<RawType *>(m_RawDataReader.GetPointer());                                          \
+    assert(raw != nullptr);                                                                                         \
+    raw->SetFileNames(this->GetFileNames());                                                                        \
+    raw->SetImageIO(m_ImageIO);                                                                                     \
+    using VectorComponentSelectionType = itk::VectorIndexSelectionCastImageFilter<InputImageType, OutputImageType>; \
+    VectorComponentSelectionType * vectorComponentSelectionFilter =                                                 \
+      dynamic_cast<VectorComponentSelectionType *>(m_VectorComponentSelectionFilter.GetPointer());                  \
+    assert(vectorComponentSelectionFilter != nullptr);                                                              \
+    vectorComponentSelectionFilter->SetInput(raw->GetOutput());                                                     \
+    output = vectorComponentSelectionFilter->GetOutput();                                                           \
   }
 
 namespace rtk

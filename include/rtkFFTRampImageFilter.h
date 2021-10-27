@@ -27,18 +27,18 @@
 // The Set macro is redefined to clear the current FFT kernel when a parameter
 // is modified.
 #undef itkSetMacro
-#define itkSetMacro(name, type)                                                                                        \
-  virtual void Set##name(const type _arg)                                                                              \
-  {                                                                                                                    \
-    itkDebugMacro("setting " #name " to " << _arg);                                                                    \
-    CLANG_PRAGMA_PUSH                                                                                                  \
-    CLANG_SUPPRESS_Wfloat_equal if (this->m_##name != _arg)                                                            \
-    {                                                                                                                  \
-      this->m_##name = _arg;                                                                                           \
-      this->Modified();                                                                                                \
-      this->m_KernelFFT = nullptr;                                                                                     \
-    }                                                                                                                  \
-    CLANG_PRAGMA_POP                                                                                                   \
+#define itkSetMacro(name, type)                             \
+  virtual void Set##name(const type _arg)                   \
+  {                                                         \
+    itkDebugMacro("setting " #name " to " << _arg);         \
+    CLANG_PRAGMA_PUSH                                       \
+    CLANG_SUPPRESS_Wfloat_equal if (this->m_##name != _arg) \
+    {                                                       \
+      this->m_##name = _arg;                                \
+      this->Modified();                                     \
+      this->m_KernelFFT = nullptr;                          \
+    }                                                       \
+    CLANG_PRAGMA_POP                                        \
   }
 
 namespace rtk
@@ -162,17 +162,17 @@ private:
 
 // Rollback to the original definition of the Set macro
 #undef itkSetMacro
-#define itkSetMacro(name, type)                                                                                        \
-  virtual void Set##name(const type _arg)                                                                              \
-  {                                                                                                                    \
-    itkDebugMacro("setting " #name " to " << _arg);                                                                    \
-    CLANG_PRAGMA_PUSH                                                                                                  \
-    CLANG_SUPPRESS_Wfloat_equal if (this->m_##name != _arg)                                                            \
-    {                                                                                                                  \
-      this->m_##name = _arg;                                                                                           \
-      this->Modified();                                                                                                \
-    }                                                                                                                  \
-    CLANG_PRAGMA_POP                                                                                                   \
+#define itkSetMacro(name, type)                             \
+  virtual void Set##name(const type _arg)                   \
+  {                                                         \
+    itkDebugMacro("setting " #name " to " << _arg);         \
+    CLANG_PRAGMA_PUSH                                       \
+    CLANG_SUPPRESS_Wfloat_equal if (this->m_##name != _arg) \
+    {                                                       \
+      this->m_##name = _arg;                                \
+      this->Modified();                                     \
+    }                                                       \
+    CLANG_PRAGMA_POP                                        \
   }
 
 #endif

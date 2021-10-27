@@ -24,7 +24,7 @@
 texture<float, 1, cudaReadModeElementType> tex_geometry; // geometry texture
 
 inline __device__ float2
-                  TransformIndexToPhysicalPoint(int2 idx, float2 origin, float2 row, float2 column)
+TransformIndexToPhysicalPoint(int2 idx, float2 origin, float2 row, float2 column)
 {
   return make_float2(origin.x + row.x * idx.x + column.x * idx.y, origin.y + row.y * idx.x + column.y * idx.y);
 }

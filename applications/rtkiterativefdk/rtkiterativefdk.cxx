@@ -76,18 +76,18 @@ main(int argc, char * argv[])
     // double for the CPU version, and float for the CUDA one, we cannot have a single
     // pointer for both possibilities. In order to set the options only once,
     // we therefore create a macro, exactly as in rtkfdk.cxx
-#define SET_IFDK_OPTIONS(f)                                                                                            \
-  f->SetInput(0, constantImageSource->GetOutput());                                                                    \
-  f->SetInput(1, reader->GetOutput());                                                                                 \
-  f->SetGeometry(geometryReader->GetOutputObject());                                                                   \
-  SetForwardProjectionFromGgo(args_info, f.GetPointer());                                                              \
-  f->SetNumberOfIterations(args_info.niterations_arg);                                                                 \
-  f->SetTruncationCorrection(args_info.pad_arg);                                                                       \
-  f->SetHannCutFrequency(args_info.hann_arg);                                                                          \
-  f->SetHannCutFrequencyY(args_info.hannY_arg);                                                                        \
-  f->SetProjectionSubsetSize(args_info.subsetsize_arg);                                                                \
-  f->SetLambda(args_info.lambda_arg);                                                                                  \
-  f->SetEnforcePositivity(enforcePositivity);                                                                          \
+#define SET_IFDK_OPTIONS(f)                               \
+  f->SetInput(0, constantImageSource->GetOutput());       \
+  f->SetInput(1, reader->GetOutput());                    \
+  f->SetGeometry(geometryReader->GetOutputObject());      \
+  SetForwardProjectionFromGgo(args_info, f.GetPointer()); \
+  f->SetNumberOfIterations(args_info.niterations_arg);    \
+  f->SetTruncationCorrection(args_info.pad_arg);          \
+  f->SetHannCutFrequency(args_info.hann_arg);             \
+  f->SetHannCutFrequencyY(args_info.hannY_arg);           \
+  f->SetProjectionSubsetSize(args_info.subsetsize_arg);   \
+  f->SetLambda(args_info.lambda_arg);                     \
+  f->SetEnforcePositivity(enforcePositivity);             \
   f->SetDisableDisplacedDetectorFilter(args_info.nodisplaced_flag);
 
   // Create Iterative FDK filter and connect it
