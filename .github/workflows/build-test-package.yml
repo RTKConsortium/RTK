@@ -13,22 +13,22 @@ jobs:
           - os: self-hosted
             c-compiler: "gcc"
             cxx-compiler: "g++"
-            itk-git-tag: "v5.2.1"
+            itk-git-tag: "v5.3rc02"
             cmake-build-type: "MinSizeRel"
           - os: ubuntu-20.04
             c-compiler: "gcc"
             cxx-compiler: "g++"
-            itk-git-tag: "v5.2.1"
+            itk-git-tag: "v5.3rc02"
             cmake-build-type: "MinSizeRel"
           - os: windows-2019
             c-compiler: "cl.exe"
             cxx-compiler: "cl.exe"
-            itk-git-tag: "v5.2.1"
+            itk-git-tag: "v5.3rc02"
             cmake-build-type: "Release"
           - os: macos-10.15
             c-compiler: "clang"
             cxx-compiler: "clang++"
-            itk-git-tag: "v5.2.1"
+            itk-git-tag: "v5.3rc02"
             cmake-build-type: "MinSizeRel"
 
     steps:
@@ -148,9 +148,9 @@ jobs:
     strategy:
       max-parallel: 2
       matrix:
-        python-version: [36, 37, 38, 39]
+        python-version: [37, 38, 39, 310]
         include:
-          - itk-python-git-tag: "v5.2.1.post1"
+          - itk-python-git-tag: "v5.3rc02.post1"
 
     steps:
     - uses: actions/checkout@v2
@@ -186,7 +186,7 @@ jobs:
       max-parallel: 2
       matrix:
         include:
-          - itk-python-git-tag: "v5.2.1.post1"
+          - itk-python-git-tag: "v5.3rc02.post1"
 
     steps:
     - uses: actions/checkout@v2
@@ -220,9 +220,9 @@ jobs:
     strategy:
       max-parallel: 2
       matrix:
-        python-version-minor: [6, 7, 8, 9]
+        python-version-minor: [7, 8, 9, 10]
         include:
-          - itk-python-git-tag: "v5.2.1.post1"
+          - itk-python-git-tag: "v5.3rc02.post1"
 
     steps:
     - name: Get specific version of CMake, Ninja
