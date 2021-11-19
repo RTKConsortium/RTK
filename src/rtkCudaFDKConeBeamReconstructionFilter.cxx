@@ -33,6 +33,9 @@ rtk::CudaFDKConeBeamReconstructionFilter ::CudaFDKConeBeamReconstructionFilter()
   // Default parameters
   m_BackProjectionFilter->InPlaceOn();
   m_BackProjectionFilter->SetTranspose(false);
+
+  // Overwrite subset size of CPU version with GPU default
+  CPUSuperclass::SetProjectionSubsetSize(SLAB_SIZE);
 }
 
 void
