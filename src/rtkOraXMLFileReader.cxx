@@ -58,6 +58,10 @@ OraXMLFileReader ::EndElement(const char * name)
   EncapsulateDouble("xrayx2_cm", name);
   EncapsulateDouble("xrayy1_cm", name);
   EncapsulateDouble("xrayy2_cm", name);
+  EncapsulateDouble("tiltleft_deg", name);
+  EncapsulateDouble("tiltright_deg", name);
+  EncapsulateDouble("ydistancebaseunitcs2imagingcs_cm", name);
+  EncapsulateDouble("zdistancebaseunitcs2imagingcs_cm", name);
 }
 
 void
