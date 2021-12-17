@@ -92,7 +92,7 @@ DisplacedDetectorForOffsetFieldOfViewImageFilter<TInputImage, TOutputImage>::Gen
                              << " space must be covered by all projections.");
   }
   // Case 2: Not displaced if less than 10% relative difference between radii
-  else if (200. * fabs(ri - rs) / (ri + rs) < 10.)
+  else if (200. * itk::Math::abs(ri - rs) / (ri + rs) < 10.)
   {
     this->SetInPlace(true);
   }

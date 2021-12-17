@@ -189,7 +189,7 @@ JosephForwardProjectionImageFilter<TInputImage,
       if (fs == ns) // If the voxel is a corner, we can skip most steps
       {
         volumeValue = BilinearInterpolationOnBorders(threadId,
-                                                     std::abs(fp[mainDir] - np[mainDir]),
+                                                     itk::Math::abs(fp[mainDir] - np[mainDir]),
                                                      pxiyi,
                                                      pxsyi,
                                                      pxiys,
@@ -232,7 +232,7 @@ JosephForwardProjectionImageFilter<TInputImage,
         currenty += stepy;
 
         // Middle steps
-        for (int i{ 0 }; i < std::abs(fs - ns) - 1; ++i)
+        for (int i{ 0 }; i < itk::Math::abs(fs - ns) - 1; ++i)
         {
           volumeValue =
             BilinearInterpolation(threadId, 1., pxiyi, pxsyi, pxiys, pxsys, currentx, currenty, offsetx, offsety);
