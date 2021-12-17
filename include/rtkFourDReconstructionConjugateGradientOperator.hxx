@@ -18,7 +18,6 @@
 #ifndef rtkFourDReconstructionConjugateGradientOperator_hxx
 #define rtkFourDReconstructionConjugateGradientOperator_hxx
 
-#include "rtkFourDReconstructionConjugateGradientOperator.h"
 #include "rtkGeneralPurposeFunctions.h"
 
 namespace rtk

@@ -19,7 +19,6 @@
 #ifndef rtkReorderProjectionsImageFilter_hxx
 #define rtkReorderProjectionsImageFilter_hxx
 
-#include "rtkReorderProjectionsImageFilter.h"
 
 #include "rtkGeneralPurposeFunctions.h"
 

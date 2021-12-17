@@ -18,7 +18,6 @@
 #ifndef rtkWarpProjectionStackToFourDImageFilter_hxx
 #define rtkWarpProjectionStackToFourDImageFilter_hxx
 
-#include "rtkWarpProjectionStackToFourDImageFilter.h"
 
 #include <itkObjectFactory.h>
 #include <itkImageRegionIterator.h>

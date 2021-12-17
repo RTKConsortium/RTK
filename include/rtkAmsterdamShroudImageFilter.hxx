@@ -19,7 +19,6 @@
 #ifndef rtkAmsterdamShroudImageFilter_hxx
 #define rtkAmsterdamShroudImageFilter_hxx
 
-#include "rtkAmsterdamShroudImageFilter.h"
 #include "rtkHomogeneousMatrix.h"
 
 #include <itkImageFileWriter.h>

@@ -23,7 +23,6 @@
 #include <itkImageRegionConstIterator.h>
 #include <itkImageRegionIterator.h>
 
-#include "rtkDrawBoxImageFilter.h"
 
 namespace rtk
 {

@@ -19,7 +19,6 @@
 #ifndef rtkDenoisingBPDQImageFilter_hxx
 #define rtkDenoisingBPDQImageFilter_hxx
 
-#include "rtkDenoisingBPDQImageFilter.h"
 
 namespace rtk
 {

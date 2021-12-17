@@ -19,7 +19,6 @@
 #ifndef rtkHilbertImageFilter_hxx
 #define rtkHilbertImageFilter_hxx
 
-#include "rtkHilbertImageFilter.h"
 
 #include <itkConfigure.h>
 #include <itkForwardFFTImageFilter.h>

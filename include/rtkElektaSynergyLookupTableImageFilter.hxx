@@ -19,7 +19,6 @@
 #ifndef rtkElektaSynergyLookupTableImageFilter_hxx
 #define rtkElektaSynergyLookupTableImageFilter_hxx
 
-#include "rtkElektaSynergyLookupTableImageFilter.h"
 
 namespace rtk
 {

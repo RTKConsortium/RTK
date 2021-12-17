@@ -23,7 +23,6 @@
 #include <itkImageRegionConstIterator.h>
 #include <itkImageRegionIterator.h>
 
-#include "rtkRayQuadricIntersectionImageFilter.h"
 #include "rtkQuadricShape.h"
 
 namespace rtk

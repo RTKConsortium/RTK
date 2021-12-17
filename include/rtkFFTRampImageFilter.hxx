@@ -19,7 +19,6 @@
 #ifndef rtkFFTRampImageFilter_hxx
 #define rtkFFTRampImageFilter_hxx
 
-#include "rtkFFTRampImageFilter.h"
 
 // Use local RTK FFTW files taken from Gaëtan Lehmann's code for
 // thread safety: http://hdl.handle.net/10380/3154

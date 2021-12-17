@@ -21,7 +21,6 @@
 
 #include "math.h"
 
-#include "rtkFDKBackProjectionImageFilter.h"
 
 #include <itkImageRegionIteratorWithIndex.h>
 #include <itkLinearInterpolateImageFunction.h>

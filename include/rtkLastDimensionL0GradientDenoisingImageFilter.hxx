@@ -18,7 +18,6 @@
 #ifndef rtkLastDimensionL0GradientDenoisingImageFilter_hxx
 #define rtkLastDimensionL0GradientDenoisingImageFilter_hxx
 
-#include "rtkLastDimensionL0GradientDenoisingImageFilter.h"
 #include "itkImageRegionIteratorWithIndex.h"
 #include "itkImageRegionIterator.h"
 

@@ -19,7 +19,6 @@
 #ifndef rtkIterativeFDKConeBeamReconstructionFilter_hxx
 #define rtkIterativeFDKConeBeamReconstructionFilter_hxx
 
-#include "rtkIterativeFDKConeBeamReconstructionFilter.h"
 
 #include <algorithm>
 #include <itkIterationReporter.h>

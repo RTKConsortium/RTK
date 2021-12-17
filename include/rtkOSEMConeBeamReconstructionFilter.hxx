@@ -19,7 +19,6 @@
 #ifndef rtkOSEMConeBeamReconstructionFilter_hxx
 #define rtkOSEMConeBeamReconstructionFilter_hxx
 
-#include "rtkOSEMConeBeamReconstructionFilter.h"
 #include "rtkGeneralPurposeFunctions.h"
 
 #include <algorithm>

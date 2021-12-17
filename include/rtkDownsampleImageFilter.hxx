@@ -19,7 +19,6 @@
 #ifndef rtkDownsampleImageFilter_hxx
 #define rtkDownsampleImageFilter_hxx
 
-#include "rtkDownsampleImageFilter.h"
 
 #include "itkImageRegionIterator.h"
 #include "itkObjectFactory.h"

@@ -19,7 +19,6 @@
 #ifndef rtkSoftThresholdImageFilter_hxx
 #define rtkSoftThresholdImageFilter_hxx
 
-#include "rtkSoftThresholdImageFilter.h"
 
 namespace rtk
 {

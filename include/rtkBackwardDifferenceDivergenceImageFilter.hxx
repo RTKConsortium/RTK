@@ -18,7 +18,6 @@
 
 #ifndef rtkBackwardDifferenceDivergenceImageFilter_hxx
 #define rtkBackwardDifferenceDivergenceImageFilter_hxx
-#include "rtkBackwardDifferenceDivergenceImageFilter.h"
 
 #include <itkConstShapedNeighborhoodIterator.h>
 #include <itkNeighborhoodInnerProduct.h>

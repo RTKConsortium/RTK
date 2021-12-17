@@ -18,7 +18,6 @@
 #ifndef rtkProjectionsRegionConstIteratorRayBased_hxx
 #define rtkProjectionsRegionConstIteratorRayBased_hxx
 
-#include "rtkProjectionsRegionConstIteratorRayBased.h"
 #include "rtkProjectionsRegionConstIteratorRayBasedParallel.h"
 #include "rtkProjectionsRegionConstIteratorRayBasedWithFlatPanel.h"
 #include "rtkProjectionsRegionConstIteratorRayBasedWithCylindricalPanel.h"

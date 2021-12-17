@@ -20,7 +20,6 @@
 #define rtkDaubechiesWaveletsConvolutionImageFilter_hxx
 
 // Includes
-#include "rtkDaubechiesWaveletsConvolutionImageFilter.h"
 
 #include <vector>
 #include <algorithm>

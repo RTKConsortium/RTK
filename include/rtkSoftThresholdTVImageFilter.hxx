@@ -21,7 +21,6 @@
 
 #include "math.h"
 
-#include "rtkSoftThresholdTVImageFilter.h"
 
 #include <itkImageRegionIterator.h>
 #include <itkImageRegionConstIterator.h>

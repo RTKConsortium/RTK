@@ -21,7 +21,6 @@
 
 #include "rtkJosephForwardProjectionImageFilter.h"
 #include "rtkJosephBackProjectionImageFilter.h"
-#include "rtkFourDConjugateGradientConeBeamReconstructionFilter.h"
 
 #include <algorithm>
 

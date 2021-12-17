@@ -23,7 +23,6 @@
 #include <itkImageRegionConstIterator.h>
 #include <itkImageRegionIterator.h>
 
-#include "rtkDrawEllipsoidImageFilter.h"
 #include "rtkQuadricShape.h"
 
 namespace rtk

@@ -20,7 +20,6 @@
 #define rtkTotalVariationImageFilter_hxx
 #include "math.h"
 
-#include "rtkTotalVariationImageFilter.h"
 
 
 #include "itkConstNeighborhoodIterator.h"

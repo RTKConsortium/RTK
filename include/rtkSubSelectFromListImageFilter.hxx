@@ -18,7 +18,6 @@
 #ifndef rtkSubSelectFromListImageFilter_hxx
 #define rtkSubSelectFromListImageFilter_hxx
 
-#include "rtkSubSelectFromListImageFilter.h"
 
 #include <itkImageRegionIterator.h>
 #include <itkImageRegionConstIterator.h>

@@ -20,7 +20,6 @@
 
 #include "math.h"
 
-#include "rtkPhaseGatingImageFilter.h"
 
 #include <itkImageRegionIterator.h>
 #include <itkImageRegionConstIterator.h>

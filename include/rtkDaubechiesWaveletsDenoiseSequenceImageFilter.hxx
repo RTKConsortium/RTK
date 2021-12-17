@@ -19,7 +19,6 @@
 #ifndef rtkDaubechiesWaveletsDenoiseSequenceImageFilter_hxx
 #define rtkDaubechiesWaveletsDenoiseSequenceImageFilter_hxx
 
-#include "rtkDaubechiesWaveletsDenoiseSequenceImageFilter.h"
 #include <itkImageFileWriter.h>
 
 namespace rtk

@@ -19,7 +19,6 @@
 #ifndef rtkFourDSARTConeBeamReconstructionFilter_hxx
 #define rtkFourDSARTConeBeamReconstructionFilter_hxx
 
-#include "rtkFourDSARTConeBeamReconstructionFilter.h"
 #include "rtkGeneralPurposeFunctions.h"
 
 #include <algorithm>

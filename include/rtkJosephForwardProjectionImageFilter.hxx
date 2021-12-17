@@ -21,7 +21,6 @@
 
 #include "math.h"
 
-#include "rtkJosephForwardProjectionImageFilter.h"
 
 #include "rtkHomogeneousMatrix.h"
 #include "rtkBoxShape.h"

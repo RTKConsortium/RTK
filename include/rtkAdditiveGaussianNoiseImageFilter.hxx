@@ -36,7 +36,6 @@
 #ifndef rtkAdditiveGaussianNoiseImageFilter_hxx
 #define rtkAdditiveGaussianNoiseImageFilter_hxx
 
-#include "rtkAdditiveGaussianNoiseImageFilter.h"
 
 namespace rtk
 {

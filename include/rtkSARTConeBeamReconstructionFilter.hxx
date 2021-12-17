@@ -19,7 +19,6 @@
 #ifndef rtkSARTConeBeamReconstructionFilter_hxx
 #define rtkSARTConeBeamReconstructionFilter_hxx
 
-#include "rtkSARTConeBeamReconstructionFilter.h"
 
 #include <algorithm>
 #include <itkIterationReporter.h>

@@ -19,7 +19,6 @@
 #ifndef rtkFDKConeBeamReconstructionFilter_hxx
 #define rtkFDKConeBeamReconstructionFilter_hxx
 
-#include "rtkFDKConeBeamReconstructionFilter.h"
 
 #include <itkProgressAccumulator.h>
 

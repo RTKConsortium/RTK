@@ -21,7 +21,6 @@
 
 #include "math.h"
 
-#include "rtkCyclicDeformationImageFilter.h"
 
 #include <itkImageRegionConstIterator.h>
 #include <itkImageRegionIterator.h>

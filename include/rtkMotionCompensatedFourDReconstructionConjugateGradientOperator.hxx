@@ -18,7 +18,6 @@
 #ifndef rtkMotionCompensatedFourDReconstructionConjugateGradientOperator_hxx
 #define rtkMotionCompensatedFourDReconstructionConjugateGradientOperator_hxx
 
-#include "rtkMotionCompensatedFourDReconstructionConjugateGradientOperator.h"
 
 #include "rtkJosephForwardProjectionImageFilter.h"
 

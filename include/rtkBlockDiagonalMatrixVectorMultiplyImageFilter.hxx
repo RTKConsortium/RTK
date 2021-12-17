@@ -18,7 +18,6 @@
 #ifndef rtkBlockDiagonalMatrixVectorMultiplyImageFilter_hxx
 #define rtkBlockDiagonalMatrixVectorMultiplyImageFilter_hxx
 
-#include "rtkBlockDiagonalMatrixVectorMultiplyImageFilter.h"
 #include "itkImageRegionIteratorWithIndex.h"
 #include "itkImageRegionIterator.h"
 #include "vnl/vnl_inverse.h"

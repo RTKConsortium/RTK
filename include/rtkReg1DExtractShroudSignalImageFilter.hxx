@@ -19,7 +19,6 @@
 #ifndef rtkReg1DExtractShroudSignalImageFilter_hxx
 #define rtkReg1DExtractShroudSignalImageFilter_hxx
 
-#include "rtkReg1DExtractShroudSignalImageFilter.h"
 
 #include <itkExtractImageFilter.h>
 #include <itkTranslationTransform.h>

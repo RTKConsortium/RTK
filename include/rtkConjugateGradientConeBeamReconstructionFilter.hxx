@@ -19,7 +19,6 @@
 #ifndef rtkConjugateGradientConeBeamReconstructionFilter_hxx
 #define rtkConjugateGradientConeBeamReconstructionFilter_hxx
 
-#include "rtkConjugateGradientConeBeamReconstructionFilter.h"
 #include <itkProgressAccumulator.h>
 
 namespace rtk

@@ -19,7 +19,6 @@
 #ifndef rtkDrawConvexImageFilter_hxx
 #define rtkDrawConvexImageFilter_hxx
 
-#include "rtkDrawConvexImageFilter.h"
 
 #include <itkImageRegionConstIterator.h>
 #include <itkImageRegionIterator.h>

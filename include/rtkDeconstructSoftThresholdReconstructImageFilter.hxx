@@ -20,7 +20,6 @@
 #define rtkDeconstructSoftThresholdReconstructImageFilter_hxx
 
 // rtk Includes
-#include "rtkDeconstructSoftThresholdReconstructImageFilter.h"
 
 namespace rtk
 {

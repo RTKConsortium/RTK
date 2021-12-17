@@ -19,7 +19,6 @@
 #ifndef rtkADMMTotalVariationConeBeamReconstructionFilter_hxx
 #define rtkADMMTotalVariationConeBeamReconstructionFilter_hxx
 
-#include "rtkADMMTotalVariationConeBeamReconstructionFilter.h"
 
 #include <itkIterationReporter.h>
 

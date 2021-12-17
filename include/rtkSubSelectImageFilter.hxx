@@ -18,7 +18,6 @@
 #ifndef rtkSubSelectImageFilter_hxx
 #define rtkSubSelectImageFilter_hxx
 
-#include "rtkSubSelectImageFilter.h"
 
 namespace rtk
 {

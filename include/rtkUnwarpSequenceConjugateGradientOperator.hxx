@@ -19,7 +19,6 @@
 #ifndef rtkUnwarpSequenceConjugateGradientOperator_hxx
 #define rtkUnwarpSequenceConjugateGradientOperator_hxx
 
-#include "rtkUnwarpSequenceConjugateGradientOperator.h"
 
 namespace rtk
 {

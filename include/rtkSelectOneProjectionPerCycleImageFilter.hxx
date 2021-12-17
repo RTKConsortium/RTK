@@ -18,7 +18,6 @@
 #ifndef rtkSelectOneProjectionPerCycleImageFilter_hxx
 #define rtkSelectOneProjectionPerCycleImageFilter_hxx
 
-#include "rtkSelectOneProjectionPerCycleImageFilter.h"
 #include <itkCSVArray2DFileReader.h>
 
 namespace rtk

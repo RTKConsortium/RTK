@@ -19,7 +19,6 @@
 #ifndef rtkImportImageFilter_hxx
 #define rtkImportImageFilter_hxx
 
-#include "rtkImportImageFilter.h"
 #include <itkObjectFactory.h>
 #ifdef RTK_USE_CUDA
 #  include <itkCudaImage.h>

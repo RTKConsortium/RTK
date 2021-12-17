@@ -18,7 +18,6 @@
 #ifndef rtkGetNewtonUpdateImageFilter_hxx
 #define rtkGetNewtonUpdateImageFilter_hxx
 
-#include "rtkGetNewtonUpdateImageFilter.h"
 #include "itkImageRegionIteratorWithIndex.h"
 #include "itkImageRegionIterator.h"
 #include "vnl/vnl_inverse.h"

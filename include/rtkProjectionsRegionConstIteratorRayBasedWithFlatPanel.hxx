@@ -18,7 +18,6 @@
 #ifndef rtkProjectionsRegionConstIteratorRayBasedWithFlatPanel_hxx
 #define rtkProjectionsRegionConstIteratorRayBasedWithFlatPanel_hxx
 
-#include "rtkProjectionsRegionConstIteratorRayBasedWithFlatPanel.h"
 #include "rtkHomogeneousMatrix.h"
 #include "rtkMacro.h"
 

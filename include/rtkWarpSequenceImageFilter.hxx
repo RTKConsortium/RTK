@@ -21,7 +21,6 @@
 
 #include "math.h"
 
-#include "rtkWarpSequenceImageFilter.h"
 
 #include <itkImageFileWriter.h>
 #include <iostream>

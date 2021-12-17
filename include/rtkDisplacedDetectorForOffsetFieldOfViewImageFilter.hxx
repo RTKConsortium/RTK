@@ -21,7 +21,6 @@
 
 #include "math.h"
 
-#include "rtkDisplacedDetectorForOffsetFieldOfViewImageFilter.h"
 
 #include <itkImageRegionIteratorWithIndex.h>
 #include <itkImageRegionConstIterator.h>

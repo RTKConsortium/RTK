@@ -19,7 +19,6 @@
 #ifndef rtkConjugateGradientOperator_hxx
 #define rtkConjugateGradientOperator_hxx
 
-#include "rtkConjugateGradientOperator.h"
 
 namespace rtk
 {

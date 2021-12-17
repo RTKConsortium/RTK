@@ -18,7 +18,6 @@
 #ifndef rtkFourDROOSTERConeBeamReconstructionFilter_hxx
 #define rtkFourDROOSTERConeBeamReconstructionFilter_hxx
 
-#include "rtkFourDROOSTERConeBeamReconstructionFilter.h"
 #include <itkImageFileWriter.h>
 #include <itkIterationReporter.h>
 

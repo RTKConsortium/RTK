@@ -21,7 +21,6 @@
 
 #include "math.h"
 
-#include "rtkFieldOfViewImageFilter.h"
 
 #include <itkImageRegionConstIterator.h>
 #include <itkImageRegionConstIteratorWithIndex.h>

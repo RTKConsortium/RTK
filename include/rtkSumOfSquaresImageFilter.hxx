@@ -19,7 +19,6 @@
 #ifndef rtkSumOfSquaresImageFilter_hxx
 #define rtkSumOfSquaresImageFilter_hxx
 
-#include "rtkSumOfSquaresImageFilter.h"
 #include <itkImageRegionConstIterator.h>
 #include <itkImageRegionIterator.h>
 

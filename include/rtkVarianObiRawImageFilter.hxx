@@ -19,7 +19,6 @@
 #ifndef rtkVarianObiRawImageFilter_hxx
 #define rtkVarianObiRawImageFilter_hxx
 
-#include "rtkVarianObiRawImageFilter.h"
 #include "rtkI0EstimationProjectionFilter.h"
 
 namespace rtk

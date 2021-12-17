@@ -19,7 +19,6 @@
 #ifndef rtkMotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter_hxx
 #define rtkMotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter_hxx
 
-#include "rtkMotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter.h"
 
 namespace rtk
 {

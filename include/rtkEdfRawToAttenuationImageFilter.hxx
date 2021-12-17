@@ -19,7 +19,6 @@
 #ifndef rtkEdfRawToAttenuationImageFilter_hxx
 #define rtkEdfRawToAttenuationImageFilter_hxx
 
-#include "rtkEdfRawToAttenuationImageFilter.h"
 
 #include <itkImageFileWriter.h>
 #include <itksys/SystemTools.hxx>

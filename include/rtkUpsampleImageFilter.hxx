@@ -19,7 +19,6 @@
 #ifndef rtkUpsampleImageFilter_hxx
 #define rtkUpsampleImageFilter_hxx
 
-#include "rtkUpsampleImageFilter.h"
 
 #include "itkImageRegionIterator.h"
 #include "itkImageRegionConstIterator.h"

@@ -18,7 +18,6 @@
 #ifndef rtkMotionCompensatedFourDROOSTERConeBeamReconstructionFilter_hxx
 #define rtkMotionCompensatedFourDROOSTERConeBeamReconstructionFilter_hxx
 
-#include "rtkMotionCompensatedFourDROOSTERConeBeamReconstructionFilter.h"
 #include <itkImageFileWriter.h>
 
 namespace rtk

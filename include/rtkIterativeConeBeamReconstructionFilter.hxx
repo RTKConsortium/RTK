@@ -19,7 +19,6 @@
 #ifndef rtkIterativeConeBeamReconstructionFilter_hxx
 #define rtkIterativeConeBeamReconstructionFilter_hxx
 
-#include "rtkIterativeConeBeamReconstructionFilter.h"
 
 namespace rtk
 {
