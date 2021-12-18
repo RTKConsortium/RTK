@@ -166,7 +166,11 @@ main(int, char **)
     PasteImageFilterType::Pointer pasteFilterStaticProjections = PasteImageFilterType::New();
     pasteFilterStaticProjections->SetDestinationImage(projectionsSource->GetOutput());
 
+#ifdef RTK_USE_CUDA
+    std::string signalFileName = "signal_fw_cuda.txt";
+#else
     std::string signalFileName = "signal_fw.txt";
+#endif
 
     std::ofstream signalFile(signalFileName.c_str());
 
