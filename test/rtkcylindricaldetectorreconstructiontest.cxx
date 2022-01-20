@@ -7,6 +7,7 @@
 #ifdef USE_CUDA
 #  include "itkCudaImage.h"
 #endif
+#include "itkTestingMacros.h"
 
 /**
  * \file rtkcylindricaldetectorreconstructiontest.cxx
@@ -144,6 +145,10 @@ main(int, char **)
 
   conjugategradient->SetForwardProjectionFilter(ConjugateGradientType::FP_JOSEPH);
   conjugategradient->SetBackProjectionFilter(ConjugateGradientType::BP_JOSEPH);
+#if defined(RTK_USE_CUDA) && !defined(USE_CUDA)
+  ITK_TRY_EXPECT_EXCEPTION(conjugategradient->Update());
+  conjugategradient->SetCudaConjugateGradient(false);
+#endif
   TRY_AND_EXIT_ON_ITK_EXCEPTION(conjugategradient->Update());
 
   CheckImageQuality<OutputImageType>(conjugategradient->GetOutput(), dsl->GetOutput(), 0.08, 23, 2.0);
@@ -152,6 +157,7 @@ main(int, char **)
 #ifdef USE_CUDA
   std::cout << "\n\n****** Case 2: CUDA ray cast forward and back projectors ******" << std::endl;
 
+  conjugategradient->SetCudaConjugateGradient(true);
   conjugategradient->SetForwardProjectionFilter(ConjugateGradientType::FP_CUDARAYCAST);
   conjugategradient->SetBackProjectionFilter(ConjugateGradientType::BP_CUDARAYCAST);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(conjugategradient->Update());
