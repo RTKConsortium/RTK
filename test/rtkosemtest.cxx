@@ -6,7 +6,7 @@
 #include "rtkConstantImageSource.h"
 #include "itkMaskImageFilter.h"
 
-#ifdef RTK_USE_CUDA
+#ifdef USE_CUDA
 #  include "itkCudaImage.h"
 #endif
 #include "rtkOSEMConeBeamReconstructionFilter.h"
@@ -30,7 +30,7 @@ main(int, char **)
   constexpr unsigned int Dimension = 3;
   using OutputPixelType = float;
 
-#ifdef RTK_USE_CUDA
+#ifdef USE_CUDA
   using OutputImageType = itk::CudaImage<OutputPixelType, Dimension>;
 #else
   using OutputImageType = itk::Image<OutputPixelType, Dimension>;

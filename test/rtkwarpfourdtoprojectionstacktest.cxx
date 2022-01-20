@@ -32,7 +32,7 @@ main(int, char **)
 
   using DVFVectorType = itk::CovariantVector<OutputPixelType, 3>;
 
-#ifdef RTK_USE_CUDA
+#ifdef USE_CUDA
   using VolumeSeriesType = itk::CudaImage<OutputPixelType, 4>;
   using ProjectionStackType = itk::CudaImage<OutputPixelType, 3>;
   using VolumeType = itk::CudaImage<OutputPixelType, 3>;
@@ -163,7 +163,7 @@ main(int, char **)
   PasteImageFilterType::Pointer pasteFilterStaticProjections = PasteImageFilterType::New();
   pasteFilterStaticProjections->SetDestinationImage(projectionsSource->GetOutput());
 
-#ifdef RTK_USE_CUDA
+#ifdef USE_CUDA
   std::string signalFileName = "signal_bw_cuda.txt";
 #else
   std::string signalFileName = "signal_bw.txt";
@@ -380,7 +380,7 @@ main(int, char **)
   warpforwardproject->SetWeights(phaseReader->GetOutput());
   warpforwardproject->SetSignal(rtk::ReadSignalFile(signalFileName));
 
-#ifndef RTK_USE_CUDA
+#ifndef USE_CUDA
   std::cout
     << "\n\n****** Case 1: Non-warped joseph forward projection (warped forward projection exists only in CUDA) ******"
     << std::endl;

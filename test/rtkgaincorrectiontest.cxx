@@ -24,7 +24,7 @@
 #include <itkImageRegionConstIterator.h>
 #include <itkImageRegionIteratorWithIndex.h>
 
-#ifdef RTK_USE_CUDA
+#ifdef USE_CUDA
 #  include "rtkCudaPolynomialGainCorrectionImageFilter.h"
 #else
 #  include "rtkPolynomialGainCorrectionImageFilter.h"
@@ -41,7 +41,7 @@
  */
 
 constexpr unsigned int Dimension = 3;
-#ifdef RTK_USE_CUDA
+#ifdef USE_CUDA
 using InputImageType = itk::CudaImage<unsigned short, Dimension>;
 using OutputImageType = itk::CudaImage<float, Dimension>;
 #else
@@ -243,7 +243,7 @@ int
 main(int, char **)
 {
   const float K = 0.5f;
-#ifdef RTK_USE_CUDA
+#ifdef USE_CUDA
   using GainCorrectionType = rtk::CudaPolynomialGainCorrectionImageFilter;
 #else
   using GainCorrectionType = rtk::PolynomialGainCorrectionImageFilter<InputImageType, OutputImageType>;

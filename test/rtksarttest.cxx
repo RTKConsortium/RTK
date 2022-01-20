@@ -5,7 +5,7 @@
 #include "rtkRayEllipsoidIntersectionImageFilter.h"
 #include "rtkConstantImageSource.h"
 
-#ifdef RTK_USE_CUDA
+#ifdef USE_CUDA
 #  include "itkCudaImage.h"
 #endif
 #include "rtkSARTConeBeamReconstructionFilter.h"
@@ -29,7 +29,7 @@ main(int, char **)
   constexpr unsigned int Dimension = 3;
   using OutputPixelType = float;
 
-#ifdef RTK_USE_CUDA
+#ifdef USE_CUDA
   using OutputImageType = itk::CudaImage<OutputPixelType, Dimension>;
 #else
   using OutputImageType = itk::Image<OutputPixelType, Dimension>;

@@ -5,7 +5,7 @@
 #include "rtkTest.h"
 #include "rtkConstantImageSource.h"
 
-#ifdef RTK_USE_CUDA
+#ifdef USE_CUDA
 #  include "rtkCudaCyclicDeformationImageFilter.h"
 #else
 #  include "rtkCyclicDeformationImageFilter.h"
@@ -30,7 +30,7 @@ main(int, char **)
 {
   using OutputPixelType = itk::CovariantVector<float, 3>;
 
-#ifdef RTK_USE_CUDA
+#ifdef USE_CUDA
   using DVFSequenceImageType = itk::CudaImage<OutputPixelType, 4>;
   using DVFImageType = itk::CudaImage<OutputPixelType, 3>;
 #else
