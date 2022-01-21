@@ -16,6 +16,7 @@
  *
  *=========================================================================*/
 
+#include "rtkSignalToInterpolationWeights.h"
 
 #include <itksys/SystemTools.hxx>
 #include <itkMath.h>
