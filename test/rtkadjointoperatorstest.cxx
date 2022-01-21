@@ -8,7 +8,7 @@
 #include "rtkJosephForwardAttenuatedProjectionImageFilter.h"
 #include "rtkZengBackProjectionImageFilter.h"
 #include "rtkZengForwardProjectionImageFilter.h"
-#ifdef RTK_USE_CUDA
+#ifdef USE_CUDA
 #  include "rtkCudaForwardProjectionImageFilter.h"
 #  include "rtkCudaRayCastBackProjectionImageFilter.h"
 #endif

@@ -6,7 +6,7 @@
 #include "itkImageFileReader.h"
 #include "rtkConstantImageSource.h"
 
-#ifdef RTK_USE_CUDA
+#ifdef USE_CUDA
 #  include "rtkCudaLaplacianImageFilter.h"
 #endif
 

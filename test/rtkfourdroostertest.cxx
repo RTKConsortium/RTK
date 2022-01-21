@@ -32,7 +32,7 @@ main(int, char **)
 
   using DVFVectorType = itk::CovariantVector<OutputPixelType, 3>;
 
-#ifdef RTK_USE_CUDA
+#ifdef USE_CUDA
   using VolumeSeriesType = itk::CudaImage<OutputPixelType, 4>;
   using ProjectionStackType = itk::CudaImage<OutputPixelType, 3>;
   using VolumeType = itk::CudaImage<OutputPixelType, 3>;
