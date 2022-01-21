@@ -180,6 +180,35 @@ jobs:
         name: LinuxWheel${{ matrix.python-version }}
         path: dist
 
+  build-linux-cuda-python-packages:
+    runs-on: self-hosted
+    strategy:
+      max-parallel: 2
+      matrix:
+        python-version: [37, 38, 39, 310]
+        include:
+          - itk-python-git-tag: "v5.3rc03"
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: 'Fetch build script'
+      run: |
+        curl -L https://raw.githubusercontent.com/InsightSoftwareConsortium/ITKPythonPackage/master/scripts/dockcross-manylinux-download-cache-and-build-module-wheels.sh -O
+        chmod u+x dockcross-manylinux-download-cache-and-build-module-wheels.sh
+
+    - name: 'Build 🐍 Python 📦 package'
+      run: |
+        export ITK_PACKAGE_VERSION=${{ matrix.itk-python-git-tag }}
+        export LD_LIBRARY_PATH="/home/srit/Downloads/cuda116:/home/srit/Downloads/cuda116/targets/x86_64-linux/lib:/home/srit/Downloads/cuda116/lib64/stubs"
+        ./dockcross-manylinux-download-cache-and-build-module-wheels.sh -c "-DCUDAToolkit_ROOT=/usr/lib64/cuda116 -DCMAKE_CUDA_COMPILER=/usr/lib64/cuda116/bin/nvcc" -x "libcuda.so;libcuda.so.1;libcudart.so;libcudart.so.11.0;libcublas.so;libcublas.so.11;libcublasLt.so;libcublasLt.so.11;libcufft.so;libcufft.so.10" cp${{ matrix.python-version }}
+
+    - name: Publish Python package as GitHub Artifact
+      uses: actions/upload-artifact@v1
+      with:
+        name: LinuxWheel${{ matrix.python-version }}-cuda116
+        path: dist
+
   build-macos-python-packages:
     runs-on: macos-10.15
     strategy:
