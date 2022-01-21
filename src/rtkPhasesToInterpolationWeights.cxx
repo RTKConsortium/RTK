@@ -15,9 +15,7 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-#ifndef rtkPhasesToInterpolationWeights_hxx
-#define rtkPhasesToInterpolationWeights_hxx
-
+#include "rtkPhasesToInterpolationWeights.h"
 
 #include <itksys/SystemTools.hxx>
 #include <itkMath.h>

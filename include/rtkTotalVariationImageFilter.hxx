@@ -21,7 +21,6 @@
 #include "math.h"
 
 
-
 #include "itkConstNeighborhoodIterator.h"
 #include "itkProgressReporter.h"
 

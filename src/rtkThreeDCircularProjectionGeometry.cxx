@@ -652,7 +652,7 @@ rtk::ThreeDCircularProjectionGeometry::FixAngles(double &              outOfPlan
   const Matrix3x3Type & rm = referenceMatrix; // shortcut
   const double          EPSILON = 1e-6;       // internal tolerance for comparison
 
-  if (itk::Math::abs(fabs(rm[2][1]) - 1.) > EPSILON)
+  if (itk::Math::abs(itk::Math::abs(rm[2][1]) - 1.) > EPSILON)
   {
     double oa = NAN, ga = NAN, ia = NAN;
 

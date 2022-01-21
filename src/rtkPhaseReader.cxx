@@ -16,6 +16,7 @@
  *
  *=========================================================================*/
 
+#include "rtkPhaseReader.h"
 
 #include "itksys/SystemTools.hxx"
 
