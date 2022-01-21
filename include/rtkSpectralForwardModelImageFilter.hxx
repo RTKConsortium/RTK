@@ -19,7 +19,6 @@
 #ifndef rtkSpectralForwardModelImageFilter_hxx
 #define rtkSpectralForwardModelImageFilter_hxx
 
-#include "rtkSpectralForwardModelImageFilter.h"
 #include <itkImageRegionIterator.h>
 #include <itkImageRegionConstIterator.h>
 

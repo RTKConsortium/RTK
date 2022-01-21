@@ -19,7 +19,6 @@
 #ifndef rtkConjugateGradientGetX_kPlusOneImageFilter_hxx
 #define rtkConjugateGradientGetX_kPlusOneImageFilter_hxx
 
-#include "rtkConjugateGradientGetX_kPlusOneImageFilter.h"
 
 namespace rtk
 {

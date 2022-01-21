@@ -18,7 +18,6 @@
 #ifndef rtkProjectionsRegionConstIteratorRayBasedWithCylindricalPanel_hxx
 #define rtkProjectionsRegionConstIteratorRayBasedWithCylindricalPanel_hxx
 
-#include "rtkProjectionsRegionConstIteratorRayBasedWithCylindricalPanel.h"
 #include "rtkHomogeneousMatrix.h"
 #include "rtkMacro.h"
 

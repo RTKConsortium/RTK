@@ -19,7 +19,6 @@
 #ifndef rtkExtractPhaseImageFilter_hxx
 #define rtkExtractPhaseImageFilter_hxx
 
-#include "rtkExtractPhaseImageFilter.h"
 
 #include "rtkHilbertImageFilter.h"
 

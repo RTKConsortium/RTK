@@ -18,7 +18,6 @@
 #ifndef rtkWeidingerForwardModelImageFilter_hxx
 #define rtkWeidingerForwardModelImageFilter_hxx
 
-#include "rtkWeidingerForwardModelImageFilter.h"
 #include "itkImageRegionIteratorWithIndex.h"
 #include "itkImageRegionIterator.h"
 

@@ -19,7 +19,6 @@
 #ifndef rtkJosephForwardAttenuatedProjectionImageFilter_hxx
 #define rtkJosephForwardAttenuatedProjectionImageFilter_hxx
 
-#include "rtkJosephForwardAttenuatedProjectionImageFilter.h"
 
 #include "rtkHomogeneousMatrix.h"
 #include "rtkBoxShape.h"

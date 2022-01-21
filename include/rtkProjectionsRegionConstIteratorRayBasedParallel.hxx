@@ -18,7 +18,6 @@
 #ifndef rtkProjectionsRegionConstIteratorRayBasedParallel_hxx
 #define rtkProjectionsRegionConstIteratorRayBasedParallel_hxx
 
-#include "rtkProjectionsRegionConstIteratorRayBasedParallel.h"
 #include "rtkHomogeneousMatrix.h"
 #include "rtkMacro.h"
 

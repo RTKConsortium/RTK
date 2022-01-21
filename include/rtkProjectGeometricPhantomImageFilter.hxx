@@ -19,7 +19,6 @@
 #ifndef rtkProjectGeometricPhantomImageFilter_hxx
 #define rtkProjectGeometricPhantomImageFilter_hxx
 
-#include "rtkProjectGeometricPhantomImageFilter.h"
 #include "rtkGeometricPhantomFileReader.h"
 #include "rtkForbildPhantomFileReader.h"
 #include "rtkRayConvexIntersectionImageFilter.h"

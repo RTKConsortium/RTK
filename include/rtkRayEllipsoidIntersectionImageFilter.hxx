@@ -19,7 +19,6 @@
 #ifndef rtkRayEllipsoidIntersectionImageFilter_hxx
 #define rtkRayEllipsoidIntersectionImageFilter_hxx
 
-#include "rtkRayEllipsoidIntersectionImageFilter.h"
 #include "rtkQuadricShape.h"
 
 namespace rtk

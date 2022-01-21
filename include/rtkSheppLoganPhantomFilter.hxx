@@ -19,7 +19,6 @@
 #ifndef rtkSheppLoganPhantomFilter_hxx
 #define rtkSheppLoganPhantomFilter_hxx
 
-#include "rtkSheppLoganPhantomFilter.h"
 #include "rtkSheppLoganPhantom.h"
 
 namespace rtk

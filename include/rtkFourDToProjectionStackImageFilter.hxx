@@ -18,7 +18,6 @@
 #ifndef rtkFourDToProjectionStackImageFilter_hxx
 #define rtkFourDToProjectionStackImageFilter_hxx
 
-#include "rtkFourDToProjectionStackImageFilter.h"
 #include "rtkGeneralPurposeFunctions.h"
 
 namespace rtk

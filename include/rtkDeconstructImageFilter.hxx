@@ -19,7 +19,6 @@
 #ifndef rtkDeconstructImageFilter_hxx
 #define rtkDeconstructImageFilter_hxx
 
-#include "rtkDeconstructImageFilter.h"
 
 namespace rtk
 {

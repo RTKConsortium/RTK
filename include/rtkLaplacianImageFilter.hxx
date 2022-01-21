@@ -19,7 +19,6 @@
 #ifndef rtkLaplacianImageFilter_hxx
 #define rtkLaplacianImageFilter_hxx
 
-#include "rtkLaplacianImageFilter.h"
 
 namespace rtk
 {

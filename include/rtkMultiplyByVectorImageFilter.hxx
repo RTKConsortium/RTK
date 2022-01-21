@@ -18,7 +18,6 @@
 #ifndef rtkMultiplyByVectorImageFilter_hxx
 #define rtkMultiplyByVectorImageFilter_hxx
 
-#include "rtkMultiplyByVectorImageFilter.h"
 #include "itkImageRegionIterator.h"
 
 

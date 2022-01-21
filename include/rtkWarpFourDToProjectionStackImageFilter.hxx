@@ -18,7 +18,6 @@
 #ifndef rtkWarpFourDToProjectionStackImageFilter_hxx
 #define rtkWarpFourDToProjectionStackImageFilter_hxx
 
-#include "rtkWarpFourDToProjectionStackImageFilter.h"
 
 namespace rtk
 {

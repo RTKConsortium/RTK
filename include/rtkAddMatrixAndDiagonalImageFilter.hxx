@@ -18,7 +18,6 @@
 #ifndef rtkAddMatrixAndDiagonalImageFilter_hxx
 #define rtkAddMatrixAndDiagonalImageFilter_hxx
 
-#include "rtkAddMatrixAndDiagonalImageFilter.h"
 #include "itkImageRegionIteratorWithIndex.h"
 #include "itkImageRegionIterator.h"
 #include "vnl/vnl_inverse.h"

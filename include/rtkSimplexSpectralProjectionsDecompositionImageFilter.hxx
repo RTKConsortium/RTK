@@ -19,7 +19,6 @@
 #ifndef rtkSimplexSpectralProjectionsDecompositionImageFilter_hxx
 #define rtkSimplexSpectralProjectionsDecompositionImageFilter_hxx
 
-#include "rtkSimplexSpectralProjectionsDecompositionImageFilter.h"
 #include "rtkSpectralForwardModelImageFilter.h"
 #include <itkImageRegionIterator.h>
 #include <itkImageRegionConstIterator.h>

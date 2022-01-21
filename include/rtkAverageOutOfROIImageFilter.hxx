@@ -18,7 +18,6 @@
 #ifndef rtkAverageOutOfROIImageFilter_hxx
 #define rtkAverageOutOfROIImageFilter_hxx
 
-#include "rtkAverageOutOfROIImageFilter.h"
 #include "itkImageRegionIteratorWithIndex.h"
 #include "itkImageRegionIterator.h"
 

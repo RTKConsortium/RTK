@@ -19,7 +19,6 @@
 #ifndef rtkUnwarpSequenceImageFilter_hxx
 #define rtkUnwarpSequenceImageFilter_hxx
 
-#include "rtkUnwarpSequenceImageFilter.h"
 
 namespace rtk
 {

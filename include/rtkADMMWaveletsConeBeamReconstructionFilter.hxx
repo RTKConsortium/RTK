@@ -19,7 +19,6 @@
 #ifndef rtkADMMWaveletsConeBeamReconstructionFilter_hxx
 #define rtkADMMWaveletsConeBeamReconstructionFilter_hxx
 
-#include "rtkADMMWaveletsConeBeamReconstructionFilter.h"
 
 #include <itkIterationReporter.h>
 

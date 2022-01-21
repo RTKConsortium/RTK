@@ -18,7 +18,6 @@
 #ifndef rtkFourDReconstructionConjugateGradientOperator_hxx
 #define rtkFourDReconstructionConjugateGradientOperator_hxx
 
-#include "rtkFourDReconstructionConjugateGradientOperator.h"
 #include "rtkGeneralPurposeFunctions.h"
 
 namespace rtk
@@ -275,7 +274,7 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
   {
     for (int proj = FirstProj + 1; proj < FirstProj + NumberProjs; proj++)
     {
-      if (fabs(m_Signal[proj] - m_Signal[proj - 1]) > 1e-4)
+      if (itk::Math::abs(m_Signal[proj] - m_Signal[proj - 1]) > 1e-4)
       {
         // Compute the number of projections in the current slab
         sizeOfSlabs.push_back(proj - firstProjectionInSlabs[firstProjectionInSlabs.size() - 1]);

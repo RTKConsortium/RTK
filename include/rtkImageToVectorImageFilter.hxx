@@ -18,7 +18,6 @@
 #ifndef rtkImageToVectorImageFilter_hxx
 #define rtkImageToVectorImageFilter_hxx
 
-#include "rtkImageToVectorImageFilter.h"
 
 #include <itkObjectFactory.h>
 #include <itkImageRegionIterator.h>

@@ -19,7 +19,6 @@
 #ifndef rtkDisplacedDetectorImageFilter_hxx
 #define rtkDisplacedDetectorImageFilter_hxx
 
-#include "rtkDisplacedDetectorImageFilter.h"
 
 #include <itkImageRegionIteratorWithIndex.h>
 #include <itkImageRegionConstIterator.h>
@@ -157,7 +156,7 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>::GenerateOutputInformati
                              << " Corner inf=" << m_InferiorCorner << " and corner sup=" << m_SuperiorCorner);
   }
   // Case 2: Not displaced, or explicit request not to pad: default outputLargestPossibleRegion is fine
-  else if ((fabs(m_InferiorCorner + m_SuperiorCorner) < 0.1 * fabs(m_SuperiorCorner - m_InferiorCorner)) ||
+  else if ((itk::Math::abs(m_InferiorCorner + m_SuperiorCorner) < 0.1 * itk::Math::abs(m_SuperiorCorner - m_InferiorCorner)) ||
            !m_PadOnTruncatedSide)
   {
     this->SetInPlace(true);
@@ -205,7 +204,7 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerate
   itk::ImageRegionConstIterator<InputImageType> itIn(this->GetInput(), overlapRegion);
 
   // Not displaced, nothing to do
-  if ((fabs(m_InferiorCorner + m_SuperiorCorner) < 0.1 * fabs(m_SuperiorCorner - m_InferiorCorner)) || m_Disable)
+  if ((itk::Math::abs(m_InferiorCorner + m_SuperiorCorner) < 0.1 * itk::Math::abs(m_SuperiorCorner - m_InferiorCorner)) || m_Disable)
   {
     // If not in place, copy is required
     if (this->GetInput() != this->GetOutput())

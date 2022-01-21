@@ -19,7 +19,6 @@
 #ifndef rtkImagXGeometryReader_hxx
 #define rtkImagXGeometryReader_hxx
 
-#include "rtkImagXGeometryReader.h"
 
 #include "rtkMacro.h"
 #include "rtkImagXXMLFileReader.h"

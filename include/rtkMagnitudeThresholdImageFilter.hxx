@@ -21,7 +21,6 @@
 
 #include "math.h"
 
-#include "rtkMagnitudeThresholdImageFilter.h"
 
 #include <itkImageRegionIterator.h>
 #include <itkImageRegionConstIterator.h>

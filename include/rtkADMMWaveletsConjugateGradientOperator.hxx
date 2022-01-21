@@ -19,7 +19,6 @@
 #ifndef rtkADMMWaveletsConjugateGradientOperator_hxx
 #define rtkADMMWaveletsConjugateGradientOperator_hxx
 
-#include "rtkADMMWaveletsConjugateGradientOperator.h"
 
 namespace rtk
 {

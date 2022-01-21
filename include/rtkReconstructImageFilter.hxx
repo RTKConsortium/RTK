@@ -20,7 +20,6 @@
 #define rtkReconstructImageFilter_hxx
 
 // Includes
-#include "rtkReconstructImageFilter.h"
 
 namespace rtk
 {

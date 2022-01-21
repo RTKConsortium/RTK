@@ -20,7 +20,6 @@
 
 #include "math.h"
 
-#include "rtkSplatWithKnownWeightsImageFilter.h"
 
 #include "itkObjectFactory.h"
 #include "itkImageRegionIterator.h"

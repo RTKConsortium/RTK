@@ -18,7 +18,6 @@
 
 #ifndef rtkDivergenceOfGradientConjugateGradientOperator_hxx
 #define rtkDivergenceOfGradientConjugateGradientOperator_hxx
-#include "rtkDivergenceOfGradientConjugateGradientOperator.h"
 
 #include "itkConstShapedNeighborhoodIterator.h"
 #include "itkNeighborhoodInnerProduct.h"

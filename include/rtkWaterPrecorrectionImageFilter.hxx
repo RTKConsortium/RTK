@@ -22,7 +22,6 @@
 #include <itkImageRegionConstIterator.h>
 #include <itkImageRegionIterator.h>
 
-#include "rtkWaterPrecorrectionImageFilter.h"
 
 namespace rtk
 {

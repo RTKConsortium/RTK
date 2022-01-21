@@ -19,7 +19,6 @@
 #ifndef rtkConjugateGradientImageFilter_hxx
 #define rtkConjugateGradientImageFilter_hxx
 
-#include "rtkConjugateGradientImageFilter.h"
 #include <itkMultiThreaderBase.h>
 #include <mutex>
 #include <itkIterationReporter.h>

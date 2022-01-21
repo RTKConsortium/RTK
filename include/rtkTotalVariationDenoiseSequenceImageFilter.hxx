@@ -19,7 +19,6 @@
 #ifndef rtkTotalVariationDenoiseSequenceImageFilter_hxx
 #define rtkTotalVariationDenoiseSequenceImageFilter_hxx
 
-#include "rtkTotalVariationDenoiseSequenceImageFilter.h"
 #include <itkImageFileWriter.h>
 
 namespace rtk

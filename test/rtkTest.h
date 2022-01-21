@@ -302,7 +302,7 @@ CheckGeometries(const rtk::ThreeDCircularProjectionGeometry * g1, const rtk::Thr
     std::cerr << "Unequal number of projections in the two geometries" << std::endl;
     exit(EXIT_FAILURE);
   }
-  if (e < std::fabs(g1->GetRadiusCylindricalDetector() - g2->GetRadiusCylindricalDetector()))
+  if (e < itk::Math::abs(g1->GetRadiusCylindricalDetector() - g2->GetRadiusCylindricalDetector()))
   {
     std::cerr << "Geometries don't have the same cylindrical detector radius" << std::endl;
     exit(EXIT_FAILURE);
@@ -312,21 +312,21 @@ CheckGeometries(const rtk::ThreeDCircularProjectionGeometry * g1, const rtk::Thr
   {
     // std::cout << g1->GetGantryAngles()[i] << " " << g2->GetGantryAngles()[i] << std::endl;
     if (e < rtk::ThreeDCircularProjectionGeometry::ConvertAngleBetween0And2PIRadians(
-              std::fabs(g1->GetGantryAngles()[i] - g2->GetGantryAngles()[i])) ||
+              itk::Math::abs(g1->GetGantryAngles()[i] - g2->GetGantryAngles()[i])) ||
         e < rtk::ThreeDCircularProjectionGeometry::ConvertAngleBetween0And2PIRadians(
-              std::fabs(g1->GetOutOfPlaneAngles()[i] - g2->GetOutOfPlaneAngles()[i])) ||
+              itk::Math::abs(g1->GetOutOfPlaneAngles()[i] - g2->GetOutOfPlaneAngles()[i])) ||
         e < rtk::ThreeDCircularProjectionGeometry::ConvertAngleBetween0And2PIRadians(
-              std::fabs(g1->GetInPlaneAngles()[i] - g2->GetInPlaneAngles()[i])) ||
-        e < std::fabs(g1->GetSourceToIsocenterDistances()[i] - g2->GetSourceToIsocenterDistances()[i]) ||
-        e < std::fabs(g1->GetSourceOffsetsX()[i] - g2->GetSourceOffsetsX()[i]) ||
-        e < std::fabs(g1->GetSourceOffsetsY()[i] - g2->GetSourceOffsetsY()[i]) ||
-        e < std::fabs(g1->GetSourceToDetectorDistances()[i] - g2->GetSourceToDetectorDistances()[i]) ||
-        e < std::fabs(g1->GetProjectionOffsetsX()[i] - g2->GetProjectionOffsetsX()[i]) ||
-        e < std::fabs(g1->GetProjectionOffsetsY()[i] - g2->GetProjectionOffsetsY()[i]) ||
-        e < std::fabs(g1->GetCollimationUInf()[i] - g2->GetCollimationUInf()[i]) ||
-        e < std::fabs(g1->GetCollimationVInf()[i] - g2->GetCollimationVInf()[i]) ||
-        e < std::fabs(g1->GetCollimationUSup()[i] - g2->GetCollimationUSup()[i]) ||
-        e < std::fabs(g1->GetCollimationVSup()[i] - g2->GetCollimationVSup()[i]))
+              itk::Math::abs(g1->GetInPlaneAngles()[i] - g2->GetInPlaneAngles()[i])) ||
+        e < itk::Math::abs(g1->GetSourceToIsocenterDistances()[i] - g2->GetSourceToIsocenterDistances()[i]) ||
+        e < itk::Math::abs(g1->GetSourceOffsetsX()[i] - g2->GetSourceOffsetsX()[i]) ||
+        e < itk::Math::abs(g1->GetSourceOffsetsY()[i] - g2->GetSourceOffsetsY()[i]) ||
+        e < itk::Math::abs(g1->GetSourceToDetectorDistances()[i] - g2->GetSourceToDetectorDistances()[i]) ||
+        e < itk::Math::abs(g1->GetProjectionOffsetsX()[i] - g2->GetProjectionOffsetsX()[i]) ||
+        e < itk::Math::abs(g1->GetProjectionOffsetsY()[i] - g2->GetProjectionOffsetsY()[i]) ||
+        e < itk::Math::abs(g1->GetCollimationUInf()[i] - g2->GetCollimationUInf()[i]) ||
+        e < itk::Math::abs(g1->GetCollimationVInf()[i] - g2->GetCollimationVInf()[i]) ||
+        e < itk::Math::abs(g1->GetCollimationUSup()[i] - g2->GetCollimationUSup()[i]) ||
+        e < itk::Math::abs(g1->GetCollimationVSup()[i] - g2->GetCollimationVSup()[i]))
     {
       std::cerr << "Geometry of projection #" << i << " is unvalid." << std::endl;
       exit(EXIT_FAILURE);

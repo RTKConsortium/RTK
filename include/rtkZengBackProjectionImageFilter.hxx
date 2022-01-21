@@ -23,7 +23,6 @@
 
 #include "math.h"
 
-#include "rtkZengBackProjectionImageFilter.h"
 
 #include "rtkHomogeneousMatrix.h"
 #include "rtkBoxShape.h"

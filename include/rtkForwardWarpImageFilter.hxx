@@ -19,7 +19,6 @@
 #ifndef rtkForwardWarpImageFilter_hxx
 #define rtkForwardWarpImageFilter_hxx
 
-#include "rtkForwardWarpImageFilter.h"
 #include "rtkHomogeneousMatrix.h"
 
 #include <itkImageRegionIterator.h>

@@ -19,7 +19,6 @@
 #ifndef rtkConjugateGradientGetP_kPlusOneImageFilter_hxx
 #define rtkConjugateGradientGetP_kPlusOneImageFilter_hxx
 
-#include "rtkConjugateGradientGetP_kPlusOneImageFilter.h"
 
 #include "itkObjectFactory.h"
 #include "itkImageRegionIterator.h"

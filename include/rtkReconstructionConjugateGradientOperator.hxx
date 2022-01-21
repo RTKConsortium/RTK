@@ -19,7 +19,6 @@
 #ifndef rtkReconstructionConjugateGradientOperator_hxx
 #define rtkReconstructionConjugateGradientOperator_hxx
 
-#include "rtkReconstructionConjugateGradientOperator.h"
 
 namespace rtk
 {

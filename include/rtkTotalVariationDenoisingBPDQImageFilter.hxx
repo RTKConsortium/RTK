@@ -19,7 +19,6 @@
 #ifndef rtkTotalVariationDenoisingBPDQImageFilter_hxx
 #define rtkTotalVariationDenoisingBPDQImageFilter_hxx
 
-#include "rtkTotalVariationDenoisingBPDQImageFilter.h"
 
 namespace rtk
 {

@@ -19,7 +19,6 @@
 #ifndef rtkDrawCylinderImageFilter_hxx
 #define rtkDrawCylinderImageFilter_hxx
 
-#include "rtkDrawCylinderImageFilter.h"
 
 namespace rtk
 {

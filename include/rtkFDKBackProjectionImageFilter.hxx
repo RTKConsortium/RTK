@@ -21,7 +21,6 @@
 
 #include "math.h"
 
-#include "rtkFDKBackProjectionImageFilter.h"
 
 #include <itkImageRegionIteratorWithIndex.h>
 #include <itkLinearInterpolateImageFunction.h>
@@ -106,12 +105,12 @@ FDKBackProjectionImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerate
     matrix /= perspFactor;
 
     // Optimized version
-    if (fabs(matrix[1][0]) < 1e-10 && fabs(matrix[2][0]) < 1e-10)
+    if (itk::Math::abs(matrix[1][0]) < 1e-10 && itk::Math::abs(matrix[2][0]) < 1e-10)
     {
       OptimizedBackprojectionX(outputRegionForThread, matrix, projection);
       continue;
     }
-    if (fabs(matrix[1][1]) < 1e-10 && fabs(matrix[2][1]) < 1e-10)
+    if (itk::Math::abs(matrix[1][1]) < 1e-10 && itk::Math::abs(matrix[2][1]) < 1e-10)
     {
       OptimizedBackprojectionY(outputRegionForThread, matrix, projection);
       continue;

@@ -18,7 +18,6 @@
 #ifndef rtkRegularizedConjugateGradientConeBeamReconstructionFilter_hxx
 #define rtkRegularizedConjugateGradientConeBeamReconstructionFilter_hxx
 
-#include "rtkRegularizedConjugateGradientConeBeamReconstructionFilter.h"
 
 #include <itkIterationReporter.h>
 

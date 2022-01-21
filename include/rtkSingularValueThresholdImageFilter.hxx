@@ -19,7 +19,6 @@
 #ifndef rtkSingularValueThresholdImageFilter_hxx
 #define rtkSingularValueThresholdImageFilter_hxx
 
-#include "rtkSingularValueThresholdImageFilter.h"
 
 #include <itkImageRegionIterator.h>
 #include <itkImageRegionConstIterator.h>

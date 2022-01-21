@@ -21,7 +21,6 @@
 
 #include "math.h"
 
-#include "rtkJosephBackProjectionImageFilter.h"
 
 #include "rtkHomogeneousMatrix.h"
 #include "rtkBoxShape.h"
@@ -211,7 +210,7 @@ JosephBackProjectionImageFilter<TInputImage,
       bool isNewRay = true;
       if (fs == ns) // If the voxel is a corner, we can skip most steps
       {
-        attenuationRay += BilinearInterpolationOnBorders(std::abs(fp[mainDir] - np[mainDir]),
+        attenuationRay += BilinearInterpolationOnBorders(itk::Math::abs(fp[mainDir] - np[mainDir]),
                                                          pxiyi,
                                                          pxsyi,
                                                          pxiys,
@@ -227,7 +226,7 @@ JosephBackProjectionImageFilter<TInputImage,
         const typename TInputImage::PixelType & rayValue =
           m_SumAlongRay(itIn->Value(), attenuationRay, stepMM, isNewRay);
         BilinearSplatOnBorders(rayValue,
-                               std::abs(fp[mainDir] - np[mainDir]),
+                               itk::Math::abs(fp[mainDir] - np[mainDir]),
                                stepMM.GetNorm(),
                                pxiyi,
                                pxsyi,
@@ -276,7 +275,7 @@ JosephBackProjectionImageFilter<TInputImage,
         currenty += stepy;
 
         // Middle steps
-        for (int i{ 0 }; i < std::abs(fs - ns) - 1; ++i)
+        for (int i{ 0 }; i < itk::Math::abs(fs - ns) - 1; ++i)
         {
           attenuationRay += BilinearInterpolation(1., pxiyi, pxsyi, pxiys, pxsys, currentx, currenty, offsetx, offsety);
 

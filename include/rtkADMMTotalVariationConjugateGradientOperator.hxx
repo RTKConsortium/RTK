@@ -19,7 +19,6 @@
 #ifndef rtkADMMTotalVariationConjugateGradientOperator_hxx
 #define rtkADMMTotalVariationConjugateGradientOperator_hxx
 
-#include "rtkADMMTotalVariationConjugateGradientOperator.h"
 
 namespace rtk
 {

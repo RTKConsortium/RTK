@@ -19,7 +19,6 @@
 #ifndef rtkNesterovUpdateImageFilter_hxx
 #define rtkNesterovUpdateImageFilter_hxx
 
-#include "rtkNesterovUpdateImageFilter.h"
 #include "itkImageRegionIterator.h"
 
 namespace rtk

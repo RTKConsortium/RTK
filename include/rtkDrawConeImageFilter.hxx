@@ -19,7 +19,6 @@
 #ifndef rtkDrawConeImageFilter_hxx
 #define rtkDrawConeImageFilter_hxx
 
-#include "rtkDrawConeImageFilter.h"
 #include "rtkQuadricShape.h"
 
 namespace rtk

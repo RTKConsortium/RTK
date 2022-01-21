@@ -19,7 +19,6 @@
 #ifndef rtkLookupTableImageFilter_hxx
 #define rtkLookupTableImageFilter_hxx
 
-#include "rtkLookupTableImageFilter.h"
 
 namespace rtk
 {

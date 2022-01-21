@@ -19,7 +19,6 @@
 #ifndef rtkSeparableQuadraticSurrogateRegularizationImageFilter_hxx
 #define rtkSeparableQuadraticSurrogateRegularizationImageFilter_hxx
 
-#include "rtkSeparableQuadraticSurrogateRegularizationImageFilter.h"
 
 namespace rtk
 {

@@ -19,7 +19,6 @@
 #ifndef rtkMechlemOneStepSpectralReconstructionFilter_hxx
 #define rtkMechlemOneStepSpectralReconstructionFilter_hxx
 
-#include "rtkMechlemOneStepSpectralReconstructionFilter.h"
 
 #include <itkIterationReporter.h>
 
