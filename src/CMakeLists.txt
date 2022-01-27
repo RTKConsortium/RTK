@@ -11,7 +11,7 @@ set(RTK_SRCS
   rtkEdfImageIO.cxx
   rtkEdfImageIOFactory.cxx
   rtkElektaSynergyGeometryReader.cxx
-  rtkElektaXVI5GeometryXMLFile.cxx
+  rtkElektaXVI5GeometryXMLFileReader.cxx
   rtkForbildPhantomFileReader.cxx
   rtkGeometricPhantom.cxx
   rtkGeometricPhantomFileReader.cxx

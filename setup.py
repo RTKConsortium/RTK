@@ -42,7 +42,8 @@ setup(
     scripts=[
         "lib/rtkorageometry.py",
         "lib/rtksimulatedgeometry.py",
-        "lib/rtkvarianobigeometry.py"
+        "lib/rtkvarianobigeometry.py",
+        "lib/rtkelektasynergygeometry.py"
         ],
     license='Apache',
     keywords='RTK Reconstruction Toolkit',

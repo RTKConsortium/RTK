@@ -16,7 +16,7 @@
  *
  *=========================================================================*/
 
-#include "rtkElektaXVI5GeometryXMLFile.h"
+#include "rtkElektaXVI5GeometryXMLFileReader.h"
 
 #include <itksys/SystemTools.hxx>
 #include <itkMetaDataObject.h>
