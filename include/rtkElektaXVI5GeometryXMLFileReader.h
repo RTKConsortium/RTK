@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-#ifndef rtkElektaXVI5GeometryXMLFile_h
-#define rtkElektaXVI5GeometryXMLFile_h
+#ifndef rtkElektaXVI5GeometryXMLFileReader_h
+#define rtkElektaXVI5GeometryXMLFileReader_h
 
 #ifdef _MSC_VER
 #  pragma warning(disable : 4786)
