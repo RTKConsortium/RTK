@@ -88,10 +88,16 @@ QuadricShape ::IsIntersectedByRay(const PointType &  rayOrigin,
       {
         nearDist = -itk::NumericTraits<ScalarType>::max();
         farDist = itk::NumericTraits<ScalarType>::max();
-        return ApplyClipPlanes(rayOrigin, rayDirection, nearDist, farDist);
+        if (ApplyClipPlanes(rayOrigin, rayDirection, nearDist, farDist))
+        {
+          // The following condition is equivant to but assumed to be faster
+          // if( itk::Math::abs(nearDist)>itk::Math::abs(farDist) )
+          if ((nearDist - farDist) * (nearDist + farDist) > 0.)
+            std::swap(nearDist, farDist);
+          return true;
+        }
       }
-      else
-        return false;
+      return false;
     }
     nearDist = (-Bq - sqrt(discriminant)) / (2 * Aq);
     farDist = (-Bq + sqrt(discriminant)) / (2 * Aq);
@@ -117,6 +123,10 @@ QuadricShape ::IsIntersectedByRay(const PointType &  rayOrigin,
         {
           nearDist = std::max(farDist, tmpNearDist);
           farDist = tmpFarDist;
+          // The following condition is equivant to but assumed to be faster
+          // if( itk::Math::abs(nearDist)>itk::Math::abs(farDist) )
+          if ((nearDist - farDist) * (nearDist + farDist) > 0.)
+            std::swap(nearDist, farDist);
           return true;
         }
       }
@@ -124,6 +134,10 @@ QuadricShape ::IsIntersectedByRay(const PointType &  rayOrigin,
       {
         farDist = std::min(nearDist, tmpFarDist);
         nearDist = tmpNearDist;
+        // The following condition is equivant to but assumed to be faster
+        // if( itk::Math::abs(nearDist)>itk::Math::abs(farDist) )
+        if ((nearDist - farDist) * (nearDist + farDist) > 0.)
+          std::swap(nearDist, farDist);
         return true;
       }
       else
@@ -131,7 +145,15 @@ QuadricShape ::IsIntersectedByRay(const PointType &  rayOrigin,
     }
   }
 
-  return ApplyClipPlanes(rayOrigin, rayDirection, nearDist, farDist);
+  if (ApplyClipPlanes(rayOrigin, rayDirection, nearDist, farDist))
+  {
+    // The following condition is equivant to but assumed to be faster
+    // if( itk::Math::abs(nearDist)>itk::Math::abs(farDist) )
+    if ((nearDist - farDist) * (nearDist + farDist) > 0.)
+      std::swap(nearDist, farDist);
+    return true;
+  }
+  return false;
 }
 
 void
