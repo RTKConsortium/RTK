@@ -26,6 +26,7 @@
 
 #include <itkImageIOBase.h>
 #include <itkImageIOFactory.h>
+#include <itkVersorRigid3DTransform.h>
 
 namespace rtk
 {
@@ -77,6 +78,8 @@ OraGeometryReader::GenerateData()
       itkExceptionMacro(<< "No Direction in " << projectionsFileName);
     }
     Matrix3x3Type mat = matMeta->GetMetaDataObjectValue();
+    VectorType    u = VectorType(&(mat[0][0]));
+    VectorType    v = VectorType(&(mat[1][0]));
 
     // table_axis_distance_cm
     MetaDataDoubleType * thMeta = dynamic_cast<MetaDataDoubleType *>(dic["table_axis_distance_cm"].GetPointer());
@@ -98,8 +101,34 @@ OraGeometryReader::GenerateData()
     sp[1] -= ax * 10.;
     dp[1] -= ax * 10.;
 
+    // Ring tilt (only available in some versions)
+    MetaDataDoubleType * tiltLeftMeta = dynamic_cast<MetaDataDoubleType *>(dic["tiltleft_deg"].GetPointer());
+    if (tiltLeftMeta != nullptr)
+    {
+      double               tiltLeft = tiltLeftMeta->GetMetaDataObjectValue();
+      MetaDataDoubleType * tiltRightMeta = dynamic_cast<MetaDataDoubleType *>(dic["tiltright_deg"].GetPointer());
+      double               tiltRight = tiltRightMeta->GetMetaDataObjectValue();
+      auto                 tiltTransform = itk::VersorRigid3DTransform<double>::New();
+      const double         deg2rad = std::atan(1.0) / 45.0;
+      tiltTransform->SetRotation(itk::MakeVector(1., 0., 0.), 0.5 * (tiltLeft + tiltRight) * deg2rad);
+
+      // Set center of rotation
+      MetaDataDoubleType * yvecMeta =
+        dynamic_cast<MetaDataDoubleType *>(dic["ydistancebaseunitcs2imagingcs_cm"].GetPointer());
+      double               yvec = yvecMeta->GetMetaDataObjectValue();
+      MetaDataDoubleType * zvecMeta =
+        dynamic_cast<MetaDataDoubleType *>(dic["zdistancebaseunitcs2imagingcs_cm"].GetPointer());
+      double zvec = zvecMeta->GetMetaDataObjectValue();
+      tiltTransform->SetCenter(itk::MakeVector(0., -10. * yvec, -10. * zvec));
+
+      sp = tiltTransform->TransformPoint(sp);
+      dp = tiltTransform->TransformPoint(dp);
+      u = tiltTransform->TransformVector(u);
+      v = tiltTransform->TransformVector(v);
+    }
+
     // Got it, add to geometry
-    m_Geometry->AddProjection(sp, dp, VectorType(&(mat[0][0])), VectorType(&(mat[1][0])));
+    m_Geometry->AddProjection(sp, dp, u, v);
 
     // Now add the collimation
     // longitudinalposition_cm

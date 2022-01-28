@@ -20,10 +20,12 @@
 int
 main(int argc, char * argv[])
 {
-  if (argc < 3)
+  if (argc < 5)
   {
     std::cerr << "Usage: " << std::endl;
-    std::cerr << argv[0] << "oraGeometry.xml refGeometry.xml reference.mha" << std::endl;
+    std::cerr << argv[0] << "oraGeometry.xml refGeometry.xml"
+              << " oraGeometry_tilt.xml refGeometry_tilt.xml"
+              << " reference.mha" << std::endl;
     return EXIT_FAILURE;
   }
 
@@ -46,6 +48,24 @@ main(int argc, char * argv[])
   // Check geometries
   CheckGeometries(geoTargReader->GetGeometry(), geoRefReader->GetOutputObject());
 
+  std::cout << "Testing geometry with tilt..." << std::endl;
+
+  // Ora geometry
+  std::vector<std::string> filenames_tilt;
+  filenames_tilt.emplace_back(argv[3]);
+  rtk::OraGeometryReader::Pointer geoTargReader_tilt;
+  geoTargReader_tilt = rtk::OraGeometryReader::New();
+  geoTargReader_tilt->SetProjectionsFileNames(filenames_tilt);
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(geoTargReader_tilt->UpdateOutputData());
+
+  // Reference geometry
+  geoRefReader = rtk::ThreeDCircularProjectionGeometryXMLFileReader::New();
+  geoRefReader->SetFilename(argv[4]);
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(geoRefReader->GenerateOutputInformation())
+
+  // Check geometries
+  CheckGeometries(geoTargReader_tilt->GetGeometry(), geoRefReader->GetOutputObject());
+
   // ******* COMPARING projections *******
   std::cout << "Testing attenuation conversion..." << std::endl;
 
@@ -53,7 +73,7 @@ main(int argc, char * argv[])
   constexpr unsigned int Dimension = 3;
   using ImageType = itk::Image<OutputPixelType, Dimension>;
 
-  // Elekta projections reader
+  // Projections reader
   using ReaderType = rtk::ProjectionsReader<ImageType>;
   ReaderType::Pointer reader = ReaderType::New();
   reader->SetFileNames(filenames);
@@ -79,7 +99,7 @@ main(int argc, char * argv[])
   // Reference projections reader
   ReaderType::Pointer readerRef = ReaderType::New();
   filenames.clear();
-  filenames.emplace_back(argv[3]);
+  filenames.emplace_back(argv[5]);
   readerRef->SetFileNames(filenames);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(readerRef->Update());
 
