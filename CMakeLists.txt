@@ -184,6 +184,7 @@ set(RTK_VERSION_PATCH ${RTK_VERSION_PATCH})
 set(RTK_USE_CUDA ${RTK_USE_CUDA})
 
 if(RTK_USE_CUDA)
+  find_package(CUDAToolkit)
   set(RTK_CUDA_PROJECTIONS_SLAB_SIZE \"16\" CACHE STRING \"Number of projections processed simultaneously in CUDA forward and back projections\")
 endif()
 ")
@@ -198,6 +199,7 @@ set(RTK_VERSION_PATCH ${RTK_VERSION_PATCH})
 set(RTK_USE_CUDA ${RTK_USE_CUDA})
 
 if(RTK_USE_CUDA)
+  find_package(CUDAToolkit)
   set(RTK_CUDA_PROJECTIONS_SLAB_SIZE \"16\" CACHE STRING \"Number of projections processed simultaneously in CUDA forward and back projections\")
 endif()
 ")
@@ -217,6 +219,9 @@ if(NOT ITK_SOURCE_DIR)
   # This must be done after RTK has been loaded by ITK to make sure
   # ${itk-module} variables are defined for RTK.
   itk_module_target_export(lpsolve55)
+  if(RTK_USE_CUDA)
+      itk_module_target_export(ITKCudaCommon)
+  endif()
 
   if(${ITK_VERSION} VERSION_LESS 5.3)
     ## Set the default target properties for RTK
