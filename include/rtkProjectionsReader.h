@@ -250,8 +250,14 @@ public:
   itkGetMacro(VectorComponent, unsigned int);
   itkSetMacro(VectorComponent, unsigned int);
 
-  /** Get the image IO that was used for reading the projection. */
-  itkGetMacro(ImageIO, itk::ImageIOBase::Pointer);
+  /** Set/Get the ImageIO helper class. Often this is created via the object
+   * factory mechanism that determines whether a particular ImageIO can
+   * read a certain file. This method provides a way to get the ImageIO
+   * instance that is created. Or you can directly specify the ImageIO
+   * to use to read a particular file in case the factory mechanism will
+   * not work properly (e.g., unknown or unusual extension). */
+  itkSetObjectMacro(ImageIO, itk::ImageIOBase);
+  itkGetConstObjectMacro(ImageIO, itk::ImageIOBase);
 
   /** Prepare the allocation of the output image during the first back
    * propagation of the pipeline. */

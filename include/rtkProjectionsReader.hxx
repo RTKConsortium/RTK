@@ -152,7 +152,17 @@ ProjectionsReader<TOutputImage>::GenerateOutputInformation()
     itk::ImageIOFactory::CreateImageIO(m_FileNames[0].c_str(), itk::ImageIOFactory::IOFileModeEnum::ReadMode);
 
   if (imageIO == nullptr)
-    itkGenericExceptionMacro(<< "Cannot create ImageIOFactory for file " << m_FileNames[0].c_str());
+  {
+    if (m_ImageIO != nullptr)
+    {
+      // Can only occur if the image IO has been set manually
+      std::swap(m_ImageIO, imageIO);
+    }
+    else
+    {
+      itkGenericExceptionMacro(<< "Cannot create ImageIOFactory for file " << m_FileNames[0].c_str());
+    }
+  }
 
   if (m_ImageIO != imageIO)
   {
