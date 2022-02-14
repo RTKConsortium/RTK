@@ -258,6 +258,16 @@ public:
   void
   GenerateOutputInformation() override;
 
+  /** Set/Get the ImageIO helper class. Often this is created via the object
+   * factory mechanism that determines whether a particular ImageIO can
+   * read a certain file. This method provides a way to get the ImageIO
+   * instance that is created. Or you can directly specify the ImageIO
+   * to use to read a particular file in case the factory mechanism will
+   * not work properly (e.g., unknown or unusual extension). */
+  void
+  SetImageIO(itk::ImageIOBase * imageIO);
+  // itkGetModifiableObjectMacro(ImageIO, itk::ImageIOBase); this is somehow not working
+
 protected:
   ProjectionsReader();
   ~ProjectionsReader() override = default;
@@ -312,6 +322,9 @@ private:
 
   /** Image IO object which is stored to create the pipe only when required */
   itk::ImageIOBase::Pointer m_ImageIO{ nullptr };
+
+  bool m_UserSpecifiedImageIO; // keep track whether the
+                               // ImageIO is user specified
 
   /** Copy of parameters for the mini-pipeline. Parameters are checked and
    * propagated when required in the GenerateOutputInformation. Refer to the

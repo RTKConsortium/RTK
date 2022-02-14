@@ -120,6 +120,9 @@ ProjectionsReader<TOutputImage>::ProjectionsReader()
   m_UpperBoundaryCropSize.Fill(0);
   m_ShrinkFactors.Fill(1);
   m_MedianRadius.Fill(0);
+
+  m_ImageIO = nullptr;
+  m_UserSpecifiedImageIO = false;
 }
 
 //--------------------------------------------------------------------
@@ -133,6 +136,7 @@ ProjectionsReader<TOutputImage>::PrintSelf(std::ostream & os, itk::Indent indent
     os << indent << "RawDataReader: " << m_RawDataReader->GetNameOfClass() << std::endl;
   if (m_RawToAttenuationFilter.GetPointer())
     os << indent << "RawToProjectionsFilter: " << m_RawToAttenuationFilter->GetNameOfClass() << std::endl;
+  os << indent << "UserSpecifiedImageIO flag: " << m_UserSpecifiedImageIO << std::endl;
 }
 
 //--------------------------------------------------------------------
@@ -148,11 +152,22 @@ ProjectionsReader<TOutputImage>::GenerateOutputInformation()
     rtk::RegisterIOFactories();
   firstTime = false;
 
-  itk::ImageIOBase::Pointer imageIO =
-    itk::ImageIOFactory::CreateImageIO(m_FileNames[0].c_str(), itk::ImageIOFactory::IOFileModeEnum::ReadMode);
+  itk::ImageIOBase::Pointer imageIO = nullptr;
 
-  if (imageIO == nullptr)
-    itkGenericExceptionMacro(<< "Cannot create ImageIOFactory for file " << m_FileNames[0].c_str());
+  if (m_UserSpecifiedImageIO == false) // try creating via factory
+  {
+    imageIO = itk::ImageIOFactory::CreateImageIO(m_FileNames[0].c_str(), itk::ImageIOFactory::IOFileModeEnum::ReadMode);
+
+    if (imageIO == nullptr)
+      itkGenericExceptionMacro(<< "Cannot create ImageIOFactory for file " << m_FileNames[0].c_str());
+  }
+  else
+  {
+    imageIO = m_ImageIO;
+    using ReaderType = itk::ImageSeriesReader<OutputImageType>;
+    typename ReaderType::Pointer reader = ReaderType::New();
+    m_RawDataReader = reader;
+  }
 
   if (m_ImageIO != imageIO)
   {
@@ -726,6 +741,19 @@ ProjectionsReader<TOutputImage>::PropagateI0(itk::ImageBase<OutputImageDimension
     i0->SetIDark(m_IDark);
   }
   // Pipeline connection for m_RawToAttenuationFilter is done after the call to this function
+}
+
+template <typename TOutputImage>
+void
+ProjectionsReader<TOutputImage>::SetImageIO(itk::ImageIOBase * imageIO)
+{
+  itkDebugMacro("setting ImageIO to " << imageIO);
+  if (this->m_ImageIO != imageIO)
+  {
+    this->m_ImageIO = imageIO;
+    this->Modified();
+  }
+  m_UserSpecifiedImageIO = true;
 }
 
 } // namespace rtk
