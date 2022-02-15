@@ -154,7 +154,7 @@ ProjectionsReader<TOutputImage>::GenerateOutputInformation()
 
   itk::ImageIOBase::Pointer imageIO = nullptr;
 
-  if (m_UserSpecifiedImageIO == false) // try creating via factory
+  if (!m_UserSpecifiedImageIO) // try creating via factory
   {
     imageIO = itk::ImageIOFactory::CreateImageIO(m_FileNames[0].c_str(), itk::ImageIOFactory::IOFileModeEnum::ReadMode);
 
@@ -164,15 +164,15 @@ ProjectionsReader<TOutputImage>::GenerateOutputInformation()
   else
   {
     imageIO = m_ImageIO;
-    using ReaderType = itk::ImageSeriesReader<OutputImageType>;
-    typename ReaderType::Pointer reader = ReaderType::New();
-    m_RawDataReader = reader;
   }
 
-  if (m_ImageIO != imageIO)
+  if ((m_ImageIO != imageIO) || (m_UserSpecifiedImageIO && imageIO))
   {
-    imageIO->SetFileName(m_FileNames[0].c_str());
-    imageIO->ReadImageInformation();
+    if (!m_UserSpecifiedImageIO)
+    {
+      imageIO->SetFileName(m_FileNames[0].c_str());
+      imageIO->ReadImageInformation();
+    }
 
     // In this block, we create the filters used depending on the input type
 
