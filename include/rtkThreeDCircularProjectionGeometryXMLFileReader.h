@@ -116,5 +116,14 @@ private:
   /** File format version */
   unsigned int m_Version{ 0 };
 };
+
+/** Convenience function for reading a geometry XML file.
+ *
+ * The function reads the geometry from the specified XML file, and returns the
+ * geometry that it has read.
+ * */
+RTK_EXPORT ThreeDCircularProjectionGeometry::Pointer
+           ReadGeometry(const std::string & filename);
+
 } // namespace rtk
 #endif

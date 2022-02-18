@@ -83,6 +83,26 @@ protected:
   void
   WriteLocalParameter(std::ofstream & output, const std::string & indent, const double & v, const std::string & s);
 };
+
+/** Convenience function for writing an geometry.
+ *
+ * The geometry parameter may be a either SmartPointer or a raw pointer and const or non-const.
+ * */
+template <typename TGeometryPointer>
+ITK_TEMPLATE_EXPORT void
+WriteGeometry(TGeometryPointer && geometry, const std::string & filename)
+{
+  using NonReferenceImagePointer = std::remove_reference_t<TGeometryPointer>;
+  static_assert(std::is_pointer<NonReferenceImagePointer>::value ||
+                  itk::mpl::IsSmartPointer<NonReferenceImagePointer>::Value,
+                "WriteGeometry requires a raw pointer or SmartPointer.");
+
+  auto writer = ThreeDCircularProjectionGeometryXMLFileWriter::New();
+  writer->SetObject(geometry);
+  writer->SetFilename(filename);
+  writer->WriteFile();
+}
+
 } // namespace rtk
 
 #endif
