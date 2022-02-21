@@ -247,14 +247,14 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerate
   {
     // Prepare weights for current slice (depends on ProjectionOffsetsX)
     const double sx = m_Geometry->GetSourceOffsetsX()[itIn.GetIndex()[NDimension - 1]];
-    double       sdd = m_Geometry->GetSourceToIsocenterDistances()[itIn.GetIndex()[NDimension - 1]];
-    sdd = sqrt(sdd * sdd + sx * sx); // To untilted situation
-    double invsdd = 0.;
+    double       sid = m_Geometry->GetSourceToIsocenterDistances()[itIn.GetIndex()[NDimension - 1]];
+    sid = sqrt(sid * sid + sx * sx); // To untilted situation
+    double invsid = 0.;
     double invden = 0.;
-    if (sdd != 0.)
+    if (sid != 0.)
     {
-      invsdd = 1. / sdd;
-      invden = 1. / (2. * std::atan(theta * invsdd));
+      invsid = 1. / sid;
+      invden = 1. / (2. * std::atan(theta * invsid));
     }
     typename WeightImageType::PointType point;
     weights->TransformIndexToPhysicalPoint(itWeights.GetIndex(), point);
@@ -270,7 +270,7 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerate
         else if (l >= theta)
           itWeights.Set(2.0);
         else
-          itWeights.Set(sin(itk::Math::pi * atan(l * invsdd) * invden) + 1);
+          itWeights.Set(sin(itk::Math::pi * atan(l * invsid) * invden) + 1);
         ++itWeights;
         point[0] += spacing[0];
       }
@@ -285,7 +285,7 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerate
         else if (l >= theta)
           itWeights.Set(0.0);
         else
-          itWeights.Set(1 - sin(itk::Math::pi * atan(l * invsdd) * invden));
+          itWeights.Set(1 - sin(itk::Math::pi * atan(l * invsid) * invden));
         ++itWeights;
         point[0] += spacing[0];
       }
