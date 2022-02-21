@@ -24,6 +24,8 @@
 #include <itkImageFileReader.h>
 #include <fstream>
 
+namespace rtk
+{
 template <class TSignalType>
 void
 WriteSignalToTextFile(TSignalType * sig, const std::string & fileName)
@@ -36,6 +38,7 @@ WriteSignalToTextFile(TSignalType * sig, const std::string & fileName)
   }
   ofs.close();
 }
+} // namespace rtk
 
 int
 main(int argc, char * argv[])
@@ -50,11 +53,8 @@ main(int argc, char * argv[])
   using OutputImageType = itk::Image<OutputPixelType, Dimension>;
 
   // Read
-  itk::ImageFileReader<InputImageType>::Pointer reader = itk::ImageFileReader<InputImageType>::New();
-  reader->SetFileName(args_info.input_arg);
-
   OutputImageType::Pointer signal;
-  signal = reader->GetOutput();
+  signal = itk::ReadImage<OutputImageType>(args_info.input_arg);
 
   // Process phase signal if required
   using PhaseFilter = rtk::ExtractPhaseImageFilter<OutputImageType>;
@@ -66,7 +66,7 @@ main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION(phase->Update())
 
   // Write output phase
-  WriteSignalToTextFile(phase->GetOutput(), args_info.output_arg);
+  rtk::WriteSignalToTextFile(phase->GetOutput(), args_info.output_arg);
 
   return EXIT_SUCCESS;
 }

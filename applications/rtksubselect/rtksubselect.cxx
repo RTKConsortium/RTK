@@ -45,14 +45,12 @@ main(int argc, char * argv[])
   // Geometry
   if (args_info.verbose_flag)
     std::cout << "Reading geometry information from " << args_info.geometry_arg << "..." << std::endl;
-  rtk::ThreeDCircularProjectionGeometryXMLFileReader::Pointer geometryReader;
-  geometryReader = rtk::ThreeDCircularProjectionGeometryXMLFileReader::New();
-  geometryReader->SetFilename(args_info.geometry_arg);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(geometryReader->GenerateOutputInformation())
+  rtk::ThreeDCircularProjectionGeometry::Pointer geometry;
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(geometry = rtk::ReadGeometry(args_info.geometry_arg));
 
   // Compute the indices of the selected projections
   std::vector<int> indices;
-  int              n = geometryReader->GetOutputObject()->GetGantryAngles().size();
+  int              n = geometry->GetGantryAngles().size();
   if (args_info.last_given)
     n = std::min(args_info.last_arg, n);
   if (args_info.list_given)
@@ -111,42 +109,29 @@ main(int argc, char * argv[])
     TRY_AND_EXIT_ON_ITK_EXCEPTION(paste->Update())
 
     // Fill in the output geometry object
-    outputGeometry->SetRadiusCylindricalDetector(geometryReader->GetOutputObject()->GetRadiusCylindricalDetector());
-    outputGeometry->AddProjectionInRadians(
-      geometryReader->GetOutputObject()->GetSourceToIsocenterDistances()[indices[i]],
-      geometryReader->GetOutputObject()->GetSourceToDetectorDistances()[indices[i]],
-      geometryReader->GetOutputObject()->GetGantryAngles()[indices[i]],
-      geometryReader->GetOutputObject()->GetProjectionOffsetsX()[indices[i]],
-      geometryReader->GetOutputObject()->GetProjectionOffsetsY()[indices[i]],
-      geometryReader->GetOutputObject()->GetOutOfPlaneAngles()[indices[i]],
-      geometryReader->GetOutputObject()->GetInPlaneAngles()[indices[i]],
-      geometryReader->GetOutputObject()->GetSourceOffsetsX()[indices[i]],
-      geometryReader->GetOutputObject()->GetSourceOffsetsY()[indices[i]]);
-    outputGeometry->SetCollimationOfLastProjection(geometryReader->GetOutputObject()->GetCollimationUInf()[indices[i]],
-                                                   geometryReader->GetOutputObject()->GetCollimationUSup()[indices[i]],
-                                                   geometryReader->GetOutputObject()->GetCollimationVInf()[indices[i]],
-                                                   geometryReader->GetOutputObject()->GetCollimationVSup()[indices[i]]);
+    outputGeometry->SetRadiusCylindricalDetector(geometry->GetRadiusCylindricalDetector());
+    outputGeometry->AddProjectionInRadians(geometry->GetSourceToIsocenterDistances()[indices[i]],
+                                           geometry->GetSourceToDetectorDistances()[indices[i]],
+                                           geometry->GetGantryAngles()[indices[i]],
+                                           geometry->GetProjectionOffsetsX()[indices[i]],
+                                           geometry->GetProjectionOffsetsY()[indices[i]],
+                                           geometry->GetOutOfPlaneAngles()[indices[i]],
+                                           geometry->GetInPlaneAngles()[indices[i]],
+                                           geometry->GetSourceOffsetsX()[indices[i]],
+                                           geometry->GetSourceOffsetsY()[indices[i]]);
+    outputGeometry->SetCollimationOfLastProjection(geometry->GetCollimationUInf()[indices[i]],
+                                                   geometry->GetCollimationUSup()[indices[i]],
+                                                   geometry->GetCollimationVInf()[indices[i]],
+                                                   geometry->GetCollimationVSup()[indices[i]]);
   }
 
   // Geometry writer
   if (args_info.verbose_flag)
     std::cout << "Writing geometry information in " << args_info.out_geometry_arg << "..." << std::endl;
-  rtk::ThreeDCircularProjectionGeometryXMLFileWriter::Pointer xmlWriter =
-    rtk::ThreeDCircularProjectionGeometryXMLFileWriter::New();
-  xmlWriter->SetFilename(args_info.out_geometry_arg);
-  xmlWriter->SetObject(&(*outputGeometry));
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(xmlWriter->WriteFile())
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(rtk::WriteGeometry(outputGeometry, args_info.out_geometry_arg))
 
   // Write
-  using WriterType = itk::ImageFileWriter<OutputImageType>;
-  WriterType::Pointer writer = WriterType::New();
-  writer->SetFileName(args_info.out_proj_arg);
-  writer->SetInput(paste->GetOutput());
-  // TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->UpdateOutputInformation() )
-  //  writer->SetNumberOfStreamDivisions( 1 + reader->GetOutput()->GetLargestPossibleRegion().GetNumberOfPixels() /
-  //  (1024*1024*4) );
-
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(writer->Update())
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(itk::WriteImage(paste->GetOutput(), args_info.out_proj_arg))
 
   return EXIT_SUCCESS;
 }

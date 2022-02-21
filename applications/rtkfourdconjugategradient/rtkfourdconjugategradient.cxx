@@ -55,10 +55,8 @@ main(int argc, char * argv[])
   // Geometry
   if (args_info.verbose_flag)
     std::cout << "Reading geometry information from " << args_info.geometry_arg << "..." << std::endl;
-  rtk::ThreeDCircularProjectionGeometryXMLFileReader::Pointer geometryReader;
-  geometryReader = rtk::ThreeDCircularProjectionGeometryXMLFileReader::New();
-  geometryReader->SetFilename(args_info.geometry_arg);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(geometryReader->GenerateOutputInformation())
+  rtk::ThreeDCircularProjectionGeometry::Pointer geometry;
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(geometry = rtk::ReadGeometry(args_info.geometry_arg));
 
   // Create input: either an existing volume read from a file or a blank image
   itk::ImageSource<VolumeSeriesType>::Pointer inputFilter;
@@ -97,7 +95,7 @@ main(int argc, char * argv[])
   using ReorderProjectionsFilterType = rtk::ReorderProjectionsImageFilter<ProjectionStackType>;
   ReorderProjectionsFilterType::Pointer reorder = ReorderProjectionsFilterType::New();
   reorder->SetInput(reader->GetOutput());
-  reorder->SetInputGeometry(geometryReader->GetOutputObject());
+  reorder->SetInputGeometry(geometry);
   reorder->SetInputSignal(signal);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(reorder->Update())
 
@@ -133,11 +131,7 @@ main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION(conjugategradient->Update())
 
   // Write
-  using WriterType = itk::ImageFileWriter<VolumeSeriesType>;
-  WriterType::Pointer writer = WriterType::New();
-  writer->SetFileName(args_info.output_arg);
-  writer->SetInput(conjugategradient->GetOutput());
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(writer->Update())
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(itk::WriteImage(conjugategradient->GetOutput(), args_info.output_arg))
 
   return EXIT_SUCCESS;
 }

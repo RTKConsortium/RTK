@@ -105,13 +105,9 @@ main(int argc, char * argv[])
   }
 
   // Write
-  using WriterType = itk::ImageFileWriter<OutputImageType>;
-  WriterType::Pointer writer = WriterType::New();
-  writer->SetFileName(args_info.output_arg);
-  writer->SetInput(output);
   if (args_info.verbose_flag)
     std::cout << "Writing reference... " << std::flush;
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(writer->Update())
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(itk::WriteImage(output, args_info.output_arg))
 
   return EXIT_SUCCESS;
 }

@@ -34,9 +34,8 @@ main(int argc, char * argv[])
   using OutputImageType = itk::VectorImage<OutputPixelType, Dimension>;
 
   // Reader
-  using ReaderType = itk::ImageFileReader<OutputImageType>;
-  ReaderType::Pointer reader = ReaderType::New();
-  reader->SetFileName(args_info.input_arg);
+  OutputImageType::Pointer input;
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(input = itk::ReadImage<OutputImageType>(args_info.input_arg))
 
   // Remove aberrant pixels
   using MedianType = rtk::ConditionalMedianImageFilter<OutputImageType>;
@@ -50,18 +49,10 @@ main(int argc, char * argv[])
       radius[i] = args_info.radius_arg[i];
   }
   median->SetRadius(radius);
-  median->SetInput(reader->GetOutput());
+  median->SetInput(input);
 
   // Write
-  using WriterType = itk::ImageFileWriter<OutputImageType>;
-  WriterType::Pointer writer = WriterType::New();
-  writer->SetFileName(args_info.output_arg);
-  writer->SetInput(median->GetOutput());
-  //  TRY_AND_EXIT_ON_ITK_EXCEPTION( writer->UpdateOutputInformation() )
-  //  writer->SetNumberOfStreamDivisions( 1 + reader->GetOutput()->GetLargestPossibleRegion().GetNumberOfPixels() /
-  //  (1024*1024*4) );
-
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(writer->Update())
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(itk::WriteImage(median->GetOutput(), args_info.output_arg))
 
   return EXIT_SUCCESS;
 }

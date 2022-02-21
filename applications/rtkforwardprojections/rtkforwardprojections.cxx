@@ -47,10 +47,8 @@ main(int argc, char * argv[])
   // Geometry
   if (args_info.verbose_flag)
     std::cout << "Reading geometry information from " << args_info.geometry_arg << "..." << std::flush;
-  rtk::ThreeDCircularProjectionGeometryXMLFileReader::Pointer geometryReader;
-  geometryReader = rtk::ThreeDCircularProjectionGeometryXMLFileReader::New();
-  geometryReader->SetFilename(args_info.geometry_arg);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(geometryReader->GenerateOutputInformation())
+  rtk::ThreeDCircularProjectionGeometry::Pointer geometry;
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(geometry = rtk::ReadGeometry(args_info.geometry_arg));
   if (args_info.verbose_flag)
     std::cout << " done." << std::endl;
 
@@ -64,27 +62,22 @@ main(int argc, char * argv[])
   ConstantImageSourceType::SizeType sizeOutput;
   sizeOutput[0] = constantImageSource->GetSize()[0];
   sizeOutput[1] = constantImageSource->GetSize()[1];
-  sizeOutput[2] = geometryReader->GetOutputObject()->GetGantryAngles().size();
+  sizeOutput[2] = geometry->GetGantryAngles().size();
   constantImageSource->SetSize(sizeOutput);
 
   // Input reader
   if (args_info.verbose_flag)
     std::cout << "Reading input volume " << args_info.input_arg << "..." << std::endl;
-  using ReaderType = itk::ImageFileReader<OutputImageType>;
-  ReaderType::Pointer reader = ReaderType::New();
-  reader->SetFileName(args_info.input_arg);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(reader->Update())
+  OutputImageType::Pointer inputVolume;
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(inputVolume = itk::ReadImage<OutputImageType>(args_info.input_arg))
 
-  itk::ImageSource<OutputImageType>::Pointer attenuationFilter;
+  OutputImageType::Pointer attenuationMap;
   if (args_info.attenuationmap_given)
   {
     if (args_info.verbose_flag)
       std::cout << "Reading attenuation map " << args_info.attenuationmap_arg << "..." << std::endl;
     // Read an existing image to initialize the attenuation map
-    using AttenuationReaderType = itk::ImageFileReader<OutputImageType>;
-    AttenuationReaderType::Pointer attenuationReader = AttenuationReaderType::New();
-    attenuationReader->SetFileName(args_info.attenuationmap_arg);
-    attenuationFilter = attenuationReader;
+    attenuationMap = itk::ReadImage<OutputImageType>(args_info.attenuationmap_arg);
   }
 
   // Create forward projection image filter
@@ -120,9 +113,9 @@ main(int argc, char * argv[])
       return EXIT_FAILURE;
   }
   forwardProjection->SetInput(constantImageSource->GetOutput());
-  forwardProjection->SetInput(1, reader->GetOutput());
+  forwardProjection->SetInput(1, inputVolume);
   if (args_info.attenuationmap_given)
-    forwardProjection->SetInput(2, attenuationFilter->GetOutput());
+    forwardProjection->SetInput(2, attenuationMap);
   if (args_info.sigmazero_given && args_info.fp_arg == fp_arg_Zeng)
     dynamic_cast<rtk::ZengForwardProjectionImageFilter<OutputImageType, OutputImageType> *>(
       forwardProjection.GetPointer())
@@ -131,7 +124,7 @@ main(int argc, char * argv[])
     dynamic_cast<rtk::ZengForwardProjectionImageFilter<OutputImageType, OutputImageType> *>(
       forwardProjection.GetPointer())
       ->SetAlpha(args_info.alphapsf_arg);
-  forwardProjection->SetGeometry(geometryReader->GetOutputObject());
+  forwardProjection->SetGeometry(geometry);
   if (!args_info.lowmem_flag)
   {
     TRY_AND_EXIT_ON_ITK_EXCEPTION(forwardProjection->Update())

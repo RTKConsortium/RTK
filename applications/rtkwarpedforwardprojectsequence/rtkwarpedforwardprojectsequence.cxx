@@ -45,7 +45,6 @@ main(int argc, char * argv[])
   using ProjectionStackType = itk::Image<OutputPixelType, 3>;
   using DVFSequenceImageType = itk::Image<DVFVectorType, VolumeSeriesType::ImageDimension>;
 #endif
-  using DVFReaderType = itk::ImageFileReader<DVFSequenceImageType>;
 
   // Create a stack of empty projection images
   using ConstantImageSourceType = rtk::ConstantImageSource<ProjectionStackType>;
@@ -55,29 +54,24 @@ main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION(constantImageSource->Update())
 
   // Read the input volume sequence
-  using volumeSeriesReaderType = itk::ImageFileReader<VolumeSeriesType>;
-  volumeSeriesReaderType::Pointer volumeSeriesReader = volumeSeriesReaderType::New();
-  volumeSeriesReader->SetFileName(args_info.input_arg);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(volumeSeriesReader->Update())
+  VolumeSeriesType::Pointer volumeSeries;
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(volumeSeries = itk::ReadImage<VolumeSeriesType>(args_info.input_arg))
 
   // Geometry
   if (args_info.verbose_flag)
     std::cout << "Reading geometry information from " << args_info.geometry_arg << "..." << std::endl;
-  rtk::ThreeDCircularProjectionGeometryXMLFileReader::Pointer geometryReader;
-  geometryReader = rtk::ThreeDCircularProjectionGeometryXMLFileReader::New();
-  geometryReader->SetFilename(args_info.geometry_arg);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(geometryReader->GenerateOutputInformation())
+  rtk::ThreeDCircularProjectionGeometry::Pointer geometry;
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(geometry = rtk::ReadGeometry(args_info.geometry_arg));
 
   // Read the phases file
   rtk::PhasesToInterpolationWeights::Pointer phaseReader = rtk::PhasesToInterpolationWeights::New();
   phaseReader->SetFileName(args_info.signal_arg);
-  phaseReader->SetNumberOfReconstructedFrames(volumeSeriesReader->GetOutput()->GetLargestPossibleRegion().GetSize(3));
+  phaseReader->SetNumberOfReconstructedFrames(volumeSeries->GetLargestPossibleRegion().GetSize(3));
   TRY_AND_EXIT_ON_ITK_EXCEPTION(phaseReader->Update())
 
   // Read DVF
-  DVFReaderType::Pointer dvfReader = DVFReaderType::New();
-  dvfReader->SetFileName(args_info.dvf_arg);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(dvfReader->Update())
+  DVFSequenceImageType::Pointer dvf;
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(dvf = itk::ReadImage<DVFSequenceImageType>(args_info.dvf_arg))
 
   if (args_info.verbose_flag)
     std::cout << "Projecting volume sequence..." << std::endl;
@@ -86,9 +80,9 @@ main(int argc, char * argv[])
   WarpForwardProjectType::Pointer forwardProjection = WarpForwardProjectType::New();
 
   forwardProjection->SetInputProjectionStack(constantImageSource->GetOutput());
-  forwardProjection->SetInputVolumeSeries(volumeSeriesReader->GetOutput());
-  forwardProjection->SetDisplacementField(dvfReader->GetOutput());
-  forwardProjection->SetGeometry(geometryReader->GetOutputObject());
+  forwardProjection->SetInputVolumeSeries(volumeSeries);
+  forwardProjection->SetDisplacementField(dvf);
+  forwardProjection->SetGeometry(geometry);
   forwardProjection->SetWeights(phaseReader->GetOutput());
   forwardProjection->SetSignal(rtk::ReadSignalFile(args_info.signal_arg));
   TRY_AND_EXIT_ON_ITK_EXCEPTION(forwardProjection->Update())
@@ -96,11 +90,7 @@ main(int argc, char * argv[])
   // Write
   if (args_info.verbose_flag)
     std::cout << "Writing... " << std::endl;
-  using WriterType = itk::ImageFileWriter<ProjectionStackType>;
-  WriterType::Pointer writer = WriterType::New();
-  writer->SetFileName(args_info.output_arg);
-  writer->SetInput(forwardProjection->GetOutput());
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(writer->Update())
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(itk::WriteImage(forwardProjection->GetOutput(), args_info.output_arg))
 
   return EXIT_SUCCESS;
 }

@@ -55,10 +55,8 @@ main(int argc, char * argv[])
   // Geometry
   if (args_info.verbose_flag)
     std::cout << "Reading geometry information from " << args_info.geometry_arg << "..." << std::endl;
-  rtk::ThreeDCircularProjectionGeometryXMLFileReader::Pointer geometryReader;
-  geometryReader = rtk::ThreeDCircularProjectionGeometryXMLFileReader::New();
-  geometryReader->SetFilename(args_info.geometry_arg);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(geometryReader->GenerateOutputInformation())
+  rtk::ThreeDCircularProjectionGeometry::Pointer geometry;
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(geometry = rtk::ReadGeometry(args_info.geometry_arg));
 
   // Create reconstructed image
   using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
@@ -79,7 +77,7 @@ main(int argc, char * argv[])
 #define SET_IFDK_OPTIONS(f)                                                                                            \
   f->SetInput(0, constantImageSource->GetOutput());                                                                    \
   f->SetInput(1, reader->GetOutput());                                                                                 \
-  f->SetGeometry(geometryReader->GetOutputObject());                                                                   \
+  f->SetGeometry(geometry);                                                                                            \
   SetForwardProjectionFromGgo(args_info, f.GetPointer());                                                              \
   f->SetNumberOfIterations(args_info.niterations_arg);                                                                 \
   f->SetTruncationCorrection(args_info.pad_arg);                                                                       \
@@ -117,15 +115,10 @@ main(int argc, char * argv[])
 #endif
 
   // Write
-  using WriterType = itk::ImageFileWriter<OutputImageType>;
-  WriterType::Pointer writer = WriterType::New();
-  writer->SetFileName(args_info.output_arg);
-  writer->SetInput(IFDKOutputPointer);
-
   if (args_info.verbose_flag)
     std::cout << "Reconstructing and writing... " << std::endl;
 
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(writer->Update())
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(itk::WriteImage(IFDKOutputPointer, args_info.output_arg))
 
   return EXIT_SUCCESS;
 }

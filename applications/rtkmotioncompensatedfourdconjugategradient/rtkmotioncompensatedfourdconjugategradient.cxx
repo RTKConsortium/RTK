@@ -48,7 +48,6 @@ main(int argc, char * argv[])
   using DVFSequenceImageType = itk::Image<DVFVectorType, VolumeSeriesType::ImageDimension>;
   using DVFImageType = itk::Image<DVFVectorType, VolumeSeriesType::ImageDimension - 1>;
 #endif
-  using DVFReaderType = itk::ImageFileReader<DVFSequenceImageType>;
 
   // Projections reader
   using ReaderType = rtk::ProjectionsReader<ProjectionStackType>;
@@ -58,10 +57,8 @@ main(int argc, char * argv[])
   // Geometry
   if (args_info.verbose_flag)
     std::cout << "Reading geometry information from " << args_info.geometry_arg << "..." << std::endl;
-  rtk::ThreeDCircularProjectionGeometryXMLFileReader::Pointer geometryReader;
-  geometryReader = rtk::ThreeDCircularProjectionGeometryXMLFileReader::New();
-  geometryReader->SetFilename(args_info.geometry_arg);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(geometryReader->GenerateOutputInformation())
+  rtk::ThreeDCircularProjectionGeometry::Pointer geometry;
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(geometry = rtk::ReadGeometry(args_info.geometry_arg));
 
   // Create input: either an existing volume read from a file or a blank image
   itk::ImageSource<VolumeSeriesType>::Pointer inputFilter;
@@ -107,7 +104,7 @@ main(int argc, char * argv[])
   MCFourDCGFilterType::Pointer mcfourdcg = MCFourDCGFilterType::New();
   mcfourdcg->SetInputVolumeSeries(inputFilter->GetOutput());
   mcfourdcg->SetInputProjectionStack(reader->GetOutput());
-  mcfourdcg->SetGeometry(geometryReader->GetOutputObject());
+  mcfourdcg->SetGeometry(geometry);
   mcfourdcg->SetWeights(phaseReader->GetOutput());
   mcfourdcg->SetNumberOfIterations(args_info.niter_arg);
   mcfourdcg->SetCudaConjugateGradient(args_info.cudacg_flag);
@@ -117,16 +114,14 @@ main(int argc, char * argv[])
   REPORT_ITERATIONS(mcfourdcg, MCFourDCGFilterType, VolumeSeriesType)
 
   // Read DVF
-  DVFReaderType::Pointer dvfReader = DVFReaderType::New();
-  dvfReader->SetFileName(args_info.dvf_arg);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(dvfReader->Update())
-  mcfourdcg->SetDisplacementField(dvfReader->GetOutput());
+  DVFSequenceImageType::Pointer dvf;
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(dvf = itk::ReadImage<DVFSequenceImageType>(args_info.dvf_arg))
+  mcfourdcg->SetDisplacementField(dvf);
 
   // Read inverse DVF if provided
-  DVFReaderType::Pointer idvfReader = DVFReaderType::New();
-  idvfReader->SetFileName(args_info.idvf_arg);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(idvfReader->Update())
-  mcfourdcg->SetInverseDisplacementField(idvfReader->GetOutput());
+  DVFSequenceImageType::Pointer idvf;
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(idvf = itk::ReadImage<DVFSequenceImageType>(args_info.idvf_arg))
+  mcfourdcg->SetInverseDisplacementField(idvf);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(mcfourdcg->Update())
 
   // The mcfourdcg filter reconstructs a static 4D volume (if the DVFs perfectly model the actual motion)
@@ -135,15 +130,11 @@ main(int argc, char * argv[])
     rtk::WarpSequenceImageFilter<VolumeSeriesType, DVFSequenceImageType, ProjectionStackType, DVFImageType>;
   WarpSequenceFilterType::Pointer warp = WarpSequenceFilterType::New();
   warp->SetInput(mcfourdcg->GetOutput());
-  warp->SetDisplacementField(idvfReader->GetOutput());
+  warp->SetDisplacementField(idvf);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(warp->Update())
 
   // Write
-  using WriterType = itk::ImageFileWriter<VolumeSeriesType>;
-  WriterType::Pointer writer = WriterType::New();
-  writer->SetFileName(args_info.output_arg);
-  writer->SetInput(warp->GetOutput());
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(writer->Update())
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(itk::WriteImage(warp->GetOutput(), args_info.output_arg))
 
   return EXIT_SUCCESS;
 }

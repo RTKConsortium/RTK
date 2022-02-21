@@ -26,6 +26,8 @@
 #include <itkImageFileReader.h>
 #include <fstream>
 
+namespace rtk
+{
 template <class TSignalType>
 void
 WriteSignalToTextFile(TSignalType * sig, const std::string & fileName)
@@ -38,6 +40,7 @@ WriteSignalToTextFile(TSignalType * sig, const std::string & fileName)
   }
   ofs.close();
 }
+} // namespace rtk
 
 int
 main(int argc, char * argv[])
@@ -51,10 +54,6 @@ main(int argc, char * argv[])
   using InputImageType = itk::Image<InputPixelType, Dimension>;
   using OutputImageType = itk::Image<OutputPixelType, Dimension - 1>;
 
-  // Read
-  itk::ImageFileReader<InputImageType>::Pointer reader = itk::ImageFileReader<InputImageType>::New();
-  reader->SetFileName(args_info.input_arg);
-
   // Extract shroud signal
   OutputImageType::Pointer shroudSignal;
   if (std::string(args_info.method_arg) == "DynamicProgramming")
@@ -66,7 +65,7 @@ main(int argc, char * argv[])
     }
     using shroudFilterType = rtk::DPExtractShroudSignalImageFilter<InputPixelType, OutputPixelType>;
     shroudFilterType::Pointer shroudFilter = shroudFilterType::New();
-    shroudFilter->SetInput(reader->GetOutput());
+    shroudFilter->SetInput(itk::ReadImage<InputImageType>(args_info.input_arg));
     shroudFilter->SetAmplitude(args_info.amplitude_arg);
     TRY_AND_EXIT_ON_ITK_EXCEPTION(shroudFilter->Update())
     shroudSignal = shroudFilter->GetOutput();
@@ -75,7 +74,7 @@ main(int argc, char * argv[])
   {
     using shroudFilterType = rtk::Reg1DExtractShroudSignalImageFilter<InputPixelType, OutputPixelType>;
     shroudFilterType::Pointer shroudFilter = shroudFilterType::New();
-    shroudFilter->SetInput(reader->GetOutput());
+    shroudFilter->SetInput(itk::ReadImage<InputImageType>(args_info.input_arg));
     TRY_AND_EXIT_ON_ITK_EXCEPTION(shroudFilter->Update())
     shroudSignal = shroudFilter->GetOutput();
   }
@@ -86,7 +85,7 @@ main(int argc, char * argv[])
   }
 
   // Write output signal
-  WriteSignalToTextFile(shroudSignal.GetPointer(), args_info.output_arg);
+  rtk::WriteSignalToTextFile(shroudSignal.GetPointer(), args_info.output_arg);
 
   // Process phase signal if required
   if (args_info.phase_given)
@@ -99,7 +98,7 @@ main(int argc, char * argv[])
     phase->SetModel((PhaseFilter::ModelType)args_info.model_arg);
     TRY_AND_EXIT_ON_ITK_EXCEPTION(phase->Update())
 
-    WriteSignalToTextFile(phase->GetOutput(), args_info.phase_arg);
+    rtk::WriteSignalToTextFile(phase->GetOutput(), args_info.phase_arg);
   }
 
   return EXIT_SUCCESS;

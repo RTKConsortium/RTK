@@ -42,9 +42,8 @@ main(int argc, char * argv[])
   using OutputImageType = itk::Image<RGBPixelType, Dimension>;
 
   // Read
-  itk::ImageFileReader<InputImageType>::Pointer reader = itk::ImageFileReader<InputImageType>::New();
-  reader->SetFileName(args_info.input_arg);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(reader->Update())
+  InputImageType::Pointer readImage;
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(readImage = itk::ReadImage<InputImageType>(args_info.input_arg))
 
   // Read signal file
   using ReaderType = itk::CSVArray2DFileReader<double>;
@@ -66,12 +65,11 @@ main(int argc, char * argv[])
 
   // Create output RGB image
   OutputImageType::Pointer RGBout = OutputImageType::New();
-  RGBout->SetRegions(reader->GetOutput()->GetLargestPossibleRegion());
+  RGBout->SetRegions(readImage->GetLargestPossibleRegion());
   RGBout->Allocate();
 
   // Compute min and max of shroud to scale output
-  itk::ImageRegionConstIterator<InputImageType>      itIn(reader->GetOutput(),
-                                                     reader->GetOutput()->GetLargestPossibleRegion());
+  itk::ImageRegionConstIterator<InputImageType>      itIn(readImage, readImage->GetLargestPossibleRegion());
   itk::ImageRegionIteratorWithIndex<OutputImageType> itOut(RGBout, RGBout->GetLargestPossibleRegion());
 
   double min = itk::NumericTraits<double>::max();
@@ -109,11 +107,7 @@ main(int argc, char * argv[])
     ++itOut;
   }
 
-  using WriterType = itk::ImageFileWriter<OutputImageType>;
-  WriterType::Pointer writer = WriterType::New();
-  writer->SetFileName(args_info.output_arg);
-  writer->SetInput(RGBout);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(writer->Update())
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(itk::WriteImage(RGBout, args_info.output_arg))
 
   return EXIT_SUCCESS;
 }

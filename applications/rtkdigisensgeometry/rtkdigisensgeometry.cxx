@@ -27,21 +27,13 @@ main(int argc, char * argv[])
 {
   GGO(rtkdigisensgeometry, args_info);
 
-  // RTK geometry object
-  using GeometryType = rtk::ThreeDCircularProjectionGeometry;
-  GeometryType::Pointer geometry = GeometryType::New();
-
   // Create geometry reader
   rtk::DigisensGeometryReader::Pointer reader = rtk::DigisensGeometryReader::New();
   reader->SetXMLFileName(args_info.xml_file_arg);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(reader->UpdateOutputData())
 
   // Write
-  rtk::ThreeDCircularProjectionGeometryXMLFileWriter::Pointer xmlWriter =
-    rtk::ThreeDCircularProjectionGeometryXMLFileWriter::New();
-  xmlWriter->SetFilename(args_info.output_arg);
-  xmlWriter->SetObject(&(*geometry));
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(xmlWriter->WriteFile())
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(rtk::WriteGeometry(reader->GetGeometry(), args_info.output_arg))
 
   return EXIT_SUCCESS;
 }

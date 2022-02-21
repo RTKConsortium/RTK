@@ -55,16 +55,14 @@ main(int argc, char * argv[])
   // Geometry
   if (args_info.verbose_flag)
     std::cout << "Reading geometry information from " << args_info.geometry_arg << "..." << std::endl;
-  rtk::ThreeDCircularProjectionGeometryXMLFileReader::Pointer geometryReader;
-  geometryReader = rtk::ThreeDCircularProjectionGeometryXMLFileReader::New();
-  geometryReader->SetFilename(args_info.geometry_arg);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(geometryReader->GenerateOutputInformation());
+  rtk::ThreeDCircularProjectionGeometry::Pointer geometry;
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(geometry = rtk::ReadGeometry(args_info.geometry_arg));
 
   // Displaced detector weighting
   using DDFType = rtk::DisplacedDetectorImageFilter<OutputImageType>;
   DDFType::Pointer ddf = DDFType::New();
   ddf->SetInput(projectionsReader->GetOutput());
-  ddf->SetGeometry(geometryReader->GetOutputObject());
+  ddf->SetGeometry(geometry);
 
   // Create input: either an existing volume read from a file or a blank image
   itk::ImageSource<OutputImageType>::Pointer inputFilter;
@@ -99,7 +97,7 @@ main(int argc, char * argv[])
   SetBackProjectionFromGgo(args_info, admmFilter.GetPointer());
 
   // Set the geometry and interpolation weights
-  admmFilter->SetGeometry(geometryReader->GetOutputObject());
+  admmFilter->SetGeometry(geometry);
 
   // Set all numerical parameters
   admmFilter->SetCG_iterations(args_info.CGiter_arg);
@@ -119,12 +117,8 @@ main(int argc, char * argv[])
 
   TRY_AND_EXIT_ON_ITK_EXCEPTION(admmFilter->Update())
 
-  // Set writer and write the output
-  using WriterType = itk::ImageFileWriter<OutputImageType>;
-  WriterType::Pointer writer = WriterType::New();
-  writer->SetFileName(args_info.output_arg);
-  writer->SetInput(admmFilter->GetOutput());
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(writer->Update())
+  // Write the output
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(itk::WriteImage(admmFilter->GetOutput(), args_info.output_arg))
 
   return EXIT_SUCCESS;
 }

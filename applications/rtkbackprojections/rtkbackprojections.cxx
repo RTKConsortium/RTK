@@ -50,10 +50,8 @@ main(int argc, char * argv[])
   // Geometry
   if (args_info.verbose_flag)
     std::cout << "Reading geometry information from " << args_info.geometry_arg << "..." << std::flush;
-  rtk::ThreeDCircularProjectionGeometryXMLFileReader::Pointer geometryReader;
-  geometryReader = rtk::ThreeDCircularProjectionGeometryXMLFileReader::New();
-  geometryReader->SetFilename(args_info.geometry_arg);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(geometryReader->GenerateOutputInformation())
+  rtk::ThreeDCircularProjectionGeometry::Pointer geometry;
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(geometry = rtk::ReadGeometry(args_info.geometry_arg));
   if (args_info.verbose_flag)
     std::cout << " done." << std::endl;
 
@@ -69,16 +67,13 @@ main(int argc, char * argv[])
   rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkbackprojections>(reader, args_info);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(reader->Update())
 
-  itk::ImageSource<OutputImageType>::Pointer attenuationFilter;
+  OutputImageType::Pointer attenuationMap;
   if (args_info.attenuationmap_given)
   {
     if (args_info.verbose_flag)
       std::cout << "Reading attenuation map " << args_info.attenuationmap_arg << "..." << std::endl;
     // Read an existing image to initialize the attenuation map
-    using AttenuationReaderType = itk::ImageFileReader<OutputImageType>;
-    AttenuationReaderType::Pointer attenuationReader = AttenuationReaderType::New();
-    attenuationReader->SetFileName(args_info.attenuationmap_arg);
-    attenuationFilter = attenuationReader;
+    attenuationMap = itk::ReadImage<OutputImageType>(args_info.attenuationmap_arg);
   }
 
   // Create back projection image filter
@@ -91,10 +86,7 @@ main(int argc, char * argv[])
   using DVFImageSequenceType = itk::Image<DVFPixelType, 4>;
   using DVFImageType = itk::Image<DVFPixelType, 3>;
   using DeformationType = rtk::CyclicDeformationImageFilter<DVFImageSequenceType, DVFImageType>;
-  using DVFReaderType = itk::ImageFileReader<DeformationType::InputImageType>;
-  DVFReaderType::Pointer   dvfReader = DVFReaderType::New();
   DeformationType::Pointer def = DeformationType::New();
-  def->SetInput(dvfReader->GetOutput());
 
   switch (args_info.bp_arg)
   {
@@ -111,7 +103,7 @@ main(int argc, char * argv[])
                   << "vector field and signal file names" << std::endl;
         return EXIT_FAILURE;
       }
-      dvfReader->SetFileName(args_info.dvf_arg);
+      def->SetInput(itk::ReadImage<DeformationType::InputImageType>(args_info.dvf_arg));
       bp = rtk::FDKWarpBackProjectionImageFilter<OutputImageType, OutputImageType, DeformationType>::New();
       def->SetSignalFilename(args_info.signal_arg);
       dynamic_cast<rtk::FDKWarpBackProjectionImageFilter<OutputImageType, OutputImageType, DeformationType> *>(
@@ -159,24 +151,20 @@ main(int argc, char * argv[])
   bp->SetInput(constantImageSource->GetOutput());
   bp->SetInput(1, reader->GetOutput());
   if (args_info.attenuationmap_given)
-    bp->SetInput(2, attenuationFilter->GetOutput());
+    bp->SetInput(2, attenuationMap);
   if (args_info.sigmazero_given && args_info.bp_arg == bp_arg_Zeng)
     dynamic_cast<rtk::ZengBackProjectionImageFilter<OutputImageType, OutputImageType> *>(bp.GetPointer())
       ->SetSigmaZero(args_info.sigmazero_arg);
   if (args_info.alphapsf_given && args_info.bp_arg == bp_arg_Zeng)
     dynamic_cast<rtk::ZengBackProjectionImageFilter<OutputImageType, OutputImageType> *>(bp.GetPointer())
       ->SetAlpha(args_info.alphapsf_arg);
-  bp->SetGeometry(geometryReader->GetOutputObject());
+  bp->SetGeometry(geometry);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(bp->Update())
 
   // Write
   if (args_info.verbose_flag)
     std::cout << "Writing... " << std::endl;
-  using WriterType = itk::ImageFileWriter<OutputImageType>;
-  WriterType::Pointer writer = WriterType::New();
-  writer->SetFileName(args_info.output_arg);
-  writer->SetInput(bp->GetOutput());
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(writer->Update())
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(itk::WriteImage(bp->GetOutput(), args_info.output_arg))
 
   return EXIT_SUCCESS;
 }

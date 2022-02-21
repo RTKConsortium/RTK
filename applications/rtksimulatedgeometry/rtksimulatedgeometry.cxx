@@ -50,11 +50,7 @@ main(int argc, char * argv[])
     geometry->SetRadiusCylindricalDetector(args_info.rad_cyl_arg);
 
   // Write
-  rtk::ThreeDCircularProjectionGeometryXMLFileWriter::Pointer xmlWriter =
-    rtk::ThreeDCircularProjectionGeometryXMLFileWriter::New();
-  xmlWriter->SetFilename(args_info.output_arg);
-  xmlWriter->SetObject(&(*geometry));
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(xmlWriter->WriteFile())
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(rtk::WriteGeometry(geometry, args_info.output_arg))
 
   return EXIT_SUCCESS;
 }

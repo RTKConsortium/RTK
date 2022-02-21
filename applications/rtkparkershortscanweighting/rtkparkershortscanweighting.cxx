@@ -58,10 +58,8 @@ main(int argc, char * argv[])
   // Geometry
   if (args_info.verbose_flag)
     std::cout << "Reading geometry information from " << args_info.geometry_arg << "..." << std::endl;
-  rtk::ThreeDCircularProjectionGeometryXMLFileReader::Pointer geometryReader;
-  geometryReader = rtk::ThreeDCircularProjectionGeometryXMLFileReader::New();
-  geometryReader->SetFilename(args_info.geometry_arg);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(geometryReader->GenerateOutputInformation())
+  rtk::ThreeDCircularProjectionGeometry::Pointer geometry;
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(geometry = rtk::ReadGeometry(args_info.geometry_arg));
 
   // Short scan image filter
   using PSSFCPUType = rtk::ParkerShortScanImageFilter<OutputImageType>;
@@ -76,7 +74,7 @@ main(int argc, char * argv[])
   else
     pssf = PSSFCPUType::New();
   pssf->SetInput(reader->GetOutput());
-  pssf->SetGeometry(geometryReader->GetOutputObject());
+  pssf->SetGeometry(geometry);
   pssf->InPlaceOff();
 
   // Write

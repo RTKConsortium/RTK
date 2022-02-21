@@ -41,25 +41,17 @@ main(int argc, char * argv[])
     rtk::TotalNuclearVariationDenoisingBPDQImageFilter<OutputImageType, GradientOutputImageType>;
 
   // Read input
-  using ReaderType = itk::ImageFileReader<OutputImageType>;
-  ReaderType::Pointer reader = ReaderType::New();
-  reader->SetFileName(args_info.input_arg);
-  //  reader->ReleaseDataFlagOn();
+  OutputImageType::Pointer input;
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(input = itk::ReadImage<OutputImageType>(args_info.input_arg))
 
   // Apply total nuclear variation denoising
   TVDenoisingFilterType::Pointer tv = TVDenoisingFilterType::New();
-  tv->SetInput(reader->GetOutput());
+  tv->SetInput(input);
   tv->SetGamma(args_info.gamma_arg);
   tv->SetNumberOfIterations(args_info.niter_arg);
-  //  tv->ReleaseDataFlagOn();
 
   // Write
-  using WriterType = itk::ImageFileWriter<OutputImageType>;
-  WriterType::Pointer writer = WriterType::New();
-  writer->SetFileName(args_info.output_arg);
-  writer->SetInput(tv->GetOutput());
-
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(writer->Update())
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(itk::WriteImage(tv->GetOutput(), args_info.output_arg))
 
   return EXIT_SUCCESS;
 }

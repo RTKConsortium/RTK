@@ -34,47 +34,36 @@ main(int argc, char * argv[])
   constexpr unsigned int Dimension = 3;
 
   using DecomposedProjectionType = itk::VectorImage<PixelValueType, Dimension>;
-  using DecomposedProjectionReaderType = itk::ImageFileReader<DecomposedProjectionType>;
-  using DecomposedProjectionWriterType = itk::ImageFileWriter<DecomposedProjectionType>;
 
   using SpectralProjectionsType = itk::VectorImage<PixelValueType, Dimension>;
-  using SpectralProjectionReaderType = itk::ImageFileReader<SpectralProjectionsType>;
 
   using IncidentSpectrumImageType = itk::VectorImage<PixelValueType, Dimension - 1>;
-  using IncidentSpectrumReaderType = itk::ImageFileReader<IncidentSpectrumImageType>;
 
   using DetectorResponseImageType = itk::Image<PixelValueType, Dimension - 1>;
-  using DetectorResponseReaderType = itk::ImageFileReader<DetectorResponseImageType>;
 
   using MaterialAttenuationsImageType = itk::Image<PixelValueType, Dimension - 1>;
-  using MaterialAttenuationsReaderType = itk::ImageFileReader<MaterialAttenuationsImageType>;
 
   // Read all inputs
-  DecomposedProjectionReaderType::Pointer decomposedProjectionReader = DecomposedProjectionReaderType::New();
-  decomposedProjectionReader->SetFileName(args_info.input_arg);
-  decomposedProjectionReader->Update();
+  DecomposedProjectionType::Pointer decomposedProjection;
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(decomposedProjection = itk::ReadImage<DecomposedProjectionType>(args_info.input_arg))
 
-  SpectralProjectionReaderType::Pointer spectralProjectionReader = SpectralProjectionReaderType::New();
-  spectralProjectionReader->SetFileName(args_info.spectral_arg);
-  spectralProjectionReader->Update();
+  SpectralProjectionsType::Pointer spectralProjection;
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(spectralProjection = itk::ReadImage<SpectralProjectionsType>(args_info.spectral_arg))
 
-  IncidentSpectrumReaderType::Pointer incidentSpectrumReader = IncidentSpectrumReaderType::New();
-  incidentSpectrumReader->SetFileName(args_info.incident_arg);
-  incidentSpectrumReader->Update();
+  IncidentSpectrumImageType::Pointer incidentSpectrum;
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(incidentSpectrum = itk::ReadImage<IncidentSpectrumImageType>(args_info.incident_arg))
 
-  DetectorResponseReaderType::Pointer detectorResponseReader = DetectorResponseReaderType::New();
-  detectorResponseReader->SetFileName(args_info.detector_arg);
-  detectorResponseReader->Update();
+  DetectorResponseImageType::Pointer detectorResponse;
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(detectorResponse = itk::ReadImage<DetectorResponseImageType>(args_info.detector_arg))
 
-  MaterialAttenuationsReaderType::Pointer materialAttenuationsReader = MaterialAttenuationsReaderType::New();
-  materialAttenuationsReader->SetFileName(args_info.attenuations_arg);
-  materialAttenuationsReader->Update();
+  MaterialAttenuationsImageType::Pointer materialAttenuations;
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(materialAttenuations =
+                                  itk::ReadImage<MaterialAttenuationsImageType>(args_info.attenuations_arg))
 
   // Get parameters from the images
-  const unsigned int NumberOfMaterials =
-    materialAttenuationsReader->GetOutput()->GetLargestPossibleRegion().GetSize()[0];
-  const unsigned int NumberOfSpectralBins = spectralProjectionReader->GetOutput()->GetVectorLength();
-  const unsigned int MaximumEnergy = incidentSpectrumReader->GetOutput()->GetVectorLength();
+  const unsigned int NumberOfMaterials = materialAttenuations->GetLargestPossibleRegion().GetSize()[0];
+  const unsigned int NumberOfSpectralBins = spectralProjection->GetVectorLength();
+  const unsigned int MaximumEnergy = incidentSpectrum->GetVectorLength();
 
   // Read the thresholds on command line and check their number
   itk::VariableLengthVector<unsigned int> thresholds;
@@ -85,7 +74,7 @@ main(int argc, char * argv[])
       thresholds[i] = args_info.thresholds_arg[i];
 
     // Add the maximum pulse height at the end
-    unsigned int MaximumPulseHeight = detectorResponseReader->GetOutput()->GetLargestPossibleRegion().GetSize()[1];
+    unsigned int MaximumPulseHeight = detectorResponse->GetLargestPossibleRegion().GetSize()[1];
     thresholds[NumberOfSpectralBins] = MaximumPulseHeight;
   }
   else
@@ -95,41 +84,40 @@ main(int argc, char * argv[])
   // Check that the inputs have the expected size
   DecomposedProjectionType::IndexType indexDecomp;
   indexDecomp.Fill(0);
-  if (decomposedProjectionReader->GetOutput()->GetPixel(indexDecomp).Size() != NumberOfMaterials)
+  if (decomposedProjection->GetPixel(indexDecomp).Size() != NumberOfMaterials)
     itkGenericExceptionMacro(<< "Decomposed projections (i.e. initialization data) image has vector size "
-                             << decomposedProjectionReader->GetOutput()->GetPixel(indexDecomp).Size() << ", should be "
+                             << decomposedProjection->GetPixel(indexDecomp).Size() << ", should be "
                              << NumberOfMaterials);
 
   SpectralProjectionsType::IndexType indexSpect;
   indexSpect.Fill(0);
-  if (spectralProjectionReader->GetOutput()->GetPixel(indexSpect).Size() != NumberOfSpectralBins)
+  if (spectralProjection->GetPixel(indexSpect).Size() != NumberOfSpectralBins)
     itkGenericExceptionMacro(<< "Spectral projections (i.e. photon count data) image has vector size "
-                             << spectralProjectionReader->GetOutput()->GetPixel(indexSpect).Size() << ", should be "
+                             << spectralProjection->GetPixel(indexSpect).Size() << ", should be "
                              << NumberOfSpectralBins);
 
   IncidentSpectrumImageType::IndexType indexIncident;
   indexIncident.Fill(0);
-  if (incidentSpectrumReader->GetOutput()->GetPixel(indexIncident).Size() != MaximumEnergy)
+  if (incidentSpectrum->GetPixel(indexIncident).Size() != MaximumEnergy)
     itkGenericExceptionMacro(<< "Incident spectrum image has vector size "
-                             << incidentSpectrumReader->GetOutput()->GetPixel(indexIncident).Size() << ", should be "
-                             << MaximumEnergy);
+                             << incidentSpectrum->GetPixel(indexIncident).Size() << ", should be " << MaximumEnergy);
 
-  if (detectorResponseReader->GetOutput()->GetLargestPossibleRegion().GetSize()[0] != MaximumEnergy)
+  if (detectorResponse->GetLargestPossibleRegion().GetSize()[0] != MaximumEnergy)
     itkGenericExceptionMacro(<< "Detector response image has "
-                             << detectorResponseReader->GetOutput()->GetLargestPossibleRegion().GetSize()[0]
-                             << "energies, should have " << MaximumEnergy);
+                             << detectorResponse->GetLargestPossibleRegion().GetSize()[0] << "energies, should have "
+                             << MaximumEnergy);
 
   // Create and set the filter
   using SimplexFilterType = rtk::SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionType,
                                                                                     SpectralProjectionsType,
                                                                                     IncidentSpectrumImageType>;
   SimplexFilterType::Pointer simplex = SimplexFilterType::New();
-  simplex->SetInputDecomposedProjections(decomposedProjectionReader->GetOutput());
+  simplex->SetInputDecomposedProjections(decomposedProjection);
   simplex->SetGuessInitialization(args_info.guess_flag);
-  simplex->SetInputMeasuredProjections(spectralProjectionReader->GetOutput());
-  simplex->SetInputIncidentSpectrum(incidentSpectrumReader->GetOutput());
-  simplex->SetDetectorResponse(detectorResponseReader->GetOutput());
-  simplex->SetMaterialAttenuations(materialAttenuationsReader->GetOutput());
+  simplex->SetInputMeasuredProjections(spectralProjection);
+  simplex->SetInputIncidentSpectrum(incidentSpectrum);
+  simplex->SetDetectorResponse(detectorResponse);
+  simplex->SetMaterialAttenuations(materialAttenuations);
   simplex->SetThresholds(thresholds);
   simplex->SetNumberOfIterations(args_info.niterations_arg);
   simplex->SetOptimizeWithRestarts(args_info.restarts_flag);
@@ -152,25 +140,18 @@ main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION(simplex->Update())
 
   // Write output
-  DecomposedProjectionWriterType::Pointer writer = DecomposedProjectionWriterType::New();
-  writer->SetInput(simplex->GetOutput(0));
-  writer->SetFileName(args_info.output_arg);
-  writer->Update();
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(itk::WriteImage(simplex->GetOutput(0), args_info.output_arg))
 
   // If requested, write the weightsmap
   if (args_info.weightsmap_given)
   {
-    writer->SetInput(simplex->GetOutput(1));
-    writer->SetFileName(args_info.weightsmap_arg);
-    writer->Update();
+    TRY_AND_EXIT_ON_ITK_EXCEPTION(itk::WriteImage(simplex->GetOutput(1), args_info.weightsmap_arg))
   }
 
   // If requested, write the fisher information matrix
   if (args_info.fischer_given)
   {
-    writer->SetInput(simplex->GetOutput(2));
-    writer->SetFileName(args_info.fischer_arg);
-    writer->Update();
+    TRY_AND_EXIT_ON_ITK_EXCEPTION(itk::WriteImage(simplex->GetOutput(2), args_info.fischer_arg))
   }
 
   return EXIT_SUCCESS;
