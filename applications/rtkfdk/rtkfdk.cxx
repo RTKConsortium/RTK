@@ -68,10 +68,8 @@ main(int argc, char * argv[])
   // Geometry
   if (args_info.verbose_flag)
     std::cout << "Reading geometry information from " << args_info.geometry_arg << "..." << std::endl;
-  rtk::ThreeDCircularProjectionGeometryXMLFileReader::Pointer geometryReader;
-  geometryReader = rtk::ThreeDCircularProjectionGeometryXMLFileReader::New();
-  geometryReader->SetFilename(args_info.geometry_arg);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(geometryReader->GenerateOutputInformation())
+  rtk::ThreeDCircularProjectionGeometry::Pointer geometry;
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(geometry = rtk::ReadGeometry(args_info.geometry_arg));
 
   // Check on hardware parameter
 #ifndef RTK_USE_CUDA
@@ -96,7 +94,7 @@ main(int argc, char * argv[])
   else
     ddf = DDFOFFFOVType::New();
   ddf->SetInput(reader->GetOutput());
-  ddf->SetGeometry(geometryReader->GetOutputObject());
+  ddf->SetGeometry(geometry);
   ddf->SetDisable(args_info.nodisplaced_flag);
 
   // Short scan image filter
@@ -112,7 +110,7 @@ main(int argc, char * argv[])
   else
     pssf = PSSFCPUType::New();
   pssf->SetInput(ddf->GetOutput());
-  pssf->SetGeometry(geometryReader->GetOutputObject());
+  pssf->SetGeometry(geometry);
   pssf->InPlaceOff();
   pssf->SetAngularGapThreshold(args_info.short_arg * itk::Math::pi / 180.);
 
@@ -136,14 +134,14 @@ main(int argc, char * argv[])
   using WarpBPType = rtk::FDKWarpBackProjectionImageFilter<OutputImageType, OutputImageType, DeformationType>;
   WarpBPType::Pointer bp = WarpBPType::New();
   bp->SetDeformation(def);
-  bp->SetGeometry(geometryReader->GetOutputObject());
+  bp->SetGeometry(geometry);
 
   // This macro sets options for fdk filter which I can not see how to do better
   // because TFFTPrecision is not the same, e.g. for CPU and CUDA (SR)
 #define SET_FELDKAMP_OPTIONS(f)                                                                                        \
   f->SetInput(0, constantImageSource->GetOutput());                                                                    \
   f->SetInput(1, pssf->GetOutput());                                                                                   \
-  f->SetGeometry(geometryReader->GetOutputObject());                                                                   \
+  f->SetGeometry(geometry);                                                                                            \
   f->GetRampFilter()->SetTruncationCorrection(args_info.pad_arg);                                                      \
   f->GetRampFilter()->SetHannCutFrequency(args_info.hann_arg);                                                         \
   f->GetRampFilter()->SetHannCutFrequencyY(args_info.hannY_arg);                                                       \
@@ -210,15 +208,10 @@ main(int argc, char * argv[])
   streamerBP->SetRegionSplitter(splitter);
 
   // Write
-  using WriterType = itk::ImageFileWriter<CPUOutputImageType>;
-  WriterType::Pointer writer = WriterType::New();
-  writer->SetFileName(args_info.output_arg);
-  writer->SetInput(streamerBP->GetOutput());
-
   if (args_info.verbose_flag)
     std::cout << "Reconstructing and writing... " << std::endl;
 
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(writer->Update())
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(itk::WriteImage(streamerBP->GetOutput(), args_info.output_arg))
 
   return EXIT_SUCCESS;
 }

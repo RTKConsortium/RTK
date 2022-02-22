@@ -172,6 +172,14 @@ ThreeDCircularProjectionGeometryXMLFileReader::CharacterDataHandler(const char *
     m_CurCharacterData = m_CurCharacterData + inData[i];
 }
 
+ThreeDCircularProjectionGeometry::Pointer
+ReadGeometry(const std::string & filename)
+{
+  const auto reader = ThreeDCircularProjectionGeometryXMLFileReader::New();
+  reader->SetFilename(filename);
+  reader->GenerateOutputInformation();
+  return reader->GetOutputObject();
+}
 } // namespace rtk
 
 #endif

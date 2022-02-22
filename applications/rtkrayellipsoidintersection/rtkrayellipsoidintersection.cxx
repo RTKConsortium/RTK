@@ -39,10 +39,8 @@ main(int argc, char * argv[])
   if (args_info.verbose_flag)
     std::cout << "Reading geometry information from " << args_info.geometry_arg << "..." << std::endl;
 
-  rtk::ThreeDCircularProjectionGeometryXMLFileReader::Pointer geometryReader;
-  geometryReader = rtk::ThreeDCircularProjectionGeometryXMLFileReader::New();
-  geometryReader->SetFilename(args_info.geometry_arg);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(geometryReader->GenerateOutputInformation())
+  rtk::ThreeDCircularProjectionGeometry::Pointer geometry;
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(geometry = rtk::ReadGeometry(args_info.geometry_arg));
 
   // Create a stack of empty projection images
   using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
@@ -54,7 +52,7 @@ main(int argc, char * argv[])
   ConstantImageSourceType::SizeType sizeOutput;
   sizeOutput[0] = constantImageSource->GetSize()[0];
   sizeOutput[1] = constantImageSource->GetSize()[1];
-  sizeOutput[2] = geometryReader->GetOutputObject()->GetGantryAngles().size();
+  sizeOutput[2] = geometry->GetGantryAngles().size();
   constantImageSource->SetSize(sizeOutput);
 
   // Create projection image filter
@@ -81,17 +79,13 @@ main(int argc, char * argv[])
   }
 
   rei->SetInput(constantImageSource->GetOutput());
-  rei->SetGeometry(geometryReader->GetOutputObject());
+  rei->SetGeometry(geometry);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(rei->Update())
 
   // Write
-  using WriterType = itk::ImageFileWriter<OutputImageType>;
-  WriterType::Pointer writer = WriterType::New();
-  writer->SetFileName(args_info.output_arg);
-  writer->SetInput(rei->GetOutput());
   if (args_info.verbose_flag)
     std::cout << "Projecting and writing... " << std::flush;
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(writer->Update())
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(itk::WriteImage(rei->GetOutput(), args_info.output_arg))
 
   return EXIT_SUCCESS;
 }

@@ -51,7 +51,6 @@ main(int argc, char * argv[])
   using DVFImageType = itk::Image<DVFVectorType, VolumeSeriesType::ImageDimension - 1>;
 #endif
   using VolumeType = ProjectionStackType;
-  using DVFReaderType = itk::ImageFileReader<DVFSequenceImageType>;
 
   // Projections reader
   using ReaderType = rtk::ProjectionsReader<ProjectionStackType>;
@@ -61,10 +60,8 @@ main(int argc, char * argv[])
   // Geometry
   if (args_info.verbose_flag)
     std::cout << "Reading geometry information from " << args_info.geometry_arg << "..." << std::endl;
-  rtk::ThreeDCircularProjectionGeometryXMLFileReader::Pointer geometryReader;
-  geometryReader = rtk::ThreeDCircularProjectionGeometryXMLFileReader::New();
-  geometryReader->SetFilename(args_info.geometry_arg);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(geometryReader->GenerateOutputInformation())
+  rtk::ThreeDCircularProjectionGeometry::Pointer geometry;
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(geometry = rtk::ReadGeometry(args_info.geometry_arg));
 
   // Create input: either an existing volume read from a file or a blank image
   itk::ImageSource<VolumeSeriesType>::Pointer inputFilter;
@@ -102,7 +99,7 @@ main(int argc, char * argv[])
   using ReorderProjectionsFilterType = rtk::ReorderProjectionsImageFilter<ProjectionStackType>;
   ReorderProjectionsFilterType::Pointer reorder = ReorderProjectionsFilterType::New();
   reorder->SetInput(reader->GetOutput());
-  reorder->SetInputGeometry(geometryReader->GetOutputObject());
+  reorder->SetInputGeometry(geometry);
   reorder->SetInputSignal(signal);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(reorder->Update())
 
@@ -199,22 +196,16 @@ main(int argc, char * argv[])
     mcrooster->SetPerformL0TemporalDenoising(false);
 
   // Read DVF
-  DVFReaderType::Pointer dvfReader = DVFReaderType::New();
-  dvfReader->SetFileName(args_info.dvf_arg);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(dvfReader->Update())
-  mcrooster->SetDisplacementField(dvfReader->GetOutput());
+  DVFSequenceImageType::Pointer dvf;
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(dvf = itk::ReadImage<DVFSequenceImageType>(args_info.dvf_arg))
+  mcrooster->SetDisplacementField(dvf);
 
   // Read inverse DVF if provided
-  DVFReaderType::Pointer idvfReader = DVFReaderType::New();
-  idvfReader->SetFileName(args_info.idvf_arg);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(idvfReader->Update())
-  mcrooster->SetInverseDisplacementField(idvfReader->GetOutput());
+  DVFSequenceImageType::Pointer idvf;
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(idvf = itk::ReadImage<DVFSequenceImageType>(args_info.idvf_arg))
+  mcrooster->SetInverseDisplacementField(idvf);
 
   TRY_AND_EXIT_ON_ITK_EXCEPTION(mcrooster->Update())
-
-  using WriterType = itk::ImageFileWriter<VolumeSeriesType>;
-  WriterType::Pointer writer = WriterType::New();
-  writer->SetFileName(args_info.output_arg);
 
   using WarpSequenceFilterType =
     rtk::WarpSequenceImageFilter<VolumeSeriesType, DVFSequenceImageType, ProjectionStackType, DVFImageType>;
@@ -223,20 +214,18 @@ main(int argc, char * argv[])
   if (args_info.nofinalwarp_flag)
   {
     // MCROOSTER outputs a motion-compensated reconstruction
-    writer->SetInput(mcrooster->GetOutput());
-    TRY_AND_EXIT_ON_ITK_EXCEPTION(writer->Update())
+    TRY_AND_EXIT_ON_ITK_EXCEPTION(itk::WriteImage(mcrooster->GetOutput(), args_info.output_arg))
   }
   else
   {
     // Warp the output of MCROOSTER with the inverse field so
     // that it is similar to that of rtkfourdrooster
     warp->SetInput(mcrooster->GetOutput());
-    warp->SetDisplacementField(idvfReader->GetOutput());
+    warp->SetDisplacementField(idvf);
     TRY_AND_EXIT_ON_ITK_EXCEPTION(warp->Update())
 
     // Write
-    writer->SetInput(warp->GetOutput());
-    TRY_AND_EXIT_ON_ITK_EXCEPTION(writer->Update())
+    TRY_AND_EXIT_ON_ITK_EXCEPTION(itk::WriteImage(warp->GetOutput(), args_info.output_arg))
   }
 
   return EXIT_SUCCESS;

@@ -58,10 +58,8 @@ main(int argc, char * argv[])
   // Geometry
   if (args_info.verbose_flag)
     std::cout << "Reading geometry information from " << args_info.geometry_arg << "..." << std::endl;
-  rtk::ThreeDCircularProjectionGeometryXMLFileReader::Pointer geometryReader;
-  geometryReader = rtk::ThreeDCircularProjectionGeometryXMLFileReader::New();
-  geometryReader->SetFilename(args_info.geometry_arg);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(geometryReader->GenerateOutputInformation());
+  rtk::ThreeDCircularProjectionGeometry::Pointer geometry;
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(geometry = rtk::ReadGeometry(args_info.geometry_arg));
 
   // Phase gating weights reader
   using PhaseGatingFilterType = rtk::PhaseGatingImageFilter<OutputImageType>;
@@ -73,7 +71,7 @@ main(int argc, char * argv[])
     phaseGating->SetGatingWindowCenter(args_info.windowcenter_arg);
     phaseGating->SetGatingWindowShape(args_info.windowshape_arg);
     phaseGating->SetInputProjectionStack(projectionsReader->GetOutput());
-    phaseGating->SetInputGeometry(geometryReader->GetOutputObject());
+    phaseGating->SetInputGeometry(geometry);
     TRY_AND_EXIT_ON_ITK_EXCEPTION(phaseGating->Update())
   }
 
@@ -127,7 +125,7 @@ main(int argc, char * argv[])
   else
   {
     admmFilter->SetInput(1, projectionsReader->GetOutput());
-    admmFilter->SetGeometry(geometryReader->GetOutputObject());
+    admmFilter->SetGeometry(geometry);
   }
   admmFilter->SetDisableDisplacedDetectorFilter(args_info.nodisplaced_flag);
 
@@ -135,12 +133,8 @@ main(int argc, char * argv[])
 
   TRY_AND_EXIT_ON_ITK_EXCEPTION(admmFilter->Update())
 
-  // Set writer and write the output
-  using WriterType = itk::ImageFileWriter<OutputImageType>;
-  WriterType::Pointer writer = WriterType::New();
-  writer->SetFileName(args_info.output_arg);
-  writer->SetInput(admmFilter->GetOutput());
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(writer->Update())
+  // Write the output
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(itk::WriteImage(admmFilter->GetOutput(), args_info.output_arg))
 
   return EXIT_SUCCESS;
 }

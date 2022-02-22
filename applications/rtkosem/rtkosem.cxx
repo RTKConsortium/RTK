@@ -52,10 +52,8 @@ main(int argc, char * argv[])
   // Geometry
   if (args_info.verbose_flag)
     std::cout << "Reading geometry information from " << args_info.geometry_arg << "..." << std::endl;
-  rtk::ThreeDCircularProjectionGeometryXMLFileReader::Pointer geometryReader;
-  geometryReader = rtk::ThreeDCircularProjectionGeometryXMLFileReader::New();
-  geometryReader->SetFilename(args_info.geometry_arg);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(geometryReader->GenerateOutputInformation())
+  rtk::ThreeDCircularProjectionGeometry::Pointer geometry;
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(geometry = rtk::ReadGeometry(args_info.geometry_arg));
 
   // Create input: either an existing volume read from a file or a blank image
   itk::ImageSource<OutputImageType>::Pointer inputFilter;
@@ -77,14 +75,11 @@ main(int argc, char * argv[])
     inputFilter = constantImageSource;
   }
 
-  itk::ImageSource<OutputImageType>::Pointer attenuationFilter;
+  OutputImageType::Pointer attenuationMap;
   if (args_info.attenuationmap_given)
   {
     // Read an existing image to initialize the attenuation map
-    using AttenuationReaderType = itk::ImageFileReader<OutputImageType>;
-    AttenuationReaderType::Pointer attenuationReader = AttenuationReaderType::New();
-    attenuationReader->SetFileName(args_info.attenuationmap_arg);
-    attenuationFilter = attenuationReader;
+    attenuationMap = itk::ReadImage<OutputImageType>(args_info.attenuationmap_arg);
   }
 
   // OSEM reconstruction filter
@@ -97,14 +92,14 @@ main(int argc, char * argv[])
   osem->SetInput(inputFilter->GetOutput());
   osem->SetInput(1, reader->GetOutput());
   if (args_info.attenuationmap_given)
-    osem->SetInput(2, attenuationFilter->GetOutput());
+    osem->SetInput(2, attenuationMap);
   if (args_info.sigmazero_given)
     osem->SetSigmaZero(args_info.sigmazero_arg);
   if (args_info.alphapsf_given)
     osem->SetAlpha(args_info.alphapsf_arg);
   if (args_info.betaregularization_given)
     osem->SetBetaRegularization(args_info.betaregularization_arg);
-  osem->SetGeometry(geometryReader->GetOutputObject());
+  osem->SetGeometry(geometry);
 
   osem->SetNumberOfIterations(args_info.niterations_arg);
   osem->SetNumberOfProjectionsPerSubset(args_info.nprojpersubset_arg);
@@ -112,11 +107,7 @@ main(int argc, char * argv[])
   REPORT_ITERATIONS(osem, rtk::OSEMConeBeamReconstructionFilter<OutputImageType>, OutputImageType)
 
   // Write
-  using WriterType = itk::ImageFileWriter<OutputImageType>;
-  WriterType::Pointer writer = WriterType::New();
-  writer->SetFileName(args_info.output_arg);
-  writer->SetInput(osem->GetOutput());
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(writer->Update())
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(itk::WriteImage(osem->GetOutput(), args_info.output_arg))
 
   return EXIT_SUCCESS;
 }

@@ -32,11 +32,7 @@ main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION(reader->UpdateOutputData())
 
   // Write
-  rtk::ThreeDCircularProjectionGeometryXMLFileWriter::Pointer xmlWriter =
-    rtk::ThreeDCircularProjectionGeometryXMLFileWriter::New();
-  xmlWriter->SetFilename(args_info.output_arg);
-  xmlWriter->SetObject(reader->GetGeometry());
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(xmlWriter->WriteFile())
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(rtk::WriteGeometry(reader->GetGeometry(), args_info.output_arg))
 
   return EXIT_SUCCESS;
 }

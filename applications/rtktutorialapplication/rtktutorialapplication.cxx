@@ -75,24 +75,19 @@ main(int argc, char * argv[])
   using OutputImageType = itk::Image<OutputPixelType, Dimension>;
 
   // Read the input volume
-  using InputReaderType = itk::ImageFileReader<OutputImageType>;
-  InputReaderType::Pointer inputReader = InputReaderType::New();
-  inputReader->SetFileName(args_info.input_arg);
+  OutputImageType::Pointer input;
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(input = itk::ReadImage<OutputImageType>(args_info.input_arg))
 
   // Create the Add filter
   using AddFilterType = itk::AddImageFilter<OutputImageType>;
   AddFilterType::Pointer add = AddFilterType::New();
-  add->SetInput1(inputReader->GetOutput());
+  add->SetInput1(input);
   add->SetConstant2(args_info.constant_arg);
 
   TRY_AND_EXIT_ON_ITK_EXCEPTION(add->Update())
 
   // Write
-  using WriterType = itk::ImageFileWriter<OutputImageType>;
-  WriterType::Pointer writer = WriterType::New();
-  writer->SetFileName(args_info.output_arg);
-  writer->SetInput(add->GetOutput());
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(writer->Update())
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(itk::WriteImage(add->GetOutput(), args_info.output_arg))
 
   return EXIT_SUCCESS;
 }

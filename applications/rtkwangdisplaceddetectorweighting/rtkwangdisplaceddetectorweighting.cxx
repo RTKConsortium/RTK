@@ -58,10 +58,8 @@ main(int argc, char * argv[])
   // Geometry
   if (args_info.verbose_flag)
     std::cout << "Reading geometry information from " << args_info.geometry_arg << "..." << std::endl;
-  rtk::ThreeDCircularProjectionGeometryXMLFileReader::Pointer geometryReader;
-  geometryReader = rtk::ThreeDCircularProjectionGeometryXMLFileReader::New();
-  geometryReader->SetFilename(args_info.geometry_arg);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(geometryReader->GenerateOutputInformation())
+  rtk::ThreeDCircularProjectionGeometry::Pointer geometry;
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(geometry = rtk::ReadGeometry(args_info.geometry_arg));
 
   // Displaced detector weighting
   using DDFCPUType = rtk::DisplacedDetectorImageFilter<OutputImageType>;
@@ -76,7 +74,7 @@ main(int argc, char * argv[])
   else
     ddf = DDFCPUType::New();
   ddf->SetInput(reader->GetOutput());
-  ddf->SetGeometry(geometryReader->GetOutputObject());
+  ddf->SetGeometry(geometry);
   if (args_info.minOffset_given && args_info.maxOffset_given)
     ddf->SetOffsets(args_info.minOffset_arg, args_info.maxOffset_arg);
 

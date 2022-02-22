@@ -49,15 +49,13 @@ main(int argc, char * argv[])
 #endif
 
   // Read input
-  using ReaderType = itk::ImageFileReader<OutputImageType>;
-  ReaderType::Pointer reader = ReaderType::New();
-  reader->SetFileName(args_info.input_arg);
-  reader->Update();
+  OutputImageType::Pointer input;
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(input = itk::ReadImage<OutputImageType>(args_info.input_arg))
 
   // Compute total variation before denoising
   using TVFilterType = rtk::TotalVariationImageFilter<OutputImageType>;
   TVFilterType::Pointer tv = TVFilterType::New();
-  tv->SetInput(reader->GetOutput());
+  tv->SetInput(input);
   if (args_info.verbose_flag)
   {
     tv->Update();
@@ -66,17 +64,12 @@ main(int argc, char * argv[])
 
   // Apply total variation denoising
   TVDenoisingFilterType::Pointer tvdenoising = TVDenoisingFilterType::New();
-  tvdenoising->SetInput(reader->GetOutput());
+  tvdenoising->SetInput(input);
   tvdenoising->SetGamma(args_info.gamma_arg);
   tvdenoising->SetNumberOfIterations(args_info.niter_arg);
 
   // Write
-  using WriterType = itk::ImageFileWriter<OutputImageType>;
-  WriterType::Pointer writer = WriterType::New();
-  writer->SetFileName(args_info.output_arg);
-  writer->SetInput(tvdenoising->GetOutput());
-
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(writer->Update())
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(itk::WriteImage(tvdenoising->GetOutput(), args_info.output_arg))
 
   // Compute total variation after denoising
   if (args_info.verbose_flag)

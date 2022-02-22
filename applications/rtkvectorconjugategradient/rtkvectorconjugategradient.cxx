@@ -57,28 +57,21 @@ main(int argc, char * argv[])
 #endif
 
   // Projections reader
-  using ReaderType = itk::ImageFileReader<OutputImageType>;
-  ReaderType::Pointer reader = ReaderType::New();
-  reader->SetFileName(args_info.projections_arg);
-  reader->Update();
+  OutputImageType::Pointer projections;
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(projections = itk::ReadImage<OutputImageType>(args_info.projections_arg))
 
   // Geometry
   if (args_info.verbose_flag)
     std::cout << "Reading geometry information from " << args_info.geometry_arg << "..." << std::endl;
-  rtk::ThreeDCircularProjectionGeometryXMLFileReader::Pointer geometryReader;
-  geometryReader = rtk::ThreeDCircularProjectionGeometryXMLFileReader::New();
-  geometryReader->SetFilename(args_info.geometry_arg);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(geometryReader->GenerateOutputInformation())
+  rtk::ThreeDCircularProjectionGeometry::Pointer geometry;
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(geometry = rtk::ReadGeometry(args_info.geometry_arg));
 
   // Create input: either an existing volume read from a file or a blank image
-  itk::ImageSource<OutputImageType>::Pointer inputFilter;
+  OutputImageType::Pointer input;
   if (args_info.input_given)
   {
     // Read an existing image to initialize the volume
-    using InputReaderType = itk::ImageFileReader<OutputImageType>;
-    InputReaderType::Pointer inputReader = InputReaderType::New();
-    inputReader->SetFileName(args_info.input_arg);
-    inputFilter = inputReader;
+    TRY_AND_EXIT_ON_ITK_EXCEPTION(input = itk::ReadImage<OutputImageType>(args_info.input_arg))
   }
   else
   {
@@ -87,18 +80,15 @@ main(int argc, char * argv[])
     ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
     rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkvectorconjugategradient>(
       constantImageSource, args_info);
-    inputFilter = constantImageSource;
+    TRY_AND_EXIT_ON_ITK_EXCEPTION(constantImageSource->Update())
+    input = constantImageSource->GetOutput();
   }
-  inputFilter->Update();
 
   // Read weights if given, otherwise default to weights all equal to one
-  itk::ImageSource<WeightsImageType>::Pointer weightsSource;
+  WeightsImageType::Pointer weightsSource;
   if (args_info.weights_given)
   {
-    using WeightsReaderType = itk::ImageFileReader<WeightsImageType>;
-    WeightsReaderType::Pointer weightsReader = WeightsReaderType::New();
-    weightsReader->SetFileName(args_info.weights_arg);
-    weightsSource = weightsReader;
+    TRY_AND_EXIT_ON_ITK_EXCEPTION(weightsSource = itk::ReadImage<WeightsImageType>(args_info.weights_arg))
   }
   else
   {
@@ -106,24 +96,21 @@ main(int argc, char * argv[])
     ConstantWeightsSourceType::Pointer constantWeightsSource = ConstantWeightsSourceType::New();
 
     // Set the weights to the identity matrix
-    TRY_AND_EXIT_ON_ITK_EXCEPTION(reader->UpdateOutputInformation())
-    constantWeightsSource->SetInformationFromImage(reader->GetOutput());
+    constantWeightsSource->SetInformationFromImage(projections);
     WeightsType constantWeight = itk::NumericTraits<WeightsType>::ZeroValue(constantWeight);
     for (unsigned int i = 0; i < nMaterials; i++)
       constantWeight[i + i * nMaterials] = 1;
 
     constantWeightsSource->SetConstant(constantWeight);
-    weightsSource = constantWeightsSource;
+    TRY_AND_EXIT_ON_ITK_EXCEPTION(constantWeightsSource->Update())
+    weightsSource = constantWeightsSource->GetOutput();
   }
 
   // Read Support Mask if given
-  itk::ImageSource<SingleComponentImageType>::Pointer supportmaskSource;
+  SingleComponentImageType::Pointer supportmask;
   if (args_info.mask_given)
   {
-    using MaskReaderType = itk::ImageFileReader<SingleComponentImageType>;
-    MaskReaderType::Pointer supportmaskReader = MaskReaderType::New();
-    supportmaskReader->SetFileName(args_info.mask_arg);
-    supportmaskSource = supportmaskReader;
+    TRY_AND_EXIT_ON_ITK_EXCEPTION(supportmask = itk::ReadImage<SingleComponentImageType>(args_info.mask_arg))
   }
 
   // Set the forward and back projection filters to be used
@@ -134,20 +121,20 @@ main(int argc, char * argv[])
   //  conjugategradient->SetBackProjectionFilter(ConjugateGradientFilterType::JOSEPH);
   SetForwardProjectionFromGgo(args_info, conjugategradient.GetPointer());
   SetBackProjectionFromGgo(args_info, conjugategradient.GetPointer());
-  conjugategradient->SetInputVolume(inputFilter->GetOutput());
-  conjugategradient->SetInputProjectionStack(reader->GetOutput());
-  conjugategradient->SetInputWeights(weightsSource->GetOutput());
+  conjugategradient->SetInputVolume(input);
+  conjugategradient->SetInputProjectionStack(projections);
+  conjugategradient->SetInputWeights(weightsSource);
   conjugategradient->SetCudaConjugateGradient(!args_info.nocudacg_flag);
   if (args_info.mask_given)
   {
-    conjugategradient->SetSupportMask(supportmaskSource->GetOutput());
+    conjugategradient->SetSupportMask(supportmask);
   }
   conjugategradient->SetIterationCosts(args_info.costs_flag);
 
   if (args_info.tikhonov_given)
     conjugategradient->SetTikhonov(args_info.tikhonov_arg);
 
-  conjugategradient->SetGeometry(geometryReader->GetOutputObject());
+  conjugategradient->SetGeometry(geometry);
   conjugategradient->SetNumberOfIterations(args_info.niterations_arg);
   conjugategradient->SetDisableDisplacedDetectorFilter(args_info.nodisplaced_flag);
 
@@ -175,11 +162,7 @@ main(int argc, char * argv[])
   }
 
   // Write
-  using WriterType = itk::ImageFileWriter<OutputImageType>;
-  WriterType::Pointer writer = WriterType::New();
-  writer->SetFileName(args_info.output_arg);
-  writer->SetInput(conjugategradient->GetOutput());
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(writer->Update())
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(itk::WriteImage(conjugategradient->GetOutput(), args_info.output_arg))
 
   return EXIT_SUCCESS;
 }

@@ -1,3 +1,21 @@
+/*=========================================================================
+ *
+ *  Copyright RTK Consortium
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ *=========================================================================*/
+
 #include "rtkcheckimagequality_ggo.h"
 #include "rtkConfiguration.h"
 #include "rtkMacro.h"
@@ -5,6 +23,8 @@
 #include "itkImageFileReader.h"
 #include "itkImageRegionConstIterator.h"
 
+namespace rtk
+{
 /**
  * \file rtkcheckimagequality.cxx
  *
@@ -38,6 +58,7 @@ MSE(typename TImage::Pointer reference, typename TImage::Pointer reconstruction)
 
   return EnerError;
 }
+} // namespace rtk
 
 int
 main(int argc, char ** argv)
@@ -47,9 +68,6 @@ main(int argc, char ** argv)
   constexpr unsigned int Dimension = 3;
   using PixelType = float;
   using ImageType = itk::Image<PixelType, Dimension>;
-
-  using ReaderType = itk::ImageFileReader<ImageType>;
-  ReaderType::Pointer reader;
 
   // Maximum number of comparisons to perform (depends on the number of inputs)
   unsigned int n_max =
@@ -61,12 +79,10 @@ main(int argc, char ** argv)
     unsigned int reconstruction_index = std::min(args_info.reconstruction_given - 1, i);
     unsigned int threshold_index = std::min(args_info.threshold_given - 1, i);
 
-    reader = ReaderType::New();
-    reader->SetFileName(args_info.reference_arg[reference_index]);
-
+    ImageType::Pointer reference, reconstruction;
     try
     {
-      reader->Update();
+      reference = itk::ReadImage<ImageType>(args_info.reference_arg[reference_index]);
     }
     catch (::itk::ExceptionObject & e)
     {
@@ -74,14 +90,9 @@ main(int argc, char ** argv)
       return EXIT_FAILURE;
     }
 
-    ImageType::Pointer reference = reader->GetOutput();
-
-    reader = ReaderType::New();
-    reader->SetFileName(args_info.reconstruction_arg[reconstruction_index]);
-
     try
     {
-      reader->Update();
+      reconstruction = itk::ReadImage<ImageType>(args_info.reconstruction_arg[reconstruction_index]);
     }
     catch (::itk::ExceptionObject & e)
     {
@@ -89,9 +100,7 @@ main(int argc, char ** argv)
       return EXIT_FAILURE;
     }
 
-    ImageType::Pointer reconstruction = reader->GetOutput();
-
-    double mse = MSE<ImageType>(reference, reconstruction);
+    double mse = rtk::MSE<ImageType>(reference, reconstruction);
 
     if (mse > args_info.threshold_arg[threshold_index])
     {

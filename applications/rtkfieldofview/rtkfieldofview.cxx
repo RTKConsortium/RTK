@@ -64,16 +64,12 @@ main(int argc, char * argv[])
   // Geometry
   if (args_info.verbose_flag)
     std::cout << "Reading geometry information from " << args_info.geometry_arg << "..." << std::endl;
-
-  rtk::ThreeDCircularProjectionGeometryXMLFileReader::Pointer geometryReader;
-  geometryReader = rtk::ThreeDCircularProjectionGeometryXMLFileReader::New();
-  geometryReader->SetFilename(args_info.geometry_arg);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(geometryReader->GenerateOutputInformation())
+  rtk::ThreeDCircularProjectionGeometry::Pointer geometry;
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(geometry = rtk::ReadGeometry(args_info.geometry_arg));
 
   // Reconstruction reader
-  using ImageReaderType = itk::ImageFileReader<OutputImageType>;
-  ImageReaderType::Pointer unmasked_reconstruction = ImageReaderType::New();
-  unmasked_reconstruction->SetFileName(args_info.reconstruction_arg);
+  OutputImageType::Pointer unmasked_reconstruction;
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(unmasked_reconstruction = itk::ReadImage<OutputImageType>(args_info.reconstruction_arg))
 
   if (!args_info.bp_flag)
   {
@@ -81,18 +77,14 @@ main(int argc, char * argv[])
     using FOVFilterType = rtk::FieldOfViewImageFilter<OutputImageType, OutputImageType>;
     FOVFilterType::Pointer fieldofview = FOVFilterType::New();
     fieldofview->SetMask(args_info.mask_flag);
-    fieldofview->SetInput(0, unmasked_reconstruction->GetOutput());
+    fieldofview->SetInput(0, unmasked_reconstruction);
     fieldofview->SetProjectionsStack(reader->GetOutput());
-    fieldofview->SetGeometry(geometryReader->GetOutputObject());
+    fieldofview->SetGeometry(geometry);
     fieldofview->SetDisplacedDetector(args_info.displaced_flag);
     TRY_AND_EXIT_ON_ITK_EXCEPTION(fieldofview->Update())
 
     // Write
-    using WriterType = itk::ImageFileWriter<OutputImageType>;
-    WriterType::Pointer writer = WriterType::New();
-    writer->SetFileName(args_info.output_arg);
-    writer->SetInput(fieldofview->GetOutput());
-    TRY_AND_EXIT_ON_ITK_EXCEPTION(writer->Update())
+    TRY_AND_EXIT_ON_ITK_EXCEPTION(itk::WriteImage(fieldofview->GetOutput(), args_info.output_arg))
   }
   else
   {
@@ -103,7 +95,6 @@ main(int argc, char * argv[])
     }
 
     TRY_AND_EXIT_ON_ITK_EXCEPTION(reader->UpdateOutputInformation())
-    TRY_AND_EXIT_ON_ITK_EXCEPTION(unmasked_reconstruction->UpdateOutputInformation())
 
 #ifdef RTK_USE_CUDA
     using MaskImgType = itk::CudaImage<float, 3>;
@@ -117,7 +108,7 @@ main(int argc, char * argv[])
 
     ConstantType::Pointer zeroVol = ConstantType::New();
     zeroVol->SetConstant(0.);
-    zeroVol->SetInformationFromImage(unmasked_reconstruction->GetOutput());
+    zeroVol->SetInformationFromImage(unmasked_reconstruction);
 
     using BPType = rtk::BackProjectionImageFilter<MaskImgType, MaskImgType>;
     BPType::Pointer bp = BPType::New();
@@ -128,12 +119,12 @@ main(int argc, char * argv[])
 #endif
     bp->SetInput(zeroVol->GetOutput());
     bp->SetInput(1, ones->GetOutput());
-    bp->SetGeometry(geometryReader->GetOutputObject());
+    bp->SetGeometry(geometry);
 
     using ThreshType = itk::ThresholdImageFilter<MaskImgType>;
     ThreshType::Pointer thresh = ThreshType::New();
     thresh->SetInput(bp->GetOutput());
-    thresh->ThresholdBelow(geometryReader->GetOutputObject()->GetGantryAngles().size() - 1);
+    thresh->ThresholdBelow(geometry->GetGantryAngles().size() - 1);
     thresh->SetOutsideValue(0.);
 
     if (args_info.mask_flag)
@@ -141,13 +132,9 @@ main(int argc, char * argv[])
       using DivideType = itk::DivideImageFilter<MaskImgType, MaskImgType, MaskImgType>;
       DivideType::Pointer div = DivideType::New();
       div->SetInput(thresh->GetOutput());
-      div->SetConstant2(geometryReader->GetOutputObject()->GetGantryAngles().size());
+      div->SetConstant2(geometry->GetGantryAngles().size());
 
-      using WriterType = itk::ImageFileWriter<MaskImgType>;
-      WriterType::Pointer writer = WriterType::New();
-      writer->SetFileName(args_info.output_arg);
-      writer->SetInput(div->GetOutput());
-      TRY_AND_EXIT_ON_ITK_EXCEPTION(writer->Update())
+      TRY_AND_EXIT_ON_ITK_EXCEPTION(itk::WriteImage(div->GetOutput(), args_info.output_arg))
     }
     else
     {

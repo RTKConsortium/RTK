@@ -58,8 +58,7 @@ main(int argc, char * argv[])
 
   // Input projection parameters
   InputImageType::SizeType sizeInput = reader->GetOutput()->GetLargestPossibleRegion().GetSize();
-  ;
-  int Nproj = sizeInput[2];
+  int                      Nproj = sizeInput[2];
 
 
   std::vector<float> coef;
@@ -174,13 +173,9 @@ main(int argc, char * argv[])
     projid += curBufferSize;
   }
 
-  using FileWriterType = itk::ImageFileWriter<InputImageType>;
-  FileWriterType::Pointer writer = FileWriterType::New();
   if (args_info.output_given)
   {
-    writer->SetFileName(args_info.output_arg);
-    writer->SetInput(paste->GetOutput());
-    TRY_AND_EXIT_ON_ITK_EXCEPTION(writer->Update())
+    TRY_AND_EXIT_ON_ITK_EXCEPTION(itk::WriteImage(paste->GetOutput(), args_info.output_arg))
   }
 
   return EXIT_SUCCESS;

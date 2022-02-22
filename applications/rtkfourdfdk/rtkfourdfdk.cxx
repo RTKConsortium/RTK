@@ -30,11 +30,7 @@
 #  include "rtkCudaParkerShortScanImageFilter.h"
 #  include "rtkCudaFDKConeBeamReconstructionFilter.h"
 #endif
-#include "rtkFDKWarpBackProjectionImageFilter.h"
-#include "rtkCyclicDeformationImageFilter.h"
 #include "rtkSelectOneProjectionPerCycleImageFilter.h"
-
-#include <itkExtractImageFilter.h>
 #include <itkImageRegionConstIterator.h>
 #include <itkStreamingImageFilter.h>
 #include <itkImageFileWriter.h>
@@ -62,16 +58,14 @@ main(int argc, char * argv[])
   // Geometry
   if (args_info.verbose_flag)
     std::cout << "Reading geometry information from " << args_info.geometry_arg << "..." << std::endl;
-  rtk::ThreeDCircularProjectionGeometryXMLFileReader::Pointer geometryReader;
-  geometryReader = rtk::ThreeDCircularProjectionGeometryXMLFileReader::New();
-  geometryReader->SetFilename(args_info.geometry_arg);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(geometryReader->GenerateOutputInformation())
+  rtk::ThreeDCircularProjectionGeometry::Pointer geometry;
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(geometry = rtk::ReadGeometry(args_info.geometry_arg));
 
   // Part specific to 4D
   using SelectorType = rtk::SelectOneProjectionPerCycleImageFilter<OutputImageType>;
   SelectorType::Pointer selector = SelectorType::New();
   selector->SetInput(reader->GetOutput());
-  selector->SetInputGeometry(geometryReader->GetOutputObject());
+  selector->SetInputGeometry(geometry);
   selector->SetSignalFilename(args_info.signal_arg);
 
   // Check on hardware parameter
@@ -205,11 +199,7 @@ main(int argc, char * argv[])
   }
 
   // Write
-  using WriterType = itk::ImageFileWriter<FourDOutputImageType>;
-  WriterType::Pointer writer = WriterType::New();
-  writer->SetFileName(args_info.output_arg);
-  writer->SetInput(fourDConstantImageSource->GetOutput());
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(writer->Update())
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(itk::WriteImage(fourDConstantImageSource->GetOutput(), args_info.output_arg))
 
   return EXIT_SUCCESS;
 }

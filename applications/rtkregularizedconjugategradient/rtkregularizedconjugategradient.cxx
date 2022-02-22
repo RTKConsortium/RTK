@@ -49,10 +49,8 @@ main(int argc, char * argv[])
   // Geometry
   if (args_info.verbose_flag)
     std::cout << "Reading geometry information from " << args_info.geometry_arg << "..." << std::endl;
-  rtk::ThreeDCircularProjectionGeometryXMLFileReader::Pointer geometryReader;
-  geometryReader = rtk::ThreeDCircularProjectionGeometryXMLFileReader::New();
-  geometryReader->SetFilename(args_info.geometry_arg);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(geometryReader->GenerateOutputInformation())
+  rtk::ThreeDCircularProjectionGeometry::Pointer geometry;
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(geometry = rtk::ReadGeometry(args_info.geometry_arg));
 
   // Create input: either an existing volume read from a file or a blank image
   itk::ImageSource<OutputImageType>::Pointer inputFilter;
@@ -98,13 +96,10 @@ main(int argc, char * argv[])
   }
 
   // Read Support Mask if given
-  itk::ImageSource<OutputImageType>::Pointer supportmaskSource;
+  OutputImageType::Pointer supportmaskSource;
   if (args_info.mask_given)
   {
-    using MaskReaderType = itk::ImageFileReader<OutputImageType>;
-    MaskReaderType::Pointer supportmaskReader = MaskReaderType::New();
-    supportmaskReader->SetFileName(args_info.mask_arg);
-    supportmaskSource = supportmaskReader;
+    TRY_AND_EXIT_ON_ITK_EXCEPTION(supportmaskSource = itk::ReadImage<OutputImageType>(args_info.mask_arg))
   }
 
   // Set the forward and back projection filters to be used
@@ -115,13 +110,13 @@ main(int argc, char * argv[])
   regularizedConjugateGradient->SetInputVolume(inputFilter->GetOutput());
   regularizedConjugateGradient->SetInputProjectionStack(reader->GetOutput());
   regularizedConjugateGradient->SetInputWeights(weightsSource->GetOutput());
-  regularizedConjugateGradient->SetGeometry(geometryReader->GetOutputObject());
+  regularizedConjugateGradient->SetGeometry(geometry);
   regularizedConjugateGradient->SetMainLoop_iterations(args_info.niter_arg);
   regularizedConjugateGradient->SetCudaConjugateGradient(!args_info.nocudacg_flag);
   regularizedConjugateGradient->SetDisableDisplacedDetectorFilter(args_info.nodisplaced_flag);
   if (args_info.mask_given)
   {
-    regularizedConjugateGradient->SetSupportMask(supportmaskSource->GetOutput());
+    regularizedConjugateGradient->SetSupportMask(supportmaskSource);
   }
   regularizedConjugateGradient->SetIterationCosts(args_info.costs_flag);
 
@@ -171,11 +166,7 @@ main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION(regularizedConjugateGradient->Update())
 
   // Write
-  using WriterType = itk::ImageFileWriter<OutputImageType>;
-  WriterType::Pointer writer = WriterType::New();
-  writer->SetFileName(args_info.output_arg);
-  writer->SetInput(regularizedConjugateGradient->GetOutput());
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(writer->Update())
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(itk::WriteImage(regularizedConjugateGradient->GetOutput(), args_info.output_arg))
 
   return EXIT_SUCCESS;
 }

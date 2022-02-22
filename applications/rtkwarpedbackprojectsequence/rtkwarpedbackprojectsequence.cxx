@@ -45,7 +45,6 @@ main(int argc, char * argv[])
   using ProjectionStackType = itk::Image<OutputPixelType, 3>;
   using DVFSequenceImageType = itk::Image<DVFVectorType, VolumeSeriesType::ImageDimension>;
 #endif
-  using DVFReaderType = itk::ImageFileReader<DVFSequenceImageType>;
 
   // Projections reader
   using ReaderType = rtk::ProjectionsReader<ProjectionStackType>;
@@ -55,10 +54,8 @@ main(int argc, char * argv[])
   // Geometry
   if (args_info.verbose_flag)
     std::cout << "Reading geometry information from " << args_info.geometry_arg << "..." << std::endl;
-  rtk::ThreeDCircularProjectionGeometryXMLFileReader::Pointer geometryReader;
-  geometryReader = rtk::ThreeDCircularProjectionGeometryXMLFileReader::New();
-  geometryReader->SetFilename(args_info.geometry_arg);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(geometryReader->GenerateOutputInformation())
+  rtk::ThreeDCircularProjectionGeometry::Pointer geometry;
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(geometry = rtk::ReadGeometry(args_info.geometry_arg));
 
   // Create input: either an existing volume read from a file or a blank image
   itk::ImageSource<VolumeSeriesType>::Pointer inputFilter;
@@ -103,24 +100,19 @@ main(int argc, char * argv[])
   WarpForwardProjectSequenceFilterType::Pointer warpbackprojectsequence = WarpForwardProjectSequenceFilterType::New();
   warpbackprojectsequence->SetInputVolumeSeries(inputFilter->GetOutput());
   warpbackprojectsequence->SetInputProjectionStack(reader->GetOutput());
-  warpbackprojectsequence->SetGeometry(geometryReader->GetOutputObject());
+  warpbackprojectsequence->SetGeometry(geometry);
   warpbackprojectsequence->SetWeights(phaseReader->GetOutput());
   warpbackprojectsequence->SetSignal(rtk::ReadSignalFile(args_info.signal_arg));
 
   // Read DVF
-  DVFReaderType::Pointer dvfReader = DVFReaderType::New();
-  dvfReader->SetFileName(args_info.dvf_arg);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(dvfReader->Update())
-  warpbackprojectsequence->SetDisplacementField(dvfReader->GetOutput());
+  DVFSequenceImageType::Pointer dvf;
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(dvf = itk::ReadImage<DVFSequenceImageType>(args_info.dvf_arg))
+  warpbackprojectsequence->SetDisplacementField(dvf);
 
   TRY_AND_EXIT_ON_ITK_EXCEPTION(warpbackprojectsequence->Update())
 
   // Write
-  using WriterType = itk::ImageFileWriter<VolumeSeriesType>;
-  WriterType::Pointer writer = WriterType::New();
-  writer->SetFileName(args_info.output_arg);
-  writer->SetInput(warpbackprojectsequence->GetOutput());
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(writer->Update())
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(itk::WriteImage(warpbackprojectsequence->GetOutput(), args_info.output_arg))
 
   return EXIT_SUCCESS;
 }

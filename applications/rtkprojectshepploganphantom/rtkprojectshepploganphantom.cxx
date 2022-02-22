@@ -40,10 +40,8 @@ main(int argc, char * argv[])
   if (args_info.verbose_flag)
     std::cout << "Reading geometry information from " << args_info.geometry_arg << "..." << std::endl;
 
-  rtk::ThreeDCircularProjectionGeometryXMLFileReader::Pointer geometryReader;
-  geometryReader = rtk::ThreeDCircularProjectionGeometryXMLFileReader::New();
-  geometryReader->SetFilename(args_info.geometry_arg);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(geometryReader->GenerateOutputInformation())
+  rtk::ThreeDCircularProjectionGeometry::Pointer geometry;
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(geometry = rtk::ReadGeometry(args_info.geometry_arg));
 
   // Create a stack of empty projection images
   using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
@@ -55,7 +53,7 @@ main(int argc, char * argv[])
   ConstantImageSourceType::SizeType sizeOutput;
   sizeOutput[0] = constantImageSource->GetSize()[0];
   sizeOutput[1] = constantImageSource->GetSize()[1];
-  sizeOutput[2] = geometryReader->GetOutputObject()->GetGantryAngles().size();
+  sizeOutput[2] = geometry->GetGantryAngles().size();
   constantImageSource->SetSize(sizeOutput);
 
   using SLPType = rtk::SheppLoganPhantomFilter<OutputImageType, OutputImageType>;
@@ -75,7 +73,7 @@ main(int argc, char * argv[])
       scale[i] = args_info.phantomscale_arg[i];
   }
   slp->SetInput(constantImageSource->GetOutput());
-  slp->SetGeometry(geometryReader->GetOutputObject());
+  slp->SetGeometry(geometry);
   slp->SetPhantomScale(scale);
   slp->SetOriginOffset(offset);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(slp->Update())
@@ -94,13 +92,9 @@ main(int argc, char * argv[])
   }
 
   // Write
-  using WriterType = itk::ImageFileWriter<OutputImageType>;
-  WriterType::Pointer writer = WriterType::New();
-  writer->SetFileName(args_info.output_arg);
-  writer->SetInput(output);
   if (args_info.verbose_flag)
     std::cout << "Projecting and writing... " << std::flush;
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(writer->Update())
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(itk::WriteImage(output, args_info.output_arg))
 
   return EXIT_SUCCESS;
 }

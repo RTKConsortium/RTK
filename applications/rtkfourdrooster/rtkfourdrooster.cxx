@@ -47,7 +47,6 @@ main(int argc, char * argv[])
   using DVFSequenceImageType = itk::Image<DVFVectorType, VolumeSeriesType::ImageDimension>;
 #endif
   using VolumeType = ProjectionStackType;
-  using DVFReaderType = itk::ImageFileReader<DVFSequenceImageType>;
 
   // Projections reader
   using ReaderType = rtk::ProjectionsReader<ProjectionStackType>;
@@ -57,10 +56,8 @@ main(int argc, char * argv[])
   // Geometry
   if (args_info.verbose_flag)
     std::cout << "Reading geometry information from " << args_info.geometry_arg << "..." << std::endl;
-  rtk::ThreeDCircularProjectionGeometryXMLFileReader::Pointer geometryReader;
-  geometryReader = rtk::ThreeDCircularProjectionGeometryXMLFileReader::New();
-  geometryReader->SetFilename(args_info.geometry_arg);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(geometryReader->GenerateOutputInformation())
+  rtk::ThreeDCircularProjectionGeometry::Pointer geometry;
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(geometry = rtk::ReadGeometry(args_info.geometry_arg));
 
   // Create input: either an existing volume read from a file or a blank image
   itk::ImageSource<VolumeSeriesType>::Pointer inputFilter;
@@ -99,7 +96,7 @@ main(int argc, char * argv[])
   using ReorderProjectionsFilterType = rtk::ReorderProjectionsImageFilter<ProjectionStackType>;
   ReorderProjectionsFilterType::Pointer reorder = ReorderProjectionsFilterType::New();
   reorder->SetInput(reader->GetOutput());
-  reorder->SetInputGeometry(geometryReader->GetOutputObject());
+  reorder->SetInputGeometry(geometry);
   reorder->SetInputSignal(signal);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(reorder->Update())
 
@@ -145,13 +142,11 @@ main(int argc, char * argv[])
     rooster->SetPerformPositivity(true);
 
   // Motion mask
-  using InputReaderType = itk::ImageFileReader<VolumeType>;
+  VolumeType::Pointer motionMask;
   if (args_info.motionmask_given)
   {
-    InputReaderType::Pointer motionMaskReader = InputReaderType::New();
-    motionMaskReader->SetFileName(args_info.motionmask_arg);
-    TRY_AND_EXIT_ON_ITK_EXCEPTION(motionMaskReader->Update())
-    rooster->SetMotionMask(motionMaskReader->GetOutput());
+    TRY_AND_EXIT_ON_ITK_EXCEPTION(motionMask = itk::ReadImage<VolumeType>(args_info.motionmask_arg))
+    rooster->SetMotionMask(motionMask);
     rooster->SetPerformMotionMask(true);
   }
   else
@@ -217,31 +212,25 @@ main(int argc, char * argv[])
       rooster->SetUseNearestNeighborInterpolationInWarping(true);
 
     // Read DVF
-    DVFReaderType::Pointer dvfReader = DVFReaderType::New();
-    dvfReader->SetFileName(args_info.dvf_arg);
-    TRY_AND_EXIT_ON_ITK_EXCEPTION(dvfReader->Update())
-    rooster->SetDisplacementField(dvfReader->GetOutput());
+    DVFSequenceImageType::Pointer dvf;
+    TRY_AND_EXIT_ON_ITK_EXCEPTION(dvf = itk::ReadImage<DVFSequenceImageType>(args_info.dvf_arg))
+    rooster->SetDisplacementField(dvf);
 
     if (args_info.idvf_given)
     {
       rooster->SetComputeInverseWarpingByConjugateGradient(false);
 
       // Read inverse DVF if provided
-      DVFReaderType::Pointer idvfReader = DVFReaderType::New();
-      idvfReader->SetFileName(args_info.idvf_arg);
-      TRY_AND_EXIT_ON_ITK_EXCEPTION(idvfReader->Update())
-      rooster->SetInverseDisplacementField(idvfReader->GetOutput());
+      DVFSequenceImageType::Pointer idvf;
+      TRY_AND_EXIT_ON_ITK_EXCEPTION(idvf = itk::ReadImage<DVFSequenceImageType>(args_info.idvf_arg))
+      rooster->SetInverseDisplacementField(idvf);
     }
   }
 
   TRY_AND_EXIT_ON_ITK_EXCEPTION(rooster->Update())
 
   // Write
-  using WriterType = itk::ImageFileWriter<VolumeSeriesType>;
-  WriterType::Pointer writer = WriterType::New();
-  writer->SetFileName(args_info.output_arg);
-  writer->SetInput(rooster->GetOutput());
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(writer->Update())
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(itk::WriteImage(rooster->GetOutput(), args_info.output_arg))
 
   return EXIT_SUCCESS;
 }

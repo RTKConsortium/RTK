@@ -123,10 +123,8 @@ main(int argc, char * argv[])
   // Geometry
   if (args_info.verbose_flag)
     std::cout << "Reading geometry information from " << args_info.geometry_arg << "..." << std::endl;
-  rtk::ThreeDCircularProjectionGeometryXMLFileReader::Pointer geometryReader;
-  geometryReader = rtk::ThreeDCircularProjectionGeometryXMLFileReader::New();
-  geometryReader->SetFilename(args_info.geometry_arg);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(geometryReader->GenerateOutputInformation())
+  rtk::ThreeDCircularProjectionGeometry::Pointer geometry;
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(geometry = rtk::ReadGeometry(args_info.geometry_arg));
   if (args_info.verbose_flag)
     std::cout << " done." << std::endl;
 
@@ -151,8 +149,7 @@ main(int argc, char * argv[])
   }
 
   // Adjust size according to geometry
-  if (reader->GetOutput()->GetLargestPossibleRegion().GetSize()[2] !=
-      geometryReader->GetOutputObject()->GetGantryAngles().size())
+  if (reader->GetOutput()->GetLargestPossibleRegion().GetSize()[2] != geometry->GetGantryAngles().size())
   {
     std::cerr << "Number of projections in the geometry and in the stack do not match." << std::endl;
     return EXIT_FAILURE;
@@ -170,7 +167,7 @@ main(int argc, char * argv[])
   JosephType::Pointer backProjection = JosephType::New();
   backProjection->SetInput(constantImageSource->GetOutput());
   backProjection->SetInput(1, reader->GetOutput());
-  backProjection->SetGeometry(geometryReader->GetOutputObject());
+  backProjection->SetGeometry(geometry);
   backProjection->GetSplatWeightMultiplication().SetProjectionsBuffer(reader->GetOutput()->GetBufferPointer());
   backProjection->GetSplatWeightMultiplication().SetVolumeBuffer(constantImageSource->GetOutput()->GetBufferPointer());
   backProjection->GetSplatWeightMultiplication().GetVnlSparseMatrix().resize(

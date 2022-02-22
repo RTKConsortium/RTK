@@ -36,24 +36,19 @@ main(int argc, char * argv[])
   using OutputImageType = itk::Image<OutputPixelType, Dimension>;
 
   // Read the input image
-  using ReaderType = itk::ImageFileReader<OutputImageType>;
-  ReaderType::Pointer reader = ReaderType::New();
-  reader->SetFileName(args_info.input_arg);
+  OutputImageType::Pointer input;
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(input = itk::ReadImage<OutputImageType>(args_info.input_arg))
 
   // Create the denoising filter
   using WaveletsSoftThresholdFilterType = rtk::DeconstructSoftThresholdReconstructImageFilter<OutputImageType>;
   WaveletsSoftThresholdFilterType::Pointer wst = WaveletsSoftThresholdFilterType::New();
-  wst->SetInput(reader->GetOutput());
+  wst->SetInput(input);
   wst->SetOrder(args_info.order_arg);
   wst->SetThreshold(args_info.threshold_arg);
   wst->SetNumberOfLevels(args_info.level_arg);
 
   // Write reconstruction
-  using WriterType = itk::ImageFileWriter<OutputImageType>;
-  WriterType::Pointer writer = WriterType::New();
-  writer->SetInput(wst->GetOutput());
-  writer->SetFileName(args_info.output_arg);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(writer->Update())
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(itk::WriteImage(wst->GetOutput(), args_info.output_arg))
 
   return EXIT_SUCCESS;
 }

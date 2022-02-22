@@ -69,13 +69,11 @@ main(int argc, char * argv[])
     shroudFilter->SetCorner2(c2);
 
     // Geometry
-    rtk::ThreeDCircularProjectionGeometryXMLFileReader::Pointer geometryReader;
-    geometryReader = rtk::ThreeDCircularProjectionGeometryXMLFileReader::New();
+    rtk::ThreeDCircularProjectionGeometry::Pointer geometry;
     if (args_info.geometry_given)
     {
-      geometryReader->SetFilename(args_info.geometry_arg);
-      TRY_AND_EXIT_ON_ITK_EXCEPTION(geometryReader->GenerateOutputInformation())
-      shroudFilter->SetGeometry(geometryReader->GetOutputObject());
+      TRY_AND_EXIT_ON_ITK_EXCEPTION(geometry = rtk::ReadGeometry(args_info.geometry_arg));
+      shroudFilter->SetGeometry(geometry);
     }
   }
   TRY_AND_EXIT_ON_ITK_EXCEPTION(shroudFilter->UpdateOutputInformation())

@@ -42,16 +42,14 @@ main(int argc, char * argv[])
   // Geometry
   if (args_info.verbose_flag)
     std::cout << "Reading geometry information from " << args_info.geometry_arg << "..." << std::endl;
-  rtk::ThreeDCircularProjectionGeometryXMLFileReader::Pointer geometryReader;
-  geometryReader = rtk::ThreeDCircularProjectionGeometryXMLFileReader::New();
-  geometryReader->SetFilename(args_info.geometry_arg);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(geometryReader->GenerateOutputInformation())
+  rtk::ThreeDCircularProjectionGeometry::Pointer geometry;
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(geometry = rtk::ReadGeometry(args_info.geometry_arg));
 
   // Weights filter
   using WeightType = rtk::FDKWeightProjectionFilter<OutputImageType>;
   WeightType::Pointer wf = WeightType::New();
   wf->SetInput(reader->GetOutput());
-  wf->SetGeometry(geometryReader->GetOutputObject());
+  wf->SetGeometry(geometry);
   wf->SetNumberOfWorkUnits(1);
   wf->InPlaceOff();
 

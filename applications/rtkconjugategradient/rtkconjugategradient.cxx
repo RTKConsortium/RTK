@@ -56,10 +56,8 @@ main(int argc, char * argv[])
   // Geometry
   if (args_info.verbose_flag)
     std::cout << "Reading geometry information from " << args_info.geometry_arg << "..." << std::endl;
-  rtk::ThreeDCircularProjectionGeometryXMLFileReader::Pointer geometryReader;
-  geometryReader = rtk::ThreeDCircularProjectionGeometryXMLFileReader::New();
-  geometryReader->SetFilename(args_info.geometry_arg);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(geometryReader->GenerateOutputInformation())
+  rtk::ThreeDCircularProjectionGeometry::Pointer geometry;
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(geometry = rtk::ReadGeometry(args_info.geometry_arg));
 
   // Create input: either an existing volume read from a file or a blank image
   itk::ImageSource<OutputImageType>::Pointer inputFilter;
@@ -103,13 +101,10 @@ main(int argc, char * argv[])
   }
 
   // Read Support Mask if given
-  itk::ImageSource<OutputImageType>::Pointer supportmaskSource;
+  OutputImageType::Pointer supportmaskSource;
   if (args_info.mask_given)
   {
-    using MaskReaderType = itk::ImageFileReader<OutputImageType>;
-    MaskReaderType::Pointer supportmaskReader = MaskReaderType::New();
-    supportmaskReader->SetFileName(args_info.mask_arg);
-    supportmaskSource = supportmaskReader;
+    supportmaskSource = itk::ReadImage<OutputImageType>(args_info.mask_arg);
   }
 
   // Set the forward and back projection filters to be used
@@ -123,7 +118,7 @@ main(int argc, char * argv[])
   conjugategradient->SetCudaConjugateGradient(!args_info.nocudacg_flag);
   if (args_info.mask_given)
   {
-    conjugategradient->SetSupportMask(supportmaskSource->GetOutput());
+    conjugategradient->SetSupportMask(supportmaskSource);
   }
   //  conjugategradient->SetIterationCosts(args_info.costs_flag);
 
@@ -132,7 +127,7 @@ main(int argc, char * argv[])
   if (args_info.tikhonov_given)
     conjugategradient->SetTikhonov(args_info.tikhonov_arg);
 
-  conjugategradient->SetGeometry(geometryReader->GetOutputObject());
+  conjugategradient->SetGeometry(geometry);
   conjugategradient->SetNumberOfIterations(args_info.niterations_arg);
   conjugategradient->SetDisableDisplacedDetectorFilter(args_info.nodisplaced_flag);
 
@@ -148,11 +143,7 @@ main(int argc, char * argv[])
   }
 
   // Write
-  using WriterType = itk::ImageFileWriter<OutputImageType>;
-  WriterType::Pointer writer = WriterType::New();
-  writer->SetFileName(args_info.output_arg);
-  writer->SetInput(conjugategradient->GetOutput());
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(writer->Update())
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(itk::WriteImage(conjugategradient->GetOutput(), args_info.output_arg))
 
   return EXIT_SUCCESS;
 }

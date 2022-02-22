@@ -44,10 +44,8 @@ main(int argc, char * argv[])
   constexpr unsigned int Dimension = 3;
 
   using DecomposedProjectionType = itk::VectorImage<PixelValueType, Dimension>;
-  using DecomposedProjectionReaderType = itk::ImageFileReader<DecomposedProjectionType>;
 
   using MaterialsVolumeType = itk::VectorImage<PixelValueType, Dimension>;
-  using MaterialsVolumeReaderType = itk::ImageFileReader<MaterialsVolumeType>;
 
 #ifdef RTK_USE_CUDA
   using VolumeSeriesType = itk::CudaImage<PixelValueType, Dimension + 1>;
@@ -58,19 +56,17 @@ main(int argc, char * argv[])
 #endif
 
   // Projections reader
-  DecomposedProjectionReaderType::Pointer projectionsReader = DecomposedProjectionReaderType::New();
-  projectionsReader->SetFileName(args_info.projection_arg);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(projectionsReader->UpdateLargestPossibleRegion())
+  DecomposedProjectionType::Pointer decomposedProjection;
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(decomposedProjection =
+                                  itk::ReadImage<DecomposedProjectionType>(args_info.projection_arg))
 
-  const unsigned int NumberOfMaterials = projectionsReader->GetOutput()->GetVectorLength();
+  const unsigned int NumberOfMaterials = decomposedProjection->GetVectorLength();
 
   // Geometry
   if (args_info.verbose_flag)
     std::cout << "Reading geometry information from " << args_info.geometry_arg << "..." << std::endl;
-  rtk::ThreeDCircularProjectionGeometryXMLFileReader::Pointer geometryReader;
-  geometryReader = rtk::ThreeDCircularProjectionGeometryXMLFileReader::New();
-  geometryReader->SetFilename(args_info.geometry_arg);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(geometryReader->GenerateOutputInformation())
+  rtk::ThreeDCircularProjectionGeometry::Pointer geometry;
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(geometry = rtk::ReadGeometry(args_info.geometry_arg));
 
   // Create 4D input. Fill it either with an existing materials volume read from a file or a blank image
   VolumeSeriesType::Pointer input;
@@ -84,17 +80,17 @@ main(int argc, char * argv[])
     if (args_info.like_given)
       std::cout << "WARNING: Option --like ignored, since option --input was passed" << std::endl;
 
-    MaterialsVolumeReaderType::Pointer referenceReader = MaterialsVolumeReaderType::New();
-    referenceReader->SetFileName(args_info.input_arg);
-    vecVol2VolSeries->SetInput(referenceReader->GetOutput());
+    MaterialsVolumeType::Pointer reference;
+    TRY_AND_EXIT_ON_ITK_EXCEPTION(reference = itk::ReadImage<MaterialsVolumeType>(args_info.input_arg))
+    vecVol2VolSeries->SetInput(reference);
     vecVol2VolSeries->Update();
     input = vecVol2VolSeries->GetOutput();
   }
   else if (args_info.like_given)
   {
-    MaterialsVolumeReaderType::Pointer referenceReader = MaterialsVolumeReaderType::New();
-    referenceReader->SetFileName(args_info.like_arg);
-    vecVol2VolSeries->SetInput(referenceReader->GetOutput());
+    MaterialsVolumeType::Pointer reference;
+    TRY_AND_EXIT_ON_ITK_EXCEPTION(reference = itk::ReadImage<MaterialsVolumeType>(args_info.like_arg))
+    vecVol2VolSeries->SetInput(reference);
     vecVol2VolSeries->UpdateOutputInformation();
 
     using ConstantImageSourceType = rtk::ConstantImageSource<VolumeSeriesType>;
@@ -114,7 +110,7 @@ main(int argc, char * argv[])
     VolumeSeriesType::PointType     inputOrigin;
     VolumeSeriesType::DirectionType inputDirection;
 
-    inputSize[Dimension] = projectionsReader->GetOutput()->GetVectorLength();
+    inputSize[Dimension] = decomposedProjection->GetVectorLength();
     inputSpacing[Dimension] = 1;
     inputOrigin[Dimension] = 0;
     inputDirection.SetIdentity();
@@ -153,9 +149,7 @@ main(int argc, char * argv[])
   // Note : the 4D CG filter is optimized when projections with identical phases are packed together
 
   // Geometry
-  unsigned int initialNumberOfProjections =
-    projectionsReader->GetOutput()->GetLargestPossibleRegion().GetSize()[Dimension - 1];
-  rtk::ThreeDCircularProjectionGeometry::Pointer geometry = geometryReader->GetOutputObject();
+  unsigned int initialNumberOfProjections = decomposedProjection->GetLargestPossibleRegion().GetSize()[Dimension - 1];
   for (unsigned int material = 1; material < NumberOfMaterials; material++)
   {
     for (unsigned int proj = 0; proj < initialNumberOfProjections; proj++)
@@ -191,11 +185,11 @@ main(int argc, char * argv[])
   using VectorProjectionsToProjectionsFilterType =
     rtk::VectorImageToImageFilter<DecomposedProjectionType, ProjectionStackType>;
   VectorProjectionsToProjectionsFilterType::Pointer vproj2proj = VectorProjectionsToProjectionsFilterType::New();
-  vproj2proj->SetInput(projectionsReader->GetOutput());
+  vproj2proj->SetInput(decomposedProjection);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(vproj2proj->Update())
 
   // Release the memory holding the stack of original projections
-  projectionsReader->GetOutput()->ReleaseData();
+  decomposedProjection->ReleaseData();
 
   // Compute the interpolation weights
   rtk::SignalToInterpolationWeights::Pointer signalToInterpolationWeights = rtk::SignalToInterpolationWeights::New();
@@ -292,11 +286,7 @@ main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION(volSeries2VecVol->Update())
 
   // Write
-  using WriterType = itk::ImageFileWriter<MaterialsVolumeType>;
-  WriterType::Pointer writer = WriterType::New();
-  writer->SetFileName(args_info.output_arg);
-  writer->SetInput(volSeries2VecVol->GetOutput());
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(writer->Update())
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(itk::WriteImage(volSeries2VecVol->GetOutput(), args_info.output_arg))
 
   return EXIT_SUCCESS;
 }
