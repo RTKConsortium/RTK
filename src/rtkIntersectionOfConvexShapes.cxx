@@ -28,11 +28,10 @@ IntersectionOfConvexShapes ::IntersectionOfConvexShapes() = default;
 void
 IntersectionOfConvexShapes ::SetConvexShapes(const ConvexShapeVector & _arg)
 {
-  if (this->m_ConvexShapes != _arg)
-  {
-    this->m_ConvexShapes = _arg;
-    this->Modified();
-  }
+  m_ConvexShapes.clear();
+  for (auto & convexShape : _arg)
+    this->AddConvexShape(convexShape);
+  this->Modified();
 }
 
 bool
