@@ -45,19 +45,17 @@ main(int argc, char * argv[])
 {
   GGO(rtkextractphasesignal, args_info);
 
-  using InputPixelType = double;
-  using OutputPixelType = double;
+  using PixelType = double;
   constexpr unsigned int Dimension = 1;
 
-  using InputImageType = itk::Image<InputPixelType, Dimension>;
-  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
+  using ImageType = itk::Image<PixelType, Dimension>;
 
   // Read
-  OutputImageType::Pointer signal;
-  signal = itk::ReadImage<OutputImageType>(args_info.input_arg);
+  ImageType::Pointer signal;
+  signal = itk::ReadImage<ImageType>(args_info.input_arg);
 
   // Process phase signal if required
-  using PhaseFilter = rtk::ExtractPhaseImageFilter<OutputImageType>;
+  using PhaseFilter = rtk::ExtractPhaseImageFilter<ImageType>;
   PhaseFilter::Pointer phase = PhaseFilter::New();
   phase->SetInput(signal);
   phase->SetMovingAverageSize(args_info.movavg_arg);
