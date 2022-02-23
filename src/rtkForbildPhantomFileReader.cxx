@@ -518,7 +518,6 @@ ForbildPhantomFileReader::FindUnions(const std::string & s)
     itkExceptionMacro(<< "Could not compile " << regex);
   const char * currs = s.c_str();
   m_UnionWith.push_back(-1);
-  m_UnionIntersectionPosition.push_back(-1);
   while (re.find(currs))
   {
     currs += re.end();
@@ -533,7 +532,6 @@ ForbildPhantomFileReader::FindUnions(const std::string & s)
     ico->SetDensity(-1. * m_ConvexShape->GetDensity());
 
     m_UnionWith.back() = pos;
-    m_UnionIntersectionPosition.back() = m_Unions.size();
     m_Unions.push_back(ico.GetPointer());
 
     // Handles the union of three objects. Union of more objects would require
@@ -549,7 +547,8 @@ ForbildPhantomFileReader::FindUnions(const std::string & s)
 
       ico = IntersectionOfConvexShapes::New();
       ico->AddConvexShape(m_ConvexShape);
-      ico->AddConvexShape(m_Unions[m_UnionIntersectionPosition[pos]]);
+      ico->AddConvexShape(m_GeometricPhantom->GetConvexShapes()[pos]);
+      ico->AddConvexShape(m_GeometricPhantom->GetConvexShapes()[m_UnionWith[pos]]);
       ico->SetDensity(m_ConvexShape->GetDensity());
       m_Unions.push_back(ico.GetPointer());
     }
