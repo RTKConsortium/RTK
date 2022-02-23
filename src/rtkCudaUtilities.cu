@@ -112,6 +112,7 @@ prepareTextureObject(int                   size[3],
   float * singleComponent;
   int     numel = size[0] * size[1] * size[2];
   cudaMalloc(&singleComponent, numel * sizeof(float));
+  CUDA_CHECK_ERROR;
   float one = 1.0;
 
   // Copy image data to arrays. The tricky part is the make_cudaPitchedPtr.
@@ -131,6 +132,7 @@ prepareTextureObject(int                   size[3],
       cudaMalloc3DArray((cudaArray **)&componentArrays[component], &channelDesc, volExtent, cudaArrayLayered);
     else
       cudaMalloc3DArray((cudaArray **)&componentArrays[component], &channelDesc, volExtent);
+    CUDA_CHECK_ERROR;
 
     // Fill it with the current singleComponent
     cudaMemcpy3DParms CopyParams = cudaMemcpy3DParms();
