@@ -119,7 +119,7 @@ OraGeometryReader::GenerateData()
       MetaDataDoubleType * zvecMeta =
         dynamic_cast<MetaDataDoubleType *>(dic["zdistancebaseunitcs2imagingcs_cm"].GetPointer());
       double zvec = zvecMeta->GetMetaDataObjectValue();
-      tiltTransform->SetCenter(itk::MakeVector(0., -10. * yvec, -10. * zvec));
+      tiltTransform->SetCenter(itk::MakePoint(0., -10. * yvec, -10. * zvec));
 
       sp = tiltTransform->TransformPoint(sp);
       dp = tiltTransform->TransformPoint(dp);
