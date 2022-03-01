@@ -82,8 +82,7 @@ main(int argc, char * argv[])
   spacing[1] = 2.;
   spacing[2] = 1.;
   reader->SetSpacing(spacing);
-  ReaderType::OutputImagePointType origin(0.);
-  reader->SetOrigin(0.);
+  reader->SetOrigin(itk::MakePoint(0., 0., 0.));
   ReaderType::OutputImageDirectionType direction;
   direction.SetIdentity();
   reader->SetDirection(direction);
