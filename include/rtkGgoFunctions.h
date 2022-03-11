@@ -81,7 +81,7 @@ SetConstantImageSourceFromGgo(typename TConstantImageSourceType::Pointer source,
   source->SetSpacing(imageSpacing);
   source->SetDirection(imageDirection);
   source->SetSize(imageDimension);
-  source->SetConstant(0.);
+  source->SetConstant({});
 
   // Copy output image information from an existing file, if requested
   // Overwrites parameters given in command line, if any

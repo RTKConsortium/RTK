@@ -73,7 +73,7 @@ public:
   using OutputImageType = TOutputImage;
   static constexpr unsigned int NDimension = TInputImage::ImageDimension;
   using OutputImageRegionType = typename OutputImageType::RegionType;
-  using WeightImageType = itk::Image<typename TOutputImage::InternalPixelType, 1>;
+  using WeightImageType = itk::Image<double, 1>;
 
   using GeometryType = ThreeDCircularProjectionGeometry;
   using GeometryConstPointer = GeometryType::ConstPointer;

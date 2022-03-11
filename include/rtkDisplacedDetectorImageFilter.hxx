@@ -197,7 +197,7 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerate
     // No overlap, set output region to 0
     while (!itOut.IsAtEnd())
     {
-      itOut.Set(0.);
+      itOut.Set({});
       ++itOut;
     }
     return;

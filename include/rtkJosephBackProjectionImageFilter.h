@@ -54,13 +54,13 @@ public:
     return !(*this != other);
   }
 
-  inline int
+  inline TOutput
   operator()(const double        itkNotUsed(stepLengthInVoxel),
              const TCoordRepType itkNotUsed(weight),
              const TInput *      itkNotUsed(p),
              const int           itkNotUsed(i)) const
   {
-    return 0;
+    return {};
   }
 };
 
