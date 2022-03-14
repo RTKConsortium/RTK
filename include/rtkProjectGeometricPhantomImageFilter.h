@@ -79,6 +79,13 @@ public:
   itkSetMacro(PhantomScale, VectorType);
   itkGetMacro(PhantomScale, VectorType);
 
+  /** Set isotropic scaling factor. */
+  virtual void
+  SetPhantomScale(const ScalarType _arg)
+  {
+    SetPhantomScale(VectorType(_arg));
+  }
+
   /** Get / Set the spatial offset of the phantom relative to its center. The
    * default value is (0, 0, 0). */
   itkSetMacro(OriginOffset, VectorType);

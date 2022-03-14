@@ -269,7 +269,7 @@ JosephForwardProjectionImageFilter<TInputImage,
     }
     else
       m_ProjectedValueAccumulation(
-        threadId, itIn->Get(), itOut.Value(), 0., pixelPosition, pixelPosition, dirVox, pixelPosition, pixelPosition);
+        threadId, itIn->Get(), itOut.Value(), {}, pixelPosition, pixelPosition, dirVox, pixelPosition, pixelPosition);
   }
   delete itIn;
 }
