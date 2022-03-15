@@ -18,6 +18,7 @@
 
 #include "math.h"
 #include <cstdlib>
+#include <clocale>
 #include <fstream>
 #include <itksys/RegularExpression.hxx>
 
@@ -32,7 +33,7 @@ void
 ForbildPhantomFileReader::GenerateOutputInformation()
 {
   // Save locale setting
-  const std::string oldLocale = std::setlocale(LC_NUMERIC, nullptr);
+  const std::string oldLocale = setlocale(LC_NUMERIC, nullptr);
   setlocale(LC_NUMERIC, "C");
   m_GeometricPhantom = GeometricPhantom::New();
 
@@ -107,7 +108,7 @@ ForbildPhantomFileReader::GenerateOutputInformation()
   for (const auto & m_Union : m_Unions)
     m_GeometricPhantom->AddConvexShape(m_Union);
   myFile.close();
-  std::setlocale(LC_NUMERIC, oldLocale.c_str());
+  setlocale(LC_NUMERIC, oldLocale.c_str());
 }
 
 void
@@ -528,7 +529,7 @@ ForbildPhantomFileReader::FindUnions(const std::string & s)
     IntersectionOfConvexShapes::Pointer ico = IntersectionOfConvexShapes::New();
     ico->AddConvexShape(m_ConvexShape);
     size_t len = m_GeometricPhantom->GetConvexShapes().size();
-    int    u = atoi(re.match(1).c_str());
+    int    u = std::stoi(re.match(1).c_str());
     size_t pos = len + u - 1;
     ico->AddConvexShape(m_GeometricPhantom->GetConvexShapes()[pos]);
     if (m_ConvexShape->GetDensity() != m_GeometricPhantom->GetConvexShapes()[pos]->GetDensity())

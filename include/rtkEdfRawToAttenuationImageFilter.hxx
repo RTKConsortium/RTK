@@ -64,7 +64,7 @@ EdfRawToAttenuationImageFilter<TInputImage, TOutputImage>::BeforeThreadedGenerat
   {
     const std::string::size_type nameSize = name.size();
     const std::string            indexStr(name, nameSize - 8, 4);
-    m_ReferenceIndices.push_back(atoi(indexStr.c_str()));
+    m_ReferenceIndices.push_back(std::stoi(indexStr.c_str()));
   }
 
   // Dark images

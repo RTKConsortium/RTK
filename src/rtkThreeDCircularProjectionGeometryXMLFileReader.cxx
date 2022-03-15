@@ -56,7 +56,7 @@ ThreeDCircularProjectionGeometryXMLFileReader::StartElement(const char * name, c
     while ((*atts) != nullptr)
     {
       if (std::string(atts[0]) == "version")
-        m_Version = atoi(atts[1]);
+        m_Version = std::stoi(atts[1]);
       atts += 2;
     }
     // Version 3 is backward compatible with version 2

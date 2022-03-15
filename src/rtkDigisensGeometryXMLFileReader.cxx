@@ -95,7 +95,7 @@ DigisensGeometryXMLFileReader::EndElement(const char * name)
 #define ENCAPLULATE_META_DATA_INTEGER(section, metaName)                                                               \
   if (m_CurrentSection == section && itksys::SystemTools::Strucmp(name, metaName) == 0)                                \
   {                                                                                                                    \
-    int i = atoi(m_CurCharacterData.c_str());                                                                          \
+    int i = std::stoi(m_CurCharacterData.c_str());                                                                     \
     itk::EncapsulateMetaData<int>(m_Dictionary, #section metaName, i);                                                 \
   }
 
