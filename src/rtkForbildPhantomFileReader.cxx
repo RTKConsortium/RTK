@@ -31,6 +31,9 @@ namespace rtk
 void
 ForbildPhantomFileReader::GenerateOutputInformation()
 {
+  // Save locale setting
+  const std::string oldLocale = std::setlocale(LC_NUMERIC, nullptr);
+  setlocale(LC_NUMERIC, "C");
   m_GeometricPhantom = GeometricPhantom::New();
 
   std::ifstream myFile;
@@ -104,6 +107,7 @@ ForbildPhantomFileReader::GenerateOutputInformation()
   for (const auto & m_Union : m_Unions)
     m_GeometricPhantom->AddConvexShape(m_Union);
   myFile.close();
+  std::setlocale(LC_NUMERIC, oldLocale.c_str());
 }
 
 void
