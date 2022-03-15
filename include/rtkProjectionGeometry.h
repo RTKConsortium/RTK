@@ -77,6 +77,10 @@ public:
   MatrixType
   GetMatrix(const unsigned int i) const
   {
+    if (i >= this->m_Matrices.size())
+    {
+      itkExceptionMacro(<< "Requested matrix index " << i << " is out of bound.");
+    }
     return this->m_Matrices[i];
   }
 
