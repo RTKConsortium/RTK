@@ -76,50 +76,50 @@ void
 ThreeDCircularProjectionGeometryXMLFileReader::EndElement(const char * name)
 {
   if (itksys::SystemTools::Strucmp(name, "InPlaneAngle") == 0)
-    m_InPlaneAngle = atof(this->m_CurCharacterData.c_str());
+    m_InPlaneAngle = std::stod(this->m_CurCharacterData.c_str());
 
   if (itksys::SystemTools::Strucmp(name, "GantryAngle") == 0 ||
       itksys::SystemTools::Strucmp(name, "Angle") == 0) // Second one for backward compatibility
-    m_GantryAngle = atof(this->m_CurCharacterData.c_str());
+    m_GantryAngle = std::stod(this->m_CurCharacterData.c_str());
 
   if (itksys::SystemTools::Strucmp(name, "OutOfPlaneAngle") == 0)
-    m_OutOfPlaneAngle = atof(this->m_CurCharacterData.c_str());
+    m_OutOfPlaneAngle = std::stod(this->m_CurCharacterData.c_str());
 
   if (itksys::SystemTools::Strucmp(name, "SourceToIsocenterDistance") == 0)
-    m_SourceToIsocenterDistance = atof(this->m_CurCharacterData.c_str());
+    m_SourceToIsocenterDistance = std::stod(this->m_CurCharacterData.c_str());
 
   if (itksys::SystemTools::Strucmp(name, "SourceOffsetX") == 0)
-    m_SourceOffsetX = atof(this->m_CurCharacterData.c_str());
+    m_SourceOffsetX = std::stod(this->m_CurCharacterData.c_str());
 
   if (itksys::SystemTools::Strucmp(name, "SourceOffsetY") == 0)
-    m_SourceOffsetY = atof(this->m_CurCharacterData.c_str());
+    m_SourceOffsetY = std::stod(this->m_CurCharacterData.c_str());
 
   if (itksys::SystemTools::Strucmp(name, "SourceToDetectorDistance") == 0)
-    m_SourceToDetectorDistance = atof(this->m_CurCharacterData.c_str());
+    m_SourceToDetectorDistance = std::stod(this->m_CurCharacterData.c_str());
 
   if (itksys::SystemTools::Strucmp(name, "ProjectionOffsetX") == 0)
-    m_ProjectionOffsetX = atof(this->m_CurCharacterData.c_str());
+    m_ProjectionOffsetX = std::stod(this->m_CurCharacterData.c_str());
 
   if (itksys::SystemTools::Strucmp(name, "ProjectionOffsetY") == 0)
-    m_ProjectionOffsetY = atof(this->m_CurCharacterData.c_str());
+    m_ProjectionOffsetY = std::stod(this->m_CurCharacterData.c_str());
 
   if (itksys::SystemTools::Strucmp(name, "RadiusCylindricalDetector") == 0)
   {
-    double radiusCylindricalDetector = atof(this->m_CurCharacterData.c_str());
+    double radiusCylindricalDetector = std::stod(this->m_CurCharacterData.c_str());
     this->m_OutputObject->SetRadiusCylindricalDetector(radiusCylindricalDetector);
   }
 
   if (itksys::SystemTools::Strucmp(name, "CollimationUInf") == 0)
-    m_CollimationUInf = atof(this->m_CurCharacterData.c_str());
+    m_CollimationUInf = std::stod(this->m_CurCharacterData.c_str());
 
   if (itksys::SystemTools::Strucmp(name, "CollimationUSup") == 0)
-    m_CollimationUSup = atof(this->m_CurCharacterData.c_str());
+    m_CollimationUSup = std::stod(this->m_CurCharacterData.c_str());
 
   if (itksys::SystemTools::Strucmp(name, "CollimationVInf") == 0)
-    m_CollimationVInf = atof(this->m_CurCharacterData.c_str());
+    m_CollimationVInf = std::stod(this->m_CurCharacterData.c_str());
 
   if (itksys::SystemTools::Strucmp(name, "CollimationVSup") == 0)
-    m_CollimationVSup = atof(this->m_CurCharacterData.c_str());
+    m_CollimationVSup = std::stod(this->m_CurCharacterData.c_str());
 
   if (itksys::SystemTools::Strucmp(name, "Matrix") == 0)
   {

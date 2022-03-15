@@ -388,7 +388,7 @@ ForbildPhantomFileReader::FindParameterInString(const std::string & name, const 
     itkExceptionMacro(<< "Could not compile " << regex);
   bool bFound = re.find(s.c_str());
   if (bFound)
-    param = atof(re.match(1).c_str());
+    param = std::stod(re.match(1).c_str());
   return bFound;
 }
 
@@ -404,7 +404,7 @@ ForbildPhantomFileReader::FindVectorInString(const std::string & name, const std
   {
     for (size_t i = 0; i < 3; i++)
     {
-      vec[i] = atof(re.match(i + 1).c_str());
+      vec[i] = std::stod(re.match(i + 1).c_str());
     }
   }
   return bFound;
@@ -451,11 +451,11 @@ ForbildPhantomFileReader::FindClipPlanes(const std::string & s)
     VectorType vec;
     for (size_t i = 0; i < 3; i++)
     {
-      vec[i] = atof(re.match(i + 1).c_str());
+      vec[i] = std::stod(re.match(i + 1).c_str());
     }
     vec /= vec.GetNorm();
     ScalarType sign = (re.match(4) == std::string("<")) ? 1. : -1.;
-    ScalarType expr = atof(re.match(5).c_str());
+    ScalarType expr = std::stod(re.match(5).c_str());
     m_ConvexShape->AddClipPlane(sign * vec, sign * expr);
     currs += re.end();
   }
@@ -471,7 +471,7 @@ ForbildPhantomFileReader::FindClipPlanes(const std::string & s)
     vec.Fill(0.);
     vec[0] = 1.;
     ScalarType sign = (re.match(1) == std::string("<")) ? 1. : -1.;
-    ScalarType expr = atof(re.match(2).c_str());
+    ScalarType expr = std::stod(re.match(2).c_str());
     m_ConvexShape->AddClipPlane(sign * vec, sign * expr);
     currs += re.end();
   }
@@ -487,7 +487,7 @@ ForbildPhantomFileReader::FindClipPlanes(const std::string & s)
     vec.Fill(0.);
     vec[1] = 1.;
     ScalarType sign = (re.match(1) == std::string("<")) ? 1. : -1.;
-    ScalarType expr = atof(re.match(2).c_str());
+    ScalarType expr = std::stod(re.match(2).c_str());
     m_ConvexShape->AddClipPlane(sign * vec, sign * expr);
     currs += re.end();
   }
@@ -503,7 +503,7 @@ ForbildPhantomFileReader::FindClipPlanes(const std::string & s)
     vec.Fill(0.);
     vec[2] = 1.;
     ScalarType sign = (re.match(1) == std::string("<")) ? 1. : -1.;
-    ScalarType expr = atof(re.match(2).c_str());
+    ScalarType expr = std::stod(re.match(2).c_str());
     m_ConvexShape->AddClipPlane(sign * vec, sign * expr);
     currs += re.end();
   }

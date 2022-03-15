@@ -104,12 +104,12 @@ ImagXGeometryReader<TInputImage>::GetGeometryForAI2p1()
         std::string tagValue = list_it.second.c_str();
         if (!subTagName.compare("xPlus"))
         {
-          F.xPlus = std::atof(tagValue.c_str());
+          F.xPlus = std::stod(tagValue.c_str());
           xPlusFound = true;
         }
         else if (!subTagName.compare("xMinus"))
         {
-          F.xMinus = std::atof(tagValue.c_str());
+          F.xMinus = std::stod(tagValue.c_str());
           xMinusFound = true;
         }
       }
@@ -131,17 +131,17 @@ ImagXGeometryReader<TInputImage>::GetGeometryForAI2p1()
         std::string subTagValue = list_it.second.c_str();
         if (!subTagName.compare("sid"))
         {
-          F.sdd = std::atof(subTagValue.c_str());
+          F.sdd = std::stod(subTagValue.c_str());
           sidFound = true;
         }
         else if (!subTagName.compare("sad"))
         {
-          F.sid = std::atof(subTagValue.c_str());
+          F.sid = std::stod(subTagValue.c_str());
           sadFound = true;
         }
         else if (!subTagName.compare("sourceToNozzleOffsetAngle"))
         {
-          F.sourceToNozzleOffsetAngle = 0; // std::atof(subTagValue.c_str());
+          F.sourceToNozzleOffsetAngle = 0; // std::stod(subTagValue.c_str());
           angleOffsetFound = true;
         }
       }
@@ -206,7 +206,7 @@ ImagXGeometryReader<TInputImage>::GetGeometryForAI2p1()
               {
                 std::string substr;
                 std::getline(iss, substr, ',');
-                v.push_back(std::atof(substr.c_str()));
+                v.push_back(std::stod(substr.c_str()));
               }
 
               if (v.size() == 10)
@@ -283,10 +283,10 @@ ImagXGeometryReader<TInputImage>::GetGeometryForAI1p5()
   std::istringstream             is(roomSetupInfo);
   parser->Update(is);
 
-  Cm.sid = atof(parser->GetOutput()->GetChild("Axis")->GetChild("Distances")->GetAttribute("sid").c_str());
-  Cm.sdd = atof(parser->GetOutput()->GetChild("Axis")->GetChild("Distances")->GetAttribute("sdd").c_str());
+  Cm.sid = std::stod(parser->GetOutput()->GetChild("Axis")->GetChild("Distances")->GetAttribute("sid").c_str());
+  Cm.sdd = std::stod(parser->GetOutput()->GetChild("Axis")->GetChild("Distances")->GetAttribute("sdd").c_str());
   Cm.sourceToNozzleOffsetAngle =
-    atof(parser->GetOutput()->GetChild("Axis")->GetChild("AngleOffset")->GetAttribute("projection").c_str());
+    std::stod(parser->GetOutput()->GetChild("Axis")->GetChild("AngleOffset")->GetAttribute("projection").c_str());
 
   // Read calibration model's parameters in the DICOM info of the first projection
   std::string calibrationTagKey = "3001|0013";
@@ -324,23 +324,23 @@ ImagXGeometryReader<TInputImage>::GetGeometryForAI1p5()
   for (unsigned int i = 0; i < 5; i++)
   {
     listPx.pop_front();
-    Cm.Px[i] = atof(listPx.front().second.c_str());
+    Cm.Px[i] = std::stod(listPx.front().second.c_str());
     listPy.pop_front();
-    Cm.Py[i] = atof(listPy.front().second.c_str());
+    Cm.Py[i] = std::stod(listPy.front().second.c_str());
     listPz.pop_front();
-    Cm.Pz[i] = atof(listPz.front().second.c_str());
+    Cm.Pz[i] = std::stod(listPz.front().second.c_str());
     listRx.pop_front();
-    Cm.Rx[i] = atof(listRx.front().second.c_str());
+    Cm.Rx[i] = std::stod(listRx.front().second.c_str());
     listRy.pop_front();
-    Cm.Ry[i] = atof(listRy.front().second.c_str());
+    Cm.Ry[i] = std::stod(listRy.front().second.c_str());
     listRz.pop_front();
-    Cm.Rz[i] = atof(listRz.front().second.c_str());
+    Cm.Rz[i] = std::stod(listRz.front().second.c_str());
     listTx.pop_front();
-    Cm.Tx[i] = atof(listTx.front().second.c_str());
+    Cm.Tx[i] = std::stod(listTx.front().second.c_str());
     listTy.pop_front();
-    Cm.Ty[i] = atof(listTy.front().second.c_str());
+    Cm.Ty[i] = std::stod(listTy.front().second.c_str());
     listTz.pop_front();
-    Cm.Tz[i] = atof(listTz.front().second.c_str());
+    Cm.Tz[i] = std::stod(listTz.front().second.c_str());
   }
 
   Cm.isValid = true;
@@ -397,31 +397,31 @@ ImagXGeometryReader<TInputImage>::GetGeometryForAI1p5FromXMLFiles()
           for (auto list_it = list2.begin(); list_it != list2.end(); list_it++, m++)
           {
             if ((list_child3[n]->GetName() == std::string("Px")) && ((*list_it).first.c_str() != std::string("MSE")))
-              C.Px[m - 1] = std::atof((*list_it).second.c_str());
+              C.Px[m - 1] = std::stod((*list_it).second.c_str());
             else if ((list_child3[n]->GetName() == std::string("Py")) &&
                      ((*list_it).first.c_str() != std::string("MSE")))
-              C.Py[m - 1] = std::atof((*list_it).second.c_str());
+              C.Py[m - 1] = std::stod((*list_it).second.c_str());
             else if ((list_child3[n]->GetName() == std::string("Pz")) &&
                      ((*list_it).first.c_str() != std::string("MSE")))
-              C.Pz[m - 1] = std::atof((*list_it).second.c_str());
+              C.Pz[m - 1] = std::stod((*list_it).second.c_str());
             else if ((list_child3[n]->GetName() == std::string("Rx")) &&
                      ((*list_it).first.c_str() != std::string("MSE")))
-              C.Rx[m - 1] = std::atof((*list_it).second.c_str());
+              C.Rx[m - 1] = std::stod((*list_it).second.c_str());
             else if ((list_child3[n]->GetName() == std::string("Ry")) &&
                      ((*list_it).first.c_str() != std::string("MSE")))
-              C.Ry[m - 1] = std::atof((*list_it).second.c_str());
+              C.Ry[m - 1] = std::stod((*list_it).second.c_str());
             else if ((list_child3[n]->GetName() == std::string("Rz")) &&
                      ((*list_it).first.c_str() != std::string("MSE")))
-              C.Rz[m - 1] = std::atof((*list_it).second.c_str());
+              C.Rz[m - 1] = std::stod((*list_it).second.c_str());
             else if ((list_child3[n]->GetName() == std::string("Tx")) &&
                      ((*list_it).first.c_str() != std::string("MSE")))
-              C.Tx[m - 1] = std::atof((*list_it).second.c_str());
+              C.Tx[m - 1] = std::stod((*list_it).second.c_str());
             else if ((list_child3[n]->GetName() == std::string("Ty")) &&
                      ((*list_it).first.c_str() != std::string("MSE")))
-              C.Ty[m - 1] = std::atof((*list_it).second.c_str());
+              C.Ty[m - 1] = std::stod((*list_it).second.c_str());
             else if ((list_child3[n]->GetName() == std::string("Tz")) &&
                      ((*list_it).first.c_str() != std::string("MSE")))
-              C.Tz[m - 1] = std::atof((*list_it).second.c_str());
+              C.Tz[m - 1] = std::stod((*list_it).second.c_str());
           }
         }
       }
@@ -466,8 +466,8 @@ ImagXGeometryReader<TInputImage>::GetGeometryForAI1p5FromXMLFiles()
       }
     }
   }
-  C.sid = std::atof(sid_s.c_str());
-  C.sdd = std::atof(sdd_s.c_str());
+  C.sid = std::stod(sid_s.c_str());
+  C.sdd = std::stod(sdd_s.c_str());
 
   return C;
 }
@@ -563,12 +563,12 @@ ImagXGeometryReader<TInputImage>::GenerateData()
 
     if (isImagX1p5 || isImagX1p2) // Using CalibModel
     {
-      float gantryAngle = std::atof(value.c_str());
+      float gantryAngle = std::stod(value.c_str());
       addEntryToGeometry(calibModel, gantryAngle);
     }
     else if (isImagX2pX) // Using flexmap
     {
-      float cbctTubeAngle = std::atof(value.c_str());
+      float cbctTubeAngle = std::stod(value.c_str());
       float gantryAngle =
         cbctTubeAngle; // Warning: no correction by sourceToNozzleOffsetAngle as radiographic angle read
       gantryAngle = (gantryAngle > 180.f) ? (gantryAngle - 360.f) : gantryAngle;
