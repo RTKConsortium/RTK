@@ -94,7 +94,7 @@ PhasesToInterpolationWeights::Parse()
   {
     this->GetNextField(entry);
     if ((m_SelectedProjections.empty()) || (m_SelectedProjections[j]))
-      projectionPhases.push_back(itk::Math::Round<float>(atof(entry.c_str()) * 1000.) / 1000.);
+      projectionPhases.push_back(itk::Math::Round<float>(std::stod(entry.c_str()) * 1000.) / 1000.);
   }
 
   // Compute the instant of the cycle each phase represents

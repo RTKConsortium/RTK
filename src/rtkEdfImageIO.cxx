@@ -89,19 +89,19 @@ rtk::EdfImageIO::ReadImageInformation()
     strncpy(otherfile_name, p, plen);
     otherfile_name[plen] = '\0';
     if ((p = edf_findInHeader(header, "EDF_BinaryFilePosition")))
-      otherfile_skip = atoi(p);
+      otherfile_skip = std::stoi(p);
   }
 
   if ((p = edf_findInHeader(header, "Dim_1")))
-    dim1 = atoi(p);
+    dim1 = std::stoi(p);
   if ((p = edf_findInHeader(header, "Dim_2")))
-    dim2 = atoi(p);
+    dim2 = std::stoi(p);
 
   //  int orig1 = -1, orig2 = -1;
   //  if ((p = edf_findInHeader(header, "row_beg")))
-  //    orig1 = atoi(p);
+  //    orig1 = std::stoi(p);
   //  if ((p = edf_findInHeader(header, "col_beg")))
-  //    orig2 = atoi(p);
+  //    orig2 = std::stoi(p);
 
   static const struct table3 edf_datatype_table[] = { { "UnsignedByte", U_CHAR_DATATYPE, 1 },
                                                       { "SignedByte", CHAR_DATATYPE, 1 },
@@ -189,7 +189,7 @@ rtk::EdfImageIO::ReadImageInformation()
   int datasize = dim1 * dim2 * datalen;
   if ((p = edf_findInHeader(header, "Size")))
   {
-    int d = atoi(p);
+    int d = std::stoi(p);
     if (d != datasize)
     {
       itkWarningMacro(<< "Size " << datasize << " is not " << dim1 << 'x' << dim2 << "x" << datalen << " = " << d
@@ -209,7 +209,7 @@ rtk::EdfImageIO::ReadImageInformation()
   double spacing = 1.;
   if ((p = edf_findInHeader(header, "optic_used")))
   {
-    spacing = atof(p);
+    spacing = std::stod(p);
     if (spacing == 0.)
       spacing = 1.;
   }

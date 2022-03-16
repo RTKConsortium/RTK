@@ -118,7 +118,7 @@ public:
   double
   GetFieldAsDouble(std::string fldName)
   {
-    return atof(GetFieldAsString(fldName).c_str());
+    return std::stod(GetFieldAsString(fldName).c_str());
   }
 
 private:

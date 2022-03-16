@@ -51,31 +51,31 @@ rtk::XRadImageIO::ReadImageInformation()
       std::string  paramValue = line.substr(pos + 1, line.length() - pos - 1);
 
       if (paramName == std::string("CBCT.DimensionalAttributes.IDim"))
-        SetDimensions(0, atoi(paramValue.c_str()));
+        SetDimensions(0, std::stoi(paramValue.c_str()));
       else if (paramName == std::string("CBCT.DimensionalAttributes.JDim"))
-        SetDimensions(1, atoi(paramValue.c_str()));
+        SetDimensions(1, std::stoi(paramValue.c_str()));
       else if (paramName == std::string("CBCT.DimensionalAttributes.KDim"))
-        SetDimensions(2, atoi(paramValue.c_str()));
+        SetDimensions(2, std::stoi(paramValue.c_str()));
       else if (paramName == std::string("CBCT.DimensionalAttributes.DataSize"))
       {
-        if (atoi(paramValue.c_str()) == 3)
+        if (std::stoi(paramValue.c_str()) == 3)
           SetComponentType(itk::ImageIOBase::IOComponentEnum::FLOAT);
-        if (atoi(paramValue.c_str()) == 6)
+        if (std::stoi(paramValue.c_str()) == 6)
           SetComponentType(itk::ImageIOBase::IOComponentEnum::USHORT);
       }
       else if (paramName == std::string("CBCT.DimensionalAttributes.PixelDimension_I_cm"))
       {
-        double spacing = 10 * atof(paramValue.c_str());
+        double spacing = 10 * std::stod(paramValue.c_str());
         SetSpacing(0, (spacing == 0.) ? 1. : spacing);
       }
       else if (paramName == std::string("CBCT.DimensionalAttributes.PixelDimension_J_cm"))
       {
-        double spacing = 10 * atof(paramValue.c_str());
+        double spacing = 10 * std::stod(paramValue.c_str());
         SetSpacing(1, (spacing == 0.) ? 1. : spacing);
       }
       else if (paramName == std::string("CBCT.DimensionalAttributes.PixelDimension_K_cm"))
       {
-        double spacing = 10 * atof(paramValue.c_str());
+        double spacing = 10 * std::stod(paramValue.c_str());
         SetSpacing(2, (spacing == 0.) ? 1. : spacing);
       }
       else

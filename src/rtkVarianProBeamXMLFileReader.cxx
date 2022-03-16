@@ -46,21 +46,21 @@ VarianProBeamXMLFileReader::EndElement(const char * name)
 #define ENCAPLULATE_META_DATA_DOUBLE(metaName)                                                                         \
   if (itksys::SystemTools::Strucmp(name, metaName) == 0)                                                               \
   {                                                                                                                    \
-    double d = atof(m_CurCharacterData.c_str());                                                                       \
+    double d = std::stod(m_CurCharacterData.c_str());                                                                  \
     itk::EncapsulateMetaData<double>(m_Dictionary, metaName, d);                                                       \
   }
 
 #define ENCAPLULATE_META_DATA_DOUBLE_AS(metaName, encapsulatedName)                                                    \
   if (itksys::SystemTools::Strucmp(name, metaName) == 0)                                                               \
   {                                                                                                                    \
-    double d = atof(m_CurCharacterData.c_str());                                                                       \
+    double d = std::stod(m_CurCharacterData.c_str());                                                                  \
     itk::EncapsulateMetaData<double>(m_Dictionary, encapsulatedName, d);                                               \
   }
 
 #define MODIFY_META_DATA_DOUBLE_MULTIPLY(metaName, encapsulatedName)                                                   \
   if (itksys::SystemTools::Strucmp(name, metaName) == 0)                                                               \
   {                                                                                                                    \
-    double d = atof(m_CurCharacterData.c_str());                                                                       \
+    double d = std::stod(m_CurCharacterData.c_str());                                                                  \
     using MetaDataDoubleType = itk::MetaDataObject<double>;                                                            \
     const double multiplier =                                                                                          \
       dynamic_cast<MetaDataDoubleType *>(m_Dictionary[encapsulatedName].GetPointer())->GetMetaDataObjectValue();       \

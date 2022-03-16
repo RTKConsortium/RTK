@@ -18,6 +18,7 @@
 
 #include "math.h"
 #include <cstdlib>
+#include <clocale>
 #include <fstream>
 #include <itksys/RegularExpression.hxx>
 
@@ -31,6 +32,9 @@ namespace rtk
 void
 ForbildPhantomFileReader::GenerateOutputInformation()
 {
+  // Save locale setting
+  const std::string oldLocale = setlocale(LC_NUMERIC, nullptr);
+  setlocale(LC_NUMERIC, "C");
   m_GeometricPhantom = GeometricPhantom::New();
 
   std::ifstream myFile;
@@ -104,6 +108,7 @@ ForbildPhantomFileReader::GenerateOutputInformation()
   for (const auto & m_Union : m_Unions)
     m_GeometricPhantom->AddConvexShape(m_Union);
   myFile.close();
+  setlocale(LC_NUMERIC, oldLocale.c_str());
 }
 
 void
@@ -388,7 +393,7 @@ ForbildPhantomFileReader::FindParameterInString(const std::string & name, const 
     itkExceptionMacro(<< "Could not compile " << regex);
   bool bFound = re.find(s.c_str());
   if (bFound)
-    param = atof(re.match(1).c_str());
+    param = std::stod(re.match(1).c_str());
   return bFound;
 }
 
@@ -404,7 +409,7 @@ ForbildPhantomFileReader::FindVectorInString(const std::string & name, const std
   {
     for (size_t i = 0; i < 3; i++)
     {
-      vec[i] = atof(re.match(i + 1).c_str());
+      vec[i] = std::stod(re.match(i + 1).c_str());
     }
   }
   return bFound;
@@ -451,11 +456,11 @@ ForbildPhantomFileReader::FindClipPlanes(const std::string & s)
     VectorType vec;
     for (size_t i = 0; i < 3; i++)
     {
-      vec[i] = atof(re.match(i + 1).c_str());
+      vec[i] = std::stod(re.match(i + 1).c_str());
     }
     vec /= vec.GetNorm();
     ScalarType sign = (re.match(4) == std::string("<")) ? 1. : -1.;
-    ScalarType expr = atof(re.match(5).c_str());
+    ScalarType expr = std::stod(re.match(5).c_str());
     m_ConvexShape->AddClipPlane(sign * vec, sign * expr);
     currs += re.end();
   }
@@ -471,7 +476,7 @@ ForbildPhantomFileReader::FindClipPlanes(const std::string & s)
     vec.Fill(0.);
     vec[0] = 1.;
     ScalarType sign = (re.match(1) == std::string("<")) ? 1. : -1.;
-    ScalarType expr = atof(re.match(2).c_str());
+    ScalarType expr = std::stod(re.match(2).c_str());
     m_ConvexShape->AddClipPlane(sign * vec, sign * expr);
     currs += re.end();
   }
@@ -487,7 +492,7 @@ ForbildPhantomFileReader::FindClipPlanes(const std::string & s)
     vec.Fill(0.);
     vec[1] = 1.;
     ScalarType sign = (re.match(1) == std::string("<")) ? 1. : -1.;
-    ScalarType expr = atof(re.match(2).c_str());
+    ScalarType expr = std::stod(re.match(2).c_str());
     m_ConvexShape->AddClipPlane(sign * vec, sign * expr);
     currs += re.end();
   }
@@ -503,7 +508,7 @@ ForbildPhantomFileReader::FindClipPlanes(const std::string & s)
     vec.Fill(0.);
     vec[2] = 1.;
     ScalarType sign = (re.match(1) == std::string("<")) ? 1. : -1.;
-    ScalarType expr = atof(re.match(2).c_str());
+    ScalarType expr = std::stod(re.match(2).c_str());
     m_ConvexShape->AddClipPlane(sign * vec, sign * expr);
     currs += re.end();
   }
@@ -524,7 +529,7 @@ ForbildPhantomFileReader::FindUnions(const std::string & s)
     IntersectionOfConvexShapes::Pointer ico = IntersectionOfConvexShapes::New();
     ico->AddConvexShape(m_ConvexShape);
     size_t len = m_GeometricPhantom->GetConvexShapes().size();
-    int    u = atoi(re.match(1).c_str());
+    int    u = std::stoi(re.match(1).c_str());
     size_t pos = len + u - 1;
     ico->AddConvexShape(m_GeometricPhantom->GetConvexShapes()[pos]);
     if (m_ConvexShape->GetDensity() != m_GeometricPhantom->GetConvexShapes()[pos]->GetDensity())
