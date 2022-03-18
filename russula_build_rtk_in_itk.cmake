@@ -27,10 +27,11 @@ foreach(ITK_VERSION "master" "release")
             -DITK_LEGACY_REMOVE:BOOL=ON
             -DITK_BUILD_DEFAULT_MODULES:BOOL=OFF
             -DModule_RTK:BOOL=ON
-            -DREMOTE_GIT_TAG_RTK:STRING=master
+            -DModule_RTK_GIT_TAG:STRING=master
             -DBUILD_EXAMPLES:BOOL=OFF
             -DBUILD_TESTING:BOOL=ON
-            -DBUILD_SHARED_LIBS:BOOL=${BUILD_SHARED_LIBS} 
+            -DBUILD_SHARED_LIBS:BOOL=${BUILD_SHARED_LIBS}
+            -DCMAKE_CXX_STANDARD=14
           )
         if("${FFTW}" STREQUAL ON)
           set(cfg_options ${cfg_options}

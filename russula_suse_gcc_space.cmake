@@ -7,5 +7,6 @@ set(dashboard_binary_name "RTK lin64_gcc")
 set(dashboard_source_name "RTK sources")
 set(ENV{ITK_DIR} "/home/srit/src/itk/lin64")
 set(CTEST_BUILD_FLAGS -j16)
+set(CONFIGURE_OPTIONS -DCMAKE_CXX_STANDARD=14)
 include("${CTEST_SCRIPT_DIRECTORY}/rtk_common.cmake")
 

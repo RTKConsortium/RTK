@@ -19,7 +19,7 @@ set(CTEST_CUSTOM_COVERAGE_EXCLUDE
     ".ggo"
     )
 set(CTEST_EXTRA_COVERAGE_GLOB "/include/*.h" "/src/*.cxx" "/include/*.hxx")
-SET(CONFIGURE_OPTIONS -DFAST_TESTS_NO_CHECKS=TRUE)
+set(CONFIGURE_OPTIONS -DFAST_TESTS_NO_CHECKS=TRUE -DCMAKE_CXX_STANDARD=14)
 set(dashboard_do_coverage true)
 
 include("${CTEST_SCRIPT_DIRECTORY}/rtk_common.cmake")

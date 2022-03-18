@@ -6,7 +6,6 @@ set(CTEST_CMAKE_GENERATOR "Unix Makefiles")
 set(dashboard_binary_name "RTK_lin64_gcc_nocuda_system_itk4_valgrind")
 set(ENV{ITK_DIR} "/home/srit/src/itk/lin64-RelWithDebInfo")
 set(CTEST_BUILD_FLAGS -j16)
-set(ENV{CXXFLAGS} "-fPIC -std=c++11 --param=max-vartrack-size=60000000")
 
 set(ENV{VALGRIND_LIB} "/usr/lib64/valgrind")
 set(CTEST_MEMORYCHECK_COMMAND /usr/bin/valgrind)
@@ -14,6 +13,7 @@ set(CTEST_MEMORYCHECK_COMMAND_OPTIONS "--gen-suppressions=all --child-silent-aft
 set(CTEST_MEMORYCHECK_SUPPRESSIONS_FILE "${CTEST_SCRIPT_DIRECTORY}/RTK.supp")
 set(CTEST_CUSTOM_MEMCHECK_IGNORE "RTKInDoxygenGroup")
 set(CONFIGURE_OPTIONS -DRTK_USE_CUDA=FALSE 
+                      -DCMAKE_CXX_STANDARD=14
                       -DFAST_TESTS_NO_CHECKS=TRUE)
 set(dashboard_do_memcheck true)
 set(CTEST_CUSTOM_WARNING_EXCEPTION ${CTEST_CUSTOM_WARNING_EXCEPTION}

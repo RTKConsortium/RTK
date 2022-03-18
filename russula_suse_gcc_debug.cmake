@@ -6,5 +6,6 @@ set(CTEST_CMAKE_GENERATOR "Unix Makefiles")
 set(dashboard_binary_name "RTK_lin64_gcc_debug")
 set(ENV{ITK_DIR} "/home/srit/src/itk/lin64-Debug")
 set(CTEST_BUILD_FLAGS -j16)
+set(CONFIGURE_OPTIONS -DCMAKE_CXX_STANDARD=14)
 include("${CTEST_SCRIPT_DIRECTORY}/rtk_common.cmake")
 
