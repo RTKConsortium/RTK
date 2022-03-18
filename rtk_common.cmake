@@ -121,7 +121,7 @@ endif()
 
 # Select Git source to use.
 if(NOT DEFINED dashboard_git_url)
-set(dashboard_git_url "git://github.com/SimonRit/RTK.git")
+set(dashboard_git_url "https://github.com/SimonRit/RTK.git")
 endif()
 if(NOT DEFINED dashboard_git_branch)
   set(dashboard_git_branch master)
