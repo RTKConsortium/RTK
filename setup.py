@@ -10,8 +10,15 @@ except ImportError:
     print('  python -m pip install scikit-build')
     sys.exit(1)
 
+# Configure wheel name if CUDA is used
+wheel_name='itk-rtk'
+# Extract cuda version from the last folder name in CUDAToolkit_ROOT path.
+for arg in sys.argv:
+  if "CUDAToolkit_ROOT" in str(arg):
+    wheel_name += ('-' + arg.rsplit('/', 1)[-1])
+
 setup(
-    name='itk-rtk',
+    name=wheel_name,
     version='2.3.0',
     author='RTK Consortium',
     author_email='rtk-users@openrtk.org',
