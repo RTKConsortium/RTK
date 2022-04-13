@@ -13,22 +13,22 @@ jobs:
           - os: self-hosted
             c-compiler: "gcc"
             cxx-compiler: "g++"
-            itk-git-tag: "v5.3rc03"
+            itk-git-tag: "801370c025c7d296783481779a41c6d559c992c5"
             cmake-build-type: "MinSizeRel"
           - os: ubuntu-20.04
             c-compiler: "gcc"
             cxx-compiler: "g++"
-            itk-git-tag: "v5.3rc03"
+            itk-git-tag: "801370c025c7d296783481779a41c6d559c992c5"
             cmake-build-type: "MinSizeRel"
           - os: windows-2019
             c-compiler: "cl.exe"
             cxx-compiler: "cl.exe"
-            itk-git-tag: "v5.3rc03"
+            itk-git-tag: "801370c025c7d296783481779a41c6d559c992c5"
             cmake-build-type: "Release"
           - os: macos-10.15
             c-compiler: "clang"
             cxx-compiler: "clang++"
-            itk-git-tag: "v5.3rc03"
+            itk-git-tag: "801370c025c7d296783481779a41c6d559c992c5"
             cmake-build-type: "MinSizeRel"
 
     steps:
@@ -97,8 +97,8 @@ jobs:
         file(TO_CMAKE_PATH "\$ENV{GITHUB_WORKSPACE}/" CTEST_SOURCE_DIRECTORY)
         file(TO_CMAKE_PATH "\$ENV{GITHUB_WORKSPACE}/../build" CTEST_BINARY_DIRECTORY)
         set(dashboard_source_name "${GITHUB_REPOSITORY}")
-        if(ENV{GITHUB_REF} MATCHES "main")
-          set(branch "-main")
+        if(ENV{GITHUB_REF} MATCHES "master")
+          set(branch "-master")
           set(dashboard_model "Continuous")
         else()
           set(branch "-${GITHUB_REF}")
@@ -150,7 +150,7 @@ jobs:
       matrix:
         python-version: [37, 38, 39, 310]
         include:
-          - itk-python-git-tag: "v5.3rc03"
+          - itk-python-git-tag: "v5.3rc04"
 
     steps:
     - uses: actions/checkout@v2
@@ -187,7 +187,7 @@ jobs:
       matrix:
         python-version: [37, 38, 39, 310]
         include:
-          - itk-python-git-tag: "v5.3rc03"
+          - itk-python-git-tag: "v5.3rc04"
 
     steps:
     - uses: actions/checkout@v2
@@ -215,7 +215,7 @@ jobs:
       max-parallel: 2
       matrix:
         include:
-          - itk-python-git-tag: "v5.3rc03"
+          - itk-python-git-tag: "v5.3rc04"
 
     steps:
     - uses: actions/checkout@v2
@@ -251,7 +251,7 @@ jobs:
       matrix:
         python-version-minor: [7, 8, 9, 10]
         include:
-          - itk-python-git-tag: "v5.3rc03"
+          - itk-python-git-tag: "v5.3rc04"
 
     steps:
     - name: Get specific version of CMake, Ninja
@@ -284,7 +284,7 @@ jobs:
       run: |
         cd ../../im
         call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
-        set PATH="C:\P\grep;%PATH%"
+        set PATH=C:\P\grep;%PATH%
         set CC=cl.exe
         set CXX=cl.exe
         C:\Python3${{ matrix.python-version-minor }}-x64\python.exe C:\P\IPP\scripts\windows_build_module_wheels.py --py-envs "3${{ matrix.python-version-minor }}-x64" --no-cleanup
