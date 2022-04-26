@@ -193,6 +193,7 @@ ParkerShortScanImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerateDa
       else if (beta <= pi - 2 * alpha)
         itWeights.Set(2.);
       else if (beta <= pi + 2 * m_Delta)
+        // Denominator fix to a typo in equation (12) of Parker's article.
         itWeights.Set(2. * pow(sin((pi * (pi + 2 * m_Delta - beta)) / (4 * (m_Delta + alpha))), 2.));
       else
         itWeights.Set(0.);
