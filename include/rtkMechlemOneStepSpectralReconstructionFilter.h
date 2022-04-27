@@ -117,7 +117,7 @@ namespace rtk
  * SQSRegul -> MultiplyRegulGradient;
  * MultiplyRegulGradient -> AddGradients;
  * Input5 -> MultiplyGradientToBeBackProjected;
- * BackProjectionGradients -> MultiplyGradientToBeBackProjected
+ * Weidinger -> MultiplyGradientToBeBackProjected
  * MultiplyGradientToBeBackProjected -> AddGradients;
  * AddGradients -> Newton;
  * Input4 -> MultiplyRegulHessian;
