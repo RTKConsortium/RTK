@@ -168,16 +168,17 @@ public:
   /** SFINAE type alias, depending on whether a CUDA image is used. */
   using CPUOutputImageType = typename itk::Image<typename TOutputImage::PixelType, TOutputImage::ImageDimension>;
 #ifdef RTK_USE_CUDA
-  typedef typename std::conditional<
-    std::is_same<TOutputImage, CPUOutputImageType>::value,
-    itk::Image<itk::Vector<dataType, nMaterials * nMaterials>, TOutputImage::ImageDimension>,
-    itk::CudaImage<itk::Vector<dataType, nMaterials * nMaterials>, TOutputImage::ImageDimension>>::type THessiansImage;
+  typedef
+    typename std::conditional<std::is_same<TOutputImage, CPUOutputImageType>::value,
+                              itk::Image<itk::Vector<dataType, nMaterials * nMaterials>, TOutputImage::ImageDimension>,
+                              itk::CudaImage<itk::Vector<dataType, nMaterials * nMaterials>,
+                                             TOutputImage::ImageDimension>>::type HessiansImageType;
   typedef
     typename std::conditional<std::is_same<TOutputImage, CPUOutputImageType>::value,
                               itk::Image<dataType, TOutputImage::ImageDimension>,
                               itk::CudaImage<dataType, TOutputImage::ImageDimension>>::type SingleComponentImageType;
 #else
-  using THessiansImage =
+  using HessiansImageType =
     typename itk::Image<itk::Vector<dataType, nMaterials * nMaterials>, TOutputImage::ImageDimension>;
   using SingleComponentImageType = typename itk::Image<dataType, TOutputImage::ImageDimension>;
 #endif
@@ -194,16 +195,16 @@ public:
                               CudaForwardProjectionImageFilter<SingleComponentImageType, SingleComponentImageType>>::
       type CudaSingleComponentForwardProjectionImageFilterType;
   typedef typename std::conditional<std::is_same<TOutputImage, CPUOutputImageType>::value,
-                                    BackProjectionImageFilter<THessiansImage, THessiansImage>,
-                                    CudaBackProjectionImageFilter<THessiansImage>>::type
+                                    BackProjectionImageFilter<HessiansImageType, HessiansImageType>,
+                                    CudaBackProjectionImageFilter<HessiansImageType>>::type
     CudaHessiansBackProjectionImageFilterType;
 #  else
   using WeidingerForwardModelType = WeidingerForwardModelImageFilter<TOutputImage, TPhotonCounts, TSpectrum>;
   using CudaSingleComponentForwardProjectionImageFilterType =
     JosephForwardProjectionImageFilter<SingleComponentImageType, SingleComponentImageType>;
-  using CudaHessiansBackProjectionImageFilterType = BackProjectionImageFilter<THessiansImage, THessiansImage>;
+  using CudaHessiansBackProjectionImageFilterType = BackProjectionImageFilter<HessiansImageType, HessiansImageType>;
 #  endif
-  using TGradientsImage = TOutputImage;
+  using GradientsImageType = TOutputImage;
 #endif
 
   using ForwardProjectionType = typename Superclass::ForwardProjectionType;
@@ -212,22 +213,22 @@ public:
 #if !defined(ITK_WRAPPING_PARSER)
   /** Filter type alias */
   using ExtractPhotonCountsFilterType = itk::ExtractImageFilter<TPhotonCounts, TPhotonCounts>;
-  using AddFilterType = itk::AddImageFilter<TGradientsImage>;
+  using AddFilterType = itk::AddImageFilter<GradientsImageType>;
   using SingleComponentForwardProjectionFilterType =
     rtk::ForwardProjectionImageFilter<SingleComponentImageType, SingleComponentImageType>;
   using ForwardProjectionFilterType = rtk::ForwardProjectionImageFilter<TOutputImage, TOutputImage>;
-  using GradientsBackProjectionFilterType = rtk::BackProjectionImageFilter<TGradientsImage, TGradientsImage>;
-  using HessiansBackProjectionFilterType = rtk::BackProjectionImageFilter<THessiansImage, THessiansImage>;
+  using GradientsBackProjectionFilterType = rtk::BackProjectionImageFilter<GradientsImageType, GradientsImageType>;
+  using HessiansBackProjectionFilterType = rtk::BackProjectionImageFilter<HessiansImageType, HessiansImageType>;
   using NesterovFilterType = rtk::NesterovUpdateImageFilter<TOutputImage>;
   using SingleComponentImageSourceType = rtk::ConstantImageSource<SingleComponentImageType>;
   using MaterialProjectionsSourceType = rtk::ConstantImageSource<TOutputImage>;
-  using GradientsSourceType = rtk::ConstantImageSource<TGradientsImage>;
-  using HessiansSourceType = rtk::ConstantImageSource<THessiansImage>;
-  using SQSRegularizationType = rtk::SeparableQuadraticSurrogateRegularizationImageFilter<TGradientsImage>;
-  using AddMatrixAndDiagonalFilterType = rtk::AddMatrixAndDiagonalImageFilter<TGradientsImage, THessiansImage>;
-  using NewtonFilterType = rtk::GetNewtonUpdateImageFilter<TGradientsImage, THessiansImage>;
+  using GradientsSourceType = rtk::ConstantImageSource<GradientsImageType>;
+  using HessiansSourceType = rtk::ConstantImageSource<HessiansImageType>;
+  using SQSRegularizationType = rtk::SeparableQuadraticSurrogateRegularizationImageFilter<GradientsImageType>;
+  using AddMatrixAndDiagonalFilterType = rtk::AddMatrixAndDiagonalImageFilter<GradientsImageType, HessiansImageType>;
+  using NewtonFilterType = rtk::GetNewtonUpdateImageFilter<GradientsImageType, HessiansImageType>;
   using MultiplyFilterType = itk::MultiplyImageFilter<TOutputImage, SingleComponentImageType>;
-  using MultiplyGradientFilterType = itk::MultiplyImageFilter<TGradientsImage, SingleComponentImageType>;
+  using MultiplyGradientFilterType = itk::MultiplyImageFilter<GradientsImageType, SingleComponentImageType>;
 #endif
 
   /** Pass the geometry to all filters needing it */
