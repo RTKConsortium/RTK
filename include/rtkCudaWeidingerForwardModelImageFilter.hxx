@@ -74,7 +74,9 @@ CudaWeidingerForwardModelImageFilter<TMaterialProjections, TPhotonCounts, TSpect
     pOut2,
     CudaWeidingerForwardModelImageFilter<TMaterialProjections, TPhotonCounts, TSpectrum, TProjections>::nBins,
     nEnergies,
-    CudaWeidingerForwardModelImageFilter<TMaterialProjections, TPhotonCounts, TSpectrum, TProjections>::nMaterials);
+    CudaWeidingerForwardModelImageFilter<TMaterialProjections, TPhotonCounts, TSpectrum, TProjections>::nMaterials,
+    this->m_NumberOfProjectionsInSpectrum,
+    this->GetInputPhotonCounts()->GetBufferedRegion().GetIndex(Dimension - 1));
 }
 
 } // end namespace rtk

@@ -155,7 +155,7 @@ main(int argc, char * argv[])
   origin[1] = -240.;
   origin[2] = 0.;
   size[0] = 32;
-  size[1] = 32;
+  size[1] = 64;
   size[2] = NumberOfProjectionImages;
   spacing[0] = 16.;
   spacing[1] = 16.;

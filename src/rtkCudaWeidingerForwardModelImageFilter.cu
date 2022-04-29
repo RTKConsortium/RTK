@@ -56,12 +56,14 @@ __constant__ float c_binnedDetectorResponse[5 * 150];
 
 template <unsigned int nBins, unsigned int nEnergies, unsigned int nMaterials>
 __global__ void
-kernel_forward_model(float * pMatProj,
-                     float * pPhoCount,
-                     float * pSpectrum,
-                     float * pProjOnes,
-                     float * pOut1,
-                     float * pOut2)
+kernel_forward_model(float *      pMatProj,
+                     float *      pPhoCount,
+                     float *      pSpectrum,
+                     float *      pProjOnes,
+                     float *      pOut1,
+                     float *      pOut2,
+                     unsigned int nProjSpectrum,
+                     int          nIdxProj)
 {
   unsigned int i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
   unsigned int j = __umul24(blockIdx.y, blockDim.y) + threadIdx.y;
@@ -73,8 +75,9 @@ kernel_forward_model(float * pMatProj,
   }
 
   // Index row major in the projection
-  long int first_proj_idx = i + j * c_projSize.x;                  // To determine the efficient spectrum
-  long int proj_idx = i + (j + k * c_projSize.y) * (c_projSize.x); // For all the rest
+  long int first_proj_idx =
+    i + (j + (nIdxProj + k) % nProjSpectrum * c_projSize.y) * c_projSize.x; // To determine the efficient spectrum
+  long int proj_idx = i + (j + k * c_projSize.y) * (c_projSize.x);          // For all the rest
 
   // Compute the efficient spectrum at the current pixel
   float efficientSpectrum[nBins * nEnergies];
@@ -176,7 +179,9 @@ CUDA_WeidingerForwardModel(int          projectionSize[3],
                            float *      pOut2,
                            unsigned int nBins,
                            unsigned int nEnergies,
-                           unsigned int nMaterials)
+                           unsigned int nMaterials,
+                           unsigned int nProjSpectrum,
+                           int          nIdxProj)
 {
   cudaMemcpyToSymbol(c_projSize, projectionSize, sizeof(int3));
   cudaMemcpyToSymbol(c_binnedDetectorResponse, &(binnedDetectorResponse[0]), nBins * nEnergies * sizeof(float));
@@ -198,11 +203,13 @@ CUDA_WeidingerForwardModel(int          projectionSize[3],
     switch (nMaterials)
     {
       case 2:
-        kernel_forward_model<5, 150, 2><<<dimGrid, dimBlock>>>(pMatProj, pPhoCount, pSpectrum, pProjOnes, pOut1, pOut2);
+        kernel_forward_model<5, 150, 2>
+          <<<dimGrid, dimBlock>>>(pMatProj, pPhoCount, pSpectrum, pProjOnes, pOut1, pOut2, nProjSpectrum, nIdxProj);
         break;
 
       case 3:
-        kernel_forward_model<5, 150, 3><<<dimGrid, dimBlock>>>(pMatProj, pPhoCount, pSpectrum, pProjOnes, pOut1, pOut2);
+        kernel_forward_model<5, 150, 3>
+          <<<dimGrid, dimBlock>>>(pMatProj, pPhoCount, pSpectrum, pProjOnes, pOut1, pOut2, nProjSpectrum, nIdxProj);
         break;
 
       default:
@@ -214,10 +221,27 @@ CUDA_WeidingerForwardModel(int          projectionSize[3],
     }
     CUDA_CHECK_ERROR;
   }
+  else if (nBins == 1 && nEnergies == 79)
+  {
+    switch (nMaterials)
+    {
+      case 2:
+        kernel_forward_model<1, 79, 2>
+          <<<dimGrid, dimBlock>>>(pMatProj, pPhoCount, pSpectrum, pProjOnes, pOut1, pOut2, nProjSpectrum, nIdxProj);
+        break;
+      default:
+      {
+        itkGenericExceptionMacro(<< "The CUDA version of WeidingerForwardModel works with hard-coded parameters, "
+                                    "currently set to nMaterials=2 or 3, nMaterials= "
+                                 << nMaterials << " is not supported.");
+      }
+    }
+    CUDA_CHECK_ERROR;
+  }
   else
   {
-    itkGenericExceptionMacro(<< "The CUDA version of WeidingerForwardModel works with hard-coded parameters, currently "
-                                "set to nBins=5, nEnergies=150 and nMaterials=2 or 3");
+    itkGenericExceptionMacro(<< "The CUDA version of WeidingerForwardModel works with hard-coded parameters "
+                                "(nBins,nEnergies,nMaterials) equal to (5,150,2),(5,150,3),(1,79,2).");
   }
   CUDA_CHECK_ERROR;
 }
