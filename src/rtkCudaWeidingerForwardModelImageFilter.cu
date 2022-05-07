@@ -215,7 +215,7 @@ CUDA_WeidingerForwardModel(int          projectionSize[3],
       default:
       {
         itkGenericExceptionMacro(<< "The CUDA version of WeidingerForwardModel works with hard-coded parameters, "
-                                    "currently set to nMaterials=2 or 3, nMaterials= "
+                                    "currently set to 2 or 3 materials."
                                  << nMaterials << " is not supported.");
       }
     }
@@ -229,10 +229,14 @@ CUDA_WeidingerForwardModel(int          projectionSize[3],
         kernel_forward_model<1, 79, 2>
           <<<dimGrid, dimBlock>>>(pMatProj, pPhoCount, pSpectrum, pProjOnes, pOut1, pOut2, nProjSpectrum, nIdxProj);
         break;
+      case 3:
+        kernel_forward_model<1, 79, 3>
+          <<<dimGrid, dimBlock>>>(pMatProj, pPhoCount, pSpectrum, pProjOnes, pOut1, pOut2, nProjSpectrum, nIdxProj);
+        break;
       default:
       {
         itkGenericExceptionMacro(<< "The CUDA version of WeidingerForwardModel works with hard-coded parameters, "
-                                    "currently set to nMaterials=2 or 3, nMaterials= "
+                                    "currently set to 2 or 3 materials."
                                  << nMaterials << " is not supported.");
       }
     }
@@ -241,7 +245,7 @@ CUDA_WeidingerForwardModel(int          projectionSize[3],
   else
   {
     itkGenericExceptionMacro(<< "The CUDA version of WeidingerForwardModel works with hard-coded parameters "
-                                "(nBins,nEnergies,nMaterials) equal to (5,150,2),(5,150,3),(1,79,2).");
+                                "(nBins,nEnergies) equal to (5,150),(5,150),(1,79),(1,79).");
   }
   CUDA_CHECK_ERROR;
 }

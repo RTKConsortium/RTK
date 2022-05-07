@@ -256,7 +256,11 @@ main(int argc, char * argv[])
     itk::ImageIOBase::Pointer headerAttenuations = GetFileHeader(args_info.attenuations_arg);
     unsigned int              nMaterials = headerAttenuations->GetDimensions(0);
 
-    if (nMaterials == 2 && nBins == 2)
+    if (nMaterials == 3 && nBins == 1)
+      rtk::rtkspectralonestep<1, 3>(args_info);
+    else if (nMaterials == 2 && nBins == 1)
+      rtk::rtkspectralonestep<1, 2>(args_info);
+    else if (nMaterials == 2 && nBins == 2)
       rtk::rtkspectralonestep<2, 2>(args_info);
     else if (nMaterials == 2 && nBins == 5)
       rtk::rtkspectralonestep<5, 2>(args_info);
