@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -79,7 +79,7 @@ private:
  *
  * Light dbase file (.dbf) file reader. It assumes little-endianness
  * (least significant byte first). The format describet on this page:
- * http://www.dbf2002.com/dbf-file-format.html
+ * https://www.dbf2002.com/dbf-file-format.html
  *
  * \author Simon Rit
  *

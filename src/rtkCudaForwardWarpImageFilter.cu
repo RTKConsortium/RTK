@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -440,7 +440,7 @@ CUDA_ForwardWarp(int     input_vol_dim[3],
   CUDA_CHECK_ERROR;
 
   // Copy image data to arrays. For a nice explanation on make_cudaPitchedPtr, checkout
-  // http://stackoverflow.com/questions/16119943/how-and-when-should-i-use-pitched-pointer-with-the-cuda-api
+  // https://stackoverflow.com/questions/16119943/how-and-when-should-i-use-pitched-pointer-with-the-cuda-api
   cudaMemcpy3DParms xCopyParams = cudaMemcpy3DParms();
   xCopyParams.srcPtr =
     make_cudaPitchedPtr(dev_input_xdvf, input_dvf_dim[0] * sizeof(float), input_dvf_dim[0], input_dvf_dim[1]);

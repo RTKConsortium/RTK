@@ -945,6 +945,6 @@ void
 print_reportbugs()
 {
   cout << endl;
-  cout << "Maintained by Lorenzo Bettini <http://www.lorenzobettini.it>" << endl;
+  cout << "Maintained by Lorenzo Bettini <https://www.lorenzobettini.it>" << endl;
   cout << "Report bugs to <bug-gengetopt at gnu.org>" << endl;
 }

@@ -14,11 +14,11 @@ RTK: The Reconstruction ToolKit
 Links
 -----
 
-* [Homepage](http://www.openrtk.org)
-* [Download](http://www.openrtk.org/RTK/resources/software.html)
-* [Mailing List](http://public.kitware.com/mailman/listinfo/rtk-users)
+* [Homepage](https://www.openrtk.org)
+* [Download](https://www.openrtk.org/RTK/resources/software.html)
+* [Mailing List](https://public.kitware.com/mailman/listinfo/rtk-users)
 * [Getting Started](GettingStarted.md)
-* [Help](http://wiki.openrtk.org)
+* [Help](https://wiki.openrtk.org)
 * [Issue tracking](https://github.com/SimonRit/RTK/issues)
 
 
@@ -26,15 +26,15 @@ Copyright RTK Consortium
 ------------------------
 
   Licensed under the Apache License, Version 2.0 (the
-  "[License](http://www.apache.org/licenses/LICENSE-2.0.txt)"); you may not use
+  "[License](https://www.apache.org/licenses/LICENSE-2.0.txt)"); you may not use
   this file except in compliance with the
-  [License](http://www.apache.org/licenses/LICENSE-2.0.txt).
+  [License](https://www.apache.org/licenses/LICENSE-2.0.txt).
 
   Unless required by applicable law or agreed to in writing, software
   distributed under the
-  [License](http://www.apache.org/licenses/LICENSE-2.0.txt) is distributed on
+  [License](https://www.apache.org/licenses/LICENSE-2.0.txt) is distributed on
   an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
   express or implied. See the
-  [License](http://www.apache.org/licenses/LICENSE-2.0.txt) for the specific
+  [License](https://www.apache.org/licenses/LICENSE-2.0.txt) for the specific
   language governing permissions and limitations under the
-  [License](http://www.apache.org/licenses/LICENSE-2.0.txt).
+  [License](https://www.apache.org/licenses/LICENSE-2.0.txt).

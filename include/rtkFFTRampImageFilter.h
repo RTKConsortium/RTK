@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -48,7 +48,7 @@ namespace rtk
  * \brief Implements the ramp image filter of the filtered backprojection algorithm.
  *
  * The filter code is based on FFTProjectionsConvolutionImageFilter by Gaetan Lehmann
- * (see http://hdl.handle.net/10380/3154)
+ * (see https://hdl.handle.net/10380/3154)
  *
  * \test rtkrampfiltertest.cxx
  *
@@ -107,7 +107,7 @@ public:
   /** Set/Get the Ram-Lak window frequency (0...1). 0 (default) disable it.
    * Equation and further explanation about Ram-Lak filter could be found in:
    * 1. Fundamentals of 2D and 3D reconstruction (by Dr. Gunter Lauritsch).
-   *    http://campar.in.tum.de/twiki/pub/Chair/TeachingWs04IOIV/08CTReconstruction.pdf
+   *    https://campar.in.tum.de/twiki/pub/Chair/TeachingWs04IOIV/08CTReconstruction.pdf
    * 2. Reconstruction.
    *    http://oftankonyv.reak.bme.hu/tiki-index.php?page=Reconstruction
    */
@@ -117,7 +117,7 @@ public:
   /** Set/Get the Shepp-Logan window frequency (0...1). 0 (default) disable it.
    * Equation and further explanation about Shepp-Logan filter could be found in:
    * 1. Fundamentals of 2D and 3D reconstruction (by Dr. Gunter Lauritsch).
-   *    http://campar.in.tum.de/twiki/pub/Chair/TeachingWs04IOIV/08CTReconstruction.pdf
+   *    https://campar.in.tum.de/twiki/pub/Chair/TeachingWs04IOIV/08CTReconstruction.pdf
    * 2. Reconstruction.
    *    http://oftankonyv.reak.bme.hu/tiki-index.php?page=Reconstruction
    */

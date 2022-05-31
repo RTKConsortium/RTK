@@ -1,4 +1,4 @@
-# Gengetopt: http://www.gnu.org/software/gengetopt/
+# Gengetopt: https://www.gnu.org/software/gengetopt/
 
 ADD_DEFINITIONS(-DPACKAGE=\"gengetopt\")
 ADD_DEFINITIONS(-DVERSION=\"2.22.4\")

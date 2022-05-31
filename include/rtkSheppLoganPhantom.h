@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,7 +28,7 @@ namespace rtk
 /** \class SheppLoganPhantom
  * \brief SheppLogan phantom as defined in "Principles of CT imaging" by Kak & Slaney
  *
- * See http://www.slaney.org/pct/pct-errata.html for the correction of the
+ * See https://www.slaney.org/pct/pct-errata.html for the correction of the
  * phantom definition.
  *
  * \test rtkfdktest.cxx

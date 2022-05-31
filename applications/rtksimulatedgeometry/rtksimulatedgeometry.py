@@ -6,7 +6,7 @@ from itk import RTK as rtk
 if __name__ == '__main__':
   # Argument parsing
   parser = argparse.ArgumentParser(description=
-    "Creates an RTK geometry file from simulated/regular trajectory. See http://www.openrtk.org/Doxygen/DocGeo3D.html for more information.")
+    "Creates an RTK geometry file from simulated/regular trajectory. See https://www.openrtk.org/Doxygen/DocGeo3D.html for more information.")
 
   parser.add_argument('--nproj', '-n', type=int, help='Number of projections')
   parser.add_argument('--output', '-o', help='Output file name')

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,7 +21,7 @@
 
 
 // Use local RTK FFTW files taken from Gaëtan Lehmann's code for
-// thread safety: http://hdl.handle.net/10380/3154
+// thread safety: https://hdl.handle.net/10380/3154
 #include <itkRealToHalfHermitianForwardFFTImageFilter.h>
 #include <itkHalfHermitianToRealInverseFFTImageFilter.h>
 
