@@ -486,7 +486,7 @@ Change history:
 - lpsolve.pas updated for Delphi 2009.
 - Python driver updated to allow also to provide numpy arrays to the lpsolve driver.
 - xli_MathProg is now compiled against glpk 4.44 meaning that it now supports the MathProg Tables feature
-  as described in http://www.cs.unb.ca/~bremner/docs/glpk/tables.pdf
+  as described in https://www.cs.unb.ca/~bremner/docs/glpk/tables.pdf
   csv, ODBC and MySQL are supported on all platforms.
 - Added MSF support. MSF (Microsoft Solver Foundation) is a microsoft .NET library to access solvers via an OO way
   MSF has a default lpsolve driver, but the one on the sourceforge site is enhanced in functionality and performance.

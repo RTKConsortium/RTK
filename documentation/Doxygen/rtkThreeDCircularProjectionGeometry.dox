@@ -149,12 +149,12 @@ positions in the rotated coordinate system \f$(Rx,Ry,Rz)\f$ (i.e., oriented
 according to the detector orientation), with its origin at the isocenter, when
 all values are positive (but all distances can be negative in this geometry):
 
-\image html http://www.openrtk.org/RTK/img/ThreeDCircularProjectionGeometry.svg
+\image html https://www.openrtk.org/RTK/img/ThreeDCircularProjectionGeometry.svg
 
 These 6 parameters are used to describe any source and detector positions. It
 is simpler to understand the circular geometry when all Offset values equal 0 :
 
-\image html http://www.openrtk.org/RTK/img/ThreeDCircularProjectionGeometry_aligned.svg
+\image html https://www.openrtk.org/RTK/img/ThreeDCircularProjectionGeometry_aligned.svg
 
 \subsection SP Source position
 
@@ -219,7 +219,7 @@ for the parameters ProjectionOffsetX and ProjectionOffsetY. The latter two
 allow to modify the Origin of each projection as is the case for a flat panel.
 The cylindrical detector geometry is illustrated in the following scheme:
 
-\image html http://www.openrtk.org/RTK/img/ThreeDCircularProjectionGeometry_cylindrical.svg
+\image html https://www.openrtk.org/RTK/img/ThreeDCircularProjectionGeometry_cylindrical.svg
 
 This scheme is based on the previous one with all offsets equal 0 but this is not required.
 
@@ -233,7 +233,7 @@ placed at a distance SourceToIsocenterDistance from the isocenter and the
 detector is placed symetrically around the origin \f$(0,0,0)\f$ at the same
 SourceToIsocenterDistance. This is summarized in the following scheme:
 
-\image html http://www.openrtk.org/RTK/img/ThreeDCircularProjectionGeometry_parallel.svg
+\image html https://www.openrtk.org/RTK/img/ThreeDCircularProjectionGeometry_parallel.svg
 
 In this case, the projection matrix becomes:
 

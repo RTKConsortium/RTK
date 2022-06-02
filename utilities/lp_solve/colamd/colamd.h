@@ -47,9 +47,9 @@
 
 	The colamd/symamd library is available at
 
-	    http://www.cise.ufl.edu/research/sparse/colamd
+	    https://www.cise.ufl.edu/research/sparse/colamd
 
-	This is the http://www.cise.ufl.edu/research/sparse/colamd/colamd.h
+	This is the https://www.cise.ufl.edu/research/sparse/colamd/colamd.h
 	file.  It is required by the colamd.c, colamdmex.c, and symamdmex.c
 	files, and by any C code that calls the routines whose prototypes are
 	listed below, or that uses the colamd/symamd definitions listed below.

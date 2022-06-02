@@ -21,7 +21,7 @@
 	conventional partial pivoting with row interchanges.  Colamd is the
 	column ordering method used in SuperLU, part of the ScaLAPACK library.
 	It is also available as built-in function in Matlab Version 6,
-	available from MathWorks, Inc. (http://www.mathworks.com).  This
+	available from MathWorks, Inc. (https://www.mathworks.com).  This
 	routine can be used in place of colmmd in Matlab.  By default, the \
 	and / operators in Matlab perform a column ordering (using colmmd
 	or colamd) prior to LU factorization using sparse partial pivoting,
@@ -75,9 +75,9 @@
 
 	The colamd/symamd library is available at
 
-	    http://www.cise.ufl.edu/research/sparse/colamd/
+	    https://www.cise.ufl.edu/research/sparse/colamd/
 
-	This is the http://www.cise.ufl.edu/research/sparse/colamd/colamd.c
+	This is the https://www.cise.ufl.edu/research/sparse/colamd/colamd.c
 	file.  It requires the colamd.h file.  It is required by the colamdmex.c
 	and symamdmex.c files, for the Matlab interface to colamd and symamd.
 
@@ -389,7 +389,7 @@
 
 	Example:
 	
-	    See http://www.cise.ufl.edu/research/sparse/colamd/example.c
+	    See https://www.cise.ufl.edu/research/sparse/colamd/example.c
 	    for a complete example.
 
 	    To order the columns of a 5-by-4 matrix with 11 nonzero entries in

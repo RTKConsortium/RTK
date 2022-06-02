@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -31,7 +31,7 @@ struct Ray
 // Intersection function of a ray with a box, followed "slabs" method
 // https://education.siggraph.org/static/HyperGraph/raytrace/rtinter3.htm
 // The function has to be explicitely inlined, otherwise "multiple definition" errors
-// will pop during linking. See http://choorucode.com/2011/03/15/cuda-device-function-in-header-file/
+// will pop during linking. See https://choorucode.com/2011/03/15/cuda-device-function-in-header-file/
 // for more information
 __forceinline__ __device__ int
                 intersectBox(Ray r, float * tnear, float * tfar, float3 boxMin, float3 boxMax)

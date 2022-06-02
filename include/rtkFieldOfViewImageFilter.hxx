@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -92,7 +92,7 @@ FieldOfViewImageFilter<TInputImage, TOutputImage>::ComputeFOVRadius(const FOVRad
       itIn = InputRegionIterator::New(dumImg, region, m_Geometry);
 
       // Compute the equation of a line of the ax+by=c
-      // http://en.wikipedia.org/wiki/Linear_equation#Two-point_form
+      // https://en.wikipedia.org/wiki/Linear_equation#Two-point_form
       sourcePosition = itIn->GetSourcePosition();
       corners[i] = itIn->GetPixelPosition();
       delete itIn;
@@ -396,7 +396,7 @@ FieldOfViewImageFilter<TInputImage, TOutputImage>::AddCollimationConstraints(con
     PointType u = CrossProduct(v, sourceDir);
 
     // Compute the equation of a line of the ax+by=c
-    // http://en.wikipedia.org/wiki/Linear_equation#Two-point_form
+    // https://en.wikipedia.org/wiki/Linear_equation#Two-point_form
     // Then compute the coefficient in front of r as suggested in
     // http://www.ifor.math.ethz.ch/teaching/lectures/intro_ss11/Exercises/solutionEx11-12.pdf
     PointType inf = u * -1. * X1;

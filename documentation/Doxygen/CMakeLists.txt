@@ -11,7 +11,7 @@ if(RTK_BUILD_DOXYGEN)
   #
 
   # Information on how to retrieve the ITK documentation tag file
-  set(ITK_DOXYGEN_TAG_LOCATION "http://itk.org/files/NightlyDoxygen/InsightDoxygenDocTag.gz")
+  set(ITK_DOXYGEN_TAG_LOCATION "https://itk.org/files/NightlyDoxygen/InsightDoxygenDocTag.gz")
   set(ITK_DOXYGEN_COMPRESSED_TAG_FILE ${PROJECT_BINARY_DIR}/Doxygen/InsightDoxygen.tag.gz)
   set(ITK_DOXYGEN_TAG_FILE ${PROJECT_BINARY_DIR}/Doxygen/InsightDoxygen.tag)
 
@@ -32,7 +32,7 @@ if(RTK_BUILD_DOXYGEN)
     find_program(GZIP_TOOL NAMES gzip)
     if(GZIP_TOOL)
       execute_process(COMMAND ${GZIP_TOOL} -dkf ${ITK_DOXYGEN_COMPRESSED_TAG_FILE})
-      set(DOXYGEN_TAGFILES_PARAMETER "${ITK_DOXYGEN_TAG_FILE}=http://www.itk.org/Doxygen/html/")
+      set(DOXYGEN_TAGFILES_PARAMETER "${ITK_DOXYGEN_TAG_FILE}=https://www.itk.org/Doxygen/html/")
     endif()
   else()
     set(DOXYGEN_TAGFILES_PARAMETER "")

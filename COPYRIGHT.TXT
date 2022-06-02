@@ -150,7 +150,7 @@ GNU General Public License for more details.
 The included file 'COPYING' is a copy of the GNU General Public License.
 
 ------------------------------------------------------------------------
-itkBinShrinkImageFilter has been taken from http://hdl.handle.net/10380/3450
+itkBinShrinkImageFilter has been taken from https://hdl.handle.net/10380/3450
 It uses the same Apache 2.0 license as RTK
 
 ------------------------------------------------------------------------
@@ -159,7 +159,7 @@ It uses the same Apache 2.0 license as RTK
 
 ------------------------------------------------------------------------
 Some code is modified (a lot) from GIFT, the Generalized Image Fusion Toolkit
-(http://hdl.handle.net/1926/216)
+(https://hdl.handle.net/1926/216)
 - rtkDaubechiesWaveletsKernelSource.h
 - rtkDaubechiesWaveletsKernelSource.hxx
 - rtkDeconstructImageFilter.h
@@ -172,7 +172,7 @@ Some code is modified (a lot) from GIFT, the Generalized Image Fusion Toolkit
 - rtkUpsampleImageFilter.hxx
 
 ------------------------------------------------------------------------
-Some code is modified from http://sourceforge.net/projects/niftyrec/:
+Some code is modified from https://sourceforge.net/projects/niftyrec/:
 - tt_project_ray_gpu_kernels.cu in rtkCudaForwardProjectionImageFilter.h
 
                       NIFTYREC TOMOGRAPHY TOOLBOX
@@ -207,7 +207,7 @@ THE POSSIBILITY OF SUCH DAMAGE.
 
 ------------------------------------------------------------------------
 utilities/lpsolve has been taken from
-http://sourceforge.net/projects/lpsolve/files/lpsolve/5.5.2.0/lp_solve_5.5.2.0_source.tar.gz/download
+https://sourceforge.net/projects/lpsolve/files/lpsolve/5.5.2.0/lp_solve_5.5.2.0_source.tar.gz/download
 and is distributed under the following license GNU lesser general public
 license.
 

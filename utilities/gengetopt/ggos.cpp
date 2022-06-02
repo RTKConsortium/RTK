@@ -4,7 +4,7 @@
 // Description:
 //
 //
-// Author: Lorenzo Bettini <http://www.lorenzobettini.it>, (C) 2005-2007
+// Author: Lorenzo Bettini <https://www.lorenzobettini.it>, (C) 2005-2007
 //
 // Copyright: See COPYING file that comes with this distribution
 //

@@ -6,7 +6,7 @@
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -32,7 +32,7 @@ CudaDataManager::CudaDataManager()
   // without CUDA. So if the context pointer is nullptr, which indicates that there
   // is no CUDA device available, we just do not set the context (SR). This fixes
   // the problem reported here:
-  // http://public.kitware.com/pipermail/rtk-users/2015-July/000570.html
+  // https://public.kitware.com/pipermail/rtk-users/2015-July/000570.html
   CUcontext * ctx = m_ContextManager->GetCurrentContext();
   if (ctx)
     CUDA_CHECK(cuCtxSetCurrent(*ctx));

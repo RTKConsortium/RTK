@@ -9,4 +9,4 @@ Here are suggested steps for the RTK beginner.
 
   3. Check out the [FirstReconstruction](examples/FirstReconstruction) example (both the [CMake](examples/FirstReconstruction/CMakeLists.txt) and the [C++](examples/FirstReconstruction/FirstReconstruction.cxx) codes). Many other examples are on the wiki using the applications (corresponding source code in the [applications](applications) subdirectory).
 
-  4. Ask question to the [user mailing list](http://public.kitware.com/mailman/listinfo/rtk-users).
+  4. Ask question to the [user mailing list](https://public.kitware.com/mailman/listinfo/rtk-users).

@@ -13,27 +13,27 @@ jobs:
           - os: self-hosted-linux
             c-compiler: "gcc"
             cxx-compiler: "g++"
-            itk-git-tag: "801370c025c7d296783481779a41c6d559c992c5"
+            itk-git-tag: "d6acfd26bfcdec606d605beb1301bddfb17c05a6"
             cmake-build-type: "MinSizeRel"
           - os: self-hosted-windows
             c-compiler: "cl.exe"
             cxx-compiler: "cl.exe"
-            itk-git-tag: "801370c025c7d296783481779a41c6d559c992c5"
+            itk-git-tag: "d6acfd26bfcdec606d605beb1301bddfb17c05a6"
             cmake-build-type: "Release"
           - os: ubuntu-20.04
             c-compiler: "gcc"
             cxx-compiler: "g++"
-            itk-git-tag: "801370c025c7d296783481779a41c6d559c992c5"
+            itk-git-tag: "d6acfd26bfcdec606d605beb1301bddfb17c05a6"
             cmake-build-type: "MinSizeRel"
           - os: windows-2019
             c-compiler: "cl.exe"
             cxx-compiler: "cl.exe"
-            itk-git-tag: "801370c025c7d296783481779a41c6d559c992c5"
+            itk-git-tag: "d6acfd26bfcdec606d605beb1301bddfb17c05a6"
             cmake-build-type: "Release"
           - os: macos-10.15
             c-compiler: "clang"
             cxx-compiler: "clang++"
-            itk-git-tag: "801370c025c7d296783481779a41c6d559c992c5"
+            itk-git-tag: "d6acfd26bfcdec606d605beb1301bddfb17c05a6"
             cmake-build-type: "MinSizeRel"
 
     steps:
