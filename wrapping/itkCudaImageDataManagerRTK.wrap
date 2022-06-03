@@ -1,0 +1,28 @@
+if(RTK_USE_CUDA)
+
+  itk_wrap_include(itkCudaImage.h)
+
+  itk_wrap_class("itk::CudaImageDataManager" POINTER)
+
+    # Add all missing image with dim == 4
+    list(FIND ITK_WRAP_IMAGE_DIMS "4" _index)
+    if(${_index} EQUAL -1)
+      itk_wrap_template("CI${ITKM_F}4" "itk::CudaImage<${ITKT_F}, 4>")
+      foreach(c 2 3 4 5)
+        itk_wrap_template("CI${ITKM_VF${c}}4" "itk::CudaImage<${ITKT_VF${c}}, 4>")
+        itk_wrap_template("CI${ITKM_CVF${c}}4" "itk::CudaImage<${ITKT_CVF${c}}, 4>")
+      endforeach()
+    endif()
+
+    # Add all missing image with comp == 5
+    list(FIND ITK_WRAP_VECTOR_COMPONENTS "5" _index)
+    if(${_index} EQUAL -1)
+      foreach(d 2 3)
+        itk_wrap_template("CI${ITKM_VF5}${d}" "itk::CudaImage<${ITKT_VF5}, ${d}>")
+        itk_wrap_template("CI${ITKM_CVF5}${d}" "itk::CudaImage<${ITKT_CVF5}, ${d}>")
+      endforeach()
+    endif()
+
+  itk_end_wrap_class()
+
+endif()

@@ -1,12 +1,13 @@
-name: 'Build, Test, Package RTK with CUDA'
+name: 'Package RTK with CUDA'
 
 on: [push,pull_request]
 
 env:
   cmake-options: '-DRTK_BUILD_APPLICATIONS:BOOL=OFF -DRTK_CUDA_VERSION=11.6'
   itk-wheel-tag: 'v5.3.0'
-  itk-python-package-tag: 'ee05fd4fa5feedc32afbed32b84b9c9eb0518036'
+  itk-python-package-tag: 'dc6a18600233ac69a8f42b7489e4edf6a5d8883a'
   itk-python-package-org: 'InsightSoftwareConsortium'
+  itk-module-deps: "RTKConsortium/ITKCudaCommon@140cf416de3da80aacd95acde339899b14e1bac3"
 
 jobs:
   build-linux-cuda-python-packages:
@@ -25,7 +26,6 @@ jobs:
         IPP_DOWNLOAD_GIT_TAG=${{ env.itk-python-package-tag }}
         IPP_DOWNLOAD_ORG=${{ env.itk-python-package-org }}
         curl -L https://raw.githubusercontent.com/${IPP_DOWNLOAD_ORG:=InsightSoftwareConsortium}/ITKPythonPackage/${IPP_DOWNLOAD_GIT_TAG:=master}/scripts/dockcross-manylinux-download-cache-and-build-module-wheels.sh -O
-        export ITK_MODULE_NO_CLEANUP=TRUE
         chmod u+x dockcross-manylinux-download-cache-and-build-module-wheels.sh
 
     - name: 'Build 🐍 Python 📦 package'
@@ -37,7 +37,7 @@ jobs:
         export ITKPYTHONPACKAGE_TAG=${{ env.itk-python-package-tag }}
         export ITKPYTHONPACKAGE_ORG=${{ env.itk-python-package-org }}
         export ITK_MODULE_PREQ=${{ env.itk-module-deps }}
-        CMAKE_OPTIONS="--cmake_options ${{ env.cmake-options }} -DCUDAToolkit_ROOT=/usr/lib64/cuda116 -DCMAKE_CUDA_COMPILER=/usr/lib64/cuda116/bin/nvcc"
+        CMAKE_OPTIONS=(--cmake_options "${{ env.cmake-options }} -DCUDAToolkit_ROOT=/usr/lib64/cuda116 -DCMAKE_CUDA_COMPILER=/usr/lib64/cuda116/bin/nvcc")
         export LD_LIBRARY_PATH="/home/srit/Downloads/cuda116:/home/srit/Downloads/cuda116/targets/x86_64-linux/lib:/home/srit/Downloads/cuda116/lib64/stubs"
         if test -e ../../ITKPythonBuilds-linux-manylinux2014.tar.zst ; then
            mv ../../*zst .
@@ -47,8 +47,9 @@ jobs:
         rm -rf ITKPythonPackage
         export MANYLINUX_VERSION=`(echo ${MANYLINUX_PLATFORM} | cut -d '-' -f 1)`
         export TARGET_ARCH=`(echo ${MANYLINUX_PLATFORM} | cut -d '-' -f 2)`
+        export ITK_MODULE_NO_CLEANUP=TRUE
         echo "Building for manylinux specialization ${MANYLINUX_VERSION} and target architecture ${TARGET_ARCH}"
-        ./dockcross-manylinux-download-cache-and-build-module-wheels.sh $CMAKE_OPTIONS -x "libcuda.so;libcuda.so.1;libcudart.so;libcudart.so.11.0;libcublas.so;libcublas.so.11;libcublasLt.so;libcublasLt.so.11;libcufft.so;libcufft.so.10" cp${{ matrix.python-version }}
+        ./dockcross-manylinux-download-cache-and-build-module-wheels.sh "${CMAKE_OPTIONS[@]}" -x "libcuda.so;libcuda.so.1;libcudart.so;libcudart.so.11.0;libcublas.so;libcublas.so.11;libcublasLt.so;libcublasLt.so.11;libcufft.so;libcufft.so.10" cp${{ matrix.python-version }}
         mv *zst ../..
 
     - name: Publish Python package as GitHub Artifact

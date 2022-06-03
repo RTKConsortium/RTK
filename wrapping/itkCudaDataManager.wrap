@@ -1,5 +1,0 @@
-if(RTK_USE_CUDA)
-
-  itk_wrap_simple_class("itk::CudaDataManager" POINTER)
-
-endif()

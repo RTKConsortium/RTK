@@ -159,16 +159,6 @@ list(APPEND RTK_INCLUDE_DIRS
   "${LPSOLVE_INCLUDE_DIRS}")
 
 #=========================================================
-# ITKCudaCommon
-#=========================================================
-if(RTK_USE_CUDA)
-  if(NOT TARGET ITKCudaCommon)
-    add_subdirectory(utilities/ITKCudaCommon)
-  endif()
-endif()
-list(APPEND RTK_INCLUDE_DIRS
-  ${ITKCudaCommon_INCLUDE_DIRS})
-#=========================================================
 # Include directories
 #=========================================================
 list(APPEND RTK_INCLUDE_DIRS
@@ -223,9 +213,6 @@ if(NOT ITK_SOURCE_DIR)
   # This must be done after RTK has been loaded by ITK to make sure
   # ${itk-module} variables are defined for RTK.
   itk_module_target_export(lpsolve55)
-  if(RTK_USE_CUDA)
-      itk_module_target_export(ITKCudaCommon)
-  endif()
 
   if(${ITK_VERSION} VERSION_LESS 5.3)
     ## Set the default target properties for RTK
