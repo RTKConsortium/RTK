@@ -128,11 +128,9 @@ endif()
 #=========================================================
 
 itk_module_add_library(RTK ${RTK_SRCS})
-target_link_libraries(RTK LINK_PUBLIC lpsolve55)
+target_link_libraries(RTK PUBLIC lpsolve55)
 
 if (RTK_USE_CUDA)
-  target_link_libraries(RTK LINK_PUBLIC ITKCudaCommon)
-  target_link_libraries(RTK LINK_PUBLIC CUDA::cufft)
-  target_link_libraries(RTK LINK_PUBLIC CUDA::cublas)
+  target_link_libraries(RTK PUBLIC CUDA::cufft CUDA::cublas)
   set_property(TARGET RTK PROPERTY CUDA_STANDARD ${CMAKE_CXX_STANDARD})
 endif ()

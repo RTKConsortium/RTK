@@ -10,7 +10,7 @@ set(WRAPPER_SUBMODULE_ORDER
   itkVariableLengthVectorRTK
   itkImageBaseRTK
   itkImageRTK
-  itkCudaImage
+  itkCudaImageRTK
   itkVectorImageRTK
   itkImageSourceRTK
   itkImageToImageFilterRTK

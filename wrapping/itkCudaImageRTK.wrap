@@ -1,0 +1,27 @@
+if(RTK_USE_CUDA)
+
+  itk_wrap_class("itk::CudaImage" POINTER_WITH_CONST_POINTER)
+
+    # Add all missing image with dim == 4
+    list(FIND ITK_WRAP_IMAGE_DIMS "4" _index)
+    if (${_index} EQUAL -1)
+      itk_wrap_template("F4" "${ITKT_F}, 4")
+      foreach(c 2 3 4 5)
+        itk_wrap_template("${ITKM_VF${c}}4" "${ITKT_VF${c}}, 4")
+        itk_wrap_template("${ITKM_CVF${c}}4" "${ITKT_CVF${c}}, 4")
+      endforeach()
+    endif()
+
+    # Add all missing image with comp == 5
+    list(FIND ITK_WRAP_VECTOR_COMPONENTS "5" _index)
+    if(${_index} EQUAL -1)
+      UNIQUE(imageDimensions "${ITK_WRAP_IMAGE_DIMS};2;3;4")
+      foreach(d ${imageDimensions})
+        itk_wrap_template("${ITKM_VF5}${d}" "${ITKT_VF5}, ${d}")
+        itk_wrap_template("${ITKM_CVF5}${d}" "${ITKT_CVF5}, ${d}")
+      endforeach()
+    endif()
+
+  itk_end_wrap_class()
+
+endif()
