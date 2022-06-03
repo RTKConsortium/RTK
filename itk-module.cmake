@@ -37,10 +37,8 @@ set(RTK_TEST_DEPENDS
 
 # # -----------------------------------------
 # # CUDA optional dependencies
-if(ITK_SOURCE_DIR)
-  if(${RTK_USE_CUDA})
-    list(APPEND RTK_DEPENDS ITKCudaCommon)
-  endif()
+if(${RTK_USE_CUDA})
+  list(APPEND RTK_DEPENDS CudaCommon)
 endif()
 
 #=========================================================
