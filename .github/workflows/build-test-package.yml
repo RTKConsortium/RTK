@@ -319,6 +319,59 @@ jobs:
         name: WindowsWheel3.${{ matrix.python-version-minor }}
         path: ../../im/dist
 
+  build-windows-cuda-python-packages:
+    runs-on: self-hosted-windows
+    strategy:
+      max-parallel: 2
+      matrix:
+        python-version-minor: [7, 8, 9, 10]
+        include:
+          - itk-python-git-tag: "v5.3rc04"
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        path: "im"
+
+    - name: 'Install Python'
+      run: |
+        $pythonArch = "64"
+        $pythonVersion = "3.${{ matrix.python-version-minor }}"
+        iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/scikit-build/scikit-ci-addons/master/windows/install-python.ps1'))
+
+    - name: self-hosted cleanup
+      shell: bash
+      run: |
+        rm -fr ../../im
+
+    - name: 'Fetch build dependencies'
+      shell: bash
+      run: |
+        mv im ../../
+        cd ../../im
+        curl -L "https://github.com/InsightSoftwareConsortium/ITKPythonBuilds/releases/download/${{ matrix.itk-python-git-tag }}/ITKPythonBuilds-windows.zip" -o "ITKPythonBuilds-windows.zip"
+        7z x ITKPythonBuilds-windows.zip -o/c/P -aoa -r
+        curl -L "https://data.kitware.com/api/v1/file/5c0ad59d8d777f2179dd3e9c/download" -o "doxygen-1.8.11.windows.bin.zip"
+        7z x doxygen-1.8.11.windows.bin.zip -o/c/P/doxygen -aoa -r
+        curl -L "https://data.kitware.com/api/v1/file/5bbf87ba8d777f06b91f27d6/download/grep-win.zip" -o "grep-win.zip"
+        7z x grep-win.zip -o/c/P/grep -aoa -r
+
+    - name: 'Build 🐍 Python 📦 package'
+      shell: cmd
+      run: |
+        cd ../../im
+        call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars64.bat"
+        set PATH=C:\P\grep;%PATH%
+        set CC=cl.exe
+        set CXX=cl.exe
+        C:\Python3${{ matrix.python-version-minor }}-x64\python.exe C:\P\IPP\scripts\windows_build_module_wheels.py --py-envs "3${{ matrix.python-version-minor }}-x64" --no-cleanup --lib-paths "C:/Program\ Files/NVIDIA\ GPU\ Computing\ Toolkit/CUDA/v11.6/bin" --exclude-libs "nvcuda.dll"
+
+    - name: Publish Python package as GitHub Artifact
+      uses: actions/upload-artifact@v1
+      with:
+        name: WindowsWheel3.${{ matrix.python-version-minor }}-cuda116
+        path: ../../im/dist
+
   publish-python-packages-to-pypi:
     needs:
       - build-linux-python-packages
