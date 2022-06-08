@@ -375,8 +375,10 @@ jobs:
   publish-python-packages-to-pypi:
     needs:
       - build-linux-python-packages
+      - build-linux-cuda-python-packages
       - build-macos-python-packages
       - build-windows-python-packages
+      - build-windows-cuda-python-packages
     runs-on: ubuntu-20.04
 
     steps:
