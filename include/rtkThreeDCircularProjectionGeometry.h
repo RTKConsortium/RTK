@@ -115,7 +115,25 @@ public:
   /** Add projection from a projection matrix. A projection matrix is defined
    * up to a scaling factor. The function here Assumes that the input matrix
    * pMat is normalized such that pMat*(x,y,z,1)'=(u,v,1)'.
-   * This code assumes that the SourceToDetectorDistance is positive. */
+   * This code assumes that the SourceToDetectorDistance is positive.
+   *
+   * \warning For parallel geometry the matrix has a special form
+   *
+   *     | R11 R12 R13 -ProjectionOffsetX |
+   * Mp =| R21 R22 R23 -ProjectionOffsetY |
+   *     |  0   0   0           1         |
+   *
+   * where
+   *
+   * | R11 R12 R13 |
+   * | R21 R22 R23 | - cropped rotation 3x3 matrix
+   * |  0   0   0  |
+   *
+   * outOfPlaneAngle must be within (-90, 90) degrees range,
+   * otherwise the rotation angles could be miscalculated.
+   *
+   * If projection matrix is for parallel geometry, then SID is set to 1000. mm
+   */
   bool
   AddProjection(const HomogeneousProjectionMatrixType & pMat);
 
@@ -265,7 +283,6 @@ public:
   {
     return this->m_MagnificationMatrices[i];
   }
-
 
   /** Get the vector containing the collimation jaw parameters. */
   const std::vector<double> &

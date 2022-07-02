@@ -165,7 +165,7 @@ rtk::ThreeDCircularProjectionGeometry::AddProjection(const PointType &  sourcePo
   const PointType &  S = sourcePosition;          // source pos
   const PointType &  R = detectorPosition;        // detector pos
 
-  if (itk::Math::abs(r * c) > 1e-6) // non-orthogonal row/column vectors
+  if (fabs(r * c) > 1e-6) // non-orthogonal row/column vectors
     return false;
 
   // Euler angles (ZXY convention) from detector orientation in IEC-based WCS:
@@ -222,7 +222,11 @@ rtk::ThreeDCircularProjectionGeometry::AddProjection(const PointType &  sourcePo
   double SID = n[0] * S[0] + n[1] * S[1] + n[2] * S[2];
   // SDD: distance from source to detector along detector normal
   double SDD = n[0] * (S[0] - R[0]) + n[1] * (S[1] - R[1]) + n[2] * (S[2] - R[2]);
-
+  if (itk::Math::abs(SDD) < 1.0E-06)
+  {
+    itkDebugMacro(<< "SourceDetectorDistance is less than 1.0E-06. For parallel geometry SDD is set to 0.0");
+    SDD = 0.0;
+  }
   // source offset: compute source's "in-plane" x/y shift off isocenter
   VectorType Sv;
   Sv[0] = S[0];
@@ -264,6 +268,50 @@ rtk::ThreeDCircularProjectionGeometry::AddProjection(const HomogeneousProjection
   double d = pMat(0, 0) * pMat(1, 1) * pMat(2, 2) + pMat(0, 1) * pMat(1, 2) * pMat(2, 0) +
              pMat(0, 2) * pMat(1, 0) * pMat(2, 1) - pMat(0, 0) * pMat(1, 2) * pMat(2, 1) -
              pMat(0, 1) * pMat(1, 0) * pMat(2, 2) - pMat(0, 2) * pMat(1, 1) * pMat(2, 0);
+
+  if (itk::Math::abs(d) < std::numeric_limits<double>::epsilon()) // parallel geometry
+  {
+    // setup rotation matrix from three rotated unit vectors
+    // v1, v2 - standard unit vectors, n - normal (cross product) [v1,v2]
+    VectorType v1, v2;
+    v1[0] = A(0, 0);
+    v1[1] = A(0, 1);
+    v1[2] = A(0, 2);
+    v2[0] = A(1, 0);
+    v2[1] = A(1, 1);
+    v2[2] = A(1, 2);
+    VectorType n = itk::CrossProduct(v1, v2);
+    A(2, 0) = n[0];
+    A(2, 1) = n[1];
+    A(2, 2) = n[2];
+
+    // Declare a 3D euler transform in order to properly extract angles
+    using EulerType = itk::Euler3DTransform<double>;
+    EulerType::Pointer euler = EulerType::New();
+    euler->SetComputeZYX(false); // ZXY order
+
+    // Extract angle using parent method without orthogonality check
+    euler->itk::MatrixOffsetTransformBase<double>::SetMatrix(A);
+    double oa = euler->GetAngleX();
+    double ga = euler->GetAngleY();
+    double ia = euler->GetAngleZ();
+
+    // verify that extracted ZXY angles result in the *desired* matrix:
+    // (at some angle constellations we may run into numerical troubles, therefore,
+    // verify angles and try to fix instabilities)
+    if (!VerifyAngles(oa, ga, ia, A))
+    {
+      if (!FixAngles(oa, ga, ia, A))
+      {
+        itkWarningMacro(<< "Failed to AddProjection");
+        return false;
+      }
+    }
+
+    this->AddProjectionInRadians(1000., 0., -1. * ga, -1. * p[0], -1. * p[1], -1. * oa, -1. * ia);
+    return true;
+  }
+
   d = -1. * d / itk::Math::abs(d);
 
   // Extract intrinsic parameters u0, v0 and f (f is chosen to be positive at that point)
@@ -637,7 +685,7 @@ rtk::ThreeDCircularProjectionGeometry::VerifyAngles(const double          outOfP
 
   for (int i = 0; i < 3; i++) // check whether matrices match
     for (int j = 0; j < 3; j++)
-      if (itk::Math::abs(rm[i][j] - m[i][j]) > EPSILON)
+      if (fabs(rm[i][j] - m[i][j]) > EPSILON)
         return false;
 
   return true;
@@ -652,7 +700,7 @@ rtk::ThreeDCircularProjectionGeometry::FixAngles(double &              outOfPlan
   const Matrix3x3Type & rm = referenceMatrix; // shortcut
   const double          EPSILON = 1e-6;       // internal tolerance for comparison
 
-  if (itk::Math::abs(itk::Math::abs(rm[2][1]) - 1.) > EPSILON)
+  if (fabs(fabs(rm[2][1]) - 1.) > EPSILON)
   {
     double oa = NAN, ga = NAN, ia = NAN;
 

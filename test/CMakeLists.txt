@@ -285,6 +285,7 @@ rtk_add_test(rtkArgsInfoManagerTest rtkargsinfomanagertest.cxx)
 
 rtk_add_test(rtkGeometryCloneTest rtkgeometryclonetest.cxx)
 rtk_add_test(rtkGeometryFromMatrixTest rtkgeometryfrommatrixtest.cxx)
+rtk_add_test(rtkParallelGeometryFromMatrixTest rtkparallelgeometryfrommatrixtest.cxx)
 
 rtk_add_test(rtkOraTest rtkoratest.cxx
   DATA{Input/Ora/0_afterLog.ora.xml,0_afterLog.mhd,0_afterLog.raw}
