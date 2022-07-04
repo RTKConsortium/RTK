@@ -52,7 +52,7 @@ IterativeFDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecisio
   m_DivideFilter = DivideFilterType::New();
 
   // Filter parameters
-  m_DisplacedDetectorFilter->SetPadOnTruncatedSide(false);
+  m_DisplacedDetectorFilter->SetPadOnTruncatedSide(true);
   m_DisableDisplacedDetectorFilter = false;
 }
 
