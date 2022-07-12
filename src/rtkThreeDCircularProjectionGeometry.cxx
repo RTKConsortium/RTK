@@ -676,7 +676,7 @@ rtk::ThreeDCircularProjectionGeometry::VerifyAngles(const double          outOfP
   using EulerType = itk::Euler3DTransform<double>;
 
   const Matrix3x3Type & rm = referenceMatrix; // shortcut
-  const double          EPSILON = 1e-5;       // internal tolerance for comparison
+  const double          EPSILON = 1e-4;       // internal tolerance for comparison
 
   EulerType::Pointer euler = EulerType::New();
   euler->SetComputeZYX(false); // ZXY order
