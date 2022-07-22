@@ -116,23 +116,31 @@ public:
    * up to a scaling factor. The function here Assumes that the input matrix
    * pMat is normalized such that pMat*(x,y,z,1)'=(u,v,1)'.
    * This code assumes that the SourceToDetectorDistance is positive.
+   * If the projection is for parallel geometry, then
+   * the SourceToIsocenterDistance is set to 1000 mm.
    *
-   * \warning For parallel geometry the matrix has a special form
+   * \note The projection matrix has a special form for a parallel geometry.
    *
-   *     | R11 R12 R13 -ProjectionOffsetX |
-   * Mp =| R21 R22 R23 -ProjectionOffsetY |
-   *     |  0   0   0           1         |
+   * | Column-1 | Column-2 | Column-3 |      Column-4      |
+   * |:--------:|:--------:|:--------:|:------------------:|
+   * | R11      | R12      | R13      | -ProjectionOffsetX |
+   * | R21      | R22      | R23      | -ProjectionOffsetY |
+   * |  0       |  0       |  0       |          1         |
    *
    * where
    *
-   * | R11 R12 R13 |
-   * | R21 R22 R23 | - cropped rotation 3x3 matrix
-   * |  0   0   0  |
+   * | Column-1 | Column-2 | Column-3 |
+   * |:--------:|:--------:|:--------:|
+   * |    R11   |    R12   |   R13    |
+   * |    R21   |    R22   |   R23    |
+   * |     0    |     0    |    0     |
    *
-   * outOfPlaneAngle must be within (-90, 90) degrees range,
-   * otherwise the rotation angles could be miscalculated.
+   * is a cropped 3x3 rotation matrix.
    *
-   * If projection matrix is for parallel geometry, then SID is set to 1000. mm
+   * \warning The outOfPlaneAngle for a parallel geometry must be
+   * within (-90, 90) degrees range, otherwise the rotation
+   * angles could be miscalculated.
+   *
    */
   bool
   AddProjection(const HomogeneousProjectionMatrixType & pMat);
