@@ -13,4 +13,5 @@ option "order"      - "The order of the Daubechies wavelets"                    
 option "levels"     - "The number of decomposition levels in the wavelets transform" int                  no default="5"
 option "input"     i "Input volume"                     string                       no
 option "nodisplaced" - "Disable the displaced detector filter"                  flag                      off
+option "tolerance" - "Projection matrix geometrical tolerance"                   double              no   default="0.001"
 

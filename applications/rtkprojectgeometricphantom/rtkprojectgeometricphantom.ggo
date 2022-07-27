@@ -10,4 +10,5 @@ option "phantomscale" - "Scaling factor for the phantom dimensions" double multi
 option "offset"       - "3D spatial offset of the phantom center"   double multiple no
 option "forbild"      f "Interpret phantomfile as Forbild file"     flag            off
 option "rotation"     - "Rotation matrix for the phantom"           double multiple no
+option "tolerance" - "Projection matrix geometrical tolerance"                   double              no   default="0.001"
 

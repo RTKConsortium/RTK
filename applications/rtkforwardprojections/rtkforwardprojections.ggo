@@ -8,6 +8,7 @@ option "input"     i "Input volume file name"                                   
 option "output"    o "Output projections file name"                              string   yes
 option "step"      s "Step size along ray (for CudaRayCast only)"                double   no   default="1"
 option "lowmem"    l "Compute only one projection at a time"                     flag     off
+option "tolerance" - "Projection matrix geometrical tolerance"                   double              no   default="0.001"
 
 section "Projectors"
 option "fp"    f "Forward projection method" values="Joseph","JosephAttenuated","CudaRayCast","Zeng" enum no default="Joseph"

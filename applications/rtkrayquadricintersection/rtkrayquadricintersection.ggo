@@ -8,3 +8,4 @@ option "output"     o "Output projections file name"                            
 option "parameters" p "A,B,C,D,E,F,G,H,I,J.  See https://education.siggraph.org/static/HyperGraph/raytrace/rtinter4.htm." double multiple yes
 option "mult"       m "Multiplier for the intersection"                                      double   no default="1"
 option "planes"     - "Clip planes, n*4 parameters (3 for the normal, 4th for distance)" double multiple no
+option "tolerance" - "Projection matrix geometrical tolerance"                   double              no   default="0.001"

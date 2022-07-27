@@ -6,3 +6,4 @@ option "config"    - "Config file"                                              
 option "geometry"  g "XML geometry file name"                                    string              yes
 option "output"    o "Output file name"                                          string              yes
 option "divisions" d "Number of stream divisions to cope with large serie"       int                 no   default="1"
+option "tolerance" - "Projection matrix geometrical tolerance"                   double              no   default="0.001"

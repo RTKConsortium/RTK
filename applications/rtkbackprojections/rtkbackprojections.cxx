@@ -47,6 +47,13 @@ main(int argc, char * argv[])
 #else
   using OutputImageType = itk::Image<OutputPixelType, Dimension>;
 #endif
+
+  // Projection matrix tolerance
+  if (!args_info.tolerance_arg)
+  {
+    rtk::ThreeDCircularProjectionGeometryXMLFileReader::SetGeometryTolerance(args_info.tolerance_arg);
+  }
+
   // Geometry
   if (args_info.verbose_flag)
     std::cout << "Reading geometry information from " << args_info.geometry_arg << "..." << std::flush;

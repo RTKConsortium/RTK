@@ -9,4 +9,5 @@ option "axes"       a "x,y,z.  See https://education.siggraph.org/static/HyperGr
 option "center"     c "x_0,y_0,z_0 Defines the center of the ellipsoid"           double multiple no
 option "mult"       m "Multiplier for the intersection"                           double   no default="1"
 option "rotation"   r "Rotation applied to the volume"                            double multiple no default="0"
+option "tolerance" - "Projection matrix geometrical tolerance"                   double              no   default="0.001"
 

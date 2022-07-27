@@ -71,6 +71,12 @@ public:
   /** Get smart pointer to projection geometry. */
   itkGetModifiableObjectMacro(Geometry, GeometryType);
 
+  /** Set geometry tolerance. Use before reading XML geometry file */
+  static void SetGeometryTolerance(double value);
+
+  /** Get geometry tolerance */
+  itkGetMacro(GeometryTolerance, double);
+
 protected:
   ThreeDCircularProjectionGeometryXMLFileReader();
   ~ThreeDCircularProjectionGeometryXMLFileReader() override = default;
@@ -115,6 +121,9 @@ private:
 
   /** File format version */
   unsigned int m_Version{ 0 };
+
+  /** Geometry projection matrix tolerance parameter. Default value is 0.001 */
+  static double m_GeometryTolerance;
 };
 
 /** Convenience function for reading a geometry XML file.

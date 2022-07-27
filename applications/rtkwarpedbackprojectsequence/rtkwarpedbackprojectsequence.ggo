@@ -6,6 +6,7 @@ option "config"      - "Config file"                                           s
 option "geometry"    g "XML geometry file name"                                string yes
 option "input"       i "Input volume"                                          string no
 option "output"      o "Output file name"                                      string yes
+option "tolerance" - "Projection matrix geometrical tolerance"                   double              no   default="0.001"
 
 section "Phase gating"
 option "signal"    - "File containing the phase of each projection"              string                       yes

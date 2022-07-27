@@ -9,3 +9,4 @@ option "niterations" n "Number of iterations"                                  i
 option "input"     i "Input volume"              string          no
 option "nprojpersubset" - "Number of projections processed between each update of the reconstructed volume (several for OSEM, all for MLEM)" int no default="1"
 option "betaregularization" - "Hyperparameter for the regularization"          float  no   default="0.01"
+option "tolerance" - "Projection matrix geometrical tolerance"                   double              no   default="0.001"

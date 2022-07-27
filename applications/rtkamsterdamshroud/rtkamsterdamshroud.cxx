@@ -40,6 +40,12 @@ main(int argc, char * argv[])
   ReaderType::Pointer reader = ReaderType::New();
   rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkamsterdamshroud>(reader, args_info);
 
+  // Projection matrix tolerance
+  if (!args_info.tolerance_arg)
+  {
+    rtk::ThreeDCircularProjectionGeometryXMLFileReader::SetGeometryTolerance(args_info.tolerance_arg);
+  }
+
   // Amsterdam shroud
   using ShroudFilterType = rtk::AmsterdamShroudImageFilter<OutputImageType>;
   ShroudFilterType::Pointer shroudFilter = ShroudFilterType::New();

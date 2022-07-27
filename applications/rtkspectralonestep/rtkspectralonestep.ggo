@@ -19,3 +19,4 @@ option "subsets"               - "Number of subsets of projections (should not e
 option "regul_weights"         - "Regularization parameters for each material"                       double multiple no
 option "regul_radius"          - "Radius of the neighborhood for regularization"                     int    multiple no
 option "reset_nesterov"        - "Reset Nesterov after a number of subsets"                          int    no
+option "tolerance" - "Projection matrix geometrical tolerance"                   double              no   default="0.001"

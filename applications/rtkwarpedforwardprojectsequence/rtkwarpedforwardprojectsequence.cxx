@@ -57,6 +57,12 @@ main(int argc, char * argv[])
   VolumeSeriesType::Pointer volumeSeries;
   TRY_AND_EXIT_ON_ITK_EXCEPTION(volumeSeries = itk::ReadImage<VolumeSeriesType>(args_info.input_arg))
 
+  // Projection matrix tolerance
+  if (!args_info.tolerance_arg)
+  {
+    rtk::ThreeDCircularProjectionGeometryXMLFileReader::SetGeometryTolerance(args_info.tolerance_arg);
+  }
+
   // Geometry
   if (args_info.verbose_flag)
     std::cout << "Reading geometry information from " << args_info.geometry_arg << "..." << std::endl;

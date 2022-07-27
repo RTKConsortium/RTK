@@ -9,4 +9,5 @@ option "hardware"   - "Hardware used for computation"                           
 option "divisions"  d "Streaming option: number of stream divisions"                int                 no   default="1"
 option "minOffset" - "Minimum offset of projections in the ramp direction"          double no
 option "maxOffset" - "Maximum offset of projections in the ramp direction"          double no
+option "tolerance" - "Projection matrix geometrical tolerance"                   double              no   default="0.001"
 

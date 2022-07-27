@@ -7,3 +7,4 @@ option "output"   o "Output file name"                                          
 option "unsharp"  u "Unsharp mask size"                                          int             no  default="17"
 option "clipbox"  c "3D clipbox for cropping projections (x1,x2,y1,y2,z1,z2) mm" double multiple no
 option "geometry" g "XML geometry file name"                                     string          no
+option "tolerance" - "Projection matrix geometrical tolerance"                   double              no   default="0.001"

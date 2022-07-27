@@ -42,6 +42,12 @@ main(int argc, char * argv[])
   rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtksubselect>(reader, args_info);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(reader->Update())
 
+  // Projection matrix tolerance
+  if (!args_info.tolerance_arg)
+  {
+    rtk::ThreeDCircularProjectionGeometryXMLFileReader::SetGeometryTolerance(args_info.tolerance_arg);
+  }
+
   // Geometry
   if (args_info.verbose_flag)
     std::cout << "Reading geometry information from " << args_info.geometry_arg << "..." << std::endl;

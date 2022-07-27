@@ -11,3 +11,4 @@ option "displaced"      d "Assume that a displaced detector has been used"      
 option "bp"             b "Slow alternative for non cylindrical FOVs:\
  backproject projections filled with ones and threshold result."                      flag     off
 option "hardware"       - "Hardware used for computation (with --bp only)" values="cpu","cuda" no   default="cpu"
+option "tolerance" - "Projection matrix geometrical tolerance"                   double              no   default="0.001"

@@ -7,6 +7,7 @@ option "geometry"  g  "XML geometry file name"                                  
 option "input"     i "Input volume sequence file name"                           string   yes
 option "output"    o "Output projections file name"                              string   yes
 option "step"      s "Step size along ray (for CudaRayCast only)"                double   no   default="1"
+option "tolerance" - "Projection matrix geometrical tolerance"                   double              no   default="0.001"
 
 section "Phase gating"
 option "signal"    - "File containing the phase of each projection"              string  yes
