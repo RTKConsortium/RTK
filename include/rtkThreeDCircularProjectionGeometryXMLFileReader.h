@@ -72,7 +72,8 @@ public:
   itkGetModifiableObjectMacro(Geometry, GeometryType);
 
   /** Set geometry tolerance. Use before reading XML geometry file */
-  static void SetGeometryTolerance(double value);
+  static void
+  SetGeometryTolerance(double value);
 
   /** Get geometry tolerance */
   itkGetMacro(GeometryTolerance, double);
