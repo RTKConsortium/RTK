@@ -161,7 +161,7 @@ rtkspectralonestep(const args_info_rtkspectralonestep & args_info)
     rtk::SpectralBinDetectorResponse<dataType>(detectorResponse.GetPointer(), thresholds, nEnergies);
 
   // Projection matrix tolerance
-  if (!args_info.tolerance_arg)
+  if (args_info.tolerance_given)
   {
     rtk::ThreeDCircularProjectionGeometryXMLFileReader::SetGeometryTolerance(args_info.tolerance_arg);
   }

@@ -53,7 +53,7 @@ main(int argc, char * argv[])
   rtk::SetProjectionsReaderFromGgo<projectionsReaderType, args_info_rtkadmmwavelets>(projectionsReader, args_info);
 
   // Projection matrix tolerance
-  if (!args_info.tolerance_arg)
+  if (args_info.tolerance_given)
   {
     rtk::ThreeDCircularProjectionGeometryXMLFileReader::SetGeometryTolerance(args_info.tolerance_arg);
   }

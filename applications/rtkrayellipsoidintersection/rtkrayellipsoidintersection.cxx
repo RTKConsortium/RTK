@@ -36,7 +36,7 @@ main(int argc, char * argv[])
   using OutputImageType = itk::Image<OutputPixelType, Dimension>;
 
   // Projection matrix tolerance
-  if (!args_info.tolerance_arg)
+  if (args_info.tolerance_given)
   {
     rtk::ThreeDCircularProjectionGeometryXMLFileReader::SetGeometryTolerance(args_info.tolerance_arg);
   }

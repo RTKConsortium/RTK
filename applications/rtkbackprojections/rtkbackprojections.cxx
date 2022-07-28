@@ -49,7 +49,7 @@ main(int argc, char * argv[])
 #endif
 
   // Projection matrix tolerance
-  if (!args_info.tolerance_arg)
+  if (args_info.tolerance_given)
   {
     rtk::ThreeDCircularProjectionGeometryXMLFileReader::SetGeometryTolerance(args_info.tolerance_arg);
   }
