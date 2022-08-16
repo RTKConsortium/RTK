@@ -127,6 +127,27 @@ OraGeometryReader::GenerateData()
       v = tiltTransform->TransformVector(v);
     }
 
+    // Ring yaw (only available in some versions)
+    MetaDataDoubleType * yawMeta = dynamic_cast<MetaDataDoubleType *>(dic["room_cs_yaw_deg"].GetPointer());
+    if (yawMeta != nullptr)
+    {
+      double       yaw = yawMeta->GetMetaDataObjectValue();
+      auto         tiltTransform = itk::VersorRigid3DTransform<double>::New();
+      const double deg2rad = std::atan(1.0) / 45.0;
+      tiltTransform->SetRotation(itk::MakeVector(0., 0., 1.), yaw * deg2rad);
+
+      // Set center of rotation
+      MetaDataDoubleType * yvecMeta =
+        dynamic_cast<MetaDataDoubleType *>(dic["ydistancebaseunitcs2imagingcs_cm"].GetPointer());
+      double yvec = yvecMeta->GetMetaDataObjectValue();
+      tiltTransform->SetCenter(itk::MakePoint(0., -10. * yvec, 0.));
+
+      sp = tiltTransform->TransformPoint(sp);
+      dp = tiltTransform->TransformPoint(dp);
+      u = tiltTransform->TransformVector(u);
+      v = tiltTransform->TransformVector(v);
+    }
+
     // Got it, add to geometry
     m_Geometry->AddProjection(sp, dp, u, v);
 
