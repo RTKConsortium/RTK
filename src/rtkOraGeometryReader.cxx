@@ -27,6 +27,7 @@
 #include <itkImageIOBase.h>
 #include <itkImageIOFactory.h>
 #include <itkVersorRigid3DTransform.h>
+#include <itkQuaternionRigidTransform.h>
 
 namespace rtk
 {
@@ -37,6 +38,8 @@ OraGeometryReader::GenerateData()
 {
   m_Geometry = GeometryType::New();
   RegisterIOFactories();
+  itk::QuaternionRigidTransform<double>::Pointer firstQuaternionsX{ nullptr };
+  itk::Vector<double, 3>                         firstTranslation;
   for (const std::string & projectionsFileName : m_ProjectionsFileNames)
   {
     itk::ImageIOBase::Pointer reader;
@@ -54,6 +57,8 @@ OraGeometryReader::GenerateData()
     using MetaDataVectorType = itk::MetaDataObject<VectorType>;
     using MetaDataMatrixType = itk::MetaDataObject<Matrix3x3Type>;
     using MetaDataDoubleType = itk::MetaDataObject<double>;
+    using MetaDataVectorDoubleType = itk::MetaDataObject<std::vector<double>>;
+    using MetaDataVectorIntType = itk::MetaDataObject<std::vector<int>>;
 
     // Source position
     MetaDataVectorType * spMeta = dynamic_cast<MetaDataVectorType *>(dic["SourcePosition"].GetPointer());
@@ -103,7 +108,7 @@ OraGeometryReader::GenerateData()
 
     // Ring tilt (only available in some versions)
     MetaDataDoubleType * tiltLeftMeta = dynamic_cast<MetaDataDoubleType *>(dic["tiltleft_deg"].GetPointer());
-    if (tiltLeftMeta != nullptr)
+    if (tiltLeftMeta != nullptr && m_OptiTrackObjectID < 0)
     {
       double               tiltLeft = tiltLeftMeta->GetMetaDataObjectValue();
       MetaDataDoubleType * tiltRightMeta = dynamic_cast<MetaDataDoubleType *>(dic["tiltright_deg"].GetPointer());
@@ -129,7 +134,7 @@ OraGeometryReader::GenerateData()
 
     // Ring yaw (only available in some versions)
     MetaDataDoubleType * yawMeta = dynamic_cast<MetaDataDoubleType *>(dic["room_cs_yaw_deg"].GetPointer());
-    if (yawMeta != nullptr)
+    if (yawMeta != nullptr && m_OptiTrackObjectID < 0)
     {
       double       yaw = yawMeta->GetMetaDataObjectValue();
       auto         tiltTransform = itk::VersorRigid3DTransform<double>::New();
@@ -146,6 +151,79 @@ OraGeometryReader::GenerateData()
       dp = tiltTransform->TransformPoint(dp);
       u = tiltTransform->TransformVector(u);
       v = tiltTransform->TransformVector(v);
+    }
+
+    // OptiTrack objects (objects tracked with infrared cameras)
+    if (m_OptiTrackObjectID >= 0)
+    {
+      // Find ID index of the OptiTrack object
+      MetaDataVectorIntType * idsMeta = dynamic_cast<MetaDataVectorIntType *>(dic["optitrack_object_ids"].GetPointer());
+      if (idsMeta == nullptr)
+        itkExceptionMacro("Could not find optitrack_object_ids in " << projectionsFileName);
+      const std::vector<int> ids = idsMeta->GetMetaDataObjectValue();
+      auto                   idIt = std::find(ids.begin(), ids.end(), m_OptiTrackObjectID);
+      int                    idIdx = idIt - ids.begin();
+
+      // Translation
+      MetaDataVectorDoubleType * posMeta =
+        dynamic_cast<MetaDataVectorDoubleType *>(dic["optitrack_positions"].GetPointer());
+      if (posMeta == nullptr)
+        itkExceptionMacro("Could not find optitrack_positions in " << projectionsFileName);
+      const std::vector<double> p = posMeta->GetMetaDataObjectValue();
+      if (p.size() < 3 * (idIdx + 1))
+        itkExceptionMacro("Not enough values in optitrack_positions of " << projectionsFileName);
+      itk::Vector<double, 3> translation = 10. * itk::MakeVector(p[idIdx * 3], p[idIdx * 3 + 1], p[idIdx * 3 + 2]);
+
+      // Rotation
+      MetaDataVectorDoubleType * rotMeta =
+        dynamic_cast<MetaDataVectorDoubleType *>(dic["optitrack_rotations"].GetPointer());
+      if (rotMeta == nullptr)
+        itkExceptionMacro("Could not find optitrack_rotations in " << projectionsFileName);
+      const std::vector<double> optitrackRotations = rotMeta->GetMetaDataObjectValue();
+      if (optitrackRotations.size() < 4 * (idIdx + 1))
+        itkExceptionMacro("Not enough values in optitrack_rotations of " << projectionsFileName);
+      auto                                                  quaternionsX = itk::QuaternionRigidTransform<double>::New();
+      itk::QuaternionRigidTransform<double>::ParametersType quaternionsXParam(7);
+      quaternionsXParam[3] = optitrackRotations[idIdx * 4];
+      quaternionsXParam[0] = optitrackRotations[idIdx * 4 + 1];
+      quaternionsXParam[1] = optitrackRotations[idIdx * 4 + 2];
+      quaternionsXParam[2] = optitrackRotations[idIdx * 4 + 3];
+      quaternionsXParam[4] = 0.;
+      quaternionsXParam[5] = 0.;
+      quaternionsXParam[6] = 0.;
+      quaternionsX->SetParameters(quaternionsXParam);
+
+      // Set center of rotation
+      MetaDataDoubleType * yvecMeta =
+        dynamic_cast<MetaDataDoubleType *>(dic["ydistancebaseunitcs2imagingcs_cm"].GetPointer());
+      double               yvec = yvecMeta->GetMetaDataObjectValue();
+      MetaDataDoubleType * zvecMeta =
+        dynamic_cast<MetaDataDoubleType *>(dic["zdistancebaseunitcs2imagingcs_cm"].GetPointer());
+      double zvec = zvecMeta->GetMetaDataObjectValue();
+      if (firstQuaternionsX.GetPointer() == nullptr)
+      {
+        firstQuaternionsX = quaternionsX;
+        firstTranslation = translation;
+      }
+      else
+      {
+        itk::MatrixOffsetTransformBase<double, 3, 3>::InverseTransformBasePointer invQuaternionsX =
+          quaternionsX->GetInverseTransform();
+
+        sp = sp - translation;
+        dp = dp - translation;
+        sp = invQuaternionsX->TransformPoint(sp);
+        dp = invQuaternionsX->TransformPoint(dp);
+        u = invQuaternionsX->TransformVector(u);
+        v = invQuaternionsX->TransformVector(v);
+
+        sp = firstQuaternionsX->TransformPoint(sp);
+        dp = firstQuaternionsX->TransformPoint(dp);
+        u = firstQuaternionsX->TransformVector(u);
+        v = firstQuaternionsX->TransformVector(v);
+        sp = sp + firstTranslation;
+        dp = dp + firstTranslation;
+      }
     }
 
     // Got it, add to geometry
