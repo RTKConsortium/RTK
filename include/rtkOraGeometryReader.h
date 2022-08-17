@@ -89,6 +89,11 @@ public:
   itkGetMacro(CollimationMargin, MarginVectorType);
   itkSetMacro(CollimationMargin, MarginVectorType);
 
+  /** Selected OptiTrack object ID. Default is -1, i.e., do not use the
+   * OptiTrack object ID. * */
+  itkGetMacro(OptiTrackObjectID, int);
+  itkSetMacro(OptiTrackObjectID, int);
+
 
 protected:
   OraGeometryReader()
@@ -104,6 +109,7 @@ private:
   GeometryType::Pointer m_Geometry;
   FileNamesContainer    m_ProjectionsFileNames;
   MarginVectorType      m_CollimationMargin;
+  int                   m_OptiTrackObjectID{ -1 };
 };
 
 } // namespace rtk

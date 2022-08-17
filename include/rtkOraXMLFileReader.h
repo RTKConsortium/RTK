@@ -76,6 +76,9 @@ protected:
   EncapsulateMatrix3x3(const char * metaName, const char * name);
   void
   EncapsulateDouble(const char * metaName, const char * name);
+  template <typename TValue>
+  void
+  EncapsulateVector(const char * metaName, const char * name);
   void
   EncapsulateString(const char * metaName, const char * name);
 
