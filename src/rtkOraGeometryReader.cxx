@@ -227,7 +227,11 @@ OraGeometryReader::GenerateData()
     }
 
     // Got it, add to geometry
-    m_Geometry->AddProjection(sp, dp, u, v);
+    if (!m_Geometry->AddProjection(sp, dp, u, v))
+    {
+      itkWarningMacro("Could not add " << projectionsFileName << " with sp=" << sp << ", dp=" << dp << ", u=" << u
+                                       << " and v=" << v);
+    }
 
     // Now add the collimation
     // longitudinalposition_cm
