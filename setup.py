@@ -19,7 +19,7 @@ for arg in sys.argv:
 
 setup(
     name=wheel_name,
-    version='2.3.0',
+    version='2.4.0',
     author='RTK Consortium',
     author_email='rtk-users@openrtk.org',
     packages=['itk'],
