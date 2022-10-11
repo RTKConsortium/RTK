@@ -1,5 +1,6 @@
 # Find PyBuffer swig files from ITKBridgeNumPy sources
-set(ITKBridgeNumpy_WRAP_DIR "${ITKBridgeNumPy_INCLUDE_DIRS}/../wrapping")
+list(GET ITKBridgeNumPy_INCLUDE_DIRS 0 ITKBridgeNumPy_INCLUDE_DIR)
+set(ITKBridgeNumpy_WRAP_DIR "${ITKBridgeNumPy_INCLUDE_DIR}/../wrapping")
 
 file(READ "${ITKBridgeNumpy_WRAP_DIR}/PyBuffer.i.init"
     PyBufferInit)
