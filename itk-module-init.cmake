@@ -32,14 +32,21 @@ endif()
 option(RTK_USE_CUDA "Use CUDA for RTK" ${RTK_USE_CUDA_DEFAULT})
 
 # Configure CUDA compilation options
+option(RTK_CUDA_VERSION "Specify the exact CUDA version that must be used for RTK")
 if(RTK_USE_CUDA)
   enable_language(CUDA)
   set(CMAKE_CUDA_RUNTIME_LIBRARY Static)
 
   include_directories(${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES})
-  find_package(CUDAToolkit REQUIRED 8.0)
+  if(RTK_CUDA_VERSION)
+    find_package(CUDAToolkit EXACT ${RTK_CUDA_VERSION})
+  else()
+    find_package(CUDAToolkit REQUIRED 8.0)
+  endif()
 
   set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -Wno-deprecated-gpu-targets")
   set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -Wno-deprecated-declarations")
   set(RTK_CUDA_PROJECTIONS_SLAB_SIZE "16" CACHE STRING "Number of projections processed simultaneously in CUDA forward and back projections")
+elseif(RTK_CUDA_VERSION)
+  message(FATAL_ERROR "RTK_CUDA_VERSION is set but the CUDA toolkit has not been found.")
 endif()

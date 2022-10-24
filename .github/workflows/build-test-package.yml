@@ -227,7 +227,7 @@ jobs:
         for tarball in "-manylinux_2_28" "-manylinux2014"; do
            rm -rf ITKPythonPackage
            export TARBALL_SPECIALIZATION=${tarball}
-           ./dockcross-manylinux-download-cache-and-build-module-wheels.sh -c "-DCUDAToolkit_ROOT=/usr/lib64/cuda116 -DCMAKE_CUDA_COMPILER=/usr/lib64/cuda116/bin/nvcc" -x "libcuda.so;libcuda.so.1;libcudart.so;libcudart.so.11.0;libcublas.so;libcublas.so.11;libcublasLt.so;libcublasLt.so.11;libcufft.so;libcufft.so.10" cp${{ matrix.python-version }}
+           ./dockcross-manylinux-download-cache-and-build-module-wheels.sh -c "-DCUDAToolkit_ROOT=/usr/lib64/cuda116 -DCMAKE_CUDA_COMPILER=/usr/lib64/cuda116/bin/nvcc -DRTK_CUDA_VERSION=11.6" -x "libcuda.so;libcuda.so.1;libcudart.so;libcudart.so.11.0;libcublas.so;libcublas.so.11;libcublasLt.so;libcublasLt.so.11;libcufft.so;libcufft.so.10" cp${{ matrix.python-version }}
         done
 
 
@@ -361,7 +361,7 @@ jobs:
         set PATH=C:\P\grep;%PATH%
         set CC=cl.exe
         set CXX=cl.exe
-        C:\Python3${{ matrix.python-version-minor }}-x64\python.exe C:\P\IPP\scripts\windows_build_module_wheels.py --py-envs "3${{ matrix.python-version-minor }}-x64" --no-cleanup --lib-paths "C:/Program\ Files/NVIDIA\ GPU\ Computing\ Toolkit/CUDA/v11.6/bin" --exclude-libs "nvcuda.dll;concrt140.dll;cublas64_11.dll;cublasLt64_11.dll;cudart64_110.dll;cufft64_10.dll"
+        C:\Python3${{ matrix.python-version-minor }}-x64\python.exe C:\P\IPP\scripts\windows_build_module_wheels.py --py-envs "3${{ matrix.python-version-minor }}-x64" --no-cleanup --lib-paths "C:/Program\ Files/NVIDIA\ GPU\ Computing\ Toolkit/CUDA/v11.6/bin" --exclude-libs "nvcuda.dll;concrt140.dll;cublas64_11.dll;cublasLt64_11.dll;cudart64_110.dll;cufft64_10.dll" -- "-DRTK_CUDA_VERSION=11.6"
 
     - name: Publish Python package as GitHub Artifact
       uses: actions/upload-artifact@v1

@@ -12,10 +12,11 @@ except ImportError:
 
 # Configure wheel name if CUDA is used
 wheel_name='itk-rtk'
-# Extract cuda version from the last folder name in CUDAToolkit_ROOT path.
+# Extract cuda version from the RTK_CUDA_VERSION cmake option
 for arg in sys.argv:
-  if "CUDAToolkit_ROOT" in str(arg):
-    wheel_name += ('-' + arg.rsplit('/', 1)[-1])
+  if "RTK_CUDA_VERSION" in str(arg):
+    cuda_version = arg.rsplit('RTK_CUDA_VERSION=', 1)[-1]
+    wheel_name += '-cuda' + cuda_version.replace('.', '')
 
 setup(
     name=wheel_name,
