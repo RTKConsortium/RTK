@@ -26,13 +26,17 @@ Installation is currently not supported for independent RTK compilations.
 
 Pre-compiled binaries
 ---------------------
-We only provide pre-compiled binaries for the Python package which depends on ITK. Use the following commands to install RTK module with `pip`.
+We only provide pre-compiled binaries for the Python package which depends on ITK. Use the following commands to install the RTK module with `pip`.
 ```
 python -m pip install --upgrade pip
 python -m pip install itk-rtk
 ```
-
 The same operating systems and Python versions are supported as ITK's packages, see the list on [Pypi](https://pypi.org/project/itk-rtk).
+
+We also provide pre-compiled [CUDA](https://developer.nvidia.com/cuda-toolkit) packages for Windows and Linux. They require an installed version of CUDA 11.6. Use the following command instead of the above one to install the CUDA RTK module with `pip`.
+```
+python -m pip install itk-rtk-cuda116
+```
 
 Getting started
 ---------------
