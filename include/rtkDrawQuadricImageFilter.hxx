@@ -36,12 +36,12 @@ template <class TInputImage, class TOutputImage>
 void
 DrawQuadricImageFilter<TInputImage, TOutputImage>::BeforeThreadedGenerateData()
 {
-  if (this->GetConvexObject() == nullptr)
-    this->SetConvexObject(QuadricShape::New().GetPointer());
+  if (this->GetConvexShape() == nullptr)
+    this->SetConvexShape(QuadricShape::New().GetPointer());
 
   Superclass::BeforeThreadedGenerateData();
 
-  QuadricShape * qo = dynamic_cast<QuadricShape *>(this->GetConvexObject());
+  auto * qo = dynamic_cast<QuadricShape *>(this->GetModifiableConvexShape());
   if (qo == nullptr)
   {
     itkExceptionMacro("This is not a QuadricShape!");
