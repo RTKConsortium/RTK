@@ -3,8 +3,8 @@ name: Build, test, package
 on: [push,pull_request]
 
 env:
-  itk-git-tag: "171fb2ba33a87041f99328a2f26612ff33aa9cc8"
-  itk-wheel-tag: "v5.3rc04.post3"
+  itk-git-tag: "abf5fa10522a36bc51f42f20f426a622f42ed90d"
+  itk-wheel-tag: "v5.3rc04.post4"
 
 jobs:
   build-test-cxx:
@@ -12,7 +12,7 @@ jobs:
     strategy:
       max-parallel: 3
       matrix:
-        os: [self-hosted-linux, self-hosted-windows,ubuntu-20.04, windows-2019, macos-11]
+        os: [self-hosted-linux, self-hosted-windows, ubuntu-20.04, windows-2022, macos-11]
         include:
           - os: self-hosted-linux
             c-compiler: "gcc"
@@ -26,7 +26,7 @@ jobs:
             c-compiler: "gcc"
             cxx-compiler: "g++"
             cmake-build-type: "MinSizeRel"
-          - os: windows-2019
+          - os: windows-2022
             c-compiler: "cl.exe"
             cxx-compiler: "cl.exe"
             cmake-build-type: "Release"
@@ -42,7 +42,7 @@ jobs:
       if: matrix.os != 'self-hosted-windows' && matrix.os != 'self-hosted-linux'
       uses: actions/setup-python@v2
       with:
-        python-version: 3.8
+        python-version: "3.8"
 
     - name: Install build dependencies
       run: |
@@ -50,7 +50,7 @@ jobs:
         python -m pip install ninja
 
     - name: Get specific version of CMake, Ninja
-      uses: lukka/get-cmake@v3.18.3
+      uses: lukka/get-cmake@v3.22.2
 
     - name: self-hosted cleanup
       if: matrix.os == 'self-hosted-windows' || matrix.os == 'self-hosted-linux'
@@ -68,7 +68,7 @@ jobs:
         git checkout ${{ env.itk-git-tag }}
 
     - name: Build ITK
-      if: matrix.os != 'windows-2019' && matrix.os != 'self-hosted-windows'
+      if: matrix.os != 'windows-2022' && matrix.os != 'self-hosted-windows'
       run: |
         cd ..
         mkdir ITK-build
@@ -77,12 +77,12 @@ jobs:
         ninja
 
     - name: Build ITK
-      if: matrix.os == 'windows-2019'
+      if: matrix.os == 'windows-2022'
       run: |
         cd ..
         mkdir ITK-build
         cd ITK-build
-        call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+        call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
         cmake -DCMAKE_C_COMPILER:FILEPATH="${{ matrix.c-compiler }}" -DBUILD_SHARED_LIBS:BOOL=ON -DCMAKE_CXX_COMPILER="${{ matrix.cxx-compiler }}" -DCMAKE_BUILD_TYPE:STRING=${{ matrix.cmake-build-type }} -DBUILD_TESTING:BOOL=OFF -GNinja ../ITK
         ninja
       shell: cmd
@@ -93,7 +93,7 @@ jobs:
         cd ..
         mkdir ITK-build
         cd ITK-build
-        call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars64.bat"
+        call "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvars64.bat"
         cmake -DCMAKE_C_COMPILER:FILEPATH="${{ matrix.c-compiler }}" -DBUILD_SHARED_LIBS:BOOL=ON -DCMAKE_CXX_COMPILER="${{ matrix.cxx-compiler }}" -DCMAKE_BUILD_TYPE:STRING=${{ matrix.cmake-build-type }} -DBUILD_TESTING:BOOL=OFF -GNinja ../ITK
         ninja
       shell: cmd
@@ -148,21 +148,21 @@ jobs:
         cat dashboard.cmake
 
     - name: Build and test
-      if: matrix.os != 'windows-2019' && matrix.os != 'self-hosted-windows'
+      if: matrix.os != 'windows-2022' && matrix.os != 'self-hosted-windows'
       run: |
         ctest --output-on-failure -j 2 -V -S dashboard.cmake
 
     - name: Build and test
-      if: matrix.os == 'windows-2019'
+      if: matrix.os == 'windows-2022'
       run: |
-        call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+        call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
         ctest --output-on-failure -j 2 -V -S dashboard.cmake
       shell: cmd
 
     - name: Build and test
       if: matrix.os == 'self-hosted-windows'
       run: |
-        call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars64.bat"
+        call "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvars64.bat"
         ctest --output-on-failure -j 2 -V -S dashboard.cmake
       shell: cmd
 
@@ -171,7 +171,7 @@ jobs:
     strategy:
       max-parallel: 2
       matrix:
-        python-version: [37, 38, 39, 310]
+        python-version: ["37", "38", "39", "310", "311"]
 
     steps:
     - uses: actions/checkout@v2
@@ -210,7 +210,7 @@ jobs:
     strategy:
       max-parallel: 2
       matrix:
-        python-version: [37, 38, 39, 310]
+        python-version: ["37", "38", "39", "310", "311"]
 
     steps:
     - uses: actions/checkout@v2
@@ -218,18 +218,22 @@ jobs:
     - name: 'Fetch build script'
       run: |
         curl -L https://raw.githubusercontent.com/InsightSoftwareConsortium/ITKPythonPackage/master/scripts/dockcross-manylinux-download-cache-and-build-module-wheels.sh -O
+        sed -i "s/^rm/\#rm/g" dockcross-manylinux-download-cache-and-build-module-wheels.sh
         chmod u+x dockcross-manylinux-download-cache-and-build-module-wheels.sh
 
     - name: 'Build 🐍 Python 📦 package'
       run: |
         export ITK_PACKAGE_VERSION=${{ env.itk-wheel-tag }}
         export LD_LIBRARY_PATH="/home/srit/Downloads/cuda116:/home/srit/Downloads/cuda116/targets/x86_64-linux/lib:/home/srit/Downloads/cuda116/lib64/stubs"
+        if test -e ../../ITKPythonBuilds-linux-manylinux2014.tar.zst ; then
+           mv ../../*zst .
+        fi
         for tarball in "-manylinux_2_28" "-manylinux2014"; do
            rm -rf ITKPythonPackage
            export TARBALL_SPECIALIZATION=${tarball}
            ./dockcross-manylinux-download-cache-and-build-module-wheels.sh -c "-DCUDAToolkit_ROOT=/usr/lib64/cuda116 -DCMAKE_CUDA_COMPILER=/usr/lib64/cuda116/bin/nvcc -DRTK_CUDA_VERSION=11.6" -x "libcuda.so;libcuda.so.1;libcudart.so;libcudart.so.11.0;libcublas.so;libcublas.so.11;libcublasLt.so;libcublasLt.so.11;libcufft.so;libcufft.so.10" cp${{ matrix.python-version }}
         done
-
+        mv *zst ../..
 
     - name: Publish Python package as GitHub Artifact
       uses: actions/upload-artifact@v1
@@ -247,7 +251,7 @@ jobs:
 
     - name: 'Specific XCode version'
       run: |
-        sudo xcode-select -s "/Applications/Xcode_11.7.app"
+        sudo xcode-select -s "/Applications/Xcode_13.2.1.app"
 
     - name: Get specific version of CMake, Ninja
       uses: lukka/get-cmake@v3.18.3
@@ -270,11 +274,11 @@ jobs:
         path: dist
 
   build-windows-python-packages:
-    runs-on: windows-2019
+    runs-on: windows-2022
     strategy:
       max-parallel: 2
       matrix:
-        python-version-minor: [7, 8, 9, 10]
+        python-version-minor: ["7", "8", "9", "10", "11"]
 
     steps:
     - name: Get specific version of CMake, Ninja
@@ -306,7 +310,7 @@ jobs:
       shell: cmd
       run: |
         cd ../../im
-        call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+        call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
         set PATH=C:\P\grep;%PATH%
         set CC=cl.exe
         set CXX=cl.exe
@@ -323,7 +327,7 @@ jobs:
     strategy:
       max-parallel: 2
       matrix:
-        python-version-minor: [7, 8, 9, 10]
+        python-version-minor: ["7", "8", "9", "10", "11"]
 
     steps:
     - uses: actions/checkout@v2
@@ -357,7 +361,7 @@ jobs:
       shell: cmd
       run: |
         cd ../../im
-        call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars64.bat"
+        call "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvars64.bat"
         set PATH=C:\P\grep;%PATH%
         set CC=cl.exe
         set CXX=cl.exe
@@ -394,7 +398,7 @@ jobs:
 
     - name: Publish 🐍 Python 📦 package to PyPI
       if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags')
-      uses: pypa/gh-action-pypi-publish@master
+      uses: pypa/gh-action-pypi-publish@v1.5.1
       with:
         user: __token__
         password: ${{ secrets.pypi_password }}
