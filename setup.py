@@ -20,7 +20,7 @@ for arg in sys.argv:
 
 setup(
     name=wheel_name,
-    version='2.4.0',
+    version='2.4.1',
     author='RTK Consortium',
     author_email='rtk-users@openrtk.org',
     packages=['itk'],
@@ -57,6 +57,6 @@ setup(
     keywords='RTK Reconstruction Toolkit',
     url=r'https://www.openrtk.org/',
     install_requires=[
-        r'itk>=5.3rc04'
+        r'itk>=5.3rc04.post4'
     ]
     )
