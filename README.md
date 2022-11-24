@@ -1,14 +1,14 @@
 RTK: The Reconstruction ToolKit
 ===============================
 
-[![GitHub release](https://img.shields.io/github/release/SimonRit/RTK.svg)](https://github.com/SimonRit/RTK/releases/latest)
+[![GitHub release](https://img.shields.io/github/release/RTKConsortium/RTK.svg)](https://github.com/RTKConsortium/RTK/releases/latest)
 [![PyPI](https://img.shields.io/pypi/v/itk-rtk.svg)](https://pypi.python.org/pypi/itk-rtk)
 [![Wheels](https://img.shields.io/pypi/wheel/itk-rtk.svg)](https://pypi.org/project/itk-rtk)
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/SimonRit/RTK/blob/master/LICENSE.TXT)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/RTKConsortium/RTK/blob/master/LICENSE.TXT)
 [![][gha-img]][gha-link]
 
-[gha-img]: https://github.com/SimonRit/RTK/actions/workflows/build-test-package.yml/badge.svg
-[gha-link]: https://github.com/SimonRit/RTK/actions/workflows/build-test-package.yml
+[gha-img]: https://github.com/RTKConsortium/RTK/actions/workflows/build-test-package.yml/badge.svg
+[gha-link]: https://github.com/RTKConsortium/RTK/actions/workflows/build-test-package.yml
 
 
 Links
@@ -19,7 +19,7 @@ Links
 * [Mailing List](https://public.kitware.com/mailman/listinfo/rtk-users)
 * [Getting Started](GettingStarted.md)
 * [Help](https://wiki.openrtk.org)
-* [Issue tracking](https://github.com/SimonRit/RTK/issues)
+* [Issue tracking](https://github.com/RTKConsortium/RTK/issues)
 
 
 Copyright RTK Consortium

@@ -25,7 +25,7 @@ setup(
     author_email='rtk-users@openrtk.org',
     packages=['itk'],
     package_dir={'itk': 'itk'},
-    download_url=r'https://github.com/SimonRit/RTK',
+    download_url=r'https://github.com/RTKConsortium/RTK',
     description=r'The Reconstruction Toolkit (RTK) for fast circular cone-beam CT reconstruction.',
     long_description='Based on the Insight Toolkit ITK, RTK provides: basic operators for reconstruction (e.g. filtering, forward, projection and backprojection), multithreaded CPU and GPU versions, tools for respiratory motion correction, I/O for several scanners, preprocessing of raw data for scatter correction.',
     classifiers=[

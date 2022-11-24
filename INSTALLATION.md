@@ -19,7 +19,7 @@ Independent configuration and compilation
 -----------------------------------------
 For RTK developpers, it may be useful to compile RTK independently from ITK. This is possible, simply:
 * Compile ITK with `Module_RTK=OFF`.
-* Manually download RTK's source repository from [GitHub](https://github.com/SimonRit/RTK) with `git` (recommended) or as a [zip package](https://codeload.github.com/SimonRit/RTK/zip/master).
+* Manually download RTK's source repository from [GitHub](https://github.com/RTKConsortium/RTK) with `git` (recommended) or as a [zip package](https://codeload.github.com/RTKConsortium/RTK/zip/master).
 * Configure the project with CMake pointing to RTK's source directory and setting the CMake option `ITK_DIR` to ITK's compilation directory. All CMake options above can be set except `Module_RTK`.
 
 Installation is currently not supported for independent RTK compilations.
@@ -40,4 +40,4 @@ python -m pip install itk-rtk-cuda116
 
 Getting started
 ---------------
-See [GettingStarted.md](GettingStarted.md). Your `CMakeLists.txt` can now use RTK when importing ITK as shown in the [FirstReconstruction's CMakeLists.txt](https://github.com/SimonRit/RTK/blob/master/examples/FirstReconstruction/CMakeLists.txt#L7).
+See [GettingStarted.md](GettingStarted.md). Your `CMakeLists.txt` can now use RTK when importing ITK as shown in the [FirstReconstruction's CMakeLists.txt](https://github.com/RTKConsortium/RTK/blob/master/examples/FirstReconstruction/CMakeLists.txt#L7).
