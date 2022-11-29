@@ -3,8 +3,9 @@ name: Build, test, package
 on: [push,pull_request]
 
 env:
-  itk-git-tag: "abf5fa10522a36bc51f42f20f426a622f42ed90d"
-  itk-wheel-tag: "v5.3rc04.post4"
+  itk-git-tag: "v5.3.0"
+  itk-wheel-tag: "v5.3.0"
+  itk-python-package-tag: "0f5effc39afbf7cb1ac5ab20faa0996ddb12b34d"
 
 jobs:
   build-test-cxx:
@@ -187,7 +188,11 @@ jobs:
 
     - name: 'Fetch build script'
       run: |
-        curl -L https://raw.githubusercontent.com/InsightSoftwareConsortium/ITKPythonPackage/master/scripts/dockcross-manylinux-download-cache-and-build-module-wheels.sh -O
+        ITK_PYTHON_PACKAGE_GIT_TAG=${{ env.itk-python-package-tag }}
+        if [[ -z ${ITK_PYTHON_PACKAGE_GIT_TAG} ]]; then
+          ITK_PYTHON_PACKAGE_GIT_TAG="master"
+        fi
+        curl -L https://raw.githubusercontent.com/InsightSoftwareConsortium/ITKPythonPackage/${ITK_PYTHON_PACKAGE_GIT_TAG}/scripts/dockcross-manylinux-download-cache-and-build-module-wheels.sh -O
         chmod u+x dockcross-manylinux-download-cache-and-build-module-wheels.sh
 
     - name: 'Build 🐍 Python 📦 package'
@@ -217,7 +222,11 @@ jobs:
 
     - name: 'Fetch build script'
       run: |
-        curl -L https://raw.githubusercontent.com/InsightSoftwareConsortium/ITKPythonPackage/master/scripts/dockcross-manylinux-download-cache-and-build-module-wheels.sh -O
+        ITK_PYTHON_PACKAGE_GIT_TAG=${{ env.itk-python-package-tag }}
+        if [[ -z ${ITK_PYTHON_PACKAGE_GIT_TAG} ]]; then
+          ITK_PYTHON_PACKAGE_GIT_TAG="master"
+        fi
+        curl -L https://raw.githubusercontent.com/InsightSoftwareConsortium/ITKPythonPackage/${ITK_PYTHON_PACKAGE_GIT_TAG}/scripts/dockcross-manylinux-download-cache-and-build-module-wheels.sh -O
         sed -i "s/^rm/\#rm/g" dockcross-manylinux-download-cache-and-build-module-wheels.sh
         chmod u+x dockcross-manylinux-download-cache-and-build-module-wheels.sh
 
@@ -254,11 +263,15 @@ jobs:
         sudo xcode-select -s "/Applications/Xcode_13.2.1.app"
 
     - name: Get specific version of CMake, Ninja
-      uses: lukka/get-cmake@v3.18.3
+      uses: lukka/get-cmake@v3.22.2
 
     - name: 'Fetch build script'
       run: |
-        curl -L https://raw.githubusercontent.com/InsightSoftwareConsortium/ITKPythonPackage/master/scripts/macpython-download-cache-and-build-module-wheels.sh -O
+        ITK_PYTHON_PACKAGE_GIT_TAG=${{ env.itk-python-package-tag }}
+        if [[ -z ${ITK_PYTHON_PACKAGE_GIT_TAG} ]]; then
+          ITK_PYTHON_PACKAGE_GIT_TAG="master"
+        fi
+        curl -L https://raw.githubusercontent.com/InsightSoftwareConsortium/ITKPythonPackage/${ITK_PYTHON_PACKAGE_GIT_TAG}/scripts/macpython-download-cache-and-build-module-wheels.sh -O
         chmod u+x macpython-download-cache-and-build-module-wheels.sh
 
     - name: 'Build 🐍 Python 📦 package'
@@ -282,7 +295,7 @@ jobs:
 
     steps:
     - name: Get specific version of CMake, Ninja
-      uses: lukka/get-cmake@v3.18.3
+      uses: lukka/get-cmake@v3.22.2
 
     - uses: actions/checkout@v2
       with:
@@ -305,6 +318,18 @@ jobs:
         7z x doxygen-1.8.11.windows.bin.zip -o/c/P/doxygen -aoa -r
         curl -L "https://data.kitware.com/api/v1/file/5bbf87ba8d777f06b91f27d6/download/grep-win.zip" -o "grep-win.zip"
         7z x grep-win.zip -o/c/P/grep -aoa -r
+
+        if [[ -n ${{ env.itk-python-package-tag }} ]]; then
+          echo "Updating ITKPythonPackage build scripts to ${{ env.itk-python-package-tag }}"
+          pushd /c/P/IPP
+          git remote add InsightSoftwareConsortium https://github.com/InsightSoftwareConsortium/ITKPythonPackage.git --tags
+          git fetch InsightSoftwareConsortium
+          git checkout ${{ env.itk-python-package-tag }}
+          git status
+          popd
+        else
+          echo "Using ITKPythonPackage scripts included with ITKPythonBuilds archive"
+        fi
 
     - name: 'Build 🐍 Python 📦 package'
       shell: cmd
