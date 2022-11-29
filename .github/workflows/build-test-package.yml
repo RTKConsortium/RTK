@@ -368,18 +368,30 @@ jobs:
     - name: self-hosted cleanup
       shell: bash
       run: |
+        if test -f ../../im/ITKPythonBuilds-windows.zip; then
+           mv ../../im/*.zip .
+        fi
         rm -fr ../../im
 
     - name: 'Fetch build dependencies'
       shell: bash
       run: |
+        if test -f ITKPythonBuilds-windows.zip; then
+           mv *.zip im
+        fi
         mv im ../../
         cd ../../im
-        curl -L "https://github.com/InsightSoftwareConsortium/ITKPythonBuilds/releases/download/${{ env.itk-wheel-tag }}/ITKPythonBuilds-windows.zip" -o "ITKPythonBuilds-windows.zip"
+        if ! test -f ITKPythonBuilds-windows.zip; then
+           curl -L "https://github.com/InsightSoftwareConsortium/ITKPythonBuilds/releases/download/${{ env.itk-wheel-tag }}/ITKPythonBuilds-windows.zip" -o "ITKPythonBuilds-windows.zip"
+        fi
         7z x ITKPythonBuilds-windows.zip -o/c/P -aoa -r
-        curl -L "https://data.kitware.com/api/v1/file/5c0ad59d8d777f2179dd3e9c/download" -o "doxygen-1.8.11.windows.bin.zip"
+        if ! test -f doxygen-1.8.11.windows.bin.zip; then
+           curl -L "https://data.kitware.com/api/v1/file/5c0ad59d8d777f2179dd3e9c/download" -o "doxygen-1.8.11.windows.bin.zip"
+        fi
         7z x doxygen-1.8.11.windows.bin.zip -o/c/P/doxygen -aoa -r
-        curl -L "https://data.kitware.com/api/v1/file/5bbf87ba8d777f06b91f27d6/download/grep-win.zip" -o "grep-win.zip"
+        if ! test -f grep-win.zip; then
+           curl -L "https://data.kitware.com/api/v1/file/5bbf87ba8d777f06b91f27d6/download/grep-win.zip" -o "grep-win.zip"
+        fi
         7z x grep-win.zip -o/c/P/grep -aoa -r
 
     - name: 'Build 🐍 Python 📦 package'
