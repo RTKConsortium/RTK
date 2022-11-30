@@ -37,7 +37,7 @@ jobs:
             cmake-build-type: "MinSizeRel"
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Set up Python 3.8
       if: matrix.os != 'self-hosted-windows' && matrix.os != 'self-hosted-linux'
@@ -175,7 +175,7 @@ jobs:
         python-version: ["37", "38", "39", "310", "311"]
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: 'Free up disk space'
       run: |
@@ -218,7 +218,7 @@ jobs:
         python-version: ["37", "38", "39", "310", "311"]
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: 'Fetch build script'
       run: |
@@ -256,7 +256,7 @@ jobs:
       max-parallel: 2
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: 'Specific XCode version'
       run: |
@@ -297,7 +297,7 @@ jobs:
     - name: Get specific version of CMake, Ninja
       uses: lukka/get-cmake@v3.22.2
 
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         path: "im"
 
@@ -355,7 +355,7 @@ jobs:
         python-version-minor: ["7", "8", "9", "10", "11"]
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         path: "im"
 
