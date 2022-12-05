@@ -364,6 +364,13 @@ public:
   itkGetConstMacro(RadiusCylindricalDetector, double);
   itkSetMacro(RadiusCylindricalDetector, double);
 
+  /** Accessor for the internal tolerance on angles. */
+  itkGetConstMacro(VerifyAnglesTolerance, double);
+  itkSetMacro(VerifyAnglesTolerance, double);
+
+  itkGetConstMacro(FixAnglesTolerance, double);
+  itkSetMacro(FixAnglesTolerance, double);
+
 protected:
   ThreeDCircularProjectionGeometry();
   ~ThreeDCircularProjectionGeometry() override = default;
@@ -476,6 +483,10 @@ protected:
   std::vector<Superclass::MatrixType>      m_MagnificationMatrices;
   std::vector<ThreeDHomogeneousMatrixType> m_RotationMatrices;
   std::vector<ThreeDHomogeneousMatrixType> m_SourceTranslationMatrices;
+
+  /** Internal tolerance parameters. */
+  double m_VerifyAnglesTolerance{ 1e-4 };
+  double m_FixAnglesTolerance{ 1e-6 };
 };
 } // namespace rtk
 
