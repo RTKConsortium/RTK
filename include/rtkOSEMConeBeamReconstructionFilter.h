@@ -234,7 +234,7 @@ private:
   double m_Alpha{ -1. };
 
   /** Hyperparameter for the regularization */
-  double m_BetaRegularization{ 0.01 };
+  double m_BetaRegularization{ 0. };
 
   bool m_StoreNormalizationImages{ true };
 
