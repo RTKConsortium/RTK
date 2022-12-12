@@ -130,6 +130,6 @@ if(BUILD_TESTING)
   add_test(rtkapposemtest ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/rtkosem -g geo -p . -r sheppy.mha -o osem.mha -n 3 --dimension 21 --output-every 1 --nprojpersubset 15 --iteration-file-name osem%d.mha)
   set_tests_properties(rtkapposemtest PROPERTIES DEPENDS rtkappprojectshepploganphantomtest)
 
-  add_test(rtkapposemchecktest ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/rtkcheckimagequality -i reference.mha -j osem1.mha,osem2.mha,osem3.mha -t 800,550,450)
+  add_test(rtkapposemchecktest ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/rtkcheckimagequality -i reference.mha -j osem1.mha,osem2.mha,osem3.mha -t 800,550,455)
   set_tests_properties(rtkapposemchecktest PROPERTIES DEPENDS "rtkapposemtest;rtkappdrawshepploganphantomtest")
 endif()
