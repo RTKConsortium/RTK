@@ -290,8 +290,9 @@ rtk_add_test(rtkParallelGeometryFromMatrixTest rtkparallelgeometryfrommatrixtest
 rtk_add_test(rtkOraTest rtkoratest.cxx
   DATA{Input/Ora/0_afterLog.ora.xml,0_afterLog.mhd,0_afterLog.raw}
   DATA{Baseline/Ora/geometry.xml}
-  DATA{Input/Ora/084183_20211217170607335.ora.xml,084183_20211217170607335.mhd}
-  DATA{Baseline/Ora/geometry_tilt.xml}
+  DATA{Input/Ora/2006137_20220918183246810.ora.xml,2006137_20220918183246810.mhd}
+  DATA{Baseline/Ora/geometry_yawtilt.xml}
+  DATA{Baseline/Ora/geometry_optitrack.xml}
   DATA{Baseline/Ora/attenuation.mha})
 
 rtk_add_test(rtkBioscanTest rtkbioscantest.cxx
