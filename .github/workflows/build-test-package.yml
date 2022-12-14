@@ -5,7 +5,9 @@ on: [push,pull_request]
 env:
   itk-git-tag: "v5.3.0"
   itk-wheel-tag: "v5.3.0"
-  itk-python-package-tag: "0f5effc39afbf7cb1ac5ab20faa0996ddb12b34d"
+  itk-python-package-tag: "d24dc0cd1f1f79e9a9846ab74a9e7eefec9ac067"
+
+  itk-python-package-org: "InsightSoftwareConsortium"
 
 jobs:
   build-test-cxx:
@@ -37,7 +39,7 @@ jobs:
             cmake-build-type: "MinSizeRel"
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v2
 
     - name: Set up Python 3.8
       if: matrix.os != 'self-hosted-windows' && matrix.os != 'self-hosted-linux'
@@ -175,7 +177,7 @@ jobs:
         python-version: ["37", "38", "39", "310", "311"]
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v2
 
     - name: 'Free up disk space'
       run: |
@@ -188,19 +190,20 @@ jobs:
 
     - name: 'Fetch build script'
       run: |
-        ITK_PYTHON_PACKAGE_GIT_TAG=${{ env.itk-python-package-tag }}
-        if [[ -z ${ITK_PYTHON_PACKAGE_GIT_TAG} ]]; then
-          ITK_PYTHON_PACKAGE_GIT_TAG="master"
-        fi
-        curl -L https://raw.githubusercontent.com/InsightSoftwareConsortium/ITKPythonPackage/${ITK_PYTHON_PACKAGE_GIT_TAG}/scripts/dockcross-manylinux-download-cache-and-build-module-wheels.sh -O
+        IPP_DOWNLOAD_GIT_TAG=${{ env.itk-python-package-tag }}
+        IPP_DOWNLOAD_ORG=${{ env.itk-python-package-org }}
+        curl -L https://raw.githubusercontent.com/${IPP_DOWNLOAD_ORG:=InsightSoftwareConsortium}/ITKPythonPackage/${IPP_DOWNLOAD_GIT_TAG:=master}/scripts/dockcross-manylinux-download-cache-and-build-module-wheels.sh -O
         chmod u+x dockcross-manylinux-download-cache-and-build-module-wheels.sh
 
     - name: 'Build 🐍 Python 📦 package'
       run: |
         export ITK_PACKAGE_VERSION=${{ env.itk-wheel-tag }}
-        for tarball in "-manylinux_2_28" "-manylinux2014"; do
+        export ITKPYTHONPACKAGE_TAG=${{ env.itk-python-package-tag }}
+        export ITKPYTHONPACKAGE_ORG=${{ env.itk-python-package-org }}
+        for manylinux_version in "_2_28" "2014"; do
            rm -rf ITKPythonPackage
-           export TARBALL_SPECIALIZATION=${tarball}
+           export MANYLINUX_VERSION=${manylinux_version}
+           echo "Building for manylinux specialization ${MANYLINUX_VERSION}"
            ./dockcross-manylinux-download-cache-and-build-module-wheels.sh cp${{ matrix.python-version }}
         done
 
@@ -218,28 +221,29 @@ jobs:
         python-version: ["37", "38", "39", "310", "311"]
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v2
 
     - name: 'Fetch build script'
       run: |
-        ITK_PYTHON_PACKAGE_GIT_TAG=${{ env.itk-python-package-tag }}
-        if [[ -z ${ITK_PYTHON_PACKAGE_GIT_TAG} ]]; then
-          ITK_PYTHON_PACKAGE_GIT_TAG="master"
-        fi
-        curl -L https://raw.githubusercontent.com/InsightSoftwareConsortium/ITKPythonPackage/${ITK_PYTHON_PACKAGE_GIT_TAG}/scripts/dockcross-manylinux-download-cache-and-build-module-wheels.sh -O
+        IPP_DOWNLOAD_GIT_TAG=${{ env.itk-python-package-tag }}
+        IPP_DOWNLOAD_ORG=${{ env.itk-python-package-org }}
+        curl -L https://raw.githubusercontent.com/${IPP_DOWNLOAD_ORG:=InsightSoftwareConsortium}/ITKPythonPackage/${IPP_DOWNLOAD_GIT_TAG:=master}/scripts/dockcross-manylinux-download-cache-and-build-module-wheels.sh -O
         sed -i "s/^rm/\#rm/g" dockcross-manylinux-download-cache-and-build-module-wheels.sh
         chmod u+x dockcross-manylinux-download-cache-and-build-module-wheels.sh
 
     - name: 'Build 🐍 Python 📦 package'
       run: |
         export ITK_PACKAGE_VERSION=${{ env.itk-wheel-tag }}
+        export ITKPYTHONPACKAGE_TAG=${{ env.itk-python-package-tag }}
+        export ITKPYTHONPACKAGE_ORG=${{ env.itk-python-package-org }}
         export LD_LIBRARY_PATH="/home/srit/Downloads/cuda116:/home/srit/Downloads/cuda116/targets/x86_64-linux/lib:/home/srit/Downloads/cuda116/lib64/stubs"
         if test -e ../../ITKPythonBuilds-linux-manylinux2014.tar.zst ; then
            mv ../../*zst .
         fi
-        for tarball in "-manylinux_2_28" "-manylinux2014"; do
+        for manylinux_version in "_2_28" "2014"; do
            rm -rf ITKPythonPackage
-           export TARBALL_SPECIALIZATION=${tarball}
+           export MANYLINUX_VERSION=${manylinux_version}
+           echo "Building for manylinux specialization ${MANYLINUX_VERSION}"
            ./dockcross-manylinux-download-cache-and-build-module-wheels.sh -c "-DCUDAToolkit_ROOT=/usr/lib64/cuda116 -DCMAKE_CUDA_COMPILER=/usr/lib64/cuda116/bin/nvcc -DRTK_CUDA_VERSION=11.6" -x "libcuda.so;libcuda.so.1;libcudart.so;libcudart.so.11.0;libcublas.so;libcublas.so.11;libcublasLt.so;libcublasLt.so.11;libcufft.so;libcufft.so.10" cp${{ matrix.python-version }}
         done
         mv *zst ../..
@@ -256,7 +260,7 @@ jobs:
       max-parallel: 2
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v2
 
     - name: 'Specific XCode version'
       run: |
@@ -267,16 +271,16 @@ jobs:
 
     - name: 'Fetch build script'
       run: |
-        ITK_PYTHON_PACKAGE_GIT_TAG=${{ env.itk-python-package-tag }}
-        if [[ -z ${ITK_PYTHON_PACKAGE_GIT_TAG} ]]; then
-          ITK_PYTHON_PACKAGE_GIT_TAG="master"
-        fi
-        curl -L https://raw.githubusercontent.com/InsightSoftwareConsortium/ITKPythonPackage/${ITK_PYTHON_PACKAGE_GIT_TAG}/scripts/macpython-download-cache-and-build-module-wheels.sh -O
+        IPP_DOWNLOAD_GIT_TAG=${{ env.itk-python-package-tag }}
+        IPP_DOWNLOAD_ORG=${{ env.itk-python-package-org }}
+        curl -L https://raw.githubusercontent.com/${IPP_DOWNLOAD_ORG:=InsightSoftwareConsortium}/ITKPythonPackage/${IPP_DOWNLOAD_GIT_TAG:=master}/scripts/macpython-download-cache-and-build-module-wheels.sh -O
         chmod u+x macpython-download-cache-and-build-module-wheels.sh
 
     - name: 'Build 🐍 Python 📦 package'
       run: |
         export ITK_PACKAGE_VERSION=${{ env.itk-wheel-tag }}
+        export ITKPYTHONPACKAGE_TAG=${{ env.itk-python-package-tag }}
+        export ITKPYTHONPACKAGE_ORG=${{ env.itk-python-package-org }}
         export MACOSX_DEPLOYMENT_TARGET=10.9
         ./macpython-download-cache-and-build-module-wheels.sh
 
