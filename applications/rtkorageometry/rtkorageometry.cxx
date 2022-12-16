@@ -35,6 +35,7 @@ main(int argc, char * argv[])
   rtk::OraGeometryReader::Pointer oraReader = rtk::OraGeometryReader::New();
   oraReader->SetProjectionsFileNames(rtk::GetProjectionsFileNamesFromGgo(args_info));
   oraReader->SetCollimationMargin(margin);
+  oraReader->SetOptiTrackObjectID(args_info.optitrack_arg);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(oraReader->UpdateOutputData())
 
   // Write

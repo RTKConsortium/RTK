@@ -24,7 +24,9 @@ main(int argc, char * argv[])
   {
     std::cerr << "Usage: " << std::endl;
     std::cerr << argv[0] << "oraGeometry.xml refGeometry.xml"
-              << " oraGeometry_tilt.xml refGeometry_tilt.xml"
+              << " oraGeometry_yawtilt.xml refGeometry_yawtilt.xml"
+              << " oraGeometry_yaw.xml refGeometry_yaw.xml"
+              << " refGeometry_optitrack.xml"
               << " reference.mha" << std::endl;
     return EXIT_FAILURE;
   }
@@ -48,15 +50,15 @@ main(int argc, char * argv[])
   // Check geometries
   CheckGeometries(geoTargReader->GetGeometry(), geoRefReader->GetOutputObject());
 
-  std::cout << "Testing geometry with tilt..." << std::endl;
+  std::cout << "Testing geometry with tilt and yaw..." << std::endl;
 
   // Ora geometry
-  std::vector<std::string> filenames_tilt;
-  filenames_tilt.emplace_back(argv[3]);
-  rtk::OraGeometryReader::Pointer geoTargReader_tilt;
-  geoTargReader_tilt = rtk::OraGeometryReader::New();
-  geoTargReader_tilt->SetProjectionsFileNames(filenames_tilt);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(geoTargReader_tilt->UpdateOutputData());
+  std::vector<std::string> filenames_yawtilt;
+  filenames_yawtilt.emplace_back(argv[3]);
+  rtk::OraGeometryReader::Pointer geoTargReader_yawtilt;
+  geoTargReader_yawtilt = rtk::OraGeometryReader::New();
+  geoTargReader_yawtilt->SetProjectionsFileNames(filenames_yawtilt);
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(geoTargReader_yawtilt->UpdateOutputData());
 
   // Reference geometry
   geoRefReader = rtk::ThreeDCircularProjectionGeometryXMLFileReader::New();
@@ -64,7 +66,26 @@ main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION(geoRefReader->GenerateOutputInformation())
 
   // Check geometries
-  CheckGeometries(geoTargReader_tilt->GetGeometry(), geoRefReader->GetOutputObject());
+  CheckGeometries(geoTargReader_yawtilt->GetGeometry(), geoRefReader->GetOutputObject());
+
+  std::cout << "Testing geometry with optitrack..." << std::endl;
+
+  // Ora geometry
+  std::vector<std::string> filenames_opti;
+  filenames_opti.emplace_back(argv[3]);
+  rtk::OraGeometryReader::Pointer geoTargReader_opti;
+  geoTargReader_opti = rtk::OraGeometryReader::New();
+  geoTargReader_opti->SetProjectionsFileNames(filenames_opti);
+  geoTargReader_opti->SetOptiTrackObjectID(2);
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(geoTargReader_opti->UpdateOutputData());
+
+  // Reference geometry
+  geoRefReader = rtk::ThreeDCircularProjectionGeometryXMLFileReader::New();
+  geoRefReader->SetFilename(argv[5]);
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(geoRefReader->GenerateOutputInformation())
+
+  // Check geometries
+  CheckGeometries(geoTargReader_opti->GetGeometry(), geoRefReader->GetOutputObject());
 
   // ******* COMPARING projections *******
   std::cout << "Testing attenuation conversion..." << std::endl;
@@ -98,7 +119,7 @@ main(int argc, char * argv[])
   // Reference projections reader
   ReaderType::Pointer readerRef = ReaderType::New();
   filenames.clear();
-  filenames.emplace_back(argv[5]);
+  filenames.emplace_back(argv[6]);
   readerRef->SetFileNames(filenames);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(readerRef->Update());
 

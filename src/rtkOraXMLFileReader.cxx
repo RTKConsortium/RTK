@@ -23,13 +23,13 @@
 
 namespace rtk
 {
-OraXMLFileReader ::OraXMLFileReader()
+OraXMLFileReader::OraXMLFileReader()
 {
   m_OutputObject = &m_Dictionary;
 }
 
 int
-OraXMLFileReader ::CanReadFile(const char * name)
+OraXMLFileReader::CanReadFile(const char * name)
 {
   if (!itksys::SystemTools::FileExists(name) || itksys::SystemTools::FileIsDirectory(name) ||
       itksys::SystemTools::FileLength(name) == 0)
@@ -38,13 +38,13 @@ OraXMLFileReader ::CanReadFile(const char * name)
 }
 
 void
-OraXMLFileReader ::StartElement(const char * itkNotUsed(name), const char ** itkNotUsed(atts))
+OraXMLFileReader::StartElement(const char * itkNotUsed(name), const char ** itkNotUsed(atts))
 {
   m_CurCharacterData = "";
 }
 
 void
-OraXMLFileReader ::EndElement(const char * name)
+OraXMLFileReader::EndElement(const char * name)
 {
   EncapsulatePoint("SourcePosition", name);
   EncapsulatePoint("Origin", name);
@@ -60,19 +60,23 @@ OraXMLFileReader ::EndElement(const char * name)
   EncapsulateDouble("xrayy2_cm", name);
   EncapsulateDouble("tiltleft_deg", name);
   EncapsulateDouble("tiltright_deg", name);
+  EncapsulateDouble("room_cs_yaw_deg", name);
   EncapsulateDouble("ydistancebaseunitcs2imagingcs_cm", name);
   EncapsulateDouble("zdistancebaseunitcs2imagingcs_cm", name);
+  EncapsulateVector<int>("optitrack_object_ids", name);
+  EncapsulateVector<double>("optitrack_positions", name);
+  EncapsulateVector<double>("optitrack_rotations", name);
 }
 
 void
-OraXMLFileReader ::CharacterDataHandler(const char * inData, int inLength)
+OraXMLFileReader::CharacterDataHandler(const char * inData, int inLength)
 {
   for (int i = 0; i < inLength; i++)
     m_CurCharacterData = m_CurCharacterData + inData[i];
 }
 
 void
-OraXMLFileReader ::EncapsulatePoint(const char * metaName, const char * name)
+OraXMLFileReader::EncapsulatePoint(const char * metaName, const char * name)
 {
   if (itksys::SystemTools::Strucmp(name, metaName) == 0)
   {
@@ -89,7 +93,7 @@ OraXMLFileReader ::EncapsulatePoint(const char * metaName, const char * name)
 }
 
 void
-OraXMLFileReader ::EncapsulateMatrix3x3(const char * metaName, const char * name)
+OraXMLFileReader::EncapsulateMatrix3x3(const char * metaName, const char * name)
 {
   if (itksys::SystemTools::Strucmp(name, metaName) == 0)
   {
@@ -109,7 +113,7 @@ OraXMLFileReader ::EncapsulateMatrix3x3(const char * metaName, const char * name
 }
 
 void
-OraXMLFileReader ::EncapsulateDouble(const char * metaName, const char * name)
+OraXMLFileReader::EncapsulateDouble(const char * metaName, const char * name)
 {
   if (itksys::SystemTools::Strucmp(name, metaName) == 0)
   {
@@ -118,8 +122,28 @@ OraXMLFileReader ::EncapsulateDouble(const char * metaName, const char * name)
   }
 }
 
+template <typename TValue>
 void
-OraXMLFileReader ::EncapsulateString(const char * metaName, const char * name)
+OraXMLFileReader::EncapsulateVector(const char * metaName, const char * name)
+{
+  if (itksys::SystemTools::Strucmp(name, metaName) == 0)
+  {
+    std::vector<TValue> v;
+    std::istringstream  iss(m_CurCharacterData);
+    TValue              d;
+    iss >> d;
+    while (!iss.fail())
+    {
+      v.push_back(d);
+      iss.ignore(1);
+      iss >> d;
+    }
+    itk::EncapsulateMetaData<std::vector<TValue>>(m_Dictionary, metaName, v);
+  }
+}
+
+void
+OraXMLFileReader::EncapsulateString(const char * metaName, const char * name)
 {
   if (itksys::SystemTools::Strucmp(name, metaName) == 0)
   {
