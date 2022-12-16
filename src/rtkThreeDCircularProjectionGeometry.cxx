@@ -676,7 +676,6 @@ rtk::ThreeDCircularProjectionGeometry::VerifyAngles(const double          outOfP
   using EulerType = itk::Euler3DTransform<double>;
 
   const Matrix3x3Type & rm = referenceMatrix; // shortcut
-  const double          EPSILON = 1e-4;       // internal tolerance for comparison
 
   EulerType::Pointer euler = EulerType::New();
   euler->SetComputeZYX(false); // ZXY order
@@ -685,7 +684,7 @@ rtk::ThreeDCircularProjectionGeometry::VerifyAngles(const double          outOfP
 
   for (int i = 0; i < 3; i++) // check whether matrices match
     for (int j = 0; j < 3; j++)
-      if (itk::Math::abs(rm[i][j] - m[i][j]) > EPSILON)
+      if (itk::Math::abs(rm[i][j] - m[i][j]) > m_VerifyAnglesTolerance)
         return false;
 
   return true;
@@ -698,9 +697,8 @@ rtk::ThreeDCircularProjectionGeometry::FixAngles(double &              outOfPlan
                                                  const Matrix3x3Type & referenceMatrix) const
 {
   const Matrix3x3Type & rm = referenceMatrix; // shortcut
-  const double          EPSILON = 1e-6;       // internal tolerance for comparison
 
-  if (itk::Math::abs(itk::Math::abs(rm[2][1]) - 1.) > EPSILON)
+  if (itk::Math::abs(itk::Math::abs(rm[2][1]) - 1.) > m_FixAnglesTolerance)
   {
     double oa = NAN, ga = NAN, ia = NAN;
 
