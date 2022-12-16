@@ -3,8 +3,11 @@ name: Build, test, package
 on: [push,pull_request]
 
 env:
-  itk-git-tag: "abf5fa10522a36bc51f42f20f426a622f42ed90d"
-  itk-wheel-tag: "v5.3rc04.post4"
+  itk-git-tag: "v5.3.0"
+  itk-wheel-tag: "v5.3.0"
+  itk-python-package-tag: "d24dc0cd1f1f79e9a9846ab74a9e7eefec9ac067"
+
+  itk-python-package-org: "InsightSoftwareConsortium"
 
 jobs:
   build-test-cxx:
@@ -187,15 +190,20 @@ jobs:
 
     - name: 'Fetch build script'
       run: |
-        curl -L https://raw.githubusercontent.com/InsightSoftwareConsortium/ITKPythonPackage/master/scripts/dockcross-manylinux-download-cache-and-build-module-wheels.sh -O
+        IPP_DOWNLOAD_GIT_TAG=${{ env.itk-python-package-tag }}
+        IPP_DOWNLOAD_ORG=${{ env.itk-python-package-org }}
+        curl -L https://raw.githubusercontent.com/${IPP_DOWNLOAD_ORG:=InsightSoftwareConsortium}/ITKPythonPackage/${IPP_DOWNLOAD_GIT_TAG:=master}/scripts/dockcross-manylinux-download-cache-and-build-module-wheels.sh -O
         chmod u+x dockcross-manylinux-download-cache-and-build-module-wheels.sh
 
     - name: 'Build 🐍 Python 📦 package'
       run: |
         export ITK_PACKAGE_VERSION=${{ env.itk-wheel-tag }}
-        for tarball in "-manylinux_2_28" "-manylinux2014"; do
+        export ITKPYTHONPACKAGE_TAG=${{ env.itk-python-package-tag }}
+        export ITKPYTHONPACKAGE_ORG=${{ env.itk-python-package-org }}
+        for manylinux_version in "_2_28" "2014"; do
            rm -rf ITKPythonPackage
-           export TARBALL_SPECIALIZATION=${tarball}
+           export MANYLINUX_VERSION=${manylinux_version}
+           echo "Building for manylinux specialization ${MANYLINUX_VERSION}"
            ./dockcross-manylinux-download-cache-and-build-module-wheels.sh cp${{ matrix.python-version }}
         done
 
@@ -217,20 +225,25 @@ jobs:
 
     - name: 'Fetch build script'
       run: |
-        curl -L https://raw.githubusercontent.com/InsightSoftwareConsortium/ITKPythonPackage/master/scripts/dockcross-manylinux-download-cache-and-build-module-wheels.sh -O
+        IPP_DOWNLOAD_GIT_TAG=${{ env.itk-python-package-tag }}
+        IPP_DOWNLOAD_ORG=${{ env.itk-python-package-org }}
+        curl -L https://raw.githubusercontent.com/${IPP_DOWNLOAD_ORG:=InsightSoftwareConsortium}/ITKPythonPackage/${IPP_DOWNLOAD_GIT_TAG:=master}/scripts/dockcross-manylinux-download-cache-and-build-module-wheels.sh -O
         sed -i "s/^rm/\#rm/g" dockcross-manylinux-download-cache-and-build-module-wheels.sh
         chmod u+x dockcross-manylinux-download-cache-and-build-module-wheels.sh
 
     - name: 'Build 🐍 Python 📦 package'
       run: |
         export ITK_PACKAGE_VERSION=${{ env.itk-wheel-tag }}
+        export ITKPYTHONPACKAGE_TAG=${{ env.itk-python-package-tag }}
+        export ITKPYTHONPACKAGE_ORG=${{ env.itk-python-package-org }}
         export LD_LIBRARY_PATH="/home/srit/Downloads/cuda116:/home/srit/Downloads/cuda116/targets/x86_64-linux/lib:/home/srit/Downloads/cuda116/lib64/stubs"
         if test -e ../../ITKPythonBuilds-linux-manylinux2014.tar.zst ; then
            mv ../../*zst .
         fi
-        for tarball in "-manylinux_2_28" "-manylinux2014"; do
+        for manylinux_version in "_2_28" "2014"; do
            rm -rf ITKPythonPackage
-           export TARBALL_SPECIALIZATION=${tarball}
+           export MANYLINUX_VERSION=${manylinux_version}
+           echo "Building for manylinux specialization ${MANYLINUX_VERSION}"
            ./dockcross-manylinux-download-cache-and-build-module-wheels.sh -c "-DCUDAToolkit_ROOT=/usr/lib64/cuda116 -DCMAKE_CUDA_COMPILER=/usr/lib64/cuda116/bin/nvcc -DRTK_CUDA_VERSION=11.6" -x "libcuda.so;libcuda.so.1;libcudart.so;libcudart.so.11.0;libcublas.so;libcublas.so.11;libcublasLt.so;libcublasLt.so.11;libcufft.so;libcufft.so.10" cp${{ matrix.python-version }}
         done
         mv *zst ../..
@@ -254,16 +267,20 @@ jobs:
         sudo xcode-select -s "/Applications/Xcode_13.2.1.app"
 
     - name: Get specific version of CMake, Ninja
-      uses: lukka/get-cmake@v3.18.3
+      uses: lukka/get-cmake@v3.22.2
 
     - name: 'Fetch build script'
       run: |
-        curl -L https://raw.githubusercontent.com/InsightSoftwareConsortium/ITKPythonPackage/master/scripts/macpython-download-cache-and-build-module-wheels.sh -O
+        IPP_DOWNLOAD_GIT_TAG=${{ env.itk-python-package-tag }}
+        IPP_DOWNLOAD_ORG=${{ env.itk-python-package-org }}
+        curl -L https://raw.githubusercontent.com/${IPP_DOWNLOAD_ORG:=InsightSoftwareConsortium}/ITKPythonPackage/${IPP_DOWNLOAD_GIT_TAG:=master}/scripts/macpython-download-cache-and-build-module-wheels.sh -O
         chmod u+x macpython-download-cache-and-build-module-wheels.sh
 
     - name: 'Build 🐍 Python 📦 package'
       run: |
         export ITK_PACKAGE_VERSION=${{ env.itk-wheel-tag }}
+        export ITKPYTHONPACKAGE_TAG=${{ env.itk-python-package-tag }}
+        export ITKPYTHONPACKAGE_ORG=${{ env.itk-python-package-org }}
         export MACOSX_DEPLOYMENT_TARGET=10.9
         ./macpython-download-cache-and-build-module-wheels.sh
 
@@ -282,9 +299,9 @@ jobs:
 
     steps:
     - name: Get specific version of CMake, Ninja
-      uses: lukka/get-cmake@v3.18.3
+      uses: lukka/get-cmake@v3.22.2
 
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         path: "im"
 
@@ -305,6 +322,18 @@ jobs:
         7z x doxygen-1.8.11.windows.bin.zip -o/c/P/doxygen -aoa -r
         curl -L "https://data.kitware.com/api/v1/file/5bbf87ba8d777f06b91f27d6/download/grep-win.zip" -o "grep-win.zip"
         7z x grep-win.zip -o/c/P/grep -aoa -r
+
+        if [[ -n ${{ env.itk-python-package-tag }} ]]; then
+          echo "Updating ITKPythonPackage build scripts to ${{ env.itk-python-package-tag }}"
+          pushd /c/P/IPP
+          git remote add InsightSoftwareConsortium https://github.com/InsightSoftwareConsortium/ITKPythonPackage.git --tags
+          git fetch InsightSoftwareConsortium
+          git checkout ${{ env.itk-python-package-tag }}
+          git status
+          popd
+        else
+          echo "Using ITKPythonPackage scripts included with ITKPythonBuilds archive"
+        fi
 
     - name: 'Build 🐍 Python 📦 package'
       shell: cmd
@@ -330,7 +359,7 @@ jobs:
         python-version-minor: ["7", "8", "9", "10", "11"]
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         path: "im"
 
@@ -343,18 +372,30 @@ jobs:
     - name: self-hosted cleanup
       shell: bash
       run: |
+        if test -f ../../im/ITKPythonBuilds-windows.zip; then
+           mv ../../im/*.zip .
+        fi
         rm -fr ../../im
 
     - name: 'Fetch build dependencies'
       shell: bash
       run: |
+        if test -f ITKPythonBuilds-windows.zip; then
+           mv *.zip im
+        fi
         mv im ../../
         cd ../../im
-        curl -L "https://github.com/InsightSoftwareConsortium/ITKPythonBuilds/releases/download/${{ env.itk-wheel-tag }}/ITKPythonBuilds-windows.zip" -o "ITKPythonBuilds-windows.zip"
+        if ! test -f ITKPythonBuilds-windows.zip; then
+           curl -L "https://github.com/InsightSoftwareConsortium/ITKPythonBuilds/releases/download/${{ env.itk-wheel-tag }}/ITKPythonBuilds-windows.zip" -o "ITKPythonBuilds-windows.zip"
+        fi
         7z x ITKPythonBuilds-windows.zip -o/c/P -aoa -r
-        curl -L "https://data.kitware.com/api/v1/file/5c0ad59d8d777f2179dd3e9c/download" -o "doxygen-1.8.11.windows.bin.zip"
+        if ! test -f doxygen-1.8.11.windows.bin.zip; then
+           curl -L "https://data.kitware.com/api/v1/file/5c0ad59d8d777f2179dd3e9c/download" -o "doxygen-1.8.11.windows.bin.zip"
+        fi
         7z x doxygen-1.8.11.windows.bin.zip -o/c/P/doxygen -aoa -r
-        curl -L "https://data.kitware.com/api/v1/file/5bbf87ba8d777f06b91f27d6/download/grep-win.zip" -o "grep-win.zip"
+        if ! test -f grep-win.zip; then
+           curl -L "https://data.kitware.com/api/v1/file/5bbf87ba8d777f06b91f27d6/download/grep-win.zip" -o "grep-win.zip"
+        fi
         7z x grep-win.zip -o/c/P/grep -aoa -r
 
     - name: 'Build 🐍 Python 📦 package'
