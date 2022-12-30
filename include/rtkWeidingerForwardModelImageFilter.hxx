@@ -36,7 +36,6 @@ WeidingerForwardModelImageFilter<TMaterialProjections, TPhotonCounts, TSpectrum,
   this->SetNthOutput(1, this->MakeOutput(1));
 }
 
-
 template <class TMaterialProjections, class TPhotonCounts, class TSpectrum, class TProjections>
 void
 WeidingerForwardModelImageFilter<TMaterialProjections, TPhotonCounts, TSpectrum, TProjections>::
@@ -235,9 +234,10 @@ WeidingerForwardModelImageFilter<TMaterialProjections, TPhotonCounts, TSpectrum,
   input2Ptr->SetRequestedRegion(outputRequested1);
   input4Ptr->SetRequestedRegion(outputRequested1);
 
-  // The spectrum input's first dimension is the energy,
-  // and then come the spatial dimensions. The projection
-  // number is discarded
+  // The spectrum input's first dimension is the energy, and then come the
+  // spatial dimensions. The projection number is discarded but the last
+  // dimension may be an integer multiple of projections to treat, e.g., even
+  // and odd projections for fast-switching.
   // Compute the requested region for the spectrum
   typename TSpectrum::RegionType spectrumRegion = input3Ptr->GetLargestPossibleRegion();
   for (unsigned int d = 0; d < TSpectrum::ImageDimension - 1; d++)
@@ -245,6 +245,16 @@ WeidingerForwardModelImageFilter<TMaterialProjections, TPhotonCounts, TSpectrum,
     spectrumRegion.SetIndex(d + 1, outputRequested1.GetIndex()[d]);
     spectrumRegion.SetSize(d + 1, outputRequested1.GetSize()[d]);
   }
+  const itk::SizeValueType nRowsSpectrum = input3Ptr->GetLargestPossibleRegion().GetSize(TSpectrum::ImageDimension - 1);
+  const itk::SizeValueType nRowsPhotonCounts =
+    input2Ptr->GetLargestPossibleRegion().GetSize(TPhotonCounts::ImageDimension - 2);
+  if (nRowsSpectrum % nRowsPhotonCounts != 0)
+    itkGenericExceptionMacro("The number of rows of the spectrum must be equal to the number of rows of the input "
+                             "projections times an integer number of projections");
+  m_NumberOfProjectionsInSpectrum = nRowsSpectrum / nRowsPhotonCounts;
+  spectrumRegion.SetSize(TSpectrum::ImageDimension - 1,
+                         spectrumRegion.GetSize(TSpectrum::ImageDimension - 1) +
+                           nRowsPhotonCounts * (m_NumberOfProjectionsInSpectrum - 1));
 
   // Set the requested region for the spectrum
   input3Ptr->SetRequestedRegion(spectrumRegion);
@@ -262,6 +272,14 @@ WeidingerForwardModelImageFilter<TMaterialProjections, TPhotonCounts, TSpectrum,
     spectrumRegion.SetIndex(d + 1, outputRegionForThread.GetIndex()[d]);
     spectrumRegion.SetSize(d + 1, outputRegionForThread.GetSize()[d]);
   }
+  const itk::SizeValueType nRowsPhotonCounts =
+    this->GetOutput2()->GetLargestPossibleRegion().GetSize(TPhotonCounts::ImageDimension - 2);
+  itk::IndexValueType spectrumProjIndex =
+    outputRegionForThread.GetIndex()[TPhotonCounts::ImageDimension - 1] % m_NumberOfProjectionsInSpectrum;
+  spectrumRegion.SetIndex(TSpectrum::ImageDimension - 1,
+                          spectrumRegion.GetIndex(TSpectrum::ImageDimension - 1) +
+                            nRowsPhotonCounts * spectrumProjIndex);
+
   unsigned int nEnergies = spectrumRegion.GetSize()[0];
 
   // Create iterators for all inputs and outputs
@@ -290,7 +308,15 @@ WeidingerForwardModelImageFilter<TMaterialProjections, TPhotonCounts, TSpectrum,
   {
     // After each projection, the spectrum's iterator must come back to the beginning
     if (spectrumIt.IsAtEnd())
+    {
+      spectrumProjIndex++;
+      spectrumProjIndex %= m_NumberOfProjectionsInSpectrum;
+      spectrumRegion.SetIndex(TSpectrum::ImageDimension - 1,
+                              outputRegionForThread.GetIndex()[TPhotonCounts::ImageDimension - 2] +
+                                nRowsPhotonCounts * spectrumProjIndex);
+      spectrumIt.SetRegion(spectrumRegion);
       spectrumIt.GoToBegin();
+    }
 
     // Read the spectrum at the current pixel
     for (unsigned int e = 0; e < nEnergies; e++)

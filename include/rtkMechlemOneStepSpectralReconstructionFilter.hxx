@@ -65,10 +65,10 @@ MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectru
   m_SingleComponentVolumeSource->SetConstant(itk::NumericTraits<typename TOutputImage::PixelType::ValueType>::One);
   m_GradientsSource->SetConstant(
     itk::NumericTraits<typename MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectrum>::
-                         TGradientsImage::PixelType>::ZeroValue());
+                         GradientsImageType::PixelType>::ZeroValue());
   m_HessiansSource->SetConstant(
     itk::NumericTraits<typename MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectrum>::
-                         THessiansImage::PixelType>::ZeroValue());
+                         HessiansImageType::PixelType>::ZeroValue());
 }
 
 template <class TOutputImage, class TPhotonCounts, class TSpectrum>
@@ -204,7 +204,7 @@ typename MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts,
 {
   // Define the type of image to be back projected
   using THessians =
-    typename MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectrum>::THessiansImage;
+    typename MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectrum>::HessiansImageType;
 
   // Declare the pointer
   typename MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectrum>::
@@ -482,8 +482,8 @@ MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectru
           // Backproject gradient and hessian of that projection
           m_GradientsBackProjectionFilter->Update();
           m_HessiansBackProjectionFilter->Update();
-          typename TGradientsImage::Pointer gBP = m_GradientsBackProjectionFilter->GetOutput();
-          typename THessiansImage::Pointer  hBP = m_HessiansBackProjectionFilter->GetOutput();
+          typename GradientsImageType::Pointer gBP = m_GradientsBackProjectionFilter->GetOutput();
+          typename HessiansImageType::Pointer  hBP = m_HessiansBackProjectionFilter->GetOutput();
           gBP->DisconnectPipeline();
           hBP->DisconnectPipeline();
           m_GradientsBackProjectionFilter->SetInput(gBP);

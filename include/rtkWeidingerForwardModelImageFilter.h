@@ -140,6 +140,7 @@ protected:
   /** Additional input parameters */
   BinnedDetectorResponseType m_BinnedDetectorResponse;
   MaterialAttenuationsType   m_MaterialAttenuations;
+  itk::SizeValueType         m_NumberOfProjectionsInSpectrum;
 };
 } // namespace rtk
 
