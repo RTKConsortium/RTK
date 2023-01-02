@@ -1,0 +1,147 @@
+name: 'Build, Test, Package RTK with CUDA'
+
+on: [push,pull_request]
+
+env:
+  itk-wheel-tag: 'v5.3.0'
+  itk-python-package-tag: "6a7296422d15a7196f0711faa4ce562d21ba1bf3"
+  itk-python-package-org: "InsightSoftwareConsortium"
+
+jobs:
+  build-linux-cuda-python-packages:
+    runs-on: self-hosted-linux
+    strategy:
+      max-parallel: 2
+      matrix:
+        python-version: ["37", "38", "39", "310", "311"]
+        manylinux-platform: ["_2_28-x64","2014-x64"]
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: 'Fetch build script'
+      run: |
+        IPP_DOWNLOAD_GIT_TAG=${{ env.itk-python-package-tag }}
+        IPP_DOWNLOAD_ORG=${{ env.itk-python-package-org }}
+        curl -L https://raw.githubusercontent.com/${IPP_DOWNLOAD_ORG:=InsightSoftwareConsortium}/ITKPythonPackage/${IPP_DOWNLOAD_GIT_TAG:=master}/scripts/dockcross-manylinux-download-cache-and-build-module-wheels.sh -O
+        export ITK_MODULE_NO_CLEANUP=TRUE
+        chmod u+x dockcross-manylinux-download-cache-and-build-module-wheels.sh
+
+    - name: 'Build 🐍 Python 📦 package'
+      shell: bash
+      run: |
+        rm -rf dist
+
+        export ITK_PACKAGE_VERSION=${{ env.itk-wheel-tag }}
+        export ITKPYTHONPACKAGE_TAG=${{ env.itk-python-package-tag }}
+        export ITKPYTHONPACKAGE_ORG=${{ env.itk-python-package-org }}
+        export ITK_MODULE_PREQ=${{ env.itk-module-deps }}
+        if [ -z ${{ env.cmake-options }}]; then
+          CMAKE_OPTIONS=""
+        else
+          CMAKE_OPTIONS="--cmake_options ${{ env.cmake-options }}"
+        fi
+        export LD_LIBRARY_PATH="/home/srit/Downloads/cuda116:/home/srit/Downloads/cuda116/targets/x86_64-linux/lib:/home/srit/Downloads/cuda116/lib64/stubs"
+        if test -e ../../ITKPythonBuilds-linux-manylinux2014.tar.zst ; then
+           mv ../../*zst .
+        fi
+        MANYLINUX_PLATFORM=${{ matrix.manylinux-platform }}
+        echo "Manylinux platform ${MANYLINUX_PLATFORM}"
+        rm -rf ITKPythonPackage
+        export MANYLINUX_VERSION=`(echo ${MANYLINUX_PLATFORM} | cut -d '-' -f 1)`
+        export TARGET_ARCH=`(echo ${MANYLINUX_PLATFORM} | cut -d '-' -f 2)`
+        echo "Building for manylinux specialization ${MANYLINUX_VERSION} and target architecture ${TARGET_ARCH}"
+        ./dockcross-manylinux-download-cache-and-build-module-wheels.sh $CMAKE_OPTIONS -c "-DCUDAToolkit_ROOT=/usr/lib64/cuda116 -DCMAKE_CUDA_COMPILER=/usr/lib64/cuda116/bin/nvcc -DRTK_CUDA_VERSION=11.6" -x "libcuda.so;libcuda.so.1;libcudart.so;libcudart.so.11.0;libcublas.so;libcublas.so.11;libcublasLt.so;libcublasLt.so.11;libcufft.so;libcufft.so.10" cp${{ matrix.python-version }}
+        mv *zst ../..
+
+    - name: Publish Python package as GitHub Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: LinuxWheel${{ matrix.python-version }}-cuda116
+        path: dist/*.whl
+
+  build-windows-cuda-python-packages:
+    runs-on: self-hosted-windows
+    strategy:
+      max-parallel: 2
+      matrix:
+        python-version-minor: ["7", "8", "9", "10", "11"]
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        path: "im"
+
+    - name: 'Reduce source path length'
+      shell: bash
+      run: |
+        # Move ITKPythonBuilds archive to the checked-out source
+        if test -f ../../im/ITKPythonBuilds-windows.zip; then
+           mv ../../im/*.zip im
+        fi
+        rm -fr ../../im
+
+        # Move checked-out source to a shorter path to avoid Windows path length issues
+        mv im ../../
+
+    - name: 'Fetch build script'
+      shell: pwsh
+      run: |
+        cd ../../im
+        $ITKPYTHONPACKAGE_TAG = "${{ env.itk-python-package-tag }}"
+        $ITKPYTHONPACKAGE_ORG = "${{ env.itk-python-package-org }}"
+        $SCRIPT_UPSTREAM = "https://raw.githubusercontent.com/$ITKPYTHONPACKAGE_ORG/ITKPythonPackage/$ITKPYTHONPACKAGE_TAG/scripts/windows-download-cache-and-build-module-wheels.ps1"
+        echo "Fetching $SCRIPT_UPSTREAM"
+        (new-object net.webclient).DownloadString($SCRIPT_UPSTREAM) > windows-download-cache-and-build-module-wheels.ps1
+
+    - name: 'Build 🐍 Python 📦 package'
+      shell: pwsh
+      run: |
+        if (Test-Path dist) { rm dist -r -fo }
+
+        cd ../../im
+        & "C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\Tools\Launch-VsDevShell.ps1" -Arch amd64 -SkipAutomaticLocation
+        $env:CC="cl.exe"
+        $env:CXX="cl.exe"
+        $env:ITK_PACKAGE_VERSION = "${{ env.itk-wheel-tag }}"
+        $env:ITKPYTHONPACKAGE_TAG = "${{ env.itk-python-package-tag }}"
+        $env:ITKPYTHONPACKAGE_ORG = "${{ env.itk-python-package-org }}"
+        $env:ITK_MODULE_PREQ = "${{ env.itk-module-deps }}"
+        ./windows-download-cache-and-build-module-wheels.ps1 "${{ matrix.python-version-minor }}" --lib-paths "C:/Program\ Files/NVIDIA\ GPU\ Computing\ Toolkit/CUDA/v11.6/bin" --exclude-libs "nvcuda.dll;concrt140.dll;cublas64_11.dll;cublasLt64_11.dll;cudart64_110.dll;cufft64_10.dll" "--" "-DRTK_CUDA_VERSION=11.6"
+
+        mkdir -p '${{ github.workspace }}\dist'
+        cp 'dist\*.whl' '${{ github.workspace }}\dist'
+
+    - name: Publish Python package as GitHub Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: WindowsWheel3.${{ matrix.python-version-minor }}-cuda116
+        path: dist/*.whl
+
+  publish-python-packages-to-pypi:
+    needs:
+      - build-linux-cuda-python-packages
+      - build-windows-cuda-python-packages
+    runs-on: ubuntu-22.04
+
+    steps:
+    - name: Download Python Packages
+      uses: actions/download-artifact@v3
+
+    - name: Prepare packages for upload
+      run: |
+        ls -R
+        for d in */; do
+          mv ${d}/*.whl .
+        done
+        mkdir dist
+        mv *.whl dist/
+        ls dist
+
+    - name: Publish 🐍 Python 📦 package to PyPI
+      if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags')
+      uses: pypa/gh-action-pypi-publish@v1.5.1
+      with:
+        skip_existing: true
+        user: __token__
+        password: ${{ secrets.pypi_password }}
