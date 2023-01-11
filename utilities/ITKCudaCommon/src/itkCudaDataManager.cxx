@@ -32,7 +32,7 @@ CudaDataManager::CudaDataManager()
   // without CUDA. So if the context pointer is nullptr, which indicates that there
   // is no CUDA device available, we just do not set the context (SR). This fixes
   // the problem reported here:
-  // https://public.kitware.com/pipermail/rtk-users/2015-July/000570.html
+  // https://www.creatis.insa-lyon.fr/pipermail/rtk-users/2015-July/000570.html
   CUcontext * ctx = m_ContextManager->GetCurrentContext();
   if (ctx)
     CUDA_CHECK(cuCtxSetCurrent(*ctx));

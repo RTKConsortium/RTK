@@ -16,7 +16,7 @@ Links
 
 * [Homepage](https://www.openrtk.org)
 * [Download](https://www.openrtk.org/RTK/resources/software.html)
-* [Mailing List](https://public.kitware.com/mailman/listinfo/rtk-users)
+* [Mailing List](https://www.creatis.insa-lyon.fr/mailman/listinfo/rtk-users)
 * [Getting Started](GettingStarted.md)
 * [Help](https://wiki.openrtk.org)
 * [Issue tracking](https://github.com/RTKConsortium/RTK/issues)
