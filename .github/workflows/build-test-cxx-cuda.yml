@@ -1,0 +1,164 @@
+name: 'Build, Test RTK with CUDA'
+
+on: [push,pull_request]
+
+env:
+  itk-git-tag: "v5.3.0"
+
+jobs:
+  build-test-cxx:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      max-parallel: 3
+      matrix:
+        os: [self-hosted-linux, self-hosted-windows]
+        include:
+          - os: self-hosted-linux
+            c-compiler: "gcc"
+            cxx-compiler: "g++"
+            cmake-build-type: "MinSizeRel"
+          - os: self-hosted-windows
+            c-compiler: "cl.exe"
+            cxx-compiler: "cl.exe"
+            cmake-build-type: "Release"
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Install build dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install ninja
+
+    - name: Get specific version of CMake, Ninja
+      uses: lukka/get-cmake@v3.24.2
+
+    - name: self-hosted cleanup
+      shell: bash
+      run: |
+        rm -fr ../ITK
+        rm -fr ../ITK-build
+        rm -fr ../build
+
+    - name: Download ITK
+      run: |
+        cd ..
+        git clone https://github.com/InsightSoftwareConsortium/ITK.git
+        cd ITK
+        git checkout ${{ env.itk-git-tag }}
+
+    - name: Build ITK
+      if: matrix.os != 'self-hosted-windows'
+      shell: bash
+      run: |
+        cd ..
+        mkdir ITK-build
+        cd ITK-build
+        MODULE_ARGS=""
+        MODULE_DEPS=${{ env.itk-module-deps }}
+        for MODULE_INFO in ${MODULE_DEPS//:/ }; do
+          MODULE_NAME=`(echo ${MODULE_INFO} | cut -d'@' -f 1)`
+          MODULE_ARGS="${MODULE_ARGS} -DModule_${MODULE_NAME}:BOOL=ON"
+          MODULE_TAG=`(echo ${MODULE_INFO} | cut -d'@' -f 2)`
+          if [[ -n ${MODULE_TAG} ]]; then
+            MODULE_ARGS+=" -DModule_${MODULE_NAME}_GIT_TAG:STRING=${MODULE_TAG}"
+          fi
+        done
+        if [[ -n $MODULE_ARGS ]]; then
+          echo "Building with modules: $MODULE_ARGS"
+        fi
+
+        cmake -DCMAKE_C_COMPILER:FILEPATH="${{ matrix.c-compiler }}" -DBUILD_SHARED_LIBS:BOOL=ON -DCMAKE_CXX_COMPILER="${{ matrix.cxx-compiler }}" -DCMAKE_BUILD_TYPE:STRING=${{ matrix.cmake-build-type }} -DBUILD_TESTING:BOOL=OFF ${{ env.itk-cmake-options }} ${MODULE_ARGS} -GNinja ../ITK
+        ninja
+
+    - name: Build ITK
+      if: matrix.os == 'self-hosted-windows'
+      shell: pwsh
+      run: |
+        Set-PSDebug -Trace 1
+        cd ..
+        & "C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\Tools\Launch-VsDevShell.ps1" -Arch amd64 -SkipAutomaticLocation
+        mkdir ITK-build
+        cd ITK-build
+
+        $MODULE_ARGS=""
+        $MODULE_DEPS="${{ env.itk-module-deps }}"
+        $MODULES_LIST = $MODULE_DEPS.split(":")
+        foreach($MODULE_INFO in $MODULES_LIST) {
+          if($MODULE_ARGS) { $MODULE_ARGS += " " }
+          $MODULE_NAME = $MODULE_INFO.split("@")[0]
+          $MODULE_ARGS += "-DModule_$MODULE_NAME`:BOOL=ON"
+          $MODULE_TAG = $MODULE_INFO.split("@")[1]
+          if($MODULE_TAG) {
+            $MODULE_ARGS += " -DModule_$MODULE_NAME`_GIT_TAG:STRING=$MODULE_TAG"
+          }
+        }
+
+        if($MODULE_ARGS) {
+          echo "Building with parameters: ${{ env.itk-cmake-options }} $MODULE_ARGS"
+        }
+
+        cmake -DCMAKE_C_COMPILER:FILEPATH="${{ matrix.c-compiler }}" -DBUILD_SHARED_LIBS:BOOL=ON -DCMAKE_CXX_COMPILER="${{ matrix.cxx-compiler }}" -DCMAKE_BUILD_TYPE:STRING=${{ matrix.cmake-build-type }} -DBUILD_TESTING:BOOL=OFF ${{ env.itk-cmake-options }} $MODULE_ARGS.split(" ") -GNinja ../ITK
+        ninja
+
+    - name: Fetch CTest driver script
+      run: |
+        curl -L https://raw.githubusercontent.com/InsightSoftwareConsortium/ITK/dashboard/itk_common.cmake -O
+
+    - name: Configure CTest script
+      shell: bash
+      run: |
+        operating_system="${{ matrix.os }}"
+        cat > dashboard.cmake << EOF
+        set(CTEST_SITE "GitHubActions")
+        file(TO_CMAKE_PATH "\$ENV{GITHUB_WORKSPACE}/.." CTEST_DASHBOARD_ROOT)
+        file(TO_CMAKE_PATH "\$ENV{GITHUB_WORKSPACE}/" CTEST_SOURCE_DIRECTORY)
+        file(TO_CMAKE_PATH "\$ENV{GITHUB_WORKSPACE}/../build" CTEST_BINARY_DIRECTORY)
+        set(dashboard_source_name "${GITHUB_REPOSITORY}")
+        if((ENV{GITHUB_REF_NAME} MATCHES "master" OR ENV{GITHUB_REF_NAME} MATCHES "main"))
+          set(branch "-master")
+          set(dashboard_model "Continuous")
+        else()
+          set(branch "-${GITHUB_REF}")
+          set(dashboard_model "Experimental")
+        endif()
+        set(CTEST_BUILD_NAME "${GITHUB_REPOSITORY}-${operating_system}-\${branch}")
+        set(CTEST_UPDATE_VERSION_ONLY 1)
+        set(CTEST_TEST_ARGS \${CTEST_TEST_ARGS} PARALLEL_LEVEL \${PARALLEL_LEVEL})
+        set(CTEST_BUILD_CONFIGURATION "Release")
+        set(CTEST_CMAKE_GENERATOR "Ninja")
+        set(CTEST_CUSTOM_WARNING_EXCEPTION
+          \${CTEST_CUSTOM_WARNING_EXCEPTION}
+          # macOS Azure VM Warning
+          "ld: warning: text-based stub file"
+          ${{ env.warnings-to-ignore }}
+          )
+        set(dashboard_no_clean 1)
+        set(ENV{CC} ${{ matrix.c-compiler }})
+        set(ENV{CXX} ${{ matrix.cxx-compiler }})
+        if(WIN32)
+          set(ENV{PATH} "\${CTEST_DASHBOARD_ROOT}/ITK-build/bin;\$ENV{PATH}")
+        endif()
+        set(dashboard_cache "
+        ITK_DIR:PATH=\${CTEST_DASHBOARD_ROOT}/ITK-build
+        BUILD_TESTING:BOOL=ON
+        ${{ env.cmake-options }}
+        ")
+        string(TIMESTAMP build_date "%Y-%m-%d")
+        message("CDash Build Identifier: \${build_date} \${CTEST_BUILD_NAME}")
+        message("CTEST_SITE = \${CTEST_SITE}")
+        include(\${CTEST_SCRIPT_DIRECTORY}/itk_common.cmake)
+        EOF
+        cat dashboard.cmake
+
+    - name: Build and test
+      if: matrix.os != 'self-hosted-windows'
+      run: |
+        ctest --output-on-failure -j 2 -V -S dashboard.cmake ${{ env.ctest-options }}
+
+    - name: Build and test
+      if: matrix.os == 'self-hosted-windows'
+      shell: pwsh
+      run: |
+        & "C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\Tools\Launch-VsDevShell.ps1" -Arch amd64 -SkipAutomaticLocation
+        ctest --output-on-failure -j 2 -V -S dashboard.cmake ${{ env.ctest-options }}
