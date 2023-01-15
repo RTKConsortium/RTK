@@ -9,6 +9,6 @@ jobs:
   python-build-workflow:
     uses: InsightSoftwareConsortium/ITKRemoteModuleBuildTestPackageAction/.github/workflows/build-test-package-python.yml@e63df7ae8a13af6e1bf5b0bcffd45252e133faad
     with:
-      manylinux-platforms: '["_2_28-x64","2014-x64"]'
+      cmake-options: '-DCMAKE_CXX_FLAGS:STRING=-fno-lto'
     secrets:
       pypi_password: ${{ secrets.pypi_password }}
