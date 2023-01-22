@@ -14,7 +14,7 @@ jobs:
       max-parallel: 2
       matrix:
         python-version: ["37", "38", "39", "310", "311"]
-        manylinux-platform: ["_2_28-x64","2014-x64"]
+        manylinux-platform: ["_2_28-x64","2014-x64","_2_28-aarch64"]
 
     steps:
     - uses: actions/checkout@v3
@@ -24,7 +24,6 @@ jobs:
         IPP_DOWNLOAD_GIT_TAG=${{ env.itk-python-package-tag }}
         IPP_DOWNLOAD_ORG=${{ env.itk-python-package-org }}
         curl -L https://raw.githubusercontent.com/${IPP_DOWNLOAD_ORG:=InsightSoftwareConsortium}/ITKPythonPackage/${IPP_DOWNLOAD_GIT_TAG:=master}/scripts/dockcross-manylinux-download-cache-and-build-module-wheels.sh -O
-        export ITK_MODULE_NO_CLEANUP=TRUE
         chmod u+x dockcross-manylinux-download-cache-and-build-module-wheels.sh
 
     - name: 'Build 🐍 Python 📦 package'
@@ -50,9 +49,28 @@ jobs:
         rm -rf ITKPythonPackage
         export MANYLINUX_VERSION=`(echo ${MANYLINUX_PLATFORM} | cut -d '-' -f 1)`
         export TARGET_ARCH=`(echo ${MANYLINUX_PLATFORM} | cut -d '-' -f 2)`
+        export ITK_MODULE_NO_CLEANUP=TRUE
+        export NO_SUDO=TRUE
         echo "Building for manylinux specialization ${MANYLINUX_VERSION} and target architecture ${TARGET_ARCH}"
         ./dockcross-manylinux-download-cache-and-build-module-wheels.sh $CMAKE_OPTIONS -c "-DCUDAToolkit_ROOT=/usr/lib64/cuda116 -DCMAKE_CUDA_COMPILER=/usr/lib64/cuda116/bin/nvcc -DRTK_CUDA_VERSION=11.6" -x "libcuda.so;libcuda.so.1;libcudart.so;libcudart.so.11.0;libcublas.so;libcublas.so.11;libcublasLt.so;libcublasLt.so.11;libcufft.so;libcufft.so.10" cp${{ matrix.python-version }}
         mv *zst ../..
+
+    - name: Validate build output
+      shell: bash
+      run: |
+        python -m pip install twine
+        ls dist/
+
+        MANYLINUX_PLATFORM=${{ matrix.manylinux-platform }}
+        MANYLINUX_VERSION=`(echo ${MANYLINUX_PLATFORM} | cut -d '-' -f 1)`
+        TARGET_ARCH_NAME=`(echo ${MANYLINUX_PLATFORM} | cut -d '-' -f 2)`
+        if [[ ${TARGET_ARCH_NAME} == "x64" ]]; then
+          TARGET_ARCH_NAME="x86_64" # Match auditwheel naming convention
+        fi
+        WHEEL_PATTERN="dist/itk_*cp${{ matrix.python-version }}*manylinux${MANYLINUX_VERSION}*${TARGET_ARCH_NAME}.whl"
+
+        echo "Searching for wheels matching pattern ${WHEEL_PATTERN}"
+        python -m twine check ${WHEEL_PATTERN}
 
     - name: Publish Python package as GitHub Artifact
       uses: actions/upload-artifact@v3
@@ -111,6 +129,17 @@ jobs:
 
         mkdir -p '${{ github.workspace }}\dist'
         cp 'dist\*.whl' '${{ github.workspace }}\dist'
+
+    - name: Validate build output
+      shell: bash
+      run: |
+        python -m pip install twine
+        ls dist/
+
+        WHEEL_PATTERN="dist/itk_*cp3${{ matrix.python-version-minor }}*win*.whl"
+        echo "Searching for wheels matching pattern ${WHEEL_PATTERN}"
+
+        python -m twine check ${WHEEL_PATTERN}
 
     - name: Publish Python package as GitHub Artifact
       uses: actions/upload-artifact@v3
