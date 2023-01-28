@@ -162,7 +162,7 @@ OraGeometryReader::GenerateData()
         itkExceptionMacro("Could not find optitrack_object_ids in " << projectionsFileName);
       const std::vector<int> ids = idsMeta->GetMetaDataObjectValue();
       auto                   idIt = std::find(ids.begin(), ids.end(), m_OptiTrackObjectID);
-      int                    idIdx = idIt - ids.begin();
+      unsigned int           idIdx = idIt - ids.begin();
 
       // Translation
       MetaDataVectorDoubleType * posMeta =
@@ -193,13 +193,6 @@ OraGeometryReader::GenerateData()
       quaternionsXParam[6] = 0.;
       quaternionsX->SetParameters(quaternionsXParam);
 
-      // Set center of rotation
-      MetaDataDoubleType * yvecMeta =
-        dynamic_cast<MetaDataDoubleType *>(dic["ydistancebaseunitcs2imagingcs_cm"].GetPointer());
-      double               yvec = yvecMeta->GetMetaDataObjectValue();
-      MetaDataDoubleType * zvecMeta =
-        dynamic_cast<MetaDataDoubleType *>(dic["zdistancebaseunitcs2imagingcs_cm"].GetPointer());
-      double zvec = zvecMeta->GetMetaDataObjectValue();
       if (firstQuaternionsX.GetPointer() == nullptr)
       {
         firstQuaternionsX = quaternionsX;
