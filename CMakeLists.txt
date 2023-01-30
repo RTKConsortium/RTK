@@ -11,7 +11,8 @@ cmake_minimum_required(VERSION 3.9.5 FATAL_ERROR)
 set(CMAKE_POLICIES
   CMP0070
   CMP0071
-  CMP0072)
+  CMP0072
+  CMP0135)
 
 foreach(p ${CMAKE_POLICIES})
   if(POLICY ${p})
