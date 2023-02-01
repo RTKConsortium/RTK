@@ -56,7 +56,6 @@ RegularizedConjugateGradientConeBeamReconstructionFilter<
   m_Order = 5;
   m_NumberOfLevels = 3;
   m_DisableDisplacedDetectorFilter = false;
-  m_IterationCosts = false;
 
   // Create the filters
   m_CGFilter = CGFilterType::New();
@@ -167,7 +166,6 @@ RegularizedConjugateGradientConeBeamReconstructionFilter<TImage>::GenerateOutput
   m_CGFilter->SetCudaConjugateGradient(this->GetCudaConjugateGradient());
   m_CGFilter->SetGamma(this->m_Gamma);
   m_CGFilter->SetTikhonov(this->m_Tikhonov);
-  //  m_CGFilter->SetIterationCosts(m_IterationCosts);
   m_CGFilter->SetDisableDisplacedDetectorFilter(m_DisableDisplacedDetectorFilter);
 
   currentDownstreamFilter = m_CGFilter;

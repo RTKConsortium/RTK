@@ -38,9 +38,7 @@ main(int argc, char * argv[])
   GGO(rtkconjugategradient, args_info);
 
   using OutputPixelType = float;
-  constexpr unsigned int        Dimension = 3;
-  std::vector<double>           costs;
-  std::ostream_iterator<double> costs_it(std::cout, "\n");
+  constexpr unsigned int Dimension = 3;
 
 #ifdef RTK_USE_CUDA
   using OutputImageType = itk::CudaImage<OutputPixelType, Dimension>;
@@ -120,7 +118,6 @@ main(int argc, char * argv[])
   {
     conjugategradient->SetSupportMask(supportmaskSource);
   }
-  //  conjugategradient->SetIterationCosts(args_info.costs_flag);
 
   if (args_info.gamma_given)
     conjugategradient->SetGamma(args_info.gamma_arg);
@@ -134,13 +131,6 @@ main(int argc, char * argv[])
   REPORT_ITERATIONS(conjugategradient, ConjugateGradientFilterType, OutputImageType)
 
   TRY_AND_EXIT_ON_ITK_EXCEPTION(conjugategradient->Update())
-
-  if (args_info.costs_given)
-  {
-    costs = conjugategradient->GetResidualCosts();
-    std::cout << "Residual costs at each iteration :" << std::endl;
-    copy(costs.begin(), costs.end(), costs_it);
-  }
 
   // Write
   TRY_AND_EXIT_ON_ITK_EXCEPTION(itk::WriteImage(conjugategradient->GetOutput(), args_info.output_arg))

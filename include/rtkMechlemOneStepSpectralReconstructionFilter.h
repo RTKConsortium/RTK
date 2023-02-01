@@ -269,9 +269,6 @@ public:
   itkSetMacro(RegularizationRadius, typename TOutputImage::RegionType::SizeType);
   itkGetMacro(RegularizationRadius, typename TOutputImage::RegionType::SizeType);
 
-  //    itkSetMacro(IterationCosts, bool);
-  //    itkGetMacro(IterationCosts, bool);
-
   /** Set methods forwarding the detector response and material attenuation
    * matrices to the internal WeidingerForwardModel filter */
   using BinnedDetectorResponseType = vnl_matrix<dataType>;
@@ -365,9 +362,6 @@ protected:
 
   typename TOutputImage::PixelType            m_RegularizationWeights;
   typename TOutputImage::RegionType::SizeType m_RegularizationRadius;
-
-  // private:
-  //    bool                         m_IterationCosts;
 };
 } // namespace rtk
 

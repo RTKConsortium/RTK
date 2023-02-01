@@ -187,10 +187,6 @@ public:
   itkGetMacro(Order, unsigned int);
   itkSetMacro(Order, unsigned int);
 
-  /** Displays the conjugate gradient cost function at each iteration. */
-  itkSetMacro(IterationCosts, bool);
-  itkGetMacro(IterationCosts, bool);
-
   // Iterations
   itkSetMacro(MainLoop_iterations, int);
   itkGetMacro(MainLoop_iterations, int);
@@ -275,7 +271,6 @@ protected:
   unsigned int m_NumberOfLevels;
 
   /** Conjugate gradient parameters */
-  bool m_IterationCosts;
   bool m_DisableDisplacedDetectorFilter;
 
   // Iterations

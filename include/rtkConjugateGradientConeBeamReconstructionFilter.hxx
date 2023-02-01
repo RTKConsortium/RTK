@@ -33,7 +33,6 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage, TSingleComponentImag
 
   // Set the default values of member parameters
   m_NumberOfIterations = 3;
-  m_IterationCosts = false;
 
   m_Gamma = 0;
   m_Tikhonov = 0;
@@ -116,13 +115,6 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage, TSingleComponentImag
 }
 
 template <typename TOutputImage, typename TSingleComponentImage, typename TWeightsImage>
-const std::vector<double> &
-ConjugateGradientConeBeamReconstructionFilter<TOutputImage, TSingleComponentImage, TWeightsImage>::GetResidualCosts()
-{
-  return m_ConjugateGradientFilter->GetResidualCosts();
-}
-
-template <typename TOutputImage, typename TSingleComponentImage, typename TWeightsImage>
 void
 ConjugateGradientConeBeamReconstructionFilter<TOutputImage, TSingleComponentImage, TWeightsImage>::VerifyPreconditions()
   ITKv5_CONST
@@ -179,7 +171,6 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage, TSingleComponentImag
     m_ConjugateGradientFilter = InstantiateCudaConjugateGradientImageFilter<TOutputImage>();
 #endif
   m_ConjugateGradientFilter->SetA(m_CGOperator.GetPointer());
-  m_ConjugateGradientFilter->SetIterationCosts(m_IterationCosts);
 
   // Set forward projection filter
   m_ForwardProjectionFilter = this->InstantiateForwardProjectionFilter(this->m_CurrentForwardProjectionConfiguration);
