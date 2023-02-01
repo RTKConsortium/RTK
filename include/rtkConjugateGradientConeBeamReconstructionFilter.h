@@ -183,9 +183,6 @@ public:
   itkSetMacro(NumberOfIterations, int);
   itkGetMacro(NumberOfIterations, int);
 
-  itkSetMacro(IterationCosts, bool);
-  itkGetMacro(IterationCosts, bool);
-
   /** Set / Get whether the displaced detector filter should be disabled */
   itkSetMacro(DisableDisplacedDetectorFilter, bool);
   itkGetMacro(DisableDisplacedDetectorFilter, bool);
@@ -200,10 +197,6 @@ public:
   /** Get / Set whether conjugate gradient should be performed on GPU */
   itkGetMacro(CudaConjugateGradient, bool);
   itkSetMacro(CudaConjugateGradient, bool);
-
-  /** Getter for ResidualCosts storing array **/
-  const std::vector<double> &
-  GetResidualCosts();
 
 protected:
   ConjugateGradientConeBeamReconstructionFilter();
@@ -274,7 +267,6 @@ private:
   int   m_NumberOfIterations;
   float m_Gamma;
   float m_Tikhonov;
-  bool  m_IterationCosts;
   bool  m_CudaConjugateGradient;
   bool  m_DisableDisplacedDetectorFilter;
 

@@ -33,32 +33,8 @@ ConjugateGradientImageFilter<OutputImageType>::ConjugateGradientImageFilter()
   this->SetInPlace(true);
 
   m_NumberOfIterations = 1;
-  m_IterationCosts = false;
-  m_C = 0.0;
 
   m_A = ConjugateGradientOperatorType::New();
-}
-
-template <typename OutputImageType>
-void
-ConjugateGradientImageFilter<OutputImageType>::SetC(const double _arg)
-{
-  this->m_C = _arg;
-  this->Modified();
-}
-
-template <typename OutputImageType>
-double
-ConjugateGradientImageFilter<OutputImageType>::GetC()
-{
-  return this->m_C;
-}
-
-template <typename OutputImageType>
-const std::vector<double> &
-ConjugateGradientImageFilter<OutputImageType>::GetResidualCosts()
-{
-  return this->m_ResidualCosts;
 }
 
 template <typename OutputImageType>

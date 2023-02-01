@@ -67,10 +67,6 @@ public:
   itkGetMacro(NumberOfIterations, int);
   itkSetMacro(NumberOfIterations, int);
 
-  /** Displays the conjugate gradient cost function at each iteration. */
-  itkGetMacro(IterationCosts, bool);
-  itkSetMacro(IterationCosts, bool);
-
   void
   SetA(ConjugateGradientOperatorPointerType _arg);
 
@@ -81,16 +77,6 @@ public:
   /** The image called "B" in the CG algorithm.*/
   void
   SetB(const OutputImageType * OutputImage);
-
-  /** Set and Get the constant quantity BtWB for residual costs calculation */
-  void
-  SetC(const double _arg);
-  double
-  GetC();
-
-  /** Getter for ResidualCosts storing array **/
-  const std::vector<double> &
-  GetResidualCosts();
 
 protected:
   ConjugateGradientImageFilter();
@@ -113,10 +99,7 @@ protected:
 
   ConjugateGradientOperatorPointerType m_A;
 
-  int                 m_NumberOfIterations;
-  bool                m_IterationCosts;
-  std::vector<double> m_ResidualCosts;
-  double              m_C;
+  int m_NumberOfIterations;
 };
 } // namespace rtk
 

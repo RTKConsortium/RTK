@@ -118,7 +118,6 @@ main(int argc, char * argv[])
   {
     regularizedConjugateGradient->SetSupportMask(supportmaskSource);
   }
-  regularizedConjugateGradient->SetIterationCosts(args_info.costs_flag);
 
   // Positivity
   if (args_info.nopositivity_flag)

@@ -43,9 +43,6 @@ main(int argc, char * argv[])
   using PixelType = itk::Vector<DataType, nMaterials>;
   using WeightsType = itk::Vector<DataType, nMaterials * nMaterials>;
 
-  std::vector<double>           costs;
-  std::ostream_iterator<double> costs_it(std::cout << std::setprecision(15), "\n");
-
 #ifdef RTK_USE_CUDA
   using SingleComponentImageType = itk::CudaImage<DataType, Dimension>;
   using OutputImageType = itk::CudaImage<PixelType, Dimension>;
@@ -129,7 +126,6 @@ main(int argc, char * argv[])
   {
     conjugategradient->SetSupportMask(supportmask);
   }
-  conjugategradient->SetIterationCosts(args_info.costs_flag);
 
   if (args_info.tikhonov_given)
     conjugategradient->SetTikhonov(args_info.tikhonov_arg);
@@ -152,13 +148,6 @@ main(int argc, char * argv[])
     //    conjugategradient->PrintTiming(std::cout);
     readerProbe.Stop();
     std::cout << "It took...  " << readerProbe.GetMean() << ' ' << readerProbe.GetUnit() << std::endl;
-  }
-
-  if (args_info.costs_given)
-  {
-    costs = conjugategradient->GetResidualCosts();
-    std::cout << "Residual costs at each iteration :" << std::endl;
-    copy(costs.begin(), costs.end(), costs_it);
   }
 
   // Write
