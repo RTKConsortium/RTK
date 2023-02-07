@@ -41,7 +41,7 @@ ToUntiltedCoordinateAtIsocenter(float tiltedCoord, float sdd, float sid, float s
   const float cosa = sx / sidu;
   // the following relation refers to a note by R. Clackdoyle, title
   // "Samping a tilted detector"
-  return l * sid / (sidu - l * cosa);
+  return l * abs(sid) / (sidu - l * cosa);
 }
 
 __global__ void
