@@ -7,7 +7,7 @@ jobs:
     uses: InsightSoftwareConsortium/ITKRemoteModuleBuildTestPackageAction/.github/workflows/build-test-cxx.yml@03626a23c22246e89e36c7e918a158c440f9b099
 
   python-build-workflow:
-    uses: InsightSoftwareConsortium/ITKRemoteModuleBuildTestPackageAction/.github/workflows/build-test-package-python.yml@03626a23c22246e89e36c7e918a158c440f9b099
+    uses: InsightSoftwareConsortium/ITKRemoteModuleBuildTestPackageAction/.github/workflows/build-test-package-python.yml@8b6beb379e6ac82b5ae8be35353a6b432cae5495
     with:
       manylinux-platforms: '["_2_28-x64","2014-x64"]'
     secrets:
