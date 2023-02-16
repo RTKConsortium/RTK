@@ -10,9 +10,5 @@ if(NOT RTK_INSTALL_NO_EXECUTABLES)
       LIBRARY DESTINATION ${RTK_INSTALL_LIB_DIR} COMPONENT RuntimeLibraries
       ARCHIVE DESTINATION ${RTK_INSTALL_ARCHIVE_DIR} COMPONENT Development)
   endforeach()
-
-  # Install Python application
-  install(FILES rtkorageometry.py
-    DESTINATION ${RTK_INSTALL_LIB_DIR} COMPONENT PythonWheelRuntimeLibraries)
 endif()
 
