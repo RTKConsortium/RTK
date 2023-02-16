@@ -11,7 +11,6 @@ if __name__ == '__main__':
   parser.add_argument('--nproj', '-n', type=int, help='Number of projections')
   parser.add_argument('--output', '-o', help='Output file name')
   parser.add_argument('--verbose', '-v', type=bool, default=False, help='Verbose execution')
-  parser.add_argument('--config', '-c', help='Config file')
   parser.add_argument('--first_angle', '-f', type=float, default=0, help='First angle in degrees')
   parser.add_argument('--arc', '-a', type=float, default=360, help='Angular arc covevered by the acquisition in degrees')
   parser.add_argument('--sdd', type=float, default=1536, help='Source to detector distance (mm)')
