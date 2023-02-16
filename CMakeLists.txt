@@ -266,6 +266,15 @@ option(RTK_BUILD_APPLICATIONS "Build RTK applications" ON)
 if(RTK_BUILD_APPLICATIONS)
   add_subdirectory(applications)
 endif()
+if(ITK_WRAP_PYTHON)
+  # Install Python application
+  install(FILES applications/rtkelektasynergygeometry/rtkelektasynergygeometry.py
+                applications/rtkorageometry/rtkorageometry.py
+                applications/rtksimulatedgeometry/rtksimulatedgeometry.py
+                applications/rtkvarianobigeometry/rtkvarianobigeometry.py
+          DESTINATION ${RTK_INSTALL_LIB_DIR}
+          COMPONENT PythonWheelRuntimeLibraries)
+endif()
 
 # --------------------------------------------------------
 # Setup KWStyle from ITK
