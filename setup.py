@@ -52,10 +52,11 @@ setup(
         "Operating System :: MacOS"
         ],
     scripts=[
+        "lib/rtkconjugategradient.py",
+        "lib/rtkelektasynergygeometry.py",
         "lib/rtkorageometry.py",
         "lib/rtksimulatedgeometry.py",
-        "lib/rtkvarianobigeometry.py",
-        "lib/rtkelektasynergygeometry.py"
+        "lib/rtkvarianobigeometry.py"
         ],
     license='Apache',
     keywords='RTK Reconstruction Toolkit',
