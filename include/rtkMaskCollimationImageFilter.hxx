@@ -78,9 +78,9 @@ MaskCollimationImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerateDa
       PointType source = itIn->GetSourcePosition();
       double    sourceNorm = source.GetNorm();
       PointType pixel = itIn->GetPixelPosition();
-      double    sourcey = source[1];
-      pixel[1] -= sourcey;
-      source[1] = 0.;
+      double    source_ = source[m_RotationAxisIndex];
+      pixel[m_RotationAxisIndex] -= source_;
+      source[m_RotationAxisIndex] = 0.;
       PointType pixelToSource(source - pixel);
       PointType sourceDir = source / sourceNorm;
 
@@ -90,11 +90,11 @@ MaskCollimationImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerateDa
       PointType    intersection = source - mag * pixelToSource;
 
       PointType v(0.);
-      v[1] = 1.;
+      v[m_RotationAxisIndex] = 1.;
 
       PointType u = CrossProduct(v, sourceDir);
       double    ucoord = u * intersection;
-      double    vcoord = intersection[1]; // equivalent to v*intersection
+      double    vcoord = intersection[m_RotationAxisIndex]; // equivalent to v*intersection
       if (ucoord > -1. * this->GetGeometry()->GetCollimationUInf()[iProj] &&
           ucoord < this->GetGeometry()->GetCollimationUSup()[iProj] &&
           vcoord > -1. * this->GetGeometry()->GetCollimationVInf()[iProj] &&
