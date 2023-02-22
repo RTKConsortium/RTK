@@ -63,6 +63,10 @@ public:
   itkGetModifiableObjectMacro(Geometry, GeometryType);
   itkSetObjectMacro(Geometry, GeometryType);
 
+  /** Set the index of the rotation axis. The rotation axis is assumed to be one of the vector of the basis of the
+   * coordinate system. The default is the y vector (index 1). */
+  itkSetMacro(RotationAxisIndex, unsigned int);
+
 protected:
   MaskCollimationImageFilter();
   ~MaskCollimationImageFilter() override = default;
@@ -84,15 +88,12 @@ protected:
   VerifyInputInformation() const override
   {}
 
+  // Set default parameters
+  unsigned int m_RotationAxisIndex = 1; // y-axis
+
 private:
   /** RTK geometry object */
   GeometryPointer m_Geometry;
-
-  /** Jaw positions */
-  double m_X1;
-  double m_X2;
-  double m_Y1;
-  double m_Y2;
 };
 
 } // end namespace rtk
