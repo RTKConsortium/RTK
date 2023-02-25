@@ -5,7 +5,7 @@ on: [push,pull_request]
 env:
   cmake-options: '-DRTK_BUILD_APPLICATIONS:BOOL=OFF -DRTK_CUDA_VERSION=11.6'
   itk-wheel-tag: 'v5.3.0'
-  itk-python-package-tag: 'f2191a014a93c0d0e7b9e7ffb32d2e1118fb2876'
+  itk-python-package-tag: 'ee05fd4fa5feedc32afbed32b84b9c9eb0518036'
   itk-python-package-org: 'InsightSoftwareConsortium'
 
 jobs:
