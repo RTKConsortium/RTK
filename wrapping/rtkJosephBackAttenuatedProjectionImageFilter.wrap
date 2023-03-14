@@ -4,7 +4,7 @@ itk_wrap_named_class("rtk::Functor::InterpolationWeightMultiplicationAttenuatedB
     itk_wrap_template("${ITKM_${t}}${ITKM_${t}}${ITKM_${t}}" "${ITKT_${t}}, ${ITKT_${t}}, ${ITKT_${t}}")
   endforeach()
 itk_end_wrap_class()
-itk_wrap_named_class("rtk::Functor::SplatWeightMultiplicationAttenuated" "rtkFunctorSplatWeightMultiplication")
+itk_wrap_named_class("rtk::Functor::SplatWeightMultiplicationAttenuated" "rtkFunctorSplatWeightMultiplicationAttenuated")
   foreach(t ${WRAP_ITK_REAL})
     itk_wrap_template("${ITKM_${t}}D${ITKM_${t}}" "${ITKT_${t}}, double, ${ITKT_${t}}")
   endforeach()
