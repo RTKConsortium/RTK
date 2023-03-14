@@ -12,11 +12,14 @@ except ImportError:
 
 # Configure wheel name if CUDA is used
 wheel_name='itk-rtk'
+wheel_requirements=[r'itk>=5.3.0']
+
 # Extract cuda version from the RTK_CUDA_VERSION cmake option
 for arg in sys.argv:
   if "RTK_CUDA_VERSION" in str(arg):
     cuda_version = arg.rsplit('RTK_CUDA_VERSION=', 1)[-1]
     wheel_name += '-cuda' + cuda_version.replace('.', '')
+    wheel_requirements.append(fr'{wheel_name.replace(rtk, cudacommon)}')
 
 setup(
     name=wheel_name,
@@ -56,7 +59,5 @@ setup(
     license='Apache',
     keywords='RTK Reconstruction Toolkit',
     url=r'https://www.openrtk.org/',
-    install_requires=[
-        r'itk>=5.3.0'
-    ]
+    install_requires=wheel_requirements
     )
