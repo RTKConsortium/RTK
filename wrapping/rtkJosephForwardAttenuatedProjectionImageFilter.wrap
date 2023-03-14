@@ -1,5 +1,5 @@
 set(WRAPPER_AUTO_INCLUDE_HEADERS OFF)
-itk_wrap_named_class("rtk::Functor::InterpolationWeightMultiplicationAttenuated" "rtkFunctorInterpolationWeightMultiplicationAttenuatedBackProjection")
+itk_wrap_named_class("rtk::Functor::InterpolationWeightMultiplicationAttenuated" "rtkFunctorInterpolationWeightMultiplicationAttenuatedBackProjectionAttenuated")
   foreach(t ${WRAP_ITK_REAL})
     itk_wrap_template("${ITKM_${t}}${ITKM_${t}}${ITKM_${t}}" "${ITKT_${t}}, ${ITKT_${t}}, ${ITKT_${t}}")
   endforeach()
