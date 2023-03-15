@@ -20,7 +20,7 @@
 #define rtkXRadGeometryReader_h
 
 #include <itkLightProcessObject.h>
-#include "rtkReg23ProjectionGeometry.h"
+#include "rtkThreeDCircularProjectionGeometry.h"
 #include "RTKExport.h"
 
 namespace rtk
@@ -47,7 +47,7 @@ public:
   using Pointer = itk::SmartPointer<Self>;
 
   /** Convenient type alias */
-  using GeometryType = Reg23ProjectionGeometry;
+  using GeometryType = ThreeDCircularProjectionGeometry;
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(XRadGeometryReader, LightProcessObject);
