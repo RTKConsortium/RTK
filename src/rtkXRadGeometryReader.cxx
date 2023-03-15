@@ -96,7 +96,7 @@ rtk::XRadGeometryReader ::GenerateData()
 
     u.Normalize();
     v.Normalize();
-    tmpGeo->AddReg23Projection(&(focus[0]), &(center[0]), u, v);
+    tmpGeo->AddProjection(&(focus[0]), &(center[0]), u, v);
 
     paramName = sectionName + "_CBCT.ProjectionGeometryArray.u_off";
     std::string suoff = dynamic_cast<MetaDataStringType *>(dic[paramName].GetPointer())->GetMetaDataObjectValue();
