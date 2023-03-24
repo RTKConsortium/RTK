@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import os
 import sys
 import itk
 from itk import RTK as rtk
@@ -6,6 +7,11 @@ from itk import RTK as rtk
 if len ( sys.argv ) < 3:
   print( "Usage: FirstReconstruction <outputimage> <outputgeometry>" )
   sys.exit ( 1 )
+
+# Import Windows CUDA_PATH for dll (required for some Python versions,
+# https://docs.python.org/3/whatsnew/3.8.html#bpo-36085-whatsnew)
+if sys.platform == 'win32':
+  os.add_dll_directory(os.path.join(os.environ['CUDA_PATH'], 'bin'))
 
 # Defines the image type
 GPUImageType = rtk.CudaImage[itk.F,3]
