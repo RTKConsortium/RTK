@@ -183,6 +183,8 @@ public:
   using OutputImageRegionType = typename TOutputImage::RegionType;
   using CoordRepType = double;
   using VectorType = itk::Vector<CoordRepType, TInputImage::ImageDimension>;
+  using TClipImageType = itk::Image<double, TOutputImage::ImageDimension>;
+  using TClipImagePointer = typename TClipImageType::Pointer;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -254,6 +256,36 @@ public:
     }
   }
 
+  /** Set/Get the inferior clip image. Each pixel of the image
+   ** corresponds to the value of the inferior clip of the ray
+   ** emitted from that pixel. */
+  void
+  SetInferiorClipImage(const TClipImageType * inferiorClipImage)
+  {
+    // Process object is not const-correct so the const casting is required.
+    this->SetInput("InferiorClipImage", const_cast<TClipImageType *>(inferiorClipImage));
+  }
+  typename TClipImageType::ConstPointer
+  GetInferiorClipImage()
+  {
+    return static_cast<const TClipImageType *>(this->itk::ProcessObject::GetInput("InferiorClipImage"));
+  }
+
+  /** Set/Get the superior clip image. Each pixel of the image
+   ** corresponds to the value of the superior clip of the ray
+   ** emitted from that pixel. */
+  void
+  SetSuperiorClipImage(const TClipImageType * superiorClipImage)
+  {
+    // Process object is not const-correct so the const casting is required.
+    this->SetInput("SuperiorClipImage", const_cast<TClipImageType *>(superiorClipImage));
+  }
+  typename TClipImageType::ConstPointer
+  GetSuperiorClipImage()
+  {
+    return static_cast<const TClipImageType *>(this->itk::ProcessObject::GetInput("SuperiorClipImage"));
+  }
+
   /** Each ray is clipped from source+m_InferiorClip*(pixel-source) to
   ** source+m_SuperiorClip*(pixel-source) with m_InferiorClip and
   ** m_SuperiorClip equal 0 and 1 by default. */
@@ -266,14 +298,17 @@ protected:
   JosephForwardProjectionImageFilter();
   ~JosephForwardProjectionImageFilter() override = default;
 
+  /** Apply changes to the input image requested region. */
+  void
+  GenerateInputRequestedRegion() override;
+
   void
   ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, ThreadIdType threadId) override;
 
-  /** The two inputs should not be in the same space so there is nothing
-   * to verify. */
+  /** If a third input is given, it should be in the same physical space
+   * than the first one. */
   void
-  VerifyInputInformation() const override
-  {}
+  VerifyInputInformation() const override;
 
   inline OutputPixelType
   BilinearInterpolation(const ThreadIdType     threadId,

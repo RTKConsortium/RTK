@@ -80,6 +80,23 @@ main(int argc, char * argv[])
     attenuationMap = itk::ReadImage<OutputImageType>(args_info.attenuationmap_arg);
   }
 
+  using ClipImageType = itk::Image<double, Dimension>;
+  ClipImageType::Pointer inferiorClipImage, superiorClipImage;
+  if (args_info.inferiorclipimage_given)
+  {
+    if (args_info.verbose_flag)
+      std::cout << "Reading inferior clip image " << args_info.inferiorclipimage_arg << "..." << std::endl;
+    // Read an existing image to initialize the attenuation map
+    inferiorClipImage = itk::ReadImage<ClipImageType>(args_info.inferiorclipimage_arg);
+  }
+  if (args_info.superiorclipimage_given)
+  {
+    if (args_info.verbose_flag)
+      std::cout << "Reading superior clip image " << args_info.superiorclipimage_arg << "..." << std::endl;
+    // Read an existing image to initialize the attenuation map
+    superiorClipImage = itk::ReadImage<ClipImageType>(args_info.superiorclipimage_arg);
+  }
+
   // Create forward projection image filter
   if (args_info.verbose_flag)
     std::cout << "Projecting volume..." << std::endl;
@@ -116,6 +133,36 @@ main(int argc, char * argv[])
   forwardProjection->SetInput(1, inputVolume);
   if (args_info.attenuationmap_given)
     forwardProjection->SetInput(2, attenuationMap);
+  if (args_info.inferiorclipimage_given)
+  {
+    if (args_info.fp_arg == fp_arg_Joseph)
+    {
+      dynamic_cast<rtk::JosephForwardProjectionImageFilter<OutputImageType, OutputImageType> *>(
+        forwardProjection.GetPointer())
+        ->SetInferiorClipImage(inferiorClipImage);
+    }
+    else if (args_info.fp_arg == fp_arg_JosephAttenuated)
+    {
+      dynamic_cast<rtk::JosephForwardAttenuatedProjectionImageFilter<OutputImageType, OutputImageType> *>(
+        forwardProjection.GetPointer())
+        ->SetInferiorClipImage(inferiorClipImage);
+    }
+  }
+  if (args_info.superiorclipimage_given)
+  {
+    if (args_info.fp_arg == fp_arg_Joseph)
+    {
+      dynamic_cast<rtk::JosephForwardProjectionImageFilter<OutputImageType, OutputImageType> *>(
+        forwardProjection.GetPointer())
+        ->SetSuperiorClipImage(superiorClipImage);
+    }
+    else if (args_info.fp_arg == fp_arg_JosephAttenuated)
+    {
+      dynamic_cast<rtk::JosephForwardAttenuatedProjectionImageFilter<OutputImageType, OutputImageType> *>(
+        forwardProjection.GetPointer())
+        ->SetSuperiorClipImage(superiorClipImage);
+    }
+  }
   if (args_info.sigmazero_given && args_info.fp_arg == fp_arg_Zeng)
     dynamic_cast<rtk::ZengForwardProjectionImageFilter<OutputImageType, OutputImageType> *>(
       forwardProjection.GetPointer())
