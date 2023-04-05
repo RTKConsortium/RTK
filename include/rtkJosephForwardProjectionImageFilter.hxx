@@ -45,6 +45,30 @@ JosephForwardProjectionImageFilter<TInputImage,
   this->DynamicMultiThreadingOff();
 }
 
+
+template <class TInputImage,
+          class TOutputImage,
+          class TInterpolationWeightMultiplication,
+          class TProjectedValueAccumulation,
+          class TSumAlongRay>
+void
+JosephForwardProjectionImageFilter<TInputImage,
+                                   TOutputImage,
+                                   TInterpolationWeightMultiplication,
+                                   TProjectedValueAccumulation,
+                                   TSumAlongRay>::GenerateInputRequestedRegion()
+{
+  Superclass::GenerateInputRequestedRegion();
+  // Input 3 give the position along the ray where to stop the projections.
+  typename Superclass::InputImagePointer inputPtr3 = const_cast<TInputImage *>(this->GetInput(3));
+  if (!inputPtr3)
+    return;
+
+  typename TInputImage::RegionType reqRegion3 = inputPtr3->GetLargestPossibleRegion();
+  inputPtr3->SetRequestedRegion(reqRegion3);
+}
+
+
 template <class TInputImage,
           class TOutputImage,
           class TInterpolationWeightMultiplication,
@@ -76,8 +100,9 @@ JosephForwardProjectionImageFilter<TInputImage,
 
   // volPPToIndex maps the physical 3D coordinates of a point (in mm) to the
   // corresponding 3D volume index
-  typename Superclass::GeometryType::ThreeDHomogeneousMatrixType volPPToIndex;
+  typename Superclass::GeometryType::ThreeDHomogeneousMatrixType volPPToIndex, volIndexToPP;
   volPPToIndex = GetPhysicalPointToIndexMatrix(this->GetInput(1));
+  volIndexToPP = GetIndexToPhysicalPointMatrix(this->GetInput(1));
 
   // Iterators on input and output projections
   using InputRegionIterator = ProjectionsRegionConstIteratorRayBased<TInputImage>;
@@ -104,12 +129,22 @@ JosephForwardProjectionImageFilter<TInputImage,
   double inferiorClip = 1. - m_SuperiorClip;
   double superiorClip = 1. - m_InferiorClip;
 
+  typename TOutputImage::PixelType                         stopValue;
+  double                                                   currentAngle;
+  typename Superclass::GeometryType::HomogeneousVectorType pixelPositionHomogeneous, pixelPositionHomogeneousMM;
   // Go over each pixel of the projection
   typename BoxShape::VectorType stepMM, np, fp;
   for (unsigned int pix = 0; pix < outputRegionForThread.GetNumberOfPixels(); pix++, itIn->Next(), ++itOut)
   {
-    typename InputRegionIterator::PointType pixelPosition = itIn->GetPixelPosition();
-    typename InputRegionIterator::PointType dirVox = -itIn->GetSourceToPixel();
+    typename InputRegionIterator::PointType  pixelPosition = itIn->GetPixelPosition();
+    typename InputRegionIterator::PointType  dirVox = -itIn->GetSourceToPixel();
+    typename InputRegionIterator ::IndexType pixelIndex = itIn->GetIndex();
+    currentAngle = geometry->GetGantryAngles()[pixelIndex[2]];
+    pixelPositionHomogeneous[0] = pixelPosition[0];
+    pixelPositionHomogeneous[1] = pixelPosition[1];
+    pixelPositionHomogeneous[2] = pixelPosition[2];
+    pixelPositionHomogeneous[3] = 1;
+    pixelPositionHomogeneousMM = volIndexToPP * pixelPositionHomogeneous;
 
     // Select main direction
     unsigned int                  mainDir = 0;
@@ -120,20 +155,43 @@ JosephForwardProjectionImageFilter<TInputImage,
       if (dirVoxAbs[i] > dirVoxAbs[mainDir])
         mainDir = i;
     }
-
+    if (this->GetInput(3))
+    {
+      stopValue = this->GetInput(3)->GetPixel(pixelIndex);
+    }
+    else
+      stopValue = 0;
     // Test if there is an intersection
     BoxShape::ScalarType nearDist = NAN, farDist = NAN;
     if (box->IsIntersectedByRay(pixelPosition, dirVox, nearDist, farDist) &&
-        farDist >= 0. && // check if detector after the source
-        nearDist <= 1.)  // check if detector after or in the volume
+        farDist >= 0. &&                                          // check if detector after the source
+        nearDist <= 1. && std::abs(stopValue - 1000.0) >= 0.0001) // check if detector after or in the volume
     {
       // Clip the casting between source and pixel of the detector
+
       nearDist = std::max(nearDist, inferiorClip);
       farDist = std::min(farDist, superiorClip);
 
       // Compute and sort intersections: (n)earest and (f)arthest (p)points
       np = pixelPosition + nearDist * dirVox;
-      fp = pixelPosition + farDist * dirVox;
+      if (!this->GetInput(3))
+        fp = pixelPosition + farDist * dirVox;
+      else
+      {
+        typename TInputImage::PointType stopPoint;
+        typename TInputImage::IndexType stopIndex;
+        double                          s = std::cos(currentAngle) * pixelPositionHomogeneousMM[0] -
+                   std::sin(currentAngle) * pixelPositionHomogeneousMM[2];
+        if (std::abs(stopValue) < 0.00001)
+          stopValue = 0.;
+        stopPoint[0] = s * std::cos(currentAngle) - stopValue * std::sin(currentAngle);
+        stopPoint[1] = pixelPositionHomogeneousMM[1];
+        stopPoint[2] = -s * std::sin(currentAngle) - stopValue * std::cos(currentAngle);
+        this->GetInput(1)->TransformPhysicalPointToIndex(stopPoint, stopIndex);
+        fp[0] = stopIndex[0] - 0.5;
+        fp[1] = stopIndex[1];
+        fp[2] = stopIndex[2] - 0.5;
+      }
 
       // Compute main nearest and farthest slice indices
       const int ns = itk::Math::rnd(np[mainDir]);

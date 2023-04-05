@@ -80,6 +80,14 @@ main(int argc, char * argv[])
     attenuationMap = itk::ReadImage<OutputImageType>(args_info.attenuationmap_arg);
   }
 
+  OutputImageType::Pointer stopRay;
+  if (args_info.stopray_given)
+  {
+    if (args_info.verbose_flag)
+      std::cout << "Reading stop ray " << args_info.stopray_arg << "..." << std::endl;
+    // Read an existing image to initialize the attenuation map
+    stopRay = itk::ReadImage<OutputImageType>(args_info.stopray_arg);
+  }
   // Create forward projection image filter
   if (args_info.verbose_flag)
     std::cout << "Projecting volume..." << std::endl;
@@ -116,6 +124,8 @@ main(int argc, char * argv[])
   forwardProjection->SetInput(1, inputVolume);
   if (args_info.attenuationmap_given)
     forwardProjection->SetInput(2, attenuationMap);
+  if (args_info.stopray_given)
+    forwardProjection->SetInput(3, stopRay);
   if (args_info.sigmazero_given && args_info.fp_arg == fp_arg_Zeng)
     dynamic_cast<rtk::ZengForwardProjectionImageFilter<OutputImageType, OutputImageType> *>(
       forwardProjection.GetPointer())

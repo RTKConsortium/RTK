@@ -266,6 +266,10 @@ protected:
   JosephForwardProjectionImageFilter();
   ~JosephForwardProjectionImageFilter() override = default;
 
+  /** Apply changes to the input image requested region. */
+  void
+  GenerateInputRequestedRegion() override;
+
   void
   ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, ThreadIdType threadId) override;
 
