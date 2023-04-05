@@ -81,6 +81,7 @@ JosephForwardAttenuatedProjectionImageFilter<TInputImage,
                                              TProjectedValueAccumulation,
                                              TComputeAttenuationCorrection>::VerifyInputInformation() const
 {
+  Superclass::VerifyInputInformation();
   using ImageBaseType = const itk::ImageBase<InputImageDimension>;
 
   ImageBaseType * inputPtr1 = nullptr;
@@ -93,7 +94,7 @@ JosephForwardAttenuatedProjectionImageFilter<TInputImage,
     // method since it returns the input as a pointer to a
     // DataObject as opposed to the subclass version which
     // static_casts the input to an TInputImage).
-    if (it.GetName() != "Primary")
+    if (it.GetName() == "_1")
     {
       inputPtr1 = dynamic_cast<ImageBaseType *>(it.GetInput());
     }
@@ -105,7 +106,7 @@ JosephForwardAttenuatedProjectionImageFilter<TInputImage,
 
   for (; !it.IsAtEnd(); ++it)
   {
-    if (it.GetName() != "Primary")
+    if (it.GetName() == "_2")
     {
       auto * inputPtrN = dynamic_cast<ImageBaseType *>(it.GetInput());
       // Physical space computation only matters if we're using two
