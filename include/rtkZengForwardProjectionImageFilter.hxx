@@ -192,7 +192,9 @@ ZengForwardProjectionImageFilter<TInputImage, TOutputImage>::GenerateOutputInfor
                      static_cast<ContinuousIndexValueType>(sizeVolume[k] - 1) / 2.0;
   }
 
-  this->GetInput(1)->TransformContinuousIndexToPhysicalPoint(centerIndex, m_centerVolume);
+  using ValueType = typename PointType::ValueType;
+  m_centerVolume =
+    this->GetInput(1)->template TransformContinuousIndexToPhysicalPoint<CoordRepType, ValueType>(centerIndex);
 
   PointType centerRotation;
   centerRotation.Fill(0);
