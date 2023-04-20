@@ -48,8 +48,9 @@ ForwardWarpImageFilter<TInputImage, TOutputImage, TDVF>::Protected_EvaluateDispl
 
   const DisplacementFieldType * fieldPtr = this->GetDisplacementField();
 
-  itk::ContinuousIndex<double, TDVF::ImageDimension> index;
-  fieldPtr->TransformPhysicalPointToContinuousIndex(point, index);
+  using ValueType = typename PointType::ValueType;
+  const itk::ContinuousIndex<double, TDVF::ImageDimension> index =
+    fieldPtr->template TransformPhysicalPointToContinuousIndex<ValueType, double>(point);
   unsigned int dim = 0; // index over dimension
   /**
    * Compute base index = closest index below point
@@ -198,8 +199,9 @@ ForwardWarpImageFilter<TInputImage, TOutputImage, TDVF>::GenerateData()
     for (unsigned int j = 0; j < TInputImage::ImageDimension; j++)
       point[j] += displacement[j];
 
-    itk::ContinuousIndex<double, TInputImage::ImageDimension> continuousIndexInOutput;
-    outputPtr->TransformPhysicalPointToContinuousIndex(point, continuousIndexInOutput);
+    using ValueType = typename TOutputImage::PointType::ValueType;
+    itk::ContinuousIndex<double, TInputImage::ImageDimension> continuousIndexInOutput =
+      outputPtr->template TransformPhysicalPointToContinuousIndex<ValueType, double>(point);
 
     // compute the base index in output, ie the closest index below point
     // Check if the baseIndex is in the output's requested region, otherwise skip the splat part

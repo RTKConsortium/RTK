@@ -82,8 +82,9 @@ FDKBackProjectionImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerate
   // Rotation center (assumed to be at 0 yet)
   typename TInputImage::PointType rotCenterPoint;
   rotCenterPoint.Fill(0.0);
-  itk::ContinuousIndex<double, Dimension> rotCenterIndex;
-  this->GetInput(0)->TransformPhysicalPointToContinuousIndex(rotCenterPoint, rotCenterIndex);
+  using ValueType = typename TInputImage::PointType::ValueType;
+  const itk::ContinuousIndex<double, Dimension> rotCenterIndex =
+    this->GetInput(0)->template TransformPhysicalPointToContinuousIndex<ValueType, double>(rotCenterPoint);
 
   // Continuous index at which we interpolate
   itk::ContinuousIndex<double, Dimension - 1> pointProj;

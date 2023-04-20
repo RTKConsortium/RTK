@@ -191,8 +191,9 @@ AmsterdamShroudImageFilter<TInputImage>::CropOutsideProjectedBox()
       vnl_vector<double> pCornerVnl = m_Geometry->GetMatrices()[iProj].GetVnlMatrix() * corners[ci].GetVnlVector();
       for (unsigned int i = 0; i < 2; i++)
         pCorner[i] = pCornerVnl[i] / pCornerVnl[2];
-      itk::ContinuousIndex<double, 3> pCornerI;
-      this->GetInput()->TransformPhysicalPointToContinuousIndex(pCorner, pCornerI);
+      using ValueType = typename TInputImage::PointType::ValueType;
+      const itk::ContinuousIndex<double, 3> pCornerI =
+        this->GetInput()->template TransformPhysicalPointToContinuousIndex<ValueType, double>(pCorner);
       if (ci == 0)
       {
         pCornerInf = pCornerI;
