@@ -46,8 +46,9 @@ CudaFDKBackProjectionImageFilter ::GPUGenerateData()
   // Rotation center (assumed to be at 0 yet)
   ImageType::PointType rotCenterPoint;
   rotCenterPoint.Fill(0.0);
-  itk::ContinuousIndex<double, Dimension> rotCenterIndex;
-  this->GetInput(0)->TransformPhysicalPointToContinuousIndex(rotCenterPoint, rotCenterIndex);
+  using ValueType = ImageType::PointType::ValueType;
+  itk::ContinuousIndex<double, Dimension> rotCenterIndex =
+    this->GetInput(0)->TransformPhysicalPointToContinuousIndex<ValueType, double>(rotCenterPoint);
 
   // Include non-zero index in matrix
   itk::Matrix<double, 4, 4> matrixIdxVol;
