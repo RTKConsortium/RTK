@@ -89,7 +89,8 @@ BoellaardScatterCorrectionImageFilter<TInputImage, TOutputImage>::ThreadedGenera
       }
       ++itInSlice;
     }
-    if (npixelBehindPatient > 1) npixelBehindPatient--;
+    if (npixelBehindPatient > 1)
+      npixelBehindPatient--;
     averageBehindPatient /= npixelBehindPatient;
 
     // Compute constant correction
