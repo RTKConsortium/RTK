@@ -77,17 +77,20 @@ BoellaardScatterCorrectionImageFilter<TInputImage, TOutputImage>::ThreadedGenera
 
     // Retrieve useful characteristics of current slice
     double averageBehindPatient = 0.;
+    unsigned int npixelBehindPatient = 1;
     double smallestValue = itk::NumericTraits<double>::max();
     for (unsigned int i = 0; i < npixelPerSlice; i++)
     {
       smallestValue = std::min(smallestValue, (double)itInSlice.Get());
-      if (itInSlice.Get() >= m_AirThreshold)
+      if (itInSlice.Get() <= m_AirThreshold)
       {
         averageBehindPatient += itInSlice.Get();
+        npixelBehindPatient++;
       }
       ++itInSlice;
     }
-    averageBehindPatient /= npixelPerSlice;
+    if (npixelBehindPatient > 1) npixelBehindPatient--;
+    averageBehindPatient /= npixelBehindPatient;
 
     // Compute constant correction
     double correction = averageBehindPatient * m_ScatterToPrimaryRatio;
