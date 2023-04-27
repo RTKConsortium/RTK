@@ -28,9 +28,16 @@ namespace rtk
 /** \class BoellaardScatterCorrectionImageFilter
  * \brief Scatter correction for cone-beam CT reconstruction.
  *
- * The scatter correction algorithm is based on the work of
- * [Boellaard, Rad Onc, 1997]. It assumes a homogeneous contribution of scatter
- * which is computed depending on the amount of tissues traversed by x-rays.
+ * The scatter correction algorithm is based on the work of [Boellaard, Med
+ * Phys, 1997] which has been used to implement the first scatter correction
+ * algorithm of Elekta's cone-beam CT reconstruction software developed at the
+ * Netherlands cancer institute by Marcel van Herk's group. The algorithm is
+ * applied to raw projections, before computing the log. The algorithm assumes
+ * that scatter adds a constant to all pixels of each projection. It does the
+ * following steps for each projection:
+ * 1. Mask out pixels above m_AirThreshold and record the smallest value sv.
+ * 2. Compute the average value over all pixels of the resulting projection avg.
+ * 3. Subtract min(m_ScatterToPrimaryRatio*avg, sv-m_NonNegativityConstraintThreshold).
  *
  * \author Simon Rit
  *
