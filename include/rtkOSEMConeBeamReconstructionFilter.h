@@ -163,14 +163,6 @@ public:
   itkGetMacro(NumberOfProjectionsPerSubset, unsigned int);
   itkSetMacro(NumberOfProjectionsPerSubset, unsigned int);
 
-  /** Get / Set the sigma zero of the PSF. Default is 1.5417233052142099 */
-  itkGetMacro(SigmaZero, double);
-  itkSetMacro(SigmaZero, double);
-
-  /** Get / Set the alpha of the PSF. Default is 0.016241189545787734 */
-  itkGetMacro(Alpha, double);
-  itkSetMacro(Alpha, double);
-
   /** Get / Set the hyperparameter for the regularization. Default is 0.01 */
   itkGetMacro(BetaRegularization, double);
   itkSetMacro(BetaRegularization, double);
@@ -228,10 +220,6 @@ private:
 
   /** Number of iterations */
   unsigned int m_NumberOfIterations{ 3 };
-
-  /** PSF correction coefficients */
-  double m_SigmaZero{ -1. };
-  double m_Alpha{ -1. };
 
   /** Hyperparameter for the regularization */
   double m_BetaRegularization{ 0. };

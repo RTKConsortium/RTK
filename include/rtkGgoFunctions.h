@@ -281,6 +281,14 @@ template <class TArgsInfo, class TIterativeReconstructionFilter>
 void
 SetBackProjectionFromGgo(const TArgsInfo & args_info, TIterativeReconstructionFilter * recon)
 {
+  typename TIterativeReconstructionFilter::VolumeType::Pointer attenuationMap;
+  using VolumeType = typename TIterativeReconstructionFilter::VolumeType;
+  if (args_info.attenuationmap_given)
+  {
+    // Read an existing image to initialize the attenuation map
+    attenuationMap = itk::ReadImage<VolumeType>(args_info.attenuationmap_arg);
+  }
+
   switch (args_info.bp_arg)
   {
     case (-1): // bp__NULL, keep default
@@ -299,9 +307,17 @@ SetBackProjectionFromGgo(const TArgsInfo & args_info, TIterativeReconstructionFi
       break;
     case (4): // bp_arg_JosephAttenuated
       recon->SetBackProjectionFilter(TIterativeReconstructionFilter::BP_JOSEPHATTENUATED);
+      if (args_info.attenuationmap_given)
+        recon->SetAttenuationMap(attenuationMap);
       break;
     case (5): // bp_arg_RotationBased
       recon->SetBackProjectionFilter(TIterativeReconstructionFilter::BP_ZENG);
+      if (args_info.sigmazero_given)
+        recon->SetSigmaZero(args_info.sigmazero_arg);
+      if (args_info.alphapsf_given)
+        recon->SetAlphaPSF(args_info.alphapsf_arg);
+      if (args_info.attenuationmap_given)
+        recon->SetAttenuationMap(attenuationMap);
       break;
   }
 }
@@ -318,21 +334,57 @@ template <class TArgsInfo, class TIterativeReconstructionFilter>
 void
 SetForwardProjectionFromGgo(const TArgsInfo & args_info, TIterativeReconstructionFilter * recon)
 {
+  typename TIterativeReconstructionFilter::VolumeType::Pointer attenuationMap;
+  using VolumeType = typename TIterativeReconstructionFilter::VolumeType;
+  if (args_info.attenuationmap_given)
+  {
+    // Read an existing image to initialize the attenuation map
+    attenuationMap = itk::ReadImage<VolumeType>(args_info.attenuationmap_arg);
+  }
+  using ClipImageType = itk::Image<double, TIterativeReconstructionFilter::VolumeType::ImageDimension>;
+  typename ClipImageType::Pointer inferiorClipImage, superiorClipImage;
+  if (args_info.inferiorclipimage_given)
+  {
+    // Read an existing image to initialize the attenuation map
+    inferiorClipImage = itk::ReadImage<ClipImageType>(args_info.inferiorclipimage_arg);
+  }
+  if (args_info.superiorclipimage_given)
+  {
+    // Read an existing image to initialize the attenuation map
+    superiorClipImage = itk::ReadImage<ClipImageType>(args_info.superiorclipimage_arg);
+  }
+
   switch (args_info.fp_arg)
   {
     case (-1): // fp__NULL, keep default
       break;
     case (0): // fp_arg_Joseph
       recon->SetForwardProjectionFilter(TIterativeReconstructionFilter::FP_JOSEPH);
+      if (args_info.superiorclipimage_given)
+        recon->SetSuperiorClipImage(superiorClipImage);
+      if (args_info.inferiorclipimage_given)
+        recon->SetInferiorClipImage(inferiorClipImage);
       break;
     case (1): // fp_arg_CudaRayCast
       recon->SetForwardProjectionFilter(TIterativeReconstructionFilter::FP_CUDARAYCAST);
       break;
     case (2): // fp_arg_JosephAttenuated
       recon->SetForwardProjectionFilter(TIterativeReconstructionFilter::FP_JOSEPHATTENUATED);
+      if (args_info.superiorclipimage_given)
+        recon->SetSuperiorClipImage(superiorClipImage);
+      if (args_info.inferiorclipimage_given)
+        recon->SetInferiorClipImage(inferiorClipImage);
+      if (args_info.attenuationmap_given)
+        recon->SetAttenuationMap(attenuationMap);
       break;
     case (3): // fp_arg_RotationBased
       recon->SetForwardProjectionFilter(TIterativeReconstructionFilter::FP_ZENG);
+      if (args_info.sigmazero_given)
+        recon->SetSigmaZero(args_info.sigmazero_arg);
+      if (args_info.alphapsf_given)
+        recon->SetAlphaPSF(args_info.alphapsf_arg);
+      if (args_info.attenuationmap_given)
+        recon->SetAttenuationMap(attenuationMap);
       break;
   }
 }

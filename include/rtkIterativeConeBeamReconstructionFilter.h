@@ -68,6 +68,7 @@ public:
 
   /** Convenient type alias */
   using VolumeType = ProjectionStackType;
+  using TClipImageType = itk::Image<double, VolumeType::ImageDimension>;
   typedef enum
   {
     FP_JOSEPH = 0,
@@ -113,6 +114,58 @@ public:
     return m_CurrentBackProjectionConfiguration;
   }
 
+  /** Set/Get the attenuation map for SPECT reconstruction.
+   * */
+  void
+  SetAttenuationMap(const VolumeType * attenuationMap)
+  {
+    // Process object is not const-correct so the const casting is required.
+    this->SetNthInput(2, const_cast<VolumeType *>(attenuationMap));
+  }
+  typename VolumeType::ConstPointer
+  GetAttenuationMap()
+  {
+    return static_cast<const VolumeType *>(this->itk::ProcessObject::GetInput(2));
+  }
+
+  /** Set/Get the inferior clip image. Each pixel of the image
+   ** corresponds to the value of the inferior clip of the ray
+   ** emitted from that pixel. */
+  void
+  SetInferiorClipImage(const TClipImageType * inferiorClipImage)
+  {
+    // Process object is not const-correct so the const casting is required.
+    this->SetInput("InferiorClipImage", const_cast<TClipImageType *>(inferiorClipImage));
+  }
+  typename TClipImageType::ConstPointer
+  GetInferiorClipImage()
+  {
+    return static_cast<const TClipImageType *>(this->itk::ProcessObject::GetInput("InferiorClipImage"));
+  }
+
+  /** Set/Get the superior clip image. Each pixel of the image
+   ** corresponds to the value of the superior clip of the ray
+   ** emitted from that pixel. */
+  void
+  SetSuperiorClipImage(const TClipImageType * superiorClipImage)
+  {
+    // Process object is not const-correct so the const casting is required.
+    this->SetInput("SuperiorClipImage", const_cast<TClipImageType *>(superiorClipImage));
+  }
+  typename TClipImageType::ConstPointer
+  GetSuperiorClipImage()
+  {
+    return static_cast<const TClipImageType *>(this->itk::ProcessObject::GetInput("SuperiorClipImage"));
+  }
+
+  /** Get / Set the sigma zero of the PSF. Default is 1.5417233052142099 */
+  itkGetMacro(SigmaZero, double);
+  itkSetMacro(SigmaZero, double);
+
+  /** Get / Set the alpha of the PSF. Default is 0.016241189545787734 */
+  itkGetMacro(AlphaPSF, double);
+  itkSetMacro(AlphaPSF, double);
+
 protected:
   IterativeConeBeamReconstructionFilter();
   ~IterativeConeBeamReconstructionFilter() override = default;
@@ -135,6 +188,10 @@ protected:
   /** A random generating engine is needed to use the C++17 comliant code for std::shuffle.
    */
   std::default_random_engine m_DefaultRandomEngine = std::default_random_engine{};
+
+  /** PSF correction coefficients */
+  double m_SigmaZero{ 1.5417233052142099 };
+  double m_AlphaPSF{ 0.016241189545787734 };
 
   /** Instantiate forward and back projectors using SFINAE. */
   using CPUImageType =
@@ -207,6 +264,27 @@ protected:
   {
     ForwardProjectionPointerType fw;
     fw = JosephForwardAttenuatedProjectionImageFilter<VolumeType, ProjectionStackType>::New();
+    if (this->GetAttenuationMap().IsNotNull())
+    {
+      fw->SetInput(2, this->GetAttenuationMap());
+    }
+    else
+    {
+      itkExceptionMacro(<< "Set Joseph attenuated forward projection filter but no attenuation map is given");
+      return nullptr;
+    }
+    if (this->GetSuperiorClipImage().IsNotNull())
+    {
+      dynamic_cast<rtk::JosephForwardAttenuatedProjectionImageFilter<VolumeType, ProjectionStackType> *>(
+        fw.GetPointer())
+        ->SetSuperiorClipImage(this->GetSuperiorClipImage());
+    }
+    if (this->GetInferiorClipImage().IsNotNull())
+    {
+      dynamic_cast<rtk::JosephForwardAttenuatedProjectionImageFilter<VolumeType, ProjectionStackType> *>(
+        fw.GetPointer())
+        ->SetInferiorClipImage(this->GetInferiorClipImage());
+    }
     return fw;
   }
 
@@ -225,6 +303,14 @@ protected:
   {
     ForwardProjectionPointerType fw;
     fw = ZengForwardProjectionImageFilter<VolumeType, ProjectionStackType>::New();
+    if (this->GetAttenuationMap().IsNotNull())
+    {
+      fw->SetInput(2, this->GetAttenuationMap());
+    }
+    dynamic_cast<rtk::ZengForwardProjectionImageFilter<VolumeType, ProjectionStackType> *>(fw.GetPointer())
+      ->SetSigmaZero(m_SigmaZero);
+    dynamic_cast<rtk::ZengForwardProjectionImageFilter<VolumeType, ProjectionStackType> *>(fw.GetPointer())
+      ->SetAlpha(m_AlphaPSF);
     return fw;
   }
 
@@ -286,7 +372,16 @@ protected:
   {
     BackProjectionPointerType bp;
     bp = JosephBackAttenuatedProjectionImageFilter<ImageType, ImageType>::New();
-    return bp;
+    if (this->GetAttenuationMap().IsNotNull())
+    {
+      bp->SetInput(2, this->GetAttenuationMap());
+      return bp;
+    }
+    else
+    {
+      itkExceptionMacro(<< "Set Joseph attenuated backprojection filter but no attenuation map is given");
+      return nullptr;
+    }
   }
 
   template <typename ImageType, EnableVectorType<ImageType> * = nullptr>
@@ -304,6 +399,14 @@ protected:
   {
     BackProjectionPointerType bp;
     bp = ZengBackProjectionImageFilter<ImageType, ImageType>::New();
+    if (this->GetAttenuationMap().IsNotNull())
+    {
+      bp->SetInput(2, this->GetAttenuationMap());
+    }
+    dynamic_cast<rtk::ZengBackProjectionImageFilter<VolumeType, ProjectionStackType> *>(bp.GetPointer())
+      ->SetSigmaZero(m_SigmaZero);
+    dynamic_cast<rtk::ZengBackProjectionImageFilter<VolumeType, ProjectionStackType> *>(bp.GetPointer())
+      ->SetAlpha(m_AlphaPSF);
     return bp;
   }
 
