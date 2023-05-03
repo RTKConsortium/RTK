@@ -243,9 +243,8 @@ JosephForwardProjectionImageFilter<TInputImage,
   typename BoxShape::VectorType stepMM, np, fp;
   for (unsigned int pix = 0; pix < outputRegionForThread.GetNumberOfPixels(); pix++, itIn->Next(), ++itOut)
   {
-    typename InputRegionIterator::PointType  pixelPosition = itIn->GetPixelPosition();
-    typename InputRegionIterator::PointType  dirVox = -itIn->GetSourceToPixel();
-    typename InputRegionIterator ::IndexType pixelIndex = itIn->GetIndex();
+    typename InputRegionIterator::PointType pixelPosition = itIn->GetPixelPosition();
+    typename InputRegionIterator::PointType dirVox = -itIn->GetSourceToPixel();
 
     // Select main direction
     unsigned int                  mainDir = 0;

@@ -39,6 +39,16 @@ IterativeConeBeamReconstructionFilter<TOutputImage, ProjectionStackType>::Instan
   {
     case (FP_JOSEPH):
       fw = JosephForwardProjectionImageFilter<VolumeType, ProjectionStackType>::New();
+      if (this->GetSuperiorClipImage().IsNotNull())
+      {
+        dynamic_cast<rtk::JosephForwardProjectionImageFilter<VolumeType, ProjectionStackType> *>(fw.GetPointer())
+          ->SetSuperiorClipImage(this->GetSuperiorClipImage());
+      }
+      if (this->GetInferiorClipImage().IsNotNull())
+      {
+        dynamic_cast<rtk::JosephForwardProjectionImageFilter<VolumeType, ProjectionStackType> *>(fw.GetPointer())
+          ->SetInferiorClipImage(this->GetInferiorClipImage());
+      }
       break;
     case (FP_CUDARAYCAST):
       fw = InstantiateCudaForwardProjection<ProjectionStackType>();

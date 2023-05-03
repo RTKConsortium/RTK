@@ -306,7 +306,7 @@ protected:
   ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, ThreadIdType threadId) override;
 
   /** If a third input is given, it should be in the same physical space
-   * than the first one. */
+   * as the first one. */
   void
   VerifyInputInformation() const override;
 
