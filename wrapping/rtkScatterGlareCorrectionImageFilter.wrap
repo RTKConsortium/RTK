@@ -1,6 +1,13 @@
+if(RTK_USE_CUDA)
+  itk_wrap_include(itkCudaImage.h)
+endif()
+
 itk_wrap_class("rtk::ScatterGlareCorrectionImageFilter" POINTER)
   foreach(t ${WRAP_ITK_REAL})
     itk_wrap_template("I${ITKM_${t}}3I${ITKM_${t}}3F"
       "itk::Image<${ITKT_${t}}, 3>, itk::Image<${ITKT_${t}}, 3>, float")
   endforeach()
+  if(RTK_USE_CUDA)
+    itk_wrap_template("CIF3CIF3F" "itk::CudaImage<float, 3>, itk::CudaImage<float, 3>, float")
+  endif()
 itk_end_wrap_class()
