@@ -12,11 +12,13 @@ set(WRAPPER_SUBMODULE_ORDER
   itkImageRTK
   itkCudaImageRTK
   itkVectorImageRTK
+  rtkFFTRampImageFilter
+  rtkScatterGlareCorrectionImageFilter
   itkImageSourceRTK
   itkImageToImageFilterRTK
-  itkCudaImageToImageFilter
+  itkCudaImageToImageFilterRTK
   itkInPlaceImageFilterRTK
-  itkCudaInPlaceImageFilter
+  itkCudaInPlaceImageFilterRTK
   rtkForwardProjectionImageFilter
   itkPyBufferRTK
 )

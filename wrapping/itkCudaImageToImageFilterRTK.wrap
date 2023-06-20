@@ -1,4 +1,6 @@
 if(RTK_USE_CUDA)
+  itk_wrap_include(rtkFFTRampImageFilter.h)
+  itk_wrap_include(rtkScatterGlareCorrectionImageFilter.h)
 
   itk_wrap_class("itk::CudaImageToImageFilter" POINTER)
 
@@ -17,6 +19,10 @@ if(RTK_USE_CUDA)
       endforeach()
     endforeach()
 
+    itk_wrap_template("CIF3CIF3RFCIF3CIF3F"
+      "itk::CudaImage<float, 3>, itk::CudaImage<float, 3>, rtk::FFTRampImageFilter< itk::CudaImage<float, 3>, itk::CudaImage<float, 3>, float >")
+    itk_wrap_template("CIF3CIF3SGCIF3CIF3F"
+      "itk::CudaImage<float, 3>, itk::CudaImage<float, 3>, rtk::ScatterGlareCorrectionImageFilter< itk::CudaImage<float, 3>, itk::CudaImage<float, 3>, float >")
   itk_end_wrap_class()
 
 endif()
