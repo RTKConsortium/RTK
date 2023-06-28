@@ -78,9 +78,7 @@ MaskCollimationImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerateDa
       PointType source = itIn->GetSourcePosition();
       double    sourceNorm = source.GetNorm();
       PointType pixel = itIn->GetPixelPosition();
-      double    source_ = source[m_RotationAxisIndex];
-      pixel[m_RotationAxisIndex] -= source_;
-      source[m_RotationAxisIndex] = 0.;
+
       PointType pixelToSource(source - pixel);
       PointType sourceDir = source / sourceNorm;
 
@@ -89,12 +87,21 @@ MaskCollimationImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerateDa
       const double mag = sourceNorm / (pixelToSource * sourceDir);
       PointType    intersection = source - mag * pixelToSource;
 
-      PointType v(0.);
-      v[m_RotationAxisIndex] = 1.;
-
+      // The first coordinate on the plane is measured along the detector
+      // orthogonal to the plane defined by the detector source direction
+      // and the secon detector vector
+      PointType v;
+      v[0] = this->GetGeometry()->GetRotationMatrix(iProj)[m_RotationAxisIndex][0];
+      v[1] = this->GetGeometry()->GetRotationMatrix(iProj)[m_RotationAxisIndex][1];
+      v[2] = this->GetGeometry()->GetRotationMatrix(iProj)[m_RotationAxisIndex][2];
       PointType u = CrossProduct(v, sourceDir);
+      u /= u.GetNorm();
       double    ucoord = u * intersection;
-      double    vcoord = intersection[m_RotationAxisIndex]; // equivalent to v*intersection
+
+      // The second coordinate is measured along the orthogonal
+      v = CrossProduct (sourceDir, u);
+      double    vcoord = v * intersection;
+
       if (ucoord > -1. * this->GetGeometry()->GetCollimationUInf()[iProj] &&
           ucoord < this->GetGeometry()->GetCollimationUSup()[iProj] &&
           vcoord > -1. * this->GetGeometry()->GetCollimationVInf()[iProj] &&
