@@ -13,6 +13,7 @@ set(WRAPPER_SUBMODULE_ORDER
   itkCudaImageRTK
   itkVectorImageRTK
   rtkFFTRampImageFilter
+  rtkParkerShortScanImageFilter
   rtkScatterGlareCorrectionImageFilter
   itkImageSourceRTK
   itkImageToImageFilterRTK
