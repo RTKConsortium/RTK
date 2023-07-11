@@ -1,7 +1,3 @@
 if(RTK_USE_CUDA)
-  itk_wrap_class("rtk::FFTRampImageFilter" POINTER)
-    itk_wrap_template("CIF3CIF3F" "itk::CudaImage<float, 3>, itk::CudaImage<float, 3>, float")
-  itk_end_wrap_class()
-
   itk_wrap_simple_class("rtk::CudaFFTRampImageFilter" POINTER)
 endif()
