@@ -1,8 +1,8 @@
 section "Projectors"
 option "fp"    f "Forward projection method" values="Joseph","CudaRayCast","JosephAttenuated","Zeng" enum no default="Joseph"
 option "bp"    b "Back projection method" values="VoxelBasedBackProjection","Joseph","CudaVoxelBased","CudaRayCast","JosephAttenuated", "Zeng" enum no default="VoxelBasedBackProjection"
-option "attenuationmap" - "Attenuation map relative to the volume to perfom the attenuation correction"   string  no 
-option "sigmazero" - "PSF value at a distance of 0 meter of the detector"   double  no
-option "alphapsf" - "Slope of the PSF against the detector distance"   double  no 
-option "inferiorclipimage" - "Value of the inferior clip of the ray for each pixel of the projections (only with Joseph-based projector)" string no
-option "superiorclipimage" - "Value of the superior clip of the ray for each pixel of the projections (only with Joseph-based projector)" string no
+option "attenuationmap" - "Attenuation map relative to the volume to perfom the attenuation correction (JosephAttenuated and Zeng)"   string  no
+option "sigmazero" - "PSF value at a distance of 0 meter of the detector (Zeng only)"   double  no
+option "alphapsf" - "Slope of the PSF against the detector distance (Zeng only)"   double  no
+option "inferiorclipimage" - "Inferior clip of the ray for each pixel of the projections (Joseph only)" string no
+option "superiorclipimage" - "Superior clip of the ray for each pixel of the projections (Joseph only)" string no
