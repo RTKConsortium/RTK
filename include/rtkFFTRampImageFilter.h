@@ -128,6 +128,10 @@ public:
   itkGetConstMacro(SheppLoganCutFrequency, double);
   itkSetMacro(SheppLoganCutFrequency, double);
 
+  /** Set/Get the previous kernel update size */
+  itkGetConstMacro(PreviousKernelUpdateSize, SizeType);
+  itkSetMacro(PreviousKernelUpdateSize, SizeType);
+
 protected:
   FFTRampImageFilter();
   ~FFTRampImageFilter() override = default;
