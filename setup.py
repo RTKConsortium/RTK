@@ -12,7 +12,7 @@ except ImportError:
 
 # Configure wheel name if CUDA is used
 wheel_name='itk-rtk'
-wheel_requirements=[r'itk>=5.3.0']
+wheel_requirements=[r'itk>=5.4rc1']
 
 # Extract cuda version from the RTK_CUDA_VERSION cmake option
 for arg in sys.argv:
@@ -24,7 +24,7 @@ for arg in sys.argv:
 
 setup(
     name=wheel_name,
-    version='2.4.1',
+    version='2.5.0',
     author='RTK Consortium',
     author_email='rtk-users@openrtk.org',
     packages=['itk'],
