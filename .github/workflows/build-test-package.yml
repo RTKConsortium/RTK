@@ -4,10 +4,10 @@ on: [push,pull_request]
 
 jobs:
   cxx-build-workflow:
-    uses: InsightSoftwareConsortium/ITKRemoteModuleBuildTestPackageAction/.github/workflows/build-test-cxx.yml@1514c2c529d3319976f82e48a9292be0297ffe9d
+    uses: InsightSoftwareConsortium/ITKRemoteModuleBuildTestPackageAction/.github/workflows/build-test-cxx.yml@v5.4.0
 
   python-build-workflow:
-    uses: InsightSoftwareConsortium/ITKRemoteModuleBuildTestPackageAction/.github/workflows/build-test-package-python.yml@1514c2c529d3319976f82e48a9292be0297ffe9d
+    uses: InsightSoftwareConsortium/ITKRemoteModuleBuildTestPackageAction/.github/workflows/build-test-package-python.yml@v5.4.0
     with:
       manylinux-platforms: '["_2_28-x64","2014-x64"]'
       cmake-options: '-DRTK_BUILD_APPLICATIONS:BOOL=OFF'

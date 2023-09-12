@@ -4,10 +4,10 @@ on: [push,pull_request]
 
 env:
   cmake-options: '-DRTK_BUILD_APPLICATIONS:BOOL=OFF -DRTK_CUDA_VERSION=11.6'
-  itk-wheel-tag: 'v5.3.0'
-  itk-python-package-tag: 'dc6a18600233ac69a8f42b7489e4edf6a5d8883a'
+  itk-wheel-tag: 'v5.4rc01'
+  itk-python-package-tag: '5ad02309321621cdc7269b9b68a35013c912271c'
   itk-python-package-org: 'InsightSoftwareConsortium'
-  itk-module-deps: "RTKConsortium/ITKCudaCommon@82ce4108588f36906dffce146bbad6981e5a5a44"
+  itk-module-deps: "RTKConsortium/ITKCudaCommon@v1.0.1"
 
 jobs:
   build-linux-cuda-python-packages:
@@ -15,7 +15,7 @@ jobs:
     strategy:
       max-parallel: 2
       matrix:
-        python-version: ["37", "38", "39", "310", "311"]
+        python3-minor-versions: ["7", "8", "9", "10", "11"]
         manylinux-platform: ["_2_28-x64","2014-x64"]
 
     steps:
@@ -49,13 +49,31 @@ jobs:
         export TARGET_ARCH=`(echo ${MANYLINUX_PLATFORM} | cut -d '-' -f 2)`
         export ITK_MODULE_NO_CLEANUP=TRUE
         echo "Building for manylinux specialization ${MANYLINUX_VERSION} and target architecture ${TARGET_ARCH}"
-        ./dockcross-manylinux-download-cache-and-build-module-wheels.sh "${CMAKE_OPTIONS[@]}" -x "libcuda.so;libcuda.so.1;libcudart.so;libcudart.so.11.0;libcublas.so;libcublas.so.11;libcublasLt.so;libcublasLt.so.11;libcufft.so;libcufft.so.10" cp${{ matrix.python-version }}
+
+        ./dockcross-manylinux-download-cache-and-build-module-wheels.sh "${CMAKE_OPTIONS[@]}" -x "libcuda.so;libcuda.so.1;libcudart.so;libcudart.so.11.0;libcublas.so;libcublas.so.11;libcublasLt.so;libcublasLt.so.11;libcufft.so;libcufft.so.10" cp3${{ matrix.python3-minor-versions }}
         mv *zst ../..
+
+    - name: Validate build output
+      shell: bash
+      run: |
+        /home/srit/miniconda3/envs/py310/bin/python -m pip install twine
+        ls dist/
+
+        MANYLINUX_PLATFORM=${{ matrix.manylinux-platform }}
+        MANYLINUX_VERSION=`(echo ${MANYLINUX_PLATFORM} | cut -d '-' -f 1)`
+        TARGET_ARCH_NAME=`(echo ${MANYLINUX_PLATFORM} | cut -d '-' -f 2)`
+        if [[ ${TARGET_ARCH_NAME} == "x64" ]]; then
+          TARGET_ARCH_NAME="x86_64" # Match auditwheel naming convention
+        fi
+        WHEEL_PATTERN="dist/itk_*cp3${{ matrix.python3-minor-version }}*manylinux${MANYLINUX_VERSION}*${TARGET_ARCH_NAME}.whl"
+
+        echo "Searching for wheels matching pattern ${WHEEL_PATTERN}"
+        /home/srit/miniconda3/envs/py310/bin/python -m twine check ${WHEEL_PATTERN}
 
     - name: Publish Python package as GitHub Artifact
       uses: actions/upload-artifact@v3
       with:
-        name: LinuxWheel${{ matrix.python-version }}-cuda116
+        name: LinuxWheel3${{ matrix.python3-minor-versions }}-cuda116
         path: dist/*.whl
 
   build-windows-cuda-python-packages:
@@ -63,7 +81,7 @@ jobs:
     strategy:
       max-parallel: 2
       matrix:
-        python-version-minor: ["7", "8", "9", "10", "11"]
+        python3-minor-version: ["7", "8", "9", "10", "11"]
 
     steps:
     - uses: actions/checkout@v3
@@ -105,15 +123,26 @@ jobs:
         $env:ITKPYTHONPACKAGE_TAG = "${{ env.itk-python-package-tag }}"
         $env:ITKPYTHONPACKAGE_ORG = "${{ env.itk-python-package-org }}"
         $env:ITK_MODULE_PREQ = "${{ env.itk-module-deps }}"
-        ./windows-download-cache-and-build-module-wheels.ps1 "${{ matrix.python-version-minor }}" -setup_options "--lib-paths ""C:/Program\ Files/NVIDIA\ GPU\ Computing\ Toolkit/CUDA/v11.6/bin"" --exclude-libs ""nvcuda.dll;concrt140.dll;cublas64_11.dll;cublasLt64_11.dll;cudart64_110.dll;cufft64_10.dll""" -cmake_options "${{ env.cmake-options }}"
+        ./windows-download-cache-and-build-module-wheels.ps1 "${{ matrix.python3-minor-version }}" -setup_options "--lib-paths ""C:/Program\ Files/NVIDIA\ GPU\ Computing\ Toolkit/CUDA/v11.6/bin"" --exclude-libs ""nvcuda.dll;concrt140.dll;cublas64_11.dll;cublasLt64_11.dll;cudart64_110.dll;cufft64_10.dll""" -cmake_options "${{ env.cmake-options }}"
 
         mkdir -p '${{ github.workspace }}\dist'
         cp 'dist\*.whl' '${{ github.workspace }}\dist'
 
+    - name: Validate build output
+      shell: pwsh
+      run: |
+        python -m pip install twine
+        ls dist/
+
+        $WHEEL_PATTERN = "dist/itk_*cp3${{ matrix.python3-minor-version }}*win*.whl"
+        echo "Searching for wheels matching pattern ${WHEEL_PATTERN}"
+
+        python -m twine check ${WHEEL_PATTERN}
+
     - name: Publish Python package as GitHub Artifact
       uses: actions/upload-artifact@v3
       with:
-        name: WindowsWheel3.${{ matrix.python-version-minor }}-cuda116
+        name: WindowsWheel3${{ matrix.python3-minor-version }}-cuda116
         path: dist/*.whl
 
   publish-python-packages-to-pypi:
