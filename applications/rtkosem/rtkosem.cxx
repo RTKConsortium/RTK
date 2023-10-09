@@ -90,7 +90,7 @@ main(int argc, char * argv[])
 
   osem->SetNumberOfIterations(args_info.niterations_arg);
   osem->SetNumberOfProjectionsPerSubset(args_info.nprojpersubset_arg);
-
+  osem->SetStoreNormalizationImages(!args_info.nostorenormalizationimages_flag);
   REPORT_ITERATIONS(osem, rtk::OSEMConeBeamReconstructionFilter<OutputImageType>, OutputImageType)
 
   // Write
