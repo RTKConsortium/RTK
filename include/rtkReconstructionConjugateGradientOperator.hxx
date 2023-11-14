@@ -161,10 +161,10 @@ ReconstructionConjugateGradientOperator<TOutputImage, TSingleComponentImage, TWe
   inputPtr1->SetRequestedRegion(inputPtr1->GetLargestPossibleRegion());
 
   // Input 2 is the weights map on projections, if any
-  typename TWeightsImage::Pointer inputPtr2 = const_cast<TWeightsImage *>(this->GetInputWeights().GetPointer());
-  if (!inputPtr2)
+  typename TWeightsImage::Pointer inputWeights = const_cast<TWeightsImage *>(this->GetInputWeights().GetPointer());
+  if (!inputWeights)
     return;
-  inputPtr2->SetRequestedRegion(inputPtr2->GetLargestPossibleRegion());
+  inputWeights->SetRequestedRegion(inputWeights->GetLargestPossibleRegion());
 
   // Input "SupportMask" is the support constraint mask on volume, if any
   if (this->GetSupportMask().IsNotNull())

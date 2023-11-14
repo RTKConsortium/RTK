@@ -136,7 +136,7 @@ main(int, char **)
   ConjugateGradientType::Pointer conjugategradient = ConjugateGradientType::New();
   conjugategradient->SetInput(tomographySource->GetOutput());
   conjugategradient->SetInput(1, rei->GetOutput());
-  conjugategradient->SetInput(2, uniformWeightsSource->GetOutput());
+  conjugategradient->SetInputWeights(uniformWeightsSource->GetOutput());
   conjugategradient->SetGeometry(geometry);
   conjugategradient->SetNumberOfIterations(5);
   conjugategradient->SetDisableDisplacedDetectorFilter(true);

@@ -142,7 +142,7 @@ main(int, char **)
   std::cout << "\n\n****** Case 1: Voxel-Based Backprojector ******" << std::endl;
 
   conjugategradient->SetBackProjectionFilter(ConjugateGradientType::BP_VOXELBASED);
-  conjugategradient->SetInput(2, uniformWeightsSource->GetOutput());
+  conjugategradient->SetInputWeights(uniformWeightsSource->GetOutput());
   TRY_AND_EXIT_ON_ITK_EXCEPTION(conjugategradient->Update());
 
   CheckImageQuality<OutputImageType>(conjugategradient->GetOutput(), dsl->GetOutput(), 0.08, 23, 2.0);

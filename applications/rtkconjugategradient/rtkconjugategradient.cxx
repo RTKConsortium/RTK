@@ -77,25 +77,15 @@ main(int argc, char * argv[])
     inputFilter = constantImageSource;
   }
 
-  // Read weights if given, otherwise default to weights all equal to one
-  itk::ImageSource<OutputImageType>::Pointer weightsSource;
+  // Read weights if given
+  OutputImageType::Pointer inputWeights;
   if (args_info.weights_given)
   {
     using WeightsReaderType = itk::ImageFileReader<OutputImageType>;
     WeightsReaderType::Pointer weightsReader = WeightsReaderType::New();
     weightsReader->SetFileName(args_info.weights_arg);
-    weightsSource = weightsReader;
-  }
-  else
-  {
-    using ConstantWeightsSourceType = rtk::ConstantImageSource<OutputImageType>;
-    ConstantWeightsSourceType::Pointer constantWeightsSource = ConstantWeightsSourceType::New();
-
-    // Set the weights to be like the projections
-    TRY_AND_EXIT_ON_ITK_EXCEPTION(reader->UpdateOutputInformation())
-    constantWeightsSource->SetInformationFromImage(reader->GetOutput());
-    constantWeightsSource->SetConstant(1.0);
-    weightsSource = constantWeightsSource;
+    inputWeights = weightsReader->GetOutput();
+    inputWeights->Update();
   }
 
   // Read Support Mask if given
@@ -110,9 +100,9 @@ main(int argc, char * argv[])
   ConjugateGradientFilterType::Pointer conjugategradient = ConjugateGradientFilterType::New();
   SetForwardProjectionFromGgo(args_info, conjugategradient.GetPointer());
   SetBackProjectionFromGgo(args_info, conjugategradient.GetPointer());
-  conjugategradient->SetInput(inputFilter->GetOutput());
-  conjugategradient->SetInput(1, reader->GetOutput());
-  conjugategradient->SetInput(2, weightsSource->GetOutput());
+  conjugategradient->SetInputVolume(inputFilter->GetOutput());
+  conjugategradient->SetInputProjectionStack(reader->GetOutput());
+  conjugategradient->SetInputWeights(inputWeights);
   conjugategradient->SetCudaConjugateGradient(!args_info.nocudacg_flag);
   if (args_info.mask_given)
   {
