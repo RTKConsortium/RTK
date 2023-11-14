@@ -166,9 +166,14 @@ public:
                                       std::is_same<TSingleComponentImage, TOutputImage>::value,
                                     CudaConstantVolumeSource,
                                     ConstantImageSource<TOutputImage>>::type           ConstantImageSourceType;
+  typedef typename std::conditional<!std::is_same<TOutputImage, CPUOutputImageType>::value &&
+                                      std::is_same<TSingleComponentImage, TOutputImage>::value,
+                                    CudaConstantVolumeSource,
+                                    ConstantImageSource<TWeightsImage>>::type          ConstantWeightSourceType;
 #else
   using DisplacedDetectorFilterType = DisplacedDetectorImageFilter<TWeightsImage>;
   using ConstantImageSourceType = ConstantImageSource<TOutputImage>;
+  using ConstantWeightSourceType = ConstantImageSource<TWeightsImage>;
 #endif
 
   /** Set the support mask, if any, for support constraint in reconstruction */

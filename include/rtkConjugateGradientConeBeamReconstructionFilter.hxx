@@ -20,6 +20,7 @@
 #define rtkConjugateGradientConeBeamReconstructionFilter_hxx
 
 #include <itkProgressAccumulator.h>
+#include <itkPixelTraits.h>
 
 namespace rtk
 {
@@ -29,7 +30,7 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage, TSingleComponentImag
   ConjugateGradientConeBeamReconstructionFilter()
   : m_IterationReporter(this, 0, 1) // report every iteration
 {
-  this->SetNumberOfRequiredInputs(3);
+  this->SetNumberOfRequiredInputs(2);
 
   // Set the default values of member parameters
   m_NumberOfIterations = 3;
@@ -74,7 +75,7 @@ void
 ConjugateGradientConeBeamReconstructionFilter<TOutputImage, TSingleComponentImage, TWeightsImage>::SetInputWeights(
   const TWeightsImage * weights)
 {
-  this->SetNthInput(2, const_cast<TWeightsImage *>(weights));
+  this->SetInput("InputWeights", const_cast<TWeightsImage *>(weights));
 }
 
 template <typename TOutputImage, typename TSingleComponentImage, typename TWeightsImage>
@@ -104,7 +105,7 @@ template <typename TOutputImage, typename TSingleComponentImage, typename TWeigh
 typename TWeightsImage::ConstPointer
 ConjugateGradientConeBeamReconstructionFilter<TOutputImage, TSingleComponentImage, TWeightsImage>::GetInputWeights()
 {
-  return static_cast<const TWeightsImage *>(this->itk::ProcessObject::GetInput(2));
+  return static_cast<const TWeightsImage *>(this->itk::ProcessObject::GetInput("InputWeights"));
 }
 
 template <typename TOutputImage, typename TSingleComponentImage, typename TWeightsImage>
@@ -142,11 +143,14 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage, TSingleComponentImag
     return;
   inputPtr1->SetRequestedRegion(inputPtr1->GetLargestPossibleRegion());
 
-  // Input 2 is the weights map on projections, either user-defined or filled with ones (default)
-  typename TWeightsImage::Pointer inputPtr2 = const_cast<TWeightsImage *>(this->GetInputWeights().GetPointer());
-  if (!inputPtr2)
-    return;
-  inputPtr2->SetRequestedRegion(inputPtr2->GetLargestPossibleRegion());
+  // Input "InputWeights" is the weights map on projections, either user-defined or filled with ones (default)
+  if (this->GetInputWeights().IsNotNull())
+  {
+    typename TWeightsImage::Pointer inputWeights = const_cast<TWeightsImage *>(this->GetInputWeights().GetPointer());
+    if (!inputWeights)
+      return;
+    inputWeights->SetRequestedRegion(inputWeights->GetLargestPossibleRegion());
+  }
 
   // Input "SupportMask" is the support constraint mask on volume, if any
   if (this->GetSupportMask().IsNotNull())
@@ -190,6 +194,16 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage, TSingleComponentImag
   m_CGOperator->SetSupportMask(this->GetSupportMask());
   m_ConjugateGradientFilter->SetX(this->GetInputVolume());
   m_DisplacedDetectorFilter->SetDisable(m_DisableDisplacedDetectorFilter);
+  if (this->GetInputWeights().IsNull())
+  {
+    using PixelType = typename TWeightsImage::PixelType;
+    using ComponentType = typename itk::PixelTraits<PixelType>::ValueType;
+    typename ConstantWeightSourceType::Pointer ones = ConstantWeightSourceType::New();
+    ones->SetInformationFromImage(this->GetInputProjectionStack());
+    ones->SetConstant(PixelType(itk::NumericTraits<ComponentType>::One));
+    ones->Update();
+    this->SetInputWeights(ones->GetOutput());
+  }
   m_DisplacedDetectorFilter->SetInput(this->GetInputWeights());
 
   // Links with the m_BackProjectionFilter should be set here and not
@@ -256,10 +270,6 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage, TSingleComponentImag
   if (this->GetSupportMask())
   {
     m_MultiplyOutputFilter->Update();
-  }
-
-  if (this->GetSupportMask())
-  {
     this->GraftOutput(m_MultiplyOutputFilter->GetOutput());
   }
   else
