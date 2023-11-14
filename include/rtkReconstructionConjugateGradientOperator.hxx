@@ -41,9 +41,6 @@ ReconstructionConjugateGradientOperator<TOutputImage, TSingleComponentImage, TWe
   m_MultiplyWithWeightsFilter = MultiplyWithWeightsFilterType::New();
   m_MultiplyOutputVolumeFilter = MultiplyFilterType::New();
   m_MultiplyInputVolumeFilter = MultiplyFilterType::New();
-  m_AddTikhonovFilter = AddFilterType::New();
-
-  m_MultiplyTikhonovFilter = MultiplyFilterType::New();
 
   // Set permanent parameters
   m_ConstantProjectionsSource->SetConstant(itk::NumericTraits<typename TOutputImage::PixelType>::ZeroValue());
@@ -96,6 +93,14 @@ ReconstructionConjugateGradientOperator<TOutputImage, TSingleComponentImage, TWe
 }
 
 template <typename TOutputImage, typename TSingleComponentImage, typename TWeightsImage>
+void
+ReconstructionConjugateGradientOperator<TOutputImage, TSingleComponentImage, TWeightsImage>::
+  SetLocalRegularizationWeights(const TSingleComponentImage * localRegularizationWeights)
+{
+  this->SetInput("LocalRegularizationWeights", const_cast<TSingleComponentImage *>(localRegularizationWeights));
+}
+
+template <typename TOutputImage, typename TSingleComponentImage, typename TWeightsImage>
 typename TOutputImage::ConstPointer
 ReconstructionConjugateGradientOperator<TOutputImage, TSingleComponentImage, TWeightsImage>::GetInputProjectionStack()
 {
@@ -114,6 +119,14 @@ typename TSingleComponentImage::ConstPointer
 ReconstructionConjugateGradientOperator<TOutputImage, TSingleComponentImage, TWeightsImage>::GetSupportMask()
 {
   return static_cast<const TSingleComponentImage *>(this->itk::ProcessObject::GetInput("SupportMask"));
+}
+
+template <typename TOutputImage, typename TSingleComponentImage, typename TWeightsImage>
+typename TSingleComponentImage::ConstPointer
+ReconstructionConjugateGradientOperator<TOutputImage, TSingleComponentImage, TWeightsImage>::
+  GetLocalRegularizationWeights()
+{
+  return static_cast<const TSingleComponentImage *>(this->itk::ProcessObject::GetInput("LocalRegularizationWeights"));
 }
 
 template <typename TOutputImage, typename TSingleComponentImage, typename TWeightsImage>
@@ -219,11 +232,23 @@ ReconstructionConjugateGradientOperator<TOutputImage, TSingleComponentImage, TWe
   // Set the filters to compute the Tikhonov regularization, if any
   if (m_Tikhonov != 0)
   {
+    m_AddTikhonovFilter = AddFilterType::New();
+    m_AddTikhonovFilter->SetInput(1, m_FloatingOutputPointer);
+
+    m_MultiplyTikhonovFilter = MultiplyFilterType::New();
     m_MultiplyTikhonovFilter->SetInput(m_FloatingInputPointer);
     m_MultiplyTikhonovFilter->SetConstant2(m_Tikhonov);
+    m_FloatingOutputPointer = m_MultiplyTikhonovFilter->GetOutput();
 
-    m_AddTikhonovFilter->SetInput(0, m_MultiplyTikhonovFilter->GetOutput());
-    m_AddTikhonovFilter->SetInput(1, m_FloatingOutputPointer);
+    if (this->GetLocalRegularizationWeights().IsNotNull())
+    {
+      m_MultiplyTikhonovWeightsFilter = MultiplyFilterType::New();
+      m_MultiplyTikhonovWeightsFilter->SetInput1(m_FloatingOutputPointer);
+      m_MultiplyTikhonovWeightsFilter->SetInput2(this->GetLocalRegularizationWeights());
+      m_FloatingOutputPointer = m_MultiplyTikhonovWeightsFilter->GetOutput();
+    }
+
+    m_AddTikhonovFilter->SetInput(0, m_FloatingOutputPointer);
 
     m_FloatingOutputPointer = m_AddTikhonovFilter->GetOutput();
   }
@@ -278,6 +303,11 @@ ReconstructionConjugateGradientOperator<TOutputImage, TSingleComponentImage, TWe
 
   m_AddLaplacianFilter = AddFilterType::New();
   m_AddLaplacianFilter->SetInput(0, m_BackProjectionFilter->GetOutput());
+  if (this->GetLocalRegularizationWeights().IsNotNull())
+  {
+    m_LaplacianFilter->SetInput("Weights",
+                                const_cast<TWeightsImage *>(this->GetLocalRegularizationWeights().GetPointer()));
+  }
   m_AddLaplacianFilter->SetInput(1, m_MultiplyLaplacianFilter->GetOutput());
 
   return m_AddLaplacianFilter->GetOutput();

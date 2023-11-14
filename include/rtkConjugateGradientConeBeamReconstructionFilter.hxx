@@ -80,6 +80,14 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage, TSingleComponentImag
 
 template <typename TOutputImage, typename TSingleComponentImage, typename TWeightsImage>
 void
+ConjugateGradientConeBeamReconstructionFilter<TOutputImage, TSingleComponentImage, TWeightsImage>::
+  SetLocalRegularizationWeights(const TSingleComponentImage * weights)
+{
+  this->SetInput("LocalRegularizationWeights", const_cast<TSingleComponentImage *>(weights));
+}
+
+template <typename TOutputImage, typename TSingleComponentImage, typename TWeightsImage>
+void
 ConjugateGradientConeBeamReconstructionFilter<TOutputImage, TSingleComponentImage, TWeightsImage>::SetSupportMask(
   const TSingleComponentImage * SupportMask)
 {
@@ -106,6 +114,14 @@ typename TWeightsImage::ConstPointer
 ConjugateGradientConeBeamReconstructionFilter<TOutputImage, TSingleComponentImage, TWeightsImage>::GetInputWeights()
 {
   return static_cast<const TWeightsImage *>(this->itk::ProcessObject::GetInput("InputWeights"));
+}
+
+template <typename TOutputImage, typename TSingleComponentImage, typename TWeightsImage>
+typename TSingleComponentImage::ConstPointer
+ConjugateGradientConeBeamReconstructionFilter<TOutputImage, TSingleComponentImage, TWeightsImage>::
+  GetLocalRegularizationWeights()
+{
+  return static_cast<const TSingleComponentImage *>(this->itk::ProcessObject::GetInput("LocalRegularizationWeights"));
 }
 
 template <typename TOutputImage, typename TSingleComponentImage, typename TWeightsImage>
@@ -150,6 +166,16 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage, TSingleComponentImag
     if (!inputWeights)
       return;
     inputWeights->SetRequestedRegion(inputWeights->GetLargestPossibleRegion());
+  }
+
+  // Input LocalRegularizationWeights is the optional weights map on regularization
+  if (this->GetLocalRegularizationWeights().IsNotNull())
+  {
+    typename TSingleComponentImage::Pointer localRegWeights =
+      const_cast<TSingleComponentImage *>(this->GetLocalRegularizationWeights().GetPointer());
+    if (!localRegWeights)
+      return;
+    localRegWeights->SetRequestedRegion(localRegWeights->GetLargestPossibleRegion());
   }
 
   // Input "SupportMask" is the support constraint mask on volume, if any
@@ -215,6 +241,7 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage, TSingleComponentImag
   m_MultiplyWithWeightsFilter->SetInput1(this->GetInputProjectionStack());
   m_MultiplyWithWeightsFilter->SetInput2(m_DisplacedDetectorFilter->GetOutput());
   m_CGOperator->SetInputWeights(m_DisplacedDetectorFilter->GetOutput());
+  m_CGOperator->SetLocalRegularizationWeights(this->GetLocalRegularizationWeights());
   m_BackProjectionFilterForB->SetInput(1, m_MultiplyWithWeightsFilter->GetOutput());
 
   // If a support mask is used, it serves as preconditioning weights

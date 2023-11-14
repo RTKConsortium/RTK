@@ -81,26 +81,26 @@ main(int argc, char * argv[])
     input = constantImageSource->GetOutput();
   }
 
-  // Read weights if given, otherwise default to weights all equal to one
-  WeightsImageType::Pointer weightsSource;
+  // Read weights if given
+  WeightsImageType::Pointer inputWeights;
   if (args_info.weights_given)
   {
-    TRY_AND_EXIT_ON_ITK_EXCEPTION(weightsSource = itk::ReadImage<WeightsImageType>(args_info.weights_arg))
+    using WeightsReaderType = itk::ImageFileReader<WeightsImageType>;
+    WeightsReaderType::Pointer weightsReader = WeightsReaderType::New();
+    weightsReader->SetFileName(args_info.weights_arg);
+    inputWeights = weightsReader->GetOutput();
+    TRY_AND_EXIT_ON_ITK_EXCEPTION(inputWeights->Update())
   }
-  else
+
+  // Read regularization weights if given
+  SingleComponentImageType::Pointer localRegWeights;
+  if (args_info.regweights_given)
   {
-    using ConstantWeightsSourceType = rtk::ConstantImageSource<WeightsImageType>;
-    ConstantWeightsSourceType::Pointer constantWeightsSource = ConstantWeightsSourceType::New();
-
-    // Set the weights to the identity matrix
-    constantWeightsSource->SetInformationFromImage(projections);
-    WeightsType constantWeight = itk::NumericTraits<WeightsType>::ZeroValue(constantWeight);
-    for (unsigned int i = 0; i < nMaterials; i++)
-      constantWeight[i + i * nMaterials] = 1;
-
-    constantWeightsSource->SetConstant(constantWeight);
-    TRY_AND_EXIT_ON_ITK_EXCEPTION(constantWeightsSource->Update())
-    weightsSource = constantWeightsSource->GetOutput();
+    using WeightsReaderType = itk::ImageFileReader<SingleComponentImageType>;
+    WeightsReaderType::Pointer localRegWeightsReader = WeightsReaderType::New();
+    localRegWeightsReader->SetFileName(args_info.regweights_arg);
+    localRegWeights = localRegWeightsReader->GetOutput();
+    localRegWeights->Update();
   }
 
   // Read Support Mask if given
@@ -114,19 +114,20 @@ main(int argc, char * argv[])
   using ConjugateGradientFilterType =
     rtk::ConjugateGradientConeBeamReconstructionFilter<OutputImageType, SingleComponentImageType, WeightsImageType>;
   ConjugateGradientFilterType::Pointer conjugategradient = ConjugateGradientFilterType::New();
-  //  conjugategradient->SetForwardProjectionFilter(ConjugateGradientFilterType::JOSEPH);
-  //  conjugategradient->SetBackProjectionFilter(ConjugateGradientFilterType::JOSEPH);
   SetForwardProjectionFromGgo(args_info, conjugategradient.GetPointer());
   SetBackProjectionFromGgo(args_info, conjugategradient.GetPointer());
   conjugategradient->SetInputVolume(input);
   conjugategradient->SetInputProjectionStack(projections);
-  conjugategradient->SetInputWeights(weightsSource);
+  conjugategradient->SetInputWeights(inputWeights);
+  conjugategradient->SetLocalRegularizationWeights(localRegWeights);
   conjugategradient->SetCudaConjugateGradient(!args_info.nocudacg_flag);
   if (args_info.mask_given)
   {
     conjugategradient->SetSupportMask(supportmask);
   }
 
+  if (args_info.gamma_given)
+    conjugategradient->SetGamma(args_info.gamma_arg);
   if (args_info.tikhonov_given)
     conjugategradient->SetTikhonov(args_info.tikhonov_arg);
 

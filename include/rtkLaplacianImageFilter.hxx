@@ -30,9 +30,6 @@ LaplacianImageFilter<TOutputImage, TGradientImage>::LaplacianImageFilter()
   m_Gradient = GradientFilterType::New();
   m_Divergence = DivergenceFilterType::New();
 
-  // Set permanent connections between filters
-  m_Divergence->SetInput(m_Gradient->GetOutput());
-
   // Set memory management parameters
   m_Gradient->ReleaseDataFlagOn();
 }
@@ -45,6 +42,17 @@ LaplacianImageFilter<TOutputImage, TGradientImage>::GenerateOutputInformation()
 
   // Set runtime connections
   m_Gradient->SetInput(this->GetInput());
+
+  // Set internal connection between filter
+  if (this->GetWeights().IsNotNull())
+  {
+    m_Multiply = MultiplyImageFilterType::New();
+    m_Multiply->SetInput1(m_Gradient->GetOutput());
+    m_Multiply->SetInput2(this->GetWeights());
+    m_Divergence->SetInput(m_Multiply->GetOutput());
+  }
+  else
+    m_Divergence->SetInput(m_Gradient->GetOutput());
 
   // Update the last filter
   m_Divergence->UpdateOutputInformation();
@@ -62,6 +70,20 @@ LaplacianImageFilter<TOutputImage, TGradientImage>::GenerateData()
 
   // Graft its output to the composite filter's output
   this->GraftOutput(m_Divergence->GetOutput());
+}
+
+template <typename TOutputImage, typename TGradientImage>
+void
+LaplacianImageFilter<TOutputImage, TGradientImage>::SetWeights(const TOutputImage * weights)
+{
+  this->SetInput("Weights", const_cast<TOutputImage *>(weights));
+}
+
+template <typename TOutputImage, typename TGradientImage>
+typename TOutputImage::ConstPointer
+LaplacianImageFilter<TOutputImage, TGradientImage>::GetWeights()
+{
+  return static_cast<const TOutputImage *>(this->itk::ProcessObject::GetInput("Weights"));
 }
 
 } // namespace rtk
