@@ -183,6 +183,14 @@ public:
   typename TSingleComponentImage::ConstPointer
   GetSupportMask();
 
+  /** Set local regularization weights. The map should have the same
+   * information (size, spacing, origin etc.) as the reconstructed volume. The
+   * same map is used in Laplacian and Tikhonov regularization. */
+  void
+  SetLocalRegularizationWeights(const TSingleComponentImage * localRegularizationWeights);
+  typename TSingleComponentImage::ConstPointer
+  GetLocalRegularizationWeights();
+
   /** Set the geometry of both m_BackProjectionFilter and m_ForwardProjectionFilter */
   itkSetConstObjectMacro(Geometry, ThreeDCircularProjectionGeometry);
 
@@ -223,6 +231,7 @@ protected:
   typename MultiplyFilterType::Pointer                                  m_MultiplyInputVolumeFilter;
   typename MultiplyFilterType::Pointer                                  m_MultiplyLaplacianFilter;
   typename MultiplyFilterType::Pointer                                  m_MultiplyTikhonovFilter;
+  typename MultiplyFilterType::Pointer                                  m_MultiplyTikhonovWeightsFilter;
   typename AddFilterType::Pointer                                       m_AddLaplacianFilter;
   typename AddFilterType::Pointer                                       m_AddTikhonovFilter;
   typename itk::ImageToImageFilter<TOutputImage, TOutputImage>::Pointer m_LaplacianFilter;

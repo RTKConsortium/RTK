@@ -131,6 +131,8 @@ public:
   SetInputProjectionStack(const TOutputImage * projs);
   void
   SetInputWeights(const TWeightsImage * weights);
+  void
+  SetLocalRegularizationWeights(const TSingleComponentImage * weights);
 
   using ForwardProjectionFilterType = ForwardProjectionImageFilter<TOutputImage, TOutputImage>;
   using ForwardProjectionFilterPointer = typename ForwardProjectionFilterType::Pointer;
@@ -249,6 +251,8 @@ protected:
   GetInputProjectionStack();
   typename TWeightsImage::ConstPointer
   GetInputWeights();
+  typename TSingleComponentImage::ConstPointer
+  GetLocalRegularizationWeights();
 
   template <typename ImageType,
             typename IterativeConeBeamReconstructionFilter<TOutputImage>::template EnableCudaScalarAndVectorType<

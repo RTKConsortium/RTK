@@ -85,7 +85,18 @@ main(int argc, char * argv[])
     WeightsReaderType::Pointer weightsReader = WeightsReaderType::New();
     weightsReader->SetFileName(args_info.weights_arg);
     inputWeights = weightsReader->GetOutput();
-    inputWeights->Update();
+    TRY_AND_EXIT_ON_ITK_EXCEPTION(inputWeights->Update())
+  }
+
+  // Read regularization weights if given
+  OutputImageType::Pointer localRegWeights;
+  if (args_info.regweights_given)
+  {
+    using WeightsReaderType = itk::ImageFileReader<OutputImageType>;
+    WeightsReaderType::Pointer localRegWeightsReader = WeightsReaderType::New();
+    localRegWeightsReader->SetFileName(args_info.regweights_arg);
+    localRegWeights = localRegWeightsReader->GetOutput();
+    localRegWeights->Update();
   }
 
   // Read Support Mask if given
@@ -103,6 +114,7 @@ main(int argc, char * argv[])
   conjugategradient->SetInputVolume(inputFilter->GetOutput());
   conjugategradient->SetInputProjectionStack(reader->GetOutput());
   conjugategradient->SetInputWeights(inputWeights);
+  conjugategradient->SetLocalRegularizationWeights(localRegWeights);
   conjugategradient->SetCudaConjugateGradient(!args_info.nocudacg_flag);
   if (args_info.mask_given)
   {
@@ -118,9 +130,21 @@ main(int argc, char * argv[])
   conjugategradient->SetNumberOfIterations(args_info.niterations_arg);
   conjugategradient->SetDisableDisplacedDetectorFilter(args_info.nodisplaced_flag);
 
-  REPORT_ITERATIONS(conjugategradient, ConjugateGradientFilterType, OutputImageType)
+  itk::TimeProbe readerProbe;
+  if (args_info.time_flag)
+  {
+    std::cout << "Recording elapsed time... " << std::flush;
+    readerProbe.Start();
+  }
 
   TRY_AND_EXIT_ON_ITK_EXCEPTION(conjugategradient->Update())
+
+  if (args_info.time_flag)
+  {
+    //    conjugategradient->PrintTiming(std::cout);
+    readerProbe.Stop();
+    std::cout << "It took...  " << readerProbe.GetMean() << ' ' << readerProbe.GetUnit() << std::endl;
+  }
 
   // Write
   TRY_AND_EXIT_ON_ITK_EXCEPTION(itk::WriteImage(conjugategradient->GetOutput(), args_info.output_arg))

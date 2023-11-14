@@ -21,6 +21,7 @@
 
 #include "rtkForwardDifferenceGradientImageFilter.h"
 #include "rtkBackwardDifferenceDivergenceImageFilter.h"
+#include "itkMultiplyImageFilter.h"
 
 namespace rtk
 {
@@ -53,12 +54,18 @@ public:
                                                                        typename TOutputImage::ValueType,
                                                                        TGradientImage>;
   using DivergenceFilterType = rtk::BackwardDifferenceDivergenceImageFilter<TGradientImage, TOutputImage>;
+  using MultiplyImageFilterType = itk::MultiplyImageFilter<TGradientImage, TOutputImage>;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
   itkTypeMacro(LaplacianImageFilter, itk::ImageToImageFilter);
+
+  void
+  SetWeights(const TOutputImage * weights);
+  typename TOutputImage::ConstPointer
+  GetWeights();
 
 protected:
   LaplacianImageFilter();
@@ -72,8 +79,9 @@ protected:
   void
   GenerateOutputInformation() override;
 
-  typename GradientFilterType::Pointer   m_Gradient;
-  typename DivergenceFilterType::Pointer m_Divergence;
+  typename GradientFilterType::Pointer      m_Gradient;
+  typename DivergenceFilterType::Pointer    m_Divergence;
+  typename MultiplyImageFilterType::Pointer m_Multiply;
 };
 } // namespace rtk
 
