@@ -37,22 +37,22 @@ namespace rtk
  * \ingroup RTK IntensityImageFilters
  */
 
-template <typename OutputImageType, typename GradientImageType>
-class ITK_TEMPLATE_EXPORT LaplacianImageFilter : public itk::ImageToImageFilter<OutputImageType, OutputImageType>
+template <typename TOutputImage, typename TGradientImage>
+class ITK_TEMPLATE_EXPORT LaplacianImageFilter : public itk::ImageToImageFilter<TOutputImage, TOutputImage>
 {
 public:
   ITK_DISALLOW_COPY_AND_MOVE(LaplacianImageFilter);
 
   /** Standard class type alias. */
   using Self = LaplacianImageFilter;
-  using Superclass = itk::ImageToImageFilter<OutputImageType, OutputImageType>;
+  using Superclass = itk::ImageToImageFilter<TOutputImage, TOutputImage>;
   using Pointer = itk::SmartPointer<Self>;
-  using OutputImagePointer = typename OutputImageType::Pointer;
-  using GradientFilterType = rtk::ForwardDifferenceGradientImageFilter<OutputImageType,
-                                                                       typename OutputImageType::ValueType,
-                                                                       typename OutputImageType::ValueType,
-                                                                       GradientImageType>;
-  using DivergenceFilterType = rtk::BackwardDifferenceDivergenceImageFilter<GradientImageType, OutputImageType>;
+  using OutputImagePointer = typename TOutputImage::Pointer;
+  using GradientFilterType = rtk::ForwardDifferenceGradientImageFilter<TOutputImage,
+                                                                       typename TOutputImage::ValueType,
+                                                                       typename TOutputImage::ValueType,
+                                                                       TGradientImage>;
+  using DivergenceFilterType = rtk::BackwardDifferenceDivergenceImageFilter<TGradientImage, TOutputImage>;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
