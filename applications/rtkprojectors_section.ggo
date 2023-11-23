@@ -1,6 +1,7 @@
 section "Projectors"
 option "fp"    f "Forward projection method" values="Joseph","CudaRayCast","JosephAttenuated","Zeng" enum no default="Joseph"
 option "bp"    b "Back projection method" values="VoxelBasedBackProjection","Joseph","CudaVoxelBased","CudaRayCast","JosephAttenuated", "Zeng" enum no default="VoxelBasedBackProjection"
+option "step" - "Step size along ray (for CudaRayCast only)"                double   no   default="1"
 option "attenuationmap" - "Attenuation map relative to the volume to perfom the attenuation correction (JosephAttenuated and Zeng)"   string  no
 option "sigmazero" - "PSF value at a distance of 0 meter of the detector (Zeng only)"   double  no
 option "alphapsf" - "Slope of the PSF against the detector distance (Zeng only)"   double  no

@@ -166,6 +166,10 @@ public:
   itkGetMacro(AlphaPSF, double);
   itkSetMacro(AlphaPSF, double);
 
+  /** Get / Set step size along ray (in mm). Default is 1 mm. */
+  itkGetConstMacro(StepSize, double);
+  itkSetMacro(StepSize, double);
+
 protected:
   IterativeConeBeamReconstructionFilter();
   ~IterativeConeBeamReconstructionFilter() override = default;
@@ -192,6 +196,9 @@ protected:
   /** PSF correction coefficients */
   double m_SigmaZero{ 1.5417233052142099 };
   double m_AlphaPSF{ 0.016241189545787734 };
+
+  /** Step size along ray (in mm). */
+  double m_StepSize{ 1.0 };
 
   /** Instantiate forward and back projectors using SFINAE. */
   using CPUImageType =
@@ -234,6 +241,8 @@ protected:
     ForwardProjectionPointerType fw;
 #ifdef RTK_USE_CUDA
     fw = CudaForwardProjectionImageFilter<ImageType, ImageType>::New();
+    dynamic_cast<rtk::CudaForwardProjectionImageFilter<ImageType, ImageType> *>(fw.GetPointer())
+      ->SetStepSize(m_StepSize);
 #endif
     return fw;
   }
@@ -343,6 +352,7 @@ protected:
     BackProjectionPointerType bp;
 #ifdef RTK_USE_CUDA
     bp = CudaRayCastBackProjectionImageFilter::New();
+    dynamic_cast<rtk::CudaRayCastBackProjectionImageFilter *>(bp.GetPointer())->SetStepSize(m_StepSize);
 #endif
     return bp;
   }

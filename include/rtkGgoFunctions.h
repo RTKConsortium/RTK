@@ -304,6 +304,8 @@ SetBackProjectionFromGgo(const TArgsInfo & args_info, TIterativeReconstructionFi
       break;
     case (3): // bp_arg_CudaRayCast
       recon->SetBackProjectionFilter(TIterativeReconstructionFilter::BP_CUDARAYCAST);
+      if (args_info.step_given)
+        recon->SetStepSize(args_info.step_arg);
       break;
     case (4): // bp_arg_JosephAttenuated
       recon->SetBackProjectionFilter(TIterativeReconstructionFilter::BP_JOSEPHATTENUATED);
@@ -367,6 +369,8 @@ SetForwardProjectionFromGgo(const TArgsInfo & args_info, TIterativeReconstructio
       break;
     case (1): // fp_arg_CudaRayCast
       recon->SetForwardProjectionFilter(TIterativeReconstructionFilter::FP_CUDARAYCAST);
+      if (args_info.step_given)
+        recon->SetStepSize(args_info.step_arg);
       break;
     case (2): // fp_arg_JosephAttenuated
       recon->SetForwardProjectionFilter(TIterativeReconstructionFilter::FP_JOSEPHATTENUATED);
