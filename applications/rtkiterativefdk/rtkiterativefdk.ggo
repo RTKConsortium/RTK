@@ -24,3 +24,4 @@ option "sigmazero" - "PSF value at a distance of 0 meter of the detector"   doub
 option "alphapsf" - "Slope of the PSF against the detector distance"   double  no
 option "inferiorclipimage" - "Value of the inferior clip of the ray for each pixel of the projections (only with Joseph-based projector)" string no
 option "superiorclipimage" - "Value of the superior clip of the ray for each pixel of the projections (only with Joseph-based projector)" string no
+option "step" - "Step size along ray (for CudaRayCast only)"                double   no   default="1"
