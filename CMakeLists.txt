@@ -262,12 +262,6 @@ if(ITK_WRAP_PYTHON)
                 applications/rtkvarianobigeometry/rtkvarianobigeometry.py
           DESTINATION ${RTK_INSTALL_LIB_DIR}
           COMPONENT PythonWheelRuntimeLibraries)
-  WRAP_ITK_PYTHON_BINDINGS_INSTALL(/itk "RTK"
-      applications/rtk3Doutputimage_group.py
-      applications/rtkinputprojections_group.py
-      applications/rtkiterations_group.py
-      applications/rtkprojectors_group.py
-      wrapping/__init_rtk__.py)
 endif()
 
 # --------------------------------------------------------
