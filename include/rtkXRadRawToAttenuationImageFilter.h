@@ -54,7 +54,11 @@ public:
   itkNewMacro(Self);
 
   /** Runtime information support. */
+#ifdef itkOverrideGetNameOfClassMacro
+  itkOverrideGetNameOfClassMacro(XRadRawToAttenuationImageFilter);
+#else
   itkTypeMacro(XRadRawToAttenuationImageFilter, itk::ImageToImageFilter);
+#endif
 
 protected:
   XRadRawToAttenuationImageFilter();

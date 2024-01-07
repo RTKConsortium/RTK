@@ -45,7 +45,11 @@ public:
   using ConstPointer = itk::SmartPointer<const Self>;
 
   /** Run-time type information (and related methods). */
+#ifdef itkOverrideGetNameOfClassMacro
+  itkOverrideGetNameOfClassMacro(GlobalResourceProbe);
+#else
   itkTypeMacro(GlobalResourceProbe, itk::Object);
+#endif
 
   /** This is a singleton pattern New.  There will only be ONE
    * reference to a GlobalResourceProbe object per process.  Clients that

@@ -50,7 +50,11 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
+#ifdef itkOverrideGetNameOfClassMacro
+  itkOverrideGetNameOfClassMacro(SelectOneProjectionPerCycleImageFilter);
+#else
   itkTypeMacro(SelectOneProjectionPerCycleImageFilter, SubSelectImageFilter);
+#endif
 
   /** File name of a text file with one phase value between 0 and 1 per line. */
   itkGetMacro(SignalFilename, std::string);

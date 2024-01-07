@@ -58,7 +58,11 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
+#ifdef itkOverrideGetNameOfClassMacro
+  itkOverrideGetNameOfClassMacro(DrawBoxImageFilter);
+#else
   itkTypeMacro(DrawBoxImageFilter, DrawConvexImageFilter);
+#endif
 
   /** Get / Set the constant density of the volume */
   itkGetMacro(Density, ScalarType);

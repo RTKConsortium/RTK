@@ -112,7 +112,11 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
+#ifdef itkOverrideGetNameOfClassMacro
+  itkOverrideGetNameOfClassMacro(DePierroRegularizationImageFilter);
+#else
   itkTypeMacro(DePierroRegularizationImageFilter, itk::ImageToImageFilter);
+#endif
 
   /** Get / Set the hyper parameter for the regularization */
   itkGetMacro(Beta, double);

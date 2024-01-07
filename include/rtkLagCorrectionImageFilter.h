@@ -67,7 +67,11 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
+#ifdef itkOverrideGetNameOfClassMacro
+  itkOverrideGetNameOfClassMacro(LagCorrectionImageFilter);
+#else
   itkTypeMacro(LagCorrectionImageFilter, ImageToImageFilter);
+#endif
 
   using ImageRegionType = typename TImage::RegionType;
   using ImageSizeType = typename TImage::SizeType;

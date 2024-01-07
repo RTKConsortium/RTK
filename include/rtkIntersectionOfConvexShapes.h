@@ -57,7 +57,11 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
+#ifdef itkOverrideGetNameOfClassMacro
+  itkOverrideGetNameOfClassMacro(IntersectionOfConvexShapes);
+#else
   itkTypeMacro(IntersectionOfConvexShapes, ConvexShape);
+#endif
 
   /** See rtk::ConvexShape::IsInside. */
   bool

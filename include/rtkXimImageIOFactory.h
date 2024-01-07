@@ -69,7 +69,11 @@ public:
   itkFactorylessNewMacro(Self);
 
   /** Run-time type information (and related methods). */
+#ifdef itkOverrideGetNameOfClassMacro
+  itkOverrideGetNameOfClassMacro(XimImageIOFactory);
+#else
   itkTypeMacro(XimImageIOFactory, itk::ObjectFactoryBase);
+#endif
 
   /** Register one factory of this type  */
   static void

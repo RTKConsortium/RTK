@@ -68,7 +68,11 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
+#  ifdef itkOverrideGetNameOfClassMacro
+  itkOverrideGetNameOfClassMacro(CudaParkerShortScanImageFilter);
+#  else
   itkTypeMacro(CudaParkerShortScanImageFilter, itk::CudaInPlaceImageFilter);
+#  endif
 
 protected:
   /** Standard constructor **/

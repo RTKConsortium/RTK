@@ -56,7 +56,11 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
+#ifdef itkOverrideGetNameOfClassMacro
+  itkOverrideGetNameOfClassMacro(RayQuadricIntersectionImageFilter);
+#else
   itkTypeMacro(RayQuadricIntersectionImageFilter, RayConvexIntersectionImageFilter);
+#endif
 
   /** Get / Set the constant density of the volume */
   itkGetMacro(Density, ScalarType);

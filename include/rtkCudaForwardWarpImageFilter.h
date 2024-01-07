@@ -70,7 +70,11 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
+#  ifdef itkOverrideGetNameOfClassMacro
+  itkOverrideGetNameOfClassMacro(CudaForwardWarpImageFilter);
+#  else
   itkTypeMacro(CudaForwardWarpImageFilter, Superclass);
+#  endif
 
 protected:
   CudaForwardWarpImageFilter();

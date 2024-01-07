@@ -109,7 +109,11 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
+#ifdef itkOverrideGetNameOfClassMacro
+  itkOverrideGetNameOfClassMacro(rtkADMMWaveletsConjugateGradientOperator);
+#else
   itkTypeMacro(rtkADMMWaveletsConjugateGradientOperator, ConjugateGradientOperator);
+#endif
 
   using BackProjectionFilterType = rtk::BackProjectionImageFilter<TOutputImage, TOutputImage>;
   using BackProjectionFilterPointer = typename BackProjectionFilterType::Pointer;

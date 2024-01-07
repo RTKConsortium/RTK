@@ -122,7 +122,11 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
+#ifdef itkOverrideGetNameOfClassMacro
+  itkOverrideGetNameOfClassMacro(ConjugateGradientConeBeamReconstructionFilter);
+#else
   itkTypeMacro(ConjugateGradientConeBeamReconstructionFilter, itk::ImageToImageFilter);
+#endif
 
   /** Setters for the inputs */
   void

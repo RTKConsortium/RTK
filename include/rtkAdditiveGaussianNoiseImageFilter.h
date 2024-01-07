@@ -183,7 +183,11 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
+#ifdef itkOverrideGetNameOfClassMacro
+  itkOverrideGetNameOfClassMacro(AdditiveGaussianNoiseImageFilter);
+#else
   itkTypeMacro(AdditiveGaussianNoiseImageFilter, ImageToImageFilter);
+#endif
 
   /** Superclass type alias. */
   using OutputImageRegionType = typename Superclass::OutputImageRegionType;

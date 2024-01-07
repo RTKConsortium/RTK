@@ -43,7 +43,11 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
+#ifdef itkOverrideGetNameOfClassMacro
+  itkOverrideGetNameOfClassMacro(ConjugateGradientOperator);
+#else
   itkTypeMacro(ConjugateGradientOperator, itk::ImageToImageFilter);
+#endif
 
   /** The image to be updated.*/
   virtual void

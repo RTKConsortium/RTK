@@ -51,7 +51,11 @@ public:
   using FileNamesContainer = std::vector<std::string>;
 
   /** Run-time type information (and related methods). */
+#ifdef itkOverrideGetNameOfClassMacro
+  itkOverrideGetNameOfClassMacro(VarianProBeamGeometryReader);
+#else
   itkTypeMacro(VarianProBeamGeometryReader, LightProcessObject);
+#endif
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);

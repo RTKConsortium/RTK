@@ -58,7 +58,11 @@ public:
   itkNewMacro(Self);
 
   /** Runtime information support. */
+#ifdef itkOverrideGetNameOfClassMacro
+  itkOverrideGetNameOfClassMacro(EdfRawToAttenuationImageFilter);
+#else
   itkTypeMacro(EdfRawToAttenuationImageFilter, itk::ImageToImageFilter);
+#endif
 
   /** Set the vector of strings that contains the file names. Files
    * are processed in sequential order. */

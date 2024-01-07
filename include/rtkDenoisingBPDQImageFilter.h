@@ -53,7 +53,11 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
+#ifdef itkOverrideGetNameOfClassMacro
+  itkOverrideGetNameOfClassMacro(DenoisingBPDQImageFilter);
+#else
   itkTypeMacro(DenoisingBPDQImageFilter, ImageToImageFilter);
+#endif
 
   /** Sub filter type definitions */
   typedef ForwardDifferenceGradientImageFilter<TOutputImage,

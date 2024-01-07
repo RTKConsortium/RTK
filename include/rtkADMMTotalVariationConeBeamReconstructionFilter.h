@@ -152,7 +152,11 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
+#ifdef itkOverrideGetNameOfClassMacro
+  itkOverrideGetNameOfClassMacro(ADMMTotalVariationConeBeamReconstructionFilter);
+#else
   itkTypeMacro(ADMMTotalVariationConeBeamReconstructionFilter, IterativeConeBeamReconstructionFilter);
+#endif
 
   using ForwardProjectionFilterType = rtk::ForwardProjectionImageFilter<TOutputImage, TOutputImage>;
   using ForwardProjectionFilterPointer = typename ForwardProjectionFilterType::Pointer;

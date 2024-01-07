@@ -70,7 +70,11 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
+#ifdef itkOverrideGetNameOfClassMacro
+  itkOverrideGetNameOfClassMacro(FDKWarpBackProjectionImageFilter);
+#else
   itkTypeMacro(FDKWarpBackProjectionImageFilter, FDKBackProjectionImageFilter);
+#endif
 
   /** Set the deformation. */
   itkGetMacro(Deformation, DeformationPointer);

@@ -51,7 +51,11 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
+#ifdef itkOverrideGetNameOfClassMacro
+  itkOverrideGetNameOfClassMacro(MultiplyByVectorImageFilter);
+#else
   itkTypeMacro(MultiplyByVectorImageFilter, itk::ImageToImageFilter);
+#endif
 
   /** The image containing the weights applied to the temporal components */
   void

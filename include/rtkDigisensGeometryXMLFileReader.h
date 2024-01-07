@@ -51,7 +51,11 @@ public:
   using CurrentSectionType = enum { NONE, ROTATION, XRAY, CAMERA, RADIOS, GRID, PROCESSING };
 
   /** Run-time type information (and related methods). */
+#ifdef itkOverrideGetNameOfClassMacro
+  itkOverrideGetNameOfClassMacro(DigisensGeometryXMLFileReader);
+#else
   itkTypeMacro(DigisensGeometryXMLFileReader, itk::XMLReader);
+#endif
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);

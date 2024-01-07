@@ -56,7 +56,11 @@ public:
   itkNewMacro(Self);
 
   /** Runtime information support. */
+#ifdef itkOverrideGetNameOfClassMacro
+  itkOverrideGetNameOfClassMacro(HilbertImageFilter);
+#else
   itkTypeMacro(HilbertImageFilter, itk::ImageToImageFilter);
+#endif
 
 protected:
   HilbertImageFilter() = default;

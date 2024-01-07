@@ -59,7 +59,11 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
+#ifdef itkOverrideGetNameOfClassMacro
+  itkOverrideGetNameOfClassMacro(BackwardDifferenceDivergenceImageFilter);
+#else
   itkTypeMacro(BackwardDifferenceDivergenceImageFilter, ImageToImageFilter);
+#endif
 
   /** Use the image spacing information in calculations. Use this option if you
    *  want derivatives in physical space. Default is UseImageSpacingOn. */

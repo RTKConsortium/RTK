@@ -57,7 +57,11 @@ public:
   itkNewMacro(Self);
 
   /** Runtime information support. */
+#  ifdef itkOverrideGetNameOfClassMacro
+  itkOverrideGetNameOfClassMacro(CudaScatterGlareCorrectionImageFilter);
+#  else
   itkTypeMacro(CudaScatterGlareCorrectionImageFilter, FFTRampImageFilter);
+#  endif
 
 protected:
   CudaScatterGlareCorrectionImageFilter() {}

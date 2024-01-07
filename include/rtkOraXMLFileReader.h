@@ -48,7 +48,11 @@ public:
   using Pointer = itk::SmartPointer<Self>;
 
   /** Run-time type information (and related methods). */
+#ifdef itkOverrideGetNameOfClassMacro
+  itkOverrideGetNameOfClassMacro(OraXMLFileReader);
+#else
   itkTypeMacro(OraXMLFileReader, itk::XMLReader);
+#endif
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);

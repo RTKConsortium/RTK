@@ -56,7 +56,11 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
+#ifdef itkOverrideGetNameOfClassMacro
+  itkOverrideGetNameOfClassMacro(NesterovUpdateImageFilter);
+#else
   itkTypeMacro(NesterovUpdateImageFilter, itk::InPlaceImageFilter);
+#endif
 
   /** Get and Set macro*/
   itkGetMacro(NumberOfIterations, int);

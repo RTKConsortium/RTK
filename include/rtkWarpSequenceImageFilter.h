@@ -127,7 +127,11 @@ public:
 #endif
 
   /** Run-time type information (and related methods). */
+#ifdef itkOverrideGetNameOfClassMacro
+  itkOverrideGetNameOfClassMacro(WarpSequenceImageFilter);
+#else
   itkTypeMacro(WarpSequenceImageFilter, IterativeConeBeamReconstructionFilter);
+#endif
 
   /** Set the motion vector field used in input 1 */
   void

@@ -54,7 +54,11 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
+#ifdef itkOverrideGetNameOfClassMacro
+  itkOverrideGetNameOfClassMacro(DrawQuadricImageFilter);
+#else
   itkTypeMacro(DrawQuadricImageFilter, DrawConvexImageFilter);
+#endif
 
   /** Get / Set the constant density of the QuadricShape */
   itkGetMacro(Density, ScalarType);
