@@ -111,7 +111,11 @@ public:
   itkNewMacro(Self);
 
   /** Runtime information support. */
+#ifdef itkOverrideGetNameOfClassMacro
+  itkOverrideGetNameOfClassMacro(VarianObiRawImageFilter);
+#else
   itkTypeMacro(VarianObiRawImageFilter, itk::UnaryFunctorImageFilter);
+#endif
 
   itkGetMacro(I0, double);
   itkSetMacro(I0, double);

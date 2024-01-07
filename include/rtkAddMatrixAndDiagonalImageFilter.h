@@ -55,7 +55,11 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
+#ifdef itkOverrideGetNameOfClassMacro
+  itkOverrideGetNameOfClassMacro(AddMatrixAndDiagonalImageFilter);
+#else
   itkTypeMacro(AddMatrixAndDiagonalImageFilter, itk::ImageToImageFilter);
+#endif
 
   /** Convenient parameters extracted from template types */
   static constexpr unsigned int nChannels = TDiagonal::PixelType::Dimension;

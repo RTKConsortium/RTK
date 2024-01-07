@@ -52,7 +52,11 @@ public:
   using Pointer = itk::SmartPointer<Self>;
 
   /** Run-time type information (and related methods). */
+#ifdef itkOverrideGetNameOfClassMacro
+  itkOverrideGetNameOfClassMacro(VarianProBeamXMLFileReader);
+#else
   itkTypeMacro(VarianProBeamXMLFileReader, itk::XMLReader);
+#endif
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);

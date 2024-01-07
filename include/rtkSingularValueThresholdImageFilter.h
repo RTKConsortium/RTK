@@ -62,7 +62,11 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods) */
+#ifdef itkOverrideGetNameOfClassMacro
+  itkOverrideGetNameOfClassMacro(SingularValueThresholdImageFilter);
+#else
   itkTypeMacro(SingularValueThresholdImageFilter, ImageToImageFilter);
+#endif
 
   /** Extract some information from the image types.  Dimensionality
    * of the two images is assumed to be the same. */

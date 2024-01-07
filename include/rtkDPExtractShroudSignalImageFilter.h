@@ -58,7 +58,11 @@ public:
   itkNewMacro(Self);
 
   /** Runtime information support. */
+#ifdef itkOverrideGetNameOfClassMacro
+  itkOverrideGetNameOfClassMacro(DPExtractShroudSignalImageFilter);
+#else
   itkTypeMacro(DPExtractShroudSignalImageFilter, itk::ImageToImageFilter);
+#endif
 
   /** Set/Get exploration amplitude. */
   itkGetMacro(Amplitude, double);

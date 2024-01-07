@@ -61,7 +61,11 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
+#ifdef itkOverrideGetNameOfClassMacro
+  itkOverrideGetNameOfClassMacro(ImportImageFilter);
+#else
   itkTypeMacro(ImportImageFilter, ImageSource);
+#endif
 
   /** Index type alias support. An index is used to access pixel values. */
   using IndexType = itk::Index<TImage::ImageDimension>;

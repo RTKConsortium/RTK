@@ -51,7 +51,11 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
+#ifdef itkOverrideGetNameOfClassMacro
+  itkOverrideGetNameOfClassMacro(UpsampleImageFilter);
+#else
   itkTypeMacro(UpsampleImageFilter, ImageToImageFilter);
+#endif
 
   /** Typedef to images */
   using OutputImageType = TOutputImage;

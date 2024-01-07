@@ -130,7 +130,11 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
+#ifdef itkOverrideGetNameOfClassMacro
+  itkOverrideGetNameOfClassMacro(TotalNuclearVariationDenoisingBPDQImageFilter);
+#else
   itkTypeMacro(TotalNuclearVariationDenoisingBPDQImageFilter, DenoisingBPDQImageFilter);
+#endif
 
   /** Sub filter type definitions */
   using SingularValueThresholdFilterType = SingularValueThresholdImageFilter<TGradientImage>;

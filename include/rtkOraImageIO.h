@@ -54,7 +54,11 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
+#ifdef itkOverrideGetNameOfClassMacro
+  itkOverrideGetNameOfClassMacro(OraImageIO);
+#else
   itkTypeMacro(OraImageIO, itk::MetaImageIO);
+#endif
 
   /*-------- This part of the interface deals with reading data. ------ */
 

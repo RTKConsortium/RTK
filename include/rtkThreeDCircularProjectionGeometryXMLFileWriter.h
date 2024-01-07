@@ -53,7 +53,11 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
+#ifdef itkOverrideGetNameOfClassMacro
+  itkOverrideGetNameOfClassMacro(ThreeDCircularProjectionGeometryXMLFileWriter);
+#else
   itkTypeMacro(ThreeDCircularProjectionGeometryXMLFileWriter, itk::XMLWriterBase);
+#endif
 
   /** Test whether a file is writable. */
   int

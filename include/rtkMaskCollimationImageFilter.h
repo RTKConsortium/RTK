@@ -57,7 +57,11 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
+#ifdef itkOverrideGetNameOfClassMacro
+  itkOverrideGetNameOfClassMacro(MaskCollimationImageFilter);
+#else
   itkTypeMacro(MaskCollimationImageFilter, itk::ImageToImageFilter);
+#endif
 
   /** Get / Set the object pointer to projection geometry */
   itkGetModifiableObjectMacro(Geometry, GeometryType);

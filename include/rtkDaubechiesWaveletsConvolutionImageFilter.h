@@ -79,7 +79,11 @@ public:
   using PassVector = typename itk::Vector<typename Self::Pass, TImage::ImageDimension>;
 
   /** Run-time type information (and related methods). */
+#ifdef itkOverrideGetNameOfClassMacro
+  itkOverrideGetNameOfClassMacro(DaubechiesWaveletsConvolutionImageFilter);
+#else
   itkTypeMacro(DaubechiesWaveletsConvolutionImageFilter, itk::ImageSource);
+#endif
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);

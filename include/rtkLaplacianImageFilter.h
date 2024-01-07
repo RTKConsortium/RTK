@@ -60,7 +60,11 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
+#ifdef itkOverrideGetNameOfClassMacro
+  itkOverrideGetNameOfClassMacro(LaplacianImageFilter);
+#else
   itkTypeMacro(LaplacianImageFilter, itk::ImageToImageFilter);
+#endif
 
   void
   SetWeights(const TOutputImage * weights);

@@ -72,7 +72,11 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
+#  ifdef itkOverrideGetNameOfClassMacro
+  itkOverrideGetNameOfClassMacro(CudaRayCastBackProjectionImageFilter);
+#  else
   itkTypeMacro(CudaRayCastBackProjectionImageFilter, Superclass);
+#  endif
 
   /** Set step size along ray (in mm). Default is 1 mm. */
   itkGetConstMacro(StepSize, double);

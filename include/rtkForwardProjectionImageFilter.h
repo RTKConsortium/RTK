@@ -49,7 +49,11 @@ public:
   using GeometryPointer = typename GeometryType::ConstPointer;
 
   /** Run-time type information (and related methods). */
+#ifdef itkOverrideGetNameOfClassMacro
+  itkOverrideGetNameOfClassMacro(ForwardProjectionImageFilter);
+#else
   itkTypeMacro(ForwardProjectionImageFilter, itk::InPlaceImageFilter);
+#endif
 
   /** Get / Set the object pointer to projection geometry */
   itkGetConstObjectMacro(Geometry, GeometryType);

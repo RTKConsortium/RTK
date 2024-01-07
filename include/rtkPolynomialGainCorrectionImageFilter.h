@@ -67,7 +67,11 @@ public:
   itkNewMacro(Self);
 
   /** Runtime information support. */
+#ifdef itkOverrideGetNameOfClassMacro
+  itkOverrideGetNameOfClassMacro(PolynomialGainCorrectionImageFilter);
+#else
   itkTypeMacro(PolynomialGainCorrectionImageFilter, itk::ImageToImageFilter);
+#endif
 
   /** Dark image, 2D same size of one input projection */
   void

@@ -67,7 +67,11 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
+#  ifdef itkOverrideGetNameOfClassMacro
+  itkOverrideGetNameOfClassMacro(CudaLagCorrectionImageFilter);
+#  else
   itkTypeMacro(CudaLagCorrectionImageFilter, itk::CudaInPlaceImageFilter);
+#  endif
 
 protected:
   /** Standard constructor **/

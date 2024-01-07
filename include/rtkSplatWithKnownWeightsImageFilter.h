@@ -80,7 +80,11 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
+#ifdef itkOverrideGetNameOfClassMacro
+  itkOverrideGetNameOfClassMacro(SplatWithKnownWeightsImageFilter);
+#else
   itkTypeMacro(SplatWithKnownWeightsImageFilter, itk::ImageToImageFilter);
+#endif
 
   /** The 4D image to be updated.*/
   void

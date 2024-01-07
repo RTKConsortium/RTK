@@ -56,7 +56,11 @@ public:
   itkNewMacro(Self);
 
   /** Runtime information support. */
+#  ifdef itkOverrideGetNameOfClassMacro
+  itkOverrideGetNameOfClassMacro(CudaFFTRampImageFilter);
+#  else
   itkTypeMacro(CudaFFTRampImageFilter, FFTRampImageFilter);
+#  endif
 
 protected:
   CudaFFTRampImageFilter() {}

@@ -59,7 +59,11 @@ public:
   itkNewMacro(Self);
 
   /** Runtime information support. */
+#ifdef itkOverrideGetNameOfClassMacro
+  itkOverrideGetNameOfClassMacro(ElektaSynergyLookupTableImageFilter);
+#else
   itkTypeMacro(ElektaSynergyLookupTableImageFilter, LookupTableImageFilter);
+#endif
 
 protected:
   ElektaSynergyLookupTableImageFilter();

@@ -125,7 +125,11 @@ public:
   itkSetMacro(Corner2, PointType);
 
   /** Runtime information support. */
+#ifdef itkOverrideGetNameOfClassMacro
+  itkOverrideGetNameOfClassMacro(AmsterdamShroudImageFilter);
+#else
   itkTypeMacro(AmsterdamShroudImageFilter, itk::ImageToImageFilter);
+#endif
 
 protected:
   AmsterdamShroudImageFilter();

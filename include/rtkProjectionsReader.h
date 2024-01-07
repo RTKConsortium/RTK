@@ -136,7 +136,11 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
+#ifdef itkOverrideGetNameOfClassMacro
+  itkOverrideGetNameOfClassMacro(ProjectionsReader);
+#else
   itkTypeMacro(ProjectionsReader, itk::ImageSource);
+#endif
 
   /** Some convenient type alias. */
   using OutputImageType = TOutputImage;

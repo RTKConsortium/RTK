@@ -59,7 +59,11 @@ public:
   static const unsigned int CurrentVersion = 3;
 
   /** Run-time type information (and related methods). */
+#ifdef itkOverrideGetNameOfClassMacro
+  itkOverrideGetNameOfClassMacro(ThreeDCircularProjectionGeometryXMLFileReader);
+#else
   itkTypeMacro(ThreeDCircularProjectionGeometryXMLFileReader, itk::XMLFileReader);
+#endif
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);

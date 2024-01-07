@@ -58,7 +58,11 @@ public:
   itkNewMacro(Self);
 
   /** Runtime information support. */
+#ifdef itkOverrideGetNameOfClassMacro
+  itkOverrideGetNameOfClassMacro(BoellaardScatterCorrectionImageFilter);
+#else
   itkTypeMacro(BoellaardScatterCorrectionImageFilter, itk::ImageToImageFilter);
+#endif
 
   /** Get / Set the air threshold on projection images. The threshold is used to
    ** evaluate which part of the x-rays have traversed the patient. */

@@ -67,7 +67,11 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
+#ifdef itkOverrideGetNameOfClassMacro
+  itkOverrideGetNameOfClassMacro(ForwardWarpImageFilter);
+#else
   itkTypeMacro(ForwardWarpImageFilter, Superclass);
+#endif
 
 protected:
   ForwardWarpImageFilter();

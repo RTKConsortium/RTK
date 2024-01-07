@@ -65,7 +65,11 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
+#  ifdef itkOverrideGetNameOfClassMacro
+  itkOverrideGetNameOfClassMacro(CudaCropImageFilter);
+#  else
   itkTypeMacro(CudaCropImageFilter, ImageToImageFilter);
+#  endif
 
 protected:
   CudaCropImageFilter();

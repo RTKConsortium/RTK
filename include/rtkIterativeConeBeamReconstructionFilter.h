@@ -96,7 +96,11 @@ public:
   itkNewMacro(Self);
 
   /** Runtime information support. */
+#ifdef itkOverrideGetNameOfClassMacro
+  itkOverrideGetNameOfClassMacro(IterativeConeBeamReconstructionFilter);
+#else
   itkTypeMacro(IterativeConeBeamReconstructionFilter, itk::ImageToImageFilter);
+#endif
 
   /** Accessors to forward and backprojection types. */
   virtual void

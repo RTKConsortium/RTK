@@ -60,7 +60,11 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
+#ifdef itkOverrideGetNameOfClassMacro
+  itkOverrideGetNameOfClassMacro(QuadricShape);
+#else
   itkTypeMacro(QuadricShape, ConvexShape);
+#endif
 
   /** See rtk::ConvexShape::IsInside. */
   bool

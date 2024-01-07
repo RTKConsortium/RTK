@@ -60,7 +60,11 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
+#ifdef itkOverrideGetNameOfClassMacro
+  itkOverrideGetNameOfClassMacro(ImageToVectorImageFilter);
+#else
   itkTypeMacro(ImageToVectorImageFilter, itk::ImageToImageFilter);
+#endif
 
   /** When the input and output dimensions are equal, the filter
    * cannot guess the number of channels. Set/Get methods to

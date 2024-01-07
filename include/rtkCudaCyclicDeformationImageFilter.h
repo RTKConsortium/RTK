@@ -62,7 +62,11 @@ public:
   itkNewMacro(Self);
 
   /** Runtime information support. */
+#  ifdef itkOverrideGetNameOfClassMacro
+  itkOverrideGetNameOfClassMacro(CudaCyclicDeformationImageFilter);
+#  else
   itkTypeMacro(CudaCyclicDeformationImageFilter, CyclicDeformationImageFilter);
+#  endif
 
 protected:
   CudaCyclicDeformationImageFilter();

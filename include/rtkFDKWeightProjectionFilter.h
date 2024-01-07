@@ -68,7 +68,11 @@ public:
   itkNewMacro(Self);
 
   /** Runtime information support. */
+#ifdef itkOverrideGetNameOfClassMacro
+  itkOverrideGetNameOfClassMacro(FDKWeightProjectionFilter);
+#else
   itkTypeMacro(FDKWeightProjectionFilter, itk::ImageToImageFilter);
+#endif
 
   /** Get/ Set geometry structure */
   itkGetMacro(Geometry, ThreeDCircularProjectionGeometry::Pointer);

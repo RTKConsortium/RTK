@@ -65,7 +65,11 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
+#ifdef itkOverrideGetNameOfClassMacro
+  itkOverrideGetNameOfClassMacro(ConvexShape);
+#else
   itkTypeMacro(ConvexShape, itk::DataObject);
+#endif
 
   /** Returns true if a point is inside the object. */
   virtual bool

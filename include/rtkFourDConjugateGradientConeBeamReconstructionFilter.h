@@ -137,7 +137,11 @@ public:
   itkNewMacro(Self);
 
   /** Runtime information support. */
+#ifdef itkOverrideGetNameOfClassMacro
+  itkOverrideGetNameOfClassMacro(FourDConjugateGradientConeBeamReconstructionFilter);
+#else
   itkTypeMacro(FourDConjugateGradientConeBeamReconstructionFilter, itk::ImageToImageFilter);
+#endif
 
   /** Get / Set the object pointer to projection geometry */
   itkGetConstObjectMacro(Geometry, ThreeDCircularProjectionGeometry);
