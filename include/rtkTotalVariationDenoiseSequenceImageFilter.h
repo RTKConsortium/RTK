@@ -107,17 +107,23 @@ public:
   void
   SetDimensionsProcessed(bool * arg);
 
-  /** Typedefs of internal filters */
+  /** SFINAE type alias, depending on whether a CUDA image is used. */
+  using CPUImageSequenceType = typename itk::Image<typename TImageSequence::PixelType, TImageSequence::ImageDimension>;
 #ifdef RTK_USE_CUDA
-  using TImage = itk::CudaImage<typename TImageSequence::PixelType, TImageSequence::ImageDimension - 1>;
-  using TVDenoisingFilterType = rtk::CudaTotalVariationDenoisingBPDQImageFilter;
+  typedef typename std::conditional<
+    std::is_same<TImageSequence, CPUImageSequenceType>::value,
+    itk::Image<typename TImageSequence::PixelType, TImageSequence::ImageDimension - 1>,
+    itk::CudaImage<typename TImageSequence::PixelType, TImageSequence::ImageDimension - 1>>::type ImageType;
+  typedef typename std::conditional<std::is_same<TImageSequence, CPUImageSequenceType>::value,
+                                    TotalVariationDenoisingBPDQImageFilter<ImageType>,
+                                    CudaTotalVariationDenoisingBPDQImageFilter>::type             TVDenoisingFilterType;
 #else
-  using TImage = itk::Image<typename TImageSequence::PixelType, TImageSequence::ImageDimension - 1>;
-  using TVDenoisingFilterType = rtk::TotalVariationDenoisingBPDQImageFilter<TImage>;
+  using ImageType = itk::Image<typename TImageSequence::PixelType, TImageSequence::ImageDimension - 1>;
+  using TVDenoisingFilterType = rtk::TotalVariationDenoisingBPDQImageFilter<ImageType>;
 #endif
-  using ExtractFilterType = itk::ExtractImageFilter<TImageSequence, TImage>;
+  using ExtractFilterType = itk::ExtractImageFilter<TImageSequence, ImageType>;
   using PasteFilterType = itk::PasteImageFilter<TImageSequence, TImageSequence>;
-  using CastFilterType = itk::CastImageFilter<TImage, TImageSequence>;
+  using CastFilterType = itk::CastImageFilter<ImageType, TImageSequence>;
   using ConstantImageSourceType = rtk::ConstantImageSource<TImageSequence>;
 
 protected:
@@ -146,7 +152,7 @@ protected:
   /** Information for the total variation denoising filter */
   double m_Gamma{ 1. };
   int    m_NumberOfIterations{ 1 };
-  bool   m_DimensionsProcessed[TImage::ImageDimension];
+  bool   m_DimensionsProcessed[ImageType::ImageDimension];
 };
 } // namespace rtk
 
