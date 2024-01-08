@@ -119,9 +119,9 @@ public:
 
   /** Run-time type information (and related methods). */
 #ifdef itkOverrideGetNameOfClassMacro
-  itkOverrideGetNameOfClassMacro(rtkADMMTotalVariationConjugateGradientOperator);
+  itkOverrideGetNameOfClassMacro(ADMMTotalVariationConjugateGradientOperator);
 #else
-  itkTypeMacro(rtkADMMTotalVariationConjugateGradientOperator, ConjugateGradientOperator);
+  itkTypeMacro(ADMMTotalVariationConjugateGradientOperator, ConjugateGradientOperator);
 #endif
 
   using BackProjectionFilterType = rtk::BackProjectionImageFilter<TOutputImage, TOutputImage>;
