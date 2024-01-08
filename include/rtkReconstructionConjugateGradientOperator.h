@@ -147,9 +147,9 @@ public:
 
   /** Run-time type information (and related methods). */
 #ifdef itkOverrideGetNameOfClassMacro
-  itkOverrideGetNameOfClassMacro(rtkReconstructionConjugateGradientOperator);
+  itkOverrideGetNameOfClassMacro(ReconstructionConjugateGradientOperator);
 #else
-  itkTypeMacro(rtkReconstructionConjugateGradientOperator, ConjugateGradientOperator);
+  itkTypeMacro(ReconstructionConjugateGradientOperator, ConjugateGradientOperator);
 #endif
 
   using BackProjectionFilterType = rtk::BackProjectionImageFilter<TOutputImage, TOutputImage>;
