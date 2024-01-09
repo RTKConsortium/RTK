@@ -61,7 +61,11 @@ public:
   static const unsigned int CurrentVersion = 2;
 
   /** Run-time type information (and related methods). */
+#ifdef itkOverrideGetNameOfClassMacro
+  itkOverrideGetNameOfClassMacro(ElektaXVI5GeometryXMLFileReader);
+#else
   itkTypeMacro(ElektaXVI5GeometryXMLFileReader, itk::XMLFileReader);
+#endif
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);

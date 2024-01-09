@@ -51,8 +51,16 @@ public:
   using Superclass = rtk::ProjectionsDecompositionNegativeLogLikelihood;
   using Pointer = itk::SmartPointer<Self>;
   using ConstPointer = itk::SmartPointer<const Self>;
+
+  /** Method for creation through the object factory. */
   itkNewMacro(Self);
-  itkTypeMacro(Schlomka2008NegativeLogLikelihood, rtk::ProjectionsDecompositionNegativeLogLikelihood);
+
+  /** Run-time type information (and related methods) */
+#ifdef itkOverrideGetNameOfClassMacro
+  itkOverrideGetNameOfClassMacro(Schlomka2008NegativeLogLikelihood);
+#else
+  itkTypeMacro(Schlomka2008NegativeLogLikelihood, ProjectionsDecompositionNegativeLogLikelihood);
+#endif
 
   using ParametersType = Superclass::ParametersType;
   using DerivativeType = Superclass::DerivativeType;

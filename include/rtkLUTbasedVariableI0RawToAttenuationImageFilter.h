@@ -98,7 +98,11 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
+#ifdef itkOverrideGetNameOfClassMacro
+  itkOverrideGetNameOfClassMacro(LUTbasedVariableI0RawToAttenuationImageFilter);
+#else
   itkTypeMacro(LUTbasedVariableI0RawToAttenuationImageFilter, LookupTableImageFilter);
+#endif
 
   /** Air level I0
    */

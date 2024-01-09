@@ -150,8 +150,12 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
+#ifdef itkOverrideGetNameOfClassMacro
+  itkOverrideGetNameOfClassMacro(MotionCompensatedFourDReconstructionConjugateGradientOperator);
+#else
   itkTypeMacro(MotionCompensatedFourDReconstructionConjugateGradientOperator,
                FourDReconstructionConjugateGradientOperator);
+#endif
 
   /** The forward and back projection filters cannot be set by the user */
   void

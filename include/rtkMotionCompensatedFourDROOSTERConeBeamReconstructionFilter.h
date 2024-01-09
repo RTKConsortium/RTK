@@ -172,8 +172,11 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-  itkTypeMacro(MotionCompensatedFourDROOSTERConeBeamReconstructionFilter,
-               rtk::FourDROOSTERConeBeamReconstructionFilter);
+#ifdef itkOverrideGetNameOfClassMacro
+  itkOverrideGetNameOfClassMacro(MotionCompensatedFourDROOSTERConeBeamReconstructionFilter);
+#else
+  itkTypeMacro(MotionCompensatedFourDROOSTERConeBeamReconstructionFilter, FourDROOSTERConeBeamReconstructionFilter);
+#endif
 
   using MotionCompensatedFourDCGFilterType =
     rtk::MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>;
