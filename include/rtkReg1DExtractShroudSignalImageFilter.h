@@ -58,7 +58,12 @@ public:
   itkNewMacro(Self);
 
   /** Runtime information support. */
+#ifdef itkOverrideGetNameOfClassMacro
+  itkOverrideGetNameOfClassMacro(Reg1DExtractShroudSignalImageFilter);
+#else
   itkTypeMacro(Reg1DExtractShroudSignalImageFilter, itk::ImageToImageFilter);
+#endif
+
 
 protected:
   Reg1DExtractShroudSignalImageFilter();

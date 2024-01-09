@@ -111,8 +111,12 @@ public:
   itkNewMacro(Self);
 
   /** Runtime information support. */
+#ifdef itkOverrideGetNameOfClassMacro
+  itkOverrideGetNameOfClassMacro(MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter);
+#else
   itkTypeMacro(MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter,
                FourDConjugateGradientConeBeamReconstructionFilter);
+#endif
 
   /** Neither the Forward nor the Back projection filters can be set by the user */
   void

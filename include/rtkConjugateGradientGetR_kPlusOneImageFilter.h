@@ -50,7 +50,11 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
+#ifdef itkOverrideGetNameOfClassMacro
+  itkOverrideGetNameOfClassMacro(ConjugateGradientGetR_kPlusOneImageFilter);
+#else
   itkTypeMacro(ConjugateGradientGetR_kPlusOneImageFilter, itk::ImageToImageFilter);
+#endif
 
   /** Functions to set the inputs */
   void
