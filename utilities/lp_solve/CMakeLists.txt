@@ -35,31 +35,6 @@ add_library(lpsolve55
 	yacc_read.c
 )
 
-set_property(TARGET lpsolve55 PROPERTY PUBLIC_HEADER
-	lp_bit.h
-	lp_crash.h
-	lp_explicit.h
-	lp_fortify.h
-	lp_Hash.h
-	lp_lib.h
-	lp_matrix.h
-	lp_MDO.h
-	lp_mipbb.h
-	lp_MPS.h
-	lp_presolve.h
-	lp_price.h
-	lp_pricePSE.h
-	lp_report.h
-	lp_rlp.h
-	lp_scale.h
-	lp_simplex.h
-	lp_solveDLL.h
-	lp_SOS.h
-	lp_types.h
-	lp_utils.h
-	lp_wlp.h
-)
-
 include_directories(
 	"$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>"
 	"$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/shared>"
@@ -102,24 +77,5 @@ if (NOT ITK_SOURCE_DIR)
   # When building externally we must do this after including ITKModuleExternal.
   # See RTK/CMakeLists.txt.
 else()
-  itk_module_target_export(lpsolve55)
-endif()
-
-#=========================================================
-if(NOT RTK_INSTALL_NO_LIBRARIES)
-  target_include_directories(lpsolve55 PUBLIC $<INSTALL_INTERFACE:${RTK_INSTALL_INCLUDE_DIR}/lpsolve>)
-
-  # External modules use their own targets.
-  set(_install_targets RTKTargets)
-  if(ITK_SOURCE_DIR)
-    # Remote modules use ITKTargets.cmake
-    set(_install_targets ITKTargets)
-  endif()
-
-  install(TARGETS lpsolve55 EXPORT ${_install_targets}
-    RUNTIME DESTINATION ${RTK_INSTALL_RUNTIME_DIR} COMPONENT Runtime
-    LIBRARY DESTINATION ${RTK_INSTALL_LIB_DIR} COMPONENT RuntimeLibraries
-    ARCHIVE DESTINATION ${RTK_INSTALL_ARCHIVE_DIR} COMPONENT Development
-    PUBLIC_HEADER DESTINATION "${RTK_INSTALL_INCLUDE_DIR}/lpsolve"
-  )
+  itk_module_target(lpsolve55)
 endif()
