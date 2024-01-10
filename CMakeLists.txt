@@ -212,7 +212,7 @@ if(NOT ITK_SOURCE_DIR)
   # Add third party to RTK build targets.
   # This must be done after RTK has been loaded by ITK to make sure
   # ${itk-module} variables are defined for RTK.
-  itk_module_target_export(lpsolve55)
+  itk_module_target(lpsolve55)
 
   if(${ITK_VERSION} VERSION_LESS 5.3)
     ## Set the default target properties for RTK
@@ -234,6 +234,33 @@ if(NOT ITK_SOURCE_DIR)
 else()
   itk_module_impl()
 endif()
+
+# Install lpsolve headers
+install(FILES ${RTK_SOURCE_DIR}/utilities/lp_solve/lp_bit.h
+              ${RTK_SOURCE_DIR}/utilities/lp_solve/lp_crash.h
+              ${RTK_SOURCE_DIR}/utilities/lp_solve/lp_explicit.h
+              ${RTK_SOURCE_DIR}/utilities/lp_solve/lp_fortify.h
+              ${RTK_SOURCE_DIR}/utilities/lp_solve/lp_Hash.h
+              ${RTK_SOURCE_DIR}/utilities/lp_solve/lp_lib.h
+              ${RTK_SOURCE_DIR}/utilities/lp_solve/lp_matrix.h
+              ${RTK_SOURCE_DIR}/utilities/lp_solve/lp_MDO.h
+              ${RTK_SOURCE_DIR}/utilities/lp_solve/lp_mipbb.h
+              ${RTK_SOURCE_DIR}/utilities/lp_solve/lp_MPS.h
+              ${RTK_SOURCE_DIR}/utilities/lp_solve/lp_presolve.h
+              ${RTK_SOURCE_DIR}/utilities/lp_solve/lp_price.h
+              ${RTK_SOURCE_DIR}/utilities/lp_solve/lp_pricePSE.h
+              ${RTK_SOURCE_DIR}/utilities/lp_solve/lp_report.h
+              ${RTK_SOURCE_DIR}/utilities/lp_solve/lp_rlp.h
+              ${RTK_SOURCE_DIR}/utilities/lp_solve/lp_scale.h
+              ${RTK_SOURCE_DIR}/utilities/lp_solve/lp_simplex.h
+              ${RTK_SOURCE_DIR}/utilities/lp_solve/lp_solveDLL.h
+              ${RTK_SOURCE_DIR}/utilities/lp_solve/lp_SOS.h
+              ${RTK_SOURCE_DIR}/utilities/lp_solve/lp_types.h
+              ${RTK_SOURCE_DIR}/utilities/lp_solve/lp_utils.h
+              ${RTK_SOURCE_DIR}/utilities/lp_solve/lp_wlp.h
+        DESTINATION ${RTK_INSTALL_INCLUDE_DIR}/lpsolve
+        COMPONENT Development)
+target_include_directories(lpsolve55 PUBLIC $<INSTALL_INTERFACE:${RTK_INSTALL_INCLUDE_DIR}/lpsolve>)
 
 # Install configuration file
 install(FILES ${RTK_BINARY_DIR}/rtkConfiguration.h DESTINATION ${RTK_INSTALL_INCLUDE_DIR})
