@@ -39,7 +39,7 @@ OraGeometryReader::GenerateData()
   m_Geometry = GeometryType::New();
   RegisterIOFactories();
   itk::QuaternionRigidTransform<double>::Pointer firstQuaternionsX{ nullptr };
-  itk::Vector<double, 3>                         firstTranslation;
+  itk::Vector<double, 3>                         firstTranslation{ 0.0 };
   for (const std::string & projectionsFileName : m_ProjectionsFileNames)
   {
     itk::ImageIOBase::Pointer reader;
