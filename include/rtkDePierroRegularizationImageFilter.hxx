@@ -19,7 +19,6 @@
 #ifndef rtkDePierroRegularizationImageFilter_hxx
 #define rtkDePierroRegularizationImageFilter_hxx
 
-#include "rtkDePierroRegularizationImageFilter.h"
 
 namespace rtk
 {
