@@ -7,7 +7,7 @@ env:
   itk-wheel-tag: 'v5.4rc01'
   itk-python-package-tag: '5ad02309321621cdc7269b9b68a35013c912271c'
   itk-python-package-org: 'InsightSoftwareConsortium'
-  itk-module-deps: "RTKConsortium/ITKCudaCommon@v1.0.1"
+  itk-module-deps: "RTKConsortium/ITKCudaCommon@9d3fe9bdedbac76abc38ea61beff4158de65109f"
 
 jobs:
   build-linux-cuda-python-packages:
