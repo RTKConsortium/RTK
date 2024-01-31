@@ -135,8 +135,8 @@ public:
     return !(*this != other);
   }
 
-  inline TOutput
-  operator()(const ThreadIdType threadId, const TInput volumeValue, const VectorType & stepInMM)
+  inline void
+  operator()(const ThreadIdType threadId, TOutput & sumValue, const TInput volumeValue, const VectorType & stepInMM)
   {
     TInput ex2 = exp(-m_AttenuationRay[threadId] * stepInMM.GetNorm());
     TInput wf;
@@ -152,7 +152,7 @@ public:
 
     m_Ex1[threadId] = ex2;
     m_AttenuationPixel[threadId] = 0;
-    return wf * volumeValue;
+    sumValue += wf * volumeValue;
   }
 
   void

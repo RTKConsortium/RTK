@@ -21,6 +21,7 @@
 
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkJosephForwardProjectionImageFilter.h"
+#include "rtkMaximumIntensityProjectionImageFilter.h"
 #include "rtkJosephForwardAttenuatedProjectionImageFilter.h"
 #include "rtkZengForwardProjectionImageFilter.h"
 #ifdef RTK_USE_CUDA
@@ -114,6 +115,9 @@ main(int argc, char * argv[])
     case (fp_arg_Zeng):
       forwardProjection = rtk::ZengForwardProjectionImageFilter<OutputImageType, OutputImageType>::New();
       break;
+    case (fp_arg_MIP):
+      forwardProjection = rtk::MaximumIntensityProjectionImageFilter<OutputImageType, OutputImageType>::New();
+      break;
     case (fp_arg_CudaRayCast):
 #ifdef RTK_USE_CUDA
       forwardProjection = rtk::CudaForwardProjectionImageFilter<OutputImageType, OutputImageType>::New();
@@ -147,6 +151,12 @@ main(int argc, char * argv[])
         forwardProjection.GetPointer())
         ->SetInferiorClipImage(inferiorClipImage);
     }
+    else if (args_info.fp_arg == fp_arg_MIP)
+    {
+      dynamic_cast<rtk::MaximumIntensityProjectionImageFilter<OutputImageType, OutputImageType> *>(
+        forwardProjection.GetPointer())
+        ->SetInferiorClipImage(inferiorClipImage);
+    }
   }
   if (args_info.superiorclipimage_given)
   {
@@ -159,6 +169,12 @@ main(int argc, char * argv[])
     else if (args_info.fp_arg == fp_arg_JosephAttenuated)
     {
       dynamic_cast<rtk::JosephForwardAttenuatedProjectionImageFilter<OutputImageType, OutputImageType> *>(
+        forwardProjection.GetPointer())
+        ->SetSuperiorClipImage(superiorClipImage);
+    }
+    else if (args_info.fp_arg == fp_arg_MIP)
+    {
+      dynamic_cast<rtk::MaximumIntensityProjectionImageFilter<OutputImageType, OutputImageType> *>(
         forwardProjection.GetPointer())
         ->SetSuperiorClipImage(superiorClipImage);
     }

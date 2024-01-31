@@ -93,10 +93,13 @@ public:
     return !(*this != other);
   }
 
-  inline TOutput
-  operator()(const ThreadIdType itkNotUsed(threadId), const TInput volumeValue, const VectorType & itkNotUsed(stepInMM))
+  inline void
+  operator()(const ThreadIdType itkNotUsed(threadId),
+             TOutput &          sumValue,
+             const TInput       volumeValue,
+             const VectorType & itkNotUsed(stepInMM))
   {
-    return volumeValue;
+    sumValue += static_cast<TOutput>(volumeValue);
   }
 };
 
