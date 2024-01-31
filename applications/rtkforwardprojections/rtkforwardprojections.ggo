@@ -10,7 +10,7 @@ option "step"      s "Step size along ray (for CudaRayCast only)"               
 option "lowmem"    l "Compute only one projection at a time"                     flag     off
 
 section "Projectors"
-option "fp"    f "Forward projection method" values="Joseph","JosephAttenuated","CudaRayCast","Zeng" enum no default="Joseph"
+option "fp"    f "Forward projection method" values="Joseph","JosephAttenuated","CudaRayCast","Zeng","MIP" enum no default="Joseph"
 option "attenuationmap" - "Attenuation map relative to the volume to perfom the attenuation correction"   string  no
 option "sigmazero" - "PSF value at a distance of 0 meter of the detector"   double  no
 option "alphapsf" - "Slope of the PSF against the detector distance"   double  no

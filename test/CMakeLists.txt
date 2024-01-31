@@ -89,6 +89,7 @@ rtk_add_test(rtkForwardProjectionTest rtkforwardprojectiontest.cxx)
 rtk_add_cuda_test(rtkForwardProjectionCudaTest rtkforwardprojectiontest.cxx)
 rtk_add_test(rtkForwardAttenuatedProjectionTest rtkforwardattenuatedprojectiontest.cxx)
 rtk_add_test(rtkZengProjectionTest rtkzengforwardprojectiontest.cxx)
+rtk_add_test(rtkMaximumIntensityProjectionTest rtkmaximumintensityprojectiontest.cxx)
 
 rtk_add_test(rtkGeometryFileTest rtkgeometryfiletest.cxx)
 
@@ -301,4 +302,5 @@ rtk_add_test(rtkBioscanTest rtkbioscantest.cxx
 
 if(ITK_WRAP_PYTHON)
   itk_python_add_test(NAME rtkFirstReconstructionPythonTest COMMAND rtkFirstReconstruction.py ${CMAKE_CURRENT_BINARY_DIR}/rtkFirstReconstruction.mha)
+  itk_python_add_test(NAME rtkMaximumIntensityPythonTest COMMAND rtkMaximumIntensity.py  ${CMAKE_CURRENT_BINARY_DIR}/rtkFirstReconstruction.mha)
 endif()

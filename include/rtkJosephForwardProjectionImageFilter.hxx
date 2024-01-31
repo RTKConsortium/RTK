@@ -351,7 +351,7 @@ JosephForwardProjectionImageFilter<TInputImage,
                                                      miny,
                                                      maxx,
                                                      maxy);
-        sum += m_SumAlongRay(threadId, volumeValue, stepMM);
+        m_SumAlongRay(threadId, sum, volumeValue, stepMM);
       }
       else
       {
@@ -370,7 +370,7 @@ JosephForwardProjectionImageFilter<TInputImage,
                                                      miny,
                                                      maxx,
                                                      maxy);
-        sum += m_SumAlongRay(threadId, volumeValue, stepMM);
+        m_SumAlongRay(threadId, sum, volumeValue, stepMM);
 
         // Move to next main direction slice
         pxiyi += offsetz;
@@ -385,7 +385,7 @@ JosephForwardProjectionImageFilter<TInputImage,
         {
           volumeValue =
             BilinearInterpolation(threadId, 1., pxiyi, pxsyi, pxiys, pxsys, currentx, currenty, offsetx, offsety);
-          sum += m_SumAlongRay(threadId, volumeValue, stepMM);
+          m_SumAlongRay(threadId, sum, volumeValue, stepMM);
 
           // Move to next main direction slice
           pxiyi += offsetz;
@@ -411,7 +411,7 @@ JosephForwardProjectionImageFilter<TInputImage,
                                                      miny,
                                                      maxx,
                                                      maxy);
-        sum += m_SumAlongRay(threadId, volumeValue, stepMM);
+        m_SumAlongRay(threadId, sum, volumeValue, stepMM);
       }
       // Accumulate
       m_ProjectedValueAccumulation(threadId, itIn->Get(), itOut.Value(), sum, stepMM, pixelPosition, dirVox, np, fp);
@@ -538,7 +538,6 @@ JosephForwardProjectionImageFilter<TInputImage,
 
   return (result);
 }
-
 } // end namespace rtk
 
 #endif
