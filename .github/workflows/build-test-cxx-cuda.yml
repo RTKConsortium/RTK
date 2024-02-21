@@ -4,7 +4,7 @@ on: [push,pull_request]
 
 env:
   itk-git-tag: "v5.4rc01"
-  itk-module-deps: "CudaCommon@v1.0.1"
+  itk-module-deps: "CudaCommon@09a964504bf9be9403189502cb7e790085a62708"
 
 jobs:
   build-test-cxx:
