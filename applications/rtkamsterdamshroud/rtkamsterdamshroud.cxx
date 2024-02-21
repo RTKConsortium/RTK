@@ -83,7 +83,7 @@ main(int argc, char * argv[])
   WriterType::Pointer writer = WriterType::New();
   writer->SetFileName(args_info.output_arg);
   writer->SetInput(shroudFilter->GetOutput());
-  writer->SetNumberOfStreamDivisions(shroudFilter->GetOutput()->GetLargestPossibleRegion().GetSize(2));
+  writer->SetNumberOfStreamDivisions(shroudFilter->GetOutput()->GetLargestPossibleRegion().GetSize(1));
 
   TRY_AND_EXIT_ON_ITK_EXCEPTION(writer->Update())
 
