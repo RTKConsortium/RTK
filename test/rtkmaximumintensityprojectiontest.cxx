@@ -26,8 +26,6 @@ main(int, char **)
   constexpr unsigned int Dimension = 3;
   using OutputPixelType = float;
   using OutputImageType = itk::Image<OutputPixelType, Dimension>;
-
-  using VectorType = itk::Vector<double, 3>;
   constexpr unsigned int NumberOfProjectionImages = 1;
 
   // Constant image sources
