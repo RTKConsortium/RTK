@@ -64,51 +64,6 @@ __constant__ float c_PPInputToIndexInputMatrix[12];
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
 __global__ void
-kernel(float * dev_vol_out, int3 vol_dim, unsigned int Blocks_Y)
-{
-  // CUDA 2.0 does not allow for a 3D grid, which severely
-  // limits the manipulation of large 3D arrays of data.  The
-  // following code is a hack to bypass this implementation
-  // limitation.
-  unsigned int blockIdx_z = blockIdx.y / Blocks_Y;
-  unsigned int blockIdx_y = blockIdx.y - __umul24(blockIdx_z, Blocks_Y);
-  unsigned int i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
-  unsigned int j = __umul24(blockIdx_y, blockDim.y) + threadIdx.y;
-  unsigned int k = __umul24(blockIdx_z, blockDim.z) + threadIdx.z;
-
-  if (i >= vol_dim.x || j >= vol_dim.y || k >= vol_dim.z)
-  {
-    return;
-  }
-
-  // Index row major into the volume
-  long int vol_idx = i + (j + k * vol_dim.y) * (vol_dim.x);
-
-  // Matrix multiply to get the index in the DVF texture of the current point in the output volume
-  float3 IndexInDVF = matrix_multiply(make_float3(i, j, k), c_IndexOutputToIndexDVFMatrix);
-
-  // Get each component of the displacement vector by
-  // interpolation in the dvf
-  float3 Displacement;
-  Displacement.x = tex3D(tex_xdvf, IndexInDVF.x + 0.5f, IndexInDVF.y + 0.5f, IndexInDVF.z + 0.5f);
-  Displacement.y = tex3D(tex_ydvf, IndexInDVF.x + 0.5f, IndexInDVF.y + 0.5f, IndexInDVF.z + 0.5f);
-  Displacement.z = tex3D(tex_zdvf, IndexInDVF.x + 0.5f, IndexInDVF.y + 0.5f, IndexInDVF.z + 0.5f);
-
-  // Matrix multiply to get the physical coordinates of the current point in the output volume
-  float3 PPinOutput = matrix_multiply(make_float3(i, j, k), c_IndexOutputToPPOutputMatrix);
-
-  // Get the index corresponding to the current physical point in output displaced by the displacement vector
-  float3 PPDisplaced;
-  PPDisplaced.x = PPinOutput.x + Displacement.x;
-  PPDisplaced.y = PPinOutput.y + Displacement.y;
-  PPDisplaced.z = PPinOutput.z + Displacement.z;
-  float3 IndexInInput = matrix_multiply(PPDisplaced, c_PPInputToIndexInputMatrix);
-
-  // Interpolate in the input and copy into the output
-  dev_vol_out[vol_idx] = tex3D(tex_input_vol, IndexInInput.x + 0.5f, IndexInInput.y + 0.5f, IndexInInput.z + 0.5f);
-}
-
-__global__ void
 kernel_3Dgrid(float * dev_vol_out, int3 vol_dim)
 {
   unsigned int i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
@@ -165,7 +120,6 @@ CUDA_warp(int     input_vol_dim[3],
           float * dev_DVF,
           bool    isLinear)
 {
-
   // Prepare channel description for arrays
   static cudaChannelFormatDesc channelDesc = cudaCreateChannelDesc<float>();
 
@@ -301,26 +255,13 @@ CUDA_warp(int     input_vol_dim[3],
   unsigned int blocksInY = (output_vol_dim[1] - 1) / tBlock_y + 1;
   unsigned int blocksInZ = (output_vol_dim[2] - 1) / tBlock_z + 1;
 
-  if (GetCudaComputeCapability(device).first <= 1)
-  {
-    dim3 dimGrid = dim3(blocksInX, blocksInY * blocksInZ);
-    dim3 dimBlock = dim3(tBlock_x, tBlock_y, tBlock_z);
+  dim3 dimGrid = dim3(blocksInX, blocksInY, blocksInZ);
+  dim3 dimBlock = dim3(tBlock_x, tBlock_y, tBlock_z);
 
-    // Note: the DVF and input image are passed via texture memory
-    //-------------------------------------
-    kernel<<<dimGrid, dimBlock>>>(
-      dev_output_vol, make_int3(output_vol_dim[0], output_vol_dim[1], output_vol_dim[2]), blocksInY);
-  }
-  else
-  {
-    dim3 dimGrid = dim3(blocksInX, blocksInY, blocksInZ);
-    dim3 dimBlock = dim3(tBlock_x, tBlock_y, tBlock_z);
-
-    // Note: the DVF and input image are passed via texture memory
-    //-------------------------------------
-    kernel_3Dgrid<<<dimGrid, dimBlock>>>(dev_output_vol,
-                                         make_int3(output_vol_dim[0], output_vol_dim[1], output_vol_dim[2]));
-  }
+  // Note: the DVF and input image are passed via texture memory
+  //-------------------------------------
+  kernel_3Dgrid<<<dimGrid, dimBlock>>>(dev_output_vol,
+                                       make_int3(output_vol_dim[0], output_vol_dim[1], output_vol_dim[2]));
 
   CUDA_CHECK_ERROR;
 

@@ -51,7 +51,7 @@ __constant__ int3 c_volSize;
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_( S T A R T )_
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
-template <unsigned int vectorLength, bool isCylindrical>
+template <unsigned int VVectorLength, bool VIsCylindrical>
 __global__ void
 kernel_backProject(float * dev_vol_in, float * dev_vol_out, float radius, cudaTextureObject_t * dev_tex_proj)
 {
@@ -68,13 +68,13 @@ kernel_backProject(float * dev_vol_in, float * dev_vol_out, float radius, cudaTe
   itk::SizeValueType vol_idx = i + (j + k * c_volSize.y) * (c_volSize.x);
 
   float3 ip, pp;
-  float  voxel_data[vectorLength];
-  for (unsigned int c = 0; c < vectorLength; c++)
+  float  voxel_data[VVectorLength];
+  for (unsigned int c = 0; c < VVectorLength; c++)
     voxel_data[c] = 0.0f;
 
   for (unsigned int proj = 0; proj < c_projSize.z; proj++)
   {
-    if (isCylindrical)
+    if (VIsCylindrical)
     {
       // matrix multiply
       pp = matrix_multiply(make_float3(i, j, k), &(c_volIndexToProjPP[12 * proj]));
@@ -105,13 +105,13 @@ kernel_backProject(float * dev_vol_in, float * dev_vol_out, float radius, cudaTe
     }
 
     // Get texture point, clip left to GPU, and accumulate in voxel_data
-    for (unsigned int c = 0; c < vectorLength; c++)
+    for (unsigned int c = 0; c < VVectorLength; c++)
       voxel_data[c] += tex2DLayered<float>(dev_tex_proj[c], ip.x, ip.y, proj);
   }
 
   // Place it into the volume
-  for (unsigned int c = 0; c < vectorLength; c++)
-    dev_vol_out[vol_idx * vectorLength + c] = dev_vol_in[vol_idx * vectorLength + c] + voxel_data[c];
+  for (unsigned int c = 0; c < VVectorLength; c++)
+    dev_vol_out[vol_idx * VVectorLength + c] = dev_vol_in[vol_idx * VVectorLength + c] + voxel_data[c];
 }
 
 
@@ -134,14 +134,6 @@ CUDA_back_project(int          projSize[3],
                   double       radiusCylindricalDetector,
                   unsigned int vectorLength)
 {
-  // 2D layered texture requires CudaComputeCapability >= 2.0
-  int device;
-  cudaGetDevice(&device);
-  if (GetCudaComputeCapability(device).first <= 1)
-  {
-    itkGenericExceptionMacro(<< "RTK no longer supports GPUs with CudaComputeCapability < 2.0");
-  }
-
   // Copy the size of inputs into constant memory
   cudaMemcpyToSymbol(c_projSize, projSize, sizeof(int3));
   cudaMemcpyToSymbol(c_volSize, volSize, sizeof(int3));
