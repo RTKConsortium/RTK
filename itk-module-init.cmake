@@ -44,8 +44,6 @@ if(RTK_USE_CUDA)
     find_package(CUDAToolkit REQUIRED 8.0)
   endif()
 
-  set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -Wno-deprecated-gpu-targets")
-  set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -Wno-deprecated-declarations")
   set(RTK_CUDA_PROJECTIONS_SLAB_SIZE "16" CACHE STRING "Number of projections processed simultaneously in CUDA forward and back projections")
 elseif(RTK_CUDA_VERSION)
   message(FATAL_ERROR "RTK_CUDA_VERSION is set but the CUDA toolkit has not been found.")
