@@ -77,13 +77,16 @@ GetFreeGPUGlobalMemory(int device)
 }
 
 __host__ void
-prepareTextureObject(int                   size[3],
-                     float *               dev_ptr,
-                     cudaArray **&         componentArrays,
-                     unsigned int          nComponents,
-                     cudaTextureObject_t * tex,
-                     bool                  isProjections)
+prepareVectorTextureObject(int                                size[3],
+                           const float *                      dev_ptr,
+                           std::vector<cudaArray *> &         componentArrays,
+                           const unsigned int                 nComponents,
+                           std::vector<cudaTextureObject_t> & tex,
+                           bool                               isProjections)
 {
+  componentArrays.resize(nComponents);
+  tex.resize(nComponents);
+
   // Create CUBLAS context
   cublasHandle_t handle;
   cublasCreate(&handle);
@@ -129,15 +132,15 @@ prepareTextureObject(int                   size[3],
 
     // Allocate the cudaArray. Projections use layered arrays, volumes use default 3D arrays
     if (isProjections)
-      cudaMalloc3DArray((cudaArray **)&componentArrays[component], &channelDesc, volExtent, cudaArrayLayered);
+      cudaMalloc3DArray(&componentArrays[component], &channelDesc, volExtent, cudaArrayLayered);
     else
-      cudaMalloc3DArray((cudaArray **)&componentArrays[component], &channelDesc, volExtent);
+      cudaMalloc3DArray(&componentArrays[component], &channelDesc, volExtent);
     CUDA_CHECK_ERROR;
 
     // Fill it with the current singleComponent
     cudaMemcpy3DParms CopyParams = cudaMemcpy3DParms();
     CopyParams.srcPtr = make_cudaPitchedPtr(singleComponent, size[0] * sizeof(float), size[0], size[1]);
-    CopyParams.dstArray = (cudaArray *)componentArrays[component];
+    CopyParams.dstArray = componentArrays[component];
     CopyParams.extent = volExtent;
     CopyParams.kind = cudaMemcpyDeviceToDevice;
     cudaMemcpy3D(&CopyParams);

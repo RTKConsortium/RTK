@@ -60,7 +60,7 @@ __constant__ float c_sourcePos[SLAB_SIZE * 3]; // Can process stacks of at most 
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
 // KERNEL kernel_forwardProject
-template <unsigned int vectorLength>
+template <unsigned int VVectorLength>
 __global__ void
 kernel_forwardProject(float * dev_proj_in, float * dev_proj_out, cudaTextureObject_t * dev_tex_vol)
 {
@@ -103,8 +103,8 @@ kernel_forwardProject(float * dev_proj_in, float * dev_proj_out, cudaTextureObje
     // Detect intersection with box
     if (!intersectBox(ray, &tnear, &tfar, c_boxMin, c_boxMax) || tfar < 0.f)
     {
-      for (unsigned int c = 0; c < vectorLength; c++)
-        dev_proj_out[projOffset * vectorLength + c] = dev_proj_in[projOffset * vectorLength + c];
+      for (unsigned int c = 0; c < VVectorLength; c++)
+        dev_proj_out[projOffset * VVectorLength + c] = dev_proj_in[projOffset * VVectorLength + c];
     }
     else
     {
@@ -123,9 +123,9 @@ kernel_forwardProject(float * dev_proj_in, float * dev_proj_out, cudaTextureObje
       pos = ray.o + tnear * ray.d;
 
       float t;
-      float sample[vectorLength];
-      float sum[vectorLength];
-      for (unsigned int c = 0; c < vectorLength; c++)
+      float sample[VVectorLength];
+      float sum[VVectorLength];
+      for (unsigned int c = 0; c < VVectorLength; c++)
       {
         sample[c] = 0.0f;
         sum[c] = 0.0f;
@@ -134,11 +134,11 @@ kernel_forwardProject(float * dev_proj_in, float * dev_proj_out, cudaTextureObje
       for (t = tnear; t <= tfar; t += vStep)
       {
         // Read from 3D texture from volume(s)
-        for (unsigned int c = 0; c < vectorLength; c++)
+        for (unsigned int c = 0; c < VVectorLength; c++)
           sample[c] = tex3D<float>(dev_tex_vol[c], pos.x, pos.y, pos.z);
 
         // Accumulate
-        for (unsigned int c = 0; c < vectorLength; c++)
+        for (unsigned int c = 0; c < VVectorLength; c++)
           sum[c] += sample[c];
 
         // Step forward
@@ -146,9 +146,9 @@ kernel_forwardProject(float * dev_proj_in, float * dev_proj_out, cudaTextureObje
       }
 
       // Update the output projection pixels
-      for (unsigned int c = 0; c < vectorLength; c++)
-        dev_proj_out[projOffset * vectorLength + c] =
-          dev_proj_in[projOffset * vectorLength + c] + (sum[c] + (tfar - t + halfVStep) / vStep * sample[c]) * c_tStep;
+      for (unsigned int c = 0; c < VVectorLength; c++)
+        dev_proj_out[projOffset * VVectorLength + c] =
+          dev_proj_in[projOffset * VVectorLength + c] + (sum[c] + (tfar - t + halfVStep) / vStep * sample[c]) * c_tStep;
     }
   }
 }
@@ -198,17 +198,15 @@ CUDA_forward_project(int          projSize[3],
   cudaMemcpyToSymbol(
     c_translatedVolumeTransformMatrices, &(translatedVolumeTransformMatrices[0]), 12 * sizeof(float) * projSize[2]);
 
-  // Create an array of textures
-  cudaTextureObject_t * tex_vol = new cudaTextureObject_t[vectorLength];
-  cudaArray **          volComponentArrays = new cudaArray *[vectorLength];
-
-  // Prepare texture objects (needs an array of cudaTextureObjects on the host as "tex_vol" argument)
-  prepareTextureObject(volSize, dev_vol, volComponentArrays, vectorLength, tex_vol, false);
+  // Prepare texture objects
+  std::vector<cudaArray *>         volComponentArrays;
+  std::vector<cudaTextureObject_t> tex_vol;
+  prepareVectorTextureObject(volSize, dev_vol, volComponentArrays, vectorLength, tex_vol, false);
 
   // Copy them to a device pointer, since it will have to be de-referenced in the kernels
   cudaTextureObject_t * dev_tex_vol;
   cudaMalloc(&dev_tex_vol, vectorLength * sizeof(cudaTextureObject_t));
-  cudaMemcpy(dev_tex_vol, tex_vol, vectorLength * sizeof(cudaTextureObject_t), cudaMemcpyHostToDevice);
+  cudaMemcpy(dev_tex_vol, tex_vol.data(), vectorLength * sizeof(cudaTextureObject_t), cudaMemcpyHostToDevice);
 
   // Run the kernel. Since "vectorLength" is passed as a function argument, not as a template argument,
   // the compiler can't assume it's constant, and a dirty trick has to be used.
@@ -239,11 +237,10 @@ CUDA_forward_project(int          projSize[3],
   for (unsigned int c = 0; c < vectorLength; c++)
   {
     cudaFreeArray((cudaArray *)volComponentArrays[c]);
+    CUDA_CHECK_ERROR;
     cudaDestroyTextureObject(tex_vol[c]);
+    CUDA_CHECK_ERROR;
   }
   cudaFree(dev_tex_vol);
-  delete[] volComponentArrays;
   CUDA_CHECK_ERROR;
-
-  delete[] tex_vol;
 }
