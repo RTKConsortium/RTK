@@ -161,18 +161,15 @@ CUDA_back_project(int          projSize[3],
   dim3 dimBlock = dim3(tBlock_x, tBlock_y, tBlock_z);
   CUDA_CHECK_ERROR;
 
-  cudaArray ** projComponentArrays = new cudaArray *[vectorLength];
-
-  // Create an array of textures
-  cudaTextureObject_t * tex_proj = new cudaTextureObject_t[vectorLength];
-
   // Prepare texture objects (needs an array of cudaTextureObjects on the host as "tex_proj" argument)
-  prepareTextureObject(projSize, dev_proj, projComponentArrays, vectorLength, tex_proj, true);
+  std::vector<cudaArray *>         projComponentArrays;
+  std::vector<cudaTextureObject_t> tex_proj;
+  prepareVectorTextureObject(projSize, dev_proj, projComponentArrays, vectorLength, tex_proj, true);
 
   // Copy them to a device pointer, since it will have to be de-referenced in the kernels
   cudaTextureObject_t * dev_tex_proj;
   cudaMalloc(&dev_tex_proj, vectorLength * sizeof(cudaTextureObject_t));
-  cudaMemcpy(dev_tex_proj, tex_proj, vectorLength * sizeof(cudaTextureObject_t), cudaMemcpyHostToDevice);
+  cudaMemcpy(dev_tex_proj, tex_proj.data(), vectorLength * sizeof(cudaTextureObject_t), cudaMemcpyHostToDevice);
 
   // Run the kernel. Since "vectorLength" is passed as a function argument, not as a template argument,
   // the compiler can't assume it's constant, and a dirty trick has to be used.
@@ -237,11 +234,11 @@ CUDA_back_project(int          projSize[3],
   // Cleanup
   for (unsigned int c = 0; c < vectorLength; c++)
   {
-    cudaFreeArray((cudaArray *)projComponentArrays[c]);
+    cudaFreeArray(projComponentArrays[c]);
+    CUDA_CHECK_ERROR;
     cudaDestroyTextureObject(tex_proj[c]);
+    CUDA_CHECK_ERROR;
   }
   cudaFree(dev_tex_proj);
-  delete[] tex_proj;
-  delete[] projComponentArrays;
   CUDA_CHECK_ERROR;
 }

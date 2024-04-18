@@ -126,13 +126,15 @@ inline __host__ __device__ float
 {
   return u.x * v.x + u.y * v.y + u.z * v.z;
 }
+
 __host__ void
-prepareTextureObject(int                   size[3],
-                     float *               dev_ptr,
-                     cudaArray **&         componentArrays,
-                     unsigned int          nComponents,
-                     cudaTextureObject_t * tex,
-                     bool                  isProjections);
+prepareVectorTextureObject(int                                size[3],
+                           const float *                      dev_ptr,
+                           std::vector<cudaArray *> &         componentArrays,
+                           const unsigned int                 nComponents,
+                           std::vector<cudaTextureObject_t> & tex,
+                           bool                               isProjections);
+
 
 inline __device__ void
 matrix_matrix_multiply(float * A, float * B, float * C, unsigned int rowsA, unsigned int colsB, unsigned int colsArowsB)
