@@ -38,16 +38,7 @@
  * CUDA #includes *
  *****************/
 #include <cuda.h>
-#include <cublas_v2.h>
 #include <cuda_runtime.h>
-
-// T E X T U R E S ////////////////////////////////////////////////////////
-texture<float, cudaTextureType2DLayered> tex_proj;
-
-texture<float, 3, cudaReadModeElementType> tex_xdvf;
-texture<float, 3, cudaReadModeElementType> tex_ydvf;
-texture<float, 3, cudaReadModeElementType> tex_zdvf;
-///////////////////////////////////////////////////////////////////////////
 
 // CONSTANTS //////////////////////////////////////////////////////////////
 __constant__ float c_matrices[SLAB_SIZE * 12]; // Can process stacks of at most SLAB_SIZE projections
@@ -66,7 +57,12 @@ __constant__ float c_IndexInputToPPInputMatrix[12];
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
 __global__ void
-kernel_warp_back_project_3Dgrid(float * dev_vol_in, float * dev_vol_out)
+kernel_warp_back_project_3Dgrid(float *             dev_vol_in,
+                                float *             dev_vol_out,
+                                cudaTextureObject_t tex_xdvf,
+                                cudaTextureObject_t tex_ydvf,
+                                cudaTextureObject_t tex_zdvf,
+                                cudaTextureObject_t tex_proj)
 {
   unsigned int i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
   unsigned int j = __umul24(blockIdx.y, blockDim.y) + threadIdx.y;
@@ -89,9 +85,9 @@ kernel_warp_back_project_3Dgrid(float * dev_vol_in, float * dev_vol_out)
     IndexInDVF = matrix_multiply(make_float3(i, j, k), c_IndexInputToIndexDVFMatrix);
 
     // Get each component of the displacement vector by interpolation in the DVF
-    Displacement.x = tex3D(tex_xdvf, IndexInDVF.x + 0.5f, IndexInDVF.y + 0.5f, IndexInDVF.z + 0.5f);
-    Displacement.y = tex3D(tex_ydvf, IndexInDVF.x + 0.5f, IndexInDVF.y + 0.5f, IndexInDVF.z + 0.5f);
-    Displacement.z = tex3D(tex_zdvf, IndexInDVF.x + 0.5f, IndexInDVF.y + 0.5f, IndexInDVF.z + 0.5f);
+    Displacement.x = tex3D<float>(tex_xdvf, IndexInDVF.x + 0.5f, IndexInDVF.y + 0.5f, IndexInDVF.z + 0.5f);
+    Displacement.y = tex3D<float>(tex_ydvf, IndexInDVF.x + 0.5f, IndexInDVF.y + 0.5f, IndexInDVF.z + 0.5f);
+    Displacement.z = tex3D<float>(tex_zdvf, IndexInDVF.x + 0.5f, IndexInDVF.y + 0.5f, IndexInDVF.z + 0.5f);
 
     // Compute the physical point in input + the displacement vector
     PP = matrix_multiply(make_float3(i, j, k), c_IndexInputToPPInputMatrix) + Displacement;
@@ -108,7 +104,7 @@ kernel_warp_back_project_3Dgrid(float * dev_vol_in, float * dev_vol_out)
     ip.y = ip.y * ip.z;
 
     // Get texture point, clip left to GPU
-    voxel_data += tex2DLayered(tex_proj, ip.x, ip.y, proj);
+    voxel_data += tex2DLayered<float>(tex_proj, ip.x, ip.y, proj);
   }
 
   // Place it into the volume
@@ -116,7 +112,13 @@ kernel_warp_back_project_3Dgrid(float * dev_vol_in, float * dev_vol_out)
 }
 
 __global__ void
-kernel_warp_back_project_3Dgrid_cylindrical_detector(float * dev_vol_in, float * dev_vol_out, float radius)
+kernel_warp_back_project_3Dgrid_cylindrical_detector(float *             dev_vol_in,
+                                                     float *             dev_vol_out,
+                                                     float               radius,
+                                                     cudaTextureObject_t tex_xdvf,
+                                                     cudaTextureObject_t tex_ydvf,
+                                                     cudaTextureObject_t tex_zdvf,
+                                                     cudaTextureObject_t tex_proj)
 {
   unsigned int i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
   unsigned int j = __umul24(blockIdx.y, blockDim.y) + threadIdx.y;
@@ -139,9 +141,9 @@ kernel_warp_back_project_3Dgrid_cylindrical_detector(float * dev_vol_in, float *
     IndexInDVF = matrix_multiply(make_float3(i, j, k), c_IndexInputToIndexDVFMatrix);
 
     // Get each component of the displacement vector by interpolation in the DVF
-    Displacement.x = tex3D(tex_xdvf, IndexInDVF.x + 0.5f, IndexInDVF.y + 0.5f, IndexInDVF.z + 0.5f);
-    Displacement.y = tex3D(tex_ydvf, IndexInDVF.x + 0.5f, IndexInDVF.y + 0.5f, IndexInDVF.z + 0.5f);
-    Displacement.z = tex3D(tex_zdvf, IndexInDVF.x + 0.5f, IndexInDVF.y + 0.5f, IndexInDVF.z + 0.5f);
+    Displacement.x = tex3D<float>(tex_xdvf, IndexInDVF.x + 0.5f, IndexInDVF.y + 0.5f, IndexInDVF.z + 0.5f);
+    Displacement.y = tex3D<float>(tex_ydvf, IndexInDVF.x + 0.5f, IndexInDVF.y + 0.5f, IndexInDVF.z + 0.5f);
+    Displacement.z = tex3D<float>(tex_zdvf, IndexInDVF.x + 0.5f, IndexInDVF.y + 0.5f, IndexInDVF.z + 0.5f);
 
     // Compute the physical point in input + the displacement vector
     PP = matrix_multiply(make_float3(i, j, k), c_IndexInputToPPInputMatrix) + Displacement;
@@ -167,7 +169,7 @@ kernel_warp_back_project_3Dgrid_cylindrical_detector(float * dev_vol_in, float *
     ip.y = c_projPPToProjIndex[3] * pp.x + c_projPPToProjIndex[4] * pp.y + c_projPPToProjIndex[5];
 
     // Get texture point, clip left to GPU
-    voxel_data += tex2DLayered(tex_proj, ip.x, ip.y, proj);
+    voxel_data += tex2DLayered<float>(tex_proj, ip.x, ip.y, proj);
   }
 
   // Place it into the volume
@@ -196,13 +198,6 @@ CUDA_warp_back_project(int     projSize[3],
                        float   IndexInputToPPInputMatrix[12],
                        double  radiusCylindricalDetector)
 {
-  // Create CUBLAS context
-  cublasHandle_t handle;
-  cublasCreate(&handle);
-
-  int device;
-  cudaGetDevice(&device);
-
   // Copy the size of inputs into constant memory
   cudaMemcpyToSymbol(c_projSize, projSize, sizeof(int3));
   cudaMemcpyToSymbol(c_volSize, volSize, sizeof(int3));
@@ -212,96 +207,15 @@ CUDA_warp_back_project(int     projSize[3],
   cudaMemcpyToSymbol(c_volIndexToProjPP, &(volIndexToProjPPs[0]), 12 * sizeof(float) * projSize[2]);
   cudaMemcpyToSymbol(c_projPPToProjIndex, &(projPPToProjIndex[0]), 9 * sizeof(float));
 
-  // set texture parameters
-  tex_proj.addressMode[0] = cudaAddressModeBorder;
-  tex_proj.addressMode[1] = cudaAddressModeBorder;
-  tex_proj.addressMode[2] = cudaAddressModeBorder;
-  tex_proj.filterMode = cudaFilterModeLinear;
-  tex_proj.normalized = false; // don't access with normalized texture coords
+  // Prepare proj texture
+  cudaArray *         array_proj;
+  cudaTextureObject_t tex_proj;
+  prepareScalarTextureObject(projSize, dev_proj, array_proj, tex_proj, true);
 
-  // Copy projection data to array, bind the array to the texture
-  cudaExtent                   projExtent = make_cudaExtent(projSize[0], projSize[1], projSize[2]);
-  cudaArray *                  array_proj;
-  static cudaChannelFormatDesc channelDesc = cudaCreateChannelDesc<float>();
-  CUDA_CHECK_ERROR;
-
-  // Allocate array for input projections, in order to bind them to
-  // a 2D layered texture
-  cudaMalloc3DArray((cudaArray **)&array_proj, &channelDesc, projExtent, cudaArrayLayered);
-  CUDA_CHECK_ERROR;
-
-  // Copy data to 3D array
-  cudaMemcpy3DParms copyParams = cudaMemcpy3DParms();
-  copyParams.srcPtr = make_cudaPitchedPtr(dev_proj, projSize[0] * sizeof(float), projSize[0], projSize[1]);
-  copyParams.dstArray = (cudaArray *)array_proj;
-  copyParams.extent = projExtent;
-  copyParams.kind = cudaMemcpyDeviceToDevice;
-  cudaMemcpy3D(&copyParams);
-  CUDA_CHECK_ERROR;
-
-  // Extent stuff, will be used for each component extraction
-  cudaExtent dvfExtent = make_cudaExtent(dvf_size[0], dvf_size[1], dvf_size[2]);
-
-  // Set texture parameters
-  tex_xdvf.addressMode[0] = cudaAddressModeBorder;
-  tex_xdvf.addressMode[1] = cudaAddressModeBorder;
-  tex_xdvf.addressMode[2] = cudaAddressModeBorder;
-  tex_xdvf.filterMode = cudaFilterModeLinear;
-  tex_xdvf.normalized = false; // don't access with normalized texture coords
-
-  tex_ydvf.addressMode[0] = cudaAddressModeBorder;
-  tex_ydvf.addressMode[1] = cudaAddressModeBorder;
-  tex_ydvf.addressMode[2] = cudaAddressModeBorder;
-  tex_ydvf.filterMode = cudaFilterModeLinear;
-  tex_ydvf.normalized = false;
-
-  tex_zdvf.addressMode[0] = cudaAddressModeBorder;
-  tex_zdvf.addressMode[1] = cudaAddressModeBorder;
-  tex_zdvf.addressMode[2] = cudaAddressModeBorder;
-  tex_zdvf.filterMode = cudaFilterModeLinear;
-  tex_zdvf.normalized = false;
-
-  // Allocate an intermediate memory space to extract x, y and z components of the DVF
-  float * DVFcomponent;
-  int     numel = dvf_size[0] * dvf_size[1] * dvf_size[2];
-  cudaMalloc(&DVFcomponent, numel * sizeof(float));
-  float one = 1.0;
-
-  // Allocate the arrays used for textures
-  cudaArray ** DVFcomponentArrays = new cudaArray *[3];
-  CUDA_CHECK_ERROR;
-
-  // Copy image data to arrays. The tricky part is the make_cudaPitchedPtr.
-  // The best way to understand it is to read
-  // https://stackoverflow.com/questions/16119943/how-and-when-should-i-use-pitched-pointer-with-the-cuda-api
-  for (unsigned int component = 0; component < 3; component++)
-  {
-    // Reset the intermediate memory
-    cudaMemset((void *)DVFcomponent, 0, numel * sizeof(float));
-
-    // Fill it with the current component
-    float * pComponent = dev_input_dvf + component;
-    cublasSaxpy(handle, numel, &one, pComponent, 3, DVFcomponent, 1);
-
-    // Allocate the cudaArray and fill it with the current DVFcomponent
-    cudaMalloc3DArray((cudaArray **)&DVFcomponentArrays[component], &channelDesc, dvfExtent);
-    cudaMemcpy3DParms CopyParams = cudaMemcpy3DParms();
-    CopyParams.srcPtr = make_cudaPitchedPtr(DVFcomponent, dvf_size[0] * sizeof(float), dvf_size[0], dvf_size[1]);
-    CopyParams.dstArray = (cudaArray *)DVFcomponentArrays[component];
-    CopyParams.extent = dvfExtent;
-    CopyParams.kind = cudaMemcpyDeviceToDevice;
-    cudaMemcpy3D(&CopyParams);
-    CUDA_CHECK_ERROR;
-  }
-
-  // Intermediate memory is no longer needed
-  cudaFree(DVFcomponent);
-
-  // Bind 3D arrays to 3D textures
-  cudaBindTextureToArray(tex_xdvf, (cudaArray *)DVFcomponentArrays[0], channelDesc);
-  cudaBindTextureToArray(tex_ydvf, (cudaArray *)DVFcomponentArrays[1], channelDesc);
-  cudaBindTextureToArray(tex_zdvf, (cudaArray *)DVFcomponentArrays[2], channelDesc);
-  CUDA_CHECK_ERROR;
+  // Prepare DVF textures
+  std::vector<cudaArray *>         DVFComponentArrays;
+  std::vector<cudaTextureObject_t> tex_dvf;
+  prepareVectorTextureObject(dvf_size, dev_input_dvf, DVFComponentArrays, 3, tex_dvf, false);
 
   // Copy matrices into constant memory
   cudaMemcpyToSymbol(
@@ -329,35 +243,27 @@ CUDA_warp_back_project(int     projSize[3],
   dim3 dimBlock = dim3(tBlock_x, tBlock_y, tBlock_z);
   CUDA_CHECK_ERROR;
 
-  // Bind the array of projections to a 2D layered texture
-  cudaBindTextureToArray(tex_proj, (cudaArray *)array_proj, channelDesc);
-  CUDA_CHECK_ERROR;
-
   // Note: cbi->img is passed via texture memory
   // Matrices are passed via constant memory
   //-------------------------------------
   if (radiusCylindricalDetector == 0)
-    kernel_warp_back_project_3Dgrid<<<dimGrid, dimBlock>>>(dev_vol_in, dev_vol_out);
+    kernel_warp_back_project_3Dgrid<<<dimGrid, dimBlock>>>(
+      dev_vol_in, dev_vol_out, tex_dvf[0], tex_dvf[1], tex_dvf[2], tex_proj);
   else
     kernel_warp_back_project_3Dgrid_cylindrical_detector<<<dimGrid, dimBlock>>>(
-      dev_vol_in, dev_vol_out, (float)radiusCylindricalDetector);
-  // Unbind the image and projection matrix textures
-  cudaUnbindTexture(tex_proj);
+      dev_vol_in, dev_vol_out, (float)radiusCylindricalDetector, tex_dvf[0], tex_dvf[1], tex_dvf[2], tex_proj);
   CUDA_CHECK_ERROR;
-
-  // Unbind the image and projection matrix textures
-  cudaUnbindTexture(tex_xdvf);
-  cudaUnbindTexture(tex_ydvf);
-  cudaUnbindTexture(tex_zdvf);
 
   // Cleanup
-  cudaFreeArray((cudaArray *)DVFcomponentArrays[0]);
-  cudaFreeArray((cudaArray *)DVFcomponentArrays[1]);
-  cudaFreeArray((cudaArray *)DVFcomponentArrays[2]);
-  delete[] DVFcomponentArrays;
+  for (unsigned int c = 0; c < 3; c++)
+  {
+    cudaFreeArray(DVFComponentArrays[c]);
+    CUDA_CHECK_ERROR;
+    cudaDestroyTextureObject(tex_dvf[c]);
+    CUDA_CHECK_ERROR;
+  }
   cudaFreeArray((cudaArray *)array_proj);
   CUDA_CHECK_ERROR;
-
-  // Destroy CUBLAS context
-  cublasDestroy(handle);
+  cudaDestroyTextureObject(tex_proj);
+  CUDA_CHECK_ERROR;
 }

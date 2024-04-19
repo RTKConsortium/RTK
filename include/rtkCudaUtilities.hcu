@@ -128,13 +128,29 @@ inline __host__ __device__ float
 }
 
 __host__ void
+prepareScalarTextureObject(int                          size[3],
+                           float *                      dev_ptr,
+                           cudaArray *&                 threeDArray,
+                           cudaTextureObject_t &        tex,
+                           const bool                   isProjections,
+                           const bool                   isLinear = true,
+                           const cudaTextureAddressMode texAddressMode = cudaAddressModeBorder);
+
+__host__ void
 prepareVectorTextureObject(int                                size[3],
                            const float *                      dev_ptr,
                            std::vector<cudaArray *> &         componentArrays,
                            const unsigned int                 nComponents,
                            std::vector<cudaTextureObject_t> & tex,
-                           bool                               isProjections);
+                           const bool                         isProjections,
+                           const cudaTextureAddressMode       texAddressMode = cudaAddressModeBorder);
 
+__host__ void
+prepareGeometryTextureObject(int                   size,
+                             const float *         geometry,
+                             float *&              dev_geom,
+                             cudaTextureObject_t & tex_geom,
+                             const unsigned int    nParam);
 
 inline __device__ void
 matrix_matrix_multiply(float * A, float * B, float * C, unsigned int rowsA, unsigned int colsB, unsigned int colsArowsB)

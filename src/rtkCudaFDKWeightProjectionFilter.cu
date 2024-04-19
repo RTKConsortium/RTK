@@ -21,8 +21,6 @@
 #include <cuda.h>
 #include <cuda_runtime.h>
 
-texture<float, 1, cudaReadModeElementType> tex_geometry; // geometry texture
-
 inline __device__ float2
                   TransformIndexToPhysicalPoint(int2 idx, float2 origin, float2 row, float2 column)
 {
@@ -30,15 +28,16 @@ inline __device__ float2
 }
 
 __global__ void
-kernel_weight_projection(int2    proj_idx,
-                         int3    proj_size,
-                         int2    proj_size_buf_in,
-                         int2    proj_size_buf_out,
-                         float * dev_proj_in,
-                         float * dev_proj_out,
-                         float2  proj_orig, // projection origin
-                         float2  proj_row,  // projection row direction & spacing
-                         float2  proj_col   // projection col direction & spacing
+kernel_weight_projection(int2                proj_idx,
+                         int3                proj_size,
+                         int2                proj_size_buf_in,
+                         int2                proj_size_buf_out,
+                         float *             dev_proj_in,
+                         float *             dev_proj_out,
+                         float2              proj_orig, // projection origin
+                         float2              proj_row,  // projection row direction & spacing
+                         float2              proj_col,  // projection col direction & spacing
+                         cudaTextureObject_t tex_geom   // geometry texture object
 )
 {
   // compute projection index (== thread index)
@@ -53,19 +52,19 @@ kernel_weight_projection(int2    proj_idx,
   if (pIdx.x >= proj_size.x || pIdx.y >= proj_size.y || pIdx.z >= proj_size.z)
     return;
 
-  const float sdd = tex1Dfetch(tex_geometry, pIdx.z * 7 + 0);
-  const float sid = tex1Dfetch(tex_geometry, pIdx.z * 7 + 1);
-  const float wFac = tex1Dfetch(tex_geometry, pIdx.z * 7 + 5);
+  const float sdd = tex1Dfetch<float>(tex_geom, pIdx.z * 7);
+  const float sid = tex1Dfetch<float>(tex_geom, pIdx.z * 7 + 1);
+  const float wFac = tex1Dfetch<float>(tex_geom, pIdx.z * 7 + 5);
   if (sdd == 0) // parallel
   {
     dev_proj_out[pIdx_comp_out] = dev_proj_in[pIdx_comp_in] * wFac;
   }
   else // divergent
   {
-    const float pOffX = tex1Dfetch(tex_geometry, pIdx.z * 7 + 2);
-    const float pOffY = tex1Dfetch(tex_geometry, pIdx.z * 7 + 3);
-    const float sOffY = tex1Dfetch(tex_geometry, pIdx.z * 7 + 4);
-    const float tAngle = tex1Dfetch(tex_geometry, pIdx.z * 7 + 6);
+    const float pOffX = tex1Dfetch<float>(tex_geom, pIdx.z * 7 + 2);
+    const float pOffY = tex1Dfetch<float>(tex_geom, pIdx.z * 7 + 3);
+    const float sOffY = tex1Dfetch<float>(tex_geom, pIdx.z * 7 + 4);
+    const float tAngle = tex1Dfetch<float>(tex_geom, pIdx.z * 7 + 6);
     const float sina = sin(tAngle);
     const float cosa = cos(tAngle);
     const float tana = tan(tAngle);
@@ -90,19 +89,14 @@ CUDA_weight_projection(int     proj_idx[2],
                        int     proj_dim_buf_out[2],
                        float * dev_proj_in,
                        float * dev_proj_out,
-                       float * geometries,
+                       float * geometry,
                        float   proj_orig[2],
                        float   proj_row[2],
                        float   proj_col[2])
 {
-  // copy geometry matrix to device, bind the matrix to the texture
-  float * dev_geom;
-  cudaMalloc((void **)&dev_geom, proj_dim[2] * 7 * sizeof(float));
-  CUDA_CHECK_ERROR;
-  cudaMemcpy(dev_geom, geometries, proj_dim[2] * 7 * sizeof(float), cudaMemcpyHostToDevice);
-  CUDA_CHECK_ERROR;
-  cudaBindTexture(0, tex_geometry, dev_geom, proj_dim[2] * 7 * sizeof(float));
-  CUDA_CHECK_ERROR;
+  float *             dev_geom;
+  cudaTextureObject_t tex_geom;
+  prepareGeometryTextureObject(proj_dim[2], geometry, dev_geom, tex_geom, 7);
 
   // Thread Block Dimensions
   int tBlock_x = 16;
@@ -124,10 +118,11 @@ CUDA_weight_projection(int     proj_idx[2],
                                                   dev_proj_out,
                                                   make_float2(proj_orig[0], proj_orig[1]),
                                                   make_float2(proj_row[0], proj_row[1]),
-                                                  make_float2(proj_col[0], proj_col[1]));
+                                                  make_float2(proj_col[0], proj_col[1]),
+                                                  tex_geom);
 
-  // Unbind matrix texture
-  cudaUnbindTexture(tex_geometry);
+  // destroy texture object
+  cudaDestroyTextureObject(tex_geom);
   CUDA_CHECK_ERROR;
   cudaFree(dev_geom);
   CUDA_CHECK_ERROR;

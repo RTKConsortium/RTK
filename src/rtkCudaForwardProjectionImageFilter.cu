@@ -36,7 +36,6 @@
  * CUDA #includes *
  *****************/
 #include <cuda.h>
-#include <cublas_v2.h>
 #include <cuda_runtime.h>
 
 // CONSTANTS //
@@ -201,7 +200,7 @@ CUDA_forward_project(int          projSize[3],
   // Prepare texture objects
   std::vector<cudaArray *>         volComponentArrays;
   std::vector<cudaTextureObject_t> tex_vol;
-  prepareVectorTextureObject(volSize, dev_vol, volComponentArrays, vectorLength, tex_vol, false);
+  prepareVectorTextureObject(volSize, dev_vol, volComponentArrays, vectorLength, tex_vol, false, cudaAddressModeClamp);
 
   // Copy them to a device pointer, since it will have to be de-referenced in the kernels
   cudaTextureObject_t * dev_tex_vol;

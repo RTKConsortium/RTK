@@ -38,7 +38,6 @@
  * CUDA #includes *
  *****************/
 #include <cuda.h>
-#include <cublas_v2.h>
 #include <cuda_runtime.h>
 
 #define IDX2D(r, c, cols) ((r) * (cols) + (c))
