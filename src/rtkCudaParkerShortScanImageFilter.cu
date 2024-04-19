@@ -22,8 +22,6 @@
 #include <cuda_runtime.h>
 #include <math_constants.h>
 
-texture<float, 1, cudaReadModeElementType> tex_geometry; // geometry texture
-
 inline __device__ float
 TransformIndexToPhysicalPoint(int2 idx, float origin, float row, float column)
 {
@@ -45,17 +43,18 @@ ToUntiltedCoordinateAtIsocenter(float tiltedCoord, float sdd, float sid, float s
 }
 
 __global__ void
-kernel_parker_weight(int2    proj_idx,
-                     int3    proj_size,
-                     int2    proj_size_buf_in,
-                     int2    proj_size_buf_out,
-                     float * dev_proj_in,
-                     float * dev_proj_out,
-                     float   delta,
-                     float   firstAngle,
-                     float   proj_orig, // projection origin
-                     float   proj_row,  // projection row direction & spacing
-                     float   proj_col   // projection col direction & spacing
+kernel_parker_weight(int2                proj_idx,
+                     int3                proj_size,
+                     int2                proj_size_buf_in,
+                     int2                proj_size_buf_out,
+                     float *             dev_proj_in,
+                     float *             dev_proj_out,
+                     float               delta,
+                     float               firstAngle,
+                     float               proj_orig, // projection origin
+                     float               proj_row,  // projection row direction & spacing
+                     float               proj_col,  // projection col direction & spacing
+                     cudaTextureObject_t tex_geom   // geometry texture object
 )
 {
   // compute projection index (== thread index)
@@ -70,10 +69,10 @@ kernel_parker_weight(int2    proj_idx,
   if (pIdx.x >= proj_size.x || pIdx.y >= proj_size.y || pIdx.z >= proj_size.z)
     return;
 
-  float sdd = tex1Dfetch(tex_geometry, pIdx.z * 5 + 0);
-  float sx = tex1Dfetch(tex_geometry, pIdx.z * 5 + 1);
-  float px = tex1Dfetch(tex_geometry, pIdx.z * 5 + 2);
-  float sid = tex1Dfetch(tex_geometry, pIdx.z * 5 + 3);
+  float sdd = tex1Dfetch<float>(tex_geom, pIdx.z * 5 + 0);
+  float sx = tex1Dfetch<float>(tex_geom, pIdx.z * 5 + 1);
+  float px = tex1Dfetch<float>(tex_geom, pIdx.z * 5 + 2);
+  float sid = tex1Dfetch<float>(tex_geom, pIdx.z * 5 + 3);
 
   // convert actual index to point
   float pPoint =
@@ -86,7 +85,7 @@ kernel_parker_weight(int2    proj_idx,
   float alpha = atan(-1 * l * invsid);
 
   // beta projection angle: Parker's article assumes that the scan starts at 0
-  float beta = tex1Dfetch(tex_geometry, pIdx.z * 5 + 4);
+  float beta = tex1Dfetch<float>(tex_geom, pIdx.z * 5 + 4);
   beta -= firstAngle;
   if (beta < 0)
     beta += (2.f * CUDART_PI_F);
@@ -111,21 +110,16 @@ CUDA_parker_weight(int     proj_idx[2],
                    int     proj_dim_buf_out[2],
                    float * dev_proj_in,
                    float * dev_proj_out,
-                   float * geometries,
+                   float * geometry,
                    float   delta,
                    float   firstAngle,
                    float   proj_orig,
                    float   proj_row,
                    float   proj_col)
 {
-  // copy geometry matrix to device, bind the matrix to the texture
-  float * dev_geom;
-  cudaMalloc((void **)&dev_geom, proj_dim[2] * 5 * sizeof(float));
-  CUDA_CHECK_ERROR;
-  cudaMemcpy(dev_geom, geometries, proj_dim[2] * 5 * sizeof(float), cudaMemcpyHostToDevice);
-  CUDA_CHECK_ERROR;
-  cudaBindTexture(0, tex_geometry, dev_geom, proj_dim[2] * 5 * sizeof(float));
-  CUDA_CHECK_ERROR;
+  float *             dev_geom;
+  cudaTextureObject_t tex_geom;
+  prepareGeometryTextureObject(proj_dim[2], geometry, dev_geom, tex_geom, 5);
 
   // Thread Block Dimensions
   int tBlock_x = 16;
@@ -139,6 +133,7 @@ CUDA_parker_weight(int     proj_idx[2],
 
   dim3 dimGrid = dim3(blocksInX, blocksInY, blocksInZ);
   dim3 dimBlock = dim3(tBlock_x, tBlock_y, tBlock_z);
+
   kernel_parker_weight<<<dimGrid, dimBlock>>>(make_int2(proj_idx[0], proj_idx[1]),
                                               make_int3(proj_dim[0], proj_dim[1], proj_dim[2]),
                                               make_int2(proj_dim_buf_in[0], proj_dim_buf_in[1]),
@@ -149,10 +144,11 @@ CUDA_parker_weight(int     proj_idx[2],
                                               firstAngle,
                                               proj_orig,
                                               proj_row,
-                                              proj_col);
+                                              proj_col,
+                                              tex_geom);
 
-  // Unbind matrix texture
-  cudaUnbindTexture(tex_geometry);
+  // destroy texture object
+  cudaDestroyTextureObject(tex_geom);
   CUDA_CHECK_ERROR;
   cudaFree(dev_geom);
   CUDA_CHECK_ERROR;

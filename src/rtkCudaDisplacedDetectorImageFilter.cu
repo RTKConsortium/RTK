@@ -22,8 +22,6 @@
 #include <cuda_runtime.h>
 #include <math_constants.h>
 
-texture<float, 1, cudaReadModeElementType> tex_geometry; // geometry texture
-
 inline __device__ float
 TransformIndexToPhysicalPoint(int2 idx, float origin, float row, float column)
 {
@@ -45,19 +43,20 @@ ToUntiltedCoordinateAtIsocenter(float tiltedCoord, float sdd, float sid, float s
 }
 
 __global__ void
-kernel_displaced_weight(int3    proj_idx_in,
-                        int3    proj_size_in,
-                        int2    proj_size_in_buf,
-                        int3    proj_idx_out,
-                        int3    proj_size_out,
-                        int2    proj_size_out_buf,
-                        float * dev_proj_in,
-                        float * dev_proj_out,
-                        float   theta,
-                        bool    isPositiveCase,
-                        float   proj_orig, // projection origin
-                        float   proj_row,  // projection row direction & spacing
-                        float   proj_col   // projection col direction & spacing
+kernel_displaced_weight(int3                proj_idx_in,
+                        int3                proj_size_in,
+                        int2                proj_size_in_buf,
+                        int3                proj_idx_out,
+                        int3                proj_size_out,
+                        int2                proj_size_out_buf,
+                        float *             dev_proj_in,
+                        float *             dev_proj_out,
+                        float               theta,
+                        bool                isPositiveCase,
+                        float               proj_orig, // projection origin
+                        float               proj_row,  // projection row direction & spacing
+                        float               proj_col,  // projection col direction & spacing
+                        cudaTextureObject_t tex_geom   // geometry texture object
 )
 {
   // compute thread index
@@ -90,10 +89,10 @@ kernel_displaced_weight(int3    proj_idx_in,
   {
     float pPoint = TransformIndexToPhysicalPoint(make_int2(pIdx.x, pIdx.y), proj_orig, proj_row, proj_col);
 
-    float sdd = tex1Dfetch(tex_geometry, tIdx.z * 4 + 0);
-    float sx = tex1Dfetch(tex_geometry, tIdx.z * 4 + 1);
-    float px = tex1Dfetch(tex_geometry, tIdx.z * 4 + 2);
-    float sid = tex1Dfetch(tex_geometry, tIdx.z * 4 + 3);
+    float sdd = tex1Dfetch<float>(tex_geom, tIdx.z * 4 + 0);
+    float sx = tex1Dfetch<float>(tex_geom, tIdx.z * 4 + 1);
+    float px = tex1Dfetch<float>(tex_geom, tIdx.z * 4 + 2);
+    float sid = tex1Dfetch<float>(tex_geom, tIdx.z * 4 + 3);
 
     float hyp = sqrtf(sid * sid + sx * sx); // to untilted situation
     float l = ToUntiltedCoordinateAtIsocenter(pPoint, sdd, sid, sx, px, hyp);
@@ -139,7 +138,7 @@ CUDA_displaced_weight(int     proj_idx_in[3],      // overlapping input region i
                       int     proj_dim_out_buf[2], // output size of buffered region
                       float * dev_proj_in,
                       float * dev_proj_out,
-                      float * geometries,
+                      float * geometry,
                       float   theta,
                       bool    isPositiveCase,
                       float   proj_orig,
@@ -147,13 +146,9 @@ CUDA_displaced_weight(int     proj_idx_in[3],      // overlapping input region i
                       float   proj_col)
 {
   // copy geometry matrix to device, bind the matrix to the texture
-  float * dev_geom;
-  cudaMalloc((void **)&dev_geom, proj_dim_out[2] * 4 * sizeof(float));
-  CUDA_CHECK_ERROR;
-  cudaMemcpy(dev_geom, geometries, proj_dim_out[2] * 4 * sizeof(float), cudaMemcpyHostToDevice);
-  CUDA_CHECK_ERROR;
-  cudaBindTexture(0, tex_geometry, dev_geom, proj_dim_out[2] * 4 * sizeof(float));
-  CUDA_CHECK_ERROR;
+  float *             dev_geom;
+  cudaTextureObject_t tex_geom;
+  prepareGeometryTextureObject(proj_dim_out[2], geometry, dev_geom, tex_geom, 4);
 
   // Thread Block Dimensions
   int tBlock_x = 16;
@@ -179,10 +174,11 @@ CUDA_displaced_weight(int     proj_idx_in[3],      // overlapping input region i
                                                  isPositiveCase,
                                                  proj_orig,
                                                  proj_row,
-                                                 proj_col);
+                                                 proj_col,
+                                                 tex_geom);
 
   // Unbind matrix texture
-  cudaUnbindTexture(tex_geometry);
+  cudaDestroyTextureObject(tex_geom);
   CUDA_CHECK_ERROR;
   cudaFree(dev_geom);
   CUDA_CHECK_ERROR;

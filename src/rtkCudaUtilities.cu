@@ -17,6 +17,7 @@
  *=========================================================================*/
 
 #include "rtkCudaUtilities.hcu"
+#include <cublas_v2.h>
 
 std::vector<int>
 GetListOfCudaDevices()
@@ -77,12 +78,72 @@ GetFreeGPUGlobalMemory(int device)
 }
 
 __host__ void
+prepareScalarTextureObject(int                          size[3],
+                           float *                      dev_ptr,
+                           cudaArray *&                 threeDArray,
+                           cudaTextureObject_t &        tex,
+                           const bool                   isProjections,
+                           const bool                   isLinear,
+                           const cudaTextureAddressMode texAddressMode)
+{
+  // create texture object
+  cudaResourceDesc resDesc = {};
+  resDesc.resType = cudaResourceTypeArray;
+
+  cudaTextureDesc texDesc = {};
+  texDesc.readMode = cudaReadModeElementType;
+
+  for (int component = 0; component < 3; component++)
+    texDesc.addressMode[component] = texAddressMode;
+  if (isLinear)
+    texDesc.filterMode = cudaFilterModeLinear;
+  else
+    texDesc.filterMode = cudaFilterModePoint;
+
+  static cudaChannelFormatDesc channelDesc = cudaCreateChannelDesc(32, 0, 0, 0, cudaChannelFormatKindFloat);
+  cudaExtent                   volExtent = make_cudaExtent(size[0], size[1], size[2]);
+
+  // Allocate an intermediate memory space to extract the components of the input volume
+  float * singleComponent;
+  int     numel = size[0] * size[1] * size[2];
+  cudaMalloc(&singleComponent, numel * sizeof(float));
+  CUDA_CHECK_ERROR;
+
+  // Copy image data to arrays. The tricky part is the make_cudaPitchedPtr.
+  // The best way to understand it is to read
+  // https://stackoverflow.com/questions/16119943/how-and-when-should-i-use-pitched-pointer-with-the-cuda-api
+
+  // Allocate the cudaArray. Projections use layered arrays, volumes use default 3D arrays
+  if (isProjections)
+    cudaMalloc3DArray(&threeDArray, &channelDesc, volExtent, cudaArrayLayered);
+  else
+    cudaMalloc3DArray(&threeDArray, &channelDesc, volExtent);
+  CUDA_CHECK_ERROR;
+
+  // Fill it with the current singleComponent
+  cudaMemcpy3DParms CopyParams = {};
+  CopyParams.srcPtr = make_cudaPitchedPtr(dev_ptr, size[0] * sizeof(float), size[0], size[1]);
+  CUDA_CHECK_ERROR;
+  CopyParams.dstArray = threeDArray;
+  CopyParams.extent = volExtent;
+  CopyParams.kind = cudaMemcpyDeviceToDevice;
+  cudaMemcpy3D(&CopyParams);
+  CUDA_CHECK_ERROR;
+
+  // Fill in the texture object with all this information
+  resDesc.res.array.array = threeDArray;
+  cudaCreateTextureObject(&tex, &resDesc, &texDesc, NULL);
+  CUDA_CHECK_ERROR;
+}
+
+__host__ void
 prepareVectorTextureObject(int                                size[3],
                            const float *                      dev_ptr,
                            std::vector<cudaArray *> &         componentArrays,
                            const unsigned int                 nComponents,
                            std::vector<cudaTextureObject_t> & tex,
-                           bool                               isProjections)
+                           const bool                         isProjections,
+                           const cudaTextureAddressMode       texAddressMode)
 {
   componentArrays.resize(nComponents);
   tex.resize(nComponents);
@@ -92,20 +153,13 @@ prepareVectorTextureObject(int                                size[3],
   cublasCreate(&handle);
 
   // create texture object
-  cudaResourceDesc resDesc;
-  memset(&resDesc, 0, sizeof(resDesc));
+  cudaResourceDesc resDesc = {};
   resDesc.resType = cudaResourceTypeArray;
 
-  cudaTextureDesc texDesc;
-  memset(&texDesc, 0, sizeof(texDesc));
+  cudaTextureDesc texDesc = {};
   texDesc.readMode = cudaReadModeElementType;
   for (int component = 0; component < 3; component++)
-  {
-    if (isProjections)
-      texDesc.addressMode[component] = cudaAddressModeBorder;
-    else
-      texDesc.addressMode[component] = cudaAddressModeClamp;
-  }
+    texDesc.addressMode[component] = texAddressMode;
   texDesc.filterMode = cudaFilterModeLinear;
 
   static cudaChannelFormatDesc channelDesc = cudaCreateChannelDesc(32, 0, 0, 0, cudaChannelFormatKindFloat);
@@ -127,7 +181,7 @@ prepareVectorTextureObject(int                                size[3],
     cudaMemset((void *)singleComponent, 0, numel * sizeof(float));
 
     // Fill it with the current component
-    float * pComponent = dev_ptr + component;
+    const float * pComponent = dev_ptr + component;
     cublasSaxpy(handle, numel, &one, pComponent, nComponents, singleComponent, 1);
 
     // Allocate the cudaArray. Projections use layered arrays, volumes use default 3D arrays
@@ -140,6 +194,7 @@ prepareVectorTextureObject(int                                size[3],
     // Fill it with the current singleComponent
     cudaMemcpy3DParms CopyParams = cudaMemcpy3DParms();
     CopyParams.srcPtr = make_cudaPitchedPtr(singleComponent, size[0] * sizeof(float), size[0], size[1]);
+    CUDA_CHECK_ERROR;
     CopyParams.dstArray = componentArrays[component];
     CopyParams.extent = volExtent;
     CopyParams.kind = cudaMemcpyDeviceToDevice;
@@ -157,4 +212,32 @@ prepareVectorTextureObject(int                                size[3],
 
   // Destroy CUBLAS context
   cublasDestroy(handle);
+}
+
+__host__ void
+prepareGeometryTextureObject(int                   length,
+                             const float *         geometry,
+                             float *&              dev_geom,
+                             cudaTextureObject_t & tex_geom,
+                             const unsigned int    nParam)
+{
+  // copy geometry matrix to device, bind the matrix to the texture
+  cudaMalloc((void **)&dev_geom, length * nParam * sizeof(float));
+  CUDA_CHECK_ERROR;
+  cudaMemcpy(dev_geom, geometry, length * nParam * sizeof(float), cudaMemcpyHostToDevice);
+  CUDA_CHECK_ERROR;
+
+  // create texture object
+  cudaResourceDesc resDesc = {};
+  resDesc.resType = cudaResourceTypeLinear;
+  resDesc.res.linear.devPtr = dev_geom;
+  resDesc.res.linear.desc.f = cudaChannelFormatKindFloat;
+  resDesc.res.linear.desc.x = 32; // bits per channel
+  resDesc.res.linear.sizeInBytes = length * nParam * sizeof(float);
+
+  cudaTextureDesc texDesc = {};
+  texDesc.readMode = cudaReadModeElementType;
+
+  cudaCreateTextureObject(&tex_geom, &resDesc, &texDesc, NULL);
+  CUDA_CHECK_ERROR;
 }

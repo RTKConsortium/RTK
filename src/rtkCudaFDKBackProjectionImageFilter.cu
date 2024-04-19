@@ -39,9 +39,6 @@
  *****************/
 #include <cuda.h>
 
-// T E X T U R E S ////////////////////////////////////////////////////////
-texture<float, cudaTextureType2DLayered> tex_proj;
-
 // Constant memory
 __constant__ float c_matrices[SLAB_SIZE * 12]; // Can process stacks of at most SLAB_SIZE projections
 __constant__ int3 c_projSize;
@@ -53,7 +50,7 @@ __constant__ int3 c_vol_size;
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
 __global__ void
-kernel_fdk_3Dgrid(float * dev_vol_in, float * dev_vol_out)
+kernel_fdk_3Dgrid(float * dev_vol_in, float * dev_vol_out, cudaTextureObject_t tex_proj)
 {
   itk::SizeValueType i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
   itk::SizeValueType j = __umul24(blockIdx.y, blockDim.y) + threadIdx.y;
@@ -81,7 +78,7 @@ kernel_fdk_3Dgrid(float * dev_vol_in, float * dev_vol_out)
     ip.y = ip.y * ip.z;
 
     // Get texture point, clip left to GPU, and accumulate in voxel_data
-    voxel_data += tex2DLayered(tex_proj, ip.x, ip.y, proj) * ip.z * ip.z;
+    voxel_data += tex2DLayered<float>(tex_proj, ip.x, ip.y, proj) * ip.z * ip.z;
   }
 
   // Place it into the volume
@@ -110,33 +107,6 @@ CUDA_reconstruct_conebeam(int     proj_size[3],
   // Copy the projection matrices into constant memory
   cudaMemcpyToSymbol(c_matrices, &(matrices[0]), 12 * sizeof(float) * proj_size[2]);
 
-  // set texture parameters
-  tex_proj.addressMode[0] = cudaAddressModeBorder;
-  tex_proj.addressMode[1] = cudaAddressModeBorder;
-  tex_proj.addressMode[2] = cudaAddressModeBorder;
-  tex_proj.filterMode = cudaFilterModeLinear;
-  tex_proj.normalized = false; // don't access with normalized texture coords
-
-  // Copy projection data to array, bind the array to the texture
-  cudaExtent                   projExtent = make_cudaExtent(proj_size[0], proj_size[1], proj_size[2]);
-  cudaArray *                  array_proj;
-  static cudaChannelFormatDesc channelDesc = cudaCreateChannelDesc<float>();
-  CUDA_CHECK_ERROR;
-
-  // Allocate array for input projections, in order to bind them to
-  // a 2D layered texture
-  cudaMalloc3DArray((cudaArray **)&array_proj, &channelDesc, projExtent, cudaArrayLayered);
-  CUDA_CHECK_ERROR;
-
-  // Copy data to 3D array
-  cudaMemcpy3DParms copyParams = cudaMemcpy3DParms();
-  copyParams.srcPtr = make_cudaPitchedPtr(dev_proj, proj_size[0] * sizeof(float), proj_size[0], proj_size[1]);
-  copyParams.dstArray = (cudaArray *)array_proj;
-  copyParams.extent = projExtent;
-  copyParams.kind = cudaMemcpyDeviceToDevice;
-  cudaMemcpy3D(&copyParams);
-  CUDA_CHECK_ERROR;
-
   // Thread Block Dimensions
   constexpr int tBlock_x = 16;
   constexpr int tBlock_y = 4;
@@ -153,19 +123,15 @@ CUDA_reconstruct_conebeam(int     proj_size[3],
   // Compute block and grid sizes
   dim3 dimGrid = dim3(blocksInX, blocksInY, blocksInZ);
   dim3 dimBlock = dim3(tBlock_x, tBlock_y, tBlock_z);
-  CUDA_CHECK_ERROR;
 
-  // Bind the array of projections to a 2D layered texture
-  cudaBindTextureToArray(tex_proj, (cudaArray *)array_proj, channelDesc);
-  CUDA_CHECK_ERROR;
-
-  kernel_fdk_3Dgrid<<<dimGrid, dimBlock>>>(dev_vol_in, dev_vol_out);
-
-  // Unbind the image and projection matrix textures
-  cudaUnbindTexture(tex_proj);
-  CUDA_CHECK_ERROR;
+  cudaArray *         array_proj;
+  cudaTextureObject_t tex_proj;
+  prepareScalarTextureObject(proj_size, dev_proj, array_proj, tex_proj, true);
+  kernel_fdk_3Dgrid<<<dimGrid, dimBlock>>>(dev_vol_in, dev_vol_out, tex_proj);
 
   // Cleanup
   cudaFreeArray((cudaArray *)array_proj);
+  CUDA_CHECK_ERROR;
+  cudaDestroyTextureObject(tex_proj);
   CUDA_CHECK_ERROR;
 }

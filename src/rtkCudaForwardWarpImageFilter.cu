@@ -39,15 +39,11 @@
  *****************/
 #include <cuda.h>
 
-// T E X T U R E S ////////////////////////////////////////////////////////
-texture<float, 1, cudaReadModeElementType> tex_IndexInputToPPInputMatrix;
-texture<float, 1, cudaReadModeElementType> tex_IndexInputToIndexDVFMatrix;
-texture<float, 1, cudaReadModeElementType> tex_PPOutputToIndexOutputMatrix;
-
-texture<float, 3, cudaReadModeElementType> tex_xdvf;
-texture<float, 3, cudaReadModeElementType> tex_ydvf;
-texture<float, 3, cudaReadModeElementType> tex_zdvf;
-///////////////////////////////////////////////////////////////////////////
+// CONSTANTS //////////////////////////////////////////////////////////////
+__constant__ float c_IndexInputToPPInputMatrix[12];
+__constant__ float c_IndexInputToIndexDVFMatrix[12];
+__constant__ float c_PPOutputToIndexOutputMatrix[12];
+////////////////////////////////////////////////////////////////////////////
 
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 // K E R N E L S -_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
@@ -129,7 +125,14 @@ normalize_3Dgrid(float * dev_vol_out, float * dev_accumulate_weights, int3 out_d
 }
 
 __global__ void
-linearSplat_3Dgrid(float * dev_vol_in, float * dev_vol_out, float * dev_accumulate_weights, int3 in_dim, int3 out_dim)
+linearSplat_3Dgrid(float *             dev_vol_in,
+                   float *             dev_vol_out,
+                   float *             dev_accumulate_weights,
+                   int3                in_dim,
+                   int3                out_dim,
+                   cudaTextureObject_t tex_xdvf,
+                   cudaTextureObject_t tex_ydvf,
+                   cudaTextureObject_t tex_zdvf)
 {
   unsigned int i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
   unsigned int j = __umul24(blockIdx.y, blockDim.y) + threadIdx.y;
@@ -141,32 +144,21 @@ linearSplat_3Dgrid(float * dev_vol_in, float * dev_vol_out, float * dev_accumula
   }
 
   // Index row major into the volume
+  float3   idx = make_float3(i, j, k);
   long int in_idx = i + (j + k * in_dim.y) * (in_dim.x);
 
   // Matrix multiply to get the index in the DVF texture of the current point in the output volume
-  float3 IndexInDVF;
-  IndexInDVF.x = tex1Dfetch(tex_IndexInputToIndexDVFMatrix, 0) * i + tex1Dfetch(tex_IndexInputToIndexDVFMatrix, 1) * j +
-                 tex1Dfetch(tex_IndexInputToIndexDVFMatrix, 2) * k + tex1Dfetch(tex_IndexInputToIndexDVFMatrix, 3);
-  IndexInDVF.y = tex1Dfetch(tex_IndexInputToIndexDVFMatrix, 4) * i + tex1Dfetch(tex_IndexInputToIndexDVFMatrix, 5) * j +
-                 tex1Dfetch(tex_IndexInputToIndexDVFMatrix, 6) * k + tex1Dfetch(tex_IndexInputToIndexDVFMatrix, 7);
-  IndexInDVF.z = tex1Dfetch(tex_IndexInputToIndexDVFMatrix, 8) * i + tex1Dfetch(tex_IndexInputToIndexDVFMatrix, 9) * j +
-                 tex1Dfetch(tex_IndexInputToIndexDVFMatrix, 10) * k + tex1Dfetch(tex_IndexInputToIndexDVFMatrix, 11);
+  float3 IndexInDVF = matrix_multiply(idx, c_IndexInputToIndexDVFMatrix);
 
   // Get each component of the displacement vector by
   // interpolation in the dvf
   float3 Displacement;
-  Displacement.x = tex3D(tex_xdvf, IndexInDVF.x + 0.5f, IndexInDVF.y + 0.5f, IndexInDVF.z + 0.5f);
-  Displacement.y = tex3D(tex_ydvf, IndexInDVF.x + 0.5f, IndexInDVF.y + 0.5f, IndexInDVF.z + 0.5f);
-  Displacement.z = tex3D(tex_zdvf, IndexInDVF.x + 0.5f, IndexInDVF.y + 0.5f, IndexInDVF.z + 0.5f);
+  Displacement.x = tex3D<float>(tex_xdvf, IndexInDVF.x + 0.5f, IndexInDVF.y + 0.5f, IndexInDVF.z + 0.5f);
+  Displacement.y = tex3D<float>(tex_ydvf, IndexInDVF.x + 0.5f, IndexInDVF.y + 0.5f, IndexInDVF.z + 0.5f);
+  Displacement.z = tex3D<float>(tex_zdvf, IndexInDVF.x + 0.5f, IndexInDVF.y + 0.5f, IndexInDVF.z + 0.5f);
 
   // Matrix multiply to get the physical coordinates of the current point in the input volume
-  float3 PPinInput;
-  PPinInput.x = tex1Dfetch(tex_IndexInputToPPInputMatrix, 0) * i + tex1Dfetch(tex_IndexInputToPPInputMatrix, 1) * j +
-                tex1Dfetch(tex_IndexInputToPPInputMatrix, 2) * k + tex1Dfetch(tex_IndexInputToPPInputMatrix, 3);
-  PPinInput.y = tex1Dfetch(tex_IndexInputToPPInputMatrix, 4) * i + tex1Dfetch(tex_IndexInputToPPInputMatrix, 5) * j +
-                tex1Dfetch(tex_IndexInputToPPInputMatrix, 6) * k + tex1Dfetch(tex_IndexInputToPPInputMatrix, 7);
-  PPinInput.z = tex1Dfetch(tex_IndexInputToPPInputMatrix, 8) * i + tex1Dfetch(tex_IndexInputToPPInputMatrix, 9) * j +
-                tex1Dfetch(tex_IndexInputToPPInputMatrix, 10) * k + tex1Dfetch(tex_IndexInputToPPInputMatrix, 11);
+  float3 PPinInput = matrix_multiply(idx, c_IndexInputToPPInputMatrix);
 
   // Get the index corresponding to the current physical point in output displaced by the displacement vector
   float3 PPDisplaced;
@@ -174,19 +166,7 @@ linearSplat_3Dgrid(float * dev_vol_in, float * dev_vol_out, float * dev_accumula
   PPDisplaced.y = PPinInput.y + Displacement.y;
   PPDisplaced.z = PPinInput.z + Displacement.z;
 
-  float3 IndexInOutput;
-  IndexInOutput.x = tex1Dfetch(tex_PPOutputToIndexOutputMatrix, 0) * PPDisplaced.x +
-                    tex1Dfetch(tex_PPOutputToIndexOutputMatrix, 1) * PPDisplaced.y +
-                    tex1Dfetch(tex_PPOutputToIndexOutputMatrix, 2) * PPDisplaced.z +
-                    tex1Dfetch(tex_PPOutputToIndexOutputMatrix, 3);
-  IndexInOutput.y = tex1Dfetch(tex_PPOutputToIndexOutputMatrix, 4) * PPDisplaced.x +
-                    tex1Dfetch(tex_PPOutputToIndexOutputMatrix, 5) * PPDisplaced.y +
-                    tex1Dfetch(tex_PPOutputToIndexOutputMatrix, 6) * PPDisplaced.z +
-                    tex1Dfetch(tex_PPOutputToIndexOutputMatrix, 7);
-  IndexInOutput.z = tex1Dfetch(tex_PPOutputToIndexOutputMatrix, 8) * PPDisplaced.x +
-                    tex1Dfetch(tex_PPOutputToIndexOutputMatrix, 9) * PPDisplaced.y +
-                    tex1Dfetch(tex_PPOutputToIndexOutputMatrix, 10) * PPDisplaced.z +
-                    tex1Dfetch(tex_PPOutputToIndexOutputMatrix, 11);
+  float3 IndexInOutput = matrix_multiply(PPDisplaced, c_PPOutputToIndexOutputMatrix);
 
   // Compute the splat weights
   int3 BaseIndexInOutput;
@@ -303,11 +283,14 @@ linearSplat_3Dgrid(float * dev_vol_in, float * dev_vol_out, float * dev_accumula
 }
 
 __global__ void
-nearestNeighborSplat_3Dgrid(float * dev_vol_in,
-                            float * dev_vol_out,
-                            float * dev_accumulate_weights,
-                            int3    in_dim,
-                            int3    out_dim)
+nearestNeighborSplat_3Dgrid(float *             dev_vol_in,
+                            float *             dev_vol_out,
+                            float *             dev_accumulate_weights,
+                            int3                in_dim,
+                            int3                out_dim,
+                            cudaTextureObject_t tex_xdvf,
+                            cudaTextureObject_t tex_ydvf,
+                            cudaTextureObject_t tex_zdvf)
 {
   unsigned int i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
   unsigned int j = __umul24(blockIdx.y, blockDim.y) + threadIdx.y;
@@ -322,29 +305,18 @@ nearestNeighborSplat_3Dgrid(float * dev_vol_in,
   long int in_idx = i + (j + k * in_dim.y) * (in_dim.x);
 
   // Matrix multiply to get the index in the DVF texture of the current point in the output volume
-  float3 IndexInDVF;
-  IndexInDVF.x = tex1Dfetch(tex_IndexInputToIndexDVFMatrix, 0) * i + tex1Dfetch(tex_IndexInputToIndexDVFMatrix, 1) * j +
-                 tex1Dfetch(tex_IndexInputToIndexDVFMatrix, 2) * k + tex1Dfetch(tex_IndexInputToIndexDVFMatrix, 3);
-  IndexInDVF.y = tex1Dfetch(tex_IndexInputToIndexDVFMatrix, 4) * i + tex1Dfetch(tex_IndexInputToIndexDVFMatrix, 5) * j +
-                 tex1Dfetch(tex_IndexInputToIndexDVFMatrix, 6) * k + tex1Dfetch(tex_IndexInputToIndexDVFMatrix, 7);
-  IndexInDVF.z = tex1Dfetch(tex_IndexInputToIndexDVFMatrix, 8) * i + tex1Dfetch(tex_IndexInputToIndexDVFMatrix, 9) * j +
-                 tex1Dfetch(tex_IndexInputToIndexDVFMatrix, 10) * k + tex1Dfetch(tex_IndexInputToIndexDVFMatrix, 11);
+  float3 idx = make_float3(i, j, k);
+  float3 IndexInDVF = matrix_multiply(idx, c_IndexInputToIndexDVFMatrix);
 
   // Get each component of the displacement vector by
   // interpolation in the dvf
   float3 Displacement;
-  Displacement.x = tex3D(tex_xdvf, IndexInDVF.x + 0.5f, IndexInDVF.y + 0.5f, IndexInDVF.z + 0.5f);
-  Displacement.y = tex3D(tex_ydvf, IndexInDVF.x + 0.5f, IndexInDVF.y + 0.5f, IndexInDVF.z + 0.5f);
-  Displacement.z = tex3D(tex_zdvf, IndexInDVF.x + 0.5f, IndexInDVF.y + 0.5f, IndexInDVF.z + 0.5f);
+  Displacement.x = tex3D<float>(tex_xdvf, IndexInDVF.x + 0.5f, IndexInDVF.y + 0.5f, IndexInDVF.z + 0.5f);
+  Displacement.y = tex3D<float>(tex_ydvf, IndexInDVF.x + 0.5f, IndexInDVF.y + 0.5f, IndexInDVF.z + 0.5f);
+  Displacement.z = tex3D<float>(tex_zdvf, IndexInDVF.x + 0.5f, IndexInDVF.y + 0.5f, IndexInDVF.z + 0.5f);
 
   // Matrix multiply to get the physical coordinates of the current point in the input volume
-  float3 PPinInput;
-  PPinInput.x = tex1Dfetch(tex_IndexInputToPPInputMatrix, 0) * i + tex1Dfetch(tex_IndexInputToPPInputMatrix, 1) * j +
-                tex1Dfetch(tex_IndexInputToPPInputMatrix, 2) * k + tex1Dfetch(tex_IndexInputToPPInputMatrix, 3);
-  PPinInput.y = tex1Dfetch(tex_IndexInputToPPInputMatrix, 4) * i + tex1Dfetch(tex_IndexInputToPPInputMatrix, 5) * j +
-                tex1Dfetch(tex_IndexInputToPPInputMatrix, 6) * k + tex1Dfetch(tex_IndexInputToPPInputMatrix, 7);
-  PPinInput.z = tex1Dfetch(tex_IndexInputToPPInputMatrix, 8) * i + tex1Dfetch(tex_IndexInputToPPInputMatrix, 9) * j +
-                tex1Dfetch(tex_IndexInputToPPInputMatrix, 10) * k + tex1Dfetch(tex_IndexInputToPPInputMatrix, 11);
+  float3 PPinInput = matrix_multiply(idx, c_IndexInputToPPInputMatrix);
 
   // Get the index corresponding to the current physical point in output displaced by the displacement vector
   float3 PPDisplaced;
@@ -352,19 +324,10 @@ nearestNeighborSplat_3Dgrid(float * dev_vol_in,
   PPDisplaced.y = PPinInput.y + Displacement.y;
   PPDisplaced.z = PPinInput.z + Displacement.z;
 
-  float3 IndexInOutput;
-  IndexInOutput.x = floor(tex1Dfetch(tex_PPOutputToIndexOutputMatrix, 0) * PPDisplaced.x +
-                          tex1Dfetch(tex_PPOutputToIndexOutputMatrix, 1) * PPDisplaced.y +
-                          tex1Dfetch(tex_PPOutputToIndexOutputMatrix, 2) * PPDisplaced.z +
-                          tex1Dfetch(tex_PPOutputToIndexOutputMatrix, 3) + 0.5);
-  IndexInOutput.y = floor(tex1Dfetch(tex_PPOutputToIndexOutputMatrix, 4) * PPDisplaced.x +
-                          tex1Dfetch(tex_PPOutputToIndexOutputMatrix, 5) * PPDisplaced.y +
-                          tex1Dfetch(tex_PPOutputToIndexOutputMatrix, 6) * PPDisplaced.z +
-                          tex1Dfetch(tex_PPOutputToIndexOutputMatrix, 7) + 0.5);
-  IndexInOutput.z = floor(tex1Dfetch(tex_PPOutputToIndexOutputMatrix, 8) * PPDisplaced.x +
-                          tex1Dfetch(tex_PPOutputToIndexOutputMatrix, 9) * PPDisplaced.y +
-                          tex1Dfetch(tex_PPOutputToIndexOutputMatrix, 10) * PPDisplaced.z +
-                          tex1Dfetch(tex_PPOutputToIndexOutputMatrix, 11) + 0.5);
+  float3 IndexInOutput = matrix_multiply(PPDisplaced, c_PPOutputToIndexOutputMatrix);
+  IndexInOutput.x = floor(IndexInOutput.x + 0.5);
+  IndexInOutput.y = floor(IndexInOutput.y + 0.5);
+  IndexInOutput.z = floor(IndexInOutput.z + 0.5);
 
   bool isInVolume = (IndexInOutput.x >= 0) && (IndexInOutput.x < out_dim.x) && (IndexInOutput.y >= 0) &&
                     (IndexInOutput.y < out_dim.y) && (IndexInOutput.z >= 0) && (IndexInOutput.z < out_dim.z);
@@ -400,101 +363,29 @@ CUDA_ForwardWarp(int     input_vol_dim[3],
                  float * dev_output_vol,
                  bool    isLinear)
 {
-
   // Prepare channel description for arrays
   static cudaChannelFormatDesc channelDesc = cudaCreateChannelDesc<float>();
 
   ///////////////////////////////////
-  // For each component of the dvf, perform a strided copy (pick every third
-  // float from dev_input_dvf) into a 3D array, and bind the array to a 3D texture
-
   // Extent stuff, will be used for each component extraction
-  cudaExtent dvfExtent = make_cudaExtent(input_dvf_dim[0], input_dvf_dim[1], input_dvf_dim[2]);
-
-  // Set texture parameters
-  tex_xdvf.addressMode[0] = cudaAddressModeBorder;
-  tex_xdvf.addressMode[1] = cudaAddressModeBorder;
-  tex_xdvf.addressMode[2] = cudaAddressModeBorder;
-  tex_xdvf.filterMode = cudaFilterModeLinear;
-  tex_xdvf.normalized = false; // don't access with normalized texture coords
-
-  tex_ydvf.addressMode[0] = cudaAddressModeBorder;
-  tex_ydvf.addressMode[1] = cudaAddressModeBorder;
-  tex_ydvf.addressMode[2] = cudaAddressModeBorder;
-  tex_ydvf.filterMode = cudaFilterModeLinear;
-  tex_ydvf.normalized = false;
-
-  tex_zdvf.addressMode[0] = cudaAddressModeBorder;
-  tex_zdvf.addressMode[1] = cudaAddressModeBorder;
-  tex_zdvf.addressMode[2] = cudaAddressModeBorder;
-  tex_zdvf.filterMode = cudaFilterModeLinear;
-  tex_zdvf.normalized = false;
-
-  // Allocate the arrays
-  cudaArray * array_xdvf;
-  cudaArray * array_ydvf;
-  cudaArray * array_zdvf;
-  cudaMalloc3DArray((cudaArray **)&array_xdvf, &channelDesc, dvfExtent);
-  cudaMalloc3DArray((cudaArray **)&array_ydvf, &channelDesc, dvfExtent);
-  cudaMalloc3DArray((cudaArray **)&array_zdvf, &channelDesc, dvfExtent);
-  CUDA_CHECK_ERROR;
-
-  // Copy image data to arrays. For a nice explanation on make_cudaPitchedPtr, checkout
-  // https://stackoverflow.com/questions/16119943/how-and-when-should-i-use-pitched-pointer-with-the-cuda-api
-  cudaMemcpy3DParms xCopyParams = cudaMemcpy3DParms();
-  xCopyParams.srcPtr =
-    make_cudaPitchedPtr(dev_input_xdvf, input_dvf_dim[0] * sizeof(float), input_dvf_dim[0], input_dvf_dim[1]);
-  xCopyParams.dstArray = (cudaArray *)array_xdvf;
-  xCopyParams.extent = dvfExtent;
-  xCopyParams.kind = cudaMemcpyDeviceToDevice;
-  cudaMemcpy3D(&xCopyParams);
-  CUDA_CHECK_ERROR;
-
-  cudaMemcpy3DParms yCopyParams = cudaMemcpy3DParms();
-  yCopyParams.srcPtr =
-    make_cudaPitchedPtr(dev_input_ydvf, input_dvf_dim[0] * sizeof(float), input_dvf_dim[0], input_dvf_dim[1]);
-  yCopyParams.dstArray = (cudaArray *)array_ydvf;
-  yCopyParams.extent = dvfExtent;
-  yCopyParams.kind = cudaMemcpyDeviceToDevice;
-  cudaMemcpy3D(&yCopyParams);
-  CUDA_CHECK_ERROR;
-
-  cudaMemcpy3DParms zCopyParams = cudaMemcpy3DParms();
-  zCopyParams.srcPtr =
-    make_cudaPitchedPtr(dev_input_zdvf, input_dvf_dim[0] * sizeof(float), input_dvf_dim[0], input_dvf_dim[1]);
-  zCopyParams.dstArray = (cudaArray *)array_zdvf;
-  zCopyParams.extent = dvfExtent;
-  zCopyParams.kind = cudaMemcpyDeviceToDevice;
-  cudaMemcpy3D(&zCopyParams);
-  CUDA_CHECK_ERROR;
-
-  // Bind 3D arrays to 3D textures
-  cudaBindTextureToArray(tex_xdvf, (cudaArray *)array_xdvf, channelDesc);
-  cudaBindTextureToArray(tex_ydvf, (cudaArray *)array_ydvf, channelDesc);
-  cudaBindTextureToArray(tex_zdvf, (cudaArray *)array_zdvf, channelDesc);
-  CUDA_CHECK_ERROR;
+  cudaArray *         array_xdvf, *array_ydvf, *array_zdvf;
+  cudaTextureObject_t tex_xdvf, tex_ydvf, tex_zdvf;
+  prepareScalarTextureObject(input_dvf_dim, dev_input_xdvf, array_xdvf, tex_xdvf, false);
+  prepareScalarTextureObject(input_dvf_dim, dev_input_ydvf, array_ydvf, tex_ydvf, false);
+  prepareScalarTextureObject(input_dvf_dim, dev_input_zdvf, array_zdvf, tex_zdvf, false);
 
   ///////////////////////////////////////
-  // Copy matrices, bind them to textures
-
-  float * dev_IndexInputToPPInput;
-  cudaMalloc((void **)&dev_IndexInputToPPInput, 12 * sizeof(float));
-  cudaMemcpy(dev_IndexInputToPPInput, IndexInputToPPInputMatrix, 12 * sizeof(float), cudaMemcpyHostToDevice);
-  cudaBindTexture(0, tex_IndexInputToPPInputMatrix, dev_IndexInputToPPInput, 12 * sizeof(float));
-
-  float * dev_IndexInputToIndexDVF;
-  cudaMalloc((void **)&dev_IndexInputToIndexDVF, 12 * sizeof(float));
-  cudaMemcpy(dev_IndexInputToIndexDVF, IndexInputToIndexDVFMatrix, 12 * sizeof(float), cudaMemcpyHostToDevice);
-  cudaBindTexture(0, tex_IndexInputToIndexDVFMatrix, dev_IndexInputToIndexDVF, 12 * sizeof(float));
-
-  float * dev_PPOutputToIndexOutput;
-  cudaMalloc((void **)&dev_PPOutputToIndexOutput, 12 * sizeof(float));
-  cudaMemcpy(dev_PPOutputToIndexOutput, PPOutputToIndexOutputMatrix, 12 * sizeof(float), cudaMemcpyHostToDevice);
-  cudaBindTexture(0, tex_PPOutputToIndexOutputMatrix, dev_PPOutputToIndexOutput, 12 * sizeof(float));
+  // Copy matrices into constant memory
+  cudaMemcpyToSymbol(
+    c_IndexInputToPPInputMatrix, IndexInputToPPInputMatrix, 12 * sizeof(float), 0, cudaMemcpyHostToDevice);
+  cudaMemcpyToSymbol(
+    c_IndexInputToIndexDVFMatrix, IndexInputToIndexDVFMatrix, 12 * sizeof(float), 0, cudaMemcpyHostToDevice);
+  cudaMemcpyToSymbol(
+    c_PPOutputToIndexOutputMatrix, PPOutputToIndexOutputMatrix, 12 * sizeof(float), 0, cudaMemcpyHostToDevice);
+  CUDA_CHECK_ERROR;
 
   ///////////////////////////////////////
   /// Initialize the output
-
   cudaMemset((void *)dev_output_vol, 0, sizeof(float) * output_vol_dim[0] * output_vol_dim[1] * output_vol_dim[2]);
 
   //////////////////////////////////////
@@ -506,12 +397,6 @@ CUDA_ForwardWarp(int     input_vol_dim[3],
              sizeof(float) * output_vol_dim[0] * output_vol_dim[1] * output_vol_dim[2]);
   cudaMemset(
     (void *)dev_accumulate_weights, 0, sizeof(float) * output_vol_dim[0] * output_vol_dim[1] * output_vol_dim[2]);
-
-  //////////////////////////////////////
-  /// Run
-
-  int device;
-  cudaGetDevice(&device);
 
   // Thread Block Dimensions
   constexpr int tBlock_x = 16;
@@ -533,14 +418,20 @@ CUDA_ForwardWarp(int     input_vol_dim[3],
                                               dev_output_vol,
                                               dev_accumulate_weights,
                                               make_int3(input_vol_dim[0], input_vol_dim[1], input_vol_dim[2]),
-                                              make_int3(output_vol_dim[0], output_vol_dim[1], output_vol_dim[2]));
+                                              make_int3(output_vol_dim[0], output_vol_dim[1], output_vol_dim[2]),
+                                              tex_xdvf,
+                                              tex_ydvf,
+                                              tex_zdvf);
   else
     nearestNeighborSplat_3Dgrid<<<dimGrid, dimBlock>>>(
       dev_input_vol,
       dev_output_vol,
       dev_accumulate_weights,
       make_int3(input_vol_dim[0], input_vol_dim[1], input_vol_dim[2]),
-      make_int3(output_vol_dim[0], output_vol_dim[1], output_vol_dim[2]));
+      make_int3(output_vol_dim[0], output_vol_dim[1], output_vol_dim[2]),
+      tex_xdvf,
+      tex_ydvf,
+      tex_zdvf);
 
   CUDA_CHECK_ERROR;
 
@@ -552,25 +443,19 @@ CUDA_ForwardWarp(int     input_vol_dim[3],
     dev_output_vol, dev_accumulate_weights, make_int3(output_vol_dim[0], output_vol_dim[1], output_vol_dim[2]));
   CUDA_CHECK_ERROR;
 
-  // Unbind the image and projection matrix textures
-  cudaUnbindTexture(tex_xdvf);
-  cudaUnbindTexture(tex_ydvf);
-  cudaUnbindTexture(tex_zdvf);
-  CUDA_CHECK_ERROR;
-  cudaUnbindTexture(tex_IndexInputToPPInputMatrix);
-  cudaUnbindTexture(tex_PPOutputToIndexOutputMatrix);
-  cudaUnbindTexture(tex_IndexInputToIndexDVFMatrix);
-  CUDA_CHECK_ERROR;
-
   // Cleanup
-  cudaFreeArray((cudaArray *)array_xdvf);
-  cudaFreeArray((cudaArray *)array_ydvf);
-  cudaFreeArray((cudaArray *)array_zdvf);
+  cudaFreeArray(array_xdvf);
+  CUDA_CHECK_ERROR;
+  cudaFreeArray(array_ydvf);
+  CUDA_CHECK_ERROR;
+  cudaFreeArray(array_zdvf);
   CUDA_CHECK_ERROR;
   cudaFree(dev_accumulate_weights);
   CUDA_CHECK_ERROR;
-  cudaFree(dev_IndexInputToPPInput);
-  cudaFree(dev_PPOutputToIndexOutput);
-  cudaFree(dev_IndexInputToIndexDVF);
+  cudaDestroyTextureObject(tex_xdvf);
+  CUDA_CHECK_ERROR;
+  cudaDestroyTextureObject(tex_ydvf);
+  CUDA_CHECK_ERROR;
+  cudaDestroyTextureObject(tex_zdvf);
   CUDA_CHECK_ERROR;
 }
