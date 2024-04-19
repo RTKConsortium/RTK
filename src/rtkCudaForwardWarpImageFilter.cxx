@@ -144,9 +144,6 @@ CudaForwardWarpImageFilter ::GPUGenerateData()
   xCompDVF = nullptr;
   yCompDVF = nullptr;
   zCompDVF = nullptr;
-
-  // The filter is inPlace
-  //  pinVol = poutVol;
 }
 
 } // end namespace rtk

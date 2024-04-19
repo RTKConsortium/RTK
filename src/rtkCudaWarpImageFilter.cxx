@@ -109,9 +109,6 @@ CudaWarpImageFilter ::GPUGenerateData()
             poutVol,
             pDVF,
             isLinear);
-
-  // The filter is inPlace
-  pinVol = poutVol;
 }
 
 } // end namespace rtk
