@@ -27,20 +27,29 @@
 // The Set macro is redefined to clear the current FFT kernel when a parameter
 // is modified.
 // clang-format off
+#ifndef ITK_GCC_PRAGMA_PUSH
+#define ITK_GCC_PRAGMA_PUSH CLANG_PRAGMA_PUSH
+#endif
+#ifndef ITK_GCC_SUPPRESS_Wfloat_equal
+#define ITK_GCC_SUPPRESS_Wfloat_equal CLANG_SUPPRESS_Wfloat_equal
+#endif
+#ifndef ITK_GCC_PRAGMA_POP
+#define ITK_GCC_PRAGMA_POP CLANG_PRAGMA_POP
+#endif
 #undef itkSetMacro
 #define itkSetMacro(name, type)                     \
-  virtual void Set##name(type _arg)           \
+  virtual void Set##name(type _arg)                 \
   {                                                 \
     itkDebugMacro("setting " #name " to " << _arg); \
-    CLANG_PRAGMA_PUSH                               \
-    CLANG_SUPPRESS_Wfloat_equal                     \
+    ITK_GCC_PRAGMA_PUSH                                 \
+    ITK_GCC_SUPPRESS_Wfloat_equal                       \
     if (this->m_##name != _arg)                     \
     {                                               \
-      this->m_##name = std::move(_arg);                        \
+      this->m_##name = std::move(_arg);             \
       this->Modified();                             \
       this->m_KernelFFT = nullptr;                  \
     }                                               \
-    CLANG_PRAGMA_POP                                \
+    ITK_GCC_PRAGMA_POP                                  \
   }                                                 \
   ITK_MACROEND_NOOP_STATEMENT
 // clang-format on
@@ -172,17 +181,17 @@ private:
 // clang-format off
 #undef itkSetMacro
 #define itkSetMacro(name, type)                     \
-  virtual void Set##name(type _arg)           \
+  virtual void Set##name(type _arg)                 \
   {                                                 \
     itkDebugMacro("setting " #name " to " << _arg); \
-    CLANG_PRAGMA_PUSH                               \
-    CLANG_SUPPRESS_Wfloat_equal                     \
+    ITK_GCC_PRAGMA_PUSH                                 \
+    ITK_GCC_SUPPRESS_Wfloat_equal                       \
     if (this->m_##name != _arg)                     \
     {                                               \
-      this->m_##name = std::move(_arg);                        \
+      this->m_##name = std::move(_arg);             \
       this->Modified();                             \
     }                                               \
-    CLANG_PRAGMA_POP                                \
+    ITK_GCC_PRAGMA_POP                                  \
   }                                                 \
   ITK_MACROEND_NOOP_STATEMENT
 // clang-format on
