@@ -1,0 +1,12 @@
+package "rtkpilines"
+purpose "Compute the PI-lines intervalle of a 3D volume. (see Noo et al., PMB, 2003). The output is a 3D 2D-vector image"
+
+option "verbose"    v "Verbose execution"                                           flag                         off
+option "config"     - "Config file"                                                 string                       no
+option "geometry"   g "XML geometry file name"                                      string                       yes
+option "input"      i "Input file name"                                             string                       yes
+option "output1"    o "Output file name"                                            string                       yes
+option "output2"    p "Output file name"                                            string                       yes
+option "filetype"   - "Type of output file. 1 : one single vector image. 2 : 2 sep files"    string              no   default="2"
+option "hardware"   - "Hardware used for computation"                               values="cpu","cuda"          no   default="cpu"
+
