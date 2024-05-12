@@ -94,7 +94,7 @@ CUDA_gain_correction(int              proj_idx_in[3],      // overlapping input 
                      unsigned short * dev_dark_in,
                      float *          dev_gain_in,
                      float *          h_powerlut,
-                     int              lut_size,
+                     size_t           lut_size,
                      float *          coefficients)
 {
   // Thread Block Dimensions

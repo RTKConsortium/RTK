@@ -33,7 +33,7 @@ CUDA_laplacian(int size[3], float spacing[3], float * dev_in, float * dev_out)
   float3 dev_Spacing = make_float3(spacing[0], spacing[1], spacing[2]);
 
   // Reset output volume
-  long int memorySizeOutput = size[0] * size[1] * size[2] * sizeof(float);
+  size_t memorySizeOutput = sizeof(float) * size[0] * size[1] * size[2];
   cudaMemset((void *)dev_out, 0, memorySizeOutput);
 
   // Initialize volumes to store the gradient components

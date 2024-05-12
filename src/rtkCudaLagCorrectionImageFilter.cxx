@@ -71,7 +71,7 @@ CudaLagCorrectionImageFilter ::GPUGenerateData()
 
   float coefficients[9] = { m_B[0], m_B[1], m_B[2], m_B[3], m_ExpmA[0], m_ExpmA[1], m_ExpmA[2], m_ExpmA[3], m_SumB };
 
-  int S_size = sizeof(float) * m_S.size();
+  size_t S_size = sizeof(float) * m_S.size();
   CUDA_lag_correction(proj_idx_in,
                       proj_size_in,
                       proj_size_in_buf,

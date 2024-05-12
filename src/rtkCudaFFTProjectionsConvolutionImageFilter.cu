@@ -78,7 +78,7 @@ CUDA_fft_convolution(const int3 &   inputDimension,
   int3           fftDimension = inputDimension;
   fftDimension.x = inputDimension.x / 2 + 1;
 
-  int memorySizeProjectionFFT = fftDimension.x * fftDimension.y * fftDimension.z * sizeof(cufftComplex);
+  size_t memorySizeProjectionFFT = sizeof(cufftComplex) * fftDimension.x * fftDimension.y * fftDimension.z;
   cudaMalloc((void **)&deviceProjectionFFT, memorySizeProjectionFFT);
   CUDA_CHECK_ERROR;
 

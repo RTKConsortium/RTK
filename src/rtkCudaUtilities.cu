@@ -105,7 +105,7 @@ prepareScalarTextureObject(int                          size[3],
 
   // Allocate an intermediate memory space to extract the components of the input volume
   float * singleComponent;
-  int     numel = size[0] * size[1] * size[2];
+  size_t  numel = size[0] * size[1] * size[2];
   cudaMalloc(&singleComponent, numel * sizeof(float));
   CUDA_CHECK_ERROR;
 
@@ -167,7 +167,7 @@ prepareVectorTextureObject(int                                size[3],
 
   // Allocate an intermediate memory space to extract the components of the input volume
   float * singleComponent;
-  int     numel = size[0] * size[1] * size[2];
+  size_t  numel = size[0] * size[1] * size[2];
   cudaMalloc(&singleComponent, numel * sizeof(float));
   CUDA_CHECK_ERROR;
   float one = 1.0;
@@ -182,7 +182,7 @@ prepareVectorTextureObject(int                                size[3],
 
     // Fill it with the current component
     const float * pComponent = dev_ptr + component;
-    cublasSaxpy(handle, numel, &one, pComponent, nComponents, singleComponent, 1);
+    cublasSaxpy(handle, (int)numel, &one, pComponent, nComponents, singleComponent, 1);
 
     // Allocate the cudaArray. Projections use layered arrays, volumes use default 3D arrays
     if (isProjections)
@@ -222,9 +222,9 @@ prepareGeometryTextureObject(int                   length,
                              const unsigned int    nParam)
 {
   // copy geometry matrix to device, bind the matrix to the texture
-  cudaMalloc((void **)&dev_geom, length * nParam * sizeof(float));
+  cudaMalloc((void **)&dev_geom, sizeof(float) * length * nParam);
   CUDA_CHECK_ERROR;
-  cudaMemcpy(dev_geom, geometry, length * nParam * sizeof(float), cudaMemcpyHostToDevice);
+  cudaMemcpy(dev_geom, geometry, sizeof(float) * length * nParam, cudaMemcpyHostToDevice);
   CUDA_CHECK_ERROR;
 
   // create texture object
