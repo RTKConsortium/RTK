@@ -57,11 +57,19 @@ CUDA_linear_interpolate_along_fourth_dimension(unsigned int inputSize[4],
 
   // Add it weightInf times the frameInf to the output
   float * pinf = input + frameInf * numel;
-  cublasSaxpy(handle, numel, &wInf, pinf, 1, output, 1);
+#if CUDA_VERSION < 12000
+  cublasSaxpy(handle, (int)numel, &wInf, pinf, 1, output, 1);
+#else
+  cublasSaxpy_64(handle, numel, &wInf, pinf, 1, output, 1);
+#endif
 
   // Add it weightSup times the frameSup to the output
   float * psup = input + frameSup * numel;
-  cublasSaxpy(handle, numel, &wSup, psup, 1, output, 1);
+#if CUDA_VERSION < 12000
+  cublasSaxpy(handle, (int)numel, &wSup, psup, 1, output, 1);
+#else
+  cublasSaxpy_64(handle, numel, &wSup, psup, 1, output, 1);
+#endif
 
   // Destroy Cublas context
   cublasDestroy(handle);
