@@ -182,7 +182,11 @@ prepareVectorTextureObject(int                                size[3],
 
     // Fill it with the current component
     const float * pComponent = dev_ptr + component;
+#if CUDA_VERSION < 12000
     cublasSaxpy(handle, (int)numel, &one, pComponent, nComponents, singleComponent, 1);
+#else
+    cublasSaxpy_64(handle, numel, &one, pComponent, nComponents, singleComponent, 1);
+#endif
 
     // Allocate the cudaArray. Projections use layered arrays, volumes use default 3D arrays
     if (isProjections)

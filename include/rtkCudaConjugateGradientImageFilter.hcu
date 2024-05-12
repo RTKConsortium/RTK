@@ -22,20 +22,20 @@
 #include "RTKExport.h"
 
 void RTK_EXPORT
-     CUDA_copy(long int numberOfElements, float * in, float * out);
+     CUDA_copy(size_t numberOfElements, float * in, float * out);
 
 void RTK_EXPORT
-     CUDA_copy(long int numberOfElements, double * in, double * out);
+     CUDA_copy(size_t numberOfElements, double * in, double * out);
 
 void RTK_EXPORT
-     CUDA_subtract(long int numberOfElements, float * out, float * toBeSubtracted);
+     CUDA_subtract(size_t numberOfElements, float * out, float * toBeSubtracted);
 
 void RTK_EXPORT
-     CUDA_subtract(long int numberOfElements, double * out, double * toBeSubtracted);
+     CUDA_subtract(size_t numberOfElements, double * out, double * toBeSubtracted);
 
 void RTK_EXPORT
-     CUDA_conjugate_gradient(long int numberOfElements, float * Xk, float * Rk, float * Pk, float * APk);
+     CUDA_conjugate_gradient(size_t numberOfElements, float * Xk, float * Rk, float * Pk, float * APk);
 
 void RTK_EXPORT
-     CUDA_conjugate_gradient(long int numberOfElements, double * Xk, double * Rk, double * Pk, double * APk);
+     CUDA_conjugate_gradient(size_t numberOfElements, double * Xk, double * Rk, double * Pk, double * APk);
 #endif

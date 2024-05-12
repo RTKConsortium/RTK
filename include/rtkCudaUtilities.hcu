@@ -26,7 +26,6 @@
 #include <itkMacro.h>
 #undef ITK_STATIC
 #include <cuda.h>
-#include <cublas_v2.h>
 
 #define CUDA_CHECK_ERROR                                                                                               \
   {                                                                                                                    \

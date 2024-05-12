@@ -34,7 +34,7 @@ CUDA_interpolation(const int4 & inputSize, float * input, float * output, int pr
   cublasCreate(&handle);
 
   // CUDA device pointers
-  int    nVoxelsOutput = inputSize.x * inputSize.y * inputSize.z;
+  size_t nVoxelsOutput = inputSize.x * inputSize.y * inputSize.z;
   size_t memorySizeOutput = nVoxelsOutput * sizeof(float);
 
   // Reset output volume
@@ -49,7 +49,11 @@ CUDA_interpolation(const int4 & inputSize, float * input, float * output, int pr
       float * p = input + phase * nVoxelsOutput;
 
       // Add "weight" times the "phase"-th volume in the input to the output
-      cublasSaxpy(handle, nVoxelsOutput, &weight, p, 1, output, 1);
+#if CUDA_VERSION < 12000
+      cublasSaxpy(handle, (int)nVoxelsOutput, &weight, p, 1, output, 1);
+#else
+      cublasSaxpy_64(handle, nVoxelsOutput, &weight, p, 1, output, 1);
+#endif
     }
   }
 

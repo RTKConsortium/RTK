@@ -33,7 +33,7 @@ CUDA_splat(const int4 & outputSize, float * input, float * output, int projectio
   cublasHandle_t handle;
   cublasCreate(&handle);
 
-  int numel = outputSize.x * outputSize.y * outputSize.z;
+  size_t numel = outputSize.x * outputSize.y * outputSize.z;
 
   for (int phase = 0; phase < outputSize.w; phase++)
   {
@@ -44,7 +44,11 @@ CUDA_splat(const int4 & outputSize, float * input, float * output, int projectio
       float * p = output + phase * numel;
 
       // Add "weight" times the input to the "phase"-th volume in the output
-      cublasSaxpy(handle, numel, &weight, input, 1, p, 1);
+#if CUDA_VERSION < 12000
+      cublasSaxpy(handle, (int)numel, &weight, input, 1, p, 1);
+#else
+      cublasSaxpy_64(handle, numel, &weight, input, 1, p, 1);
+#endif
     }
   }
 
