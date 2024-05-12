@@ -168,8 +168,11 @@ prepareVectorTextureObject(int                                size[3],
   // Allocate an intermediate memory space to extract the components of the input volume
   float * singleComponent;
   size_t  numel = size[0] * size[1] * size[2];
-  cudaMalloc(&singleComponent, numel * sizeof(float));
-  CUDA_CHECK_ERROR;
+  if (nComponents > 1)
+  {
+    cudaMalloc(&singleComponent, numel * sizeof(float));
+    CUDA_CHECK_ERROR;
+  }
   float one = 1.0;
 
   // Copy image data to arrays. The tricky part is the make_cudaPitchedPtr.
@@ -177,16 +180,19 @@ prepareVectorTextureObject(int                                size[3],
   // https://stackoverflow.com/questions/16119943/how-and-when-should-i-use-pitched-pointer-with-the-cuda-api
   for (unsigned int component = 0; component < nComponents; component++)
   {
-    // Reset the intermediate memory
-    cudaMemset((void *)singleComponent, 0, numel * sizeof(float));
+    if (nComponents > 1)
+    {
+      // Reset the intermediate memory
+      cudaMemset((void *)singleComponent, 0, numel * sizeof(float));
 
-    // Fill it with the current component
-    const float * pComponent = dev_ptr + component;
+      // Fill it with the current component
+      const float * pComponent = dev_ptr + component;
 #if CUDA_VERSION < 12000
-    cublasSaxpy(handle, (int)numel, &one, pComponent, nComponents, singleComponent, 1);
+      cublasSaxpy(handle, (int)numel, &one, pComponent, nComponents, singleComponent, 1);
 #else
-    cublasSaxpy_64(handle, numel, &one, pComponent, nComponents, singleComponent, 1);
+      cublasSaxpy_64(handle, numel, &one, pComponent, nComponents, singleComponent, 1);
 #endif
+    }
 
     // Allocate the cudaArray. Projections use layered arrays, volumes use default 3D arrays
     if (isProjections)
@@ -197,7 +203,10 @@ prepareVectorTextureObject(int                                size[3],
 
     // Fill it with the current singleComponent
     cudaMemcpy3DParms CopyParams = cudaMemcpy3DParms();
-    CopyParams.srcPtr = make_cudaPitchedPtr(singleComponent, size[0] * sizeof(float), size[0], size[1]);
+    if (nComponents > 1)
+      CopyParams.srcPtr = make_cudaPitchedPtr(singleComponent, size[0] * sizeof(float), size[0], size[1]);
+    else
+      CopyParams.srcPtr = make_cudaPitchedPtr((void *)dev_ptr, size[0] * sizeof(float), size[0], size[1]);
     CUDA_CHECK_ERROR;
     CopyParams.dstArray = componentArrays[component];
     CopyParams.extent = volExtent;
@@ -212,7 +221,8 @@ prepareVectorTextureObject(int                                size[3],
   }
 
   // Intermediate memory is no longer needed
-  cudaFree(singleComponent);
+  if (nComponents > 1)
+    cudaFree(singleComponent);
 
   // Destroy CUBLAS context
   cublasDestroy(handle);
