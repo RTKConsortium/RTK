@@ -386,17 +386,16 @@ CUDA_ForwardWarp(int     input_vol_dim[3],
 
   ///////////////////////////////////////
   /// Initialize the output
-  cudaMemset((void *)dev_output_vol, 0, sizeof(float) * output_vol_dim[0] * output_vol_dim[1] * output_vol_dim[2]);
+  size_t memorySizeOutput = sizeof(float) * output_vol_dim[0] * output_vol_dim[1] * output_vol_dim[2];
+  cudaMemset((void *)dev_output_vol, 0, memorySizeOutput);
 
   //////////////////////////////////////
   /// Create an image to store the splat weights
   /// (in order to normalize)
 
   float * dev_accumulate_weights;
-  cudaMalloc((void **)&dev_accumulate_weights,
-             sizeof(float) * output_vol_dim[0] * output_vol_dim[1] * output_vol_dim[2]);
-  cudaMemset(
-    (void *)dev_accumulate_weights, 0, sizeof(float) * output_vol_dim[0] * output_vol_dim[1] * output_vol_dim[2]);
+  cudaMalloc((void **)&dev_accumulate_weights, memorySizeOutput);
+  cudaMemset((void *)dev_accumulate_weights, 0, memorySizeOutput);
 
   // Thread Block Dimensions
   constexpr int tBlock_x = 16;

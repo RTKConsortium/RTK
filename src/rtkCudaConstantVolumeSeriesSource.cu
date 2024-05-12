@@ -74,7 +74,7 @@ CUDA_generate_constant_volume_series(int size[4], float * dev_out, float constan
   // run a kernel to replace the zeros with constantValue.
 
   // Reset output volume
-  long int memorySizeOutput = size[0] * size[1] * size[2] * size[3] * sizeof(float);
+  size_t memorySizeOutput = size[0] * size[1] * size[2] * size[3] * sizeof(float);
   cudaMemset((void *)dev_out, 0, memorySizeOutput);
 
   if (!(constantValue == 0))

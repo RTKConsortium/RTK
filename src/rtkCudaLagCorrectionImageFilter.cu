@@ -97,7 +97,7 @@ CUDA_lag_correction(int              proj_idx_in[3],      // overlapping input r
                     unsigned short * dev_proj_in,
                     unsigned short * dev_proj_out,
                     float *          h_state,
-                    int              state_size,
+                    size_t           state_size,
                     float *          coefficients)
 {
   // Thread Block Dimensions

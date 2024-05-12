@@ -138,7 +138,7 @@ CUDA_total_variation(int     size[3],
     minSpacing = spacing[2];
 
   // Reset output volume
-  long int memorySizeOutput = size[0] * size[1] * size[2] * sizeof(float);
+  size_t memorySizeOutput = sizeof(float) * size[0] * size[1] * size[2];
   cudaMemset((void *)dev_out, 0, memorySizeOutput);
 
   // Initialize volume to store intermediate images

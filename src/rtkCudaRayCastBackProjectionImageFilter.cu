@@ -285,13 +285,14 @@ CUDA_ray_cast_back_project(int      projSize[3],
   // normalization by the splat weights would affect not only the backprojection
   // of the current projection, but also the initial value of the output
   float * dev_accumulate_values;
-  cudaMalloc((void **)&dev_accumulate_values, sizeof(float) * volSize[0] * volSize[1] * volSize[2]);
-  cudaMemset((void *)dev_accumulate_values, 0, sizeof(float) * volSize[0] * volSize[1] * volSize[2]);
+  size_t  volMemSize = sizeof(float) * volSize[0] * volSize[1] * volSize[2];
+  cudaMalloc((void **)&dev_accumulate_values, volMemSize);
+  cudaMemset((void *)dev_accumulate_values, 0, volMemSize);
 
   // Create an image to store the splat weights (in order to normalize)
   float * dev_accumulate_weights;
-  cudaMalloc((void **)&dev_accumulate_weights, sizeof(float) * volSize[0] * volSize[1] * volSize[2]);
-  cudaMemset((void *)dev_accumulate_weights, 0, sizeof(float) * volSize[0] * volSize[1] * volSize[2]);
+  cudaMalloc((void **)&dev_accumulate_weights, volMemSize);
+  cudaMemset((void *)dev_accumulate_weights, 0, volMemSize);
 
   // Calling kernels
   dim3 dimBlock = dim3(8, 8, 4);

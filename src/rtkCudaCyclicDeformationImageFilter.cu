@@ -51,7 +51,7 @@ CUDA_linear_interpolate_along_fourth_dimension(unsigned int inputSize[4],
   float wInf = (float)weightInf;
   float wSup = (float)weightSup;
 
-  int numel = inputSize[0] * inputSize[1] * inputSize[2] * 3;
+  size_t numel = inputSize[0] * inputSize[1] * inputSize[2] * 3;
 
   cudaMemset((void *)output, 0, numel * sizeof(float));
 

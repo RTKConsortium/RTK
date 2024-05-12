@@ -31,7 +31,7 @@ void
 CUDA_copy(long int numberOfElements, float * in, float * out)
 {
   // Copy input volume to output
-  long int memorySizeOutput = numberOfElements * sizeof(float);
+  size_t memorySizeOutput = numberOfElements * sizeof(float);
   cudaMemcpy(out, in, memorySizeOutput, cudaMemcpyDeviceToDevice);
 }
 
@@ -39,7 +39,7 @@ void
 CUDA_copy(long int numberOfElements, double * in, double * out)
 {
   // Copy input volume to output
-  long int memorySizeOutput = numberOfElements * sizeof(double);
+  size_t memorySizeOutput = numberOfElements * sizeof(double);
   cudaMemcpy(out, in, memorySizeOutput, cudaMemcpyDeviceToDevice);
 }
 
