@@ -3,10 +3,10 @@ name: 'Package RTK with CUDA'
 on: [push,pull_request]
 
 env:
-  itk-wheel-tag: 'v5.4rc02'
-  itk-python-package-tag: '8b047b05ee19c01a1744af2b3ee36f7c893ee01e'
+  itk-wheel-tag: 'v5.4.0'
+  itk-python-package-tag: 'v5.4.0'
   itk-python-package-org: 'InsightSoftwareConsortium'
-  itk-module-deps: "RTKConsortium/ITKCudaCommon@09a964504bf9be9403189502cb7e790085a62708"
+  itk-module-deps: "RTKConsortium/ITKCudaCommon@c7c766a6b944124da21131c6eb689ee75e61bd6e"
 
 jobs:
   build-linux-cuda-python-packages:
@@ -14,7 +14,7 @@ jobs:
     strategy:
       max-parallel: 2
       matrix:
-        python3-minor-version: ["8", "9", "10", "11"]
+        python3-minor-version: ["8","9","10","11"]
         manylinux-platform: ["_2_28-x64","2014-x64"]
         cuda-version: ["116","121"]
 
@@ -42,7 +42,6 @@ jobs:
         CMAKE_OPTIONS="-DCUDACOMMON_CUDA_VERSION=${CUDA_VERSION_MAJOR}.${CUDA_VERSION_MINOR}"
         CMAKE_OPTIONS="${CMAKE_OPTIONS} -DCUDAToolkit_ROOT=/usr/lib64/cuda${CUDA_VERSION}"
         CMAKE_OPTIONS="${CMAKE_OPTIONS} -DCMAKE_CUDA_COMPILER=/usr/lib64/cuda${CUDA_VERSION}/bin/nvcc"
-        CMAKE_OPTIONS=(--cmake_options "${CMAKE_OPTIONS}")
 
         # The first two are not library paths but are included to be mounted in the
         # docker by dockcross-manylinux-build-module-wheels.sh
@@ -54,9 +53,11 @@ jobs:
         fi
 
         MANYLINUX_PLATFORM=${{ matrix.manylinux-platform }}
-        if [[ ${MANYLINUX_PLATFORM} == "_2_28-x64" ]]; then
+        if test ${MANYLINUX_PLATFORM} == "_2_28-x64" && test ${CUDA_VERSION} -lt 120; then
           export IMAGE_TAG=20230106-1aeaea0
+          CMAKE_OPTIONS="${CMAKE_OPTIONS} -DITK_USE_PYTHON_LIMITED_API=FALSE"
         fi
+        CMAKE_OPTIONS=(--cmake_options "${CMAKE_OPTIONS}")
         echo "Manylinux platform ${MANYLINUX_PLATFORM}"
         rm -rf ITKPythonPackage
         export MANYLINUX_VERSION=`(echo ${MANYLINUX_PLATFORM} | cut -d '-' -f 1)`
@@ -103,7 +104,7 @@ jobs:
         cuda-version: ["116","121"]
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         path: "im"
 
@@ -168,7 +169,7 @@ jobs:
         python -m twine check ${WHEEL_PATTERN}
 
     - name: Publish Python package as GitHub Artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: WindowsWheel3${{ matrix.python3-minor-version }}-cuda${{ matrix.cuda-version }}
         path: dist/*.whl
@@ -181,7 +182,7 @@ jobs:
 
     steps:
     - name: Download Python Packages
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
 
     - name: Prepare packages for upload
       run: |
