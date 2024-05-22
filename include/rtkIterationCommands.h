@@ -157,8 +157,8 @@ protected:
     typedef itk::ImageFileWriter<TOutputImage> WriterType;
     typename WriterType::Pointer               writer = WriterType::New();
 
-    char         buffer[100];
-    unsigned int size = sprintf(buffer, m_FileFormat.c_str(), this->m_IterationCount);
+    char         buffer[1024];
+    unsigned int size = snprintf(buffer, 1024, m_FileFormat.c_str(), this->m_IterationCount);
     writer->SetFileName(std::string(buffer, size));
 
     writer->SetInput(caller->GetOutput());
