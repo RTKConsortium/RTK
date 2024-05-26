@@ -12,6 +12,6 @@ jobs:
       cmake-options: '-DRTK_BUILD_APPLICATIONS:BOOL=OFF'
       itk-wheel-tag: 'v5.4.0'
       itk-python-package-tag: 'v5.4.0'
-      itk-module-deps: "RTKConsortium/ITKCudaCommon@c7c766a6b944124da21131c6eb689ee75e61bd6e"
+      itk-module-deps: "RTKConsortium/ITKCudaCommon@v1.1.0"
     secrets:
       pypi_password: ${{ secrets.pypi_password }}

@@ -6,7 +6,7 @@ env:
   itk-wheel-tag: 'v5.4.0'
   itk-python-package-tag: 'v5.4.0'
   itk-python-package-org: 'InsightSoftwareConsortium'
-  itk-module-deps: "RTKConsortium/ITKCudaCommon@c7c766a6b944124da21131c6eb689ee75e61bd6e"
+  itk-module-deps: "RTKConsortium/ITKCudaCommon@v1.1.0"
 
 jobs:
   build-linux-cuda-python-packages:
@@ -39,7 +39,7 @@ jobs:
         export CUDA_VERSION=${{ matrix.cuda-version }}
         export CUDA_VERSION_MAJOR=`(echo ${CUDA_VERSION} | cut -b1-2)`
         export CUDA_VERSION_MINOR=`(echo ${CUDA_VERSION} | cut -b3-)`
-        CMAKE_OPTIONS="-DCUDACOMMON_CUDA_VERSION=${CUDA_VERSION_MAJOR}.${CUDA_VERSION_MINOR}"
+        CMAKE_OPTIONS="-DRTK_CUDA_VERSION=${CUDA_VERSION_MAJOR}.${CUDA_VERSION_MINOR}"
         CMAKE_OPTIONS="${CMAKE_OPTIONS} -DCUDAToolkit_ROOT=/usr/lib64/cuda${CUDA_VERSION}"
         CMAKE_OPTIONS="${CMAKE_OPTIONS} -DCMAKE_CUDA_COMPILER=/usr/lib64/cuda${CUDA_VERSION}/bin/nvcc"
 
@@ -152,7 +152,7 @@ jobs:
         $LIBCUBLAS= (Get-Item "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v${CUDA_VERSION_MAJOR}.${CUDA_VERSION_MINOR}\bin\cublas64*dll" ).Name
         $LIBCUBLASLT= (Get-Item "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v${CUDA_VERSION_MAJOR}.${CUDA_VERSION_MINOR}\bin\cublasLt64*dll" ).Name
         $LIBCUFFT= (Get-Item "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v${CUDA_VERSION_MAJOR}.${CUDA_VERSION_MINOR}\bin\cufft64*dll" ).Name
-        ./windows-download-cache-and-build-module-wheels.ps1 "${{ matrix.python3-minor-version }}" -setup_options "--lib-paths ""C:/Program\ Files/NVIDIA\ GPU\ Computing\ Toolkit/CUDA/v${CUDA_VERSION_MAJOR}.${CUDA_VERSION_MINOR}/bin"" --exclude-libs ""nvcuda.dll;concrt140.dll;${LIBCUDART};${LIBCUBLAS};${LIBCUBLASLT};${LIBCUFFT}""" -cmake_options "${{ env.cmake-options }}"
+        ./windows-download-cache-and-build-module-wheels.ps1 "${{ matrix.python3-minor-version }}" -setup_options "--lib-paths ""C:/Program\ Files/NVIDIA\ GPU\ Computing\ Toolkit/CUDA/v${CUDA_VERSION_MAJOR}.${CUDA_VERSION_MINOR}/bin"" --exclude-libs ""nvcuda.dll;concrt140.dll;${LIBCUDART};${LIBCUBLAS};${LIBCUBLASLT};${LIBCUFFT}""" -cmake_options "-DRTK_CUDA_VERSION=${CUDA_VERSION_MAJOR}.${CUDA_VERSION_MINOR}"
 
         mkdir -p '${{ github.workspace }}\dist'
         cp 'dist\*.whl' '${{ github.workspace }}\dist'
