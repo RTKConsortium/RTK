@@ -17,7 +17,7 @@ def GetCudaImageFromImage(img):
   else:
     return img
 
-if __name__ == '__main__':
+def main():
   # argument parsing
   parser = argparse.ArgumentParser(description=
     'Reconstructs a 3D volume from a sequence of projections with a conjugate gradient technique',
@@ -131,3 +131,6 @@ if __name__ == '__main__':
   writer.SetFileName(args_info.output)
   writer.SetInput(conjugategradient.GetOutput())
   writer.Update()
+
+if __name__ == '__main__':
+  main()
