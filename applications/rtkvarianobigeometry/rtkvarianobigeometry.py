@@ -4,7 +4,7 @@ import sys
 import itk
 from itk import RTK as rtk
 
-if __name__ == '__main__':
+def main():
   # Argument parsing
   parser = argparse.ArgumentParser(description=
     "Creates an RTK geometry file from a Varian OBI acquisition.")
@@ -34,3 +34,6 @@ if __name__ == '__main__':
   xmlWriter.SetFilename(args.output)
   xmlWriter.SetObject(reader.GetGeometry())
   xmlWriter.WriteFile()
+
+if __name__ == '__main__':
+  main()
