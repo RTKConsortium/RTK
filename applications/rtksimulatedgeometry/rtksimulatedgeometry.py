@@ -3,7 +3,7 @@ import argparse
 import sys
 from itk import RTK as rtk
 
-if __name__ == '__main__':
+def main():
   # Argument parsing
   parser = argparse.ArgumentParser(description=
     "Creates an RTK geometry file from simulated/regular trajectory. See https://www.openrtk.org/Doxygen/DocGeo3D.html for more information.")
@@ -51,3 +51,6 @@ if __name__ == '__main__':
   writer.SetFilename(args.output)
   writer.SetObject(geometry)
   writer.WriteFile()
+
+if __name__ == '__main__':
+  main()
