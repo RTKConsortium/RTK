@@ -251,7 +251,7 @@ MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectru
 
 template <class TOutputImage, class TPhotonCounts, class TSpectrum>
 void
-MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectrum>::VerifyPreconditions() ITKv5_CONST
+MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectrum>::VerifyPreconditions() const
 {
   this->Superclass::VerifyPreconditions();
 

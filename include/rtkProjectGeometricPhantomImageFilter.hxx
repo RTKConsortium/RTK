@@ -39,7 +39,7 @@ ProjectGeometricPhantomImageFilter<TInputImage, TOutputImage>::ProjectGeometricP
 
 template <class TInputImage, class TOutputImage>
 void
-ProjectGeometricPhantomImageFilter<TInputImage, TOutputImage>::VerifyPreconditions() ITKv5_CONST
+ProjectGeometricPhantomImageFilter<TInputImage, TOutputImage>::VerifyPreconditions() const
 {
   this->Superclass::VerifyPreconditions();
 

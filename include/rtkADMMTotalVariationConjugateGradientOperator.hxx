@@ -95,7 +95,7 @@ ADMMTotalVariationConjugateGradientOperator<TOutputImage, TGradientOutputImage>:
 
 template <class TInputImage, class TOutputImage>
 void
-ADMMTotalVariationConjugateGradientOperator<TInputImage, TOutputImage>::VerifyPreconditions() ITKv5_CONST
+ADMMTotalVariationConjugateGradientOperator<TInputImage, TOutputImage>::VerifyPreconditions() const
 {
   this->Superclass::VerifyPreconditions();
 

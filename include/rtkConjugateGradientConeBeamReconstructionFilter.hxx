@@ -134,7 +134,7 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage, TSingleComponentImag
 template <typename TOutputImage, typename TSingleComponentImage, typename TWeightsImage>
 void
 ConjugateGradientConeBeamReconstructionFilter<TOutputImage, TSingleComponentImage, TWeightsImage>::VerifyPreconditions()
-  ITKv5_CONST
+  const
 {
   this->Superclass::VerifyPreconditions();
 

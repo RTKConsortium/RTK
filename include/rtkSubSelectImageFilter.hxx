@@ -46,7 +46,7 @@ SubSelectImageFilter<ProjectionStackType>::GetInputProjectionStack()
 
 template <typename ProjectionStackType>
 void
-SubSelectImageFilter<ProjectionStackType>::VerifyPreconditions() ITKv5_CONST
+SubSelectImageFilter<ProjectionStackType>::VerifyPreconditions() const
 {
   this->Superclass::VerifyPreconditions();
 

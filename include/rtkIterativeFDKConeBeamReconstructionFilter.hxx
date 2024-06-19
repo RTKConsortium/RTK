@@ -58,7 +58,7 @@ IterativeFDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecisio
 
 template <class TInputImage, class TOutputImage, class TFFTPrecision>
 void
-IterativeFDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecision>::VerifyPreconditions() ITKv5_CONST
+IterativeFDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecision>::VerifyPreconditions() const
 {
   this->Superclass::VerifyPreconditions();
 

@@ -155,7 +155,7 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
 
 template <typename VolumeSeriesType, typename ProjectionStackType>
 void
-FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType>::VerifyPreconditions() ITKv5_CONST
+FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType>::VerifyPreconditions() const
 {
   this->Superclass::VerifyPreconditions();
 

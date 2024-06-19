@@ -55,7 +55,7 @@ ReorderProjectionsImageFilter<TInputImage, TOutputImage>::GetOutputSignal()
 
 template <class TInputImage, class TOutputImage>
 void
-ReorderProjectionsImageFilter<TInputImage, TOutputImage>::VerifyPreconditions() ITKv5_CONST
+ReorderProjectionsImageFilter<TInputImage, TOutputImage>::VerifyPreconditions() const
 {
   this->Superclass::VerifyPreconditions();
 

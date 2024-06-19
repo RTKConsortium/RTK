@@ -137,7 +137,7 @@ ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImag
 
 template <class TInputImage, class TOutputImage>
 void
-ADMMTotalVariationConeBeamReconstructionFilter<TInputImage, TOutputImage>::VerifyPreconditions() ITKv5_CONST
+ADMMTotalVariationConeBeamReconstructionFilter<TInputImage, TOutputImage>::VerifyPreconditions() const
 {
   this->Superclass::VerifyPreconditions();
 

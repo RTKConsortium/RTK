@@ -27,7 +27,7 @@ namespace rtk
 
 template <class TInputImage, class TOutputImage>
 void
-FDKWeightProjectionFilter<TInputImage, TOutputImage>::VerifyPreconditions() ITKv5_CONST
+FDKWeightProjectionFilter<TInputImage, TOutputImage>::VerifyPreconditions() const
 {
   this->Superclass::VerifyPreconditions();
 

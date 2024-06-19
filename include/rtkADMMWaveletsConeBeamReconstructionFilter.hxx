@@ -73,7 +73,7 @@ ADMMWaveletsConeBeamReconstructionFilter<TOutputImage>::ADMMWaveletsConeBeamReco
 
 template <class TOutputImage>
 void
-ADMMWaveletsConeBeamReconstructionFilter<TOutputImage>::VerifyPreconditions() ITKv5_CONST
+ADMMWaveletsConeBeamReconstructionFilter<TOutputImage>::VerifyPreconditions() const
 {
   this->Superclass::VerifyPreconditions();
 

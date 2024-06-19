@@ -109,8 +109,7 @@ FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionS
 
 template <class VolumeSeriesType, class ProjectionStackType>
 void
-FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::VerifyPreconditions()
-  ITKv5_CONST
+FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::VerifyPreconditions() const
 {
   this->Superclass::VerifyPreconditions();
 

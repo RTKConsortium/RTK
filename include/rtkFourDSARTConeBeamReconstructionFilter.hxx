@@ -132,7 +132,7 @@ FourDSARTConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::Se
 
 template <class VolumeSeriesType, class ProjectionStackType>
 void
-FourDSARTConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::VerifyPreconditions() ITKv5_CONST
+FourDSARTConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::VerifyPreconditions() const
 {
   this->Superclass::VerifyPreconditions();
 
