@@ -98,7 +98,7 @@ SARTConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>::SetGatingWeigh
 
 template <class TVolumeImage, class TProjectionImage>
 void
-SARTConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>::VerifyPreconditions() ITKv5_CONST
+SARTConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>::VerifyPreconditions() const
 {
   this->Superclass::VerifyPreconditions();
 

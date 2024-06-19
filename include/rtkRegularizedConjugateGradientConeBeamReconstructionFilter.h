@@ -227,7 +227,7 @@ protected:
 
   /** Checks that inputs are correctly set. */
   void
-  VerifyPreconditions() ITKv5_CONST override;
+  VerifyPreconditions() const override;
 
   /** Does the real work. */
   void

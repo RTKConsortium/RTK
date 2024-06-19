@@ -125,8 +125,7 @@ ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPre
 
 template <typename VolumeSeriesType, typename ProjectionStackType, typename TFFTPrecision>
 void
-ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPrecision>::VerifyPreconditions()
-  ITKv5_CONST
+ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPrecision>::VerifyPreconditions() const
 {
   this->Superclass::VerifyPreconditions();
 

@@ -51,7 +51,7 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>::SetOffsets(double minOf
 
 template <class TInputImage, class TOutputImage>
 void
-DisplacedDetectorImageFilter<TInputImage, TOutputImage>::VerifyPreconditions() ITKv5_CONST
+DisplacedDetectorImageFilter<TInputImage, TOutputImage>::VerifyPreconditions() const
 {
   this->Superclass::VerifyPreconditions();
 

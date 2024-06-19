@@ -36,7 +36,7 @@ MaskCollimationImageFilter<TInputImage, TOutputImage>::MaskCollimationImageFilte
 
 template <class TInputImage, class TOutputImage>
 void
-MaskCollimationImageFilter<TInputImage, TOutputImage>::VerifyPreconditions() ITKv5_CONST
+MaskCollimationImageFilter<TInputImage, TOutputImage>::VerifyPreconditions() const
 {
   this->Superclass::VerifyPreconditions();
 

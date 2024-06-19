@@ -31,7 +31,7 @@ namespace rtk
 
 template <class TInputImage, class TOutputImage>
 void
-ForwardProjectionImageFilter<TInputImage, TOutputImage>::VerifyPreconditions() ITKv5_CONST
+ForwardProjectionImageFilter<TInputImage, TOutputImage>::VerifyPreconditions() const
 {
   this->Superclass::VerifyPreconditions();
 

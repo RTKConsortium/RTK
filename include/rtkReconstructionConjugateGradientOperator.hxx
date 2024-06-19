@@ -147,8 +147,7 @@ ReconstructionConjugateGradientOperator<TOutputImage, TSingleComponentImage, TWe
 
 template <typename TOutputImage, typename TSingleComponentImage, typename TWeightsImage>
 void
-ReconstructionConjugateGradientOperator<TOutputImage, TSingleComponentImage, TWeightsImage>::VerifyPreconditions()
-  ITKv5_CONST
+ReconstructionConjugateGradientOperator<TOutputImage, TSingleComponentImage, TWeightsImage>::VerifyPreconditions() const
 {
   this->Superclass::VerifyPreconditions();
 

@@ -123,7 +123,7 @@ RegularizedConjugateGradientConeBeamReconstructionFilter<TOutputImage>::GetSuppo
 
 template <typename TImage>
 void
-RegularizedConjugateGradientConeBeamReconstructionFilter<TImage>::VerifyPreconditions() ITKv5_CONST
+RegularizedConjugateGradientConeBeamReconstructionFilter<TImage>::VerifyPreconditions() const
 {
   this->Superclass::VerifyPreconditions();
 

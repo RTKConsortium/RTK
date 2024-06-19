@@ -44,7 +44,7 @@ RayConvexIntersectionImageFilter<TInputImage, TOutputImage>::BeforeThreadedGener
 
 template <class TInputImage, class TOutputImage>
 void
-RayConvexIntersectionImageFilter<TInputImage, TOutputImage>::VerifyPreconditions() ITKv5_CONST
+RayConvexIntersectionImageFilter<TInputImage, TOutputImage>::VerifyPreconditions() const
 {
   this->Superclass::VerifyPreconditions();
 

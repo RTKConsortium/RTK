@@ -177,7 +177,7 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>:
 
 template <typename VolumeSeriesType, typename ProjectionStackType>
 void
-FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::VerifyPreconditions() ITKv5_CONST
+FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::VerifyPreconditions() const
 {
   this->Superclass::VerifyPreconditions();
 

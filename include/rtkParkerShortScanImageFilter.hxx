@@ -36,7 +36,7 @@ ParkerShortScanImageFilter<TInputImage, TOutputImage>::ParkerShortScanImageFilte
 
 template <class TInputImage, class TOutputImage>
 void
-ParkerShortScanImageFilter<TInputImage, TOutputImage>::VerifyPreconditions() ITKv5_CONST
+ParkerShortScanImageFilter<TInputImage, TOutputImage>::VerifyPreconditions() const
 {
   this->Superclass::VerifyPreconditions();
 

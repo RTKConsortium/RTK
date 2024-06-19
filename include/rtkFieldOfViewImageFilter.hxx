@@ -188,7 +188,7 @@ FieldOfViewImageFilter<TInputImage, TOutputImage>::ComputeFOVRadius(const FOVRad
 
 template <class TInputImage, class TOutputImage>
 void
-FieldOfViewImageFilter<TInputImage, TOutputImage>::VerifyPreconditions() ITKv5_CONST
+FieldOfViewImageFilter<TInputImage, TOutputImage>::VerifyPreconditions() const
 {
   this->Superclass::VerifyPreconditions();
 

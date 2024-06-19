@@ -58,7 +58,7 @@ OSEMConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>::OSEMConeBeamRe
 
 template <class TVolumeImage, class TProjectionImage>
 void
-OSEMConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>::VerifyPreconditions() ITKv5_CONST
+OSEMConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>::VerifyPreconditions() const
 {
   this->Superclass::VerifyPreconditions();
 

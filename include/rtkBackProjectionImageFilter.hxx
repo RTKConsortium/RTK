@@ -152,7 +152,7 @@ BackProjectionImageFilter<TInputImage, TOutputImage>::GenerateInputRequestedRegi
 
 template <class TInputImage, class TOutputImage>
 void
-BackProjectionImageFilter<TInputImage, TOutputImage>::VerifyPreconditions() ITKv5_CONST
+BackProjectionImageFilter<TInputImage, TOutputImage>::VerifyPreconditions() const
 {
   this->Superclass::VerifyPreconditions();
 
