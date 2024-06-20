@@ -4,14 +4,13 @@ on: [push,pull_request]
 
 jobs:
   cxx-build-workflow:
-    uses: InsightSoftwareConsortium/ITKRemoteModuleBuildTestPackageAction/.github/workflows/build-test-cxx.yml@f675eac324601214287717c06dd8f77224689c76
+    uses: InsightSoftwareConsortium/ITKRemoteModuleBuildTestPackageAction/.github/workflows/build-test-cxx.yml@v5.4.0
 
   python-build-workflow:
-    uses: InsightSoftwareConsortium/ITKRemoteModuleBuildTestPackageAction/.github/workflows/build-test-package-python.yml@f675eac324601214287717c06dd8f77224689c76
+    uses: InsightSoftwareConsortium/ITKRemoteModuleBuildTestPackageAction/.github/workflows/build-test-package-python.yml@v5.4.0
     with:
       cmake-options: '-DRTK_BUILD_APPLICATIONS:BOOL=OFF'
-      itk-wheel-tag: 'v5.4.0'
-      itk-python-package-tag: 'v5.4.0'
-      itk-module-deps: "RTKConsortium/ITKCudaCommon@c7c766a6b944124da21131c6eb689ee75e61bd6e"
+      itk-python-package-org: 'SimonRit'
+      itk-python-package-tag: '26495c927f31ea20616efe2b2bad05e9275ea3a5'
     secrets:
       pypi_password: ${{ secrets.pypi_password }}
