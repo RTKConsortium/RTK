@@ -130,6 +130,11 @@ if(RTK_BUILD_DOXYGEN)
   add_subdirectory(documentation/Doxygen)
 endif()
 
+option(RTK_BUILD_SPHINX "Build Documentation" OFF)
+if(RTK_BUILD_SPHINX)
+  add_subdirectory(documentation/Sphinx)
+endif()
+
 # Setup build locations.
 if(NOT CMAKE_RUNTIME_OUTPUT_DIRECTORY)
   set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${RTK_BINARY_DIR}/bin)
