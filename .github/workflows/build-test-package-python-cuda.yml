@@ -4,9 +4,9 @@ on: [push,pull_request]
 
 env:
   itk-wheel-tag: 'v5.4.0'
-  itk-python-package-tag: 'd0d2733d44c77b0f8e1fc2e6e2c5b20c883f3f83'
+  itk-python-package-tag: 'dea15f87cb2f023e716faf2a811937bef3b105e3'
   itk-python-package-org: 'SimonRit'
-  itk-module-deps: "RTKConsortium/ITKCudaCommon@v1.1.0"
+  itk-module-deps: "RTKConsortium/ITKCudaCommon@cae7c93c2f6d4c5b3cb5f6e5ce4a97686e626bf7"
 
 jobs:
   build-linux-cuda-python-packages:
