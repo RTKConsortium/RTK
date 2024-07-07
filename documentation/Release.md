@@ -8,22 +8,22 @@ Check ITK's instructions and update this wiki page accordingly.
 Based on previous messages (`git show tags`).
 
 ```
-git log --no-merges v2.4.0..HEAD --pretty=format:"%h; %an; %ad: %s" >release_notes.txt
-git log --no-merges v2.4.0..HEAD --pretty=format:"%an" | sort -u >contributors.txt
+git log --no-merges v2.5.0..HEAD --pretty=format:"%h; %an; %ad: %s" >release_notes.txt
+git log --no-merges v2.5.0..HEAD --pretty=format:"%an" | sort -u >contributors.txt
 ```
 
 ## Prepare repository
 
 * Modify the RTK release number(s) in `CMakeLists.txt`,
-* Modify the RTK release number and the required ITK version for Python packages in `setup.py`.
-* Tag git repository on this change with a copy of the release message.
+* Modify the RTK release number and the required ITK version for Python packages in `pyproject.toml`.
+* Commit these changes and tag the commit. Push and release via GitHub when the Python packages have been compiled and uploaded.
 
 ## Backup Doxygen documentation
 
 ```
 ctest -S /home/srit/src/rtk/rtk-dashboard/russula_doxygen.cmake -V
 cd /home/srit/src/rtk/RTK-website/
-mv  /home/srit/src/rtk/dashboard_tests/RTK-Doxygen/Doxygen/html Doxygen241
+mv  /home/srit/src/rtk/dashboard_tests/RTK-Doxygen/Doxygen/html Doxygen250
 ./sync.sh
 ```
 
@@ -39,4 +39,4 @@ Post message on the mailing list [`rtk-users@openrtk.org`](mailto:rtk-users@open
 
 ## Verify binaries
 
-Binaries will now be posted by GitHub actions when tagging the repository, simply verify that the Github action goes well and that the packages have been posted once it is over. 
+Binaries will now be posted by GitHub actions when tagging the repository, simply verify that the Github action goes well and that the packages have been posted once it is over.
