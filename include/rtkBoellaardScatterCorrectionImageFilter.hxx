@@ -81,7 +81,7 @@ BoellaardScatterCorrectionImageFilter<TInputImage, TOutputImage>::ThreadedGenera
     for (unsigned int i = 0; i < npixelPerSlice; i++)
     {
       smallestValue = std::min(smallestValue, (double)itInSlice.Get());
-      if (itInSlice.Get() >= m_AirThreshold)
+      if (itInSlice.Get() <= m_AirThreshold)
       {
         averageBehindPatient += itInSlice.Get();
       }
