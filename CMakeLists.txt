@@ -3,15 +3,12 @@
 #=========================================================
 # Respect the CMAKE_CXX_STANDARD flags when building for
 # ITKv5 or C++11.
-cmake_minimum_required(VERSION 3.9.5 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.16.3 FATAL_ERROR)
 
 ## Only policies introduced after the cmake_minimum_required
 ## version need to explicitly be set to NEW.
 ## Refer to https://cmake.org/cmake/help/v3.11/manual/cmake-policies.7.html
 set(CMAKE_POLICIES
-  CMP0070
-  CMP0071
-  CMP0072
   CMP0135)
 
 foreach(p ${CMAKE_POLICIES})
