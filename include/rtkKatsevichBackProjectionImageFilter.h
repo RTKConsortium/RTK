@@ -1,0 +1,168 @@
+/*=========================================================================
+ *
+ *  Copyright RTK Consortium
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0.txt
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ *=========================================================================*/
+
+#ifndef rtkKatsevichBackProjectionImageFilter_h
+#define rtkKatsevichBackProjectionImageFilter_h
+
+#include <rtkConfiguration.h>
+
+#include <itkInPlaceImageFilter.h>
+#include <itkConceptChecking.h>
+
+#include <rtkBackProjectionImageFilter.h>
+#include <rtkThreeDHelicalProjectionGeometry.h>
+#include <rtkPILineImageFilter.h>
+
+#include <type_traits>
+#include <typeinfo>
+
+namespace rtk
+{
+
+/** \class KatsevichBackProjectionImageFilter
+ * \brief 3D backprojection
+ *
+ * Backprojects a stack of projection images (input 1) in a 3D volume (input 0)
+ * using linear interpolation according to a specified geometry. The operation
+ * is voxel-based, meaning that the center of each voxel is projected in the
+ * projection images to determine the interpolation location.
+ *
+ * \test
+ *
+ * \author Simon Rit, Jerome Lesaint
+ *
+ * \ingroup RTK Projector
+ */
+template <class TInputImage, class TOutputImage>
+class KatsevichBackProjectionImageFilter : public rtk::BackProjectionImageFilter<TInputImage, TOutputImage>
+{
+public:
+  ITK_DISALLOW_COPY_AND_ASSIGN(KatsevichBackProjectionImageFilter);
+
+  /** Standard class type alias. */
+  using Self = KatsevichBackProjectionImageFilter;
+  using Superclass = rtk::BackProjectionImageFilter<TInputImage, TOutputImage>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
+
+  /** Convenient type alias. */
+  using InputPixelType = typename TInputImage::PixelType;
+  using InternalInputPixelType = typename TInputImage::InternalPixelType;
+  using OutputImageRegionType = typename TOutputImage::RegionType;
+  using GeometryType = rtk::ThreeDHelicalProjectionGeometry;
+  using GeometryPointer = typename GeometryType::Pointer;
+  using ProjectionMatrixType = typename GeometryType::MatrixType;
+  using ProjectionImageType = typename Superclass::ProjectionImageType;
+  using ProjectionImagePointer = typename ProjectionImageType::Pointer;
+  using PILineRealType = float;
+  using PILineImageType = itk::Image<itk::Vector<PILineRealType, 2>, TInputImage::ImageDimension>;
+  using PILineImagePointer = typename PILineImageType::Pointer;
+  using PILineImageFilterType = PILineImageFilter<TOutputImage, PILineImageType>;
+  using PILinePointer = typename PILineImageFilterType::Pointer;
+
+  /** Method for creation through the object factory. */
+  itkNewMacro(Self);
+
+  /** Run-time type information (and related methods). */
+  itkTypeMacro(KatsevichBackProjectionImageFilter, itk::ImageToImageFilter);
+
+  //  virtual void
+  //  SetPILines(PILineImagePointer image) ;
+  //
+  //  virtual const PILineImagePointer
+  //  GetPILines() const;
+
+
+  /** Get / Set the object pointer to projection geometry */
+  itkGetModifiableObjectMacro(Geometry, GeometryType);
+  itkSetObjectMacro(Geometry, GeometryType);
+
+  /** Get / Set the transpose flag for 2D projections (optimization trick) */
+  itkGetMacro(Transpose, bool);
+  itkSetMacro(Transpose, bool);
+
+protected:
+  KatsevichBackProjectionImageFilter();
+  ~KatsevichBackProjectionImageFilter() override = default;
+
+  /** Checks that inputs are correctly set. */
+  void
+  VerifyPreconditions() ITKv5_CONST override;
+
+  /** Apply changes to the input image requested region. */
+  void
+  GenerateInputRequestedRegion() override;
+
+  void
+  BeforeThreadedGenerateData() override;
+
+  void
+  DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread) override;
+
+  /** Special case when the detector is cylindrical and centered on source */
+  virtual void
+  CylindricalDetectorCenteredOnSourceBackprojection(
+    const OutputImageRegionType &                                                         region,
+    const ProjectionMatrixType &                                                          volIndexToProjPP,
+    const itk::Matrix<double, TInputImage::ImageDimension, TInputImage::ImageDimension> & projPPToProjIndex,
+    const ProjectionImagePointer                                                          projection,
+    const double                                                                          lambda,
+    const double                                                                          delta_lambda);
+
+  /** Optimized version when the rotation is parallel to X, i.e. matrix[1][0]
+    and matrix[2][0] are zeros. */
+  virtual void
+  OptimizedBackprojectionX(const OutputImageRegionType & region,
+                           const ProjectionMatrixType &  matrix,
+                           const ProjectionImagePointer  projection,
+                           const double                  lambda,
+                           const double                  delta_lambda);
+
+  /** Optimized version when the rotation is parallel to Y, i.e. matrix[1][1]
+    and matrix[2][1] are zeros. */
+  virtual void
+  OptimizedBackprojectionY(const OutputImageRegionType & region,
+                           const ProjectionMatrixType &  matrix,
+                           const ProjectionImagePointer  projection,
+                           const double                  lambda,
+                           const double                  delta_lambda);
+
+  /** The two inputs should not be in the same space so there is nothing
+   * to verify. */
+  void
+  VerifyInputInformation() const override
+  {}
+
+  /** RTK geometry object */
+  GeometryPointer    m_Geometry;
+  PILineImagePointer m_PILines;
+
+
+private:
+  /** Flip projection flag: infludences GetProjection and
+    GetIndexToIndexProjectionMatrix for optimization */
+  bool m_Transpose{ false };
+};
+
+} // end namespace rtk
+
+#ifndef ITK_MANUAL_INSTANTIATION
+#  include "rtkKatsevichBackProjectionImageFilter.hxx"
+#endif
+
+#endif
