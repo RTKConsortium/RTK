@@ -4,7 +4,7 @@ on: [push,pull_request]
 
 env:
   itk-wheel-tag: 'v5.4.0'
-  itk-python-package-tag: 'dea15f87cb2f023e716faf2a811937bef3b105e3'
+  itk-python-package-tag: '45cfd02a22661731ca5b155f210cfa2f887d50e7'
   itk-python-package-org: 'SimonRit'
   itk-module-deps: "RTKConsortium/ITKCudaCommon@cae7c93c2f6d4c5b3cb5f6e5ce4a97686e626bf7"
 
