@@ -103,12 +103,6 @@ prepareScalarTextureObject(int                          size[3],
   static cudaChannelFormatDesc channelDesc = cudaCreateChannelDesc(32, 0, 0, 0, cudaChannelFormatKindFloat);
   cudaExtent                   volExtent = make_cudaExtent(size[0], size[1], size[2]);
 
-  // Allocate an intermediate memory space to extract the components of the input volume
-  float * singleComponent;
-  size_t  numel = size[0] * size[1] * size[2];
-  cudaMalloc(&singleComponent, numel * sizeof(float));
-  CUDA_CHECK_ERROR;
-
   // Copy image data to arrays. The tricky part is the make_cudaPitchedPtr.
   // The best way to understand it is to read
   // https://stackoverflow.com/questions/16119943/how-and-when-should-i-use-pitched-pointer-with-the-cuda-api
@@ -120,7 +114,7 @@ prepareScalarTextureObject(int                          size[3],
     cudaMalloc3DArray(&threeDArray, &channelDesc, volExtent);
   CUDA_CHECK_ERROR;
 
-  // Fill it with the current singleComponent
+  // Fill it
   cudaMemcpy3DParms CopyParams = {};
   CopyParams.srcPtr = make_cudaPitchedPtr(dev_ptr, size[0] * sizeof(float), size[0], size[1]);
   CUDA_CHECK_ERROR;
