@@ -330,7 +330,7 @@ main(int, char **)
   using GeometryType = rtk::ThreeDCircularProjectionGeometry;
   GeometryType::Pointer geometry_parallel = GeometryType::New();
   for (unsigned int noProj = 0; noProj < NumberOfProjectionImages; noProj++)
-    geometry_parallel->AddProjection(500., 0., noProj * 360. / NumberOfProjectionImages);
+    geometry_parallel->AddProjection(500., 0., noProj * 360. / NumberOfProjectionImages, 16., -12.);
 
 
   std::cout << "\n\n******  Zeng Forward projector ******" << std::endl;
