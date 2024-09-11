@@ -27,7 +27,6 @@
 #include "rtkHomogeneousMatrix.h"
 #include "rtkBoxShape.h"
 #include "rtkProjectionsRegionConstIteratorRayBased.h"
-#include "itkImageFileWriter.h"
 
 #include <itkImageRegionIteratorWithIndex.h>
 #include <itkInputDataObjectConstIterator.h>
@@ -180,7 +179,6 @@ ZengForwardProjectionImageFilter<TInputImage, TOutputImage>::GenerateOutputInfor
   const typename OuputCPUImageType::PointType originProjection = this->GetInput(0)->GetOrigin();
 
   // Find the center of the volume
-
   using CoordinateType = typename PointType ::ValueType;
   using ContinuousIndexType = itk::ContinuousIndex<CoordinateType, InputImageDimension>;
   using ContinuousIndexValueType = typename ContinuousIndexType::ValueType;
@@ -326,11 +324,14 @@ ZengForwardProjectionImageFilter<TInputImage, TOutputImage>::GenerateData()
   indexProjection.Fill(0);
   double dist = NAN, sigmaSlice = NAN;
   double thicknessSlice = NAN;
-  int    nbProjections = 0;
+  int    nbProjections = projRegion.GetIndex(Dimension - 1);
   for (auto & angle : list_angle)
   {
     // Set the rotation angle.
     m_Transform->SetRotation(0., angle, 0.);
+    m_Transform->SetTranslation(itk::MakeVector(geometry->GetProjectionOffsetsX()[nbProjections] * cos(-angle),
+                                                geometry->GetProjectionOffsetsY()[nbProjections],
+                                                geometry->GetProjectionOffsetsX()[nbProjections] * sin(-angle)));
     centerRotatedVolume = m_Transform->GetMatrix() * m_centerVolume;
 
     // Rotate the input volume
@@ -380,7 +381,7 @@ ZengForwardProjectionImageFilter<TInputImage, TOutputImage>::GenerateData()
 
     // Compute the distance between the current slice and the detector
     rotatedVolume->TransformIndexToPhysicalPoint(indexSlice, pointSlice);
-    dist = geometry->GetSourceToIsocenterDistances()[nbProjections + projRegion.GetIndex(Dimension - 1)] +
+    dist = geometry->GetSourceToIsocenterDistances()[nbProjections] +
            pointSlice.GetVectorFromOrigin() * m_VectorOrthogonalDetector;
     int index = 0;
     for (index = nbSlice - 2; index >= 0; index--)
@@ -424,7 +425,7 @@ ZengForwardProjectionImageFilter<TInputImage, TOutputImage>::GenerateData()
     sigmaSlice = pow(m_Alpha * dist + m_SigmaZero, 2.0);
     m_DiscreteGaussianFilter->SetVariance(sigmaSlice);
     // Paste the projection in the output volume
-    indexProjection[Dimension - 1] = nbProjections + projRegion.GetIndex(Dimension - 1);
+    indexProjection[Dimension - 1] = nbProjections;
     m_PasteImageFilter->SetSourceRegion(m_DiscreteGaussianFilter->GetOutput()->GetLargestPossibleRegion());
     m_PasteImageFilter->SetDestinationIndex(indexProjection);
     m_PasteImageFilter->UpdateLargestPossibleRegion();
