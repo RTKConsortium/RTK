@@ -27,7 +27,6 @@
 #include "rtkHomogeneousMatrix.h"
 #include "rtkBoxShape.h"
 #include "rtkProjectionsRegionConstIteratorRayBased.h"
-#include <itkImageFileWriter.h>
 
 #include <itkImageRegionIteratorWithIndex.h>
 #include <itkInputDataObjectConstIterator.h>
@@ -337,12 +336,15 @@ ZengBackProjectionImageFilter<TInputImage, TOutputImage>::GenerateData()
   indexSlice.Fill(0);
   double dist = NAN, sigmaSlice = NAN;
   double thicknessSlice = this->GetInput(0)->GetSpacing()[2];
-  int    nbProjections = 0;
+  int    nbProjections = indexProj;
   int    startSlice = -1;
   for (auto & angle : list_angle)
   {
     // Get the center of the rotated volume
     m_Transform->SetRotation(0., angle, 0.);
+    m_Transform->SetTranslation(itk::MakeVector(geometry->GetProjectionOffsetsX()[nbProjections] * cos(-angle),
+                                                geometry->GetProjectionOffsetsY()[nbProjections],
+                                                geometry->GetProjectionOffsetsX()[nbProjections] * sin(-angle)));
     centerRotatedVolume = m_Transform->GetMatrix() * m_centerVolume;
 
     // Set the new origin of the rotate volume according to the center
@@ -352,10 +354,10 @@ ZengBackProjectionImageFilter<TInputImage, TOutputImage>::GenerateData()
     m_ConstantVolumeSource->SetOrigin(originRotatedVolume);
 
     // Set the rotation angle.
-    m_Transform->SetRotation(0., -angle, 0.);
+    m_ResampleImageFilter->SetTransform(m_Transform->GetInverseTransform());
 
     // Extract the projection corresponding to the current angle from the projection stack
-    projRegion.SetIndex(Dimension - 1, nbProjections + indexProj);
+    projRegion.SetIndex(Dimension - 1, nbProjections);
     m_ExtractImageFilter->SetExtractionRegion(projRegion);
     m_ExtractImageFilter->UpdateOutputInformation();
 
@@ -369,7 +371,7 @@ ZengBackProjectionImageFilter<TInputImage, TOutputImage>::GenerateData()
       startSlice += 1;
       indexSlice[Dimension - 1] = startSlice;
       m_ConstantVolumeSource->GetOutput()->TransformIndexToPhysicalPoint(indexSlice, pointSlice);
-      dist = geometry->GetSourceToIsocenterDistances()[nbProjections + indexProj] +
+      dist = geometry->GetSourceToIsocenterDistances()[nbProjections] +
              pointSlice.GetVectorFromOrigin() * m_VectorOrthogonalDetector;
     }
     if (this->GetInput(2))
