@@ -1,3 +1,25 @@
+if(RTK_USE_CUDA)
+  itk_wrap_include(itkCudaImage.h)
+endif()
+
 itk_wrap_class("rtk::ReorderProjectionsImageFilter" POINTER)
-  itk_wrap_image_filter("${WRAP_ITK_ALL_TYPES}" 2 3)
+    itk_wrap_image_filter("${WRAP_ITK_REAL}" 2 3)
+
+    if(RTK_USE_CUDA)
+        itk_wrap_template("CIF3CIF3" "itk::CudaImage<${ITKT_F}, 3>, itk::CudaImage<${ITKT_F}, 3>")
+    endif()
+
+    # Force VECTOR_COMPONENTS to contain "2;3;4;5"
+    set(vectorComponents 2 3 4 5)
+    foreach(nmat ${vectorComponents})
+        foreach(vt ${WRAP_ITK_VECTOR_REAL})
+
+          itk_wrap_template("I${ITKM_${vt}${nmat}}3I${ITKM_${vt}${nmat}}3" "itk::Image<${ITKT_${vt}${nmat}},3>, itk::Image<${ITKT_${vt}${nmat}},3>")
+
+        endforeach()
+
+        if(RTK_USE_CUDA)
+          itk_wrap_template("CI${ITKM_VF${nmat}}3CI${ITKM_VF${nmat}}3" "itk::CudaImage<${ITKT_VF${nmat}},3>, itk::CudaImage<${ITKT_VF${nmat}},3>")
+        endif()
+    endforeach()
 itk_end_wrap_class()
