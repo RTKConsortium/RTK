@@ -47,8 +47,13 @@ rtk::CudaTotalVariationDenoisingBPDQImageFilter ::GPUGenerateData()
     }
   }
 
+#ifdef CUDACOMMON_VERSION_MAJOR
+  float * pin = (float *)(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
+  float * pout = (float *)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
+#else
   float * pin = *(float **)(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
   float * pout = *(float **)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
+#endif
 
   CUDA_total_variation(
     inputSize, inputSpacing, pin, pout, static_cast<float>(m_Gamma), static_cast<float>(m_Beta), m_NumberOfIterations);

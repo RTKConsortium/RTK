@@ -190,10 +190,17 @@ CudaWarpForwardProjectionImageFilter ::GPUGenerateData()
   inputDVFSize[1] = this->GetDisplacementField()->GetBufferedRegion().GetSize()[1];
   inputDVFSize[2] = this->GetDisplacementField()->GetBufferedRegion().GetSize()[2];
 
+#ifdef CUDACOMMON_VERSION_MAJOR
+  float * pin = (float *)(this->GetInputProjectionStack()->GetCudaDataManager()->GetGPUBufferPointer());
+  float * pout = (float *)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
+  float * pvol = (float *)(this->GetInputVolume()->GetCudaDataManager()->GetGPUBufferPointer());
+  float * pDVF = (float *)(this->GetDisplacementField()->GetCudaDataManager()->GetGPUBufferPointer());
+#else
   float * pin = *(float **)(this->GetInputProjectionStack()->GetCudaDataManager()->GetGPUBufferPointer());
   float * pout = *(float **)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
   float * pvol = *(float **)(this->GetInputVolume()->GetCudaDataManager()->GetGPUBufferPointer());
   float * pDVF = *(float **)(this->GetDisplacementField()->GetCudaDataManager()->GetGPUBufferPointer());
+#endif
 
   // Transform matrices that we will need during the warping process
   indexInputToPPInputMatrix = rtk::GetIndexToPhysicalPointMatrix(this->GetInputVolume().GetPointer()).GetVnlMatrix() *
