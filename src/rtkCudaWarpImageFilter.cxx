@@ -64,9 +64,15 @@ CudaWarpImageFilter ::GPUGenerateData()
   outputVolumeSize[1] = this->GetOutput()->GetBufferedRegion().GetSize()[1];
   outputVolumeSize[2] = this->GetOutput()->GetBufferedRegion().GetSize()[2];
 
+#ifdef CUDACOMMON_VERSION_MAJOR
+  float * pinVol = (float *)(this->GetInput(0)->GetCudaDataManager()->GetGPUBufferPointer());
+  float * poutVol = (float *)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
+  float * pDVF = (float *)(this->GetDisplacementField()->GetCudaDataManager()->GetGPUBufferPointer());
+#else
   float * pinVol = *(float **)(this->GetInput(0)->GetCudaDataManager()->GetGPUBufferPointer());
   float * poutVol = *(float **)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
   float * pDVF = *(float **)(this->GetDisplacementField()->GetCudaDataManager()->GetGPUBufferPointer());
+#endif
 
   // Transform matrices that we will need during the warping process
   indexOutputToPPOutputMatrix =
