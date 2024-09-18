@@ -76,10 +76,16 @@ CudaBackProjectionImageFilter<ImageType>::GPUGenerateData()
   volumeSize[1] = this->GetOutput()->GetBufferedRegion().GetSize()[1];
   volumeSize[2] = this->GetOutput()->GetBufferedRegion().GetSize()[2];
 
+#  ifdef CUDACOMMON_VERSION_MAJOR
+  float * pin = (float *)(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
+  float * pout = (float *)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
+  float * stackGPUPointer = (float *)(this->GetInput(1)->GetCudaDataManager()->GetGPUBufferPointer());
+#  else
   float * pin = *(float **)(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
   float * pout = *(float **)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
+  float * stackGPUPointer = *(float **)(this->GetInput(1)->GetCudaDataManager()->GetGPUBufferPointer());
+#  endif
 
-  float *   stackGPUPointer = *(float **)(this->GetInput(1)->GetCudaDataManager()->GetGPUBufferPointer());
   ptrdiff_t projSize = this->GetInput(1)->GetBufferedRegion().GetSize()[0] *
                        this->GetInput(1)->GetBufferedRegion().GetSize()[1] *
                        itk::NumericTraits<typename ImageType::PixelType>::GetLength();
