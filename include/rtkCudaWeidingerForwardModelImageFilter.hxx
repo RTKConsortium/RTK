@@ -53,13 +53,22 @@ CudaWeidingerForwardModelImageFilter<TMaterialProjections, TPhotonCounts, TSpect
   for (unsigned int d = 0; d < Dimension; d++)
     projectionSize[d] = this->GetInputMaterialProjections()->GetBufferedRegion().GetSize()[d];
 
-  // Pointers to inputs and outputs
+    // Pointers to inputs and outputs
+#  ifdef CUDACOMMON_VERSION_MAJOR
+  float * pMatProj = (float *)(this->GetInputMaterialProjections()->GetCudaDataManager()->GetGPUBufferPointer());
+  float * pPhoCount = (float *)(this->GetInputPhotonCounts()->GetCudaDataManager()->GetGPUBufferPointer());
+  float * pSpectrum = (float *)(this->GetInputSpectrum()->GetCudaDataManager()->GetGPUBufferPointer());
+  float * pProjOnes = (float *)(this->GetInputProjectionsOfOnes()->GetCudaDataManager()->GetGPUBufferPointer());
+  float * pOut1 = (float *)(this->GetOutput1()->GetCudaDataManager()->GetGPUBufferPointer());
+  float * pOut2 = (float *)(this->GetOutput2()->GetCudaDataManager()->GetGPUBufferPointer());
+#  else
   float * pMatProj = *(float **)(this->GetInputMaterialProjections()->GetCudaDataManager()->GetGPUBufferPointer());
   float * pPhoCount = *(float **)(this->GetInputPhotonCounts()->GetCudaDataManager()->GetGPUBufferPointer());
   float * pSpectrum = *(float **)(this->GetInputSpectrum()->GetCudaDataManager()->GetGPUBufferPointer());
   float * pProjOnes = *(float **)(this->GetInputProjectionsOfOnes()->GetCudaDataManager()->GetGPUBufferPointer());
   float * pOut1 = *(float **)(this->GetOutput1()->GetCudaDataManager()->GetGPUBufferPointer());
   float * pOut2 = *(float **)(this->GetOutput2()->GetCudaDataManager()->GetGPUBufferPointer());
+#  endif
 
   // Run the forward projection with a slab of SLAB_SIZE or less projections
   CUDA_WeidingerForwardModel(

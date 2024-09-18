@@ -35,6 +35,12 @@ using ThreadIdType = itk::ThreadIdType;
 #  define SLAB_SIZE @RTK_CUDA_PROJECTIONS_SLAB_SIZE@
 #endif
 
+// CudaCommon_SOURCE_DIR and cudaCommonConfiguration.h were introduced in CudaCommon 2.0
+#cmakedefine CudaCommon_SOURCE_DIR
+#ifdef CudaCommon_SOURCE_DIR
+#  include <cudaCommonConfiguration.h>
+#endif
+
 #define RTK_BINARY_DIR "@RTK_BINARY_DIR@"
 #define RTK_DATA_ROOT "@RTK_DATA_ROOT@"
 
