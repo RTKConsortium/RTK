@@ -109,6 +109,9 @@ public:
   typename MaterialAttenuationsImageType::ConstPointer
   GetMaterialAttenuations();
 
+  typename DecomposedProjectionsType::ConstPointer
+  GetOutputCramerRaoLowerBound();
+
   itkSetMacro(Thresholds, ThresholdsType);
   itkGetMacro(Thresholds, ThresholdsType);
 
@@ -126,6 +129,9 @@ public:
 
   itkSetMacro(ComputeVariances, bool);
   itkGetMacro(ComputeVariances, bool);
+
+  itkSetMacro(ComputeCramerRaoLowerBound, bool);
+  itkGetMacro(ComputeCramerRaoLowerBound, bool);
 
 protected:
   SpectralForwardModelImageFilter();
@@ -165,8 +171,9 @@ protected:
   unsigned int m_NumberOfIterations;
   unsigned int m_NumberOfMaterials;
   bool         m_OptimizeWithRestarts;
-  bool         m_IsSpectralCT;     // If not, it is dual energy CT
-  bool         m_ComputeVariances; // Only implemented for dual energy CT
+  bool         m_IsSpectralCT;               // If not, it is dual energy CT
+  bool         m_ComputeVariances;           // Only implemented for dual energy CT
+  bool         m_ComputeCramerRaoLowerBound; // Only implemented for spectral CT
 
 }; // end of class
 

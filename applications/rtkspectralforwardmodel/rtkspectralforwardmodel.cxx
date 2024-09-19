@@ -32,7 +32,6 @@ main(int argc, char * argv[])
 
   using PixelValueType = float;
   constexpr unsigned int Dimension = 3;
-
   using DecomposedProjectionType = itk::VectorImage<PixelValueType, Dimension>;
   using SpectralProjectionsType = itk::VectorImage<PixelValueType, Dimension>;
   using IncidentSpectrumImageType = itk::VectorImage<PixelValueType, Dimension - 1>;
@@ -110,11 +109,20 @@ main(int argc, char * argv[])
   forward->SetMaterialAttenuations(materialAttenuations);
   forward->SetThresholds(thresholds);
   forward->SetIsSpectralCT(true);
+  if (args_info.cramer_rao_given)
+    forward->SetComputeCramerRaoLowerBound(true);
 
   TRY_AND_EXIT_ON_ITK_EXCEPTION(forward->Update())
 
   // Write output
   TRY_AND_EXIT_ON_ITK_EXCEPTION(itk::WriteImage(forward->GetOutput(), args_info.output_arg))
+
+  // If requested, write the variance
+  if (args_info.cramer_rao_given)
+  {
+    TRY_AND_EXIT_ON_ITK_EXCEPTION(itk::WriteImage(forward->GetOutputCramerRaoLowerBound(), args_info.cramer_rao_arg))
+  }
+
 
   return EXIT_SUCCESS;
 }

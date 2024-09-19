@@ -9,3 +9,4 @@ option "detector"   d "Detector response file"                                  
 option "incident"   - "Incident spectrum file"                                            string                       yes
 option "attenuations" a "Material attenuations file"                                      string                       yes
 option "thresholds" t "Lower threshold of bins, expressed in pulse height"                double                       yes multiple
+option "cramer_rao" - "File name for the output Cramer Rao Lower Bound (estimation of the variance in the material decomposed images)"  string   no
