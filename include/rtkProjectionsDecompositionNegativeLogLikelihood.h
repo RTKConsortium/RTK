@@ -107,6 +107,20 @@ public:
   }
 
   virtual itk::VariableLengthVector<float>
+  GetCramerRaoLowerBound()
+  {
+    // Return the inverses of the diagonal components (i.e. the inverse variances, to be used directly in WLS
+    // reconstruction)
+    itk::VariableLengthVector<double> diag;
+    diag.SetSize(m_NumberOfMaterials);
+    diag.Fill(0);
+
+    for (unsigned int mat = 0; mat < m_NumberOfMaterials; mat++)
+      diag[mat] = m_Fischer.GetInverse()[mat][mat];
+    return diag;
+  }
+
+  virtual itk::VariableLengthVector<float>
   GetFischerMatrix()
   {
     // Return the whole Fischer information matrix

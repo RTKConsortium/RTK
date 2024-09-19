@@ -40,14 +40,19 @@ SpectralForwardModelImageFilter<DecomposedProjectionsType,
   m_NumberOfSpectralBins = 8;
   m_IsSpectralCT = true;
   m_ComputeVariances = false;
+  m_ComputeCramerRaoLowerBound = false;
 
-  this->SetNumberOfIndexedOutputs(2); // decomposed projections, inverse variance of decomposition noise
+  this->SetNumberOfIndexedOutputs(
+    3); // dual energy/ photon counts, variance of the distribution, Cramer-Rao lower bound.
 
-  // Dual energy projections (mean of the distribution)
+  // Dual energy projections (mean of the distribution) or photon counts in case of spectral CT.
   this->SetNthOutput(0, this->MakeOutput(0));
 
   // Variance of the distribution
   this->SetNthOutput(1, this->MakeOutput(1));
+
+  // Cramer-rao lower bound
+  this->SetNthOutput(2, this->MakeOutput(2));
 }
 
 template <typename DecomposedProjectionsType,
@@ -241,6 +246,21 @@ template <typename DecomposedProjectionsType,
           typename IncidentSpectrumImageType,
           typename DetectorResponseImageType,
           typename MaterialAttenuationsImageType>
+typename DecomposedProjectionsType::ConstPointer
+SpectralForwardModelImageFilter<DecomposedProjectionsType,
+                                MeasuredProjectionsType,
+                                IncidentSpectrumImageType,
+                                DetectorResponseImageType,
+                                MaterialAttenuationsImageType>::GetOutputCramerRaoLowerBound()
+{
+  return static_cast<const DecomposedProjectionsType *>(this->GetOutput(2));
+}
+
+template <typename DecomposedProjectionsType,
+          typename MeasuredProjectionsType,
+          typename IncidentSpectrumImageType,
+          typename DetectorResponseImageType,
+          typename MaterialAttenuationsImageType>
 itk::DataObject::Pointer
 SpectralForwardModelImageFilter<DecomposedProjectionsType,
                                 MeasuredProjectionsType,
@@ -253,11 +273,13 @@ SpectralForwardModelImageFilter<DecomposedProjectionsType,
   switch (idx)
   {
     case 0:
-      output = (DecomposedProjectionsType::New()).GetPointer();
+      output = (MeasuredProjectionsType::New()).GetPointer();
       break;
     case 1:
-      output = (DecomposedProjectionsType::New()).GetPointer();
+      output = (MeasuredProjectionsType::New()).GetPointer();
       break;
+    case 2:
+      output = (DecomposedProjectionsType::New()).GetPointer();
   }
   return output.GetPointer();
 }
@@ -275,10 +297,11 @@ SpectralForwardModelImageFilter<DecomposedProjectionsType,
                                 MaterialAttenuationsImageType>::GenerateOutputInformation()
 {
   Superclass::GenerateOutputInformation();
-
   this->m_NumberOfSpectralBins = this->GetInputMeasuredProjections()->GetVectorLength();
   this->m_NumberOfMaterials = this->GetInputDecomposedProjections()->GetVectorLength();
   this->m_NumberOfEnergies = this->GetInputIncidentSpectrum()->GetVectorLength();
+  this->GetOutput(2)->SetLargestPossibleRegion(this->GetInputDecomposedProjections()->GetLargestPossibleRegion());
+  this->GetOutput(2)->SetVectorLength(this->m_NumberOfMaterials);
 }
 
 template <typename DecomposedProjectionsType,
@@ -400,7 +423,8 @@ SpectralForwardModelImageFilter<DecomposedProjectionsType,
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // Walk the output projection stack. For each pixel, set the cost function's member variables and run the optimizer.
   itk::ImageRegionIterator<MeasuredProjectionsType>        output0It(this->GetOutput(0), outputRegionForThread);
-  itk::ImageRegionIterator<DecomposedProjectionsType>      output1It(this->GetOutput(1), outputRegionForThread);
+  itk::ImageRegionIterator<MeasuredProjectionsType>        output1It(this->GetOutput(1), outputRegionForThread);
+  itk::ImageRegionIterator<DecomposedProjectionsType>      output2It(this->GetOutput(2), outputRegionForThread);
   itk::ImageRegionConstIterator<DecomposedProjectionsType> inIt(this->GetInputDecomposedProjections(),
                                                                 outputRegionForThread);
 
@@ -473,6 +497,21 @@ SpectralForwardModelImageFilter<DecomposedProjectionsType,
       output1It.Set(
         itk::VariableLengthVector<double>(cost->GetVariances(in).data_block(), this->m_NumberOfSpectralBins));
       ++output1It;
+    }
+
+    // If requested, compute the Cramer Rao Lower bound (only for spectral CT).
+    if (m_IsSpectralCT)
+    {
+      if (m_ComputeCramerRaoLowerBound)
+      {
+        rtk::ProjectionsDecompositionNegativeLogLikelihood::MeasuredDataType photon_counts;
+        photon_counts.SetSize(forward.size());
+        photon_counts.SetData(forward.data_block());
+        cost->SetMeasuredData(photon_counts);
+        cost->ComputeFischerMatrix(in);
+        output2It.Set(cost->GetCramerRaoLowerBound());
+        ++output2It;
+      }
     }
 
     // Move forward
