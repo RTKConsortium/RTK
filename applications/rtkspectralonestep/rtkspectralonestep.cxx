@@ -201,40 +201,10 @@ rtkspectralonestep(const args_info_rtkspectralonestep & args_info)
     mechlemOneStep->SetSupportMask(supportmask);
   if (args_info.regul_spatial_weights_given)
     mechlemOneStep->SetSpatialRegularizationWeights(spatialRegulWeighs);
-
-  // If subsets are used, reorder projections and geometry according to
-  // a random permutation
-  if (args_info.subsets_arg != 1)
-  {
-    using ReorderProjectionsFilterType = rtk::ReorderProjectionsImageFilter<PhotonCountsType>;
-    typename ReorderProjectionsFilterType::Pointer reorder_PhotonsCounts = ReorderProjectionsFilterType::New();
-    reorder_PhotonsCounts->SetInput(photonCounts);
-    reorder_PhotonsCounts->SetInputGeometry(geometry);
-    reorder_PhotonsCounts->SetPermutation(rtk::ReorderProjectionsImageFilter<PhotonCountsType>::SHUFFLE);
-    reorder_PhotonsCounts->Update();
-    mechlemOneStep->SetInputPhotonCounts(reorder_PhotonsCounts->GetOutput());
-    mechlemOneStep->SetGeometry(reorder_PhotonsCounts->GetOutputGeometry());
-    if (args_info.projection_weights_given)
-    {
-      // N.B: The permutation of photon counts and weights correspond because we use the SHUFFLE case mode initialized
-      // to zero (cf case (SHUFFLE): in ReorderProjectionsImageFilter.hxx)
-      using ReorderWeightsFilterType = rtk::ReorderProjectionsImageFilter<IncidentSpectrumType>;
-      typename ReorderWeightsFilterType::Pointer reorder_ProjectionWeights = ReorderWeightsFilterType::New();
-      reorder_ProjectionWeights->SetInput(projectionWeights);
-      // Here we get geometry which has not been shuffled
-      reorder_ProjectionWeights->SetInputGeometry(geometry);
-      reorder_ProjectionWeights->SetPermutation(rtk::ReorderProjectionsImageFilter<IncidentSpectrumType>::SHUFFLE);
-      reorder_ProjectionWeights->Update();
-      mechlemOneStep->SetProjectionWeights(reorder_ProjectionWeights->GetOutput());
-    }
-  }
-  else
-  {
-    mechlemOneStep->SetInputPhotonCounts(photonCounts);
-    mechlemOneStep->SetGeometry(geometry);
-    if (args_info.projection_weights_given)
-      mechlemOneStep->SetProjectionWeights(projectionWeights);
-  }
+  mechlemOneStep->SetInputPhotonCounts(photonCounts);
+  mechlemOneStep->SetGeometry(geometry);
+  if (args_info.projection_weights_given)
+    mechlemOneStep->SetProjectionWeights(projectionWeights);
 
   REPORT_ITERATIONS(mechlemOneStep, MechlemFilterType, MaterialVolumesType);
 
