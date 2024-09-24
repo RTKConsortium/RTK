@@ -57,6 +57,8 @@ MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectru
   m_NewtonFilter = NewtonFilterType::New();
   m_NesterovFilter = NesterovFilterType::New();
   m_MultiplySupportFilter = MultiplyFilterType::New();
+  m_ReorderPhotonCountsFilter = ReorderProjectionsFilterPhotonCountsType::New();
+  m_ReorderProjectionsWeightsFilter = ReorderProjectionsFilterProjectionsWeightsType::New();
 
   // Set permanent parameters
   m_ProjectionsSource->SetConstant(itk::NumericTraits<typename TOutputImage::PixelType>::ZeroValue());
@@ -333,7 +335,17 @@ MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectru
   // Set runtime connections. Links with the forward and back projection filters should be set here,
   // since those filters are not instantiated by the constructor, but by
   // a call to SetForwardProjectionFilter() and SetBackProjectionFilter()
-  m_ExtractPhotonCountsFilter->SetInput(this->GetInputPhotonCounts());
+  if (m_NumberOfSubsets != 1)
+  {
+    m_ReorderPhotonCountsFilter->SetInput(this->GetInputPhotonCounts());
+    m_ReorderPhotonCountsFilter->SetInputGeometry(this->m_Geometry);
+    m_ReorderPhotonCountsFilter->SetPermutation(ReorderProjectionsFilterPhotonCountsType::SHUFFLE);
+    m_ExtractPhotonCountsFilter->SetInput(m_ReorderPhotonCountsFilter->GetOutput());
+  }
+  else
+  {
+    m_ExtractPhotonCountsFilter->SetInput(this->GetInputPhotonCounts());
+  }
 
   m_ForwardProjectionFilter->SetInput(0, m_ProjectionsSource->GetOutput());
   m_ForwardProjectionFilter->SetInput(1, this->GetInputMaterialVolumes());
@@ -350,7 +362,17 @@ MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectru
   if (this->GetProjectionWeights().GetPointer() != nullptr)
   {
     m_MultiplyGradientToBeBackprojectedFilter->SetInput1(m_WeidingerForward->GetOutput1());
-    m_MultiplyGradientToBeBackprojectedFilter->SetInput2(this->GetProjectionWeights());
+    if (m_NumberOfSubsets != 1)
+    {
+      m_ReorderProjectionsWeightsFilter->SetInput(this->GetProjectionWeights());
+      m_ReorderProjectionsWeightsFilter->SetInputGeometry(this->m_Geometry);
+      m_ReorderProjectionsWeightsFilter->SetPermutation(ReorderProjectionsFilterProjectionsWeightsType::SHUFFLE);
+      m_MultiplyGradientToBeBackprojectedFilter->SetInput2(m_ReorderProjectionsWeightsFilter->GetOutput());
+    }
+    else
+    {
+      m_MultiplyGradientToBeBackprojectedFilter->SetInput2(this->GetProjectionWeights());
+    }
     m_GradientsBackProjectionFilter->SetInput(1, m_MultiplyGradientToBeBackprojectedFilter->GetOutput());
   }
   else
@@ -426,6 +448,16 @@ void
 MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectrum>::GenerateData()
 {
   itk::IterationReporter iterationReporter(this, 0, 1);
+
+  // If subsets are used the photons counts and geometry are shuffled, then geometry need to be set again.
+  if (m_NumberOfSubsets != 1)
+  {
+    m_ReorderPhotonCountsFilter->Update();
+    m_ForwardProjectionFilter->SetGeometry(m_ReorderPhotonCountsFilter->GetOutputGeometry());
+    m_SingleComponentForwardProjectionFilter->SetGeometry(m_ReorderPhotonCountsFilter->GetOutputGeometry());
+    m_GradientsBackProjectionFilter->SetGeometry(m_ReorderPhotonCountsFilter->GetOutputGeometry());
+    m_HessiansBackProjectionFilter->SetGeometry(m_ReorderPhotonCountsFilter->GetOutputGeometry());
+  }
 
   // Run the iteration loop
   typename TOutputImage::Pointer Next_Zk;

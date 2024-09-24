@@ -27,6 +27,7 @@
 #include "rtkNesterovUpdateImageFilter.h"
 #include "rtkSeparableQuadraticSurrogateRegularizationImageFilter.h"
 #include "rtkAddMatrixAndDiagonalImageFilter.h"
+#include "rtkReorderProjectionsImageFilter.h"
 
 #include <itkExtractImageFilter.h>
 #include <itkAddImageFilter.h>
@@ -97,12 +98,17 @@ namespace rtk
  * MultiplySupport [ label="itk::MultiplyImageFilter" URL="\ref itk::MultiplyImageFilter" style=dashed];
  * Alphak [ label="", fixedsize="false", width=0, height=0, shape=none];
  * NextAlphak [ label="", fixedsize="false", width=0, height=0, shape=none];
+ * ReorderProjections [label="rtk::ReorderProjectionsImageFilter (Photon Counts)"
+ *                       URL="\ref ReorderProjectionsImageFilter" style=dashed];
+ * ReorderProjectionsWeights [label="rtk::ReorderProjectionsImageFilter (Projection Weights)"
+ *                            URL="\ref ReorderProjectionsImageFilter" style=dashed];
  *
  * Input0 -> Alphak [arrowhead=none];
  * Alphak -> ForwardProjection;
  * Alphak -> SQSRegul;
  * ProjectionsSource -> ForwardProjection;
- * Input1 -> Extract;
+ * Input1 -> ReorderProjections;
+ * ReorderProjections -> Extract;
  * Extract -> Weidinger;
  * Input2 -> Weidinger;
  * ForwardProjection -> Weidinger;
@@ -116,7 +122,8 @@ namespace rtk
  * Input4 -> MultiplyRegulGradient;
  * SQSRegul -> MultiplyRegulGradient;
  * MultiplyRegulGradient -> AddGradients;
- * Input5 -> MultiplyGradientToBeBackProjected;
+ * Input5 -> ReorderProjectionsWeights;
+ * ReorderProjectionsWeights-> MultiplyGradientToBeBackProjected;
  * Weidinger -> MultiplyGradientToBeBackProjected
  * MultiplyGradientToBeBackProjected -> AddGradients;
  * AddGradients -> Newton;
@@ -233,10 +240,12 @@ public:
   using NewtonFilterType = rtk::GetNewtonUpdateImageFilter<GradientsImageType, HessiansImageType>;
   using MultiplyFilterType = itk::MultiplyImageFilter<TOutputImage, SingleComponentImageType>;
   using MultiplyGradientFilterType = itk::MultiplyImageFilter<GradientsImageType, SingleComponentImageType>;
+  using ReorderProjectionsFilterPhotonCountsType = rtk::ReorderProjectionsImageFilter<TPhotonCounts>;
+  using ReorderProjectionsFilterProjectionsWeightsType = rtk::ReorderProjectionsImageFilter<SingleComponentImageType>;
 #endif
 
   /** Pass the geometry to all filters needing it */
-  itkSetConstObjectMacro(Geometry, ThreeDCircularProjectionGeometry);
+  itkSetObjectMacro(Geometry, ThreeDCircularProjectionGeometry);
 
   itkSetMacro(NumberOfIterations, int);
   itkGetMacro(NumberOfIterations, int);
@@ -296,26 +305,28 @@ protected:
 
 #if !defined(ITK_WRAPPING_PARSER)
   /** Member pointers to the filters used internally (for convenience)*/
-  typename ExtractPhotonCountsFilterType::Pointer              m_ExtractPhotonCountsFilter;
-  typename AddFilterType::Pointer                              m_AddGradients;
-  typename SingleComponentForwardProjectionFilterType::Pointer m_SingleComponentForwardProjectionFilter;
-  typename MaterialProjectionsSourceType::Pointer              m_ProjectionsSource;
-  typename SingleComponentImageSourceType::Pointer             m_SingleComponentProjectionsSource;
-  typename SingleComponentImageSourceType::Pointer             m_SingleComponentVolumeSource;
-  typename GradientsSourceType::Pointer                        m_GradientsSource;
-  typename HessiansSourceType::Pointer                         m_HessiansSource;
-  typename WeidingerForwardModelType::Pointer                  m_WeidingerForward;
-  typename SQSRegularizationType::Pointer                      m_SQSRegul;
-  typename AddMatrixAndDiagonalFilterType::Pointer             m_AddHessians;
-  typename NewtonFilterType::Pointer                           m_NewtonFilter;
-  typename NesterovFilterType::Pointer                         m_NesterovFilter;
-  typename ForwardProjectionFilterType::Pointer                m_ForwardProjectionFilter;
-  typename GradientsBackProjectionFilterType::Pointer          m_GradientsBackProjectionFilter;
-  typename HessiansBackProjectionFilterType::Pointer           m_HessiansBackProjectionFilter;
-  typename MultiplyFilterType::Pointer                         m_MultiplySupportFilter;
-  typename MultiplyGradientFilterType::Pointer                 m_MultiplyRegulGradientsFilter;
-  typename MultiplyGradientFilterType::Pointer                 m_MultiplyRegulHessiansFilter;
-  typename MultiplyGradientFilterType::Pointer                 m_MultiplyGradientToBeBackprojectedFilter;
+  typename ExtractPhotonCountsFilterType::Pointer                  m_ExtractPhotonCountsFilter;
+  typename AddFilterType::Pointer                                  m_AddGradients;
+  typename SingleComponentForwardProjectionFilterType::Pointer     m_SingleComponentForwardProjectionFilter;
+  typename MaterialProjectionsSourceType::Pointer                  m_ProjectionsSource;
+  typename SingleComponentImageSourceType::Pointer                 m_SingleComponentProjectionsSource;
+  typename SingleComponentImageSourceType::Pointer                 m_SingleComponentVolumeSource;
+  typename GradientsSourceType::Pointer                            m_GradientsSource;
+  typename HessiansSourceType::Pointer                             m_HessiansSource;
+  typename WeidingerForwardModelType::Pointer                      m_WeidingerForward;
+  typename SQSRegularizationType::Pointer                          m_SQSRegul;
+  typename AddMatrixAndDiagonalFilterType::Pointer                 m_AddHessians;
+  typename NewtonFilterType::Pointer                               m_NewtonFilter;
+  typename NesterovFilterType::Pointer                             m_NesterovFilter;
+  typename ForwardProjectionFilterType::Pointer                    m_ForwardProjectionFilter;
+  typename GradientsBackProjectionFilterType::Pointer              m_GradientsBackProjectionFilter;
+  typename HessiansBackProjectionFilterType::Pointer               m_HessiansBackProjectionFilter;
+  typename MultiplyFilterType::Pointer                             m_MultiplySupportFilter;
+  typename MultiplyGradientFilterType::Pointer                     m_MultiplyRegulGradientsFilter;
+  typename MultiplyGradientFilterType::Pointer                     m_MultiplyRegulHessiansFilter;
+  typename MultiplyGradientFilterType::Pointer                     m_MultiplyGradientToBeBackprojectedFilter;
+  typename ReorderProjectionsFilterPhotonCountsType::Pointer       m_ReorderPhotonCountsFilter;
+  typename ReorderProjectionsFilterProjectionsWeightsType::Pointer m_ReorderProjectionsWeightsFilter;
 #endif
 
   /** The inputs of this filter have the same type but not the same meaning
@@ -355,7 +366,7 @@ protected:
   InstantiateHessiansBackProjectionFilter(int bptype);
 #endif
 
-  ThreeDCircularProjectionGeometry::ConstPointer m_Geometry;
+  ThreeDCircularProjectionGeometry::Pointer m_Geometry;
 
   int              m_NumberOfIterations;
   int              m_NumberOfProjectionsPerSubset;
