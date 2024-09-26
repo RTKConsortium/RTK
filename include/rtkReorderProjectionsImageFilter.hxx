@@ -65,17 +65,19 @@ ReorderProjectionsImageFilter<TInputImage, TOutputImage>::VerifyPreconditions() 
 
 template <class TInputImage, class TOutputImage>
 void
-ReorderProjectionsImageFilter<TInputImage, TOutputImage>::GenerateData()
+ReorderProjectionsImageFilter<TInputImage, TOutputImage>::GenerateOutputInformation()
 {
+  Superclass::GenerateOutputInformation();
+
   unsigned int NumberOfProjections =
     this->GetInput()->GetLargestPossibleRegion().GetSize()[TInputImage::ImageDimension - 1];
-  std::vector<unsigned int> permutation;
+  m_NewIndices.clear();
   switch (m_Permutation)
   {
     case (NONE):
     {
       for (unsigned int i = 0; i < NumberOfProjections; i++)
-        permutation.push_back(i);
+        m_NewIndices.push_back(i);
       break;
     }
     case (SORT):
@@ -92,31 +94,20 @@ ReorderProjectionsImageFilter<TInputImage, TOutputImage>::GenerateData()
 
       // Extract the permutated indices
       for (unsigned int i = 0; i < NumberOfProjections; i++)
-        permutation.push_back(pairsVector[i].second);
+        m_NewIndices.push_back(pairsVector[i].second);
       break;
     }
     case (SHUFFLE):
     {
       for (unsigned int i = 0; i < NumberOfProjections; i++)
-        permutation.push_back(i);
+        m_NewIndices.push_back(i);
       std::default_random_engine randomGenerator(0); // The seed is hard-coded to 0 to make the behavior reproducible
-      std::shuffle(permutation.begin(), permutation.end(), randomGenerator);
+      std::shuffle(m_NewIndices.begin(), m_NewIndices.end(), randomGenerator);
       break;
     }
     default:
       itkGenericExceptionMacro(<< "Unhandled projection reordering method");
   }
-
-  // Allocate the pixels of the output, and at first fill them with zeros
-  this->GetOutput()->SetBufferedRegion(this->GetOutput()->GetRequestedRegion());
-  this->GetOutput()->Allocate();
-  this->GetOutput()->FillBuffer(itk::NumericTraits<typename TInputImage::PixelType>::ZeroValue());
-
-  // Declare regions used in the loop
-  typename TInputImage::RegionType inputRegion = this->GetOutput()->GetRequestedRegion();
-  typename TInputImage::RegionType outputRegion = this->GetOutput()->GetRequestedRegion();
-  inputRegion.SetSize(2, 1);
-  outputRegion.SetSize(2, 1);
 
   // Initialize objects (otherwise, if the filter runs several times,
   // the outputs become incorrect)
@@ -124,12 +115,51 @@ ReorderProjectionsImageFilter<TInputImage, TOutputImage>::GenerateData()
   m_OutputSignal.clear();
 
   // Perform the copies
-  for (unsigned int proj = 0; proj < this->GetOutput()->GetRequestedRegion().GetSize()[2]; proj++)
+  for (unsigned int proj = 0; proj < NumberOfProjections; proj++)
   {
-    // Copy the projection data
+    // Copy the geometry
+    m_OutputGeometry->SetRadiusCylindricalDetector(m_InputGeometry->GetRadiusCylindricalDetector());
+    m_OutputGeometry->AddProjectionInRadians(m_InputGeometry->GetSourceToIsocenterDistances()[m_NewIndices[proj]],
+                                             m_InputGeometry->GetSourceToDetectorDistances()[m_NewIndices[proj]],
+                                             m_InputGeometry->GetGantryAngles()[m_NewIndices[proj]],
+                                             m_InputGeometry->GetProjectionOffsetsX()[m_NewIndices[proj]],
+                                             m_InputGeometry->GetProjectionOffsetsY()[m_NewIndices[proj]],
+                                             m_InputGeometry->GetOutOfPlaneAngles()[m_NewIndices[proj]],
+                                             m_InputGeometry->GetInPlaneAngles()[m_NewIndices[proj]],
+                                             m_InputGeometry->GetSourceOffsetsX()[m_NewIndices[proj]],
+                                             m_InputGeometry->GetSourceOffsetsY()[m_NewIndices[proj]]);
+    m_OutputGeometry->SetCollimationOfLastProjection(m_InputGeometry->GetCollimationUInf()[m_NewIndices[proj]],
+                                                     m_InputGeometry->GetCollimationUSup()[m_NewIndices[proj]],
+                                                     m_InputGeometry->GetCollimationVInf()[m_NewIndices[proj]],
+                                                     m_InputGeometry->GetCollimationVSup()[m_NewIndices[proj]]);
+
+    // Copy the signal, if any
+    if (m_Permutation == SORT)
+      m_OutputSignal.push_back(m_InputSignal[m_NewIndices[proj]]);
+  }
+}
+
+template <class TInputImage, class TOutputImage>
+void
+ReorderProjectionsImageFilter<TInputImage, TOutputImage>::GenerateData()
+{
+  // Allocate the pixels of the output
+  this->GetOutput()->SetBufferedRegion(this->GetOutput()->GetRequestedRegion());
+  this->GetOutput()->Allocate();
+
+  // Declare regions used in the loop
+  typename TInputImage::RegionType inputRegion = this->GetOutput()->GetRequestedRegion();
+  typename TInputImage::RegionType outputRegion = this->GetOutput()->GetRequestedRegion();
+  inputRegion.SetSize(2, 1);
+  outputRegion.SetSize(2, 1);
+
+  // Copy the projection data
+  for (unsigned int i = 0; i < this->GetOutput()->GetRequestedRegion().GetSize()[2]; i++)
+  {
+    const unsigned int proj = i + this->GetOutput()->GetRequestedRegion().GetIndex()[2];
 
     // Regions
-    inputRegion.SetIndex(2, permutation[proj]);
+    inputRegion.SetIndex(2, m_NewIndices[proj]);
     outputRegion.SetIndex(2, proj);
 
     itk::ImageRegionConstIterator<TInputImage> inputProjsIt(this->GetInput(), inputRegion);
@@ -142,26 +172,6 @@ ReorderProjectionsImageFilter<TInputImage, TOutputImage>::GenerateData()
       ++outputProjsIt;
       ++inputProjsIt;
     }
-
-    // Copy the geometry
-    m_OutputGeometry->SetRadiusCylindricalDetector(m_InputGeometry->GetRadiusCylindricalDetector());
-    m_OutputGeometry->AddProjectionInRadians(m_InputGeometry->GetSourceToIsocenterDistances()[permutation[proj]],
-                                             m_InputGeometry->GetSourceToDetectorDistances()[permutation[proj]],
-                                             m_InputGeometry->GetGantryAngles()[permutation[proj]],
-                                             m_InputGeometry->GetProjectionOffsetsX()[permutation[proj]],
-                                             m_InputGeometry->GetProjectionOffsetsY()[permutation[proj]],
-                                             m_InputGeometry->GetOutOfPlaneAngles()[permutation[proj]],
-                                             m_InputGeometry->GetInPlaneAngles()[permutation[proj]],
-                                             m_InputGeometry->GetSourceOffsetsX()[permutation[proj]],
-                                             m_InputGeometry->GetSourceOffsetsY()[permutation[proj]]);
-    m_OutputGeometry->SetCollimationOfLastProjection(m_InputGeometry->GetCollimationUInf()[permutation[proj]],
-                                                     m_InputGeometry->GetCollimationUSup()[permutation[proj]],
-                                                     m_InputGeometry->GetCollimationVInf()[permutation[proj]],
-                                                     m_InputGeometry->GetCollimationVSup()[permutation[proj]]);
-
-    // Copy the signal, if any
-    if (m_Permutation == SORT)
-      m_OutputSignal.push_back(m_InputSignal[permutation[proj]]);
   }
 }
 
