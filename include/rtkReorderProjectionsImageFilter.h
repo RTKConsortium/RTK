@@ -97,6 +97,9 @@ protected:
   VerifyPreconditions() const override;
 
   void
+  GenerateOutputInformation() override;
+
+  void
   GenerateData() override;
 
 private:
@@ -111,6 +114,8 @@ private:
   /** Permutation type */
   PermutationType m_Permutation;
 
+  /** Indices in the original stack for the new stack */
+  std::vector<unsigned int> m_NewIndices;
 }; // end of class
 
 } // end namespace rtk

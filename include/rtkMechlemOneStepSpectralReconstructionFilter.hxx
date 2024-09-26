@@ -341,6 +341,10 @@ MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectru
     m_ReorderPhotonCountsFilter->SetInputGeometry(this->m_Geometry);
     m_ReorderPhotonCountsFilter->SetPermutation(ReorderProjectionsFilterPhotonCountsType::SHUFFLE);
     m_ExtractPhotonCountsFilter->SetInput(m_ReorderPhotonCountsFilter->GetOutput());
+    m_ForwardProjectionFilter->SetGeometry(m_ReorderPhotonCountsFilter->GetOutputGeometry());
+    m_SingleComponentForwardProjectionFilter->SetGeometry(m_ReorderPhotonCountsFilter->GetOutputGeometry());
+    m_GradientsBackProjectionFilter->SetGeometry(m_ReorderPhotonCountsFilter->GetOutputGeometry());
+    m_HessiansBackProjectionFilter->SetGeometry(m_ReorderPhotonCountsFilter->GetOutputGeometry());
   }
   else
   {
@@ -448,16 +452,6 @@ void
 MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectrum>::GenerateData()
 {
   itk::IterationReporter iterationReporter(this, 0, 1);
-
-  // If subsets are used the photons counts and geometry are shuffled, then geometry need to be set again.
-  if (m_NumberOfSubsets != 1)
-  {
-    m_ReorderPhotonCountsFilter->Update();
-    m_ForwardProjectionFilter->SetGeometry(m_ReorderPhotonCountsFilter->GetOutputGeometry());
-    m_SingleComponentForwardProjectionFilter->SetGeometry(m_ReorderPhotonCountsFilter->GetOutputGeometry());
-    m_GradientsBackProjectionFilter->SetGeometry(m_ReorderPhotonCountsFilter->GetOutputGeometry());
-    m_HessiansBackProjectionFilter->SetGeometry(m_ReorderPhotonCountsFilter->GetOutputGeometry());
-  }
 
   // Run the iteration loop
   typename TOutputImage::Pointer Next_Zk;
