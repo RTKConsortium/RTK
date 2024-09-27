@@ -215,6 +215,7 @@ main(int, char **)
     // Signal
     signalFile << (noProj % 8) / 8. << std::endl;
   }
+  signalFile.close();
 
   // Create a vector field and its (very rough) inverse
   using IteratorType = itk::ImageRegionIteratorWithIndex<DVFSequenceImageType>;

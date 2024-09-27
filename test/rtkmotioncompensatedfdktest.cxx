@@ -160,6 +160,7 @@ main(int, char **)
     // Signal
     signalFile << (noProj % 8) / 8. << std::endl;
   }
+  signalFile.close();
 
   // Create vector field
   using DVFPixelType = itk::Vector<float, 3>;
