@@ -132,6 +132,7 @@ main(int, char **)
   std::string   signalFileName = "signal_CyclicDeformation.txt";
   std::ofstream signalFile(signalFileName.c_str());
   signalFile << "0.3" << std::endl;
+  signalFile.close();
 
   // Set the forward and back projection filters to be used
   using CyclicDeformationType = rtk::CyclicDeformationImageFilter<DVFSequenceImageType, DVFImageType>;

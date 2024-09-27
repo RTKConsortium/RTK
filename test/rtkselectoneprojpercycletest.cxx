@@ -140,6 +140,7 @@ main(int, char **)
     // Signal
     signalFile << (noProj % 8) / 8. << std::endl;
   }
+  signalFile.close();
 
   // Select
   using SelectionType = rtk::SelectOneProjectionPerCycleImageFilter<OutputImageType>;

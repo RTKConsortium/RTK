@@ -211,6 +211,7 @@ main(int, char **)
     // Signal
     signalFile << (noProj % 8) / 8. << std::endl;
   }
+  signalFile.close();
 
   // Ground truth
   auto * Volumes = new VolumeType::Pointer[fourDSize[3]];
