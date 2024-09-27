@@ -341,6 +341,7 @@ MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectru
     m_ReorderPhotonCountsFilter->SetInputGeometry(this->m_Geometry);
     m_ReorderPhotonCountsFilter->SetPermutation(ReorderProjectionsFilterPhotonCountsType::SHUFFLE);
     m_ExtractPhotonCountsFilter->SetInput(m_ReorderPhotonCountsFilter->GetOutput());
+
     m_ForwardProjectionFilter->SetGeometry(m_ReorderPhotonCountsFilter->GetOutputGeometry());
     m_SingleComponentForwardProjectionFilter->SetGeometry(m_ReorderPhotonCountsFilter->GetOutputGeometry());
     m_GradientsBackProjectionFilter->SetGeometry(m_ReorderPhotonCountsFilter->GetOutputGeometry());
@@ -349,6 +350,11 @@ MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectru
   else
   {
     m_ExtractPhotonCountsFilter->SetInput(this->GetInputPhotonCounts());
+
+    m_ForwardProjectionFilter->SetGeometry(this->m_Geometry);
+    m_SingleComponentForwardProjectionFilter->SetGeometry(this->m_Geometry);
+    m_GradientsBackProjectionFilter->SetGeometry(this->m_Geometry.GetPointer());
+    m_HessiansBackProjectionFilter->SetGeometry(this->m_Geometry.GetPointer());
   }
 
   m_ForwardProjectionFilter->SetInput(0, m_ProjectionsSource->GetOutput());
@@ -429,12 +435,6 @@ MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectru
   m_SingleComponentVolumeSource->SetInformationFromImage(this->GetInputMaterialVolumes());
   m_GradientsSource->SetInformationFromImage(this->GetInputMaterialVolumes());
   m_HessiansSource->SetInformationFromImage(this->GetInputMaterialVolumes());
-
-  // For the same reason, set geometry now
-  m_ForwardProjectionFilter->SetGeometry(this->m_Geometry);
-  m_SingleComponentForwardProjectionFilter->SetGeometry(this->m_Geometry);
-  m_GradientsBackProjectionFilter->SetGeometry(this->m_Geometry.GetPointer());
-  m_HessiansBackProjectionFilter->SetGeometry(this->m_Geometry.GetPointer());
 
   // Set regularization parameters
   m_SQSRegul->SetRegularizationWeights(m_RegularizationWeights);
