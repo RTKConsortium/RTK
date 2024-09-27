@@ -61,6 +61,7 @@ public:
   using PermutationType = enum { NONE = 0, SORT = 1, SHUFFLE = 2 };
 
   using GeometryType = ThreeDCircularProjectionGeometry;
+  using GeometryConstPointer = GeometryType::ConstPointer;
   using GeometryPointer = GeometryType::Pointer;
 
   /** Standard New method. */
@@ -75,7 +76,7 @@ public:
 
   /** Get / Set the object pointer to projection geometry */
   itkGetModifiableObjectMacro(OutputGeometry, GeometryType);
-  itkSetObjectMacro(InputGeometry, GeometryType);
+  itkSetConstObjectMacro(InputGeometry, ThreeDCircularProjectionGeometry);
 
   /** Get / Set the kind of permutation requested */
   itkGetMacro(Permutation, PermutationType);
@@ -104,8 +105,8 @@ protected:
 
 private:
   /** RTK geometry objects */
-  GeometryPointer m_InputGeometry;
-  GeometryPointer m_OutputGeometry;
+  GeometryConstPointer m_InputGeometry;
+  GeometryPointer      m_OutputGeometry;
 
   /** Input and output signal vectors */
   std::vector<double> m_InputSignal;

@@ -245,7 +245,7 @@ public:
 #endif
 
   /** Pass the geometry to all filters needing it */
-  itkSetObjectMacro(Geometry, ThreeDCircularProjectionGeometry);
+  itkSetConstObjectMacro(Geometry, ThreeDCircularProjectionGeometry);
 
   itkSetMacro(NumberOfIterations, int);
   itkGetMacro(NumberOfIterations, int);
@@ -366,7 +366,7 @@ protected:
   InstantiateHessiansBackProjectionFilter(int bptype);
 #endif
 
-  ThreeDCircularProjectionGeometry::Pointer m_Geometry;
+  ThreeDCircularProjectionGeometry::ConstPointer m_Geometry;
 
   int              m_NumberOfIterations;
   int              m_NumberOfProjectionsPerSubset;
