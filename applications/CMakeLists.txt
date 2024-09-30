@@ -89,6 +89,7 @@ add_subdirectory(rtkmaskcollimation)
 add_subdirectory(rtkspectraldenoiseprojections)
 add_subdirectory(rtkprojectionmatrix)
 add_subdirectory(rtkvectorconjugategradient)
+add_subdirectory(rtkdualenergyforwardmodel)
 
 add_subdirectory(rtkcheckimagequality)
 
