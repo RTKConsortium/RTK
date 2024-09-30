@@ -108,10 +108,8 @@ public:
     vnl_vector<double> variances = GetVariances(parameters);
 
     long double measure = 0;
-    // TODO: Improve this estimation
-    // We assume that the variance of the integrated energy is equal to the mean
     // From equation (5) of "Cramer-Rao lower bound of basis image noise in multiple-energy x-ray imaging",
-    // PMB 2009, Roessl et al, we replace the variance with the mean
+    // PMB 2009, Roessl et al.
 
     // Compute the negative log likelihood from the expectedEnergies
     for (unsigned int i = 0; i < this->m_NumberOfMaterials; i++)

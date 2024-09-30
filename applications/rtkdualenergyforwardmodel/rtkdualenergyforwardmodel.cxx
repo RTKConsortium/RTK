@@ -134,9 +134,7 @@ main(int argc, char * argv[])
   // If requested, write the variances
   if (args_info.variances_given)
   {
-    writer->SetInput(forward->GetOutput(1));
-    writer->SetFileName(args_info.variances_arg);
-    writer->Update();
+    TRY_AND_EXIT_ON_ITK_EXCEPTION(itk::WriteImage(forward->GetOutputVariances(), args_info.variances_arg))
   }
 
   return EXIT_SUCCESS;

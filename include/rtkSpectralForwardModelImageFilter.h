@@ -112,6 +112,9 @@ public:
   typename DecomposedProjectionsType::ConstPointer
   GetOutputCramerRaoLowerBound();
 
+  typename MeasuredProjectionsType::ConstPointer
+  GetOutputVariances();
+
   itkSetMacro(Thresholds, ThresholdsType);
   itkGetMacro(Thresholds, ThresholdsType);
 
