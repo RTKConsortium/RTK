@@ -111,16 +111,24 @@ main(int argc, char * argv[])
   forward->SetIsSpectralCT(true);
   if (args_info.cramer_rao_given)
     forward->SetComputeCramerRaoLowerBound(true);
+  if (args_info.variances_given)
+    forward->SetComputeVariances(true);
 
   TRY_AND_EXIT_ON_ITK_EXCEPTION(forward->Update())
 
   // Write output
   TRY_AND_EXIT_ON_ITK_EXCEPTION(itk::WriteImage(forward->GetOutput(), args_info.output_arg))
 
-  // If requested, write the variance
+  // If requested, write the Cramer-Rao lower bound
   if (args_info.cramer_rao_given)
   {
     TRY_AND_EXIT_ON_ITK_EXCEPTION(itk::WriteImage(forward->GetOutputCramerRaoLowerBound(), args_info.cramer_rao_arg))
+  }
+
+  // If requested, write the variance
+  if (args_info.variances_given)
+  {
+    TRY_AND_EXIT_ON_ITK_EXCEPTION(itk::WriteImage(forward->GetOutputVariances(), args_info.variances_arg))
   }
 
 

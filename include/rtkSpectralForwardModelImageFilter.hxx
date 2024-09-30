@@ -261,6 +261,21 @@ template <typename DecomposedProjectionsType,
           typename IncidentSpectrumImageType,
           typename DetectorResponseImageType,
           typename MaterialAttenuationsImageType>
+typename MeasuredProjectionsType::ConstPointer
+SpectralForwardModelImageFilter<DecomposedProjectionsType,
+                                MeasuredProjectionsType,
+                                IncidentSpectrumImageType,
+                                DetectorResponseImageType,
+                                MaterialAttenuationsImageType>::GetOutputVariances()
+{
+  return static_cast<const MeasuredProjectionsType *>(this->GetOutput(1));
+}
+
+template <typename DecomposedProjectionsType,
+          typename MeasuredProjectionsType,
+          typename IncidentSpectrumImageType,
+          typename DetectorResponseImageType,
+          typename MaterialAttenuationsImageType>
 itk::DataObject::Pointer
 SpectralForwardModelImageFilter<DecomposedProjectionsType,
                                 MeasuredProjectionsType,
@@ -494,8 +509,16 @@ SpectralForwardModelImageFilter<DecomposedProjectionsType,
     // If requested, store the variances into output(1)
     if (m_ComputeVariances)
     {
-      output1It.Set(
-        itk::VariableLengthVector<double>(cost->GetVariances(in).data_block(), this->m_NumberOfSpectralBins));
+      if (m_IsSpectralCT)
+      {
+        // For spectral CT, Poisson noise is assumed therefore the variances is equal to the photon counts.
+        output1It.Set(outputPixel);
+      }
+      else
+      {
+        output1It.Set(
+          itk::VariableLengthVector<double>(cost->GetVariances(in).data_block(), this->m_NumberOfSpectralBins));
+      }
       ++output1It;
     }
 
