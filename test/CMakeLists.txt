@@ -77,6 +77,8 @@ rtk_add_cuda_test(rtkRampFilterCudaTest rtkrampfiltertest.cxx)
 rtk_add_test(rtkRampFilterTest2 rtkrampfiltertest2.cxx)
 rtk_add_cuda_test(rtkRampFilterCudaTest2 rtkrampfiltertest2.cxx)
 
+rtk_add_test(rtkHilbertFilterTest rtkhilbertfiltertest.cxx)
+
 rtk_add_test(rtkScatterGlareFilterTest rtkscatterglarefiltertest.cxx)
 rtk_add_cuda_test(rtkScatterGlareFilterCudaTest rtkscatterglarefiltertest.cxx)
 
