@@ -49,6 +49,7 @@ main(int argc, char * argv[])
   if (args_info.rad_cyl_given)
     geometry->SetRadiusCylindricalDetector(args_info.rad_cyl_arg);
 
+
   // Write
   TRY_AND_EXIT_ON_ITK_EXCEPTION(rtk::WriteGeometry(geometry, args_info.output_arg))
 

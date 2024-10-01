@@ -1,0 +1,16 @@
+package "rtkhelicalgeometry"
+purpose "Creates an RTK helical geometry file from regular helical trajectory. See http://www.openrtk.org/Doxygen/DocGeo3D.html for more information."
+
+option "verbose"     v "Verbose execution"                                                    flag   off
+option "config"      - "Config file"                                                          string no
+
+option "output"      o "Output file name"                                                     string yes
+option "first_angle" f "First angle in degrees (default = centered around 0)"                 double no
+option "first_sy"    y "First vertical position (default = centered around 0)"                double no 
+option "nproj"       n "Number of projections"                                                int    yes
+option "pitch"       p "Helix pitch (vertical displacement in one full (2pi) rotation"        double yes default="200"
+option "arc"         a "Angular arc covevered by the acquisition in degrees"                  double yes default="360"
+option "sdd"         - "Source to detector distance (mm)"                                     double no  default="1536"
+option "sid"         - "Source to isocenter distance (mm)"                                    double no  default="1000"
+option "rad_cyl"     - "Radius cylinder of cylindrical detector"                              double no  default="0"
+

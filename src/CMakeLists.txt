@@ -40,6 +40,9 @@ set(RTK_SRCS
   rtkThreeDCircularProjectionGeometry.cxx
   rtkThreeDCircularProjectionGeometryXMLFileReader.cxx
   rtkThreeDCircularProjectionGeometryXMLFileWriter.cxx
+  rtkThreeDHelicalProjectionGeometry.cxx
+  rtkThreeDHelicalProjectionGeometryXMLFileReader.cxx
+  rtkThreeDHelicalProjectionGeometryXMLFileWriter.cxx
   rtkResourceProbesCollector.cxx
   rtkVarianObiGeometryReader.cxx
   rtkVarianObiXMLFileReader.cxx
