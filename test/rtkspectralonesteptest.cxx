@@ -4,7 +4,6 @@
 #include "rtkConstantImageSource.h"
 #include "rtkMechlemOneStepSpectralReconstructionFilter.h"
 #include "rtkSpectralForwardModelImageFilter.h"
-#include "rtkReorderProjectionsImageFilter.h"
 
 #ifdef USE_CUDA
 #  include "itkCudaImage.h"
@@ -311,15 +310,6 @@ main(int argc, char * argv[])
   std::cout << "\n\nTest PASSED! " << std::endl;
 
   std::cout << "\n\n****** Case 3: Voxel-based Backprojector, 4 subsets, with regularization  ******" << std::endl;
-
-  using ReorderProjectionsFilterType = rtk::ReorderProjectionsImageFilter<PhotonCountsType>;
-  ReorderProjectionsFilterType::Pointer reorder = ReorderProjectionsFilterType::New();
-  reorder->SetInput(composePhotonCounts->GetOutput());
-  reorder->SetInputGeometry(geometry);
-  reorder->SetPermutation(rtk::ReorderProjectionsImageFilter<PhotonCountsType>::SHUFFLE);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(reorder->Update())
-  mechlemOneStep->SetInputPhotonCounts(reorder->GetOutput());
-  mechlemOneStep->SetGeometry(reorder->GetOutputGeometry());
 
   mechlemOneStep->SetBackProjectionFilter(MechlemType::BP_VOXELBASED);
   mechlemOneStep->SetNumberOfSubsets(4);
