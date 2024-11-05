@@ -240,7 +240,6 @@ JosephForwardProjectionImageFilter<TInputImage,
   double superiorClip = 1. - m_InferiorClip;
 
   // Go over each pixel of the projection
-  typename BoxShape::VectorType stepMM, np, fp;
   for (unsigned int pix = 0; pix < outputRegionForThread.GetNumberOfPixels(); pix++, itIn->Next(), ++itOut)
   {
     typename InputRegionIterator::PointType pixelPosition = itIn->GetPixelPosition();
@@ -281,8 +280,8 @@ JosephForwardProjectionImageFilter<TInputImage,
         farDist > nearDist)
     {
       // Compute and sort intersections: (n)earest and (f)arthest (p)points
-      np = pixelPosition + nearDist * dirVox;
-      fp = pixelPosition + farDist * dirVox;
+      typename BoxShape::VectorType np = pixelPosition + nearDist * dirVox;
+      typename BoxShape::VectorType fp = pixelPosition + farDist * dirVox;
 
       // Compute main nearest and farthest slice indices
       const int ns = itk::Math::rnd(np[mainDir]);
@@ -315,6 +314,10 @@ JosephForwardProjectionImageFilter<TInputImage,
       const CoordRepType norm = itk::NumericTraits<CoordRepType>::One / dirVox[mainDir];
       CoordRepType       stepx = dirVox[notMainDirInf] * norm;
       CoordRepType       stepy = dirVox[notMainDirSup] * norm;
+
+      // Voxel to millimeters conversion vector
+      typename BoxShape::VectorType stepMM = this->GetInput(1)->GetSpacing();
+
       if (np[mainDir] > fp[mainDir])
       {
         residualB *= -1;
@@ -322,14 +325,13 @@ JosephForwardProjectionImageFilter<TInputImage,
         offsetz *= -1;
         stepx *= -1;
         stepy *= -1;
+        stepMM[mainDir] *= -1; // stepz is 1.
       }
       CoordRepType currentx = np[notMainDirInf] + residualB * stepx;
       CoordRepType currenty = np[notMainDirSup] + residualB * stepy;
 
-      // Compute voxel to millimeters conversion
-      stepMM[notMainDirInf] = this->GetInput(1)->GetSpacing()[notMainDirInf] * stepx;
-      stepMM[notMainDirSup] = this->GetInput(1)->GetSpacing()[notMainDirSup] * stepy;
-      stepMM[mainDir] = this->GetInput(1)->GetSpacing()[mainDir];
+      stepMM[notMainDirInf] *= stepx;
+      stepMM[notMainDirSup] *= stepy;
 
       // Initialize the accumulation
       typename TOutputImage::PixelType sum = itk::NumericTraits<typename TOutputImage::PixelType>::ZeroValue();
