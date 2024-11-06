@@ -65,8 +65,9 @@ public:
              const TInput *      p,
              const int           i)
   {
-    const bool bInKRegion = ((p + m_KRegionMinusAttenuationMapPtrDiff)[i] != 0.);
-    m_PixelInKRegion[threadId] = m_PixelInKRegion[threadId] || bInKRegion;
+    const TInput kRegion = (p + m_KRegionMinusAttenuationMapPtrDiff)[i];
+    const int    bNotInKRegion = (kRegion == itk::NumericTraits<TInput>::ZeroValue());
+    m_BeforeKRegion[threadId] = m_BeforeKRegion[threadId] * bNotInKRegion;
     m_LatestStepLength[threadId] = stepLengthInVoxel;
     return weight * p[i];
   }
@@ -77,10 +78,10 @@ public:
     m_KRegionMinusAttenuationMapPtrDiff = pd;
   }
 
-  bool *
-  GetPixelInKRegion()
+  int *
+  GetBeforeKRegion()
   {
-    return m_PixelInKRegion;
+    return m_BeforeKRegion;
   }
 
   double *
@@ -91,7 +92,7 @@ public:
 
 private:
   std::ptrdiff_t m_KRegionMinusAttenuationMapPtrDiff{};
-  bool           m_PixelInKRegion[itk::ITK_MAX_THREADS]{ false };
+  int            m_BeforeKRegion[itk::ITK_MAX_THREADS]{ 1 };
   double         m_LatestStepLength[itk::ITK_MAX_THREADS]{};
 };
 
@@ -125,22 +126,13 @@ public:
   }
 
   inline void
-  operator()(const ThreadIdType threadId, TOutput & sumValue, const TInput volumeValue, const VectorType & stepInMM)
+  operator()(const ThreadIdType threadId,
+             TOutput &          sumValue,
+             const TInput       volumeValue,
+             const VectorType & itkNotUsed(stepInMM))
   {
-    // Do nothing if we have passed the K region border
-    if (!m_BeforeKRegion[threadId])
-      return;
-
-    // Calculate the correction factor if we have reached the K region
-    if (m_PixelInKRegion[threadId])
-    {
-      m_BeforeKRegion[threadId] = false;
-    }
-    else
-    {
-      sumValue += static_cast<TOutput>(volumeValue);
-      m_TraveledBeforeKRegion[threadId] += m_LatestStepLength[threadId];
-    }
+    sumValue += static_cast<TOutput>(volumeValue) * m_BeforeKRegion[threadId];
+    m_TraveledBeforeKRegion[threadId] += m_LatestStepLength[threadId] * m_BeforeKRegion[threadId];
   }
 
   double *
@@ -149,16 +141,10 @@ public:
     return m_TraveledBeforeKRegion;
   }
 
-  bool *
-  GetBeforeKRegion()
-  {
-    return m_BeforeKRegion;
-  }
-
   void
-  SetPixelInKRegion(bool * pixelInKRegion)
+  SetBeforeKRegion(int * pixelInKRegion)
   {
-    m_PixelInKRegion = pixelInKRegion;
+    m_BeforeKRegion = pixelInKRegion;
   }
 
   void
@@ -168,8 +154,7 @@ public:
   }
 
 private:
-  bool *   m_PixelInKRegion{};
-  bool     m_BeforeKRegion[itk::ITK_MAX_THREADS]{ true };
+  int *    m_BeforeKRegion{};
   double   m_TraveledBeforeKRegion[itk::ITK_MAX_THREADS]{ 0. };
   double * m_LatestStepLength{};
 };
@@ -210,10 +195,10 @@ public:
              TOutput &          output,
              const TOutput &    rayCastValue,
              const VectorType & stepInMM,
-             const VectorType & pixel,
+             const VectorType & itkNotUsed(pixel),
              const VectorType & pixelToSource,
              const VectorType & nearestPoint,
-             const VectorType & farthestPoint)
+             const VectorType & itkNotUsed(farthestPoint))
   {
     // If we have not hit the K region, we set the correction factor to 0. as
     // there shouldn't be any emission outside the K region.
@@ -236,21 +221,16 @@ public:
       pixelToSource[0] * m_Spacing[0], pixelToSource[1] * m_Spacing[1], pixelToSource[2] * m_Spacing[2]);
     double tau = originToKRegionInMM * pixelToSourceInMM / -pixelToSourceInMM.GetNorm();
     output = input * std::exp(rayCastValue + tau * m_Mu0);
-    m_PixelInKRegion[threadId] = false;
-    m_BeforeKRegion[threadId] = true;
+
+    // Reinitialize for next ray
+    m_BeforeKRegion[threadId] = 1;
     m_TraveledBeforeKRegion[threadId] = 0.;
   }
 
   void
-  SetPixelInKRegion(bool * pixelInKRegion)
+  SetBeforeKRegion(int * pixelInKRegion)
   {
-    m_PixelInKRegion = pixelInKRegion;
-  }
-
-  void
-  SetBeforeKRegion(bool * beforeKRegion)
-  {
-    m_BeforeKRegion = beforeKRegion;
+    m_BeforeKRegion = pixelInKRegion;
   }
 
   void
@@ -278,8 +258,7 @@ public:
   }
 
 private:
-  bool *     m_PixelInKRegion{};
-  bool *     m_BeforeKRegion{};
+  int *      m_BeforeKRegion{};
   double *   m_TraveledBeforeKRegion{};
   TOutput    m_Mu0{};
   VectorType m_Origin{};
@@ -294,7 +273,7 @@ private:
  * computerized tomography", 1986. The conversion assumes that the emission is
  * contained in a K region (referred to as $\Omega$ in the book) of constant
  * attenuation $\mu_0$. The projector therefore uses a mask as third input with
- * the same voxel lattice as the attenuation map in the first input. $\mu_0$ is
+ * the same voxel lattice as the attenuation map in the second input. $\mu_0$ is
  * calculated as the average in the K region.
  *
  * \test TODO
