@@ -173,11 +173,10 @@ AttenuatedToExponentialCorrectionImageFilter<TInputImage,
 {
   this->GetInterpolationWeightMultiplication().SetKRegionMinusAttenuationMapPtrDiff(
     this->GetInput(2)->GetBufferPointer() - this->GetInput(1)->GetBufferPointer());
-  this->GetSumAlongRay().SetPixelInKRegion(this->GetInterpolationWeightMultiplication().GetPixelInKRegion());
+  this->GetSumAlongRay().SetBeforeKRegion(this->GetInterpolationWeightMultiplication().GetBeforeKRegion());
   this->GetSumAlongRay().SetLatestStepLength(this->GetInterpolationWeightMultiplication().GetLatestStepLength());
-  this->GetProjectedValueAccumulation().SetPixelInKRegion(
-    this->GetInterpolationWeightMultiplication().GetPixelInKRegion());
-  this->GetProjectedValueAccumulation().SetBeforeKRegion(this->GetSumAlongRay().GetBeforeKRegion());
+  this->GetProjectedValueAccumulation().SetBeforeKRegion(
+    this->GetInterpolationWeightMultiplication().GetBeforeKRegion());
   this->GetProjectedValueAccumulation().SetTraveledBeforeKRegion(this->GetSumAlongRay().GetTraveledBeforeKRegion());
   this->GetProjectedValueAccumulation().SetSpacing(this->GetInput(1)->GetSpacing());
 
