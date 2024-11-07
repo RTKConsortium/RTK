@@ -1,0 +1,12 @@
+if(RTK_USE_CUDA)
+  itk_wrap_include(itkCudaImage.h)
+endif()
+
+itk_wrap_class("rtk::FFTVarianceRampImageFilter"  POINTER)
+  foreach(t ${WRAP_ITK_REAL})
+    itk_wrap_template("I${ITKM_${t}}3I${ITKM_${t}}3${ITKM_D}" "itk::Image<${ITKT_${t}}, 3>, itk::Image<${ITKT_${t}}, 3>, ${ITKT_D}")
+  endforeach()
+  if(RTK_USE_CUDA)
+    itk_wrap_template("CI${ITKM_F}3CI${ITKM_F}3${ITKM_F}" "itk::CudaImage<${ITKT_F}, 3>, itk::CudaImage<${ITKT_F}, 3>, ${ITKT_F}")
+  endif()
+itk_end_wrap_class()
