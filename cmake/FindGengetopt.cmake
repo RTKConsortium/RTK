@@ -71,11 +71,7 @@ macro (WRAP_GGO GGO_SRCS)
 
   set_source_files_properties(${${GGO_SRCS}} PROPERTIES GENERATED TRUE)
   if(CMAKE_COMPILER_IS_GNUCXX)
-    find_program(DEFAULT_GCC gcc)
-    exec_program(${DEFAULT_GCC} ARGS "-dumpversion" OUTPUT_VARIABLE GCCVER)
-    if("${GCCVER}" VERSION_GREATER "4.5.2")
-      set_source_files_properties(${${GGO_SRCS}} PROPERTIES COMPILE_FLAGS "-Wno-unused-but-set-variable")
-    endif()
+    set_source_files_properties(${${GGO_SRCS}} PROPERTIES COMPILE_FLAGS "-Wno-unused-but-set-variable")
   endif()
   if(MSVC)
     # Disable double to float truncation warning as gengetopt cannot append "f"
