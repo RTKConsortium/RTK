@@ -48,7 +48,6 @@ FFTHilbertImageFilter<TInputImage, TOutputImage, TFFTPrecision>::UpdateFFTProjec
   m_PreviousKernelUpdateSize = s;
 
   const int width = s[0];
-  const int height = s[1];
 
   // Allocate kernel
   SizeType size;
