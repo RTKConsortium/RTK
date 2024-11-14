@@ -31,4 +31,5 @@ Discussion <https://www.creatis.insa-lyon.fr/mailman/listinfo/rtk-users>
 Issue tracker <https://github.com/RTKConsortium/RTK/issues>
 documentation/docs/README
 documentation/docs/Release
+documentation/docs/Phantom
 ```
