@@ -1,13 +1,15 @@
 # FDK
 
-Reconstruction of the Shepp–Logan phantom using Feldkamp, David and Kress cone-beam reconstruction.
+Reconstruction of a phantom using Feldkamp, David and Kress cone-beam reconstruction.
+
+---
+
+This example uses the Shepp–Logan phantom.
 
 ## 3D
 
 ![sin_3D](SheppLogan-3D-Sinogram.png){w=200px alt="Shepp-Logan 3D sinogram"}
 ![img_3D](SheppLogan-3D.png){w=200px alt="Shepp-Logan 3D image"}
-
-This script uses the file [SheppLogan.txt](https://data.kitware.com/api/v1/item/5b179c938d777f15ebe2020b/download) as input.
 
 ```{literalinclude} Code3D.sh
 ```
@@ -19,7 +21,24 @@ This script uses the file [SheppLogan.txt](https://data.kitware.com/api/v1/item/
 
 The same reconstruction can be performed using the original 2D Shepp-Logan phantom.
 RTK can perform 2D reconstructions through images wide of 1 pixel in the y direction.
-The following script performs the same reconstruction as above in a 2D environment and uses the [2D Shepp-Logan](http://wiki.openrtk.org/images/7/73/SheppLogan-2d.txt) phantom as input.
 
 ```{literalinclude} Code2D.sh
+```
+
+---
+
+If you want to create your own phantom, you can follow the documentation [here](../../documentation/docs/Phantom.md).
+
+```shell
+# Create a simulated geometry
+rtksimulatedgeometry -n 180 -o geometry.xml
+
+# Create projections of the phantom file
+rtkprojectgeometricphantom -g geometry.xml -o projections.mha --spacing 2 --dimension=512,3,512 --phantomfile YourPhantom.txt --phantomscale=256,1,256
+
+# Reconstruct
+rtkfdk -p . -r projections.mha -o fdk.mha -g geometry.xml --spacing 2 --dimension 256,1,256
+
+# Create a reference volume for comparison
+rtkdrawshepploganphantom --spacing 2 --dimension=256,1,256 --phantomfile YourPhantom.txt -o ref.mha --phantomscale=256,1,256
 ```
