@@ -1,0 +1,15 @@
+if(RTK_USE_CUDA)
+  itk_wrap_include(itkImage.h)
+
+  itk_wrap_class("itk::CudaImageFromImageFilter" POINTER)
+
+    set(vectorComponents 2 3 4 5)
+    list(REMOVE_ITEM vectorComponents ${ITK_WRAP_VECTOR_COMPONENTS})
+    foreach(c ${vectorComponents})
+      foreach(d ${ITK_WRAP_IMAGE_DIMS})
+        itk_wrap_template("${ITKM_VF${c}}${d}" "itk::Image<${ITKT_VF${c}}, ${d}>")
+      endforeach()
+    endforeach()
+
+  itk_end_wrap_class()
+endif()
