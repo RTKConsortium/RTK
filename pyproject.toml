@@ -177,7 +177,7 @@ minimum-version = "0.8.2"
 build-dir = "build/{wheel_tag}"
 
 [dependency-groups]
-test = ["pytest>=7.0", "matplotlib"]
+test = ["pytest>=7.0", "matplotlib", "spekpy", "xraylib"]
 doc = [
     "furo",
     "myst-parser[linkify]",
