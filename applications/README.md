@@ -20,6 +20,10 @@ The following are examples using RTK applications:
 ./rtkfourdconjugategradient/README.md
 ./rtkfourdsart/README.md
 ./rtkfourdrooster/README.md
+./rtkspectralforwardmodel/README.md
+./rtkspectralsimplexdecomposition/README.md
+./rtkspectralrooster/README.md
+./rtkspectralonestep/README.md
 ./rtkshowgeometry/README.md
 ./rtkosem/README.md
 ./rtksart/README.md
