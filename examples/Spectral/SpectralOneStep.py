@@ -7,13 +7,13 @@ import numpy as np
 import xraylib as xrl
 
 # Simulation, decomposition and reconstruction parameters
-niterations = 10
-nsubsets = 1
+niterations = 100
+nsubsets = 4
 thresholds = [20.,40.,60.,80.,100.,120.]
 nbins = len(thresholds)-1
 sdd=1000.
 sid=500.
-npix=64
+npix=128
 spacing=256./npix
 nmat=2
 origin=-0.5*(npix-1)*spacing
@@ -25,12 +25,12 @@ materials.append({'material': xrl.GetCompoundDataNISTByIndex(xrl.NIST_COMPOUND_W
                   'centers':  [[0.,0.,0.],     [-50.,0.,0.], [50.,0.,0.]],
                   'semi_axes': [[100.,0.,100.], [20.,0.,20.], [20.,0.,20.]],
                   'fractions': [1.,             -1.,          -1.],
-                  'regularization_weight': 1.e5})
+                  'regularization_weight': 1.e3})
 materials.append({'material': xrl.GetCompoundDataNISTByIndex(xrl.NIST_COMPOUND_BONE_CORTICAL_ICRP),
                   'centers':  [[50.,0.,0.]],
                   'semi_axes': [[20.,0.,20.]],
                   'fractions': [1.],
-                  'regularization_weight': 1.e5})
+                  'regularization_weight': 1.e3})
 nmat=len(materials)
 
 # Defines the RTK geometry object using nproj, sdd, sid
@@ -67,17 +67,25 @@ spectrum.SetOrigin([0.,origin_proj,origin_proj])
 itk.imwrite(spectrum, 'spectrum.mha')
 
 # Create material images and corresponding gpu_image
+DecomposedImageType = itk.Image[itk.Vector[itk.F,nmat],3]
+decomposed_ref = DecomposedImageType.New()
+decomposed_ref.SetRegions([npix,int(npix*1.5),npix])
+decomposed_ref.AllocateInitialized()
+decomposed_ref.SetOrigin([origin,origin*1.5,origin])
+decomposed_ref.SetSpacing([spacing]*3)
+decomposed_ref_np = itk.array_view_from_image(decomposed_ref)
 ImageType = itk.Image[itk.F,3]
 for i,m in zip(range(nmat), materials):
-    mat_ref = rtk.constant_image_source(origin=[origin]*3, size=[npix]*3, spacing=[spacing]*3, ttype=ImageType)
+    mat_ref = rtk.constant_image_source(information_from_image=decomposed_ref, ttype=ImageType)
     mat_proj = rtk.constant_image_source(origin=[origin_proj,origin_proj,0.], size=[npix,npix,nproj], spacing=[spacing_proj]*3, ttype=ImageType)
     for c,a,d in zip(m['centers'], m['semi_axes'], m['fractions']):
         mat_ref = rtk.draw_ellipsoid_image_filter(mat_ref, center=c, axis=a, density=d)
         mat_proj = rtk.ray_ellipsoid_intersection_image_filter(mat_proj, geometry=geometry, center=c, axis=a, density=d)
-    itk.imwrite(mat_ref, f'mat{i}_ref.mha')
     itk.imwrite(mat_proj, f'mat{i}_proj.mha')
     mat_proj_np = itk.array_view_from_image(mat_proj)
     m['projections'] = mat_proj_np
+    decomposed_ref_np[:,:,:,i] = itk.array_view_from_image(mat_ref)[:,:,:]
+itk.imwrite(decomposed_ref, 'decomposed_ref.mha')
 
 # Detector response matrix
 drm = rtk.constant_image_source(size=[energies.size,energies.size], spacing=[1.]*2, ttype=itk.Image[itk.F,2])
@@ -121,20 +129,14 @@ itk.imwrite(itk.image_from_array(itk.array_from_vnl_matrix(binned_drm)), 'binned
 itk.imwrite(counts, 'counts.mha')
 
 # Create initialization for iterative decomposition
-DecomposedImageType = itk.Image[itk.Vector[itk.F,nmat],3]
-decomposed_init = DecomposedImageType.New()
-decomposed_init.SetRegions([npix,int(npix*1.5),npix])
-decomposed_init.AllocateInitialized()
-decomposed_init.SetOrigin([origin,origin*1.5,origin])
-decomposed_init.SetSpacing([spacing]*3)
-decomposed_init_np = itk.array_view_from_image(decomposed_init)
+decomposed_init = rtk.constant_image_source(information_from_image=decomposed_ref, ttype=DecomposedImageType)
 itk.imwrite(decomposed_init, 'decomposed_init.mha')
 
 # Image of materials basis (linear attenuation coefficients)
 mat_basis = itk.vnl_matrix[itk.F](nenergies, nmat, 0.)
-for e in range(energies.size):
+for e in range(int(np.argwhere(energies==thresholds[0])), energies.size):
     for i,m in zip(range(nmat), materials):
-        mat_basis.put(e,i,0.1*xrl.CS_Total_CP(m['material']['name'], energies[e]) * m['material']['density'])
+        mat_basis.put(e, i, 0.1 * xrl.CS_Total_CP(m['material']['name'], energies[e]) * m['material']['density'])
 itk.imwrite(itk.image_from_array(itk.array_from_vnl_matrix(mat_basis)), 'mat_basis.mha')
 
 # Regularization weights
@@ -193,7 +195,7 @@ iteration_number = 0
 def callback(): # write the result before the end of the reconstruction
     global iteration_number
     iteration_number += 1
-    itk.imwrite(gpu_to_cpu_image(mechlem.GetOutput()), f'decomposed_iteration{iteration_number:03d}.mha')
+    itk.imwrite(gpu_to_cpu_image(mechlem.GetOutput()), f'decomposed_iteration{iteration_number//nsubsets:03d}_subset{iteration_number%nsubsets:01d}.mha')
     print(f'Iteration #{iteration_number} written.', end='\r')
 
 # One-step decomposition and reconstruction
@@ -202,10 +204,10 @@ counts_gpu = cpu_to_gpu_image(counts)
 spectrum_gpu = cpu_to_gpu_image(spectrum)
 MechlemFilterType = rtk.MechlemOneStepSpectralReconstructionFilter[type(decomposed_init_gpu), type(counts_gpu), type(spectrum_gpu)]
 mechlem = MechlemFilterType.New()
-#mechlem.SetForwardProjectionFilter(MechlemFilterType.ForwardProjectionType_FP_CUDARAYCAST)
-mechlem.SetForwardProjectionFilter(MechlemFilterType.ForwardProjectionType_FP_JOSEPH)
-#mechlem.SetBackProjectionFilter(MechlemFilterType.BackProjectionType_BP_CUDAVOXELBASED)
-mechlem.SetBackProjectionFilter(MechlemFilterType.BackProjectionType_BP_JOSEPH)
+mechlem.SetForwardProjectionFilter(MechlemFilterType.ForwardProjectionType_FP_CUDARAYCAST)
+#mechlem.SetForwardProjectionFilter(MechlemFilterType.ForwardProjectionType_FP_JOSEPH)
+mechlem.SetBackProjectionFilter(MechlemFilterType.BackProjectionType_BP_CUDAVOXELBASED)
+#mechlem.SetBackProjectionFilter(MechlemFilterType.BackProjectionType_BP_JOSEPH)
 mechlem.SetInputMaterialVolumes( decomposed_init_gpu )
 mechlem.SetInputSpectrum( spectrum_gpu )
 mechlem.SetBinnedDetectorResponse(binned_drm)
