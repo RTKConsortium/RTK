@@ -86,7 +86,6 @@ createInputImage(const std::vector<float> & coef)
   itk::ImageRegionIteratorWithIndex<ImageType> itK(inputI, inputI->GetLargestPossibleRegion());
   itK.GoToBegin();
   ImageType::IndexType idx;
-  float                sum = 0.0f;
   while (!itK.IsAtEnd())
   {
     idx = itK.GetIndex();
@@ -100,10 +99,8 @@ createInputImage(const std::vector<float> & coef)
     }
     g = spikeValue * g; // The image is a spike at the central pixel convolved with the scatter PSF
     itK.Set(g);
-    sum += g;
     ++itK;
   }
-
   return inputI;
 }
 
