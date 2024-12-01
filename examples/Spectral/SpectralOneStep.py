@@ -8,7 +8,7 @@ import xraylib as xrl
 
 # Simulation, decomposition and reconstruction parameters
 niterations = 100
-nsubsets = 4
+nsubsets = 1
 thresholds = [20.,40.,60.,80.,100.,120.]
 nbins = len(thresholds)-1
 sdd=1000.
@@ -91,9 +91,16 @@ itk.imwrite(decomposed_ref, 'decomposed_ref.mha')
 drm = rtk.constant_image_source(size=[energies.size,energies.size], spacing=[1.]*2, ttype=itk.Image[itk.F,2])
 drm_np = itk.array_view_from_image(drm)
 for i in range(energies.size):
-    # Assumes a perfect photon counting detector
-    drm_np[i,i]=1.
+    drm_np[:i,i]=np.arange(i)/i
 itk.imwrite(drm, 'drm.mha')
+
+# Image of materials basis (linear attenuation coefficients)
+mat_basis = itk.vnl_matrix[itk.F](nenergies, nmat, 0.)
+for e in range(int(np.argwhere(energies==thresholds[0])), energies.size):
+    for i,m in zip(range(nmat), materials):
+        mat_basis.put(e, i, 0.1 * xrl.CS_Total_CP(m['material']['name'], energies[e]) * m['material']['density'])
+mat_basis_np = itk.array_from_vnl_matrix(mat_basis)
+itk.imwrite(itk.image_from_array(mat_basis_np), 'mat_basis.mha')
 
 # Spectral mixture using line integral of materials and linear attenuation coefficient
 # Also record the binned detector response in parallel
@@ -106,38 +113,28 @@ counts.SetSpacing([spacing_proj]*3)
 counts_np = itk.array_view_from_image(counts)
 binned_drm = itk.vnl_matrix[itk.F](nbins, nenergies, 0.)
 for t in range(nbins):
-    selected_energy_indices = np.argwhere((energies>=thresholds[t]) & (energies<=thresholds[t+1])).flatten()
-    for edet in selected_energy_indices:
+    for eimp in range(drm_np.shape[1]):
         att = 0. * materials[0]['projections']
-        for m in materials:
-            mu_mat = xrl.CS_Total_CP(m['material']['name'], energies[edet]) * m['material']['density']
-            mu_mat *= 0.1 # to / mm
-            att += m['projections'] * mu_mat
+        for i,m in zip(range(nmat), materials):
+             att += m['projections'] * mat_basis_np[eimp,i]
         att = np.exp(-att)
-        for eimp in range(drm_np.shape[0]):
-            if drm[eimp, edet] == 0.:
+        selected_energy_indices = np.argwhere((energies>=thresholds[t]) & (energies<=thresholds[t+1])).flatten()
+        for edet in selected_energy_indices:
+            if drm[edet, eimp] == 0.:
                 continue
             # Calculate the weight for the trapezoidal rule
             if edet==selected_energy_indices[0] or edet==selected_energy_indices[-1]:
                 w=0.5
             else:
                 w=1.
-            counts_np[:,:,:,t] += w * fluence[eimp] * drm[eimp, edet] * att
-            binned_drm.put(t, eimp, binned_drm(t,eimp) + w*drm[eimp, edet])
-
+            counts_np[:,:,:,t] += w * fluence[eimp] * drm[edet, eimp] * att
+            binned_drm.put(t, eimp, binned_drm(t,eimp) + w*drm[edet, eimp])
 itk.imwrite(itk.image_from_array(itk.array_from_vnl_matrix(binned_drm)), 'binned_drm.mha')
 itk.imwrite(counts, 'counts.mha')
 
 # Create initialization for iterative decomposition
 decomposed_init = rtk.constant_image_source(information_from_image=decomposed_ref, ttype=DecomposedImageType)
 itk.imwrite(decomposed_init, 'decomposed_init.mha')
-
-# Image of materials basis (linear attenuation coefficients)
-mat_basis = itk.vnl_matrix[itk.F](nenergies, nmat, 0.)
-for e in range(int(np.argwhere(energies==thresholds[0])), energies.size):
-    for i,m in zip(range(nmat), materials):
-        mat_basis.put(e, i, 0.1 * xrl.CS_Total_CP(m['material']['name'], energies[e]) * m['material']['density'])
-itk.imwrite(itk.image_from_array(itk.array_from_vnl_matrix(mat_basis)), 'mat_basis.mha')
 
 # Regularization weights
 regulWeights = itk.Vector[itk.F, nmat]()
