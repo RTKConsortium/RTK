@@ -19,6 +19,7 @@ INSTALLATION
 :caption: 📖 Learn
 
 GettingStarted
+documentation/docs/Phantom.md
 examples/index
 ```
 
