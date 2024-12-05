@@ -220,7 +220,7 @@ public:
     VectorType pixelToSourceInMM = itk::MakeVector(
       pixelToSource[0] * m_Spacing[0], pixelToSource[1] * m_Spacing[1], pixelToSource[2] * m_Spacing[2]);
     double tau = originToKRegionInMM * pixelToSourceInMM / -pixelToSourceInMM.GetNorm();
-    output = input * std::exp(rayCastValue + tau * m_Mu0);
+    output = input * std::exp(rayCastValue * stepInMM.GetNorm() + tau * m_Mu0);
 
     // Reinitialize for next ray
     m_BeforeKRegion[threadId] = 1;
