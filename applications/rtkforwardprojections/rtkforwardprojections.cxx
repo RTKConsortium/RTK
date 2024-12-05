@@ -27,6 +27,7 @@
 #ifdef RTK_USE_CUDA
 #  include "rtkCudaForwardProjectionImageFilter.h"
 #endif
+#include "rtkAttenuatedToExponentialCorrectionImageFilter.h"
 
 #include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>
@@ -81,6 +82,14 @@ main(int argc, char * argv[])
     attenuationMap = itk::ReadImage<OutputImageType>(args_info.attenuationmap_arg);
   }
 
+  OutputImageType::Pointer KRegion;
+  if (args_info.kregion_given)
+  {
+    if (args_info.verbose_flag)
+      std::cout << "Reading K region " << args_info.kregion_arg << "..." << std::endl;
+    KRegion = itk::ReadImage<OutputImageType>(args_info.kregion_arg);
+  }
+
   using ClipImageType = itk::Image<double, Dimension>;
   ClipImageType::Pointer inferiorClipImage, superiorClipImage;
   if (args_info.inferiorclipimage_given)
@@ -108,6 +117,10 @@ main(int argc, char * argv[])
   {
     case (fp_arg_Joseph):
       forwardProjection = rtk::JosephForwardProjectionImageFilter<OutputImageType, OutputImageType>::New();
+      break;
+    case (fp_arg_AttToExp):
+      forwardProjection = rtk::AttenuatedToExponentialCorrectionImageFilter<OutputImageType, OutputImageType>::New();
+      constantImageSource->SetConstant(1.);
       break;
     case (fp_arg_JosephAttenuated):
       forwardProjection = rtk::JosephForwardAttenuatedProjectionImageFilter<OutputImageType, OutputImageType>::New();
@@ -137,6 +150,8 @@ main(int argc, char * argv[])
   forwardProjection->SetInput(1, inputVolume);
   if (args_info.attenuationmap_given)
     forwardProjection->SetInput(2, attenuationMap);
+  if (args_info.kregion_arg)
+    forwardProjection->SetInput(2, KRegion);
   if (args_info.inferiorclipimage_given)
   {
     if (args_info.fp_arg == fp_arg_Joseph)
