@@ -153,6 +153,10 @@ protected:
   void
   UpdateFFTProjectionsConvolutionKernel(const SizeType s) override;
 
+  virtual void
+  SquareKernel()
+  {}
+
 private:
   /**
    * Cut frequency of Hann, Cosine and Hamming windows. The first one which is
