@@ -4,10 +4,10 @@ on: [push,pull_request]
 
 jobs:
   cxx-build-workflow:
-    uses: InsightSoftwareConsortium/ITKRemoteModuleBuildTestPackageAction/.github/workflows/build-test-cxx.yml@v5.4.0
+    uses: SimonRit/ITKRemoteModuleBuildTestPackageAction/.github/workflows/build-test-cxx.yml@d128d87f1d0f25ca5f1e4ad38588b8e48ec8e108
 
   python-build-workflow:
-    uses: InsightSoftwareConsortium/ITKRemoteModuleBuildTestPackageAction/.github/workflows/build-test-package-python.yml@v5.4.0
+    uses: SimonRit/ITKRemoteModuleBuildTestPackageAction/.github/workflows/build-test-package-python.yml@d128d87f1d0f25ca5f1e4ad38588b8e48ec8e108
     with:
       cmake-options: '-DRTK_BUILD_APPLICATIONS:BOOL=OFF'
       itk-python-package-org: 'SimonRit'
