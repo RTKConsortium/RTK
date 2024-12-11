@@ -8,6 +8,10 @@ env:
   itk-python-package-org: 'SimonRit'
   itk-module-deps: "RTKConsortium/ITKCudaCommon@cae7c93c2f6d4c5b3cb5f6e5ce4a97686e626bf7"
 
+concurrency:
+  group: '${{ github.workflow }}@${{ github.head_ref || github.run_id }}'
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   build-linux-cuda-python-packages:
     runs-on: self-hosted-linux
