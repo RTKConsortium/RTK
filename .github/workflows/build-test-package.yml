@@ -16,5 +16,6 @@ jobs:
       cmake-options: '-DRTK_BUILD_APPLICATIONS:BOOL=OFF'
       itk-python-package-org: 'SimonRit'
       itk-python-package-tag: '45cfd02a22661731ca5b155f210cfa2f887d50e7'
+      python3-minor-versions: ${{ github.event_name == 'pull_request' && '["11"]' || '["9","10","11"]' }}
     secrets:
       pypi_password: ${{ secrets.pypi_password }}
