@@ -6,6 +6,10 @@ env:
   itk-git-tag: "v5.4.0"
   itk-module-deps: "CudaCommon@cae7c93c2f6d4c5b3cb5f6e5ce4a97686e626bf7"
 
+concurrency:
+  group: '${{ github.workflow }}@${{ github.head_ref || github.run_id }}'
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   build-test-cxx:
     runs-on: ${{ matrix.os }}
