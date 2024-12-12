@@ -18,7 +18,7 @@ jobs:
     strategy:
       max-parallel: 2
       matrix:
-        python3-minor-versions: ${{ github.event_name == 'pull_request' && '["11"]' || '["9","10","11"]' }}
+        python3-minor-version: ${{ github.event_name == 'pull_request' && fromJSON('["11"]') || fromJSON('["9","10","11"]') }}
         manylinux-platform: ["_2_28-x64","2014-x64"]
         cuda-version: ["116","121"]
 
