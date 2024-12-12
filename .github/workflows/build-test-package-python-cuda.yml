@@ -107,7 +107,7 @@ jobs:
     strategy:
       max-parallel: 2
       matrix:
-        python3-minor-version: ["8","9","10","11"]
+        python3-minor-version: ${{ github.event_name == 'pull_request' && fromJSON('["11"]') || fromJSON('["9","10","11"]') }}
         cuda-version: ["116","121"]
 
     steps:
