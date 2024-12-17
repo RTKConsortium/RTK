@@ -1,13 +1,15 @@
 # FDK
 
-Reconstruction of the Shepp–Logan phantom using Feldkamp, David and Kress cone-beam reconstruction.
+Reconstruction of a phantom using Feldkamp, David and Kress cone-beam reconstruction.
+
+---
+
+This example uses the Shepp–Logan phantom.
 
 ## 3D
 
 ![sin_3D](SheppLogan-3D-Sinogram.png){w=200px alt="Shepp-Logan 3D sinogram"}
 ![img_3D](SheppLogan-3D.png){w=200px alt="Shepp-Logan 3D image"}
-
-This script uses the file [SheppLogan.txt](https://data.kitware.com/api/v1/item/5b179c938d777f15ebe2020b/download) as input.
 
 ```{literalinclude} Code3D.sh
 ```
@@ -19,7 +21,14 @@ This script uses the file [SheppLogan.txt](https://data.kitware.com/api/v1/item/
 
 The same reconstruction can be performed using the original 2D Shepp-Logan phantom.
 RTK can perform 2D reconstructions through images wide of 1 pixel in the y direction.
-The following script performs the same reconstruction as above in a 2D environment and uses the [2D Shepp-Logan](http://wiki.openrtk.org/images/7/73/SheppLogan-2d.txt) phantom as input.
 
 ```{literalinclude} Code2D.sh
+```
+
+---
+
+If you want to create your own phantom, you can follow the documentation [here](../../documentation/docs/Phantom.md).
+You can find the SheppLogan example [here](https://data.kitware.com/api/v1/file/674da1cc2da68b3050ac6a02/download).
+
+```{literalinclude} CustomPhantom.sh
 ```
