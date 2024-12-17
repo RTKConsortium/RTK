@@ -38,6 +38,26 @@ We also provide pre-compiled [CUDA](https://developer.nvidia.com/cuda-toolkit) p
 python -m pip install itk-rtk-cuda116
 ```
 
+Docker
+---------------------
+
+Another installation solution is to use the Docker solution provided by Thomas Baudier:
+
+```
+docker pull tbaudier/rtk:v1.3.0
+docker run -ti --rm -e DISPLAY=$DISPLAY -v \[Documents\]:/home tbaudier/rtk:v1.3.0 bash
+```
+Information on what is installed can be reached using the commands:
+```
+docker images
+docker ps -a
+```
+To clean it after use, you can do:
+```
+docker rm -f \[container id\]
+docker rmi -f \[image id\]
+```
+
 Getting started
 ---------------
 See [GettingStarted.md](GettingStarted.md). Your `CMakeLists.txt` can now use RTK when importing ITK as shown in the [FirstReconstruction's CMakeLists.txt](https://github.com/RTKConsortium/RTK/blob/master/examples/FirstReconstruction/CMakeLists.txt#L7).

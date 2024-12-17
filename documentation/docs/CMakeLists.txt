@@ -12,6 +12,7 @@ if(RTK_BUILD_SPHINX)
     COMMAND ${CMAKE_COMMAND} -E copy "${RTK_SOURCE_DIR}/index.md" "${RTK_DOC_OUTPUT_DIR}/index.md"
     COMMAND ${CMAKE_COMMAND} -E copy "${RTK_SOURCE_DIR}/GettingStarted.md" "${RTK_DOC_OUTPUT_DIR}/GettingStarted.md"
     COMMAND ${CMAKE_COMMAND} -E copy "${RTK_SOURCE_DIR}/INSTALLATION.md" "${RTK_DOC_OUTPUT_DIR}/INSTALLATION.md"
+    COMMAND ${CMAKE_COMMAND} -E copy "${RTK_SOURCE_DIR}/CodeContribution.md" "${RTK_DOC_OUTPUT_DIR}/CodeContribution.md"
     COMMENT "Copying documentation sources"
     )
 
