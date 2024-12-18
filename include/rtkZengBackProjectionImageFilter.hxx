@@ -348,8 +348,10 @@ ZengBackProjectionImageFilter<TInputImage, TOutputImage>::GenerateData()
   {
     // Get the center of the rotated volume
     m_Transform->SetRotation(0., angle, 0.);
-    m_Transform->SetTranslation(itk::MakeVector(
-      geometry->GetProjectionOffsetsX()[nbProjections], geometry->GetProjectionOffsetsY()[nbProjections], 0.));
+        m_Transform->SetTranslation(itk::MakeVector(
+      geometry->GetProjectionOffsetsX()[nbProjections] * cos(-angle), 
+      geometry->GetProjectionOffsetsY()[nbProjections], 
+      geometry->GetProjectionOffsetsX()[nbProjections] * sin(-angle)));
     centerRotatedVolume = m_Transform->GetMatrix() * m_centerVolume;
 
     // Set the new origin of the rotate volume according to the center

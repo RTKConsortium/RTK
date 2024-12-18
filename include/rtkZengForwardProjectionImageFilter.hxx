@@ -333,9 +333,10 @@ ZengForwardProjectionImageFilter<TInputImage, TOutputImage>::GenerateData()
     // Set the rotation angle.
     m_Transform->SetRotation(0., angle, 0.);
     m_Transform->SetTranslation(itk::MakeVector(
-      geometry->GetProjectionOffsetsX()[nbProjections], geometry->GetProjectionOffsetsY()[nbProjections], 0.));
+      geometry->GetProjectionOffsetsX()[nbProjections] * cos(-angle), 
+      geometry->GetProjectionOffsetsY()[nbProjections], 
+      geometry->GetProjectionOffsetsX()[nbProjections] * sin(-angle)));
     centerRotatedVolume = m_Transform->GetMatrix() * m_centerVolume;
-
     // Rotate the input volume
     this->GetInput(1)->GetBufferPointer();
     originRotatedVolume = m_ResampleImageFilter->GetOutputOrigin();
@@ -385,6 +386,7 @@ ZengForwardProjectionImageFilter<TInputImage, TOutputImage>::GenerateData()
     rotatedVolume->TransformIndexToPhysicalPoint(indexSlice, pointSlice);
     dist = geometry->GetSourceToIsocenterDistances()[nbProjections] +
            pointSlice.GetVectorFromOrigin() * m_VectorOrthogonalDetector;
+       
     int index = 0;
     for (index = nbSlice - 2; index >= 0; index--)
     {
