@@ -116,10 +116,6 @@ if(NOT ITK_SOURCE_DIR)
   endif()
 endif()
 
-# Propagate cmake options in a header file
-configure_file(${RTK_SOURCE_DIR}/rtkConfiguration.h.in
-  ${RTK_BINARY_DIR}/rtkConfiguration.h)
-
 #=========================================================
 # If choose to build documentation, then search for Doxygen/Sphinx executables.
 option(RTK_BUILD_DOXYGEN "Build Doxygen Documentation" OFF)
@@ -236,6 +232,11 @@ if(NOT ITK_SOURCE_DIR)
 else()
   itk_module_impl()
 endif()
+
+# Propagate cmake options in a header file
+# Must be done after the external module configuration to make sure CudaCommon_SOURCE_DIR is defined
+configure_file(${RTK_SOURCE_DIR}/rtkConfiguration.h.in
+  ${RTK_BINARY_DIR}/rtkConfiguration.h)
 
 # Install lpsolve headers
 install(FILES ${RTK_SOURCE_DIR}/utilities/lp_solve/lp_bit.h
