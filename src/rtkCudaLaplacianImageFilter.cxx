@@ -46,7 +46,7 @@ rtk::CudaLaplacianImageFilter ::GPUGenerateData()
     }
   }
 
-#ifdef CUDACOMMON_VERSION_MAJOR
+#if CUDACOMMON_VERSION_MAJOR > 1
   float * pin = (float *)(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
   float * pout = (float *)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
 #else

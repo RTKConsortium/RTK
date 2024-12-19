@@ -90,7 +90,7 @@ CudaForwardWarpImageFilter ::GPUGenerateData()
     ++itDVF;
   }
 
-#ifdef CUDACOMMON_VERSION_MAJOR
+#if CUDACOMMON_VERSION_MAJOR > 1
   float * pinVol = (float *)(this->GetInput(0)->GetCudaDataManager()->GetGPUBufferPointer());
   float * poutVol = (float *)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
   float * pinxDVF = (float *)(xCompDVF->GetCudaDataManager()->GetGPUBufferPointer());

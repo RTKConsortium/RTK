@@ -107,13 +107,13 @@ CudaFDKWeightProjectionFilter ::GPUGenerateData()
   }
 
   // Put the two data pointers at the same location
-#ifdef CUDACOMMON_VERSION_MAJOR
+#if CUDACOMMON_VERSION_MAJOR > 1
   float * inBuffer = static_cast<float *>(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
 #else
   float * inBuffer = *static_cast<float **>(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
 #endif
   inBuffer += this->GetInput()->ComputeOffset(this->GetInput()->GetRequestedRegion().GetIndex());
-#ifdef CUDACOMMON_VERSION_MAJOR
+#if CUDACOMMON_VERSION_MAJOR > 1
   float * outBuffer = static_cast<float *>(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
 #else
   float * outBuffer = *static_cast<float **>(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());

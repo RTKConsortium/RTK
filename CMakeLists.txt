@@ -233,8 +233,13 @@ else()
   itk_module_impl()
 endif()
 
-# Propagate cmake options in a header file
-# Must be done after the external module configuration to make sure CudaCommon_SOURCE_DIR is defined
+if(RTK_USE_CUDA)
+  # CUDACOMMON_VERSION_MAJOR is defined by CudaCommon starting with version 2
+  if(NOT DEFINED CUDACOMMON_VERSION_MAJOR)
+      set(CUDACOMMON_VERSION_MAJOR 1)
+  endif()
+endif()
+
 configure_file(${RTK_SOURCE_DIR}/rtkConfiguration.h.in
   ${RTK_BINARY_DIR}/rtkConfiguration.h)
 

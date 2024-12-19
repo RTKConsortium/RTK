@@ -190,7 +190,7 @@ CudaWarpForwardProjectionImageFilter ::GPUGenerateData()
   inputDVFSize[1] = this->GetDisplacementField()->GetBufferedRegion().GetSize()[1];
   inputDVFSize[2] = this->GetDisplacementField()->GetBufferedRegion().GetSize()[2];
 
-#ifdef CUDACOMMON_VERSION_MAJOR
+#if CUDACOMMON_VERSION_MAJOR > 1
   float * pin = (float *)(this->GetInputProjectionStack()->GetCudaDataManager()->GetGPUBufferPointer());
   float * pout = (float *)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
   float * pvol = (float *)(this->GetInputVolume()->GetCudaDataManager()->GetGPUBufferPointer());
