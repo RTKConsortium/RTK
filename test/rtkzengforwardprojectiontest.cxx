@@ -1,13 +1,12 @@
 #include "rtkTest.h"
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
-#include "rtkRayBoxIntersectionImageFilter.h"
+#include "rtkJosephForwardAttenuatedProjectionImageFilter.h"
 #include "rtkConstantImageSource.h"
 #include "rtkZengForwardProjectionImageFilter.h"
 #include <itkImageRegionSplitterDirection.h>
 #include <itkImageRegionIterator.h>
 #include <cmath>
-
-
+#include "rtkDrawEllipsoidImageFilter.h"
 /**
  * \file rtkzengforwardprojectiontest.cxx
  *
@@ -44,9 +43,8 @@ main(int, char **)
   ConstantImageSourceType::PointType   origin;
   ConstantImageSourceType::SizeType    size;
   ConstantImageSourceType::SpacingType spacing;
-
+  constexpr double                     att = 0.0154;
   // Create Joseph Forward Projector volume input.
-  const ConstantImageSourceType::Pointer volInput = ConstantImageSourceType::New();
   origin[0] = -126;
   origin[1] = -126;
   origin[2] = -126;
@@ -65,14 +63,22 @@ main(int, char **)
   spacing[1] = 4.;
   spacing[2] = 4.;
 #endif
-  volInput->SetOrigin(origin);
-  volInput->SetSpacing(spacing);
-  volInput->SetSize(size);
-  volInput->SetConstant(1.);
-  volInput->UpdateOutputInformation();
 
-  // Initialization Volume, it is used in the Zeng Forward Projector and in the
-  // Ray Box Intersection Filter in order to initialize the stack of projections.
+ConstantImageSourceType::Pointer tomographySource = ConstantImageSourceType::New();
+  tomographySource->SetOrigin(origin);
+  tomographySource->SetSpacing(spacing);
+  tomographySource->SetSize(size);
+  tomographySource->SetConstant(0.);
+
+// Create constant attenuation map
+  const ConstantImageSourceType::Pointer attenuationInput = ConstantImageSourceType::New();
+  attenuationInput->SetOrigin(origin);
+  attenuationInput->SetSpacing(spacing);
+  attenuationInput->SetSize(size);
+  attenuationInput->SetConstant(att);
+  
+
+  // Initialization Volume, it is used in the Zeng Forward Projector and in the Joseph Attenuated Projector
   const ConstantImageSourceType::Pointer projInput = ConstantImageSourceType::New();
   size[2] = NumberOfProjectionImages;
   projInput->SetOrigin(origin);
@@ -81,6 +87,25 @@ main(int, char **)
   projInput->SetConstant(0.);
   projInput->Update();
 
+
+
+ using DEIFType = rtk::DrawEllipsoidImageFilter<OutputImageType, OutputImageType>;
+  DEIFType::Pointer    volInput = DEIFType::New();
+  DEIFType::VectorType axis_vol, center_vol, center_att, axis_att;
+  axis_vol[0] = 32;
+  axis_vol[1] = 32;
+  axis_vol[2] = 32  ;
+  center_vol[0] = 0.;
+  center_vol[1] = 0.;
+  center_vol[2] = 0.;
+  volInput->SetInput(tomographySource->GetOutput());
+  volInput->SetCenter(center_vol);
+  volInput->SetAxis(axis_vol);
+  volInput->SetDensity(1);
+  volInput->Update();
+  
+
+
   // Zeng Forward Projection filter
   using JFPType = rtk::ZengForwardProjectionImageFilter<OutputImageType, OutputImageType>;
 
@@ -88,43 +113,34 @@ main(int, char **)
   jfp->InPlaceOff();
   jfp->SetInput(projInput->GetOutput());
   jfp->SetInput(1, volInput->GetOutput());
+  jfp->SetInput(2, attenuationInput->GetOutput());
 
-  // Ray Box Intersection filter (reference)
-  using RBIType = rtk::RayBoxIntersectionImageFilter<OutputImageType, OutputImageType>;
-  RBIType::Pointer rbi = RBIType::New();
-  rbi->InPlaceOff();
-  rbi->SetInput(projInput->GetOutput());
-  VectorType boxMin, boxMax;
-  boxMin[0] = -128;
-  boxMin[1] = -128;
-  boxMin[2] = -128;
-  boxMax[0] = 128;
-  boxMax[1] = 128;
-  boxMax[2] = 128;
-  rbi->SetBoxMin(boxMin);
-  rbi->SetBoxMax(boxMax);
+  // Joseph Forward Attenuated Projection filter
+  using ATTJFPType = rtk::JosephForwardAttenuatedProjectionImageFilter<OutputImageType, OutputImageType>;
+  ATTJFPType::Pointer attjfp = ATTJFPType::New();
+  attjfp->InPlaceOff();
+  attjfp->SetInput(projInput->GetOutput());
+  attjfp->SetInput(1, volInput->GetOutput());
+  attjfp->SetInput(2, attenuationInput->GetOutput());
 
-  std::cout << "\n\n****** Case 1: inner ray source ******" << std::endl;
 
-  using GeometryType = rtk::ThreeDCircularProjectionGeometry;
+ using GeometryType = rtk::ThreeDCircularProjectionGeometry;
   GeometryType::Pointer geometry = GeometryType::New();
   for (unsigned int i = 0; i < NumberOfProjectionImages; i++)
   {
-    geometry->AddProjection(500, 0, i * 360. / NumberOfProjectionImages);
+    geometry->AddProjection(500, 0, i * 360. / NumberOfProjectionImages, 16., 12.);
   }
 
-  rbi->SetGeometry(geometry);
-  rbi->Update();
+  attjfp->SetGeometry(geometry);
+  attjfp->Update();
 
   jfp->SetGeometry(geometry);
   jfp->SetAlpha(0.);
   jfp->SetSigmaZero(0.);
-
   jfp->Update();
 
-  CheckImageQuality<OutputImageType>(jfp->GetOutput(), rbi->GetOutput(), 1.28, 44.0, 255.0);
+  CheckImageQuality<OutputImageType>(jfp->GetOutput(), attjfp->GetOutput(), 0.1, 44.0, 255.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
-
 
   return EXIT_SUCCESS;
 }
