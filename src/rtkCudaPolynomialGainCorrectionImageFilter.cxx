@@ -33,7 +33,7 @@ CudaPolynomialGainCorrectionImageFilter ::GPUGenerateData()
   OutputImageRegionType overlapRegion = this->GetOutput()->GetRequestedRegion();
 
   // Put the two data pointers at the same location
-#ifdef CUDACOMMON_VERSION_MAJOR
+#if CUDACOMMON_VERSION_MAJOR > 1
   unsigned short * inBuffer =
     static_cast<unsigned short *>(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
 #else
@@ -41,14 +41,14 @@ CudaPolynomialGainCorrectionImageFilter ::GPUGenerateData()
     *static_cast<unsigned short **>(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
 #endif
   inBuffer += this->GetInput()->ComputeOffset(overlapRegion.GetIndex());
-#ifdef CUDACOMMON_VERSION_MAJOR
+#if CUDACOMMON_VERSION_MAJOR > 1
   float * outBuffer = static_cast<float *>(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
 #else
   float *          outBuffer = *static_cast<float **>(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
 #endif
   outBuffer += this->GetOutput()->ComputeOffset(this->GetOutput()->GetRequestedRegion().GetIndex());
 
-#ifdef CUDACOMMON_VERSION_MAJOR
+#if CUDACOMMON_VERSION_MAJOR > 1
   unsigned short * darkBuffer = static_cast<unsigned short *>(m_DarkImage->GetCudaDataManager()->GetGPUBufferPointer());
 
   float * gainBuffer = static_cast<float *>(m_GainImage->GetCudaDataManager()->GetGPUBufferPointer());

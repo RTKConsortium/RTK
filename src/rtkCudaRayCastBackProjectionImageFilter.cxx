@@ -84,7 +84,7 @@ CudaRayCastBackProjectionImageFilter ::GPUGenerateData()
   volumeSize[1] = this->GetOutput()->GetRequestedRegion().GetSize()[1];
   volumeSize[2] = this->GetOutput()->GetRequestedRegion().GetSize()[2];
 
-#ifdef CUDACOMMON_VERSION_MAJOR
+#if CUDACOMMON_VERSION_MAJOR > 1
   float * pin = (float *)(this->GetInput(0)->GetCudaDataManager()->GetGPUBufferPointer());
   float * pout = (float *)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
   float * pproj = (float *)(this->GetInput(1)->GetCudaDataManager()->GetGPUBufferPointer());

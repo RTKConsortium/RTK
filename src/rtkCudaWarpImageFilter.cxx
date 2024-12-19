@@ -64,7 +64,7 @@ CudaWarpImageFilter ::GPUGenerateData()
   outputVolumeSize[1] = this->GetOutput()->GetBufferedRegion().GetSize()[1];
   outputVolumeSize[2] = this->GetOutput()->GetBufferedRegion().GetSize()[2];
 
-#ifdef CUDACOMMON_VERSION_MAJOR
+#if CUDACOMMON_VERSION_MAJOR > 1
   float * pinVol = (float *)(this->GetInput(0)->GetCudaDataManager()->GetGPUBufferPointer());
   float * poutVol = (float *)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
   float * pDVF = (float *)(this->GetDisplacementField()->GetCudaDataManager()->GetGPUBufferPointer());
