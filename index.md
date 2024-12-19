@@ -6,29 +6,33 @@ The Reconstruction Toolkit (RTK) is an open-source and cross-platform software f
 [![PyPI](https://img.shields.io/pypi/v/itk-rtk.svg)](https://pypi.python.org/pypi/itk-rtk)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/RTKConsortium/RTK/blob/master/LICENSE.TXT)
 
+```{toctree}
+GettingStarted
+```
 
 ```{toctree}
 :maxdepth: 1
 :caption: 💾 Download
-
 INSTALLATION
 ```
 
 ```{toctree}
 :maxdepth: 1
 :caption: 📖 Learn
-
-GettingStarted
+documentation/docs/Phantom.md
+documentation/docs/Geometry.md
+documentation/docs/Tutorial.md
 examples/index
 ```
 
 ```{toctree}
 :maxdepth: 1
 :caption: 🔨 Develop
-
 API <https://www.openrtk.org/Doxygen/index.html>
 Discussion <https://www.creatis.insa-lyon.fr/mailman/listinfo/rtk-users>
 Issue tracker <https://github.com/RTKConsortium/RTK/issues>
+CodeContribution
 documentation/docs/README
 documentation/docs/Release
+
 ```

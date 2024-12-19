@@ -41,7 +41,7 @@ ForbildPhantomFileReader::GenerateOutputInformation()
   myFile.open(m_Filename.c_str());
   if (!myFile.is_open())
   {
-    itkGenericExceptionMacro("Error opening file" << m_Filename);
+    itkGenericExceptionMacro("Error opening file " << m_Filename);
   }
   while (!myFile.eof())
   {
@@ -57,6 +57,7 @@ ForbildPhantomFileReader::GenerateOutputInformation()
       itkExceptionMacro(<< "Could not compile " << regex);
     if (!re.find(line.c_str()))
       continue;
+
     const std::string fig = re.match(1);
 
     // Find density
@@ -104,6 +105,17 @@ ForbildPhantomFileReader::GenerateOutputInformation()
       FindUnions(line);
       m_ConvexShape = ConvexShape::Pointer(nullptr);
     }
+  }
+  if (m_GeometricPhantom->GetConvexShapes().empty())
+  {
+    itkExceptionMacro("Failed to create a valid shape from file: "
+                      << m_Filename
+                      << "\n"
+                         "Possible reasons:\n"
+                         " - The input file is empty or contains no parameters.\n"
+                         " - The input file format is not Forbild.\n"
+                         " - The file specifies unknown or unsupported shape types.\n"
+                         "Please check the input file for errors.");
   }
   for (const auto & m_Union : m_Unions)
     m_GeometricPhantom->AddConvexShape(m_Union);
@@ -532,8 +544,11 @@ ForbildPhantomFileReader::FindUnions(const std::string & s)
     int    u = std::stoi(re.match(1).c_str());
     size_t pos = len + u - 1;
     ico->AddConvexShape(m_GeometricPhantom->GetConvexShapes()[pos]);
+
     if (m_ConvexShape->GetDensity() != m_GeometricPhantom->GetConvexShapes()[pos]->GetDensity())
-      itkExceptionMacro(<< "Cannot unionize objects of different density in " << s);
+      itkExceptionMacro(<< "Cannot unionize objects of different density in " << s
+                        << "See the documentation if the densities are equal, it could be a limitation of the forbild "
+                           "format regarding the overlaping shapes");
     ico->SetDensity(-1. * m_ConvexShape->GetDensity());
 
     m_UnionWith.back() = pos;
