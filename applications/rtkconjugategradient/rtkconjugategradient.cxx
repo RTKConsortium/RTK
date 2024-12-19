@@ -130,6 +130,9 @@ main(int argc, char * argv[])
   conjugategradient->SetNumberOfIterations(args_info.niterations_arg);
   conjugategradient->SetDisableDisplacedDetectorFilter(args_info.nodisplaced_flag);
 
+  REPORT_ITERATIONS(
+    conjugategradient, rtk::ConjugateGradientConeBeamReconstructionFilter<OutputImageType>, OutputImageType)
+
   itk::TimeProbe readerProbe;
   if (args_info.time_flag)
   {

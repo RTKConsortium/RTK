@@ -8,13 +8,17 @@ env:
   itk-python-package-org: 'SimonRit'
   itk-module-deps: "RTKConsortium/ITKCudaCommon@cae7c93c2f6d4c5b3cb5f6e5ce4a97686e626bf7"
 
+concurrency:
+  group: '${{ github.workflow }}@${{ github.head_ref || github.run_id }}'
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   build-linux-cuda-python-packages:
     runs-on: self-hosted-linux
     strategy:
       max-parallel: 2
       matrix:
-        python3-minor-version: ["8","9","10","11"]
+        python3-minor-version: ${{ github.event_name == 'pull_request' && fromJSON('["11"]') || fromJSON('["9","10","11"]') }}
         manylinux-platform: ["_2_28-x64","2014-x64"]
         cuda-version: ["116","121"]
 
@@ -103,7 +107,7 @@ jobs:
     strategy:
       max-parallel: 2
       matrix:
-        python3-minor-version: ["8","9","10","11"]
+        python3-minor-version: ${{ github.event_name == 'pull_request' && fromJSON('["11"]') || fromJSON('["9","10","11"]') }}
         cuda-version: ["116","121"]
 
     steps:
