@@ -1,11 +1,11 @@
 if(RTK_USE_CUDA)
 
-  if(CudaCommon_SOURCE_DIR)
+  if(CudaCommon_VERSION_MAJOR)
     configure_file("${CudaCommon_SOURCE_DIR}/wrapping/CudaImage.i.init" "${CMAKE_CURRENT_BINARY_DIR}/CudaImageRTK.i" @ONLY)
   endif()
 
   function(wrap_CudaImage_swig_ext type px_type)
-    if(CudaCommon_SOURCE_DIR)
+    if(CudaCommon_VERSION_MAJOR)
       set(CudaImageTypes ${type})
       set(PixelType ${px_type})
       configure_file(${CudaCommon_SOURCE_DIR}/wrapping/CudaImage.i.in ${CMAKE_CURRENT_BINARY_DIR}/CudaImageRTK.i.temp @ONLY)
@@ -43,7 +43,7 @@ if(RTK_USE_CUDA)
 
   itk_end_wrap_class()
 
-  if(CudaCommon_SOURCE_DIR)
+  if(CudaCommon_VERSION_MAJOR)
     # Add library files to be included at a submodule level and copy them into
     # ITK's wrapping typedef directory.
     # Another approach is to add CudaImage.i to the WRAPPER_SWIG_LIBRARY_FILES list

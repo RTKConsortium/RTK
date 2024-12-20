@@ -234,7 +234,7 @@ else()
 endif()
 
 # Propagate cmake options in a header file
-# Must be done after the external module configuration to make sure CudaCommon_SOURCE_DIR is defined
+# Must be done after the external module configuration to make sure CudaCommon_VERSION is defined
 configure_file(${RTK_SOURCE_DIR}/rtkConfiguration.h.in
   ${RTK_BINARY_DIR}/rtkConfiguration.h)
 
