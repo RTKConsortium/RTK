@@ -159,7 +159,7 @@ FDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecision>::Gener
 template <class TInputImage, class TOutputImage, class TFFTPrecision>
 void
 FDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecision>::SetBackProjectionFilter(
-  const BackProjectionFilterPointer _arg)
+  BackProjectionFilterType * _arg)
 {
   itkDebugMacro("setting BackProjectionFilter to " << _arg);
   if (this->m_BackProjectionFilter != _arg)

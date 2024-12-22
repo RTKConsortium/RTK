@@ -67,7 +67,7 @@ ConjugateGradientImageFilter<OutputImageType>::GetB()
 
 template <typename OutputImageType>
 void
-ConjugateGradientImageFilter<OutputImageType>::SetA(ConjugateGradientOperatorPointerType _arg)
+ConjugateGradientImageFilter<OutputImageType>::SetA(ConjugateGradientOperatorType * _arg)
 {
   this->m_A = _arg;
   this->Modified();

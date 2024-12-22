@@ -144,7 +144,7 @@ public:
 
   /** The forward projection filter cannot be set by the user */
   void
-  SetForwardProjectionFilter(const typename Superclass::ForwardProjectionFilterType::Pointer itkNotUsed(_arg))
+  SetForwardProjectionFilter(typename Superclass::ForwardProjectionFilterType * itkNotUsed(_arg))
   {
     itkExceptionMacro(<< "ForwardProjection cannot be changed");
   }

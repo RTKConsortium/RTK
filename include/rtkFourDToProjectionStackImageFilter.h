@@ -141,11 +141,10 @@ public:
 
   /** Set the ForwardProjection filter */
   void
-  SetForwardProjectionFilter(const typename ForwardProjectionFilterType::Pointer _arg);
+  SetForwardProjectionFilter(ForwardProjectionFilterType * _arg);
 
   /** Pass the geometry to SingleProjectionToFourDFilter */
-  virtual void
-  SetGeometry(GeometryType::Pointer _arg);
+  itkSetObjectMacro(Geometry, GeometryType);
 
   /** Pass the interpolation weights to SingleProjectionToFourDFilter */
   void

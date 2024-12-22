@@ -74,7 +74,7 @@ FourDToProjectionStackImageFilter<ProjectionStackType, VolumeSeriesType>::GetInp
 template <typename ProjectionStackType, typename VolumeSeriesType>
 void
 FourDToProjectionStackImageFilter<ProjectionStackType, VolumeSeriesType>::SetForwardProjectionFilter(
-  const typename ForwardProjectionFilterType::Pointer _arg)
+  ForwardProjectionFilterType * _arg)
 {
   m_ForwardProjectionFilter = _arg;
 }
@@ -84,13 +84,6 @@ void
 FourDToProjectionStackImageFilter<ProjectionStackType, VolumeSeriesType>::SetWeights(const itk::Array2D<float> _arg)
 {
   m_Weights = _arg;
-}
-
-template <typename ProjectionStackType, typename VolumeSeriesType>
-void
-FourDToProjectionStackImageFilter<ProjectionStackType, VolumeSeriesType>::SetGeometry(GeometryType::Pointer _arg)
-{
-  m_Geometry = _arg;
 }
 
 template <typename VolumeSeriesType, typename ProjectionStackType>
