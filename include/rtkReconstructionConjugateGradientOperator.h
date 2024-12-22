@@ -175,11 +175,11 @@ public:
 
   /** Set the backprojection filter*/
   void
-  SetBackProjectionFilter(const BackProjectionFilterPointer _arg);
+  SetBackProjectionFilter(BackProjectionFilterType * _arg);
 
   /** Set the forward projection filter*/
   void
-  SetForwardProjectionFilter(const ForwardProjectionFilterPointer _arg);
+  SetForwardProjectionFilter(ForwardProjectionFilterType * _arg);
 
   /** Set the support mask, if any, for support constraint in reconstruction */
   void

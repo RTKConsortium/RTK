@@ -32,14 +32,14 @@ PolynomialGainCorrectionImageFilter<TInputImage, TOutputImage>::PolynomialGainCo
 
 template <class TInputImage, class TOutputImage>
 void
-PolynomialGainCorrectionImageFilter<TInputImage, TOutputImage>::SetDarkImage(const InputImagePointer darkImage)
+PolynomialGainCorrectionImageFilter<TInputImage, TOutputImage>::SetDarkImage(InputImageType * darkImage)
 {
   m_DarkImage = darkImage;
 }
 
 template <class TInputImage, class TOutputImage>
 void
-PolynomialGainCorrectionImageFilter<TInputImage, TOutputImage>::SetGainCoefficients(const OutputImagePointer gain)
+PolynomialGainCorrectionImageFilter<TInputImage, TOutputImage>::SetGainCoefficients(OutputImageType * gain)
 {
   m_GainImage = gain;
 }

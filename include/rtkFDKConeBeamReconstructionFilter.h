@@ -120,7 +120,7 @@ public:
    * created before calling this set function. */
   itkGetMacro(BackProjectionFilter, BackProjectionFilterPointer);
   virtual void
-  SetBackProjectionFilter(const BackProjectionFilterPointer _arg);
+  SetBackProjectionFilter(BackProjectionFilterType * _arg);
 
 protected:
   FDKConeBeamReconstructionFilter();
