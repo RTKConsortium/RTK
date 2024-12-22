@@ -167,7 +167,7 @@ public:
 
   /** Pass the backprojection filter to SingleProjectionToFourDFilter */
   void
-  SetBackProjectionFilter(const typename BackProjectionFilterType::Pointer _arg);
+  SetBackProjectionFilter(BackProjectionFilterType * _arg);
 
   /** Pass the geometry to SingleProjectionToFourDFilter */
   itkSetConstObjectMacro(Geometry, GeometryType);

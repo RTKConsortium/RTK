@@ -47,7 +47,7 @@ namespace rtk
  */
 template <class TConstantImageSourceType, class TArgsInfo>
 void
-SetConstantImageSourceFromGgo(typename TConstantImageSourceType::Pointer source, const TArgsInfo & args_info)
+SetConstantImageSourceFromGgo(TConstantImageSourceType * source, const TArgsInfo & args_info)
 {
   using ImageType = typename TConstantImageSourceType::OutputImageType;
 
@@ -175,7 +175,7 @@ GetProjectionsFileNamesFromGgo(const TArgsInfo & args_info)
 
 template <class TProjectionsReaderType, class TArgsInfo>
 void
-SetProjectionsReaderFromGgo(typename TProjectionsReaderType::Pointer reader, const TArgsInfo & args_info)
+SetProjectionsReaderFromGgo(TProjectionsReaderType * reader, const TArgsInfo & args_info)
 {
   const std::vector<std::string> fileNames = GetProjectionsFileNamesFromGgo(args_info);
 

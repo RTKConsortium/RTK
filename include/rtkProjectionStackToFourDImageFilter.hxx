@@ -73,7 +73,7 @@ ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPre
 template <typename VolumeSeriesType, typename ProjectionStackType, typename TFFTPrecision>
 void
 ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPrecision>::SetBackProjectionFilter(
-  const typename BackProjectionFilterType::Pointer _arg)
+  BackProjectionFilterType * _arg)
 {
   m_BackProjectionFilter = _arg;
   this->Modified();

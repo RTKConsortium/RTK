@@ -200,11 +200,11 @@ public:
 
   /** Pass the backprojection filter to ProjectionStackToFourD*/
   void
-  SetBackProjectionFilter(const typename BackProjectionFilterType::Pointer _arg);
+  SetBackProjectionFilter(BackProjectionFilterType * _arg);
 
   /** Pass the forward projection filter to FourDToProjectionStack */
   void
-  SetForwardProjectionFilter(const typename ForwardProjectionFilterType::Pointer _arg);
+  SetForwardProjectionFilter(ForwardProjectionFilterType * _arg);
 
   /** Pass the geometry to all filters needing it */
   itkSetConstObjectMacro(Geometry, ThreeDCircularProjectionGeometry);

@@ -65,7 +65,7 @@ public:
     return m_LookupTablePointer;
   }
   void
-  SetLookupTable(LookupTablePointer lut)
+  SetLookupTable(LookupTableType * lut)
   {
     m_LookupTablePointer = lut;
     m_LookupTableDataPointer = lut->GetBufferPointer();

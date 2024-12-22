@@ -53,8 +53,7 @@ ADMMWaveletsConjugateGradientOperator<TOutputImage>::ADMMWaveletsConjugateGradie
 
 template <typename TOutputImage>
 void
-ADMMWaveletsConjugateGradientOperator<TOutputImage>::SetBackProjectionFilter(
-  const typename BackProjectionFilterType::Pointer _arg)
+ADMMWaveletsConjugateGradientOperator<TOutputImage>::SetBackProjectionFilter(BackProjectionFilterType * _arg)
 {
   if (m_BackProjectionFilter != _arg)
     this->Modified();
@@ -63,8 +62,7 @@ ADMMWaveletsConjugateGradientOperator<TOutputImage>::SetBackProjectionFilter(
 
 template <typename TOutputImage>
 void
-ADMMWaveletsConjugateGradientOperator<TOutputImage>::SetForwardProjectionFilter(
-  const typename ForwardProjectionFilterType::Pointer _arg)
+ADMMWaveletsConjugateGradientOperator<TOutputImage>::SetForwardProjectionFilter(ForwardProjectionFilterType * _arg)
 {
   if (m_ForwardProjectionFilter != _arg)
     this->Modified();
@@ -74,9 +72,9 @@ ADMMWaveletsConjugateGradientOperator<TOutputImage>::SetForwardProjectionFilter(
 
 template <typename TOutputImage>
 void
-ADMMWaveletsConjugateGradientOperator<TOutputImage>::SetGeometry(const ThreeDCircularProjectionGeometry::Pointer _arg)
+ADMMWaveletsConjugateGradientOperator<TOutputImage>::SetGeometry(ThreeDCircularProjectionGeometry * _arg)
 {
-  m_BackProjectionFilter->SetGeometry(_arg.GetPointer());
+  m_BackProjectionFilter->SetGeometry(_arg);
   m_ForwardProjectionFilter->SetGeometry(_arg);
   m_DisplacedDetectorFilter->SetGeometry(_arg);
 }

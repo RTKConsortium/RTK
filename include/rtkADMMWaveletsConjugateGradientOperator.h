@@ -128,15 +128,15 @@ public:
 
   /** Set the backprojection filter*/
   void
-  SetBackProjectionFilter(const BackProjectionFilterPointer _arg);
+  SetBackProjectionFilter(BackProjectionFilterType * _arg);
 
   /** Set the forward projection filter*/
   void
-  SetForwardProjectionFilter(const ForwardProjectionFilterPointer _arg);
+  SetForwardProjectionFilter(ForwardProjectionFilterType * _arg);
 
   /** Set the geometry of both m_BackProjectionFilter and m_ForwardProjectionFilter */
   void
-  SetGeometry(const ThreeDCircularProjectionGeometry::Pointer _arg);
+  SetGeometry(ThreeDCircularProjectionGeometry * _arg);
 
   /** Set the regularization parameter */
   itkSetMacro(Beta, float);

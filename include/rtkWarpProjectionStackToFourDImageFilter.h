@@ -138,7 +138,7 @@ public:
 
   /** The back projection filter cannot be set by the user */
   void
-  SetBackProjectionFilter(const typename Superclass::BackProjectionFilterType::Pointer itkNotUsed(_arg))
+  SetBackProjectionFilter(typename Superclass::BackProjectionFilterType * itkNotUsed(_arg))
   {
     itkExceptionMacro(<< "BackProjection cannot be changed");
   }

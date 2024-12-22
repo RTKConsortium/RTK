@@ -54,7 +54,6 @@ public:
   using Superclass = itk::InPlaceImageFilter<OutputImageType, OutputImageType>;
   using Pointer = itk::SmartPointer<Self>;
   using ConjugateGradientOperatorType = ConjugateGradientOperator<OutputImageType>;
-  using ConjugateGradientOperatorPointerType = typename ConjugateGradientOperatorType::Pointer;
   using OutputImagePointer = typename OutputImageType::Pointer;
 
   /** Method for creation through the object factory. */
@@ -72,7 +71,7 @@ public:
   itkSetMacro(NumberOfIterations, int);
 
   void
-  SetA(ConjugateGradientOperatorPointerType _arg);
+  SetA(ConjugateGradientOperatorType * _arg);
 
   /** The input image to be updated.*/
   void
@@ -101,7 +100,7 @@ protected:
   void
   GenerateOutputInformation() override;
 
-  ConjugateGradientOperatorPointerType m_A;
+  ConjugateGradientOperatorType * m_A;
 
   int m_NumberOfIterations;
 };

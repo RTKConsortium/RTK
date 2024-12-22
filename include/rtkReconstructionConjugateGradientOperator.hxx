@@ -132,7 +132,7 @@ ReconstructionConjugateGradientOperator<TOutputImage, TSingleComponentImage, TWe
 template <typename TOutputImage, typename TSingleComponentImage, typename TWeightsImage>
 void
 ReconstructionConjugateGradientOperator<TOutputImage, TSingleComponentImage, TWeightsImage>::SetBackProjectionFilter(
-  const typename BackProjectionFilterType::Pointer _arg)
+  BackProjectionFilterType * _arg)
 {
   m_BackProjectionFilter = _arg;
 }
@@ -140,7 +140,7 @@ ReconstructionConjugateGradientOperator<TOutputImage, TSingleComponentImage, TWe
 template <typename TOutputImage, typename TSingleComponentImage, typename TWeightsImage>
 void
 ReconstructionConjugateGradientOperator<TOutputImage, TSingleComponentImage, TWeightsImage>::SetForwardProjectionFilter(
-  const typename ForwardProjectionFilterType::Pointer _arg)
+  ForwardProjectionFilterType * _arg)
 {
   m_ForwardProjectionFilter = _arg;
 }
