@@ -77,7 +77,7 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
 template <typename VolumeSeriesType, typename ProjectionStackType>
 void
 FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType>::SetBackProjectionFilter(
-  const typename BackProjectionFilterType::Pointer _arg)
+  BackProjectionFilterType * _arg)
 {
   m_BackProjectionFilter = _arg;
   this->Modified();
@@ -86,7 +86,7 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
 template <typename VolumeSeriesType, typename ProjectionStackType>
 void
 FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType>::SetForwardProjectionFilter(
-  const typename ForwardProjectionFilterType::Pointer _arg)
+  ForwardProjectionFilterType * _arg)
 {
   m_ForwardProjectionFilter = _arg;
   this->Modified();
