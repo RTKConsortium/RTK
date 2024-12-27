@@ -15,7 +15,7 @@ def setup(app):
 
 # -- Project information -----------------------------------------------------
 project = 'RTK'
-copyright = f'{date.today().year}, Simon Rit'
+copyright = f'{date.today().year}, RTK Consortium'
 author = 'RTK Consortium'
 
 # The full version, including alpha/beta/rc tags
