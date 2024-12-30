@@ -19,6 +19,7 @@ INSTALLATION
 ```{toctree}
 :maxdepth: 1
 :caption: 📖 Learn
+documentation/docs/Geometry.md
 documentation/docs/Phantom.md
 documentation/docs/Tutorial.md
 examples/index.md

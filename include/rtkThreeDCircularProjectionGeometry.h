@@ -40,7 +40,8 @@ namespace rtk
  *
  * If SDD equals 0., then one is dealing with a parallel geometry.
  *
- * More information is provided in \ref DocGeo3D.
+ * See https://docs.openrtk.org/en/latest/documentation/docs/Geometry.html
+ * for more information.
  *
  * \author Simon Rit
  *
