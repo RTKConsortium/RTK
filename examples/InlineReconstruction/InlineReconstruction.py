@@ -13,6 +13,9 @@ reconstruct inline / on-the-fly with RTK's implementation of FDK
 
 # Parameters controlling the geometry of the simulated acquisition
 image_type=itk.Image[itk.F,3]
+has_gpu_capability=hasattr(itk, 'CudaImage')
+if has_gpu_capability:
+    cuda_image_type=itk.CudaImage[itk.F,3]
 nproj=64
 sid=1000
 sdd=1500
@@ -53,9 +56,14 @@ if __name__ == "__main__":
     # Create the reconstruction pipeline
     reader = rtk.ProjectionsReader[image_type].New()
     extractor = itk.ExtractImageFilter[image_type, image_type].New(Input=reader.GetOutput())
-    parker = rtk.ParkerShortScanImageFilter[image_type].New(Input=extractor.GetOutput(), Geometry=geometry_rec)
-    reconstruction_source = rtk.ConstantImageSource[image_type].New(Origin=[origin*sid/sdd]*3, Spacing=[spacing*sid/sdd]*3, Size=[size]*3)
-    fdk = rtk.FDKConeBeamReconstructionFilter[image_type].New(Geometry=geometry_rec)
+    if has_gpu_capability:
+        parker = rtk.CudaParkerShortScanImageFilter.New(Geometry=geometry_rec)
+        reconstruction_source = rtk.ConstantImageSource[cuda_image_type].New(Origin=[origin*sid/sdd]*3, Spacing=[spacing*sid/sdd]*3, Size=[size]*3)
+        fdk = rtk.CudaFDKConeBeamReconstructionFilter.New(Geometry=geometry_rec)
+    else:
+        parker = rtk.ParkerShortScanImageFilter[image_type].New(Input=extractor.GetOutput(), Geometry=geometry_rec)
+        reconstruction_source = rtk.ConstantImageSource[image_type].New(Origin=[origin*sid/sdd]*3, Spacing=[spacing*sid/sdd]*3, Size=[size]*3)
+        fdk = rtk.FDKConeBeamReconstructionFilter[image_type].New(Geometry=geometry_rec)
     fdk.SetInput(0, reconstruction_source.GetOutput())
     fdk.SetInput(1, parker.GetOutput())
 
@@ -88,9 +96,16 @@ if __name__ == "__main__":
             # Only extract and read the new projection
             extracted_region.SetIndex(2, number_of_reconstructed_projections)
             extractor.SetExtractionRegion(extracted_region)
-            fdk.GetOutput().UpdateOutputInformation()
-            fdk.GetOutput().PropagateRequestedRegion()
+            extractor.UpdateLargestPossibleRegion()
+            if has_gpu_capability:
+                projection = cuda_image_type.New()
+                projection.SetPixelContainer(extractor.GetOutput().GetPixelContainer())
+                projection.CopyInformation(extractor.GetOutput())
+                projection.SetBufferedRegion(extractor.GetOutput().GetBufferedRegion())
+                projection.SetRequestedRegion(extractor.GetOutput().GetRequestedRegion())
+                parker.SetInput(projection)
             fdk.Update()
             number_of_reconstructed_projections += 1
     thread.join()
-    itk.imwrite(fdk.GetOutput(), 'fdk.mha')
+    writer = itk.ImageFileWriter[image_type].New(Input=fdk.GetOutput(), FileName='fdk.mha')
+    writer.Update()
