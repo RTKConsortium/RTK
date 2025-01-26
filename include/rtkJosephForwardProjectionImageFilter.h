@@ -39,7 +39,7 @@ namespace Functor
  *
  * \ingroup RTK Functions
  */
-template <class TInput, class TCoordRepType, class TOutput = TInput>
+template <class TInput, class TCoordinateType, class TOutput = TInput>
 class ITK_TEMPLATE_EXPORT InterpolationWeightMultiplication
 {
 public:
@@ -59,7 +59,7 @@ public:
   inline TOutput
   operator()(const ThreadIdType  itkNotUsed(threadId),
              const double        itkNotUsed(stepLengthInVoxel),
-             const TCoordRepType weight,
+             const TCoordinateType weight,
              const TInput *      p,
              const int           i) const
   {
@@ -184,8 +184,8 @@ public:
   using InputPixelType = typename TInputImage::PixelType;
   using OutputPixelType = typename TOutputImage::PixelType;
   using OutputImageRegionType = typename TOutputImage::RegionType;
-  using CoordRepType = double;
-  using VectorType = itk::Vector<CoordRepType, TInputImage::ImageDimension>;
+  using CoordinateType = double;
+  using VectorType = itk::Vector<CoordinateType, TInputImage::ImageDimension>;
   using TClipImageType = itk::Image<double, TOutputImage::ImageDimension>;
   using TClipImagePointer = typename TClipImageType::Pointer;
 

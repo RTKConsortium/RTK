@@ -35,7 +35,7 @@ namespace Functor
  *
  * \ingroup RTK Functions
  */
-template <class TInput, class TCoordRepType, class TOutput = TInput>
+template <class TInput, class TCoordinateType, class TOutput = TInput>
 class ITK_TEMPLATE_EXPORT InterpolationWeightMultiplicationAttenuatedBackProjection
 {
 public:
@@ -55,7 +55,7 @@ public:
   }
 
   inline TOutput
-  operator()(const double stepLengthInVoxel, const TCoordRepType weight, const TInput * p, const int i)
+  operator()(const double stepLengthInVoxel, const TCoordinateType weight, const TInput * p, const int i)
   {
     const double w = weight * stepLengthInVoxel;
 
@@ -150,7 +150,7 @@ private:
  *
  * \ingroup RTK Functions
  */
-template <class TInput, class TCoordRepType, class TOutput = TCoordRepType>
+template <class TInput, class TCoordinateType, class TOutput = TCoordinateType>
 class ITK_TEMPLATE_EXPORT SplatWeightMultiplicationAttenuated
 {
 public:
@@ -173,7 +173,7 @@ public:
              TOutput &           output,
              const double        stepLengthInVoxel,
              const double        itkNotUsed(voxelSize),
-             const TCoordRepType weight) const
+             const TCoordinateType weight) const
   {
     output += rayValue * weight * stepLengthInVoxel;
   }
@@ -226,8 +226,8 @@ public:
   using InputPixelType = typename TInputImage::PixelType;
   using OutputPixelType = typename TOutputImage::PixelType;
   using OutputImageRegionType = typename TOutputImage::RegionType;
-  using CoordRepType = double;
-  using VectorType = itk::Vector<CoordRepType, TInputImage::ImageDimension>;
+  using CoordinateType = double;
+  using VectorType = itk::Vector<CoordinateType, TInputImage::ImageDimension>;
   using GeometryType = rtk::ThreeDCircularProjectionGeometry;
   using GeometryPointer = typename GeometryType::Pointer;
 
