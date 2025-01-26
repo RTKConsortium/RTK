@@ -37,7 +37,7 @@ namespace Functor
  *
  * \ingroup RTK Functions
  */
-template <class TInput, class TCoordRepType, class TOutput = TInput>
+template <class TInput, class TCoordinateType, class TOutput = TInput>
 class ITK_TEMPLATE_EXPORT InterpolationWeightMultiplicationBackProjection
 {
 public:
@@ -55,10 +55,10 @@ public:
   }
 
   inline TOutput
-  operator()(const double        itkNotUsed(stepLengthInVoxel),
-             const TCoordRepType itkNotUsed(weight),
-             const TInput *      itkNotUsed(p),
-             const int           itkNotUsed(i)) const
+  operator()(const double          itkNotUsed(stepLengthInVoxel),
+             const TCoordinateType itkNotUsed(weight),
+             const TInput *        itkNotUsed(p),
+             const int             itkNotUsed(i)) const
   {
     return {};
   }
@@ -107,7 +107,7 @@ public:
  *
  * \ingroup RTK Functions
  */
-template <class TInput, class TCoordRepType, class TOutput = TCoordRepType>
+template <class TInput, class TCoordinateType, class TOutput = TCoordinateType>
 class ITK_TEMPLATE_EXPORT SplatWeightMultiplication
 {
 public:
@@ -125,11 +125,11 @@ public:
   }
 
   inline void
-  operator()(const TInput &      rayValue,
-             TOutput &           output,
-             const double        stepLengthInVoxel,
-             const double        voxelSize,
-             const TCoordRepType weight) const
+  operator()(const TInput &        rayValue,
+             TOutput &             output,
+             const double          stepLengthInVoxel,
+             const double          voxelSize,
+             const TCoordinateType weight) const
   {
     output += rayValue * weight * voxelSize * stepLengthInVoxel;
   }
@@ -174,8 +174,8 @@ public:
   using InputPixelType = typename TInputImage::PixelType;
   using OutputPixelType = typename TOutputImage::PixelType;
   using OutputImageRegionType = typename TOutputImage::RegionType;
-  using CoordRepType = double;
-  using VectorType = itk::Vector<CoordRepType, TInputImage::ImageDimension>;
+  using CoordinateType = double;
+  using VectorType = itk::Vector<CoordinateType, TInputImage::ImageDimension>;
   using GeometryType = rtk::ThreeDCircularProjectionGeometry;
   using GeometryPointer = typename GeometryType::Pointer;
 
@@ -298,10 +298,10 @@ protected:
                          const double           y,
                          const int              ox,
                          const int              oy,
-                         const CoordRepType     minx,
-                         const CoordRepType     miny,
-                         const CoordRepType     maxx,
-                         const CoordRepType     maxy);
+                         const CoordinateType   minx,
+                         const CoordinateType   miny,
+                         const CoordinateType   maxx,
+                         const CoordinateType   maxy);
 
   inline OutputPixelType
   BilinearInterpolation(const double           stepLengthInVoxel,

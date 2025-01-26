@@ -30,7 +30,7 @@ namespace rtk
 {
 namespace Functor
 {
-template <class TInput, class TCoordRepType, class TOutput = TCoordRepType>
+template <class TInput, class TCoordinateType, class TOutput = TCoordinateType>
 class StoreSparseMatrixSplatWeightMultiplication
 {
 public:
@@ -49,11 +49,11 @@ public:
   }
 
   inline void
-  operator()(const TInput &      rayValue,
-             TOutput &           output,
-             const double        stepLengthInVoxel,
-             const double        voxelSize,
-             const TCoordRepType weight)
+  operator()(const TInput &        rayValue,
+             TOutput &             output,
+             const double          stepLengthInVoxel,
+             const double          voxelSize,
+             const TCoordinateType weight)
   {
     // One row of the matrix is one ray, it should be thread safe
     m_SystemMatrix.put(

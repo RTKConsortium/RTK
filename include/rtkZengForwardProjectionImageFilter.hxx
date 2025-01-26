@@ -181,8 +181,8 @@ ZengForwardProjectionImageFilter<TInputImage, TOutputImage>::GenerateOutputInfor
 
   // Find the center of the volume
 
-  using CoordRepType = typename PointType ::ValueType;
-  using ContinuousIndexType = itk::ContinuousIndex<CoordRepType, InputImageDimension>;
+  using CoordinateType = typename PointType ::ValueType;
+  using ContinuousIndexType = itk::ContinuousIndex<CoordinateType, InputImageDimension>;
   using ContinuousIndexValueType = typename ContinuousIndexType::ValueType;
   ContinuousIndexType centerIndex;
 
@@ -194,7 +194,7 @@ ZengForwardProjectionImageFilter<TInputImage, TOutputImage>::GenerateOutputInfor
 
   using ValueType = typename PointType::ValueType;
   m_centerVolume =
-    this->GetInput(1)->template TransformContinuousIndexToPhysicalPoint<CoordRepType, ValueType>(centerIndex);
+    this->GetInput(1)->template TransformContinuousIndexToPhysicalPoint<CoordinateType, ValueType>(centerIndex);
 
   PointType centerRotation;
   centerRotation.Fill(0);
