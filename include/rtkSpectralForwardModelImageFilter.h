@@ -72,7 +72,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(SpectralForwardModelImageFilter);
 #else
-  itkTypeMacro(SpectralForwardModelImageFilter, InPlaceImageFilter);
+  itkOverrideGetNameOfClassMacro(SpectralForwardModelImageFilter);
 #endif
 
   /** Set/Get the incident spectrum input images */

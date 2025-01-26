@@ -59,7 +59,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(LastDimensionL0GradientDenoisingImageFilter);
 #else
-  itkTypeMacro(LastDimensionL0GradientDenoisingImageFilter, itk::InPlaceImageFilter);
+  itkOverrideGetNameOfClassMacro(LastDimensionL0GradientDenoisingImageFilter);
 #endif
 
   /** Get / Set the threshold. Default is 0.001 */

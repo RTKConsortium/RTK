@@ -53,7 +53,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(ElektaSynergyGeometryReader);
 #else
-  itkTypeMacro(ElektaSynergyGeometryReader, LightProcessObject);
+  itkOverrideGetNameOfClassMacro(ElektaSynergyGeometryReader);
 #endif
 
   /** Method for creation through the object factory. */

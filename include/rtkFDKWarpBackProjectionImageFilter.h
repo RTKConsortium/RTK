@@ -73,7 +73,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(FDKWarpBackProjectionImageFilter);
 #else
-  itkTypeMacro(FDKWarpBackProjectionImageFilter, FDKBackProjectionImageFilter);
+  itkOverrideGetNameOfClassMacro(FDKWarpBackProjectionImageFilter);
 #endif
 
   /** Set the deformation. */

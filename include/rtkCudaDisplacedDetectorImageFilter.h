@@ -71,7 +71,7 @@ public:
 #  ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(CudaDisplacedDetectorImageFilter);
 #  else
-  itkTypeMacro(CudaDisplacedDetectorImageFilter, itk::CudaInPlaceImageFilter);
+  itkOverrideGetNameOfClassMacro(CudaDisplacedDetectorImageFilter);
 #  endif
 
 protected:

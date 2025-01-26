@@ -55,7 +55,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(PhasesToInterpolationWeights);
 #else
-  itkTypeMacro(PhasesToInterpolationWeights, itk::CSVFileReaderBase);
+  itkOverrideGetNameOfClassMacro(PhasesToInterpolationWeights);
 #endif
 
   /** DataFrame Object types */

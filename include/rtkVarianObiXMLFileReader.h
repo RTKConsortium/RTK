@@ -56,7 +56,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(VarianObiXMLFileReader);
 #else
-  itkTypeMacro(VarianObiXMLFileReader, itk::XMLReader);
+  itkOverrideGetNameOfClassMacro(VarianObiXMLFileReader);
 #endif
 
   /** Method for creation through the object factory. */

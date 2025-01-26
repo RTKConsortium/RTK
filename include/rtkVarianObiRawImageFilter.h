@@ -114,7 +114,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(VarianObiRawImageFilter);
 #else
-  itkTypeMacro(VarianObiRawImageFilter, itk::UnaryFunctorImageFilter);
+  itkOverrideGetNameOfClassMacro(VarianObiRawImageFilter);
 #endif
 
   itkGetMacro(I0, double);

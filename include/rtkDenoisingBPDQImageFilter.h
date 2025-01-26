@@ -56,7 +56,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(DenoisingBPDQImageFilter);
 #else
-  itkTypeMacro(DenoisingBPDQImageFilter, ImageToImageFilter);
+  itkOverrideGetNameOfClassMacro(DenoisingBPDQImageFilter);
 #endif
 
   /** Sub filter type definitions */

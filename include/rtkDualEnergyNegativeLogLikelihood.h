@@ -53,7 +53,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(DualEnergyNegativeLogLikelihood);
 #else
-  itkTypeMacro(DualEnergyNegativeLogLikelihood, rtk::ProjectionsDecompositionNegativeLogLikelihood);
+  itkOverrideGetNameOfClassMacro(DualEnergyNegativeLogLikelihood);
 #endif
 
   using ParametersType = Superclass::ParametersType;

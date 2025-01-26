@@ -196,7 +196,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(JosephForwardProjectionImageFilter);
 #else
-  itkTypeMacro(JosephForwardProjectionImageFilter, ForwardProjectionImageFilter);
+  itkOverrideGetNameOfClassMacro(JosephForwardProjectionImageFilter);
 #endif
 
   /** Get/Set the functor that is used to multiply each interpolation value with a volume value */

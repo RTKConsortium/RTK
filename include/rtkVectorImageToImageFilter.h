@@ -63,7 +63,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(VectorImageToImageFilter);
 #else
-  itkTypeMacro(VectorImageToImageFilter, itk::ImageToImageFilter);
+  itkOverrideGetNameOfClassMacro(VectorImageToImageFilter);
 #endif
 
 protected:

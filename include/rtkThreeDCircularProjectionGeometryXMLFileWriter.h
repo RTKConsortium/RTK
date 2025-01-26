@@ -56,7 +56,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(ThreeDCircularProjectionGeometryXMLFileWriter);
 #else
-  itkTypeMacro(ThreeDCircularProjectionGeometryXMLFileWriter, itk::XMLWriterBase);
+  itkOverrideGetNameOfClassMacro(ThreeDCircularProjectionGeometryXMLFileWriter);
 #endif
 
   /** Test whether a file is writable. */

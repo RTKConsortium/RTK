@@ -186,7 +186,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(AdditiveGaussianNoiseImageFilter);
 #else
-  itkTypeMacro(AdditiveGaussianNoiseImageFilter, ImageToImageFilter);
+  itkOverrideGetNameOfClassMacro(AdditiveGaussianNoiseImageFilter);
 #endif
 
   /** Superclass type alias. */

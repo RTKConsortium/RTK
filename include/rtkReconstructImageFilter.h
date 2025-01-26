@@ -138,7 +138,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(ReconstructImageFilter);
 #else
-  itkTypeMacro(ReconstructImageFilter, ImageToImageFilter);
+  itkOverrideGetNameOfClassMacro(ReconstructImageFilter);
 #endif
 
   /** ImageDimension enumeration. */

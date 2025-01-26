@@ -70,7 +70,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(PolynomialGainCorrectionImageFilter);
 #else
-  itkTypeMacro(PolynomialGainCorrectionImageFilter, itk::ImageToImageFilter);
+  itkOverrideGetNameOfClassMacro(PolynomialGainCorrectionImageFilter);
 #endif
 
   /** Dark image, 2D same size of one input projection */

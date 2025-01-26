@@ -297,7 +297,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(JosephForwardAttenuatedProjectionImageFilter);
 #else
-  itkTypeMacro(JosephForwardAttenuatedProjectionImageFilter, JosephForwardProjectionImageFilter);
+  itkOverrideGetNameOfClassMacro(JosephForwardAttenuatedProjectionImageFilter);
 #endif
 
 protected:

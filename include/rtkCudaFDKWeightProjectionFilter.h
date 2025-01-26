@@ -72,7 +72,7 @@ public:
 #  ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(CudaFDKWeightProjectionFilter);
 #  else
-  itkTypeMacro(CudaFDKWeightProjectionFilter, itk::CudaInPlaceImageFilter);
+  itkOverrideGetNameOfClassMacro(CudaFDKWeightProjectionFilter);
 #  endif
 
 protected:

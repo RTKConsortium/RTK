@@ -53,7 +53,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(XRadGeometryReader);
 #else
-  itkTypeMacro(XRadGeometryReader, LightProcessObject);
+  itkOverrideGetNameOfClassMacro(XRadGeometryReader);
 #endif
 
   /** Method for creation through the object factory. */

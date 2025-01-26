@@ -66,7 +66,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(XRadImageIOFactory);
 #else
-  itkTypeMacro(XRadImageIOFactory, ObjectFactoryBase);
+  itkOverrideGetNameOfClassMacro(XRadImageIOFactory);
 #endif
 
   /** Register one factory of this type  */

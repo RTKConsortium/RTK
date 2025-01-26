@@ -140,7 +140,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(FourDConjugateGradientConeBeamReconstructionFilter);
 #else
-  itkTypeMacro(FourDConjugateGradientConeBeamReconstructionFilter, itk::ImageToImageFilter);
+  itkOverrideGetNameOfClassMacro(FourDConjugateGradientConeBeamReconstructionFilter);
 #endif
 
   /** Get / Set the object pointer to projection geometry */

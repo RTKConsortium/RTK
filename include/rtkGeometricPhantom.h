@@ -61,7 +61,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(GeometricPhantom);
 #else
-  itkTypeMacro(GeometricPhantom, itk::DataObject);
+  itkOverrideGetNameOfClassMacro(GeometricPhantom);
 #endif
 
   /** Rescale object along each direction by a 3D vector. */

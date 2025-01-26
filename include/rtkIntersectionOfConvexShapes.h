@@ -60,7 +60,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(IntersectionOfConvexShapes);
 #else
-  itkTypeMacro(IntersectionOfConvexShapes, ConvexShape);
+  itkOverrideGetNameOfClassMacro(IntersectionOfConvexShapes);
 #endif
 
   /** See rtk::ConvexShape::IsInside. */

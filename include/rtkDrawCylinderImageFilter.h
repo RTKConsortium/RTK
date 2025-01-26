@@ -60,7 +60,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(DrawCylinderImageFilter);
 #else
-  itkTypeMacro(DrawCylinderImageFilter, DrawCylinderImageFilter);
+  itkOverrideGetNameOfClassMacro(DrawCylinderImageFilter);
 #endif
 
 protected:

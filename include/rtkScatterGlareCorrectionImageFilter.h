@@ -72,7 +72,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(ScatterGlareCorrectionImageFilter);
 #else
-  itkTypeMacro(ScatterGlareCorrectionImageFilter, FFTProjectionsConvolutionImageFilter);
+  itkOverrideGetNameOfClassMacro(ScatterGlareCorrectionImageFilter);
 #endif
 
   itkGetConstMacro(Coefficients, CoefficientVectorType);

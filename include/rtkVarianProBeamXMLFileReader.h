@@ -55,7 +55,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(VarianProBeamXMLFileReader);
 #else
-  itkTypeMacro(VarianProBeamXMLFileReader, itk::XMLReader);
+  itkOverrideGetNameOfClassMacro(VarianProBeamXMLFileReader);
 #endif
 
   /** Method for creation through the object factory. */

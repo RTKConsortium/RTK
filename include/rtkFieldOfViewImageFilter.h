@@ -71,7 +71,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(FieldOfViewImageFilter);
 #else
-  itkTypeMacro(FieldOfViewImageFilter, InPlaceImageFilter);
+  itkOverrideGetNameOfClassMacro(FieldOfViewImageFilter);
 #endif
 
   /** Get / Set the object pointer to projection geometry */

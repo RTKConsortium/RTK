@@ -57,7 +57,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(XRadImageIO);
 #else
-  itkTypeMacro(XRadImageIO, ImageIOBase);
+  itkOverrideGetNameOfClassMacro(XRadImageIO);
 #endif
 
   /*-------- This part of the interface deals with reading data. ------ */

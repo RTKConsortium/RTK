@@ -68,7 +68,7 @@ public:
 #  ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(CudaCropImageFilter);
 #  else
-  itkTypeMacro(CudaCropImageFilter, ImageToImageFilter);
+  itkOverrideGetNameOfClassMacro(CudaCropImageFilter);
 #  endif
 
 protected:

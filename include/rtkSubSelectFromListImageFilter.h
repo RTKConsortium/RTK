@@ -47,7 +47,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(SubSelectFromListImageFilter);
 #else
-  itkTypeMacro(SubSelectFromListImageFilter, SubSelectImageFilter);
+  itkOverrideGetNameOfClassMacro(SubSelectFromListImageFilter);
 #endif
 
   void

@@ -62,7 +62,7 @@ public:
 #  ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(CudaInterpolateImageFilter);
 #  else
-  itkTypeMacro(CudaInterpolateImageFilter, InterpolatorWithKnownWeightsImageFilter);
+  itkOverrideGetNameOfClassMacro(CudaInterpolateImageFilter);
 #  endif
 
 protected:

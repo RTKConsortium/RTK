@@ -70,7 +70,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(ForwardWarpImageFilter);
 #else
-  itkTypeMacro(ForwardWarpImageFilter, Superclass);
+  itkOverrideGetNameOfClassMacro(ForwardWarpImageFilter);
 #endif
 
 protected:

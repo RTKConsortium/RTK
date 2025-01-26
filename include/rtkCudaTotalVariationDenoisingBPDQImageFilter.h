@@ -65,7 +65,7 @@ public:
 #  ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(CudaTotalVariationDenoisingBPDQImageFilter);
 #  else
-  itkTypeMacro(CudaTotalVariationDenoisingBPDQImageFilter, TotalVariationDenoisingBPDQImageFilter);
+  itkOverrideGetNameOfClassMacro(CudaTotalVariationDenoisingBPDQImageFilter);
 #  endif
 
 protected:

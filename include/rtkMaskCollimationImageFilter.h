@@ -60,7 +60,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(MaskCollimationImageFilter);
 #else
-  itkTypeMacro(MaskCollimationImageFilter, itk::ImageToImageFilter);
+  itkOverrideGetNameOfClassMacro(MaskCollimationImageFilter);
 #endif
 
   /** Get / Set the object pointer to projection geometry */

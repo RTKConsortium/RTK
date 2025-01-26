@@ -139,7 +139,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(ProjectionsReader);
 #else
-  itkTypeMacro(ProjectionsReader, itk::ImageSource);
+  itkOverrideGetNameOfClassMacro(ProjectionsReader);
 #endif
 
   /** Some convenient type alias. */

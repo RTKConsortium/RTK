@@ -54,7 +54,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(BlockDiagonalMatrixVectorMultiplyImageFilter);
 #else
-  itkTypeMacro(BlockDiagonalMatrixVectorMultiplyImageFilter, itk::ImageToImageFilter);
+  itkOverrideGetNameOfClassMacro(BlockDiagonalMatrixVectorMultiplyImageFilter);
 #endif
 
   /** Convenient parameters extracted from template types */

@@ -68,7 +68,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(CyclicDeformationImageFilter);
 #else
-  itkTypeMacro(CyclicDeformationImageFilter, itk::ImageToImageFilter);
+  itkOverrideGetNameOfClassMacro(CyclicDeformationImageFilter);
 #endif
 
   /** Get / Set the signal file name relating each frame to a phase position.

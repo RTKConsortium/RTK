@@ -55,7 +55,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(SheppLoganPhantomFilter);
 #else
-  itkTypeMacro(SheppLoganPhantomFilter, ProjectGeometricPhantomImageFilter);
+  itkOverrideGetNameOfClassMacro(SheppLoganPhantomFilter);
 #endif
 
 protected:

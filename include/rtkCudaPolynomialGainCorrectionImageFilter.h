@@ -72,7 +72,7 @@ public:
 #  ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(CudaPolynomialGainCorrectionImageFilter);
 #  else
-  itkTypeMacro(CudaPolynomialGainCorrectionImageFilter, itk::CudaImageToImageFilter);
+  itkOverrideGetNameOfClassMacro(CudaPolynomialGainCorrectionImageFilter);
 #  endif
 
 protected:

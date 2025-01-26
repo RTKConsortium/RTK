@@ -59,7 +59,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(SeparableQuadraticSurrogateRegularizationImageFilter);
 #else
-  itkTypeMacro(SeparableQuadraticSurrogateRegularizationImageFilter, itk::ImageToImageFilter);
+  itkOverrideGetNameOfClassMacro(SeparableQuadraticSurrogateRegularizationImageFilter);
 #endif
 
   /** Set/Get for the radius */

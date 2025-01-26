@@ -132,7 +132,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(RegularizedConjugateGradientConeBeamReconstructionFilter);
 #else
-  itkTypeMacro(RegularizedConjugateGradientConeBeamReconstructionFilter, itk::ImageToImageFilter);
+  itkOverrideGetNameOfClassMacro(RegularizedConjugateGradientConeBeamReconstructionFilter);
 #endif
 
   /** The image to be updated.*/

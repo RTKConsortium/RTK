@@ -69,7 +69,7 @@ public:
 #  ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(CudaFFTProjectionsConvolutionImageFilter);
 #  else
-  itkTypeMacro(CudaFFTProjectionsConvolutionImageFilter, TParentImageFilter);
+  itkOverrideGetNameOfClassMacro(CudaFFTProjectionsConvolutionImageFilter);
 #  endif
 
 protected:

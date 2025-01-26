@@ -57,7 +57,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(OraGeometryReader);
 #else
-  itkTypeMacro(OraGeometryReader, itk::LightProcessObject);
+  itkOverrideGetNameOfClassMacro(OraGeometryReader);
 #endif
 
   /** Method for creation through the object factory. */

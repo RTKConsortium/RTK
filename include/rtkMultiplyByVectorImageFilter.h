@@ -54,7 +54,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(MultiplyByVectorImageFilter);
 #else
-  itkTypeMacro(MultiplyByVectorImageFilter, itk::ImageToImageFilter);
+  itkOverrideGetNameOfClassMacro(MultiplyByVectorImageFilter);
 #endif
 
   /** The image containing the weights applied to the temporal components */

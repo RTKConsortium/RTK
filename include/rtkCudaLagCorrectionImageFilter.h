@@ -70,7 +70,7 @@ public:
 #  ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(CudaLagCorrectionImageFilter);
 #  else
-  itkTypeMacro(CudaLagCorrectionImageFilter, itk::CudaInPlaceImageFilter);
+  itkOverrideGetNameOfClassMacro(CudaLagCorrectionImageFilter);
 #  endif
 
 protected:

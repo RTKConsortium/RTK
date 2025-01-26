@@ -58,7 +58,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(EdfImageIO);
 #else
-  itkTypeMacro(EdfImageIO, ImageIOBase);
+  itkOverrideGetNameOfClassMacro(EdfImageIO);
 #endif
 
   /*-------- This part of the interface deals with reading data. ------ */

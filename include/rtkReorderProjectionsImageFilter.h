@@ -71,7 +71,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(ReorderProjectionsImageFilter);
 #else
-  itkTypeMacro(ReorderProjectionsImageFilter, ImageToImageFilter);
+  itkOverrideGetNameOfClassMacro(ReorderProjectionsImageFilter);
 #endif
 
   /** Get / Set the object pointer to projection geometry */

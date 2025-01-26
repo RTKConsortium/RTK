@@ -128,7 +128,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(AmsterdamShroudImageFilter);
 #else
-  itkTypeMacro(AmsterdamShroudImageFilter, itk::ImageToImageFilter);
+  itkOverrideGetNameOfClassMacro(AmsterdamShroudImageFilter);
 #endif
 
 protected:

@@ -48,7 +48,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(PhaseGatingImageFilter);
 #else
-  itkTypeMacro(PhaseGatingImageFilter, SubSelectImageFilter);
+  itkOverrideGetNameOfClassMacro(PhaseGatingImageFilter);
 #endif
 
   itkSetMacro(PhasesFileName, std::string);

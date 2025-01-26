@@ -52,7 +52,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(ConjugateGradientGetX_kPlusOneImageFilter);
 #else
-  itkTypeMacro(ConjugateGradientGetX_kPlusOneImageFilter, itk::ImageToImageFilter);
+  itkOverrideGetNameOfClassMacro(ConjugateGradientGetX_kPlusOneImageFilter);
 #endif
 
   /** Functions to set the inputs */

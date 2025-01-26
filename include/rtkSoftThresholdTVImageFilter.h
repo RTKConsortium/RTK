@@ -60,7 +60,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(SoftThresholdTVImageFilter);
 #else
-  itkTypeMacro(SoftThresholdTVImageFilter, ImageToImageFilter);
+  itkOverrideGetNameOfClassMacro(SoftThresholdTVImageFilter);
 #endif
 
   /** Extract some information from the image types.  Dimensionality

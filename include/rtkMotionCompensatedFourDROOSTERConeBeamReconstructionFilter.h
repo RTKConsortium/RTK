@@ -175,7 +175,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(MotionCompensatedFourDROOSTERConeBeamReconstructionFilter);
 #else
-  itkTypeMacro(MotionCompensatedFourDROOSTERConeBeamReconstructionFilter, FourDROOSTERConeBeamReconstructionFilter);
+  itkOverrideGetNameOfClassMacro(MotionCompensatedFourDROOSTERConeBeamReconstructionFilter);
 #endif
 
   using MotionCompensatedFourDCGFilterType =

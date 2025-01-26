@@ -66,7 +66,7 @@ public:
 #  ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(CudaWeidingerForwardModelImageFilter);
 #  else
-  itkTypeMacro(CudaWeidingerForwardModelImageFilter, ImageToImageFilter);
+  itkOverrideGetNameOfClassMacro(CudaWeidingerForwardModelImageFilter);
 #  endif
 
 protected:

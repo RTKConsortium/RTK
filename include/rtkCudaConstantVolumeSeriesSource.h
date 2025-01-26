@@ -62,7 +62,7 @@ public:
 #  ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(CudaConstantVolumeSeriesSource);
 #  else
-  itkTypeMacro(CudaConstantVolumeSeriesSource, ImageToImageFilter);
+  itkOverrideGetNameOfClassMacro(CudaConstantVolumeSeriesSource);
 #  endif
 
 protected:

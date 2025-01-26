@@ -62,7 +62,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(RayBoxIntersectionImageFilter);
 #else
-  itkTypeMacro(RayBoxIntersectionImageFilter, RayConvexIntersectionImageFilter);
+  itkOverrideGetNameOfClassMacro(RayBoxIntersectionImageFilter);
 #endif
 
   /** Get / Set the constant density of the volume */

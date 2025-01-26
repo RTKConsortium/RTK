@@ -54,7 +54,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(ImagXXMLFileReader);
 #else
-  itkTypeMacro(ImagXXMLFileReader, itk::XMLReader);
+  itkOverrideGetNameOfClassMacro(ImagXXMLFileReader);
 #endif
 
   /** Method for creation through the object factory. */

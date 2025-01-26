@@ -60,7 +60,7 @@ public:
 #  ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(CudaConjugateGradientImageFilter);
 #  else
-  itkTypeMacro(CudaConjugateGradientImageFilter, ConjugateGradientImageFilter);
+  itkOverrideGetNameOfClassMacro(CudaConjugateGradientImageFilter);
 #  endif
 
 protected:

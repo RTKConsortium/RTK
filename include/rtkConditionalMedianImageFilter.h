@@ -64,7 +64,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(ConditionalMedianImageFilter);
 #else
-  itkTypeMacro(ConditionalMedianImageFilter, itk::InPlaceImageFilter);
+  itkOverrideGetNameOfClassMacro(ConditionalMedianImageFilter);
 #endif
 
   /** Set/Get neighborhood radius */

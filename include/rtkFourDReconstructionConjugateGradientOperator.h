@@ -148,7 +148,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(FourDReconstructionConjugateGradientOperator);
 #else
-  itkTypeMacro(FourDReconstructionConjugateGradientOperator, ConjugateGradientOperator);
+  itkOverrideGetNameOfClassMacro(FourDReconstructionConjugateGradientOperator);
 #endif
 
   /** Set/Get the 4D image to be updated.*/

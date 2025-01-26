@@ -59,7 +59,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(WaterPrecorrectionImageFilter);
 #else
-  itkTypeMacro(WaterPrecorrectionImageFilter, ImageToImageFilter);
+  itkOverrideGetNameOfClassMacro(WaterPrecorrectionImageFilter);
 #endif
 
   /** Get / Set the Median window that are going to be used during the operation

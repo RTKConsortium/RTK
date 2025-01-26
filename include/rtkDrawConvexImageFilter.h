@@ -64,7 +64,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(DrawConvexImageFilter);
 #else
-  itkTypeMacro(DrawConvexImageFilter, itk::InPlaceImageFilter);
+  itkOverrideGetNameOfClassMacro(DrawConvexImageFilter);
 #endif
 
   /** Get / Set the object pointer to the ConvexShape. */

@@ -62,7 +62,7 @@ public:
 #  ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(CudaAverageOutOfROIImageFilter);
 #  else
-  itkTypeMacro(CudaAverageOutOfROIImageFilter, AverageOutOfROIImageFilter);
+  itkOverrideGetNameOfClassMacro(CudaAverageOutOfROIImageFilter);
 #  endif
 
 protected:

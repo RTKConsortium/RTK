@@ -63,7 +63,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(OraLookupTableImageFilter);
 #else
-  itkTypeMacro(OraLookupTableImageFilter, LookupTableImageFilter);
+  itkOverrideGetNameOfClassMacro(OraLookupTableImageFilter);
 #endif
 
   void

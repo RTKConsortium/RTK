@@ -106,7 +106,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(SoftThresholdImageFilter);
 #else
-  itkTypeMacro(SoftThresholdImageFilter, UnaryFunctorImageFilter);
+  itkOverrideGetNameOfClassMacro(SoftThresholdImageFilter);
 #endif
 
   /** Pixel types. */

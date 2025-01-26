@@ -89,7 +89,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(DaubechiesWaveletsDenoiseSequenceImageFilter);
 #else
-  itkTypeMacro(DaubechiesWaveletsDenoiseSequenceImageFilter, ImageToImageFilter);
+  itkOverrideGetNameOfClassMacro(DaubechiesWaveletsDenoiseSequenceImageFilter);
 #endif
 
   /** Set the number of levels of the deconstruction and reconstruction */

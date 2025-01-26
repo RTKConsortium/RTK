@@ -53,7 +53,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(SelectOneProjectionPerCycleImageFilter);
 #else
-  itkTypeMacro(SelectOneProjectionPerCycleImageFilter, SubSelectImageFilter);
+  itkOverrideGetNameOfClassMacro(SelectOneProjectionPerCycleImageFilter);
 #endif
 
   /** File name of a text file with one phase value between 0 and 1 per line. */

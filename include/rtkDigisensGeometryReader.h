@@ -54,7 +54,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(DigisensGeometryReader);
 #else
-  itkTypeMacro(DigisensGeometryReader, LightProcessObject);
+  itkOverrideGetNameOfClassMacro(DigisensGeometryReader);
 #endif
 
   /** Method for creation through the object factory. */

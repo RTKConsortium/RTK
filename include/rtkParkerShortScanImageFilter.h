@@ -69,7 +69,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(ParkerShortScanImageFilter);
 #else
-  itkTypeMacro(ParkerShortScanImageFilter, itk::ImageToImageFilter);
+  itkOverrideGetNameOfClassMacro(ParkerShortScanImageFilter);
 #endif
 
   /** Get / Set the object pointer to projection geometry */

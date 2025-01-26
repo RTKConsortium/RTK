@@ -63,7 +63,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(RayConvexIntersectionImageFilter);
 #else
-  itkTypeMacro(RayConvexIntersectionImageFilter, itk::InPlaceImageFilter);
+  itkOverrideGetNameOfClassMacro(RayConvexIntersectionImageFilter);
 #endif
 
   /** Get / Set the object pointer to the ConvexShape. */

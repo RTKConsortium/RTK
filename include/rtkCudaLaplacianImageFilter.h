@@ -62,7 +62,7 @@ public:
 #  ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(CudaLaplacianImageFilter);
 #  else
-  itkTypeMacro(CudaLaplacianImageFilter, LaplacianImageFilter);
+  itkOverrideGetNameOfClassMacro(CudaLaplacianImageFilter);
 #  endif
 
 protected:

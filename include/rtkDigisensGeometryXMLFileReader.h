@@ -54,7 +54,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(DigisensGeometryXMLFileReader);
 #else
-  itkTypeMacro(DigisensGeometryXMLFileReader, itk::XMLReader);
+  itkOverrideGetNameOfClassMacro(DigisensGeometryXMLFileReader);
 #endif
 
   /** Method for creation through the object factory. */

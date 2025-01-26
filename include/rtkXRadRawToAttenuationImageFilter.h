@@ -57,7 +57,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(XRadRawToAttenuationImageFilter);
 #else
-  itkTypeMacro(XRadRawToAttenuationImageFilter, itk::ImageToImageFilter);
+  itkOverrideGetNameOfClassMacro(XRadRawToAttenuationImageFilter);
 #endif
 
 protected:

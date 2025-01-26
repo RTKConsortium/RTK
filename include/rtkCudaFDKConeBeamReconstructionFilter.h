@@ -73,7 +73,7 @@ public:
 #  ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(CudaFDKConeBeamReconstructionFilter);
 #  else
-  itkTypeMacro(CudaFDKConeBeamReconstructionFilter, FDKConeBeamReconstructionFilter);
+  itkOverrideGetNameOfClassMacro(CudaFDKConeBeamReconstructionFilter);
 #  endif
 
 protected:

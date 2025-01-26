@@ -68,7 +68,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(ConvexShape);
 #else
-  itkTypeMacro(ConvexShape, itk::DataObject);
+  itkOverrideGetNameOfClassMacro(ConvexShape);
 #endif
 
   /** Returns true if a point is inside the object. */

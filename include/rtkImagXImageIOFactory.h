@@ -65,7 +65,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(ImagXImageIOFactory);
 #else
-  itkTypeMacro(ImagXImageIOFactory, ObjectFactoryBase);
+  itkOverrideGetNameOfClassMacro(ImagXImageIOFactory);
 #endif
 
   /** Register one factory of this type  */

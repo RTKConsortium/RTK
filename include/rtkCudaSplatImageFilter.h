@@ -63,7 +63,7 @@ public:
 #  ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(CudaSplatImageFilter);
 #  else
-  itkTypeMacro(CudaSplatImageFilter, SplatWithKnownWeightsImageFilter);
+  itkOverrideGetNameOfClassMacro(CudaSplatImageFilter);
 #  endif
 
 protected:

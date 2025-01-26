@@ -81,7 +81,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(UnwarpSequenceConjugateGradientOperator);
 #else
-  itkTypeMacro(UnwarpSequenceConjugateGradientOperator, ConjugateGradientOperator);
+  itkOverrideGetNameOfClassMacro(UnwarpSequenceConjugateGradientOperator);
 #endif
 
   using WarpSequenceFilterType = rtk::WarpSequenceImageFilter<TImageSequence, TDVFImageSequence, TImage, TDVFImage>;

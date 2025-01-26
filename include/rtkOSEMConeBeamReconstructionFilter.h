@@ -152,7 +152,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(OSEMConeBeamReconstructionFilter);
 #else
-  itkTypeMacro(OSEMConeBeamReconstructionFilter, IterativeConeBeamReconstructionFilter);
+  itkOverrideGetNameOfClassMacro(OSEMConeBeamReconstructionFilter);
 #endif
 
   /** Get / Set the object pointer to projection geometry */

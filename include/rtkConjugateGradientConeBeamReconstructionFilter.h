@@ -125,7 +125,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(ConjugateGradientConeBeamReconstructionFilter);
 #else
-  itkTypeMacro(ConjugateGradientConeBeamReconstructionFilter, itk::ImageToImageFilter);
+  itkOverrideGetNameOfClassMacro(ConjugateGradientConeBeamReconstructionFilter);
 #endif
 
   /** Setters for the inputs */

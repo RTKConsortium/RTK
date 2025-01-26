@@ -149,7 +149,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(ReconstructionConjugateGradientOperator);
 #else
-  itkTypeMacro(ReconstructionConjugateGradientOperator, ConjugateGradientOperator);
+  itkOverrideGetNameOfClassMacro(ReconstructionConjugateGradientOperator);
 #endif
 
   using BackProjectionFilterType = rtk::BackProjectionImageFilter<TOutputImage, TOutputImage>;

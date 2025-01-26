@@ -61,7 +61,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(EdfRawToAttenuationImageFilter);
 #else
-  itkTypeMacro(EdfRawToAttenuationImageFilter, itk::ImageToImageFilter);
+  itkOverrideGetNameOfClassMacro(EdfRawToAttenuationImageFilter);
 #endif
 
   /** Set the vector of strings that contains the file names. Files

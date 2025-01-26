@@ -63,7 +63,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(ImageToVectorImageFilter);
 #else
-  itkTypeMacro(ImageToVectorImageFilter, itk::ImageToImageFilter);
+  itkOverrideGetNameOfClassMacro(ImageToVectorImageFilter);
 #endif
 
   /** When the input and output dimensions are equal, the filter

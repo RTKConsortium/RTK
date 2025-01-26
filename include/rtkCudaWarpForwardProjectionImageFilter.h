@@ -69,7 +69,7 @@ public:
 #  ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(CudaWarpForwardProjectionImageFilter);
 #  else
-  itkTypeMacro(CudaWarpForwardProjectionImageFilter, ForwardProjectionImageFilter);
+  itkOverrideGetNameOfClassMacro(CudaWarpForwardProjectionImageFilter);
 #  endif
 
   /** Input projection stack */

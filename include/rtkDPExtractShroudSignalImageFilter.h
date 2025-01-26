@@ -61,7 +61,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(DPExtractShroudSignalImageFilter);
 #else
-  itkTypeMacro(DPExtractShroudSignalImageFilter, itk::ImageToImageFilter);
+  itkOverrideGetNameOfClassMacro(DPExtractShroudSignalImageFilter);
 #endif
 
   /** Set/Get exploration amplitude. */

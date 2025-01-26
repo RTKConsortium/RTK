@@ -85,7 +85,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(DisplacedDetectorImageFilter);
 #else
-  itkTypeMacro(DisplacedDetectorImageFilter, ImageToImageFilter);
+  itkOverrideGetNameOfClassMacro(DisplacedDetectorImageFilter);
 #endif
 
   /** Get / Set the object pointer to projection geometry */

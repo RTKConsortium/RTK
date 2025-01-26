@@ -54,7 +54,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(VarianObiGeometryReader);
 #else
-  itkTypeMacro(VarianObiGeometryReader, LightProcessObject);
+  itkOverrideGetNameOfClassMacro(VarianObiGeometryReader);
 #endif
 
   /** Method for creation through the object factory. */

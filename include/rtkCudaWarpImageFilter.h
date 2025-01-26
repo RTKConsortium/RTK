@@ -72,7 +72,7 @@ public:
 #  ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(CudaWarpImageFilter);
 #  else
-  itkTypeMacro(CudaWarpImageFilter, Superclass);
+  itkOverrideGetNameOfClassMacro(CudaWarpImageFilter);
 #  endif
 
 protected:

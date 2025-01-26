@@ -59,7 +59,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(NesterovUpdateImageFilter);
 #else
-  itkTypeMacro(NesterovUpdateImageFilter, itk::InPlaceImageFilter);
+  itkOverrideGetNameOfClassMacro(NesterovUpdateImageFilter);
 #endif
 
   /** Get and Set macro*/

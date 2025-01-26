@@ -70,7 +70,7 @@ public:
 #  ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(CudaFDKBackProjectionImageFilter);
 #  else
-  itkTypeMacro(CudaFDKBackProjectionImageFilter, Superclass);
+  itkOverrideGetNameOfClassMacro(CudaFDKBackProjectionImageFilter);
 #  endif
 
 protected:

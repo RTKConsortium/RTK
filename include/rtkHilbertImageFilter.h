@@ -59,7 +59,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(HilbertImageFilter);
 #else
-  itkTypeMacro(HilbertImageFilter, itk::ImageToImageFilter);
+  itkOverrideGetNameOfClassMacro(HilbertImageFilter);
 #endif
 
 protected:

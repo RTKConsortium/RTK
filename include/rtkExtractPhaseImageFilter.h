@@ -72,7 +72,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(ExtractPhaseImageFilter);
 #else
-  itkTypeMacro(ExtractPhaseImageFilter, itk::InPlaceImageFilter);
+  itkOverrideGetNameOfClassMacro(ExtractPhaseImageFilter);
 #endif
 
   /** The input signal may be smoothed before taking the phase of the Hilbert

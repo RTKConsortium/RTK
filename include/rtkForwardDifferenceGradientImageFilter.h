@@ -83,7 +83,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(ForwardDifferenceGradientImageFilter);
 #else
-  itkTypeMacro(ForwardDifferenceGradientImageFilter, ImageToImageFilter);
+  itkOverrideGetNameOfClassMacro(ForwardDifferenceGradientImageFilter);
 #endif
 
   /** Image type alias support. */

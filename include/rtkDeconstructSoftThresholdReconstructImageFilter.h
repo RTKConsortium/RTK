@@ -63,7 +63,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(DeconstructSoftThresholdReconstructImageFilter);
 #else
-  itkTypeMacro(DeconstructSoftThresholdReconstructImageFilter, ImageToImageFilter);
+  itkOverrideGetNameOfClassMacro(DeconstructSoftThresholdReconstructImageFilter);
 #endif
 
   /** ImageDimension enumeration. */

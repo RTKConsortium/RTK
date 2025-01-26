@@ -71,7 +71,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(FDKWeightProjectionFilter);
 #else
-  itkTypeMacro(FDKWeightProjectionFilter, itk::ImageToImageFilter);
+  itkOverrideGetNameOfClassMacro(FDKWeightProjectionFilter);
 #endif
 
   /** Get/ Set geometry structure */

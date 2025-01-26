@@ -68,7 +68,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(OraImageIOFactory);
 #else
-  itkTypeMacro(OraImageIOFactory, itk::ObjectFactoryBase);
+  itkOverrideGetNameOfClassMacro(OraImageIOFactory);
 #endif
 
   /** Register one factory of this type  */

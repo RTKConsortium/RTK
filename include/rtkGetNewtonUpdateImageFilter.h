@@ -59,7 +59,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(GetNewtonUpdateImageFilter);
 #else
-  itkTypeMacro(GetNewtonUpdateImageFilter, itk::ImageToImageFilter);
+  itkOverrideGetNameOfClassMacro(GetNewtonUpdateImageFilter);
 #endif
 
   /** Convenient parameters extracted from template types */

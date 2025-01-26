@@ -63,7 +63,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(LaplacianImageFilter);
 #else
-  itkTypeMacro(LaplacianImageFilter, itk::ImageToImageFilter);
+  itkOverrideGetNameOfClassMacro(LaplacianImageFilter);
 #endif
 
   void

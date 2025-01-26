@@ -53,7 +53,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(DownsampleImageFilter);
 #else
-  itkTypeMacro(DownsampleImageFilter, ImageToImageFilter);
+  itkOverrideGetNameOfClassMacro(DownsampleImageFilter);
 #endif
 
   /** Typedef to images */

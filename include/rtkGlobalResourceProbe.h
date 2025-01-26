@@ -48,7 +48,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(GlobalResourceProbe);
 #else
-  itkTypeMacro(GlobalResourceProbe, itk::Object);
+  itkOverrideGetNameOfClassMacro(GlobalResourceProbe);
 #endif
 
   /** This is a singleton pattern New.  There will only be ONE

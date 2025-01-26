@@ -175,7 +175,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(SARTConeBeamReconstructionFilter);
 #else
-  itkTypeMacro(SARTConeBeamReconstructionFilter, IterativeConeBeamReconstructionFilter);
+  itkOverrideGetNameOfClassMacro(SARTConeBeamReconstructionFilter);
 #endif
 
   /** Get / Set the object pointer to projection geometry */

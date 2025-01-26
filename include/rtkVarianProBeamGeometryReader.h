@@ -54,7 +54,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(VarianProBeamGeometryReader);
 #else
-  itkTypeMacro(VarianProBeamGeometryReader, LightProcessObject);
+  itkOverrideGetNameOfClassMacro(VarianProBeamGeometryReader);
 #endif
 
   /** Method for creation through the object factory. */

@@ -51,7 +51,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(OraXMLFileReader);
 #else
-  itkTypeMacro(OraXMLFileReader, itk::XMLReader);
+  itkOverrideGetNameOfClassMacro(OraXMLFileReader);
 #endif
 
   /** Method for creation through the object factory. */

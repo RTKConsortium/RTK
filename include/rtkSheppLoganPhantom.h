@@ -61,7 +61,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(SheppLoganPhantom);
 #else
-  itkTypeMacro(SheppLoganPhantom, GeometricPhantom);
+  itkOverrideGetNameOfClassMacro(SheppLoganPhantom);
 #endif
 
 protected:

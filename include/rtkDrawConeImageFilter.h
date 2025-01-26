@@ -56,7 +56,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(DrawConeImageFilter);
 #else
-  itkTypeMacro(DrawConeImageFilter, DrawConeImageFilter);
+  itkOverrideGetNameOfClassMacro(DrawConeImageFilter);
 #endif
 
 protected:

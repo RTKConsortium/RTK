@@ -59,7 +59,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(DivergenceOfGradientConjugateGradientOperator);
 #else
-  itkTypeMacro(DivergenceOfGradientConjugateGradientOperator, ImageToImageFilter);
+  itkOverrideGetNameOfClassMacro(DivergenceOfGradientConjugateGradientOperator);
 #endif
 
   /** Image type alias support. */

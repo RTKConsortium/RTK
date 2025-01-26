@@ -130,7 +130,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(WarpSequenceImageFilter);
 #else
-  itkTypeMacro(WarpSequenceImageFilter, IterativeConeBeamReconstructionFilter);
+  itkOverrideGetNameOfClassMacro(WarpSequenceImageFilter);
 #endif
 
   /** Set the motion vector field used in input 1 */

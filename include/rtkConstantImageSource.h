@@ -72,7 +72,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(ConstantImageSource);
 #else
-  itkTypeMacro(ConstantImageSource, itk::ImageSource);
+  itkOverrideGetNameOfClassMacro(ConstantImageSource);
 #endif
 
   /** Method for creation through the object factory. */

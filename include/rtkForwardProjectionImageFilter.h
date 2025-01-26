@@ -52,7 +52,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(ForwardProjectionImageFilter);
 #else
-  itkTypeMacro(ForwardProjectionImageFilter, itk::InPlaceImageFilter);
+  itkOverrideGetNameOfClassMacro(ForwardProjectionImageFilter);
 #endif
 
   /** Get / Set the object pointer to projection geometry */

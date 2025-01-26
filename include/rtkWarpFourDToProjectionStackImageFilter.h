@@ -137,7 +137,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(WarpFourDToProjectionStackImageFilter);
 #else
-  itkTypeMacro(WarpFourDToProjectionStackImageFilter, rtk::FourDToProjectionStackImageFilter);
+  itkOverrideGetNameOfClassMacro(WarpFourDToProjectionStackImageFilter);
 #endif
 
   using SignalVectorType = std::vector<double>;

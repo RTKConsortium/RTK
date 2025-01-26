@@ -71,7 +71,7 @@ public:
 #  ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(CudaForwardProjectionImageFilter);
 #  else
-  itkTypeMacro(CudaForwardProjectionImageFilter, ImageToImageFilter);
+  itkOverrideGetNameOfClassMacro(CudaForwardProjectionImageFilter);
 #  endif
 
   /** Set step size along ray (in mm). Default is 1 mm. */

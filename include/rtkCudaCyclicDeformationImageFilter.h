@@ -65,7 +65,7 @@ public:
 #  ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(CudaCyclicDeformationImageFilter);
 #  else
-  itkTypeMacro(CudaCyclicDeformationImageFilter, CyclicDeformationImageFilter);
+  itkOverrideGetNameOfClassMacro(CudaCyclicDeformationImageFilter);
 #  endif
 
 protected:

@@ -74,7 +74,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(BackProjectionImageFilter);
 #else
-  itkTypeMacro(BackProjectionImageFilter, itk::ImageToImageFilter);
+  itkOverrideGetNameOfClassMacro(BackProjectionImageFilter);
 #endif
 
   /** Get / Set the object pointer to projection geometry */

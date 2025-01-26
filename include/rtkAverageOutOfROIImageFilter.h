@@ -67,7 +67,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(AverageOutOfROIImageFilter);
 #else
-  itkTypeMacro(AverageOutOfROIImageFilter, itk::InPlaceImageFilter);
+  itkOverrideGetNameOfClassMacro(AverageOutOfROIImageFilter);
 #endif
 
   /** The image containing the weights applied to the temporal components */

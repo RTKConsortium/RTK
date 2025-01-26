@@ -158,7 +158,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(ADMMWaveletsConeBeamReconstructionFilter);
 #else
-  itkTypeMacro(ADMMWaveletsConeBeamReconstructionFilter, itk::ImageToImageFilter);
+  itkOverrideGetNameOfClassMacro(ADMMWaveletsConeBeamReconstructionFilter);
 #endif
 
   //    /** The 3D image to be updated */

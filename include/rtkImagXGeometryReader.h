@@ -55,7 +55,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(ImagXGeometryReader);
 #else
-  itkTypeMacro(ImagXGeometryReader, itk::LightProcessObject);
+  itkOverrideGetNameOfClassMacro(ImagXGeometryReader);
 #endif
 
   /** Method for creation through the object factory. */

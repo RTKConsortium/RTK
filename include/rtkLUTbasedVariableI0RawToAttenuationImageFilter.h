@@ -101,7 +101,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(LUTbasedVariableI0RawToAttenuationImageFilter);
 #else
-  itkTypeMacro(LUTbasedVariableI0RawToAttenuationImageFilter, LookupTableImageFilter);
+  itkOverrideGetNameOfClassMacro(LUTbasedVariableI0RawToAttenuationImageFilter);
 #endif
 
   /** Air level I0

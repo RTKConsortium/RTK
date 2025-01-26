@@ -168,7 +168,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(MechlemOneStepSpectralReconstructionFilter);
 #else
-  itkTypeMacro(MechlemOneStepSpectralReconstructionFilter, itk::ImageToImageFilter);
+  itkOverrideGetNameOfClassMacro(MechlemOneStepSpectralReconstructionFilter);
 #endif
 
   /** Internal type alias and parameters */

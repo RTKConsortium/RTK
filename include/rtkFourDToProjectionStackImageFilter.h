@@ -118,7 +118,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(FourDToProjectionStackImageFilter);
 #else
-  itkTypeMacro(FourDToProjectionStackImageFilter, itk::ImageToImageFilter);
+  itkOverrideGetNameOfClassMacro(FourDToProjectionStackImageFilter);
 #endif
 
   /** The 4D image to be updated.*/

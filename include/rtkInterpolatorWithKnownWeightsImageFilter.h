@@ -79,7 +79,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(InterpolatorWithKnownWeightsImageFilter);
 #else
-  itkTypeMacro(InterpolatorWithKnownWeightsImageFilter, itk::InPlaceImageFilter);
+  itkOverrideGetNameOfClassMacro(InterpolatorWithKnownWeightsImageFilter);
 #endif
 
   /** The 3D image to be updated.*/

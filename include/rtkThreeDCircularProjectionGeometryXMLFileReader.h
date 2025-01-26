@@ -62,7 +62,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(ThreeDCircularProjectionGeometryXMLFileReader);
 #else
-  itkTypeMacro(ThreeDCircularProjectionGeometryXMLFileReader, itk::XMLFileReader);
+  itkOverrideGetNameOfClassMacro(ThreeDCircularProjectionGeometryXMLFileReader);
 #endif
 
   /** Method for creation through the object factory. */

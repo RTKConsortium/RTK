@@ -72,7 +72,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(XimImageIOFactory);
 #else
-  itkTypeMacro(XimImageIOFactory, itk::ObjectFactoryBase);
+  itkOverrideGetNameOfClassMacro(XimImageIOFactory);
 #endif
 
   /** Register one factory of this type  */

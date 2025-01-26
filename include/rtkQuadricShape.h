@@ -63,7 +63,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(QuadricShape);
 #else
-  itkTypeMacro(QuadricShape, ConvexShape);
+  itkOverrideGetNameOfClassMacro(QuadricShape);
 #endif
 
   /** See rtk::ConvexShape::IsInside. */

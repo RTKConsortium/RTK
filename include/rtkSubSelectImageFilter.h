@@ -76,7 +76,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(SubSelectImageFilter);
 #else
-  itkTypeMacro(SubSelectImageFilter, itk::ImageToImageFilter);
+  itkOverrideGetNameOfClassMacro(SubSelectImageFilter);
 #endif
 
   /** The set of projections from which a subset will be extracted */

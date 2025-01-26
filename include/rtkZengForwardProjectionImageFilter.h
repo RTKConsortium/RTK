@@ -107,7 +107,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(ZengForwardProjectionImageFilter);
 #else
-  itkTypeMacro(ZengForwardProjectionImageFilter, ForwardProjectionImageFilter);
+  itkOverrideGetNameOfClassMacro(ZengForwardProjectionImageFilter);
 #endif
 
   /** Get / Set the sigma zero of the PSF. Default is 1.5417233052142099 */

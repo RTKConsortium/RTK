@@ -61,7 +61,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(Reg1DExtractShroudSignalImageFilter);
 #else
-  itkTypeMacro(Reg1DExtractShroudSignalImageFilter, itk::ImageToImageFilter);
+  itkOverrideGetNameOfClassMacro(Reg1DExtractShroudSignalImageFilter);
 #endif
 
 

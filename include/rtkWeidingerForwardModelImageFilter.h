@@ -61,7 +61,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(WeidingerForwardModelImageFilter);
 #else
-  itkTypeMacro(WeidingerForwardModelImageFilter, itk::ImageToImageFilter);
+  itkOverrideGetNameOfClassMacro(WeidingerForwardModelImageFilter);
 #endif
 
   /** Convenient parameters extracted from template types */

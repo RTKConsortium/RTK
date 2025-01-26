@@ -64,7 +64,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(ProjectGeometricPhantomImageFilter);
 #else
-  itkTypeMacro(ProjectGeometricPhantomImageFilter, itk::InPlaceImageFilter);
+  itkOverrideGetNameOfClassMacro(ProjectGeometricPhantomImageFilter);
 #endif
 
   /** Get / Set the object pointer to the geometry. */

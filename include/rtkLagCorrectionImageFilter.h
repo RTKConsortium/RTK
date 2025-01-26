@@ -70,7 +70,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(LagCorrectionImageFilter);
 #else
-  itkTypeMacro(LagCorrectionImageFilter, ImageToImageFilter);
+  itkOverrideGetNameOfClassMacro(LagCorrectionImageFilter);
 #endif
 
   using ImageRegionType = typename TImage::RegionType;

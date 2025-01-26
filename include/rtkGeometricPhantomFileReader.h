@@ -57,7 +57,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(GeometricPhantomFileReader);
 #else
-  itkTypeMacro(GeometricPhantomFileReader, itk::LightProcessObject);
+  itkOverrideGetNameOfClassMacro(GeometricPhantomFileReader);
 #endif
 
   /** Get / Set the object pointer to geometric phantom. */

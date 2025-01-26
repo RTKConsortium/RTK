@@ -83,7 +83,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(SplatWithKnownWeightsImageFilter);
 #else
-  itkTypeMacro(SplatWithKnownWeightsImageFilter, itk::ImageToImageFilter);
+  itkOverrideGetNameOfClassMacro(SplatWithKnownWeightsImageFilter);
 #endif
 
   /** The 4D image to be updated.*/

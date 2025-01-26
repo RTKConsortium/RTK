@@ -66,7 +66,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(DisplacedDetectorForOffsetFieldOfViewImageFilter);
 #else
-  itkTypeMacro(DisplacedDetectorForOffsetFieldOfViewImageFilter, ImageToImageFilter);
+  itkOverrideGetNameOfClassMacro(DisplacedDetectorForOffsetFieldOfViewImageFilter);
 #endif
 
 protected:

@@ -102,7 +102,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(FFTRampImageFilter);
 #else
-  itkTypeMacro(FFTRampImageFilter, FFTProjectionsConvolutionImageFilter);
+  itkOverrideGetNameOfClassMacro(FFTRampImageFilter);
 #endif
 
   /** Set/Get the Hann window frequency. 0 (default) disables it */

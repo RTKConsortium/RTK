@@ -59,7 +59,7 @@ public:
 #  ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(CudaFFTRampImageFilter);
 #  else
-  itkTypeMacro(CudaFFTRampImageFilter, FFTRampImageFilter);
+  itkOverrideGetNameOfClassMacro(CudaFFTRampImageFilter);
 #  endif
 
 protected:

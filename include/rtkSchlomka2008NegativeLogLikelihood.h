@@ -59,7 +59,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(Schlomka2008NegativeLogLikelihood);
 #else
-  itkTypeMacro(Schlomka2008NegativeLogLikelihood, ProjectionsDecompositionNegativeLogLikelihood);
+  itkOverrideGetNameOfClassMacro(Schlomka2008NegativeLogLikelihood);
 #endif
 
   using ParametersType = Superclass::ParametersType;

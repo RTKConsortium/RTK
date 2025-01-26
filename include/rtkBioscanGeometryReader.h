@@ -67,7 +67,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(BioscanGeometryReader);
 #else
-  itkTypeMacro(BioscanGeometryReader, itk::LightProcessObject);
+  itkOverrideGetNameOfClassMacro(BioscanGeometryReader);
 #endif
 
   /** Method for creation through the object factory. */

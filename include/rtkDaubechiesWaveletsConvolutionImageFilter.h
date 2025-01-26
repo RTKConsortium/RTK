@@ -82,7 +82,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(DaubechiesWaveletsConvolutionImageFilter);
 #else
-  itkTypeMacro(DaubechiesWaveletsConvolutionImageFilter, itk::ImageSource);
+  itkOverrideGetNameOfClassMacro(DaubechiesWaveletsConvolutionImageFilter);
 #endif
 
   /** Method for creation through the object factory. */

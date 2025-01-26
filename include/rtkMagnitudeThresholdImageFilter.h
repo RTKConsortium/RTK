@@ -55,7 +55,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(MagnitudeThresholdImageFilter);
 #else
-  itkTypeMacro(MagnitudeThresholdImageFilter, itk::ImageToImageFilter);
+  itkOverrideGetNameOfClassMacro(MagnitudeThresholdImageFilter);
 #endif
 
   /** Extract some information from the image types.  Dimensionality

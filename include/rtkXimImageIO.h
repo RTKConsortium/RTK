@@ -110,7 +110,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(XimImageIO);
 #else
-  itkTypeMacro(XimImageIO, itk::ImageIOBase);
+  itkOverrideGetNameOfClassMacro(XimImageIO);
 #endif
 
   /*-------- This part of the interface deals with reading data. ------ */

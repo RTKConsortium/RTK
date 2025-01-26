@@ -63,7 +63,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(ElektaSynergyRawLookupTableImageFilter);
 #else
-  itkTypeMacro(ElektaSynergyRawLookupTableImageFilter, LookupTableImageFilter);
+  itkOverrideGetNameOfClassMacro(ElektaSynergyRawLookupTableImageFilter);
 #endif
 
 #ifdef ITK_USE_CONCEPT_CHECKING

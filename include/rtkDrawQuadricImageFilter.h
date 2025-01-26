@@ -57,7 +57,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(DrawQuadricImageFilter);
 #else
-  itkTypeMacro(DrawQuadricImageFilter, DrawConvexImageFilter);
+  itkOverrideGetNameOfClassMacro(DrawQuadricImageFilter);
 #endif
 
   /** Get / Set the constant density of the QuadricShape */

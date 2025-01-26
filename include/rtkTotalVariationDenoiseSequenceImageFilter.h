@@ -94,7 +94,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(TotalVariationDenoiseSequenceImageFilter);
 #else
-  itkTypeMacro(TotalVariationDenoiseSequenceImageFilter, ImageToImageFilter);
+  itkOverrideGetNameOfClassMacro(TotalVariationDenoiseSequenceImageFilter);
 #endif
 
   /** Set/Get for the TotalVariationDenoisingBPDQImageFilter */

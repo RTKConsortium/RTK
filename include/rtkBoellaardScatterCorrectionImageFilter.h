@@ -61,7 +61,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(BoellaardScatterCorrectionImageFilter);
 #else
-  itkTypeMacro(BoellaardScatterCorrectionImageFilter, itk::ImageToImageFilter);
+  itkOverrideGetNameOfClassMacro(BoellaardScatterCorrectionImageFilter);
 #endif
 
   /** Get / Set the air threshold on projection images. The threshold is used to

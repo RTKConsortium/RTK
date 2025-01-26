@@ -63,7 +63,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(ConjugateGradientImageFilter);
 #else
-  itkTypeMacro(ConjugateGradientImageFilter, itk::InPlaceImageFilter);
+  itkOverrideGetNameOfClassMacro(ConjugateGradientImageFilter);
 #endif
 
   /** Get and Set macro*/

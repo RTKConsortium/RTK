@@ -61,7 +61,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(I0EstimationProjectionFilter);
 #else
-  itkTypeMacro(I0EstimationProjectionFilter, itk::InPlaceImageFilter);
+  itkOverrideGetNameOfClassMacro(I0EstimationProjectionFilter);
 #endif
 
   /** Some convenient type alias. */

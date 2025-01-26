@@ -62,7 +62,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(BackwardDifferenceDivergenceImageFilter);
 #else
-  itkTypeMacro(BackwardDifferenceDivergenceImageFilter, ImageToImageFilter);
+  itkOverrideGetNameOfClassMacro(BackwardDifferenceDivergenceImageFilter);
 #endif
 
   /** Use the image spacing information in calculations. Use this option if you

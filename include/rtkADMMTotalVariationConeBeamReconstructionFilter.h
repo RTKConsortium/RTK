@@ -155,7 +155,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(ADMMTotalVariationConeBeamReconstructionFilter);
 #else
-  itkTypeMacro(ADMMTotalVariationConeBeamReconstructionFilter, IterativeConeBeamReconstructionFilter);
+  itkOverrideGetNameOfClassMacro(ADMMTotalVariationConeBeamReconstructionFilter);
 #endif
 
   using ForwardProjectionFilterType = rtk::ForwardProjectionImageFilter<TOutputImage, TOutputImage>;

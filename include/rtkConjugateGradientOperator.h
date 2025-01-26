@@ -46,7 +46,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(ConjugateGradientOperator);
 #else
-  itkTypeMacro(ConjugateGradientOperator, itk::ImageToImageFilter);
+  itkOverrideGetNameOfClassMacro(ConjugateGradientOperator);
 #endif
 
   /** The image to be updated.*/

@@ -50,7 +50,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(DCMImagXImageIO);
 #else
-  itkTypeMacro(DCMImagXImageIO, itk::GDCMImageIO);
+  itkOverrideGetNameOfClassMacro(DCMImagXImageIO);
 #endif
 
   void

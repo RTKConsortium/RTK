@@ -49,7 +49,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(ProjectionsDecompositionNegativeLogLikelihood);
 #else
-  itkTypeMacro(ProjectionsDecompositionNegativeLogLikelihood, SingleValuedCostFunction);
+  itkOverrideGetNameOfClassMacro(ProjectionsDecompositionNegativeLogLikelihood);
 #endif
 
   //  enum { SpaceDimension=m_NumberOfMaterials };

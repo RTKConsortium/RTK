@@ -58,7 +58,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(DrawEllipsoidImageFilter);
 #else
-  itkTypeMacro(DrawEllipsoidImageFilter, DrawConvexImageFilter);
+  itkOverrideGetNameOfClassMacro(DrawEllipsoidImageFilter);
 #endif
 
   /** Get / Set the constant density of the volume */

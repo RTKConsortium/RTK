@@ -241,7 +241,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(JosephBackAttenuatedProjectionImageFilter);
 #else
-  itkTypeMacro(JosephBackAttenuatedProjectionImageFilter, JosephBackProjectionImageFilter);
+  itkOverrideGetNameOfClassMacro(JosephBackAttenuatedProjectionImageFilter);
 #endif
 
 protected:

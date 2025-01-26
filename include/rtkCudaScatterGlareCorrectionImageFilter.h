@@ -60,7 +60,7 @@ public:
 #  ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(CudaScatterGlareCorrectionImageFilter);
 #  else
-  itkTypeMacro(CudaScatterGlareCorrectionImageFilter, FFTRampImageFilter);
+  itkOverrideGetNameOfClassMacro(CudaScatterGlareCorrectionImageFilter);
 #  endif
 
 protected:

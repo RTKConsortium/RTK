@@ -57,7 +57,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(OraImageIO);
 #else
-  itkTypeMacro(OraImageIO, itk::MetaImageIO);
+  itkOverrideGetNameOfClassMacro(OraImageIO);
 #endif
 
   /*-------- This part of the interface deals with reading data. ------ */

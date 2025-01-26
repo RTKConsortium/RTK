@@ -166,7 +166,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(LookupTableImageFilter);
 #else
-  itkTypeMacro(LookupTableImageFilter, itk::UnaryFunctorImageFilter);
+  itkOverrideGetNameOfClassMacro(LookupTableImageFilter);
 #endif
 
   /** Set lookup table. */

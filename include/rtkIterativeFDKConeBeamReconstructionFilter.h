@@ -141,7 +141,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(IterativeFDKConeBeamReconstructionFilter);
 #else
-  itkTypeMacro(IterativeFDKConeBeamReconstructionFilter, IterativeConeBeamReconstructionFilter);
+  itkOverrideGetNameOfClassMacro(IterativeFDKConeBeamReconstructionFilter);
 #endif
 
   /** Get / Set the object pointer to projection geometry */

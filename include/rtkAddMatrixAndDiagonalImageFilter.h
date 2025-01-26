@@ -58,7 +58,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(AddMatrixAndDiagonalImageFilter);
 #else
-  itkTypeMacro(AddMatrixAndDiagonalImageFilter, itk::ImageToImageFilter);
+  itkOverrideGetNameOfClassMacro(AddMatrixAndDiagonalImageFilter);
 #endif
 
   /** Convenient parameters extracted from template types */

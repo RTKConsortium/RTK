@@ -115,7 +115,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(DePierroRegularizationImageFilter);
 #else
-  itkTypeMacro(DePierroRegularizationImageFilter, itk::ImageToImageFilter);
+  itkOverrideGetNameOfClassMacro(DePierroRegularizationImageFilter);
 #endif
 
   /** Get / Set the hyper parameter for the regularization */

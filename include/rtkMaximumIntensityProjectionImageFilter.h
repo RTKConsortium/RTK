@@ -155,7 +155,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(MaximumIntensityProjectionImageFilter);
 #else
-  itkTypeMacro(MaximumIntensityProjectionImageFilter, JosephForwardProjectionImageFilter);
+  itkOverrideGetNameOfClassMacro(MaximumIntensityProjectionImageFilter);
 #endif
 
 protected:

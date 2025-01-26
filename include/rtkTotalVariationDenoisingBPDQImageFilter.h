@@ -129,7 +129,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(TotalVariationDenoisingBPDQImageFilter);
 #else
-  itkTypeMacro(TotalVariationDenoisingBPDQImageFilter, DenoisingBPDQImageFilter);
+  itkOverrideGetNameOfClassMacro(TotalVariationDenoisingBPDQImageFilter);
 #endif
 
   /** Sub filter type definitions */

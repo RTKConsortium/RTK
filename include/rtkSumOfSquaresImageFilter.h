@@ -55,7 +55,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(SumOfSquaresImageFilter);
 #else
-  itkTypeMacro(SumOfSquaresImageFilter, itk::InPlaceImageFilter);
+  itkOverrideGetNameOfClassMacro(SumOfSquaresImageFilter);
 #endif
 
   /** Macro to get the SSD */

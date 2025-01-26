@@ -128,7 +128,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(HncImageIO);
 #else
-  itkTypeMacro(HncImageIO, itk::ImageIOBase);
+  itkOverrideGetNameOfClassMacro(HncImageIO);
 #endif
 
   /*-------- This part of the interface deals with reading data. ------ */

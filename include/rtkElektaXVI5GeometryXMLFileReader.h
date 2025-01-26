@@ -64,7 +64,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(ElektaXVI5GeometryXMLFileReader);
 #else
-  itkTypeMacro(ElektaXVI5GeometryXMLFileReader, itk::XMLFileReader);
+  itkOverrideGetNameOfClassMacro(ElektaXVI5GeometryXMLFileReader);
 #endif
 
   /** Method for creation through the object factory. */

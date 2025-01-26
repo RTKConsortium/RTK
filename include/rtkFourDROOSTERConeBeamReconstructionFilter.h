@@ -264,7 +264,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(FourDROOSTERConeBeamReconstructionFilter);
 #else
-  itkTypeMacro(FourDROOSTERConeBeamReconstructionFilter, itk::ImageToImageFilter);
+  itkOverrideGetNameOfClassMacro(FourDROOSTERConeBeamReconstructionFilter);
 #endif
 
   /** The 4D image to be updated.*/

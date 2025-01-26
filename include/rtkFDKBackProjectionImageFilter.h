@@ -59,7 +59,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(FDKBackProjectionImageFilter);
 #else
-  itkTypeMacro(FDKBackProjectionImageFilter, ImageToImageFilter);
+  itkOverrideGetNameOfClassMacro(FDKBackProjectionImageFilter);
 #endif
 
 protected:

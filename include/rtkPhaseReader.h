@@ -50,7 +50,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(PhaseReader);
 #else
-  itkTypeMacro(PhaseReader, itk::CSVFileReaderBase);
+  itkOverrideGetNameOfClassMacro(PhaseReader);
 #endif
 
   /** The value type of the dataset. */

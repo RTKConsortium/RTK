@@ -121,7 +121,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(ADMMTotalVariationConjugateGradientOperator);
 #else
-  itkTypeMacro(ADMMTotalVariationConjugateGradientOperator, ConjugateGradientOperator);
+  itkOverrideGetNameOfClassMacro(ADMMTotalVariationConjugateGradientOperator);
 #endif
 
   using BackProjectionFilterType = rtk::BackProjectionImageFilter<TOutputImage, TOutputImage>;

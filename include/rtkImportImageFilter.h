@@ -64,7 +64,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(ImportImageFilter);
 #else
-  itkTypeMacro(ImportImageFilter, ImageSource);
+  itkOverrideGetNameOfClassMacro(ImportImageFilter);
 #endif
 
   /** Index type alias support. An index is used to access pixel values. */

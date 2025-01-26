@@ -65,7 +65,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(TotalVariationImageFilter);
 #else
-  itkTypeMacro(TotalVariationImageFilter, ImageToImageFilter);
+  itkOverrideGetNameOfClassMacro(TotalVariationImageFilter);
 #endif
 
   /** Image related type alias. */

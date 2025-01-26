@@ -95,7 +95,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(UnwarpSequenceImageFilter);
 #else
-  itkTypeMacro(UnwarpSequenceImageFilter, ImageToImageFilter);
+  itkOverrideGetNameOfClassMacro(UnwarpSequenceImageFilter);
 #endif
 
   using CGOperatorFilterType =

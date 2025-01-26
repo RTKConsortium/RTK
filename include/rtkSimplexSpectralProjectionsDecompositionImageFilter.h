@@ -72,7 +72,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(SimplexSpectralProjectionsDecompositionImageFilter);
 #else
-  itkTypeMacro(SimplexSpectralProjectionsDecompositionImageFilter, ImageToImageFilter);
+  itkOverrideGetNameOfClassMacro(SimplexSpectralProjectionsDecompositionImageFilter);
 #endif
 
   /** Set/Get the input material-decomposed stack of projections (only used for initialization) */

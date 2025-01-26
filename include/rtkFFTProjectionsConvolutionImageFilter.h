@@ -74,7 +74,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(FFTProjectionsConvolutionImageFilter);
 #else
-  itkTypeMacro(FFTProjectionsConvolutionImageFilter, ImageToImageFilter);
+  itkOverrideGetNameOfClassMacro(FFTProjectionsConvolutionImageFilter);
 #endif
 
   /**

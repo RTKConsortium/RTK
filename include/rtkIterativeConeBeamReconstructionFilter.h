@@ -99,7 +99,7 @@ public:
 #ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(IterativeConeBeamReconstructionFilter);
 #else
-  itkTypeMacro(IterativeConeBeamReconstructionFilter, itk::ImageToImageFilter);
+  itkOverrideGetNameOfClassMacro(IterativeConeBeamReconstructionFilter);
 #endif
 
   /** Accessors to forward and backprojection types. */
