@@ -294,10 +294,10 @@ JosephForwardProjectionImageFilter<TInputImage,
       if (notMainDirInf > notMainDirSup)
         std::swap(notMainDirInf, notMainDirSup);
 
-      const CoordRepType minx = box->GetBoxMin()[notMainDirInf];
-      const CoordRepType miny = box->GetBoxMin()[notMainDirSup];
-      const CoordRepType maxx = box->GetBoxMax()[notMainDirInf];
-      const CoordRepType maxy = box->GetBoxMax()[notMainDirSup];
+      const CoordinateType minx = box->GetBoxMin()[notMainDirInf];
+      const CoordinateType miny = box->GetBoxMin()[notMainDirSup];
+      const CoordinateType maxx = box->GetBoxMax()[notMainDirInf];
+      const CoordinateType maxy = box->GetBoxMax()[notMainDirSup];
 
       // Init data pointers to first pixel of slice ns (i)nferior and (s)uperior (x|y) corner
       const int offsetx = offsets[notMainDirInf];
@@ -310,11 +310,11 @@ JosephForwardProjectionImageFilter<TInputImage,
       const typename TInputImage::PixelType * pxsys = pxsyi + offsety;
 
       // Compute step size and go to first voxel
-      CoordRepType       residualB = ns - np[mainDir];
-      CoordRepType       residualE = fp[mainDir] - fs;
-      const CoordRepType norm = itk::NumericTraits<CoordRepType>::One / dirVox[mainDir];
-      CoordRepType       stepx = dirVox[notMainDirInf] * norm;
-      CoordRepType       stepy = dirVox[notMainDirSup] * norm;
+      CoordinateType       residualB = ns - np[mainDir];
+      CoordinateType       residualE = fp[mainDir] - fs;
+      const CoordinateType norm = itk::NumericTraits<CoordinateType>::One / dirVox[mainDir];
+      CoordinateType       stepx = dirVox[notMainDirInf] * norm;
+      CoordinateType       stepy = dirVox[notMainDirSup] * norm;
       if (np[mainDir] > fp[mainDir])
       {
         residualB *= -1;
@@ -323,8 +323,8 @@ JosephForwardProjectionImageFilter<TInputImage,
         stepx *= -1;
         stepy *= -1;
       }
-      CoordRepType currentx = np[notMainDirInf] + residualB * stepx;
-      CoordRepType currenty = np[notMainDirSup] + residualB * stepy;
+      CoordinateType currentx = np[notMainDirInf] + residualB * stepx;
+      CoordinateType currenty = np[notMainDirSup] + residualB * stepy;
 
       // Compute voxel to millimeters conversion
       stepMM[notMainDirInf] = this->GetInput(1)->GetSpacing()[notMainDirInf] * stepx;
@@ -443,32 +443,32 @@ JosephForwardProjectionImageFilter<TInputImage,
                                                                         const InputPixelType * pxsyi,
                                                                         const InputPixelType * pxiys,
                                                                         const InputPixelType * pxsys,
-                                                                        const CoordRepType     x,
-                                                                        const CoordRepType     y,
+                                                                        const CoordinateType   x,
+                                                                        const CoordinateType   y,
                                                                         const int              ox,
                                                                         const int              oy)
 {
-  int          ix = itk::Math::floor(x);
-  int          iy = itk::Math::floor(y);
-  int          idx = ix * ox + iy * oy;
-  CoordRepType lx = x - ix;
-  CoordRepType ly = y - iy;
-  CoordRepType lxc = 1. - lx;
-  CoordRepType lyc = 1. - ly;
+  int            ix = itk::Math::floor(x);
+  int            iy = itk::Math::floor(y);
+  int            idx = ix * ox + iy * oy;
+  CoordinateType lx = x - ix;
+  CoordinateType ly = y - iy;
+  CoordinateType lxc = 1. - lx;
+  CoordinateType lyc = 1. - ly;
   return (m_InterpolationWeightMultiplication(threadId, stepLengthInVoxel, lxc * lyc, pxiyi, idx) +
           m_InterpolationWeightMultiplication(threadId, stepLengthInVoxel, lx * lyc, pxsyi, idx) +
           m_InterpolationWeightMultiplication(threadId, stepLengthInVoxel, lxc * ly, pxiys, idx) +
           m_InterpolationWeightMultiplication(threadId, stepLengthInVoxel, lx * ly, pxsys, idx));
   /* Alternative slower solution
-  const unsigned int ix = itk::Math::Floor(x);
-  const unsigned int iy = itk::Math::Floor(y);
-  const unsigned int idx = ix*ox + iy*oy;
-  const CoordRepType a = p1[idx];
-  const CoordRepType b = p2[idx] - a;
-  const CoordRepType c = p3[idx] - a;
-  const CoordRepType lx = x-ix;
-  const CoordRepType ly = y-iy;
-  const CoordRepType d = p4[idx] - a - b - c;
+  const unsigned int   ix = itk::Math::Floor(x);
+  const unsigned int   iy = itk::Math::Floor(y);
+  const unsigned int   idx = ix*ox + iy*oy;
+  const CoordinateType a = p1[idx];
+  const CoordinateType b = p2[idx] - a;
+  const CoordinateType c = p3[idx] - a;
+  const CoordinateType lx = x-ix;
+  const CoordinateType ly = y-iy;
+  const CoordinateType d = p4[idx] - a - b - c;
   return a + b*lx + c*ly + d*lx*ly;
 */
 }
@@ -493,22 +493,22 @@ JosephForwardProjectionImageFilter<TInputImage,
                                                                                  const InputPixelType * pxsyi,
                                                                                  const InputPixelType * pxiys,
                                                                                  const InputPixelType * pxsys,
-                                                                                 const CoordRepType     x,
-                                                                                 const CoordRepType     y,
+                                                                                 const CoordinateType   x,
+                                                                                 const CoordinateType   y,
                                                                                  const int              ox,
                                                                                  const int              oy,
-                                                                                 const CoordRepType     minx,
-                                                                                 const CoordRepType     miny,
-                                                                                 const CoordRepType     maxx,
-                                                                                 const CoordRepType     maxy)
+                                                                                 const CoordinateType   minx,
+                                                                                 const CoordinateType   miny,
+                                                                                 const CoordinateType   maxx,
+                                                                                 const CoordinateType   maxy)
 {
-  int          ix = itk::Math::floor(x);
-  int          iy = itk::Math::floor(y);
-  int          idx = ix * ox + iy * oy;
-  CoordRepType lx = x - ix;
-  CoordRepType ly = y - iy;
-  CoordRepType lxc = 1. - lx;
-  CoordRepType lyc = 1. - ly;
+  int            ix = itk::Math::floor(x);
+  int            iy = itk::Math::floor(y);
+  int            idx = ix * ox + iy * oy;
+  CoordinateType lx = x - ix;
+  CoordinateType ly = y - iy;
+  CoordinateType lxc = 1. - lx;
+  CoordinateType lyc = 1. - ly;
 
   int offset_xi = 0;
   int offset_yi = 0;
