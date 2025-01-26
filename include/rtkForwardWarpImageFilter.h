@@ -60,8 +60,8 @@ public:
   using DisplacementType = typename DisplacementFieldType::PixelType;
 
   /** Point type */
-  using CoordRepType = double;
-  using PointType = itk::Point<CoordRepType, Self::ImageDimension>;
+  using CoordinateType = double;
+  using PointType = itk::Point<CoordinateType, Self::ImageDimension>;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
