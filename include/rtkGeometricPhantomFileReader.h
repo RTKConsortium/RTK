@@ -54,11 +54,7 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-#ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(GeometricPhantomFileReader);
-#else
-  itkTypeMacro(GeometricPhantomFileReader, itk::LightProcessObject);
-#endif
 
   /** Get / Set the object pointer to geometric phantom. */
   itkGetModifiableObjectMacro(GeometricPhantom, GeometricPhantom);

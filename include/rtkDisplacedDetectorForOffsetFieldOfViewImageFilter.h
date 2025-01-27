@@ -63,11 +63,7 @@ public:
   itkNewMacro(Self);
 
   /** Runtime information support. */
-#ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(DisplacedDetectorForOffsetFieldOfViewImageFilter);
-#else
-  itkTypeMacro(DisplacedDetectorForOffsetFieldOfViewImageFilter, ImageToImageFilter);
-#endif
 
 protected:
   DisplacedDetectorForOffsetFieldOfViewImageFilter();

@@ -52,11 +52,7 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-#ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(SumOfSquaresImageFilter);
-#else
-  itkTypeMacro(SumOfSquaresImageFilter, itk::InPlaceImageFilter);
-#endif
 
   /** Macro to get the SSD */
   itkGetMacro(SumOfSquares, OutputInternalPixelType);

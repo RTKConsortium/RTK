@@ -47,11 +47,7 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods) */
-#ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(PhaseReader);
-#else
-  itkTypeMacro(PhaseReader, itk::CSVFileReaderBase);
-#endif
 
   /** The value type of the dataset. */
   using ValueType = float;

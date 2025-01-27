@@ -58,11 +58,7 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-#ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(GeometricPhantom);
-#else
-  itkTypeMacro(GeometricPhantom, itk::DataObject);
-#endif
 
   /** Rescale object along each direction by a 3D vector. */
   virtual void

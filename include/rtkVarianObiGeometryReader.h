@@ -51,11 +51,7 @@ public:
   using FileNamesContainer = std::vector<std::string>;
 
   /** Run-time type information (and related methods). */
-#ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(VarianObiGeometryReader);
-#else
-  itkTypeMacro(VarianObiGeometryReader, LightProcessObject);
-#endif
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);

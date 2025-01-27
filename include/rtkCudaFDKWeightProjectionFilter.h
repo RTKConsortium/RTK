@@ -69,11 +69,7 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-#  ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(CudaFDKWeightProjectionFilter);
-#  else
-  itkTypeMacro(CudaFDKWeightProjectionFilter, itk::CudaInPlaceImageFilter);
-#  endif
 
 protected:
   /** Standard constructor **/

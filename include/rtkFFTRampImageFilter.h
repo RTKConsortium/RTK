@@ -99,11 +99,7 @@ public:
   itkNewMacro(Self);
 
   /** Runtime information support. */
-#ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(FFTRampImageFilter);
-#else
-  itkTypeMacro(FFTRampImageFilter, FFTProjectionsConvolutionImageFilter);
-#endif
 
   /** Set/Get the Hann window frequency. 0 (default) disables it */
   itkGetConstMacro(HannCutFrequency, double);

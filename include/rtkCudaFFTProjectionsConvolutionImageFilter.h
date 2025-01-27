@@ -66,11 +66,7 @@ public:
   using CudaFFTOutputImagePointer = CudaFFTOutputImageType::Pointer;
 
   /** Runtime information support. */
-#  ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(CudaFFTProjectionsConvolutionImageFilter);
-#  else
-  itkTypeMacro(CudaFFTProjectionsConvolutionImageFilter, TParentImageFilter);
-#  endif
 
 protected:
   CudaFFTProjectionsConvolutionImageFilter();

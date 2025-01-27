@@ -126,11 +126,7 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-#ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(TotalVariationDenoisingBPDQImageFilter);
-#else
-  itkTypeMacro(TotalVariationDenoisingBPDQImageFilter, DenoisingBPDQImageFilter);
-#endif
 
   /** Sub filter type definitions */
   using MagnitudeThresholdFilterType =

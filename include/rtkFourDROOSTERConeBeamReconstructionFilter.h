@@ -261,11 +261,7 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-#ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(FourDROOSTERConeBeamReconstructionFilter);
-#else
-  itkTypeMacro(FourDROOSTERConeBeamReconstructionFilter, itk::ImageToImageFilter);
-#endif
 
   /** The 4D image to be updated.*/
   void

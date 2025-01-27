@@ -60,11 +60,7 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-#ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(ConjugateGradientImageFilter);
-#else
-  itkTypeMacro(ConjugateGradientImageFilter, itk::InPlaceImageFilter);
-#endif
 
   /** Get and Set macro*/
   itkGetMacro(NumberOfIterations, int);

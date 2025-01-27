@@ -51,11 +51,7 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-#ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(BlockDiagonalMatrixVectorMultiplyImageFilter);
-#else
-  itkTypeMacro(BlockDiagonalMatrixVectorMultiplyImageFilter, itk::ImageToImageFilter);
-#endif
 
   /** Convenient parameters extracted from template types */
   static constexpr unsigned int nChannels = TVectorImage::PixelType::Dimension;

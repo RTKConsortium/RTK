@@ -58,11 +58,7 @@ public:
   itkNewMacro(Self);
 
   /** Runtime information support. */
-#ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(I0EstimationProjectionFilter);
-#else
-  itkTypeMacro(I0EstimationProjectionFilter, itk::InPlaceImageFilter);
-#endif
 
   /** Some convenient type alias. */
   using InputImageType = TInputImage;

@@ -69,11 +69,7 @@ public:
   itkNewMacro(Self);
 
   /** Runtime information support. */
-#ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(ExtractPhaseImageFilter);
-#else
-  itkTypeMacro(ExtractPhaseImageFilter, itk::InPlaceImageFilter);
-#endif
 
   /** The input signal may be smoothed before taking the phase of the Hilbert
    * transform. This parameter sets the number of samples for this smoothing. */

@@ -44,11 +44,7 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-#ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(SubSelectFromListImageFilter);
-#else
-  itkTypeMacro(SubSelectFromListImageFilter, SubSelectImageFilter);
-#endif
 
   void
   SetSelectedProjections(std::vector<bool> sprojs);

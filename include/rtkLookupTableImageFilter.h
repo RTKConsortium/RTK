@@ -163,11 +163,7 @@ public:
   itkNewMacro(Self);
 
   /** Runtime information support. */
-#ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(LookupTableImageFilter);
-#else
-  itkTypeMacro(LookupTableImageFilter, itk::UnaryFunctorImageFilter);
-#endif
 
   /** Set lookup table. */
   virtual void
