@@ -63,11 +63,7 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-#  ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(CudaWeidingerForwardModelImageFilter);
-#  else
-  itkTypeMacro(CudaWeidingerForwardModelImageFilter, ImageToImageFilter);
-#  endif
 
 protected:
   CudaWeidingerForwardModelImageFilter();

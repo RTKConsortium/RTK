@@ -193,11 +193,7 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-#ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(JosephForwardProjectionImageFilter);
-#else
-  itkTypeMacro(JosephForwardProjectionImageFilter, ForwardProjectionImageFilter);
-#endif
 
   /** Get/Set the functor that is used to multiply each interpolation value with a volume value */
   TInterpolationWeightMultiplication &

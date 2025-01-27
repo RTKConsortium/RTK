@@ -76,11 +76,7 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-#ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(InterpolatorWithKnownWeightsImageFilter);
-#else
-  itkTypeMacro(InterpolatorWithKnownWeightsImageFilter, itk::InPlaceImageFilter);
-#endif
 
   /** The 3D image to be updated.*/
   void

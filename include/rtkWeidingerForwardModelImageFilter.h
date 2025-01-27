@@ -58,11 +58,7 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-#ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(WeidingerForwardModelImageFilter);
-#else
-  itkTypeMacro(WeidingerForwardModelImageFilter, itk::ImageToImageFilter);
-#endif
 
   /** Convenient parameters extracted from template types */
   static constexpr unsigned int nBins = TPhotonCounts::PixelType::Dimension;

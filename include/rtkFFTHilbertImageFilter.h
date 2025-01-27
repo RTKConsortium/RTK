@@ -83,11 +83,7 @@ public:
   }
 
   /** Runtime information support. */
-#ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(FFTHilbertImageFilter);
-#else
-  itkTypeMacro(FFTHilbertImageFilter, FFTProjectionsConvolutionImageFilter);
-#endif
 
 protected:
   FFTHilbertImageFilter() = default;

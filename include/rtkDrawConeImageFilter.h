@@ -53,11 +53,7 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-#ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(DrawConeImageFilter);
-#else
-  itkTypeMacro(DrawConeImageFilter, DrawConeImageFilter);
-#endif
 
 protected:
   DrawConeImageFilter() = default;

@@ -57,11 +57,7 @@ public:
   itkNewMacro(Self);
 
   /** Runtime information support. */
-#  ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(CudaConjugateGradientImageFilter);
-#  else
-  itkTypeMacro(CudaConjugateGradientImageFilter, ConjugateGradientImageFilter);
-#  endif
 
 protected:
   CudaConjugateGradientImageFilter();

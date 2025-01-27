@@ -145,11 +145,7 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-#ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(FourDReconstructionConjugateGradientOperator);
-#else
-  itkTypeMacro(FourDReconstructionConjugateGradientOperator, ConjugateGradientOperator);
-#endif
 
   /** Set/Get the 4D image to be updated.*/
   void

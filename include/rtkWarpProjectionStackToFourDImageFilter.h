@@ -128,11 +128,7 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-#ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(WarpProjectionStackToFourDImageFilter);
-#else
-  itkTypeMacro(WarpProjectionStackToFourDImageFilter, ProjectionStackToFourDImageFilter);
-#endif
 
   using SignalVectorType = std::vector<double>;
 

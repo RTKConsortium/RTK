@@ -80,11 +80,7 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-#ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(ForwardDifferenceGradientImageFilter);
-#else
-  itkTypeMacro(ForwardDifferenceGradientImageFilter, ImageToImageFilter);
-#endif
 
   /** Image type alias support. */
   using OperatorValueType = TOperatorValueType;

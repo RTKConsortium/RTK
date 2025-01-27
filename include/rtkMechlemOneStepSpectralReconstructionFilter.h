@@ -165,11 +165,7 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-#ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(MechlemOneStepSpectralReconstructionFilter);
-#else
-  itkTypeMacro(MechlemOneStepSpectralReconstructionFilter, itk::ImageToImageFilter);
-#endif
 
   /** Internal type alias and parameters */
   static constexpr unsigned int nBins = TPhotonCounts::PixelType::Dimension;

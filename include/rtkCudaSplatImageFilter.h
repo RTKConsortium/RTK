@@ -60,11 +60,7 @@ public:
   itkNewMacro(Self);
 
   /** Runtime information support. */
-#  ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(CudaSplatImageFilter);
-#  else
-  itkTypeMacro(CudaSplatImageFilter, SplatWithKnownWeightsImageFilter);
-#  endif
 
 protected:
   CudaSplatImageFilter();

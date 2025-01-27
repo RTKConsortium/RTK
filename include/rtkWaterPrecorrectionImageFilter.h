@@ -56,11 +56,7 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-#ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(WaterPrecorrectionImageFilter);
-#else
-  itkTypeMacro(WaterPrecorrectionImageFilter, ImageToImageFilter);
-#endif
 
   /** Get / Set the Median window that are going to be used during the operation
    */

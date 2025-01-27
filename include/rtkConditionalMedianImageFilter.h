@@ -61,11 +61,7 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-#ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(ConditionalMedianImageFilter);
-#else
-  itkTypeMacro(ConditionalMedianImageFilter, itk::InPlaceImageFilter);
-#endif
 
   /** Set/Get neighborhood radius */
   itkSetMacro(Radius, MedianRadiusType);

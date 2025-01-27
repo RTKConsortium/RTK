@@ -47,11 +47,7 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-#ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(DCMImagXImageIO);
-#else
-  itkTypeMacro(DCMImagXImageIO, itk::GDCMImageIO);
-#endif
 
   void
   ReadImageInformation() override;

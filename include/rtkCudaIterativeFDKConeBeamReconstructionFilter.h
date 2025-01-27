@@ -74,11 +74,7 @@ public:
   itkNewMacro(Self);
 
   /** Runtime information support. */
-#  ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(CudaIterativeFDKConeBeamReconstructionFilter);
-#  else
-  itkTypeMacro(CudaIterativeFDKConeBeamReconstructionFilter, IterativeFDKConeBeamReconstructionFilter);
-#  endif
 
 protected:
   CudaIterativeFDKConeBeamReconstructionFilter();

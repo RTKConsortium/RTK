@@ -294,11 +294,7 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-#ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(JosephForwardAttenuatedProjectionImageFilter);
-#else
-  itkTypeMacro(JosephForwardAttenuatedProjectionImageFilter, JosephForwardProjectionImageFilter);
-#endif
 
 protected:
   JosephForwardAttenuatedProjectionImageFilter();

@@ -71,11 +71,7 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-#ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(BackProjectionImageFilter);
-#else
-  itkTypeMacro(BackProjectionImageFilter, itk::ImageToImageFilter);
-#endif
 
   /** Get / Set the object pointer to projection geometry */
   itkGetConstObjectMacro(Geometry, GeometryType);

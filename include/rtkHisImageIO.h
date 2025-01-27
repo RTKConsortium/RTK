@@ -55,11 +55,7 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-#ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(HisImageIO);
-#else
-  itkTypeMacro(HisImageIO, itk::ImageIOBase);
-#endif
 
   /*-------- This part of the interface deals with reading data. ------ */
   void

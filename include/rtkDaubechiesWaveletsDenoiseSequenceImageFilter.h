@@ -86,11 +86,7 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-#ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(DaubechiesWaveletsDenoiseSequenceImageFilter);
-#else
-  itkTypeMacro(DaubechiesWaveletsDenoiseSequenceImageFilter, ImageToImageFilter);
-#endif
 
   /** Set the number of levels of the deconstruction and reconstruction */
   itkGetMacro(NumberOfLevels, unsigned int);

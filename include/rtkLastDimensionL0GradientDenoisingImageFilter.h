@@ -56,11 +56,7 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-#ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(LastDimensionL0GradientDenoisingImageFilter);
-#else
-  itkTypeMacro(LastDimensionL0GradientDenoisingImageFilter, itk::InPlaceImageFilter);
-#endif
 
   /** Get / Set the threshold. Default is 0.001 */
   itkGetMacro(Lambda, double);

@@ -50,11 +50,7 @@ public:
   using Pointer = itk::SmartPointer<Self>;
   using ConstPointer = itk::SmartPointer<const Self>;
   itkNewMacro(Self);
-#ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(DualEnergyNegativeLogLikelihood);
-#else
-  itkTypeMacro(DualEnergyNegativeLogLikelihood, rtk::ProjectionsDecompositionNegativeLogLikelihood);
-#endif
 
   using ParametersType = Superclass::ParametersType;
   using DerivativeType = Superclass::DerivativeType;

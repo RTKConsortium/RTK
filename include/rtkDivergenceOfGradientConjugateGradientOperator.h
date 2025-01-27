@@ -56,11 +56,7 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-#ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(DivergenceOfGradientConjugateGradientOperator);
-#else
-  itkTypeMacro(DivergenceOfGradientConjugateGradientOperator, ImageToImageFilter);
-#endif
 
   /** Image type alias support. */
   using InputPixelType = typename InputImageType::PixelType;

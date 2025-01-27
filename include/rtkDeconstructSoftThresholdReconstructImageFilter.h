@@ -60,11 +60,7 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-#ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(DeconstructSoftThresholdReconstructImageFilter);
-#else
-  itkTypeMacro(DeconstructSoftThresholdReconstructImageFilter, ImageToImageFilter);
-#endif
 
   /** ImageDimension enumeration. */
   static constexpr unsigned int ImageDimension = TImage::ImageDimension;

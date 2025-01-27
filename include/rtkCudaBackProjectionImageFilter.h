@@ -68,11 +68,7 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-#  ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(CudaBackProjectionImageFilter);
-#  else
-  itkTypeMacro(CudaBackProjectionImageFilter, Superclass);
-#  endif
 
 protected:
   CudaBackProjectionImageFilter();

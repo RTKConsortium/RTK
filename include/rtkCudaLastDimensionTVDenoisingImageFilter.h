@@ -63,11 +63,7 @@ public:
   itkNewMacro(Self);
 
   /** Runtime information support. */
-#  ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(CudaLastDimensionTVDenoisingImageFilter);
-#  else
-  itkTypeMacro(CudaLastDimensionTVDenoisingImageFilter, TotalVariationDenoisingBPDQImageFilter);
-#  endif
 
 protected:
   CudaLastDimensionTVDenoisingImageFilter();

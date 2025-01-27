@@ -59,11 +59,7 @@ public:
   itkNewMacro(Self);
 
   /** Runtime information support. */
-#  ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(CudaConstantVolumeSeriesSource);
-#  else
-  itkTypeMacro(CudaConstantVolumeSeriesSource, ImageToImageFilter);
-#  endif
 
 protected:
   CudaConstantVolumeSeriesSource();

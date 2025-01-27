@@ -61,11 +61,7 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-#ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(ProjectGeometricPhantomImageFilter);
-#else
-  itkTypeMacro(ProjectGeometricPhantomImageFilter, itk::InPlaceImageFilter);
-#endif
 
   /** Get / Set the object pointer to the geometry. */
   itkGetConstObjectMacro(GeometricPhantom, GeometricPhantom);

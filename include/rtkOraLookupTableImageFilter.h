@@ -60,11 +60,7 @@ public:
   itkNewMacro(Self);
 
   /** Runtime information support. */
-#ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(OraLookupTableImageFilter);
-#else
-  itkTypeMacro(OraLookupTableImageFilter, LookupTableImageFilter);
-#endif
 
   void
   BeforeThreadedGenerateData() override;

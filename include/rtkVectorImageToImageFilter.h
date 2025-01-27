@@ -60,11 +60,7 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-#ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(VectorImageToImageFilter);
-#else
-  itkTypeMacro(VectorImageToImageFilter, itk::ImageToImageFilter);
-#endif
 
 protected:
   VectorImageToImageFilter();

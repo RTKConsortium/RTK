@@ -69,11 +69,7 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-#  ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(CudaWarpBackProjectionImageFilter);
-#  else
-  itkTypeMacro(CudaWarpBackProjectionImageFilter, Superclass);
-#  endif
 
   /** Input projection stack */
   void

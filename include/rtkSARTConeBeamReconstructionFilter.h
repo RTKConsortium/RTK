@@ -172,11 +172,7 @@ public:
   itkNewMacro(Self);
 
   /** Runtime information support. */
-#ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(SARTConeBeamReconstructionFilter);
-#else
-  itkTypeMacro(SARTConeBeamReconstructionFilter, IterativeConeBeamReconstructionFilter);
-#endif
 
   /** Get / Set the object pointer to projection geometry */
   itkGetModifiableObjectMacro(Geometry, ThreeDCircularProjectionGeometry);

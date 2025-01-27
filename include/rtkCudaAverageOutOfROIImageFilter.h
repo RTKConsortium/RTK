@@ -59,11 +59,7 @@ public:
   itkNewMacro(Self);
 
   /** Runtime information support. */
-#  ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(CudaAverageOutOfROIImageFilter);
-#  else
-  itkTypeMacro(CudaAverageOutOfROIImageFilter, AverageOutOfROIImageFilter);
-#  endif
 
 protected:
   CudaAverageOutOfROIImageFilter();

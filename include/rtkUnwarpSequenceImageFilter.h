@@ -92,11 +92,7 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-#ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(UnwarpSequenceImageFilter);
-#else
-  itkTypeMacro(UnwarpSequenceImageFilter, ImageToImageFilter);
-#endif
 
   using CGOperatorFilterType =
     UnwarpSequenceConjugateGradientOperator<TImageSequence, TDVFImageSequence, TImage, TDVFImage>;

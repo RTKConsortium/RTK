@@ -103,11 +103,7 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-#ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(SoftThresholdImageFilter);
-#else
-  itkTypeMacro(SoftThresholdImageFilter, UnaryFunctorImageFilter);
-#endif
 
   /** Pixel types. */
   using InputPixelType = typename TInputImage::PixelType;
