@@ -89,12 +89,10 @@ public:
   /** Superclass type alias. */
   using OutputImageRegionType = typename Superclass::OutputImageRegionType;
 
-#ifdef ITK_USE_CONCEPT_CHECKING
   /** Begin concept checking */
   itkConceptMacro(InputHasNumericTraitsCheck, (itk::Concept::HasNumericTraits<typename InputPixelType::ValueType>));
   itkConceptMacro(RealTypeHasNumericTraitsCheck, (itk::Concept::HasNumericTraits<RealType>));
   /** End concept checking */
-#endif
 
   itkGetMacro(Threshold, TRealType);
   itkSetMacro(Threshold, TRealType);

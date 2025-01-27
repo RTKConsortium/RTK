@@ -62,10 +62,8 @@ public:
   /** Runtime information support. */
   itkOverrideGetNameOfClassMacro(ElektaSynergyRawLookupTableImageFilter);
 
-#ifdef ITK_USE_CONCEPT_CHECKING
   // Begin concept checking
   itkConceptMacro(SameTypeCheck, (itk::Concept::SameType<InputImagePixelType, unsigned short>));
-#endif
 
 protected:
   ElektaSynergyRawLookupTableImageFilter();

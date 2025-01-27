@@ -116,14 +116,12 @@ public:
   virtual void
   SetThreshold(const InputPixelType threshold);
 
-#ifdef ITK_USE_CONCEPT_CHECKING
   /** Begin concept checking */
   itkConceptMacro(OutputEqualityComparableCheck, (itk::Concept::EqualityComparable<OutputPixelType>));
   itkConceptMacro(InputPixelTypeComparable, (itk::Concept::Comparable<InputPixelType>));
   itkConceptMacro(InputOStreamWritableCheck, (itk::Concept::OStreamWritable<InputPixelType>));
   itkConceptMacro(OutputOStreamWritableCheck, (itk::Concept::OStreamWritable<OutputPixelType>));
   /** End concept checking */
-#endif
 
 protected:
   SoftThresholdImageFilter();
