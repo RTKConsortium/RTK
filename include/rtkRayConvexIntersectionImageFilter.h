@@ -60,11 +60,7 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-#ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(RayConvexIntersectionImageFilter);
-#else
-  itkTypeMacro(RayConvexIntersectionImageFilter, itk::InPlaceImageFilter);
-#endif
 
   /** Get / Set the object pointer to the ConvexShape. */
   itkGetModifiableObjectMacro(ConvexShape, ConvexShape);

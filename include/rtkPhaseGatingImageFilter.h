@@ -45,11 +45,7 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-#ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(PhaseGatingImageFilter);
-#else
-  itkTypeMacro(PhaseGatingImageFilter, SubSelectImageFilter);
-#endif
 
   itkSetMacro(PhasesFileName, std::string);
   itkGetMacro(PhasesFileName, std::string);

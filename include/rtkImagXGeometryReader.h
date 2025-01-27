@@ -52,11 +52,7 @@ public:
   using GeometryType = ThreeDCircularProjectionGeometry;
 
   /** Run-time type information (and related methods). */
-#ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(ImagXGeometryReader);
-#else
-  itkTypeMacro(ImagXGeometryReader, itk::LightProcessObject);
-#endif
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);

@@ -64,11 +64,7 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-#ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(AverageOutOfROIImageFilter);
-#else
-  itkTypeMacro(AverageOutOfROIImageFilter, itk::InPlaceImageFilter);
-#endif
 
   /** The image containing the weights applied to the temporal components */
   void

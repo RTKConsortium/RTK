@@ -65,11 +65,7 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-#ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(CyclicDeformationImageFilter);
-#else
-  itkTypeMacro(CyclicDeformationImageFilter, itk::ImageToImageFilter);
-#endif
 
   /** Get / Set the signal file name relating each frame to a phase position.
       The signal file is a text file containing one line per frame. */

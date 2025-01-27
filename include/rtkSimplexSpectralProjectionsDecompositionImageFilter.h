@@ -69,11 +69,7 @@ public:
   itkNewMacro(Self);
 
   /** Runtime information support. */
-#ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(SimplexSpectralProjectionsDecompositionImageFilter);
-#else
-  itkTypeMacro(SimplexSpectralProjectionsDecompositionImageFilter, ImageToImageFilter);
-#endif
 
   /** Set/Get the input material-decomposed stack of projections (only used for initialization) */
   void

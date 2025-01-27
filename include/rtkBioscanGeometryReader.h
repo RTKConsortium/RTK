@@ -64,11 +64,7 @@ public:
   using GeometryPointer = GeometryType::Pointer;
 
   /** Run-time type information (and related methods). */
-#ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(BioscanGeometryReader);
-#else
-  itkTypeMacro(BioscanGeometryReader, itk::LightProcessObject);
-#endif
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);

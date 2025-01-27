@@ -146,11 +146,7 @@ public:
   SetInputWeights(const TWeightsImage * weights);
 
   /** Run-time type information (and related methods). */
-#ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(ReconstructionConjugateGradientOperator);
-#else
-  itkTypeMacro(ReconstructionConjugateGradientOperator, ConjugateGradientOperator);
-#endif
 
   using BackProjectionFilterType = rtk::BackProjectionImageFilter<TOutputImage, TOutputImage>;
   using BackProjectionFilterPointer = typename BackProjectionFilterType::Pointer;

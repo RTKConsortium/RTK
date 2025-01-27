@@ -59,11 +59,7 @@ public:
   itkNewMacro(Self);
 
   /** Runtime information support. */
-#  ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(CudaLaplacianImageFilter);
-#  else
-  itkTypeMacro(CudaLaplacianImageFilter, LaplacianImageFilter);
-#  endif
 
 protected:
   CudaLaplacianImageFilter();

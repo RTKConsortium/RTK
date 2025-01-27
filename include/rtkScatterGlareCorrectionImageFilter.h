@@ -69,11 +69,7 @@ public:
   itkNewMacro(Self);
 
   /** Runtime information support. */
-#ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(ScatterGlareCorrectionImageFilter);
-#else
-  itkTypeMacro(ScatterGlareCorrectionImageFilter, FFTProjectionsConvolutionImageFilter);
-#endif
 
   itkGetConstMacro(Coefficients, CoefficientVectorType);
   virtual void

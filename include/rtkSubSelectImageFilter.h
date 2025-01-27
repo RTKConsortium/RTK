@@ -73,11 +73,7 @@ public:
   using Pointer = itk::SmartPointer<Self>;
 
   /** Run-time type information (and related methods). */
-#ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(SubSelectImageFilter);
-#else
-  itkTypeMacro(SubSelectImageFilter, itk::ImageToImageFilter);
-#endif
 
   /** The set of projections from which a subset will be extracted */
   void

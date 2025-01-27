@@ -46,11 +46,7 @@ public:
   using Pointer = itk::SmartPointer<Self>;
   using ConstPointer = itk::SmartPointer<const Self>;
   itkNewMacro(Self);
-#ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(ProjectionsDecompositionNegativeLogLikelihood);
-#else
-  itkTypeMacro(ProjectionsDecompositionNegativeLogLikelihood, SingleValuedCostFunction);
-#endif
 
   //  enum { SpaceDimension=m_NumberOfMaterials };
 

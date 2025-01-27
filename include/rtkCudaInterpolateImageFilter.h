@@ -59,11 +59,7 @@ public:
   itkNewMacro(Self);
 
   /** Runtime information support. */
-#  ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(CudaInterpolateImageFilter);
-#  else
-  itkTypeMacro(CudaInterpolateImageFilter, InterpolatorWithKnownWeightsImageFilter);
-#  endif
 
 protected:
   CudaInterpolateImageFilter();

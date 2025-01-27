@@ -56,11 +56,7 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-#ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(SeparableQuadraticSurrogateRegularizationImageFilter);
-#else
-  itkTypeMacro(SeparableQuadraticSurrogateRegularizationImageFilter, itk::ImageToImageFilter);
-#endif
 
   /** Set/Get for the radius */
   itkSetMacro(Radius, typename TImage::RegionType::SizeType);

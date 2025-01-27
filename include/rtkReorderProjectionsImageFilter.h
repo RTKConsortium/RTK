@@ -68,11 +68,7 @@ public:
   itkNewMacro(Self);
 
   /** Runtime information support. */
-#ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(ReorderProjectionsImageFilter);
-#else
-  itkTypeMacro(ReorderProjectionsImageFilter, ImageToImageFilter);
-#endif
 
   /** Get / Set the object pointer to projection geometry */
   itkGetModifiableObjectMacro(OutputGeometry, GeometryType);

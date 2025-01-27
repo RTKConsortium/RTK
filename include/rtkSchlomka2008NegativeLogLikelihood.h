@@ -56,11 +56,7 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods) */
-#ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(Schlomka2008NegativeLogLikelihood);
-#else
-  itkTypeMacro(Schlomka2008NegativeLogLikelihood, ProjectionsDecompositionNegativeLogLikelihood);
-#endif
 
   using ParametersType = Superclass::ParametersType;
   using DerivativeType = Superclass::DerivativeType;

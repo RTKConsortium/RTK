@@ -78,11 +78,7 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-#ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(UnwarpSequenceConjugateGradientOperator);
-#else
-  itkTypeMacro(UnwarpSequenceConjugateGradientOperator, ConjugateGradientOperator);
-#endif
 
   using WarpSequenceFilterType = rtk::WarpSequenceImageFilter<TImageSequence, TDVFImageSequence, TImage, TDVFImage>;
 

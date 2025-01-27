@@ -54,11 +54,7 @@ public:
   using MarginVectorType = itk::Vector<double, 4>;
 
   /** Run-time type information (and related methods). */
-#ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(OraGeometryReader);
-#else
-  itkTypeMacro(OraGeometryReader, itk::LightProcessObject);
-#endif
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);

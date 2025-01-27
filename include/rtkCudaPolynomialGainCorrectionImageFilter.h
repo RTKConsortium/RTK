@@ -69,11 +69,7 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-#  ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(CudaPolynomialGainCorrectionImageFilter);
-#  else
-  itkTypeMacro(CudaPolynomialGainCorrectionImageFilter, itk::CudaImageToImageFilter);
-#  endif
 
 protected:
   /** Standard constructor **/

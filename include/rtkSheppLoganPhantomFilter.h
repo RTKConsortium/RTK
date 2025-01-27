@@ -52,11 +52,7 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-#ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(SheppLoganPhantomFilter);
-#else
-  itkTypeMacro(SheppLoganPhantomFilter, ProjectGeometricPhantomImageFilter);
-#endif
 
 protected:
   SheppLoganPhantomFilter();

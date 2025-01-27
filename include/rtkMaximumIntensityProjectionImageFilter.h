@@ -152,11 +152,7 @@ public:
   itkNewMacro(Self);
 
   /** Run-time type information (and related methods). */
-#ifdef itkOverrideGetNameOfClassMacro
   itkOverrideGetNameOfClassMacro(MaximumIntensityProjectionImageFilter);
-#else
-  itkTypeMacro(MaximumIntensityProjectionImageFilter, JosephForwardProjectionImageFilter);
-#endif
 
 protected:
   MaximumIntensityProjectionImageFilter() = default;
