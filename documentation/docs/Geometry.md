@@ -1,4 +1,4 @@
-# 3D Projection Geometry
+# 3D projection geometry
 
 ## Purpose
 

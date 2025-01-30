@@ -1,6 +1,7 @@
-﻿# Welcome to RTK's documentation!
+﻿The Reconstruction Toolkit (RTK)
+================================
 
-The Reconstruction Toolkit (RTK) is an open-source and cross-platform software for fast circular cone-beam CT reconstruction based on the Insight Toolkit (ITK). RTK is developed by the RTK consortium.
+RTK is an open-source and cross-platform software for fast circular cone-beam CT reconstruction based on the Insight Toolkit (ITK). RTK is developed by the RTK consortium.
 
 [![GitHub release](https://img.shields.io/github/release/RTKConsortium/RTK.svg)](https://github.com/RTKConsortium/RTK/releases/latest)
 [![PyPI](https://img.shields.io/pypi/v/itk-rtk.svg)](https://pypi.python.org/pypi/itk-rtk)
@@ -21,8 +22,8 @@ INSTALLATION
 :caption: 📖 Learn
 documentation/docs/Geometry.md
 documentation/docs/Phantom.md
-documentation/docs/Tutorial.md
-examples/index.md
+examples/README.md
+applications/README.md
 ```
 
 ```{toctree}
