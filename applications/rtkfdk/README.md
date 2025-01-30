@@ -1,10 +1,36 @@
-# Motion Compensation Reconstruction
+# 3D, 2D and motion-compensated FDK
+
+The following exampels illustrates the command line application `rtkfdk` by reconstructing a Shepp Logan phantom with Feldkamp, David and Kress algorithm in 3D (cone-beam) and 2D (fan-beam).
+
+## 3D
+
+![sin_3D](SheppLogan-3D-Sinogram.png){w=200px alt="Shepp-Logan 3D sinogram"}
+![img_3D](SheppLogan-3D.png){w=200px alt="Shepp-Logan 3D image"}
+
+This script uses the file [SheppLogan.txt](https://data.kitware.com/api/v1/item/5b179c938d777f15ebe2020b/download) as input.
+
+```{literalinclude} FDK3D.sh
+```
+
+## 2D
+
+![sin_2D](SheppLogan-2D-Sinogram.png){w=200px alt="Shepp-Logan 2D sinogram"}
+![img_2D](SheppLogan-2D.png){w=200px alt="Shepp-Logan 2D image"}
+
+The same reconstruction can be performed using the original 2D Shepp-Logan phantom.
+RTK can perform 2D reconstructions through images wide of 1 pixel in the y direction.
+The following script performs the same reconstruction as above in a 2D environment and uses the [2D Shepp-Logan](http://wiki.openrtk.org/images/7/73/SheppLogan-2d.txt) phantom as input.
+
+```{literalinclude} FDK2D.sh
+```
+
+## Motion-compensated reconstruction
 
 RTK provides the necessary tools to reconstruct an image with motion compensation. The implementation is based on two articles that we have published ([article 1](https://hal.archives-ouvertes.fr/hal-00443440) and [article 2](https://hal.archives-ouvertes.fr/hal-01967313)) but only the FDK-based motion-compensated CBCT reconstruction (analytic algorithm in article 1) and without optimization (very slow reconstruction compared to article 2). You should read the articles to understand the basics of the algorithm before trying to use the software.
 
 The algorithm requires a set of projection images with the associated RTK geometry, the respiratory phase of each projection image and the 4D motion vector field over a respiratory cycle in the cone-beam coordinate system. Each piece of data is described in more details below and can be downloaded using [Girder](https://data.kitware.com/#collection/5a7706878d777f0649e04776). It is assumed that we have a breathing motion that is cyclic and similar to that described by the vector field. Note that you could modify the code and create your own motion model if you want to, in which case you should probably [contact us](http://www.openrtk.org/RTK/project/contactus.html).
 
-## Projection images
+### Projection images
 
 This example is illustrated with a set of projection images of the [POPI patient](http://www.creatis.insa-lyon.fr/rio/popi-model_original_page). This dataset has been used in the first previously-mentioned article. You can [download the projections](https://data.kitware.com/api/v1/item/5be99af88d777f2179a2e144/download) and the required tables of the Elekta database, [FRAME.DBF](https://data.kitware.com/api/v1/item/5be99a068d777f2179a2cf4f/download) and [IMAGE.DBF](https://data.kitware.com/api/v1/item/5be99a078d777f2179a2cf65/download). The dataset is first used to reconstruct a blurry image:
 
@@ -38,7 +64,7 @@ You should obtain something like that with [VV](http://vv.creatis.insa-lyon.fr/)
 
 ![Blurred](Blurred.jpg){w=600px alt="Blurred image"}
 
-## Deformation vector field
+### Deformation vector field
 
 The next piece of data is a 4D deformation vector field that describes a respiratory cycle. Typically, it can be obtained from the 4D planning CT with deformable image registration. Here, I have used [Elastix](http://elastix.lumc.nl/) with the [sliding module](http://elastix.lumc.nl/modelzoo/par0016) developed by Vivien Delmon. The registration uses a [patient mask](https://data.kitware.com/api/v1/item/5be99a408d777f2179a2dde8/download) (red+green) and a [motion mask](https://data.kitware.com/api/v1/item/5be99a088d777f2179a2cf6f/download) (red) as described in [Jef's publication](http://www.creatis.insa-lyon.fr/site/fr/publications/VAND-12):
 
@@ -109,7 +135,7 @@ This is a bit complicated and there are probably other ways of doing this. For e
 
 The elastix output files and the transformed 4D DVF are available [here](https://data.kitware.com/api/v1/item/5be99a058d777f2179a2cf42/download).
 
-## Respiratory signal
+### Respiratory signal
 
 The motion model requires that we associate each projection image with one frame of the 4D vector field. We used the Amsterdam shroud solution of Lambert Zijp (described [here](http://www.creatis.insa-lyon.fr/site/fr/publications/RIT-12a)) which is implemented in RTK
 
@@ -128,7 +154,7 @@ Post-process with Matlab to obtain the phase signal, ensuring the phase ranges f
 
 ---
 
-## Motion-Compensated Cone-Beam CT Reconstruction
+### Motion-compensated cone-beam CT reconstruction
 
 Gather all the pieces to perform motion-compensated reconstruction. Use the following commands:
 
