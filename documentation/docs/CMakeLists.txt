@@ -7,6 +7,7 @@ if(RTK_BUILD_SPHINX)
   # The images are downloaded when conf.py is run by sphinx.
   add_custom_target(copy_sources ALL
     COMMAND ${CMAKE_COMMAND} -E copy_directory "${RTK_SOURCE_DIR}/examples" "${RTK_DOC_OUTPUT_DIR}/examples"
+    COMMAND ${CMAKE_COMMAND} -E copy_directory "${RTK_SOURCE_DIR}/applications" "${RTK_DOC_OUTPUT_DIR}/applications"
     COMMAND ${CMAKE_COMMAND} -E copy_directory "${RTK_SOURCE_DIR}/documentation" "${RTK_DOC_OUTPUT_DIR}/documentation"
     COMMAND ${CMAKE_COMMAND} -E copy "${RTK_SOURCE_DIR}/conf.py" "${RTK_DOC_OUTPUT_DIR}/conf.py"
     COMMAND ${CMAKE_COMMAND} -E copy "${RTK_SOURCE_DIR}/index.md" "${RTK_DOC_OUTPUT_DIR}/index.md"
