@@ -69,7 +69,7 @@ public:
 
 protected:
   CudaCropImageFilter();
-  virtual ~CudaCropImageFilter(){};
+  virtual ~CudaCropImageFilter() {};
 
   virtual void
   GPUGenerateData();

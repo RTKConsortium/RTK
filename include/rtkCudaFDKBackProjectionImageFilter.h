@@ -71,7 +71,7 @@ public:
 
 protected:
   CudaFDKBackProjectionImageFilter();
-  virtual ~CudaFDKBackProjectionImageFilter(){};
+  virtual ~CudaFDKBackProjectionImageFilter() {};
 
   virtual void
   GPUGenerateData();

@@ -4,7 +4,7 @@
 #include "rtkDrawEllipsoidImageFilter.h"
 #include "rtkRayEllipsoidIntersectionImageFilter.h"
 #include "rtkConstantImageSource.h"
-//#include "rtkNormalizedJosephBackProjectionImageFilter.h"
+// #include "rtkNormalizedJosephBackProjectionImageFilter.h"
 
 #ifdef USE_CUDA
 #  include "itkCudaImage.h"

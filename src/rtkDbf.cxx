@@ -85,10 +85,7 @@ DbfFile::DbfFile(std::string fileName)
   m_Stream.seekg(m_HeaderSize);
 }
 
-DbfFile::~DbfFile()
-{
-  delete[] m_Record;
-}
+DbfFile::~DbfFile() { delete[] m_Record; }
 
 bool
 DbfFile::ReadNextRecord()

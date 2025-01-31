@@ -73,7 +73,8 @@ public:
   {
     itkDebugMacro("setting PixelShift to " << _arg);
     CLANG_PRAGMA_PUSH
-    CLANG_SUPPRESS_Wfloat_equal if (this->m_PixelShift != _arg)
+    CLANG_SUPPRESS_Wfloat_equal
+    if (this->m_PixelShift != _arg)
     {
       this->m_PixelShift = _arg;
       this->Modified();

@@ -76,7 +76,7 @@ public:
 
 protected:
   CudaForwardProjectionImageFilter();
-  ~CudaForwardProjectionImageFilter(){};
+  ~CudaForwardProjectionImageFilter() {};
 
   virtual void
   GPUGenerateData();

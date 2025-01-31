@@ -38,8 +38,7 @@ DePierroRegularizationImageFilter<TInputImage, TOutputImage>::DePierroRegulariza
 
   // Set Lambda function
   auto customLambda = [](const typename InputImageType::PixelType & input1,
-                         const typename InputImageType::PixelType & input2) -> typename OutputImageType::PixelType
-  {
+                         const typename InputImageType::PixelType & input2) -> typename OutputImageType::PixelType {
     return static_cast<typename OutputImageType::PixelType>((input1 + std::sqrt(input1 * input1 + input2)) / 2);
   };
   m_CustomBinaryFilter->SetFunctor(customLambda);

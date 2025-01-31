@@ -24,10 +24,7 @@
 namespace rtk
 {
 
-SignalToInterpolationWeights::SignalToInterpolationWeights()
-{
-  this->m_NumberOfReconstructedFrames = 0;
-}
+SignalToInterpolationWeights::SignalToInterpolationWeights() { this->m_NumberOfReconstructedFrames = 0; }
 
 void
 SignalToInterpolationWeights::PrintSelf(std::ostream & os, itk::Indent indent) const
