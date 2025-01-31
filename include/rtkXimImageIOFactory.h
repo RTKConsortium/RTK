@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-//#ifndef ITKHNDIMAGEIOFACTORY_H
-//#define ITKHNDIMAGEIOFACTORY_H
+// #ifndef ITKHNDIMAGEIOFACTORY_H
+// #define ITKHNDIMAGEIOFACTORY_H
 
 #ifndef rtkXimImageIOFactory_h
 #define rtkXimImageIOFactory_h

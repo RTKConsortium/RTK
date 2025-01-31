@@ -102,7 +102,7 @@ protected:
   InputImagePointer  m_DarkImage;           // Dark image
   OutputImagePointer m_GainImage;           // Gain coefficients (A matrix)
   OutputSizeType     m_GainSize;            // Gain map size
-};                                          // end of class
+}; // end of class
 
 } // namespace rtk
 

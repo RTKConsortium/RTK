@@ -17,8 +17,8 @@
 
 //
 bool Verbose = false; // spam the console
-#define VERBOSE(x)                                                                                                     \
-  if (Verbose)                                                                                                         \
+#define VERBOSE(x) \
+  if (Verbose)     \
     std::cout x;
 
 

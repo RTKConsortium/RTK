@@ -37,17 +37,17 @@ ImagXXMLFileReader::CanReadFile(const char * name)
 void
 ImagXXMLFileReader::StartElement(const char * name, const char ** atts)
 {
-#define ENCAPLULATE_META_DATA_INT(metaName)                                                                            \
-  if (itksys::SystemTools::Strucmp(atts[i], metaName) == 0)                                                            \
-  {                                                                                                                    \
-    double d = std::stod(atts[i + 1]);                                                                                 \
-    itk::EncapsulateMetaData<int>(m_Dictionary, metaName, d);                                                          \
+#define ENCAPLULATE_META_DATA_INT(metaName)                   \
+  if (itksys::SystemTools::Strucmp(atts[i], metaName) == 0)   \
+  {                                                           \
+    double d = std::stod(atts[i + 1]);                        \
+    itk::EncapsulateMetaData<int>(m_Dictionary, metaName, d); \
   }
 
-#define ENCAPLULATE_META_DATA_STRING(metaName)                                                                         \
-  if (itksys::SystemTools::Strucmp(atts[i], metaName) == 0)                                                            \
-  {                                                                                                                    \
-    itk::EncapsulateMetaData<std::string>(m_Dictionary, metaName, atts[i + 1]);                                        \
+#define ENCAPLULATE_META_DATA_STRING(metaName)                                  \
+  if (itksys::SystemTools::Strucmp(atts[i], metaName) == 0)                     \
+  {                                                                             \
+    itk::EncapsulateMetaData<std::string>(m_Dictionary, metaName, atts[i + 1]); \
   }
 
   if (std::string(name) == std::string("image"))
@@ -76,11 +76,11 @@ ImagXXMLFileReader::StartElement(const char * name, const char ** atts)
   }
   if (std::string(name) == std::string("spacing"))
   {
-#define ENCAPLULATE_META_DATA_DOUBLE(metaName)                                                                         \
-  if (itksys::SystemTools::Strucmp(atts[i], metaName) == 0)                                                            \
-  {                                                                                                                    \
-    double d = std::stod(atts[i + 1]);                                                                                 \
-    itk::EncapsulateMetaData<double>(m_Dictionary, std::string("spacing_") + std::string(metaName), d);                \
+#define ENCAPLULATE_META_DATA_DOUBLE(metaName)                                                          \
+  if (itksys::SystemTools::Strucmp(atts[i], metaName) == 0)                                             \
+  {                                                                                                     \
+    double d = std::stod(atts[i + 1]);                                                                  \
+    itk::EncapsulateMetaData<double>(m_Dictionary, std::string("spacing_") + std::string(metaName), d); \
   }
     for (int i = 0; atts[i] != nullptr; i += 2)
     {

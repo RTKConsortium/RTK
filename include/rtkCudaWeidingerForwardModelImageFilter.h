@@ -67,7 +67,7 @@ public:
 
 protected:
   CudaWeidingerForwardModelImageFilter();
-  ~CudaWeidingerForwardModelImageFilter(){};
+  ~CudaWeidingerForwardModelImageFilter() {};
 
   virtual void
   GPUGenerateData();

@@ -27,10 +27,7 @@
 namespace rtk
 {
 
-ElektaXVI5GeometryXMLFileReader::ElektaXVI5GeometryXMLFileReader()
-{
-  this->m_OutputObject = &(*m_Geometry);
-}
+ElektaXVI5GeometryXMLFileReader::ElektaXVI5GeometryXMLFileReader() { this->m_OutputObject = &(*m_Geometry); }
 
 int
 ElektaXVI5GeometryXMLFileReader::CanReadFile(const char * name)

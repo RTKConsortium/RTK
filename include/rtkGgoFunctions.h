@@ -16,8 +16,8 @@
  *
  *=========================================================================*/
 
-//#ifndef RTKGGOFUNCTIONS_H
-//#define RTKGGOFUNCTIONS_H
+// #ifndef RTKGGOFUNCTIONS_H
+// #define RTKGGOFUNCTIONS_H
 
 #ifndef rtkGgoFunctions_h
 #define rtkGgoFunctions_h

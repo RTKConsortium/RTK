@@ -34,7 +34,7 @@ struct Ray
 // will pop during linking. See https://choorucode.com/2011/03/15/cuda-device-function-in-header-file/
 // for more information
 __forceinline__ __device__ int
-                intersectBox(Ray r, float * tnear, float * tfar, float3 boxMin, float3 boxMax)
+intersectBox(Ray r, float * tnear, float * tfar, float3 boxMin, float3 boxMax)
 {
   // Compute intersection of ray with all six bbox planes
   float3 invR = make_float3(1.f / r.d.x, 1.f / r.d.y, 1.f / r.d.z);

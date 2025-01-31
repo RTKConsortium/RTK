@@ -410,7 +410,7 @@ BackProjectionImageFilter<TInputImage, TOutputImage>::OptimizedBackprojectionX(c
         } // i
       }
     } // j
-  }   // k
+  } // k
 }
 
 template <class TInputImage, class TOutputImage>
@@ -472,7 +472,7 @@ BackProjectionImageFilter<TInputImage, TOutputImage>::OptimizedBackprojectionY(c
         } // j
       }
     } // i
-  }   // k
+  } // k
 }
 
 template <class TInputImage, class TOutputImage>
