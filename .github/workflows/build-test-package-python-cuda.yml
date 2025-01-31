@@ -97,7 +97,7 @@ jobs:
         /home/srit/miniconda3/envs/py310/bin/python -m twine check ${WHEEL_PATTERN}
 
     - name: Publish Python package as GitHub Artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: LinuxWheel3${{ matrix.python3-minor-version }}${{ matrix.manylinux-platform }}-cuda${{ matrix.cuda-version }}
         path: dist/*.whl
