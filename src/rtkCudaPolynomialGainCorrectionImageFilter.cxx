@@ -44,7 +44,7 @@ CudaPolynomialGainCorrectionImageFilter ::GPUGenerateData()
 #ifdef CUDACOMMON_VERSION_MAJOR
   float * outBuffer = static_cast<float *>(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
 #else
-  float *          outBuffer = *static_cast<float **>(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
+  float * outBuffer = *static_cast<float **>(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
 #endif
   outBuffer += this->GetOutput()->ComputeOffset(this->GetOutput()->GetRequestedRegion().GetIndex());
 

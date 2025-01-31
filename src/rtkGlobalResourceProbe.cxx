@@ -25,10 +25,7 @@ GlobalResourceProbe::Pointer GlobalResourceProbe::m_Instance = nullptr;
 /**
  * Prompting off by default
  */
-GlobalResourceProbe ::GlobalResourceProbe()
-{
-  m_Verbose = false;
-}
+GlobalResourceProbe ::GlobalResourceProbe() { m_Verbose = false; }
 
 GlobalResourceProbe ::~GlobalResourceProbe()
 {

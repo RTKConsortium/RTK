@@ -245,8 +245,7 @@ main(int, char **)
   typename CustomBinaryFilterType::Pointer customBinaryFilter = CustomBinaryFilterType::New();
   // Set Lambda function
   auto customLambda = [&](const typename OutputImageType::PixelType & input1,
-                          const typename OutputImageType::PixelType & input2) -> typename OutputImageType::PixelType
-  {
+                          const typename OutputImageType::PixelType & input2) -> typename OutputImageType::PixelType {
     return static_cast<typename OutputImageType::PixelType>((1 - std::exp(-input1 * att)) / att *
                                                             std::exp(-input2 * att));
   };

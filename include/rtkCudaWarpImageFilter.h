@@ -73,7 +73,7 @@ public:
 
 protected:
   CudaWarpImageFilter();
-  virtual ~CudaWarpImageFilter(){};
+  virtual ~CudaWarpImageFilter() {};
 
   virtual void
   GPUGenerateData();

@@ -38,7 +38,7 @@ namespace rtk
  * \ingroup RTK
  */
 
-inline static std::vector<double>
+static inline std::vector<double>
 ReadSignalFile(std::string filename)
 {
   std::vector<double> signalVector;

@@ -117,13 +117,13 @@ main(int argc, char * argv[])
 
   // This macro sets options for fdk filter which I can not see how to do better
   // because TFFTPrecision is not the same, e.g. for CPU and CUDA (SR)
-#define SET_FELDKAMP_OPTIONS(f)                                                                                        \
-  f->SetInput(0, constantImageSource->GetOutput());                                                                    \
-  f->SetInput(1, pssf->GetOutput());                                                                                   \
-  f->SetGeometry(selector->GetOutputGeometry());                                                                       \
-  f->GetRampFilter()->SetTruncationCorrection(args_info.pad_arg);                                                      \
-  f->GetRampFilter()->SetHannCutFrequency(args_info.hann_arg);                                                         \
-  f->GetRampFilter()->SetHannCutFrequencyY(args_info.hannY_arg);                                                       \
+#define SET_FELDKAMP_OPTIONS(f)                                   \
+  f->SetInput(0, constantImageSource->GetOutput());               \
+  f->SetInput(1, pssf->GetOutput());                              \
+  f->SetGeometry(selector->GetOutputGeometry());                  \
+  f->GetRampFilter()->SetTruncationCorrection(args_info.pad_arg); \
+  f->GetRampFilter()->SetHannCutFrequency(args_info.hann_arg);    \
+  f->GetRampFilter()->SetHannCutFrequencyY(args_info.hannY_arg);  \
   f->SetProjectionSubsetSize(args_info.subsetsize_arg)
 
   // FDK reconstruction filtering

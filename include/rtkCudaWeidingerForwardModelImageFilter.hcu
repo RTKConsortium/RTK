@@ -22,19 +22,19 @@
 #include "RTKExport.h"
 
 void RTK_EXPORT
-     CUDA_WeidingerForwardModel(int          projectionSize[3],
-                                float *      materialAttenuations,
-                                float *      binnedDetectorResponse,
-                                float *      pMatProj,
-                                float *      pPhoCount,
-                                float *      pSpectrum,
-                                float *      pProjOnes,
-                                float *      pOut1,
-                                float *      pOut2,
-                                unsigned int nBins,
-                                unsigned int nEnergies,
-                                unsigned int nMaterials,
-                                unsigned int nProjSpectrum,
-                                int          nIdxProj);
+CUDA_WeidingerForwardModel(int          projectionSize[3],
+                           float *      materialAttenuations,
+                           float *      binnedDetectorResponse,
+                           float *      pMatProj,
+                           float *      pPhoCount,
+                           float *      pSpectrum,
+                           float *      pProjOnes,
+                           float *      pOut1,
+                           float *      pOut2,
+                           unsigned int nBins,
+                           unsigned int nEnergies,
+                           unsigned int nMaterials,
+                           unsigned int nProjSpectrum,
+                           int          nIdxProj);
 
 #endif

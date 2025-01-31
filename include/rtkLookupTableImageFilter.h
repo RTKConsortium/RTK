@@ -55,7 +55,7 @@ public:
 
   LUT()
     : m_LookupTableDataPointer(nullptr)
-    , m_Interpolator(InterpolatorType::New()){};
+    , m_Interpolator(InterpolatorType::New()) {};
   ~LUT() = default;
 
   /** Get/Set the lookup table. */
@@ -170,10 +170,9 @@ public:
   SetLookupTable(LookupTableType * _arg)
   {
     // Idem as itkSetObjectMacro + call to functor SetLookupTableDataPointer
-    itkDebugMacro("setting "
-                  << "LookupTable"
-                     " to "
-                  << _arg);
+    itkDebugMacro("setting " << "LookupTable"
+                                " to "
+                             << _arg);
     if (this->m_LookupTable != _arg || (_arg && _arg->GetTimeStamp() > this->GetTimeStamp()))
     {
       this->m_LookupTable = _arg;

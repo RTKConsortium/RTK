@@ -28,10 +28,7 @@
 namespace rtk
 {
 
-CudaWarpBackProjectionImageFilter ::CudaWarpBackProjectionImageFilter()
-{
-  this->SetNumberOfRequiredInputs(1);
-}
+CudaWarpBackProjectionImageFilter ::CudaWarpBackProjectionImageFilter() { this->SetNumberOfRequiredInputs(1); }
 
 void
 CudaWarpBackProjectionImageFilter ::SetInputVolume(const ImageType * Volume)

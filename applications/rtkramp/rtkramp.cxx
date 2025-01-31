@@ -56,7 +56,7 @@ main(int argc, char * argv[])
   else
     TRY_AND_EXIT_ON_ITK_EXCEPTION(reader->UpdateOutputInformation())
 
-    // Ramp filter
+  // Ramp filter
 #ifdef RTK_USE_CUDA
   using CudaRampFilterType = rtk::CudaFFTRampImageFilter;
   CudaRampFilterType::Pointer cudaRampFilter;

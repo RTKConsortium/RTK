@@ -92,7 +92,7 @@ public:
 
 protected:
   CudaWarpForwardProjectionImageFilter();
-  ~CudaWarpForwardProjectionImageFilter(){};
+  ~CudaWarpForwardProjectionImageFilter() {};
 
   virtual void
   GenerateInputRequestedRegion();

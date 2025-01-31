@@ -37,7 +37,7 @@ namespace itk
 static bool DCMImagXImageIOFactoryHasBeenRegistered;
 
 void RTK_EXPORT
-     DCMImagXImageIOFactoryRegister__Private()
+DCMImagXImageIOFactoryRegister__Private()
 {
   if (!DCMImagXImageIOFactoryHasBeenRegistered)
   {

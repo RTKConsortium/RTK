@@ -72,7 +72,7 @@ public:
 
 protected:
   CudaBackProjectionImageFilter();
-  virtual ~CudaBackProjectionImageFilter(){};
+  virtual ~CudaBackProjectionImageFilter() {};
 
   virtual void
   GPUGenerateData();

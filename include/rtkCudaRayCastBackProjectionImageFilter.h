@@ -84,7 +84,7 @@ public:
 
 protected:
   CudaRayCastBackProjectionImageFilter();
-  virtual ~CudaRayCastBackProjectionImageFilter(){};
+  virtual ~CudaRayCastBackProjectionImageFilter() {};
 
   virtual void
   GPUGenerateData();

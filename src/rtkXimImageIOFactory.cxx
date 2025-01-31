@@ -36,7 +36,7 @@ namespace itk
 static bool XimImageIOFactoryHasBeenRegistered;
 
 void RTK_EXPORT
-     XimImageIOFactoryRegister__Private()
+XimImageIOFactoryRegister__Private()
 {
   if (!XimImageIOFactoryHasBeenRegistered)
   {

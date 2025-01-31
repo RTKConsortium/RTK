@@ -30,14 +30,14 @@ ReconstructionConjugateGradientOperator<TOutputImage, TSingleComponentImage, TWe
   this->SetNumberOfRequiredInputs(3);
 
   // Create filters
-  //#ifdef RTK_USE_CUDA
+  // #ifdef RTK_USE_CUDA
   //  m_ConstantProjectionsSource = rtk::CudaConstantVolumeSource::New();
   //  m_ConstantVolumeSource = rtk::CudaConstantVolumeSource::New();
   //  m_LaplacianFilter = rtk::CudaLaplacianImageFilter::New();
-  //#else
+  // #else
   m_ConstantProjectionsSource = ConstantSourceType::New();
   m_ConstantVolumeSource = ConstantSourceType::New();
-  //#endif
+  // #endif
   m_MultiplyWithWeightsFilter = MultiplyWithWeightsFilterType::New();
   m_MultiplyOutputVolumeFilter = MultiplyFilterType::New();
   m_MultiplyInputVolumeFilter = MultiplyFilterType::New();

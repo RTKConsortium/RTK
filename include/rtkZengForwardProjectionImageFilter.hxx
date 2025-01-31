@@ -255,10 +255,9 @@ ZengForwardProjectionImageFilter<TInputImage, TOutputImage>::GenerateOutputInfor
 
     // Set Lambda function
     auto customLambda = [spacingVolume](const typename OuputCPUImageType::PixelType & input1) ->
-      typename OuputCPUImageType::PixelType
-    {
-      return static_cast<typename OuputCPUImageType::PixelType>(std::exp(-spacingVolume[2] * input1));
-    };
+      typename OuputCPUImageType::PixelType {
+        return static_cast<typename OuputCPUImageType::PixelType>(std::exp(-spacingVolume[2] * input1));
+      };
     m_CustomUnaryFilter->SetFunctor(customLambda);
     m_CustomUnaryFilter->SetInput(this->GetInput(2));
 

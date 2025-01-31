@@ -53,7 +53,7 @@ CudaWeidingerForwardModelImageFilter<TMaterialProjections, TPhotonCounts, TSpect
   for (unsigned int d = 0; d < Dimension; d++)
     projectionSize[d] = this->GetInputMaterialProjections()->GetBufferedRegion().GetSize()[d];
 
-    // Pointers to inputs and outputs
+  // Pointers to inputs and outputs
 #  ifdef CUDACOMMON_VERSION_MAJOR
   float * pMatProj = (float *)(this->GetInputMaterialProjections()->GetCudaDataManager()->GetGPUBufferPointer());
   float * pPhoCount = (float *)(this->GetInputPhotonCounts()->GetCudaDataManager()->GetGPUBufferPointer());

@@ -21,10 +21,7 @@
 
 #include <itkMacro.h>
 
-rtk::CudaLastDimensionTVDenoisingImageFilter ::CudaLastDimensionTVDenoisingImageFilter()
-{
-  this->SetInPlace(true);
-}
+rtk::CudaLastDimensionTVDenoisingImageFilter ::CudaLastDimensionTVDenoisingImageFilter() { this->SetInPlace(true); }
 
 void
 rtk::CudaLastDimensionTVDenoisingImageFilter ::GPUGenerateData()

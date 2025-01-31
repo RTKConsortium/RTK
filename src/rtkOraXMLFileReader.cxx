@@ -23,10 +23,7 @@
 
 namespace rtk
 {
-OraXMLFileReader::OraXMLFileReader()
-{
-  m_OutputObject = &m_Dictionary;
-}
+OraXMLFileReader::OraXMLFileReader() { m_OutputObject = &m_Dictionary; }
 
 int
 OraXMLFileReader::CanReadFile(const char * name)

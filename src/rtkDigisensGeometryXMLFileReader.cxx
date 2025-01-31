@@ -74,36 +74,36 @@ DigisensGeometryXMLFileReader::EndElement(const char * name)
   using VectorThreeDType = itk::Vector<double, 3>;
   using Vector4DType = itk::Vector<double, 4>;
 
-#define ENCAPLULATE_META_DATA_3D(section, metaName)                                                                    \
-  if (m_CurrentSection == section && itksys::SystemTools::Strucmp(name, metaName) == 0)                                \
-  {                                                                                                                    \
-    VectorThreeDType   vec;                                                                                            \
-    std::istringstream iss(m_CurCharacterData);                                                                        \
-    iss >> vec;                                                                                                        \
-    itk::EncapsulateMetaData<VectorThreeDType>(m_Dictionary, #section metaName, vec);                                  \
+#define ENCAPLULATE_META_DATA_3D(section, metaName)                                     \
+  if (m_CurrentSection == section && itksys::SystemTools::Strucmp(name, metaName) == 0) \
+  {                                                                                     \
+    VectorThreeDType   vec;                                                             \
+    std::istringstream iss(m_CurCharacterData);                                         \
+    iss >> vec;                                                                         \
+    itk::EncapsulateMetaData<VectorThreeDType>(m_Dictionary, #section metaName, vec);   \
   }
 
-#define ENCAPLULATE_META_DATA_4D(section, metaName)                                                                    \
-  if (m_CurrentSection == section && itksys::SystemTools::Strucmp(name, metaName) == 0)                                \
-  {                                                                                                                    \
-    Vector4DType       vec;                                                                                            \
-    std::istringstream iss(m_CurCharacterData);                                                                        \
-    iss >> vec;                                                                                                        \
-    itk::EncapsulateMetaData<Vector4DType>(m_Dictionary, #section metaName, vec);                                      \
+#define ENCAPLULATE_META_DATA_4D(section, metaName)                                     \
+  if (m_CurrentSection == section && itksys::SystemTools::Strucmp(name, metaName) == 0) \
+  {                                                                                     \
+    Vector4DType       vec;                                                             \
+    std::istringstream iss(m_CurCharacterData);                                         \
+    iss >> vec;                                                                         \
+    itk::EncapsulateMetaData<Vector4DType>(m_Dictionary, #section metaName, vec);       \
   }
 
-#define ENCAPLULATE_META_DATA_INTEGER(section, metaName)                                                               \
-  if (m_CurrentSection == section && itksys::SystemTools::Strucmp(name, metaName) == 0)                                \
-  {                                                                                                                    \
-    int i = std::stoi(m_CurCharacterData.c_str());                                                                     \
-    itk::EncapsulateMetaData<int>(m_Dictionary, #section metaName, i);                                                 \
+#define ENCAPLULATE_META_DATA_INTEGER(section, metaName)                                \
+  if (m_CurrentSection == section && itksys::SystemTools::Strucmp(name, metaName) == 0) \
+  {                                                                                     \
+    int i = std::stoi(m_CurCharacterData.c_str());                                      \
+    itk::EncapsulateMetaData<int>(m_Dictionary, #section metaName, i);                  \
   }
 
-#define ENCAPLULATE_META_DATA_DOUBLE(section, metaName)                                                                \
-  if (m_CurrentSection == section && itksys::SystemTools::Strucmp(name, metaName) == 0)                                \
-  {                                                                                                                    \
-    double d = std::stod(m_CurCharacterData.c_str());                                                                  \
-    itk::EncapsulateMetaData<double>(m_Dictionary, #section metaName, d);                                              \
+#define ENCAPLULATE_META_DATA_DOUBLE(section, metaName)                                 \
+  if (m_CurrentSection == section && itksys::SystemTools::Strucmp(name, metaName) == 0) \
+  {                                                                                     \
+    double d = std::stod(m_CurCharacterData.c_str());                                   \
+    itk::EncapsulateMetaData<double>(m_Dictionary, #section metaName, d);               \
   }
 
   ENCAPLULATE_META_DATA_4D(GRID, "rotation");

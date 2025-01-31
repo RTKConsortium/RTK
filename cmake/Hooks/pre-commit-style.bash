@@ -149,7 +149,7 @@ run_KWStyle() {
 #-----------------------------------------------------------------------------
 # clangformat.
 check_for_clangformat() {
-  clangformat_required_version=8.0
+  clangformat_required_version=19.1
   system_tools="
     clang-format-$clangformat_required_version
     clang-format
@@ -314,4 +314,4 @@ elif $do_KWStyle; then
   fi
 fi
 
-# vim: set filetype=sh tabstop=8 softtabstop=8 shiftwidth=8 noexpandtab :
+# vim: set fenc=utf-8 ff=unix sw=8 tw=0 :

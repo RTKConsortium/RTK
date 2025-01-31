@@ -22,15 +22,15 @@
 #include "RTKExport.h"
 
 void RTK_EXPORT
-     CUDA_back_project(int          projSize[3],
-                       int          volSize[3],
-                       float *      matrices,
-                       float *      volIndexToProjPPs,
-                       float *      projPPToProjIndex,
-                       float *      dev_vol_in,
-                       float *      dev_vol_out,
-                       float *      dev_img,
-                       double       radiusCylindricalDetector,
-                       unsigned int vectorLength);
+CUDA_back_project(int          projSize[3],
+                  int          volSize[3],
+                  float *      matrices,
+                  float *      volIndexToProjPPs,
+                  float *      projPPToProjIndex,
+                  float *      dev_vol_in,
+                  float *      dev_vol_out,
+                  float *      dev_img,
+                  double       radiusCylindricalDetector,
+                  unsigned int vectorLength);
 
 #endif

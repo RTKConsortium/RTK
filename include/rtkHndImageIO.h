@@ -24,7 +24,7 @@
 
 #if defined(_MSC_VER) && (_MSC_VER < 1600)
 // SR: taken from
-//#include "msinttypes/stdint.h"
+// #include "msinttypes/stdint.h"
 #else
 #  include <cstdint>
 #endif

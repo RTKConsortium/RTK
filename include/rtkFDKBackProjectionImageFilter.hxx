@@ -226,7 +226,7 @@ FDKBackProjectionImageFilter<TInputImage, TOutputImage>::OptimizedBackprojection
         } // i
       }
     } // j
-  }   // k
+  } // k
 }
 
 template <class TInputImage, class TOutputImage>
@@ -304,7 +304,7 @@ FDKBackProjectionImageFilter<TInputImage, TOutputImage>::OptimizedBackprojection
         } // j
       }
     } // i
-  }   // k
+  } // k
 }
 
 } // end namespace rtk

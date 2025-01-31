@@ -27,16 +27,16 @@ WriteReadAndCheck(GeometryType * geometry)
   GeometryType * geoRead = xmlReader->GetOutputObject();
   for (unsigned int i = 0; i < geometry->GetGantryAngles().size(); i++)
   {
-#define CHECK_GEOMETRY_PARAMETER(paramName)                                                                            \
-  {                                                                                                                    \
-    double val1 = geoRead->Get##paramName()[i];                                                                        \
-    double val2 = geometry->Get##paramName()[i];                                                                       \
-    if (itk::Math::abs(val1 - val2) > epsilon)                                                                         \
-    {                                                                                                                  \
-      std::cerr << #paramName " differ [" << val1 << "] read from written file vs. [" << val2                          \
-                << "] for the reference, difference=[" << val1 - val2 << "]." << std::endl;                            \
-      exit(1);                                                                                                         \
-    }                                                                                                                  \
+#define CHECK_GEOMETRY_PARAMETER(paramName)                                                   \
+  {                                                                                           \
+    double val1 = geoRead->Get##paramName()[i];                                               \
+    double val2 = geometry->Get##paramName()[i];                                              \
+    if (itk::Math::abs(val1 - val2) > epsilon)                                                \
+    {                                                                                         \
+      std::cerr << #paramName " differ [" << val1 << "] read from written file vs. [" << val2 \
+                << "] for the reference, difference=[" << val1 - val2 << "]." << std::endl;   \
+      exit(1);                                                                                \
+    }                                                                                         \
   }
 
     CHECK_GEOMETRY_PARAMETER(GantryAngles);
