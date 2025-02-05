@@ -1,5 +1,5 @@
 configure_file (${CMAKE_CURRENT_SOURCE_DIR}/rtkTestConfiguration.h.in
-  ${RTK_BINARY_DIR}/rtkTestConfiguration.h)
+  ${RTK_BINARY_DIR}/include/rtkTestConfiguration.h)
 
 #-----------------------------------------------------------------------------
 # Find ITK.
