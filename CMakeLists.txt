@@ -173,6 +173,9 @@ list(APPEND RTK_INCLUDE_DIRS
 # Generate RTKConfig.cmake for the build tree.
 set(RTK_MODULE_PATH_CONFIG ${CMAKE_MODULE_PATH})
 
+# Add option to control the generation of RTK applications
+option(RTK_BUILD_APPLICATIONS "Build RTK applications" ON)
+
 set(RTK_EXPORT_CODE_BUILD "
 # The RTK version number
 set(RTK_VERSION_MAJOR ${RTK_VERSION_MAJOR})
@@ -181,6 +184,9 @@ set(RTK_VERSION_PATCH ${RTK_VERSION_PATCH})
 
 # Whether the compiled version of RTK uses CUDA
 set(RTK_USE_CUDA ${RTK_USE_CUDA})
+
+# Whether RTK applications were built
+set(RTK_BUILD_APPLICATIONS ${RTK_BUILD_APPLICATIONS})
 
 if(RTK_USE_CUDA)
   find_package(CUDAToolkit)
@@ -196,6 +202,9 @@ set(RTK_VERSION_PATCH ${RTK_VERSION_PATCH})
 
 # Whether the compiled version of RTK uses CUDA
 set(RTK_USE_CUDA ${RTK_USE_CUDA})
+
+# Whether RTK applications were built
+set(RTK_BUILD_APPLICATIONS ${RTK_BUILD_APPLICATIONS})
 
 if(RTK_USE_CUDA)
   find_package(CUDAToolkit)
@@ -286,7 +295,7 @@ endif()
 # Build applications
 #=========================================================
 option(RTK_PROBE_EACH_FILTER "Probe each RTK filter in a global object and report times and memory used in RTK applications" OFF)
-option(RTK_BUILD_APPLICATIONS "Build RTK applications" ON)
+
 if(RTK_BUILD_APPLICATIONS)
   add_subdirectory(applications)
 endif()
