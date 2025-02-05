@@ -136,7 +136,14 @@ if(NOT CMAKE_LIBRARY_OUTPUT_DIRECTORY)
   set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${RTK_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
 endif()
 if(NOT CMAKE_ARCHIVE_OUTPUT_DIRECTORY)
-  set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${RTK_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
+  # Python builds CI workflows expects archives to be placed in the ITK lib
+  # directory. This makes sure that other remote modules that depends on RTK
+  # can link against the RTK libraries.
+  if (WRAP_ITK_INSTALL_COMPONENT_IDENTIFIER STREQUAL "PythonWheel")
+    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${ITK_DIR}/${CMAKE_INSTALL_LIBDIR})
+  else()
+    set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${RTK_BINARY_DIR}/${CMAKE_INSTALL_LIBDIR})
+  endif()
 endif()
 
 #=========================================================
