@@ -38,20 +38,20 @@ namespace rtk
  * \ingroup RTK
  *
  */
-template <class TMaterialProjections,
-          class TPhotonCounts,
-          class TSpectrum,
+template <class TDecomposedProjections,
+          class TMeasuredProjections,
+          class TIncidentSpectrum,
           class TProjections =
-            itk::Image<typename TMaterialProjections::PixelType::ValueType, TMaterialProjections::ImageDimension>>
+            itk::Image<typename TDecomposedProjections::PixelType::ValueType, TDecomposedProjections::ImageDimension>>
 class ITK_TEMPLATE_EXPORT WeidingerForwardModelImageFilter
-  : public itk::ImageToImageFilter<TMaterialProjections, TMaterialProjections>
+  : public itk::ImageToImageFilter<TDecomposedProjections, TDecomposedProjections>
 {
 public:
   ITK_DISALLOW_COPY_AND_MOVE(WeidingerForwardModelImageFilter);
 
   /** Standard class type alias. */
   using Self = WeidingerForwardModelImageFilter;
-  using Superclass = itk::ImageToImageFilter<TMaterialProjections, TMaterialProjections>;
+  using Superclass = itk::ImageToImageFilter<TDecomposedProjections, TDecomposedProjections>;
   using Pointer = itk::SmartPointer<Self>;
 
   /** Method for creation through the object factory. */
@@ -61,22 +61,22 @@ public:
   itkOverrideGetNameOfClassMacro(WeidingerForwardModelImageFilter);
 
   /** Convenient parameters extracted from template types */
-  static constexpr unsigned int nBins = TPhotonCounts::PixelType::Dimension;
-  static constexpr unsigned int nMaterials = TMaterialProjections::PixelType::Dimension;
+  static constexpr unsigned int nBins = TMeasuredProjections::PixelType::Dimension;
+  static constexpr unsigned int nMaterials = TDecomposedProjections::PixelType::Dimension;
 
   /** Convenient type alias */
-  using dataType = typename TMaterialProjections::PixelType::ValueType;
+  using dataType = typename TDecomposedProjections::PixelType::ValueType;
 
   /** Define types for output images:
    * - one n-vector per pixel
    * - one nxn-matrix per pixel, but stored as one nxn-vector
   to allow vector back projection */
-  using TOutputImage1 = TMaterialProjections;
+  using TOutputImage1 = TDecomposedProjections;
   using TPixelOutput2 = itk::Vector<dataType, nMaterials * nMaterials>;
 #ifdef RTK_USE_CUDA
-  using TOutputImage2 = itk::CudaImage<TPixelOutput2, TMaterialProjections::ImageDimension>;
+  using TOutputImage2 = itk::CudaImage<TPixelOutput2, TDecomposedProjections::ImageDimension>;
 #else
-  using TOutputImage2 = itk::Image<TPixelOutput2, TMaterialProjections::ImageDimension>;
+  using TOutputImage2 = itk::Image<TPixelOutput2, TDecomposedProjections::ImageDimension>;
 #endif
 
   /** Define the getters for the outputs, with correct types */
@@ -87,11 +87,19 @@ public:
 
   /** Set methods for all inputs, since they have different types */
   void
-  SetInputMaterialProjections(const TMaterialProjections * materialProjections);
+  SetInputDecomposedProjections(const TDecomposedProjections * decomposedProjections);
   void
-  SetInputPhotonCounts(const TPhotonCounts * photonCounts);
+  SetInputMeasuredProjections(const TMeasuredProjections * measuredProjections);
   void
-  SetInputSpectrum(const TSpectrum * spectrum);
+  SetInputIncidentSpectrum(const TIncidentSpectrum * incidentSpectrum);
+#ifdef ITK_FUTURE_LEGACY_REMOVE
+  void
+  SetInputMaterialProjections(const TDecomposedProjections * decomposedProjections);
+  void
+  SetInputPhotonCounts(const TMeasuredProjections * measuredProjections);
+  void
+  SetInputSpectrum(const TIncidentSpectrum * incidentSpectrum);
+#endif
   void
   SetInputProjectionsOfOnes(const TProjections * projectionsOfOnes);
 
@@ -128,19 +136,27 @@ protected:
   MakeOutput(const itk::ProcessObject::DataObjectIdentifierType &) override;
 
   /** Getters for the inputs */
-  typename TMaterialProjections::ConstPointer
+  typename TDecomposedProjections::ConstPointer
+  GetInputDecomposedProjections();
+  typename TMeasuredProjections::ConstPointer
+  GetInputMeasuredProjections();
+  typename TIncidentSpectrum::ConstPointer
+  GetInputIncidentSpectrum();
+#ifdef ITK_FUTURE_LEGACY_REMOVE
+  typename TDecomposedProjections::ConstPointer
   GetInputMaterialProjections();
-  typename TPhotonCounts::ConstPointer
+  typename TMeasuredProjections::ConstPointer
   GetInputPhotonCounts();
-  typename TSpectrum::ConstPointer
+  typename TIncidentSpectrum::ConstPointer
   GetInputSpectrum();
+#endif
   typename TProjections::ConstPointer
   GetInputProjectionsOfOnes();
 
   /** Additional input parameters */
   BinnedDetectorResponseType m_BinnedDetectorResponse;
   MaterialAttenuationsType   m_MaterialAttenuations;
-  itk::SizeValueType         m_NumberOfProjectionsInSpectrum;
+  itk::SizeValueType         m_NumberOfProjectionsInIncidentSpectrum;
 };
 } // namespace rtk
 
