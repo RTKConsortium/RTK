@@ -25,8 +25,8 @@
 namespace rtk
 {
 
-template <class TOutputImage, class TPhotonCounts, class TSpectrum>
-MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectrum>::
+template <class TOutputImage, class TMeasuredProjections, class TIncidentSpectrum>
+MechlemOneStepSpectralReconstructionFilter<TOutputImage, TMeasuredProjections, TIncidentSpectrum>::
   MechlemOneStepSpectralReconstructionFilter()
 {
   this->SetNumberOfRequiredInputs(3);
@@ -41,7 +41,7 @@ MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectru
   m_RegularizationRadius.Fill(0);
 
   // Create the filters
-  m_ExtractPhotonCountsFilter = ExtractPhotonCountsFilterType::New();
+  m_ExtractMeasuredProjectionsFilter = ExtractMeasuredProjectionsFilterType::New();
   m_AddGradients = AddFilterType::New();
   m_AddHessians = AddMatrixAndDiagonalFilterType::New();
   m_ProjectionsSource = MaterialProjectionsSourceType::New();
@@ -57,8 +57,8 @@ MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectru
   m_NewtonFilter = NewtonFilterType::New();
   m_NesterovFilter = NesterovFilterType::New();
   m_MultiplySupportFilter = MultiplyFilterType::New();
-  m_ReorderPhotonCountsFilter = ReorderProjectionsFilterPhotonCountsType::New();
-  m_ReorderProjectionsWeightsFilter = ReorderProjectionsFilterProjectionsWeightsType::New();
+  m_ReorderMeasuredProjectionsFilter = ReorderMeasuredProjectionsFilterType::New();
+  m_ReorderProjectionsWeightsFilter = ReorderProjectionsWeightsFilterType::New();
 
   // Set permanent parameters
   m_ProjectionsSource->SetConstant(itk::NumericTraits<typename TOutputImage::PixelType>::ZeroValue());
@@ -66,118 +66,152 @@ MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectru
     itk::NumericTraits<typename TOutputImage::PixelType::ValueType>::ZeroValue());
   m_SingleComponentVolumeSource->SetConstant(itk::NumericTraits<typename TOutputImage::PixelType::ValueType>::One);
   m_GradientsSource->SetConstant(
-    itk::NumericTraits<typename MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectrum>::
+    itk::NumericTraits<typename MechlemOneStepSpectralReconstructionFilter<TOutputImage, TMeasuredProjections, TIncidentSpectrum>::
                          GradientsImageType::PixelType>::ZeroValue());
   m_HessiansSource->SetConstant(
-    itk::NumericTraits<typename MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectrum>::
+    itk::NumericTraits<typename MechlemOneStepSpectralReconstructionFilter<TOutputImage, TMeasuredProjections, TIncidentSpectrum>::
                          HessiansImageType::PixelType>::ZeroValue());
 }
 
-template <class TOutputImage, class TPhotonCounts, class TSpectrum>
+template <class TOutputImage, class TMeasuredProjections, class TIncidentSpectrum>
 void
-MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectrum>::SetInputMaterialVolumes(
+MechlemOneStepSpectralReconstructionFilter<TOutputImage, TMeasuredProjections, TIncidentSpectrum>::SetInputMaterialVolumes(
   const TOutputImage * materialVolumes)
 {
   this->SetNthInput(0, const_cast<TOutputImage *>(materialVolumes));
 }
 
-template <class TOutputImage, class TPhotonCounts, class TSpectrum>
+template <class TOutputImage, class TMeasuredProjections, class TIncidentSpectrum>
 void
-MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectrum>::SetInputPhotonCounts(
-  const TPhotonCounts * photonCounts)
+MechlemOneStepSpectralReconstructionFilter<TOutputImage, TMeasuredProjections, TIncidentSpectrum>::SetInputMeasuredProjections(
+  const TMeasuredProjections * measuredProjections)
 {
-  this->SetNthInput(1, const_cast<TPhotonCounts *>(photonCounts));
+  this->SetNthInput(1, const_cast<TMeasuredProjections *>(measuredProjections));
 }
 
-template <class TOutputImage, class TPhotonCounts, class TSpectrum>
+template <class TOutputImage, class TMeasuredProjections, class TIncidentSpectrum>
 void
-MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectrum>::SetInputSpectrum(
-  const TSpectrum * spectrum)
+MechlemOneStepSpectralReconstructionFilter<TOutputImage, TMeasuredProjections, TIncidentSpectrum>::SetInputIncidentSpectrum(
+  const TIncidentSpectrum * incidentSpectrum)
 {
-  this->SetNthInput(2, const_cast<TSpectrum *>(spectrum));
+  this->SetNthInput(2, const_cast<TIncidentSpectrum *>(incidentSpectrum));
 }
 
-template <class TOutputImage, class TPhotonCounts, class TSpectrum>
+#ifdef ITK_FUTURE_LEGACY_REMOVE
+template <class TOutputImage, class TMeasuredProjections, class TIncidentSpectrum>
 void
-MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectrum>::SetSupportMask(
+MechlemOneStepSpectralReconstructionFilter<TOutputImage, TMeasuredProjections, TIncidentSpectrum>::SetInputPhotonCounts(
+  const TMeasuredProjections * measuredProjections)
+{
+  this->SetInputMeasuredProjections(measuredProjections);
+}
+
+template <class TOutputImage, class TMeasuredProjections, class TIncidentSpectrum>
+void
+MechlemOneStepSpectralReconstructionFilter<TOutputImage, TMeasuredProjections, TIncidentSpectrum>::SetInputSpectrum(
+  const TIncidentSpectrum * incidentSpectrum)
+{
+  this->SetInputIncidentSpectrum(incidentSpectrum);
+}
+#endif
+
+template <class TOutputImage, class TMeasuredProjections, class TIncidentSpectrum>
+void
+MechlemOneStepSpectralReconstructionFilter<TOutputImage, TMeasuredProjections, TIncidentSpectrum>::SetSupportMask(
   const SingleComponentImageType * support)
 {
   this->SetNthInput(3, const_cast<SingleComponentImageType *>(support));
 }
 
-template <class TOutputImage, class TPhotonCounts, class TSpectrum>
+template <class TOutputImage, class TMeasuredProjections, class TIncidentSpectrum>
 void
-MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectrum>::SetSpatialRegularizationWeights(
+MechlemOneStepSpectralReconstructionFilter<TOutputImage, TMeasuredProjections, TIncidentSpectrum>::SetSpatialRegularizationWeights(
   const SingleComponentImageType * regweights)
 {
   this->SetNthInput(4, const_cast<SingleComponentImageType *>(regweights));
 }
 
-template <class TOutputImage, class TPhotonCounts, class TSpectrum>
+template <class TOutputImage, class TMeasuredProjections, class TIncidentSpectrum>
 void
-MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectrum>::SetProjectionWeights(
+MechlemOneStepSpectralReconstructionFilter<TOutputImage, TMeasuredProjections, TIncidentSpectrum>::SetProjectionWeights(
   const SingleComponentImageType * weiprojections)
 {
   this->SetNthInput(5, const_cast<SingleComponentImageType *>(weiprojections));
 }
 
-template <class TOutputImage, class TPhotonCounts, class TSpectrum>
+template <class TOutputImage, class TMeasuredProjections, class TIncidentSpectrum>
 typename TOutputImage::ConstPointer
-MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectrum>::GetInputMaterialVolumes()
+MechlemOneStepSpectralReconstructionFilter<TOutputImage, TMeasuredProjections, TIncidentSpectrum>::GetInputMaterialVolumes()
 {
   return static_cast<const TOutputImage *>(this->itk::ProcessObject::GetInput(0));
 }
 
-template <class TOutputImage, class TPhotonCounts, class TSpectrum>
-typename TPhotonCounts::ConstPointer
-MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectrum>::GetInputPhotonCounts()
+template <class TOutputImage, class TMeasuredProjections, class TIncidentSpectrum>
+typename TMeasuredProjections::ConstPointer
+MechlemOneStepSpectralReconstructionFilter<TOutputImage, TMeasuredProjections, TIncidentSpectrum>::GetInputMeasuredProjections()
 {
-  return static_cast<const TPhotonCounts *>(this->itk::ProcessObject::GetInput(1));
+  return static_cast<const TMeasuredProjections *>(this->itk::ProcessObject::GetInput(1));
 }
 
-template <class TOutputImage, class TPhotonCounts, class TSpectrum>
-typename TSpectrum::ConstPointer
-MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectrum>::GetInputSpectrum()
+template <class TOutputImage, class TMeasuredProjections, class TIncidentSpectrum>
+typename TIncidentSpectrum::ConstPointer
+MechlemOneStepSpectralReconstructionFilter<TOutputImage, TMeasuredProjections, TIncidentSpectrum>::GetInputIncidentSpectrum()
 {
-  return static_cast<const TSpectrum *>(this->itk::ProcessObject::GetInput(2));
+  return static_cast<const TIncidentSpectrum *>(this->itk::ProcessObject::GetInput(2));
 }
 
-template <class TOutputImage, class TPhotonCounts, class TSpectrum>
-typename MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectrum>::SingleComponentImageType::
+#ifdef ITK_FUTURE_LEGACY_REMOVE
+template <class TOutputImage, class TMeasuredProjections, class TIncidentSpectrum>
+typename TMeasuredProjections::ConstPointer
+MechlemOneStepSpectralReconstructionFilter<TOutputImage, TMeasuredProjections, TIncidentSpectrum>::GetInputPhotonCounts()
+{
+  return this->GetInputMeasuredProjections();
+}
+
+template <class TOutputImage, class TMeasuredProjections, class TIncidentSpectrum>
+typename TIncidentSpectrum::ConstPointer
+MechlemOneStepSpectralReconstructionFilter<TOutputImage, TMeasuredProjections, TIncidentSpectrum>::GetInputSpectrum()
+{
+  return this->GetInputIncidentSpectrum();
+}
+#endif
+
+template <class TOutputImage, class TMeasuredProjections, class TIncidentSpectrum>
+typename MechlemOneStepSpectralReconstructionFilter<TOutputImage, TMeasuredProjections, TIncidentSpectrum>::SingleComponentImageType::
   ConstPointer
-  MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectrum>::GetSupportMask()
+  MechlemOneStepSpectralReconstructionFilter<TOutputImage, TMeasuredProjections, TIncidentSpectrum>::GetSupportMask()
 {
   return static_cast<const SingleComponentImageType *>(this->itk::ProcessObject::GetInput(3));
 }
 
-template <class TOutputImage, class TPhotonCounts, class TSpectrum>
-typename MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectrum>::SingleComponentImageType::
+template <class TOutputImage, class TMeasuredProjections, class TIncidentSpectrum>
+typename MechlemOneStepSpectralReconstructionFilter<TOutputImage, TMeasuredProjections, TIncidentSpectrum>::SingleComponentImageType::
   ConstPointer
-  MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectrum>::GetSpatialRegularizationWeights()
+  MechlemOneStepSpectralReconstructionFilter<TOutputImage, TMeasuredProjections, TIncidentSpectrum>::GetSpatialRegularizationWeights()
 {
   return static_cast<const SingleComponentImageType *>(this->itk::ProcessObject::GetInput(4));
 }
 
-template <class TOutputImage, class TPhotonCounts, class TSpectrum>
-typename MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectrum>::SingleComponentImageType::
+template <class TOutputImage, class TMeasuredProjections, class TIncidentSpectrum>
+typename MechlemOneStepSpectralReconstructionFilter<TOutputImage, TMeasuredProjections, TIncidentSpectrum>::SingleComponentImageType::
   ConstPointer
-  MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectrum>::GetProjectionWeights()
+  MechlemOneStepSpectralReconstructionFilter<TOutputImage, TMeasuredProjections, TIncidentSpectrum>::GetProjectionWeights()
 {
   return static_cast<const SingleComponentImageType *>(this->itk::ProcessObject::GetInput(5));
 }
 
-template <class TOutputImage, class TPhotonCounts, class TSpectrum>
-typename MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectrum>::
+template <class TOutputImage, class TMeasuredProjections, class TIncidentSpectrum>
+typename MechlemOneStepSpectralReconstructionFilter<TOutputImage, TMeasuredProjections, TIncidentSpectrum>::
   SingleComponentForwardProjectionFilterType::Pointer
-  MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectrum>::
+  MechlemOneStepSpectralReconstructionFilter<TOutputImage, TMeasuredProjections, TIncidentSpectrum>::
     InstantiateSingleComponentForwardProjectionFilter(int fwtype)
 {
   // Define the type of image to be back projected
-  using TSingleComponent = typename MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectrum>::
+  using TSingleComponent = typename MechlemOneStepSpectralReconstructionFilter<TOutputImage, TMeasuredProjections, TIncidentSpectrum>::
     SingleComponentImageType;
 
   // Declare the pointer
-  typename MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectrum>::
+  typename MechlemOneStepSpectralReconstructionFilter<TOutputImage, TMeasuredProjections, TIncidentSpectrum>::
     SingleComponentForwardProjectionFilterType::Pointer fw;
 
   // Instantiate it
@@ -198,18 +232,18 @@ typename MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts,
   return fw;
 }
 
-template <class TOutputImage, class TPhotonCounts, class TSpectrum>
-typename MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectrum>::
+template <class TOutputImage, class TMeasuredProjections, class TIncidentSpectrum>
+typename MechlemOneStepSpectralReconstructionFilter<TOutputImage, TMeasuredProjections, TIncidentSpectrum>::
   HessiansBackProjectionFilterType::Pointer
-  MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectrum>::
+  MechlemOneStepSpectralReconstructionFilter<TOutputImage, TMeasuredProjections, TIncidentSpectrum>::
     InstantiateHessiansBackProjectionFilter(int bptype)
 {
   // Define the type of image to be back projected
   using THessians =
-    typename MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectrum>::HessiansImageType;
+    typename MechlemOneStepSpectralReconstructionFilter<TOutputImage, TMeasuredProjections, TIncidentSpectrum>::HessiansImageType;
 
   // Declare the pointer
-  typename MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectrum>::
+  typename MechlemOneStepSpectralReconstructionFilter<TOutputImage, TMeasuredProjections, TIncidentSpectrum>::
     HessiansBackProjectionFilterType::Pointer bp;
 
   // Instantiate it
@@ -235,25 +269,25 @@ typename MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts,
   return bp;
 }
 
-template <class TOutputImage, class TPhotonCounts, class TSpectrum>
+template <class TOutputImage, class TMeasuredProjections, class TIncidentSpectrum>
 void
-MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectrum>::SetMaterialAttenuations(
+MechlemOneStepSpectralReconstructionFilter<TOutputImage, TMeasuredProjections, TIncidentSpectrum>::SetMaterialAttenuations(
   const MaterialAttenuationsType & matAtt)
 {
   m_WeidingerForward->SetMaterialAttenuations(matAtt);
 }
 
-template <class TOutputImage, class TPhotonCounts, class TSpectrum>
+template <class TOutputImage, class TMeasuredProjections, class TIncidentSpectrum>
 void
-MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectrum>::SetBinnedDetectorResponse(
+MechlemOneStepSpectralReconstructionFilter<TOutputImage, TMeasuredProjections, TIncidentSpectrum>::SetBinnedDetectorResponse(
   const BinnedDetectorResponseType & detResp)
 {
   m_WeidingerForward->SetBinnedDetectorResponse(detResp);
 }
 
-template <class TOutputImage, class TPhotonCounts, class TSpectrum>
+template <class TOutputImage, class TMeasuredProjections, class TIncidentSpectrum>
 void
-MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectrum>::VerifyPreconditions() const
+MechlemOneStepSpectralReconstructionFilter<TOutputImage, TMeasuredProjections, TIncidentSpectrum>::VerifyPreconditions() const
 {
   this->Superclass::VerifyPreconditions();
 
@@ -261,9 +295,9 @@ MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectru
     itkExceptionMacro(<< "Geometry has not been set.");
 }
 
-template <class TOutputImage, class TPhotonCounts, class TSpectrum>
+template <class TOutputImage, class TMeasuredProjections, class TIncidentSpectrum>
 void
-MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectrum>::GenerateInputRequestedRegion()
+MechlemOneStepSpectralReconstructionFilter<TOutputImage, TMeasuredProjections, TIncidentSpectrum>::GenerateInputRequestedRegion()
 {
   // Input 0 is the material volumes we update
   typename TOutputImage::Pointer inputPtr0 = const_cast<TOutputImage *>(this->GetInputMaterialVolumes().GetPointer());
@@ -272,13 +306,13 @@ MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectru
   inputPtr0->SetRequestedRegion(this->GetOutput()->GetRequestedRegion());
 
   // Input 1 is the photon counts
-  typename TPhotonCounts::Pointer inputPtr1 = const_cast<TPhotonCounts *>(this->GetInputPhotonCounts().GetPointer());
+  typename TMeasuredProjections::Pointer inputPtr1 = const_cast<TMeasuredProjections *>(this->GetInputMeasuredProjections().GetPointer());
   if (!inputPtr1)
     return;
   inputPtr1->SetRequestedRegion(inputPtr1->GetLargestPossibleRegion());
 
   // Input 2 is the incident spectrum
-  typename TSpectrum::Pointer inputPtr2 = const_cast<TSpectrum *>(this->GetInputSpectrum().GetPointer());
+  typename TIncidentSpectrum::Pointer inputPtr2 = const_cast<TIncidentSpectrum *>(this->GetInputIncidentSpectrum().GetPointer());
   if (!inputPtr2)
     return;
   inputPtr2->SetRequestedRegion(inputPtr2->GetLargestPossibleRegion());
@@ -302,12 +336,12 @@ MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectru
     inputPtr5->SetRequestedRegion(inputPtr1->GetRequestedRegion());
 }
 
-template <class TOutputImage, class TPhotonCounts, class TSpectrum>
+template <class TOutputImage, class TMeasuredProjections, class TIncidentSpectrum>
 void
-MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectrum>::GenerateOutputInformation()
+MechlemOneStepSpectralReconstructionFilter<TOutputImage, TMeasuredProjections, TIncidentSpectrum>::GenerateOutputInformation()
 {
-  typename TPhotonCounts::RegionType largest = this->GetInputPhotonCounts()->GetLargestPossibleRegion();
-  m_NumberOfProjections = largest.GetSize()[TPhotonCounts::ImageDimension - 1];
+  typename TMeasuredProjections::RegionType largest = this->GetInputMeasuredProjections()->GetLargestPossibleRegion();
+  m_NumberOfProjections = largest.GetSize()[TMeasuredProjections::ImageDimension - 1];
 
   // Set forward projection filter
   m_ForwardProjectionFilter =
@@ -328,28 +362,28 @@ MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectru
       std::min(m_NumberOfProjectionsPerSubset, m_NumberOfProjections - s * m_NumberOfProjectionsPerSubset));
 
   // Compute the extract filter's initial extract region
-  typename TPhotonCounts::RegionType extractionRegion = largest;
-  extractionRegion.SetSize(TPhotonCounts::ImageDimension - 1, m_NumberOfProjectionsInSubset[0]);
-  extractionRegion.SetIndex(TPhotonCounts::ImageDimension - 1, 0);
+  typename TMeasuredProjections::RegionType extractionRegion = largest;
+  extractionRegion.SetSize(TMeasuredProjections::ImageDimension - 1, m_NumberOfProjectionsInSubset[0]);
+  extractionRegion.SetIndex(TMeasuredProjections::ImageDimension - 1, 0);
 
   // Set runtime connections. Links with the forward and back projection filters should be set here,
   // since those filters are not instantiated by the constructor, but by
   // a call to SetForwardProjectionFilter() and SetBackProjectionFilter()
   if (m_NumberOfSubsets != 1)
   {
-    m_ReorderPhotonCountsFilter->SetInput(this->GetInputPhotonCounts());
-    m_ReorderPhotonCountsFilter->SetInputGeometry(this->m_Geometry);
-    m_ReorderPhotonCountsFilter->SetPermutation(ReorderProjectionsFilterPhotonCountsType::SHUFFLE);
-    m_ExtractPhotonCountsFilter->SetInput(m_ReorderPhotonCountsFilter->GetOutput());
+    m_ReorderMeasuredProjectionsFilter->SetInput(this->GetInputMeasuredProjections());
+    m_ReorderMeasuredProjectionsFilter->SetInputGeometry(this->m_Geometry);
+    m_ReorderMeasuredProjectionsFilter->SetPermutation(ReorderMeasuredProjectionsFilterType::SHUFFLE);
+    m_ExtractMeasuredProjectionsFilter->SetInput(m_ReorderMeasuredProjectionsFilter->GetOutput());
 
-    m_ForwardProjectionFilter->SetGeometry(m_ReorderPhotonCountsFilter->GetOutputGeometry());
-    m_SingleComponentForwardProjectionFilter->SetGeometry(m_ReorderPhotonCountsFilter->GetOutputGeometry());
-    m_GradientsBackProjectionFilter->SetGeometry(m_ReorderPhotonCountsFilter->GetOutputGeometry());
-    m_HessiansBackProjectionFilter->SetGeometry(m_ReorderPhotonCountsFilter->GetOutputGeometry());
+    m_ForwardProjectionFilter->SetGeometry(m_ReorderMeasuredProjectionsFilter->GetOutputGeometry());
+    m_SingleComponentForwardProjectionFilter->SetGeometry(m_ReorderMeasuredProjectionsFilter->GetOutputGeometry());
+    m_GradientsBackProjectionFilter->SetGeometry(m_ReorderMeasuredProjectionsFilter->GetOutputGeometry());
+    m_HessiansBackProjectionFilter->SetGeometry(m_ReorderMeasuredProjectionsFilter->GetOutputGeometry());
   }
   else
   {
-    m_ExtractPhotonCountsFilter->SetInput(this->GetInputPhotonCounts());
+    m_ExtractMeasuredProjectionsFilter->SetInput(this->GetInputMeasuredProjections());
 
     m_ForwardProjectionFilter->SetGeometry(this->m_Geometry);
     m_SingleComponentForwardProjectionFilter->SetGeometry(this->m_Geometry);
@@ -364,8 +398,8 @@ MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectru
   m_SingleComponentForwardProjectionFilter->SetInput(1, m_SingleComponentVolumeSource->GetOutput());
 
   m_WeidingerForward->SetInputMaterialProjections(m_ForwardProjectionFilter->GetOutput());
-  m_WeidingerForward->SetInputPhotonCounts(m_ExtractPhotonCountsFilter->GetOutput());
-  m_WeidingerForward->SetInputSpectrum(this->GetInputSpectrum());
+  m_WeidingerForward->SetInputPhotonCounts(m_ExtractMeasuredProjectionsFilter->GetOutput());
+  m_WeidingerForward->SetInputSpectrum(this->GetInputIncidentSpectrum());
   m_WeidingerForward->SetInputProjectionsOfOnes(m_SingleComponentForwardProjectionFilter->GetOutput());
 
   m_GradientsBackProjectionFilter->SetInput(0, m_GradientsSource->GetOutput());
@@ -376,7 +410,7 @@ MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectru
     {
       m_ReorderProjectionsWeightsFilter->SetInput(this->GetProjectionWeights());
       m_ReorderProjectionsWeightsFilter->SetInputGeometry(this->m_Geometry);
-      m_ReorderProjectionsWeightsFilter->SetPermutation(ReorderProjectionsFilterProjectionsWeightsType::SHUFFLE);
+      m_ReorderProjectionsWeightsFilter->SetPermutation(ReorderProjectionsWeightsFilterType::SHUFFLE);
       m_MultiplyGradientToBeBackprojectedFilter->SetInput2(m_ReorderProjectionsWeightsFilter->GetOutput());
     }
     else
@@ -428,10 +462,10 @@ MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectru
   }
 
   // Set information for the extract filter and the sources
-  m_ExtractPhotonCountsFilter->SetExtractionRegion(extractionRegion);
-  m_ExtractPhotonCountsFilter->UpdateOutputInformation();
-  m_SingleComponentProjectionsSource->SetInformationFromImage(m_ExtractPhotonCountsFilter->GetOutput());
-  m_ProjectionsSource->SetInformationFromImage(m_ExtractPhotonCountsFilter->GetOutput());
+  m_ExtractMeasuredProjectionsFilter->SetExtractionRegion(extractionRegion);
+  m_ExtractMeasuredProjectionsFilter->UpdateOutputInformation();
+  m_SingleComponentProjectionsSource->SetInformationFromImage(m_ExtractMeasuredProjectionsFilter->GetOutput());
+  m_ProjectionsSource->SetInformationFromImage(m_ExtractMeasuredProjectionsFilter->GetOutput());
   m_SingleComponentVolumeSource->SetInformationFromImage(this->GetInputMaterialVolumes());
   m_GradientsSource->SetInformationFromImage(this->GetInputMaterialVolumes());
   m_HessiansSource->SetInformationFromImage(this->GetInputMaterialVolumes());
@@ -447,9 +481,9 @@ MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectru
   this->GetOutput()->CopyInformation(lastOutput);
 }
 
-template <class TOutputImage, class TPhotonCounts, class TSpectrum>
+template <class TOutputImage, class TMeasuredProjections, class TIncidentSpectrum>
 void
-MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectrum>::GenerateData()
+MechlemOneStepSpectralReconstructionFilter<TOutputImage, TMeasuredProjections, TIncidentSpectrum>::GenerateData()
 {
   itk::IterationReporter iterationReporter(this, 0, 1);
 
@@ -492,16 +526,16 @@ MechlemOneStepSpectralReconstructionFilter<TOutputImage, TPhotonCounts, TSpectru
       for (int i = 0; i < m_NumberOfProjectionsInSubset[subset]; i += NProjPerExtract)
       {
         // Set the extract filter's region
-        typename TPhotonCounts::RegionType extractionRegion = this->GetInputPhotonCounts()->GetLargestPossibleRegion();
-        extractionRegion.SetSize(TPhotonCounts::ImageDimension - 1,
+        typename TMeasuredProjections::RegionType extractionRegion = this->GetInputMeasuredProjections()->GetLargestPossibleRegion();
+        extractionRegion.SetSize(TMeasuredProjections::ImageDimension - 1,
                                  std::min(NProjPerExtract, m_NumberOfProjectionsInSubset[subset] - i));
-        extractionRegion.SetIndex(TPhotonCounts::ImageDimension - 1, subset * m_NumberOfProjectionsPerSubset + i);
-        m_ExtractPhotonCountsFilter->SetExtractionRegion(extractionRegion);
-        m_ExtractPhotonCountsFilter->UpdateOutputInformation();
+        extractionRegion.SetIndex(TMeasuredProjections::ImageDimension - 1, subset * m_NumberOfProjectionsPerSubset + i);
+        m_ExtractMeasuredProjectionsFilter->SetExtractionRegion(extractionRegion);
+        m_ExtractMeasuredProjectionsFilter->UpdateOutputInformation();
 
         // Set the projection sources accordingly
-        m_SingleComponentProjectionsSource->SetInformationFromImage(m_ExtractPhotonCountsFilter->GetOutput());
-        m_ProjectionsSource->SetInformationFromImage(m_ExtractPhotonCountsFilter->GetOutput());
+        m_SingleComponentProjectionsSource->SetInformationFromImage(m_ExtractMeasuredProjectionsFilter->GetOutput());
+        m_ProjectionsSource->SetInformationFromImage(m_ExtractMeasuredProjectionsFilter->GetOutput());
 
         if (i < m_NumberOfProjectionsInSubset[subset] - NProjPerExtract)
         {

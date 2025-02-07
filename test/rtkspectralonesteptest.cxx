@@ -286,8 +286,8 @@ main(int argc, char * argv[])
   MechlemType::Pointer mechlemOneStep = MechlemType::New();
   mechlemOneStep->SetForwardProjectionFilter(MechlemType::FP_JOSEPH); // Joseph
   mechlemOneStep->SetInputMaterialVolumes(materialVolumeSource->GetOutput());
-  mechlemOneStep->SetInputPhotonCounts(composePhotonCounts->GetOutput());
-  mechlemOneStep->SetInputSpectrum(incidentSpectrumReader->GetOutput());
+  mechlemOneStep->SetInputMeasuredProjections(composePhotonCounts->GetOutput());
+  mechlemOneStep->SetInputIncidentSpectrum(incidentSpectrumReader->GetOutput());
   mechlemOneStep->SetBinnedDetectorResponse(drm);
   mechlemOneStep->SetMaterialAttenuations(materialAttenuationsMatrix);
   mechlemOneStep->SetGeometry(geometry);

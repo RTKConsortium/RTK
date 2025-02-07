@@ -188,7 +188,7 @@ rtkspectralonestep(const args_info_rtkspectralonestep & args_info)
   SetForwardProjectionFromGgo(args_info, mechlemOneStep.GetPointer());
   SetBackProjectionFromGgo(args_info, mechlemOneStep.GetPointer());
   mechlemOneStep->SetInputMaterialVolumes(input);
-  mechlemOneStep->SetInputSpectrum(incidentSpectrum);
+  mechlemOneStep->SetInputIncidentSpectrum(incidentSpectrum);
   mechlemOneStep->SetBinnedDetectorResponse(drm);
   mechlemOneStep->SetMaterialAttenuations(materialAttenuationsMatrix);
   mechlemOneStep->SetNumberOfIterations(args_info.niterations_arg);
@@ -201,7 +201,7 @@ rtkspectralonestep(const args_info_rtkspectralonestep & args_info)
     mechlemOneStep->SetSupportMask(supportmask);
   if (args_info.regul_spatial_weights_given)
     mechlemOneStep->SetSpatialRegularizationWeights(spatialRegulWeighs);
-  mechlemOneStep->SetInputPhotonCounts(photonCounts);
+  mechlemOneStep->SetInputMeasuredProjections(photonCounts);
   mechlemOneStep->SetGeometry(geometry);
   if (args_info.projection_weights_given)
     mechlemOneStep->SetProjectionWeights(projectionWeights);
