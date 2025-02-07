@@ -397,9 +397,9 @@ MechlemOneStepSpectralReconstructionFilter<TOutputImage, TMeasuredProjections, T
   m_SingleComponentForwardProjectionFilter->SetInput(0, m_SingleComponentProjectionsSource->GetOutput());
   m_SingleComponentForwardProjectionFilter->SetInput(1, m_SingleComponentVolumeSource->GetOutput());
 
-  m_WeidingerForward->SetInputMaterialProjections(m_ForwardProjectionFilter->GetOutput());
-  m_WeidingerForward->SetInputPhotonCounts(m_ExtractMeasuredProjectionsFilter->GetOutput());
-  m_WeidingerForward->SetInputSpectrum(this->GetInputIncidentSpectrum());
+  m_WeidingerForward->SetInputDecomposedProjections(m_ForwardProjectionFilter->GetOutput());
+  m_WeidingerForward->SetInputMeasuredProjections(m_ExtractMeasuredProjectionsFilter->GetOutput());
+  m_WeidingerForward->SetInputIncidentSpectrum(this->GetInputIncidentSpectrum());
   m_WeidingerForward->SetInputProjectionsOfOnes(m_SingleComponentForwardProjectionFilter->GetOutput());
 
   m_GradientsBackProjectionFilter->SetInput(0, m_GradientsSource->GetOutput());

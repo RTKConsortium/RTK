@@ -9,7 +9,7 @@
  *
  * \brief Test for the filter rtkWeidingerForwardModelImageFilter
  *
- * This test reads material projections, photon counts, spectrum, material
+ * This test reads decomposed projections, measured projections, incident spectrum, material
  * attenuations, detector response, and projections of a volume of ones,
  * runs the filter rtkWeidingerForwardModelImageFilter, and compare its outputs
  * to the expected ones (computed with Matlab)
@@ -24,7 +24,7 @@ main(int argc, char * argv[])
   {
     std::cerr << "Usage: " << std::endl;
     std::cerr << argv[0]
-              << " materialProjections.mha photonCounts.mha spectrum.mha projections.mha DetectorResponse.csv "
+              << " decomposedProjections.mha measuredProjections.mha incidentSpectrum.mha projections.mha DetectorResponse.csv "
                  "materialAttenuations.csv out1.mha out2.mha"
               << std::endl;
     return EXIT_FAILURE;
@@ -35,9 +35,9 @@ main(int argc, char * argv[])
   constexpr unsigned int nMaterials = 3;
   constexpr unsigned int nEnergies = 150;
   using dataType = double;
-  using TMaterialProjections = itk::Image<itk::Vector<dataType, nMaterials>, 3>;
-  using TPhotonCounts = itk::Image<itk::Vector<dataType, nBins>, 3>;
-  using TSpectrum = itk::Image<dataType, 3>;
+  using TDecomposedProjections = itk::Image<itk::Vector<dataType, nMaterials>, 3>;
+  using TMeasuredProjections = itk::Image<itk::Vector<dataType, nBins>, 3>;
+  using TIncidentSpectrum = itk::Image<dataType, 3>;
   using TProjections = itk::Image<dataType, 3>;
   using TOutput1 = itk::Image<itk::Vector<dataType, nMaterials>, 3>;
   using TOutput2 = itk::Image<itk::Vector<dataType, nMaterials * nMaterials>, 3>;
@@ -46,20 +46,20 @@ main(int argc, char * argv[])
   vnl_matrix<dataType> materialAttenuations(nEnergies, nMaterials);
 
   // Define, instantiate, set and update readers
-  using MaterialProjectionsReaderType = itk::ImageFileReader<TMaterialProjections>;
-  MaterialProjectionsReaderType::Pointer materialProjectionsReader = MaterialProjectionsReaderType::New();
-  materialProjectionsReader->SetFileName(argv[1]);
-  materialProjectionsReader->Update();
+  using DecomposedProjectionsReaderType = itk::ImageFileReader<TDecomposedProjections>;
+  DecomposedProjectionsReaderType::Pointer decomposedProjectionsReader = DecomposedProjectionsReaderType::New();
+  decomposedProjectionsReader->SetFileName(argv[1]);
+  decomposedProjectionsReader->Update();
 
-  using PhotonCountsReaderType = itk::ImageFileReader<TPhotonCounts>;
-  PhotonCountsReaderType::Pointer photonCountsReader = PhotonCountsReaderType::New();
-  photonCountsReader->SetFileName(argv[2]);
-  photonCountsReader->Update();
+  using MeasuredProjectionsReaderType = itk::ImageFileReader<TMeasuredProjections>;
+  MeasuredProjectionsReaderType::Pointer measuredProjectionsReader = MeasuredProjectionsReaderType::New();
+  measuredProjectionsReader->SetFileName(argv[2]);
+  measuredProjectionsReader->Update();
 
-  using SpectrumReaderType = itk::ImageFileReader<TSpectrum>;
-  SpectrumReaderType::Pointer spectrumReader = SpectrumReaderType::New();
-  spectrumReader->SetFileName(argv[3]);
-  spectrumReader->Update();
+  using IncidentSpectrumReaderType = itk::ImageFileReader<TIncidentSpectrum>;
+  IncidentSpectrumReaderType::Pointer incidentSpectrumReader = IncidentSpectrumReaderType::New();
+  incidentSpectrumReader->SetFileName(argv[3]);
+  incidentSpectrumReader->Update();
 
   using ProjectionsReaderType = itk::ImageFileReader<TProjections>;
   ProjectionsReaderType::Pointer projectionsReader = ProjectionsReaderType::New();
@@ -100,13 +100,13 @@ main(int argc, char * argv[])
 
   // Create the filter
   using WeidingerForwardModelType =
-    rtk::WeidingerForwardModelImageFilter<TMaterialProjections, TPhotonCounts, TSpectrum, TProjections>;
+    rtk::WeidingerForwardModelImageFilter<TDecomposedProjections, TMeasuredProjections, TIncidentSpectrum, TProjections>;
   WeidingerForwardModelType::Pointer weidingerForward = WeidingerForwardModelType::New();
 
   // Set its inputs
-  weidingerForward->SetInputMaterialProjections(materialProjectionsReader->GetOutput());
-  weidingerForward->SetInputPhotonCounts(photonCountsReader->GetOutput());
-  weidingerForward->SetInputSpectrum(spectrumReader->GetOutput());
+  weidingerForward->SetInputDecomposedProjections(decomposedProjectionsReader->GetOutput());
+  weidingerForward->SetInputMeasuredProjections(measuredProjectionsReader->GetOutput());
+  weidingerForward->SetInputIncidentSpectrum(incidentSpectrumReader->GetOutput());
   weidingerForward->SetInputProjectionsOfOnes(projectionsReader->GetOutput());
   weidingerForward->SetBinnedDetectorResponse(detectorResponse);
   weidingerForward->SetMaterialAttenuations(materialAttenuations);
