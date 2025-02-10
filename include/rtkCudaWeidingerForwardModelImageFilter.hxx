@@ -41,7 +41,8 @@ CudaWeidingerForwardModelImageFilter<TDecomposedProjections, TMeasuredProjection
 
 template <class TDecomposedProjections, class TMeasuredProjections, class TIncidentSpectrum, class TProjections>
 void
-CudaWeidingerForwardModelImageFilter<TDecomposedProjections, TMeasuredProjections, TIncidentSpectrum, TProjections>::GPUGenerateData()
+CudaWeidingerForwardModelImageFilter<TDecomposedProjections, TMeasuredProjections, TIncidentSpectrum, TProjections>::
+  GPUGenerateData()
 {
   this->AllocateOutputs();
 
@@ -71,21 +72,26 @@ CudaWeidingerForwardModelImageFilter<TDecomposedProjections, TMeasuredProjection
 #  endif
 
   // Run the forward projection with a slab of SLAB_SIZE or less projections
-  CUDA_WeidingerForwardModel(
-    projectionSize,
-    this->m_MaterialAttenuations.data_block(),
-    this->m_BinnedDetectorResponse.data_block(),
-    pMatProj,
-    pPhoCount,
-    pSpectrum,
-    pProjOnes,
-    pOut1,
-    pOut2,
-    CudaWeidingerForwardModelImageFilter<TDecomposedProjections, TMeasuredProjections, TIncidentSpectrum, TProjections>::nBins,
-    nEnergies,
-    CudaWeidingerForwardModelImageFilter<TDecomposedProjections, TMeasuredProjections, TIncidentSpectrum, TProjections>::nMaterials,
-    this->m_NumberOfProjectionsInIncidentSpectrum,
-    this->GetInputMeasuredProjections()->GetBufferedRegion().GetIndex(Dimension - 1));
+  CUDA_WeidingerForwardModel(projectionSize,
+                             this->m_MaterialAttenuations.data_block(),
+                             this->m_BinnedDetectorResponse.data_block(),
+                             pMatProj,
+                             pPhoCount,
+                             pSpectrum,
+                             pProjOnes,
+                             pOut1,
+                             pOut2,
+                             CudaWeidingerForwardModelImageFilter<TDecomposedProjections,
+                                                                  TMeasuredProjections,
+                                                                  TIncidentSpectrum,
+                                                                  TProjections>::nBins,
+                             nEnergies,
+                             CudaWeidingerForwardModelImageFilter<TDecomposedProjections,
+                                                                  TMeasuredProjections,
+                                                                  TIncidentSpectrum,
+                                                                  TProjections>::nMaterials,
+                             this->m_NumberOfProjectionsInIncidentSpectrum,
+                             this->GetInputMeasuredProjections()->GetBufferedRegion().GetIndex(Dimension - 1));
 }
 
 } // end namespace rtk

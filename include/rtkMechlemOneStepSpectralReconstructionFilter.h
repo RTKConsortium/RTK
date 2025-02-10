@@ -192,9 +192,10 @@ public:
 
 #if !defined(ITK_WRAPPING_PARSER)
 #  ifdef RTK_USE_CUDA
-  typedef typename std::conditional<std::is_same<TOutputImage, CPUOutputImageType>::value,
-                                    WeidingerForwardModelImageFilter<TOutputImage, TMeasuredProjections, TIncidentSpectrum>,
-                                    CudaWeidingerForwardModelImageFilter<TOutputImage, TMeasuredProjections, TIncidentSpectrum>>::type
+  typedef typename std::conditional<
+    std::is_same<TOutputImage, CPUOutputImageType>::value,
+    WeidingerForwardModelImageFilter<TOutputImage, TMeasuredProjections, TIncidentSpectrum>,
+    CudaWeidingerForwardModelImageFilter<TOutputImage, TMeasuredProjections, TIncidentSpectrum>>::type
     WeidingerForwardModelType;
   typedef
     typename std::conditional<std::is_same<TOutputImage, CPUOutputImageType>::value,
@@ -206,7 +207,8 @@ public:
                                     CudaBackProjectionImageFilter<HessiansImageType>>::type
     CudaHessiansBackProjectionImageFilterType;
 #  else
-  using WeidingerForwardModelType = WeidingerForwardModelImageFilter<TOutputImage, TMeasuredProjections, TIncidentSpectrum>;
+  using WeidingerForwardModelType =
+    WeidingerForwardModelImageFilter<TOutputImage, TMeasuredProjections, TIncidentSpectrum>;
   using CudaSingleComponentForwardProjectionImageFilterType =
     JosephForwardProjectionImageFilter<SingleComponentImageType, SingleComponentImageType>;
   using CudaHessiansBackProjectionImageFilterType = BackProjectionImageFilter<HessiansImageType, HessiansImageType>;
@@ -307,28 +309,28 @@ protected:
 
 #if !defined(ITK_WRAPPING_PARSER)
   /** Member pointers to the filters used internally (for convenience)*/
-  typename ExtractMeasuredProjectionsFilterType::Pointer           m_ExtractMeasuredProjectionsFilter;
-  typename AddFilterType::Pointer                                  m_AddGradients;
-  typename SingleComponentForwardProjectionFilterType::Pointer     m_SingleComponentForwardProjectionFilter;
-  typename MaterialProjectionsSourceType::Pointer                  m_ProjectionsSource;
-  typename SingleComponentImageSourceType::Pointer                 m_SingleComponentProjectionsSource;
-  typename SingleComponentImageSourceType::Pointer                 m_SingleComponentVolumeSource;
-  typename GradientsSourceType::Pointer                            m_GradientsSource;
-  typename HessiansSourceType::Pointer                             m_HessiansSource;
-  typename WeidingerForwardModelType::Pointer                      m_WeidingerForward;
-  typename SQSRegularizationType::Pointer                          m_SQSRegul;
-  typename AddMatrixAndDiagonalFilterType::Pointer                 m_AddHessians;
-  typename NewtonFilterType::Pointer                               m_NewtonFilter;
-  typename NesterovFilterType::Pointer                             m_NesterovFilter;
-  typename ForwardProjectionFilterType::Pointer                    m_ForwardProjectionFilter;
-  typename GradientsBackProjectionFilterType::Pointer              m_GradientsBackProjectionFilter;
-  typename HessiansBackProjectionFilterType::Pointer               m_HessiansBackProjectionFilter;
-  typename MultiplyFilterType::Pointer                             m_MultiplySupportFilter;
-  typename MultiplyGradientFilterType::Pointer                     m_MultiplyRegulGradientsFilter;
-  typename MultiplyGradientFilterType::Pointer                     m_MultiplyRegulHessiansFilter;
-  typename MultiplyGradientFilterType::Pointer                     m_MultiplyGradientToBeBackprojectedFilter;
-  typename ReorderMeasuredProjectionsFilterType::Pointer           m_ReorderMeasuredProjectionsFilter;
-  typename ReorderProjectionsWeightsFilterType::Pointer            m_ReorderProjectionsWeightsFilter;
+  typename ExtractMeasuredProjectionsFilterType::Pointer       m_ExtractMeasuredProjectionsFilter;
+  typename AddFilterType::Pointer                              m_AddGradients;
+  typename SingleComponentForwardProjectionFilterType::Pointer m_SingleComponentForwardProjectionFilter;
+  typename MaterialProjectionsSourceType::Pointer              m_ProjectionsSource;
+  typename SingleComponentImageSourceType::Pointer             m_SingleComponentProjectionsSource;
+  typename SingleComponentImageSourceType::Pointer             m_SingleComponentVolumeSource;
+  typename GradientsSourceType::Pointer                        m_GradientsSource;
+  typename HessiansSourceType::Pointer                         m_HessiansSource;
+  typename WeidingerForwardModelType::Pointer                  m_WeidingerForward;
+  typename SQSRegularizationType::Pointer                      m_SQSRegul;
+  typename AddMatrixAndDiagonalFilterType::Pointer             m_AddHessians;
+  typename NewtonFilterType::Pointer                           m_NewtonFilter;
+  typename NesterovFilterType::Pointer                         m_NesterovFilter;
+  typename ForwardProjectionFilterType::Pointer                m_ForwardProjectionFilter;
+  typename GradientsBackProjectionFilterType::Pointer          m_GradientsBackProjectionFilter;
+  typename HessiansBackProjectionFilterType::Pointer           m_HessiansBackProjectionFilter;
+  typename MultiplyFilterType::Pointer                         m_MultiplySupportFilter;
+  typename MultiplyGradientFilterType::Pointer                 m_MultiplyRegulGradientsFilter;
+  typename MultiplyGradientFilterType::Pointer                 m_MultiplyRegulHessiansFilter;
+  typename MultiplyGradientFilterType::Pointer                 m_MultiplyGradientToBeBackprojectedFilter;
+  typename ReorderMeasuredProjectionsFilterType::Pointer       m_ReorderMeasuredProjectionsFilter;
+  typename ReorderProjectionsWeightsFilterType::Pointer        m_ReorderProjectionsWeightsFilter;
 #endif
 
   /** The inputs of this filter have the same type but not the same meaning

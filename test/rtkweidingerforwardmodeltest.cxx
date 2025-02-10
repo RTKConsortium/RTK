@@ -23,10 +23,11 @@ main(int argc, char * argv[])
   if (argc < 9)
   {
     std::cerr << "Usage: " << std::endl;
-    std::cerr << argv[0]
-              << " decomposedProjections.mha measuredProjections.mha incidentSpectrum.mha projections.mha DetectorResponse.csv "
-                 "materialAttenuations.csv out1.mha out2.mha"
-              << std::endl;
+    std::cerr
+      << argv[0]
+      << " decomposedProjections.mha measuredProjections.mha incidentSpectrum.mha projections.mha DetectorResponse.csv "
+         "materialAttenuations.csv out1.mha out2.mha"
+      << std::endl;
     return EXIT_FAILURE;
   }
 
@@ -99,8 +100,8 @@ main(int argc, char * argv[])
       materialAttenuations[r][c] = csvReader->GetOutput()->GetData(r, c);
 
   // Create the filter
-  using WeidingerForwardModelType =
-    rtk::WeidingerForwardModelImageFilter<TDecomposedProjections, TMeasuredProjections, TIncidentSpectrum, TProjections>;
+  using WeidingerForwardModelType = rtk::
+    WeidingerForwardModelImageFilter<TDecomposedProjections, TMeasuredProjections, TIncidentSpectrum, TProjections>;
   WeidingerForwardModelType::Pointer weidingerForward = WeidingerForwardModelType::New();
 
   // Set its inputs
