@@ -46,16 +46,16 @@ WeidingerForwardModelImageFilter<TDecomposedProjections, TMeasuredProjections, T
 
 template <class TDecomposedProjections, class TMeasuredProjections, class TIncidentSpectrum, class TProjections>
 void
-WeidingerForwardModelImageFilter<TDecomposedProjections, TMeasuredProjections, TIncidentSpectrum, TProjections>::SetInputMeasuredProjections(
-  const TMeasuredProjections * measuredProjections)
+WeidingerForwardModelImageFilter<TDecomposedProjections, TMeasuredProjections, TIncidentSpectrum, TProjections>::
+  SetInputMeasuredProjections(const TMeasuredProjections * measuredProjections)
 {
   this->SetNthInput(1, const_cast<TMeasuredProjections *>(measuredProjections));
 }
 
 template <class TDecomposedProjections, class TMeasuredProjections, class TIncidentSpectrum, class TProjections>
 void
-WeidingerForwardModelImageFilter<TDecomposedProjections, TMeasuredProjections, TIncidentSpectrum, TProjections>::SetInputIncidentSpectrum(
-  const TIncidentSpectrum * incidentSpectrum)
+WeidingerForwardModelImageFilter<TDecomposedProjections, TMeasuredProjections, TIncidentSpectrum, TProjections>::
+  SetInputIncidentSpectrum(const TIncidentSpectrum * incidentSpectrum)
 {
   this->SetNthInput(2, const_cast<TIncidentSpectrum *>(incidentSpectrum));
 }
@@ -63,7 +63,7 @@ WeidingerForwardModelImageFilter<TDecomposedProjections, TMeasuredProjections, T
 #ifdef ITK_FUTURE_LEGACY_REMOVED
 template <class TDecomposedProjections, class TMeasuredProjections, class TIncidentSpectrum, class TProjections>
 void
-  WeidingerForwardModelImageFilter<TDecomposedProjections, TMeasuredProjections, TIncidentSpectrum, TProjections>::
+WeidingerForwardModelImageFilter<TDecomposedProjections, TMeasuredProjections, TIncidentSpectrum, TProjections>::
   SetInputMaterialProjections(const TDecomposedProjections * decomposedProjections)
 {
   this->SetInputDecomposedProjections(decomposedProjections);
@@ -71,16 +71,16 @@ void
 
 template <class TDecomposedProjections, class TMeasuredProjections, class TIncidentSpectrum, class TProjections>
 void
-WeidingerForwardModelImageFilter<TDecomposedProjections, TMeasuredProjections, TIncidentSpectrum, TProjections>::SetInputPhotonCounts(
-  const TMeasuredProjections * measuredProjections)
+WeidingerForwardModelImageFilter<TDecomposedProjections, TMeasuredProjections, TIncidentSpectrum, TProjections>::
+  SetInputPhotonCounts(const TMeasuredProjections * measuredProjections)
 {
   this->SetInputMeasuredProjections(measuredProjections);
 }
 
 template <class TDecomposedProjections, class TMeasuredProjections, class TIncidentSpectrum, class TProjections>
 void
-WeidingerForwardModelImageFilter<TDecomposedProjections, TMeasuredProjections, TIncidentSpectrum, TProjections>::SetInputSpectrum(
-  const TIncidentSpectrum * incidentSpectrum)
+WeidingerForwardModelImageFilter<TDecomposedProjections, TMeasuredProjections, TIncidentSpectrum, TProjections>::
+  SetInputSpectrum(const TIncidentSpectrum * incidentSpectrum)
 {
   this->SetInputIncidentSpectrum(incidentSpectrum);
 }
@@ -104,14 +104,16 @@ WeidingerForwardModelImageFilter<TDecomposedProjections, TMeasuredProjections, T
 
 template <class TDecomposedProjections, class TMeasuredProjections, class TIncidentSpectrum, class TProjections>
 typename TMeasuredProjections::ConstPointer
-WeidingerForwardModelImageFilter<TDecomposedProjections, TMeasuredProjections, TIncidentSpectrum, TProjections>::GetInputMeasuredProjections()
+WeidingerForwardModelImageFilter<TDecomposedProjections, TMeasuredProjections, TIncidentSpectrum, TProjections>::
+  GetInputMeasuredProjections()
 {
   return static_cast<const TMeasuredProjections *>(this->itk::ProcessObject::GetInput(1));
 }
 
 template <class TDecomposedProjections, class TMeasuredProjections, class TIncidentSpectrum, class TProjections>
 typename TIncidentSpectrum::ConstPointer
-WeidingerForwardModelImageFilter<TDecomposedProjections, TMeasuredProjections, TIncidentSpectrum, TProjections>::GetInputIncidentSpectrum()
+WeidingerForwardModelImageFilter<TDecomposedProjections, TMeasuredProjections, TIncidentSpectrum, TProjections>::
+  GetInputIncidentSpectrum()
 {
   return static_cast<const TIncidentSpectrum *>(this->itk::ProcessObject::GetInput(2));
 }
@@ -119,7 +121,7 @@ WeidingerForwardModelImageFilter<TDecomposedProjections, TMeasuredProjections, T
 #ifdef ITK_FUTURE_LEGACY_REMOVED
 template <class TDecomposedProjections, class TMeasuredProjections, class TIncidentSpectrum, class TProjections>
 typename TDecomposedProjections::ConstPointer
-  WeidingerForwardModelImageFilter<TDecomposedProjections, TMeasuredProjections, TIncidentSpectrum, TProjections>::
+WeidingerForwardModelImageFilter<TDecomposedProjections, TMeasuredProjections, TIncidentSpectrum, TProjections>::
   GetInputMaterialProjections()
 {
   return this->GetInputDecomposedProjections();
@@ -127,14 +129,16 @@ typename TDecomposedProjections::ConstPointer
 
 template <class TDecomposedProjections, class TMeasuredProjections, class TIncidentSpectrum, class TProjections>
 typename TMeasuredProjections::ConstPointer
-WeidingerForwardModelImageFilter<TDecomposedProjections, TMeasuredProjections, TIncidentSpectrum, TProjections>::GetInputPhotonCounts()
+WeidingerForwardModelImageFilter<TDecomposedProjections, TMeasuredProjections, TIncidentSpectrum, TProjections>::
+  GetInputPhotonCounts()
 {
   return this->GetInputMeasuredProjections();
 }
 
 template <class TDecomposedProjections, class TMeasuredProjections, class TIncidentSpectrum, class TProjections>
 typename TIncidentSpectrum::ConstPointer
-WeidingerForwardModelImageFilter<TDecomposedProjections, TMeasuredProjections, TIncidentSpectrum, TProjections>::GetInputSpectrum()
+WeidingerForwardModelImageFilter<TDecomposedProjections, TMeasuredProjections, TIncidentSpectrum, TProjections>::
+  GetInputSpectrum()
 {
   return this->GetInputIncidentSpectrum();
 }
@@ -150,8 +154,8 @@ WeidingerForwardModelImageFilter<TDecomposedProjections, TMeasuredProjections, T
 
 template <class TDecomposedProjections, class TMeasuredProjections, class TIncidentSpectrum, class TProjections>
 itk::ProcessObject::DataObjectPointer
-WeidingerForwardModelImageFilter<TDecomposedProjections, TMeasuredProjections, TIncidentSpectrum, TProjections>::MakeOutput(
-  itk::ProcessObject::DataObjectPointerArraySizeType idx)
+WeidingerForwardModelImageFilter<TDecomposedProjections, TMeasuredProjections, TIncidentSpectrum, TProjections>::
+  MakeOutput(itk::ProcessObject::DataObjectPointerArraySizeType idx)
 {
   itk::DataObject::Pointer output;
 
@@ -173,22 +177,30 @@ WeidingerForwardModelImageFilter<TDecomposedProjections, TMeasuredProjections, T
 
 template <class TDecomposedProjections, class TMeasuredProjections, class TIncidentSpectrum, class TProjections>
 itk::ProcessObject::DataObjectPointer
-WeidingerForwardModelImageFilter<TDecomposedProjections, TMeasuredProjections, TIncidentSpectrum, TProjections>::MakeOutput(
-  const itk::ProcessObject::DataObjectIdentifierType & idx)
+WeidingerForwardModelImageFilter<TDecomposedProjections, TMeasuredProjections, TIncidentSpectrum, TProjections>::
+  MakeOutput(const itk::ProcessObject::DataObjectIdentifierType & idx)
 {
   return Superclass::MakeOutput(idx);
 }
 
 template <class TDecomposedProjections, class TMeasuredProjections, class TIncidentSpectrum, class TProjections>
-typename WeidingerForwardModelImageFilter<TDecomposedProjections, TMeasuredProjections, TIncidentSpectrum, TProjections>::TOutputImage1 *
-WeidingerForwardModelImageFilter<TDecomposedProjections, TMeasuredProjections, TIncidentSpectrum, TProjections>::GetOutput1()
+typename WeidingerForwardModelImageFilter<TDecomposedProjections,
+                                          TMeasuredProjections,
+                                          TIncidentSpectrum,
+                                          TProjections>::TOutputImage1 *
+WeidingerForwardModelImageFilter<TDecomposedProjections, TMeasuredProjections, TIncidentSpectrum, TProjections>::
+  GetOutput1()
 {
   return dynamic_cast<TOutputImage1 *>(this->itk::ProcessObject::GetOutput(0));
 }
 
 template <class TDecomposedProjections, class TMeasuredProjections, class TIncidentSpectrum, class TProjections>
-typename WeidingerForwardModelImageFilter<TDecomposedProjections, TMeasuredProjections, TIncidentSpectrum, TProjections>::TOutputImage2 *
-WeidingerForwardModelImageFilter<TDecomposedProjections, TMeasuredProjections, TIncidentSpectrum, TProjections>::GetOutput2()
+typename WeidingerForwardModelImageFilter<TDecomposedProjections,
+                                          TMeasuredProjections,
+                                          TIncidentSpectrum,
+                                          TProjections>::TOutputImage2 *
+WeidingerForwardModelImageFilter<TDecomposedProjections, TMeasuredProjections, TIncidentSpectrum, TProjections>::
+  GetOutput2()
 {
   return dynamic_cast<TOutputImage2 *>(this->itk::ProcessObject::GetOutput(1));
 }
@@ -227,8 +239,8 @@ WeidingerForwardModelImageFilter<TDecomposedProjections, TMeasuredProjections, T
 
 template <class TDecomposedProjections, class TMeasuredProjections, class TIncidentSpectrum, class TProjections>
 void
-WeidingerForwardModelImageFilter<TDecomposedProjections, TMeasuredProjections, TIncidentSpectrum, TProjections>::SetMaterialAttenuations(
-  const MaterialAttenuationsType & matAtt)
+WeidingerForwardModelImageFilter<TDecomposedProjections, TMeasuredProjections, TIncidentSpectrum, TProjections>::
+  SetMaterialAttenuations(const MaterialAttenuationsType & matAtt)
 {
   bool modified = false;
 
@@ -275,8 +287,10 @@ WeidingerForwardModelImageFilter<TDecomposedProjections, TMeasuredProjections, T
   // Get pointers to the inputs
   typename TDecomposedProjections::Pointer input1Ptr =
     const_cast<TDecomposedProjections *>(this->GetInputDecomposedProjections().GetPointer());
-  typename TMeasuredProjections::Pointer input2Ptr = const_cast<TMeasuredProjections *>(this->GetInputMeasuredProjections().GetPointer());
-  typename TIncidentSpectrum::Pointer     input3Ptr = const_cast<TIncidentSpectrum *>(this->GetInputIncidentSpectrum().GetPointer());
+  typename TMeasuredProjections::Pointer input2Ptr =
+    const_cast<TMeasuredProjections *>(this->GetInputMeasuredProjections().GetPointer());
+  typename TIncidentSpectrum::Pointer input3Ptr =
+    const_cast<TIncidentSpectrum *>(this->GetInputIncidentSpectrum().GetPointer());
   typename TProjections::Pointer input4Ptr = const_cast<TProjections *>(this->GetInputProjectionsOfOnes().GetPointer());
 
   // The first and second input must have the same requested region as the outputs
@@ -295,7 +309,8 @@ WeidingerForwardModelImageFilter<TDecomposedProjections, TMeasuredProjections, T
     spectrumRegion.SetIndex(d + 1, outputRequested1.GetIndex()[d]);
     spectrumRegion.SetSize(d + 1, outputRequested1.GetSize()[d]);
   }
-  const itk::SizeValueType nRowsIncidentSpectrum = input3Ptr->GetLargestPossibleRegion().GetSize(TIncidentSpectrum::ImageDimension - 1);
+  const itk::SizeValueType nRowsIncidentSpectrum =
+    input3Ptr->GetLargestPossibleRegion().GetSize(TIncidentSpectrum::ImageDimension - 1);
   const itk::SizeValueType nRowsMeasuredProjections =
     input2Ptr->GetLargestPossibleRegion().GetSize(TMeasuredProjections::ImageDimension - 2);
   if (nRowsIncidentSpectrum % nRowsMeasuredProjections != 0)
@@ -324,8 +339,8 @@ WeidingerForwardModelImageFilter<TDecomposedProjections, TMeasuredProjections, T
   }
   const itk::SizeValueType nRowsMeasuredProjections =
     this->GetOutput2()->GetLargestPossibleRegion().GetSize(TMeasuredProjections::ImageDimension - 2);
-  itk::IndexValueType spectrumProjIndex =
-    outputRegionForThread.GetIndex()[TMeasuredProjections::ImageDimension - 1] % m_NumberOfProjectionsInIncidentSpectrum;
+  itk::IndexValueType spectrumProjIndex = outputRegionForThread.GetIndex()[TMeasuredProjections::ImageDimension - 1] %
+                                          m_NumberOfProjectionsInIncidentSpectrum;
   spectrumRegion.SetIndex(TIncidentSpectrum::ImageDimension - 1,
                           spectrumRegion.GetIndex(TIncidentSpectrum::ImageDimension - 1) +
                             nRowsMeasuredProjections * spectrumProjIndex);
@@ -333,13 +348,14 @@ WeidingerForwardModelImageFilter<TDecomposedProjections, TMeasuredProjections, T
   unsigned int nEnergies = spectrumRegion.GetSize()[0];
 
   // Create iterators for all inputs and outputs
-  itk::ImageRegionIterator<TOutputImage1>             out1It(this->GetOutput1(), outputRegionForThread);
-  itk::ImageRegionIterator<TOutputImage2>             out2It(this->GetOutput2(), outputRegionForThread);
+  itk::ImageRegionIterator<TOutputImage1>               out1It(this->GetOutput1(), outputRegionForThread);
+  itk::ImageRegionIterator<TOutputImage2>               out2It(this->GetOutput2(), outputRegionForThread);
   itk::ImageRegionConstIterator<TDecomposedProjections> projIt(this->GetInputDecomposedProjections(),
-                                                             outputRegionForThread);
-  itk::ImageRegionConstIterator<TMeasuredProjections> MeasuredProjectionsIt(this->GetInputMeasuredProjections(), outputRegionForThread);
-  itk::ImageRegionConstIterator<TIncidentSpectrum>     spectrumIt(this->GetInputIncidentSpectrum(), spectrumRegion);
-  itk::ImageRegionConstIterator<TProjections>  projOfOnesIt(this->GetInputProjectionsOfOnes(), outputRegionForThread);
+                                                               outputRegionForThread);
+  itk::ImageRegionConstIterator<TMeasuredProjections>   MeasuredProjectionsIt(this->GetInputMeasuredProjections(),
+                                                                            outputRegionForThread);
+  itk::ImageRegionConstIterator<TIncidentSpectrum>      spectrumIt(this->GetInputIncidentSpectrum(), spectrumRegion);
+  itk::ImageRegionConstIterator<TProjections> projOfOnesIt(this->GetInputProjectionsOfOnes(), outputRegionForThread);
 
   // Declare intermediate variables
   vnl_vector<dataType>                           spectrum(nEnergies);

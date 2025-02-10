@@ -58,21 +58,21 @@ rtkspectralonestep(const args_info_rtkspectralonestep & args_info)
   // Define types for the input images
 #ifdef RTK_USE_CUDA
   using MaterialVolumesType = typename itk::CudaImage<itk::Vector<dataType, VNumberOfMaterials>, Dimension>;
-  using PhotonCountsType = typename itk::CudaImage<itk::Vector<dataType, VNumberOfBins>, Dimension>;
+  using MeasuredProjectionsType = typename itk::CudaImage<itk::Vector<dataType, VNumberOfBins>, Dimension>;
   using IncidentSpectrumType = itk::CudaImage<dataType, Dimension>;
   using DetectorResponseType = itk::CudaImage<dataType, 2>;
   using MaterialAttenuationsType = itk::CudaImage<dataType, 2>;
 #else
   using MaterialVolumesType = typename itk::Image<itk::Vector<dataType, VNumberOfMaterials>, Dimension>;
-  using PhotonCountsType = typename itk::Image<itk::Vector<dataType, VNumberOfBins>, Dimension>;
+  using MeasuredProjectionsType = typename itk::Image<itk::Vector<dataType, VNumberOfBins>, Dimension>;
   using IncidentSpectrumType = itk::Image<dataType, Dimension>;
   using DetectorResponseType = itk::Image<dataType, 2>;
   using MaterialAttenuationsType = itk::Image<dataType, 2>;
 #endif
 
   // Instantiate and update the readers
-  typename PhotonCountsType::Pointer photonCounts;
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(photonCounts = itk::ReadImage<PhotonCountsType>(args_info.spectral_arg))
+  typename MeasuredProjectionsType::Pointer mea;
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(mea = itk::ReadImage<MeasuredProjectionsType>(args_info.spectral_arg))
 
   IncidentSpectrumType::Pointer incidentSpectrum;
   TRY_AND_EXIT_ON_ITK_EXCEPTION(incidentSpectrum = itk::ReadImage<IncidentSpectrumType>(args_info.incident_arg))
@@ -183,7 +183,7 @@ rtkspectralonestep(const args_info_rtkspectralonestep & args_info)
 
   // Set the forward and back projection filters to be used
   using MechlemFilterType = typename rtk::
-    MechlemOneStepSpectralReconstructionFilter<MaterialVolumesType, PhotonCountsType, IncidentSpectrumType>;
+    MechlemOneStepSpectralReconstructionFilter<MaterialVolumesType, MeasuredProjectionsType, IncidentSpectrumType>;
   typename MechlemFilterType::Pointer mechlemOneStep = MechlemFilterType::New();
   SetForwardProjectionFromGgo(args_info, mechlemOneStep.GetPointer());
   SetBackProjectionFromGgo(args_info, mechlemOneStep.GetPointer());
@@ -201,7 +201,7 @@ rtkspectralonestep(const args_info_rtkspectralonestep & args_info)
     mechlemOneStep->SetSupportMask(supportmask);
   if (args_info.regul_spatial_weights_given)
     mechlemOneStep->SetSpatialRegularizationWeights(spatialRegulWeighs);
-  mechlemOneStep->SetInputMeasuredProjections(photonCounts);
+  mechlemOneStep->SetInputMeasuredProjections(mea);
   mechlemOneStep->SetGeometry(geometry);
   if (args_info.projection_weights_given)
     mechlemOneStep->SetProjectionWeights(projectionWeights);
@@ -221,8 +221,8 @@ main(int argc, char * argv[])
   GGO(rtkspectralonestep, args_info);
   try
   {
-    itk::ImageIOBase::Pointer headerInputPhotonCounts = GetFileHeader(args_info.spectral_arg);
-    unsigned int              nBins = headerInputPhotonCounts->GetNumberOfComponents();
+    itk::ImageIOBase::Pointer headerInputMeasuredProjections = GetFileHeader(args_info.spectral_arg);
+    unsigned int              nBins = headerInputMeasuredProjections->GetNumberOfComponents();
     itk::ImageIOBase::Pointer headerAttenuations = GetFileHeader(args_info.attenuations_arg);
     unsigned int              nMaterials = headerAttenuations->GetDimensions(0);
 
