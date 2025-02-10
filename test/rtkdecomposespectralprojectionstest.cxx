@@ -37,7 +37,7 @@ main(int argc, char * argv[])
 
   using DecomposedProjectionType = itk::VectorImage<PixelValueType, Dimension>;
 
-  using SpectralProjectionsType = itk::VectorImage<PixelValueType, Dimension>;
+  using MeasuredProjectionsType = itk::VectorImage<PixelValueType, Dimension>;
 
   using IncidentSpectrumImageType = itk::VectorImage<PixelValueType, Dimension - 1>;
   using IncidentSpectrumReaderType = itk::ImageFileReader<IncidentSpectrumImageType>;
@@ -157,10 +157,10 @@ main(int argc, char * argv[])
   }
 
   // Generate a set of zero-filled photon count projections
-  SpectralProjectionsType::Pointer photonCounts = SpectralProjectionsType::New();
-  photonCounts->CopyInformation(decomposed);
-  photonCounts->SetVectorLength(6);
-  photonCounts->Allocate();
+  MeasuredProjectionsType::Pointer measuredProjections = MeasuredProjectionsType::New();
+  measuredProjections->CopyInformation(decomposed);
+  measuredProjections->SetVectorLength(6);
+  measuredProjections->Allocate();
 
   // Generate the thresholds vector
   itk::VariableLengthVector<unsigned int> thresholds;
@@ -175,10 +175,10 @@ main(int argc, char * argv[])
 
   // Apply the forward model to the multi-material projections
   using SpectralForwardFilterType =
-    rtk::SpectralForwardModelImageFilter<DecomposedProjectionType, SpectralProjectionsType, IncidentSpectrumImageType>;
+    rtk::SpectralForwardModelImageFilter<DecomposedProjectionType, MeasuredProjectionsType, IncidentSpectrumImageType>;
   SpectralForwardFilterType::Pointer forward = SpectralForwardFilterType::New();
   forward->SetInputDecomposedProjections(decomposed);
-  forward->SetInputMeasuredProjections(photonCounts);
+  forward->SetInputMeasuredProjections(measuredProjections);
   forward->SetInputIncidentSpectrum(incidentSpectrumReader->GetOutput());
   forward->SetDetectorResponse(detectorResponseReader->GetOutput());
   forward->SetMaterialAttenuations(materialAttenuationsReader->GetOutput());
@@ -202,7 +202,7 @@ main(int argc, char * argv[])
 
   // Create and set the simplex filter to perform the decomposition
   using SimplexFilterType = rtk::SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionType,
-                                                                                    SpectralProjectionsType,
+                                                                                    MeasuredProjectionsType,
                                                                                     IncidentSpectrumImageType>;
   SimplexFilterType::Pointer simplex = SimplexFilterType::New();
   simplex->SetInputDecomposedProjections(initialDecomposedProjections);

@@ -33,7 +33,7 @@ main(int argc, char * argv[])
   using PixelValueType = float;
   constexpr unsigned int Dimension = 3;
   using DecomposedProjectionType = itk::VectorImage<PixelValueType, Dimension>;
-  using SpectralProjectionsType = itk::VectorImage<PixelValueType, Dimension>;
+  using MeasuredProjectionsType = itk::VectorImage<PixelValueType, Dimension>;
   using IncidentSpectrumImageType = itk::VectorImage<PixelValueType, Dimension - 1>;
   using DetectorResponseImageType = itk::Image<PixelValueType, Dimension - 1>;
   using MaterialAttenuationsImageType = itk::Image<PixelValueType, Dimension - 1>;
@@ -58,10 +58,10 @@ main(int argc, char * argv[])
   const unsigned int MaximumEnergy = incidentSpectrum->GetVectorLength();
 
   // Generate a set of zero-filled photon count projections
-  SpectralProjectionsType::Pointer photonCounts = SpectralProjectionsType::New();
-  photonCounts->CopyInformation(decomposedProjection);
-  photonCounts->SetVectorLength(NumberOfSpectralBins);
-  photonCounts->Allocate();
+  MeasuredProjectionsType::Pointer measuredProjections = MeasuredProjectionsType::New();
+  measuredProjections->CopyInformation(decomposedProjection);
+  measuredProjections->SetVectorLength(NumberOfSpectralBins);
+  measuredProjections->Allocate();
 
   // Read the thresholds on command line
   itk::VariableLengthVector<unsigned int> thresholds;
@@ -81,11 +81,12 @@ main(int argc, char * argv[])
                              << decomposedProjection->GetPixel(indexDecomp).Size() << ", should be "
                              << NumberOfMaterials);
 
-  SpectralProjectionsType::IndexType indexSpect;
+  MeasuredProjectionsType::IndexType indexSpect;
   indexSpect.Fill(0);
-  if (photonCounts->GetPixel(indexSpect).Size() != NumberOfSpectralBins)
+  if (measuredProjections->GetPixel(indexSpect).Size() != NumberOfSpectralBins)
     itkGenericExceptionMacro(<< "Spectral projections (i.e. photon count data) image has vector size "
-                             << photonCounts->GetPixel(indexSpect).Size() << ", should be " << NumberOfSpectralBins);
+                             << measuredProjections->GetPixel(indexSpect).Size() << ", should be "
+                             << NumberOfSpectralBins);
 
   IncidentSpectrumImageType::IndexType indexIncident;
   indexIncident.Fill(0);
@@ -100,10 +101,10 @@ main(int argc, char * argv[])
 
   // Create and set the filter
   using ForwardModelFilterType =
-    rtk::SpectralForwardModelImageFilter<DecomposedProjectionType, SpectralProjectionsType, IncidentSpectrumImageType>;
+    rtk::SpectralForwardModelImageFilter<DecomposedProjectionType, MeasuredProjectionsType, IncidentSpectrumImageType>;
   ForwardModelFilterType::Pointer forward = ForwardModelFilterType::New();
   forward->SetInputDecomposedProjections(decomposedProjection);
-  forward->SetInputMeasuredProjections(photonCounts);
+  forward->SetInputMeasuredProjections(measuredProjections);
   forward->SetInputIncidentSpectrum(incidentSpectrum);
   forward->SetDetectorResponse(detectorResponse);
   forward->SetMaterialAttenuations(materialAttenuations);
