@@ -99,7 +99,7 @@ MechlemOneStepSpectralReconstructionFilter<TOutputImage, TMeasuredProjections, T
   this->SetNthInput(2, const_cast<TIncidentSpectrum *>(incidentSpectrum));
 }
 
-#ifdef ITK_FUTURE_LEGACY_REMOVE
+#ifndef ITK_FUTURE_LEGACY_REMOVE
 template <class TOutputImage, class TMeasuredProjections, class TIncidentSpectrum>
 void
 MechlemOneStepSpectralReconstructionFilter<TOutputImage, TMeasuredProjections, TIncidentSpectrum>::SetInputPhotonCounts(
@@ -165,7 +165,7 @@ MechlemOneStepSpectralReconstructionFilter<TOutputImage, TMeasuredProjections, T
   return static_cast<const TIncidentSpectrum *>(this->itk::ProcessObject::GetInput(2));
 }
 
-#ifdef ITK_FUTURE_LEGACY_REMOVE
+#ifndef ITK_FUTURE_LEGACY_REMOVE
 template <class TOutputImage, class TMeasuredProjections, class TIncidentSpectrum>
 typename TMeasuredProjections::ConstPointer
 MechlemOneStepSpectralReconstructionFilter<TOutputImage, TMeasuredProjections, TIncidentSpectrum>::
