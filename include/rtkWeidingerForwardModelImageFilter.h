@@ -92,7 +92,7 @@ public:
   SetInputMeasuredProjections(const TMeasuredProjections * measuredProjections);
   void
   SetInputIncidentSpectrum(const TIncidentSpectrum * incidentSpectrum);
-#ifdef ITK_FUTURE_LEGACY_REMOVE
+#ifndef ITK_FUTURE_LEGACY_REMOVE
   void
   SetInputMaterialProjections(const TDecomposedProjections * decomposedProjections);
   void
@@ -142,7 +142,7 @@ protected:
   GetInputMeasuredProjections();
   typename TIncidentSpectrum::ConstPointer
   GetInputIncidentSpectrum();
-#ifdef ITK_FUTURE_LEGACY_REMOVE
+#ifndef ITK_FUTURE_LEGACY_REMOVE
   typename TDecomposedProjections::ConstPointer
   GetInputMaterialProjections();
   typename TMeasuredProjections::ConstPointer
