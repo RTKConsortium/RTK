@@ -265,7 +265,7 @@ public:
   SetInputMeasuredProjections(const TMeasuredProjections * measuredProjections);
   void
   SetInputIncidentSpectrum(const TIncidentSpectrum * incidentSpectrum);
-#ifdef ITK_FUTURE_LEGACY_REMOVE
+#ifndef ITK_FUTURE_LEGACY_REMOVE
   void
   SetInputPhotonCounts(const TMeasuredProjections * measuredProjections);
   void
@@ -354,7 +354,7 @@ protected:
   GetInputMeasuredProjections();
   typename TIncidentSpectrum::ConstPointer
   GetInputIncidentSpectrum();
-#ifdef ITK_FUTURE_LEGACY_REMOVE
+#ifndef ITK_FUTURE_LEGACY_REMOVE
   typename TMeasuredProjections::ConstPointer
   GetInputPhotonCounts();
   typename TIncidentSpectrum::ConstPointer
