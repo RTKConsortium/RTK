@@ -2,20 +2,27 @@
 
 The following exampels illustrates the command line application `rtkfdk` by reconstructing a Shepp Logan phantom with Feldkamp, David and Kress algorithm in 3D (cone-beam) and 2D (fan-beam).
 
+`````{tab-set}
+
+````{tab-item} 3D
+
 ## 3D
 
-![sin_3D](SheppLogan-3D-Sinogram.png){w=200px alt="Shepp-Logan 3D sinogram"}
-![img_3D](SheppLogan-3D.png){w=200px alt="Shepp-Logan 3D image"}
+![sin_3D](../../documentation/docs/ExternalData/SheppLogan-3D-Sinogram.png){w=200px alt="Shepp-Logan 3D sinogram"}
+![img_3D](../../documentation/docs/ExternalData/SheppLogan-3D.png){w=200px alt="Shepp-Logan 3D image"}
 
 This script uses the file [SheppLogan.txt](https://data.kitware.com/api/v1/item/5b179c938d777f15ebe2020b/download) as input.
 
 ```{literalinclude} FDK3D.sh
 ```
 
+````
+````{tab-item} 2D
+
 ## 2D
 
-![sin_2D](SheppLogan-2D-Sinogram.png){w=200px alt="Shepp-Logan 2D sinogram"}
-![img_2D](SheppLogan-2D.png){w=200px alt="Shepp-Logan 2D image"}
+![sin_2D](../../documentation/docs/ExternalData/SheppLogan-2D-Sinogram.png){w=200px alt="Shepp-Logan 2D sinogram"}
+![img_2D](../../documentation/docs/ExternalData/SheppLogan-2D.png){w=200px alt="Shepp-Logan 2D image"}
 
 The same reconstruction can be performed using the original 2D Shepp-Logan phantom.
 RTK can perform 2D reconstructions through images wide of 1 pixel in the y direction.
@@ -23,6 +30,9 @@ The following script performs the same reconstruction as above in a 2D environme
 
 ```{literalinclude} FDK2D.sh
 ```
+````
+
+````{tab-item} Motion compensated
 
 ## Motion-compensated reconstruction
 
@@ -62,13 +72,13 @@ rtkfieldofview \
 
 You should obtain something like that with [VV](http://vv.creatis.insa-lyon.fr/):
 
-![Blurred](Blurred.jpg){w=600px alt="Blurred image"}
+![Blurred](../../documentation/docs/ExternalData/Blurred.jpg){w=600px alt="Blurred image"}
 
 ### Deformation vector field
 
 The next piece of data is a 4D deformation vector field that describes a respiratory cycle. Typically, it can be obtained from the 4D planning CT with deformable image registration. Here, I have used [Elastix](http://elastix.lumc.nl/) with the [sliding module](http://elastix.lumc.nl/modelzoo/par0016) developed by Vivien Delmon. The registration uses a [patient mask](https://data.kitware.com/api/v1/item/5be99a408d777f2179a2dde8/download) (red+green) and a [motion mask](https://data.kitware.com/api/v1/item/5be99a088d777f2179a2cf6f/download) (red) as described in [Jef's publication](http://www.creatis.insa-lyon.fr/site/fr/publications/VAND-12):
 
-![Mm](MotionMask.jpg){w=400px alt="Motion mask"}
+![Mm](../../documentation/docs/ExternalData/MotionMask.jpg){w=400px alt="Motion mask"}
 
 The registration can easily be scripted, here with bash, where each phase image of the POPI 4D CT has been stored in files 00.mhd to 50.mhd:
 
@@ -131,7 +141,7 @@ done
 
 This is a bit complicated and there are probably other ways of doing this. For example, Vivien has resampled the planning CT frames on the CBCT coordinate system before doing the registrations, in which case you do not need to do all this. Just pick one of your choice but motion-compensated CBCT reconstruction requires a 4D vector field that is nicely displayed on top of a CBCT image, for example the fdk.mha that has been produced in the first step (the vector field is downsampled and displayed with VV):
 
-![Vf](VectorField.gif){w=400px alt="Vector field"}
+![Vf](../../documentation/docs/ExternalData/VectorField.gif){w=400px alt="Vector field"}
 
 The elastix output files and the transformed 4D DVF are available [here](https://data.kitware.com/api/v1/item/5be99a058d777f2179a2cf42/download).
 
@@ -150,7 +160,7 @@ rtkextractshroudsignal --input shroud.mha \
 
 Post-process with Matlab to obtain the phase signal, ensuring the phase ranges from 0 to 1 (e.g., 0.3 corresponds to 30% of the respiratory cycle). The resulting phase is visualized [here](https://data.kitware.com/api/v1/item/5be99af98d777f2179a2e160/download):
 
-![Signal](Signal.jpg){w=800px alt="Phase signal"}
+![Signal](../../documentation/docs/ExternalData/Signal.jpg){w=800px alt="Phase signal"}
 
 ---
 
@@ -183,6 +193,8 @@ rtkfieldofview \
 
 Toggle between uncorrected and motion-compensated reconstruction to appreciate the improvement:
 
-![Blurred vs mc.gif](Blurred_vs_mc.gif){w=400 alt="blurred vs motion compensation image"}
+![Blurred vs mc.gif](../../documentation/docs/ExternalData/Blurred_vs_mc.gif){w=400 alt="blurred vs motion compensation image"}
 
 The 4D vector field is constructed with phase 50% as a reference. Modify the reference image to reconstruct other phases, such as the time-average position.
+````
+`````
