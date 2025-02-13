@@ -10,10 +10,10 @@ This example is illustrated with a set of projection images of the [POPI patient
 
 ```
 # Convert Elekta database to RTK geometry
-rtkelektasynergygeometry
-  -o geometry.rtk
-  -f FRAME.DBF
-  -i IMAGE.DBF
+rtkelektasynergygeometry \
+  -o geometry.rtk \
+  -f FRAME.DBF \
+  -i IMAGE.DBF \
   -u 1.3.46.423632.141000.1169042526.68
 
 # Reconstruct a 3D volume from all projection images.
@@ -22,44 +22,44 @@ rtkelektasynergygeometry
 # not required for 4D ROOSTER, but there is usually no other way to generate
 # a motion mask, which is required. Additionally, the blurry reconstruction
 # can be used to initialize the 4D ROOSTER reconstruction.
-rtkfdk
-  -p .
-  -r .*.his
-  -o fdk.mha
-  -g geometry.rtk
-  --hann 0.5
-  --pad 1.0
-  --dimension 160
+rtkfdk \
+  -p . \
+  -r .*.his \
+  -o fdk.mha \
+  -g geometry.rtk \
+  --hann 0.5 \
+  --pad 1.0 \
+  --dimension 160 \
   --spacing 2
 ```
 
 You should obtain something like that with [VV](http://vv.creatis.insa-lyon.fr/):
 
-![Blurred](Blurred.jpg){w=600px alt="Blurred image"}
+![Blurred](../../documentation/docs/ExternalData/Blurred.jpg){w=600px alt="Blurred image"}
 
 ## Motion mask
 
 The next piece of data is a 3D motion mask: a volume that contains only zeros, where no movement is expected to occur, and ones, where movement is expected. Typically, during breathing, the whole chest moves, so it is safe to use the [patient mask](https://data.kitware.com/api/v1/item/5be99a418d777f2179a2ddf4/download) (red+green). However, restricting the movement to a smaller region, e.g. the rib cage, can help reconstruct this region more accurately and mitigate artifacts, so we might want to use the [rib cage mask](https://data.kitware.com/api/v1/item/5be99a2c8d777f2179a2dc4f/download) (red):
 
-![Mm](MotionMask.jpg){w=400px alt="Motion mask"}
+![Mm](../../documentation/docs/ExternalData/MotionMask.jpg){w=400px alt="Motion mask"}
 
 ## Respiratory signal
 
 The 4D ROOSTER algorithm requires that we associate each projection image with the instant of the respiratory cycle at which it has been acquired. We used the Amsterdam shroud solution of Lambert Zijp (described [here](http://www.creatis.insa-lyon.fr/site/fr/publications/RIT-12a)) which is implemented in RTK
 
 ```
-rtkamsterdamshroud --path .
-                   --regexp '.*.his'
-                   --output shroud.mha
+rtkamsterdamshroud --path . \
+                   --regexp '.*.his' \
+                   --output shroud.mha \
                    --unsharp 650
-rtkextractshroudsignal --input shroud.mha
-                       --output signal.txt
+rtkextractshroudsignal --input shroud.mha \
+                       --output signal.txt \
                        --phase sphase.txt
 ```
 
 to get the phase signal. Note that the phase must go from 0 to 1 where 0.3 corresponds to 30% in the respiratory cycle, i.e., frame 3 if you have a 10-frames 4D reconstruction or frame 6 if you have a 20-frames 4D reconstruction. The [resulting phase](https://data.kitware.com/api/v1/item/5be99af98d777f2179a2e160/download) is in green on top of the blue respiratory signal and the detected end-exhale peaks:
 
-![Signal](Signal.jpg){w=800px alt="Phase signal"}
+![Signal](../../documentation/docs/ExternalData/Signal.jpg){w=800px alt="Phase signal"}
 
 ## ROOSTER for conebeam CT reconstruction
 
@@ -73,20 +73,20 @@ The number of iterations suggested here should work in most situations. The para
 
 ```
 # Reconstruct from all projection images with 4D ROOSTER
-rtkfourdrooster
-  -p .
-  -r .*.his
-  -o rooster.mha
-  -g geometry.rtk
-  --signal sphase.txt
-  --motionmask MotionMask.mha
-  --gamma_time 0.0001
-  --gamma_space 0.0001
-  --niter 30
-  --cgiter 4
-  --tviter 10
-  --spacing 2
-  --dimension 160
+rtkfourdrooster \
+  -p . \
+  -r .*.his \
+  -o rooster.mha \
+  -g geometry.rtk \
+  --signal sphase.txt \
+  --motionmask MotionMask.mha \
+  --gamma_time 0.0001 \
+  --gamma_space 0.0001 \
+  --niter 30 \
+  --cgiter 4 \
+  --tviter 10 \
+  --spacing 2 \
+  --dimension 160 \
   --frames 5
 ```
 
@@ -94,22 +94,22 @@ Depending on the resolution you choose, and even on powerful computers, the reco
 
 ```
 # Reconstruct from all projection images with 4D ROOSTER, using CUDA forward and back projectors
-rtkfourdrooster
-  -p .
-  -r .*.his
-  -o rooster.mha
-  -g geometry.rtk
-  --signal sphase.txt
-  --motionmask MotionMask.mha
-  --fp CudaRayCast
-  --bp CudaVoxelBased
-  --gamma_time 0.0001
-  --gamma_space 0.0001
-  --niter 30
-  --cgiter 4
-  --tviter 10
-  --spacing 2
-  --dimension 160
+rtkfourdrooster \
+  -p . \
+  -r .*.his \
+  -o rooster.mha \
+  -g geometry.rtk \
+  --signal sphase.txt \
+  --motionmask MotionMask.mha \
+  --fp CudaRayCast \
+  --bp CudaVoxelBased \
+  --gamma_time 0.0001 \
+  --gamma_space 0.0001 \
+  --niter 30 \
+  --cgiter 4 \
+  --tviter 10 \
+  --spacing 2 \
+  --dimension 160 \
   --frames 5
 ```
 
@@ -123,21 +123,21 @@ Note that the reconstructed volume in this example does not fully contain the at
 
 ```
 # Reconstruct from all projection images with MA ROOSTER
-rtkfourdrooster
-  -p .
-  -r .*.his
-  -o rooster.mha
-  -g geometry.rtk
-  --signal sphase.txt
-  --motionmask MotionMask.mha
-  --gamma_time 0.0001
-  --gamma_space 0.0001
-  --niter 30
-  --cgiter 4
-  --tviter 10
-  --spacing 2
-  --dimension 160
-  --frames 5
+rtkfourdrooster \
+  -p . \
+  -r .*.his \
+  -o rooster.mha \
+  -g geometry.rtk \
+  --signal sphase.txt \
+  --motionmask MotionMask.mha \
+  --gamma_time 0.0001 \
+  --gamma_space 0.0001 \
+  --niter 30 \
+  --cgiter 4 \
+  --tviter 10 \
+  --spacing 2 \
+  --dimension 160 \
+  --frames 5 \
   --dvf deformationField_4D.mhd
 ```
 
@@ -156,23 +156,23 @@ Extract the data of each patient in a separate folder. From the folder containin
 
 ```
 # Reconstruct patient 1 with MA ROOSTER
-rtkfourdrooster
-  -p .
-  -r correctedProjs.mha
-  -o marooster.mha
-  -g geom.xml
-  --signal cphase.txt
-  --motionmask dilated_resampled_mm.mhd
-  --gamma_time 0.0002
-  --gamma_space 0.00005
-  --niter 10
-  --cgiter 4
-  --tviter 10
-  --spacing "1, 1, 1, 1"
-  --dimension "220, 280, 370, 10"
-  --origin "-140, -140, -75, 0"
-  --frames 10
-  --dvf toPhase50_4D.mhd
+rtkfourdrooster \
+  -p . \
+  -r correctedProjs.mha \
+  -o marooster.mha \
+  -g geom.xml \
+  --signal cphase.txt \
+  --motionmask dilated_resampled_mm.mhd \
+  --gamma_time 0.0002 \
+  --gamma_space 0.00005 \
+  --niter 10 \
+  --cgiter 4 \
+  --tviter 10 \
+  --spacing "1, 1, 1, 1" \
+  --dimension "220, 280, 370, 10" \
+  --origin "-140, -140, -75, 0" \
+  --frames 10 \
+  --dvf toPhase50_4D.mhd \
   --idvf fromPhase50_4D.mhd
 ```
 
@@ -180,24 +180,24 @@ From the folder containing the data of patient 2, run the following command line
 
 ```
 # Reconstruct patient 2 with MA ROOSTER
-rtkfourdrooster
-  -p .
-  -r correctedProjs.mha
-  -o marooster.mha
-  -g geom.xml
-  --signal cphase.txt
-  --motionmask dilated_resampled_mm.mhd
-  --gamma_time 0.0002
-  --gamma_space 0.00005
-  --niter 10
-  --cgiter 4
-  --tviter 10
-  --spacing "1, 1, 1, 1"
-  --dimension "285, 270, 307, 10"
-  --origin "-167.5, -135, -205, 0"
-  --frames 10
-  --dvf toPhase50_4D.mhd
-  --idvf fromPhase50_4D.mhd
+rtkfourdrooster \
+  -p . \
+  -r correctedProjs.mha \
+  -o marooster.mha \
+  -g geom.xml \
+  --signal cphase.txt \
+  --motionmask dilated_resampled_mm.mhd \
+  --gamma_time 0.0002 \
+  --gamma_space 0.00005 \
+  --niter 10 \
+  --cgiter 4 \
+  --tviter 10 \
+  --spacing "1, 1, 1, 1" \
+  --dimension "285, 270, 307, 10" \
+  --origin "-167.5, -135, -205, 0" \
+  --frames 10 \
+  --dvf toPhase50_4D.mhd \
+  --idvf fromPhase50_4D.mhd \
 ```
 
 Note the option "--idvf", which allows to provide the inverse DVF. It is used to inverse warp the 4D reconstruction after the temporal regularization. MA-ROOSTER will work with and without the inverse DVF, and yield almost the same results in both cases. Not using the inverse DVF is approximately two times slower, as it requires MA-ROOSTER to perform the inverse warping by an iterative method.

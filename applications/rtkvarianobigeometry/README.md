@@ -1,5 +1,9 @@
 # Varian Reconstruction
 
+`````{tab-set}
+
+````{tab-item} OBI
+
 ## Varian OBI Reconstruction
 
 The first step before proceeding with reconstruction is to convert Varian's geometry into RTK's format using a command-line tool. Follow these simple steps:
@@ -54,9 +58,10 @@ rtkfieldofview \
 
 You can visualize the result using a viewer (e.g., VV). The resulting image should look like this:
 
-![Varian](Varian.png){w=400px alt="Varian snapshot"}
+![../../documentation/docs/ExternalData/Varian](../../documentation/docs/ExternalData/Varian.png){w=400px alt="Varian snapshot"}
 
----
+````
+````{tab-item} ProBeam
 
 ## Varian ProBeam Reconstruction
 
@@ -112,4 +117,6 @@ rtkfieldofview \
 
 You can visualize the result using a viewer (e.g., VV). The resulting image should look like this:
 
-![VarianProBeam](VarianProBeam.png){w=400px alt="VarianProBeam snapshot"}
+![../../documentation/docs/ExternalData/VarianProBeam](../../documentation/docs/ExternalData/VarianProBeam.png){w=400px alt="VarianProBeam snapshot"}
+`````
+````
