@@ -122,7 +122,7 @@ def main():
   conjugategradient.SetNumberOfIterations(args_info.niterations)
   conjugategradient.SetDisableDisplacedDetectorFilter(args_info.nodisplaced)
 
-  # TODO REPORT_ITERATIONS(conjugategradient, ConjugateGradientFilterType, OutputImageType)
+  rtk.SetIterationsReportFromArgParse(args_info, conjugategradient)
 
   conjugategradient.Update()
 
