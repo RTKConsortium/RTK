@@ -25,6 +25,7 @@ author = 'RTK Consortium'
 extensions = [
     'myst_parser',
     'sphinx_copybutton',
+    'sphinx_design',
 ]
 
 myst_enable_extensions = [

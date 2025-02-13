@@ -69,4 +69,4 @@ rtkfieldofview \
 
 You can visualize the result using a viewer (e.g., VV). The resulting image should look like the following:
 
-![Elekta.jpg](Elekta.png){w=400px alt="Elekta snapshot"}
+![Elekta.jpg](../../documentation/docs/ExternalData/Elekta.png){w=400px alt="Elekta snapshot"}

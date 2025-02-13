@@ -1,7 +1,7 @@
 # Amsterdam Shroud
 
-![sin](Moving-Phantom-Sinogram.png){w=400px alt="Moving phantom sinogram"}
-![img](Amsterdam.png){w=400px alt="Amsterdam image"}
+![sin](../../documentation/docs/ExternalData/Moving-Phantom-Sinogram.png){w=400px alt="Moving phantom sinogram"}
+![img](../../documentation/docs/ExternalData/Amsterdam.png){w=400px alt="Amsterdam image"}
 
 Picture 1 shows the sinogram of the input and picture 2 the shroud image that was created using the command line below.
 

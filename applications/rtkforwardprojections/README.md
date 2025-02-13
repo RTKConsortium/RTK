@@ -1,7 +1,7 @@
 # Forward Projection
 
-![sin](POPI-Sinogram.png){w=400px alt="POPI sinogram"}
-![img](POPI-Reconstruction.png){w=400px alt="POPI reconstruction"}
+![sin](../../documentation/docs/ExternalData/POPI-Sinogram.png){w=400px alt="POPI sinogram"}
+![img](../../documentation/docs/ExternalData/POPI-Reconstruction.png){w=400px alt="POPI reconstruction"}
 
 This script uses the files [00.mhd](http://www.creatis.insa-lyon.fr/~srit/POPI/MedPhys11/bl/mhd/00.mhd) and [00.raw](http://www.creatis.insa-lyon.fr/~srit/POPI/MedPhys11/bl/mhd/00.raw) of the [POPI](http://www.creatis.insa-lyon.fr/rio/popi-model/) as input.
 
