@@ -60,7 +60,7 @@ WeidingerForwardModelImageFilter<TDecomposedProjections, TMeasuredProjections, T
   this->SetNthInput(2, const_cast<TIncidentSpectrum *>(incidentSpectrum));
 }
 
-#ifndef ITK_FUTURE_LEGACY_REMOVED
+#ifndef ITK_FUTURE_LEGACY_REMOVE
 template <class TDecomposedProjections, class TMeasuredProjections, class TIncidentSpectrum, class TProjections>
 void
 WeidingerForwardModelImageFilter<TDecomposedProjections, TMeasuredProjections, TIncidentSpectrum, TProjections>::
@@ -118,7 +118,7 @@ WeidingerForwardModelImageFilter<TDecomposedProjections, TMeasuredProjections, T
   return static_cast<const TIncidentSpectrum *>(this->itk::ProcessObject::GetInput(2));
 }
 
-#ifndef ITK_FUTURE_LEGACY_REMOVED
+#ifndef ITK_FUTURE_LEGACY_REMOVE
 template <class TDecomposedProjections, class TMeasuredProjections, class TIncidentSpectrum, class TProjections>
 typename TDecomposedProjections::ConstPointer
 WeidingerForwardModelImageFilter<TDecomposedProjections, TMeasuredProjections, TIncidentSpectrum, TProjections>::
