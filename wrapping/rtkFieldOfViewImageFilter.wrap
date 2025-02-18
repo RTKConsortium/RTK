@@ -1,3 +1,9 @@
 itk_wrap_class("rtk::FieldOfViewImageFilter" POINTER)
   itk_wrap_image_filter("${WRAP_ITK_REAL}" 2 3)
 itk_end_wrap_class()
+
+set(ITK_WRAP_PYTHON_SWIG_EXT
+    "%include FieldOfViewImageFilter.i\n${ITK_WRAP_PYTHON_SWIG_EXT}")
+
+file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/FieldOfViewImageFilter.i"
+    DESTINATION "${WRAPPER_MASTER_INDEX_OUTPUT_DIR}")

@@ -306,4 +306,5 @@ rtk_add_test(rtkBioscanTest rtkbioscantest.cxx
 if(ITK_WRAP_PYTHON)
   itk_python_add_test(NAME rtkFirstReconstructionPythonTest COMMAND rtkFirstReconstruction.py ${CMAKE_CURRENT_BINARY_DIR}/rtkFirstReconstruction.mha)
   itk_python_add_test(NAME rtkMaximumIntensityPythonTest COMMAND rtkMaximumIntensity.py  ${CMAKE_CURRENT_BINARY_DIR}/rtkFirstReconstruction.mha)
+  itk_python_add_test(NAME rtkOutoutArgumentWrappingTest COMMAND rtkOutoutArgumentWrapping.py)
 endif()
