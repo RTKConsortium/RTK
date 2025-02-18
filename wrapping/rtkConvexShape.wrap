@@ -1,1 +1,7 @@
 itk_wrap_simple_class("rtk::ConvexShape" POINTER)
+
+set(ITK_WRAP_PYTHON_SWIG_EXT
+    "%include ConvexShape.i\n${ITK_WRAP_PYTHON_SWIG_EXT}")
+
+file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/ConvexShape.i"
+    DESTINATION "${WRAPPER_MASTER_INDEX_OUTPUT_DIR}")
