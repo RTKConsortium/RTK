@@ -1,4 +1,3 @@
-package "rtkconjugategradient"
 purpose "Reconstructs a set of 3D volumes from a set of photon counts projections, using the method described by Mechlem et al. in IEEE TMI in 2017"
 
 option "verbose"               v "Verbose execution"                                                 flag   off

@@ -1,4 +1,3 @@
-package "rtkorageometry"
 purpose "Creates an RTK geometry file from a sequence of ora.xml files (radART / medPhoton file format)."
 
 option "verbose"     v "Verbose execution"                           flag   off

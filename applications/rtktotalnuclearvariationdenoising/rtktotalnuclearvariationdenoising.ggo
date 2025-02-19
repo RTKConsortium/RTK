@@ -1,4 +1,3 @@
-package "rtktotalnuclearvariationdenoising"
 purpose "Performs total nuclear variation denoising of a 3D + channels image."
 
 option "verbose"   v "Verbose execution"                                            flag         off

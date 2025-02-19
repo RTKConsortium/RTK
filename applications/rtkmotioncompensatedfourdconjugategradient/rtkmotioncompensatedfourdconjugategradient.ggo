@@ -1,4 +1,3 @@
-package "rtkmotioncompensatedfourdconjugategradient"
 purpose "Performs a motion-compensated 4D reconstruction by the conjugate gradient method"
 
 option "verbose"     v "Verbose execution"                                     flag   off

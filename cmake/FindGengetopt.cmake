@@ -64,6 +64,7 @@ macro (WRAP_GGO GGO_SRCS)
                           --unamed-opts
                           --conf-parser
                           --include-getopt
+                          --set-package ${CMAKE_PROJECT_NAME}
                      DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${FIRST_GGO_BASEFILENAME}
                     )
   set(${GGO_SRCS} ${${GGO_SRCS}} ${GGO_OUTPUT})

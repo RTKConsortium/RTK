@@ -1,4 +1,3 @@
-package "rtkdrawshepploganphantom"
 purpose "Computes a 3D voxelized Shepp & Logan phantom with noise [https://www.slaney.org/pct/pct-errata.html]"
 
 option "verbose"      v "Verbose execution"                         flag            off

@@ -1,4 +1,3 @@
-package "rtkoverlayphaseandshroud"
 purpose "Generates an RGB image showing the phase peaks on top of the shroud"
 
 option "verbose"    v   "Verbose execution"                           flag                    off
