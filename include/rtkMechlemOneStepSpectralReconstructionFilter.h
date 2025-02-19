@@ -272,9 +272,13 @@ public:
   SetInputMaterialVolumes(const VectorImageType * materialVolumes);
   void
   SetInputMeasuredProjections(const TMeasuredProjections * measuredProjections);
-#ifndef ITK_FUTURE_LEGACY_REMOVE
   void
   SetInputMeasuredProjections(const VectorImageType * measuredProjections);
+  void
+  SetInputIncidentSpectrum(const TIncidentSpectrum * incidentSpectrum);
+#ifndef ITK_FUTURE_LEGACY_REMOVE
+  void
+  SetInputPhotonCounts(const TMeasuredProjections * measuredProjections);
   void
   SetInputSpectrum(const TIncidentSpectrum * incidentSpectrum);
 #endif

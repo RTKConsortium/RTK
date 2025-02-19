@@ -45,7 +45,6 @@ main(int argc, char * argv[])
   using MeasuredProjectionsPixelType = itk::Vector<DataType, nBins>;
 
   using MaterialProjectionsType = itk::VectorImage<DataType, Dimension>;
-  using vIncidentSpectrum = itk::VectorImage<DataType, Dimension - 1>;
   using VectorImageType = typename itk::VectorImage<DataType, Dimension>;
 
 #ifdef RTK_USE_CUDA
@@ -65,7 +64,6 @@ main(int argc, char * argv[])
 #endif
 
   using IncidentSpectrumReaderType = itk::ImageFileReader<IncidentSpectrumImageType>;
-  using vIncidentSpectrumReaderType = itk::ImageFileReader<vIncidentSpectrum>;
   using DetectorResponseReaderType = itk::ImageFileReader<DetectorResponseImageType>;
   using MaterialAttenuationsReaderType = itk::ImageFileReader<MaterialAttenuationsImageType>;
 
@@ -77,10 +75,6 @@ main(int argc, char * argv[])
   IncidentSpectrumReaderType::Pointer incidentSpectrumReader = IncidentSpectrumReaderType::New();
   incidentSpectrumReader->SetFileName(argv[1]);
   incidentSpectrumReader->Update();
-
-  vIncidentSpectrumReaderType::Pointer vIncidentSpectrumReader = vIncidentSpectrumReaderType::New();
-  vIncidentSpectrumReader->SetFileName(argv[2]);
-  vIncidentSpectrumReader->Update();
 
   DetectorResponseReaderType::Pointer detectorResponseReader = DetectorResponseReaderType::New();
   detectorResponseReader->SetFileName(argv[3]);

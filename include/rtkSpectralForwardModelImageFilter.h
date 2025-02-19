@@ -21,7 +21,9 @@
 
 #include "rtkSchlomka2008NegativeLogLikelihood.h"
 #include "rtkDualEnergyNegativeLogLikelihood.h"
+#include "rtkVectorImageToImageFilter.h"
 
+#include <itkPermuteAxesImageFilter.h>
 #include <itkInPlaceImageFilter.h>
 
 namespace rtk
@@ -41,7 +43,7 @@ namespace rtk
 
 template <typename DecomposedProjectionsType,
           typename MeasuredProjectionsType,
-          typename IncidentSpectrumImageType = itk::VectorImage<float, 2>,
+          typename IncidentSpectrumImageType = itk::Image<float, 3>,
           typename DetectorResponseImageType = itk::Image<float, 2>,
           typename MaterialAttenuationsImageType = itk::Image<float, 2>>
 class ITK_TEMPLATE_EXPORT SpectralForwardModelImageFilter
@@ -65,6 +67,13 @@ public:
   using DetectorResponseType = vnl_matrix<double>;
   using MaterialAttenuationsType = vnl_matrix<double>;
 
+#ifndef ITK_FUTURE_LEGACY_REMOVE
+  /** Additional types to overload SetInputIncidentSpectrum */
+  using VectorSpectrumImageType = itk::VectorImage<float, 2>;
+  using FlattenVectorFilterType = rtk::VectorImageToImageFilter<VectorSpectrumImageType, IncidentSpectrumImageType>;
+  using PermuteFilterType = itk::PermuteAxesImageFilter<IncidentSpectrumImageType>;
+#endif
+
   /** Standard New method. */
   itkNewMacro(Self);
 
@@ -76,6 +85,12 @@ public:
   SetInputIncidentSpectrum(const IncidentSpectrumImageType * IncidentSpectrum);
   void
   SetInputSecondIncidentSpectrum(const IncidentSpectrumImageType * SecondIncidentSpectrum);
+#ifndef ITK_FUTURE_LEGACY_REMOVE
+  void
+  SetInputIncidentSpectrum(const VectorSpectrumImageType * IncidentSpectrum);
+  void
+  SetInputSecondIncidentSpectrum(const VectorSpectrumImageType * SecondIncidentSpectrum);
+#endif
   typename IncidentSpectrumImageType::ConstPointer
   GetInputIncidentSpectrum();
   typename IncidentSpectrumImageType::ConstPointer
@@ -173,6 +188,14 @@ protected:
   bool         m_IsSpectralCT;               // If not, it is dual energy CT
   bool         m_ComputeVariances;           // Only implemented for dual energy CT
   bool         m_ComputeCramerRaoLowerBound; // Only implemented for spectral CT
+
+#ifndef ITK_FUTURE_LEGACY_REMOVE
+  /** Filters required for the overload of SetInputIncidentSpectrum */
+  typename FlattenVectorFilterType::Pointer m_FlattenFilter;
+  typename FlattenVectorFilterType::Pointer m_FlattenSecondFilter;
+  typename PermuteFilterType::Pointer       m_PermuteFilter;
+  typename PermuteFilterType::Pointer       m_PermuteSecondFilter;
+#endif
 
 }; // end of class
 
