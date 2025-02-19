@@ -1,4 +1,3 @@
-package "rtk"
 purpose "Polynomial gain correction projections"
 
 option  "config"     - "Config file"                                              string        no

@@ -1,4 +1,3 @@
-package "rtkdualenergysimplexdecomposition"
 purpose "Decomposes dual energy projections into materials"
 
 option "verbose"          v "Verbose execution"                                                 flag                         off

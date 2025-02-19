@@ -1,4 +1,3 @@
-package "rtkosem"
 purpose "Reconstructs a 3D volume from a sequence of projections with Ordered subset expectation maximization."
 
 option "verbose"     v "Verbose execution"                                     flag   off

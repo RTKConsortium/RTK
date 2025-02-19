@@ -1,4 +1,3 @@
-package "rtkwarpedbackprojectsequence"
 purpose "Backprojects a set of projections into a 4D volume, based on a respiratory/cardiac signal, and taking an a priori motion into account"
 
 option "verbose"     v "Verbose execution"                                     flag   off

@@ -1,4 +1,3 @@
-package "rtkextractshroudsignal"
 purpose "Extracts the breathing signal from a shroud image."
 
 option "verbose"    v   "Verbose execution"                           flag                    off
