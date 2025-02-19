@@ -3,10 +3,10 @@ name: 'Package RTK with CUDA'
 on: [push,pull_request]
 
 env:
-  itk-wheel-tag: 'v5.4.0'
-  itk-python-package-tag: '45cfd02a22661731ca5b155f210cfa2f887d50e7'
-  itk-python-package-org: 'SimonRit'
-  itk-module-deps: "RTKConsortium/ITKCudaCommon@cae7c93c2f6d4c5b3cb5f6e5ce4a97686e626bf7"
+  itk-wheel-tag: 'v5.4.2.post1'
+  itk-python-package-tag: 'v5.4.2.post1'
+  itk-python-package-org: 'InsightSoftwareConsortium'
+  itk-module-deps: "RTKConsortium/ITKCudaCommon@e38460052e7bf0965b95d46c263835a5eff0d52c"
 
 concurrency:
   group: '${{ github.workflow }}@${{ github.head_ref || github.run_id }}'
@@ -23,7 +23,7 @@ jobs:
         cuda-version: ["116","121"]
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: 'Fetch build script'
       run: |
