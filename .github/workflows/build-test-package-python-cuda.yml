@@ -162,7 +162,7 @@ jobs:
         $LIBCUFFT= (Get-Item "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v${CUDA_VERSION_MAJOR}.${CUDA_VERSION_MINOR}\bin\cufft64*dll" ).Name
         ((Get-Content -Path pyproject.toml) -replace "itk-rtk","itk-rtk-cuda${CUDA_VERSION}") | Set-Content -Path pyproject.toml
         ((Get-Content -Path pyproject.toml) -replace "dependencies = \[","dependencies = [""itk-cudacommon-cuda${CUDA_VERSION}  == 1.1.*"",") | Set-Content -Path pyproject.toml
-        ./windows-download-cache-and-build-module-wheels.ps1 "${{ matrix.python3-minor-version }}" -setup_options "--lib-paths ""C:/Program\ Files/NVIDIA\ GPU\ Computing\ Toolkit/CUDA/v${CUDA_VERSION_MAJOR}.${CUDA_VERSION_MINOR}/bin"" --exclude-libs ""nvcuda.dll;concrt140.dll;${LIBCUDART};${LIBCUBLAS};${LIBCUBLASLT};${LIBCUFFT}""" -cmake_options """-DRTK_CUDA_VERSION=${CUDA_VERSION_MAJOR}.${CUDA_VERSION_MINOR}"" ""-DRTK_BUILD_APPLICATIONS:BOOL=OFF"""
+        ./windows-download-cache-and-build-module-wheels.ps1 "${{ matrix.python3-minor-version }}" -setup_options "--lib-paths ""C:/Program\ Files/NVIDIA\ GPU\ Computing\ Toolkit/CUDA/v${CUDA_VERSION_MAJOR}.${CUDA_VERSION_MINOR}/bin"" --exclude-libs ""nvcuda.dll;concrt140.dll;${LIBCUDART};${LIBCUBLAS};${LIBCUBLASLT};${LIBCUFFT}""" -cmake_options """-DRTK_CUDA_VERSION=${CUDA_VERSION_MAJOR}.${CUDA_VERSION_MINOR}"" ""-DCMAKE_CUDA_COMPILER=$env:CUDACXX"" ""-DRTK_BUILD_APPLICATIONS:BOOL=OFF"""
 
         mkdir -p '${{ github.workspace }}\dist'
         cp 'dist\*.whl' '${{ github.workspace }}\dist'
