@@ -46,6 +46,8 @@ main(int argc, char * argv[])
 
   using MaterialProjectionsType = itk::VectorImage<DataType, Dimension>;
   using vIncidentSpectrum = itk::VectorImage<DataType, Dimension - 1>;
+  using VectorImageType = typename itk::VectorImage<DataType, Dimension>;
+
 #ifdef RTK_USE_CUDA
   using MaterialVolumeType = itk::CudaImage<MaterialPixelType, Dimension>;
   using MeasuredProjectionsType = itk::CudaImage<MeasuredProjectionsPixelType, Dimension>;
@@ -66,6 +68,10 @@ main(int argc, char * argv[])
   using vIncidentSpectrumReaderType = itk::ImageFileReader<vIncidentSpectrum>;
   using DetectorResponseReaderType = itk::ImageFileReader<DetectorResponseImageType>;
   using MaterialAttenuationsReaderType = itk::ImageFileReader<MaterialAttenuationsImageType>;
+
+  // Cast filters to convert between vector image types
+  using CastMaterialVolumesFilterType = itk::CastImageFilter<MaterialVolumeType, VectorImageType>;
+  using CastMeasuredProjectionsFilterType = itk::CastImageFilter<VectorImageType, MeasuredProjectionsType>;
 
   // Read all inputs
   IncidentSpectrumReaderType::Pointer incidentSpectrumReader = IncidentSpectrumReaderType::New();
@@ -229,11 +235,11 @@ main(int argc, char * argv[])
 
   // Apply spectral forward model to turn material projections into photon counts
   using ForwardModelFilterType =
-    rtk::SpectralForwardModelImageFilter<MaterialProjectionsType, vMeasuredProjectionsType, vIncidentSpectrum>;
+    rtk::SpectralForwardModelImageFilter<MaterialProjectionsType, vMeasuredProjectionsType, IncidentSpectrumImageType>;
   ForwardModelFilterType::Pointer forward = ForwardModelFilterType::New();
   forward->SetInputDecomposedProjections(composeProjs->GetOutput());
   forward->SetInputMeasuredProjections(vMeasuredProjections);
-  forward->SetInputIncidentSpectrum(vIncidentSpectrumReader->GetOutput());
+  forward->SetInputIncidentSpectrum(incidentSpectrumReader->GetOutput());
   forward->SetDetectorResponse(detectorResponseReader->GetOutput());
   forward->SetMaterialAttenuations(materialAttenuationsReader->GetOutput());
   itk::VariableLengthVector<double> thresholds;
@@ -250,19 +256,9 @@ main(int argc, char * argv[])
 
   // Convert the itk::VectorImage<> returned by "forward" into
   // an itk::Image<itk::Vector<>>
-  using IndexSelectionType =
-    itk::VectorIndexSelectionCastImageFilter<vMeasuredProjectionsType, SingleComponentImageType>;
-  IndexSelectionType::Pointer selectors[nBins];
-  using ComposeMeasuredProjectionsType = itk::ComposeImageFilter<SingleComponentImageType, MeasuredProjectionsType>;
-  ComposeMeasuredProjectionsType::Pointer composeMeasuredProjections = ComposeMeasuredProjectionsType::New();
-  for (unsigned int bin = 0; bin < nBins; bin++)
-  {
-    selectors[bin] = IndexSelectionType::New();
-    selectors[bin]->SetIndex(bin);
-    selectors[bin]->SetInput(forward->GetOutput());
-    composeMeasuredProjections->SetInput(bin, selectors[bin]->GetOutput());
-  }
-  composeMeasuredProjections->Update();
+  typename CastMeasuredProjectionsFilterType::Pointer castMeasuredProjections =
+    CastMeasuredProjectionsFilterType::New();
+  castMeasuredProjections->SetInput(forward->GetOutput());
 
   // Read the material attenuations image as a matrix
   MaterialAttenuationsImageType::IndexType indexMat;
@@ -287,8 +283,8 @@ main(int argc, char * argv[])
   MechlemType::Pointer mechlemOneStep = MechlemType::New();
   mechlemOneStep->SetForwardProjectionFilter(MechlemType::FP_JOSEPH); // Joseph
   mechlemOneStep->SetInputMaterialVolumes(materialVolumeSource->GetOutput());
-  mechlemOneStep->SetInputMeasuredProjections(composeMeasuredProjections->GetOutput());
-  mechlemOneStep->SetInputIncidentSpectrum(incidentSpectrumReader->GetOutput());
+  mechlemOneStep->SetInputMeasuredProjections(castMeasuredProjections->GetOutput());
+  mechlemOneStep->SetInputSpectrum(incidentSpectrumReader->GetOutput());
   mechlemOneStep->SetBinnedDetectorResponse(drm);
   mechlemOneStep->SetMaterialAttenuations(materialAttenuationsMatrix);
   mechlemOneStep->SetGeometry(geometry);
@@ -336,6 +332,27 @@ main(int argc, char * argv[])
   CheckVectorImageQuality<MaterialVolumeType>(mechlemOneStep->GetOutput(), composeVols->GetOutput(), 0.08, 23, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 #endif
+
+#ifdef RTK_USE_CUDA
+  std::cout
+    << "\n\n****** Case 5: CUDA voxel-based Backprojector, 4 subsets, with regularization, itkVectorImage inputs ******"
+    << std::endl;
+#else
+  std::cout
+    << "\n\n****** Case 4: Voxel-based Backprojector, 4 subsets, with regularization, itkVectorImage inputs ******"
+    << std::endl;
+#endif
+  // Add a cast to itkVectorImage, to test the overloaded SetInputMaterialVolumes method
+  typename CastMaterialVolumesFilterType::Pointer castMaterials = CastMaterialVolumesFilterType::New();
+  castMaterials->SetInput(materialVolumeSource->GetOutput());
+  mechlemOneStep->SetInputMaterialVolumes(castMaterials->GetOutput());
+
+  // Remove the cast from itkVectorImage, to test the overloaded SetInputMeasuredProjections method
+  mechlemOneStep->SetInputMeasuredProjections(forward->GetOutput());
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(mechlemOneStep->Update());
+
+  CheckVectorImageQuality<MaterialVolumeType>(mechlemOneStep->GetOutput(), composeVols->GetOutput(), 0.08, 23, 2.0);
+  std::cout << "\n\nTest PASSED! " << std::endl;
 
   return EXIT_SUCCESS;
 }

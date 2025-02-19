@@ -41,6 +41,8 @@ MechlemOneStepSpectralReconstructionFilter<TOutputImage, TMeasuredProjections, T
   m_RegularizationRadius.Fill(0);
 
   // Create the filters
+  m_CastMaterialVolumesFilter = CastMaterialVolumesFilterType::New();
+  m_CastMeasuredProjectionsFilter = CastMeasuredProjectionsFilterType::New();
   m_ExtractMeasuredProjectionsFilter = ExtractMeasuredProjectionsFilterType::New();
   m_AddGradients = AddFilterType::New();
   m_AddHessians = AddMatrixAndDiagonalFilterType::New();
@@ -86,9 +88,27 @@ MechlemOneStepSpectralReconstructionFilter<TOutputImage, TMeasuredProjections, T
 template <class TOutputImage, class TMeasuredProjections, class TIncidentSpectrum>
 void
 MechlemOneStepSpectralReconstructionFilter<TOutputImage, TMeasuredProjections, TIncidentSpectrum>::
+  SetInputMaterialVolumes(const VectorImageType * variableLengthVectorMaterialVolumes)
+{
+  m_CastMaterialVolumesFilter->SetInput(variableLengthVectorMaterialVolumes);
+  this->SetNthInput(0, const_cast<TOutputImage *>(m_CastMaterialVolumesFilter->GetOutput()));
+}
+
+template <class TOutputImage, class TMeasuredProjections, class TIncidentSpectrum>
+void
+MechlemOneStepSpectralReconstructionFilter<TOutputImage, TMeasuredProjections, TIncidentSpectrum>::
   SetInputMeasuredProjections(const TMeasuredProjections * measuredProjections)
 {
   this->SetNthInput(1, const_cast<TMeasuredProjections *>(measuredProjections));
+}
+
+template <class TOutputImage, class TMeasuredProjections, class TIncidentSpectrum>
+void
+MechlemOneStepSpectralReconstructionFilter<TOutputImage, TMeasuredProjections, TIncidentSpectrum>::
+  SetInputMeasuredProjections(const VectorImageType * variableLengthVectorMeasuredProjections)
+{
+  m_CastMeasuredProjectionsFilter->SetInput(variableLengthVectorMeasuredProjections);
+  this->SetNthInput(1, const_cast<TMeasuredProjections *>(m_CastMeasuredProjectionsFilter->GetOutput()));
 }
 
 template <class TOutputImage, class TMeasuredProjections, class TIncidentSpectrum>
