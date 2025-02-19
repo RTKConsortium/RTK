@@ -23,6 +23,9 @@
 #include <itkAmoebaOptimizer.h>
 #include "rtkSchlomka2008NegativeLogLikelihood.h"
 #include "rtkDualEnergyNegativeLogLikelihood.h"
+#include "rtkVectorImageToImageFilter.h"
+
+#include <itkPermuteAxesImageFilter.h>
 
 namespace rtk
 {
@@ -39,7 +42,7 @@ namespace rtk
 
 template <typename DecomposedProjectionsType,
           typename MeasuredProjectionsType,
-          typename IncidentSpectrumImageType = itk::VectorImage<float, 2>,
+          typename IncidentSpectrumImageType = itk::Image<float, 3>,
           typename DetectorResponseImageType = itk::Image<float, 2>,
           typename MaterialAttenuationsImageType = itk::Image<float, 2>>
 class ITK_TEMPLATE_EXPORT SimplexSpectralProjectionsDecompositionImageFilter
@@ -64,6 +67,13 @@ public:
   using DetectorResponseType = vnl_matrix<double>;
   using MaterialAttenuationsType = vnl_matrix<double>;
   using CostFunctionType = ProjectionsDecompositionNegativeLogLikelihood;
+
+#ifndef ITK_FUTURE_LEGACY_REMOVE
+  /** Additional types to overload SetInputIncidentSpectrum */
+  using VectorSpectrumImageType = itk::VectorImage<float, 2>;
+  using FlattenVectorFilterType = rtk::VectorImageToImageFilter<VectorSpectrumImageType, IncidentSpectrumImageType>;
+  using PermuteFilterType = itk::PermuteAxesImageFilter<IncidentSpectrumImageType>;
+#endif
 
   /** Standard New method. */
   itkNewMacro(Self);
@@ -100,6 +110,12 @@ public:
   SetInputIncidentSpectrum(const IncidentSpectrumImageType * IncidentSpectrum);
   void
   SetInputSecondIncidentSpectrum(const IncidentSpectrumImageType * SecondIncidentSpectrum);
+#ifndef ITK_FUTURE_LEGACY_REMOVE
+  void
+  SetInputIncidentSpectrum(const VectorSpectrumImageType * IncidentSpectrum);
+  void
+  SetInputSecondIncidentSpectrum(const VectorSpectrumImageType * SecondIncidentSpectrum);
+#endif
   typename IncidentSpectrumImageType::ConstPointer
   GetInputIncidentSpectrum();
   typename IncidentSpectrumImageType::ConstPointer
@@ -181,6 +197,14 @@ protected:
   unsigned int             m_NumberOfMaterials;
   unsigned int             m_NumberOfEnergies;
   unsigned int             m_NumberOfSpectralBins;
+
+#ifndef ITK_FUTURE_LEGACY_REMOVE
+  /** Filters required for the overload of SetInputIncidentSpectrum */
+  typename FlattenVectorFilterType::Pointer m_FlattenFilter;
+  typename FlattenVectorFilterType::Pointer m_FlattenSecondFilter;
+  typename PermuteFilterType::Pointer       m_PermuteFilter;
+  typename PermuteFilterType::Pointer       m_PermuteSecondFilter;
+#endif
 
 }; // end of class
 
