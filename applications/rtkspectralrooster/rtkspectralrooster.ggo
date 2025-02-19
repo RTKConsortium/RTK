@@ -1,4 +1,3 @@
-package "rtkspectralrooster"
 purpose "Reconstructs a 3D + material vector volume from a vector projection stack, alternating between conjugate gradient optimization and regularization, including between materials"
 
 option "verbose"     v "Verbose execution"                                     flag   off

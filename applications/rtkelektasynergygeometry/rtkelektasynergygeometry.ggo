@@ -1,4 +1,3 @@
-package "rtkelektasynergygeometry"
 purpose "Creates an RTK geometry file from an Elekta Synergy acquisition."
 
 option "verbose"   v "Verbose execution"                    flag   off

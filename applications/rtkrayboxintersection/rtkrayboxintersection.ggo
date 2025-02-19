@@ -1,4 +1,3 @@
-package "rtkrayboxintersection"
 purpose "Computes the intersection length between rays of 2D projections and a 3D volume."
 
 option "verbose"   v "Verbose execution"                                         flag     off

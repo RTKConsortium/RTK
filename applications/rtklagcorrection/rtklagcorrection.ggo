@@ -1,4 +1,3 @@
-package "rtklagcorrection"
 purpose "4th order LTI Lag correction"
 
 option  "config"       - "Config file"                                       string         no

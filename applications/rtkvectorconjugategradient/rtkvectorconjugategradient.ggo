@@ -1,4 +1,3 @@
-package "rtkvectorconjugategradient"
 purpose "Reconstructs a 3D volume from a sequence of projections with a conjugate gradient technique"
 
 option "verbose"        v "Verbose execution"                                                                         flag   off

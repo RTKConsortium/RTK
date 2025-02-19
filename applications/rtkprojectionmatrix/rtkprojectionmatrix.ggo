@@ -1,4 +1,3 @@
-package "rtkprojectionmatrix"
 purpose "Saves the sparse system matrix of rtk::JosephForwardProjectionImageFilter in a file. Only works in 2D."
 
 option "verbose"   v "Verbose execution"                                     flag   off

@@ -1,4 +1,3 @@
-package "rtkadmmtotalvariation"
 purpose "Performs an iterative 3D reconstruction with 3D TV regularization"
 
 option "verbose"   v "Verbose execution"                                         flag                         off

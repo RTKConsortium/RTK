@@ -1,4 +1,3 @@
-package "rtkmaskcollimation"
 purpose "Masks out the collimator from the projections"
 
 option "verbose"    v "Verbose execution"                                         flag     off
