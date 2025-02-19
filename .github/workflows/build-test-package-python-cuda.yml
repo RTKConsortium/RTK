@@ -82,7 +82,7 @@ jobs:
     - name: Validate build output
       shell: bash
       run: |
-        /home/srit/miniconda3/envs/py310/bin/python -m pip install twine
+        python -m pip install twine
         ls dist/
 
         MANYLINUX_PLATFORM=${{ matrix.manylinux-platform }}
@@ -94,7 +94,7 @@ jobs:
         WHEEL_PATTERN="dist/itk_*cp3${{ matrix.python3-minor-version }}*manylinux${MANYLINUX_VERSION}*${TARGET_ARCH_NAME}.whl"
 
         echo "Searching for wheels matching pattern ${WHEEL_PATTERN}"
-        /home/srit/miniconda3/envs/py310/bin/python -m twine check ${WHEEL_PATTERN}
+        python -m twine check ${WHEEL_PATTERN}
 
     - name: Publish Python package as GitHub Artifact
       uses: actions/upload-artifact@v4
