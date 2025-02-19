@@ -56,14 +56,14 @@ macro (WRAP_GGO GGO_SRCS)
   set(GGO_OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${GGO_H} ${CMAKE_CURRENT_BINARY_DIR}/${GGO_C})
   add_custom_command(OUTPUT ${GGO_OUTPUT}
                      COMMAND gengetopt
-                     ARGS < ${CMAKE_CURRENT_BINARY_DIR}/${FIRST_GGO_BASEFILENAME}
-                            --output-dir=${CMAKE_CURRENT_BINARY_DIR}
-                            --arg-struct-name=args_info_${GGO_BASEFILENAME}
-                            --func-name=cmdline_parser_${GGO_BASEFILENAME}
-                            --file-name=${GGO_BASEFILENAME}_ggo
-                            --unamed-opts
-                            --conf-parser
-                            --include-getopt
+                     ARGS --input=${CMAKE_CURRENT_BINARY_DIR}/${FIRST_GGO_BASEFILENAME}
+                          --output-dir=${CMAKE_CURRENT_BINARY_DIR}
+                          --arg-struct-name=args_info_${GGO_BASEFILENAME}
+                          --func-name=cmdline_parser_${GGO_BASEFILENAME}
+                          --file-name=${GGO_BASEFILENAME}_ggo
+                          --unamed-opts
+                          --conf-parser
+                          --include-getopt
                      DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${FIRST_GGO_BASEFILENAME}
                     )
   set(${GGO_SRCS} ${${GGO_SRCS}} ${GGO_OUTPUT})
