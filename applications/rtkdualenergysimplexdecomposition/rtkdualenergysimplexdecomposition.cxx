@@ -41,7 +41,7 @@ main(int argc, char * argv[])
   using DualEnergyProjectionsType = itk::VectorImage<PixelValueType, Dimension>;
   using DualEnergyProjectionReaderType = itk::ImageFileReader<DualEnergyProjectionsType>;
 
-  using IncidentSpectrumImageType = itk::VectorImage<PixelValueType, Dimension - 1>;
+  using IncidentSpectrumImageType = itk::Image<PixelValueType, Dimension>;
   using IncidentSpectrumReaderType = itk::ImageFileReader<IncidentSpectrumImageType>;
 
   using DetectorResponseImageType = itk::Image<PixelValueType, Dimension - 1>;
@@ -71,6 +71,10 @@ main(int argc, char * argv[])
   materialAttenuationsReader->SetFileName(args_info.attenuations_arg);
   materialAttenuationsReader->Update();
 
+  // Get parameters from the images
+  const unsigned int MaximumEnergy =
+    incidentSpectrumReaderHighEnergy->GetOutput()->GetLargestPossibleRegion().GetSize(0);
+
   // If the detector response is given by the user, use it. Otherwise, assume it is included in the
   // incident spectrum, and fill the response with ones
   DetectorResponseReaderType::Pointer detectorResponseReader = DetectorResponseReaderType::New();
@@ -87,22 +91,12 @@ main(int argc, char * argv[])
       rtk::ConstantImageSource<DetectorResponseImageType>::New();
     DetectorResponseImageType::SizeType sourceSize;
     sourceSize[0] = 1;
-    sourceSize[1] = incidentSpectrumReaderHighEnergy->GetOutput()->GetVectorLength();
+    sourceSize[1] = MaximumEnergy;
     detectorSource->SetSize(sourceSize);
     detectorSource->SetConstant(1.0);
     detectorSource->Update();
     detectorImage = detectorSource->GetOutput();
   }
-
-  // Get parameters from the images
-  const unsigned int MaximumEnergy = incidentSpectrumReaderHighEnergy->GetOutput()->GetVectorLength();
-
-  IncidentSpectrumImageType::IndexType indexIncident;
-  indexIncident.Fill(0);
-  if (incidentSpectrumReaderLowEnergy->GetOutput()->GetPixel(indexIncident).Size() != MaximumEnergy)
-    itkGenericExceptionMacro(<< "Low energy incident spectrum image has vector size "
-                             << incidentSpectrumReaderLowEnergy->GetOutput()->GetPixel(indexIncident).Size()
-                             << ", should be " << MaximumEnergy);
 
   if (detectorImage->GetLargestPossibleRegion().GetSize()[1] != MaximumEnergy)
     itkGenericExceptionMacro(<< "Detector response image has " << detectorImage->GetLargestPossibleRegion().GetSize()[1]

@@ -39,7 +39,7 @@ main(int argc, char * argv[])
 
   using MeasuredProjectionsType = itk::VectorImage<PixelValueType, Dimension>;
 
-  using IncidentSpectrumImageType = itk::VectorImage<PixelValueType, Dimension - 1>;
+  using IncidentSpectrumImageType = itk::Image<PixelValueType, Dimension>;
   using IncidentSpectrumReaderType = itk::ImageFileReader<IncidentSpectrumImageType>;
 
   using DetectorResponseImageType = itk::Image<PixelValueType, Dimension - 1>;
@@ -225,6 +225,19 @@ main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION(simplex->Update())
   CheckVectorImageQuality<DecomposedProjectionType>(simplex->GetOutput(), decomposed, 0.0001, 15, 2.0);
 
+#ifndef ITK_FUTURE_LEGACY_REMOVE
+  std::cout << "\n\n****** Case 3: Legacy VectorImage type for incident spectrum ******" << std::endl;
+
+  using VectorImageType = itk::VectorImage<PixelValueType, Dimension - 1>;
+  using VectorSpectrumReaderType = itk::ImageFileReader<VectorImageType>;
+  VectorSpectrumReaderType::Pointer vectorSpectrumReader = VectorSpectrumReaderType::New();
+  vectorSpectrumReader->SetFileName(argv[4]);
+  vectorSpectrumReader->Update();
+  forward->SetInputIncidentSpectrum(vectorSpectrumReader->GetOutput());
+  simplex->SetInputIncidentSpectrum(vectorSpectrumReader->GetOutput());
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(simplex->Update())
+  CheckVectorImageQuality<DecomposedProjectionType>(simplex->GetOutput(), decomposed, 0.0001, 15, 2.0);
+#endif
 
   std::cout << "\n\nTest PASSED! " << std::endl;
   return EXIT_SUCCESS;

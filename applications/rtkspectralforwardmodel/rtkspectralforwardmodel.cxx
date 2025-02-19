@@ -34,7 +34,7 @@ main(int argc, char * argv[])
   constexpr unsigned int Dimension = 3;
   using DecomposedProjectionType = itk::VectorImage<PixelValueType, Dimension>;
   using MeasuredProjectionsType = itk::VectorImage<PixelValueType, Dimension>;
-  using IncidentSpectrumImageType = itk::VectorImage<PixelValueType, Dimension - 1>;
+  using IncidentSpectrumImageType = itk::Image<PixelValueType, Dimension>;
   using DetectorResponseImageType = itk::Image<PixelValueType, Dimension - 1>;
   using MaterialAttenuationsImageType = itk::Image<PixelValueType, Dimension - 1>;
 
@@ -55,7 +55,7 @@ main(int argc, char * argv[])
   // Get parameters from the images
   const unsigned int NumberOfMaterials = materialAttenuations->GetLargestPossibleRegion().GetSize()[0];
   const unsigned int NumberOfSpectralBins = args_info.thresholds_given;
-  const unsigned int MaximumEnergy = incidentSpectrum->GetVectorLength();
+  const unsigned int MaximumEnergy = incidentSpectrum->GetLargestPossibleRegion().GetSize()[0];
 
   // Generate a set of zero-filled photon count projections
   MeasuredProjectionsType::Pointer measuredProjections = MeasuredProjectionsType::New();
@@ -87,12 +87,6 @@ main(int argc, char * argv[])
     itkGenericExceptionMacro(<< "Spectral projections (i.e. photon count data) image has vector size "
                              << measuredProjections->GetPixel(indexSpect).Size() << ", should be "
                              << NumberOfSpectralBins);
-
-  IncidentSpectrumImageType::IndexType indexIncident;
-  indexIncident.Fill(0);
-  if (incidentSpectrum->GetPixel(indexIncident).Size() != MaximumEnergy)
-    itkGenericExceptionMacro(<< "Incident spectrum image has vector size "
-                             << incidentSpectrum->GetPixel(indexIncident).Size() << ", should be " << MaximumEnergy);
 
   if (detectorResponse->GetLargestPossibleRegion().GetSize()[0] != MaximumEnergy)
     itkGenericExceptionMacro(<< "Detector response image has "

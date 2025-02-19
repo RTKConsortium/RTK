@@ -66,6 +66,14 @@ SimplexSpectralProjectionsDecompositionImageFilter<
   m_LogTransformEachBin = false;
   m_GuessInitialization = false;
   m_IsSpectralCT = true;
+
+#ifndef ITK_FUTURE_LEGACY_REMOVE
+  // Instantiate the filters required in the overload of SetInputIncidentSpectrum
+  m_FlattenFilter = FlattenVectorFilterType::New();
+  m_FlattenSecondFilter = FlattenVectorFilterType::New();
+  m_PermuteFilter = PermuteFilterType::New();
+  m_PermuteSecondFilter = PermuteFilterType::New();
+#endif
 }
 
 template <typename DecomposedProjectionsType,
@@ -164,6 +172,54 @@ SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType,
 {
   this->SetInput("SecondIncidentSpectrum", const_cast<IncidentSpectrumImageType *>(SecondIncidentSpectrum));
 }
+
+#ifndef ITK_FUTURE_LEGACY_REMOVE
+template <typename DecomposedProjectionsType,
+          typename MeasuredProjectionsType,
+          typename IncidentSpectrumImageType,
+          typename DetectorResponseImageType,
+          typename MaterialAttenuationsImageType>
+void
+SimplexSpectralProjectionsDecompositionImageFilter<
+  DecomposedProjectionsType,
+  MeasuredProjectionsType,
+  IncidentSpectrumImageType,
+  DetectorResponseImageType,
+  MaterialAttenuationsImageType>::SetInputIncidentSpectrum(const VectorSpectrumImageType * IncidentSpectrum)
+{
+  this->m_FlattenFilter->SetInput(IncidentSpectrum);
+  this->m_PermuteFilter->SetInput(this->m_FlattenFilter->GetOutput());
+  typename PermuteFilterType::PermuteOrderArrayType order;
+  order[0] = 2;
+  order[1] = 0;
+  order[2] = 1;
+  this->m_PermuteFilter->SetOrder(order);
+  this->SetInputIncidentSpectrum(m_PermuteFilter->GetOutput());
+}
+
+template <typename DecomposedProjectionsType,
+          typename MeasuredProjectionsType,
+          typename IncidentSpectrumImageType,
+          typename DetectorResponseImageType,
+          typename MaterialAttenuationsImageType>
+void
+SimplexSpectralProjectionsDecompositionImageFilter<
+  DecomposedProjectionsType,
+  MeasuredProjectionsType,
+  IncidentSpectrumImageType,
+  DetectorResponseImageType,
+  MaterialAttenuationsImageType>::SetInputSecondIncidentSpectrum(const VectorSpectrumImageType * SecondIncidentSpectrum)
+{
+  this->m_FlattenSecondFilter->SetInput(SecondIncidentSpectrum);
+  this->m_PermuteSecondFilter->SetInput(this->m_FlattenSecondFilter->GetOutput());
+  typename PermuteFilterType::PermuteOrderArrayType order;
+  order[0] = 2;
+  order[1] = 0;
+  order[2] = 1;
+  this->m_PermuteSecondFilter->SetOrder(order);
+  this->SetInputSecondIncidentSpectrum(m_PermuteSecondFilter->GetOutput());
+}
+#endif
 
 template <typename DecomposedProjectionsType,
           typename MeasuredProjectionsType,
@@ -304,7 +360,7 @@ SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType,
 
   this->m_NumberOfSpectralBins = this->GetInputMeasuredProjections()->GetVectorLength();
   this->m_NumberOfMaterials = this->GetInputDecomposedProjections()->GetVectorLength();
-  this->m_NumberOfEnergies = this->GetInputIncidentSpectrum()->GetVectorLength();
+  this->m_NumberOfEnergies = this->GetInputIncidentSpectrum()->GetLargestPossibleRegion().GetSize(0);
 
   // Set vector length for the fischer matrix
   this->GetOutput(2)->SetVectorLength(this->m_NumberOfMaterials * this->m_NumberOfMaterials);
@@ -342,24 +398,21 @@ SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType,
     return;
   inputPtr1->SetRequestedRegion(this->GetOutput()->GetRequestedRegion());
 
-  // Input 2 is the incident spectrum image (same dimension as a single projection)
+  // Input 2 is the incident spectrum image
   typename IncidentSpectrumImageType::Pointer inputPtr2 =
     const_cast<IncidentSpectrumImageType *>(this->GetInputIncidentSpectrum().GetPointer());
   if (!inputPtr2)
     return;
 
-  typename IncidentSpectrumImageType::RegionType requested;
-  typename IncidentSpectrumImageType::IndexType  indexRequested;
-  typename IncidentSpectrumImageType::SizeType   sizeRequested;
-  indexRequested.Fill(0);
-  sizeRequested.Fill(0);
-  for (unsigned int i = 0; i < IncidentSpectrumImageType::GetImageDimension(); i++)
+  typename IncidentSpectrumImageType::RegionType requested =
+    this->GetInputIncidentSpectrum()->GetLargestPossibleRegion();
+  typename IncidentSpectrumImageType::IndexType indexRequested = requested.GetIndex();
+  typename IncidentSpectrumImageType::SizeType  sizeRequested = requested.GetSize();
+  for (unsigned int i = 0; i < IncidentSpectrumImageType::GetImageDimension() - 1; i++)
   {
-    indexRequested[i] = this->GetOutput()->GetRequestedRegion().GetIndex()[i];
-    sizeRequested[i] = this->GetOutput()->GetRequestedRegion().GetSize()[i];
+    indexRequested[i + 1] = this->GetOutput()->GetRequestedRegion().GetIndex()[i];
+    sizeRequested[i + 1] = this->GetOutput()->GetRequestedRegion().GetSize()[i];
   }
-  requested.SetIndex(indexRequested);
-  requested.SetSize(sizeRequested);
 
   inputPtr2->SetRequestedRegion(requested);
 
@@ -474,11 +527,12 @@ SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType,
   itk::ImageRegionConstIterator<MeasuredProjectionsType>   spectralProjIt(this->GetInputMeasuredProjections(),
                                                                         outputRegionForThread);
 
-  typename IncidentSpectrumImageType::RegionType incidentSpectrumRegionForThread;
-  for (unsigned int dim = 0; dim < IncidentSpectrumImageType::GetImageDimension(); dim++)
+  typename IncidentSpectrumImageType::RegionType incidentSpectrumRegionForThread =
+    this->GetInputIncidentSpectrum()->GetLargestPossibleRegion();
+  for (unsigned int dim = 0; dim < IncidentSpectrumImageType::GetImageDimension() - 1; dim++)
   {
-    incidentSpectrumRegionForThread.SetIndex(dim, outputRegionForThread.GetIndex()[dim]);
-    incidentSpectrumRegionForThread.SetSize(dim, outputRegionForThread.GetSize()[dim]);
+    incidentSpectrumRegionForThread.SetIndex(dim + 1, outputRegionForThread.GetIndex()[dim]);
+    incidentSpectrumRegionForThread.SetSize(dim + 1, outputRegionForThread.GetSize()[dim]);
   }
   itk::ImageRegionConstIterator<IncidentSpectrumImageType> spectrumIt(this->GetInputIncidentSpectrum(),
                                                                       incidentSpectrumRegionForThread);
@@ -505,14 +559,23 @@ SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType,
     vnl_matrix<float> spectra;
     if (this->GetInputSecondIncidentSpectrum()) // Dual energy CT
     {
-      spectra.set_size(2, this->m_NumberOfEnergies);
-      spectra.set_row(0, spectrumIt.Get().GetDataPointer());
-      spectra.set_row(1, secondSpectrumIt.Get().GetDataPointer());
+      spectra.set_size(2, m_NumberOfEnergies);
+      for (int e = 0; e < m_NumberOfEnergies; e++)
+      {
+        spectra.put(0, e, spectrumIt.Get());
+        spectra.put(1, e, secondSpectrumIt.Get());
+        ++spectrumIt;
+        ++secondSpectrumIt;
+      }
     }
     else
     {
-      spectra.set_size(1, this->m_NumberOfEnergies);
-      spectra.set_row(0, spectrumIt.Get().GetDataPointer());
+      spectra.set_size(1, m_NumberOfEnergies);
+      for (int e = 0; e < m_NumberOfEnergies; e++)
+      {
+        spectra.put(0, e, spectrumIt.Get());
+        ++spectrumIt;
+      }
     }
 
     // Pass the incident spectrum vector to cost function
@@ -575,9 +638,6 @@ SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType,
     ++output2It;
     ++inputIt;
     ++spectralProjIt;
-    ++spectrumIt;
-    if (this->GetInputSecondIncidentSpectrum())
-      ++secondSpectrumIt;
   }
 }
 

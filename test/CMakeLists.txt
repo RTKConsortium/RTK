@@ -108,9 +108,10 @@ rtk_add_test(rtkWaterPreCorrectionTest rtkwaterprecorrectiontest.cxx)
 rtk_add_test(rtkLUTBasedVarI0RawToAttTest rtklutbasedvarI0rawtoatttest.cxx)
 
 rtk_add_test(rtkDecomposeSpectralProjectionsTest rtkdecomposespectralprojectionstest.cxx
-  DATA{Input/Spectral/incident_spectrum.mha}
+  DATA{Input/Spectral/no_vector_incident_spectrum.mha}
   DATA{Input/Spectral/detector_response.mha}
-  DATA{Input/Spectral/material_attenuations.mha})
+  DATA{Input/Spectral/material_attenuations.mha}
+  DATA{Input/Spectral/incident_spectrum.mha})
 
 rtk_add_test(rtkSpectralOneStepTest rtkspectralonesteptest.cxx
   DATA{Input/Spectral/OneStep/no_vector_incident_spectrum_64_rows.mha}
