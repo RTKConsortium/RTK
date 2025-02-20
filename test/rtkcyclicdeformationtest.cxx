@@ -129,7 +129,11 @@ main(int, char **)
   }
 
   // Signal
-  std::string   signalFileName = "signal_CyclicDeformation.txt";
+#ifdef USE_CUDA
+  std::string signalFileName = "signal_CyclicDeformation_cuda.txt";
+#else
+  std::string signalFileName = "signal_CyclicDeformation.txt";
+#endif
   std::ofstream signalFile(signalFileName.c_str());
   signalFile << "0.3" << std::endl;
   signalFile.close();

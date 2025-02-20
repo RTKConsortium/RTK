@@ -155,7 +155,11 @@ main(int, char **)
   PasteImageFilterType::Pointer pasteFilter = PasteImageFilterType::New();
   pasteFilter->SetDestinationImage(projectionsSource->GetOutput());
 
+#ifdef USE_CUDA
+  std::string signalFileName = "signal_4DConjugatedGradient_cuda.txt";
+#else
   std::string signalFileName = "signal_4DConjugatedGradient.txt";
+#endif
 
   std::ofstream signalFile(signalFileName.c_str());
   for (unsigned int noProj = 0; noProj < NumberOfProjectionImages; noProj++)
