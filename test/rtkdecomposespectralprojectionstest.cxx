@@ -49,8 +49,10 @@ main(int argc, char * argv[])
   using MaterialAttenuationsReaderType = itk::ImageFileReader<MaterialAttenuationsImageType>;
 
   // Cast filters to convert between vector image types
-  using CastDecomposedProjectionsFilterType = itk::CastImageFilter<DecomposedProjectionsType, itk::Image<itk::Vector<PixelValueType, 3>, Dimension>>;
-  using CastMeasuredProjectionFilterType = itk::CastImageFilter<MeasuredProjectionsType, itk::Image<itk::Vector<PixelValueType, 6>, Dimension>>;
+  using CastDecomposedProjectionsFilterType =
+    itk::CastImageFilter<DecomposedProjectionsType, itk::Image<itk::Vector<PixelValueType, 3>, Dimension>>;
+  using CastMeasuredProjectionFilterType =
+    itk::CastImageFilter<MeasuredProjectionsType, itk::Image<itk::Vector<PixelValueType, 6>, Dimension>>;
 
   // Read all inputs
   IncidentSpectrumReaderType::Pointer incidentSpectrumReader = IncidentSpectrumReaderType::New();
@@ -235,14 +237,24 @@ main(int argc, char * argv[])
   measuredProjections->SetRegions(region);
   measuredProjections->Allocate();
 
-  typename CastDecomposedProjectionsFilterType::Pointer castDecomposedProjections = CastDecomposedProjectionsFilterType::New();
+  typename CastDecomposedProjectionsFilterType::Pointer castDecomposedProjections =
+    CastDecomposedProjectionsFilterType::New();
   typename CastMeasuredProjectionFilterType::Pointer castMeasuredProjections = CastMeasuredProjectionFilterType::New();
   castDecomposedProjections->SetInput(decomposed);
   castMeasuredProjections->SetInput(measuredProjections);
   forward->SetInputDecomposedProjections(castDecomposedProjections->GetOutput());
   forward->SetInputMeasuredProjections(castMeasuredProjections->GetOutput());
   TRY_AND_EXIT_ON_ITK_EXCEPTION(forward->Update())
+
+  typename CastDecomposedProjectionsFilterType::Pointer castDecomposedProjections2 =
+    CastDecomposedProjectionsFilterType::New();
+  typename CastMeasuredProjectionFilterType::Pointer castMeasuredProjections2 = CastMeasuredProjectionFilterType::New();
+  castDecomposedProjections->SetInput(initialDecomposedProjections);
+  castMeasuredProjections->SetInput(forward->GetOutput());
+  simplex->SetInputDecomposedProjections(castDecomposedProjections->GetOutput());
+  simplex->SetInputMeasuredProjections(castMeasuredProjections->GetOutput());
   TRY_AND_EXIT_ON_ITK_EXCEPTION(simplex->Update())
+
   CheckVectorImageQuality<DecomposedProjectionsType>(simplex->GetOutput(), decomposed, 0.0001, 15, 2.0);
 
 #ifndef ITK_FUTURE_LEGACY_REMOVE
