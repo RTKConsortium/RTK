@@ -82,14 +82,80 @@ template <typename DecomposedProjectionsType,
           typename DetectorResponseImageType,
           typename MaterialAttenuationsImageType>
 void
-SimplexSpectralProjectionsDecompositionImageFilter<
-  DecomposedProjectionsType,
-  MeasuredProjectionsType,
-  IncidentSpectrumImageType,
-  DetectorResponseImageType,
-  MaterialAttenuationsImageType>::SetInputDecomposedProjections(const DecomposedProjectionsType * DecomposedProjections)
+SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType,
+                                                   MeasuredProjectionsType,
+                                                   IncidentSpectrumImageType,
+                                                   DetectorResponseImageType,
+                                                   MaterialAttenuationsImageType>::
+  SetInputDecomposedProjections(
+    const typename itk::ImageBase<DecomposedProjectionsType::ImageDimension> * DecomposedProjections)
 {
-  this->SetNthInput(0, const_cast<DecomposedProjectionsType *>(DecomposedProjections));
+  // Attempt to dynamic_cast DecomposedProjections into one of the supported types
+  const DecomposedProjectionsType * ptr = dynamic_cast<const DecomposedProjectionsType *>(DecomposedProjections);
+  if (ptr)
+  {
+    this->SetNthInput(0, const_cast<DecomposedProjectionsType *>(ptr));
+  }
+  else
+  {
+    // Perform all possible dynamic_casts
+    typedef itk::Image<itk::Vector<DecomposedProjectionsDataType, 1>, DecomposedProjectionsType::ImageDimension> Type1;
+    typedef itk::Image<itk::Vector<DecomposedProjectionsDataType, 2>, DecomposedProjectionsType::ImageDimension> Type2;
+    typedef itk::Image<itk::Vector<DecomposedProjectionsDataType, 3>, DecomposedProjectionsType::ImageDimension> Type3;
+    typedef itk::Image<itk::Vector<DecomposedProjectionsDataType, 4>, DecomposedProjectionsType::ImageDimension> Type4;
+    typedef itk::Image<itk::Vector<DecomposedProjectionsDataType, 5>, DecomposedProjectionsType::ImageDimension> Type5;
+    const Type1 * ptr1 = dynamic_cast<const Type1 *>(DecomposedProjections);
+    const Type2 * ptr2 = dynamic_cast<const Type2 *>(DecomposedProjections);
+    const Type3 * ptr3 = dynamic_cast<const Type3 *>(DecomposedProjections);
+    const Type4 * ptr4 = dynamic_cast<const Type4 *>(DecomposedProjections);
+    const Type5 * ptr5 = dynamic_cast<const Type5 *>(DecomposedProjections);
+
+    if (ptr1)
+    {
+      this->SetInputFixedVectorLengthDecomposedProjections<1>(ptr1);
+    }
+    else if (ptr2)
+    {
+      this->SetInputFixedVectorLengthDecomposedProjections<2>(ptr2);
+    }
+    else if (ptr3)
+    {
+      this->SetInputFixedVectorLengthDecomposedProjections<3>(ptr3);
+    }
+    else if (ptr4)
+    {
+      this->SetInputFixedVectorLengthDecomposedProjections<4>(ptr4);
+    }
+    else if (ptr5)
+    {
+      this->SetInputFixedVectorLengthDecomposedProjections<5>(ptr5);
+    }
+  }
+}
+
+template <typename DecomposedProjectionsType,
+          typename MeasuredProjectionsType,
+          typename IncidentSpectrumImageType,
+          typename DetectorResponseImageType,
+          typename MaterialAttenuationsImageType>
+template <unsigned int VNumberOfMaterials>
+void
+SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType,
+                                                   MeasuredProjectionsType,
+                                                   IncidentSpectrumImageType,
+                                                   DetectorResponseImageType,
+                                                   MaterialAttenuationsImageType>::
+  SetInputFixedVectorLengthDecomposedProjections(
+    const itk::Image<itk::Vector<DecomposedProjectionsDataType, VNumberOfMaterials>,
+                     DecomposedProjectionsType::ImageDimension> * DecomposedProjections)
+{
+  using ActualInputType = itk::Image<itk::Vector<DecomposedProjectionsDataType, VNumberOfMaterials>,
+                                     DecomposedProjectionsType::ImageDimension>;
+  using CastFilterType = itk::CastImageFilter<ActualInputType, DecomposedProjectionsType>;
+  typename CastFilterType::Pointer castPointer = CastFilterType::New();
+  castPointer->SetInput(DecomposedProjections);
+  castPointer->Update();
+  this->SetNthInput(0, const_cast<DecomposedProjectionsType *>(castPointer->GetOutput()));
 }
 
 template <typename DecomposedProjectionsType,
@@ -98,14 +164,86 @@ template <typename DecomposedProjectionsType,
           typename DetectorResponseImageType,
           typename MaterialAttenuationsImageType>
 void
-SimplexSpectralProjectionsDecompositionImageFilter<
-  DecomposedProjectionsType,
-  MeasuredProjectionsType,
-  IncidentSpectrumImageType,
-  DetectorResponseImageType,
-  MaterialAttenuationsImageType>::SetInputMeasuredProjections(const MeasuredProjectionsType * SpectralProjections)
+SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType,
+                                                   MeasuredProjectionsType,
+                                                   IncidentSpectrumImageType,
+                                                   DetectorResponseImageType,
+                                                   MaterialAttenuationsImageType>::
+  SetInputMeasuredProjections(
+    const typename itk::ImageBase<MeasuredProjectionsType::ImageDimension> * MeasuredProjections)
 {
-  this->SetInput("MeasuredProjections", const_cast<MeasuredProjectionsType *>(SpectralProjections));
+  // Attempt to dynamic_cast MeasuredProjections into one of the supported types
+  const MeasuredProjectionsType * ptr = dynamic_cast<const MeasuredProjectionsType *>(MeasuredProjections);
+  if (ptr)
+  {
+    this->SetInput("MeasuredProjections", const_cast<MeasuredProjectionsType *>(ptr));
+  }
+  else
+  {
+    // Perform all possible dynamic_casts
+    typedef itk::Image<itk::Vector<MeasuredProjectionsDataType, 1>, MeasuredProjectionsType::ImageDimension> Type1;
+    typedef itk::Image<itk::Vector<MeasuredProjectionsDataType, 2>, MeasuredProjectionsType::ImageDimension> Type2;
+    typedef itk::Image<itk::Vector<MeasuredProjectionsDataType, 3>, MeasuredProjectionsType::ImageDimension> Type3;
+    typedef itk::Image<itk::Vector<MeasuredProjectionsDataType, 4>, MeasuredProjectionsType::ImageDimension> Type4;
+    typedef itk::Image<itk::Vector<MeasuredProjectionsDataType, 5>, MeasuredProjectionsType::ImageDimension> Type5;
+    typedef itk::Image<itk::Vector<MeasuredProjectionsDataType, 6>, MeasuredProjectionsType::ImageDimension> Type6;
+    const Type1 * ptr1 = dynamic_cast<const Type1 *>(MeasuredProjections);
+    const Type2 * ptr2 = dynamic_cast<const Type2 *>(MeasuredProjections);
+    const Type3 * ptr3 = dynamic_cast<const Type3 *>(MeasuredProjections);
+    const Type4 * ptr4 = dynamic_cast<const Type4 *>(MeasuredProjections);
+    const Type5 * ptr5 = dynamic_cast<const Type5 *>(MeasuredProjections);
+    const Type6 * ptr6 = dynamic_cast<const Type6 *>(MeasuredProjections);
+
+    if (ptr1)
+    {
+      this->SetInputFixedVectorLengthMeasuredProjections<1>(ptr1);
+    }
+    else if (ptr2)
+    {
+      this->SetInputFixedVectorLengthMeasuredProjections<2>(ptr2);
+    }
+    else if (ptr3)
+    {
+      this->SetInputFixedVectorLengthMeasuredProjections<3>(ptr3);
+    }
+    else if (ptr4)
+    {
+      this->SetInputFixedVectorLengthMeasuredProjections<4>(ptr4);
+    }
+    else if (ptr5)
+    {
+      this->SetInputFixedVectorLengthMeasuredProjections<5>(ptr5);
+    }
+    else if (ptr6)
+    {
+      this->SetInputFixedVectorLengthMeasuredProjections<6>(ptr6);
+    }
+  }
+}
+
+template <typename DecomposedProjectionsType,
+          typename MeasuredProjectionsType,
+          typename IncidentSpectrumImageType,
+          typename DetectorResponseImageType,
+          typename MaterialAttenuationsImageType>
+template <unsigned int VNumberOfSpectralBins>
+void
+SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType,
+                                                   MeasuredProjectionsType,
+                                                   IncidentSpectrumImageType,
+                                                   DetectorResponseImageType,
+                                                   MaterialAttenuationsImageType>::
+  SetInputFixedVectorLengthMeasuredProjections(
+    const itk::Image<itk::Vector<MeasuredProjectionsDataType, VNumberOfSpectralBins>,
+                     MeasuredProjectionsType::ImageDimension> * MeasuredProjections)
+{
+  using ActualInputType = itk::Image<itk::Vector<MeasuredProjectionsDataType, VNumberOfSpectralBins>,
+                                     MeasuredProjectionsType::ImageDimension>;
+  using CastFilterType = itk::CastImageFilter<ActualInputType, MeasuredProjectionsType>;
+  typename CastFilterType::Pointer castPointer = CastFilterType::New();
+  castPointer->SetInput(MeasuredProjections);
+  castPointer->UpdateLargestPossibleRegion();
+  this->SetInput("MeasuredProjections", const_cast<MeasuredProjectionsType *>(castPointer->GetOutput()));
 }
 
 template <typename DecomposedProjectionsType,
