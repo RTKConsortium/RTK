@@ -560,7 +560,7 @@ SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType,
     if (this->GetInputSecondIncidentSpectrum()) // Dual energy CT
     {
       spectra.set_size(2, m_NumberOfEnergies);
-      for (int e = 0; e < m_NumberOfEnergies; e++)
+      for (unsigned int e = 0; e < m_NumberOfEnergies; e++)
       {
         spectra.put(0, e, spectrumIt.Get());
         spectra.put(1, e, secondSpectrumIt.Get());
@@ -571,7 +571,7 @@ SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType,
     else
     {
       spectra.set_size(1, m_NumberOfEnergies);
-      for (int e = 0; e < m_NumberOfEnergies; e++)
+      for (unsigned int e = 0; e < m_NumberOfEnergies; e++)
       {
         spectra.put(0, e, spectrumIt.Get());
         ++spectrumIt;
