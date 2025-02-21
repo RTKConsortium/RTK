@@ -278,7 +278,7 @@ main(int argc, char * argv[])
   mechlemOneStep->SetForwardProjectionFilter(MechlemType::FP_JOSEPH); // Joseph
   mechlemOneStep->SetInputMaterialVolumes(materialVolumeSource->GetOutput());
   mechlemOneStep->SetInputMeasuredProjections(castMeasuredProjections->GetOutput());
-  mechlemOneStep->SetInputSpectrum(incidentSpectrumReader->GetOutput());
+  mechlemOneStep->SetInputIncidentSpectrum(incidentSpectrumReader->GetOutput());
   mechlemOneStep->SetBinnedDetectorResponse(drm);
   mechlemOneStep->SetMaterialAttenuations(materialAttenuationsMatrix);
   mechlemOneStep->SetGeometry(geometry);
