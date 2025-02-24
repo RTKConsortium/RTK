@@ -1,6 +1,10 @@
 # Fetch external data from https://data.kitware.com
 # Used by Sphinx conf.py during setup.
 #
+if(POLICY CMP0009)
+    cmake_policy(SET CMP0009 NEW)
+endif()
+
 set(link_content sha512)
 
 if(NOT EXTERNAL_DATA_INPUT_ROOT)
