@@ -11,7 +11,7 @@ jobs:
     uses: InsightSoftwareConsortium/ITKRemoteModuleBuildTestPackageAction/.github/workflows/build-test-cxx.yml@v5.4.2
 
   python-build-workflow:
-    uses: InsightSoftwareConsortium/ITKRemoteModuleBuildTestPackageAction/.github/workflows/build-test-package-python.yml@v5.4.2
+    uses: SimonRit/ITKRemoteModuleBuildTestPackageAction/.github/workflows/build-test-package-python.yml@26b50c9edc6dfa5fa08d2e0068cb70df319c3988
     with:
       cmake-options: '-DRTK_BUILD_APPLICATIONS:BOOL=OFF'
       python3-minor-versions: ${{ github.event_name == 'pull_request' && '["11"]' || '["9","10","11"]' }}
