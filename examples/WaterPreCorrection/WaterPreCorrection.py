@@ -23,10 +23,7 @@ for file in os.listdir(directory):
         file_names.append(directory + file)
 
 # Read in full geometry
-geometry_reader = rtk.ThreeDCircularProjectionGeometryXMLFileReader.New()
-geometry_reader.SetFilename ( "output/geometry.xml" )
-geometry_reader.GenerateOutputInformation()
-geometry = geometry_reader.GetGeometry()
+geometry = rtk.read_geometry("output/geometry.xml")
 
 # Crate template image
 ImageType = itk.Image[itk.F,3]
