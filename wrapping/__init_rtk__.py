@@ -6,7 +6,8 @@ rtk_module = getattr(itk_module, 'RTK')
 rtk_submodules = ['itk.rtkinputprojections_group',
                   'itk.rtk3Doutputimage_group',
                   'itk.rtkprojectors_group',
-                  'itk.rtkiterations_group']
+                  'itk.rtkiterations_group',
+                  'itk.rtkExtras']
 for mod_name in rtk_submodules:
   mod = importlib.import_module(mod_name)
   for a in dir(mod):
