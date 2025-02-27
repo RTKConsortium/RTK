@@ -55,10 +55,7 @@ def main():
   # Geometry
   if args_info.verbose:
     print(f'Reading geometry information from {args_info.geometry}')
-  geometryReader = rtk.ThreeDCircularProjectionGeometryXMLFileReader.New()
-  geometryReader.SetFilename(args_info.geometry)
-  geometryReader.GenerateOutputInformation()
-  geometry = geometryReader.GetOutputObject()
+  geometry = rtk.read_geometry(args_info.geometry)
 
   # Create input: either an existing volume read from a file or a blank image
   if args_info.input is not None:

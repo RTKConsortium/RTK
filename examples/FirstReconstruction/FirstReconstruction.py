@@ -22,10 +22,7 @@ for x in range(0,numberOfProjections):
   geometry.AddProjection(sid,sdd,angle)
 
 # Writing the geometry to disk
-xmlWriter = rtk.ThreeDCircularProjectionGeometryXMLFileWriter.New()
-xmlWriter.SetFilename ( sys.argv[2] )
-xmlWriter.SetObject ( geometry )
-xmlWriter.WriteFile()
+rtk.write_geometry(geometry, sys.argv[2])
 
 # Create a stack of empty projection images
 ConstantImageSourceType = rtk.ConstantImageSource[ImageType]

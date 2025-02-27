@@ -25,18 +25,15 @@ def main():
   print(margin)
 
   names = itk.RegularExpressionSeriesFileNames.New()
-  names.SetDirectory(args.path);
-  names.SetRegularExpression(args.regexp);
+  names.SetDirectory(args.path)
+  names.SetRegularExpression(args.regexp)
 
   reader = rtk.OraGeometryReader.New()
   reader.SetProjectionsFileNames(names.GetFileNames())
   reader.SetCollimationMargin(margin)
   reader.UpdateOutputData()
 
-  xmlWriter = rtk.ThreeDCircularProjectionGeometryXMLFileWriter.New()
-  xmlWriter.SetFilename(args.output)
-  xmlWriter.SetObject(reader.GetGeometry())
-  xmlWriter.WriteFile()
+  rtk.write_geometry(reader.GetGeometry(), args.output)
 
 if __name__ == '__main__':
   main()
