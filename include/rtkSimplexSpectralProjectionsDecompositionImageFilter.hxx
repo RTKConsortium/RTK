@@ -90,15 +90,16 @@ SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType,
   SetInputDecomposedProjections(
     const typename itk::ImageBase<DecomposedProjectionsType::ImageDimension> * DecomposedProjections)
 {
-  // Attempt to dynamic_cast DecomposedProjections into one of the supported types
-  const DecomposedProjectionsType * ptr = dynamic_cast<const DecomposedProjectionsType *>(DecomposedProjections);
-  if (ptr)
+  // Attempt to dynamic_cast DecomposedProjections into the default DecomposedProjectionsType
+  const DecomposedProjectionsType * default_ptr =
+    dynamic_cast<const DecomposedProjectionsType *>(DecomposedProjections);
+  if (default_ptr)
   {
-    this->SetNthInput(0, const_cast<DecomposedProjectionsType *>(ptr));
+    this->SetNthInput(0, const_cast<DecomposedProjectionsType *>(default_ptr));
   }
   else
   {
-    // Perform all possible dynamic_casts
+    // Attempt to dynamic_cast DecomposedProjections into one of the supported fixed vector length types
     typedef itk::Image<itk::Vector<DecomposedProjectionsDataType, 1>, DecomposedProjectionsType::ImageDimension> Type1;
     typedef itk::Image<itk::Vector<DecomposedProjectionsDataType, 2>, DecomposedProjectionsType::ImageDimension> Type2;
     typedef itk::Image<itk::Vector<DecomposedProjectionsDataType, 3>, DecomposedProjectionsType::ImageDimension> Type3;
@@ -129,6 +130,10 @@ SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType,
     else if (ptr5)
     {
       this->SetInputFixedVectorLengthDecomposedProjections<5>(ptr5);
+    }
+    else
+    {
+      itkWarningMacro("The input does not match any of the supported types, and has been ignored");
     }
   }
 }
@@ -172,15 +177,15 @@ SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType,
   SetInputMeasuredProjections(
     const typename itk::ImageBase<MeasuredProjectionsType::ImageDimension> * MeasuredProjections)
 {
-  // Attempt to dynamic_cast MeasuredProjections into one of the supported types
-  const MeasuredProjectionsType * ptr = dynamic_cast<const MeasuredProjectionsType *>(MeasuredProjections);
-  if (ptr)
+  // Attempt to dynamic_cast MeasuredProjections into the default type MeasuredProjectionsType
+  const MeasuredProjectionsType * default_ptr = dynamic_cast<const MeasuredProjectionsType *>(MeasuredProjections);
+  if (default_ptr)
   {
-    this->SetInput("MeasuredProjections", const_cast<MeasuredProjectionsType *>(ptr));
+    this->SetInput("MeasuredProjections", const_cast<MeasuredProjectionsType *>(default_ptr));
   }
   else
   {
-    // Perform all possible dynamic_casts
+    // Attempt to dynamic_cast MeasuredProjections into one of the supported types
     typedef itk::Image<itk::Vector<MeasuredProjectionsDataType, 1>, MeasuredProjectionsType::ImageDimension> Type1;
     typedef itk::Image<itk::Vector<MeasuredProjectionsDataType, 2>, MeasuredProjectionsType::ImageDimension> Type2;
     typedef itk::Image<itk::Vector<MeasuredProjectionsDataType, 3>, MeasuredProjectionsType::ImageDimension> Type3;
@@ -217,6 +222,10 @@ SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType,
     else if (ptr6)
     {
       this->SetInputFixedVectorLengthMeasuredProjections<6>(ptr6);
+    }
+    else
+    {
+      itkWarningMacro("The input does not match any of the supported types, and has been ignored");
     }
   }
 }
