@@ -4,19 +4,6 @@ import sys
 import itk
 from itk import RTK as rtk
 
-def GetCudaImageFromImage(img):
-  if hasattr(itk, 'CudaImage'):
-    # TODO: avoid this Update by implementing an itk::ImageToCudaImageFilter
-    img.Update()
-    cuda_img = itk.CudaImage[itk.itkCType.GetCTypeForDType(img.dtype),img.ndim].New()
-    cuda_img.SetPixelContainer(img.GetPixelContainer())
-    cuda_img.CopyInformation(img)
-    cuda_img.SetBufferedRegion(img.GetBufferedRegion())
-    cuda_img.SetRequestedRegion(img.GetRequestedRegion())
-    return cuda_img
-  else:
-    return img
-
 def main():
   # argument parsing
   parser = argparse.ArgumentParser(description=
@@ -96,19 +83,25 @@ def main():
   if hasattr(itk, 'CudaImage'):
     OutputCudaImageType = itk.CudaImage[OutputPixelType, Dimension]
     ConjugateGradientFilterType = rtk.ConjugateGradientConeBeamReconstructionFilter[OutputCudaImageType]
+    conjugategradient = ConjugateGradientFilterType.New()
+    conjugategradient.SetInput(itk.cuda_image_from_image(inputFilter.GetOutput()))
+    conjugategradient.SetInput(1, itk.cuda_image_from_image(reader.GetOutput()))
+    conjugategradient.SetInput(2, itk.cuda_image_from_image(weightsSource.GetOutput()))
+    conjugategradient.SetCudaConjugateGradient(not args_info.nocudacg)
+    if args_info.mask is not None:
+      conjugategradient.SetSupportMask(itk.cuda_image_from_image(supportmask))
   else:
     ConjugateGradientFilterType = rtk.ConjugateGradientConeBeamReconstructionFilter[OutputImageType]
+    conjugategradient = ConjugateGradientFilterType.New()
+    conjugategradient.SetInput(inputFilter.GetOutput())
+    conjugategradient.SetInput(1, reader.GetOutput())
+    conjugategradient.SetInput(2, weightsSource.GetOutput())
+    if args_info.mask is not None:
+      conjugategradient.SetSupportMask(supportmask)
 
-  conjugategradient = ConjugateGradientFilterType.New()
   rtk.SetForwardProjectionFromArgParse(args_info, conjugategradient)
   rtk.SetBackProjectionFromArgParse(args_info, conjugategradient)
   rtk.SetIterationsReportFromArgParse(args_info, conjugategradient)
-  conjugategradient.SetInput(GetCudaImageFromImage(inputFilter.GetOutput()))
-  conjugategradient.SetInput(1, GetCudaImageFromImage(reader.GetOutput()))
-  conjugategradient.SetInput(2, GetCudaImageFromImage(weightsSource.GetOutput()))
-  conjugategradient.SetCudaConjugateGradient(not args_info.nocudacg)
-  if args_info.mask is not None:
-    conjugategradient.SetSupportMask(GetCudaImageFromImage(supportmask))
 
   if args_info.gamma is not None:
     conjugategradient.SetGamma(args_info.gamma)
