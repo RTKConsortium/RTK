@@ -85,6 +85,8 @@ public:
 
   /** Set/Get the input material-decomposed stack of projections (only used for initialization) */
   void
+  SetInputDecomposedProjections(const DecomposedProjectionsType * DecomposedProjections);
+  void
   SetInputDecomposedProjections(
     const typename itk::ImageBase<DecomposedProjectionsType::ImageDimension> * DecomposedProjections);
   template <unsigned int VNumberOfMaterials>
@@ -96,6 +98,8 @@ public:
   GetInputDecomposedProjections();
 
   /** Set/Get the input stack of measured projections (to be decomposed in materials) */
+  void
+  SetInputMeasuredProjections(const MeasuredProjectionsType * MeasuredProjections);
   void
   SetInputMeasuredProjections(
     const typename itk::ImageBase<MeasuredProjectionsType::ImageDimension> * MeasuredProjections);
