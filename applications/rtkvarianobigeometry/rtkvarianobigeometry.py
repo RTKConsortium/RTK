@@ -30,10 +30,7 @@ def main():
   reader.SetProjectionsFileNames(names.GetFileNames())
   reader.UpdateOutputData()
 
-  xmlWriter = rtk.ThreeDCircularProjectionGeometryXMLFileWriter.New()
-  xmlWriter.SetFilename(args.output)
-  xmlWriter.SetObject(reader.GetGeometry())
-  xmlWriter.WriteFile()
+  rtk.write_geometry(reader.GetGeometry(), args.output)
 
 if __name__ == '__main__':
   main()

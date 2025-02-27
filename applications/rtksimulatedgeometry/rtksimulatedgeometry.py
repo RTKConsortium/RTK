@@ -47,10 +47,7 @@ def main():
 
   geometry.SetRadiusCylindricalDetector(args.rad_cyl)
 
-  writer = rtk.ThreeDCircularProjectionGeometryXMLFileWriter.New()
-  writer.SetFilename(args.output)
-  writer.SetObject(geometry)
-  writer.WriteFile()
+  rtk.write_geometry(geometry, args.output)
 
 if __name__ == '__main__':
   main()

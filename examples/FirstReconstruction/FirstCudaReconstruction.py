@@ -29,10 +29,7 @@ for x in range(0,numberOfProjections):
   geometry.AddProjection(sid,sdd,angle)
 
 # Writing the geometry to disk
-xmlWriter = rtk.ThreeDCircularProjectionGeometryXMLFileWriter.New()
-xmlWriter.SetFilename ( sys.argv[2] )
-xmlWriter.SetObject ( geometry );
-xmlWriter.WriteFile();
+rtk.write_geometry(geometry, sys.argv[2])
 
 # Create a stack of empty projection images
 ConstantImageSourceType = rtk.ConstantImageSource[GPUImageType]
@@ -79,11 +76,11 @@ projections.SetRequestedRegion(rei.GetOutput().GetRequestedRegion())
 print("Reconstructing...")
 FDKGPUType = rtk.CudaFDKConeBeamReconstructionFilter
 feldkamp = FDKGPUType.New()
-feldkamp.SetInput(0, constantImageSource2.GetOutput());
-feldkamp.SetInput(1, projections);
-feldkamp.SetGeometry(geometry);
-feldkamp.GetRampFilter().SetTruncationCorrection(0.0);
-feldkamp.GetRampFilter().SetHannCutFrequency(0.0);
+feldkamp.SetInput(0, constantImageSource2.GetOutput())
+feldkamp.SetInput(1, projections)
+feldkamp.SetGeometry(geometry)
+feldkamp.GetRampFilter().SetTruncationCorrection(0.0)
+feldkamp.GetRampFilter().SetHannCutFrequency(0.0)
 
 # Field-of-view masking
 FOVFilterType = rtk.FieldOfViewImageFilter[CPUImageType, CPUImageType]
@@ -95,10 +92,10 @@ fieldofview.SetGeometry(geometry)
 # Writer
 print("Writing output image...")
 WriterType = rtk.ImageFileWriter[CPUImageType]
-writer = WriterType.New();
-writer.SetFileName(sys.argv[1]);
-writer.SetInput(fieldofview.GetOutput());
-writer.Update();
+writer = WriterType.New()
+writer.SetFileName(sys.argv[1])
+writer.SetInput(fieldofview.GetOutput())
+writer.Update()
 
 print("Done!")
 
