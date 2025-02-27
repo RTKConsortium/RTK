@@ -67,6 +67,8 @@ public:
   using DetectorResponseType = vnl_matrix<double>;
   using MaterialAttenuationsType = vnl_matrix<double>;
   using CostFunctionType = ProjectionsDecompositionNegativeLogLikelihood;
+  using DecomposedProjectionsDataType = typename DecomposedProjectionsType::PixelType::ValueType;
+  using MeasuredProjectionsDataType = typename MeasuredProjectionsType::PixelType::ValueType;
 
 #ifndef ITK_FUTURE_LEGACY_REMOVE
   /** Additional types to overload SetInputIncidentSpectrum */
@@ -84,14 +86,31 @@ public:
   /** Set/Get the input material-decomposed stack of projections (only used for initialization) */
   void
   SetInputDecomposedProjections(const DecomposedProjectionsType * DecomposedProjections);
+  void
+  SetInputDecomposedProjections(
+    const typename itk::ImageBase<DecomposedProjectionsType::ImageDimension> * DecomposedProjections);
+  template <unsigned int VNumberOfMaterials>
+  void
+  SetInputFixedVectorLengthDecomposedProjections(
+    const itk::Image<itk::Vector<DecomposedProjectionsDataType, VNumberOfMaterials>,
+                     DecomposedProjectionsType::ImageDimension> * DecomposedProjections);
   typename DecomposedProjectionsType::ConstPointer
   GetInputDecomposedProjections();
 
   /** Set/Get the input stack of measured projections (to be decomposed in materials) */
   void
-  SetInputMeasuredProjections(const MeasuredProjectionsType * SpectralProjections);
+  SetInputMeasuredProjections(const MeasuredProjectionsType * MeasuredProjections);
+  void
+  SetInputMeasuredProjections(
+    const typename itk::ImageBase<MeasuredProjectionsType::ImageDimension> * MeasuredProjections);
+  template <unsigned int VNumberOfSpectralBins>
+  void
+  SetInputFixedVectorLengthMeasuredProjections(
+    const itk::Image<itk::Vector<MeasuredProjectionsDataType, VNumberOfSpectralBins>,
+                     MeasuredProjectionsType::ImageDimension> * MeasuredProjections);
   typename MeasuredProjectionsType::ConstPointer
   GetInputMeasuredProjections();
+
 
   /** Set/Get the detector response as an image */
   void
