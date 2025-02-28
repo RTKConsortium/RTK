@@ -83,6 +83,17 @@ rtkforwardprojectiontest(int, char *[])
   jfp->SetInput(projInput->GetOutput());
   jfp->SetInput(1, volInput->GetOutput());
 
+#ifndef USE_CUDA
+  // custom SumAlongRay lambda function (works ONLY without CUDA support)
+  JFPType::SumAlongRayFunc sumFuncTest = [](const itk::ThreadIdType,
+                                            JFPType::OutputPixelType &    sum,
+                                            const JFPType::InputPixelType in,
+                                            const JFPType::VectorType &) -> void {
+    sum += static_cast<JFPType::OutputPixelType>(in);
+  };
+  jfp->SetSumAlongRay(sumFuncTest);
+#endif
+
   // Ray Box Intersection filter (reference)
 #ifdef USE_CUDA
   jfp->SetStepSize(10);

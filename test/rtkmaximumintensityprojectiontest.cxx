@@ -2,6 +2,7 @@
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkRayBoxIntersectionImageFilter.h"
 #include "rtkConstantImageSource.h"
+#include "rtkJosephForwardProjectionImageFilter.h"
 #include "rtkMaximumIntensityProjectionImageFilter.h"
 #include <itkImageRegionSplitterDirection.h>
 #include <itkImageRegionIterator.h>
@@ -54,18 +55,54 @@ rtkmaximumintensityprojectiontest(int, char *[])
   projInput->SetConstant(0.);
   projInput->Update();
 
-  // MIP Forward Projection filter
-  auto mipfp = rtk::MaximumIntensityProjectionImageFilter<OutputImageType, OutputImageType>::New();
-  mipfp->SetInput(projInput->GetOutput());
-  mipfp->SetInput(1, volInput->GetOutput());
+  // Test-1
+  // Joseph Forward Projection filter for MIP projection
+  std::cout << "\n\n****** Case 1: JosephForwardProjection filter with custom MIP functions ******" << std::endl;
+  using JFPType = rtk::JosephForwardProjectionImageFilter<OutputImageType, OutputImageType>;
+  auto jfp = rtk::JosephForwardProjectionImageFilter<OutputImageType, OutputImageType>::New();
+  jfp->SetInput(projInput->GetOutput());
+  jfp->SetInput(1, volInput->GetOutput());
+
+  // Function to compute the maximum intensity (MIP) value along the ray projection.
+  JFPType::SumAlongRayFunc sumAlongFunc = [](const itk::ThreadIdType,
+                                             JFPType::OutputPixelType &    mipValue,
+                                             const JFPType::InputPixelType volumeValue,
+                                             const JFPType::VectorType &) -> void {
+    JFPType::OutputPixelType tmp = static_cast<JFPType::OutputPixelType>(volumeValue);
+    if (tmp > mipValue)
+    {
+      mipValue = tmp;
+    }
+  };
+  jfp->SetSumAlongRay(sumAlongFunc);
+
+  // Performs a MIP forward projection, i.e. calculation of a maximum intensity
+  // step along the x-ray line.
+  JFPType::ProjectedValueAccumulationFunc projAccumFunc = [](const itk::ThreadIdType          itkNotUsed(threadId),
+                                                             const JFPType::InputPixelType &  input,
+                                                             JFPType::OutputPixelType &       output,
+                                                             const JFPType::OutputPixelType & rayCastValue,
+                                                             const JFPType::VectorType &      stepInMM,
+                                                             const JFPType::VectorType &      itkNotUsed(source),
+                                                             const JFPType::VectorType &      itkNotUsed(sourceToPixel),
+                                                             const JFPType::VectorType &      itkNotUsed(nearestPoint),
+                                                             const JFPType::VectorType & itkNotUsed(farthestPoint)) {
+    JFPType::OutputPixelType tmp = static_cast<JFPType::OutputPixelType>(input);
+    if (tmp < rayCastValue)
+    {
+      tmp = rayCastValue;
+    }
+    output = tmp * stepInMM.GetNorm();
+  };
+  jfp->SetProjectedValueAccumulation(projAccumFunc);
 
   auto geometry = rtk::ThreeDCircularProjectionGeometry::New();
   geometry->AddProjection(700, 800, 0);
 
-  mipfp->SetGeometry(geometry);
-  mipfp->Update();
+  jfp->SetGeometry(geometry);
+  jfp->Update();
 
-  itk::ImageRegionConstIterator<OutputImageType> inputIt(mipfp->GetOutput(), mipfp->GetOutput()->GetRequestedRegion());
+  itk::ImageRegionConstIterator<OutputImageType> inputIt(jfp->GetOutput(), jfp->GetOutput()->GetRequestedRegion());
 
   inputIt.GoToBegin();
 
@@ -84,5 +121,41 @@ rtkmaximumintensityprojectiontest(int, char *[])
     return EXIT_FAILURE;
   }
   std::cout << "\n\nTest PASSED! " << std::endl;
+
+  // Test-2
+  // Maximum Intensity Projection (MIP) filter, derived from Joseph Forward Projection filter
+  std::cout << "\n\n****** Case 2: MaximumIntensityProjection (MIP) filter ******" << std::endl;
+  using MIPType = rtk::MaximumIntensityProjectionImageFilter<OutputImageType, OutputImageType>;
+  MIPType::Pointer mipfp = MIPType::New();
+  mipfp->SetInput(projInput->GetOutput());
+  mipfp->SetInput(1, volInput->GetOutput());
+
+  mipfp->SetGeometry(geometry);
+  mipfp->Update();
+
+  itk::ImageRegionConstIterator<OutputImageType> inputIt2(mipfp->GetOutput(), mipfp->GetOutput()->GetRequestedRegion());
+
+  inputIt2.GoToBegin();
+
+  res = false;
+  while (!inputIt2.IsAtEnd())
+  {
+    OutputPixelType pixel = inputIt2.Get();
+    if (pixel < 4. || pixel > 4.25)
+    {
+      res = true;
+    }
+    ++inputIt2;
+  }
+  if (res)
+  {
+    return EXIT_FAILURE;
+  }
+  std::cout << "\n\nTest PASSED! " << std::endl;
+
+  std::cout << "\n\n****** Compare two resulted images ******" << std::endl;
+  CheckImageQuality<OutputImageType>(jfp->GetOutput(), mipfp->GetOutput(), 0.001, 0.000001, 1.E+19);
+  std::cout << "\n\nImages are OK! " << std::endl;
+
   return EXIT_SUCCESS;
 }
