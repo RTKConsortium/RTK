@@ -20,3 +20,18 @@ def read_geometry(filename):
 
   # Return the geometry object
   return reader.GetOutputObject()
+
+# Returns the progress percentage
+class PercentageProgressCommand:
+  def __init__(self,caller):
+    self.percentage = -1
+    self.caller=caller
+
+  def callback(self):
+    new_percentage = int(self.caller.GetProgress() * 100)
+    if new_percentage > self.percentage:
+      print(f"\r{self.caller.GetNameOfClass()} {new_percentage}% completed.", end='', flush=True)
+      self.percentage = new_percentage
+
+  def End(self):
+      print()  # Print newline when execution ends
