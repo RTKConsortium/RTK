@@ -33,6 +33,11 @@ def CudaImageFromImage(img):
         return cuda_img
     return img  # Return the original image if CUDA is not available
 
+# Returns a lambda function that parses a comma-separated string and converts each element to the specified type.
+def comma_separated_args(value_type):
+    return lambda value: [value_type(s.strip()) for s in value.split(',')]
+
+# Returns the progress percentage
 class PercentageProgressCommand:
     def __init__(self,caller):
         self.percentage = -1
