@@ -35,3 +35,7 @@ class PercentageProgressCommand:
 
   def End(self):
       print()  # Print newline when execution ends
+
+# Returns a lambda function that parses a comma-separated string and converts each element to the specified type.
+def comma_separated_args(value_type):
+  return lambda value: [value_type(s.strip()) for s in value.split(',')]
