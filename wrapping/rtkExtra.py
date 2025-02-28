@@ -32,3 +32,17 @@ def CudaImageFromImage(img):
         cuda_img.SetRequestedRegion(img.GetRequestedRegion())
         return cuda_img
     return img  # Return the original image if CUDA is not available
+
+class PercentageProgressCommand:
+    def __init__(self,caller):
+        self.percentage = -1
+        self.caller=caller
+
+    def callback(self):
+        new_percentage = int(self.caller.GetProgress() * 100)
+        if new_percentage > self.percentage:
+            print(f"\r{self.caller.GetNameOfClass()} {new_percentage}% completed.", end='', flush=True)
+            self.percentage = new_percentage
+
+    def End(self):
+        print()  # Print newline when execution ends
