@@ -46,6 +46,7 @@ rtkelektasynergygeometry = "itk.rtkelektasynergygeometry:main"
 rtkorageometry = "itk.rtkorageometry:main"
 rtksimulatedgeometry = "itk.rtksimulatedgeometry:main"
 rtkvarianobigeometry = "itk.rtkvarianobigeometry:main"
+rtkfdk = "itk.rtkfdk:main"
 
 [project.urls]
 Download = "https://github.com/RTKConsortium/RTK"
