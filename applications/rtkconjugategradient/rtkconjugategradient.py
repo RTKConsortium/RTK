@@ -4,19 +4,6 @@ import sys
 import itk
 from itk import RTK as rtk
 
-def GetCudaImageFromImage(img):
-  if hasattr(itk, 'CudaImage'):
-    # TODO: avoid this Update by implementing an itk::ImageToCudaImageFilter
-    img.Update()
-    cuda_img = itk.CudaImage[itk.itkCType.GetCTypeForDType(img.dtype),img.ndim].New()
-    cuda_img.SetPixelContainer(img.GetPixelContainer())
-    cuda_img.CopyInformation(img)
-    cuda_img.SetBufferedRegion(img.GetBufferedRegion())
-    cuda_img.SetRequestedRegion(img.GetRequestedRegion())
-    return cuda_img
-  else:
-    return img
-
 def main():
   # argument parsing
   parser = argparse.ArgumentParser(description=
@@ -106,12 +93,12 @@ def main():
   rtk.SetForwardProjectionFromArgParse(args_info, conjugategradient)
   rtk.SetBackProjectionFromArgParse(args_info, conjugategradient)
   rtk.SetIterationsReportFromArgParse(args_info, conjugategradient)
-  conjugategradient.SetInput(GetCudaImageFromImage(inputFilter.GetOutput()))
-  conjugategradient.SetInput(1, GetCudaImageFromImage(reader.GetOutput()))
-  conjugategradient.SetInput(2, GetCudaImageFromImage(weightsSource.GetOutput()))
+  conjugategradient.SetInput(rtk.CudaImageFromImage(inputFilter.GetOutput()))
+  conjugategradient.SetInput(1, rtk.CudaImageFromImage(reader.GetOutput()))
+  conjugategradient.SetInput(2, rtk.CudaImageFromImage(weightsSource.GetOutput()))
   conjugategradient.SetCudaConjugateGradient(not args_info.nocudacg)
   if args_info.mask is not None:
-    conjugategradient.SetSupportMask(GetCudaImageFromImage(supportmask))
+    conjugategradient.SetSupportMask(rtk.CudaImageFromImage(supportmask))
 
   if args_info.gamma is not None:
     conjugategradient.SetGamma(args_info.gamma)
