@@ -29,15 +29,24 @@ itk_end_wrap_module()
 
 wrap_itk_python_bindings_install(/itk "RTK"
     __init_rtk__.py
-
     ${RTK_SOURCE_DIR}/applications/rtk3Doutputimage_group.py
-    ${RTK_SOURCE_DIR}/applications/rtkinputprojections_group.py
-    ${RTK_SOURCE_DIR}/applications/rtkiterations_group.py
-    ${RTK_SOURCE_DIR}/applications/rtkprojectors_group.py
+    ${RTK_SOURCE_DIR}/applications/rtkadmmtotalvariation/rtkadmmtotalvariation.py
+    ${RTK_SOURCE_DIR}/applications/rtkbackprojections/rtkbackprojections.py
+    ${RTK_SOURCE_DIR}/applications/rtkbioscangeometry/rtkbioscangeometry.py
+    ${RTK_SOURCE_DIR}/applications/rtkcheckimagequality/rtkcheckimagequality.py
     ${RTK_SOURCE_DIR}/applications/rtkconjugategradient/rtkconjugategradient.py
+    ${RTK_SOURCE_DIR}/applications/rtkdigisensgeometry/rtkdigisensgeometry.py
+    ${RTK_SOURCE_DIR}/applications/rtkdualenergyforwardmodel/rtkdualenergyforwardmodel.py
+    ${RTK_SOURCE_DIR}/applications/rtkadmmwavelets/rtkadmmwavelets.py
+    ${RTK_SOURCE_DIR}/applications/rtkdrawgeometricphantom/rtkdrawgeometricphantom.py
     ${RTK_SOURCE_DIR}/applications/rtkelektasynergygeometry/rtkelektasynergygeometry.py
     ${RTK_SOURCE_DIR}/applications/rtkfdk/rtkfdk.py
+    ${RTK_SOURCE_DIR}/applications/rtkinputprojections_group.py
+    ${RTK_SOURCE_DIR}/applications/rtkamsterdamshroud/rtkamsterdamshroud.py
+    ${RTK_SOURCE_DIR}/applications/rtkiterations_group.py
     ${RTK_SOURCE_DIR}/applications/rtkorageometry/rtkorageometry.py
+    ${RTK_SOURCE_DIR}/applications/rtkprojectgeometricphantom/rtkprojectgeometricphantom.py
+    ${RTK_SOURCE_DIR}/applications/rtkprojectors_group.py
     ${RTK_SOURCE_DIR}/applications/rtksimulatedgeometry/rtksimulatedgeometry.py
     ${RTK_SOURCE_DIR}/applications/rtkvarianobigeometry/rtkvarianobigeometry.py
     ${RTK_SOURCE_DIR}/wrapping/rtkExtra.py

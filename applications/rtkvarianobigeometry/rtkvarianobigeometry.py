@@ -7,7 +7,9 @@ from itk import RTK as rtk
 def main():
   # Argument parsing
   parser = argparse.ArgumentParser(description=
-    "Creates an RTK geometry file from a Varian OBI acquisition.")
+      "Creates an RTK geometry file from a Varian OBI acquisition.",
+      formatter_class=argparse.ArgumentDefaultsHelpFormatter
+  )
 
   parser.add_argument('--verbose', '-v', help='Verbose execution', type=bool)
   parser.add_argument('--xml_file', '-x', help='Varian OBI XML information file on projections')
