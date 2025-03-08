@@ -73,6 +73,7 @@ main(int, char **)
 
   // Test-1
   // Joseph Forward Projection filter for MIP projection
+  std::cout << "\n\n****** Case 1: JosephForwardProjection filter with custom MIP functions ******" << std::endl;
   using JFPType = rtk::JosephForwardProjectionImageFilter<OutputImageType, OutputImageType>;
   JFPType::Pointer jfp = JFPType::New();
   jfp->SetInput(projInput->GetOutput());
@@ -137,10 +138,11 @@ main(int, char **)
   {
     return EXIT_FAILURE;
   }
-  std::cout << "\n\nTest-1 PASSED! " << std::endl;
+  std::cout << "\n\nTest PASSED! " << std::endl;
 
   // Test-2
   // Maximum Intensity Projection (MIP) filter, derived from Joseph Forward Projection filter
+  std::cout << "\n\n****** Case 2: MaximumIntensityProjection (MIP) filter ******" << std::endl;
   using MIPType = rtk::MaximumIntensityProjectionImageFilter<OutputImageType, OutputImageType>;
   MIPType::Pointer mipfp = MIPType::New();
   mipfp->SetInput(projInput->GetOutput());
@@ -167,7 +169,11 @@ main(int, char **)
   {
     return EXIT_FAILURE;
   }
+  std::cout << "\n\nTest PASSED! " << std::endl;
 
-  std::cout << "\n\nTest-2 PASSED! " << std::endl;
+  std::cout << "\n\n****** Compare two resulted images ******" << std::endl;
+  CheckImageQuality<OutputImageType>(jfp->GetOutput(), mipfp->GetOutput(), 0.001, 0.000001, 1.E+19);
+  std::cout << "\n\nImages are OK! " << std::endl;
+
   return EXIT_SUCCESS;
 }
