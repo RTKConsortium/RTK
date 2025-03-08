@@ -84,7 +84,7 @@ rtkforwardprojectiontest(int, char *[])
   jfp->SetInput(1, volInput->GetOutput());
 
 #ifndef USE_CUDA
-  // custom SumAlongRay lambda function (works ONLY without CUDA support)
+  // Adding custom SumAlongRay lambda function doesn't work with CUDA filter
   JFPType::SumAlongRayFunc sumFuncTest = [](const itk::ThreadIdType,
                                             JFPType::OutputPixelType &    sum,
                                             const JFPType::InputPixelType in,
