@@ -48,6 +48,7 @@ jobs:
         CMAKE_OPTIONS="${CMAKE_OPTIONS} -DRTK_BUILD_APPLICATIONS:BOOL=OFF"
         CMAKE_OPTIONS="${CMAKE_OPTIONS} -DCUDAToolkit_ROOT=/usr/lib64/cuda${CUDA_VERSION}"
         CMAKE_OPTIONS="${CMAKE_OPTIONS} -DCMAKE_CUDA_COMPILER=/usr/lib64/cuda${CUDA_VERSION}/bin/nvcc"
+        CMAKE_OPTIONS="${CMAKE_OPTIONS} --config-setting=build.tool-args=-j16"
 
         # The first two are not library paths but are included to be mounted in the
         # docker by dockcross-manylinux-build-module-wheels.sh
