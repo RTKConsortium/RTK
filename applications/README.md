@@ -12,7 +12,7 @@ RTK provides command line applications that can be built from the C++ code by tu
 ./rtkamsterdamshroud/README.md
 ./rtkelektasynergygeometry/README.md
 ./rtkvarianobigeometry/README.md
-./rtkregularizedconjugategradient/README.md
+./rtkadmmtotalvariation/README.md
 ./rtkadmmwavelets/README.md
 ./rtkfourdrooster/README.md
 ```
