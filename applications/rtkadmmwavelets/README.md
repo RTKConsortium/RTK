@@ -1,7 +1,7 @@
 # Daubechies Wavelets Regularized Reconstruction
 
-![sin](../../documentation/docs/ExternalData/Sinogram.png){w=300px alt="sinogram"}
-![img](../../documentation/docs/ExternalData/Overlay.png){w=300px alt="image"}
+![sin](../../documentation/docs/ExternalData/SheppLogan-Sinogram-3D.png){w=300px alt="SheppLogan sinogram 3D"}
+![img](../../documentation/docs/ExternalData/AdmmWavelets.png){w=300px alt="AdmmWavelets reconstruction"}
 
 This script uses the SheppLogan phantom
 
