@@ -52,7 +52,6 @@ public:
   using InputPixelType = typename TInputImage::PixelType;
   using OutputPixelType = typename TOutputImage::PixelType;
   using CoordinateType = double;
-  using WeightCoordinateType = typename itk::PixelTraits<InputPixelType>::ValueType;
   using VectorType = itk::Vector<CoordinateType, TInputImage::ImageDimension>;
 
   /** Method for creation through the object factory. */

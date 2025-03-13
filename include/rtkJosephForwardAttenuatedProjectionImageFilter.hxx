@@ -43,7 +43,6 @@ JosephForwardAttenuatedProjectionImageFilter<TInputImage, TOutputImage>::JosephF
   /** \brief Function to multiply the interpolation weights with the projected
    * volume values and attenuation map.
    *
-   * \author Antoine Robert
    */
   auto interpolationWeightMultiplicationAttenuatedFunc = [this](const ThreadIdType         threadId,
                                                                 double                     stepLengthInVoxel,
@@ -60,7 +59,6 @@ JosephForwardAttenuatedProjectionImageFilter<TInputImage, TOutputImage>::JosephF
 
   /** \brief Function to compute the attenuation correction on the projection.
    *
-   * \author Antoine Robert
    */
   auto computeAttenuationCorrectionFunc = [this](const ThreadIdType   threadId,
                                                  OutputPixelType &    sumValue,
@@ -86,7 +84,6 @@ JosephForwardAttenuatedProjectionImageFilter<TInputImage, TOutputImage>::JosephF
 
   /** \brief Function to accumulate the ray casting on the projection.
    *
-   * \author Antoine Robert
    */
   auto projectedValueAccumulationAttenuatedFunc = [this](const ThreadIdType      threadId,
                                                          const InputPixelType &  input,

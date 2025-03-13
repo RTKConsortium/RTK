@@ -68,21 +68,18 @@ public:
   /** \brief Function to multiply the interpolation weights with the projected
    * volume values.
    *
-   * \author Simon Rit
    */
   using InterpolationWeightMultiplicationFunc =
     std::function<OutputPixelType(const ThreadIdType, double, const WeightCoordinateType, const InputPixelType *, int)>;
 
   /** \brief Function to compute the attenuation correction on the projection.
    *
-   * \author Antoine Robert
    */
   using SumAlongRayFunc =
     std::function<void(const ThreadIdType, OutputPixelType &, const InputPixelType, const VectorType &)>;
 
   /** \brief Function to accumulate the ray casting on the projection.
    *
-   * \author Simon Rit
    */
   using ProjectedValueAccumulationFunc = std::function<void(const ThreadIdType,
                                                             const InputPixelType &,
