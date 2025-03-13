@@ -117,7 +117,7 @@ main(int, char **)
   geometry->AddProjection(700, 800, 0);
 
   jfp->SetGeometry(geometry);
-  jfp->Update();
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(jfp->Update());
 
   using ConstIteratorType = itk::ImageRegionConstIterator<OutputImageType>;
   ConstIteratorType inputIt(jfp->GetOutput(), jfp->GetOutput()->GetRequestedRegion());
@@ -149,7 +149,7 @@ main(int, char **)
   mipfp->SetInput(1, volInput->GetOutput());
 
   mipfp->SetGeometry(geometry);
-  mipfp->Update();
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(mipfp->Update());
 
   inputIt = ConstIteratorType(mipfp->GetOutput(), mipfp->GetOutput()->GetRequestedRegion());
 
@@ -173,7 +173,7 @@ main(int, char **)
 
   std::cout << "\n\n****** Compare two resulted images ******" << std::endl;
   CheckImageQuality<OutputImageType>(jfp->GetOutput(), mipfp->GetOutput(), 0.001, 0.000001, 1.E+19);
-  std::cout << "\n\nImages are OK! " << std::endl;
+  std::cout << "\n\nTest PASSED! " << std::endl;
 
   return EXIT_SUCCESS;
 }
