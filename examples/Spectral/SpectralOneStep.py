@@ -96,7 +96,7 @@ itk.imwrite(drm, 'drm.mha')
 
 # Image of materials basis (linear attenuation coefficients)
 mat_basis = itk.vnl_matrix[itk.F](nenergies, nmat, 0.)
-for e in range(int(np.argwhere(energies==thresholds[0])), energies.size):
+for e in range(int(np.argwhere(energies==thresholds[0]).item()), energies.size):
     for i,m in zip(range(nmat), materials):
         mat_basis.put(e, i, 0.1 * xrl.CS_Total_CP(m['material']['name'], energies[e]) * m['material']['density'])
 mat_basis_np = itk.array_from_vnl_matrix(mat_basis)
@@ -128,7 +128,7 @@ for t in range(nbins):
             else:
                 w=1.
             counts_np[:,:,:,t] += w * fluence[eimp] * drm[edet, eimp] * att
-            binned_drm.put(t, eimp, binned_drm(t,eimp) + w*drm[edet, eimp])
+            binned_drm.put(t, eimp, binned_drm(t,eimp) + w*float(drm[edet, eimp]))
 itk.imwrite(itk.image_from_array(itk.array_from_vnl_matrix(binned_drm)), 'binned_drm.mha')
 itk.imwrite(counts, 'counts.mha')
 
