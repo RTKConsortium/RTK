@@ -87,7 +87,7 @@ public:
   void
   Translate(const VectorType & t) override;
 
-  /** Rotate object by a given 3D vector. */
+  /** Rotate object by a given 3D matrix. */
   void
   Rotate(const RotationMatrixType & r) override;
 
