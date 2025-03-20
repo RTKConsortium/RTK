@@ -6,14 +6,16 @@ from itk import RTK as rtk
 def main():
   # Argument parsing
   parser = argparse.ArgumentParser(description=
-    "Creates an RTK geometry file from a Varian OBI acquisition.")
+      "Creates an RTK geometry file from a Varian OBI acquisition.",
+      formatter_class=argparse.ArgumentDefaultsHelpFormatter
+  )
 
   parser.add_argument('--verbose', '-v', help='Verbose execution', type=bool)
   parser.add_argument('--xml_file', '-x', help='Varian OBI XML information file on projections')
   parser.add_argument('--output', '-o', help='Output file name', required=True)
   parser.add_argument('--path', '-p', help='Path containing projections', required=True)
   parser.add_argument('--regexp', '-r', help='Regular expression to select projection files in path')
-  parser.add_argument('--margin', '-m', help='Collimation margin (uinf, usup, vinf, vsup)', type=float, nargs='+', default=0.)
+  parser.add_argument('--margin', '-m', help='Collimation margin (uinf, usup, vinf, vsup)', type=rtk.comma_separated_args(float), default=0.)
 
   args = parser.parse_args()
 
@@ -25,8 +27,8 @@ def main():
   print(margin)
 
   names = itk.RegularExpressionSeriesFileNames.New()
-  names.SetDirectory(args.path);
-  names.SetRegularExpression(args.regexp);
+  names.SetDirectory(args.path)
+  names.SetRegularExpression(args.regexp)
 
   reader = rtk.OraGeometryReader.New()
   reader.SetProjectionsFileNames(names.GetFileNames())
