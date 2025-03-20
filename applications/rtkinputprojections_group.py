@@ -1,4 +1,5 @@
 import itk
+from itk import RTK as rtk
 
 __all__ = [
     'add_rtkinputprojections_group',
@@ -13,20 +14,20 @@ def add_rtkinputprojections_group(parser):
   rtkinputprojections_group.add_argument('--nsort', help='Numeric sort for regular expression matches', action='store_true')
   rtkinputprojections_group.add_argument('--submatch', help='Index of the submatch that will be used to sort matches', type=int, default=0)
   rtkinputprojections_group.add_argument('--nolineint', help='Disable raw to line integral conversion, just casts to float', type=bool, default=False)
-  rtkinputprojections_group.add_argument('--newdirection', help='New value of input projections (before pre-processing)', type=float, nargs='+')
-  rtkinputprojections_group.add_argument('--neworigin', help='New origin of input projections (before pre-processing)', type=float, nargs='+')
-  rtkinputprojections_group.add_argument('--newspacing', help='New spacing of input projections (before pre-processing)', type=float, nargs='+')
-  rtkinputprojections_group.add_argument('--lowercrop', help='Lower boundary crop size', type=int, nargs='+', default=[0])
-  rtkinputprojections_group.add_argument('--uppercrop', help='Upper boundary crop size', type=int, nargs='+', default=[0])
-  rtkinputprojections_group.add_argument('--binning', help='Shrink / Binning factos in each direction', type=int, nargs='+', default=[1])
-  rtkinputprojections_group.add_argument('--wpc', help='Water precorrection coefficients (default is no correction)', type=float, nargs='+')
+  rtkinputprojections_group.add_argument('--newdirection', help='New value of input projections (before pre-processing)', type=rtk.comma_separated_args(float))
+  rtkinputprojections_group.add_argument('--neworigin', help='New origin of input projections (before pre-processing)', type=rtk.comma_separated_args(float))
+  rtkinputprojections_group.add_argument('--newspacing', help='New spacing of input projections (before pre-processing)', type=rtk.comma_separated_args(float))
+  rtkinputprojections_group.add_argument('--lowercrop', help='Lower boundary crop size', type=rtk.comma_separated_args(int))
+  rtkinputprojections_group.add_argument('--uppercrop', help='Upper boundary crop size', type=rtk.comma_separated_args(int))
+  rtkinputprojections_group.add_argument('--binning', help='Shrink / Binning factos in each direction', type=rtk.comma_separated_args(int), default=[1])
+  rtkinputprojections_group.add_argument('--wpc', help='Water precorrection coefficients (default is no correction)', type=rtk.comma_separated_args(float))
   rtkinputprojections_group.add_argument('--spr', help='Boellaard scatter correction: scatter-to-primary ratio', type=float, default=0)
   rtkinputprojections_group.add_argument('--nonneg', help='Boellaard scatter correction: non-negativity threshold', type=float)
   rtkinputprojections_group.add_argument('--airthres', help='Boellaard scatter correction: air threshold', type=float)
   rtkinputprojections_group.add_argument('--i0', help='I0 value (when assumed constant per projection), 0 means auto', type=float)
   rtkinputprojections_group.add_argument('--idark', help='IDark value, i.e., value when beam is off', type=float, default=0)
   rtkinputprojections_group.add_argument('--component', help='Vector component to extract, for multi-material projections', type=int, default=0)
-  rtkinputprojections_group.add_argument('--radius', help='Radius of neighborhood for conditional median filtering', type=int, nargs='+', default=[0])
+  rtkinputprojections_group.add_argument('--radius', help='Radius of neighborhood for conditional median filtering', type=rtk.comma_separated_args(int), default=[0])
   rtkinputprojections_group.add_argument('--multiplier', help='Threshold multiplier for conditional median filtering', type=float, default=0)
 
 # Mimicks GetProjectionsFileNamesFromGgo

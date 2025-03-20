@@ -1,4 +1,5 @@
 import itk
+from itk import RTK as rtk
 
 __all__ = [
     'add_rtk3Doutputimage_group',
@@ -8,10 +9,10 @@ __all__ = [
 # Mimicks rtk3Doutputimage_section.ggo
 def add_rtk3Doutputimage_group(parser):
   rtk3Doutputimage_group = parser.add_argument_group('Output 3D image properties')
-  rtk3Doutputimage_group.add_argument('--origin', help='Origin (default=centered)', type=float, nargs='+')
-  rtk3Doutputimage_group.add_argument('--dimension', help='Dimension', type=int, nargs='+', default=[256])
-  rtk3Doutputimage_group.add_argument('--spacing', help='Spacing', type=float, nargs='+', default=[1])
-  rtk3Doutputimage_group.add_argument('--direction', help='Direction', type=float, nargs='+')
+  rtk3Doutputimage_group.add_argument('--origin', help='Origin (default=centered)', type=rtk.comma_separated_args(float))
+  rtk3Doutputimage_group.add_argument('--dimension', help='Dimension', type=rtk.comma_separated_args(int), default=[256])
+  rtk3Doutputimage_group.add_argument('--spacing', help='Spacing', type=rtk.comma_separated_args(float), default=[1])
+  rtk3Doutputimage_group.add_argument('--direction', help='Direction', type=rtk.comma_separated_args(float))
   rtk3Doutputimage_group.add_argument('--like', help='Copy information from this image (origin, dimension, spacing, direction)')
 
 # Mimicks SetConstantImageSourceFromGgo
