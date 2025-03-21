@@ -141,6 +141,8 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>::UpdateFFTProjectio
     itK.Set(itK.Get() * TFFTPrecision(0.));
   }
 
+  this->SquareKernel();
+
   // Replicate and window if required
   if (this->GetHannCutFrequencyY() > 0.)
   {
