@@ -3,11 +3,10 @@ name: 'Package RTK with CUDA'
 on: [push,pull_request]
 
 env:
-  itk-wheel-tag: 'v5.4.2.post1'
-  # v5.4.2.post1 + linux libtbb fix
-  itk-python-package-tag: '9534d2d6ad5e741825d9708e68bda76464fab08b'
+  itk-wheel-tag: 'v5.4.3'
+  itk-python-package-tag: 'v5.4.3'
   itk-python-package-org: 'InsightSoftwareConsortium'
-  itk-module-deps: "RTKConsortium/ITKCudaCommon@e38460052e7bf0965b95d46c263835a5eff0d52c"
+  itk-module-deps: "RTKConsortium/ITKCudaCommon@8baef219d19d8f320898c3c649539bbb5ba3f509"
 
 concurrency:
   group: '${{ github.workflow }}@${{ github.head_ref || github.run_id }}'

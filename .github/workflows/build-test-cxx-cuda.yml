@@ -3,8 +3,8 @@ name: 'Build, Test RTK with CUDA'
 on: [push,pull_request]
 
 env:
-  itk-git-tag: "v5.4.2"
-  itk-module-deps: "CudaCommon@e38460052e7bf0965b95d46c263835a5eff0d52c"
+  itk-git-tag: "v5.4.3"
+  itk-module-deps: "CudaCommon@8baef219d19d8f320898c3c649539bbb5ba3f509"
 
 concurrency:
   group: '${{ github.workflow }}@${{ github.head_ref || github.run_id }}'
