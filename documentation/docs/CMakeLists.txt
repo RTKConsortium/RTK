@@ -9,7 +9,7 @@ if(RTK_BUILD_SPHINX)
     COMMAND ${CMAKE_COMMAND}
                -DRTK_SOURCE_DIR:PATH="${RTK_SOURCE_DIR}"
                -DRTK_DOC_OUTPUT_DIR:PATH="${RTK_DOC_OUTPUT_DIR}"
-               -P "${CMAKE_CURRENT_SOURCE_DIR}/copy_sphinx_doc_files.cmake"
+               -P "${CMAKE_CURRENT_SOURCE_DIR}/copy_and_fetch_sphinx_doc_files.cmake"
     COMMENT "Copying documentation sources"
     )
 
