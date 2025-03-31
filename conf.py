@@ -8,11 +8,6 @@ from datetime import date
 
 import subprocess
 
-# -- Build setup -------------------------------------------------------------
-def setup(app):
-  # Fetch documentation images
-  subprocess.check_call("cmake -P documentation/docs/ExternalData/FetchExternalData.cmake", stderr=subprocess.STDOUT, shell=True)
-
 # -- Project information -----------------------------------------------------
 project = 'RTK'
 copyright = f'{date.today().year}, RTK Consortium'
