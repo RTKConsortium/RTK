@@ -17,3 +17,29 @@ jobs:
       python3-minor-versions: ${{ github.event_name == 'pull_request' && '["11"]' || '["9","10","11"]' }}
     secrets:
       pypi_password: ${{ secrets.pypi_password }}
+
+  run-python-tests:
+    needs: build-linux-py
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Download Python Package Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: LinuxWheel311_2_28-x64
+
+      - name: Install Python Package Artifact
+        run: |
+          ls .
+          unzip LinuxWheel311_2_28-x64.zip
+          wheel_name=`(find . -name "itk_pct*.whl")`
+          python -m pip uninstall itk-pct -y
+          python -m pip install ${wheel_name}
+
+      - name: Run Python tests
+        run: ctest -L Python
