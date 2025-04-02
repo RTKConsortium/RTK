@@ -41,6 +41,7 @@ dependencies = [
 ]
 
 [project.scripts]
+rtkadmmtotalvariation = "itk.rtkadmmtotalvariation:main"
 rtkamsterdamshroud = "itk.rtkamsterdamshroud:main"
 rtkbackprojections = "itk.rtkbackprojections:main"
 rtkbioscangeometry = "itk.rtkbioscangeometry:main"
