@@ -1,6 +1,6 @@
 itk_wrap_class("rtk::ADMMTotalVariationConeBeamReconstructionFilter" POINTER)
   if(RTK_USE_CUDA)
-    itk_wrap_template("CIF3" "itk::CudaImage<${ITKT_F}, 3>")
+    itk_wrap_template("CIF3CICVF33" "itk::CudaImage<${ITKT_F}, 3>, itk::CudaImage<itk::CovariantVector<${ITKT_F},3>, 3>")
   endif()
   itk_wrap_image_filter("${WRAP_ITK_REAL}" 1 3)
 itk_end_wrap_class()
