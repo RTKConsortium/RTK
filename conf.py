@@ -7,6 +7,15 @@
 from datetime import date
 
 import subprocess
+import os
+
+# -- Build setup -------------------------------------------------------------
+def setup(app):
+  # Fetch documentation images
+  cwd = os.getcwd()
+  subprocess.check_call(f'cmake -DRTK_SOURCE_DIR:PATH={cwd}'
+                        f'      -DRTK_DOC_OUTPUT_DIR:PATH={cwd}'
+                         '      -P documentation/docs/copy_and_fetch_sphinx_doc_files.cmake', stderr=subprocess.STDOUT, shell=True)
 
 # -- Project information -----------------------------------------------------
 project = 'RTK'
