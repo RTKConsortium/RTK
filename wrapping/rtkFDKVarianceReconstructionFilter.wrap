@@ -1,0 +1,22 @@
+if(RTK_USE_CUDA)
+  itk_wrap_include(itkCudaImage.h)
+endif()
+
+itk_wrap_class("rtk::FDKVarianceReconstructionFilter"  POINTER)
+  foreach(t ${WRAP_ITK_REAL})
+    itk_wrap_template("I${ITKM_${t}}3" "itk::Image<${ITKT_${t}}, 3>")
+  endforeach()
+  if(RTK_USE_CUDA)
+    itk_wrap_template("CIF3CIF3F" "itk::CudaImage<${ITKT_F}, 3>, itk::CudaImage<${ITKT_F}, 3>, float")
+  endif()
+itk_end_wrap_class()
+
+if(RTK_USE_CUDA)
+  itk_wrap_class("itk::CudaImageToImageFilter" POINTER)
+    itk_wrap_template("CIF3CIF3FDKCIF3F" "itk::CudaImage<${ITKT_F}, 3>, itk::CudaImage<${ITKT_F}, 3>, rtk::FDKVarianceReconstructionFilter< itk::CudaImage<${ITKT_F}, 3>, itk::CudaImage<${ITKT_F}, 3>, float >")
+  itk_end_wrap_class()
+
+  itk_wrap_class("itk::CudaInPlaceImageFilter" POINTER)
+    itk_wrap_template("CIF3CIF3FDKCIF3F" "itk::CudaImage<${ITKT_F}, 3>, itk::CudaImage<${ITKT_F}, 3>, rtk::FDKVarianceReconstructionFilter< itk::CudaImage<${ITKT_F}, 3>, itk::CudaImage<${ITKT_F}, 3>, float >")
+  itk_end_wrap_class()
+endif()
