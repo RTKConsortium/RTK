@@ -41,6 +41,7 @@ dependencies = [
 ]
 
 [project.scripts]
+rtkadmmwavelets = "itk.rtkadmmwavelets:main"
 rtkamsterdamshroud = "itk.rtkamsterdamshroud:main"
 rtkbackprojections = "itk.rtkbackprojections:main"
 rtkconjugategradient = "itk.rtkconjugategradient:main"
