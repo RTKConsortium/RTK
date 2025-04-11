@@ -24,6 +24,7 @@ for mod_name in rtk_submodules:
 # Application modules
 _app_modules = [
     "rtkadmmtotalvariation",
+    "rtkadmmwavelets"
     "rtkamsterdamshroud",
     "rtkbackprojections",
     "rtkbioscangeometry",
