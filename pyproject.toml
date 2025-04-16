@@ -43,10 +43,11 @@ dependencies = [
 [project.scripts]
 rtkconjugategradient = "itk.rtkconjugategradient:main"
 rtkelektasynergygeometry = "itk.rtkelektasynergygeometry:main"
+rtkfdk = "itk.rtkfdk:main"
 rtkorageometry = "itk.rtkorageometry:main"
+rtkshowgeometry = "itk.rtkshowgeometry:main"
 rtksimulatedgeometry = "itk.rtksimulatedgeometry:main"
 rtkvarianobigeometry = "itk.rtkvarianobigeometry:main"
-rtkfdk = "itk.rtkfdk:main"
 
 [project.urls]
 Download = "https://github.com/RTKConsortium/RTK"

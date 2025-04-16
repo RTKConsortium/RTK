@@ -15,6 +15,7 @@ RTK provides command line applications that can be built from the C++ code by tu
 ./rtkadmmtotalvariation/README.md
 ./rtkadmmwavelets/README.md
 ./rtkfourdrooster/README.md
+./rtkshowgeometry/README.md
 ```
 
 In [applications/rtktutorialapplication/](https://github.com/RTKConsortium/RTK/blob/master/applications/rtktutorialapplication), you will find a very basic RTK application that can be used as a starting point for building your own new application.
