@@ -2,7 +2,7 @@
 
 ## Purpose
 
-The purpose of this page is to describe the geometry object used in RTK to relate a tomography to projection images. There is currently only one geometry class, `ThreeDCircularProjectionGeometry`.
+The purpose of this page is to describe the geometry object used in RTK to relate a tomography to projection images. There is currently only one geometry class, `ThreeDCircularProjectionGeometry`. A visual illustration of a given geometry is provided by the command line tool [`rtkshowgeometry`](../../applications/rtkshowgeometry/README.md).
 
 ## Units
 
