@@ -42,6 +42,10 @@ Then add the content link files of the screenshots to presented in the documenta
 Include the images and scripts in a `README.md` file describing the example.
 Add a reference to the README file in the `examples/index.md` to add the new example page to the documentation
 
+### Graphs
+
+ITK's pipeline mechanism, described in their [software guide](https://itk.org/ITKSoftwareGuide/html/Book1/ITKSoftwareGuide-Book1ch3.html#x39-420003.5), is described in the documention with [Graphviz](https://graphviz.org), both in the Sphinx doc (e.g. in [Projectors.md](Projectors.md)) and in the Doxygen doc (e.g. in the [ProjectionsReader](https://www.openrtk.org/Doxygen/classrtk_1_1ProjectionsReader.html)).
+
 ## Preview changes
 
 To preview documentation changes, build and serve the documentation locally:
