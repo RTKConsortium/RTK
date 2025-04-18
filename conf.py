@@ -28,8 +28,10 @@ author = 'RTK Consortium'
 # -- General configuration ---------------------------------------------------
 extensions = [
     'myst_parser',
+    'sphinx.ext.autodoc',
     'sphinx_copybutton',
     'sphinx_design',
+    'sphinx.ext.graphviz',
 ]
 
 myst_enable_extensions = [
@@ -48,6 +50,9 @@ templates_path = ['_templates']
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+
+# The output format for Graphviz when building HTML files. This must be either 'png' or 'svg'; the default is 'png'.
+graphviz_output_format = 'svg'
 
 # -- Options for HTML output -------------------------------------------------
 html_theme = 'furo'
