@@ -63,7 +63,7 @@ public:
   itkNewMacro(Self);
 
   /** Runtime information support. */
-  itkTypeMacro(FFTVarianceRampImageFilter, FFTConvolutionImageFilter);
+  itkOverrideGetNameOfClassMacro(FFTVarianceRampImageFilter);
 
 protected:
   FFTVarianceRampImageFilter();
