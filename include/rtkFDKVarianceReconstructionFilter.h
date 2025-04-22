@@ -78,7 +78,7 @@ public:
   itkNewMacro(Self);
 
   /** Runtime information support. */
-  itkTypeMacro(FDKVarianceReconstructionFilter, itk::ImageToImageFilter);
+  itkOverrideGetNameOfClassMacro(FDKVarianceReconstructionFilter);
 
   /** Get / Set the object pointer to projection geometry */
   itkGetModifiableObjectMacro(Geometry, ThreeDCircularProjectionGeometry);
