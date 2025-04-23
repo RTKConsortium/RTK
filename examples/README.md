@@ -21,4 +21,5 @@ providing efficient implementations for high-performance applications.
 ./WaterPreCorrection/README.md
 ./InlineReconstruction/README.md
 ./AddNoise/README.md
+./GeometricPhantom/README.md
 ```
