@@ -4,29 +4,29 @@ import sys
 import itk
 from itk import RTK as rtk
 
-if len ( sys.argv ) < 3:
-  print( "Usage: FirstReconstruction <outputimage> <outputgeometry>" )
-  sys.exit ( 1 )
+if len(sys.argv) < 3:
+    print("Usage: FirstReconstruction <outputimage> <outputgeometry>")
+    sys.exit(1)
 
 # Import Windows CUDA_PATH for dll (required for some Python versions,
 # https://docs.python.org/3/whatsnew/3.8.html#bpo-36085-whatsnew)
-if sys.platform == 'win32':
-  os.add_dll_directory(os.path.join(os.environ['CUDA_PATH'], 'bin'))
+if sys.platform == "win32":
+    os.add_dll_directory(os.path.join(os.environ["CUDA_PATH"], "bin"))
 
 # Defines the image type
-GPUImageType = rtk.CudaImage[itk.F,3]
-CPUImageType = rtk.Image[itk.F,3]
+GPUImageType = rtk.CudaImage[itk.F, 3]
+CPUImageType = rtk.Image[itk.F, 3]
 
 # Defines the RTK geometry object
 geometry = rtk.ThreeDCircularProjectionGeometry.New()
 numberOfProjections = 360
-firstAngle = 0.
-angularArc = 360.
-sid = 600 # source to isocenter distance
-sdd = 1200 # source to detector distance
-for x in range(0,numberOfProjections):
-  angle = firstAngle + x * angularArc / numberOfProjections
-  geometry.AddProjection(sid,sdd,angle)
+firstAngle = 0.0
+angularArc = 360.0
+sid = 600  # source to isocenter distance
+sdd = 1200  # source to detector distance
+for x in range(0, numberOfProjections):
+    angle = firstAngle + x * angularArc / numberOfProjections
+    geometry.AddProjection(sid, sdd, angle)
 
 # Writing the geometry to disk
 rtk.write_geometry(geometry, sys.argv[2])
@@ -34,35 +34,35 @@ rtk.write_geometry(geometry, sys.argv[2])
 # Create a stack of empty projection images
 ConstantImageSourceType = rtk.ConstantImageSource[GPUImageType]
 constantImageSource = ConstantImageSourceType.New()
-origin = [ -127, -127, 0. ]
-sizeOutput = [ 128, 128,  numberOfProjections ]
-spacing = [ 2.0, 2.0, 2.0 ]
-constantImageSource.SetOrigin( origin )
-constantImageSource.SetSpacing( spacing )
-constantImageSource.SetSize( sizeOutput )
-constantImageSource.SetConstant(0.)
+origin = [-127, -127, 0.0]
+sizeOutput = [128, 128, numberOfProjections]
+spacing = [2.0, 2.0, 2.0]
+constantImageSource.SetOrigin(origin)
+constantImageSource.SetSpacing(spacing)
+constantImageSource.SetSize(sizeOutput)
+constantImageSource.SetConstant(0.0)
 
 REIType = rtk.RayEllipsoidIntersectionImageFilter[CPUImageType, CPUImageType]
 rei = REIType.New()
-semiprincipalaxis = [ 50, 50, 50]
-center = [ 0, 0, 10]
+semiprincipalaxis = [50, 50, 50]
+center = [0, 0, 10]
 # Set GrayScale value, axes, center...
 rei.SetDensity(2)
 rei.SetAngle(0)
 rei.SetCenter(center)
 rei.SetAxis(semiprincipalaxis)
-rei.SetGeometry( geometry )
+rei.SetGeometry(geometry)
 rei.SetInput(constantImageSource.GetOutput())
 
 # Create reconstructed image
 constantImageSource2 = ConstantImageSourceType.New()
-sizeOutput = [ 128, 128, 128 ]
-origin = [ -63.5, -63.5, -63.5 ]
-spacing = [ 1.0, 1.0, 1.0 ]
-constantImageSource2.SetOrigin( origin )
-constantImageSource2.SetSpacing( spacing )
-constantImageSource2.SetSize( sizeOutput )
-constantImageSource2.SetConstant(0.)
+sizeOutput = [128, 128, 128]
+origin = [-63.5, -63.5, -63.5]
+spacing = [1.0, 1.0, 1.0]
+constantImageSource2.SetOrigin(origin)
+constantImageSource2.SetSpacing(spacing)
+constantImageSource2.SetSize(sizeOutput)
+constantImageSource2.SetConstant(0.0)
 
 # Graft the projections to an itk::CudaImage
 projections = GPUImageType.New()
@@ -98,4 +98,3 @@ writer.SetInput(fieldofview.GetOutput())
 writer.Update()
 
 print("Done!")
-
