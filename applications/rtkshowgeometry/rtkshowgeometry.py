@@ -207,7 +207,7 @@ def main():
         proj_offset_y = geometry.GetProjectionOffsetsY()[frame]
 
         info_text = (
-            f"Frame {frame+1}\n"
+            f"Frame index {frame}\n"
             f"Gantry: {gantry_angle:.2f}°\n"
             f"Out-of-Plane: {out_of_plane_angle:.2f}°\n"
             f"In-Plane: {in_plane_angle:.2f}°\n"
