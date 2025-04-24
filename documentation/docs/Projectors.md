@@ -10,6 +10,7 @@ An intuitive design for a forward projector would be:
 
 ```{eval-rst}
 .. graphviz::
+  :align: center
 
   digraph IntuitiveDesign {
     node [shape=box];
@@ -27,6 +28,7 @@ but ITK's filter output has the same information (size, spacing, direction, ...)
 
 ```{eval-rst}
 .. graphviz::
+  :align: center
 
   digraph IntuitiveDesign {
     node [shape=box];
@@ -62,6 +64,7 @@ Similarly, the design chosen for RTK back projectors is:
 
 ```{eval-rst}
 .. graphviz::
+  :align: center
 
   digraph IntuitiveDesign {
     node [shape=box];
