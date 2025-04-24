@@ -53,6 +53,54 @@ namespace rtk
  * has been placed after the source and the volume. If the detector is in the volume
  * the sum is performed only until that point.
  *
+ * \dot
+ * digraph ZengBackProjectionImageFilter {
+ *
+ *  Input0 [ label="Input 0 (Volume)"];
+ *  Input0 [shape=Mdiamond];
+ *  Input1 [label="Input 1 (Projections)"];
+ *  Input1 [shape=Mdiamond];
+ *  Input2 [label="Input 2 (Attenuation)"];
+ *  Input2 [shape=Mdiamond];
+ *  Output [label="Output (Reconstruction)"];
+ *  Output [shape=Mdiamond];
+ *
+ *  node [shape=box];
+ *
+ *  Add [ label="itk::AddImageFilter" URL="\ref itk::AddImageFilter"];
+ *  Paste [ label="itk::PasteImageFilter" URL="\ref itk::PasteImageFilter"];
+ *  Gaussian [ label="itk::DiscreteGaussianFilter" URL="\ref itk::DiscreteGaussianFilter"];
+ *  Resample [ label="itk::ResampleImageFilter" URL="\ref itk::ResampleImageFilter"];
+ *  Multiply [ label="itk::MultiplyImageFilter" URL="\ref itk::MultiplyImageFilter"];
+ *  Constant [ label="itk::ConstantVolumeSource" URL="\ref itk::ConstantVolumeSource"];
+ *  Extract [ label="itk::ExtractImageFilter" URL="\ref itk::ExtractImageFilter"];
+ *  ChangeInfo [ label="itk::ChangeInformationImageFilter" URL="\ref itk::ChangeInformationImageFilter"];
+ *  AttMultiply [ label="itk::MultiplyImageFilter" URL="\ref itk::MultiplyImageFilter"];
+ *  ROI [ label="itk::RegionOfInterestImageFilter" URL="\ref itk::RegionOfInterestImageFilter"];
+ *  AttResample [ label="itk::ResampleImageFilter" URL="\ref itk::ResampleImageFilter"];
+ *  AttChangeInfo [ label="itk::ChangeInformationImageFilter" URL="\ref itk::ChangeInformationImageFilter"];
+ *  Unary [ label="itk::UnaryGeneratorImageFilter" URL="\ref itk::UnaryGeneratorImageFilter"];
+ *  Multiply -> Add;
+ *  Resample -> Multiply;
+ *  Extract -> ChangeInfo;
+ *  Input1 -> Extract
+ *  ChangeInfo -> Gaussian;
+ *  Input2 -> Unary;
+ *  Unary -> AttResample;
+ *  AttResample -> ROI;
+ *  ROI -> AttChangeInfo;
+ *  ChangeInfo -> AttMultiply;
+ *  AttChangeInfo -> AttMultiply;
+ *  AttMultiply -> Gaussian;
+ *  Gaussian -> Paste;
+ *  Constant -> Paste;
+ *  Paste -> Resample;
+ *  Input0 -> Add;
+ *  Gaussian -> AttMultiply;
+ *  Add -> Output;
+ *  }
+ * \enddot
+ *
  * \test rtkZengBackprojectiontest.cxx
  *
  * \author Antoine Robert
