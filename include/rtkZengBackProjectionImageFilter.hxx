@@ -55,7 +55,6 @@ ZengBackProjectionImageFilter<TInputImage, TOutputImage>::ZengBackProjectionImag
   m_AttenuationMapRegionOfInterest = nullptr;
   m_AttenuationMapResampleImageFilter = nullptr;
   m_AttenuationMapChangeInformation = nullptr;
-  m_AttenuationMapTransform = nullptr;
   m_CustomUnaryFilter = nullptr;
 
   // Permanent internal connections
@@ -198,7 +197,6 @@ ZengBackProjectionImageFilter<TInputImage, TOutputImage>::GenerateOutputInformat
   PointType centerRotation;
   centerRotation.Fill(0);
   m_Transform->SetCenter(centerRotation);
-  m_ResampleImageFilter->SetTransform(m_Transform);
   m_ResampleImageFilter->SetOutputParametersFromImage(this->GetInput(0));
 
   // Set the output size of volume
@@ -243,7 +241,6 @@ ZengBackProjectionImageFilter<TInputImage, TOutputImage>::GenerateOutputInformat
     m_AttenuationMapResampleImageFilter = ResampleImageFilterType::New();
     m_AttenuationMapChangeInformation = ChangeInformationFilterType::New();
     m_CustomUnaryFilter = CustomUnaryFilterType::New();
-    m_AttenuationMapTransform = TransformType::New();
     m_AttenuationMapChangeInformation->ChangeOriginOn();
     m_AttenuationMapChangeInformation->ChangeRegionOn();
     m_AttenuationMapChangeInformation->SetReferenceImage(m_ChangeInformation->GetOutput());
@@ -257,8 +254,7 @@ ZengBackProjectionImageFilter<TInputImage, TOutputImage>::GenerateOutputInformat
     m_CustomUnaryFilter->SetFunctor(customLambda);
     m_CustomUnaryFilter->SetInput(this->GetInput(2));
 
-    m_AttenuationMapTransform->SetCenter(centerRotation);
-    m_AttenuationMapResampleImageFilter->SetTransform(m_AttenuationMapTransform);
+    m_AttenuationMapResampleImageFilter->SetTransform(m_Transform);
     m_AttenuationMapResampleImageFilter->SetOutputParametersFromImage(this->GetInput(0));
     m_AttenuationMapResampleImageFilter->SetSize(outputSize);
     m_AttenuationMapResampleImageFilter->SetOutputOrigin(outputOrigin);
@@ -378,7 +374,6 @@ ZengBackProjectionImageFilter<TInputImage, TOutputImage>::GenerateData()
     }
     if (this->GetInput(2))
     {
-      m_AttenuationMapTransform->SetRotation(0., angle, 0.);
       m_AttenuationMapResampleImageFilter->SetOutputOrigin(originRotatedVolume);
       m_AttenuationMapResampleImageFilter->Update();
       rotatedAttenuation = m_AttenuationMapResampleImageFilter->GetOutput();
