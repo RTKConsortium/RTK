@@ -138,7 +138,7 @@ public:
   using ChangeInformationFilterType = itk::ChangeInformationImageFilter<OuputCPUImageType>;
   using ChangeInformationPointerType = typename ChangeInformationFilterType::Pointer;
   using MultiplyImageFilterType = itk::MultiplyImageFilter<InputCPUImageType, InputCPUImageType>;
-  using MultpiplyImageFilterPointerType = typename MultiplyImageFilterType::Pointer;
+  using MultiplyImageFilterPointerType = typename MultiplyImageFilterType::Pointer;
   using ConstantVolumeSourceType = rtk::ConstantImageSource<InputCPUImageType>;
   using ConstantVolumeSourcePointerType = typename ConstantVolumeSourceType::Pointer;
   using ExtractImageFilterType = itk::ExtractImageFilter<OuputCPUImageType, OuputCPUImageType>;
@@ -193,11 +193,11 @@ protected:
   DiscreteGaussianFilterPointeurType m_DiscreteGaussianFilter;
   ResampleImageFilterPointerType     m_ResampleImageFilter;
   TransformPointerType               m_Transform;
-  MultpiplyImageFilterPointerType    m_MultiplyImageFilter;
+  MultiplyImageFilterPointerType     m_MultiplyImageFilter;
   ConstantVolumeSourcePointerType    m_ConstantVolumeSource;
   ExtractImageFilterPointerType      m_ExtractImageFilter;
   ChangeInformationPointerType       m_ChangeInformation;
-  MultpiplyImageFilterPointerType    m_AttenuationMapMultiplyImageFilter;
+  MultiplyImageFilterPointerType     m_AttenuationMapMultiplyImageFilter;
   RegionOfInterestPointerType        m_AttenuationMapRegionOfInterest;
   ResampleImageFilterPointerType     m_AttenuationMapResampleImageFilter;
   ChangeInformationPointerType       m_AttenuationMapChangeInformation;
