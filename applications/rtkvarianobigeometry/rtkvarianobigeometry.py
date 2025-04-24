@@ -4,33 +4,42 @@ import sys
 import itk
 from itk import RTK as rtk
 
+
 def main():
-  # Argument parsing
-  parser = argparse.ArgumentParser(description=
-    "Creates an RTK geometry file from a Varian OBI acquisition.")
+    # Argument parsing
+    parser = argparse.ArgumentParser(
+        description="Creates an RTK geometry file from a Varian OBI acquisition."
+    )
 
-  parser.add_argument('--verbose', '-v', help='Verbose execution', type=bool)
-  parser.add_argument('--xml_file', '-x', help='Varian OBI XML information file on projections')
-  parser.add_argument('--output', '-o', help='Output file name')
-  parser.add_argument('--path', '-p', help='Path containing projections', required=True)
-  parser.add_argument('--regexp', '-r', help='Regular expression to select projection files in path')
+    parser.add_argument("--verbose", "-v", help="Verbose execution", type=bool)
+    parser.add_argument(
+        "--xml_file", "-x", help="Varian OBI XML information file on projections"
+    )
+    parser.add_argument("--output", "-o", help="Output file name")
+    parser.add_argument(
+        "--path", "-p", help="Path containing projections", required=True
+    )
+    parser.add_argument(
+        "--regexp", "-r", help="Regular expression to select projection files in path"
+    )
 
-  args = parser.parse_args()
+    args = parser.parse_args()
 
-  if args.xml_file is None or args.output is None:
-    parser.print_help()
-    sys.exit()
+    if args.xml_file is None or args.output is None:
+        parser.print_help()
+        sys.exit()
 
-  names = itk.RegularExpressionSeriesFileNames.New()
-  names.SetDirectory(args.path);
-  names.SetRegularExpression(args.regexp);
+    names = itk.RegularExpressionSeriesFileNames.New()
+    names.SetDirectory(args.path)
+    names.SetRegularExpression(args.regexp)
 
-  reader = rtk.VarianObiGeometryReader.New()
-  reader.SetXMLFileName(args.xml_file)
-  reader.SetProjectionsFileNames(names.GetFileNames())
-  reader.UpdateOutputData()
+    reader = rtk.VarianObiGeometryReader.New()
+    reader.SetXMLFileName(args.xml_file)
+    reader.SetProjectionsFileNames(names.GetFileNames())
+    reader.UpdateOutputData()
 
-  rtk.write_geometry(reader.GetGeometry(), args.output)
+    rtk.write_geometry(reader.GetGeometry(), args.output)
 
-if __name__ == '__main__':
-  main()
+
+if __name__ == "__main__":
+    main()
