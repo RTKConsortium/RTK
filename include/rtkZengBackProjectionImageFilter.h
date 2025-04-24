@@ -201,7 +201,6 @@ protected:
   RegionOfInterestPointerType        m_AttenuationMapRegionOfInterest;
   ResampleImageFilterPointerType     m_AttenuationMapResampleImageFilter;
   ChangeInformationPointerType       m_AttenuationMapChangeInformation;
-  TransformPointerType               m_AttenuationMapTransform;
   BoundaryCondition                  m_BoundsCondition;
   CustomUnaryFilterPointerType       m_CustomUnaryFilter;
 
