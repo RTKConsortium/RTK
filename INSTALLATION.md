@@ -34,9 +34,12 @@ python -m pip install itk-rtk
 ```
 The same operating systems and Python versions are supported as ITK's packages, see the list on [Pypi](https://pypi.org/project/itk-rtk).
 
-We also provide pre-compiled [CUDA](https://developer.nvidia.com/cuda-toolkit) packages for Windows and Linux. They require an installed version of CUDA 11.6. Use the following command instead of the above one to install the CUDA RTK module with `pip`.
+We also provide pre-compiled [CUDA](https://developer.nvidia.com/cuda-toolkit) packages for Windows and Linux. They require an installed version of CUDA compatible with the package. Currently, RTK is available for CUDA 12.4 on Windows and Linux via:
 ```
-python -m pip install itk-rtk-cuda116
+python -m pip install itk-rtk-cuda124
+```
+```
+python -m pip install itk-rtk-cuda124
 ```
 
 Getting started
