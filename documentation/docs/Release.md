@@ -8,14 +8,14 @@ Check ITK's instructions and update this wiki page accordingly.
 Based on previous messages (`git show tags`).
 
 ```
-git log --no-merges v2.5.0..HEAD --pretty=format:"%h; %an; %ad: %s" >release_notes.txt
-git log --no-merges v2.5.0..HEAD --pretty=format:"%an" | sort -u >contributors.txt
+git log --no-merges $(git describe --tags --abbrev=0)..HEAD --pretty=format:"%h; %an; %ad: %s" >release_notes.txt
+git log --no-merges $(git describe --tags --abbrev=0)..HEAD --pretty=format:"%an" | sort -u >contributors.txt
 ```
 
 ## Prepare repository
 
 * Modify the RTK release number(s) in `CMakeLists.txt`,
-* Modify the RTK release number and the required ITK version for Python packages in `pyproject.toml`.
+* Modify the RTK release number, the required `itk` package version in `pyproject.toml` and the required `itk-cudacommon` version in `.github/workflows/build-test-package-python-cuda.yml`.
 * Commit these changes and tag the commit. Push and release via GitHub when the Python packages have been compiled and uploaded.
 
 ## Backup Doxygen documentation
