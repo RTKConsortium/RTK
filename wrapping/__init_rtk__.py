@@ -3,6 +3,8 @@ import importlib
 
 itk_module = sys.modules["itk"]
 rtk_module = getattr(itk_module, "RTK")
+
+# Import RTK submodules
 rtk_submodules = [
     "itk.rtkinputprojections_group",
     "itk.rtk3Doutputimage_group",
@@ -15,3 +17,23 @@ for mod_name in rtk_submodules:
     for a in dir(mod):
         if a[0] != "_":
             setattr(rtk_module, a, getattr(mod, a))
+
+# Application modules
+_app_modules = [
+    "rtkfdk",
+    "rtkconjugategradient",
+    "rtkelektasynergygeometry",
+    "rtkorageometry",
+    "rtkprojectshepploganphantom",
+    "rtksimulatedgeometry",
+    "rtkvarianobigeometry",
+    "rtkshowgeometry",
+]
+
+# Dynamically access make_application_func from rtkExtras
+rtk_extras = importlib.import_module("itk.rtkExtras")
+make_application_func = getattr(rtk_extras, "make_application_func")
+
+# Dynamically register applications
+for app_name in _app_modules:
+    setattr(rtk_module, app_name, make_application_func(app_name))

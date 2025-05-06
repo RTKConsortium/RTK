@@ -1,13 +1,12 @@
 #!/usr/bin/env python
 import argparse
 import sys
-import itk
 import math
+import itk
 from itk import RTK as rtk
 
 
-def main():
-    # Argument parsing
+def build_parser():
     parser = argparse.ArgumentParser(
         description="Reconstructs a 3D volume from a sequence of projections [Feldkamp, David, Kress, 1984].",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
@@ -93,9 +92,11 @@ def main():
     rtk.add_rtk3Doutputimage_group(parser)
 
     # Parse the command line arguments
-    args_info = parser.parse_args()
+    return parser
 
-    # Define output pixel type and dimension
+
+def process(args_info: argparse.Namespace):
+    # Define pixel type and dimension
     OutputPixelType = itk.F
     Dimension = 3
     OutputImageType = itk.Image[OutputPixelType, Dimension]
@@ -106,12 +107,12 @@ def main():
 
     if not args_info.lowmem:
         if args_info.verbose:
-            print("Reading...")
+            print("Reading projections...")
         reader.Update()
 
     # Geometry
     if args_info.verbose:
-        print(f"Reading geometry information from {args_info.geometry}")
+        print(f"Reading geometry information from {args_info.geometry}...")
     geometry = rtk.read_geometry(args_info.geometry)
 
     # Check on hardware parameter
@@ -175,6 +176,14 @@ def main():
         feldkamp = rtk.FDKConeBeamReconstructionFilter[OutputImageType].New()
         feldkamp.SetInput(0, constantImageSource.GetOutput())
 
+    # Set inputs and options for the FDK filter
+    feldkamp.SetInput(1, pssf.GetOutput())
+    feldkamp.SetGeometry(geometry)
+    feldkamp.GetRampFilter().SetTruncationCorrection(args_info.pad)
+    feldkamp.GetRampFilter().SetHannCutFrequency(args_info.hann)
+    feldkamp.GetRampFilter().SetHannCutFrequencyY(args_info.hannY)
+    feldkamp.SetProjectionSubsetSize(args_info.subsetsize)
+
     # Progress reporting
     if args_info.verbose:
         progressCommand = rtk.PercentageProgressCommand(feldkamp)
@@ -184,14 +193,6 @@ def main():
         feldkamp.AddObserver(
             itk.EndEvent(), progressCommand.End
         )  # Register end notification
-
-    # Set inputs and options for the FDK filter)
-    feldkamp.SetInput(1, pssf.GetOutput())
-    feldkamp.SetGeometry(geometry)
-    feldkamp.GetRampFilter().SetTruncationCorrection(args_info.pad)
-    feldkamp.GetRampFilter().SetHannCutFrequency(args_info.hann)
-    feldkamp.GetRampFilter().SetHannCutFrequencyY(args_info.hannY)
-    feldkamp.SetProjectionSubsetSize(args_info.subsetsize)
 
     # Motion compensated CBCT settings
     if args_info.signal and args_info.dvf:
@@ -212,11 +213,16 @@ def main():
     splitter.SetDirection(2)
     streamerBP.SetRegionSplitter(splitter)
 
-    # Write
     if args_info.verbose:
         print("Reconstructing and writing...")
 
     itk.imwrite(streamerBP.GetOutput(), args_info.output)
+
+
+def main(argv=None):
+    parser = build_parser()
+    args_info = parser.parse_args(argv)
+    process(args_info)
 
 
 if __name__ == "__main__":
