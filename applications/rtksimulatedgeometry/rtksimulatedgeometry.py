@@ -4,7 +4,7 @@ import sys
 from itk import RTK as rtk
 
 
-def main():
+def build_parser():
     # Argument parsing
     parser = argparse.ArgumentParser(
         description="Creates an RTK geometry file from simulated/regular trajectory. See https://docs.openrtk.org/en/latest/documentation/docs/Geometry.html for more information."
@@ -13,8 +13,10 @@ def main():
     parser.add_argument(
         "--verbose", "-v", type=bool, default=False, help="Verbose execution"
     )
-    parser.add_argument("--nproj", "-n", type=int, help="Number of projections")
-    parser.add_argument("--output", "-o", help="Output file name")
+    parser.add_argument(
+        "--nproj", "-n", type=int, help="Number of projections", required=True
+    )
+    parser.add_argument("--output", "-o", help="Output file name", required=True)
     parser.add_argument(
         "--first_angle", "-f", type=float, default=0, help="First angle in degrees"
     )
@@ -64,12 +66,11 @@ def main():
         help="Radius cylinder of cylindrical detector",
     )
 
-    args = parser.parse_args()
+    # Parse the command line arguments
+    return parser
 
-    if args.nproj is None or args.output is None:
-        parser.print_help()
-        sys.exit()
 
+def process(args: argparse.Namespace):
     # Simulated Geometry
     GeometryType = rtk.ThreeDCircularProjectionGeometry
     geometry = GeometryType.New()
@@ -91,6 +92,12 @@ def main():
     geometry.SetRadiusCylindricalDetector(args.rad_cyl)
 
     rtk.write_geometry(geometry, args.output)
+
+
+def main(argv=None):
+    parser = build_parser()
+    args_info = parser.parse_args(argv)
+    process(args_info)
 
 
 if __name__ == "__main__":
