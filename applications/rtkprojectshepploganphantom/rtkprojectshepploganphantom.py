@@ -3,7 +3,7 @@ import argparse
 from itk import RTK as rtk
 
 
-def main():
+def build_parser():
     # Argument parsing
     parser = argparse.ArgumentParser(
         description="Computes projections through a 3D Shepp & Logan phantom, according to a geometry"
@@ -33,7 +33,11 @@ def main():
 
     rtk.add_rtk3Doutputimage_group(parser)
 
-    args_info = parser.parse_args()
+    # Parse the command line arguments
+    return parser
+
+
+def process(args_info: argparse.Namespace):
 
     OutputPixelType = itk.F
     Dimension = 3
@@ -88,6 +92,12 @@ def main():
         print("Projecting and writing... ")
 
     itk.imwrite(output, args_info.output)
+
+
+def main(argv=None):
+    parser = build_parser()
+    args_info = parser.parse_args(argv)
+    process(args_info)
 
 
 if __name__ == "__main__":
