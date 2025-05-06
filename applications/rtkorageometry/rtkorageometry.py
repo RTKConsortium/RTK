@@ -4,7 +4,7 @@ import itk
 from itk import RTK as rtk
 
 
-def main():
+def build_parser():
     # Argument parsing
     parser = argparse.ArgumentParser(
         description="Creates an RTK geometry file from a Varian OBI acquisition."
@@ -29,7 +29,11 @@ def main():
         default=0.0,
     )
 
-    args = parser.parse_args()
+    # Parse the command line arguments
+    return parser
+
+
+def process(args: argparse.Namespace):
 
     margin = args.margin
     if type(margin) is float:
@@ -48,6 +52,12 @@ def main():
     reader.UpdateOutputData()
 
     rtk.write_geometry(reader.GetGeometry(), args.output)
+
+
+def main(argv=None):
+    parser = build_parser()
+    args_info = parser.parse_args(argv)
+    process(args_info)
 
 
 if __name__ == "__main__":
