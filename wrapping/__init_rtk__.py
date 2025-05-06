@@ -15,3 +15,13 @@ for mod_name in rtk_submodules:
     for a in dir(mod):
         if a[0] != "_":
             setattr(rtk_module, a, getattr(mod, a))
+
+# Application modules
+_app_modules = [
+    "rtkfdk",
+]
+
+for mod_name in _app_modules:
+    full_mod = importlib.import_module(f"itk.{mod_name}")
+    func = getattr(full_mod, mod_name, None)
+    setattr(rtk_module, mod_name, func)
