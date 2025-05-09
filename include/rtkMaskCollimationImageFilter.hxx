@@ -96,11 +96,11 @@ MaskCollimationImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerateDa
       v[2] = this->GetGeometry()->GetRotationMatrix(iProj)[m_RotationAxisIndex][2];
       PointType u = CrossProduct(v, sourceDir);
       u /= u.GetNorm();
-      double    ucoord = u * intersection;
+      double ucoord = u * intersection;
 
       // The second coordinate is measured along the orthogonal
-      v = CrossProduct (sourceDir, u);
-      double    vcoord = v * intersection;
+      v = CrossProduct(sourceDir, u);
+      double vcoord = v * intersection;
 
       if (ucoord > -1. * this->GetGeometry()->GetCollimationUInf()[iProj] &&
           ucoord < this->GetGeometry()->GetCollimationUSup()[iProj] &&
