@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 import argparse
 import sys
-import itk
 import math
+import itk
 from itk import RTK as rtk
+import shlex
 
 
-def main():
-    # Argument parsing
+def build_parser():
     parser = argparse.ArgumentParser(
         description="Reconstructs a 3D volume from a sequence of projections [Feldkamp, David, Kress, 1984].",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
@@ -93,34 +93,36 @@ def main():
     rtk.add_rtk3Doutputimage_group(parser)
 
     # Parse the command line arguments
-    args_info = parser.parse_args()
+    return parser
 
-    # Define output pixel type and dimension
+
+def process(args: argparse.Namespace):
+    # Define pixel type and dimension
     OutputPixelType = itk.F
     Dimension = 3
     OutputImageType = itk.Image[OutputPixelType, Dimension]
 
     # Projections reader
     reader = rtk.ProjectionsReader[OutputImageType].New()
-    rtk.SetProjectionsReaderFromArgParse(reader, args_info)
+    rtk.SetProjectionsReaderFromArgParse(reader, args)
 
-    if not args_info.lowmem:
-        if args_info.verbose:
-            print("Reading...")
+    if not args.lowmem:
+        if args.verbose:
+            print("Reading projections...")
         reader.Update()
 
     # Geometry
-    if args_info.verbose:
-        print(f"Reading geometry information from {args_info.geometry}")
-    geometry = rtk.read_geometry(args_info.geometry)
+    if args.verbose:
+        print(f"Reading geometry information from {args.geometry}...")
+    geometry = rtk.read_geometry(args.geometry)
 
     # Check on hardware parameter
-    if not hasattr(itk, "CudaImage") and args_info.hardware == "cuda":
+    if not hasattr(itk, "CudaImage") and args.hardware == "cuda":
         print("The program has not been compiled with CUDA option.")
         sys.exit(1)
 
     # CUDA classes are non-templated, so they do not require a type specification.
-    if args_info.hardware == "cuda":
+    if args.hardware == "cuda":
         ddf = rtk.CudaDisplacedDetectorImageFilter.New()
         ddf.SetInput(itk.cuda_image_from_image(reader.GetOutput()))
         pssf = rtk.CudaParkerShortScanImageFilter.New()
@@ -133,17 +135,17 @@ def main():
 
     # Displaced detector weighting
     ddf.SetGeometry(geometry)
-    ddf.SetDisable(args_info.nodisplaced)
+    ddf.SetDisable(args.nodisplaced)
 
     # Short scan image filter
     pssf.SetInput(ddf.GetOutput())
     pssf.SetGeometry(geometry)
     pssf.InPlaceOff()
-    pssf.SetAngularGapThreshold(args_info.short * math.pi / 180.0)
+    pssf.SetAngularGapThreshold(args.short * math.pi / 180.0)
 
     # Create reconstructed image
     constantImageSource = rtk.ConstantImageSource[OutputImageType].New()
-    rtk.SetConstantImageSourceFromArgParse(constantImageSource, args_info)
+    rtk.SetConstantImageSourceFromArgParse(constantImageSource, args)
 
     # Motion-compensated objects for the compensation of a cyclic deformation.
     # Although these will only be used if the command line options for motion
@@ -168,56 +170,80 @@ def main():
     bp.SetGeometry(geometry)
 
     # FDK reconstruction filtering
-    if args_info.hardware == "cuda":
+    if args.hardware == "cuda":
         feldkamp = rtk.CudaFDKConeBeamReconstructionFilter.New()
         feldkamp.SetInput(0, itk.cuda_image_from_image(constantImageSource.GetOutput()))
     else:
         feldkamp = rtk.FDKConeBeamReconstructionFilter[OutputImageType].New()
         feldkamp.SetInput(0, constantImageSource.GetOutput())
 
-    # Progress reporting
-    if args_info.verbose:
-        progressCommand = rtk.PercentageProgressCommand(feldkamp)
-        feldkamp.AddObserver(
-            itk.ProgressEvent(), progressCommand.callback
-        )  # Register the callback for progress
-        feldkamp.AddObserver(
-            itk.EndEvent(), progressCommand.End
-        )  # Register end notification
-
-    # Set inputs and options for the FDK filter)
+    # Set inputs and options for the FDK filter
     feldkamp.SetInput(1, pssf.GetOutput())
     feldkamp.SetGeometry(geometry)
-    feldkamp.GetRampFilter().SetTruncationCorrection(args_info.pad)
-    feldkamp.GetRampFilter().SetHannCutFrequency(args_info.hann)
-    feldkamp.GetRampFilter().SetHannCutFrequencyY(args_info.hannY)
-    feldkamp.SetProjectionSubsetSize(args_info.subsetsize)
+    feldkamp.GetRampFilter().SetTruncationCorrection(args.pad)
+    feldkamp.GetRampFilter().SetHannCutFrequency(args.hann)
+    feldkamp.GetRampFilter().SetHannCutFrequencyY(args.hannY)
+    feldkamp.SetProjectionSubsetSize(args.subsetsize)
+
+    # Progress reporting
+    if args.verbose:
+        progressCommand = rtk.PercentageProgressCommand(feldkamp)
+        feldkamp.AddObserver(itk.ProgressEvent(), progressCommand.callback)
+        feldkamp.AddObserver(itk.EndEvent(), progressCommand.End)
 
     # Motion compensated CBCT settings
-    if args_info.signal and args_info.dvf:
-        if args_info.hardware == "cuda":
+    if args.signal and args.dvf:
+        if args.hardware == "cuda":
             print("Motion compensation is not supported in CUDA. Aborting")
             sys.exit(1)  # Exit if CUDA is selected with motion compensation
-        dvfReader.SetFileName(args_info.dvf)
-        deformation.SetSignalFilename(args_info.signal)
+        dvfReader.SetFileName(args.dvf)
+        deformation.SetSignalFilename(args.signal)
         feldkamp.SetBackProjectionFilter(bp)
 
     # Streaming depending on streaming capability of writer
     streamerBP = itk.StreamingImageFilter[OutputImageType, OutputImageType].New()
     streamerBP.SetInput(feldkamp.GetOutput())
-    streamerBP.SetNumberOfStreamDivisions(args_info.divisions)
+    streamerBP.SetNumberOfStreamDivisions(args.divisions)
 
     # Create a splitter to control how the image region is divided during streaming
     splitter = itk.ImageRegionSplitterDirection.New()
     splitter.SetDirection(2)
     streamerBP.SetRegionSplitter(splitter)
 
+    if args.verbose:
+        print(f"Reconstructing and writing...")
+
     # Write
-    if args_info.verbose:
-        print("Reconstructing and writing...")
+    itk.imwrite(streamerBP.GetOutput(), args.output)
 
-    itk.imwrite(streamerBP.GetOutput(), args_info.output)
 
+def main(argv=None):
+    parser = build_parser()
+    args = parser.parse_args(argv)
+    process(args)
+
+
+def rtkfdk(*args, **kwargs):
+    """
+    Unified RTKFDK entry point.
+
+    Usage:
+      • Shell-style: rtkfdk("-p . -r proj.mha -g geom.xml -o out.mha")
+      • Python API:  rtkfdk(path=".", regexp="proj.mha", geometry="geom.xml", output="out.mha")
+    """
+    # Shell-style style
+    if len(args) == 1 and isinstance(args[0], str) and not kwargs:
+        argv = shlex.split(args[0])
+        return main(argv)
+
+    # Python API style
+    if len(args) == 0:
+        parser = build_parser()
+        parsed = rtk.parse_kwargs(parser, func_name="rtkfdk", **kwargs)
+        return process(parsed)
+
+
+rtk.patch_signature(rtkfdk, build_parser())
 
 if __name__ == "__main__":
     main()
