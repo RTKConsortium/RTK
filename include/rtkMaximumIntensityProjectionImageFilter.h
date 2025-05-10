@@ -23,95 +23,6 @@
 
 namespace rtk
 {
-namespace Functor
-{
-
-/** \class MaximumIntensityAlongRay
- * \brief Function to compute the maximum intensity (MIP) value along the ray projection.
- *
- * \author Mikhail Polkovnikov
- *
- * \ingroup RTK Functions
- */
-template <class TInput, class TOutput>
-class ITK_TEMPLATE_EXPORT MaximumIntensityAlongRay
-{
-public:
-  using VectorType = itk::Vector<double, 3>;
-
-  MaximumIntensityAlongRay() = default;
-  ~MaximumIntensityAlongRay() = default;
-  bool
-  operator!=(const MaximumIntensityAlongRay &) const
-  {
-    return false;
-  }
-  bool
-  operator==(const MaximumIntensityAlongRay & other) const
-  {
-    return !(*this != other);
-  }
-
-  inline void
-  operator()(const ThreadIdType itkNotUsed(threadId),
-             TOutput &          mipValue,
-             const TInput       volumeValue,
-             const VectorType & itkNotUsed(stepInMM))
-  {
-    TOutput tmp = static_cast<TOutput>(volumeValue);
-    if (tmp > mipValue)
-    {
-      mipValue = tmp;
-    }
-  }
-};
-
-/** \class MaximumIntensityProjectedValueAccumulation
- * \brief Function to calculate maximum intensity step along the ray projection.
- *
- * \author Mikhail Polkovnikov
- *
- * \ingroup RTK Functions
- */
-template <class TInput, class TOutput>
-class ITK_TEMPLATE_EXPORT MaximumIntensityProjectedValueAccumulation
-{
-public:
-  using VectorType = itk::Vector<double, 3>;
-
-  bool
-  operator!=(const MaximumIntensityProjectedValueAccumulation &) const
-  {
-    return false;
-  }
-  bool
-  operator==(const MaximumIntensityProjectedValueAccumulation & other) const
-  {
-    return !(*this != other);
-  }
-
-  inline void
-  operator()(const ThreadIdType itkNotUsed(threadId),
-             const TInput &     input,
-             TOutput &          output,
-             const TOutput &    rayCastValue,
-             const VectorType & stepInMM,
-             const VectorType & itkNotUsed(source),
-             const VectorType & itkNotUsed(sourceToPixel),
-             const VectorType & itkNotUsed(nearestPoint),
-             const VectorType & itkNotUsed(farthestPoint)) const
-  {
-    TOutput tmp = static_cast<TOutput>(input);
-    if (tmp < rayCastValue)
-    {
-      tmp = rayCastValue;
-    }
-    output = tmp * stepInMM.GetNorm();
-  }
-};
-
-} // end namespace Functor
-
 
 /** \class MaximumIntensityProjectionImageFilter
  * \brief MIP filter.
@@ -119,27 +30,16 @@ public:
  * Performs a MIP forward projection, i.e. calculation of a maximum intensity
  * step along the x-ray line.
  *
+ * \test rtkmaximumintensityprojectiontest.cxx
+ *
  * \author Mikhail Polkovnikov
  *
  * \ingroup RTK Projector
  */
 
-template <class TInputImage,
-          class TOutputImage,
-          class TInterpolationWeightMultiplication = Functor::InterpolationWeightMultiplication<
-            typename TInputImage::PixelType,
-            typename itk::PixelTraits<typename TInputImage::PixelType>::ValueType>,
-          class TProjectedValueAccumulation =
-            Functor::MaximumIntensityProjectedValueAccumulation<typename TInputImage::PixelType,
-                                                                typename TOutputImage::PixelType>,
-          class TSumAlongRay =
-            Functor::MaximumIntensityAlongRay<typename TInputImage::PixelType, typename TOutputImage::PixelType>>
+template <class TInputImage, class TOutputImage>
 class ITK_TEMPLATE_EXPORT MaximumIntensityProjectionImageFilter
-  : public JosephForwardProjectionImageFilter<TInputImage,
-                                              TOutputImage,
-                                              TInterpolationWeightMultiplication,
-                                              TProjectedValueAccumulation,
-                                              TSumAlongRay>
+  : public JosephForwardProjectionImageFilter<TInputImage, TOutputImage>
 {
 public:
   ITK_DISALLOW_COPY_AND_MOVE(MaximumIntensityProjectionImageFilter);
@@ -147,6 +47,12 @@ public:
   /** Standard class type alias. */
   using Self = MaximumIntensityProjectionImageFilter;
   using Pointer = itk::SmartPointer<Self>;
+  using Superclass = JosephForwardProjectionImageFilter<TInputImage, TOutputImage>;
+  using ConstPointer = itk::SmartPointer<const Self>;
+  using InputPixelType = typename TInputImage::PixelType;
+  using OutputPixelType = typename TOutputImage::PixelType;
+  using CoordinateType = double;
+  using VectorType = itk::Vector<CoordinateType, TInputImage::ImageDimension>;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -155,9 +61,13 @@ public:
   itkOverrideGetNameOfClassMacro(MaximumIntensityProjectionImageFilter);
 
 protected:
-  MaximumIntensityProjectionImageFilter() = default;
+  MaximumIntensityProjectionImageFilter();
   ~MaximumIntensityProjectionImageFilter() override = default;
 };
 } // end namespace rtk
+
+#ifndef ITK_MANUAL_INSTANTIATION
+#  include "rtkMaximumIntensityProjectionImageFilter.hxx"
+#endif
 
 #endif
