@@ -25,6 +25,7 @@ documentation/docs/Phantom.md
 documentation/docs/Projectors.md
 examples/README.md
 applications/README.md
+documentation/docs/PythonApplications.md
 ```
 
 ```{toctree}
