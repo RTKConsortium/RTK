@@ -37,7 +37,7 @@ namespace rtk
  * This function sets a ConstantImageSource object from command line options stored in ggo struct.
  *  The image is not buffered to allow streaming. The image is filled with zeros.
  *  The required options in the ggo struct are:
- *     - dimension: image size in pixels
+ *     - size: image size in pixels
  *     - spacing: image spacing in coordinate units
  *     - origin: image origin in coordinate units
  *
@@ -54,9 +54,19 @@ SetConstantImageSourceFromGgo(TConstantImageSourceType * source, const TArgsInfo
   const unsigned int Dimension = ImageType::GetImageDimension();
 
   typename ImageType::SizeType imageDimension;
-  imageDimension.Fill(args_info.dimension_arg[0]);
-  for (unsigned int i = 0; i < std::min(args_info.dimension_given, Dimension); i++)
-    imageDimension[i] = args_info.dimension_arg[i];
+  if (args_info.dimension_given)
+  {
+    itkGenericOutputMacro(
+      "Warning: --dimension is deprecated and will be removed in a future release. Use --size instead.");
+    imageDimension.Fill(args_info.dimension_arg[0]);
+    for (unsigned int i = 0; i < std::min(args_info.dimension_given, Dimension); i++)
+    {
+      imageDimension[i] = args_info.dimension_arg[i];
+    }
+  }
+  imageDimension.Fill(args_info.size_arg[0]);
+  for (unsigned int i = 0; i < std::min(args_info.size_given, Dimension); i++)
+    imageDimension[i] = args_info.size_arg[i];
 
   typename ImageType::SpacingType imageSpacing;
   imageSpacing.Fill(args_info.spacing_arg[0]);

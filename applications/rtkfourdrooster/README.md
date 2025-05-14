@@ -29,7 +29,7 @@ rtkfdk \
   -g geometry.rtk \
   --hann 0.5 \
   --pad 1.0 \
-  --dimension 160 \
+  --size 160 \
   --spacing 2
 ```
 
@@ -86,7 +86,7 @@ rtkfourdrooster \
   --cgiter 4 \
   --tviter 10 \
   --spacing 2 \
-  --dimension 160 \
+  --size 160 \
   --frames 5
 ```
 
@@ -109,13 +109,13 @@ rtkfourdrooster \
   --cgiter 4 \
   --tviter 10 \
   --spacing 2 \
-  --dimension 160 \
+  --size 160 \
   --frames 5
 ```
 
 With a recent GPU, this should allow you to perform a standard resolution reconstruction in less than one hour.
 
-Note that the reconstructed volume in this example does not fully contain the attenuating object, causing hyper-attenuation artifacts on the borders of the result. To avoid these artifacts, reconstruct a larger volume (--dimension 256) should be fine. Note that you will have to resize your motion mask as well, as 3D the motion mask is expected to have the same size, spacing and origin as the first 3 dimensions of the 4D output.
+Note that the reconstructed volume in this example does not fully contain the attenuating object, causing hyper-attenuation artifacts on the borders of the result. To avoid these artifacts, reconstruct a larger volume (--size 256) should be fine. Note that you will have to resize your motion mask as well, as 3D the motion mask is expected to have the same size, spacing and origin as the first 3 dimensions of the 4D output.
 
 ## Motion-Aware 4D Rooster
 
@@ -136,7 +136,8 @@ rtkfourdrooster \
   --cgiter 4 \
   --tviter 10 \
   --spacing 2 \
-  --dimension 160 \
+  --  --size 160 \
+ 160 \
   --frames 5 \
   --dvf deformationField_4D.mhd
 ```
@@ -169,7 +170,7 @@ rtkfourdrooster \
   --cgiter 4 \
   --tviter 10 \
   --spacing "1, 1, 1, 1" \
-  --dimension "220, 280, 370, 10" \
+  --size "220, 280, 370, 10" \
   --origin "-140, -140, -75, 0" \
   --frames 10 \
   --dvf toPhase50_4D.mhd \
@@ -193,7 +194,7 @@ rtkfourdrooster \
   --cgiter 4 \
   --tviter 10 \
   --spacing "1, 1, 1, 1" \
-  --dimension "285, 270, 307, 10" \
+  --size "285, 270, 307, 10" \
   --origin "-167.5, -135, -205, 0" \
   --frames 10 \
   --dvf toPhase50_4D.mhd \
