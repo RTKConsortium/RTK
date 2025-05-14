@@ -47,7 +47,7 @@ rtkfdk \
   --output slice29.5.mha \
   --verbose \
   --spacing 0.25,0.25,0.25 \
-  --dimension 1024,1,1024 \
+  --size 1024,1,1024 \
   --origin -127.875,29.5,-127.875
 ```
 

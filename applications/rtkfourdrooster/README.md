@@ -29,7 +29,7 @@ rtkfdk \
   -g geometry.rtk \
   --hann 0.5 \
   --pad 1.0 \
-  --dimension 160 \
+  --size 160 \
   --spacing 2
 ```
 
@@ -69,7 +69,7 @@ We now have all the pieces to perform a 3D + time reconstruction. The algorithm 
 *   total-variation regularization in space, with parameter "gamma_space" (the higher, the more regularized) and "tviter" iterations
 *   total-variation regularization in time, with parameter "gamma_time" (the higher, the more regularized) and "tviter" iterations
 
-The number of iterations suggested here should work in most situations. The parameters gamma_space and gamma_time, on the other hand, must be adjusted carefully for each type of datasets (and, unfortunately, for each resolution). Unlike in analytical reconstruction methods like FDK, with 4D ROOSTER it is also very important that the reconstruction volume contains the whole patient's chest. You should therefore adapt the "dimension", "spacing" and "origin" parameters carefully, based on what you have observed on the blurry FDK reconstruction.
+The number of iterations suggested here should work in most situations. The parameters gamma_space and gamma_time, on the other hand, must be adjusted carefully for each type of datasets (and, unfortunately, for each resolution). Unlike in analytical reconstruction methods like FDK, with 4D ROOSTER it is also very important that the reconstruction volume contains the whole patient's chest. You should therefore adapt the "size", "spacing" and "origin" parameters carefully, based on what you have observed on the blurry FDK reconstruction.
 
 ```
 # Reconstruct from all projection images with 4D ROOSTER
@@ -86,7 +86,7 @@ rtkfourdrooster \
   --cgiter 4 \
   --tviter 10 \
   --spacing 2 \
-  --dimension 160 \
+  --size 160 \
   --frames 5
 ```
 
@@ -109,13 +109,13 @@ rtkfourdrooster \
   --cgiter 4 \
   --tviter 10 \
   --spacing 2 \
-  --dimension 160 \
+  --size 160 \
   --frames 5
 ```
 
 With a recent GPU, this should allow you to perform a standard resolution reconstruction in less than one hour.
 
-Note that the reconstructed volume in this example does not fully contain the attenuating object, causing hyper-attenuation artifacts on the borders of the result. To avoid these artifacts, reconstruct a larger volume (--dimension 256) should be fine. Note that you will have to resize your motion mask as well, as 3D the motion mask is expected to have the same size, spacing and origin as the first 3 dimensions of the 4D output.
+Note that the reconstructed volume in this example does not fully contain the attenuating object, causing hyper-attenuation artifacts on the borders of the result. To avoid these artifacts, reconstruct a larger volume (--size 256) should be fine. Note that you will have to resize your motion mask as well, as 3D the motion mask is expected to have the same size, spacing and origin as the first 3 dimensions of the 4D output.
 
 ## Motion-Aware 4D Rooster
 
@@ -136,7 +136,7 @@ rtkfourdrooster \
   --cgiter 4 \
   --tviter 10 \
   --spacing 2 \
-  --dimension 160 \
+  --size 160 \
   --frames 5 \
   --dvf deformationField_4D.mhd
 ```
@@ -169,14 +169,14 @@ rtkfourdrooster \
   --cgiter 4 \
   --tviter 10 \
   --spacing "1, 1, 1, 1" \
-  --dimension "220, 280, 370, 10" \
+  --size "220, 280, 370, 10" \
   --origin "-140, -140, -75, 0" \
   --frames 10 \
   --dvf toPhase50_4D.mhd \
   --idvf fromPhase50_4D.mhd
 ```
 
-From the folder containing the data of patient 2, run the following command line (only the dimension and origin parameters are different):
+From the folder containing the data of patient 2, run the following command line (only the size and origin parameters are different):
 
 ```
 # Reconstruct patient 2 with MA ROOSTER
@@ -193,7 +193,7 @@ rtkfourdrooster \
   --cgiter 4 \
   --tviter 10 \
   --spacing "1, 1, 1, 1" \
-  --dimension "285, 270, 307, 10" \
+  --size "285, 270, 307, 10" \
   --origin "-167.5, -135, -205, 0" \
   --frames 10 \
   --dvf toPhase50_4D.mhd \
