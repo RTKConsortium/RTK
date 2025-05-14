@@ -37,7 +37,7 @@ namespace rtk
  * This function sets a ConstantImageSource object from command line options stored in ggo struct.
  *  The image is not buffered to allow streaming. The image is filled with zeros.
  *  The required options in the ggo struct are:
- *     - dimension: image size in pixels
+ *     - size: image size in pixels
  *     - spacing: image spacing in coordinate units
  *     - origin: image origin in coordinate units
  *
@@ -53,10 +53,20 @@ SetConstantImageSourceFromGgo(TConstantImageSourceType * source, const TArgsInfo
 
   const unsigned int Dimension = ImageType::GetImageDimension();
 
-  typename ImageType::SizeType imageDimension;
-  imageDimension.Fill(args_info.dimension_arg[0]);
-  for (unsigned int i = 0; i < std::min(args_info.dimension_given, Dimension); i++)
-    imageDimension[i] = args_info.dimension_arg[i];
+  typename ImageType::SizeType imageSize;
+  if (args_info.dimension_given)
+  {
+    itkGenericOutputMacro(
+      "Warning: --dimension is deprecated and will be removed in a future release. Use --size instead.");
+    imageSize.Fill(args_info.dimension_arg[0]);
+    for (unsigned int i = 0; i < std::min(args_info.dimension_given, Dimension); i++)
+    {
+      imageSize[i] = args_info.dimension_arg[i];
+    }
+  }
+  imageSize.Fill(args_info.size_arg[0]);
+  for (unsigned int i = 0; i < std::min(args_info.size_given, Dimension); i++)
+    imageSize[i] = args_info.size_arg[i];
 
   typename ImageType::SpacingType imageSpacing;
   imageSpacing.Fill(args_info.spacing_arg[0]);
@@ -65,7 +75,7 @@ SetConstantImageSourceFromGgo(TConstantImageSourceType * source, const TArgsInfo
 
   typename ImageType::PointType imageOrigin;
   for (unsigned int i = 0; i < Dimension; i++)
-    imageOrigin[i] = imageSpacing[i] * (imageDimension[i] - 1) * -0.5;
+    imageOrigin[i] = imageSpacing[i] * (imageSize[i] - 1) * -0.5;
   for (unsigned int i = 0; i < std::min(args_info.origin_given, Dimension); i++)
     imageOrigin[i] = args_info.origin_arg[i];
 
@@ -80,7 +90,7 @@ SetConstantImageSourceFromGgo(TConstantImageSourceType * source, const TArgsInfo
   source->SetOrigin(imageOrigin);
   source->SetSpacing(imageSpacing);
   source->SetDirection(imageDirection);
-  source->SetSize(imageDimension);
+  source->SetSize(imageSize);
   source->SetConstant({});
 
   // Copy output image information from an existing file, if requested

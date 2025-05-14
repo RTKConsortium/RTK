@@ -33,6 +33,7 @@ applications/README.md
 API <https://www.openrtk.org/Doxygen/index.html>
 Discussion <https://www.creatis.insa-lyon.fr/mailman/listinfo/rtk-users>
 Issue tracker <https://github.com/RTKConsortium/RTK/issues>
+documentation/docs/migration_guides/README.md
 CodeContribution
 documentation/docs/README
 documentation/docs/Release

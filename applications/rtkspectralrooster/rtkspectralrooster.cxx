@@ -115,8 +115,8 @@ main(int argc, char * argv[])
     inputOrigin[Dimension] = 0;
     inputDirection.SetIdentity();
 
-    for (unsigned int i = 0; i < std::min(args_info.dimension_given, Dimension); i++)
-      inputSize[i] = args_info.dimension_arg[i];
+    for (unsigned int i = 0; i < std::min(args_info.size_given, Dimension); i++)
+      inputSize[i] = args_info.size_arg[i];
 
     inputSpacing.Fill(args_info.spacing_arg[0]);
     for (unsigned int i = 0; i < std::min(args_info.spacing_given, Dimension); i++)

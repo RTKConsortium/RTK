@@ -36,7 +36,7 @@ rtkfdk \
   --output slice30.mha \
   --verbose \
   --spacing 0.25,0.25,0.25 \
-  --dimension 1024,1,1024 \
+  --size 1024,1,1024 \
   --origin -127.875,30,-127.875
 ```
 
@@ -95,7 +95,7 @@ rtkfdk \
   --output slice58.mha \
   --verbose \
   --spacing 0.25,0.25,0.25 \
-  --dimension 1024,1,1024 \
+  --size 1024,1,1024 \
   --origin -127.875,-58,-127.875
 ```
 
