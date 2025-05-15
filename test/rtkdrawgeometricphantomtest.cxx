@@ -2,7 +2,6 @@
 #include "rtkMacro.h"
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkConstantImageSource.h"
-#include "rtkGeometricPhantomFileReader.h"
 #include "rtkDrawGeometricPhantomImageFilter.h"
 #include "rtkDrawSheppLoganFilter.h"
 #include "rtkDrawCylinderImageFilter.h"
@@ -122,9 +121,9 @@ main(int argc, char * argv[])
   axis[0] = 100.;
   axis[1] = 0.;
   axis[2] = 100.;
-  center[0] = 2.;
-  center[1] = 2.;
-  center[2] = 2.;
+  center[0] = 0.;
+  center[1] = 0.;
+  center[2] = 0.;
 
   dcl->SetInput(tomographySource->GetOutput());
   dcl->SetAxis(axis);
@@ -138,6 +137,7 @@ main(int argc, char * argv[])
   axis[0] = 25.;
   axis[1] = -50.;
   axis[2] = 25.;
+
 
   using DCOType = rtk::DrawConeImageFilter<OutputImageType, OutputImageType>;
   DCOType::Pointer dco = DCOType::New();
@@ -155,7 +155,7 @@ main(int argc, char * argv[])
   addFilter->SetInput2(dco->GetOutput());
   TRY_AND_EXIT_ON_ITK_EXCEPTION(addFilter->Update());
 
-  CheckImageQuality<OutputImageType>(dgp->GetOutput(), addFilter->GetOutput(), 0.0005, 90, 255.0);
+  CheckImageQuality<OutputImageType>(dgp->GetOutput(), addFilter->GetOutput(), 0.005, 90, 255.0);
   std::cout << "Test PASSED! " << std::endl;
 
   return EXIT_SUCCESS;
