@@ -84,12 +84,6 @@ public:
   itkSetMacro(OriginOffset, VectorType);
   itkGetMacro(OriginOffset, VectorType);
 
-  /** Interpret config file as Forbild file (see
-   * http://www.imp.uni-erlangen.de/phantoms/). */
-  itkSetMacro(IsForbildConfigFile, bool);
-  itkGetConstMacro(IsForbildConfigFile, bool);
-  itkBooleanMacro(IsForbildConfigFile);
-
   /** Get / Set a rotation matrix for the phantom. Default is identity. */
   itkSetMacro(RotationMatrix, RotationMatrixType);
   itkGetMacro(RotationMatrix, RotationMatrixType);
@@ -113,7 +107,6 @@ private:
   StringType                   m_ConfigFile;
   VectorType                   m_PhantomScale{ 1. };
   VectorType                   m_OriginOffset{ 0. };
-  bool                         m_IsForbildConfigFile{ false };
   RotationMatrixType           m_RotationMatrix;
   std::vector<VectorType>      m_PlaneDirections;
   std::vector<ScalarType>      m_PlanePositions;

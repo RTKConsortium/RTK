@@ -105,7 +105,6 @@ main(int, char **)
   pgp->SetGeometry(geometry);
   pgp->SetPhantomScale(1.2);
   pgp->SetConfigFile(configFileName);
-  pgp->SetIsForbildConfigFile(true);
   pgp->SetRotationMatrix(rotMat);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(pgp->Update());
 
@@ -116,7 +115,6 @@ main(int, char **)
   dgp->SetInput(tomographySource->GetOutput());
   dgp->SetPhantomScale(1.2);
   dgp->SetConfigFile(configFileName);
-  dgp->SetIsForbildConfigFile(true);
   dgp->SetRotationMatrix(rotMat);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(dgp->Update())
 

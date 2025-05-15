@@ -14,7 +14,6 @@ set(RTK_SRCS
   rtkElektaXVI5GeometryXMLFileReader.cxx
   rtkForbildPhantomFileReader.cxx
   rtkGeometricPhantom.cxx
-  rtkGeometricPhantomFileReader.cxx
   rtkGlobalResourceProbe.cxx
   rtkHisImageIO.cxx
   rtkHisImageIOFactory.cxx
