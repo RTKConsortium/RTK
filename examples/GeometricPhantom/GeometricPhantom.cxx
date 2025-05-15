@@ -49,7 +49,6 @@ main()
   pgp->SetPhantomScale(scale);
   pgp->SetRotationMatrix(rotation);
   pgp->SetConfigFile(configFileName);
-  pgp->SetIsForbildConfigFile(true);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(itk::WriteImage(pgp->GetOutput(), "projections.mha"));
 
   // Draw the geometric phantom image
@@ -58,7 +57,6 @@ main()
   dgp->SetPhantomScale(scale);
   dgp->SetRotationMatrix(rotation);
   dgp->SetConfigFile(configFileName);
-  dgp->SetIsForbildConfigFile(true);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(itk::WriteImage(dgp->GetOutput(), "ref.mha"));
 
   // Perform FDK reconstruction filtering

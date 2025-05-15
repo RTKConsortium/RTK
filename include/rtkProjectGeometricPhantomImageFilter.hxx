@@ -19,7 +19,6 @@
 #ifndef rtkProjectGeometricPhantomImageFilter_hxx
 #define rtkProjectGeometricPhantomImageFilter_hxx
 
-#include "rtkGeometricPhantomFileReader.h"
 #include "rtkForbildPhantomFileReader.h"
 #include "rtkRayConvexIntersectionImageFilter.h"
 
@@ -54,22 +53,11 @@ ProjectGeometricPhantomImageFilter<TInputImage, TOutputImage>::GenerateData()
   // Reading figure config file
   if (!m_ConfigFile.empty())
   {
-    if (m_IsForbildConfigFile)
-    {
-      using ReaderType = rtk::ForbildPhantomFileReader;
-      ReaderType::Pointer reader = ReaderType::New();
-      reader->SetFilename(m_ConfigFile);
-      reader->GenerateOutputInformation();
-      this->m_GeometricPhantom = reader->GetGeometricPhantom();
-    }
-    else
-    {
-      using ReaderType = rtk::GeometricPhantomFileReader;
-      ReaderType::Pointer reader = ReaderType::New();
-      reader->SetFilename(m_ConfigFile);
-      reader->GenerateOutputInformation();
-      this->m_GeometricPhantom = reader->GetGeometricPhantom();
-    }
+    using ReaderType = rtk::ForbildPhantomFileReader;
+    ReaderType::Pointer reader = ReaderType::New();
+    reader->SetFilename(m_ConfigFile);
+    reader->GenerateOutputInformation();
+    this->m_GeometricPhantom = reader->GetGeometricPhantom();
   }
 
   // Check that it's not empty

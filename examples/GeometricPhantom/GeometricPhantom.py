@@ -33,7 +33,6 @@ pgp = rtk.project_geometric_phantom_image_filter(
     phantom_scale=scale,
     rotation_matrix=rotation,
     config_file=config_file_name,
-    is_forbild_config_file=True,
 )
 itk.imwrite(pgp, "projections.mha")
 
@@ -46,7 +45,6 @@ dgp = rtk.draw_geometric_phantom_image_filter(
     phantom_scale=scale,
     rotation_matrix=rotation,
     config_file=config_file_name,
-    is_forbild_config_file=True,
 )
 itk.imwrite(dgp, "ref.mha")
 

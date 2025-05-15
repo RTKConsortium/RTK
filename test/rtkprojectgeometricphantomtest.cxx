@@ -2,7 +2,6 @@
 #include "rtkMacro.h"
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkConstantImageSource.h"
-#include "rtkGeometricPhantomFileReader.h"
 #include "rtkProjectGeometricPhantomImageFilter.h"
 #include "rtkSheppLoganPhantomFilter.h"
 
