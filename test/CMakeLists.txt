@@ -177,11 +177,11 @@ rtk_add_test(rtkXRadTest rtkxradtest.cxx
   DATA{Baseline/XRad/attenuation.mha})
 
 rtk_add_test(rtkProjectGeometricPhantomTest rtkprojectgeometricphantomtest.cxx
-  DATA{Input/GeometricPhantom/SheppLogan.txt})
+  DATA{Input/GeometricPhantom/SheppLogan_forbild.txt})
 
 rtk_add_test(rtkDrawGeometricPhantomTest rtkdrawgeometricphantomtest.cxx
-  DATA{Input/GeometricPhantom/SheppLogan.txt}
-  DATA{Input/GeometricPhantom/Geometries.txt})
+  DATA{Input/GeometricPhantom/SheppLogan_forbild.txt}
+  DATA{Input/GeometricPhantom/Geometries_Forbild.txt})
 
 rtk_add_test(rtkWeidingerForwardModelTest rtkweidingerforwardmodeltest.cxx
   DATA{Input/Spectral/OneStep/materialProjections.mha}
