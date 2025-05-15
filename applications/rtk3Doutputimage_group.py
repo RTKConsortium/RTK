@@ -1,10 +1,12 @@
 import itk
 from itk import RTK as rtk
+import warnings
 
 __all__ = [
     "add_rtk3Doutputimage_group",
     "SetConstantImageSourceFromArgParse",
 ]
+
 
 # Mimicks rtk3Doutputimage_section.ggo
 def add_rtk3Doutputimage_group(parser):
@@ -15,10 +17,17 @@ def add_rtk3Doutputimage_group(parser):
         type=rtk.comma_separated_args(float),
     )
     rtk3Doutputimage_group.add_argument(
+        "--size",
+        help="Size",
+        type=rtk.comma_separated_args(int),
+        default=[256],
+    )
+    rtk3Doutputimage_group.add_argument(
         "--dimension",
         help="Dimension",
         type=rtk.comma_separated_args(int),
         default=[256],
+        deprecated=True,
     )
     rtk3Doutputimage_group.add_argument(
         "--spacing", help="Spacing", type=rtk.comma_separated_args(float), default=[1]
@@ -28,7 +37,7 @@ def add_rtk3Doutputimage_group(parser):
     )
     rtk3Doutputimage_group.add_argument(
         "--like",
-        help="Copy information from this image (origin, dimension, spacing, direction)",
+        help="Copy information from this image (origin, size, spacing, direction)",
     )
 
 
@@ -36,12 +45,16 @@ def add_rtk3Doutputimage_group(parser):
 def SetConstantImageSourceFromArgParse(source, args_info):
     ImageType = type(source.GetOutput())
 
+    # Handle deprecated --dimension argument
+    if args_info.dimension is not None:
+        args_info.size = args_info.dimension
+
     Dimension = ImageType.GetImageDimension()
 
     imageDimension = itk.Size[Dimension]()
-    imageDimension.Fill(args_info.dimension[0])
-    for i in range(min(len(args_info.dimension), Dimension)):
-        imageDimension[i] = args_info.dimension[i]
+    imageDimension.Fill(args_info.size[0])
+    for i in range(min(len(args_info.size), Dimension)):
+        imageDimension[i] = args_info.size[i]
 
     imageSpacing = itk.Vector[itk.D, Dimension]()
     imageSpacing.Fill(args_info.spacing[0])
