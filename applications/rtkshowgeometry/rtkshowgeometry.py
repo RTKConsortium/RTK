@@ -6,7 +6,7 @@ import pyvista as pv
 import argparse
 
 
-def main():
+def build_parser():
     parser = argparse.ArgumentParser(
         description=" Create an interactive 3D viewer for the given geometry and projections.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
@@ -31,7 +31,11 @@ def main():
         if action.dest == "regexp":
             action.required = False
 
-    args_info = parser.parse_args()
+    # Parse the command line arguments
+    return parser
+
+
+def process(args_info: argparse.Namespace):
 
     OutputPixelType = itk.F
     Dimension = 3
@@ -127,7 +131,7 @@ def main():
     # Compute "nice" tick spacing for grid
     raw_spacing = (abs(max_value) + abs(min_value)) / 4.0
     exp_val = np.floor(np.log10(raw_spacing))
-    f = raw_spacing / (10 ** exp_val)
+    f = raw_spacing / (10**exp_val)
     if f < 1.5:
         nf = 1.0
     elif f < 3.0:
@@ -136,7 +140,7 @@ def main():
         nf = 5.0
     else:
         nf = 10.0
-    nice_tick = nf * (10 ** exp_val)
+    nice_tick = nf * (10**exp_val)
 
     # Adjust bounds to align with tick spacing
     min_bounds = np.floor(min_value / nice_tick) * nice_tick
@@ -408,9 +412,9 @@ def main():
                     source_poly, color="red", opacity=0.3
                 )
             else:
-                actors[
-                    "source_plane"
-                ].GetMapper().GetInput().points = source_corners_array
+                actors["source_plane"].GetMapper().GetInput().points = (
+                    source_corners_array
+                )
 
             if "lines" not in actors:
                 actors["lines"] = []
@@ -469,6 +473,12 @@ def main():
     update(0)
     plotter.show_axes()
     plotter.show()
+
+
+def main(argv=None):
+    parser = build_parser()
+    args_info = parser.parse_args(argv)
+    process(args_info)
 
 
 if __name__ == "__main__":

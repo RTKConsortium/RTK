@@ -5,7 +5,7 @@ import itk
 from itk import RTK as rtk
 
 
-def main():
+def build_parser():
     # Argument parsing
     parser = argparse.ArgumentParser(
         description="Creates an RTK geometry file from a Varian OBI acquisition."
@@ -13,21 +13,27 @@ def main():
 
     parser.add_argument("--verbose", "-v", help="Verbose execution", type=bool)
     parser.add_argument(
-        "--xml_file", "-x", help="Varian OBI XML information file on projections"
+        "--xml_file",
+        "-x",
+        help="Varian OBI XML information file on projections",
+        required=True,
     )
-    parser.add_argument("--output", "-o", help="Output file name")
+    parser.add_argument("--output", "-o", help="Output file name", required=True)
     parser.add_argument(
         "--path", "-p", help="Path containing projections", required=True
     )
     parser.add_argument(
-        "--regexp", "-r", help="Regular expression to select projection files in path"
+        "--regexp",
+        "-r",
+        help="Regular expression to select projection files in path",
+        required=True,
     )
 
-    args = parser.parse_args()
+    # Parse the command line arguments
+    return parser
 
-    if args.xml_file is None or args.output is None:
-        parser.print_help()
-        sys.exit()
+
+def process(args: argparse.Namespace):
 
     names = itk.RegularExpressionSeriesFileNames.New()
     names.SetDirectory(args.path)
@@ -39,6 +45,12 @@ def main():
     reader.UpdateOutputData()
 
     rtk.write_geometry(reader.GetGeometry(), args.output)
+
+
+def main(argv=None):
+    parser = build_parser()
+    args_info = parser.parse_args(argv)
+    process(args_info)
 
 
 if __name__ == "__main__":
