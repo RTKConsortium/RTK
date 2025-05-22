@@ -33,7 +33,7 @@ rtk::CudaConstantVolumeSource ::GPUGenerateData()
     outputSize[i] = this->GetOutput()->GetRequestedRegion().GetSize()[i];
   }
 
-#ifdef CUDACOMMON_VERSION_MAJOR
+#ifdef CudaCommon_VERSION_MAJOR
   float * pout = (float *)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
 #else
   float * pout = *(float **)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());

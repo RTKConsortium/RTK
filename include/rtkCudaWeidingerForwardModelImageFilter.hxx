@@ -55,7 +55,7 @@ CudaWeidingerForwardModelImageFilter<TDecomposedProjections, TMeasuredProjection
     projectionSize[d] = this->GetInputDecomposedProjections()->GetBufferedRegion().GetSize()[d];
 
   // Pointers to inputs and outputs
-#  ifdef CUDACOMMON_VERSION_MAJOR
+#  ifdef CudaCommon_VERSION_MAJOR
   float * pMatProj = (float *)(this->GetInputDecomposedProjections()->GetCudaDataManager()->GetGPUBufferPointer());
   float * pPhoCount = (float *)(this->GetInputMeasuredProjections()->GetCudaDataManager()->GetGPUBufferPointer());
   float * pSpectrum = (float *)(this->GetInputIncidentSpectrum()->GetCudaDataManager()->GetGPUBufferPointer());
