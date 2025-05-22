@@ -74,7 +74,7 @@ CudaFFTProjectionsConvolutionImageFilter<TParentImageFilter>::PadInputImageRegio
   sz_i.y = inBuffRegion.GetSize()[1];
   sz_i.z = inBuffRegion.GetSize()[2];
 
-#  ifdef CUDACOMMON_VERSION_MAJOR
+#  ifdef CudaCommon_VERSION_MAJOR
   float * pin = (float *)(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
   float * pout = (float *)(paddedImage->GetCudaDataManager()->GetGPUBufferPointer());
 #  else
@@ -137,7 +137,7 @@ CudaFFTProjectionsConvolutionImageFilter<TParentImageFilter>::GPUGenerateData()
   kernelDimension.y = this->m_KernelFFT->GetBufferedRegion().GetSize()[1];
   CUDA_fft_convolution(inputDimension,
                        kernelDimension,
-#  ifdef CUDACOMMON_VERSION_MAJOR
+#  ifdef CudaCommon_VERSION_MAJOR
                        (float *)(cuPadImgP->GetCudaDataManager()->GetGPUBufferPointer()),
                        (float2 *)(this->m_KernelFFTCUDA->GetCudaDataManager()->GetGPUBufferPointer()));
 #  else

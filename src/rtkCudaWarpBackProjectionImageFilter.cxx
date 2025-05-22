@@ -188,7 +188,7 @@ CudaWarpBackProjectionImageFilter ::GPUGenerateData()
   }
 
   // Load the required images onto the GPU (handled by the CudaDataManager)
-#ifdef CUDACOMMON_VERSION_MAJOR
+#ifdef CudaCommon_VERSION_MAJOR
   float * pin = (float *)(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
   float * pout = (float *)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
   float * pDVF = (float *)(this->GetDisplacementField()->GetCudaDataManager()->GetGPUBufferPointer());

@@ -50,7 +50,7 @@ rtk::CudaLastDimensionTVDenoisingImageFilter ::GPUGenerateData()
     }
   }
 
-#ifdef CUDACOMMON_VERSION_MAJOR
+#ifdef CudaCommon_VERSION_MAJOR
   float * pin = (float *)(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
   float * pout = (float *)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
 #else

@@ -50,7 +50,7 @@ CudaCropImageFilter ::GPUGenerateData()
     itkExceptionMacro(<< "CudaCropImageFilter assumes that requested and buffered regions are equal.");
   }
 
-#ifdef CUDACOMMON_VERSION_MAJOR
+#ifdef CudaCommon_VERSION_MAJOR
   float * pin = (float *)(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
   float * pout = (float *)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
 #else
