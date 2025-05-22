@@ -126,7 +126,7 @@ main(int argc, char * argv[])
     // determine a few random phantom markers around isocenter
     constexpr int       NUM_PHANTOM_MARKERS = 5;
     RandomType::Pointer generator = RandomType::New();
-    generator->Initialize(123456);
+    generator->SetSeed(123456);
     GeometryType::PointType p;
     for (int i = 0; i < NUM_PHANTOM_MARKERS; i++)
     {
@@ -165,7 +165,7 @@ main(int argc, char * argv[])
     const double degreesToRadians = atan(1.0) / 45.;
 
     RandomType::Pointer generator = RandomType::New();
-    generator->Initialize(123456);
+    generator->SetSeed(123456);
 
     GeometryType::PointType             locSourcePosition;
     GeometryType::PointType             locDetectorPosition;
