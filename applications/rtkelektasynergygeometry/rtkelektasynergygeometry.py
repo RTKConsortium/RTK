@@ -11,6 +11,7 @@ def main():
         description="Creates an RTK geometry file from an Elekta Synergy acquisition."
     )
 
+    parser.add_argument("--verbose", "-v", help="Verbose execution", type=bool)
     parser.add_argument("--xml", "-x", help="XML file name (starting with XVI5)")
     parser.add_argument("--output", "-o", help="Output file name")
 

@@ -10,6 +10,9 @@ def main():
         description="Creates an RTK geometry file from simulated/regular trajectory. See https://docs.openrtk.org/en/latest/documentation/docs/Geometry.html for more information."
     )
 
+    parser.add_argument(
+        "--verbose", "-v", type=bool, default=False, help="Verbose execution"
+    )
     parser.add_argument("--nproj", "-n", type=int, help="Number of projections")
     parser.add_argument("--output", "-o", help="Output file name")
     parser.add_argument(
