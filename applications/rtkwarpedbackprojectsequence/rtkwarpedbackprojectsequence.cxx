@@ -75,9 +75,9 @@ main(int argc, char * argv[])
     rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkwarpedbackprojectsequence>(
       constantImageSource, args_info);
 
-    // GenGetOpt can't handle default arguments for multiple arguments like dimension or spacing.
+    // GenGetOpt can't handle default arguments for multiple arguments like size or spacing.
     // The only default it accepts is to set all components of a multiple argument to the same value.
-    // Default dimension is 256^4, ie the number of reconstructed instants is 256. It has to be set to a more reasonable
+    // Default size is 256^4, ie the number of reconstructed instants is 256. It has to be set to a more reasonable
     // value which is why a "frames" argument is introduced
     ConstantImageSourceType::SizeType inputSize = constantImageSource->GetSize();
     inputSize[3] = args_info.frames_arg;
