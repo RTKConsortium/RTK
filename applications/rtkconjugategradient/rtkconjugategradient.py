@@ -5,7 +5,7 @@ import itk
 from itk import RTK as rtk
 
 
-def main():
+def build_parser():
     # argument parsing
     parser = argparse.ArgumentParser(
         description="Reconstructs a 3D volume from a sequence of projections with a conjugate gradient technique",
@@ -47,7 +47,10 @@ def main():
     rtk.add_rtkprojectors_group(parser)
     rtk.add_rtkiterations_group(parser)
 
-    args_info = parser.parse_args()
+    # Parse the command line arguments
+    return parser
+
+def process(args_info: argparse.Namespace):
 
     OutputPixelType = itk.F
     Dimension = 3
@@ -146,6 +149,11 @@ def main():
     writer.SetFileName(args_info.output)
     writer.SetInput(conjugategradient.GetOutput())
     writer.Update()
+
+def main(argv=None):
+    parser = build_parser()
+    args_info = parser.parse_args(argv)
+    process(args_info)
 
 
 if __name__ == "__main__":
