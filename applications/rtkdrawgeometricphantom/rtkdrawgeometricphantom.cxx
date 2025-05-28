@@ -71,12 +71,12 @@ main(int argc, char * argv[])
   {
     if (args_info.rotation_given != 9)
     {
-      std::cerr << "--phantomscale needs exactly 9 values" << std::endl;
+      std::cerr << "--rotation needs exactly 9 values" << std::endl;
       exit(EXIT_FAILURE);
     }
     for (unsigned int i = 0; i < Dimension; i++)
       for (unsigned int j = 0; j < Dimension; j++)
-        rot[i][j] = args_info.rotation_arg[i * 3 + j];
+        rot[i][j] = args_info.rotation_arg[i * Dimension + j];
   }
 
   // Reference
