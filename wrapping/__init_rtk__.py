@@ -24,6 +24,7 @@ _app_modules = [
     "rtkconjugategradient",
     "rtkelektasynergygeometry",
     "rtkorageometry",
+    "rtkprojectgeometricphantom",
     "rtkprojectshepploganphantom",
     "rtksimulatedgeometry",
     "rtkvarianobigeometry",
