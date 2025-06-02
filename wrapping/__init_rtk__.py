@@ -24,6 +24,7 @@ _app_modules = [
     "rtkfdk",
     "rtkconjugategradient",
     "rtkelektasynergygeometry",
+    "rtkforwardprojections",
     "rtkorageometry",
     "rtkprojectgeometricphantom",
     "rtkprojectshepploganphantom",

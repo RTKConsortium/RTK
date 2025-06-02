@@ -38,6 +38,7 @@ wrap_itk_python_bindings_install(/itk "RTK"
     ${RTK_SOURCE_DIR}/applications/rtkconjugategradient/rtkconjugategradient.py
     ${RTK_SOURCE_DIR}/applications/rtkelektasynergygeometry/rtkelektasynergygeometry.py
     ${RTK_SOURCE_DIR}/applications/rtkfdk/rtkfdk.py
+    ${RTK_SOURCE_DIR}/applications/rtkforwardprojections/rtkforwardprojections.py
     ${RTK_SOURCE_DIR}/applications/rtkorageometry/rtkorageometry.py
     ${RTK_SOURCE_DIR}/applications/rtksimulatedgeometry/rtksimulatedgeometry.py
     ${RTK_SOURCE_DIR}/applications/rtkshowgeometry/rtkshowgeometry.py
