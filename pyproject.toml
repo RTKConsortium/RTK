@@ -41,6 +41,7 @@ dependencies = [
 ]
 
 [project.scripts]
+rtkbackprojections = "itk.rtkbackprojections:main"
 rtkconjugategradient = "itk.rtkconjugategradient:main"
 rtkelektasynergygeometry = "itk.rtkelektasynergygeometry:main"
 rtkfdk = "itk.rtkfdk:main"
