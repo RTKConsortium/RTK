@@ -4,6 +4,7 @@ __all__ = [
     "SetBackProjectionFromArgParse",
 ]
 
+
 # Mimicks rtkprojectors_section.ggo
 def add_rtkprojectors_group(parser):
     rtkprojectors_group = parser.add_argument_group("Projectors")
@@ -84,7 +85,7 @@ def SetBackProjectionFromArgParse(args_info, recon):
         if args_info.alphapsf is not None:
             recon.SetAlphaPSF(args_info.alphapsf)
         if args_info.attenuationmap is not None:
-            recon.SetAttenuationMap(attenuationMap)
+            recon.SetAttenuationMap(args_info.attenuationMap)
 
 
 # Mimicks SetForwardProjectionFromGgo
@@ -109,4 +110,4 @@ def SetForwardProjectionFromArgParse(args_info, recon):
         if args_info.alphapsf is not None:
             recon.SetAlphaPSF(args_info.alphapsf)
         if args_info.attenuationmap is not None:
-            recon.SetAttenuationMap(attenuationMap)
+            recon.SetAttenuationMap(args_info.attenuationMap)
