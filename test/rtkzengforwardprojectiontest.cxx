@@ -32,7 +32,6 @@ main(int, char **)
   using OutputImageType = itk::Image<OutputPixelType, Dimension>;
 #endif
 
-  using VectorType = itk::Vector<double, 3>;
 #if FAST_TESTS_NO_CHECKS
   constexpr unsigned int NumberOfProjectionImages = 3;
 #else
@@ -90,7 +89,7 @@ main(int, char **)
 
   using DEIFType = rtk::DrawEllipsoidImageFilter<OutputImageType, OutputImageType>;
   DEIFType::Pointer    volInput = DEIFType::New();
-  DEIFType::VectorType axis_vol, center_vol, center_att, axis_att;
+  DEIFType::VectorType axis_vol, center_vol;
   axis_vol[0] = 32;
   axis_vol[1] = 32;
   axis_vol[2] = 32;
