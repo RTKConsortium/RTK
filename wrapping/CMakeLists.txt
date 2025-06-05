@@ -43,5 +43,6 @@ wrap_itk_python_bindings_install(/itk "RTK"
     ${RTK_SOURCE_DIR}/applications/rtksimulatedgeometry/rtksimulatedgeometry.py
     ${RTK_SOURCE_DIR}/applications/rtkshowgeometry/rtkshowgeometry.py
     ${RTK_SOURCE_DIR}/applications/rtkvarianobigeometry/rtkvarianobigeometry.py
+    ${RTK_SOURCE_DIR}/applications/rtkdrawgeometricphantom/rtkdrawgeometricphantom.py
     ${RTK_SOURCE_DIR}/wrapping/rtkExtras.py
 )
