@@ -2,6 +2,7 @@ import itk
 import argparse
 from itk import RTK as rtk
 import sys
+import numpy as np
 
 
 def build_parser():
@@ -91,9 +92,7 @@ def process(args_info: argparse.Namespace):
         if len(args_info.rotation) != 9:
             print("--rotation needs exactly 9 values")
             sys.exit(1)
-        for i in range(Dimension):
-            for j in range(Dimension):
-                rot[i, j] = args_info.rotation[i * Dimension + j]
+        itk.matrix_from_array(np.array(args_info.rotation).reshape(3, 3))
 
     ppc = rtk.ProjectGeometricPhantomImageFilter[OutputImageType, OutputImageType].New()
     ppc.SetInput(constantImageSource.GetOutput())
