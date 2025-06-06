@@ -33,6 +33,7 @@ wrap_itk_python_bindings_install(/itk "RTK"
     ${RTK_SOURCE_DIR}/applications/rtkinputprojections_group.py
     ${RTK_SOURCE_DIR}/applications/rtkiterations_group.py
     ${RTK_SOURCE_DIR}/applications/rtkprojectors_group.py
+    ${RTK_SOURCE_DIR}/applications/rtkdrawshepploganphantom/rtkdrawshepploganphantom.py
     ${RTK_SOURCE_DIR}/applications/rtkprojectshepploganphantom/rtkprojectshepploganphantom.py
     ${RTK_SOURCE_DIR}/applications/rtkbackprojections/rtkbackprojections.py
     ${RTK_SOURCE_DIR}/applications/rtkconjugategradient/rtkconjugategradient.py
