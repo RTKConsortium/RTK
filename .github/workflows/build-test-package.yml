@@ -11,10 +11,11 @@ jobs:
     uses: InsightSoftwareConsortium/ITKRemoteModuleBuildTestPackageAction/.github/workflows/build-test-cxx.yml@v5.4.3
 
   python-build-workflow:
-    uses: InsightSoftwareConsortium/ITKRemoteModuleBuildTestPackageAction/.github/workflows/build-test-package-python.yml@v5.4.3
+    uses: SimonRit/ITKRemoteModuleBuildTestPackageAction/.github/workflows/build-test-package-python.yml@8e1b5c36fd379cd9236ca604e430ea5463fbc190
     with:
       cmake-options: '-DRTK_BUILD_APPLICATIONS:BOOL=OFF'
       python3-minor-versions: ${{ github.event_name == 'pull_request' && '["11"]' || '["9","10","11"]' }}
-      itk-python-package-tag: 'release'
+      itk-python-package-tag: 'c8abf82ce0198110a8226bec311c4bf6ccb7fb8f'
+      itk-python-package-org: 'SimonRit'
     secrets:
       pypi_password: ${{ secrets.pypi_password }}
