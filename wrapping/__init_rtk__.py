@@ -21,18 +21,18 @@ for mod_name in rtk_submodules:
 # Application modules
 _app_modules = [
     "rtkbackprojections",
-    "rtkfdk",
     "rtkconjugategradient",
     "rtkdrawgeometricphantom",
+    "rtkdrawshepploganphantom",
     "rtkelektasynergygeometry",
-    "rtkdrawshepploganphantom" "rtkelektasynergygeometry",
+    "rtkfdk",
     "rtkforwardprojections",
     "rtkorageometry",
     "rtkprojectgeometricphantom",
     "rtkprojectshepploganphantom",
+    "rtkshowgeometry",
     "rtksimulatedgeometry",
     "rtkvarianobigeometry",
-    "rtkshowgeometry",
 ]
 
 # Dynamically access make_application_func from rtkExtras
