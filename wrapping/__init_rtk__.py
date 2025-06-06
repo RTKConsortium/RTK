@@ -20,6 +20,7 @@ for mod_name in rtk_submodules:
 
 # Application modules
 _app_modules = [
+    "rtkamsterdamshroud",
     "rtkbackprojections",
     "rtkconjugategradient",
     "rtkdrawgeometricphantom",
