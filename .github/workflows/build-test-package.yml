@@ -15,6 +15,6 @@ jobs:
     with:
       cmake-options: '-DRTK_BUILD_APPLICATIONS:BOOL=OFF'
       python3-minor-versions: ${{ github.event_name == 'pull_request' && '["11"]' || '["9","10","11"]' }}
-      itk-python-package-tag: 'release'
+      itk-python-package-tag: '290c7357dff9d5b73f23d1a052da969680050fc1'
     secrets:
       pypi_password: ${{ secrets.pypi_password }}
