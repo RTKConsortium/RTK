@@ -29,6 +29,7 @@ _app_modules = [
     "rtkforwardprojections",
     "rtkorageometry",
     "rtkprojectgeometricphantom",
+    "rtkprojections",
     "rtkprojectshepploganphantom",
     "rtkshowgeometry",
     "rtksimulatedgeometry",
