@@ -13,7 +13,7 @@ def build_parser():
     parser.add_argument(
         "--output", "-o", help="Output file name", type=str, required=True
     )
-    rtk.add_inputprojections_group(parser)
+    rtk.add_rtkinputprojections_group(parser)
 
     # Parse the command line arguments
     return parser
