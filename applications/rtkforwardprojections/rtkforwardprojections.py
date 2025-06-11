@@ -93,7 +93,8 @@ def process(args_info):
     OutputPixelType = itk.F
     Dimension = 3
     OutputImageType = itk.Image[OutputPixelType, Dimension]
-    OutputCudaImageType = itk.CudaImage[OutputPixelType, Dimension]
+    if hasattr(itk, "CudaImage"):
+        OutputCudaImageType = itk.CudaImage[OutputPixelType, Dimension]
 
     # Geometry
     if args_info.verbose:
@@ -232,10 +233,10 @@ def process(args_info):
     if args_info.verbose:
         print("Writing...")
 
-    writter = itk.ImageFileWriter[OutputImageType].New()
-    writter.SetFileName(args_info.output)
-    writter.SetInput(forwardProjection.GetOutput())
-    writter.Update()
+    writer = itk.ImageFileWriter[OutputImageType].New()
+    writer.SetFileName(args_info.output)
+    writer.SetInput(forwardProjection.GetOutput())
+    writer.Update()
 
     if args_info.verbose:
         print("Processing completed successfully.")
