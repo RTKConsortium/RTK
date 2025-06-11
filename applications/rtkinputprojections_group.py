@@ -1,5 +1,6 @@
 import itk
 from itk import RTK as rtk
+import numpy as np
 
 __all__ = [
     "add_rtkinputprojections_group",
@@ -162,11 +163,11 @@ def SetProjectionsReaderFromArgParse(reader, args_info):
     # Change image information
     Dimension = reader.GetOutput().GetImageDimension()
     if args_info.newdirection is not None:
-        direction = itk.Matrix[itk.D, Dimension, Dimension]()
-        direction.Fill(args_info.newdirection[0])
-        for i in range(len(args_info.newdirection)):
-            direction[i / Dimension][i % Dimension] = args_info.newdirection_arg[i]
-        reader.SetDirection(direction)
+        direction = [args_info.newdirection[0]] * 9
+        for i in range(min(9, len(args_info.newdirection))):
+            direction[i] = args_info.newdirection[i]
+        direction = np.array(direction).reshape((3, 3))
+        reader.SetDirection(itk.matrix_from_array(direction))
 
     if args_info.newspacing is not None:
         spacing = itk.Vector[itk.D, Dimension]()
