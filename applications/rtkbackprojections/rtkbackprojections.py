@@ -75,7 +75,8 @@ def process(args_info: argparse.Namespace):
     OutputPixelType = itk.F
     Dimension = 3
     OutputImageType = itk.Image[OutputPixelType, Dimension]
-    OutputCudaImageType = itk.CudaImage[OutputPixelType, Dimension]
+    if hasattr(itk, "CudaImage"):
+        OutputCudaImageType = itk.CudaImage[OutputPixelType, Dimension]
 
     # Geometry
     if args_info.verbose:
