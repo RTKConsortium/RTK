@@ -161,7 +161,8 @@ def make_application_func(app_name):
             argv = shlex.split(args[0])
             try:
                 return main(argv)
-            except:
+            except Exception as e:
+                print(e)
                 return
 
         # Handle positional arguments
