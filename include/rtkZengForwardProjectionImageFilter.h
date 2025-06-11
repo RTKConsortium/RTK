@@ -43,12 +43,13 @@ namespace rtk
 /** \class ZengForwardProjectionImageFilter
  * \brief Zeng forward projection.
  *
- * Performs a rotation based forward projection, i.e. the volume is rotated so that
- * the face of the image volume is parallel to the detector and the projection is done
- * by summing the collumn. This projector is used to perform the PSF correction
- * describe in [Zeng 1996]. The forward projector tests if the detector
- * has been placed after the source and the volume. If the detector is in the volume
- * the sum is performed only until that point.
+ * Performs a rotation based forward projection, i.e. the volume is rotated so
+ * that the face of the image volume is parallel to the detector and the
+ * projection is done by summing the collumn. This projector is used to perform
+ * the PSF correction described in [Zeng et al, 1999,
+ * 10.1109/42.796285]. The forward projector tests if the detector has been
+ * placed after the source and the volume. If the detector is in the volume the
+ * sum is performed only until that point.
  *
  * \test rtkZengforwardprojectiontest.cxx
  *
