@@ -42,7 +42,7 @@ The algorithm requires a set of projection images with the associated RTK geomet
 
 ### Projection images
 
-This example is illustrated with a set of projection images of the [POPI patient](http://www.creatis.insa-lyon.fr/rio/popi-model_original_page). This dataset has been used in the first previously-mentioned article. You can [download the projections](https://data.kitware.com/api/v1/item/5be99af88d777f2179a2e144/download) and the required tables of the Elekta database, [FRAME.DBF](https://data.kitware.com/api/v1/item/5be99a068d777f2179a2cf4f/download) and [IMAGE.DBF](https://data.kitware.com/api/v1/item/5be99a078d777f2179a2cf65/download). The dataset is first used to reconstruct a blurry image:
+This example is illustrated with a set of projection images of the [POPI patient](https://github.com/open-vv/popi-model/blob/master/popi-model.md). This dataset has been used in the first previously-mentioned article. You can [download the projections](https://data.kitware.com/api/v1/item/5be99af88d777f2179a2e144/download) and the required tables of the Elekta database, [FRAME.DBF](https://data.kitware.com/api/v1/item/5be99a068d777f2179a2cf4f/download) and [IMAGE.DBF](https://data.kitware.com/api/v1/item/5be99a078d777f2179a2cf65/download). The dataset is first used to reconstruct a blurry image:
 
 ```bash
 # Convert Elekta database to RTK geometry
