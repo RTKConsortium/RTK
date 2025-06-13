@@ -26,7 +26,7 @@ This script uses the SheppLogan phantom.
 
 The same reconstruction can be performed using the original 2D Shepp-Logan phantom.
 RTK can perform 2D reconstructions through images wide of 1 pixel in the y direction.
-The following script performs the same reconstruction as above in a 2D environment and uses the [2D Shepp-Logan](https://data.kitware.com/#item/67d1ff45c6dec2fc9c534d0c/download) phantom as input.
+The following script performs the same reconstruction as above in a 2D environment and uses the [2D Shepp-Logan](https://data.kitware.com/api/v1/file/67d1ff45c6dec2fc9c534d0d/download) phantom as input.
 
 ```{literalinclude} FDK2D.sh
 ```
