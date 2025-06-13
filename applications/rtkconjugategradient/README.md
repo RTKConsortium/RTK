@@ -24,7 +24,7 @@ This script uses the SheppLogan phantom.
 
 The same reconstruction can be performed using the original 2D Shepp-Logan phantom.
 RTK can perform 2D reconstructions through images wide of 1 pixel in the y direction.
-The following script performs the same reconstruction as above in a 2D environment and use the Shepp–Logan phantom (https://data.kitware.com/#item/67d1ff45c6dec2fc9c534d0c/download).
+The following script performs the same reconstruction as above in a 2D environment and use the Shepp–Logan phantom (https://data.kitware.com/api/v1/file/67d1ff45c6dec2fc9c534d0d/download).
 
 ```{literalinclude} ConjugateGradient2D.sh
 ```
