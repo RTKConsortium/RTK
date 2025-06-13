@@ -23,7 +23,7 @@ def build_parser():
         "--phantomscale",
         help="Scaling factor for the phantom dimensions",
         type=rtk.comma_separated_args(float),
-        default=[1.0],
+        default=[128],
     )
     parser.add_argument("--noise", help="Gaussian noise parameter (SD)", type=float)
     parser.add_argument(
