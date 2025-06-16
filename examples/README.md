@@ -18,6 +18,7 @@ providing efficient implementations for high-performance applications.
 :maxdepth: 1
 
 ./FirstReconstruction/README.md
+./ConjugateGradient/README.md
 ./WaterPreCorrection/README.md
 ./InlineReconstruction/README.md
 ./AddNoise/README.md
