@@ -326,6 +326,10 @@ rtk_add_test(rtkAddNoiseExampleTest
 rtk_add_test(rtkGeometricPhantomExampleTest
   ../examples/GeometricPhantom/GeometricPhantom.cxx
   DATA{Input/Forbild/thorax.txt})
+rtk_add_test(rtkConjugateGradientExampleTest
+  ../examples/ConjugateGradient/ConjugateGradient.cxx
+  DATA{Input/Forbild/thorax.txt}
+)
 
 if(ITK_WRAP_PYTHON)
   itk_python_add_test(NAME rtkMaximumIntensityPythonTest COMMAND rtkMaximumIntensity.py)
