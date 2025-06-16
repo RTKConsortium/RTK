@@ -84,7 +84,7 @@ def process(args_info: argparse.Namespace):
         if len(args_info.rotation) != 9:
             print("--rotation needs exactly 9 values", file=sys.stderr)
             sys.exit(1)
-        itk.matrix_from_array(np.array(args_info.rotation).reshape(3, 3))
+        rot = itk.matrix_from_array(np.array(args_info.rotation).reshape(3, 3))
 
     # Reference
     if args_info.verbose:
