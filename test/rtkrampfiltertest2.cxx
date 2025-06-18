@@ -31,11 +31,7 @@ main(int, char **)
 
   ImageType::Pointer    image = ImageType::New();
   ImageType::RegionType region;
-  ImageType::SizeType   size;
-  size[0] = 64;
-  size[1] = 64;
-  size[2] = 64;
-  region.SetSize(size);
+  region.SetSize(itk::MakeSize(64, 64, 64));
   image->SetRegions(region);
   image->Allocate();
   image->FillBuffer(10);
@@ -55,11 +51,7 @@ main(int, char **)
 
 
   // Check the results
-  ImageType::IndexType index;
-  index[0] = 3;
-  index[1] = 21;
-  index[2] = 26;
-
+  auto  index = itk::MakeIndex(3, 21, 26);
   float value = 0.132652;
   if (itk::Math::abs(rampFilter->GetOutput()->GetPixel(index) - value) > 0.000001)
   {

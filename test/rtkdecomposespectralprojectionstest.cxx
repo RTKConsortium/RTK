@@ -48,22 +48,22 @@ main(int argc, char * argv[])
   using MaterialAttenuationsImageType = itk::Image<PixelValueType, Dimension - 1>;
   using MaterialAttenuationsReaderType = itk::ImageFileReader<MaterialAttenuationsImageType>;
 
-  // Cast filters to convert between vector image types
+  // Cast filters between vector image types
   using CastDecomposedProjectionsFilterType =
     itk::CastImageFilter<DecomposedProjectionsType, itk::Image<itk::Vector<PixelValueType, 3>, Dimension>>;
   using CastMeasuredProjectionFilterType =
     itk::CastImageFilter<MeasuredProjectionsType, itk::Image<itk::Vector<PixelValueType, 6>, Dimension>>;
 
-  // Read all inputs
-  IncidentSpectrumReaderType::Pointer incidentSpectrumReader = IncidentSpectrumReaderType::New();
+  // Read input files
+  auto incidentSpectrumReader = IncidentSpectrumReaderType::New();
   incidentSpectrumReader->SetFileName(argv[1]);
   incidentSpectrumReader->Update();
 
-  DetectorResponseReaderType::Pointer detectorResponseReader = DetectorResponseReaderType::New();
+  auto detectorResponseReader = DetectorResponseReaderType::New();
   detectorResponseReader->SetFileName(argv[2]);
   detectorResponseReader->Update();
 
-  MaterialAttenuationsReaderType::Pointer materialAttenuationsReader = MaterialAttenuationsReaderType::New();
+  auto materialAttenuationsReader = MaterialAttenuationsReaderType::New();
   materialAttenuationsReader->SetFileName(argv[3]);
   materialAttenuationsReader->Update();
 
@@ -73,41 +73,31 @@ main(int argc, char * argv[])
   constexpr unsigned int NumberOfProjectionImages = 64;
 #endif
 
-  // Constant image source for the analytical projections calculation
+  // Constant image source for analytical projections
   using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
-  ConstantImageSourceType::PointType   origin;
-  ConstantImageSourceType::SizeType    size;
-  ConstantImageSourceType::SpacingType spacing;
-
   ConstantImageSourceType::Pointer projectionsSource = ConstantImageSourceType::New();
-  origin[0] = -255.;
-  origin[1] = -0.5;
-  origin[2] = -255.;
+
 #if FAST_TESTS_NO_CHECKS
-  size[0] = 2;
-  size[1] = 1;
-  size[2] = NumberOfProjectionImages;
-  spacing[0] = 504.;
-  spacing[1] = 504.;
-  spacing[2] = 504.;
+  auto origin = itk::MakePoint(-255., -0.5, -255.);
+  auto spacing = itk::MakeVector(504., 504., 504.);
+  auto size = itk::MakeSize(2, 1, NumberOfProjectionImages);
 #else
-  size[0] = 64;
-  size[1] = 1;
-  size[2] = NumberOfProjectionImages;
-  spacing[0] = 8.;
-  spacing[1] = 1.;
-  spacing[2] = 1.;
+  auto origin = itk::MakePoint(-255., -0.5, -255.);
+  auto spacing = itk::MakeVector(8., 1., 1.);
+  auto size = itk::MakeSize(64, 1, NumberOfProjectionImages);
 #endif
+
   projectionsSource->SetOrigin(origin);
   projectionsSource->SetSpacing(spacing);
   projectionsSource->SetSize(size);
   projectionsSource->SetConstant(0.);
 
-  // Initialize the multi-materials projections
+  // Initialize multi-material projections
   DecomposedProjectionsType::Pointer decomposed = DecomposedProjectionsType::New();
   decomposed->SetVectorLength(3);
   decomposed->SetOrigin(origin);
   decomposed->SetSpacing(spacing);
+
   DecomposedProjectionsType::RegionType region;
   DecomposedProjectionsType::IndexType  index;
   index.Fill(0);
@@ -118,40 +108,32 @@ main(int argc, char * argv[])
 
   // Geometry object
   using GeometryType = rtk::ThreeDCircularProjectionGeometry;
-  GeometryType::Pointer geometry = GeometryType::New();
-  for (unsigned int noProj = 0; noProj < NumberOfProjectionImages; noProj++)
+  auto geometry = GeometryType::New();
+  for (unsigned int noProj = 0; noProj < NumberOfProjectionImages; ++noProj)
     geometry->AddProjection(600., 1200., noProj * 360. / NumberOfProjectionImages);
 
-  // Generate 3 phantoms, one per material
+  // Generate phantoms (water, iodine, gadolinium)
   using REIType = rtk::RayEllipsoidIntersectionImageFilter<OutputImageType, OutputImageType>;
-  REIType::Pointer rei;
-  rei = REIType::New();
-  for (unsigned int material = 0; material < 3; material++)
+  auto rei = REIType::New();
+
+  for (unsigned int material = 0; material < 3; ++material)
   {
-    REIType::VectorType semiprincipalaxis, center;
-    semiprincipalaxis.Fill(10.);
-    center.Fill(0.);
-    //    center[0] = (material-1) * 15;
-    //    center[2] = (material-1) * 15;
-    center[0] = 15;
-    center[2] = 15;
+    REIType::VectorType semiprincipalaxis = itk::MakeVector(10., 10., 10.);
+    REIType::VectorType center = itk::MakeVector(15., 0., 15.);
+
     rei->SetAngle(0.);
-    if (material == 2) // water
-      rei->SetDensity(1.);
-    else // iodine and gadolinium
-      rei->SetDensity(0.01);
+    rei->SetDensity(material == 2 ? 1. : 0.01);
     rei->SetCenter(center);
     rei->SetAxis(semiprincipalaxis);
 
-    // Compute analytical projections through them
     rei->SetInput(projectionsSource->GetOutput());
     rei->SetGeometry(geometry);
     TRY_AND_EXIT_ON_ITK_EXCEPTION(rei->Update());
 
-    // Merge these projections into the multi-material projections image
     itk::ImageRegionConstIterator<OutputImageType> inIt(rei->GetOutput(), rei->GetOutput()->GetLargestPossibleRegion());
     itk::ImageRegionIterator<DecomposedProjectionsType> outIt(decomposed, decomposed->GetLargestPossibleRegion());
     outIt.GoToBegin();
+
     while (!outIt.IsAtEnd())
     {
       itk::VariableLengthVector<PixelValueType> vector = outIt.Get();
@@ -162,16 +144,15 @@ main(int argc, char * argv[])
     }
   }
 
-  // Generate a set of zero-filled photon count projections
+  // Zero-filled photon count projections
   MeasuredProjectionsType::Pointer measuredProjections = MeasuredProjectionsType::New();
   measuredProjections->CopyInformation(decomposed);
   measuredProjections->SetVectorLength(6);
   measuredProjections->SetRegions(region);
   measuredProjections->Allocate();
 
-  // Generate the thresholds vector
-  itk::VariableLengthVector<unsigned int> thresholds;
-  thresholds.SetSize(7);
+  // Thresholds vector
+  itk::VariableLengthVector<unsigned int> thresholds(7);
   thresholds[0] = 25;
   thresholds[1] = 40;
   thresholds[2] = 55;
@@ -180,10 +161,10 @@ main(int argc, char * argv[])
   thresholds[5] = 100;
   thresholds[6] = 180;
 
-  // Apply the forward model to the multi-material projections
+  // Spectral forward model filter
   using SpectralForwardFilterType =
     rtk::SpectralForwardModelImageFilter<DecomposedProjectionsType, MeasuredProjectionsType, IncidentSpectrumImageType>;
-  SpectralForwardFilterType::Pointer forward = SpectralForwardFilterType::New();
+  auto forward = SpectralForwardFilterType::New();
   forward->SetInputDecomposedProjections(decomposed);
   forward->SetInputMeasuredProjections(measuredProjections);
   forward->SetInputIncidentSpectrum(incidentSpectrumReader->GetOutput());
@@ -191,26 +172,27 @@ main(int argc, char * argv[])
   forward->SetMaterialAttenuations(materialAttenuationsReader->GetOutput());
   forward->SetThresholds(thresholds);
   forward->SetIsSpectralCT(true);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(forward->Update())
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(forward->Update());
 
-  // Generate a set of decomposed projections as input for the simplex
+  // Initial decomposed projections for simplex filter
   DecomposedProjectionsType::Pointer initialDecomposedProjections = DecomposedProjectionsType::New();
   initialDecomposedProjections->CopyInformation(decomposed);
   initialDecomposedProjections->SetRegions(region);
   initialDecomposedProjections->SetVectorLength(3);
   initialDecomposedProjections->Allocate();
+
   DecomposedProjectionsType::PixelType initPixel;
   initPixel.SetSize(3);
   initPixel[0] = 0.1;
   initPixel[1] = 0.1;
-  initPixel[2] = 10;
+  initPixel[2] = 10.;
   initialDecomposedProjections->FillBuffer(initPixel);
 
-  // Create and set the simplex filter to perform the decomposition
+  // Simplex decomposition filter
   using SimplexFilterType = rtk::SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType,
                                                                                     MeasuredProjectionsType,
                                                                                     IncidentSpectrumImageType>;
-  SimplexFilterType::Pointer simplex = SimplexFilterType::New();
+  auto simplex = SimplexFilterType::New();
   simplex->SetInputDecomposedProjections(initialDecomposedProjections);
   simplex->SetInputMeasuredProjections(forward->GetOutput());
   simplex->SetInputIncidentSpectrum(incidentSpectrumReader->GetOutput());
@@ -221,39 +203,35 @@ main(int argc, char * argv[])
   forward->SetIsSpectralCT(true);
 
   std::cout << "\n\n****** Case 1: User-provided initial values ******" << std::endl;
-
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(simplex->Update())
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(simplex->Update());
   CheckVectorImageQuality<DecomposedProjectionsType>(simplex->GetOutput(), decomposed, 0.0001, 15, 2.0);
 
   std::cout << "\n\n****** Case 2: Heuristically-determined initial values ******" << std::endl;
-
   simplex->SetGuessInitialization(true);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(simplex->Update())
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(simplex->Update());
   CheckVectorImageQuality<DecomposedProjectionsType>(simplex->GetOutput(), decomposed, 0.0001, 15, 2.0);
 
   std::cout << "\n\n****** Case 3: Fixed-length vector image inputs ******" << std::endl;
 
-  // measuredProjections has been consumed by forward, which is InPlace. Reallocate it
+  // measuredProjections consumed by forward filter (in-place), reallocate
   measuredProjections->SetRegions(region);
   measuredProjections->Allocate();
 
-  typename CastDecomposedProjectionsFilterType::Pointer castDecomposedProjections =
-    CastDecomposedProjectionsFilterType::New();
-  typename CastMeasuredProjectionFilterType::Pointer castMeasuredProjections = CastMeasuredProjectionFilterType::New();
+  auto castDecomposedProjections = CastDecomposedProjectionsFilterType::New();
+  auto castMeasuredProjections = CastMeasuredProjectionFilterType::New();
   castDecomposedProjections->SetInput(decomposed);
   castMeasuredProjections->SetInput(measuredProjections);
+
   forward->SetInputDecomposedProjections(castDecomposedProjections->GetOutput());
   forward->SetInputMeasuredProjections(castMeasuredProjections->GetOutput());
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(forward->Update())
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(forward->Update());
 
-  typename CastDecomposedProjectionsFilterType::Pointer castDecomposedProjections2 =
-    CastDecomposedProjectionsFilterType::New();
-  typename CastMeasuredProjectionFilterType::Pointer castMeasuredProjections2 = CastMeasuredProjectionFilterType::New();
   castDecomposedProjections->SetInput(initialDecomposedProjections);
   castMeasuredProjections->SetInput(forward->GetOutput());
+
   simplex->SetInputDecomposedProjections(castDecomposedProjections->GetOutput());
   simplex->SetInputMeasuredProjections(castMeasuredProjections->GetOutput());
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(simplex->Update())
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(simplex->Update());
 
   CheckVectorImageQuality<DecomposedProjectionsType>(simplex->GetOutput(), decomposed, 0.0001, 15, 2.0);
 
@@ -262,12 +240,12 @@ main(int argc, char * argv[])
 
   using VectorImageType = itk::VectorImage<PixelValueType, Dimension - 1>;
   using VectorSpectrumReaderType = itk::ImageFileReader<VectorImageType>;
-  VectorSpectrumReaderType::Pointer vectorSpectrumReader = VectorSpectrumReaderType::New();
+  auto vectorSpectrumReader = VectorSpectrumReaderType::New();
   vectorSpectrumReader->SetFileName(argv[4]);
   vectorSpectrumReader->Update();
   forward->SetInputIncidentSpectrum(vectorSpectrumReader->GetOutput());
   simplex->SetInputIncidentSpectrum(vectorSpectrumReader->GetOutput());
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(simplex->Update())
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(simplex->Update());
   CheckVectorImageQuality<DecomposedProjectionsType>(simplex->GetOutput(), decomposed, 0.0001, 15, 2.0);
 #endif
 

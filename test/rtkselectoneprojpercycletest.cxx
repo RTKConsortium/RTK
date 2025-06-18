@@ -27,21 +27,12 @@ main(int, char **)
 
   // Constant image sources
   using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
-  ConstantImageSourceType::PointType   origin;
-  ConstantImageSourceType::SizeType    size;
-  ConstantImageSourceType::SpacingType spacing;
 
   ConstantImageSourceType::Pointer projectionsSource = ConstantImageSourceType::New();
   ConstantImageSourceType::Pointer projectionsSourceRef = ConstantImageSourceType::New();
-  origin[0] = -254.;
-  origin[1] = -254.;
-  origin[2] = -254.;
-  size[0] = 128;
-  size[1] = 128;
-  size[2] = NumberOfProjectionImages;
-  spacing[0] = 4.;
-  spacing[1] = 4.;
-  spacing[2] = 4.;
+  auto                             origin = itk::MakePoint(-254., -254., -254.);
+  auto                             size = itk::MakeSize(128, 128, NumberOfProjectionImages);
+  auto                             spacing = itk::MakeVector(4., 4., 4.);
   projectionsSource->SetOrigin(origin);
   projectionsSource->SetSpacing(spacing);
   projectionsSource->SetSize(size);

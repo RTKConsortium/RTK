@@ -13,29 +13,16 @@ main(int, char **)
   using PixelType = float;
   using ImageType = itk::CudaImage<PixelType, Dimension>;
 
-  ImageType::Pointer    image = ImageType::New();
-  ImageType::RegionType region;
-  ImageType::SizeType   size;
-  size[0] = 50;
-  size[1] = 50;
-  size[2] = 50;
-  region.SetSize(size);
-  image->SetRegions(region);
+  ImageType::Pointer image = ImageType::New();
+  image->SetRegions(itk::MakeSize(50, 50, 50));
   image->Allocate();
   image->FillBuffer(12.3);
 
   using CropImageFilter = rtk::CudaCropImageFilter;
   CropImageFilter::Pointer crop = CropImageFilter::New();
   crop->SetInput(image);
-
-  ImageType::SizeType upCropSize, lowCropSize;
-  for (unsigned int i = 0; i < ImageType::ImageDimension; i++)
-  {
-    lowCropSize[i] = 1;
-    upCropSize[i] = 10;
-  }
-  crop->SetUpperBoundaryCropSize(upCropSize);
-  crop->SetLowerBoundaryCropSize(lowCropSize);
+  crop->SetUpperBoundaryCropSize(itk::MakeSize(1, 1, 1));
+  crop->SetLowerBoundaryCropSize(itk::MakeSize(10, 10, 10));
 
   try
   {

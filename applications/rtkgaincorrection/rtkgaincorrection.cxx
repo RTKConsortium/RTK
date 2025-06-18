@@ -120,14 +120,9 @@ main(int argc, char * argv[])
               << currentBufferSize << std::endl;
 
     InputImageType::RegionType sliceRegion = reader->GetOutput()->GetLargestPossibleRegion();
-    InputImageType::SizeType   size = sliceRegion.GetSize();
-    size[2] = currentBufferSize;
-
-    InputImageType::IndexType start = sliceRegion.GetIndex();
-    start[2] = bufferIdx;
     InputImageType::RegionType desiredRegion;
-    desiredRegion.SetSize(size);
-    desiredRegion.SetIndex(start);
+    desiredRegion.SetSize(itk::MakeSize(sliceRegion.GetSize()[0], sliceRegion.GetSize()[1], currentBufferSize));
+    desiredRegion.SetIndex(itk::MakeIndex(sliceRegion.GetIndex()[0], sliceRegion.GetIndex()[1], bufferIdx));
 
     ExtractType::Pointer extract = ExtractType::New();
     extract->SetDirectionCollapseToIdentity();

@@ -38,15 +38,8 @@ main(int, char **)
 
   LCImageFilterType::Pointer lagcorr = LCImageFilterType::New();
 
-  ImageType::SizeType size;
-  size[0] = 650;
-  size[1] = 700;
-  size[2] = 1;
-
-  ImageType::IndexType start;
-  start[0] = 0;
-  start[1] = 0;
-  start[2] = 0;
+  auto size = itk::MakeSize(650, 700, 1);
+  auto start = itk::MakeIndex(0, 0, 0);
 
   ImageType::RegionType region;
   region.SetSize(size);

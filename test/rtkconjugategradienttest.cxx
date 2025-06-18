@@ -117,29 +117,15 @@ main(int, char **)
   using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
   ConstantImageSourceType::Pointer constantVolumeSource = ConstantImageSourceType::New();
 
-  // Image meta data
-  RandomImageSourceType::PointType   origin;
-  RandomImageSourceType::SizeType    size;
-  RandomImageSourceType::SpacingType spacing;
-
   // Volume metadata
-  origin[0] = -127.;
-  origin[1] = -127.;
-  origin[2] = -127.;
 #if FAST_TESTS_NO_CHECKS
-  size[0] = 2;
-  size[1] = 2;
-  size[2] = 2;
-  spacing[0] = 252.;
-  spacing[1] = 252.;
-  spacing[2] = 252.;
+  auto origin = itk::MakePoint(-127., -127., -127.);
+  auto spacing = itk::MakeVector(252., 252., 252.);
+  auto size = itk::MakeSize(2, 2, 2);
 #else
-  size[0] = 64;
-  size[1] = 64;
-  size[2] = 64;
-  spacing[0] = 4.;
-  spacing[1] = 4.;
-  spacing[2] = 4.;
+  auto origin = itk::MakePoint(-127., -127., -127.);
+  auto spacing = itk::MakeVector(4., 4., 4.);
+  auto size = itk::MakeSize(64, 64, 64);
 #endif
   randomVolumeSource->SetOrigin(origin);
   randomVolumeSource->SetSpacing(spacing);
@@ -148,6 +134,15 @@ main(int, char **)
   randomVolumeSource->SetMax(1.);
   randomVolumeSource->SetNumberOfWorkUnits(2); // With 1, it's deterministic
 
+#if FAST_TESTS_NO_CHECKS
+  origin = itk::MakePoint(-127., -127., -127.);
+  pacing = itk::MakeVector(252., 252., 252.);
+  size = itk::MakeSize(2, 2, 2);
+#else
+  origin = itk::MakePoint(-127., -127., -127.);
+  spacing = itk::MakeVector(4., 4., 4.);
+  size = itk::MakeSize(64, 64, 64);
+#endif
   constantVolumeSource->SetOrigin(origin);
   constantVolumeSource->SetSpacing(spacing);
   constantVolumeSource->SetSize(size);
