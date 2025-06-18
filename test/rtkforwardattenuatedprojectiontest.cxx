@@ -51,30 +51,17 @@ main(int, char **)
 
   // Constant image sources
   using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
-  ConstantImageSourceType::PointType   origin;
-  ConstantImageSourceType::SizeType    size;
-  ConstantImageSourceType::SpacingType spacing;
-  constexpr double                     att = 0.0154;
+  constexpr double att = 0.0154;
 
   // Create Joseph Forward Projector volume input.
   const ConstantImageSourceType::Pointer volInput = ConstantImageSourceType::New();
-  origin[0] = -126;
-  origin[1] = -126;
-  origin[2] = -126;
+  auto                                   origin = itk::MakePoint(-126., -126., -126.);
 #if FAST_TESTS_NO_CHECKS
-  size[0] = 2;
-  size[1] = 2;
-  size[2] = 2;
-  spacing[0] = 252.;
-  spacing[1] = 252.;
-  spacing[2] = 252.;
+  auto size = itk::MakeSize(2, 2, 2);
+  auto spacing = itk::MakeVector(252., 252., 252.);
 #else
-  size[0] = 64;
-  size[1] = 64;
-  size[2] = 64;
-  spacing[0] = 4.;
-  spacing[1] = 4.;
-  spacing[2] = 4.;
+  auto size = itk::MakeSize(64, 64, 64);
+  auto spacing = itk::MakeVector(4., 4., 4.);
 #endif
   volInput->SetOrigin(origin);
   volInput->SetSpacing(spacing);
@@ -91,12 +78,9 @@ main(int, char **)
   attenuationInput->SetConstant(0);
 
   using DEIFType = rtk::DrawEllipsoidImageFilter<OutputImageType, OutputImageType>;
-  DEIFType::Pointer    deif = DEIFType::New();
-  DEIFType::VectorType axis_vol, center_vol, center_att, axis_att;
-  axis_vol.Fill(50);
-  center_vol[0] = 0.;
-  center_vol[1] = 0.;
-  center_vol[2] = -30.;
+  DEIFType::Pointer deif = DEIFType::New();
+  auto              axis_vol = itk::MakeVector(50., 50., 50.);
+  auto              center_vol = itk::MakeVector(0., 0., -30.);
   deif->SetInput(volInput->GetOutput());
   deif->SetCenter(center_vol);
   deif->SetAxis(axis_vol);
@@ -106,11 +90,8 @@ main(int, char **)
   typename OutputImageType::Pointer attenuationMap, volumeSource;
   volumeSource = deif->GetOutput();
   volumeSource->DisconnectPipeline();
-
-  axis_att.Fill(90);
-  center_att.Fill(0.);
-  deif->SetCenter(center_att);
-  deif->SetAxis(axis_att);
+  deif->SetCenter(itk::MakeVector(0., 0., 0.));
+  deif->SetAxis(itk::MakeVector(90, 90, 90));
   deif->SetDensity(att);
   deif->Update();
   attenuationMap = deif->GetOutput();
@@ -181,8 +162,8 @@ main(int, char **)
     REIType::Pointer sphere_attenuation = REIType::New();
     sphere_attenuation->SetAngle(0);
     sphere_attenuation->SetDensity(1);
-    sphere_attenuation->SetCenter(center_att);
-    sphere_attenuation->SetAxis(axis_att);
+    sphere_attenuation->SetCenter(itk::MakeVector(0., 0., 0.));
+    sphere_attenuation->SetAxis(itk::MakeVector(90, 90, 90));
     sphere_attenuation->SetInput(projInput->GetOutput());
     REIType::Pointer sphere_emission = REIType::New();
     sphere_emission->SetAngle(0);

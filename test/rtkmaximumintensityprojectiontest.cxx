@@ -30,30 +30,14 @@ main(int, char **)
 
   // Constant image sources
   using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
-  ConstantImageSourceType::PointType   origin;
-  ConstantImageSourceType::SizeType    size;
-  ConstantImageSourceType::SizeType    sizeOutput;
-  ConstantImageSourceType::SpacingType spacing;
-  ConstantImageSourceType::SpacingType spacingOutput;
-
   // Create MIP Forward Projector volume input.
   const ConstantImageSourceType::Pointer volInput = ConstantImageSourceType::New();
-  origin[0] = 0;
-  origin[1] = 0;
-  origin[2] = 0;
-  size[0] = 64;
-  size[1] = 64;
-  size[2] = 64;
-  spacing[0] = 4.;
-  spacing[1] = 4.;
-  spacing[2] = 4.;
 
-  sizeOutput[0] = 200;
-  sizeOutput[1] = 200;
-  sizeOutput[2] = 200;
-  spacingOutput[0] = 1.;
-  spacingOutput[1] = 1.;
-  spacingOutput[2] = 1.;
+  auto origin = itk::MakePoint(0., 0., 0.);
+  auto size = itk::MakeSize(64, 64, 64);
+  auto spacing = itk::MakeVector(4., 4., 4.);
+  auto sizeOutput = itk::MakeSize(200, 200, 200);
+  auto spacingOutput = itk::MakeVector(1., 1., 1.);
 
   volInput->SetOrigin(origin);
   volInput->SetSpacing(spacing);

@@ -42,34 +42,20 @@ main(int, char **)
   constexpr unsigned int NumberOfProjectionImages = 60;
 #endif
 
-
   // Constant image sources
   using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
-  ConstantImageSourceType::PointType   origin;
-  ConstantImageSourceType::SizeType    size;
-  ConstantImageSourceType::SpacingType spacing;
-  constexpr double                     att = 0.0154;
+  constexpr double att = 0.0154;
 
   ConstantImageSourceType::Pointer tomographySource = ConstantImageSourceType::New();
   ConstantImageSourceType::Pointer volumeSource = ConstantImageSourceType::New();
   ConstantImageSourceType::Pointer attenuationInput = ConstantImageSourceType::New();
-  origin[0] = -67.;
-  origin[1] = -67.;
-  origin[2] = -67.;
+  auto                             origin = itk::MakePoint(-67., -67., -67.);
 #if FAST_TESTS_NO_CHECKS
-  size[0] = 2;
-  size[1] = 2;
-  size[2] = 2;
-  spacing[0] = 252.;
-  spacing[1] = 252.;
-  spacing[2] = 252.;
+  auto size = itk::MakeSize(2, 2, 2);
+  auto spacing = itk::MakeVector(252., 252., 252.);
 #else
-  size[0] = 34;
-  size[1] = 34;
-  size[2] = 34;
-  spacing[0] = 4.;
-  spacing[1] = 4.;
-  spacing[2] = 4.;
+  auto size = itk::MakeSize(34, 34, 34);
+  auto spacing = itk::MakeVector(4., 4., 4.);
 #endif
   tomographySource->SetOrigin(origin);
   tomographySource->SetSpacing(spacing);
@@ -85,23 +71,13 @@ main(int, char **)
   attenuationInput->SetConstant(att);
 
   ConstantImageSourceType::Pointer projectionsSource = ConstantImageSourceType::New();
-  origin[0] = -135.;
-  origin[1] = -135.;
-  origin[2] = -135.;
+  origin = itk::MakePoint(-135., -135., -135.);
 #if FAST_TESTS_NO_CHECKS
-  size[0] = 2;
-  size[1] = 2;
-  size[2] = NumberOfProjectionImages;
-  spacing[0] = 504.;
-  spacing[1] = 504.;
-  spacing[2] = 504.;
+  size = itk::MakeSize(2, 2, NumberOfProjectionImages);
+  spacing = itk::MakeVector(504., 504., 504.);
 #else
-  size[0] = 34;
-  size[1] = 34;
-  size[2] = NumberOfProjectionImages;
-  spacing[0] = 8.;
-  spacing[1] = 8.;
-  spacing[2] = 8.;
+  size = itk::MakeSize(34, 34, NumberOfProjectionImages);
+  spacing = itk::MakeVector(8., 8., 8.);
 #endif
   projectionsSource->SetOrigin(origin);
   projectionsSource->SetSpacing(spacing);
@@ -118,10 +94,9 @@ main(int, char **)
   using REIType = rtk::RayEllipsoidIntersectionImageFilter<OutputImageType, OutputImageType>;
   REIType::Pointer rei;
 
+  auto semiprincipalaxis = itk::MakeVector(60., 60., 60.);
+  auto center = itk::MakeVector(0., 0., 0.);
   rei = REIType::New();
-  REIType::VectorType semiprincipalaxis, center;
-  semiprincipalaxis.Fill(60.);
-  center.Fill(0.);
   rei->SetAngle(0.);
   rei->SetDensity(1.);
   rei->SetCenter(center);

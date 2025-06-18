@@ -75,28 +75,15 @@ main(int argc, char * argv[])
 
   // Constant image source for the analytical projections calculation
   using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
-  ConstantImageSourceType::PointType   origin;
-  ConstantImageSourceType::SizeType    size;
-  ConstantImageSourceType::SpacingType spacing;
 
   ConstantImageSourceType::Pointer projectionsSource = ConstantImageSourceType::New();
-  origin[0] = -255.;
-  origin[1] = -0.5;
-  origin[2] = -255.;
+  auto                             origin = itk::MakePoint(-255., -0.5, -255.);
 #if FAST_TESTS_NO_CHECKS
-  size[0] = 2;
-  size[1] = 1;
-  size[2] = NumberOfProjectionImages;
-  spacing[0] = 504.;
-  spacing[1] = 504.;
-  spacing[2] = 504.;
+  auto spacing = itk::MakeVector(504., 504., 504.);
+  auto size = itk::MakeSize(2, 1, NumberOfProjectionImages);
 #else
-  size[0] = 64;
-  size[1] = 1;
-  size[2] = NumberOfProjectionImages;
-  spacing[0] = 8.;
-  spacing[1] = 1.;
-  spacing[2] = 1.;
+  auto spacing = itk::MakeVector(8., 1., 1.);
+  auto size = itk::MakeSize(64, 1, NumberOfProjectionImages);
 #endif
   projectionsSource->SetOrigin(origin);
   projectionsSource->SetSpacing(spacing);
@@ -128,13 +115,8 @@ main(int argc, char * argv[])
   rei = REIType::New();
   for (unsigned int material = 0; material < 3; material++)
   {
-    REIType::VectorType semiprincipalaxis, center;
-    semiprincipalaxis.Fill(10.);
-    center.Fill(0.);
-    //    center[0] = (material-1) * 15;
-    //    center[2] = (material-1) * 15;
-    center[0] = 15;
-    center[2] = 15;
+    auto semiprincipalaxis = itk::MakeVector(10., 10., 10.);
+    auto center = itk::MakeVector(15., 0., 15.);
     rei->SetAngle(0.);
     if (material == 2) // water
       rei->SetDensity(1.);

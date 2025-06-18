@@ -57,29 +57,14 @@ main(int, char **)
   ConstantImageSourceType::Pointer constantProjectionsSource = ConstantImageSourceType::New();
   ConstantImageSourceType::Pointer constantAttenuationSource = ConstantImageSourceType::New();
 
-  // Image meta data
-  RandomImageSourceType::PointType   origin;
-  RandomImageSourceType::SizeType    size;
-  RandomImageSourceType::SpacingType spacing;
-
   // Volume metadata
-  origin[0] = -128.;
-  origin[1] = -128.;
-  origin[2] = -128.;
+  auto origin = itk::MakePoint(-128., -128., -128.);
 #if FAST_TESTS_NO_CHECKS
-  size[0] = 2;
-  size[1] = 2;
-  size[2] = 2;
-  spacing[0] = 252.;
-  spacing[1] = 252.;
-  spacing[2] = 252.;
+  auto spacing = itk::MakeVector(252., 252., 252.);
+  auto size = itk::MakeSize(2, 2, 2);
 #else
-  size[0] = 65;
-  size[1] = 65;
-  size[2] = 65;
-  spacing[0] = 4.;
-  spacing[1] = 4.;
-  spacing[2] = 4.;
+  auto spacing = itk::MakeVector(4., 4., 4.);
+  auto size = itk::MakeSize(65, 65, 65);
 #endif
   randomVolumeSource->SetOrigin(origin);
   randomVolumeSource->SetSpacing(spacing);
@@ -99,23 +84,13 @@ main(int, char **)
   constantAttenuationSource->SetConstant(0.0154);
 
   // Projections metadata
-  origin[0] = -128.;
-  origin[1] = -128.;
-  origin[2] = -128.;
+  origin = itk::MakePoint(-128., -128., -128.);
 #if FAST_TESTS_NO_CHECKS
-  size[0] = 2;
-  size[1] = 2;
-  size[2] = NumberOfProjectionImages;
-  spacing[0] = 504.;
-  spacing[1] = 504.;
-  spacing[2] = 504.;
+  spacing = itk::MakeVector(504., 504., 504.);
+  size = itk::MakeSize(2, 2, NumberOfProjectionImages);
 #else
-  size[0] = 65;
-  size[1] = 65;
-  size[2] = NumberOfProjectionImages;
-  spacing[0] = 4.;
-  spacing[1] = 4.;
-  spacing[2] = 1;
+  spacing = itk::MakeVector(4., 4., 1.);
+  size = itk::MakeSize(65, 65, NumberOfProjectionImages);
 #endif
   randomProjectionsSource->SetOrigin(origin);
   randomProjectionsSource->SetSpacing(spacing);

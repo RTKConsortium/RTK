@@ -32,19 +32,12 @@ main(int, char **)
   std::cout << "\n\n****** Case 1: 3D image to 2D vector image, and back ******" << std::endl;
 
   // Initialize the first input image
-  HigherDimensionImageType::Pointer     higherDimensionInput = HigherDimensionImageType::New();
-  HigherDimensionImageType::SizeType    hsize;
-  HigherDimensionImageType::IndexType   hindex;
-  HigherDimensionImageType::SpacingType hspacing;
-  HigherDimensionImageType::RegionType  hregion;
+  HigherDimensionImageType::Pointer    higherDimensionInput = HigherDimensionImageType::New();
+  HigherDimensionImageType::RegionType hregion;
 
-  hindex.Fill(0);
-  hspacing.Fill(1);
-  hsize[0] = 8;
-  hsize[1] = 8;
-  hsize[2] = 8;
+  auto hspacing = itk::MakeVector(1., 1., 1.);
+  auto hsize = itk::MakeSize(8, 8, 8);
   hregion.SetSize(hsize);
-  hregion.SetIndex(hindex);
   higherDimensionInput->SetSpacing(hspacing);
   higherDimensionInput->SetRegions(hregion);
   higherDimensionInput->Allocate();
@@ -55,7 +48,6 @@ main(int, char **)
   slice.SetSize(2, 1);
   for (unsigned int s = 0; s < hsize[2]; s++)
   {
-    slice.SetIndex(hindex);
     slice.SetIndex(2, s);
     itk::ImageRegionIterator<HigherDimensionImageType> sliceIt(higherDimensionInput, slice);
     while (!sliceIt.IsAtEnd())
@@ -123,18 +115,12 @@ main(int, char **)
   std::cout << "\n\n****** Case 2: 2D image to 2D vector image, and back ******" << std::endl;
 
   // Initialize the first input image
-  ImageType::Pointer     input = ImageType::New();
-  ImageType::SizeType    size;
-  ImageType::IndexType   index;
-  ImageType::SpacingType spacing;
-  ImageType::RegionType  region;
+  ImageType::Pointer    input = ImageType::New();
+  ImageType::RegionType region;
 
-  index.Fill(0);
-  spacing.Fill(1);
-  size[0] = 8;
-  size[1] = 64;
+  auto spacing = itk::MakeVector(1., 1.);
+  auto size = itk::MakeSize(8, 64);
   region.SetSize(size);
-  region.SetIndex(index);
   input->SetSpacing(spacing);
   input->SetRegions(region);
   input->Allocate();
@@ -145,7 +131,6 @@ main(int, char **)
   block.SetSize(1, 8);
   for (unsigned int b = 0; b < 8; b++)
   {
-    block.SetIndex(index);
     block.SetIndex(1, 8 * b);
     itk::ImageRegionIterator<ImageType> blockIt(input, block);
     while (!blockIt.IsAtEnd())

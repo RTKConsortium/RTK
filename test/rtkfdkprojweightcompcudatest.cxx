@@ -29,24 +29,10 @@ main(int, char **)
 
   // Constant image sources
   using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
-  ConstantImageSourceType::PointType   origin;
-  ConstantImageSourceType::SizeType    size;
-  ConstantImageSourceType::SpacingType spacing;
-
   ConstantImageSourceType::Pointer projSource = ConstantImageSourceType::New();
-  origin[0] = -127.;
-  origin[1] = -3.;
-  origin[2] = 0.;
-  size[0] = 128;
-  size[1] = 4;
-  size[2] = 4;
-  spacing[0] = 2.;
-  spacing[1] = 2.;
-  spacing[2] = 2.;
-
-  projSource->SetOrigin(origin);
-  projSource->SetSpacing(spacing);
-  projSource->SetSize(size);
+  projSource->SetOrigin(itk::MakePoint(-127., -3., 0.));
+  projSource->SetSpacing(itk::MakeVector(2., 2., 2.));
+  projSource->SetSize(itk::MakeSize(128, 4, 4));
 
   // Geometry
   using GeometryType = rtk::ThreeDCircularProjectionGeometry;

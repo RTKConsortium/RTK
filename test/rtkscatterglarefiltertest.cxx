@@ -52,24 +52,10 @@ constexpr float spikeValue = 12.341;
 ImageType::Pointer
 createInputImage(const std::vector<float> & coef)
 {
-  ImageType::SizeType size;
-  size[0] = 650;
-  size[1] = 700;
-  size[2] = 1;
-
-  ImageType::SpacingType spacing;
-  spacing[0] = 0.296;
-  spacing[1] = 0.296;
-  spacing[2] = 1;
-
-  ImageType::IndexType start;
-  start[0] = 0;
-  start[1] = 0;
-  start[2] = 0;
-
+  auto                  spacing = itk::MakeVector(0.296, 0.296, 1.);
+  auto                  size = itk::MakeSize(650, 700, 1);
   ImageType::RegionType region;
   region.SetSize(size);
-  region.SetIndex(start);
 
   ImageType::Pointer inputI = ImageType::New();
   inputI->SetRegions(region);

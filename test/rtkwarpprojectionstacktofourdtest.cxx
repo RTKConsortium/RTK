@@ -53,33 +53,16 @@ main(int, char **)
 
   // Constant image sources
   using ConstantImageSourceType = rtk::ConstantImageSource<VolumeType>;
-  ConstantImageSourceType::PointType   origin;
-  ConstantImageSourceType::SizeType    size;
-  ConstantImageSourceType::SpacingType spacing;
-
   using FourDSourceType = rtk::ConstantImageSource<VolumeSeriesType>;
-  FourDSourceType::PointType   fourDOrigin;
-  FourDSourceType::SizeType    fourDSize;
-  FourDSourceType::SpacingType fourDSpacing;
 
   ConstantImageSourceType::Pointer tomographySource = ConstantImageSourceType::New();
-  origin[0] = -63.;
-  origin[1] = -31.;
-  origin[2] = -63.;
+  auto                             origin = itk::MakePoint(-63., -31., -63.);
 #if FAST_TESTS_NO_CHECKS
-  size[0] = 8;
-  size[1] = 8;
-  size[2] = 8;
-  spacing[0] = 16.;
-  spacing[1] = 8.;
-  spacing[2] = 16.;
+  auto size = itk::MakeSize(8, 8, 8);
+  auto spacing = itk::MakeVector(16., 8., 16.);
 #else
-  size[0] = 64;
-  size[1] = 64;
-  size[2] = 64;
-  spacing[0] = 2.;
-  spacing[1] = 1.;
-  spacing[2] = 2.;
+  auto size = itk::MakeSize(64, 64, 64);
+  auto spacing = itk::MakeVector(2., 1., 2.);
 #endif
   tomographySource->SetOrigin(origin);
   tomographySource->SetSpacing(spacing);
@@ -87,28 +70,13 @@ main(int, char **)
   tomographySource->SetConstant(0.);
 
   FourDSourceType::Pointer fourdSource = FourDSourceType::New();
-  fourDOrigin[0] = -63.;
-  fourDOrigin[1] = -31.5;
-  fourDOrigin[2] = -63.;
-  fourDOrigin[3] = 0;
+  auto                     fourDOrigin = itk::MakePoint(-63., -31.5, -63., 0.);
 #if FAST_TESTS_NO_CHECKS
-  fourDSize[0] = 8;
-  fourDSize[1] = 8;
-  fourDSize[2] = 8;
-  fourDSize[3] = 2;
-  fourDSpacing[0] = 16.;
-  fourDSpacing[1] = 8.;
-  fourDSpacing[2] = 16.;
-  fourDSpacing[3] = 1.;
+  auto fourDSize = itk::MakeSize(8, 8, 8, 2);
+  auto fourDSpacing = itk::MakeVector(16., 8., 16., 1.);
 #else
-  fourDSize[0] = 64;
-  fourDSize[1] = 64;
-  fourDSize[2] = 64;
-  fourDSize[3] = 8;
-  fourDSpacing[0] = 2.;
-  fourDSpacing[1] = 1.;
-  fourDSpacing[2] = 2.;
-  fourDSpacing[3] = 1.;
+  auto fourDSize = itk::MakeSize(64, 64, 64, 8);
+  auto fourDSpacing = itk::MakeVector(2., 1., 2., 1.);
 #endif
   fourdSource->SetOrigin(fourDOrigin);
   fourdSource->SetSpacing(fourDSpacing);
@@ -116,23 +84,13 @@ main(int, char **)
   fourdSource->SetConstant(0.);
 
   ConstantImageSourceType::Pointer projectionsSource = ConstantImageSourceType::New();
-  origin[0] = -254.;
-  origin[1] = -254.;
-  origin[2] = -254.;
+  origin = itk::MakePoint(-254., -254., -254.);
 #if FAST_TESTS_NO_CHECKS
-  size[0] = 32;
-  size[1] = 32;
-  size[2] = NumberOfProjectionImages;
-  spacing[0] = 32.;
-  spacing[1] = 32.;
-  spacing[2] = 32.;
+  size = itk::MakeSize(32, 32, NumberOfProjectionImages);
+  spacing = itk::MakeVector(32., 32., 32.);
 #else
-  size[0] = 128;
-  size[1] = 128;
-  size[2] = NumberOfProjectionImages;
-  spacing[0] = 4.;
-  spacing[1] = 4.;
-  spacing[2] = 1.;
+  size = itk::MakeSize(128, 128, NumberOfProjectionImages);
+  spacing = itk::MakeVector(4., 4., 1.);
 #endif
   projectionsSource->SetOrigin(origin);
   projectionsSource->SetSpacing(spacing);
@@ -155,10 +113,7 @@ main(int, char **)
     // Projections
     using REIType = rtk::RayEllipsoidIntersectionImageFilter<VolumeType, ProjectionStackType>;
     using PasteImageFilterType = itk::PasteImageFilter<ProjectionStackType, ProjectionStackType, ProjectionStackType>;
-    ProjectionStackType::IndexType destinationIndex;
-    destinationIndex[0] = 0;
-    destinationIndex[1] = 0;
-    destinationIndex[2] = 0;
+    auto destinationIndex = itk::MakeIndex(0, 0, 0);
 
     PasteImageFilterType::Pointer pasteFilter = PasteImageFilterType::New();
     pasteFilter->SetDestinationImage(projectionsSource->GetOutput());
@@ -184,11 +139,9 @@ main(int, char **)
       oneProjGeometry->AddProjection(600., 1200., noProj * 360. / NumberOfProjectionImages, 0, 0, 0, 0, 20, 15);
 
       // Ellipse 1
-      REIType::Pointer    e1 = REIType::New();
-      REIType::VectorType semiprincipalaxis, center;
-      semiprincipalaxis.Fill(60.);
-      semiprincipalaxis[1] = 30;
-      center.Fill(0.);
+      REIType::Pointer e1 = REIType::New();
+      auto             semiprincipalaxis = itk::MakeVector(60., 30., 60.);
+      auto             center = itk::MakeVector(0., 0., 0.);
       e1->SetInput(oneProjectionSource->GetOutput());
       e1->SetGeometry(oneProjGeometry);
       e1->SetDensity(1.);
@@ -202,8 +155,6 @@ main(int, char **)
       REIType::Pointer e2 = REIType::New();
       semiprincipalaxis.Fill(8.);
       center[0] = 4 * (itk::Math::abs((4 + noProj) % 8 - 4.) - 2.);
-      center[1] = 0.;
-      center[2] = 0.;
       e2->SetInput(e1->GetOutput());
       e2->SetGeometry(oneProjGeometry);
       e2->SetDensity(-1.);
@@ -214,10 +165,7 @@ main(int, char **)
 
       // Ellipse 2 without motion
       REIType::Pointer e2static = REIType::New();
-      semiprincipalaxis.Fill(8.);
       center[0] = 0;
-      center[1] = 0.;
-      center[2] = 0.;
       e2static->SetInput(e1->GetOutput());
       e2static->SetGeometry(oneProjGeometry);
       e2static->SetDensity(-1.);
@@ -260,30 +208,11 @@ main(int, char **)
     DVFSequenceImageType::Pointer deformationField = DVFSequenceImageType::New();
     DVFSequenceImageType::Pointer inverseDeformationField = DVFSequenceImageType::New();
 
-    DVFSequenceImageType::IndexType startMotion;
-    startMotion[0] = 0; // first index on X
-    startMotion[1] = 0; // first index on Y
-    startMotion[2] = 0; // first index on Z
-    startMotion[3] = 0; // first index on t
-    DVFSequenceImageType::SizeType sizeMotion;
-    sizeMotion[0] = fourDSize[0];
-    sizeMotion[1] = fourDSize[1];
-    sizeMotion[2] = fourDSize[2];
-    sizeMotion[3] = 2;
-    DVFSequenceImageType::PointType originMotion;
-    originMotion[0] = -63.;
-    originMotion[1] = -31.;
-    originMotion[2] = -63.;
-    originMotion[3] = 0.;
+    auto sizeMotion = itk::MakeSize(fourDSize[0], fourDSize[1], fourDSize[2], 2);
+    auto originMotion = itk::MakePoint(-63., -31., -63., 0.);
+    auto spacingMotion = itk::MakeVector(fourDSpacing[0], fourDSpacing[1], fourDSpacing[2], fourDSpacing[3]);
     DVFSequenceImageType::RegionType regionMotion;
     regionMotion.SetSize(sizeMotion);
-    regionMotion.SetIndex(startMotion);
-
-    DVFSequenceImageType::SpacingType spacingMotion;
-    spacingMotion[0] = fourDSpacing[0];
-    spacingMotion[1] = fourDSpacing[1];
-    spacingMotion[2] = fourDSpacing[2];
-    spacingMotion[3] = fourDSpacing[3];
 
     deformationField->SetRegions(regionMotion);
     deformationField->SetOrigin(originMotion);

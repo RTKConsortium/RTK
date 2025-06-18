@@ -38,69 +38,25 @@ main(int, char **)
   using DVFImageType = itk::Image<OutputPixelType, 3>;
 #endif
 
-  DVFSequenceImageType::PointType   fourDOrigin;
-  DVFSequenceImageType::SizeType    fourDSize;
-  DVFSequenceImageType::SpacingType fourDSpacing;
-
-  fourDOrigin[0] = -63.;
-  fourDOrigin[1] = -31.;
-  fourDOrigin[2] = -63.;
-  fourDOrigin[3] = 0;
+  auto origin = itk::MakePoint(-63., -31., -63., 0.);
 #if FAST_TESTS_NO_CHECKS
-  fourDSize[0] = 8;
-  fourDSize[1] = 8;
-  fourDSize[2] = 8;
-  fourDSize[3] = 2;
-  fourDSpacing[0] = 16.;
-  fourDSpacing[1] = 8.;
-  fourDSpacing[2] = 16.;
-  fourDSpacing[3] = 1.;
+  auto size = itk::MakeSize(8, 8, 8, 2);
+  auto spacing = itk::MakeVector(16., 8., 16., 1.);
 #else
-  fourDSize[0] = 32;
-  fourDSize[1] = 16;
-  fourDSize[2] = 32;
-  fourDSize[3] = 8;
-  fourDSpacing[0] = 4.;
-  fourDSpacing[1] = 4.;
-  fourDSpacing[2] = 4.;
-  fourDSpacing[3] = 1.;
+  auto size = itk::MakeSize(32, 16, 32, 8);
+  auto spacing = itk::MakeVector(4., 4., 4., 1.);
 #endif
 
-  // Create a vector field and its (very rough) inverse
-  using IteratorType = itk::ImageRegionIteratorWithIndex<DVFSequenceImageType>;
+  DVFSequenceImageType::RegionType regionMotion;
+  regionMotion.SetSize(size);
 
   DVFSequenceImageType::Pointer deformationField = DVFSequenceImageType::New();
-
-  DVFSequenceImageType::IndexType startMotion;
-  startMotion[0] = 0; // first index on X
-  startMotion[1] = 0; // first index on Y
-  startMotion[2] = 0; // first index on Z
-  startMotion[3] = 0; // first index on t
-  DVFSequenceImageType::SizeType sizeMotion;
-  sizeMotion[0] = fourDSize[0];
-  sizeMotion[1] = fourDSize[1];
-  sizeMotion[2] = fourDSize[2];
-  sizeMotion[3] = 2;
-  DVFSequenceImageType::PointType originMotion;
-  originMotion[0] = -63.;
-  originMotion[1] = -31.;
-  originMotion[2] = -63.;
-  originMotion[3] = 0.;
-  DVFSequenceImageType::RegionType regionMotion;
-  regionMotion.SetSize(sizeMotion);
-  regionMotion.SetIndex(startMotion);
-
-  DVFSequenceImageType::SpacingType spacingMotion;
-  spacingMotion[0] = fourDSpacing[0];
-  spacingMotion[1] = fourDSpacing[1];
-  spacingMotion[2] = fourDSpacing[2];
-  spacingMotion[3] = fourDSpacing[3];
-
   deformationField->SetRegions(regionMotion);
-  deformationField->SetOrigin(originMotion);
-  deformationField->SetSpacing(spacingMotion);
+  deformationField->SetOrigin(origin);
+  deformationField->SetSpacing(spacing);
   deformationField->Allocate();
 
+  using IteratorType = itk::ImageRegionIteratorWithIndex<DVFSequenceImageType>;
   // Vector Field initilization
   DVFImageType::PixelType vec;
   IteratorType            dvfIt(deformationField, deformationField->GetLargestPossibleRegion());
@@ -108,9 +64,9 @@ main(int, char **)
   DVFSequenceImageType::OffsetType DVFCenter;
   DVFSequenceImageType::IndexType  toCenter;
   DVFCenter.Fill(0);
-  DVFCenter[0] = sizeMotion[0] / 2;
-  DVFCenter[1] = sizeMotion[1] / 2;
-  DVFCenter[2] = sizeMotion[2] / 2;
+  DVFCenter[0] = size[0] / 2;
+  DVFCenter[1] = size[1] / 2;
+  DVFCenter[2] = size[2] / 2;
   while (!dvfIt.IsAtEnd())
   {
     vec.Fill(0.);

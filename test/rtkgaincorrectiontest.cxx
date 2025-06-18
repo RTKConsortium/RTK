@@ -55,20 +55,11 @@ constexpr int sizeI = 100;
 InputImageType::Pointer
 createDarkImage()
 {
-  InputImageType::SizeType size;
-  size[0] = sizeI;
-  size[1] = sizeI;
-  size[2] = 1;
-
-  InputImageType::SpacingType spacing;
-  spacing.Fill(1.f);
-
-  InputImageType::IndexType start;
-  start.Fill(0);
+  auto size = itk::MakeSize(sizeI, sizeI, 1);
+  auto spacing = itk::MakeVector(1.f, 1.f, 1.f);
 
   InputImageType::RegionType region;
   region.SetSize(size);
-  region.SetIndex(start);
 
   InputImageType::Pointer darkImage = InputImageType::New();
   darkImage->SetRegions(region);
@@ -97,20 +88,11 @@ createDarkImage()
 OutputImageType::Pointer
 createGainImage()
 {
-  OutputImageType::SizeType size;
-  size[0] = sizeI;
-  size[1] = sizeI;
-  size[2] = modelOrder;
-
-  OutputImageType::SpacingType spacing;
-  spacing.Fill(1.f);
-
-  OutputImageType::IndexType start;
-  start.Fill(0);
+  auto size = itk::MakeSize(sizeI, sizeI, modelOrder);
+  auto spacing = itk::MakeVector(1.f, 1.f, 1.f);
 
   OutputImageType::RegionType region;
   region.SetSize(size);
-  region.SetIndex(start);
 
   OutputImageType::Pointer gainImage = OutputImageType::New();
   gainImage->SetRegions(region);
@@ -141,20 +123,11 @@ createGainImage()
 InputImageType::Pointer
 createInputImage()
 {
-  InputImageType::SizeType size;
-  size[0] = sizeI;
-  size[1] = sizeI;
-  size[2] = 1;
-
-  InputImageType::SpacingType spacing;
-  spacing.Fill(1.f);
-
-  InputImageType::IndexType start;
-  start.Fill(0);
+  auto size = itk::MakeSize(sizeI, sizeI, 1);
+  auto spacing = itk::MakeVector(1.f, 1.f, 1.f);
 
   InputImageType::RegionType region;
   region.SetSize(size);
-  region.SetIndex(start);
 
   InputImageType::Pointer inputImage = InputImageType::New();
   inputImage->SetRegions(region);
@@ -171,20 +144,11 @@ generateExpectedOutput(InputImageType::Pointer  inputImage,
                        InputImageType::Pointer  darkImage,
                        OutputImageType::Pointer gainImage)
 {
-  OutputImageType::SizeType size;
-  size[0] = sizeI;
-  size[1] = sizeI;
-  size[2] = 1;
-
-  OutputImageType::SpacingType spacing;
-  spacing.Fill(1.f);
-
-  OutputImageType::IndexType start;
-  start.Fill(0);
+  auto size = itk::MakeSize(sizeI, sizeI, 1);
+  auto spacing = itk::MakeVector(1.f, 1.f, 1.f);
 
   OutputImageType::RegionType region;
   region.SetSize(size);
-  region.SetIndex(start);
 
   OutputImageType::Pointer expectedOutput = OutputImageType::New();
   expectedOutput->SetRegions(region);

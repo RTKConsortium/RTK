@@ -46,53 +46,28 @@ main(int, char **)
 
   // Constant image sources
   using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
-  ConstantImageSourceType::PointType   origin;
-  ConstantImageSourceType::SizeType    size;
-  ConstantImageSourceType::SpacingType spacing;
-
-  ConstantImageSourceType::Pointer tomographySource = ConstantImageSourceType::New();
-  origin[0] = -127.;
-  origin[1] = -127.;
-  origin[2] = -127.;
+  auto origin = itk::MakePoint(-127., -127., -127.);
 #if FAST_TESTS_NO_CHECKS
-  size[0] = 32;
-  size[1] = 32;
-  size[2] = 32;
-  spacing[0] = 8.;
-  spacing[1] = 8.;
-  spacing[2] = 8.;
+  auto size = itk::MakeSize(32, 32, 32) auto spacing = itk::MakeVector(8., 8., 8.);
 #else
-  size[0] = 128;
-  size[1] = 128;
-  size[2] = 128;
-  spacing[0] = 2.;
-  spacing[1] = 2.;
-  spacing[2] = 2.;
+  auto size = itk::MakeSize(128, 128, 128);
+  auto spacing = itk::MakeVector(2., 2., 2.);
 #endif
+  ConstantImageSourceType::Pointer tomographySource = ConstantImageSourceType::New();
   tomographySource->SetOrigin(origin);
   tomographySource->SetSpacing(spacing);
   tomographySource->SetSize(size);
   tomographySource->SetConstant(0.);
 
-  ConstantImageSourceType::Pointer projectionsSource = ConstantImageSourceType::New();
-  origin[0] = -254.;
-  origin[1] = -254.;
-  origin[2] = -254.;
+  origin = itk::MakePoint(-254., -254., -254.);
 #if FAST_TESTS_NO_CHECKS
-  size[0] = 32;
-  size[1] = 32;
-  size[2] = NumberOfProjectionImages;
-  spacing[0] = 32.;
-  spacing[1] = 32.;
-  spacing[2] = 32.;
+  size = itk::MakeSize(32, 32, NumberOfProjectionImages);
+  spacing = itk::MakeVector(32., 32., 32.);
 #else
-  size[0] = 128;
-  size[1] = 128;
-  size[2] = NumberOfProjectionImages;
-  spacing[0] = 4.;
-  spacing[1] = 4.;
-  spacing[2] = 4.;
+  size = itk::MakeSize(128, 128, NumberOfProjectionImages);
+  spacing = itk::MakeVector(4., 4., 4.);
 #endif
+  ConstantImageSourceType::Pointer projectionsSource = ConstantImageSourceType::New();
   projectionsSource->SetOrigin(origin);
   projectionsSource->SetSpacing(spacing);
   projectionsSource->SetSize(size);
@@ -158,10 +133,7 @@ main(int, char **)
   direction[2][1] = 0;
   direction[2][2] = 1;
   tomographySource->SetDirection(direction);
-  origin[0] = -127.;
-  origin[1] = 127.;
-  origin[2] = -127.;
-  tomographySource->SetOrigin(origin);
+  tomographySource->SetOrigin(itk::MakePoint(-127., 127., -127.));
   fov->GetOutput()->ResetPipeline();
   TRY_AND_EXIT_ON_ITK_EXCEPTION(fov->Update());
   TRY_AND_EXIT_ON_ITK_EXCEPTION(dsl->Update())
@@ -181,10 +153,7 @@ main(int, char **)
   direction[2][1] = 0;
   direction[2][2] = 1;
   tomographySource->SetDirection(direction);
-  origin[0] = -127.;
-  origin[1] = -127.;
-  origin[2] = -127.;
-  tomographySource->SetOrigin(origin);
+  tomographySource->SetOrigin(itk::MakePoint(-127., -127., -127.));
   TRY_AND_EXIT_ON_ITK_EXCEPTION(dsl->Update())
   TRY_AND_EXIT_ON_ITK_EXCEPTION(fov->Update());
 
@@ -209,14 +178,8 @@ main(int, char **)
   std::cout << "Test PASSED! " << std::endl;
 
   std::cout << "\n\n****** Case 5: small ROI ******" << std::endl;
-  origin[0] = -5.;
-  origin[1] = -13.;
-  origin[2] = -20.;
-  size[0] = 64;
-  size[1] = 64;
-  size[2] = 64;
-  tomographySource->SetOrigin(origin);
-  tomographySource->SetSize(size);
+  tomographySource->SetOrigin(itk::MakePoint(-5., -13., -20.));
+  tomographySource->SetSize(itk::MakeSize(64, 64, 64));
   TRY_AND_EXIT_ON_ITK_EXCEPTION(fov->UpdateLargestPossibleRegion());
   TRY_AND_EXIT_ON_ITK_EXCEPTION(dsl->UpdateLargestPossibleRegion())
   CheckImageQuality<OutputImageType>(fov->GetOutput(), dsl->GetOutput(), 0.03, 26, 2.0);

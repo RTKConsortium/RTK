@@ -46,29 +46,15 @@ main(int, char **)
 
   // Constant image sources
   using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
-  ConstantImageSourceType::PointType   origin;
-  ConstantImageSourceType::SizeType    size;
-  ConstantImageSourceType::SpacingType spacing;
-
-  ConstantImageSourceType::Pointer tomographySource = ConstantImageSourceType::New();
-  origin[0] = -127.;
-  origin[1] = -127.;
-  origin[2] = -127.;
+  auto origin = itk::MakePoint(-127., -127., -127.);
 #if FAST_TESTS_NO_CHECKS
-  size[0] = 32;
-  size[1] = 32;
-  size[2] = 32;
-  spacing[0] = 8.;
-  spacing[1] = 8.;
-  spacing[2] = 8.;
+  auto size = itk::MakeSize(32, 32, 32);
+  auto spacing = itk::MakeVector(8., 8., 8.);
 #else
-  size[0] = 128;
-  size[1] = 128;
-  size[2] = 128;
-  spacing[0] = 2.;
-  spacing[1] = 2.;
-  spacing[2] = 2.;
+  auto size = itk::MakeSize(128, 128, 128);
+  auto spacing = itk::MakeVector(2., 2., 2.);
 #endif
+  ConstantImageSourceType::Pointer tomographySource = ConstantImageSourceType::New();
   tomographySource->SetOrigin(origin);
   tomographySource->SetSpacing(spacing);
   tomographySource->SetSize(size);

@@ -41,28 +41,14 @@ main(int argc, char * argv[])
 
   // Constant image sources
   using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
-  ConstantImageSourceType::PointType   origin;
-  ConstantImageSourceType::SizeType    size;
-  ConstantImageSourceType::SpacingType spacing;
-
   ConstantImageSourceType::Pointer tomographySource = ConstantImageSourceType::New();
-  origin[0] = -127.;
-  origin[1] = -127.;
-  origin[2] = -127.;
+  auto                             origin = itk::MakePoint(-127., -127., -127.);
 #if FAST_TESTS_NO_CHECKS
-  size[0] = 2;
-  size[1] = 2;
-  size[2] = 2;
-  spacing[0] = 254.;
-  spacing[1] = 254.;
-  spacing[2] = 254.;
+  auto spacing = itk::MakeVector(254., 254., 254.);
+  auto size = itk::MakeSize(2, 2, 2);
 #else
-  size[0] = 128;
-  size[1] = 128;
-  size[2] = 128;
-  spacing[0] = 2.;
-  spacing[1] = 2.;
-  spacing[2] = 2.;
+  auto spacing = itk::MakeVector(2., 2., 2.);
+  auto size = itk::MakeSize(128, 128, 128);
 #endif
   tomographySource->SetOrigin(origin);
   tomographySource->SetSpacing(spacing);
@@ -117,32 +103,19 @@ main(int argc, char * argv[])
   using DCType = rtk::DrawCylinderImageFilter<OutputImageType, OutputImageType>;
   DCType::Pointer dcl = DCType::New();
 
-  DCType::VectorType axis, center;
-  axis[0] = 100.;
-  axis[1] = 0.;
-  axis[2] = 100.;
-  center[0] = 2.;
-  center[1] = 2.;
-  center[2] = 2.;
-
   dcl->SetInput(tomographySource->GetOutput());
-  dcl->SetAxis(axis);
-  dcl->SetCenter(center);
+  dcl->SetAxis(itk::MakeVector(100., 0., 100.));
+  dcl->SetCenter(itk::MakeVector(2., 2., 2.));
   dcl->SetAngle(0.);
   dcl->SetDensity(2.);
   dcl->InPlaceOff();
 
   // Draw CONE
-  // axis.clear();
-  axis[0] = 25.;
-  axis[1] = -50.;
-  axis[2] = 25.;
-
   using DCOType = rtk::DrawConeImageFilter<OutputImageType, OutputImageType>;
   DCOType::Pointer dco = DCOType::New();
   dco->SetInput(tomographySource->GetOutput());
-  dco->SetAxis(axis);
-  dco->SetCenter(center);
+  dco->SetAxis(itk::MakeVector(25., -50., 25.));
+  dco->SetCenter(itk::MakeVector(2., 2., 2.));
   dco->SetAngle(0.);
   dco->SetDensity(-0.54);
 

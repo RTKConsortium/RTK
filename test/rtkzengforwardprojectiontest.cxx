@@ -40,28 +40,15 @@ main(int, char **)
 
   // Constant image sources
   using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
-  ConstantImageSourceType::PointType   origin;
-  ConstantImageSourceType::SizeType    size;
-  ConstantImageSourceType::SpacingType spacing;
-  constexpr double                     att = 0.0154;
+  constexpr double att = 0.0154;
   // Create Joseph Forward Projector volume input.
-  origin[0] = -126;
-  origin[1] = -126;
-  origin[2] = -126;
+  auto origin = itk::MakePoint(-126., -126., -126.);
 #if FAST_TESTS_NO_CHECKS
-  size[0] = 2;
-  size[1] = 2;
-  size[2] = 2;
-  spacing[0] = 252.;
-  spacing[1] = 252.;
-  spacing[2] = 252.;
+  auto size = itk::MakeSize(2, 2, 2);
+  auto spacing = itk::MakeVector(252., 252., 252.);
 #else
-  size[0] = 64;
-  size[1] = 64;
-  size[2] = 64;
-  spacing[0] = 4.;
-  spacing[1] = 4.;
-  spacing[2] = 4.;
+  auto size = itk::MakeSize(64, 64, 64);
+  auto spacing = itk::MakeVector(4., 4., 4.);
 #endif
 
   ConstantImageSourceType::Pointer tomographySource = ConstantImageSourceType::New();
@@ -88,14 +75,9 @@ main(int, char **)
 
 
   using DEIFType = rtk::DrawEllipsoidImageFilter<OutputImageType, OutputImageType>;
-  DEIFType::Pointer    volInput = DEIFType::New();
-  DEIFType::VectorType axis_vol, center_vol;
-  axis_vol[0] = 32;
-  axis_vol[1] = 32;
-  axis_vol[2] = 32;
-  center_vol[0] = 0.;
-  center_vol[1] = 0.;
-  center_vol[2] = 0.;
+  DEIFType::Pointer volInput = DEIFType::New();
+  auto              axis_vol = itk::MakeVector(32., 32., 32.);
+  auto              center_vol = itk::MakeVector(0., 0., 0.);
   volInput->SetInput(tomographySource->GetOutput());
   volInput->SetCenter(center_vol);
   volInput->SetAxis(axis_vol);
