@@ -27,21 +27,11 @@ main(int, char **)
 
   // Constant image sources
   using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
-  ConstantImageSourceType::PointType   origin;
-  ConstantImageSourceType::SizeType    size;
-  ConstantImageSourceType::SpacingType spacing;
-
   ConstantImageSourceType::Pointer projectionsSource = ConstantImageSourceType::New();
   ConstantImageSourceType::Pointer projectionsSourceRef = ConstantImageSourceType::New();
-  origin[0] = -254.;
-  origin[1] = -254.;
-  origin[2] = -254.;
-  size[0] = 128;
-  size[1] = 128;
-  size[2] = NumberOfProjectionImages;
-  spacing[0] = 4.;
-  spacing[1] = 4.;
-  spacing[2] = 4.;
+  auto                             origin = itk::MakePoint(-254., -254., -254.);
+  auto                             size = itk::MakeSize(128, 128, NumberOfProjectionImages);
+  auto                             spacing = itk::MakeVector(4., 4., 4.);
   projectionsSource->SetOrigin(origin);
   projectionsSource->SetSpacing(spacing);
   projectionsSource->SetSize(size);
@@ -87,10 +77,9 @@ main(int, char **)
     oneProjGeometry->AddProjection(600., 1200., noProj * 360. / NumberOfProjectionImages, 0, 0, 0, 0, 20, 15);
 
     // Ellipse 1
-    REIType::Pointer    e1 = REIType::New();
-    REIType::VectorType semiprincipalaxis, center;
-    semiprincipalaxis.Fill(60.);
-    center.Fill(0.);
+    REIType::Pointer e1 = REIType::New();
+    auto             semiprincipalaxis = itk::MakeVector(60., 60., 60.);
+    auto             center = itk::MakeVector(0., 0., 0.);
     e1->SetInput(oneProjectionSource->GetOutput());
     e1->SetGeometry(oneProjGeometry);
     e1->SetDensity(2.);

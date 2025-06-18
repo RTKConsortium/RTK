@@ -43,48 +43,27 @@ main(int argc, char ** argv)
 
   // Create a stack of empty projection images
   using ConstantImageSourceType = rtk::ConstantImageSource<ImageType>;
-  ConstantImageSourceType::Pointer     constantImageSource = ConstantImageSourceType::New();
-  ConstantImageSourceType::PointType   origin;
-  ConstantImageSourceType::SpacingType spacing;
-  ConstantImageSourceType::SizeType    sizeOutput;
-
-  origin[0] = -127;
-  origin[1] = -127;
-  origin[2] = 0.;
-
-  sizeOutput[0] = 128;
-  sizeOutput[1] = 128;
-  sizeOutput[2] = numberOfProjections;
-
-  spacing.Fill(2.);
-
-  constantImageSource->SetOrigin(origin);
-  constantImageSource->SetSpacing(spacing);
-  constantImageSource->SetSize(sizeOutput);
+  ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
+  constantImageSource->SetOrigin(itk::MakePoint(-127, -127, 0.));
+  constantImageSource->SetSpacing(itk::MakeVector(2., 2., 2.));
+  constantImageSource->SetSize(itk::MakeSize(128, 128, numberOfProjections));
   constantImageSource->SetConstant(0.);
 
   // Create projections of an ellipse
   using REIType = rtk::RayEllipsoidIntersectionImageFilter<ImageType, ImageType>;
-  REIType::Pointer    rei = REIType::New();
-  REIType::VectorType semiprincipalaxis, center;
-  semiprincipalaxis.Fill(50.);
-  center.Fill(0.);
-  center[2] = 10.;
+  REIType::Pointer rei = REIType::New();
   rei->SetDensity(2.);
   rei->SetAngle(0.);
-  rei->SetCenter(center);
-  rei->SetAxis(semiprincipalaxis);
+  rei->SetCenter(itk::MakePoint(0., 0., 10.));
+  rei->SetAxis(itk::MakeVector(50., 50., 50.));
   rei->SetGeometry(geometry);
   rei->SetInput(constantImageSource->GetOutput());
 
   // Create reconstructed image
   ConstantImageSourceType::Pointer constantImageSource2 = ConstantImageSourceType::New();
-  sizeOutput.Fill(128);
-  origin.Fill(-63.5);
-  spacing.Fill(1.);
-  constantImageSource2->SetOrigin(origin);
-  constantImageSource2->SetSpacing(spacing);
-  constantImageSource2->SetSize(sizeOutput);
+  constantImageSource2->SetOrigin(itk::MakePoint(-63.5, -63.5, -63.5));
+  constantImageSource2->SetSpacing(itk::MakeVector(1., 1., 1.));
+  constantImageSource2->SetSize(itk::MakeSize(128, 128, 128));
   constantImageSource2->SetConstant(0.);
 
   // FDK reconstruction

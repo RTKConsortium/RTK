@@ -47,29 +47,15 @@ main(int, char **)
 
   // Constant image sources
   using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
-  ConstantImageSourceType::PointType   origin;
-  ConstantImageSourceType::SizeType    size;
-  ConstantImageSourceType::SpacingType spacing;
-
   // Create Joseph Forward Projector volume input.
   const ConstantImageSourceType::Pointer volInput = ConstantImageSourceType::New();
-  origin[0] = -126;
-  origin[1] = -126;
-  origin[2] = -126;
+  auto                                   origin = itk::MakePoint(-126., -126., -126.);
 #if FAST_TESTS_NO_CHECKS
-  size[0] = 2;
-  size[1] = 2;
-  size[2] = 2;
-  spacing[0] = 252.;
-  spacing[1] = 252.;
-  spacing[2] = 252.;
+  auto size = itk::MakeSize(2, 2, 2);
+  auto spacing = itk::MakeVector(252., 252., 252.);
 #else
-  size[0] = 64;
-  size[1] = 64;
-  size[2] = 64;
-  spacing[0] = 4.;
-  spacing[1] = 4.;
-  spacing[2] = 4.;
+  auto size = itk::MakeSize(64, 64, 64);
+  auto spacing = itk::MakeVector(4., 4., 4.);
 #endif
   volInput->SetOrigin(origin);
   volInput->SetSpacing(spacing);
@@ -106,15 +92,8 @@ main(int, char **)
   RBIType::Pointer rbi = RBIType::New();
   rbi->InPlaceOff();
   rbi->SetInput(projInput->GetOutput());
-  VectorType boxMin, boxMax;
-  boxMin[0] = -126.0;
-  boxMin[1] = -126.0;
-  boxMin[2] = -126.0;
-  boxMax[0] = 126.0;
-  boxMax[1] = 126.0;
-  boxMax[2] = 47.6;
-  rbi->SetBoxMin(boxMin);
-  rbi->SetBoxMax(boxMax);
+  rbi->SetBoxMin(itk::MakeVector(-126.0, -126.0, -126.0));
+  rbi->SetBoxMax(itk::MakeVector(126.0, 126.0, 47.6));
 
   // Streaming filter to test for unusual regions
   using StreamingFilterType = itk::StreamingImageFilter<OutputImageType, OutputImageType>;
@@ -157,8 +136,7 @@ main(int, char **)
 #endif
 
   std::cout << "\n\n****** Case 2: outer ray source ******" << std::endl;
-  boxMax[2] = 126.0;
-  rbi->SetBoxMax(boxMax);
+  rbi->SetBoxMax(itk::MakeVector(126.0, 126.0, 126.0));
 
   // Geometry
   using GeometryType = rtk::ThreeDCircularProjectionGeometry;

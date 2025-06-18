@@ -49,21 +49,11 @@ Acquisition()
     auto geometryAcq = rtk::ThreeDCircularProjectionGeometry::New();
     geometryAcq->AddProjection(sid, sdd, i * arc / numProjections);
 
-    // Set the origin for the projection
-    itk::Point<double, 3> point;
-    point[0] = origin;
-    point[1] = origin;
-    point[2] = 0.0;
-
     // Create a constant image source for the projection
     auto projection = rtk::ConstantImageSource<ImageType>::New();
-    projection->SetOrigin(point);
-    projection->SetSize({ imageSize, imageSize, 1 });
-
-    // Set spacing for the projection
-    itk::Vector<double, 3> spacingVec;
-    spacingVec.Fill(spacing);
-    projection->SetSpacing(spacingVec);
+    projection->SetOrigin(itk::MakePoint(origin, origin, 0.0));
+    projection->SetSize(itk::MakeSize(imageSize, imageSize, 1));
+    projection->SetSpacing(itk::MakeSpacing(spacing, spacing, spacing));
     projection->Update();
 
     // Create Shepp-Logan phantom filter
@@ -102,13 +92,8 @@ main()
   auto extractor = itk::ExtractImageFilter<ImageType, ImageType>::New();
   extractor->SetInput(reader->GetOutput());
 
-  // Set the origin for the reconstruction
-  itk::Point<double, 3> originPoint;
-  originPoint.Fill(origin * sid / sdd);
-
-  // Set spacing for the reconstruction
-  itk::Vector<double, 3> spacingVec;
-  spacingVec.Fill(spacing * sid / sdd);
+  double originValue = origin * sid / sdd;
+  double spacingValue = spacing * sid / sdd;
 
 #ifdef RTK_USE_CUDA
   // Use CUDA for Parker short scan image filter
@@ -116,10 +101,9 @@ main()
   parker->SetGeometry(geometryRec);
 
   auto reconstructionSource = rtk::ConstantImageSource<CudaImageType>::New();
-  reconstructionSource->SetOrigin(originPoint);
-  reconstructionSource->SetSpacing(spacingVec);
-  reconstructionSource->SetSize({ imageSize, imageSize, imageSize });
-
+  reconstructionSource->SetOrigin(itk::MakePoint(originValue, originValue, originValue));
+  reconstructionSource->SetSpacing(itk::MakeVector(spacingValue, spacingValue, spacingValue));
+  reconstructionSource->SetSize(itk::MakeSize(imageSize, imageSize, imageSize));
   auto fdk = rtk::CudaFDKConeBeamReconstructionFilter::New();
 #else
   // Use CPU for Parker short scan image filter
@@ -128,10 +112,9 @@ main()
   parker->SetGeometry(geometryRec);
 
   auto reconstructionSource = rtk::ConstantImageSource<ImageType>::New();
-  reconstructionSource->Setorigin(originPoint);
-  reconstructionSource->Setspacing(spacingVec);
-  reconstructionSource->SetSize({ imageSize, imageSize, imageSize });
-
+  reconstructionSource->SetOrigin(itk::MakePoint(originValue, originValue, originValue));
+  reconstructionSource->SetSpacing(itk::MakeVector(spacingValue, spacingValue, spacingValue));
+  reconstructionSource->SetSize(itk::MakeSize(imageSize, imageSize, imageSize));
   auto fdk = rtk::FDKConeBeamReconstructionFilter<ImageType>::New();
 #endif
 

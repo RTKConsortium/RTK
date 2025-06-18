@@ -44,14 +44,8 @@ SheppLoganPhantom ::SetEllipsoid(ScalarType spax,
                                  ScalarType angle,
                                  ScalarType density)
 {
-  VectorType semiprincipalaxis;
-  PointType  center;
-  semiprincipalaxis[0] = spax;
-  semiprincipalaxis[1] = spay;
-  semiprincipalaxis[2] = spaz;
-  center[0] = centerx;
-  center[1] = centery;
-  center[2] = centerz;
+  auto                  semiprincipalaxis = itk::MakeVector(spax, spay, spaz);
+  auto                  center = itk::MakeVector(centerx, centery, centerz);
   QuadricShape::Pointer q = QuadricShape::New();
   q->SetEllipsoid(center, semiprincipalaxis, angle);
   q->SetDensity(density);

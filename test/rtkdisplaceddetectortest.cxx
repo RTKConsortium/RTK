@@ -44,53 +44,29 @@ main(int, char **)
 
   // Constant image sources
   using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
-  ConstantImageSourceType::PointType   origin;
-  ConstantImageSourceType::SizeType    size;
-  ConstantImageSourceType::SpacingType spacing;
-
   ConstantImageSourceType::Pointer tomographySource = ConstantImageSourceType::New();
-  origin[0] = -127.;
-  origin[1] = -127.;
-  origin[2] = -127.;
+  auto                             origin = itk::MakePoint(-127., -127., -127.);
 #if FAST_TESTS_NO_CHECKS
-  size[0] = 2;
-  size[1] = 2;
-  size[2] = 2;
-  spacing[0] = 254.;
-  spacing[1] = 254.;
-  spacing[2] = 254.;
+  auto size = itk::MakeSize(2, 2, 2);
+  auto spacing = itk::MakeVector(254., 254., 254.);
 #else
-  size[0] = 128;
-  size[1] = 128;
-  size[2] = 128;
-  spacing[0] = 2.;
-  spacing[1] = 2.;
-  spacing[2] = 2.;
+  auto size = itk::MakeSize(128, 128, 128);
+  auto spacing = itk::MakeVector(2., 2., 2.);
 #endif
   tomographySource->SetOrigin(origin);
   tomographySource->SetSpacing(spacing);
   tomographySource->SetSize(size);
   tomographySource->SetConstant(0.);
 
-  ConstantImageSourceType::Pointer projectionsSource = ConstantImageSourceType::New();
-  origin[0] = -254.;
-  origin[1] = -254.;
-  origin[2] = -254.;
+  origin = itk::MakePoint(-254., -254., -254.);
 #if FAST_TESTS_NO_CHECKS
-  size[0] = 2;
-  size[1] = 2;
-  size[2] = NumberOfProjectionImages;
-  spacing[0] = 508.;
-  spacing[1] = 508.;
-  spacing[2] = 508.;
+  size = itk::MakeSize(2, 2, NumberOfProjectionImages);
+  spacing = itk::MakeVector(508., 508., 508.);
 #else
-  size[0] = 128;
-  size[1] = 128;
-  size[2] = NumberOfProjectionImages;
-  spacing[0] = 4.;
-  spacing[1] = 4.;
-  spacing[2] = 4.;
+  size = itk::MakeSize(128, 128, NumberOfProjectionImages);
+  spacing = itk::MakeVector(4., 4., 4.);
 #endif
+  ConstantImageSourceType::Pointer projectionsSource = ConstantImageSourceType::New();
   projectionsSource->SetOrigin(origin);
   projectionsSource->SetSpacing(spacing);
   projectionsSource->SetSize(size);
@@ -162,14 +138,12 @@ main(int, char **)
   feldkamp->SetGeometry(geometry);
   for (unsigned int noProj = 0; noProj < NumberOfProjectionImages; noProj++)
     geometry->AddProjection(600., 1200., noProj * 360. / NumberOfProjectionImages);
-  origin[0] = -400;
-  projectionsSource->SetOrigin(origin);
+  projectionsSource->SetOrigin(itk::MakePoint(-400., -254., -254.));
   TRY_AND_EXIT_ON_ITK_EXCEPTION(feldkamp->Update());
   CheckImageQuality<OutputImageType>(feldkamp->GetOutput(), dsl->GetOutput(), 0.061, 24, 2.0);
 
   std::cout << "\n\n****** Case 5: positive offset in origin ******" << std::endl;
-  origin[0] = -100;
-  projectionsSource->SetOrigin(origin);
+  projectionsSource->SetOrigin(itk::MakePoint(-100., -254., -254.));
   TRY_AND_EXIT_ON_ITK_EXCEPTION(feldkamp->Update());
   CheckImageQuality<OutputImageType>(feldkamp->GetOutput(), dsl->GetOutput(), 0.061, 24, 2.0);
 

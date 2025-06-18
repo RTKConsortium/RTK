@@ -172,11 +172,9 @@ main(int, char **)
     oneProjGeometry->AddProjection(600., 1200., noProj * 360. / NumberOfProjectionImages, 0, 0, 0, 0, 20, 15);
 
     // Ellipse 1
-    REIType::Pointer    e1 = REIType::New();
-    REIType::VectorType semiprincipalaxis, center;
-    semiprincipalaxis.Fill(60.);
-    semiprincipalaxis[1] = 30;
-    center.Fill(0.);
+    REIType::Pointer e1 = REIType::New();
+    auto             semiprincipalaxis = itk::MakeVector(60., 30., 60.);
+    auto             center = itk::MakeVector(0., 0., 0.);
     e1->SetInput(oneProjectionSource->GetOutput());
     e1->SetGeometry(oneProjGeometry);
     e1->SetDensity(2.);

@@ -105,29 +105,14 @@ main(int, char **)
   using RandomImageSourceType = itk::RandomImageSource<OutputImageType>;
   RandomImageSourceType::Pointer randomVolumeSource = RandomImageSourceType::New();
 
-  // Image meta data
-  RandomImageSourceType::PointType   origin;
-  RandomImageSourceType::SizeType    size;
-  RandomImageSourceType::SpacingType spacing;
-
   // Volume metadata
-  origin[0] = -127.;
-  origin[1] = -127.;
-  origin[2] = -127.;
+  auto origin = itk::MakePoint<OutputPixelType>(-127., -127., -127.);
 #if FAST_TESTS_NO_CHECKS
-  size[0] = 2;
-  size[1] = 2;
-  size[2] = 2;
-  spacing[0] = 252.;
-  spacing[1] = 252.;
-  spacing[2] = 252.;
+  auto size = itk::MakeSize<itk::SizeValueType>(2, 2, 2);
+  auto spacing = itk::MakeVector<OutputPixelType>(252., 252., 252.);
 #else
-  size[0] = 64;
-  size[1] = 64;
-  size[2] = 64;
-  spacing[0] = 4.;
-  spacing[1] = 4.;
-  spacing[2] = 4.;
+  auto size = itk::MakeSize<itk::SizeValueType>(64, 64, 64);
+  auto spacing = itk::MakeVector<OutputPixelType>(4., 4., 4.);
 #endif
   randomVolumeSource->SetOrigin(origin);
   randomVolumeSource->SetSpacing(spacing);

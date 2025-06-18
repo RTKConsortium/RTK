@@ -38,28 +38,14 @@ main(int, char **)
 
   // Constant image sources
   using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
-  ConstantImageSourceType::PointType   origin;
-  ConstantImageSourceType::SizeType    size;
-  ConstantImageSourceType::SpacingType spacing;
-
   ConstantImageSourceType::Pointer tomographySource = ConstantImageSourceType::New();
-  origin[0] = -63.;
-  origin[1] = -31.;
-  origin[2] = -63.;
+  auto                             origin = itk::MakePoint(-63., -31., -63.);
 #if FAST_TESTS_NO_CHECKS
-  size[0] = 32;
-  size[1] = 32;
-  size[2] = 32;
-  spacing[0] = 8.;
-  spacing[1] = 8.;
-  spacing[2] = 8.;
+  auto size = itk::MakeSize(32, 32, 32);
+  auto spacing = itk::MakeVector(8., 8., 8.);
 #else
-  size[0] = 64;
-  size[1] = 32;
-  size[2] = 64;
-  spacing[0] = 2.;
-  spacing[1] = 2.;
-  spacing[2] = 2.;
+  auto size = itk::MakeSize(64, 32, 64);
+  auto spacing = itk::MakeVector(2., 2., 2.);
 #endif
   tomographySource->SetOrigin(origin);
   tomographySource->SetSpacing(spacing);
@@ -67,23 +53,13 @@ main(int, char **)
   tomographySource->SetConstant(0.);
 
   ConstantImageSourceType::Pointer projectionsSource = ConstantImageSourceType::New();
-  origin[0] = -254.;
-  origin[1] = -254.;
-  origin[2] = -254.;
+  origin = itk::MakePoint(-254., -254., -254.);
 #if FAST_TESTS_NO_CHECKS
-  size[0] = 32;
-  size[1] = 32;
-  size[2] = NumberOfProjectionImages;
-  spacing[0] = 32.;
-  spacing[1] = 32.;
-  spacing[2] = 32.;
+  size = itk::MakeSize(32, 32, NumberOfProjectionImages);
+  spacing = itk::MakeVector(32., 32., 32.);
 #else
-  size[0] = 128;
-  size[1] = 128;
-  size[2] = NumberOfProjectionImages;
-  spacing[0] = 4.;
-  spacing[1] = 4.;
-  spacing[2] = 4.;
+  size = itk::MakeSize(128, 128, NumberOfProjectionImages);
+  spacing = itk::MakeVector(4., 4., 4.);
 #endif
   projectionsSource->SetOrigin(origin);
   projectionsSource->SetSpacing(spacing);
@@ -104,10 +80,7 @@ main(int, char **)
   // Projections
   using REIType = rtk::RayEllipsoidIntersectionImageFilter<OutputImageType, OutputImageType>;
   using PasteImageFilterType = itk::PasteImageFilter<OutputImageType, OutputImageType, OutputImageType>;
-  OutputImageType::IndexType destinationIndex;
-  destinationIndex[0] = 0;
-  destinationIndex[1] = 0;
-  destinationIndex[2] = 0;
+  auto                          destinationIndex = itk::MakeIndex(0, 0, 0);
   PasteImageFilterType::Pointer pasteFilter = PasteImageFilterType::New();
 
   std::ofstream            signalFile("signal.txt");
@@ -121,10 +94,9 @@ main(int, char **)
     oneProjGeometry->AddProjection(600., 1200., noProj * 360. / NumberOfProjectionImages, 0, 0, 0, 0, 20, 15);
 
     // Ellipse 1
-    REIType::Pointer    e1 = REIType::New();
-    REIType::VectorType semiprincipalaxis, center;
-    semiprincipalaxis.Fill(60.);
-    center.Fill(0.);
+    REIType::Pointer e1 = REIType::New();
+    auto             semiprincipalaxis = itk::MakeVector(60., 60., 60.);
+    auto             center = itk::MakeVector(0., 0., 0.);
     e1->SetInput(oneProjectionSource->GetOutput());
     e1->SetGeometry(oneProjGeometry);
     e1->SetDensity(2.);
@@ -137,14 +109,11 @@ main(int, char **)
     // Ellipse 2
     REIType::Pointer e2 = REIType::New();
     semiprincipalaxis.Fill(8.);
-    center[0] = 4 * (itk::Math::abs((4 + noProj) % 8 - 4.) - 2.);
-    center[1] = 0.;
-    center[2] = 0.;
     e2->SetInput(e1->GetOutput());
     e2->SetGeometry(oneProjGeometry);
     e2->SetDensity(-1.);
-    e2->SetAxis(semiprincipalaxis);
-    e2->SetCenter(center);
+    e2->SetAxis(itk::MakeVector(8., 8., 8.));
+    e2->SetCenter(itk::MakeVector(4 * (itk::Math::abs((4 + noProj) % 8 - 4.) - 2.), 0., 0.));
     e2->SetAngle(0.);
     e2->Update();
 
@@ -172,16 +141,7 @@ main(int, char **)
   DeformationType::InputImageType::Pointer deformationField;
   deformationField = DeformationType::InputImageType::New();
 
-  DeformationType::InputImageType::IndexType startMotion;
-  startMotion[0] = 0; // first index on X
-  startMotion[1] = 0; // first index on Y
-  startMotion[2] = 0; // first index on Z
-  startMotion[3] = 0; // first index on t
-  DeformationType::InputImageType::SizeType sizeMotion;
-  sizeMotion[0] = 64; // size along X
-  sizeMotion[1] = 64; // size along Y
-  sizeMotion[2] = 64; // size along Z
-  sizeMotion[3] = 2;  // size along t
+  auto                                       sizeMotion = itk::MakeSize(64, 64, 64, 2);
   DeformationType::InputImageType::PointType originMotion;
   originMotion[0] = (sizeMotion[0] - 1) * (-0.5); // size along X
   originMotion[1] = (sizeMotion[1] - 1) * (-0.5); // size along Y
@@ -189,7 +149,6 @@ main(int, char **)
   originMotion[3] = 0.;
   DeformationType::InputImageType::RegionType regionMotion;
   regionMotion.SetSize(sizeMotion);
-  regionMotion.SetIndex(startMotion);
   deformationField->SetRegions(regionMotion);
   deformationField->SetOrigin(originMotion);
   deformationField->Allocate();
@@ -243,12 +202,8 @@ main(int, char **)
   DEType::Pointer e1 = DEType::New();
   e1->SetInput(tomographySource->GetOutput());
   e1->SetDensity(2.);
-  DEType::VectorType axis;
-  axis.Fill(60.);
-  e1->SetAxis(axis);
-  DEType::VectorType center;
-  center.Fill(0.);
-  e1->SetCenter(center);
+  e1->SetAxis(itk::MakeVector(60., 60., 60.));
+  e1->SetCenter(itk::MakeVector(0., 0., 0.));
   e1->SetAngle(0.);
   e1->InPlaceOff();
   TRY_AND_EXIT_ON_ITK_EXCEPTION(e1->Update())
@@ -257,12 +212,8 @@ main(int, char **)
   DEType::Pointer e2 = DEType::New();
   e2->SetInput(e1->GetOutput());
   e2->SetDensity(-1.);
-  DEType::VectorType axis2;
-  axis2.Fill(8.);
-  e2->SetAxis(axis2);
-  DEType::VectorType center2;
-  center2.Fill(0.);
-  e2->SetCenter(center2);
+  e2->SetAxis(itk::MakeVector(8., 8., 8.));
+  e2->SetCenter(itk::MakeVector(0., 0., 0.));
   e2->SetAngle(0.);
   e2->InPlaceOff();
   TRY_AND_EXIT_ON_ITK_EXCEPTION(e2->Update())

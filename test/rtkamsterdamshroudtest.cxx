@@ -54,41 +54,28 @@ main(int argc, char * argv[])
 
   // Create a stack of empty projection images
   using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
-  ConstantImageSourceType::PointType   origin;
-  ConstantImageSourceType::SizeType    sizeOutput;
-  ConstantImageSourceType::SpacingType spacing;
 
   // Adjust size according to geometry and for just one projection
   ConstantImageSourceType::Pointer constantImageSourceSingleProjection = ConstantImageSourceType::New();
-  origin[0] = -50.;
-  origin[1] = -50.;
-  origin[2] = -158.75;
+  auto                             origin = itk::MakePoint(-50., -50., -158.75);
 #if FAST_TESTS_NO_CHECKS
-  sizeOutput[0] = 4;
-  sizeOutput[1] = 4;
-  sizeOutput[2] = 1;
-  spacing[0] = 106.;
-  spacing[1] = 106.;
-  spacing[2] = 2.5;
+  auto spacing = itk::MakeVector(106., 106., 2.5);
+  auto size = itk::MakeSize(4, 4, 1);
 #else
-  sizeOutput[0] = 128;
-  sizeOutput[1] = 128;
-  sizeOutput[2] = 1;
-  spacing[0] = 2.5;
-  spacing[1] = 2.5;
-  spacing[2] = 2.5;
+  auto spacing = itk::MakeVector(2.5, 2.5, 2.5);
+  auto size = itk::MakeSize(128, 128, 1);
 #endif
   constantImageSourceSingleProjection->SetOrigin(origin);
   constantImageSourceSingleProjection->SetSpacing(spacing);
-  constantImageSourceSingleProjection->SetSize(sizeOutput);
+  constantImageSourceSingleProjection->SetSize(size);
   constantImageSourceSingleProjection->SetConstant(0.);
 
   // Adjust size according to geometry
   ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
-  sizeOutput[2] = NumberOfProjectionImages;
+  size[2] = NumberOfProjectionImages;
   constantImageSource->SetOrigin(origin);
   constantImageSource->SetSpacing(spacing);
-  constantImageSource->SetSize(sizeOutput);
+  constantImageSource->SetSize(size);
   constantImageSource->SetConstant(0.);
 
   using PasteImageFilterType = itk::PasteImageFilter<OutputImageType, OutputImageType, OutputImageType>;
@@ -101,86 +88,61 @@ main(int argc, char * argv[])
 
   // Single projection
   using REIType = rtk::RayEllipsoidIntersectionImageFilter<OutputImageType, OutputImageType>;
-  double                 size = 80.;
+  double                 reiSize = 80.;
   double                 sinus = 0.;
   constexpr unsigned int Cycles = 4;
 
   OutputImageType::Pointer wholeImage = constantImageSource->GetOutput();
   GeometryType::Pointer    geometryFull = GeometryType::New();
-  for (unsigned int i = 1; i <= sizeOutput[2]; i++)
+  for (unsigned int i = 1; i <= size[2]; i++)
   {
     // Geometry object
     GeometryType::Pointer geometry = GeometryType::New();
-    geometry->AddProjection(1200., 1500., i * 360 / sizeOutput[2]);
-    geometryFull->AddProjection(1200., 1500., i * 360 / sizeOutput[2]);
+    geometry->AddProjection(1200., 1500., i * 360 / size[2]);
+    geometryFull->AddProjection(1200., 1500., i * 360 / size[2]);
 
     // Ellipse 1
-    REIType::Pointer    e1 = REIType::New();
-    REIType::VectorType semiprincipalaxis, center;
-    semiprincipalaxis[0] = 88.32;
-    semiprincipalaxis[1] = 115.2;
-    semiprincipalaxis[2] = 117.76;
-    center[0] = 0.;
-    center[1] = 0.;
-    center[2] = 0.;
+    REIType::Pointer e1 = REIType::New();
     e1->SetInput(constantImageSourceSingleProjection->GetOutput());
     e1->SetGeometry(geometry);
     e1->SetDensity(2.);
-    e1->SetAxis(semiprincipalaxis);
-    e1->SetCenter(center);
+    e1->SetAxis(itk::MakeVector(88.32, 115.2, 117.76));
+    e1->SetCenter(itk::MakeVector(0., 0., 0.));
     e1->SetAngle(0.);
     e1->InPlaceOff();
     e1->Update();
 
     // Ellipse 2
     REIType::Pointer e2 = REIType::New();
-    semiprincipalaxis[0] = 35.;
-    semiprincipalaxis[1] = size - sinus;
-    semiprincipalaxis[2] = size - sinus;
-    center[0] = -37.;
-    center[1] = 0.;
-    center[2] = 0.;
     e2->SetInput(e1->GetOutput());
     e2->SetGeometry(geometry);
     e2->SetDensity(-1.98);
-    e2->SetAxis(semiprincipalaxis);
-    e2->SetCenter(center);
+    e2->SetAxis(itk::MakeVector(35., reiSize - sinus, reiSize - sinus));
+    e2->SetCenter(itk::MakeVector(-37., 0., 0.));
     e2->SetAngle(0.);
     e2->Update();
 
     // Ellipse 3
     REIType::Pointer e3 = REIType::New();
-    semiprincipalaxis[0] = 35.;
-    semiprincipalaxis[1] = size - sinus;
-    semiprincipalaxis[2] = size - sinus;
-    center[0] = 37.;
-    center[1] = 0.;
-    center[2] = 0.;
     e3->SetInput(e2->GetOutput());
     e3->SetGeometry(geometry);
     e3->SetDensity(-1.98);
-    e3->SetAxis(semiprincipalaxis);
-    e3->SetCenter(center);
+    e3->SetAxis(itk::MakeVector(35., reiSize - sinus, reiSize - sinus));
+    e3->SetCenter(itk::MakeVector(37., 0., 0.));
     e3->SetAngle(0.);
     e3->Update();
 
     // Ellipse 4
     REIType::Pointer e4 = REIType::New();
-    semiprincipalaxis[0] = 8.;
-    semiprincipalaxis[1] = 8.;
-    semiprincipalaxis[2] = 8.;
-    center[0] = -40.;
-    center[1] = 0.;
-    center[2] = 0.;
     e4->SetInput(e3->GetOutput());
     e4->SetGeometry(geometry);
     e4->SetDensity(1.42);
-    e4->SetAxis(semiprincipalaxis);
-    e4->SetCenter(center);
+    e4->SetAxis(itk::MakeVector(8., 8., 8.));
+    e4->SetCenter(itk::MakeVector(-40., 0., 0.));
     e4->SetAngle(0.);
 
     // Creating movement
-    sinus = 15 * sin(i * 2 * itk::Math::pi / (sizeOutput[2] / Cycles));
+    sinus = 15 * sin(i * 2 * itk::Math::pi / (size[2] / Cycles));
 
     // Generating projection
     e4->Update();

@@ -105,39 +105,16 @@ main(int, char **)
   using VolumeSeriesType = itk::Image<OutputPixelType, 4>;
 
   // Constant image sources
-  VolumeSeriesType::PointType   origin;
-  VolumeSeriesType::SizeType    size;
-  VolumeSeriesType::SpacingType spacing;
-  VolumeSeriesType::IndexType   index;
-
-  origin[0] = -63.;
-  origin[1] = -31.;
-  origin[2] = -63.;
-  origin[3] = 0.;
-  index.Fill(0);
+  auto origin = itk::MakePoint(-63., -31., -63., 0.);
 #if FAST_TESTS_NO_CHECKS
-  size[0] = 8;
-  size[1] = 8;
-  size[2] = 8;
-  size[3] = 12;
-  spacing[0] = 16.;
-  spacing[1] = 8.;
-  spacing[2] = 16.;
-  spacing[3] = 1.;
+  auto size = itk::MakeSize(8, 8, 8, 12);
+  auto spacing = itk::MakeVector(16., 8., 16., 1.);
 #else
-  size[0] = 32;
-  size[1] = 16;
-  size[2] = 32;
-  size[3] = 12;
-  spacing[0] = 4.;
-  spacing[1] = 4.;
-  spacing[2] = 4.;
-  spacing[3] = 1.;
+  auto size = itk::MakeSize(32, 16, 32, 12);
+  auto spacing = itk::MakeVector(4., 4., 4., 1.);
 #endif
-
   // Initialize the largest possible region for the input image
   VolumeSeriesType::RegionType largest;
-  largest.SetIndex(index);
   largest.SetSize(size);
 
   // Initialize the input image

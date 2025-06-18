@@ -98,13 +98,9 @@ main(int argc, char * argv[])
     int curBufferSize = std::min(args_info.bufferSize_arg, Nproj - projid);
 
     InputImageType::RegionType sliceRegionA = reader->GetOutput()->GetLargestPossibleRegion();
-    InputImageType::SizeType   sizeA = sliceRegionA.GetSize();
-    sizeA[2] = curBufferSize;
-    InputImageType::IndexType start = sliceRegionA.GetIndex();
-    start[2] = projid;
     InputImageType::RegionType desiredRegionA;
-    desiredRegionA.SetSize(sizeA);
-    desiredRegionA.SetIndex(start);
+    desiredRegionA.SetSize(itk::MakeSize(sliceRegionA.GetSize()[0], sliceRegionA.GetSize()[1], curBufferSize));
+    desiredRegionA.SetIndex(itk::MakeIndex(sliceRegionA.GetIndex()[0], sliceRegionA.GetIndex()[1], projid));
 
     using ExtractFilterType = itk::ExtractImageFilter<InputImageType, InputImageType>;
     ExtractFilterType::Pointer extract = ExtractFilterType::New();

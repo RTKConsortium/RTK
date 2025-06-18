@@ -36,21 +36,12 @@ main(int, char **)
   ConvertFilterType::Pointer convert = ConvertFilterType::New();
 
   // Constant image sources
-  ShortImageType::SizeType size;
-  size[0] = 10;
-  size[1] = 10;
-  ShortImageType::IndexType start;
-  start.Fill(0);
   ShortImageType::RegionType region;
-  region.SetIndex(start);
-  region.SetSize(size);
-  ShortImageType::SpacingType spacings;
-  spacings[0] = 1.0;
-  spacings[1] = 1.0;
+  region.SetSize(itk::MakeSize(10, 10));
 
   ShortImageType::Pointer rawImage = ShortImageType::New();
   rawImage->SetRegions(region);
-  rawImage->SetSpacing(spacings);
+  rawImage->SetSpacing(itk::MakeVector(1.0, 1.0));
   rawImage->Allocate();
 
   convert->SetInput(rawImage);

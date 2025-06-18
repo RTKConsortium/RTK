@@ -62,32 +62,13 @@ main(int argc, char * argv[])
   ConstantVolumeSeriesSourceType::Pointer constantVolumeSeriesSource = ConstantVolumeSeriesSourceType::New();
 
   // Volume metadata
-  VolumeSeriesType::PointType   fourDOrigin;
-  VolumeSeriesType::SizeType    fourDSize;
-  VolumeSeriesType::SpacingType fourDSpacing;
-
-  fourDOrigin[0] = -127.;
-  fourDOrigin[1] = -127.;
-  fourDOrigin[2] = -127.;
-  fourDOrigin[3] = 0.;
+  auto fourDOrigin = itk::MakePoint(-127., -127., -127., 0.);
 #if FAST_TESTS_NO_CHECKS
-  fourDSize[0] = 2;
-  fourDSize[1] = 2;
-  fourDSize[2] = NumberOfSlices;
-  fourDSize[3] = 2;
-  fourDSpacing[0] = 252.;
-  fourDSpacing[1] = 252.;
-  fourDSpacing[2] = 252.;
-  fourDSpacing[3] = 1.;
+  auto fourDSize = itk::MakeSize(2, 2, NumberOfSlices, 2);
+  auto fourDSpacing = itk::MakeVector(252., 252., 252., 1.);
 #else
-  fourDSize[0] = 64;
-  fourDSize[1] = 64;
-  fourDSize[2] = NumberOfSlices;
-  fourDSize[3] = 5;
-  fourDSpacing[0] = 4.;
-  fourDSpacing[1] = 4.;
-  fourDSpacing[2] = 4.;
-  fourDSpacing[3] = 1.;
+  auto fourDSize = itk::MakeSize(64, 64, NumberOfSlices, 5);
+  auto fourDSpacing = itk::MakeVector(4., 4., 4., 1.);
 #endif
   randomVolumeSeriesSource->SetOrigin(fourDOrigin);
   randomVolumeSeriesSource->SetSpacing(fourDSpacing);
@@ -101,27 +82,13 @@ main(int argc, char * argv[])
   constantVolumeSeriesSource->SetConstant(0.);
 
   // Volume metadata
-  VolumeType::PointType   origin;
-  VolumeType::SizeType    size;
-  VolumeType::SpacingType spacing;
-
-  origin[0] = -255.;
-  origin[1] = -255.;
-  origin[2] = -255.;
+  auto origin = itk::MakePoint(-255., -255., -255.);
 #if FAST_TESTS_NO_CHECKS
-  size[0] = 2;
-  size[1] = 2;
-  size[2] = NumberOfSlices;
-  spacing[0] = 504.;
-  spacing[1] = 504.;
-  spacing[2] = 504.;
+  auto size = itk::MakeSize(2, 2, NumberOfSlices);
+  auto spacing = itk::MakeVector(504., 504., 504.);
 #else
-  size[0] = 64;
-  size[1] = 64;
-  size[2] = NumberOfSlices;
-  spacing[0] = 8.;
-  spacing[1] = 8.;
-  spacing[2] = 8.;
+  auto size = itk::MakeSize(64, 64, NumberOfSlices);
+  auto spacing = itk::MakeVector(8., 8., 8.);
 #endif
   randomVolumeSource->SetOrigin(origin);
   randomVolumeSource->SetSpacing(spacing);

@@ -30,28 +30,14 @@ main(int, char **)
 
   // Constant image sources
   using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
-  ConstantImageSourceType::PointType   origin;
-  ConstantImageSourceType::SizeType    size;
-  ConstantImageSourceType::SpacingType spacing;
-
   ConstantImageSourceType::Pointer tomographySource = ConstantImageSourceType::New();
-  origin[0] = -29.;
-  origin[1] = -29.;
-  origin[2] = -29.;
+  auto                             origin = itk::MakePoint(-29., -29., -29.);
 #if FAST_TESTS_NO_CHECKS
-  size[0] = 6;
-  size[1] = 6;
-  size[2] = 6;
-  spacing[0] = 10.;
-  spacing[1] = 10.;
-  spacing[2] = 10.;
+  auto size = itk::MakeSize(6, 6, 6);
+  auto spacing = itk::MakeVector(10., 10., 10.);
 #else
-  size[0] = 30;
-  size[1] = 30;
-  size[2] = 30;
-  spacing[0] = 2.;
-  spacing[1] = 2.;
-  spacing[2] = 2.;
+  auto size = itk::MakeSize(30, 30, 30);
+  auto spacing = itk::MakeVector(2., 2., 2.);
 #endif
   tomographySource->SetOrigin(origin);
   tomographySource->SetSpacing(spacing);
@@ -59,23 +45,11 @@ main(int, char **)
   tomographySource->SetConstant(0.);
 
   ConstantImageSourceType::Pointer projectionsSource = ConstantImageSourceType::New();
-  origin[0] = -29.;
-  origin[1] = -29.;
-  origin[2] = 0.;
+  origin = itk::MakePoint(-29., -29., 0.);
 #if FAST_TESTS_NO_CHECKS
-  size[0] = 6;
-  size[1] = 6;
-  size[2] = NumberOfProjectionImages;
-  spacing[0] = 10.;
-  spacing[1] = 10.;
-  spacing[2] = 10.;
+  size = itk::MakeSize(6, 6, NumberOfProjectionImages);
 #else
-  size[0] = 30;
-  size[1] = 30;
-  size[2] = NumberOfProjectionImages;
-  spacing[0] = 2.;
-  spacing[1] = 2.;
-  spacing[2] = 2.;
+  size = itk::MakeSize(30, 30, NumberOfProjectionImages);
 #endif
   projectionsSource->SetOrigin(origin);
   projectionsSource->SetSpacing(spacing);
