@@ -1,7 +1,6 @@
 purpose "Reads projection images and estimates the I0 value for each of them"
 
 option "verbose"  v "Verbose execution"                                         flag      off
-option "config"   - "Config file"                                               string    no
 option "output"   o "Output filename - not implemented"                         string    no
 option "debug"    d "Debug mode: output CSV file name with I0 estimates"        string    no
 option "range"    - "Range of projection to analyse min,step,max"               int     multiple no

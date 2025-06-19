@@ -1,7 +1,6 @@
 purpose "Computes a 3D voxelized phantom from a phantom description file"
 
 option "verbose"      v "Verbose execution"                         flag            off
-option "config"       - "Config file"                               string          no
 option "output"       o "Output projections file name"              string          yes
 option "phantomfile"  - "Parameters of the phantom reference"       string          yes
 option "noise"        - "Gaussian noise parameter (SD)"             double          no

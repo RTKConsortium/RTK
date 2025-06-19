@@ -1,7 +1,6 @@
 purpose "Creates an RTK geometry file from a sequence of ora.xml files (radART / medPhoton file format)."
 
 option "verbose"     v "Verbose execution"                           flag   off
-option "config"      - "Config file"                                 string no
 option "output"      o "Output file name"                            string yes
 option "margin"      m "Collimation margin (uinf, usup, vinf, vsup)" double no  multiple default="0."
 option "optitrack"   - "OptiTrack object ID (unused by default)"     int no default="-1"

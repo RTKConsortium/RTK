@@ -1,7 +1,6 @@
 purpose "Computes expected photon counts from incident spectrum, material attenuations, detector response and material-decomposed projections"
 
 option "verbose"    v "Verbose execution"                                                 flag                         off
-option "config"     - "Config file"                                                       string                       no
 option "output"     o "Output file name (photon counts)"                                  string                       yes
 option "input"      i "Material-decomposed projections"                                   string                       yes
 option "detector"   d "Detector response file"                                            string                       yes

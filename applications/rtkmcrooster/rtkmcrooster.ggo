@@ -1,7 +1,6 @@
 purpose "Reconstructs a 3D + time sequence of volumes from a projection stack and a respiratory/cardiac signal, applying TV regularization in space and time, and restricting motion to a region of interest"
 
 option "verbose"     v "Verbose execution"                                     flag   off
-option "config"      - "Config file"                                           string no
 option "geometry"    g "XML geometry file name"                                string yes
 option "input"       i "Input volume"                                          string no
 option "output"      o "Output file name"                                      string yes

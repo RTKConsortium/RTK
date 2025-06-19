@@ -1,7 +1,6 @@
 purpose "Reconstructs a 3D volume from a sequence of projections with a conjugate gradient technique"
 
 option "verbose"        v "Verbose execution"                                                                         flag   off
-option "config"         - "Config file"                                                                               string no
 option "geometry"       g "XML geometry file name"                                                                    string yes
 option "output"         o "Output file name"                                                                          string yes
 option "projections"    - "Projections file name"                                                                     string yes
