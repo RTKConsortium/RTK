@@ -1,7 +1,6 @@
 purpose "Decomposes dual energy projections into materials"
 
 option "verbose"          v "Verbose execution"                                                 flag                         off
-option "config"           - "Config file"                                                       string                       no
 option "input"            i "Initial solution for material decomposition, file name"            string                       yes
 option "output"     o "Output file name (decomposed projections)"                               string                       yes
 option "dual"             - "Projections to be decomposed, VectorImage file name"               string                       yes

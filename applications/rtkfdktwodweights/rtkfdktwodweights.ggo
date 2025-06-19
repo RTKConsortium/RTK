@@ -1,7 +1,6 @@
 purpose "Weights projection stack with 2D weights of Feldkamp cone-beam reconstruction algorithm."
 
 option "verbose"   v "Verbose execution"                                         flag                off
-option "config"    - "Config file"                                               string              no
 option "geometry"  g "XML geometry file name"                                    string              yes
 option "output"    o "Output file name"                                          string              yes
 option "divisions" d "Number of stream divisions to cope with large serie"       int                 no   default="1"

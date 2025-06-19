@@ -1,7 +1,6 @@
 purpose "Computes the field of view of a reconstruction."
 
 option "verbose"        v "Verbose execution"                                         flag     off
-option "config"         - "Config file"                                               string   no
 option "geometry"       g  "XML geometry file name"                                   string   yes
 option "output"         o "Output projections file name"                              string   yes
 option "reconstruction" - "Reconstruction file unmasked"                              string   yes
