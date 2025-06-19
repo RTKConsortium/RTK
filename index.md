@@ -23,6 +23,7 @@ INSTALLATION
 documentation/docs/Geometry.md
 documentation/docs/Phantom.md
 documentation/docs/Projectors.md
+documentation/docs/ImageQuality.md
 examples/README.md
 applications/README.md
 ```
