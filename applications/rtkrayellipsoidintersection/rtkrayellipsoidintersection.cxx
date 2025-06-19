@@ -49,11 +49,8 @@ main(int argc, char * argv[])
     constantImageSource, args_info);
 
   // Adjust size according to geometry
-  ConstantImageSourceType::SizeType sizeOutput;
-  sizeOutput[0] = constantImageSource->GetSize()[0];
-  sizeOutput[1] = constantImageSource->GetSize()[1];
-  sizeOutput[2] = geometry->GetGantryAngles().size();
-  constantImageSource->SetSize(sizeOutput);
+  constantImageSource->SetSize(itk::MakeSize(
+    constantImageSource->GetSize()[0], constantImageSource->GetSize()[1], geometry->GetGantryAngles().size()));
 
   // Create projection image filter
   using REIType = rtk::RayEllipsoidIntersectionImageFilter<OutputImageType, OutputImageType>;

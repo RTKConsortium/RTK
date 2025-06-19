@@ -98,33 +98,19 @@ main(int argc, char * argv[])
 
   // Constant image sources
   using ConstantImageSourceType = rtk::ConstantImageSource<SingleComponentImageType>;
-  ConstantImageSourceType::PointType   origin;
-  ConstantImageSourceType::SizeType    size;
-  ConstantImageSourceType::SpacingType spacing;
 
   // Generate a blank volume
   ConstantImageSourceType::Pointer tomographySource = ConstantImageSourceType::New();
+
 #if FAST_TESTS_NO_CHECKS
-  origin[0] = -64.;
-  origin[1] = -64.;
-  origin[2] = -64.;
-  size[0] = 2;
-  size[1] = 2;
-  size[2] = 2;
-  spacing[0] = 128.;
-  spacing[1] = 128.;
-  spacing[2] = 128.;
+  auto origin = itk::MakePoint(-64., -64., -64.;) auto size = itk::MakeSize(2, 2, 2);
+  auto                                                 spacing = itk::MakeVector(128., 128., 128.);
 #else
-  origin[0] = -124.;
-  origin[1] = -124.;
-  origin[2] = -124.;
-  size[0] = 32;
-  size[1] = 32;
-  size[2] = 32;
-  spacing[0] = 8.;
-  spacing[1] = 8.;
-  spacing[2] = 8.;
+  auto origin = itk::MakePoint(-124., -124., -124.);
+  auto size = itk::MakeSize(32, 32, 32);
+  auto spacing = itk::MakeVector(8., 8., 8.);
 #endif
+
   tomographySource->SetOrigin(origin);
   tomographySource->SetSpacing(spacing);
   tomographySource->SetSize(size);
@@ -140,26 +126,14 @@ main(int argc, char * argv[])
   // Generate a blank set of projections
   ConstantImageSourceType::Pointer projectionsSource = ConstantImageSourceType::New();
 #if FAST_TESTS_NO_CHECKS
-  origin[0] = -128.;
-  origin[1] = -128.;
-  origin[2] = 0.;
-  size[0] = 2;
-  size[1] = 2;
-  size[2] = NumberOfProjectionImages;
-  spacing[0] = 256.;
-  spacing[1] = 256.;
-  spacing[2] = 256.;
+  origin = itk::MakePoint(-128., -128., 0.;) size = itk::MakeSize(2, 2, NumberOfProjectionImages);
+  spacing = itk::MakeVector(256., 256., 256.);
 #else
-  origin[0] = -240.;
-  origin[1] = -240.;
-  origin[2] = 0.;
-  size[0] = 32;
-  size[1] = 64;
-  size[2] = NumberOfProjectionImages;
-  spacing[0] = 16.;
-  spacing[1] = 16.;
-  spacing[2] = 16.;
+  origin = itk::MakePoint(-240., -240., 0.);
+  size = itk::MakeSize(32, 64, NumberOfProjectionImages);
+  spacing = itk::MakeVector(16., 16., 16.);
 #endif
+
   projectionsSource->SetOrigin(origin);
   projectionsSource->SetSpacing(spacing);
   projectionsSource->SetSize(size);

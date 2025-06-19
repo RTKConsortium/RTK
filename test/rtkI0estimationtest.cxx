@@ -21,12 +21,9 @@ main(int, char **)
   I0FilterType::Pointer i0est = I0FilterType::New();
 
   // Constant image sources
-  ImageType::SizeType size;
-  size[0] = 150;
-  size[1] = 150;
-  size[2] = 1;
-  ImageType::IndexType start;
-  start.Fill(0);
+  auto size = itk::MakeSize(150, 150, 1);
+  auto start = itk::MakeIndex(0, 0, 0);
+
   ImageType::RegionType region;
   region.SetIndex(start);
   region.SetSize(size);

@@ -20,20 +20,14 @@ main(int, char **)
 
   // Constant image sources
   using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
-  ConstantImageSourceType::PointType   origin;
-  ConstantImageSourceType::SizeType    size;
-  ConstantImageSourceType::SpacingType spacing;
 
   // Create constant image of value 2 and reference image.
   ConstantImageSourceType::Pointer imgIn = ConstantImageSourceType::New();
   ConstantImageSourceType::Pointer imgRef = ConstantImageSourceType::New();
 
-  origin[0] = -126;
-  origin[1] = -126;
-  size[0] = 16;
-  size[1] = 16;
-  spacing[0] = 16.;
-  spacing[1] = 16.;
+  auto origin = itk::MakePoint(-126., -126.);
+  auto size = itk::MakeSize(16, 16);
+  auto spacing = itk::MakeVector(16., 16.);
 
   imgIn->SetOrigin(origin);
   imgIn->SetSpacing(spacing);

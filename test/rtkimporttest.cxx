@@ -113,7 +113,7 @@ main(int, char **)
   rtk::ImportImageFilter<itk::Image<unsigned int, 2>>::Pointer vol =
     rtk::ImportImageFilter<itk::Image<unsigned int, 2>>::New();
   vol->SetRegion(volRegion);
-  vol->SetSpacing(itk::Vector<double, 2>(1.0));
+  vol->SetSpacing(itk::MakeVector(1.0, 1.0));
   vol->SetImportPointer(vec_uint_2d, 10 * 10, false);
   vol->Update();
 
@@ -124,7 +124,7 @@ main(int, char **)
   rtk::ImportImageFilter<itk::CudaImage<unsigned int, 2>>::Pointer volCuda =
     rtk::ImportImageFilter<itk::CudaImage<unsigned int, 2>>::New();
   volCuda->SetRegion(volRegion);
-  volCuda->SetSpacing(itk::Vector<double, 2>(1.0));
+  volCuda->SetSpacing(itk::MakeVector(1.0, 1.0));
   volCuda->SetImportPointer(vec_uint_2d, 10 * 10, false);
   volCuda->Update();
 
@@ -149,7 +149,7 @@ main(int, char **)
 
   rtk::ImportImageFilter<itk::Image<int, 2>>::Pointer volInt = rtk::ImportImageFilter<itk::Image<int, 2>>::New();
   volInt->SetRegion(volIntRegion);
-  volInt->SetSpacing(itk::Vector<double, 2>(1.0));
+  volInt->SetSpacing(itk::MakeVector(1.0, 1.0));
   volInt->SetImportPointer(vec_int_2d, 10 * 10, false);
   volInt->Update();
 
@@ -160,7 +160,7 @@ main(int, char **)
   rtk::ImportImageFilter<itk::CudaImage<int, 2>>::Pointer volIntCuda =
     rtk::ImportImageFilter<itk::CudaImage<int, 2>>::New();
   volIntCuda->SetRegion(volIntRegion);
-  volIntCuda->SetSpacing(itk::Vector<double, 2>(1.0));
+  volIntCuda->SetSpacing(itk::MakeVector(1.0, 1.0));
   volIntCuda->SetImportPointer(vec_int_2d, 10 * 10, false);
   volIntCuda->Update();
 
@@ -185,7 +185,7 @@ main(int, char **)
 
   rtk::ImportImageFilter<itk::Image<float, 2>>::Pointer volFloat = rtk::ImportImageFilter<itk::Image<float, 2>>::New();
   volFloat->SetRegion(volFloatRegion);
-  volFloat->SetSpacing(itk::Vector<double, 2>(1.0));
+  volFloat->SetSpacing(itk::MakeVector(1.0, 1.0));
   volFloat->SetImportPointer(vec_float_2d, 10 * 10, false);
   volFloat->Update();
 
@@ -196,7 +196,7 @@ main(int, char **)
   rtk::ImportImageFilter<itk::CudaImage<float, 2>>::Pointer volFloatCuda =
     rtk::ImportImageFilter<itk::CudaImage<float, 2>>::New();
   volFloatCuda->SetRegion(volFloatRegion);
-  volFloatCuda->SetSpacing(itk::Vector<double, 2>(1.0));
+  volFloatCuda->SetSpacing(itk::MakeVector(1.0, 1.0));
   volFloatCuda->SetImportPointer(vec_float_2d, 10 * 10, false);
   volFloatCuda->Update();
 
@@ -222,7 +222,7 @@ main(int, char **)
   rtk::ImportImageFilter<itk::Image<double, 2>>::Pointer volDouble =
     rtk::ImportImageFilter<itk::Image<double, 2>>::New();
   volDouble->SetRegion(volDoubleRegion);
-  volDouble->SetSpacing(itk::Vector<double, 2>(1.0));
+  volDouble->SetSpacing(itk::MakeVector(1.0, 1.0));
   volDouble->SetImportPointer(vec_double_2d, 10 * 10, false);
   volDouble->Update();
 
@@ -233,7 +233,7 @@ main(int, char **)
   rtk::ImportImageFilter<itk::CudaImage<double, 2>>::Pointer volDoubleCuda =
     rtk::ImportImageFilter<itk::CudaImage<double, 2>>::New();
   volDoubleCuda->SetRegion(volDoubleRegion);
-  volDoubleCuda->SetSpacing(itk::Vector<double, 2>(1.0));
+  volDoubleCuda->SetSpacing(itk::MakeVector(1.0, 1.0));
   volDoubleCuda->SetImportPointer(vec_double_2d, 10 * 10, false);
   volDoubleCuda->Update();
 

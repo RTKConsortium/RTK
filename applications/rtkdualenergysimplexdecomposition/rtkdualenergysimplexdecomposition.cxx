@@ -89,10 +89,7 @@ main(int argc, char * argv[])
   {
     rtk::ConstantImageSource<DetectorResponseImageType>::Pointer detectorSource =
       rtk::ConstantImageSource<DetectorResponseImageType>::New();
-    DetectorResponseImageType::SizeType sourceSize;
-    sourceSize[0] = 1;
-    sourceSize[1] = MaximumEnergy;
-    detectorSource->SetSize(sourceSize);
+    detectorSource->SetSize(itk::MakeSize(1, MaximumEnergy));
     detectorSource->SetConstant(1.0);
     detectorSource->Update();
     detectorImage = detectorSource->GetOutput();

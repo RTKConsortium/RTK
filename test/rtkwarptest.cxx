@@ -33,29 +33,17 @@ main(int, char **)
 
   // Constant image sources
   using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
-  ConstantImageSourceType::PointType   origin;
-  ConstantImageSourceType::SizeType    size;
-  ConstantImageSourceType::SpacingType spacing;
 
   ConstantImageSourceType::Pointer tomographySource = ConstantImageSourceType::New();
-  origin[0] = -63.;
-  origin[1] = -31.;
-  origin[2] = -63.;
+  auto                             origin = itk::MakePoint(-63., -31., -63.);
 #if FAST_TESTS_NO_CHECKS
-  size[0] = 32;
-  size[1] = 32;
-  size[2] = 32;
-  spacing[0] = 8.;
-  spacing[1] = 8.;
-  spacing[2] = 8.;
+  auto size = itk::MakeSize(32, 32, 32);
+  auto spacing = itk::MakeVector(8., 8., 8.);
 #else
-  size[0] = 64;
-  size[1] = 32;
-  size[2] = 64;
-  spacing[0] = 2.;
-  spacing[1] = 2.;
-  spacing[2] = 2.;
+  auto size = itk::MakeSize(64, 32, 64);
+  auto spacing = itk::MakeVector(2., 2., 2.);
 #endif
+
   tomographySource->SetOrigin(origin);
   tomographySource->SetSpacing(spacing);
   tomographySource->SetSize(size);
@@ -68,14 +56,8 @@ main(int, char **)
 
   DVFImageType::Pointer deformationField = DVFImageType::New();
 
-  DVFImageType::IndexType startMotion;
-  startMotion[0] = 0; // first index on X
-  startMotion[1] = 0; // first index on Y
-  startMotion[2] = 0; // first index on Z
-  DVFImageType::SizeType sizeMotion;
-  sizeMotion[0] = 64; // size along X
-  sizeMotion[1] = 64; // size along Y
-  sizeMotion[2] = 64; // size along Z
+  auto                    startMotion = itk::MakeIndex(0, 0, 0);
+  auto                    sizeMotion = itk::MakeSize(64, 64, 64);
   DVFImageType::PointType originMotion;
   originMotion[0] = (sizeMotion[0] - 1) * (-0.5); // size along X
   originMotion[1] = (sizeMotion[1] - 1) * (-0.5); // size along Y
