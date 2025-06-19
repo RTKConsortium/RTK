@@ -74,7 +74,7 @@ main(int argc, char * argv[])
   {
     // Create new empty volume
     using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
-    ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
+    auto constantImageSource = ConstantImageSourceType::New();
     rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkvectorconjugategradient>(
       constantImageSource, args_info);
     TRY_AND_EXIT_ON_ITK_EXCEPTION(constantImageSource->Update())
@@ -86,7 +86,7 @@ main(int argc, char * argv[])
   if (args_info.weights_given)
   {
     using WeightsReaderType = itk::ImageFileReader<WeightsImageType>;
-    WeightsReaderType::Pointer weightsReader = WeightsReaderType::New();
+    auto weightsReader = WeightsReaderType::New();
     weightsReader->SetFileName(args_info.weights_arg);
     inputWeights = weightsReader->GetOutput();
     TRY_AND_EXIT_ON_ITK_EXCEPTION(inputWeights->Update())
@@ -97,7 +97,7 @@ main(int argc, char * argv[])
   if (args_info.regweights_given)
   {
     using WeightsReaderType = itk::ImageFileReader<SingleComponentImageType>;
-    WeightsReaderType::Pointer localRegWeightsReader = WeightsReaderType::New();
+    auto localRegWeightsReader = WeightsReaderType::New();
     localRegWeightsReader->SetFileName(args_info.regweights_arg);
     localRegWeights = localRegWeightsReader->GetOutput();
     localRegWeights->Update();
@@ -113,7 +113,7 @@ main(int argc, char * argv[])
   // Set the forward and back projection filters to be used
   using ConjugateGradientFilterType =
     rtk::ConjugateGradientConeBeamReconstructionFilter<OutputImageType, SingleComponentImageType, WeightsImageType>;
-  ConjugateGradientFilterType::Pointer conjugategradient = ConjugateGradientFilterType::New();
+  auto conjugategradient = ConjugateGradientFilterType::New();
   SetForwardProjectionFromGgo(args_info, conjugategradient.GetPointer());
   SetBackProjectionFromGgo(args_info, conjugategradient.GetPointer());
   conjugategradient->SetInputVolume(input);

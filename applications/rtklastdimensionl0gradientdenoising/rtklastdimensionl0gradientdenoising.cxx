@@ -47,12 +47,12 @@ main(int argc, char * argv[])
 
   // Read input
   using ReaderType = itk::ImageFileReader<OutputImageType>;
-  ReaderType::Pointer reader = ReaderType::New();
+  auto reader = ReaderType::New();
   reader->SetFileName(args_info.input_arg);
   reader->ReleaseDataFlagOn();
 
   // Apply L0 gradient norm denoising
-  DenoisingFilterType::Pointer denoising = DenoisingFilterType::New();
+  auto denoising = DenoisingFilterType::New();
   denoising->SetInput(reader->GetOutput());
   denoising->SetLambda(args_info.lambda_arg);
   denoising->SetNumberOfIterations(args_info.niter_arg);

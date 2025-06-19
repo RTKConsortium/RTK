@@ -119,7 +119,7 @@ ForbildPhantomFileReader::CreateForbildSphere(const std::string & s)
     itkExceptionMacro(<< "Could not find r (radius) in " << s);
   VectorType axes;
   axes.Fill(r);
-  QuadricShape::Pointer q = QuadricShape::New();
+  auto q = QuadricShape::New();
   q->SetEllipsoid(m_Center, axes);
   m_ConvexShape = q.GetPointer();
 }
@@ -134,7 +134,7 @@ ForbildPhantomFileReader::CreateForbildBox(const std::string & s)
     itkExceptionMacro(<< "Could not find dy in " << s);
   if (!FindParameterInString("dz", s, length[2]))
     itkExceptionMacro(<< "Could not find dz in " << s);
-  BoxShape::Pointer b = BoxShape::New();
+  auto b = BoxShape::New();
   b->SetBoxMin(m_Center - 0.5 * length);
   b->SetBoxMax(m_Center + 0.5 * length);
   m_ConvexShape = b.GetPointer();
@@ -179,7 +179,7 @@ ForbildPhantomFileReader::CreateForbildCylinder(const std::string & s, const std
       itkExceptionMacro(<< "Could not find axis in " << s);
     rot = ComputeRotationMatrixBetweenVectors(planeDir, dir);
   }
-  QuadricShape::Pointer q = QuadricShape::New();
+  auto q = QuadricShape::New();
   q->SetEllipsoid(VectorType(0.), axes);
   q->AddClipPlane(planeDir, 0.5 * l);
   q->AddClipPlane(-1. * planeDir, 0.5 * l);
@@ -209,7 +209,7 @@ ForbildPhantomFileReader::CreateForbildElliptCyl(const std::string & s, const st
   for (unsigned int i = 0; i < Dimension; i++)
     planeDir[i] = (axes[i] == 0.) ? 1. : 0.;
 
-  QuadricShape::Pointer q = QuadricShape::New();
+  auto q = QuadricShape::New();
   q->SetEllipsoid(VectorType(0.), axes);
   q->AddClipPlane(planeDir, 0.5 * l);
   q->AddClipPlane(-1. * planeDir, 0.5 * l);
@@ -266,7 +266,7 @@ ForbildPhantomFileReader::CreateForbildEllipsoid(const std::string & s, const st
     itkExceptionMacro(<< "Could not find dy in " << s);
   if (!FindParameterInString("dz", s, axes[2]))
     itkExceptionMacro(<< "Could not find dz in " << s);
-  QuadricShape::Pointer q = QuadricShape::New();
+  auto q = QuadricShape::New();
   q->SetEllipsoid(VectorType(0.), axes);
 
   if (fig == "Ellipsoid_free")
@@ -325,8 +325,8 @@ ForbildPhantomFileReader::CreateForbildCone(const std::string & s, const std::st
   planeDir[1] = 0.;
   planeDir[2] = 1.;
 
-  QuadricShape::Pointer q = QuadricShape::New();
-  PointType             spatialOffset;
+  auto      q = QuadricShape::New();
+  PointType spatialOffset;
   spatialOffset[0] = 0.;
   spatialOffset[1] = 0.;
   if (r2 > r1)
@@ -526,7 +526,7 @@ ForbildPhantomFileReader::FindUnions(const std::string & s)
   while (re.find(currs))
   {
     currs += re.end();
-    IntersectionOfConvexShapes::Pointer ico = IntersectionOfConvexShapes::New();
+    auto ico = IntersectionOfConvexShapes::New();
     ico->AddConvexShape(m_ConvexShape);
     size_t len = m_GeometricPhantom->GetConvexShapes().size();
     int    u = std::stoi(re.match(1).c_str());

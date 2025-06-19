@@ -62,7 +62,7 @@ main(int, char **)
   FourDSourceType::SizeType    fourDSize;
   FourDSourceType::SpacingType fourDSpacing;
 
-  ConstantImageSourceType::Pointer tomographySource = ConstantImageSourceType::New();
+  auto tomographySource = ConstantImageSourceType::New();
   origin[0] = -63.;
   origin[1] = -31.;
   origin[2] = -63.;
@@ -86,7 +86,7 @@ main(int, char **)
   tomographySource->SetSize(size);
   tomographySource->SetConstant(0.);
 
-  FourDSourceType::Pointer fourdSource = FourDSourceType::New();
+  auto fourdSource = FourDSourceType::New();
   fourDOrigin[0] = -63.;
   fourDOrigin[1] = -31.5;
   fourDOrigin[2] = -63.;
@@ -115,7 +115,7 @@ main(int, char **)
   fourdSource->SetSize(fourDSize);
   fourdSource->SetConstant(0.);
 
-  ConstantImageSourceType::Pointer projectionsSource = ConstantImageSourceType::New();
+  auto projectionsSource = ConstantImageSourceType::New();
   origin[0] = -254.;
   origin[1] = -254.;
   origin[2] = -254.;
@@ -139,7 +139,7 @@ main(int, char **)
   projectionsSource->SetSize(size);
   projectionsSource->SetConstant(0.);
 
-  ConstantImageSourceType::Pointer oneProjectionSource = ConstantImageSourceType::New();
+  auto oneProjectionSource = ConstantImageSourceType::New();
   size[2] = 1;
   oneProjectionSource->SetOrigin(origin);
   oneProjectionSource->SetSpacing(spacing);
@@ -150,7 +150,7 @@ main(int, char **)
   {
     // Geometry object
     using GeometryType = rtk::ThreeDCircularProjectionGeometry;
-    GeometryType::Pointer geometry = GeometryType::New();
+    auto geometry = GeometryType::New();
 
     // Projections
     using REIType = rtk::RayEllipsoidIntersectionImageFilter<VolumeType, ProjectionStackType>;
@@ -160,10 +160,10 @@ main(int, char **)
     destinationIndex[1] = 0;
     destinationIndex[2] = 0;
 
-    PasteImageFilterType::Pointer pasteFilter = PasteImageFilterType::New();
+    auto pasteFilter = PasteImageFilterType::New();
     pasteFilter->SetDestinationImage(projectionsSource->GetOutput());
 
-    PasteImageFilterType::Pointer pasteFilterStaticProjections = PasteImageFilterType::New();
+    auto pasteFilterStaticProjections = PasteImageFilterType::New();
     pasteFilterStaticProjections->SetDestinationImage(projectionsSource->GetOutput());
 
 #ifdef USE_CUDA
@@ -180,11 +180,11 @@ main(int, char **)
       geometry->AddProjection(600., 1200., noProj * 360. / NumberOfProjectionImages, 0, 0, 0, 0, 20, 15);
 
       // Geometry object
-      GeometryType::Pointer oneProjGeometry = GeometryType::New();
+      auto oneProjGeometry = GeometryType::New();
       oneProjGeometry->AddProjection(600., 1200., noProj * 360. / NumberOfProjectionImages, 0, 0, 0, 0, 20, 15);
 
       // Ellipse 1
-      REIType::Pointer    e1 = REIType::New();
+      auto                e1 = REIType::New();
       REIType::VectorType semiprincipalaxis, center;
       semiprincipalaxis.Fill(60.);
       semiprincipalaxis[1] = 30;
@@ -199,7 +199,7 @@ main(int, char **)
       e1->Update();
 
       // Ellipse 2
-      REIType::Pointer e2 = REIType::New();
+      auto e2 = REIType::New();
       semiprincipalaxis.Fill(8.);
       center[0] = 4 * (itk::Math::abs((4 + noProj) % 8 - 4.) - 2.);
       center[1] = 0.;
@@ -213,7 +213,7 @@ main(int, char **)
       e2->Update();
 
       // Ellipse 2 without motion
-      REIType::Pointer e2static = REIType::New();
+      auto e2static = REIType::New();
       semiprincipalaxis.Fill(8.);
       center[0] = 0;
       center[1] = 0.;
@@ -257,8 +257,8 @@ main(int, char **)
     // Create a vector field and its (very rough) inverse
     using IteratorType = itk::ImageRegionIteratorWithIndex<DVFSequenceImageType>;
 
-    DVFSequenceImageType::Pointer deformationField = DVFSequenceImageType::New();
-    DVFSequenceImageType::Pointer inverseDeformationField = DVFSequenceImageType::New();
+    auto deformationField = DVFSequenceImageType::New();
+    auto inverseDeformationField = DVFSequenceImageType::New();
 
     DVFSequenceImageType::IndexType startMotion;
     startMotion[0] = 0; // first index on X
@@ -327,7 +327,7 @@ main(int, char **)
 
     // Input 4D volume sequence
     using JoinFilterType = itk::JoinSeriesImageFilter<VolumeType, VolumeSeriesType>;
-    JoinFilterType::Pointer join = JoinFilterType::New();
+    auto join = JoinFilterType::New();
 
     // Read the phases file
     rtk::PhasesToInterpolationWeights::Pointer phaseReader = rtk::PhasesToInterpolationWeights::New();
@@ -337,7 +337,7 @@ main(int, char **)
 
     // The CPU voxel-based static 3D back projection used as a reference for comparison
     using StaticBackProjectionFilterType = rtk::BackProjectionImageFilter<VolumeType, VolumeType>;
-    StaticBackProjectionFilterType::Pointer backprojection = StaticBackProjectionFilterType::New();
+    auto backprojection = StaticBackProjectionFilterType::New();
     backprojection->SetInput(0, tomographySource->GetOutput());
     backprojection->SetInput(1, pasteFilterStaticProjections->GetOutput());
     backprojection->SetGeometry(geometry.GetPointer());
@@ -346,7 +346,7 @@ main(int, char **)
     // Divide the result by the number of volumes in the 4D sequence,
     // for the attenuation results to approximately match
     using DivideFilterType = itk::DivideImageFilter<VolumeType, VolumeType, VolumeType>;
-    DivideFilterType::Pointer divide = DivideFilterType::New();
+    auto divide = DivideFilterType::New();
     divide->SetInput1(backprojection->GetOutput());
     divide->SetConstant2(fourDSize[3]);
     divide->Update();
@@ -359,7 +359,7 @@ main(int, char **)
 
     // Create and set the warped forward projection filter
     using WarpProjectionStackToFourDType = rtk::WarpProjectionStackToFourDImageFilter<VolumeSeriesType, VolumeType>;
-    WarpProjectionStackToFourDType::Pointer warpbackproject = WarpProjectionStackToFourDType::New();
+    auto warpbackproject = WarpProjectionStackToFourDType::New();
     warpbackproject->SetInputVolumeSeries(fourdSource->GetOutput());
     warpbackproject->SetInputProjectionStack(pasteFilter->GetOutput());
     warpbackproject->SetGeometry(geometry);

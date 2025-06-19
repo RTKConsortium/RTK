@@ -47,7 +47,7 @@ main(int argc, char * argv[])
 
   // Read signal file
   using ReaderType = itk::CSVArray2DFileReader<double>;
-  ReaderType::Pointer signalReader = ReaderType::New();
+  auto signalReader = ReaderType::New();
   signalReader->SetFileName(args_info.signal_arg);
   signalReader->SetFieldDelimiterCharacter(';');
   signalReader->HasRowHeadersOff();
@@ -64,7 +64,7 @@ main(int argc, char * argv[])
   }
 
   // Create output RGB image
-  OutputImageType::Pointer RGBout = OutputImageType::New();
+  auto RGBout = OutputImageType::New();
   RGBout->SetRegions(readImage->GetLargestPossibleRegion());
   RGBout->Allocate();
 

@@ -45,7 +45,7 @@ main(int argc, char * argv[])
   ConstantImageSourceType::SizeType    size;
   ConstantImageSourceType::SpacingType spacing;
 
-  ConstantImageSourceType::Pointer tomographySource = ConstantImageSourceType::New();
+  auto tomographySource = ConstantImageSourceType::New();
   origin[0] = -127.;
   origin[1] = -127.;
   origin[2] = -127.;
@@ -75,7 +75,7 @@ main(int argc, char * argv[])
 
   // Shepp Logan reference filter
   using DSLType = rtk::DrawSheppLoganFilter<OutputImageType, OutputImageType>;
-  DSLType::Pointer dsl = DSLType::New();
+  auto dsl = DSLType::New();
   dsl->SetInput(tomographySource->GetOutput());
   dsl->SetPhantomScale(128.);
   dsl->InPlaceOff();
@@ -83,7 +83,7 @@ main(int argc, char * argv[])
 
   // Shepp Logan reference filter from Configuration File
   using DGPType = rtk::DrawGeometricPhantomImageFilter<OutputImageType, OutputImageType>;
-  DGPType::Pointer dgp = DGPType::New();
+  auto dgp = DGPType::New();
   dgp->SetInput(tomographySource->GetOutput());
   dgp->InPlaceOff();
   dgp->SetConfigFile(argv[1]);
@@ -115,7 +115,7 @@ main(int argc, char * argv[])
 
   // Draw CYLINDER
   using DCType = rtk::DrawCylinderImageFilter<OutputImageType, OutputImageType>;
-  DCType::Pointer dcl = DCType::New();
+  auto dcl = DCType::New();
 
   DCType::VectorType axis, center;
   axis[0] = 100.;
@@ -139,7 +139,7 @@ main(int argc, char * argv[])
   axis[2] = 25.;
 
   using DCOType = rtk::DrawConeImageFilter<OutputImageType, OutputImageType>;
-  DCOType::Pointer dco = DCOType::New();
+  auto dco = DCOType::New();
   dco->SetInput(tomographySource->GetOutput());
   dco->SetAxis(axis);
   dco->SetCenter(center);
@@ -148,7 +148,7 @@ main(int argc, char * argv[])
 
   // Add Image Filter used to concatenate the different figures obtained on each iteration
   using AddImageFilterType = itk::AddImageFilter<OutputImageType, OutputImageType, OutputImageType>;
-  AddImageFilterType::Pointer addFilter = AddImageFilterType::New();
+  auto addFilter = AddImageFilterType::New();
 
   addFilter->SetInput1(dcl->GetOutput());
   addFilter->SetInput2(dco->GetOutput());

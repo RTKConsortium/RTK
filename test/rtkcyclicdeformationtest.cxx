@@ -69,7 +69,7 @@ main(int, char **)
   // Create a vector field and its (very rough) inverse
   using IteratorType = itk::ImageRegionIteratorWithIndex<DVFSequenceImageType>;
 
-  DVFSequenceImageType::Pointer deformationField = DVFSequenceImageType::New();
+  auto deformationField = DVFSequenceImageType::New();
 
   DVFSequenceImageType::IndexType startMotion;
   startMotion[0] = 0; // first index on X
@@ -143,7 +143,7 @@ main(int, char **)
 
   std::cout << "\n\n****** Case 1: CPU cyclic deformation field ******" << std::endl;
 
-  CyclicDeformationType::Pointer cyclic = CyclicDeformationType::New();
+  auto cyclic = CyclicDeformationType::New();
   cyclic->SetInput(deformationField);
   cyclic->SetSignalFilename(signalFileName);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(cyclic->Update());

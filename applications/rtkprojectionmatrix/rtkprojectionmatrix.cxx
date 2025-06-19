@@ -103,7 +103,7 @@ main(int argc, char * argv[])
 
   // Projections reader
   using ReaderType = rtk::ProjectionsReader<OutputImageType>;
-  ReaderType::Pointer reader = ReaderType::New();
+  auto reader = ReaderType::New();
   rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkprojectionmatrix>(reader, args_info);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(reader->Update())
 
@@ -130,7 +130,7 @@ main(int argc, char * argv[])
 
   // Create reconstructed image
   using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
-  ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
+  auto constantImageSource = ConstantImageSourceType::New();
   rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkprojectionmatrix>(constantImageSource,
                                                                                              args_info);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(constantImageSource->Update())
@@ -164,7 +164,7 @@ main(int argc, char * argv[])
     OutputImageType,
     rtk::Functor::InterpolationWeightMultiplicationBackProjection<OutputPixelType, OutputPixelType>,
     rtk::Functor::StoreSparseMatrixSplatWeightMultiplication<OutputPixelType, double, OutputPixelType>>;
-  JosephType::Pointer backProjection = JosephType::New();
+  auto backProjection = JosephType::New();
   backProjection->SetInput(constantImageSource->GetOutput());
   backProjection->SetInput(1, reader->GetOutput());
   backProjection->SetGeometry(geometry);

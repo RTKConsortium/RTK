@@ -51,14 +51,14 @@ main(int argc, char * argv[])
 
   // Elekta projections reader
   using ReaderType = rtk::ProjectionsReader<ImageType>;
-  ReaderType::Pointer      reader = ReaderType::New();
+  auto                     reader = ReaderType::New();
   std::vector<std::string> fileNames;
   fileNames.emplace_back(argv[2]);
   reader->SetFileNames(fileNames);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(reader->Update());
 
   // Reference projections reader
-  ReaderType::Pointer readerRef = ReaderType::New();
+  auto readerRef = ReaderType::New();
   fileNames.clear();
   fileNames.emplace_back(argv[4]);
   readerRef->SetFileNames(fileNames);

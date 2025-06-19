@@ -71,7 +71,7 @@ createInputImage(const std::vector<float> & coef)
   region.SetSize(size);
   region.SetIndex(start);
 
-  ImageType::Pointer inputI = ImageType::New();
+  auto inputI = ImageType::New();
   inputI->SetRegions(region);
   inputI->SetSpacing(spacing);
   inputI->Allocate();
@@ -112,7 +112,7 @@ main(int, char **)
 #else
   using ScatterCorrectionType = rtk::ScatterGlareCorrectionImageFilter<ImageType, ImageType, float>;
 #endif
-  ScatterCorrectionType::Pointer SFilter = ScatterCorrectionType::New();
+  auto SFilter = ScatterCorrectionType::New();
 
   std::vector<float> coef;
   coef.push_back(0.0787f);

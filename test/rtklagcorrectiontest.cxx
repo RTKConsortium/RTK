@@ -36,7 +36,7 @@ main(int, char **)
   using LCImageFilterType = rtk::LagCorrectionImageFilter<ImageType, ModelOrder>;
 #endif
 
-  LCImageFilterType::Pointer lagcorr = LCImageFilterType::New();
+  auto lagcorr = LCImageFilterType::New();
 
   ImageType::SizeType size;
   size[0] = 650;
@@ -68,7 +68,7 @@ main(int, char **)
 
   for (unsigned i = 0; i < Nprojections; ++i)
   {
-    ImageType::Pointer inputI = ImageType::New();
+    auto inputI = ImageType::New();
     inputI->SetRegions(region);
     inputI->Allocate();
     inputI->FillBuffer(1.0f);

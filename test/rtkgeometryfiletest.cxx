@@ -66,7 +66,7 @@ int
 main(int, char **)
 {
   // Create a geometry object with 1 projection
-  GeometryType::Pointer geometry = GeometryType::New();
+  auto geometry = GeometryType::New();
   geometry->AddProjection(615., 548., 36., 1.3, 1.57, 15.4, 13.48, 5.42, 7.56);
   WriteReadAndCheck(geometry);
 

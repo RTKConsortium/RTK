@@ -42,7 +42,7 @@ main(int, char **)
   ConstantImageSourceType::SizeType    size;
   ConstantImageSourceType::SpacingType spacing;
 
-  ConstantImageSourceType::Pointer tomographySource = ConstantImageSourceType::New();
+  auto tomographySource = ConstantImageSourceType::New();
   origin[0] = -63.;
   origin[1] = -31.;
   origin[2] = -63.;
@@ -66,7 +66,7 @@ main(int, char **)
   tomographySource->SetSize(size);
   tomographySource->SetConstant(0.);
 
-  ConstantImageSourceType::Pointer projectionsSource = ConstantImageSourceType::New();
+  auto projectionsSource = ConstantImageSourceType::New();
   origin[0] = -254.;
   origin[1] = -254.;
   origin[2] = -254.;
@@ -90,7 +90,7 @@ main(int, char **)
   projectionsSource->SetSize(size);
   projectionsSource->SetConstant(0.);
 
-  ConstantImageSourceType::Pointer oneProjectionSource = ConstantImageSourceType::New();
+  auto oneProjectionSource = ConstantImageSourceType::New();
   size[2] = 1;
   oneProjectionSource->SetOrigin(origin);
   oneProjectionSource->SetSpacing(spacing);
@@ -99,7 +99,7 @@ main(int, char **)
 
   // Geometry object
   using GeometryType = rtk::ThreeDCircularProjectionGeometry;
-  GeometryType::Pointer geometry = GeometryType::New();
+  auto geometry = GeometryType::New();
 
   // Projections
   using REIType = rtk::RayEllipsoidIntersectionImageFilter<OutputImageType, OutputImageType>;
@@ -108,7 +108,7 @@ main(int, char **)
   destinationIndex[0] = 0;
   destinationIndex[1] = 0;
   destinationIndex[2] = 0;
-  PasteImageFilterType::Pointer pasteFilter = PasteImageFilterType::New();
+  auto pasteFilter = PasteImageFilterType::New();
 
   std::ofstream            signalFile("signal.txt");
   OutputImageType::Pointer wholeImage = projectionsSource->GetOutput();
@@ -117,11 +117,11 @@ main(int, char **)
     geometry->AddProjection(600., 1200., noProj * 360. / NumberOfProjectionImages, 0, 0, 0, 0, 20, 15);
 
     // Geometry object
-    GeometryType::Pointer oneProjGeometry = GeometryType::New();
+    auto oneProjGeometry = GeometryType::New();
     oneProjGeometry->AddProjection(600., 1200., noProj * 360. / NumberOfProjectionImages, 0, 0, 0, 0, 20, 15);
 
     // Ellipse 1
-    REIType::Pointer    e1 = REIType::New();
+    auto                e1 = REIType::New();
     REIType::VectorType semiprincipalaxis, center;
     semiprincipalaxis.Fill(60.);
     center.Fill(0.);
@@ -135,7 +135,7 @@ main(int, char **)
     e1->Update();
 
     // Ellipse 2
-    REIType::Pointer e2 = REIType::New();
+    auto e2 = REIType::New();
     semiprincipalaxis.Fill(8.);
     center[0] = 4 * (itk::Math::abs((4 + noProj) % 8 - 4.) - 2.);
     center[1] = 0.;
@@ -208,10 +208,10 @@ main(int, char **)
   }
 
   // Create cyclic deformation
-  DeformationType::Pointer def = DeformationType::New();
+  auto def = DeformationType::New();
   def->SetInput(deformationField);
   using WarpBPType = rtk::FDKWarpBackProjectionImageFilter<OutputImageType, OutputImageType, DeformationType>;
-  WarpBPType::Pointer bp = WarpBPType::New();
+  auto bp = WarpBPType::New();
   bp->SetDeformation(def);
   bp->SetGeometry(geometry.GetPointer());
 
@@ -221,7 +221,7 @@ main(int, char **)
 #else
   using FDKType = rtk::FDKConeBeamReconstructionFilter<OutputImageType>;
 #endif
-  FDKType::Pointer feldkamp = FDKType::New();
+  auto feldkamp = FDKType::New();
   feldkamp->SetInput(0, tomographySource->GetOutput());
   feldkamp->SetInput(1, wholeImage);
   feldkamp->SetGeometry(geometry);
@@ -231,7 +231,7 @@ main(int, char **)
 
   // FOV
   using FOVFilterType = rtk::FieldOfViewImageFilter<OutputImageType, OutputImageType>;
-  FOVFilterType::Pointer fov = FOVFilterType::New();
+  auto fov = FOVFilterType::New();
   fov->SetInput(0, feldkamp->GetOutput());
   fov->SetProjectionsStack(wholeImage.GetPointer());
   fov->SetGeometry(geometry);
@@ -240,7 +240,7 @@ main(int, char **)
   // Create a reference object (in this case a 3D phantom reference).
   // Ellipse 1
   using DEType = rtk::DrawEllipsoidImageFilter<OutputImageType, OutputImageType>;
-  DEType::Pointer e1 = DEType::New();
+  auto e1 = DEType::New();
   e1->SetInput(tomographySource->GetOutput());
   e1->SetDensity(2.);
   DEType::VectorType axis;
@@ -254,7 +254,7 @@ main(int, char **)
   TRY_AND_EXIT_ON_ITK_EXCEPTION(e1->Update())
 
   // Ellipse 2
-  DEType::Pointer e2 = DEType::New();
+  auto e2 = DEType::New();
   e2->SetInput(e1->GetOutput());
   e2->SetDensity(-1.);
   DEType::VectorType axis2;

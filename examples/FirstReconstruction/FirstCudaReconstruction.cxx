@@ -21,13 +21,12 @@ main(int argc, char ** argv)
   using ImageType = itk::CudaImage<float, 3>;
 
   // Defines the RTK geometry object
-  using GeometryType = rtk::ThreeDCircularProjectionGeometry;
-  GeometryType::Pointer geometry = GeometryType::New();
-  unsigned int          numberOfProjections = 360;
-  double                firstAngle = 0;
-  double                angularArc = 360;
-  unsigned int          sid = 600;  // source to isocenter distance
-  unsigned int          sdd = 1200; // source to detector distance
+  auto         geometry = rtk::ThreeDCircularProjectionGeometry::New();
+  unsigned int numberOfProjections = 360;
+  double       firstAngle = 0;
+  double       angularArc = 360;
+  unsigned int sid = 600;  // source to isocenter distance
+  unsigned int sdd = 1200; // source to detector distance
   for (unsigned int noProj = 0; noProj < numberOfProjections; noProj++)
   {
     double angle = firstAngle + noProj * angularArc / numberOfProjections;
@@ -35,15 +34,14 @@ main(int argc, char ** argv)
   }
 
   // Write the geometry to disk
-  rtk::ThreeDCircularProjectionGeometryXMLFileWriter::Pointer xmlWriter;
-  xmlWriter = rtk::ThreeDCircularProjectionGeometryXMLFileWriter::New();
+  auto xmlWriter = rtk::ThreeDCircularProjectionGeometryXMLFileWriter::New();
   xmlWriter->SetFilename(argv[2]);
   xmlWriter->SetObject(geometry);
   xmlWriter->WriteFile();
 
   // Create a stack of empty projection images
   using ConstantImageSourceType = rtk::ConstantImageSource<ImageType>;
-  ConstantImageSourceType::Pointer     constantImageSource = ConstantImageSourceType::New();
+  auto                                 constantImageSource = ConstantImageSourceType::New();
   ConstantImageSourceType::PointType   origin;
   ConstantImageSourceType::SpacingType spacing;
   ConstantImageSourceType::SizeType    sizeOutput;
@@ -65,7 +63,7 @@ main(int argc, char ** argv)
 
   // Create projections of an ellipse
   using REIType = rtk::RayEllipsoidIntersectionImageFilter<ImageType, ImageType>;
-  REIType::Pointer    rei = REIType::New();
+  auto                rei = REIType::New();
   REIType::VectorType semiprincipalaxis, center;
   semiprincipalaxis.Fill(50.);
   center.Fill(0.);
@@ -78,7 +76,7 @@ main(int argc, char ** argv)
   rei->SetInput(constantImageSource->GetOutput());
 
   // Create reconstructed image
-  ConstantImageSourceType::Pointer constantImageSource2 = ConstantImageSourceType::New();
+  auto constantImageSource2 = ConstantImageSourceType::New();
   sizeOutput.Fill(128);
   origin.Fill(-63.5);
   spacing.Fill(1.);
@@ -90,7 +88,7 @@ main(int argc, char ** argv)
   // FDK reconstruction
   std::cout << "Reconstructing..." << std::endl;
   using FDKGPUType = rtk::CudaFDKConeBeamReconstructionFilter;
-  FDKGPUType::Pointer feldkamp = FDKGPUType::New();
+  auto feldkamp = FDKGPUType::New();
   feldkamp->SetInput(0, constantImageSource2->GetOutput());
   feldkamp->SetInput(1, rei->GetOutput());
   feldkamp->SetGeometry(geometry);
@@ -99,7 +97,7 @@ main(int argc, char ** argv)
 
   // Field-of-view masking
   using FOVFilterType = rtk::FieldOfViewImageFilter<ImageType, ImageType>;
-  FOVFilterType::Pointer fieldofview = FOVFilterType::New();
+  auto fieldofview = FOVFilterType::New();
   fieldofview->SetInput(0, feldkamp->GetOutput());
   fieldofview->SetProjectionsStack(rei->GetOutput());
   fieldofview->SetGeometry(geometry);
@@ -107,7 +105,7 @@ main(int argc, char ** argv)
   // Writer
   std::cout << "Writing output image..." << std::endl;
   using WriterType = itk::ImageFileWriter<ImageType>;
-  WriterType::Pointer writer = WriterType::New();
+  auto writer = WriterType::New();
   writer->SetFileName(argv[1]);
   writer->SetInput(fieldofview->GetOutput());
   writer->Update();

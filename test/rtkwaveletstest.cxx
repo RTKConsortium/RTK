@@ -81,7 +81,7 @@ main(int, char **)
   using OutputImageType = itk::Image<OutputPixelType, Dimension>;
   // Random image sources
   using RandomImageSourceType = itk::RandomImageSource<OutputImageType>;
-  RandomImageSourceType::Pointer randomVolumeSource = RandomImageSourceType::New();
+  auto randomVolumeSource = RandomImageSourceType::New();
 
   // Image meta data
   RandomImageSourceType::PointType   origin;
@@ -117,7 +117,7 @@ main(int, char **)
 
   // Wavelets deconstruction and reconstruction
   using DeconstructReconstructFilterType = rtk::DeconstructSoftThresholdReconstructImageFilter<OutputImageType>;
-  DeconstructReconstructFilterType::Pointer wavelets = DeconstructReconstructFilterType::New();
+  auto wavelets = DeconstructReconstructFilterType::New();
   wavelets->SetInput(randomVolumeSource->GetOutput());
   wavelets->SetNumberOfLevels(3);
   wavelets->SetOrder(3);

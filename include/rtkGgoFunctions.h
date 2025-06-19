@@ -98,7 +98,7 @@ SetConstantImageSourceFromGgo(TConstantImageSourceType * source, const TArgsInfo
   if (args_info.like_given)
   {
     using LikeReaderType = itk::ImageFileReader<ImageType>;
-    typename LikeReaderType::Pointer likeReader = LikeReaderType::New();
+    auto likeReader = LikeReaderType::New();
     likeReader->SetFileName(args_info.like_arg);
     TRY_AND_EXIT_ON_ITK_EXCEPTION(likeReader->UpdateOutputInformation());
     source->SetInformationFromImage(likeReader->GetOutput());

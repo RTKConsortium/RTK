@@ -34,7 +34,7 @@ main(int, char **)
   ConstantImageSourceType::SizeType    size;
   ConstantImageSourceType::SpacingType spacing;
 
-  ConstantImageSourceType::Pointer tomographySource = ConstantImageSourceType::New();
+  auto tomographySource = ConstantImageSourceType::New();
   origin[0] = -29.;
   origin[1] = -29.;
   origin[2] = -29.;
@@ -58,7 +58,7 @@ main(int, char **)
   tomographySource->SetSize(size);
   tomographySource->SetConstant(0.);
 
-  ConstantImageSourceType::Pointer projectionsSource = ConstantImageSourceType::New();
+  auto projectionsSource = ConstantImageSourceType::New();
   origin[0] = -29.;
   origin[1] = -29.;
   origin[2] = 0.;
@@ -91,7 +91,7 @@ main(int, char **)
 
   // Geometry object
   using GeometryType = rtk::ThreeDCircularProjectionGeometry;
-  GeometryType::Pointer geometry = GeometryType::New();
+  auto geometry = GeometryType::New();
   for (unsigned int noProj = 0; noProj < NumberOfProjectionImages; noProj++)
     geometry->AddProjection(600., 0., noProj * 360. / NumberOfProjectionImages);
 
@@ -100,7 +100,7 @@ main(int, char **)
   // Shepp Logan projections filter
   std::cout << "\n\n****** Projecting ******" << std::endl;
   using ProjectGPType = rtk::ProjectGeometricPhantomImageFilter<OutputImageType, OutputImageType>;
-  ProjectGPType::Pointer pgp = ProjectGPType::New();
+  auto pgp = ProjectGPType::New();
   pgp->SetInput(projectionsSource->GetOutput());
   pgp->SetGeometry(geometry);
   pgp->SetPhantomScale(1.2);
@@ -111,7 +111,7 @@ main(int, char **)
   // Create a reference object (in this case a 3D phantom reference).
   std::cout << "\n\n****** Drawing ******" << std::endl;
   using DrawGPType = rtk::DrawGeometricPhantomImageFilter<OutputImageType, OutputImageType>;
-  DrawGPType::Pointer dgp = DrawGPType::New();
+  auto dgp = DrawGPType::New();
   dgp->SetInput(tomographySource->GetOutput());
   dgp->SetPhantomScale(1.2);
   dgp->SetConfigFile(configFileName);
@@ -121,7 +121,7 @@ main(int, char **)
   // FDK reconstruction filtering
   std::cout << "\n\n****** Reconstructing ******" << std::endl;
   using FDKType = rtk::FDKConeBeamReconstructionFilter<OutputImageType>;
-  FDKType::Pointer feldkamp = FDKType::New();
+  auto feldkamp = FDKType::New();
   feldkamp->SetInput(0, tomographySource->GetOutput());
   feldkamp->SetInput(1, pgp->GetOutput());
   feldkamp->SetGeometry(geometry);

@@ -49,7 +49,7 @@ main(int argc, char * argv[])
 
   // Projections reader
   using projectionsReaderType = rtk::ProjectionsReader<OutputImageType>;
-  projectionsReaderType::Pointer projectionsReader = projectionsReaderType::New();
+  auto projectionsReader = projectionsReaderType::New();
   rtk::SetProjectionsReaderFromGgo<projectionsReaderType, args_info_rtkadmmwavelets>(projectionsReader, args_info);
 
   // Geometry
@@ -60,7 +60,7 @@ main(int argc, char * argv[])
 
   // Displaced detector weighting
   using DDFType = rtk::DisplacedDetectorImageFilter<OutputImageType>;
-  DDFType::Pointer ddf = DDFType::New();
+  auto ddf = DDFType::New();
   ddf->SetInput(projectionsReader->GetOutput());
   ddf->SetGeometry(geometry);
 
@@ -70,7 +70,7 @@ main(int argc, char * argv[])
   {
     // Read an existing image to initialize the volume
     using InputReaderType = itk::ImageFileReader<OutputImageType>;
-    InputReaderType::Pointer inputReader = InputReaderType::New();
+    auto inputReader = InputReaderType::New();
     inputReader->SetFileName(args_info.input_arg);
     inputFilter = inputReader;
   }
@@ -78,7 +78,7 @@ main(int argc, char * argv[])
   {
     // Create new empty volume
     using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
-    ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
+    auto constantImageSource = ConstantImageSourceType::New();
     rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkadmmwavelets>(constantImageSource,
                                                                                            args_info);
     inputFilter = constantImageSource;
@@ -90,7 +90,7 @@ main(int argc, char * argv[])
 
   // Set the reconstruction filter
   using ADMM_Wavelets_FilterType = rtk::ADMMWaveletsConeBeamReconstructionFilter<OutputImageType>;
-  ADMM_Wavelets_FilterType::Pointer admmFilter = ADMM_Wavelets_FilterType::New();
+  auto admmFilter = ADMM_Wavelets_FilterType::New();
 
   // Set the forward and back projection filters to be used inside admmFilter
   SetForwardProjectionFromGgo(args_info, admmFilter.GetPointer());

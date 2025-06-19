@@ -44,7 +44,7 @@ main(int argc, char * argv[])
 
   // Create a stack of empty projection images
   using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
-  ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
+  auto constantImageSource = ConstantImageSourceType::New();
   rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkprojectgeometricphantom>(constantImageSource,
                                                                                                     args_info);
 
@@ -96,7 +96,7 @@ main(int argc, char * argv[])
         rot[i][j] = args_info.rotation_arg[i * Dimension + j];
   }
 
-  PPCType::Pointer ppc = PPCType::New();
+  auto ppc = PPCType::New();
   ppc->SetInput(constantImageSource->GetOutput());
   ppc->SetGeometry(geometry);
   ppc->SetPhantomScale(scale);

@@ -33,7 +33,7 @@ main(int, char **)
   OutputImageType::IndexType ix;
 
   // Build the signal t -> sin(20*pi*t)
-  OutputImageType::Pointer signal = OutputImageType::New();
+  auto signal = OutputImageType::New();
   signal->SetSpacing(spacing);
   signal->SetRegions(size);
   signal->Allocate();
@@ -51,7 +51,7 @@ main(int, char **)
 
   // Build the analytic Hilbert transform of the signal
   // It is t -> -cos(20*pi*t)
-  OutputImageType::Pointer analyticHilbertSignal = OutputImageType::New();
+  auto analyticHilbertSignal = OutputImageType::New();
   analyticHilbertSignal->SetSpacing(spacing);
   analyticHilbertSignal->SetRegions(size);
   analyticHilbertSignal->Allocate();
@@ -70,7 +70,7 @@ main(int, char **)
 
   // Compute the Hilbert transform of the signal using rtkFFTHilbertImageFilter
   using HilbertType = rtk::FFTHilbertImageFilter<OutputImageType>;
-  HilbertType::Pointer hilbert = HilbertType::New();
+  auto hilbert = HilbertType::New();
   hilbert->SetInput(signal);
 
   using ZeroPadFactorsType = HilbertType::ZeroPadFactorsType;

@@ -48,7 +48,7 @@ main(int argc, char * argv[])
 
   // Projections reader
   using ReaderType = rtk::ProjectionsReader<OutputImageType>;
-  ReaderType::Pointer reader = ReaderType::New();
+  auto reader = ReaderType::New();
   rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkconjugategradient>(reader, args_info);
 
   // Geometry
@@ -63,7 +63,7 @@ main(int argc, char * argv[])
   {
     // Read an existing image to initialize the volume
     using InputReaderType = itk::ImageFileReader<OutputImageType>;
-    InputReaderType::Pointer inputReader = InputReaderType::New();
+    auto inputReader = InputReaderType::New();
     inputReader->SetFileName(args_info.input_arg);
     inputFilter = inputReader;
   }
@@ -71,7 +71,7 @@ main(int argc, char * argv[])
   {
     // Create new empty volume
     using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
-    ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
+    auto constantImageSource = ConstantImageSourceType::New();
     rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkconjugategradient>(constantImageSource,
                                                                                                 args_info);
     inputFilter = constantImageSource;
@@ -82,7 +82,7 @@ main(int argc, char * argv[])
   if (args_info.weights_given)
   {
     using WeightsReaderType = itk::ImageFileReader<OutputImageType>;
-    WeightsReaderType::Pointer weightsReader = WeightsReaderType::New();
+    auto weightsReader = WeightsReaderType::New();
     weightsReader->SetFileName(args_info.weights_arg);
     inputWeights = weightsReader->GetOutput();
     TRY_AND_EXIT_ON_ITK_EXCEPTION(inputWeights->Update())
@@ -93,7 +93,7 @@ main(int argc, char * argv[])
   if (args_info.regweights_given)
   {
     using WeightsReaderType = itk::ImageFileReader<OutputImageType>;
-    WeightsReaderType::Pointer localRegWeightsReader = WeightsReaderType::New();
+    auto localRegWeightsReader = WeightsReaderType::New();
     localRegWeightsReader->SetFileName(args_info.regweights_arg);
     localRegWeights = localRegWeightsReader->GetOutput();
     localRegWeights->Update();
@@ -108,7 +108,7 @@ main(int argc, char * argv[])
 
   // Set the forward and back projection filters to be used
   using ConjugateGradientFilterType = rtk::ConjugateGradientConeBeamReconstructionFilter<OutputImageType>;
-  ConjugateGradientFilterType::Pointer conjugategradient = ConjugateGradientFilterType::New();
+  auto conjugategradient = ConjugateGradientFilterType::New();
   SetForwardProjectionFromGgo(args_info, conjugategradient.GetPointer());
   SetBackProjectionFromGgo(args_info, conjugategradient.GetPointer());
   conjugategradient->SetInputVolume(inputFilter->GetOutput());

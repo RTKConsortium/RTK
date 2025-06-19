@@ -45,7 +45,7 @@ main(int, char **)
   ConstantImageSourceType::SizeType    size;
   ConstantImageSourceType::SpacingType spacing;
 
-  ConstantImageSourceType::Pointer tomographySource = ConstantImageSourceType::New();
+  auto tomographySource = ConstantImageSourceType::New();
 #if FAST_TESTS_NO_CHECKS
   size = itk::MakeSize(2, 2, 2);
   spacing = itk::MakeVector(254., 254., 254.);
@@ -58,7 +58,7 @@ main(int, char **)
   tomographySource->SetSize(size);
   tomographySource->SetConstant(0.);
 
-  ConstantImageSourceType::Pointer projectionsSource = ConstantImageSourceType::New();
+  auto projectionsSource = ConstantImageSourceType::New();
   origin = itk::MakePoint(-7.5, -1., -7.5);
 #if FAST_TESTS_NO_CHECKS
   size = itk::MakeSize(2, 2, NumberOfProjectionImages);
@@ -74,13 +74,13 @@ main(int, char **)
 
   // Geometry object
   using GeometryType = rtk::ThreeDCircularProjectionGeometry;
-  GeometryType::Pointer geometry = GeometryType::New();
+  auto geometry = GeometryType::New();
   for (unsigned int noProj = 0; noProj < NumberOfProjectionImages; noProj++)
     geometry->AddProjection(600., 0., noProj * 360. / NumberOfProjectionImages);
 
   // Shepp Logan projections filter
   using SLPType = rtk::SheppLoganPhantomFilter<OutputImageType, OutputImageType>;
-  SLPType::Pointer slp = SLPType::New();
+  auto slp = SLPType::New();
   slp->SetInput(projectionsSource->GetOutput());
   slp->SetGeometry(geometry);
   slp->SetPhantomScale(8.);
@@ -90,19 +90,19 @@ main(int, char **)
 
   // Add noise
   using NIFType = itk::ShotNoiseImageFilter<OutputImageType>;
-  NIFType::Pointer noisy = NIFType::New();
+  auto noisy = NIFType::New();
   noisy->SetInput(slp->GetOutput());
 
   using AddType = itk::AddImageFilter<OutputImageType, OutputImageType>;
-  AddType::Pointer add = AddType::New();
+  auto add = AddType::New();
   add->InPlaceOff();
   TRY_AND_EXIT_ON_ITK_EXCEPTION(tomographySource->Update());
   OutputImageType::Pointer currentSum = tomographySource->GetOutput();
   currentSum->DisconnectPipeline();
 
   using SquareType = itk::SquareImageFilter<OutputImageType, OutputImageType>;
-  SquareType::Pointer square = SquareType::New();
-  AddType::Pointer    addSquare = AddType::New();
+  auto square = SquareType::New();
+  auto addSquare = AddType::New();
   addSquare->SetInput(1, square->GetOutput());
   TRY_AND_EXIT_ON_ITK_EXCEPTION(tomographySource->Update());
   OutputImageType::Pointer currentSumOfSquares = tomographySource->GetOutput();
@@ -110,7 +110,7 @@ main(int, char **)
 
   // FDK reconstruction
   using FDKType = rtk::FDKConeBeamReconstructionFilter<OutputImageType>;
-  FDKType::Pointer feldkamp = FDKType::New();
+  auto feldkamp = FDKType::New();
   TRY_AND_EXIT_ON_ITK_EXCEPTION(tomographySource->Update());
   feldkamp->SetInput(0, tomographySource->GetOutput());
   feldkamp->SetInput(1, noisy->GetOutput());
@@ -139,7 +139,7 @@ main(int, char **)
   }
 
   using MultiplyType = itk::MultiplyImageFilter<OutputImageType, OutputImageType>;
-  MultiplyType::Pointer multiply = MultiplyType::New();
+  auto multiply = MultiplyType::New();
   multiply->SetInput(0, currentSumOfSquares);
   multiply->SetConstant((float)(1. / NumberOfSamples));
   TRY_AND_EXIT_ON_ITK_EXCEPTION(multiply->Update());
@@ -155,7 +155,7 @@ main(int, char **)
   TRY_AND_EXIT_ON_ITK_EXCEPTION(addSquare->Update());
 
   using VarianceType = rtk::FDKVarianceReconstructionFilter<OutputImageType, OutputImageType>;
-  VarianceType::Pointer variance = VarianceType::New();
+  auto variance = VarianceType::New();
   variance->SetGeometry(geometry);
   variance->SetInput(0, tomographySource->GetOutput());
   variance->SetInput(1, slp->GetOutput());

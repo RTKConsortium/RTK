@@ -34,7 +34,7 @@ main(int argc, char * argv[])
 
   // Empty volume image
   using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
-  ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
+  auto constantImageSource = ConstantImageSourceType::New();
   rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkdrawgeometricphantom>(constantImageSource,
                                                                                                  args_info);
 
@@ -82,7 +82,7 @@ main(int argc, char * argv[])
   // Reference
   if (args_info.verbose_flag)
     std::cout << "Creating reference... " << std::flush;
-  DQType::Pointer dq = DQType::New();
+  auto dq = DQType::New();
   dq->SetInput(constantImageSource->GetOutput());
   dq->SetPhantomScale(scale);
   dq->SetOriginOffset(offset);
@@ -95,7 +95,7 @@ main(int argc, char * argv[])
   if (args_info.noise_given)
   {
     using NIFType = rtk::AdditiveGaussianNoiseImageFilter<OutputImageType>;
-    NIFType::Pointer noisy = NIFType::New();
+    auto noisy = NIFType::New();
     noisy->SetInput(output);
     noisy->SetMean(0.0);
     noisy->SetStandardDeviation(args_info.noise_arg);

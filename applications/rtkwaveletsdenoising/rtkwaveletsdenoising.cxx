@@ -41,7 +41,7 @@ main(int argc, char * argv[])
 
   // Create the denoising filter
   using WaveletsSoftThresholdFilterType = rtk::DeconstructSoftThresholdReconstructImageFilter<OutputImageType>;
-  WaveletsSoftThresholdFilterType::Pointer wst = WaveletsSoftThresholdFilterType::New();
+  auto wst = WaveletsSoftThresholdFilterType::New();
   wst->SetInput(input);
   wst->SetOrder(args_info.order_arg);
   wst->SetThreshold(args_info.threshold_arg);

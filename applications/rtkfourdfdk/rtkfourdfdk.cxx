@@ -52,7 +52,7 @@ main(int argc, char * argv[])
 
   // Projections reader
   using ReaderType = rtk::ProjectionsReader<OutputImageType>;
-  ReaderType::Pointer reader = ReaderType::New();
+  auto reader = ReaderType::New();
   rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkfourdfdk>(reader, args_info);
 
   // Geometry
@@ -63,7 +63,7 @@ main(int argc, char * argv[])
 
   // Part specific to 4D
   using SelectorType = rtk::SelectOneProjectionPerCycleImageFilter<OutputImageType>;
-  SelectorType::Pointer selector = SelectorType::New();
+  auto selector = SelectorType::New();
   selector->SetInput(reader->GetOutput());
   selector->SetInputGeometry(geometry);
   selector->SetSignalFilename(args_info.signal_arg);
@@ -111,7 +111,7 @@ main(int argc, char * argv[])
 
   // Create one frame of the reconstructed image
   using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
-  ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
+  auto constantImageSource = ConstantImageSourceType::New();
   rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkfourdfdk>(constantImageSource, args_info);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(constantImageSource->Update())
 
@@ -152,7 +152,7 @@ main(int argc, char * argv[])
 
   // Streaming depending on streaming capability of writer
   using StreamerType = itk::StreamingImageFilter<CPUOutputImageType, CPUOutputImageType>;
-  StreamerType::Pointer streamerBP = StreamerType::New();
+  auto streamerBP = StreamerType::New();
   streamerBP->SetInput(pfeldkamp);
   streamerBP->SetNumberOfStreamDivisions(args_info.divisions_arg);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(streamerBP->UpdateOutputInformation())
@@ -160,7 +160,7 @@ main(int argc, char * argv[])
   // Create empty 4D image
   using FourDOutputImageType = itk::Image<OutputPixelType, Dimension + 1>;
   using FourDConstantImageSourceType = rtk::ConstantImageSource<FourDOutputImageType>;
-  FourDConstantImageSourceType::Pointer fourDConstantImageSource = FourDConstantImageSourceType::New();
+  auto fourDConstantImageSource = FourDConstantImageSourceType::New();
   rtk::SetConstantImageSourceFromGgo<FourDConstantImageSourceType, args_info_rtkfourdfdk>(fourDConstantImageSource,
                                                                                           args_info);
 
