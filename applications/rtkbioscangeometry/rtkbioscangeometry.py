@@ -3,9 +3,8 @@ import sys
 from itk import RTK as rtk
 
 def build_parser():
-    parser = argparse.ArgumentParser(
-        description="Read Bioscan geometry and write RTK geometry XML file.",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    parser = rtk.RTKArgumentParser(
+        description="Read Bioscan geometry and write RTK geometry XML file."
     )
     parser.add_argument(
         "--output", "-o", required=True, help="Output geometry XML file"

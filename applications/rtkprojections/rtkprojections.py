@@ -4,7 +4,7 @@ from itk import RTK as rtk
 
 
 def build_parser():
-    parser = argparse.ArgumentParser(
+    parser = rtk.RTKArgumentParser(
         description="Reads raw projection images, converts them to attenuation and stacks them into a single output image file"
     )
     parser.add_argument(

@@ -8,9 +8,8 @@ import numpy as np
 
 def build_parser():
     # Argument parsing
-    parser = argparse.ArgumentParser(
-        description="Computes a 3D voxelized phantom from a phantom description file.",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    parser = rtk.RTKArgumentParser(
+        description="Computes a 3D voxelized phantom from a phantom description file."
     )
 
     # General options

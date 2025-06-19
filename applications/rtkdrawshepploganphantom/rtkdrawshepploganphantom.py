@@ -7,9 +7,8 @@ from itk import RTK as rtk
 
 def build_parser():
     # Argument parsing
-    parser = argparse.ArgumentParser(
-        description="Computes a 3D voxelized Shepp & Logan phantom with noise [https://www.slaney.org/pct/pct-errata.html]",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    parser = rtk.RTKArgumentParser(
+        description="Computes a 3D voxelized Shepp & Logan phantom with noise [https://www.slaney.org/pct/pct-errata.html]"
     )
 
     # General options

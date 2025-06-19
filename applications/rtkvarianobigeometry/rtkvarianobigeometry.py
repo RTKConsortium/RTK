@@ -6,7 +6,7 @@ from itk import RTK as rtk
 
 def build_parser():
     # Argument parsing
-    parser = argparse.ArgumentParser(
+    parser = rtk.RTKArgumentParser(
         description="Creates an RTK geometry file from a Varian OBI acquisition."
     )
 

@@ -6,7 +6,7 @@ from itk import RTK as rtk
 
 
 def build_parser():
-    parser = argparse.ArgumentParser(
+    parser = rtk.RTKArgumentParser(
         description="Projects a volume according to a geometry file."
     )
     parser.add_argument(
