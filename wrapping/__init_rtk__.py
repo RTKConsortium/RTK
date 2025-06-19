@@ -6,6 +6,8 @@ rtk_module = getattr(itk_module, "RTK")
 
 # Import RTK submodules
 rtk_submodules = [
+    "itk.rtkversion",
+    "itk.rtkargumentparser",
     "itk.rtkinputprojections_group",
     "itk.rtk3Doutputimage_group",
     "itk.rtkprojectors_group",
