@@ -7,7 +7,7 @@ import numpy as np
 
 def build_parser():
     # Argument parsing
-    parser = argparse.ArgumentParser(
+    parser = rtk.RTKArgumentParser(
         description="Computes projections through a 3D phantom described by a file, according to a geometry"
     )
     # General options

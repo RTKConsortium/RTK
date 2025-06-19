@@ -7,9 +7,8 @@ from itk import RTK as rtk
 
 def build_parser():
     # Argument parsing
-    parser = argparse.ArgumentParser(
-        description="Perform ADMM total variation reconstruction on cone-beam projections.",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    parser = rtk.RTKArgumentParser(
+        description="Perform ADMM total variation reconstruction on cone-beam projections."
     )
 
     # General options

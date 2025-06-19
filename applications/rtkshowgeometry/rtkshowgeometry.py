@@ -6,9 +6,8 @@ from itk import RTK as rtk
 
 
 def build_parser():
-    parser = argparse.ArgumentParser(
+    parser = rtk.RTKArgumentParser(
         description=" Create an interactive 3D viewer for the given geometry and projections.",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
 
     parser.add_argument(

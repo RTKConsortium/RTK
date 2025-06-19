@@ -6,9 +6,8 @@ from itk import RTK as rtk
 
 
 def build_parser():
-    parser = argparse.ArgumentParser(
-        description="Creates an Amsterdam Shroud image from a sequence of projections [Zijp et al, ICCR, 2004].",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    parser = rtk.RTKArgumentParser(
+        description="Creates an Amsterdam Shroud image from a sequence of projections [Zijp et al, ICCR, 2004]."
     )
 
     # General options

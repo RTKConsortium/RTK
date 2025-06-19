@@ -94,7 +94,7 @@ class GirderExternalDataCli(GirderClient):
 
 
 def main():
-    parser = argparse.ArgumentParser(
+    parser = rtk.RTKArgumentParser(
         description="Upload CMake ExternalData content links to Girder"
     )
     parser.add_argument(

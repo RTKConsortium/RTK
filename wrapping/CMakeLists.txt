@@ -27,6 +27,8 @@ set(WRAPPER_SUBMODULE_ORDER
 itk_auto_load_submodules()
 itk_end_wrap_module()
 
+configure_file (${RTK_SOURCE_DIR}/applications/rtkversion.py.in ${RTK_BINARY_DIR}/applications/rtkversion.py)
+
 file(GLOB RTK_GROUP_SCRIPTS CONFIGURE_DEPENDS
   "${RTK_SOURCE_DIR}/applications/rtk*_group.py")
 file(GLOB RTK_APP_SCRIPTS CONFIGURE_DEPENDS
