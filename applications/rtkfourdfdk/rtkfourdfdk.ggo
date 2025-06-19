@@ -1,7 +1,6 @@
 purpose "Reconstructs a 4D volume from a sequence of projections using FDK with one projection per respiratory cycle in each frame."
 
 option "verbose"    v "Verbose execution"                                           flag                off
-option "config"     - "Config file"                                                 string              no
 option "geometry"   g "XML geometry file name"                                      string              yes
 option "output"     o "Output file name"                                            string              yes
 option "hardware"   - "Hardware used for computation"                               values="cpu","cuda" no   default="cpu"

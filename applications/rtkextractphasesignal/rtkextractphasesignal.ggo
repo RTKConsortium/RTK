@@ -1,7 +1,6 @@
 purpose "Extracts the phase from a signal."
 
 option "verbose"    v   "Verbose execution"                                   flag                    off
-option "config"     -   "Config file"                                         string                  no
 option "input"      i   "Input signal"		                                    string                  yes
 option "output"     o   "Output file name for the Hilbert phase signal"       string                  yes
 option "movavg"     -   "Moving average size applied before phase extraction" int     default="1"  no

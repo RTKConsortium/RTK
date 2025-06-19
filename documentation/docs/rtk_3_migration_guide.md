@@ -16,3 +16,8 @@ is also achievable with the only file format for geometric phantoms accepted in
 RTK 3.0, the [Forbild phantom file format](Phantom.md). The flag `--forbild`
 has also been removed from command line tools as it is now the default and only
 option.
+
+## Remove config option from c++ applications
+
+The `--config` command-line option has been removed from all RTK ggo-based
+applications as it was not known to be used in practice.

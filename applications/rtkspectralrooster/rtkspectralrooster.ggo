@@ -1,7 +1,6 @@
 purpose "Reconstructs a 3D + material vector volume from a vector projection stack, alternating between conjugate gradient optimization and regularization, including between materials"
 
 option "verbose"     v "Verbose execution"                                     flag   off
-option "config"      - "Config file"                                           string no
 option "geometry"    g "XML geometry file name"                                string yes
 option "output"      o "Output file name"                                      string yes
 option "niter"       n "Number of main loop iterations"                        int    no   default="5"

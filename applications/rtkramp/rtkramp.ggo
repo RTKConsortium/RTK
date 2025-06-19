@@ -1,7 +1,6 @@
 purpose "Reads raw projection images, converts to attenuation, ramp filters and stacks them into a single output image file"
 
 option "verbose"    v "Verbose execution"                                           flag                off
-option "config"     - "Config file"                                                 string              no
 option "output"     o "Output file name"                                            string              yes
 option "pad"        - "Data padding parameter to correct for truncation"            double              no   default="0.0"
 option "hardware"   - "Hardware used for computation"                               values="cpu","cuda" no   default="cpu"
