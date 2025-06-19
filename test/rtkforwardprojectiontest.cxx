@@ -52,7 +52,7 @@ main(int, char **)
   ConstantImageSourceType::SpacingType spacing;
 
   // Create Joseph Forward Projector volume input.
-  const ConstantImageSourceType::Pointer volInput = ConstantImageSourceType::New();
+  const auto volInput = ConstantImageSourceType::New();
   origin[0] = -126;
   origin[1] = -126;
   origin[2] = -126;
@@ -79,7 +79,7 @@ main(int, char **)
 
   // Initialization Volume, it is used in the Joseph Forward Projector and in the
   // Ray Box Intersection Filter in order to initialize the stack of projections.
-  const ConstantImageSourceType::Pointer projInput = ConstantImageSourceType::New();
+  const auto projInput = ConstantImageSourceType::New();
   size[2] = NumberOfProjectionImages;
   projInput->SetOrigin(origin);
   projInput->SetSpacing(spacing);
@@ -93,7 +93,7 @@ main(int, char **)
 #else
   using JFPType = rtk::JosephForwardProjectionImageFilter<OutputImageType, OutputImageType>;
 #endif
-  JFPType::Pointer jfp = JFPType::New();
+  auto jfp = JFPType::New();
   jfp->InPlaceOff();
   jfp->SetInput(projInput->GetOutput());
   jfp->SetInput(1, volInput->GetOutput());
@@ -103,7 +103,7 @@ main(int, char **)
 #ifdef USE_CUDA
   jfp->SetStepSize(10);
 #endif
-  RBIType::Pointer rbi = RBIType::New();
+  auto rbi = RBIType::New();
   rbi->InPlaceOff();
   rbi->SetInput(projInput->GetOutput());
   VectorType boxMin, boxMax;
@@ -118,7 +118,7 @@ main(int, char **)
 
   // Streaming filter to test for unusual regions
   using StreamingFilterType = itk::StreamingImageFilter<OutputImageType, OutputImageType>;
-  StreamingFilterType::Pointer stream = StreamingFilterType::New();
+  auto stream = StreamingFilterType::New();
   stream->SetInput(jfp->GetOutput());
 
   stream->SetNumberOfStreamDivisions(9);
@@ -132,7 +132,7 @@ main(int, char **)
   {
     // Geometry
     using GeometryType = rtk::ThreeDCircularProjectionGeometry;
-    GeometryType::Pointer geometry = GeometryType::New();
+    auto geometry = GeometryType::New();
     for (unsigned int i = 0; i < NumberOfProjectionImages; i++)
     {
       const double angle = -45. + i * 2.;
@@ -162,7 +162,7 @@ main(int, char **)
 
   // Geometry
   using GeometryType = rtk::ThreeDCircularProjectionGeometry;
-  GeometryType::Pointer geometry = GeometryType::New();
+  auto geometry = GeometryType::New();
   for (unsigned int i = 0; i < NumberOfProjectionImages; i++)
     geometry->AddProjection(500., 1000., i * 8.);
 
@@ -179,7 +179,7 @@ main(int, char **)
 
   // Create Shepp Logan reference projections
   using SLPType = rtk::SheppLoganPhantomFilter<OutputImageType, OutputImageType>;
-  SLPType::Pointer slp = SLPType::New();
+  auto slp = SLPType::New();
   slp->InPlaceOff();
   slp->SetInput(projInput->GetOutput());
   slp->SetGeometry(geometry);
@@ -195,7 +195,7 @@ main(int, char **)
   volInput->SetConstant(0.);
 
   using DSLType = rtk::DrawSheppLoganFilter<OutputImageType, OutputImageType>;
-  DSLType::Pointer dsl = DSLType::New();
+  auto dsl = DSLType::New();
   dsl->InPlaceOff();
   dsl->SetInput(volInput->GetOutput());
   dsl->Update();

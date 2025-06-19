@@ -37,7 +37,7 @@ main(int, char **)
   ConstantImageSourceType::SpacingType spacingOutput;
 
   // Create MIP Forward Projector volume input.
-  const ConstantImageSourceType::Pointer volInput = ConstantImageSourceType::New();
+  const auto volInput = ConstantImageSourceType::New();
   origin[0] = 0;
   origin[1] = 0;
   origin[2] = 0;
@@ -62,7 +62,7 @@ main(int, char **)
   volInput->UpdateOutputInformation();
 
   // Initialization Imager Volume
-  const ConstantImageSourceType::Pointer projInput = ConstantImageSourceType::New();
+  const auto projInput = ConstantImageSourceType::New();
   sizeOutput[2] = NumberOfProjectionImages;
   projInput->SetOrigin(origin);
   projInput->SetSpacing(spacingOutput);
@@ -72,12 +72,12 @@ main(int, char **)
 
   // MIP Forward Projection filter
   using MIPType = rtk::MaximumIntensityProjectionImageFilter<OutputImageType, OutputImageType>;
-  MIPType::Pointer mipfp = MIPType::New();
+  auto mipfp = MIPType::New();
   mipfp->SetInput(projInput->GetOutput());
   mipfp->SetInput(1, volInput->GetOutput());
 
   using GeometryType = rtk::ThreeDCircularProjectionGeometry;
-  GeometryType::Pointer geometry = GeometryType::New();
+  auto geometry = GeometryType::New();
   geometry->AddProjection(700, 800, 0);
 
   mipfp->SetGeometry(geometry);

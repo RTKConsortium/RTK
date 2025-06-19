@@ -54,8 +54,7 @@ rtk::VarianProBeamGeometryReader ::GenerateData()
     using InputPixelType = unsigned int;
     using InputImageType = itk::Image<InputPixelType, 2>;
 
-    using ReaderType = itk::ImageFileReader<InputImageType>;
-    ReaderType::Pointer reader = ReaderType::New();
+    auto reader = itk::ImageFileReader<InputImageType>::New();
     reader->SetFileName(projectionsFileName);
     reader->UpdateOutputInformation();
 

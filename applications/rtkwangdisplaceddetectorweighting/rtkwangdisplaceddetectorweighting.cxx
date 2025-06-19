@@ -52,7 +52,7 @@ main(int argc, char * argv[])
 
   // Projections reader
   using ReaderType = rtk::ProjectionsReader<OutputImageType>;
-  ReaderType::Pointer reader = ReaderType::New();
+  auto reader = ReaderType::New();
   rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkwangdisplaceddetectorweighting>(reader, args_info);
 
   // Geometry
@@ -80,7 +80,7 @@ main(int argc, char * argv[])
 
   // Write
   using WriterType = itk::ImageFileWriter<OutputImageType>;
-  WriterType::Pointer writer = WriterType::New();
+  auto writer = WriterType::New();
   writer->SetFileName(args_info.output_arg);
   writer->SetInput(ddf->GetOutput());
   writer->SetNumberOfStreamDivisions(args_info.divisions_arg);

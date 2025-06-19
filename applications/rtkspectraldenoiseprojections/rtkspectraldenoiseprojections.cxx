@@ -39,7 +39,7 @@ main(int argc, char * argv[])
 
   // Remove aberrant pixels
   using MedianType = rtk::ConditionalMedianImageFilter<OutputImageType>;
-  MedianType::Pointer median = MedianType::New();
+  auto median = MedianType::New();
   median->SetThresholdMultiplier(args_info.multiplier_arg);
   MedianType::MedianRadiusType radius;
   if (args_info.radius_given)

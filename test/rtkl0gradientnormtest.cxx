@@ -141,7 +141,7 @@ main(int, char **)
   largest.SetSize(size);
 
   // Initialize the input image
-  VolumeSeriesType::Pointer input = VolumeSeriesType::New();
+  auto input = VolumeSeriesType::New();
   input->SetOrigin(origin);
   input->SetSpacing(spacing);
   input->SetRegions(largest);
@@ -206,7 +206,7 @@ main(int, char **)
 
   // Perform regularization
   using DenoisingFilterType = rtk::LastDimensionL0GradientDenoisingImageFilter<VolumeSeriesType>;
-  DenoisingFilterType::Pointer denoising = DenoisingFilterType::New();
+  auto denoising = DenoisingFilterType::New();
   denoising->SetInput(input);
   denoising->SetLambda(0.3);
   denoising->SetNumberOfIterations(5);

@@ -32,7 +32,7 @@ main(int, char **)
   ConstantImageSourceType::SizeType    size;
   ConstantImageSourceType::SpacingType spacing;
 
-  ConstantImageSourceType::Pointer projSource = ConstantImageSourceType::New();
+  auto projSource = ConstantImageSourceType::New();
   origin[0] = -127.;
   origin[1] = -3.;
   origin[2] = 0.;
@@ -49,7 +49,7 @@ main(int, char **)
 
   // Geometry
   using GeometryType = rtk::ThreeDCircularProjectionGeometry;
-  GeometryType::Pointer geometry = GeometryType::New();
+  auto geometry = GeometryType::New();
   geometry->AddProjection(600., 700., 0., 84., 35, 23, 15, 21, 26);
   geometry->AddProjection(500., 800., 45., 21., 12, 16, 546, 14, 41);
   geometry->AddProjection(700., 900., 90., 68., 68, 54, 38, 35, 56);
@@ -57,7 +57,7 @@ main(int, char **)
 
   // Projections
   using SLPType = rtk::SheppLoganPhantomFilter<OutputImageType, OutputImageType>;
-  SLPType::Pointer slp = SLPType::New();
+  auto slp = SLPType::New();
   slp->SetInput(projSource->GetOutput());
   slp->SetGeometry(geometry);
   slp->SetPhantomScale(116);
@@ -71,14 +71,14 @@ main(int, char **)
     std::cout << " in place ******" << std::endl;
 
     using CUDASSFType = rtk::CudaParkerShortScanImageFilter;
-    CUDASSFType::Pointer cudassf = CUDASSFType::New();
+    auto cudassf = CUDASSFType::New();
     cudassf->SetInput(slp->GetOutput());
     cudassf->SetGeometry(geometry);
     cudassf->InPlaceOff();
     TRY_AND_EXIT_ON_ITK_EXCEPTION(cudassf->Update());
 
     using CPUSSFType = rtk::ParkerShortScanImageFilter<OutputImageType>;
-    CPUSSFType::Pointer cpussf = CPUSSFType::New();
+    auto cpussf = CPUSSFType::New();
     cpussf->SetInput(slp->GetOutput());
     cpussf->SetGeometry(geometry);
     cpussf->InPlaceOff();
@@ -98,7 +98,7 @@ main(int, char **)
     cudassf->InPlaceOff();
 
     using StreamingType = itk::StreamingImageFilter<OutputImageType, OutputImageType>;
-    StreamingType::Pointer streamingCUDA = StreamingType::New();
+    auto streamingCUDA = StreamingType::New();
     streamingCUDA->SetInput(cudassf->GetOutput());
     streamingCUDA->SetNumberOfStreamDivisions(4);
     itk::ImageRegionSplitterDirection::Pointer splitter = itk::ImageRegionSplitterDirection::New();
@@ -111,7 +111,7 @@ main(int, char **)
     cpussf->SetGeometry(geometry);
     cpussf->InPlaceOff();
 
-    StreamingType::Pointer streamingCPU = StreamingType::New();
+    auto streamingCPU = StreamingType::New();
     streamingCPU->SetInput(cpussf->GetOutput());
     streamingCPU->SetNumberOfStreamDivisions(2);
     TRY_AND_EXIT_ON_ITK_EXCEPTION(streamingCPU->Update());

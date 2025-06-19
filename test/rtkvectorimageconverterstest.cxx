@@ -32,7 +32,7 @@ main(int, char **)
   std::cout << "\n\n****** Case 1: 3D image to 2D vector image, and back ******" << std::endl;
 
   // Initialize the first input image
-  HigherDimensionImageType::Pointer     higherDimensionInput = HigherDimensionImageType::New();
+  auto                                  higherDimensionInput = HigherDimensionImageType::New();
   HigherDimensionImageType::SizeType    hsize;
   HigherDimensionImageType::IndexType   hindex;
   HigherDimensionImageType::SpacingType hspacing;
@@ -67,7 +67,7 @@ main(int, char **)
 
   // Create the filter to convert it to a vector image
   using HigherDimensionToVectorType = rtk::ImageToVectorImageFilter<HigherDimensionImageType, VectorImageType>;
-  HigherDimensionToVectorType::Pointer higherDimensionToVector = HigherDimensionToVectorType::New();
+  auto higherDimensionToVector = HigherDimensionToVectorType::New();
   higherDimensionToVector->SetInput(higherDimensionInput);
 
   // Perform conversion
@@ -75,7 +75,7 @@ main(int, char **)
 
   // Create a reference vector image, equal to the expected output of higherDimensionToVector, and perform the
   // comparison
-  VectorImageType::Pointer refVectorImage = VectorImageType::New();
+  auto refVectorImage = VectorImageType::New();
 
   VectorImageType::SizeType    refVectorSize;
   VectorImageType::IndexType   refVectorIndex;
@@ -111,7 +111,7 @@ main(int, char **)
 
   // Create the filter to convert the result back to an image
   using VectorToHigherDimensionType = rtk::VectorImageToImageFilter<VectorImageType, HigherDimensionImageType>;
-  VectorToHigherDimensionType::Pointer vectorToHigherDimension = VectorToHigherDimensionType::New();
+  auto vectorToHigherDimension = VectorToHigherDimensionType::New();
   vectorToHigherDimension->SetInput(higherDimensionToVector->GetOutput());
 
   TRY_AND_EXIT_ON_ITK_EXCEPTION(vectorToHigherDimension->Update());
@@ -123,7 +123,7 @@ main(int, char **)
   std::cout << "\n\n****** Case 2: 2D image to 2D vector image, and back ******" << std::endl;
 
   // Initialize the first input image
-  ImageType::Pointer     input = ImageType::New();
+  auto                   input = ImageType::New();
   ImageType::SizeType    size;
   ImageType::IndexType   index;
   ImageType::SpacingType spacing;
@@ -157,7 +157,7 @@ main(int, char **)
 
   // Create the filter to convert it to a vector image
   using ToVectorType = rtk::ImageToVectorImageFilter<ImageType, VectorImageType>;
-  ToVectorType::Pointer imageToVector = ToVectorType::New();
+  auto imageToVector = ToVectorType::New();
   imageToVector->SetInput(input);
   imageToVector->SetNumberOfChannels(8);
 
@@ -169,7 +169,7 @@ main(int, char **)
 
   // Create the filter to convert the result back to an image
   using VectorToType = rtk::VectorImageToImageFilter<VectorImageType, ImageType>;
-  VectorToType::Pointer vectorToImage = VectorToType::New();
+  auto vectorToImage = VectorToType::New();
   vectorToImage->SetInput(imageToVector->GetOutput());
 
   TRY_AND_EXIT_ON_ITK_EXCEPTION(vectorToImage->Update());

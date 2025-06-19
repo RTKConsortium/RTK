@@ -48,7 +48,7 @@ main(int argc, char * argv[])
 
   // Create a stack of empty projection images
   using ConstantImageSourceType = rtk::ConstantImageSource<ProjectionStackType>;
-  ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
+  auto constantImageSource = ConstantImageSourceType::New();
   rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkwarpedforwardprojectsequence>(
     constantImageSource, args_info);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(constantImageSource->Update())
@@ -77,7 +77,7 @@ main(int argc, char * argv[])
     std::cout << "Projecting volume sequence..." << std::endl;
 
   using WarpForwardProjectType = rtk::WarpFourDToProjectionStackImageFilter<VolumeSeriesType, ProjectionStackType>;
-  WarpForwardProjectType::Pointer forwardProjection = WarpForwardProjectType::New();
+  auto forwardProjection = WarpForwardProjectType::New();
 
   forwardProjection->SetInputProjectionStack(constantImageSource->GetOutput());
   forwardProjection->SetInputVolumeSeries(volumeSeries);

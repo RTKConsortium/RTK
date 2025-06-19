@@ -47,7 +47,7 @@ main(int argc, char * argv[])
   ConstantImageSourceType::SizeType    size;
   ConstantImageSourceType::SpacingType spacing;
 
-  ConstantImageSourceType::Pointer projectionsSource = ConstantImageSourceType::New();
+  auto projectionsSource = ConstantImageSourceType::New();
   origin[0] = -254.;
   origin[1] = -254.;
   origin[2] = -254.;
@@ -73,20 +73,20 @@ main(int argc, char * argv[])
 
   // Geometry object
   using GeometryType = rtk::ThreeDCircularProjectionGeometry;
-  GeometryType::Pointer geometry = GeometryType::New();
+  auto geometry = GeometryType::New();
   for (unsigned int noProj = 0; noProj < NumberOfProjectionImages; noProj++)
     geometry->AddProjection(600., 1200., noProj * 360. / NumberOfProjectionImages);
 
   // Shepp Logan projections filter
   using SLPType = rtk::SheppLoganPhantomFilter<OutputImageType, OutputImageType>;
-  SLPType::Pointer slp = SLPType::New();
+  auto slp = SLPType::New();
   slp->SetInput(projectionsSource->GetOutput());
   slp->SetGeometry(geometry);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(slp->Update());
 
   // Shepp Logan projections filter from Configuration File
   using PGPType = rtk::ProjectGeometricPhantomImageFilter<OutputImageType, OutputImageType>;
-  PGPType::Pointer pgp = PGPType::New();
+  auto pgp = PGPType::New();
   pgp->SetInput(projectionsSource->GetOutput());
   pgp->SetGeometry(geometry);
   pgp->SetConfigFile(argv[1]);

@@ -43,18 +43,18 @@ main(int argc, char * argv[])
 
   // Projections reader
   using ReaderType = rtk::ProjectionsReader<OutputImageType>;
-  ReaderType::Pointer reader = ReaderType::New();
+  auto reader = ReaderType::New();
   rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkmaskcollimation>(reader, args_info);
 
   // Create projection image filter
   using OFMType = rtk::MaskCollimationImageFilter<OutputImageType, OutputImageType>;
-  OFMType::Pointer ofm = OFMType::New();
+  auto ofm = OFMType::New();
   ofm->SetInput(reader->GetOutput());
   ofm->SetGeometry(geometry);
 
   // Write
   using WriterType = itk::ImageFileWriter<OutputImageType>;
-  WriterType::Pointer writer = WriterType::New();
+  auto writer = WriterType::New();
   writer->SetFileName(args_info.output_arg);
   writer->SetInput(ofm->GetOutput());
   if (args_info.verbose_flag)

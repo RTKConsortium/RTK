@@ -103,7 +103,7 @@ main(int, char **)
 
   // Random image sources
   using RandomImageSourceType = itk::RandomImageSource<OutputImageType>;
-  RandomImageSourceType::Pointer randomVolumeSource = RandomImageSourceType::New();
+  auto randomVolumeSource = RandomImageSourceType::New();
 
   // Image meta data
   RandomImageSourceType::PointType   origin;
@@ -140,7 +140,7 @@ main(int, char **)
 
   using GradientFilterType =
     rtk::ForwardDifferenceGradientImageFilter<OutputImageType, OutputPixelType, OutputPixelType, GradientImageType>;
-  GradientFilterType::Pointer grad = GradientFilterType::New();
+  auto grad = GradientFilterType::New();
   grad->SetInput(randomVolumeSource->GetOutput());
 
   bool computeGradientAlongDim[Dimension];

@@ -80,7 +80,7 @@ main(int argc, char * argv[])
 
   // Create the Add filter
   using AddFilterType = itk::AddImageFilter<OutputImageType>;
-  AddFilterType::Pointer add = AddFilterType::New();
+  auto add = AddFilterType::New();
   add->SetInput1(input);
   add->SetConstant2(args_info.constant_arg);
 

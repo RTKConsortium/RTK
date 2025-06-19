@@ -64,7 +64,7 @@ main(int argc, char * argv[])
       return 1;
     }
     using shroudFilterType = rtk::DPExtractShroudSignalImageFilter<InputPixelType, OutputPixelType>;
-    shroudFilterType::Pointer shroudFilter = shroudFilterType::New();
+    auto shroudFilter = shroudFilterType::New();
     shroudFilter->SetInput(itk::ReadImage<InputImageType>(args_info.input_arg));
     shroudFilter->SetAmplitude(args_info.amplitude_arg);
     TRY_AND_EXIT_ON_ITK_EXCEPTION(shroudFilter->Update())
@@ -73,7 +73,7 @@ main(int argc, char * argv[])
   else if (std::string(args_info.method_arg) == "Reg1D")
   {
     using shroudFilterType = rtk::Reg1DExtractShroudSignalImageFilter<InputPixelType, OutputPixelType>;
-    shroudFilterType::Pointer shroudFilter = shroudFilterType::New();
+    auto shroudFilter = shroudFilterType::New();
     shroudFilter->SetInput(itk::ReadImage<InputImageType>(args_info.input_arg));
     TRY_AND_EXIT_ON_ITK_EXCEPTION(shroudFilter->Update())
     shroudSignal = shroudFilter->GetOutput();
@@ -91,7 +91,7 @@ main(int argc, char * argv[])
   if (args_info.phase_given)
   {
     using PhaseFilter = rtk::ExtractPhaseImageFilter<OutputImageType>;
-    PhaseFilter::Pointer phase = PhaseFilter::New();
+    auto phase = PhaseFilter::New();
     phase->SetInput(shroudSignal);
     phase->SetMovingAverageSize(args_info.movavg_arg);
     phase->SetUnsharpMaskSize(args_info.unsharp_arg);

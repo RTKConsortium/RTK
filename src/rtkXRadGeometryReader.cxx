@@ -32,7 +32,7 @@ rtk::XRadGeometryReader ::GenerateData()
 {
   // Create new RTK geometry object
   m_Geometry = GeometryType::New();
-  GeometryType::Pointer tmpGeo = GeometryType::New();
+  auto tmpGeo = GeometryType::New();
 
   // Read image information which contains geometry information
   rtk::XRadImageIOFactory::RegisterOneFactory();

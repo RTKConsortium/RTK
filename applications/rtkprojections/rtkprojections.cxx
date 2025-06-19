@@ -33,12 +33,12 @@ main(int argc, char * argv[])
 
   // Projections reader
   using ReaderType = rtk::ProjectionsReader<OutputImageType>;
-  ReaderType::Pointer reader = ReaderType::New();
+  auto reader = ReaderType::New();
   rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkprojections>(reader, args_info);
 
   // Write
   using WriterType = itk::ImageFileWriter<OutputImageType>;
-  WriterType::Pointer writer = WriterType::New();
+  auto writer = WriterType::New();
   writer->SetFileName(args_info.output_arg);
   writer->SetInput(reader->GetOutput());
   TRY_AND_EXIT_ON_ITK_EXCEPTION(writer->UpdateOutputInformation())

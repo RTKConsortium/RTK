@@ -48,7 +48,7 @@ main(int argc, char * argv[])
   }
 
   using GeometryType = rtk::ThreeDCircularProjectionGeometry;
-  GeometryType::Pointer geometryMain = GeometryType::New();
+  auto geometryMain = GeometryType::New();
   for (unsigned int noProj = 0; noProj < NumberOfProjectionImages; noProj++)
     geometryMain->AddProjection(600., 1200., noProj * 360. / NumberOfProjectionImages);
 
@@ -59,7 +59,7 @@ main(int argc, char * argv[])
   ConstantImageSourceType::SpacingType spacing;
 
   // Adjust size according to geometry and for just one projection
-  ConstantImageSourceType::Pointer constantImageSourceSingleProjection = ConstantImageSourceType::New();
+  auto constantImageSourceSingleProjection = ConstantImageSourceType::New();
   origin[0] = -50.;
   origin[1] = -50.;
   origin[2] = -158.75;
@@ -84,7 +84,7 @@ main(int argc, char * argv[])
   constantImageSourceSingleProjection->SetConstant(0.);
 
   // Adjust size according to geometry
-  ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
+  auto constantImageSource = ConstantImageSourceType::New();
   sizeOutput[2] = NumberOfProjectionImages;
   constantImageSource->SetOrigin(origin);
   constantImageSource->SetSpacing(spacing);
@@ -97,7 +97,7 @@ main(int argc, char * argv[])
   destinationIndex[1] = 0;
   destinationIndex[2] = 0;
 
-  PasteImageFilterType::Pointer pasteFilter = PasteImageFilterType::New();
+  auto pasteFilter = PasteImageFilterType::New();
 
   // Single projection
   using REIType = rtk::RayEllipsoidIntersectionImageFilter<OutputImageType, OutputImageType>;
@@ -106,16 +106,16 @@ main(int argc, char * argv[])
   constexpr unsigned int Cycles = 4;
 
   OutputImageType::Pointer wholeImage = constantImageSource->GetOutput();
-  GeometryType::Pointer    geometryFull = GeometryType::New();
+  auto                     geometryFull = GeometryType::New();
   for (unsigned int i = 1; i <= sizeOutput[2]; i++)
   {
     // Geometry object
-    GeometryType::Pointer geometry = GeometryType::New();
+    auto geometry = GeometryType::New();
     geometry->AddProjection(1200., 1500., i * 360 / sizeOutput[2]);
     geometryFull->AddProjection(1200., 1500., i * 360 / sizeOutput[2]);
 
     // Ellipse 1
-    REIType::Pointer    e1 = REIType::New();
+    auto                e1 = REIType::New();
     REIType::VectorType semiprincipalaxis, center;
     semiprincipalaxis[0] = 88.32;
     semiprincipalaxis[1] = 115.2;
@@ -133,7 +133,7 @@ main(int argc, char * argv[])
     e1->Update();
 
     // Ellipse 2
-    REIType::Pointer e2 = REIType::New();
+    auto e2 = REIType::New();
     semiprincipalaxis[0] = 35.;
     semiprincipalaxis[1] = size - sinus;
     semiprincipalaxis[2] = size - sinus;
@@ -149,7 +149,7 @@ main(int argc, char * argv[])
     e2->Update();
 
     // Ellipse 3
-    REIType::Pointer e3 = REIType::New();
+    auto e3 = REIType::New();
     semiprincipalaxis[0] = 35.;
     semiprincipalaxis[1] = size - sinus;
     semiprincipalaxis[2] = size - sinus;
@@ -165,7 +165,7 @@ main(int argc, char * argv[])
     e3->Update();
 
     // Ellipse 4
-    REIType::Pointer e4 = REIType::New();
+    auto e4 = REIType::New();
     semiprincipalaxis[0] = 8.;
     semiprincipalaxis[1] = 8.;
     semiprincipalaxis[2] = 8.;
@@ -199,7 +199,7 @@ main(int argc, char * argv[])
 
   // Amsterdam shroud
   using ShroudFilterType = rtk::AmsterdamShroudImageFilter<OutputImageType>;
-  ShroudFilterType::Pointer shroudFilter = ShroudFilterType::New();
+  auto shroudFilter = ShroudFilterType::New();
   shroudFilter->SetInput(pasteFilter->GetOutput());
   shroudFilter->SetGeometry(geometryFull);
   ShroudFilterType::PointType center(0.), offset1(-40), offset2(40);
@@ -216,7 +216,7 @@ main(int argc, char * argv[])
 
   // Read reference object
   using ReaderAmsterdamType = itk::ImageFileReader<ShroudFilterType::OutputImageType>;
-  ReaderAmsterdamType::Pointer reader2 = ReaderAmsterdamType::New();
+  auto reader2 = ReaderAmsterdamType::New();
   reader2->SetFileName(argv[1]);
   reader2->Update();
 
@@ -242,8 +242,8 @@ main(int argc, char * argv[])
 
   // Estimation of breathing signal
   using reg1DFilterType = rtk::Reg1DExtractShroudSignalImageFilter<reg1DPixelType, reg1DPixelType>;
-  reg1DImageType::Pointer  reg1DSignal;
-  reg1DFilterType::Pointer reg1DFilter = reg1DFilterType::New();
+  reg1DImageType::Pointer reg1DSignal;
+  auto                    reg1DFilter = reg1DFilterType::New();
   reg1DFilter->SetInput(reader2->GetOutput());
   reg1DFilter->Update();
   reg1DSignal = reg1DFilter->GetOutput();
@@ -283,7 +283,7 @@ main(int argc, char * argv[])
   // Estimation of breathing signal
   using DPFilterType = rtk::DPExtractShroudSignalImageFilter<reg1DPixelType, reg1DPixelType>;
   reg1DImageType::Pointer DPSignal;
-  DPFilterType::Pointer   DPFilter = DPFilterType::New();
+  auto                    DPFilter = DPFilterType::New();
   DPFilter->SetInput(reader2->GetOutput());
   DPFilter->SetAmplitude(20.);
   DPFilter->Update();
@@ -320,7 +320,7 @@ main(int argc, char * argv[])
 
   // Check phase
   using PhaseType = rtk::ExtractPhaseImageFilter<reg1DImageType>;
-  PhaseType::Pointer phaseFilt = PhaseType::New();
+  auto phaseFilt = PhaseType::New();
   phaseFilt->SetInput(DPSignal);
   phaseFilt->SetUnsharpMaskSize(53);
   std::cout << "Unsharp mask size is " << phaseFilt->GetUnsharpMaskSize() << std::endl;

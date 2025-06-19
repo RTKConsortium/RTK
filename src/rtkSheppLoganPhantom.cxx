@@ -52,7 +52,7 @@ SheppLoganPhantom ::SetEllipsoid(ScalarType spax,
   center[0] = centerx;
   center[1] = centery;
   center[2] = centerz;
-  QuadricShape::Pointer q = QuadricShape::New();
+  auto q = QuadricShape::New();
   q->SetEllipsoid(center, semiprincipalaxis, angle);
   q->SetDensity(density);
   this->AddConvexShape(q.GetPointer());

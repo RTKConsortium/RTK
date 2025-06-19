@@ -33,7 +33,7 @@ int
 main(int, char **)
 {
   using ConvertFilterType = rtk::LUTbasedVariableI0RawToAttenuationImageFilter<ShortImageType, FloatImageType>;
-  ConvertFilterType::Pointer convert = ConvertFilterType::New();
+  auto convert = ConvertFilterType::New();
 
   // Constant image sources
   ShortImageType::SizeType size;
@@ -48,7 +48,7 @@ main(int, char **)
   spacings[0] = 1.0;
   spacings[1] = 1.0;
 
-  ShortImageType::Pointer rawImage = ShortImageType::New();
+  auto rawImage = ShortImageType::New();
   rawImage->SetRegions(region);
   rawImage->SetSpacing(spacings);
   rawImage->Allocate();

@@ -48,38 +48,38 @@ main(int argc, char * argv[])
 
   // Define, instantiate, set and update readers
   using DecomposedProjectionsReaderType = itk::ImageFileReader<TDecomposedProjections>;
-  DecomposedProjectionsReaderType::Pointer decomposedProjectionsReader = DecomposedProjectionsReaderType::New();
+  auto decomposedProjectionsReader = DecomposedProjectionsReaderType::New();
   decomposedProjectionsReader->SetFileName(argv[1]);
   decomposedProjectionsReader->Update();
 
   using MeasuredProjectionsReaderType = itk::ImageFileReader<TMeasuredProjections>;
-  MeasuredProjectionsReaderType::Pointer measuredProjectionsReader = MeasuredProjectionsReaderType::New();
+  auto measuredProjectionsReader = MeasuredProjectionsReaderType::New();
   measuredProjectionsReader->SetFileName(argv[2]);
   measuredProjectionsReader->Update();
 
   using IncidentSpectrumReaderType = itk::ImageFileReader<TIncidentSpectrum>;
-  IncidentSpectrumReaderType::Pointer incidentSpectrumReader = IncidentSpectrumReaderType::New();
+  auto incidentSpectrumReader = IncidentSpectrumReaderType::New();
   incidentSpectrumReader->SetFileName(argv[3]);
   incidentSpectrumReader->Update();
 
   using ProjectionsReaderType = itk::ImageFileReader<TProjections>;
-  ProjectionsReaderType::Pointer projectionsReader = ProjectionsReaderType::New();
+  auto projectionsReader = ProjectionsReaderType::New();
   projectionsReader->SetFileName(argv[4]);
   projectionsReader->Update();
 
   using Output1ReaderType = itk::ImageFileReader<TOutput1>;
-  Output1ReaderType::Pointer output1Reader = Output1ReaderType::New();
+  auto output1Reader = Output1ReaderType::New();
   output1Reader->SetFileName(argv[7]);
   output1Reader->Update();
 
   using Output2ReaderType = itk::ImageFileReader<TOutput2>;
-  Output2ReaderType::Pointer output2Reader = Output2ReaderType::New();
+  auto output2Reader = Output2ReaderType::New();
   output2Reader->SetFileName(argv[8]);
   output2Reader->Update();
 
   // Read binned detector response
   using CSVReaderType = itk::CSVArray2DFileReader<dataType>;
-  CSVReaderType::Pointer csvReader = CSVReaderType::New();
+  auto csvReader = CSVReaderType::New();
   csvReader->SetFieldDelimiterCharacter(',');
   csvReader->HasColumnHeadersOff();
   csvReader->HasRowHeadersOff();
@@ -102,7 +102,7 @@ main(int argc, char * argv[])
   // Create the filter
   using WeidingerForwardModelType = rtk::
     WeidingerForwardModelImageFilter<TDecomposedProjections, TMeasuredProjections, TIncidentSpectrum, TProjections>;
-  WeidingerForwardModelType::Pointer weidingerForward = WeidingerForwardModelType::New();
+  auto weidingerForward = WeidingerForwardModelType::New();
 
   // Set its inputs
   weidingerForward->SetInputDecomposedProjections(decomposedProjectionsReader->GetOutput());

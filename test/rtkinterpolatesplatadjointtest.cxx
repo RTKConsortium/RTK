@@ -49,17 +49,17 @@ main(int argc, char * argv[])
 
   // Random image sources
   using RandomVolumeSourceType = itk::RandomImageSource<VolumeType>;
-  RandomVolumeSourceType::Pointer randomVolumeSource = RandomVolumeSourceType::New();
+  auto randomVolumeSource = RandomVolumeSourceType::New();
 
   using RandomVolumeSeriesSourceType = itk::RandomImageSource<VolumeSeriesType>;
-  RandomVolumeSeriesSourceType::Pointer randomVolumeSeriesSource = RandomVolumeSeriesSourceType::New();
+  auto randomVolumeSeriesSource = RandomVolumeSeriesSourceType::New();
 
   // Constant sources
   using ConstantVolumeSourceType = rtk::ConstantImageSource<VolumeType>;
-  ConstantVolumeSourceType::Pointer constantVolumeSource = ConstantVolumeSourceType::New();
+  auto constantVolumeSource = ConstantVolumeSourceType::New();
 
   using ConstantVolumeSeriesSourceType = rtk::ConstantImageSource<VolumeSeriesType>;
-  ConstantVolumeSeriesSourceType::Pointer constantVolumeSeriesSource = ConstantVolumeSeriesSourceType::New();
+  auto constantVolumeSeriesSource = ConstantVolumeSeriesSourceType::New();
 
   // Volume metadata
   VolumeSeriesType::PointType   fourDOrigin;
@@ -149,7 +149,7 @@ main(int argc, char * argv[])
   std::cout << "\n\n****** 4D to 3D (interpolation) ******" << std::endl;
 
   using InterpolateFilterType = rtk::InterpolatorWithKnownWeightsImageFilter<VolumeType, VolumeSeriesType>;
-  InterpolateFilterType::Pointer interp = InterpolateFilterType::New();
+  auto interp = InterpolateFilterType::New();
   interp->SetInputVolume(constantVolumeSource->GetOutput());
   interp->SetInputVolumeSeries(randomVolumeSeriesSource->GetOutput());
   interp->SetWeights(phaseReader->GetOutput());
@@ -158,7 +158,7 @@ main(int argc, char * argv[])
   std::cout << "\n\n****** 3D to 4D (splat) ******" << std::endl;
 
   using SplatFilterType = rtk::SplatWithKnownWeightsImageFilter<VolumeSeriesType, VolumeType>;
-  SplatFilterType::Pointer splat = SplatFilterType::New();
+  auto splat = SplatFilterType::New();
   splat->SetInputVolumeSeries(constantVolumeSeriesSource->GetOutput());
   splat->SetInputVolume(randomVolumeSource->GetOutput());
   splat->SetWeights(phaseReader->GetOutput());
