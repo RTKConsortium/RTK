@@ -1,6 +1,5 @@
 purpose "Reads raw projection images, converts them to attenuation and stacks them into a single output image file"
 
 option "verbose"  v "Verbose execution"                                         flag      off
-option "config"   - "Config file"                                               string    no
 option "output"   o "Output file name"                                          string    yes
 

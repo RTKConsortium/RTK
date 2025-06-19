@@ -1,7 +1,6 @@
 purpose "Computes a 3D voxelized Shepp & Logan phantom with noise [https://www.slaney.org/pct/pct-errata.html]"
 
 option "verbose"      v "Verbose execution"                         flag            off
-option "config"       - "Config file"                               string          no
 option "output"       o "Output projections file name"              string          yes
 option "phantomscale" - "Scaling factor for the phantom dimensions" double multiple no default="128"
 option "noise"        - "Gaussian noise parameter (SD)"             double          no
