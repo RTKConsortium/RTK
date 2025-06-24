@@ -27,7 +27,7 @@ set(WRAPPER_SUBMODULE_ORDER
 itk_auto_load_submodules()
 itk_end_wrap_module()
 
-configure_file (${CMAKE_CURRENT_SOURCE_DIR}/rtkversion.py.in ${RTK_BINARY_DIR}/applications/rtkversion.py)
+configure_file (${RTK_SOURCE_DIR}/applications/rtkversion.py.in ${RTK_BINARY_DIR}/applications/rtkversion.py)
 
 wrap_itk_python_bindings_install(/itk "RTK"
     __init_rtk__.py
