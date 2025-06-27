@@ -23,6 +23,7 @@ _app_modules = [
     "rtkamsterdamshroud",
     "rtkbackprojections",
     "rtkconjugategradient",
+    "rtkdigisensgeometry",
     "rtkdrawgeometricphantom",
     "rtkdrawshepploganphantom",
     "rtkelektasynergygeometry",
