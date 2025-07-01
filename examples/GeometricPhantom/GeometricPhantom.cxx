@@ -5,8 +5,14 @@
 #include "rtkThreeDCircularProjectionGeometryXMLFileWriter.h"
 
 int
-main()
+main(int argc, char ** argv)
 {
+  if (argc < 2)
+  {
+    std::cout << "Usage: GeometricPhantom <phantomfile>" << std::endl;
+    return EXIT_FAILURE;
+  }
+
   constexpr unsigned int Dimension = 3;
   using OutputPixelType = float;
   using OutputImageType = itk::Image<OutputPixelType, Dimension>;
@@ -16,7 +22,6 @@ main()
   constexpr unsigned int sid = 600;  // source to isocenter distance
   constexpr unsigned int sdd = 1200; // source to detector distance
   constexpr double       scale = 2.;
-  const std::string      configFileName = "Thorax";
 
   itk::Matrix<double, Dimension, Dimension> rotation;
   rotation[0][0] = 1.;
@@ -48,7 +53,7 @@ main()
   pgp->SetGeometry(geometry);
   pgp->SetPhantomScale(scale);
   pgp->SetRotationMatrix(rotation);
-  pgp->SetConfigFile(configFileName);
+  pgp->SetConfigFile(argv[1]);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(itk::WriteImage(pgp->GetOutput(), "projections.mha"));
 
   // Draw the geometric phantom image
@@ -56,7 +61,7 @@ main()
   dgp->SetInput(tomographySource->GetOutput());
   dgp->SetPhantomScale(scale);
   dgp->SetRotationMatrix(rotation);
-  dgp->SetConfigFile(configFileName);
+  dgp->SetConfigFile(argv[1]);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(itk::WriteImage(dgp->GetOutput(), "ref.mha"));
 
   // Perform FDK reconstruction filtering

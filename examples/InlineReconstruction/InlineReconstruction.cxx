@@ -24,7 +24,6 @@
 
 // Type definitions
 using ImageType = itk::Image<float, 3>;
-using CudaImageType = itk::CudaImage<float, 3>;
 
 // Constants for acquisition and reconstruction
 const int                       numProjections = 64;
@@ -53,7 +52,7 @@ Acquisition()
     auto projection = rtk::ConstantImageSource<ImageType>::New();
     projection->SetOrigin(itk::MakePoint(origin, origin, 0.0));
     projection->SetSize(itk::MakeSize(imageSize, imageSize, 1));
-    projection->SetSpacing(itk::MakeSpacing(spacing, spacing, spacing));
+    projection->SetSpacing(itk::MakeVector(spacing, spacing, spacing));
     projection->Update();
 
     // Create Shepp-Logan phantom filter
@@ -96,6 +95,7 @@ main()
   double spacingValue = spacing * sid / sdd;
 
 #ifdef RTK_USE_CUDA
+  using CudaImageType = itk::CudaImage<float, 3>;
   // Use CUDA for Parker short scan image filter
   auto parker = rtk::CudaParkerShortScanImageFilter::New();
   parker->SetGeometry(geometryRec);
