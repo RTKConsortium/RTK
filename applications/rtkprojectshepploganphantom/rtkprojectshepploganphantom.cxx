@@ -45,7 +45,7 @@ main(int argc, char * argv[])
 
   // Create a stack of empty projection images
   using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
-  ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
+  auto constantImageSource = ConstantImageSourceType::New();
   rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkprojectshepploganphantom>(
     constantImageSource, args_info);
 
@@ -54,7 +54,7 @@ main(int argc, char * argv[])
     constantImageSource->GetSize()[0], constantImageSource->GetSize()[1], geometry->GetGantryAngles().size()));
 
   using SLPType = rtk::SheppLoganPhantomFilter<OutputImageType, OutputImageType>;
-  SLPType::Pointer    slp = SLPType::New();
+  auto                slp = SLPType::New();
   SLPType::VectorType offset(0.);
   SLPType::VectorType scale;
   if (args_info.offset_given)
@@ -80,7 +80,7 @@ main(int argc, char * argv[])
   if (args_info.noise_given)
   {
     using NIFType = rtk::AdditiveGaussianNoiseImageFilter<OutputImageType>;
-    NIFType::Pointer noisy = NIFType::New();
+    auto noisy = NIFType::New();
     noisy->SetInput(slp->GetOutput());
     noisy->SetMean(0.0);
     noisy->SetStandardDeviation(args_info.noise_arg);

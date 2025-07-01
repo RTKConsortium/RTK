@@ -50,7 +50,7 @@ main(int argc, char * argv[])
 
   // Projections reader
   using ReaderType = rtk::ProjectionsReader<ProjectionStackType>;
-  ReaderType::Pointer reader = ReaderType::New();
+  auto reader = ReaderType::New();
   rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkfourdrooster>(reader, args_info);
 
   // Geometry
@@ -65,7 +65,7 @@ main(int argc, char * argv[])
   {
     // Read an existing image to initialize the volume
     using InputReaderType = itk::ImageFileReader<VolumeSeriesType>;
-    InputReaderType::Pointer inputReader = InputReaderType::New();
+    auto inputReader = InputReaderType::New();
     inputReader->SetFileName(args_info.input_arg);
     inputFilter = inputReader;
   }
@@ -73,7 +73,7 @@ main(int argc, char * argv[])
   {
     // Create new empty volume
     using ConstantImageSourceType = rtk::ConstantImageSource<VolumeSeriesType>;
-    ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
+    auto constantImageSource = ConstantImageSourceType::New();
     rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkfourdrooster>(constantImageSource,
                                                                                            args_info);
 
@@ -96,7 +96,7 @@ main(int argc, char * argv[])
   // In the new order, projections with identical phases are packed together
   std::vector<double> signal = rtk::ReadSignalFile(args_info.signal_arg);
   using ReorderProjectionsFilterType = rtk::ReorderProjectionsImageFilter<ProjectionStackType>;
-  ReorderProjectionsFilterType::Pointer reorder = ReorderProjectionsFilterType::New();
+  auto reorder = ReorderProjectionsFilterType::New();
   reorder->SetInput(reader->GetOutput());
   reorder->SetInputGeometry(geometry);
   reorder->SetInputSignal(signal);
@@ -106,7 +106,7 @@ main(int argc, char * argv[])
   reader->GetOutput()->ReleaseData();
 
   // Compute the interpolation weights
-  rtk::SignalToInterpolationWeights::Pointer signalToInterpolationWeights = rtk::SignalToInterpolationWeights::New();
+  auto signalToInterpolationWeights = rtk::SignalToInterpolationWeights::New();
   signalToInterpolationWeights->SetSignal(reorder->GetOutputSignal());
   signalToInterpolationWeights->SetNumberOfReconstructedFrames(
     inputFilter->GetOutput()->GetLargestPossibleRegion().GetSize(3));
@@ -115,7 +115,7 @@ main(int argc, char * argv[])
   // Create the 4DROOSTER filter, connect the basic inputs, and set the basic parameters
   // Also set the forward and back projection filters to be used
   using ROOSTERFilterType = rtk::FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>;
-  ROOSTERFilterType::Pointer rooster = ROOSTERFilterType::New();
+  auto rooster = ROOSTERFilterType::New();
   SetForwardProjectionFromGgo(args_info, rooster.GetPointer());
   SetBackProjectionFromGgo(args_info, rooster.GetPointer());
   rooster->SetInputVolumeSeries(inputFilter->GetOutput());

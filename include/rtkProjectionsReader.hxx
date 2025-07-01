@@ -68,7 +68,7 @@
     using InputPixelType = itk::Vector<componentType, numberOfComponents>;                                          \
     using InputImageType = itk::Image<InputPixelType, OutputImageDimension>;                                        \
     using ReaderType = itk::ImageSeriesReader<InputImageType>;                                                      \
-    typename ReaderType::Pointer reader = ReaderType::New();                                                        \
+    auto reader = ReaderType::New();                                                                                \
     m_RawDataReader = reader;                                                                                       \
     using VectorComponentSelectionType = itk::VectorIndexSelectionCastImageFilter<InputImageType, OutputImageType>; \
     typename VectorComponentSelectionType::Pointer vectorComponentSelectionFilter =                                 \
@@ -194,12 +194,12 @@ ProjectionsReader<TOutputImage>::GenerateOutputInformation()
 
       // Reader
       using ReaderType = itk::ImageSeriesReader<InputImageType>;
-      typename ReaderType::Pointer reader = ReaderType::New();
+      auto reader = ReaderType::New();
       m_RawDataReader = reader;
 
       // Change information
       using ChangeInfoType = itk::ChangeInformationImageFilter<InputImageType>;
-      typename ChangeInfoType::Pointer cif = ChangeInfoType::New();
+      auto cif = ChangeInfoType::New();
       m_ChangeInformationFilter = cif;
 
       if (!strcmp(imageIO->GetNameOfClass(), "EdfImageIO"))
@@ -207,12 +207,12 @@ ProjectionsReader<TOutputImage>::GenerateOutputInformation()
         /////////// ESRF
         // Convert raw to Projections
         using RawFilterType = rtk::EdfRawToAttenuationImageFilter<InputImageType, OutputImageType>;
-        typename RawFilterType::Pointer rawFilter = RawFilterType::New();
+        auto rawFilter = RawFilterType::New();
         m_RawToAttenuationFilter = rawFilter;
 
         // Or just cast to OutputImageType
         using CastFilterType = itk::CastImageFilter<InputImageType, OutputImageType>;
-        typename CastFilterType::Pointer castFilter = CastFilterType::New();
+        auto castFilter = CastFilterType::New();
         m_RawCastFilter = castFilter;
       }
       if (!strcmp(imageIO->GetNameOfClass(), "XRadImageIO"))
@@ -220,12 +220,12 @@ ProjectionsReader<TOutputImage>::GenerateOutputInformation()
         /////////// XRad
         // Convert raw to Projections
         using XRadRawFilterType = rtk::XRadRawToAttenuationImageFilter<InputImageType, OutputImageType>;
-        typename XRadRawFilterType::Pointer rawFilterXRad = XRadRawFilterType::New();
+        auto rawFilterXRad = XRadRawFilterType::New();
         m_RawToAttenuationFilter = rawFilterXRad;
 
         // Or just cast to OutputImageType
         using CastFilterType = itk::CastImageFilter<InputImageType, OutputImageType>;
-        typename CastFilterType::Pointer castFilter = CastFilterType::New();
+        auto castFilter = CastFilterType::New();
         m_RawCastFilter = castFilter;
       }
     }
@@ -237,47 +237,47 @@ ProjectionsReader<TOutputImage>::GenerateOutputInformation()
 
       // Reader
       using ReaderType = itk::ImageSeriesReader<InputImageType>;
-      typename ReaderType::Pointer reader = ReaderType::New();
+      auto reader = ReaderType::New();
       m_RawDataReader = reader;
 
       // Change information
       using ChangeInfoType = itk::ChangeInformationImageFilter<InputImageType>;
-      typename ChangeInfoType::Pointer cif = ChangeInfoType::New();
+      auto cif = ChangeInfoType::New();
       m_ChangeInformationFilter = cif;
 
       // Crop
       using CropType = itk::CropImageFilter<InputImageType, InputImageType>;
-      typename CropType::Pointer crop = CropType::New();
+      auto crop = CropType::New();
       m_CropFilter = crop;
 
       // Conditional median
       using ConditionalMedianType = rtk::ConditionalMedianImageFilter<InputImageType>;
-      typename ConditionalMedianType::Pointer cond = ConditionalMedianType::New();
+      auto cond = ConditionalMedianType::New();
       m_ConditionalMedianFilter = cond;
 
       // Bin
       using BinType = itk::BinShrinkImageFilter<InputImageType, InputImageType>;
-      typename BinType::Pointer bin = BinType::New();
+      auto bin = BinType::New();
       m_BinningFilter = bin;
 
       // Scatter correction
       using ScatterFilterType = rtk::BoellaardScatterCorrectionImageFilter<InputImageType, InputImageType>;
-      typename ScatterFilterType::Pointer scatter = ScatterFilterType::New();
+      auto scatter = ScatterFilterType::New();
       m_ScatterFilter = scatter;
 
       // I0 estimation filter (shunt from pipeline by default)
       using I0EstimationFilterType = rtk::I0EstimationProjectionFilter<InputImageType, InputImageType>;
-      typename I0EstimationFilterType::Pointer i0est = I0EstimationFilterType::New();
+      auto i0est = I0EstimationFilterType::New();
       m_I0EstimationFilter = i0est;
 
       // Convert raw to Projections
       using RawFilterType = rtk::VarianObiRawImageFilter<InputImageType, OutputImageType>;
-      typename RawFilterType::Pointer rawFilter = RawFilterType::New();
+      auto rawFilter = RawFilterType::New();
       m_RawToAttenuationFilter = rawFilter;
 
       // Or just cast to OutputImageType
       using CastFilterType = itk::CastImageFilter<InputImageType, OutputImageType>;
-      typename CastFilterType::Pointer castFilter = CastFilterType::New();
+      auto castFilter = CastFilterType::New();
       m_RawCastFilter = castFilter;
     }
     else if (imageIO->GetComponentType() == itk::ImageIOBase::IOComponentEnum::USHORT)
@@ -288,17 +288,17 @@ ProjectionsReader<TOutputImage>::GenerateOutputInformation()
 
       // Reader
       using ReaderType = itk::ImageSeriesReader<InputImageType>;
-      typename ReaderType::Pointer reader = ReaderType::New();
+      auto reader = ReaderType::New();
       m_RawDataReader = reader;
 
       // Change information
       using ChangeInfoType = itk::ChangeInformationImageFilter<InputImageType>;
-      typename ChangeInfoType::Pointer cif = ChangeInfoType::New();
+      auto cif = ChangeInfoType::New();
       m_ChangeInformationFilter = cif;
 
       // Crop
       using CropType = itk::CropImageFilter<InputImageType, InputImageType>;
-      typename CropType::Pointer crop = CropType::New();
+      auto crop = CropType::New();
       m_CropFilter = crop;
 
       // Elekta specific conversion of input raw data
@@ -307,7 +307,7 @@ ProjectionsReader<TOutputImage>::GenerateOutputInformation()
         using ElektaRawType =
           rtk::ElektaSynergyRawLookupTableImageFilter<itk::Image<unsigned short, OutputImageDimension>,
                                                       itk::Image<unsigned short, OutputImageDimension>>;
-        typename ElektaRawType::Pointer elekta = ElektaRawType::New();
+        auto elekta = ElektaRawType::New();
         m_ElektaRawFilter = elekta;
 
         // Backward compatibility for default Elekta parameters
@@ -326,41 +326,41 @@ ProjectionsReader<TOutputImage>::GenerateOutputInformation()
 
       // Conditional median
       using ConditionalMedianType = rtk::ConditionalMedianImageFilter<InputImageType>;
-      typename ConditionalMedianType::Pointer cond = ConditionalMedianType::New();
+      auto cond = ConditionalMedianType::New();
       m_ConditionalMedianFilter = cond;
 
       // Bin
       using BinType = itk::BinShrinkImageFilter<InputImageType, InputImageType>;
-      typename BinType::Pointer bin = BinType::New();
+      auto bin = BinType::New();
       m_BinningFilter = bin;
 
       // Ora & ushort specific conversion of input raw data
       if (!strcmp(imageIO->GetNameOfClass(), "OraImageIO"))
       {
         using OraRawType = rtk::OraLookupTableImageFilter<OutputImageType>;
-        typename OraRawType::Pointer oraraw = OraRawType::New();
+        auto oraraw = OraRawType::New();
         m_RawToAttenuationFilter = oraraw;
       }
       else
       {
         // Scatter correction
         using ScatterFilterType = rtk::BoellaardScatterCorrectionImageFilter<InputImageType, InputImageType>;
-        typename ScatterFilterType::Pointer scatter = ScatterFilterType::New();
+        auto scatter = ScatterFilterType::New();
         m_ScatterFilter = scatter;
 
         // I0 estimation filter (shunt from pipeline by default)
         using I0EstimationFilterType = rtk::I0EstimationProjectionFilter<InputImageType, InputImageType>;
-        typename I0EstimationFilterType::Pointer i0est = I0EstimationFilterType::New();
+        auto i0est = I0EstimationFilterType::New();
         m_I0EstimationFilter = i0est;
 
         // Convert raw to Projections
         using RawFilterType = rtk::LUTbasedVariableI0RawToAttenuationImageFilter<InputImageType, OutputImageType>;
-        typename RawFilterType::Pointer rawFilter = RawFilterType::New();
+        auto rawFilter = RawFilterType::New();
         m_RawToAttenuationFilter = rawFilter;
 
         // Or just casts to OutputImageType
         using CastFilterType = itk::CastImageFilter<InputImageType, OutputImageType>;
-        typename CastFilterType::Pointer castFilter = CastFilterType::New();
+        auto castFilter = CastFilterType::New();
         m_RawCastFilter = castFilter;
       }
     }
@@ -387,28 +387,28 @@ ProjectionsReader<TOutputImage>::GenerateOutputInformation()
         ///////////// Default: whatever the format, we assume that we directly
         //// read the Projections
         using ReaderType = itk::ImageSeriesReader<OutputImageType>;
-        typename ReaderType::Pointer reader = ReaderType::New();
+        auto reader = ReaderType::New();
         m_RawDataReader = reader;
       }
 
       // Change information
       using ChangeInfoType = itk::ChangeInformationImageFilter<OutputImageType>;
-      typename ChangeInfoType::Pointer cif = ChangeInfoType::New();
+      auto cif = ChangeInfoType::New();
       m_ChangeInformationFilter = cif;
 
       // Crop
       using CropType = itk::CropImageFilter<OutputImageType, OutputImageType>;
-      typename CropType::Pointer crop = CropType::New();
+      auto crop = CropType::New();
       m_CropFilter = crop;
 
       // Conditional median
       using ConditionalMedianType = rtk::ConditionalMedianImageFilter<OutputImageType>;
-      typename ConditionalMedianType::Pointer cond = ConditionalMedianType::New();
+      auto cond = ConditionalMedianType::New();
       m_ConditionalMedianFilter = cond;
 
       // Bin
       using BinType = itk::BinShrinkImageFilter<OutputImageType, OutputImageType>;
-      typename BinType::Pointer bin = BinType::New();
+      auto bin = BinType::New();
       m_BinningFilter = bin;
     }
 

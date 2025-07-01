@@ -46,10 +46,10 @@ main(int, char **)
   using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
   constexpr double att = 0.0154;
 
-  ConstantImageSourceType::Pointer tomographySource = ConstantImageSourceType::New();
-  ConstantImageSourceType::Pointer volumeSource = ConstantImageSourceType::New();
-  ConstantImageSourceType::Pointer attenuationInput = ConstantImageSourceType::New();
-  auto                             origin = itk::MakePoint(-67., -67., -67.);
+  auto tomographySource = ConstantImageSourceType::New();
+  auto volumeSource = ConstantImageSourceType::New();
+  auto attenuationInput = ConstantImageSourceType::New();
+  auto origin = itk::MakePoint(-67., -67., -67.);
 #if FAST_TESTS_NO_CHECKS
   auto size = itk::MakeSize(2, 2, 2);
   auto spacing = itk::MakeVector(252., 252., 252.);
@@ -70,7 +70,7 @@ main(int, char **)
   attenuationInput->SetSize(size);
   attenuationInput->SetConstant(att);
 
-  ConstantImageSourceType::Pointer projectionsSource = ConstantImageSourceType::New();
+  auto projectionsSource = ConstantImageSourceType::New();
   origin = itk::MakePoint(-135., -135., -135.);
 #if FAST_TESTS_NO_CHECKS
   size = itk::MakeSize(2, 2, NumberOfProjectionImages);
@@ -86,7 +86,7 @@ main(int, char **)
 
   // Geometry object
   using GeometryType = rtk::ThreeDCircularProjectionGeometry;
-  GeometryType::Pointer geometry = GeometryType::New();
+  auto geometry = GeometryType::New();
   for (unsigned int noProj = 0; noProj < NumberOfProjectionImages; noProj++)
     geometry->AddProjection(600., 1200., noProj * 360. / NumberOfProjectionImages);
 
@@ -110,21 +110,21 @@ main(int, char **)
 
   // Create REFERENCE object (3D ellipsoid).
   using DEType = rtk::DrawEllipsoidImageFilter<OutputImageType, OutputImageType>;
-  DEType::Pointer dsl = DEType::New();
+  auto dsl = DEType::New();
   dsl->SetInput(tomographySource->GetOutput());
   dsl->SetAxis(semiprincipalaxis);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(dsl->Update());
 
   // Create attenuation map according to the reference object
   using MaskFilterType = itk::MaskImageFilter<OutputImageType, OutputImageType>;
-  MaskFilterType::Pointer maskFilter = MaskFilterType::New();
+  auto maskFilter = MaskFilterType::New();
   maskFilter->SetInput(attenuationInput->GetOutput());
   maskFilter->SetMaskImage(dsl->GetOutput());
   TRY_AND_EXIT_ON_ITK_EXCEPTION(maskFilter->Update());
 
   // OSEM reconstruction filtering
   using OSEMType = rtk::OSEMConeBeamReconstructionFilter<OutputImageType>;
-  OSEMType::Pointer osem = OSEMType::New();
+  auto osem = OSEMType::New();
   osem->SetInput(0, volumeSource->GetOutput());
   osem->SetInput(1, rei->GetOutput());
   osem->SetGeometry(geometry);

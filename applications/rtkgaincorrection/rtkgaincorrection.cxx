@@ -46,7 +46,7 @@ main(int argc, char * argv[])
 #endif
 
   using ReaderType = rtk::ProjectionsReader<InputImageType>;
-  ReaderType::Pointer reader = ReaderType::New();
+  auto reader = ReaderType::New();
   rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkgaincorrection>(reader, args_info);
   reader->ComputeLineIntegralOff(); // Don't want to preprocess data
   reader->SetFileNames(rtk::GetProjectionsFileNamesFromGgo(args_info));
@@ -67,7 +67,7 @@ main(int argc, char * argv[])
 
   InputImageType::Pointer darkImage;
   using DarkReaderType = itk::ImageFileReader<InputImageType>;
-  DarkReaderType::Pointer readerDark = DarkReaderType::New();
+  auto readerDark = DarkReaderType::New();
   readerDark->SetFileName(darkFile);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(readerDark->Update())
   darkImage = readerDark->GetOutput();
@@ -80,7 +80,7 @@ main(int argc, char * argv[])
 
   OutputImageType::Pointer gainImage;
   using GainReaderType = itk::ImageFileReader<OutputImageType>;
-  GainReaderType::Pointer readerGain = GainReaderType::New();
+  auto readerGain = GainReaderType::New();
   readerGain->SetFileName(gainFile);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(readerGain->Update())
   gainImage = readerGain->GetOutput();
@@ -92,19 +92,19 @@ main(int argc, char * argv[])
   using GainType = rtk::PolynomialGainCorrectionImageFilter<InputImageType, OutputImageType>;
 #endif
 
-  GainType::Pointer gainfilter = GainType::New();
+  auto gainfilter = GainType::New();
   gainfilter->SetDarkImage(darkImage);
   gainfilter->SetGainCoefficients(gainImage);
   gainfilter->SetK(args_info.K_arg);
 
   // Create empty volume for storing processed images
   using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
-  ConstantImageSourceType::Pointer constantSource = ConstantImageSourceType::New();
+  auto constantSource = ConstantImageSourceType::New();
 
   using ExtractType = itk::ExtractImageFilter<InputImageType, InputImageType>;
 
   using PasteType = itk::PasteImageFilter<OutputImageType, OutputImageType>;
-  PasteType::Pointer pasteFilter = PasteType::New();
+  auto pasteFilter = PasteType::New();
   pasteFilter->SetDestinationImage(constantSource->GetOutput());
 
   int bufferSize = args_info.bufferSize_arg;
@@ -124,7 +124,7 @@ main(int argc, char * argv[])
     desiredRegion.SetSize(itk::MakeSize(sliceRegion.GetSize()[0], sliceRegion.GetSize()[1], currentBufferSize));
     desiredRegion.SetIndex(itk::MakeIndex(sliceRegion.GetIndex()[0], sliceRegion.GetIndex()[1], bufferIdx));
 
-    ExtractType::Pointer extract = ExtractType::New();
+    auto extract = ExtractType::New();
     extract->SetDirectionCollapseToIdentity();
     extract->SetExtractionRegion(desiredRegion);
     extract->SetInput(reader->GetOutput());

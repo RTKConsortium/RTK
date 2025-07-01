@@ -147,7 +147,7 @@ main(int, char **)
   volIntSize.Fill(10);
   volIntRegion.SetSize(volIntSize);
 
-  rtk::ImportImageFilter<itk::Image<int, 2>>::Pointer volInt = rtk::ImportImageFilter<itk::Image<int, 2>>::New();
+  auto volInt = rtk::ImportImageFilter<itk::Image<int, 2>>::New();
   volInt->SetRegion(volIntRegion);
   volInt->SetSpacing(itk::MakeVector(1.0, 1.0));
   volInt->SetImportPointer(vec_int_2d, 10 * 10, false);
@@ -183,7 +183,7 @@ main(int, char **)
   volFloatSize.Fill(10);
   volFloatRegion.SetSize(volFloatSize);
 
-  rtk::ImportImageFilter<itk::Image<float, 2>>::Pointer volFloat = rtk::ImportImageFilter<itk::Image<float, 2>>::New();
+  auto volFloat = rtk::ImportImageFilter<itk::Image<float, 2>>::New();
   volFloat->SetRegion(volFloatRegion);
   volFloat->SetSpacing(itk::MakeVector(1.0, 1.0));
   volFloat->SetImportPointer(vec_float_2d, 10 * 10, false);

@@ -27,7 +27,7 @@ main(int argc, char * argv[])
   GGO(rtkbioscangeometry, args_info);
 
   // Create geometry reader
-  rtk::BioscanGeometryReader::Pointer bioscanReader = rtk::BioscanGeometryReader::New();
+  auto bioscanReader = rtk::BioscanGeometryReader::New();
   bioscanReader->SetProjectionsFileNames(rtk::GetProjectionsFileNamesFromGgo(args_info));
   TRY_AND_EXIT_ON_ITK_EXCEPTION(bioscanReader->UpdateOutputData())
 

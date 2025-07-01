@@ -44,8 +44,8 @@ main(int, char **)
 
   // Constant image sources
   using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
-  ConstantImageSourceType::Pointer tomographySource = ConstantImageSourceType::New();
-  auto                             origin = itk::MakePoint(-127., -127., -127.);
+  auto tomographySource = ConstantImageSourceType::New();
+  auto origin = itk::MakePoint(-127., -127., -127.);
 #if FAST_TESTS_NO_CHECKS
   auto size = itk::MakeSize(2, 2, 2);
   auto spacing = itk::MakeVector(254., 254., 254.);
@@ -66,7 +66,7 @@ main(int, char **)
   size = itk::MakeSize(128, 128, NumberOfProjectionImages);
   spacing = itk::MakeVector(4., 4., 4.);
 #endif
-  ConstantImageSourceType::Pointer projectionsSource = ConstantImageSourceType::New();
+  auto projectionsSource = ConstantImageSourceType::New();
   projectionsSource->SetOrigin(origin);
   projectionsSource->SetSpacing(spacing);
   projectionsSource->SetSize(size);
@@ -74,7 +74,7 @@ main(int, char **)
 
   // Shepp Logan projections filter
   using SLPType = rtk::SheppLoganPhantomFilter<OutputImageType, OutputImageType>;
-  SLPType::Pointer slp = SLPType::New();
+  auto slp = SLPType::New();
   slp->SetInput(projectionsSource->GetOutput());
 
   // Displaced detector weighting
@@ -83,24 +83,24 @@ main(int, char **)
 #else
   using DDFType = rtk::DisplacedDetectorImageFilter<OutputImageType>;
 #endif
-  DDFType::Pointer ddf = DDFType::New();
+  auto ddf = DDFType::New();
   ddf->SetInput(slp->GetOutput());
 
   // Create a reference object (in this case a 3D phantom reference).
   using DSLType = rtk::DrawSheppLoganFilter<OutputImageType, OutputImageType>;
-  DSLType::Pointer dsl = DSLType::New();
+  auto dsl = DSLType::New();
   dsl->SetInput(tomographySource->GetOutput());
   TRY_AND_EXIT_ON_ITK_EXCEPTION(dsl->Update());
 
   // FDK reconstruction filtering
   using FDKCPUType = rtk::FDKConeBeamReconstructionFilter<OutputImageType>;
-  FDKCPUType::Pointer feldkamp = FDKCPUType::New();
+  auto feldkamp = FDKCPUType::New();
   feldkamp->SetInput(0, tomographySource->GetOutput());
   feldkamp->SetInput(1, ddf->GetOutput());
 
   std::cout << "\n\n****** Case 1: positive offset in geometry ******" << std::endl;
   using GeometryType = rtk::ThreeDCircularProjectionGeometry;
-  GeometryType::Pointer geometry = GeometryType::New();
+  auto geometry = GeometryType::New();
   slp->SetGeometry(geometry);
   ddf->SetGeometry(geometry);
   feldkamp->SetGeometry(geometry);

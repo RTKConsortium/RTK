@@ -48,8 +48,8 @@ main(int, char **)
   // Constant image sources
   using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
   // Create Joseph Forward Projector volume input.
-  const ConstantImageSourceType::Pointer volInput = ConstantImageSourceType::New();
-  auto                                   origin = itk::MakePoint(-126., -126., -126.);
+  auto volInput = ConstantImageSourceType::New();
+  auto origin = itk::MakePoint(-126., -126., -126.);
 #if FAST_TESTS_NO_CHECKS
   auto size = itk::MakeSize(2, 2, 2);
   auto spacing = itk::MakeVector(252., 252., 252.);
@@ -65,7 +65,7 @@ main(int, char **)
 
   // Initialization Volume, it is used in the Joseph Forward Projector and in the
   // Ray Box Intersection Filter in order to initialize the stack of projections.
-  const ConstantImageSourceType::Pointer projInput = ConstantImageSourceType::New();
+  auto projInput = ConstantImageSourceType::New();
   size[2] = NumberOfProjectionImages;
   projInput->SetOrigin(origin);
   projInput->SetSpacing(spacing);
@@ -79,7 +79,7 @@ main(int, char **)
 #else
   using JFPType = rtk::JosephForwardProjectionImageFilter<OutputImageType, OutputImageType>;
 #endif
-  JFPType::Pointer jfp = JFPType::New();
+  auto jfp = JFPType::New();
   jfp->InPlaceOff();
   jfp->SetInput(projInput->GetOutput());
   jfp->SetInput(1, volInput->GetOutput());
@@ -89,7 +89,7 @@ main(int, char **)
 #ifdef USE_CUDA
   jfp->SetStepSize(10);
 #endif
-  RBIType::Pointer rbi = RBIType::New();
+  auto rbi = RBIType::New();
   rbi->InPlaceOff();
   rbi->SetInput(projInput->GetOutput());
   rbi->SetBoxMin(itk::MakeVector(-126.0, -126.0, -126.0));
@@ -97,11 +97,11 @@ main(int, char **)
 
   // Streaming filter to test for unusual regions
   using StreamingFilterType = itk::StreamingImageFilter<OutputImageType, OutputImageType>;
-  StreamingFilterType::Pointer stream = StreamingFilterType::New();
+  auto stream = StreamingFilterType::New();
   stream->SetInput(jfp->GetOutput());
 
   stream->SetNumberOfStreamDivisions(9);
-  itk::ImageRegionSplitterDirection::Pointer splitter = itk::ImageRegionSplitterDirection::New();
+  auto splitter = itk::ImageRegionSplitterDirection::New();
   splitter->SetDirection(2); // Splitting along direction 1, NOT 2
   stream->SetRegionSplitter(splitter);
 
@@ -111,7 +111,7 @@ main(int, char **)
   {
     // Geometry
     using GeometryType = rtk::ThreeDCircularProjectionGeometry;
-    GeometryType::Pointer geometry = GeometryType::New();
+    auto geometry = GeometryType::New();
     for (unsigned int i = 0; i < NumberOfProjectionImages; i++)
     {
       const double angle = -45. + i * 2.;
@@ -140,7 +140,7 @@ main(int, char **)
 
   // Geometry
   using GeometryType = rtk::ThreeDCircularProjectionGeometry;
-  GeometryType::Pointer geometry = GeometryType::New();
+  auto geometry = GeometryType::New();
   for (unsigned int i = 0; i < NumberOfProjectionImages; i++)
     geometry->AddProjection(500., 1000., i * 8.);
 
@@ -157,7 +157,7 @@ main(int, char **)
 
   // Create Shepp Logan reference projections
   using SLPType = rtk::SheppLoganPhantomFilter<OutputImageType, OutputImageType>;
-  SLPType::Pointer slp = SLPType::New();
+  auto slp = SLPType::New();
   slp->InPlaceOff();
   slp->SetInput(projInput->GetOutput());
   slp->SetGeometry(geometry);
@@ -173,7 +173,7 @@ main(int, char **)
   volInput->SetConstant(0.);
 
   using DSLType = rtk::DrawSheppLoganFilter<OutputImageType, OutputImageType>;
-  DSLType::Pointer dsl = DSLType::New();
+  auto dsl = DSLType::New();
   dsl->InPlaceOff();
   dsl->SetInput(volInput->GetOutput());
   dsl->Update();

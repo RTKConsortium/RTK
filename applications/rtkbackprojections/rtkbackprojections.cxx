@@ -57,13 +57,13 @@ main(int argc, char * argv[])
 
   // Create an empty volume
   using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
-  ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
+  auto constantImageSource = ConstantImageSourceType::New();
   rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkbackprojections>(constantImageSource,
                                                                                             args_info);
 
   // Projections reader
   using ReaderType = rtk::ProjectionsReader<OutputImageType>;
-  ReaderType::Pointer reader = ReaderType::New();
+  auto reader = ReaderType::New();
   rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkbackprojections>(reader, args_info);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(reader->Update())
 
@@ -86,7 +86,7 @@ main(int argc, char * argv[])
   using DVFImageSequenceType = itk::Image<DVFPixelType, 4>;
   using DVFImageType = itk::Image<DVFPixelType, 3>;
   using DeformationType = rtk::CyclicDeformationImageFilter<DVFImageSequenceType, DVFImageType>;
-  DeformationType::Pointer def = DeformationType::New();
+  auto def = DeformationType::New();
 
   switch (args_info.bp_arg)
   {

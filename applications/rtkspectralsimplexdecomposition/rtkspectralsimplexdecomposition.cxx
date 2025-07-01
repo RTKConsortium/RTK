@@ -105,7 +105,7 @@ main(int argc, char * argv[])
   using SimplexFilterType = rtk::SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionType,
                                                                                     SpectralProjectionsType,
                                                                                     IncidentSpectrumImageType>;
-  SimplexFilterType::Pointer simplex = SimplexFilterType::New();
+  auto simplex = SimplexFilterType::New();
   simplex->SetInputDecomposedProjections(decomposedProjection);
   simplex->SetGuessInitialization(args_info.guess_flag);
   simplex->SetInputMeasuredProjections(spectralProjection);

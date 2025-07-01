@@ -129,7 +129,7 @@ FDKVarianceReconstructionFilter<TInputImage, TOutputImage, TFFTPrecision>::Gener
 
   // The progress accumulator tracks the progress of the pipeline
   // Each filter is equally weighted across all iterations of the stack
-  itk::ProgressAccumulator::Pointer progress = itk::ProgressAccumulator::New();
+  auto progress = itk::ProgressAccumulator::New();
   progress->SetMiniPipelineFilter(this);
   auto frac = (1.0f / 4) / itk::Math::ceil(double(nProj) / m_ProjectionSubsetSize);
   progress->RegisterInternalFilter(m_WeightFilter1, frac);

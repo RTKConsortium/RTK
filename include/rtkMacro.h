@@ -210,27 +210,27 @@
  *
  * \ingroup RTK
  */
-#define REPORT_ITERATIONS(filter, filter_type, output_image_type)                                               \
-  if (args_info.verbose_flag)                                                                                   \
-  {                                                                                                             \
-    using VerboseIterationCommandType = rtk::VerboseIterationCommand<filter_type>;                              \
-    typename VerboseIterationCommandType::Pointer verboseIterationCommand = VerboseIterationCommandType::New(); \
-    filter->AddObserver(itk::AnyEvent(), verboseIterationCommand);                                              \
-  }                                                                                                             \
-  if (args_info.output_every_given)                                                                             \
-  {                                                                                                             \
-    typedef rtk::OutputIterationCommand<filter_type, output_image_type> OutputIterationCommand;                 \
-    typename OutputIterationCommand::Pointer outputIterationCommand = OutputIterationCommand::New();            \
-    outputIterationCommand->SetTriggerEvery(args_info.output_every_arg);                                        \
-    if (args_info.iteration_file_name_given)                                                                    \
-    {                                                                                                           \
-      outputIterationCommand->SetFileFormat(args_info.iteration_file_name_arg);                                 \
-    }                                                                                                           \
-    else                                                                                                        \
-    {                                                                                                           \
-      outputIterationCommand->SetFileFormat("iter%d.mha");                                                      \
-    }                                                                                                           \
-    filter->AddObserver(itk::IterationEvent(), outputIterationCommand);                                         \
+#define REPORT_ITERATIONS(filter, filter_type, output_image_type)                               \
+  if (args_info.verbose_flag)                                                                   \
+  {                                                                                             \
+    using VerboseIterationCommandType = rtk::VerboseIterationCommand<filter_type>;              \
+    auto verboseIterationCommand = VerboseIterationCommandType::New();                          \
+    filter->AddObserver(itk::AnyEvent(), verboseIterationCommand);                              \
+  }                                                                                             \
+  if (args_info.output_every_given)                                                             \
+  {                                                                                             \
+    typedef rtk::OutputIterationCommand<filter_type, output_image_type> OutputIterationCommand; \
+    auto outputIterationCommand = OutputIterationCommand::New();                                \
+    outputIterationCommand->SetTriggerEvery(args_info.output_every_arg);                        \
+    if (args_info.iteration_file_name_given)                                                    \
+    {                                                                                           \
+      outputIterationCommand->SetFileFormat(args_info.iteration_file_name_arg);                 \
+    }                                                                                           \
+    else                                                                                        \
+    {                                                                                           \
+      outputIterationCommand->SetFileFormat("iter%d.mha");                                      \
+    }                                                                                           \
+    filter->AddObserver(itk::IterationEvent(), outputIterationCommand);                         \
   }
 //--------------------------------------------------------------------
 

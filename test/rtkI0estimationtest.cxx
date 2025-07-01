@@ -18,7 +18,7 @@ main(int, char **)
   using ImageType = itk::Image<unsigned short, Dimension>;
 
   using I0FilterType = rtk::I0EstimationProjectionFilter<ImageType, ImageType, 3>;
-  I0FilterType::Pointer i0est = I0FilterType::New();
+  auto i0est = I0FilterType::New();
 
   // Constant image sources
   auto                  size = itk::MakeSize(150, 150, 1);
@@ -26,7 +26,7 @@ main(int, char **)
   region.SetSize(size);
 
   using RandomImageSourceType = itk::RandomImageSource<ImageType>;
-  RandomImageSourceType::Pointer randomSource = RandomImageSourceType::New();
+  auto randomSource = RandomImageSourceType::New();
   randomSource->SetSize(size);
 
   i0est->SetExpectedI0(23);

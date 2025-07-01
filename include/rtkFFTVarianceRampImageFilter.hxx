@@ -42,7 +42,7 @@ FFTVarianceRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>::UpdateFFTP
 
   // iFFT kernel
   using IFFTType = itk::HalfHermitianToRealInverseFFTImageFilter<FFTOutputImageType, FFTInputImageType>;
-  typename IFFTType::Pointer ifftK = IFFTType::New();
+  auto ifftK = IFFTType::New();
   ifftK->SetInput(this->m_KernelFFT);
   ifftK->SetNumberOfWorkUnits(this->GetNumberOfWorkUnits());
   ifftK->Update();
@@ -87,7 +87,7 @@ FFTVarianceRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>::UpdateFFTP
   }
 
   // FFT kernel
-  typename FFTType::Pointer fftK2 = FFTType::New();
+  auto fftK2 = FFTType::New();
   fftK2->SetInput(KernelIFFT);
   fftK2->SetNumberOfWorkUnits(this->GetNumberOfWorkUnits());
   fftK2->Update();

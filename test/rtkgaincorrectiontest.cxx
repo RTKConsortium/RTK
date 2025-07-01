@@ -61,7 +61,7 @@ createDarkImage()
   InputImageType::RegionType region;
   region.SetSize(size);
 
-  InputImageType::Pointer darkImage = InputImageType::New();
+  auto darkImage = InputImageType::New();
   darkImage->SetRegions(region);
   darkImage->SetSpacing(spacing);
   darkImage->Allocate();
@@ -94,7 +94,7 @@ createGainImage()
   OutputImageType::RegionType region;
   region.SetSize(size);
 
-  OutputImageType::Pointer gainImage = OutputImageType::New();
+  auto gainImage = OutputImageType::New();
   gainImage->SetRegions(region);
   gainImage->SetSpacing(spacing);
   gainImage->Allocate();
@@ -129,7 +129,7 @@ createInputImage()
   InputImageType::RegionType region;
   region.SetSize(size);
 
-  InputImageType::Pointer inputImage = InputImageType::New();
+  auto inputImage = InputImageType::New();
   inputImage->SetRegions(region);
   inputImage->SetSpacing(spacing);
   inputImage->Allocate();
@@ -150,7 +150,7 @@ generateExpectedOutput(InputImageType::Pointer  inputImage,
   OutputImageType::RegionType region;
   region.SetSize(size);
 
-  OutputImageType::Pointer expectedOutput = OutputImageType::New();
+  auto expectedOutput = OutputImageType::New();
   expectedOutput->SetRegions(region);
   expectedOutput->SetSpacing(spacing);
   expectedOutput->Allocate();
@@ -212,7 +212,7 @@ main(int, char **)
 #else
   using GainCorrectionType = rtk::PolynomialGainCorrectionImageFilter<InputImageType, OutputImageType>;
 #endif
-  GainCorrectionType::Pointer gainfilter = GainCorrectionType::New();
+  auto gainfilter = GainCorrectionType::New();
 
   // Set filter inputs
   InputImageType::Pointer darkImage = createDarkImage();

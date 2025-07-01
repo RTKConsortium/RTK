@@ -51,7 +51,7 @@ main(int argc, char * argv[])
 
   // Projections reader
   using ReaderType = rtk::ProjectionsReader<ProjectionStackType>;
-  ReaderType::Pointer reader = ReaderType::New();
+  auto reader = ReaderType::New();
   rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkmotioncompensatedfourdconjugategradient>(reader, args_info);
 
   // Geometry
@@ -66,7 +66,7 @@ main(int argc, char * argv[])
   {
     // Read an existing image to initialize the volume
     using InputReaderType = itk::ImageFileReader<VolumeSeriesType>;
-    InputReaderType::Pointer inputReader = InputReaderType::New();
+    auto inputReader = InputReaderType::New();
     inputReader->SetFileName(args_info.input_arg);
     inputFilter = inputReader;
   }
@@ -74,7 +74,7 @@ main(int argc, char * argv[])
   {
     // Create new empty volume
     using ConstantImageSourceType = rtk::ConstantImageSource<VolumeSeriesType>;
-    ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
+    auto constantImageSource = ConstantImageSourceType::New();
     rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkmotioncompensatedfourdconjugategradient>(
       constantImageSource, args_info);
 
@@ -93,7 +93,7 @@ main(int argc, char * argv[])
   inputFilter->ReleaseDataFlagOn();
 
   // Read the phases file
-  rtk::PhasesToInterpolationWeights::Pointer phaseReader = rtk::PhasesToInterpolationWeights::New();
+  auto phaseReader = rtk::PhasesToInterpolationWeights::New();
   phaseReader->SetFileName(args_info.signal_arg);
   phaseReader->SetNumberOfReconstructedFrames(inputFilter->GetOutput()->GetLargestPossibleRegion().GetSize(3));
   TRY_AND_EXIT_ON_ITK_EXCEPTION(phaseReader->Update())
@@ -102,7 +102,7 @@ main(int argc, char * argv[])
   // Create the mcfourdcg filter, connect the basic inputs, and set the basic parameters
   using MCFourDCGFilterType =
     rtk::MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>;
-  MCFourDCGFilterType::Pointer mcfourdcg = MCFourDCGFilterType::New();
+  auto mcfourdcg = MCFourDCGFilterType::New();
   mcfourdcg->SetInputVolumeSeries(inputFilter->GetOutput());
   mcfourdcg->SetInputProjectionStack(reader->GetOutput());
   mcfourdcg->SetGeometry(geometry);
@@ -129,7 +129,7 @@ main(int argc, char * argv[])
   // Warp this sequence with the inverse DVF so as to obtain a result similar to the classical 4D CG filter
   using WarpSequenceFilterType =
     rtk::WarpSequenceImageFilter<VolumeSeriesType, DVFSequenceImageType, ProjectionStackType, DVFImageType>;
-  WarpSequenceFilterType::Pointer warp = WarpSequenceFilterType::New();
+  auto warp = WarpSequenceFilterType::New();
   warp->SetInput(mcfourdcg->GetOutput());
   warp->SetDisplacementField(idvf);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(warp->Update())

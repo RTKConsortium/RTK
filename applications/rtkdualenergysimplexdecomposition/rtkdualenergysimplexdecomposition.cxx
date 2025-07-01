@@ -51,23 +51,23 @@ main(int argc, char * argv[])
   using MaterialAttenuationsReaderType = itk::ImageFileReader<MaterialAttenuationsImageType>;
 
   // Read all inputs
-  DecomposedProjectionReaderType::Pointer decomposedProjectionReader = DecomposedProjectionReaderType::New();
+  auto decomposedProjectionReader = DecomposedProjectionReaderType::New();
   decomposedProjectionReader->SetFileName(args_info.input_arg);
   decomposedProjectionReader->Update();
 
-  DualEnergyProjectionReaderType::Pointer dualEnergyProjectionReader = DualEnergyProjectionReaderType::New();
+  auto dualEnergyProjectionReader = DualEnergyProjectionReaderType::New();
   dualEnergyProjectionReader->SetFileName(args_info.dual_arg);
   dualEnergyProjectionReader->Update();
 
-  IncidentSpectrumReaderType::Pointer incidentSpectrumReaderHighEnergy = IncidentSpectrumReaderType::New();
+  auto incidentSpectrumReaderHighEnergy = IncidentSpectrumReaderType::New();
   incidentSpectrumReaderHighEnergy->SetFileName(args_info.high_arg);
   incidentSpectrumReaderHighEnergy->Update();
 
-  IncidentSpectrumReaderType::Pointer incidentSpectrumReaderLowEnergy = IncidentSpectrumReaderType::New();
+  auto incidentSpectrumReaderLowEnergy = IncidentSpectrumReaderType::New();
   incidentSpectrumReaderLowEnergy->SetFileName(args_info.low_arg);
   incidentSpectrumReaderLowEnergy->Update();
 
-  MaterialAttenuationsReaderType::Pointer materialAttenuationsReader = MaterialAttenuationsReaderType::New();
+  auto materialAttenuationsReader = MaterialAttenuationsReaderType::New();
   materialAttenuationsReader->SetFileName(args_info.attenuations_arg);
   materialAttenuationsReader->Update();
 
@@ -77,8 +77,8 @@ main(int argc, char * argv[])
 
   // If the detector response is given by the user, use it. Otherwise, assume it is included in the
   // incident spectrum, and fill the response with ones
-  DetectorResponseReaderType::Pointer detectorResponseReader = DetectorResponseReaderType::New();
-  DetectorResponseImageType::Pointer  detectorImage;
+  auto                               detectorResponseReader = DetectorResponseReaderType::New();
+  DetectorResponseImageType::Pointer detectorImage;
   if (args_info.detector_given)
   {
     detectorResponseReader->SetFileName(args_info.detector_arg);
@@ -105,7 +105,7 @@ main(int argc, char * argv[])
                                                                                     IncidentSpectrumImageType,
                                                                                     DetectorResponseImageType,
                                                                                     MaterialAttenuationsImageType>;
-  SimplexFilterType::Pointer simplex = SimplexFilterType::New();
+  auto simplex = SimplexFilterType::New();
   simplex->SetInputDecomposedProjections(decomposedProjectionReader->GetOutput());
   simplex->SetGuessInitialization(args_info.guess_flag);
   simplex->SetInputMeasuredProjections(dualEnergyProjectionReader->GetOutput());
@@ -120,7 +120,7 @@ main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION(simplex->Update())
 
   // Write outputs
-  DecomposedProjectionWriterType::Pointer writer = DecomposedProjectionWriterType::New();
+  auto writer = DecomposedProjectionWriterType::New();
   writer->SetInput(simplex->GetOutput(0));
   writer->SetFileName(args_info.output_arg);
   writer->Update();

@@ -155,7 +155,7 @@ protected:
   Run(const TCaller * caller) override
   {
     typedef itk::ImageFileWriter<TOutputImage> WriterType;
-    typename WriterType::Pointer               writer = WriterType::New();
+    auto                                       writer = WriterType::New();
 
     char         buffer[1024];
     unsigned int size = snprintf(buffer, 1024, m_FileFormat.c_str(), this->m_IterationCount);

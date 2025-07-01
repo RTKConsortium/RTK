@@ -51,7 +51,7 @@ main(int argc, char * argv[])
 #endif
 
   using ReaderType = rtk::ProjectionsReader<InputImageType>; // Warning: preprocess images
-  ReaderType::Pointer reader = ReaderType::New();
+  auto reader = ReaderType::New();
   reader->SetFileNames(rtk::GetProjectionsFileNamesFromGgo(args_info));
   reader->ComputeLineIntegralOff();
   TRY_AND_EXIT_ON_ITK_EXCEPTION(reader->UpdateOutputInformation())
@@ -78,15 +78,15 @@ main(int argc, char * argv[])
 #else
   using ScatterCorrectionType = rtk::ScatterGlareCorrectionImageFilter<InputImageType, InputImageType, float>;
 #endif
-  ScatterCorrectionType::Pointer SFilter = ScatterCorrectionType::New();
+  auto SFilter = ScatterCorrectionType::New();
   SFilter->SetTruncationCorrection(0.0);
   SFilter->SetCoefficients(coef);
 
   using ConstantImageSourceType = rtk::ConstantImageSource<InputImageType>;
-  ConstantImageSourceType::Pointer constantSource = ConstantImageSourceType::New();
+  auto constantSource = ConstantImageSourceType::New();
 
   using PasteImageFilterType = itk::PasteImageFilter<InputImageType, InputImageType>;
-  PasteImageFilterType::Pointer paste = PasteImageFilterType::New();
+  auto paste = PasteImageFilterType::New();
   paste->SetSourceImage(SFilter->GetOutput());
   paste->SetDestinationImage(constantSource->GetOutput());
 
@@ -103,7 +103,7 @@ main(int argc, char * argv[])
     desiredRegionA.SetIndex(itk::MakeIndex(sliceRegionA.GetIndex()[0], sliceRegionA.GetIndex()[1], projid));
 
     using ExtractFilterType = itk::ExtractImageFilter<InputImageType, InputImageType>;
-    ExtractFilterType::Pointer extract = ExtractFilterType::New();
+    auto extract = ExtractFilterType::New();
     extract->SetDirectionCollapseToIdentity();
     extract->SetExtractionRegion(desiredRegionA);
     extract->SetInput(reader->GetOutput());
@@ -123,7 +123,7 @@ main(int argc, char * argv[])
     if (args_info.difference_flag)
     {
       using SubtractImageFilterType = itk::SubtractImageFilter<InputImageType, InputImageType>;
-      SubtractImageFilterType::Pointer subtractFilter = SubtractImageFilterType::New();
+      auto subtractFilter = SubtractImageFilterType::New();
       subtractFilter->SetInput1(image);
       subtractFilter->SetInput2(procImage);
       TRY_AND_EXIT_ON_ITK_EXCEPTION(subtractFilter->Update())

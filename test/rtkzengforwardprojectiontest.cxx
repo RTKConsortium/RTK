@@ -51,13 +51,13 @@ main(int, char **)
   auto spacing = itk::MakeVector(4., 4., 4.);
 #endif
 
-  ConstantImageSourceType::Pointer tomographySource = ConstantImageSourceType::New();
+  auto tomographySource = ConstantImageSourceType::New();
   tomographySource->SetOrigin(origin);
   tomographySource->SetSpacing(spacing);
   tomographySource->SetSize(size);
   tomographySource->SetConstant(0.);
 
-  const ConstantImageSourceType::Pointer attenuationInput = ConstantImageSourceType::New();
+  auto attenuationInput = ConstantImageSourceType::New();
   attenuationInput->SetOrigin(origin);
   attenuationInput->SetSpacing(spacing);
   attenuationInput->SetSize(size);
@@ -65,7 +65,7 @@ main(int, char **)
 
 
   // Initialization Volume, it is used in the Zeng Forward Projector and in the Joseph Attenuated Projector
-  const ConstantImageSourceType::Pointer projInput = ConstantImageSourceType::New();
+  auto projInput = ConstantImageSourceType::New();
   size[2] = NumberOfProjectionImages;
   projInput->SetOrigin(origin);
   projInput->SetSpacing(spacing);
@@ -75,9 +75,9 @@ main(int, char **)
 
 
   using DEIFType = rtk::DrawEllipsoidImageFilter<OutputImageType, OutputImageType>;
-  DEIFType::Pointer volInput = DEIFType::New();
-  auto              axis_vol = itk::MakeVector(32., 32., 32.);
-  auto              center_vol = itk::MakeVector(0., 0., 0.);
+  auto volInput = DEIFType::New();
+  auto axis_vol = itk::MakeVector(32., 32., 32.);
+  auto center_vol = itk::MakeVector(0., 0., 0.);
   volInput->SetInput(tomographySource->GetOutput());
   volInput->SetCenter(center_vol);
   volInput->SetAxis(axis_vol);
@@ -87,7 +87,7 @@ main(int, char **)
   // Zeng Forward Projection filter
   using JFPType = rtk::ZengForwardProjectionImageFilter<OutputImageType, OutputImageType>;
 
-  JFPType::Pointer jfp = JFPType::New();
+  auto jfp = JFPType::New();
   jfp->InPlaceOff();
   jfp->SetInput(projInput->GetOutput());
   jfp->SetInput(1, volInput->GetOutput());
@@ -95,14 +95,14 @@ main(int, char **)
 
   // Joseph Forward Attenuated Projection filter
   using ATTJFPType = rtk::JosephForwardAttenuatedProjectionImageFilter<OutputImageType, OutputImageType>;
-  ATTJFPType::Pointer attjfp = ATTJFPType::New();
+  auto attjfp = ATTJFPType::New();
   attjfp->InPlaceOff();
   attjfp->SetInput(projInput->GetOutput());
   attjfp->SetInput(1, volInput->GetOutput());
   attjfp->SetInput(2, attenuationInput->GetOutput());
 
   using GeometryType = rtk::ThreeDCircularProjectionGeometry;
-  GeometryType::Pointer geometry = GeometryType::New();
+  auto geometry = GeometryType::New();
   for (unsigned int i = 0; i < NumberOfProjectionImages; i++)
   {
     geometry->AddProjection(500, 0, i * 360. / NumberOfProjectionImages, 16., 12.);

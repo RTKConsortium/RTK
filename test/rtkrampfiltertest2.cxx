@@ -29,14 +29,14 @@ main(int, char **)
   using RampFilterType = rtk::FFTRampImageFilter<ImageType, ImageType>;
 #endif
 
-  ImageType::Pointer    image = ImageType::New();
+  auto                  image = ImageType::New();
   ImageType::RegionType region;
   region.SetSize(itk::MakeSize(64, 64, 64));
   image->SetRegions(region);
   image->Allocate();
   image->FillBuffer(10);
 
-  RampFilterType::Pointer rampFilter = RampFilterType::New();
+  auto rampFilter = RampFilterType::New();
   rampFilter->SetInput(image);
 
   try

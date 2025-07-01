@@ -49,7 +49,7 @@ main(int argc, char * argv[])
 
   // Projections reader
   using ReaderType = rtk::ProjectionsReader<OutputImageType>;
-  ReaderType::Pointer reader = ReaderType::New();
+  auto reader = ReaderType::New();
   rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtklagcorrection>(reader, args_info);
   reader->ComputeLineIntegralOff(); // Don't want to preprocess data
   reader->SetFileNames(rtk::GetProjectionsFileNamesFromGgo(args_info));
@@ -73,7 +73,7 @@ main(int argc, char * argv[])
 #else
   using LagType = rtk::LagCorrectionImageFilter<OutputImageType, VModelOrder>;
 #endif
-  LagType::Pointer lagfilter = LagType::New();
+  auto lagfilter = LagType::New();
   lagfilter->SetInput(reader->GetOutput());
   lagfilter->SetCoefficients(a, b);
   lagfilter->InPlaceOff();
@@ -81,7 +81,7 @@ main(int argc, char * argv[])
 
   // Streaming filter
   using StreamerType = itk::StreamingImageFilter<OutputImageType, OutputImageType>;
-  StreamerType::Pointer streamer = StreamerType::New();
+  auto streamer = StreamerType::New();
   streamer->SetInput(lagfilter->GetOutput());
   streamer->SetNumberOfStreamDivisions(100);
 

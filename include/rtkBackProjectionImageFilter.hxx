@@ -191,7 +191,7 @@ BackProjectionImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerateDat
 
   // Create interpolator, could be any interpolation
   using InterpolatorType = itk::LinearInterpolateImageFunction<ProjectionImageType, double>;
-  typename InterpolatorType::Pointer interpolator = InterpolatorType::New();
+  auto interpolator = InterpolatorType::New();
 
   // Iterators on volume input and output
   using InputRegionIterator = itk::ImageRegionConstIterator<TInputImage>;
@@ -294,7 +294,7 @@ BackProjectionImageFilter<TInputImage, TOutputImage>::CylindricalDetectorCentere
 
   // Create interpolator, could be any interpolation
   using InterpolatorType = itk::LinearInterpolateImageFunction<ProjectionImageType, double>;
-  typename InterpolatorType::Pointer interpolator = InterpolatorType::New();
+  auto interpolator = InterpolatorType::New();
   interpolator->SetInputImage(projection);
 
   // Get radius of the cylindrical detector
@@ -485,7 +485,7 @@ BackProjectionImageFilter<TInputImage, TOutputImage>::GetProjection(const unsign
 
   const int iProjBuff = stack->GetBufferedRegion().GetIndex(ProjectionImageType::ImageDimension);
 
-  typename TProjectionImage::Pointer     projection = TProjectionImage::New();
+  auto                                   projection = TProjectionImage::New();
   typename TProjectionImage::RegionType  region;
   typename TProjectionImage::SpacingType spacing;
   typename TProjectionImage::PointType   origin;

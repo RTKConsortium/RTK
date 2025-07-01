@@ -44,7 +44,7 @@ DrawGeometricPhantomImageFilter<TInputImage, TOutputImage>::GenerateData()
   if (!m_ConfigFile.empty())
   {
     using ReaderType = rtk::ForbildPhantomFileReader;
-    ReaderType::Pointer reader = ReaderType::New();
+    auto reader = ReaderType::New();
     reader->SetFilename(m_ConfigFile);
     reader->GenerateOutputInformation();
     this->m_GeometricPhantom = reader->GetGeometricPhantom();
@@ -69,7 +69,7 @@ DrawGeometricPhantomImageFilter<TInputImage, TOutputImage>::GenerateData()
     if (!drawers.empty())
     {
       using RCOIType = DrawConvexImageFilter<TOutputImage, TOutputImage>;
-      typename RCOIType::Pointer rcoi = RCOIType::New();
+      auto rcoi = RCOIType::New();
       rcoi->SetInput(drawers.back()->GetOutput());
       rcoi->SetConvexShape(co);
       drawers.push_back(rcoi.GetPointer());
@@ -77,7 +77,7 @@ DrawGeometricPhantomImageFilter<TInputImage, TOutputImage>::GenerateData()
     else
     {
       using RCOIType = DrawConvexImageFilter<TInputImage, TOutputImage>;
-      typename RCOIType::Pointer rcoi = RCOIType::New();
+      auto rcoi = RCOIType::New();
       rcoi->SetInput(this->GetInput());
       rcoi->SetConvexShape(co);
       drawers.push_back(rcoi.GetPointer());

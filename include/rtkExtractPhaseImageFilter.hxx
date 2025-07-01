@@ -46,24 +46,24 @@ ExtractPhaseImageFilter<TImage>::GenerateData()
   typename TImage::SizeType kernelSz;
   kernelSz[0] = m_MovingAverageSize;
 
-  typename TImage::Pointer kernel = TImage::New();
+  auto kernel = TImage::New();
   kernel->SetRegions(kernelSz);
   kernel->Allocate();
   kernel->FillBuffer(1. / m_MovingAverageSize);
 
   using ConvolutionType = itk::ConvolutionImageFilter<TImage, TImage>;
-  typename ConvolutionType::Pointer conv = ConvolutionType::New();
+  auto conv = ConvolutionType::New();
   conv->SetInput(this->GetInput());
   conv->SetKernelImage(kernel);
 
   // Unsharp mask
   kernelSz[0] = m_UnsharpMaskSize;
-  typename TImage::Pointer kernel2 = TImage::New();
+  auto kernel2 = TImage::New();
   kernel2->SetRegions(kernelSz);
   kernel2->Allocate();
   kernel2->FillBuffer(1. / m_UnsharpMaskSize);
 
-  typename ConvolutionType::Pointer conv2 = ConvolutionType::New();
+  auto conv2 = ConvolutionType::New();
   conv2->SetInput(conv->GetOutput());
   conv2->SetKernelImage(kernel2);
 
@@ -73,7 +73,7 @@ ExtractPhaseImageFilter<TImage>::GenerateData()
   using RealOutputImageType = itk::Image<RealOutputPixelType, 1>;
 
   using SubtractType = itk::SubtractImageFilter<TImage, TImage, RealOutputImageType>;
-  typename SubtractType::Pointer sub = SubtractType::New();
+  auto sub = SubtractType::New();
   sub->SetInput1(conv->GetOutput());
   sub->SetInput2(conv2->GetOutput());
   sub->InPlaceOff();
@@ -85,12 +85,12 @@ ExtractPhaseImageFilter<TImage>::GenerateData()
 
   // Hilbert transform
   using HilbertType = rtk::HilbertImageFilter<RealOutputImageType, ComplexSignalType>;
-  typename HilbertType::Pointer hilbert = HilbertType::New();
+  auto hilbert = HilbertType::New();
   hilbert->SetInput(sub->GetOutput());
 
   // Take the linear phase of this signal
   using PhaseType = itk::ComplexToPhaseImageFilter<ComplexSignalType, TImage>;
-  typename PhaseType::Pointer phase = PhaseType::New();
+  auto phase = PhaseType::New();
   phase->SetInput(hilbert->GetOutput());
   phase->Update();
 

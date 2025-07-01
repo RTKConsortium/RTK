@@ -48,7 +48,7 @@ main(int argc, char * argv[])
 
   // Projections reader
   using ReaderType = rtk::ProjectionsReader<ProjectionStackType>;
-  ReaderType::Pointer reader = ReaderType::New();
+  auto reader = ReaderType::New();
   rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkfourdsart>(reader, args_info);
 
   // Geometry
@@ -63,7 +63,7 @@ main(int argc, char * argv[])
   {
     // Read an existing image to initialize the volume
     using InputReaderType = itk::ImageFileReader<VolumeSeriesType>;
-    InputReaderType::Pointer inputReader = InputReaderType::New();
+    auto inputReader = InputReaderType::New();
     inputReader->SetFileName(args_info.input_arg);
     inputFilter = inputReader;
   }
@@ -71,7 +71,7 @@ main(int argc, char * argv[])
   {
     // Create new empty volume
     using ConstantImageSourceType = rtk::ConstantImageSource<VolumeSeriesType>;
-    ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
+    auto constantImageSource = ConstantImageSourceType::New();
     rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkfourdsart>(constantImageSource, args_info);
 
     // GenGetOpt can't handle default arguments for multiple arguments like size or spacing.
@@ -89,7 +89,7 @@ main(int argc, char * argv[])
   inputFilter->ReleaseDataFlagOn();
 
   // Read the phases file
-  rtk::PhasesToInterpolationWeights::Pointer phaseReader = rtk::PhasesToInterpolationWeights::New();
+  auto phaseReader = rtk::PhasesToInterpolationWeights::New();
   phaseReader->SetFileName(args_info.signal_arg);
   phaseReader->SetNumberOfReconstructedFrames(inputFilter->GetOutput()->GetLargestPossibleRegion().GetSize(3));
   TRY_AND_EXIT_ON_ITK_EXCEPTION(phaseReader->Update())
@@ -97,7 +97,7 @@ main(int argc, char * argv[])
   // 4D SART reconstruction filter
   using FourDSARTConeBeamReconstructionFilterType =
     rtk::FourDSARTConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>;
-  FourDSARTConeBeamReconstructionFilterType::Pointer fourdsart = FourDSARTConeBeamReconstructionFilterType::New();
+  auto fourdsart = FourDSARTConeBeamReconstructionFilterType::New();
 
   // Set the forward and back projection filters
   SetForwardProjectionFromGgo(args_info, fourdsart.GetPointer());

@@ -131,7 +131,7 @@ AmsterdamShroudImageFilter<TInputImage>::UpdateUnsharpMaskKernel()
 {
   // Unsharp mask: difference between image and moving average
   // m_ConvolutionFilter computes the moving average
-  typename TOutputImage::Pointer    kernel = TOutputImage::New();
+  auto                              kernel = TOutputImage::New();
   typename TOutputImage::RegionType region;
   region.SetIndex(0, 0);
   region.SetIndex(1, (int)m_UnsharpMaskSize / -2);

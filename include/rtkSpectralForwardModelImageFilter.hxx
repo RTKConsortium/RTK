@@ -144,7 +144,7 @@ SpectralForwardModelImageFilter<DecomposedProjectionsType,
   using ActualInputType = itk::Image<itk::Vector<DecomposedProjectionsDataType, VNumberOfMaterials>,
                                      DecomposedProjectionsType::ImageDimension>;
   using CastFilterType = itk::CastImageFilter<ActualInputType, DecomposedProjectionsType>;
-  typename CastFilterType::Pointer castPointer = CastFilterType::New();
+  auto castPointer = CastFilterType::New();
   castPointer->SetInput(DecomposedProjections);
   castPointer->Update();
   this->SetInput("DecomposedProjections", const_cast<DecomposedProjectionsType *>(castPointer->GetOutput()));
@@ -236,7 +236,7 @@ SpectralForwardModelImageFilter<DecomposedProjectionsType,
   using ActualInputType = itk::Image<itk::Vector<MeasuredProjectionsDataType, VNumberOfSpectralBins>,
                                      MeasuredProjectionsType::ImageDimension>;
   using CastFilterType = itk::CastImageFilter<ActualInputType, MeasuredProjectionsType>;
-  typename CastFilterType::Pointer castPointer = CastFilterType::New();
+  auto castPointer = CastFilterType::New();
   castPointer->SetInput(MeasuredProjections);
   castPointer->UpdateLargestPossibleRegion();
   this->SetNthInput(0, const_cast<MeasuredProjectionsType *>(castPointer->GetOutput()));

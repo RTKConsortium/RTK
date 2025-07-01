@@ -58,7 +58,7 @@ CudaFFTProjectionsConvolutionImageFilter<TParentImageFilter>::PadInputImageRegio
   RegionType paddedRegion = TParentImageFilter::GetPaddedImageRegion(inputRegion);
 
   // Create padded image (spacing and origin do not matter)
-  itk::CudaImage<float, 3>::Pointer paddedImage = itk::CudaImage<float, 3>::New();
+  auto paddedImage = itk::CudaImage<float, 3>::New();
   paddedImage->SetRegions(paddedRegion);
   paddedImage->Allocate();
 
@@ -152,7 +152,7 @@ CudaFFTProjectionsConvolutionImageFilter<TParentImageFilter>::GPUGenerateData()
 
   // CUDA Cropping and Graft Output
   using CropFilter = CudaCropImageFilter;
-  CropFilter::Pointer                            cf = CropFilter::New();
+  auto                                           cf = CropFilter::New();
   typename Superclass::OutputImageType::SizeType upCropSize, lowCropSize;
   for (unsigned int i = 0; i < CudaImageType::ImageDimension; i++)
   {

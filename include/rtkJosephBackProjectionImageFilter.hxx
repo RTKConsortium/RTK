@@ -110,7 +110,7 @@ JosephBackProjectionImageFilter<TInputImage,
   itIn = InputRegionIterator::New(this->GetInput(1), buffReg, geometry, volPPToIndex);
 
   // Create intersection functions, one for each possible main direction
-  typename BoxShape::Pointer    box = BoxShape::New();
+  auto                          box = BoxShape::New();
   typename BoxShape::VectorType boxMin, boxMax;
   for (unsigned int i = 0; i < Dimension; i++)
   {

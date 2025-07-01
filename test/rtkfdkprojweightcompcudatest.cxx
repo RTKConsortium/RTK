@@ -29,14 +29,14 @@ main(int, char **)
 
   // Constant image sources
   using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
-  ConstantImageSourceType::Pointer projSource = ConstantImageSourceType::New();
+  auto projSource = ConstantImageSourceType::New();
   projSource->SetOrigin(itk::MakePoint(-127., -3., 0.));
   projSource->SetSpacing(itk::MakeVector(2., 2., 2.));
   projSource->SetSize(itk::MakeSize(128, 4, 4));
 
   // Geometry
   using GeometryType = rtk::ThreeDCircularProjectionGeometry;
-  GeometryType::Pointer geometry = GeometryType::New();
+  auto geometry = GeometryType::New();
   geometry->AddProjection(600., 700., 0., 84., 35, 23, 15, 21, 26);
   geometry->AddProjection(500., 800., 45., 21., 12, 16, 546, 14, 41);
   geometry->AddProjection(700., 900., 90., 68., 68, 54, 38, 35, 56);
@@ -44,7 +44,7 @@ main(int, char **)
 
   // Projections
   using SLPType = rtk::SheppLoganPhantomFilter<OutputImageType, OutputImageType>;
-  SLPType::Pointer slp = SLPType::New();
+  auto slp = SLPType::New();
   slp->SetInput(projSource->GetOutput());
   slp->SetGeometry(geometry);
   slp->SetPhantomScale(116);
@@ -58,14 +58,14 @@ main(int, char **)
     std::cout << " in place ******" << std::endl;
 
     using CUDAFDKWFType = rtk::CudaFDKWeightProjectionFilter;
-    CUDAFDKWFType::Pointer cudafdkwf = CUDAFDKWFType::New();
+    auto cudafdkwf = CUDAFDKWFType::New();
     cudafdkwf->SetInput(slp->GetOutput());
     cudafdkwf->SetGeometry(geometry);
     cudafdkwf->InPlaceOff();
     TRY_AND_EXIT_ON_ITK_EXCEPTION(cudafdkwf->Update());
 
     using CPUFDKWFType = rtk::FDKWeightProjectionFilter<OutputImageType>;
-    CPUFDKWFType::Pointer cpufdkwf = CPUFDKWFType::New();
+    auto cpufdkwf = CPUFDKWFType::New();
     cpufdkwf->SetInput(slp->GetOutput());
     cpufdkwf->SetGeometry(geometry);
     cpufdkwf->InPlaceOff();
@@ -85,10 +85,10 @@ main(int, char **)
     cudafdkwf->InPlaceOff();
 
     using StreamingType = itk::StreamingImageFilter<OutputImageType, OutputImageType>;
-    StreamingType::Pointer streamingCUDA = StreamingType::New();
+    auto streamingCUDA = StreamingType::New();
     streamingCUDA->SetInput(cudafdkwf->GetOutput());
     streamingCUDA->SetNumberOfStreamDivisions(4);
-    itk::ImageRegionSplitterDirection::Pointer splitter = itk::ImageRegionSplitterDirection::New();
+    auto splitter = itk::ImageRegionSplitterDirection::New();
     splitter->SetDirection(2); // Splitting along direction 1, NOT 2
     streamingCUDA->SetRegionSplitter(splitter);
     TRY_AND_EXIT_ON_ITK_EXCEPTION(streamingCUDA->Update());
@@ -98,7 +98,7 @@ main(int, char **)
     cpufdkwf->SetGeometry(geometry);
     cpufdkwf->InPlaceOff();
 
-    StreamingType::Pointer streamingCPU = StreamingType::New();
+    auto streamingCPU = StreamingType::New();
     streamingCPU->SetInput(cpufdkwf->GetOutput());
     streamingCPU->SetNumberOfStreamDivisions(2);
     TRY_AND_EXIT_ON_ITK_EXCEPTION(streamingCPU->Update());

@@ -124,8 +124,8 @@ main(int argc, char * argv[])
   lok = true;
   {
     // determine a few random phantom markers around isocenter
-    constexpr int       NUM_PHANTOM_MARKERS = 5;
-    RandomType::Pointer generator = RandomType::New();
+    constexpr int NUM_PHANTOM_MARKERS = 5;
+    auto          generator = RandomType::New();
     generator->SetSeed(123456);
     GeometryType::PointType p;
     for (int i = 0; i < NUM_PHANTOM_MARKERS; i++)
@@ -160,11 +160,11 @@ main(int argc, char * argv[])
   std::vector<Point2DType>             rtkMarkerProjections;
   std::vector<GeometryType::PointType> anglesList;
   GeometryType::PointType              aaa;
-  GeometryType::Pointer                rtkProjectionsList = GeometryType::New();
+  auto                                 rtkProjectionsList = GeometryType::New();
   {
     const double degreesToRadians = atan(1.0) / 45.;
 
-    RandomType::Pointer generator = RandomType::New();
+    auto generator = RandomType::New();
     generator->SetSeed(123456);
 
     GeometryType::PointType             locSourcePosition;
@@ -179,7 +179,7 @@ main(int argc, char * argv[])
     GeometryType::HomogeneousVectorType hv;
     GeometryType::VectorType            tmp;
 
-    EulerType::Pointer  eu = EulerType::New();
+    auto                eu = EulerType::New();
     std::vector<double> gantryAngles;
     std::vector<double> outOfPlaneAngles;
     std::vector<double> inPlaneAngles;

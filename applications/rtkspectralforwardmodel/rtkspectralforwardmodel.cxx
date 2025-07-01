@@ -58,7 +58,7 @@ main(int argc, char * argv[])
   const unsigned int MaximumEnergy = incidentSpectrum->GetLargestPossibleRegion().GetSize()[0];
 
   // Generate a set of zero-filled photon count projections
-  MeasuredProjectionsType::Pointer measuredProjections = MeasuredProjectionsType::New();
+  auto measuredProjections = MeasuredProjectionsType::New();
   measuredProjections->CopyInformation(decomposedProjection);
   measuredProjections->SetVectorLength(NumberOfSpectralBins);
   measuredProjections->Allocate();
@@ -96,7 +96,7 @@ main(int argc, char * argv[])
   // Create and set the filter
   using ForwardModelFilterType =
     rtk::SpectralForwardModelImageFilter<DecomposedProjectionType, MeasuredProjectionsType, IncidentSpectrumImageType>;
-  ForwardModelFilterType::Pointer forward = ForwardModelFilterType::New();
+  auto forward = ForwardModelFilterType::New();
   forward->SetInputDecomposedProjections(decomposedProjection);
   forward->SetInputMeasuredProjections(measuredProjections);
   forward->SetInputIncidentSpectrum(incidentSpectrum);

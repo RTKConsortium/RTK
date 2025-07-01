@@ -44,7 +44,7 @@ main(int argc, char * argv[])
 
   // Create a stack of empty projection images
   using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
-  ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
+  auto constantImageSource = ConstantImageSourceType::New();
   rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkrayellipsoidintersection>(
     constantImageSource, args_info);
 
@@ -54,7 +54,7 @@ main(int argc, char * argv[])
 
   // Create projection image filter
   using REIType = rtk::RayEllipsoidIntersectionImageFilter<OutputImageType, OutputImageType>;
-  REIType::Pointer rei = REIType::New();
+  auto rei = REIType::New();
 
   rei->SetDensity(args_info.mult_arg);
   if (args_info.axes_given > 0)

@@ -154,7 +154,7 @@ FFTProjectionsConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>::
 
     // FFT padded image
     using FFTType = itk::RealToHalfHermitianForwardFFTImageFilter<FFTInputImageType>;
-    typename FFTType::Pointer fftI = FFTType::New();
+    auto fftI = FFTType::New();
     fftI->SetInput(paddedImage);
     fftI->SetNumberOfWorkUnits(m_BackupNumberOfThreads);
     fftI->Update();
@@ -177,7 +177,7 @@ FFTProjectionsConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>::
 
     // Inverse FFT image
     using IFFTType = itk::HalfHermitianToRealInverseFFTImageFilter<typename FFTType::OutputImageType>;
-    typename IFFTType::Pointer ifft = IFFTType::New();
+    auto ifft = IFFTType::New();
     ifft->SetInput(fftI->GetOutput());
     ifft->SetNumberOfWorkUnits(m_BackupNumberOfThreads);
     ifft->SetReleaseDataFlag(true);

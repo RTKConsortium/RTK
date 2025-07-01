@@ -32,7 +32,7 @@ main(int argc, char * argv[])
     margin[i] = args_info.margin_arg[i];
 
   // Create geometry reader
-  rtk::OraGeometryReader::Pointer oraReader = rtk::OraGeometryReader::New();
+  auto oraReader = rtk::OraGeometryReader::New();
   oraReader->SetProjectionsFileNames(rtk::GetProjectionsFileNamesFromGgo(args_info));
   oraReader->SetCollimationMargin(margin);
   oraReader->SetOptiTrackObjectID(args_info.optitrack_arg);

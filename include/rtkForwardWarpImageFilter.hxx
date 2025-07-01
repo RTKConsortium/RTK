@@ -157,7 +157,7 @@ ForwardWarpImageFilter<TInputImage, TOutputImage, TDVF>::GenerateData()
 
   // Allocate an image with the same metadata as the output
   // to accumulate the weights during splat, and divide by the total weights at the end
-  typename TOutputImage::Pointer accumulate = TOutputImage::New();
+  auto accumulate = TOutputImage::New();
   accumulate->SetRegions(outputPtr->GetRequestedRegion());
   accumulate->Allocate();
   accumulate->FillBuffer(0);

@@ -41,8 +41,8 @@ main(int argc, char * argv[])
 
   // Constant image sources
   using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
-  ConstantImageSourceType::Pointer tomographySource = ConstantImageSourceType::New();
-  auto                             origin = itk::MakePoint(-127., -127., -127.);
+  auto tomographySource = ConstantImageSourceType::New();
+  auto origin = itk::MakePoint(-127., -127., -127.);
 #if FAST_TESTS_NO_CHECKS
   auto spacing = itk::MakeVector(254., 254., 254.);
   auto size = itk::MakeSize(2, 2, 2);
@@ -61,7 +61,7 @@ main(int argc, char * argv[])
 
   // Shepp Logan reference filter
   using DSLType = rtk::DrawSheppLoganFilter<OutputImageType, OutputImageType>;
-  DSLType::Pointer dsl = DSLType::New();
+  auto dsl = DSLType::New();
   dsl->SetInput(tomographySource->GetOutput());
   dsl->SetPhantomScale(128.);
   dsl->InPlaceOff();
@@ -69,7 +69,7 @@ main(int argc, char * argv[])
 
   // Shepp Logan reference filter from Configuration File
   using DGPType = rtk::DrawGeometricPhantomImageFilter<OutputImageType, OutputImageType>;
-  DGPType::Pointer dgp = DGPType::New();
+  auto dgp = DGPType::New();
   dgp->SetInput(tomographySource->GetOutput());
   dgp->InPlaceOff();
   dgp->SetConfigFile(argv[1]);
@@ -101,7 +101,7 @@ main(int argc, char * argv[])
 
   // Draw CYLINDER
   using DCType = rtk::DrawCylinderImageFilter<OutputImageType, OutputImageType>;
-  DCType::Pointer dcl = DCType::New();
+  auto dcl = DCType::New();
 
   dcl->SetInput(tomographySource->GetOutput());
   dcl->SetAxis(itk::MakeVector(100., 0., 100.));
@@ -112,7 +112,7 @@ main(int argc, char * argv[])
 
   // Draw CONE
   using DCOType = rtk::DrawConeImageFilter<OutputImageType, OutputImageType>;
-  DCOType::Pointer dco = DCOType::New();
+  auto dco = DCOType::New();
   dco->SetInput(tomographySource->GetOutput());
   dco->SetAxis(itk::MakeVector(25., -50., 25.));
   dco->SetCenter(itk::MakeVector(2., 2., 2.));
@@ -121,7 +121,7 @@ main(int argc, char * argv[])
 
   // Add Image Filter used to concatenate the different figures obtained on each iteration
   using AddImageFilterType = itk::AddImageFilter<OutputImageType, OutputImageType, OutputImageType>;
-  AddImageFilterType::Pointer addFilter = AddImageFilterType::New();
+  auto addFilter = AddImageFilterType::New();
 
   addFilter->SetInput1(dcl->GetOutput());
   addFilter->SetInput2(dco->GetOutput());

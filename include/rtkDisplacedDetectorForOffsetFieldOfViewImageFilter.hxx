@@ -75,7 +75,7 @@ DisplacedDetectorForOffsetFieldOfViewImageFilter<TInputImage, TOutputImage>::Gen
   }
 
   using FOVFilterType = typename rtk::FieldOfViewImageFilter<OutputImageType, OutputImageType>;
-  typename FOVFilterType::Pointer fieldofview = FOVFilterType::New();
+  auto fieldofview = FOVFilterType::New();
   fieldofview->SetProjectionsStack(inputPtr.GetPointer());
   fieldofview->SetGeometry(this->GetGeometry());
   bool   hasOverlap = fieldofview->ComputeFOVRadius(FOVFilterType::RADIUSBOTH, m_FOVCenterX, m_FOVCenterZ, m_FOVRadius);
@@ -161,7 +161,7 @@ DisplacedDetectorForOffsetFieldOfViewImageFilter<TInputImage, TOutputImage>::Dyn
   origin[0] = this->GetInput()->GetOrigin()[0];
 
   // Create one line of weights
-  typename WeightImageType::Pointer weights = WeightImageType::New();
+  auto weights = WeightImageType::New();
   weights->SetSpacing(spacing);
   weights->SetOrigin(origin);
   weights->SetRegions(region);

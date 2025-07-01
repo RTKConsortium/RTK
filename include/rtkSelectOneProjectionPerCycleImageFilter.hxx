@@ -32,7 +32,7 @@ SelectOneProjectionPerCycleImageFilter<ProjectionStackType>::GenerateOutputInfor
 {
   // Read signal file
   using ReaderType = itk::CSVArray2DFileReader<double>;
-  ReaderType::Pointer reader = ReaderType::New();
+  auto reader = ReaderType::New();
   reader->SetFileName(m_SignalFilename);
   reader->SetFieldDelimiterCharacter(';');
   reader->HasRowHeadersOff();

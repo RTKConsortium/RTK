@@ -27,14 +27,14 @@ main(int, char **)
 
   // Constant image sources
   using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
-  ConstantImageSourceType::Pointer projSource = ConstantImageSourceType::New();
+  auto projSource = ConstantImageSourceType::New();
   projSource->SetOrigin(itk::MakePoint(-508., -3., 0.));
   projSource->SetSpacing(itk::MakeVector(8., 2., 2.));
   projSource->SetSize(itk::MakeSize(128, 4, 4));
 
   // Geometry
   using GeometryType = rtk::ThreeDCircularProjectionGeometry;
-  GeometryType::Pointer geometry = GeometryType::New();
+  auto geometry = GeometryType::New();
   geometry->AddProjection(600., 560., 0., 3., 0., 0., 0., 2., 0.);
   geometry->AddProjection(500., 545., 90., 2., 0., 0., 0., 4., 0.);
   geometry->AddProjection(700., 790., 180., 8., 0., 0., 0., 5., 0.);
@@ -42,7 +42,7 @@ main(int, char **)
 
   // Projections
   using SLPType = rtk::SheppLoganPhantomFilter<OutputImageType, OutputImageType>;
-  SLPType::Pointer slp = SLPType::New();
+  auto slp = SLPType::New();
   slp->SetInput(projSource->GetOutput());
   slp->SetGeometry(geometry);
   slp->SetPhantomScale(116);
@@ -56,14 +56,14 @@ main(int, char **)
     std::cout << " in place ******" << std::endl;
 
     using OffsetDDFType = rtk::DisplacedDetectorForOffsetFieldOfViewImageFilter<OutputImageType>;
-    OffsetDDFType::Pointer cudaddf = OffsetDDFType::New();
+    auto cudaddf = OffsetDDFType::New();
     cudaddf->SetInput(slp->GetOutput());
     cudaddf->SetGeometry(geometry);
     cudaddf->InPlaceOff();
     TRY_AND_EXIT_ON_ITK_EXCEPTION(cudaddf->Update());
 
     using CPUDDFType = rtk::DisplacedDetectorImageFilter<OutputImageType>;
-    CPUDDFType::Pointer cpuddf = CPUDDFType::New();
+    auto cpuddf = CPUDDFType::New();
     cpuddf->SetInput(slp->GetOutput());
     cpuddf->SetGeometry(geometry);
     cpuddf->InPlaceOff();
@@ -83,7 +83,7 @@ main(int, char **)
     cudaddf->InPlaceOff();
 
     using StreamingType = itk::StreamingImageFilter<OutputImageType, OutputImageType>;
-    StreamingType::Pointer streamingCUDA = StreamingType::New();
+    auto streamingCUDA = StreamingType::New();
     streamingCUDA->SetInput(cudaddf->GetOutput());
     streamingCUDA->SetNumberOfStreamDivisions(2);
     TRY_AND_EXIT_ON_ITK_EXCEPTION(streamingCUDA->Update());
@@ -93,7 +93,7 @@ main(int, char **)
     cpuddf->SetGeometry(geometry);
     cpuddf->InPlaceOff();
 
-    StreamingType::Pointer streamingCPU = StreamingType::New();
+    auto streamingCPU = StreamingType::New();
     streamingCPU->SetInput(cpuddf->GetOutput());
     streamingCPU->SetNumberOfStreamDivisions(2);
     TRY_AND_EXIT_ON_ITK_EXCEPTION(streamingCPU->Update());

@@ -27,7 +27,7 @@ template <class TInputImage, class TOutputImage>
 ElektaSynergyRawLookupTableImageFilter<TInputImage, TOutputImage>::ElektaSynergyRawLookupTableImageFilter()
 {
   // Create the lut
-  typename LookupTableType::Pointer  lut = LookupTableType::New();
+  auto                               lut = LookupTableType::New();
   typename LookupTableType::SizeType size;
   size[0] = itk::NumericTraits<InputImagePixelType>::max() - itk::NumericTraits<InputImagePixelType>::min() + 1;
   lut->SetRegions(size);

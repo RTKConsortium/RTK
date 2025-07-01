@@ -32,7 +32,7 @@ main(int argc, char * argv[])
   using OutputImageType = itk::Image<OutputPixelType, Dimension>;
 
   // Create geometry reader
-  rtk::ImagXGeometryReader<OutputImageType>::Pointer imagxReader = rtk::ImagXGeometryReader<OutputImageType>::New();
+  auto imagxReader = rtk::ImagXGeometryReader<OutputImageType>::New();
   imagxReader->SetProjectionsFileNames(rtk::GetProjectionsFileNamesFromGgo(args_info));
   if (args_info.calibration_given)
   {

@@ -43,8 +43,8 @@ main(int argc, char * argv[])
 
   // Constant image sources
   using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
-  ConstantImageSourceType::Pointer projectionsSource = ConstantImageSourceType::New();
-  auto                             origin = itk::MakePoint(-254., -254., -254.);
+  auto projectionsSource = ConstantImageSourceType::New();
+  auto origin = itk::MakePoint(-254., -254., -254.);
 #if FAST_TESTS_NO_CHECKS
   auto size = itk::MakeSize(2, 2, NumberOfProjectionImages);
   auto spacing = itk::MakeVector(508., 508., 508.);
@@ -59,20 +59,20 @@ main(int argc, char * argv[])
 
   // Geometry object
   using GeometryType = rtk::ThreeDCircularProjectionGeometry;
-  GeometryType::Pointer geometry = GeometryType::New();
+  auto geometry = GeometryType::New();
   for (unsigned int noProj = 0; noProj < NumberOfProjectionImages; noProj++)
     geometry->AddProjection(600., 1200., noProj * 360. / NumberOfProjectionImages);
 
   // Shepp Logan projections filter
   using SLPType = rtk::SheppLoganPhantomFilter<OutputImageType, OutputImageType>;
-  SLPType::Pointer slp = SLPType::New();
+  auto slp = SLPType::New();
   slp->SetInput(projectionsSource->GetOutput());
   slp->SetGeometry(geometry);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(slp->Update());
 
   // Shepp Logan projections filter from Configuration File
   using PGPType = rtk::ProjectGeometricPhantomImageFilter<OutputImageType, OutputImageType>;
-  PGPType::Pointer pgp = PGPType::New();
+  auto pgp = PGPType::New();
   pgp->SetInput(projectionsSource->GetOutput());
   pgp->SetGeometry(geometry);
   pgp->SetConfigFile(argv[1]);

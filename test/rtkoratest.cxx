@@ -96,7 +96,7 @@ main(int argc, char * argv[])
 
   // Projections reader
   using ReaderType = rtk::ProjectionsReader<ImageType>;
-  ReaderType::Pointer reader = ReaderType::New();
+  auto reader = ReaderType::New();
   reader->SetFileNames(filenames);
   ReaderType::OutputImageSpacingType spacing;
   spacing[0] = 1.;
@@ -110,14 +110,14 @@ main(int argc, char * argv[])
 
   // Create projection image filter
   using OFMType = rtk::MaskCollimationImageFilter<ImageType, ImageType>;
-  OFMType::Pointer ofm = OFMType::New();
+  auto ofm = OFMType::New();
   ofm->SetInput(reader->GetOutput());
   ofm->SetGeometry(geoTargReader->GetModifiableGeometry());
 
   TRY_AND_EXIT_ON_ITK_EXCEPTION(ofm->Update());
 
   // Reference projections reader
-  ReaderType::Pointer readerRef = ReaderType::New();
+  auto readerRef = ReaderType::New();
   filenames.clear();
   filenames.emplace_back(argv[6]);
   readerRef->SetFileNames(filenames);

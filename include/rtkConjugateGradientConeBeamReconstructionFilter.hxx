@@ -224,7 +224,7 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage, TSingleComponentImag
   {
     using PixelType = typename TWeightsImage::PixelType;
     using ComponentType = typename itk::PixelTraits<PixelType>::ValueType;
-    typename ConstantWeightSourceType::Pointer ones = ConstantWeightSourceType::New();
+    auto ones = ConstantWeightSourceType::New();
     ones->SetInformationFromImage(this->GetInputProjectionStack());
     ones->SetConstant(PixelType(itk::NumericTraits<ComponentType>::One));
     ones->Update();
@@ -288,7 +288,7 @@ template <typename TOutputImage, typename TSingleComponentImage, typename TWeigh
 void
 ConjugateGradientConeBeamReconstructionFilter<TOutputImage, TSingleComponentImage, TWeightsImage>::GenerateData()
 {
-  typename itk::MemberCommand<Self>::Pointer callbackCommand = itk::MemberCommand<Self>::New();
+  auto callbackCommand = itk::MemberCommand<Self>::New();
   callbackCommand->SetCallbackFunction(this, &Self::ReportProgress);
   m_ConjugateGradientFilter->AddObserver(itk::IterationEvent(), callbackCommand);
 

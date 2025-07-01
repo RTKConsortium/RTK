@@ -50,7 +50,7 @@ main(int, char **)
   DVFSequenceImageType::RegionType regionMotion;
   regionMotion.SetSize(size);
 
-  DVFSequenceImageType::Pointer deformationField = DVFSequenceImageType::New();
+  auto deformationField = DVFSequenceImageType::New();
   deformationField->SetRegions(regionMotion);
   deformationField->SetOrigin(origin);
   deformationField->SetSpacing(spacing);
@@ -99,7 +99,7 @@ main(int, char **)
 
   std::cout << "\n\n****** Case 1: CPU cyclic deformation field ******" << std::endl;
 
-  CyclicDeformationType::Pointer cyclic = CyclicDeformationType::New();
+  auto cyclic = CyclicDeformationType::New();
   cyclic->SetInput(deformationField);
   cyclic->SetSignalFilename(signalFileName);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(cyclic->Update());

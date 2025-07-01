@@ -42,7 +42,7 @@ main(int argc, char * argv[])
 
   // Create a stack of empty projection images
   using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
-  ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
+  auto constantImageSource = ConstantImageSourceType::New();
   rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkrayboxintersection>(constantImageSource,
                                                                                                args_info);
 
@@ -56,7 +56,7 @@ main(int argc, char * argv[])
 
   // Create projection image filter
   using RBIType = rtk::RayBoxIntersectionImageFilter<OutputImageType, OutputImageType>;
-  RBIType::Pointer rbi = RBIType::New();
+  auto rbi = RBIType::New();
   rbi->SetInput(constantImageSource->GetOutput());
   rbi->SetBoxFromImage(input);
   rbi->SetGeometry(geometry);

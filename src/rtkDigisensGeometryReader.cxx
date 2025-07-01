@@ -102,7 +102,7 @@ rtk::DigisensGeometryReader ::GenerateData()
     xfm3DVersor.Set(rotationAxis, angle * degreesToRadians);
 
     using ThreeDTransformType = itk::CenteredEuler3DTransform<double>;
-    ThreeDTransformType::Pointer xfm3D = ThreeDTransformType::New();
+    auto xfm3D = ThreeDTransformType::New();
     xfm3D->SetMatrix(xfm3DVersor.GetMatrix());
 
     m_Geometry->AddProjectionInRadians(sid,

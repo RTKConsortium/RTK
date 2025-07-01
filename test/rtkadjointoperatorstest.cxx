@@ -48,14 +48,14 @@ main(int, char **)
 
   // Random image sources
   using RandomImageSourceType = itk::RandomImageSource<OutputImageType>;
-  RandomImageSourceType::Pointer randomVolumeSource = RandomImageSourceType::New();
-  RandomImageSourceType::Pointer randomProjectionsSource = RandomImageSourceType::New();
+  auto randomVolumeSource = RandomImageSourceType::New();
+  auto randomProjectionsSource = RandomImageSourceType::New();
 
   // Constant sources
   using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
-  ConstantImageSourceType::Pointer constantVolumeSource = ConstantImageSourceType::New();
-  ConstantImageSourceType::Pointer constantProjectionsSource = ConstantImageSourceType::New();
-  ConstantImageSourceType::Pointer constantAttenuationSource = ConstantImageSourceType::New();
+  auto constantVolumeSource = ConstantImageSourceType::New();
+  auto constantProjectionsSource = ConstantImageSourceType::New();
+  auto constantAttenuationSource = ConstantImageSourceType::New();
 
   // Volume metadata
   auto origin = itk::MakePoint(-128., -128., -128.);
@@ -111,7 +111,7 @@ main(int, char **)
 
   // Geometry object
   using GeometryType = rtk::ThreeDCircularProjectionGeometry;
-  GeometryType::Pointer geometry = GeometryType::New();
+  auto geometry = GeometryType::New();
   for (unsigned int noProj = 0; noProj < NumberOfProjectionImages; noProj++)
     geometry->AddProjection(600., 1200., noProj * 360. / NumberOfProjectionImages);
 
@@ -128,7 +128,7 @@ main(int, char **)
     std::cout << "\n\n****** Joseph Forward projector ******" << std::endl;
 
     using JosephForwardProjectorType = rtk::JosephForwardProjectionImageFilter<OutputImageType, OutputImageType>;
-    JosephForwardProjectorType::Pointer fw = JosephForwardProjectorType::New();
+    auto fw = JosephForwardProjectorType::New();
     fw->SetInput(0, constantProjectionsSource->GetOutput());
     fw->SetInput(1, randomVolumeSource->GetOutput());
     fw->SetGeometry(geometry);
@@ -137,7 +137,7 @@ main(int, char **)
     std::cout << "\n\n****** Joseph Back projector ******" << std::endl;
 
     using JosephBackProjectorType = rtk::JosephBackProjectionImageFilter<OutputImageType, OutputImageType>;
-    JosephBackProjectorType::Pointer bp = JosephBackProjectorType::New();
+    auto bp = JosephBackProjectorType::New();
     bp->SetInput(0, constantVolumeSource->GetOutput());
     bp->SetInput(1, randomProjectionsSource->GetOutput());
     bp->SetGeometry(geometry.GetPointer());
@@ -149,10 +149,10 @@ main(int, char **)
     std::cout << "\n\nTest PASSED! " << std::endl;
 
     using VectorImageType = itk::Image<itk::Vector<OutputPixelType, 3>, Dimension>;
-    VectorImageType::Pointer vectorRandomProjections = VectorImageType::New();
-    VectorImageType::Pointer vectorConstantProjections = VectorImageType::New();
-    VectorImageType::Pointer vectorRandomVolume = VectorImageType::New();
-    VectorImageType::Pointer vectorConstantVolume = VectorImageType::New();
+    auto vectorRandomProjections = VectorImageType::New();
+    auto vectorConstantProjections = VectorImageType::New();
+    auto vectorRandomVolume = VectorImageType::New();
+    auto vectorConstantVolume = VectorImageType::New();
     vectorRandomProjections->CopyInformation(randomProjectionsSource->GetOutput());
     vectorRandomProjections->SetRegions(randomProjectionsSource->GetOutput()->GetLargestPossibleRegion());
     vectorRandomProjections->Allocate();
@@ -228,7 +228,7 @@ main(int, char **)
 
     using VectorJosephForwardProjectorType = rtk::JosephForwardProjectionImageFilter<VectorImageType, VectorImageType>;
 
-    VectorJosephForwardProjectorType::Pointer vfw = VectorJosephForwardProjectorType::New();
+    auto vfw = VectorJosephForwardProjectorType::New();
     vfw->SetInput(0, vectorConstantProjections);
     vfw->SetInput(1, vectorRandomVolume);
     vfw->SetGeometry(geometry);
@@ -236,7 +236,7 @@ main(int, char **)
 
     std::cout << "\n\n****** Joseph Vector Back projector ******" << std::endl;
     using VectorJosephBackProjectorType = rtk::JosephBackProjectionImageFilter<VectorImageType, VectorImageType>;
-    VectorJosephBackProjectorType::Pointer vbp = VectorJosephBackProjectorType::New();
+    auto vbp = VectorJosephBackProjectorType::New();
     vbp->SetInput(0, vectorConstantVolume);
     vbp->SetInput(1, vectorRandomProjections);
     vbp->SetGeometry(geometry.GetPointer());
@@ -251,7 +251,7 @@ main(int, char **)
 
     using JosephForwardAttenuatedProjectorType =
       rtk::JosephForwardAttenuatedProjectionImageFilter<OutputImageType, OutputImageType>;
-    JosephForwardAttenuatedProjectorType::Pointer attfw = JosephForwardAttenuatedProjectorType::New();
+    auto attfw = JosephForwardAttenuatedProjectorType::New();
     attfw->SetInput(0, constantProjectionsSource->GetOutput());
     attfw->SetInput(1, randomVolumeSource->GetOutput());
     attfw->SetInput(2, constantAttenuationSource->GetOutput());
@@ -262,7 +262,7 @@ main(int, char **)
 
     using JosephBackAttenuatedProjectorType =
       rtk::JosephBackAttenuatedProjectionImageFilter<OutputImageType, OutputImageType>;
-    JosephBackAttenuatedProjectorType::Pointer attbp = JosephBackAttenuatedProjectorType::New();
+    auto attbp = JosephBackAttenuatedProjectorType::New();
     attbp->SetInput(0, constantVolumeSource->GetOutput());
     attbp->SetInput(1, randomProjectionsSource->GetOutput());
     attbp->SetInput(2, constantAttenuationSource->GetOutput());
@@ -278,7 +278,7 @@ main(int, char **)
     std::cout << "\n\n****** Cuda Ray Cast Forward projector ******" << std::endl;
 
     using CudaForwardProjectorType = rtk::CudaForwardProjectionImageFilter<OutputImageType, OutputImageType>;
-    CudaForwardProjectorType::Pointer cfw = CudaForwardProjectorType::New();
+    auto cfw = CudaForwardProjectorType::New();
     cfw->SetInput(0, constantProjectionsSource->GetOutput());
     cfw->SetInput(1, randomVolumeSource->GetOutput());
     cfw->SetGeometry(geometry);
@@ -287,7 +287,7 @@ main(int, char **)
     std::cout << "\n\n****** Cuda Ray Cast Back projector ******" << std::endl;
 
     using CudaRayCastBackProjectorType = rtk::CudaRayCastBackProjectionImageFilter;
-    CudaRayCastBackProjectorType::Pointer cbp = CudaRayCastBackProjectorType::New();
+    auto cbp = CudaRayCastBackProjectorType::New();
     cbp->SetInput(0, constantVolumeSource->GetOutput());
     cbp->SetInput(1, randomProjectionsSource->GetOutput());
     cbp->SetGeometry(geometry.GetPointer());
@@ -303,7 +303,7 @@ main(int, char **)
 
   // Geometry parallel object
   using GeometryType = rtk::ThreeDCircularProjectionGeometry;
-  GeometryType::Pointer geometry_parallel = GeometryType::New();
+  auto geometry_parallel = GeometryType::New();
   for (unsigned int noProj = 0; noProj < NumberOfProjectionImages; noProj++)
     geometry_parallel->AddProjection(500., 0., noProj * 360. / NumberOfProjectionImages, 8., -4.);
 
@@ -311,7 +311,7 @@ main(int, char **)
   std::cout << "\n\n******  Zeng Forward projector ******" << std::endl;
 
   using ZengForwardProjectorType = rtk::ZengForwardProjectionImageFilter<OutputImageType, OutputImageType>;
-  ZengForwardProjectorType::Pointer zfw = ZengForwardProjectorType::New();
+  auto zfw = ZengForwardProjectorType::New();
   zfw->SetInput(0, constantProjectionsSource->GetOutput());
   zfw->SetInput(1, randomVolumeSource->GetOutput());
   zfw->SetGeometry(geometry_parallel);
@@ -320,7 +320,7 @@ main(int, char **)
   std::cout << "\n\n****** Zeng Back projector ******" << std::endl;
 
   using ZengBackProjectorType = rtk::ZengBackProjectionImageFilter<OutputImageType, OutputImageType>;
-  ZengBackProjectorType::Pointer zbp = ZengBackProjectorType::New();
+  auto zbp = ZengBackProjectorType::New();
   zbp->SetInput(0, constantVolumeSource->GetOutput());
   zbp->SetInput(1, randomProjectionsSource->GetOutput());
   zbp->SetGeometry(geometry_parallel);
@@ -334,7 +334,7 @@ main(int, char **)
   std::cout << "\n\n******  Attenuated Zeng Forward projector ******" << std::endl;
 
   using ZengForwardProjectorType = rtk::ZengForwardProjectionImageFilter<OutputImageType, OutputImageType>;
-  ZengForwardProjectorType::Pointer attzfw = ZengForwardProjectorType::New();
+  auto attzfw = ZengForwardProjectorType::New();
   attzfw->SetInput(0, constantProjectionsSource->GetOutput());
   attzfw->SetInput(1, randomVolumeSource->GetOutput());
   attzfw->SetInput(2, constantAttenuationSource->GetOutput());
@@ -344,7 +344,7 @@ main(int, char **)
   std::cout << "\n\n****** Attenuated Zeng Back projector ******" << std::endl;
 
   using ZengBackProjectorType = rtk::ZengBackProjectionImageFilter<OutputImageType, OutputImageType>;
-  ZengBackProjectorType::Pointer attzbp = ZengBackProjectorType::New();
+  auto attzbp = ZengBackProjectorType::New();
   attzbp->SetInput(0, constantVolumeSource->GetOutput());
   attzbp->SetInput(1, randomProjectionsSource->GetOutput());
   attzbp->SetInput(2, constantAttenuationSource->GetOutput());

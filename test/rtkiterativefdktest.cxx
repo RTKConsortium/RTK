@@ -47,8 +47,8 @@ main(int, char **)
 
   // Constant image sources
   using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
-  ConstantImageSourceType::Pointer tomographySource = ConstantImageSourceType::New();
-  auto                             origin = itk::MakePoint(-127., -127., -127.);
+  auto tomographySource = ConstantImageSourceType::New();
+  auto origin = itk::MakePoint(-127., -127., -127.);
 #if FAST_TESTS_NO_CHECKS
   auto size = itk::MakeSize(32, 32, 32);
   auto spacing = itk::MakeVector(8., 8., 8.);
@@ -61,7 +61,7 @@ main(int, char **)
   tomographySource->SetSize(size);
   tomographySource->SetConstant(0.);
 
-  ConstantImageSourceType::Pointer projectionsSource = ConstantImageSourceType::New();
+  auto projectionsSource = ConstantImageSourceType::New();
   origin = itk::MakePoint(-254., -254., -254.);
 #if FAST_TESTS_NO_CHECKS
   size = itk::MakeSize(32, 32, NumberOfProjectionImages);
@@ -77,13 +77,13 @@ main(int, char **)
 
   // Geometry object
   using GeometryType = rtk::ThreeDCircularProjectionGeometry;
-  GeometryType::Pointer geometry = GeometryType::New();
+  auto geometry = GeometryType::New();
   for (unsigned int noProj = 0; noProj < NumberOfProjectionImages; noProj++)
     geometry->AddProjection(600., 1200., noProj * 360. / NumberOfProjectionImages, 0, 0, 0, 0, 20, 15);
 
   // Shepp Logan projections filter
   using SLPType = rtk::SheppLoganPhantomFilter<OutputImageType, OutputImageType>;
-  SLPType::Pointer slp = SLPType::New();
+  auto slp = SLPType::New();
   slp->SetInput(projectionsSource->GetOutput());
   slp->SetGeometry(geometry);
   slp->SetPhantomScale(116);
@@ -91,7 +91,7 @@ main(int, char **)
 
   // Create a reference object (in this case a 3D phantom reference).
   using DSLType = rtk::DrawSheppLoganFilter<OutputImageType, OutputImageType>;
-  DSLType::Pointer dsl = DSLType::New();
+  auto dsl = DSLType::New();
   dsl->SetInput(tomographySource->GetOutput());
   dsl->SetPhantomScale(116);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(dsl->Update())
@@ -102,7 +102,7 @@ main(int, char **)
 #else
   using FDKType = rtk::IterativeFDKConeBeamReconstructionFilter<OutputImageType>;
 #endif
-  FDKType::Pointer ifdk = FDKType::New();
+  auto ifdk = FDKType::New();
   ifdk->SetInput(0, tomographySource->GetOutput());
   ifdk->SetInput(1, slp->GetOutput());
   ifdk->SetGeometry(geometry);
@@ -116,7 +116,7 @@ main(int, char **)
 
   // FOV
   using FOVFilterType = rtk::FieldOfViewImageFilter<OutputImageType, OutputImageType>;
-  FOVFilterType::Pointer fov = FOVFilterType::New();
+  auto fov = FOVFilterType::New();
   fov->SetInput(0, ifdk->GetOutput());
   fov->SetProjectionsStack(slp->GetOutput());
   fov->SetGeometry(geometry);

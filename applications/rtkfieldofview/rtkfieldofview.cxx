@@ -58,7 +58,7 @@ main(int argc, char * argv[])
 
   // Projections reader
   using ReaderType = rtk::ProjectionsReader<OutputImageType>;
-  ReaderType::Pointer reader = ReaderType::New();
+  auto reader = ReaderType::New();
   rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkfieldofview>(reader, args_info);
 
   // Geometry
@@ -75,7 +75,7 @@ main(int argc, char * argv[])
   {
     // FOV filter
     using FOVFilterType = rtk::FieldOfViewImageFilter<OutputImageType, OutputImageType>;
-    FOVFilterType::Pointer fieldofview = FOVFilterType::New();
+    auto fieldofview = FOVFilterType::New();
     fieldofview->SetMask(args_info.mask_flag);
     fieldofview->SetInput(0, unmasked_reconstruction);
     fieldofview->SetProjectionsStack(reader->GetOutput());
@@ -102,16 +102,16 @@ main(int argc, char * argv[])
     using MaskImgType = itk::Image<unsigned short, 3>;
 #endif
     using ConstantType = rtk::ConstantImageSource<MaskImgType>;
-    ConstantType::Pointer ones = ConstantType::New();
+    auto ones = ConstantType::New();
     ones->SetConstant(1);
     ones->SetInformationFromImage(reader->GetOutput());
 
-    ConstantType::Pointer zeroVol = ConstantType::New();
+    auto zeroVol = ConstantType::New();
     zeroVol->SetConstant(0.);
     zeroVol->SetInformationFromImage(unmasked_reconstruction);
 
     using BPType = rtk::BackProjectionImageFilter<MaskImgType, MaskImgType>;
-    BPType::Pointer bp = BPType::New();
+    auto bp = BPType::New();
 #ifdef RTK_USE_CUDA
     using BPCudaType = rtk::CudaBackProjectionImageFilter<MaskImgType>;
     if (!strcmp(args_info.hardware_arg, "cuda"))
@@ -122,7 +122,7 @@ main(int argc, char * argv[])
     bp->SetGeometry(geometry);
 
     using ThreshType = itk::ThresholdImageFilter<MaskImgType>;
-    ThreshType::Pointer thresh = ThreshType::New();
+    auto thresh = ThreshType::New();
     thresh->SetInput(bp->GetOutput());
     thresh->ThresholdBelow(geometry->GetGantryAngles().size() - 1);
     thresh->SetOutsideValue(0.);
@@ -130,7 +130,7 @@ main(int argc, char * argv[])
     if (args_info.mask_flag)
     {
       using DivideType = itk::DivideImageFilter<MaskImgType, MaskImgType, MaskImgType>;
-      DivideType::Pointer div = DivideType::New();
+      auto div = DivideType::New();
       div->SetInput(thresh->GetOutput());
       div->SetConstant2(geometry->GetGantryAngles().size());
 

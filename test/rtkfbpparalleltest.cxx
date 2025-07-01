@@ -54,13 +54,13 @@ main(int, char **)
   auto size = itk::MakeSize(128, 128, 128);
   auto spacing = itk::MakeVector(2., 2., 2.);
 #endif
-  ConstantImageSourceType::Pointer tomographySource = ConstantImageSourceType::New();
+  auto tomographySource = ConstantImageSourceType::New();
   tomographySource->SetOrigin(origin);
   tomographySource->SetSpacing(spacing);
   tomographySource->SetSize(size);
   tomographySource->SetConstant(0.);
 
-  ConstantImageSourceType::Pointer projectionsSource = ConstantImageSourceType::New();
+  auto projectionsSource = ConstantImageSourceType::New();
   size[2] = NumberOfProjectionImages;
   projectionsSource->SetOrigin(origin);
   projectionsSource->SetSpacing(spacing);
@@ -69,13 +69,13 @@ main(int, char **)
 
   // Geometry object
   using GeometryType = rtk::ThreeDCircularProjectionGeometry;
-  GeometryType::Pointer geometry = GeometryType::New();
+  auto geometry = GeometryType::New();
   for (unsigned int noProj = 0; noProj < NumberOfProjectionImages; noProj++)
     geometry->AddProjection(600., 0., noProj * 360. / NumberOfProjectionImages, 0, 0, 0, 0, 20, 15);
 
   // Shepp Logan projections filter
   using SLPType = rtk::SheppLoganPhantomFilter<OutputImageType, OutputImageType>;
-  SLPType::Pointer slp = SLPType::New();
+  auto slp = SLPType::New();
   slp->SetInput(projectionsSource->GetOutput());
   slp->SetGeometry(geometry);
   slp->SetPhantomScale(116);
@@ -83,7 +83,7 @@ main(int, char **)
 
   // Create a reference object (in this case a 3D phantom reference).
   using DSLType = rtk::DrawSheppLoganFilter<OutputImageType, OutputImageType>;
-  DSLType::Pointer dsl = DSLType::New();
+  auto dsl = DSLType::New();
   dsl->SetInput(tomographySource->GetOutput());
   dsl->SetPhantomScale(116);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(dsl->Update())
@@ -94,7 +94,7 @@ main(int, char **)
 #else
   using FDKType = rtk::FDKConeBeamReconstructionFilter<OutputImageType>;
 #endif
-  FDKType::Pointer feldkamp = FDKType::New();
+  auto feldkamp = FDKType::New();
   feldkamp->SetInput(0, tomographySource->GetOutput());
   feldkamp->SetInput(1, slp->GetOutput());
   feldkamp->SetGeometry(geometry);
@@ -103,7 +103,7 @@ main(int, char **)
 
   // FOV
   using FOVFilterType = rtk::FieldOfViewImageFilter<OutputImageType, OutputImageType>;
-  FOVFilterType::Pointer fov = FOVFilterType::New();
+  auto fov = FOVFilterType::New();
   fov->SetInput(0, feldkamp->GetOutput());
   fov->SetProjectionsStack(slp->GetOutput());
   fov->SetGeometry(geometry);

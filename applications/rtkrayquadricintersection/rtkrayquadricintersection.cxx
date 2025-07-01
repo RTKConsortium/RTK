@@ -43,7 +43,7 @@ main(int argc, char * argv[])
 
   // Create a stack of empty projection images
   using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
-  ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
+  auto constantImageSource = ConstantImageSourceType::New();
   rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkrayquadricintersection>(constantImageSource,
                                                                                                    args_info);
 
@@ -53,7 +53,7 @@ main(int argc, char * argv[])
 
   // Create projection image filter
   using RQIType = rtk::RayQuadricIntersectionImageFilter<OutputImageType, OutputImageType>;
-  RQIType::Pointer rqi = RQIType::New();
+  auto rqi = RQIType::New();
   rqi->SetInput(constantImageSource->GetOutput());
   if (args_info.parameters_given > 0)
     rqi->SetA(args_info.parameters_arg[0]);
