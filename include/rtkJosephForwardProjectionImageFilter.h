@@ -29,123 +29,6 @@
 #include <itkVectorImage.h>
 namespace rtk
 {
-namespace Functor
-{
-/** \class InterpolationWeightMultiplication
- * \brief Function to multiply the interpolation weights with the projected
- * volume values.
- *
- * \author Simon Rit
- *
- * \ingroup RTK Functions
- */
-template <class TInput, class TCoordinateType, class TOutput = TInput>
-class ITK_TEMPLATE_EXPORT InterpolationWeightMultiplication
-{
-public:
-  InterpolationWeightMultiplication() = default;
-  ~InterpolationWeightMultiplication() = default;
-  bool
-  operator!=(const InterpolationWeightMultiplication &) const
-  {
-    return false;
-  }
-  bool
-  operator==(const InterpolationWeightMultiplication & other) const
-  {
-    return !(*this != other);
-  }
-
-  inline TOutput
-  operator()(const ThreadIdType    itkNotUsed(threadId),
-             const double          itkNotUsed(stepLengthInVoxel),
-             const TCoordinateType weight,
-             const TInput *        p,
-             const int             i) const
-  {
-    return weight * p[i];
-  }
-};
-
-/** \class SumAlongRay
- * \brief Function to compute the attenuation correction on the projection.
- *
- * \author Antoine Robert
- *
- * \ingroup RTK Functions
- */
-template <class TInput, class TOutput>
-class ITK_TEMPLATE_EXPORT SumAlongRay
-{
-public:
-  using VectorType = itk::Vector<double, 3>;
-
-  SumAlongRay() = default;
-  ~SumAlongRay() = default;
-  bool
-  operator!=(const SumAlongRay &) const
-  {
-    return false;
-  }
-  bool
-  operator==(const SumAlongRay & other) const
-  {
-    return !(*this != other);
-  }
-
-  inline void
-  operator()(const ThreadIdType itkNotUsed(threadId),
-             TOutput &          sumValue,
-             const TInput       volumeValue,
-             const VectorType & itkNotUsed(stepInMM))
-  {
-    sumValue += static_cast<TOutput>(volumeValue);
-  }
-};
-
-/** \class ProjectedValueAccumulation
- * \brief Function to accumulate the ray casting on the projection.
- *
- * \author Simon Rit
- *
- * \ingroup RTK Functions
- */
-template <class TInput, class TOutput>
-class ITK_TEMPLATE_EXPORT ProjectedValueAccumulation
-{
-public:
-  using VectorType = itk::Vector<double, 3>;
-
-  ProjectedValueAccumulation() = default;
-  ~ProjectedValueAccumulation() = default;
-  bool
-  operator!=(const ProjectedValueAccumulation &) const
-  {
-    return false;
-  }
-  bool
-  operator==(const ProjectedValueAccumulation & other) const
-  {
-    return !(*this != other);
-  }
-
-  inline void
-  operator()(const ThreadIdType itkNotUsed(threadId),
-             const TInput &     input,
-             TOutput &          output,
-             const TOutput &    rayCastValue,
-             const VectorType & stepInMM,
-             const VectorType & itkNotUsed(source),
-             const VectorType & itkNotUsed(sourceToPixel),
-             const VectorType & itkNotUsed(nearestPoint),
-             const VectorType & itkNotUsed(farthestPoint)) const
-  {
-    output = input + rayCastValue * stepInMM.GetNorm();
-  }
-};
-
-} // end namespace Functor
-
 
 /** \class JosephForwardProjectionImageFilter
  * \brief Joseph forward projection.
@@ -161,15 +44,7 @@ public:
  *
  * \ingroup RTK Projector
  */
-
-template <class TInputImage,
-          class TOutputImage,
-          class TInterpolationWeightMultiplication = Functor::InterpolationWeightMultiplication<
-            typename TInputImage::PixelType,
-            typename itk::PixelTraits<typename TInputImage::PixelType>::ValueType>,
-          class TProjectedValueAccumulation =
-            Functor::ProjectedValueAccumulation<typename TInputImage::PixelType, typename TOutputImage::PixelType>,
-          class TSumAlongRay = Functor::SumAlongRay<typename TInputImage::PixelType, typename TOutputImage::PixelType>>
+template <class TInputImage, class TOutputImage>
 class ITK_TEMPLATE_EXPORT JosephForwardProjectionImageFilter
   : public ForwardProjectionImageFilter<TInputImage, TOutputImage>
 {
@@ -185,9 +60,36 @@ public:
   using OutputPixelType = typename TOutputImage::PixelType;
   using OutputImageRegionType = typename TOutputImage::RegionType;
   using CoordinateType = double;
+  using WeightCoordinateType = typename itk::PixelTraits<InputPixelType>::ValueType;
   using VectorType = itk::Vector<CoordinateType, TInputImage::ImageDimension>;
   using TClipImageType = itk::Image<double, TOutputImage::ImageDimension>;
   using TClipImagePointer = typename TClipImageType::Pointer;
+
+  /** \brief Function to multiply the interpolation weights with the projected
+   * volume values.
+   *
+   */
+  using InterpolationWeightMultiplicationFunc =
+    std::function<OutputPixelType(const ThreadIdType, double, const WeightCoordinateType, const InputPixelType *, int)>;
+
+  /** \brief Function to compute the attenuation correction on the projection.
+   *
+   */
+  using SumAlongRayFunc =
+    std::function<void(const ThreadIdType, OutputPixelType &, const InputPixelType, const VectorType &)>;
+
+  /** \brief Function to accumulate the ray casting on the projection.
+   *
+   */
+  using ProjectedValueAccumulationFunc = std::function<void(const ThreadIdType,
+                                                            const InputPixelType &,
+                                                            OutputPixelType &,
+                                                            const OutputPixelType &,
+                                                            const VectorType &,
+                                                            const VectorType &,
+                                                            const VectorType &,
+                                                            const VectorType &,
+                                                            const VectorType &)>;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -195,68 +97,59 @@ public:
   /** Run-time type information (and related methods). */
   itkOverrideGetNameOfClassMacro(JosephForwardProjectionImageFilter);
 
-  /** Get/Set the functor that is used to multiply each interpolation value with a volume value */
-  TInterpolationWeightMultiplication &
+  /** Get/Set the lambda function that is used to multiply each interpolation value with a volume value */
+  InterpolationWeightMultiplicationFunc &
   GetInterpolationWeightMultiplication()
   {
     return m_InterpolationWeightMultiplication;
   }
-  const TInterpolationWeightMultiplication &
+  const InterpolationWeightMultiplicationFunc &
   GetInterpolationWeightMultiplication() const
   {
     return m_InterpolationWeightMultiplication;
   }
   void
-  SetInterpolationWeightMultiplication(const TInterpolationWeightMultiplication & _arg)
+  SetInterpolationWeightMultiplication(const InterpolationWeightMultiplicationFunc & _arg)
   {
-    if (m_InterpolationWeightMultiplication != _arg)
-    {
-      m_InterpolationWeightMultiplication = _arg;
-      this->Modified();
-    }
+    m_InterpolationWeightMultiplication = _arg;
+    this->Modified();
   }
 
-  /** Get/Set the functor that is used to accumulate values in the projection image after the ray
+  /** Get/Set the lambda function that is used to accumulate values in the projection image after the ray
    * casting has been performed. */
-  TProjectedValueAccumulation &
+  ProjectedValueAccumulationFunc &
   GetProjectedValueAccumulation()
   {
     return m_ProjectedValueAccumulation;
   }
-  const TProjectedValueAccumulation &
+  const ProjectedValueAccumulationFunc &
   GetProjectedValueAccumulation() const
   {
     return m_ProjectedValueAccumulation;
   }
   void
-  SetProjectedValueAccumulation(const TProjectedValueAccumulation & _arg)
+  SetProjectedValueAccumulation(const ProjectedValueAccumulationFunc & _arg)
   {
-    if (m_ProjectedValueAccumulation != _arg)
-    {
-      m_ProjectedValueAccumulation = _arg;
-      this->Modified();
-    }
+    m_ProjectedValueAccumulation = _arg;
+    this->Modified();
   }
 
-  /** Get/Set the functor that is used to compute the sum along the ray*/
-  TSumAlongRay &
+  /** Get/Set the lambda function that is used to compute the sum along the ray */
+  SumAlongRayFunc &
   GetSumAlongRay()
   {
     return m_SumAlongRay;
   }
-  const TSumAlongRay &
+  const SumAlongRayFunc &
   GetSumAlongRay() const
   {
     return m_SumAlongRay;
   }
   void
-  SetSumAlongRay(const TSumAlongRay & _arg)
+  SetSumAlongRay(const SumAlongRayFunc & _arg)
   {
-    if (m_SumAlongRay != _arg)
-    {
-      m_SumAlongRay = _arg;
-      this->Modified();
-    }
+    m_SumAlongRay = _arg;
+    this->Modified();
   }
 
   /** Set/Get the inferior clip image. Each pixel of the image
@@ -342,12 +235,14 @@ protected:
                                  const double           maxy);
 
 private:
-  // Functors
-  TInterpolationWeightMultiplication m_InterpolationWeightMultiplication;
-  TProjectedValueAccumulation        m_ProjectedValueAccumulation;
-  TSumAlongRay                       m_SumAlongRay;
-  double                             m_InferiorClip{ 0. };
-  double                             m_SuperiorClip{ 1. };
+  // lambdas or std::functions
+  // MUST BE initiated in constructor, or custom functions
+  // must be set by means of Set methods in application
+  InterpolationWeightMultiplicationFunc m_InterpolationWeightMultiplication;
+  SumAlongRayFunc                       m_SumAlongRay;
+  ProjectedValueAccumulationFunc        m_ProjectedValueAccumulation;
+  double                                m_InferiorClip{ 0. };
+  double                                m_SuperiorClip{ 1. };
 };
 
 } // end namespace rtk

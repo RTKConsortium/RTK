@@ -31,33 +31,82 @@
 
 namespace rtk
 {
-template <class TInputImage,
-          class TOutputImage,
-          class TInterpolationWeightMultiplication,
-          class TProjectedValueAccumulation,
-          class TComputeAttenuationCorrection>
-JosephForwardAttenuatedProjectionImageFilter<
-  TInputImage,
-  TOutputImage,
-  TInterpolationWeightMultiplication,
-  TProjectedValueAccumulation,
-  TComputeAttenuationCorrection>::JosephForwardAttenuatedProjectionImageFilter()
+template <class TInputImage, class TOutputImage>
+JosephForwardAttenuatedProjectionImageFilter<TInputImage, TOutputImage>::JosephForwardAttenuatedProjectionImageFilter()
+  : JosephForwardProjectionImageFilter<TInputImage, TOutputImage>()
 {
+  std::fill(m_AttenuationRay.begin(), m_AttenuationRay.end(), 0.);
+  std::fill(m_AttenuationPixel.begin(), m_AttenuationPixel.end(), 0.);
+  std::fill(m_Ex1.begin(), m_Ex1.end(), 1.);
+  m_AttenuationMinusEmissionMapsPtrDiff = 0;
+
+  /** \brief Function to multiply the interpolation weights with the projected
+   * volume values and attenuation map.
+   *
+   */
+  auto interpolationWeightMultiplicationAttenuatedFunc = [this](const ThreadIdType         threadId,
+                                                                double                     stepLengthInVoxel,
+                                                                const WeightCoordinateType weight,
+                                                                const InputPixelType *     p,
+                                                                const int                  i) -> OutputPixelType {
+    const double w = weight * stepLengthInVoxel;
+
+    this->m_AttenuationRay[threadId] += w * (p + this->m_AttenuationMinusEmissionMapsPtrDiff)[i];
+    this->m_AttenuationPixel[threadId] += w * (p + this->m_AttenuationMinusEmissionMapsPtrDiff)[i];
+    return weight * p[i];
+  };
+  this->SetInterpolationWeightMultiplication(interpolationWeightMultiplicationAttenuatedFunc);
+
+  /** \brief Function to compute the attenuation correction on the projection.
+   *
+   */
+  auto computeAttenuationCorrectionFunc = [this](const ThreadIdType   threadId,
+                                                 OutputPixelType &    sumValue,
+                                                 const InputPixelType volumeValue,
+                                                 const VectorType &   stepInMM) {
+    InputPixelType ex2 = exp(-1. * this->m_AttenuationRay[threadId] * stepInMM.GetNorm());
+    InputPixelType wf;
+
+    if (this->m_AttenuationPixel[threadId] > 0)
+    {
+      wf = (this->m_Ex1[threadId] - ex2) / this->m_AttenuationPixel[threadId];
+    }
+    else
+    {
+      wf = this->m_Ex1[threadId] * stepInMM.GetNorm();
+    }
+
+    this->m_Ex1[threadId] = ex2;
+    this->m_AttenuationPixel[threadId] = 0;
+    sumValue += wf * volumeValue;
+  };
+  this->SetSumAlongRay(computeAttenuationCorrectionFunc);
+
+  /** \brief Function to accumulate the ray casting on the projection.
+   *
+   */
+  auto projectedValueAccumulationAttenuatedFunc = [this](const ThreadIdType      threadId,
+                                                         const InputPixelType &  input,
+                                                         OutputPixelType &       output,
+                                                         const OutputPixelType & rayCastValue,
+                                                         const VectorType &      itkNotUsed(stepInMM),
+                                                         const VectorType &      itkNotUsed(source),
+                                                         const VectorType &      itkNotUsed(sourceToPixel),
+                                                         const VectorType &      itkNotUsed(nearestPoint),
+                                                         const VectorType &      itkNotUsed(farthestPoint)) {
+    output = input + rayCastValue;
+    this->m_AttenuationRay[threadId] = 0;
+    this->m_Ex1[threadId] = 1;
+  };
+  this->SetProjectedValueAccumulation(projectedValueAccumulationAttenuatedFunc);
+
   this->SetNumberOfRequiredInputs(3);
   this->DynamicMultiThreadingOff();
 }
 
-template <class TInputImage,
-          class TOutputImage,
-          class TInterpolationWeightMultiplication,
-          class TProjectedValueAccumulation,
-          class TComputeAttenuationCorrection>
+template <class TInputImage, class TOutputImage>
 void
-JosephForwardAttenuatedProjectionImageFilter<TInputImage,
-                                             TOutputImage,
-                                             TInterpolationWeightMultiplication,
-                                             TProjectedValueAccumulation,
-                                             TComputeAttenuationCorrection>::GenerateInputRequestedRegion()
+JosephForwardAttenuatedProjectionImageFilter<TInputImage, TOutputImage>::GenerateInputRequestedRegion()
 {
   Superclass::GenerateInputRequestedRegion();
   // Input 2 is the attenuation map relative to the volume
@@ -69,17 +118,9 @@ JosephForwardAttenuatedProjectionImageFilter<TInputImage,
   inputPtr2->SetRequestedRegion(reqRegion2);
 }
 
-template <class TInputImage,
-          class TOutputImage,
-          class TInterpolationWeightMultiplication,
-          class TProjectedValueAccumulation,
-          class TComputeAttenuationCorrection>
+template <class TInputImage, class TOutputImage>
 void
-JosephForwardAttenuatedProjectionImageFilter<TInputImage,
-                                             TOutputImage,
-                                             TInterpolationWeightMultiplication,
-                                             TProjectedValueAccumulation,
-                                             TComputeAttenuationCorrection>::VerifyInputInformation() const
+JosephForwardAttenuatedProjectionImageFilter<TInputImage, TOutputImage>::VerifyInputInformation() const
 {
   Superclass::VerifyInputInformation();
   using ImageBaseType = const itk::ImageBase<InputImageDimension>;
@@ -160,26 +201,12 @@ JosephForwardAttenuatedProjectionImageFilter<TInputImage,
   }
 }
 
-template <class TInputImage,
-          class TOutputImage,
-          class TInterpolationWeightMultiplication,
-          class TProjectedValueAccumulation,
-          class TComputeAttenuationCorrection>
+template <class TInputImage, class TOutputImage>
 void
-JosephForwardAttenuatedProjectionImageFilter<TInputImage,
-                                             TOutputImage,
-                                             TInterpolationWeightMultiplication,
-                                             TProjectedValueAccumulation,
-                                             TComputeAttenuationCorrection>::BeforeThreadedGenerateData()
+JosephForwardAttenuatedProjectionImageFilter<TInputImage, TOutputImage>::BeforeThreadedGenerateData()
 {
-  this->GetInterpolationWeightMultiplication().SetAttenuationMinusEmissionMapsPtrDiff(
-    this->GetInput(2)->GetBufferPointer() - this->GetInput(1)->GetBufferPointer());
-  this->GetProjectedValueAccumulation().SetAttenuationVector(
-    this->GetInterpolationWeightMultiplication().GetAttenuationRay());
-  this->GetSumAlongRay().SetAttenuationRayVector(this->GetInterpolationWeightMultiplication().GetAttenuationRay());
-  this->GetSumAlongRay().SetAttenuationPixelVector(this->GetInterpolationWeightMultiplication().GetAttenuationPixel());
-  this->GetProjectedValueAccumulation().SetEx1(this->GetInterpolationWeightMultiplication().GetEx1());
-  this->GetSumAlongRay().SetEx1(this->GetInterpolationWeightMultiplication().GetEx1());
+  this->m_AttenuationMinusEmissionMapsPtrDiff =
+    this->GetInput(2)->GetBufferPointer() - this->GetInput(1)->GetBufferPointer();
 }
 } // end namespace rtk
 
