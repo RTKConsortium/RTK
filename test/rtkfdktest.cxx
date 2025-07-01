@@ -48,7 +48,8 @@ main(int, char **)
   using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
   auto origin = itk::MakePoint(-127., -127., -127.);
 #if FAST_TESTS_NO_CHECKS
-  auto size = itk::MakeSize(32, 32, 32) auto spacing = itk::MakeVector(8., 8., 8.);
+  auto size = itk::MakeSize(32, 32, 32);
+  auto spacing = itk::MakeVector(8., 8., 8.);
 #else
   auto size = itk::MakeSize(128, 128, 128);
   auto spacing = itk::MakeVector(2., 2., 2.);
