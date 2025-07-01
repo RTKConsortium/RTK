@@ -27,11 +27,11 @@ main(int, char **)
 
   // Constant image sources
   using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
-  ConstantImageSourceType::Pointer projectionsSource = ConstantImageSourceType::New();
-  ConstantImageSourceType::Pointer projectionsSourceRef = ConstantImageSourceType::New();
-  auto                             origin = itk::MakePoint(-254., -254., -254.);
-  auto                             size = itk::MakeSize(128, 128, NumberOfProjectionImages);
-  auto                             spacing = itk::MakeVector(4., 4., 4.);
+  auto projectionsSource = ConstantImageSourceType::New();
+  auto projectionsSourceRef = ConstantImageSourceType::New();
+  auto origin = itk::MakePoint(-254., -254., -254.);
+  auto size = itk::MakeSize(128, 128, NumberOfProjectionImages);
+  auto spacing = itk::MakeVector(4., 4., 4.);
   projectionsSource->SetOrigin(origin);
   projectionsSource->SetSpacing(spacing);
   projectionsSource->SetSize(size);
@@ -42,7 +42,7 @@ main(int, char **)
   projectionsSourceRef->SetSize(size);
   projectionsSourceRef->SetConstant(0.);
 
-  ConstantImageSourceType::Pointer oneProjectionSource = ConstantImageSourceType::New();
+  auto oneProjectionSource = ConstantImageSourceType::New();
   size[2] = 1;
   oneProjectionSource->SetOrigin(origin);
   oneProjectionSource->SetSpacing(spacing);
@@ -51,8 +51,8 @@ main(int, char **)
 
   // Geometry objects
   using GeometryType = rtk::ThreeDCircularProjectionGeometry;
-  GeometryType::Pointer geometry = GeometryType::New();
-  GeometryType::Pointer geometryRef = GeometryType::New();
+  auto geometry = GeometryType::New();
+  auto geometryRef = GeometryType::New();
 
   // Projections
   using REIType = rtk::RayEllipsoidIntersectionImageFilter<OutputImageType, OutputImageType>;
@@ -60,7 +60,7 @@ main(int, char **)
   OutputImageType::IndexType destinationIndex, destinationIndexRef;
   destinationIndex.Fill(0);
   destinationIndexRef.Fill(0);
-  PasteImageFilterType::Pointer pasteFilter = PasteImageFilterType::New();
+  auto pasteFilter = PasteImageFilterType::New();
 
   std::string              signalFileName = "signal_SelectOneProjPerCycle.txt";
   std::ofstream            signalFile(signalFileName.c_str());
@@ -73,13 +73,13 @@ main(int, char **)
       geometryRef->AddProjection(600., 1200., noProj * 360. / NumberOfProjectionImages, 0, 0, 0, 0, 20, 15);
 
     // Geometry object
-    GeometryType::Pointer oneProjGeometry = GeometryType::New();
+    auto oneProjGeometry = GeometryType::New();
     oneProjGeometry->AddProjection(600., 1200., noProj * 360. / NumberOfProjectionImages, 0, 0, 0, 0, 20, 15);
 
     // Ellipse 1
-    REIType::Pointer e1 = REIType::New();
-    auto             semiprincipalaxis = itk::MakeVector(60., 60., 60.);
-    auto             center = itk::MakeVector(0., 0., 0.);
+    auto e1 = REIType::New();
+    auto semiprincipalaxis = itk::MakeVector(60., 60., 60.);
+    auto center = itk::MakeVector(0., 0., 0.);
     e1->SetInput(oneProjectionSource->GetOutput());
     e1->SetGeometry(oneProjGeometry);
     e1->SetDensity(2.);
@@ -90,7 +90,7 @@ main(int, char **)
     e1->Update();
 
     // Ellipse 2
-    REIType::Pointer e2 = REIType::New();
+    auto e2 = REIType::New();
     semiprincipalaxis.Fill(8.);
     center[0] = 4 * (itk::Math::abs((4 + noProj) % 8 - 4.) - 2.);
     center[1] = 0.;
@@ -133,7 +133,7 @@ main(int, char **)
 
   // Select
   using SelectionType = rtk::SelectOneProjectionPerCycleImageFilter<OutputImageType>;
-  SelectionType::Pointer select = SelectionType::New();
+  auto select = SelectionType::New();
   select->SetInput(wholeImage);
   select->SetInputGeometry(geometry);
   select->SetPhase(0.4);

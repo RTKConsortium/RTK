@@ -39,13 +39,13 @@ main(int, char **)
 
   // Random image sources
   using RandomImageSourceType = itk::RandomImageSource<OutputImageType>;
-  RandomImageSourceType::Pointer randomVolumeSource = RandomImageSourceType::New();
-  RandomImageSourceType::Pointer randomProjectionsSource = RandomImageSourceType::New();
+  auto randomVolumeSource = RandomImageSourceType::New();
+  auto randomProjectionsSource = RandomImageSourceType::New();
 
   // Constant sources
   using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
-  ConstantImageSourceType::Pointer constantVolumeSource = ConstantImageSourceType::New();
-  ConstantImageSourceType::Pointer constantProjectionsSource = ConstantImageSourceType::New();
+  auto constantVolumeSource = ConstantImageSourceType::New();
+  auto constantProjectionsSource = ConstantImageSourceType::New();
 
   // Volume metadata
   auto origin = itk::MakePoint(-127., -127., -127.);
@@ -95,14 +95,14 @@ main(int, char **)
 
   // Geometry object
   using GeometryType = rtk::ThreeDCircularProjectionGeometry;
-  GeometryType::Pointer geometry = GeometryType::New();
+  auto geometry = GeometryType::New();
   for (unsigned int noProj = 0; noProj < NumberOfProjectionImages; noProj++)
     geometry->AddProjection(600., 1200., noProj * 360. / NumberOfProjectionImages);
 
   std::cout << "\n\n****** CUDA ray cast Forward projector, flat panel detector ******" << std::endl;
 
   using ForwardProjectorType = rtk::CudaForwardProjectionImageFilter<OutputImageType, OutputImageType>;
-  ForwardProjectorType::Pointer fw = ForwardProjectorType::New();
+  auto fw = ForwardProjectorType::New();
   fw->SetInput(0, constantProjectionsSource->GetOutput());
   fw->SetInput(1, randomVolumeSource->GetOutput());
   fw->SetGeometry(geometry);
@@ -111,7 +111,7 @@ main(int, char **)
   std::cout << "\n\n****** CUDA ray cast Back projector, flat panel detector ******" << std::endl;
 
   using BackProjectorType = rtk::CudaRayCastBackProjectionImageFilter;
-  BackProjectorType::Pointer bp = BackProjectorType::New();
+  auto bp = BackProjectorType::New();
   bp->SetInput(0, constantVolumeSource->GetOutput());
   bp->SetInput(1, randomProjectionsSource->GetOutput());
   bp->SetGeometry(geometry.GetPointer());

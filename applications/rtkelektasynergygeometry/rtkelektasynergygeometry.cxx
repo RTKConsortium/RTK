@@ -30,7 +30,7 @@ main(int argc, char * argv[])
   if (args_info.image_db_given && args_info.frame_db_given && args_info.dicom_uid_given && !args_info.xml_given)
   {
     // Create geometry reader
-    rtk::ElektaSynergyGeometryReader::Pointer reader = rtk::ElektaSynergyGeometryReader::New();
+    auto reader = rtk::ElektaSynergyGeometryReader::New();
     reader->SetDicomUID(args_info.dicom_uid_arg);
     reader->SetImageDbfFileName(args_info.image_db_arg);
     reader->SetFrameDbfFileName(args_info.frame_db_arg);

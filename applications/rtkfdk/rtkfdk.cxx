@@ -55,7 +55,7 @@ main(int argc, char * argv[])
 
   // Projections reader
   using ReaderType = rtk::ProjectionsReader<OutputImageType>;
-  ReaderType::Pointer reader = ReaderType::New();
+  auto reader = ReaderType::New();
   rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkfdk>(reader, args_info);
 
   if (!args_info.lowmem_flag)
@@ -116,7 +116,7 @@ main(int argc, char * argv[])
 
   // Create reconstructed image
   using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
-  ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
+  auto constantImageSource = ConstantImageSourceType::New();
   rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkfdk>(constantImageSource, args_info);
 
   // Motion-compensated objects for the compensation of a cyclic deformation.
@@ -128,11 +128,11 @@ main(int argc, char * argv[])
   using DVFImageType = itk::Image<DVFPixelType, 3>;
   using DeformationType = rtk::CyclicDeformationImageFilter<DVFImageSequenceType, DVFImageType>;
   using DVFReaderType = itk::ImageFileReader<DeformationType::InputImageType>;
-  DVFReaderType::Pointer   dvfReader = DVFReaderType::New();
-  DeformationType::Pointer def = DeformationType::New();
+  auto dvfReader = DVFReaderType::New();
+  auto def = DeformationType::New();
   def->SetInput(dvfReader->GetOutput());
   using WarpBPType = rtk::FDKWarpBackProjectionImageFilter<OutputImageType, OutputImageType, DeformationType>;
-  WarpBPType::Pointer bp = WarpBPType::New();
+  auto bp = WarpBPType::New();
   bp->SetDeformation(def);
   bp->SetGeometry(geometry);
 
@@ -164,7 +164,7 @@ main(int argc, char * argv[])
   {
     // Progress reporting
     using PercentageProgressCommandType = rtk::PercentageProgressCommand<FDKCPUType>;
-    PercentageProgressCommandType::Pointer progressCommand = PercentageProgressCommandType::New();
+    auto progressCommand = PercentageProgressCommandType::New();
 
     feldkamp = FDKCPUType::New();
     SET_FELDKAMP_OPTIONS(feldkamp);
@@ -190,7 +190,7 @@ main(int argc, char * argv[])
 
     // Progress reporting
     using PercentageProgressCommandType = rtk::PercentageProgressCommand<FDKCUDAType>;
-    PercentageProgressCommandType::Pointer progressCommand = PercentageProgressCommandType::New();
+    auto progressCommand = PercentageProgressCommandType::New();
 
     feldkampCUDA = FDKCUDAType::New();
     SET_FELDKAMP_OPTIONS(feldkampCUDA);
@@ -200,10 +200,10 @@ main(int argc, char * argv[])
 
   // Streaming depending on streaming capability of writer
   using StreamerType = itk::StreamingImageFilter<CPUOutputImageType, CPUOutputImageType>;
-  StreamerType::Pointer streamerBP = StreamerType::New();
+  auto streamerBP = StreamerType::New();
   streamerBP->SetInput(pfeldkamp);
   streamerBP->SetNumberOfStreamDivisions(args_info.divisions_arg);
-  itk::ImageRegionSplitterDirection::Pointer splitter = itk::ImageRegionSplitterDirection::New();
+  auto splitter = itk::ImageRegionSplitterDirection::New();
   splitter->SetDirection(2); // Prevent splitting along z axis. As a result, splitting will be performed along y axis
   streamerBP->SetRegionSplitter(splitter);
 

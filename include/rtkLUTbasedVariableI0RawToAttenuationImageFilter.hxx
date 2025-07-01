@@ -32,7 +32,7 @@ LUTbasedVariableI0RawToAttenuationImageFilter<TInputImage,
                                               TOutputImage>::LUTbasedVariableI0RawToAttenuationImageFilter()
 {
   // Create the lut
-  typename LookupTableType::Pointer  lut = LookupTableType::New();
+  auto                               lut = LookupTableType::New();
   typename LookupTableType::SizeType size;
   size[0] =
     itk::NumericTraits<InputImagePixelType>::max() - itk::NumericTraits<InputImagePixelType>::NonpositiveMin() + 1;

@@ -34,7 +34,7 @@ HilbertImageFilter<TInputImage, TOutputImage>::GenerateData()
 {
   // Take the FFT of the input
   using FFTFilterType = typename itk::ForwardFFTImageFilter<TInputImage, TOutputImage>;
-  typename FFTFilterType::Pointer fftFilt = FFTFilterType::New();
+  auto fftFilt = FFTFilterType::New();
   fftFilt->SetInput(this->GetInput());
   fftFilt->Update();
 
@@ -77,7 +77,7 @@ HilbertImageFilter<TInputImage, TOutputImage>::GenerateData()
 #endif
 
   using InverseFFTFilterType = typename itk::ComplexToComplexFFTImageFilter<TOutputImage>;
-  typename InverseFFTFilterType::Pointer invFilt = InverseFFTFilterType::New();
+  auto invFilt = InverseFFTFilterType::New();
   invFilt->SetTransformDirection(InverseFFTFilterType::TransformDirectionEnum::FORWARD);
   invFilt->SetInput(fft);
   invFilt->Update();

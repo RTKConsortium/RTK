@@ -51,7 +51,7 @@ ImagXGeometryReader<TInputImage>::GetGeometryForAI2p1()
 
   // Read the dcmdump of the geocal tag (3001,1018)
 
-  itk::DOMNodeXMLReader::Pointer readerXML = itk::DOMNodeXMLReader::New();
+  auto readerXML = itk::DOMNodeXMLReader::New();
   readerXML->SetFileName(m_CalibrationXMLFileName);
   readerXML->Update();
   const itk::DOMNodeXMLReader::OutputType * XMLFile = readerXML->GetOutput();
@@ -268,7 +268,7 @@ ImagXGeometryReader<TInputImage>::GetGeometryForAI1p5()
 
   // Define, create and set projection reader
   using ReaderType = itk::ImageFileReader<TInputImage>;
-  typename ReaderType::Pointer reader = ReaderType::New();
+  auto reader = ReaderType::New();
   reader->SetImageIO(imageIO);
   reader->SetFileName(m_ProjectionsFileNames[0]);
   reader->UpdateOutputInformation();
@@ -279,8 +279,8 @@ ImagXGeometryReader<TInputImage>::GetGeometryForAI1p5()
   dynamic_cast<itk::GDCMImageIO *>(imageIO.GetPointer())->GetValueFromTag(roomSetupTagKey, roomSetupInfo);
 
   // Extract SID, SDD and angle offset from the roomSetupInfo
-  itk::DOMNodeXMLReader::Pointer parser = itk::DOMNodeXMLReader::New();
-  std::istringstream             is(roomSetupInfo);
+  auto               parser = itk::DOMNodeXMLReader::New();
+  std::istringstream is(roomSetupInfo);
   parser->Update(is);
 
   Cm.sid = std::stod(parser->GetOutput()->GetChild("Axis")->GetChild("Distances")->GetAttribute("sid").c_str());
@@ -360,7 +360,7 @@ ImagXGeometryReader<TInputImage>::GetGeometryForAI1p5FromXMLFiles()
   // iMagX axisName parameter
   std::string axisName, sid_s, sdd_s;
 
-  itk::DOMNodeXMLReader::Pointer readerXML = itk::DOMNodeXMLReader::New();
+  auto readerXML = itk::DOMNodeXMLReader::New();
   readerXML->SetFileName(m_CalibrationXMLFileName);
   readerXML->Update();
   const itk::DOMNodeXMLReader::OutputType * XMLFile = readerXML->GetOutput();
@@ -485,7 +485,7 @@ ImagXGeometryReader<TInputImage>::getAIversion()
 
   // Define, create and set projection reader
   using ReaderType = itk::ImageFileReader<TInputImage>;
-  typename ReaderType::Pointer reader = ReaderType::New();
+  auto reader = ReaderType::New();
   reader->SetImageIO(imageIO);
   reader->SetFileName(m_ProjectionsFileNames[0]);
   reader->UpdateOutputInformation();
@@ -549,7 +549,7 @@ ImagXGeometryReader<TInputImage>::GenerateData()
     itk::ImageIOBase::Pointer imageIO = itk::ImageIOFactory::CreateImageIO(
       m_ProjectionsFileNames[0].c_str(), itk::ImageIOFactory::IOFileModeEnum::ReadMode);
     using ReaderType = itk::ImageFileReader<TInputImage>;
-    typename ReaderType::Pointer reader = ReaderType::New();
+    auto reader = ReaderType::New();
     reader->SetFileName(m_ProjectionsFileName);
     imageIO = itk::GDCMImageIO::New();
 

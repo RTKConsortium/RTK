@@ -43,8 +43,8 @@ main(int argc, char * argv[])
 
   // Constant image sources
   using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
-  ConstantImageSourceType::Pointer tomographySource = ConstantImageSourceType::New();
-  auto                             origin = itk::MakePoint(-127., -127., -127.);
+  auto tomographySource = ConstantImageSourceType::New();
+  auto origin = itk::MakePoint(-127., -127., -127.);
 #if FAST_TESTS_NO_CHECKS
   auto size = itk::MakeSize(2, 2, 2);
   auto spacing = itk::MakeVector(254., 254., 254.);
@@ -59,7 +59,7 @@ main(int argc, char * argv[])
 
   // Generate a shepp logan phantom
   using DSLType = rtk::DrawSheppLoganFilter<OutputImageType, OutputImageType>;
-  DSLType::Pointer dsl = DSLType::New();
+  auto dsl = DSLType::New();
   dsl->SetInput(tomographySource->GetOutput());
   dsl->SetPhantomScale(128.);
   dsl->InPlaceOff();
@@ -68,7 +68,7 @@ main(int argc, char * argv[])
 
   // Read a reference image
   using ReaderType = itk::ImageFileReader<OutputImageType>;
-  ReaderType::Pointer readerRef = ReaderType::New();
+  auto readerRef = ReaderType::New();
   readerRef->SetFileName(argv[1]);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(readerRef->Update());
 
@@ -77,7 +77,7 @@ main(int argc, char * argv[])
 
   // Create and set the laplacian filter
   using LaplacianFilterType = rtk::LaplacianImageFilter<OutputImageType, GradientImageType>;
-  LaplacianFilterType::Pointer laplacian = LaplacianFilterType::New();
+  auto laplacian = LaplacianFilterType::New();
   laplacian->SetInput(dsl->GetOutput());
 
   // Compute the laplacian of the shepp logan
@@ -93,7 +93,7 @@ main(int argc, char * argv[])
 
   // Create and set the laplacian filter
   typedef rtk::CudaLaplacianImageFilter CUDALaplacianFilterType;
-  CUDALaplacianFilterType::Pointer      cudaLaplacian = CUDALaplacianFilterType::New();
+  auto                                  cudaLaplacian = CUDALaplacianFilterType::New();
   cudaLaplacian->SetInput(dsl->GetOutput());
 
   // Compute the laplacian of the shepp logan

@@ -28,7 +28,7 @@ main(int argc, char * argv[])
 
   // RTK geometry object
   using GeometryType = rtk::ThreeDCircularProjectionGeometry;
-  GeometryType::Pointer geometry = GeometryType::New();
+  auto geometry = GeometryType::New();
 
   // Projection matrices
   for (int noProj = 0; noProj < args_info.nproj_arg; noProj++)

@@ -55,15 +55,15 @@ main(int argc, char * argv[])
     itk::CastImageFilter<MeasuredProjectionsType, itk::Image<itk::Vector<PixelValueType, 6>, Dimension>>;
 
   // Read all inputs
-  IncidentSpectrumReaderType::Pointer incidentSpectrumReader = IncidentSpectrumReaderType::New();
+  auto incidentSpectrumReader = IncidentSpectrumReaderType::New();
   incidentSpectrumReader->SetFileName(argv[1]);
   incidentSpectrumReader->Update();
 
-  DetectorResponseReaderType::Pointer detectorResponseReader = DetectorResponseReaderType::New();
+  auto detectorResponseReader = DetectorResponseReaderType::New();
   detectorResponseReader->SetFileName(argv[2]);
   detectorResponseReader->Update();
 
-  MaterialAttenuationsReaderType::Pointer materialAttenuationsReader = MaterialAttenuationsReaderType::New();
+  auto materialAttenuationsReader = MaterialAttenuationsReaderType::New();
   materialAttenuationsReader->SetFileName(argv[3]);
   materialAttenuationsReader->Update();
 
@@ -76,8 +76,8 @@ main(int argc, char * argv[])
   // Constant image source for the analytical projections calculation
   using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
 
-  ConstantImageSourceType::Pointer projectionsSource = ConstantImageSourceType::New();
-  auto                             origin = itk::MakePoint(-255., -0.5, -255.);
+  auto projectionsSource = ConstantImageSourceType::New();
+  auto origin = itk::MakePoint(-255., -0.5, -255.);
 #if FAST_TESTS_NO_CHECKS
   auto spacing = itk::MakeVector(504., 504., 504.);
   auto size = itk::MakeSize(2, 1, NumberOfProjectionImages);
@@ -91,7 +91,7 @@ main(int argc, char * argv[])
   projectionsSource->SetConstant(0.);
 
   // Initialize the multi-materials projections
-  DecomposedProjectionsType::Pointer decomposed = DecomposedProjectionsType::New();
+  auto decomposed = DecomposedProjectionsType::New();
   decomposed->SetVectorLength(3);
   decomposed->SetOrigin(origin);
   decomposed->SetSpacing(spacing);
@@ -105,7 +105,7 @@ main(int argc, char * argv[])
 
   // Geometry object
   using GeometryType = rtk::ThreeDCircularProjectionGeometry;
-  GeometryType::Pointer geometry = GeometryType::New();
+  auto geometry = GeometryType::New();
   for (unsigned int noProj = 0; noProj < NumberOfProjectionImages; noProj++)
     geometry->AddProjection(600., 1200., noProj * 360. / NumberOfProjectionImages);
 
@@ -145,7 +145,7 @@ main(int argc, char * argv[])
   }
 
   // Generate a set of zero-filled photon count projections
-  MeasuredProjectionsType::Pointer measuredProjections = MeasuredProjectionsType::New();
+  auto measuredProjections = MeasuredProjectionsType::New();
   measuredProjections->CopyInformation(decomposed);
   measuredProjections->SetVectorLength(6);
   measuredProjections->SetRegions(region);
@@ -165,7 +165,7 @@ main(int argc, char * argv[])
   // Apply the forward model to the multi-material projections
   using SpectralForwardFilterType =
     rtk::SpectralForwardModelImageFilter<DecomposedProjectionsType, MeasuredProjectionsType, IncidentSpectrumImageType>;
-  SpectralForwardFilterType::Pointer forward = SpectralForwardFilterType::New();
+  auto forward = SpectralForwardFilterType::New();
   forward->SetInputDecomposedProjections(decomposed);
   forward->SetInputMeasuredProjections(measuredProjections);
   forward->SetInputIncidentSpectrum(incidentSpectrumReader->GetOutput());
@@ -176,7 +176,7 @@ main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION(forward->Update())
 
   // Generate a set of decomposed projections as input for the simplex
-  DecomposedProjectionsType::Pointer initialDecomposedProjections = DecomposedProjectionsType::New();
+  auto initialDecomposedProjections = DecomposedProjectionsType::New();
   initialDecomposedProjections->CopyInformation(decomposed);
   initialDecomposedProjections->SetRegions(region);
   initialDecomposedProjections->SetVectorLength(3);
@@ -192,7 +192,7 @@ main(int argc, char * argv[])
   using SimplexFilterType = rtk::SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType,
                                                                                     MeasuredProjectionsType,
                                                                                     IncidentSpectrumImageType>;
-  SimplexFilterType::Pointer simplex = SimplexFilterType::New();
+  auto simplex = SimplexFilterType::New();
   simplex->SetInputDecomposedProjections(initialDecomposedProjections);
   simplex->SetInputMeasuredProjections(forward->GetOutput());
   simplex->SetInputIncidentSpectrum(incidentSpectrumReader->GetOutput());
@@ -221,7 +221,7 @@ main(int argc, char * argv[])
 
   typename CastDecomposedProjectionsFilterType::Pointer castDecomposedProjections =
     CastDecomposedProjectionsFilterType::New();
-  typename CastMeasuredProjectionFilterType::Pointer castMeasuredProjections = CastMeasuredProjectionFilterType::New();
+  auto castMeasuredProjections = CastMeasuredProjectionFilterType::New();
   castDecomposedProjections->SetInput(decomposed);
   castMeasuredProjections->SetInput(measuredProjections);
   forward->SetInputDecomposedProjections(castDecomposedProjections->GetOutput());
@@ -230,7 +230,7 @@ main(int argc, char * argv[])
 
   typename CastDecomposedProjectionsFilterType::Pointer castDecomposedProjections2 =
     CastDecomposedProjectionsFilterType::New();
-  typename CastMeasuredProjectionFilterType::Pointer castMeasuredProjections2 = CastMeasuredProjectionFilterType::New();
+  auto castMeasuredProjections2 = CastMeasuredProjectionFilterType::New();
   castDecomposedProjections->SetInput(initialDecomposedProjections);
   castMeasuredProjections->SetInput(forward->GetOutput());
   simplex->SetInputDecomposedProjections(castDecomposedProjections->GetOutput());
@@ -244,7 +244,7 @@ main(int argc, char * argv[])
 
   using VectorImageType = itk::VectorImage<PixelValueType, Dimension - 1>;
   using VectorSpectrumReaderType = itk::ImageFileReader<VectorImageType>;
-  VectorSpectrumReaderType::Pointer vectorSpectrumReader = VectorSpectrumReaderType::New();
+  auto vectorSpectrumReader = VectorSpectrumReaderType::New();
   vectorSpectrumReader->SetFileName(argv[4]);
   vectorSpectrumReader->Update();
   forward->SetInputIncidentSpectrum(vectorSpectrumReader->GetOutput());

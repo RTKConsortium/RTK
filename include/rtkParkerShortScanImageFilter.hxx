@@ -155,7 +155,7 @@ ParkerShortScanImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerateDa
   origin[0] = this->GetInput()->GetOrigin()[0];
 
   // Create one line of weights
-  typename WeightImageType::Pointer weights = WeightImageType::New();
+  auto weights = WeightImageType::New();
   weights->SetSpacing(spacing);
   weights->SetOrigin(origin);
   weights->SetRegions(region);

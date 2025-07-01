@@ -42,8 +42,8 @@ main(int, char **)
 
   // Random image sources
   using RandomImageSourceType = itk::RandomImageSource<ImageType>;
-  RandomImageSourceType::Pointer randomVolumeSource1 = RandomImageSourceType::New();
-  RandomImageSourceType::Pointer randomVolumeSource2 = RandomImageSourceType::New();
+  auto randomVolumeSource1 = RandomImageSourceType::New();
+  auto randomVolumeSource2 = RandomImageSourceType::New();
 
   auto origin = itk::MakePoint(-127., -127., -127.);
 #if FAST_TESTS_NO_CHECKS
@@ -79,22 +79,22 @@ main(int, char **)
   // Compute the gradient of both volumes
   using GradientFilterType =
     rtk::ForwardDifferenceGradientImageFilter<ImageType, OutputPixelType, OutputPixelType, GradientImageType>;
-  GradientFilterType::Pointer grad1 = GradientFilterType::New();
+  auto grad1 = GradientFilterType::New();
   grad1->SetInput(randomVolumeSource1->GetOutput());
   grad1->SetDimensionsProcessed(computeGradientAlongDim);
 
-  GradientFilterType::Pointer grad2 = GradientFilterType::New();
+  auto grad2 = GradientFilterType::New();
   grad2->SetInput(randomVolumeSource2->GetOutput());
   grad2->SetDimensionsProcessed(computeGradientAlongDim);
 
   // Now compute MINUS the divergence of grad2
   using DivergenceFilterType = rtk::BackwardDifferenceDivergenceImageFilter<GradientImageType, ImageType>;
-  DivergenceFilterType::Pointer div = DivergenceFilterType::New();
+  auto div = DivergenceFilterType::New();
   div->SetInput(grad2->GetOutput());
   div->SetDimensionsProcessed(computeGradientAlongDim);
 
   using MultiplyFilterType = itk::MultiplyImageFilter<ImageType>;
-  MultiplyFilterType::Pointer multiply = MultiplyFilterType::New();
+  auto multiply = MultiplyFilterType::New();
   multiply->SetInput1(div->GetOutput());
   multiply->SetConstant2(-1);
 

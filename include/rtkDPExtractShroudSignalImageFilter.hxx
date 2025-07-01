@@ -87,7 +87,7 @@ DPExtractShroudSignalImageFilter<TInputPixel, TOutputPixel>::GenerateData()
   typename TInputImage::RegionType::IndexType inputIdx = input->GetLargestPossibleRegion().GetIndex();
   typename TInputImage::RegionType::SizeType  inputSize = input->GetLargestPossibleRegion().GetSize();
 
-  typename itk::Image<int, InputImageDimension>::Pointer from = itk::Image<int, InputImageDimension>::New();
+  auto from = itk::Image<int, InputImageDimension>::New();
   from->CopyInformation(input);
   from->SetRegions(input->GetLargestPossibleRegion());
   from->Allocate();

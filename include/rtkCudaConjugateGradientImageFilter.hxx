@@ -46,8 +46,8 @@ CudaConjugateGradientImageFilter<TImage>::GPUGenerateData()
                             itk::PixelTraits<typename TImage::PixelType>::Dimension;
 
   // Create and allocate images
-  typename TImage::Pointer P_k = TImage::New();
-  typename TImage::Pointer R_k = TImage::New();
+  auto P_k = TImage::New();
+  auto R_k = TImage::New();
   P_k->SetRegions(this->GetOutput()->GetLargestPossibleRegion());
   R_k->SetRegions(this->GetOutput()->GetLargestPossibleRegion());
   P_k->Allocate();

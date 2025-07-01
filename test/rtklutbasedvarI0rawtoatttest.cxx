@@ -33,13 +33,13 @@ int
 main(int, char **)
 {
   using ConvertFilterType = rtk::LUTbasedVariableI0RawToAttenuationImageFilter<ShortImageType, FloatImageType>;
-  ConvertFilterType::Pointer convert = ConvertFilterType::New();
+  auto convert = ConvertFilterType::New();
 
   // Constant image sources
   ShortImageType::RegionType region;
   region.SetSize(itk::MakeSize(10, 10));
 
-  ShortImageType::Pointer rawImage = ShortImageType::New();
+  auto rawImage = ShortImageType::New();
   rawImage->SetRegions(region);
   rawImage->SetSpacing(itk::MakeVector(1.0, 1.0));
   rawImage->Allocate();

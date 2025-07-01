@@ -33,8 +33,8 @@ main(int, char **)
 
   // Constant image sources
   using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
-  ConstantImageSourceType::Pointer tomographySource = ConstantImageSourceType::New();
-  auto                             origin = itk::MakePoint(-63., -31., -63.);
+  auto tomographySource = ConstantImageSourceType::New();
+  auto origin = itk::MakePoint(-63., -31., -63.);
 #if FAST_TESTS_NO_CHECKS
   auto size = itk::MakeSize(32, 32, 32);
   auto spacing = itk::MakeVector(8., 8., 8.);
@@ -52,7 +52,7 @@ main(int, char **)
   using DVFImageType = itk::Image<DVFPixelType, 3>;
   using IteratorType = itk::ImageRegionIteratorWithIndex<DVFImageType>;
 
-  DVFImageType::Pointer deformationField = DVFImageType::New();
+  auto deformationField = DVFImageType::New();
 
   auto                    sizeMotion = itk::MakeSize(64, 64, 64);
   DVFImageType::PointType originMotion;
@@ -79,7 +79,7 @@ main(int, char **)
   // Create a reference object (in this case a 3D phantom reference).
   // Ellipse 1
   using DEType = rtk::DrawEllipsoidImageFilter<OutputImageType, OutputImageType>;
-  DEType::Pointer e1 = DEType::New();
+  auto e1 = DEType::New();
   e1->SetInput(tomographySource->GetOutput());
   e1->SetDensity(2.);
   DEType::VectorType axis;
@@ -93,7 +93,7 @@ main(int, char **)
   TRY_AND_EXIT_ON_ITK_EXCEPTION(e1->Update())
 
   // Ellipse 2
-  DEType::Pointer e2 = DEType::New();
+  auto e2 = DEType::New();
   e2->SetInput(e1->GetOutput());
   e2->SetDensity(-1.);
   DEType::VectorType axis2;
@@ -107,7 +107,7 @@ main(int, char **)
   TRY_AND_EXIT_ON_ITK_EXCEPTION(e2->Update())
 
   using WarpFilterType = itk::WarpImageFilter<OutputImageType, OutputImageType, DVFImageType>;
-  WarpFilterType::Pointer warp = WarpFilterType::New();
+  auto warp = WarpFilterType::New();
   warp->SetInput(e2->GetOutput());
   warp->SetDisplacementField(deformationField);
   warp->SetOutputParametersFromImage(e2->GetOutput());
@@ -115,7 +115,7 @@ main(int, char **)
   TRY_AND_EXIT_ON_ITK_EXCEPTION(warp->Update());
 
   using ForwardWarpFilterType = rtk::ForwardWarpImageFilter<OutputImageType, OutputImageType, DVFImageType>;
-  ForwardWarpFilterType::Pointer forwardWarp = ForwardWarpFilterType::New();
+  auto forwardWarp = ForwardWarpFilterType::New();
   forwardWarp->SetInput(warp->GetOutput());
   forwardWarp->SetDisplacementField(deformationField);
   forwardWarp->SetOutputParametersFromImage(warp->GetOutput());

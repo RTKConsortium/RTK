@@ -75,14 +75,14 @@ main(int argc, char * argv[])
 
   // Elekta projections reader
   using ReaderType = rtk::ProjectionsReader<ImageType>;
-  ReaderType::Pointer      reader = ReaderType::New();
+  auto                     reader = ReaderType::New();
   std::vector<std::string> fileNames;
   fileNames.emplace_back(argv[3]);
   reader->SetFileNames(fileNames);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(reader->Update());
 
   // Reference projections reader
-  ReaderType::Pointer readerRef = ReaderType::New();
+  auto readerRef = ReaderType::New();
   fileNames.clear();
   fileNames.emplace_back(argv[6]);
   readerRef->SetFileNames(fileNames);
@@ -95,22 +95,22 @@ main(int argc, char * argv[])
   using InputPixelType = unsigned short;
   using InputImageType = itk::Image<InputPixelType, 3>;
   using RawReaderType = itk::ImageFileReader<InputImageType>;
-  RawReaderType::Pointer r = RawReaderType::New();
+  auto r = RawReaderType::New();
   r->SetFileName(argv[3]);
   r->Update();
 
   using FullLUTType = rtk::ElektaSynergyLookupTableImageFilter<ImageType>;
-  FullLUTType::Pointer full = FullLUTType::New();
+  auto full = FullLUTType::New();
   full->SetInput(r->GetOutput());
   full->Update();
 
   using RawLUTType = rtk::ElektaSynergyRawLookupTableImageFilter<InputImageType, InputImageType>;
-  RawLUTType::Pointer raw = RawLUTType::New();
+  auto raw = RawLUTType::New();
   raw->SetInput(r->GetOutput());
   raw->Update();
 
   using LogLUTType = rtk::LUTbasedVariableI0RawToAttenuationImageFilter<InputImageType, ImageType>;
-  LogLUTType::Pointer log = LogLUTType::New();
+  auto log = LogLUTType::New();
   log->SetInput(raw->GetOutput());
   log->SetI0(log->GetI0() + 1.);
   log->Update();

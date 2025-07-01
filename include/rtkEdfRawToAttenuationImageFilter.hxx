@@ -50,7 +50,7 @@ EdfRawToAttenuationImageFilter<TInputImage, TOutputImage>::BeforeThreadedGenerat
   std::string fileName = pathComponents.back();
 
   // Reference images (flood field)
-  itk::RegularExpressionSeriesFileNames::Pointer refNames = itk::RegularExpressionSeriesFileNames::New();
+  auto refNames = itk::RegularExpressionSeriesFileNames::New();
   refNames->SetDirectory(path.c_str());
   refNames->SetNumericSort(false);
   refNames->SetRegularExpression("refHST[0-9]*.edf$");

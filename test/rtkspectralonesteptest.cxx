@@ -72,15 +72,15 @@ main(int argc, char * argv[])
   using CastMeasuredProjectionsFilterType = itk::CastImageFilter<VectorImageType, MeasuredProjectionsType>;
 
   // Read all inputs
-  IncidentSpectrumReaderType::Pointer incidentSpectrumReader = IncidentSpectrumReaderType::New();
+  auto incidentSpectrumReader = IncidentSpectrumReaderType::New();
   incidentSpectrumReader->SetFileName(argv[1]);
   incidentSpectrumReader->Update();
 
-  DetectorResponseReaderType::Pointer detectorResponseReader = DetectorResponseReaderType::New();
+  auto detectorResponseReader = DetectorResponseReaderType::New();
   detectorResponseReader->SetFileName(argv[3]);
   detectorResponseReader->Update();
 
-  MaterialAttenuationsReaderType::Pointer materialAttenuationsReader = MaterialAttenuationsReaderType::New();
+  auto materialAttenuationsReader = MaterialAttenuationsReaderType::New();
   materialAttenuationsReader->SetFileName(argv[4]);
   materialAttenuationsReader->Update();
 
@@ -100,7 +100,7 @@ main(int argc, char * argv[])
   using ConstantImageSourceType = rtk::ConstantImageSource<SingleComponentImageType>;
 
   // Generate a blank volume
-  ConstantImageSourceType::Pointer tomographySource = ConstantImageSourceType::New();
+  auto tomographySource = ConstantImageSourceType::New();
 #if FAST_TESTS_NO_CHECKS
   auto origin = itk::MakePoint(-64., -64., -64.);
   auto size = itk::MakeSize(2, 2, 2);
@@ -118,12 +118,12 @@ main(int argc, char * argv[])
 
   // Generate a blank set of material volumes
   using MaterialVolumeSourceType = rtk::ConstantImageSource<MaterialVolumeType>;
-  MaterialVolumeSourceType::Pointer materialVolumeSource = MaterialVolumeSourceType::New();
+  auto materialVolumeSource = MaterialVolumeSourceType::New();
   materialVolumeSource->SetInformationFromImage(tomographySource->GetOutput());
   materialVolumeSource->SetConstant(itk::NumericTraits<MaterialPixelType>::ZeroValue());
 
   // Generate a blank set of projections
-  ConstantImageSourceType::Pointer projectionsSource = ConstantImageSourceType::New();
+  auto projectionsSource = ConstantImageSourceType::New();
 #if FAST_TESTS_NO_CHECKS
   origin = itk::MakePoint(-128., -128., 0.);
   size = itk::MakeSize(2, 2, NumberOfProjectionImages);
@@ -141,7 +141,7 @@ main(int argc, char * argv[])
 
   // Create a vectorImage of blank photon counts
   using vMeasuredProjectionsType = itk::VectorImage<DataType, Dimension>;
-  vMeasuredProjectionsType::Pointer vMeasuredProjections = vMeasuredProjectionsType::New();
+  auto vMeasuredProjections = vMeasuredProjectionsType::New();
   vMeasuredProjections->CopyInformation(projectionsSource->GetOutput());
   vMeasuredProjections->SetVectorLength(nBins);
   vMeasuredProjections->SetRegions(vMeasuredProjections->GetLargestPossibleRegion());
@@ -153,7 +153,7 @@ main(int argc, char * argv[])
 
   // Geometry object
   using GeometryType = rtk::ThreeDCircularProjectionGeometry;
-  GeometryType::Pointer geometry = GeometryType::New();
+  auto geometry = GeometryType::New();
   for (unsigned int noProj = 0; noProj < NumberOfProjectionImages; noProj++)
     geometry->AddProjection(600., 1200., noProj * 360. / NumberOfProjectionImages);
 
@@ -170,16 +170,16 @@ main(int argc, char * argv[])
 
   // Create reference volume (3D ellipsoid).
   using DEType = rtk::DrawEllipsoidImageFilter<SingleComponentImageType, SingleComponentImageType>;
-  DEType::Pointer dsl = DEType::New();
+  auto dsl = DEType::New();
   dsl->SetInput(tomographySource->GetOutput());
 
   // Generate one set of projections and one reference volume per material, and assemble them
   SingleComponentImageType::Pointer projs[nMaterials];
   SingleComponentImageType::Pointer vols[nMaterials];
   using ComposeProjectionsFilterType = itk::ComposeImageFilter<SingleComponentImageType>;
-  ComposeProjectionsFilterType::Pointer composeProjs = ComposeProjectionsFilterType::New();
+  auto composeProjs = ComposeProjectionsFilterType::New();
   using ComposeVolumesFilterType = itk::ComposeImageFilter<SingleComponentImageType, MaterialVolumeType>;
-  ComposeVolumesFilterType::Pointer composeVols = ComposeVolumesFilterType::New();
+  auto composeVols = ComposeVolumesFilterType::New();
   for (unsigned int mat = 0; mat < nMaterials; mat++)
   {
     rei->SetDensity(concentrations[mat]);
@@ -200,7 +200,7 @@ main(int argc, char * argv[])
   // Apply spectral forward model to turn material projections into photon counts
   using ForwardModelFilterType =
     rtk::SpectralForwardModelImageFilter<MaterialProjectionsType, vMeasuredProjectionsType, IncidentSpectrumImageType>;
-  ForwardModelFilterType::Pointer forward = ForwardModelFilterType::New();
+  auto forward = ForwardModelFilterType::New();
   forward->SetInputDecomposedProjections(composeProjs->GetOutput());
   forward->SetInputMeasuredProjections(vMeasuredProjections);
   forward->SetInputIncidentSpectrum(incidentSpectrumReader->GetOutput());
@@ -244,7 +244,7 @@ main(int argc, char * argv[])
   // Reconstruct using Mechlem
   using MechlemType = rtk::
     MechlemOneStepSpectralReconstructionFilter<MaterialVolumeType, MeasuredProjectionsType, IncidentSpectrumImageType>;
-  MechlemType::Pointer mechlemOneStep = MechlemType::New();
+  auto mechlemOneStep = MechlemType::New();
   mechlemOneStep->SetForwardProjectionFilter(MechlemType::FP_JOSEPH); // Joseph
   mechlemOneStep->SetInputMaterialVolumes(materialVolumeSource->GetOutput());
   mechlemOneStep->SetInputMeasuredProjections(castMeasuredProjections->GetOutput());
@@ -307,7 +307,7 @@ main(int argc, char * argv[])
     << std::endl;
 #endif
   // Add a cast to itkVectorImage, to test the overloaded SetInputMaterialVolumes method
-  typename CastMaterialVolumesFilterType::Pointer castMaterials = CastMaterialVolumesFilterType::New();
+  auto castMaterials = CastMaterialVolumesFilterType::New();
   castMaterials->SetInput(materialVolumeSource->GetOutput());
   mechlemOneStep->SetInputMaterialVolumes(castMaterials->GetOutput());
 

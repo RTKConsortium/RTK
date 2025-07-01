@@ -92,7 +92,7 @@ WarpSequenceImageFilter<TImageSequence, TDVFImageSequence, TImage, TDVFImage>::G
     m_DVFInterpolatorFilter = CudaCyclicDeformationImageFilterType::New();
   }
 
-  typename LinearInterpolatorType::Pointer          linearInterpolator = LinearInterpolatorType::New();
+  auto                                              linearInterpolator = LinearInterpolatorType::New();
   typename NearestNeighborInterpolatorType::Pointer nearestNeighborInterpolator =
     NearestNeighborInterpolatorType::New();
 

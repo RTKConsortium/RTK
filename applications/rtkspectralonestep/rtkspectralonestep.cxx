@@ -117,7 +117,7 @@ rtkspectralonestep(const args_info_rtkspectralonestep & args_info)
   {
     // Create new empty volume
     using ConstantImageSourceType = typename rtk::ConstantImageSource<MaterialVolumesType>;
-    typename ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
+    auto constantImageSource = ConstantImageSourceType::New();
     rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkspectralonestep>(constantImageSource,
                                                                                               args_info);
     TRY_AND_EXIT_ON_ITK_EXCEPTION(constantImageSource->Update())
@@ -184,7 +184,7 @@ rtkspectralonestep(const args_info_rtkspectralonestep & args_info)
   // Set the forward and back projection filters to be used
   using MechlemFilterType = typename rtk::
     MechlemOneStepSpectralReconstructionFilter<MaterialVolumesType, MeasuredProjectionsType, IncidentSpectrumType>;
-  typename MechlemFilterType::Pointer mechlemOneStep = MechlemFilterType::New();
+  auto mechlemOneStep = MechlemFilterType::New();
   SetForwardProjectionFromGgo(args_info, mechlemOneStep.GetPointer());
   SetBackProjectionFromGgo(args_info, mechlemOneStep.GetPointer());
   mechlemOneStep->SetInputMaterialVolumes(input);

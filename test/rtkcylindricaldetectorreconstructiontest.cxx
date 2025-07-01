@@ -42,8 +42,8 @@ main(int, char **)
 
   // Constant image sources
   using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
-  ConstantImageSourceType::Pointer tomographySource = ConstantImageSourceType::New();
-  auto                             origin = itk::MakePoint(-127., -127., -127.);
+  auto tomographySource = ConstantImageSourceType::New();
+  auto origin = itk::MakePoint(-127., -127., -127.);
 #if FAST_TESTS_NO_CHECKS
   auto spacing = itk::MakeVector(252., 252., 252.);
   auto size = itk::MakeSize(2, 2, 2);
@@ -56,7 +56,7 @@ main(int, char **)
   tomographySource->SetSize(size);
   tomographySource->SetConstant(0.);
 
-  ConstantImageSourceType::Pointer projectionsSource = ConstantImageSourceType::New();
+  auto projectionsSource = ConstantImageSourceType::New();
   origin = itk::MakePoint(-255., -255., -255.);
 #if FAST_TESTS_NO_CHECKS
   spacing = itk::MakeVector(504., 504., 504.);
@@ -72,7 +72,7 @@ main(int, char **)
 
   // Geometry object
   using GeometryType = rtk::ThreeDCircularProjectionGeometry;
-  GeometryType::Pointer geometry = GeometryType::New();
+  auto geometry = GeometryType::New();
   geometry->SetRadiusCylindricalDetector(200);
   for (unsigned int noProj = 0; noProj < NumberOfProjectionImages; noProj++)
     geometry->AddProjection(600., 1200., noProj * 360. / NumberOfProjectionImages);
@@ -95,18 +95,18 @@ main(int, char **)
 
   // Create REFERENCE object (3D ellipsoid).
   using DEType = rtk::DrawEllipsoidImageFilter<OutputImageType, OutputImageType>;
-  DEType::Pointer dsl = DEType::New();
+  auto dsl = DEType::New();
   dsl->SetInput(tomographySource->GetOutput());
   TRY_AND_EXIT_ON_ITK_EXCEPTION(dsl->Update())
 
   // Define weights (for weighted least squares)
-  ConstantImageSourceType::Pointer uniformWeightsSource = ConstantImageSourceType::New();
+  auto uniformWeightsSource = ConstantImageSourceType::New();
   uniformWeightsSource->SetInformationFromImage(projectionsSource->GetOutput());
   uniformWeightsSource->SetConstant(1.0);
 
   // ConjugateGradient reconstruction filtering
   using ConjugateGradientType = rtk::ConjugateGradientConeBeamReconstructionFilter<OutputImageType>;
-  ConjugateGradientType::Pointer conjugategradient = ConjugateGradientType::New();
+  auto conjugategradient = ConjugateGradientType::New();
   conjugategradient->SetInput(tomographySource->GetOutput());
   conjugategradient->SetInput(1, rei->GetOutput());
   conjugategradient->SetInputWeights(uniformWeightsSource->GetOutput());

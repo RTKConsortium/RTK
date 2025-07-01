@@ -190,7 +190,7 @@ rtk::ThreeDCircularProjectionGeometry::AddProjection(const PointType &  sourcePo
   rm[2][1] = n[1];
   rm[2][2] = n[2];
   // extract Euler angles by using the standard ITK implementation:
-  EulerType::Pointer euler = EulerType::New();
+  auto euler = EulerType::New();
   euler->SetComputeZYX(false); // ZXY order
   // workaround: Orthogonality tolerance problem when using
   // Euler3DTransform->SetMatrix() due to error magnification.
@@ -287,7 +287,7 @@ rtk::ThreeDCircularProjectionGeometry::AddProjection(const HomogeneousProjection
 
     // Declare a 3D euler transform in order to properly extract angles
     using EulerType = itk::Euler3DTransform<double>;
-    EulerType::Pointer euler = EulerType::New();
+    auto euler = EulerType::New();
     euler->SetComputeZYX(false); // ZXY order
 
     // Extract angle using parent method without orthogonality check
@@ -338,7 +338,7 @@ rtk::ThreeDCircularProjectionGeometry::AddProjection(const HomogeneousProjection
 
   // Declare a 3D euler transform in order to properly extract angles
   using EulerType = itk::Euler3DTransform<double>;
-  EulerType::Pointer euler = EulerType::New();
+  auto euler = EulerType::New();
   euler->SetComputeZYX(false); // ZXY order
 
   // Extract angle using parent method without orthogonality check
@@ -535,7 +535,7 @@ rtk::ThreeDCircularProjectionGeometry::ThreeDHomogeneousMatrixType
 rtk::ThreeDCircularProjectionGeometry::ComputeRotationHomogeneousMatrix(double angleX, double angleY, double angleZ)
 {
   using ThreeDTransformType = itk::CenteredEuler3DTransform<double>;
-  ThreeDTransformType::Pointer xfm = ThreeDTransformType::New();
+  auto xfm = ThreeDTransformType::New();
   xfm->SetIdentity();
   xfm->SetRotation(angleX, angleY, angleZ);
 
@@ -677,7 +677,7 @@ rtk::ThreeDCircularProjectionGeometry::VerifyAngles(const double          outOfP
 
   const Matrix3x3Type & rm = referenceMatrix; // shortcut
 
-  EulerType::Pointer euler = EulerType::New();
+  auto euler = EulerType::New();
   euler->SetComputeZYX(false); // ZXY order
   euler->SetRotation(outOfPlaneAngleRAD, gantryAngleRAD, inPlaneAngleRAD);
   Matrix3x3Type m = euler->GetMatrix(); // resultant matrix

@@ -44,9 +44,9 @@ SheppLoganPhantom ::SetEllipsoid(ScalarType spax,
                                  ScalarType angle,
                                  ScalarType density)
 {
-  auto                  semiprincipalaxis = itk::MakeVector(spax, spay, spaz);
-  auto                  center = itk::MakeVector(centerx, centery, centerz);
-  QuadricShape::Pointer q = QuadricShape::New();
+  auto semiprincipalaxis = itk::MakeVector(spax, spay, spaz);
+  auto center = itk::MakeVector(centerx, centery, centerz);
+  auto q = QuadricShape::New();
   q->SetEllipsoid(center, semiprincipalaxis, angle);
   q->SetDensity(density);
   this->AddConvexShape(q.GetPointer());

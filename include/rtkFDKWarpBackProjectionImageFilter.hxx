@@ -74,7 +74,7 @@ FDKWarpBackProjectionImageFilter<TInputImage, TOutputImage, TDeformation>::Gener
 
   // Warped point and interpolator for vector field
   using WarpInterpolatorType = itk::LinearInterpolateImageFunction<typename TDeformation::OutputImageType, double>;
-  typename WarpInterpolatorType::Pointer            warpInterpolator = WarpInterpolatorType::New();
+  auto                                              warpInterpolator = WarpInterpolatorType::New();
   itk::Matrix<double, Dimension + 1, Dimension + 1> matrixVol =
     GetPhysicalPointToIndexMatrix<TOutputImage>(this->GetOutput());
 
@@ -89,7 +89,7 @@ FDKWarpBackProjectionImageFilter<TInputImage, TOutputImage, TDeformation>::Gener
     // Extract the current slice and create interpolator, could be any interpolation
     ProjectionImagePointer projection = this->template GetProjection<ProjectionImageType>(iProj);
     using InterpolatorType = itk::LinearInterpolateImageFunction<ProjectionImageType, double>;
-    typename InterpolatorType::Pointer interpolator = InterpolatorType::New();
+    auto interpolator = InterpolatorType::New();
     interpolator->SetInputImage(projection);
 
     // Index to index matrix normalized to have a correct backprojection weight

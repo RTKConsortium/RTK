@@ -87,7 +87,7 @@ FFTHilbertImageFilter<TInputImage, TOutputImage, TFFTPrecision>::UpdateFFTProjec
 
   // FFT kernel
   using FFTType = itk::RealToHalfHermitianForwardFFTImageFilter<FFTInputImageType, FFTOutputImageType>;
-  typename FFTType::Pointer fftK = FFTType::New();
+  auto fftK = FFTType::New();
   fftK->SetInput(kernel);
   fftK->SetNumberOfWorkUnits(this->GetNumberOfWorkUnits());
   fftK->Update();

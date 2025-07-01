@@ -58,7 +58,7 @@ main(int, char **)
   FourDSourceType::SizeType    fourDSize;
   FourDSourceType::SpacingType fourDSpacing;
 
-  ConstantImageSourceType::Pointer tomographySource = ConstantImageSourceType::New();
+  auto tomographySource = ConstantImageSourceType::New();
   origin[0] = -63.;
   origin[1] = -31.;
   origin[2] = -63.;
@@ -82,7 +82,7 @@ main(int, char **)
   tomographySource->SetSize(size);
   tomographySource->SetConstant(0.);
 
-  FourDSourceType::Pointer fourdSource = FourDSourceType::New();
+  auto fourdSource = FourDSourceType::New();
   fourDOrigin[0] = -63.;
   fourDOrigin[1] = -31.;
   fourDOrigin[2] = -63.;
@@ -111,7 +111,7 @@ main(int, char **)
   fourdSource->SetSize(fourDSize);
   fourdSource->SetConstant(0.);
 
-  ConstantImageSourceType::Pointer projectionsSource = ConstantImageSourceType::New();
+  auto projectionsSource = ConstantImageSourceType::New();
   origin[0] = -254.;
   origin[1] = -254.;
   origin[2] = -254.;
@@ -135,7 +135,7 @@ main(int, char **)
   projectionsSource->SetSize(size);
   projectionsSource->SetConstant(0.);
 
-  ConstantImageSourceType::Pointer oneProjectionSource = ConstantImageSourceType::New();
+  auto oneProjectionSource = ConstantImageSourceType::New();
   size[2] = 1;
   oneProjectionSource->SetOrigin(origin);
   oneProjectionSource->SetSpacing(spacing);
@@ -144,7 +144,7 @@ main(int, char **)
 
   // Geometry object
   using GeometryType = rtk::ThreeDCircularProjectionGeometry;
-  GeometryType::Pointer geometry = GeometryType::New();
+  auto geometry = GeometryType::New();
 
   // Projections
   using REIType = rtk::RayEllipsoidIntersectionImageFilter<VolumeType, ProjectionStackType>;
@@ -153,7 +153,7 @@ main(int, char **)
   destinationIndex[0] = 0;
   destinationIndex[1] = 0;
   destinationIndex[2] = 0;
-  PasteImageFilterType::Pointer pasteFilter = PasteImageFilterType::New();
+  auto pasteFilter = PasteImageFilterType::New();
   pasteFilter->SetDestinationImage(projectionsSource->GetOutput());
 
 #ifdef USE_CUDA
@@ -168,13 +168,13 @@ main(int, char **)
     geometry->AddProjection(600., 1200., noProj * 360. / NumberOfProjectionImages, 0, 0, 0, 0, 20, 15);
 
     // Geometry object
-    GeometryType::Pointer oneProjGeometry = GeometryType::New();
+    auto oneProjGeometry = GeometryType::New();
     oneProjGeometry->AddProjection(600., 1200., noProj * 360. / NumberOfProjectionImages, 0, 0, 0, 0, 20, 15);
 
     // Ellipse 1
-    REIType::Pointer e1 = REIType::New();
-    auto             semiprincipalaxis = itk::MakeVector(60., 30., 60.);
-    auto             center = itk::MakeVector(0., 0., 0.);
+    auto e1 = REIType::New();
+    auto semiprincipalaxis = itk::MakeVector(60., 30., 60.);
+    auto center = itk::MakeVector(0., 0., 0.);
     e1->SetInput(oneProjectionSource->GetOutput());
     e1->SetGeometry(oneProjGeometry);
     e1->SetDensity(2.);
@@ -185,7 +185,7 @@ main(int, char **)
     e1->Update();
 
     // Ellipse 2
-    REIType::Pointer e2 = REIType::New();
+    auto e2 = REIType::New();
     semiprincipalaxis.Fill(8.);
     center[0] = 4 * (itk::Math::abs((4 + noProj) % 8 - 4.) - 2.);
     center[1] = 0.;
@@ -219,13 +219,13 @@ main(int, char **)
   // Ground truth
   auto * Volumes = new VolumeType::Pointer[fourDSize[3]];
   using JoinFilterType = itk::JoinSeriesImageFilter<VolumeType, VolumeSeriesType>;
-  JoinFilterType::Pointer join = JoinFilterType::New();
+  auto join = JoinFilterType::New();
 
   for (itk::SizeValueType n = 0; n < fourDSize[3]; n++)
   {
     // Ellipse 1
     using DEType = rtk::DrawEllipsoidImageFilter<VolumeType, VolumeType>;
-    DEType::Pointer de1 = DEType::New();
+    auto de1 = DEType::New();
     de1->SetInput(tomographySource->GetOutput());
     de1->SetDensity(2.);
     DEType::VectorType axis;
@@ -240,7 +240,7 @@ main(int, char **)
     TRY_AND_EXIT_ON_ITK_EXCEPTION(de1->Update())
 
     // Ellipse 2
-    DEType::Pointer de2 = DEType::New();
+    auto de2 = DEType::New();
     de2->SetInput(de1->GetOutput());
     de2->SetDensity(-1.);
     DEType::VectorType axis2;
@@ -262,14 +262,14 @@ main(int, char **)
   join->Update();
 
   // Read the phases file
-  rtk::PhasesToInterpolationWeights::Pointer phaseReader = rtk::PhasesToInterpolationWeights::New();
+  auto phaseReader = rtk::PhasesToInterpolationWeights::New();
   phaseReader->SetFileName(signalFileName);
   phaseReader->SetNumberOfReconstructedFrames(fourDSize[3]);
   phaseReader->Update();
 
   // Set the forward and back projection filters to be used
   using FourDSARTFilterType = rtk::FourDSARTConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>;
-  FourDSARTFilterType::Pointer fourdsart = FourDSARTFilterType::New();
+  auto fourdsart = FourDSARTFilterType::New();
   fourdsart->SetInputVolumeSeries(fourdSource->GetOutput());
   fourdsart->SetInputProjectionStack(pasteFilter->GetOutput());
   fourdsart->SetGeometry(geometry);

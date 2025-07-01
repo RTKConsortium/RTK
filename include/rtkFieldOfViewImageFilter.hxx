@@ -48,7 +48,7 @@ FieldOfViewImageFilter<TInputImage, TOutputImage>::ComputeFOVRadius(const FOVRad
   regSize.Fill(1);
   typename TInputImage::RegionType region = m_ProjectionsStack->GetLargestPossibleRegion();
   region.SetSize(regSize);
-  typename TInputImage::Pointer dumImg = TInputImage::New();
+  auto dumImg = TInputImage::New();
   dumImg->CopyInformation(m_ProjectionsStack);
 
   // Build model for lpsolve with 3 variables: x, z and r

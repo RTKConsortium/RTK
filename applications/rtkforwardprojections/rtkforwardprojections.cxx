@@ -55,7 +55,7 @@ main(int argc, char * argv[])
 
   // Create a stack of empty projection images
   using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
-  ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
+  auto constantImageSource = ConstantImageSourceType::New();
   rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkforwardprojections>(constantImageSource,
                                                                                                args_info);
 
@@ -195,7 +195,7 @@ main(int argc, char * argv[])
   if (args_info.verbose_flag)
     std::cout << "Writing... " << std::endl;
   using WriterType = itk::ImageFileWriter<OutputImageType>;
-  WriterType::Pointer writer = WriterType::New();
+  auto writer = WriterType::New();
   writer->SetFileName(args_info.output_arg);
   writer->SetInput(forwardProjection->GetOutput());
   if (args_info.lowmem_flag)

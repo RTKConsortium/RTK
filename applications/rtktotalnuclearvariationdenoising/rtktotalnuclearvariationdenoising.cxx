@@ -45,7 +45,7 @@ main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION(input = itk::ReadImage<OutputImageType>(args_info.input_arg))
 
   // Apply total nuclear variation denoising
-  TVDenoisingFilterType::Pointer tv = TVDenoisingFilterType::New();
+  auto tv = TVDenoisingFilterType::New();
   tv->SetInput(input);
   tv->SetGamma(args_info.gamma_arg);
   tv->SetNumberOfIterations(args_info.niter_arg);

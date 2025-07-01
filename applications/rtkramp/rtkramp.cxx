@@ -45,7 +45,7 @@ main(int argc, char * argv[])
 
   // Projections reader
   using ReaderType = rtk::ProjectionsReader<OutputImageType>;
-  ReaderType::Pointer reader = ReaderType::New();
+  auto reader = ReaderType::New();
   rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkramp>(reader, args_info);
   if (!args_info.lowmem_flag)
   {
@@ -87,7 +87,7 @@ main(int argc, char * argv[])
 
   // Streaming filter
   using StreamerType = itk::StreamingImageFilter<OutputImageType, OutputImageType>;
-  StreamerType::Pointer streamer = StreamerType::New();
+  auto streamer = StreamerType::New();
 #ifdef RTK_USE_CUDA
   if (!strcmp(args_info.hardware_arg, "cuda"))
     streamer->SetInput(cudaRampFilter->GetOutput());
@@ -100,7 +100,7 @@ main(int argc, char * argv[])
   if (args_info.verbose_flag)
   {
     using PercentageProgressCommandType = rtk::PercentageProgressCommand<CPURampFilterType>;
-    PercentageProgressCommandType::Pointer progressCommand = PercentageProgressCommandType::New();
+    auto progressCommand = PercentageProgressCommandType::New();
 #ifdef RTK_USE_CUDA
     if (!strcmp(args_info.hardware_arg, "cuda"))
       cudaRampFilter->AddObserver(itk::ProgressEvent(), progressCommand);

@@ -38,12 +38,12 @@ main(int argc, char * argv[])
   using InputImageType = itk::Image<InputPixelType, Dimension>;
 
   using ReaderType = rtk::ProjectionsReader<InputImageType>;
-  ReaderType::Pointer reader = ReaderType::New();
+  auto reader = ReaderType::New();
   reader->SetFileNames(rtk::GetProjectionsFileNamesFromGgo(args_info));
   TRY_AND_EXIT_ON_ITK_EXCEPTION(reader->UpdateOutputInformation())
 
   using ExtractFilterType = itk::ExtractImageFilter<InputImageType, InputImageType>;
-  ExtractFilterType::Pointer extract = ExtractFilterType::New();
+  auto extract = ExtractFilterType::New();
   extract->InPlaceOff();
   extract->SetDirectionCollapseToSubmatrix();
   extract->SetInput(reader->GetOutput());
@@ -73,7 +73,7 @@ main(int argc, char * argv[])
     }
   }
 
-  I0FilterType::Pointer i0est = I0FilterType::New();
+  auto i0est = I0FilterType::New();
 
   if (args_info.lambda_given)
   {

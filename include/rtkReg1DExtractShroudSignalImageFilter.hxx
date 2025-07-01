@@ -94,11 +94,11 @@ Reg1DExtractShroudSignalImageFilter<TInputPixel, TOutputPixel>::register1D(const
   using InterpolatorType = itk::LinearInterpolateImageFunction<RegisterImageType, TOutputPixel>;
   using RegistrationType = itk::ImageRegistrationMethod<RegisterImageType, RegisterImageType>;
 
-  typename MetricType::Pointer       metric = MetricType::New();
-  typename TransformType::Pointer    transform = TransformType::New();
-  typename OptimizerType::Pointer    optimizer = OptimizerType::New();
-  typename InterpolatorType::Pointer interpolator = InterpolatorType::New();
-  typename RegistrationType::Pointer registration = RegistrationType::New();
+  auto metric = MetricType::New();
+  auto transform = TransformType::New();
+  auto optimizer = OptimizerType::New();
+  auto interpolator = InterpolatorType::New();
+  auto registration = RegistrationType::New();
 
   registration->SetMetric(metric);
   registration->SetOptimizer(optimizer);
@@ -139,7 +139,7 @@ Reg1DExtractShroudSignalImageFilter<TInputPixel, TOutputPixel>::GenerateData()
   typename TInputImage::RegionType   inputRegion = input->GetLargestPossibleRegion();
   typename TInputImage::SizeType     inputSize = inputRegion.GetSize();
 
-  typename ExtractFilterType::Pointer extractor = ExtractFilterType::New();
+  auto extractor = ExtractFilterType::New();
   extractor->SetInput(input);
 
   typename TInputImage::RegionType extractRegion;
@@ -153,7 +153,7 @@ Reg1DExtractShroudSignalImageFilter<TInputPixel, TOutputPixel>::GenerateData()
   extractor->SetExtractionRegion(extractRegion);
   extractor->SetDirectionCollapseToIdentity();
   extractor->Update();
-  typename DuplicatorType::Pointer duplicator = DuplicatorType::New();
+  auto duplicator = DuplicatorType::New();
   duplicator->SetInputImage(extractor->GetOutput());
   duplicator->Update();
   const RegisterImageType * prev = duplicator->GetOutput();

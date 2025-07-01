@@ -157,7 +157,7 @@ SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType,
   using ActualInputType = itk::Image<itk::Vector<DecomposedProjectionsDataType, VNumberOfMaterials>,
                                      DecomposedProjectionsType::ImageDimension>;
   using CastFilterType = itk::CastImageFilter<ActualInputType, DecomposedProjectionsType>;
-  typename CastFilterType::Pointer castPointer = CastFilterType::New();
+  auto castPointer = CastFilterType::New();
   castPointer->SetInput(DecomposedProjections);
   castPointer->Update();
   this->SetNthInput(0, const_cast<DecomposedProjectionsType *>(castPointer->GetOutput()));
@@ -249,7 +249,7 @@ SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType,
   using ActualInputType = itk::Image<itk::Vector<MeasuredProjectionsDataType, VNumberOfSpectralBins>,
                                      MeasuredProjectionsType::ImageDimension>;
   using CastFilterType = itk::CastImageFilter<ActualInputType, MeasuredProjectionsType>;
-  typename CastFilterType::Pointer castPointer = CastFilterType::New();
+  auto castPointer = CastFilterType::New();
   castPointer->SetInput(MeasuredProjections);
   castPointer->UpdateLargestPossibleRegion();
   this->SetInput("MeasuredProjections", const_cast<MeasuredProjectionsType *>(castPointer->GetOutput()));
@@ -641,7 +641,7 @@ SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType,
 {
   ////////////////////////////////////////////////////////////////////
   // Create a Nelder-Mead simplex optimizer and its cost function
-  itk::AmoebaOptimizer::Pointer                               optimizer = itk::AmoebaOptimizer::New();
+  auto                                                        optimizer = itk::AmoebaOptimizer::New();
   rtk::ProjectionsDecompositionNegativeLogLikelihood::Pointer cost;
   if (m_IsSpectralCT)
     cost = rtk::Schlomka2008NegativeLogLikelihood::New();

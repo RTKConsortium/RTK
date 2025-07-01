@@ -48,7 +48,7 @@ main(int argc, char * argv[])
 
   // Projections reader
   using ReaderType = rtk::ProjectionsReader<ProjectionStackType>;
-  ReaderType::Pointer reader = ReaderType::New();
+  auto reader = ReaderType::New();
   rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkwarpedbackprojectsequence>(reader, args_info);
 
   // Geometry
@@ -63,7 +63,7 @@ main(int argc, char * argv[])
   {
     // Read an existing image to initialize the volume
     using InputReaderType = itk::ImageFileReader<VolumeSeriesType>;
-    InputReaderType::Pointer inputReader = InputReaderType::New();
+    auto inputReader = InputReaderType::New();
     inputReader->SetFileName(args_info.input_arg);
     inputFilter = inputReader;
   }
@@ -71,7 +71,7 @@ main(int argc, char * argv[])
   {
     // Create new empty volume sequence
     using ConstantImageSourceType = rtk::ConstantImageSource<VolumeSeriesType>;
-    ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
+    auto constantImageSource = ConstantImageSourceType::New();
     rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkwarpedbackprojectsequence>(
       constantImageSource, args_info);
 
@@ -90,7 +90,7 @@ main(int argc, char * argv[])
   inputFilter->ReleaseDataFlagOn();
 
   // Read the phases file
-  rtk::PhasesToInterpolationWeights::Pointer phaseReader = rtk::PhasesToInterpolationWeights::New();
+  auto phaseReader = rtk::PhasesToInterpolationWeights::New();
   phaseReader->SetFileName(args_info.signal_arg);
   phaseReader->SetNumberOfReconstructedFrames(inputFilter->GetOutput()->GetLargestPossibleRegion().GetSize(3));
   phaseReader->Update();
@@ -98,7 +98,7 @@ main(int argc, char * argv[])
   // Create the main filter, connect the basic inputs, and set the basic parameters
   using WarpForwardProjectSequenceFilterType =
     rtk::WarpProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType>;
-  WarpForwardProjectSequenceFilterType::Pointer warpbackprojectsequence = WarpForwardProjectSequenceFilterType::New();
+  auto warpbackprojectsequence = WarpForwardProjectSequenceFilterType::New();
   warpbackprojectsequence->SetInputVolumeSeries(inputFilter->GetOutput());
   warpbackprojectsequence->SetInputProjectionStack(reader->GetOutput());
   warpbackprojectsequence->SetGeometry(geometry);

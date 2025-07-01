@@ -79,7 +79,7 @@ rtk::VarianObiGeometryReader ::GenerateData()
     using InputImageType = itk::Image<InputPixelType, 2>;
 
     using ReaderType = itk::ImageFileReader<InputImageType>;
-    ReaderType::Pointer reader = ReaderType::New();
+    auto reader = ReaderType::New();
     reader->SetFileName(projectionsFileName);
     reader->UpdateOutputInformation();
 

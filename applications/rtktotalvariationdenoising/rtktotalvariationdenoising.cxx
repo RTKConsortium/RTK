@@ -54,7 +54,7 @@ main(int argc, char * argv[])
 
   // Compute total variation before denoising
   using TVFilterType = rtk::TotalVariationImageFilter<OutputImageType>;
-  TVFilterType::Pointer tv = TVFilterType::New();
+  auto tv = TVFilterType::New();
   tv->SetInput(input);
   if (args_info.verbose_flag)
   {
@@ -63,7 +63,7 @@ main(int argc, char * argv[])
   }
 
   // Apply total variation denoising
-  TVDenoisingFilterType::Pointer tvdenoising = TVDenoisingFilterType::New();
+  auto tvdenoising = TVDenoisingFilterType::New();
   tvdenoising->SetInput(input);
   tvdenoising->SetGamma(args_info.gamma_arg);
   tvdenoising->SetNumberOfIterations(args_info.niter_arg);

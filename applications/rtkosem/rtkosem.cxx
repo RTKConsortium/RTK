@@ -46,7 +46,7 @@ main(int argc, char * argv[])
 
   // Projections reader
   using ReaderType = rtk::ProjectionsReader<OutputImageType>;
-  ReaderType::Pointer reader = ReaderType::New();
+  auto reader = ReaderType::New();
   rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkosem>(reader, args_info);
 
   // Geometry
@@ -61,7 +61,7 @@ main(int argc, char * argv[])
   {
     // Read an existing image to initialize the volume
     using InputReaderType = itk::ImageFileReader<OutputImageType>;
-    InputReaderType::Pointer inputReader = InputReaderType::New();
+    auto inputReader = InputReaderType::New();
     inputReader->SetFileName(args_info.input_arg);
     inputFilter = inputReader;
   }
@@ -69,7 +69,7 @@ main(int argc, char * argv[])
   {
     // Create new empty volume
     using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
-    ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
+    auto constantImageSource = ConstantImageSourceType::New();
     rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkosem>(constantImageSource, args_info);
     constantImageSource->SetConstant(1.);
     inputFilter = constantImageSource;

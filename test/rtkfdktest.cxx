@@ -53,7 +53,7 @@ main(int, char **)
   auto size = itk::MakeSize(128, 128, 128);
   auto spacing = itk::MakeVector(2., 2., 2.);
 #endif
-  ConstantImageSourceType::Pointer tomographySource = ConstantImageSourceType::New();
+  auto tomographySource = ConstantImageSourceType::New();
   tomographySource->SetOrigin(origin);
   tomographySource->SetSpacing(spacing);
   tomographySource->SetSize(size);
@@ -67,7 +67,7 @@ main(int, char **)
   size = itk::MakeSize(128, 128, NumberOfProjectionImages);
   spacing = itk::MakeVector(4., 4., 4.);
 #endif
-  ConstantImageSourceType::Pointer projectionsSource = ConstantImageSourceType::New();
+  auto projectionsSource = ConstantImageSourceType::New();
   projectionsSource->SetOrigin(origin);
   projectionsSource->SetSpacing(spacing);
   projectionsSource->SetSize(size);
@@ -77,13 +77,13 @@ main(int, char **)
 
   // Geometry object
   using GeometryType = rtk::ThreeDCircularProjectionGeometry;
-  GeometryType::Pointer geometry = GeometryType::New();
+  auto geometry = GeometryType::New();
   for (unsigned int noProj = 0; noProj < NumberOfProjectionImages; noProj++)
     geometry->AddProjection(600., 1200., noProj * 360. / NumberOfProjectionImages, 0, 0, 0, 0, 20, 15);
 
   // Shepp Logan projections filter
   using SLPType = rtk::SheppLoganPhantomFilter<OutputImageType, OutputImageType>;
-  SLPType::Pointer slp = SLPType::New();
+  auto slp = SLPType::New();
   slp->SetInput(projectionsSource->GetOutput());
   slp->SetGeometry(geometry);
   slp->SetPhantomScale(116);
@@ -91,7 +91,7 @@ main(int, char **)
 
   // Create a reference object (in this case a 3D phantom reference).
   using DSLType = rtk::DrawSheppLoganFilter<OutputImageType, OutputImageType>;
-  DSLType::Pointer dsl = DSLType::New();
+  auto dsl = DSLType::New();
   dsl->SetInput(tomographySource->GetOutput());
   dsl->SetPhantomScale(116);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(dsl->Update())
@@ -102,7 +102,7 @@ main(int, char **)
 #else
   using FDKType = rtk::FDKConeBeamReconstructionFilter<OutputImageType>;
 #endif
-  FDKType::Pointer feldkamp = FDKType::New();
+  auto feldkamp = FDKType::New();
   feldkamp->SetInput(0, tomographySource->GetOutput());
   feldkamp->SetInput(1, slp->GetOutput());
   feldkamp->SetGeometry(geometry);
@@ -111,7 +111,7 @@ main(int, char **)
 
   // FOV
   using FOVFilterType = rtk::FieldOfViewImageFilter<OutputImageType, OutputImageType>;
-  FOVFilterType::Pointer fov = FOVFilterType::New();
+  auto fov = FOVFilterType::New();
   fov->SetInput(0, feldkamp->GetOutput());
   fov->SetProjectionsStack(slp->GetOutput());
   fov->SetGeometry(geometry);
@@ -166,10 +166,10 @@ main(int, char **)
   fov->GetOutput()->ReleaseData();
 
   using StreamingType = itk::StreamingImageFilter<OutputImageType, OutputImageType>;
-  StreamingType::Pointer streamer = StreamingType::New();
+  auto streamer = StreamingType::New();
   streamer->SetInput(0, fov->GetOutput());
   streamer->SetNumberOfStreamDivisions(8);
-  itk::ImageRegionSplitterDirection::Pointer splitter = itk::ImageRegionSplitterDirection::New();
+  auto splitter = itk::ImageRegionSplitterDirection::New();
   splitter->SetDirection(2); // Prevent splitting along z axis. As a result, splitting will be performed along y axis
   streamer->SetRegionSplitter(splitter);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(streamer->Update());

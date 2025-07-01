@@ -22,8 +22,8 @@ main(int, char **)
   using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
 
   // Create constant image of value 2 and reference image.
-  ConstantImageSourceType::Pointer imgIn = ConstantImageSourceType::New();
-  ConstantImageSourceType::Pointer imgRef = ConstantImageSourceType::New();
+  auto imgIn = ConstantImageSourceType::New();
+  auto imgRef = ConstantImageSourceType::New();
 
   auto origin = itk::MakePoint(-126., -126.);
   auto size = itk::MakeSize(16, 16);
@@ -46,7 +46,7 @@ main(int, char **)
   std::cout << "\n\n****** Case 1: order 2 ******" << std::endl;
 
   using WPCType = rtk::WaterPrecorrectionImageFilter<OutputImageType, OutputImageType>;
-  WPCType::Pointer model2 = WPCType::New();
+  auto model2 = WPCType::New();
 
   // Update median filter
   WPCType::VectorType c1;
@@ -61,7 +61,7 @@ main(int, char **)
 
   std::cout << "\n\n****** Case 2: order 3 ******" << std::endl;
 
-  WPCType::Pointer    model3 = WPCType::New();
+  auto                model3 = WPCType::New();
   WPCType::VectorType c2;
   c2.push_back(0.05);
   c2.push_back(0.3);
@@ -75,7 +75,7 @@ main(int, char **)
 
   std::cout << "\n\n****** Case 3: order 5 ******" << std::endl;
 
-  WPCType::Pointer model5 = WPCType::New();
+  auto model5 = WPCType::New();
 
   WPCType::VectorType c3;
   c3.push_back(0.0687);

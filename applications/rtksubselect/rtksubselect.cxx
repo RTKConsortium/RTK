@@ -38,7 +38,7 @@ main(int argc, char * argv[])
 
   // Projections reader
   using ReaderType = rtk::ProjectionsReader<OutputImageType>;
-  ReaderType::Pointer reader = ReaderType::New();
+  auto reader = ReaderType::New();
   rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtksubselect>(reader, args_info);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(reader->Update())
 
@@ -66,11 +66,11 @@ main(int argc, char * argv[])
 
   // Output RTK geometry object
   using GeometryType = rtk::ThreeDCircularProjectionGeometry;
-  GeometryType::Pointer outputGeometry = GeometryType::New();
+  auto outputGeometry = GeometryType::New();
 
   // Output projections object
   using SourceType = rtk::ConstantImageSource<OutputImageType>;
-  SourceType::Pointer source = SourceType::New();
+  auto source = SourceType::New();
   source->SetInformationFromImage(reader->GetOutput());
   OutputImageType::SizeType outputSize = reader->GetOutput()->GetLargestPossibleRegion().GetSize();
   outputSize[Dimension - 1] = indices.size();
@@ -80,7 +80,7 @@ main(int argc, char * argv[])
 
   // Fill in the outputGeometry and the output projections
   using PasteType = itk::PasteImageFilter<OutputImageType>;
-  PasteType::Pointer paste = PasteType::New();
+  auto paste = PasteType::New();
   paste->SetSourceImage(reader->GetOutput());
   paste->SetDestinationImage(source->GetOutput());
 

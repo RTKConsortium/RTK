@@ -111,8 +111,8 @@ ConjugateGradientImageFilter<OutputImageType>::GenerateData()
   using DataType = typename itk::PixelTraits<typename OutputImageType::PixelType>::ValueType;
 
   // Create and allocate images
-  typename OutputImageType::Pointer Pk = OutputImageType::New();
-  typename OutputImageType::Pointer Rk = OutputImageType::New();
+  auto Pk = OutputImageType::New();
+  auto Rk = OutputImageType::New();
   Pk->SetRegions(largest);
   Rk->SetRegions(largest);
   this->GetOutput()->SetRegions(largest);
@@ -132,8 +132,8 @@ ConjugateGradientImageFilter<OutputImageType>::GenerateData()
   DataType eps = itk::NumericTraits<DataType>::min();
 
   // Instantiate the multithreader
-  itk::MultiThreaderBase::Pointer mt = itk::MultiThreaderBase::New();
-  std::mutex                      accumulationLock;
+  auto       mt = itk::MultiThreaderBase::New();
+  std::mutex accumulationLock;
 
   // Compute Xk+1
   mt->template ParallelizeImageRegion<OutputImageType::ImageDimension>(

@@ -37,7 +37,7 @@ main(int argc, char * argv[])
   FileNames.emplace_back(argv[1]);
 
   // Create geometry reader
-  rtk::ImagXGeometryReader<ImageType>::Pointer imagxReader = rtk::ImagXGeometryReader<ImageType>::New();
+  auto imagxReader = rtk::ImagXGeometryReader<ImageType>::New();
   imagxReader->SetProjectionsFileNames(FileNames);
   imagxReader->SetCalibrationXMLFileName(argv[2]);
   imagxReader->SetRoomXMLFileName(argv[3]);
@@ -62,7 +62,7 @@ main(int argc, char * argv[])
   ReaderType::OutputImageSizeType crop;
   crop.Fill(4);
   crop[2] = 0;
-  ReaderType::Pointer      reader = ReaderType::New();
+  auto                     reader = ReaderType::New();
   std::vector<std::string> fileNames;
   fileNames.emplace_back(argv[4]);
   reader->SetFileNames(fileNames);
@@ -74,7 +74,7 @@ main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION(reader->Update());
 
   // Reference projections reader
-  ReaderType::Pointer readerRef = ReaderType::New();
+  auto readerRef = ReaderType::New();
   fileNames.clear();
   fileNames.emplace_back(argv[6]);
   readerRef->SetFileNames(fileNames);

@@ -113,9 +113,9 @@ main(int, char **)
 
   // Random and constant image sources
   using RandomImageSourceType = itk::RandomImageSource<OutputImageType>;
-  RandomImageSourceType::Pointer randomVolumeSource = RandomImageSourceType::New();
+  auto randomVolumeSource = RandomImageSourceType::New();
   using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
-  ConstantImageSourceType::Pointer constantVolumeSource = ConstantImageSourceType::New();
+  auto constantVolumeSource = ConstantImageSourceType::New();
 
   // Volume metadata
   auto origin = itk::MakePoint(-127., -127., -127.);
@@ -144,7 +144,7 @@ main(int, char **)
 
   // Create and set the gradient and divergence filters
   using GradientFilterType = rtk::ForwardDifferenceGradientImageFilter<OutputImageType>;
-  GradientFilterType::Pointer gradientFilter = GradientFilterType::New();
+  auto gradientFilter = GradientFilterType::New();
   gradientFilter->SetInput(randomVolumeSource->GetOutput());
   bool dimsProcessed[Dimension];
   for (bool & dimProcessed : dimsProcessed)
@@ -153,7 +153,7 @@ main(int, char **)
   }
   gradientFilter->SetDimensionsProcessed(dimsProcessed);
   using DivergenceFilterType = rtk::BackwardDifferenceDivergenceImageFilter<GradientFilterType::OutputImageType>;
-  DivergenceFilterType::Pointer divergenceFilter = DivergenceFilterType::New();
+  auto divergenceFilter = DivergenceFilterType::New();
   divergenceFilter->SetInput(gradientFilter->GetOutput());
 
   // Update the gradient and divergence filters
@@ -162,10 +162,10 @@ main(int, char **)
   // Create and set the conjugate gradient optimizer
   // It uses the operator DivergenceOfGradientConjugateGradientOperator
   using CGFilterType = rtk::ConjugateGradientImageFilter<OutputImageType>;
-  CGFilterType::Pointer cg = CGFilterType::New();
+  auto cg = CGFilterType::New();
 
   using CGoperatorType = rtk::DivergenceOfGradientConjugateGradientOperator<OutputImageType>;
-  CGoperatorType::Pointer cg_op = CGoperatorType::New();
+  auto cg_op = CGoperatorType::New();
   cg->SetA(cg_op.GetPointer());
   cg->SetX(constantVolumeSource->GetOutput());
   cg->SetB(divergenceFilter->GetOutput());

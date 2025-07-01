@@ -10,7 +10,7 @@ void
 CheckTotalVariation(typename TImage::Pointer before, typename TImage::Pointer after)
 {
   using TotalVariationFilterType = rtk::TotalVariationImageFilter<TImage>;
-  typename TotalVariationFilterType::Pointer tv = TotalVariationFilterType::New();
+  auto tv = TotalVariationFilterType::New();
 
   double totalVariationBefore = NAN;
   double totalVariationAfter = NAN;
@@ -65,7 +65,7 @@ main(int, char **)
 
   // Random image sources
   using RandomImageSourceType = itk::RandomImageSource<OutputImageType>;
-  RandomImageSourceType::Pointer randomVolumeSource = RandomImageSourceType::New();
+  auto randomVolumeSource = RandomImageSourceType::New();
 
   // Volume metadata
   auto origin = itk::MakePoint(0., 0., 0.);
@@ -88,7 +88,7 @@ main(int, char **)
 
   // Create and set the TV denoising filter
   using TVDenoisingFilterType = rtk::TotalVariationDenoisingBPDQImageFilter<OutputImageType, GradientOutputImageType>;
-  TVDenoisingFilterType::Pointer TVdenoising = TVDenoisingFilterType::New();
+  auto TVdenoising = TVDenoisingFilterType::New();
   TVdenoising->SetInput(randomVolumeSource->GetOutput());
   TVdenoising->SetNumberOfIterations(100);
   TVdenoising->SetGamma(0.3);

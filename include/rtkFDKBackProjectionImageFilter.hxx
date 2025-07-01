@@ -58,7 +58,7 @@ FDKBackProjectionImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerate
 
   // Create interpolator, could be any interpolation
   using InterpolatorType = itk::LinearInterpolateImageFunction<ProjectionImageType, double>;
-  typename InterpolatorType::Pointer interpolator = InterpolatorType::New();
+  auto interpolator = InterpolatorType::New();
 
   // Iterators on volume input and output
   using InputRegionIterator = itk::ImageRegionConstIterator<TInputImage>;

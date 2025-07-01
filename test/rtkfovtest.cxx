@@ -36,8 +36,8 @@ main(int, char **)
   using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
 
   // FOV filter Input Volume, it is used as the input to create the fov mask.
-  ConstantImageSourceType::Pointer fovInput = ConstantImageSourceType::New();
-  auto                             origin = itk::MakePoint(-127., -127., -127.);
+  auto fovInput = ConstantImageSourceType::New();
+  auto origin = itk::MakePoint(-127., -127., -127.);
 #if FAST_TESTS_NO_CHECKS
   auto size = itk::MakeSize(2, 2, 2);
   auto spacing = itk::MakeVector(254., 254., 254.);
@@ -53,13 +53,13 @@ main(int, char **)
   fovInput->SetConstant(1.);
 
   // BP volume
-  const ConstantImageSourceType::Pointer bpInput = ConstantImageSourceType::New();
+  auto bpInput = ConstantImageSourceType::New();
   bpInput->SetOrigin(origin);
   bpInput->SetSpacing(spacing);
   bpInput->SetSize(size);
 
   // BackProjection Input Projections, it is used as the input to create the fov mask.
-  const ConstantImageSourceType::Pointer projectionsSource = ConstantImageSourceType::New();
+  auto projectionsSource = ConstantImageSourceType::New();
   origin.Fill(-254.);
 #if FAST_TESTS_NO_CHECKS
   size = itk::MakeSize(2, 2, NumberOfProjectionImages);
@@ -77,13 +77,13 @@ main(int, char **)
 
   // Geometry
   using GeometryType = rtk::ThreeDCircularProjectionGeometry;
-  GeometryType::Pointer geometry = GeometryType::New();
+  auto geometry = GeometryType::New();
   for (unsigned int noProj = 0; noProj < NumberOfProjectionImages; noProj++)
     geometry->AddProjection(600, 1200., noProj * 360. / NumberOfProjectionImages);
 
   // FOV
   using FOVFilterType = rtk::FieldOfViewImageFilter<OutputImageType, OutputImageType>;
-  FOVFilterType::Pointer fov = FOVFilterType::New();
+  auto fov = FOVFilterType::New();
   fov->SetInput(0, fovInput->GetOutput());
   fov->SetProjectionsStack(projectionsSource->GetOutput());
   fov->SetGeometry(geometry);
@@ -91,14 +91,14 @@ main(int, char **)
 
   // Backprojection reconstruction filter
   using BPType = rtk::BackProjectionImageFilter<OutputImageType, OutputImageType>;
-  BPType::Pointer bp = BPType::New();
+  auto bp = BPType::New();
   bp->SetInput(0, bpInput->GetOutput());
   bp->SetInput(1, projectionsSource->GetOutput());
   bp->SetGeometry(geometry.GetPointer());
 
   // Thresholded to the number of projections
   using ThresholdType = itk::BinaryThresholdImageFilter<OutputImageType, OutputImageType>;
-  ThresholdType::Pointer threshold = ThresholdType::New();
+  auto threshold = ThresholdType::New();
   threshold->SetInput(bp->GetOutput());
   threshold->SetOutsideValue(0.);
   threshold->SetLowerThreshold(NumberOfProjectionImages - 0.01);

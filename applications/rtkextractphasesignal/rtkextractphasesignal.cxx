@@ -56,7 +56,7 @@ main(int argc, char * argv[])
 
   // Process phase signal if required
   using PhaseFilter = rtk::ExtractPhaseImageFilter<ImageType>;
-  PhaseFilter::Pointer phase = PhaseFilter::New();
+  auto phase = PhaseFilter::New();
   phase->SetInput(signal);
   phase->SetMovingAverageSize(args_info.movavg_arg);
   phase->SetUnsharpMaskSize(args_info.unsharp_arg);

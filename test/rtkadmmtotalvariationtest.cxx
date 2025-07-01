@@ -53,8 +53,8 @@ main(int argc, char * argv[])
   // Constant image sources
   using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
 
-  ConstantImageSourceType::Pointer tomographySource = ConstantImageSourceType::New();
-  auto                             origin = itk::MakePoint(-127., -127., -127.);
+  auto tomographySource = ConstantImageSourceType::New();
+  auto origin = itk::MakePoint(-127., -127., -127.);
 #if FAST_TESTS_NO_CHECKS
   auto spacing = itk::MakeVector(252., 252., 252.);
   auto size = itk::MakeSize(2, 2, 2);
@@ -67,7 +67,7 @@ main(int argc, char * argv[])
   tomographySource->SetSize(size);
   tomographySource->SetConstant(0.);
 
-  ConstantImageSourceType::Pointer projectionsSource = ConstantImageSourceType::New();
+  auto projectionsSource = ConstantImageSourceType::New();
   origin = itk::MakePoint(-255., -255., -255.);
 #if FAST_TESTS_NO_CHECKS
   spacing = itk::MakeVector(504., 504., 504.);
@@ -83,7 +83,7 @@ main(int argc, char * argv[])
 
   // Geometry object
   using GeometryType = rtk::ThreeDCircularProjectionGeometry;
-  GeometryType::Pointer geometry = GeometryType::New();
+  auto geometry = GeometryType::New();
   for (unsigned int noProj = 0; noProj < NumberOfProjectionImages; noProj++)
     geometry->AddProjection(600., 1200., noProj * 360. / NumberOfProjectionImages);
 
@@ -108,14 +108,14 @@ main(int argc, char * argv[])
 
   // Create REFERENCE object (3D ellipsoid).
   using DEType = rtk::DrawEllipsoidImageFilter<OutputImageType, OutputImageType>;
-  DEType::Pointer dsl = DEType::New();
+  auto dsl = DEType::New();
   dsl->SetInput(tomographySource->GetOutput());
   TRY_AND_EXIT_ON_ITK_EXCEPTION(dsl->Update())
 
   // ADMMTotalVariation reconstruction filtering
   using ADMMTotalVariationType =
     rtk::ADMMTotalVariationConeBeamReconstructionFilter<OutputImageType, GradientOutputImageType>;
-  ADMMTotalVariationType::Pointer admmtotalvariation = ADMMTotalVariationType::New();
+  auto admmtotalvariation = ADMMTotalVariationType::New();
   admmtotalvariation->SetInput(tomographySource->GetOutput());
   admmtotalvariation->SetInput(1, rei->GetOutput());
   admmtotalvariation->SetGeometry(geometry);
@@ -161,7 +161,7 @@ main(int argc, char * argv[])
 
   // Generate arbitrary gating weights (select every third projection)
   using PhaseGatingFilterType = rtk::PhaseGatingImageFilter<OutputImageType>;
-  PhaseGatingFilterType::Pointer phaseGating = PhaseGatingFilterType::New();
+  auto phaseGating = PhaseGatingFilterType::New();
 #if FAST_TESTS_NO_CHECKS
   phaseGating->SetPhasesFileName(argv[2]);
 #else

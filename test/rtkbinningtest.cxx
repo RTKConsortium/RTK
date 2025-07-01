@@ -26,8 +26,8 @@ main(int, char **)
   using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
 
   // Create constant image of value 2 and reference image.
-  ConstantImageSourceType::Pointer imgIn = ConstantImageSourceType::New();
-  ConstantImageSourceType::Pointer imgRef = ConstantImageSourceType::New();
+  auto imgIn = ConstantImageSourceType::New();
+  auto imgRef = ConstantImageSourceType::New();
 
   imgIn->SetOrigin(itk::MakePoint(-7, -7));
   imgIn->SetSpacing(itk::MakeVector(1., 1.));
@@ -44,7 +44,7 @@ main(int, char **)
 
   // Binning filter
   using BINType = itk::BinShrinkImageFilter<OutputImageType, OutputImageType>;
-  BINType::Pointer bin = BINType::New();
+  auto bin = BINType::New();
 
   std::cout << "\n\n****** Case 1: binning 2x2 ******" << std::endl;
 

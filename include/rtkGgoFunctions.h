@@ -98,7 +98,7 @@ SetConstantImageSourceFromGgo(TConstantImageSourceType * source, const TArgsInfo
   if (args_info.like_given)
   {
     using LikeReaderType = itk::ImageFileReader<ImageType>;
-    typename LikeReaderType::Pointer likeReader = LikeReaderType::New();
+    auto likeReader = LikeReaderType::New();
     likeReader->SetFileName(args_info.like_arg);
     TRY_AND_EXIT_ON_ITK_EXCEPTION(likeReader->UpdateOutputInformation());
     source->SetInformationFromImage(likeReader->GetOutput());
@@ -127,7 +127,7 @@ const std::vector<std::string>
 GetProjectionsFileNamesFromGgo(const TArgsInfo & args_info)
 {
   // Generate file names
-  itk::RegularExpressionSeriesFileNames::Pointer names = itk::RegularExpressionSeriesFileNames::New();
+  auto names = itk::RegularExpressionSeriesFileNames::New();
   names->SetDirectory(args_info.path_arg);
   names->SetNumericSort(args_info.nsort_flag);
   names->SetRegularExpression(args_info.regexp_arg);

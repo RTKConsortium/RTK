@@ -72,7 +72,7 @@ main(int argc, char * argv[])
   VolumeSeriesType::Pointer input;
 
   using VectorVolumeToVolumeSeriesFilterType = rtk::VectorImageToImageFilter<MaterialsVolumeType, VolumeSeriesType>;
-  VectorVolumeToVolumeSeriesFilterType::Pointer vecVol2VolSeries = VectorVolumeToVolumeSeriesFilterType::New();
+  auto vecVol2VolSeries = VectorVolumeToVolumeSeriesFilterType::New();
 
   if (args_info.input_given)
   {
@@ -94,7 +94,7 @@ main(int argc, char * argv[])
     vecVol2VolSeries->UpdateOutputInformation();
 
     using ConstantImageSourceType = rtk::ConstantImageSource<VolumeSeriesType>;
-    ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
+    auto constantImageSource = ConstantImageSourceType::New();
     constantImageSource->SetInformationFromImage(vecVol2VolSeries->GetOutput());
     constantImageSource->Update();
     input = constantImageSource->GetOutput();
@@ -103,7 +103,7 @@ main(int argc, char * argv[])
   {
     // Create new empty volume
     using ConstantImageSourceType = rtk::ConstantImageSource<VolumeSeriesType>;
-    ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
+    auto constantImageSource = ConstantImageSourceType::New();
 
     VolumeSeriesType::SizeType      inputSize;
     VolumeSeriesType::SpacingType   inputSpacing;
@@ -184,7 +184,7 @@ main(int argc, char * argv[])
   // Projections
   using VectorProjectionsToProjectionsFilterType =
     rtk::VectorImageToImageFilter<DecomposedProjectionType, ProjectionStackType>;
-  VectorProjectionsToProjectionsFilterType::Pointer vproj2proj = VectorProjectionsToProjectionsFilterType::New();
+  auto vproj2proj = VectorProjectionsToProjectionsFilterType::New();
   vproj2proj->SetInput(decomposedProjection);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(vproj2proj->Update())
 
@@ -192,14 +192,14 @@ main(int argc, char * argv[])
   decomposedProjection->ReleaseData();
 
   // Compute the interpolation weights
-  rtk::SignalToInterpolationWeights::Pointer signalToInterpolationWeights = rtk::SignalToInterpolationWeights::New();
+  auto signalToInterpolationWeights = rtk::SignalToInterpolationWeights::New();
   signalToInterpolationWeights->SetSignal(fakeSignal);
   signalToInterpolationWeights->SetNumberOfReconstructedFrames(NumberOfMaterials);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(signalToInterpolationWeights->Update())
 
   // Set the forward and back projection filters to be used
   using ROOSTERFilterType = rtk::FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>;
-  ROOSTERFilterType::Pointer rooster = ROOSTERFilterType::New();
+  auto rooster = ROOSTERFilterType::New();
   SetForwardProjectionFromGgo(args_info, rooster.GetPointer());
   SetBackProjectionFromGgo(args_info, rooster.GetPointer());
   rooster->SetInputVolumeSeries(input);
@@ -281,7 +281,7 @@ main(int argc, char * argv[])
 
   // Convert to result to a vector image
   using VolumeSeriesToVectorVolumeFilterType = rtk::ImageToVectorImageFilter<VolumeSeriesType, MaterialsVolumeType>;
-  VolumeSeriesToVectorVolumeFilterType::Pointer volSeries2VecVol = VolumeSeriesToVectorVolumeFilterType::New();
+  auto volSeries2VecVol = VolumeSeriesToVectorVolumeFilterType::New();
   volSeries2VecVol->SetInput(rooster->GetOutput());
   TRY_AND_EXIT_ON_ITK_EXCEPTION(volSeries2VecVol->Update())
 

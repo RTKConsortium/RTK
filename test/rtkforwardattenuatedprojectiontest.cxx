@@ -54,8 +54,8 @@ main(int, char **)
   constexpr double att = 0.0154;
 
   // Create Joseph Forward Projector volume input.
-  const ConstantImageSourceType::Pointer volInput = ConstantImageSourceType::New();
-  auto                                   origin = itk::MakePoint(-126., -126., -126.);
+  auto volInput = ConstantImageSourceType::New();
+  auto origin = itk::MakePoint(-126., -126., -126.);
 #if FAST_TESTS_NO_CHECKS
   auto size = itk::MakeSize(2, 2, 2);
   auto spacing = itk::MakeVector(252., 252., 252.);
@@ -70,7 +70,7 @@ main(int, char **)
   volInput->UpdateOutputInformation();
 
   // Create Joseph Forward Projector attenuation map.
-  const ConstantImageSourceType::Pointer attenuationInput = ConstantImageSourceType::New();
+  auto attenuationInput = ConstantImageSourceType::New();
 
   attenuationInput->SetOrigin(origin);
   attenuationInput->SetSpacing(spacing);
@@ -78,9 +78,9 @@ main(int, char **)
   attenuationInput->SetConstant(0);
 
   using DEIFType = rtk::DrawEllipsoidImageFilter<OutputImageType, OutputImageType>;
-  DEIFType::Pointer deif = DEIFType::New();
-  auto              axis_vol = itk::MakeVector(50., 50., 50.);
-  auto              center_vol = itk::MakeVector(0., 0., -30.);
+  auto deif = DEIFType::New();
+  auto axis_vol = itk::MakeVector(50., 50., 50.);
+  auto center_vol = itk::MakeVector(0., 0., -30.);
   deif->SetInput(volInput->GetOutput());
   deif->SetCenter(center_vol);
   deif->SetAxis(axis_vol);
@@ -99,7 +99,7 @@ main(int, char **)
 
   // Initialization Volume, it is used in the Joseph Forward Projector and in the
   // Ray Box Intersection Filter in order to initialize the stack of projections.
-  const ConstantImageSourceType::Pointer projInput = ConstantImageSourceType::New();
+  auto projInput = ConstantImageSourceType::New();
   size[2] = 1;
   projInput->SetOrigin(origin);
   projInput->SetSpacing(spacing);
@@ -107,7 +107,7 @@ main(int, char **)
   projInput->SetConstant(0.);
   projInput->Update();
 
-  const ConstantImageSourceType::Pointer projTotal = ConstantImageSourceType::New();
+  auto projTotal = ConstantImageSourceType::New();
   size[2] = NumberOfProjectionImages;
   projTotal->SetOrigin(origin);
   projTotal->SetSpacing(spacing);
@@ -121,7 +121,7 @@ main(int, char **)
 #else
   using JFPType = rtk::JosephForwardAttenuatedProjectionImageFilter<OutputImageType, OutputImageType>;
 #endif
-  JFPType::Pointer jfp = JFPType::New();
+  auto jfp = JFPType::New();
   jfp->InPlaceOff();
   jfp->SetInput(projTotal->GetOutput());
   jfp->SetInput(1, volumeSource);
@@ -132,8 +132,8 @@ main(int, char **)
 #endif
   // Geometry
   using GeometryType = rtk::ThreeDCircularProjectionGeometry;
-  GeometryType::Pointer geometry_projection = GeometryType::New();
-  double                angle = 0;
+  auto   geometry_projection = GeometryType::New();
+  double angle = 0;
   using REIType = rtk::RayEllipsoidIntersectionImageFilter<OutputImageType, OutputImageType>;
   REIType::PointType  center_transform;
   REIType::VectorType clip_plane_direction_init, clip_plane_direction;
@@ -141,14 +141,14 @@ main(int, char **)
   clip_plane_direction_init[1] = 0.;
   clip_plane_direction_init[2] = 1.;
   using TransformType = itk::CenteredEuler3DTransform<double>;
-  typename TransformType::Pointer transform = TransformType::New();
+  auto transform = TransformType::New();
   using SubtractImageFilterType = itk::SubtractImageFilter<OutputImageType, OutputImageType>;
-  typename SubtractImageFilterType::Pointer subtractImageFilter = SubtractImageFilterType::New();
-  typename OutputImageType::IndexType       indexSlice;
-  typename OutputImageType::Pointer         pimg;
+  auto                                subtractImageFilter = SubtractImageFilterType::New();
+  typename OutputImageType::IndexType indexSlice;
+  typename OutputImageType::Pointer   pimg;
   indexSlice.Fill(0);
   using PasteImageFilterType = itk::PasteImageFilter<OutputImageType, OutputImageType>;
-  typename PasteImageFilterType::Pointer pasteImageFilter = PasteImageFilterType::New();
+  auto pasteImageFilter = PasteImageFilterType::New();
   pasteImageFilter->SetDestinationImage(projTotal->GetOutput());
 
   int count = 0;
@@ -159,13 +159,13 @@ main(int, char **)
     transform->SetRotation(0., angle * itk::Math::pi / 180, 0.);
     clip_plane_direction = transform->GetMatrix() * clip_plane_direction_init;
     center_transform = transform->GetMatrix() * center_vol;
-    REIType::Pointer sphere_attenuation = REIType::New();
+    auto sphere_attenuation = REIType::New();
     sphere_attenuation->SetAngle(0);
     sphere_attenuation->SetDensity(1);
     sphere_attenuation->SetCenter(itk::MakeVector(0., 0., 0.));
     sphere_attenuation->SetAxis(itk::MakeVector(90, 90, 90));
     sphere_attenuation->SetInput(projInput->GetOutput());
-    REIType::Pointer sphere_emission = REIType::New();
+    auto sphere_emission = REIType::New();
     sphere_emission->SetAngle(0);
     sphere_emission->SetDensity(1);
     sphere_emission->SetCenter(center_vol);
@@ -194,25 +194,25 @@ main(int, char **)
 
   // Streaming filter to test for unusual regions
   using StreamingFilterType = itk::StreamingImageFilter<OutputImageType, OutputImageType>;
-  StreamingFilterType::Pointer stream = StreamingFilterType::New();
+  auto stream = StreamingFilterType::New();
   stream->SetInput(jfp->GetOutput());
 
   stream->SetNumberOfStreamDivisions(9);
-  itk::ImageRegionSplitterDirection::Pointer splitter = itk::ImageRegionSplitterDirection::New();
+  auto splitter = itk::ImageRegionSplitterDirection::New();
   splitter->SetDirection(2); // Splitting along direction 1, NOT 2
   stream->SetRegionSplitter(splitter);
 
   std::cout << "\n\n****** Case 1: inner ray source ******" << std::endl;
 
   using GeometryType = rtk::ThreeDCircularProjectionGeometry;
-  GeometryType::Pointer geometry = GeometryType::New();
+  auto geometry = GeometryType::New();
   for (unsigned int i = 0; i < NumberOfProjectionImages; i++)
   {
     geometry->AddProjection(500, 0., i * 360. / NumberOfProjectionImages);
   }
   projTotal->Update();
   using REIType = rtk::RayEllipsoidIntersectionImageFilter<OutputImageType, OutputImageType>;
-  REIType::Pointer rei = REIType::New();
+  auto rei = REIType::New();
   rei->InPlaceOff();
   rei->SetAngle(0);
   rei->SetDensity(1);
@@ -223,7 +223,7 @@ main(int, char **)
   rei->Update();
 
   using CustomBinaryFilterType = itk::BinaryGeneratorImageFilter<OutputImageType, OutputImageType, OutputImageType>;
-  typename CustomBinaryFilterType::Pointer customBinaryFilter = CustomBinaryFilterType::New();
+  auto customBinaryFilter = CustomBinaryFilterType::New();
   // Set Lambda function
   auto customLambda = [&](const typename OutputImageType::PixelType & input1,
                           const typename OutputImageType::PixelType & input2) -> typename OutputImageType::PixelType {

@@ -65,9 +65,9 @@ CudaForwardWarpImageFilter ::GPUGenerateData()
   outputVolumeSize[2] = this->GetOutput()->GetBufferedRegion().GetSize()[2];
 
   // Split the DVF into three images (one per component)
-  ImageType::Pointer    xCompDVF = ImageType::New();
-  ImageType::Pointer    yCompDVF = ImageType::New();
-  ImageType::Pointer    zCompDVF = ImageType::New();
+  auto                  xCompDVF = ImageType::New();
+  auto                  yCompDVF = ImageType::New();
+  auto                  zCompDVF = ImageType::New();
   ImageType::RegionType largest = this->GetDisplacementField()->GetLargestPossibleRegion();
   xCompDVF->SetRegions(largest);
   yCompDVF->SetRegions(largest);

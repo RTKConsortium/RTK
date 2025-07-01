@@ -37,12 +37,12 @@ main(int argc, char * argv[])
 
   // Projections reader
   using ReaderType = rtk::ProjectionsReader<OutputImageType>;
-  ReaderType::Pointer reader = ReaderType::New();
+  auto reader = ReaderType::New();
   rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkamsterdamshroud>(reader, args_info);
 
   // Amsterdam shroud
   using ShroudFilterType = rtk::AmsterdamShroudImageFilter<OutputImageType>;
-  ShroudFilterType::Pointer shroudFilter = ShroudFilterType::New();
+  auto shroudFilter = ShroudFilterType::New();
   shroudFilter->SetInput(reader->GetOutput());
   shroudFilter->SetUnsharpMaskSize(args_info.unsharp_arg);
 
@@ -80,7 +80,7 @@ main(int argc, char * argv[])
 
   // Write
   using WriterType = itk::ImageFileWriter<ShroudFilterType::OutputImageType>;
-  WriterType::Pointer writer = WriterType::New();
+  auto writer = WriterType::New();
   writer->SetFileName(args_info.output_arg);
   writer->SetInput(shroudFilter->GetOutput());
   writer->SetNumberOfStreamDivisions(shroudFilter->GetOutput()->GetLargestPossibleRegion().GetSize(1));

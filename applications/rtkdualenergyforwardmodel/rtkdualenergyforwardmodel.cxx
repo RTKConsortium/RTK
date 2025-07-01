@@ -50,19 +50,19 @@ main(int argc, char * argv[])
   using MaterialAttenuationsReaderType = itk::ImageFileReader<MaterialAttenuationsImageType>;
 
   // Read all inputs
-  DecomposedProjectionReaderType::Pointer decomposedProjectionReader = DecomposedProjectionReaderType::New();
+  auto decomposedProjectionReader = DecomposedProjectionReaderType::New();
   decomposedProjectionReader->SetFileName(args_info.input_arg);
   decomposedProjectionReader->Update();
 
-  IncidentSpectrumReaderType::Pointer incidentSpectrumReaderHighEnergy = IncidentSpectrumReaderType::New();
+  auto incidentSpectrumReaderHighEnergy = IncidentSpectrumReaderType::New();
   incidentSpectrumReaderHighEnergy->SetFileName(args_info.high_arg);
   incidentSpectrumReaderHighEnergy->Update();
 
-  IncidentSpectrumReaderType::Pointer incidentSpectrumReaderLowEnergy = IncidentSpectrumReaderType::New();
+  auto incidentSpectrumReaderLowEnergy = IncidentSpectrumReaderType::New();
   incidentSpectrumReaderLowEnergy->SetFileName(args_info.low_arg);
   incidentSpectrumReaderLowEnergy->Update();
 
-  MaterialAttenuationsReaderType::Pointer materialAttenuationsReader = MaterialAttenuationsReaderType::New();
+  auto materialAttenuationsReader = MaterialAttenuationsReaderType::New();
   materialAttenuationsReader->SetFileName(args_info.attenuations_arg);
   materialAttenuationsReader->Update();
 
@@ -72,8 +72,8 @@ main(int argc, char * argv[])
 
   // If the detector response is given by the user, use it. Otherwise, assume it is included in the
   // incident spectrum, and fill the response with ones
-  DetectorResponseReaderType::Pointer detectorResponseReader = DetectorResponseReaderType::New();
-  DetectorResponseImageType::Pointer  detectorImage;
+  auto                               detectorResponseReader = DetectorResponseReaderType::New();
+  DetectorResponseImageType::Pointer detectorImage;
   if (args_info.detector_given)
   {
     detectorResponseReader->SetFileName(args_info.detector_arg);
@@ -91,7 +91,7 @@ main(int argc, char * argv[])
   }
 
   // Generate a set of zero-filled intensity projections
-  DualEnergyProjectionsType::Pointer dualEnergyProjections = DualEnergyProjectionsType::New();
+  auto dualEnergyProjections = DualEnergyProjectionsType::New();
   dualEnergyProjections->CopyInformation(decomposedProjectionReader->GetOutput());
   dualEnergyProjections->SetVectorLength(2);
   dualEnergyProjections->Allocate();
@@ -111,7 +111,7 @@ main(int argc, char * argv[])
   // Create and set the filter
   using ForwardModelFilterType =
     rtk::SpectralForwardModelImageFilter<DecomposedProjectionType, DualEnergyProjectionsType>;
-  ForwardModelFilterType::Pointer forward = ForwardModelFilterType::New();
+  auto forward = ForwardModelFilterType::New();
   forward->SetInputDecomposedProjections(decomposedProjectionReader->GetOutput());
   forward->SetInputMeasuredProjections(dualEnergyProjections);
   forward->SetInputIncidentSpectrum(incidentSpectrumReaderHighEnergy->GetOutput());
@@ -124,7 +124,7 @@ main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION(forward->Update())
 
   // Write output
-  DualEnergyProjectionWriterType::Pointer writer = DualEnergyProjectionWriterType::New();
+  auto writer = DualEnergyProjectionWriterType::New();
   writer->SetInput(forward->GetOutput());
   writer->SetFileName(args_info.output_arg);
   writer->Update();

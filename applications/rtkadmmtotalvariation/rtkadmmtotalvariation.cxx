@@ -51,7 +51,7 @@ main(int argc, char * argv[])
 
   // Projections reader
   using projectionsReaderType = rtk::ProjectionsReader<OutputImageType>;
-  projectionsReaderType::Pointer projectionsReader = projectionsReaderType::New();
+  auto projectionsReader = projectionsReaderType::New();
   rtk::SetProjectionsReaderFromGgo<projectionsReaderType, args_info_rtkadmmtotalvariation>(projectionsReader,
                                                                                            args_info);
 
@@ -63,7 +63,7 @@ main(int argc, char * argv[])
 
   // Phase gating weights reader
   using PhaseGatingFilterType = rtk::PhaseGatingImageFilter<OutputImageType>;
-  PhaseGatingFilterType::Pointer phaseGating = PhaseGatingFilterType::New();
+  auto phaseGating = PhaseGatingFilterType::New();
   if (args_info.phases_given)
   {
     phaseGating->SetPhasesFileName(args_info.phases_arg);
@@ -81,7 +81,7 @@ main(int argc, char * argv[])
   {
     // Read an existing image to initialize the volume
     using InputReaderType = itk::ImageFileReader<OutputImageType>;
-    InputReaderType::Pointer inputReader = InputReaderType::New();
+    auto inputReader = InputReaderType::New();
     inputReader->SetFileName(args_info.input_arg);
     inputFilter = inputReader;
   }
@@ -89,7 +89,7 @@ main(int argc, char * argv[])
   {
     // Create new empty volume
     using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
-    ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
+    auto constantImageSource = ConstantImageSourceType::New();
     rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkadmmtotalvariation>(constantImageSource,
                                                                                                  args_info);
     inputFilter = constantImageSource;
@@ -102,7 +102,7 @@ main(int argc, char * argv[])
   // Set the reconstruction filter
   using ADMM_TV_FilterType =
     rtk::ADMMTotalVariationConeBeamReconstructionFilter<OutputImageType, GradientOutputImageType>;
-  ADMM_TV_FilterType::Pointer admmFilter = ADMM_TV_FilterType::New();
+  auto admmFilter = ADMM_TV_FilterType::New();
 
   // Set the forward and back projection filters to be used inside admmFilter
   SetForwardProjectionFromGgo(args_info, admmFilter.GetPointer());
