@@ -44,7 +44,7 @@ main(int argc, char ** argv)
   // Create a stack of empty projection images
   using ConstantImageSourceType = rtk::ConstantImageSource<ImageType>;
   ConstantImageSourceType::Pointer constantImageSource = ConstantImageSourceType::New();
-  constantImageSource->SetOrigin(itk::MakePoint(-127, -127, 0.));
+  constantImageSource->SetOrigin(itk::MakePoint(-127., -127., 0.));
   constantImageSource->SetSpacing(itk::MakeVector(2., 2., 2.));
   constantImageSource->SetSize(itk::MakeSize(128, 128, numberOfProjections));
   constantImageSource->SetConstant(0.);
@@ -54,7 +54,7 @@ main(int argc, char ** argv)
   REIType::Pointer rei = REIType::New();
   rei->SetDensity(2.);
   rei->SetAngle(0.);
-  rei->SetCenter(itk::MakePoint(0., 0., 10.));
+  rei->SetCenter(itk::MakeVector(0., 0., 10.));
   rei->SetAxis(itk::MakeVector(50., 50., 50.));
   rei->SetGeometry(geometry);
   rei->SetInput(constantImageSource->GetOutput());
