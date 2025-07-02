@@ -44,6 +44,7 @@ dependencies = [
 rtkamsterdamshroud = "itk.rtkamsterdamshroud:main"
 rtkbackprojections = "itk.rtkbackprojections:main"
 rtkbioscangeometry = "itk.rtkbioscangeometry:main"
+rtkcheckimagequality = "itk.rtkcheckimagequality:main"
 rtkconjugategradient = "itk.rtkconjugategradient:main"
 rtkdrawgeometricphantom = "itk.rtkdrawgeometricphantom:main"
 rtkdigisensgeometry = "itk.rtkdigisensgeometry:main"
