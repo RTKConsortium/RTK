@@ -1,6 +1,6 @@
 purpose "Checks the MSE of a reconstructed image against a reference."
 
 option "verbose" v "Verbose execution" flag   off
-option  "reference" i "Reference volume"  string  multiple  yes
-option  "reconstruction"  j "Reconstructed volume"  string  multiple  yes
-option  "threshold" t "MSE threshold" int multiple  yes
+option  "reference" i "Reference volume(s)"  string  multiple  yes
+option  "reconstruction"  j "Reconstructed volume(s)"  string  multiple  yes
+option  "threshold" t "MSE threshold(s)" int multiple  yes
