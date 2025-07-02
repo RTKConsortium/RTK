@@ -71,8 +71,7 @@
     auto reader = ReaderType::New();                                                                                \
     m_RawDataReader = reader;                                                                                       \
     using VectorComponentSelectionType = itk::VectorIndexSelectionCastImageFilter<InputImageType, OutputImageType>; \
-    typename VectorComponentSelectionType::Pointer vectorComponentSelectionFilter =                                 \
-      VectorComponentSelectionType::New();                                                                          \
+    auto vectorComponentSelectionFilter = VectorComponentSelectionType::New();                                      \
     if (m_VectorComponent < numberOfComponents)                                                                     \
       vectorComponentSelectionFilter->SetIndex(m_VectorComponent);                                                  \
     else                                                                                                            \

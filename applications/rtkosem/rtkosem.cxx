@@ -76,8 +76,7 @@ main(int argc, char * argv[])
   }
 
   // OSEM reconstruction filter
-  rtk::OSEMConeBeamReconstructionFilter<OutputImageType>::Pointer osem =
-    rtk::OSEMConeBeamReconstructionFilter<OutputImageType>::New();
+  auto osem = rtk::OSEMConeBeamReconstructionFilter<OutputImageType>::New();
 
   // Set the forward and back projection filters
   SetForwardProjectionFromGgo(args_info, osem.GetPointer());

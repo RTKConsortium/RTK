@@ -219,8 +219,7 @@ main(int argc, char * argv[])
   measuredProjections->SetRegions(region);
   measuredProjections->Allocate();
 
-  typename CastDecomposedProjectionsFilterType::Pointer castDecomposedProjections =
-    CastDecomposedProjectionsFilterType::New();
+  auto castDecomposedProjections = CastDecomposedProjectionsFilterType::New();
   auto castMeasuredProjections = CastMeasuredProjectionFilterType::New();
   castDecomposedProjections->SetInput(decomposed);
   castMeasuredProjections->SetInput(measuredProjections);
@@ -228,8 +227,7 @@ main(int argc, char * argv[])
   forward->SetInputMeasuredProjections(castMeasuredProjections->GetOutput());
   TRY_AND_EXIT_ON_ITK_EXCEPTION(forward->Update())
 
-  typename CastDecomposedProjectionsFilterType::Pointer castDecomposedProjections2 =
-    CastDecomposedProjectionsFilterType::New();
+  auto castDecomposedProjections2 = CastDecomposedProjectionsFilterType::New();
   auto castMeasuredProjections2 = CastMeasuredProjectionFilterType::New();
   castDecomposedProjections->SetInput(initialDecomposedProjections);
   castMeasuredProjections->SetInput(forward->GetOutput());

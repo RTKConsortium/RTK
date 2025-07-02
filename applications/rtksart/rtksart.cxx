@@ -89,8 +89,7 @@ main(int argc, char * argv[])
   }
 
   // SART reconstruction filter
-  rtk::SARTConeBeamReconstructionFilter<OutputImageType>::Pointer sart =
-    rtk::SARTConeBeamReconstructionFilter<OutputImageType>::New();
+  auto sart = rtk::SARTConeBeamReconstructionFilter<OutputImageType>::New();
 
   // Set the forward and back projection filters
   SetForwardProjectionFromGgo(args_info, sart.GetPointer());
