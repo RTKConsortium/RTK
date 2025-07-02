@@ -84,19 +84,17 @@ main(int, char **)
   jfp->SetInput(1, volInput->GetOutput());
 
   // Ray Box Intersection filter (reference)
-  using RBIType = rtk::RayBoxIntersectionImageFilter<OutputImageType, OutputImageType>;
 #ifdef USE_CUDA
   jfp->SetStepSize(10);
 #endif
-  auto rbi = RBIType::New();
+  auto rbi = rtk::RayBoxIntersectionImageFilter<OutputImageType, OutputImageType>::New();
   rbi->InPlaceOff();
   rbi->SetInput(projInput->GetOutput());
   rbi->SetBoxMin(itk::MakeVector(-126.0, -126.0, -126.0));
   rbi->SetBoxMax(itk::MakeVector(126.0, 126.0, 47.6));
 
   // Streaming filter to test for unusual regions
-  using StreamingFilterType = itk::StreamingImageFilter<OutputImageType, OutputImageType>;
-  auto stream = StreamingFilterType::New();
+  auto stream = itk::StreamingImageFilter<OutputImageType, OutputImageType>::New();
   stream->SetInput(jfp->GetOutput());
 
   stream->SetNumberOfStreamDivisions(9);
@@ -155,8 +153,7 @@ main(int, char **)
   std::cout << "\n\n****** Case 3: Shepp-Logan, outer ray source ******" << std::endl;
 
   // Create Shepp Logan reference projections
-  using SLPType = rtk::SheppLoganPhantomFilter<OutputImageType, OutputImageType>;
-  auto slp = SLPType::New();
+  auto slp = rtk::SheppLoganPhantomFilter<OutputImageType, OutputImageType>::New();
   slp->InPlaceOff();
   slp->SetInput(projInput->GetOutput());
   slp->SetGeometry(geometry);
@@ -171,8 +168,7 @@ main(int, char **)
   volInput->SetSize(size);
   volInput->SetConstant(0.);
 
-  using DSLType = rtk::DrawSheppLoganFilter<OutputImageType, OutputImageType>;
-  auto dsl = DSLType::New();
+  auto dsl = rtk::DrawSheppLoganFilter<OutputImageType, OutputImageType>::New();
   dsl->InPlaceOff();
   dsl->SetInput(volInput->GetOutput());
   dsl->Update();

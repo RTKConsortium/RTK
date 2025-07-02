@@ -68,29 +68,24 @@ ExtractPhaseImageFilter<TImage>::GenerateData()
   conv2->SetKernelImage(kernel2);
 
   // Define real image type for FFT
-  using InputPixelType = typename TImage::PixelType;
-  using RealOutputPixelType = typename itk::NumericTraits<InputPixelType>::RealType;
+  using RealOutputPixelType = typename itk::NumericTraits<typename TImage::PixelType>::RealType;
   using RealOutputImageType = itk::Image<RealOutputPixelType, 1>;
 
-  using SubtractType = itk::SubtractImageFilter<TImage, TImage, RealOutputImageType>;
-  auto sub = SubtractType::New();
+  auto sub = itk::SubtractImageFilter<TImage, TImage, RealOutputImageType>::New();
   sub->SetInput1(conv->GetOutput());
   sub->SetInput2(conv2->GetOutput());
   sub->InPlaceOff();
   sub->Update();
 
   // Define FFT output type (complex)
-  using ComplexType = std::complex<RealOutputPixelType>;
-  using ComplexSignalType = itk::Image<ComplexType, 1>;
+  using ComplexSignalType = itk::Image<std::complex<RealOutputPixelType>, 1>;
 
   // Hilbert transform
-  using HilbertType = rtk::HilbertImageFilter<RealOutputImageType, ComplexSignalType>;
-  auto hilbert = HilbertType::New();
+  auto hilbert = rtk::HilbertImageFilter<RealOutputImageType, ComplexSignalType>::New();
   hilbert->SetInput(sub->GetOutput());
 
   // Take the linear phase of this signal
-  using PhaseType = itk::ComplexToPhaseImageFilter<ComplexSignalType, TImage>;
-  auto phase = PhaseType::New();
+  auto phase = itk::ComplexToPhaseImageFilter<ComplexSignalType, TImage>::New();
   phase->SetInput(hilbert->GetOutput());
   phase->Update();
 

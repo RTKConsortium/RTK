@@ -81,18 +81,16 @@ main(int argc, char * argv[])
 #endif
 
   // Displaced detector weighting
-  using DDFCPUType = rtk::DisplacedDetectorImageFilter<OutputImageType>;
-  using DDFOFFFOVType = rtk::DisplacedDetectorForOffsetFieldOfViewImageFilter<OutputImageType>;
 #ifdef RTK_USE_CUDA
   using DDFType = rtk::CudaDisplacedDetectorImageFilter;
 #else
   using DDFType = rtk::DisplacedDetectorForOffsetFieldOfViewImageFilter<OutputImageType>;
 #endif
-  DDFCPUType::Pointer ddf;
+  rtk::DisplacedDetectorImageFilter<OutputImageType>::Pointer ddf;
   if (!strcmp(args_info.hardware_arg, "cuda"))
     ddf = DDFType::New();
   else
-    ddf = DDFOFFFOVType::New();
+    ddf = rtk::DisplacedDetectorForOffsetFieldOfViewImageFilter<OutputImageType>::New();
   ddf->SetInput(reader->GetOutput());
   ddf->SetGeometry(geometry);
   ddf->SetDisable(args_info.nodisplaced_flag);
@@ -124,15 +122,11 @@ main(int argc, char * argv[])
   // compensation are set, we still create the object before hand to avoid auto
   // destruction.
   using DVFPixelType = itk::Vector<float, 3>;
-  using DVFImageSequenceType = itk::Image<DVFPixelType, 4>;
-  using DVFImageType = itk::Image<DVFPixelType, 3>;
-  using DeformationType = rtk::CyclicDeformationImageFilter<DVFImageSequenceType, DVFImageType>;
-  using DVFReaderType = itk::ImageFileReader<DeformationType::InputImageType>;
-  auto dvfReader = DVFReaderType::New();
+  using DeformationType = rtk::CyclicDeformationImageFilter<itk::Image<DVFPixelType, 4>, itk::Image<DVFPixelType, 3>>;
+  auto dvfReader = itk::ImageFileReader<DeformationType::InputImageType>::New();
   auto def = DeformationType::New();
   def->SetInput(dvfReader->GetOutput());
-  using WarpBPType = rtk::FDKWarpBackProjectionImageFilter<OutputImageType, OutputImageType, DeformationType>;
-  auto bp = WarpBPType::New();
+  auto bp = rtk::FDKWarpBackProjectionImageFilter<OutputImageType, OutputImageType, DeformationType>::New();
   bp->SetDeformation(def);
   bp->SetGeometry(geometry);
 
@@ -199,8 +193,7 @@ main(int argc, char * argv[])
 #endif
 
   // Streaming depending on streaming capability of writer
-  using StreamerType = itk::StreamingImageFilter<CPUOutputImageType, CPUOutputImageType>;
-  auto streamerBP = StreamerType::New();
+  auto streamerBP = itk::StreamingImageFilter<CPUOutputImageType, CPUOutputImageType>::New();
   streamerBP->SetInput(pfeldkamp);
   streamerBP->SetNumberOfStreamDivisions(args_info.divisions_arg);
   auto splitter = itk::ImageRegionSplitterDirection::New();

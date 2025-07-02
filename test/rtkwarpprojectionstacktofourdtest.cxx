@@ -53,7 +53,6 @@ main(int, char **)
 
   // Constant image sources
   using ConstantImageSourceType = rtk::ConstantImageSource<VolumeType>;
-  using FourDSourceType = rtk::ConstantImageSource<VolumeSeriesType>;
 
   auto tomographySource = ConstantImageSourceType::New();
   auto origin = itk::MakePoint(-63., -31., -63.);
@@ -69,7 +68,7 @@ main(int, char **)
   tomographySource->SetSize(size);
   tomographySource->SetConstant(0.);
 
-  auto fourdSource = FourDSourceType::New();
+  auto fourdSource = rtk::ConstantImageSource<VolumeSeriesType>::New();
   auto fourDOrigin = itk::MakePoint(-63., -31.5, -63., 0.);
 #if FAST_TESTS_NO_CHECKS
   auto fourDSize = itk::MakeSize(8, 8, 8, 2);
@@ -255,8 +254,7 @@ main(int, char **)
     }
 
     // Input 4D volume sequence
-    using JoinFilterType = itk::JoinSeriesImageFilter<VolumeType, VolumeSeriesType>;
-    auto join = JoinFilterType::New();
+    auto join = itk::JoinSeriesImageFilter<VolumeType, VolumeSeriesType>::New();
 
     // Read the phases file
     auto phaseReader = rtk::PhasesToInterpolationWeights::New();
@@ -265,8 +263,7 @@ main(int, char **)
     phaseReader->Update();
 
     // The CPU voxel-based static 3D back projection used as a reference for comparison
-    using StaticBackProjectionFilterType = rtk::BackProjectionImageFilter<VolumeType, VolumeType>;
-    auto backprojection = StaticBackProjectionFilterType::New();
+    auto backprojection = rtk::BackProjectionImageFilter<VolumeType, VolumeType>::New();
     backprojection->SetInput(0, tomographySource->GetOutput());
     backprojection->SetInput(1, pasteFilterStaticProjections->GetOutput());
     backprojection->SetGeometry(geometry.GetPointer());
@@ -274,8 +271,7 @@ main(int, char **)
 
     // Divide the result by the number of volumes in the 4D sequence,
     // for the attenuation results to approximately match
-    using DivideFilterType = itk::DivideImageFilter<VolumeType, VolumeType, VolumeType>;
-    auto divide = DivideFilterType::New();
+    auto divide = itk::DivideImageFilter<VolumeType, VolumeType, VolumeType>::New();
     divide->SetInput1(backprojection->GetOutput());
     divide->SetConstant2(fourDSize[3]);
     divide->Update();
@@ -287,8 +283,7 @@ main(int, char **)
     join->Update();
 
     // Create and set the warped forward projection filter
-    using WarpProjectionStackToFourDType = rtk::WarpProjectionStackToFourDImageFilter<VolumeSeriesType, VolumeType>;
-    auto warpbackproject = WarpProjectionStackToFourDType::New();
+    auto warpbackproject = rtk::WarpProjectionStackToFourDImageFilter<VolumeSeriesType, VolumeType>::New();
     warpbackproject->SetInputVolumeSeries(fourdSource->GetOutput());
     warpbackproject->SetInputProjectionStack(pasteFilter->GetOutput());
     warpbackproject->SetGeometry(geometry);

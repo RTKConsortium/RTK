@@ -39,15 +39,12 @@ main(int argc, char * argv[])
   rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtklut>(reader, args_info);
 
   // Read lookup table
-  using LUTType = itk::Image<OutputPixelType, 1>;
-  using LUTReaderType = itk::ImageFileReader<LUTType>;
-  auto lutReader = LUTReaderType::New();
+  auto lutReader = itk::ImageFileReader<itk::Image<OutputPixelType, 1>>::New();
   lutReader->SetFileName(args_info.lut_arg);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(lutReader->Update())
 
   // Apply lookup table
-  using LUTFilterType = rtk::LookupTableImageFilter<OutputImageType, OutputImageType>;
-  auto lutFilter = LUTFilterType::New();
+  auto lutFilter = rtk::LookupTableImageFilter<OutputImageType, OutputImageType>::New();
   lutFilter->SetInput(reader->GetOutput());
   lutFilter->SetLookupTable(lutReader->GetOutput());
   TRY_AND_EXIT_ON_ITK_EXCEPTION(lutFilter->Update())

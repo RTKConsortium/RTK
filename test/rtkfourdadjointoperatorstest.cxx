@@ -53,18 +53,14 @@ main(int argc, char * argv[])
 
 
   // Random image sources
-  using RandomProjectionStackSourceType = itk::RandomImageSource<ProjectionStackType>;
-  auto randomProjectionStackSource = RandomProjectionStackSourceType::New();
+  auto randomProjectionStackSource = itk::RandomImageSource<ProjectionStackType>::New();
 
-  using RandomVolumeSeriesSourceType = itk::RandomImageSource<VolumeSeriesType>;
-  auto randomVolumeSeriesSource = RandomVolumeSeriesSourceType::New();
+  auto randomVolumeSeriesSource = itk::RandomImageSource<VolumeSeriesType>::New();
 
   // Constant sources
-  using ConstantProjectionStackSourceType = rtk::ConstantImageSource<ProjectionStackType>;
-  auto constantProjectionStackSource = ConstantProjectionStackSourceType::New();
+  auto constantProjectionStackSource = rtk::ConstantImageSource<ProjectionStackType>::New();
 
-  using ConstantVolumeSeriesSourceType = rtk::ConstantImageSource<VolumeSeriesType>;
-  auto constantVolumeSeriesSource = ConstantVolumeSeriesSourceType::New();
+  auto constantVolumeSeriesSource = rtk::ConstantImageSource<VolumeSeriesType>::New();
 
   // Volume metadata
   auto fourDOrigin = itk::MakePoint(-127., -127., -127., 0.);
@@ -113,8 +109,7 @@ main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION(constantProjectionStackSource->Update());
 
   // Geometry object
-  using GeometryType = rtk::ThreeDCircularProjectionGeometry;
-  auto geometry = GeometryType::New();
+  auto geometry = rtk::ThreeDCircularProjectionGeometry::New();
   for (unsigned int noProj = 0; noProj < NumberOfProjectionImages; noProj++)
     geometry->AddProjection(600., 1200., noProj * 360. / NumberOfProjectionImages);
 
@@ -126,12 +121,9 @@ main(int argc, char * argv[])
 
   std::cout << "\n\n****** 4D to projection stack ******" << std::endl;
 
-  using JosephForwardProjectorType = rtk::JosephForwardProjectionImageFilter<ProjectionStackType, ProjectionStackType>;
-  auto jfw = JosephForwardProjectorType::New();
+  auto jfw = rtk::JosephForwardProjectionImageFilter<ProjectionStackType, ProjectionStackType>::New();
 
-  using FourDToProjectionStackFilterType =
-    rtk::FourDToProjectionStackImageFilter<ProjectionStackType, VolumeSeriesType>;
-  auto fw = FourDToProjectionStackFilterType::New();
+  auto fw = rtk::FourDToProjectionStackImageFilter<ProjectionStackType, VolumeSeriesType>::New();
   fw->SetInputProjectionStack(constantProjectionStackSource->GetOutput());
   fw->SetInputVolumeSeries(randomVolumeSeriesSource->GetOutput());
   fw->SetForwardProjectionFilter(jfw.GetPointer());
@@ -142,12 +134,9 @@ main(int argc, char * argv[])
 
   std::cout << "\n\n****** Projection stack to 4D ******" << std::endl;
 
-  using JosephBackProjectorType = rtk::JosephBackProjectionImageFilter<ProjectionStackType, ProjectionStackType>;
-  auto jbp = JosephBackProjectorType::New();
+  auto jbp = rtk::JosephBackProjectionImageFilter<ProjectionStackType, ProjectionStackType>::New();
 
-  using ProjectionStackToFourDFilterType =
-    rtk::ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType>;
-  auto bp = ProjectionStackToFourDFilterType::New();
+  auto bp = rtk::ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType>::New();
   bp->SetInputVolumeSeries(constantVolumeSeriesSource->GetOutput());
   bp->SetInputProjectionStack(randomProjectionStackSource->GetOutput());
   bp->SetBackProjectionFilter(jbp.GetPointer());

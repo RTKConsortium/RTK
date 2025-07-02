@@ -19,10 +19,8 @@ CheckImageQuality(typename TImage1::Pointer itkNotUsed(recon), typename TImage2:
 void
 CheckImageQuality(typename TImage1::Pointer recon, typename TImage2::Pointer ref)
 {
-  using ImageIteratorType1 = itk::ImageRegionConstIterator<TImage1>;
-  using ImageIteratorType2 = itk::ImageRegionConstIterator<TImage2>;
-  ImageIteratorType1 itTest(recon, recon->GetBufferedRegion());
-  ImageIteratorType2 itRef(ref, ref->GetBufferedRegion());
+  itk::ImageRegionConstIterator<TImage1> itTest(recon, recon->GetBufferedRegion());
+  itk::ImageRegionConstIterator<TImage2> itRef(ref, ref->GetBufferedRegion());
 
   // Compute the mean of the reference image (which cannot be recovered by inverting the gradient)
   double mean = 0;
@@ -107,15 +105,12 @@ int
 main(int, char **)
 {
   constexpr unsigned int Dimension = 3;
-  using OutputPixelType = float;
 
-  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
+  using OutputImageType = itk::Image<float, Dimension>;
 
   // Random and constant image sources
-  using RandomImageSourceType = itk::RandomImageSource<OutputImageType>;
-  auto randomVolumeSource = RandomImageSourceType::New();
-  using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
-  auto constantVolumeSource = ConstantImageSourceType::New();
+  auto randomVolumeSource = itk::RandomImageSource<OutputImageType>::New();
+  auto constantVolumeSource = rtk::ConstantImageSource<OutputImageType>::New();
 
   // Volume metadata
   auto origin = itk::MakePoint(-127., -127., -127.);
@@ -152,8 +147,7 @@ main(int, char **)
     dimProcessed = true;
   }
   gradientFilter->SetDimensionsProcessed(dimsProcessed);
-  using DivergenceFilterType = rtk::BackwardDifferenceDivergenceImageFilter<GradientFilterType::OutputImageType>;
-  auto divergenceFilter = DivergenceFilterType::New();
+  auto divergenceFilter = rtk::BackwardDifferenceDivergenceImageFilter<GradientFilterType::OutputImageType>::New();
   divergenceFilter->SetInput(gradientFilter->GetOutput());
 
   // Update the gradient and divergence filters
@@ -161,11 +155,9 @@ main(int, char **)
 
   // Create and set the conjugate gradient optimizer
   // It uses the operator DivergenceOfGradientConjugateGradientOperator
-  using CGFilterType = rtk::ConjugateGradientImageFilter<OutputImageType>;
-  auto cg = CGFilterType::New();
+  auto cg = rtk::ConjugateGradientImageFilter<OutputImageType>::New();
 
-  using CGoperatorType = rtk::DivergenceOfGradientConjugateGradientOperator<OutputImageType>;
-  auto cg_op = CGoperatorType::New();
+  auto cg_op = rtk::DivergenceOfGradientConjugateGradientOperator<OutputImageType>::New();
   cg->SetA(cg_op.GetPointer());
   cg->SetX(constantVolumeSource->GetOutput());
   cg->SetB(divergenceFilter->GetOutput());

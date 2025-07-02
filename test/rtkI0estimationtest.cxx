@@ -17,16 +17,14 @@ main(int, char **)
   constexpr unsigned int Dimension = 3;
   using ImageType = itk::Image<unsigned short, Dimension>;
 
-  using I0FilterType = rtk::I0EstimationProjectionFilter<ImageType, ImageType, 3>;
-  auto i0est = I0FilterType::New();
+  auto i0est = rtk::I0EstimationProjectionFilter<ImageType, ImageType, 3>::New();
 
   // Constant image sources
   auto                  size = itk::MakeSize(150, 150, 1);
   ImageType::RegionType region;
   region.SetSize(size);
 
-  using RandomImageSourceType = itk::RandomImageSource<ImageType>;
-  auto randomSource = RandomImageSourceType::New();
+  auto randomSource = itk::RandomImageSource<ImageType>::New();
   randomSource->SetSize(size);
 
   i0est->SetExpectedI0(23);

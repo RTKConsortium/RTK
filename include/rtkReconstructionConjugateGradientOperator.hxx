@@ -291,8 +291,7 @@ typename std::enable_if<std::is_same<TSingleComponentImage, ImageType>::value, I
 ReconstructionConjugateGradientOperator<TOutputImage, TSingleComponentImage, TWeightsImage>::
   ConnectGradientRegularization()
 {
-  using LaplacianFilterType = rtk::LaplacianImageFilter<TOutputImage, GradientImageType>;
-  m_LaplacianFilter = LaplacianFilterType::New();
+  m_LaplacianFilter = rtk::LaplacianImageFilter<TOutputImage, GradientImageType>::New();
   m_LaplacianFilter->SetInput(m_FloatingInputPointer);
   m_MultiplyLaplacianFilter = MultiplyFilterType::New();
   m_MultiplyLaplacianFilter->SetInput1(m_LaplacianFilter->GetOutput());

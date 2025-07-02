@@ -51,11 +51,8 @@ rtk::VarianProBeamGeometryReader ::GenerateData()
   // Projection matrices
   for (const std::string & projectionsFileName : m_ProjectionsFileNames)
   {
-    using InputPixelType = unsigned int;
-    using InputImageType = itk::Image<InputPixelType, 2>;
 
-    using ReaderType = itk::ImageFileReader<InputImageType>;
-    auto reader = ReaderType::New();
+    auto reader = itk::ImageFileReader<itk::Image<unsigned int, 2>>::New();
     reader->SetFileName(projectionsFileName);
     reader->UpdateOutputInformation();
 

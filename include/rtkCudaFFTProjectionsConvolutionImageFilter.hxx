@@ -151,8 +151,7 @@ CudaFFTProjectionsConvolutionImageFilter<TParentImageFilter>::GPUGenerateData()
   progress.CompletedPixel();
 
   // CUDA Cropping and Graft Output
-  using CropFilter = CudaCropImageFilter;
-  auto                                           cf = CropFilter::New();
+  auto                                           cf = CudaCropImageFilter::New();
   typename Superclass::OutputImageType::SizeType upCropSize, lowCropSize;
   for (unsigned int i = 0; i < CudaImageType::ImageDimension; i++)
   {

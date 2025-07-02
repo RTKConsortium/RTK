@@ -88,16 +88,12 @@ TOutputPixel
 Reg1DExtractShroudSignalImageFilter<TInputPixel, TOutputPixel>::register1D(const RegisterImageType * f,
                                                                            const RegisterImageType * m)
 {
-  using TransformType = itk::TranslationTransform<TOutputPixel, 1>;
-  using OptimizerType = itk::RegularStepGradientDescentOptimizer;
-  using MetricType = itk::MeanSquaresImageToImageMetric<RegisterImageType, RegisterImageType>;
-  using InterpolatorType = itk::LinearInterpolateImageFunction<RegisterImageType, TOutputPixel>;
   using RegistrationType = itk::ImageRegistrationMethod<RegisterImageType, RegisterImageType>;
 
-  auto metric = MetricType::New();
-  auto transform = TransformType::New();
-  auto optimizer = OptimizerType::New();
-  auto interpolator = InterpolatorType::New();
+  auto metric = itk::MeanSquaresImageToImageMetric<RegisterImageType, RegisterImageType>::New();
+  auto transform = itk::TranslationTransform<TOutputPixel, 1>::New();
+  auto optimizer = itk::RegularStepGradientDescentOptimizer::New();
+  auto interpolator = itk::LinearInterpolateImageFunction<RegisterImageType, TOutputPixel>::New();
   auto registration = RegistrationType::New();
 
   registration->SetMetric(metric);
@@ -109,8 +105,7 @@ Reg1DExtractShroudSignalImageFilter<TInputPixel, TOutputPixel>::register1D(const
   registration->SetMovingImage(m);
   registration->SetFixedImageRegion(f->GetLargestPossibleRegion());
 
-  using ParametersType = typename RegistrationType::ParametersType;
-  ParametersType initialParameters(transform->GetNumberOfParameters());
+  typename RegistrationType::ParametersType initialParameters(transform->GetNumberOfParameters());
   // Initial offset along X
   initialParameters[0] = itk::NumericTraits<TOutputPixel>::Zero;
 
@@ -132,14 +127,12 @@ Reg1DExtractShroudSignalImageFilter<TInputPixel, TOutputPixel>::GenerateData()
 {
   this->AllocateOutputs();
 
-  using ExtractFilterType = itk::ExtractImageFilter<TInputImage, RegisterImageType>;
-  using DuplicatorType = itk::ImageDuplicator<RegisterImageType>;
 
   typename TInputImage::ConstPointer input = this->GetInput();
   typename TInputImage::RegionType   inputRegion = input->GetLargestPossibleRegion();
   typename TInputImage::SizeType     inputSize = inputRegion.GetSize();
 
-  auto extractor = ExtractFilterType::New();
+  auto extractor = itk::ExtractImageFilter<TInputImage, RegisterImageType>::New();
   extractor->SetInput(input);
 
   typename TInputImage::RegionType extractRegion;
@@ -153,7 +146,7 @@ Reg1DExtractShroudSignalImageFilter<TInputPixel, TOutputPixel>::GenerateData()
   extractor->SetExtractionRegion(extractRegion);
   extractor->SetDirectionCollapseToIdentity();
   extractor->Update();
-  auto duplicator = DuplicatorType::New();
+  auto duplicator = itk::ImageDuplicator<RegisterImageType>::New();
   duplicator->SetInputImage(extractor->GetOutput());
   duplicator->Update();
   const RegisterImageType * prev = duplicator->GetOutput();

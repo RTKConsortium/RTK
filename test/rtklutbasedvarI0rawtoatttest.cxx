@@ -12,7 +12,6 @@
  */
 
 using ShortImageType = itk::Image<unsigned short, 2>;
-using FloatImageType = itk::Image<float, 2>;
 
 void
 fillImageWithRawData(ShortImageType::Pointer image, unsigned short I0)
@@ -32,8 +31,7 @@ fillImageWithRawData(ShortImageType::Pointer image, unsigned short I0)
 int
 main(int, char **)
 {
-  using ConvertFilterType = rtk::LUTbasedVariableI0RawToAttenuationImageFilter<ShortImageType, FloatImageType>;
-  auto convert = ConvertFilterType::New();
+  auto convert = rtk::LUTbasedVariableI0RawToAttenuationImageFilter<ShortImageType, itk::Image<float, 2>>::New();
 
   // Constant image sources
   ShortImageType::RegionType region;

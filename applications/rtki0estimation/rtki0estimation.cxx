@@ -33,12 +33,10 @@ main(int argc, char * argv[])
 {
   GGO(rtki0estimation, args_info);
 
-  using InputPixelType = unsigned short;
   constexpr unsigned int Dimension = 3;
-  using InputImageType = itk::Image<InputPixelType, Dimension>;
+  using InputImageType = itk::Image<unsigned short, Dimension>;
 
-  using ReaderType = rtk::ProjectionsReader<InputImageType>;
-  auto reader = ReaderType::New();
+  auto reader = rtk::ProjectionsReader<InputImageType>::New();
   reader->SetFileNames(rtk::GetProjectionsFileNamesFromGgo(args_info));
   TRY_AND_EXIT_ON_ITK_EXCEPTION(reader->UpdateOutputInformation())
 
@@ -55,7 +53,6 @@ main(int argc, char * argv[])
   extractSize[2] = 1;
   InputImageType::IndexType start = subsetRegion.GetIndex();
 
-  using I0FilterType = rtk::I0EstimationProjectionFilter<InputImageType, InputImageType, 2>;
 
   std::vector<unsigned short> I0buffer;
 
@@ -73,7 +70,7 @@ main(int argc, char * argv[])
     }
   }
 
-  auto i0est = I0FilterType::New();
+  auto i0est = rtk::I0EstimationProjectionFilter<InputImageType, InputImageType, 2>::New();
 
   if (args_info.lambda_given)
   {

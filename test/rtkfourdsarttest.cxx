@@ -148,12 +148,11 @@ main(int, char **)
 
   // Projections
   using REIType = rtk::RayEllipsoidIntersectionImageFilter<VolumeType, ProjectionStackType>;
-  using PasteImageFilterType = itk::PasteImageFilter<ProjectionStackType, ProjectionStackType, ProjectionStackType>;
   ProjectionStackType::IndexType destinationIndex;
   destinationIndex[0] = 0;
   destinationIndex[1] = 0;
   destinationIndex[2] = 0;
-  auto pasteFilter = PasteImageFilterType::New();
+  auto pasteFilter = itk::PasteImageFilter<ProjectionStackType, ProjectionStackType, ProjectionStackType>::New();
   pasteFilter->SetDestinationImage(projectionsSource->GetOutput());
 
 #ifdef USE_CUDA
@@ -218,8 +217,7 @@ main(int, char **)
 
   // Ground truth
   auto * Volumes = new VolumeType::Pointer[fourDSize[3]];
-  using JoinFilterType = itk::JoinSeriesImageFilter<VolumeType, VolumeSeriesType>;
-  auto join = JoinFilterType::New();
+  auto   join = itk::JoinSeriesImageFilter<VolumeType, VolumeSeriesType>::New();
 
   for (itk::SizeValueType n = 0; n < fourDSize[3]; n++)
   {

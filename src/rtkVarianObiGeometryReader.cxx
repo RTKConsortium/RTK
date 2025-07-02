@@ -49,9 +49,9 @@ rtk::VarianObiGeometryReader ::GenerateData()
   const double sdd = dynamic_cast<MetaDataDoubleType *>(dic["CalibratedSID"].GetPointer())->GetMetaDataObjectValue();
   const double sid = dynamic_cast<MetaDataDoubleType *>(dic["CalibratedSAD"].GetPointer())->GetMetaDataObjectValue();
 
-  using MetaDataStringType = itk::MetaDataObject<std::string>;
   double      offsetx = NAN;
-  std::string fanType = dynamic_cast<const MetaDataStringType *>(dic["FanType"].GetPointer())->GetMetaDataObjectValue();
+  std::string fanType =
+    dynamic_cast<const itk::MetaDataObject<std::string> *>(dic["FanType"].GetPointer())->GetMetaDataObjectValue();
   if (itksys::SystemTools::Strucmp(fanType.c_str(), "HalfFan") == 0)
   {
     // Half Fan (offset detector), get lateral offset from XML file
@@ -75,11 +75,8 @@ rtk::VarianObiGeometryReader ::GenerateData()
   // Projection matrices
   for (const std::string & projectionsFileName : m_ProjectionsFileNames)
   {
-    using InputPixelType = unsigned int;
-    using InputImageType = itk::Image<InputPixelType, 2>;
 
-    using ReaderType = itk::ImageFileReader<InputImageType>;
-    auto reader = ReaderType::New();
+    auto reader = itk::ImageFileReader<itk::Image<unsigned int, 2>>::New();
     reader->SetFileName(projectionsFileName);
     reader->UpdateOutputInformation();
 

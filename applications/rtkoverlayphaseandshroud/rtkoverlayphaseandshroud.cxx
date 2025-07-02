@@ -34,11 +34,10 @@ main(int argc, char * argv[])
 {
   GGO(rtkoverlayphaseandshroud, args_info);
 
-  using InputPixelType = double;
   using RGBPixelType = itk::RGBPixel<unsigned char>;
   constexpr unsigned int Dimension = 2;
 
-  using InputImageType = itk::Image<InputPixelType, Dimension>;
+  using InputImageType = itk::Image<double, Dimension>;
   using OutputImageType = itk::Image<RGBPixelType, Dimension>;
 
   // Read
@@ -46,8 +45,7 @@ main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION(readImage = itk::ReadImage<InputImageType>(args_info.input_arg))
 
   // Read signal file
-  using ReaderType = itk::CSVArray2DFileReader<double>;
-  auto signalReader = ReaderType::New();
+  auto signalReader = itk::CSVArray2DFileReader<double>::New();
   signalReader->SetFileName(args_info.signal_arg);
   signalReader->SetFieldDelimiterCharacter(';');
   signalReader->HasRowHeadersOff();

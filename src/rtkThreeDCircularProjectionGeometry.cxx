@@ -534,8 +534,7 @@ rtk::ThreeDCircularProjectionGeometry::GetAngularGaps(const std::vector<double> 
 rtk::ThreeDCircularProjectionGeometry::ThreeDHomogeneousMatrixType
 rtk::ThreeDCircularProjectionGeometry::ComputeRotationHomogeneousMatrix(double angleX, double angleY, double angleZ)
 {
-  using ThreeDTransformType = itk::CenteredEuler3DTransform<double>;
-  auto xfm = ThreeDTransformType::New();
+  auto xfm = itk::CenteredEuler3DTransform<double>::New();
   xfm->SetIdentity();
   xfm->SetRotation(angleX, angleY, angleZ);
 

@@ -105,9 +105,8 @@ CudaWarpBackProjectionImageFilter ::GenerateInputRequestedRegion()
     }
     else
     {
-      using DisplacementRegionType = DVFType::RegionType;
 
-      DisplacementRegionType fieldRequestedRegion = itk::ImageAlgorithm::EnlargeRegionOverBox(
+      DVFType::RegionType fieldRequestedRegion = itk::ImageAlgorithm::EnlargeRegionOverBox(
         outputPtr->GetRequestedRegion(), outputPtr.GetPointer(), fieldPtr.GetPointer());
       fieldPtr->SetRequestedRegion(fieldRequestedRegion);
     }
@@ -133,9 +132,9 @@ CudaWarpBackProjectionImageFilter ::GPUGenerateData()
   // Rotation center (assumed to be at 0 yet)
   ImageType::PointType rotCenterPoint;
   rotCenterPoint.Fill(0.0);
-  using ValueType = ImageType::PointType::ValueType;
   itk::ContinuousIndex<double, Dimension> rotCenterIndex =
-    this->GetInputVolume()->TransformPhysicalPointToContinuousIndex<ValueType, double>(rotCenterPoint);
+    this->GetInputVolume()->TransformPhysicalPointToContinuousIndex<ImageType::PointType::ValueType, double>(
+      rotCenterPoint);
 
   // Include non-zero index in matrix
   itk::Matrix<double, 4, 4> matrixIdxVol;

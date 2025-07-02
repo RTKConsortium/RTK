@@ -10,16 +10,14 @@ int
 main(int, char **)
 {
   constexpr unsigned int Dimension = 3;
-  using PixelType = float;
-  using ImageType = itk::CudaImage<PixelType, Dimension>;
+  using ImageType = itk::CudaImage<float, Dimension>;
 
   auto image = ImageType::New();
   image->SetRegions(itk::MakeSize(50, 50, 50));
   image->Allocate();
   image->FillBuffer(12.3);
 
-  using CropImageFilter = rtk::CudaCropImageFilter;
-  auto crop = CropImageFilter::New();
+  auto crop = rtk::CudaCropImageFilter::New();
   crop->SetInput(image);
   crop->SetLowerBoundaryCropSize(itk::MakeSize(1, 1, 1));
   crop->SetUpperBoundaryCropSize(itk::MakeSize(10, 10, 10));

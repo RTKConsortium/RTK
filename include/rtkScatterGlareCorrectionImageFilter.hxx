@@ -88,15 +88,13 @@ ScatterGlareCorrectionImageFilter<TInputImage, TOutputImage, TFFTPrecision>::Upd
   }
 
   // FFT kernel
-  using ForwardFFTType = itk::RealToHalfHermitianForwardFFTImageFilter<FFTInputImageType, FFTOutputImageType>;
-  auto fftK = ForwardFFTType::New();
+  auto fftK = itk::RealToHalfHermitianForwardFFTImageFilter<FFTInputImageType, FFTOutputImageType>::New();
   fftK->SetInput(kernel);
   fftK->SetNumberOfWorkUnits(this->GetNumberOfWorkUnits());
   fftK->Update();
 
   // Inverse
-  using DivideType = itk::DivideImageFilter<FFTOutputImageType, FFTOutputImageType, FFTOutputImageType>;
-  auto div = DivideType::New();
+  auto div = itk::DivideImageFilter<FFTOutputImageType, FFTOutputImageType, FFTOutputImageType>::New();
   div->SetConstant1(1.);
   div->SetInput(1, fftK->GetOutput());
   div->SetNumberOfWorkUnits(this->GetNumberOfWorkUnits());

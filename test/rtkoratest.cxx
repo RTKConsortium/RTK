@@ -90,9 +90,8 @@ main(int argc, char * argv[])
   // ******* COMPARING projections *******
   std::cout << "Testing attenuation conversion..." << std::endl;
 
-  using OutputPixelType = float;
   constexpr unsigned int Dimension = 3;
-  using ImageType = itk::Image<OutputPixelType, Dimension>;
+  using ImageType = itk::Image<float, Dimension>;
 
   // Projections reader
   using ReaderType = rtk::ProjectionsReader<ImageType>;
@@ -109,8 +108,7 @@ main(int argc, char * argv[])
   reader->SetDirection(direction);
 
   // Create projection image filter
-  using OFMType = rtk::MaskCollimationImageFilter<ImageType, ImageType>;
-  auto ofm = OFMType::New();
+  auto ofm = rtk::MaskCollimationImageFilter<ImageType, ImageType>::New();
   ofm->SetInput(reader->GetOutput());
   ofm->SetGeometry(geoTargReader->GetModifiableGeometry());
 

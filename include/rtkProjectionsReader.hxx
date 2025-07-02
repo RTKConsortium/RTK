@@ -218,8 +218,7 @@ ProjectionsReader<TOutputImage>::GenerateOutputInformation()
       {
         /////////// XRad
         // Convert raw to Projections
-        using XRadRawFilterType = rtk::XRadRawToAttenuationImageFilter<InputImageType, OutputImageType>;
-        auto rawFilterXRad = XRadRawFilterType::New();
+        auto rawFilterXRad = rtk::XRadRawToAttenuationImageFilter<InputImageType, OutputImageType>::New();
         m_RawToAttenuationFilter = rawFilterXRad;
 
         // Or just cast to OutputImageType
@@ -659,8 +658,8 @@ ProjectionsReader<TOutputImage>::PropagateParametersToMiniPipeline()
     }
 
     // ESRF raw to attenuation converter also needs the filenames
-    using EdfRawFilterType = rtk::EdfRawToAttenuationImageFilter<TInputImage, OutputImageType>;
-    auto * edf = dynamic_cast<EdfRawFilterType *>(m_RawToAttenuationFilter.GetPointer());
+    auto * edf = dynamic_cast<rtk::EdfRawToAttenuationImageFilter<TInputImage, OutputImageType> *>(
+      m_RawToAttenuationFilter.GetPointer());
     if (edf)
       edf->SetFileNames(this->GetFileNames());
 

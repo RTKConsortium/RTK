@@ -61,8 +61,7 @@ RayConvexIntersectionImageFilter<TInputImage, TOutputImage>::DynamicThreadedGene
   using InputRegionIterator = ProjectionsRegionConstIteratorRayBased<TInputImage>;
   InputRegionIterator * itIn = nullptr;
   itIn = InputRegionIterator::New(this->GetInput(), outputRegionForThread, m_Geometry);
-  using OutputRegionIterator = itk::ImageRegionIteratorWithIndex<TOutputImage>;
-  OutputRegionIterator itOut(this->GetOutput(), outputRegionForThread);
+  itk::ImageRegionIteratorWithIndex<TOutputImage> itOut(this->GetOutput(), outputRegionForThread);
 
   // Go over each projection
   const double r = m_ConvexShape->GetDensity() / m_Attenuation;

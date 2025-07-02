@@ -71,8 +71,7 @@ main(int argc, char * argv[])
   // Create 4D input. Fill it either with an existing materials volume read from a file or a blank image
   VolumeSeriesType::Pointer input;
 
-  using VectorVolumeToVolumeSeriesFilterType = rtk::VectorImageToImageFilter<MaterialsVolumeType, VolumeSeriesType>;
-  auto vecVol2VolSeries = VectorVolumeToVolumeSeriesFilterType::New();
+  auto vecVol2VolSeries = rtk::VectorImageToImageFilter<MaterialsVolumeType, VolumeSeriesType>::New();
 
   if (args_info.input_given)
   {
@@ -182,9 +181,7 @@ main(int argc, char * argv[])
   }
 
   // Projections
-  using VectorProjectionsToProjectionsFilterType =
-    rtk::VectorImageToImageFilter<DecomposedProjectionType, ProjectionStackType>;
-  auto vproj2proj = VectorProjectionsToProjectionsFilterType::New();
+  auto vproj2proj = rtk::VectorImageToImageFilter<DecomposedProjectionType, ProjectionStackType>::New();
   vproj2proj->SetInput(decomposedProjection);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(vproj2proj->Update())
 
@@ -198,8 +195,7 @@ main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION(signalToInterpolationWeights->Update())
 
   // Set the forward and back projection filters to be used
-  using ROOSTERFilterType = rtk::FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>;
-  auto rooster = ROOSTERFilterType::New();
+  auto rooster = rtk::FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::New();
   SetForwardProjectionFromGgo(args_info, rooster.GetPointer());
   SetBackProjectionFromGgo(args_info, rooster.GetPointer());
   rooster->SetInputVolumeSeries(input);
@@ -280,8 +276,7 @@ main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION(rooster->Update())
 
   // Convert to result to a vector image
-  using VolumeSeriesToVectorVolumeFilterType = rtk::ImageToVectorImageFilter<VolumeSeriesType, MaterialsVolumeType>;
-  auto volSeries2VecVol = VolumeSeriesToVectorVolumeFilterType::New();
+  auto volSeries2VecVol = rtk::ImageToVectorImageFilter<VolumeSeriesType, MaterialsVolumeType>::New();
   volSeries2VecVol->SetInput(rooster->GetOutput());
   TRY_AND_EXIT_ON_ITK_EXCEPTION(volSeries2VecVol->Update())
 

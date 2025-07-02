@@ -59,8 +59,7 @@ main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION(geometry = rtk::ReadGeometry(args_info.geometry_arg));
 
   // Displaced detector weighting
-  using DDFType = rtk::DisplacedDetectorImageFilter<OutputImageType>;
-  auto ddf = DDFType::New();
+  auto ddf = rtk::DisplacedDetectorImageFilter<OutputImageType>::New();
   ddf->SetInput(projectionsReader->GetOutput());
   ddf->SetGeometry(geometry);
 
@@ -69,8 +68,7 @@ main(int argc, char * argv[])
   if (args_info.input_given)
   {
     // Read an existing image to initialize the volume
-    using InputReaderType = itk::ImageFileReader<OutputImageType>;
-    auto inputReader = InputReaderType::New();
+    auto inputReader = itk::ImageFileReader<OutputImageType>::New();
     inputReader->SetFileName(args_info.input_arg);
     inputFilter = inputReader;
   }

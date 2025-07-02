@@ -24,8 +24,7 @@ int
 main(int, char **)
 {
   constexpr unsigned int Dimension = 3;
-  using OutputPixelType = float;
-  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
+  using OutputImageType = itk::Image<float, Dimension>;
 #if FAST_TESTS_NO_CHECKS
   constexpr unsigned int NumberOfProjectionImages = 3;
 #else
@@ -76,29 +75,25 @@ main(int, char **)
   std::cout << "\n\n****** Case 1: centered detector ******" << std::endl;
 
   // Geometry
-  using GeometryType = rtk::ThreeDCircularProjectionGeometry;
-  auto geometry = GeometryType::New();
+  auto geometry = rtk::ThreeDCircularProjectionGeometry::New();
   for (unsigned int noProj = 0; noProj < NumberOfProjectionImages; noProj++)
     geometry->AddProjection(600, 1200., noProj * 360. / NumberOfProjectionImages);
 
   // FOV
-  using FOVFilterType = rtk::FieldOfViewImageFilter<OutputImageType, OutputImageType>;
-  auto fov = FOVFilterType::New();
+  auto fov = rtk::FieldOfViewImageFilter<OutputImageType, OutputImageType>::New();
   fov->SetInput(0, fovInput->GetOutput());
   fov->SetProjectionsStack(projectionsSource->GetOutput());
   fov->SetGeometry(geometry);
   fov->Update();
 
   // Backprojection reconstruction filter
-  using BPType = rtk::BackProjectionImageFilter<OutputImageType, OutputImageType>;
-  auto bp = BPType::New();
+  auto bp = rtk::BackProjectionImageFilter<OutputImageType, OutputImageType>::New();
   bp->SetInput(0, bpInput->GetOutput());
   bp->SetInput(1, projectionsSource->GetOutput());
   bp->SetGeometry(geometry.GetPointer());
 
   // Thresholded to the number of projections
-  using ThresholdType = itk::BinaryThresholdImageFilter<OutputImageType, OutputImageType>;
-  auto threshold = ThresholdType::New();
+  auto threshold = itk::BinaryThresholdImageFilter<OutputImageType, OutputImageType>::New();
   threshold->SetInput(bp->GetOutput());
   threshold->SetOutsideValue(0.);
   threshold->SetLowerThreshold(NumberOfProjectionImages - 0.01);

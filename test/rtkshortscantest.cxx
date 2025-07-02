@@ -73,14 +73,12 @@ main(int, char **)
   projectionsSource->SetConstant(0.);
 
   // Geometry object
-  using GeometryType = rtk::ThreeDCircularProjectionGeometry;
-  auto geometry = GeometryType::New();
+  auto geometry = rtk::ThreeDCircularProjectionGeometry::New();
   for (unsigned int noProj = 0; noProj < NumberOfProjectionImages; noProj++)
     geometry->AddProjection(600., 1200., noProj * ArcSize / NumberOfProjectionImages);
 
   // Shepp Logan projections filter
-  using SLPType = rtk::SheppLoganPhantomFilter<OutputImageType, OutputImageType>;
-  auto slp = SLPType::New();
+  auto slp = rtk::SheppLoganPhantomFilter<OutputImageType, OutputImageType>::New();
   slp->SetInput(projectionsSource->GetOutput());
   slp->SetGeometry(geometry);
   slp->SetPhantomScale(116);
@@ -99,15 +97,13 @@ main(int, char **)
   pssf->Update();
 
   // Create a reference object (in this case a 3D phantom reference).
-  using DSLType = rtk::DrawSheppLoganFilter<OutputImageType, OutputImageType>;
-  auto dsl = DSLType::New();
+  auto dsl = rtk::DrawSheppLoganFilter<OutputImageType, OutputImageType>::New();
   dsl->SetInput(tomographySource->GetOutput());
   dsl->SetPhantomScale(116);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(dsl->Update())
 
   // FDK reconstruction filtering
-  using FDKCPUType = rtk::FDKConeBeamReconstructionFilter<OutputImageType>;
-  auto feldkamp = FDKCPUType::New();
+  auto feldkamp = rtk::FDKConeBeamReconstructionFilter<OutputImageType>::New();
   feldkamp->SetInput(0, tomographySource->GetOutput());
   feldkamp->SetInput(1, pssf->GetOutput());
   feldkamp->SetGeometry(geometry);

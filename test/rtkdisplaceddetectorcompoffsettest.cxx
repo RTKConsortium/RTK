@@ -22,27 +22,23 @@ int
 main(int, char **)
 {
   constexpr unsigned int Dimension = 3;
-  using OutputPixelType = float;
-  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
+  using OutputImageType = itk::Image<float, Dimension>;
 
   // Constant image sources
-  using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
-  auto projSource = ConstantImageSourceType::New();
+  auto projSource = rtk::ConstantImageSource<OutputImageType>::New();
   projSource->SetOrigin(itk::MakePoint(-508., -3., 0.));
   projSource->SetSpacing(itk::MakeVector(8., 2., 2.));
   projSource->SetSize(itk::MakeSize(128, 4, 4));
 
   // Geometry
-  using GeometryType = rtk::ThreeDCircularProjectionGeometry;
-  auto geometry = GeometryType::New();
+  auto geometry = rtk::ThreeDCircularProjectionGeometry::New();
   geometry->AddProjection(600., 560., 0., 3., 0., 0., 0., 2., 0.);
   geometry->AddProjection(500., 545., 90., 2., 0., 0., 0., 4., 0.);
   geometry->AddProjection(700., 790., 180., 8., 0., 0., 0., 5., 0.);
   geometry->AddProjection(900., 935., 270., 4., 0., 0., 0., 8., 0.);
 
   // Projections
-  using SLPType = rtk::SheppLoganPhantomFilter<OutputImageType, OutputImageType>;
-  auto slp = SLPType::New();
+  auto slp = rtk::SheppLoganPhantomFilter<OutputImageType, OutputImageType>::New();
   slp->SetInput(projSource->GetOutput());
   slp->SetGeometry(geometry);
   slp->SetPhantomScale(116);

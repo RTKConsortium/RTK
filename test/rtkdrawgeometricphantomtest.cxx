@@ -36,12 +36,10 @@ main(int argc, char * argv[])
   }
 
   constexpr unsigned int Dimension = 3;
-  using OutputPixelType = float;
-  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
+  using OutputImageType = itk::Image<float, Dimension>;
 
   // Constant image sources
-  using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
-  auto tomographySource = ConstantImageSourceType::New();
+  auto tomographySource = rtk::ConstantImageSource<OutputImageType>::New();
   auto origin = itk::MakePoint(-127., -127., -127.);
 #if FAST_TESTS_NO_CHECKS
   auto spacing = itk::MakeVector(254., 254., 254.);
@@ -60,16 +58,14 @@ main(int argc, char * argv[])
   //////////////////////////////////
 
   // Shepp Logan reference filter
-  using DSLType = rtk::DrawSheppLoganFilter<OutputImageType, OutputImageType>;
-  auto dsl = DSLType::New();
+  auto dsl = rtk::DrawSheppLoganFilter<OutputImageType, OutputImageType>::New();
   dsl->SetInput(tomographySource->GetOutput());
   dsl->SetPhantomScale(128.);
   dsl->InPlaceOff();
   TRY_AND_EXIT_ON_ITK_EXCEPTION(dsl->Update());
 
   // Shepp Logan reference filter from Configuration File
-  using DGPType = rtk::DrawGeometricPhantomImageFilter<OutputImageType, OutputImageType>;
-  auto dgp = DGPType::New();
+  auto dgp = rtk::DrawGeometricPhantomImageFilter<OutputImageType, OutputImageType>::New();
   dgp->SetInput(tomographySource->GetOutput());
   dgp->InPlaceOff();
   dgp->SetConfigFile(argv[1]);
@@ -100,8 +96,7 @@ main(int argc, char * argv[])
   //    center.push_back(2.);
 
   // Draw CYLINDER
-  using DCType = rtk::DrawCylinderImageFilter<OutputImageType, OutputImageType>;
-  auto dcl = DCType::New();
+  auto dcl = rtk::DrawCylinderImageFilter<OutputImageType, OutputImageType>::New();
 
   dcl->SetInput(tomographySource->GetOutput());
   dcl->SetAxis(itk::MakeVector(100., 0., 100.));
@@ -111,8 +106,7 @@ main(int argc, char * argv[])
   dcl->InPlaceOff();
 
   // Draw CONE
-  using DCOType = rtk::DrawConeImageFilter<OutputImageType, OutputImageType>;
-  auto dco = DCOType::New();
+  auto dco = rtk::DrawConeImageFilter<OutputImageType, OutputImageType>::New();
   dco->SetInput(tomographySource->GetOutput());
   dco->SetAxis(itk::MakeVector(25., -50., 25.));
   dco->SetCenter(itk::MakeVector(2., 2., 2.));
@@ -120,8 +114,7 @@ main(int argc, char * argv[])
   dco->SetDensity(-0.54);
 
   // Add Image Filter used to concatenate the different figures obtained on each iteration
-  using AddImageFilterType = itk::AddImageFilter<OutputImageType, OutputImageType, OutputImageType>;
-  auto addFilter = AddImageFilterType::New();
+  auto addFilter = itk::AddImageFilter<OutputImageType, OutputImageType, OutputImageType>::New();
 
   addFilter->SetInput1(dcl->GetOutput());
   addFilter->SetInput2(dco->GetOutput());

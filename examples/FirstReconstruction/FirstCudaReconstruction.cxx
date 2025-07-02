@@ -21,8 +21,7 @@ main(int argc, char ** argv)
   using ImageType = itk::CudaImage<float, 3>;
 
   // Defines the RTK geometry object
-  using GeometryType = rtk::ThreeDCircularProjectionGeometry;
-  auto         geometry = GeometryType::New();
+  auto         geometry = rtk::ThreeDCircularProjectionGeometry::New();
   unsigned int numberOfProjections = 360;
   double       firstAngle = 0;
   double       angularArc = 360;
@@ -50,8 +49,7 @@ main(int argc, char ** argv)
   constantImageSource->SetConstant(0.);
 
   // Create projections of an ellipse
-  using REIType = rtk::RayEllipsoidIntersectionImageFilter<ImageType, ImageType>;
-  auto rei = REIType::New();
+  auto rei = rtk::RayEllipsoidIntersectionImageFilter<ImageType, ImageType>::New();
   rei->SetDensity(2.);
   rei->SetAngle(0.);
   rei->SetCenter(itk::MakePoint(0., 0., 10.));
@@ -68,8 +66,7 @@ main(int argc, char ** argv)
 
   // FDK reconstruction
   std::cout << "Reconstructing..." << std::endl;
-  using FDKGPUType = rtk::CudaFDKConeBeamReconstructionFilter;
-  auto feldkamp = FDKGPUType::New();
+  auto feldkamp = rtk::CudaFDKConeBeamReconstructionFilter::New();
   feldkamp->SetInput(0, constantImageSource2->GetOutput());
   feldkamp->SetInput(1, rei->GetOutput());
   feldkamp->SetGeometry(geometry);
@@ -77,16 +74,14 @@ main(int argc, char ** argv)
   feldkamp->GetRampFilter()->SetHannCutFrequency(0.0);
 
   // Field-of-view masking
-  using FOVFilterType = rtk::FieldOfViewImageFilter<ImageType, ImageType>;
-  auto fieldofview = FOVFilterType::New();
+  auto fieldofview = rtk::FieldOfViewImageFilter<ImageType, ImageType>::New();
   fieldofview->SetInput(0, feldkamp->GetOutput());
   fieldofview->SetProjectionsStack(rei->GetOutput());
   fieldofview->SetGeometry(geometry);
 
   // Writer
   std::cout << "Writing output image..." << std::endl;
-  using WriterType = itk::ImageFileWriter<ImageType>;
-  auto writer = WriterType::New();
+  auto writer = itk::ImageFileWriter<ImageType>::New();
   writer->SetFileName(argv[1]);
   writer->SetInput(fieldofview->GetOutput());
   writer->Update();

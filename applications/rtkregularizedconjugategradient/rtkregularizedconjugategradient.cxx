@@ -57,8 +57,7 @@ main(int argc, char * argv[])
   if (args_info.input_given)
   {
     // Read an existing image to initialize the volume
-    using InputReaderType = itk::ImageFileReader<OutputImageType>;
-    auto inputReader = InputReaderType::New();
+    auto inputReader = itk::ImageFileReader<OutputImageType>::New();
     inputReader->SetFileName(args_info.input_arg);
     inputFilter = inputReader;
   }
@@ -78,15 +77,13 @@ main(int argc, char * argv[])
   itk::ImageSource<OutputImageType>::Pointer weightsSource;
   if (args_info.weights_given)
   {
-    using WeightsReaderType = itk::ImageFileReader<OutputImageType>;
-    auto weightsReader = WeightsReaderType::New();
+    auto weightsReader = itk::ImageFileReader<OutputImageType>::New();
     weightsReader->SetFileName(args_info.weights_arg);
     weightsSource = weightsReader;
   }
   else
   {
-    using ConstantWeightsSourceType = rtk::ConstantImageSource<OutputImageType>;
-    auto constantWeightsSource = ConstantWeightsSourceType::New();
+    auto constantWeightsSource = rtk::ConstantImageSource<OutputImageType>::New();
 
     // Set the weights to be like the projections
     TRY_AND_EXIT_ON_ITK_EXCEPTION(reader->UpdateOutputInformation())

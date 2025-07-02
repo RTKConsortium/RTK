@@ -28,9 +28,8 @@ main(int argc, char * argv[])
 {
   GGO(rtkdrawgeometricphantom, args_info);
 
-  using OutputPixelType = float;
   constexpr unsigned int Dimension = 3;
-  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
+  using OutputImageType = itk::Image<float, Dimension>;
 
   // Empty volume image
   using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
@@ -94,8 +93,7 @@ main(int argc, char * argv[])
   OutputImageType::Pointer output = dq->GetOutput();
   if (args_info.noise_given)
   {
-    using NIFType = rtk::AdditiveGaussianNoiseImageFilter<OutputImageType>;
-    auto noisy = NIFType::New();
+    auto noisy = rtk::AdditiveGaussianNoiseImageFilter<OutputImageType>::New();
     noisy->SetInput(output);
     noisy->SetMean(0.0);
     noisy->SetStandardDeviation(args_info.noise_arg);

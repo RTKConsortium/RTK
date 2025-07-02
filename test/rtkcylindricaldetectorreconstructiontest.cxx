@@ -94,8 +94,7 @@ main(int, char **)
   TRY_AND_EXIT_ON_ITK_EXCEPTION(rei->Update());
 
   // Create REFERENCE object (3D ellipsoid).
-  using DEType = rtk::DrawEllipsoidImageFilter<OutputImageType, OutputImageType>;
-  auto dsl = DEType::New();
+  auto dsl = rtk::DrawEllipsoidImageFilter<OutputImageType, OutputImageType>::New();
   dsl->SetInput(tomographySource->GetOutput());
   TRY_AND_EXIT_ON_ITK_EXCEPTION(dsl->Update())
 

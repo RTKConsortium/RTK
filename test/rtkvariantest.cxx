@@ -55,9 +55,8 @@ main(int argc, char * argv[])
   CheckGeometries(geoTargReader->GetGeometry(), geoRefReader->GetOutputObject());
 
   // ******* COMPARING projections *******
-  using OutputPixelType = float;
   constexpr unsigned int Dimension = 3;
-  using ImageType = itk::Image<OutputPixelType, Dimension>;
+  using ImageType = itk::Image<float, Dimension>;
 
   // Varian projections reader
   using ReaderType = rtk::ProjectionsReader<ImageType>;

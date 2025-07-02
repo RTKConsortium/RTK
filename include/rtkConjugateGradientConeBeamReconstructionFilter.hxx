@@ -223,10 +223,9 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage, TSingleComponentImag
   if (this->GetInputWeights().IsNull())
   {
     using PixelType = typename TWeightsImage::PixelType;
-    using ComponentType = typename itk::PixelTraits<PixelType>::ValueType;
     auto ones = ConstantWeightSourceType::New();
     ones->SetInformationFromImage(this->GetInputProjectionStack());
-    ones->SetConstant(PixelType(itk::NumericTraits<ComponentType>::One));
+    ones->SetConstant(PixelType(itk::NumericTraits<typename itk::PixelTraits<PixelType>::ValueType>::One));
     ones->Update();
     this->SetInputWeights(ones->GetOutput());
   }

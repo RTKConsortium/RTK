@@ -53,8 +53,7 @@ ProjectGeometricPhantomImageFilter<TInputImage, TOutputImage>::GenerateData()
   // Reading figure config file
   if (!m_ConfigFile.empty())
   {
-    using ReaderType = rtk::ForbildPhantomFileReader;
-    auto reader = ReaderType::New();
+    auto reader = rtk::ForbildPhantomFileReader::New();
     reader->SetFilename(m_ConfigFile);
     reader->GenerateOutputInformation();
     this->m_GeometricPhantom = reader->GetGeometricPhantom();

@@ -27,12 +27,10 @@ main(int argc, char * argv[])
   GGO(rtkimagxgeometry, args_info);
 
   // Image Type
-  using OutputPixelType = float;
   constexpr unsigned int Dimension = 3;
-  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
 
   // Create geometry reader
-  auto imagxReader = rtk::ImagXGeometryReader<OutputImageType>::New();
+  auto imagxReader = rtk::ImagXGeometryReader<itk::Image<float, Dimension>>::New();
   imagxReader->SetProjectionsFileNames(rtk::GetProjectionsFileNamesFromGgo(args_info));
   if (args_info.calibration_given)
   {

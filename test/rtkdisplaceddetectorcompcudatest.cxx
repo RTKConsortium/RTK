@@ -22,27 +22,23 @@ int
 main(int, char **)
 {
   constexpr unsigned int Dimension = 3;
-  using OutputPixelType = float;
-  using OutputImageType = itk::CudaImage<OutputPixelType, Dimension>;
+  using OutputImageType = itk::CudaImage<float, Dimension>;
 
   // Constant image sources
-  using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
-  auto projSource = ConstantImageSourceType::New();
+  auto projSource = rtk::ConstantImageSource<OutputImageType>::New();
   projSource->SetOrigin(itk::MakePoint(-127., -3., 0.));
   projSource->SetSpacing(itk::MakeVector(2., 2., 2.));
   projSource->SetSize(itk::MakeSize(128, 4, 4));
 
   // Geometry
-  using GeometryType = rtk::ThreeDCircularProjectionGeometry;
-  auto geometry = GeometryType::New();
+  auto geometry = rtk::ThreeDCircularProjectionGeometry::New();
   geometry->AddProjection(600., 700., 0., 84., 35, 23, 15, 21, 26);
   geometry->AddProjection(500., 800., 45., 21., 12, 16, 546, 14, 41);
   geometry->AddProjection(700., 900., 90., 68., 68, 54, 38, 35, 56);
   geometry->AddProjection(900., 1000., 135., 48., 35, 84, 10, 84, 59);
 
   // Projections
-  using SLPType = rtk::SheppLoganPhantomFilter<OutputImageType, OutputImageType>;
-  auto slp = SLPType::New();
+  auto slp = rtk::SheppLoganPhantomFilter<OutputImageType, OutputImageType>::New();
   slp->SetInput(projSource->GetOutput());
   slp->SetGeometry(geometry);
   slp->SetPhantomScale(116);

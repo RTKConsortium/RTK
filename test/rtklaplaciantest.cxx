@@ -42,8 +42,7 @@ main(int argc, char * argv[])
 #endif
 
   // Constant image sources
-  using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
-  auto tomographySource = ConstantImageSourceType::New();
+  auto tomographySource = rtk::ConstantImageSource<OutputImageType>::New();
   auto origin = itk::MakePoint(-127., -127., -127.);
 #if FAST_TESTS_NO_CHECKS
   auto size = itk::MakeSize(2, 2, 2);
@@ -58,8 +57,7 @@ main(int argc, char * argv[])
   tomographySource->SetConstant(0.);
 
   // Generate a shepp logan phantom
-  using DSLType = rtk::DrawSheppLoganFilter<OutputImageType, OutputImageType>;
-  auto dsl = DSLType::New();
+  auto dsl = rtk::DrawSheppLoganFilter<OutputImageType, OutputImageType>::New();
   dsl->SetInput(tomographySource->GetOutput());
   dsl->SetPhantomScale(128.);
   dsl->InPlaceOff();
@@ -67,8 +65,7 @@ main(int argc, char * argv[])
 
 
   // Read a reference image
-  using ReaderType = itk::ImageFileReader<OutputImageType>;
-  auto readerRef = ReaderType::New();
+  auto readerRef = itk::ImageFileReader<OutputImageType>::New();
   readerRef->SetFileName(argv[1]);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(readerRef->Update());
 
@@ -76,8 +73,7 @@ main(int argc, char * argv[])
   std::cout << "\n\n****** Case 1: CPU laplacian ******" << std::endl;
 
   // Create and set the laplacian filter
-  using LaplacianFilterType = rtk::LaplacianImageFilter<OutputImageType, GradientImageType>;
-  auto laplacian = LaplacianFilterType::New();
+  auto laplacian = rtk::LaplacianImageFilter<OutputImageType, GradientImageType>::New();
   laplacian->SetInput(dsl->GetOutput());
 
   // Compute the laplacian of the shepp logan

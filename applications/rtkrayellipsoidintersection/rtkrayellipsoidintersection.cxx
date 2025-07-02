@@ -30,10 +30,9 @@ main(int argc, char * argv[])
 {
   GGO(rtkrayellipsoidintersection, args_info);
 
-  using OutputPixelType = float;
   constexpr unsigned int Dimension = 3;
 
-  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
+  using OutputImageType = itk::Image<float, Dimension>;
 
   // Geometry
   if (args_info.verbose_flag)
@@ -53,8 +52,7 @@ main(int argc, char * argv[])
     constantImageSource->GetSize()[0], constantImageSource->GetSize()[1], geometry->GetGantryAngles().size()));
 
   // Create projection image filter
-  using REIType = rtk::RayEllipsoidIntersectionImageFilter<OutputImageType, OutputImageType>;
-  auto rei = REIType::New();
+  auto rei = rtk::RayEllipsoidIntersectionImageFilter<OutputImageType, OutputImageType>::New();
 
   rei->SetDensity(args_info.mult_arg);
   if (args_info.axes_given > 0)

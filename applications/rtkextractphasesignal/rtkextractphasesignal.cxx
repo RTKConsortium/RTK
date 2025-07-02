@@ -45,10 +45,9 @@ main(int argc, char * argv[])
 {
   GGO(rtkextractphasesignal, args_info);
 
-  using PixelType = double;
   constexpr unsigned int Dimension = 1;
 
-  using ImageType = itk::Image<PixelType, Dimension>;
+  using ImageType = itk::Image<double, Dimension>;
 
   // Read
   ImageType::Pointer signal;

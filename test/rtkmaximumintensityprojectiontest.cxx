@@ -55,20 +55,17 @@ main(int, char **)
   projInput->Update();
 
   // MIP Forward Projection filter
-  using MIPType = rtk::MaximumIntensityProjectionImageFilter<OutputImageType, OutputImageType>;
-  auto mipfp = MIPType::New();
+  auto mipfp = rtk::MaximumIntensityProjectionImageFilter<OutputImageType, OutputImageType>::New();
   mipfp->SetInput(projInput->GetOutput());
   mipfp->SetInput(1, volInput->GetOutput());
 
-  using GeometryType = rtk::ThreeDCircularProjectionGeometry;
-  auto geometry = GeometryType::New();
+  auto geometry = rtk::ThreeDCircularProjectionGeometry::New();
   geometry->AddProjection(700, 800, 0);
 
   mipfp->SetGeometry(geometry);
   mipfp->Update();
 
-  using ConstIteratorType = itk::ImageRegionConstIterator<OutputImageType>;
-  ConstIteratorType inputIt(mipfp->GetOutput(), mipfp->GetOutput()->GetRequestedRegion());
+  itk::ImageRegionConstIterator<OutputImageType> inputIt(mipfp->GetOutput(), mipfp->GetOutput()->GetRequestedRegion());
 
   inputIt.GoToBegin();
 

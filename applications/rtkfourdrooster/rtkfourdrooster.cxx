@@ -64,8 +64,7 @@ main(int argc, char * argv[])
   if (args_info.input_given)
   {
     // Read an existing image to initialize the volume
-    using InputReaderType = itk::ImageFileReader<VolumeSeriesType>;
-    auto inputReader = InputReaderType::New();
+    auto inputReader = itk::ImageFileReader<VolumeSeriesType>::New();
     inputReader->SetFileName(args_info.input_arg);
     inputFilter = inputReader;
   }
@@ -95,8 +94,7 @@ main(int argc, char * argv[])
   // Re-order geometry and projections
   // In the new order, projections with identical phases are packed together
   std::vector<double> signal = rtk::ReadSignalFile(args_info.signal_arg);
-  using ReorderProjectionsFilterType = rtk::ReorderProjectionsImageFilter<ProjectionStackType>;
-  auto reorder = ReorderProjectionsFilterType::New();
+  auto                reorder = rtk::ReorderProjectionsImageFilter<ProjectionStackType>::New();
   reorder->SetInput(reader->GetOutput());
   reorder->SetInputGeometry(geometry);
   reorder->SetInputSignal(signal);

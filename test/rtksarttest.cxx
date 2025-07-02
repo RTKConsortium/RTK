@@ -72,8 +72,7 @@ main(int, char **)
   projectionsSource->SetConstant(0.);
 
   // Geometry object
-  using GeometryType = rtk::ThreeDCircularProjectionGeometry;
-  auto geometry = GeometryType::New();
+  auto geometry = rtk::ThreeDCircularProjectionGeometry::New();
   for (unsigned int noProj = 0; noProj < NumberOfProjectionImages; noProj++)
     geometry->AddProjection(600., 1200., noProj * 360. / NumberOfProjectionImages);
 
@@ -94,8 +93,7 @@ main(int, char **)
   TRY_AND_EXIT_ON_ITK_EXCEPTION(rei->Update());
 
   // Create REFERENCE object (3D ellipsoid).
-  using DEType = rtk::DrawEllipsoidImageFilter<OutputImageType, OutputImageType>;
-  auto dsl = DEType::New();
+  auto dsl = rtk::DrawEllipsoidImageFilter<OutputImageType, OutputImageType>::New();
   dsl->SetInput(tomographySource->GetOutput());
   TRY_AND_EXIT_ON_ITK_EXCEPTION(dsl->Update())
 

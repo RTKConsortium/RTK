@@ -182,8 +182,7 @@ main(int, char **)
   delete[] signal;
 
   // Perform regularization
-  using DenoisingFilterType = rtk::LastDimensionL0GradientDenoisingImageFilter<VolumeSeriesType>;
-  auto denoising = DenoisingFilterType::New();
+  auto denoising = rtk::LastDimensionL0GradientDenoisingImageFilter<VolumeSeriesType>::New();
   denoising->SetInput(input);
   denoising->SetLambda(0.3);
   denoising->SetNumberOfIterations(5);

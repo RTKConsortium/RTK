@@ -76,22 +76,19 @@ main(int, char **)
   projectionsSource->SetConstant(0.);
 
   // Geometry object
-  using GeometryType = rtk::ThreeDCircularProjectionGeometry;
-  auto geometry = GeometryType::New();
+  auto geometry = rtk::ThreeDCircularProjectionGeometry::New();
   for (unsigned int noProj = 0; noProj < NumberOfProjectionImages; noProj++)
     geometry->AddProjection(600., 1200., noProj * 360. / NumberOfProjectionImages, 0, 0, 0, 0, 20, 15);
 
   // Shepp Logan projections filter
-  using SLPType = rtk::SheppLoganPhantomFilter<OutputImageType, OutputImageType>;
-  auto slp = SLPType::New();
+  auto slp = rtk::SheppLoganPhantomFilter<OutputImageType, OutputImageType>::New();
   slp->SetInput(projectionsSource->GetOutput());
   slp->SetGeometry(geometry);
   slp->SetPhantomScale(116);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(slp->Update());
 
   // Create a reference object (in this case a 3D phantom reference).
-  using DSLType = rtk::DrawSheppLoganFilter<OutputImageType, OutputImageType>;
-  auto dsl = DSLType::New();
+  auto dsl = rtk::DrawSheppLoganFilter<OutputImageType, OutputImageType>::New();
   dsl->SetInput(tomographySource->GetOutput());
   dsl->SetPhantomScale(116);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(dsl->Update())
@@ -115,8 +112,7 @@ main(int, char **)
   TRY_AND_EXIT_ON_ITK_EXCEPTION(ifdk->Update());
 
   // FOV
-  using FOVFilterType = rtk::FieldOfViewImageFilter<OutputImageType, OutputImageType>;
-  auto fov = FOVFilterType::New();
+  auto fov = rtk::FieldOfViewImageFilter<OutputImageType, OutputImageType>::New();
   fov->SetInput(0, ifdk->GetOutput());
   fov->SetProjectionsStack(slp->GetOutput());
   fov->SetGeometry(geometry);

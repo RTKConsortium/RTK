@@ -8,8 +8,7 @@ int
 main()
 {
   constexpr unsigned int Dimension = 3;
-  using OutputPixelType = float;
-  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
+  using OutputImageType = itk::Image<float, Dimension>;
 
   constexpr unsigned int numberOfProjections = 180;
   constexpr double       angularArc = 360.;

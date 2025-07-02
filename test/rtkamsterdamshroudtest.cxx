@@ -31,8 +31,7 @@ main(int argc, char * argv[])
 {
   constexpr unsigned int Dimension = 3;
   using reg1DPixelType = double;
-  using OutputPixelType = float;
-  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
+  using OutputImageType = itk::Image<float, Dimension>;
   using reg1DImageType = itk::Image<reg1DPixelType, Dimension - 2>;
 #if FAST_TESTS_NO_CHECKS
   constexpr unsigned int NumberOfProjectionImages = 3;
@@ -78,13 +77,12 @@ main(int argc, char * argv[])
   constantImageSource->SetSize(size);
   constantImageSource->SetConstant(0.);
 
-  using PasteImageFilterType = itk::PasteImageFilter<OutputImageType, OutputImageType, OutputImageType>;
   OutputImageType::IndexType destinationIndex;
   destinationIndex[0] = 0;
   destinationIndex[1] = 0;
   destinationIndex[2] = 0;
 
-  auto pasteFilter = PasteImageFilterType::New();
+  auto pasteFilter = itk::PasteImageFilter<OutputImageType, OutputImageType, OutputImageType>::New();
 
   // Single projection
   using REIType = rtk::RayEllipsoidIntersectionImageFilter<OutputImageType, OutputImageType>;
@@ -177,8 +175,7 @@ main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION(shroudFilter->Update());
 
   // Read reference object
-  using ReaderAmsterdamType = itk::ImageFileReader<ShroudFilterType::OutputImageType>;
-  auto reader2 = ReaderAmsterdamType::New();
+  auto reader2 = itk::ImageFileReader<ShroudFilterType::OutputImageType>::New();
   reader2->SetFileName(argv[1]);
   reader2->Update();
 
@@ -203,9 +200,8 @@ main(int argc, char * argv[])
   std::cout << "\n\n****** Case 2: Breathing signal calculated by reg1D algorithm ******\n" << std::endl;
 
   // Estimation of breathing signal
-  using reg1DFilterType = rtk::Reg1DExtractShroudSignalImageFilter<reg1DPixelType, reg1DPixelType>;
   reg1DImageType::Pointer reg1DSignal;
-  auto                    reg1DFilter = reg1DFilterType::New();
+  auto                    reg1DFilter = rtk::Reg1DExtractShroudSignalImageFilter<reg1DPixelType, reg1DPixelType>::New();
   reg1DFilter->SetInput(reader2->GetOutput());
   reg1DFilter->Update();
   reg1DSignal = reg1DFilter->GetOutput();
@@ -243,9 +239,8 @@ main(int argc, char * argv[])
   std::cout << "\n\n****** Case 3: Breathing signal calculated by DP algorithm ******\n" << std::endl;
 
   // Estimation of breathing signal
-  using DPFilterType = rtk::DPExtractShroudSignalImageFilter<reg1DPixelType, reg1DPixelType>;
   reg1DImageType::Pointer DPSignal;
-  auto                    DPFilter = DPFilterType::New();
+  auto                    DPFilter = rtk::DPExtractShroudSignalImageFilter<reg1DPixelType, reg1DPixelType>::New();
   DPFilter->SetInput(reader2->GetOutput());
   DPFilter->SetAmplitude(20.);
   DPFilter->Update();

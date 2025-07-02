@@ -52,8 +52,7 @@ FDKWarpBackProjectionImageFilter<TInputImage, TOutputImage, TDeformation>::Gener
       this->GetOutput()->GetRequestedRegion(),
       [this](const typename TOutputImage::RegionType & outputRegionForThread) {
         // Iterators on volume input and output
-        using InputRegionIterator = itk::ImageRegionConstIterator<TInputImage>;
-        InputRegionIterator itIn(this->GetInput(), outputRegionForThread);
+        itk::ImageRegionConstIterator<TInputImage> itIn(this->GetInput(), outputRegionForThread);
         using OutputRegionIterator = itk::ImageRegionIteratorWithIndex<TOutputImage>;
         OutputRegionIterator itOut(this->GetOutput(), outputRegionForThread);
 
@@ -73,8 +72,7 @@ FDKWarpBackProjectionImageFilter<TInputImage, TOutputImage, TDeformation>::Gener
   rotCenterPoint.Fill(0.0);
 
   // Warped point and interpolator for vector field
-  using WarpInterpolatorType = itk::LinearInterpolateImageFunction<typename TDeformation::OutputImageType, double>;
-  auto                                              warpInterpolator = WarpInterpolatorType::New();
+  auto warpInterpolator = itk::LinearInterpolateImageFunction<typename TDeformation::OutputImageType, double>::New();
   itk::Matrix<double, Dimension + 1, Dimension + 1> matrixVol =
     GetPhysicalPointToIndexMatrix<TOutputImage>(this->GetOutput());
 
@@ -88,8 +86,7 @@ FDKWarpBackProjectionImageFilter<TInputImage, TOutputImage, TDeformation>::Gener
 
     // Extract the current slice and create interpolator, could be any interpolation
     ProjectionImagePointer projection = this->template GetProjection<ProjectionImageType>(iProj);
-    using InterpolatorType = itk::LinearInterpolateImageFunction<ProjectionImageType, double>;
-    auto interpolator = InterpolatorType::New();
+    auto                   interpolator = itk::LinearInterpolateImageFunction<ProjectionImageType, double>::New();
     interpolator->SetInputImage(projection);
 
     // Index to index matrix normalized to have a correct backprojection weight

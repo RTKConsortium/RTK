@@ -75,13 +75,11 @@ CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer ref)
 int
 main(int, char **)
 {
-  using OutputPixelType = float;
   constexpr unsigned int Dimension = 3;
 
-  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
+  using OutputImageType = itk::Image<float, Dimension>;
   // Random image sources
-  using RandomImageSourceType = itk::RandomImageSource<OutputImageType>;
-  auto randomVolumeSource = RandomImageSourceType::New();
+  auto randomVolumeSource = itk::RandomImageSource<OutputImageType>::New();
 
   // Volume metadata
   auto origin = itk::MakePoint(0., 0., 0.);
@@ -104,8 +102,7 @@ main(int, char **)
   TRY_AND_EXIT_ON_ITK_EXCEPTION(randomVolumeSource->Update());
 
   // Wavelets deconstruction and reconstruction
-  using DeconstructReconstructFilterType = rtk::DeconstructSoftThresholdReconstructImageFilter<OutputImageType>;
-  auto wavelets = DeconstructReconstructFilterType::New();
+  auto wavelets = rtk::DeconstructSoftThresholdReconstructImageFilter<OutputImageType>::New();
   wavelets->SetInput(randomVolumeSource->GetOutput());
   wavelets->SetNumberOfLevels(3);
   wavelets->SetOrder(3);

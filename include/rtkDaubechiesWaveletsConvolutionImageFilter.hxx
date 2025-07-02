@@ -272,7 +272,6 @@ DaubechiesWaveletsConvolutionImageFilter<TImage>::GenerateData()
 
   std::vector<typename TImage::Pointer>                kernelImages;
   std::vector<typename ConvolutionFilterType::Pointer> convolutionFilters;
-  using KernelIteratorType = itk::ImageRegionIterator<TImage>;
 
   // Convolve the input "Dimension" times, each time with a 1-D kernel
   for (int d = 0; d < dim; d++)
@@ -292,7 +291,7 @@ DaubechiesWaveletsConvolutionImageFilter<TImage>::GenerateData()
     kernelImages.push_back(TImage::New());
     kernelImages[d]->SetRegions(kernelRegion);
     kernelImages[d]->Allocate();
-    KernelIteratorType kernelIt(kernelImages[d], kernelImages[d]->GetLargestPossibleRegion());
+    itk::ImageRegionIterator<TImage> kernelIt(kernelImages[d], kernelImages[d]->GetLargestPossibleRegion());
 
     int pos = 0;
     while (!kernelIt.IsAtEnd())

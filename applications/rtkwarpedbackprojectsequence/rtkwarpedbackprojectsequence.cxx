@@ -62,8 +62,7 @@ main(int argc, char * argv[])
   if (args_info.input_given)
   {
     // Read an existing image to initialize the volume
-    using InputReaderType = itk::ImageFileReader<VolumeSeriesType>;
-    auto inputReader = InputReaderType::New();
+    auto inputReader = itk::ImageFileReader<VolumeSeriesType>::New();
     inputReader->SetFileName(args_info.input_arg);
     inputFilter = inputReader;
   }
@@ -96,9 +95,8 @@ main(int argc, char * argv[])
   phaseReader->Update();
 
   // Create the main filter, connect the basic inputs, and set the basic parameters
-  using WarpForwardProjectSequenceFilterType =
-    rtk::WarpProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType>;
-  auto warpbackprojectsequence = WarpForwardProjectSequenceFilterType::New();
+  auto warpbackprojectsequence =
+    rtk::WarpProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType>::New();
   warpbackprojectsequence->SetInputVolumeSeries(inputFilter->GetOutput());
   warpbackprojectsequence->SetInputProjectionStack(reader->GetOutput());
   warpbackprojectsequence->SetGeometry(geometry);

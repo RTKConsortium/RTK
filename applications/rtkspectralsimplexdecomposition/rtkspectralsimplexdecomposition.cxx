@@ -102,10 +102,9 @@ main(int argc, char * argv[])
                              << MaximumEnergy);
 
   // Create and set the filter
-  using SimplexFilterType = rtk::SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionType,
-                                                                                    SpectralProjectionsType,
-                                                                                    IncidentSpectrumImageType>;
-  auto simplex = SimplexFilterType::New();
+  auto simplex = rtk::SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionType,
+                                                                         SpectralProjectionsType,
+                                                                         IncidentSpectrumImageType>::New();
   simplex->SetInputDecomposedProjections(decomposedProjection);
   simplex->SetGuessInitialization(args_info.guess_flag);
   simplex->SetInputMeasuredProjections(spectralProjection);
