@@ -38,7 +38,6 @@ main(int, char **)
   using OutputImageType = itk::Image<OutputPixelType, Dimension>;
 #endif
 
-  using VectorType = itk::Vector<double, 3>;
 #if FAST_TESTS_NO_CHECKS
   constexpr unsigned int NumberOfProjectionImages = 3;
 #else
