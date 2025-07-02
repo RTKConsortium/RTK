@@ -21,8 +21,8 @@ main(int, char **)
   using CropImageFilter = rtk::CudaCropImageFilter;
   auto crop = CropImageFilter::New();
   crop->SetInput(image);
-  crop->SetUpperBoundaryCropSize(itk::MakeSize(1, 1, 1));
-  crop->SetLowerBoundaryCropSize(itk::MakeSize(10, 10, 10));
+  crop->SetLowerBoundaryCropSize(itk::MakeSize(1, 1, 1));
+  crop->SetUpperBoundaryCropSize(itk::MakeSize(10, 10, 10));
 
   try
   {
