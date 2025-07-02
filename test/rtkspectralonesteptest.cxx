@@ -220,8 +220,7 @@ main(int argc, char * argv[])
 
   // Convert the itk::VectorImage<> returned by "forward" into
   // an itk::Image<itk::Vector<>>
-  typename CastMeasuredProjectionsFilterType::Pointer castMeasuredProjections =
-    CastMeasuredProjectionsFilterType::New();
+  auto castMeasuredProjections = CastMeasuredProjectionsFilterType::New();
   castMeasuredProjections->SetInput(forward->GetOutput());
 
   // Read the material attenuations image as a matrix

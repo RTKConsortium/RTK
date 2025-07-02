@@ -11,8 +11,7 @@ WriteReadAndCheck(GeometryType * geometry)
   const char   fileName[] = "rtkgeometryfiletest.out";
   const double epsilon = 1e-13;
 
-  rtk::ThreeDCircularProjectionGeometryXMLFileWriter::Pointer xmlWriter =
-    rtk::ThreeDCircularProjectionGeometryXMLFileWriter::New();
+  auto xmlWriter = rtk::ThreeDCircularProjectionGeometryXMLFileWriter::New();
   xmlWriter->SetFilename(fileName);
   xmlWriter->SetObject(geometry);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(xmlWriter->WriteFile())
