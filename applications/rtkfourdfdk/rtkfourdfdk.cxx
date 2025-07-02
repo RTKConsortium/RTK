@@ -62,8 +62,7 @@ main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION(geometry = rtk::ReadGeometry(args_info.geometry_arg));
 
   // Part specific to 4D
-  using SelectorType = rtk::SelectOneProjectionPerCycleImageFilter<OutputImageType>;
-  auto selector = SelectorType::New();
+  auto selector = rtk::SelectOneProjectionPerCycleImageFilter<OutputImageType>::New();
   selector->SetInput(reader->GetOutput());
   selector->SetInputGeometry(geometry);
   selector->SetSignalFilename(args_info.signal_arg);
@@ -78,18 +77,16 @@ main(int argc, char * argv[])
 #endif
 
   // Displaced detector weighting
-  using DDFCPUType = rtk::DisplacedDetectorImageFilter<OutputImageType>;
-  using DDFOFFFOVType = rtk::DisplacedDetectorForOffsetFieldOfViewImageFilter<OutputImageType>;
 #ifdef RTK_USE_CUDA
   using DDFType = rtk::CudaDisplacedDetectorImageFilter;
 #else
   using DDFType = rtk::DisplacedDetectorForOffsetFieldOfViewImageFilter<OutputImageType>;
 #endif
-  DDFCPUType::Pointer ddf;
+  rtk::DisplacedDetectorImageFilter<OutputImageType>::Pointer ddf;
   if (!strcmp(args_info.hardware_arg, "cuda"))
     ddf = DDFType::New();
   else
-    ddf = DDFOFFFOVType::New();
+    ddf = rtk::DisplacedDetectorForOffsetFieldOfViewImageFilter<OutputImageType>::New();
   ddf->SetInput(selector->GetOutput());
   ddf->SetGeometry(selector->GetOutputGeometry());
 
@@ -151,8 +148,7 @@ main(int argc, char * argv[])
 #endif
 
   // Streaming depending on streaming capability of writer
-  using StreamerType = itk::StreamingImageFilter<CPUOutputImageType, CPUOutputImageType>;
-  auto streamerBP = StreamerType::New();
+  auto streamerBP = itk::StreamingImageFilter<CPUOutputImageType, CPUOutputImageType>::New();
   streamerBP->SetInput(pfeldkamp);
   streamerBP->SetNumberOfStreamDivisions(args_info.divisions_arg);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(streamerBP->UpdateOutputInformation())

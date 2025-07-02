@@ -56,8 +56,7 @@ main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION(geometry = rtk::ReadGeometry(args_info.geometry_arg));
 
   // Phase gating weights reader
-  using PhaseGatingFilterType = rtk::PhaseGatingImageFilter<OutputImageType>;
-  auto phaseGating = PhaseGatingFilterType::New();
+  auto phaseGating = rtk::PhaseGatingImageFilter<OutputImageType>::New();
   if (args_info.signal_given)
   {
     phaseGating->SetPhasesFileName(args_info.signal_arg);
@@ -74,8 +73,7 @@ main(int argc, char * argv[])
   if (args_info.input_given)
   {
     // Read an existing image to initialize the volume
-    using InputReaderType = itk::ImageFileReader<OutputImageType>;
-    auto inputReader = InputReaderType::New();
+    auto inputReader = itk::ImageFileReader<OutputImageType>::New();
     inputReader->SetFileName(args_info.input_arg);
     inputFilter = inputReader;
   }

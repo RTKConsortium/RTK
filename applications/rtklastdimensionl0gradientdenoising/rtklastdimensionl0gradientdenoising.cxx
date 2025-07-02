@@ -46,8 +46,7 @@ main(int argc, char * argv[])
   // #endif
 
   // Read input
-  using ReaderType = itk::ImageFileReader<OutputImageType>;
-  auto reader = ReaderType::New();
+  auto reader = itk::ImageFileReader<OutputImageType>::New();
   reader->SetFileName(args_info.input_arg);
   reader->ReleaseDataFlagOn();
 

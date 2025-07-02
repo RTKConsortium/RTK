@@ -79,8 +79,7 @@ main(int argc, char * argv[])
     ddf->SetOffsets(args_info.minOffset_arg, args_info.maxOffset_arg);
 
   // Write
-  using WriterType = itk::ImageFileWriter<OutputImageType>;
-  auto writer = WriterType::New();
+  auto writer = itk::ImageFileWriter<OutputImageType>::New();
   writer->SetFileName(args_info.output_arg);
   writer->SetInput(ddf->GetOutput());
   writer->SetNumberOfStreamDivisions(args_info.divisions_arg);

@@ -83,9 +83,7 @@ main(int argc, char * argv[])
 
   // In case warp backprojection is used, we create a deformation
   using DVFPixelType = itk::Vector<float, 3>;
-  using DVFImageSequenceType = itk::Image<DVFPixelType, 4>;
-  using DVFImageType = itk::Image<DVFPixelType, 3>;
-  using DeformationType = rtk::CyclicDeformationImageFilter<DVFImageSequenceType, DVFImageType>;
+  using DeformationType = rtk::CyclicDeformationImageFilter<itk::Image<DVFPixelType, 4>, itk::Image<DVFPixelType, 3>>;
   auto def = DeformationType::New();
 
   switch (args_info.bp_arg)

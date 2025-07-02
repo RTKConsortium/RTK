@@ -94,15 +94,13 @@ main(int, char **)
   TRY_AND_EXIT_ON_ITK_EXCEPTION(constantProjectionsSource->Update());
 
   // Geometry object
-  using GeometryType = rtk::ThreeDCircularProjectionGeometry;
-  auto geometry = GeometryType::New();
+  auto geometry = rtk::ThreeDCircularProjectionGeometry::New();
   for (unsigned int noProj = 0; noProj < NumberOfProjectionImages; noProj++)
     geometry->AddProjection(600., 1200., noProj * 360. / NumberOfProjectionImages);
 
   std::cout << "\n\n****** CUDA ray cast Forward projector, flat panel detector ******" << std::endl;
 
-  using ForwardProjectorType = rtk::CudaForwardProjectionImageFilter<OutputImageType, OutputImageType>;
-  auto fw = ForwardProjectorType::New();
+  auto fw = rtk::CudaForwardProjectionImageFilter<OutputImageType, OutputImageType>::New();
   fw->SetInput(0, constantProjectionsSource->GetOutput());
   fw->SetInput(1, randomVolumeSource->GetOutput());
   fw->SetGeometry(geometry);
@@ -110,8 +108,7 @@ main(int, char **)
 
   std::cout << "\n\n****** CUDA ray cast Back projector, flat panel detector ******" << std::endl;
 
-  using BackProjectorType = rtk::CudaRayCastBackProjectionImageFilter;
-  auto bp = BackProjectorType::New();
+  auto bp = rtk::CudaRayCastBackProjectionImageFilter::New();
   bp->SetInput(0, constantVolumeSource->GetOutput());
   bp->SetInput(1, randomProjectionsSource->GetOutput());
   bp->SetGeometry(geometry.GetPointer());

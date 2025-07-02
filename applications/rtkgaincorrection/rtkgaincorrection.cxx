@@ -66,8 +66,7 @@ main(int argc, char * argv[])
   darkFile.append(args_info.Dark_arg);
 
   InputImageType::Pointer darkImage;
-  using DarkReaderType = itk::ImageFileReader<InputImageType>;
-  auto readerDark = DarkReaderType::New();
+  auto                    readerDark = itk::ImageFileReader<InputImageType>::New();
   readerDark->SetFileName(darkFile);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(readerDark->Update())
   darkImage = readerDark->GetOutput();
@@ -79,8 +78,7 @@ main(int argc, char * argv[])
   gainFile.append(args_info.Gain_arg);
 
   OutputImageType::Pointer gainImage;
-  using GainReaderType = itk::ImageFileReader<OutputImageType>;
-  auto readerGain = GainReaderType::New();
+  auto                     readerGain = itk::ImageFileReader<OutputImageType>::New();
   readerGain->SetFileName(gainFile);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(readerGain->Update())
   gainImage = readerGain->GetOutput();
@@ -98,13 +96,10 @@ main(int argc, char * argv[])
   gainfilter->SetK(args_info.K_arg);
 
   // Create empty volume for storing processed images
-  using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
-  auto constantSource = ConstantImageSourceType::New();
+  auto constantSource = rtk::ConstantImageSource<OutputImageType>::New();
 
-  using ExtractType = itk::ExtractImageFilter<InputImageType, InputImageType>;
 
-  using PasteType = itk::PasteImageFilter<OutputImageType, OutputImageType>;
-  auto pasteFilter = PasteType::New();
+  auto pasteFilter = itk::PasteImageFilter<OutputImageType, OutputImageType>::New();
   pasteFilter->SetDestinationImage(constantSource->GetOutput());
 
   int bufferSize = args_info.bufferSize_arg;
@@ -124,7 +119,7 @@ main(int argc, char * argv[])
     desiredRegion.SetSize(itk::MakeSize(sliceRegion.GetSize()[0], sliceRegion.GetSize()[1], currentBufferSize));
     desiredRegion.SetIndex(itk::MakeIndex(sliceRegion.GetIndex()[0], sliceRegion.GetIndex()[1], bufferIdx));
 
-    auto extract = ExtractType::New();
+    auto extract = itk::ExtractImageFilter<InputImageType, InputImageType>::New();
     extract->SetDirectionCollapseToIdentity();
     extract->SetExtractionRegion(desiredRegion);
     extract->SetInput(reader->GetOutput());

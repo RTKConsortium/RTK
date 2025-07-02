@@ -194,8 +194,7 @@ main(int argc, char * argv[])
   // Write
   if (args_info.verbose_flag)
     std::cout << "Writing... " << std::endl;
-  using WriterType = itk::ImageFileWriter<OutputImageType>;
-  auto writer = WriterType::New();
+  auto writer = itk::ImageFileWriter<OutputImageType>::New();
   writer->SetFileName(args_info.output_arg);
   writer->SetInput(forwardProjection->GetOutput());
   if (args_info.lowmem_flag)

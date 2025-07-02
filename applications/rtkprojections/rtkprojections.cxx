@@ -27,9 +27,8 @@ main(int argc, char * argv[])
 {
   GGO(rtkprojections, args_info);
 
-  using OutputPixelType = float;
   constexpr unsigned int Dimension = 3;
-  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
+  using OutputImageType = itk::Image<float, Dimension>;
 
   // Projections reader
   using ReaderType = rtk::ProjectionsReader<OutputImageType>;
@@ -37,8 +36,7 @@ main(int argc, char * argv[])
   rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkprojections>(reader, args_info);
 
   // Write
-  using WriterType = itk::ImageFileWriter<OutputImageType>;
-  auto writer = WriterType::New();
+  auto writer = itk::ImageFileWriter<OutputImageType>::New();
   writer->SetFileName(args_info.output_arg);
   writer->SetInput(reader->GetOutput());
   TRY_AND_EXIT_ON_ITK_EXCEPTION(writer->UpdateOutputInformation())

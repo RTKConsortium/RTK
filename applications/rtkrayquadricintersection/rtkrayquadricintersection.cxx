@@ -30,10 +30,9 @@ main(int argc, char * argv[])
 {
   GGO(rtkrayquadricintersection, args_info);
 
-  using OutputPixelType = float;
   constexpr unsigned int Dimension = 3;
 
-  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
+  using OutputImageType = itk::Image<float, Dimension>;
 
   // Geometry
   if (args_info.verbose_flag)

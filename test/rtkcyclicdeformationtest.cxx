@@ -56,10 +56,10 @@ main(int, char **)
   deformationField->SetSpacing(spacing);
   deformationField->Allocate();
 
-  using IteratorType = itk::ImageRegionIteratorWithIndex<DVFSequenceImageType>;
   // Vector Field initilization
-  DVFImageType::PixelType vec;
-  IteratorType            dvfIt(deformationField, deformationField->GetLargestPossibleRegion());
+  DVFImageType::PixelType                                 vec;
+  itk::ImageRegionIteratorWithIndex<DVFSequenceImageType> dvfIt(deformationField,
+                                                                deformationField->GetLargestPossibleRegion());
 
   DVFSequenceImageType::OffsetType DVFCenter;
   DVFSequenceImageType::IndexType  toCenter;
@@ -95,11 +95,10 @@ main(int, char **)
   signalFile.close();
 
   // Set the forward and back projection filters to be used
-  using CyclicDeformationType = rtk::CyclicDeformationImageFilter<DVFSequenceImageType, DVFImageType>;
 
   std::cout << "\n\n****** Case 1: CPU cyclic deformation field ******" << std::endl;
 
-  auto cyclic = CyclicDeformationType::New();
+  auto cyclic = rtk::CyclicDeformationImageFilter<DVFSequenceImageType, DVFImageType>::New();
   cyclic->SetInput(deformationField);
   cyclic->SetSignalFilename(signalFileName);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(cyclic->Update());

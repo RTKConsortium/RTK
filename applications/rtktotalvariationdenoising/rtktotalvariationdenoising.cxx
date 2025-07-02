@@ -44,8 +44,9 @@ main(int argc, char * argv[])
   using TVDenoisingFilterType = rtk::CudaTotalVariationDenoisingBPDQImageFilter;
 #else
   using OutputImageType = itk::Image<OutputPixelType, Dimension>;
-  using GradientOutputImageType = itk::Image<itk::CovariantVector<OutputPixelType, Dimension>, Dimension>;
-  using TVDenoisingFilterType = rtk::TotalVariationDenoisingBPDQImageFilter<OutputImageType, GradientOutputImageType>;
+  using TVDenoisingFilterType = rtk::TotalVariationDenoisingBPDQImageFilter<
+    OutputImageType,
+    itk::Image<itk::CovariantVector<OutputPixelType, Dimension>, Dimension>>;
 #endif
 
   // Read input
@@ -53,8 +54,7 @@ main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION(input = itk::ReadImage<OutputImageType>(args_info.input_arg))
 
   // Compute total variation before denoising
-  using TVFilterType = rtk::TotalVariationImageFilter<OutputImageType>;
-  auto tv = TVFilterType::New();
+  auto tv = rtk::TotalVariationImageFilter<OutputImageType>::New();
   tv->SetInput(input);
   if (args_info.verbose_flag)
   {

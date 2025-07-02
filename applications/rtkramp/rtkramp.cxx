@@ -86,8 +86,7 @@ main(int argc, char * argv[])
   }
 
   // Streaming filter
-  using StreamerType = itk::StreamingImageFilter<OutputImageType, OutputImageType>;
-  auto streamer = StreamerType::New();
+  auto streamer = itk::StreamingImageFilter<OutputImageType, OutputImageType>::New();
 #ifdef RTK_USE_CUDA
   if (!strcmp(args_info.hardware_arg, "cuda"))
     streamer->SetInput(cudaRampFilter->GetOutput());
@@ -99,8 +98,7 @@ main(int argc, char * argv[])
 
   if (args_info.verbose_flag)
   {
-    using PercentageProgressCommandType = rtk::PercentageProgressCommand<CPURampFilterType>;
-    auto progressCommand = PercentageProgressCommandType::New();
+    auto progressCommand = rtk::PercentageProgressCommand<CPURampFilterType>::New();
 #ifdef RTK_USE_CUDA
     if (!strcmp(args_info.hardware_arg, "cuda"))
       cudaRampFilter->AddObserver(itk::ProgressEvent(), progressCommand);

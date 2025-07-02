@@ -37,8 +37,7 @@ template <class TInputImage, class TOutputImage>
 void
 XRadRawToAttenuationImageFilter<TInputImage, TOutputImage>::BeforeThreadedGenerateData()
 {
-  using ReaderType = itk::ImageFileReader<OutputImageType>;
-  auto reader = ReaderType::New();
+  auto reader = itk::ImageFileReader<OutputImageType>::New();
 
   reader->SetFileName(m_DarkImageFileName);
   reader->Update();

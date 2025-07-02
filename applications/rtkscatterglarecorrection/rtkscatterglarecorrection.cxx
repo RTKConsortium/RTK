@@ -82,11 +82,9 @@ main(int argc, char * argv[])
   SFilter->SetTruncationCorrection(0.0);
   SFilter->SetCoefficients(coef);
 
-  using ConstantImageSourceType = rtk::ConstantImageSource<InputImageType>;
-  auto constantSource = ConstantImageSourceType::New();
+  auto constantSource = rtk::ConstantImageSource<InputImageType>::New();
 
-  using PasteImageFilterType = itk::PasteImageFilter<InputImageType, InputImageType>;
-  auto paste = PasteImageFilterType::New();
+  auto paste = itk::PasteImageFilter<InputImageType, InputImageType>::New();
   paste->SetSourceImage(SFilter->GetOutput());
   paste->SetDestinationImage(constantSource->GetOutput());
 
@@ -102,8 +100,7 @@ main(int argc, char * argv[])
     desiredRegionA.SetSize(itk::MakeSize(sliceRegionA.GetSize()[0], sliceRegionA.GetSize()[1], curBufferSize));
     desiredRegionA.SetIndex(itk::MakeIndex(sliceRegionA.GetIndex()[0], sliceRegionA.GetIndex()[1], projid));
 
-    using ExtractFilterType = itk::ExtractImageFilter<InputImageType, InputImageType>;
-    auto extract = ExtractFilterType::New();
+    auto extract = itk::ExtractImageFilter<InputImageType, InputImageType>::New();
     extract->SetDirectionCollapseToIdentity();
     extract->SetExtractionRegion(desiredRegionA);
     extract->SetInput(reader->GetOutput());
@@ -122,8 +119,7 @@ main(int argc, char * argv[])
     InputImageType::Pointer outImage;
     if (args_info.difference_flag)
     {
-      using SubtractImageFilterType = itk::SubtractImageFilter<InputImageType, InputImageType>;
-      auto subtractFilter = SubtractImageFilterType::New();
+      auto subtractFilter = itk::SubtractImageFilter<InputImageType, InputImageType>::New();
       subtractFilter->SetInput1(image);
       subtractFilter->SetInput2(procImage);
       TRY_AND_EXIT_ON_ITK_EXCEPTION(subtractFilter->Update())

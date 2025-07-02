@@ -19,8 +19,7 @@ int
 main(int, char **)
 {
   constexpr unsigned int Dimension = 3;
-  using OutputPixelType = float;
-  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
+  using OutputImageType = itk::Image<float, Dimension>;
 
 #if FAST_TESTS_NO_CHECKS
   constexpr unsigned int NumberOfProjectionImages = 3;
@@ -64,8 +63,7 @@ main(int, char **)
   rotMat[2][1] = -1.;
 
   // Geometry object
-  using GeometryType = rtk::ThreeDCircularProjectionGeometry;
-  auto geometry = GeometryType::New();
+  auto geometry = rtk::ThreeDCircularProjectionGeometry::New();
   for (unsigned int noProj = 0; noProj < NumberOfProjectionImages; noProj++)
     geometry->AddProjection(600., 0., noProj * 360. / NumberOfProjectionImages);
 
@@ -73,8 +71,7 @@ main(int, char **)
 
   // Shepp Logan projections filter
   std::cout << "\n\n****** Projecting ******" << std::endl;
-  using ProjectGPType = rtk::ProjectGeometricPhantomImageFilter<OutputImageType, OutputImageType>;
-  auto pgp = ProjectGPType::New();
+  auto pgp = rtk::ProjectGeometricPhantomImageFilter<OutputImageType, OutputImageType>::New();
   pgp->SetInput(projectionsSource->GetOutput());
   pgp->SetGeometry(geometry);
   pgp->SetPhantomScale(1.2);
@@ -84,8 +81,7 @@ main(int, char **)
 
   // Create a reference object (in this case a 3D phantom reference).
   std::cout << "\n\n****** Drawing ******" << std::endl;
-  using DrawGPType = rtk::DrawGeometricPhantomImageFilter<OutputImageType, OutputImageType>;
-  auto dgp = DrawGPType::New();
+  auto dgp = rtk::DrawGeometricPhantomImageFilter<OutputImageType, OutputImageType>::New();
   dgp->SetInput(tomographySource->GetOutput());
   dgp->SetPhantomScale(1.2);
   dgp->SetConfigFile(configFileName);
@@ -94,8 +90,7 @@ main(int, char **)
 
   // FDK reconstruction filtering
   std::cout << "\n\n****** Reconstructing ******" << std::endl;
-  using FDKType = rtk::FDKConeBeamReconstructionFilter<OutputImageType>;
-  auto feldkamp = FDKType::New();
+  auto feldkamp = rtk::FDKConeBeamReconstructionFilter<OutputImageType>::New();
   feldkamp->SetInput(0, tomographySource->GetOutput());
   feldkamp->SetInput(1, pgp->GetOutput());
   feldkamp->SetGeometry(geometry);

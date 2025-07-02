@@ -88,13 +88,11 @@ main(int, char **)
   grad2->SetDimensionsProcessed(computeGradientAlongDim);
 
   // Now compute MINUS the divergence of grad2
-  using DivergenceFilterType = rtk::BackwardDifferenceDivergenceImageFilter<GradientImageType, ImageType>;
-  auto div = DivergenceFilterType::New();
+  auto div = rtk::BackwardDifferenceDivergenceImageFilter<GradientImageType, ImageType>::New();
   div->SetInput(grad2->GetOutput());
   div->SetDimensionsProcessed(computeGradientAlongDim);
 
-  using MultiplyFilterType = itk::MultiplyImageFilter<ImageType>;
-  auto multiply = MultiplyFilterType::New();
+  auto multiply = itk::MultiplyImageFilter<ImageType>::New();
   multiply->SetInput1(div->GetOutput());
   multiply->SetConstant2(-1);
 

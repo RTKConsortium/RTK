@@ -28,8 +28,7 @@ main(int argc, char * argv[])
 
   // Elekta projections reader
   using ShortImageType = itk::Image<unsigned short, 3>;
-  using ReaderType = rtk::ProjectionsReader<ShortImageType>;
-  auto                     r = ReaderType::New();
+  auto                     r = rtk::ProjectionsReader<ShortImageType>::New();
   std::vector<std::string> fileNames;
   fileNames.emplace_back(argv[1]);
   r->SetFileNames(fileNames);
@@ -42,19 +41,15 @@ main(int argc, char * argv[])
   sflut->SetInput(r->GetOutput());
   TRY_AND_EXIT_ON_ITK_EXCEPTION(sflut->Update());
 
-  using FloatCastType = itk::CastImageFilter<ShortImageType, FloatImageType>;
-  auto fCast = FloatCastType::New();
+  auto fCast = itk::CastImageFilter<ShortImageType, FloatImageType>::New();
   fCast->SetInput(r->GetOutput());
   TRY_AND_EXIT_ON_ITK_EXCEPTION(fCast->Update());
 
-  using FloatLUTType = itk::Image<float, 1>;
-  using FloatLUTCastType = itk::CastImageFilter<ShortFloatLUTType::LookupTableType, FloatLUTType>;
-  auto flCast = FloatLUTCastType::New();
+  auto flCast = itk::CastImageFilter<ShortFloatLUTType::LookupTableType, itk::Image<float, 1>>::New();
   flCast->SetInput(sflut->GetLookupTable());
   TRY_AND_EXIT_ON_ITK_EXCEPTION(flCast->Update());
 
-  using FloatLUTTypea = rtk::LookupTableImageFilter<FloatImageType, FloatImageType>;
-  auto flut = FloatLUTTypea::New();
+  auto flut = rtk::LookupTableImageFilter<FloatImageType, FloatImageType>::New();
   flut->SetInput(fCast->GetOutput());
   flut->SetLookupTable(flCast->GetOutput());
   TRY_AND_EXIT_ON_ITK_EXCEPTION(flut->Update());
@@ -68,19 +63,15 @@ main(int argc, char * argv[])
   sdlut->SetInput(r->GetOutput());
   TRY_AND_EXIT_ON_ITK_EXCEPTION(sdlut->Update());
 
-  using DoubleCastType = itk::CastImageFilter<ShortImageType, DoubleImageType>;
-  auto dCast = DoubleCastType::New();
+  auto dCast = itk::CastImageFilter<ShortImageType, DoubleImageType>::New();
   dCast->SetInput(r->GetOutput());
   TRY_AND_EXIT_ON_ITK_EXCEPTION(dCast->Update());
 
-  using DoubleLUTType = itk::Image<float, 1>;
-  using DoubleLUTCastType = itk::CastImageFilter<ShortDoubleLUTType::LookupTableType, DoubleLUTType>;
-  auto dlCast = DoubleLUTCastType::New();
+  auto dlCast = itk::CastImageFilter<ShortDoubleLUTType::LookupTableType, itk::Image<float, 1>>::New();
   dlCast->SetInput(sdlut->GetLookupTable());
   TRY_AND_EXIT_ON_ITK_EXCEPTION(dlCast->Update());
 
-  using DoubleLUTTypea = rtk::LookupTableImageFilter<DoubleImageType, DoubleImageType>;
-  auto dlut = DoubleLUTTypea::New();
+  auto dlut = rtk::LookupTableImageFilter<DoubleImageType, DoubleImageType>::New();
   dlut->SetInput(dCast->GetOutput());
   dlut->SetLookupTable(dlCast->GetOutput());
   TRY_AND_EXIT_ON_ITK_EXCEPTION(dlut->Update());

@@ -28,12 +28,10 @@ int
 main(int, char **)
 {
   constexpr unsigned int Dimension = 3;
-  using OutputPixelType = float;
-  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
+  using OutputImageType = itk::Image<float, Dimension>;
 
   // Constant image sources
-  using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
-  auto tomographySource = ConstantImageSourceType::New();
+  auto tomographySource = rtk::ConstantImageSource<OutputImageType>::New();
   auto origin = itk::MakePoint(-63., -31., -63.);
 #if FAST_TESTS_NO_CHECKS
   auto size = itk::MakeSize(32, 32, 32);
@@ -50,7 +48,6 @@ main(int, char **)
   // Create vector field
   using DVFPixelType = itk::Vector<float, 3>;
   using DVFImageType = itk::Image<DVFPixelType, 3>;
-  using IteratorType = itk::ImageRegionIteratorWithIndex<DVFImageType>;
 
   auto deformationField = DVFImageType::New();
 
@@ -68,7 +65,7 @@ main(int, char **)
   // Vector Field initilization
   DVFPixelType vec;
   vec.Fill(0.);
-  IteratorType defIt(deformationField, deformationField->GetLargestPossibleRegion());
+  itk::ImageRegionIteratorWithIndex<DVFImageType> defIt(deformationField, deformationField->GetLargestPossibleRegion());
   for (defIt.GoToBegin(); !defIt.IsAtEnd(); ++defIt)
   {
     vec.Fill(0.);
@@ -106,16 +103,14 @@ main(int, char **)
   e2->InPlaceOff();
   TRY_AND_EXIT_ON_ITK_EXCEPTION(e2->Update())
 
-  using WarpFilterType = itk::WarpImageFilter<OutputImageType, OutputImageType, DVFImageType>;
-  auto warp = WarpFilterType::New();
+  auto warp = itk::WarpImageFilter<OutputImageType, OutputImageType, DVFImageType>::New();
   warp->SetInput(e2->GetOutput());
   warp->SetDisplacementField(deformationField);
   warp->SetOutputParametersFromImage(e2->GetOutput());
 
   TRY_AND_EXIT_ON_ITK_EXCEPTION(warp->Update());
 
-  using ForwardWarpFilterType = rtk::ForwardWarpImageFilter<OutputImageType, OutputImageType, DVFImageType>;
-  auto forwardWarp = ForwardWarpFilterType::New();
+  auto forwardWarp = rtk::ForwardWarpImageFilter<OutputImageType, OutputImageType, DVFImageType>::New();
   forwardWarp->SetInput(warp->GetOutput());
   forwardWarp->SetDisplacementField(deformationField);
   forwardWarp->SetOutputParametersFromImage(warp->GetOutput());

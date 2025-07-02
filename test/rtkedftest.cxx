@@ -24,9 +24,8 @@ main(int argc, char * argv[])
     return EXIT_FAILURE;
   }
 
-  using OutputPixelType = float;
   constexpr unsigned int Dimension = 3;
-  using ImageType = itk::Image<OutputPixelType, Dimension>;
+  using ImageType = itk::Image<float, Dimension>;
 
   // 1. ESRF / Edf projections reader
   using ReaderType = rtk::ProjectionsReader<ImageType>;

@@ -78,8 +78,7 @@ main(int argc, char * argv[])
   pssf->InPlaceOff();
 
   // Write
-  using WriterType = itk::ImageFileWriter<OutputImageType>;
-  auto writer = WriterType::New();
+  auto writer = itk::ImageFileWriter<OutputImageType>::New();
   writer->SetFileName(args_info.output_arg);
   writer->SetInput(pssf->GetOutput());
   writer->SetNumberOfStreamDivisions(args_info.divisions_arg);

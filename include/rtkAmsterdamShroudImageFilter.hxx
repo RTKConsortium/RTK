@@ -153,8 +153,7 @@ AmsterdamShroudImageFilter<TInputImage>::CropOutsideProjectedBox()
   typename TInputImage::RegionType reg;
   reg = m_DerivativeFilter->GetOutput()->GetRequestedRegion();
 
-  using OutputIterator = typename itk::ImageRegionIterator<TInputImage>;
-  OutputIterator it(m_DerivativeFilter->GetOutput(), reg);
+  typename itk::ImageRegionIterator<TInputImage> it(m_DerivativeFilter->GetOutput(), reg);
 
   // Prepare the 8 corners of the box
   std::vector<GeometryType::HomogeneousVectorType> corners;
@@ -191,9 +190,10 @@ AmsterdamShroudImageFilter<TInputImage>::CropOutsideProjectedBox()
       vnl_vector<double> pCornerVnl = m_Geometry->GetMatrices()[iProj].GetVnlMatrix() * corners[ci].GetVnlVector();
       for (unsigned int i = 0; i < 2; i++)
         pCorner[i] = pCornerVnl[i] / pCornerVnl[2];
-      using ValueType = typename TInputImage::PointType::ValueType;
       const itk::ContinuousIndex<double, 3> pCornerI =
-        this->GetInput()->template TransformPhysicalPointToContinuousIndex<ValueType, double>(pCorner);
+        this->GetInput()
+          ->template TransformPhysicalPointToContinuousIndex<typename TInputImage::PointType::ValueType, double>(
+            pCorner);
       if (ci == 0)
       {
         pCornerInf = pCornerI;

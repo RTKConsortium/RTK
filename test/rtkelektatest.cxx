@@ -69,9 +69,8 @@ main(int argc, char * argv[])
   std::cout << "Testing his file processing..." << std::endl;
 
   // ******* COMPARING projections *******
-  using OutputPixelType = float;
   constexpr unsigned int Dimension = 3;
-  using ImageType = itk::Image<OutputPixelType, Dimension>;
+  using ImageType = itk::Image<float, Dimension>;
 
   // Elekta projections reader
   using ReaderType = rtk::ProjectionsReader<ImageType>;
@@ -92,25 +91,20 @@ main(int argc, char * argv[])
   CheckImageQuality<ImageType>(reader->GetOutput(), readerRef->GetOutput(), 1.6e-7, 100, 2.0);
 
   // ******* Test split of lookup table ******
-  using InputPixelType = unsigned short;
-  using InputImageType = itk::Image<InputPixelType, 3>;
-  using RawReaderType = itk::ImageFileReader<InputImageType>;
-  auto r = RawReaderType::New();
+  using InputImageType = itk::Image<unsigned short, 3>;
+  auto r = itk::ImageFileReader<InputImageType>::New();
   r->SetFileName(argv[3]);
   r->Update();
 
-  using FullLUTType = rtk::ElektaSynergyLookupTableImageFilter<ImageType>;
-  auto full = FullLUTType::New();
+  auto full = rtk::ElektaSynergyLookupTableImageFilter<ImageType>::New();
   full->SetInput(r->GetOutput());
   full->Update();
 
-  using RawLUTType = rtk::ElektaSynergyRawLookupTableImageFilter<InputImageType, InputImageType>;
-  auto raw = RawLUTType::New();
+  auto raw = rtk::ElektaSynergyRawLookupTableImageFilter<InputImageType, InputImageType>::New();
   raw->SetInput(r->GetOutput());
   raw->Update();
 
-  using LogLUTType = rtk::LUTbasedVariableI0RawToAttenuationImageFilter<InputImageType, ImageType>;
-  auto log = LogLUTType::New();
+  auto log = rtk::LUTbasedVariableI0RawToAttenuationImageFilter<InputImageType, ImageType>::New();
   log->SetInput(raw->GetOutput());
   log->SetI0(log->GetI0() + 1.);
   log->Update();

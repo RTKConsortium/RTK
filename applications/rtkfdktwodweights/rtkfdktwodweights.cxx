@@ -29,10 +29,9 @@ main(int argc, char * argv[])
 {
   GGO(rtkfdktwodweights, args_info);
 
-  using OutputPixelType = float;
   constexpr unsigned int Dimension = 3;
 
-  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
+  using OutputImageType = itk::Image<float, Dimension>;
 
   // Projections reader
   using ReaderType = rtk::ProjectionsReader<OutputImageType>;
@@ -46,16 +45,14 @@ main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION(geometry = rtk::ReadGeometry(args_info.geometry_arg));
 
   // Weights filter
-  using WeightType = rtk::FDKWeightProjectionFilter<OutputImageType>;
-  auto wf = WeightType::New();
+  auto wf = rtk::FDKWeightProjectionFilter<OutputImageType>::New();
   wf->SetInput(reader->GetOutput());
   wf->SetGeometry(geometry);
   wf->SetNumberOfWorkUnits(1);
   wf->InPlaceOff();
 
   // Write
-  using WriterType = itk::ImageFileWriter<OutputImageType>;
-  auto writer = WriterType::New();
+  auto writer = itk::ImageFileWriter<OutputImageType>::New();
   writer->SetFileName(args_info.output_arg);
   writer->SetInput(wf->GetOutput());
   writer->SetNumberOfStreamDivisions(args_info.divisions_arg);

@@ -69,18 +69,16 @@ main(int argc, char * argv[])
   // function. You can see how it is used in
   // rtkSARTConeBeamReconstructionFilter.hxx
 
-  using OutputPixelType = float;
   constexpr unsigned int Dimension = 3;
 
-  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
+  using OutputImageType = itk::Image<float, Dimension>;
 
   // Read the input volume
   OutputImageType::Pointer input;
   TRY_AND_EXIT_ON_ITK_EXCEPTION(input = itk::ReadImage<OutputImageType>(args_info.input_arg))
 
   // Create the Add filter
-  using AddFilterType = itk::AddImageFilter<OutputImageType>;
-  auto add = AddFilterType::New();
+  auto add = itk::AddImageFilter<OutputImageType>::New();
   add->SetInput1(input);
   add->SetConstant2(args_info.constant_arg);
 

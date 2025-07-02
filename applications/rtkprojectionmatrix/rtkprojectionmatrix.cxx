@@ -159,12 +159,11 @@ main(int argc, char * argv[])
   if (args_info.verbose_flag)
     std::cout << "Backprojecting volume and recording matrix values..." << std::endl;
 
-  using JosephType = rtk::JosephBackProjectionImageFilter<
+  auto backProjection = rtk::JosephBackProjectionImageFilter<
     OutputImageType,
     OutputImageType,
     rtk::Functor::InterpolationWeightMultiplicationBackProjection<OutputPixelType, OutputPixelType>,
-    rtk::Functor::StoreSparseMatrixSplatWeightMultiplication<OutputPixelType, double, OutputPixelType>>;
-  auto backProjection = JosephType::New();
+    rtk::Functor::StoreSparseMatrixSplatWeightMultiplication<OutputPixelType, double, OutputPixelType>>::New();
   backProjection->SetInput(constantImageSource->GetOutput());
   backProjection->SetInput(1, reader->GetOutput());
   backProjection->SetGeometry(geometry);

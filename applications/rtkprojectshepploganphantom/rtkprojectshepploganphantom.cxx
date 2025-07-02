@@ -31,10 +31,9 @@ main(int argc, char * argv[])
 {
   GGO(rtkprojectshepploganphantom, args_info);
 
-  using OutputPixelType = float;
   constexpr unsigned int Dimension = 3;
 
-  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
+  using OutputImageType = itk::Image<float, Dimension>;
 
   // Geometry
   if (args_info.verbose_flag)
@@ -79,8 +78,7 @@ main(int argc, char * argv[])
   OutputImageType::Pointer output = slp->GetOutput();
   if (args_info.noise_given)
   {
-    using NIFType = rtk::AdditiveGaussianNoiseImageFilter<OutputImageType>;
-    auto noisy = NIFType::New();
+    auto noisy = rtk::AdditiveGaussianNoiseImageFilter<OutputImageType>::New();
     noisy->SetInput(slp->GetOutput());
     noisy->SetMean(0.0);
     noisy->SetStandardDeviation(args_info.noise_arg);

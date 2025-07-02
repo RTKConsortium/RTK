@@ -111,7 +111,6 @@ main(int argc, char * argv[])
   VERBOSE(<< "\n\nStart testing ora::Reg23ProjectionGeometry\n\n")
 
   using RandomType = itk::Statistics::MersenneTwisterRandomVariateGenerator;
-  using EulerType = itk::Euler3DTransform<double>;
   using Point2DType = itk::Point<double, 2>;
 
   GeometryType::PointType              sourcePosition;
@@ -179,7 +178,7 @@ main(int argc, char * argv[])
     GeometryType::HomogeneousVectorType hv;
     GeometryType::VectorType            tmp;
 
-    auto                eu = EulerType::New();
+    auto                eu = itk::Euler3DTransform<double>::New();
     std::vector<double> gantryAngles;
     std::vector<double> outOfPlaneAngles;
     std::vector<double> inPlaneAngles;

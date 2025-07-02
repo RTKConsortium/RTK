@@ -80,8 +80,7 @@ main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION(lagfilter->Update())
 
   // Streaming filter
-  using StreamerType = itk::StreamingImageFilter<OutputImageType, OutputImageType>;
-  auto streamer = StreamerType::New();
+  auto streamer = itk::StreamingImageFilter<OutputImageType, OutputImageType>::New();
   streamer->SetInput(lagfilter->GetOutput());
   streamer->SetNumberOfStreamDivisions(100);
 

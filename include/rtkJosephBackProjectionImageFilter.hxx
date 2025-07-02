@@ -93,8 +93,7 @@ JosephBackProjectionImageFilter<TInputImage,
     using InputRegionIterator = itk::ImageRegionConstIterator<TInputImage>;
     InputRegionIterator itVolIn(this->GetInput(0), this->GetInput()->GetBufferedRegion());
 
-    using OutputRegionIterator = itk::ImageRegionIteratorWithIndex<TOutputImage>;
-    OutputRegionIterator itVolOut(this->GetOutput(), this->GetInput()->GetBufferedRegion());
+    itk::ImageRegionIteratorWithIndex<TOutputImage> itVolOut(this->GetOutput(), this->GetInput()->GetBufferedRegion());
 
     while (!itVolIn.IsAtEnd())
     {

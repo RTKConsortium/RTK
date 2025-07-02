@@ -75,29 +75,25 @@ main(int, char **)
   projectionsSource->SetConstant(0.);
 
   // Geometry object
-  using GeometryType = rtk::ThreeDCircularProjectionGeometry;
-  auto geometry = GeometryType::New();
+  auto geometry = rtk::ThreeDCircularProjectionGeometry::New();
   for (unsigned int noProj = 0; noProj < NumberOfProjectionImages; noProj++)
     geometry->AddProjection(600., 1200., noProj * 360. / NumberOfProjectionImages);
 
   // Shepp Logan projections filter
-  using SLPType = rtk::SheppLoganPhantomFilter<OutputImageType, OutputImageType>;
-  auto slp = SLPType::New();
+  auto slp = rtk::SheppLoganPhantomFilter<OutputImageType, OutputImageType>::New();
   slp->SetInput(projectionsSource->GetOutput());
   slp->SetGeometry(geometry);
 
   std::cout << "\n\n****** Test 1: add noise and test Hann window ******" << std::endl;
 
   // Add noise
-  using NIFType = rtk::AdditiveGaussianNoiseImageFilter<OutputImageType>;
-  auto noisy = NIFType::New();
+  auto noisy = rtk::AdditiveGaussianNoiseImageFilter<OutputImageType>::New();
   noisy->SetInput(slp->GetOutput());
   noisy->SetMean(0.0);
   noisy->SetStandardDeviation(1.);
 
   // Create a reference object (in this case a 3D phantom reference).
-  using DSLType = rtk::DrawSheppLoganFilter<OutputImageType, OutputImageType>;
-  auto dsl = DSLType::New();
+  auto dsl = rtk::DrawSheppLoganFilter<OutputImageType, OutputImageType>::New();
   dsl->SetInput(tomographySource->GetOutput());
   TRY_AND_EXIT_ON_ITK_EXCEPTION(dsl->Update());
 

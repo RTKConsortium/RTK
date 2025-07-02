@@ -33,24 +33,20 @@ main(int argc, char * argv[])
   using THessian = itk::Image<itk::Vector<dataType, nMaterials * nMaterials>, 3>;
 
   // Define, instantiate, set and update readers
-  using GradientReaderType = itk::ImageFileReader<TGradient>;
-  auto gradientReader = GradientReaderType::New();
+  auto gradientReader = itk::ImageFileReader<TGradient>::New();
   gradientReader->SetFileName(argv[1]);
   gradientReader->Update();
 
-  using HessianReaderType = itk::ImageFileReader<THessian>;
-  auto hessianReader = HessianReaderType::New();
+  auto hessianReader = itk::ImageFileReader<THessian>::New();
   hessianReader->SetFileName(argv[2]);
   hessianReader->Update();
 
-  using OutputReaderType = itk::ImageFileReader<TGradient>;
-  auto outputReader = OutputReaderType::New();
+  auto outputReader = itk::ImageFileReader<TGradient>::New();
   outputReader->SetFileName(argv[3]);
   outputReader->Update();
 
   // Create the filter
-  using NewtonUpdateFilterType = rtk::GetNewtonUpdateImageFilter<TGradient, THessian>;
-  auto newtonUpdate = NewtonUpdateFilterType::New();
+  auto newtonUpdate = rtk::GetNewtonUpdateImageFilter<TGradient, THessian>::New();
 
   // Set its inputs
   newtonUpdate->SetInputGradient(gradientReader->GetOutput());

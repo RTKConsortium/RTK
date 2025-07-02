@@ -28,8 +28,7 @@ int
 main(int, char **)
 {
   constexpr unsigned int Dimension = 3;
-  using OutputPixelType = float;
-  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
+  using OutputImageType = itk::Image<float, Dimension>;
 #if FAST_TESTS_NO_CHECKS
   constexpr unsigned int NumberOfProjectionImages = 3;
 #else
@@ -79,9 +78,8 @@ main(int, char **)
 
   // Projections
   using REIType = rtk::RayEllipsoidIntersectionImageFilter<OutputImageType, OutputImageType>;
-  using PasteImageFilterType = itk::PasteImageFilter<OutputImageType, OutputImageType, OutputImageType>;
   auto destinationIndex = itk::MakeIndex(0, 0, 0);
-  auto pasteFilter = PasteImageFilterType::New();
+  auto pasteFilter = itk::PasteImageFilter<OutputImageType, OutputImageType, OutputImageType>::New();
 
   std::ofstream            signalFile("signal.txt");
   OutputImageType::Pointer wholeImage = projectionsSource->GetOutput();
@@ -133,10 +131,7 @@ main(int, char **)
 
   // Create vector field
   using DVFPixelType = itk::Vector<float, 3>;
-  using DVFImageSequenceType = itk::Image<DVFPixelType, 4>;
-  using DVFImageType = itk::Image<DVFPixelType, 3>;
-  using DeformationType = rtk::CyclicDeformationImageFilter<DVFImageSequenceType, DVFImageType>;
-  using IteratorType = itk::ImageRegionIteratorWithIndex<DeformationType::InputImageType>;
+  using DeformationType = rtk::CyclicDeformationImageFilter<itk::Image<DVFPixelType, 4>, itk::Image<DVFPixelType, 3>>;
 
   DeformationType::InputImageType::Pointer deformationField;
   deformationField = DeformationType::InputImageType::New();
@@ -156,7 +151,8 @@ main(int, char **)
   // Vector Field initilization
   DVFPixelType vec;
   vec.Fill(0.);
-  IteratorType inputIt(deformationField, deformationField->GetLargestPossibleRegion());
+  itk::ImageRegionIteratorWithIndex<DeformationType::InputImageType> inputIt(
+    deformationField, deformationField->GetLargestPossibleRegion());
   for (inputIt.GoToBegin(); !inputIt.IsAtEnd(); ++inputIt)
   {
     if (inputIt.GetIndex()[3] == 0)
@@ -169,8 +165,7 @@ main(int, char **)
   // Create cyclic deformation
   auto def = DeformationType::New();
   def->SetInput(deformationField);
-  using WarpBPType = rtk::FDKWarpBackProjectionImageFilter<OutputImageType, OutputImageType, DeformationType>;
-  auto bp = WarpBPType::New();
+  auto bp = rtk::FDKWarpBackProjectionImageFilter<OutputImageType, OutputImageType, DeformationType>::New();
   bp->SetDeformation(def);
   bp->SetGeometry(geometry.GetPointer());
 
@@ -189,8 +184,7 @@ main(int, char **)
   TRY_AND_EXIT_ON_ITK_EXCEPTION(feldkamp->Update());
 
   // FOV
-  using FOVFilterType = rtk::FieldOfViewImageFilter<OutputImageType, OutputImageType>;
-  auto fov = FOVFilterType::New();
+  auto fov = rtk::FieldOfViewImageFilter<OutputImageType, OutputImageType>::New();
   fov->SetInput(0, feldkamp->GetOutput());
   fov->SetProjectionsStack(wholeImage.GetPointer());
   fov->SetGeometry(geometry);

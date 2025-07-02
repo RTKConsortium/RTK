@@ -111,9 +111,8 @@ main(int argc, char * argv[])
   }
 
   // Set the forward and back projection filters to be used
-  using ConjugateGradientFilterType =
-    rtk::ConjugateGradientConeBeamReconstructionFilter<OutputImageType, SingleComponentImageType, WeightsImageType>;
-  auto conjugategradient = ConjugateGradientFilterType::New();
+  auto conjugategradient = rtk::
+    ConjugateGradientConeBeamReconstructionFilter<OutputImageType, SingleComponentImageType, WeightsImageType>::New();
   SetForwardProjectionFromGgo(args_info, conjugategradient.GetPointer());
   SetBackProjectionFromGgo(args_info, conjugategradient.GetPointer());
   conjugategradient->SetInputVolume(input);

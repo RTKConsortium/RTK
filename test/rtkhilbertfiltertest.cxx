@@ -73,8 +73,7 @@ main(int, char **)
   auto hilbert = HilbertType::New();
   hilbert->SetInput(signal);
 
-  using ZeroPadFactorsType = HilbertType::ZeroPadFactorsType;
-  ZeroPadFactorsType zeroPadFactors;
+  HilbertType::ZeroPadFactorsType zeroPadFactors;
   zeroPadFactors.Fill(1);
   hilbert->SetZeroPadFactors(zeroPadFactors);
 

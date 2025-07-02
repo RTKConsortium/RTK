@@ -41,8 +41,7 @@ FFTVarianceRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>::UpdateFFTP
   Superclass::UpdateFFTProjectionsConvolutionKernel(s);
 
   // iFFT kernel
-  using IFFTType = itk::HalfHermitianToRealInverseFFTImageFilter<FFTOutputImageType, FFTInputImageType>;
-  auto ifftK = IFFTType::New();
+  auto ifftK = itk::HalfHermitianToRealInverseFFTImageFilter<FFTOutputImageType, FFTInputImageType>::New();
   ifftK->SetInput(this->m_KernelFFT);
   ifftK->SetNumberOfWorkUnits(this->GetNumberOfWorkUnits());
   ifftK->Update();
@@ -50,12 +49,12 @@ FFTVarianceRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>::UpdateFFTP
   typename FFTType::InputImageType::Pointer KernelIFFT = ifftK->GetOutput();
 
   // calculate ratio g_C/g^2
-  using InverseIteratorType = itk::ImageRegionIteratorWithIndex<typename FFTType::InputImageType>;
-  InverseIteratorType                         itiK(KernelIFFT, KernelIFFT->GetLargestPossibleRegion());
-  typename FFTType::InputImageType::PixelType sumgc = 0.;
-  typename FFTType::InputImageType::PixelType sumg2 = 0.;
-  typename FFTType::InputImageType::IndexType idxshifted;
-  const unsigned int                          widthFFT = KernelIFFT->GetLargestPossibleRegion().GetSize()[0];
+  itk::ImageRegionIteratorWithIndex<typename FFTType::InputImageType> itiK(KernelIFFT,
+                                                                           KernelIFFT->GetLargestPossibleRegion());
+  typename FFTType::InputImageType::PixelType                         sumgc = 0.;
+  typename FFTType::InputImageType::PixelType                         sumg2 = 0.;
+  typename FFTType::InputImageType::IndexType                         idxshifted;
+  const unsigned int widthFFT = KernelIFFT->GetLargestPossibleRegion().GetSize()[0];
   for (; !itiK.IsAtEnd(); ++itiK)
   {
     idxshifted = itiK.GetIndex();

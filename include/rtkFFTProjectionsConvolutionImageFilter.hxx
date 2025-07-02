@@ -176,8 +176,7 @@ FFTProjectionsConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>::
     }
 
     // Inverse FFT image
-    using IFFTType = itk::HalfHermitianToRealInverseFFTImageFilter<typename FFTType::OutputImageType>;
-    auto ifft = IFFTType::New();
+    auto ifft = itk::HalfHermitianToRealInverseFFTImageFilter<typename FFTType::OutputImageType>::New();
     ifft->SetInput(fftI->GetOutput());
     ifft->SetNumberOfWorkUnits(m_BackupNumberOfThreads);
     ifft->SetReleaseDataFlag(true);

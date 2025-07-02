@@ -77,8 +77,7 @@ main(int, char **)
   attenuationInput->SetSize(size);
   attenuationInput->SetConstant(0);
 
-  using DEIFType = rtk::DrawEllipsoidImageFilter<OutputImageType, OutputImageType>;
-  auto deif = DEIFType::New();
+  auto deif = rtk::DrawEllipsoidImageFilter<OutputImageType, OutputImageType>::New();
   auto axis_vol = itk::MakeVector(50., 50., 50.);
   auto center_vol = itk::MakeVector(0., 0., -30.);
   deif->SetInput(volInput->GetOutput());
@@ -140,15 +139,12 @@ main(int, char **)
   clip_plane_direction_init[0] = 0.;
   clip_plane_direction_init[1] = 0.;
   clip_plane_direction_init[2] = 1.;
-  using TransformType = itk::CenteredEuler3DTransform<double>;
-  auto transform = TransformType::New();
-  using SubtractImageFilterType = itk::SubtractImageFilter<OutputImageType, OutputImageType>;
-  auto                                subtractImageFilter = SubtractImageFilterType::New();
+  auto transform = itk::CenteredEuler3DTransform<double>::New();
+  auto subtractImageFilter = itk::SubtractImageFilter<OutputImageType, OutputImageType>::New();
   typename OutputImageType::IndexType indexSlice;
   typename OutputImageType::Pointer   pimg;
   indexSlice.Fill(0);
-  using PasteImageFilterType = itk::PasteImageFilter<OutputImageType, OutputImageType>;
-  auto pasteImageFilter = PasteImageFilterType::New();
+  auto pasteImageFilter = itk::PasteImageFilter<OutputImageType, OutputImageType>::New();
   pasteImageFilter->SetDestinationImage(projTotal->GetOutput());
 
   int count = 0;
@@ -193,8 +189,7 @@ main(int, char **)
   }
 
   // Streaming filter to test for unusual regions
-  using StreamingFilterType = itk::StreamingImageFilter<OutputImageType, OutputImageType>;
-  auto stream = StreamingFilterType::New();
+  auto stream = itk::StreamingImageFilter<OutputImageType, OutputImageType>::New();
   stream->SetInput(jfp->GetOutput());
 
   stream->SetNumberOfStreamDivisions(9);
@@ -222,8 +217,7 @@ main(int, char **)
   rei->SetGeometry(geometry);
   rei->Update();
 
-  using CustomBinaryFilterType = itk::BinaryGeneratorImageFilter<OutputImageType, OutputImageType, OutputImageType>;
-  auto customBinaryFilter = CustomBinaryFilterType::New();
+  auto customBinaryFilter = itk::BinaryGeneratorImageFilter<OutputImageType, OutputImageType, OutputImageType>::New();
   // Set Lambda function
   auto customLambda = [&](const typename OutputImageType::PixelType & input1,
                           const typename OutputImageType::PixelType & input2) -> typename OutputImageType::PixelType {

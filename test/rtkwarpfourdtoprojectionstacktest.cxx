@@ -52,7 +52,6 @@ main(int, char **)
 
   // Constant image sources
   using ConstantImageSourceType = rtk::ConstantImageSource<VolumeType>;
-  using FourDSourceType = rtk::ConstantImageSource<VolumeSeriesType>;
 
   auto tomographySource = ConstantImageSourceType::New();
   auto origin = itk::MakePoint(-63.0, -31.0, -63.0);
@@ -68,7 +67,7 @@ main(int, char **)
   tomographySource->SetSize(size);
   tomographySource->SetConstant(0.);
 
-  auto fourdSource = FourDSourceType::New();
+  auto fourdSource = rtk::ConstantImageSource<VolumeSeriesType>::New();
   auto fourDOrigin = itk::MakePoint(-63.0, -31.5, -63.0, 0.0);
 #if FAST_TESTS_NO_CHECKS
   auto fourDSize = itk::MakeSize(8, 8, 8, 2);
@@ -254,8 +253,7 @@ main(int, char **)
 
   // Input 4D volume sequence
   auto * Volumes = new VolumeType::Pointer[fourDSize[3]];
-  using JoinFilterType = itk::JoinSeriesImageFilter<VolumeType, VolumeSeriesType>;
-  auto join = JoinFilterType::New();
+  auto   join = itk::JoinSeriesImageFilter<VolumeType, VolumeSeriesType>::New();
 
   for (itk::SizeValueType n = 0; n < fourDSize[3]; n++)
   {
@@ -304,8 +302,7 @@ main(int, char **)
   phaseReader->Update();
 
   // Create and set the warped forward projection filter
-  using WarpFourDToProjectionStackType = rtk::WarpFourDToProjectionStackImageFilter<VolumeSeriesType, VolumeType>;
-  auto warpforwardproject = WarpFourDToProjectionStackType::New();
+  auto warpforwardproject = rtk::WarpFourDToProjectionStackImageFilter<VolumeSeriesType, VolumeType>::New();
   warpforwardproject->SetInputVolumeSeries(join->GetOutput());
   warpforwardproject->SetInputProjectionStack(pasteFilter->GetOutput());
   warpforwardproject->SetGeometry(geometry);

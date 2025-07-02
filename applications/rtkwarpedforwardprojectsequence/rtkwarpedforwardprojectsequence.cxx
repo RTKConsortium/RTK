@@ -76,8 +76,7 @@ main(int argc, char * argv[])
   if (args_info.verbose_flag)
     std::cout << "Projecting volume sequence..." << std::endl;
 
-  using WarpForwardProjectType = rtk::WarpFourDToProjectionStackImageFilter<VolumeSeriesType, ProjectionStackType>;
-  auto forwardProjection = WarpForwardProjectType::New();
+  auto forwardProjection = rtk::WarpFourDToProjectionStackImageFilter<VolumeSeriesType, ProjectionStackType>::New();
 
   forwardProjection->SetInputProjectionStack(constantImageSource->GetOutput());
   forwardProjection->SetInputVolumeSeries(volumeSeries);

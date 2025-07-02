@@ -94,9 +94,9 @@ main(int argc, char * argv[])
                              << MaximumEnergy);
 
   // Create and set the filter
-  using ForwardModelFilterType =
-    rtk::SpectralForwardModelImageFilter<DecomposedProjectionType, MeasuredProjectionsType, IncidentSpectrumImageType>;
-  auto forward = ForwardModelFilterType::New();
+  auto forward = rtk::SpectralForwardModelImageFilter<DecomposedProjectionType,
+                                                      MeasuredProjectionsType,
+                                                      IncidentSpectrumImageType>::New();
   forward->SetInputDecomposedProjections(decomposedProjection);
   forward->SetInputMeasuredProjections(measuredProjections);
   forward->SetInputIncidentSpectrum(incidentSpectrum);

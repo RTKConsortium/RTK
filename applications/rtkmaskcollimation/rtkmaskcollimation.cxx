@@ -30,10 +30,9 @@ main(int argc, char * argv[])
 {
   GGO(rtkmaskcollimation, args_info);
 
-  using OutputPixelType = float;
   constexpr unsigned int Dimension = 3;
 
-  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
+  using OutputImageType = itk::Image<float, Dimension>;
 
   // Geometry
   if (args_info.verbose_flag)
@@ -47,14 +46,12 @@ main(int argc, char * argv[])
   rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkmaskcollimation>(reader, args_info);
 
   // Create projection image filter
-  using OFMType = rtk::MaskCollimationImageFilter<OutputImageType, OutputImageType>;
-  auto ofm = OFMType::New();
+  auto ofm = rtk::MaskCollimationImageFilter<OutputImageType, OutputImageType>::New();
   ofm->SetInput(reader->GetOutput());
   ofm->SetGeometry(geometry);
 
   // Write
-  using WriterType = itk::ImageFileWriter<OutputImageType>;
-  auto writer = WriterType::New();
+  auto writer = itk::ImageFileWriter<OutputImageType>::New();
   writer->SetFileName(args_info.output_arg);
   writer->SetInput(ofm->GetOutput());
   if (args_info.verbose_flag)

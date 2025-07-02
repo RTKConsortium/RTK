@@ -73,8 +73,7 @@ main(int, char **)
   projectionsSource->SetConstant(0.);
 
   // Shepp Logan projections filter
-  using SLPType = rtk::SheppLoganPhantomFilter<OutputImageType, OutputImageType>;
-  auto slp = SLPType::New();
+  auto slp = rtk::SheppLoganPhantomFilter<OutputImageType, OutputImageType>::New();
   slp->SetInput(projectionsSource->GetOutput());
 
   // Displaced detector weighting
@@ -87,14 +86,12 @@ main(int, char **)
   ddf->SetInput(slp->GetOutput());
 
   // Create a reference object (in this case a 3D phantom reference).
-  using DSLType = rtk::DrawSheppLoganFilter<OutputImageType, OutputImageType>;
-  auto dsl = DSLType::New();
+  auto dsl = rtk::DrawSheppLoganFilter<OutputImageType, OutputImageType>::New();
   dsl->SetInput(tomographySource->GetOutput());
   TRY_AND_EXIT_ON_ITK_EXCEPTION(dsl->Update());
 
   // FDK reconstruction filtering
-  using FDKCPUType = rtk::FDKConeBeamReconstructionFilter<OutputImageType>;
-  auto feldkamp = FDKCPUType::New();
+  auto feldkamp = rtk::FDKConeBeamReconstructionFilter<OutputImageType>::New();
   feldkamp->SetInput(0, tomographySource->GetOutput());
   feldkamp->SetInput(1, ddf->GetOutput());
 

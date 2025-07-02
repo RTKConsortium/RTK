@@ -33,10 +33,9 @@ main(int argc, char * argv[])
 {
   GGO(rtkdrawshepploganphantom, args_info);
 
-  using OutputPixelType = float;
   constexpr unsigned int Dimension = 3;
 
-  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
+  using OutputImageType = itk::Image<float, Dimension>;
 
   // Create a stack of empty projection images
   using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
@@ -63,8 +62,7 @@ main(int argc, char * argv[])
   OutputImageType::Pointer output = dsl->GetOutput();
   if (args_info.noise_given)
   {
-    using NIFType = rtk::AdditiveGaussianNoiseImageFilter<OutputImageType>;
-    auto noisy = NIFType::New();
+    auto noisy = rtk::AdditiveGaussianNoiseImageFilter<OutputImageType>::New();
     noisy->SetInput(output);
     noisy->SetMean(0.0);
     noisy->SetStandardDeviation(args_info.noise_arg);

@@ -47,39 +47,32 @@ main(int argc, char * argv[])
   vnl_matrix<dataType> materialAttenuations(nEnergies, nMaterials);
 
   // Define, instantiate, set and update readers
-  using DecomposedProjectionsReaderType = itk::ImageFileReader<TDecomposedProjections>;
-  auto decomposedProjectionsReader = DecomposedProjectionsReaderType::New();
+  auto decomposedProjectionsReader = itk::ImageFileReader<TDecomposedProjections>::New();
   decomposedProjectionsReader->SetFileName(argv[1]);
   decomposedProjectionsReader->Update();
 
-  using MeasuredProjectionsReaderType = itk::ImageFileReader<TMeasuredProjections>;
-  auto measuredProjectionsReader = MeasuredProjectionsReaderType::New();
+  auto measuredProjectionsReader = itk::ImageFileReader<TMeasuredProjections>::New();
   measuredProjectionsReader->SetFileName(argv[2]);
   measuredProjectionsReader->Update();
 
-  using IncidentSpectrumReaderType = itk::ImageFileReader<TIncidentSpectrum>;
-  auto incidentSpectrumReader = IncidentSpectrumReaderType::New();
+  auto incidentSpectrumReader = itk::ImageFileReader<TIncidentSpectrum>::New();
   incidentSpectrumReader->SetFileName(argv[3]);
   incidentSpectrumReader->Update();
 
-  using ProjectionsReaderType = itk::ImageFileReader<TProjections>;
-  auto projectionsReader = ProjectionsReaderType::New();
+  auto projectionsReader = itk::ImageFileReader<TProjections>::New();
   projectionsReader->SetFileName(argv[4]);
   projectionsReader->Update();
 
-  using Output1ReaderType = itk::ImageFileReader<TOutput1>;
-  auto output1Reader = Output1ReaderType::New();
+  auto output1Reader = itk::ImageFileReader<TOutput1>::New();
   output1Reader->SetFileName(argv[7]);
   output1Reader->Update();
 
-  using Output2ReaderType = itk::ImageFileReader<TOutput2>;
-  auto output2Reader = Output2ReaderType::New();
+  auto output2Reader = itk::ImageFileReader<TOutput2>::New();
   output2Reader->SetFileName(argv[8]);
   output2Reader->Update();
 
   // Read binned detector response
-  using CSVReaderType = itk::CSVArray2DFileReader<dataType>;
-  auto csvReader = CSVReaderType::New();
+  auto csvReader = itk::CSVArray2DFileReader<dataType>::New();
   csvReader->SetFieldDelimiterCharacter(',');
   csvReader->HasColumnHeadersOff();
   csvReader->HasRowHeadersOff();
@@ -100,9 +93,10 @@ main(int argc, char * argv[])
       materialAttenuations[r][c] = csvReader->GetOutput()->GetData(r, c);
 
   // Create the filter
-  using WeidingerForwardModelType = rtk::
-    WeidingerForwardModelImageFilter<TDecomposedProjections, TMeasuredProjections, TIncidentSpectrum, TProjections>;
-  auto weidingerForward = WeidingerForwardModelType::New();
+  auto weidingerForward = rtk::WeidingerForwardModelImageFilter<TDecomposedProjections,
+                                                                TMeasuredProjections,
+                                                                TIncidentSpectrum,
+                                                                TProjections>::New();
 
   // Set its inputs
   weidingerForward->SetInputDecomposedProjections(decomposedProjectionsReader->GetOutput());

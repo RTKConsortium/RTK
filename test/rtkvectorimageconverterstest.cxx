@@ -58,8 +58,7 @@ main(int, char **)
   }
 
   // Create the filter to convert it to a vector image
-  using HigherDimensionToVectorType = rtk::ImageToVectorImageFilter<HigherDimensionImageType, VectorImageType>;
-  auto higherDimensionToVector = HigherDimensionToVectorType::New();
+  auto higherDimensionToVector = rtk::ImageToVectorImageFilter<HigherDimensionImageType, VectorImageType>::New();
   higherDimensionToVector->SetInput(higherDimensionInput);
 
   // Perform conversion
@@ -102,8 +101,7 @@ main(int, char **)
     higherDimensionToVector->GetOutput(), refVectorImage, 1e-7, 100, 2.0);
 
   // Create the filter to convert the result back to an image
-  using VectorToHigherDimensionType = rtk::VectorImageToImageFilter<VectorImageType, HigherDimensionImageType>;
-  auto vectorToHigherDimension = VectorToHigherDimensionType::New();
+  auto vectorToHigherDimension = rtk::VectorImageToImageFilter<VectorImageType, HigherDimensionImageType>::New();
   vectorToHigherDimension->SetInput(higherDimensionToVector->GetOutput());
 
   TRY_AND_EXIT_ON_ITK_EXCEPTION(vectorToHigherDimension->Update());
@@ -141,8 +139,7 @@ main(int, char **)
   }
 
   // Create the filter to convert it to a vector image
-  using ToVectorType = rtk::ImageToVectorImageFilter<ImageType, VectorImageType>;
-  auto imageToVector = ToVectorType::New();
+  auto imageToVector = rtk::ImageToVectorImageFilter<ImageType, VectorImageType>::New();
   imageToVector->SetInput(input);
   imageToVector->SetNumberOfChannels(8);
 
@@ -153,8 +150,7 @@ main(int, char **)
   CheckVariableLengthVectorImageQuality<VectorImageType>(imageToVector->GetOutput(), refVectorImage, 1e-7, 100, 2.0);
 
   // Create the filter to convert the result back to an image
-  using VectorToType = rtk::VectorImageToImageFilter<VectorImageType, ImageType>;
-  auto vectorToImage = VectorToType::New();
+  auto vectorToImage = rtk::VectorImageToImageFilter<VectorImageType, ImageType>::New();
   vectorToImage->SetInput(imageToVector->GetOutput());
 
   TRY_AND_EXIT_ON_ITK_EXCEPTION(vectorToImage->Update());

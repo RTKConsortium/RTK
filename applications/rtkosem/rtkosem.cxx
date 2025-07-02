@@ -60,8 +60,7 @@ main(int argc, char * argv[])
   if (args_info.input_given)
   {
     // Read an existing image to initialize the volume
-    using InputReaderType = itk::ImageFileReader<OutputImageType>;
-    auto inputReader = InputReaderType::New();
+    auto inputReader = itk::ImageFileReader<OutputImageType>::New();
     inputReader->SetFileName(args_info.input_arg);
     inputFilter = inputReader;
   }

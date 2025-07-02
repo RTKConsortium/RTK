@@ -57,14 +57,11 @@ FDKBackProjectionImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerate
   const unsigned int iFirstProj = this->GetInput(1)->GetLargestPossibleRegion().GetIndex(Dimension - 1);
 
   // Create interpolator, could be any interpolation
-  using InterpolatorType = itk::LinearInterpolateImageFunction<ProjectionImageType, double>;
-  auto interpolator = InterpolatorType::New();
+  auto interpolator = itk::LinearInterpolateImageFunction<ProjectionImageType, double>::New();
 
   // Iterators on volume input and output
-  using InputRegionIterator = itk::ImageRegionConstIterator<TInputImage>;
-  InputRegionIterator itIn(this->GetInput(), outputRegionForThread);
-  using OutputRegionIterator = itk::ImageRegionIteratorWithIndex<TOutputImage>;
-  OutputRegionIterator itOut(this->GetOutput(), outputRegionForThread);
+  itk::ImageRegionConstIterator<TInputImage>      itIn(this->GetInput(), outputRegionForThread);
+  itk::ImageRegionIteratorWithIndex<TOutputImage> itOut(this->GetOutput(), outputRegionForThread);
 
   // Initialize output region with input region in case the filter is not in
   // place
@@ -82,9 +79,10 @@ FDKBackProjectionImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerate
   // Rotation center (assumed to be at 0 yet)
   typename TInputImage::PointType rotCenterPoint;
   rotCenterPoint.Fill(0.0);
-  using ValueType = typename TInputImage::PointType::ValueType;
   const itk::ContinuousIndex<double, Dimension> rotCenterIndex =
-    this->GetInput(0)->template TransformPhysicalPointToContinuousIndex<ValueType, double>(rotCenterPoint);
+    this->GetInput(0)
+      ->template TransformPhysicalPointToContinuousIndex<typename TInputImage::PointType::ValueType, double>(
+        rotCenterPoint);
 
   // Continuous index at which we interpolate
   itk::ContinuousIndex<double, Dimension - 1> pointProj;

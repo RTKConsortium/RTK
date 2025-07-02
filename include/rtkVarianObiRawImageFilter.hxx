@@ -31,8 +31,8 @@ template <typename TInputImage, typename TOutputImage>
 void
 VarianObiRawImageFilter<TInputImage, TOutputImage>::BeforeThreadedGenerateData()
 {
-  using I0EstimationType = rtk::I0EstimationProjectionFilter<TInputImage>;
-  auto * i0est = dynamic_cast<I0EstimationType *>(this->GetInput()->GetSource().GetPointer());
+  auto * i0est =
+    dynamic_cast<rtk::I0EstimationProjectionFilter<TInputImage> *>(this->GetInput()->GetSource().GetPointer());
   if (i0est)
   {
     m_I0 = (double)i0est->GetI0();

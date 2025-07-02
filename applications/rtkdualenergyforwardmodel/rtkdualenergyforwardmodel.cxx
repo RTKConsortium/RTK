@@ -35,22 +35,16 @@ main(int argc, char * argv[])
   constexpr unsigned int Dimension = 3;
 
   using DecomposedProjectionType = itk::VectorImage<PixelValueType, Dimension>;
-  using DecomposedProjectionReaderType = itk::ImageFileReader<DecomposedProjectionType>;
 
   using DualEnergyProjectionsType = itk::VectorImage<PixelValueType, Dimension>;
-  using DualEnergyProjectionWriterType = itk::ImageFileWriter<DualEnergyProjectionsType>;
 
-  using IncidentSpectrumImageType = itk::Image<PixelValueType, Dimension>;
-  using IncidentSpectrumReaderType = itk::ImageFileReader<IncidentSpectrumImageType>;
+  using IncidentSpectrumReaderType = itk::ImageFileReader<itk::Image<PixelValueType, Dimension>>;
 
   using DetectorResponseImageType = itk::Image<PixelValueType, Dimension - 1>;
-  using DetectorResponseReaderType = itk::ImageFileReader<DetectorResponseImageType>;
 
-  using MaterialAttenuationsImageType = itk::Image<PixelValueType, Dimension - 1>;
-  using MaterialAttenuationsReaderType = itk::ImageFileReader<MaterialAttenuationsImageType>;
 
   // Read all inputs
-  auto decomposedProjectionReader = DecomposedProjectionReaderType::New();
+  auto decomposedProjectionReader = itk::ImageFileReader<DecomposedProjectionType>::New();
   decomposedProjectionReader->SetFileName(args_info.input_arg);
   decomposedProjectionReader->Update();
 
@@ -62,7 +56,7 @@ main(int argc, char * argv[])
   incidentSpectrumReaderLowEnergy->SetFileName(args_info.low_arg);
   incidentSpectrumReaderLowEnergy->Update();
 
-  auto materialAttenuationsReader = MaterialAttenuationsReaderType::New();
+  auto materialAttenuationsReader = itk::ImageFileReader<itk::Image<PixelValueType, Dimension - 1>>::New();
   materialAttenuationsReader->SetFileName(args_info.attenuations_arg);
   materialAttenuationsReader->Update();
 
@@ -72,7 +66,7 @@ main(int argc, char * argv[])
 
   // If the detector response is given by the user, use it. Otherwise, assume it is included in the
   // incident spectrum, and fill the response with ones
-  auto                               detectorResponseReader = DetectorResponseReaderType::New();
+  auto                               detectorResponseReader = itk::ImageFileReader<DetectorResponseImageType>::New();
   DetectorResponseImageType::Pointer detectorImage;
   if (args_info.detector_given)
   {
@@ -108,9 +102,7 @@ main(int argc, char * argv[])
                              << "energies, should have " << MaximumEnergy);
 
   // Create and set the filter
-  using ForwardModelFilterType =
-    rtk::SpectralForwardModelImageFilter<DecomposedProjectionType, DualEnergyProjectionsType>;
-  auto forward = ForwardModelFilterType::New();
+  auto forward = rtk::SpectralForwardModelImageFilter<DecomposedProjectionType, DualEnergyProjectionsType>::New();
   forward->SetInputDecomposedProjections(decomposedProjectionReader->GetOutput());
   forward->SetInputMeasuredProjections(dualEnergyProjections);
   forward->SetInputIncidentSpectrum(incidentSpectrumReaderHighEnergy->GetOutput());
@@ -123,7 +115,7 @@ main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION(forward->Update())
 
   // Write output
-  auto writer = DualEnergyProjectionWriterType::New();
+  auto writer = itk::ImageFileWriter<DualEnergyProjectionsType>::New();
   writer->SetInput(forward->GetOutput());
   writer->SetFileName(args_info.output_arg);
   writer->Update();

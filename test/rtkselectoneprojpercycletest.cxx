@@ -21,8 +21,7 @@ int
 main(int, char **)
 {
   constexpr unsigned int Dimension = 3;
-  using OutputPixelType = float;
-  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
+  using OutputImageType = itk::Image<float, Dimension>;
   constexpr unsigned int NumberOfProjectionImages = 24;
 
   // Constant image sources
@@ -56,11 +55,10 @@ main(int, char **)
 
   // Projections
   using REIType = rtk::RayEllipsoidIntersectionImageFilter<OutputImageType, OutputImageType>;
-  using PasteImageFilterType = itk::PasteImageFilter<OutputImageType, OutputImageType, OutputImageType>;
   OutputImageType::IndexType destinationIndex, destinationIndexRef;
   destinationIndex.Fill(0);
   destinationIndexRef.Fill(0);
-  auto pasteFilter = PasteImageFilterType::New();
+  auto pasteFilter = itk::PasteImageFilter<OutputImageType, OutputImageType, OutputImageType>::New();
 
   std::string              signalFileName = "signal_SelectOneProjPerCycle.txt";
   std::ofstream            signalFile(signalFileName.c_str());
@@ -132,8 +130,7 @@ main(int, char **)
   signalFile.close();
 
   // Select
-  using SelectionType = rtk::SelectOneProjectionPerCycleImageFilter<OutputImageType>;
-  auto select = SelectionType::New();
+  auto select = rtk::SelectOneProjectionPerCycleImageFilter<OutputImageType>::New();
   select->SetInput(wholeImage);
   select->SetInputGeometry(geometry);
   select->SetPhase(0.4);

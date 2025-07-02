@@ -26,8 +26,7 @@ CheckGradient(typename TImage::Pointer im, typename TGradient::Pointer grad, con
       dimsToProcess.push_back(dim);
   }
 
-  using GradientIteratorType = itk::ImageRegionConstIterator<TGradient>;
-  GradientIteratorType itGrad(grad, grad->GetBufferedRegion());
+  itk::ImageRegionConstIterator<TGradient> itGrad(grad, grad->GetBufferedRegion());
 
   const int ImageDimension = TImage::ImageDimension;
 
@@ -102,8 +101,7 @@ main(int, char **)
 #endif
 
   // Random image sources
-  using RandomImageSourceType = itk::RandomImageSource<OutputImageType>;
-  auto randomVolumeSource = RandomImageSourceType::New();
+  auto randomVolumeSource = itk::RandomImageSource<OutputImageType>::New();
 
   // Volume metadata
   auto origin = itk::MakePoint<OutputPixelType>(-127., -127., -127.);

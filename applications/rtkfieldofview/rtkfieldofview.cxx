@@ -74,8 +74,7 @@ main(int argc, char * argv[])
   if (!args_info.bp_flag)
   {
     // FOV filter
-    using FOVFilterType = rtk::FieldOfViewImageFilter<OutputImageType, OutputImageType>;
-    auto fieldofview = FOVFilterType::New();
+    auto fieldofview = rtk::FieldOfViewImageFilter<OutputImageType, OutputImageType>::New();
     fieldofview->SetMask(args_info.mask_flag);
     fieldofview->SetInput(0, unmasked_reconstruction);
     fieldofview->SetProjectionsStack(reader->GetOutput());
@@ -110,27 +109,23 @@ main(int argc, char * argv[])
     zeroVol->SetConstant(0.);
     zeroVol->SetInformationFromImage(unmasked_reconstruction);
 
-    using BPType = rtk::BackProjectionImageFilter<MaskImgType, MaskImgType>;
-    auto bp = BPType::New();
+    auto bp = rtk::BackProjectionImageFilter<MaskImgType, MaskImgType>::New();
 #ifdef RTK_USE_CUDA
-    using BPCudaType = rtk::CudaBackProjectionImageFilter<MaskImgType>;
     if (!strcmp(args_info.hardware_arg, "cuda"))
-      bp = BPCudaType::New();
+      bp = rtk::CudaBackProjectionImageFilter<MaskImgType>::New();
 #endif
     bp->SetInput(zeroVol->GetOutput());
     bp->SetInput(1, ones->GetOutput());
     bp->SetGeometry(geometry);
 
-    using ThreshType = itk::ThresholdImageFilter<MaskImgType>;
-    auto thresh = ThreshType::New();
+    auto thresh = itk::ThresholdImageFilter<MaskImgType>::New();
     thresh->SetInput(bp->GetOutput());
     thresh->ThresholdBelow(geometry->GetGantryAngles().size() - 1);
     thresh->SetOutsideValue(0.);
 
     if (args_info.mask_flag)
     {
-      using DivideType = itk::DivideImageFilter<MaskImgType, MaskImgType, MaskImgType>;
-      auto div = DivideType::New();
+      auto div = itk::DivideImageFilter<MaskImgType, MaskImgType, MaskImgType>::New();
       div->SetInput(thresh->GetOutput());
       div->SetConstant2(geometry->GetGantryAngles().size());
 

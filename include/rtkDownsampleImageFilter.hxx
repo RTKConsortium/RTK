@@ -96,7 +96,6 @@ DownsampleImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerateData(
   // Define/declare an iterator that will walk the output region for this
   // thread.
   using OutputIterator = itk::ImageRegionIterator<TOutputImage>;
-  using InputIterator = itk::ImageRegionConstIterator<TInputImage>;
 
   // Define a few indices that will be used to translate from an input pixel
   // to an output pixel
@@ -172,8 +171,8 @@ DownsampleImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerateData(
     inputLine.SetSize(inputLineSize);
     inputLine.SetIndex(inputStartIndex + firstPixelOfInputLineOffset);
 
-    OutputIterator outIt(outputPtr, outputLine);
-    InputIterator  inIt(inputPtr, inputLine);
+    OutputIterator                             outIt(outputPtr, outputLine);
+    itk::ImageRegionConstIterator<TInputImage> inIt(inputPtr, inputLine);
 
     // Walk the line and copy the pixels
     while (!outIt.IsAtEnd())

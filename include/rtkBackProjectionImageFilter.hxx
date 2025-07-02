@@ -194,8 +194,7 @@ BackProjectionImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerateDat
   auto interpolator = InterpolatorType::New();
 
   // Iterators on volume input and output
-  using InputRegionIterator = itk::ImageRegionConstIterator<TInputImage>;
-  InputRegionIterator itIn(this->GetInput(), outputRegionForThread);
+  itk::ImageRegionConstIterator<TInputImage> itIn(this->GetInput(), outputRegionForThread);
   using OutputRegionIterator = itk::ImageRegionIteratorWithIndex<TOutputImage>;
   OutputRegionIterator itOut(this->GetOutput(), outputRegionForThread);
 

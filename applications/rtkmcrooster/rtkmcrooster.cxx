@@ -50,7 +50,6 @@ main(int argc, char * argv[])
   using DVFSequenceImageType = itk::Image<DVFVectorType, VolumeSeriesType::ImageDimension>;
   using DVFImageType = itk::Image<DVFVectorType, VolumeSeriesType::ImageDimension - 1>;
 #endif
-  using VolumeType = ProjectionStackType;
 
   // Projections reader
   using ReaderType = rtk::ProjectionsReader<ProjectionStackType>;
@@ -98,8 +97,7 @@ main(int argc, char * argv[])
   // Re-order geometry and projections
   // In the new order, projections with identical phases are packed together
   std::vector<double> signal = rtk::ReadSignalFile(args_info.signal_arg);
-  using ReorderProjectionsFilterType = rtk::ReorderProjectionsImageFilter<ProjectionStackType>;
-  auto reorder = ReorderProjectionsFilterType::New();
+  auto                reorder = rtk::ReorderProjectionsImageFilter<ProjectionStackType>::New();
   reorder->SetInput(reader->GetOutput());
   reorder->SetInputGeometry(geometry);
   reorder->SetInputSignal(signal);
@@ -116,9 +114,8 @@ main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION(signalToInterpolationWeights->Update())
 
   // Create the 4DROOSTER filter, connect the basic inputs, and set the basic parameters
-  using MCROOSTERFilterType =
-    rtk::MotionCompensatedFourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>;
-  auto mcrooster = MCROOSTERFilterType::New();
+  auto mcrooster =
+    rtk::MotionCompensatedFourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::New();
   SetForwardProjectionFromGgo(args_info, mcrooster.GetPointer());
   SetBackProjectionFromGgo(args_info, mcrooster.GetPointer());
   mcrooster->SetInputVolumeSeries(inputFilter->GetOutput());
@@ -144,7 +141,7 @@ main(int argc, char * argv[])
     mcrooster->SetPerformPositivity(true);
 
   // Motion mask
-  using InputReaderType = itk::ImageFileReader<VolumeType>;
+  using InputReaderType = itk::ImageFileReader<ProjectionStackType>;
   if (args_info.motionmask_given)
   {
     auto motionMaskReader = InputReaderType::New();
@@ -209,9 +206,8 @@ main(int argc, char * argv[])
 
   TRY_AND_EXIT_ON_ITK_EXCEPTION(mcrooster->Update())
 
-  using WarpSequenceFilterType =
-    rtk::WarpSequenceImageFilter<VolumeSeriesType, DVFSequenceImageType, ProjectionStackType, DVFImageType>;
-  auto warp = WarpSequenceFilterType::New();
+  auto warp =
+    rtk::WarpSequenceImageFilter<VolumeSeriesType, DVFSequenceImageType, ProjectionStackType, DVFImageType>::New();
 
   if (args_info.nofinalwarp_flag)
   {

@@ -157,18 +157,15 @@ InterpolatorWithKnownWeightsImageFilter<VolumeType, VolumeSeriesType>::DynamicTh
   typename VolumeSeriesType::SizeType   volumeSeriesSize;
   typename VolumeSeriesType::IndexType  volumeSeriesIndex;
 
-  using VolumeRegionIterator = itk::ImageRegionIterator<VolumeType>;
-  using VolumeRegionConstIterator = itk::ImageRegionConstIterator<VolumeType>;
-  using VolumeSeriesRegionIterator = itk::ImageRegionIterator<VolumeSeriesType>;
 
   float weight = NAN;
 
   // Initialize output region with input region in case the filter is not in
   // place
-  VolumeRegionIterator itOut(this->GetOutput(), outputRegionForThread);
+  itk::ImageRegionIterator<VolumeType> itOut(this->GetOutput(), outputRegionForThread);
   if (this->GetInput() != this->GetOutput())
   {
-    VolumeRegionConstIterator itIn(volume, outputRegionForThread);
+    itk::ImageRegionConstIterator<VolumeType> itIn(volume, outputRegionForThread);
     while (!itOut.IsAtEnd())
     {
       itOut.Set(itIn.Get());
@@ -202,7 +199,7 @@ InterpolatorWithKnownWeightsImageFilter<VolumeType, VolumeSeriesType>::DynamicTh
       volumeSeriesRegion.SetIndex(volumeSeriesIndex);
 
       // Iterators
-      VolumeSeriesRegionIterator itVolumeSeries(volumeSeries, volumeSeriesRegion);
+      itk::ImageRegionIterator<VolumeSeriesType> itVolumeSeries(volumeSeries, volumeSeriesRegion);
       itOut.GoToBegin();
 
       while (!itOut.IsAtEnd())

@@ -36,16 +36,15 @@ main(int argc, char * argv[])
   constexpr unsigned int DimensionsProcessed = 3; // Number of dimensions along which the gradient is computed
 
   using OutputImageType = itk::Image<OutputPixelType, Dimension>;
-  using GradientOutputImageType = itk::Image<itk::CovariantVector<OutputPixelType, DimensionsProcessed>, Dimension>;
-  using TVDenoisingFilterType =
-    rtk::TotalNuclearVariationDenoisingBPDQImageFilter<OutputImageType, GradientOutputImageType>;
 
   // Read input
   OutputImageType::Pointer input;
   TRY_AND_EXIT_ON_ITK_EXCEPTION(input = itk::ReadImage<OutputImageType>(args_info.input_arg))
 
   // Apply total nuclear variation denoising
-  auto tv = TVDenoisingFilterType::New();
+  auto tv = rtk::TotalNuclearVariationDenoisingBPDQImageFilter<
+    OutputImageType,
+    itk::Image<itk::CovariantVector<OutputPixelType, DimensionsProcessed>, Dimension>>::New();
   tv->SetInput(input);
   tv->SetGamma(args_info.gamma_arg);
   tv->SetNumberOfIterations(args_info.niter_arg);

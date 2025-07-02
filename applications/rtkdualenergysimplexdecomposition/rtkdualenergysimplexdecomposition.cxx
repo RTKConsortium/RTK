@@ -35,27 +35,22 @@ main(int argc, char * argv[])
   constexpr unsigned int Dimension = 3;
 
   using DecomposedProjectionType = itk::VectorImage<PixelValueType, Dimension>;
-  using DecomposedProjectionReaderType = itk::ImageFileReader<DecomposedProjectionType>;
-  using DecomposedProjectionWriterType = itk::ImageFileWriter<DecomposedProjectionType>;
 
   using DualEnergyProjectionsType = itk::VectorImage<PixelValueType, Dimension>;
-  using DualEnergyProjectionReaderType = itk::ImageFileReader<DualEnergyProjectionsType>;
 
   using IncidentSpectrumImageType = itk::Image<PixelValueType, Dimension>;
   using IncidentSpectrumReaderType = itk::ImageFileReader<IncidentSpectrumImageType>;
 
   using DetectorResponseImageType = itk::Image<PixelValueType, Dimension - 1>;
-  using DetectorResponseReaderType = itk::ImageFileReader<DetectorResponseImageType>;
 
   using MaterialAttenuationsImageType = itk::Image<PixelValueType, Dimension - 1>;
-  using MaterialAttenuationsReaderType = itk::ImageFileReader<MaterialAttenuationsImageType>;
 
   // Read all inputs
-  auto decomposedProjectionReader = DecomposedProjectionReaderType::New();
+  auto decomposedProjectionReader = itk::ImageFileReader<DecomposedProjectionType>::New();
   decomposedProjectionReader->SetFileName(args_info.input_arg);
   decomposedProjectionReader->Update();
 
-  auto dualEnergyProjectionReader = DualEnergyProjectionReaderType::New();
+  auto dualEnergyProjectionReader = itk::ImageFileReader<DualEnergyProjectionsType>::New();
   dualEnergyProjectionReader->SetFileName(args_info.dual_arg);
   dualEnergyProjectionReader->Update();
 
@@ -67,7 +62,7 @@ main(int argc, char * argv[])
   incidentSpectrumReaderLowEnergy->SetFileName(args_info.low_arg);
   incidentSpectrumReaderLowEnergy->Update();
 
-  auto materialAttenuationsReader = MaterialAttenuationsReaderType::New();
+  auto materialAttenuationsReader = itk::ImageFileReader<MaterialAttenuationsImageType>::New();
   materialAttenuationsReader->SetFileName(args_info.attenuations_arg);
   materialAttenuationsReader->Update();
 
@@ -77,7 +72,7 @@ main(int argc, char * argv[])
 
   // If the detector response is given by the user, use it. Otherwise, assume it is included in the
   // incident spectrum, and fill the response with ones
-  auto                               detectorResponseReader = DetectorResponseReaderType::New();
+  auto                               detectorResponseReader = itk::ImageFileReader<DetectorResponseImageType>::New();
   DetectorResponseImageType::Pointer detectorImage;
   if (args_info.detector_given)
   {
@@ -99,12 +94,11 @@ main(int argc, char * argv[])
                              << "energies, should have " << MaximumEnergy);
 
   // Create and set the filter
-  using SimplexFilterType = rtk::SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionType,
-                                                                                    DualEnergyProjectionsType,
-                                                                                    IncidentSpectrumImageType,
-                                                                                    DetectorResponseImageType,
-                                                                                    MaterialAttenuationsImageType>;
-  auto simplex = SimplexFilterType::New();
+  auto simplex = rtk::SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionType,
+                                                                         DualEnergyProjectionsType,
+                                                                         IncidentSpectrumImageType,
+                                                                         DetectorResponseImageType,
+                                                                         MaterialAttenuationsImageType>::New();
   simplex->SetInputDecomposedProjections(decomposedProjectionReader->GetOutput());
   simplex->SetGuessInitialization(args_info.guess_flag);
   simplex->SetInputMeasuredProjections(dualEnergyProjectionReader->GetOutput());
@@ -119,7 +113,7 @@ main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION(simplex->Update())
 
   // Write outputs
-  auto writer = DecomposedProjectionWriterType::New();
+  auto writer = itk::ImageFileWriter<DecomposedProjectionType>::New();
   writer->SetInput(simplex->GetOutput(0));
   writer->SetFileName(args_info.output_arg);
   writer->Update();

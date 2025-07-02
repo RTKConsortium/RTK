@@ -207,8 +207,7 @@ JosephForwardProjectionImageFilter<TInputImage,
   using InputRegionIterator = ProjectionsRegionConstIteratorRayBased<TInputImage>;
   InputRegionIterator * itIn = nullptr;
   itIn = InputRegionIterator::New(this->GetInput(), outputRegionForThread, geometry, volPPToIndex);
-  using OutputRegionIterator = itk::ImageRegionIteratorWithIndex<TOutputImage>;
-  OutputRegionIterator itOut(this->GetOutput(), outputRegionForThread);
+  itk::ImageRegionIteratorWithIndex<TOutputImage> itOut(this->GetOutput(), outputRegionForThread);
   using ClipImageIterator = itk::ImageRegionConstIterator<TClipImageType>;
   ClipImageIterator * itInferiorImage = nullptr;
   ClipImageIterator * itSuperiorImage = nullptr;

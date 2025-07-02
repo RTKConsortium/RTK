@@ -30,10 +30,9 @@ main(int argc, char * argv[])
 {
   GGO(rtkamsterdamshroud, args_info);
 
-  using OutputPixelType = double;
   constexpr unsigned int Dimension = 3;
 
-  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
+  using OutputImageType = itk::Image<double, Dimension>;
 
   // Projections reader
   using ReaderType = rtk::ProjectionsReader<OutputImageType>;
@@ -79,8 +78,7 @@ main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION(shroudFilter->UpdateOutputInformation())
 
   // Write
-  using WriterType = itk::ImageFileWriter<ShroudFilterType::OutputImageType>;
-  auto writer = WriterType::New();
+  auto writer = itk::ImageFileWriter<ShroudFilterType::OutputImageType>::New();
   writer->SetFileName(args_info.output_arg);
   writer->SetInput(shroudFilter->GetOutput());
   writer->SetNumberOfStreamDivisions(shroudFilter->GetOutput()->GetLargestPossibleRegion().GetSize(1));

@@ -29,10 +29,9 @@ main(int argc, char * argv[])
 {
   GGO(rtkrayboxintersection, args_info);
 
-  using OutputPixelType = float;
   constexpr unsigned int Dimension = 3;
 
-  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
+  using OutputImageType = itk::Image<float, Dimension>;
 
   // Geometry
   if (args_info.verbose_flag)
@@ -55,8 +54,7 @@ main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION(input = itk::ReadImage<OutputImageType>(args_info.input_arg))
 
   // Create projection image filter
-  using RBIType = rtk::RayBoxIntersectionImageFilter<OutputImageType, OutputImageType>;
-  auto rbi = RBIType::New();
+  auto rbi = rtk::RayBoxIntersectionImageFilter<OutputImageType, OutputImageType>::New();
   rbi->SetInput(constantImageSource->GetOutput());
   rbi->SetBoxFromImage(input);
   rbi->SetGeometry(geometry);

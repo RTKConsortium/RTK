@@ -74,8 +74,7 @@ main(int, char **)
   projInput->Update();
 
 
-  using DEIFType = rtk::DrawEllipsoidImageFilter<OutputImageType, OutputImageType>;
-  auto volInput = DEIFType::New();
+  auto volInput = rtk::DrawEllipsoidImageFilter<OutputImageType, OutputImageType>::New();
   auto axis_vol = itk::MakeVector(32., 32., 32.);
   auto center_vol = itk::MakeVector(0., 0., 0.);
   volInput->SetInput(tomographySource->GetOutput());
@@ -85,24 +84,21 @@ main(int, char **)
   volInput->Update();
 
   // Zeng Forward Projection filter
-  using JFPType = rtk::ZengForwardProjectionImageFilter<OutputImageType, OutputImageType>;
 
-  auto jfp = JFPType::New();
+  auto jfp = rtk::ZengForwardProjectionImageFilter<OutputImageType, OutputImageType>::New();
   jfp->InPlaceOff();
   jfp->SetInput(projInput->GetOutput());
   jfp->SetInput(1, volInput->GetOutput());
   jfp->SetInput(2, attenuationInput->GetOutput());
 
   // Joseph Forward Attenuated Projection filter
-  using ATTJFPType = rtk::JosephForwardAttenuatedProjectionImageFilter<OutputImageType, OutputImageType>;
-  auto attjfp = ATTJFPType::New();
+  auto attjfp = rtk::JosephForwardAttenuatedProjectionImageFilter<OutputImageType, OutputImageType>::New();
   attjfp->InPlaceOff();
   attjfp->SetInput(projInput->GetOutput());
   attjfp->SetInput(1, volInput->GetOutput());
   attjfp->SetInput(2, attenuationInput->GetOutput());
 
-  using GeometryType = rtk::ThreeDCircularProjectionGeometry;
-  auto geometry = GeometryType::New();
+  auto geometry = rtk::ThreeDCircularProjectionGeometry::New();
   for (unsigned int i = 0; i < NumberOfProjectionImages; i++)
   {
     geometry->AddProjection(500, 0, i * 360. / NumberOfProjectionImages, 16., 12.);

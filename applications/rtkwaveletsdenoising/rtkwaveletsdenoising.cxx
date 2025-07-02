@@ -30,18 +30,16 @@ main(int argc, char * argv[])
 {
   GGO(rtkwaveletsdenoising, args_info);
 
-  using OutputPixelType = float;
   constexpr unsigned int Dimension = 3;
 
-  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
+  using OutputImageType = itk::Image<float, Dimension>;
 
   // Read the input image
   OutputImageType::Pointer input;
   TRY_AND_EXIT_ON_ITK_EXCEPTION(input = itk::ReadImage<OutputImageType>(args_info.input_arg))
 
   // Create the denoising filter
-  using WaveletsSoftThresholdFilterType = rtk::DeconstructSoftThresholdReconstructImageFilter<OutputImageType>;
-  auto wst = WaveletsSoftThresholdFilterType::New();
+  auto wst = rtk::DeconstructSoftThresholdReconstructImageFilter<OutputImageType>::New();
   wst->SetInput(input);
   wst->SetOrder(args_info.order_arg);
   wst->SetThreshold(args_info.threshold_arg);

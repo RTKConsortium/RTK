@@ -40,13 +40,7 @@ main(int argc, char * argv[])
   using MeasuredProjectionsType = itk::VectorImage<PixelValueType, Dimension>;
 
   using IncidentSpectrumImageType = itk::Image<PixelValueType, Dimension>;
-  using IncidentSpectrumReaderType = itk::ImageFileReader<IncidentSpectrumImageType>;
 
-  using DetectorResponseImageType = itk::Image<PixelValueType, Dimension - 1>;
-  using DetectorResponseReaderType = itk::ImageFileReader<DetectorResponseImageType>;
-
-  using MaterialAttenuationsImageType = itk::Image<PixelValueType, Dimension - 1>;
-  using MaterialAttenuationsReaderType = itk::ImageFileReader<MaterialAttenuationsImageType>;
 
   // Cast filters to convert between vector image types
   using CastDecomposedProjectionsFilterType =
@@ -55,15 +49,15 @@ main(int argc, char * argv[])
     itk::CastImageFilter<MeasuredProjectionsType, itk::Image<itk::Vector<PixelValueType, 6>, Dimension>>;
 
   // Read all inputs
-  auto incidentSpectrumReader = IncidentSpectrumReaderType::New();
+  auto incidentSpectrumReader = itk::ImageFileReader<IncidentSpectrumImageType>::New();
   incidentSpectrumReader->SetFileName(argv[1]);
   incidentSpectrumReader->Update();
 
-  auto detectorResponseReader = DetectorResponseReaderType::New();
+  auto detectorResponseReader = itk::ImageFileReader<itk::Image<PixelValueType, Dimension - 1>>::New();
   detectorResponseReader->SetFileName(argv[2]);
   detectorResponseReader->Update();
 
-  auto materialAttenuationsReader = MaterialAttenuationsReaderType::New();
+  auto materialAttenuationsReader = itk::ImageFileReader<itk::Image<PixelValueType, Dimension - 1>>::New();
   materialAttenuationsReader->SetFileName(argv[3]);
   materialAttenuationsReader->Update();
 
@@ -74,9 +68,8 @@ main(int argc, char * argv[])
 #endif
 
   // Constant image source for the analytical projections calculation
-  using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
 
-  auto projectionsSource = ConstantImageSourceType::New();
+  auto projectionsSource = rtk::ConstantImageSource<OutputImageType>::New();
   auto origin = itk::MakePoint(-255., -0.5, -255.);
 #if FAST_TESTS_NO_CHECKS
   auto spacing = itk::MakeVector(504., 504., 504.);
@@ -104,8 +97,7 @@ main(int argc, char * argv[])
   decomposed->Allocate();
 
   // Geometry object
-  using GeometryType = rtk::ThreeDCircularProjectionGeometry;
-  auto geometry = GeometryType::New();
+  auto geometry = rtk::ThreeDCircularProjectionGeometry::New();
   for (unsigned int noProj = 0; noProj < NumberOfProjectionImages; noProj++)
     geometry->AddProjection(600., 1200., noProj * 360. / NumberOfProjectionImages);
 
@@ -163,9 +155,9 @@ main(int argc, char * argv[])
   thresholds[6] = 180;
 
   // Apply the forward model to the multi-material projections
-  using SpectralForwardFilterType =
-    rtk::SpectralForwardModelImageFilter<DecomposedProjectionsType, MeasuredProjectionsType, IncidentSpectrumImageType>;
-  auto forward = SpectralForwardFilterType::New();
+  auto forward = rtk::SpectralForwardModelImageFilter<DecomposedProjectionsType,
+                                                      MeasuredProjectionsType,
+                                                      IncidentSpectrumImageType>::New();
   forward->SetInputDecomposedProjections(decomposed);
   forward->SetInputMeasuredProjections(measuredProjections);
   forward->SetInputIncidentSpectrum(incidentSpectrumReader->GetOutput());
@@ -189,10 +181,9 @@ main(int argc, char * argv[])
   initialDecomposedProjections->FillBuffer(initPixel);
 
   // Create and set the simplex filter to perform the decomposition
-  using SimplexFilterType = rtk::SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType,
-                                                                                    MeasuredProjectionsType,
-                                                                                    IncidentSpectrumImageType>;
-  auto simplex = SimplexFilterType::New();
+  auto simplex = rtk::SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType,
+                                                                         MeasuredProjectionsType,
+                                                                         IncidentSpectrumImageType>::New();
   simplex->SetInputDecomposedProjections(initialDecomposedProjections);
   simplex->SetInputMeasuredProjections(forward->GetOutput());
   simplex->SetInputIncidentSpectrum(incidentSpectrumReader->GetOutput());
@@ -240,9 +231,7 @@ main(int argc, char * argv[])
 #ifndef ITK_FUTURE_LEGACY_REMOVE
   std::cout << "\n\n****** Case 4: Legacy VectorImage type for incident spectrum ******" << std::endl;
 
-  using VectorImageType = itk::VectorImage<PixelValueType, Dimension - 1>;
-  using VectorSpectrumReaderType = itk::ImageFileReader<VectorImageType>;
-  auto vectorSpectrumReader = VectorSpectrumReaderType::New();
+  auto vectorSpectrumReader = itk::ImageFileReader<itk::VectorImage<PixelValueType, Dimension - 1>>::New();
   vectorSpectrumReader->SetFileName(argv[4]);
   vectorSpectrumReader->Update();
   forward->SetInputIncidentSpectrum(vectorSpectrumReader->GetOutput());
