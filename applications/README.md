@@ -20,7 +20,7 @@ The following are examples using RTK applications:
 ./rtkshowgeometry/README.md
 ```
 
-In [applications/rtktutorialapplication/](https://github.com/RTKConsortium/RTK/blob/master/applications/rtktutorialapplication), you will find a very basic RTK application that can be used as a starting point for building your own new application.
+In [applications/rtktutorialapplication/](https://github.com/RTKConsortium/RTK/blob/main/applications/rtktutorialapplication), you will find a very basic RTK application that can be used as a starting point for building your own new application.
 
 ## Using RTK applications in Python
 
