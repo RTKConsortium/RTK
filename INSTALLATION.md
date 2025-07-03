@@ -6,7 +6,7 @@ Configuration, compilation and installation with ITK
 RTK is a module of [ITK](https://www.itk.org), the Insight Toolkit. Follow the instructions of the [ITK software guide](https://itk.org/ITKSoftwareGuide/html) ([chapter 2](https://itk.org/ITKSoftwareGuide/html/Book1/ITKSoftwareGuide-Book1ch2.html) mainly) for configuring and compiling ITK. The following CMake options are RTK specific:
 
 * `Module_RTK`: Activates RTK download and compilation. Default is `OFF`. Turn it `ON` to activate RTK or compile RTK independently (see below).
-* `Module_RTK_GIT_TAG`: Git tag for the RTK download. By default, the RTK version which is downloaded and compiled is the one given in the [RTK.remote.cmake](https://github.com/InsightSoftwareConsortium/ITK/blob/master/Modules/Remote/RTK.remote.cmake). Change this option to build another version. For example, you can change it to `master` to build the latest RTK version. RTK is only maintained to be backward compatible with the latest ITK release and ITK master branch.
+* `Module_RTK_GIT_TAG`: Git tag for the RTK download. By default, the RTK version which is downloaded and compiled is the one given in the [RTK.remote.cmake](https://github.com/InsightSoftwareConsortium/ITK/blob/main/Modules/Remote/RTK.remote.cmake). Change this option to build another version. For example, you can change it to `main` to build the latest RTK version. RTK is only maintained to be backward compatible with the latest ITK release and ITK main branch.
 * `RTK_BUILD_APPLICATIONS`: Activates the compilation of RTK's command line tools. Although RTK is mainly a toolkit, we also provide several command line tools for doing most of the available processing. These command line tools use [gengetopt](https://www.gnu.org/software/gengetopt/gengetopt.html). Several examples are available in the [documentation](http://docs.openrtk.org).
 * `RTK_USE_CUDA`: Activates CUDA computation. Default is `ON` if CMake has automatically found the CUDA package and a CUDA-compatible GPU, and `OFF` otherwise.
 * `RTK_CUDA_VERSION`: Specifies an exact version of the CUDA toolkit which must be used. If unspecified, RTK only checks if the found version is recent enough.
@@ -19,8 +19,8 @@ Independent configuration and compilation
 -----------------------------------------
 For RTK developpers, it may be useful to compile RTK independently from ITK. This is possible, simply:
 * Compile ITK with `Module_RTK=OFF`.
-* If you want to use CUDA, also activate `Module_CudaCommon` or compile it separately as RTK in the following two bullet points (cloning its [GitHub repository](https://github.com/RTKConsortium/ITKCudaCommon) or downloading it as a [zip package](https://codeload.github.com/RTKConsortium/ITKCudaCommon/zip/master)).
-* Manually download RTK's source repository from [GitHub](https://github.com/RTKConsortium/RTK) with `git` (recommended) or as a [zip package](https://codeload.github.com/RTKConsortium/RTK/zip/master).
+* If you want to use CUDA, also activate `Module_CudaCommon` or compile it separately as RTK in the following two bullet points (cloning its [GitHub repository](https://github.com/RTKConsortium/ITKCudaCommon) or downloading it as a [zip package](https://codeload.github.com/RTKConsortium/ITKCudaCommon/zip/main)).
+* Manually download RTK's source repository from [GitHub](https://github.com/RTKConsortium/RTK) with `git` (recommended) or as a [zip package](https://codeload.github.com/RTKConsortium/RTK/zip/main).
 * Configure the project with CMake pointing to RTK's source directory and setting the CMake option `ITK_DIR` to ITK's compilation directory. All CMake options above can be set except `Module_RTK`.
 
 Installation is currently not supported for independent RTK compilations.
@@ -44,4 +44,4 @@ python -m pip install itk-rtk-cuda124
 
 Getting started
 ---------------
-See [GettingStarted.md](GettingStarted.md). Your `CMakeLists.txt` can now use RTK when importing ITK as shown in the [FirstReconstruction's CMakeLists.txt](https://github.com/RTKConsortium/RTK/blob/master/examples/FirstReconstruction/CMakeLists.txt#L7).
+See [GettingStarted.md](GettingStarted.md). Your `CMakeLists.txt` can now use RTK when importing ITK as shown in the [FirstReconstruction's CMakeLists.txt](https://github.com/RTKConsortium/RTK/blob/main/examples/FirstReconstruction/CMakeLists.txt#L7).

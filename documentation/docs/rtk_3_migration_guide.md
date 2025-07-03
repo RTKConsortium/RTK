@@ -21,3 +21,17 @@ option.
 
 The `--config` command-line option has been removed from all RTK ggo-based
 applications as it was not known to be used in practice.
+
+## Default branch renamed from master to main
+
+The InsightSoftwareConsortium has decided to rename its default branches from `master` to `main` (https://github.com/InsightSoftwareConsortium/ITK/issues/4732) following [GitHub's move](https://github.com/github/renaming). RTK's default branch has been renamed from `master` to `main` too. Here is what to do:
+
+- GitHub forks: see [Matt McCormick's post](https://discourse.itk.org/t/itk-git-repository-primary-branch-name-transition-from-master-to-main/7569) to change your fork's default repository.
+- Your local clones should be updated as suggested by GitHub (if `origin` is the name of https://github.com/RTKConsortium/RTK.git):
+
+```
+git branch -m master main
+git fetch origin
+git branch -u origin/main main
+git remote set-head origin -a
+```

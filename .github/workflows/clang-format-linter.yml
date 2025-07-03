@@ -11,4 +11,4 @@ jobs:
 
     - uses: InsightSoftwareConsortium/ITKClangFormatLinterAction@master
       with:
-        itk-branch: master
+        itk-branch: main

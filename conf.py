@@ -66,7 +66,7 @@ html_theme = "furo"
 html_theme_options = {
     "top_of_page_button": "edit",
     "source_repository": "https://github.com/RTKConsortium/RTK/",
-    "source_branch": "master",
+    "source_branch": "main",
     "source_directory": "",
 }
 
