@@ -85,7 +85,7 @@ def SetBackProjectionFromArgParse(args_info, recon):
         if args_info.alphapsf is not None:
             recon.SetAlphaPSF(args_info.alphapsf)
         if args_info.attenuationmap is not None:
-            recon.SetAttenuationMap(args_info.attenuationMap)
+            recon.SetAttenuationMap(attenuation_map)
 
 
 # Mimicks SetForwardProjectionFromGgo
@@ -110,4 +110,4 @@ def SetForwardProjectionFromArgParse(args_info, recon):
         if args_info.alphapsf is not None:
             recon.SetAlphaPSF(args_info.alphapsf)
         if args_info.attenuationmap is not None:
-            recon.SetAttenuationMap(args_info.attenuationMap)
+            recon.SetAttenuationMap(attenuation_map)
