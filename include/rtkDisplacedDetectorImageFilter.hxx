@@ -103,7 +103,6 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>::GenerateOutputInformati
 
   if (m_Disable)
   {
-    this->SetInPlace(true);
     outputPtr->SetLargestPossibleRegion(outputLargestPossibleRegion);
     return;
   }
@@ -157,7 +156,6 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>::GenerateOutputInformati
             0.1 * itk::Math::abs(m_SuperiorCorner - m_InferiorCorner)) ||
            !m_PadOnTruncatedSide)
   {
-    this->SetInPlace(true);
   }
   else if (m_SuperiorCorner + m_InferiorCorner > 0.)
   {
