@@ -77,7 +77,7 @@ public:
   itkSetMacro(AngularGapThreshold, double);
 
 protected:
-  ParkerShortScanImageFilter();
+  ParkerShortScanImageFilter() = default;
   ~ParkerShortScanImageFilter() override = default;
 
   /** Checks that inputs are correctly set. */
@@ -110,7 +110,7 @@ private:
   double m_SuperiorCorner;
 
   /** Minimum angular gap to automatically detect a short scan. Defaults is pi/9 radians. */
-  double m_AngularGapThreshold;
+  double m_AngularGapThreshold{ itk::Math::pi / 9 };
 }; // end of class
 
 } // end namespace rtk

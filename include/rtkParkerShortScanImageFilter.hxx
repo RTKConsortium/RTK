@@ -28,13 +28,6 @@ namespace rtk
 {
 
 template <class TInputImage, class TOutputImage>
-ParkerShortScanImageFilter<TInputImage, TOutputImage>::ParkerShortScanImageFilter()
-  : m_AngularGapThreshold(itk::Math::pi / 9)
-{
-  this->SetInPlace(true);
-}
-
-template <class TInputImage, class TOutputImage>
 void
 ParkerShortScanImageFilter<TInputImage, TOutputImage>::VerifyPreconditions() const
 {

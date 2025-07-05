@@ -108,7 +108,7 @@ public:
   itkSetMacro(Disable, bool);
 
 protected:
-  DisplacedDetectorImageFilter();
+  DisplacedDetectorImageFilter() = default;
 
   ~DisplacedDetectorImageFilter() override = default;
 
