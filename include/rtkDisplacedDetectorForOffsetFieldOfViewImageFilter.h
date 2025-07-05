@@ -66,7 +66,7 @@ public:
   itkOverrideGetNameOfClassMacro(DisplacedDetectorForOffsetFieldOfViewImageFilter);
 
 protected:
-  DisplacedDetectorForOffsetFieldOfViewImageFilter();
+  DisplacedDetectorForOffsetFieldOfViewImageFilter() = default;
   ~DisplacedDetectorForOffsetFieldOfViewImageFilter() override = default;
 
   void
