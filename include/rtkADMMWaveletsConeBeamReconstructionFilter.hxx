@@ -58,6 +58,8 @@ ADMMWaveletsConeBeamReconstructionFilter<TOutputImage>::ADMMWaveletsConeBeamReco
   m_ZeroMultiplyFilter->SetConstant2(itk::NumericTraits<typename TOutputImage::PixelType>::ZeroValue());
   m_DisplacedDetectorFilter->SetPadOnTruncatedSide(false);
   m_DisableDisplacedDetectorFilter = false;
+  // Not in place to avoid reading the projections twice
+  m_DisplacedDetectorFilter->SetInPlace(false);
 
   // Set memory management parameters
   m_ZeroMultiplyFilter->ReleaseDataFlagOn();

@@ -77,6 +77,8 @@ ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage,
   m_ZeroMultiplyGradientFilter->SetConstant2(itk::NumericTraits<typename TGradientOutputImage::PixelType>::ZeroValue());
   m_DisplacedDetectorFilter->SetPadOnTruncatedSide(false);
   m_DisableDisplacedDetectorFilter = false;
+  // Not in place to avoid reading the projections twice
+  m_DisplacedDetectorFilter->SetInPlace(false);
 
   // Set memory management parameters
   m_ZeroMultiplyVolumeFilter->ReleaseDataFlagOn();

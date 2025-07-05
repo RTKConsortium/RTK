@@ -58,7 +58,6 @@ DisplacedDetectorForOffsetFieldOfViewImageFilter<TInputImage, TOutputImage>::Gen
 
   if (this->GetDisable())
   {
-    this->SetInPlace(true);
     outputPtr->SetLargestPossibleRegion(outputLargestPossibleRegion);
     return;
   }
@@ -89,7 +88,6 @@ DisplacedDetectorForOffsetFieldOfViewImageFilter<TInputImage, TOutputImage>::Gen
   // Case 2: Not displaced if less than 10% relative difference between radii
   else if (200. * itk::Math::abs(ri - rs) / (ri + rs) < 10.)
   {
-    this->SetInPlace(true);
   }
   else if (rs > ri)
   {
