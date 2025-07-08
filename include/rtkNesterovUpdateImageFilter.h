@@ -20,6 +20,7 @@
 #define rtkNesterovUpdateImageFilter_h
 
 #include "itkInPlaceImageFilter.h"
+#include "itkPixelTraits.h"
 
 namespace rtk
 {
@@ -77,13 +78,13 @@ protected:
   void
   GenerateInputRequestedRegion() override;
 
-  int                                   m_NumberOfIterations;
-  int                                   m_CurrentIteration;
-  bool                                  m_MustInitializeIntermediateImages;
-  typename TImage::PixelType::ValueType m_TCoeff;
-  typename TImage::PixelType::ValueType m_TCoeffNext;
-  typename TImage::PixelType::ValueType m_Sum;
-  typename TImage::PixelType::ValueType m_Ratio;
+  int                                                              m_NumberOfIterations;
+  int                                                              m_CurrentIteration;
+  bool                                                             m_MustInitializeIntermediateImages;
+  typename itk::PixelTraits<typename TImage::PixelType>::ValueType m_TCoeff;
+  typename itk::PixelTraits<typename TImage::PixelType>::ValueType m_TCoeffNext;
+  typename itk::PixelTraits<typename TImage::PixelType>::ValueType m_Sum;
+  typename itk::PixelTraits<typename TImage::PixelType>::ValueType m_Ratio;
 
   // Internal images
   typename TImage::Pointer m_Vk;
