@@ -255,12 +255,12 @@ protected:
   ProjectionPixelType m_DivisionThreshold;
 
   bool m_EnforcePositivity;
-  bool m_DisableDisplacedDetectorFilter;
+  bool m_DisableDisplacedDetectorFilter{};
 
 private:
   /** Number of projections processed before the volume is updated (1 for SART,
    * several for OS-SART, all for SIRT) */
-  unsigned int m_NumberOfProjectionsPerSubset;
+  unsigned int m_NumberOfProjectionsPerSubset{1};
 
   /** Geometry object */
   ThreeDCircularProjectionGeometry::Pointer m_Geometry;
@@ -274,7 +274,7 @@ private:
 
   /** Have gating weights been set ? If so, apply them, otherwise ignore
    * the gating weights filter */
-  bool               m_IsGated;
+  bool               m_IsGated{};
   std::vector<float> m_GatingWeights;
 }; // end of class
 

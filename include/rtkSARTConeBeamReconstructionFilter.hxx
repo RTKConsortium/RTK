@@ -82,10 +82,7 @@ SARTConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>::SARTConeBeamRe
   // Default parameters
   m_ExtractFilter->SetDirectionCollapseToSubmatrix();
   m_ExtractFilterRayBox->SetDirectionCollapseToSubmatrix();
-  m_IsGated = false;
-  m_NumberOfProjectionsPerSubset = 1; // Default is the SART behavior
   m_DisplacedDetectorFilter->SetPadOnTruncatedSide(false);
-  m_DisableDisplacedDetectorFilter = false;
 }
 
 template <class TVolumeImage, class TProjectionImage>
