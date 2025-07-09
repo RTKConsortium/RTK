@@ -79,15 +79,18 @@ namespace rtk
  * AfterExtract [label="", fixedsize="false", width=0, height=0, shape=none];
  * Subtract [ label="itk::SubtractImageFilter" URL="\ref itk::SubtractImageFilter"];
  * MultiplyByLambda [ label="itk::MultiplyImageFilter (by lambda)" URL="\ref itk::MultiplyImageFilter"];
- * Divide [ label="itk::DivideOrZeroOutImageFilter" URL="\ref itk::DivideOrZeroOutImageFilter"];
+ * DivideProj [ label="itk::DivideOrZeroOutImageFilter" URL="\ref itk::DivideOrZeroOutImageFilter"];
+ * DivideVol [ label="itk::DivideOrZeroOutImageFilter" URL="\ref itk::DivideOrZeroOutImageFilter"];
  * GatingWeight [ label="itk::MultiplyImageFilter (by gating weight)"
  *                URL="\ref itk::MultiplyImageFilter", style=dashed];
  * Displaced [ label="rtk::DisplacedDetectorImageFilter" URL="\ref rtk::DisplacedDetectorImageFilter"];
- * ConstantProjectionStack [ label="rtk::ConstantImageSource" URL="\ref rtk::ConstantImageSource"];
+ * ConstantProjectionStack [ label="rtk::ConstantImageSource (0)" URL="\ref rtk::ConstantImageSource"];
  * ExtractConstantProjection [ label="itk::ExtractImageFilter" URL="\ref itk::ExtractImageFilter"];
  * RayBox [ label="rtk::RayBoxIntersectionImageFilter" URL="\ref rtk::RayBoxIntersectionImageFilter"];
- * ConstantVolume [ label="rtk::ConstantImageSource" URL="\ref rtk::ConstantImageSource"];
+ * ConstantVolume [ label="rtk::ConstantImageSource (0)" URL="\ref rtk::ConstantImageSource"];
  * BackProjection [ label="rtk::BackProjectionImageFilter" URL="\ref rtk::BackProjectionImageFilter"];
+ * ConstantProjDenom [ label="rtk::ConstantImageSource (1)" URL="\ref rtk::ConstantImageSource"];
+ * BackProjectionDenom [ label="rtk::BackProjectionImageFilter" URL="\ref rtk::BackProjectionImageFilter"];
  * Add [ label="itk::AddImageFilter" URL="\ref itk::AddImageFilter"];
  * OutofInput0 [label="", fixedsize="false", width=0, height=0, shape=none];
  * Threshold [ label="itk::ThresholdImageFilter" URL="\ref itk::ThresholdImageFilter"];
@@ -108,16 +111,19 @@ namespace rtk
  * Input1 -> Extract;
  * ForwardProject -> Subtract;
  * Subtract -> MultiplyByLambda;
- * MultiplyByLambda -> Divide;
- * Divide -> GatingWeight;
+ * MultiplyByLambda -> DivideProj;
+ * DivideProj -> GatingWeight;
  * GatingWeight -> Displaced;
  * ConstantProjectionStack -> ExtractConstantProjection;
  * ExtractConstantProjection -> RayBox;
- * RayBox -> Divide;
+ * RayBox -> DivideProj;
  * Displaced -> BackProjection;
  * BackProjection -> OutofBP [arrowhead=none];
- * OutofBP -> Add;
- * OutofBP -> BeforeBP [style=dashed, constraint=false];
+ * ConstantProjDenom -> BackProjectionDenom;
+ * OutofBP -> DivideVol
+ * BeforeBP -> BackProjectionDenom;
+ * BackProjectionDenom -> DivideVol;
+ * DivideVol -> Add;
  * Add -> Threshold;
  * Threshold -> OutofThreshold [arrowhead=none];
  * OutofThreshold -> OutofInput0 [headport="se", style=dashed];
