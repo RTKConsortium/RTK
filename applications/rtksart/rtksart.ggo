@@ -1,15 +1,16 @@
 purpose "Reconstructs a 3D volume from a sequence of projections with Simulatenous Algebraic Reconstruction Technique [Andersen, 1984]."
 
-option "verbose"     v "Verbose execution"                                     flag   off
-option "geometry"    g "XML geometry file name"                                string yes
-option "output"      o "Output file name"                                      string yes
-option "niterations" n "Number of iterations"                                  int    no   default="5"
-option "lambda"      l "Convergence factor"                                    double no   default="0.3"
-option "positivity"  - "Enforces positivity during the reconstruction"         flag   off
-option "input"     i "Input volume"              string          no
-option "nprojpersubset" - "Number of projections processed between each update of the reconstructed volume (1 for SART, several for OSSART, all for SIRT)" int no default="1"
-option "nodisplaced"    - "Disable the displaced detector filter"              flag   off
-option "divisionthreshold"  - "Threshold below which pixels in the denominator in the projection space are considered zero" double  no
+option "verbose"           v "Verbose execution"                                             flag   off
+option "geometry"          g "XML geometry file name"                                        string yes
+option "output"            o "Output file name"                                              string yes
+option "niterations"       n "Number of iterations"                                          int    no   default="5"
+option "lambda"            l "Convergence factor"                                            double no   default="0.3"
+option "positivity"        - "Enforces positivity during the reconstruction"                 flag   off
+option "input"             i "Input volume"                                                  string          no
+option "nprojpersubset"    - "Number of projections processed between each update of the reconstructed volume (1 for SART, several for OSSART, all for SIRT)" int no default="1"
+option "nodisplaced"       - "Disable the displaced detector filter"                         flag   off
+option "divisionthreshold" - "Denominator threshold below which denominator pixels are zero" double  no
+option "reset_nesterov"    - "Reset Nesterov after a number of subset (1 means no momentum)" int no default="1"
 
 section "Phase gating"
 option "signal"       - "File containing the phase of each projection"                                              string              no

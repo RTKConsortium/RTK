@@ -21,6 +21,11 @@
 
 #include "rtkBackProjectionImageFilter.h"
 #include "rtkForwardProjectionImageFilter.h"
+#include "rtkRayBoxIntersectionImageFilter.h"
+#include "rtkConstantImageSource.h"
+#include "rtkIterativeConeBeamReconstructionFilter.h"
+#include "rtkDisplacedDetectorImageFilter.h"
+#include "rtkNesterovUpdateImageFilter.h"
 
 #include <itkExtractImageFilter.h>
 #include <itkMultiplyImageFilter.h>
@@ -29,11 +34,6 @@
 #include <itkAddImageFilter.h>
 #include <itkDivideOrZeroOutImageFilter.h>
 #include <itkThresholdImageFilter.h>
-
-#include "rtkRayBoxIntersectionImageFilter.h"
-#include "rtkConstantImageSource.h"
-#include "rtkIterativeConeBeamReconstructionFilter.h"
-#include "rtkDisplacedDetectorImageFilter.h"
 
 namespace rtk
 {
@@ -91,7 +91,7 @@ namespace rtk
  * BackProjection [ label="rtk::BackProjectionImageFilter" URL="\ref rtk::BackProjectionImageFilter"];
  * ConstantProjDenom [ label="rtk::ConstantImageSource (1)" URL="\ref rtk::ConstantImageSource"];
  * BackProjectionDenom [ label="rtk::BackProjectionImageFilter" URL="\ref rtk::BackProjectionImageFilter"];
- * Add [ label="itk::AddImageFilter" URL="\ref itk::AddImageFilter"];
+ * Add [ label="itk::AddImageFilter or rtk::NesterovUpdateImageFilter" URL="\ref rtk::NesterovUpdateImageFilter"];
  * OutofInput0 [label="", fixedsize="false", width=0, height=0, shape=none];
  * Threshold [ label="itk::ThresholdImageFilter" URL="\ref itk::ThresholdImageFilter"];
  * OutofThreshold [label="", fixedsize="false", width=0, height=0, shape=none];
@@ -161,6 +161,7 @@ public:
   using ForwardProjectionFilterType = rtk::ForwardProjectionImageFilter<ProjectionType, VolumeType>;
   using SubtractFilterType = itk::SubtractImageFilter<ProjectionType, ProjectionType>;
   using AddFilterType = itk::AddImageFilter<VolumeType, VolumeType>;
+  using NesterovFilterType = rtk::NesterovUpdateImageFilter<VolumeType>;
   using BackProjectionFilterType = rtk::BackProjectionImageFilter<VolumeType, ProjectionType>;
   using RayBoxIntersectionFilterType = rtk::RayBoxIntersectionImageFilter<ProjectionType, ProjectionType>;
   using DivideProjectionFilterType = itk::DivideOrZeroOutImageFilter<ProjectionType, ProjectionType, ProjectionType>;
@@ -215,6 +216,12 @@ public:
   itkSetMacro(DivisionThreshold, ProjectionPixelType);
   itkGetMacro(DivisionThreshold, ProjectionPixelType);
 
+  /** Parameter to trigger Nesterov's reset. The value is a number of subsets
+  ** which can be larger than the number of subsets per iteration. 1 means no
+  ** Nesterov acceleration (default). */
+  itkSetMacro(ResetNesterovEvery, int);
+  itkGetMacro(ResetNesterovEvery, int);
+
 protected:
   SARTConeBeamReconstructionFilter();
   ~SARTConeBeamReconstructionFilter() override = default;
@@ -257,6 +264,7 @@ protected:
   typename ThresholdFilterType::Pointer          m_ThresholdFilter;
   typename DisplacedDetectorFilterType::Pointer  m_DisplacedDetectorFilter;
   typename GatingWeightsFilterType::Pointer      m_GatingWeightsFilter;
+  typename NesterovFilterType::Pointer           m_NesterovFilter;
 
   ProjectionPixelType m_DivisionThreshold;
 
@@ -266,7 +274,7 @@ protected:
 private:
   /** Number of projections processed before the volume is updated (1 for SART,
    * several for OS-SART, all for SIRT) */
-  unsigned int m_NumberOfProjectionsPerSubset{1};
+  unsigned int m_NumberOfProjectionsPerSubset{ 1 };
 
   /** Geometry object */
   ThreeDCircularProjectionGeometry::Pointer m_Geometry;
@@ -282,6 +290,9 @@ private:
    * the gating weights filter */
   bool               m_IsGated{};
   std::vector<float> m_GatingWeights;
+
+  /** Nesterov reset. */
+  int m_ResetNesterovEvery{ 1 };
 }; // end of class
 
 } // end namespace rtk
