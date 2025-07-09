@@ -28,11 +28,16 @@ namespace rtk
 /** \class NesterovUpdateImageFilter
  * \brief Applies Nesterov's momentum technique
  *
- * NesterovUpdateImageFilter implements Nesterov's momentum technique
- * in order to accelerate the convergence rate of Newton's method, or
- * other optimization algorithms. The first input is the current iterate,
- * the second input is the product of the inverse hessian matrix
- * by the gradient vector (the Newton's update, before applying a minus sign)
+ * NesterovUpdateImageFilter implements Nesterov's momentum technique in order
+ * to accelerate the convergence rate of Newton's method, or other optimization
+ * algorithms. The implementation is based on the description of [Mechlem et
+ * al, 10.1109/TMI.2017.2726687, 2018], based on [Kim et al,
+ * 10.1109/TMI.2014.2350962, 2015] implementing [Nesterov,
+ * 10.1007/s10107-004-0552-5, 2005] for ordered-subset tomographic
+ * reconstruction. The first input is the current iterate, the second input is
+ * the opposite of the next step, e.g., the product of the inverse hessian
+ * matrix by the gradient vector for an update of Newton's algorithm before
+ * applying a minus sign.
  *
  * \author Cyril Mory
  *
