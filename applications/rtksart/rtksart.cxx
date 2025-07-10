@@ -108,6 +108,7 @@ main(int argc, char * argv[])
   sart->SetNumberOfProjectionsPerSubset(args_info.nprojpersubset_arg);
   sart->SetLambda(args_info.lambda_arg);
   sart->SetDisableDisplacedDetectorFilter(args_info.nodisplaced_flag);
+  sart->SetResetNesterovEvery(args_info.reset_nesterov_arg);
 
   if (args_info.positivity_flag)
   {
