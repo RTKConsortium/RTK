@@ -170,14 +170,14 @@ rtkspectralonestep(const args_info_rtkspectralonestep & args_info)
   typename MaterialVolumesType::RegionType::SizeType regulRadius;
   if (args_info.regul_radius_given)
     for (unsigned int i = 0; i < Dimension; i++)
-      regulRadius[i] = args_info.regul_radius_arg[i];
+      regulRadius[i] = args_info.regul_radius_arg[std::min(i, args_info.regul_radius_given - 1)];
   else
     regulRadius.Fill(0);
 
   typename MaterialVolumesType::PixelType regulWeights;
   if (args_info.regul_weights_given)
     for (unsigned int i = 0; i < VNumberOfMaterials; i++)
-      regulWeights[i] = args_info.regul_weights_arg[i];
+      regulWeights[i] = args_info.regul_weights_arg[std::min(i, args_info.regul_weights_given - 1)];
   else
     regulWeights.Fill(0);
 
