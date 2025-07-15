@@ -519,11 +519,11 @@ rtk::ThreeDCircularProjectionGeometry::GetAngularGaps(const std::vector<double> 
     auto it = std::max_element(angularGaps.begin(), angularGaps.end());
     if (*it > itk::Math::pi_over_2)
     {
-      for (it = angularGaps.begin(); it < angularGaps.end(); it++)
+      for (auto & gap : angularGaps)
       {
-        if (*it > itk::Math::pi_over_2)
-          *it -= itk::Math::pi_over_2;
-        *it *= 2.;
+        if (gap > itk::Math::pi_over_2)
+          gap -= itk::Math::pi_over_2;
+        gap *= 2.;
       }
     }
   }
