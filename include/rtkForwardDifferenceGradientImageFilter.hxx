@@ -215,10 +215,10 @@ ForwardDifferenceGradientImageFilter<TInputImage, TOperatorValueType, TOuputValu
   CovariantVectorType gradient(itk::NumericTraits<typename CovariantVectorType::ValueType>::ZeroValue());
   // Process non-boundary face and then each of the boundary faces.
   // These are N-d regions which border the edge of the buffer.
-  for (fit = faceList.begin(); fit != faceList.end(); ++fit)
+  for (auto & currentFace : faceList)
   {
-    nit = itk::ConstNeighborhoodIterator<InputImageType>(radius, inputImage, *fit);
-    itk::ImageRegionIterator<OutputImageType> it = itk::ImageRegionIterator<OutputImageType>(outputImage, *fit);
+    nit = itk::ConstNeighborhoodIterator<InputImageType>(radius, inputImage, currentFace);
+    itk::ImageRegionIterator<OutputImageType> it = itk::ImageRegionIterator<OutputImageType>(outputImage, currentFace);
     nit.OverrideBoundaryCondition(m_BoundaryCondition);
     nit.GoToBegin();
 

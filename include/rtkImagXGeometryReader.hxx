@@ -72,10 +72,10 @@ ImagXGeometryReader<TInputImage>::GetGeometryForAI2p1()
     {
       list.clear();
       child->GetAllAttributes(list);
-      for (const auto & list_it : list)
+      for (const auto & element : list)
       {
-        std::string subTagName = list_it.first.c_str();
-        std::string tagValue = list_it.second.c_str();
+        std::string subTagName = element.first.c_str();
+        std::string tagValue = element.second.c_str();
         if (!subTagName.compare("name"))
         {
           F.activeArcName = tagValue;
@@ -98,10 +98,10 @@ ImagXGeometryReader<TInputImage>::GetGeometryForAI2p1()
       bool xMinusFound = false;
       list.clear();
       child->GetAllAttributes(list);
-      for (const auto & list_it : list)
+      for (const auto & element : list)
       {
-        std::string subTagName = list_it.first.c_str();
-        std::string tagValue = list_it.second.c_str();
+        std::string subTagName = element.first.c_str();
+        std::string tagValue = element.second.c_str();
         if (!subTagName.compare("xPlus"))
         {
           F.xPlus = std::stod(tagValue.c_str());
@@ -125,10 +125,10 @@ ImagXGeometryReader<TInputImage>::GetGeometryForAI2p1()
       bool angleOffsetFound = false;
       list.clear();
       child->GetAllAttributes(list);
-      for (const auto & list_it : list)
+      for (const auto & element : list)
       {
-        std::string subTagName = list_it.first.c_str();
-        std::string subTagValue = list_it.second.c_str();
+        std::string subTagName = element.first.c_str();
+        std::string subTagValue = element.second.c_str();
         if (!subTagName.compare("sid"))
         {
           F.sdd = std::stod(subTagValue.c_str());
@@ -181,10 +181,10 @@ ImagXGeometryReader<TInputImage>::GetGeometryForAI2p1()
           {
             list.clear();
             list_geocal->GetAllAttributes(list);
-            for (const auto & list_it : list)
+            for (const auto & element : list)
             {
-              std::string tagName = list_it.first.c_str();
-              std::string tagValue = list_it.second.c_str();
+              std::string tagName = element.first.c_str();
+              std::string tagValue = element.second.c_str();
               if (tagName == "uid" && tagValue == F.activeGeocalUID)
               {
                 flexmapFoundAndLoaded = true;
@@ -372,11 +372,10 @@ ImagXGeometryReader<TInputImage>::GetGeometryForAI1p5FromXMLFiles()
   for (const auto & child : list_child)
   {
     child->GetAllAttributes(list);
-    unsigned int k = 0;
-    for (auto list_it = list.begin(); list_it != list.end(); list_it++, k++)
+    for (auto & element : list)
     {
-      if ((*list_it).first.c_str() == std::string("axis"))
-        axisName = (*list_it).second.c_str();
+      if (element.first.c_str() == std::string("axis"))
+        axisName = element.second.c_str();
     }
 
     // If cbct axis then extract deformation model parameters
@@ -394,34 +393,28 @@ ImagXGeometryReader<TInputImage>::GetGeometryForAI1p5FromXMLFiles()
           itk::DOMNode::AttributesListType list2;
           list_child3[n]->GetAllAttributes(list2);
           unsigned int m = 0;
-          for (auto list_it = list2.begin(); list_it != list2.end(); list_it++, m++)
+          for (auto & element : list2)
           {
-            if ((list_child3[n]->GetName() == std::string("Px")) && ((*list_it).first.c_str() != std::string("MSE")))
-              C.Px[m - 1] = std::stod((*list_it).second.c_str());
-            else if ((list_child3[n]->GetName() == std::string("Py")) &&
-                     ((*list_it).first.c_str() != std::string("MSE")))
-              C.Py[m - 1] = std::stod((*list_it).second.c_str());
-            else if ((list_child3[n]->GetName() == std::string("Pz")) &&
-                     ((*list_it).first.c_str() != std::string("MSE")))
-              C.Pz[m - 1] = std::stod((*list_it).second.c_str());
-            else if ((list_child3[n]->GetName() == std::string("Rx")) &&
-                     ((*list_it).first.c_str() != std::string("MSE")))
-              C.Rx[m - 1] = std::stod((*list_it).second.c_str());
-            else if ((list_child3[n]->GetName() == std::string("Ry")) &&
-                     ((*list_it).first.c_str() != std::string("MSE")))
-              C.Ry[m - 1] = std::stod((*list_it).second.c_str());
-            else if ((list_child3[n]->GetName() == std::string("Rz")) &&
-                     ((*list_it).first.c_str() != std::string("MSE")))
-              C.Rz[m - 1] = std::stod((*list_it).second.c_str());
-            else if ((list_child3[n]->GetName() == std::string("Tx")) &&
-                     ((*list_it).first.c_str() != std::string("MSE")))
-              C.Tx[m - 1] = std::stod((*list_it).second.c_str());
-            else if ((list_child3[n]->GetName() == std::string("Ty")) &&
-                     ((*list_it).first.c_str() != std::string("MSE")))
-              C.Ty[m - 1] = std::stod((*list_it).second.c_str());
-            else if ((list_child3[n]->GetName() == std::string("Tz")) &&
-                     ((*list_it).first.c_str() != std::string("MSE")))
-              C.Tz[m - 1] = std::stod((*list_it).second.c_str());
+            if ((list_child3[n]->GetName() == std::string("Px")) && (element.first.c_str() != std::string("MSE")))
+              C.Px[m - 1] = std::stod(element.second.c_str());
+            else if ((list_child3[n]->GetName() == std::string("Py")) && (element.first.c_str() != std::string("MSE")))
+              C.Py[m - 1] = std::stod(element.second.c_str());
+            else if ((list_child3[n]->GetName() == std::string("Pz")) && (element.first.c_str() != std::string("MSE")))
+              C.Pz[m - 1] = std::stod(element.second.c_str());
+            else if ((list_child3[n]->GetName() == std::string("Rx")) && (element.first.c_str() != std::string("MSE")))
+              C.Rx[m - 1] = std::stod(element.second.c_str());
+            else if ((list_child3[n]->GetName() == std::string("Ry")) && (element.first.c_str() != std::string("MSE")))
+              C.Ry[m - 1] = std::stod(element.second.c_str());
+            else if ((list_child3[n]->GetName() == std::string("Rz")) && (element.first.c_str() != std::string("MSE")))
+              C.Rz[m - 1] = std::stod(element.second.c_str());
+            else if ((list_child3[n]->GetName() == std::string("Tx")) && (element.first.c_str() != std::string("MSE")))
+              C.Tx[m - 1] = std::stod(element.second.c_str());
+            else if ((list_child3[n]->GetName() == std::string("Ty")) && (element.first.c_str() != std::string("MSE")))
+              C.Ty[m - 1] = std::stod(element.second.c_str());
+            else if ((list_child3[n]->GetName() == std::string("Tz")) && (element.first.c_str() != std::string("MSE")))
+              C.Tz[m - 1] = std::stod(element.second.c_str());
+
+            ++m;
           }
         }
       }
@@ -440,11 +433,10 @@ ImagXGeometryReader<TInputImage>::GetGeometryForAI1p5FromXMLFiles()
   for (const auto & child : list_child)
   {
     child->GetAllAttributes(list);
-    unsigned int k = 0;
-    for (auto list_it = list.begin(); list_it != list.end(); list_it++, k++)
+    for (auto & element : list)
     {
-      if ((*list_it).first.c_str() == std::string("axis"))
-        axisName = (*list_it).second.c_str();
+      if (element.first.c_str() == std::string("axis"))
+        axisName = element.second.c_str();
     }
 
     // If cbct axis then extract sdd and sid parameters
@@ -456,12 +448,12 @@ ImagXGeometryReader<TInputImage>::GetGeometryForAI1p5FromXMLFiles()
       {
         itk::DOMNode::AttributesListType list2;
         child2->GetAllAttributes(list2);
-        for (auto list_it = list2.begin(); list_it != list2.end(); list_it++, k++)
+        for (auto & element : list2)
         {
-          if ((*list_it).first.c_str() == std::string("sdd"))
-            sdd_s = (*list_it).second.c_str();
-          if ((*list_it).first.c_str() == std::string("sid"))
-            sid_s = (*list_it).second.c_str();
+          if (element.first.c_str() == std::string("sdd"))
+            sdd_s = element.second.c_str();
+          if (element.first.c_str() == std::string("sid"))
+            sid_s = element.second.c_str();
         }
       }
     }
