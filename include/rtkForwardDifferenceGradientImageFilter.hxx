@@ -202,8 +202,7 @@ ForwardDifferenceGradientImageFilter<TInputImage, TOperatorValueType, TOuputValu
   auto fit = faceList.begin();
 
   // Initialize the x_slice array
-  itk::ConstNeighborhoodIterator<InputImageType> nit =
-    itk::ConstNeighborhoodIterator<InputImageType>(radius, inputImage, *fit);
+  auto nit = itk::ConstNeighborhoodIterator<InputImageType>(radius, inputImage, *fit);
 
   std::slice               x_slice[InputImageDimension];
   const itk::SizeValueType center = nit.Size() / 2;
@@ -218,7 +217,7 @@ ForwardDifferenceGradientImageFilter<TInputImage, TOperatorValueType, TOuputValu
   for (auto & currentFace : faceList)
   {
     nit = itk::ConstNeighborhoodIterator<InputImageType>(radius, inputImage, currentFace);
-    itk::ImageRegionIterator<OutputImageType> it = itk::ImageRegionIterator<OutputImageType>(outputImage, currentFace);
+    auto it = itk::ImageRegionIterator<OutputImageType>(outputImage, currentFace);
     nit.OverrideBoundaryCondition(m_BoundaryCondition);
     nit.GoToBegin();
 
