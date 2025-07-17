@@ -34,6 +34,7 @@ wrap_itk_python_bindings_install(/itk "RTK"
     ${RTK_SOURCE_DIR}/applications/rtkiterations_group.py
     ${RTK_SOURCE_DIR}/applications/rtkprojectors_group.py
     ${RTK_SOURCE_DIR}/applications/rtkadmmtotalvariation/rtkadmmtotalvariation.py
+    ${RTK_SOURCE_DIR}/applications/rtkadmmwavelets/rtkadmmwavelets.py
     ${RTK_SOURCE_DIR}/applications/rtkamsterdamshroud/rtkamsterdamshroud.py
     ${RTK_SOURCE_DIR}/applications/rtkbackprojections/rtkbackprojections.py
     ${RTK_SOURCE_DIR}/applications/rtkbioscangeometry/rtkbioscangeometry.py
