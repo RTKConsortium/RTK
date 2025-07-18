@@ -7,10 +7,7 @@ from itk import RTK as rtk
 
 
 def build_parser():
-    parser = argparse.ArgumentParser(
-        description="Reconstructs a 3D volume from a sequence of projections [Feldkamp, David, Kress, 1984].",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-    )
+    parser = rtk.rtk_argument_parser("Reconstructs a 3D volume from a sequence of projections [Feldkamp, David, Kress, 1984].")
 
     # General options
     parser.add_argument(
