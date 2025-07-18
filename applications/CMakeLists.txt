@@ -1,14 +1,5 @@
 find_package(Gengetopt)
 
-#-----------------------------------------------------------------------------
-# Common revision info between applications
-include(GetGitRevisionDescription)
-get_git_head_revision(GIT_REFSPEC GIT_SHA1)
-if(GIT_SHA1 MATCHES ".*NOTFOUND")
-  set(RTK_VERSION_HASH "")
-else()
-  set(RTK_VERSION_HASH ", git hash ${GIT_SHA1}")
-endif()
 configure_file (${CMAKE_CURRENT_SOURCE_DIR}/rtkVersion.ggo.in ${RTK_BINARY_DIR}/rtkVersion.ggo)
 
 #-----------------------------------------------------------------------------
