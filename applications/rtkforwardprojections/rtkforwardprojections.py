@@ -6,9 +6,7 @@ from itk import RTK as rtk
 
 
 def build_parser():
-    parser = argparse.ArgumentParser(
-        description="Projects a volume according to a geometry file."
-    )
+    parser = rtk.rtk_argument_parser("Projects a volume according to a geometry file.")
     parser.add_argument(
         "--verbose", "-v", help="Verbose execution", action="store_true"
     )

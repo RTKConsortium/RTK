@@ -6,9 +6,7 @@ from itk import RTK as rtk
 
 def build_parser():
     # Argument parsing
-    parser = argparse.ArgumentParser(
-        description="Creates an RTK geometry file from simulated/regular trajectory. See https://docs.openrtk.org/en/latest/documentation/docs/Geometry.html for more information."
-    )
+    parser = rtk.rtk_argument_parser("Creates an RTK geometry file from simulated/regular trajectory. See https://docs.openrtk.org/en/latest/documentation/docs/Geometry.html for more information.")
 
     parser.add_argument(
         "--verbose", "-v", type=bool, default=False, help="Verbose execution"

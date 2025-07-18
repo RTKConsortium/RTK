@@ -5,9 +5,7 @@ from itk import RTK as rtk
 
 def build_parser():
     # Argument parsing
-    parser = argparse.ArgumentParser(
-        description="Computes projections through a 3D Shepp & Logan phantom, according to a geometry"
-    )
+    parser = rtk.rtk_argument_parser("Computes projections through a 3D Shepp & Logan phantom, according to a geometry")
     # General options
     parser.add_argument(
         "--verbose", "-v", help="Verbose execution", action="store_true"

@@ -7,10 +7,7 @@ from itk import RTK as rtk
 
 def build_parser():
     # argument parsing
-    parser = argparse.ArgumentParser(
-        description="Reconstructs a 3D volume from a sequence of projections with a conjugate gradient technique",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-    )
+    parser = rtk.rtk_argument_parser("Reconstructs a 3D volume from a sequence of projections with a conjugate gradient technique")
 
     parser.add_argument(
         "--verbose", "-v", help="Verbose execution", action="store_true"

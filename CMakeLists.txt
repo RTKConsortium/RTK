@@ -176,6 +176,16 @@ set(RTK_MODULE_PATH_CONFIG ${CMAKE_MODULE_PATH})
 # Add option to control the generation of RTK applications
 option(RTK_BUILD_APPLICATIONS "Build RTK applications" ON)
 
+#-----------------------------------------------------------------------------
+# Common revision info between applications
+include(GetGitRevisionDescription)
+get_git_head_revision(GIT_REFSPEC GIT_SHA1)
+if(GIT_SHA1 MATCHES ".*NOTFOUND")
+  set(RTK_VERSION_HASH "")
+else()
+  set(RTK_VERSION_HASH ", git hash ${GIT_SHA1}")
+endif()
+
 set(RTK_EXPORT_CODE_BUILD "
 # The RTK version number
 set(RTK_VERSION_MAJOR ${RTK_VERSION_MAJOR})
