@@ -39,10 +39,8 @@ main(int argc, char * argv[])
 
 #ifdef RTK_USE_CUDA
   using OutputImageType = itk::CudaImage<OutputPixelType, Dimension>;
-  using GradientOutputImageType = itk::CudaImage<itk::CovariantVector<OutputPixelType, Dimension>, Dimension>;
 #else
   using OutputImageType = itk::Image<OutputPixelType, Dimension>;
-  using GradientOutputImageType = itk::Image<itk::CovariantVector<OutputPixelType, Dimension>, Dimension>;
 #endif
 
   //////////////////////////////////////////////////////////////////////////////////////////
@@ -98,8 +96,7 @@ main(int argc, char * argv[])
   //////////////////////////////////////////////////////////////////////////////////////////
 
   // Set the reconstruction filter
-  using ADMM_TV_FilterType =
-    rtk::ADMMTotalVariationConeBeamReconstructionFilter<OutputImageType, GradientOutputImageType>;
+  using ADMM_TV_FilterType = rtk::ADMMTotalVariationConeBeamReconstructionFilter<OutputImageType>;
   auto admmFilter = ADMM_TV_FilterType::New();
 
   // Set the forward and back projection filters to be used inside admmFilter

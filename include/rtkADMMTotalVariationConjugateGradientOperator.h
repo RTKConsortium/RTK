@@ -31,6 +31,10 @@
 #include "rtkMultiplyByVectorImageFilter.h"
 #include "rtkThreeDCircularProjectionGeometry.h"
 
+#ifdef RTK_USE_CUDA
+#  include <itkCudaImage.h>
+#endif
+
 namespace rtk
 {
 
@@ -100,10 +104,7 @@ namespace rtk
  * \ingroup RTK ReconstructionAlgorithm
  */
 
-template <typename TOutputImage,
-          typename TGradientOutputImage =
-            itk::Image<itk::CovariantVector<typename TOutputImage::ValueType, TOutputImage::ImageDimension>,
-                       TOutputImage::ImageDimension>>
+template <typename TOutputImage>
 class ITK_TEMPLATE_EXPORT ADMMTotalVariationConjugateGradientOperator : public ConjugateGradientOperator<TOutputImage>
 {
 public:
@@ -128,11 +129,23 @@ public:
 
   using MultiplyFilterType = itk::MultiplyImageFilter<TOutputImage>;
   using SubtractFilterType = itk::SubtractImageFilter<TOutputImage>;
+
+  using VectorPixelType = itk::CovariantVector<typename TOutputImage::ValueType, TOutputImage::ImageDimension>;
+  using CPUImageType = itk::Image<typename TOutputImage::PixelType, TOutputImage::ImageDimension>;
+#ifdef RTK_USE_CUDA
+  typedef
+    typename std::conditional<std::is_same<TOutputImage, CPUImageType>::value,
+                              itk::Image<VectorPixelType, TOutputImage::ImageDimension>,
+                              itk::CudaImage<VectorPixelType, TOutputImage::ImageDimension>>::type GradientImageType;
+#else
+  using GradientImageType = itk::Image<VectorPixelType, TOutputImage::ImageDimension>;
+#endif
+
   using GradientFilterType = ForwardDifferenceGradientImageFilter<TOutputImage,
                                                                   typename TOutputImage::ValueType,
                                                                   typename TOutputImage::ValueType,
-                                                                  TGradientOutputImage>;
-  using DivergenceFilterType = rtk::BackwardDifferenceDivergenceImageFilter<TGradientOutputImage, TOutputImage>;
+                                                                  GradientImageType>;
+  using DivergenceFilterType = rtk::BackwardDifferenceDivergenceImageFilter<GradientImageType, TOutputImage>;
   using DisplacedDetectorFilterType = rtk::DisplacedDetectorImageFilter<TOutputImage>;
   using GatingWeightsFilterType = rtk::MultiplyByVectorImageFilter<TOutputImage>;
 

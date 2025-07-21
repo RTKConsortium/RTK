@@ -37,10 +37,8 @@ main(int argc, char * argv[])
 
 #ifdef USE_CUDA
   using OutputImageType = itk::CudaImage<OutputPixelType, Dimension>;
-  using GradientOutputImageType = itk::CudaImage<itk::CovariantVector<OutputPixelType, Dimension>, Dimension>;
 #else
   using OutputImageType = itk::Image<OutputPixelType, Dimension>;
-  using GradientOutputImageType = itk::Image<itk::CovariantVector<OutputPixelType, Dimension>, Dimension>;
 #endif
 
 #if FAST_TESTS_NO_CHECKS
@@ -111,8 +109,7 @@ main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION(dsl->Update())
 
   // ADMMTotalVariation reconstruction filtering
-  using ADMMTotalVariationType =
-    rtk::ADMMTotalVariationConeBeamReconstructionFilter<OutputImageType, GradientOutputImageType>;
+  using ADMMTotalVariationType = rtk::ADMMTotalVariationConeBeamReconstructionFilter<OutputImageType>;
   auto admmtotalvariation = ADMMTotalVariationType::New();
   admmtotalvariation->SetInput(tomographySource->GetOutput());
   admmtotalvariation->SetInput(1, rei->GetOutput());

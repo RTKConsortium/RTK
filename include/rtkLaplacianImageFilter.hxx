@@ -23,8 +23,8 @@
 namespace rtk
 {
 
-template <typename TOutputImage, typename TGradientImage>
-LaplacianImageFilter<TOutputImage, TGradientImage>::LaplacianImageFilter()
+template <typename TOutputImage>
+LaplacianImageFilter<TOutputImage>::LaplacianImageFilter()
 {
   // Create the filters
   m_Gradient = GradientFilterType::New();
@@ -34,9 +34,9 @@ LaplacianImageFilter<TOutputImage, TGradientImage>::LaplacianImageFilter()
   m_Gradient->ReleaseDataFlagOn();
 }
 
-template <typename TOutputImage, typename TGradientImage>
+template <typename TOutputImage>
 void
-LaplacianImageFilter<TOutputImage, TGradientImage>::GenerateOutputInformation()
+LaplacianImageFilter<TOutputImage>::GenerateOutputInformation()
 {
   Superclass::GenerateOutputInformation();
 
@@ -61,9 +61,9 @@ LaplacianImageFilter<TOutputImage, TGradientImage>::GenerateOutputInformation()
   this->GetOutput()->CopyInformation(m_Divergence->GetOutput());
 }
 
-template <typename TOutputImage, typename TGradientImage>
+template <typename TOutputImage>
 void
-LaplacianImageFilter<TOutputImage, TGradientImage>::GenerateData()
+LaplacianImageFilter<TOutputImage>::GenerateData()
 {
   // Update the last filter
   m_Divergence->Update();
@@ -72,16 +72,16 @@ LaplacianImageFilter<TOutputImage, TGradientImage>::GenerateData()
   this->GraftOutput(m_Divergence->GetOutput());
 }
 
-template <typename TOutputImage, typename TGradientImage>
+template <typename TOutputImage>
 void
-LaplacianImageFilter<TOutputImage, TGradientImage>::SetWeights(const TOutputImage * weights)
+LaplacianImageFilter<TOutputImage>::SetWeights(const TOutputImage * weights)
 {
   this->SetInput("Weights", const_cast<TOutputImage *>(weights));
 }
 
-template <typename TOutputImage, typename TGradientImage>
+template <typename TOutputImage>
 typename TOutputImage::ConstPointer
-LaplacianImageFilter<TOutputImage, TGradientImage>::GetWeights()
+LaplacianImageFilter<TOutputImage>::GetWeights()
 {
   return static_cast<const TOutputImage *>(this->itk::ProcessObject::GetInput("Weights"));
 }

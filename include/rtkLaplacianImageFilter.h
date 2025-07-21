@@ -23,6 +23,10 @@
 #include "rtkBackwardDifferenceDivergenceImageFilter.h"
 #include "itkMultiplyImageFilter.h"
 
+#ifdef RTK_USE_CUDA
+#  include <itkCudaImage.h>
+#endif
+
 namespace rtk
 {
 
@@ -38,7 +42,7 @@ namespace rtk
  * \ingroup RTK IntensityImageFilters
  */
 
-template <typename TOutputImage, typename TGradientImage>
+template <typename TOutputImage>
 class ITK_TEMPLATE_EXPORT LaplacianImageFilter : public itk::ImageToImageFilter<TOutputImage, TOutputImage>
 {
 public:
@@ -49,12 +53,23 @@ public:
   using Superclass = itk::ImageToImageFilter<TOutputImage, TOutputImage>;
   using Pointer = itk::SmartPointer<Self>;
   using OutputImagePointer = typename TOutputImage::Pointer;
+  using CPUImageType = itk::Image<typename TOutputImage::PixelType, TOutputImage::ImageDimension>;
+  using VectorPixelType = itk::CovariantVector<typename TOutputImage::ValueType, TOutputImage::ImageDimension>;
+
+#ifdef RTK_USE_CUDA
+  typedef
+    typename std::conditional<std::is_same<TOutputImage, CPUImageType>::value,
+                              itk::Image<VectorPixelType, TOutputImage::ImageDimension>,
+                              itk::CudaImage<VectorPixelType, TOutputImage::ImageDimension>>::type GradientImageType;
+#else
+  using GradientImageType = itk::Image<VectorPixelType, TOutputImage::ImageDimension>;
+#endif
   using GradientFilterType = rtk::ForwardDifferenceGradientImageFilter<TOutputImage,
                                                                        typename TOutputImage::ValueType,
                                                                        typename TOutputImage::ValueType,
-                                                                       TGradientImage>;
-  using DivergenceFilterType = rtk::BackwardDifferenceDivergenceImageFilter<TGradientImage, TOutputImage>;
-  using MultiplyImageFilterType = itk::MultiplyImageFilter<TGradientImage, TOutputImage>;
+                                                                       GradientImageType>;
+  using DivergenceFilterType = rtk::BackwardDifferenceDivergenceImageFilter<GradientImageType, TOutputImage>;
+  using MultiplyImageFilterType = itk::MultiplyImageFilter<GradientImageType, TOutputImage>;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);

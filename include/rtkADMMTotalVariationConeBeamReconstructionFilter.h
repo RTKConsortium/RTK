@@ -130,10 +130,8 @@ namespace rtk
  * \ingroup RTK ReconstructionAlgorithm
  */
 
-template <typename TOutputImage,
-          typename TGradientOutputImage =
-            itk::Image<itk::CovariantVector<typename TOutputImage::ValueType, TOutputImage::ImageDimension>,
-                       TOutputImage::ImageDimension>>
+
+template <typename TOutputImage>
 class ITK_TEMPLATE_EXPORT ADMMTotalVariationConeBeamReconstructionFilter
   : public rtk::IterativeConeBeamReconstructionFilter<TOutputImage, TOutputImage>
 {
@@ -159,17 +157,27 @@ public:
   using BackProjectionFilterType = rtk::BackProjectionImageFilter<TOutputImage, TOutputImage>;
   using BackProjectionFilterPointer = typename BackProjectionFilterType::Pointer;
   using ConjugateGradientFilterType = rtk::ConjugateGradientImageFilter<TOutputImage>;
+  using VectorPixelType = itk::CovariantVector<typename TOutputImage::ValueType, TOutputImage::ImageDimension>;
+  using CPUImageType = itk::Image<typename TOutputImage::PixelType, TOutputImage::ImageDimension>;
+#ifdef RTK_USE_CUDA
+  typedef
+    typename std::conditional<std::is_same<TOutputImage, CPUImageType>::value,
+                              itk::Image<VectorPixelType, TOutputImage::ImageDimension>,
+                              itk::CudaImage<VectorPixelType, TOutputImage::ImageDimension>>::type GradientImageType;
+#else
+  using GradientImageType = itk::Image<VectorPixelType, TOutputImage::ImageDimension>;
+#endif
   using ImageGradientFilterType = ForwardDifferenceGradientImageFilter<TOutputImage,
                                                                        typename TOutputImage::ValueType,
                                                                        typename TOutputImage::ValueType,
-                                                                       TGradientOutputImage>;
-  using ImageDivergenceFilterType = rtk::BackwardDifferenceDivergenceImageFilter<TGradientOutputImage, TOutputImage>;
-  typedef rtk::SoftThresholdTVImageFilter<TGradientOutputImage> SoftThresholdTVFilterType;
+                                                                       GradientImageType>;
+  using ImageDivergenceFilterType = rtk::BackwardDifferenceDivergenceImageFilter<GradientImageType, TOutputImage>;
+  typedef rtk::SoftThresholdTVImageFilter<GradientImageType> SoftThresholdTVFilterType;
   using SubtractVolumeFilterType = itk::SubtractImageFilter<TOutputImage>;
-  using AddGradientsFilterType = itk::AddImageFilter<TGradientOutputImage>;
+  using AddGradientsFilterType = itk::AddImageFilter<GradientImageType>;
   using MultiplyVolumeFilterType = itk::MultiplyImageFilter<TOutputImage>;
-  using MultiplyGradientFilterType = itk::MultiplyImageFilter<TGradientOutputImage>;
-  using SubtractGradientsFilterType = itk::SubtractImageFilter<TGradientOutputImage>;
+  using MultiplyGradientFilterType = itk::MultiplyImageFilter<GradientImageType>;
+  using SubtractGradientsFilterType = itk::SubtractImageFilter<GradientImageType>;
   using CGOperatorFilterType = rtk::ADMMTotalVariationConjugateGradientOperator<TOutputImage>;
   using DisplacedDetectorFilterType = rtk::DisplacedDetectorImageFilter<TOutputImage>;
   using GatingWeightsFilterType = rtk::MultiplyByVectorImageFilter<TOutputImage>;
