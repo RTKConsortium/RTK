@@ -287,7 +287,7 @@ ReconstructionConjugateGradientOperator<TOutputImage, TSingleComponentImage, TWe
 
 template <typename TOutputImage, typename TSingleComponentImage, typename TWeightsImage>
 template <typename ImageType>
-typename std::enable_if<std::is_same<TSingleComponentImage, ImageType>::value, ImageType>::type::Pointer
+typename std::enable_if<std::is_same_v<TSingleComponentImage, ImageType>, ImageType>::type::Pointer
 ReconstructionConjugateGradientOperator<TOutputImage, TSingleComponentImage, TWeightsImage>::
   ConnectGradientRegularization()
 {
@@ -313,7 +313,7 @@ ReconstructionConjugateGradientOperator<TOutputImage, TSingleComponentImage, TWe
 
 template <typename TOutputImage, typename TSingleComponentImage, typename TWeightsImage>
 template <typename ImageType>
-typename std::enable_if<!std::is_same<TSingleComponentImage, ImageType>::value, ImageType>::type::Pointer
+typename std::enable_if<!std::is_same_v<TSingleComponentImage, ImageType>, ImageType>::type::Pointer
 ReconstructionConjugateGradientOperator<TOutputImage, TSingleComponentImage, TWeightsImage>::
   ConnectGradientRegularization()
 {

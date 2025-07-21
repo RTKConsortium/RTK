@@ -87,7 +87,7 @@ WarpSequenceImageFilter<TImageSequence, TDVFImageSequence, TImage, TDVFImage>::G
     m_WarpFilter = WarpFilterType::New();
   if (m_UseCudaCyclicDeformation)
   {
-    if (std::is_same<TImage, CPUImageType>::value)
+    if (std::is_same_v<TImage, CPUImageType>)
       itkGenericExceptionMacro(<< "UseCudaCyclicDeformation option only available with itk::CudaImage.");
     m_DVFInterpolatorFilter = CudaCyclicDeformationImageFilterType::New();
   }

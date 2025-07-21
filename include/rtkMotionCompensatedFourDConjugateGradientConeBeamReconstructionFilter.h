@@ -92,14 +92,13 @@ public:
   using CPUVolumeSeriesType =
     typename itk::Image<typename VolumeSeriesType::PixelType, VolumeSeriesType::ImageDimension>;
 #ifdef RTK_USE_CUDA
-  typedef typename std::conditional<std::is_same<VolumeSeriesType, CPUVolumeSeriesType>::value,
-                                    itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension>,
-                                    itk::CudaImage<VectorForDVF, VolumeSeriesType::ImageDimension>>::type
-    DVFSequenceImageType;
-  typedef
-    typename std::conditional<std::is_same<VolumeSeriesType, CPUVolumeSeriesType>::value,
-                              itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension - 1>,
-                              itk::CudaImage<VectorForDVF, VolumeSeriesType::ImageDimension - 1>>::type DVFImageType;
+  using DVFSequenceImageType =
+    typename std::conditional_t<std::is_same_v<VolumeSeriesType, CPUVolumeSeriesType>,
+                                itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension>,
+                                itk::CudaImage<VectorForDVF, VolumeSeriesType::ImageDimension>>;
+  using DVFImageType = typename std::conditional_t<std::is_same_v<VolumeSeriesType, CPUVolumeSeriesType>,
+                                                   itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension - 1>,
+                                                   itk::CudaImage<VectorForDVF, VolumeSeriesType::ImageDimension - 1>>;
 #else
   using DVFSequenceImageType = itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension>;
   using DVFImageType = itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension - 1>;

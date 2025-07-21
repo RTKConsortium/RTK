@@ -106,13 +106,13 @@ public:
   /** SFINAE type alias, depending on whether a CUDA image is used. */
   using CPUImageSequenceType = typename itk::Image<typename TImageSequence::PixelType, TImageSequence::ImageDimension>;
 #ifdef RTK_USE_CUDA
-  typedef typename std::conditional<
-    std::is_same<TImageSequence, CPUImageSequenceType>::value,
-    itk::Image<typename TImageSequence::PixelType, TImageSequence::ImageDimension - 1>,
-    itk::CudaImage<typename TImageSequence::PixelType, TImageSequence::ImageDimension - 1>>::type ImageType;
-  typedef typename std::conditional<std::is_same<TImageSequence, CPUImageSequenceType>::value,
-                                    TotalVariationDenoisingBPDQImageFilter<ImageType>,
-                                    CudaTotalVariationDenoisingBPDQImageFilter>::type             TVDenoisingFilterType;
+  using ImageType =
+    typename std::conditional_t<std::is_same_v<TImageSequence, CPUImageSequenceType>,
+                                itk::Image<typename TImageSequence::PixelType, TImageSequence::ImageDimension - 1>,
+                                itk::CudaImage<typename TImageSequence::PixelType, TImageSequence::ImageDimension - 1>>;
+  using TVDenoisingFilterType = typename std::conditional_t<std::is_same_v<TImageSequence, CPUImageSequenceType>,
+                                                            TotalVariationDenoisingBPDQImageFilter<ImageType>,
+                                                            CudaTotalVariationDenoisingBPDQImageFilter>;
 #else
   using ImageType = itk::Image<typename TImageSequence::PixelType, TImageSequence::ImageDimension - 1>;
   using TVDenoisingFilterType = rtk::TotalVariationDenoisingBPDQImageFilter<ImageType>;

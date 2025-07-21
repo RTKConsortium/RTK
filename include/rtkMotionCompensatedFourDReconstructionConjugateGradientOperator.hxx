@@ -34,7 +34,7 @@ MotionCompensatedFourDReconstructionConjugateGradientOperator<VolumeSeriesType, 
 
   this->m_ForwardProjectionFilter = WarpForwardProjectionImageFilterType::New();
   this->m_BackProjectionFilter = WarpBackProjectionImageFilterType::New();
-  if (std::is_same<VolumeSeriesType, CPUVolumeSeriesType>::value)
+  if (std::is_same_v<VolumeSeriesType, CPUVolumeSeriesType>)
     itkWarningMacro("The warp forward and back project image filters exist only"
                     << " in CUDA. Ignoring the displacement vector field and using CPU"
                     << "Joseph forward projection and CPU voxel-based back projection");
@@ -91,7 +91,7 @@ MotionCompensatedFourDReconstructionConjugateGradientOperator<VolumeSeriesType,
   m_InverseDVFInterpolatorFilter = CPUDVFInterpolatorType::New();
   if (m_UseCudaCyclicDeformation)
   {
-    if (std::is_same<VolumeSeriesType, CPUVolumeSeriesType>::value)
+    if (std::is_same_v<VolumeSeriesType, CPUVolumeSeriesType>)
       itkGenericExceptionMacro(<< "UseCudaCyclicDeformation option only available with itk::CudaImage.");
     m_DVFInterpolatorFilter = CudaCyclicDeformationImageFilterType::New();
     m_InverseDVFInterpolatorFilter = CudaCyclicDeformationImageFilterType::New();

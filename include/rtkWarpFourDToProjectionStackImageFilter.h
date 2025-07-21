@@ -104,26 +104,27 @@ public:
     typename itk::Image<typename VolumeSeriesType::PixelType, VolumeSeriesType::ImageDimension>;
 #ifdef RTK_USE_CUDA
   /** SFINAE type alias, depending on whether a CUDA image is used. */
-  typedef typename std::conditional<std::is_same<VolumeSeriesType, CPUVolumeSeriesType>::value,
-                                    itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension>,
-                                    itk::CudaImage<VectorForDVF, VolumeSeriesType::ImageDimension>>::type
-    DVFSequenceImageType;
-  typedef
-    typename std::conditional<std::is_same<VolumeSeriesType, CPUVolumeSeriesType>::value,
-                              itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension - 1>,
-                              itk::CudaImage<VectorForDVF, VolumeSeriesType::ImageDimension - 1>>::type DVFImageType;
+  using DVFSequenceImageType =
+    typename std::conditional_t<std::is_same_v<VolumeSeriesType, CPUVolumeSeriesType>,
+                                itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension>,
+                                itk::CudaImage<VectorForDVF, VolumeSeriesType::ImageDimension>>;
+  using DVFImageType = typename std::conditional_t<std::is_same_v<VolumeSeriesType, CPUVolumeSeriesType>,
+                                                   itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension - 1>,
+                                                   itk::CudaImage<VectorForDVF, VolumeSeriesType::ImageDimension - 1>>;
 #else
   using DVFSequenceImageType = typename itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension>;
   using DVFImageType = typename itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension - 1>;
 #endif
   using CPUDVFInterpolatorType = CyclicDeformationImageFilter<DVFSequenceImageType, DVFImageType>;
 #ifdef RTK_USE_CUDA
-  typedef typename std::conditional<std::is_same<VolumeSeriesType, CPUVolumeSeriesType>::value,
-                                    JosephForwardProjectionImageFilter<ProjectionStackType, ProjectionStackType>,
-                                    CudaWarpForwardProjectionImageFilter>::type WarpForwardProjectionImageFilterType;
-  typedef typename std::conditional<std::is_same<VolumeSeriesType, CPUVolumeSeriesType>::value,
-                                    CPUDVFInterpolatorType,
-                                    CudaCyclicDeformationImageFilter>::type     CudaCyclicDeformationImageFilterType;
+  using WarpForwardProjectionImageFilterType =
+    typename std::conditional_t<std::is_same_v<VolumeSeriesType, CPUVolumeSeriesType>,
+                                JosephForwardProjectionImageFilter<ProjectionStackType, ProjectionStackType>,
+                                CudaWarpForwardProjectionImageFilter>;
+  using CudaCyclicDeformationImageFilterType =
+    typename std::conditional_t<std::is_same_v<VolumeSeriesType, CPUVolumeSeriesType>,
+                                CPUDVFInterpolatorType,
+                                CudaCyclicDeformationImageFilter>;
 #else
   using WarpForwardProjectionImageFilterType =
     JosephForwardProjectionImageFilter<ProjectionStackType, ProjectionStackType>;

@@ -125,10 +125,10 @@ public:
   using CPUVolumeSeriesType =
     typename itk::Image<typename VolumeSeriesType::PixelType, VolumeSeriesType::ImageDimension>;
 #ifdef RTK_USE_CUDA
-  typedef typename std::conditional<std::is_same<VolumeSeriesType, CPUVolumeSeriesType>::value,
-                                    ConjugateGradientImageFilter<VolumeSeriesType>,
-                                    CudaConjugateGradientImageFilter<VolumeSeriesType>>::type
-    CudaConjugateGradientImageFilterType;
+  using CudaConjugateGradientImageFilterType =
+    typename std::conditional_t<std::is_same_v<VolumeSeriesType, CPUVolumeSeriesType>,
+                                ConjugateGradientImageFilter<VolumeSeriesType>,
+                                CudaConjugateGradientImageFilter<VolumeSeriesType>>;
 #else
   using CudaConjugateGradientImageFilterType = ConjugateGradientImageFilter<VolumeSeriesType>;
 #endif
