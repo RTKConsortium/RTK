@@ -171,21 +171,24 @@ public:
   using CPUProjectionStackType =
     typename itk::Image<typename ProjectionStackType::PixelType, ProjectionStackType::ImageDimension>;
 #ifdef RTK_USE_CUDA
-  typedef typename std::conditional<std::is_same<ProjectionStackType, CPUProjectionStackType>::value,
-                                    DisplacedDetectorImageFilter<ProjectionStackType>,
-                                    CudaDisplacedDetectorImageFilter>::type DisplacedDetectorFilterType;
-  typedef typename std::conditional<std::is_same<ProjectionStackType, CPUProjectionStackType>::value,
-                                    InterpolationFilterType,
-                                    CudaInterpolateImageFilter>::type       CudaInterpolateImageFilterType;
-  typedef typename std::conditional<std::is_same<ProjectionStackType, CPUProjectionStackType>::value,
-                                    SplatFilterType,
-                                    CudaSplatImageFilter>::type             CudaSplatImageFilterType;
-  typedef typename std::conditional<std::is_same<ProjectionStackType, CPUProjectionStackType>::value,
-                                    ConstantVolumeSourceType,
-                                    CudaConstantVolumeSource>::type         CudaConstantVolumeSourceType;
-  typedef typename std::conditional<std::is_same<ProjectionStackType, CPUProjectionStackType>::value,
-                                    ConstantVolumeSeriesSourceType,
-                                    CudaConstantVolumeSeriesSource>::type   CudaConstantVolumeSeriesSourceType;
+  using DisplacedDetectorFilterType =
+    typename std::conditional_t<std::is_same_v<ProjectionStackType, CPUProjectionStackType>,
+                                DisplacedDetectorImageFilter<ProjectionStackType>,
+                                CudaDisplacedDetectorImageFilter>;
+  using CudaInterpolateImageFilterType =
+    typename std::conditional_t<std::is_same_v<ProjectionStackType, CPUProjectionStackType>,
+                                InterpolationFilterType,
+                                CudaInterpolateImageFilter>;
+  using CudaSplatImageFilterType = typename std::
+    conditional_t<std::is_same_v<ProjectionStackType, CPUProjectionStackType>, SplatFilterType, CudaSplatImageFilter>;
+  using CudaConstantVolumeSourceType =
+    typename std::conditional_t<std::is_same_v<ProjectionStackType, CPUProjectionStackType>,
+                                ConstantVolumeSourceType,
+                                CudaConstantVolumeSource>;
+  using CudaConstantVolumeSeriesSourceType =
+    typename std::conditional_t<std::is_same_v<ProjectionStackType, CPUProjectionStackType>,
+                                ConstantVolumeSeriesSourceType,
+                                CudaConstantVolumeSeriesSource>;
 #else
   using DisplacedDetectorFilterType = DisplacedDetectorImageFilter<ProjectionStackType>;
   using CudaInterpolateImageFilterType = InterpolationFilterType;

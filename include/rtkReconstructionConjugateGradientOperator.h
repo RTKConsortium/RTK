@@ -163,9 +163,9 @@ public:
   // is needed. Thus the meta-programming construct
   using MatrixVectorMultiplyFilterType = rtk::BlockDiagonalMatrixVectorMultiplyImageFilter<TOutputImage, TWeightsImage>;
   using PlainMultiplyFilterType = itk::MultiplyImageFilter<TOutputImage, TOutputImage, TOutputImage>;
-  typedef typename std::conditional<std::is_same<TSingleComponentImage, TOutputImage>::value,
-                                    PlainMultiplyFilterType,
-                                    MatrixVectorMultiplyFilterType>::type MultiplyWithWeightsFilterType;
+  using MultiplyWithWeightsFilterType = typename std::conditional_t<std::is_same_v<TSingleComponentImage, TOutputImage>,
+                                                                    PlainMultiplyFilterType,
+                                                                    MatrixVectorMultiplyFilterType>;
 
   using OutputImagePointer = typename TOutputImage::Pointer;
 
@@ -214,11 +214,11 @@ protected:
   GenerateData() override;
 
   template <typename ImageType>
-  typename std::enable_if<std::is_same<TSingleComponentImage, ImageType>::value, ImageType>::type::Pointer
+  typename std::enable_if<std::is_same_v<TSingleComponentImage, ImageType>, ImageType>::type::Pointer
   ConnectGradientRegularization();
 
   template <typename ImageType>
-  typename std::enable_if<!std::is_same<TSingleComponentImage, ImageType>::value, ImageType>::type::Pointer
+  typename std::enable_if<!std::is_same_v<TSingleComponentImage, ImageType>, ImageType>::type::Pointer
   ConnectGradientRegularization();
 
   /** Member pointers to the filters used internally (for convenience)*/

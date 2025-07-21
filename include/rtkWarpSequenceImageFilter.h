@@ -111,15 +111,15 @@ public:
   using CPUImageType = typename itk::Image<typename TImage::PixelType, TImage::ImageDimension>;
   using CPUWarpFilterType = typename itk::WarpImageFilter<TImage, TImage, TDVFImage>;
 #ifdef RTK_USE_CUDA
-  typedef
-    typename std::conditional<std::is_same<TImage, CPUImageType>::value, CPUWarpFilterType, CudaWarpImageFilter>::type
-                                                                            WarpFilterType;
-  typedef typename std::conditional<std::is_same<TImage, CPUImageType>::value,
-                                    ForwardWarpImageFilter<TImage, TImage, TDVFImage>,
-                                    CudaForwardWarpImageFilter>::type       ForwardWarpFilterType;
-  typedef typename std::conditional<std::is_same<TImage, CPUImageType>::value,
-                                    CyclicDeformationImageFilter<TDVFImageSequence, TDVFImage>,
-                                    CudaCyclicDeformationImageFilter>::type CudaCyclicDeformationImageFilterType;
+  using WarpFilterType =
+    typename std::conditional_t<std::is_same_v<TImage, CPUImageType>, CPUWarpFilterType, CudaWarpImageFilter>;
+  using ForwardWarpFilterType = typename std::conditional_t<std::is_same_v<TImage, CPUImageType>,
+                                                            ForwardWarpImageFilter<TImage, TImage, TDVFImage>,
+                                                            CudaForwardWarpImageFilter>;
+  using CudaCyclicDeformationImageFilterType =
+    typename std::conditional_t<std::is_same_v<TImage, CPUImageType>,
+                                CyclicDeformationImageFilter<TDVFImageSequence, TDVFImage>,
+                                CudaCyclicDeformationImageFilter>;
 #else
   using WarpFilterType = CPUWarpFilterType;
   using ForwardWarpFilterType = ForwardWarpImageFilter<TImage, TImage, TDVFImage>;

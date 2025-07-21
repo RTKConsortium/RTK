@@ -180,15 +180,13 @@ public:
   /** SFINAE type alias, depending on whether a CUDA image is used. */
   using CPUOutputImageType = typename itk::Image<typename TOutputImage::PixelType, TOutputImage::ImageDimension>;
 #ifdef RTK_USE_CUDA
-  typedef
-    typename std::conditional<std::is_same<TOutputImage, CPUOutputImageType>::value,
-                              itk::Image<itk::Vector<dataType, nMaterials * nMaterials>, TOutputImage::ImageDimension>,
-                              itk::CudaImage<itk::Vector<dataType, nMaterials * nMaterials>,
-                                             TOutputImage::ImageDimension>>::type HessiansImageType;
-  typedef
-    typename std::conditional<std::is_same<TOutputImage, CPUOutputImageType>::value,
-                              itk::Image<dataType, TOutputImage::ImageDimension>,
-                              itk::CudaImage<dataType, TOutputImage::ImageDimension>>::type SingleComponentImageType;
+  using HessiansImageType = typename std::conditional_t<
+    std::is_same_v<TOutputImage, CPUOutputImageType>,
+    itk::Image<itk::Vector<dataType, nMaterials * nMaterials>, TOutputImage::ImageDimension>,
+    itk::CudaImage<itk::Vector<dataType, nMaterials * nMaterials>, TOutputImage::ImageDimension>>;
+  using SingleComponentImageType = typename std::conditional_t<std::is_same_v<TOutputImage, CPUOutputImageType>,
+                                                               itk::Image<dataType, TOutputImage::ImageDimension>,
+                                                               itk::CudaImage<dataType, TOutputImage::ImageDimension>>;
 #else
   using HessiansImageType =
     typename itk::Image<itk::Vector<dataType, nMaterials * nMaterials>, TOutputImage::ImageDimension>;
@@ -197,20 +195,18 @@ public:
 
 #if !defined(ITK_WRAPPING_PARSER)
 #  ifdef RTK_USE_CUDA
-  typedef typename std::conditional<
-    std::is_same<TOutputImage, CPUOutputImageType>::value,
+  using WeidingerForwardModelType = typename std::conditional_t<
+    std::is_same_v<TOutputImage, CPUOutputImageType>,
     WeidingerForwardModelImageFilter<TOutputImage, TMeasuredProjections, TIncidentSpectrum>,
-    CudaWeidingerForwardModelImageFilter<TOutputImage, TMeasuredProjections, TIncidentSpectrum>>::type
-    WeidingerForwardModelType;
-  typedef
-    typename std::conditional<std::is_same<TOutputImage, CPUOutputImageType>::value,
-                              JosephForwardProjectionImageFilter<SingleComponentImageType, SingleComponentImageType>,
-                              CudaForwardProjectionImageFilter<SingleComponentImageType, SingleComponentImageType>>::
-      type CudaSingleComponentForwardProjectionImageFilterType;
-  typedef typename std::conditional<std::is_same<TOutputImage, CPUOutputImageType>::value,
-                                    BackProjectionImageFilter<HessiansImageType, HessiansImageType>,
-                                    CudaBackProjectionImageFilter<HessiansImageType>>::type
-    CudaHessiansBackProjectionImageFilterType;
+    CudaWeidingerForwardModelImageFilter<TOutputImage, TMeasuredProjections, TIncidentSpectrum>>;
+  using CudaSingleComponentForwardProjectionImageFilterType =
+    typename std::conditional_t<std::is_same_v<TOutputImage, CPUOutputImageType>,
+                                JosephForwardProjectionImageFilter<SingleComponentImageType, SingleComponentImageType>,
+                                CudaForwardProjectionImageFilter<SingleComponentImageType, SingleComponentImageType>>;
+  using CudaHessiansBackProjectionImageFilterType =
+    typename std::conditional_t<std::is_same_v<TOutputImage, CPUOutputImageType>,
+                                BackProjectionImageFilter<HessiansImageType, HessiansImageType>,
+                                CudaBackProjectionImageFilter<HessiansImageType>>;
 #  else
   using WeidingerForwardModelType =
     WeidingerForwardModelImageFilter<TOutputImage, TMeasuredProjections, TIncidentSpectrum>;

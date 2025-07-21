@@ -146,15 +146,16 @@ public:
   using CPUVolumeSeriesType =
     typename itk::Image<typename VolumeSeriesType::PixelType, VolumeSeriesType::ImageDimension>;
 #ifdef RTK_USE_CUDA
-  typedef typename std::conditional<std::is_same<VolumeSeriesType, CPUVolumeSeriesType>::value,
-                                    SplatFilterType,
-                                    CudaSplatImageFilter>::type           CudaSplatImageFilterType;
-  typedef typename std::conditional<std::is_same<VolumeSeriesType, CPUVolumeSeriesType>::value,
-                                    ConstantVolumeSourceType,
-                                    CudaConstantVolumeSource>::type       CudaConstantVolumeSourceType;
-  typedef typename std::conditional<std::is_same<VolumeSeriesType, CPUVolumeSeriesType>::value,
-                                    ConstantVolumeSeriesSourceType,
-                                    CudaConstantVolumeSeriesSource>::type CudaConstantVolumeSeriesSourceType;
+  using CudaSplatImageFilterType = typename std::
+    conditional_t<std::is_same_v<VolumeSeriesType, CPUVolumeSeriesType>, SplatFilterType, CudaSplatImageFilter>;
+  using CudaConstantVolumeSourceType =
+    typename std::conditional_t<std::is_same_v<VolumeSeriesType, CPUVolumeSeriesType>,
+                                ConstantVolumeSourceType,
+                                CudaConstantVolumeSource>;
+  using CudaConstantVolumeSeriesSourceType =
+    typename std::conditional_t<std::is_same_v<VolumeSeriesType, CPUVolumeSeriesType>,
+                                ConstantVolumeSeriesSourceType,
+                                CudaConstantVolumeSeriesSource>;
 #else
   using CudaSplatImageFilterType = SplatFilterType;
   using CudaConstantVolumeSourceType = ConstantVolumeSourceType;

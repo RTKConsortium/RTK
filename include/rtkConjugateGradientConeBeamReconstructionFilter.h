@@ -155,23 +155,23 @@ public:
   // is needed. Thus the meta-programming construct
   using MatrixVectorMultiplyFilterType = BlockDiagonalMatrixVectorMultiplyImageFilter<TOutputImage, TWeightsImage>;
   using PlainMultiplyFilterType = itk::MultiplyImageFilter<TOutputImage, TOutputImage, TOutputImage>;
-  typedef typename std::conditional<std::is_same<TSingleComponentImage, TOutputImage>::value,
-                                    PlainMultiplyFilterType,
-                                    MatrixVectorMultiplyFilterType>::type MultiplyWithWeightsFilterType;
+  using MultiplyWithWeightsFilterType = typename std::conditional_t<std::is_same_v<TSingleComponentImage, TOutputImage>,
+                                                                    PlainMultiplyFilterType,
+                                                                    MatrixVectorMultiplyFilterType>;
   using CPUOutputImageType = typename itk::Image<typename TOutputImage::PixelType, TOutputImage::ImageDimension>;
 #ifdef RTK_USE_CUDA
-  typedef typename std::conditional<!std::is_same<TOutputImage, CPUOutputImageType>::value &&
-                                      std::is_same<TSingleComponentImage, TOutputImage>::value,
-                                    CudaDisplacedDetectorImageFilter,
-                                    DisplacedDetectorImageFilter<TWeightsImage>>::type DisplacedDetectorFilterType;
-  typedef typename std::conditional<!std::is_same<TOutputImage, CPUOutputImageType>::value &&
-                                      std::is_same<TSingleComponentImage, TOutputImage>::value,
-                                    CudaConstantVolumeSource,
-                                    ConstantImageSource<TOutputImage>>::type           ConstantImageSourceType;
-  typedef typename std::conditional<!std::is_same<TOutputImage, CPUOutputImageType>::value &&
-                                      std::is_same<TSingleComponentImage, TOutputImage>::value,
-                                    CudaConstantVolumeSource,
-                                    ConstantImageSource<TWeightsImage>>::type          ConstantWeightSourceType;
+  using DisplacedDetectorFilterType = typename std::conditional_t<!std::is_same_v<TOutputImage, CPUOutputImageType> &&
+                                                                    std::is_same_v<TSingleComponentImage, TOutputImage>,
+                                                                  CudaDisplacedDetectorImageFilter,
+                                                                  DisplacedDetectorImageFilter<TWeightsImage>>;
+  using ConstantImageSourceType = typename std::conditional_t<!std::is_same_v<TOutputImage, CPUOutputImageType> &&
+                                                                std::is_same_v<TSingleComponentImage, TOutputImage>,
+                                                              CudaConstantVolumeSource,
+                                                              ConstantImageSource<TOutputImage>>;
+  using ConstantWeightSourceType = typename std::conditional_t<!std::is_same_v<TOutputImage, CPUOutputImageType> &&
+                                                                 std::is_same_v<TSingleComponentImage, TOutputImage>,
+                                                               CudaConstantVolumeSource,
+                                                               ConstantImageSource<TWeightsImage>>;
 #else
   using DisplacedDetectorFilterType = DisplacedDetectorImageFilter<TWeightsImage>;
   using ConstantImageSourceType = ConstantImageSource<TOutputImage>;

@@ -102,12 +102,12 @@ public:
   /** SFINAE type alias, depending on whether a CUDA image is used. */
   using CPUImageSequence = typename itk::Image<typename TImageSequence::PixelType, TImageSequence::ImageDimension>;
 #ifdef RTK_USE_CUDA
-  typedef typename std::conditional<std::is_same<TImageSequence, CPUImageSequence>::value,
-                                    ConstantImageSource<TImageSequence>,
-                                    CudaConstantVolumeSeriesSource>::type                   ConstantSourceType;
-  typedef typename std::conditional<std::is_same<TImageSequence, CPUImageSequence>::value,
-                                    ConjugateGradientFilterType,
-                                    CudaConjugateGradientImageFilter<TImageSequence>>::type CudaConjugateGradientType;
+  using ConstantSourceType = typename std::conditional_t<std::is_same_v<TImageSequence, CPUImageSequence>,
+                                                         ConstantImageSource<TImageSequence>,
+                                                         CudaConstantVolumeSeriesSource>;
+  using CudaConjugateGradientType = typename std::conditional_t<std::is_same_v<TImageSequence, CPUImageSequence>,
+                                                                ConjugateGradientFilterType,
+                                                                CudaConjugateGradientImageFilter<TImageSequence>>;
 #else
   using ConstantSourceType = ConstantImageSource<TImageSequence>;
   using CudaConjugateGradientType = ConjugateGradientFilterType;

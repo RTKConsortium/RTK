@@ -40,7 +40,7 @@ UnwarpSequenceImageFilter<TImageSequence, TDVFImageSequence, TImage, TDVFImage>:
   m_ConstantSource = ConstantSourceType::New();
   if (m_CudaConjugateGradient)
   {
-    if (std::is_same<TImageSequence, CPUImageSequence>::value)
+    if (std::is_same_v<TImageSequence, CPUImageSequence>)
       itkGenericExceptionMacro(<< "CudaConjugateGradient option only available with itk::CudaImage.");
     m_ConjugateGradientFilter = CudaConjugateGradientType::New();
   }
