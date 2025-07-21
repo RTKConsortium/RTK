@@ -39,10 +39,9 @@ namespace rtk
  */
 
 class RTK_EXPORT CudaLaplacianImageFilter
-  : public itk::CudaImageToImageFilter<
-      itk::CudaImage<float, 3>,
-      itk::CudaImage<float, 3>,
-      LaplacianImageFilter<itk::CudaImage<float, 3>, itk::CudaImage<itk::CovariantVector<float, 3>, 3>>>
+  : public itk::CudaImageToImageFilter<itk::CudaImage<float, 3>,
+                                       itk::CudaImage<float, 3>,
+                                       LaplacianImageFilter<itk::CudaImage<float, 3>>>
 {
 public:
   ITK_DISALLOW_COPY_AND_MOVE(CudaLaplacianImageFilter);
@@ -50,8 +49,7 @@ public:
   /** Standard class type alias. */
   using Self = rtk::CudaLaplacianImageFilter;
   using OutputImageType = itk::CudaImage<float, 3>;
-  using GradientImageType = itk::CudaImage<itk::CovariantVector<float, 3>, 3>;
-  using Superclass = rtk::LaplacianImageFilter<OutputImageType, GradientImageType>;
+  using Superclass = rtk::LaplacianImageFilter<OutputImageType>;
   using Pointer = itk::SmartPointer<Self>;
   using ConstPointer = itk::SmartPointer<const Self>;
 

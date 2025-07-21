@@ -35,10 +35,8 @@ main(int argc, char * argv[])
 
 #ifdef USE_CUDA
   using OutputImageType = itk::CudaImage<OutputPixelType, Dimension>;
-  using GradientImageType = itk::CudaImage<itk::CovariantVector<OutputPixelType, Dimension>, Dimension>;
 #else
   using OutputImageType = itk::Image<OutputPixelType, Dimension>;
-  using GradientImageType = itk::Image<itk::CovariantVector<OutputPixelType, Dimension>, Dimension>;
 #endif
 
   // Constant image sources
@@ -73,7 +71,7 @@ main(int argc, char * argv[])
   std::cout << "\n\n****** Case 1: CPU laplacian ******" << std::endl;
 
   // Create and set the laplacian filter
-  auto laplacian = rtk::LaplacianImageFilter<OutputImageType, GradientImageType>::New();
+  auto laplacian = rtk::LaplacianImageFilter<OutputImageType>::New();
   laplacian->SetInput(dsl->GetOutput());
 
   // Compute the laplacian of the shepp logan

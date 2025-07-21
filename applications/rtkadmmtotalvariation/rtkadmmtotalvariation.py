@@ -131,7 +131,7 @@ def process(args_info: argparse.Namespace):
     # Set the reconstruction filter
     if hasattr(itk, "CudaImage"):
         CudaOutputImageType = itk.CudaImage[OutputPixelType, Dimension]
-        admmFilter = rtk.ADMMTotalVariationConeBeamReconstructionFilter[CudaOutputImageType, itk.CudaImage[itk.CovariantVector[OutputPixelType, Dimension], Dimension]].New()
+        admmFilter = rtk.ADMMTotalVariationConeBeamReconstructionFilter[CudaOutputImageType].New()
         admmFilter.SetInput(0, itk.cuda_image_from_image(inputFilter.GetOutput()))
         if args_info.phases:
             admmFilter.SetInput(1, itk.cuda_image_from_image(phaseGating.GetOutput()))

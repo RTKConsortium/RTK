@@ -25,9 +25,8 @@
 namespace rtk
 {
 
-template <typename TOutputImage, typename TGradientOutputImage>
-ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage,
-                                               TGradientOutputImage>::ADMMTotalVariationConeBeamReconstructionFilter()
+template <typename TOutputImage>
+ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage>::ADMMTotalVariationConeBeamReconstructionFilter()
 {
   this->SetNumberOfRequiredInputs(2);
 
@@ -74,7 +73,7 @@ ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage,
 
   // Set permanent parameters
   m_ZeroMultiplyVolumeFilter->SetConstant2(itk::NumericTraits<typename TOutputImage::PixelType>::ZeroValue());
-  m_ZeroMultiplyGradientFilter->SetConstant2(itk::NumericTraits<typename TGradientOutputImage::PixelType>::ZeroValue());
+  m_ZeroMultiplyGradientFilter->SetConstant2(itk::NumericTraits<typename GradientImageType::PixelType>::ZeroValue());
   m_DisplacedDetectorFilter->SetPadOnTruncatedSide(false);
   m_DisableDisplacedDetectorFilter = false;
   // Not in place to avoid reading the projections twice
@@ -96,9 +95,9 @@ ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage,
   m_DisplacedDetectorFilter->ReleaseDataFlagOn();
 }
 
-template <typename TOutputImage, typename TGradientOutputImage>
+template <typename TOutputImage>
 void
-ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImage>::SetBetaForCurrentIteration(int iter)
+ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage>::SetBetaForCurrentIteration(int iter)
 {
   float currentBeta = m_Beta * (iter + 1) / (float)m_AL_iterations;
 
@@ -107,18 +106,17 @@ ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImag
   m_MultiplyFilter->SetConstant2((const float)currentBeta);
 }
 
-template <typename TOutputImage, typename TGradientOutputImage>
+template <typename TOutputImage>
 void
-ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImage>::SetGatingWeights(
-  std::vector<float> weights)
+ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage>::SetGatingWeights(std::vector<float> weights)
 {
   m_GatingWeights = weights;
   m_IsGated = true;
 }
 
-template <typename TOutputImage, typename TGradientOutputImage>
+template <typename TOutputImage>
 void
-ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImage>::GenerateInputRequestedRegion()
+ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage>::GenerateInputRequestedRegion()
 {
   // Input 0 is the volume we update
   typename Superclass::InputImagePointer inputPtr0 = const_cast<TOutputImage *>(this->GetInput(0));
@@ -137,9 +135,9 @@ ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImag
   inputPtr1->SetRequestedRegion(inputPtr1->GetLargestPossibleRegion());
 }
 
-template <class TInputImage, class TOutputImage>
+template <class TOutputImage>
 void
-ADMMTotalVariationConeBeamReconstructionFilter<TInputImage, TOutputImage>::VerifyPreconditions() const
+ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage>::VerifyPreconditions() const
 {
   this->Superclass::VerifyPreconditions();
 
@@ -147,9 +145,9 @@ ADMMTotalVariationConeBeamReconstructionFilter<TInputImage, TOutputImage>::Verif
     itkExceptionMacro(<< "Geometry has not been set.");
 }
 
-template <typename TOutputImage, typename TGradientOutputImage>
+template <typename TOutputImage>
 void
-ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImage>::GenerateOutputInformation()
+ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage>::GenerateOutputInformation()
 {
   // Set forward projection filter
   m_ForwardProjectionFilter = this->InstantiateForwardProjectionFilter(this->m_CurrentForwardProjectionConfiguration);
@@ -208,9 +206,9 @@ ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImag
   this->GetOutput()->CopyInformation(m_SubtractFilter2->GetOutput());
 }
 
-template <typename TOutputImage, typename TGradientOutputImage>
+template <typename TOutputImage>
 void
-ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage, TGradientOutputImage>::GenerateData()
+ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage>::GenerateData()
 {
   itk::IterationReporter iterationReporter(this, 0, 1);
   for (unsigned int iter = 0; iter < m_AL_iterations; iter++)
