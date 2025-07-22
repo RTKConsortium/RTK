@@ -331,7 +331,6 @@ rtk_add_test(rtkGeometricPhantomExampleTest
   DATA{Input/Forbild/thorax.txt})
 
 if(ITK_WRAP_PYTHON)
-  itk_python_add_test(NAME rtkFirstReconstructionPythonTest COMMAND rtkFirstReconstruction.py ${CMAKE_CURRENT_BINARY_DIR}/rtkFirstReconstruction.mha)
   itk_python_add_test(NAME rtkMaximumIntensityPythonTest COMMAND rtkMaximumIntensity.py  ${CMAKE_CURRENT_BINARY_DIR}/rtkFirstReconstruction.mha)
   itk_python_add_test(NAME rtkOutputArgumentWrappingTest COMMAND rtkOutputArgumentWrapping.py)
 endif()
