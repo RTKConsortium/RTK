@@ -305,6 +305,31 @@ rtk_add_test(rtkBioscanTest rtkbioscantest.cxx
 
 rtk_add_test(rtkVarianceReconstructionTest rtkvariancereconstructiontest.cxx)
 
+#-----------------------------------------------------------------------------
+# Test examples
+rtk_add_test(rtkFirstReconstructionExampleTest
+  ../examples/FirstReconstruction/FirstReconstruction.cxx
+  ${CMAKE_CURRENT_BINARY_DIR}/FirstReconstruction.mha
+  ${CMAKE_CURRENT_BINARY_DIR}/FirstReconstruction.xml
+)
+rtk_add_cuda_test(rtkFirstCudaReconstructionExampleTest
+  ../examples/FirstReconstruction/FirstCudaReconstruction.cxx
+  ${CMAKE_CURRENT_BINARY_DIR}/FirstCudaReconstruction.mha
+  ${CMAKE_CURRENT_BINARY_DIR}/FirstCudaReconstruction.xml
+)
+
+rtk_add_test(rtkInlineReconstructionExampleTest
+  ../examples/InlineReconstruction/InlineReconstruction.cxx)
+rtk_add_cuda_test(rtkCudaInlineReconstructionExampleTest
+  ../examples/InlineReconstruction/InlineReconstruction.cxx)
+
+rtk_add_test(rtkAddNoiseExampleTest
+  ../examples/AddNoise/AddNoise.cxx)
+
+rtk_add_test(rtkGeometricPhantomExampleTest
+  ../examples/GeometricPhantom/GeometricPhantom.cxx
+  DATA{Input/Forbild/thorax.txt})
+
 if(ITK_WRAP_PYTHON)
   itk_python_add_test(NAME rtkFirstReconstructionPythonTest COMMAND rtkFirstReconstruction.py ${CMAKE_CURRENT_BINARY_DIR}/rtkFirstReconstruction.mha)
   itk_python_add_test(NAME rtkMaximumIntensityPythonTest COMMAND rtkMaximumIntensity.py  ${CMAKE_CURRENT_BINARY_DIR}/rtkFirstReconstruction.mha)
