@@ -33,6 +33,7 @@ _app_modules = [
     "rtkdualenergysimplexdecomposition",
     "rtkelektasynergygeometry",
     "rtkextractphasesignal",
+    "rtkextractshroudsignal",
     "rtkfdk",
     "rtkforwardprojections",
     "rtkorageometry",
