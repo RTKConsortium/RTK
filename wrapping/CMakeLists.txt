@@ -45,6 +45,7 @@ wrap_itk_python_bindings_install(/itk "RTK"
     ${RTK_SOURCE_DIR}/applications/rtkdualenergyforwardmodel/rtkdualenergyforwardmodel.py
     ${RTK_SOURCE_DIR}/applications/rtkdualenergysimplexdecomposition/rtkdualenergysimplexdecomposition.py
     ${RTK_SOURCE_DIR}/applications/rtkelektasynergygeometry/rtkelektasynergygeometry.py
+    ${RTK_SOURCE_DIR}/applications/rtkextractphasesignal/rtkextractphasesignal.py
     ${RTK_SOURCE_DIR}/applications/rtkfdk/rtkfdk.py
     ${RTK_SOURCE_DIR}/applications/rtkforwardprojections/rtkforwardprojections.py
     ${RTK_SOURCE_DIR}/applications/rtkorageometry/rtkorageometry.py
