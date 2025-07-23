@@ -30,6 +30,7 @@ _app_modules = [
     "rtkdrawgeometricphantom",
     "rtkdrawshepploganphantom",
     "rtkdualenergyforwardmodel",
+    "rtkdualenergysimplexdecomposition",
     "rtkelektasynergygeometry",
     "rtkfdk",
     "rtkforwardprojections",
