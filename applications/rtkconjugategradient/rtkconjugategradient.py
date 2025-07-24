@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 import argparse
-import sys
 import itk
 from itk import RTK as rtk
 

@@ -1,8 +1,8 @@
 #!/usr/bin/env python
+import argparse
 import numpy as np
 import itk
 from itk import RTK as rtk
-import argparse
 
 
 def build_parser():

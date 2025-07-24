@@ -1,5 +1,5 @@
-import itk
 import argparse
+import itk
 from itk import RTK as rtk
 
 
