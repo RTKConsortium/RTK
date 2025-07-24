@@ -1,7 +1,7 @@
-import itk
 import argparse
-from itk import RTK as rtk
 import sys
+import itk
+from itk import RTK as rtk
 import numpy as np
 
 
