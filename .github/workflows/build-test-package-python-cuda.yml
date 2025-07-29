@@ -212,3 +212,33 @@ jobs:
         skip_existing: true
         user: __token__
         password: ${{ secrets.pypi_password }}
+
+  test-python-wheel:
+    needs:
+      - build-linux-cuda-python-packages
+    runs-on: self-hosted-linux
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Download all wheel artifacts
+      uses: actions/download-artifact@v4
+      with:
+        path: wheels
+
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Test python wheel
+      run: |
+        # Find the CUDA 124 wheel for Python 3.11 dynamically
+        wheel=$(find wheels -name "*cuda124*cp311*manylinux_2_28_x86_64.whl" -type f | head -1)
+
+        pip uninstall -y $(pip list |  grep -E '^itk-')
+        echo "Installing wheel: $wheel"
+        pip install $wheel
+
+        pip install pytest matplotlib
+        pytest $GITHUB_WORKSPACE/test/*.py -vv -W "ignore:builtin type swig"
