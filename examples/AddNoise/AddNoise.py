@@ -72,4 +72,4 @@ plt.xlabel("v pixel index")
 plt.ylabel("Pixel intensity")
 plt.legend()
 plt.savefig("AddNoise.png", bbox_inches="tight")
-plt
+#plt.show()

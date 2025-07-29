@@ -1,3 +1,4 @@
+import sys
 import itk
 from itk import RTK as rtk
 
@@ -10,7 +11,7 @@ angularArc = 360.0
 sid = 600
 sdd = 1200
 scale = 2.0
-config_file_name = "Thorax"
+config_file_name = sys.argv[1]
 rotation = itk.matrix_from_array([[1.0, 0.0, 0.0], [0.0, 0.0, -1.0], [0.0, 1.0, 0.0]])
 
 # Set up the geometry for the projections
