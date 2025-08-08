@@ -21,14 +21,16 @@ def build_parser():
     parser.add_argument(
         "--phantomscale",
         help="Scaling factor for the phantom dimensions",
-        type=rtk.comma_separated_args(float),
+        type=float,
+        nargs="+",
         default=[128],
     )
     parser.add_argument("--noise", help="Gaussian noise parameter (SD)", type=float)
     parser.add_argument(
         "--offset",
         help="3D spatial offset of the phantom center",
-        type=rtk.comma_separated_args(float),
+        type=float,
+        nargs="+",
     )
 
     rtk.add_rtk3Doutputimage_group(parser)

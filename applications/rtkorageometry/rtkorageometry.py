@@ -25,7 +25,8 @@ def build_parser():
         "--margin",
         "-m",
         help="Collimation margin (uinf, usup, vinf, vsup)",
-        type=rtk.comma_separated_args(float),
+        type=float,
+        nargs="+",
         default=0.0,
     )
 

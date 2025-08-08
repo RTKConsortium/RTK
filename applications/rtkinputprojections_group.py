@@ -41,40 +41,47 @@ def add_rtkinputprojections_group(parser):
     rtkinputprojections_group.add_argument(
         "--newdirection",
         help="New value of input projections (before pre-processing)",
-        type=rtk.comma_separated_args(float),
+        type=float,
+        nargs="+",
     )
     rtkinputprojections_group.add_argument(
         "--neworigin",
         help="New origin of input projections (before pre-processing)",
-        type=rtk.comma_separated_args(float),
+        type=float,
+        nargs="+",
     )
     rtkinputprojections_group.add_argument(
         "--newspacing",
         help="New spacing of input projections (before pre-processing)",
-        type=rtk.comma_separated_args(float),
+        type=float,
+        nargs="+",
     )
     rtkinputprojections_group.add_argument(
         "--lowercrop",
         help="Lower boundary crop size",
-        type=rtk.comma_separated_args(int),
+        type=int,
+        nargs="+",
         default=[0],
     )
     rtkinputprojections_group.add_argument(
         "--uppercrop",
         help="Upper boundary crop size",
-        type=rtk.comma_separated_args(int),
+        type=int,
+        nargs="+",
         default=[0],
     )
     rtkinputprojections_group.add_argument(
         "--binning",
         help="Shrink / Binning factos in each direction",
-        type=rtk.comma_separated_args(int),
+        type=int,
+        nargs="+",
         default=[1],
     )
     rtkinputprojections_group.add_argument(
         "--wpc",
         help="Water precorrection coefficients (default is no correction)",
-        type=rtk.comma_separated_args(float),
+        type=float,
+        nargs="+",
     )
     rtkinputprojections_group.add_argument(
         "--spr",
@@ -110,7 +117,8 @@ def add_rtkinputprojections_group(parser):
     rtkinputprojections_group.add_argument(
         "--radius",
         help="Radius of neighborhood for conditional median filtering",
-        type=rtk.comma_separated_args(int),
+        type=int,
+        nargs="+",
         default=[0],
     )
     rtkinputprojections_group.add_argument(
