@@ -37,6 +37,11 @@ FFTVarianceRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>::UpdateFFTP
     itkGenericExceptionMacro(<< "Variance Ramp image filter is not implemented for HannCutFrequencyY>0.");
   }
 
+  if (this->m_KernelFFT.GetPointer() != nullptr && s == this->m_PreviousKernelUpdateSize)
+  {
+    return;
+  }
+
   // Calculate the conventional ramp image filter Kernel
   Superclass::UpdateFFTProjectionsConvolutionKernel(s);
 
@@ -91,6 +96,7 @@ FFTVarianceRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>::UpdateFFTP
   fftK2->SetNumberOfWorkUnits(this->GetNumberOfWorkUnits());
   fftK2->Update();
   this->m_KernelFFT = fftK2->GetOutput();
+  this->m_KernelFFT->DisconnectPipeline();
 }
 
 } // end namespace rtk

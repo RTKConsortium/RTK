@@ -149,6 +149,8 @@ protected:
   void
   UpdateFFTProjectionsConvolutionKernel(const SizeType s) override;
 
+  SizeType m_PreviousKernelUpdateSize;
+
 private:
   /**
    * Cut frequency of Hann, Cosine and Hamming windows. The first one which is
@@ -164,7 +166,6 @@ private:
   double m_RamLakCutFrequency{ 0. };
   double m_SheppLoganCutFrequency{ 0. };
 
-  SizeType m_PreviousKernelUpdateSize;
 }; // end of class
 
 } // end namespace rtk

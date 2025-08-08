@@ -34,7 +34,7 @@ main(int, char **)
   constexpr unsigned int NumberOfProjectionImages = 3;
   constexpr unsigned int NumberOfSamples = 2;
 #else
-  constexpr unsigned int NumberOfProjectionImages = 10;
+  constexpr unsigned int NumberOfProjectionImages = 50;
   constexpr unsigned int NumberOfSamples = 100;
 #endif
 
@@ -55,12 +55,12 @@ main(int, char **)
   tomographySource->SetConstant(0.);
 
   auto projectionsSource = ConstantImageSourceType::New();
-  origin = itk::MakePoint(-7.5, -1., -7.5);
+  origin = itk::MakePoint(-7.5, -1., 0.);
 #if FAST_TESTS_NO_CHECKS
   size = itk::MakeSize(2, 2, NumberOfProjectionImages);
   spacing = itk::MakeVector(508., 508., 508.);
 #else
-  size = itk::MakeSize(64, 3, NumberOfProjectionImages);
+  size = itk::MakeSize(16, 3, NumberOfProjectionImages);
   spacing = itk::MakeVector(1., 1., 1.);
 #endif
   projectionsSource->SetOrigin(origin);
