@@ -24,7 +24,8 @@ def build_parser():
         "--clipbox",
         "-c",
         help="3D clipbox for cropping projections (x1, x2, y1, y2, z1, z2) in mm",
-        type=rtk.comma_separated_args(float),
+        type=float,
+        nargs="+"
     )
     parser.add_argument("--geometry", "-g", help="XML geometry file name", type=str)
 
