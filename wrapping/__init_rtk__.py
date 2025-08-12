@@ -34,6 +34,7 @@ _app_modules = [
     "rtkelektasynergygeometry",
     "rtkextractphasesignal",
     "rtkfdk",
+    "rtkfieldofview",
     "rtkforwardprojections",
     "rtkorageometry",
     "rtkprojectgeometricphantom",
