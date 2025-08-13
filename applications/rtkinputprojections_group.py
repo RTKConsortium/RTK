@@ -134,23 +134,17 @@ def GetProjectionsFileNamesFromArgParse(args_info):
         print(f"Regular expression matches {len(names.GetFileNames())} file(s)...")
 
     # Check submatch in file names TODO
-
-    fileNames = names.GetFileNames()
     # rtk.RegisterIOFactories() TODO
-    idxtopop = []
-    for i, fn in enumerate(fileNames):
-        imageio = itk.ImageIOFactory.CreateImageIO(
-            fn, itk.CommonEnums.IOFileMode_ReadMode
-        )
+
+    fileNames = []
+    for fn in names.GetFileNames():
+        imageio = itk.ImageIOFactory.CreateImageIO(fn, itk.CommonEnums.IOFileMode_ReadMode)
         if imageio is None:
             print(f"Ignoring file: {fn}")
-            idxtopop.append(i)
-
-    for id in idxtopop:
-        fileNames.pop(id)
+            continue
+        fileNames.append(fn)
 
     return fileNames
-
 
 # Mimicks SetProjectionsReaderFromGgo
 def SetProjectionsReaderFromArgParse(reader, args_info):
