@@ -1,5 +1,7 @@
 import sys
 import importlib
+import os
+import glob
 
 itk_module = sys.modules["itk"]
 rtk_module = getattr(itk_module, "RTK")
@@ -18,32 +20,15 @@ for mod_name in rtk_submodules:
         if a[0] != "_":
             setattr(rtk_module, a, getattr(mod, a))
 
-# Application modules
-_app_modules = [
-    "rtkadmmtotalvariation",
-    "rtkamsterdamshroud",
-    "rtkbackprojections",
-    "rtkbioscangeometry",
-    "rtkcheckimagequality",
-    "rtkconjugategradient",
-    "rtkdigisensgeometry",
-    "rtkdrawgeometricphantom",
-    "rtkdrawshepploganphantom",
-    "rtkdualenergyforwardmodel",
-    "rtkdualenergysimplexdecomposition",
-    "rtkelektasynergygeometry",
-    "rtkextractphasesignal",
-    "rtkfdk",
-    "rtkfieldofview",
-    "rtkforwardprojections",
-    "rtkorageometry",
-    "rtkprojectgeometricphantom",
-    "rtkprojections",
-    "rtkprojectshepploganphantom",
-    "rtkshowgeometry",
-    "rtksimulatedgeometry",
-    "rtkvarianobigeometry",
-]
+# Dynamically build application modules list from applications/rtk*/rtk*.py
+_app_modules = []
+base_dir = os.path.dirname(__file__)
+apps_root = os.path.join(base_dir, "applications")
+pattern = os.path.join(apps_root, "rtk*", "rtk*.py")
+for filepath in glob.glob(pattern):
+    name = os.path.splitext(os.path.basename(filepath))[0]
+    _app_modules.append(name)
+_app_modules.sort()
 
 # Dynamically access make_application_func from rtkExtras
 rtk_extras = importlib.import_module("itk.rtkExtras")
