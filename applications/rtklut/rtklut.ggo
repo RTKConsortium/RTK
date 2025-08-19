@@ -1,6 +1,0 @@
-purpose "Converts pixel intensities of projection images according to lookup table"
-
-option "verbose"   v "Verbose execution"                                         flag     off
-option "output"    o "Output stack file name"                                    string   yes
-option "lut"       l "File name for 1D lookup table"                             string   yes
-
