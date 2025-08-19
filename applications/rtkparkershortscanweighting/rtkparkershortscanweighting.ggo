@@ -1,8 +1,0 @@
-purpose "Weights projection stack with parker weights for short scan with a divergent geometry."
-
-option "verbose"    v "Verbose execution"                                           flag                off
-option "geometry"   g "XML geometry file name"                                      string              yes
-option "output"     o "Output file name"                                            string              yes
-option "hardware"   - "Hardware used for computation"                               values="cpu","cuda" no   default="cpu"
-option "divisions"  d "Streaming option: number of stream divisions"                int                 no   default="1"
-
