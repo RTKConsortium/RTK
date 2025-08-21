@@ -9,6 +9,8 @@ concurrency:
 jobs:
   cxx-build-workflow:
     uses: InsightSoftwareConsortium/ITKRemoteModuleBuildTestPackageAction/.github/workflows/build-test-cxx.yml@v5.4.3
+    with:
+      itk-git-tag: 'update-expat-2.7.1'
 
   python-build-workflow:
     uses: InsightSoftwareConsortium/ITKRemoteModuleBuildTestPackageAction/.github/workflows/build-test-package-python.yml@v5.4.3
