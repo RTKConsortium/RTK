@@ -160,10 +160,9 @@ public:
   using VectorPixelType = itk::CovariantVector<typename TOutputImage::ValueType, TOutputImage::ImageDimension>;
   using CPUImageType = itk::Image<typename TOutputImage::PixelType, TOutputImage::ImageDimension>;
 #ifdef RTK_USE_CUDA
-  typedef
-    typename std::conditional<std::is_same<TOutputImage, CPUImageType>::value,
-                              itk::Image<VectorPixelType, TOutputImage::ImageDimension>,
-                              itk::CudaImage<VectorPixelType, TOutputImage::ImageDimension>>::type GradientImageType;
+  using GradientImageType = typename std::conditional_t<std::is_same_v<TOutputImage, CPUImageType>,
+                                                        itk::Image<VectorPixelType, TOutputImage::ImageDimension>,
+                                                        itk::CudaImage<VectorPixelType, TOutputImage::ImageDimension>>;
 #else
   using GradientImageType = itk::Image<VectorPixelType, TOutputImage::ImageDimension>;
 #endif
@@ -172,7 +171,7 @@ public:
                                                                        typename TOutputImage::ValueType,
                                                                        GradientImageType>;
   using ImageDivergenceFilterType = rtk::BackwardDifferenceDivergenceImageFilter<GradientImageType, TOutputImage>;
-  typedef rtk::SoftThresholdTVImageFilter<GradientImageType> SoftThresholdTVFilterType;
+  using SoftThresholdTVFilterType = rtk::SoftThresholdTVImageFilter<GradientImageType>;
   using SubtractVolumeFilterType = itk::SubtractImageFilter<TOutputImage>;
   using AddGradientsFilterType = itk::AddImageFilter<GradientImageType>;
   using MultiplyVolumeFilterType = itk::MultiplyImageFilter<TOutputImage>;
