@@ -115,13 +115,16 @@ public:
   using Superclass = rtk::IterativeConeBeamReconstructionFilter<TImage, TImage>;
   using Pointer = itk::SmartPointer<Self>;
   using CovariantVectorForSpatialGradient = itk::CovariantVector<typename TImage::ValueType, TImage::ImageDimension>;
-
-#ifdef RTK_USE_CUDA
-  using GradientImageType = itk::CudaImage<CovariantVectorForSpatialGradient, TImage::ImageDimension>;
+#ifdef CudaCommon_VERSION_MAJOR
+  using GradientImageType =
+    typename TImage::template RebindImageType<CovariantVectorForSpatialGradient, TImage::ImageDimension>;
 #else
+#  ifdef RTK_USE_CUDA
+  using GradientImageType = itk::CudaImage<CovariantVectorForSpatialGradient, TImage::ImageDimension>;
+#  else
   using GradientImageType = itk::Image<CovariantVectorForSpatialGradient, TImage::ImageDimension>;
+#  endif
 #endif
-
   using ForwardProjectionType = typename Superclass::ForwardProjectionType;
   using BackProjectionType = typename Superclass::BackProjectionType;
 
