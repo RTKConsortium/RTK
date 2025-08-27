@@ -124,15 +124,9 @@ public:
   using Self = ReconstructionConjugateGradientOperator;
   using Superclass = ConjugateGradientOperator<TOutputImage>;
   using Pointer = itk::SmartPointer<Self>;
-#ifdef RTK_USE_CUDA
+  using VectorPixelType = itk::CovariantVector<typename TOutputImage::ValueType, TOutputImage::ImageDimension>;
   using GradientImageType =
-    itk::CudaImage<itk::CovariantVector<typename TOutputImage::PixelType, TOutputImage::ImageDimension>,
-                   TOutputImage::ImageDimension>;
-#else
-  using GradientImageType =
-    itk::Image<itk::CovariantVector<typename TOutputImage::PixelType, TOutputImage::ImageDimension>,
-               TOutputImage::ImageDimension>;
-#endif
+    typename TOutputImage::template RebindImageType<VectorPixelType, TOutputImage::ImageDimension>;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);

@@ -96,18 +96,15 @@ public:
   /** Convenient type alias */
   using VolumeType = ProjectionStackType;
   using VectorForDVF = itk::CovariantVector<typename VolumeSeriesType::ValueType, VolumeSeriesType::ImageDimension - 1>;
-
-  /** SFINAE type alias, depending on whether a CUDA image is used. */
   using CPUVolumeSeriesType =
     typename itk::Image<typename VolumeSeriesType::PixelType, VolumeSeriesType::ImageDimension>;
-#ifdef RTK_USE_CUDA
   using DVFSequenceImageType =
-    typename std::conditional_t<std::is_same_v<VolumeSeriesType, CPUVolumeSeriesType>,
-                                itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension>,
-                                itk::CudaImage<VectorForDVF, VolumeSeriesType::ImageDimension>>;
-  using DVFImageType = typename std::conditional_t<std::is_same_v<VolumeSeriesType, CPUVolumeSeriesType>,
-                                                   itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension - 1>,
-                                                   itk::CudaImage<VectorForDVF, VolumeSeriesType::ImageDimension - 1>>;
+    typename VolumeSeriesType::template RebindImageType<VectorForDVF, VolumeSeriesType::ImageDimension>;
+  using DVFImageType =
+    typename VolumeSeriesType::template RebindImageType<VectorForDVF, VolumeSeriesType::ImageDimension - 1>;
+
+  /** SFINAE type alias, depending on whether a CUDA image is used. */
+#ifdef RTK_USE_CUDA
   using WarpBackProjectionImageFilter =
     typename std::conditional_t<std::is_same_v<VolumeSeriesType, CPUVolumeSeriesType>,
                                 BackProjectionImageFilter<VolumeType, VolumeType>,
@@ -118,8 +115,6 @@ public:
                                 CPUDVFInterpolatorType,
                                 CudaCyclicDeformationImageFilter>;
 #else
-  using DVFSequenceImageType = itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension>;
-  using DVFImageType = itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension - 1>;
   using WarpBackProjectionImageFilter = BackProjectionImageFilter<VolumeType, VolumeType>;
   using CPUDVFInterpolatorType = CyclicDeformationImageFilter<DVFSequenceImageType, DVFImageType>;
   using CudaCyclicDeformationImageFilterType = CPUDVFInterpolatorType;
