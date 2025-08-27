@@ -23,10 +23,6 @@
 #include "rtkBackwardDifferenceDivergenceImageFilter.h"
 #include "itkMultiplyImageFilter.h"
 
-#ifdef RTK_USE_CUDA
-#  include <itkCudaImage.h>
-#endif
-
 namespace rtk
 {
 
@@ -53,16 +49,9 @@ public:
   using Superclass = itk::ImageToImageFilter<TOutputImage, TOutputImage>;
   using Pointer = itk::SmartPointer<Self>;
   using OutputImagePointer = typename TOutputImage::Pointer;
-  using CPUImageType = itk::Image<typename TOutputImage::PixelType, TOutputImage::ImageDimension>;
   using VectorPixelType = itk::CovariantVector<typename TOutputImage::ValueType, TOutputImage::ImageDimension>;
-
-#ifdef RTK_USE_CUDA
-  using GradientImageType = typename std::conditional_t<std::is_same_v<TOutputImage, CPUImageType>,
-                                                        itk::Image<VectorPixelType, TOutputImage::ImageDimension>,
-                                                        itk::CudaImage<VectorPixelType, TOutputImage::ImageDimension>>;
-#else
-  using GradientImageType = itk::Image<VectorPixelType, TOutputImage::ImageDimension>;
-#endif
+  using GradientImageType =
+    typename TOutputImage::template RebindImageType<VectorPixelType, TOutputImage::ImageDimension>;
   using GradientFilterType = rtk::ForwardDifferenceGradientImageFilter<TOutputImage,
                                                                        typename TOutputImage::ValueType,
                                                                        typename TOutputImage::ValueType,

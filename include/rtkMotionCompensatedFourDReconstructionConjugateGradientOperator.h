@@ -115,14 +115,11 @@ public:
   /** SFINAE type alias, depending on whether a CUDA image is used. */
   using CPUVolumeSeriesType =
     typename itk::Image<typename VolumeSeriesType::PixelType, VolumeSeriesType::ImageDimension>;
-#ifdef RTK_USE_CUDA
   using DVFSequenceImageType =
-    typename std::conditional_t<std::is_same_v<VolumeSeriesType, CPUVolumeSeriesType>,
-                                itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension>,
-                                itk::CudaImage<VectorForDVF, VolumeSeriesType::ImageDimension>>;
-  using DVFImageType = typename std::conditional_t<std::is_same_v<VolumeSeriesType, CPUVolumeSeriesType>,
-                                                   itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension - 1>,
-                                                   itk::CudaImage<VectorForDVF, VolumeSeriesType::ImageDimension - 1>>;
+    typename VolumeSeriesType::template RebindImageType<VectorForDVF, VolumeSeriesType::ImageDimension>;
+  using DVFImageType =
+    typename VolumeSeriesType::template RebindImageType<VectorForDVF, VolumeSeriesType::ImageDimension - 1>;
+#ifdef RTK_USE_CUDA
   using WarpForwardProjectionImageFilterType =
     typename std::conditional_t<std::is_same_v<VolumeSeriesType, CPUVolumeSeriesType>,
                                 JosephForwardProjectionImageFilter<ProjectionStackType, ProjectionStackType>,
@@ -132,8 +129,6 @@ public:
                                 BackProjectionImageFilter<VolumeType, VolumeType>,
                                 CudaWarpBackProjectionImageFilter>;
 #else
-  using DVFSequenceImageType = itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension>;
-  using DVFImageType = itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension - 1>;
   using WarpForwardProjectionImageFilterType =
     JosephForwardProjectionImageFilter<ProjectionStackType, ProjectionStackType>;
   using WarpBackProjectionImageFilterType = BackProjectionImageFilter<VolumeType, VolumeType>;
