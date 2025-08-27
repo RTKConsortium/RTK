@@ -48,7 +48,7 @@ namespace rtk
  *
  * This filter implements the ConjugateGradient method.
  * ConjugateGradient attempts to find the f that minimizes
- * (1/2).|| sqrt(D) (Rf -p) ||_2^2 + (1/2).gamma.|| grad f ||_2^2
+ * (1/2).|| sqrt(D) (Rf -p) ||_2^2 + (1/2).gamma.|| grad f ||_2^2 + (1/2).Tikhonov || f ||_2^2
  * with R the forward projection operator,
  * p the measured projections, and D the displaced detector weighting operator.
  *
@@ -194,10 +194,13 @@ public:
   itkSetMacro(DisableDisplacedDetectorFilter, bool);
   itkGetMacro(DisableDisplacedDetectorFilter, bool);
 
-  /** If Regularized, perform laplacian-based regularization during
-   *  reconstruction (gamma is the strength of the regularization) */
+  /** If Regularized, perform Tikhonov regularization during
+   *  reconstruction: (1/2).Tikhonov || f ||_2^2 */
   itkSetMacro(Tikhonov, float);
   itkGetMacro(Tikhonov, float);
+
+  /** If Regularized, perform laplacian-based regularization during
+  *  reconstruction: (1/2).gamma.|| grad f ||_2^2 (gamma is the strength of the regularization) */
   itkSetMacro(Gamma, float);
   itkGetMacro(Gamma, float);
 
