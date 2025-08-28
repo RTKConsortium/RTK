@@ -171,7 +171,10 @@ def process(args_info: argparse.Namespace):
 
     admmFilter.Update()
 
-    itk.imwrite(admmFilter.GetOutput(), args_info.output)
+    writer = itk.ImageFileWriter[OutputImageType].New()
+    writer.SetFileName(args_info.output)
+    writer.SetInput(admmFilter.GetOutput())
+    writer.Update()
 
 
 def main(argv=None):
