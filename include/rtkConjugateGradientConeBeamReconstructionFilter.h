@@ -200,7 +200,8 @@ public:
   itkGetMacro(Tikhonov, float);
 
   /** If Regularized, perform laplacian-based regularization during
-  *  reconstruction: (1/2).gamma.|| grad f ||_2^2 (gamma is the strength of the regularization) */
+   *  reconstruction: (1/2).gamma.|| grad f ||_2^2 (gamma is the strength of
+   *  the regularization). */
   itkSetMacro(Gamma, float);
   itkGetMacro(Gamma, float);
 
