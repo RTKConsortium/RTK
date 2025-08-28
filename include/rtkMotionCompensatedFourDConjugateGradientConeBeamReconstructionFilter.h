@@ -87,11 +87,16 @@ public:
 
   using ForwardProjectionType = typename Superclass::ForwardProjectionType;
   using BackProjectionType = typename Superclass::BackProjectionType;
-
+#ifdef CudaCommon_VERSION_MAJOR
+  using DVFSequenceImageType =
+    typename VolumeSeriesType::template RebindImageType<VectorForDVF, VolumeSeriesType::ImageDimension>;
+  using DVFImageType =
+    typename VolumeSeriesType::template RebindImageType<VectorForDVF, VolumeSeriesType::ImageDimension - 1>;
+#else
   /** SFINAE type alias, depending on whether a CUDA image is used. */
   using CPUVolumeSeriesType =
     typename itk::Image<typename VolumeSeriesType::PixelType, VolumeSeriesType::ImageDimension>;
-#ifdef RTK_USE_CUDA
+#  ifdef RTK_USE_CUDA
   using DVFSequenceImageType =
     typename std::conditional_t<std::is_same_v<VolumeSeriesType, CPUVolumeSeriesType>,
                                 itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension>,
@@ -99,9 +104,10 @@ public:
   using DVFImageType = typename std::conditional_t<std::is_same_v<VolumeSeriesType, CPUVolumeSeriesType>,
                                                    itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension - 1>,
                                                    itk::CudaImage<VectorForDVF, VolumeSeriesType::ImageDimension - 1>>;
-#else
+#  else
   using DVFSequenceImageType = itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension>;
   using DVFImageType = itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension - 1>;
+#  endif
 #endif
 
   /** Typedefs of each subfilter of this composite filter */
