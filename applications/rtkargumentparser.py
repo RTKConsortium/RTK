@@ -14,7 +14,7 @@ class RTKHelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
             prefix = rtk.version() + "\n\nusage: "
         return super()._format_usage(usage, actions, groups, prefix)
 
-class RTKArgumentParser(rtk.RTKArgumentParser):
+class RTKArgumentParser(argparse.ArgumentParser):
     def __init__(self, description=None, **kwargs):
         super().__init__(description=description, **kwargs)
         self.formatter_class = RTKHelpFormatter
