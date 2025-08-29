@@ -67,7 +67,7 @@ main(int, char **)
   for (unsigned int noProj = 0; noProj < NumberOfProjectionImages; noProj++)
     geometry->AddProjection(600., 0., noProj * 360. / NumberOfProjectionImages);
 
-  std::string configFileName = std::string(RTK_DATA_ROOT) + std::string("/Input/Forbild/thorax.txt");
+  std::string configFileName = std::string(RTK_DATA_ROOT) + std::string("/Input/Forbild/Thorax");
 
   // Shepp Logan projections filter
   std::cout << "\n\n****** Projecting ******" << std::endl;
