@@ -45,3 +45,7 @@ def test_FirstReconstructionExample(tmp_path):
     out_img = tmp_path / "FirstReconstruction.mha"
     out_geom = tmp_path / "FirstReconstruction.xml"
     run_example(tmp_path, "FirstReconstruction/FirstReconstruction.py", out_img, out_geom)
+
+def test_ConjugateGradient(tmp_path, thorax_file):
+    out_img = tmp_path / "ConjugateGradient.mha"
+    run_example(tmp_path, "ConjugateGradient/ConjugateGradient.py", thorax_file, out_img)
