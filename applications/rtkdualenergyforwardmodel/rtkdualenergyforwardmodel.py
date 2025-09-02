@@ -6,9 +6,8 @@ from itk import RTK as rtk
 
 
 def build_parser():
-    parser = argparse.ArgumentParser(
-        description="Computes expected photon counts from incident spectrum, material attenuations, detector response and material-decomposed projections",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    parser = rtk.RTKArgumentParser(
+        description="Computes expected photon counts from incident spectrum, material attenuations, detector response and material-decomposed projections"
     )
 
     # General options

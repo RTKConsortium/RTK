@@ -6,9 +6,8 @@ from itk import RTK as rtk
 
 
 def build_parser():
-    parser = argparse.ArgumentParser(
-        description="Decomposes dual energy projections into materials",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    parser = rtk.RTKArgumentParser(
+        description="Decomposes dual energy projections into materials"
     )
 
     # General options
