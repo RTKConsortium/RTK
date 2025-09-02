@@ -16,9 +16,8 @@ def write_signal_to_text_file(signal_image, filename):
 
 
 def build_parser():
-    parser = argparse.ArgumentParser(
-        description="Extracts the phase from a signal.",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    parser = rtk.RTKArgumentParser(
+        description="Extracts the phase from a signal."
     )
 
     # General options
