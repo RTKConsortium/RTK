@@ -9,4 +9,4 @@ include(${ITK_USE_FILE})
 
 # Executable(s)
 add_executable(InlineReconstruction InlineReconstruction.cxx)
-target_link_libraries(AddNoise ${ITK_LIBRARIES})
+target_link_libraries(InlineReconstruction ${ITK_LIBRARIES})
