@@ -146,10 +146,13 @@ main()
         reader->SetFileNames(projectionFileNames);
 
         // Disconnect the pipeline to allow for proper reconstruction
+#ifdef RTK_USE_CUDA
+        CudaImageType::Pointer reconstructedImage = fdk->GetOutput();
+#else
         ImageType::Pointer reconstructedImage = fdk->GetOutput();
+#endif
         reconstructedImage->DisconnectPipeline();
-
-        fdk->SetInput(0, reconstructionSource->GetOutput());
+        fdk->SetInput(reconstructedImage);
       }
 
       // Extract and read the new projection
