@@ -84,7 +84,6 @@ main(int argc, char * argv[])
   conjugategradient->SetBackProjectionFilter(ConjugateGradientFilterType::BP_VOXELBASED);
 #endif
 
-  using VerboseIterationCommandType = rtk::VerboseIterationCommand<ConjugateGradientFilterType>;
   auto verboseIterationCommand = rtk::VerboseIterationCommand<ConjugateGradientFilterType>::New();
   conjugategradient->AddObserver(itk::AnyEvent(), verboseIterationCommand);
 
