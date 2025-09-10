@@ -33,6 +33,8 @@
 #  include "rtkCudaForwardProjectionImageFilter.h"
 #  include "rtkCudaBackProjectionImageFilter.h"
 #  include "rtkCudaRayCastBackProjectionImageFilter.h"
+#  include "rtkCudaWarpForwardProjectionImageFilter.h"
+#  include "rtkCudaWarpBackProjectionImageFilter.h"
 #endif
 
 #include <random>
@@ -74,16 +76,19 @@ public:
     FP_JOSEPH = 0,
     FP_CUDARAYCAST = 2,
     FP_JOSEPHATTENUATED = 3,
-    FP_ZENG = 4
+    FP_ZENG = 4,
+    FP_CUDAWARPRAYCAST = 5
   } ForwardProjectionType;
   typedef enum
   {
     BP_VOXELBASED = 0,
     BP_JOSEPH = 1,
     BP_CUDAVOXELBASED = 2,
+    BP_CUDAWARP = 3,
     BP_CUDARAYCAST = 4,
     BP_JOSEPHATTENUATED = 5,
-    BP_ZENG = 6
+    BP_ZENG = 6,
+
   } BackProjectionType;
 
   /** Typedefs of each subfilter of this composite filter */
@@ -156,6 +161,18 @@ public:
   GetSuperiorClipImage()
   {
     return static_cast<const TClipImageType *>(this->itk::ProcessObject::GetInput("SuperiorClipImage"));
+  }
+
+  /** Set/Get the displacement field (DVF) required by warp forward/back projectors. */
+  void
+  SetDisplacementField(const VolumeType * dvf)
+  {
+    this->SetInput("DisplacementField", const_cast<VolumeType *>(dvf));
+  }
+  typename VolumeType::ConstPointer
+  GetDisplacementField()
+  {
+    return static_cast<const VolumeType *>(this->itk::ProcessObject::GetInput("DisplacementField"));
   }
 
   /** Get / Set the sigma zero of the PSF. Default is 1.5417233052142099 */
@@ -363,6 +380,70 @@ protected:
   InstantiateCudaRayCastBackProjection()
   {
     itkGenericExceptionMacro(<< "CudaRayCastBackProjectionImageFilter only available with 3D CudaImage of float.");
+    return nullptr;
+  }
+
+
+  template <typename ImageType, EnableCudaScalarType<ImageType> * = nullptr>
+  ForwardProjectionPointerType
+  InstantiateCudaWarpForwardProjection()
+  {
+    ForwardProjectionPointerType fw;
+#ifdef RTK_USE_CUDA
+    fw = CudaWarpForwardProjectionImageFilter::New();
+    dynamic_cast<rtk::CudaWarpForwardProjectionImageFilter *>(fw.GetPointer())->SetStepSize(m_StepSize);
+    if (this->GetDisplacementField().IsNull())
+    {
+      itkExceptionMacro(
+        << "CudaWarpForwardProjectionImageFilter requires a displacement field. Call SetDisplacementField().");
+    }
+    else
+    {
+      dynamic_cast<rtk::CudaWarpForwardProjectionImageFilter *>(fw.GetPointer())
+        ->SetDisplacementField(reinterpret_cast<typename rtk::CudaWarpForwardProjectionImageFilter::DVFType *>(
+          const_cast<VolumeType *>(this->GetDisplacementField().GetPointer())));
+    }
+#endif
+    return fw;
+  }
+
+
+  template <typename ImageType, DisableCudaScalarType<ImageType> * = nullptr>
+  ForwardProjectionPointerType
+  InstantiateCudaWarpForwardProjection()
+  {
+    itkGenericExceptionMacro(<< "CudaWarpForwardProjectionImageFilter only available with 3D CudaImage of float.");
+    return nullptr;
+  }
+
+
+  template <typename ImageType, EnableCudaScalarType<ImageType> * = nullptr>
+  BackProjectionPointerType
+  InstantiateCudaWarpBackProjection()
+  {
+    BackProjectionPointerType bp;
+#ifdef RTK_USE_CUDA
+    bp = CudaWarpBackProjectionImageFilter::New();
+    if (this->GetDisplacementField().IsNull())
+    {
+      itkExceptionMacro(
+        << "CudaWarpBackProjectionImageFilter requires a displacement field. Call SetDisplacementField().");
+    }
+    else
+    {
+      dynamic_cast<rtk::CudaWarpBackProjectionImageFilter *>(bp.GetPointer())
+        ->SetDisplacementField(reinterpret_cast<typename rtk::CudaWarpBackProjectionImageFilter::DVFType *>(
+          const_cast<VolumeType *>(this->GetDisplacementField().GetPointer())));
+    }
+#endif
+    return bp;
+  }
+
+  template <typename ImageType, DisableCudaScalarType<ImageType> * = nullptr>
+  BackProjectionPointerType
+  InstantiateCudaWarpBackProjection()
+  {
+    itkGenericExceptionMacro(<< "CudaWarpBackProjectionImageFilter only available with 3D CudaImage of float.");
     return nullptr;
   }
 
