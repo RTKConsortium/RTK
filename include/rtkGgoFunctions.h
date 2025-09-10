@@ -331,6 +331,9 @@ SetBackProjectionFromGgo(const TArgsInfo & args_info, TIterativeReconstructionFi
       if (args_info.attenuationmap_given)
         recon->SetAttenuationMap(attenuationMap);
       break;
+    case (6): // bp_arg_CudaWarpBackProjection
+      recon->SetBackProjectionFilter(TIterativeReconstructionFilter::BP_CUDAWARP);
+      break;
   }
 }
 
@@ -399,6 +402,11 @@ SetForwardProjectionFromGgo(const TArgsInfo & args_info, TIterativeReconstructio
         recon->SetAlphaPSF(args_info.alphapsf_arg);
       if (args_info.attenuationmap_given)
         recon->SetAttenuationMap(attenuationMap);
+      break;
+    case (4): // fp_arg_CudaWarpRayCast
+      recon->SetForwardProjectionFilter(TIterativeReconstructionFilter::FP_CUDAWARPRAYCAST);
+      if (args_info.step_given)
+        recon->SetStepSize(args_info.step_arg);
       break;
   }
 }
