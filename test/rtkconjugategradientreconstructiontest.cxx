@@ -7,6 +7,7 @@
 #ifdef USE_CUDA
 #  include "itkCudaImage.h"
 #endif
+#include <itkCovariantVector.h>
 
 /**
  * \file rtkconjugategradientreconstructiontest.cxx
@@ -135,6 +136,26 @@ main(int, char **)
   conjugategradient->SetBackProjectionFilter(ConjugateGradientType::BP_CUDAVOXELBASED);
   conjugategradient->SetGamma(0);
   conjugategradient->SetTikhonov(0);
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(conjugategradient->Update());
+
+  CheckImageQuality<OutputImageType>(conjugategradient->GetOutput(), dsl->GetOutput(), 0.08, 23, 2.0);
+  std::cout << "\n\nTest PASSED! " << std::endl;
+
+  std::cout << "\n\n****** Case 3b: CUDA Warp Forward/Back Projectors ******" << std::endl;
+  using DVFPixelType = itk::CovariantVector<OutputPixelType, 3>;
+  using DVFImageType = itk::CudaImage<DVFPixelType, 3>;
+  auto dvfSource = rtk::ConstantImageSource<DVFImageType>::New();
+  dvfSource->SetOrigin(tomographySource->GetOutput()->GetOrigin());
+  dvfSource->SetSpacing(tomographySource->GetOutput()->GetSpacing());
+  dvfSource->SetSize(tomographySource->GetOutput()->GetLargestPossibleRegion().GetSize());
+  DVFPixelType dvf;
+  dvf.Fill(0.0);
+  dvfSource->SetConstant(dvf);
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(dvfSource->Update())
+
+  conjugategradient->SetDisplacementField(reinterpret_cast<const OutputImageType *>(dvfSource->GetOutput()));
+  conjugategradient->SetForwardProjectionFilter(ConjugateGradientType::FP_CUDAWARPRAYCAST);
+  conjugategradient->SetBackProjectionFilter(ConjugateGradientType::BP_CUDAWARP);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(conjugategradient->Update());
 
   CheckImageQuality<OutputImageType>(conjugategradient->GetOutput(), dsl->GetOutput(), 0.08, 23, 2.0);
