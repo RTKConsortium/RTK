@@ -219,11 +219,37 @@ public:
     itk::CovariantVector<typename VolumeSeriesType::ValueType, VolumeSeriesType::ImageDimension - 1>;
   using CovariantVectorForTemporalGradient = itk::CovariantVector<typename VolumeSeriesType::ValueType, 1>;
   using DVFVectorType = CovariantVectorForSpatialGradient;
-
-  /** SFINAE type alias, depending on whether a CUDA image is used. */
   using CPUVolumeSeriesType =
     typename itk::Image<typename VolumeSeriesType::PixelType, VolumeSeriesType::ImageDimension>;
-#ifdef RTK_USE_CUDA
+#ifdef CudaCommon_VERSION_MAJOR
+  // Image types rebound to CPU or CUDA automatically
+  using SpatialGradientImageType =
+    typename VolumeSeriesType::template RebindImageType<CovariantVectorForSpatialGradient,
+                                                        VolumeSeriesType::ImageDimension>;
+  using TemporalGradientImageType =
+    typename VolumeSeriesType::template RebindImageType<CovariantVectorForTemporalGradient,
+                                                        VolumeSeriesType::ImageDimension>;
+  // Replace explicit CPU/CUDA conditionals with backend-preserving rebinding
+  using DVFSequenceImageType =
+    typename VolumeSeriesType::template RebindImageType<DVFVectorType, VolumeSeriesType::ImageDimension>;
+  using DVFImageType =
+    typename VolumeSeriesType::template RebindImageType<DVFVectorType, VolumeSeriesType::ImageDimension - 1>;
+
+#  ifdef RTK_USE_CUDA
+  using AverageOutOfROIFilterType = std::conditional_t<std::is_same_v<VolumeSeriesType, CPUVolumeSeriesType>,
+                                                       AverageOutOfROIImageFilter<VolumeSeriesType, VolumeType>,
+                                                       CudaAverageOutOfROIImageFilter>;
+  using TemporalTVDenoisingFilterType =
+    std::conditional_t<std::is_same_v<VolumeSeriesType, CPUVolumeSeriesType>,
+                       TotalVariationDenoisingBPDQImageFilter<VolumeSeriesType, TemporalGradientImageType>,
+                       CudaLastDimensionTVDenoisingImageFilter>;
+#  else
+  using AverageOutOfROIFilterType = rtk::AverageOutOfROIImageFilter<VolumeSeriesType, VolumeType>;
+  using TemporalTVDenoisingFilterType =
+    rtk::TotalVariationDenoisingBPDQImageFilter<VolumeSeriesType, TemporalGradientImageType>;
+#  endif
+#else
+#  ifdef RTK_USE_CUDA
   using SpatialGradientImageType =
     typename std::conditional_t<std::is_same_v<VolumeSeriesType, CPUVolumeSeriesType>,
                                 itk::Image<CovariantVectorForSpatialGradient, VolumeSeriesType::ImageDimension>,
@@ -247,7 +273,7 @@ public:
     typename std::conditional_t<std::is_same_v<VolumeSeriesType, CPUVolumeSeriesType>,
                                 TotalVariationDenoisingBPDQImageFilter<VolumeSeriesType, TemporalGradientImageType>,
                                 CudaLastDimensionTVDenoisingImageFilter>;
-#else
+#  else
   using SpatialGradientImageType = itk::Image<CovariantVectorForSpatialGradient, VolumeSeriesType::ImageDimension>;
   using TemporalGradientImageType = itk::Image<CovariantVectorForTemporalGradient, VolumeSeriesType::ImageDimension>;
   using DVFSequenceImageType = itk::Image<DVFVectorType, VolumeSeriesType::ImageDimension>;
@@ -255,8 +281,8 @@ public:
   using AverageOutOfROIFilterType = AverageOutOfROIImageFilter<VolumeSeriesType, VolumeType>;
   using TemporalTVDenoisingFilterType =
     TotalVariationDenoisingBPDQImageFilter<VolumeSeriesType, TemporalGradientImageType>;
+#  endif
 #endif
-
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
 

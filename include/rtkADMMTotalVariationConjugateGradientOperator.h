@@ -31,10 +31,11 @@
 #include "rtkMultiplyByVectorImageFilter.h"
 #include "rtkThreeDCircularProjectionGeometry.h"
 
-#ifdef RTK_USE_CUDA
-#  include <itkCudaImage.h>
+#ifndef CudaCommon_VERSION_MAJOR
+#  ifdef RTK_USE_CUDA
+#    include <itkCudaImage.h>
+#  endif
 #endif
-
 namespace rtk
 {
 
@@ -131,14 +132,18 @@ public:
   using SubtractFilterType = itk::SubtractImageFilter<TOutputImage>;
 
   using VectorPixelType = itk::CovariantVector<typename TOutputImage::ValueType, TOutputImage::ImageDimension>;
-  using CPUImageType = itk::Image<typename TOutputImage::PixelType, TOutputImage::ImageDimension>;
-#ifdef RTK_USE_CUDA
-  typedef
-    typename std::conditional<std::is_same<TOutputImage, CPUImageType>::value,
-                              itk::Image<VectorPixelType, TOutputImage::ImageDimension>,
-                              itk::CudaImage<VectorPixelType, TOutputImage::ImageDimension>>::type GradientImageType;
+#ifdef CudaCommon_VERSION_MAJOR
+  using GradientImageType =
+    typename TOutputImage::template RebindImageType<VectorPixelType, TOutputImage::ImageDimension>;
 #else
+  using CPUImageType = itk::Image<typename TOutputImage::PixelType, TOutputImage::ImageDimension>;
+#  ifdef RTK_USE_CUDA
+  using GradientImageType = typename std::conditional_t<std::is_same_v<TOutputImage, CPUImageType>,
+                                                        itk::Image<VectorPixelType, TOutputImage::ImageDimension>,
+                                                        itk::CudaImage<VectorPixelType, TOutputImage::ImageDimension>>;
+#  else
   using GradientImageType = itk::Image<VectorPixelType, TOutputImage::ImageDimension>;
+#  endif
 #endif
 
   using GradientFilterType = ForwardDifferenceGradientImageFilter<TOutputImage,
