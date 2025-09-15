@@ -16,7 +16,7 @@ option "hann"      - "Cut frequency for hann window in ]0,1] (0.0 disables it)" 
 option "hannY"     - "Cut frequency for hann window in ]0,1] (0.0 disables it)"  double                       no   default="0.0"
 
 section "Projectors"
-option "fp"    f "Forward projection method" values="Joseph","CudaRayCast","JosephAttenuated","Zeng" enum no default="Joseph"
+option "fp"    f "Forward projection method" values="Joseph","CudaRayCast","JosephAttenuated","Zeng","CudaWarpRayCast" enum no default="Joseph"
 option "attenuationmap" - "Attenuation map relative to the volume to perfom the attenuation correction"   string  no
 option "sigmazero" - "PSF value at a distance of 0 meter of the detector"   double  no
 option "alphapsf" - "Slope of the PSF against the detector distance"   double  no
