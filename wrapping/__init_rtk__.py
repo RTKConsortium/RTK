@@ -39,6 +39,7 @@ _app_modules = [
     "rtkfdk",
     "rtkfieldofview",
     "rtkforwardprojections",
+    "rtkgaincorrection",
     "rtkorageometry",
     "rtkprojectgeometricphantom",
     "rtkprojections",
