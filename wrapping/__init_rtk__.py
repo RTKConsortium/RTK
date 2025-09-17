@@ -42,6 +42,7 @@ _app_modules = [
     "rtkgaincorrection",
     "rtki0estimation",
     "rtkimagxgeometry",
+    "rtklagcorrection",
     "rtkorageometry",
     "rtkprojectgeometricphantom",
     "rtkprojections",
