@@ -1,0 +1,16 @@
+if(RTK_USE_CUDA)
+
+  # Ensure wrapping knows about itk::CudaImage
+  itk_wrap_include(itkCudaImage.h)
+
+  # Register the concrete specialization of itk::CudaInPlaceImageFilter used by the CUDA LagCorrection
+  itk_wrap_class("itk::CudaInPlaceImageFilter" POINTER)
+
+    itk_wrap_template("CIUS3CIUS3LAGCIUS3"
+      "itk::CudaImage<unsigned short, 3>, itk::CudaImage<unsigned short, 3>, rtk::LagCorrectionImageFilter< itk::CudaImage<unsigned short, 3>, 4 >")
+
+  itk_end_wrap_class()
+
+  itk_wrap_simple_class("rtk::CudaLagCorrectionImageFilter" POINTER)
+
+endif()
