@@ -20,6 +20,8 @@ if(RTK_USE_CUDA)
 
     itk_wrap_template("CIF3CIF3PSCIF3"
       "itk::CudaImage<float, 3>, itk::CudaImage<float, 3>, rtk::ParkerShortScanImageFilter< itk::CudaImage<float, 3>>")
+    itk_wrap_template("CIUS3CIUS3LAGCIUS3"
+      "itk::CudaImage<unsigned short, 3>, itk::CudaImage<unsigned short, 3>, rtk::LagCorrectionImageFilter< itk::CudaImage<unsigned short, 3>, 4 >")
   itk_end_wrap_class()
 
   itk_wrap_class("itk::CudaImageToImageFilter" POINTER)
