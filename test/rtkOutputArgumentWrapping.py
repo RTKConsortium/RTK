@@ -2,6 +2,7 @@ import itk
 from itk import RTK as rtk
 import math
 
+
 # Test for rtkConvexShape::IsIntersectedByRay
 def test_IsIntersectedByRay():
     q = rtk.QuadricShape.New()
@@ -11,7 +12,7 @@ def test_IsIntersectedByRay():
     q.SetA(1)
     q.SetB(1)
     q.SetC(1)
-    q.SetJ(-(radius ** 2))
+    q.SetJ(-(radius**2))
 
     # Ray starting outside sphere aiming through center should intersect.
     res = q.IsIntersectedByRay([-20, 0, 0], [1, 0, 0])
@@ -65,6 +66,7 @@ def test_ComputeFOVRadius():
     # Allow small deviation (<2%) due to internal computations
     rel_err = abs(rinf - expected) / expected
     assert rel_err < 0.02
+
 
 if __name__ == "__main__":
     test_IsIntersectedByRay()

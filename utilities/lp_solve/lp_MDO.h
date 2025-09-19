@@ -5,14 +5,15 @@
 
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
-int __WINAPI getMDO(lprec *lp, MYBOOL *usedpos, int *colorder, int *size, MYBOOL symmetric);
+  int __WINAPI
+  getMDO(lprec * lp, MYBOOL * usedpos, int * colorder, int * size, MYBOOL symmetric);
 
 #ifdef __cplusplus
- }
+}
 #endif
 
 #endif /* HEADER_MDO */
-

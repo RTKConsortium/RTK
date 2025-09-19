@@ -4,30 +4,36 @@
 #include "lp_types.h"
 
 /* For MPS file reading and writing */
-#define ROWNAMEMASK          "R%d"
-#define ROWNAMEMASK2         "r%d"
-#define COLNAMEMASK          "C%d"
-#define COLNAMEMASK2         "c%d"
+#define ROWNAMEMASK "R%d"
+#define ROWNAMEMASK2 "r%d"
+#define COLNAMEMASK "C%d"
+#define COLNAMEMASK2 "c%d"
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
-/* Read an MPS file */
-MYBOOL MPS_readfile(lprec **newlp, const char *filename, int typeMPS, int verbose);
-MYBOOL __WINAPI MPS_readhandle(lprec **newlp, FILE *filehandle, int typeMPS, int verbose);
+  /* Read an MPS file */
+  MYBOOL
+  MPS_readfile(lprec ** newlp, const char * filename, int typeMPS, int verbose);
+  MYBOOL __WINAPI
+  MPS_readhandle(lprec ** newlp, FILE * filehandle, int typeMPS, int verbose);
 
-/* Write a MPS file to output */
-MYBOOL MPS_writefile(lprec *lp, int typeMPS, const char *filename);
-MYBOOL MPS_writehandle(lprec *lp, int typeMPS, FILE *output);
+  /* Write a MPS file to output */
+  MYBOOL
+  MPS_writefile(lprec * lp, int typeMPS, const char * filename);
+  MYBOOL
+  MPS_writehandle(lprec * lp, int typeMPS, FILE * output);
 
-/* Read and write BAS files */
-MYBOOL MPS_readBAS(lprec *lp, int typeMPS, const char *filename, char *info);
-MYBOOL MPS_writeBAS(lprec *lp, int typeMPS, const char *filename);
+  /* Read and write BAS files */
+  MYBOOL
+  MPS_readBAS(lprec * lp, int typeMPS, const char * filename, char * info);
+  MYBOOL
+  MPS_writeBAS(lprec * lp, int typeMPS, const char * filename);
 
 #ifdef __cplusplus
- }
+}
 #endif
 
 #endif /* HEADER_lp_MPS */
-

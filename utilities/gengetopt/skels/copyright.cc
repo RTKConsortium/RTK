@@ -7,13 +7,13 @@
 #include "copyright.h"
 
 void
-copyright_gen_class::generate_copyright(ostream &stream, unsigned int indent)
+copyright_gen_class::generate_copyright(ostream & stream, unsigned int indent)
 {
-  string indent_str (indent, ' ');
+  string indent_str(indent, ' ');
   indent = 0;
 
   stream << "Copyright (C) ";
-  generate_string (year, stream, indent + indent_str.length ());
+  generate_string(year, stream, indent + indent_str.length());
   stream << "  Free Software Foundation Inc.";
   stream << "\n";
   stream << indent_str;

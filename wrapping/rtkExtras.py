@@ -46,12 +46,12 @@ class PercentageProgressCommand:
         print()  # Print newline when execution ends
 
 
-
 def make_application_func(app_name):
     """
     Factory: returns a function that runs the RTK application `app_name`
     with either Python-style kwargs or a single CLI-style string.
     """
+
     def app_func(*args, **kwargs):
         app_module = importlib.import_module(f"itk.{app_name}")
         parser = app_module.build_parser()
@@ -82,7 +82,7 @@ def make_application_func(app_name):
     description = (_parser.description or "").rstrip()
     examples = _parser.build_usage_examples(app_name)
     options = _parser.format_help()
-    idx = options.lower().find('options:')
+    idx = options.lower().find("options:")
     opt_text = options[idx:].strip()
     parts = [rtk.version(), description, examples, opt_text]
     app_func.__doc__ = "\n\n".join(parts)

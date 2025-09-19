@@ -35,46 +35,47 @@
 
 /* Tokens.  */
 #ifndef YYTOKENTYPE
-# define YYTOKENTYPE
-   /* Put the tokens into the symbol table, so that GDB and other debuggers
-      know about them.  */
-   enum yytokentype {
-     TOK_PACKAGE = 258,
-     TOK_VERSION = 259,
-     TOK_OPTION = 260,
-     TOK_DEFGROUP = 261,
-     TOK_GROUPOPTION = 262,
-     TOK_DEFMODE = 263,
-     TOK_MODEOPTION = 264,
-     TOK_YES = 265,
-     TOK_NO = 266,
-     TOK_ON = 267,
-     TOK_OFF = 268,
-     TOK_FLAG = 269,
-     TOK_PURPOSE = 270,
-     TOK_DESCRIPTION = 271,
-     TOK_USAGE = 272,
-     TOK_DEFAULT = 273,
-     TOK_GROUP = 274,
-     TOK_GROUPDESC = 275,
-     TOK_MODE = 276,
-     TOK_MODEDESC = 277,
-     TOK_MULTIPLE = 278,
-     TOK_ARGOPTIONAL = 279,
-     TOK_TYPESTR = 280,
-     TOK_SECTION = 281,
-     TOK_DETAILS = 282,
-     TOK_SECTIONDESC = 283,
-     TOK_TEXT = 284,
-     TOK_ARGS = 285,
-     TOK_VALUES = 286,
-     TOK_HIDDEN = 287,
-     TOK_DEPENDON = 288,
-     TOK_STRING = 289,
-     TOK_CHAR = 290,
-     TOK_ARGTYPE = 291,
-     TOK_SIZE = 292
-   };
+#  define YYTOKENTYPE
+/* Put the tokens into the symbol table, so that GDB and other debuggers
+   know about them.  */
+enum yytokentype
+{
+  TOK_PACKAGE = 258,
+  TOK_VERSION = 259,
+  TOK_OPTION = 260,
+  TOK_DEFGROUP = 261,
+  TOK_GROUPOPTION = 262,
+  TOK_DEFMODE = 263,
+  TOK_MODEOPTION = 264,
+  TOK_YES = 265,
+  TOK_NO = 266,
+  TOK_ON = 267,
+  TOK_OFF = 268,
+  TOK_FLAG = 269,
+  TOK_PURPOSE = 270,
+  TOK_DESCRIPTION = 271,
+  TOK_USAGE = 272,
+  TOK_DEFAULT = 273,
+  TOK_GROUP = 274,
+  TOK_GROUPDESC = 275,
+  TOK_MODE = 276,
+  TOK_MODEDESC = 277,
+  TOK_MULTIPLE = 278,
+  TOK_ARGOPTIONAL = 279,
+  TOK_TYPESTR = 280,
+  TOK_SECTION = 281,
+  TOK_DETAILS = 282,
+  TOK_SECTIONDESC = 283,
+  TOK_TEXT = 284,
+  TOK_ARGS = 285,
+  TOK_VALUES = 286,
+  TOK_HIDDEN = 287,
+  TOK_DEPENDON = 288,
+  TOK_STRING = 289,
+  TOK_CHAR = 290,
+  TOK_ARGTYPE = 291,
+  TOK_SIZE = 292
+};
 #endif
 /* Tokens.  */
 #define TOK_PACKAGE 258
@@ -114,36 +115,33 @@
 #define TOK_SIZE 292
 
 
-
-
-#if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
+#if !defined YYSTYPE && !defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE
 {
 
 /* Line 1676 of yacc.c  */
-#line 148 "../../src/parser.yy"
+#  line 148 "../../src/parser.yy"
 
-    char   *str;
-    char    chr;
-    int	    argtype;
-    int	    boolean;
-    class AcceptedValues *ValueList;
-    struct gengetopt_option *gengetopt_option;
-    struct multiple_size *multiple_size;
-
+  char *                    str;
+  char                      chr;
+  int                       argtype;
+  int                       boolean;
+  class AcceptedValues *    ValueList;
+  struct gengetopt_option * gengetopt_option;
+  struct multiple_size *    multiple_size;
 
 
 /* Line 1676 of yacc.c  */
-#line 138 "../../src/parser.h"
+#  line 138 "../../src/parser.h"
 } YYSTYPE;
-# define YYSTYPE_IS_TRIVIAL 1
-# define yystype YYSTYPE /* obsolescent; will be withdrawn */
-# define YYSTYPE_IS_DECLARED 1
+#  define YYSTYPE_IS_TRIVIAL 1
+#  define yystype YYSTYPE /* obsolescent; will be withdrawn */
+#  define YYSTYPE_IS_DECLARED 1
 #endif
 
 extern YYSTYPE yylval;
 
-#if ! defined YYLTYPE && ! defined YYLTYPE_IS_DECLARED
+#if !defined YYLTYPE && !defined YYLTYPE_IS_DECLARED
 typedef struct YYLTYPE
 {
   int first_line;
@@ -151,10 +149,9 @@ typedef struct YYLTYPE
   int last_line;
   int last_column;
 } YYLTYPE;
-# define yyltype YYLTYPE /* obsolescent; will be withdrawn */
-# define YYLTYPE_IS_DECLARED 1
-# define YYLTYPE_IS_TRIVIAL 1
+#  define yyltype YYLTYPE /* obsolescent; will be withdrawn */
+#  define YYLTYPE_IS_DECLARED 1
+#  define YYLTYPE_IS_TRIVIAL 1
 #endif
 
 extern YYLTYPE yylloc;
-

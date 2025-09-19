@@ -20,16 +20,15 @@
 
 #include "argsdef.h"
 
-const char * arg_names [] = { (const char*)0, (const char*)0, "STRING", "INT",
-        "SHORT", "LONG", "FLOAT", "DOUBLE", "LONGDOUBLE", "LONGLONG", "ENUM" };
+const char * arg_names[] = { (const char *)0, (const char *)0, "STRING",     "INT",      "SHORT", "LONG",
+                             "FLOAT",         "DOUBLE",        "LONGDOUBLE", "LONGLONG", "ENUM" };
 
-const char * arg_type_constants [] = { "ARG_NO", "ARG_FLAG", "ARG_STRING",
-        "ARG_INT", "ARG_SHORT", "ARG_LONG", "ARG_FLOAT", "ARG_DOUBLE",
-        "ARG_LONGDOUBLE", "ARG_LONGLONG", "ARG_ENUM" };
+const char * arg_type_constants[] = { "ARG_NO",         "ARG_FLAG",     "ARG_STRING", "ARG_INT",
+                                      "ARG_SHORT",      "ARG_LONG",     "ARG_FLOAT",  "ARG_DOUBLE",
+                                      "ARG_LONGDOUBLE", "ARG_LONGLONG", "ARG_ENUM" };
 
-const char * arg_types [] = { (const char*)0, "int", "char *", "int", "short",
-        "long", "float", "double", "long double", "long long int", "enum" };
+const char * arg_types[] = { (const char *)0, "int",    "char *",      "int",           "short", "long",
+                             "float",         "double", "long double", "long long int", "enum" };
 
-const char * arg_types_names [] = { (const char*)0, "int", "string", "int",
-        "short", "long", "float", "double", "longdouble", "longlong", "int" };
-
+const char * arg_types_names[] = { (const char *)0, "int",    "string",     "int",      "short", "long",
+                                   "float",         "double", "longdouble", "longlong", "int" };

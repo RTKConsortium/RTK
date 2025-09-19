@@ -49,7 +49,7 @@ itk.imwrite(weights, "weights.mha")
 weights = itk.array_from_image(weights).flatten()
 
 # Create reconstructed images
-wpcoeffs = np.zeros((order + 1))
+wpcoeffs = np.zeros(order + 1)
 fdks = [None] * (order + 1)
 for o in range(0, order + 1):
     wpcoeffs[o - 1] = 0.0
@@ -64,7 +64,7 @@ for o in range(0, order + 1):
     fdks[o] = itk.array_from_image(fdk).flatten()
 
 # Create and solve the linear system of equation B.c= a to find the coeffs c
-a = np.zeros((order + 1))
+a = np.zeros(order + 1)
 B = np.zeros((order + 1, order + 1))
 for i in range(0, order + 1):
     a[i] = np.sum(weights * fdks[i] * template)

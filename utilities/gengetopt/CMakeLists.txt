@@ -1,26 +1,30 @@
 # Gengetopt: https://www.gnu.org/software/gengetopt/
 
-ADD_DEFINITIONS(-DPACKAGE=\"gengetopt\")
-ADD_DEFINITIONS(-DVERSION=\"2.22.4\")
-ADD_DEFINITIONS(-DHAVE_SSTREAM)
-ADD_DEFINITIONS(-DHAVE_NAMESPACES)
+add_definitions(-DPACKAGE=\"gengetopt\")
+add_definitions(-DVERSION=\"2.22.4\")
+add_definitions(-DHAVE_SSTREAM)
+add_definitions(-DHAVE_NAMESPACES)
 
 rtk_module_warnings_disable(C CXX)
 
 include(CheckCXXCompilerFlag)
-CHECK_CXX_COMPILER_FLAG(-fno-var-tracking-assignments HAS_NO_VAR_TRACKING_ASSIGNMENTS)
-if (HAS_NO_VAR_TRACKING_ASSIGNMENTS)
+check_cxx_compiler_flag(
+  -fno-var-tracking-assignments
+  HAS_NO_VAR_TRACKING_ASSIGNMENTS
+)
+if(HAS_NO_VAR_TRACKING_ASSIGNMENTS)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-var-tracking-assignments")
 endif()
 
 # MSVC specific issues
-ADD_DEFINITIONS(-DHAVE_STRING_H)
-IF(MSVC)
-  ADD_DEFINITIONS(-DYY_NO_UNISTD_H)
-  ADD_DEFINITIONS(-Disatty=!)
-ENDIF(MSVC)
+add_definitions(-DHAVE_STRING_H)
+if(MSVC)
+  add_definitions(-DYY_NO_UNISTD_H)
+  add_definitions(-Disatty=!)
+endif(MSVC)
 
-ADD_EXECUTABLE(gengetopt
+add_executable(
+  gengetopt
   ./cmdline.c
   ./ggos.cpp
   ./scanner.cc
@@ -64,8 +68,9 @@ ADD_EXECUTABLE(gengetopt
   ./acceptedvalues.cpp
   ./gengetopt.cc
   ./yyerror.cc
-  ./parser.cc)
+  ./parser.cc
+)
 
-INCLUDE_DIRECTORIES(.)
-INCLUDE_DIRECTORIES(skels)
+include_directories(.)
+include_directories(skels)
 #INCLUDE_DIRECTORIES(includes)

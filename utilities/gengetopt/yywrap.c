@@ -10,9 +10,8 @@ This file is licensed to you under the license specified in the included file
 #include <stdio.h>
 
 int
-yywrap ()
+yywrap()
 {
   /* fprintf (stderr, "yywrap() called.\n"); */
   return 1;
 }
-

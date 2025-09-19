@@ -67,76 +67,85 @@
    27 Jun 2004: (PEG) Allow write only if nout .gt. 0.
    ================================================================== */
 #ifdef UseOld_LU6CHK_20040510
-void LU6CHK(LUSOLrec *LUSOL, int MODE, int LENA2, int *INFORM)
+void
+LU6CHK(LUSOLrec * LUSOL, int MODE, int LENA2, int * INFORM)
 {
   MYBOOL KEEPLU;
   int    I, J, JUMIN, K, L, L1, L2, LENL, LPRINT, NDEFIC, NRANK;
   REAL   AIJ, DIAG, DUMAX, DUMIN, LMAX, UMAX, UTOL1, UTOL2;
 
   LPRINT = LUSOL->luparm[LUSOL_IP_PRINTLEVEL];
-  KEEPLU = (MYBOOL) (LUSOL->luparm[LUSOL_IP_KEEPLU]!=0);
+  KEEPLU = (MYBOOL)(LUSOL->luparm[LUSOL_IP_KEEPLU] != 0);
   NRANK = LUSOL->luparm[LUSOL_IP_RANK_U];
-  LENL  = LUSOL->luparm[LUSOL_IP_NONZEROS_L];
+  LENL = LUSOL->luparm[LUSOL_IP_NONZEROS_L];
   UTOL1 = LUSOL->parmlu[LUSOL_RP_SMALLDIAG_U];
   UTOL2 = LUSOL->parmlu[LUSOL_RP_EPSDIAG_U];
   *INFORM = LUSOL_INFORM_LUSUCCESS;
-  LMAX  = ZERO;
-  UMAX  = ZERO;
-  LUSOL->luparm[LUSOL_IP_SINGULARITIES]  = 0;
-  LUSOL->luparm[LUSOL_IP_SINGULARINDEX]  = 0;
+  LMAX = ZERO;
+  UMAX = ZERO;
+  LUSOL->luparm[LUSOL_IP_SINGULARITIES] = 0;
+  LUSOL->luparm[LUSOL_IP_SINGULARINDEX] = 0;
   JUMIN = 0;
   DUMAX = ZERO;
   DUMIN = LUSOL_BIGNUM;
 
-#ifdef LUSOLFastClear
-  MEMCLEAR(LUSOL->w+1, LUSOL->n);
-#else
-  for(I = 1; I <= LUSOL->n; I++)
+#  ifdef LUSOLFastClear
+  MEMCLEAR(LUSOL->w + 1, LUSOL->n);
+#  else
+  for (I = 1; I <= LUSOL->n; I++)
     LUSOL->w[I] = ZERO;
-#endif
+#  endif
 
-  if(KEEPLU) {
-/*     --------------------------------------------------------------
-        Find  Lmax.
-       -------------------------------------------------------------- */
-    for(L = (LENA2+1)-LENL; L <= LENA2; L++) {
-      SETMAX(LMAX,fabs(LUSOL->a[L]));
+  if (KEEPLU)
+  {
+    /*     --------------------------------------------------------------
+            Find  Lmax.
+           -------------------------------------------------------------- */
+    for (L = (LENA2 + 1) - LENL; L <= LENA2; L++)
+    {
+      SETMAX(LMAX, fabs(LUSOL->a[L]));
     }
-/*     --------------------------------------------------------------
-        Find Umax and set w(j) = maximum element in j-th column of U.
-       -------------------------------------------------------------- */
-    for(K = 1; K <= NRANK; K++) {
+    /*     --------------------------------------------------------------
+            Find Umax and set w(j) = maximum element in j-th column of U.
+           -------------------------------------------------------------- */
+    for (K = 1; K <= NRANK; K++)
+    {
       I = LUSOL->ip[K];
       L1 = LUSOL->locr[I];
-      L2 = (L1+LUSOL->lenr[I])-1;
-      for(L = L1; L <= L2; L++) {
+      L2 = (L1 + LUSOL->lenr[I]) - 1;
+      for (L = L1; L <= L2; L++)
+      {
         J = LUSOL->indr[L];
         AIJ = fabs(LUSOL->a[L]);
-        SETMAX(LUSOL->w[J],AIJ);
-        SETMAX(UMAX,AIJ);
+        SETMAX(LUSOL->w[J], AIJ);
+        SETMAX(UMAX, AIJ);
       }
     }
-/*     --------------------------------------------------------------
-        Negate w(j) if the corresponding diagonal of U is
-        too small in absolute terms or relative to the other elements
-        in the same column of  U.
-        Also find DUmax and DUmin, the extreme diagonals of U.
-       -------------------------------------------------------------- */
-    for(K = 1; K <= LUSOL->n; K++) {
+    /*     --------------------------------------------------------------
+            Negate w(j) if the corresponding diagonal of U is
+            too small in absolute terms or relative to the other elements
+            in the same column of  U.
+            Also find DUmax and DUmin, the extreme diagonals of U.
+           -------------------------------------------------------------- */
+    for (K = 1; K <= LUSOL->n; K++)
+    {
       J = LUSOL->iq[K];
-      if(K>NRANK)
+      if (K > NRANK)
         DIAG = ZERO;
-      else {
+      else
+      {
         I = LUSOL->ip[K];
         L1 = LUSOL->locr[I];
         DIAG = fabs(LUSOL->a[L1]);
-        SETMAX(DUMAX,DIAG);
-        if(DUMIN>DIAG) {
+        SETMAX(DUMAX, DIAG);
+        if (DUMIN > DIAG)
+        {
           DUMIN = DIAG;
           JUMIN = J;
         }
       }
-      if((DIAG<=UTOL1) || (DIAG<=UTOL2*LUSOL->w[J])) {
+      if ((DIAG <= UTOL1) || (DIAG <= UTOL2 * LUSOL->w[J]))
+      {
         LUSOL_addSingularity(LUSOL, J, INFORM);
         LUSOL->w[J] = -LUSOL->w[J];
       }
@@ -144,196 +153,231 @@ void LU6CHK(LUSOLrec *LUSOL, int MODE, int LENA2, int *INFORM)
     LUSOL->parmlu[LUSOL_RP_MAXMULT_L] = LMAX;
     LUSOL->parmlu[LUSOL_RP_MAXELEM_U] = UMAX;
   }
-   else {
-/*     --------------------------------------------------------------
-        keepLU = 0.
-        Only diag(U) is stored.  Set w(*) accordingly.
-       -------------------------------------------------------------- */
-    for(K = 1; K <= LUSOL->n; K++) {
+  else
+  {
+    /*     --------------------------------------------------------------
+            keepLU = 0.
+            Only diag(U) is stored.  Set w(*) accordingly.
+           -------------------------------------------------------------- */
+    for (K = 1; K <= LUSOL->n; K++)
+    {
       J = LUSOL->iq[K];
-      if(K>NRANK)
+      if (K > NRANK)
         DIAG = ZERO;
-      else {
-/* !             diag   = abs( diagU(k) ) ! 06 May 2002: Diags are in natural order */
+      else
+      {
+        /* !             diag   = abs( diagU(k) ) ! 06 May 2002: Diags are in natural order */
         DIAG = fabs(LUSOL->diagU[J]);
         LUSOL->w[J] = DIAG;
-        SETMAX(DUMAX,DIAG);
-        if(DUMIN>DIAG) {
+        SETMAX(DUMAX, DIAG);
+        if (DUMIN > DIAG)
+        {
           DUMIN = DIAG;
           JUMIN = J;
         }
       }
-      if(DIAG<=UTOL1) {
+      if (DIAG <= UTOL1)
+      {
         LUSOL_addSingularity(LUSOL, J, INFORM);
         LUSOL->w[J] = -LUSOL->w[J];
       }
     }
   }
-/*     -----------------------------------------------------------------
-        Set output parameters.
-       ----------------------------------------------------------------- */
-  if(JUMIN==0)
+  /*     -----------------------------------------------------------------
+          Set output parameters.
+         ----------------------------------------------------------------- */
+  if (JUMIN == 0)
     DUMIN = ZERO;
   LUSOL->luparm[LUSOL_IP_COLINDEX_DUMIN] = JUMIN;
-  LUSOL->parmlu[LUSOL_RP_MAXELEM_DIAGU]  = DUMAX;
-  LUSOL->parmlu[LUSOL_RP_MINELEM_DIAGU]  = DUMIN;
-/*      The matrix has been judged singular. */
-  if(LUSOL->luparm[LUSOL_IP_SINGULARITIES]>0) {
+  LUSOL->parmlu[LUSOL_RP_MAXELEM_DIAGU] = DUMAX;
+  LUSOL->parmlu[LUSOL_RP_MINELEM_DIAGU] = DUMIN;
+  /*      The matrix has been judged singular. */
+  if (LUSOL->luparm[LUSOL_IP_SINGULARITIES] > 0)
+  {
     *INFORM = LUSOL_INFORM_LUSINGULAR;
-    NDEFIC = LUSOL->n-NRANK;
-    if(LPRINT>=LUSOL_MSG_SINGULARITY) {
-      LUSOL_report(LUSOL, 0, "Singular(m%cn)  rank:%9d  n-rank:%8d  nsing:%9d\n",
-                             relationChar(LUSOL->m, LUSOL->n),NRANK,NDEFIC,
-                             LUSOL->luparm[LUSOL_IP_SINGULARITIES]);
+    NDEFIC = LUSOL->n - NRANK;
+    if (LPRINT >= LUSOL_MSG_SINGULARITY)
+    {
+      LUSOL_report(LUSOL,
+                   0,
+                   "Singular(m%cn)  rank:%9d  n-rank:%8d  nsing:%9d\n",
+                   relationChar(LUSOL->m, LUSOL->n),
+                   NRANK,
+                   NDEFIC,
+                   LUSOL->luparm[LUSOL_IP_SINGULARITIES]);
     }
   }
-/*      Exit. */
+  /*      Exit. */
   LUSOL->luparm[LUSOL_IP_INFORM] = *INFORM;
 }
 #else
-void LU6CHK(LUSOLrec *LUSOL, int MODE, int LENA2, int *INFORM)
+void
+LU6CHK(LUSOLrec * LUSOL, int MODE, int LENA2, int * INFORM)
 {
   MYBOOL KEEPLU, TRP;
   int    I, J, JUMIN, K, L, L1, L2, LENL, LDIAGU, LPRINT, NDEFIC, NRANK;
   REAL   AIJ, DIAG, DUMAX, DUMIN, LMAX, UMAX, UTOL1, UTOL2;
 
   LPRINT = LUSOL->luparm[LUSOL_IP_PRINTLEVEL];
-  KEEPLU = (MYBOOL) (LUSOL->luparm[LUSOL_IP_KEEPLU] != 0);
-  TRP    = (MYBOOL) (LUSOL->luparm[LUSOL_IP_PIVOTTYPE] == LUSOL_PIVMOD_TRP);
-  NRANK  = LUSOL->luparm[LUSOL_IP_RANK_U];
-  LENL   = LUSOL->luparm[LUSOL_IP_NONZEROS_L];
-  UTOL1  = LUSOL->parmlu[LUSOL_RP_SMALLDIAG_U];
-  UTOL2  = LUSOL->parmlu[LUSOL_RP_EPSDIAG_U];
+  KEEPLU = (MYBOOL)(LUSOL->luparm[LUSOL_IP_KEEPLU] != 0);
+  TRP = (MYBOOL)(LUSOL->luparm[LUSOL_IP_PIVOTTYPE] == LUSOL_PIVMOD_TRP);
+  NRANK = LUSOL->luparm[LUSOL_IP_RANK_U];
+  LENL = LUSOL->luparm[LUSOL_IP_NONZEROS_L];
+  UTOL1 = LUSOL->parmlu[LUSOL_RP_SMALLDIAG_U];
+  UTOL2 = LUSOL->parmlu[LUSOL_RP_EPSDIAG_U];
   *INFORM = LUSOL_INFORM_LUSUCCESS;
-  LMAX   = ZERO;
-  UMAX   = ZERO;
+  LMAX = ZERO;
+  UMAX = ZERO;
   LUSOL->luparm[LUSOL_IP_SINGULARITIES] = 0;
   LUSOL->luparm[LUSOL_IP_SINGULARINDEX] = 0;
-  JUMIN  = 0;
-  DUMAX  = ZERO;
-  DUMIN  = LUSOL_BIGNUM;
+  JUMIN = 0;
+  DUMAX = ZERO;
+  DUMIN = LUSOL_BIGNUM;
 
-#ifdef LUSOLFastClear
-  MEMCLEAR(LUSOL->w+1, LUSOL->n);
-#else
-  for(I = 1; I <= LUSOL->n; I++)
+#  ifdef LUSOLFastClear
+  MEMCLEAR(LUSOL->w + 1, LUSOL->n);
+#  else
+  for (I = 1; I <= LUSOL->n; I++)
     LUSOL->w[I] = ZERO;
-#endif
+#  endif
 
-  if(KEEPLU) {
-/*     --------------------------------------------------------------
-        Find  Lmax.
-       -------------------------------------------------------------- */
-    for(L = (LENA2+1)-LENL; L <= LENA2; L++) {
-      SETMAX(LMAX,fabs(LUSOL->a[L]));
-     }
-/*     --------------------------------------------------------------
-        Find Umax and set w(j) = maximum element in j-th column of U.
-       -------------------------------------------------------------- */
-    for(K = 1; K <= NRANK; K++) {
+  if (KEEPLU)
+  {
+    /*     --------------------------------------------------------------
+            Find  Lmax.
+           -------------------------------------------------------------- */
+    for (L = (LENA2 + 1) - LENL; L <= LENA2; L++)
+    {
+      SETMAX(LMAX, fabs(LUSOL->a[L]));
+    }
+    /*     --------------------------------------------------------------
+            Find Umax and set w(j) = maximum element in j-th column of U.
+           -------------------------------------------------------------- */
+    for (K = 1; K <= NRANK; K++)
+    {
       I = LUSOL->ip[K];
       L1 = LUSOL->locr[I];
-      L2 = (L1+LUSOL->lenr[I])-1;
-      for(L = L1; L <= L2; L++) {
+      L2 = (L1 + LUSOL->lenr[I]) - 1;
+      for (L = L1; L <= L2; L++)
+      {
         J = LUSOL->indr[L];
         AIJ = fabs(LUSOL->a[L]);
-        SETMAX(LUSOL->w[J],AIJ);
-        SETMAX(UMAX,AIJ);
+        SETMAX(LUSOL->w[J], AIJ);
+        SETMAX(UMAX, AIJ);
       }
     }
     LUSOL->parmlu[LUSOL_RP_MAXMULT_L] = LMAX;
     LUSOL->parmlu[LUSOL_RP_MAXELEM_U] = UMAX;
-/*     --------------------------------------------------------------
-       Find DUmax and DUmin, the extreme diagonals of U.
-       -------------------------------------------------------------- */
-    for(K = 1; K <= NRANK; K++) {
-      J     = LUSOL->iq[K];
-      I     = LUSOL->ip[K];
-      L1    = LUSOL->locr[I];
-      DIAG  = fabs(LUSOL->a[L1]);
-      SETMAX( DUMAX, DIAG );
-      if(DUMIN > DIAG) {
-        DUMIN  = DIAG;
-        JUMIN  = J;
-      }
-    }
-  }
-  else {
-/*     --------------------------------------------------------------
-       keepLU = 0.
-       Only diag(U) is stored.  Set w(*) accordingly.
-       Find DUmax and DUmin, the extreme diagonals of U.
-       -------------------------------------------------------------- */
-    LDIAGU = LENA2 - LUSOL->n;
-    for(K = 1; K <= NRANK; K++) {
-      J           = LUSOL->iq[K];
-      DIAG        = fabs( LUSOL->a[LDIAGU + J] ); /* are in natural order */
-      LUSOL->w[J] = DIAG;
-      SETMAX( DUMAX, DIAG );
-      if(DUMIN > DIAG) {
+    /*     --------------------------------------------------------------
+           Find DUmax and DUmin, the extreme diagonals of U.
+           -------------------------------------------------------------- */
+    for (K = 1; K <= NRANK; K++)
+    {
+      J = LUSOL->iq[K];
+      I = LUSOL->ip[K];
+      L1 = LUSOL->locr[I];
+      DIAG = fabs(LUSOL->a[L1]);
+      SETMAX(DUMAX, DIAG);
+      if (DUMIN > DIAG)
+      {
         DUMIN = DIAG;
         JUMIN = J;
       }
     }
   }
-/*     --------------------------------------------------------------
-       Negate w(j) if the corresponding diagonal of U is
-       too small in absolute terms or relative to the other elements
-       in the same column of  U.
+  else
+  {
+    /*     --------------------------------------------------------------
+           keepLU = 0.
+           Only diag(U) is stored.  Set w(*) accordingly.
+           Find DUmax and DUmin, the extreme diagonals of U.
+           -------------------------------------------------------------- */
+    LDIAGU = LENA2 - LUSOL->n;
+    for (K = 1; K <= NRANK; K++)
+    {
+      J = LUSOL->iq[K];
+      DIAG = fabs(LUSOL->a[LDIAGU + J]); /* are in natural order */
+      LUSOL->w[J] = DIAG;
+      SETMAX(DUMAX, DIAG);
+      if (DUMIN > DIAG)
+      {
+        DUMIN = DIAG;
+        JUMIN = J;
+      }
+    }
+  }
+  /*     --------------------------------------------------------------
+         Negate w(j) if the corresponding diagonal of U is
+         too small in absolute terms or relative to the other elements
+         in the same column of  U.
 
-       23 Apr 2004: TRP ensures that diags are NOT small relative to
-                    other elements in their own column.
-                    Much better, we can compare all diags to DUmax.
-      -------------------------------------------------------------- */
-  if((MODE == 1) && TRP) {
-    SETMAX( UTOL1, UTOL2*DUMAX );
+         23 Apr 2004: TRP ensures that diags are NOT small relative to
+                      other elements in their own column.
+                      Much better, we can compare all diags to DUmax.
+        -------------------------------------------------------------- */
+  if ((MODE == 1) && TRP)
+  {
+    SETMAX(UTOL1, UTOL2 * DUMAX);
   }
 
-  if(KEEPLU) {
-    for(K = 1; K <= LUSOL->n; K++) {
+  if (KEEPLU)
+  {
+    for (K = 1; K <= LUSOL->n; K++)
+    {
       J = LUSOL->iq[K];
-      if(K>NRANK)
+      if (K > NRANK)
         DIAG = ZERO;
-      else {
+      else
+      {
         I = LUSOL->ip[K];
         L1 = LUSOL->locr[I];
         DIAG = fabs(LUSOL->a[L1]);
       }
-      if((DIAG<=UTOL1) || (DIAG<=UTOL2*LUSOL->w[J])) {
+      if ((DIAG <= UTOL1) || (DIAG <= UTOL2 * LUSOL->w[J]))
+      {
         LUSOL_addSingularity(LUSOL, J, INFORM);
         LUSOL->w[J] = -LUSOL->w[J];
       }
     }
   }
-  else { /* keepLU = FALSE */
-    for(K = 1; K <= LUSOL->n; K++) {
+  else
+  { /* keepLU = FALSE */
+    for (K = 1; K <= LUSOL->n; K++)
+    {
       J = LUSOL->iq[K];
       DIAG = LUSOL->w[J];
-      if(DIAG<=UTOL1) {
+      if (DIAG <= UTOL1)
+      {
         LUSOL_addSingularity(LUSOL, J, INFORM);
         LUSOL->w[J] = -LUSOL->w[J];
       }
     }
   }
-/*     -----------------------------------------------------------------
-        Set output parameters.
-       ----------------------------------------------------------------- */
-  if(JUMIN==0)
+  /*     -----------------------------------------------------------------
+          Set output parameters.
+         ----------------------------------------------------------------- */
+  if (JUMIN == 0)
     DUMIN = ZERO;
   LUSOL->luparm[LUSOL_IP_COLINDEX_DUMIN] = JUMIN;
-  LUSOL->parmlu[LUSOL_RP_MAXELEM_DIAGU]  = DUMAX;
-  LUSOL->parmlu[LUSOL_RP_MINELEM_DIAGU]  = DUMIN;
-/*      The matrix has been judged singular. */
-  if(LUSOL->luparm[LUSOL_IP_SINGULARITIES]>0) {
+  LUSOL->parmlu[LUSOL_RP_MAXELEM_DIAGU] = DUMAX;
+  LUSOL->parmlu[LUSOL_RP_MINELEM_DIAGU] = DUMIN;
+  /*      The matrix has been judged singular. */
+  if (LUSOL->luparm[LUSOL_IP_SINGULARITIES] > 0)
+  {
     *INFORM = LUSOL_INFORM_LUSINGULAR;
-    NDEFIC = LUSOL->n-NRANK;
-    if((LUSOL->outstream!=NULL) && (LPRINT>=LUSOL_MSG_SINGULARITY)) {
-      LUSOL_report(LUSOL, 0, "Singular(m%cn)  rank:%9d  n-rank:%8d  nsing:%9d\n",
-                             relationChar(LUSOL->m, LUSOL->n),NRANK,NDEFIC,
-                             LUSOL->luparm[LUSOL_IP_SINGULARITIES]);
+    NDEFIC = LUSOL->n - NRANK;
+    if ((LUSOL->outstream != NULL) && (LPRINT >= LUSOL_MSG_SINGULARITY))
+    {
+      LUSOL_report(LUSOL,
+                   0,
+                   "Singular(m%cn)  rank:%9d  n-rank:%8d  nsing:%9d\n",
+                   relationChar(LUSOL->m, LUSOL->n),
+                   NRANK,
+                   NDEFIC,
+                   LUSOL->luparm[LUSOL_IP_SINGULARITIES]);
     }
   }
-/*      Exit. */
+  /*      Exit. */
   LUSOL->luparm[LUSOL_IP_INFORM] = *INFORM;
 }
 #endif
@@ -352,44 +396,47 @@ void LU6CHK(LUSOLrec *LUSOL, int MODE, int LENA2, int *INFORM)
    15 Dec 2002: First version derived from lu6sol.
    15 Dec 2002: Current version.
    ------------------------------------------------------------------ */
-void LU6L(LUSOLrec *LUSOL, int *INFORM, REAL V[], int NZidx[])
+void
+LU6L(LUSOLrec * LUSOL, int * INFORM, REAL V[], int NZidx[])
 {
   (void)NZidx;
   int  JPIV, K, L, L1, LEN, LENL, LENL0, NUML, NUML0;
   REAL SMALL;
   REAL VPIV;
 #ifdef LUSOLFastSolve
-  REAL *aptr;
-  int  *iptr, *jptr;
+  REAL * aptr;
+  int *  iptr, *jptr;
 #else
-  int  I, J;
+  int I, J;
 #endif
   (void)NZidx;
 
   NUML0 = LUSOL->luparm[LUSOL_IP_COLCOUNT_L0];
   LENL0 = LUSOL->luparm[LUSOL_IP_NONZEROS_L0];
-  LENL  = LUSOL->luparm[LUSOL_IP_NONZEROS_L];
+  LENL = LUSOL->luparm[LUSOL_IP_NONZEROS_L];
   SMALL = LUSOL->parmlu[LUSOL_RP_ZEROTOLERANCE];
   *INFORM = LUSOL_INFORM_LUSUCCESS;
-  L1 = LUSOL->lena+1;
-  for(K = 1; K <= NUML0; K++) {
+  L1 = LUSOL->lena + 1;
+  for (K = 1; K <= NUML0; K++)
+  {
     LEN = LUSOL->lenc[K];
     L = L1;
     L1 -= LEN;
     JPIV = LUSOL->indr[L1];
     VPIV = V[JPIV];
-    if(fabs(VPIV)>SMALL) {
+    if (fabs(VPIV) > SMALL)
+    {
 /*     ***** This loop could be coded specially. */
 #ifdef LUSOLFastSolve
       L--;
-      for(aptr = LUSOL->a+L, iptr = LUSOL->indc+L;
-          LEN > 0; LEN--, aptr--, iptr--)
+      for (aptr = LUSOL->a + L, iptr = LUSOL->indc + L; LEN > 0; LEN--, aptr--, iptr--)
         V[*iptr] += (*aptr) * VPIV;
 #else
-      for(; LEN > 0; LEN--) {
+      for (; LEN > 0; LEN--)
+      {
         L--;
         I = LUSOL->indc[L];
-        V[I] += LUSOL->a[L]*VPIV;
+        V[I] += LUSOL->a[L] * VPIV;
       }
 #endif
     }
@@ -398,35 +445,37 @@ void LU6L(LUSOLrec *LUSOL, int *INFORM, REAL V[], int NZidx[])
       V[JPIV] = 0;
 #endif
   }
-  L = (LUSOL->lena-LENL0)+1;
-  NUML = LENL-LENL0;
+  L = (LUSOL->lena - LENL0) + 1;
+  NUML = LENL - LENL0;
 /*     ***** This loop could be coded specially. */
 #ifdef LUSOLFastSolve
   L--;
-  for(aptr = LUSOL->a+L, jptr = LUSOL->indr+L, iptr = LUSOL->indc+L;
-      NUML > 0; NUML--, aptr--, jptr--, iptr--) {
-    if(fabs(V[*jptr])>SMALL)
+  for (aptr = LUSOL->a + L, jptr = LUSOL->indr + L, iptr = LUSOL->indc + L; NUML > 0; NUML--, aptr--, jptr--, iptr--)
+  {
+    if (fabs(V[*jptr]) > SMALL)
       V[*iptr] += (*aptr) * V[*jptr];
-#ifdef SetSmallToZero
+#  ifdef SetSmallToZero
     else
       V[*jptr] = 0;
-#endif
+#  endif
   }
 #else
-  for(; NUML > 0; NUML--) {
+  for (; NUML > 0; NUML--)
+  {
     L--;
     J = LUSOL->indr[L];
-    if(fabs(V[J])>SMALL) {
+    if (fabs(V[J]) > SMALL)
+    {
       I = LUSOL->indc[L];
-      V[I] += LUSOL->a[L]*V[J];
+      V[I] += LUSOL->a[L] * V[J];
     }
-#ifdef SetSmallToZero
+#  ifdef SetSmallToZero
     else
       V[J] = 0;
-#endif
+#  endif
   }
 #endif
-/*      Exit. */
+  /*      Exit. */
   LUSOL->luparm[LUSOL_IP_INFORM] = *INFORM;
 }
 
@@ -446,54 +495,57 @@ void LU6L(LUSOLrec *LUSOL, int *INFORM, REAL V[], int NZidx[])
    15 Dec 2002: First version of lu6LD.
    15 Dec 2002: Current version.
    ================================================================== */
-void LU6LD(LUSOLrec *LUSOL, int *INFORM, int MODE, REAL V[], int NZidx[])
+void
+LU6LD(LUSOLrec * LUSOL, int * INFORM, int MODE, REAL V[], int NZidx[])
 {
   (void)NZidx;
   int  IPIV, K, L, L1, LEN, NUML0;
   REAL DIAG, SMALL;
   REAL VPIV;
 #ifdef LUSOLFastSolve
-  REAL *aptr;
-  int  *jptr;
+  REAL * aptr;
+  int *  jptr;
 #else
-  int  J;
+  int J;
 #endif
   (void)NZidx;
 
-/*      Solve L D v(new) = v  or  L|D|v(new) = v, depending on mode.
-        The code for L is the same as in lu6L,
-        but when a nonzero entry of v arises, we divide by
-        the corresponding entry of D or |D|. */
+  /*      Solve L D v(new) = v  or  L|D|v(new) = v, depending on mode.
+          The code for L is the same as in lu6L,
+          but when a nonzero entry of v arises, we divide by
+          the corresponding entry of D or |D|. */
   NUML0 = LUSOL->luparm[LUSOL_IP_COLCOUNT_L0];
   SMALL = LUSOL->parmlu[LUSOL_RP_ZEROTOLERANCE];
   *INFORM = LUSOL_INFORM_LUSUCCESS;
-  L1 = LUSOL->lena+1;
-  for(K = 1; K <= NUML0; K++) {
+  L1 = LUSOL->lena + 1;
+  for (K = 1; K <= NUML0; K++)
+  {
     LEN = LUSOL->lenc[K];
     L = L1;
     L1 -= LEN;
     IPIV = LUSOL->indr[L1];
     VPIV = V[IPIV];
-    if(fabs(VPIV)>SMALL) {
+    if (fabs(VPIV) > SMALL)
+    {
 /*     ***** This loop could be coded specially. */
 #ifdef LUSOLFastSolve
       L--;
-      for(aptr = LUSOL->a+L, jptr = LUSOL->indc+L;
-          LEN > 0; LEN--, aptr--, jptr--)
-        V[*jptr] += (*aptr)*VPIV;
+      for (aptr = LUSOL->a + L, jptr = LUSOL->indc + L; LEN > 0; LEN--, aptr--, jptr--)
+        V[*jptr] += (*aptr) * VPIV;
 #else
-      for(; LEN > 0; LEN--) {
+      for (; LEN > 0; LEN--)
+      {
         L--;
         J = LUSOL->indc[L];
-        V[J] += LUSOL->a[L]*VPIV;
+        V[J] += LUSOL->a[L] * VPIV;
       }
 #endif
-/*      Find diag = U(ipiv,ipiv) and divide by diag or |diag|. */
+      /*      Find diag = U(ipiv,ipiv) and divide by diag or |diag|. */
       L = LUSOL->locr[IPIV];
       DIAG = LUSOL->a[L];
-      if(MODE==2)
+      if (MODE == 2)
         DIAG = fabs(DIAG);
-      V[IPIV] = VPIV/DIAG;
+      V[IPIV] = VPIV / DIAG;
     }
 #ifdef SetSmallToZero
     else
@@ -509,121 +561,131 @@ void LU6LD(LUSOLrec *LUSOL, int *INFORM, int MODE, REAL V[], int NZidx[])
    15 Dec 2002: First version derived from lu6sol.
    15 Dec 2002: Current version.
    ================================================================== */
-void LU6LT(LUSOLrec *LUSOL, int *INFORM, REAL V[], int NZidx[])
+void
+LU6LT(LUSOLrec * LUSOL, int * INFORM, REAL V[], int NZidx[])
 {
 #ifdef DoTraceL0
-  REAL    TEMP;
+  REAL TEMP;
 #endif
-  int     K, L, L1, L2, LEN, LENL, LENL0, NUML0;
-  REAL    SMALL;
+  int    K, L, L1, L2, LEN, LENL, LENL0, NUML0;
+  REAL   SMALL;
   REALXP SUM;
-  REAL HOLD;
+  REAL   HOLD;
 #if (defined LUSOLFastSolve) && !(defined DoTraceL0)
-  REAL    *aptr;
-  int     *iptr, *jptr;
+  REAL * aptr;
+  int *  iptr, *jptr;
 #else
-  int     I, J;
+  int I, J;
 #endif
 
   NUML0 = LUSOL->luparm[LUSOL_IP_COLCOUNT_L0];
   LENL0 = LUSOL->luparm[LUSOL_IP_NONZEROS_L0];
-  LENL  = LUSOL->luparm[LUSOL_IP_NONZEROS_L];
+  LENL = LUSOL->luparm[LUSOL_IP_NONZEROS_L];
   SMALL = LUSOL->parmlu[LUSOL_RP_ZEROTOLERANCE];
   *INFORM = LUSOL_INFORM_LUSUCCESS;
-  L1 = (LUSOL->lena-LENL)+1;
-  L2 = LUSOL->lena-LENL0;
+  L1 = (LUSOL->lena - LENL) + 1;
+  L2 = LUSOL->lena - LENL0;
 
 /*     ***** This loop could be coded specially. */
 #if (defined LUSOLFastSolve) && !(defined DoTraceL0)
-  for(L = L1, aptr = LUSOL->a+L1, iptr = LUSOL->indr+L1, jptr = LUSOL->indc+L1;
-      L <= L2; L++, aptr++, iptr++, jptr++) {
+  for (L = L1, aptr = LUSOL->a + L1, iptr = LUSOL->indr + L1, jptr = LUSOL->indc + L1; L <= L2;
+       L++, aptr++, iptr++, jptr++)
+  {
     HOLD = V[*jptr];
-    if(fabs(HOLD)>SMALL)
-      V[*iptr] += (*aptr)*HOLD;
-#ifdef SetSmallToZero
+    if (fabs(HOLD) > SMALL)
+      V[*iptr] += (*aptr) * HOLD;
+#  ifdef SetSmallToZero
     else
       V[*jptr] = 0;
-#endif
+#  endif
   }
 #else
-  for(L = L1; L <= L2; L++) {
+  for (L = L1; L <= L2; L++)
+  {
     J = LUSOL->indc[L];
     HOLD = V[J];
-    if(fabs(HOLD)>SMALL) {
+    if (fabs(HOLD) > SMALL)
+    {
       I = LUSOL->indr[L];
-      V[I] += LUSOL->a[L]*HOLD;
+      V[I] += LUSOL->a[L] * HOLD;
     }
-#ifdef SetSmallToZero
+#  ifdef SetSmallToZero
     else
       V[J] = 0;
-#endif
+#  endif
   }
 #endif
 
   /* Do row-based L0 version, if available */
-  if((LUSOL->L0 != NULL) ||
-     ((LUSOL->luparm[LUSOL_IP_BTRANCOUNT] == 0) && LU1L0(LUSOL, &(LUSOL->L0), INFORM))) {
+  if ((LUSOL->L0 != NULL) || ((LUSOL->luparm[LUSOL_IP_BTRANCOUNT] == 0) && LU1L0(LUSOL, &(LUSOL->L0), INFORM)))
+  {
     LU6L0T_v(LUSOL, LUSOL->L0, V, NZidx, INFORM);
   }
 
   /* Alternatively, do the standard column-based L0 version */
-  else  {
+  else
+  {
     /* Perform loop over columns */
-    for(K = NUML0; K >= 1; K--) {
+    for (K = NUML0; K >= 1; K--)
+    {
       SUM = ZERO;
       LEN = LUSOL->lenc[K];
-      L1 = L2+1;
+      L1 = L2 + 1;
       L2 += LEN;
 /*     ***** This loop could be coded specially. */
 #if (defined LUSOLFastSolve) && !(defined DoTraceL0)
-      for(L = L1, aptr = LUSOL->a+L1, jptr = LUSOL->indc+L1;
-          L <= L2; L++, aptr++, jptr++)
+      for (L = L1, aptr = LUSOL->a + L1, jptr = LUSOL->indc + L1; L <= L2; L++, aptr++, jptr++)
         SUM += (*aptr) * V[*jptr];
 #else
-      for(L = L1; L <= L2; L++) {
+      for (L = L1; L <= L2; L++)
+      {
         J = LUSOL->indc[L];
-#ifndef DoTraceL0
-        SUM += LUSOL->a[L]*V[J];
-#else
+#  ifndef DoTraceL0
+        SUM += LUSOL->a[L] * V[J];
+#  else
         TEMP = V[LUSOL->indr[L1]] + SUM;
-        SUM += LUSOL->a[L]*V[J];
-        printf("V[%3d] = V[%3d] + L[%d,%d]*V[%3d]\n", LUSOL->indr[L1], LUSOL->indr[L1], J,LUSOL->indr[L1], J);
+        SUM += LUSOL->a[L] * V[J];
+        printf("V[%3d] = V[%3d] + L[%d,%d]*V[%3d]\n", LUSOL->indr[L1], LUSOL->indr[L1], J, LUSOL->indr[L1], J);
         printf("%6g = %6g + %6g*%6g\n", V[LUSOL->indr[L1]] + SUM, TEMP, LUSOL->a[L], V[J]);
-#endif
+#  endif
       }
 #endif
-      V[LUSOL->indr[L1]] += (REAL) SUM;
+      V[LUSOL->indr[L1]] += (REAL)SUM;
     }
   }
 
-/*      Exit. */
+  /*      Exit. */
   LUSOL->luparm[LUSOL_IP_INFORM] = *INFORM;
 }
 
-void print_L0(LUSOLrec *LUSOL)
+void
+print_L0(LUSOLrec * LUSOL)
 {
-  int  I, J, K, L, L1, L2, LEN, LENL0, NUML0;
-  REAL *denseL0 = (REAL*) calloc(LUSOL->m+1, (LUSOL->n+1)*sizeof(*denseL0));
+  int    I, J, K, L, L1, L2, LEN, LENL0, NUML0;
+  REAL * denseL0 = (REAL *)calloc(LUSOL->m + 1, (LUSOL->n + 1) * sizeof(*denseL0));
 
   NUML0 = LUSOL->luparm[LUSOL_IP_COLCOUNT_L0];
   LENL0 = LUSOL->luparm[LUSOL_IP_NONZEROS_L0];
 
-  L2 = LUSOL->lena-LENL0;
-  for(K = NUML0; K >= 1; K--) {
+  L2 = LUSOL->lena - LENL0;
+  for (K = NUML0; K >= 1; K--)
+  {
     LEN = LUSOL->lenc[K];
-    L1 = L2+1;
+    L1 = L2 + 1;
     L2 += LEN;
-    for(L = L1; L <= L2; L++) {
+    for (L = L1; L <= L2; L++)
+    {
       I = LUSOL->indc[L];
       I = LUSOL->ipinv[I]; /* Undo row mapping */
       J = LUSOL->indr[L];
-      denseL0[(LUSOL->n+1)*(J-1) + I] = LUSOL->a[L];
+      denseL0[(LUSOL->n + 1) * (J - 1) + I] = LUSOL->a[L];
     }
   }
 
-  for(I = 1; I <= LUSOL->n; I++) {
-    for(J = 1; J <= LUSOL->m; J++)
-      fprintf(stdout, "%10g", denseL0[(LUSOL->n+1)*(J-1) + I]);
+  for (I = 1; I <= LUSOL->n; I++)
+  {
+    for (J = 1; J <= LUSOL->m; J++)
+      fprintf(stdout, "%10g", denseL0[(LUSOL->n + 1) * (J - 1) + I]);
     fprintf(stdout, "\n");
   }
   LUSOL_FREE(denseL0);
@@ -643,78 +705,84 @@ void print_L0(LUSOLrec *LUSOL)
    15 Dec 2002: First version derived from lu6sol.
    15 Dec 2002: Current version.
    ================================================================== */
-void LU6U(LUSOLrec *LUSOL, int *INFORM, REAL V[], REAL W[], int NZidx[])
+void
+LU6U(LUSOLrec * LUSOL, int * INFORM, REAL V[], REAL W[], int NZidx[])
 {
   /* Do column-based U version, if available */
-  if((LUSOL->U != NULL) ||
-     ((LUSOL->luparm[LUSOL_IP_FTRANCOUNT] == 0) && LU1U0(LUSOL, &(LUSOL->U), INFORM))) {
+  if ((LUSOL->U != NULL) || ((LUSOL->luparm[LUSOL_IP_FTRANCOUNT] == 0) && LU1U0(LUSOL, &(LUSOL->U), INFORM)))
+  {
     LU6U0_v(LUSOL, LUSOL->U, V, W, NZidx, INFORM);
   }
   /* Alternatively, do the standard column-based L0 version */
-  else {
-    int  I, J, K, KLAST, L, L1, L2, L3, NRANK, NRANK1;
-    REAL SMALL;
+  else
+  {
+    int    I, J, K, KLAST, L, L1, L2, L3, NRANK, NRANK1;
+    REAL   SMALL;
     REALXP T;
 #ifdef LUSOLFastSolve
-    REAL *aptr;
-    int  *jptr;
+    REAL * aptr;
+    int *  jptr;
 #endif
     NRANK = LUSOL->luparm[LUSOL_IP_RANK_U];
     SMALL = LUSOL->parmlu[LUSOL_RP_ZEROTOLERANCE];
     *INFORM = LUSOL_INFORM_LUSUCCESS;
-    NRANK1 = NRANK+1;
-/*      Find the first nonzero in v(1:nrank), counting backwards. */
-    for(KLAST = NRANK; KLAST >= 1; KLAST--) {
+    NRANK1 = NRANK + 1;
+    /*      Find the first nonzero in v(1:nrank), counting backwards. */
+    for (KLAST = NRANK; KLAST >= 1; KLAST--)
+    {
       I = LUSOL->ip[KLAST];
-      if(fabs(V[I])>SMALL)
+      if (fabs(V[I]) > SMALL)
         break;
     }
     L = LUSOL->n;
 #ifdef LUSOLFastSolve
-    for(K = KLAST+1, jptr = LUSOL->iq+K; K <= L; K++, jptr++)
+    for (K = KLAST + 1, jptr = LUSOL->iq + K; K <= L; K++, jptr++)
       W[*jptr] = ZERO;
 #else
-    for(K = KLAST+1; K <= L; K++) {
+    for (K = KLAST + 1; K <= L; K++)
+    {
       J = LUSOL->iq[K];
       W[J] = ZERO;
     }
 #endif
-/*      Do the back-substitution, using rows 1:klast of U. */
-    for(K = KLAST; K >= 1; K--) {
+    /*      Do the back-substitution, using rows 1:klast of U. */
+    for (K = KLAST; K >= 1; K--)
+    {
       I = LUSOL->ip[K];
       T = V[I];
       L1 = LUSOL->locr[I];
-      L2 = L1+1;
-      L3 = (L1+LUSOL->lenr[I])-1;
+      L2 = L1 + 1;
+      L3 = (L1 + LUSOL->lenr[I]) - 1;
 /*     ***** This loop could be coded specially. */
 #ifdef LUSOLFastSolve
-      for(L = L2, aptr = LUSOL->a+L2, jptr = LUSOL->indr+L2;
-          L <= L3; L++, aptr++, jptr++)
+      for (L = L2, aptr = LUSOL->a + L2, jptr = LUSOL->indr + L2; L <= L3; L++, aptr++, jptr++)
         T -= (*aptr) * W[*jptr];
 #else
-      for(L = L2; L <= L3; L++) {
+      for (L = L2; L <= L3; L++)
+      {
         J = LUSOL->indr[L];
-        T -= LUSOL->a[L]*W[J];
+        T -= LUSOL->a[L] * W[J];
       }
 #endif
       J = LUSOL->iq[K];
-      if(fabs((REAL) T)<=SMALL)
+      if (fabs((REAL)T) <= SMALL)
         T = ZERO;
       else
         T /= LUSOL->a[L1];
-      W[J] = (REAL) T;
+      W[J] = (REAL)T;
     }
-/*      Compute residual for overdetermined systems. */
+    /*      Compute residual for overdetermined systems. */
     T = ZERO;
-    for(K = NRANK1; K <= LUSOL->m; K++) {
+    for (K = NRANK1; K <= LUSOL->m; K++)
+    {
       I = LUSOL->ip[K];
       T += fabs(V[I]);
     }
-/*      Exit. */
-    if(T>ZERO)
+    /*      Exit. */
+    if (T > ZERO)
       *INFORM = LUSOL_INFORM_LUSINGULAR;
-    LUSOL->luparm[LUSOL_IP_INFORM]     = *INFORM;
-    LUSOL->parmlu[LUSOL_RP_RESIDUAL_U] = (REAL) T;
+    LUSOL->luparm[LUSOL_IP_INFORM] = *INFORM;
+    LUSOL->parmlu[LUSOL_RP_RESIDUAL_U] = (REAL)T;
   }
 }
 
@@ -724,29 +792,30 @@ void LU6U(LUSOLrec *LUSOL, int *INFORM, REAL V[], REAL W[], int NZidx[])
    15 Dec 2002: First version derived from lu6sol.
    15 Dec 2002: Current version.
    ================================================================== */
-void LU6UT(LUSOLrec *LUSOL, int *INFORM, REAL V[], REAL W[], int NZidx[])
+void
+LU6UT(LUSOLrec * LUSOL, int * INFORM, REAL V[], REAL W[], int NZidx[])
 {
   (void)NZidx;
-  int  I, J, K, L, L1, L2, NRANK, NRANK1,
-       *ip = LUSOL->ip + 1, *iq = LUSOL->iq + 1;
+  int  I, J, K, L, L1, L2, NRANK, NRANK1, *ip = LUSOL->ip + 1, *iq = LUSOL->iq + 1;
   REAL SMALL;
   REAL T;
 #ifdef LUSOLFastSolve
-  REAL *aptr;
-  int  *jptr;
+  REAL * aptr;
+  int *  jptr;
 #endif
   (void)NZidx;
 
   NRANK = LUSOL->luparm[LUSOL_IP_RANK_U];
   SMALL = LUSOL->parmlu[LUSOL_RP_ZEROTOLERANCE];
   *INFORM = LUSOL_INFORM_LUSUCCESS;
-  NRANK1 = NRANK+1;
+  NRANK1 = NRANK + 1;
   L = LUSOL->m;
 #ifdef LUSOLFastSolve
-  for(K = NRANK1, jptr = LUSOL->ip+K; K <= L; K++, jptr++)
+  for (K = NRANK1, jptr = LUSOL->ip + K; K <= L; K++, jptr++)
     V[*jptr] = ZERO;
 #else
-  for(K = NRANK1; K <= L; K++) {
+  for (K = NRANK1; K <= L; K++)
+  {
     I = LUSOL->ip[K];
     V[I] = ZERO;
   }
@@ -758,42 +827,45 @@ void LU6UT(LUSOLrec *LUSOL, int *INFORM, REAL V[], REAL W[], int NZidx[])
     I = LUSOL->ip[K];
     J = LUSOL->iq[K];
 #else
-  for(K = 1; K <= NRANK; K++, ip++, iq++) {
+  for (K = 1; K <= NRANK; K++, ip++, iq++)
+  {
     I = *ip;
     J = *iq;
 #endif
     T = W[J];
-    if(fabs(T)<=SMALL) {
+    if (fabs(T) <= SMALL)
+    {
       V[I] = ZERO;
       continue;
     }
     L1 = LUSOL->locr[I];
     T /= LUSOL->a[L1];
     V[I] = T;
-    L2 = (L1+LUSOL->lenr[I])-1;
+    L2 = (L1 + LUSOL->lenr[I]) - 1;
     L1++;
 /*     ***** This loop could be coded specially. */
 #ifdef LUSOLFastSolve
-    for(L = L1, aptr = LUSOL->a+L1, jptr = LUSOL->indr+L1;
-        L <= L2; L++, aptr++, jptr++)
+    for (L = L1, aptr = LUSOL->a + L1, jptr = LUSOL->indr + L1; L <= L2; L++, aptr++, jptr++)
       W[*jptr] -= T * (*aptr);
 #else
-    for(L = L1; L <= L2; L++) {
-      J = LUSOL->indr[L];
-      W[J] -= T*LUSOL->a[L];
-    }
+  for (L = L1; L <= L2; L++)
+  {
+    J = LUSOL->indr[L];
+    W[J] -= T * LUSOL->a[L];
+  }
 #endif
   }
-/*      Compute residual for overdetermined systems. */
+  /*      Compute residual for overdetermined systems. */
   T = ZERO;
-  for(K = NRANK1; K <= LUSOL->n; K++) {
+  for (K = NRANK1; K <= LUSOL->n; K++)
+  {
     J = LUSOL->iq[K];
     T += fabs(W[J]);
   }
-/*      Exit. */
-  if(T>ZERO)
+  /*      Exit. */
+  if (T > ZERO)
     *INFORM = LUSOL_INFORM_LUSINGULAR;
-  LUSOL->luparm[LUSOL_IP_INFORM]     = *INFORM;
+  LUSOL->luparm[LUSOL_IP_INFORM] = *INFORM;
   LUSOL->parmlu[LUSOL_RP_RESIDUAL_U] = T;
 }
 
@@ -839,35 +911,43 @@ void LU6UT(LUSOLrec *LUSOL, int *INFORM, REAL V[], REAL W[], int NZidx[])
                 But hard to change other "go to"s to "if then else".
    15 Dec 2002: lu6L, lu6Lt, lu6U, lu6Ut added to modularize lu6sol.
    ================================================================== */
-void LU6SOL(LUSOLrec *LUSOL, int MODE, REAL V[], REAL W[], int NZidx[], int *INFORM)
+void
+LU6SOL(LUSOLrec * LUSOL, int MODE, REAL V[], REAL W[], int NZidx[], int * INFORM)
 {
-  if(MODE==LUSOL_SOLVE_Lv_v) {          /* Solve  L v(new) = v. */
-    LU6L(LUSOL, INFORM,V, NZidx);
+  if (MODE == LUSOL_SOLVE_Lv_v)
+  { /* Solve  L v(new) = v. */
+    LU6L(LUSOL, INFORM, V, NZidx);
   }
-  else if(MODE==LUSOL_SOLVE_Ltv_v) {    /* Solve  L'v(new) = v. */
-    LU6LT(LUSOL, INFORM,V, NZidx);
+  else if (MODE == LUSOL_SOLVE_Ltv_v)
+  { /* Solve  L'v(new) = v. */
+    LU6LT(LUSOL, INFORM, V, NZidx);
   }
-  else if(MODE==LUSOL_SOLVE_Uw_v) {     /* Solve  U w = v. */
-    LU6U(LUSOL, INFORM,V,W, NZidx);
+  else if (MODE == LUSOL_SOLVE_Uw_v)
+  { /* Solve  U w = v. */
+    LU6U(LUSOL, INFORM, V, W, NZidx);
   }
-  else if(MODE==LUSOL_SOLVE_Utv_w) {    /* Solve  U'v = w. */
-    LU6UT(LUSOL, INFORM,V,W, NZidx);
+  else if (MODE == LUSOL_SOLVE_Utv_w)
+  { /* Solve  U'v = w. */
+    LU6UT(LUSOL, INFORM, V, W, NZidx);
   }
-  else if(MODE==LUSOL_SOLVE_Aw_v) {     /* Solve  A w      = v (i.e. FTRAN) */
-    LU6L(LUSOL, INFORM,V, NZidx);        /* via     L v(new) = v */
-    LU6U(LUSOL, INFORM,V,W, NULL);       /* ... and U w = v(new). */
+  else if (MODE == LUSOL_SOLVE_Aw_v)
+  {                                  /* Solve  A w      = v (i.e. FTRAN) */
+    LU6L(LUSOL, INFORM, V, NZidx);   /* via     L v(new) = v */
+    LU6U(LUSOL, INFORM, V, W, NULL); /* ... and U w = v(new). */
   }
-  else if(MODE==LUSOL_SOLVE_Atv_w) {    /* Solve  A'v = w (i.e. BTRAN) */
-    LU6UT(LUSOL, INFORM,V,W, NZidx);     /* via      U'v = w */
-    LU6LT(LUSOL, INFORM,V, NULL);        /* ... and  L'v(new) = v. */
+  else if (MODE == LUSOL_SOLVE_Atv_w)
+  {                                    /* Solve  A'v = w (i.e. BTRAN) */
+    LU6UT(LUSOL, INFORM, V, W, NZidx); /* via      U'v = w */
+    LU6LT(LUSOL, INFORM, V, NULL);     /* ... and  L'v(new) = v. */
   }
-  else if(MODE==LUSOL_SOLVE_Av_v) {     /* Solve  LDv(bar) = v */
-    LU6LD(LUSOL, INFORM,1,V, NZidx);     /* and    L'v(new) = v(bar). */
-    LU6LT(LUSOL, INFORM,V, NULL);
+  else if (MODE == LUSOL_SOLVE_Av_v)
+  {                                    /* Solve  LDv(bar) = v */
+    LU6LD(LUSOL, INFORM, 1, V, NZidx); /* and    L'v(new) = v(bar). */
+    LU6LT(LUSOL, INFORM, V, NULL);
   }
-  else if(MODE==LUSOL_SOLVE_LDLtv_v) {  /* Solve  L|D|v(bar) = v */
-    LU6LD(LUSOL, INFORM,2,V, NZidx);     /* and    L'v(new) = v(bar). */
-    LU6LT(LUSOL, INFORM,V, NULL);
+  else if (MODE == LUSOL_SOLVE_LDLtv_v)
+  {                                    /* Solve  L|D|v(bar) = v */
+    LU6LD(LUSOL, INFORM, 2, V, NZidx); /* and    L'v(new) = v(bar). */
+    LU6LT(LUSOL, INFORM, V, NULL);
   }
 }
-

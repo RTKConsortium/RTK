@@ -7,20 +7,20 @@
 #include "group_counter.h"
 
 void
-group_counter_gen_class::generate_group_counter(ostream &stream, unsigned int indent)
+group_counter_gen_class::generate_group_counter(ostream & stream, unsigned int indent)
 {
-  string indent_str (indent, ' ');
+  string indent_str(indent, ' ');
   indent = 0;
 
   stream << "int ";
-  generate_string (group_name, stream, indent + indent_str.length ());
+  generate_string(group_name, stream, indent + indent_str.length());
   stream << "_";
-  generate_string (name, stream, indent + indent_str.length ());
+  generate_string(name, stream, indent + indent_str.length());
   stream << "_counter; /**< ";
   stream << "@";
   stream << "brief Counter for ";
-  generate_string (name, stream, indent + indent_str.length ());
+  generate_string(name, stream, indent + indent_str.length());
   stream << " ";
-  generate_string (group_name, stream, indent + indent_str.length ());
+  generate_string(group_name, stream, indent + indent_str.length());
   stream << " */";
 }

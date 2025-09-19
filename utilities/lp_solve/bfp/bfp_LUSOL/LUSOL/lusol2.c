@@ -39,7 +39,8 @@
    05 May 2002: Change input paramter k to kk to stop k being output.
    05 May 2002: Current version of Hdown.
    ================================================================== */
-void HDOWN(REAL HA[], int HJ[], int HK[], int N, int K, int *HOPS)
+void
+HDOWN(REAL HA[], int HJ[], int HK[], int N, int K, int * HOPS)
 {
   int  J, JJ, JV, N2;
   REAL V;
@@ -47,20 +48,21 @@ void HDOWN(REAL HA[], int HJ[], int HK[], int N, int K, int *HOPS)
   *HOPS = 0;
   V = HA[K];
   JV = HJ[K];
- N2 = N/2;
+  N2 = N / 2;
 /*      while 1
         break */
 x100:
-  if(K>N2)
+  if (K > N2)
     goto x200;
   (*HOPS)++;
-  J = K+K;
-  if(J<N) {
-    if(HA[J]<HA[J+1])
+  J = K + K;
+  if (J < N)
+  {
+    if (HA[J] < HA[J + 1])
       J++;
   }
-/*      break */
-  if(V>=HA[J])
+  /*      break */
+  if (V >= HA[J])
     goto x200;
   HA[K] = HA[J];
   JJ = HJ[J];
@@ -82,22 +84,23 @@ x200:
    05 May 2002: Change input paramter k to kk to stop k being output.
    05 May 2002: Current version of Hup.
    ================================================================== */
-void HUP(REAL HA[], int HJ[], int HK[], int K, int *HOPS)
+void
+HUP(REAL HA[], int HJ[], int HK[], int K, int * HOPS)
 {
   int  J, JV, K2;
   REAL V;
 
   *HOPS = 0;
   V = HA[K];
- JV = HJ[K];
+  JV = HJ[K];
 /*      while 1
         break */
 x100:
-  if(K<2)
+  if (K < 2)
     goto x200;
-  K2 = K/2;
-/*      break */
-  if(V<HA[K2])
+  K2 = K / 2;
+  /*      break */
+  if (V < HA[K2])
     goto x200;
   (*HOPS)++;
   HA[K] = HA[K2];
@@ -123,13 +126,13 @@ x200:
    07 May 2002: Protect input parameters N, Nk.
    07 May 2002: Current version of Hinsert.
    ================================================================== */
-void HINSERT(REAL HA[], int HJ[], int HK[], int N,
-             REAL V, int JV, int *HOPS)
+void
+HINSERT(REAL HA[], int HJ[], int HK[], int N, REAL V, int JV, int * HOPS)
 {
   HA[N] = V;
   HJ[N] = JV;
   HK[JV] = N;
-  HUP(HA,HJ,HK,N,HOPS);
+  HUP(HA, HJ, HK, N, HOPS);
 }
 
 /* ==================================================================
@@ -139,8 +142,8 @@ void HINSERT(REAL HA[], int HJ[], int HK[], int N,
    07 May 2002: Protect input parameters N, Nk, k.
    07 May 2002: Current version of Hchange.
    ================================================================== */
-void HCHANGE(REAL HA[], int HJ[], int HK[], int N, int K,
-             REAL V, int JV, int *HOPS)
+void
+HCHANGE(REAL HA[], int HJ[], int HK[], int N, int K, REAL V, int JV, int * HOPS)
 {
   REAL V1;
 
@@ -148,10 +151,10 @@ void HCHANGE(REAL HA[], int HJ[], int HK[], int N, int K,
   HA[K] = V;
   HJ[K] = JV;
   HK[JV] = K;
-  if(V1<V)
-    HUP  (HA,HJ,HK,  K,HOPS);
+  if (V1 < V)
+    HUP(HA, HJ, HK, K, HOPS);
   else
-    HDOWN(HA,HJ,HK,N,K,HOPS);
+    HDOWN(HA, HJ, HK, N, K, HOPS);
 }
 
 /* ==================================================================
@@ -162,7 +165,8 @@ void HCHANGE(REAL HA[], int HJ[], int HK[], int N, int K,
    07 May 2002: Protect input parameters N, Nk, k.
    07 May 2002: Current version of Hdelete.
    ================================================================== */
-void HDELETE(REAL HA[], int HJ[], int HK[], int *N, int K, int *HOPS)
+void
+HDELETE(REAL HA[], int HJ[], int HK[], int * N, int K, int * HOPS)
 {
 
   int  JV, NX;
@@ -173,8 +177,8 @@ void HDELETE(REAL HA[], int HJ[], int HK[], int *N, int K, int *HOPS)
   JV = HJ[NX];
   (*N)--;
   *HOPS = 0;
-  if(K<NX)
-    HCHANGE(HA,HJ,HK,NX,K,V,JV,HOPS);
+  if (K < NX)
+    HCHANGE(HA, HJ, HK, NX, K, V, JV, HOPS);
 }
 
 /* ==================================================================
@@ -188,17 +192,19 @@ void HDELETE(REAL HA[], int HJ[], int HK[], int *N, int K, int *HOPS)
    07 May 2002: ftnchek wants us to protect Nk, Ha(k), Hj(k) too.
    07 May 2002: Current version of Hbuild.
    ================================================================== */
-void HBUILD(REAL HA[], int HJ[], int HK[], int N, int *HOPS)
+void
+HBUILD(REAL HA[], int HJ[], int HK[], int N, int * HOPS)
 {
   int  H, JV, K, KK;
   REAL V;
 
   *HOPS = 0;
-  for(K = 1; K <= N; K++) {
+  for (K = 1; K <= N; K++)
+  {
     KK = K;
     V = HA[K];
     JV = HJ[K];
-    HINSERT(HA,HJ,HK,KK,V,JV,&H);
+    HINSERT(HA, HJ, HK, KK, V, JV, &H);
     (*HOPS) += H;
   }
 }

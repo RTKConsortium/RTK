@@ -15,7 +15,11 @@ def build_parser():
         "--verbose", "-v", help="Verbose execution", action="store_true"
     )
     parser.add_argument(
-        "--output", "-o", help="Output file name (high and low energy projections)", type=str, required=True
+        "--output",
+        "-o",
+        help="Output file name (high and low energy projections)",
+        type=str,
+        required=True,
     )
     parser.add_argument(
         "--input", "-i", help="Material-decomposed projections", type=str, required=True
@@ -26,11 +30,13 @@ def build_parser():
     parser.add_argument(
         "--low", help="Incident spectrum image, low energy", type=str, required=True
     )
+    parser.add_argument("--detector", "-d", help="Detector response file", type=str)
     parser.add_argument(
-        "--detector", "-d", help="Detector response file", type=str
-    )
-    parser.add_argument(
-        "--attenuations", "-a", help="Material attenuations file", type=str, required=True
+        "--attenuations",
+        "-a",
+        help="Material attenuations file",
+        type=str,
+        required=True,
     )
     parser.add_argument(
         "--variances", help="Output variances of measured energies, file name", type=str
@@ -59,24 +65,34 @@ def process(args_info: argparse.Namespace):
 
     if args_info.verbose:
         print("Reading incident spectrum (high energy)...")
-    incident_spectrum_reader_high_energy = itk.ImageFileReader[IncidentSpectrumImageType].New()
+    incident_spectrum_reader_high_energy = itk.ImageFileReader[
+        IncidentSpectrumImageType
+    ].New()
     incident_spectrum_reader_high_energy.SetFileName(args_info.high)
     incident_spectrum_reader_high_energy.Update()
 
     if args_info.verbose:
         print("Reading incident spectrum (low energy)...")
-    incident_spectrum_reader_low_energy = itk.ImageFileReader[IncidentSpectrumImageType].New()
+    incident_spectrum_reader_low_energy = itk.ImageFileReader[
+        IncidentSpectrumImageType
+    ].New()
     incident_spectrum_reader_low_energy.SetFileName(args_info.low)
     incident_spectrum_reader_low_energy.Update()
 
     if args_info.verbose:
         print("Reading material attenuations...")
-    material_attenuations_reader = itk.ImageFileReader[MaterialAttenuationsImageType].New()
+    material_attenuations_reader = itk.ImageFileReader[
+        MaterialAttenuationsImageType
+    ].New()
     material_attenuations_reader.SetFileName(args_info.attenuations)
     material_attenuations_reader.Update()
 
     # Get parameters from the images
-    maximum_energy = incident_spectrum_reader_high_energy.GetOutput().GetLargestPossibleRegion().GetSize(0)
+    maximum_energy = (
+        incident_spectrum_reader_high_energy.GetOutput()
+        .GetLargestPossibleRegion()
+        .GetSize(0)
+    )
 
     # If the detector response is given by the user, use it. Otherwise, assume it is included in the
     # incident spectrum, and fill the response with ones
@@ -104,21 +120,32 @@ def process(args_info: argparse.Namespace):
 
     # Check that the inputs have the expected size
     if decomposed_projection_reader.GetOutput().GetVectorLength() != 2:
-        print(f"Error: Decomposed projections image has vector length {decomposed_projection_reader.GetOutput().GetVectorLength()}, should be 2")
+        print(
+            f"Error: Decomposed projections image has vector length {decomposed_projection_reader.GetOutput().GetVectorLength()}, should be 2"
+        )
         sys.exit(1)
 
-    if material_attenuations_reader.GetOutput().GetLargestPossibleRegion().GetSize()[1] != maximum_energy:
-        print(f"Error: Material attenuations image has {material_attenuations_reader.GetOutput().GetLargestPossibleRegion().GetSize()[1]} energies, should have {maximum_energy}")
+    if (
+        material_attenuations_reader.GetOutput().GetLargestPossibleRegion().GetSize()[1]
+        != maximum_energy
+    ):
+        print(
+            f"Error: Material attenuations image has {material_attenuations_reader.GetOutput().GetLargestPossibleRegion().GetSize()[1]} energies, should have {maximum_energy}"
+        )
         sys.exit(1)
 
     # Create and set the filter
     if args_info.verbose:
         print("Setting up spectral forward model filter...")
-    forward = rtk.SpectralForwardModelImageFilter[DecomposedProjectionType, DualEnergyProjectionsType].New()
+    forward = rtk.SpectralForwardModelImageFilter[
+        DecomposedProjectionType, DualEnergyProjectionsType
+    ].New()
     forward.SetInputDecomposedProjections(decomposed_projection_reader.GetOutput())
     forward.SetInputMeasuredProjections(dual_energy_projections)
     forward.SetInputIncidentSpectrum(incident_spectrum_reader_high_energy.GetOutput())
-    forward.SetInputSecondIncidentSpectrum(incident_spectrum_reader_low_energy.GetOutput())
+    forward.SetInputSecondIncidentSpectrum(
+        incident_spectrum_reader_low_energy.GetOutput()
+    )
     forward.SetDetectorResponse(detector_image)
     forward.SetMaterialAttenuations(material_attenuations_reader.GetOutput())
     forward.SetIsSpectralCT(False)

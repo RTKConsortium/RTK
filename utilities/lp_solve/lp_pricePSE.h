@@ -6,30 +6,39 @@
 #define ApplySteepestEdgeMinimum
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
-/* Price norm management routines */
-STATIC MYBOOL initPricer(lprec *lp);
+  /* Price norm management routines */
+  STATIC MYBOOL
+  initPricer(lprec * lp);
 #if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunused-function"
+#  pragma clang diagnostic push
+#  pragma clang diagnostic ignored "-Wunused-function"
 #endif
-INLINE MYBOOL applyPricer(lprec *lp);
+  INLINE MYBOOL
+  applyPricer(lprec * lp);
 #if defined(__clang__)
-#pragma clang diagnostic pop
+#  pragma clang diagnostic pop
 #endif
-STATIC void simplexPricer(lprec *lp, MYBOOL isdual);
-STATIC void freePricer(lprec *lp);
-STATIC MYBOOL resizePricer(lprec *lp);
-STATIC REAL getPricer(lprec *lp, int item, MYBOOL isdual);
-STATIC MYBOOL restartPricer(lprec *lp, MYBOOL isdual);
-STATIC MYBOOL updatePricer(lprec *lp, int rownr, int colnr, REAL *pcol, REAL *prow, int *nzprow);
-STATIC MYBOOL verifyPricer(lprec *lp);
+  STATIC void
+  simplexPricer(lprec * lp, MYBOOL isdual);
+  STATIC void
+  freePricer(lprec * lp);
+  STATIC MYBOOL
+  resizePricer(lprec * lp);
+  STATIC REAL
+  getPricer(lprec * lp, int item, MYBOOL isdual);
+  STATIC MYBOOL
+  restartPricer(lprec * lp, MYBOOL isdual);
+  STATIC MYBOOL
+  updatePricer(lprec * lp, int rownr, int colnr, REAL * pcol, REAL * prow, int * nzprow);
+  STATIC MYBOOL
+  verifyPricer(lprec * lp);
 
 #ifdef __cplusplus
- }
+}
 #endif
 
 #endif /* HEADER_lp_pricePSE */
-

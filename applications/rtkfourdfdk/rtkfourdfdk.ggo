@@ -15,4 +15,3 @@ option "hannY"     - "Cut frequency for hann window in ]0,1] (0.0 disables it)" 
 
 section "Phase gating"
 option "signal"    - "File containing the phase of each projection"                 string              yes
-
