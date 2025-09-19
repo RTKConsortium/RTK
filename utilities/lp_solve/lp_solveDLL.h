@@ -4,17 +4,17 @@
 //
 
 #if !defined(AFX_STDAFX_H__22BF6D92_917F_4BDF_B806_0954721EBA95__INCLUDED_)
-#define AFX_STDAFX_H__22BF6D92_917F_4BDF_B806_0954721EBA95__INCLUDED_
+#  define AFX_STDAFX_H__22BF6D92_917F_4BDF_B806_0954721EBA95__INCLUDED_
 
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
+#  if _MSC_VER > 1000
+#    pragma once
+#  endif // _MSC_VER > 1000
 
 
 // Insert your headers here
-#define WIN32_LEAN_AND_MEAN // Exclude rarely-used stuff from Windows headers
+#  define WIN32_LEAN_AND_MEAN // Exclude rarely-used stuff from Windows headers
 
-#include <windows.h>
+#  include <windows.h>
 
 // TODO: reference additional headers your program requires here
 

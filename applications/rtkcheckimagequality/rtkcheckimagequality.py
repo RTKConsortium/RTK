@@ -3,6 +3,7 @@ import sys
 import itk
 from itk import RTK as rtk
 
+
 def build_parser():
     parser = rtk.RTKArgumentParser(
         description="Checks the MSE of a reconstructed image against a reference."
@@ -36,10 +37,12 @@ def build_parser():
     )
     return parser
 
+
 def mse(reference, reconstruction):
     arr_ref = itk.array_view_from_image(reference)
     arr_rec = itk.array_view_from_image(reconstruction)
     return float(((arr_ref - arr_rec) ** 2).sum())
+
 
 def process(args_info: argparse.Namespace):
     # Maximum number of comparisons to perform (depends on the number of inputs)
@@ -59,7 +62,9 @@ def process(args_info: argparse.Namespace):
         reference = itk.imread(args_info.reference[reference_index])
 
         if args_info.verbose:
-            print(f"Reading reconstruction image: {args_info.reconstruction[reconstruction_index]}")
+            print(
+                f"Reading reconstruction image: {args_info.reconstruction[reconstruction_index]}"
+            )
         reconstruction = itk.imread(args_info.reconstruction[reconstruction_index])
 
         mse_val = mse(reference, reconstruction)
@@ -76,10 +81,12 @@ def process(args_info: argparse.Namespace):
     if args_info.verbose:
         print("All comparisons passed.")
 
+
 def main(argv=None):
     parser = build_parser()
     args_info = parser.parse_args(argv)
     process(args_info)
+
 
 if __name__ == "__main__":
     main()

@@ -8,9 +8,8 @@ section "Projectors"
 option "bp"    - "Backprojection method" values="VoxelBasedBackProjection","FDKBackProjection","FDKWarpBackProjection","Joseph","JosephAttenuated", "Zeng", "CudaFDKBackProjection","CudaBackProjection","CudaRayCast"  enum no default="VoxelBasedBackProjection"
 option "attenuationmap" - "Attenuation map relative to the volume to perfom the attenuation correction"   string  no
 option "sigmazero" - "PSF value at a distance of 0 meter of the detector"   double  no
-option "alphapsf" - "Slope of the PSF against the detector distance"   double  no 
+option "alphapsf" - "Slope of the PSF against the detector distance"   double  no
 
 section "Warped backprojection"
 option "signal"    - "Signal file name"          string    no
 option "dvf"       - "Input 4D DVF"              string    no
-

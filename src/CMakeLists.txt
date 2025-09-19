@@ -1,4 +1,5 @@
-set(RTK_SRCS
+set(
+  RTK_SRCS
   rtkBioscanGeometryReader.cxx
   rtkBoxShape.cxx
   rtkConditionalMedianImageFilter.cxx
@@ -50,7 +51,7 @@ set(RTK_SRCS
   rtkXRadGeometryReader.cxx
   rtkXRadImageIO.cxx
   rtkXRadImageIOFactory.cxx
-  )
+)
 
 #=========================================================
 # This is a fix for when using Module_ITKVtkGlue
@@ -62,13 +63,19 @@ foreach(def ${defCom})
     list(APPEND defComSansVTK ${def})
   endif()
 endforeach()
-set_directory_properties(PROPERTIES COMPILE_DEFINITIONS "${defComSansVTK}")
+set_directory_properties(
+  PROPERTIES
+    COMPILE_DEFINITIONS
+      "${defComSansVTK}"
+)
 
 #=========================================================
 # CUDA library
 #=========================================================
-if (RTK_USE_CUDA)
-  set(RTK_SRCS ${RTK_SRCS}
+if(RTK_USE_CUDA)
+  set(
+    RTK_SRCS
+    ${RTK_SRCS}
     rtkCudaAverageOutOfROIImageFilter.cxx
     rtkCudaConstantVolumeSeriesSource.cxx
     rtkCudaConstantVolumeSource.cxx
@@ -91,9 +98,12 @@ if (RTK_USE_CUDA)
     rtkCudaTotalVariationDenoisingBPDQImageFilter.cxx
     rtkCudaWarpBackProjectionImageFilter.cxx
     rtkCudaWarpForwardProjectionImageFilter.cxx
-    rtkCudaWarpImageFilter.cxx)
+    rtkCudaWarpImageFilter.cxx
+  )
 
-  set(RTK_SRCS ${RTK_SRCS}
+  set(
+    RTK_SRCS
+    ${RTK_SRCS}
     rtkCudaAverageOutOfROIImageFilter.cu
     rtkCudaBackProjectionImageFilter.cu
     rtkCudaConjugateGradientImageFilter.cu
@@ -122,14 +132,25 @@ if (RTK_USE_CUDA)
     rtkCudaWarpForwardProjectionImageFilter.cu
     rtkCudaWarpImageFilter.cu
     rtkCudaWeidingerForwardModelImageFilter.cu
-    )
+  )
 endif()
 #=========================================================
 
 itk_module_add_library(RTK ${RTK_SRCS})
 target_link_libraries(RTK PUBLIC lpsolve55)
 
-if (RTK_USE_CUDA)
-  target_link_libraries(RTK PUBLIC CUDA::cufft CUDA::cublas)
-  set_property(TARGET RTK PROPERTY CUDA_STANDARD ${CMAKE_CXX_STANDARD})
-endif ()
+if(RTK_USE_CUDA)
+  target_link_libraries(
+    RTK
+    PUBLIC
+      CUDA::cufft
+      CUDA::cublas
+  )
+  set_property(
+    TARGET
+      RTK
+    PROPERTY
+      CUDA_STANDARD
+        ${CMAKE_CXX_STANDARD}
+  )
+endif()

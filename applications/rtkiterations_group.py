@@ -5,6 +5,7 @@ __all__ = [
     "SetIterationsReportFromArgParse",
 ]
 
+
 # Mimicks rtkiterations_section.ggo
 def add_rtkiterations_group(parser):
     rtkiterations_group = parser.add_argument_group("Iteration reporting")

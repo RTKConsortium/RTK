@@ -10,4 +10,3 @@ if (${_index} EQUAL -1)
 
   itk_end_wrap_class()
 endif()
-

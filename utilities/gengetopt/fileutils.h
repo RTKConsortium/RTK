@@ -17,7 +17,9 @@
 
 using std::ofstream;
 
-char *create_filename (char *name, char *ext);
-ofstream *open_fstream (const char *filename);
+char *
+create_filename(char * name, char * ext);
+ofstream *
+open_fstream(const char * filename);
 
 #endif

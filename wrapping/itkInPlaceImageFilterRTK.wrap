@@ -114,4 +114,3 @@ itk_wrap_class("itk::InPlaceImageFilter" POINTER)
           "itk::VectorImage<${ITKT_D}, 3>, itk::VectorImage<${ITKT_D}, 3>")
   endif()
 itk_end_wrap_class()
-

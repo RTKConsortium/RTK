@@ -7,33 +7,33 @@
 #include "file_save_multiple.h"
 
 void
-file_save_multiple_gen_class::generate_file_save_multiple(ostream &stream, unsigned int indent)
+file_save_multiple_gen_class::generate_file_save_multiple(ostream & stream, unsigned int indent)
 {
-  string indent_str (indent, ' ');
+  string indent_str(indent, ' ');
   indent = 0;
 
   if (has_arg)
-    {
-      stream << "write_multiple_into_file(outfile, args_info->";
-      generate_string (opt_var, stream, indent + indent_str.length ());
-      stream << "_given, \"";
-      generate_string (opt_name, stream, indent + indent_str.length ());
-      stream << "\", args_info->";
-      generate_string (opt_var, stream, indent + indent_str.length ());
-      stream << "_orig, ";
-      generate_string (values, stream, indent + indent_str.length ());
-      stream << ");";
-      stream << "\n";
-      stream << indent_str;
-    }
+  {
+    stream << "write_multiple_into_file(outfile, args_info->";
+    generate_string(opt_var, stream, indent + indent_str.length());
+    stream << "_given, \"";
+    generate_string(opt_name, stream, indent + indent_str.length());
+    stream << "\", args_info->";
+    generate_string(opt_var, stream, indent + indent_str.length());
+    stream << "_orig, ";
+    generate_string(values, stream, indent + indent_str.length());
+    stream << ");";
+    stream << "\n";
+    stream << indent_str;
+  }
   else
-    {
-      stream << "write_multiple_into_file(outfile, args_info->";
-      generate_string (opt_var, stream, indent + indent_str.length ());
-      stream << "_given, \"";
-      generate_string (opt_name, stream, indent + indent_str.length ());
-      stream << "\", 0, 0);";
-      stream << "\n";
-      stream << indent_str;
-    }
+  {
+    stream << "write_multiple_into_file(outfile, args_info->";
+    generate_string(opt_var, stream, indent + indent_str.length());
+    stream << "_given, \"";
+    generate_string(opt_name, stream, indent + indent_str.length());
+    stream << "\", 0, 0);";
+    stream << "\n";
+    stream << indent_str;
+  }
 }

@@ -23,18 +23,21 @@ the values that can be passed to an option
 */
 class AcceptedValues : protected std::list<std::string>
 {
-  private:
-    typedef std::set<std::string> value_set;
-    value_set values;
+private:
+  typedef std::set<std::string> value_set;
+  value_set                     values;
 
-  public:
-    using std::list<std::string>::const_iterator;
-    using std::list<std::string>::begin;
-    using std::list<std::string>::end;
+public:
+  using std::list<std::string>::const_iterator;
+  using std::list<std::string>::begin;
+  using std::list<std::string>::end;
 
-    void insert(const std::string &s);
-    const std::string toString(bool escape = true) const;
-    bool contains(const std::string &s) const;
+  void
+  insert(const std::string & s);
+  const std::string
+  toString(bool escape = true) const;
+  bool
+  contains(const std::string & s) const;
 };
 
 #endif

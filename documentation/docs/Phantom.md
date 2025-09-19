@@ -132,7 +132,7 @@ Clip planes can be applied to any volume to restrict their extents.
 
 ## Function value `rho`
 
-The function (attenuation, emission, etc. depending on the context) value `rho` is defined absolutely in the shape. RTK automatically deduces how much must be added to the current background based on the center (`x`,`y`,`z`) of the shape (e.g. 0.5 if one adds a shape with `rho=1.5` in a shape with `rho=1`). This is order dependent so the same phantom shapes defined in different orders might result in different results. The background of a shape must be defined first. 
+The function (attenuation, emission, etc. depending on the context) value `rho` is defined absolutely in the shape. RTK automatically deduces how much must be added to the current background based on the center (`x`,`y`,`z`) of the shape (e.g. 0.5 if one adds a shape with `rho=1.5` in a shape with `rho=1`). This is order dependent so the same phantom shapes defined in different orders might result in different results. The background of a shape must be defined first.
 
 ## Union
 

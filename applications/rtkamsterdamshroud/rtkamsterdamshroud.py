@@ -25,7 +25,7 @@ def build_parser():
         "-c",
         help="3D clipbox for cropping projections (x1, x2, y1, y2, z1, z2) in mm",
         type=float,
-        nargs="+"
+        nargs="+",
     )
     parser.add_argument("--geometry", "-g", help="XML geometry file name", type=str)
 

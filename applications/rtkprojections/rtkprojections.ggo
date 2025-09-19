@@ -2,4 +2,3 @@ purpose "Reads raw projection images, converts them to attenuation and stacks th
 
 option "verbose"  v "Verbose execution"                                         flag      off
 option "output"   o "Output file name"                                          string    yes
-

@@ -1,5 +1,5 @@
 #ifdef FORTIFY
 
-#include "fortify.h"
+#  include "fortify.h"
 
 #endif
