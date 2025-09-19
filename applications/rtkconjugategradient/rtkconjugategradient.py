@@ -48,6 +48,7 @@ def build_parser():
     # Parse the command line arguments
     return parser
 
+
 def process(args_info: argparse.Namespace):
 
     OutputPixelType = itk.F
@@ -147,6 +148,7 @@ def process(args_info: argparse.Namespace):
     writer.SetFileName(args_info.output)
     writer.SetInput(conjugategradient.GetOutput())
     writer.Update()
+
 
 def main(argv=None):
     parser = build_parser()

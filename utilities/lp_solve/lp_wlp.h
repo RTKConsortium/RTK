@@ -5,17 +5,19 @@
 
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
-/* Put function headers here */
-MYBOOL LP_writefile(lprec *lp, const char *filename);
-MYBOOL LP_writehandle(lprec *lp, FILE *output);
+  /* Put function headers here */
+  MYBOOL
+  LP_writefile(lprec * lp, const char * filename);
+  MYBOOL
+  LP_writehandle(lprec * lp, FILE * output);
 
 
 #ifdef __cplusplus
- }
+}
 #endif
 
 #endif /* HEADER_lp_lp */
-

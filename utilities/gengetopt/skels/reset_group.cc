@@ -7,18 +7,18 @@
 #include "reset_group.h"
 
 void
-reset_group_gen_class::generate_reset_group(ostream &stream, unsigned int indent)
+reset_group_gen_class::generate_reset_group(ostream & stream, unsigned int indent)
 {
-  string indent_str (indent, ' ');
+  string indent_str(indent, ' ');
   indent = 0;
 
   stream << "static void";
   stream << "\n";
   stream << indent_str;
   stream << "reset_group_";
-  generate_string (name, stream, indent + indent_str.length ());
+  generate_string(name, stream, indent + indent_str.length());
   stream << "(struct ";
-  generate_string (args_info, stream, indent + indent_str.length ());
+  generate_string(args_info, stream, indent + indent_str.length());
   stream << " *args_info)";
   stream << "\n";
   stream << indent_str;
@@ -26,7 +26,7 @@ reset_group_gen_class::generate_reset_group(ostream &stream, unsigned int indent
   stream << "\n";
   stream << indent_str;
   stream << "  if (! args_info->";
-  generate_string (name, stream, indent + indent_str.length ());
+  generate_string(name, stream, indent + indent_str.length());
   stream << "_group_counter)";
   stream << "\n";
   stream << indent_str;
@@ -40,12 +40,12 @@ reset_group_gen_class::generate_reset_group(ostream &stream, unsigned int indent
   stream << indent_str;
   indent = 2;
   stream << "  ";
-  generate_string (body, stream, indent + indent_str.length ());
+  generate_string(body, stream, indent + indent_str.length());
   indent = 0;
   stream << "\n";
   stream << indent_str;
   stream << "  args_info->";
-  generate_string (name, stream, indent + indent_str.length ());
+  generate_string(name, stream, indent + indent_str.length());
   stream << "_group_counter = 0;";
   stream << "\n";
   stream << indent_str;

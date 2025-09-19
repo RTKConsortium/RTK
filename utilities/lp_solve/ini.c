@@ -6,71 +6,80 @@
 
 #include "ini.h"
 
-FILE *ini_create(const char *filename)
+FILE *
+ini_create(const char * filename)
 {
-  FILE *fp;
+  FILE * fp;
 
   fp = fopen(filename, "w");
 
-  return(fp);
+  return (fp);
 }
 
-FILE *ini_open(const char *filename)
+FILE *
+ini_open(const char * filename)
 {
-  FILE *fp;
+  FILE * fp;
 
   fp = fopen(filename, "r");
 
-  return(fp);
+  return (fp);
 }
 
-void ini_writecomment(FILE *fp, const char *comment)
+void
+ini_writecomment(FILE * fp, const char * comment)
 {
   fprintf(fp, "; %s\n", comment);
 }
 
-void ini_writeheader(FILE *fp, const char *header, int addnewline)
+void
+ini_writeheader(FILE * fp, const char * header, int addnewline)
 {
-  if((addnewline) && (ftell(fp) > 0))
+  if ((addnewline) && (ftell(fp) > 0))
     fputs("\n", fp);
   fprintf(fp, "[%s]\n", header);
 }
 
-void ini_writedata(FILE *fp, const char *name, const char *data)
+void
+ini_writedata(FILE * fp, const char * name, const char * data)
 {
-  if(name != NULL)
+  if (name != NULL)
     fprintf(fp, "%s=%s\n", name, data);
   else
     fprintf(fp, "%s\n", data);
 }
 
-int ini_readdata(FILE *fp, char * const data, int szdata, int withcomment)
+int
+ini_readdata(FILE * fp, char * const data, int szdata, int withcomment)
 {
-  int l;
-  char *ptr;
+  int    l;
+  char * ptr;
 
-  if(fgets(data, szdata, fp) == NULL)
-    return(0);
+  if (fgets(data, szdata, fp) == NULL)
+    return (0);
 
-  if(!withcomment) {
+  if (!withcomment)
+  {
     ptr = strchr(data, ';');
-    if(ptr != NULL)
+    if (ptr != NULL)
       *ptr = 0;
   }
 
-  l = (int) strlen(data);
-  while((l > 0) && (isspace(data[l - 1])))
+  l = (int)strlen(data);
+  while ((l > 0) && (isspace(data[l - 1])))
     l--;
   data[l] = 0;
-  if((l >= 2) && (data[0] == '[') && (data[l - 1] == ']')) {
+  if ((l >= 2) && (data[0] == '[') && (data[l - 1] == ']'))
+  {
     memcpy(data, data + 1, l - 2);
     data[l - 2] = 0;
-    return(1);
+    return (1);
   }
-  return(2);
+  return (2);
 }
 
-void ini_close(FILE *fp)
+void
+ini_close(FILE * fp)
 {
   fclose(fp);
 }

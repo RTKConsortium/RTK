@@ -7,35 +7,35 @@
 #include "init_args_info.h"
 
 void
-init_args_info_gen_class::generate_init_args_info(ostream &stream, unsigned int indent)
+init_args_info_gen_class::generate_init_args_info(ostream & stream, unsigned int indent)
 {
-  string indent_str (indent, ' ');
+  string indent_str(indent, ' ');
   indent = 0;
 
   stream << "args_info->";
-  generate_string (var_arg, stream, indent + indent_str.length ());
+  generate_string(var_arg, stream, indent + indent_str.length());
   stream << "_help = ";
-  generate_string (help_strings, stream, indent + indent_str.length ());
+  generate_string(help_strings, stream, indent + indent_str.length());
   stream << "[";
-  generate_string (num, stream, indent + indent_str.length ());
+  generate_string(num, stream, indent + indent_str.length());
   stream << "] ;";
   stream << "\n";
   stream << indent_str;
   if (multiple)
-    {
-      stream << "args_info->";
-      generate_string (var_arg, stream, indent + indent_str.length ());
-      stream << "_min = ";
-      generate_string (min, stream, indent + indent_str.length ());
-      stream << ";";
-      stream << "\n";
-      stream << indent_str;
-      stream << "args_info->";
-      generate_string (var_arg, stream, indent + indent_str.length ());
-      stream << "_max = ";
-      generate_string (max, stream, indent + indent_str.length ());
-      stream << ";";
-      stream << "\n";
-      stream << indent_str;
-    }
+  {
+    stream << "args_info->";
+    generate_string(var_arg, stream, indent + indent_str.length());
+    stream << "_min = ";
+    generate_string(min, stream, indent + indent_str.length());
+    stream << ";";
+    stream << "\n";
+    stream << indent_str;
+    stream << "args_info->";
+    generate_string(var_arg, stream, indent + indent_str.length());
+    stream << "_max = ";
+    generate_string(max, stream, indent + indent_str.length());
+    stream << ";";
+    stream << "\n";
+    stream << indent_str;
+  }
 }

@@ -2,7 +2,8 @@ set(DOCUMENTATION "")
 
 # -----------------------------------------
 #  Required Modules to build RTK library :
-set(RTK_IO_DEPENDS
+set(
+  RTK_IO_DEPENDS
   ITKIOCSV
   ITKIOGDCM
   ITKGDCM
@@ -10,15 +11,14 @@ set(RTK_IO_DEPENDS
   ITKIORAW
   ITKIOTIFF
   ITKIOXML
-  )
+)
 
 if(ITK_WRAP_PYTHON)
-  set(RTK_BRIDGE_DEPENDS
-  ITKBridgeNumPy
-  )
+  set(RTK_BRIDGE_DEPENDS ITKBridgeNumPy)
 endif()
 
-set(RTK_DEPENDS
+set(
+  RTK_DEPENDS
   ITKCommon
   ITKConvolution
   ITKFFT
@@ -28,12 +28,11 @@ set(RTK_DEPENDS
   ITKImageNoise
   ${RTK_IO_DEPENDS}
   ${RTK_BRIDGE_DEPENDS}
-  )
+)
 
 # -----------------------------------------
 #  Required Modules to build RTK tests :
-set(RTK_TEST_DEPENDS
-  ITKTestKernel)
+set(RTK_TEST_DEPENDS ITKTestKernel)
 
 # # -----------------------------------------
 # # CUDA optional dependencies
@@ -62,4 +61,4 @@ itk_module(RTK
     ImageIO::XRad
   DESCRIPTION
     "${DOCUMENTATION}"
-  )
+)
