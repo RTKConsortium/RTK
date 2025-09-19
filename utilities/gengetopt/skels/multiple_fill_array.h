@@ -15,67 +15,74 @@ using std::ostream;
 
 class multiple_fill_array_gen_class
 {
- protected:
+protected:
   string arg_type;
   string default_value;
   string option_var_name;
   string type;
 
- public:
-  multiple_fill_array_gen_class()
-  {
-  }
+public:
+  multiple_fill_array_gen_class() {}
 
-  multiple_fill_array_gen_class(const string &_arg_type, const string &_default_value, const string &_option_var_name, const string &_type) :
-    arg_type (_arg_type), default_value (_default_value), option_var_name (_option_var_name), type (_type)
-  {
-  }
+  multiple_fill_array_gen_class(const string & _arg_type,
+                                const string & _default_value,
+                                const string & _option_var_name,
+                                const string & _type)
+    : arg_type(_arg_type)
+    , default_value(_default_value)
+    , option_var_name(_option_var_name)
+    , type(_type)
+  {}
 
   static void
-  generate_string(const string &s, ostream &stream, unsigned int indent)
+  generate_string(const string & s, ostream & stream, unsigned int indent)
   {
     if (!indent || s.find('\n') == string::npos)
-      {
-        stream << s;
-        return;
-      }
+    {
+      stream << s;
+      return;
+    }
 
     string::size_type pos;
     string::size_type start = 0;
-    string ind (indent, ' ');
-    while ( (pos=s.find('\n', start)) != string::npos)
-      {
-        stream << s.substr (start, (pos+1)-start);
-        start = pos+1;
-        if (start+1 <= s.size ())
-          stream << ind;
-      }
-    if (start+1 <= s.size ())
-      stream << s.substr (start);
+    string            ind(indent, ' ');
+    while ((pos = s.find('\n', start)) != string::npos)
+    {
+      stream << s.substr(start, (pos + 1) - start);
+      start = pos + 1;
+      if (start + 1 <= s.size())
+        stream << ind;
+    }
+    if (start + 1 <= s.size())
+      stream << s.substr(start);
   }
 
-  void set_arg_type(const string &_arg_type)
+  void
+  set_arg_type(const string & _arg_type)
   {
     arg_type = _arg_type;
   }
 
-  void set_default_value(const string &_default_value)
+  void
+  set_default_value(const string & _default_value)
   {
     default_value = _default_value;
   }
 
-  void set_option_var_name(const string &_option_var_name)
+  void
+  set_option_var_name(const string & _option_var_name)
   {
     option_var_name = _option_var_name;
   }
 
-  void set_type(const string &_type)
+  void
+  set_type(const string & _type)
   {
     type = _type;
   }
 
-  void generate_multiple_fill_array(ostream &stream, unsigned int indent = 0);
-
+  void
+  generate_multiple_fill_array(ostream & stream, unsigned int indent = 0);
 };
 
 #endif // MULTIPLE_FILL_ARRAY_GEN_CLASS_H

@@ -3,4 +3,3 @@ purpose "Saves the sparse system matrix of rtk::JosephForwardProjectionImageFilt
 option "verbose"   v "Verbose execution"                                     flag   off
 option "geometry"  g  "XML geometry file name"                               string yes
 option "output"    o "Output file name for the sparse matrix"                string yes
-

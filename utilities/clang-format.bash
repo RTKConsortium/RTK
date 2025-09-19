@@ -19,4 +19,3 @@ for i in \
 do
 	clang-format -style=file -i $i
 done
-

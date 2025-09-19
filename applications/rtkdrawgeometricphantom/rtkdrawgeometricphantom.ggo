@@ -7,4 +7,3 @@ option "noise"        - "Gaussian noise parameter (SD)"             double      
 option "phantomscale" - "Scaling factor for the phantom dimensions" double multiple no default="1."
 option "offset"       - "3D spatial offset of the phantom center"   double multiple no
 option "rotation"     - "Rotation matrix for the phantom"           double multiple no
-

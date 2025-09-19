@@ -10,37 +10,43 @@ def write_signal_to_text_file(signal_image, filename):
     signal_array = itk.array_from_image(signal_image)
 
     # Write to text file
-    with open(filename, 'w') as f:
+    with open(filename, "w") as f:
         for value in signal_array.flatten():
             f.write(f"{value}\n")
 
 
 def build_parser():
-    parser = rtk.RTKArgumentParser(
-        description="Extracts the phase from a signal."
-    )
+    parser = rtk.RTKArgumentParser(description="Extracts the phase from a signal.")
 
     # General options
     parser.add_argument(
         "--verbose", "-v", help="Verbose execution", action="store_true"
     )
+    parser.add_argument("--input", "-i", help="Input signal", type=str, required=True)
     parser.add_argument(
-        "--input", "-i", help="Input signal", type=str, required=True
+        "--output",
+        "-o",
+        help="Output file name for the Hilbert phase signal",
+        type=str,
+        required=True,
     )
     parser.add_argument(
-        "--output", "-o", help="Output file name for the Hilbert phase signal", type=str, required=True
+        "--movavg",
+        help="Moving average size applied before phase extraction",
+        type=int,
+        default=1,
     )
     parser.add_argument(
-        "--movavg", help="Moving average size applied before phase extraction", type=int, default=1
-    )
-    parser.add_argument(
-        "--unsharp", help="Unsharp mask size applied before phase extraction", type=int, default=55
+        "--unsharp",
+        help="Unsharp mask size applied before phase extraction",
+        type=int,
+        default=55,
     )
     parser.add_argument(
         "--model",
         help="Phase model",
         choices=["LOCAL_PHASE", "LINEAR_BETWEEN_MINIMA", "LINEAR_BETWEEN_MAXIMA"],
-        default="LINEAR_BETWEEN_MINIMA"
+        default="LINEAR_BETWEEN_MINIMA",
     )
 
     return parser
@@ -72,7 +78,7 @@ def process(args_info: argparse.Namespace):
     model_values = {
         "LOCAL_PHASE": 0,
         "LINEAR_BETWEEN_MINIMA": 1,
-        "LINEAR_BETWEEN_MAXIMA": 2
+        "LINEAR_BETWEEN_MAXIMA": 2,
     }
     phase.SetModel(model_values[args_info.model])
 

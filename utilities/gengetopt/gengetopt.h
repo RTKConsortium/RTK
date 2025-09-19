@@ -24,11 +24,16 @@
 #include "acceptedvalues.h"
 #include "ggos.h"
 
-int gengetopt_define_package (char * s) ;
-int gengetopt_define_version (char * s) ;
-int gengetopt_define_purpose (char * s) ;
-int gengetopt_define_description (char * s) ;
-int gengetopt_define_usage (char * s) ;
+int
+gengetopt_define_package(char * s);
+int
+gengetopt_define_version(char * s);
+int
+gengetopt_define_purpose(char * s);
+int
+gengetopt_define_description(char * s);
+int
+gengetopt_define_usage(char * s);
 
 /**
  * Sets the "global" section specification that will be then set
@@ -36,40 +41,52 @@ int gengetopt_define_usage (char * s) ;
  * @param s The section
  * @param sd The section description
  */
-void gengetopt_set_section (const char * s, const char *sd) ;
+void
+gengetopt_set_section(const char * s, const char * sd);
 
 /**
  * Sets the "global" text string that will be inserted in
  * a specific field of the next option
  * @param desc The text string
  */
-void gengetopt_set_text (const char * desc) ;
+void
+gengetopt_set_text(const char * desc);
 
 /**
  * Sets the "global" text string containing the arguments
  * that complement the command line arguments of gengetopt.
  * @param args
  */
-void gengetopt_set_args (const char *args);
+void
+gengetopt_set_args(const char * args);
 
-int gengetopt_add_group (const char * s, const char *desc, int required) ;
-int gengetopt_add_mode (const char * s, const char *desc) ;
+int
+gengetopt_add_group(const char * s, const char * desc, int required);
+int
+gengetopt_add_mode(const char * s, const char * desc);
 
-int gengetopt_has_option (const char * long_opt, char short_opt);
-int gengetopt_add_option (const char * long_opt, char short_opt,
-                          const char * desc,
-                          int type, int flagstat, int required,
-                          const char *default_value,
-                          const char * group_value,
-                          const char * mode_value,
-                          const char * type_str,
-                          const AcceptedValues *acceptedvalues,
-                          int multiple = 0,
-                          int argoptional = 0);
+int
+gengetopt_has_option(const char * long_opt, char short_opt);
+int
+gengetopt_add_option(const char *           long_opt,
+                     char                   short_opt,
+                     const char *           desc,
+                     int                    type,
+                     int                    flagstat,
+                     int                    required,
+                     const char *           default_value,
+                     const char *           group_value,
+                     const char *           mode_value,
+                     const char *           type_str,
+                     const AcceptedValues * acceptedvalues,
+                     int                    multiple = 0,
+                     int                    argoptional = 0);
 
-int gengetopt_has_option (gengetopt_option *opt);
-int gengetopt_check_option (gengetopt_option *opt,
-    bool groupoption = false, bool modeoption = false);
-int gengetopt_add_option (gengetopt_option *opt);
+int
+gengetopt_has_option(gengetopt_option * opt);
+int
+gengetopt_check_option(gengetopt_option * opt, bool groupoption = false, bool modeoption = false);
+int
+gengetopt_add_option(gengetopt_option * opt);
 
 #endif /* _GENGETOPT_H */

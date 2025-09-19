@@ -7,6 +7,7 @@ __all__ = [
     "GetProjectionsFileNamesFromArgParse",
 ]
 
+
 # Mimicks rtkinputprojections_section.ggo
 def add_rtkinputprojections_group(parser):
     rtkinputprojections_group = parser.add_argument_group(
@@ -146,13 +147,16 @@ def GetProjectionsFileNamesFromArgParse(args_info):
 
     fileNames = []
     for fn in names.GetFileNames():
-        imageio = itk.ImageIOFactory.CreateImageIO(fn, itk.CommonEnums.IOFileMode_ReadMode)
+        imageio = itk.ImageIOFactory.CreateImageIO(
+            fn, itk.CommonEnums.IOFileMode_ReadMode
+        )
         if imageio is None:
             print(f"Ignoring file: {fn}")
             continue
         fileNames.append(fn)
 
     return fileNames
+
 
 # Mimicks SetProjectionsReaderFromGgo
 def SetProjectionsReaderFromArgParse(reader, args_info):

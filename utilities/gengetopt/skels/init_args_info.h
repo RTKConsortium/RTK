@@ -15,80 +15,94 @@ using std::ostream;
 
 class init_args_info_gen_class
 {
- protected:
+protected:
   string help_strings;
   string max;
   string min;
-  bool multiple;
+  bool   multiple;
   string num;
   string var_arg;
 
- public:
-  init_args_info_gen_class() :
-    multiple (false)
-  {
-  }
+public:
+  init_args_info_gen_class()
+    : multiple(false)
+  {}
 
-  init_args_info_gen_class(const string &_help_strings, const string &_max, const string &_min, bool _multiple, const string &_num, const string &_var_arg) :
-    help_strings (_help_strings), max (_max), min (_min), multiple (_multiple), num (_num), var_arg (_var_arg)
-  {
-  }
+  init_args_info_gen_class(const string & _help_strings,
+                           const string & _max,
+                           const string & _min,
+                           bool           _multiple,
+                           const string & _num,
+                           const string & _var_arg)
+    : help_strings(_help_strings)
+    , max(_max)
+    , min(_min)
+    , multiple(_multiple)
+    , num(_num)
+    , var_arg(_var_arg)
+  {}
 
   static void
-  generate_string(const string &s, ostream &stream, unsigned int indent)
+  generate_string(const string & s, ostream & stream, unsigned int indent)
   {
     if (!indent || s.find('\n') == string::npos)
-      {
-        stream << s;
-        return;
-      }
+    {
+      stream << s;
+      return;
+    }
 
     string::size_type pos;
     string::size_type start = 0;
-    string ind (indent, ' ');
-    while ( (pos=s.find('\n', start)) != string::npos)
-      {
-        stream << s.substr (start, (pos+1)-start);
-        start = pos+1;
-        if (start+1 <= s.size ())
-          stream << ind;
-      }
-    if (start+1 <= s.size ())
-      stream << s.substr (start);
+    string            ind(indent, ' ');
+    while ((pos = s.find('\n', start)) != string::npos)
+    {
+      stream << s.substr(start, (pos + 1) - start);
+      start = pos + 1;
+      if (start + 1 <= s.size())
+        stream << ind;
+    }
+    if (start + 1 <= s.size())
+      stream << s.substr(start);
   }
 
-  void set_help_strings(const string &_help_strings)
+  void
+  set_help_strings(const string & _help_strings)
   {
     help_strings = _help_strings;
   }
 
-  void set_max(const string &_max)
+  void
+  set_max(const string & _max)
   {
     max = _max;
   }
 
-  void set_min(const string &_min)
+  void
+  set_min(const string & _min)
   {
     min = _min;
   }
 
-  void set_multiple(bool _multiple)
+  void
+  set_multiple(bool _multiple)
   {
     multiple = _multiple;
   }
 
-  void set_num(const string &_num)
+  void
+  set_num(const string & _num)
   {
     num = _num;
   }
 
-  void set_var_arg(const string &_var_arg)
+  void
+  set_var_arg(const string & _var_arg)
   {
     var_arg = _var_arg;
   }
 
-  void generate_init_args_info(ostream &stream, unsigned int indent = 0);
-
+  void
+  generate_init_args_info(ostream & stream, unsigned int indent = 0);
 };
 
 #endif // INIT_ARGS_INFO_GEN_CLASS_H

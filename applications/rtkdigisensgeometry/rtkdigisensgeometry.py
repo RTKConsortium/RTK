@@ -1,6 +1,7 @@
 import argparse
 from itk import RTK as rtk
 
+
 def build_parser():
     parser = rtk.RTKArgumentParser(
         description="Read Digisens geometry XML and write RTK geometry XML file."
@@ -15,6 +16,7 @@ def build_parser():
         "--verbose", "-v", action="store_true", help="Enable verbose output"
     )
     return parser
+
 
 def process(args_info: argparse.Namespace):
     # Create geometry reader
@@ -31,10 +33,12 @@ def process(args_info: argparse.Namespace):
     if args_info.verbose:
         print("Done.")
 
+
 def main(argv=None):
     parser = build_parser()
     args_info = parser.parse_args(argv)
     process(args_info)
+
 
 if __name__ == "__main__":
     main()

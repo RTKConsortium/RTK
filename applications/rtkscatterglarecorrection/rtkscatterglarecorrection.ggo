@@ -7,4 +7,3 @@ option "difference"   d "Output the difference between input and corrected image
 
 section "Algorithm parameters"
 option "coefficients"  c  "Deconvolution kernel coefficients"                   float   multiple yes
-

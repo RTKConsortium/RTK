@@ -3,4 +3,3 @@ purpose "Creates an RTK geometry file from an acquisition exported on the XRad s
 option "verbose"   v "Verbose execution"                 flag   off
 option "input"     i "Input sinogram header file"        string yes
 option "output"    o "Output file name"                  string yes
-

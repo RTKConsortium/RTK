@@ -7,8 +7,14 @@ macro(rtk_module_warnings_disable)
   # per ITK External/Remote module through the inclusion of ITKModuleExternal.
   foreach(lang ${ARGN})
     if(MSVC)
-      string(REGEX REPLACE "(^| )[/-]W[0-4]( |$)" " "
-        CMAKE_${lang}_FLAGS "${CMAKE_${lang}_FLAGS}")
+      string(
+        REGEX
+        REPLACE
+        "(^| )[/-]W[0-4]( |$)"
+        " "
+        CMAKE_${lang}_FLAGS
+        "${CMAKE_${lang}_FLAGS}"
+      )
       set(CMAKE_${lang}_FLAGS "${CMAKE_${lang}_FLAGS} /W0")
     elseif(BORLAND)
       set(CMAKE_${lang}_FLAGS "${CMAKE_${lang}_FLAGS} -w-")

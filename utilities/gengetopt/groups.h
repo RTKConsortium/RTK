@@ -30,12 +30,15 @@
 struct Group
 {
   string desc;
-  bool required;
+  bool   required;
 
-  Group(const string &s, bool r) : desc (s), required (r) {}
+  Group(const string & s, bool r)
+    : desc(s)
+    , required(r)
+  {}
 };
 
-typedef map<string,Group> groups_collection_t;
+typedef map<string, Group> groups_collection_t;
 
 /**
  * Represents a mode of options
@@ -44,9 +47,11 @@ struct Mode
 {
   string desc;
 
-  Mode(const string &s) : desc (s) {}
+  Mode(const string & s)
+    : desc(s)
+  {}
 };
 
-typedef map<string,Mode> modes_collection_t;
+typedef map<string, Mode> modes_collection_t;
 
 #endif // GROUPS_H

@@ -14,26 +14,26 @@ def add_rtk3Doutputimage_group(parser):
         "--origin",
         help="Origin (default=centered)",
         type=float,
-        nargs='+',
+        nargs="+",
     )
     rtk3Doutputimage_group.add_argument(
         "--size",
         help="Size",
         type=int,
-        nargs='+',
+        nargs="+",
         default=[256],
     )
     rtk3Doutputimage_group.add_argument(
         "--dimension",
         help="Dimension",
         type=int,
-        nargs='+',
+        nargs="+",
     )
     rtk3Doutputimage_group.add_argument(
-        "--spacing", help="Spacing", type=float, nargs='+', default=[1]
+        "--spacing", help="Spacing", type=float, nargs="+", default=[1]
     )
     rtk3Doutputimage_group.add_argument(
-        "--direction", help="Direction", type=float, nargs='+'
+        "--direction", help="Direction", type=float, nargs="+"
     )
     rtk3Doutputimage_group.add_argument(
         "--like",

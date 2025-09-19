@@ -15,49 +15,47 @@ using std::ostream;
 
 class update_given_gen_class
 {
- protected:
+protected:
   string option_var_name;
 
- public:
-  update_given_gen_class()
-  {
-  }
+public:
+  update_given_gen_class() {}
 
-  update_given_gen_class(const string &_option_var_name) :
-    option_var_name (_option_var_name)
-  {
-  }
+  update_given_gen_class(const string & _option_var_name)
+    : option_var_name(_option_var_name)
+  {}
 
   static void
-  generate_string(const string &s, ostream &stream, unsigned int indent)
+  generate_string(const string & s, ostream & stream, unsigned int indent)
   {
     if (!indent || s.find('\n') == string::npos)
-      {
-        stream << s;
-        return;
-      }
+    {
+      stream << s;
+      return;
+    }
 
     string::size_type pos;
     string::size_type start = 0;
-    string ind (indent, ' ');
-    while ( (pos=s.find('\n', start)) != string::npos)
-      {
-        stream << s.substr (start, (pos+1)-start);
-        start = pos+1;
-        if (start+1 <= s.size ())
-          stream << ind;
-      }
-    if (start+1 <= s.size ())
-      stream << s.substr (start);
+    string            ind(indent, ' ');
+    while ((pos = s.find('\n', start)) != string::npos)
+    {
+      stream << s.substr(start, (pos + 1) - start);
+      start = pos + 1;
+      if (start + 1 <= s.size())
+        stream << ind;
+    }
+    if (start + 1 <= s.size())
+      stream << s.substr(start);
   }
 
-  void set_option_var_name(const string &_option_var_name)
+  void
+  set_option_var_name(const string & _option_var_name)
   {
     option_var_name = _option_var_name;
   }
 
-  void generate_update_given(ostream &stream, unsigned int indent = 0);
-
+  void
+  generate_update_given(ostream & stream, unsigned int indent = 0);
 };
 
 #endif // UPDATE_GIVEN_GEN_CLASS_H

@@ -23,4 +23,3 @@ if(RTK_USE_CUDA)
   itk_end_wrap_class()
 
 endif()
-

@@ -1,12 +1,14 @@
-configure_file (${CMAKE_CURRENT_SOURCE_DIR}/rtkTestConfiguration.h.in
-  ${RTK_BINARY_DIR}/include/rtkTestConfiguration.h)
+configure_file(
+  ${CMAKE_CURRENT_SOURCE_DIR}/rtkTestConfiguration.h.in
+  ${RTK_BINARY_DIR}/include/rtkTestConfiguration.h
+)
 
 #-----------------------------------------------------------------------------
 # Find ITK.
 # Required to include ITK_USE_FILE in order to Register IO factories
 # Force requested modules to be RTK dependencies only, otherwise all
 # available factories will try to register themselves.
-if (NOT ITK_DIR)
+if(NOT ITK_DIR)
   set(ITK_DIR ${ITK_BINARY_DIR}/CMakeTmp)
 endif()
 find_package(ITK REQUIRED COMPONENTS ${ITK_MODULE_RTK_DEPENDS})
@@ -17,11 +19,16 @@ include(${ITK_USE_FILE})
 # Add regular test as opposed to tests depending on CUDA
 function(rtk_add_test testname testfile)
   add_executable(${testname} ${testfile})
-  target_link_libraries( ${testname} ${RTK_LIBRARIES} ${ITK_LIBRARIES})
+  target_link_libraries(
+    ${testname}
+    ${RTK_LIBRARIES}
+    ${ITK_LIBRARIES}
+  )
   itk_add_test(NAME ${testname}
     COMMAND itkTestDriver
     $<TARGET_FILE:${testname}>
-    ${ARGN})
+    ${ARGN}
+  )
 endfunction()
 
 #-----------------------------------------------------------------------------
@@ -30,15 +37,24 @@ endfunction()
 function(rtk_add_cuda_test testname testfile)
   if(RTK_USE_CUDA)
     add_executable(${testname} ${testfile})
-    target_link_libraries( ${testname} ${RTK_LIBRARIES} ${ITK_LIBRARIES})
+    target_link_libraries(
+      ${testname}
+      ${RTK_LIBRARIES}
+      ${ITK_LIBRARIES}
+    )
     itk_add_test(NAME ${testname}
       COMMAND itkTestDriver
       $<TARGET_FILE:${testname}>
-      ${ARGN})
-    set_target_properties(${testname} PROPERTIES COMPILE_FLAGS -DUSE_CUDA)
+      ${ARGN}
+    )
+    set_target_properties(
+      ${testname}
+      PROPERTIES
+        COMPILE_FLAGS
+          -DUSE_CUDA
+    )
   endif()
 endfunction()
-
 
 itk_module_test()
 
@@ -111,19 +127,22 @@ rtk_add_test(rtkDecomposeSpectralProjectionsTest rtkdecomposespectralprojections
   DATA{Input/Spectral/no_vector_incident_spectrum.mha}
   DATA{Input/Spectral/detector_response.mha}
   DATA{Input/Spectral/material_attenuations.mha}
-  DATA{Input/Spectral/incident_spectrum.mha})
+  DATA{Input/Spectral/incident_spectrum.mha}
+)
 
 rtk_add_test(rtkSpectralOneStepTest rtkspectralonesteptest.cxx
   DATA{Input/Spectral/OneStep/no_vector_incident_spectrum_64_rows.mha}
   DATA{Input/Spectral/OneStep/incident_spectrum_64_rows.mha}
   DATA{Input/Spectral/detector_response.mha}
-  DATA{Input/Spectral/material_attenuations.mha})
+  DATA{Input/Spectral/material_attenuations.mha}
+)
 
 rtk_add_test(rtkVectorImageConvertersTest rtkvectorimageconverterstest.cxx)
 
 rtk_add_test(rtkAmsterdamShroudTest rtkamsterdamshroudtest.cxx
   DATA{Baseline/AmsterdamShroud/Amsterdam_crop.mha}
-  DATA{Baseline/AmsterdamShroud/Amsterdam.mha})
+  DATA{Baseline/AmsterdamShroud/Amsterdam.mha}
+)
 
 rtk_add_test(rtkVarianTest rtkvariantest.cxx
   DATA{Input/Varian/raw.hnd}
@@ -136,7 +155,8 @@ rtk_add_test(rtkVarianTest rtkvariantest.cxx
   DATA{Baseline/Varian/geometryProBeam.xml}
   DATA{Baseline/Varian/attenuationProBeam.mha}
   DATA{Baseline/Varian/geometryHnc.xml}
-  DATA{Baseline/Varian/attenuationHnc.mha})
+  DATA{Baseline/Varian/attenuationHnc.mha}
+)
 
 rtk_add_test(rtkElektaTest rtkelektatest.cxx
   DATA{Input/Elekta/IMAGE.DBF}
@@ -145,11 +165,13 @@ rtk_add_test(rtkElektaTest rtkelektatest.cxx
   DATA{Input/Elekta/_Frames.xml}
   DATA{Baseline/Elekta/geometry.xml}
   DATA{Baseline/Elekta/attenuation.mha}
-  DATA{Baseline/Elekta/geometry5.xml})
+  DATA{Baseline/Elekta/geometry5.xml}
+)
 
 rtk_add_test(rtkLUTTest rtkluttest.cxx
   DATA{Input/Elekta/raw.his}
-  DATA{Baseline/Elekta/attenuation.mha})
+  DATA{Baseline/Elekta/attenuation.mha}
+)
 
 rtk_add_test(rtkImagXTest rtkimagxtest.cxx
   DATA{Input/ImagX/1.dcm}
@@ -158,30 +180,36 @@ rtk_add_test(rtkImagXTest rtkimagxtest.cxx
   DATA{Input/ImagX/raw.xml,raw.raw}
   DATA{Baseline/ImagX/geo.xml}
   DATA{Baseline/ImagX/attenuation.mha}
-  DATA{Baseline/ImagX/attenuationDCM.mha})
+  DATA{Baseline/ImagX/attenuationDCM.mha}
+)
 
 rtk_add_test(rtkEdfTest rtkedftest.cxx
   DATA{Input/ESRF/raw.edf,dark.edf,refHST0000.edf}
-  DATA{Baseline/ESRF/attenuation.mha})
+  DATA{Baseline/ESRF/attenuation.mha}
+)
 
 rtk_add_test(rtkDigisensTest rtkdigisenstest.cxx
   DATA{Input/Digisens/calibration.cal}
   DATA{Input/Digisens/ima0010.tif}
   DATA{Baseline/Digisens/geometry.xml}
-  DATA{Baseline/Digisens/attenuation.mha})
+  DATA{Baseline/Digisens/attenuation.mha}
+)
 
 rtk_add_test(rtkXRadTest rtkxradtest.cxx
   DATA{Input/XRad/SolidWater_HiGain1x1.header}
   DATA{Input/XRad/SolidWater_HiGain1x1_firstProj.header,flat.header,flat.img,dark.header,dark.img,SolidWater_HiGain1x1_firstProj.img}
   DATA{Baseline/XRad/geometry.xml}
-  DATA{Baseline/XRad/attenuation.mha})
+  DATA{Baseline/XRad/attenuation.mha}
+)
 
 rtk_add_test(rtkProjectGeometricPhantomTest rtkprojectgeometricphantomtest.cxx
-  DATA{Input/GeometricPhantom/SheppLogan_forbild.txt})
+  DATA{Input/GeometricPhantom/SheppLogan_forbild.txt}
+)
 
 rtk_add_test(rtkDrawGeometricPhantomTest rtkdrawgeometricphantomtest.cxx
   DATA{Input/GeometricPhantom/SheppLogan_forbild.txt}
-  DATA{Input/GeometricPhantom/Geometries_Forbild.txt})
+  DATA{Input/GeometricPhantom/Geometries_Forbild.txt}
+)
 
 rtk_add_test(rtkWeidingerForwardModelTest rtkweidingerforwardmodeltest.cxx
   DATA{Input/Spectral/OneStep/materialProjections.mha}
@@ -191,12 +219,14 @@ rtk_add_test(rtkWeidingerForwardModelTest rtkweidingerforwardmodeltest.cxx
   DATA{Input/Spectral/OneStep/binnedDetectorResponse.csv}
   DATA{Input/Spectral/OneStep/materialAttenuations.csv}
   DATA{Baseline/Spectral/OneStep/out1.mha}
-  DATA{Baseline/Spectral/OneStep/out2.mha})
+  DATA{Baseline/Spectral/OneStep/out2.mha}
+)
 
 rtk_add_test(rtkNewtonUpdateTest rtknewtonupdatetest.cxx
   DATA{Input/Spectral/OneStep/gradient.mha}
   DATA{Input/Spectral/OneStep/hessian.mha}
-  DATA{Baseline/Spectral/OneStep/newtonUpdate.mha})
+  DATA{Baseline/Spectral/OneStep/newtonUpdate.mha}
+)
 
 rtk_add_test(rtkSartTest rtksarttest.cxx)
 rtk_add_cuda_test(rtkSartCudaTest rtksarttest.cxx)
@@ -219,20 +249,23 @@ rtk_add_cuda_test(rtkWarpProjectionStackToFourDCudaTest rtkwarpprojectionstackto
 rtk_add_test(rtkCylindricalDetectorReconstructionTest rtkcylindricaldetectorreconstructiontest.cxx)
 rtk_add_cuda_test(rtkCylindricalDetectorReconstructionCudaTest rtkcylindricaldetectorreconstructiontest.cxx)
 
-
 rtk_add_test(rtkAdjointOperatorsTest rtkadjointoperatorstest.cxx)
 rtk_add_cuda_test(rtkAdjointOperatorsCudaTest rtkadjointoperatorstest.cxx)
 
 rtk_add_test(rtkFourDAdjointOperatorsTest rtkfourdadjointoperatorstest.cxx
-  DATA{Input/Phases/phases_slow.txt})
+  DATA{Input/Phases/phases_slow.txt}
+)
 
 rtk_add_test(rtkInterpolateSplatAdjointTest rtkinterpolatesplatadjointtest.cxx
-  DATA{Input/Phases/phases_slow.txt})
+  DATA{Input/Phases/phases_slow.txt}
+)
 
 rtk_add_test(rtkLaplacianTest rtklaplaciantest.cxx
-  DATA{Baseline/Laplacian/Laplacian.mha})
+  DATA{Baseline/Laplacian/Laplacian.mha}
+)
 rtk_add_cuda_test(rtkLaplacianCudaTest rtklaplaciantest.cxx
-  DATA{Baseline/Laplacian/Laplacian.mha})
+  DATA{Baseline/Laplacian/Laplacian.mha}
+)
 
 rtk_add_test(rtkTotalVariationTest rtktotalvariationtest.cxx)
 
@@ -264,7 +297,8 @@ if(NOT RTK_USE_CUDA)
 
   rtk_add_test(rtkADMMTotalVariationTest rtkadmmtotalvariationtest.cxx
     DATA{Input/Phases/phases.txt}
-    DATA{Input/Phases/phases_3projs.txt})
+    DATA{Input/Phases/phases_3projs.txt}
+  )
 
   rtk_add_test(rtkRegularizedConjugateGradientTest rtkregularizedconjugategradienttest.cxx)
 
@@ -277,7 +311,8 @@ rtk_add_cuda_test(rtkFourDRoosterCudaTest rtkfourdroostertest.cxx)
 rtk_add_cuda_test(rtkADMMWaveletsCudaTest rtkadmmwaveletstest.cxx)
 rtk_add_cuda_test(rtkADMMTotalVariationCudaTest rtkadmmtotalvariationtest.cxx
   DATA{Input/Phases/phases.txt}
-  DATA{Input/Phases/phases_3projs.txt})
+  DATA{Input/Phases/phases_3projs.txt}
+)
 rtk_add_cuda_test(rtkRegularizedConjugateGradientCudaTest rtkregularizedconjugategradienttest.cxx)
 rtk_add_cuda_test(rtkCudaRaycastAdjointOperatorsCudaTest rtkcudaraycastadjointoperatorstest.cxx)
 rtk_add_cuda_test(rtkCyclicDeformationCudaTest rtkcyclicdeformationtest.cxx)
@@ -297,11 +332,13 @@ rtk_add_test(rtkOraTest rtkoratest.cxx
   DATA{Input/Ora/2006137_20220918183246810.ora.xml,2006137_20220918183246810.mhd}
   DATA{Baseline/Ora/geometry_yawtilt.xml}
   DATA{Baseline/Ora/geometry_optitrack.xml}
-  DATA{Baseline/Ora/attenuation.mha})
+  DATA{Baseline/Ora/attenuation.mha}
+)
 
 rtk_add_test(rtkBioscanTest rtkbioscantest.cxx
   DATA{Input/Bioscan/bioscan.dcm}
-  DATA{Baseline/Bioscan/geometry.xml})
+  DATA{Baseline/Bioscan/geometry.xml}
+)
 
 rtk_add_test(rtkVarianceReconstructionTest rtkvariancereconstructiontest.cxx)
 
@@ -318,11 +355,14 @@ rtk_add_cuda_test(rtkFirstCudaReconstructionExampleTest
   ${CMAKE_CURRENT_BINARY_DIR}/FirstCudaReconstruction.xml
 )
 rtk_add_test(rtkInlineReconstructionExampleTest
-  ../examples/InlineReconstruction/InlineReconstruction.cxx)
+  ../examples/InlineReconstruction/InlineReconstruction.cxx
+)
 rtk_add_cuda_test(rtkCudaInlineReconstructionExampleTest
-  ../examples/InlineReconstruction/InlineReconstruction.cxx)
+  ../examples/InlineReconstruction/InlineReconstruction.cxx
+)
 rtk_add_test(rtkAddNoiseExampleTest
-  ../examples/AddNoise/AddNoise.cxx)
+  ../examples/AddNoise/AddNoise.cxx
+)
 rtk_add_test(rtkGeometricPhantomExampleTest
   ../examples/GeometricPhantom/GeometricPhantom.cxx
   DATA{Input/Forbild/Thorax}

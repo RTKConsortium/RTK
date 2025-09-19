@@ -15,49 +15,47 @@ using std::ostream;
 
 class multiple_opt_list_gen_class
 {
- protected:
+protected:
   string arg_name;
 
- public:
-  multiple_opt_list_gen_class()
-  {
-  }
+public:
+  multiple_opt_list_gen_class() {}
 
-  multiple_opt_list_gen_class(const string &_arg_name) :
-    arg_name (_arg_name)
-  {
-  }
+  multiple_opt_list_gen_class(const string & _arg_name)
+    : arg_name(_arg_name)
+  {}
 
   static void
-  generate_string(const string &s, ostream &stream, unsigned int indent)
+  generate_string(const string & s, ostream & stream, unsigned int indent)
   {
     if (!indent || s.find('\n') == string::npos)
-      {
-        stream << s;
-        return;
-      }
+    {
+      stream << s;
+      return;
+    }
 
     string::size_type pos;
     string::size_type start = 0;
-    string ind (indent, ' ');
-    while ( (pos=s.find('\n', start)) != string::npos)
-      {
-        stream << s.substr (start, (pos+1)-start);
-        start = pos+1;
-        if (start+1 <= s.size ())
-          stream << ind;
-      }
-    if (start+1 <= s.size ())
-      stream << s.substr (start);
+    string            ind(indent, ' ');
+    while ((pos = s.find('\n', start)) != string::npos)
+    {
+      stream << s.substr(start, (pos + 1) - start);
+      start = pos + 1;
+      if (start + 1 <= s.size())
+        stream << ind;
+    }
+    if (start + 1 <= s.size())
+      stream << s.substr(start);
   }
 
-  void set_arg_name(const string &_arg_name)
+  void
+  set_arg_name(const string & _arg_name)
   {
     arg_name = _arg_name;
   }
 
-  void generate_multiple_opt_list(ostream &stream, unsigned int indent = 0);
-
+  void
+  generate_multiple_opt_list(ostream & stream, unsigned int indent = 0);
 };
 
 #endif // MULTIPLE_OPT_LIST_GEN_CLASS_H

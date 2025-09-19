@@ -8,5 +8,5 @@ find_package(ITK REQUIRED COMPONENTS RTK)
 include(${ITK_USE_FILE})
 
 # Executable(s)
-add_executable(GeometricPhantom GeometricPhantom.cxx )
+add_executable(GeometricPhantom GeometricPhantom.cxx)
 target_link_libraries(GeometricPhantom ${ITK_LIBRARIES})

@@ -14,36 +14,33 @@ This file is licensed to you under the license specified in the included file
 #include <string.h>
 #include <iostream>
 
-extern int gengetopt_count_line;
+extern int    gengetopt_count_line;
 extern char * gengetopt_input_filename;
 
-extern int tokenpos;
-extern char linebuf[];
-extern char *yytext;
+extern int    tokenpos;
+extern char   linebuf[];
+extern char * yytext;
 
 using namespace std;
 
 void
-yyerror (const char *s)
+yyerror(const char * s)
 {
-  const char *source =
-    (gengetopt_input_filename ? gengetopt_input_filename : "gengetopt");
+  const char * source = (gengetopt_input_filename ? gengetopt_input_filename : "gengetopt");
 
-  fprintf (stderr, "%s:%d: %s %s\n", source, gengetopt_count_line, s, yytext);
+  fprintf(stderr, "%s:%d: %s %s\n", source, gengetopt_count_line, s, yytext);
 
-  if (/*!linebuf || */!strlen(linebuf))
+  if (/*!linebuf || */ !strlen(linebuf))
     return;
 
-  fprintf (stderr, "%s:%d: %s\n", source, gengetopt_count_line, linebuf);
-  fprintf (stderr, "%s:%d: %*s\n", source, gengetopt_count_line,
-           tokenpos + 1, "^");
+  fprintf(stderr, "%s:%d: %s\n", source, gengetopt_count_line, linebuf);
+  fprintf(stderr, "%s:%d: %*s\n", source, gengetopt_count_line, tokenpos + 1, "^");
 }
 
 void
-yyerror (gengetopt_option *opt, const char *s)
+yyerror(gengetopt_option * opt, const char * s)
 {
-  const char *source =
-    (opt->filename ? opt->filename : "gengetopt");
+  const char * source = (opt->filename ? opt->filename : "gengetopt");
 
   cerr << source << ":" << opt->linenum << ": " << s << endl;
 }

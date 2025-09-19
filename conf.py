@@ -9,6 +9,7 @@ from datetime import date
 import subprocess
 import os
 
+
 # -- Build setup -------------------------------------------------------------
 def setup(app):
     # Fetch documentation images

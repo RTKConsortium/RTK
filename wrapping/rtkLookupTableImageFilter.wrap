@@ -57,4 +57,3 @@ itk_wrap_class("rtk::LookupTableImageFilter" POINTER)
     itk_wrap_template("I${ITKM_US}${d}I${ITKM_US}${d}" "itk::Image<${ITKT_US}, ${d}>, itk::Image<${ITKT_US}, ${d}>")
   endforeach()
 itk_end_wrap_class()
-
