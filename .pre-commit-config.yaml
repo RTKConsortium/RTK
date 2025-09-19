@@ -1,0 +1,37 @@
+fail_fast: true
+repos:
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v5.0.0
+  hooks:
+    - id: check-added-large-files
+      args: ['--maxkb=200']
+    - id: check-merge-conflict
+      args: ['--assume-in-merge']
+    - id: end-of-file-fixer
+    - id: trailing-whitespace
+
+- repo: https://github.com/pre-commit/mirrors-clang-format
+  rev: v19.1.7
+  hooks:
+    - id: clang-format
+      args: ['--style=file']
+      files: '\.(c|cc|h|cxx|hxx|cu)$'
+
+- repo: https://github.com/psf/black
+  rev: 24.2.0
+  hooks:
+    - id: black
+      args: ['--target-version', 'py39']
+
+- repo: https://github.com/asottile/pyupgrade
+  rev: v3.19.0
+  hooks:
+    - id: pyupgrade
+      args: ['--py39-plus']
+
+- repo: https://github.com/BlankSpruce/gersemi
+  rev: 0.19.3
+  hooks:
+    - id: gersemi
+      args: ['--config', '.gersemi.config', '-i']
+      files: '\.(cmake|wrap)$|CMakeLists.txt'
