@@ -3,6 +3,7 @@ import argparse
 from itk import RTK as rtk
 import difflib
 import inspect
+from typing import Optional
 
 __all__ = [
     "RTKArgumentParser"
@@ -37,7 +38,7 @@ class RTKArgumentParser(argparse.ArgumentParser):
         var_kw = inspect.Parameter('kwargs', kind=inspect.Parameter.VAR_KEYWORD)
         return inspect.Signature(required_params + [var_kw])
 
-    def build_usage_examples(self, app_name: str | None = None) -> str:
+    def build_usage_examples(self, app_name: Optional[str] = None) -> str:
         """Return a Usage examples block for Python help()."""
         name = app_name or self.prog
         # Collect required destinations
@@ -93,7 +94,7 @@ class RTKArgumentParser(argparse.ArgumentParser):
             action.type = neutralized[dest]
         return namespace
 
-    def parse_kwargs(self, func_name: str | None = None, **kwargs):
+    def parse_kwargs(self, func_name: Optional[str] = None, **kwargs):
         """Convert Python kwargs to argv and parse them.
         Lists/tuples for multi-value options are serialized as a single comma token."""
         actions = {a.dest: a for a in self._actions if a.dest and a.dest not in ("help", "version")}
