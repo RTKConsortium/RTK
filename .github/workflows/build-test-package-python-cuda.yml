@@ -3,8 +3,8 @@ name: 'Package RTK with CUDA'
 on: [push,pull_request]
 
 env:
-  itk-wheel-tag: 'v5.4.3'
-  itk-python-package-tag: 'release'
+  itk-wheel-tag: 'v5.4.4'
+  itk-python-package-tag: 'release-5.4'
   itk-python-package-org: 'InsightSoftwareConsortium'
   itk-module-deps: "RTKConsortium/ITKCudaCommon@8baef219d19d8f320898c3c649539bbb5ba3f509"
 
