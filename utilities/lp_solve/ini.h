@@ -1,16 +1,17 @@
 #include <stdio.h>
 
 #ifdef __cplusplus
-__EXTERN_C {
+__EXTERN_C
+{
 #endif
 
-extern FILE *ini_create(const char *filename);
-extern FILE *ini_open(const char *filename);
-extern void ini_writecomment(FILE *fp, const char *comment);
-extern void ini_writeheader(FILE *fp, const char *header, int addnewline);
-extern void ini_writedata(FILE *fp, const char *name, const char *data);
-extern int ini_readdata(FILE *fp, char * const data, int szdata, int withcomment);
-extern void ini_close(FILE *fp);
+  extern FILE * ini_create(const char * filename);
+  extern FILE * ini_open(const char * filename);
+  extern void   ini_writecomment(FILE * fp, const char * comment);
+  extern void   ini_writeheader(FILE * fp, const char * header, int addnewline);
+  extern void   ini_writedata(FILE * fp, const char * name, const char * data);
+  extern int    ini_readdata(FILE * fp, char * const data, int szdata, int withcomment);
+  extern void   ini_close(FILE * fp);
 
 #ifdef __cplusplus
 }

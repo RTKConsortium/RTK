@@ -1,6 +1,9 @@
 find_package(Gengetopt)
 
-configure_file (${CMAKE_CURRENT_SOURCE_DIR}/rtkVersion.ggo.in ${RTK_BINARY_DIR}/rtkVersion.ggo)
+configure_file(
+  ${CMAKE_CURRENT_SOURCE_DIR}/rtkVersion.ggo.in
+  ${RTK_BINARY_DIR}/rtkVersion.ggo
+)
 
 #-----------------------------------------------------------------------------
 # Setup RPATH :
@@ -17,7 +20,7 @@ set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${RTK_INSTALL_LIB_DIR}")
 # Required to include ITK_USE_FILE in order to Register IO factories
 # Force requested modules to be RTK dependencies only, otherwise all
 # available factories will try to register themselves.
-if (NOT ITK_DIR)
+if(NOT ITK_DIR)
   set(ITK_DIR ${ITK_BINARY_DIR}/CMakeTmp)
 endif()
 find_package(ITK REQUIRED COMPONENTS ${ITK_MODULE_RTK_DEPENDS})
@@ -90,28 +93,151 @@ add_subdirectory(rtkbioscangeometry)
 # Testing of the applications
 if(BUILD_TESTING)
   # Reference data (geometry, reference Shepp Logan and corresponding projections)
-  add_test(rtkappsimulatedgeometrytest ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/rtksimulatedgeometry -n 45 --sid 1000 --sdd 1500 -o geo)
+  add_test(
+    rtkappsimulatedgeometrytest
+    ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/rtksimulatedgeometry
+    -n
+    45
+    --sid
+    1000
+    --sdd
+    1500
+    -o
+    geo
+  )
 
-  add_test(rtkappdrawshepploganphantomtest ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/rtkdrawshepploganphantom -o reference.mha --size 21 --phantomscale 10)
+  add_test(
+    rtkappdrawshepploganphantomtest
+    ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/rtkdrawshepploganphantom
+    -o
+    reference.mha
+    --size
+    21
+    --phantomscale
+    10
+  )
 
-  add_test(rtkappprojectshepploganphantomtest ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/rtkprojectshepploganphantom  -o sheppy.mha -g geo --phantomscale 10 --size 32)
-  set_tests_properties(rtkappprojectshepploganphantomtest PROPERTIES DEPENDS rtkappsimulatedgeometrytest)
+  add_test(
+    rtkappprojectshepploganphantomtest
+    ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/rtkprojectshepploganphantom
+    -o
+    sheppy.mha
+    -g
+    geo
+    --phantomscale
+    10
+    --size
+    32
+  )
+  set_tests_properties(
+    rtkappprojectshepploganphantomtest
+    PROPERTIES
+      DEPENDS
+        rtkappsimulatedgeometrytest
+  )
 
   # FDK test
   if(RTK_USE_CUDA)
-    add_test(rtkappfdktest ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/rtkfdk -g geo -p . -r sheppy.mha -o fdk.mha --hardware cuda --size 21)
+    add_test(
+      rtkappfdktest
+      ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/rtkfdk
+      -g
+      geo
+      -p
+      .
+      -r
+      sheppy.mha
+      -o
+      fdk.mha
+      --hardware
+      cuda
+      --size
+      21
+    )
   else()
-    add_test(rtkappfdktest ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/rtkfdk -g geo -p . -r sheppy.mha -o fdk.mha --size 21)
+    add_test(
+      rtkappfdktest
+      ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/rtkfdk
+      -g
+      geo
+      -p
+      .
+      -r
+      sheppy.mha
+      -o
+      fdk.mha
+      --size
+      21
+    )
   endif()
-  set_tests_properties(rtkappfdktest PROPERTIES DEPENDS rtkappprojectshepploganphantomtest)
+  set_tests_properties(
+    rtkappfdktest
+    PROPERTIES
+      DEPENDS
+        rtkappprojectshepploganphantomtest
+  )
 
-  add_test(rtkappfdkchecktest ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/rtkcheckimagequality -i reference.mha -j fdk.mha -t 400)
-  set_tests_properties(rtkappfdkchecktest PROPERTIES DEPENDS "rtkappdrawshepploganphantomtest;rtkappfdktest")
+  add_test(
+    rtkappfdkchecktest
+    ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/rtkcheckimagequality
+    -i
+    reference.mha
+    -j
+    fdk.mha
+    -t
+    400
+  )
+  set_tests_properties(
+    rtkappfdkchecktest
+    PROPERTIES
+      DEPENDS
+        "rtkappdrawshepploganphantomtest;rtkappfdktest"
+  )
 
   # Iteration reporting testing
-  add_test(rtkapposemtest ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/rtkosem -g geo -p . -r sheppy.mha -o osem.mha -n 3 --size 21 --output-every 1 --nprojpersubset 15 --iteration-file-name osem%d.mha)
-  set_tests_properties(rtkapposemtest PROPERTIES DEPENDS rtkappprojectshepploganphantomtest)
+  add_test(
+    rtkapposemtest
+    ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/rtkosem
+    -g
+    geo
+    -p
+    .
+    -r
+    sheppy.mha
+    -o
+    osem.mha
+    -n
+    3
+    --size
+    21
+    --output-every
+    1
+    --nprojpersubset
+    15
+    --iteration-file-name
+    osem%d.mha
+  )
+  set_tests_properties(
+    rtkapposemtest
+    PROPERTIES
+      DEPENDS
+        rtkappprojectshepploganphantomtest
+  )
 
-  add_test(rtkapposemchecktest ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/rtkcheckimagequality -i reference.mha -j osem1.mha,osem2.mha,osem3.mha -t 800,550,455)
-  set_tests_properties(rtkapposemchecktest PROPERTIES DEPENDS "rtkapposemtest;rtkappdrawshepploganphantomtest")
+  add_test(
+    rtkapposemchecktest
+    ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/rtkcheckimagequality
+    -i
+    reference.mha
+    -j
+    osem1.mha,osem2.mha,osem3.mha
+    -t
+    800,550,455
+  )
+  set_tests_properties(
+    rtkapposemchecktest
+    PROPERTIES
+      DEPENDS
+        "rtkapposemtest;rtkappdrawshepploganphantomtest"
+  )
 endif()

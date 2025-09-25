@@ -15,16 +15,13 @@ using std::ostream;
 
 class custom_getopt_gen_gen_class
 {
- protected:
-
- public:
-  custom_getopt_gen_gen_class()
-  {
-  }
+protected:
+public:
+  custom_getopt_gen_gen_class() {}
 
 
-  void generate_custom_getopt_gen(ostream &stream, unsigned int indent = 0);
-
+  void
+  generate_custom_getopt_gen(ostream & stream, unsigned int indent = 0);
 };
 
 #endif // CUSTOM_GETOPT_GEN_GEN_CLASS_H

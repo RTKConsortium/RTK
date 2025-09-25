@@ -21,28 +21,27 @@
 #ifndef GENGETOPT_ARGSDEF_H
 #define GENGETOPT_ARGSDEF_H
 
-#define ARG_NO		0
-#define ARG_FLAG	1
-#define ARG_STRING	2
-#define ARG_INT		3
-#define ARG_SHORT	4
-#define ARG_LONG	5
-#define ARG_FLOAT	6
-#define ARG_DOUBLE	7
-#define ARG_LONGDOUBLE	8
-#define ARG_LONGLONG	9
-#define ARG_ENUM    10
+#define ARG_NO 0
+#define ARG_FLAG 1
+#define ARG_STRING 2
+#define ARG_INT 3
+#define ARG_SHORT 4
+#define ARG_LONG 5
+#define ARG_FLOAT 6
+#define ARG_DOUBLE 7
+#define ARG_LONGDOUBLE 8
+#define ARG_LONGLONG 9
+#define ARG_ENUM 10
 
 /** corresponding strings for above defines */
-extern const char * arg_type_constants [];
+extern const char * arg_type_constants[];
 /** symbolic names for argument types */
-extern const char * arg_names [];
+extern const char * arg_names[];
 /** corresponding C types */
-extern const char * arg_types [];
+extern const char * arg_types[];
 /** string representation of types */
-extern const char * arg_types_names [];
+extern const char * arg_types_names[];
 
 #define ARGS_STRUCT "args_info"
 
 #endif /* GENGETOPT_ARGSDEF_H */
-

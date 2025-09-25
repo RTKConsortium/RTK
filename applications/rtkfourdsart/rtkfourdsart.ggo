@@ -12,4 +12,3 @@ option "nodisplaced"    - "Disable the displaced detector filter"              f
 
 section "Phase gating"
 option "signal"       - "File containing the phase of each projection"                                              string              no
-

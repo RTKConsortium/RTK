@@ -18,7 +18,7 @@
 
 #include "ggos.h"
 
-template< typename ArgumentType, typename ResultType >
+template <typename ArgumentType, typename ResultType>
 struct unary_function
 {
   using argument_type = ArgumentType;
@@ -32,53 +32,71 @@ using std::string;
  * @return a copy of the string passed after canonizing it (i.e. '-' and
  * '.' are transformed in '_').
  */
-char *canonize_names(const char * name);
+char *
+canonize_names(const char * name);
 
 /**
  * @param name
  * @return a copy of the string passed after canonizing it (i.e. '-' and
  * '.' are transformed in '_').
  */
-const string canonize_name(const string &name);
+const string
+canonize_name(const string & name);
 
 /**
  * @param s the string representing an enum value
  * @return a copy of the string passed after canonizing it (i.e. '-' and
  * becomes _MINUS_, '+' becomes _PLUS_)
  */
-const string canonize_enum(const string &s);
+const string
+canonize_enum(const string & s);
 
-const string strip_path(const string &);
-const string to_upper(const string &);
+const string
+strip_path(const string &);
+const string
+to_upper(const string &);
 
 /**
  * All multiple options are of type string
  * @return All multiple options are of type string
  */
-bool has_multiple_options_all_string();
+bool
+has_multiple_options_all_string();
 
 /**
  * Has multiple options and at least one is of type string
  * @return Has multiple options and at least one is of type string
  */
-bool has_multiple_options_string();
+bool
+has_multiple_options_string();
 
 /**
  * Has multiple options and at least one has a default value
  * @return Has multiple options and at least one has a default value
  */
-bool has_multiple_options_with_default();
+bool
+has_multiple_options_with_default();
 
-bool has_multiple_options();
-bool has_multiple_options_with_type();
-bool has_required();
-bool has_dependencies();
-bool has_options_with_type();
-bool has_options_with_mode();
-bool has_options();
-bool has_hidden_options();
-bool has_options_with_details();
-bool has_values();
+bool
+has_multiple_options();
+bool
+has_multiple_options_with_type();
+bool
+has_required();
+bool
+has_dependencies();
+bool
+has_options_with_type();
+bool
+has_options_with_mode();
+bool
+has_options();
+bool
+has_hidden_options();
+bool
+has_options_with_details();
+bool
+has_values();
 
 /**
  * Whether the specified option deals with number
@@ -86,7 +104,8 @@ bool has_values();
  * @param opt
  * @return
  */
-bool is_numeric(const gengetopt_option *opt);
+bool
+is_numeric(const gengetopt_option * opt);
 
 /**
  * Performs word wrapping on the passed string (and return the result in the first
@@ -98,7 +117,8 @@ bool is_numeric(const gengetopt_option *opt);
  * first one
  * @param orig the original string that must be wrapped
  */
-void wrap_cstr (string &wrapped, unsigned int from_column, unsigned int second_indent, const string &orig);
+void
+wrap_cstr(string & wrapped, unsigned int from_column, unsigned int second_indent, const string & orig);
 
 /**
  * Searches for characters which are not newlines.
@@ -108,31 +128,47 @@ void wrap_cstr (string &wrapped, unsigned int from_column, unsigned int second_i
  * before the first non newline char will be stored
  * @return the position in the string after the (possible) new line char
  */
-int not_newlines(const string &buf, int &num_of_newlines);
+int
+not_newlines(const string & buf, int & num_of_newlines);
 
 /**
  * Function object to print something into a stream (to be used with for_each)
  */
-template<class T>
-struct print_f : public unary_function<T, void >
+template <class T>
+struct print_f : public unary_function<T, void>
 {
-    print_f(std::ostream& out, const string &s = ", ") : os(out), sep(s) {}
-    void operator() (T x) { os << x << sep; }
-    std::ostream& os;
-    const string &sep;
+  print_f(std::ostream & out, const string & s = ", ")
+    : os(out)
+    , sep(s)
+  {}
+  void
+  operator()(T x)
+  {
+    os << x << sep;
+  }
+  std::ostream & os;
+  const string & sep;
 };
 
 /**
  * Function object to print a pair into two streams (to be used with for_each)
  */
-template<class T>
-struct pair_print_f : public unary_function<T, void >
+template <class T>
+struct pair_print_f : public unary_function<T, void>
 {
-    pair_print_f(std::ostream& out1, std::ostream& out2, const string &s = ", ") :
-        os1(out1), os2(out2), sep(s) {}
-    void operator() (T x) { os1 << x.first << sep; os2 << x.second << sep;}
-    std::ostream &os1, &os2;
-    const string &sep;
+  pair_print_f(std::ostream & out1, std::ostream & out2, const string & s = ", ")
+    : os1(out1)
+    , os2(out2)
+    , sep(s)
+  {}
+  void
+  operator()(T x)
+  {
+    os1 << x.first << sep;
+    os2 << x.second << sep;
+  }
+  std::ostream & os1, &os2;
+  const string & sep;
 };
 
 #endif

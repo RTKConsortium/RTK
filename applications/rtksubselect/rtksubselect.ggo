@@ -9,4 +9,3 @@ option "first"     f "First projection index"                                   
 option "last"      l "Last projection index"                                     int          no
 option "step"      s "Step between projections"                                  int          no  default="1"
 option "list"      - "List of projection indices to keep (0-based)"              int multiple no
-

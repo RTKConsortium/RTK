@@ -3,269 +3,270 @@
 #include "lp_lib.h"
 
 #if defined LPSOLVEAPIFROMLPRECDEF
-# define LPSOLVEAPIFROMLPREC
-# define LPSOLVEAPIDEF
+#  define LPSOLVEAPIFROMLPREC
+#  define LPSOLVEAPIDEF
 #endif
 
 #if defined LPSOLVEAPIFROMLIBDEF
-# define LPSOLVEAPIFROMLIB
-# define LPSOLVEAPIDEF
+#  define LPSOLVEAPIFROMLIB
+#  define LPSOLVEAPIDEF
 #endif
 
 #if !defined LPSOLVEAPIDEF
-# define LPSOLVEAPIDEF extern
+#  define LPSOLVEAPIDEF extern
 #endif
 
 /* entries for lp structure */
-LPSOLVEAPIDEF add_column_func               *_add_column;
-LPSOLVEAPIDEF add_columnex_func             *_add_columnex;
-LPSOLVEAPIDEF add_constraint_func           *_add_constraint;
-LPSOLVEAPIDEF add_constraintex_func         *_add_constraintex;
-LPSOLVEAPIDEF add_lag_con_func              *_add_lag_con;
-LPSOLVEAPIDEF add_SOS_func                  *_add_SOS;
-LPSOLVEAPIDEF column_in_lp_func             *_column_in_lp;
-LPSOLVEAPIDEF copy_lp_func                  *_copy_lp;
-LPSOLVEAPIDEF default_basis_func            *_default_basis;
-LPSOLVEAPIDEF del_column_func               *_del_column;
-LPSOLVEAPIDEF del_constraint_func           *_del_constraint;
-LPSOLVEAPIDEF delete_lp_func                *_delete_lp;
-LPSOLVEAPIDEF dualize_lp_func               *_dualize_lp;
-LPSOLVEAPIDEF free_lp_func                  *_free_lp;
+LPSOLVEAPIDEF add_column_func *       _add_column;
+LPSOLVEAPIDEF add_columnex_func *     _add_columnex;
+LPSOLVEAPIDEF add_constraint_func *   _add_constraint;
+LPSOLVEAPIDEF add_constraintex_func * _add_constraintex;
+LPSOLVEAPIDEF add_lag_con_func *      _add_lag_con;
+LPSOLVEAPIDEF add_SOS_func *          _add_SOS;
+LPSOLVEAPIDEF column_in_lp_func *     _column_in_lp;
+LPSOLVEAPIDEF copy_lp_func *          _copy_lp;
+LPSOLVEAPIDEF default_basis_func *    _default_basis;
+LPSOLVEAPIDEF del_column_func *       _del_column;
+LPSOLVEAPIDEF del_constraint_func *   _del_constraint;
+LPSOLVEAPIDEF delete_lp_func *        _delete_lp;
+LPSOLVEAPIDEF dualize_lp_func *       _dualize_lp;
+LPSOLVEAPIDEF free_lp_func *          _free_lp;
 /*LPSOLVEAPIDEF get_accuracy_func             *_get_accuracy;*/
-LPSOLVEAPIDEF get_anti_degen_func           *_get_anti_degen;
-LPSOLVEAPIDEF get_basis_func                *_get_basis;
-LPSOLVEAPIDEF get_basiscrash_func           *_get_basiscrash;
-LPSOLVEAPIDEF get_bb_depthlimit_func        *_get_bb_depthlimit;
-LPSOLVEAPIDEF get_bb_floorfirst_func        *_get_bb_floorfirst;
-LPSOLVEAPIDEF get_bb_rule_func              *_get_bb_rule;
-LPSOLVEAPIDEF get_bounds_tighter_func       *_get_bounds_tighter;
-LPSOLVEAPIDEF get_break_at_value_func       *_get_break_at_value;
+LPSOLVEAPIDEF get_anti_degen_func *     _get_anti_degen;
+LPSOLVEAPIDEF get_basis_func *          _get_basis;
+LPSOLVEAPIDEF get_basiscrash_func *     _get_basiscrash;
+LPSOLVEAPIDEF get_bb_depthlimit_func *  _get_bb_depthlimit;
+LPSOLVEAPIDEF get_bb_floorfirst_func *  _get_bb_floorfirst;
+LPSOLVEAPIDEF get_bb_rule_func *        _get_bb_rule;
+LPSOLVEAPIDEF get_bounds_tighter_func * _get_bounds_tighter;
+LPSOLVEAPIDEF get_break_at_value_func * _get_break_at_value;
 /*LPSOLVEAPIDEF get_break_numeric_accuracy_func *_get_break_numeric_accuracy;*/
-LPSOLVEAPIDEF get_col_name_func             *_get_col_name;
-LPSOLVEAPIDEF get_column_func               *_get_column;
-LPSOLVEAPIDEF get_columnex_func             *_get_columnex;
-LPSOLVEAPIDEF get_constr_type_func          *_get_constr_type;
-LPSOLVEAPIDEF get_constr_value_func         *_get_constr_value;
-LPSOLVEAPIDEF get_constraints_func          *_get_constraints;
-LPSOLVEAPIDEF get_dual_solution_func        *_get_dual_solution;
-LPSOLVEAPIDEF get_epsb_func                 *_get_epsb;
-LPSOLVEAPIDEF get_epsd_func                 *_get_epsd;
-LPSOLVEAPIDEF get_epsel_func                *_get_epsel;
-LPSOLVEAPIDEF get_epsint_func               *_get_epsint;
-LPSOLVEAPIDEF get_epsperturb_func           *_get_epsperturb;
-LPSOLVEAPIDEF get_epspivot_func             *_get_epspivot;
-LPSOLVEAPIDEF get_improve_func              *_get_improve;
-LPSOLVEAPIDEF get_infinite_func             *_get_infinite;
-LPSOLVEAPIDEF get_lambda_func               *_get_lambda;
-LPSOLVEAPIDEF get_lowbo_func                *_get_lowbo;
-LPSOLVEAPIDEF get_lp_index_func             *_get_lp_index;
-LPSOLVEAPIDEF get_lp_name_func              *_get_lp_name;
-LPSOLVEAPIDEF get_Lrows_func                *_get_Lrows;
-LPSOLVEAPIDEF get_mat_func                  *_get_mat;
-LPSOLVEAPIDEF get_mat_byindex_func          *_get_mat_byindex;
-LPSOLVEAPIDEF get_max_level_func            *_get_max_level;
-LPSOLVEAPIDEF get_maxpivot_func             *_get_maxpivot;
-LPSOLVEAPIDEF get_mip_gap_func              *_get_mip_gap;
-LPSOLVEAPIDEF get_multiprice_func           *_get_multiprice;
-LPSOLVEAPIDEF get_nameindex_func            *_get_nameindex;
-LPSOLVEAPIDEF get_Ncolumns_func             *_get_Ncolumns;
-LPSOLVEAPIDEF get_negrange_func             *_get_negrange;
-LPSOLVEAPIDEF get_nz_func                   *_get_nonzeros;
-LPSOLVEAPIDEF get_Norig_columns_func        *_get_Norig_columns;
-LPSOLVEAPIDEF get_Norig_rows_func           *_get_Norig_rows;
-LPSOLVEAPIDEF get_Nrows_func                *_get_Nrows;
-LPSOLVEAPIDEF get_obj_bound_func            *_get_obj_bound;
-LPSOLVEAPIDEF get_objective_func            *_get_objective;
-LPSOLVEAPIDEF get_orig_index_func           *_get_orig_index;
-LPSOLVEAPIDEF get_origcol_name_func         *_get_origcol_name;
-LPSOLVEAPIDEF get_origrow_name_func         *_get_origrow_name;
-LPSOLVEAPIDEF get_partialprice_func         *_get_partialprice;
-LPSOLVEAPIDEF get_pivoting_func             *_get_pivoting;
-LPSOLVEAPIDEF get_presolve_func             *_get_presolve;
-LPSOLVEAPIDEF get_presolveloops_func        *_get_presolveloops;
-LPSOLVEAPIDEF get_primal_solution_func      *_get_primal_solution;
-LPSOLVEAPIDEF get_print_sol_func            *_get_print_sol;
-LPSOLVEAPIDEF get_pseudocosts_func          *_get_pseudocosts;
-LPSOLVEAPIDEF get_ptr_constraints_func      *_get_ptr_constraints;
-LPSOLVEAPIDEF get_ptr_dual_solution_func    *_get_ptr_dual_solution;
-LPSOLVEAPIDEF get_ptr_lambda_func           *_get_ptr_lambda;
-LPSOLVEAPIDEF get_ptr_primal_solution_func  *_get_ptr_primal_solution;
-LPSOLVEAPIDEF get_ptr_sensitivity_obj_func  *_get_ptr_sensitivity_obj;
-LPSOLVEAPIDEF get_ptr_sensitivity_objex_func *_get_ptr_sensitivity_objex;
-LPSOLVEAPIDEF get_ptr_sensitivity_rhs_func  *_get_ptr_sensitivity_rhs;
-LPSOLVEAPIDEF get_ptr_variables_func        *_get_ptr_variables;
-LPSOLVEAPIDEF get_rh_func                   *_get_rh;
-LPSOLVEAPIDEF get_rh_range_func             *_get_rh_range;
-LPSOLVEAPIDEF get_row_func                  *_get_row;
-LPSOLVEAPIDEF get_rowex_func                *_get_rowex;
-LPSOLVEAPIDEF get_row_name_func             *_get_row_name;
-LPSOLVEAPIDEF get_scalelimit_func           *_get_scalelimit;
-LPSOLVEAPIDEF get_scaling_func              *_get_scaling;
-LPSOLVEAPIDEF get_sensitivity_obj_func      *_get_sensitivity_obj;
-LPSOLVEAPIDEF get_sensitivity_objex_func    *_get_sensitivity_objex;
-LPSOLVEAPIDEF get_sensitivity_rhs_func      *_get_sensitivity_rhs;
-LPSOLVEAPIDEF get_simplextype_func          *_get_simplextype;
-LPSOLVEAPIDEF get_solutioncount_func        *_get_solutioncount;
-LPSOLVEAPIDEF get_solutionlimit_func        *_get_solutionlimit;
-LPSOLVEAPIDEF get_status_func               *_get_status;
-LPSOLVEAPIDEF get_statustext_func           *_get_statustext;
-LPSOLVEAPIDEF get_timeout_func              *_get_timeout;
-LPSOLVEAPIDEF get_total_iter_func           *_get_total_iter;
-LPSOLVEAPIDEF get_total_nodes_func          *_get_total_nodes;
-LPSOLVEAPIDEF get_upbo_func                 *_get_upbo;
-LPSOLVEAPIDEF get_var_branch_func           *_get_var_branch;
-LPSOLVEAPIDEF get_var_dualresult_func       *_get_var_dualresult;
-LPSOLVEAPIDEF get_var_primalresult_func     *_get_var_primalresult;
-LPSOLVEAPIDEF get_var_priority_func         *_get_var_priority;
-LPSOLVEAPIDEF get_variables_func            *_get_variables;
-LPSOLVEAPIDEF get_verbose_func              *_get_verbose;
-LPSOLVEAPIDEF get_working_objective_func    *_get_working_objective;
-LPSOLVEAPIDEF guess_basis_func              *_guess_basis;
-LPSOLVEAPIDEF has_BFP_func                  *_has_BFP;
-LPSOLVEAPIDEF has_XLI_func                  *_has_XLI;
-LPSOLVEAPIDEF is_add_rowmode_func           *_is_add_rowmode;
-LPSOLVEAPIDEF is_anti_degen_func            *_is_anti_degen;
-LPSOLVEAPIDEF is_binary_func                *_is_binary;
-LPSOLVEAPIDEF is_break_at_first_func        *_is_break_at_first;
-LPSOLVEAPIDEF is_constr_type_func           *_is_constr_type;
-LPSOLVEAPIDEF is_debug_func                 *_is_debug;
-LPSOLVEAPIDEF is_feasible_func              *_is_feasible;
-LPSOLVEAPIDEF is_unbounded_func             *_is_unbounded;
-LPSOLVEAPIDEF is_infinite_func              *_is_infinite;
-LPSOLVEAPIDEF is_int_func                   *_is_int;
-LPSOLVEAPIDEF is_integerscaling_func        *_is_integerscaling;
-LPSOLVEAPIDEF is_lag_trace_func             *_is_lag_trace;
-LPSOLVEAPIDEF is_maxim_func                 *_is_maxim;
-LPSOLVEAPIDEF is_nativeBFP_func             *_is_nativeBFP;
-LPSOLVEAPIDEF is_nativeXLI_func             *_is_nativeXLI;
-LPSOLVEAPIDEF is_negative_func              *_is_negative;
-LPSOLVEAPIDEF is_piv_mode_func              *_is_piv_mode;
-LPSOLVEAPIDEF is_piv_rule_func              *_is_piv_rule;
-LPSOLVEAPIDEF is_presolve_func              *_is_presolve;
-LPSOLVEAPIDEF is_scalemode_func             *_is_scalemode;
-LPSOLVEAPIDEF is_scaletype_func             *_is_scaletype;
-LPSOLVEAPIDEF is_semicont_func              *_is_semicont;
-LPSOLVEAPIDEF is_SOS_var_func               *_is_SOS_var;
-LPSOLVEAPIDEF is_trace_func                 *_is_trace;
-LPSOLVEAPIDEF is_use_names_func             *_is_use_names;
-LPSOLVEAPIDEF lp_solve_version_func         *_lp_solve_version;
-LPSOLVEAPIDEF make_lp_func                  *_make_lp;
-LPSOLVEAPIDEF print_constraints_func        *_print_constraints;
-LPSOLVEAPIDEF print_debugdump_func          *_print_debugdump;
-LPSOLVEAPIDEF print_duals_func              *_print_duals;
-LPSOLVEAPIDEF print_lp_func                 *_print_lp;
-LPSOLVEAPIDEF print_objective_func          *_print_objective;
-LPSOLVEAPIDEF print_scales_func             *_print_scales;
-LPSOLVEAPIDEF print_solution_func           *_print_solution;
-LPSOLVEAPIDEF print_str_func                *_print_str;
-LPSOLVEAPIDEF print_tableau_func            *_print_tableau;
-LPSOLVEAPIDEF put_abortfunc_func            *_put_abortfunc;
-LPSOLVEAPIDEF put_bb_nodefunc_func          *_put_bb_nodefunc;
-LPSOLVEAPIDEF put_bb_branchfunc_func        *_put_bb_branchfunc;
-LPSOLVEAPIDEF put_logfunc_func              *_put_logfunc;
-LPSOLVEAPIDEF put_msgfunc_func              *_put_msgfunc;
-LPSOLVEAPIDEF read_LP_func                  *_read_LP;
-LPSOLVEAPIDEF read_MPS_func                 *_read_MPS;
-LPSOLVEAPIDEF read_XLI_func                 *_read_XLI;
-LPSOLVEAPIDEF read_params_func              *_read_params;
-LPSOLVEAPIDEF read_basis_func               *_read_basis;
-LPSOLVEAPIDEF reset_basis_func              *_reset_basis;
-LPSOLVEAPIDEF reset_params_func             *_reset_params;
-LPSOLVEAPIDEF reportfunc                    *_report;
-LPSOLVEAPIDEF resize_lp_func                *_resize_lp;
-LPSOLVEAPIDEF set_add_rowmode_func          *_set_add_rowmode;
-LPSOLVEAPIDEF set_anti_degen_func           *_set_anti_degen;
-LPSOLVEAPIDEF set_basisvar_func             *_set_basisvar;
-LPSOLVEAPIDEF set_basis_func                *_set_basis;
-LPSOLVEAPIDEF set_basiscrash_func           *_set_basiscrash;
-LPSOLVEAPIDEF set_bb_depthlimit_func        *_set_bb_depthlimit;
-LPSOLVEAPIDEF set_bb_floorfirst_func        *_set_bb_floorfirst;
-LPSOLVEAPIDEF set_bb_rule_func              *_set_bb_rule;
-LPSOLVEAPIDEF set_BFP_func                  *_set_BFP;
-LPSOLVEAPIDEF set_binary_func               *_set_binary;
-LPSOLVEAPIDEF set_bounds_func               *_set_bounds;
-LPSOLVEAPIDEF set_bounds_tighter_func       *_set_bounds_tighter;
-LPSOLVEAPIDEF set_break_at_first_func       *_set_break_at_first;
-LPSOLVEAPIDEF set_break_at_value_func       *_set_break_at_value;
+LPSOLVEAPIDEF get_col_name_func *              _get_col_name;
+LPSOLVEAPIDEF get_column_func *                _get_column;
+LPSOLVEAPIDEF get_columnex_func *              _get_columnex;
+LPSOLVEAPIDEF get_constr_type_func *           _get_constr_type;
+LPSOLVEAPIDEF get_constr_value_func *          _get_constr_value;
+LPSOLVEAPIDEF get_constraints_func *           _get_constraints;
+LPSOLVEAPIDEF get_dual_solution_func *         _get_dual_solution;
+LPSOLVEAPIDEF get_epsb_func *                  _get_epsb;
+LPSOLVEAPIDEF get_epsd_func *                  _get_epsd;
+LPSOLVEAPIDEF get_epsel_func *                 _get_epsel;
+LPSOLVEAPIDEF get_epsint_func *                _get_epsint;
+LPSOLVEAPIDEF get_epsperturb_func *            _get_epsperturb;
+LPSOLVEAPIDEF get_epspivot_func *              _get_epspivot;
+LPSOLVEAPIDEF get_improve_func *               _get_improve;
+LPSOLVEAPIDEF get_infinite_func *              _get_infinite;
+LPSOLVEAPIDEF get_lambda_func *                _get_lambda;
+LPSOLVEAPIDEF get_lowbo_func *                 _get_lowbo;
+LPSOLVEAPIDEF get_lp_index_func *              _get_lp_index;
+LPSOLVEAPIDEF get_lp_name_func *               _get_lp_name;
+LPSOLVEAPIDEF get_Lrows_func *                 _get_Lrows;
+LPSOLVEAPIDEF get_mat_func *                   _get_mat;
+LPSOLVEAPIDEF get_mat_byindex_func *           _get_mat_byindex;
+LPSOLVEAPIDEF get_max_level_func *             _get_max_level;
+LPSOLVEAPIDEF get_maxpivot_func *              _get_maxpivot;
+LPSOLVEAPIDEF get_mip_gap_func *               _get_mip_gap;
+LPSOLVEAPIDEF get_multiprice_func *            _get_multiprice;
+LPSOLVEAPIDEF get_nameindex_func *             _get_nameindex;
+LPSOLVEAPIDEF get_Ncolumns_func *              _get_Ncolumns;
+LPSOLVEAPIDEF get_negrange_func *              _get_negrange;
+LPSOLVEAPIDEF get_nz_func *                    _get_nonzeros;
+LPSOLVEAPIDEF get_Norig_columns_func *         _get_Norig_columns;
+LPSOLVEAPIDEF get_Norig_rows_func *            _get_Norig_rows;
+LPSOLVEAPIDEF get_Nrows_func *                 _get_Nrows;
+LPSOLVEAPIDEF get_obj_bound_func *             _get_obj_bound;
+LPSOLVEAPIDEF get_objective_func *             _get_objective;
+LPSOLVEAPIDEF get_orig_index_func *            _get_orig_index;
+LPSOLVEAPIDEF get_origcol_name_func *          _get_origcol_name;
+LPSOLVEAPIDEF get_origrow_name_func *          _get_origrow_name;
+LPSOLVEAPIDEF get_partialprice_func *          _get_partialprice;
+LPSOLVEAPIDEF get_pivoting_func *              _get_pivoting;
+LPSOLVEAPIDEF get_presolve_func *              _get_presolve;
+LPSOLVEAPIDEF get_presolveloops_func *         _get_presolveloops;
+LPSOLVEAPIDEF get_primal_solution_func *       _get_primal_solution;
+LPSOLVEAPIDEF get_print_sol_func *             _get_print_sol;
+LPSOLVEAPIDEF get_pseudocosts_func *           _get_pseudocosts;
+LPSOLVEAPIDEF get_ptr_constraints_func *       _get_ptr_constraints;
+LPSOLVEAPIDEF get_ptr_dual_solution_func *     _get_ptr_dual_solution;
+LPSOLVEAPIDEF get_ptr_lambda_func *            _get_ptr_lambda;
+LPSOLVEAPIDEF get_ptr_primal_solution_func *   _get_ptr_primal_solution;
+LPSOLVEAPIDEF get_ptr_sensitivity_obj_func *   _get_ptr_sensitivity_obj;
+LPSOLVEAPIDEF get_ptr_sensitivity_objex_func * _get_ptr_sensitivity_objex;
+LPSOLVEAPIDEF get_ptr_sensitivity_rhs_func *   _get_ptr_sensitivity_rhs;
+LPSOLVEAPIDEF get_ptr_variables_func *         _get_ptr_variables;
+LPSOLVEAPIDEF get_rh_func *                    _get_rh;
+LPSOLVEAPIDEF get_rh_range_func *              _get_rh_range;
+LPSOLVEAPIDEF get_row_func *                   _get_row;
+LPSOLVEAPIDEF get_rowex_func *                 _get_rowex;
+LPSOLVEAPIDEF get_row_name_func *              _get_row_name;
+LPSOLVEAPIDEF get_scalelimit_func *            _get_scalelimit;
+LPSOLVEAPIDEF get_scaling_func *               _get_scaling;
+LPSOLVEAPIDEF get_sensitivity_obj_func *       _get_sensitivity_obj;
+LPSOLVEAPIDEF get_sensitivity_objex_func *     _get_sensitivity_objex;
+LPSOLVEAPIDEF get_sensitivity_rhs_func *       _get_sensitivity_rhs;
+LPSOLVEAPIDEF get_simplextype_func *           _get_simplextype;
+LPSOLVEAPIDEF get_solutioncount_func *         _get_solutioncount;
+LPSOLVEAPIDEF get_solutionlimit_func *         _get_solutionlimit;
+LPSOLVEAPIDEF get_status_func *                _get_status;
+LPSOLVEAPIDEF get_statustext_func *            _get_statustext;
+LPSOLVEAPIDEF get_timeout_func *               _get_timeout;
+LPSOLVEAPIDEF get_total_iter_func *            _get_total_iter;
+LPSOLVEAPIDEF get_total_nodes_func *           _get_total_nodes;
+LPSOLVEAPIDEF get_upbo_func *                  _get_upbo;
+LPSOLVEAPIDEF get_var_branch_func *            _get_var_branch;
+LPSOLVEAPIDEF get_var_dualresult_func *        _get_var_dualresult;
+LPSOLVEAPIDEF get_var_primalresult_func *      _get_var_primalresult;
+LPSOLVEAPIDEF get_var_priority_func *          _get_var_priority;
+LPSOLVEAPIDEF get_variables_func *             _get_variables;
+LPSOLVEAPIDEF get_verbose_func *               _get_verbose;
+LPSOLVEAPIDEF get_working_objective_func *     _get_working_objective;
+LPSOLVEAPIDEF guess_basis_func *               _guess_basis;
+LPSOLVEAPIDEF has_BFP_func *                   _has_BFP;
+LPSOLVEAPIDEF has_XLI_func *                   _has_XLI;
+LPSOLVEAPIDEF is_add_rowmode_func *            _is_add_rowmode;
+LPSOLVEAPIDEF is_anti_degen_func *             _is_anti_degen;
+LPSOLVEAPIDEF is_binary_func *                 _is_binary;
+LPSOLVEAPIDEF is_break_at_first_func *         _is_break_at_first;
+LPSOLVEAPIDEF is_constr_type_func *            _is_constr_type;
+LPSOLVEAPIDEF is_debug_func *                  _is_debug;
+LPSOLVEAPIDEF is_feasible_func *               _is_feasible;
+LPSOLVEAPIDEF is_unbounded_func *              _is_unbounded;
+LPSOLVEAPIDEF is_infinite_func *               _is_infinite;
+LPSOLVEAPIDEF is_int_func *                    _is_int;
+LPSOLVEAPIDEF is_integerscaling_func *         _is_integerscaling;
+LPSOLVEAPIDEF is_lag_trace_func *              _is_lag_trace;
+LPSOLVEAPIDEF is_maxim_func *                  _is_maxim;
+LPSOLVEAPIDEF is_nativeBFP_func *              _is_nativeBFP;
+LPSOLVEAPIDEF is_nativeXLI_func *              _is_nativeXLI;
+LPSOLVEAPIDEF is_negative_func *               _is_negative;
+LPSOLVEAPIDEF is_piv_mode_func *               _is_piv_mode;
+LPSOLVEAPIDEF is_piv_rule_func *               _is_piv_rule;
+LPSOLVEAPIDEF is_presolve_func *               _is_presolve;
+LPSOLVEAPIDEF is_scalemode_func *              _is_scalemode;
+LPSOLVEAPIDEF is_scaletype_func *              _is_scaletype;
+LPSOLVEAPIDEF is_semicont_func *               _is_semicont;
+LPSOLVEAPIDEF is_SOS_var_func *                _is_SOS_var;
+LPSOLVEAPIDEF is_trace_func *                  _is_trace;
+LPSOLVEAPIDEF is_use_names_func *              _is_use_names;
+LPSOLVEAPIDEF lp_solve_version_func *          _lp_solve_version;
+LPSOLVEAPIDEF make_lp_func *                   _make_lp;
+LPSOLVEAPIDEF print_constraints_func *         _print_constraints;
+LPSOLVEAPIDEF print_debugdump_func *           _print_debugdump;
+LPSOLVEAPIDEF print_duals_func *               _print_duals;
+LPSOLVEAPIDEF print_lp_func *                  _print_lp;
+LPSOLVEAPIDEF print_objective_func *           _print_objective;
+LPSOLVEAPIDEF print_scales_func *              _print_scales;
+LPSOLVEAPIDEF print_solution_func *            _print_solution;
+LPSOLVEAPIDEF print_str_func *                 _print_str;
+LPSOLVEAPIDEF print_tableau_func *             _print_tableau;
+LPSOLVEAPIDEF put_abortfunc_func *             _put_abortfunc;
+LPSOLVEAPIDEF put_bb_nodefunc_func *           _put_bb_nodefunc;
+LPSOLVEAPIDEF put_bb_branchfunc_func *         _put_bb_branchfunc;
+LPSOLVEAPIDEF put_logfunc_func *               _put_logfunc;
+LPSOLVEAPIDEF put_msgfunc_func *               _put_msgfunc;
+LPSOLVEAPIDEF read_LP_func *                   _read_LP;
+LPSOLVEAPIDEF read_MPS_func *                  _read_MPS;
+LPSOLVEAPIDEF read_XLI_func *                  _read_XLI;
+LPSOLVEAPIDEF read_params_func *               _read_params;
+LPSOLVEAPIDEF read_basis_func *                _read_basis;
+LPSOLVEAPIDEF reset_basis_func *               _reset_basis;
+LPSOLVEAPIDEF reset_params_func *              _reset_params;
+LPSOLVEAPIDEF reportfunc *                     _report;
+LPSOLVEAPIDEF resize_lp_func *                 _resize_lp;
+LPSOLVEAPIDEF set_add_rowmode_func *           _set_add_rowmode;
+LPSOLVEAPIDEF set_anti_degen_func *            _set_anti_degen;
+LPSOLVEAPIDEF set_basisvar_func *              _set_basisvar;
+LPSOLVEAPIDEF set_basis_func *                 _set_basis;
+LPSOLVEAPIDEF set_basiscrash_func *            _set_basiscrash;
+LPSOLVEAPIDEF set_bb_depthlimit_func *         _set_bb_depthlimit;
+LPSOLVEAPIDEF set_bb_floorfirst_func *         _set_bb_floorfirst;
+LPSOLVEAPIDEF set_bb_rule_func *               _set_bb_rule;
+LPSOLVEAPIDEF set_BFP_func *                   _set_BFP;
+LPSOLVEAPIDEF set_binary_func *                _set_binary;
+LPSOLVEAPIDEF set_bounds_func *                _set_bounds;
+LPSOLVEAPIDEF set_bounds_tighter_func *        _set_bounds_tighter;
+LPSOLVEAPIDEF set_break_at_first_func *        _set_break_at_first;
+LPSOLVEAPIDEF set_break_at_value_func *        _set_break_at_value;
 /*LPSOLVEAPIDEF set_break_numeric_accuracy_func *_set_break_numeric_accuracy;*/
-LPSOLVEAPIDEF set_column_func               *_set_column;
-LPSOLVEAPIDEF set_columnex_func             *_set_columnex;
-LPSOLVEAPIDEF set_col_name_func             *_set_col_name;
-LPSOLVEAPIDEF set_constr_type_func          *_set_constr_type;
-LPSOLVEAPIDEF set_debug_func                *_set_debug;
-LPSOLVEAPIDEF set_epsb_func                 *_set_epsb;
-LPSOLVEAPIDEF set_epsd_func                 *_set_epsd;
-LPSOLVEAPIDEF set_epsel_func                *_set_epsel;
-LPSOLVEAPIDEF set_epsint_func               *_set_epsint;
-LPSOLVEAPIDEF set_epslevel_func             *_set_epslevel;
-LPSOLVEAPIDEF set_epsperturb_func           *_set_epsperturb;
-LPSOLVEAPIDEF set_epspivot_func             *_set_epspivot;
-LPSOLVEAPIDEF set_unbounded_func            *_set_unbounded;
-LPSOLVEAPIDEF set_improve_func              *_set_improve;
-LPSOLVEAPIDEF set_infinite_func             *_set_infinite;
-LPSOLVEAPIDEF set_int_func                  *_set_int;
-LPSOLVEAPIDEF set_lag_trace_func            *_set_lag_trace;
-LPSOLVEAPIDEF set_lowbo_func                *_set_lowbo;
-LPSOLVEAPIDEF set_lp_name_func              *_set_lp_name;
-LPSOLVEAPIDEF set_mat_func                  *_set_mat;
-LPSOLVEAPIDEF set_maxim_func                *_set_maxim;
-LPSOLVEAPIDEF set_maxpivot_func             *_set_maxpivot;
-LPSOLVEAPIDEF set_minim_func                *_set_minim;
-LPSOLVEAPIDEF set_mip_gap_func              *_set_mip_gap;
-LPSOLVEAPIDEF set_multiprice_func           *_set_multiprice;
-LPSOLVEAPIDEF set_negrange_func             *_set_negrange;
-LPSOLVEAPIDEF set_obj_bound_func            *_set_obj_bound;
-LPSOLVEAPIDEF set_obj_fn_func               *_set_obj_fn;
-LPSOLVEAPIDEF set_obj_fnex_func             *_set_obj_fnex;
-LPSOLVEAPIDEF set_obj_func                  *_set_obj;
-LPSOLVEAPIDEF set_outputfile_func           *_set_outputfile;
-LPSOLVEAPIDEF set_outputstream_func         *_set_outputstream;
-LPSOLVEAPIDEF set_partialprice_func         *_set_partialprice;
-LPSOLVEAPIDEF set_pivoting_func             *_set_pivoting;
-LPSOLVEAPIDEF set_preferdual_func           *_set_preferdual;
-LPSOLVEAPIDEF set_presolve_func             *_set_presolve;
-LPSOLVEAPIDEF set_print_sol_func            *_set_print_sol;
-LPSOLVEAPIDEF set_pseudocosts_func          *_set_pseudocosts;
-LPSOLVEAPIDEF set_rh_func                   *_set_rh;
-LPSOLVEAPIDEF set_rh_range_func             *_set_rh_range;
-LPSOLVEAPIDEF set_rh_vec_func               *_set_rh_vec;
-LPSOLVEAPIDEF set_row_func                  *_set_row;
-LPSOLVEAPIDEF set_rowex_func                *_set_rowex;
-LPSOLVEAPIDEF set_row_name_func             *_set_row_name;
-LPSOLVEAPIDEF set_scalelimit_func           *_set_scalelimit;
-LPSOLVEAPIDEF set_scaling_func              *_set_scaling;
-LPSOLVEAPIDEF set_semicont_func             *_set_semicont;
-LPSOLVEAPIDEF set_sense_func                *_set_sense;
-LPSOLVEAPIDEF set_simplextype_func          *_set_simplextype;
-LPSOLVEAPIDEF set_solutionlimit_func        *_set_solutionlimit;
-LPSOLVEAPIDEF set_timeout_func              *_set_timeout;
-LPSOLVEAPIDEF set_trace_func                *_set_trace;
-LPSOLVEAPIDEF set_upbo_func                 *_set_upbo;
-LPSOLVEAPIDEF set_var_branch_func           *_set_var_branch;
-LPSOLVEAPIDEF set_var_weights_func          *_set_var_weights;
-LPSOLVEAPIDEF set_verbose_func              *_set_verbose;
-LPSOLVEAPIDEF set_XLI_func                  *_set_XLI;
-LPSOLVEAPIDEF solve_func                    *_solve;
-LPSOLVEAPIDEF str_add_column_func           *_str_add_column;
-LPSOLVEAPIDEF str_add_constraint_func       *_str_add_constraint;
-LPSOLVEAPIDEF str_add_lag_con_func          *_str_add_lag_con;
-LPSOLVEAPIDEF str_set_obj_fn_func           *_str_set_obj_fn;
-LPSOLVEAPIDEF str_set_rh_vec_func           *_str_set_rh_vec;
-LPSOLVEAPIDEF time_elapsed_func             *_time_elapsed;
-LPSOLVEAPIDEF unscale_func                  *_unscale;
-LPSOLVEAPIDEF write_lp_func                 *_write_lp;
-LPSOLVEAPIDEF write_LP_func                 *_write_LP;
-LPSOLVEAPIDEF write_mps_func                *_write_mps;
-LPSOLVEAPIDEF write_MPS_func                *_write_MPS;
-LPSOLVEAPIDEF write_freemps_func            *_write_freemps;
-LPSOLVEAPIDEF write_freeMPS_func            *_write_freeMPS;
-LPSOLVEAPIDEF write_XLI_func                *_write_XLI;
-LPSOLVEAPIDEF write_basis_func              *_write_basis;
-LPSOLVEAPIDEF write_params_func             *_write_params;
+LPSOLVEAPIDEF set_column_func *         _set_column;
+LPSOLVEAPIDEF set_columnex_func *       _set_columnex;
+LPSOLVEAPIDEF set_col_name_func *       _set_col_name;
+LPSOLVEAPIDEF set_constr_type_func *    _set_constr_type;
+LPSOLVEAPIDEF set_debug_func *          _set_debug;
+LPSOLVEAPIDEF set_epsb_func *           _set_epsb;
+LPSOLVEAPIDEF set_epsd_func *           _set_epsd;
+LPSOLVEAPIDEF set_epsel_func *          _set_epsel;
+LPSOLVEAPIDEF set_epsint_func *         _set_epsint;
+LPSOLVEAPIDEF set_epslevel_func *       _set_epslevel;
+LPSOLVEAPIDEF set_epsperturb_func *     _set_epsperturb;
+LPSOLVEAPIDEF set_epspivot_func *       _set_epspivot;
+LPSOLVEAPIDEF set_unbounded_func *      _set_unbounded;
+LPSOLVEAPIDEF set_improve_func *        _set_improve;
+LPSOLVEAPIDEF set_infinite_func *       _set_infinite;
+LPSOLVEAPIDEF set_int_func *            _set_int;
+LPSOLVEAPIDEF set_lag_trace_func *      _set_lag_trace;
+LPSOLVEAPIDEF set_lowbo_func *          _set_lowbo;
+LPSOLVEAPIDEF set_lp_name_func *        _set_lp_name;
+LPSOLVEAPIDEF set_mat_func *            _set_mat;
+LPSOLVEAPIDEF set_maxim_func *          _set_maxim;
+LPSOLVEAPIDEF set_maxpivot_func *       _set_maxpivot;
+LPSOLVEAPIDEF set_minim_func *          _set_minim;
+LPSOLVEAPIDEF set_mip_gap_func *        _set_mip_gap;
+LPSOLVEAPIDEF set_multiprice_func *     _set_multiprice;
+LPSOLVEAPIDEF set_negrange_func *       _set_negrange;
+LPSOLVEAPIDEF set_obj_bound_func *      _set_obj_bound;
+LPSOLVEAPIDEF set_obj_fn_func *         _set_obj_fn;
+LPSOLVEAPIDEF set_obj_fnex_func *       _set_obj_fnex;
+LPSOLVEAPIDEF set_obj_func *            _set_obj;
+LPSOLVEAPIDEF set_outputfile_func *     _set_outputfile;
+LPSOLVEAPIDEF set_outputstream_func *   _set_outputstream;
+LPSOLVEAPIDEF set_partialprice_func *   _set_partialprice;
+LPSOLVEAPIDEF set_pivoting_func *       _set_pivoting;
+LPSOLVEAPIDEF set_preferdual_func *     _set_preferdual;
+LPSOLVEAPIDEF set_presolve_func *       _set_presolve;
+LPSOLVEAPIDEF set_print_sol_func *      _set_print_sol;
+LPSOLVEAPIDEF set_pseudocosts_func *    _set_pseudocosts;
+LPSOLVEAPIDEF set_rh_func *             _set_rh;
+LPSOLVEAPIDEF set_rh_range_func *       _set_rh_range;
+LPSOLVEAPIDEF set_rh_vec_func *         _set_rh_vec;
+LPSOLVEAPIDEF set_row_func *            _set_row;
+LPSOLVEAPIDEF set_rowex_func *          _set_rowex;
+LPSOLVEAPIDEF set_row_name_func *       _set_row_name;
+LPSOLVEAPIDEF set_scalelimit_func *     _set_scalelimit;
+LPSOLVEAPIDEF set_scaling_func *        _set_scaling;
+LPSOLVEAPIDEF set_semicont_func *       _set_semicont;
+LPSOLVEAPIDEF set_sense_func *          _set_sense;
+LPSOLVEAPIDEF set_simplextype_func *    _set_simplextype;
+LPSOLVEAPIDEF set_solutionlimit_func *  _set_solutionlimit;
+LPSOLVEAPIDEF set_timeout_func *        _set_timeout;
+LPSOLVEAPIDEF set_trace_func *          _set_trace;
+LPSOLVEAPIDEF set_upbo_func *           _set_upbo;
+LPSOLVEAPIDEF set_var_branch_func *     _set_var_branch;
+LPSOLVEAPIDEF set_var_weights_func *    _set_var_weights;
+LPSOLVEAPIDEF set_verbose_func *        _set_verbose;
+LPSOLVEAPIDEF set_XLI_func *            _set_XLI;
+LPSOLVEAPIDEF solve_func *              _solve;
+LPSOLVEAPIDEF str_add_column_func *     _str_add_column;
+LPSOLVEAPIDEF str_add_constraint_func * _str_add_constraint;
+LPSOLVEAPIDEF str_add_lag_con_func *    _str_add_lag_con;
+LPSOLVEAPIDEF str_set_obj_fn_func *     _str_set_obj_fn;
+LPSOLVEAPIDEF str_set_rh_vec_func *     _str_set_rh_vec;
+LPSOLVEAPIDEF time_elapsed_func *       _time_elapsed;
+LPSOLVEAPIDEF unscale_func *            _unscale;
+LPSOLVEAPIDEF write_lp_func *           _write_lp;
+LPSOLVEAPIDEF write_LP_func *           _write_LP;
+LPSOLVEAPIDEF write_mps_func *          _write_mps;
+LPSOLVEAPIDEF write_MPS_func *          _write_MPS;
+LPSOLVEAPIDEF write_freemps_func *      _write_freemps;
+LPSOLVEAPIDEF write_freeMPS_func *      _write_freeMPS;
+LPSOLVEAPIDEF write_XLI_func *          _write_XLI;
+LPSOLVEAPIDEF write_basis_func *        _write_basis;
+LPSOLVEAPIDEF write_params_func *       _write_params;
 
 #if defined LPSOLVEAPIFROMLPREC
 
-static int init_lpsolve(lprec *lp)
+static int
+init_lpsolve(lprec * lp)
 {
   _add_column = lp->add_column;
   _add_columnex = lp->add_columnex;
@@ -290,7 +291,7 @@ static int init_lpsolve(lprec *lp)
   _get_bb_rule = lp->get_bb_rule;
   _get_bounds_tighter = lp->get_bounds_tighter;
   _get_break_at_value = lp->get_break_at_value;
-/*  _get_break_numeric_accuracy = lp->get_break_numeric_accuracy;*/
+  /*  _get_break_numeric_accuracy = lp->get_break_numeric_accuracy;*/
   _get_col_name = lp->get_col_name;
   _get_columnex = lp->get_columnex;
   _get_constr_type = lp->get_constr_type;
@@ -435,7 +436,7 @@ static int init_lpsolve(lprec *lp)
   _set_bounds_tighter = lp->set_bounds_tighter;
   _set_break_at_first = lp->set_break_at_first;
   _set_break_at_value = lp->set_break_at_value;
-/*  _set_break_numeric_accuracy = lp->set_break_numeric_accuracy;*/
+  /*  _set_break_numeric_accuracy = lp->set_break_numeric_accuracy;*/
   _set_column = lp->set_column;
   _set_columnex = lp->set_columnex;
   _set_col_name = lp->set_col_name;
@@ -511,304 +512,310 @@ static int init_lpsolve(lprec *lp)
   _write_basis = lp->write_basis;
   _write_params = lp->write_params;
 
-  return(TRUE);
+  return (TRUE);
 }
 
 #elif defined LPSOLVEAPIFROMLIB
 
-#ifdef WIN32
-#  include <windows.h>
-#else
-#  include <dlfcn.h>
-#endif
+#  ifdef WIN32
+#    include <windows.h>
+#  else
+#    include <dlfcn.h>
+#  endif
 
-#if defined WIN32
-# define hlpsolve HINSTANCE
-#else
-# define hlpsolve void *
-#endif
+#  if defined WIN32
+#    define hlpsolve HINSTANCE
+#  else
+#    define hlpsolve void *
+#  endif
 
-static hlpsolve open_lpsolve_lib(char *filename)
+static hlpsolve
+open_lpsolve_lib(char * filename)
 {
   hlpsolve lpsolve;
 
-# if defined WIN32
+#  if defined WIN32
   /* Get a handle to the Windows DLL module. */
   lpsolve = LoadLibrary("lpsolve55.dll");
-# else
-  lpsolve = dlopen("liblpsolve55.so", RTLD_LAZY);;
-# endif
-  return(lpsolve);
+#  else
+  lpsolve = dlopen("liblpsolve55.so", RTLD_LAZY);
+  ;
+#  endif
+  return (lpsolve);
 }
 
-static int close_lpsolve_lib(hlpsolve lpsolve)
+static int
+close_lpsolve_lib(hlpsolve lpsolve)
 {
-#ifdef WIN32
+#  ifdef WIN32
   FreeLibrary(lpsolve);
-#else
+#  else
   dlclose(lpsolve);
-#endif
+#  endif
 
-  return(TRUE);
+  return (TRUE);
 }
 
-static int init_lpsolve(hlpsolve lpsolve)
+static int
+init_lpsolve(hlpsolve lpsolve)
 {
-# if defined WIN32
-#   define AddressOf GetProcAddress
-# else
-#   define AddressOf dlsym
-# endif
+#  if defined WIN32
+#    define AddressOf GetProcAddress
+#  else
+#    define AddressOf dlsym
+#  endif
 
   /* assign API functions to lp structure */
-  _add_column = (add_column_func *) AddressOf(lpsolve, "add_column");
-  _add_columnex = (add_columnex_func *) AddressOf(lpsolve, "add_columnex");
-  _add_constraint = (add_constraint_func *) AddressOf(lpsolve, "add_constraint");
-  _add_constraintex = (add_constraintex_func *) AddressOf(lpsolve, "add_constraintex");
-  _add_lag_con = (add_lag_con_func *) AddressOf(lpsolve, "add_lag_con");
-  _add_SOS = (add_SOS_func *) AddressOf(lpsolve, "add_SOS");
-  _column_in_lp = (column_in_lp_func *) AddressOf(lpsolve, "column_in_lp");
-  _copy_lp = (copy_lp_func *) AddressOf(lpsolve, "copy_lp");
-  _default_basis = (default_basis_func *) AddressOf(lpsolve, "default_basis");
-  _del_column = (del_column_func *) AddressOf(lpsolve, "del_column");
-  _del_constraint = (del_constraint_func *) AddressOf(lpsolve, "del_constraint");
-  _delete_lp = (delete_lp_func *) AddressOf(lpsolve, "delete_lp");
-  _dualize_lp = (dualize_lp_func *) AddressOf(lpsolve, "dualize_lp");
-  _free_lp = (free_lp_func *) AddressOf(lpsolve, "free_lp");
+  _add_column = (add_column_func *)AddressOf(lpsolve, "add_column");
+  _add_columnex = (add_columnex_func *)AddressOf(lpsolve, "add_columnex");
+  _add_constraint = (add_constraint_func *)AddressOf(lpsolve, "add_constraint");
+  _add_constraintex = (add_constraintex_func *)AddressOf(lpsolve, "add_constraintex");
+  _add_lag_con = (add_lag_con_func *)AddressOf(lpsolve, "add_lag_con");
+  _add_SOS = (add_SOS_func *)AddressOf(lpsolve, "add_SOS");
+  _column_in_lp = (column_in_lp_func *)AddressOf(lpsolve, "column_in_lp");
+  _copy_lp = (copy_lp_func *)AddressOf(lpsolve, "copy_lp");
+  _default_basis = (default_basis_func *)AddressOf(lpsolve, "default_basis");
+  _del_column = (del_column_func *)AddressOf(lpsolve, "del_column");
+  _del_constraint = (del_constraint_func *)AddressOf(lpsolve, "del_constraint");
+  _delete_lp = (delete_lp_func *)AddressOf(lpsolve, "delete_lp");
+  _dualize_lp = (dualize_lp_func *)AddressOf(lpsolve, "dualize_lp");
+  _free_lp = (free_lp_func *)AddressOf(lpsolve, "free_lp");
   /*_get_accuracy = (get_accuracy_func *) AddressOf(lpsolve, "get_accuracy");*/
-  _get_anti_degen = (get_anti_degen_func *) AddressOf(lpsolve, "get_anti_degen");
-  _get_basis = (get_basis_func *) AddressOf(lpsolve, "get_basis");
-  _get_basiscrash = (get_basiscrash_func *) AddressOf(lpsolve, "get_basiscrash");
-  _get_bb_depthlimit = (get_bb_depthlimit_func *) AddressOf(lpsolve, "get_bb_depthlimit");
-  _get_bb_floorfirst = (get_bb_floorfirst_func *) AddressOf(lpsolve, "get_bb_floorfirst");
-  _get_bb_rule = (get_bb_rule_func *) AddressOf(lpsolve, "get_bb_rule");
-  _get_bounds_tighter = (get_bounds_tighter_func *) AddressOf(lpsolve, "get_bounds_tighter");
-  _get_break_at_value = (get_break_at_value_func *) AddressOf(lpsolve, "get_break_at_value");
-/*  _get_break_numeric_accuracy = (get_break_numeric_accuracy_func *) AddressOf(lpsolve, "get_break_numeric_accuracy");*/
-  _get_col_name = (get_col_name_func *) AddressOf(lpsolve, "get_col_name");
-  _get_column = (get_column_func *) AddressOf(lpsolve, "get_column");
-  _get_columnex = (get_columnex_func *) AddressOf(lpsolve, "get_columnex");
-  _get_constr_type = (get_constr_type_func *) AddressOf(lpsolve, "get_constr_type");
-  _get_constr_value = (get_constr_value_func *) AddressOf(lpsolve, "get_constr_value");
-  _get_constraints = (get_constraints_func *) AddressOf(lpsolve, "get_constraints");
-  _get_dual_solution = (get_dual_solution_func *) AddressOf(lpsolve, "get_dual_solution");
-  _get_epsb = (get_epsb_func *) AddressOf(lpsolve, "get_epsb");
-  _get_epsd = (get_epsd_func *) AddressOf(lpsolve, "get_epsd");
-  _get_epsel = (get_epsel_func *) AddressOf(lpsolve, "get_epsel");
-  _get_epsint = (get_epsint_func *) AddressOf(lpsolve, "get_epsint");
-  _get_epsperturb = (get_epsperturb_func *) AddressOf(lpsolve, "get_epsperturb");
-  _get_epspivot = (get_epspivot_func *) AddressOf(lpsolve, "get_epspivot");
-  _get_improve = (get_improve_func *) AddressOf(lpsolve, "get_improve");
-  _get_infinite = (get_infinite_func *) AddressOf(lpsolve, "get_infinite");
-  _get_lambda = (get_lambda_func *) AddressOf(lpsolve, "get_lambda");
-  _get_lowbo = (get_lowbo_func *) AddressOf(lpsolve, "get_lowbo");
-  _get_lp_index = (get_lp_index_func *) AddressOf(lpsolve, "get_lp_index");
-  _get_lp_name = (get_lp_name_func *) AddressOf(lpsolve, "get_lp_name");
-  _get_Lrows = (get_Lrows_func *) AddressOf(lpsolve, "get_Lrows");
-  _get_mat = (get_mat_func *) AddressOf(lpsolve, "get_mat");
-  _get_mat_byindex = (get_mat_byindex_func *) AddressOf(lpsolve, "get_mat_byindex");
-  _get_max_level = (get_max_level_func *) AddressOf(lpsolve, "get_max_level");
-  _get_maxpivot = (get_maxpivot_func *) AddressOf(lpsolve, "get_maxpivot");
-  _get_mip_gap = (get_mip_gap_func *) AddressOf(lpsolve, "get_mip_gap");
-  _get_multiprice = (get_multiprice_func *) AddressOf(lpsolve, "get_multiprice");
-  _get_nameindex = (get_nameindex_func *) AddressOf(lpsolve, "get_nameindex");
-  _get_Ncolumns = (get_Ncolumns_func *) AddressOf(lpsolve, "get_Ncolumns");
-  _get_negrange = (get_negrange_func *) AddressOf(lpsolve, "get_negrange");
-  _get_nonzeros = (get_nz_func *) AddressOf(lpsolve, "get_nonzeros");
-  _get_Norig_columns = (get_Norig_columns_func *) AddressOf(lpsolve, "get_Norig_columns");
-  _get_Norig_rows = (get_Norig_rows_func *) AddressOf(lpsolve, "get_Norig_rows");
-  _get_Nrows = (get_Nrows_func *) AddressOf(lpsolve, "get_Nrows");
-  _get_obj_bound = (get_obj_bound_func *) AddressOf(lpsolve, "get_obj_bound");
-  _get_objective = (get_objective_func *) AddressOf(lpsolve, "get_objective");
-  _get_orig_index = (get_orig_index_func *) AddressOf(lpsolve, "get_orig_index");
-  _get_origcol_name = (get_origcol_name_func *) AddressOf(lpsolve, "get_origcol_name");
-  _get_origrow_name = (get_origrow_name_func *) AddressOf(lpsolve, "get_origrow_name");
-  _get_partialprice = (get_partialprice_func *) AddressOf(lpsolve, "get_partialprice");
-  _get_pivoting = (get_pivoting_func *) AddressOf(lpsolve, "get_pivoting");
-  _get_presolve = (get_presolve_func *) AddressOf(lpsolve, "get_presolve");
-  _get_presolveloops = (get_presolveloops_func *) AddressOf(lpsolve, "get_presolveloops");
-  _get_primal_solution = (get_primal_solution_func *) AddressOf(lpsolve, "get_primal_solution");
-  _get_print_sol = (get_print_sol_func *) AddressOf(lpsolve, "get_print_sol");
-  _get_pseudocosts = (get_pseudocosts_func *) AddressOf(lpsolve, "get_pseudocosts");
-  _get_ptr_constraints = (get_ptr_constraints_func *) AddressOf(lpsolve, "get_ptr_constraints");
-  _get_ptr_dual_solution = (get_ptr_dual_solution_func *) AddressOf(lpsolve, "get_ptr_dual_solution");
-  _get_ptr_lambda = (get_ptr_lambda_func *) AddressOf(lpsolve, "get_ptr_lambda");
-  _get_ptr_primal_solution = (get_ptr_primal_solution_func *) AddressOf(lpsolve, "get_ptr_primal_solution");
-  _get_ptr_sensitivity_obj = (get_ptr_sensitivity_obj_func *) AddressOf(lpsolve, "get_ptr_sensitivity_obj");
-  _get_ptr_sensitivity_objex = (get_ptr_sensitivity_objex_func *) AddressOf(lpsolve, "get_ptr_sensitivity_objex");
-  _get_ptr_sensitivity_rhs = (get_ptr_sensitivity_rhs_func *) AddressOf(lpsolve, "get_ptr_sensitivity_rhs");
-  _get_ptr_variables = (get_ptr_variables_func *) AddressOf(lpsolve, "get_ptr_variables");
-  _get_rh = (get_rh_func *) AddressOf(lpsolve, "get_rh");
-  _get_rh_range = (get_rh_range_func *) AddressOf(lpsolve, "get_rh_range");
-  _get_row = (get_row_func *) AddressOf(lpsolve, "get_row");
-  _get_rowex = (get_rowex_func *) AddressOf(lpsolve, "get_rowex");
-  _get_row_name = (get_row_name_func *) AddressOf(lpsolve, "get_row_name");
-  _get_scalelimit = (get_scalelimit_func *) AddressOf(lpsolve, "get_scalelimit");
-  _get_scaling = (get_scaling_func *) AddressOf(lpsolve, "get_scaling");
-  _get_sensitivity_obj = (get_sensitivity_obj_func *) AddressOf(lpsolve, "get_sensitivity_obj");
-  _get_sensitivity_objex = (get_sensitivity_objex_func *) AddressOf(lpsolve, "get_sensitivity_objex");
-  _get_sensitivity_rhs = (get_sensitivity_rhs_func *) AddressOf(lpsolve, "get_sensitivity_rhs");
-  _get_simplextype = (get_simplextype_func *) AddressOf(lpsolve, "get_simplextype");
-  _get_solutioncount = (get_solutioncount_func *) AddressOf(lpsolve, "get_solutioncount");
-  _get_solutionlimit = (get_solutionlimit_func *) AddressOf(lpsolve, "get_solutionlimit");
-  _get_status = (get_status_func *) AddressOf(lpsolve, "get_status");
-  _get_statustext = (get_statustext_func *) AddressOf(lpsolve, "get_statustext");
-  _get_timeout = (get_timeout_func *) AddressOf(lpsolve, "get_timeout");
-  _get_total_iter = (get_total_iter_func *) AddressOf(lpsolve, "get_total_iter");
-  _get_total_nodes = (get_total_nodes_func *) AddressOf(lpsolve, "get_total_nodes");
-  _get_upbo = (get_upbo_func *) AddressOf(lpsolve, "get_upbo");
-  _get_var_branch = (get_var_branch_func *) AddressOf(lpsolve, "get_var_branch");
-  _get_var_dualresult = (get_var_dualresult_func *) AddressOf(lpsolve, "get_var_dualresult");
-  _get_var_primalresult = (get_var_primalresult_func *) AddressOf(lpsolve, "get_var_primalresult");
-  _get_var_priority = (get_var_priority_func *) AddressOf(lpsolve, "get_var_priority");
-  _get_variables = (get_variables_func *) AddressOf(lpsolve, "get_variables");
-  _get_verbose = (get_verbose_func *) AddressOf(lpsolve, "get_verbose");
-  _get_working_objective = (get_working_objective_func *) AddressOf(lpsolve, "get_working_objective");
-  _guess_basis = (guess_basis_func *) AddressOf(lpsolve, "guess_basis");
-  _has_BFP = (has_BFP_func *) AddressOf(lpsolve, "has_BFP");
-  _has_XLI = (has_XLI_func *) AddressOf(lpsolve, "has_XLI");
-  _is_add_rowmode = (is_add_rowmode_func *) AddressOf(lpsolve, "is_add_rowmode");
-  _is_anti_degen = (is_anti_degen_func *) AddressOf(lpsolve, "is_anti_degen");
-  _is_binary = (is_binary_func *) AddressOf(lpsolve, "is_binary");
-  _is_break_at_first = (is_break_at_first_func *) AddressOf(lpsolve, "is_break_at_first");
-  _is_constr_type = (is_constr_type_func *) AddressOf(lpsolve, "is_constr_type");
-  _is_debug = (is_debug_func *) AddressOf(lpsolve, "is_debug");
-  _is_feasible = (is_feasible_func *) AddressOf(lpsolve, "is_feasible");
-  _is_unbounded = (is_unbounded_func *) AddressOf(lpsolve, "is_unbounded");
-  _is_infinite = (is_infinite_func *) AddressOf(lpsolve, "is_infinite");
-  _is_int = (is_int_func *) AddressOf(lpsolve, "is_int");
-  _is_integerscaling = (is_integerscaling_func *) AddressOf(lpsolve, "is_integerscaling");
-  _is_lag_trace = (is_lag_trace_func *) AddressOf(lpsolve, "is_lag_trace");
-  _is_maxim = (is_maxim_func *) AddressOf(lpsolve, "is_maxim");
-  _is_nativeBFP = (is_nativeBFP_func *) AddressOf(lpsolve, "is_nativeBFP");
-  _is_nativeXLI = (is_nativeXLI_func *) AddressOf(lpsolve, "is_nativeXLI");
-  _is_negative = (is_negative_func *) AddressOf(lpsolve, "is_negative");
-  _is_piv_mode = (is_piv_mode_func *) AddressOf(lpsolve, "is_piv_mode");
-  _is_piv_rule = (is_piv_rule_func *) AddressOf(lpsolve, "is_piv_rule");
-  _is_presolve = (is_presolve_func *) AddressOf(lpsolve, "is_presolve");
-  _is_scalemode = (is_scalemode_func *) AddressOf(lpsolve, "is_scalemode");
-  _is_scaletype = (is_scaletype_func *) AddressOf(lpsolve, "is_scaletype");
-  _is_semicont = (is_semicont_func *) AddressOf(lpsolve, "is_semicont");
-  _is_SOS_var = (is_SOS_var_func *) AddressOf(lpsolve, "is_SOS_var");
-  _is_trace = (is_trace_func *) AddressOf(lpsolve, "is_trace");
-  _is_use_names = (is_use_names_func *) AddressOf(lpsolve, "is_use_names");
-  _lp_solve_version = (lp_solve_version_func *) AddressOf(lpsolve, "lp_solve_version");
-  _make_lp = (make_lp_func *) AddressOf(lpsolve, "make_lp");
-  _print_constraints = (print_constraints_func *) AddressOf(lpsolve, "print_constraints");
-  _print_debugdump = (print_debugdump_func *) AddressOf(lpsolve, "print_debugdump");
-  _print_duals = (print_duals_func *) AddressOf(lpsolve, "print_duals");
-  _print_lp = (print_lp_func *) AddressOf(lpsolve, "print_lp");
-  _print_objective = (print_objective_func *) AddressOf(lpsolve, "print_objective");
-  _print_scales = (print_scales_func *) AddressOf(lpsolve, "print_scales");
-  _print_solution = (print_solution_func *) AddressOf(lpsolve, "print_solution");
-  _print_str = (print_str_func *) AddressOf(lpsolve, "print_str");
-  _print_tableau = (print_tableau_func *) AddressOf(lpsolve, "print_tableau");
-  _put_abortfunc = (put_abortfunc_func *) AddressOf(lpsolve, "put_abortfunc");
-  _put_bb_nodefunc = (put_bb_nodefunc_func *) AddressOf(lpsolve, "put_bb_nodefunc");
-  _put_bb_branchfunc = (put_bb_branchfunc_func *) AddressOf(lpsolve, "put_bb_branchfunc");
-  _put_logfunc = (put_logfunc_func *) AddressOf(lpsolve, "put_logfunc");
-  _put_msgfunc = (put_msgfunc_func *) AddressOf(lpsolve, "put_msgfunc");
-  _read_LP = (read_LP_func *) AddressOf(lpsolve, "read_LP");
-  _read_MPS = (read_MPS_func *) AddressOf(lpsolve, "read_MPS");
-  _read_XLI = (read_XLI_func *) AddressOf(lpsolve, "read_XLI");
-  _read_params = (read_params_func *) AddressOf(lpsolve, "read_params");
-  _read_basis = (read_basis_func *) AddressOf(lpsolve, "read_basis");
-  _reset_basis = (reset_basis_func *) AddressOf(lpsolve, "reset_basis");
-  _reset_params = (reset_params_func *) AddressOf(lpsolve, "reset_params");
-  _report = (reportfunc *) AddressOf(lpsolve, "report");
-  _resize_lp = (resize_lp_func *) AddressOf(lpsolve, "resize_lp");
-  _set_add_rowmode = (set_add_rowmode_func *) AddressOf(lpsolve, "set_add_rowmode");
-  _set_anti_degen = (set_anti_degen_func *) AddressOf(lpsolve, "set_anti_degen");
-  _set_basisvar = (set_basisvar_func *) AddressOf(lpsolve, "set_basisvar");
-  _set_basis = (set_basis_func *) AddressOf(lpsolve, "set_basis");
-  _set_basiscrash = (set_basiscrash_func *) AddressOf(lpsolve, "set_basiscrash");
-  _set_bb_depthlimit = (set_bb_depthlimit_func *) AddressOf(lpsolve, "set_bb_depthlimit");
-  _set_bb_floorfirst = (set_bb_floorfirst_func *) AddressOf(lpsolve, "set_bb_floorfirst");
-  _set_bb_rule = (set_bb_rule_func *) AddressOf(lpsolve, "set_bb_rule");
-  _set_BFP = (set_BFP_func *) AddressOf(lpsolve, "set_BFP");
-  _set_binary = (set_binary_func *) AddressOf(lpsolve, "set_binary");
-  _set_bounds = (set_bounds_func *) AddressOf(lpsolve, "set_bounds");
-  _set_bounds_tighter = (set_bounds_tighter_func *) AddressOf(lpsolve, "set_bounds_tighter");
-  _set_break_at_first = (set_break_at_first_func *) AddressOf(lpsolve, "set_break_at_first");
-  _set_break_at_value = (set_break_at_value_func *) AddressOf(lpsolve, "set_break_at_value");
-/*  _set_break_numeric_accuracy = (set_break_numeric_accuracy_func *) AddressOf(lpsolve, "set_break_numeric_accuracy");*/
-  _set_column = (set_column_func *) AddressOf(lpsolve, "set_column");
-  _set_columnex = (set_columnex_func *) AddressOf(lpsolve, "set_columnex");
-  _set_col_name = (set_col_name_func *) AddressOf(lpsolve, "set_col_name");
-  _set_constr_type = (set_constr_type_func *) AddressOf(lpsolve, "set_constr_type");
-  _set_debug = (set_debug_func *) AddressOf(lpsolve, "set_debug");
-  _set_epsb = (set_epsb_func *) AddressOf(lpsolve, "set_epsb");
-  _set_epsd = (set_epsd_func *) AddressOf(lpsolve, "set_epsd");
-  _set_epsel = (set_epsel_func *) AddressOf(lpsolve, "set_epsel");
-  _set_epsint = (set_epsint_func *) AddressOf(lpsolve, "set_epsint");
-  _set_epslevel = (set_epslevel_func *) AddressOf(lpsolve, "set_epslevel");
-  _set_epsperturb = (set_epsperturb_func *) AddressOf(lpsolve, "set_epsperturb");
-  _set_epspivot = (set_epspivot_func *) AddressOf(lpsolve, "set_epspivot");
-  _set_unbounded = (set_unbounded_func *) AddressOf(lpsolve, "set_unbounded");
-  _set_improve = (set_improve_func *) AddressOf(lpsolve, "set_improve");
-  _set_infinite = (set_infinite_func *) AddressOf(lpsolve, "set_infinite");
-  _set_int = (set_int_func *) AddressOf(lpsolve, "set_int");
-  _set_lag_trace = (set_lag_trace_func *) AddressOf(lpsolve, "set_lag_trace");
-  _set_lowbo = (set_lowbo_func *) AddressOf(lpsolve, "set_lowbo");
-  _set_lp_name = (set_lp_name_func *) AddressOf(lpsolve, "set_lp_name");
-  _set_mat = (set_mat_func *) AddressOf(lpsolve, "set_mat");
-  _set_maxim = (set_maxim_func *) AddressOf(lpsolve, "set_maxim");
-  _set_maxpivot = (set_maxpivot_func *) AddressOf(lpsolve, "set_maxpivot");
-  _set_minim = (set_minim_func *) AddressOf(lpsolve, "set_minim");
-  _set_mip_gap = (set_mip_gap_func *) AddressOf(lpsolve, "set_mip_gap");
-  _set_multiprice = (set_multiprice_func *) AddressOf(lpsolve, "set_multiprice");
-  _set_negrange = (set_negrange_func *) AddressOf(lpsolve, "set_negrange");
-  _set_obj_bound = (set_obj_bound_func *) AddressOf(lpsolve, "set_obj_bound");
-  _set_obj_fn = (set_obj_fn_func *) AddressOf(lpsolve, "set_obj_fn");
-  _set_obj_fnex = (set_obj_fnex_func *) AddressOf(lpsolve, "set_obj_fnex");
-  _set_obj = (set_obj_func *) AddressOf(lpsolve, "set_obj");
-  _set_outputfile = (set_outputfile_func *) AddressOf(lpsolve, "set_outputfile");
-  _set_outputstream = (set_outputstream_func *) AddressOf(lpsolve, "set_outputstream");
-  _set_partialprice = (set_partialprice_func *) AddressOf(lpsolve, "set_partialprice");
-  _set_pivoting = (set_pivoting_func *) AddressOf(lpsolve, "set_pivoting");
-  _set_preferdual = (set_preferdual_func *) AddressOf(lpsolve, "set_preferdual");
-  _set_presolve = (set_presolve_func *) AddressOf(lpsolve, "set_presolve");
-  _set_print_sol = (set_print_sol_func *) AddressOf(lpsolve, "set_print_sol");
-  _set_pseudocosts = (set_pseudocosts_func *) AddressOf(lpsolve, "set_pseudocosts");
-  _set_rh = (set_rh_func *) AddressOf(lpsolve, "set_rh");
-  _set_rh_range = (set_rh_range_func *) AddressOf(lpsolve, "set_rh_range");
-  _set_rh_vec = (set_rh_vec_func *) AddressOf(lpsolve, "set_rh_vec");
-  _set_row = (set_row_func *) AddressOf(lpsolve, "set_row");
-  _set_rowex = (set_rowex_func *) AddressOf(lpsolve, "set_rowex");
-  _set_row_name = (set_row_name_func *) AddressOf(lpsolve, "set_row_name");
-  _set_scalelimit = (set_scalelimit_func *) AddressOf(lpsolve, "set_scalelimit");
-  _set_scaling = (set_scaling_func *) AddressOf(lpsolve, "set_scaling");
-  _set_semicont = (set_semicont_func *) AddressOf(lpsolve, "set_semicont");
-  _set_sense = (set_sense_func *) AddressOf(lpsolve, "set_sense");
-  _set_simplextype = (set_simplextype_func *) AddressOf(lpsolve, "set_simplextype");
-  _set_solutionlimit = (set_solutionlimit_func *) AddressOf(lpsolve, "set_solutionlimit");
-  _set_timeout = (set_timeout_func *) AddressOf(lpsolve, "set_timeout");
-  _set_trace = (set_trace_func *) AddressOf(lpsolve, "set_trace");
-  _set_upbo = (set_upbo_func *) AddressOf(lpsolve, "set_upbo");
-  _set_var_branch = (set_var_branch_func *) AddressOf(lpsolve, "set_var_branch");
-  _set_var_weights = (set_var_weights_func *) AddressOf(lpsolve, "set_var_weights");
-  _set_verbose = (set_verbose_func *) AddressOf(lpsolve, "set_verbose");
-  _set_XLI = (set_XLI_func *) AddressOf(lpsolve, "set_XLI");
-  _solve = (solve_func *) AddressOf(lpsolve, "solve");
-  _str_add_column = (str_add_column_func *) AddressOf(lpsolve, "str_add_column");
-  _str_add_constraint = (str_add_constraint_func *) AddressOf(lpsolve, "str_add_constraint");
-  _str_add_lag_con = (str_add_lag_con_func *) AddressOf(lpsolve, "str_add_lag_con");
-  _str_set_obj_fn = (str_set_obj_fn_func *) AddressOf(lpsolve, "str_set_obj_fn");
-  _str_set_rh_vec = (str_set_rh_vec_func *) AddressOf(lpsolve, "str_set_rh_vec");
-  _time_elapsed = (time_elapsed_func *) AddressOf(lpsolve, "time_elapsed");
-  _unscale = (unscale_func *) AddressOf(lpsolve, "unscale");
-  _write_lp = (write_lp_func *) AddressOf(lpsolve, "write_lp");
-  _write_LP = (write_LP_func *) AddressOf(lpsolve, "write_LP");
-  _write_mps = (write_mps_func *) AddressOf(lpsolve, "write_mps");
-  _write_MPS = (write_MPS_func *) AddressOf(lpsolve, "write_MPS");
-  _write_freemps = (write_freemps_func *) AddressOf(lpsolve, "write_freemps");
-  _write_freeMPS = (write_freeMPS_func *) AddressOf(lpsolve, "write_freeMPS");
-  _write_XLI = (write_XLI_func *) AddressOf(lpsolve, "write_XLI");
-  _write_basis = (write_basis_func *) AddressOf(lpsolve, "write_basis");
-  _write_params = (write_params_func *) AddressOf(lpsolve, "write_params");
+  _get_anti_degen = (get_anti_degen_func *)AddressOf(lpsolve, "get_anti_degen");
+  _get_basis = (get_basis_func *)AddressOf(lpsolve, "get_basis");
+  _get_basiscrash = (get_basiscrash_func *)AddressOf(lpsolve, "get_basiscrash");
+  _get_bb_depthlimit = (get_bb_depthlimit_func *)AddressOf(lpsolve, "get_bb_depthlimit");
+  _get_bb_floorfirst = (get_bb_floorfirst_func *)AddressOf(lpsolve, "get_bb_floorfirst");
+  _get_bb_rule = (get_bb_rule_func *)AddressOf(lpsolve, "get_bb_rule");
+  _get_bounds_tighter = (get_bounds_tighter_func *)AddressOf(lpsolve, "get_bounds_tighter");
+  _get_break_at_value = (get_break_at_value_func *)AddressOf(lpsolve, "get_break_at_value");
+  /*  _get_break_numeric_accuracy = (get_break_numeric_accuracy_func *) AddressOf(lpsolve,
+   * "get_break_numeric_accuracy");*/
+  _get_col_name = (get_col_name_func *)AddressOf(lpsolve, "get_col_name");
+  _get_column = (get_column_func *)AddressOf(lpsolve, "get_column");
+  _get_columnex = (get_columnex_func *)AddressOf(lpsolve, "get_columnex");
+  _get_constr_type = (get_constr_type_func *)AddressOf(lpsolve, "get_constr_type");
+  _get_constr_value = (get_constr_value_func *)AddressOf(lpsolve, "get_constr_value");
+  _get_constraints = (get_constraints_func *)AddressOf(lpsolve, "get_constraints");
+  _get_dual_solution = (get_dual_solution_func *)AddressOf(lpsolve, "get_dual_solution");
+  _get_epsb = (get_epsb_func *)AddressOf(lpsolve, "get_epsb");
+  _get_epsd = (get_epsd_func *)AddressOf(lpsolve, "get_epsd");
+  _get_epsel = (get_epsel_func *)AddressOf(lpsolve, "get_epsel");
+  _get_epsint = (get_epsint_func *)AddressOf(lpsolve, "get_epsint");
+  _get_epsperturb = (get_epsperturb_func *)AddressOf(lpsolve, "get_epsperturb");
+  _get_epspivot = (get_epspivot_func *)AddressOf(lpsolve, "get_epspivot");
+  _get_improve = (get_improve_func *)AddressOf(lpsolve, "get_improve");
+  _get_infinite = (get_infinite_func *)AddressOf(lpsolve, "get_infinite");
+  _get_lambda = (get_lambda_func *)AddressOf(lpsolve, "get_lambda");
+  _get_lowbo = (get_lowbo_func *)AddressOf(lpsolve, "get_lowbo");
+  _get_lp_index = (get_lp_index_func *)AddressOf(lpsolve, "get_lp_index");
+  _get_lp_name = (get_lp_name_func *)AddressOf(lpsolve, "get_lp_name");
+  _get_Lrows = (get_Lrows_func *)AddressOf(lpsolve, "get_Lrows");
+  _get_mat = (get_mat_func *)AddressOf(lpsolve, "get_mat");
+  _get_mat_byindex = (get_mat_byindex_func *)AddressOf(lpsolve, "get_mat_byindex");
+  _get_max_level = (get_max_level_func *)AddressOf(lpsolve, "get_max_level");
+  _get_maxpivot = (get_maxpivot_func *)AddressOf(lpsolve, "get_maxpivot");
+  _get_mip_gap = (get_mip_gap_func *)AddressOf(lpsolve, "get_mip_gap");
+  _get_multiprice = (get_multiprice_func *)AddressOf(lpsolve, "get_multiprice");
+  _get_nameindex = (get_nameindex_func *)AddressOf(lpsolve, "get_nameindex");
+  _get_Ncolumns = (get_Ncolumns_func *)AddressOf(lpsolve, "get_Ncolumns");
+  _get_negrange = (get_negrange_func *)AddressOf(lpsolve, "get_negrange");
+  _get_nonzeros = (get_nz_func *)AddressOf(lpsolve, "get_nonzeros");
+  _get_Norig_columns = (get_Norig_columns_func *)AddressOf(lpsolve, "get_Norig_columns");
+  _get_Norig_rows = (get_Norig_rows_func *)AddressOf(lpsolve, "get_Norig_rows");
+  _get_Nrows = (get_Nrows_func *)AddressOf(lpsolve, "get_Nrows");
+  _get_obj_bound = (get_obj_bound_func *)AddressOf(lpsolve, "get_obj_bound");
+  _get_objective = (get_objective_func *)AddressOf(lpsolve, "get_objective");
+  _get_orig_index = (get_orig_index_func *)AddressOf(lpsolve, "get_orig_index");
+  _get_origcol_name = (get_origcol_name_func *)AddressOf(lpsolve, "get_origcol_name");
+  _get_origrow_name = (get_origrow_name_func *)AddressOf(lpsolve, "get_origrow_name");
+  _get_partialprice = (get_partialprice_func *)AddressOf(lpsolve, "get_partialprice");
+  _get_pivoting = (get_pivoting_func *)AddressOf(lpsolve, "get_pivoting");
+  _get_presolve = (get_presolve_func *)AddressOf(lpsolve, "get_presolve");
+  _get_presolveloops = (get_presolveloops_func *)AddressOf(lpsolve, "get_presolveloops");
+  _get_primal_solution = (get_primal_solution_func *)AddressOf(lpsolve, "get_primal_solution");
+  _get_print_sol = (get_print_sol_func *)AddressOf(lpsolve, "get_print_sol");
+  _get_pseudocosts = (get_pseudocosts_func *)AddressOf(lpsolve, "get_pseudocosts");
+  _get_ptr_constraints = (get_ptr_constraints_func *)AddressOf(lpsolve, "get_ptr_constraints");
+  _get_ptr_dual_solution = (get_ptr_dual_solution_func *)AddressOf(lpsolve, "get_ptr_dual_solution");
+  _get_ptr_lambda = (get_ptr_lambda_func *)AddressOf(lpsolve, "get_ptr_lambda");
+  _get_ptr_primal_solution = (get_ptr_primal_solution_func *)AddressOf(lpsolve, "get_ptr_primal_solution");
+  _get_ptr_sensitivity_obj = (get_ptr_sensitivity_obj_func *)AddressOf(lpsolve, "get_ptr_sensitivity_obj");
+  _get_ptr_sensitivity_objex = (get_ptr_sensitivity_objex_func *)AddressOf(lpsolve, "get_ptr_sensitivity_objex");
+  _get_ptr_sensitivity_rhs = (get_ptr_sensitivity_rhs_func *)AddressOf(lpsolve, "get_ptr_sensitivity_rhs");
+  _get_ptr_variables = (get_ptr_variables_func *)AddressOf(lpsolve, "get_ptr_variables");
+  _get_rh = (get_rh_func *)AddressOf(lpsolve, "get_rh");
+  _get_rh_range = (get_rh_range_func *)AddressOf(lpsolve, "get_rh_range");
+  _get_row = (get_row_func *)AddressOf(lpsolve, "get_row");
+  _get_rowex = (get_rowex_func *)AddressOf(lpsolve, "get_rowex");
+  _get_row_name = (get_row_name_func *)AddressOf(lpsolve, "get_row_name");
+  _get_scalelimit = (get_scalelimit_func *)AddressOf(lpsolve, "get_scalelimit");
+  _get_scaling = (get_scaling_func *)AddressOf(lpsolve, "get_scaling");
+  _get_sensitivity_obj = (get_sensitivity_obj_func *)AddressOf(lpsolve, "get_sensitivity_obj");
+  _get_sensitivity_objex = (get_sensitivity_objex_func *)AddressOf(lpsolve, "get_sensitivity_objex");
+  _get_sensitivity_rhs = (get_sensitivity_rhs_func *)AddressOf(lpsolve, "get_sensitivity_rhs");
+  _get_simplextype = (get_simplextype_func *)AddressOf(lpsolve, "get_simplextype");
+  _get_solutioncount = (get_solutioncount_func *)AddressOf(lpsolve, "get_solutioncount");
+  _get_solutionlimit = (get_solutionlimit_func *)AddressOf(lpsolve, "get_solutionlimit");
+  _get_status = (get_status_func *)AddressOf(lpsolve, "get_status");
+  _get_statustext = (get_statustext_func *)AddressOf(lpsolve, "get_statustext");
+  _get_timeout = (get_timeout_func *)AddressOf(lpsolve, "get_timeout");
+  _get_total_iter = (get_total_iter_func *)AddressOf(lpsolve, "get_total_iter");
+  _get_total_nodes = (get_total_nodes_func *)AddressOf(lpsolve, "get_total_nodes");
+  _get_upbo = (get_upbo_func *)AddressOf(lpsolve, "get_upbo");
+  _get_var_branch = (get_var_branch_func *)AddressOf(lpsolve, "get_var_branch");
+  _get_var_dualresult = (get_var_dualresult_func *)AddressOf(lpsolve, "get_var_dualresult");
+  _get_var_primalresult = (get_var_primalresult_func *)AddressOf(lpsolve, "get_var_primalresult");
+  _get_var_priority = (get_var_priority_func *)AddressOf(lpsolve, "get_var_priority");
+  _get_variables = (get_variables_func *)AddressOf(lpsolve, "get_variables");
+  _get_verbose = (get_verbose_func *)AddressOf(lpsolve, "get_verbose");
+  _get_working_objective = (get_working_objective_func *)AddressOf(lpsolve, "get_working_objective");
+  _guess_basis = (guess_basis_func *)AddressOf(lpsolve, "guess_basis");
+  _has_BFP = (has_BFP_func *)AddressOf(lpsolve, "has_BFP");
+  _has_XLI = (has_XLI_func *)AddressOf(lpsolve, "has_XLI");
+  _is_add_rowmode = (is_add_rowmode_func *)AddressOf(lpsolve, "is_add_rowmode");
+  _is_anti_degen = (is_anti_degen_func *)AddressOf(lpsolve, "is_anti_degen");
+  _is_binary = (is_binary_func *)AddressOf(lpsolve, "is_binary");
+  _is_break_at_first = (is_break_at_first_func *)AddressOf(lpsolve, "is_break_at_first");
+  _is_constr_type = (is_constr_type_func *)AddressOf(lpsolve, "is_constr_type");
+  _is_debug = (is_debug_func *)AddressOf(lpsolve, "is_debug");
+  _is_feasible = (is_feasible_func *)AddressOf(lpsolve, "is_feasible");
+  _is_unbounded = (is_unbounded_func *)AddressOf(lpsolve, "is_unbounded");
+  _is_infinite = (is_infinite_func *)AddressOf(lpsolve, "is_infinite");
+  _is_int = (is_int_func *)AddressOf(lpsolve, "is_int");
+  _is_integerscaling = (is_integerscaling_func *)AddressOf(lpsolve, "is_integerscaling");
+  _is_lag_trace = (is_lag_trace_func *)AddressOf(lpsolve, "is_lag_trace");
+  _is_maxim = (is_maxim_func *)AddressOf(lpsolve, "is_maxim");
+  _is_nativeBFP = (is_nativeBFP_func *)AddressOf(lpsolve, "is_nativeBFP");
+  _is_nativeXLI = (is_nativeXLI_func *)AddressOf(lpsolve, "is_nativeXLI");
+  _is_negative = (is_negative_func *)AddressOf(lpsolve, "is_negative");
+  _is_piv_mode = (is_piv_mode_func *)AddressOf(lpsolve, "is_piv_mode");
+  _is_piv_rule = (is_piv_rule_func *)AddressOf(lpsolve, "is_piv_rule");
+  _is_presolve = (is_presolve_func *)AddressOf(lpsolve, "is_presolve");
+  _is_scalemode = (is_scalemode_func *)AddressOf(lpsolve, "is_scalemode");
+  _is_scaletype = (is_scaletype_func *)AddressOf(lpsolve, "is_scaletype");
+  _is_semicont = (is_semicont_func *)AddressOf(lpsolve, "is_semicont");
+  _is_SOS_var = (is_SOS_var_func *)AddressOf(lpsolve, "is_SOS_var");
+  _is_trace = (is_trace_func *)AddressOf(lpsolve, "is_trace");
+  _is_use_names = (is_use_names_func *)AddressOf(lpsolve, "is_use_names");
+  _lp_solve_version = (lp_solve_version_func *)AddressOf(lpsolve, "lp_solve_version");
+  _make_lp = (make_lp_func *)AddressOf(lpsolve, "make_lp");
+  _print_constraints = (print_constraints_func *)AddressOf(lpsolve, "print_constraints");
+  _print_debugdump = (print_debugdump_func *)AddressOf(lpsolve, "print_debugdump");
+  _print_duals = (print_duals_func *)AddressOf(lpsolve, "print_duals");
+  _print_lp = (print_lp_func *)AddressOf(lpsolve, "print_lp");
+  _print_objective = (print_objective_func *)AddressOf(lpsolve, "print_objective");
+  _print_scales = (print_scales_func *)AddressOf(lpsolve, "print_scales");
+  _print_solution = (print_solution_func *)AddressOf(lpsolve, "print_solution");
+  _print_str = (print_str_func *)AddressOf(lpsolve, "print_str");
+  _print_tableau = (print_tableau_func *)AddressOf(lpsolve, "print_tableau");
+  _put_abortfunc = (put_abortfunc_func *)AddressOf(lpsolve, "put_abortfunc");
+  _put_bb_nodefunc = (put_bb_nodefunc_func *)AddressOf(lpsolve, "put_bb_nodefunc");
+  _put_bb_branchfunc = (put_bb_branchfunc_func *)AddressOf(lpsolve, "put_bb_branchfunc");
+  _put_logfunc = (put_logfunc_func *)AddressOf(lpsolve, "put_logfunc");
+  _put_msgfunc = (put_msgfunc_func *)AddressOf(lpsolve, "put_msgfunc");
+  _read_LP = (read_LP_func *)AddressOf(lpsolve, "read_LP");
+  _read_MPS = (read_MPS_func *)AddressOf(lpsolve, "read_MPS");
+  _read_XLI = (read_XLI_func *)AddressOf(lpsolve, "read_XLI");
+  _read_params = (read_params_func *)AddressOf(lpsolve, "read_params");
+  _read_basis = (read_basis_func *)AddressOf(lpsolve, "read_basis");
+  _reset_basis = (reset_basis_func *)AddressOf(lpsolve, "reset_basis");
+  _reset_params = (reset_params_func *)AddressOf(lpsolve, "reset_params");
+  _report = (reportfunc *)AddressOf(lpsolve, "report");
+  _resize_lp = (resize_lp_func *)AddressOf(lpsolve, "resize_lp");
+  _set_add_rowmode = (set_add_rowmode_func *)AddressOf(lpsolve, "set_add_rowmode");
+  _set_anti_degen = (set_anti_degen_func *)AddressOf(lpsolve, "set_anti_degen");
+  _set_basisvar = (set_basisvar_func *)AddressOf(lpsolve, "set_basisvar");
+  _set_basis = (set_basis_func *)AddressOf(lpsolve, "set_basis");
+  _set_basiscrash = (set_basiscrash_func *)AddressOf(lpsolve, "set_basiscrash");
+  _set_bb_depthlimit = (set_bb_depthlimit_func *)AddressOf(lpsolve, "set_bb_depthlimit");
+  _set_bb_floorfirst = (set_bb_floorfirst_func *)AddressOf(lpsolve, "set_bb_floorfirst");
+  _set_bb_rule = (set_bb_rule_func *)AddressOf(lpsolve, "set_bb_rule");
+  _set_BFP = (set_BFP_func *)AddressOf(lpsolve, "set_BFP");
+  _set_binary = (set_binary_func *)AddressOf(lpsolve, "set_binary");
+  _set_bounds = (set_bounds_func *)AddressOf(lpsolve, "set_bounds");
+  _set_bounds_tighter = (set_bounds_tighter_func *)AddressOf(lpsolve, "set_bounds_tighter");
+  _set_break_at_first = (set_break_at_first_func *)AddressOf(lpsolve, "set_break_at_first");
+  _set_break_at_value = (set_break_at_value_func *)AddressOf(lpsolve, "set_break_at_value");
+  /*  _set_break_numeric_accuracy = (set_break_numeric_accuracy_func *) AddressOf(lpsolve,
+   * "set_break_numeric_accuracy");*/
+  _set_column = (set_column_func *)AddressOf(lpsolve, "set_column");
+  _set_columnex = (set_columnex_func *)AddressOf(lpsolve, "set_columnex");
+  _set_col_name = (set_col_name_func *)AddressOf(lpsolve, "set_col_name");
+  _set_constr_type = (set_constr_type_func *)AddressOf(lpsolve, "set_constr_type");
+  _set_debug = (set_debug_func *)AddressOf(lpsolve, "set_debug");
+  _set_epsb = (set_epsb_func *)AddressOf(lpsolve, "set_epsb");
+  _set_epsd = (set_epsd_func *)AddressOf(lpsolve, "set_epsd");
+  _set_epsel = (set_epsel_func *)AddressOf(lpsolve, "set_epsel");
+  _set_epsint = (set_epsint_func *)AddressOf(lpsolve, "set_epsint");
+  _set_epslevel = (set_epslevel_func *)AddressOf(lpsolve, "set_epslevel");
+  _set_epsperturb = (set_epsperturb_func *)AddressOf(lpsolve, "set_epsperturb");
+  _set_epspivot = (set_epspivot_func *)AddressOf(lpsolve, "set_epspivot");
+  _set_unbounded = (set_unbounded_func *)AddressOf(lpsolve, "set_unbounded");
+  _set_improve = (set_improve_func *)AddressOf(lpsolve, "set_improve");
+  _set_infinite = (set_infinite_func *)AddressOf(lpsolve, "set_infinite");
+  _set_int = (set_int_func *)AddressOf(lpsolve, "set_int");
+  _set_lag_trace = (set_lag_trace_func *)AddressOf(lpsolve, "set_lag_trace");
+  _set_lowbo = (set_lowbo_func *)AddressOf(lpsolve, "set_lowbo");
+  _set_lp_name = (set_lp_name_func *)AddressOf(lpsolve, "set_lp_name");
+  _set_mat = (set_mat_func *)AddressOf(lpsolve, "set_mat");
+  _set_maxim = (set_maxim_func *)AddressOf(lpsolve, "set_maxim");
+  _set_maxpivot = (set_maxpivot_func *)AddressOf(lpsolve, "set_maxpivot");
+  _set_minim = (set_minim_func *)AddressOf(lpsolve, "set_minim");
+  _set_mip_gap = (set_mip_gap_func *)AddressOf(lpsolve, "set_mip_gap");
+  _set_multiprice = (set_multiprice_func *)AddressOf(lpsolve, "set_multiprice");
+  _set_negrange = (set_negrange_func *)AddressOf(lpsolve, "set_negrange");
+  _set_obj_bound = (set_obj_bound_func *)AddressOf(lpsolve, "set_obj_bound");
+  _set_obj_fn = (set_obj_fn_func *)AddressOf(lpsolve, "set_obj_fn");
+  _set_obj_fnex = (set_obj_fnex_func *)AddressOf(lpsolve, "set_obj_fnex");
+  _set_obj = (set_obj_func *)AddressOf(lpsolve, "set_obj");
+  _set_outputfile = (set_outputfile_func *)AddressOf(lpsolve, "set_outputfile");
+  _set_outputstream = (set_outputstream_func *)AddressOf(lpsolve, "set_outputstream");
+  _set_partialprice = (set_partialprice_func *)AddressOf(lpsolve, "set_partialprice");
+  _set_pivoting = (set_pivoting_func *)AddressOf(lpsolve, "set_pivoting");
+  _set_preferdual = (set_preferdual_func *)AddressOf(lpsolve, "set_preferdual");
+  _set_presolve = (set_presolve_func *)AddressOf(lpsolve, "set_presolve");
+  _set_print_sol = (set_print_sol_func *)AddressOf(lpsolve, "set_print_sol");
+  _set_pseudocosts = (set_pseudocosts_func *)AddressOf(lpsolve, "set_pseudocosts");
+  _set_rh = (set_rh_func *)AddressOf(lpsolve, "set_rh");
+  _set_rh_range = (set_rh_range_func *)AddressOf(lpsolve, "set_rh_range");
+  _set_rh_vec = (set_rh_vec_func *)AddressOf(lpsolve, "set_rh_vec");
+  _set_row = (set_row_func *)AddressOf(lpsolve, "set_row");
+  _set_rowex = (set_rowex_func *)AddressOf(lpsolve, "set_rowex");
+  _set_row_name = (set_row_name_func *)AddressOf(lpsolve, "set_row_name");
+  _set_scalelimit = (set_scalelimit_func *)AddressOf(lpsolve, "set_scalelimit");
+  _set_scaling = (set_scaling_func *)AddressOf(lpsolve, "set_scaling");
+  _set_semicont = (set_semicont_func *)AddressOf(lpsolve, "set_semicont");
+  _set_sense = (set_sense_func *)AddressOf(lpsolve, "set_sense");
+  _set_simplextype = (set_simplextype_func *)AddressOf(lpsolve, "set_simplextype");
+  _set_solutionlimit = (set_solutionlimit_func *)AddressOf(lpsolve, "set_solutionlimit");
+  _set_timeout = (set_timeout_func *)AddressOf(lpsolve, "set_timeout");
+  _set_trace = (set_trace_func *)AddressOf(lpsolve, "set_trace");
+  _set_upbo = (set_upbo_func *)AddressOf(lpsolve, "set_upbo");
+  _set_var_branch = (set_var_branch_func *)AddressOf(lpsolve, "set_var_branch");
+  _set_var_weights = (set_var_weights_func *)AddressOf(lpsolve, "set_var_weights");
+  _set_verbose = (set_verbose_func *)AddressOf(lpsolve, "set_verbose");
+  _set_XLI = (set_XLI_func *)AddressOf(lpsolve, "set_XLI");
+  _solve = (solve_func *)AddressOf(lpsolve, "solve");
+  _str_add_column = (str_add_column_func *)AddressOf(lpsolve, "str_add_column");
+  _str_add_constraint = (str_add_constraint_func *)AddressOf(lpsolve, "str_add_constraint");
+  _str_add_lag_con = (str_add_lag_con_func *)AddressOf(lpsolve, "str_add_lag_con");
+  _str_set_obj_fn = (str_set_obj_fn_func *)AddressOf(lpsolve, "str_set_obj_fn");
+  _str_set_rh_vec = (str_set_rh_vec_func *)AddressOf(lpsolve, "str_set_rh_vec");
+  _time_elapsed = (time_elapsed_func *)AddressOf(lpsolve, "time_elapsed");
+  _unscale = (unscale_func *)AddressOf(lpsolve, "unscale");
+  _write_lp = (write_lp_func *)AddressOf(lpsolve, "write_lp");
+  _write_LP = (write_LP_func *)AddressOf(lpsolve, "write_LP");
+  _write_mps = (write_mps_func *)AddressOf(lpsolve, "write_mps");
+  _write_MPS = (write_MPS_func *)AddressOf(lpsolve, "write_MPS");
+  _write_freemps = (write_freemps_func *)AddressOf(lpsolve, "write_freemps");
+  _write_freeMPS = (write_freeMPS_func *)AddressOf(lpsolve, "write_freeMPS");
+  _write_XLI = (write_XLI_func *)AddressOf(lpsolve, "write_XLI");
+  _write_basis = (write_basis_func *)AddressOf(lpsolve, "write_basis");
+  _write_params = (write_params_func *)AddressOf(lpsolve, "write_params");
 
-  return(TRUE);
-# undef AddressOf
+  return (TRUE);
+#  undef AddressOf
 }
 
 #else

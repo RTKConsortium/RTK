@@ -17,5 +17,3 @@ option "signal"       - "File containing the phase of each projection"          
 option "windowcenter" c "Target reconstruction phase"                                                               float   no default="0"
 option "windowwidth"  w "Tolerance around the target phase to determine in-phase and out-of-phase projections"      float   no default="1"
 option "windowshape"  s "Shape of the gating window"     values="Rectangular","Triangular"                          enum    no default="Rectangular"
-
-

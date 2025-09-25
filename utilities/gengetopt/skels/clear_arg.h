@@ -15,74 +15,86 @@ using std::ostream;
 
 class clear_arg_gen_class
 {
- protected:
-  bool has_arg;
-  bool has_orig;
+protected:
+  bool   has_arg;
+  bool   has_orig;
   string name;
   string suffix;
   string value;
 
- public:
-  clear_arg_gen_class() :
-    has_arg (false), has_orig (false)
-  {
-  }
+public:
+  clear_arg_gen_class()
+    : has_arg(false)
+    , has_orig(false)
+  {}
 
-  clear_arg_gen_class(bool _has_arg, bool _has_orig, const string &_name, const string &_suffix, const string &_value) :
-    has_arg (_has_arg), has_orig (_has_orig), name (_name), suffix (_suffix), value (_value)
-  {
-  }
+  clear_arg_gen_class(bool           _has_arg,
+                      bool           _has_orig,
+                      const string & _name,
+                      const string & _suffix,
+                      const string & _value)
+    : has_arg(_has_arg)
+    , has_orig(_has_orig)
+    , name(_name)
+    , suffix(_suffix)
+    , value(_value)
+  {}
 
   static void
-  generate_string(const string &s, ostream &stream, unsigned int indent)
+  generate_string(const string & s, ostream & stream, unsigned int indent)
   {
     if (!indent || s.find('\n') == string::npos)
-      {
-        stream << s;
-        return;
-      }
+    {
+      stream << s;
+      return;
+    }
 
     string::size_type pos;
     string::size_type start = 0;
-    string ind (indent, ' ');
-    while ( (pos=s.find('\n', start)) != string::npos)
-      {
-        stream << s.substr (start, (pos+1)-start);
-        start = pos+1;
-        if (start+1 <= s.size ())
-          stream << ind;
-      }
-    if (start+1 <= s.size ())
-      stream << s.substr (start);
+    string            ind(indent, ' ');
+    while ((pos = s.find('\n', start)) != string::npos)
+    {
+      stream << s.substr(start, (pos + 1) - start);
+      start = pos + 1;
+      if (start + 1 <= s.size())
+        stream << ind;
+    }
+    if (start + 1 <= s.size())
+      stream << s.substr(start);
   }
 
-  void set_has_arg(bool _has_arg)
+  void
+  set_has_arg(bool _has_arg)
   {
     has_arg = _has_arg;
   }
 
-  void set_has_orig(bool _has_orig)
+  void
+  set_has_orig(bool _has_orig)
   {
     has_orig = _has_orig;
   }
 
-  void set_name(const string &_name)
+  void
+  set_name(const string & _name)
   {
     name = _name;
   }
 
-  void set_suffix(const string &_suffix)
+  void
+  set_suffix(const string & _suffix)
   {
     suffix = _suffix;
   }
 
-  void set_value(const string &_value)
+  void
+  set_value(const string & _value)
   {
     value = _value;
   }
 
-  void generate_clear_arg(ostream &stream, unsigned int indent = 0);
-
+  void
+  generate_clear_arg(ostream & stream, unsigned int indent = 0);
 };
 
 #endif // CLEAR_ARG_GEN_CLASS_H

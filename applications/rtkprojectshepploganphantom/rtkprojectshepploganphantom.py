@@ -62,7 +62,7 @@ def process(args_info: argparse.Namespace):
     # Create SheppLogan Phantom
     offset = [0] * Dimension
     if args_info.offset is not None:
-        for i in range((min(len(args_info.offset), Dimension))):
+        for i in range(min(len(args_info.offset), Dimension)):
             offset[i] = args_info.offset[i]
 
     scale = [args_info.phantomscale[0]] * 3

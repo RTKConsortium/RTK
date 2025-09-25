@@ -7,30 +7,30 @@
 #include "given_field.h"
 
 void
-given_field_gen_class::generate_given_field(ostream &stream, unsigned int indent)
+given_field_gen_class::generate_given_field(ostream & stream, unsigned int indent)
 {
-  string indent_str (indent, ' ');
+  string indent_str(indent, ' ');
   indent = 0;
 
   stream << "unsigned int ";
-  generate_string (arg_name, stream, indent + indent_str.length ());
+  generate_string(arg_name, stream, indent + indent_str.length());
   stream << "_given ;	/**< ";
   stream << "@";
   stream << "brief Whether ";
-  generate_string (long_opt, stream, indent + indent_str.length ());
+  generate_string(long_opt, stream, indent + indent_str.length());
   stream << " was given.  */";
   stream << "\n";
   stream << indent_str;
   if (group)
-    {
-      stream << "  int ";
-      generate_string (arg_name, stream, indent + indent_str.length ());
-      stream << "_group ; /**< ";
-      stream << "@";
-      stream << "brief Whether ";
-      generate_string (long_opt, stream, indent + indent_str.length ());
-      stream << "'s was updated.  */";
-      stream << "\n";
-      stream << indent_str;
-    }
+  {
+    stream << "  int ";
+    generate_string(arg_name, stream, indent + indent_str.length());
+    stream << "_group ; /**< ";
+    stream << "@";
+    stream << "brief Whether ";
+    generate_string(long_opt, stream, indent + indent_str.length());
+    stream << "'s was updated.  */";
+    stream << "\n";
+    stream << indent_str;
+  }
 }

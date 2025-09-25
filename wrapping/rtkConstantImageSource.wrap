@@ -20,5 +20,3 @@ if(RTK_USE_CUDA)
     itk_wrap_template("CIF3CIF3CteISrcCIF3" "itk::CudaImage<${ITKT_F}, 3>, itk::CudaImage<${ITKT_F}, 3>, rtk::ConstantImageSource< itk::CudaImage<${ITKT_F}, 3> >")
   itk_end_wrap_class()
 endif()
-
-

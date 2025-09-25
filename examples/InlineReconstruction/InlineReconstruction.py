@@ -19,6 +19,7 @@ size = 256
 origin = -0.5 * (size - 1)
 number_of_acquired_projections = 0
 
+
 # Function for the thread simulating an acquisition: simulates and writes a
 # projection every 100 ms.
 def acquisition():
@@ -46,7 +47,6 @@ def acquisition():
         time.sleep(0.1)
 
 
-
 # Launches the acquisition thread, then waits for new projections and reconstructs inline / on-the-fly
 # Launch the simulated acquisition
 thread = threading.Thread(target=acquisition)
@@ -59,9 +59,7 @@ for i in range(nproj):
 
 # Create the reconstruction pipeline
 reader = rtk.ProjectionsReader[image_type].New()
-extractor = itk.ExtractImageFilter[image_type, image_type].New(
-    Input=reader.GetOutput()
-)
+extractor = itk.ExtractImageFilter[image_type, image_type].New(Input=reader.GetOutput())
 if has_gpu_capability:
     parker = rtk.CudaParkerShortScanImageFilter.New(Geometry=geometry_rec)
     reconstruction_source = rtk.ConstantImageSource[cuda_image_type].New(
@@ -106,9 +104,9 @@ while number_of_reconstructed_projections != nproj:
             extracted_region.SetSize(2, 1)
         else:
             # Update file name list with the new projection
-            projection_file_names[
-                number_of_reconstructed_projections
-            ] = f"projection_{number_of_reconstructed_projections:03d}.mha"
+            projection_file_names[number_of_reconstructed_projections] = (
+                f"projection_{number_of_reconstructed_projections:03d}.mha"
+            )
             reader.SetFileNames(projection_file_names)
 
             # Reconnect FDK output to
@@ -125,14 +123,10 @@ while number_of_reconstructed_projections != nproj:
             projection.SetPixelContainer(extractor.GetOutput().GetPixelContainer())
             projection.CopyInformation(extractor.GetOutput())
             projection.SetBufferedRegion(extractor.GetOutput().GetBufferedRegion())
-            projection.SetRequestedRegion(
-                extractor.GetOutput().GetRequestedRegion()
-            )
+            projection.SetRequestedRegion(extractor.GetOutput().GetRequestedRegion())
             parker.SetInput(projection)
         fdk.Update()
         number_of_reconstructed_projections += 1
 thread.join()
-writer = itk.ImageFileWriter[image_type].New(
-    Input=fdk.GetOutput(), FileName="fdk.mha"
-)
+writer = itk.ImageFileWriter[image_type].New(Input=fdk.GetOutput(), FileName="fdk.mha")
 writer.Update()

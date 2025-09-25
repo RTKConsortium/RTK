@@ -7,9 +7,9 @@
 #include "custom_getopt_gen.h"
 
 void
-custom_getopt_gen_gen_class::generate_custom_getopt_gen(ostream &stream, unsigned int indent)
+custom_getopt_gen_gen_class::generate_custom_getopt_gen(ostream & stream, unsigned int indent)
 {
-  string indent_str (indent, ' ');
+  string indent_str(indent, ' ');
   indent = 0;
 
   stream << "/*";
