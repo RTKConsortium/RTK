@@ -47,7 +47,6 @@ main(int argc, char * argv[])
   extract->SetInput(reader->GetOutput());
 
   ExtractFilterType::InputImageRegionType subsetRegion = reader->GetOutput()->GetLargestPossibleRegion();
-  subsetRegion = reader->GetOutput()->GetLargestPossibleRegion();
   extract->SetInput(reader->GetOutput());
   InputImageType::SizeType extractSize = subsetRegion.GetSize();
   extractSize[2] = 1;

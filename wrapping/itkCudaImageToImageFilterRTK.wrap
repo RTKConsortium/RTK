@@ -23,6 +23,10 @@ if(RTK_USE_CUDA)
       "itk::CudaImage<float, 3>, itk::CudaImage<float, 3>, rtk::FFTRampImageFilter< itk::CudaImage<float, 3>, itk::CudaImage<float, 3>, float >")
     itk_wrap_template("CIF3CIF3SGCIF3CIF3F"
       "itk::CudaImage<float, 3>, itk::CudaImage<float, 3>, rtk::ScatterGlareCorrectionImageFilter< itk::CudaImage<float, 3>, itk::CudaImage<float, 3>, float >")
+    itk_wrap_template("CIUS3CIUS3LAGCIUS3"
+      "itk::CudaImage<unsigned short, 3>, itk::CudaImage<unsigned short, 3>, rtk::LagCorrectionImageFilter< itk::CudaImage<unsigned short, 3>, 4 >")
+    itk_wrap_template("CIUS3CIF3POLYCIF3"
+      "itk::CudaImage<unsigned short, 3>, itk::CudaImage<float, 3>, rtk::PolynomialGainCorrectionImageFilter< itk::CudaImage<unsigned short, 3>, itk::CudaImage<float, 3> >")
   itk_end_wrap_class()
 
 endif()
