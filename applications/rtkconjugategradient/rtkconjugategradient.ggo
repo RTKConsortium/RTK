@@ -13,3 +13,4 @@ option "tikhonov"       - "Tikhonov regularization weight"                      
 option "nocudacg"       - "Do not perform conjugate gradient calculations on GPU"                                     flag   off
 option "mask"           m "Apply a support binary mask: reconstruction kept null outside the mask)"                   string no
 option "nodisplaced"    - "Disable the displaced detector filter"                                                     flag   off
+option "dvf"            - "3D DVF"                                                                                    string no
