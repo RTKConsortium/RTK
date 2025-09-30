@@ -1,0 +1,4 @@
+itk_wrap_class("itk::CSVArray2DFileReader" POINTER)
+  itk_wrap_template("CSVF"  "itk::CSVArray2DFileReader<float>")
+  itk_wrap_template("CSVDouble" "itk::CSVArray2DFileReader<double>")
+itk_end_wrap_class()
