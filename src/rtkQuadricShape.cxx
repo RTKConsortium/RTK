@@ -65,8 +65,11 @@ QuadricShape ::IsIntersectedByRay(const PointType &  rayOrigin,
   {
     // Only one intersection with, e.g., a plane: check which half line should be kept
     nearDist = -Cq / Bq;
-    auto bOriginIsInside = IsInsideQuadric(rayOrigin);
-    if ((bOriginIsInside && nearDist < 0.) || (!bOriginIsInside && nearDist > 0.))
+    // The following condition tests on which side of the quadric is the ray origin.
+    // It is equivalent to the following code.
+    // if ((IsInsideQuadric(rayOrigin) && nearDist < 0.) ||
+    //     (!IsInsideQuadric(rayOrigin) && nearDist > 0.))
+    if (Cq * nearDist > 0.)
       farDist = itk::NumericTraits<ScalarType>::max();
     else
     {
@@ -84,7 +87,8 @@ QuadricShape ::IsIntersectedByRay(const PointType &  rayOrigin,
     {
       // No intersection but one might be dealing with an infinite line
       // in the quadric, e.g. a line parallel to and in a cylinder.
-      if (IsInsideQuadric(rayOrigin))
+      // The following condition is a faster equivalent to IsInsideQuadric(rayOrigin)
+      if (Cq <= zero)
       {
         nearDist = -itk::NumericTraits<ScalarType>::max();
         farDist = itk::NumericTraits<ScalarType>::max();
