@@ -102,10 +102,16 @@ QuadricShape ::IsIntersectedByRay(const PointType &  rayOrigin,
     if (nearDist > farDist)
       std::swap(nearDist, farDist);
 
-    // Check if the central point between the two intersections is in the quadric
-    if (!IsInsideQuadric(rayOrigin + 0.5 * (farDist + nearDist) * rayDirection))
+    // Check if the segment between the two intersections is in the quadric.
+    // Instead of testing if the central point is oustside the quadric with
+    // !IsInsideQuadric(rayOrigin + 0.5 * (farDist + nearDist) * rayDirection),
+    // which was prone to numerical errors, we test if the ray origin is between
+    // intersections (farDist * nearDist < 0) and strictly in the quadric (Cq < 0),
+    // or before / after the two intersections (farDist * nearDist > 0) and outside
+    // the quadric (Cq>0).
+    if (Cq * farDist * nearDist < zero)
     {
-      // If not, one is dealing with a half line, searching for the good one
+      // If not, one is dealing with a half line, searching for the good one (out of two)
       double tmpNearDist = -itk::NumericTraits<ScalarType>::max();
       double tmpFarDist = itk::NumericTraits<ScalarType>::max();
       if (!ApplyClipPlanes(rayOrigin, rayDirection, tmpNearDist, tmpFarDist))
