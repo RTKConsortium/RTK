@@ -176,6 +176,8 @@ rtk_add_test(rtkXRadTest rtkxradtest.cxx
   DATA{Baseline/XRad/geometry.xml}
   DATA{Baseline/XRad/attenuation.mha})
 
+rtk_add_test(rtkQuadricTest rtkquadrictest.cxx)
+
 rtk_add_test(rtkProjectGeometricPhantomTest rtkprojectgeometricphantomtest.cxx
   DATA{Input/GeometricPhantom/SheppLogan_forbild.txt})
 
