@@ -41,6 +41,7 @@ _app_modules = [
     "rtkfieldofview",
     "rtkforwardprojections",
     "rtkorageometry",
+    "rtkoverlayphaseandshroud",
     "rtkprojectgeometricphantom",
     "rtkprojections",
     "rtkprojectshepploganphantom",
