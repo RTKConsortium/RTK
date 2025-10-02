@@ -63,18 +63,32 @@ QuadricShape ::IsIntersectedByRay(const PointType &  rayOrigin,
   const ScalarType zero = itk::NumericTraits<ScalarType>::ZeroValue();
   if (Aq == zero)
   {
-    // Only one intersection with, e.g., a plane: check which half line should be kept
-    nearDist = -Cq / Bq;
-    // The following condition tests on which side of the quadric is the ray origin.
-    // It is equivalent to the following code.
-    // if ((IsInsideQuadric(rayOrigin) && nearDist < 0.) ||
-    //     (!IsInsideQuadric(rayOrigin) && nearDist > 0.))
-    if (Cq * nearDist > 0.)
-      farDist = itk::NumericTraits<ScalarType>::max();
+    if (Bq == zero)
+    {
+      if (Cq == zero)
+      {
+        // Whole ray contained in quadric
+        nearDist = -itk::NumericTraits<ScalarType>::max();
+        farDist = itk::NumericTraits<ScalarType>::max();
+      }
+      else
+        return false;
+    }
     else
     {
-      farDist = nearDist;
-      nearDist = -itk::NumericTraits<ScalarType>::max();
+      // Only one intersection with, e.g., a plane: check which half line should be kept
+      nearDist = -Cq / Bq;
+      // The following condition tests on which side of the quadric is the ray origin.
+      // It is equivalent to the following code.
+      // if ((IsInsideQuadric(rayOrigin) && nearDist < 0.) ||
+      //     (!IsInsideQuadric(rayOrigin) && nearDist > 0.))
+      if (Cq * nearDist > 0.)
+        farDist = itk::NumericTraits<ScalarType>::max();
+      else
+      {
+        farDist = nearDist;
+        nearDist = -itk::NumericTraits<ScalarType>::max();
+      }
     }
   }
   else
