@@ -75,14 +75,14 @@ public:
   itkSetMacro(StepSize, double);
 
 protected:
-  CudaForwardProjectionImageFilter();
+  CudaForwardProjectionImageFilter() = default;
   ~CudaForwardProjectionImageFilter() {};
 
   virtual void
   GPUGenerateData();
 
 private:
-  double m_StepSize;
+  double m_StepSize{ 1. };
 }; // end of class
 
 } // end namespace rtk

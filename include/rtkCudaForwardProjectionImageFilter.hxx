@@ -38,11 +38,6 @@ namespace rtk
 {
 
 template <class TInputImage, class TOutputImage>
-CudaForwardProjectionImageFilter<TInputImage, TOutputImage>::CudaForwardProjectionImageFilter()
-  : m_StepSize(1)
-{}
-
-template <class TInputImage, class TOutputImage>
 void
 CudaForwardProjectionImageFilter<TInputImage, TOutputImage>::GPUGenerateData()
 {

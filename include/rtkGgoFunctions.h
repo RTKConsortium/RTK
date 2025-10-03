@@ -316,6 +316,7 @@ SetBackProjectionFromGgo(const TArgsInfo & args_info, TIterativeReconstructionFi
       recon->SetBackProjectionFilter(TIterativeReconstructionFilter::BP_CUDARAYCAST);
       if (args_info.step_given)
         recon->SetStepSize(args_info.step_arg);
+      recon->SetNormalize(args_info.normalize_flag);
       break;
     case (4): // bp_arg_JosephAttenuated
       recon->SetBackProjectionFilter(TIterativeReconstructionFilter::BP_JOSEPHATTENUATED);

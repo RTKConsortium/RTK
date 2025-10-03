@@ -30,6 +30,12 @@ def add_rtkprojectors_group(parser):
         default="VoxelBasedBackProjection",
     )
     rtkprojectors_group.add_argument(
+        "--step",
+        help="Step size along ray (for CudaRayCast only)",
+        type=float,
+        default=1.,
+    )
+    rtkprojectors_group.add_argument(
         "--attenuationmap",
         help="Attenuation map relative to the volume to perfom the attenuation correction (JosephAttenuated and Zeng)",
     )
@@ -51,7 +57,9 @@ def add_rtkprojectors_group(parser):
         "--superiorclipimage",
         help="Superior clip of the ray for each pixel of the projections (Joseph only)",
     )
-
+    rtkprojectors_group.add_argument(
+        "--normalize", help="Normalize CudaRayCast backprojection", action="store_true"
+    )
 
 # Mimicks SetBackProjectionFromGgo
 def SetBackProjectionFromArgParse(args_info, recon):
@@ -70,6 +78,9 @@ def SetBackProjectionFromArgParse(args_info, recon):
         recon.SetBackProjectionFilter(ReconType.BackProjectionType_BP_CUDAVOXELBASED)
     elif args_info.bp == "CudaRayCast":  # bp_arg_CudaRayCast
         recon.SetBackProjectionFilter(ReconType.BackProjectionType_BP_CUDARAYCAST)
+        if args_info.step is not None:
+            recon.SetStepSize(args_info.step)
+        recon.SetNormalize(args_info.normalize)
     elif args_info.bp == "JosephAttenuated":  # bp_arg_JosephAttenuated
         recon.SetBackProjectionFilter(ReconType.BackProjectionType_BP_JOSEPHATTENUATED)
         if args_info.inferiorclipimage is not None:
