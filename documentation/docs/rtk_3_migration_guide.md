@@ -35,3 +35,7 @@ git fetch origin
 git branch -u origin/main main
 git remote set-head origin -a
 ```
+
+## Default value of member `m_Normalize` of `rtk::CudaRayCastBackProjectionImageFilter` is now set to `false`
+
+Most users intuitively expect this for the backprojector matched to `rtk::CudaForwardProjectionFilter`.

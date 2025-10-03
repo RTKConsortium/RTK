@@ -170,6 +170,11 @@ public:
   itkGetConstMacro(StepSize, double);
   itkSetMacro(StepSize, double);
 
+  /** Set whether the CudaRayCastBackProjectionImageFilter should be divided by
+   * the sum of splat weights. Default is false. */
+  itkGetMacro(Normalize, bool);
+  itkSetMacro(Normalize, bool);
+
 protected:
   IterativeConeBeamReconstructionFilter();
   ~IterativeConeBeamReconstructionFilter() override = default;
@@ -199,6 +204,9 @@ protected:
 
   /** Step size along ray (in mm). */
   double m_StepSize{ 1.0 };
+
+  /** Whether the back projection should be divided by the sum of splat weights */
+  bool m_Normalize{ false };
 
   /** Instantiate forward and back projectors using SFINAE. */
   using CPUImageType =
