@@ -83,15 +83,15 @@ public:
   itkSetMacro(Normalize, bool);
 
 protected:
-  CudaRayCastBackProjectionImageFilter();
+  CudaRayCastBackProjectionImageFilter() = default;
   virtual ~CudaRayCastBackProjectionImageFilter() {};
 
   virtual void
   GPUGenerateData();
 
 private:
-  double m_StepSize;
-  bool   m_Normalize;
+  double m_StepSize{ 1. };
+  bool   m_Normalize{ true };
 };
 
 } // end namespace rtk

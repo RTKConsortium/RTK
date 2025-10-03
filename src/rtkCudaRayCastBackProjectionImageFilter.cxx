@@ -28,11 +28,6 @@
 namespace rtk
 {
 
-CudaRayCastBackProjectionImageFilter ::CudaRayCastBackProjectionImageFilter()
-  : m_StepSize(1)
-  , m_Normalize(true)
-{}
-
 void
 CudaRayCastBackProjectionImageFilter ::GPUGenerateData()
 {
