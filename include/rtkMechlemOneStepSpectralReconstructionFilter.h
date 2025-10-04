@@ -179,7 +179,15 @@ public:
 
   /** SFINAE type alias, depending on whether a CUDA image is used. */
   using CPUOutputImageType = typename itk::Image<typename TOutputImage::PixelType, TOutputImage::ImageDimension>;
-#ifdef RTK_USE_CUDA
+#ifdef CudaCommon_VERSION_MAJOR
+  // Use RebindImageType to preserve backend (CPU or CUDA) while changing pixel type
+  using HessiansImageType =
+    typename TOutputImage::template RebindImageType<itk::Vector<dataType, nMaterials * nMaterials>,
+                                                    TOutputImage::ImageDimension>;
+  using SingleComponentImageType =
+    typename TOutputImage::template RebindImageType<dataType, TOutputImage::ImageDimension>;
+#else
+#  ifdef RTK_USE_CUDA
   using HessiansImageType = typename std::conditional_t<
     std::is_same_v<TOutputImage, CPUOutputImageType>,
     itk::Image<itk::Vector<dataType, nMaterials * nMaterials>, TOutputImage::ImageDimension>,
@@ -187,12 +195,12 @@ public:
   using SingleComponentImageType = typename std::conditional_t<std::is_same_v<TOutputImage, CPUOutputImageType>,
                                                                itk::Image<dataType, TOutputImage::ImageDimension>,
                                                                itk::CudaImage<dataType, TOutputImage::ImageDimension>>;
-#else
+#  else
   using HessiansImageType =
     typename itk::Image<itk::Vector<dataType, nMaterials * nMaterials>, TOutputImage::ImageDimension>;
   using SingleComponentImageType = typename itk::Image<dataType, TOutputImage::ImageDimension>;
+#  endif
 #endif
-
 #if !defined(ITK_WRAPPING_PARSER)
 #  ifdef RTK_USE_CUDA
   using WeidingerForwardModelType = typename std::conditional_t<
