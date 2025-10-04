@@ -89,7 +89,7 @@ kernel_ray_cast_back_project(float * dev_vol_out, float * dev_proj)
   ray.d = ray.d / sqrtf(dot(ray.d, ray.d));
 
   // Detect intersection with box
-  if (intersectBox(ray, &tnear, &tfar, c_boxMin, c_boxMax) && !(tfar < 0.f))
+  if (intersectBox(ray, &tnear, &tfar, c_boxMin, c_boxMax) && tfar >= 0.f)
   {
     if (tnear < 0.f)
       tnear = 0.f; // clamp to near plane
