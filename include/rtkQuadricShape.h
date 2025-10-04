@@ -76,8 +76,8 @@ public:
   bool
   IsIntersectedByRay(const PointType &  rayOrigin,
                      const VectorType & rayDirection,
-                     double &           nearDist,
-                     double &           farDist) const override;
+                     ScalarType &       nearDist,
+                     ScalarType &       farDist) const override;
 
   /** Rescale object along each direction by a 3D vector. */
   void
