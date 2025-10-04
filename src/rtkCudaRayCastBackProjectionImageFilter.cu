@@ -188,7 +188,7 @@ kernel_ray_cast_back_project(float * dev_accumulate_values, float * dev_proj, fl
   ray.d = ray.d / sqrtf(dot(ray.d, ray.d));
 
   // Detect intersection with box
-  if (intersectBox(ray, &tnear, &tfar, c_boxMin, c_boxMax) && !(tfar < 0.f))
+  if (intersectBox(ray, &tnear, &tfar, c_boxMin, c_boxMax) && tfar >= 0.f)
   {
     if (tnear < 0.f)
       tnear = 0.f; // clamp to near plane
@@ -211,29 +211,26 @@ kernel_ray_cast_back_project(float * dev_accumulate_values, float * dev_proj, fl
     float    weights[8];
     int3     floor_pos;
 
-    if (tfar - tnear > halfVStep)
+    for (t = tnear; t <= tfar; t += vStep)
     {
-      for (t = tnear; t <= tfar; t += vStep)
-      {
-        floor_pos.x = floorf(pos.x);
-        floor_pos.y = floorf(pos.y);
-        floor_pos.z = floorf(pos.z);
+      floor_pos.x = floorf(pos.x);
+      floor_pos.y = floorf(pos.y);
+      floor_pos.z = floorf(pos.z);
 
-        // Compute the weights and the voxel indices, taking into account border conditions (here clamping)
-        splat3D_getWeightsAndIndices(pos, floor_pos, c_volSize, weights, indices);
+      // Compute the weights and the voxel indices, taking into account border conditions (here clamping)
+      splat3D_getWeightsAndIndices(pos, floor_pos, c_volSize, weights, indices);
 
-        // Compute the value to be splatted
-        toSplat = dev_proj[numThread + proj * c_projSize.x * c_projSize.y] * c_tStep;
-        splat3D(toSplat, dev_accumulate_values, dev_accumulate_weights, weights, indices);
-
-        // Move to next position
-        pos += step;
-      }
-
-      // Last position
-      toSplat = dev_proj[numThread + proj * c_projSize.x * c_projSize.y] * c_tStep * (tfar - t + halfVStep) / vStep;
+      // Compute the value to be splatted
+      toSplat = dev_proj[numThread + proj * c_projSize.x * c_projSize.y] * c_tStep;
       splat3D(toSplat, dev_accumulate_values, dev_accumulate_weights, weights, indices);
+
+      // Move to next position
+      pos += step;
     }
+
+    // Last position
+    toSplat = dev_proj[numThread + proj * c_projSize.x * c_projSize.y] * c_tStep * (tfar - t + halfVStep) / vStep;
+    splat3D(toSplat, dev_accumulate_values, dev_accumulate_weights, weights, indices);
   }
 }
 
