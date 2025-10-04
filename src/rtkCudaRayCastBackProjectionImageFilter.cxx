@@ -58,8 +58,8 @@ CudaRayCastBackProjectionImageFilter ::GPUGenerateData()
   float boxMax[3];
   for (unsigned int i = 0; i < 3; i++)
   {
-    boxMin[i] = this->GetInput(0)->GetBufferedRegion().GetIndex()[i] + 0.5;
-    boxMax[i] = boxMin[i] + this->GetInput(0)->GetBufferedRegion().GetSize()[i] - 1.0;
+    boxMin[i] = this->GetInput(0)->GetBufferedRegion().GetIndex()[i];
+    boxMax[i] = boxMin[i] + this->GetInput(0)->GetBufferedRegion().GetSize()[i] - 1;
   }
 
   // Getting Spacing
