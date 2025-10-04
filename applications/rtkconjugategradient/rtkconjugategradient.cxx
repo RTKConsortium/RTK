@@ -29,8 +29,10 @@
 
 #ifdef RTK_USE_CUDA
 #  include <itkCudaImage.h>
+#  include <itkCovariantVector.h>
 #endif
 #include <itkImageFileWriter.h>
+#include <itkImageFileReader.h>
 
 int
 main(int argc, char * argv[])
@@ -109,6 +111,30 @@ main(int argc, char * argv[])
   auto conjugategradient = rtk::ConjugateGradientConeBeamReconstructionFilter<OutputImageType>::New();
   SetForwardProjectionFromGgo(args_info, conjugategradient.GetPointer());
   SetBackProjectionFromGgo(args_info, conjugategradient.GetPointer());
+
+
+#ifdef RTK_USE_CUDA
+  {
+    const bool warpRequested = (args_info.fp_arg == fp_arg_CudaWarpRayCast) || (args_info.bp_arg == bp_arg_CudaWarp);
+    if (warpRequested && !args_info.dvf_given)
+    {
+      itkGenericExceptionMacro(<< "Warp projectors selected but no --dvf provided. Please provide "
+                                  "a DVF in physical units (mm).");
+    }
+    if (args_info.dvf_given)
+    {
+      using VectorType = itk::CovariantVector<OutputPixelType, 3>;
+      using DVF3DCudaType = itk::CudaImage<VectorType, 3>;
+
+      auto dvf3dReader = itk::ImageFileReader<DVF3DCudaType>::New();
+      dvf3dReader->SetFileName(args_info.dvf_arg);
+      TRY_AND_EXIT_ON_ITK_EXCEPTION(dvf3dReader->Update())
+
+      conjugategradient->SetDisplacementField(reinterpret_cast<const OutputImageType *>(dvf3dReader->GetOutput()));
+    }
+  }
+#endif
+
   conjugategradient->SetInputVolume(inputFilter->GetOutput());
   conjugategradient->SetInputProjectionStack(reader->GetOutput());
   conjugategradient->SetInputWeights(inputWeights);
