@@ -78,10 +78,6 @@ public:
   itkGetConstMacro(StepSize, double);
   itkSetMacro(StepSize, double);
 
-  /** Set whether the back projection should be divided by the sum of splat weights */
-  itkGetMacro(Normalize, bool);
-  itkSetMacro(Normalize, bool);
-
 protected:
   CudaRayCastBackProjectionImageFilter() = default;
   virtual ~CudaRayCastBackProjectionImageFilter() {};
@@ -91,7 +87,6 @@ protected:
 
 private:
   double m_StepSize{ 1. };
-  bool   m_Normalize{ true };
 };
 
 } // end namespace rtk

@@ -112,7 +112,6 @@ main(int, char **)
   bp->SetInput(0, constantVolumeSource->GetOutput());
   bp->SetInput(1, randomProjectionsSource->GetOutput());
   bp->SetGeometry(geometry.GetPointer());
-  bp->SetNormalize(false);
 
   TRY_AND_EXIT_ON_ITK_EXCEPTION(bp->Update());
 
@@ -130,7 +129,6 @@ main(int, char **)
   std::cout << "\n\n****** CUDA ray cast Back projector, cylindrical detector ******" << std::endl;
 
   bp->SetGeometry(geometry.GetPointer());
-  bp->SetNormalize(false);
 
   TRY_AND_EXIT_ON_ITK_EXCEPTION(bp->Update());
 

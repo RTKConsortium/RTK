@@ -35,3 +35,7 @@ git fetch origin
 git branch -u origin/main main
 git remote set-head origin -a
 ```
+
+## Removed `m_Normalize` from `rtk::CudaRayCastBackProjectionImageFilter`
+
+Most users intuitively expect this for the backprojector matched to `rtk::CudaForwardProjectionFilter`. The filter was originally implemented with the normalization for SART and OSEM reconstruction but the normalization is now done in the reconstruction filters so it can be removed.

@@ -175,8 +175,7 @@ CudaRayCastBackProjectionImageFilter ::GPUGenerateData()
                                radiusCylindricalDetector,
                                boxMin,
                                boxMax,
-                               spacing,
-                               m_Normalize);
+                               spacing);
 
     // Re-use the output as input
     pin = pout;
