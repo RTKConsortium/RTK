@@ -17,6 +17,15 @@ set(
   "documentation"
 )
 
+# List of files to grab from CudaCommon
+set(
+  CUDACOMMONFILES
+  "README.md"
+  "cuda_array_interface.md"
+  "examples/itkCudaArrayInterfaceCupyExample.py"
+  "examples/itkCudaArrayInterfaceTorchExample.py"
+)
+
 # Append the files in the subdirectories
 foreach(subdir ${DOCSUBDIRS})
   file(
@@ -87,6 +96,21 @@ foreach(content_file ${content_files})
     )
   endif()
   list(APPEND DOCSRCFILES "${content_file_rel_path}")
+endforeach()
+
+foreach(cudacommon_file ${CUDACOMMONFILES})
+  if(NOT EXISTS "${RTK_DOC_OUTPUT_DIR}/${cudacommon_file}")
+    set(
+      URL
+      "https://raw.githubusercontent.com/RTKConsortium/ITKCudaCommon/main/${cudacommon_file}"
+    )
+    file(
+      DOWNLOAD
+        "${URL}"
+        "${RTK_DOC_OUTPUT_DIR}/${cudacommon_file}"
+    )
+  endif()
+  list(APPEND DOCSRCFILES "${cudacommon_file}")
 endforeach()
 
 # Clean-up: remove all files which are not in the input files or in the _build and documentation/docs/ExternalData/ subfolders
