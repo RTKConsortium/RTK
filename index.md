@@ -7,15 +7,21 @@ RTK is an open-source and cross-platform software for fast circular cone-beam CT
 [![PyPI](https://img.shields.io/pypi/v/itk-rtk.svg)](https://pypi.python.org/pypi/itk-rtk)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/RTKConsortium/RTK/blob/master/LICENSE.TXT)
 
+<br>
+
 ```{toctree}
 GettingStarted
 ```
+
+<br>
 
 ```{toctree}
 :maxdepth: 1
 :caption: 💾 Download
 INSTALLATION
 ```
+
+<br>
 
 ```{toctree}
 :maxdepth: 1
@@ -27,6 +33,17 @@ examples/README.md
 applications/README.md
 ```
 
+<br>
+
+```{toctree}
+:maxdepth: 1
+:caption: CudaCommon
+README.md
+cuda_array_interface.md
+```
+
+<br>
+
 ```{toctree}
 :maxdepth: 1
 :caption: 🔨 Develop
@@ -37,5 +54,4 @@ documentation/docs/rtk_3_migration_guide.md
 CodeContribution
 documentation/docs/README
 documentation/docs/Release
-
 ```
