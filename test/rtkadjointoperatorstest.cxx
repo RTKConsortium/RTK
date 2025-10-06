@@ -281,7 +281,6 @@ main(int, char **)
     cbp->SetInput(0, constantVolumeSource->GetOutput());
     cbp->SetInput(1, randomProjectionsSource->GetOutput());
     cbp->SetGeometry(geometry.GetPointer());
-    cbp->SetNormalize(false);
 
     TRY_AND_EXIT_ON_ITK_EXCEPTION(cbp->Update());
 

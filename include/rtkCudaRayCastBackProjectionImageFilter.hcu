@@ -32,7 +32,6 @@ CUDA_ray_cast_back_project(int      projSize[3],
                            float    radiusCylindricalDetector,
                            float    box_min[3],
                            float    box_max[3],
-                           float    spacing[3],
-                           bool     normalize);
+                           float    spacing[3]);
 
 #endif

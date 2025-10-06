@@ -51,108 +51,9 @@ __constant__ float
 __constant__ float
   c_translatedVolumeTransformMatrices[SLAB_SIZE * 12]; // Can process stacks of at most SLAB_SIZE projections
 __constant__ float c_sourcePos[SLAB_SIZE * 3];         // Can process stacks of at most SLAB_SIZE projections
-__constant__ bool  c_normalize;
 
-//__constant__ float3 spacingSquare;  // inverse view matrix
-
-//_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
-// K E R N E L S -_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
-//_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_( S T A R T )_
-//_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
-
-__device__ void
-splat3D_getWeightsAndIndices(float3 pos, int3 floor_pos, int3 volSize, float * weights, long int * indices)
-{
-  // Compute the weights
-  float3 Distance;
-  Distance.x = pos.x - floor_pos.x;
-  Distance.y = pos.y - floor_pos.y;
-  Distance.z = pos.z - floor_pos.z;
-
-  weights[0] = (1 - Distance.x) * (1 - Distance.y) * (1 - Distance.z); // weight000
-  weights[1] = (1 - Distance.x) * (1 - Distance.y) * Distance.z;       // weight001
-  weights[2] = (1 - Distance.x) * Distance.y * (1 - Distance.z);       // weight010
-  weights[3] = (1 - Distance.x) * Distance.y * Distance.z;             // weight011
-  weights[4] = Distance.x * (1 - Distance.y) * (1 - Distance.z);       // weight100
-  weights[5] = Distance.x * (1 - Distance.y) * Distance.z;             // weight101
-  weights[6] = Distance.x * Distance.y * (1 - Distance.z);             // weight110
-  weights[7] = Distance.x * Distance.y * Distance.z;                   // weight111
-
-  // Compute positions of sampling, taking into account the clamping
-  int3 pos_low;
-  pos_low.x = max(floor_pos.x, 0);
-  pos_low.y = max(floor_pos.y, 0);
-  pos_low.z = max(floor_pos.z, 0);
-
-  int3 pos_high;
-  pos_high.x = min(floor_pos.x + 1, volSize.x - 1);
-  pos_high.y = min(floor_pos.y + 1, volSize.y - 1);
-  pos_high.z = min(floor_pos.z + 1, volSize.z - 1);
-
-  // Compute indices in the volume
-  indices[0] = pos_low.x + pos_low.y * volSize.x + pos_low.z * volSize.x * volSize.y;    // index000
-  indices[1] = pos_low.x + pos_low.y * volSize.x + pos_high.z * volSize.x * volSize.y;   // index001
-  indices[2] = pos_low.x + pos_high.y * volSize.x + pos_low.z * volSize.x * volSize.y;   // index010
-  indices[3] = pos_low.x + pos_high.y * volSize.x + pos_high.z * volSize.x * volSize.y;  // index011
-  indices[4] = pos_high.x + pos_low.y * volSize.x + pos_low.z * volSize.x * volSize.y;   // index100
-  indices[5] = pos_high.x + pos_low.y * volSize.x + pos_high.z * volSize.x * volSize.y;  // index101
-  indices[6] = pos_high.x + pos_high.y * volSize.x + pos_low.z * volSize.x * volSize.y;  // index110
-  indices[7] = pos_high.x + pos_high.y * volSize.x + pos_high.z * volSize.x * volSize.y; // index111
-}
-
-__device__ void
-splat3D(float      toSplat,
-        float *    dev_accumulate_values,
-        float *    dev_accumulate_weights,
-        float *    weights,
-        long int * indices)
-{
-  // Perform splat
-  for (unsigned int i = 0; i < 8; i++)
-  {
-    atomicAdd(&dev_accumulate_values[indices[i]], toSplat * weights[i]);
-    atomicAdd(&dev_accumulate_weights[indices[i]], weights[i]);
-  }
-}
-
-
-// KERNEL normalize
 __global__ void
-kernel_normalize_and_add_to_output(float * dev_vol_in,
-                                   float * dev_vol_out,
-                                   float * dev_accumulate_weights,
-                                   float * dev_accumulate_values)
-{
-  unsigned int i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
-  unsigned int j = __umul24(blockIdx.y, blockDim.y) + threadIdx.y;
-  unsigned int k = __umul24(blockIdx.z, blockDim.z) + threadIdx.z;
-
-  if (i >= c_volSize.x || j >= c_volSize.y || k >= c_volSize.z)
-  {
-    return;
-  }
-
-  // Index row major into the volume
-  long int out_idx = i + (j + k * c_volSize.y) * (c_volSize.x);
-
-  float eps = 1e-6;
-
-  // Divide the output volume's voxels by the accumulated splat weights
-  //   unless the accumulated splat weights are equal to zero
-  if (c_normalize)
-  {
-    if (abs(dev_accumulate_weights[out_idx]) > eps)
-      dev_vol_out[out_idx] = dev_vol_in[out_idx] + (dev_accumulate_values[out_idx] / dev_accumulate_weights[out_idx]);
-    else
-      dev_vol_out[out_idx] = dev_vol_in[out_idx];
-  }
-  else
-    dev_vol_out[out_idx] = dev_vol_in[out_idx] + dev_accumulate_values[out_idx];
-}
-
-// KERNEL kernel_ray_cast_back_project
-__global__ void
-kernel_ray_cast_back_project(float * dev_accumulate_values, float * dev_proj, float * dev_accumulate_weights)
+kernel_ray_cast_back_project(float * dev_vol_out, float * dev_proj)
 {
   unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
   unsigned int j = blockIdx.y * blockDim.y + threadIdx.y;
@@ -219,12 +120,52 @@ kernel_ray_cast_back_project(float * dev_accumulate_values, float * dev_proj, fl
         floor_pos.y = floorf(pos.y);
         floor_pos.z = floorf(pos.z);
 
-        // Compute the weights and the voxel indices, taking into account border conditions (here clamping)
-        splat3D_getWeightsAndIndices(pos, floor_pos, c_volSize, weights, indices);
+        // Compute the weights
+        float3 Distance;
+        Distance.x = pos.x - floor_pos.x;
+        Distance.y = pos.y - floor_pos.y;
+        Distance.z = pos.z - floor_pos.z;
+
+        weights[0] = (1 - Distance.x) * (1 - Distance.y) * (1 - Distance.z); // weight000
+        weights[1] = (1 - Distance.x) * (1 - Distance.y) * Distance.z;       // weight001
+        weights[2] = (1 - Distance.x) * Distance.y * (1 - Distance.z);       // weight010
+        weights[3] = (1 - Distance.x) * Distance.y * Distance.z;             // weight011
+        weights[4] = Distance.x * (1 - Distance.y) * (1 - Distance.z);       // weight100
+        weights[5] = Distance.x * (1 - Distance.y) * Distance.z;             // weight101
+        weights[6] = Distance.x * Distance.y * (1 - Distance.z);             // weight110
+        weights[7] = Distance.x * Distance.y * Distance.z;                   // weight111
+
+        // Compute positions of sampling, taking into account the clamping
+        int3 pos_low;
+        pos_low.x = max(floor_pos.x, 0);
+        pos_low.y = max(floor_pos.y, 0);
+        pos_low.z = max(floor_pos.z, 0);
+
+        int3 pos_high;
+        pos_high.x = min(floor_pos.x + 1, c_volSize.x - 1);
+        pos_high.y = min(floor_pos.y + 1, c_volSize.y - 1);
+        pos_high.z = min(floor_pos.z + 1, c_volSize.z - 1);
+
+        // Compute indices in the volume
+        indices[0] = pos_low.x + pos_low.y * c_volSize.x + pos_low.z * c_volSize.x * c_volSize.y;    // index000
+        indices[1] = pos_low.x + pos_low.y * c_volSize.x + pos_high.z * c_volSize.x * c_volSize.y;   // index001
+        indices[2] = pos_low.x + pos_high.y * c_volSize.x + pos_low.z * c_volSize.x * c_volSize.y;   // index010
+        indices[3] = pos_low.x + pos_high.y * c_volSize.x + pos_high.z * c_volSize.x * c_volSize.y;  // index011
+        indices[4] = pos_high.x + pos_low.y * c_volSize.x + pos_low.z * c_volSize.x * c_volSize.y;   // index100
+        indices[5] = pos_high.x + pos_low.y * c_volSize.x + pos_high.z * c_volSize.x * c_volSize.y;  // index101
+        indices[6] = pos_high.x + pos_high.y * c_volSize.x + pos_low.z * c_volSize.x * c_volSize.y;  // index110
+        indices[7] = pos_high.x + pos_high.y * c_volSize.x + pos_high.z * c_volSize.x * c_volSize.y; // index111
 
         // Compute the value to be splatted
         toSplat = dev_proj[numThread + proj * c_projSize.x * c_projSize.y] * c_tStep;
-        splat3D(toSplat, dev_accumulate_values, dev_accumulate_weights, weights, indices);
+        atomicAdd(&dev_vol_out[indices[0]], toSplat * weights[0]);
+        atomicAdd(&dev_vol_out[indices[1]], toSplat * weights[1]);
+        atomicAdd(&dev_vol_out[indices[2]], toSplat * weights[2]);
+        atomicAdd(&dev_vol_out[indices[3]], toSplat * weights[3]);
+        atomicAdd(&dev_vol_out[indices[4]], toSplat * weights[4]);
+        atomicAdd(&dev_vol_out[indices[5]], toSplat * weights[5]);
+        atomicAdd(&dev_vol_out[indices[6]], toSplat * weights[6]);
+        atomicAdd(&dev_vol_out[indices[7]], toSplat * weights[7]);
 
         // Move to next position
         pos += step;
@@ -232,18 +173,18 @@ kernel_ray_cast_back_project(float * dev_accumulate_values, float * dev_proj, fl
 
       // Last position
       toSplat = dev_proj[numThread + proj * c_projSize.x * c_projSize.y] * c_tStep * (tfar - t + halfVStep) / vStep;
-      splat3D(toSplat, dev_accumulate_values, dev_accumulate_weights, weights, indices);
+      atomicAdd(&dev_vol_out[indices[0]], toSplat * weights[0]);
+      atomicAdd(&dev_vol_out[indices[1]], toSplat * weights[1]);
+      atomicAdd(&dev_vol_out[indices[2]], toSplat * weights[2]);
+      atomicAdd(&dev_vol_out[indices[3]], toSplat * weights[3]);
+      atomicAdd(&dev_vol_out[indices[4]], toSplat * weights[4]);
+      atomicAdd(&dev_vol_out[indices[5]], toSplat * weights[5]);
+      atomicAdd(&dev_vol_out[indices[6]], toSplat * weights[6]);
+      atomicAdd(&dev_vol_out[indices[7]], toSplat * weights[7]);
     }
   }
 }
 
-//_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
-// K E R N E L S -_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
-//_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-( E N D )-_-_
-//_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
-
-///////////////////////////////////////////////////////////////////////////
-// FUNCTION: CUDA_ray_cast_backproject() //////////////////////////////////
 void
 CUDA_ray_cast_back_project(int      projSize[3],
                            int      volSize[3],
@@ -257,8 +198,7 @@ CUDA_ray_cast_back_project(int      projSize[3],
                            float    radiusCylindricalDetector,
                            float    box_min[3],
                            float    box_max[3],
-                           float    spacing[3],
-                           bool     normalize)
+                           float    spacing[3])
 {
   // Constant memory
   cudaMemcpyToSymbol(c_projSize, projSize, sizeof(int3));
@@ -268,7 +208,6 @@ CUDA_ray_cast_back_project(int      projSize[3],
   cudaMemcpyToSymbol(c_volSize, volSize, sizeof(int3));
   cudaMemcpyToSymbol(c_tStep, &t_step, sizeof(float));
   cudaMemcpyToSymbol(c_radius, &radiusCylindricalDetector, sizeof(float));
-  cudaMemcpyToSymbol(c_normalize, &normalize, sizeof(bool));
 
   // Copy the source position matrix into a float3 in constant memory
   cudaMemcpyToSymbol(c_sourcePos, &(source_positions[0]), 3 * sizeof(float) * projSize[2]);
@@ -280,41 +219,21 @@ CUDA_ray_cast_back_project(int      projSize[3],
   cudaMemcpyToSymbol(
     c_translatedVolumeTransformMatrices, &(translatedVolumeTransformMatrices[0]), 12 * sizeof(float) * projSize[2]);
 
-  // Create an image to store the splatted values
-  // We cannot use the output image, because it may not be zero, in which case
-  // normalization by the splat weights would affect not only the backprojection
-  // of the current projection, but also the initial value of the output
-  float * dev_accumulate_values;
-  size_t  volMemSize = sizeof(float) * volSize[0] * volSize[1] * volSize[2];
-  cudaMalloc((void **)&dev_accumulate_values, volMemSize);
-  cudaMemset((void *)dev_accumulate_values, 0, volMemSize);
-
-  // Create an image to store the splat weights (in order to normalize)
-  float * dev_accumulate_weights;
-  cudaMalloc((void **)&dev_accumulate_weights, volMemSize);
-  cudaMemset((void *)dev_accumulate_weights, 0, volMemSize);
+  // If not in place, input must be copied to output
+  if (dev_vol_in != dev_vol_out)
+  {
+    size_t volMemSize = sizeof(float) * volSize[0] * volSize[1] * volSize[2];
+    cudaMemcpy(dev_vol_out, dev_vol_in, volMemSize, cudaMemcpyDeviceToDevice);
+    CUDA_CHECK_ERROR;
+  }
 
   // Calling kernels
   dim3 dimBlock = dim3(8, 8, 4);
   dim3 dimGrid =
     dim3(iDivUp(projSize[0], dimBlock.x), iDivUp(projSize[1], dimBlock.y), iDivUp(projSize[2], dimBlock.z));
 
-  kernel_ray_cast_back_project<<<dimGrid, dimBlock>>>(dev_accumulate_values, dev_proj, dev_accumulate_weights);
+  kernel_ray_cast_back_project<<<dimGrid, dimBlock>>>(dev_vol_out, dev_proj);
 
   cudaDeviceSynchronize();
-  CUDA_CHECK_ERROR;
-
-  dim3 dimBlockVol = dim3(16, 4, 4);
-  dim3 dimGridVol =
-    dim3(iDivUp(volSize[0], dimBlockVol.x), iDivUp(volSize[1], dimBlockVol.y), iDivUp(volSize[2], dimBlockVol.z));
-
-  kernel_normalize_and_add_to_output<<<dimGridVol, dimBlockVol>>>(
-    dev_vol_in, dev_vol_out, dev_accumulate_weights, dev_accumulate_values);
-
-  CUDA_CHECK_ERROR;
-
-  // Cleanup
-  cudaFree(dev_accumulate_weights);
-  cudaFree(dev_accumulate_values);
   CUDA_CHECK_ERROR;
 }
