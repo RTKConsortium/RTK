@@ -96,83 +96,67 @@ kernel_ray_cast_back_project(float * dev_vol_out, float * dev_proj)
 
     // Step length in mm
     float3 dirInMM = c_spacing * ray.d;
-    float  vStep = c_tStep / sqrtf(dot(dirInMM, dirInMM));
-    float3 step = vStep * ray.d;
+    float  dirLengthInMM = sqrtf(dot(dirInMM, dirInMM));
+    float  vStep = min(c_tStep / dirLengthInMM, tfar - tnear);
+    float  mmStep = vStep * dirLengthInMM;
 
-    // First position in the box
-    float3 pos;
-    float  halfVStep = 0.5f * vStep;
-    tnear = tnear + halfVStep;
-    pos = ray.o + tnear * ray.d;
-
-    float t;
-
+    // Skip rays intersecting less half a step
     float    toSplat;
     long int indices[8];
     float    weights[8];
     int3     floor_pos;
 
-    if (tfar - tnear > halfVStep)
+    // First position in the box
+    float halfVStep = 0.5f * vStep;
+    tnear = tnear + halfVStep;
+
+    float3 pos = ray.o + tnear * ray.d;
+    float3 step = vStep * ray.d;
+    float  t;
+    for (t = tnear; t <= tfar; t += vStep)
     {
-      for (t = tnear; t <= tfar; t += vStep)
-      {
-        floor_pos.x = floorf(pos.x);
-        floor_pos.y = floorf(pos.y);
-        floor_pos.z = floorf(pos.z);
+      floor_pos.x = floorf(pos.x);
+      floor_pos.y = floorf(pos.y);
+      floor_pos.z = floorf(pos.z);
 
-        // Compute the weights
-        float3 Distance;
-        Distance.x = pos.x - floor_pos.x;
-        Distance.y = pos.y - floor_pos.y;
-        Distance.z = pos.z - floor_pos.z;
+      // Compute the weights
+      float3 Distance;
+      Distance.x = pos.x - floor_pos.x;
+      Distance.y = pos.y - floor_pos.y;
+      Distance.z = pos.z - floor_pos.z;
 
-        weights[0] = (1 - Distance.x) * (1 - Distance.y) * (1 - Distance.z); // weight000
-        weights[1] = (1 - Distance.x) * (1 - Distance.y) * Distance.z;       // weight001
-        weights[2] = (1 - Distance.x) * Distance.y * (1 - Distance.z);       // weight010
-        weights[3] = (1 - Distance.x) * Distance.y * Distance.z;             // weight011
-        weights[4] = Distance.x * (1 - Distance.y) * (1 - Distance.z);       // weight100
-        weights[5] = Distance.x * (1 - Distance.y) * Distance.z;             // weight101
-        weights[6] = Distance.x * Distance.y * (1 - Distance.z);             // weight110
-        weights[7] = Distance.x * Distance.y * Distance.z;                   // weight111
+      weights[0] = (1 - Distance.x) * (1 - Distance.y) * (1 - Distance.z); // weight000
+      weights[1] = (1 - Distance.x) * (1 - Distance.y) * Distance.z;       // weight001
+      weights[2] = (1 - Distance.x) * Distance.y * (1 - Distance.z);       // weight010
+      weights[3] = (1 - Distance.x) * Distance.y * Distance.z;             // weight011
+      weights[4] = Distance.x * (1 - Distance.y) * (1 - Distance.z);       // weight100
+      weights[5] = Distance.x * (1 - Distance.y) * Distance.z;             // weight101
+      weights[6] = Distance.x * Distance.y * (1 - Distance.z);             // weight110
+      weights[7] = Distance.x * Distance.y * Distance.z;                   // weight111
 
-        // Compute positions of sampling, taking into account the clamping
-        int3 pos_low;
-        pos_low.x = max(floor_pos.x, 0);
-        pos_low.y = max(floor_pos.y, 0);
-        pos_low.z = max(floor_pos.z, 0);
+      // Compute positions of sampling, taking into account the clamping
+      int3 pos_low;
+      pos_low.x = max(floor_pos.x, 0);
+      pos_low.y = max(floor_pos.y, 0);
+      pos_low.z = max(floor_pos.z, 0);
 
-        int3 pos_high;
-        pos_high.x = min(floor_pos.x + 1, c_volSize.x - 1);
-        pos_high.y = min(floor_pos.y + 1, c_volSize.y - 1);
-        pos_high.z = min(floor_pos.z + 1, c_volSize.z - 1);
+      int3 pos_high;
+      pos_high.x = min(floor_pos.x + 1, c_volSize.x - 1);
+      pos_high.y = min(floor_pos.y + 1, c_volSize.y - 1);
+      pos_high.z = min(floor_pos.z + 1, c_volSize.z - 1);
 
-        // Compute indices in the volume
-        indices[0] = pos_low.x + pos_low.y * c_volSize.x + pos_low.z * c_volSize.x * c_volSize.y;    // index000
-        indices[1] = pos_low.x + pos_low.y * c_volSize.x + pos_high.z * c_volSize.x * c_volSize.y;   // index001
-        indices[2] = pos_low.x + pos_high.y * c_volSize.x + pos_low.z * c_volSize.x * c_volSize.y;   // index010
-        indices[3] = pos_low.x + pos_high.y * c_volSize.x + pos_high.z * c_volSize.x * c_volSize.y;  // index011
-        indices[4] = pos_high.x + pos_low.y * c_volSize.x + pos_low.z * c_volSize.x * c_volSize.y;   // index100
-        indices[5] = pos_high.x + pos_low.y * c_volSize.x + pos_high.z * c_volSize.x * c_volSize.y;  // index101
-        indices[6] = pos_high.x + pos_high.y * c_volSize.x + pos_low.z * c_volSize.x * c_volSize.y;  // index110
-        indices[7] = pos_high.x + pos_high.y * c_volSize.x + pos_high.z * c_volSize.x * c_volSize.y; // index111
+      // Compute indices in the volume
+      indices[0] = pos_low.x + pos_low.y * c_volSize.x + pos_low.z * c_volSize.x * c_volSize.y;    // index000
+      indices[1] = pos_low.x + pos_low.y * c_volSize.x + pos_high.z * c_volSize.x * c_volSize.y;   // index001
+      indices[2] = pos_low.x + pos_high.y * c_volSize.x + pos_low.z * c_volSize.x * c_volSize.y;   // index010
+      indices[3] = pos_low.x + pos_high.y * c_volSize.x + pos_high.z * c_volSize.x * c_volSize.y;  // index011
+      indices[4] = pos_high.x + pos_low.y * c_volSize.x + pos_low.z * c_volSize.x * c_volSize.y;   // index100
+      indices[5] = pos_high.x + pos_low.y * c_volSize.x + pos_high.z * c_volSize.x * c_volSize.y;  // index101
+      indices[6] = pos_high.x + pos_high.y * c_volSize.x + pos_low.z * c_volSize.x * c_volSize.y;  // index110
+      indices[7] = pos_high.x + pos_high.y * c_volSize.x + pos_high.z * c_volSize.x * c_volSize.y; // index111
 
-        // Compute the value to be splatted
-        toSplat = dev_proj[numThread + proj * c_projSize.x * c_projSize.y] * c_tStep;
-        atomicAdd(&dev_vol_out[indices[0]], toSplat * weights[0]);
-        atomicAdd(&dev_vol_out[indices[1]], toSplat * weights[1]);
-        atomicAdd(&dev_vol_out[indices[2]], toSplat * weights[2]);
-        atomicAdd(&dev_vol_out[indices[3]], toSplat * weights[3]);
-        atomicAdd(&dev_vol_out[indices[4]], toSplat * weights[4]);
-        atomicAdd(&dev_vol_out[indices[5]], toSplat * weights[5]);
-        atomicAdd(&dev_vol_out[indices[6]], toSplat * weights[6]);
-        atomicAdd(&dev_vol_out[indices[7]], toSplat * weights[7]);
-
-        // Move to next position
-        pos += step;
-      }
-
-      // Last position
-      toSplat = dev_proj[numThread + proj * c_projSize.x * c_projSize.y] * c_tStep * (tfar - t + halfVStep) / vStep;
+      // Compute the value to be splatted
+      toSplat = dev_proj[numThread + proj * c_projSize.x * c_projSize.y] * mmStep;
       atomicAdd(&dev_vol_out[indices[0]], toSplat * weights[0]);
       atomicAdd(&dev_vol_out[indices[1]], toSplat * weights[1]);
       atomicAdd(&dev_vol_out[indices[2]], toSplat * weights[2]);
@@ -181,7 +165,21 @@ kernel_ray_cast_back_project(float * dev_vol_out, float * dev_proj)
       atomicAdd(&dev_vol_out[indices[5]], toSplat * weights[5]);
       atomicAdd(&dev_vol_out[indices[6]], toSplat * weights[6]);
       atomicAdd(&dev_vol_out[indices[7]], toSplat * weights[7]);
+
+      // Move to next position
+      pos += step;
     }
+
+    // Last position
+    toSplat = dev_proj[numThread + proj * c_projSize.x * c_projSize.y] * (tfar - t + halfVStep) * dirLengthInMM;
+    atomicAdd(&dev_vol_out[indices[0]], toSplat * weights[0]);
+    atomicAdd(&dev_vol_out[indices[1]], toSplat * weights[1]);
+    atomicAdd(&dev_vol_out[indices[2]], toSplat * weights[2]);
+    atomicAdd(&dev_vol_out[indices[3]], toSplat * weights[3]);
+    atomicAdd(&dev_vol_out[indices[4]], toSplat * weights[4]);
+    atomicAdd(&dev_vol_out[indices[5]], toSplat * weights[5]);
+    atomicAdd(&dev_vol_out[indices[6]], toSplat * weights[6]);
+    atomicAdd(&dev_vol_out[indices[7]], toSplat * weights[7]);
   }
 }
 
