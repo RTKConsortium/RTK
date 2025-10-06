@@ -112,16 +112,14 @@ kernel_forwardProject(float * dev_proj_in, float * dev_proj_out, cudaTextureObje
 
       // Step length in mm
       float3 dirInMM = c_spacing * ray.d;
-      float  vStep = c_tStep / sqrtf(dot(dirInMM, dirInMM));
-      float3 step = vStep * ray.d;
+      float  dirLengthInMM = sqrtf(dot(dirInMM, dirInMM));
+      float  vStep = min(c_tStep / dirLengthInMM, tfar - tnear);
+      float  mmStep = vStep * dirLengthInMM;
 
       // First position in the box
-      float3 pos;
-      float  halfVStep = 0.5f * vStep;
+      float halfVStep = 0.5f * vStep;
       tnear = tnear + halfVStep;
-      pos = ray.o + tnear * ray.d;
 
-      float t;
       float sample[VVectorLength];
       float sum[VVectorLength];
       for (unsigned int c = 0; c < VVectorLength; c++)
@@ -130,6 +128,9 @@ kernel_forwardProject(float * dev_proj_in, float * dev_proj_out, cudaTextureObje
         sum[c] = 0.0f;
       }
 
+      float3 pos = ray.o + tnear * ray.d;
+      float3 step = vStep * ray.d;
+      float  t;
       for (t = tnear; t <= tfar; t += vStep)
       {
         // Read from 3D texture from volume(s)
@@ -146,8 +147,8 @@ kernel_forwardProject(float * dev_proj_in, float * dev_proj_out, cudaTextureObje
 
       // Update the output projection pixels
       for (unsigned int c = 0; c < VVectorLength; c++)
-        dev_proj_out[projOffset * VVectorLength + c] =
-          dev_proj_in[projOffset * VVectorLength + c] + (sum[c] + (tfar - t + halfVStep) / vStep * sample[c]) * c_tStep;
+        dev_proj_out[projOffset * VVectorLength + c] = dev_proj_in[projOffset * VVectorLength + c] + sum[c] * mmStep +
+                                                       sample[c] * (tfar - t + halfVStep) * dirLengthInMM;
     }
   }
 }
