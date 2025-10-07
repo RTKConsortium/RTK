@@ -90,7 +90,7 @@ BoxShape ::IsIntersectedByRay(const PointType &  rayOrigin,
       farDist = T2;
     if (nearDist > farDist)
       return false;
-    if (farDist < 0)
+    if (farDist < itk::NumericTraits<ScalarType>::ZeroValue())
       return false;
   }
 

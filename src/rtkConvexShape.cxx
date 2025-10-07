@@ -104,8 +104,8 @@ ConvexShape ::SetClipPlanes(const std::vector<VectorType> & dir, const std::vect
 bool
 ConvexShape ::ApplyClipPlanes(const PointType &  rayOrigin,
                               const VectorType & rayDirection,
-                              double &           nearDist,
-                              double &           farDist) const
+                              ScalarType &       nearDist,
+                              ScalarType &       farDist) const
 {
   for (size_t i = 0; i < m_PlaneDirections.size(); i++)
   {
@@ -124,7 +124,7 @@ ConvexShape ::ApplyClipPlanes(const PointType &  rayOrigin,
     ScalarType planeDist = (m_PlanePositions[i] - rayOrigin * m_PlaneDirections[i]) / rayDirPlaneDir;
 
     // If plane is pointing in the same direction as the ray
-    if (rayDirPlaneDir >= 0)
+    if (rayDirPlaneDir >= itk::NumericTraits<ScalarType>::ZeroValue())
     {
       if (planeDist <= nearDist)
         return false;
