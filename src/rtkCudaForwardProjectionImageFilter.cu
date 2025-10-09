@@ -100,7 +100,7 @@ kernel_forwardProject(float * dev_proj_in, float * dev_proj_out, cudaTextureObje
     int projOffset = numThread + proj * c_projSize.x * c_projSize.y;
 
     // Detect intersection with box
-    if (!intersectBox(ray, &tnear, &tfar, c_boxMin, c_boxMax) || tfar < 0.f)
+    if (!intersectBox(ray, &tnear, &tfar, c_boxMin, c_boxMax) || tfar <= 0.f || tfar == tnear)
     {
       for (unsigned int c = 0; c < VVectorLength; c++)
         dev_proj_out[projOffset * VVectorLength + c] = dev_proj_in[projOffset * VVectorLength + c];
