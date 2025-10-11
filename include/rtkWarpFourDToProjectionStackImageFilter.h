@@ -99,23 +99,14 @@ public:
   /** Convenient type alias */
   using VolumeType = ProjectionStackType;
   using VectorForDVF = itk::CovariantVector<typename VolumeSeriesType::ValueType, VolumeSeriesType::ImageDimension - 1>;
-
   using CPUVolumeSeriesType =
     typename itk::Image<typename VolumeSeriesType::PixelType, VolumeSeriesType::ImageDimension>;
-#ifdef RTK_USE_CUDA
-  /** SFINAE type alias, depending on whether a CUDA image is used. */
   using DVFSequenceImageType =
-    typename std::conditional_t<std::is_same_v<VolumeSeriesType, CPUVolumeSeriesType>,
-                                itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension>,
-                                itk::CudaImage<VectorForDVF, VolumeSeriesType::ImageDimension>>;
-  using DVFImageType = typename std::conditional_t<std::is_same_v<VolumeSeriesType, CPUVolumeSeriesType>,
-                                                   itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension - 1>,
-                                                   itk::CudaImage<VectorForDVF, VolumeSeriesType::ImageDimension - 1>>;
-#else
-  using DVFSequenceImageType = typename itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension>;
-  using DVFImageType = typename itk::Image<VectorForDVF, VolumeSeriesType::ImageDimension - 1>;
-#endif
+    typename VolumeSeriesType::template RebindImageType<VectorForDVF, VolumeSeriesType::ImageDimension>;
+  using DVFImageType =
+    typename VolumeSeriesType::template RebindImageType<VectorForDVF, VolumeSeriesType::ImageDimension - 1>;
   using CPUDVFInterpolatorType = CyclicDeformationImageFilter<DVFSequenceImageType, DVFImageType>;
+
 #ifdef RTK_USE_CUDA
   using WarpForwardProjectionImageFilterType =
     typename std::conditional_t<std::is_same_v<VolumeSeriesType, CPUVolumeSeriesType>,

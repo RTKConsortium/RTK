@@ -154,19 +154,16 @@ public:
 
   using ForwardProjectionType = typename Superclass::ForwardProjectionType;
   using BackProjectionType = typename Superclass::BackProjectionType;
-
-#ifdef RTK_USE_CUDA
-  using SpatialGradientImageType = itk::CudaImage<CovariantVectorForSpatialGradient, VolumeSeriesType::ImageDimension>;
+  using SpatialGradientImageType =
+    typename VolumeSeriesType::template RebindImageType<CovariantVectorForSpatialGradient,
+                                                        VolumeSeriesType::ImageDimension>;
   using TemporalGradientImageType =
-    itk::CudaImage<CovariantVectorForTemporalGradient, VolumeSeriesType::ImageDimension>;
-  using DVFSequenceImageType = itk::CudaImage<DVFVectorType, VolumeSeriesType::ImageDimension>;
-  using DVFImageType = itk::CudaImage<DVFVectorType, VolumeSeriesType::ImageDimension - 1>;
-#else
-  using SpatialGradientImageType = itk::Image<CovariantVectorForSpatialGradient, VolumeSeriesType::ImageDimension>;
-  using TemporalGradientImageType = itk::Image<CovariantVectorForTemporalGradient, VolumeSeriesType::ImageDimension>;
-  using DVFSequenceImageType = itk::Image<DVFVectorType, VolumeSeriesType::ImageDimension>;
-  using DVFImageType = itk::Image<DVFVectorType, VolumeSeriesType::ImageDimension - 1>;
-#endif
+    typename VolumeSeriesType::template RebindImageType<CovariantVectorForTemporalGradient,
+                                                        VolumeSeriesType::ImageDimension>;
+  using DVFSequenceImageType =
+    typename VolumeSeriesType::template RebindImageType<DVFVectorType, VolumeSeriesType::ImageDimension>;
+  using DVFImageType =
+    typename VolumeSeriesType::template RebindImageType<DVFVectorType, VolumeSeriesType::ImageDimension - 1>;
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
