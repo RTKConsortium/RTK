@@ -182,11 +182,6 @@ set(
 list(APPEND RTK_INCLUDE_DIRS "${LPSOLVE_INCLUDE_DIRS}")
 
 #=========================================================
-# Include directories
-#=========================================================
-list(APPEND RTK_INCLUDE_DIRS ${RTK_BINARY_DIR}/include)
-
-#=========================================================
 # Generate RTKConfig.cmake for the build tree.
 set(RTK_MODULE_PATH_CONFIG ${CMAKE_MODULE_PATH})
 
@@ -287,9 +282,15 @@ endif()
 
 # Propagate cmake options in a header file
 # Must be done after the external module configuration to make sure CudaCommon_VERSION is defined
+# The file is generated in the same folder as RTKExport.h
+if(ITK_SOURCE_DIR)
+  set(_configuration_header_file "${ITKCommon_BINARY_DIR}/rtkConfiguration.h")
+else()
+  set(_configuration_header_file "${RTK_BINARY_DIR}/include/rtkConfiguration.h")
+endif()
 configure_file(
   ${RTK_SOURCE_DIR}/rtkConfiguration.h.in
-  ${RTK_BINARY_DIR}/include/rtkConfiguration.h
+  ${_configuration_header_file}
 )
 
 # Install lpsolve headers
@@ -329,7 +330,7 @@ target_include_directories(
 # Install configuration file
 install(
   FILES
-    ${RTK_BINARY_DIR}/include/rtkConfiguration.h
+    ${_configuration_header_file}
   DESTINATION ${RTK_INSTALL_INCLUDE_DIR}
 )
 install(
