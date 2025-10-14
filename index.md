@@ -38,8 +38,8 @@ applications/README.md
 ```{toctree}
 :maxdepth: 1
 :caption: CudaCommon
-README.md
-cuda_array_interface.md
+CudaCommon/README.md
+CudaCommon/cuda_array_interface.md
 ```
 
 <br>
