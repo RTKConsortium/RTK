@@ -99,7 +99,7 @@ foreach(content_file ${content_files})
 endforeach()
 
 foreach(cudacommon_file ${CUDACOMMONFILES})
-  if(NOT EXISTS "${RTK_DOC_OUTPUT_DIR}/${cudacommon_file}")
+  if(NOT EXISTS "${RTK_DOC_OUTPUT_DIR}/CudaCommon/${cudacommon_file}")
     set(
       URL
       "https://raw.githubusercontent.com/RTKConsortium/ITKCudaCommon/main/${cudacommon_file}"
@@ -107,10 +107,10 @@ foreach(cudacommon_file ${CUDACOMMONFILES})
     file(
       DOWNLOAD
         "${URL}"
-        "${RTK_DOC_OUTPUT_DIR}/${cudacommon_file}"
+        "${RTK_DOC_OUTPUT_DIR}/CudaCommon/${cudacommon_file}"
     )
   endif()
-  list(APPEND DOCSRCFILES "${cudacommon_file}")
+  list(APPEND DOCSRCFILES "CudaCommon/${cudacommon_file}")
 endforeach()
 
 # Clean-up: remove all files which are not in the input files or in the _build and documentation/docs/ExternalData/ subfolders
