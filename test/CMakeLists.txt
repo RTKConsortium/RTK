@@ -1,6 +1,12 @@
+# The test header file is generated in the same folder as RTKExport.h
+if(ITK_SOURCE_DIR)
+  set(_test_header_file "${ITKCommon_BINARY_DIR}/rtkTestConfiguration.h")
+else()
+  set(_test_header_file "${RTK_BINARY_DIR}/include/rtkTestConfiguration.h")
+endif()
 configure_file(
   ${CMAKE_CURRENT_SOURCE_DIR}/rtkTestConfiguration.h.in
-  ${RTK_BINARY_DIR}/include/rtkTestConfiguration.h
+  ${_test_header_file}
 )
 
 #-----------------------------------------------------------------------------
