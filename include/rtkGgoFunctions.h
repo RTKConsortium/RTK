@@ -54,7 +54,7 @@ SetConstantImageSourceFromGgo(TConstantImageSourceType * source, const TArgsInfo
   const unsigned int Dimension = ImageType::GetImageDimension();
 
   typename ImageType::SizeType imageSize;
-  if (args_info.dimension_given)
+  if (args_info.dimension_given && !args_info.size_given)
   {
     itkGenericOutputMacro(
       "Warning: --dimension is deprecated and will be removed in a future release. Use --size instead.");
@@ -64,9 +64,12 @@ SetConstantImageSourceFromGgo(TConstantImageSourceType * source, const TArgsInfo
       imageSize[i] = args_info.dimension_arg[i];
     }
   }
-  imageSize.Fill(args_info.size_arg[0]);
-  for (unsigned int i = 0; i < std::min(args_info.size_given, Dimension); i++)
-    imageSize[i] = args_info.size_arg[i];
+  else
+  {
+    imageSize.Fill(args_info.size_arg[0]);
+    for (unsigned int i = 0; i < std::min(args_info.size_given, Dimension); i++)
+      imageSize[i] = args_info.size_arg[i];
+  }
 
   typename ImageType::SpacingType imageSpacing;
   imageSpacing.Fill(args_info.spacing_arg[0]);
