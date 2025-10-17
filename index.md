@@ -29,6 +29,7 @@ INSTALLATION
 documentation/docs/Geometry.md
 documentation/docs/Phantom.md
 documentation/docs/Projectors.md
+documentation/docs/3d_time.md
 examples/README.md
 applications/README.md
 ```
