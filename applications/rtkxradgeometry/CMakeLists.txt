@@ -6,6 +6,13 @@ add_executable(
 )
 target_link_libraries(rtkxradgeometry RTK)
 
+set_target_properties(
+  rtkxradgeometry
+  PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY
+      "${RTK_BINARY_DIR}/bin"
+)
+
 # Installation code
 if(NOT RTK_INSTALL_NO_EXECUTABLES)
   foreach(EXE_NAME rtkxradgeometry)
