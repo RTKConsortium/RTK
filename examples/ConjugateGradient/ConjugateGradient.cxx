@@ -20,7 +20,7 @@ main(int argc, char * argv[])
   using OutputImageType = itk::Image<OutputPixelType, Dimension>;
 #endif
 
-  constexpr unsigned int numberOfProjections = 180;
+  constexpr unsigned int numberOfProjections = 60;
   constexpr double       angularArc = 360.;
   constexpr unsigned int sid = 600;  // source to isocenter distance
   constexpr unsigned int sdd = 1200; // source to detector distance
@@ -30,7 +30,7 @@ main(int argc, char * argv[])
   {
     configFileName = argv[1];
   }
-  constexpr unsigned int niterations = 10;
+  constexpr unsigned int niterations = 3;
 
   itk::Matrix<double, Dimension, Dimension> rotation;
   rotation[0][0] = 1.;
@@ -49,8 +49,9 @@ main(int argc, char * argv[])
   // Create a constant image source for the projections
   auto projectionsSource = rtk::ConstantImageSource<OutputImageType>::New();
   projectionsSource->SetOrigin(itk::MakePoint(-127., -127., -127.));
-  projectionsSource->SetSpacing(itk::MakeVector(2., 2., 2.));
-  projectionsSource->SetSize(itk::MakeSize(128, 128, numberOfProjections));
+  // Use coarser spacing and smaller images for fast tests
+  projectionsSource->SetSpacing(itk::MakeVector(4., 4., 4.));
+  projectionsSource->SetSize(itk::MakeSize(64, 64, numberOfProjections));
 
   // Project the geometric phantom image
   auto pgp = rtk::ProjectGeometricPhantomImageFilter<OutputImageType, OutputImageType>::New();
@@ -64,8 +65,9 @@ main(int argc, char * argv[])
   // Create new empty volume
   auto conjugateGradientSource = rtk::ConstantImageSource<OutputImageType>::New();
   conjugateGradientSource->SetOrigin(itk::MakePoint(-127., -127., -127.));
-  conjugateGradientSource->SetSpacing(itk::MakeVector(2., 2., 2.));
-  conjugateGradientSource->SetSize(itk::MakeSize(128, 128, 128));
+  // Match coarser spacing and smaller volume for quick smoke tests
+  conjugateGradientSource->SetSpacing(itk::MakeVector(4., 4., 4.));
+  conjugateGradientSource->SetSize(itk::MakeSize(64, 64, 64));
 
   // Set the forward and back projection filters to be used
   using ConjugateGradientFilterType = rtk::ConjugateGradientConeBeamReconstructionFilter<OutputImageType>;
