@@ -67,8 +67,8 @@ public:
   bool
   IsIntersectedByRay(const PointType &  rayOrigin,
                      const VectorType & rayDirection,
-                     ScalarType &       nearDist,
-                     ScalarType &       farDist) const override;
+                     ScalarType &       infDist,
+                     ScalarType &       supDist) const override;
 
   /** Add convex object to phantom. */
   void

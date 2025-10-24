@@ -1,4 +1,4 @@
 %include "typemaps.i"
 
 // rtkConvexShape::IsIntersectedByRay
-%apply double &OUTPUT {double & nearDist, double & farDist};
+%apply double &OUTPUT {double & infDist, double & supDist};
