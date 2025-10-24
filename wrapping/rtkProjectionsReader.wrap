@@ -2,7 +2,7 @@ itk_wrap_class("rtk::ProjectionsReader" POINTER)
   # Force uchar image IO
   UNIQUE(image_types "UC;${WRAP_ITK_REAL}")
   itk_wrap_image_filter("${image_types}" 1)
-
+  itk_wrap_template("IUS3" "itk::Image<unsigned short, 3>")
   #WARNING: "UC;${WRAP_ITK_REAL}" is too restrictive.
   # Types should be similar to vnl wrapped types :
   #  "D;F;SI;SL;LD;SC;UC;US;UI;UL"

@@ -16,6 +16,11 @@ if(RTK_USE_CUDA)
 
   itk_wrap_class("itk::CudaImage" POINTER_WITH_CONST_POINTER)
 
+    if (NOT ITK_WRAP_unsigned_short)
+      itk_wrap_template("US3" "unsigned short, 3")
+      wrap_CudaImage_swig_ext(US3 US)
+    endif()
+
     # Add all missing image with dim == 4
     list(FIND ITK_WRAP_IMAGE_DIMS "4" _index)
     if (${_index} EQUAL -1)

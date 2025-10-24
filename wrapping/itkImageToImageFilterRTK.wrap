@@ -63,6 +63,10 @@ itk_wrap_class("itk::ImageToImageFilter" POINTER)
         "itk::CudaImage<${ITKT_F}, 4>, itk::CudaImage<${ITKT_F}, 4>")
     endif()
 
+    # Wrap ITK short/float combination (required by : rtkCudaPolynomialGainCorrectionImageFilter)
+    itk_wrap_template("CIUS3CIF3"
+      "itk::CudaImage<${ITKT_US}, 3>, itk::CudaImage<${ITKT_F}, 3>")
+
     # Force VECTOR_COMPONENTS to "2;3;4;5"
     UNIQUE(imageDimensions "${ITK_WRAP_IMAGE_DIMS};2;3;4")
     UNIQUE(vectorComponents "${ITK_WRAP_VECTOR_COMPONENTS};2;3;4;5")
