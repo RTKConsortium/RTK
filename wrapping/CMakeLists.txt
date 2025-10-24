@@ -16,6 +16,7 @@ set(
   rtkFFTRampImageFilter
   rtkParkerShortScanImageFilter
   rtkScatterGlareCorrectionImageFilter
+  rtkPolynomialGainCorrectionImageFilter
   itkImageSourceRTK
   itkImageToImageFilterRTK
   itkCudaImageToImageFilterRTK
