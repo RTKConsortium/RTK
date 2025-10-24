@@ -33,8 +33,8 @@ ConvexShape ::IsInside(const PointType & /*point*/) const
 bool
 ConvexShape ::IsIntersectedByRay(const PointType & /*rayOrigin*/,
                                  const VectorType & /*rayDirection*/,
-                                 ScalarType & /*nearDist*/,
-                                 ScalarType & /*farDist*/) const
+                                 ScalarType & /*infDist*/,
+                                 ScalarType & /*supDist*/) const
 {
   itkExceptionMacro(<< "This method should have been reimplemented in base classe");
   return false;
@@ -104,8 +104,8 @@ ConvexShape ::SetClipPlanes(const std::vector<VectorType> & dir, const std::vect
 bool
 ConvexShape ::ApplyClipPlanes(const PointType &  rayOrigin,
                               const VectorType & rayDirection,
-                              ScalarType &       nearDist,
-                              ScalarType &       farDist) const
+                              ScalarType &       infDist,
+                              ScalarType &       supDist) const
 {
   for (size_t i = 0; i < m_PlaneDirections.size(); i++)
   {
@@ -126,15 +126,15 @@ ConvexShape ::ApplyClipPlanes(const PointType &  rayOrigin,
     // If plane is pointing in the same direction as the ray
     if (rayDirPlaneDir >= itk::NumericTraits<ScalarType>::ZeroValue())
     {
-      if (planeDist <= nearDist)
+      if (planeDist <= infDist)
         return false;
-      farDist = std::min(farDist, planeDist);
+      supDist = std::min(supDist, planeDist);
     }
     else
     {
-      if (planeDist >= farDist)
+      if (planeDist >= supDist)
         return false;
-      nearDist = std::max(nearDist, planeDist);
+      infDist = std::max(infDist, planeDist);
     }
   }
   return true;

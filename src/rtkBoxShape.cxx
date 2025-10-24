@@ -46,8 +46,8 @@ BoxShape ::IsInside(const PointType & point) const
 bool
 BoxShape ::IsIntersectedByRay(const PointType &  rayOrigin,
                               const VectorType & rayDirection,
-                              double &           nearDist,
-                              double &           farDist) const
+                              double &           infDist,
+                              double &           supDist) const
 {
   // Apply transform
   RotationMatrixType dirt;
@@ -69,10 +69,10 @@ BoxShape ::IsIntersectedByRay(const PointType &  rayOrigin,
   // Bh <-> max
   // Ro <-> org
   // Rd <-> dir
-  // Tnear <-> nearDist
-  // Tfar <-> farDist
-  nearDist = itk::NumericTraits<ScalarType>::NonpositiveMin();
-  farDist = itk::NumericTraits<ScalarType>::max();
+  // Tnear <-> infDist
+  // Tfar <-> supDist
+  infDist = itk::NumericTraits<ScalarType>::NonpositiveMin();
+  supDist = itk::NumericTraits<ScalarType>::max();
   ScalarType T1 = NAN, T2 = NAN, invRayDir = NAN;
   for (unsigned int i = 0; i < Dimension; i++)
   {
@@ -84,17 +84,17 @@ BoxShape ::IsIntersectedByRay(const PointType &  rayOrigin,
     T2 = (max[i] - org[i]) * invRayDir;
     if (T1 > T2)
       std::swap(T1, T2);
-    if (T1 > nearDist)
-      nearDist = T1;
-    if (T2 < farDist)
-      farDist = T2;
-    if (nearDist > farDist)
+    if (T1 > infDist)
+      infDist = T1;
+    if (T2 < supDist)
+      supDist = T2;
+    if (infDist > supDist)
       return false;
-    if (farDist < itk::NumericTraits<ScalarType>::ZeroValue())
+    if (supDist < itk::NumericTraits<ScalarType>::ZeroValue())
       return false;
   }
 
-  return ApplyClipPlanes(rayOrigin, rayDirection, nearDist, farDist);
+  return ApplyClipPlanes(rayOrigin, rayDirection, infDist, supDist);
 }
 
 void

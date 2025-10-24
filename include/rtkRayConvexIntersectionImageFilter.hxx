@@ -68,13 +68,13 @@ RayConvexIntersectionImageFilter<TInputImage, TOutputImage>::DynamicThreadedGene
   for (unsigned int pix = 0; pix < outputRegionForThread.GetNumberOfPixels(); pix++, itIn->Next(), ++itOut)
   {
     // Compute ray intersection length
-    ConvexShape::ScalarType nearDist = NAN, farDist = NAN;
-    if (m_ConvexShape->IsIntersectedByRay(itIn->GetSourcePosition(), itIn->GetDirection(), nearDist, farDist))
+    ConvexShape::ScalarType infDist = NAN, supDist = NAN;
+    if (m_ConvexShape->IsIntersectedByRay(itIn->GetSourcePosition(), itIn->GetDirection(), infDist, supDist))
     {
       if (m_Attenuation == 0.)
-        itOut.Set(itIn->Get() + m_ConvexShape->GetDensity() * (farDist - nearDist));
+        itOut.Set(itIn->Get() + m_ConvexShape->GetDensity() * (supDist - infDist));
       else
-        itOut.Set(itIn->Get() + r * (std::exp(m_Attenuation * farDist) - std::exp(m_Attenuation * nearDist)));
+        itOut.Set(itIn->Get() + r * (std::exp(m_Attenuation * supDist) - std::exp(m_Attenuation * infDist)));
     }
     else
       itOut.Set(itIn->Get());

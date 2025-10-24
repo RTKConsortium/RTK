@@ -20,9 +20,9 @@ main(int, char **)
   cylinder->SetA(100. - 1.42109e-14);
   cylinder->SetC(100. - 1.42109e-14);
   cylinder->SetJ(-1.);
-  rtk::QuadricShape::ScalarType nearDist, farDist;
+  rtk::QuadricShape::ScalarType infDist, supDist;
   auto                          rayOrigin = itk::MakeVector(52.43581919641932, -0.5, 998.6243011589495);
   auto                          rayDirection = itk::MakeVector(-0.05233595624294384, 0., -0.9986295347545739);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(cylinder->IsIntersectedByRay(rayOrigin, rayDirection, nearDist, farDist));
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(cylinder->IsIntersectedByRay(rayOrigin, rayDirection, infDist, supDist));
   return EXIT_SUCCESS;
 }

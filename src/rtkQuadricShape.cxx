@@ -42,8 +42,8 @@ QuadricShape ::IsInsideQuadric(const PointType & point) const
 bool
 QuadricShape ::IsIntersectedByRay(const PointType &  rayOrigin,
                                   const VectorType & rayDirection,
-                                  ScalarType &       nearDist,
-                                  ScalarType &       farDist) const
+                                  ScalarType &       infDist,
+                                  ScalarType &       supDist) const
 {
   // https://education.siggraph.org/static/HyperGraph/raytrace/rtinter4.htm
   ScalarType Aq = m_A * rayDirection[0] * rayDirection[0] + m_B * rayDirection[1] * rayDirection[1] +
@@ -68,8 +68,8 @@ QuadricShape ::IsIntersectedByRay(const PointType &  rayOrigin,
       if (Cq == zero)
       {
         // Whole ray contained in quadric
-        nearDist = -itk::NumericTraits<ScalarType>::max();
-        farDist = itk::NumericTraits<ScalarType>::max();
+        infDist = -itk::NumericTraits<ScalarType>::max();
+        supDist = itk::NumericTraits<ScalarType>::max();
       }
       else
         return false;
@@ -84,29 +84,29 @@ QuadricShape ::IsIntersectedByRay(const PointType &  rayOrigin,
         if (Bq > zero)
         {
           // rayOrigin+rayDirection is not in the quadric
-          farDist = zero;
-          nearDist = -itk::NumericTraits<ScalarType>::max();
+          supDist = zero;
+          infDist = -itk::NumericTraits<ScalarType>::max();
         }
         else
         {
-          nearDist = zero;
-          farDist = itk::NumericTraits<ScalarType>::max();
+          infDist = zero;
+          supDist = itk::NumericTraits<ScalarType>::max();
         }
       }
       else
       {
         // Only one intersection with, e.g., a plane: check which half line should be kept
-        nearDist = -Cq / Bq;
+        infDist = -Cq / Bq;
         // The following condition tests on which side of the quadric is the ray origin.
         // It is equivalent to the following code.
-        // if ((IsInsideQuadric(rayOrigin) && nearDist < 0.) ||
-        //     (!IsInsideQuadric(rayOrigin) && nearDist > 0.))
-        if (Cq * nearDist > zero)
-          farDist = itk::NumericTraits<ScalarType>::max();
+        // if ((IsInsideQuadric(rayOrigin) && infDist < 0.) ||
+        //     (!IsInsideQuadric(rayOrigin) && infDist > 0.))
+        if (Cq * infDist > zero)
+          supDist = itk::NumericTraits<ScalarType>::max();
         else
         {
-          farDist = nearDist;
-          nearDist = -itk::NumericTraits<ScalarType>::max();
+          supDist = infDist;
+          infDist = -itk::NumericTraits<ScalarType>::max();
         }
       }
     }
@@ -119,8 +119,8 @@ QuadricShape ::IsIntersectedByRay(const PointType &  rayOrigin,
     static constexpr ScalarType eps = 1e5 * itk::NumericTraits<ScalarType>::epsilon();
     if (itk::Math::abs(discriminant) <= eps)
     {
-      nearDist = -Bq / (2 * Aq);
-      farDist = nearDist;
+      infDist = -Bq / (2 * Aq);
+      supDist = infDist;
     }
     else if (discriminant < zero)
     {
@@ -129,51 +129,51 @@ QuadricShape ::IsIntersectedByRay(const PointType &  rayOrigin,
       // The following condition is a faster equivalent to IsInsideQuadric(rayOrigin)
       if (Cq <= zero)
       {
-        nearDist = -itk::NumericTraits<ScalarType>::max();
-        farDist = itk::NumericTraits<ScalarType>::max();
+        infDist = -itk::NumericTraits<ScalarType>::max();
+        supDist = itk::NumericTraits<ScalarType>::max();
       }
       else
         return false;
     }
     else
     {
-      nearDist = (-Bq - sqrt(discriminant)) / (2 * Aq);
-      farDist = (-Bq + sqrt(discriminant)) / (2 * Aq);
-      if (nearDist > farDist)
-        std::swap(nearDist, farDist);
+      infDist = (-Bq - sqrt(discriminant)) / (2 * Aq);
+      supDist = (-Bq + sqrt(discriminant)) / (2 * Aq);
+      if (infDist > supDist)
+        std::swap(infDist, supDist);
 
       // Check if the segment between the two intersections is in the quadric.
       // Instead of testing if the central point is oustside the quadric with
-      // !IsInsideQuadric(rayOrigin + 0.5 * (farDist + nearDist) * rayDirection),
+      // !IsInsideQuadric(rayOrigin + 0.5 * (supDist + infDist) * rayDirection),
       // which was prone to numerical errors, we test if the ray origin is between
-      // intersections (farDist * nearDist < 0) and strictly in the quadric (Cq < 0),
-      // or before / after the two intersections (farDist * nearDist > 0) and outside
+      // intersections (supDist * infDist < 0) and strictly in the quadric (Cq < 0),
+      // or before / after the two intersections (supDist * infDist > 0) and outside
       // the quadric (Cq>0).
-      if (Cq * farDist * nearDist < zero)
+      if (Cq * supDist * infDist < zero)
       {
         // If not, one is dealing with a half line, searching for the good one (out of two)
-        ScalarType tmpNearDist = -itk::NumericTraits<ScalarType>::max();
-        ScalarType tmpFarDist = itk::NumericTraits<ScalarType>::max();
-        if (!ApplyClipPlanes(rayOrigin, rayDirection, tmpNearDist, tmpFarDist))
+        ScalarType tmpInfDist = -itk::NumericTraits<ScalarType>::max();
+        ScalarType tmpSupDist = itk::NumericTraits<ScalarType>::max();
+        if (!ApplyClipPlanes(rayOrigin, rayDirection, tmpInfDist, tmpSupDist))
           return false;
-        if (tmpFarDist > farDist)
+        if (tmpSupDist > supDist)
         {
-          if (tmpNearDist < nearDist)
+          if (tmpInfDist < infDist)
           {
             itkGenericExceptionMacro(<< "Intersection of the quadric with the line "
                                      << "gives two half lines, add clip planes to select which one");
           }
           else
           {
-            nearDist = std::max(farDist, tmpNearDist);
-            farDist = tmpFarDist;
+            infDist = std::max(supDist, tmpInfDist);
+            supDist = tmpSupDist;
             return true;
           }
         }
-        else if (tmpNearDist < nearDist)
+        else if (tmpInfDist < infDist)
         {
-          farDist = std::min(nearDist, tmpFarDist);
-          nearDist = tmpNearDist;
+          supDist = std::min(infDist, tmpSupDist);
+          infDist = tmpInfDist;
           return true;
         }
         else
@@ -182,7 +182,7 @@ QuadricShape ::IsIntersectedByRay(const PointType &  rayOrigin,
     }
   }
 
-  return ApplyClipPlanes(rayOrigin, rayDirection, nearDist, farDist);
+  return ApplyClipPlanes(rayOrigin, rayDirection, infDist, supDist);
 }
 
 void

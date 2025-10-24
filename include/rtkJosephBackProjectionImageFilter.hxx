@@ -144,18 +144,18 @@ JosephBackProjectionImageFilter<TInputImage,
     }
 
     // Test if there is an intersection
-    BoxShape::ScalarType nearDist = NAN, farDist = NAN;
-    if (box->IsIntersectedByRay(pixelPosition, dirVox, nearDist, farDist) &&
-        farDist >= 0. && // check if detector after the source
-        nearDist <= 1.)  // check if detector after or in the volume
+    BoxShape::ScalarType infDist = NAN, supDist = NAN;
+    if (box->IsIntersectedByRay(pixelPosition, dirVox, infDist, supDist) &&
+        supDist >= 0. && // check if detector after the source
+        infDist <= 1.)   // check if detector after or in the volume
     {
       // Clip the casting between source and pixel of the detector
-      nearDist = std::max(nearDist, inferiorClip);
-      farDist = std::min(farDist, superiorClip);
+      infDist = std::max(infDist, inferiorClip);
+      supDist = std::min(supDist, superiorClip);
 
       // Compute and sort intersections: (n)earest and (f)arthest (p)points
-      np = pixelPosition + nearDist * dirVox;
-      fp = pixelPosition + farDist * dirVox;
+      np = pixelPosition + infDist * dirVox;
+      fp = pixelPosition + supDist * dirVox;
 
       // Compute main nearest and farthest slice indices
       const int ns = itk::Math::rnd(np[mainDir]);
