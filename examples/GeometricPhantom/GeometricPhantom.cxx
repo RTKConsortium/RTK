@@ -17,7 +17,7 @@ main(int argc, char ** argv)
   using OutputPixelType = float;
   using OutputImageType = itk::Image<OutputPixelType, Dimension>;
 
-  constexpr unsigned int numberOfProjections = 180;
+  constexpr unsigned int numberOfProjections = 60;
   constexpr double       angularArc = 360.;
   constexpr unsigned int sid = 600;  // source to isocenter distance
   constexpr unsigned int sdd = 1200; // source to detector distance
@@ -39,13 +39,13 @@ main(int argc, char ** argv)
   // Create a constant image source for the tomography
   auto tomographySource = rtk::ConstantImageSource<OutputImageType>::New();
   tomographySource->SetOrigin(itk::MakePoint(-63.5, -63.5, -63.5));
-  tomographySource->SetSize(itk::MakeSize(128, 128, 128));
+  tomographySource->SetSize(itk::MakeSize(64, 64, 64));
 
   // Create a constant image source for the projections
   auto projectionsSource = rtk::ConstantImageSource<OutputImageType>::New();
   projectionsSource->SetOrigin(itk::MakePoint(-127., -127., -127.));
-  projectionsSource->SetSpacing(itk::MakeVector(2., 2., 2.));
-  projectionsSource->SetSize(itk::MakeSize(128, 128, numberOfProjections));
+  projectionsSource->SetSpacing(itk::MakeVector(4., 4., 4.));
+  projectionsSource->SetSize(itk::MakeSize(64, 64, numberOfProjections));
 
   // Project the geometric phantom image
   auto pgp = rtk::ProjectGeometricPhantomImageFilter<OutputImageType, OutputImageType>::New();
