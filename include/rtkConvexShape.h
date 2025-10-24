@@ -72,13 +72,13 @@ public:
   IsInside(const PointType & point) const;
 
   /** Returns true if a ray intersects the object. If it does, the parameters
-  ** nearDist and farDist get the shape distance from the source in the ray direction.
-  ** Note that nearDist<farDist, and nearDist and farDist can be negative. */
+  ** infDist and supDist get the shape distance from the source in the ray direction.
+  ** Note that infDist<supDist, and infDist and supDist can be negative. */
   virtual bool
   IsIntersectedByRay(const PointType &  rayOrigin,
                      const VectorType & rayDirection,
-                     ScalarType &       nearDist,
-                     ScalarType &       farDist) const;
+                     ScalarType &       infDist,
+                     ScalarType &       supDist) const;
 
   /** Rescale object along each direction by a 3D vector. */
   virtual void
@@ -113,8 +113,8 @@ protected:
   bool
   ApplyClipPlanes(const PointType &  rayOrigin,
                   const VectorType & rayDirection,
-                  ScalarType &       nearDist,
-                  ScalarType &       farDist) const;
+                  ScalarType &       infDist,
+                  ScalarType &       supDist) const;
   bool
   ApplyClipPlanes(const PointType & point) const;
   itk::LightObject::Pointer
