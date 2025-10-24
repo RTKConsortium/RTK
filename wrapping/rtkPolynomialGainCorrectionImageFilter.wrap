@@ -1,3 +1,14 @@
 itk_wrap_class("rtk::PolynomialGainCorrectionImageFilter" POINTER)
   itk_wrap_image_filter("${WRAP_ITK_REAL}" 2 3)
 itk_end_wrap_class()
+
+if(RTK_USE_CUDA)
+  itk_wrap_include(itkCudaImage.h)
+  itk_wrap_template("CIUS3CIF3"
+    "itk::CudaImage<unsigned short, 3>, itk::CudaImage<float, 3>")
+  # ensure the ImageToImageFilter base instantiated on CudaImage types is known
+  itk_wrap_class("itk::ImageToImageFilter" POINTER)
+    itk_wrap_template("CIUS3CIF3"
+      "itk::CudaImage<unsigned short, 3>, itk::CudaImage<float, 3>")
+  itk_end_wrap_class()
+endif()
