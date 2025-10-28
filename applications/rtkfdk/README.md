@@ -1,6 +1,6 @@
 # 3D, 2D and motion-compensated FDK
 
-The following exampels illustrates the command line application `rtkfdk` by reconstructing a Shepp Logan phantom with Feldkamp, David and Kress algorithm in 3D (cone-beam) and 2D (fan-beam).
+The following examples illustrate the command line application `rtkfdk` by reconstructing a Shepp Logan phantom with Feldkamp, David and Kress algorithm in 3D (cone-beam) and 2D (fan-beam).
 
 `````{tab-set}
 
@@ -80,7 +80,7 @@ The next piece of data is a 4D deformation vector field that describes a respira
 
 ![Mm](../../documentation/docs/ExternalData/MotionMask.jpg){w=400px alt="Motion mask"}
 
-The registration can easily be scripted, here with bash, where each phase image of the POPI 4D CT has been stored in files 00.mhd to 50.mhd:
+The registration can easily be scripted, here with bash, where each phase image of the POPI 4D CT has been stored in files 00.mhd to 90.mhd:
 
 ```bash
 for i in $(seq -w 0 10 90)
