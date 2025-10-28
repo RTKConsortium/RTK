@@ -97,18 +97,16 @@ IterativeFDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecisio
   m_ConstantProjectionStackSource->SetConstant(0);
 
   // Set box for the m_RayBoxFiltersectionImageFilter
-  itk::Vector<double, 3> Corner1, Corner2;
-  Corner1[0] = this->GetInput(0)->GetOrigin()[0];
-  Corner1[1] = this->GetInput(0)->GetOrigin()[1];
-  Corner1[2] = this->GetInput(0)->GetOrigin()[2];
-  Corner2[0] = this->GetInput(0)->GetOrigin()[0] +
-               this->GetInput(0)->GetLargestPossibleRegion().GetSize()[0] * this->GetInput(0)->GetSpacing()[0];
-  Corner2[1] = this->GetInput(0)->GetOrigin()[1] +
-               this->GetInput(0)->GetLargestPossibleRegion().GetSize()[1] * this->GetInput(0)->GetSpacing()[1];
-  Corner2[2] = this->GetInput(0)->GetOrigin()[2] +
-               this->GetInput(0)->GetLargestPossibleRegion().GetSize()[2] * this->GetInput(0)->GetSpacing()[2];
-  m_RayBoxFilter->SetBoxMin(Corner1);
-  m_RayBoxFilter->SetBoxMax(Corner2);
+  itk::Point<double, 3> corner1, corner2;
+  for (unsigned int i = 0; i < 3; ++i)
+  {
+    corner1[i] = this->GetInput(0)->GetOrigin()[i];
+    corner2[i] = this->GetInput(0)->GetOrigin()[i] +
+                 this->GetInput(0)->GetLargestPossibleRegion().GetSize()[i] * this->GetInput(0)->GetSpacing()[i];
+  }
+
+  m_RayBoxFilter->SetBoxMin(corner1);
+  m_RayBoxFilter->SetBoxMax(corner2);
 
   // Initial internal connections
   m_DisplacedDetectorFilter->SetInput(this->GetInput(1));
