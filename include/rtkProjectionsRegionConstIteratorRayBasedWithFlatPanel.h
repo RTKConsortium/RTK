@@ -47,7 +47,8 @@ public:
   /** Types inherited from the Superclass */
   using OffsetValueType = typename Superclass::OffsetValueType;
   using RegionType = typename Superclass::RegionType;
-  using PointType = typename itk::Vector<double, 3>;
+  using PointType = typename itk::Point<double, 3>;
+  using VectorType = typename itk::Vector<double, 3>;
   using MatrixType = typename Superclass::MatrixType;
   using HomogeneousMatrixType = itk::Matrix<double, 4, 4>;
 

@@ -42,7 +42,8 @@ ProjectionsRegionConstIteratorRayBasedWithFlatPanel<TImage>::NewProjection()
   // Set source position in volume indices
   // GetSourcePosition() returns coordinates in mm. Multiplying by
   // volPPToIndex gives the corresponding volume index
-  this->m_SourcePosition = this->m_PostMultiplyMatrix * this->m_Geometry->GetSourcePosition(this->m_PositionIndex[2]);
+  this->m_SourcePosition =
+    PointType(this->m_PostMultiplyMatrix * this->m_Geometry->GetSourcePosition(this->m_PositionIndex[2]));
 
   // Compute matrix to transform projection index to volume index
   // IndexToPhysicalPointMatrix maps the 2D index of a projection's pixel to its 2D position on the detector (in mm)

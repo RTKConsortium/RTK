@@ -77,7 +77,7 @@ OraXMLFileReader::EncapsulatePoint(const char * metaName, const char * name)
 {
   if (itksys::SystemTools::Strucmp(name, metaName) == 0)
   {
-    using PointType = itk::Vector<double, 3>;
+    using PointType = itk::Point<double, 3>;
     PointType          p;
     std::istringstream iss(m_CurCharacterData);
     for (int i = 0; i < 3; i++)

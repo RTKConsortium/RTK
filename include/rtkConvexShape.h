@@ -57,7 +57,7 @@ public:
   /** Convenient type alias. */
   static constexpr unsigned int Dimension = 3;
   using ScalarType = double;
-  using PointType = itk::Vector<ScalarType, Dimension>;
+  using PointType = itk::Point<ScalarType, Dimension>;
   using VectorType = itk::Vector<ScalarType, Dimension>;
   using RotationMatrixType = itk::Matrix<ScalarType, Dimension, Dimension>;
 

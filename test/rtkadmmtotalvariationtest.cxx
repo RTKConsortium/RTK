@@ -89,9 +89,8 @@ rtkadmmtotalvariationtest(int argc, char * argv[])
   REIType::Pointer rei;
 
   rei = REIType::New();
-  REIType::VectorType semiprincipalaxis, center;
-  semiprincipalaxis.Fill(90.);
-  center.Fill(0.);
+  auto semiprincipalaxis = itk::MakeVector(90., 90., 90.);
+  auto center = itk::MakePoint(0., 0., 0.);
   rei->SetAngle(0.);
   rei->SetDensity(1.);
   rei->SetCenter(center);

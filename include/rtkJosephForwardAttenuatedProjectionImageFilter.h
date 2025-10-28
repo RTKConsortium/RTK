@@ -189,6 +189,7 @@ class ITK_TEMPLATE_EXPORT ProjectedValueAccumulationAttenuated
 {
 public:
   using VectorType = itk::Vector<double, 3>;
+  using PointType = itk::Point<double, 3>;
 
   ProjectedValueAccumulationAttenuated() = default;
   ~ProjectedValueAccumulationAttenuated() = default;
@@ -210,10 +211,10 @@ public:
              TOutput &          output,
              const TOutput &    rayCastValue,
              const VectorType & /*stepInMM*/,
-             const VectorType & itkNotUsed(source),
+             const PointType &  itkNotUsed(source),
              const VectorType & itkNotUsed(sourceToPixel),
-             const VectorType & itkNotUsed(nearestPoint),
-             const VectorType & itkNotUsed(farthestPoint))
+             const PointType &  itkNotUsed(nearestPoint),
+             const PointType &  itkNotUsed(farthestPoint))
   {
     output = input + rayCastValue;
     m_Attenuation[threadId] = 0;

@@ -50,7 +50,8 @@ public:
   using MatrixType = typename Superclass::MatrixType;
   using IndexValueType = typename Superclass::IndexValueType;
 
-  using PointType = typename itk::Vector<double, 3>;
+  using PointType = typename itk::Point<double, 3>;
+  using VectorType = typename itk::Vector<double, 3>;
   using HomogeneousMatrixType = itk::Matrix<double, 4, 4>;
 
   /** Constructor establishes an iterator to walk a particular image and a
