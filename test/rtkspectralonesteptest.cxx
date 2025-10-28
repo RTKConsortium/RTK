@@ -156,7 +156,7 @@ rtkspectralonesteptest(int argc, char * argv[])
 
   rei = REIType::New();
   rei->SetAngle(0.);
-  rei->SetCenter(itk::MakeVector(0., 0., 0.));
+  rei->SetCenter(itk::MakePoint(0., 0., 0.));
   rei->SetAxis(itk::MakeVector(90., 90., 90.));
   rei->SetInput(projectionsSource->GetOutput());
   rei->SetGeometry(geometry);

@@ -49,7 +49,7 @@ ProjectionsRegionConstIteratorRayBasedWithCylindricalPanel<TImage>::NewProjectio
   // Set source position in volume indices
   // GetSourcePosition() returns coordinates in mm. Multiplying by
   // volPPToIndex gives the corresponding volume index
-  this->m_SourcePosition = this->m_PostMultiplyMatrix * this->m_Geometry->GetSourcePosition(iProj);
+  this->m_SourcePosition = PointType(this->m_PostMultiplyMatrix * this->m_Geometry->GetSourcePosition(iProj));
 
   // Compute matrix to transform projection index to position on a flat panel
   // if the panel were flat, before accounting for the curvature

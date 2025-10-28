@@ -77,10 +77,10 @@ public:
   SetBoxFromImage(const ImageBaseType * img, bool bWithExternalHalfPixelBorder = true);
 
   /** Get/Set the box parameters. See rtk::BoxShape. */
-  itkGetMacro(BoxMin, VectorType);
-  itkSetMacro(BoxMin, VectorType);
-  itkGetMacro(BoxMax, VectorType);
-  itkSetMacro(BoxMax, VectorType);
+  itkGetMacro(BoxMin, PointType);
+  itkSetMacro(BoxMin, PointType);
+  itkGetMacro(BoxMax, PointType);
+  itkSetMacro(BoxMax, PointType);
   itkGetMacro(Direction, RotationMatrixType);
   itkSetMacro(Direction, RotationMatrixType);
 
@@ -96,8 +96,8 @@ private:
   std::vector<VectorType> m_PlaneDirections;
   std::vector<ScalarType> m_PlanePositions;
 
-  VectorType         m_BoxMin{ 0. };
-  VectorType         m_BoxMax{ 0. };
+  PointType          m_BoxMin{ 0. };
+  PointType          m_BoxMax{ 0. };
   RotationMatrixType m_Direction;
 };
 

@@ -115,6 +115,7 @@ class ITK_TEMPLATE_EXPORT ProjectedValueAccumulation
 {
 public:
   using VectorType = itk::Vector<double, 3>;
+  using PointType = itk::Point<double, 3>;
 
   ProjectedValueAccumulation() = default;
   ~ProjectedValueAccumulation() = default;
@@ -135,10 +136,10 @@ public:
              TOutput &          output,
              const TOutput &    rayCastValue,
              const VectorType & stepInMM,
-             const VectorType & itkNotUsed(source),
+             const PointType &  itkNotUsed(source),
              const VectorType & itkNotUsed(sourceToPixel),
-             const VectorType & itkNotUsed(nearestPoint),
-             const VectorType & itkNotUsed(farthestPoint)) const
+             const PointType &  itkNotUsed(nearestPoint),
+             const PointType &  itkNotUsed(farthestPoint)) const
   {
     output = input + rayCastValue * stepInMM.GetNorm();
   }

@@ -84,3 +84,8 @@ Historically, several applications had been developed to handle material decompo
 ## rtkmcrooster and rtkmotioncompensatedfourdconjugategradient have been removed
 
 Motion-compensated 4D reconstruction potentially avoids some interpolations during reconstruction but the benefit was too small for publication. The code was found to be unusable 10 years after its development and it was decided to remove it as it had not been used in the past 10 years.
+
+## Positions now use `itk::Point` instead of `itk::Vector`
+
+APIs that represent physical *positions* were changed from `itk::Vector<double,3>` to `itk::Point<double,3>`. This makes a clear distinction between points (locations) and vectors (directions or offsets).
+Projection iterators (`rtkProjectionsRegionConstIteratorRayBased*`), Joseph forward/back projectors, ray-box filters, convex/quadric shapes, Ora geometry readers, Forbild phantom readers, and test/phantom helpers now expect `PointType` for positions (source, pixel, box corners, shape centers).

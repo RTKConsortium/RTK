@@ -221,8 +221,8 @@ JosephForwardProjectionImageFilter<TInputImage,
   }
 
   // Create intersection functions, one for each possible main direction
-  auto                          box = BoxShape::New();
-  typename BoxShape::VectorType boxMin, boxMax;
+  auto                         box = BoxShape::New();
+  typename BoxShape::PointType boxMin, boxMax;
   for (unsigned int i = 0; i < Dimension; i++)
   {
     boxMin[i] = this->GetInput(1)->GetBufferedRegion().GetIndex()[i];
@@ -239,11 +239,10 @@ JosephForwardProjectionImageFilter<TInputImage,
   double superiorClip = 1. - m_InferiorClip;
 
   // Go over each pixel of the projection
-  typename BoxShape::VectorType stepMM, np, fp;
   for (unsigned int pix = 0; pix < outputRegionForThread.GetNumberOfPixels(); pix++, itIn->Next(), ++itOut)
   {
-    typename InputRegionIterator::PointType pixelPosition = itIn->GetPixelPosition();
-    typename InputRegionIterator::PointType dirVox = -itIn->GetSourceToPixel();
+    typename InputRegionIterator::PointType  pixelPosition = itIn->GetPixelPosition();
+    typename InputRegionIterator::VectorType dirVox = -itIn->GetSourceToPixel();
 
     // Select main direction
     unsigned int                  mainDir = 0;
@@ -280,8 +279,8 @@ JosephForwardProjectionImageFilter<TInputImage,
         supDist > infDist)
     {
       // Compute and sort intersections: (n)earest and (f)arthest (p)points
-      np = pixelPosition + infDist * dirVox;
-      fp = pixelPosition + supDist * dirVox;
+      typename BoxShape::PointType np = pixelPosition + infDist * dirVox;
+      typename BoxShape::PointType fp = pixelPosition + supDist * dirVox;
 
       // Compute main nearest and farthest slice indices
       const int ns = itk::Math::rnd(np[mainDir]);
@@ -326,6 +325,7 @@ JosephForwardProjectionImageFilter<TInputImage,
       CoordinateType currenty = np[notMainDirSup] + residualB * stepy;
 
       // Compute voxel to millimeters conversion
+      typename BoxShape::VectorType stepMM;
       stepMM[notMainDirInf] = this->GetInput(1)->GetSpacing()[notMainDirInf] * stepx;
       stepMM[notMainDirSup] = this->GetInput(1)->GetSpacing()[notMainDirSup] * stepy;
       stepMM[mainDir] = this->GetInput(1)->GetSpacing()[mainDir];
@@ -416,8 +416,12 @@ JosephForwardProjectionImageFilter<TInputImage,
       m_ProjectedValueAccumulation(threadId, itIn->Get(), itOut.Value(), sum, stepMM, pixelPosition, dirVox, np, fp);
     }
     else
-      m_ProjectedValueAccumulation(
-        threadId, itIn->Get(), itOut.Value(), {}, pixelPosition, pixelPosition, dirVox, pixelPosition, pixelPosition);
+    {
+      // This ray does not intersect the input image so just accumulate the
+      // current pixel with the input value. Step and intersection points are
+      // set to 0.
+      m_ProjectedValueAccumulation(threadId, itIn->Get(), itOut.Value(), {}, {}, pixelPosition, dirVox, {}, {});
+    }
   }
   delete itIn;
 }
