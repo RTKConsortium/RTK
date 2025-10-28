@@ -124,16 +124,25 @@ main(int argc, char * argv[])
   mcfourdcg->SetInverseDisplacementField(idvf);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(mcfourdcg->Update())
 
-  // The mcfourdcg filter reconstructs a static 4D volume (if the DVFs perfectly model the actual motion)
-  // Warp this sequence with the inverse DVF so as to obtain a result similar to the classical 4D CG filter
   auto warp =
     rtk::WarpSequenceImageFilter<VolumeSeriesType, DVFSequenceImageType, ProjectionStackType, DVFImageType>::New();
-  warp->SetInput(mcfourdcg->GetOutput());
-  warp->SetDisplacementField(idvf);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(warp->Update())
 
-  // Write
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(itk::WriteImage(warp->GetOutput(), args_info.output_arg))
+  if (args_info.nofinalwarp_flag)
+  {
+    // mcfourdcg outputs a motion-compensated reconstruction
+    TRY_AND_EXIT_ON_ITK_EXCEPTION(itk::WriteImage(mcfourdcg->GetOutput(), args_info.output_arg))
+  }
+  else
+  {
+    // Warp the output of mcfourdcg with the inverse field so
+    // that it is similar to that of rtkfourdrooster
+    warp->SetInput(mcfourdcg->GetOutput());
+    warp->SetDisplacementField(idvf);
+    TRY_AND_EXIT_ON_ITK_EXCEPTION(warp->Update())
+
+    // Write
+    TRY_AND_EXIT_ON_ITK_EXCEPTION(itk::WriteImage(warp->GetOutput(), args_info.output_arg))
+  }
 
   return EXIT_SUCCESS;
 }
