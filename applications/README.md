@@ -16,6 +16,7 @@ The following are examples using RTK applications:
 ./rtkvarianobigeometry/README.md
 ./rtkadmmtotalvariation/README.md
 ./rtkadmmwavelets/README.md
+./rtkfourdconjugategradient/README.md
 ./rtkfourdrooster/README.md
 ./rtkshowgeometry/README.md
 ```
