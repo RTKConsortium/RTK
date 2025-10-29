@@ -45,21 +45,8 @@ The next piece of data is a 3D motion mask: a volume that contains only zeros, w
 
 ## Respiratory signal
 
-The 4D ROOSTER algorithm requires that we associate each projection image with the instant of the respiratory cycle at which it has been acquired. We used the Amsterdam shroud solution of Lambert Zijp (described [here](http://www.creatis.insa-lyon.fr/site/fr/publications/RIT-12a)) which is implemented in RTK
-
-```
-rtkamsterdamshroud --path . \
-                   --regexp '.*.his' \
-                   --output shroud.mha \
-                   --unsharp 650
-rtkextractshroudsignal --input shroud.mha \
-                       --output signal.txt \
-                       --phase sphase.txt
-```
-
-to get the phase signal. Note that the phase must go from 0 to 1 where 0.3 corresponds to 30% in the respiratory cycle, i.e., frame 3 if you have a 10-frames 4D reconstruction or frame 6 if you have a 20-frames 4D reconstruction. The [resulting phase](https://data.kitware.com/api/v1/item/5be99af98d777f2179a2e160/download) is in green on top of the blue respiratory signal and the detected end-exhale peaks:
-
-![Signal](../../documentation/docs/ExternalData/Signal.jpg){w=800px alt="Phase signal"}
+The 4D ROOSTER algorithm requires that we associate each projection image with the instant of the respiratory cycle at which it has been acquired.
+See [this page](../rtkamsterdamshroud/README.md) to learn how to generate it from the projections using the Amsterdam Shroud.
 
 ## ROOSTER for conebeam CT reconstruction
 
