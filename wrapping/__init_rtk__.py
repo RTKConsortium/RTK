@@ -50,6 +50,7 @@ _app_modules = [
     "rtkprojections",
     "rtkprojectshepploganphantom",
     "rtkshowgeometry",
+    "rtksart",
     "rtksimulatedgeometry",
     "rtkvarianobigeometry",
 ]

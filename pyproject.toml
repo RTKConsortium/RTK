@@ -68,6 +68,7 @@ rtkprojectgeometricphantom = "itk.rtkprojectgeometricphantom:main"
 rtkprojections = "itk.rtkprojections:main"
 rtkprojectshepploganphantom= "itk.rtkprojectshepploganphantom:main"
 rtkshowgeometry = "itk.rtkshowgeometry:main"
+rtksart = "itk.rtksart:main"
 rtksimulatedgeometry = "itk.rtksimulatedgeometry:main"
 rtkvarianobigeometry = "itk.rtkvarianobigeometry:main"
 
