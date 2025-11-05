@@ -19,6 +19,9 @@ The following are examples using RTK applications:
 ./rtkfourdconjugategradient/README.md
 ./rtkfourdrooster/README.md
 ./rtkshowgeometry/README.md
+./rtkosem/README.md
+./rtksart/README.md
+./rtksubselect/README.md
 ```
 
 In [applications/rtktutorialapplication/](https://github.com/RTKConsortium/RTK/blob/main/applications/rtktutorialapplication), you will find a very basic RTK application that can be used as a starting point for building your own new application.
