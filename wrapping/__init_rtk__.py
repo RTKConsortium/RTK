@@ -52,6 +52,7 @@ _app_modules = [
     "rtkshowgeometry",
     "rtksart",
     "rtksimulatedgeometry",
+    "rtksubselect",
     "rtkvarianobigeometry",
 ]
 

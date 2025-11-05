@@ -70,6 +70,7 @@ rtkprojectshepploganphantom= "itk.rtkprojectshepploganphantom:main"
 rtkshowgeometry = "itk.rtkshowgeometry:main"
 rtksart = "itk.rtksart:main"
 rtksimulatedgeometry = "itk.rtksimulatedgeometry:main"
+rtksubselect = "itk.rtksubselect:main"
 rtkvarianobigeometry = "itk.rtkvarianobigeometry:main"
 
 [project.urls]
