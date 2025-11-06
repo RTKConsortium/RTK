@@ -53,6 +53,7 @@ _app_modules = [
     "rtktotalvariationdenoising",
     "rtkvarianobigeometry",
     "rtkwaveletsdenoising",
+    "rtkxradgeometry",
 ]
 
 # Dynamically access make_application_func from rtkExtras
