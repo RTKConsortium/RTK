@@ -1,3 +1,7 @@
+if(RTK_USE_CUDA)
+  itk_wrap_include(itkCudaImage.h)
+endif()
+
 itk_wrap_class("rtk::DenoisingBPDQImageFilter" POINTER)
   foreach(d ${ITK_WRAP_IMAGE_DIMS})
     foreach(t ${WRAP_ITK_REAL})
@@ -7,4 +11,9 @@ itk_wrap_class("rtk::DenoisingBPDQImageFilter" POINTER)
       endforeach()
     endforeach()
   endforeach()
+  if(RTK_USE_CUDA)
+    # CUDA instantiation required by TV denoising (base class specialization)
+    itk_wrap_template("CIF3CICVF33"
+      "itk::CudaImage<float, 3>, itk::CudaImage<itk::CovariantVector<float, 3>, 3>")
+  endif()
 itk_end_wrap_class()
