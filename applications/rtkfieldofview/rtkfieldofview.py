@@ -8,9 +8,7 @@ def build_parser():
     parser = rtk.RTKArgumentParser(
         description="Computes the field of view of a reconstruction."
     )
-    parser.add_argument(
-        "--verbose", "-v", help="Verbose execution", action="store_true"
-    )
+
     parser.add_argument(
         "--geometry", "-g", help="XML geometry file name", type=str, required=True
     )

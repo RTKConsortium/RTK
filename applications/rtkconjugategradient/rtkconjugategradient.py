@@ -10,9 +10,6 @@ def build_parser():
         description="Reconstructs a 3D volume from a sequence of projections with a conjugate gradient technique"
     )
 
-    parser.add_argument(
-        "--verbose", "-v", help="Verbose execution", action="store_true"
-    )
     parser.add_argument("--geometry", "-g", help="Geometry file name", required=True)
     parser.add_argument("--output", "-o", help="Output file name", required=True)
     parser.add_argument(

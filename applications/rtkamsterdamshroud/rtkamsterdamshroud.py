@@ -12,9 +12,6 @@ def build_parser():
 
     # General options
     parser.add_argument(
-        "--verbose", "-v", help="Verbose execution", action="store_true"
-    )
-    parser.add_argument(
         "--output", "-o", help="Output file name", type=str, required=True
     )
     parser.add_argument(

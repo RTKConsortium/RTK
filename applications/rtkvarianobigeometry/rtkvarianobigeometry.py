@@ -10,7 +10,6 @@ def build_parser():
         description="Creates an RTK geometry file from a Varian OBI acquisition."
     )
 
-    parser.add_argument("--verbose", "-v", help="Verbose execution", type=bool)
     parser.add_argument(
         "--xml_file",
         "-x",

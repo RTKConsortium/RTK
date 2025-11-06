@@ -10,9 +10,6 @@ def build_parser():
     parser.add_argument(
         "--output", "-o", required=True, help="Output geometry XML file"
     )
-    parser.add_argument(
-        "--verbose", "-v", action="store_true", help="Enable verbose output"
-    )
     rtk.add_rtkinputprojections_group(parser)
     return parser
 

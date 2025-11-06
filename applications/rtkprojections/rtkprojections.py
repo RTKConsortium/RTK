@@ -7,9 +7,7 @@ def build_parser():
     parser = rtk.RTKArgumentParser(
         description="Reads raw projection images, converts them to attenuation and stacks them into a single output image file"
     )
-    parser.add_argument(
-        "--verbose", "-v", help="Verbose execution", action="store_true"
-    )
+
     parser.add_argument(
         "--output", "-o", help="Output file name", type=str, required=True
     )

@@ -10,9 +10,6 @@ def build_parser():
     )
 
     parser.add_argument(
-        "--verbose", "-v", type=bool, default=False, help="Verbose execution"
-    )
-    parser.add_argument(
         "--nproj", "-n", type=int, help="Number of projections", required=True
     )
     parser.add_argument("--output", "-o", help="Output file name", required=True)
