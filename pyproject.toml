@@ -68,6 +68,7 @@ rtkprojections = "itk.rtkprojections:main"
 rtkprojectshepploganphantom= "itk.rtkprojectshepploganphantom:main"
 rtkshowgeometry = "itk.rtkshowgeometry:main"
 rtksimulatedgeometry = "itk.rtksimulatedgeometry:main"
+rtktotalvariationdenoising = "itk.rtktotalvariationdenoising:main"
 rtkvarianobigeometry = "itk.rtkvarianobigeometry:main"
 
 [project.urls]
