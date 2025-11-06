@@ -1,0 +1,3 @@
+if(RTK_USE_CUDA)
+  itk_wrap_simple_class("rtk::CudaTotalVariationDenoisingBPDQImageFilter" POINTER)
+endif()

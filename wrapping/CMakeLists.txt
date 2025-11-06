@@ -19,6 +19,7 @@ set(
   rtkPolynomialGainCorrectionImageFilter
   itkImageSourceRTK
   itkImageToImageFilterRTK
+  rtkTotalVariationDenoisingBPDQImageFilter
   itkCudaImageToImageFilterRTK
   itkInPlaceImageFilterRTK
   itkCudaInPlaceImageFilterRTK

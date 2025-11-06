@@ -2,6 +2,7 @@ if(RTK_USE_CUDA)
   itk_wrap_include(rtkFFTRampImageFilter.h)
   itk_wrap_include(rtkScatterGlareCorrectionImageFilter.h)
   itk_wrap_include(rtkPolynomialGainCorrectionImageFilter.h)
+  itk_wrap_include(rtkTotalVariationDenoisingBPDQImageFilter.h)
 
   itk_wrap_class("itk::CudaImageToImageFilter" POINTER)
 
@@ -26,6 +27,8 @@ if(RTK_USE_CUDA)
       "itk::CudaImage<float, 3>, itk::CudaImage<float, 3>, rtk::ScatterGlareCorrectionImageFilter< itk::CudaImage<float, 3>, itk::CudaImage<float, 3>, float >")
     itk_wrap_template("CIUS3CIF3PGCIFCIUS3CIF3"
       "itk::CudaImage<unsigned short, 3>, itk::CudaImage<float, 3>, rtk::PolynomialGainCorrectionImageFilter< itk::CudaImage<unsigned short, 3>, itk::CudaImage<float, 3> >")
+    itk_wrap_template("CIF3CIF3TVDBPDQCIF3CICVF33"
+      "itk::CudaImage<float, 3>, itk::CudaImage<float, 3>, rtk::TotalVariationDenoisingBPDQImageFilter< itk::CudaImage<float, 3>, itk::CudaImage<itk::CovariantVector<float, 3>, 3> >")
   itk_end_wrap_class()
 
 endif()
