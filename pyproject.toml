@@ -70,6 +70,7 @@ rtkshowgeometry = "itk.rtkshowgeometry:main"
 rtksimulatedgeometry = "itk.rtksimulatedgeometry:main"
 rtktotalvariationdenoising = "itk.rtktotalvariationdenoising:main"
 rtkvarianobigeometry = "itk.rtkvarianobigeometry:main"
+rtkwaveletsdenoising = "itk.rtkwaveletsdenoising:main"
 
 [project.urls]
 Download = "https://github.com/RTKConsortium/RTK"
