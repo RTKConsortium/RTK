@@ -10,9 +10,6 @@ def build_parser():
     )
 
     parser.add_argument(
-        "--verbose", "-v", action="store_true", help="Verbose execution"
-    )
-    parser.add_argument(
         "--geometry", "-g", required=True, help="XML geometry file name"
     )
     parser.add_argument(

@@ -8,10 +8,8 @@ def build_parser():
     parser = rtk.RTKArgumentParser(
         description="Computes projections through a 3D Shepp & Logan phantom, according to a geometry"
     )
+
     # General options
-    parser.add_argument(
-        "--verbose", "-v", help="Verbose execution", action="store_true"
-    )
     parser.add_argument(
         "--geometry", "-g", help="XML geometry file name", type=str, required=True
     )

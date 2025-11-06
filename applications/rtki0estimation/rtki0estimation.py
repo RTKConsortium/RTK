@@ -7,9 +7,6 @@ from itk import RTK as rtk
 def build_parser():
     parser = rtk.RTKArgumentParser(description="Estimate I0 from projections")
 
-    parser.add_argument(
-        "--verbose", "-v", action="store_true", help="Verbose execution"
-    )
     parser.add_argument("--debug", "-d", help="Debug CSV output file name")
     parser.add_argument(
         "--range",

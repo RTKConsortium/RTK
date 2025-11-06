@@ -21,7 +21,11 @@ class RTKArgumentParser(argparse.ArgumentParser):
         self.formatter_class = RTKHelpFormatter
         # allow negative numeric tokens to be treated as values, not options. This mirrors CPython behavior in python 3.14
         self._negative_number_matcher = re.compile(r"-\.?\d")
+        # Common options available to all RTK Python applications
         self.add_argument("-V", "--version", action="version", version=rtk.version())
+        self.add_argument(
+            "-v", "--verbose", help="Verbose execution", action="store_true"
+        )
 
     def build_signature(self) -> inspect.Signature:
         """Build a compact Python signature: only required kwargs + **kwargs."""

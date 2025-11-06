@@ -10,9 +10,6 @@ def build_parser():
         description=" Create an interactive 3D viewer for the given geometry and projections.",
     )
 
-    parser.add_argument(
-        "--verbose", "-v", help="Verbose execution", action="store_true"
-    )
     parser.add_argument("--geometry", "-g", help="Geometry file name", required=True)
     parser.add_argument(
         "--show_trajectory", "-t", help="Show source trajectory", action="store_true"

@@ -12,9 +12,6 @@ def build_parser():
     parser.add_argument("--calibration", "-c", help="iMagX Calibration file")
     parser.add_argument("--room_setup", "-s", help="iMagX room setup file")
     parser.add_argument("--output", "-o", required=True, help="Output file name")
-    parser.add_argument(
-        "--verbose", "-v", action="store_true", help="Verbose execution"
-    )
 
     # Projections group (path, regexp, nsort, submatch)
     rtk.add_rtkinputprojections_group(parser)

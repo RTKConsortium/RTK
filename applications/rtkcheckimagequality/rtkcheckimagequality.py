@@ -32,9 +32,6 @@ def build_parser():
         nargs="+",
         help="MSE threshold(s)",
     )
-    parser.add_argument(
-        "--verbose", "-v", action="store_true", help="Enable verbose output"
-    )
     return parser
 
 
