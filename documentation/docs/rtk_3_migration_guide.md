@@ -39,3 +39,7 @@ git remote set-head origin -a
 ## Removed `m_Normalize` from `rtk::CudaRayCastBackProjectionImageFilter`
 
 Most users intuitively expect this for the backprojector matched to `rtk::CudaForwardProjectionFilter`. The filter was originally implemented with the normalization for SART and OSEM reconstruction but the normalization is now done in the reconstruction filters so it can be removed.
+
+## CUDA forward / ray-cast step size default
+
+The CUDA forward projector and the CUDA ray-cast backprojector now use the minimum voxel spacing of the input volume as the ray step when StepSize is not set. The previous default value was 1.

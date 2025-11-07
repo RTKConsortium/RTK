@@ -4,7 +4,7 @@ option "verbose"   v "Verbose execution"                                        
 option "geometry"  g  "XML geometry file name"                                   string   yes
 option "input"     i "Input volume file name"                                    string   yes
 option "output"    o "Output projections file name"                              string   yes
-option "step"      s "Step size along ray (for CudaRayCast only)"                double   no   default="1"
+option "step"      s "Step size along ray (for CudaRayCast only, default to the minimum voxel spacing of the input volume if set to 0)"                double   no   default="0"
 option "lowmem"    l "Compute only one projection at a time"                     flag     off
 
 section "Projectors"

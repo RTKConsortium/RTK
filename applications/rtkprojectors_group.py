@@ -31,9 +31,9 @@ def add_rtkprojectors_group(parser):
     )
     rtkprojectors_group.add_argument(
         "--step",
-        help="Step size along ray (for CudaRayCast only)",
+        help="Step size along ray (for CudaRayCast only, default to the minimum voxel spacing of the input volume if set to 0)",
         type=float,
-        default=1.0,
+        default=0.0,
     )
     rtkprojectors_group.add_argument(
         "--attenuationmap",

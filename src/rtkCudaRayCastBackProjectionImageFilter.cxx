@@ -69,6 +69,12 @@ CudaRayCastBackProjectionImageFilter ::GPUGenerateData()
     spacing[i] = this->GetInput(0)->GetSpacing()[i];
   }
 
+  // Determine step size: if user provided a positive StepSize, use it. Otherwise use min(volume spacing)
+  if (m_StepSize == 0.)
+  {
+    m_StepSize = *std::min_element(spacing, spacing + 3);
+  }
+
   // Cuda convenient format for dimensions
   int projectionSize[3];
   projectionSize[0] = this->GetInput(1)->GetBufferedRegion().GetSize()[0];
