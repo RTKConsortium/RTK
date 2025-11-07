@@ -22,9 +22,9 @@ def build_parser():
     parser.add_argument(
         "--step",
         "-s",
-        help="Step size along ray (for CudaRayCast only)",
+        help="Step size along ray (for CudaRayCast only, default to the minimum voxel spacing of the input volume if set to 0)",
         type=float,
-        default=1,
+        default=0.0,
     )
     parser.add_argument(
         "--lowmem",
