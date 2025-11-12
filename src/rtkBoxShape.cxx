@@ -145,17 +145,19 @@ BoxShape ::SetBoxFromImage(const ImageBaseType * img, bool bWithExternalHalfPixe
     itkGenericExceptionMacro(<< "BoxShape and image dimensions must agree");
 
   // BoxShape corner 1
-  m_BoxMin = img->GetOrigin().GetVectorFromOrigin();
+  m_BoxMin = img->GetOrigin();
   if (bWithExternalHalfPixelBorder)
     m_BoxMin -= img->GetDirection() * img->GetSpacing() * 0.5;
 
   // BoxShape corner 2
+  VectorType max;
   for (unsigned int i = 0; i < Dimension; i++)
     if (bWithExternalHalfPixelBorder)
-      m_BoxMax[i] = img->GetSpacing()[i] * img->GetLargestPossibleRegion().GetSize()[i];
+      max[i] = img->GetSpacing()[i] * img->GetLargestPossibleRegion().GetSize()[i];
     else
-      m_BoxMax[i] = img->GetSpacing()[i] * (img->GetLargestPossibleRegion().GetSize()[i] - 1);
-  m_BoxMax = m_BoxMin + img->GetDirection() * m_BoxMax;
+      max[i] = img->GetSpacing()[i] * (img->GetLargestPossibleRegion().GetSize()[i] - 1);
+  max = img->GetDirection() * max;
+  m_BoxMax = m_BoxMin + max;
 
   SetDirection(img->GetDirection());
 }

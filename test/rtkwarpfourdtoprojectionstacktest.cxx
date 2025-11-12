@@ -138,7 +138,7 @@ main(int, char **)
     // Ellipse 1
     auto e1 = REIType::New();
     auto semiprincipalaxis = itk::MakeVector(60., 30., 60.);
-    auto center = itk::MakeVector(0., 0., 0.);
+    auto center = itk::MakePoint(0., 0., 0.);
     e1->SetInput(oneProjectionSource->GetOutput());
     e1->SetGeometry(oneProjGeometry);
     e1->SetDensity(1.);
@@ -266,7 +266,7 @@ main(int, char **)
     axis.Fill(60.);
     axis[1] = 30;
     de1->SetAxis(axis);
-    DEType::VectorType center;
+    DEType::PointType center;
     center.Fill(0.);
     de1->SetCenter(center);
     de1->SetAngle(0.);
@@ -280,7 +280,7 @@ main(int, char **)
     DEType::VectorType axis2;
     axis2.Fill(8.);
     de2->SetAxis(axis2);
-    DEType::VectorType center2;
+    DEType::PointType center2;
     center2[0] = 4 * (itk::Math::abs((4 + n) % 8 - 4.) - 2.);
     center2[1] = 0.;
     center2[2] = 0.;

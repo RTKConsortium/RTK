@@ -108,7 +108,7 @@ main(int argc, char * argv[])
   for (unsigned int material = 0; material < 3; material++)
   {
     auto semiprincipalaxis = itk::MakeVector(10., 10., 10.);
-    auto center = itk::MakeVector(15., 0., 15.);
+    auto center = itk::MakePoint(15., 0., 15.);
     rei->SetAngle(0.);
     if (material == 2) // water
       rei->SetDensity(1.);

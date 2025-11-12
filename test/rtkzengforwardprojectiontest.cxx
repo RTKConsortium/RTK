@@ -76,7 +76,7 @@ main(int, char **)
 
   auto volInput = rtk::DrawEllipsoidImageFilter<OutputImageType, OutputImageType>::New();
   auto axis_vol = itk::MakeVector(32., 32., 32.);
-  auto center_vol = itk::MakeVector(0., 0., 0.);
+  auto center_vol = itk::MakePoint(0., 0., 0.);
   volInput->SetInput(tomographySource->GetOutput());
   volInput->SetCenter(center_vol);
   volInput->SetAxis(axis_vol);
