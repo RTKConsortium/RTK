@@ -30,6 +30,7 @@ documentation/docs/Geometry.md
 documentation/docs/Phantom.md
 documentation/docs/Projectors.md
 documentation/docs/3d_time.md
+documentation/docs/multi_energy.md
 examples/README.md
 applications/README.md
 ```
