@@ -41,6 +41,7 @@ _app_modules = [
     "rtkfieldofview",
     "rtkforwardprojections",
     "rtkfourdconjugategradient",
+    "rtkfourdfdk",
     "rtki0estimation",
     "rtkimagxgeometry",
     "rtkmaskcollimation",
