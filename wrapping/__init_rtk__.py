@@ -50,7 +50,10 @@ _app_modules = [
     "rtkprojectshepploganphantom",
     "rtkshowgeometry",
     "rtksimulatedgeometry",
+    "rtktotalvariationdenoising",
     "rtkvarianobigeometry",
+    "rtkwaveletsdenoising",
+    "rtkxradgeometry",
 ]
 
 # Dynamically access make_application_func from rtkExtras
