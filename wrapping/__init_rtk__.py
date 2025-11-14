@@ -45,11 +45,14 @@ _app_modules = [
     "rtkmaskcollimation",
     "rtkgaincorrection",
     "rtkorageometry",
+    "rtkosem",
     "rtkprojectgeometricphantom",
     "rtkprojections",
     "rtkprojectshepploganphantom",
     "rtkshowgeometry",
+    "rtksart",
     "rtksimulatedgeometry",
+    "rtksubselect",
     "rtkvarianobigeometry",
 ]
 
