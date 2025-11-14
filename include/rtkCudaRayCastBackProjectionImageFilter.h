@@ -86,7 +86,7 @@ protected:
   GPUGenerateData();
 
 private:
-  double m_StepSize{ 1. };
+  double m_StepSize{ 0. };
 };
 
 } // end namespace rtk

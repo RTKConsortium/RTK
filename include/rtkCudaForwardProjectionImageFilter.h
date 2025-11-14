@@ -70,7 +70,7 @@ public:
   /** Run-time type information (and related methods). */
   itkOverrideGetNameOfClassMacro(CudaForwardProjectionImageFilter);
 
-  /** Set step size along ray (in mm). Default is 1 mm. */
+  /** Set step size along ray (in mm). Default is the min value of spacing. */
   itkGetConstMacro(StepSize, double);
   itkSetMacro(StepSize, double);
 
@@ -82,7 +82,7 @@ protected:
   GPUGenerateData();
 
 private:
-  double m_StepSize{ 1. };
+  double m_StepSize{ 0. };
 }; // end of class
 
 } // end namespace rtk
