@@ -23,7 +23,7 @@ We now have all the pieces to perform a 3D + time reconstruction. The algorithm 
 rtkfourdconjugategradient \
   -p . \
   -r .*.his \
-  -o rooster.mha \
+  -o fourd_cg.mha \
   -g geometry.rtk \
   --signal sphase.txt \
   --niterations 30 \
@@ -39,7 +39,7 @@ Compared to FDK, which only performs a single back projection, it can therefore 
 rtkfourdconjugategradient \
   -p . \
   -r .*.his \
-  -o rooster.mha \
+  -o fourd_cg.mha \
   -g geometry.rtk \
   --signal sphase.txt \
   --fp CudaRayCast \

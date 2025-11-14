@@ -130,7 +130,7 @@ rtkfourdrooster \
 
 Making use of the motion information adds to computation time. If you have compiled RTK with RTK_USE_CUDA = ON and have a working and CUDA-enabled nVidia GPU, it will automatically be used to speed up that part of the process.
 
-The article in which the theoretical foundations of MA-ROOSTER are presented (link to be added) contains results obtained on two patients. If you wish to reproduce these results, you can download all the necessary data here:
+[The article](https://www.creatis.insa-lyon.fr/~srit/biblio/mory2016a.pdf) in which the theoretical foundations of MA-ROOSTER are presented contains results obtained on two patients. If you wish to reproduce these results, you can download all the necessary data here:
 
 *   Original projections, log-transformed projections with the table removed, motion mask, respiratory signal, and transform matrices to change from CT to CBCT coordinates and back
     *   [Patient 1](https://data.kitware.com/api/v1/item/5be97d688d777f2179a28e39/download)
