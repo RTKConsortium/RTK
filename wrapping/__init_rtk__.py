@@ -1,6 +1,5 @@
 import sys
 import importlib
-import os
 
 itk_module = sys.modules["itk"]
 rtk_module = getattr(itk_module, "RTK")
@@ -11,6 +10,7 @@ rtk_submodules = [
     "itk.rtkargumentparser",
     "itk.rtkinputprojections_group",
     "itk.rtk3Doutputimage_group",
+    "itk.rtk4Doutputimage_group",
     "itk.rtkprojectors_group",
     "itk.rtkiterations_group",
     "itk.rtkExtras",
@@ -40,6 +40,7 @@ _app_modules = [
     "rtkfdk",
     "rtkfieldofview",
     "rtkforwardprojections",
+    "rtkfourdconjugategradient",
     "rtki0estimation",
     "rtkimagxgeometry",
     "rtkmaskcollimation",
