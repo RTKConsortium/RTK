@@ -11,12 +11,8 @@ def build_parser():
     parser = rtk.RTKArgumentParser(description="Polynomial gain correction projections")
 
     parser.add_argument(
-        "--verbose", "-v", help="Verbose execution", action="store_true"
-    )
-    parser.add_argument(
         "--output", "-o", help="Output file name", type=str, required=True
     )
-
     parser.add_argument(
         "--calibDir",
         "-c",
