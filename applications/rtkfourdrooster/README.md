@@ -1,8 +1,8 @@
-# 4DROOSTER: Total variation-regularized 3D + time reconstruction
+# 4D ROOSTER
 
 RTK provides a tool to reconstruct a 3D + time image which does not require explicit motion estimation. Instead, it uses total variation regularization along both space and time. The implementation is based on a paper that we have published ([article](https://hal.science/hal-01097456v1)). You should read the article to understand the basics of the algorithm before trying to use the software.
 
-The algorithm requires a set of projection images with the associated RTK geometry, the respiratory phase of each projection image and a motion mask in which the region of the space where movement is expected is set to 1 and the rest is set to 0. Each piece of data is described in more details below and can be downloaded using [Girder](https://data.kitware.com/#collection/5a7706878d777f0649e04776). It is assumed that the breathing motion is periodic, which implies that the mechanical state of the chest depends only on the respiratory phase.
+The algorithm requires a set of projection images with the associated RTK geometry, the respiratory phase of each projection image and a motion mask in which the region of the space where movement is expected is set to 1 and the rest is set to 0. Each piece of data is described in more details below and can be downloaded using [Girder](https://data.kitware.com/#collection/5a7706878d777f0649e04776). It is assumed that the breathing motion is periodic, which implies that the position of the chest depends only on the respiratory phase.
 
 ## Projection images
 
@@ -45,18 +45,18 @@ The next piece of data is a 3D motion mask: a volume that contains only zeros, w
 
 ## Respiratory signal
 
-The 4D ROOSTER algorithm requires that we associate each projection image with the instant of the respiratory cycle at which it has been acquired.
+The 4D ROOSTER algorithm requires that we associate each projection image with its position in the respiratory cycle when it has been acquired.
 See [this page](../rtkamsterdamshroud/README.md) to learn how to generate it from the projections using the Amsterdam Shroud.
 
 ## ROOSTER for conebeam CT reconstruction
 
-We now have all the pieces to perform a 3D + time reconstruction. The algorithm will perform "niter" iterations of the main loop, and run three inner loops at each iteration:
+We now have all the pieces to perform a 3D + time reconstruction. The algorithm will perform `niter` iterations of the main loop, and run three inner loops at each iteration:
 
-*   conjugate gradient reconstruction with "cgiter" iterations
-*   total-variation regularization in space, with parameter "gamma_space" (the higher, the more regularized) and "tviter" iterations
-*   total-variation regularization in time, with parameter "gamma_time" (the higher, the more regularized) and "tviter" iterations
+*   conjugate gradient reconstruction with `cgiter` iterations
+*   total-variation regularization in space, with parameter `gamma_space` (the higher, the more regularized) and `tviter` iterations
+*   total-variation regularization in time, with parameter `gamma_time` (the higher, the more regularized) and `tviter` iterations
 
-The number of iterations suggested here should work in most situations. The parameters gamma_space and gamma_time, on the other hand, must be adjusted carefully for each type of datasets (and, unfortunately, for each resolution). Unlike in analytical reconstruction methods like FDK, with 4D ROOSTER it is also very important that the reconstruction volume contains the whole patient's chest. You should therefore adapt the "size", "spacing" and "origin" parameters carefully, based on what you have observed on the blurry FDK reconstruction.
+The number of iterations suggested here should work in most situations. The parameters `gamma_space` and `gamma_time`, on the other hand, must be adjusted carefully for each type of datasets (and, unfortunately, for each resolution). Unlike in analytical reconstruction methods like FDK, with 4D ROOSTER it is also very important that the reconstruction volume contains the whole patient's chest. You should therefore adapt the `size`, `spacing` and `origin` parameters carefully, based on what you have observed on the blurry FDK reconstruction.
 
 ```
 # Reconstruct from all projection images with 4D ROOSTER
@@ -102,11 +102,11 @@ rtkfourdrooster \
 
 With a recent GPU, this should allow you to perform a standard resolution reconstruction in less than one hour.
 
-Note that the reconstructed volume in this example does not fully contain the attenuating object, causing hyper-attenuation artifacts on the borders of the result. To avoid these artifacts, reconstruct a larger volume (--size 256) should be fine. Note that you will have to resize your motion mask as well, as 3D the motion mask is expected to have the same size, spacing and origin as the first 3 dimensions of the 4D output.
+Note that the reconstructed volume in this example does not fully contain the attenuating object, causing hyper-attenuation artifacts on the borders of the result. To avoid these artifacts, reconstruct a larger volume (`--size 256`) should be fine. Note that you will have to resize your motion mask as well, as 3D the motion mask is expected to have the same size, spacing and origin as the first 3 dimensions of the 4D output.
 
 ## Motion-Aware 4D Rooster
 
-4D ROOSTER doesn't require explicit motion information, but can take advantage of it to guide TV-regularization if motion information is available. Please refer to the tutorial on Motion-Compensated FDK to learn how to obtain a valid 4D Displacement Vector Field (DVF). Once you have it, simply adding the option --dvf "4D_DVF_Filename" to the list of rtkfourdrooster arguments will run MA-ROOSTER instead of 4D ROOSTER.
+4D ROOSTER does not require explicit motion information, but it can take advantage of it to guide TV-regularization if motion information is available. Please refer to the tutorial on [motion-compensated FDK](../rtkfdk/README.md) to learn how to obtain a valid 4D displacement vector field (DVF). Once you have it, simply adding the option `--dvf 4D_DVF_Filename` to the list of `rtkfourdrooster` arguments will run MA-ROOSTER instead of 4D ROOSTER.
 
 ```
 # Reconstruct from all projection images with MA ROOSTER
@@ -128,14 +128,14 @@ rtkfourdrooster \
   --dvf deformationField_4D.mhd
 ```
 
-Making use of the motion information adds to computation time. If you have compiled RTK with RTK_USE_CUDA = ON and have a working and CUDA-enabled nVidia GPU, it will automatically be used to speed up that part of the process.
+Making use of the motion information adds to computation time. If you have compiled RTK with `RTK_USE_CUDA=ON` and have a working and CUDA-enabled nVidia GPU, it will automatically be used to speed up that part of the process.
 
-The article in which the theoretical foundations of MA-ROOSTER are presented (link to be added) contains results obtained on two patients. If you wish to reproduce these results, you can download all the necessary data here:
+[The article](https://hal.science/hal-01375767) in which the theoretical foundations of MA-ROOSTER are presented contains results obtained on two patients. If you wish to reproduce these results, you can download all the necessary data here:
 
 *   Original projections, log-transformed projections with the table removed, motion mask, respiratory signal, and transform matrices to change from CT to CBCT coordinates and back
     *   [Patient 1](https://data.kitware.com/api/v1/item/5be97d688d777f2179a28e39/download)
     *   [Patient 2](https://data.kitware.com/api/v1/item/5be99df68d777f2179a2e904/download)
-*   Inverse-consistent 4D Displacement Vector Fields, to the end-exhale phase and from the end-exhale phase
+*   Inverse-consistent 4D DVFs, to the end-exhale phase and from the end-exhale phase
     *   [Patient 1](https://data.kitware.com/api/v1/item/5be989e68d777f2179a29e95/download)
     *   [Patient 2](https://data.kitware.com/api/v1/item/5be9a1388d777f2179a2f44d/download)
 
@@ -155,9 +155,9 @@ rtkfourdrooster \
   --niter 10 \
   --cgiter 4 \
   --tviter 10 \
-  --spacing "1, 1, 1, 1" \
-  --size "220, 280, 370, 10" \
-  --origin "-140, -140, -75, 0" \
+  --spacing 1 \
+  --size 220,280,370,10 \
+  --origin -140,-140,-75,0 \
   --frames 10 \
   --dvf toPhase50_4D.mhd \
   --idvf fromPhase50_4D.mhd
@@ -179,19 +179,19 @@ rtkfourdrooster \
   --niter 10 \
   --cgiter 4 \
   --tviter 10 \
-  --spacing "1, 1, 1, 1" \
-  --size "285, 270, 307, 10" \
-  --origin "-167.5, -135, -205, 0" \
+  --spacing 1 \
+  --size 285,270,307,10 \
+  --origin -167.5,-135,-205,0 \
   --frames 10 \
   --dvf toPhase50_4D.mhd \
   --idvf fromPhase50_4D.mhd \
 ```
 
-Note the option "--idvf", which allows to provide the inverse DVF. It is used to inverse warp the 4D reconstruction after the temporal regularization. MA-ROOSTER will work with and without the inverse DVF, and yield almost the same results in both cases. Not using the inverse DVF is approximately two times slower, as it requires MA-ROOSTER to perform the inverse warping by an iterative method.
+Note the option `--idvf` to provide the inverse DVF. It is used to inverse warp the 4D reconstruction after the temporal regularization. MA-ROOSTER will work with and without the inverse DVF, and yield almost the same results in both cases. Not using the inverse DVF is approximately two times slower, as it requires MA-ROOSTER to perform the inverse warping by an iterative method.
 
-Again, if you have a CUDA-enabled GPU (in this case with at least 3 GB of VRAM), and have compiled RTK with RTK_USE_CUDA = ON, you can add the "--bp CudaVoxelBased" and "--fp CudaRayCast" to speed up the computation by performing the forward and back projections on the GPU.
+Again, if you have a CUDA-enabled GPU (in this case with at least 3 GB of VRAM), and have compiled RTK with `RTK_USE_CUDA=ON`, you can add the `--bp CudaVoxelBased` and `--fp CudaRayCast` to speed up the computation by performing the forward and back projections on the GPU.
 
-You do not need the 4D planning CT data to perform the MA-ROOSTER reconstructions. It is only required to compute the DVFs, which can be downloaded above. We do provide it anyway, in case you want to use your own method, or the one described in Motion-Compensated FDK, to extract a DVF from it:
+You do not need the 4D planning CT data to perform the MA-ROOSTER reconstructions. It is only required to compute the DVFs, which can be downloaded above. We do provide it anyway, in case you want to use your own method, or the one described in [motion-compensated FDK](../rtkfdk/README.md), to extract a DVF from it:
 
 *   4D planning CT
     *   [Patient 1](https://data.kitware.com/api/v1/item/5be98bd28d777f2179a2a279/download)

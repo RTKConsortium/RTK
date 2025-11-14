@@ -1,10 +1,10 @@
-# 4D conjugate gradient: unregularized 3D + time reconstruction
+# 4D conjugate gradient
 
 Please start by reading the [main documentation page on 3D + time reconstruction](../../documentation/docs/3d_time.md) if you have not read it already. It gives the necessary background to understand the 3D + time reconstruction tools, including this one. You can skip the sections on known non-rigid motion and deformation vector fields as they are not used in 4D conjugate gradient.
 
 RTK provides several tools to reconstruct a 3D + time image without regularization. 4D conjugate gradient is one of them.
 
-The algorithm requires a set of projection images with the associated RTK geometry, and the respiratory phase of each projection image. Each piece of data is described in more detail below and can be downloaded using [Girder](https://data.kitware.com/#collection/5a7706878d777f0649e04776). It is assumed that the breathing motion is periodic, which implies that the mechanical state of the chest depends on the respiratory phase only.
+The algorithm requires a set of projection images with the associated RTK geometry, and the respiratory phase of each projection image. Each piece of data is described in more detail below and can be downloaded using [Girder](https://data.kitware.com/#collection/5a7706878d777f0649e04776). It is assumed that the breathing motion is periodic, which implies that the position of the chest depends on the respiratory phase only.
 
 ## Projection images
 
@@ -12,7 +12,7 @@ This example is illustrated with a set of projection images of the [POPI patient
 
 ## Respiratory signal
 
-The 4D conjugate gradient algorithm requires that we associate each projection image with the instant of the respiratory cycle at which it has been acquired.
+The 4D conjugate gradient algorithm requires that we associate each projection image with its position in the respiratory cycle when it has been acquired.
 See [this page](../rtkamsterdamshroud/README.md) to learn how to generate it from the projections using the Amsterdam Shroud.
 
 ## 4D conjugate gradient for cone-beam CT reconstruction
@@ -23,7 +23,7 @@ We now have all the pieces to perform a 3D + time reconstruction. The algorithm 
 rtkfourdconjugategradient \
   -p . \
   -r .*.his \
-  -o rooster.mha \
+  -o fourd_cg.mha \
   -g geometry.rtk \
   --signal sphase.txt \
   --niterations 30 \
@@ -39,7 +39,7 @@ Compared to FDK, which only performs a single back projection, it can therefore 
 rtkfourdconjugategradient \
   -p . \
   -r .*.his \
-  -o rooster.mha \
+  -o fourd_cg.mha \
   -g geometry.rtk \
   --signal sphase.txt \
   --fp CudaRayCast \
