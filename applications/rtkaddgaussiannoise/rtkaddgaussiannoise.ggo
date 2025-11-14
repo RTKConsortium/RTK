@@ -1,0 +1,7 @@
+purpose "Add Gaussian noise to analytic projections. By default, mean=0., std=1."
+
+option "verbose"   v "Verbose execution"                          flag                         off
+option "input"     i "Input file name"                            string                       yes
+option "output"    o "Output file name"                           string
+option "mean"      m "Noise level (mean)"                         float                        no     default="0.0"
+option "sigma"     s "Noise standard deviation (std)"             float                        no     default="1.0"

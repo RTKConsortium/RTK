@@ -1,0 +1,7 @@
+purpose "Add Poisson noise to analytic projections. It estimates the number of photons by applying Beer-Lambert law with the linear attenuation coefficient of Liquid Water at 75keV and then apply a Poisson distribution on that."
+
+option "verbose"   v "Verbose execution"                                     flag       off
+option "input"     i "Input file name"                                       string     yes
+option "output"    o "Output file name"                                      string     yes
+option "I0"        - "Number of impinging photons per pixel."                int        no
+option "muref"     - "Reference Linear attenuation coeff. Default: 0.01879"  float      no        default="0.01879"
