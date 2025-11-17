@@ -10,7 +10,7 @@ set_target_properties(
   rtkspectralsimplexdecomposition
   PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY
-      "${RTK_BINARY_DIR}/bin"
+      "${CMAKE_BINARY_DIR}/bin"
 )
 
 # Installation code

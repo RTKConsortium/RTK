@@ -10,7 +10,7 @@ set_target_properties(
   rtkfourdconjugategradient
   PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY
-      "${RTK_BINARY_DIR}/bin"
+      "${CMAKE_BINARY_DIR}/bin"
 )
 
 # Installation code

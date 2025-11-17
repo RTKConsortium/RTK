@@ -95,7 +95,7 @@ if(BUILD_TESTING)
   # Reference data (geometry, reference Shepp Logan and corresponding projections)
   add_test(
     rtkappsimulatedgeometrytest
-    ${RTK_BINARY_DIR}/bin/rtksimulatedgeometry
+    ${CMAKE_BINARY_DIR}/bin/rtksimulatedgeometry
     -n
     45
     --sid
@@ -108,7 +108,7 @@ if(BUILD_TESTING)
 
   add_test(
     rtkappdrawshepploganphantomtest
-    ${RTK_BINARY_DIR}/bin/rtkdrawshepploganphantom
+    ${CMAKE_BINARY_DIR}/bin/rtkdrawshepploganphantom
     -o
     reference.mha
     --size
@@ -119,7 +119,7 @@ if(BUILD_TESTING)
 
   add_test(
     rtkappprojectshepploganphantomtest
-    ${RTK_BINARY_DIR}/bin/rtkprojectshepploganphantom
+    ${CMAKE_BINARY_DIR}/bin/rtkprojectshepploganphantom
     -o
     sheppy.mha
     -g
@@ -140,7 +140,7 @@ if(BUILD_TESTING)
   if(RTK_USE_CUDA)
     add_test(
       rtkappfdktest
-      ${RTK_BINARY_DIR}/bin/rtkfdk
+      ${CMAKE_BINARY_DIR}/bin/rtkfdk
       -g
       geo
       -p
@@ -157,7 +157,7 @@ if(BUILD_TESTING)
   else()
     add_test(
       rtkappfdktest
-      ${RTK_BINARY_DIR}/bin/rtkfdk
+      ${CMAKE_BINARY_DIR}/bin/rtkfdk
       -g
       geo
       -p
@@ -179,7 +179,7 @@ if(BUILD_TESTING)
 
   add_test(
     rtkappfdkchecktest
-    ${RTK_BINARY_DIR}/bin/rtkcheckimagequality
+    ${CMAKE_BINARY_DIR}/bin/rtkcheckimagequality
     -i
     reference.mha
     -j
@@ -197,7 +197,7 @@ if(BUILD_TESTING)
   # Iteration reporting testing
   add_test(
     rtkapposemtest
-    ${RTK_BINARY_DIR}/bin/rtkosem
+    ${CMAKE_BINARY_DIR}/bin/rtkosem
     -g
     geo
     -p
@@ -226,7 +226,7 @@ if(BUILD_TESTING)
 
   add_test(
     rtkapposemchecktest
-    ${RTK_BINARY_DIR}/bin/rtkcheckimagequality
+    ${CMAKE_BINARY_DIR}/bin/rtkcheckimagequality
     -i
     reference.mha
     -j
