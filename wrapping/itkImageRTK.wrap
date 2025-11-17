@@ -90,8 +90,8 @@ itk_wrap_simple_type("itk::Image< float, 3 >::ConstPointer" "itkImageF3_ConstPoi
 itk_wrap_simple_type_swig_interface("itk::Image< float, 4 >::ConstPointer" "itkImageF4_ConstPointer")
 itk_wrap_simple_type("itk::Image< float, 4 >::ConstPointer" "itkImageF4_ConstPointer")
 
-#itk_wrap_simple_type_swig_interface("itk::Image< itk::CovariantVector< float, 3 >, 4 >::ConstPointer" "itkImageCVF34_ConstPointer")
-#itk_wrap_simple_type("itk::Image< itk::CovariantVector< float, 3 >, 4 >::ConstPointer" "itkImageCVF34_ConstPointer")
+itk_wrap_simple_type_swig_interface("itk::Image< itk::CovariantVector< float, 3 >, 4 >::ConstPointer" "itkImageCVF34_ConstPointer")
+itk_wrap_simple_type("itk::Image< itk::CovariantVector< float, 3 >, 4 >::ConstPointer" "itkImageCVF34_ConstPointer")
 
 if (ITK_WRAP_double)
   itk_wrap_simple_type_swig_interface("itk::Image< double, 3 >::ConstPointer" "itkImageD3_ConstPointer")
@@ -100,8 +100,8 @@ if (ITK_WRAP_double)
   itk_wrap_simple_type_swig_interface("itk::Image< double, 4 >::ConstPointer" "itkImageD4_ConstPointer")
   itk_wrap_simple_type("itk::Image< double, 4 >::ConstPointer" "itkImageD4_ConstPointer")
 
-  #itk_wrap_simple_type_swig_interface("itk::Image< itk::CovariantVector< double, 3 >, 4 >::ConstPointer" "itkImageCVD34_ConstPointer")
-  #itk_wrap_simple_type("itk::Image< itk::CovariantVector< double, 3 >, 4 >::ConstPointer" "itkImageCVD34_ConstPointer")
+  itk_wrap_simple_type_swig_interface("itk::Image< itk::CovariantVector< double, 3 >, 4 >::ConstPointer" "itkImageCVD34_ConstPointer")
+  itk_wrap_simple_type("itk::Image< itk::CovariantVector< double, 3 >, 4 >::ConstPointer" "itkImageCVD34_ConstPointer")
 endif()
 
 set(vectorComponents 2 3 4 5)
