@@ -69,11 +69,6 @@
   args_params.check_required = 0;                                                     \
   args_params.override = 1;                                                           \
   args_params.initialize = 1;                                                         \
-  if (0 != cmdline_parser_##ggo_filename##_ext(argc, argv, &args_info, &args_params)) \
-  {                                                                                   \
-    std::cerr << "Error in cmdline_parser_" #ggo_filename "_ext" << std::endl;        \
-    exit(1);                                                                          \
-  }                                                                                   \
   args_params.check_required = 1;                                                     \
   if (0 != cmdline_parser_##ggo_filename##_ext(argc, argv, &args_info, &args_params)) \
   {                                                                                   \
