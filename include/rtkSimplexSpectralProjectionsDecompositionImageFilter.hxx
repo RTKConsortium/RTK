@@ -158,8 +158,8 @@ SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType,
                                      DecomposedProjectionsType::ImageDimension>;
   using CastFilterType = itk::CastImageFilter<ActualInputType, DecomposedProjectionsType>;
   auto castPointer = CastFilterType::New();
+  m_CastDecomposedProjectionsPointer = castPointer;
   castPointer->SetInput(DecomposedProjections);
-  castPointer->Update();
   this->SetNthInput(0, const_cast<DecomposedProjectionsType *>(castPointer->GetOutput()));
 }
 
@@ -250,8 +250,8 @@ SimplexSpectralProjectionsDecompositionImageFilter<DecomposedProjectionsType,
                                      MeasuredProjectionsType::ImageDimension>;
   using CastFilterType = itk::CastImageFilter<ActualInputType, MeasuredProjectionsType>;
   auto castPointer = CastFilterType::New();
+  m_CastMeasuredProjectionsPointer = castPointer;
   castPointer->SetInput(MeasuredProjections);
-  castPointer->UpdateLargestPossibleRegion();
   this->SetInput("MeasuredProjections", const_cast<MeasuredProjectionsType *>(castPointer->GetOutput()));
 }
 
