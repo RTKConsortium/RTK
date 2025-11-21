@@ -76,15 +76,7 @@ main(int argc, char * argv[])
 
   // Add noise
   OutputImageType::Pointer output = slp->GetOutput();
-  if (args_info.noise_given)
-  {
-    auto noisy = rtk::AdditiveGaussianNoiseImageFilter<OutputImageType>::New();
-    noisy->SetInput(slp->GetOutput());
-    noisy->SetMean(0.0);
-    noisy->SetStandardDeviation(args_info.noise_arg);
-    TRY_AND_EXIT_ON_ITK_EXCEPTION(noisy->Update())
-    output = noisy->GetOutput();
-  }
+  rtk::SetNoiseFromGgo<OutputImageType, args_info_rtkprojectshepploganphantom>(output, args_info);
 
   // Write
   if (args_info.verbose_flag)
