@@ -1,6 +1,6 @@
 # 3D, 2D and motion-compensated FDK
 
-The following examples illustrate the command line application `rtkfdk` by reconstructing a Shepp Logan phantom with Feldkamp, David and Kress algorithm in 3D (cone-beam) and 2D (fan-beam).
+The following examples illustrates the command line application `rtkfdk` by reconstructing a Shepp Logan phantom with Feldkamp, David and Kress algorithm in 3D (cone-beam) and 2D (fan-beam).
 
 `````{tab-set}
 
