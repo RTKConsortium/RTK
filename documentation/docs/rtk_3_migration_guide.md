@@ -39,3 +39,7 @@ git remote set-head origin -a
 ## Removed `m_Normalize` from `rtk::CudaRayCastBackProjectionImageFilter`
 
 Most users intuitively expect this for the backprojector matched to `rtk::CudaForwardProjectionFilter`. The filter was originally implemented with the normalization for SART and OSEM reconstruction but the normalization is now done in the reconstruction filters so it can be removed.
+
+## Centralized noise handling
+
+Noise options are now provided centrally via `rtknoise_section.ggo` and the Python helper `rtknoise_group.py` (for example: `--poisson <I0>,<muref>`, `--gaussian <mean>,<std>`). The legacy `--noise` option in `rtkprojectshepploganphantom` has been removed.
