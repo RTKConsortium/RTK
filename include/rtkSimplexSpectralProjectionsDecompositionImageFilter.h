@@ -213,6 +213,13 @@ protected:
   unsigned int             m_NumberOfEnergies;
   unsigned int             m_NumberOfSpectralBins;
 
+  /** Cast filter pointers required for converting a fixed input length vector
+   * to a variable length vector. The pointer is hold to ensure that the
+   * pipeline is functional after quitting the SetInputFixedVectorLength*
+   * function. */
+  typename itk::ImageSource<DecomposedProjectionsType>::Pointer m_CastDecomposedProjectionsPointer;
+  typename itk::ImageSource<MeasuredProjectionsType>::Pointer   m_CastMeasuredProjectionsPointer;
+
 #ifndef ITK_FUTURE_LEGACY_REMOVE
   /** Filters required for the overload of SetInputIncidentSpectrum */
   typename FlattenVectorFilterType::Pointer m_FlattenFilter;
@@ -220,7 +227,6 @@ protected:
   typename PermuteFilterType::Pointer       m_PermuteFilter;
   typename PermuteFilterType::Pointer       m_PermuteSecondFilter;
 #endif
-
 }; // end of class
 
 } // end namespace rtk
