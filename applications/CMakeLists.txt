@@ -28,6 +28,8 @@ include(${ITK_USE_FILE})
 
 #-----------------------------------------------------------------------------
 # Executables
+add_subdirectory(rtkaddgaussiannoise)
+add_subdirectory(rtkaddpoissonnoise)
 add_subdirectory(rtkamsterdamshroud)
 add_subdirectory(rtkbackprojections)
 add_subdirectory(rtkfdk)
