@@ -4,7 +4,7 @@ Please start by reading the [main documentation page on 3D + time reconstruction
 
 RTK provides several tools to reconstruct a 3D + time image without regularization. 4D conjugate gradient is one of them.
 
-The algorithm requires a set of projection images with the associated RTK geometry, and the respiratory phase of each projection image. Each piece of data is described in more detail below and can be downloaded using [Girder](https://data.kitware.com/#collection/lorem_ipsum). It is assumed that the breathing motion is periodic, which implies that the mechanical state of the chest depends on the respiratory phase only.
+The algorithm requires a set of projection images with the associated RTK geometry, and the respiratory phase of each projection image. Each piece of data is described in more detail below and can be downloaded using [Girder](https://data.kitware.com/#collection/5a7706878d777f0649e04776). It is assumed that the breathing motion is periodic, which implies that the mechanical state of the chest depends on the respiratory phase only.
 
 ## Projection images
 

@@ -9,7 +9,7 @@ RTK can account for some motion during the acquisition:
 
 When the patient or object moved periodically during the acquisition, a 1D periodic signal describing the motion must be acquired or extracted:
 - For beating heart imaging, the electrocardiogram must be recorded during the acquisition and synchronized with it.
-- For respiration, a breathing signal can be extracted directly from the projections using the Amsterdam shroud solution of Lambert Zijp described in [[Rit et al, IJROBP, 2021]](https://www.creatis.insa-lyon.fr/~srit/biblio/rit2012.pdf) and implemented in [`rtkamsterdamshroud`](../../applications/rtkamsterdamshroud/README.md).
+- For respiration, a breathing signal can be extracted directly from the projections using the Amsterdam shroud solution of Lambert Zijp described in [[Rit et al, IJROBP, 2021]](https://hal.science/hal-01123734v1) and implemented in [`rtkamsterdamshroud`](../../applications/rtkamsterdamshroud/README.md).
 
 The phase of that periodic signal is then computed, to determine at which phase each projection was acquired. Phase is commonly measured in radians, with values in $[0,2\pi[$, but in RTK it is normalized to $[0,1[$.
 

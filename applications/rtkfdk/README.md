@@ -26,7 +26,7 @@ This script uses the SheppLogan phantom.
 
 The same reconstruction can be performed using the original 2D Shepp-Logan phantom.
 RTK can perform 2D reconstructions through images wide of 1 pixel in the y direction.
-The following script performs the same reconstruction as above in a 2D environment and uses the [2D Shepp-Logan](https://data.kitware.com/api/v1/file/67d1ff45c6dec2fc9c534d0d/download) phantom as input.
+The following script performs the same reconstruction as above in a 2D environment and uses the [2D Shepp-Logan](https://data.kitware.com/api/v1/file/6925a4ebcdb169d7a021d788/download) phantom as input.
 
 ```{literalinclude} FDK2D.sh
 ```
@@ -76,7 +76,7 @@ You should obtain something like that with [VV](http://vv.creatis.insa-lyon.fr/)
 
 ### Deformation vector field
 
-The next piece of data is a 4D deformation vector field that describes a respiratory cycle. Typically, it can be obtained from the 4D planning CT with deformable image registration. Here, I have used [Elastix](http://elastix.lumc.nl/) with the [sliding module](http://elastix.lumc.nl/modelzoo/par0016) developed by Vivien Delmon. The registration uses a [patient mask](https://data.kitware.com/api/v1/item/5be99a408d777f2179a2dde8/download) (red+green) and a [motion mask](https://data.kitware.com/api/v1/item/5be99a088d777f2179a2cf6f/download) (red) as described in [Jef's publication](http://www.creatis.insa-lyon.fr/site/fr/publications/VAND-12):
+The next piece of data is a 4D deformation vector field that describes a respiratory cycle. Typically, it can be obtained from the 4D planning CT with deformable image registration. Here, I have used [Elastix](http://elastix.lumc.nl/) with the [sliding module](https://lkeb.ml/modelzoo/par0016) developed by Vivien Delmon. The registration uses a [patient mask](https://data.kitware.com/api/v1/item/5be99a408d777f2179a2dde8/download) (red+green) and a [motion mask](https://data.kitware.com/api/v1/item/5be99a088d777f2179a2cf6f/download) (red) as described in [Jef's publication](https://doi.org/10.1118/1.3679009):
 
 ![Mm](../../documentation/docs/ExternalData/MotionMask.jpg){w=400px alt="Motion mask"}
 
@@ -147,7 +147,7 @@ The elastix output files and the transformed 4D DVF are available [here](https:/
 
 ### Respiratory signal
 
-The motion model requires that we associate each projection image with one frame of the 4D vector field. We used the Amsterdam shroud solution of Lambert Zijp (described [here](http://www.creatis.insa-lyon.fr/site/fr/publications/RIT-12a)) which is implemented in RTK
+The motion model requires that we associate each projection image with one frame of the 4D vector field. We used the Amsterdam shroud solution of Lambert Zijp (described [here](https://hal.science/hal-01123734v1)) which is implemented in RTK
 
 ```bash
 rtkamsterdamshroud --path . \
