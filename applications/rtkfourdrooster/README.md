@@ -1,6 +1,6 @@
 # 4DROOSTER: Total variation-regularized 3D + time reconstruction
 
-RTK provides a tool to reconstruct a 3D + time image which does not require explicit motion estimation. Instead, it uses total variation regularization along both space and time. The implementation is based on a paper that we have published ([article](http://www.creatis.insa-lyon.fr/site/fr/publications/MORY-14)). You should read the article to understand the basics of the algorithm before trying to use the software.
+RTK provides a tool to reconstruct a 3D + time image which does not require explicit motion estimation. Instead, it uses total variation regularization along both space and time. The implementation is based on a paper that we have published ([article](https://hal.science/hal-01097456v1)). You should read the article to understand the basics of the algorithm before trying to use the software.
 
 The algorithm requires a set of projection images with the associated RTK geometry, the respiratory phase of each projection image and a motion mask in which the region of the space where movement is expected is set to 1 and the rest is set to 0. Each piece of data is described in more details below and can be downloaded using [Girder](https://data.kitware.com/#collection/5a7706878d777f0649e04776). It is assumed that the breathing motion is periodic, which implies that the mechanical state of the chest depends only on the respiratory phase.
 

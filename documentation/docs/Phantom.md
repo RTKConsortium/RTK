@@ -1,6 +1,6 @@
 # Phantom definition
 
-This page, adapted from the original [Forbild's syntax explanation](https://www.dkfz.de/en/roentgenbildgebung/ct/CT_Phantoms/Head_Phantom/How-to-define-a-phantom.pdf), provides instructions for defining a phantom in the Forbild format in RTK.
+This page provides instructions for defining a phantom in the Forbild format in RTK.
 
 - Each shape is defined in a block enclosed in curly brackets `{}`.
 - Each shape is specified in square brackets `[type : commands]`

@@ -1,6 +1,6 @@
 # Amsterdam Shroud
 
-The Amsterdam Shroud is an algorithm developed by Lambert Zijp (described [here](https://www.creatis.insa-lyon.fr/~srit/biblio/rit2012.pdf)) to extract a respiratory signal from the projection images of cone beam acquisitions of the free breathing thorax. This example is illustrated with a set of projection images of the [POPI patient](https://github.com/open-vv/popi-model/blob/master/popi-model.md). You can download the projections [here](https://data.kitware.com/api/v1/item/5be99af88d777f2179a2e144/download).
+The Amsterdam Shroud is an algorithm developed by Lambert Zijp (described [here](https://hal.science/hal-01123734v1)) to extract a respiratory signal from the projection images of cone beam acquisitions of the free breathing thorax. This example is illustrated with a set of projection images of the [POPI patient](https://github.com/open-vv/popi-model/blob/master/popi-model.md). You can download the projections [here](https://data.kitware.com/api/v1/item/5be99af88d777f2179a2e144/download).
 
 The Amsterdam Shroud tracks the diaphragm, which separates the lungs (low attenuation) and the abdomen (attenuation similar to water), by leveraging the strong attenuation contrast between these two regions.
 
