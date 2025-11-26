@@ -89,3 +89,7 @@ Motion-compensated 4D reconstruction potentially avoids some interpolations duri
 
 APIs that represent physical *positions* were changed from `itk::Vector<double,3>` to `itk::Point<double,3>`. This makes a clear distinction between points (locations) and vectors (directions or offsets).
 Projection iterators (`rtkProjectionsRegionConstIteratorRayBased*`), Joseph forward/back projectors, ray-box filters, convex/quadric shapes, Ora geometry readers, Forbild phantom readers, and test/phantom helpers now expect `PointType` for positions (source, pixel, box corners, shape centers).
+
+## Common noise options in applications generating projections
+
+Noise options are now provided similarly in all command line applications generating projections via `rtknoise_section.ggo` and the Python helper `rtknoise_group.py` (for example: `--poisson <I0>,<muref>`, `--gaussian <std>`). The legacy `--noise` option in `rtkprojectshepploganphantom` has been removed.

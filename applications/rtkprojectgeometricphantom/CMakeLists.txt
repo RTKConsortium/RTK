@@ -1,4 +1,4 @@
-wrap_ggo(rtkprojectgeometricphantom_GGO_C rtkprojectgeometricphantom.ggo ../rtk3Doutputimage_section.ggo)
+wrap_ggo(rtkprojectgeometricphantom_GGO_C rtkprojectgeometricphantom.ggo ../rtk3Doutputimage_section.ggo ../rtknoise_section.ggo)
 add_executable(
   rtkprojectgeometricphantom
   rtkprojectgeometricphantom.cxx
