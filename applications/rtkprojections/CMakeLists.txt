@@ -1,4 +1,4 @@
-wrap_ggo(rtkprojections_GGO_C rtkprojections.ggo ../rtkinputprojections_section.ggo ${RTK_BINARY_DIR}/rtkVersion.ggo)
+wrap_ggo(rtkprojections_GGO_C rtkprojections.ggo ../rtkinputprojections_section.ggo)
 add_executable(
   rtkprojections
   rtkprojections.cxx

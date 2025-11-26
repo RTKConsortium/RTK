@@ -1,6 +1,5 @@
 purpose "Computes expected photon counts from incident spectrum, material attenuations, detector response and material-decomposed projections"
 
-option "verbose"    v "Verbose execution"                                                 flag                         off
 option "output"     o "Output file name (high and low energy projections)"                string                       yes
 option "input"      i "Material-decomposed projections"                                   string                       yes
 option "high"       - "Incident spectrum image, high energy"                              string                       yes

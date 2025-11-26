@@ -1,6 +1,5 @@
 purpose "Alternates between conjugate gradient reconstruction and regularization"
 
-option "verbose"        v "Verbose execution"                                                                         flag   off
 option "geometry"       g "XML geometry file name"                                                                    string yes
 option "output"         o "Output file name"                                                                          string yes
 option "niter"          n "Number of iterations"                                                                      int    no   default="5"

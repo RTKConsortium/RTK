@@ -1,4 +1,4 @@
-wrap_ggo(rtkvectorconjugategradient_GGO_C rtkvectorconjugategradient.ggo ../rtk3Doutputimage_section.ggo ../rtkprojectors_section.ggo ${RTK_BINARY_DIR}/rtkVersion.ggo)
+wrap_ggo(rtkvectorconjugategradient_GGO_C rtkvectorconjugategradient.ggo ../rtk3Doutputimage_section.ggo ../rtkprojectors_section.ggo)
 add_executable(
   rtkvectorconjugategradient
   rtkvectorconjugategradient.cxx

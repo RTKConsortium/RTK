@@ -1,4 +1,4 @@
-wrap_ggo(rtkvarianobigeometry_GGO_C rtkvarianobigeometry.ggo ../rtkinputprojections_section.ggo ${RTK_BINARY_DIR}/rtkVersion.ggo)
+wrap_ggo(rtkvarianobigeometry_GGO_C rtkvarianobigeometry.ggo ../rtkinputprojections_section.ggo)
 add_executable(
   rtkvarianobigeometry
   rtkvarianobigeometry.cxx

@@ -1,4 +1,4 @@
-wrap_ggo(rtkmotioncompensatedfourdconjugategradient_GGO_C rtkmotioncompensatedfourdconjugategradient.ggo ../rtkinputprojections_section.ggo ../rtk4Doutputimage_section.ggo ../rtkiterations_section.ggo ${RTK_BINARY_DIR}/rtkVersion.ggo)
+wrap_ggo(rtkmotioncompensatedfourdconjugategradient_GGO_C rtkmotioncompensatedfourdconjugategradient.ggo ../rtkinputprojections_section.ggo ../rtk4Doutputimage_section.ggo ../rtkiterations_section.ggo)
 add_executable(
   rtkmotioncompensatedfourdconjugategradient
   rtkmotioncompensatedfourdconjugategradient.cxx

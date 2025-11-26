@@ -1,4 +1,4 @@
-wrap_ggo(rtkspectralonestep_GGO_C rtkspectralonestep.ggo ../rtk3Doutputimage_section.ggo ../rtkprojectors_section.ggo ../rtkiterations_section.ggo ${RTK_BINARY_DIR}/rtkVersion.ggo)
+wrap_ggo(rtkspectralonestep_GGO_C rtkspectralonestep.ggo ../rtk3Doutputimage_section.ggo ../rtkprojectors_section.ggo ../rtkiterations_section.ggo)
 add_executable(
   rtkspectralonestep
   rtkspectralonestep.cxx

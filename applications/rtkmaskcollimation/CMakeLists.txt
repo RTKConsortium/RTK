@@ -1,4 +1,4 @@
-wrap_ggo(rtkmaskcollimation_GGO_C rtkmaskcollimation.ggo ../rtkinputprojections_section.ggo ${RTK_BINARY_DIR}/rtkVersion.ggo)
+wrap_ggo(rtkmaskcollimation_GGO_C rtkmaskcollimation.ggo ../rtkinputprojections_section.ggo)
 add_executable(
   rtkmaskcollimation
   rtkmaskcollimation.cxx

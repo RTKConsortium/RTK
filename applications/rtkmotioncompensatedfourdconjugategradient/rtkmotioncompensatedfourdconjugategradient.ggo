@@ -1,6 +1,5 @@
 purpose "Performs a motion-compensated 4D reconstruction by the conjugate gradient method"
 
-option "verbose"     v "Verbose execution"                                     flag   off
 option "geometry"    g "XML geometry file name"                                string yes
 option "input"       i "Input volume"                                          string no
 option "output"      o "Output file name"                                      string yes

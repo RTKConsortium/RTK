@@ -1,6 +1,5 @@
 purpose "Creates an RTK geometry file from a sequence of x-ray projections of a Bioscan NanoSPECT/CT scanner."
 
-option "verbose"     v "Verbose execution"                           flag   off
 option "output"      o "Output file name"                            string yes
 
 section "Projections"

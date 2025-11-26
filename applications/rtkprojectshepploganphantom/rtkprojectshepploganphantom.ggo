@@ -1,6 +1,5 @@
 purpose "Computes projections through a 3D Shepp & Logan phantom, according to a geometry"
 
-option "verbose"      v "Verbose execution"                         flag     off
 option "geometry"     g  "XML geometry file name"                   string   yes
 option "output"       o "Output projections file name"              string   yes
 option "phantomscale" - "Scaling factor for the phantom dimensions" double   multiple no default="128"

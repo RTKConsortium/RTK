@@ -1,6 +1,5 @@
 purpose "Decomposes spectral projections into materials"
 
-option "verbose"    v "Verbose execution"                                                 flag                         off
 option "output"     o "Output file name (decomposed projections)"                         string                       yes
 option "input"      i "Decomposed projections for initialization file name"               string                       no
 option "spectral"   s "Spectral projections to be decomposed"                             string                       yes

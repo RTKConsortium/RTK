@@ -1,6 +1,5 @@
 purpose "Backprojects a volume according to a geometry file."
 
-option "verbose"   v "Verbose execution"                                         flag     off
 option "geometry"  g  "XML geometry file name"                                   string   yes
 option "output"    o "Output volume file name"                                   string   yes
 

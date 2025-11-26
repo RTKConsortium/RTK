@@ -1,4 +1,4 @@
-wrap_ggo(rtkdigisensgeometry_GGO_C rtkdigisensgeometry.ggo ${RTK_BINARY_DIR}/rtkVersion.ggo)
+wrap_ggo(rtkdigisensgeometry_GGO_C rtkdigisensgeometry.ggo)
 add_executable(
   rtkdigisensgeometry
   rtkdigisensgeometry.cxx

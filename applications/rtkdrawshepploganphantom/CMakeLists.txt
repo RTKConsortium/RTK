@@ -1,4 +1,4 @@
-wrap_ggo(rtkdrawshepploganphantom_GGO_C rtkdrawshepploganphantom.ggo ../rtk3Doutputimage_section.ggo ${RTK_BINARY_DIR}/rtkVersion.ggo)
+wrap_ggo(rtkdrawshepploganphantom_GGO_C rtkdrawshepploganphantom.ggo ../rtk3Doutputimage_section.ggo)
 add_executable(
   rtkdrawshepploganphantom
   rtkdrawshepploganphantom.cxx

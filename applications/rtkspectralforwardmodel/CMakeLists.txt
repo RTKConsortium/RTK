@@ -1,4 +1,4 @@
-wrap_ggo(rtkspectralforwardmodel_GGO_C rtkspectralforwardmodel.ggo ${RTK_BINARY_DIR}/rtkVersion.ggo)
+wrap_ggo(rtkspectralforwardmodel_GGO_C rtkspectralforwardmodel.ggo)
 add_executable(
   rtkspectralforwardmodel
   rtkspectralforwardmodel.cxx

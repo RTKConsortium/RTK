@@ -1,4 +1,4 @@
-wrap_ggo(rtkoverlayphaseandshroud_GGO_C rtkoverlayphaseandshroud.ggo ${RTK_BINARY_DIR}/rtkVersion.ggo)
+wrap_ggo(rtkoverlayphaseandshroud_GGO_C rtkoverlayphaseandshroud.ggo)
 add_executable(
   rtkoverlayphaseandshroud
   rtkoverlayphaseandshroud.cxx

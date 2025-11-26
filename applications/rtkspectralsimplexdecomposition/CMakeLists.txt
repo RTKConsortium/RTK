@@ -1,4 +1,4 @@
-wrap_ggo(rtkspectralsimplexdecomposition_GGO_C rtkspectralsimplexdecomposition.ggo ${RTK_BINARY_DIR}/rtkVersion.ggo)
+wrap_ggo(rtkspectralsimplexdecomposition_GGO_C rtkspectralsimplexdecomposition.ggo)
 add_executable(
   rtkspectralsimplexdecomposition
   rtkspectralsimplexdecomposition.cxx

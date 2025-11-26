@@ -1,4 +1,4 @@
-wrap_ggo(rtklagcorrection_GGO_C rtklagcorrection.ggo ../rtkinputprojections_section.ggo ${RTK_BINARY_DIR}/rtkVersion.ggo)
+wrap_ggo(rtklagcorrection_GGO_C rtklagcorrection.ggo ../rtkinputprojections_section.ggo)
 add_executable(
   rtklagcorrection
   rtklagcorrection.cxx

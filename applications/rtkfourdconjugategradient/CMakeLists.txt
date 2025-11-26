@@ -1,4 +1,4 @@
-wrap_ggo(rtkfourdconjugategradient_GGO_C rtkfourdconjugategradient.ggo ../rtkinputprojections_section.ggo ../rtk4Doutputimage_section.ggo ../rtkprojectors_section.ggo ../rtkiterations_section.ggo ${RTK_BINARY_DIR}/rtkVersion.ggo)
+wrap_ggo(rtkfourdconjugategradient_GGO_C rtkfourdconjugategradient.ggo ../rtkinputprojections_section.ggo ../rtk4Doutputimage_section.ggo ../rtkprojectors_section.ggo ../rtkiterations_section.ggo)
 add_executable(
   rtkfourdconjugategradient
   rtkfourdconjugategradient.cxx
