@@ -43,3 +43,7 @@ Most users intuitively expect this for the backprojector matched to `rtk::CudaFo
 ## CUDA forward / ray-cast step size default
 
 The CUDA forward projector and the CUDA ray-cast backprojector now use the minimum voxel spacing of the input volume as the ray step when StepSize is not set. The previous default value was 1.
+
+## Centralized noise handling
+
+Noise options are now provided centrally via `rtknoise_section.ggo` and the Python helper `rtknoise_group.py` (for example: `--poisson <I0>,<muref>`, `--gaussian <mean>,<std>`). The legacy `--noise` option in `rtkprojectshepploganphantom` has been removed.
