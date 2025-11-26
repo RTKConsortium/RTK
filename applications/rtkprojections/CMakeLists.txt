@@ -1,4 +1,4 @@
-wrap_ggo(rtkprojections_GGO_C rtkprojections.ggo ../rtkinputprojections_section.ggo)
+wrap_ggo(rtkprojections_GGO_C rtkprojections.ggo ../rtkinputprojections_section.ggo ../rtknoise_section.ggo)
 add_executable(
   rtkprojections
   rtkprojections.cxx

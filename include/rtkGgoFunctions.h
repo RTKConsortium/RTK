@@ -28,6 +28,12 @@
 #include "rtkProjectionsReader.h"
 #include <itkRegularExpressionSeriesFileNames.h>
 #include <itksys/RegularExpression.hxx>
+#include <itkMultiplyImageFilter.h>
+#include <itkExpImageFilter.h>
+#include <itkShotNoiseImageFilter.h>
+#include <itkThresholdImageFilter.h>
+#include <itkLogImageFilter.h>
+#include "rtkAdditiveGaussianNoiseImageFilter.h"
 
 namespace rtk
 {
@@ -281,6 +287,75 @@ SetProjectionsReaderFromGgo(TProjectionsReaderType * reader, const TArgsInfo & a
   // Pass list to projections reader
   reader->SetFileNames(fileNames);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(reader->UpdateOutputInformation());
+}
+
+
+template <class TImageType, class TArgsInfo>
+typename TImageType::Pointer
+AddNoiseFromGgo(typename TImageType::Pointer projections, const TArgsInfo & args_info)
+{
+  using ImageType = TImageType;
+  typename TImageType::Pointer newproj = projections;
+
+  // Poisson noise
+  if (args_info.poisson_given)
+  {
+    auto multiply = itk::MultiplyImageFilter<ImageType>::New();
+    multiply->SetInput(newproj);
+    if (args_info.poisson_given > 1)
+      multiply->SetConstant(-args_info.poisson_arg[1]); // -muref
+    else
+      multiply->SetConstant(-0.01879); // mm^-1, attenuation coefficient of water at 75 keV
+
+    auto expf = itk::ExpImageFilter<ImageType, ImageType>::New();
+    expf->SetInput(multiply->GetOutput());
+
+    auto multiply2 = itk::MultiplyImageFilter<ImageType>::New();
+    multiply2->SetInput(expf->GetOutput());
+    multiply2->SetConstant(args_info.poisson_arg[0]); // I0
+
+    auto poisson = itk::ShotNoiseImageFilter<ImageType>::New();
+    poisson->SetInput(multiply2->GetOutput());
+
+    auto threshold = itk::ThresholdImageFilter<ImageType>::New();
+    threshold->SetInput(poisson->GetOutput());
+    threshold->SetLower(1.);
+    threshold->SetOutsideValue(1.);
+
+    auto multiply3 = itk::MultiplyImageFilter<ImageType>::New();
+    // Gaussian noise
+    auto gaussian = rtk::AdditiveGaussianNoiseImageFilter<ImageType>::New();
+    if (args_info.gaussian_given)
+    {
+      gaussian->SetInput(threshold->GetOutput());
+      gaussian->SetStandardDeviation(args_info.gaussian_arg);
+      multiply3->SetInput(gaussian->GetOutput());
+    }
+    else
+      multiply3->SetInput(threshold->GetOutput());
+    multiply3->SetConstant(1. / args_info.poisson_arg[0]);
+
+    auto logf = itk::LogImageFilter<ImageType, ImageType>::New();
+    logf->SetInput(multiply3->GetOutput());
+
+    auto multiply4 = itk::MultiplyImageFilter<ImageType>::New();
+    multiply4->SetInput(logf->GetOutput());
+    multiply4->SetConstant(-1. / args_info.poisson_arg[1]);
+
+    TRY_AND_EXIT_ON_ITK_EXCEPTION(multiply4->Update());
+    newproj = multiply4->GetOutput();
+  }
+  else if (args_info.gaussian_given)
+  {
+    auto gaussian = rtk::AdditiveGaussianNoiseImageFilter<ImageType>::New();
+    gaussian->SetInput(newproj);
+    gaussian->SetStandardDeviation(args_info.gaussian_arg);
+
+    TRY_AND_EXIT_ON_ITK_EXCEPTION(gaussian->Update());
+    newproj = gaussian->GetOutput();
+  }
+
+  return newproj;
 }
 
 /** \brief Set the correct RTK backprojection type from gengetopt
