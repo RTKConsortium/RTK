@@ -1,4 +1,4 @@
-wrap_ggo(rtkdualenergysimplexdecomposition_GGO_C rtkdualenergysimplexdecomposition.ggo ${RTK_BINARY_DIR}/rtkVersion.ggo)
+wrap_ggo(rtkdualenergysimplexdecomposition_GGO_C rtkdualenergysimplexdecomposition.ggo)
 add_executable(
   rtkdualenergysimplexdecomposition
   rtkdualenergysimplexdecomposition.cxx

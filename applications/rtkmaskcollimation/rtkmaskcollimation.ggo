@@ -1,5 +1,4 @@
 purpose "Masks out the collimator from the projections"
 
-option "verbose"    v "Verbose execution"                                         flag     off
 option "geometry"   g  "XML geometry file name"                                   string   yes
 option "output"     o "Output projections file name"                              string   yes

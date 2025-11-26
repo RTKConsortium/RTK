@@ -1,6 +1,5 @@
 purpose "Extracts the breathing signal from a shroud image."
 
-option "verbose"    v   "Verbose execution"                           flag                    off
 option "input"      i   "Input shroud image file name"		            string                  yes
 option "amplitude"  a   "Maximum breathing amplitude explored in mm"  double                  no
 option "output"     o   "Output file name"                            string                  yes

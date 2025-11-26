@@ -1,4 +1,4 @@
-wrap_ggo(rtksubselect_GGO_C rtksubselect.ggo ../rtkinputprojections_section.ggo ${RTK_BINARY_DIR}/rtkVersion.ggo)
+wrap_ggo(rtksubselect_GGO_C rtksubselect.ggo ../rtkinputprojections_section.ggo)
 add_executable(
   rtksubselect
   rtksubselect.cxx

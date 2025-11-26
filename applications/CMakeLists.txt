@@ -1,9 +1,11 @@
-find_package(Gengetopt)
-
-configure_file(
-  ${CMAKE_CURRENT_SOURCE_DIR}/rtkVersion.ggo.in
-  ${RTK_BINARY_DIR}/rtkVersion.ggo
+set(
+  GENGETOPT_HEADER
+  "version \\\"${RTK_VERSION_MAJOR}.${RTK_VERSION_MINOR}.${RTK_VERSION_PATCH}${RTK_VERSION_HASH}\\\"
+option \\\"verbose\\\" v \\\"Verbose execution\\\" flag off
+"
 )
+
+find_package(Gengetopt)
 
 #-----------------------------------------------------------------------------
 # Setup RPATH :

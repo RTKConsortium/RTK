@@ -1,4 +1,4 @@
-wrap_ggo(rtkvarianprobeamgeometry_GGO_C rtkvarianprobeamgeometry.ggo ../rtkinputprojections_section.ggo ${RTK_BINARY_DIR}/rtkVersion.ggo)
+wrap_ggo(rtkvarianprobeamgeometry_GGO_C rtkvarianprobeamgeometry.ggo ../rtkinputprojections_section.ggo)
 add_executable(
   rtkvarianprobeamgeometry
   rtkvarianprobeamgeometry.cxx

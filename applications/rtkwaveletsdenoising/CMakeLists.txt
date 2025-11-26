@@ -1,4 +1,4 @@
-wrap_ggo(rtkwaveletsdenoising_GGO_C rtkwaveletsdenoising.ggo ${RTK_BINARY_DIR}/rtkVersion.ggo)
+wrap_ggo(rtkwaveletsdenoising_GGO_C rtkwaveletsdenoising.ggo)
 add_executable(
   rtkwaveletsdenoising
   rtkwaveletsdenoising.cxx

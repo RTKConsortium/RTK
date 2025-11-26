@@ -1,4 +1,4 @@
-wrap_ggo(rtkfourdfdk_GGO_C rtkfourdfdk.ggo ../rtkinputprojections_section.ggo ../rtk4Doutputimage_section.ggo ${RTK_BINARY_DIR}/rtkVersion.ggo)
+wrap_ggo(rtkfourdfdk_GGO_C rtkfourdfdk.ggo ../rtkinputprojections_section.ggo ../rtk4Doutputimage_section.ggo)
 add_executable(
   rtkfourdfdk
   rtkfourdfdk.cxx

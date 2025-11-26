@@ -1,4 +1,4 @@
-wrap_ggo(rtkbioscangeometry_GGO_C rtkbioscangeometry.ggo ${RTK_BINARY_DIR}/rtkVersion.ggo)
+wrap_ggo(rtkbioscangeometry_GGO_C rtkbioscangeometry.ggo)
 add_executable(
   rtkbioscangeometry
   rtkbioscangeometry.cxx

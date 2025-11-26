@@ -1,4 +1,4 @@
-wrap_ggo(rtkextractphasesignal_GGO_C rtkextractphasesignal.ggo ${RTK_BINARY_DIR}/rtkVersion.ggo)
+wrap_ggo(rtkextractphasesignal_GGO_C rtkextractphasesignal.ggo)
 add_executable(
   rtkextractphasesignal
   rtkextractphasesignal.cxx

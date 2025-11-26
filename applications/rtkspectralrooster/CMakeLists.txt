@@ -1,4 +1,4 @@
-wrap_ggo(rtkspectralrooster_GGO_C rtkspectralrooster.ggo ../rtk3Doutputimage_section.ggo ../rtkprojectors_section.ggo ${RTK_BINARY_DIR}/rtkVersion.ggo)
+wrap_ggo(rtkspectralrooster_GGO_C rtkspectralrooster.ggo ../rtk3Doutputimage_section.ggo ../rtkprojectors_section.ggo)
 add_executable(
   rtkspectralrooster
   rtkspectralrooster.cxx

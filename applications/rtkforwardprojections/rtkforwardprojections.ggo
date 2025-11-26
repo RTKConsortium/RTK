@@ -1,6 +1,5 @@
 purpose "Projects a volume according to a geometry file."
 
-option "verbose"   v "Verbose execution"                                         flag     off
 option "geometry"  g  "XML geometry file name"                                   string   yes
 option "input"     i "Input volume file name"                                    string   yes
 option "output"    o "Output projections file name"                              string   yes

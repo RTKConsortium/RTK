@@ -1,4 +1,4 @@
-wrap_ggo(rtkmcrooster_GGO_C rtkmcrooster.ggo ../rtkinputprojections_section.ggo ../rtk4Doutputimage_section.ggo ../rtkprojectors_section.ggo ${RTK_BINARY_DIR}/rtkVersion.ggo)
+wrap_ggo(rtkmcrooster_GGO_C rtkmcrooster.ggo ../rtkinputprojections_section.ggo ../rtk4Doutputimage_section.ggo ../rtkprojectors_section.ggo)
 add_executable(
   rtkmcrooster
   rtkmcrooster.cxx

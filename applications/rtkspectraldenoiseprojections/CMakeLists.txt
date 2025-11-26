@@ -1,4 +1,4 @@
-wrap_ggo(rtkspectraldenoiseprojections_GGO_C rtkspectraldenoiseprojections.ggo ${RTK_BINARY_DIR}/rtkVersion.ggo)
+wrap_ggo(rtkspectraldenoiseprojections_GGO_C rtkspectraldenoiseprojections.ggo)
 add_executable(
   rtkspectraldenoiseprojections
   rtkspectraldenoiseprojections.cxx

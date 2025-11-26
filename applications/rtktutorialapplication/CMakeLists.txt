@@ -1,4 +1,4 @@
-wrap_ggo(rtktutorialapplication_GGO_C rtktutorialapplication.ggo ${RTK_BINARY_DIR}/rtkVersion.ggo)
+wrap_ggo(rtktutorialapplication_GGO_C rtktutorialapplication.ggo)
 add_executable(
   rtktutorialapplication
   rtktutorialapplication.cxx

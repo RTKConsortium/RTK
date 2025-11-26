@@ -1,4 +1,4 @@
-wrap_ggo(rtkimagxgeometry_GGO_C rtkimagxgeometry.ggo ${RTK_BINARY_DIR}/rtkVersion.ggo)
+wrap_ggo(rtkimagxgeometry_GGO_C rtkimagxgeometry.ggo)
 add_executable(
   rtkimagxgeometry
   rtkimagxgeometry.cxx

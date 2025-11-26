@@ -1,4 +1,4 @@
-wrap_ggo(rtkorageometry_GGO_C rtkorageometry.ggo ${RTK_BINARY_DIR}/rtkVersion.ggo)
+wrap_ggo(rtkorageometry_GGO_C rtkorageometry.ggo)
 add_executable(
   rtkorageometry
   rtkorageometry.cxx

@@ -34,11 +34,13 @@ if(NOT TARGET gengetopt)
 endif()
 
 # Create a cmake script to cat a list of files
+# The variable GENGETOPT_HEADER may be set beforehand to define common
+# Gengetopt options, e.g., the version number or a verbose option
 file(
   WRITE
   "${CMAKE_BINARY_DIR}/cat.cmake"
   "
-file(WRITE \"\${OUTPUT}\" \"\")
+file(WRITE \"\${OUTPUT}\" \"${GENGETOPT_HEADER}\")
 foreach(INPUT \${INPUTS})
   string(REPLACE \";\" \" \" INPUT \"\${INPUT}\")
   file(READ \"\${INPUT}\" CONTENT)

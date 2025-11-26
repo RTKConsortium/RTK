@@ -1,4 +1,4 @@
-wrap_ggo(rtktotalvariationdenoising_GGO_C rtktotalvariationdenoising.ggo ${RTK_BINARY_DIR}/rtkVersion.ggo)
+wrap_ggo(rtktotalvariationdenoising_GGO_C rtktotalvariationdenoising.ggo)
 add_executable(
   rtktotalvariationdenoising
   rtktotalvariationdenoising.cxx

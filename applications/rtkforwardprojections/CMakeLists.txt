@@ -1,4 +1,4 @@
-wrap_ggo(rtkforwardprojections_GGO_C rtkforwardprojections.ggo ../rtk3Doutputimage_section.ggo ${RTK_BINARY_DIR}/rtkVersion.ggo)
+wrap_ggo(rtkforwardprojections_GGO_C rtkforwardprojections.ggo ../rtk3Doutputimage_section.ggo)
 add_executable(
   rtkforwardprojections
   rtkforwardprojections.cxx

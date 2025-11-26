@@ -1,4 +1,4 @@
-wrap_ggo(rtksimulatedgeometry_GGO_C rtksimulatedgeometry.ggo ${RTK_BINARY_DIR}/rtkVersion.ggo)
+wrap_ggo(rtksimulatedgeometry_GGO_C rtksimulatedgeometry.ggo)
 add_executable(
   rtksimulatedgeometry
   rtksimulatedgeometry.cxx

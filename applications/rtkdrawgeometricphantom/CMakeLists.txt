@@ -1,4 +1,4 @@
-wrap_ggo(rtkdrawgeometricphantom_GGO_C rtkdrawgeometricphantom.ggo ../rtk3Doutputimage_section.ggo ${RTK_BINARY_DIR}/rtkVersion.ggo)
+wrap_ggo(rtkdrawgeometricphantom_GGO_C rtkdrawgeometricphantom.ggo ../rtk3Doutputimage_section.ggo)
 add_executable(
   rtkdrawgeometricphantom
   rtkdrawgeometricphantom.cxx

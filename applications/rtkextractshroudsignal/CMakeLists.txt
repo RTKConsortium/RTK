@@ -1,4 +1,4 @@
-wrap_ggo(rtkextractshroudsignal_GGO_C rtkextractshroudsignal.ggo ${RTK_BINARY_DIR}/rtkVersion.ggo)
+wrap_ggo(rtkextractshroudsignal_GGO_C rtkextractshroudsignal.ggo)
 add_executable(
   rtkextractshroudsignal
   rtkextractshroudsignal.cxx

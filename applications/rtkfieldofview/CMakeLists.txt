@@ -1,4 +1,4 @@
-wrap_ggo(rtkfieldofview_GGO_C rtkfieldofview.ggo ../rtkinputprojections_section.ggo ${RTK_BINARY_DIR}/rtkVersion.ggo)
+wrap_ggo(rtkfieldofview_GGO_C rtkfieldofview.ggo ../rtkinputprojections_section.ggo)
 add_executable(
   rtkfieldofview
   rtkfieldofview.cxx

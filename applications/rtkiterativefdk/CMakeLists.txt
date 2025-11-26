@@ -1,4 +1,4 @@
-wrap_ggo(rtkiterativefdk_GGO_C rtkiterativefdk.ggo ../rtkinputprojections_section.ggo ../rtk3Doutputimage_section.ggo ../rtkiterations_section.ggo ${RTK_BINARY_DIR}/rtkVersion.ggo)
+wrap_ggo(rtkiterativefdk_GGO_C rtkiterativefdk.ggo ../rtkinputprojections_section.ggo ../rtk3Doutputimage_section.ggo ../rtkiterations_section.ggo)
 add_executable(
   rtkiterativefdk
   rtkiterativefdk.cxx

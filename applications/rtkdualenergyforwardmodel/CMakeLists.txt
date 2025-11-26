@@ -1,4 +1,4 @@
-wrap_ggo(rtkdualenergyforwardmodel_GGO_C rtkdualenergyforwardmodel.ggo ${RTK_BINARY_DIR}/rtkVersion.ggo)
+wrap_ggo(rtkdualenergyforwardmodel_GGO_C rtkdualenergyforwardmodel.ggo)
 add_executable(
   rtkdualenergyforwardmodel
   rtkdualenergyforwardmodel.cxx
