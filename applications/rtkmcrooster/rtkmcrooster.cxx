@@ -113,7 +113,7 @@ main(int argc, char * argv[])
     inputFilter->GetOutput()->GetLargestPossibleRegion().GetSize(3));
   TRY_AND_EXIT_ON_ITK_EXCEPTION(signalToInterpolationWeights->Update())
 
-  // Create the 4DROOSTER filter, connect the basic inputs, and set the basic parameters
+  // Create the MCROOSTER filter, connect the basic inputs, and set the basic parameters
   auto mcrooster =
     rtk::MotionCompensatedFourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::New();
   SetForwardProjectionFromGgo(args_info, mcrooster.GetPointer());
