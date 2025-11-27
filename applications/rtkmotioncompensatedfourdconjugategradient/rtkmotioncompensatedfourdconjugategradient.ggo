@@ -5,6 +5,7 @@ option "input"       i "Input volume"                                          s
 option "output"      o "Output file name"                                      string yes
 option "niter"       n "Number of main loop iterations"                        int    no   default="5"
 option "cudacg"      - "Perform conjugate gradient calculations on GPU"        flag   off
+option "cudadvfinterpolation"   - "Perform DVF interpolation calculations on GPU"        flag   off
 option "nodisplaced" - "Disable the displaced detector filter"                 flag   off
 
 section "Phase gating"
