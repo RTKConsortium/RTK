@@ -103,7 +103,6 @@ main(int argc, char * argv[])
   forward->SetDetectorResponse(detectorResponse);
   forward->SetMaterialAttenuations(materialAttenuations);
   forward->SetThresholds(thresholds);
-  forward->SetIsSpectralCT(true);
   if (args_info.cramer_rao_given)
     forward->SetComputeCramerRaoLowerBound(true);
   if (args_info.variances_given)

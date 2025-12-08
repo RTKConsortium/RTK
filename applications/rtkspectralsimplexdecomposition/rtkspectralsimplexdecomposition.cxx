@@ -115,7 +115,6 @@ main(int argc, char * argv[])
   simplex->SetNumberOfIterations(args_info.niterations_arg);
   simplex->SetOptimizeWithRestarts(args_info.restarts_flag);
   simplex->SetLogTransformEachBin(args_info.log_flag);
-  simplex->SetIsSpectralCT(true);
 
   // Note: The simplex filter is set to perform several searches for each pixel,
   // with different initializations, and keep the best one (SetOptimizeWithRestart(true)).

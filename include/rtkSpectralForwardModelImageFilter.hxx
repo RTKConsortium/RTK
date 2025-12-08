@@ -38,14 +38,12 @@ SpectralForwardModelImageFilter<DecomposedProjectionsType,
 {
   // Initial lengths, set to incorrect values to make sure that they are indeed updated
   m_NumberOfSpectralBins = 8;
-  m_IsSpectralCT = true;
   m_ComputeVariances = false;
   m_ComputeCramerRaoLowerBound = false;
 
-  this->SetNumberOfIndexedOutputs(
-    3); // dual energy/ photon counts, variance of the distribution, Cramer-Rao lower bound.
+  this->SetNumberOfIndexedOutputs(3); // photon counts, variance of the distribution, Cramer-Rao lower bound
 
-  // Dual energy projections (mean of the distribution) or photon counts in case of spectral CT.
+  // Photon counts
   this->SetNthOutput(0, this->MakeOutput(0));
 
   // Variance of the distribution
@@ -57,9 +55,7 @@ SpectralForwardModelImageFilter<DecomposedProjectionsType,
 #ifndef ITK_FUTURE_LEGACY_REMOVE
   // Instantiate the filters required in the overload of SetInputIncidentSpectrum
   m_FlattenFilter = FlattenVectorFilterType::New();
-  m_FlattenSecondFilter = FlattenVectorFilterType::New();
   m_PermuteFilter = PermuteFilterType::New();
-  m_PermuteSecondFilter = PermuteFilterType::New();
 #endif
 }
 
@@ -258,22 +254,6 @@ SpectralForwardModelImageFilter<
   this->SetInput("IncidentSpectrum", const_cast<IncidentSpectrumImageType *>(IncidentSpectrum));
 }
 
-template <typename DecomposedProjectionsType,
-          typename MeasuredProjectionsType,
-          typename IncidentSpectrumImageType,
-          typename DetectorResponseImageType,
-          typename MaterialAttenuationsImageType>
-void
-SpectralForwardModelImageFilter<DecomposedProjectionsType,
-                                MeasuredProjectionsType,
-                                IncidentSpectrumImageType,
-                                DetectorResponseImageType,
-                                MaterialAttenuationsImageType>::
-  SetInputSecondIncidentSpectrum(const IncidentSpectrumImageType * SecondIncidentSpectrum)
-{
-  this->SetInput("SecondIncidentSpectrum", const_cast<IncidentSpectrumImageType *>(SecondIncidentSpectrum));
-}
-
 #ifndef ITK_FUTURE_LEGACY_REMOVE
 template <typename DecomposedProjectionsType,
           typename MeasuredProjectionsType,
@@ -296,29 +276,6 @@ SpectralForwardModelImageFilter<DecomposedProjectionsType,
   order[2] = 1;
   this->m_PermuteFilter->SetOrder(order);
   this->SetInputIncidentSpectrum(m_PermuteFilter->GetOutput());
-}
-
-template <typename DecomposedProjectionsType,
-          typename MeasuredProjectionsType,
-          typename IncidentSpectrumImageType,
-          typename DetectorResponseImageType,
-          typename MaterialAttenuationsImageType>
-void
-SpectralForwardModelImageFilter<
-  DecomposedProjectionsType,
-  MeasuredProjectionsType,
-  IncidentSpectrumImageType,
-  DetectorResponseImageType,
-  MaterialAttenuationsImageType>::SetInputSecondIncidentSpectrum(const VectorSpectrumImageType * SecondIncidentSpectrum)
-{
-  this->m_FlattenSecondFilter->SetInput(SecondIncidentSpectrum);
-  this->m_PermuteSecondFilter->SetInput(this->m_FlattenSecondFilter->GetOutput());
-  typename PermuteFilterType::PermuteOrderArrayType order;
-  order[0] = 2;
-  order[1] = 0;
-  order[2] = 1;
-  this->m_PermuteSecondFilter->SetOrder(order);
-  this->SetInputSecondIncidentSpectrum(m_PermuteSecondFilter->GetOutput());
 }
 #endif
 
@@ -382,21 +339,6 @@ SpectralForwardModelImageFilter<DecomposedProjectionsType,
                                 MaterialAttenuationsImageType>::GetInputIncidentSpectrum()
 {
   return static_cast<const IncidentSpectrumImageType *>(this->itk::ProcessObject::GetInput("IncidentSpectrum"));
-}
-
-template <typename DecomposedProjectionsType,
-          typename MeasuredProjectionsType,
-          typename IncidentSpectrumImageType,
-          typename DetectorResponseImageType,
-          typename MaterialAttenuationsImageType>
-typename IncidentSpectrumImageType::ConstPointer
-SpectralForwardModelImageFilter<DecomposedProjectionsType,
-                                MeasuredProjectionsType,
-                                IncidentSpectrumImageType,
-                                DetectorResponseImageType,
-                                MaterialAttenuationsImageType>::GetInputSecondIncidentSpectrum()
-{
-  return static_cast<const IncidentSpectrumImageType *>(this->itk::ProcessObject::GetInput("SecondIncidentSpectrum"));
 }
 
 template <typename DecomposedProjectionsType,
@@ -585,24 +527,8 @@ SpectralForwardModelImageFilter<DecomposedProjectionsType,
     }
   }
 
-  if (this->GetInputSecondIncidentSpectrum())
-  {
-    // Read the detector response image as a matrix
-    this->m_DetectorResponse.set_size(1, this->m_NumberOfEnergies);
-    this->m_DetectorResponse.fill(0);
-    typename DetectorResponseImageType::IndexType indexDet;
-    for (unsigned int energy = 0; energy < this->m_NumberOfEnergies; energy++)
-    {
-      indexDet[0] = energy;
-      indexDet[1] = 0;
-      this->m_DetectorResponse[0][energy] += this->GetDetectorResponse()->GetPixel(indexDet);
-    }
-  }
-  else
-  {
-    this->m_DetectorResponse = SpectralBinDetectorResponse<DetectorResponseType::element_type>(
-      this->GetDetectorResponse().GetPointer(), m_Thresholds, m_NumberOfEnergies);
-  }
+  this->m_DetectorResponse = SpectralBinDetectorResponse<DetectorResponseType::element_type>(
+    this->GetDetectorResponse().GetPointer(), m_Thresholds, m_NumberOfEnergies);
 }
 
 template <typename DecomposedProjectionsType,
@@ -621,11 +547,7 @@ SpectralForwardModelImageFilter<DecomposedProjectionsType,
   ////////////////////////////////////////////////////////////////////
   // Create a Nelder-Mead simplex optimizer and its cost function
   rtk::ProjectionsDecompositionNegativeLogLikelihood::Pointer cost;
-  if (m_IsSpectralCT)
-    cost = rtk::Schlomka2008NegativeLogLikelihood::New();
-  else
-    cost = rtk::DualEnergyNegativeLogLikelihood::New();
-
+  cost = rtk::Schlomka2008NegativeLogLikelihood::New();
   cost->SetNumberOfEnergies(this->GetNumberOfEnergies());
   cost->SetNumberOfMaterials(this->GetNumberOfMaterials());
   cost->SetNumberOfSpectralBins(this->GetNumberOfSpectralBins());
@@ -654,23 +576,9 @@ SpectralForwardModelImageFilter<DecomposedProjectionsType,
   itk::ImageRegionConstIterator<IncidentSpectrumImageType> spectrumIt(this->GetInputIncidentSpectrum(),
                                                                       incidentSpectrumRegionForThread);
 
-  // Special case for the dual energy CT
-  itk::ImageRegionConstIterator<IncidentSpectrumImageType> secondSpectrumIt;
-  if (this->GetInputSecondIncidentSpectrum())
-    secondSpectrumIt = itk::ImageRegionConstIterator<IncidentSpectrumImageType>(this->GetInputSecondIncidentSpectrum(),
-                                                                                incidentSpectrumRegionForThread);
-
-  // Instantiate a vnl_matrix for the high and low energy incident spectra (if DECT)
-  // or the single spectrum (if spectral) and set its size.
+  // Instantiate a vnl_matrix for the spectrum and set its size
   vnl_matrix<float> spectra;
-  if (this->GetInputSecondIncidentSpectrum()) // Dual energy CT
-  {
-    spectra.set_size(2, m_NumberOfEnergies);
-  }
-  else
-  {
-    spectra.set_size(1, m_NumberOfEnergies);
-  }
+  spectra.set_size(1, m_NumberOfEnergies);
 
   while (!output0It.IsAtEnd())
   {
@@ -679,28 +587,12 @@ SpectralForwardModelImageFilter<DecomposedProjectionsType,
     if (spectrumIt.IsAtEnd())
     {
       spectrumIt.GoToBegin();
-      if (this->GetInputSecondIncidentSpectrum())
-        secondSpectrumIt.GoToBegin();
     }
 
-    // Fill in the spectra matrix
-    if (this->GetInputSecondIncidentSpectrum()) // Dual energy CT
+    for (unsigned int e = 0; e < m_NumberOfEnergies; e++)
     {
-      for (unsigned int e = 0; e < m_NumberOfEnergies; e++)
-      {
-        spectra.put(0, e, spectrumIt.Get());
-        spectra.put(1, e, secondSpectrumIt.Get());
-        ++spectrumIt;
-        ++secondSpectrumIt;
-      }
-    }
-    else
-    {
-      for (unsigned int e = 0; e < m_NumberOfEnergies; e++)
-      {
-        spectra.put(0, e, spectrumIt.Get());
-        ++spectrumIt;
-      }
+      spectra.put(0, e, spectrumIt.Get());
+      ++spectrumIt;
     }
 
     // Pass the incident spectrum vector to cost function
@@ -727,32 +619,21 @@ SpectralForwardModelImageFilter<DecomposedProjectionsType,
     // If requested, store the variances into output(1)
     if (m_ComputeVariances)
     {
-      if (m_IsSpectralCT)
-      {
-        // For spectral CT, Poisson noise is assumed therefore the variances is equal to the photon counts.
-        output1It.Set(outputPixel);
-      }
-      else
-      {
-        output1It.Set(
-          itk::VariableLengthVector<double>(cost->GetVariances(in).data_block(), this->m_NumberOfSpectralBins));
-      }
+      // For spectral CT, Poisson noise is assumed therefore the variances is equal to the photon counts.
+      output1It.Set(outputPixel);
       ++output1It;
     }
 
     // If requested, compute the Cramer Rao Lower bound (only for spectral CT).
-    if (m_IsSpectralCT)
+    if (m_ComputeCramerRaoLowerBound)
     {
-      if (m_ComputeCramerRaoLowerBound)
-      {
-        rtk::ProjectionsDecompositionNegativeLogLikelihood::MeasuredDataType photon_counts;
-        photon_counts.SetSize(forward.size());
-        photon_counts.SetData(forward.data_block());
-        cost->SetMeasuredData(photon_counts);
-        cost->ComputeFischerMatrix(in);
-        output2It.Set(cost->GetCramerRaoLowerBound());
-        ++output2It;
-      }
+      rtk::ProjectionsDecompositionNegativeLogLikelihood::MeasuredDataType photon_counts;
+      photon_counts.SetSize(forward.size());
+      photon_counts.SetData(forward.data_block());
+      cost->SetMeasuredData(photon_counts);
+      cost->ComputeFischerMatrix(in);
+      output2It.Set(cost->GetCramerRaoLowerBound());
+      ++output2It;
     }
 
     // Move forward

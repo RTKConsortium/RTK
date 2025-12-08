@@ -205,7 +205,6 @@ main(int argc, char * argv[])
   thresholds[4] = 85;
   thresholds[5] = detectorResponseReader->GetOutput()->GetLargestPossibleRegion().GetSize()[1];
   forward->SetThresholds(thresholds);
-  forward->SetIsSpectralCT(true);
   forward->Update();
 
   // Convert the itk::VectorImage<> returned by "forward" into

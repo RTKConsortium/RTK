@@ -43,3 +43,7 @@ Most users intuitively expect this for the backprojector matched to `rtk::CudaFo
 ## CUDA forward / ray-cast step size default
 
 The CUDA forward projector and the CUDA ray-cast backprojector now use the minimum voxel spacing of the input volume as the ray step when StepSize is not set. The previous default value was 1.
+
+## rtkdualenergy applications and associated code removed
+
+Historically, several applications had been developed to handle material decomposition of specific dual-energy spectral CT acquisitions with fast switching. `rtkdualenergysimplexdecomposition` and `rtkdualenergyforwardmodel` and the associated code in `DualEnergyNegativeLogLikelihood` and `SpectralForwardModelImageFilter` have been removed as one can do the same with `rtkspectralsimplexdecomposition` and `rtkdualenergysimplexdecomposition`.
