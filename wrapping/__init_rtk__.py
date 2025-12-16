@@ -13,6 +13,7 @@ rtk_submodules = [
     "itk.rtk3Doutputimage_group",
     "itk.rtkprojectors_group",
     "itk.rtkiterations_group",
+    "itk.rtknoise_group",
     "itk.rtkExtras",
 ]
 for mod_name in rtk_submodules:

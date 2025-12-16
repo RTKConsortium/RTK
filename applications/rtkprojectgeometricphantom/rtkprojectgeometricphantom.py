@@ -45,6 +45,7 @@ def build_parser():
     )
 
     rtk.add_rtk3Doutputimage_group(parser)
+    rtk.add_rtknoise_group(parser)
 
     # Parse the command line arguments
     return parser
@@ -104,11 +105,13 @@ def process(args_info: argparse.Namespace):
     ppc.SetConfigFile(args_info.phantomfile)
     ppc.Update()
 
-    # Write
+    # Add noise
+    output = rtk.SetNoiseFromArgParse(ppc.GetOutput(), args_info)
+
     if args_info.verbose:
         print("Projecting and writing... ")
 
-    itk.imwrite(ppc.GetOutput(), args_info.output)
+    itk.imwrite(output, args_info.output)
 
 
 def main(argv=None):

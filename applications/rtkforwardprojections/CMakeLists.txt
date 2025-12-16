@@ -1,4 +1,4 @@
-wrap_ggo(rtkforwardprojections_GGO_C rtkforwardprojections.ggo ../rtk3Doutputimage_section.ggo)
+wrap_ggo(rtkforwardprojections_GGO_C rtkforwardprojections.ggo ../rtk3Doutputimage_section.ggo ../rtknoise_section.ggo)
 add_executable(
   rtkforwardprojections
   rtkforwardprojections.cxx

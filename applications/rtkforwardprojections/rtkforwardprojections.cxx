@@ -191,12 +191,16 @@ main(int argc, char * argv[])
     TRY_AND_EXIT_ON_ITK_EXCEPTION(forwardProjection->Update())
   }
 
+  // Add noise
+  OutputImageType::Pointer output =
+    rtk::SetNoiseFromGgo<OutputImageType, args_info_rtkforwardprojections>(forwardProjection->GetOutput(), args_info);
+
   // Write
   if (args_info.verbose_flag)
     std::cout << "Writing... " << std::endl;
   auto writer = itk::ImageFileWriter<OutputImageType>::New();
   writer->SetFileName(args_info.output_arg);
-  writer->SetInput(forwardProjection->GetOutput());
+  writer->SetInput(output);
   if (args_info.lowmem_flag)
   {
     writer->SetNumberOfStreamDivisions(sizeOutput[2]);

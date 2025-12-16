@@ -1,0 +1,5 @@
+section "Gaussian noise"
+option "gaussian" - "Gaussian noise parameters: <mean> Noise level and <std> Noise standard deviation"    double  multiple                     no
+
+section "Poisson noise"
+option "poisson" -  "Poisson noise parameters: <I0> Number of impinging photons per pixel and <muref> reference linear attenuation coefficient"  double multiple no

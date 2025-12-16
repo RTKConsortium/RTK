@@ -32,6 +32,7 @@ def build_parser():
     )
 
     rtk.add_rtk3Doutputimage_group(parser)
+    rtk.add_rtknoise_group(parser)
 
     # Parse the command line arguments
     return parser
@@ -74,18 +75,8 @@ def process(args_info: argparse.Namespace):
     slp.SetOriginOffset(offset)
     slp.Update()
 
-    output = slp.GetOutput()
-
     # Add noise
-    if args_info.noise:
-        noisy = rtk.AdditiveGaussianNoiseImageFilter[
-            OutputImageType, OutputImageType
-        ].New()
-        noisy.SetInput(slp.GetOutput())
-        noisy.SetMean(0.0)
-        noisy.SetStandardDeviation(args_info.noise)
-        noisy.Update()
-        output = noisy.GetOutput()
+    output = rtk.SetNoiseFromArgParse(slp.GetOutput(), args_info)
 
     # Write
     if args_info.verbose:

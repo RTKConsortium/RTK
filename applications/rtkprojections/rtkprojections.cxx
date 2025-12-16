@@ -35,10 +35,13 @@ main(int argc, char * argv[])
   auto reader = ReaderType::New();
   rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkprojections>(reader, args_info);
 
+  OutputImageType::Pointer output =
+    rtk::SetNoiseFromGgo<OutputImageType, args_info_rtkprojections>(reader->GetOutput(), args_info);
+
   // Write
   auto writer = itk::ImageFileWriter<OutputImageType>::New();
   writer->SetFileName(args_info.output_arg);
-  writer->SetInput(reader->GetOutput());
+  writer->SetInput(output);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(writer->UpdateOutputInformation())
   writer->SetNumberOfStreamDivisions(1 + reader->GetOutput()->GetLargestPossibleRegion().GetNumberOfPixels() /
                                            (1024 * 1024 * 4));
