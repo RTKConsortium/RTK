@@ -158,7 +158,6 @@ main(int argc, char * argv[])
   forward->SetDetectorResponse(detectorResponseReader->GetOutput());
   forward->SetMaterialAttenuations(materialAttenuationsReader->GetOutput());
   forward->SetThresholds(thresholds);
-  forward->SetIsSpectralCT(true);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(forward->Update())
 
   // Generate a set of decomposed projections as input for the simplex
@@ -185,7 +184,6 @@ main(int argc, char * argv[])
   simplex->SetMaterialAttenuations(materialAttenuationsReader->GetOutput());
   simplex->SetThresholds(thresholds);
   simplex->SetNumberOfIterations(10000);
-  forward->SetIsSpectralCT(true);
 
   std::cout << "\n\n****** Case 1: User-provided initial values ******" << std::endl;
 
