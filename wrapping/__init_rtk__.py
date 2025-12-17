@@ -51,6 +51,7 @@ _app_modules = [
     "rtkprojections",
     "rtkprojectshepploganphantom",
     "rtkregularizedconjugategradient",
+    "rtkscatterglarecorrection",
     "rtkshowgeometry",
     "rtksart",
     "rtksimulatedgeometry",
