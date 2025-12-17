@@ -42,6 +42,7 @@ _app_modules = [
     "rtkforwardprojections",
     "rtki0estimation",
     "rtkimagxgeometry",
+    "rtkiterativefdk",
     "rtkmaskcollimation",
     "rtkgaincorrection",
     "rtkorageometry",
