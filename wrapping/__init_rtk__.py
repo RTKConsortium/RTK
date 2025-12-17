@@ -44,6 +44,7 @@ _app_modules = [
     "rtkfourdsart",
     "rtki0estimation",
     "rtkimagxgeometry",
+    "rtkiterativefdk",
     "rtkmaskcollimation",
     "rtkgaincorrection",
     "rtkorageometry",
