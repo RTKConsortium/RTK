@@ -135,12 +135,35 @@ template <typename TImage>
 void
 RegularizedConjugateGradientConeBeamReconstructionFilter<TImage>::GenerateInputRequestedRegion()
 {
-  // Call the superclass' implementation of this method
-  Superclass::GenerateInputRequestedRegion();
+  // Input 0 is the volume we update
+  typename TImage::Pointer inputPtr0 = const_cast<TImage *>(this->GetInputVolume().GetPointer());
+  if (!inputPtr0)
+    return;
+  inputPtr0->SetRequestedRegion(this->GetOutput()->GetRequestedRegion());
 
-  // Let the CG subfilters compute the requested regions for the projections
-  // stack and the input volume
-  m_CGFilter->PropagateRequestedRegion(m_CGFilter->GetOutput());
+  // Input 1 is the stack of projections to backproject
+  typename TImage::Pointer inputPtr1 = const_cast<TImage *>(this->GetInputProjectionStack().GetPointer());
+  if (!inputPtr1)
+    return;
+  inputPtr1->SetRequestedRegion(inputPtr1->GetLargestPossibleRegion());
+
+  // Input "Weights" is the weights map on projections, either user-defined or filled with ones (default)
+  if (this->GetInputWeights().IsNotNull())
+  {
+    typename TImage::Pointer inputWeights = const_cast<TImage *>(this->GetInputWeights().GetPointer());
+    if (!inputWeights)
+      return;
+    inputWeights->SetRequestedRegion(inputWeights->GetLargestPossibleRegion());
+  }
+
+  // Input "SupportMask" is the support constraint mask on volume, if any
+  if (this->GetSupportMask().IsNotNull())
+  {
+    typename TImage::Pointer inputSupportMaskPtr = const_cast<TImage *>(this->GetSupportMask().GetPointer());
+    if (!inputSupportMaskPtr)
+      return;
+    inputSupportMaskPtr->SetRequestedRegion(this->GetOutput()->GetRequestedRegion());
+  }
 }
 
 template <typename TImage>
