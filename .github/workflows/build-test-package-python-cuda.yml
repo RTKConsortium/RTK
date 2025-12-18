@@ -241,4 +241,14 @@ jobs:
         pip install $wheel
 
         pip install pytest matplotlib
-        pytest $GITHUB_WORKSPACE/test/*.py -vv -W "ignore:builtin type swig"
+
+        # Run tests with warning detection.
+        # SWIG < 4.4 triggers the Py_LIMITED_API "builtin type swig…" warning when
+        # Python runs with -Walways; pytest enables that behavior, so we ignore it.
+        stderr_log=$(mktemp)
+        pytest $GITHUB_WORKSPACE/test/*.py -vv -s -W "ignore:builtin type swig" 2> "$stderr_log"
+        if grep -q "Warning" "$stderr_log"; then
+          echo "Warnings found in stderr, failing the build"
+          cat "$stderr_log"
+          exit 1
+        fi
