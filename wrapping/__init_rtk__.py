@@ -58,6 +58,7 @@ _app_modules = [
     "rtksart",
     "rtksimulatedgeometry",
     "rtksubselect",
+    "rtktotalnuclearvariationdenoising",
     "rtktotalvariationdenoising",
     "rtkvarianobigeometry",
     "rtkwaveletsdenoising",
