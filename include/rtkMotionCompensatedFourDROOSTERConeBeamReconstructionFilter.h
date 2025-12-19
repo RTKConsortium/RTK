@@ -174,18 +174,6 @@ public:
   using MotionCompensatedFourDCGFilterType =
     rtk::MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>;
 
-  /** Neither the forward nor the back projection filter can be set by the user */
-  void
-  SetForwardProjectionFilter(ForwardProjectionType itkNotUsed(fwtype)) override
-  {
-    itkExceptionMacro(<< "ForwardProjection cannot be changed");
-  }
-  void
-  SetBackProjectionFilter(BackProjectionType itkNotUsed(bptype)) override
-  {
-    itkExceptionMacro(<< "BackProjection cannot be changed");
-  }
-
   /** Set the vector containing the signal in the sub-filters */
   void
   SetSignal(const std::vector<double> signal) override;

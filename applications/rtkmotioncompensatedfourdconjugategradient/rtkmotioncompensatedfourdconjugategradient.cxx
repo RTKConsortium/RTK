@@ -102,6 +102,8 @@ main(int argc, char * argv[])
   using MCFourDCGFilterType =
     rtk::MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>;
   auto mcfourdcg = MCFourDCGFilterType::New();
+  mcfourdcg->SetForwardProjectionFilter(MCFourDCGFilterType::FP_CUDAWARP);
+  mcfourdcg->SetBackProjectionFilter(MCFourDCGFilterType::BP_CUDAWARP);
   mcfourdcg->SetInputVolumeSeries(inputFilter->GetOutput());
   mcfourdcg->SetInputProjectionStack(reader->GetOutput());
   mcfourdcg->SetGeometry(geometry);
@@ -109,8 +111,8 @@ main(int argc, char * argv[])
   mcfourdcg->SetNumberOfIterations(args_info.niter_arg);
   mcfourdcg->SetCudaConjugateGradient(args_info.cudacg_flag);
   mcfourdcg->SetSignal(rtk::ReadSignalFile(args_info.signal_arg));
+  mcfourdcg->SetUseCudaCyclicDeformation(args_info.cudadvfinterpolation_flag);
   mcfourdcg->SetDisableDisplacedDetectorFilter(args_info.nodisplaced_flag);
-
   REPORT_ITERATIONS(mcfourdcg, MCFourDCGFilterType, VolumeSeriesType)
 
   // Read DVF

@@ -16,8 +16,12 @@ The following are examples using RTK applications:
 ./rtkvarianobigeometry/README.md
 ./rtkadmmtotalvariation/README.md
 ./rtkadmmwavelets/README.md
+./rtkfourdfdk/README.md
 ./rtkfourdconjugategradient/README.md
+./rtkfourdsart/README.md
 ./rtkfourdrooster/README.md
+./rtkmotioncompensatedfourdconjugategradient/README.md
+./rtkmcrooster/README.md
 ./rtkshowgeometry/README.md
 ./rtkosem/README.md
 ./rtksart/README.md
