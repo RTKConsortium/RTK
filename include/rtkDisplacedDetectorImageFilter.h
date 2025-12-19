@@ -116,6 +116,13 @@ protected:
   itkGetMacro(InferiorCorner, double);
   itkGetMacro(SuperiorCorner, double);
 
+  /** Returns true when offsets were explicitly provided */
+  bool
+  GetOffsetsSet() const
+  {
+    return m_OffsetsSet;
+  }
+
   /** Checks that inputs are correctly set. */
   void
   VerifyPreconditions() const override;
