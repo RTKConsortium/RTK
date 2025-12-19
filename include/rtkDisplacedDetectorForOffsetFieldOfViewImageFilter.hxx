@@ -72,6 +72,12 @@ DisplacedDetectorForOffsetFieldOfViewImageFilter<TInputImage, TOutputImage>::Gen
                              << "or using the nodisplaced flag of the application you are running");
   }
 
+  if (this->GetOffsetsSet())
+  {
+    itkGenericExceptionMacro(<< "DisplacedDetectorForOffsetFieldOfViewImageFilter cannot use manually set offsets. "
+                             << "Use DisplacedDetectorImageFilter when processing independent projections.");
+  }
+
   using FOVFilterType = typename rtk::FieldOfViewImageFilter<OutputImageType, OutputImageType>;
   auto fieldofview = FOVFilterType::New();
   fieldofview->SetProjectionsStack(inputPtr.GetPointer());
