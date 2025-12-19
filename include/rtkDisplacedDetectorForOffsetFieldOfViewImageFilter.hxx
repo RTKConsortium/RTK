@@ -67,6 +67,12 @@ DisplacedDetectorForOffsetFieldOfViewImageFilter<TInputImage, TOutputImage>::Gen
                              << "Consider disabling it by setting m_Disable=true "
                              << "or using the nodisplaced flag of the application you are running");
   }
+  else if (this->GetGeometry()->GetSourceToDetectorDistances().front() == 0.)
+  {
+    itkGenericExceptionMacro(<< "Displaced detector cannot handle parallel geometry. "
+                             << "Consider disabling it by setting m_Disable=true "
+                             << "or using the nodisplaced flag of the application you are running");
+  }
 
   using FOVFilterType = typename rtk::FieldOfViewImageFilter<OutputImageType, OutputImageType>;
   auto fieldofview = FOVFilterType::New();
