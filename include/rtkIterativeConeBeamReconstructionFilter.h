@@ -31,7 +31,9 @@
 
 #ifdef RTK_USE_CUDA
 #  include "rtkCudaForwardProjectionImageFilter.h"
+#  include "rtkCudaWarpForwardProjectionImageFilter.h"
 #  include "rtkCudaBackProjectionImageFilter.h"
+#  include "rtkCudaWarpBackProjectionImageFilter.h"
 #  include "rtkCudaRayCastBackProjectionImageFilter.h"
 #endif
 
@@ -74,7 +76,8 @@ public:
     FP_JOSEPH = 0,
     FP_CUDARAYCAST = 2,
     FP_JOSEPHATTENUATED = 3,
-    FP_ZENG = 4
+    FP_ZENG = 4,
+    FP_CUDAWARP = 5
   } ForwardProjectionType;
   typedef enum
   {
@@ -83,7 +86,8 @@ public:
     BP_CUDAVOXELBASED = 2,
     BP_CUDARAYCAST = 4,
     BP_JOSEPHATTENUATED = 5,
-    BP_ZENG = 6
+    BP_ZENG = 6,
+    BP_CUDAWARP = 7
   } BackProjectionType;
 
   /** Typedefs of each subfilter of this composite filter */
@@ -258,6 +262,29 @@ protected:
   }
 
 
+  template <typename ImageType, EnableCudaScalarType<ImageType> * = nullptr>
+  ForwardProjectionPointerType
+  InstantiateCudaWarpForwardProjection()
+  {
+    ForwardProjectionPointerType fw;
+#ifdef RTK_USE_CUDA
+    fw = CudaWarpForwardProjectionImageFilter::New();
+    dynamic_cast<rtk::CudaWarpForwardProjectionImageFilter *>(fw.GetPointer())->SetStepSize(m_StepSize);
+#endif
+    return fw;
+  }
+
+
+  template <typename ImageType, DisableCudaScalarType<ImageType> * = nullptr>
+  ForwardProjectionPointerType
+  InstantiateCudaWarpForwardProjection()
+  {
+    itkGenericExceptionMacro(
+      << "CudaWarpForwardProjectionImageFilter only available with 3D CudaImage of float or itk::Vector<float,3>.");
+    return nullptr;
+  }
+
+
   template <typename ImageType, EnableVectorType<ImageType> * = nullptr>
   ForwardProjectionPointerType
   InstantiateJosephForwardAttenuatedProjection()
@@ -344,6 +371,27 @@ protected:
     return nullptr;
   }
 
+
+  template <typename ImageType, EnableCudaScalarType<ImageType> * = nullptr>
+  BackProjectionPointerType
+  InstantiateCudaWarpBackProjection()
+  {
+    BackProjectionPointerType bp;
+#ifdef RTK_USE_CUDA
+    bp = CudaWarpBackProjectionImageFilter::New();
+#endif
+    return bp;
+  }
+
+
+  template <typename ImageType, DisableCudaScalarType<ImageType> * = nullptr>
+  BackProjectionPointerType
+  InstantiateCudaWarpBackProjection()
+  {
+    itkGenericExceptionMacro(
+      << "CudaWarpBackProjectionImageFilter only available with 3D CudaImage of float or itk::Vector<float,3>.");
+    return nullptr;
+  }
 
   template <typename ImageType, EnableCudaScalarType<ImageType> * = nullptr>
   BackProjectionPointerType
