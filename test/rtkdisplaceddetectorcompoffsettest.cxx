@@ -6,6 +6,7 @@
 #include "rtkSheppLoganPhantomFilter.h"
 
 #include <itkStreamingImageFilter.h>
+#include <itkTestingMacros.h>
 
 /**
  * \file rtkdisplaceddetectorcompcudatest.cxx
@@ -95,6 +96,20 @@ rtkdisplaceddetectorcompoffsettest(int, char *[])
     TRY_AND_EXIT_ON_ITK_EXCEPTION(streamingCPU->Update());
 
     CheckImageQuality<OutputImageType>(streamingCUDA->GetOutput(), streamingCPU->GetOutput(), 1.e-6, 100, 1.);
+  }
+  {
+    constexpr double minOffset = -16.;
+    constexpr double maxOffset = 12.;
+
+    std::cout << "\n\n****** Case 4: manual offsets are not supported ******" << std::endl;
+
+    using OffsetDDFType = rtk::DisplacedDetectorForOffsetFieldOfViewImageFilter<OutputImageType>;
+    auto cudaddf = OffsetDDFType::New();
+    cudaddf->SetInput(slp->GetOutput());
+    cudaddf->SetGeometry(geometry);
+    cudaddf->SetOffsets(minOffset, maxOffset);
+    cudaddf->InPlaceOff();
+    ITK_TRY_EXPECT_EXCEPTION(cudaddf->Update());
   }
 
   // If all succeed
