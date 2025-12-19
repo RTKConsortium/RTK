@@ -79,13 +79,16 @@ def SetBackProjectionFromArgParse(args_info, recon):
         if args_info.step is not None:
             recon.SetStepSize(args_info.step)
     elif args_info.bp == "JosephAttenuated":  # bp_arg_JosephAttenuated
+        if args_info.attenuationmap is None:
+            raise RuntimeError(
+                "Attenuation map is required with JosephAttenuated back projection (use --attenuationmap)"
+            )
         recon.SetBackProjectionFilter(ReconType.BackProjectionType_BP_JOSEPHATTENUATED)
         if args_info.inferiorclipimage is not None:
             recon.SetInferiorClipImage(inferior_clip_image)
         if args_info.superiorclipimage is not None:
             recon.SetSuperiorClipImage(superior_clip_image)
-        if args_info.attenuationmap is not None:
-            recon.SetAttenuationMap(attenuation_map)
+        recon.SetAttenuationMap(attenuation_map)
     elif args_info.bp == "Zeng":  # bp_arg_RotationBased
         recon.SetBackProjectionFilter(ReconType.BackProjectionType_BP_ZENG)
         if args_info.sigmazero is not None:
@@ -108,11 +111,14 @@ def SetForwardProjectionFromArgParse(args_info, recon):
         if args_info.step is not None:
             recon.SetStepSize(args_info.step)
     elif args_info.fp == "JosephAttenuated":  # fp_arg_JosephAttenuated
+        if args_info.attenuationmap is None:
+            raise RuntimeError(
+                "Attenuation map is required with JosephAttenuated forward projection (use --attenuationmap)"
+            )
         recon.SetForwardProjectionFilter(
             ReconType.ForwardProjectionType_FP_JOSEPHATTENUATED
         )
-        if args_info.attenuationmap is not None:
-            recon.SetAttenuationMap(attenuation_map)
+        recon.SetAttenuationMap(attenuation_map)
     elif args_info.fp == "Zeng":  # fp_arg_RotationBased
         recon.SetForwardProjectionFilter(ReconType.ForwardProjectionType_FP_ZENG)
         if args_info.sigmazero is not None:
