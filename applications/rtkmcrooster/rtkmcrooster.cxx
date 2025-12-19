@@ -114,10 +114,11 @@ main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION(signalToInterpolationWeights->Update())
 
   // Create the MCROOSTER filter, connect the basic inputs, and set the basic parameters
-  auto mcrooster =
-    rtk::MotionCompensatedFourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::New();
-  SetForwardProjectionFromGgo(args_info, mcrooster.GetPointer());
-  SetBackProjectionFromGgo(args_info, mcrooster.GetPointer());
+  using MCFourDROOSTERTYPE =
+    rtk::MotionCompensatedFourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>;
+  auto mcrooster = MCFourDROOSTERTYPE::New();
+  mcrooster->SetForwardProjectionFilter(MCFourDROOSTERTYPE::FP_CUDAWARP);
+  mcrooster->SetBackProjectionFilter(MCFourDROOSTERTYPE::BP_CUDAWARP);
   mcrooster->SetInputVolumeSeries(inputFilter->GetOutput());
   mcrooster->SetCG_iterations(args_info.cgiter_arg);
   mcrooster->SetMainLoop_iterations(args_info.niter_arg);
