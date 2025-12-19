@@ -140,7 +140,7 @@ main(int, char **)
       // Ellipse 1
       auto e1 = REIType::New();
       auto semiprincipalaxis = itk::MakeVector(60., 30., 60.);
-      auto center = itk::MakeVector(0., 0., 0.);
+      auto center = itk::MakePoint(0., 0., 0.);
       e1->SetInput(oneProjectionSource->GetOutput());
       e1->SetGeometry(oneProjGeometry);
       e1->SetDensity(1.);

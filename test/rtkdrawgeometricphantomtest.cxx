@@ -100,7 +100,7 @@ main(int argc, char * argv[])
 
   dcl->SetInput(tomographySource->GetOutput());
   dcl->SetAxis(itk::MakeVector(100., 0., 100.));
-  dcl->SetCenter(itk::MakeVector(2., 2., 2.));
+  dcl->SetCenter(itk::MakePoint(2., 2., 2.));
   dcl->SetAngle(0.);
   dcl->SetDensity(2.);
   dcl->InPlaceOff();
@@ -109,7 +109,7 @@ main(int argc, char * argv[])
   auto dco = rtk::DrawConeImageFilter<OutputImageType, OutputImageType>::New();
   dco->SetInput(tomographySource->GetOutput());
   dco->SetAxis(itk::MakeVector(25., -50., 25.));
-  dco->SetCenter(itk::MakeVector(2., 2., 2.));
+  dco->SetCenter(itk::MakePoint(2., 2., 2.));
   dco->SetAngle(0.);
   dco->SetDensity(-0.54);
 

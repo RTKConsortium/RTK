@@ -79,7 +79,7 @@ main(int, char **)
 
   auto deif = rtk::DrawEllipsoidImageFilter<OutputImageType, OutputImageType>::New();
   auto axis_vol = itk::MakeVector(50., 50., 50.);
-  auto center_vol = itk::MakeVector(0., 0., -30.);
+  auto center_vol = itk::MakePoint(0., 0., -30.);
   deif->SetInput(volInput->GetOutput());
   deif->SetCenter(center_vol);
   deif->SetAxis(axis_vol);
@@ -89,7 +89,7 @@ main(int, char **)
   typename OutputImageType::Pointer attenuationMap, volumeSource;
   volumeSource = deif->GetOutput();
   volumeSource->DisconnectPipeline();
-  deif->SetCenter(itk::MakeVector(0., 0., 0.));
+  deif->SetCenter(itk::MakePoint(0., 0., 0.));
   deif->SetAxis(itk::MakeVector(90, 90, 90));
   deif->SetDensity(att);
   deif->Update();
@@ -158,7 +158,7 @@ main(int, char **)
     auto sphere_attenuation = REIType::New();
     sphere_attenuation->SetAngle(0);
     sphere_attenuation->SetDensity(1);
-    sphere_attenuation->SetCenter(itk::MakeVector(0., 0., 0.));
+    sphere_attenuation->SetCenter(itk::MakePoint(0., 0., 0.));
     sphere_attenuation->SetAxis(itk::MakeVector(90, 90, 90));
     sphere_attenuation->SetInput(projInput->GetOutput());
     auto sphere_emission = REIType::New();

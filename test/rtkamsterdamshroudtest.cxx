@@ -105,7 +105,7 @@ main(int argc, char * argv[])
     e1->SetGeometry(geometry);
     e1->SetDensity(2.);
     e1->SetAxis(itk::MakeVector(88.32, 115.2, 117.76));
-    e1->SetCenter(itk::MakeVector(0., 0., 0.));
+    e1->SetCenter(itk::MakePoint(0., 0., 0.));
     e1->SetAngle(0.);
     e1->InPlaceOff();
     e1->Update();
@@ -116,7 +116,7 @@ main(int argc, char * argv[])
     e2->SetGeometry(geometry);
     e2->SetDensity(-1.98);
     e2->SetAxis(itk::MakeVector(35., reiSize - sinus, reiSize - sinus));
-    e2->SetCenter(itk::MakeVector(-37., 0., 0.));
+    e2->SetCenter(itk::MakePoint(-37., 0., 0.));
     e2->SetAngle(0.);
     e2->Update();
 
@@ -126,7 +126,7 @@ main(int argc, char * argv[])
     e3->SetGeometry(geometry);
     e3->SetDensity(-1.98);
     e3->SetAxis(itk::MakeVector(35., reiSize - sinus, reiSize - sinus));
-    e3->SetCenter(itk::MakeVector(37., 0., 0.));
+    e3->SetCenter(itk::MakePoint(37., 0., 0.));
     e3->SetAngle(0.);
     e3->Update();
 
@@ -136,7 +136,7 @@ main(int argc, char * argv[])
     e4->SetGeometry(geometry);
     e4->SetDensity(1.42);
     e4->SetAxis(itk::MakeVector(8., 8., 8.));
-    e4->SetCenter(itk::MakeVector(-40., 0., 0.));
+    e4->SetCenter(itk::MakePoint(-40., 0., 0.));
     e4->SetAngle(0.);
 
     // Creating movement

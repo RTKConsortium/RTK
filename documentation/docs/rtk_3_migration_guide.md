@@ -43,3 +43,8 @@ Most users intuitively expect this for the backprojector matched to `rtk::CudaFo
 ## CUDA forward / ray-cast step size default
 
 The CUDA forward projector and the CUDA ray-cast backprojector now use the minimum voxel spacing of the input volume as the ray step when StepSize is not set. The previous default value was 1.
+
+## Positions now use `itk::Point` instead of `itk::Vector`
+
+APIs that represent physical *positions* were changed from `itk::Vector<double,3>` to `itk::Point<double,3>`. This makes a clear distinction between points (locations) and vectors (directions or offsets).
+Projection iterators (`rtkProjectionsRegionConstIteratorRayBased*`), Joseph forward/back projectors, ray-box filters, convex/quadric shapes, Ora geometry readers, Forbild phantom readers, and test/phantom helpers now expect `PointType` for positions (source, pixel, box corners, shape centers).

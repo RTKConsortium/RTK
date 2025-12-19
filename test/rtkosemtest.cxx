@@ -94,7 +94,7 @@ main(int, char **)
   REIType::Pointer rei;
 
   auto semiprincipalaxis = itk::MakeVector(60., 60., 60.);
-  auto center = itk::MakeVector(0., 0., 0.);
+  auto center = itk::MakePoint(0., 0., 0.);
   rei = REIType::New();
   rei->SetAngle(0.);
   rei->SetDensity(1.);

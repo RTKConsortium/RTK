@@ -90,8 +90,8 @@ main(int, char **)
   auto rbi = rtk::RayBoxIntersectionImageFilter<OutputImageType, OutputImageType>::New();
   rbi->InPlaceOff();
   rbi->SetInput(projInput->GetOutput());
-  rbi->SetBoxMin(itk::MakeVector(-126.0, -126.0, -126.0));
-  rbi->SetBoxMax(itk::MakeVector(126.0, 126.0, 47.6));
+  rbi->SetBoxMin(itk::MakePoint(-126.0, -126.0, -126.0));
+  rbi->SetBoxMax(itk::MakePoint(126.0, 126.0, 47.6));
 
   // Streaming filter to test for unusual regions
   auto stream = itk::StreamingImageFilter<OutputImageType, OutputImageType>::New();
@@ -133,7 +133,7 @@ main(int, char **)
 #endif
 
   std::cout << "\n\n****** Case 2: outer ray source ******" << std::endl;
-  rbi->SetBoxMax(itk::MakeVector(126.0, 126.0, 126.0));
+  rbi->SetBoxMax(itk::MakePoint(126.0, 126.0, 126.0));
 
   // Geometry
   using GeometryType = rtk::ThreeDCircularProjectionGeometry;

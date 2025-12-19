@@ -109,8 +109,8 @@ JosephBackProjectionImageFilter<TInputImage,
   itIn = InputRegionIterator::New(this->GetInput(1), buffReg, geometry, volPPToIndex);
 
   // Create intersection functions, one for each possible main direction
-  auto                          box = BoxShape::New();
-  typename BoxShape::VectorType boxMin, boxMax;
+  auto                         box = BoxShape::New();
+  typename BoxShape::PointType boxMin, boxMax;
   for (unsigned int i = 0; i < Dimension; i++)
   {
     boxMin[i] = this->GetOutput()->GetRequestedRegion().GetIndex()[i];
@@ -127,11 +127,12 @@ JosephBackProjectionImageFilter<TInputImage,
   double superiorClip = 1. - m_InferiorClip;
 
   // Go over each pixel of the projection
-  typename BoxShape::VectorType stepMM, np, fp;
+  typename BoxShape::VectorType stepMM;
+  typename BoxShape::PointType  np, fp;
   for (unsigned int pix = 0; pix < buffReg.GetNumberOfPixels(); pix++, itIn->Next())
   {
-    typename InputRegionIterator::PointType pixelPosition = itIn->GetPixelPosition();
-    typename InputRegionIterator::PointType dirVox = -itIn->GetSourceToPixel();
+    typename InputRegionIterator::PointType  pixelPosition = itIn->GetPixelPosition();
+    typename InputRegionIterator::VectorType dirVox = -itIn->GetSourceToPixel();
 
     // Select main direction
     unsigned int         mainDir = 0;

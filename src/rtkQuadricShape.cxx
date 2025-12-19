@@ -316,7 +316,7 @@ QuadricShape ::SetEllipsoid(const PointType & center, const VectorType & axis, c
   m_I = TempG * sin(yangle * (itk::Math::pi / 180)) + TempI * cos(yangle * (itk::Math::pi / 180));
   m_J = TempJ;
 
-  Translate(center);
+  Translate(center.GetVectorFromOrigin());
 }
 
 itk::LightObject::Pointer
