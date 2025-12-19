@@ -74,39 +74,82 @@ DisplacedDetectorForOffsetFieldOfViewImageFilter<TInputImage, TOutputImage>::Gen
                              << "or using the nodisplaced flag of the application you are running");
   }
 
-  using FOVFilterType = typename rtk::FieldOfViewImageFilter<OutputImageType, OutputImageType>;
-  auto fieldofview = FOVFilterType::New();
-  fieldofview->SetProjectionsStack(inputPtr.GetPointer());
-  fieldofview->SetGeometry(this->GetGeometry());
-  bool   hasOverlap = fieldofview->ComputeFOVRadius(FOVFilterType::RADIUSBOTH, m_FOVCenterX, m_FOVCenterZ, m_FOVRadius);
-  double xi = NAN, zi = NAN, ri = NAN;
-  fieldofview->ComputeFOVRadius(FOVFilterType::RADIUSINF, xi, zi, ri);
-  double xs = NAN, zs = NAN, rs = NAN;
-  fieldofview->ComputeFOVRadius(FOVFilterType::RADIUSSUP, xs, zs, rs);
+  if (!this->GetOffsetsSet())
+  {
+    using FOVFilterType = typename rtk::FieldOfViewImageFilter<OutputImageType, OutputImageType>;
+    auto fieldofview = FOVFilterType::New();
+    fieldofview->SetProjectionsStack(inputPtr.GetPointer());
+    fieldofview->SetGeometry(this->GetGeometry());
+    bool hasOverlap = fieldofview->ComputeFOVRadius(FOVFilterType::RADIUSBOTH, m_FOVCenterX, m_FOVCenterZ, m_FOVRadius);
+    double xi = NAN, zi = NAN, ri = NAN;
+    fieldofview->ComputeFOVRadius(FOVFilterType::RADIUSINF, xi, zi, ri);
+    double xs = NAN, zs = NAN, rs = NAN;
+    fieldofview->ComputeFOVRadius(FOVFilterType::RADIUSSUP, xs, zs, rs);
 
-  // 4 cases depending on the position of the two corners
-  // Case 1: Impossible to account for too large displacements
-  if (!hasOverlap)
-  {
-    itkGenericExceptionMacro(<< "Cannot account for too large detector displacements, a part of"
-                             << " space must be covered by all projections.");
-  }
-  // Case 2: Not displaced if less than 10% relative difference between radii
-  else if (200. * itk::Math::abs(ri - rs) / (ri + rs) < 10.)
-  {
-  }
-  else if (rs > ri)
-  {
-    this->SetInPlace(false);
-    itk::Index<3>::IndexValueType index =
-      outputLargestPossibleRegion.GetIndex()[0] - outputLargestPossibleRegion.GetSize()[0];
-    outputLargestPossibleRegion.SetIndex(0, index);
-    outputLargestPossibleRegion.SetSize(0, outputLargestPossibleRegion.GetSize()[0] * 2);
+    // 4 cases depending on the position of the two corners
+    // Case 1: Impossible to account for too large displacements
+    if (!hasOverlap)
+    {
+      itkGenericExceptionMacro(<< "Cannot account for too large detector displacements, a part of"
+                               << " space must be covered by all projections.");
+    }
+    // Case 2: Not displaced if less than 10% relative difference between radii
+    else if (200. * itk::Math::abs(ri - rs) / (ri + rs) < 10.)
+    {
+    }
+    else if (rs > ri)
+    {
+      this->SetInPlace(false);
+      itk::Index<3>::IndexValueType index =
+        outputLargestPossibleRegion.GetIndex()[0] - outputLargestPossibleRegion.GetSize()[0];
+      outputLargestPossibleRegion.SetIndex(0, index);
+      outputLargestPossibleRegion.SetSize(0, outputLargestPossibleRegion.GetSize()[0] * 2);
+    }
+    else
+    {
+      this->SetInPlace(false);
+      outputLargestPossibleRegion.SetSize(0, outputLargestPossibleRegion.GetSize()[0] * 2);
+    }
   }
   else
   {
-    this->SetInPlace(false);
-    outputLargestPossibleRegion.SetSize(0, outputLargestPossibleRegion.GetSize()[0] * 2);
+    // If the user manually set offsets, apply the same corner-based logic as the base class
+    typename Superclass::InputImageType::PointType corner;
+    inputPtr->TransformIndexToPhysicalPoint(inputPtr->GetLargestPossibleRegion().GetIndex(), corner);
+    double inferiorCorner = corner[0];
+    double superiorCorner = inferiorCorner;
+    if (inputPtr->GetSpacing()[0] < 0.)
+      inferiorCorner += inputPtr->GetSpacing()[0] * (outputLargestPossibleRegion.GetSize(0) - 1);
+    else
+      superiorCorner += inputPtr->GetSpacing()[0] * (outputLargestPossibleRegion.GetSize(0) - 1);
+
+    inferiorCorner += this->GetMaximumOffset();
+    superiorCorner += this->GetMinimumOffset();
+
+    if (inferiorCorner > 0. || superiorCorner < 0.)
+    {
+      itkGenericExceptionMacro(<< "Cannot account for detector displacement larger than 50% of panel size."
+                               << " Corner inf=" << inferiorCorner << " and corner sup=" << superiorCorner);
+    }
+    else if ((itk::Math::abs(inferiorCorner + superiorCorner) <
+              0.1 * itk::Math::abs(superiorCorner - inferiorCorner)) ||
+             !this->m_PadOnTruncatedSide)
+    {
+      // nothing to do, keep region
+    }
+    else if (superiorCorner + inferiorCorner > 0.)
+    {
+      this->SetInPlace(false);
+      typename itk::Index<3>::IndexValueType index =
+        outputLargestPossibleRegion.GetIndex()[0] - outputLargestPossibleRegion.GetSize()[0];
+      outputLargestPossibleRegion.SetIndex(0, index);
+      outputLargestPossibleRegion.SetSize(0, outputLargestPossibleRegion.GetSize()[0] * 2);
+    }
+    else
+    {
+      this->SetInPlace(false);
+      outputLargestPossibleRegion.SetSize(0, outputLargestPossibleRegion.GetSize()[0] * 2);
+    }
   }
 
   outputPtr->SetLargestPossibleRegion(outputLargestPossibleRegion);
