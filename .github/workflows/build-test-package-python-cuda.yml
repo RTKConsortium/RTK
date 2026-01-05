@@ -20,7 +20,7 @@ jobs:
       matrix:
         python3-minor-version: ${{ github.event_name == 'pull_request' && fromJSON('["11"]') || fromJSON('["9","10","11"]') }}
         manylinux-platform: ["_2_28-x64","2014-x64"]
-        cuda-version: ["116","121","124"]
+        cuda-version: ["118","128","130"]
 
     steps:
     - uses: actions/checkout@v4
@@ -48,6 +48,9 @@ jobs:
         CMAKE_OPTIONS="${CMAKE_OPTIONS} -DCUDAToolkit_ROOT=/usr/lib64/cuda${CUDA_VERSION}"
         CMAKE_OPTIONS="${CMAKE_OPTIONS} -DCMAKE_CUDA_COMPILER=/usr/lib64/cuda${CUDA_VERSION}/bin/nvcc"
         CMAKE_OPTIONS="${CMAKE_OPTIONS} --config-setting=build.tool-args=-j16"
+        if test ${CUDA_VERSION_MAJOR} -ge 13; then
+          CMAKE_OPTIONS="${CMAKE_OPTIONS} -DCMAKE_CUDA_ARCHITECTURES=75"
+        fi
 
         # The first two are not library paths but are included to be mounted in the
         # docker by dockcross-manylinux-build-module-wheels.sh
@@ -109,7 +112,7 @@ jobs:
       max-parallel: 2
       matrix:
         python3-minor-version: ${{ github.event_name == 'pull_request' && fromJSON('["11"]') || fromJSON('["9","10","11"]') }}
-        cuda-version: ["124"]
+        cuda-version: ["128","130"]
 
     steps:
     - uses: actions/checkout@v4
@@ -161,9 +164,16 @@ jobs:
         $LIBCUBLAS= (Get-Item "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v${CUDA_VERSION_MAJOR}.${CUDA_VERSION_MINOR}\bin\cublas64*dll" ).Name
         $LIBCUBLASLT= (Get-Item "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v${CUDA_VERSION_MAJOR}.${CUDA_VERSION_MINOR}\bin\cublasLt64*dll" ).Name
         $LIBCUFFT= (Get-Item "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v${CUDA_VERSION_MAJOR}.${CUDA_VERSION_MINOR}\bin\cufft64*dll" ).Name
+        if(${CUDA_VERSION_MAJOR} -ge 13) {
+          $CUDA_ARCHITECTURES = "75"
+        }
+        else {
+          $CUDA_ARCHITECTURES = "52"
+        }
         ((Get-Content -Path pyproject.toml) -replace "itk-rtk","itk-rtk-cuda${CUDA_VERSION}") | Set-Content -Path pyproject.toml
         ((Get-Content -Path pyproject.toml) -replace "dependencies = \[","dependencies = [""itk-cudacommon-cuda${CUDA_VERSION}  == 2.0.*"",") | Set-Content -Path pyproject.toml
-        ./windows-download-cache-and-build-module-wheels.ps1 "${{ matrix.python3-minor-version }}" -setup_options "--lib-paths ""C:/Program\ Files/NVIDIA\ GPU\ Computing\ Toolkit/CUDA/v${CUDA_VERSION_MAJOR}.${CUDA_VERSION_MINOR}/bin"" --exclude-libs ""nvcuda.dll;concrt140.dll;${LIBCUDART};${LIBCUBLAS};${LIBCUBLASLT};${LIBCUFFT}""" -cmake_options """-DRTK_CUDA_VERSION=${CUDA_VERSION_MAJOR}.${CUDA_VERSION_MINOR}"" ""-DCMAKE_CUDA_COMPILER=$env:CUDACXX"" ""-DRTK_BUILD_APPLICATIONS:BOOL=OFF"""
+
+        ./windows-download-cache-and-build-module-wheels.ps1 "${{ matrix.python3-minor-version }}" -setup_options "--lib-paths ""C:/Program\ Files/NVIDIA\ GPU\ Computing\ Toolkit/CUDA/v${CUDA_VERSION_MAJOR}.${CUDA_VERSION_MINOR}/bin"" --exclude-libs ""nvcuda.dll;concrt140.dll;${LIBCUDART};${LIBCUBLAS};${LIBCUBLASLT};${LIBCUFFT}""" -cmake_options """-DRTK_CUDA_VERSION=${CUDA_VERSION_MAJOR}.${CUDA_VERSION_MINOR}"" ""-DCMAKE_CUDA_COMPILER=$env:CUDACXX"" ""-DRTK_BUILD_APPLICATIONS:BOOL=OFF"" ""-DCMAKE_CUDA_ARCHITECTURES=${CUDA_ARCHITECTURES}"""
 
         mkdir -p '${{ github.workspace }}\dist'
         cp 'dist\*.whl' '${{ github.workspace }}\dist'
@@ -233,8 +243,8 @@ jobs:
 
     - name: Test python wheel
       run: |
-        # Find the CUDA 124 wheel for Python 3.11 dynamically
-        wheel=$(find wheels -name "*cuda124*cp311*manylinux_2_28_x86_64.whl" -type f | head -1)
+        # Find the CUDA 128 wheel for Python 3.11 dynamically
+        wheel=$(find wheels -name "*cuda128*cp311*manylinux_2_28_x86_64.whl" -type f | head -1)
 
         pip uninstall -y $(pip list |  grep -E '^itk-') || true
         echo "Installing wheel: $wheel"
