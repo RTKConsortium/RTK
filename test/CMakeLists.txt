@@ -365,9 +365,6 @@ rtk_add_cuda_test(rtkFirstCudaReconstructionExampleTest
 rtk_add_test(rtkInlineReconstructionExampleTest
   ../examples/InlineReconstruction/InlineReconstruction.cxx
 )
-rtk_add_cuda_test(rtkCudaInlineReconstructionExampleTest
-  ../examples/InlineReconstruction/InlineReconstruction.cxx
-)
 rtk_add_test(rtkAddNoiseExampleTest
   ../examples/AddNoise/AddNoise.cxx
 )
