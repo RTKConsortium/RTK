@@ -19,8 +19,16 @@
 #ifndef rtkMatlabSparseMatrix_h
 #define rtkMatlabSparseMatrix_h
 
+#include "RTKExport.h"
 #include "rtkConfiguration.h"
+
+#include <itkObject.h>
+#include <itkSmartPointer.h>
+
 #include <vnl/vnl_sparse_matrix.h>
+
+#include <ostream>
+#include <string>
 
 namespace rtk
 {
@@ -36,17 +44,43 @@ namespace rtk
  *
  * \ingroup RTK
  */
-class MatlabSparseMatrix
+template <typename TOutputImage>
+class ITK_TEMPLATE_EXPORT MatlabSparseMatrix : public itk::Object
 {
 public:
-  template <class TOutputImage>
-  MatlabSparseMatrix(const vnl_sparse_matrix<double> & sparseMatrix, TOutputImage * output);
+  ITK_DISALLOW_COPY_AND_MOVE(MatlabSparseMatrix);
+
+  using Self = MatlabSparseMatrix<TOutputImage>;
+  using Superclass = itk::Object;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
+  using OutputImageType = TOutputImage;
+  using MatrixType = vnl_sparse_matrix<double>;
+
+  itkOverrideGetNameOfClassMacro(MatlabSparseMatrix);
+  itkFactorylessNewMacro(Self);
+
+  // Custom setter needed because vnl_sparse_matrix doesn't support operator<< for itkSetMacro
+  void
+  SetMatrix(const MatrixType & matrix)
+  {
+    m_Matrix = matrix;
+    this->Modified();
+  }
+  itkGetMacro(Matrix, MatrixType);
+
+  itkSetConstObjectMacro(Output, OutputImageType);
+  itkGetConstObjectMacro(Output, OutputImageType);
 
   void
   Save(std::ostream & out);
 
   void
   Print();
+
+protected:
+  MatlabSparseMatrix() = default;
+  ~MatlabSparseMatrix() override;
 
   struct MatlabSparseMatrixStruct
   {
@@ -72,19 +106,24 @@ public:
     unsigned char       s_namePadding[3];
     unsigned long int   s_rowIndexTag;
     unsigned long int   s_rowIndexLength;
-    unsigned long int * s_rowIndex;
+    unsigned long int * s_rowIndex = nullptr;
     unsigned long int   s_rowIndexPadding;
     unsigned long int   s_columnIndexTag;
     unsigned long int   s_columnIndexLength;
-    unsigned long int * s_columnIndex;
+    unsigned long int * s_columnIndex = nullptr;
     unsigned long int   s_columnIndexPadding;
     unsigned long int   s_valueTag;
     unsigned long int   s_valueLength;
-    double *            s_value;
+    double *            s_value = nullptr;
   };
 
-protected:
-  MatlabSparseMatrixStruct m_MatlabSparseMatrix;
+private:
+  void
+  BuildMatlabMatrix();
+
+  MatlabSparseMatrixStruct                       m_MatlabSparseMatrix;
+  MatrixType                                     m_Matrix{};
+  typename OutputImageType::ConstPointer         m_Output;
 };
 
 } // namespace rtk

@@ -21,6 +21,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <string>
 #include <vector>
 
 namespace rtk
@@ -28,10 +29,27 @@ namespace rtk
 
 //====================================================================
 template <class TOutputImage>
-MatlabSparseMatrix::MatlabSparseMatrix(const vnl_sparse_matrix<double> & sparseMatrix, TOutputImage * output)
+MatlabSparseMatrix<TOutputImage>::~MatlabSparseMatrix()
 {
-  unsigned int nbColumn = output->GetLargestPossibleRegion().GetSize()[0] *
-                          output->GetLargestPossibleRegion().GetSize()[2]; // it's not sparseMatrix.columns()
+  if (m_MatlabSparseMatrix.s_rowIndex)
+    delete[] m_MatlabSparseMatrix.s_rowIndex;
+  if (m_MatlabSparseMatrix.s_columnIndex)
+    delete[] m_MatlabSparseMatrix.s_columnIndex;
+  if (m_MatlabSparseMatrix.s_value)
+    delete[] m_MatlabSparseMatrix.s_value;
+}
+
+template <class TOutputImage>
+void
+MatlabSparseMatrix<TOutputImage>::BuildMatlabMatrix()
+{
+  if (!m_Output)
+  {
+    itkExceptionMacro("Output image not set");
+  }
+
+  unsigned int nbColumn = m_Output->GetLargestPossibleRegion().GetSize()[0] *
+                          m_Output->GetLargestPossibleRegion().GetSize()[2]; // it's not m_Matrix.columns()
 
   // Take the number of non-zero elements:
   // Compute the column index
@@ -39,21 +57,21 @@ MatlabSparseMatrix::MatlabSparseMatrix(const vnl_sparse_matrix<double> & sparseM
   unsigned int nonZeroElement(0);
   using sparseMatrixColumn = std::vector<std::pair<unsigned int, double>>;
   auto * columnsVector = new sparseMatrixColumn[nbColumn];
-  sparseMatrix.reset();
-  while (sparseMatrix.next())
+  m_Matrix.reset();
+  while (m_Matrix.next())
   {
-    typename TOutputImage::IndexType idx = output->ComputeIndex(sparseMatrix.getcolumn());
+    typename TOutputImage::IndexType idx = m_Output->ComputeIndex(m_Matrix.getcolumn());
     if (idx[1] != 1)
       continue;
-    unsigned int indexColumn = idx[0] + idx[2] * output->GetLargestPossibleRegion().GetSize()[2];
+    unsigned int indexColumn = idx[0] + idx[2] * m_Output->GetLargestPossibleRegion().GetSize()[2];
     auto         it = columnsVector[indexColumn].begin();
     while (it != columnsVector[indexColumn].end())
     {
-      if ((unsigned int)sparseMatrix.getrow() < it->first)
+      if ((unsigned int)m_Matrix.getrow() < it->first)
         break;
       ++it;
     }
-    columnsVector[indexColumn].insert(it, std::make_pair(sparseMatrix.getrow(), sparseMatrix.value()));
+    columnsVector[indexColumn].insert(it, std::make_pair(m_Matrix.getrow(), m_Matrix.value()));
     ++nonZeroElement;
   }
 
@@ -76,7 +94,7 @@ MatlabSparseMatrix::MatlabSparseMatrix(const vnl_sparse_matrix<double> & sparseM
   m_MatlabSparseMatrix.s_arrayNzmax = nonZeroElement;
   m_MatlabSparseMatrix.s_dimensionTag = 5;
   m_MatlabSparseMatrix.s_dimensionLength = 8;
-  m_MatlabSparseMatrix.s_dimensionNbRow = sparseMatrix.rows();
+  m_MatlabSparseMatrix.s_dimensionNbRow = m_Matrix.rows();
   m_MatlabSparseMatrix.s_dimensionNbColumn = nbColumn;
   m_MatlabSparseMatrix.s_nameLength = 1;
   m_MatlabSparseMatrix.s_nameTag = 1;
@@ -117,9 +135,12 @@ MatlabSparseMatrix::MatlabSparseMatrix(const vnl_sparse_matrix<double> & sparseM
   delete[] columnsVector;
 }
 
-inline void
-MatlabSparseMatrix::Save(std::ostream & out)
+template <class TOutputImage>
+void
+MatlabSparseMatrix<TOutputImage>::Save(std::ostream & out)
 {
+  BuildMatlabMatrix();
+  
   // Write data
   out.write(reinterpret_cast<const char *>(&m_MatlabSparseMatrix.s_headerMatlab), 116);
   out.write(reinterpret_cast<const char *>(&m_MatlabSparseMatrix.s_headerOffset), 8);
@@ -159,8 +180,9 @@ MatlabSparseMatrix::Save(std::ostream & out)
     out.write(reinterpret_cast<const char *>(&m_MatlabSparseMatrix.s_value[i]), 8);
 }
 
+template <class TOutputImage>
 inline void
-MatlabSparseMatrix::Print()
+MatlabSparseMatrix<TOutputImage>::Print()
 {
   std::cout << "m_MatlabSparseMatrix.s_headerMatlab : \"" << m_MatlabSparseMatrix.s_headerMatlab << "\"" << std::endl;
   std::cout << "m_MatlabSparseMatrix.s_headerOffset : \"" << m_MatlabSparseMatrix.s_headerOffset << "\"" << std::endl;
