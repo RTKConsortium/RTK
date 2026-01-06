@@ -120,9 +120,10 @@ main(int argc, char * argv[])
     std::cerr << "Failed to open " << args_info.output_arg << std::endl;
     return EXIT_FAILURE;
   }
-  rtk::MatlabSparseMatrix matlabSparseMatrix(backProjection->GetSplatWeightMultiplication().GetVnlSparseMatrix(),
-                                             backProjection->GetOutput());
-  matlabSparseMatrix.Save(ofs);
+  auto matlabSparseMatrix = rtk::MatlabSparseMatrix<OutputImageType>::New();
+  matlabSparseMatrix->SetMatrix(backProjection->GetSplatWeightMultiplication().GetVnlSparseMatrix());
+  matlabSparseMatrix->SetOutput(backProjection->GetOutput());
+  matlabSparseMatrix->Save(ofs);
   ofs.close();
   return EXIT_SUCCESS;
 }
