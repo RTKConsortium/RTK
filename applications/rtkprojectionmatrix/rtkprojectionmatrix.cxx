@@ -25,70 +25,7 @@
 #include "rtkJosephBackProjectionImageFilter.h"
 #include "rtkConfiguration.h"
 #include "rtkMatlabSparseMatrix.h"
-
-namespace rtk
-{
-namespace Functor
-{
-template <class TInput, class TCoordinateType, class TOutput = TCoordinateType>
-class StoreSparseMatrixSplatWeightMultiplication
-{
-public:
-  StoreSparseMatrixSplatWeightMultiplication() = default;
-  ~StoreSparseMatrixSplatWeightMultiplication() = default;
-
-  bool
-  operator!=(const StoreSparseMatrixSplatWeightMultiplication &) const
-  {
-    return false;
-  }
-  bool
-  operator==(const StoreSparseMatrixSplatWeightMultiplication & other) const
-  {
-    return !(*this != other);
-  }
-
-  inline void
-  operator()(const TInput &        rayValue,
-             TOutput &             output,
-             const double          stepLengthInVoxel,
-             const double          voxelSize,
-             const TCoordinateType weight)
-  {
-    // One row of the matrix is one ray, it should be thread safe
-    m_SystemMatrix.put(
-      &rayValue - m_ProjectionsBuffer, &output - m_VolumeBuffer, weight * voxelSize * stepLengthInVoxel);
-  }
-  vnl_sparse_matrix<double> &
-  GetVnlSparseMatrix()
-  {
-    return m_SystemMatrix;
-  }
-  void
-  SetProjectionsBuffer(TInput * pb)
-  {
-    m_ProjectionsBuffer = pb;
-  }
-  void
-  SetVolumeBuffer(TOutput * vb)
-  {
-    m_VolumeBuffer = vb;
-  }
-
-private:
-  vnl_sparse_matrix<double> m_SystemMatrix;
-  TInput *                  m_ProjectionsBuffer;
-  TOutput *                 m_VolumeBuffer;
-};
-} // namespace Functor
-} // namespace rtk
-
-std::ostream &
-operator<<(std::ostream & out, rtk::MatlabSparseMatrix & matlabSparseMatrix)
-{
-  matlabSparseMatrix.Save(out);
-  return out;
-}
+#include "rtkStoreSparseMatrixSplatWeightMultiplication.h"
 
 
 int
@@ -185,7 +122,7 @@ main(int argc, char * argv[])
   }
   rtk::MatlabSparseMatrix matlabSparseMatrix(backProjection->GetSplatWeightMultiplication().GetVnlSparseMatrix(),
                                              backProjection->GetOutput());
-  ofs << matlabSparseMatrix;
+  matlabSparseMatrix.Save(ofs);
   ofs.close();
   return EXIT_SUCCESS;
 }
