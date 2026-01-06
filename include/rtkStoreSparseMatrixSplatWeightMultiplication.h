@@ -90,6 +90,15 @@ public:
   }
 
   /**
+   * \brief Resize the sparse matrix (rows = projection pixels, cols = volume voxels).
+   */
+  void
+  Resize(unsigned int rows, unsigned int cols)
+  {
+    m_SystemMatrix.resize(rows, cols);
+  }
+
+  /**
    * \brief Set pointer to projection data buffer for index computation.
    */
   void
