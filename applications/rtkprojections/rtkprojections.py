@@ -12,6 +12,7 @@ def build_parser():
         "--output", "-o", help="Output file name", type=str, required=True
     )
     rtk.add_rtkinputprojections_group(parser)
+    rtk.add_rtknoise_group(parser)
 
     # Parse the command line arguments
     return parser
@@ -29,10 +30,13 @@ def process(args_info: argparse.Namespace):
     if args_info.verbose:
         print(f"Reading projections...")
 
+    # Add noise
+    output = rtk.SetNoiseFromArgParse(reader.GetOutput(), args_info)
+
     # Write
     writer = itk.ImageFileWriter[OutputImageType].New()
     writer.SetFileName(args_info.output)
-    writer.SetInput(reader.GetOutput())
+    writer.SetInput(output)
     if args_info.verbose:
         print(f"Writing output to: {args_info.output}")
     writer.Update()

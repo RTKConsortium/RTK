@@ -28,6 +28,12 @@
 #include "rtkProjectionsReader.h"
 #include <itkRegularExpressionSeriesFileNames.h>
 #include <itksys/RegularExpression.hxx>
+#include <itkMultiplyImageFilter.h>
+#include <itkExpImageFilter.h>
+#include <itkShotNoiseImageFilter.h>
+#include <itkThresholdImageFilter.h>
+#include <itkLogImageFilter.h>
+#include "rtkAdditiveGaussianNoiseImageFilter.h"
 
 namespace rtk
 {
@@ -280,6 +286,65 @@ SetProjectionsReaderFromGgo(TProjectionsReaderType * reader, const TArgsInfo & a
   // Pass list to projections reader
   reader->SetFileNames(fileNames);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(reader->UpdateOutputInformation());
+}
+
+
+template <class TImageType, class TArgsInfo>
+typename TImageType::Pointer
+SetNoiseFromGgo(typename TImageType::Pointer projections, const TArgsInfo & args_info)
+{
+  using ImageType = TImageType;
+
+  // Gaussian noise
+  if (args_info.gaussian_given)
+  {
+    auto noisy = rtk::AdditiveGaussianNoiseImageFilter<ImageType>::New();
+    noisy->SetInput(projections);
+    noisy->SetMean(args_info.gaussian_arg[0]);
+    noisy->SetStandardDeviation(args_info.gaussian_arg[1]);
+
+    TRY_AND_EXIT_ON_ITK_EXCEPTION(noisy->Update());
+    projections = noisy->GetOutput();
+  }
+
+  // Poisson noise
+  if (args_info.poisson_given)
+  {
+    auto multiply = itk::MultiplyImageFilter<ImageType>::New();
+    multiply->SetInput(projections);
+    multiply->SetConstant(-args_info.poisson_arg[1]); // -muref
+
+    auto expf = itk::ExpImageFilter<ImageType, ImageType>::New();
+    expf->SetInput(multiply->GetOutput());
+
+    auto multiply2 = itk::MultiplyImageFilter<ImageType>::New();
+    multiply2->SetInput(expf->GetOutput());
+    multiply2->SetConstant(args_info.poisson_arg[0]); // I0
+
+    auto poisson = itk::ShotNoiseImageFilter<ImageType>::New();
+    poisson->SetInput(multiply2->GetOutput());
+
+    auto threshold = itk::ThresholdImageFilter<ImageType>::New();
+    threshold->SetInput(poisson->GetOutput());
+    threshold->SetLower(1.);
+    threshold->SetOutsideValue(1.);
+
+    auto multiply3 = itk::MultiplyImageFilter<ImageType>::New();
+    multiply3->SetInput(threshold->GetOutput());
+    multiply3->SetConstant(1. / args_info.poisson_arg[0]);
+
+    auto logf = itk::LogImageFilter<ImageType, ImageType>::New();
+    logf->SetInput(multiply3->GetOutput());
+
+    auto multiply4 = itk::MultiplyImageFilter<ImageType>::New();
+    multiply4->SetInput(logf->GetOutput());
+    multiply4->SetConstant(-1. / args_info.poisson_arg[1]);
+
+    TRY_AND_EXIT_ON_ITK_EXCEPTION(multiply4->Update());
+    projections = multiply4->GetOutput();
+  }
+
+  return projections;
 }
 
 /** \brief Set the correct RTK backprojection type from gengetopt

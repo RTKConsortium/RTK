@@ -102,10 +102,14 @@ main(int argc, char * argv[])
 
   TRY_AND_EXIT_ON_ITK_EXCEPTION(ppc->Update())
 
+  // Add noise
+  OutputImageType::Pointer output = ppc->GetOutput();
+  output = rtk::SetNoiseFromGgo<OutputImageType, args_info_rtkprojectgeometricphantom>(output, args_info);
+
   // Write
   if (args_info.verbose_flag)
     std::cout << "Projecting and writing... " << std::flush;
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(itk::WriteImage(ppc->GetOutput(), args_info.output_arg))
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(itk::WriteImage(output, args_info.output_arg))
 
   return EXIT_SUCCESS;
 }

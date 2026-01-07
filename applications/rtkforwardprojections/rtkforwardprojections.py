@@ -83,6 +83,7 @@ def build_parser():
     warp_forwardprojection_group.add_argument("--dvf", help="Input 4D DVF", type=str)
 
     rtk.add_rtk3Doutputimage_group(parser)
+    rtk.add_rtknoise_group(parser)
 
     return parser
 
@@ -227,13 +228,16 @@ def process(args_info):
     if not args_info.lowmem:
         forwardProjection.Update()
 
+    # Add noise
+    output = rtk.SetNoiseFromArgParse(forwardProjection.GetOutput(), args_info)
+
     # Write
     if args_info.verbose:
         print("Writing...")
 
     writer = itk.ImageFileWriter[OutputImageType].New()
     writer.SetFileName(args_info.output)
-    writer.SetInput(forwardProjection.GetOutput())
+    writer.SetInput(output)
     writer.Update()
 
     if args_info.verbose:
