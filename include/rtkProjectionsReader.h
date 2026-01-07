@@ -322,19 +322,21 @@ private:
   /** Copy of parameters for the mini-pipeline. Parameters are checked and
    * propagated when required in the GenerateOutputInformation. Refer to the
    * documentation of the corresponding filter for more information. */
-  OutputImagePointType         m_Origin;
-  OutputImageSpacingType       m_Spacing;
-  OutputImageDirectionType     m_Direction;
-  OutputImageSizeType          m_LowerBoundaryCropSize;
-  OutputImageSizeType          m_UpperBoundaryCropSize;
-  ShrinkFactorsType            m_ShrinkFactors;
-  MedianRadiusType             m_MedianRadius;
-  double                       m_AirThreshold{ 32000 };
-  double                       m_ScatterToPrimaryRatio{ 0. };
-  double                       m_NonNegativityConstraintThreshold{ itk::NumericTraits<double>::NonpositiveMin() };
-  double                       m_I0{ itk::NumericTraits<double>::NonpositiveMin() };
-  double                       m_IDark{ 0. };
-  double                       m_ConditionalMedianThresholdMultiplier{ 1. };
+  OutputImagePointType     m_Origin;
+  OutputImageSpacingType   m_Spacing;
+  OutputImageDirectionType m_Direction;
+  itk::SizeValueType       m_DefaultBoundaryCropValue{ itk::NumericTraits<itk::SizeValueType>::max() };
+  OutputImageSizeType      m_DefaultBoundaryCropSize = itk::MakeFilled<OutputImageSizeType>(m_DefaultBoundaryCropValue);
+  OutputImageSizeType      m_LowerBoundaryCropSize{ m_DefaultBoundaryCropSize };
+  OutputImageSizeType      m_UpperBoundaryCropSize{ m_DefaultBoundaryCropSize };
+  ShrinkFactorsType        m_ShrinkFactors;
+  MedianRadiusType         m_MedianRadius;
+  double                   m_AirThreshold{ 32000 };
+  double                   m_ScatterToPrimaryRatio{ 0. };
+  double                   m_NonNegativityConstraintThreshold{ itk::NumericTraits<double>::NonpositiveMin() };
+  double                   m_I0{ itk::NumericTraits<double>::NonpositiveMin() };
+  double                   m_IDark{ 0. };
+  double                   m_ConditionalMedianThresholdMultiplier{ 1. };
   WaterPrecorrectionVectorType m_WaterPrecorrectionCoefficients;
   bool                         m_ComputeLineIntegral{ true };
   unsigned int                 m_VectorComponent{ 0 };

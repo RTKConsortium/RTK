@@ -226,15 +226,17 @@ SetProjectionsReaderFromGgo(TProjectionsReaderType * reader, const TArgsInfo & a
   }
 
   // Crop boundaries
-  typename TProjectionsReaderType::OutputImageSizeType upperCrop, lowerCrop;
-  upperCrop.Fill(0);
-  lowerCrop.Fill(0);
+  auto lowerCrop = itk::MakeFilled<typename TProjectionsReaderType::OutputImageSizeType>(0);
   for (unsigned int i = 0; i < args_info.lowercrop_given; i++)
     lowerCrop[i] = args_info.lowercrop_arg[i];
-  reader->SetLowerBoundaryCropSize(lowerCrop);
+  if (args_info.lowercrop_given)
+    reader->SetLowerBoundaryCropSize(lowerCrop);
+
+  auto upperCrop = itk::MakeFilled<typename TProjectionsReaderType::OutputImageSizeType>(0);
   for (unsigned int i = 0; i < args_info.uppercrop_given; i++)
     upperCrop[i] = args_info.uppercrop_arg[i];
-  reader->SetUpperBoundaryCropSize(upperCrop);
+  if (args_info.uppercrop_given)
+    reader->SetUpperBoundaryCropSize(upperCrop);
 
   // Conditional median
   typename TProjectionsReaderType::MedianRadiusType medianRadius;

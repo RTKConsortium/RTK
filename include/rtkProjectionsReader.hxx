@@ -115,8 +115,6 @@ ProjectionsReader<TOutputImage>::ProjectionsReader()
   m_Spacing.Fill(itk::NumericTraits<typename OutputImageType::SpacingValueType>::max());
   m_Origin.Fill(itk::NumericTraits<typename OutputImageType::PointValueType>::max());
   m_Direction.Fill(itk::NumericTraits<typename OutputImageType::PointValueType>::max());
-  m_LowerBoundaryCropSize.Fill(0);
-  m_UpperBoundaryCropSize.Fill(0);
   m_ShrinkFactors.Fill(1);
   m_MedianRadius.Fill(0);
 }
@@ -309,9 +307,8 @@ ProjectionsReader<TOutputImage>::GenerateOutputInformation()
         m_ElektaRawFilter = elekta;
 
         // Backward compatibility for default Elekta parameters
-        OutputImageSizeType defaultCropSize;
-        defaultCropSize.Fill(0);
-        if (m_LowerBoundaryCropSize == defaultCropSize && m_UpperBoundaryCropSize == defaultCropSize)
+        if (m_LowerBoundaryCropSize == m_DefaultBoundaryCropSize &&
+            m_UpperBoundaryCropSize == m_DefaultBoundaryCropSize)
         {
           m_LowerBoundaryCropSize.Fill(4);
           m_LowerBoundaryCropSize[2] = 0;
@@ -517,9 +514,7 @@ ProjectionsReader<TOutputImage>::PropagateParametersToMiniPipeline()
     }
 
     // Crop
-    OutputImageSizeType defaultCropSize;
-    defaultCropSize.Fill(0);
-    if (m_LowerBoundaryCropSize != defaultCropSize || m_UpperBoundaryCropSize != defaultCropSize)
+    if (m_LowerBoundaryCropSize != m_DefaultBoundaryCropSize || m_UpperBoundaryCropSize != m_DefaultBoundaryCropSize)
     {
       if (m_CropFilter.GetPointer() == nullptr)
       {
@@ -530,7 +525,11 @@ ProjectionsReader<TOutputImage>::PropagateParametersToMiniPipeline()
         using CropType = itk::CropImageFilter<TInputImage, TInputImage>;
         auto * crop = dynamic_cast<CropType *>(m_CropFilter.GetPointer());
         assert(crop != nullptr);
+        if (m_LowerBoundaryCropSize == m_DefaultBoundaryCropSize)
+          m_LowerBoundaryCropSize.Fill(0);
         crop->SetLowerBoundaryCropSize(m_LowerBoundaryCropSize);
+        if (m_UpperBoundaryCropSize == m_DefaultBoundaryCropSize)
+          m_UpperBoundaryCropSize.Fill(0);
         crop->SetUpperBoundaryCropSize(m_UpperBoundaryCropSize);
         crop->SetInput(nextInput);
         nextInput = crop->GetOutput();
