@@ -65,7 +65,8 @@ public:
   /** Types inherited from the Superclass */
   using OffsetValueType = typename Superclass::OffsetValueType;
   using RegionType = typename Superclass::RegionType;
-  using PointType = typename itk::Vector<double, 3>;
+  using VectorType = typename itk::Vector<double, 3>;
+  using PointType = typename itk::Point<double, 3>;
   using IndexValueType = typename Superclass::IndexValueType;
 
   using MatrixType = itk::Matrix<double, 3, 4>;
@@ -130,7 +131,7 @@ public:
   {
     return this->m_PixelPosition;
   }
-  const PointType &
+  const VectorType &
   GetSourceToPixel()
   {
     return this->m_SourceToPixel;
@@ -138,7 +139,7 @@ public:
 
   /** Computes and returns a unit vector pointing from the source to the
    * current pixel, i.e., GetSourceToPixel()/||GetSourceToPixel()||. */
-  const PointType
+  const VectorType
   GetDirection()
   {
     return m_SourceToPixel / m_SourceToPixel.GetNorm();
@@ -158,7 +159,7 @@ protected:
   MatrixType                                     m_PostMultiplyMatrix;
   PointType                                      m_SourcePosition;
   PointType                                      m_PixelPosition;
-  PointType                                      m_SourceToPixel;
+  VectorType                                     m_SourceToPixel;
 };
 } // namespace rtk
 

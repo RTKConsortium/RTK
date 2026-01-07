@@ -82,7 +82,7 @@ main(int, char **)
   DEType::VectorType axis;
   axis.Fill(60.);
   e1->SetAxis(axis);
-  DEType::VectorType center;
+  DEType::PointType center;
   center.Fill(0.);
   e1->SetCenter(center);
   e1->SetAngle(0.);
@@ -96,7 +96,7 @@ main(int, char **)
   DEType::VectorType axis2;
   axis2.Fill(8.);
   e2->SetAxis(axis2);
-  DEType::VectorType center2;
+  DEType::PointType center2;
   center2.Fill(0.);
   e2->SetCenter(center2);
   e2->SetAngle(0.);

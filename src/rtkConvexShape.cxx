@@ -114,14 +114,15 @@ ConvexShape ::ApplyClipPlanes(const PointType &  rayOrigin,
     // Ray parallel to plane
     if (rayDirPlaneDir == itk::NumericTraits<ScalarType>::ZeroValue())
     {
-      if (rayOrigin * m_PlaneDirections[i] < m_PlanePositions[i])
+      if (rayOrigin.GetVectorFromOrigin() * m_PlaneDirections[i] < m_PlanePositions[i])
         continue;
       else
         return false;
     }
 
     // Compute plane distance in ray direction
-    ScalarType planeDist = (m_PlanePositions[i] - rayOrigin * m_PlaneDirections[i]) / rayDirPlaneDir;
+    ScalarType planeDist =
+      (m_PlanePositions[i] - rayOrigin.GetVectorFromOrigin() * m_PlaneDirections[i]) / rayDirPlaneDir;
 
     // If plane is pointing in the same direction as the ray
     if (rayDirPlaneDir >= itk::NumericTraits<ScalarType>::ZeroValue())
@@ -145,7 +146,7 @@ ConvexShape ::ApplyClipPlanes(const PointType & point) const
 {
   for (size_t i = 0; i < m_PlaneDirections.size(); i++)
   {
-    if (point * m_PlaneDirections[i] >= m_PlanePositions[i])
+    if (point.GetVectorFromOrigin() * m_PlaneDirections[i] >= m_PlanePositions[i])
       return false;
   }
   return true;

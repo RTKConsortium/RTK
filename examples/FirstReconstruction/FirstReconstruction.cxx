@@ -53,7 +53,7 @@ main(int argc, char ** argv)
   REIType::Pointer rei = REIType::New();
   rei->SetDensity(2.);
   rei->SetAngle(0.);
-  rei->SetCenter(itk::MakeVector(0., 0., 10.));
+  rei->SetCenter(itk::MakePoint(0., 0., 10.));
   rei->SetAxis(itk::MakeVector(50., 50., 50.));
   rei->SetGeometry(geometry);
   rei->SetInput(constantImageSource->GetOutput());

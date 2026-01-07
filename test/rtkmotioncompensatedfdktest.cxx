@@ -94,7 +94,7 @@ main(int, char **)
     // Ellipse 1
     auto e1 = REIType::New();
     auto semiprincipalaxis = itk::MakeVector(60., 60., 60.);
-    auto center = itk::MakeVector(0., 0., 0.);
+    auto center = itk::MakePoint(0., 0., 0.);
     e1->SetInput(oneProjectionSource->GetOutput());
     e1->SetGeometry(oneProjGeometry);
     e1->SetDensity(2.);
@@ -111,7 +111,7 @@ main(int, char **)
     e2->SetGeometry(oneProjGeometry);
     e2->SetDensity(-1.);
     e2->SetAxis(itk::MakeVector(8., 8., 8.));
-    e2->SetCenter(itk::MakeVector(4 * (itk::Math::abs((4 + noProj) % 8 - 4.) - 2.), 0., 0.));
+    e2->SetCenter(itk::MakePoint(4 * (itk::Math::abs((4 + noProj) % 8 - 4.) - 2.), 0., 0.));
     e2->SetAngle(0.);
     e2->Update();
 
@@ -197,7 +197,7 @@ main(int, char **)
   e1->SetInput(tomographySource->GetOutput());
   e1->SetDensity(2.);
   e1->SetAxis(itk::MakeVector(60., 60., 60.));
-  e1->SetCenter(itk::MakeVector(0., 0., 0.));
+  e1->SetCenter(itk::MakePoint(0., 0., 0.));
   e1->SetAngle(0.);
   e1->InPlaceOff();
   TRY_AND_EXIT_ON_ITK_EXCEPTION(e1->Update())
@@ -207,7 +207,7 @@ main(int, char **)
   e2->SetInput(e1->GetOutput());
   e2->SetDensity(-1.);
   e2->SetAxis(itk::MakeVector(8., 8., 8.));
-  e2->SetCenter(itk::MakeVector(0., 0., 0.));
+  e2->SetCenter(itk::MakePoint(0., 0., 0.));
   e2->SetAngle(0.);
   e2->InPlaceOff();
   TRY_AND_EXIT_ON_ITK_EXCEPTION(e2->Update())

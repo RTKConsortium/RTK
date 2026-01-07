@@ -73,26 +73,28 @@ MaskCollimationImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerateDa
     for (unsigned int pix = 0; pix < npixperslice; pix++, itIn->Next(), ++itOut)
     {
       using PointType = typename InputRegionIterator::PointType;
-      PointType source = itIn->GetSourcePosition();
-      double    sourceNorm = source.GetNorm();
-      PointType pixel = itIn->GetPixelPosition();
+      using VectorType = typename InputRegionIterator::VectorType;
 
-      PointType pixelToSource(source - pixel);
-      PointType sourceDir = source / sourceNorm;
+      VectorType source = itIn->GetSourcePosition().GetVectorFromOrigin();
+      double     sourceNorm = source.GetNorm();
+      VectorType pixel = itIn->GetPixelPosition().GetVectorFromOrigin();
+
+      VectorType pixelToSource(source - pixel);
+      VectorType sourceDir = source / sourceNorm;
 
       // Get the 3D position of the ray and the main plane
       // (at 0,0,0 and orthogonal to source to center)
       const double mag = sourceNorm / (pixelToSource * sourceDir);
-      PointType    intersection = source - mag * pixelToSource;
+      VectorType   intersection = source - mag * pixelToSource;
 
       // The first coordinate on the plane is measured along the detector
       // orthogonal to the plane defined by the detector source direction
       // and the secon detector vector
-      PointType v;
+      VectorType v;
       v[0] = this->GetGeometry()->GetRotationMatrix(iProj)[m_RotationAxisIndex][0];
       v[1] = this->GetGeometry()->GetRotationMatrix(iProj)[m_RotationAxisIndex][1];
       v[2] = this->GetGeometry()->GetRotationMatrix(iProj)[m_RotationAxisIndex][2];
-      PointType u = CrossProduct(v, sourceDir);
+      VectorType u = CrossProduct(v, sourceDir);
       u /= u.GetNorm();
       double ucoord = u * intersection;
 

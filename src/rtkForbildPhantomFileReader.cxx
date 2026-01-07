@@ -180,11 +180,11 @@ ForbildPhantomFileReader::CreateForbildCylinder(const std::string & s, const std
     rot = ComputeRotationMatrixBetweenVectors(planeDir, dir);
   }
   auto q = QuadricShape::New();
-  q->SetEllipsoid(VectorType(0.), axes);
+  q->SetEllipsoid(itk::MakePoint(0., 0., 0.), axes);
   q->AddClipPlane(planeDir, 0.5 * l);
   q->AddClipPlane(-1. * planeDir, 0.5 * l);
   q->Rotate(rot);
-  q->Translate(m_Center);
+  q->Translate(m_Center.GetVectorFromOrigin());
   m_ConvexShape = q.GetPointer();
 }
 
@@ -210,7 +210,7 @@ ForbildPhantomFileReader::CreateForbildElliptCyl(const std::string & s, const st
     planeDir[i] = (axes[i] == 0.) ? 1. : 0.;
 
   auto q = QuadricShape::New();
-  q->SetEllipsoid(VectorType(0.), axes);
+  q->SetEllipsoid(itk::MakePoint(0., 0., 0.), axes);
   q->AddClipPlane(planeDir, 0.5 * l);
   q->AddClipPlane(-1. * planeDir, 0.5 * l);
   if (fig == "Ellipt_Cyl")
@@ -252,7 +252,7 @@ ForbildPhantomFileReader::CreateForbildElliptCyl(const std::string & s, const st
     }
     q->Rotate(rot);
   }
-  q->Translate(m_Center);
+  q->Translate(m_Center.GetVectorFromOrigin());
   m_ConvexShape = q.GetPointer();
 }
 
@@ -267,7 +267,7 @@ ForbildPhantomFileReader::CreateForbildEllipsoid(const std::string & s, const st
   if (!FindParameterInString("dz", s, axes[2]))
     itkExceptionMacro(<< "Could not find dz in " << s);
   auto q = QuadricShape::New();
-  q->SetEllipsoid(VectorType(0.), axes);
+  q->SetEllipsoid(itk::MakePoint(0., 0., 0.), axes);
 
   if (fig == "Ellipsoid_free")
   {
@@ -296,7 +296,7 @@ ForbildPhantomFileReader::CreateForbildEllipsoid(const std::string & s, const st
     }
     q->Rotate(rot);
   }
-  q->Translate(m_Center);
+  q->Translate(m_Center.GetVectorFromOrigin());
   m_ConvexShape = q.GetPointer();
 }
 
@@ -343,7 +343,7 @@ ForbildPhantomFileReader::CreateForbildCone(const std::string & s, const std::st
     q->AddClipPlane(planeDir, l + axes[2]);
     spatialOffset[2] = -axes[2] - 0.5 * l;
   }
-  q->SetEllipsoid(VectorType(0.), axes);
+  q->SetEllipsoid(itk::MakePoint(0., 0., 0.), axes);
   q->SetJ(0.);
 
   RotationMatrixType rot;
@@ -376,7 +376,8 @@ ForbildPhantomFileReader::CreateForbildCone(const std::string & s, const std::st
     itkExceptionMacro(<< "Unknown figure: " << fig);
   }
   q->Rotate(rot);
-  q->Translate(m_Center + rot * spatialOffset);
+  VectorType translation = m_Center.GetVectorFromOrigin() + rot * spatialOffset.GetVectorFromOrigin();
+  q->Translate(translation);
   m_ConvexShape = q.GetPointer();
 }
 
