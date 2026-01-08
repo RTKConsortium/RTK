@@ -409,6 +409,18 @@ rtk_add_test(rtkConjugateGradientExampleTest
   ../examples/ConjugateGradient/ConjugateGradient.cxx
   DATA{Input/Forbild/Thorax}
 )
+rtk_add_test(rtkGenerateFourDDataExampleTest
+  ../examples/GenerateFourDData/GenerateFourDData.cxx
+)
+rtk_add_test(rtkFourDConjugateGradientExampleTest
+  ../examples/FourDConjugateGradient/FourDConjugateGradient.cxx
+)
+rtk_add_test(rtkFourDFDKExampleTest
+  ../examples/FourDFDK/FourDFDK.cxx
+)
+rtk_add_test(rtkFourDROOSTERExampleTest
+  ../examples/FourDROOSTER/FourDROOSTER.cxx
+)
 
 #-----------------------------------------------------------------------------
 # Test drivers
