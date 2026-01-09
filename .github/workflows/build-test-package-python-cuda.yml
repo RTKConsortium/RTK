@@ -19,8 +19,8 @@ jobs:
       max-parallel: 2
       matrix:
         python3-minor-version: ${{ github.event_name == 'pull_request' && fromJSON('["11"]') || fromJSON('["9","10","11"]') }}
-        manylinux-platform: ["_2_28-x64","2014-x64"]
-        cuda-version: ["118","128","130"]
+        manylinux-platform: ${{ github.event_name == 'pull_request' && fromJSON('["_2_28-x64"]') || fromJSON('["_2_28-x64","2014-x64"]') }}
+        cuda-version: ${{ github.event_name == 'pull_request' && fromJSON('["128"]') || fromJSON('["118","128","130"]') }}
 
     steps:
     - uses: actions/checkout@v4
@@ -112,7 +112,7 @@ jobs:
       max-parallel: 2
       matrix:
         python3-minor-version: ${{ github.event_name == 'pull_request' && fromJSON('["11"]') || fromJSON('["9","10","11"]') }}
-        cuda-version: ["128","130"]
+        cuda-version: ${{ github.event_name == 'pull_request' && fromJSON('["128"]') || fromJSON('["128","130"]') }}
 
     steps:
     - uses: actions/checkout@v4
