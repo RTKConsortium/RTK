@@ -16,7 +16,7 @@
  *
  *=========================================================================*/
 
-#include "rtkmotioncompensatedfourdconjugategradient_ggo.h"
+#include "rtkmcfourdconjugategradient_ggo.h"
 #include "rtkGgoFunctions.h"
 
 #include "rtkMotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter.h"
@@ -32,7 +32,7 @@
 int
 main(int argc, char * argv[])
 {
-  GGO(rtkmotioncompensatedfourdconjugategradient, args_info);
+  GGO(rtkmcfourdconjugategradient, args_info);
 
   using OutputPixelType = float;
   using DVFVectorType = itk::CovariantVector<OutputPixelType, 3>;
@@ -52,7 +52,7 @@ main(int argc, char * argv[])
   // Projections reader
   using ReaderType = rtk::ProjectionsReader<ProjectionStackType>;
   auto reader = ReaderType::New();
-  rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkmotioncompensatedfourdconjugategradient>(reader, args_info);
+  rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkmcfourdconjugategradient>(reader, args_info);
 
   // Geometry
   if (args_info.verbose_flag)
@@ -74,7 +74,7 @@ main(int argc, char * argv[])
     // Create new empty volume
     using ConstantImageSourceType = rtk::ConstantImageSource<VolumeSeriesType>;
     auto constantImageSource = ConstantImageSourceType::New();
-    rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkmotioncompensatedfourdconjugategradient>(
+    rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkmcfourdconjugategradient>(
       constantImageSource, args_info);
 
     // GenGetOpt can't handle default arguments for multiple arguments like size or spacing.
