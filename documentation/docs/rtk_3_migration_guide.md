@@ -47,3 +47,7 @@ The CUDA forward projector and the CUDA ray-cast backprojector now use the minim
 ## rtkdualenergy applications and associated code removed
 
 Historically, several applications had been developed to handle material decomposition of specific dual-energy spectral CT acquisitions with fast switching. `rtkdualenergysimplexdecomposition` and `rtkdualenergyforwardmodel` and the associated code in `DualEnergyNegativeLogLikelihood` and `SpectralForwardModelImageFilter` have been removed as one can do the same with `rtkspectralsimplexdecomposition` and `rtkdualenergysimplexdecomposition`.
+
+## rtkmotioncompensatedfourdconjugategradient has been renamed
+
+For consistency with `rtkmcrooster`, `rtkmotioncompensatedfourdconjugategradient` has been renamed to `rtkmcfourdconjugategradient`.

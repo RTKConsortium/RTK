@@ -59,8 +59,6 @@ namespace rtk
  * }
  * \enddot
  *
- * \test rtkmotioncompensatedfourdconjugategradienttest.cxx
- *
  * \author Cyril Mory
  *
  * \ingroup RTK ReconstructionAlgorithm
@@ -122,6 +120,14 @@ public:
   /** Set and Get for the UseCudaCyclicDeformation variable */
   itkSetMacro(UseCudaCyclicDeformation, bool);
   itkGetMacro(UseCudaCyclicDeformation, bool);
+
+  /** Forward projector can only be FP_CUDAWARP */
+  virtual void
+  SetForwardProjectionFilter(ForwardProjectionType fwtype) override;
+
+  /** Backprojector can only be BP_CUDAWARP */
+  virtual void
+  SetBackProjectionFilter(BackProjectionType bptype) override;
 
 protected:
   MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter();

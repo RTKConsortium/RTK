@@ -30,6 +30,8 @@ MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter<VolumeSeries
   this->SetNumberOfRequiredInputs(3);
   this->m_ProjStackToFourDFilter = MCProjStackToFourDType::New();
   this->m_CGOperator = MCCGOperatorType::New();
+  this->m_CurrentForwardProjectionConfiguration = ForwardProjectionType::FP_CUDAWARP;
+  this->m_CurrentBackProjectionConfiguration = BackProjectionType::BP_CUDAWARP;
 }
 
 template <typename VolumeSeriesType, typename ProjectionStackType>
@@ -78,6 +80,28 @@ MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter<VolumeSeries
 #else
   (void)signal;
 #endif
+}
+
+template <typename VolumeSeriesType, typename ProjectionStackType>
+void
+MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::
+  SetForwardProjectionFilter(ForwardProjectionType fwtype)
+{
+  if (this->m_CurrentForwardProjectionConfiguration != fwtype)
+  {
+    itkExceptionMacro("MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter only accepts FP_CUDAWARP");
+  }
+}
+
+template <typename VolumeSeriesType, typename ProjectionStackType>
+void
+MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::
+  SetBackProjectionFilter(BackProjectionType bptype)
+{
+  if (this->m_CurrentBackProjectionConfiguration != bptype)
+  {
+    itkExceptionMacro("MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter only accepts BP_CUDAWARP");
+  }
 }
 
 template <typename VolumeSeriesType, typename ProjectionStackType>

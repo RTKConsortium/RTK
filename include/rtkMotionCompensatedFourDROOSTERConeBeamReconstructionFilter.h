@@ -178,6 +178,14 @@ public:
   void
   SetSignal(const std::vector<double> signal) override;
 
+  /** Forward projector can only be FP_CUDAWARP */
+  virtual void
+  SetForwardProjectionFilter(ForwardProjectionType fwtype) override;
+
+  /** Backprojector can only be BP_CUDAWARP */
+  virtual void
+  SetBackProjectionFilter(BackProjectionType bptype) override;
+
 protected:
   MotionCompensatedFourDROOSTERConeBeamReconstructionFilter();
   ~MotionCompensatedFourDROOSTERConeBeamReconstructionFilter() override = default;

@@ -1,13 +1,13 @@
-wrap_ggo(rtkmcrooster_GGO_C rtkmcrooster.ggo ../rtkinputprojections_section.ggo ../rtk4Doutputimage_section.ggo)
+wrap_ggo(rtkmcfourdconjugategradient_GGO_C rtkmcfourdconjugategradient.ggo ../rtkinputprojections_section.ggo ../rtk4Doutputimage_section.ggo ../rtkiterations_section.ggo)
 add_executable(
-  rtkmcrooster
-  rtkmcrooster.cxx
-  ${rtkmcrooster_GGO_C}
+  rtkmcfourdconjugategradient
+  rtkmcfourdconjugategradient.cxx
+  ${rtkmcfourdconjugategradient_GGO_C}
 )
-target_link_libraries(rtkmcrooster RTK)
+target_link_libraries(rtkmcfourdconjugategradient RTK)
 
 set_target_properties(
-  rtkmcrooster
+  rtkmcfourdconjugategradient
   PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY
       "${CMAKE_BINARY_DIR}/bin"
@@ -17,7 +17,7 @@ set_target_properties(
 if(NOT RTK_INSTALL_NO_EXECUTABLES)
   install(
     TARGETS
-      rtkmcrooster
+      rtkmcfourdconjugategradient
     RUNTIME
       DESTINATION ${RTK_INSTALL_RUNTIME_DIR}
       COMPONENT Runtime

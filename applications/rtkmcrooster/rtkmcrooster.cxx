@@ -117,8 +117,6 @@ main(int argc, char * argv[])
   using MCFourDROOSTERTYPE =
     rtk::MotionCompensatedFourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>;
   auto mcrooster = MCFourDROOSTERTYPE::New();
-  mcrooster->SetForwardProjectionFilter(MCFourDROOSTERTYPE::FP_CUDAWARP);
-  mcrooster->SetBackProjectionFilter(MCFourDROOSTERTYPE::BP_CUDAWARP);
   mcrooster->SetInputVolumeSeries(inputFilter->GetOutput());
   mcrooster->SetCG_iterations(args_info.cgiter_arg);
   mcrooster->SetMainLoop_iterations(args_info.niter_arg);
