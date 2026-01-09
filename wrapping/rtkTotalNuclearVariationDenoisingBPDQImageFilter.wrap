@@ -1,0 +1,9 @@
+itk_wrap_class("rtk::TotalNuclearVariationDenoisingBPDQImageFilter" POINTER)
+  foreach(d ${ITK_WRAP_IMAGE_DIMS})
+    if(d GREATER 1)
+      math(EXPR gradDim "${d}-1")
+        itk_wrap_template("I${ITKM_F}${d}ICVF${gradDim}${d}"
+          "itk::Image<${ITKT_F}, ${d}>, itk::Image<itk::CovariantVector< ${ITKT_F}, ${gradDim} >, ${d}>")
+    endif()
+  endforeach()
+itk_end_wrap_class()
