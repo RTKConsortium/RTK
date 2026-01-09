@@ -82,9 +82,14 @@ WarpProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType>::Ge
   {
     CudaWarpBackProjectionImageFilter * wbp;
     wbp = dynamic_cast<CudaWarpBackProjectionImageFilter *>(this->m_BackProjectionFilter.GetPointer());
+    if (wbp == nullptr)
+      itkGenericExceptionMacro(
+        << "WarpProjectionStackToFourDImageFilter only handles CudaWarpBackProjectionImageFilter");
     using CudaDVFImageType = itk::CudaImage<VectorForDVF, VolumeSeriesType::ImageDimension - 1>;
     CudaDVFImageType * cudvf;
     cudvf = dynamic_cast<CudaDVFImageType *>(m_DVFInterpolatorFilter->GetOutput());
+    if (cudvf == nullptr)
+      itkGenericExceptionMacro(<< "WarpProjectionStackToFourDImageFilter only handles CovariantVector");
     wbp->SetDisplacementField(cudvf);
   }
 #endif

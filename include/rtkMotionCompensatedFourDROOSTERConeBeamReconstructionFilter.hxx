@@ -31,6 +31,8 @@ MotionCompensatedFourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, Proj
 #ifdef RTK_USE_CUDA
   this->m_FourDCGFilter = MotionCompensatedFourDCGFilterType::New();
 #endif
+  this->m_CurrentForwardProjectionConfiguration = ForwardProjectionType::FP_CUDAWARP;
+  this->m_CurrentBackProjectionConfiguration = BackProjectionType::BP_CUDAWARP;
 }
 
 template <typename VolumeSeriesType, typename ProjectionStackType>
@@ -39,6 +41,28 @@ MotionCompensatedFourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, Proj
   const std::vector<double> signal)
 {
   this->m_FourDCGFilter->SetSignal(signal);
+}
+
+template <typename VolumeSeriesType, typename ProjectionStackType>
+void
+MotionCompensatedFourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::
+  SetForwardProjectionFilter(ForwardProjectionType fwtype)
+{
+  if (this->m_CurrentForwardProjectionConfiguration != fwtype)
+  {
+    itkExceptionMacro("MotionCompensatedFourDROOSTERConeBeamReconstructionFilter only accepts FP_CUDAWARP");
+  }
+}
+
+template <typename VolumeSeriesType, typename ProjectionStackType>
+void
+MotionCompensatedFourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::
+  SetBackProjectionFilter(BackProjectionType bptype)
+{
+  if (this->m_CurrentBackProjectionConfiguration != bptype)
+  {
+    itkExceptionMacro("MotionCompensatedFourDROOSTERConeBeamReconstructionFilter only accepts BP_CUDAWARP");
+  }
 }
 
 template <typename VolumeSeriesType, typename ProjectionStackType>

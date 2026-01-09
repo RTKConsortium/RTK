@@ -102,8 +102,6 @@ main(int argc, char * argv[])
   using MCFourDCGFilterType =
     rtk::MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>;
   auto mcfourdcg = MCFourDCGFilterType::New();
-  mcfourdcg->SetForwardProjectionFilter(MCFourDCGFilterType::FP_CUDAWARP);
-  mcfourdcg->SetBackProjectionFilter(MCFourDCGFilterType::BP_CUDAWARP);
   mcfourdcg->SetInputVolumeSeries(inputFilter->GetOutput());
   mcfourdcg->SetInputProjectionStack(reader->GetOutput());
   mcfourdcg->SetGeometry(geometry);
