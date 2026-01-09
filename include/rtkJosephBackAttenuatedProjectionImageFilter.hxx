@@ -166,6 +166,10 @@ JosephBackAttenuatedProjectionImageFilter<TInputImage,
                                           TSplatWeightMultiplication,
                                           TSumAlongRay>::Init()
 {
+  if (!this->GetInput(2))
+  {
+    itkExceptionMacro("Attenuation map (input 2) must be set before running the attenuated back projector.");
+  }
   this->m_InterpolationWeightMultiplication.SetAttenuationMinusEmissionMapsPtrDiff(
     this->GetInput(2)->GetBufferPointer() - this->GetInput(0)->GetBufferPointer());
   this->m_SumAlongRay.SetAttenuationPixel(this->m_InterpolationWeightMultiplication.GetAttenuationPixel());

@@ -172,6 +172,10 @@ JosephForwardAttenuatedProjectionImageFilter<TInputImage,
                                              TProjectedValueAccumulation,
                                              TComputeAttenuationCorrection>::BeforeThreadedGenerateData()
 {
+  if (!this->GetInput(2))
+  {
+    itkExceptionMacro("Attenuation map (input 2) must be set before running the attenuated forward projector.");
+  }
   this->GetInterpolationWeightMultiplication().SetAttenuationMinusEmissionMapsPtrDiff(
     this->GetInput(2)->GetBufferPointer() - this->GetInput(1)->GetBufferPointer());
   this->GetProjectedValueAccumulation().SetAttenuationVector(
