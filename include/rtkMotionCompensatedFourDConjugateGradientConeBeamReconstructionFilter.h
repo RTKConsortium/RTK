@@ -121,6 +121,14 @@ public:
   itkSetMacro(UseCudaCyclicDeformation, bool);
   itkGetMacro(UseCudaCyclicDeformation, bool);
 
+  /** Forward projector can only be FP_CUDAWARP */
+  virtual void
+  SetForwardProjectionFilter(ForwardProjectionType fwtype) override;
+
+  /** Backprojector can only be BP_CUDAWARP */
+  virtual void
+  SetBackProjectionFilter(BackProjectionType bptype) override;
+
 protected:
   MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter();
   ~MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter() override = default;
