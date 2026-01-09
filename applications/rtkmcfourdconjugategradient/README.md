@@ -21,7 +21,7 @@ Copy paste the projections and DVFs in the same folder, then from that folder, r
 
 ```
 # Reconstruct with motion-compensated 4D conjugate gradient
-rtkmotioncompensatedfourdconjugategradient \
+rtkmcfourdconjugategradient \
 -p . \
 -r correctedProjs.mha \
 -o mc_fourdcg.mha \

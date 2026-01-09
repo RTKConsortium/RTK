@@ -59,8 +59,6 @@ namespace rtk
  * }
  * \enddot
  *
- * \test rtkmotioncompensatedfourdconjugategradienttest.cxx
- *
  * \author Cyril Mory
  *
  * \ingroup RTK ReconstructionAlgorithm
