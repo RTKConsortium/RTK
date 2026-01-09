@@ -112,6 +112,12 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>::GenerateOutputInformati
                              << "Consider disabling it by setting m_Disable=true "
                              << "or using the nodisplaced flag of the application you are running");
   }
+  else if (this->GetGeometry()->GetSourceToDetectorDistances().front() == 0.)
+  {
+    itkGenericExceptionMacro(<< "Displaced detector cannot handle parallel geometry. "
+                             << "Consider disabling it by setting m_Disable=true "
+                             << "or using the nodisplaced flag of the application you are running");
+  }
 
   // Compute the X coordinates of the corners of the image
   typename Superclass::InputImageType::PointType corner;
