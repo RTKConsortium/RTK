@@ -19,25 +19,32 @@
 #ifndef rtkMatlabSparseMatrix_h
 #define rtkMatlabSparseMatrix_h
 
+#include "rtkConfiguration.h"
 #include <vnl/vnl_sparse_matrix.h>
 
 namespace rtk
 {
+
 /** \class MatlabSparseMatrix
  *
- * sparse matrix in Matlab format
- * Initilaize it with vnl_sparse_matrix
- * Save it into .mat format
+ * \brief Sparse matrix in Matlab format
  *
+ * Converts a vnl_sparse_matrix to Matlab .mat format.
+ * Initialize it with vnl_sparse_matrix and save it into .mat format.
+ *
+ * \author Thomas Baudier
+ *
+ * \ingroup RTK
  */
-
 class MatlabSparseMatrix
 {
 public:
   template <class TOutputImage>
   MatlabSparseMatrix(const vnl_sparse_matrix<double> & sparseMatrix, TOutputImage * output);
+
   void
   Save(std::ostream & out);
+
   void
   Print();
 
@@ -79,6 +86,7 @@ public:
 protected:
   MatlabSparseMatrixStruct m_MatlabSparseMatrix;
 };
+
 } // namespace rtk
 
 #ifndef ITK_MANUAL_INSTANTIATION
