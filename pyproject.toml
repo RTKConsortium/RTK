@@ -89,7 +89,7 @@ cmake.version = ">=3.16.3"
 cmake.args = []
 
 # A table of defines to pass to CMake when configuring the project. Additive.
-cmake.define = {}
+cmake.define = { RTK_PROBE_EACH_FILTER = "ON" }
 
 # Verbose printout when building.
 cmake.verbose = true

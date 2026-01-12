@@ -5,6 +5,27 @@ import difflib
 import inspect
 from typing import Optional
 
+
+def _enable_global_resource_probe_if_available(verbose: bool) -> None:
+    if not verbose:
+        return
+
+    # Mirror the C++ apps: --verbose enables RTK probe reporting (when compiled in).
+    try:
+        grp = getattr(rtk, "GlobalResourceProbe", None)
+        if grp is None:
+            return
+
+        instance = grp.GetInstance() if hasattr(grp, "GetInstance") else grp.New()
+        if hasattr(instance, "SetVerbose"):
+            instance.SetVerbose(True)
+        elif hasattr(instance, "VerboseOn"):
+            instance.VerboseOn()
+    except Exception:
+        # Keep --verbose best-effort and never fail the application.
+        return
+
+
 __all__ = ["RTKArgumentParser"]
 
 
@@ -97,6 +118,8 @@ class RTKArgumentParser(argparse.ArgumentParser):
                     # Case 2: normal space-separated form (e.g. "1 2 3"). Just cast every token.
                     setattr(namespace, dest, [caster(tk) for tk in val])
             action.type = neutralized[dest]
+
+        _enable_global_resource_probe_if_available(getattr(namespace, "verbose", False))
         return namespace
 
     def parse_kwargs(self, func_name: Optional[str] = None, **kwargs):
