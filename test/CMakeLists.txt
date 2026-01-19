@@ -382,8 +382,23 @@ rtk_add_test(rtkConjugateGradientExampleTest
   ../examples/ConjugateGradient/ConjugateGradient.cxx
   DATA{Input/Forbild/Thorax}
 )
+rtk_add_test(rtkGenerateFourDDataExampleTest
+  ../examples/GenerateFourDData/GenerateFourDData.cxx
+)
+set_tests_properties(
+  rtkGenerateFourDDataExampleTest
+  PROPERTIES
+    FIXTURES_SETUP
+      FourDData
+)
 rtk_add_test(rtkFourDConjugateGradientExampleTest
   ../examples/FourDConjugateGradient/FourDConjugateGradient.cxx
+)
+set_tests_properties(
+  rtkFourDConjugateGradientExampleTest
+  PROPERTIES
+    FIXTURES_REQUIRED
+      FourDData
 )
 
 if(ITK_WRAP_PYTHON)
