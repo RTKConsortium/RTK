@@ -10,6 +10,12 @@ itk_wrap_class("rtk::DenoisingBPDQImageFilter" POINTER)
           "itk::Image<${ITKT_${t}}, ${d}>, itk::Image<${ITKT_${cvt}${d}}, ${d}>")
       endforeach()
     endforeach()
+    # Explicit float instantiation with gradient length (d-1) needed by TotalNuclearVariationDenoisingBPDQ
+    if(d GREATER 1)
+      math(EXPR gradDim "${d}-1")
+      itk_wrap_template("IF${d}ICVF${gradDim}${d}"
+        "itk::Image<float, ${d}>, itk::Image<itk::CovariantVector< float,${gradDim} >, ${d}>")
+    endif()
   endforeach()
   if(RTK_USE_CUDA)
     # CUDA instantiation required by TV denoising (base class specialization)
