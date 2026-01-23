@@ -41,6 +41,7 @@ _app_modules = [
     "rtkfourdconjugategradient",
     "rtkfourdfdk",
     "rtkfourdrooster",
+    "rtkfourdsart",
     "rtki0estimation",
     "rtkimagxgeometry",
     "rtkmaskcollimation",
