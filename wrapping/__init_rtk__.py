@@ -50,6 +50,7 @@ _app_modules = [
     "rtkshowgeometry",
     "rtksart",
     "rtksimulatedgeometry",
+    "rtkspectraldenoiseprojections",
     "rtksubselect",
     "rtktotalvariationdenoising",
     "rtkvarianobigeometry",
