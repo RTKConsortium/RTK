@@ -17,7 +17,13 @@ configure_file(
 if(NOT ITK_DIR)
   set(ITK_DIR ${ITK_BINARY_DIR}/CMakeTmp)
 endif()
-find_package(ITK REQUIRED COMPONENTS ${ITK_MODULE_RTK_DEPENDS})
+find_package(
+  ITK
+  REQUIRED
+  COMPONENTS
+    ${ITK_MODULE_RTK_DEPENDS}
+    ${RTK_TEST_DEPENDS}
+)
 include(${ITK_USE_FILE})
 
 #-----------------------------------------------------------------------------
