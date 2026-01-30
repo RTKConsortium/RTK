@@ -60,6 +60,7 @@ _app_modules = [
     "rtkshowgeometry",
     "rtksart",
     "rtksimulatedgeometry",
+    "rtkspectralforwardmodel",
     "rtkspectraldenoiseprojections",
     "rtkspectralrooster",
     "rtksubselect",
