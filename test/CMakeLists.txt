@@ -382,6 +382,32 @@ rtk_add_test(rtkConjugateGradientExampleTest
   ../examples/ConjugateGradient/ConjugateGradient.cxx
   DATA{Input/Forbild/Thorax}
 )
+rtk_add_test(rtkGenerateFourDDataExampleTest
+  ../examples/GenerateFourDData/GenerateFourDData.cxx
+)
+set_tests_properties(
+  rtkGenerateFourDDataExampleTest
+  PROPERTIES
+    FIXTURES_SETUP
+      FourDData
+)
+rtk_add_test(rtkFourDConjugateGradientExampleTest
+  ../examples/FourDConjugateGradient/FourDConjugateGradient.cxx
+)
+rtk_add_test(rtkFourDSARTExampleTest
+  ../examples/FourDSART/FourDSART.cxx
+)
+rtk_add_test(rtkFourDFDKExampleTest
+  ../examples/FourDFDK/FourDFDK.cxx
+)
+set_tests_properties(
+  rtkFourDConjugateGradientExampleTest
+  rtkFourDSARTExampleTest
+  rtkFourDFDKExampleTest
+  PROPERTIES
+    FIXTURES_REQUIRED
+      FourDData
+)
 
 if(ITK_WRAP_PYTHON)
   itk_python_add_test(NAME rtkMaximumIntensityPythonTest COMMAND rtkMaximumIntensity.py)
