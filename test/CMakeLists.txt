@@ -400,10 +400,14 @@ rtk_add_test(rtkFourDSARTExampleTest
 rtk_add_test(rtkFourDFDKExampleTest
   ../examples/FourDFDK/FourDFDK.cxx
 )
+rtk_add_test(rtkFourDROOSTERExampleTest
+  ../examples/FourDROOSTER/FourDROOSTER.cxx
+)
 set_tests_properties(
   rtkFourDConjugateGradientExampleTest
   rtkFourDSARTExampleTest
   rtkFourDFDKExampleTest
+  rtkFourDROOSTERExampleTest
   PROPERTIES
     FIXTURES_REQUIRED
       FourDData
