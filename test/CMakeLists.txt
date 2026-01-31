@@ -397,9 +397,13 @@ rtk_add_test(rtkFourDConjugateGradientExampleTest
 rtk_add_test(rtkFourDSARTExampleTest
   ../examples/FourDSART/FourDSART.cxx
 )
+rtk_add_test(rtkFourDFDKExampleTest
+  ../examples/FourDFDK/FourDFDK.cxx
+)
 set_tests_properties(
   rtkFourDConjugateGradientExampleTest
   rtkFourDSARTExampleTest
+  rtkFourDFDKExampleTest
   PROPERTIES
     FIXTURES_REQUIRED
       FourDData
