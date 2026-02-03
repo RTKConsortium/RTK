@@ -24,7 +24,9 @@ find_package(
     ${ITK_MODULE_RTK_DEPENDS}
     ${RTK_TEST_DEPENDS}
 )
-include(${ITK_USE_FILE})
+if("${ITK_VERSION_MAJOR}" VERSION_LESS "6")
+  include(${ITK_USE_FILE})
+endif()
 
 #-----------------------------------------------------------------------------
 # rtk_add_test(testname testfile [DATA{}])

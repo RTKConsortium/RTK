@@ -5,7 +5,9 @@ project(InlineReconstruction)
 
 # Find ITK with RTK
 find_package(ITK REQUIRED COMPONENTS RTK)
-include(${ITK_USE_FILE})
+if("${ITK_VERSION_MAJOR}" VERSION_LESS "6")
+  include(${ITK_USE_FILE})
+endif()
 
 # Executable(s)
 add_executable(InlineReconstruction InlineReconstruction.cxx)
