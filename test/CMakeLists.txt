@@ -24,6 +24,7 @@ find_package(
     ${ITK_MODULE_RTK_DEPENDS}
     ${RTK_TEST_DEPENDS}
 )
+include(itkVersion)
 if("${ITK_VERSION_MAJOR}" VERSION_LESS "6")
   include(${ITK_USE_FILE})
 endif()
