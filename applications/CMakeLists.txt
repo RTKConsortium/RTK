@@ -26,7 +26,9 @@ if(NOT ITK_DIR)
   set(ITK_DIR ${ITK_BINARY_DIR}/CMakeTmp)
 endif()
 find_package(ITK REQUIRED COMPONENTS ${ITK_MODULE_RTK_DEPENDS})
-include(${ITK_USE_FILE})
+if("${ITK_VERSION_MAJOR}" VERSION_LESS "6")
+  include(${ITK_USE_FILE})
+endif()
 
 #-----------------------------------------------------------------------------
 # Executables
