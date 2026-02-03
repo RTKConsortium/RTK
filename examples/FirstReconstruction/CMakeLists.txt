@@ -5,6 +5,7 @@ project(FirstReconstruction)
 
 # Find ITK with RTK
 find_package(ITK REQUIRED COMPONENTS RTK)
+include(itkVersion)
 if("${ITK_VERSION_MAJOR}" VERSION_LESS "6")
   include(${ITK_USE_FILE})
 endif()
