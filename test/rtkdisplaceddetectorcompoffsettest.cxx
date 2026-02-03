@@ -96,6 +96,30 @@ main(int, char **)
 
     CheckImageQuality<OutputImageType>(streamingCUDA->GetOutput(), streamingCPU->GetOutput(), 1.e-6, 100, 1.);
   }
+  {
+    constexpr double minOffset = -16.;
+    constexpr double maxOffset = 12.;
+
+    std::cout << "\n\n****** Case 4: manual offsets ******" << std::endl;
+
+    using OffsetDDFType = rtk::DisplacedDetectorForOffsetFieldOfViewImageFilter<OutputImageType>;
+    auto cudaddf = OffsetDDFType::New();
+    cudaddf->SetInput(slp->GetOutput());
+    cudaddf->SetGeometry(geometry);
+    cudaddf->SetOffsets(minOffset, maxOffset);
+    cudaddf->InPlaceOff();
+    TRY_AND_EXIT_ON_ITK_EXCEPTION(cudaddf->Update());
+
+    using CPUDDFType = rtk::DisplacedDetectorImageFilter<OutputImageType>;
+    auto cpuddf = CPUDDFType::New();
+    cpuddf->SetInput(slp->GetOutput());
+    cpuddf->SetGeometry(geometry);
+    cpuddf->SetOffsets(minOffset, maxOffset);
+    cpuddf->InPlaceOff();
+    TRY_AND_EXIT_ON_ITK_EXCEPTION(cpuddf->Update());
+
+    CheckImageQuality<OutputImageType>(cudaddf->GetOutput(), cpuddf->GetOutput(), 1.e-6, 100, 1.);
+  }
 
   // If all succeed
   std::cout << "\n\nTest PASSED! " << std::endl;
