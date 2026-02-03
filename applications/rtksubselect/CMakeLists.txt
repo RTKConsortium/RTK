@@ -4,7 +4,7 @@ add_executable(
   rtksubselect.cxx
   ${rtksubselect_GGO_C}
 )
-target_link_libraries(rtksubselect RTK)
+target_link_libraries(rtksubselect ${RTK_APPLICATION_TARGETS})
 
 set_target_properties(
   rtksubselect

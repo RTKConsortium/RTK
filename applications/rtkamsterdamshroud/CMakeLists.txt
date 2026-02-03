@@ -4,7 +4,7 @@ add_executable(
   rtkamsterdamshroud.cxx
   ${rtkamsterdamshroud_GGO_C}
 )
-target_link_libraries(rtkamsterdamshroud RTK)
+target_link_libraries(rtkamsterdamshroud ${RTK_APPLICATION_TARGETS})
 
 set_target_properties(
   rtkamsterdamshroud

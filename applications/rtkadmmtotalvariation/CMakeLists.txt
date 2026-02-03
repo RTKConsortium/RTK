@@ -4,7 +4,7 @@ add_executable(
   rtkadmmtotalvariation.cxx
   ${rtkadmmtotalvariation_GGO_C}
 )
-target_link_libraries(rtkadmmtotalvariation RTK)
+target_link_libraries(rtkadmmtotalvariation ${RTK_APPLICATION_TARGETS})
 
 set_target_properties(
   rtkadmmtotalvariation

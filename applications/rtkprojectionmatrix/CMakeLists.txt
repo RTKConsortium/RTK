@@ -4,7 +4,7 @@ add_executable(
   rtkprojectionmatrix.cxx
   ${rtkprojectionmatrix_GGO_C}
 )
-target_link_libraries(rtkprojectionmatrix RTK)
+target_link_libraries(rtkprojectionmatrix ${RTK_APPLICATION_TARGETS})
 
 set_target_properties(
   rtkprojectionmatrix

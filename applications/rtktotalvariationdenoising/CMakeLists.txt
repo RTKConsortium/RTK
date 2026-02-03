@@ -4,7 +4,7 @@ add_executable(
   rtktotalvariationdenoising.cxx
   ${rtktotalvariationdenoising_GGO_C}
 )
-target_link_libraries(rtktotalvariationdenoising RTK)
+target_link_libraries(rtktotalvariationdenoising ${RTK_APPLICATION_TARGETS})
 
 set_target_properties(
   rtktotalvariationdenoising

@@ -4,7 +4,7 @@ add_executable(
   rtkspectraldenoiseprojections.cxx
   ${rtkspectraldenoiseprojections_GGO_C}
 )
-target_link_libraries(rtkspectraldenoiseprojections RTK)
+target_link_libraries(rtkspectraldenoiseprojections ${RTK_APPLICATION_TARGETS})
 
 set_target_properties(
   rtkspectraldenoiseprojections

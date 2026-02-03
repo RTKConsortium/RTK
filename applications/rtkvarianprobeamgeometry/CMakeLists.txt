@@ -4,7 +4,7 @@ add_executable(
   rtkvarianprobeamgeometry.cxx
   ${rtkvarianprobeamgeometry_GGO_C}
 )
-target_link_libraries(rtkvarianprobeamgeometry RTK)
+target_link_libraries(rtkvarianprobeamgeometry ${RTK_APPLICATION_TARGETS})
 
 set_target_properties(
   rtkvarianprobeamgeometry

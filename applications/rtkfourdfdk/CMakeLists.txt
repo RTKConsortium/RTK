@@ -4,7 +4,7 @@ add_executable(
   rtkfourdfdk.cxx
   ${rtkfourdfdk_GGO_C}
 )
-target_link_libraries(rtkfourdfdk RTK)
+target_link_libraries(rtkfourdfdk ${RTK_APPLICATION_TARGETS})
 
 set_target_properties(
   rtkfourdfdk

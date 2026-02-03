@@ -4,7 +4,7 @@ add_executable(
   rtkoverlayphaseandshroud.cxx
   ${rtkoverlayphaseandshroud_GGO_C}
 )
-target_link_libraries(rtkoverlayphaseandshroud RTK)
+target_link_libraries(rtkoverlayphaseandshroud ${RTK_APPLICATION_TARGETS})
 
 set_target_properties(
   rtkoverlayphaseandshroud

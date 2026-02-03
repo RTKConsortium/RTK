@@ -4,12 +4,26 @@ cmake_minimum_required(VERSION 3.9.5 FATAL_ERROR)
 project(InlineReconstruction)
 
 # Find ITK with RTK
-find_package(ITK REQUIRED COMPONENTS RTK)
-include(itkVersion)
+find_package(
+  ITK
+  REQUIRED
+  COMPONENTS
+    RTK
+    ITKImageIO
+)
 if("${ITK_VERSION_MAJOR}" VERSION_LESS "6")
   include(${ITK_USE_FILE})
+  set(RTK_EXAMPLE_TARGETS ${ITK_LIBRARIES})
+else()
+  itk_generate_factory_registration()
+  set(
+    RTK_EXAMPLE_TARGETS
+    ${ITK_INTERFACE_LIBRARIES}
+    ITK::ITKImageIO
+    ITK::ITKFFTImageFilterInit
+  )
 endif()
 
 # Executable(s)
 add_executable(InlineReconstruction InlineReconstruction.cxx)
-target_link_libraries(InlineReconstruction ${ITK_LIBRARIES})
+target_link_libraries(InlineReconstruction ${RTK_EXAMPLE_TARGETS})

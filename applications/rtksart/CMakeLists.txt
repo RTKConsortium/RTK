@@ -4,7 +4,7 @@ add_executable(
   rtksart.cxx
   ${rtksart_GGO_C}
 )
-target_link_libraries(rtksart RTK)
+target_link_libraries(rtksart ${RTK_APPLICATION_TARGETS})
 
 set_target_properties(
   rtksart

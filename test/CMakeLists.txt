@@ -27,6 +27,20 @@ find_package(
 include(itkVersion)
 if("${ITK_VERSION_MAJOR}" VERSION_LESS "6")
   include(${ITK_USE_FILE})
+  set(
+    RTK_TEST_TARGETS
+    ${RTK_LIBRARIES}
+    ${ITK_LIBRARIES}
+  )
+else()
+  itk_generate_factory_registration()
+  set(
+    RTK_TEST_TARGETS
+    ITK::RTKModule
+    ITK::ITKImageIO
+    ITK::ITKFFTImageFilterInit
+    ITK::ITKTestKernel
+  )
 endif()
 
 #-----------------------------------------------------------------------------
@@ -34,11 +48,7 @@ endif()
 # Add regular test as opposed to tests depending on CUDA
 function(rtk_add_test testname testfile)
   add_executable(${testname} ${testfile})
-  target_link_libraries(
-    ${testname}
-    ${RTK_LIBRARIES}
-    ${ITK_LIBRARIES}
-  )
+  target_link_libraries(${testname} ${RTK_TEST_TARGETS})
   itk_add_test(NAME ${testname}
     COMMAND itkTestDriver
     $<TARGET_FILE:${testname}>
@@ -52,11 +62,7 @@ endfunction()
 function(rtk_add_cuda_test testname testfile)
   if(RTK_USE_CUDA)
     add_executable(${testname} ${testfile})
-    target_link_libraries(
-      ${testname}
-      ${RTK_LIBRARIES}
-      ${ITK_LIBRARIES}
-    )
+    target_link_libraries(${testname} ${RTK_TEST_TARGETS})
     itk_add_test(NAME ${testname}
       COMMAND itkTestDriver
       $<TARGET_FILE:${testname}>

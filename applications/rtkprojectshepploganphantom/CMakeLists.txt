@@ -4,7 +4,7 @@ add_executable(
   rtkprojectshepploganphantom.cxx
   ${rtkprojectshepploganphantom_GGO_C}
 )
-target_link_libraries(rtkprojectshepploganphantom RTK)
+target_link_libraries(rtkprojectshepploganphantom ${RTK_APPLICATION_TARGETS})
 
 set_target_properties(
   rtkprojectshepploganphantom

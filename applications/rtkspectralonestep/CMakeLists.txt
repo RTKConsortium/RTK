@@ -4,7 +4,7 @@ add_executable(
   rtkspectralonestep.cxx
   ${rtkspectralonestep_GGO_C}
 )
-target_link_libraries(rtkspectralonestep RTK)
+target_link_libraries(rtkspectralonestep ${RTK_APPLICATION_TARGETS})
 
 set_target_properties(
   rtkspectralonestep

@@ -4,7 +4,7 @@ add_executable(
   rtkvarianobigeometry.cxx
   ${rtkvarianobigeometry_GGO_C}
 )
-target_link_libraries(rtkvarianobigeometry RTK)
+target_link_libraries(rtkvarianobigeometry ${RTK_APPLICATION_TARGETS})
 
 set_target_properties(
   rtkvarianobigeometry

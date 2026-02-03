@@ -4,7 +4,7 @@ add_executable(
   rtkfieldofview.cxx
   ${rtkfieldofview_GGO_C}
 )
-target_link_libraries(rtkfieldofview RTK)
+target_link_libraries(rtkfieldofview ${RTK_APPLICATION_TARGETS})
 
 set_target_properties(
   rtkfieldofview

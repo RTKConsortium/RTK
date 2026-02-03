@@ -4,7 +4,7 @@ add_executable(
   rtktutorialapplication.cxx
   ${rtktutorialapplication_GGO_C}
 )
-target_link_libraries(rtktutorialapplication RTK)
+target_link_libraries(rtktutorialapplication ${RTK_APPLICATION_TARGETS})
 
 set_target_properties(
   rtktutorialapplication

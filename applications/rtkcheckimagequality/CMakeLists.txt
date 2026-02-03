@@ -4,7 +4,7 @@ add_executable(
   rtkcheckimagequality.cxx
   ${rtkcheckimagequality_GGO_C}
 )
-target_link_libraries(rtkcheckimagequality RTK)
+target_link_libraries(rtkcheckimagequality ${RTK_APPLICATION_TARGETS})
 
 set_target_properties(
   rtkcheckimagequality

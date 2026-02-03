@@ -4,7 +4,7 @@ add_executable(
   rtkspectralrooster.cxx
   ${rtkspectralrooster_GGO_C}
 )
-target_link_libraries(rtkspectralrooster RTK)
+target_link_libraries(rtkspectralrooster ${RTK_APPLICATION_TARGETS})
 
 set_target_properties(
   rtkspectralrooster

@@ -4,7 +4,7 @@ add_executable(
   rtkbackprojections.cxx
   ${rtkbackprojections_GGO_C}
 )
-target_link_libraries(rtkbackprojections RTK)
+target_link_libraries(rtkbackprojections ${RTK_APPLICATION_TARGETS})
 
 set_target_properties(
   rtkbackprojections

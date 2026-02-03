@@ -4,7 +4,7 @@ add_executable(
   rtkextractphasesignal.cxx
   ${rtkextractphasesignal_GGO_C}
 )
-target_link_libraries(rtkextractphasesignal RTK)
+target_link_libraries(rtkextractphasesignal ${RTK_APPLICATION_TARGETS})
 
 set_target_properties(
   rtkextractphasesignal

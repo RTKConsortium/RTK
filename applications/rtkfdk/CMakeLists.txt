@@ -4,7 +4,7 @@ add_executable(
   rtkfdk.cxx
   ${rtkfdk_GGO_C}
 )
-target_link_libraries(rtkfdk RTK)
+target_link_libraries(rtkfdk ${RTK_APPLICATION_TARGETS})
 
 set_target_properties(
   rtkfdk

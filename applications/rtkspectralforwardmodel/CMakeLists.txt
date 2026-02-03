@@ -4,7 +4,7 @@ add_executable(
   rtkspectralforwardmodel.cxx
   ${rtkspectralforwardmodel_GGO_C}
 )
-target_link_libraries(rtkspectralforwardmodel RTK)
+target_link_libraries(rtkspectralforwardmodel ${RTK_APPLICATION_TARGETS})
 
 set_target_properties(
   rtkspectralforwardmodel
