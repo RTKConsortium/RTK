@@ -4,7 +4,7 @@ add_executable(
   rtkdrawshepploganphantom.cxx
   ${rtkdrawshepploganphantom_GGO_C}
 )
-target_link_libraries(rtkdrawshepploganphantom RTK)
+target_link_libraries(rtkdrawshepploganphantom ${RTK_APPLICATION_TARGETS})
 
 set_target_properties(
   rtkdrawshepploganphantom

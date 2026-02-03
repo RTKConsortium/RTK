@@ -4,7 +4,10 @@ add_executable(
   rtktotalnuclearvariationdenoising.cxx
   ${rtktotalnuclearvariationdenoising_GGO_C}
 )
-target_link_libraries(rtktotalnuclearvariationdenoising RTK)
+target_link_libraries(
+  rtktotalnuclearvariationdenoising
+  ${RTK_APPLICATION_TARGETS}
+)
 
 set_target_properties(
   rtktotalnuclearvariationdenoising

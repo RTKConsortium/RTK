@@ -4,7 +4,7 @@ add_executable(
   rtkscatterglarecorrection.cxx
   ${rtkscatterglarecorrection_GGO_C}
 )
-target_link_libraries(rtkscatterglarecorrection RTK)
+target_link_libraries(rtkscatterglarecorrection ${RTK_APPLICATION_TARGETS})
 
 set_target_properties(
   rtkscatterglarecorrection

@@ -4,7 +4,7 @@ add_executable(
   rtkdrawgeometricphantom.cxx
   ${rtkdrawgeometricphantom_GGO_C}
 )
-target_link_libraries(rtkdrawgeometricphantom RTK)
+target_link_libraries(rtkdrawgeometricphantom ${RTK_APPLICATION_TARGETS})
 
 set_target_properties(
   rtkdrawgeometricphantom

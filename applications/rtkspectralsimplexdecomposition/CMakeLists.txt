@@ -4,7 +4,10 @@ add_executable(
   rtkspectralsimplexdecomposition.cxx
   ${rtkspectralsimplexdecomposition_GGO_C}
 )
-target_link_libraries(rtkspectralsimplexdecomposition RTK)
+target_link_libraries(
+  rtkspectralsimplexdecomposition
+  ${RTK_APPLICATION_TARGETS}
+)
 
 set_target_properties(
   rtkspectralsimplexdecomposition

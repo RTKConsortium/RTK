@@ -4,7 +4,7 @@ add_executable(
   rtkwaveletsdenoising.cxx
   ${rtkwaveletsdenoising_GGO_C}
 )
-target_link_libraries(rtkwaveletsdenoising RTK)
+target_link_libraries(rtkwaveletsdenoising ${RTK_APPLICATION_TARGETS})
 
 set_target_properties(
   rtkwaveletsdenoising

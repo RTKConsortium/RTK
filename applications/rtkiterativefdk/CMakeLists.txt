@@ -4,7 +4,7 @@ add_executable(
   rtkiterativefdk.cxx
   ${rtkiterativefdk_GGO_C}
 )
-target_link_libraries(rtkiterativefdk RTK)
+target_link_libraries(rtkiterativefdk ${RTK_APPLICATION_TARGETS})
 
 set_target_properties(
   rtkiterativefdk

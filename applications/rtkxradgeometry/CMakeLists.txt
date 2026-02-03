@@ -4,7 +4,7 @@ add_executable(
   rtkxradgeometry.cxx
   ${rtkxradgeometry_GGO_C}
 )
-target_link_libraries(rtkxradgeometry RTK)
+target_link_libraries(rtkxradgeometry ${RTK_APPLICATION_TARGETS})
 
 set_target_properties(
   rtkxradgeometry

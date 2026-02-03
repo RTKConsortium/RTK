@@ -4,7 +4,7 @@ add_executable(
   rtkvectorconjugategradient.cxx
   ${rtkvectorconjugategradient_GGO_C}
 )
-target_link_libraries(rtkvectorconjugategradient RTK)
+target_link_libraries(rtkvectorconjugategradient ${RTK_APPLICATION_TARGETS})
 
 set_target_properties(
   rtkvectorconjugategradient

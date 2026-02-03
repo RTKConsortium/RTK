@@ -4,7 +4,7 @@ add_executable(
   rtkextractshroudsignal.cxx
   ${rtkextractshroudsignal_GGO_C}
 )
-target_link_libraries(rtkextractshroudsignal RTK)
+target_link_libraries(rtkextractshroudsignal ${RTK_APPLICATION_TARGETS})
 
 set_target_properties(
   rtkextractshroudsignal

@@ -4,7 +4,7 @@ add_executable(
   rtkadmmwavelets.cxx
   ${rtkadmmwavelets_GGO_C}
 )
-target_link_libraries(rtkadmmwavelets RTK)
+target_link_libraries(rtkadmmwavelets ${RTK_APPLICATION_TARGETS})
 
 set_target_properties(
   rtkadmmwavelets

@@ -4,7 +4,7 @@ add_executable(
   rtkimagxgeometry.cxx
   ${rtkimagxgeometry_GGO_C}
 )
-target_link_libraries(rtkimagxgeometry RTK)
+target_link_libraries(rtkimagxgeometry ${RTK_APPLICATION_TARGETS})
 
 set_target_properties(
   rtkimagxgeometry

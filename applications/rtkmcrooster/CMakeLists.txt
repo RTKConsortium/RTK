@@ -4,7 +4,7 @@ add_executable(
   rtkmcrooster.cxx
   ${rtkmcrooster_GGO_C}
 )
-target_link_libraries(rtkmcrooster RTK)
+target_link_libraries(rtkmcrooster ${RTK_APPLICATION_TARGETS})
 
 set_target_properties(
   rtkmcrooster

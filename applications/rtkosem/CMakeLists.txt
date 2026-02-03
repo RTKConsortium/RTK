@@ -4,7 +4,7 @@ add_executable(
   rtkosem.cxx
   ${rtkosem_GGO_C}
 )
-target_link_libraries(rtkosem RTK)
+target_link_libraries(rtkosem ${RTK_APPLICATION_TARGETS})
 
 set_target_properties(
   rtkosem

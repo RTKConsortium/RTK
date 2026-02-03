@@ -4,7 +4,7 @@ add_executable(
   rtkfourdrooster.cxx
   ${rtkfourdrooster_GGO_C}
 )
-target_link_libraries(rtkfourdrooster RTK)
+target_link_libraries(rtkfourdrooster ${RTK_APPLICATION_TARGETS})
 
 set_target_properties(
   rtkfourdrooster

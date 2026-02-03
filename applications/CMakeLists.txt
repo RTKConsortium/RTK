@@ -29,6 +29,15 @@ find_package(ITK REQUIRED COMPONENTS ${ITK_MODULE_RTK_DEPENDS})
 include(itkVersion)
 if("${ITK_VERSION_MAJOR}" VERSION_LESS "6")
   include(${ITK_USE_FILE})
+  set(RTK_APPLICATION_TARGETS ${RTK_LIBRARIES})
+else()
+  itk_generate_factory_registration()
+  set(
+    RTK_APPLICATION_TARGETS
+    ITK::RTKModule
+    ITK::ITKImageIO
+    ITK::ITKFFTImageFilterInit
+  )
 endif()
 
 #-----------------------------------------------------------------------------

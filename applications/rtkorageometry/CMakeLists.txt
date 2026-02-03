@@ -4,7 +4,7 @@ add_executable(
   rtkorageometry.cxx
   ${rtkorageometry_GGO_C}
 )
-target_link_libraries(rtkorageometry RTK)
+target_link_libraries(rtkorageometry ${RTK_APPLICATION_TARGETS})
 
 set_target_properties(
   rtkorageometry

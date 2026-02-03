@@ -4,7 +4,7 @@ add_executable(
   rtklagcorrection.cxx
   ${rtklagcorrection_GGO_C}
 )
-target_link_libraries(rtklagcorrection RTK)
+target_link_libraries(rtklagcorrection ${RTK_APPLICATION_TARGETS})
 
 set_target_properties(
   rtklagcorrection

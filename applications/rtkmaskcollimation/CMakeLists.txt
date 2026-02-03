@@ -4,7 +4,7 @@ add_executable(
   rtkmaskcollimation.cxx
   ${rtkmaskcollimation_GGO_C}
 )
-target_link_libraries(rtkmaskcollimation RTK)
+target_link_libraries(rtkmaskcollimation ${RTK_APPLICATION_TARGETS})
 
 set_target_properties(
   rtkmaskcollimation

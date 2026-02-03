@@ -4,7 +4,7 @@ add_executable(
   rtkdigisensgeometry.cxx
   ${rtkdigisensgeometry_GGO_C}
 )
-target_link_libraries(rtkdigisensgeometry RTK)
+target_link_libraries(rtkdigisensgeometry ${RTK_APPLICATION_TARGETS})
 
 set_target_properties(
   rtkdigisensgeometry

@@ -4,7 +4,7 @@ add_executable(
   rtksimulatedgeometry.cxx
   ${rtksimulatedgeometry_GGO_C}
 )
-target_link_libraries(rtksimulatedgeometry RTK)
+target_link_libraries(rtksimulatedgeometry ${RTK_APPLICATION_TARGETS})
 
 set_target_properties(
   rtksimulatedgeometry
