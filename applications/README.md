@@ -20,8 +20,6 @@ The following are examples using RTK applications:
 ./rtkfourdconjugategradient/README.md
 ./rtkfourdsart/README.md
 ./rtkfourdrooster/README.md
-./rtkmcfourdconjugategradient/README.md
-./rtkmcrooster/README.md
 ./rtkshowgeometry/README.md
 ./rtkosem/README.md
 ./rtksart/README.md

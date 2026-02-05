@@ -1,9 +1,0 @@
-itk_wrap_class("rtk::MotionCompensatedFourDConjugateGradientConeBeamReconstructionFilter" POINTER)
-
-  if(RTK_USE_CUDA)
-    itk_wrap_template("CIF4CIF3" "itk::CudaImage<float, 4>, itk::CudaImage<float, 3>")
-  endif()
-  itk_wrap_template("I${ITKM_F}4I${ITKM_F}3"
-    "itk::Image<${ITKT_F}, 4>, itk::Image<${ITKT_F}, 3>")
-
-itk_end_wrap_class()
