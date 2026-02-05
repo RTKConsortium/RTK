@@ -24,10 +24,14 @@ RTK command-line applications for 3D + time reconstruction have a `–-signal` o
 Phase and frames interact in several ways in RTK:
 - [Forward projection of a 4D image](https://www.openrtk.org/Doxygen/classrtk_1_1FourDToProjectionStackImageFilter.html): for each projection, RTK first interpolates linearly between the frames to get a 3D volume at that projection’s phase, then forward projects through that 3D volume.
 - [Back projection to a 4D image](https://www.openrtk.org/Doxygen/classrtk_1_1ProjectionStackToFourDImageFilter.html): for each projection, RTK back projects into a 3D volume, then splats that 3D volume linearly.
-
-The forward and back projections are used in all 4D iterative reconstruction methods in RTK.
+These forward and back projections are used in all 4D iterative reconstruction methods in RTK.
+The temporal interpolation and splat weights for each projection are computed once, by a [signal to interpolation weights filter](https://www.openrtk.org/Doxygen/classrtk_1_1SignalToInterpolationWeights.html), and passed to the iterative reconstruction filter as an `itkArray2D` of size `[#frames; #projections]`.
 
 4D FDK is implemented with a different approach: each frame is reconstructed from a single projection per cycle. Some projections may remain unused.
+
+## Projections reordering
+
+To improve performance, projections are reordered into ascending phase order by a [reorder projections filter](https://www.openrtk.org/Doxygen/classrtk_1_1ReorderProjectionsImageFilter.html). It allows the 4D forward and back projection filters to group projections impacting the same pair of consecutive frames.
 
 ## Known non-rigid motion
 
