@@ -49,18 +49,31 @@ if(CMAKE_CUDA_COMPILER)
 endif()
 option(RTK_USE_CUDA "Use CUDA for RTK" ${RTK_USE_CUDA_DEFAULT})
 
-# Configure CUDA compilation options
-option(
-  RTK_CUDA_VERSION
-  "Specify the exact CUDA version that must be used for RTK"
-)
 if(RTK_USE_CUDA)
+  # Configure CUDA compilation options
+  if(NOT RTK_CUDA_VERSION)
+    set(
+      RTK_CUDA_VERSION
+      ${CUDAToolkit_VERSION}
+      CACHE STRING
+      "Specify the exact CUDA version that must be used for RTK"
+    )
+  else()
+    set(
+      RTK_CUDA_VERSION
+      ${RTK_CUDA_VERSION}
+      CACHE STRING
+      "Specify the exact CUDA version that must be used for RTK"
+    )
+  endif()
+  mark_as_advanced(RTK_CUDA_VERSION)
+
   enable_language(CUDA)
   set(CMAKE_CUDA_RUNTIME_LIBRARY Static)
 
   include_directories(${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES})
   if(RTK_CUDA_VERSION)
-    find_package(CUDAToolkit EXACT ${RTK_CUDA_VERSION})
+    find_package(CUDAToolkit EXACT ${RTK_CUDA_VERSION} REQUIRED)
   else()
     find_package(CUDAToolkit REQUIRED 8.0)
   endif()
@@ -70,10 +83,5 @@ if(RTK_USE_CUDA)
     "16"
     CACHE STRING
     "Number of projections processed simultaneously in CUDA forward and back projections"
-  )
-elseif(RTK_CUDA_VERSION)
-  message(
-    FATAL_ERROR
-    "RTK_CUDA_VERSION is set but the CUDA toolkit has not been found."
   )
 endif()
