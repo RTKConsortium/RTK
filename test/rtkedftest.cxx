@@ -15,7 +15,7 @@
  */
 
 int
-main(int argc, char * argv[])
+rtkedftest(int argc, char * argv[])
 {
   if (argc < 3)
   {

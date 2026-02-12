@@ -26,7 +26,7 @@
  */
 
 int
-main(int, char **)
+rtkfourdroostertest(int, char *[])
 {
   using OutputPixelType = float;
 

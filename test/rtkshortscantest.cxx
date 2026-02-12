@@ -25,7 +25,7 @@
  */
 
 int
-main(int, char **)
+rtkshortscantest(int, char *[])
 {
   constexpr unsigned int Dimension = 3;
   using OutputPixelType = float;

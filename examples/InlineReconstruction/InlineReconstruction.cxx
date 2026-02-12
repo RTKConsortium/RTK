@@ -74,7 +74,7 @@ Acquisition()
 }
 
 int
-main()
+main(int, char *[])
 {
   // Launch the simulated acquisition
   std::thread acquisitionThread(Acquisition);

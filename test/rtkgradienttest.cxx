@@ -86,7 +86,7 @@ CheckGradient(typename TImage::Pointer im, typename TGradient::Pointer grad, con
  */
 
 int
-main(int, char **)
+rtkgradienttest(int, char *[])
 {
   constexpr unsigned int Dimension = 3;
   using OutputPixelType = double;

@@ -11,7 +11,7 @@
  */
 
 int
-main(int, char **)
+rtkquadrictest(int, char *[])
 {
   // Test https://github.com/RTKConsortium/RTK/issues/819#issuecomment-3337586635
   // The following is [Cylinder_y: x=0 y=0 z=0 r=0.1  l=100 rho=1]

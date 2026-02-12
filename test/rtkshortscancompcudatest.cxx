@@ -19,7 +19,7 @@
  */
 
 int
-main(int, char **)
+rtkshortscancompcudatest(int, char *[])
 {
   constexpr unsigned int Dimension = 3;
   using OutputImageType = itk::CudaImage<float, Dimension>;
