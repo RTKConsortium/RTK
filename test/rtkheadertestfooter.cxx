@@ -10,7 +10,7 @@
  */
 
 int
-main(int, char **)
+rtkheadertestfooter(int, char *[])
 {
   std::cout << "\n\nTest PASSED! " << std::endl;
   return EXIT_SUCCESS;

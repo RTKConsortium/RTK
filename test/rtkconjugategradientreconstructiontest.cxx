@@ -22,7 +22,7 @@
  */
 
 int
-main(int, char **)
+rtkconjugategradientreconstructiontest(int, char *[])
 {
   constexpr unsigned int Dimension = 3;
   using OutputPixelType = float;

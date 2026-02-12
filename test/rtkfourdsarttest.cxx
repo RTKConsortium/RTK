@@ -27,7 +27,7 @@
  */
 
 int
-main(int, char **)
+rtkfourdsarttest(int, char *[])
 {
   using OutputPixelType = float;
 

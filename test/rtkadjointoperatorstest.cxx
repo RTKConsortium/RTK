@@ -28,7 +28,7 @@
  */
 
 int
-main(int, char **)
+rtkadjointoperatorstest(int, char *[])
 {
   constexpr unsigned int Dimension = 3;
 

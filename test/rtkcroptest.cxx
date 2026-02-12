@@ -7,7 +7,7 @@
  * \author Julien Jomier
  */
 int
-main(int, char **)
+rtkcroptest(int, char *[])
 {
   constexpr unsigned int Dimension = 3;
   using ImageType = itk::CudaImage<float, Dimension>;

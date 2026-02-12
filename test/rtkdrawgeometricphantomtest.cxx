@@ -26,7 +26,7 @@ using GeometryType = rtk::ThreeDCircularProjectionGeometry;
  */
 
 int
-main(int argc, char * argv[])
+rtkdrawgeometricphantomtest(int argc, char * argv[])
 {
   if (argc < 3)
   {

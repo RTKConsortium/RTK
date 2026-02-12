@@ -17,7 +17,7 @@
  */
 
 int
-main(int, char **)
+rtkrampfiltertest2(int, char *[])
 {
   constexpr unsigned int Dimension = 3;
   using PixelType = float;

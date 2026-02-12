@@ -278,7 +278,7 @@ CheckVariableLengthVectorImageQuality(typename TImage::Pointer recon,
 }
 #endif // FAST_TESTS_NO_CHECKS
 
-void
+inline void
 CheckGeometries(const rtk::ThreeDCircularProjectionGeometry * g1, const rtk::ThreeDCircularProjectionGeometry * g2)
 {
   //  // It is often necessary to write the geometries and look at them

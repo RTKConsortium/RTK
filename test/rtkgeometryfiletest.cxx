@@ -62,7 +62,7 @@ WriteReadAndCheck(GeometryType * geometry)
  */
 
 int
-main(int, char **)
+rtkgeometryfiletest(int, char *[])
 {
   // Create a geometry object with 1 projection
   auto geometry = GeometryType::New();

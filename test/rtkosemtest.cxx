@@ -25,7 +25,7 @@
  */
 
 int
-main(int, char **)
+rtkosemtest(int, char *[])
 {
   constexpr unsigned int Dimension = 3;
   using OutputPixelType = float;

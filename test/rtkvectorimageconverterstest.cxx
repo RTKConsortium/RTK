@@ -22,7 +22,7 @@
  */
 
 int
-main(int, char **)
+rtkvectorimageconverterstest(int, char *[])
 {
   using PixelType = float;
   using HigherDimensionImageType = itk::Image<PixelType, 3>;

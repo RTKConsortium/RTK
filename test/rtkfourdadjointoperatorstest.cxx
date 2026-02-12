@@ -25,7 +25,7 @@
  */
 
 int
-main(int argc, char * argv[])
+rtkfourdadjointoperatorstest(int argc, char * argv[])
 {
   if (argc < 2)
   {

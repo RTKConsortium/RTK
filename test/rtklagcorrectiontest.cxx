@@ -21,7 +21,7 @@ const unsigned ModelOrder = 4;
 const unsigned Nprojections = 10;
 
 int
-main(int, char **)
+rtklagcorrectiontest(int, char *[])
 {
   constexpr unsigned int Dimension = 3;
 

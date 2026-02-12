@@ -29,7 +29,7 @@
  */
 
 int
-main(int, char **)
+rtkiterativefdktest(int, char *[])
 {
   constexpr unsigned int Dimension = 3;
   using OutputPixelType = float;

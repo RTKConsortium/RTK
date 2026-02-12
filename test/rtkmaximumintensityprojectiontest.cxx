@@ -21,7 +21,7 @@
  */
 
 int
-main(int, char **)
+rtkmaximumintensityprojectiontest(int, char *[])
 {
   constexpr unsigned int Dimension = 3;
   using OutputPixelType = float;

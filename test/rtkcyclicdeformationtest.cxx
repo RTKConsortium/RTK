@@ -26,7 +26,7 @@
  */
 
 int
-main(int, char **)
+rtkcyclicdeformationtest(int, char *[])
 {
   using OutputPixelType = itk::CovariantVector<float, 3>;
 

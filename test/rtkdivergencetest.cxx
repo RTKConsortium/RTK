@@ -26,7 +26,7 @@
  */
 
 int
-main(int, char **)
+rtkdivergencetest(int, char *[])
 {
   constexpr unsigned int Dimension = 3;
   using OutputPixelType = double;
