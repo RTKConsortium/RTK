@@ -17,7 +17,7 @@
  */
 
 int
-main(int argc, char * argv[])
+rtkimagxtest(int argc, char * argv[])
 {
   if (argc < 8)
   {

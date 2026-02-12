@@ -20,7 +20,7 @@
  */
 
 int
-main(int, char **)
+rtkfdkprojweightcompcudatest(int, char *[])
 {
   constexpr unsigned int Dimension = 3;
   using OutputImageType = itk::CudaImage<float, Dimension>;
