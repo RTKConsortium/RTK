@@ -39,40 +39,38 @@ add_library(
   yacc_read.c
 )
 
-include_directories(
-  "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>"
-  "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/shared>"
-  "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/bfp>"
-  "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/bfp/bfp_LUSOL>"
-  "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/bfp/bfp_LUSOL/LUSOL>"
-  "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/colamd>"
+target_include_directories(
+  lpsolve55
+  PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+    $<INSTALL_INTERFACE:${RTK_INSTALL_INCLUDE_DIR}/lpsolve>
+  PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared
+    ${CMAKE_CURRENT_SOURCE_DIR}/bfp
+    ${CMAKE_CURRENT_SOURCE_DIR}/bfp/bfp_LUSOL
+    ${CMAKE_CURRENT_SOURCE_DIR}/bfp/bfp_LUSOL/LUSOL
+    ${CMAKE_CURRENT_SOURCE_DIR}/colamd
 )
 
-set_property(
-  TARGET
-    lpsolve55
-  APPEND
-  PROPERTY
-    COMPILE_DEFINITIONS
-      YY_NEVER_INTERACTIVE
-      PARSER_LP
-      INVERSE_ACTIVE=INVERSE_LUSOL
-      RoleIsExternalInvEngine
-      LoadInverseLib=FALSE
-      LoadLanguageLib=FALSE
-      LoadableBlasLib=0
+target_compile_definitions(
+  lpsolve55
+  PRIVATE
+    YY_NEVER_INTERACTIVE
+    PARSER_LP
+    INVERSE_ACTIVE=INVERSE_LUSOL
+    RoleIsExternalInvEngine
+    LoadInverseLib=FALSE
+    LoadLanguageLib=FALSE
+    LoadableBlasLib=0
 )
 
 if(WIN32)
-  set_property(
-    TARGET
-      lpsolve55
-    APPEND
-    PROPERTY
-      COMPILE_DEFINITIONS
-        INLINE=static
-        _USRDLL
-        WIN32
+  target_compile_definitions(
+    lpsolve55
+    PRIVATE
+      INLINE=static
+      _USRDLL
+      WIN32
   )
 endif()
 
@@ -83,14 +81,7 @@ check_symbol_exists(
   HAVE_ISNAN
 )
 if(NOT HAVE_ISNAN)
-  set_property(
-    TARGET
-      lpsolve55
-    APPEND
-    PROPERTY
-      COMPILE_DEFINITIONS
-        NOISNAN
-  )
+  target_compile_definitions(lpsolve55 PRIVATE NOISNAN)
 endif()
 
 # Set version of library
