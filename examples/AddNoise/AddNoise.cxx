@@ -15,7 +15,7 @@ const float I0 = 1e4;     // Number of photons before attenuation
 const float mu = 0.01879; // mm^-1, attenuation coefficient of water at 75 keV
 
 int
-main()
+main(int, char *[])
 {
   // Simulate a Shepp Logan projection
   auto geometry = rtk::ThreeDCircularProjectionGeometry::New();

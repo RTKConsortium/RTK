@@ -49,7 +49,7 @@ CheckTotalVariation(typename TImage::Pointer before, typename TImage::Pointer af
  */
 
 int
-main(int, char **)
+rtktotalvariationtest(int, char *[])
 {
   using OutputPixelType = float;
   constexpr unsigned int Dimension = 3;

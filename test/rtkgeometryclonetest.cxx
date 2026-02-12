@@ -3,7 +3,7 @@
 #include "rtkTest.h"
 
 int
-main(int, char **)
+rtkgeometryclonetest(int, char *[])
 {
   rtk::ThreeDCircularProjectionGeometry::Pointer geometry1, geometry2;
   geometry1 = rtk::ThreeDCircularProjectionGeometry::New();

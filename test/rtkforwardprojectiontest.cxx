@@ -27,7 +27,7 @@
  */
 
 int
-main(int, char **)
+rtkforwardprojectiontest(int, char *[])
 {
   constexpr unsigned int Dimension = 3;
   using OutputPixelType = float;
