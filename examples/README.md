@@ -23,4 +23,9 @@ providing efficient implementations for high-performance applications.
 ./InlineReconstruction/README.md
 ./AddNoise/README.md
 ./GeometricPhantom/README.md
+./GenerateFourDData/README.md
+./FourDFDK/README.md
+./FourDSART/README.md
+./FourDConjugateGradient/README.md
+./FourDROOSTER/README.md
 ```
