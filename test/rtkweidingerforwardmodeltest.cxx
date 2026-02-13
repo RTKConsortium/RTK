@@ -18,7 +18,7 @@
  */
 
 int
-main(int argc, char * argv[])
+rtkweidingerforwardmodeltest(int argc, char * argv[])
 {
   if (argc < 9)
   {
