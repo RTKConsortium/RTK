@@ -166,8 +166,7 @@ counts_forward = rtk.spectral_forward_model_image_filter(input_decomposed_projec
                                                          material_attenuations=mat_basis,
                                                          number_of_energies=energies.size,
                                                          number_of_materials=nmat,
-                                                         thresholds=thresholds_itk,
-                                                         IsSpectralCT=True)
+                                                         thresholds=thresholds_itk)
 itk.imwrite(counts_forward[0], 'counts_forward.mha')
 
 # Projection-based decomposition
@@ -180,8 +179,7 @@ decomposed = rtk.simplex_spectral_projections_decomposition_image_filter(input_d
                                                                          thresholds=thresholds_itk,
                                                                          number_of_iterations=niterations,
                                                                          optimize_with_restarts=True,
-                                                                         log_transform_each_bin=False,
-                                                                         IsSpectralCT=True)
+                                                                         log_transform_each_bin=False)
 itk.imwrite(decomposed[0], 'decomposed.mha')
 
 # Reconstruct each material image with FDK
