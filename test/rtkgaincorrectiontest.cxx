@@ -204,7 +204,7 @@ generateExpectedOutput(InputImageType::Pointer  inputImage,
 
 
 int
-main(int, char **)
+rtkgaincorrectiontest(int, char *[])
 {
   const float K = 0.5f;
 #ifdef USE_CUDA

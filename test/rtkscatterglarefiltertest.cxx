@@ -91,7 +91,7 @@ createInputImage(const std::vector<float> & coef)
 }
 
 int
-main(int, char **)
+rtkscatterglarefiltertest(int, char *[])
 {
 #ifdef USE_CUDA
   using ScatterCorrectionType = rtk::CudaScatterGlareCorrectionImageFilter;

@@ -16,7 +16,7 @@
  */
 
 int
-main(int argc, char * argv[])
+rtkbioscantest(int argc, char * argv[])
 {
   if (argc < 3)
   {

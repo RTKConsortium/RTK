@@ -21,7 +21,7 @@
  */
 
 int
-main(int argc, char * argv[])
+rtklaplaciantest(int argc, char * argv[])
 {
   if (argc < 2)
   {

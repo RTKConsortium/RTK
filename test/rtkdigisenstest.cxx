@@ -21,7 +21,7 @@
  */
 
 int
-main(int argc, char * argv[])
+rtkdigisenstest(int argc, char * argv[])
 {
   if (argc < 5)
   {

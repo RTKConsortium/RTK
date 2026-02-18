@@ -27,52 +27,93 @@ find_package(
 include(itkVersion)
 if("${ITK_VERSION_MAJOR}" VERSION_LESS "6")
   include(${ITK_USE_FILE})
-  set(
-    RTK_TEST_TARGETS
-    ${RTK_LIBRARIES}
-    ${ITK_LIBRARIES}
-  )
 else()
   itk_generate_factory_registration()
-  set(
-    RTK_TEST_TARGETS
-    ITK::RTKModule
-    ITK::ITKImageIO
-    ITK::ITKFFTImageFilterInit
-    ITK::ITKTestKernel
-  )
 endif()
 
 #-----------------------------------------------------------------------------
 # rtk_add_test(testname testfile [DATA{}])
 # Add regular test as opposed to tests depending on CUDA
+set(RTKTests)
 function(rtk_add_test testname testfile)
-  add_executable(${testname} ${testfile})
-  target_link_libraries(${testname} ${RTK_TEST_TARGETS})
+  set(options USE_MAIN)
+  cmake_parse_arguments(RTK_ADD_TEST "${options}" "" "" ${ARGN})
+
+  # Collect unique test sources used to build the test driver.
+  if(NOT "${testfile}" IN_LIST RTKTests)
+    list(APPEND RTKTests "${testfile}")
+    set(RTKTests "${RTKTests}" PARENT_SCOPE)
+  endif()
+
+  # Match create_test_sourcelist naming: keep path, drop extension.
+  get_filename_component(rtk_test_dir "${testfile}" DIRECTORY)
+  get_filename_component(rtk_test_name_we "${testfile}" NAME_WE)
+  if(rtk_test_dir STREQUAL "")
+    set(rtk_test_entry "${rtk_test_name_we}")
+  else()
+    set(rtk_test_entry "${rtk_test_dir}/${rtk_test_name_we}")
+  endif()
+
+  string(FIND "${testfile}" "../examples/" rtk_examples_prefix)
+  if(rtk_examples_prefix EQUAL 0)
+    # For sources that only define main(), remap main to the generated test symbol.
+    string(MAKE_C_IDENTIFIER "${rtk_test_entry}" rtk_test_symbol)
+    set_property(
+      SOURCE
+        ${testfile}
+      APPEND
+      PROPERTY
+        COMPILE_DEFINITIONS
+          "main=${rtk_test_symbol}"
+    )
+  endif()
+
   itk_add_test(NAME ${testname}
-    COMMAND itkTestDriver
-    $<TARGET_FILE:${testname}>
-    ${ARGN}
+    COMMAND RTKTestDriver
+    ${rtk_test_entry}
+    ${RTK_ADD_TEST_UNPARSED_ARGUMENTS}
   )
 endfunction()
 
 #-----------------------------------------------------------------------------
 # rtk_add_cuda_test(testname testfile [DATA{}])
 # Add test depending on CUDA
+set(RTKCudaTests)
 function(rtk_add_cuda_test testname testfile)
+  set(options USE_MAIN)
+  cmake_parse_arguments(RTK_ADD_TEST "${options}" "" "" ${ARGN})
+
   if(RTK_USE_CUDA)
-    add_executable(${testname} ${testfile})
-    target_link_libraries(${testname} ${RTK_TEST_TARGETS})
+    if(NOT "${testfile}" IN_LIST RTKCudaTests)
+      list(APPEND RTKCudaTests "${testfile}")
+      set(RTKCudaTests "${RTKCudaTests}" PARENT_SCOPE)
+    endif()
+
+    get_filename_component(rtk_test_dir "${testfile}" DIRECTORY)
+    get_filename_component(rtk_test_name_we "${testfile}" NAME_WE)
+    if(rtk_test_dir STREQUAL "")
+      set(rtk_test_entry "${rtk_test_name_we}")
+    else()
+      set(rtk_test_entry "${rtk_test_dir}/${rtk_test_name_we}")
+    endif()
+
+    string(FIND "${testfile}" "../examples/" rtk_examples_prefix)
+    if(rtk_examples_prefix EQUAL 0)
+      string(MAKE_C_IDENTIFIER "${rtk_test_entry}" rtk_test_symbol)
+      set_property(
+        SOURCE
+          ${testfile}
+        APPEND
+        PROPERTY
+          COMPILE_DEFINITIONS
+            "main=${rtk_test_symbol}"
+      )
+    endif()
+
     itk_add_test(NAME ${testname}
-      COMMAND itkTestDriver
-      $<TARGET_FILE:${testname}>
-      ${ARGN}
-    )
-    set_target_properties(
-      ${testname}
-      PROPERTIES
-        COMPILE_FLAGS
-          -DUSE_CUDA
+      COMMAND RTKCudaTestDriver
+      ${rtk_test_entry}
+      ${RTK_ADD_TEST_UNPARSED_ARGUMENTS}
     )
   endif()
 endfunction()
@@ -359,8 +400,6 @@ rtk_add_test(rtkBioscanTest rtkbioscantest.cxx
 
 rtk_add_test(rtkVarianceReconstructionTest rtkvariancereconstructiontest.cxx)
 
-#-----------------------------------------------------------------------------
-# Test examples
 rtk_add_test(rtkFirstReconstructionExampleTest
   ../examples/FirstReconstruction/FirstReconstruction.cxx
   ${CMAKE_CURRENT_BINARY_DIR}/FirstReconstruction.mha
@@ -389,4 +428,13 @@ rtk_add_test(rtkConjugateGradientExampleTest
 if(ITK_WRAP_PYTHON)
   itk_python_add_test(NAME rtkMaximumIntensityPythonTest COMMAND rtkMaximumIntensity.py)
   itk_python_add_test(NAME rtkOutputArgumentWrappingTest COMMAND rtkOutputArgumentWrapping.py)
+endif()
+
+#-----------------------------------------------------------------------------
+# Test drivers
+createtestdriver(RTK "${RTK-Test_LIBRARIES}" "${RTKTests}")
+
+if(RTK_USE_CUDA AND RTKCudaTests)
+  createtestdriver(RTKCuda "${RTK-Test_LIBRARIES}" "${RTKCudaTests}")
+  target_compile_definitions(RTKCudaTestDriver PRIVATE USE_CUDA)
 endif()

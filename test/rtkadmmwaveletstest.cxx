@@ -80,7 +80,7 @@ CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer ref)
  */
 
 int
-main(int, char **)
+rtkadmmwaveletstest(int, char *[])
 {
   using OutputPixelType = float;
   constexpr unsigned int Dimension = 3;

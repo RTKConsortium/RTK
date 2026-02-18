@@ -102,7 +102,7 @@ CheckImageQuality(typename TImage1::Pointer recon, typename TImage2::Pointer ref
  */
 
 int
-main(int, char **)
+rtkconjugategradienttest(int, char *[])
 {
   constexpr unsigned int Dimension = 3;
 

@@ -26,7 +26,7 @@
  */
 
 int
-main(int, char **)
+rtkfourdconjugategradienttest(int, char *[])
 {
   using OutputPixelType = float;
 

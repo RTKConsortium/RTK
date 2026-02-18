@@ -12,7 +12,7 @@
  */
 
 int
-main(int, char **)
+rtkI0estimationtest(int, char *[])
 {
   constexpr unsigned int Dimension = 3;
   using ImageType = itk::Image<unsigned short, Dimension>;

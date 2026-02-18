@@ -12,7 +12,7 @@
  */
 
 int
-main(int, char **)
+rtkwaterprecorrectiontest(int, char *[])
 {
   constexpr unsigned int Dimension = 2;
   using OutputImageType = itk::Image<float, Dimension>;
