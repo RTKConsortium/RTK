@@ -206,35 +206,33 @@ protected:
   using CPUImageType =
     typename itk::Image<typename ProjectionStackType::PixelType, ProjectionStackType::ImageDimension>;
   template <typename ImageType>
-  using EnableCudaScalarAndVectorType = typename std::enable_if<
-    !std::is_same_v<CPUImageType, ImageType> &&
-    std::is_same_v<typename itk::PixelTraits<typename ImageType::PixelType>::ValueType, float> &&
-    (itk::PixelTraits<typename ImageType::PixelType>::Dimension == 1 ||
-     itk::PixelTraits<typename ImageType::PixelType>::Dimension == 2 ||
-     itk::PixelTraits<typename ImageType::PixelType>::Dimension == 3)>::type;
+  using EnableCudaScalarAndVectorType =
+    std::enable_if_t<!std::is_same_v<CPUImageType, ImageType> &&
+                     std::is_same_v<typename itk::PixelTraits<typename ImageType::PixelType>::ValueType, float> &&
+                     (itk::PixelTraits<typename ImageType::PixelType>::Dimension == 1 ||
+                      itk::PixelTraits<typename ImageType::PixelType>::Dimension == 2 ||
+                      itk::PixelTraits<typename ImageType::PixelType>::Dimension == 3)>;
   template <typename ImageType>
-  using DisableCudaScalarAndVectorType = typename std::enable_if<
-    std::is_same_v<CPUImageType, ImageType> ||
-    !std::is_same_v<typename itk::PixelTraits<typename ImageType::PixelType>::ValueType, float> ||
-    (itk::PixelTraits<typename ImageType::PixelType>::Dimension != 1 &&
-     itk::PixelTraits<typename ImageType::PixelType>::Dimension != 2 &&
-     itk::PixelTraits<typename ImageType::PixelType>::Dimension != 3)>::type;
+  using DisableCudaScalarAndVectorType =
+    std::enable_if_t<std::is_same_v<CPUImageType, ImageType> ||
+                     !std::is_same_v<typename itk::PixelTraits<typename ImageType::PixelType>::ValueType, float> ||
+                     (itk::PixelTraits<typename ImageType::PixelType>::Dimension != 1 &&
+                      itk::PixelTraits<typename ImageType::PixelType>::Dimension != 2 &&
+                      itk::PixelTraits<typename ImageType::PixelType>::Dimension != 3)>;
   template <typename ImageType>
-  using EnableCudaScalarType = typename std::enable_if<
-    !std::is_same_v<CPUImageType, ImageType> &&
-    std::is_same_v<typename itk::PixelTraits<typename ImageType::PixelType>::ValueType, float> &&
-    itk::PixelTraits<typename ImageType::PixelType>::Dimension == 1>::type;
+  using EnableCudaScalarType =
+    std::enable_if_t<!std::is_same_v<CPUImageType, ImageType> &&
+                     std::is_same_v<typename itk::PixelTraits<typename ImageType::PixelType>::ValueType, float> &&
+                     itk::PixelTraits<typename ImageType::PixelType>::Dimension == 1>;
   template <typename ImageType>
-  using DisableCudaScalarType = typename std::enable_if<
-    std::is_same_v<CPUImageType, ImageType> ||
-    !std::is_same_v<typename itk::PixelTraits<typename ImageType::PixelType>::ValueType, float> ||
-    itk::PixelTraits<typename ImageType::PixelType>::Dimension != 1>::type;
+  using DisableCudaScalarType =
+    std::enable_if_t<std::is_same_v<CPUImageType, ImageType> ||
+                     !std::is_same_v<typename itk::PixelTraits<typename ImageType::PixelType>::ValueType, float> ||
+                     itk::PixelTraits<typename ImageType::PixelType>::Dimension != 1>;
   template <typename ImageType>
-  using EnableVectorType =
-    typename std::enable_if<itk::PixelTraits<typename ImageType::PixelType>::Dimension != 1>::type;
+  using EnableVectorType = std::enable_if_t<itk::PixelTraits<typename ImageType::PixelType>::Dimension != 1>;
   template <typename ImageType>
-  using DisableVectorType =
-    typename std::enable_if<itk::PixelTraits<typename ImageType::PixelType>::Dimension == 1>::type;
+  using DisableVectorType = std::enable_if_t<itk::PixelTraits<typename ImageType::PixelType>::Dimension == 1>;
 
   template <typename ImageType, EnableCudaScalarAndVectorType<ImageType> * = nullptr>
   ForwardProjectionPointerType
