@@ -23,7 +23,10 @@
 #include "rtkXimImageIO.h"
 #include <itkMetaDataObject.h>
 
-#define PROPERTY_NAME_MAX_LENGTH 256
+enum
+{
+  PROPERTY_NAME_MAX_LENGTH = 256
+};
 
 template <typename T>
 size_t
