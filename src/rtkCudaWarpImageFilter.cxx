@@ -29,7 +29,7 @@
 namespace rtk
 {
 
-CudaWarpImageFilter ::CudaWarpImageFilter() {}
+CudaWarpImageFilter ::CudaWarpImageFilter() = default;
 
 void
 CudaWarpImageFilter ::GPUGenerateData()

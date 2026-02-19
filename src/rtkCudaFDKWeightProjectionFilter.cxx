@@ -23,9 +23,9 @@
 namespace rtk
 {
 
-CudaFDKWeightProjectionFilter ::CudaFDKWeightProjectionFilter() {}
+CudaFDKWeightProjectionFilter ::CudaFDKWeightProjectionFilter() = default;
 
-CudaFDKWeightProjectionFilter ::~CudaFDKWeightProjectionFilter() {}
+CudaFDKWeightProjectionFilter ::~CudaFDKWeightProjectionFilter() = default;
 
 void
 CudaFDKWeightProjectionFilter ::GPUGenerateData()

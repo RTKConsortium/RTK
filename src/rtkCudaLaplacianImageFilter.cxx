@@ -21,7 +21,7 @@
 
 #include <itkMacro.h>
 
-rtk::CudaLaplacianImageFilter ::CudaLaplacianImageFilter() {}
+rtk::CudaLaplacianImageFilter ::CudaLaplacianImageFilter() = default;
 
 void
 rtk::CudaLaplacianImageFilter ::GPUGenerateData()
