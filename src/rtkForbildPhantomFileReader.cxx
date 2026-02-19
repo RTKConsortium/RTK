@@ -537,7 +537,7 @@ ForbildPhantomFileReader::FindUnions(const std::string & s)
     ico->SetDensity(-1. * m_ConvexShape->GetDensity());
 
     m_UnionWith.back() = pos;
-    m_Unions.push_back(ico.GetPointer());
+    m_Unions.emplace_back(ico.GetPointer());
 
     // Handles the union of three objects. Union of more objects would require
     // the implementation of the inclusion-exclusion formula
@@ -548,14 +548,14 @@ ForbildPhantomFileReader::FindUnions(const std::string & s)
       ico->AddConvexShape(m_ConvexShape);
       ico->AddConvexShape(m_GeometricPhantom->GetConvexShapes()[m_UnionWith[pos]]);
       ico->SetDensity(-1. * m_ConvexShape->GetDensity());
-      m_Unions.push_back(ico.GetPointer());
+      m_Unions.emplace_back(ico.GetPointer());
 
       ico = IntersectionOfConvexShapes::New();
       ico->AddConvexShape(m_ConvexShape);
       ico->AddConvexShape(m_GeometricPhantom->GetConvexShapes()[pos]);
       ico->AddConvexShape(m_GeometricPhantom->GetConvexShapes()[m_UnionWith[pos]]);
       ico->SetDensity(m_ConvexShape->GetDensity());
-      m_Unions.push_back(ico.GetPointer());
+      m_Unions.emplace_back(ico.GetPointer());
     }
   }
 }
