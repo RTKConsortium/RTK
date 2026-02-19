@@ -21,7 +21,7 @@
 
 #include <itkMacro.h>
 
-rtk::CudaSplatImageFilter ::CudaSplatImageFilter() {}
+rtk::CudaSplatImageFilter ::CudaSplatImageFilter() = default;
 
 void
 rtk::CudaSplatImageFilter ::GPUGenerateData()

@@ -21,7 +21,7 @@
 
 #include <itkMacro.h>
 
-rtk::CudaInterpolateImageFilter ::CudaInterpolateImageFilter() {}
+rtk::CudaInterpolateImageFilter ::CudaInterpolateImageFilter() = default;
 
 void
 rtk::CudaInterpolateImageFilter ::GPUGenerateData()

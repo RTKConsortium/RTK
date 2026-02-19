@@ -86,7 +86,7 @@ public:
 
 protected:
   CudaFDKConeBeamReconstructionFilter();
-  ~CudaFDKConeBeamReconstructionFilter() {}
+  ~CudaFDKConeBeamReconstructionFilter() = default;
 
   virtual void
   GPUGenerateData();

@@ -22,7 +22,7 @@
 
 #include <itkMacro.h>
 
-rtk::CudaCyclicDeformationImageFilter ::CudaCyclicDeformationImageFilter() {}
+rtk::CudaCyclicDeformationImageFilter ::CudaCyclicDeformationImageFilter() = default;
 
 void
 rtk::CudaCyclicDeformationImageFilter ::GPUGenerateData()

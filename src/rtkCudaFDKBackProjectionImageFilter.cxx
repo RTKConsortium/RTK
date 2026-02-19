@@ -29,7 +29,7 @@
 namespace rtk
 {
 
-CudaFDKBackProjectionImageFilter ::CudaFDKBackProjectionImageFilter() {}
+CudaFDKBackProjectionImageFilter ::CudaFDKBackProjectionImageFilter() = default;
 
 void
 CudaFDKBackProjectionImageFilter ::GPUGenerateData()
