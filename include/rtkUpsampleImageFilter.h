@@ -143,7 +143,7 @@ private:
   typename TOutputImage::SizeType  m_OutputSize;
   typename TOutputImage::IndexType m_OutputIndex;
 
-  const itk::ImageRegionSplitterBase *
+  [[nodiscard]] const itk::ImageRegionSplitterBase *
                                              GetImageRegionSplitter() const override;
   itk::ImageRegionSplitterDirection::Pointer m_Splitter;
 };
