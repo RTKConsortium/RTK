@@ -91,11 +91,10 @@ public:
 
   /** Standard class type alias. */
   using Self = SoftThresholdImageFilter;
-  typedef itk::UnaryFunctorImageFilter<
+  using Superclass = itk::UnaryFunctorImageFilter<
     TInputImage,
     TOutputImage,
-    Functor::SoftThreshold<typename TInputImage::PixelType, typename TOutputImage::PixelType>>
-    Superclass;
+    Functor::SoftThreshold<typename TInputImage::PixelType, typename TOutputImage::PixelType>>;
   using Pointer = itk::SmartPointer<Self>;
   using ConstPointer = itk::SmartPointer<const Self>;
 

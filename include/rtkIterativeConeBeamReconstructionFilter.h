@@ -71,16 +71,14 @@ public:
   /** Convenient type alias */
   using VolumeType = ProjectionStackType;
   using TClipImageType = itk::Image<double, VolumeType::ImageDimension>;
-  typedef enum
-  {
+  using ForwardProjectionType = enum {
     FP_JOSEPH = 0,
     FP_CUDARAYCAST = 2,
     FP_JOSEPHATTENUATED = 3,
     FP_ZENG = 4,
     FP_CUDAWARP = 5
-  } ForwardProjectionType;
-  typedef enum
-  {
+  };
+  using BackProjectionType = enum {
     BP_VOXELBASED = 0,
     BP_JOSEPH = 1,
     BP_CUDAVOXELBASED = 2,
@@ -88,7 +86,7 @@ public:
     BP_JOSEPHATTENUATED = 5,
     BP_ZENG = 6,
     BP_CUDAWARP = 7
-  } BackProjectionType;
+  };
 
   /** Typedefs of each subfilter of this composite filter */
   using ForwardProjectionFilterType = rtk::ForwardProjectionImageFilter<VolumeType, ProjectionStackType>;

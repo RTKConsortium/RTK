@@ -38,9 +38,9 @@ class ITK_TEMPLATE_EXPORT ProgressCommand : public itk::Command
 {
 public:
   /** Standard class typedefs. */
-  typedef ProgressCommand         Self;
-  typedef itk::Command            Superclass;
-  typedef itk::SmartPointer<Self> Pointer;
+  using Self = ProgressCommand;
+  using Superclass = itk::Command;
+  using Pointer = itk::SmartPointer<Self>;
 
   void
   Execute(itk::Object * caller, const itk::EventObject & event) override
@@ -92,9 +92,9 @@ class ITK_TEMPLATE_EXPORT PercentageProgressCommand : public ProgressCommand<TCa
 {
 public:
   /** Standard class typedefs. */
-  typedef PercentageProgressCommand Self;
-  typedef ProgressCommand<TCaller>  Superclass;
-  typedef itk::SmartPointer<Self>   Pointer;
+  using Self = PercentageProgressCommand;
+  using Superclass = ProgressCommand<TCaller>;
+  using Pointer = itk::SmartPointer<Self>;
   itkNewMacro(Self);
 
   int percentage = -1;

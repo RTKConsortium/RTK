@@ -39,9 +39,9 @@ class ITK_TEMPLATE_EXPORT IterationCommand : public itk::Command
 {
 public:
   /** Standard class typedefs. */
-  typedef IterationCommand        Self;
-  typedef itk::Command            Superclass;
-  typedef itk::SmartPointer<Self> Pointer;
+  using Self = IterationCommand;
+  using Superclass = itk::Command;
+  using Pointer = itk::SmartPointer<Self>;
 
   itkSetMacro(TriggerEvery, unsigned int);
 
@@ -104,9 +104,9 @@ class ITK_TEMPLATE_EXPORT VerboseIterationCommand : public IterationCommand<TCal
 {
 public:
   /** Standard class typedefs. */
-  typedef VerboseIterationCommand   Self;
-  typedef IterationCommand<TCaller> Superclass;
-  typedef itk::SmartPointer<Self>   Pointer;
+  using Self = VerboseIterationCommand;
+  using Superclass = IterationCommand<TCaller>;
+  using Pointer = itk::SmartPointer<Self>;
   itkNewMacro(Self);
 
 protected:
@@ -140,9 +140,9 @@ class ITK_TEMPLATE_EXPORT OutputIterationCommand : public IterationCommand<TCall
 {
 public:
   /** Standard class typedefs. */
-  typedef OutputIterationCommand    Self;
-  typedef IterationCommand<TCaller> Superclass;
-  typedef itk::SmartPointer<Self>   Pointer;
+  using Self = OutputIterationCommand;
+  using Superclass = IterationCommand<TCaller>;
+  using Pointer = itk::SmartPointer<Self>;
   itkNewMacro(Self);
 
   itkSetMacro(FileFormat, std::string);
@@ -154,8 +154,8 @@ protected:
   void
   Run(const TCaller * caller) override
   {
-    typedef itk::ImageFileWriter<TOutputImage> WriterType;
-    auto                                       writer = WriterType::New();
+    using WriterType = itk::ImageFileWriter<TOutputImage>;
+    auto writer = WriterType::New();
 
     char         buffer[1024];
     unsigned int size = snprintf(buffer, 1024, m_FileFormat.c_str(), this->m_IterationCount);
