@@ -16,7 +16,10 @@
  *
  *=========================================================================*/
 
-#define HEADER_INFO_SIZE 68
+enum
+{
+  HEADER_INFO_SIZE = 68
+};
 
 // Based on a true story by the Nederlands Kanker Instituut (AVS_HEIMANN.CPP
 // from the 20090608)
