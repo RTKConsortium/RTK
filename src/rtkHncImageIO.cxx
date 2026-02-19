@@ -30,7 +30,7 @@ void
 rtk::HncImageIO::ReadImageInformation()
 {
   Hnc_header hnc;
-  FILE *     fp;
+  FILE *     fp = nullptr;
 
   fp = fopen(m_FileName.c_str(), "rb");
   if (fp == nullptr)
@@ -137,7 +137,7 @@ rtk::HncImageIO::CanReadFile(const char * FileNameToRead)
 void
 rtk::HncImageIO::Read(void * buffer)
 {
-  FILE * fp;
+  FILE * fp = nullptr;
 
   fp = fopen(m_FileName.c_str(), "rb");
   if (fp == nullptr)
