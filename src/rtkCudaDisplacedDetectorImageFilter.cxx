@@ -22,9 +22,9 @@
 namespace rtk
 {
 
-CudaDisplacedDetectorImageFilter ::CudaDisplacedDetectorImageFilter() {}
+CudaDisplacedDetectorImageFilter ::CudaDisplacedDetectorImageFilter() = default;
 
-CudaDisplacedDetectorImageFilter ::~CudaDisplacedDetectorImageFilter() {}
+CudaDisplacedDetectorImageFilter ::~CudaDisplacedDetectorImageFilter() = default;
 
 void
 CudaDisplacedDetectorImageFilter ::GPUGenerateData()

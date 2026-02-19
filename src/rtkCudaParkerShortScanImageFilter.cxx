@@ -22,9 +22,9 @@
 namespace rtk
 {
 
-CudaParkerShortScanImageFilter ::CudaParkerShortScanImageFilter() {}
+CudaParkerShortScanImageFilter ::CudaParkerShortScanImageFilter() = default;
 
-CudaParkerShortScanImageFilter ::~CudaParkerShortScanImageFilter() {}
+CudaParkerShortScanImageFilter ::~CudaParkerShortScanImageFilter() = default;
 
 void
 CudaParkerShortScanImageFilter ::GPUGenerateData()

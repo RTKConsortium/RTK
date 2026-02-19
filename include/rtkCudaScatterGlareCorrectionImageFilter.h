@@ -73,7 +73,7 @@ public:
 
 protected:
   CudaScatterGlareCorrectionImageFilter() {}
-  ~CudaScatterGlareCorrectionImageFilter() {}
+  ~CudaScatterGlareCorrectionImageFilter() = default;
 
 }; // end of class
 

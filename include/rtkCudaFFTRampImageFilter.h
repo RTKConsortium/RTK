@@ -70,7 +70,7 @@ public:
 
 protected:
   CudaFFTRampImageFilter() {}
-  ~CudaFFTRampImageFilter() {}
+  ~CudaFFTRampImageFilter() = default;
 
 }; // end of class
 

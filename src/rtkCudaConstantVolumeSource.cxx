@@ -21,7 +21,7 @@
 
 #include <itkMacro.h>
 
-rtk::CudaConstantVolumeSource ::CudaConstantVolumeSource() {}
+rtk::CudaConstantVolumeSource ::CudaConstantVolumeSource() = default;
 
 void
 rtk::CudaConstantVolumeSource ::GPUGenerateData()
