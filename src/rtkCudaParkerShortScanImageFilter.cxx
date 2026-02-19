@@ -97,8 +97,8 @@ CudaParkerShortScanImageFilter ::GPUGenerateData()
   // 0: sdd
   // 1: projection offset x
   // 2: gantry angle
-  int     geomIdx = this->GetInput()->GetRequestedRegion().GetIndex()[2];
-  float * geomMatrix = new float[proj_size[2] * 5];
+  int    geomIdx = this->GetInput()->GetRequestedRegion().GetIndex()[2];
+  auto * geomMatrix = new float[proj_size[2] * 5];
   if (geomMatrix == nullptr)
     itkExceptionMacro(<< "Couldn't allocate geomMatrix");
   for (int g = 0; g < proj_size[2]; ++g)
