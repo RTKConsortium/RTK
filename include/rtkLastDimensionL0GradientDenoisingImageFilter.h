@@ -79,7 +79,7 @@ protected:
                        itk::ThreadIdType                        itkNotUsed(threadId)) override;
 
   /** Splits the OutputRequestedRegion along the first direction, not the last */
-  const itk::ImageRegionSplitterBase *
+  [[nodiscard]] const itk::ImageRegionSplitterBase *
                                              GetImageRegionSplitter() const override;
   itk::ImageRegionSplitterDirection::Pointer m_Splitter;
 

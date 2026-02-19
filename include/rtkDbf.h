@@ -50,19 +50,19 @@ public:
   {
     return m_Name;
   }
-  char
+  [[nodiscard]] char
   GetType() const
   {
     return m_Type;
   }
-  short
+  [[nodiscard]] short
   GetLength() const
   {
     return m_Length;
   }
 
   /** Memory offset from beginning of the record */
-  short
+  [[nodiscard]] short
   GetRecOffset() const
   {
     return m_RecOffset;
