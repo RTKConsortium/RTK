@@ -39,25 +39,25 @@ template <class TInputImage, class TOutputImage = TInputImage, class TFFTPrecisi
 class ITK_EXPORT FFTVarianceRampImageFilter : public rtk::FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>
 {
 public:
-  typedef rtk::FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision> Baseclass;
+  using Baseclass = rtk::FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>;
 
   /** Standard class typedefs. */
-  typedef FFTVarianceRampImageFilter                                        Self;
-  typedef rtk::FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision> Superclass;
-  typedef itk::SmartPointer<Self>                                           Pointer;
-  typedef itk::SmartPointer<const Self>                                     ConstPointer;
+  using Self = FFTVarianceRampImageFilter;
+  using Superclass = rtk::FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>;
+  using Pointer = itk::SmartPointer<Self>;
+  using ConstPointer = itk::SmartPointer<const Self>;
 
   /** Some convenient typedefs. */
-  typedef typename Baseclass::InputImageType   InputImageType;
-  typedef typename Baseclass::OutputImageType  OutputImageType;
-  typedef typename Baseclass::FFTPrecisionType FFTPrecisionType;
-  typedef typename Baseclass::IndexType        IndexType;
-  typedef typename Baseclass::SizeType         SizeType;
+  using InputImageType = typename Baseclass::InputImageType;
+  using OutputImageType = typename Baseclass::OutputImageType;
+  using FFTPrecisionType = typename Baseclass::FFTPrecisionType;
+  using IndexType = typename Baseclass::IndexType;
+  using SizeType = typename Baseclass::SizeType;
 
-  typedef typename Baseclass::FFTInputImageType     FFTInputImageType;
-  typedef typename Baseclass::FFTInputImagePointer  FFTInputImagePointer;
-  typedef typename Baseclass::FFTOutputImageType    FFTOutputImageType;
-  typedef typename Baseclass::FFTOutputImagePointer FFTOutputImagePointer;
+  using FFTInputImageType = typename Baseclass::FFTInputImageType;
+  using FFTInputImagePointer = typename Baseclass::FFTInputImagePointer;
+  using FFTOutputImageType = typename Baseclass::FFTOutputImageType;
+  using FFTOutputImagePointer = typename Baseclass::FFTOutputImagePointer;
 
   /** Standard New method. */
   itkNewMacro(Self);

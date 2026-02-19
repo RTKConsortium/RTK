@@ -54,7 +54,7 @@ public:
   using PixelType = signed short int;
   using Int4 = itk::int32_t; // int of 4 bytes as in xim docs
 
-  typedef struct xim_header
+  using Xim_header = struct xim_header
   {
     // Actual Header:
     char sFileType[32];
@@ -97,7 +97,7 @@ public:
     double       dGating4DInfoY;
     double       dGating4DInfoZ;
     // double dGating4DInfoTime;
-  } Xim_header;
+  };
 
   XimImageIO()
     : Superclass()

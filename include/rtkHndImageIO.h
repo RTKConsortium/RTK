@@ -52,7 +52,7 @@ public:
   using Pointer = itk::SmartPointer<Self>;
   using PixelType = signed short int;
 
-  typedef struct hnd_header
+  using Hnd_header = struct hnd_header
   {
     char         sFileType[32];
     unsigned int FileLength;
@@ -114,7 +114,7 @@ public:
     double       dGating4DInfoY;
     double       dGating4DInfoZ;
     double       dGating4DInfoTime;
-  } Hnd_header;
+  };
 
   HndImageIO()
     : Superclass()
