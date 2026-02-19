@@ -95,7 +95,7 @@ CudaWarpImageFilter ::GPUGenerateData()
     fIndexOutputToPPOutputMatrix[j] = (float)indexOutputToPPOutputMatrix[j / 4][j % 4];
   }
 
-  bool isLinear;
+  bool isLinear = false;
   if (std::string("LinearInterpolateImageFunction").compare(this->GetInterpolator()->GetNameOfClass()) == 0)
     isLinear = true;
   else if (std::string("NearestNeighborInterpolateImageFunction").compare(this->GetInterpolator()->GetNameOfClass()) ==
