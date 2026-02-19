@@ -83,8 +83,8 @@ OraGeometryReader::GenerateData()
       itkExceptionMacro(<< "No Direction in " << projectionsFileName);
     }
     Matrix3x3Type mat = matMeta->GetMetaDataObjectValue();
-    VectorType    u = VectorType(&(mat[0][0]));
-    VectorType    v = VectorType(&(mat[1][0]));
+    auto          u = VectorType(&(mat[0][0]));
+    auto          v = VectorType(&(mat[1][0]));
 
     // table_axis_distance_cm
     MetaDataDoubleType * thMeta = dynamic_cast<MetaDataDoubleType *>(dic["table_axis_distance_cm"].GetPointer());
