@@ -30,9 +30,8 @@ void
 rtk::HncImageIO::ReadImageInformation()
 {
   Hnc_header hnc;
-  FILE *     fp;
 
-  fp = fopen(m_FileName.c_str(), "rb");
+  FILE * fp = fopen(m_FileName.c_str(), "rb");
   if (fp == nullptr)
     itkGenericExceptionMacro(<< "Could not open file (for reading): " << m_FileName);
 
@@ -137,9 +136,7 @@ rtk::HncImageIO::CanReadFile(const char * FileNameToRead)
 void
 rtk::HncImageIO::Read(void * buffer)
 {
-  FILE * fp;
-
-  fp = fopen(m_FileName.c_str(), "rb");
+  FILE * fp = fopen(m_FileName.c_str(), "rb");
   if (fp == nullptr)
   {
     itkGenericExceptionMacro(<< "Could not open file (for reading): " << m_FileName);
