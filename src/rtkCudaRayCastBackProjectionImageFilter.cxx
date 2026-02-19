@@ -37,7 +37,7 @@ CudaRayCastBackProjectionImageFilter ::GPUGenerateData()
     itkGenericExceptionMacro(<< "Parallel geometry is not handled by CUDA forward projector.");
   }
 
-  const GeometryType * geometry = dynamic_cast<const GeometryType *>(this->GetGeometry());
+  const auto * geometry = dynamic_cast<const GeometryType *>(this->GetGeometry());
   if (!geometry)
   {
     itkGenericExceptionMacro(<< "Error, ThreeDCircularProjectionGeometry expected");
@@ -111,9 +111,9 @@ CudaRayCastBackProjectionImageFilter ::GPUGenerateData()
   }
 
   // Compute matrices to transform projection index to volume index, one per projection
-  float * translatedProjectionIndexTransformMatrices = new float[12 * nProj];
-  float * translatedVolumeTransformMatrices = new float[12 * nProj];
-  float * source_positions = new float[4 * nProj];
+  auto * translatedProjectionIndexTransformMatrices = new float[12 * nProj];
+  auto * translatedVolumeTransformMatrices = new float[12 * nProj];
+  auto * source_positions = new float[4 * nProj];
 
   float radiusCylindricalDetector = geometry->GetRadiusCylindricalDetector();
 

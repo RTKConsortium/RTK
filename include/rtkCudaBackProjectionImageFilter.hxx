@@ -77,9 +77,9 @@ CudaBackProjectionImageFilter<ImageType>::GPUGenerateData()
   volumeSize[2] = this->GetOutput()->GetBufferedRegion().GetSize()[2];
 
 #  ifdef CudaCommon_VERSION_MAJOR
-  float * pin = (float *)(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
-  float * pout = (float *)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
-  float * stackGPUPointer = (float *)(this->GetInput(1)->GetCudaDataManager()->GetGPUBufferPointer());
+  auto * pin = (float *)(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
+  auto * pout = (float *)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
+  auto * stackGPUPointer = (float *)(this->GetInput(1)->GetCudaDataManager()->GetGPUBufferPointer());
 #  else
   float * pin = *(float **)(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
   float * pout = *(float **)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
@@ -93,9 +93,9 @@ CudaBackProjectionImageFilter<ImageType>::GPUGenerateData()
 
   // Allocate a large matrix to hold the matrix of all projections
   // fMatrix is for flat detector, the other two are for cylindrical
-  float * fMatrix = new float[12 * nProj];
-  float * fvolIndexToProjPP = new float[12 * nProj];
-  float * fprojPPToProjIndex = new float[9];
+  auto * fMatrix = new float[12 * nProj];
+  auto * fvolIndexToProjPP = new float[12 * nProj];
+  auto * fprojPPToProjIndex = new float[9];
 
   // Correction for non-zero indices in the projections
   itk::Matrix<double, 3, 3> matrixIdxProj;

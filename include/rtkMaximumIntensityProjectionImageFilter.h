@@ -58,7 +58,7 @@ public:
              const TInput       volumeValue,
              const VectorType & itkNotUsed(stepInMM))
   {
-    TOutput tmp = static_cast<TOutput>(volumeValue);
+    auto tmp = static_cast<TOutput>(volumeValue);
     if (tmp > mipValue)
     {
       mipValue = tmp;
@@ -101,7 +101,7 @@ public:
              const VectorType & itkNotUsed(nearestPoint),
              const VectorType & itkNotUsed(farthestPoint)) const
   {
-    TOutput tmp = static_cast<TOutput>(input);
+    auto tmp = static_cast<TOutput>(input);
     if (tmp < rayCastValue)
     {
       tmp = rayCastValue;

@@ -56,8 +56,8 @@ CudaConjugateGradientImageFilter<TImage>::GPUGenerateData()
 
   // Copy the input to the output (X_0 = input)
 #  ifdef CudaCommon_VERSION_MAJOR
-  DataType * pin = (DataType *)(this->GetX()->GetCudaDataManager()->GetGPUBufferPointer());
-  DataType * pX = (DataType *)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
+  auto * pin = (DataType *)(this->GetX()->GetCudaDataManager()->GetGPUBufferPointer());
+  auto * pX = (DataType *)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
 #  else
   DataType * pin = *(DataType **)(this->GetX()->GetCudaDataManager()->GetGPUBufferPointer());
   DataType * pX = *(DataType **)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
@@ -75,9 +75,9 @@ CudaConjugateGradientImageFilter<TImage>::GPUGenerateData()
   AOut->DisconnectPipeline();
 
 #  ifdef CudaCommon_VERSION_MAJOR
-  DataType * pR = (DataType *)(R_k->GetCudaDataManager()->GetGPUBufferPointer());
-  DataType * pB = (DataType *)(this->GetB()->GetCudaDataManager()->GetGPUBufferPointer());
-  DataType * pAOut = (DataType *)(AOut->GetCudaDataManager()->GetGPUBufferPointer());
+  auto * pR = (DataType *)(R_k->GetCudaDataManager()->GetGPUBufferPointer());
+  auto * pB = (DataType *)(this->GetB()->GetCudaDataManager()->GetGPUBufferPointer());
+  auto * pAOut = (DataType *)(AOut->GetCudaDataManager()->GetGPUBufferPointer());
 #  else
   DataType * pR = *(DataType **)(R_k->GetCudaDataManager()->GetGPUBufferPointer());
   DataType * pB = *(DataType **)(this->GetB()->GetCudaDataManager()->GetGPUBufferPointer());
@@ -93,7 +93,7 @@ CudaConjugateGradientImageFilter<TImage>::GPUGenerateData()
   this->GetB()->GetCudaDataManager()->GetCPUBufferPointer();
 
 #  ifdef CudaCommon_VERSION_MAJOR
-  DataType * pP = (DataType *)(P_k->GetCudaDataManager()->GetGPUBufferPointer());
+  auto * pP = (DataType *)(P_k->GetCudaDataManager()->GetGPUBufferPointer());
 #  else
   DataType * pP = *(DataType **)(P_k->GetCudaDataManager()->GetGPUBufferPointer());
 #  endif

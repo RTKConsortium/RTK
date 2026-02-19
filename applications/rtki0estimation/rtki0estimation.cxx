@@ -109,7 +109,7 @@ main(int argc, char * argv[])
   {
     std::ofstream paramFile;
     paramFile.open(args_info.debug_arg);
-    std::vector<unsigned short>::const_iterator it = I0buffer.begin();
+    auto it = I0buffer.begin();
     for (; it != I0buffer.end(); ++it)
     {
       paramFile << *it << ",";

@@ -207,9 +207,9 @@ CudaWarpBackProjectionImageFilter ::GPUGenerateData()
 
   // Allocate a large matrix to hold the matrix of all projections
   // fMatrix is for flat detector, the other two are for cylindrical
-  float * fMatrix = new float[12 * nProj];
-  float * fvolIndexToProjPP = new float[12 * nProj];
-  float * fprojPPToProjIndex = new float[9];
+  auto * fMatrix = new float[12 * nProj];
+  auto * fvolIndexToProjPP = new float[12 * nProj];
+  auto * fprojPPToProjIndex = new float[9];
 
   // Correction for non-zero indices in the projections
   itk::Matrix<double, 3, 3> matrixIdxProj;

@@ -458,7 +458,7 @@ rtk::ThreeDCircularProjectionGeometry::GetAngularGapsWithNext(const std::vector<
   std::multimap<double, unsigned int> sangles = this->GetSortedAngles(angles);
 
   // We then go over the sorted angles and deduce the angular weight
-  std::multimap<double, unsigned int>::const_iterator curr = sangles.begin(), next = sangles.begin();
+  auto curr = sangles.begin(), next = sangles.begin();
   next++;
 
   // All but the last projection
@@ -492,8 +492,7 @@ rtk::ThreeDCircularProjectionGeometry::GetAngularGaps(const std::vector<double> 
   std::multimap<double, unsigned int> sangles = this->GetSortedAngles(angles);
 
   // We then go over the sorted angles and deduce the angular weight
-  std::multimap<double, unsigned int>::const_iterator prev = sangles.begin(), curr = sangles.begin(),
-                                                      next = sangles.begin();
+  auto prev = sangles.begin(), curr = sangles.begin(), next = sangles.begin();
   next++;
 
   // First projection wraps the angle of the last one
