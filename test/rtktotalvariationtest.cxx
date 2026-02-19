@@ -1,5 +1,5 @@
 #include "itkRandomImageSource.h"
-#include "math.h"
+#include <cmath>
 
 #include "rtkTotalVariationImageFilter.h"
 #include "rtkTotalVariationDenoisingBPDQImageFilter.h"

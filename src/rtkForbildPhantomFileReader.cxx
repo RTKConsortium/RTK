@@ -16,7 +16,7 @@
  *
  *=========================================================================*/
 
-#include "math.h"
+#include <cmath>
 #include <cstdlib>
 #include <clocale>
 #include <fstream>

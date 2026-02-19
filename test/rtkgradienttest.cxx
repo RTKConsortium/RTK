@@ -1,4 +1,4 @@
-#include "math.h"
+#include <cmath>
 #include <itkImageRegionConstIterator.h>
 
 #include "rtkMacro.h"

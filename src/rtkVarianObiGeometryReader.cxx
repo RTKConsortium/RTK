@@ -17,7 +17,7 @@
  *=========================================================================*/
 
 
-#include "math.h"
+#include <cmath>
 
 #include "rtkVarianObiGeometryReader.h"
 #include "rtkVarianObiXMLFileReader.h"

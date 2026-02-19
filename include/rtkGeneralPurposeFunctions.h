@@ -22,7 +22,7 @@
 #include <vector>
 
 
-#include "math.h"
+#include <cmath>
 
 #include <itkMacro.h>
 #include <itkImageFileWriter.h>
