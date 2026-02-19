@@ -16,7 +16,7 @@
  *
  *=========================================================================*/
 
-#include "math.h"
+#include <cmath>
 
 #include "rtkThreeDCircularProjectionGeometry.h"
 #include "rtkMacro.h"
