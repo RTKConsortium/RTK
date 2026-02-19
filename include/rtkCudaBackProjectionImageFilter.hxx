@@ -36,8 +36,7 @@ namespace rtk
 {
 
 template <class ImageType>
-CudaBackProjectionImageFilter<ImageType>::CudaBackProjectionImageFilter()
-{}
+CudaBackProjectionImageFilter<ImageType>::CudaBackProjectionImageFilter() = default;
 
 template <class ImageType>
 void

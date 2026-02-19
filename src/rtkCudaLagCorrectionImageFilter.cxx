@@ -22,9 +22,9 @@
 namespace rtk
 {
 
-CudaLagCorrectionImageFilter ::CudaLagCorrectionImageFilter() {}
+CudaLagCorrectionImageFilter ::CudaLagCorrectionImageFilter() = default;
 
-CudaLagCorrectionImageFilter ::~CudaLagCorrectionImageFilter() {}
+CudaLagCorrectionImageFilter ::~CudaLagCorrectionImageFilter() = default;
 
 void
 CudaLagCorrectionImageFilter ::GPUGenerateData()

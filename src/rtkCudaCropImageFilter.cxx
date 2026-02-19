@@ -25,7 +25,7 @@
 namespace rtk
 {
 
-CudaCropImageFilter ::CudaCropImageFilter() {}
+CudaCropImageFilter ::CudaCropImageFilter() = default;
 
 // CUDA cropping call
 void

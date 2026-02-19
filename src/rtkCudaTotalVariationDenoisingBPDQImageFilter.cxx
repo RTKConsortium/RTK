@@ -21,7 +21,7 @@
 
 #include <itkMacro.h>
 
-rtk::CudaTotalVariationDenoisingBPDQImageFilter ::CudaTotalVariationDenoisingBPDQImageFilter() {}
+rtk::CudaTotalVariationDenoisingBPDQImageFilter ::CudaTotalVariationDenoisingBPDQImageFilter() = default;
 
 void
 rtk::CudaTotalVariationDenoisingBPDQImageFilter ::GPUGenerateData()

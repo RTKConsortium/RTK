@@ -34,8 +34,7 @@ namespace rtk
 {
 
 template <class TImage>
-CudaConjugateGradientImageFilter<TImage>::CudaConjugateGradientImageFilter()
-{}
+CudaConjugateGradientImageFilter<TImage>::CudaConjugateGradientImageFilter() = default;
 
 template <class TImage>
 void

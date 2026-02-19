@@ -67,7 +67,7 @@ public:
 
 protected:
   FFTVarianceRampImageFilter();
-  ~FFTVarianceRampImageFilter() {}
+  ~FFTVarianceRampImageFilter() = default;
 
   /** Creates and return a pointer to one line of the variance kernel in Fourier space.
    *  Used in generate data functions.  */

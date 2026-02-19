@@ -36,8 +36,7 @@ namespace rtk
 
 template <class TDecomposedProjections, class TMeasuredProjections, class TIncidentSpectrum, class TProjections>
 CudaWeidingerForwardModelImageFilter<TDecomposedProjections, TMeasuredProjections, TIncidentSpectrum, TProjections>::
-  CudaWeidingerForwardModelImageFilter()
-{}
+  CudaWeidingerForwardModelImageFilter() = default;
 
 template <class TDecomposedProjections, class TMeasuredProjections, class TIncidentSpectrum, class TProjections>
 void

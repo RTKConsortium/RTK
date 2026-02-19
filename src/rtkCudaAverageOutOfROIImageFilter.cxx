@@ -21,7 +21,7 @@
 
 #include <itkMacro.h>
 
-rtk::CudaAverageOutOfROIImageFilter ::CudaAverageOutOfROIImageFilter() {}
+rtk::CudaAverageOutOfROIImageFilter ::CudaAverageOutOfROIImageFilter() = default;
 
 void
 rtk::CudaAverageOutOfROIImageFilter ::GPUGenerateData()
