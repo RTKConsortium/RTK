@@ -73,7 +73,7 @@ public:
     m_Interpolator->SetInputImage(lut);
   }
 
-  LookupTableDataPointer
+  [[nodiscard]] LookupTableDataPointer
   GetLookupTable() const
   {
     return m_LookupTableDataPointer;

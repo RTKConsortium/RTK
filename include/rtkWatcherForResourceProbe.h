@@ -62,7 +62,7 @@ public:
 
   /** Methods to access member data */
   /** Get a pointer to the process object being watched. */
-  const ProcessObject *
+  [[nodiscard]] const ProcessObject *
   GetProcess() const
   {
     return m_Process;

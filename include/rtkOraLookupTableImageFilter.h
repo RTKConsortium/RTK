@@ -82,7 +82,7 @@ public:
       this->Modified();
     }
   }
-  const FileNamesContainer &
+  [[nodiscard]] const FileNamesContainer &
   GetFileNames() const
   {
     return m_FileNames;

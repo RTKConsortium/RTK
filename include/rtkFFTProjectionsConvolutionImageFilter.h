@@ -143,10 +143,10 @@ protected:
   void
   PrintSelf(std::ostream & os, itk::Indent indent) const override;
 
-  bool
+  [[nodiscard]] bool
   IsPrime(int n) const;
 
-  int
+  [[nodiscard]] int
   GreatestPrimeFactor(int n) const;
 
   /** Creates and return a pointer to the convolution kernel. Can be 1D or 2D.
