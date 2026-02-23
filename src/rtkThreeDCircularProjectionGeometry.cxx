@@ -323,7 +323,7 @@ rtk::ThreeDCircularProjectionGeometry::AddProjection(const HomogeneousProjection
 
   // Def matrix K so that detK = det P[:,:3]
   Matrix3x3Type K;
-  K.Fill(0.0f);
+  K.Fill(0.0F);
   K(0, 0) = sdd;
   K(1, 1) = sdd;
   K(2, 2) = -1.0;
