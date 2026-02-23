@@ -89,7 +89,7 @@ class RTK_EXPORT DbfFile
 {
 public:
   /** Constructor initializes the structure and goes to first record */
-  DbfFile(const std::string & fileName);
+  explicit DbfFile(const std::string & fileName);
   ~DbfFile();
 
   /** Return open status of file stream */
