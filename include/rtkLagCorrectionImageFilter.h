@@ -121,7 +121,7 @@ protected:
   VectorType m_ExpmA; // exp(-a)
   float      m_SumB;  // normalization factor
 
-protected:
+
   FloatVectorType m_S; // State variable
 
 private:
