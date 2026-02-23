@@ -23,6 +23,8 @@
 #include <itkVectorImage.h>
 #include <itkVariableLengthVector.h>
 #include <itkVariableSizeMatrix.h>
+
+#include <algorithm>
 #include "rtkMacro.h"
 
 namespace rtk
@@ -210,8 +212,7 @@ public:
         // Compute the length of current material required to obtain the attenuation
         // observed in current bin. Keep only the minimum among all bins
         double requiredLength = this->BinwiseLogTransform()[bin] / MeanAttenuationInBin[mat][bin];
-        if (initialGuess[mat] > requiredLength)
-          initialGuess[mat] = requiredLength;
+        initialGuess[mat] = std::min(initialGuess[mat], requiredLength);
       }
     }
 
