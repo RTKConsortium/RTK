@@ -151,7 +151,6 @@ rtk::HncImageIO::Read(void * buffer)
     itkGenericExceptionMacro(<< "Could not read " << nelements << " bytes in " << m_FileName);
 
   fclose(fp);
-  return;
 }
 
 //--------------------------------------------------------------------
