@@ -22,7 +22,6 @@
 #include "rtkMacro.h"
 
 #include <algorithm>
-#include <cmath>
 
 #include <itkCenteredEuler3DTransform.h>
 #include <itkEuler3DTransform.h>

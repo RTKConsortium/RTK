@@ -10,7 +10,6 @@
 #include <itkVector.h>
 #include <itkPoint.h>
 // RTK/ORA
-#include <cmath>
 
 #include "rtkReg23ProjectionGeometry.h"
 
