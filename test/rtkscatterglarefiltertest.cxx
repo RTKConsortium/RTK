@@ -60,7 +60,7 @@ createInputImage(const std::vector<float> & coef)
   inputI->SetRegions(region);
   inputI->SetSpacing(spacing);
   inputI->Allocate();
-  inputI->FillBuffer(1.0f);
+  inputI->FillBuffer(1.0F);
 
   float a3 = coef[0];
   float b3 = coef[1];
@@ -74,10 +74,10 @@ createInputImage(const std::vector<float> & coef)
   while (!itK.IsAtEnd())
   {
     idx = itK.GetIndex();
-    float xx = (float)idx[0] - (float)size[0] / 2.0f;
-    float yy = (float)idx[1] - (float)size[1] / 2.0f;
+    float xx = (float)idx[0] - (float)size[0] / 2.0F;
+    float yy = (float)idx[1] - (float)size[1] / 2.0F;
     float rr2 = (xx * xx + yy * yy);
-    float g = (a3 * dx * dy / (2.0f * itk::Math::pi * b3sq)) * 1.0f / std::pow((1.0f + rr2 / b3sq), 1.5f);
+    float g = (a3 * dx * dy / (2.0F * itk::Math::pi * b3sq)) * 1.0F / std::pow((1.0F + rr2 / b3sq), 1.5F);
     if ((2 * idx[0] == (ImageType::IndexValueType)size[0]) && ((2 * idx[1] == (ImageType::IndexValueType)size[1])))
     {
       g += (1 - a3);
@@ -100,8 +100,8 @@ main(int, char **)
   auto SFilter = ScatterCorrectionType::New();
 
   std::vector<float> coef;
-  coef.push_back(0.0787f);
-  coef.push_back(106.244f);
+  coef.push_back(0.0787F);
+  coef.push_back(106.244F);
 
   SFilter->SetTruncationCorrection(0.5);
   SFilter->SetCoefficients(coef);
@@ -116,8 +116,8 @@ main(int, char **)
   itO.GoToBegin();
 
   ImageType::IndexType idx;
-  float                sumBng = 0.0f;
-  float                spikeValueOut = 0.0f;
+  float                sumBng = 0.0F;
+  float                spikeValueOut = 0.0F;
   while (!itO.IsAtEnd())
   {
     idx = itO.GetIndex();

@@ -97,7 +97,7 @@ protected:
 
   bool               m_MapsLoaded{ false }; // True if gain maps loaded
   int                m_VModelOrder{ 1 };    // Polynomial correction order
-  float              m_K{ 1.0f };           // Scaling constant, a 0 means no correction
+  float              m_K{ 1.0F };           // Scaling constant, a 0 means no correction
   VectorType         m_PowerLut;            // Vector containing I^n
   InputImagePointer  m_DarkImage;           // Dark image
   OutputImagePointer m_GainImage;           // Gain coefficients (A matrix)

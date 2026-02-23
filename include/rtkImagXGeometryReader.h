@@ -151,16 +151,16 @@ private:
 
     CalibrationModelType()
     {
-      sourceToNozzleOffsetAngle = -90.f;
-      Px = std::vector<float>(5, 0.f);
-      Py = std::vector<float>(5, 0.f);
-      Pz = std::vector<float>(5, 0.f);
-      Rx = std::vector<float>(5, 0.f);
-      Ry = std::vector<float>(5, 0.f);
-      Rz = std::vector<float>(5, 0.f);
-      Tx = std::vector<float>(5, 0.f);
-      Ty = std::vector<float>(5, 0.f);
-      Tz = std::vector<float>(5, 0.f);
+      sourceToNozzleOffsetAngle = -90.F;
+      Px = std::vector<float>(5, 0.F);
+      Py = std::vector<float>(5, 0.F);
+      Pz = std::vector<float>(5, 0.F);
+      Rx = std::vector<float>(5, 0.F);
+      Ry = std::vector<float>(5, 0.F);
+      Rz = std::vector<float>(5, 0.F);
+      Tx = std::vector<float>(5, 0.F);
+      Ty = std::vector<float>(5, 0.F);
+      Tz = std::vector<float>(5, 0.F);
     }
   };
 

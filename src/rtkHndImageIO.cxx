@@ -230,7 +230,7 @@ rtk::HndImageIO::Read(void * buffer)
     return bytes;
   });
 
-  const auto total_bytes = std::accumulate(std::begin(byte_table), std::end(byte_table), 0ull);
+  const auto total_bytes = std::accumulate(std::begin(byte_table), std::end(byte_table), 0ULL);
 
   auto compr_img_buffer = std::vector<unsigned char>(total_bytes);
   // total_bytes - 3 because the last two bits can be redundant (according to Xim docs)
