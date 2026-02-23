@@ -209,26 +209,26 @@ public:
 
   /** Get a vector containing the tilt angles in radians. The tilt angle is
    * defined as the difference between -GantryAngle and the SourceAngle. */
-  const std::vector<double>
+  std::vector<double>
   GetTiltAngles() const;
 
   /** Get a multimap containing all sorted angles in radians and corresponding
    * index. */
-  const std::multimap<double, unsigned int>
+  std::multimap<double, unsigned int>
   GetSortedAngles(const std::vector<double> & angles) const;
 
   /** Get a map containing unique sorted angles in radians and corresponding
    * index. */
-  const std::map<double, unsigned int>
+  std::map<double, unsigned int>
   GetUniqueSortedAngles(const std::vector<double> & angles) const;
 
   /** Get for each projection the angular gaps with next projection in radians. */
-  const std::vector<double>
+  std::vector<double>
   GetAngularGapsWithNext(const std::vector<double> & angles) const;
 
   /** Get for each projection half the angular distance between the previous
    *  and the next projection in radians. */
-  const std::vector<double>
+  std::vector<double>
   GetAngularGaps(const std::vector<double> & angles);
 
   /** Compute rotation matrix in homogeneous coordinates from 3 angles in
@@ -322,7 +322,7 @@ public:
 
   /** Get the source position for the ith projection in the fixed reference
    * system and in homogeneous coordinates. */
-  const HomogeneousVectorType
+  HomogeneousVectorType
   GetSourcePosition(unsigned int i) const;
 
   /** Compute the ith matrix to convert projection coordinates to coordinates
@@ -330,7 +330,7 @@ public:
    * third element of the projection coordinates is ignored because projection
    * coordinates are 2D. This is meant to manipulate more easily stack of
    * projection images. */
-  const ThreeDHomogeneousMatrixType
+  ThreeDHomogeneousMatrixType
   GetProjectionCoordinatesToDetectorSystemMatrix(unsigned int i) const;
 
   /** Compute the ith matrix to convert projection coordinates to coordinates
@@ -338,7 +338,7 @@ public:
    * third element of the projection coordinates is ignored because projection
    * coordinates are 2D. This is meant to manipulate more easily stack of
    * projection images. */
-  const ThreeDHomogeneousMatrixType
+  ThreeDHomogeneousMatrixType
   GetProjectionCoordinatesToFixedSystemMatrix(unsigned int i) const;
 
   /** This function wraps an angle value between 0 and 360 degrees. */

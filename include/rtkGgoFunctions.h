@@ -126,7 +126,7 @@ SetConstantImageSourceFromGgo(TConstantImageSourceType * source, const TArgsInfo
  * \ingroup RTK
  */
 template <class TArgsInfo>
-const std::vector<std::string>
+std::vector<std::string>
 GetProjectionsFileNamesFromGgo(const TArgsInfo & args_info)
 {
   // Generate file names
