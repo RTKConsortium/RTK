@@ -171,8 +171,8 @@ CudaRayCastBackProjectionImageFilter ::GPUGenerateData()
 
     CUDA_ray_cast_back_project(projectionSize,
                                volumeSize,
-                               (float *)&(translatedProjectionIndexTransformMatrices[12 * i]),
-                               (float *)&(translatedVolumeTransformMatrices[12 * i]),
+                               (&(translatedProjectionIndexTransformMatrices[12 * i])),
+                               (&(translatedVolumeTransformMatrices[12 * i])),
                                pin,
                                pout,
                                pproj + (nPixelsPerProj * projectionOffset),
