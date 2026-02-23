@@ -95,15 +95,15 @@ protected:
   enum DataType
   {
     U_CHAR_DATATYPE = 0,
-    CHAR_DATATYPE, //  8 bits = 1 B
-    U_SHORT_DATATYPE,
-    SHORT_DATATYPE, // 16 bits = 2 B
-    U_INT_DATATYPE,
-    INT_DATATYPE, // 32 bits = 4 B
-    U_L_INT_DATATYPE,
-    L_INT_DATATYPE, // 32 bits = 4 B
-    FLOAT_DATATYPE,
-    DOUBLE_DATATYPE, // 4 B, 8 B
+    CHAR_DATATYPE = 1, //  8 bits = 1 B
+    U_SHORT_DATATYPE = 2,
+    SHORT_DATATYPE = 3, // 16 bits = 2 B
+    U_INT_DATATYPE = 4,
+    INT_DATATYPE = 5, // 32 bits = 4 B
+    U_L_INT_DATATYPE = 6,
+    L_INT_DATATYPE = 7, // 32 bits = 4 B
+    FLOAT_DATATYPE = 8,
+    DOUBLE_DATATYPE = 9, // 4 B, 8 B
     UNKNOWN_DATATYPE = -1
   };
 
