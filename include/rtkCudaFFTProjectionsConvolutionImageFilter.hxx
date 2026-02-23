@@ -76,7 +76,7 @@ CudaFFTProjectionsConvolutionImageFilter<TParentImageFilter>::PadInputImageRegio
 
 #  ifdef CudaCommon_VERSION_MAJOR
   auto *  pin = (float *)(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
-  float * pout = (float *)(paddedImage->GetCudaDataManager()->GetGPUBufferPointer());
+  float * pout = static_cast<float *>(paddedImage->GetCudaDataManager()->GetGPUBufferPointer());
 #  else
   float * pin = *(float **)(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
   float * pout = *(float **)(paddedImage->GetCudaDataManager()->GetGPUBufferPointer());
@@ -138,7 +138,7 @@ CudaFFTProjectionsConvolutionImageFilter<TParentImageFilter>::GPUGenerateData()
   CUDA_fft_convolution(inputDimension,
                        kernelDimension,
 #  ifdef CudaCommon_VERSION_MAJOR
-                       (float *)(cuPadImgP->GetCudaDataManager()->GetGPUBufferPointer()),
+                       static_cast<float *>(cuPadImgP->GetCudaDataManager()->GetGPUBufferPointer()),
                        (float2 *)(this->m_KernelFFTCUDA->GetCudaDataManager()->GetGPUBufferPointer()));
 #  else
                        *(float **)(cuPadImgP->GetCudaDataManager()->GetGPUBufferPointer()),

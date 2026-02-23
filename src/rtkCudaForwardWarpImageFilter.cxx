@@ -91,11 +91,11 @@ CudaForwardWarpImageFilter ::GPUGenerateData()
   }
 
 #ifdef CudaCommon_VERSION_MAJOR
-  float * pinVol = (float *)(this->GetInput(0)->GetCudaDataManager()->GetGPUBufferPointer());
-  float * poutVol = (float *)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
-  float * pinxDVF = (float *)(xCompDVF->GetCudaDataManager()->GetGPUBufferPointer());
-  float * pinyDVF = (float *)(yCompDVF->GetCudaDataManager()->GetGPUBufferPointer());
-  float * pinzDVF = (float *)(zCompDVF->GetCudaDataManager()->GetGPUBufferPointer());
+  float * pinVol = static_cast<float *>(this->GetInput(0)->GetCudaDataManager()->GetGPUBufferPointer());
+  float * poutVol = static_cast<float *>(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
+  float * pinxDVF = static_cast<float *>(xCompDVF->GetCudaDataManager()->GetGPUBufferPointer());
+  float * pinyDVF = static_cast<float *>(yCompDVF->GetCudaDataManager()->GetGPUBufferPointer());
+  float * pinzDVF = static_cast<float *>(zCompDVF->GetCudaDataManager()->GetGPUBufferPointer());
 #else
   float * pinVol = *(float **)(this->GetInput(0)->GetCudaDataManager()->GetGPUBufferPointer());
   float * poutVol = *(float **)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
@@ -120,9 +120,9 @@ CudaForwardWarpImageFilter ::GPUGenerateData()
   float fPPOutputToIndexOutputMatrix[12];
   for (int j = 0; j < 12; j++)
   {
-    fIndexInputToIndexDVFMatrix[j] = (float)indexInputToIndexDVFMatrix[j / 4][j % 4];
-    fPPOutputToIndexOutputMatrix[j] = (float)PPOutputToIndexOutputMatrix[j / 4][j % 4];
-    fIndexInputToPPInputMatrix[j] = (float)indexInputToPPInputMatrix[j / 4][j % 4];
+    fIndexInputToIndexDVFMatrix[j] = static_cast<float>(indexInputToIndexDVFMatrix[j / 4][j % 4]);
+    fPPOutputToIndexOutputMatrix[j] = static_cast<float>(PPOutputToIndexOutputMatrix[j / 4][j % 4]);
+    fIndexInputToPPInputMatrix[j] = static_cast<float>(indexInputToPPInputMatrix[j / 4][j % 4]);
   }
 
   bool isLinear = false;
