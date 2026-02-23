@@ -214,13 +214,13 @@ public:
 
   /** Get a multimap containing all sorted angles in radians and corresponding
    * index. */
-  std::multimap<double, unsigned int>
-  GetSortedAngles(const std::vector<double> & angles) const;
+  static std::multimap<double, unsigned int>
+  GetSortedAngles(const std::vector<double> & angles);
 
   /** Get a map containing unique sorted angles in radians and corresponding
    * index. */
-  std::map<double, unsigned int>
-  GetUniqueSortedAngles(const std::vector<double> & angles) const;
+  static std::map<double, unsigned int>
+  GetUniqueSortedAngles(const std::vector<double> & angles);
 
   /** Get for each projection the angular gaps with next projection in radians. */
   std::vector<double>
