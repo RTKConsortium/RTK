@@ -97,7 +97,7 @@ public:
     double       dGating4DInfoY;
     double       dGating4DInfoZ;
     // double dGating4DInfoTime;
-  };
+  } __attribute__((aligned(128)));
 
   XimImageIO() {}
 

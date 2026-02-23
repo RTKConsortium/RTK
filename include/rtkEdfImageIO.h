@@ -120,14 +120,14 @@ protected:
   {
     const char * key;
     int          value;
-  };
+  } __attribute__((aligned(16)));
 
   struct table3
   {
     const char * key;
     int          value;
     short        sajzof;
-  };
+  } __attribute__((aligned(16)));
 
   /* Returns index of the table tbl whose key matches the beginning of the
    * search string search_str.
