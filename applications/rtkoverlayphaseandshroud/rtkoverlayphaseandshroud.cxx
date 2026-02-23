@@ -75,10 +75,8 @@ main(int argc, char * argv[])
   while (!itIn.IsAtEnd())
   {
     double currentPixel = itIn.Get();
-    if (currentPixel < min)
-      min = currentPixel;
-    if (currentPixel > max)
-      max = currentPixel;
+    min = std::min(currentPixel, min);
+    max = std::max(currentPixel, max);
     ++itIn;
   }
 
