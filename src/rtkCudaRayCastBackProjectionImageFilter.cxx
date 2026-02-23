@@ -133,7 +133,7 @@ CudaRayCastBackProjectionImageFilter ::GPUGenerateData()
         rtk::GetIndexToPhysicalPointMatrix(this->GetInput(1)).GetVnlMatrix() * projIndexTranslation.GetVnlMatrix();
       for (int j = 0; j < 3; j++) // Ignore the 4th row
         for (int k = 0; k < 4; k++)
-          translatedProjectionIndexTransformMatrices[(j + 3 * (iProj - iFirstProj)) * 4 + k] =
+          translatedProjectionIndexTransformMatrices[((j + 3 * (iProj - iFirstProj)) * 4) + k] =
             (float)translatedProjectionIndexTransformMatrix[j][k];
     }
     else
@@ -143,14 +143,14 @@ CudaRayCastBackProjectionImageFilter ::GPUGenerateData()
         rtk::GetIndexToPhysicalPointMatrix(this->GetInput(1)).GetVnlMatrix() * projIndexTranslation.GetVnlMatrix();
       for (int j = 0; j < 3; j++) // Ignore the 4th row
         for (int k = 0; k < 4; k++)
-          translatedProjectionIndexTransformMatrices[(j + 3 * (iProj - iFirstProj)) * 4 + k] =
+          translatedProjectionIndexTransformMatrices[((j + 3 * (iProj - iFirstProj)) * 4) + k] =
             (float)translatedProjectionIndexTransformMatrix[j][k];
 
       translatedVolumeTransformMatrix = volIndexTranslation.GetVnlMatrix() * volPPToIndex.GetVnlMatrix() *
                                         geometry->GetRotationMatrices()[iProj].GetInverse();
       for (int j = 0; j < 3; j++) // Ignore the 4th row
         for (int k = 0; k < 4; k++)
-          translatedVolumeTransformMatrices[(j + 3 * (iProj - iFirstProj)) * 4 + k] =
+          translatedVolumeTransformMatrices[((j + 3 * (iProj - iFirstProj)) * 4) + k] =
             (float)translatedVolumeTransformMatrix[j][k];
     }
 
@@ -159,7 +159,7 @@ CudaRayCastBackProjectionImageFilter ::GPUGenerateData()
 
     // Copy it into a single large array
     for (unsigned int d = 0; d < 3; d++)
-      source_positions[(iProj - iFirstProj) * 3 + d] = source_position[d]; // Ignore the 4th component
+      source_positions[((iProj - iFirstProj) * 3) + d] = source_position[d]; // Ignore the 4th component
   }
 
   int projectionOffset = 0;
@@ -175,7 +175,7 @@ CudaRayCastBackProjectionImageFilter ::GPUGenerateData()
                                (float *)&(translatedVolumeTransformMatrices[12 * i]),
                                pin,
                                pout,
-                               pproj + nPixelsPerProj * projectionOffset,
+                               pproj + (nPixelsPerProj * projectionOffset),
                                m_StepSize,
                                (double *)&(source_positions[3 * i]),
                                radiusCylindricalDetector,

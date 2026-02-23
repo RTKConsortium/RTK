@@ -32,10 +32,10 @@ QuadricShape ::IsInside(const PointType & point) const
 bool
 QuadricShape ::IsInsideQuadric(const PointType & point) const
 {
-  ScalarType QuadricEllip = this->GetA() * point[0] * point[0] + this->GetB() * point[1] * point[1] +
-                            this->GetC() * point[2] * point[2] + this->GetD() * point[0] * point[1] +
-                            this->GetE() * point[0] * point[2] + this->GetF() * point[1] * point[2] +
-                            this->GetG() * point[0] + this->GetH() * point[1] + this->GetI() * point[2] + this->GetJ();
+  ScalarType QuadricEllip =
+    (this->GetA() * point[0] * point[0]) + (this->GetB() * point[1] * point[1]) + (this->GetC() * point[2] * point[2]) +
+    (this->GetD() * point[0] * point[1]) + (this->GetE() * point[0] * point[2]) + (this->GetF() * point[1] * point[2]) +
+    (this->GetG() * point[0]) + (this->GetH() * point[1]) + (this->GetI() * point[2]) + this->GetJ();
   return (QuadricEllip <= itk::NumericTraits<ScalarType>::ZeroValue());
 }
 
@@ -46,19 +46,19 @@ QuadricShape ::IsIntersectedByRay(const PointType &  rayOrigin,
                                   ScalarType &       supDist) const
 {
   // https://education.siggraph.org/static/HyperGraph/raytrace/rtinter4.htm
-  ScalarType Aq = m_A * rayDirection[0] * rayDirection[0] + m_B * rayDirection[1] * rayDirection[1] +
-                  m_C * rayDirection[2] * rayDirection[2] + m_D * rayDirection[0] * rayDirection[1] +
-                  m_E * rayDirection[0] * rayDirection[2] + m_F * rayDirection[1] * rayDirection[2];
-  ScalarType Bq = 2 * (m_A * rayOrigin[0] * rayDirection[0] + m_B * rayOrigin[1] * rayDirection[1] +
-                       m_C * rayOrigin[2] * rayDirection[2]) +
-                  m_D * (rayOrigin[0] * rayDirection[1] + rayOrigin[1] * rayDirection[0]) +
-                  m_E * (rayOrigin[2] * rayDirection[0] + rayOrigin[0] * rayDirection[2]) +
-                  m_F * (rayOrigin[1] * rayDirection[2] + rayOrigin[2] * rayDirection[1]) + m_G * rayDirection[0] +
-                  m_H * rayDirection[1] + m_I * rayDirection[2];
-  ScalarType Cq = m_A * rayOrigin[0] * rayOrigin[0] + m_B * rayOrigin[1] * rayOrigin[1] +
-                  m_C * rayOrigin[2] * rayOrigin[2] + m_D * rayOrigin[0] * rayOrigin[1] +
-                  m_E * rayOrigin[0] * rayOrigin[2] + m_F * rayOrigin[1] * rayOrigin[2] + m_G * rayOrigin[0] +
-                  m_H * rayOrigin[1] + m_I * rayOrigin[2] + m_J;
+  ScalarType Aq = (m_A * rayDirection[0] * rayDirection[0]) + (m_B * rayDirection[1] * rayDirection[1]) +
+                  (m_C * rayDirection[2] * rayDirection[2]) + (m_D * rayDirection[0] * rayDirection[1]) +
+                  (m_E * rayDirection[0] * rayDirection[2]) + (m_F * rayDirection[1] * rayDirection[2]);
+  ScalarType Bq = (2 * (m_A * rayOrigin[0] * rayDirection[0] + m_B * rayOrigin[1] * rayDirection[1] +
+                        m_C * rayOrigin[2] * rayDirection[2])) +
+                  (m_D * (rayOrigin[0] * rayDirection[1] + rayOrigin[1] * rayDirection[0])) +
+                  (m_E * (rayOrigin[2] * rayDirection[0] + rayOrigin[0] * rayDirection[2])) +
+                  (m_F * (rayOrigin[1] * rayDirection[2] + rayOrigin[2] * rayDirection[1])) + (m_G * rayDirection[0]) +
+                  (m_H * rayDirection[1]) + (m_I * rayDirection[2]);
+  ScalarType Cq = (m_A * rayOrigin[0] * rayOrigin[0]) + (m_B * rayOrigin[1] * rayOrigin[1]) +
+                  (m_C * rayOrigin[2] * rayOrigin[2]) + (m_D * rayOrigin[0] * rayOrigin[1]) +
+                  (m_E * rayOrigin[0] * rayOrigin[2]) + (m_F * rayOrigin[1] * rayOrigin[2]) + (m_G * rayOrigin[0]) +
+                  (m_H * rayOrigin[1]) + (m_I * rayOrigin[2]) + m_J;
 
   constexpr ScalarType zero = itk::NumericTraits<ScalarType>::ZeroValue();
   if (Aq == zero)
@@ -113,7 +113,7 @@ QuadricShape ::IsIntersectedByRay(const PointType &  rayOrigin,
   }
   else
   {
-    ScalarType discriminant = Bq * Bq - 4 * Aq * Cq;
+    ScalarType discriminant = (Bq * Bq) - (4 * Aq * Cq);
     // The epsilon value allows detection of very close intersections, i.e., a
     // ray tangent to the quadric
     static constexpr ScalarType eps = 1e5 * itk::NumericTraits<ScalarType>::epsilon();
@@ -206,11 +206,12 @@ QuadricShape ::Translate(const VectorType & t)
   Superclass::Translate(t);
 
   // Translation Parameters
-  ScalarType newG = m_G - 2. * m_A * t[0] - m_D * t[1] - m_E * t[2];
-  ScalarType newH = m_H - 2. * m_B * t[1] - m_D * t[0] - m_F * t[2];
-  ScalarType newI = m_I - 2. * m_C * t[2] - m_E * t[0] - m_F * t[1];
-  ScalarType newJ = m_J + m_A * std::pow(t[0], 2.0) + m_B * std::pow(t[1], 2.0) + m_C * std::pow(t[2], 2.) +
-                    m_D * t[0] * t[1] + m_E * t[0] * t[2] + m_F * t[1] * t[2] - m_G * t[0] - m_H * t[1] - m_I * t[2];
+  ScalarType newG = m_G - (2. * m_A * t[0]) - (m_D * t[1]) - (m_E * t[2]);
+  ScalarType newH = m_H - (2. * m_B * t[1]) - (m_D * t[0]) - (m_F * t[2]);
+  ScalarType newI = m_I - (2. * m_C * t[2]) - (m_E * t[0]) - (m_F * t[1]);
+  ScalarType newJ = m_J + (m_A * std::pow(t[0], 2.0)) + (m_B * std::pow(t[1], 2.0)) + (m_C * std::pow(t[2], 2.)) +
+                    (m_D * t[0] * t[1]) + (m_E * t[0] * t[2]) + (m_F * t[1] * t[2]) - (m_G * t[0]) - (m_H * t[1]) -
+                    (m_I * t[2]);
   m_G = newG;
   m_H = newH;
   m_I = newI;

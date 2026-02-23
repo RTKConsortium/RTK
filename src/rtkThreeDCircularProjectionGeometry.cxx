@@ -31,13 +31,13 @@ rtk::ThreeDCircularProjectionGeometry::ThreeDCircularProjectionGeometry() = defa
 double
 rtk::ThreeDCircularProjectionGeometry::ConvertAngleBetween0And360Degrees(const double a)
 {
-  return a - 360 * floor(a / 360);
+  return a - (360 * floor(a / 360));
 }
 
 double
 rtk::ThreeDCircularProjectionGeometry::ConvertAngleBetween0And2PIRadians(const double a)
 {
-  return a - 2 * itk::Math::pi * floor(a / (2 * itk::Math::pi));
+  return a - (2 * itk::Math::pi * floor(a / (2 * itk::Math::pi)));
 }
 
 double
@@ -218,9 +218,9 @@ rtk::ThreeDCircularProjectionGeometry::AddProjection(const PointType &  sourcePo
   ia *= -1.;
 
   // SID: distance from source to isocenter along detector normal
-  double SID = n[0] * S[0] + n[1] * S[1] + n[2] * S[2];
+  double SID = (n[0] * S[0]) + (n[1] * S[1]) + (n[2] * S[2]);
   // SDD: distance from source to detector along detector normal
-  double SDD = n[0] * (S[0] - R[0]) + n[1] * (S[1] - R[1]) + n[2] * (S[2] - R[2]);
+  double SDD = (n[0] * (S[0] - R[0])) + (n[1] * (S[1] - R[1])) + (n[2] * (S[2] - R[2]));
   if (itk::Math::abs(SDD) < 1.0E-06)
   {
     itkDebugMacro(<< "SourceDetectorDistance is less than 1.0E-06. For parallel geometry SDD is set to 0.0");
@@ -264,9 +264,9 @@ rtk::ThreeDCircularProjectionGeometry::AddProjection(const HomogeneousProjection
   p[2] = pMat(2, 3);
 
   // Compute determinant of A
-  double d = pMat(0, 0) * pMat(1, 1) * pMat(2, 2) + pMat(0, 1) * pMat(1, 2) * pMat(2, 0) +
-             pMat(0, 2) * pMat(1, 0) * pMat(2, 1) - pMat(0, 0) * pMat(1, 2) * pMat(2, 1) -
-             pMat(0, 1) * pMat(1, 0) * pMat(2, 2) - pMat(0, 2) * pMat(1, 1) * pMat(2, 0);
+  double d = (pMat(0, 0) * pMat(1, 1) * pMat(2, 2)) + (pMat(0, 1) * pMat(1, 2) * pMat(2, 0)) +
+             (pMat(0, 2) * pMat(1, 0) * pMat(2, 1)) - (pMat(0, 0) * pMat(1, 2) * pMat(2, 1)) -
+             (pMat(0, 1) * pMat(1, 0) * pMat(2, 2)) - (pMat(0, 2) * pMat(1, 1) * pMat(2, 0));
 
   if (itk::Math::abs(d) < std::numeric_limits<double>::epsilon()) // parallel geometry
   {
@@ -317,8 +317,8 @@ rtk::ThreeDCircularProjectionGeometry::AddProjection(const HomogeneousProjection
   // The extraction of u0 and v0 is independant of KR-decomp.
   double u0 = (pMat(0, 0) * pMat(2, 0)) + (pMat(0, 1) * pMat(2, 1)) + (pMat(0, 2) * pMat(2, 2));
   double v0 = (pMat(1, 0) * pMat(2, 0)) + (pMat(1, 1) * pMat(2, 1)) + (pMat(1, 2) * pMat(2, 2));
-  double aU = sqrt(pMat(0, 0) * pMat(0, 0) + pMat(0, 1) * pMat(0, 1) + pMat(0, 2) * pMat(0, 2) - u0 * u0);
-  double aV = sqrt(pMat(1, 0) * pMat(1, 0) + pMat(1, 1) * pMat(1, 1) + pMat(1, 2) * pMat(1, 2) - v0 * v0);
+  double aU = sqrt((pMat(0, 0) * pMat(0, 0)) + (pMat(0, 1) * pMat(0, 1)) + (pMat(0, 2) * pMat(0, 2)) - (u0 * u0));
+  double aV = sqrt((pMat(1, 0) * pMat(1, 0)) + (pMat(1, 1) * pMat(1, 1)) + (pMat(1, 2) * pMat(1, 2)) - (v0 * v0));
   double sdd = 0.5 * (aU + aV);
 
   // Def matrix K so that detK = det P[:,:3]
@@ -408,7 +408,7 @@ rtk::ThreeDCircularProjectionGeometry::GetTiltAngles() const
   std::vector<double>       tang;
   for (unsigned int iProj = 0; iProj < gangles.size(); iProj++)
   {
-    double angle = -1. * gangles[iProj] - sangles[iProj];
+    double angle = (-1. * gangles[iProj]) - sangles[iProj];
     tang.push_back(ConvertAngleBetween0And2PIRadians(angle));
   }
   return tang;
@@ -646,10 +646,10 @@ rtk::ThreeDCircularProjectionGeometry::ToUntiltedCoordinateAtIsocenter(const uns
   const double px = this->GetProjectionOffsetsX()[noProj];
 
   // sidu is the distance between the source and the virtual untilted detector
-  const double sidu = sqrt(sid2 + sx * sx);
+  const double sidu = sqrt(sid2 + (sx * sx));
   // l is the coordinate on the virtual detector parallel to the real detector
   // and passing at the isocenter
-  const double l = (tiltedCoord + px - sx) * sid / sdd + sx;
+  const double l = ((tiltedCoord + px - sx) * sid / sdd) + sx;
 
   // a is the angle between the virtual detector and the real detector
   const double cosa = sx / sidu;

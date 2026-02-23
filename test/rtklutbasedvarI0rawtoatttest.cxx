@@ -46,7 +46,7 @@ main(int, char **)
 
   for (unsigned short i = 0; i < 10; ++i)
   {
-    unsigned short I0 = 10 * i + 1;
+    unsigned short I0 = (10 * i) + 1;
 
     fillImageWithRawData(rawImage, I0);
 

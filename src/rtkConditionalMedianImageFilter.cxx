@@ -54,7 +54,7 @@ rtk::ConditionalMedianImageFilter<itk::VectorImage<float, 3>>::DynamicThreadedGe
       double sum = std::accumulate(pixels[mat].begin(), pixels[mat].end(), 0.0);
       double mean = sum / pixels[mat].size();
       double sq_sum = std::inner_product(pixels[mat].begin(), pixels[mat].end(), pixels[mat].begin(), 0.0);
-      double stdev = std::sqrt(sq_sum / pixels[mat].size() - mean * mean);
+      double stdev = std::sqrt((sq_sum / pixels[mat].size()) - (mean * mean));
 
       // Compute the median of the neighborhood
       std::nth_element(pixels[mat].begin(), pixels[mat].begin() + pixels[mat].size() / 2, pixels[mat].end());
