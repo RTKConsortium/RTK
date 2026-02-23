@@ -66,7 +66,7 @@ public:
     return !(*this != other);
   }
 
-  inline TOutput
+  TOutput
   operator()(const ThreadIdType    threadId,
              const double          stepLengthInVoxel,
              const TCoordinateType weight,
@@ -135,7 +135,7 @@ public:
     return !(*this != other);
   }
 
-  inline void
+  void
   operator()(const ThreadIdType threadId, TOutput & sumValue, const TInput volumeValue, const VectorType & stepInMM)
   {
     TInput ex2 = exp(-m_AttenuationRay[threadId] * stepInMM.GetNorm());
@@ -204,7 +204,7 @@ public:
     return !(*this != other);
   }
 
-  inline void
+  void
   operator()(const ThreadIdType threadId,
              const TInput &     input,
              TOutput &          output,

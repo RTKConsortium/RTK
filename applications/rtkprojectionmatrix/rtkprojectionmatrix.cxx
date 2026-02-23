@@ -48,7 +48,7 @@ public:
     return !(*this != other);
   }
 
-  inline void
+  void
   operator()(const TInput &        rayValue,
              TOutput &             output,
              const double          stepLengthInVoxel,

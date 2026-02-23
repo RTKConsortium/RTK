@@ -54,7 +54,7 @@ public:
     return !(*this != other);
   }
 
-  inline TOutput
+  TOutput
   operator()(const double          itkNotUsed(stepLengthInVoxel),
              const TCoordinateType itkNotUsed(weight),
              const TInput *        itkNotUsed(p),
@@ -90,7 +90,7 @@ public:
     return !(*this != other);
   }
 
-  inline const TOutput &
+  const TOutput &
   operator()(const TInput &     rayValue,
              const TInput       itkNotUsed(attenuationRay),
              const VectorType & itkNotUsed(stepInMM),
@@ -124,7 +124,7 @@ public:
     return !(*this != other);
   }
 
-  inline void
+  void
   operator()(const TInput &        rayValue,
              TOutput &             output,
              const double          stepLengthInVoxel,
