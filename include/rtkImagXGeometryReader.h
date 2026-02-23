@@ -95,9 +95,7 @@ public:
 
 protected:
   ImagXGeometryReader()
-    : m_Geometry(nullptr)
-    , m_CalibrationXMLFileName("")
-    , m_RoomXMLFileName("") {};
+    : m_Geometry(nullptr) {};
 
   ~ImagXGeometryReader() override = default;
 
