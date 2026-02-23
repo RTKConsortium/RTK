@@ -42,7 +42,7 @@ rtk::HisImageIO::ReadImageInformation()
 
   // read header
   unsigned char header[HEADER_INFO_SIZE];
-  file.read((char *)header, HEADER_INFO_SIZE);
+  file.read(reinterpret_cast<char *>(header), HEADER_INFO_SIZE);
 
   if (header[0] != 0 || header[1] != 112 || header[2] != 68 || header[3] != 0)
   {
@@ -122,7 +122,7 @@ rtk::HisImageIO::Read(void * buffer)
   if (file.fail())
     itkExceptionMacro(<< "File seek failed (His Read)");
 
-  file.read((char *)buffer, GetImageSizeInBytes());
+  file.read(static_cast<char *>(buffer), GetImageSizeInBytes());
   if (file.fail())
     itkExceptionMacro(<< "Read failed: Wanted " << GetImageSizeInBytes() << " bytes, but read " << file.gcount()
                       << " bytes. The current state is: " << file.rdstate());

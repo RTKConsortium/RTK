@@ -95,7 +95,7 @@ main(int argc, char * argv[])
     phase->SetInput(shroudSignal);
     phase->SetMovingAverageSize(args_info.movavg_arg);
     phase->SetUnsharpMaskSize(args_info.unsharp_arg);
-    phase->SetModel((PhaseFilter::ModelType)args_info.model_arg);
+    phase->SetModel(static_cast<PhaseFilter::ModelType>(args_info.model_arg));
     TRY_AND_EXIT_ON_ITK_EXCEPTION(phase->Update())
 
     rtk::WriteSignalToTextFile(phase->GetOutput(), args_info.phase_arg);
