@@ -172,7 +172,7 @@ OraGeometryReader::GenerateData()
       const std::vector<double> p = posMeta->GetMetaDataObjectValue();
       if (p.size() < 3 * (idIdx + 1))
         itkExceptionMacro("Not enough values in optitrack_positions of " << projectionsFileName);
-      itk::Vector<double, 3> translation = 10. * itk::MakeVector(p[idIdx * 3], p[idIdx * 3 + 1], p[idIdx * 3 + 2]);
+      itk::Vector<double, 3> translation = 10. * itk::MakeVector(p[idIdx * 3], p[(idIdx * 3) + 1], p[(idIdx * 3) + 2]);
 
       // Rotation
       MetaDataVectorDoubleType * rotMeta =
@@ -185,9 +185,9 @@ OraGeometryReader::GenerateData()
       auto                                                  quaternionsX = itk::QuaternionRigidTransform<double>::New();
       itk::QuaternionRigidTransform<double>::ParametersType quaternionsXParam(7);
       quaternionsXParam[3] = optitrackRotations[idIdx * 4];
-      quaternionsXParam[0] = optitrackRotations[idIdx * 4 + 1];
-      quaternionsXParam[1] = optitrackRotations[idIdx * 4 + 2];
-      quaternionsXParam[2] = optitrackRotations[idIdx * 4 + 3];
+      quaternionsXParam[0] = optitrackRotations[(idIdx * 4) + 1];
+      quaternionsXParam[1] = optitrackRotations[(idIdx * 4) + 2];
+      quaternionsXParam[2] = optitrackRotations[(idIdx * 4) + 3];
       quaternionsXParam[4] = 0.;
       quaternionsXParam[5] = 0.;
       quaternionsXParam[6] = 0.;

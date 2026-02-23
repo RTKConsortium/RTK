@@ -97,13 +97,13 @@ CudaFDKWeightProjectionFilter ::GPUGenerateData()
     itkExceptionMacro(<< "Couldn't allocate geomMatrix");
   for (int g = 0; g < proj_size[2]; ++g)
   {
-    geomMatrix[g * 7 + 0] = this->GetGeometry()->GetSourceToDetectorDistances()[g + geomIdx];
-    geomMatrix[g * 7 + 1] = this->GetGeometry()->GetSourceToIsocenterDistances()[g + geomIdx];
-    geomMatrix[g * 7 + 2] = this->GetGeometry()->GetProjectionOffsetsX()[g + geomIdx];
-    geomMatrix[g * 7 + 3] = this->GetGeometry()->GetProjectionOffsetsY()[g + geomIdx];
-    geomMatrix[g * 7 + 4] = this->GetGeometry()->GetSourceOffsetsY()[g + geomIdx];
-    geomMatrix[g * 7 + 5] = constantProjectionFactor[g + geomIdx];
-    geomMatrix[g * 7 + 6] = tiltAngles[g + geomIdx];
+    geomMatrix[(g * 7) + 0] = this->GetGeometry()->GetSourceToDetectorDistances()[g + geomIdx];
+    geomMatrix[(g * 7) + 1] = this->GetGeometry()->GetSourceToIsocenterDistances()[g + geomIdx];
+    geomMatrix[(g * 7) + 2] = this->GetGeometry()->GetProjectionOffsetsX()[g + geomIdx];
+    geomMatrix[(g * 7) + 3] = this->GetGeometry()->GetProjectionOffsetsY()[g + geomIdx];
+    geomMatrix[(g * 7) + 4] = this->GetGeometry()->GetSourceOffsetsY()[g + geomIdx];
+    geomMatrix[(g * 7) + 5] = constantProjectionFactor[g + geomIdx];
+    geomMatrix[(g * 7) + 6] = tiltAngles[g + geomIdx];
   }
 
   // Put the two data pointers at the same location

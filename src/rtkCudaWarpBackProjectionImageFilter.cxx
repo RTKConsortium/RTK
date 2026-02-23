@@ -246,8 +246,8 @@ CudaWarpBackProjectionImageFilter ::GPUGenerateData()
     // Fill float arrays with matrices coefficients, to be passed to GPU
     for (int j = 0; j < 12; j++)
     {
-      fvolIndexToProjPP[j + (iProj - iFirstProj) * 12] = volIndexToProjPP[j / 4][j % 4];
-      fMatrix[j + (iProj - iFirstProj) * 12] = matrix[j / 4][j % 4];
+      fvolIndexToProjPP[j + ((iProj - iFirstProj) * 12)] = volIndexToProjPP[j / 4][j % 4];
+      fMatrix[j + ((iProj - iFirstProj) * 12)] = matrix[j / 4][j % 4];
     }
   }
 
@@ -260,12 +260,12 @@ CudaWarpBackProjectionImageFilter ::GPUGenerateData()
     CUDA_warp_back_project(projectionSize,
                            volumeSize,
                            inputDVFSize,
-                           fMatrix + 12 * i,
-                           fvolIndexToProjPP + 12 * i,
+                           fMatrix + (12 * i),
+                           fvolIndexToProjPP + (12 * i),
                            fprojPPToProjIndex,
                            pin,
                            pout,
-                           stackGPUPointer + projSize * i,
+                           stackGPUPointer + (projSize * i),
                            pDVF,
                            fIndexInputToIndexDVFMatrix,
                            fPPInputToIndexInputMatrix,

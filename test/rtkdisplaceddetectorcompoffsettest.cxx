@@ -67,7 +67,7 @@ main(int, char **)
 
     CheckImageQuality<OutputImageType>(cudaddf->GetOutput(), cpuddf->GetOutput(), 1.e-6, 100, 1.);
 
-    std::cout << "\n\n****** Case " << inPlace * 2 + 1 << ": with streaming, ";
+    std::cout << "\n\n****** Case " << (inPlace * 2) + 1 << ": with streaming, ";
     if (!inPlace)
       std::cout << "not";
     std::cout << " in place ******" << std::endl;

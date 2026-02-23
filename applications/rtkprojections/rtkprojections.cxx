@@ -40,8 +40,8 @@ main(int argc, char * argv[])
   writer->SetFileName(args_info.output_arg);
   writer->SetInput(reader->GetOutput());
   TRY_AND_EXIT_ON_ITK_EXCEPTION(writer->UpdateOutputInformation())
-  writer->SetNumberOfStreamDivisions(1 + reader->GetOutput()->GetLargestPossibleRegion().GetNumberOfPixels() /
-                                           (1024 * 1024 * 4));
+  writer->SetNumberOfStreamDivisions(
+    1 + (reader->GetOutput()->GetLargestPossibleRegion().GetNumberOfPixels() / (1024 * 1024 * 4)));
 
   TRY_AND_EXIT_ON_ITK_EXCEPTION(writer->Update())
 

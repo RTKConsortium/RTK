@@ -256,14 +256,14 @@ CudaWarpForwardProjectionImageFilter ::GPUGenerateData()
                projIndexTranslation.GetVnlMatrix();
     for (int j = 0; j < 3; j++) // Ignore the 4th row
       for (int k = 0; k < 4; k++)
-        matrices[(j + 3 * (iProj - iFirstProj)) * 4 + k] = (float)d_matrix[j][k];
+        matrices[((j + 3 * (iProj - iFirstProj)) * 4) + k] = (float)d_matrix[j][k];
 
     // Compute source position in volume indices
     source_position = volPPToIndex * geometry->GetSourcePosition(iProj);
 
     // Copy it into a single large array
     for (unsigned int d = 0; d < 3; d++)
-      source_positions[(iProj - iFirstProj) * 3 + d] = source_position[d]; // Ignore the 4th component
+      source_positions[((iProj - iFirstProj) * 3) + d] = source_position[d]; // Ignore the 4th component
   }
 
   int projectionOffset = 0;
@@ -277,8 +277,8 @@ CudaWarpForwardProjectionImageFilter ::GPUGenerateData()
                               volumeSize,
                               inputDVFSize,
                               (float *)&(matrices[12 * i]),
-                              pin + nPixelsPerProj * projectionOffset,
-                              pout + nPixelsPerProj * projectionOffset,
+                              pin + (nPixelsPerProj * projectionOffset),
+                              pout + (nPixelsPerProj * projectionOffset),
                               pvol,
                               m_StepSize,
                               (float *)&(source_positions[3 * i]),

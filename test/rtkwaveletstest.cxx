@@ -41,7 +41,7 @@ CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer ref)
   ErrorType MSE = EnerError / ref->GetBufferedRegion().GetNumberOfPixels();
   std::cout << "MSE = " << MSE << std::endl;
   // PSNR
-  ErrorType PSNR = 20 * log10(2.0) - 10 * log10(MSE);
+  ErrorType PSNR = (20 * log10(2.0)) - (10 * log10(MSE));
   std::cout << "PSNR = " << PSNR << "dB" << std::endl;
   // QI
   ErrorType QI = (2.0 - ErrorPerPixel) / 2.0;

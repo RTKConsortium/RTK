@@ -107,7 +107,7 @@ CudaFDKBackProjectionImageFilter ::GPUGenerateData()
     matrix /= perspFactor;
 
     for (int j = 0; j < 12; j++)
-      fMatrix[j + (iProj - iFirstProj) * 12] = matrix[j / 4][j % 4];
+      fMatrix[j + ((iProj - iFirstProj) * 12)] = matrix[j / 4][j % 4];
   }
 
   // Slab-wise progress reporting
@@ -119,7 +119,8 @@ CudaFDKBackProjectionImageFilter ::GPUGenerateData()
     projectionSize[2] = std::min(nProj - i, (unsigned int)SLAB_SIZE);
 
     // Run the back projection with a slab of SLAB_SIZE or less projections
-    CUDA_reconstruct_conebeam(projectionSize, volumeSize, fMatrix + 12 * i, pin, pout, stackGPUPointer + projSize * i);
+    CUDA_reconstruct_conebeam(
+      projectionSize, volumeSize, fMatrix + (12 * i), pin, pout, stackGPUPointer + (projSize * i));
 
     // Re-use the output as input
     pin = pout;
