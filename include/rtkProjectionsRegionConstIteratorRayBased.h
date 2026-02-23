@@ -138,7 +138,7 @@ public:
 
   /** Computes and returns a unit vector pointing from the source to the
    * current pixel, i.e., GetSourceToPixel()/||GetSourceToPixel()||. */
-  const PointType
+  PointType
   GetDirection()
   {
     return m_SourceToPixel / m_SourceToPixel.GetNorm();

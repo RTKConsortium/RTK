@@ -401,7 +401,7 @@ rtk::ThreeDCircularProjectionGeometry::Clear()
   this->Modified();
 }
 
-const std::vector<double>
+std::vector<double>
 rtk::ThreeDCircularProjectionGeometry::GetTiltAngles() const
 {
   const std::vector<double> sangles = this->GetSourceAngles();
@@ -415,7 +415,7 @@ rtk::ThreeDCircularProjectionGeometry::GetTiltAngles() const
   return tang;
 }
 
-const std::multimap<double, unsigned int>
+std::multimap<double, unsigned int>
 rtk::ThreeDCircularProjectionGeometry::GetSortedAngles(const std::vector<double> & angles) const
 {
   unsigned int                        nProj = angles.size();
@@ -428,7 +428,7 @@ rtk::ThreeDCircularProjectionGeometry::GetSortedAngles(const std::vector<double>
   return sangles;
 }
 
-const std::map<double, unsigned int>
+std::map<double, unsigned int>
 rtk::ThreeDCircularProjectionGeometry::GetUniqueSortedAngles(const std::vector<double> & angles) const
 {
   unsigned int                   nProj = angles.size();
@@ -441,7 +441,7 @@ rtk::ThreeDCircularProjectionGeometry::GetUniqueSortedAngles(const std::vector<d
   return sangles;
 }
 
-const std::vector<double>
+std::vector<double>
 rtk::ThreeDCircularProjectionGeometry::GetAngularGapsWithNext(const std::vector<double> & angles) const
 {
   std::vector<double> angularGaps;
@@ -475,7 +475,7 @@ rtk::ThreeDCircularProjectionGeometry::GetAngularGapsWithNext(const std::vector<
   return angularGaps;
 }
 
-const std::vector<double>
+std::vector<double>
 rtk::ThreeDCircularProjectionGeometry::GetAngularGaps(const std::vector<double> & angles)
 {
   std::vector<double> angularGaps;
@@ -591,7 +591,7 @@ rtk::ThreeDCircularProjectionGeometry::SetCollimationOfLastProjection(const doub
   m_CollimationVSup.back() = vsup;
 }
 
-const rtk::ThreeDCircularProjectionGeometry::HomogeneousVectorType
+rtk::ThreeDCircularProjectionGeometry::HomogeneousVectorType
 rtk::ThreeDCircularProjectionGeometry::GetSourcePosition(const unsigned int i) const
 {
   HomogeneousVectorType sourcePosition;
@@ -605,7 +605,7 @@ rtk::ThreeDCircularProjectionGeometry::GetSourcePosition(const unsigned int i) c
   return sourcePosition;
 }
 
-const rtk::ThreeDCircularProjectionGeometry::ThreeDHomogeneousMatrixType
+rtk::ThreeDCircularProjectionGeometry::ThreeDHomogeneousMatrixType
 rtk::ThreeDCircularProjectionGeometry::GetProjectionCoordinatesToDetectorSystemMatrix(const unsigned int i) const
 {
   // Compute projection inverse and distance to source
@@ -625,7 +625,7 @@ rtk::ThreeDCircularProjectionGeometry::GetProjectionCoordinatesToDetectorSystemM
   return matrix;
 }
 
-const rtk::ThreeDCircularProjectionGeometry::ThreeDHomogeneousMatrixType
+rtk::ThreeDCircularProjectionGeometry::ThreeDHomogeneousMatrixType
 rtk::ThreeDCircularProjectionGeometry::GetProjectionCoordinatesToFixedSystemMatrix(const unsigned int i) const
 {
   ThreeDHomogeneousMatrixType matrix;
