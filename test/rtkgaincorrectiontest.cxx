@@ -190,7 +190,7 @@ generateExpectedOutput(InputImageType::Pointer  inputImage,
       }
       correctedValue *= K;
 
-      itOut.Set(static_cast<float>(correctedValue));
+      itOut.Set(correctedValue);
 
       ++itIn;
       ++itOut;
