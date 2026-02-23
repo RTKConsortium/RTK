@@ -378,7 +378,7 @@ rtk::XimImageIO::Read(void * buffer)
     itkGenericExceptionMacro(<< "Could not read LUT size from: " << m_FileName);
   }
   auto m_lookup_table = std::vector<unsigned char>(lookUpTableSize);
-  if (lookUpTableSize != (Int4)fread((void *)&m_lookup_table[0], sizeof(unsigned char), lookUpTableSize, fp))
+  if (lookUpTableSize != (Int4)fread((void *)m_lookup_table.data(), sizeof(unsigned char), lookUpTableSize, fp))
   {
     itkGenericExceptionMacro(<< "Could not read lookup table from Xim file: " << m_FileName);
   }
@@ -413,7 +413,7 @@ rtk::XimImageIO::Read(void * buffer)
 
   auto compr_img_buffer = std::vector<unsigned char>(total_bytes);
   // total_bytes - 3 because the last two bits can be redundant (according to Xim docs)
-  if ((total_bytes - 3) > fread((void *)&compr_img_buffer[0], sizeof(unsigned char), total_bytes, fp))
+  if ((total_bytes - 3) > fread((void *)compr_img_buffer.data(), sizeof(unsigned char), total_bytes, fp))
   {
     itkGenericExceptionMacro(<< "Could not read image buffer of Xim file: " << m_FileName);
   }

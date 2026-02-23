@@ -209,7 +209,7 @@ rtk::HndImageIO::Read(void * buffer)
   const size_t lookUpTableSize = (ydim - 1) * xdim / 4;
   // De"compress" image
   auto m_lookup_table = std::vector<unsigned char>(lookUpTableSize);
-  if (lookUpTableSize != fread((void *)&m_lookup_table[0], sizeof(unsigned char), lookUpTableSize, fp))
+  if (lookUpTableSize != fread((void *)m_lookup_table.data(), sizeof(unsigned char), lookUpTableSize, fp))
   {
     itkGenericExceptionMacro(<< "Could not read lookup table from Hnd file: " << m_FileName);
   }
@@ -236,7 +236,7 @@ rtk::HndImageIO::Read(void * buffer)
 
   auto compr_img_buffer = std::vector<unsigned char>(total_bytes);
   // total_bytes - 3 because the last two bits can be redundant (according to Xim docs)
-  if ((total_bytes - 3) > fread((void *)&compr_img_buffer[0], sizeof(unsigned char), total_bytes, fp))
+  if ((total_bytes - 3) > fread((void *)compr_img_buffer.data(), sizeof(unsigned char), total_bytes, fp))
   {
     itkGenericExceptionMacro(<< "Could not read image buffer of Hnd file: " << m_FileName);
   }
