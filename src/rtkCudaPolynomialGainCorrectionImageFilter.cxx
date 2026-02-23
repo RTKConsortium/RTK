@@ -100,7 +100,7 @@ CudaPolynomialGainCorrectionImageFilter ::GPUGenerateData()
                        outBuffer,
                        darkBuffer,
                        gainBuffer,
-                       &m_PowerLut[0],
+                       m_PowerLut.data(),
                        LUT_size,
                        coefficients);
 }
