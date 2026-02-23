@@ -130,7 +130,7 @@ CudaWarpForwardProjectionImageFilter ::GenerateInputRequestedRegion()
 void
 CudaWarpForwardProjectionImageFilter ::GPUGenerateData()
 {
-  if (this->GetGeometry()->GetSourceToDetectorDistances().size() &&
+  if (!this->GetGeometry()->GetSourceToDetectorDistances().empty() &&
       this->GetGeometry()->GetSourceToDetectorDistances()[0] == 0)
   {
     itkGenericExceptionMacro(<< "Parallel geometry is not handled by CUDA forward projector.");
