@@ -109,7 +109,7 @@ rtk::XimImageIO::ReadImageInformation()
   Xim_header xim;
   FILE *     fp = nullptr;
 
-  fp = fopen(m_FileName.c_str(), "rb");
+  fp = fopen(m_FileName.c_str(), "rbe");
   if (fp == nullptr)
     itkGenericExceptionMacro(<< "Could not open file (for reading): " << m_FileName);
   size_t nelements = 0;
@@ -272,7 +272,7 @@ rtk::XimImageIO::CanReadFile(const char * FileNameToRead)
     return false;
 
   FILE * fp = nullptr;
-  fp = fopen(filename.c_str(), "rb");
+  fp = fopen(filename.c_str(), "rbe");
   if (fp == nullptr)
   {
     std::cerr << "Could not open file (for reading): " << m_FileName << std::endl;
@@ -364,7 +364,7 @@ rtk::XimImageIO::Read(void * buffer)
   // Long is only garanteed to be AT LEAST 32 bits, it could be 64 bit
   Int4 * buf = static_cast<Int4 *>(buffer);
 
-  fp = fopen(m_FileName.c_str(), "rb");
+  fp = fopen(m_FileName.c_str(), "rbe");
   if (fp == nullptr)
     itkGenericExceptionMacro(<< "Could not open file (for reading): " << m_FileName);
 

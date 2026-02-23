@@ -31,7 +31,7 @@ rtk::HndImageIO::ReadImageInformation()
   Hnd_header hnd;
   FILE *     fp = nullptr;
 
-  fp = fopen(m_FileName.c_str(), "rb");
+  fp = fopen(m_FileName.c_str(), "rbe");
   if (fp == nullptr)
     itkGenericExceptionMacro(<< "Could not open file (for reading): " << m_FileName);
 
@@ -195,7 +195,7 @@ rtk::HndImageIO::Read(void * buffer)
   using Int4 = itk::uint32_t;
   Int4 * buf = static_cast<Int4 *>(buffer);
 
-  fp = fopen(m_FileName.c_str(), "rb");
+  fp = fopen(m_FileName.c_str(), "rbe");
   if (fp == nullptr)
     itkGenericExceptionMacro(<< "Could not open file (for reading): " << m_FileName);
 
