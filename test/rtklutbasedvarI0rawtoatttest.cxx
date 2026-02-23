@@ -14,7 +14,7 @@
 using ShortImageType = itk::Image<unsigned short, 2>;
 
 void
-fillImageWithRawData(ShortImageType::Pointer image, unsigned short I0)
+fillImageWithRawData(const ShortImageType::Pointer & image, unsigned short I0)
 {
   itk::ImageRegionIterator<ShortImageType> it(image, image->GetLargestPossibleRegion());
   it.GoToBegin();
