@@ -134,7 +134,7 @@ rtk::ThreeDCircularProjectionGeometry::AddProjectionInRadians(const double sid,
   z[2] = 1.;
   HomogeneousVectorType sph = GetSourcePosition(m_GantryAngles.size() - 1);
   sph[1] = 0.; // Project position to central plane
-  VectorType sp(&(sph[0]));
+  VectorType sp(sph.data());
   sp.Normalize();
   double a = acos(sp * z);
   if (sp[0] > 0.)
@@ -416,7 +416,7 @@ rtk::ThreeDCircularProjectionGeometry::GetTiltAngles() const
 }
 
 std::multimap<double, unsigned int>
-rtk::ThreeDCircularProjectionGeometry::GetSortedAngles(const std::vector<double> & angles) const
+rtk::ThreeDCircularProjectionGeometry::GetSortedAngles(const std::vector<double> & angles)
 {
   unsigned int                        nProj = angles.size();
   std::multimap<double, unsigned int> sangles;
@@ -429,7 +429,7 @@ rtk::ThreeDCircularProjectionGeometry::GetSortedAngles(const std::vector<double>
 }
 
 std::map<double, unsigned int>
-rtk::ThreeDCircularProjectionGeometry::GetUniqueSortedAngles(const std::vector<double> & angles) const
+rtk::ThreeDCircularProjectionGeometry::GetUniqueSortedAngles(const std::vector<double> & angles)
 {
   unsigned int                   nProj = angles.size();
   std::map<double, unsigned int> sangles;
