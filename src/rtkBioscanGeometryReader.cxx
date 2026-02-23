@@ -42,6 +42,7 @@ BioscanGeometryReader::GetVectorTagValue(const gdcm::DataSet & ds, itk::uint16_t
   gdcm::Element<gdcm::VR::FL, gdcm::VM::VM1_n> el;
   el.Set(de.GetValue());
   std::vector<float> val;
+  val.reserve(el.GetLength());
   for (unsigned int i = 0; i < el.GetLength(); i++)
   {
     val.push_back(el.GetValue(i));
