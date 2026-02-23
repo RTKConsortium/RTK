@@ -193,7 +193,7 @@ protected:
 
   /** A random generating engine is needed to use the C++17 comliant code for std::shuffle.
    */
-  std::default_random_engine m_DefaultRandomEngine = std::default_random_engine{};
+  std::default_random_engine m_DefaultRandomEngine;
 
   /** PSF correction coefficients */
   double m_SigmaZero{ 1.5417233052142099 };

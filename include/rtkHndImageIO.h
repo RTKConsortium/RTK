@@ -116,9 +116,7 @@ public:
     double       dGating4DInfoTime;
   };
 
-  HndImageIO()
-    : Superclass()
-  {}
+  HndImageIO() {}
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);

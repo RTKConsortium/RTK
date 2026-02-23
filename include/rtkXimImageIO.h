@@ -99,9 +99,7 @@ public:
     // double dGating4DInfoTime;
   };
 
-  XimImageIO()
-    : Superclass()
-  {}
+  XimImageIO() {}
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
