@@ -40,7 +40,7 @@ class RTK_EXPORT WatcherForResourceProbe
 public:
   /** Constructor. Takes a ProcessObject to monitor and an optional
    * comment string that is prepended to each event message. */
-  WatcherForResourceProbe(itk::ProcessObject * o);
+  explicit WatcherForResourceProbe(itk::ProcessObject * o);
 
   /** Copy constructor */
   WatcherForResourceProbe(const WatcherForResourceProbe &);
