@@ -271,59 +271,59 @@ protected:
 
   inline void
   BilinearSplat(const InputPixelType & rayValue,
-                const double           stepLengthInVoxel,
-                const double           voxelSize,
+                double                 stepLengthInVoxel,
+                double                 voxelSize,
                 OutputPixelType *      pxiyi,
                 OutputPixelType *      pxsyi,
                 OutputPixelType *      pxiys,
                 OutputPixelType *      pxsys,
-                const double           x,
-                const double           y,
-                const int              ox,
-                const int              oy);
+                double                 x,
+                double                 y,
+                int                    ox,
+                int                    oy);
 
   inline void
   BilinearSplatOnBorders(const InputPixelType & rayValue,
-                         const double           stepLengthInVoxel,
-                         const double           voxelSize,
+                         double                 stepLengthInVoxel,
+                         double                 voxelSize,
                          OutputPixelType *      pxiyi,
                          OutputPixelType *      pxsyi,
                          OutputPixelType *      pxiys,
                          OutputPixelType *      pxsys,
-                         const double           x,
-                         const double           y,
-                         const int              ox,
-                         const int              oy,
-                         const CoordinateType   minx,
-                         const CoordinateType   miny,
-                         const CoordinateType   maxx,
-                         const CoordinateType   maxy);
+                         double                 x,
+                         double                 y,
+                         int                    ox,
+                         int                    oy,
+                         CoordinateType         minx,
+                         CoordinateType         miny,
+                         CoordinateType         maxx,
+                         CoordinateType         maxy);
 
   inline OutputPixelType
-  BilinearInterpolation(const double           stepLengthInVoxel,
+  BilinearInterpolation(double                 stepLengthInVoxel,
                         const InputPixelType * pxiyi,
                         const InputPixelType * pxsyi,
                         const InputPixelType * pxiys,
                         const InputPixelType * pxsys,
-                        const double           x,
-                        const double           y,
-                        const int              ox,
-                        const int              oy);
+                        double                 x,
+                        double                 y,
+                        int                    ox,
+                        int                    oy);
 
   inline OutputPixelType
-  BilinearInterpolationOnBorders(const double           stepLengthInVoxel,
+  BilinearInterpolationOnBorders(double                 stepLengthInVoxel,
                                  const InputPixelType * pxiyi,
                                  const InputPixelType * pxsyi,
                                  const InputPixelType * pxiys,
                                  const InputPixelType * pxsys,
-                                 const double           x,
-                                 const double           y,
-                                 const int              ox,
-                                 const int              oy,
-                                 const double           minx,
-                                 const double           miny,
-                                 const double           maxx,
-                                 const double           maxy);
+                                 double                 x,
+                                 double                 y,
+                                 int                    ox,
+                                 int                    oy,
+                                 double                 minx,
+                                 double                 miny,
+                                 double                 maxx,
+                                 double                 maxy);
 
   /** Functor */
   TSplatWeightMultiplication         m_SplatWeightMultiplication;

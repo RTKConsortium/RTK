@@ -314,32 +314,32 @@ protected:
   VerifyInputInformation() const override;
 
   inline OutputPixelType
-  BilinearInterpolation(const ThreadIdType     threadId,
-                        const double           stepLengthInVoxel,
+  BilinearInterpolation(ThreadIdType           threadId,
+                        double                 stepLengthInVoxel,
                         const InputPixelType * pxiyi,
                         const InputPixelType * pxsyi,
                         const InputPixelType * pxiys,
                         const InputPixelType * pxsys,
-                        const double           x,
-                        const double           y,
-                        const int              ox,
-                        const int              oy);
+                        double                 x,
+                        double                 y,
+                        int                    ox,
+                        int                    oy);
 
   inline OutputPixelType
-  BilinearInterpolationOnBorders(const ThreadIdType     threadId,
-                                 const double           stepLengthInVoxel,
+  BilinearInterpolationOnBorders(ThreadIdType           threadId,
+                                 double                 stepLengthInVoxel,
                                  const InputPixelType * pxiyi,
                                  const InputPixelType * pxsyi,
                                  const InputPixelType * pxiys,
                                  const InputPixelType * pxsys,
-                                 const double           x,
-                                 const double           y,
-                                 const int              ox,
-                                 const int              oy,
-                                 const double           minx,
-                                 const double           miny,
-                                 const double           maxx,
-                                 const double           maxy);
+                                 double                 x,
+                                 double                 y,
+                                 int                    ox,
+                                 int                    oy,
+                                 double                 minx,
+                                 double                 miny,
+                                 double                 maxx,
+                                 double                 maxy);
 
 private:
   // Functors

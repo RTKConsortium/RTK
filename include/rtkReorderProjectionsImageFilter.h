@@ -80,7 +80,7 @@ public:
 
   /** Set the input signal */
   void
-  SetInputSignal(const std::vector<double> signal);
+  SetInputSignal(std::vector<double> signal);
   std::vector<double>
   GetOutputSignal();
 

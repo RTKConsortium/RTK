@@ -113,7 +113,7 @@ public:
 
   /** Set the threshold */
   virtual void
-  SetThreshold(const InputPixelType threshold);
+  SetThreshold(InputPixelType threshold);
 
   /** Begin concept checking */
   itkConceptMacro(OutputEqualityComparableCheck, (itk::Concept::EqualityComparable<OutputPixelType>));

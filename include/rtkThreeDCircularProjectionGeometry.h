@@ -74,27 +74,27 @@ public:
    * units (e.g. mm). The rotation axis is assumed to be (0,1,0).
    */
   void
-  AddProjection(const double sid,
-                const double sdd,
-                const double gantryAngle,
-                const double projOffsetX = 0.,
-                const double projOffsetY = 0.,
-                const double outOfPlaneAngle = 0.,
-                const double inPlaneAngle = 0.,
-                const double sourceOffsetX = 0.,
-                const double sourceOffsetY = 0.);
+  AddProjection(double sid,
+                double sdd,
+                double gantryAngle,
+                double projOffsetX = 0.,
+                double projOffsetY = 0.,
+                double outOfPlaneAngle = 0.,
+                double inPlaneAngle = 0.,
+                double sourceOffsetX = 0.,
+                double sourceOffsetY = 0.);
 
   /** Idem with angles in radians. */
   virtual void
-  AddProjectionInRadians(const double sid,
-                         const double sdd,
-                         const double gantryAngle,
-                         const double projOffsetX = 0.,
-                         const double projOffsetY = 0.,
-                         const double outOfPlaneAngle = 0.,
-                         const double inPlaneAngle = 0.,
-                         const double sourceOffsetX = 0.,
-                         const double sourceOffsetY = 0.);
+  AddProjectionInRadians(double sid,
+                         double sdd,
+                         double gantryAngle,
+                         double projOffsetX = 0.,
+                         double projOffsetY = 0.,
+                         double outOfPlaneAngle = 0.,
+                         double inPlaneAngle = 0.,
+                         double sourceOffsetX = 0.,
+                         double sourceOffsetY = 0.);
 
   /**
    * @brief Add a REG23-based geometry set to the RTK projections list.
@@ -318,12 +318,12 @@ public:
   /** Set the collimation of the latest added projection (to be called after
    * AddProjection). */
   void
-  SetCollimationOfLastProjection(const double uinf, const double usup, const double vinf, const double vsup);
+  SetCollimationOfLastProjection(double uinf, double usup, double vinf, double vsup);
 
   /** Get the source position for the ith projection in the fixed reference
    * system and in homogeneous coordinates. */
   const HomogeneousVectorType
-  GetSourcePosition(const unsigned int i) const;
+  GetSourcePosition(unsigned int i) const;
 
   /** Compute the ith matrix to convert projection coordinates to coordinates
    * in the detector coordinate system (u,v,u^v). Note that the matrix is square but the
@@ -331,7 +331,7 @@ public:
    * coordinates are 2D. This is meant to manipulate more easily stack of
    * projection images. */
   const ThreeDHomogeneousMatrixType
-  GetProjectionCoordinatesToDetectorSystemMatrix(const unsigned int i) const;
+  GetProjectionCoordinatesToDetectorSystemMatrix(unsigned int i) const;
 
   /** Compute the ith matrix to convert projection coordinates to coordinates
    * in the fixed coordinate system. Note that the matrix is square but the
@@ -339,26 +339,26 @@ public:
    * coordinates are 2D. This is meant to manipulate more easily stack of
    * projection images. */
   const ThreeDHomogeneousMatrixType
-  GetProjectionCoordinatesToFixedSystemMatrix(const unsigned int i) const;
+  GetProjectionCoordinatesToFixedSystemMatrix(unsigned int i) const;
 
   /** This function wraps an angle value between 0 and 360 degrees. */
   static double
-  ConvertAngleBetween0And360Degrees(const double a);
+  ConvertAngleBetween0And360Degrees(double a);
 
   /** This function wraps an angle value between 0 and 2*PI radians. */
   static double
-  ConvertAngleBetween0And2PIRadians(const double a);
+  ConvertAngleBetween0And2PIRadians(double a);
 
   /** This function wraps an angle value between -PI and PI radians. */
   static double
-  ConvertAngleBetweenMinusAndPlusPIRadians(const double a);
+  ConvertAngleBetweenMinusAndPlusPIRadians(double a);
 
   /** Changes the coordinate on the projection image to the coordinate on a
    * virtual detector that is perpendicular to the source to isocenter line and
    * positioned at the isocenter.
    * It is assumed that OutOfPlaneAngle=0 and InPlaneAngle=0.*/
   double
-  ToUntiltedCoordinateAtIsocenter(const unsigned int noProj, const double tiltedCoord) const;
+  ToUntiltedCoordinateAtIsocenter(unsigned int noProj, double tiltedCoord) const;
 
   /** Accessor for the radius of curved detector. The default is 0 and it means
    * a flat detector. */
@@ -418,9 +418,9 @@ protected:
    * of 1e-6!}
    */
   bool
-  VerifyAngles(const double          outOfPlaneAngleRAD,
-               const double          gantryAngleRAD,
-               const double          inPlaneAngleRAD,
+  VerifyAngles(double                outOfPlaneAngleRAD,
+               double                gantryAngleRAD,
+               double                inPlaneAngleRAD,
                const Matrix3x3Type & referenceMatrix) const;
 
   /** Try to fix Euler angles, which were found incorrect, to match the specified

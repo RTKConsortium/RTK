@@ -144,7 +144,7 @@ public:
 
   /** Pass the interpolation weights to SingleProjectionToFourDFilter */
   void
-  SetWeights(const itk::Array2D<float> _arg);
+  SetWeights(itk::Array2D<float> _arg);
 
   /** Initializes the empty volume source, set it and update it */
   void
@@ -152,7 +152,7 @@ public:
 
   /** Store the phase signal in a member variable */
   virtual void
-  SetSignal(const std::vector<double> signal);
+  SetSignal(std::vector<double> signal);
 
 protected:
   FourDToProjectionStackImageFilter();

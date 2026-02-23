@@ -73,14 +73,14 @@ protected:
   void
   OptimizedBackprojectionX(const OutputImageRegionType & region,
                            const ProjectionMatrixType &  matrix,
-                           const ProjectionImagePointer  projection) override;
+                           ProjectionImagePointer        projection) override;
 
   /** Optimized version when the rotation is parallel to Y, i.e. matrix[1][1]
     and matrix[2][1] are zeros. */
   void
   OptimizedBackprojectionY(const OutputImageRegionType & region,
                            const ProjectionMatrixType &  matrix,
-                           const ProjectionImagePointer  projection) override;
+                           ProjectionImagePointer        projection) override;
 };
 
 } // end namespace rtk

@@ -80,7 +80,7 @@ public:
 
   /** Set the input signal */
   void
-  SetSignal(const std::vector<double> signal);
+  SetSignal(std::vector<double> signal);
 
 protected:
   SignalToInterpolationWeights();
