@@ -165,11 +165,11 @@ public:
 
   /** Pass the interpolation weights to subfilters */
   void
-  SetWeights(const itk::Array2D<float> _arg);
+  SetWeights(itk::Array2D<float> _arg);
 
   /** Store the phase signal in a member variable */
   virtual void
-  SetSignal(const std::vector<double> signal);
+  SetSignal(std::vector<double> signal);
 
   /** Set / Get whether the displaced detector filter should be disabled */
   itkSetMacro(DisableDisplacedDetectorFilter, bool);

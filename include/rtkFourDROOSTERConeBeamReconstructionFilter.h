@@ -303,7 +303,7 @@ public:
 
   /** Pass the interpolation weights to SingleProjectionToFourDFilter */
   virtual void
-  SetWeights(const itk::Array2D<float> _arg);
+  SetWeights(itk::Array2D<float> _arg);
 
   /** Set / Get whether the displaced detector filter should be disabled */
   itkSetMacro(DisableDisplacedDetectorFilter, bool);
@@ -375,7 +375,7 @@ public:
 
   /** Store the phase signal in a member variable */
   virtual void
-  SetSignal(const std::vector<double> signal);
+  SetSignal(std::vector<double> signal);
 
 protected:
   FourDROOSTERConeBeamReconstructionFilter();

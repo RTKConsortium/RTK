@@ -96,7 +96,7 @@ protected:
   /** Create and return a pointer to one line of the Hilbert kernel in Fourier space.
    *  Used in generate data functions.  */
   void
-  UpdateFFTProjectionsConvolutionKernel(const SizeType s) override;
+  UpdateFFTProjectionsConvolutionKernel(SizeType s) override;
 
 private:
   SizeType m_PreviousKernelUpdateSize;

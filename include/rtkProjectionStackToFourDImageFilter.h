@@ -181,7 +181,7 @@ public:
 
   /** Store the phase signal in a member variable */
   virtual void
-  SetSignal(const std::vector<double> signal);
+  SetSignal(std::vector<double> signal);
 
 protected:
   ProjectionStackToFourDImageFilter();
