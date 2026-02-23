@@ -93,7 +93,7 @@ protected:
 private:
   GeometryPointer m_Geometry{ GeometryType::New() };
 
-  std::string m_CurCharacterData{ "" };
+  std::string m_CurCharacterData;
 
   /** Projection parameters */
   double m_InPlaneAngle{ 0. };
