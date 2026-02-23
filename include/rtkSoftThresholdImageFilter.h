@@ -69,7 +69,7 @@ public:
     return !(*this != other);
   }
 
-  inline TOutput
+  TOutput
   operator()(const TInput & A) const
   {
     return (itk::Math::sgn(A) * std::max((TInput)std::abs(A) - m_Threshold, (TInput)0.0));
