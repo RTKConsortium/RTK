@@ -65,7 +65,7 @@ DbfFile::DbfFile(std::string fileName)
 
     // Field types
     char fldType = 0;
-    m_Stream.read((char *)&fldType, sizeof(fldType));
+    m_Stream.read((&fldType), sizeof(fldType));
 
     // Skip displacement of field in record?
     m_Stream.seekg(4, std::ios_base::cur);
