@@ -63,7 +63,7 @@ SignalToInterpolationWeights::Update()
   {
     int lower = 0;
     int upper = 1;
-    while (!((m_Signal[c] >= reconstructedFrames[lower]) && (m_Signal[c] < reconstructedFrames[upper])))
+    while ((m_Signal[c] < reconstructedFrames[lower]) || (m_Signal[c] >= reconstructedFrames[upper]))
     {
       lower++;
       upper++;
