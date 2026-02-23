@@ -125,7 +125,7 @@ PhasesToInterpolationWeights::Parse()
       {
         i = i + 1;
       }
-      reconstructedFrames.push_back(((float)i) / 100.);
+      reconstructedFrames.push_back((static_cast<float>(i)) / 100.);
     }
     reconstructedFrames.push_back(1);
     for (int n = 0; n < this->m_NumberOfReconstructedFrames; n++)

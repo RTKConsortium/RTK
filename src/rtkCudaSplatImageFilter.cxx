@@ -33,8 +33,8 @@ rtk::CudaSplatImageFilter ::GPUGenerateData()
   outputSize.w = this->GetOutput()->GetLargestPossibleRegion().GetSize()[3];
 
 #ifdef CudaCommon_VERSION_MAJOR
-  float * pvolseries = (float *)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
-  float * pvol = (float *)(this->GetInputVolume()->GetCudaDataManager()->GetGPUBufferPointer());
+  float * pvolseries = static_cast<float *>(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
+  float * pvol = static_cast<float *>(this->GetInputVolume()->GetCudaDataManager()->GetGPUBufferPointer());
 #else
   float * pvolseries = *(float **)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
   float * pvol = *(float **)(this->GetInputVolume()->GetCudaDataManager()->GetGPUBufferPointer());

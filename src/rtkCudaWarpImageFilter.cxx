@@ -65,9 +65,9 @@ CudaWarpImageFilter ::GPUGenerateData()
   outputVolumeSize[2] = this->GetOutput()->GetBufferedRegion().GetSize()[2];
 
 #ifdef CudaCommon_VERSION_MAJOR
-  float * pinVol = (float *)(this->GetInput(0)->GetCudaDataManager()->GetGPUBufferPointer());
-  float * poutVol = (float *)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
-  float * pDVF = (float *)(this->GetDisplacementField()->GetCudaDataManager()->GetGPUBufferPointer());
+  float * pinVol = static_cast<float *>(this->GetInput(0)->GetCudaDataManager()->GetGPUBufferPointer());
+  float * poutVol = static_cast<float *>(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
+  float * pDVF = static_cast<float *>(this->GetDisplacementField()->GetCudaDataManager()->GetGPUBufferPointer());
 #else
   float * pinVol = *(float **)(this->GetInput(0)->GetCudaDataManager()->GetGPUBufferPointer());
   float * poutVol = *(float **)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
@@ -90,9 +90,9 @@ CudaWarpImageFilter ::GPUGenerateData()
   float fPPInputToIndexInputMatrix[12];
   for (int j = 0; j < 12; j++)
   {
-    fIndexOutputToIndexDVFMatrix[j] = (float)indexOutputToIndexDVFMatrix[j / 4][j % 4];
-    fPPInputToIndexInputMatrix[j] = (float)PPInputToIndexInputMatrix[j / 4][j % 4];
-    fIndexOutputToPPOutputMatrix[j] = (float)indexOutputToPPOutputMatrix[j / 4][j % 4];
+    fIndexOutputToIndexDVFMatrix[j] = static_cast<float>(indexOutputToIndexDVFMatrix[j / 4][j % 4]);
+    fPPInputToIndexInputMatrix[j] = static_cast<float>(PPInputToIndexInputMatrix[j / 4][j % 4]);
+    fIndexOutputToPPOutputMatrix[j] = static_cast<float>(indexOutputToPPOutputMatrix[j / 4][j % 4]);
   }
 
   bool isLinear = false;

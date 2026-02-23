@@ -193,7 +193,7 @@ public:
         double accumulate = 0;
         double accumulateWeights = 0;
         for (int energy = m_Thresholds[bin] - 1;
-             (energy < m_Thresholds[bin + 1]) && (energy < (int)(this->m_MaterialAttenuations.rows()));
+             (energy < m_Thresholds[bin + 1]) && (energy < static_cast<int>(this->m_MaterialAttenuations.rows()));
              energy++)
         {
           accumulate += this->m_MaterialAttenuations[energy][mat] * this->m_IncidentSpectrum[0][energy];

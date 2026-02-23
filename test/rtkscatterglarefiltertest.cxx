@@ -74,11 +74,12 @@ createInputImage(const std::vector<float> & coef)
   while (!itK.IsAtEnd())
   {
     idx = itK.GetIndex();
-    float xx = (float)idx[0] - (float)size[0] / 2.0F;
-    float yy = (float)idx[1] - (float)size[1] / 2.0F;
+    float xx = static_cast<float>(idx[0]) - static_cast<float>(size[0]) / 2.0F;
+    float yy = static_cast<float>(idx[1]) - static_cast<float>(size[1]) / 2.0F;
     float rr2 = (xx * xx + yy * yy);
     float g = (a3 * dx * dy / (2.0F * itk::Math::pi * b3sq)) * 1.0F / std::pow((1.0F + rr2 / b3sq), 1.5F);
-    if ((2 * idx[0] == (ImageType::IndexValueType)size[0]) && ((2 * idx[1] == (ImageType::IndexValueType)size[1])))
+    if ((2 * idx[0] == static_cast<ImageType::IndexValueType>(size[0])) &&
+        ((2 * idx[1] == static_cast<ImageType::IndexValueType>(size[1]))))
     {
       g += (1 - a3);
     }
@@ -121,7 +122,8 @@ main(int, char **)
   while (!itO.IsAtEnd())
   {
     idx = itO.GetIndex();
-    if ((2 * idx[0] == (ImageType::IndexValueType)size[0]) && ((2 * idx[1] == (ImageType::IndexValueType)size[1])))
+    if ((2 * idx[0] == static_cast<ImageType::IndexValueType>(size[0])) &&
+        ((2 * idx[1] == static_cast<ImageType::IndexValueType>(size[1]))))
     {
       spikeValueOut += itO.Get();
     }

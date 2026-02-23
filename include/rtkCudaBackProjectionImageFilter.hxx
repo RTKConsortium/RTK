@@ -144,7 +144,7 @@ CudaBackProjectionImageFilter<ImageType>::GPUGenerateData()
   for (unsigned int i = 0; i < nProj; i += SLAB_SIZE)
   {
     // If nProj is not a multiple of SLAB_SIZE, the last slab will contain less than SLAB_SIZE projections
-    projectionSize[2] = std::min(nProj - i, (unsigned int)SLAB_SIZE);
+    projectionSize[2] = std::min(nProj - i, static_cast<unsigned int>(SLAB_SIZE));
 
     // Run the back projection with a slab of SLAB_SIZE or less projections
     CUDA_back_project(projectionSize,

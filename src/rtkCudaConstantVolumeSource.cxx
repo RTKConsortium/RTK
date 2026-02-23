@@ -34,7 +34,7 @@ rtk::CudaConstantVolumeSource ::GPUGenerateData()
   }
 
 #ifdef CudaCommon_VERSION_MAJOR
-  float * pout = (float *)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
+  float * pout = static_cast<float *>(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
 #else
   float * pout = *(float **)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
 #endif
