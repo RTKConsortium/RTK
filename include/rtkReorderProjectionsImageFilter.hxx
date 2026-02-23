@@ -40,7 +40,7 @@ ReorderProjectionsImageFilter<TInputImage, TOutputImage>::ReorderProjectionsImag
 
 template <class TInputImage, class TOutputImage>
 void
-ReorderProjectionsImageFilter<TInputImage, TOutputImage>::SetInputSignal(const std::vector<double> signal)
+ReorderProjectionsImageFilter<TInputImage, TOutputImage>::SetInputSignal(const std::vector<double> & signal)
 {
   m_InputSignal = signal;
   m_Permutation = SORT;

@@ -71,7 +71,7 @@ public:
       The signal file is a text file containing one line per frame. */
   itkGetMacro(SignalFilename, std::string);
   virtual void
-  SetSignalFilename(const std::string _arg);
+  SetSignalFilename(std::string _arg);
   virtual void
   SetSignalVector(std::vector<double> _arg);
 

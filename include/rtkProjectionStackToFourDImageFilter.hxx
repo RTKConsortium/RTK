@@ -82,7 +82,7 @@ ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPre
 template <typename VolumeSeriesType, typename ProjectionStackType, typename TFFTPrecision>
 void
 ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPrecision>::SetSignal(
-  const std::vector<double> signal)
+  const std::vector<double> & signal)
 {
   this->m_Signal = signal;
 }

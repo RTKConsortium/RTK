@@ -72,7 +72,7 @@ protected:
   /** Creates and return a pointer to one line of the variance kernel in Fourier space.
    *  Used in generate data functions.  */
   void
-  UpdateFFTProjectionsConvolutionKernel(const SizeType size) override;
+  UpdateFFTProjectionsConvolutionKernel(SizeType size) override;
 
   FFTVarianceRampImageFilter(const Self &); // purposely not implemented
   void

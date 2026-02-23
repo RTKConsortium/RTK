@@ -122,7 +122,7 @@ FourDSARTConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::Se
 template <class VolumeSeriesType, class ProjectionStackType>
 void
 FourDSARTConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::SetSignal(
-  const std::vector<double> signal)
+  const std::vector<double> & signal)
 {
   m_ProjectionStackToFourDFilter->SetSignal(signal);
   m_FourDToProjectionStackFilter->SetSignal(signal);

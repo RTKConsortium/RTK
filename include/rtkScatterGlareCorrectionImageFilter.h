@@ -89,7 +89,7 @@ protected:
   /** Create the deconvolution kernel
    */
   void
-  UpdateFFTProjectionsConvolutionKernel(const SizeType size) override;
+  UpdateFFTProjectionsConvolutionKernel(SizeType size) override;
 
 private:
   CoefficientVectorType m_Coefficients;
