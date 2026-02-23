@@ -362,7 +362,7 @@ rtk::XimImageIO::Read(void * buffer)
 {
   FILE * fp = nullptr;
   // Long is only garanteed to be AT LEAST 32 bits, it could be 64 bit
-  Int4 * buf = (Int4 *)buffer;
+  Int4 * buf = static_cast<Int4 *>(buffer);
 
   fp = fopen(m_FileName.c_str(), "rb");
   if (fp == nullptr)
@@ -378,7 +378,8 @@ rtk::XimImageIO::Read(void * buffer)
     itkGenericExceptionMacro(<< "Could not read LUT size from: " << m_FileName);
   }
   auto m_lookup_table = std::vector<unsigned char>(lookUpTableSize);
-  if (lookUpTableSize != (Int4)fread((void *)m_lookup_table.data(), sizeof(unsigned char), lookUpTableSize, fp))
+  if (lookUpTableSize !=
+      static_cast<Int4>(fread((void *)m_lookup_table.data(), sizeof(unsigned char), lookUpTableSize, fp)))
   {
     itkGenericExceptionMacro(<< "Could not read lookup table from Xim file: " << m_FileName);
   }
@@ -476,5 +477,5 @@ rtk::XimImageIO::CanWriteFile(const char * itkNotUsed(FileNameToWrite))
 void
 rtk::XimImageIO::Write(const void * itkNotUsed(buffer))
 {
-  // TODO?
+  // TODO(itk-developer): ?
 }

@@ -131,7 +131,7 @@ main(int, char **)
 
   auto multiply = itk::MultiplyImageFilter<OutputImageType, OutputImageType>::New();
   multiply->SetInput(0, currentSumOfSquares);
-  multiply->SetConstant((float)(1. / NumberOfSamples));
+  multiply->SetConstant(static_cast<float>(1. / NumberOfSamples));
   TRY_AND_EXIT_ON_ITK_EXCEPTION(multiply->Update());
   currentSumOfSquares = multiply->GetOutput();
   currentSumOfSquares->DisconnectPipeline();
@@ -140,7 +140,7 @@ main(int, char **)
   currentSum->DisconnectPipeline();
   square->SetInput(currentSum);
   multiply->SetInput(0, square->GetOutput());
-  multiply->SetConstant((float)(-1. / (NumberOfSamples * NumberOfSamples)));
+  multiply->SetConstant(static_cast<float>(-1. / (NumberOfSamples * NumberOfSamples)));
   addSquare->SetInput(1, multiply->GetOutput());
   TRY_AND_EXIT_ON_ITK_EXCEPTION(addSquare->Update());
 

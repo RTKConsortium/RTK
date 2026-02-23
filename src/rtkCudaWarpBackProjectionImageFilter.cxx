@@ -181,18 +181,19 @@ CudaWarpBackProjectionImageFilter ::GPUGenerateData()
   float fIndexInputToPPInputMatrix[12];
   for (int j = 0; j < 12; j++)
   {
-    fIndexInputToIndexDVFMatrix[j] = (float)indexInputToIndexDVFMatrix[j / 4][j % 4];
-    fPPInputToIndexInputMatrix[j] = (float)PPInputToIndexInputMatrix[j / 4][j % 4];
-    fIndexInputToPPInputMatrix[j] = (float)indexInputToPPInputMatrix[j / 4][j % 4];
+    fIndexInputToIndexDVFMatrix[j] = static_cast<float>(indexInputToIndexDVFMatrix[j / 4][j % 4]);
+    fPPInputToIndexInputMatrix[j] = static_cast<float>(PPInputToIndexInputMatrix[j / 4][j % 4]);
+    fIndexInputToPPInputMatrix[j] = static_cast<float>(indexInputToPPInputMatrix[j / 4][j % 4]);
   }
 
   // Load the required images onto the GPU (handled by the CudaDataManager)
 #ifdef CudaCommon_VERSION_MAJOR
-  float * pin = (float *)(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
-  float * pout = (float *)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
-  float * pDVF = (float *)(this->GetDisplacementField()->GetCudaDataManager()->GetGPUBufferPointer());
+  float * pin = static_cast<float *>(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
+  float * pout = static_cast<float *>(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
+  float * pDVF = static_cast<float *>(this->GetDisplacementField()->GetCudaDataManager()->GetGPUBufferPointer());
 
-  float * stackGPUPointer = (float *)(this->GetInputProjectionStack()->GetCudaDataManager()->GetGPUBufferPointer());
+  float * stackGPUPointer =
+    static_cast<float *>(this->GetInputProjectionStack()->GetCudaDataManager()->GetGPUBufferPointer());
 #else
   float * pin = *(float **)(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
   float * pout = *(float **)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
@@ -254,7 +255,7 @@ CudaWarpBackProjectionImageFilter ::GPUGenerateData()
   for (unsigned int i = 0; i < nProj; i += SLAB_SIZE)
   {
     // If nProj is not a multiple of SLAB_SIZE, the last slab will contain less than SLAB_SIZE projections
-    projectionSize[2] = std::min(nProj - i, (unsigned int)SLAB_SIZE);
+    projectionSize[2] = std::min(nProj - i, static_cast<unsigned int>(SLAB_SIZE));
 
     // Run the back projection with a slab of SLAB_SIZE or less projections
     CUDA_warp_back_project(projectionSize,

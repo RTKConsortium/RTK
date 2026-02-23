@@ -69,9 +69,9 @@ CudaFDKBackProjectionImageFilter ::GPUGenerateData()
   volumeSize[2] = this->GetOutput()->GetBufferedRegion().GetSize()[2];
 
 #ifdef CudaCommon_VERSION_MAJOR
-  float * pin = (float *)(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
-  float * pout = (float *)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
-  float * stackGPUPointer = (float *)(this->GetInput(1)->GetCudaDataManager()->GetGPUBufferPointer());
+  float * pin = static_cast<float *>(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
+  float * pout = static_cast<float *>(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
+  float * stackGPUPointer = static_cast<float *>(this->GetInput(1)->GetCudaDataManager()->GetGPUBufferPointer());
 #else
   float * pin = *(float **)(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
   float * pout = *(float **)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
@@ -111,12 +111,12 @@ CudaFDKBackProjectionImageFilter ::GPUGenerateData()
   }
 
   // Slab-wise progress reporting
-  itk::ProgressReporter progress(this, 0, itk::Math::ceil(double(nProj) / SLAB_SIZE));
+  itk::ProgressReporter progress(this, 0, itk::Math::ceil(static_cast<double>(nProj) / SLAB_SIZE));
 
   for (unsigned int i = 0; i < nProj; i += SLAB_SIZE)
   {
     // If nProj is not a multiple of SLAB_SIZE, the last slab will contain less than SLAB_SIZE projections
-    projectionSize[2] = std::min(nProj - i, (unsigned int)SLAB_SIZE);
+    projectionSize[2] = std::min(nProj - i, static_cast<unsigned int>(SLAB_SIZE));
 
     // Run the back projection with a slab of SLAB_SIZE or less projections
     CUDA_reconstruct_conebeam(

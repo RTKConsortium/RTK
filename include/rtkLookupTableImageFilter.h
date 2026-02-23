@@ -113,7 +113,7 @@ LUT<float, float>::operator()(const float & val) const
 {
   InterpolatorType::ContinuousIndexType index;
   index[0] = m_InverseLUTSpacing * (val - m_LookupTablePointer->GetOrigin()[0]);
-  return float(m_Interpolator->EvaluateAtContinuousIndex(index));
+  return static_cast<float>(m_Interpolator->EvaluateAtContinuousIndex(index));
 }
 
 template <>
@@ -122,7 +122,7 @@ LUT<double, double>::operator()(const double & val) const
 {
   InterpolatorType::ContinuousIndexType index;
   index[0] = m_InverseLUTSpacing * (val - m_LookupTablePointer->GetOrigin()[0]);
-  return double(m_Interpolator->EvaluateAtContinuousIndex(index));
+  return static_cast<double>(m_Interpolator->EvaluateAtContinuousIndex(index));
 }
 
 } // end namespace Functor

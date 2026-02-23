@@ -190,10 +190,10 @@ CudaWarpForwardProjectionImageFilter ::GPUGenerateData()
   inputDVFSize[2] = this->GetDisplacementField()->GetBufferedRegion().GetSize()[2];
 
 #ifdef CudaCommon_VERSION_MAJOR
-  float * pin = (float *)(this->GetInputProjectionStack()->GetCudaDataManager()->GetGPUBufferPointer());
-  float * pout = (float *)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
-  float * pvol = (float *)(this->GetInputVolume()->GetCudaDataManager()->GetGPUBufferPointer());
-  float * pDVF = (float *)(this->GetDisplacementField()->GetCudaDataManager()->GetGPUBufferPointer());
+  float * pin = static_cast<float *>(this->GetInputProjectionStack()->GetCudaDataManager()->GetGPUBufferPointer());
+  float * pout = static_cast<float *>(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
+  float * pvol = static_cast<float *>(this->GetInputVolume()->GetCudaDataManager()->GetGPUBufferPointer());
+  float * pDVF = static_cast<float *>(this->GetDisplacementField()->GetCudaDataManager()->GetGPUBufferPointer());
 #else
   float * pin = *(float **)(this->GetInputProjectionStack()->GetCudaDataManager()->GetGPUBufferPointer());
   float * pout = *(float **)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
@@ -218,9 +218,9 @@ CudaWarpForwardProjectionImageFilter ::GPUGenerateData()
   float fIndexInputToPPInputMatrix[12];
   for (int j = 0; j < 12; j++)
   {
-    fIndexInputToIndexDVFMatrix[j] = (float)indexInputToIndexDVFMatrix[j / 4][j % 4];
-    fPPInputToIndexInputMatrix[j] = (float)PPInputToIndexInputMatrix[j / 4][j % 4];
-    fIndexInputToPPInputMatrix[j] = (float)indexInputToPPInputMatrix[j / 4][j % 4];
+    fIndexInputToIndexDVFMatrix[j] = static_cast<float>(indexInputToIndexDVFMatrix[j / 4][j % 4]);
+    fPPInputToIndexInputMatrix[j] = static_cast<float>(PPInputToIndexInputMatrix[j / 4][j % 4]);
+    fIndexInputToPPInputMatrix[j] = static_cast<float>(indexInputToPPInputMatrix[j / 4][j % 4]);
   }
 
   // Account for system rotations
@@ -256,7 +256,7 @@ CudaWarpForwardProjectionImageFilter ::GPUGenerateData()
                projIndexTranslation.GetVnlMatrix();
     for (int j = 0; j < 3; j++) // Ignore the 4th row
       for (int k = 0; k < 4; k++)
-        matrices[((j + 3 * (iProj - iFirstProj)) * 4) + k] = (float)d_matrix[j][k];
+        matrices[((j + 3 * (iProj - iFirstProj)) * 4) + k] = static_cast<float>(d_matrix[j][k]);
 
     // Compute source position in volume indices
     source_position = volPPToIndex * geometry->GetSourcePosition(iProj);
@@ -270,7 +270,7 @@ CudaWarpForwardProjectionImageFilter ::GPUGenerateData()
   for (unsigned int i = 0; i < nProj; i += SLAB_SIZE)
   {
     // If nProj is not a multiple of SLAB_SIZE, the last slab will contain less than SLAB_SIZE projections
-    projectionSize[2] = std::min(nProj - i, (unsigned int)SLAB_SIZE);
+    projectionSize[2] = std::min(nProj - i, static_cast<unsigned int>(SLAB_SIZE));
     projectionOffset = iFirstProj + i - this->GetOutput()->GetBufferedRegion().GetIndex(2);
 
     CUDA_warp_forward_project(projectionSize,
