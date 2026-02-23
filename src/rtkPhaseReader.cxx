@@ -59,7 +59,7 @@ PhaseReader::Parse()
   for (unsigned int j = 0; j < NumberOfProjections; j++)
   {
     this->GetNextField(entry);
-    m_Phases.push_back(std::stod(entry.c_str()));
+    m_Phases.push_back(std::stod(entry));
   }
 
   this->m_InputStream.close();

@@ -119,7 +119,7 @@ main(int, char **)
 
 #endif
 
-  itksys::SystemTools::RemoveFile(signalFileName.c_str());
+  itksys::SystemTools::RemoveFile(signalFileName);
 
   return EXIT_SUCCESS;
 }
