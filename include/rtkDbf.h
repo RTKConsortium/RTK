@@ -89,7 +89,7 @@ class RTK_EXPORT DbfFile
 {
 public:
   /** Constructor initializes the structure and goes to first record */
-  DbfFile(std::string fileName);
+  DbfFile(const std::string & fileName);
   ~DbfFile();
 
   /** Return open status of file stream */
@@ -113,10 +113,10 @@ public:
 
   /** Access to field value of field named fldName */
   std::string
-  GetFieldAsString(std::string fldName);
+  GetFieldAsString(const std::string & fldName);
 
   double
-  GetFieldAsDouble(std::string fldName)
+  GetFieldAsDouble(const std::string & fldName)
   {
     return std::stod(GetFieldAsString(fldName));
   }

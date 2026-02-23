@@ -18,6 +18,7 @@
 #include "rtkPhasesToInterpolationWeights.h"
 
 #include <itksys/SystemTools.hxx>
+#include <utility>
 #include <itkMath.h>
 
 namespace rtk
@@ -40,7 +41,7 @@ PhasesToInterpolationWeights::PrintSelf(std::ostream & os, itk::Indent indent) c
 void
 PhasesToInterpolationWeights::SetSelectedProjections(std::vector<bool> sprojs)
 {
-  this->m_SelectedProjections = sprojs;
+  this->m_SelectedProjections = std::move(sprojs);
   this->Modified();
 }
 

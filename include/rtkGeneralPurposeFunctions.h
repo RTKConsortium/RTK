@@ -39,7 +39,7 @@ namespace rtk
  */
 
 static inline std::vector<double>
-ReadSignalFile(std::string filename)
+ReadSignalFile(const std::string & filename)
 {
   std::vector<double> signalVector;
   std::ifstream       is(filename.c_str());

@@ -138,10 +138,10 @@ createInputImage()
 }
 
 OutputImageType::Pointer
-generateExpectedOutput(InputImageType::Pointer  inputImage,
-                       float                    K,
-                       InputImageType::Pointer  darkImage,
-                       OutputImageType::Pointer gainImage)
+generateExpectedOutput(const InputImageType::Pointer &  inputImage,
+                       float                            K,
+                       const InputImageType::Pointer &  darkImage,
+                       const OutputImageType::Pointer & gainImage)
 {
   auto size = itk::MakeSize(sizeI, sizeI, 1);
   auto spacing = itk::MakeVector(1.F, 1.F, 1.F);

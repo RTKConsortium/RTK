@@ -17,7 +17,7 @@ CheckImageQuality(typename TImage1::Pointer itkNotUsed(recon), typename TImage2:
 {}
 #else
 void
-CheckImageQuality(typename TImage1::Pointer recon, typename TImage2::Pointer ref)
+CheckImageQuality(const typename TImage1::Pointer & recon, const typename TImage2::Pointer & ref)
 {
   itk::ImageRegionConstIterator<TImage1> itTest(recon, recon->GetBufferedRegion());
   itk::ImageRegionConstIterator<TImage2> itRef(ref, ref->GetBufferedRegion());

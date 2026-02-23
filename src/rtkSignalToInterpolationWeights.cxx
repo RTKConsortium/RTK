@@ -34,7 +34,7 @@ SignalToInterpolationWeights::PrintSelf(std::ostream & os, itk::Indent indent) c
 }
 
 void
-SignalToInterpolationWeights::SetSignal(const std::vector<double> signal)
+SignalToInterpolationWeights::SetSignal(const std::vector<double> & signal)
 {
   this->m_Signal = signal;
 }

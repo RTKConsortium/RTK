@@ -30,7 +30,7 @@ DbfField::DbfField(std::string name, char type, unsigned char length, short recO
   , m_RecOffset(recOffset)
 {}
 
-DbfFile::DbfFile(std::string fileName)
+DbfFile::DbfFile(const std::string & fileName)
 {
   m_Stream.open(fileName.c_str(), std::ios_base::in | std::ios_base::binary);
   if (!m_Stream.is_open())
@@ -98,7 +98,7 @@ DbfFile::ReadNextRecord()
 }
 
 std::string
-DbfFile::GetFieldAsString(std::string fldName)
+DbfFile::GetFieldAsString(const std::string & fldName)
 {
   DbfField &  field = m_Fields[m_MapFieldNameIndex[fldName]];
   std::string result(m_Record + field.GetRecOffset(), field.GetLength());
