@@ -96,10 +96,9 @@ CudaWarpImageFilter ::GPUGenerateData()
   }
 
   bool isLinear = false;
-  if (std::string("LinearInterpolateImageFunction").compare(this->GetInterpolator()->GetNameOfClass()) == 0)
+  if (std::string("LinearInterpolateImageFunction") == this->GetInterpolator()->GetNameOfClass())
     isLinear = true;
-  else if (std::string("NearestNeighborInterpolateImageFunction").compare(this->GetInterpolator()->GetNameOfClass()) ==
-           0)
+  else if (std::string("NearestNeighborInterpolateImageFunction") == this->GetInterpolator()->GetNameOfClass())
     isLinear = false;
   else
     itkGenericExceptionMacro(<< "In rtkCudaWarpImageFilter: unknown interpolator");
