@@ -46,9 +46,7 @@ public:
   using Superclass = itk::ImageIOBase;
   using Pointer = itk::SmartPointer<Self>;
 
-  XRadImageIO()
-    : Superclass()
-  {}
+  XRadImageIO() {}
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);

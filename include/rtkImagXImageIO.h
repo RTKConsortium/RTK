@@ -43,9 +43,7 @@ public:
   using Superclass = itk::ImageIOBase;
   using Pointer = itk::SmartPointer<Self>;
 
-  ImagXImageIO()
-    : Superclass()
-  {}
+  ImagXImageIO() {}
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);

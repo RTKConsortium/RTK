@@ -47,9 +47,7 @@ public:
   using Superclass = itk::ImageIOBase;
   using Pointer = itk::SmartPointer<Self>;
 
-  EdfImageIO()
-    : Superclass()
-  {}
+  EdfImageIO() {}
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);

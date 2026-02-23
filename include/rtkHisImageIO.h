@@ -45,11 +45,7 @@ public:
   using Pointer = itk::SmartPointer<Self>;
   using PixelType = signed short int;
 
-  HisImageIO()
-    : Superclass()
-  {
-    ;
-  }
+  HisImageIO() {}
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
