@@ -30,7 +30,6 @@
 #  include "rtkPolynomialGainCorrectionImageFilter.h"
 #endif
 
-#include "rtkTestConfiguration.h"
 
 /**
  * \file rtkgaincorrectiontest.cxx
