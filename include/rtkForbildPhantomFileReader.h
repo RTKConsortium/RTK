@@ -98,8 +98,8 @@ protected:
   CreateForbildCone(const std::string & s, const std::string & fig);
   void
   CreateForbildTetrahedron(const std::string & s);
-  RotationMatrixType
-  ComputeRotationMatrixBetweenVectors(const VectorType & source, const VectorType & dest) const;
+  static RotationMatrixType
+  ComputeRotationMatrixBetweenVectors(const VectorType & source, const VectorType & dest);
 
   bool
   FindParameterInString(const std::string & name, const std::string & s, ScalarType & param);
