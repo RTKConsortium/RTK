@@ -88,7 +88,7 @@ FourDToProjectionStackImageFilter<ProjectionStackType, VolumeSeriesType>::SetWei
 
 template <typename VolumeSeriesType, typename ProjectionStackType>
 void
-FourDToProjectionStackImageFilter<VolumeSeriesType, ProjectionStackType>::SetSignal(const std::vector<double> signal)
+FourDToProjectionStackImageFilter<VolumeSeriesType, ProjectionStackType>::SetSignal(const std::vector<double> & signal)
 {
   this->m_Signal = signal;
   this->Modified();

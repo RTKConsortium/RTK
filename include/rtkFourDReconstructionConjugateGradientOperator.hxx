@@ -95,7 +95,7 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
 template <typename VolumeSeriesType, typename ProjectionStackType>
 void
 FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackType>::SetSignal(
-  const std::vector<double> signal)
+  const std::vector<double> & signal)
 {
   this->m_Signal = signal;
 }

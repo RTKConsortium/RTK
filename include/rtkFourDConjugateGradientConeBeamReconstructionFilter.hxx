@@ -99,7 +99,7 @@ FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionS
 template <class VolumeSeriesType, class ProjectionStackType>
 void
 FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::SetSignal(
-  const std::vector<double> signal)
+  const std::vector<double> & signal)
 {
   m_ProjStackToFourDFilter->SetSignal(signal);
   m_CGOperator->SetSignal(signal);
