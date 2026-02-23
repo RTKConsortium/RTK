@@ -26,11 +26,11 @@ CheckError(typename TImage::Pointer     itkNotUsed(recon),
 {}
 #else
 void
-CheckError(typename TImage::Pointer     recon,
-           typename TImage::PixelType * ref,
-           double                       ErrorPerPixelTolerance,
-           double                       PSNRTolerance,
-           double                       RefValueForPSNR)
+CheckError(const typename TImage::Pointer & recon,
+           typename TImage::PixelType *     ref,
+           double                           ErrorPerPixelTolerance,
+           double                           PSNRTolerance,
+           double                           RefValueForPSNR)
 {
   itk::ImageRegionConstIterator<TImage> itTest(recon, recon->GetBufferedRegion());
 

@@ -35,7 +35,7 @@ namespace rtk
 
 template <class TImage>
 double
-MSE(typename TImage::Pointer reference, typename TImage::Pointer reconstruction)
+MSE(const typename TImage::Pointer & reference, const typename TImage::Pointer & reconstruction)
 {
   using ImageIteratorType = itk::ImageRegionConstIterator<TImage>;
   ImageIteratorType itTest(reconstruction, reconstruction->GetBufferedRegion());
