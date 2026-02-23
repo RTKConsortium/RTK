@@ -233,7 +233,7 @@ bool
 rtk::EdfImageIO::CanReadFile(const char * FileNameToRead)
 {
   std::string                  filename(FileNameToRead);
-  const std::string::size_type it = filename.find_last_of(".");
+  const std::string::size_type it = filename.find_last_of('.');
   std::string                  fileExt(filename, it + 1, filename.length());
 
   return fileExt == std::string("edf");
