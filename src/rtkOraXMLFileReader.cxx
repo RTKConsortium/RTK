@@ -114,7 +114,7 @@ OraXMLFileReader::EncapsulateDouble(const char * metaName, const char * name)
 {
   if (itksys::SystemTools::Strucmp(name, metaName) == 0)
   {
-    double d = std::stod(m_CurCharacterData.c_str());
+    double d = std::stod(m_CurCharacterData);
     itk::EncapsulateMetaData<double>(m_Dictionary, metaName, d);
   }
 }

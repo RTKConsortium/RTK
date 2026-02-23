@@ -142,7 +142,7 @@ main(int, char **)
 
   std::cout << "Test PASSED! " << std::endl;
 
-  itksys::SystemTools::RemoveFile(signalFileName.c_str());
+  itksys::SystemTools::RemoveFile(signalFileName);
 
   return EXIT_SUCCESS;
 }

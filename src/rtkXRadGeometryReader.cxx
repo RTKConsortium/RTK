@@ -100,11 +100,11 @@ rtk::XRadGeometryReader ::GenerateData()
 
     paramName = sectionName + "_CBCT.ProjectionGeometryArray.u_off";
     std::string suoff = dynamic_cast<MetaDataStringType *>(dic[paramName].GetPointer())->GetMetaDataObjectValue();
-    double      uoff = std::stod(suoff.c_str()) * reader->GetSpacing(0);
+    double      uoff = std::stod(suoff) * reader->GetSpacing(0);
 
     paramName = sectionName + "_CBCT.ProjectionGeometryArray.v_off";
     std::string svoff = dynamic_cast<MetaDataStringType *>(dic[paramName].GetPointer())->GetMetaDataObjectValue();
-    double      voff = std::stod(svoff.c_str()) * reader->GetSpacing(1);
+    double      voff = std::stod(svoff) * reader->GetSpacing(1);
 
     m_Geometry->AddProjectionInRadians(tmpGeo->GetSourceToIsocenterDistances()[i],
                                        tmpGeo->GetSourceToDetectorDistances()[i],
