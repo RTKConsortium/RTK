@@ -52,7 +52,7 @@ public:
     return !(*this != other);
   }
 
-  inline void
+  void
   operator()(const ThreadIdType itkNotUsed(threadId),
              TOutput &          mipValue,
              const TInput       volumeValue,
@@ -90,7 +90,7 @@ public:
     return !(*this != other);
   }
 
-  inline void
+  void
   operator()(const ThreadIdType itkNotUsed(threadId),
              const TInput &     input,
              TOutput &          output,

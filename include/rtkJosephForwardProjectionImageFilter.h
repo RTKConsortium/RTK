@@ -56,7 +56,7 @@ public:
     return !(*this != other);
   }
 
-  inline TOutput
+  TOutput
   operator()(const ThreadIdType    itkNotUsed(threadId),
              const double          itkNotUsed(stepLengthInVoxel),
              const TCoordinateType weight,
@@ -93,7 +93,7 @@ public:
     return !(*this != other);
   }
 
-  inline void
+  void
   operator()(const ThreadIdType itkNotUsed(threadId),
              TOutput &          sumValue,
              const TInput       volumeValue,
@@ -129,7 +129,7 @@ public:
     return !(*this != other);
   }
 
-  inline void
+  void
   operator()(const ThreadIdType itkNotUsed(threadId),
              const TInput &     input,
              TOutput &          output,

@@ -57,7 +57,7 @@ public:
   {
     return !(*this != other);
   }
-  inline TOutput
+  TOutput
   operator()(const TInput & A) const
   {
     return (!A) ? 0. : TOutput(std::log((m_I0 - m_IDark) / (A - m_IDark)));
