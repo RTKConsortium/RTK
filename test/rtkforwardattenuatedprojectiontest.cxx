@@ -1,7 +1,6 @@
 #include "rtkTest.h"
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkConstantImageSource.h"
-#include "rtkJosephForwardAttenuatedProjectionImageFilter.h"
 #include "rtkRayEllipsoidIntersectionImageFilter.h"
 #include "rtkDrawEllipsoidImageFilter.h"
 #include <itkStreamingImageFilter.h>

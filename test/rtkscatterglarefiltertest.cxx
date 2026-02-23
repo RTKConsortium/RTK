@@ -30,7 +30,6 @@
 #  include "rtkScatterGlareCorrectionImageFilter.h"
 #endif
 
-#include "rtkTestConfiguration.h"
 
 /**
  * \file rtkscatterglarefiltertest.cxx
