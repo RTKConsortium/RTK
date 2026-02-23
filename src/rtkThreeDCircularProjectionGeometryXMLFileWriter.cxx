@@ -36,9 +36,7 @@ ThreeDCircularProjectionGeometryXMLFileWriter::CanWriteFile(const char * name)
 {
   std::ofstream output(name);
 
-  if (output.fail())
-    return false;
-  return true;
+  return !output.fail();
 }
 
 int
