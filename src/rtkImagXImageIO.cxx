@@ -136,10 +136,7 @@ rtk::ImagXImageIO::CanReadFile(const char * FileNameToRead)
     return true;
 
   std::getline(is, line);
-  if (line.substr(0, 12) == std::string("<image name="))
-    return true;
-
-  return false;
+  return line.substr(0, 12) == std::string("<image name=");
 } ////
 
 //--------------------------------------------------------------------

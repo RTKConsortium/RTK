@@ -146,7 +146,7 @@ PhasesToInterpolationWeights::Parse()
   {
     int lower = 0;
     int upper = 1;
-    while (!((projectionPhases[c] >= reconstructedFrames[lower]) && (projectionPhases[c] < reconstructedFrames[upper])))
+    while ((projectionPhases[c] < reconstructedFrames[lower]) || (projectionPhases[c] >= reconstructedFrames[upper]))
     {
       lower++;
       upper++;

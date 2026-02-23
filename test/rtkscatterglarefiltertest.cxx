@@ -132,7 +132,7 @@ main(int, char **)
     ++itO;
   }
 
-  if (!((itk::Math::abs(spikeValueOut - spikeValue) < 1e-2) && (itk::Math::abs(sumBng) < 1e-2)))
+  if ((itk::Math::abs(spikeValueOut - spikeValue) >= 1e-2) || (itk::Math::abs(sumBng) >= 1e-2))
   {
     std::cerr << "Test Failed! " << std::endl;
     exit(EXIT_FAILURE);

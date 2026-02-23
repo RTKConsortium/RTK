@@ -110,7 +110,7 @@ CudaDisplacedDetectorImageFilter ::GPUGenerateData()
   proj_size_out[2] = this->GetOutput()->GetRequestedRegion().GetSize()[2];
 
   double theta = std::min(-1. * this->GetInferiorCorner(), this->GetSuperiorCorner());
-  bool   isPositiveCase = (this->GetSuperiorCorner() + this->GetInferiorCorner() > 0.) ? true : false;
+  bool   isPositiveCase = this->GetSuperiorCorner() + this->GetInferiorCorner() > 0.;
 
   // 2D matrix (numgeom * 4 values) in one block for memcpy!
   // for each geometry, the following structure is used:

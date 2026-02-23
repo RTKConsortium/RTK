@@ -64,12 +64,6 @@ main(int argc, char * argv[])
   rtk::SetConstantImageSourceFromGgo<ConstantImageSourceType, args_info_rtkiterativefdk>(constantImageSource,
                                                                                          args_info);
 
-  bool enforcePositivity = false;
-  if (args_info.positivity_flag)
-    enforcePositivity = true;
-  else
-    enforcePositivity = false;
-
   // Since the last template argument for IterativeFDKConeBeamReconstructionFilter is
   // double for the CPU version, and float for the CUDA one, we cannot have a single
   // pointer for both possibilities. In order to set the options only once,
@@ -85,7 +79,7 @@ main(int argc, char * argv[])
   f->SetHannCutFrequencyY(args_info.hannY_arg);           \
   f->SetProjectionSubsetSize(args_info.subsetsize_arg);   \
   f->SetLambda(args_info.lambda_arg);                     \
-  f->SetEnforcePositivity(enforcePositivity);             \
+  f->SetEnforcePositivity(args_info.positivity_flag);     \
   f->SetDisableDisplacedDetectorFilter(args_info.nodisplaced_flag);
 
   // Create Iterative FDK filter and connect it

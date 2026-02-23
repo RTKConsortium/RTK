@@ -56,11 +56,7 @@ public:
   bool
   operator!=(const SoftThreshold & other) const
   {
-    if (m_Threshold != other.m_Threshold)
-    {
-      return true;
-    }
-    return false;
+    return static_cast<bool>(m_Threshold != other.m_Threshold);
   }
   bool
   operator==(const SoftThreshold & other) const

@@ -127,9 +127,7 @@ rtk::HncImageIO::CanReadFile(const char * FileNameToRead)
   const std::string::size_type it = filename.find_last_of(".");
   std::string                  fileExt(filename, it + 1, filename.length());
 
-  if (fileExt != std::string("hnc"))
-    return false;
-  return true;
+  return fileExt == std::string("hnc");
 }
 
 //--------------------------------------------------------------------
