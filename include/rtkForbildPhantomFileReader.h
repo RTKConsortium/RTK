@@ -20,8 +20,8 @@
 #define rtkForbildPhantomFileReader_h
 
 #include "RTKExport.h"
-#include <itkLightProcessObject.h>
 #include "rtkGeometricPhantom.h"
+#include <itkLightProcessObject.h>
 
 namespace rtk
 {

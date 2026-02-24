@@ -27,8 +27,8 @@
 #  include "rtkCudaConjugateGradientImageFilter.hcu"
 #  include "rtkCudaConstantVolumeSource.h"
 
-#  include <itkMacro.h>
 #  include <itkIterationReporter.h>
+#  include <itkMacro.h>
 
 namespace rtk
 {

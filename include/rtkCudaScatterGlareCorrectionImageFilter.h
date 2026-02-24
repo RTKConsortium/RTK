@@ -24,8 +24,8 @@
 #ifdef RTK_USE_CUDA
 
 
-#  include "rtkScatterGlareCorrectionImageFilter.h"
 #  include "rtkCudaFFTProjectionsConvolutionImageFilter.h"
+#  include "rtkScatterGlareCorrectionImageFilter.h"
 #  include "RTKExport.h"
 
 #  include "rtkCudaExternTemplates.h"

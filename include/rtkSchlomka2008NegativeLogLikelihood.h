@@ -22,9 +22,9 @@
 #include "rtkProjectionsDecompositionNegativeLogLikelihood.h"
 #include "rtkMacro.h"
 
-#include <itkVectorImage.h>
 #include <itkVariableLengthVector.h>
 #include <itkVariableSizeMatrix.h>
+#include <itkVectorImage.h>
 
 namespace rtk
 {

@@ -19,10 +19,10 @@
 #ifndef rtkFFTHilbertImageFilter_h
 #define rtkFFTHilbertImageFilter_h
 
-#include <itkConceptChecking.h>
 #include "rtkConfiguration.h"
 #include "rtkFFTProjectionsConvolutionImageFilter.h"
 #include "rtkMacro.h"
+#include <itkConceptChecking.h>
 
 namespace rtk
 {

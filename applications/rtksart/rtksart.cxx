@@ -19,10 +19,10 @@
 #include "rtksart_ggo.h"
 #include "rtkGgoFunctions.h"
 
-#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
-#include "rtkSARTConeBeamReconstructionFilter.h"
-#include "rtkPhaseGatingImageFilter.h"
 #include "rtkIterationCommands.h"
+#include "rtkPhaseGatingImageFilter.h"
+#include "rtkSARTConeBeamReconstructionFilter.h"
+#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 
 #ifdef RTK_USE_CUDA
 #  include "itkCudaImage.h"

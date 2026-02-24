@@ -1,9 +1,9 @@
-#include <itkImageFileWriter.h>
-#include <itkMultiplyImageFilter.h>
 #include <itkExpImageFilter.h>
+#include <itkImageFileWriter.h>
+#include <itkLogImageFilter.h>
+#include <itkMultiplyImageFilter.h>
 #include <itkShotNoiseImageFilter.h>
 #include <itkThresholdImageFilter.h>
-#include <itkLogImageFilter.h>
 
 #include <rtkConstantImageSource.h>
 #include <rtkSheppLoganPhantomFilter.h>

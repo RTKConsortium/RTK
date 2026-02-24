@@ -20,8 +20,8 @@
 #define rtkDigisensGeometryReader_h
 
 #include "RTKExport.h"
-#include <itkLightProcessObject.h>
 #include "rtkThreeDCircularProjectionGeometry.h"
+#include <itkLightProcessObject.h>
 
 namespace rtk
 {

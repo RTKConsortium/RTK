@@ -19,16 +19,16 @@
 #ifndef rtkIterativeFDKConeBeamReconstructionFilter_h
 #define rtkIterativeFDKConeBeamReconstructionFilter_h
 
+#include <itkDivideOrZeroOutImageFilter.h>
 #include <itkMultiplyImageFilter.h>
 #include <itkSubtractImageFilter.h>
 #include <itkThresholdImageFilter.h>
-#include <itkDivideOrZeroOutImageFilter.h>
 
 #include "rtkConstantImageSource.h"
-#include "rtkParkerShortScanImageFilter.h"
 #include "rtkDisplacedDetectorForOffsetFieldOfViewImageFilter.h"
-#include "rtkIterativeConeBeamReconstructionFilter.h"
 #include "rtkFDKConeBeamReconstructionFilter.h"
+#include "rtkIterativeConeBeamReconstructionFilter.h"
+#include "rtkParkerShortScanImageFilter.h"
 #include "rtkRayBoxIntersectionImageFilter.h"
 
 namespace rtk

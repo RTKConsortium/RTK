@@ -23,8 +23,8 @@
 #include "rtkForwardProjectionImageFilter.h"
 #include "rtkJosephForwardProjectionImageFilter.h"
 #include "rtkMacro.h"
-#include <itkPixelTraits.h>
 #include <cmath>
+#include <itkPixelTraits.h>
 #include <vector>
 
 namespace rtk

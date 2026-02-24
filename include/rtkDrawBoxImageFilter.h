@@ -20,8 +20,8 @@
 #define rtkDrawBoxImageFilter_h
 
 #include "rtkDrawConvexImageFilter.h"
-#include "rtkConfiguration.h"
 #include "rtkBoxShape.h"
+#include "rtkConfiguration.h"
 
 namespace rtk
 {

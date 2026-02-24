@@ -23,9 +23,9 @@
 #include "rtkBackwardDifferenceDivergenceImageFilter.h"
 
 #include <itkCastImageFilter.h>
-#include <itkSubtractImageFilter.h>
-#include <itkMultiplyImageFilter.h>
 #include <itkInPlaceImageFilter.h>
+#include <itkMultiplyImageFilter.h>
+#include <itkSubtractImageFilter.h>
 
 namespace rtk
 {

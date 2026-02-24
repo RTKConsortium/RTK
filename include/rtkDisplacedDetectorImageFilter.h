@@ -19,9 +19,9 @@
 #ifndef rtkDisplacedDetectorImageFilter_h
 #define rtkDisplacedDetectorImageFilter_h
 
-#include <itkInPlaceImageFilter.h>
-#include "rtkThreeDCircularProjectionGeometry.h"
 #include "rtkConfiguration.h"
+#include "rtkThreeDCircularProjectionGeometry.h"
+#include <itkInPlaceImageFilter.h>
 
 namespace rtk
 {

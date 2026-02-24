@@ -20,8 +20,8 @@
 #define rtkBoxShape_h
 
 #include "RTKExport.h"
-#include "rtkMacro.h"
 #include "rtkConvexShape.h"
+#include "rtkMacro.h"
 
 #include <itkImageBase.h>
 

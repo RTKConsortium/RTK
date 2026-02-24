@@ -1,10 +1,10 @@
 #include "itkRandomImageSource.h"
+#include "itkImageFileReader.h"
+#include "rtkConstantImageSource.h"
+#include "rtkDrawSheppLoganFilter.h"
 #include "rtkLaplacianImageFilter.h"
 #include "rtkMacro.h"
 #include "rtkTest.h"
-#include "rtkDrawSheppLoganFilter.h"
-#include "itkImageFileReader.h"
-#include "rtkConstantImageSource.h"
 
 #ifdef USE_CUDA
 #  include "rtkCudaLaplacianImageFilter.h"

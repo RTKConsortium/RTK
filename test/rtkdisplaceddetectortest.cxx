@@ -1,10 +1,10 @@
 #include <itkImageRegionConstIterator.h>
 
-#include "rtkTest.h"
-#include "rtkSheppLoganPhantomFilter.h"
+#include "rtkConstantImageSource.h"
 #include "rtkDrawSheppLoganFilter.h"
 #include "rtkFDKConeBeamReconstructionFilter.h"
-#include "rtkConstantImageSource.h"
+#include "rtkSheppLoganPhantomFilter.h"
+#include "rtkTest.h"
 #ifdef USE_CUDA
 #  include "rtkCudaDisplacedDetectorImageFilter.h"
 #else

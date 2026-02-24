@@ -1,9 +1,9 @@
 #include <itkImageRegionConstIterator.h>
 #include <itkRandomImageSource.h>
 
-#include "rtkTestConfiguration.h"
 #include "rtkDeconstructSoftThresholdReconstructImageFilter.h"
 #include "rtkMacro.h"
+#include "rtkTestConfiguration.h"
 
 template <class TImage>
 #if FAST_TESTS_NO_CHECKS

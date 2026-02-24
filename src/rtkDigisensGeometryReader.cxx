@@ -19,9 +19,9 @@
 #include "rtkDigisensGeometryReader.h"
 #include "rtkDigisensGeometryXMLFileReader.h"
 
+#include <itkCenteredEuler3DTransform.h>
 #include <itkMetaDataObject.h>
 #include <itkVersor.h>
-#include <itkCenteredEuler3DTransform.h>
 
 rtk::DigisensGeometryReader ::DigisensGeometryReader() = default;
 

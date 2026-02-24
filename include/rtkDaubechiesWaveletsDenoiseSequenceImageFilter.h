@@ -21,10 +21,10 @@
 
 #include "rtkConstantImageSource.h"
 
+#include "rtkDeconstructSoftThresholdReconstructImageFilter.h"
+#include <itkCastImageFilter.h>
 #include <itkExtractImageFilter.h>
 #include <itkPasteImageFilter.h>
-#include <itkCastImageFilter.h>
-#include "rtkDeconstructSoftThresholdReconstructImageFilter.h"
 
 namespace rtk
 {

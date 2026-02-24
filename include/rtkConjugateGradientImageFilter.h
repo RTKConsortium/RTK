@@ -19,15 +19,15 @@
 #ifndef rtkConjugateGradientImageFilter_h
 #define rtkConjugateGradientImageFilter_h
 
-#include <itkSubtractImageFilter.h>
 #include <itkStatisticsImageFilter.h>
+#include <itkSubtractImageFilter.h>
 #include <itkTimeProbe.h>
 
 #include "rtkSumOfSquaresImageFilter.h"
 
+#include "rtkConjugateGradientGetP_kPlusOneImageFilter.h"
 #include "rtkConjugateGradientGetR_kPlusOneImageFilter.h"
 #include "rtkConjugateGradientGetX_kPlusOneImageFilter.h"
-#include "rtkConjugateGradientGetP_kPlusOneImageFilter.h"
 #include "rtkConjugateGradientOperator.h"
 
 namespace rtk

@@ -19,11 +19,11 @@
 #include "rtkImagXImageIO.h"
 #include "rtkImagXXMLFileReader.h"
 
-#include <itksys/SystemTools.hxx>
-#include <itkMetaDataObject.h>
-#include <itkMatrix.h>
 #include <itkByteSwapper.h>
+#include <itkMatrix.h>
+#include <itkMetaDataObject.h>
 #include <itkRawImageIO.h>
+#include <itksys/SystemTools.hxx>
 
 //--------------------------------------------------------------------
 // Read Image Information

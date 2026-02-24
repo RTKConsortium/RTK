@@ -18,10 +18,11 @@
 
 #include "rtkcheckimagequality_ggo.h"
 #include "rtkConfiguration.h"
-#include "rtkMacro.h"
+
 #include "itkImage.h"
 #include "itkImageFileReader.h"
 #include "itkImageRegionConstIterator.h"
+#include "rtkMacro.h"
 
 namespace rtk
 {

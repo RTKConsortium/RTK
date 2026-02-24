@@ -19,9 +19,9 @@
 #include "rtkprojectgeometricphantom_ggo.h"
 #include "rtkGgoFunctions.h"
 
-#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
-#include "rtkRayEllipsoidIntersectionImageFilter.h"
 #include "rtkProjectGeometricPhantomImageFilter.h"
+#include "rtkRayEllipsoidIntersectionImageFilter.h"
+#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 
 #include <itkImageFileWriter.h>
 

@@ -18,8 +18,8 @@
 
 #include "rtkSignalToInterpolationWeights.h"
 
-#include <itksys/SystemTools.hxx>
 #include <itkMath.h>
+#include <itksys/SystemTools.hxx>
 
 namespace rtk
 {

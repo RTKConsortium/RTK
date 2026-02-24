@@ -20,17 +20,17 @@
 #define rtkProjectionsReader_h
 
 // ITK
-#include <itkImageSource.h>
 #include <itkImageIOFactory.h>
+#include <itkImageSource.h>
 #include <itkStreamingImageFilter.h>
 
 // RTK
-#include "rtkWaterPrecorrectionImageFilter.h"
 #include "rtkConditionalMedianImageFilter.h"
+#include "rtkWaterPrecorrectionImageFilter.h"
 
 // Standard lib
-#include <vector>
 #include <string>
+#include <vector>
 
 namespace rtk
 {

@@ -24,8 +24,8 @@
 
 #include <cmath>
 
-#include <itkMacro.h>
 #include <itkImageFileWriter.h>
+#include <itkMacro.h>
 #include <itkMath.h>
 
 namespace rtk

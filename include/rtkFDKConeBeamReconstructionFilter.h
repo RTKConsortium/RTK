@@ -20,9 +20,9 @@
 #define rtkFDKConeBeamReconstructionFilter_h
 
 #include "rtkFDKWeightProjectionFilter.h"
-#include "rtkFFTRampImageFilter.h"
-#include "rtkFDKBackProjectionImageFilter.h"
 #include "rtkConfiguration.h"
+#include "rtkFDKBackProjectionImageFilter.h"
+#include "rtkFFTRampImageFilter.h"
 
 #include <itkExtractImageFilter.h>
 

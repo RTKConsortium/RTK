@@ -20,8 +20,8 @@
 #define rtkHncImageIO_h
 
 // itk include
-#include <itkImageIOBase.h>
 #include "itksys/SystemTools.hxx"
+#include <itkImageIOBase.h>
 
 #if defined(_MSC_VER) && (_MSC_VER < 1600)
 // SR: taken from
