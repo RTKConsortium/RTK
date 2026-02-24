@@ -139,8 +139,8 @@ private:
   size_t
   SetPropertyValue(char * property_name, Int4 value_length, FILE * fp, Xim_header * xim);
 
-  int  m_ImageDataStart;
-  Int4 m_BytesPerPixel;
+  int  m_ImageDataStart{};
+  Int4 m_BytesPerPixel{};
 
 }; // end class XimImageIO
 

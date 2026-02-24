@@ -126,9 +126,9 @@ private:
   std::ifstream m_Stream;
 
   /** Global properties of a dbf file */
-  unsigned int   m_NumRecords;
-  unsigned short m_RecordSize;
-  unsigned short m_HeaderSize;
+  unsigned int   m_NumRecords{};
+  unsigned short m_RecordSize{};
+  unsigned short m_HeaderSize{};
 
   /** Set of fields described in the header */
   std::vector<DbfField> m_Fields;
