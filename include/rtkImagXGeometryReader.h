@@ -116,12 +116,12 @@ private:
   // Structure containing the flexmap (for AI versions >= 2.0)
   struct FlexmapType
   {
-    bool               isValid;
+    bool               isValid{};
     std::string        activeArcName;
     std::string        activeGeocalUID;
-    float              sid, sdd, sourceToNozzleOffsetAngle;
-    float              constantDetectorOffset, xMinus, xPlus;
-    bool               isCW;
+    float              sid{}, sdd{}, sourceToNozzleOffsetAngle{};
+    float              constantDetectorOffset{}, xMinus{}, xPlus{};
+    bool               isCW{};
     std::vector<float> anglesDeg;  // Gantry angles [deg]
     std::vector<float> Px, Py, Pz, // Detector translations
       Rx, Ry, Rz,                  // Detector rotations
@@ -143,8 +143,8 @@ private:
   // Structure containing the calibration models (for AI versions < 2.0)
   struct CalibrationModelType
   {
-    bool               isValid;
-    float              sid, sdd, sourceToNozzleOffsetAngle;
+    bool               isValid{};
+    float              sid{}, sdd{}, sourceToNozzleOffsetAngle;
     std::vector<float> Px, Py, Pz, // Detector translations model
       Rx, Ry, Rz,                  // Detector rotations model
       Tx, Ty, Tz;                  // Source translations model

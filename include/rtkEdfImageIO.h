@@ -83,7 +83,7 @@ public:
 
 protected:
   std::string m_BinaryFileName;
-  int         m_BinaryFileSkip;
+  int         m_BinaryFileSkip{};
 
   static char *
   edf_findInHeader(char * header, const char * key);

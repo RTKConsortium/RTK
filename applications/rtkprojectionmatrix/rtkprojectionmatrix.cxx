@@ -77,8 +77,8 @@ public:
 
 private:
   vnl_sparse_matrix<double> m_SystemMatrix;
-  TInput *                  m_ProjectionsBuffer;
-  TOutput *                 m_VolumeBuffer;
+  TInput *                  m_ProjectionsBuffer{};
+  TOutput *                 m_VolumeBuffer{};
 };
 } // namespace Functor
 } // namespace rtk

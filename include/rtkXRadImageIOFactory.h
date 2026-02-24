@@ -77,7 +77,7 @@ protected:
   ~XRadImageIOFactory() override = default;
 
   using myProductType = XRadImageIOFactory;
-  const myProductType * m_MyProduct;
+  const myProductType * m_MyProduct{};
 };
 
 } // namespace rtk

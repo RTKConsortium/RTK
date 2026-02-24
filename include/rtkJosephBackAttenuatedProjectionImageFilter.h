@@ -75,7 +75,7 @@ public:
   }
 
 private:
-  std::ptrdiff_t m_AttenuationMinusEmissionMapsPtrDiff;
+  std::ptrdiff_t m_AttenuationMinusEmissionMapsPtrDiff{};
   TInput         m_AttenuationPixel;
 };
 
