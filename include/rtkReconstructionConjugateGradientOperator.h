@@ -19,18 +19,18 @@
 #ifndef rtkReconstructionConjugateGradientOperator_h
 #define rtkReconstructionConjugateGradientOperator_h
 
-#include <itkMultiplyImageFilter.h>
 #include <itkAddImageFilter.h>
+#include <itkMultiplyImageFilter.h>
 
 #include "rtkConstantImageSource.h"
 
-#include "rtkConjugateGradientOperator.h"
 #include "rtkBackProjectionImageFilter.h"
+#include "rtkConjugateGradientOperator.h"
 #include "rtkForwardProjectionImageFilter.h"
 
-#include "rtkThreeDCircularProjectionGeometry.h"
-#include "rtkLaplacianImageFilter.h"
 #include "rtkBlockDiagonalMatrixVectorMultiplyImageFilter.h"
+#include "rtkLaplacianImageFilter.h"
+#include "rtkThreeDCircularProjectionGeometry.h"
 
 #ifdef RTK_USE_CUDA
 #  include "rtkCudaConstantVolumeSource.h"

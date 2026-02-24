@@ -20,8 +20,8 @@
 #define rtkDigisensGeometryXMLFileReader_h
 
 #include "RTKExport.h"
-#include <itkXMLFile.h>
 #include <itkMetaDataDictionary.h>
+#include <itkXMLFile.h>
 
 #include "rtkMacro.h"
 

@@ -17,13 +17,13 @@
  *=========================================================================*/
 
 #include "rtkfourdsart_ggo.h"
-#include "rtkGgoFunctions.h"
 #include "rtkGeneralPurposeFunctions.h"
+#include "rtkGgoFunctions.h"
 
-#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
+#include "rtkDisplacedDetectorImageFilter.h"
 #include "rtkFourDSARTConeBeamReconstructionFilter.h"
 #include "rtkPhasesToInterpolationWeights.h"
-#include "rtkDisplacedDetectorImageFilter.h"
+#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 
 #ifdef RTK_USE_CUDA
 #  include "itkCudaImage.h"

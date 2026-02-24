@@ -17,8 +17,8 @@
  *=========================================================================*/
 
 #include "rtktotalnuclearvariationdenoising_ggo.h"
-#include "rtkGgoFunctions.h"
 #include "rtkConfiguration.h"
+#include "rtkGgoFunctions.h"
 
 #include "rtkTotalNuclearVariationDenoisingBPDQImageFilter.h"
 

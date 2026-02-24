@@ -19,9 +19,9 @@
 #ifndef rtkTotalVariationImageFilter_h
 #define rtkTotalVariationImageFilter_h
 
+#include <itkArray.h>
 #include <itkImageToImageFilter.h>
 #include <itkNumericTraits.h>
-#include <itkArray.h>
 #include <itkSimpleDataObjectDecorator.h>
 
 #include "rtkMacro.h"

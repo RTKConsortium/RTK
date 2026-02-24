@@ -18,18 +18,18 @@
 #ifndef rtkProjectionStackToFourDImageFilter_h
 #define rtkProjectionStackToFourDImageFilter_h
 
-#include <itkExtractImageFilter.h>
 #include <itkArray2D.h>
+#include <itkExtractImageFilter.h>
 
 #include "rtkBackProjectionImageFilter.h"
-#include "rtkSplatWithKnownWeightsImageFilter.h"
 #include "rtkConstantImageSource.h"
+#include "rtkSplatWithKnownWeightsImageFilter.h"
 #include "rtkThreeDCircularProjectionGeometry.h"
 
 #ifdef RTK_USE_CUDA
-#  include "rtkCudaSplatImageFilter.h"
-#  include "rtkCudaConstantVolumeSource.h"
 #  include "rtkCudaConstantVolumeSeriesSource.h"
+#  include "rtkCudaConstantVolumeSource.h"
+#  include "rtkCudaSplatImageFilter.h"
 #endif
 
 namespace rtk

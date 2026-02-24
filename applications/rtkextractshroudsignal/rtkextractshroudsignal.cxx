@@ -20,11 +20,11 @@
 #include "rtkMacro.h"
 
 #include "rtkDPExtractShroudSignalImageFilter.h"
-#include "rtkReg1DExtractShroudSignalImageFilter.h"
 #include "rtkExtractPhaseImageFilter.h"
+#include "rtkReg1DExtractShroudSignalImageFilter.h"
 
-#include <itkImageFileReader.h>
 #include <fstream>
+#include <itkImageFileReader.h>
 
 namespace rtk
 {

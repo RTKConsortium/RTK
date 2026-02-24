@@ -18,9 +18,9 @@
 
 #include "rtkDigisensGeometryXMLFileReader.h"
 
-#include <itksys/SystemTools.hxx>
 #include <itkMetaDataObject.h>
 #include <itkVector.h>
+#include <itksys/SystemTools.hxx>
 
 namespace rtk
 {

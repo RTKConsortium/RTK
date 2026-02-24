@@ -19,8 +19,8 @@
 #ifndef rtkBoellaardScatterCorrectionImageFilter_h
 #define rtkBoellaardScatterCorrectionImageFilter_h
 
-#include <itkInPlaceImageFilter.h>
 #include "rtkConfiguration.h"
+#include <itkInPlaceImageFilter.h>
 
 namespace rtk
 {

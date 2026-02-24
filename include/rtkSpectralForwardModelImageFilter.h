@@ -22,9 +22,9 @@
 #include "rtkSchlomka2008NegativeLogLikelihood.h"
 #include "rtkVectorImageToImageFilter.h"
 
-#include <itkPermuteAxesImageFilter.h>
-#include <itkInPlaceImageFilter.h>
 #include <itkCastImageFilter.h>
+#include <itkInPlaceImageFilter.h>
+#include <itkPermuteAxesImageFilter.h>
 
 namespace rtk
 {

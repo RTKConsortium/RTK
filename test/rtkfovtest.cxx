@@ -1,11 +1,11 @@
-#include <itkImageRegionConstIterator.h>
 #include <itkBinaryThresholdImageFilter.h>
+#include <itkImageRegionConstIterator.h>
 
-#include "rtkTest.h"
-#include "rtkMacro.h"
-#include "rtkFieldOfViewImageFilter.h"
-#include "rtkConstantImageSource.h"
 #include "rtkBackProjectionImageFilter.h"
+#include "rtkConstantImageSource.h"
+#include "rtkFieldOfViewImageFilter.h"
+#include "rtkMacro.h"
+#include "rtkTest.h"
 
 /**
  * \file rtkfovtest.cxx

@@ -19,13 +19,13 @@
 #ifndef rtkDePierroRegularizationImageFilter_h
 #define rtkDePierroRegularizationImageFilter_h
 
-#include <itkMultiplyImageFilter.h>
-#include <itkSubtractImageFilter.h>
+#include "rtkConstantImageSource.h"
+#include <itkConstantBoundaryCondition.h>
 #include <itkDivideImageFilter.h>
 #include <itkImageKernelOperator.h>
+#include <itkMultiplyImageFilter.h>
 #include <itkNeighborhoodOperatorImageFilter.h>
-#include <itkConstantBoundaryCondition.h>
-#include "rtkConstantImageSource.h"
+#include <itkSubtractImageFilter.h>
 
 namespace rtk
 {

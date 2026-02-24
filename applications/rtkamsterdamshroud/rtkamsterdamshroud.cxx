@@ -19,9 +19,9 @@
 #include "rtkamsterdamshroud_ggo.h"
 #include "rtkMacro.h"
 
-#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkAmsterdamShroudImageFilter.h"
 #include "rtkGgoFunctions.h"
+#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 
 #include <itkImageFileWriter.h>
 

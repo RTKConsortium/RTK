@@ -21,8 +21,8 @@
 
 #include "RTKExport.h"
 #include "rtkConfiguration.h"
-#include <itkTimeProbe.h>
 #include <itkMemoryProbe.h>
+#include <itkTimeProbe.h>
 
 #ifdef RTK_USE_CUDA
 #  include <itkCudaMemoryProbe.h>

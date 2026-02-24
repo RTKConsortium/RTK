@@ -17,8 +17,8 @@
  *=========================================================================*/
 
 #include "rtkXRadImageIO.h"
-#include <itkMetaDataObject.h>
 #include <itkByteSwapper.h>
+#include <itkMetaDataObject.h>
 #include <itkRawImageIO.h>
 
 //--------------------------------------------------------------------

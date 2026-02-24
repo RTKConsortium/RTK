@@ -19,18 +19,18 @@
 #ifndef rtkADMMTotalVariationConeBeamReconstructionFilter_h
 #define rtkADMMTotalVariationConeBeamReconstructionFilter_h
 
-#include <itkImageToImageFilter.h>
 #include <itkAddImageFilter.h>
-#include <itkSubtractImageFilter.h>
+#include <itkImageToImageFilter.h>
 #include <itkMultiplyImageFilter.h>
+#include <itkSubtractImageFilter.h>
 
-#include "rtkConjugateGradientImageFilter.h"
-#include "rtkSoftThresholdTVImageFilter.h"
 #include "rtkADMMTotalVariationConjugateGradientOperator.h"
-#include "rtkIterativeConeBeamReconstructionFilter.h"
-#include "rtkThreeDCircularProjectionGeometry.h"
+#include "rtkConjugateGradientImageFilter.h"
 #include "rtkDisplacedDetectorImageFilter.h"
+#include "rtkIterativeConeBeamReconstructionFilter.h"
 #include "rtkMultiplyByVectorImageFilter.h"
+#include "rtkSoftThresholdTVImageFilter.h"
+#include "rtkThreeDCircularProjectionGeometry.h"
 
 namespace rtk
 {

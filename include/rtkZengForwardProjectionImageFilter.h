@@ -24,17 +24,17 @@
 #include "rtkMacro.h"
 #include <itkPixelTraits.h>
 
-#include <itkMultiplyImageFilter.h>
 #include <itkAddImageFilter.h>
-#include <itkDiscreteGaussianImageFilter.h>
-#include <itkPasteImageFilter.h>
-#include <itkResampleImageFilter.h>
-#include <itkVector.h>
 #include <itkCenteredEuler3DTransform.h>
 #include <itkChangeInformationImageFilter.h>
-#include <itkRegionOfInterestImageFilter.h>
 #include <itkConstantBoundaryCondition.h>
+#include <itkDiscreteGaussianImageFilter.h>
+#include <itkMultiplyImageFilter.h>
+#include <itkPasteImageFilter.h>
+#include <itkRegionOfInterestImageFilter.h>
+#include <itkResampleImageFilter.h>
 #include <itkUnaryGeneratorImageFilter.h>
+#include <itkVector.h>
 
 #include <itkVectorImage.h>
 namespace rtk

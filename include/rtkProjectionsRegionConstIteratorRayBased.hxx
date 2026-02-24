@@ -19,10 +19,10 @@
 #define rtkProjectionsRegionConstIteratorRayBased_hxx
 
 #include "rtkProjectionsRegionConstIteratorRayBasedParallel.h"
-#include "rtkProjectionsRegionConstIteratorRayBasedWithFlatPanel.h"
-#include "rtkProjectionsRegionConstIteratorRayBasedWithCylindricalPanel.h"
 #include "rtkHomogeneousMatrix.h"
 #include "rtkMacro.h"
+#include "rtkProjectionsRegionConstIteratorRayBasedWithCylindricalPanel.h"
+#include "rtkProjectionsRegionConstIteratorRayBasedWithFlatPanel.h"
 
 namespace rtk
 {

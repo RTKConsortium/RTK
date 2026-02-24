@@ -19,10 +19,10 @@
 #ifndef rtkConvexShape_h
 #define rtkConvexShape_h
 
-#include <itkMatrix.h>
-#include <itkPoint.h>
 #include <itkDataObject.h>
+#include <itkMatrix.h>
 #include <itkObjectFactory.h>
+#include <itkPoint.h>
 
 #include "RTKExport.h"
 #include "rtkMacro.h"

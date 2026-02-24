@@ -18,10 +18,10 @@
 #ifndef rtkSubSelectImageFilter_h
 #define rtkSubSelectImageFilter_h
 
-#include <itkPasteImageFilter.h>
-#include <itkExtractImageFilter.h>
 #include "rtkConstantImageSource.h"
 #include "rtkThreeDCircularProjectionGeometry.h"
+#include <itkExtractImageFilter.h>
+#include <itkPasteImageFilter.h>
 
 namespace rtk
 {

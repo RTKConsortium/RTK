@@ -25,9 +25,9 @@ enum
 // from the 20090608)
 
 // Includes
-#include <fstream>
 #include "rtkHisImageIO.h"
 #include "rtkMacro.h"
+#include <fstream>
 
 //--------------------------------------------------------------------
 // Read Image Information

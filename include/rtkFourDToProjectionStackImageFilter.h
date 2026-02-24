@@ -19,12 +19,12 @@
 #define rtkFourDToProjectionStackImageFilter_h
 
 #include <itkExtractImageFilter.h>
-#include <itkPasteImageFilter.h>
 #include <itkMultiplyImageFilter.h>
+#include <itkPasteImageFilter.h>
 
 #include "rtkConstantImageSource.h"
-#include "rtkInterpolatorWithKnownWeightsImageFilter.h"
 #include "rtkForwardProjectionImageFilter.h"
+#include "rtkInterpolatorWithKnownWeightsImageFilter.h"
 
 namespace rtk
 {

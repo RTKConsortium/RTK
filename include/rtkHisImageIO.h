@@ -20,9 +20,9 @@
 #define rtkHisImageIO_h
 
 // itk include
-#include <itkImageIOBase.h>
 #include "RTKExport.h"
 #include "rtkMacro.h"
+#include <itkImageIOBase.h>
 
 namespace rtk
 {

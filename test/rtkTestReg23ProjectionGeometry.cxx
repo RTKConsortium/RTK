@@ -1,14 +1,14 @@
 //
 // std
+#include <cmath>
 #include <cstdlib>
 #include <iostream>
 #include <vector>
-#include <cmath>
 // ITK
-#include <itkMersenneTwisterRandomVariateGenerator.h>
 #include <itkEuler3DTransform.h>
-#include <itkVector.h>
+#include <itkMersenneTwisterRandomVariateGenerator.h>
 #include <itkPoint.h>
+#include <itkVector.h>
 // RTK/ORA
 
 #include "rtkReg23ProjectionGeometry.h"

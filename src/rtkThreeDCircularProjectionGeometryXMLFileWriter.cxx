@@ -22,9 +22,9 @@
 #include "rtkThreeDCircularProjectionGeometryXMLFileReader.h"
 #include "rtkThreeDCircularProjectionGeometryXMLFileWriter.h"
 
-#include <itksys/SystemTools.hxx>
-#include <itkMetaDataObject.h>
 #include <itkIOCommon.h>
+#include <itkMetaDataObject.h>
+#include <itksys/SystemTools.hxx>
 
 #include <iomanip>
 

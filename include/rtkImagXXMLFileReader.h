@@ -23,8 +23,8 @@
 #  pragma warning(disable : 4786)
 #endif
 
-#include <itkXMLFile.h>
 #include <itkMetaDataDictionary.h>
+#include <itkXMLFile.h>
 
 #include <map>
 

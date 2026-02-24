@@ -1,6 +1,6 @@
 #include "rtkTest.h"
-#include "rtkMacro.h"
 #include "rtkLUTbasedVariableI0RawToAttenuationImageFilter.h"
+#include "rtkMacro.h"
 #include <itkImageRegionIterator.h>
 
 /**

@@ -24,8 +24,8 @@
 #endif
 
 #include "RTKExport.h"
-#include <itkXMLFile.h>
 #include "rtkThreeDCircularProjectionGeometry.h"
+#include <itkXMLFile.h>
 
 namespace rtk
 {

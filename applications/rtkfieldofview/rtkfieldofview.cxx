@@ -17,21 +17,21 @@
  *=========================================================================*/
 
 #include "rtkfieldofview_ggo.h"
-#include "rtkGgoFunctions.h"
-#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
-#include "rtkRayEllipsoidIntersectionImageFilter.h"
-#include "rtkFieldOfViewImageFilter.h"
-#include "rtkConstantImageSource.h"
 #include "rtkBackProjectionImageFilter.h"
+#include "rtkConstantImageSource.h"
+#include "rtkFieldOfViewImageFilter.h"
+#include "rtkGgoFunctions.h"
+#include "rtkRayEllipsoidIntersectionImageFilter.h"
+#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #ifdef RTK_USE_CUDA
 #  include "rtkCudaBackProjectionImageFilter.h"
 #endif
 
+#include <itkDivideImageFilter.h>
 #include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>
-#include <itkThresholdImageFilter.h>
-#include <itkDivideImageFilter.h>
 #include <itkMaskImageFilter.h>
+#include <itkThresholdImageFilter.h>
 
 int
 main(int argc, char * argv[])

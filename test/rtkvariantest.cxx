@@ -1,8 +1,8 @@
 #include "rtkTest.h"
-#include "rtkProjectionsReader.h"
 #include "rtkMacro.h"
-#include "rtkVarianObiGeometryReader.h"
+#include "rtkProjectionsReader.h"
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
+#include "rtkVarianObiGeometryReader.h"
 #include "rtkVarianProBeamGeometryReader.h"
 
 #include <itkRegularExpressionSeriesFileNames.h>

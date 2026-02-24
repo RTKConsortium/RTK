@@ -19,9 +19,9 @@
 #ifndef rtkImagXImageIO_h
 #define rtkImagXImageIO_h
 
-#include <itkImageIOBase.h>
-#include <fstream>
 #include <cstring>
+#include <fstream>
+#include <itkImageIOBase.h>
 
 #include "RTKExport.h"
 #include "rtkMacro.h"
