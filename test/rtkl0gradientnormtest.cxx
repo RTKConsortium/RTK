@@ -1,11 +1,11 @@
+#include <itkJoinSeriesImageFilter.h>
 #include <itkPasteImageFilter.h>
 #include <itksys/SystemTools.hxx>
 #include <utility>
-#include <itkJoinSeriesImageFilter.h>
 
+#include "rtkLastDimensionL0GradientDenoisingImageFilter.h"
 #include "rtkTest.h"
 #include <itkImageRegionIteratorWithIndex.h>
-#include "rtkLastDimensionL0GradientDenoisingImageFilter.h"
 
 /**
  * \file rtkl0gradientnormtest.cxx

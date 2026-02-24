@@ -1,9 +1,9 @@
 #include "itkRandomImageSource.h"
 #include <cmath>
 
-#include "rtkTotalVariationImageFilter.h"
-#include "rtkTotalVariationDenoisingBPDQImageFilter.h"
 #include "rtkMacro.h"
+#include "rtkTotalVariationDenoisingBPDQImageFilter.h"
+#include "rtkTotalVariationImageFilter.h"
 
 template <class TImage>
 void

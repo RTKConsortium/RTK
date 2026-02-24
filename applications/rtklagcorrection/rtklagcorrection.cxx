@@ -18,8 +18,8 @@
 
 #include "rtklagcorrection_ggo.h"
 
-#include "rtkGgoFunctions.h"
 #include "rtkConfiguration.h"
+#include "rtkGgoFunctions.h"
 
 #ifdef RTK_USE_CUDA
 #  include "rtkCudaLagCorrectionImageFilter.h"

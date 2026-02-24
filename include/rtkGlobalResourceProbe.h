@@ -18,10 +18,10 @@
 #ifndef rtkGlobalResourceProbe_h
 #define rtkGlobalResourceProbe_h
 
-#include <itkProcessObject.h>
+#include "RTKExport.h"
 #include "rtkResourceProbesCollector.h"
 #include "rtkWatcherForResourceProbe.h"
-#include "RTKExport.h"
+#include <itkProcessObject.h>
 #include <mutex>
 
 namespace rtk

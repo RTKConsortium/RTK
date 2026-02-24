@@ -17,9 +17,9 @@
  *=========================================================================*/
 
 #include "rtkEdfImageIO.h"
-#include <itk_zlib.h>
 #include <itkByteSwapper.h>
 #include <itkRawImageIO.h>
+#include <itk_zlib.h>
 
 //--------------------------------------------------------------------
 /* Find value_ptr as pointer to the parameter of the given key in the header.

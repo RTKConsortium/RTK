@@ -20,9 +20,9 @@
 #define rtkDrawConvexImageFilter_h
 
 
-#include <itkInPlaceImageFilter.h>
 #include "rtkConvexShape.h"
 #include "rtkMacro.h"
+#include <itkInPlaceImageFilter.h>
 
 namespace rtk
 {

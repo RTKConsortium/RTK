@@ -24,8 +24,8 @@
 #ifdef RTK_USE_CUDA
 
 #  include "rtkCudaBackProjectionImageFilter.h"
-#  include "rtkCudaUtilities.hcu"
 #  include "rtkCudaBackProjectionImageFilter.hcu"
+#  include "rtkCudaUtilities.hcu"
 
 #  include <itkImageRegionConstIterator.h>
 #  include <itkImageRegionIteratorWithIndex.h>

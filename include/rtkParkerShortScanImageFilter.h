@@ -21,8 +21,8 @@
 
 #include <itkInPlaceImageFilter.h>
 
-#include "rtkThreeDCircularProjectionGeometry.h"
 #include "rtkConfiguration.h"
+#include "rtkThreeDCircularProjectionGeometry.h"
 
 namespace rtk
 {

@@ -19,13 +19,13 @@
 #ifndef rtkADMMWaveletsConjugateGradientOperator_h
 #define rtkADMMWaveletsConjugateGradientOperator_h
 
-#include <itkMultiplyImageFilter.h>
 #include <itkAddImageFilter.h>
+#include <itkMultiplyImageFilter.h>
 
-#include "rtkConjugateGradientOperator.h"
 #include "rtkBackProjectionImageFilter.h"
-#include "rtkForwardProjectionImageFilter.h"
+#include "rtkConjugateGradientOperator.h"
 #include "rtkDisplacedDetectorImageFilter.h"
+#include "rtkForwardProjectionImageFilter.h"
 
 #include "rtkThreeDCircularProjectionGeometry.h"
 

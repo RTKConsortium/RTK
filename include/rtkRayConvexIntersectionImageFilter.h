@@ -19,10 +19,10 @@
 #ifndef rtkRayConvexIntersectionImageFilter_h
 #define rtkRayConvexIntersectionImageFilter_h
 
-#include <itkInPlaceImageFilter.h>
 #include "rtkConfiguration.h"
-#include "rtkThreeDCircularProjectionGeometry.h"
 #include "rtkConvexShape.h"
+#include "rtkThreeDCircularProjectionGeometry.h"
+#include <itkInPlaceImageFilter.h>
 
 namespace rtk
 {

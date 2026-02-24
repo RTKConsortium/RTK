@@ -19,13 +19,13 @@
 #include "rtkoverlayphaseandshroud_ggo.h"
 #include "rtkMacro.h"
 
+#include <itkCSVArray2DFileReader.h>
 #include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>
-#include <itkCSVArray2DFileReader.h>
-#include <itkRGBPixel.h>
 #include <itkImageRegionConstIterator.h>
 #include <itkImageRegionIteratorWithIndex.h>
 #include <itkNumericTraits.h>
+#include <itkRGBPixel.h>
 
 #include <fstream>
 

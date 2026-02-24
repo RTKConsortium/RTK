@@ -17,8 +17,8 @@
  *=========================================================================*/
 
 #include "rtkCudaCropImageFilter.h"
-#include "rtkCudaUtilities.hcu"
 #include "rtkCudaCropImageFilter.hcu"
+#include "rtkCudaUtilities.hcu"
 
 #include <itkMacro.h>
 

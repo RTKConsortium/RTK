@@ -19,9 +19,9 @@
 #ifndef rtkVarianObiRawImageFilter_h
 #define rtkVarianObiRawImageFilter_h
 
-#include <itkUnaryFunctorImageFilter.h>
 #include <itkConceptChecking.h>
 #include <itkNumericTraits.h>
+#include <itkUnaryFunctorImageFilter.h>
 
 #include "rtkMacro.h"
 

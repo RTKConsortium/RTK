@@ -20,9 +20,9 @@
 #define rtkUnwarpSequenceImageFilter_h
 
 #include "rtkConjugateGradientImageFilter.h"
+#include "rtkConstantImageSource.h"
 #include "rtkUnwarpSequenceConjugateGradientOperator.h"
 #include "rtkWarpSequenceImageFilter.h"
-#include "rtkConstantImageSource.h"
 
 #ifdef RTK_USE_CUDA
 #  include "rtkCudaConjugateGradientImageFilter.h"

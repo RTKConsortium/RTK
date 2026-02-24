@@ -17,8 +17,8 @@
  *=========================================================================*/
 
 #include "rtkprojections_ggo.h"
-#include "rtkMacro.h"
 #include "rtkGgoFunctions.h"
+#include "rtkMacro.h"
 
 #include <itkImageFileWriter.h>
 

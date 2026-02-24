@@ -19,9 +19,9 @@
 #ifndef rtkDrawGeometricPhantomImageFilter_h
 #define rtkDrawGeometricPhantomImageFilter_h
 
-#include <itkInPlaceImageFilter.h>
-#include <itkAddImageFilter.h>
 #include "rtkGeometricPhantom.h"
+#include <itkAddImageFilter.h>
+#include <itkInPlaceImageFilter.h>
 
 namespace rtk
 {

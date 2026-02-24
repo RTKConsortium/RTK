@@ -23,13 +23,13 @@
 // Conditional definition of the class to pass ITKHeaderTest
 #ifdef RTK_USE_CUDA
 
-#  include "rtkCudaWeidingerForwardModelImageFilter.h"
 #  include "rtkCudaUtilities.hcu"
+#  include "rtkCudaWeidingerForwardModelImageFilter.h"
 #  include "rtkCudaWeidingerForwardModelImageFilter.hcu"
 
-#  include <itkMacro.h>
-#  include "rtkMacro.h"
 #  include "itkCudaUtil.h"
+#  include "rtkMacro.h"
+#  include <itkMacro.h>
 
 namespace rtk
 {

@@ -17,10 +17,10 @@
  *=========================================================================*/
 
 #include "rtkdrawgeometricphantom_ggo.h"
-#include "rtkGgoFunctions.h"
-#include "rtkDrawGeometricPhantomImageFilter.h"
 #include "itkImageFileWriter.h"
 #include "rtkAdditiveGaussianNoiseImageFilter.h"
+#include "rtkDrawGeometricPhantomImageFilter.h"
+#include "rtkGgoFunctions.h"
 
 
 int

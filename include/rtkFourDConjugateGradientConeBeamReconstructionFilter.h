@@ -20,17 +20,17 @@
 #define rtkFourDConjugateGradientConeBeamReconstructionFilter_h
 
 #include "rtkBackProjectionImageFilter.h"
-#include "rtkForwardProjectionImageFilter.h"
-#include "rtkIterativeConeBeamReconstructionFilter.h"
 #include "rtkConjugateGradientImageFilter.h"
-#include "rtkFourDReconstructionConjugateGradientOperator.h"
-#include "rtkProjectionStackToFourDImageFilter.h"
 #include "rtkDisplacedDetectorImageFilter.h"
+#include "rtkForwardProjectionImageFilter.h"
+#include "rtkFourDReconstructionConjugateGradientOperator.h"
+#include "rtkIterativeConeBeamReconstructionFilter.h"
+#include "rtkProjectionStackToFourDImageFilter.h"
 
 #include <itkExtractImageFilter.h>
-#include <itkSubtractImageFilter.h>
-#include <itkMultiplyImageFilter.h>
 #include <itkIterationReporter.h>
+#include <itkMultiplyImageFilter.h>
+#include <itkSubtractImageFilter.h>
 #ifdef RTK_USE_CUDA
 #  include "rtkCudaConjugateGradientImageFilter.h"
 #endif

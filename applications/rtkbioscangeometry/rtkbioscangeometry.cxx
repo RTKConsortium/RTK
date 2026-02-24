@@ -17,8 +17,8 @@
  *=========================================================================*/
 
 #include "rtkbioscangeometry_ggo.h"
-#include "rtkGgoFunctions.h"
 #include "rtkBioscanGeometryReader.h"
+#include "rtkGgoFunctions.h"
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 
 int

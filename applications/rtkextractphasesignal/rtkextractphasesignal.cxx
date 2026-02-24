@@ -21,8 +21,8 @@
 
 #include "rtkExtractPhaseImageFilter.h"
 
-#include <itkImageFileReader.h>
 #include <fstream>
+#include <itkImageFileReader.h>
 
 namespace rtk
 {

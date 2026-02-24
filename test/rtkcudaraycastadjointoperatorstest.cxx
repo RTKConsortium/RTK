@@ -1,9 +1,9 @@
 #include "rtkMacro.h"
-#include "rtkTest.h"
 #include "itkRandomImageSource.h"
 #include "rtkConstantImageSource.h"
-#include "rtkCudaRayCastBackProjectionImageFilter.h"
 #include "rtkCudaForwardProjectionImageFilter.h"
+#include "rtkCudaRayCastBackProjectionImageFilter.h"
+#include "rtkTest.h"
 
 /**
  * \file rtkcudaraycastadjointoperatorstest.cxx

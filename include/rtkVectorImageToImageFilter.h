@@ -20,8 +20,8 @@
 
 #include "rtkMacro.h"
 
-#include <itkImageToImageFilter.h>
 #include <itkImageRegionSplitterDirection.h>
+#include <itkImageToImageFilter.h>
 
 namespace rtk
 {

@@ -20,20 +20,20 @@
 #include "rtkGgoFunctions.h"
 
 #include "rtkFourDROOSTERConeBeamReconstructionFilter.h"
-#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
-#include "rtkSignalToInterpolationWeights.h"
-#include "rtkVectorImageToImageFilter.h"
 #include "rtkImageToVectorImageFilter.h"
+#include "rtkSignalToInterpolationWeights.h"
+#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
+#include "rtkVectorImageToImageFilter.h"
 
 #ifdef RTK_USE_CUDA
 #  include "itkCudaImage.h"
 #  include "rtkCudaConstantVolumeSeriesSource.h"
 #endif
 
-#include <itkImageRegionConstIterator.h>
-#include <itkImageRegionIterator.h>
 #include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>
+#include <itkImageRegionConstIterator.h>
+#include <itkImageRegionIterator.h>
 
 int
 main(int argc, char * argv[])

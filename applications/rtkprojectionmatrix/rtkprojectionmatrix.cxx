@@ -16,15 +16,15 @@
  *
  *=========================================================================*/
 
-#include <vnl/vnl_sparse_matrix.h>
 #include <fstream>
+#include <vnl/vnl_sparse_matrix.h>
 
-#include "rtkprojectionmatrix_ggo.h"
-#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
+#include "rtkConfiguration.h"
 #include "rtkGgoFunctions.h"
 #include "rtkJosephBackProjectionImageFilter.h"
-#include "rtkConfiguration.h"
 #include "rtkMatlabSparseMatrix.h"
+#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
+#include "rtkprojectionmatrix_ggo.h"
 
 namespace rtk
 {

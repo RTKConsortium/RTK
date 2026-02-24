@@ -1,6 +1,18 @@
-#include <rtkGgoArgsInfoManager.h>
 #include <cstdlib>
 #include <iostream>
+#include <rtkGgoArgsInfoManager.h>
+
+/**
+ * \file rtkargsinfomanagertest.cxx
+ *
+ * \brief Tests the cleanup behavior of `rtk::args_info_manager`.
+ *
+ * This test checks that the `args_info_manager` calls the provided cleanup
+ * function or functor on destruction, so the wrapped `args_info_test` is
+ * updated accordingly.
+ *
+ * \author Lucas Gandel
+ */
 
 class args_info_test
 {

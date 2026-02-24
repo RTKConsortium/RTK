@@ -25,13 +25,13 @@
 #include "rtkHomogeneousMatrix.h"
 #include "rtkMacro.h"
 
+#include "itkCudaUtil.h"
+#include <itkImageAlgorithm.h>
 #include <itkImageRegionConstIterator.h>
+#include <itkImageRegionIterator.h>
 #include <itkImageRegionIteratorWithIndex.h>
 #include <itkLinearInterpolateImageFunction.h>
 #include <itkMacro.h>
-#include <itkImageRegionIterator.h>
-#include <itkImageAlgorithm.h>
-#include "itkCudaUtil.h"
 
 namespace rtk
 {

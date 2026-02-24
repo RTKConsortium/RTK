@@ -19,8 +19,8 @@
 #ifndef rtkUpsampleImageFilter_h
 #define rtkUpsampleImageFilter_h
 
-#include <itkImageToImageFilter.h>
 #include <itkImageRegionSplitterDirection.h>
+#include <itkImageToImageFilter.h>
 
 namespace rtk
 {

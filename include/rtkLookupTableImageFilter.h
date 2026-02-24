@@ -19,8 +19,8 @@
 #ifndef rtkLookupTableImageFilter_h
 #define rtkLookupTableImageFilter_h
 
-#include <itkUnaryFunctorImageFilter.h>
 #include <itkLinearInterpolateImageFunction.h>
+#include <itkUnaryFunctorImageFilter.h>
 
 namespace rtk
 {

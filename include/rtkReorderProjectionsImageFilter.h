@@ -19,9 +19,9 @@
 #ifndef rtkReorderProjectionsImageFilter_h
 #define rtkReorderProjectionsImageFilter_h
 
-#include <itkInPlaceImageFilter.h>
-#include "rtkThreeDCircularProjectionGeometry.h"
 #include "rtkConfiguration.h"
+#include "rtkThreeDCircularProjectionGeometry.h"
+#include <itkInPlaceImageFilter.h>
 
 namespace rtk
 {

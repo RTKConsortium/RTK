@@ -18,8 +18,8 @@
 
 #include "rtkDCMImagXImageIO.h"
 
-#include <gdcmImageReader.h>
 #include <gdcmAttribute.h>
+#include <gdcmImageReader.h>
 
 void
 rtk::DCMImagXImageIO::ReadImageInformation()

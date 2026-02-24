@@ -19,9 +19,9 @@
 #ifndef rtkMaskCollimationImageFilter_h
 #define rtkMaskCollimationImageFilter_h
 
-#include <itkInPlaceImageFilter.h>
 #include "rtkConfiguration.h"
 #include "rtkThreeDCircularProjectionGeometry.h"
+#include <itkInPlaceImageFilter.h>
 
 namespace rtk
 {

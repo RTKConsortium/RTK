@@ -19,9 +19,9 @@
 #ifndef rtkXRadGeometryReader_h
 #define rtkXRadGeometryReader_h
 
-#include <itkLightProcessObject.h>
-#include "rtkThreeDCircularProjectionGeometry.h"
 #include "RTKExport.h"
+#include "rtkThreeDCircularProjectionGeometry.h"
+#include <itkLightProcessObject.h>
 
 namespace rtk
 {

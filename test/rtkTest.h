@@ -18,10 +18,10 @@
 #ifndef rtkTest_h
 #define rtkTest_h
 
-#include <itkImageRegionConstIterator.h>
-#include <itkImageFileWriter.h>
-#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkTestConfiguration.h"
+#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
+#include <itkImageFileWriter.h>
+#include <itkImageRegionConstIterator.h>
 
 
 template <class TImage>

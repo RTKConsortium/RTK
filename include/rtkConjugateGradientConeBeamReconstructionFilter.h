@@ -19,26 +19,26 @@
 #ifndef rtkConjugateGradientConeBeamReconstructionFilter_h
 #define rtkConjugateGradientConeBeamReconstructionFilter_h
 
-#include <itkMultiplyImageFilter.h>
-#include <itkDivideOrZeroOutImageFilter.h>
-#include <itkProcessObject.h>
-#include <itkObject.h>
 #include <itkCommand.h>
+#include <itkDivideOrZeroOutImageFilter.h>
 #include <itkIterationReporter.h>
+#include <itkMultiplyImageFilter.h>
+#include <itkObject.h>
+#include <itkProcessObject.h>
 
-#include "rtkConjugateGradientImageFilter.h"
-#include "rtkReconstructionConjugateGradientOperator.h"
-#include "rtkIterativeConeBeamReconstructionFilter.h"
-#include "rtkThreeDCircularProjectionGeometry.h"
-#include "rtkDisplacedDetectorImageFilter.h"
-#include "rtkConstantImageSource.h"
-#include "rtkLaplacianImageFilter.h"
 #include "rtkBlockDiagonalMatrixVectorMultiplyImageFilter.h"
+#include "rtkConjugateGradientImageFilter.h"
+#include "rtkConstantImageSource.h"
+#include "rtkDisplacedDetectorImageFilter.h"
+#include "rtkIterativeConeBeamReconstructionFilter.h"
+#include "rtkLaplacianImageFilter.h"
+#include "rtkReconstructionConjugateGradientOperator.h"
+#include "rtkThreeDCircularProjectionGeometry.h"
 
 #ifdef RTK_USE_CUDA
 #  include "rtkCudaConjugateGradientImageFilter.h"
-#  include "rtkCudaDisplacedDetectorImageFilter.h"
 #  include "rtkCudaConstantVolumeSource.h"
+#  include "rtkCudaDisplacedDetectorImageFilter.h"
 #endif
 
 namespace rtk

@@ -1,14 +1,14 @@
 #include <itkPasteImageFilter.h>
 #include <itksys/SystemTools.hxx>
 
-#include "rtkTest.h"
-#include "rtkRayEllipsoidIntersectionImageFilter.h"
-#include "rtkDrawEllipsoidImageFilter.h"
 #include "rtkConstantImageSource.h"
-#include "rtkFieldOfViewImageFilter.h"
+#include "rtkCyclicDeformationImageFilter.h"
+#include "rtkDrawEllipsoidImageFilter.h"
 #include "rtkFDKConeBeamReconstructionFilter.h"
 #include "rtkFDKWarpBackProjectionImageFilter.h"
-#include "rtkCyclicDeformationImageFilter.h"
+#include "rtkFieldOfViewImageFilter.h"
+#include "rtkRayEllipsoidIntersectionImageFilter.h"
+#include "rtkTest.h"
 
 /**
  * \file rtkmotioncompensatedfdktest.cxx

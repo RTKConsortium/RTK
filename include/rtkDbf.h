@@ -21,11 +21,11 @@
 
 #include "RTKExport.h"
 #include "itkWin32Header.h"
-#include <string>
-#include <fstream>
-#include <vector>
-#include <map>
 #include <cstdlib>
+#include <fstream>
+#include <map>
+#include <string>
+#include <vector>
 
 namespace rtk
 {

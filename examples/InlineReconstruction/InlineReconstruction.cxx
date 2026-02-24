@@ -1,25 +1,25 @@
-#include <iostream>
-#include <thread>
-#include <chrono>
-#include <vector>
-#include <iomanip>
-#include <sstream>
 #include <atomic>
+#include <chrono>
+#include <iomanip>
+#include <iostream>
+#include <sstream>
+#include <thread>
+#include <vector>
 
-#include <itkImageFileWriter.h>
 #include <itkExtractImageFilter.h>
+#include <itkImageFileWriter.h>
 
+#include <rtkConstantImageSource.h>
 #include <rtkFDKConeBeamReconstructionFilter.h>
 #include <rtkParkerShortScanImageFilter.h>
 #include <rtkProjectionsReader.h>
 #include <rtkSheppLoganPhantomFilter.h>
-#include <rtkConstantImageSource.h>
 
 // CUDA headers (if available)
 #ifdef RTK_USE_CUDA
+#  include <itkCudaImage.h>
 #  include <rtkCudaFDKConeBeamReconstructionFilter.h>
 #  include <rtkCudaParkerShortScanImageFilter.h>
-#  include <itkCudaImage.h>
 #endif
 
 // Type definitions

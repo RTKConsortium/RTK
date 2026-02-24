@@ -20,8 +20,8 @@
 #define rtkDaubechiesWaveletsConvolutionImageFilter_h
 
 // Includes
-#include <itkImageToImageFilter.h>
 #include <itkConvolutionImageFilter.h>
+#include <itkImageToImageFilter.h>
 
 #include "rtkMacro.h"
 

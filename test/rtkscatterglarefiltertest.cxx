@@ -17,8 +17,8 @@
 #endif
 
 #include "rtkTest.h"
-#include "rtkTestConfiguration.h"
 #include "rtkMacro.h"
+#include "rtkTestConfiguration.h"
 
 #include <cmath>
 #include <itkImageRegionConstIterator.h>

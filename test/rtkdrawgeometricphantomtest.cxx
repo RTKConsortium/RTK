@@ -1,11 +1,11 @@
 #include "rtkTest.h"
-#include "rtkMacro.h"
-#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkConstantImageSource.h"
+#include "rtkDrawConeImageFilter.h"
+#include "rtkDrawCylinderImageFilter.h"
 #include "rtkDrawGeometricPhantomImageFilter.h"
 #include "rtkDrawSheppLoganFilter.h"
-#include "rtkDrawCylinderImageFilter.h"
-#include "rtkDrawConeImageFilter.h"
+#include "rtkMacro.h"
+#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 
 #include <itkRegularExpressionSeriesFileNames.h>
 

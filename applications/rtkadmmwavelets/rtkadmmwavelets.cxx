@@ -17,17 +17,17 @@
  *=========================================================================*/
 
 #include "rtkadmmwavelets_ggo.h"
-#include "rtkGgoFunctions.h"
 #include "rtkConfiguration.h"
+#include "rtkGgoFunctions.h"
 
 #include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>
 
-#include "rtkProjectionsReader.h"
-#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
+#include "rtkADMMWaveletsConeBeamReconstructionFilter.h"
 #include "rtkConstantImageSource.h"
 #include "rtkDisplacedDetectorImageFilter.h"
-#include "rtkADMMWaveletsConeBeamReconstructionFilter.h"
+#include "rtkProjectionsReader.h"
+#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 
 int
 main(int argc, char * argv[])

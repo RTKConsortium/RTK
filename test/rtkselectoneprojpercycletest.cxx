@@ -1,10 +1,10 @@
 #include <itksys/SystemTools.hxx>
 
-#include "rtkTest.h"
+#include "rtkConstantImageSource.h"
 #include "rtkMacro.h"
 #include "rtkRayEllipsoidIntersectionImageFilter.h"
-#include "rtkConstantImageSource.h"
 #include "rtkSelectOneProjectionPerCycleImageFilter.h"
+#include "rtkTest.h"
 
 /**
  * \file rtkmotioncompensatedfdktest.cxx

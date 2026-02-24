@@ -1,8 +1,8 @@
 #include "rtkTest.h"
+#include "rtkConjugateGradientConeBeamReconstructionFilter.h"
+#include "rtkConstantImageSource.h"
 #include "rtkDrawEllipsoidImageFilter.h"
 #include "rtkRayEllipsoidIntersectionImageFilter.h"
-#include "rtkConstantImageSource.h"
-#include "rtkConjugateGradientConeBeamReconstructionFilter.h"
 
 #ifdef USE_CUDA
 #  include "itkCudaImage.h"

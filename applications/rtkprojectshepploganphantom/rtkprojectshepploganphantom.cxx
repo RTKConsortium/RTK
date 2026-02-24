@@ -17,11 +17,11 @@
  *=========================================================================*/
 
 #include "rtkprojectshepploganphantom_ggo.h"
+#include "rtkAdditiveGaussianNoiseImageFilter.h"
 #include "rtkGgoFunctions.h"
-#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkRayEllipsoidIntersectionImageFilter.h"
 #include "rtkSheppLoganPhantomFilter.h"
-#include "rtkAdditiveGaussianNoiseImageFilter.h"
+#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 
 #include <itkImageFileWriter.h>
 

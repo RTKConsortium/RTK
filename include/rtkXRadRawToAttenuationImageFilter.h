@@ -19,8 +19,8 @@
 #ifndef rtkXRadRawToAttenuationImageFilter_h
 #define rtkXRadRawToAttenuationImageFilter_h
 
-#include <itkImageToImageFilter.h>
 #include "rtkConfiguration.h"
+#include <itkImageToImageFilter.h>
 
 /** \class RawToAttenuationImageFilter
  * \brief Convert raw XRad data to attenuation images

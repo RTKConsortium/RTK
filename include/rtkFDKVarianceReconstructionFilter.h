@@ -20,9 +20,9 @@
 #define rtkFDKVarianceReconstructionFilter_h
 
 #include "rtkFDKWeightProjectionFilter.h"
-#include "rtkFFTVarianceRampImageFilter.h"
-#include "rtkFDKBackProjectionImageFilter.h"
 #include "rtkConfiguration.h"
+#include "rtkFDKBackProjectionImageFilter.h"
+#include "rtkFFTVarianceRampImageFilter.h"
 
 #include <itkExtractImageFilter.h>
 

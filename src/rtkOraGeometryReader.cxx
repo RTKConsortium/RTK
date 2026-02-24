@@ -20,14 +20,14 @@
 #define rtkOraGeometryReader_hxx
 
 #include "rtkMacro.h"
+#include "rtkIOFactories.h"
 #include "rtkOraGeometryReader.h"
 #include "rtkOraXMLFileReader.h"
-#include "rtkIOFactories.h"
 
 #include <itkImageIOBase.h>
 #include <itkImageIOFactory.h>
-#include <itkVersorRigid3DTransform.h>
 #include <itkQuaternionRigidTransform.h>
+#include <itkVersorRigid3DTransform.h>
 
 namespace rtk
 {

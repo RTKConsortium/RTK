@@ -24,15 +24,15 @@
 #ifdef RTK_USE_CUDA
 
 #  include "rtkCudaForwardProjectionImageFilter.h"
-#  include "rtkCudaUtilities.hcu"
 #  include "rtkCudaForwardProjectionImageFilter.hcu"
+#  include "rtkCudaUtilities.hcu"
 
+#  include "itkCudaUtil.h"
+#  include "rtkMacro.h"
 #  include <itkImageRegionConstIterator.h>
 #  include <itkImageRegionIteratorWithIndex.h>
 #  include <itkLinearInterpolateImageFunction.h>
 #  include <itkMacro.h>
-#  include "rtkMacro.h"
-#  include "itkCudaUtil.h"
 
 namespace rtk
 {

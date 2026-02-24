@@ -17,8 +17,8 @@
  *=========================================================================*/
 
 #include "rtkCudaForwardWarpImageFilter.h"
-#include "rtkCudaUtilities.hcu"
 #include "rtkCudaForwardWarpImageFilter.hcu"
+#include "rtkCudaUtilities.hcu"
 #include "rtkHomogeneousMatrix.h"
 
 #include <itkImageRegionConstIterator.h>

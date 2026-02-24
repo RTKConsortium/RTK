@@ -20,15 +20,15 @@
 #include "rtkGgoFunctions.h"
 
 #include "rtkMechlemOneStepSpectralReconstructionFilter.h"
-#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkReorderProjectionsImageFilter.h"
 #include "rtkSpectralForwardModelImageFilter.h"
+#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 
 #include <algorithm> // std::shuffle
-#include <vector>    // std::vector
-#include <random>    // std::default_random_engine
 #include <iostream>
 #include <iterator>
+#include <random> // std::default_random_engine
+#include <vector> // std::vector
 
 #include <itkImageFileWriter.h>
 

@@ -1,6 +1,6 @@
 #include "rtkTest.h"
-#include "rtkMacro.h"
 #include "rtkI0EstimationProjectionFilter.h"
+#include "rtkMacro.h"
 #include <itkRandomImageSource.h>
 
 /**

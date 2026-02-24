@@ -18,8 +18,8 @@
 
 #include "rtkxradgeometry_ggo.h"
 #include "rtkGgoFunctions.h"
-#include "rtkXRadGeometryReader.h"
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
+#include "rtkXRadGeometryReader.h"
 
 int
 main(int argc, char * argv[])

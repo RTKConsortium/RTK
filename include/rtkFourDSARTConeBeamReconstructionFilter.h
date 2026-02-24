@@ -22,20 +22,20 @@
 #include "rtkBackProjectionImageFilter.h"
 #include "rtkForwardProjectionImageFilter.h"
 
-#include <itkExtractImageFilter.h>
-#include <itkMultiplyImageFilter.h>
-#include <itkSubtractImageFilter.h>
 #include <itkAddImageAdaptor.h>
 #include <itkAddImageFilter.h>
 #include <itkDivideOrZeroOutImageFilter.h>
+#include <itkExtractImageFilter.h>
+#include <itkMultiplyImageFilter.h>
+#include <itkSubtractImageFilter.h>
 #include <itkThresholdImageFilter.h>
 
-#include "rtkRayBoxIntersectionImageFilter.h"
 #include "rtkConstantImageSource.h"
+#include "rtkDisplacedDetectorImageFilter.h"
+#include "rtkFourDToProjectionStackImageFilter.h"
 #include "rtkIterativeConeBeamReconstructionFilter.h"
 #include "rtkProjectionStackToFourDImageFilter.h"
-#include "rtkFourDToProjectionStackImageFilter.h"
-#include "rtkDisplacedDetectorImageFilter.h"
+#include "rtkRayBoxIntersectionImageFilter.h"
 
 namespace rtk
 {

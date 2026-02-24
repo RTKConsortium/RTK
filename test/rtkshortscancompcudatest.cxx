@@ -1,11 +1,11 @@
 #include "rtkTest.h"
-#include "rtkMacro.h"
-#include "rtkCudaParkerShortScanImageFilter.h"
 #include "rtkConstantImageSource.h"
+#include "rtkCudaParkerShortScanImageFilter.h"
+#include "rtkMacro.h"
 #include "rtkSheppLoganPhantomFilter.h"
 
-#include <itkStreamingImageFilter.h>
 #include <itkImageRegionSplitterDirection.h>
+#include <itkStreamingImageFilter.h>
 
 /**
  * \file rtkshortscancompcudatest.cxx

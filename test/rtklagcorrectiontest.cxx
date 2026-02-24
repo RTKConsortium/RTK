@@ -1,6 +1,6 @@
 #include "rtkTest.h"
-#include "rtkTestConfiguration.h"
 #include "rtkMacro.h"
+#include "rtkTestConfiguration.h"
 #ifdef USE_CUDA
 #  include "rtkCudaLagCorrectionImageFilter.h"
 #else

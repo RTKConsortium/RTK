@@ -1,12 +1,12 @@
 #include "rtkTest.h"
 #include "rtkConfiguration.h"
+#include "rtkConstantImageSource.h"
 #include "rtkMacro.h"
+#include "rtkRayEllipsoidIntersectionImageFilter.h"
 #include "rtkSimplexSpectralProjectionsDecompositionImageFilter.h"
 #include "rtkSpectralForwardModelImageFilter.h"
-#include "rtkConstantImageSource.h"
-#include "rtkRayEllipsoidIntersectionImageFilter.h"
-#include <itkImageFileReader.h>
 #include <itkCastImageFilter.h>
+#include <itkImageFileReader.h>
 
 /**
  * \file rtkdecomposespectralprojectionstest.cxx

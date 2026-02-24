@@ -1,9 +1,9 @@
 #include "rtkTest.h"
-#include "rtkDrawEllipsoidImageFilter.h"
-#include "rtkRayEllipsoidIntersectionImageFilter.h"
-#include "rtkConstantImageSource.h"
 #include "rtkADMMTotalVariationConeBeamReconstructionFilter.h"
+#include "rtkConstantImageSource.h"
+#include "rtkDrawEllipsoidImageFilter.h"
 #include "rtkPhaseGatingImageFilter.h"
+#include "rtkRayEllipsoidIntersectionImageFilter.h"
 
 #ifdef USE_CUDA
 #  include "itkCudaImage.h"

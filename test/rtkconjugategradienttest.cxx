@@ -1,13 +1,13 @@
-#include <itkRandomImageSource.h>
 #include <itkImageRegionIterator.h>
+#include <itkRandomImageSource.h>
 
-#include "rtkConstantImageSource.h"
-#include "rtkTestConfiguration.h"
-#include "rtkConjugateGradientImageFilter.h"
-#include "rtkDivergenceOfGradientConjugateGradientOperator.h"
-#include "rtkMacro.h"
-#include "rtkForwardDifferenceGradientImageFilter.h"
 #include "rtkBackwardDifferenceDivergenceImageFilter.h"
+#include "rtkConjugateGradientImageFilter.h"
+#include "rtkConstantImageSource.h"
+#include "rtkDivergenceOfGradientConjugateGradientOperator.h"
+#include "rtkForwardDifferenceGradientImageFilter.h"
+#include "rtkMacro.h"
+#include "rtkTestConfiguration.h"
 
 
 template <class TImage1, class TImage2>

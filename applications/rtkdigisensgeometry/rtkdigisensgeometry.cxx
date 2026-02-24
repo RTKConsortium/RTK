@@ -19,8 +19,8 @@
 #include "rtkdigisensgeometry_ggo.h"
 #include "rtkGgoFunctions.h"
 
-#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkDigisensGeometryReader.h"
+#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 
 int
 main(int argc, char * argv[])

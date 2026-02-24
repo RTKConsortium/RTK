@@ -18,8 +18,8 @@
 
 #include "rtkOraXMLFileReader.h"
 
-#include <itksys/SystemTools.hxx>
 #include <itkMetaDataObject.h>
+#include <itksys/SystemTools.hxx>
 
 namespace rtk
 {

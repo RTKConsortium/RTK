@@ -17,9 +17,9 @@
  *=========================================================================*/
 #include "rtkPhasesToInterpolationWeights.h"
 
+#include <itkMath.h>
 #include <itksys/SystemTools.hxx>
 #include <utility>
-#include <itkMath.h>
 
 namespace rtk
 {

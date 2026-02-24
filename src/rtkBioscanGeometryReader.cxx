@@ -23,9 +23,9 @@
 #include "rtkBioscanGeometryReader.h"
 #include "rtkIOFactories.h"
 
-#include <gdcmImageReader.h>
 #include <gdcmAttribute.h>
 #include <gdcmDataSet.h>
+#include <gdcmImageReader.h>
 
 namespace rtk
 {

@@ -3,9 +3,9 @@
 
 #include "rtkMacro.h"
 
-#include "rtkTestConfiguration.h"
 #include "itkRandomImageSource.h"
 #include "rtkForwardDifferenceGradientImageFilter.h"
+#include "rtkTestConfiguration.h"
 
 template <class TImage, class TGradient>
 #if FAST_TESTS_NO_CHECKS

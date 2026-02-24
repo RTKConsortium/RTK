@@ -19,8 +19,8 @@
 #ifndef rtkFFTProjectionsConvolutionImageFilter_h
 #define rtkFFTProjectionsConvolutionImageFilter_h
 
-#include <itkImageToImageFilter.h>
 #include <itkConceptChecking.h>
+#include <itkImageToImageFilter.h>
 
 #include "rtkConfiguration.h"
 #include "rtkMacro.h"

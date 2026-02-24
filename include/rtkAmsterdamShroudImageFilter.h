@@ -19,16 +19,16 @@
 #ifndef rtkAmsterdamShroudImageFilter_h
 #define rtkAmsterdamShroudImageFilter_h
 
-#include <itkImageToImageFilter.h>
-#include <itkRecursiveGaussianImageFilter.h>
-#include <itkMultiplyImageFilter.h>
-#include <itkThresholdImageFilter.h>
-#include <itkSumProjectionImageFilter.h>
-#include <itkConvolutionImageFilter.h>
-#include <itkSubtractImageFilter.h>
-#include <itkPermuteAxesImageFilter.h>
-#include <itkCropImageFilter.h>
 #include "rtkThreeDCircularProjectionGeometry.h"
+#include <itkConvolutionImageFilter.h>
+#include <itkCropImageFilter.h>
+#include <itkImageToImageFilter.h>
+#include <itkMultiplyImageFilter.h>
+#include <itkPermuteAxesImageFilter.h>
+#include <itkRecursiveGaussianImageFilter.h>
+#include <itkSubtractImageFilter.h>
+#include <itkSumProjectionImageFilter.h>
+#include <itkThresholdImageFilter.h>
 
 namespace rtk
 {

@@ -1,17 +1,17 @@
+#include <itkConfigure.h>
 #include <itkImageFileReader.h>
 #include <itkPasteImageFilter.h>
-#include <itkConfigure.h>
 
-#include "rtkTest.h"
 #include "rtkAmsterdamShroudImageFilter.h"
-#include "rtkConstantImageSource.h"
-#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
-#include "rtkRayEllipsoidIntersectionImageFilter.h"
 #include "rtkConfiguration.h"
-#include "rtkReg1DExtractShroudSignalImageFilter.h"
+#include "rtkConstantImageSource.h"
 #include "rtkDPExtractShroudSignalImageFilter.h"
-#include "rtkMacro.h"
 #include "rtkExtractPhaseImageFilter.h"
+#include "rtkMacro.h"
+#include "rtkRayEllipsoidIntersectionImageFilter.h"
+#include "rtkReg1DExtractShroudSignalImageFilter.h"
+#include "rtkTest.h"
+#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 
 /**
  * \file rtkamsterdamshroudtest.cxx

@@ -17,12 +17,12 @@
  *=========================================================================*/
 
 #include "rtkIOFactories.h"
-#include <itkImageIOFactory.h>
 #include <itkGDCMImageIOFactory.h>
+#include <itkImageIOFactory.h>
 
 // Varian Obi includes
-#include "rtkHndImageIOFactory.h"
 #include "rtkHncImageIOFactory.h"
+#include "rtkHndImageIOFactory.h"
 
 // Varian ProBeam includes
 #include "rtkXimImageIOFactory.h"
@@ -31,8 +31,8 @@
 #include "rtkHisImageIOFactory.h"
 
 // ImagX includes
-#include "rtkImagXImageIOFactory.h"
 #include "rtkDCMImagXImageIOFactory.h"
+#include "rtkImagXImageIOFactory.h"
 
 // European Synchrotron Radiation Facility
 #include "rtkEdfImageIOFactory.h"

@@ -16,16 +16,16 @@
  *
  *=========================================================================*/
 
+#include <clocale>
 #include <cmath>
 #include <cstdlib>
-#include <clocale>
 #include <fstream>
 #include <itksys/RegularExpression.hxx>
 
 #include "rtkForbildPhantomFileReader.h"
-#include "rtkQuadricShape.h"
 #include "rtkBoxShape.h"
 #include "rtkIntersectionOfConvexShapes.h"
+#include "rtkQuadricShape.h"
 
 namespace rtk
 {

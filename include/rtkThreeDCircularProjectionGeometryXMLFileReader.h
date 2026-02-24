@@ -23,9 +23,9 @@
 #  pragma warning(disable : 4786)
 #endif
 
-#include <itkXMLFile.h>
-#include "rtkThreeDCircularProjectionGeometry.h"
 #include "RTKExport.h"
+#include "rtkThreeDCircularProjectionGeometry.h"
+#include <itkXMLFile.h>
 
 namespace rtk
 {
