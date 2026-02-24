@@ -19,13 +19,13 @@
 #include "rtksubselect_ggo.h"
 #include "rtkGgoFunctions.h"
 
-#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
-#include "rtkProjectionsReader.h"
 #include "rtkConstantImageSource.h"
+#include "rtkProjectionsReader.h"
+#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 
 #include <itkImageFileWriter.h>
-#include <itkRegularExpressionSeriesFileNames.h>
 #include <itkPasteImageFilter.h>
+#include <itkRegularExpressionSeriesFileNames.h>
 
 int
 main(int argc, char * argv[])

@@ -20,14 +20,14 @@
 #define rtkOraGeometryReader_hxx
 
 #include "rtkMacro.h"
+#include "rtkIOFactories.h"
 #include "rtkOraGeometryReader.h"
 #include "rtkOraXMLFileReader.h"
-#include "rtkIOFactories.h"
 
 #include <itkImageIOBase.h>
 #include <itkImageIOFactory.h>
-#include <itkVersorRigid3DTransform.h>
 #include <itkQuaternionRigidTransform.h>
+#include <itkVersorRigid3DTransform.h>
 
 namespace rtk
 {
@@ -66,7 +66,7 @@ OraGeometryReader::GenerateData()
     {
       itkExceptionMacro(<< "No SourcePosition in " << projectionsFileName);
     }
-    PointType sp(&(spMeta->GetMetaDataObjectValue()[0]));
+    PointType sp(spMeta->GetMetaDataObjectValue().data());
 
     // Origin (detector position)
     MetaDataVectorType * dpMeta = dynamic_cast<MetaDataVectorType *>(dic["Origin"].GetPointer());
@@ -74,7 +74,7 @@ OraGeometryReader::GenerateData()
     {
       itkExceptionMacro(<< "No Origin in " << projectionsFileName);
     }
-    PointType dp(&(dpMeta->GetMetaDataObjectValue()[0]));
+    PointType dp(dpMeta->GetMetaDataObjectValue().data());
 
     // Direction (detector orientation)
     MetaDataMatrixType * matMeta = dynamic_cast<MetaDataMatrixType *>(dic["Direction"].GetPointer());
@@ -83,8 +83,8 @@ OraGeometryReader::GenerateData()
       itkExceptionMacro(<< "No Direction in " << projectionsFileName);
     }
     Matrix3x3Type mat = matMeta->GetMetaDataObjectValue();
-    VectorType    u = VectorType(&(mat[0][0]));
-    VectorType    v = VectorType(&(mat[1][0]));
+    auto          u = VectorType(&(mat[0][0]));
+    auto          v = VectorType(&(mat[1][0]));
 
     // table_axis_distance_cm
     MetaDataDoubleType * thMeta = dynamic_cast<MetaDataDoubleType *>(dic["table_axis_distance_cm"].GetPointer());
@@ -172,7 +172,7 @@ OraGeometryReader::GenerateData()
       const std::vector<double> p = posMeta->GetMetaDataObjectValue();
       if (p.size() < 3 * (idIdx + 1))
         itkExceptionMacro("Not enough values in optitrack_positions of " << projectionsFileName);
-      itk::Vector<double, 3> translation = 10. * itk::MakeVector(p[idIdx * 3], p[idIdx * 3 + 1], p[idIdx * 3 + 2]);
+      itk::Vector<double, 3> translation = 10. * itk::MakeVector(p[idIdx * 3], p[(idIdx * 3) + 1], p[(idIdx * 3) + 2]);
 
       // Rotation
       MetaDataVectorDoubleType * rotMeta =
@@ -185,9 +185,9 @@ OraGeometryReader::GenerateData()
       auto                                                  quaternionsX = itk::QuaternionRigidTransform<double>::New();
       itk::QuaternionRigidTransform<double>::ParametersType quaternionsXParam(7);
       quaternionsXParam[3] = optitrackRotations[idIdx * 4];
-      quaternionsXParam[0] = optitrackRotations[idIdx * 4 + 1];
-      quaternionsXParam[1] = optitrackRotations[idIdx * 4 + 2];
-      quaternionsXParam[2] = optitrackRotations[idIdx * 4 + 3];
+      quaternionsXParam[0] = optitrackRotations[(idIdx * 4) + 1];
+      quaternionsXParam[1] = optitrackRotations[(idIdx * 4) + 2];
+      quaternionsXParam[2] = optitrackRotations[(idIdx * 4) + 3];
       quaternionsXParam[4] = 0.;
       quaternionsXParam[5] = 0.;
       quaternionsXParam[6] = 0.;

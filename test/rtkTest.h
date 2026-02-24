@@ -15,14 +15,13 @@
  *  limitations under the License.
  *
  *=========================================================================*/
-
 #ifndef rtkTest_h
 #define rtkTest_h
 
-#include <itkImageRegionConstIterator.h>
-#include <itkImageFileWriter.h>
-#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkTestConfiguration.h"
+#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
+#include <itkImageFileWriter.h>
+#include <itkImageRegionConstIterator.h>
 
 
 template <class TImage>
@@ -69,7 +68,7 @@ CheckImageQuality(typename TImage::Pointer recon,
   ErrorType MSE = EnerError / ref->GetBufferedRegion().GetNumberOfPixels();
   std::cout << "MSE = " << MSE << std::endl;
   // PSNR
-  ErrorType PSNR = 20 * log10(RefValueForPSNR) - 10 * log10(MSE);
+  ErrorType PSNR = (20 * log10(RefValueForPSNR)) - (10 * log10(MSE));
   std::cout << "PSNR = " << PSNR << "dB" << std::endl;
   // QI
   ErrorType QI = (RefValueForPSNR - ErrorPerPixel) / RefValueForPSNR;
@@ -149,7 +148,7 @@ CheckVectorImageQuality(typename TImage::Pointer recon,
   ErrorType MSE = EnerError / ref->GetBufferedRegion().GetNumberOfPixels();
   std::cout << "MSE = " << MSE << std::endl;
   // PSNR
-  ErrorType PSNR = 20 * log10(RefValueForPSNR) - 10 * log10(MSE);
+  ErrorType PSNR = (20 * log10(RefValueForPSNR)) - (10 * log10(MSE));
   std::cout << "PSNR = " << PSNR << "dB" << std::endl;
   // QI
   ErrorType QI = (RefValueForPSNR - ErrorPerPixel) / RefValueForPSNR;
@@ -242,7 +241,7 @@ CheckVariableLengthVectorImageQuality(typename TImage::Pointer recon,
   ErrorType MSE = EnerError / ref->GetBufferedRegion().GetNumberOfPixels();
   std::cout << "MSE = " << MSE << std::endl;
   // PSNR
-  ErrorType PSNR = 20 * log10(RefValueForPSNR) - 10 * log10(MSE);
+  ErrorType PSNR = (20 * log10(RefValueForPSNR)) - (10 * log10(MSE));
   std::cout << "PSNR = " << PSNR << "dB" << std::endl;
   // QI
   ErrorType QI = (RefValueForPSNR - ErrorPerPixel) / RefValueForPSNR;

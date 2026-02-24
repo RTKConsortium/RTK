@@ -1,14 +1,14 @@
 #include <itkPasteImageFilter.h>
 #include <itksys/SystemTools.hxx>
 
-#include "rtkTest.h"
-#include "rtkRayEllipsoidIntersectionImageFilter.h"
-#include "rtkDrawEllipsoidImageFilter.h"
 #include "rtkConstantImageSource.h"
-#include "rtkFieldOfViewImageFilter.h"
+#include "rtkCyclicDeformationImageFilter.h"
+#include "rtkDrawEllipsoidImageFilter.h"
 #include "rtkFDKConeBeamReconstructionFilter.h"
 #include "rtkFDKWarpBackProjectionImageFilter.h"
-#include "rtkCyclicDeformationImageFilter.h"
+#include "rtkFieldOfViewImageFilter.h"
+#include "rtkRayEllipsoidIntersectionImageFilter.h"
+#include "rtkTest.h"
 
 /**
  * \file rtkmotioncompensatedfdktest.cxx
@@ -111,7 +111,7 @@ main(int, char **)
     e2->SetGeometry(oneProjGeometry);
     e2->SetDensity(-1.);
     e2->SetAxis(itk::MakeVector(8., 8., 8.));
-    e2->SetCenter(itk::MakeVector(4 * (itk::Math::abs((4 + noProj) % 8 - 4.) - 2.), 0., 0.));
+    e2->SetCenter(itk::MakeVector(4 * (itk::Math::abs(((4 + noProj) % 8) - 4.) - 2.), 0., 0.));
     e2->SetAngle(0.);
     e2->Update();
 

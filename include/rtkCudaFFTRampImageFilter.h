@@ -23,9 +23,9 @@
 // Conditional definition of the class to pass ITKHeaderTest
 #ifdef RTK_USE_CUDA
 
+#  include "RTKExport.h"
 #  include "rtkCudaFFTProjectionsConvolutionImageFilter.h"
 #  include "rtkFFTRampImageFilter.h"
-#  include "RTKExport.h"
 
 namespace rtk
 {
@@ -60,7 +60,7 @@ public:
 
 protected:
   CudaFFTRampImageFilter() {}
-  ~CudaFFTRampImageFilter() {}
+  ~CudaFFTRampImageFilter() override = default;
 
 }; // end of class
 

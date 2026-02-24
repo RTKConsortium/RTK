@@ -1,8 +1,8 @@
 #include "rtkTest.h"
-#include "rtkProjectionsReader.h"
-#include "rtkMacro.h"
 #include "rtkElektaSynergyGeometryReader.h"
 #include "rtkElektaXVI5GeometryXMLFileReader.h"
+#include "rtkMacro.h"
+#include "rtkProjectionsReader.h"
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 
 #include <itkRegularExpressionSeriesFileNames.h>

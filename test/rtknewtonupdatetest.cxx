@@ -1,8 +1,8 @@
 #include "rtkTest.h"
-#include "rtkMacro.h"
-#include <itkImageFileReader.h>
 #include "rtkGetNewtonUpdateImageFilter.h"
+#include "rtkMacro.h"
 #include <itkCSVArray2DFileReader.h>
+#include <itkImageFileReader.h>
 
 /**
  * \file rtknewtonupdatetest.cxx

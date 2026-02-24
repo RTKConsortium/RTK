@@ -19,8 +19,8 @@
 #ifndef rtkFFTProjectionsConvolutionImageFilter_h
 #define rtkFFTProjectionsConvolutionImageFilter_h
 
-#include <itkImageToImageFilter.h>
 #include <itkConceptChecking.h>
+#include <itkImageToImageFilter.h>
 
 #include "rtkConfiguration.h"
 #include "rtkMacro.h"
@@ -143,16 +143,16 @@ protected:
   void
   PrintSelf(std::ostream & os, itk::Indent indent) const override;
 
-  bool
+  [[nodiscard]] bool
   IsPrime(int n) const;
 
-  int
+  [[nodiscard]] int
   GreatestPrimeFactor(int n) const;
 
   /** Creates and return a pointer to the convolution kernel. Can be 1D or 2D.
    *  Used in generate data functions, must be implemented in daughter classes.  */
   virtual void
-  UpdateFFTProjectionsConvolutionKernel(const SizeType size) = 0;
+  UpdateFFTProjectionsConvolutionKernel(SizeType size) = 0;
 
   /** Pre compute weights for truncation correction in a lookup table. The index
    * is the distance to the original image border.

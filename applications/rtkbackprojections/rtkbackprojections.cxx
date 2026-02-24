@@ -19,15 +19,15 @@
 #include "rtkbackprojections_ggo.h"
 #include "rtkGgoFunctions.h"
 
-#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkFDKBackProjectionImageFilter.h"
 #include "rtkFDKWarpBackProjectionImageFilter.h"
-#include "rtkJosephBackProjectionImageFilter.h"
 #include "rtkJosephBackAttenuatedProjectionImageFilter.h"
+#include "rtkJosephBackProjectionImageFilter.h"
+#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkZengBackProjectionImageFilter.h"
 #ifdef RTK_USE_CUDA
-#  include "rtkCudaFDKBackProjectionImageFilter.h"
 #  include "rtkCudaBackProjectionImageFilter.h"
+#  include "rtkCudaFDKBackProjectionImageFilter.h"
 #  include "rtkCudaRayCastBackProjectionImageFilter.h"
 #endif
 #include "rtkCyclicDeformationImageFilter.h"

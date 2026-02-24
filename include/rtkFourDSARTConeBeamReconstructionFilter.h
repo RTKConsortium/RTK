@@ -22,20 +22,20 @@
 #include "rtkBackProjectionImageFilter.h"
 #include "rtkForwardProjectionImageFilter.h"
 
-#include <itkExtractImageFilter.h>
-#include <itkMultiplyImageFilter.h>
-#include <itkSubtractImageFilter.h>
 #include <itkAddImageAdaptor.h>
 #include <itkAddImageFilter.h>
 #include <itkDivideOrZeroOutImageFilter.h>
+#include <itkExtractImageFilter.h>
+#include <itkMultiplyImageFilter.h>
+#include <itkSubtractImageFilter.h>
 #include <itkThresholdImageFilter.h>
 
-#include "rtkRayBoxIntersectionImageFilter.h"
 #include "rtkConstantImageSource.h"
+#include "rtkDisplacedDetectorImageFilter.h"
+#include "rtkFourDToProjectionStackImageFilter.h"
 #include "rtkIterativeConeBeamReconstructionFilter.h"
 #include "rtkProjectionStackToFourDImageFilter.h"
-#include "rtkFourDToProjectionStackImageFilter.h"
-#include "rtkDisplacedDetectorImageFilter.h"
+#include "rtkRayBoxIntersectionImageFilter.h"
 
 namespace rtk
 {
@@ -198,11 +198,11 @@ public:
 
   /** Pass the interpolation weights to subfilters */
   void
-  SetWeights(const itk::Array2D<float> _arg);
+  SetWeights(itk::Array2D<float> _arg);
 
   /** Store the phase signal in a member variable */
   virtual void
-  SetSignal(const std::vector<double> signal);
+  SetSignal(std::vector<double> signal);
 
   /** Set / Get whether the displaced detector filter should be disabled */
   itkSetMacro(DisableDisplacedDetectorFilter, bool);

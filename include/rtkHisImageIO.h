@@ -20,9 +20,9 @@
 #define rtkHisImageIO_h
 
 // itk include
-#include <itkImageIOBase.h>
 #include "RTKExport.h"
 #include "rtkMacro.h"
+#include <itkImageIOBase.h>
 
 namespace rtk
 {
@@ -45,11 +45,7 @@ public:
   using Pointer = itk::SmartPointer<Self>;
   using PixelType = signed short int;
 
-  HisImageIO()
-    : Superclass()
-  {
-    ;
-  }
+  HisImageIO() {}
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -87,7 +83,7 @@ public:
   Write(const void * buffer) override;
 
 protected:
-  int m_HeaderSize;
+  int m_HeaderSize{};
 
 }; // end class HisImageIO
 } // namespace rtk

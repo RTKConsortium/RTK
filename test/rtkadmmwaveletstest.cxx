@@ -1,9 +1,9 @@
 #include <itkImageRegionConstIterator.h>
 
-#include "rtkTestConfiguration.h"
+#include "rtkConstantImageSource.h"
 #include "rtkDrawEllipsoidImageFilter.h"
 #include "rtkRayEllipsoidIntersectionImageFilter.h"
-#include "rtkConstantImageSource.h"
+#include "rtkTestConfiguration.h"
 
 #ifdef USE_CUDA
 #  include "itkCudaImage.h"
@@ -17,7 +17,7 @@ CheckImageQuality(typename TImage::Pointer itkNotUsed(recon), typename TImage::P
 {}
 #else
 void
-CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer ref)
+CheckImageQuality(const typename TImage::Pointer & recon, const typename TImage::Pointer & ref)
 {
   using ImageIteratorType = itk::ImageRegionConstIterator<TImage>;
   ImageIteratorType itTest(recon, recon->GetBufferedRegion());

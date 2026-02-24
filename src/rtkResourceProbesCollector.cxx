@@ -69,7 +69,7 @@ ResourceProbesCollector::Report(std::ostream & os) const
 
   unsigned int maxlength = sizeof("Probe Tag") / sizeof(char);
   while (tProbe != tEnd)
-    maxlength = std::max(maxlength, (unsigned int)(tProbe++)->first.size());
+    maxlength = std::max(maxlength, static_cast<unsigned int>((tProbe++)->first.size()));
   maxlength += 2;
   tProbe = this->m_TimeProbes.begin();
 

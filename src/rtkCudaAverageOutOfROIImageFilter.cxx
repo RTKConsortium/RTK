@@ -21,7 +21,7 @@
 
 #include <itkMacro.h>
 
-rtk::CudaAverageOutOfROIImageFilter ::CudaAverageOutOfROIImageFilter() {}
+rtk::CudaAverageOutOfROIImageFilter ::CudaAverageOutOfROIImageFilter() = default;
 
 void
 rtk::CudaAverageOutOfROIImageFilter ::GPUGenerateData()
@@ -34,9 +34,9 @@ rtk::CudaAverageOutOfROIImageFilter ::GPUGenerateData()
   }
 
 #ifdef CudaCommon_VERSION_MAJOR
-  float * pin = (float *)(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
-  float * pout = (float *)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
-  float * proi = (float *)(this->GetROI()->GetCudaDataManager()->GetGPUBufferPointer());
+  float * pin = static_cast<float *>(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
+  float * pout = static_cast<float *>(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
+  float * proi = static_cast<float *>(this->GetROI()->GetCudaDataManager()->GetGPUBufferPointer());
 #else
   float * pin = *(float **)(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
   float * pout = *(float **)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());

@@ -21,8 +21,8 @@
 
 #include <itkInPlaceImageFilter.h>
 
-#include "rtkThreeDCircularProjectionGeometry.h"
 #include "rtkConfiguration.h"
+#include "rtkThreeDCircularProjectionGeometry.h"
 
 namespace rtk
 {
@@ -91,10 +91,10 @@ protected:
   DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread) override;
 
   /** Actual angular gap in the projections */
-  double m_Delta;
+  double m_Delta{};
 
   /** First angle of the short scan */
-  double m_FirstAngle;
+  double m_FirstAngle{};
 
   /** Internal variable indicating whether this scan is short */
   bool m_IsShortScan{ false };
@@ -106,8 +106,8 @@ private:
   /** Superior and inferior position of the detector along the weighting direction, i.e. x.
    * The computed value account for the x projection offset of the geometry.
    */
-  double m_InferiorCorner;
-  double m_SuperiorCorner;
+  double m_InferiorCorner{};
+  double m_SuperiorCorner{};
 
   /** Minimum angular gap to automatically detect a short scan. Defaults is pi/9 radians. */
   double m_AngularGapThreshold{ itk::Math::pi / 9 };

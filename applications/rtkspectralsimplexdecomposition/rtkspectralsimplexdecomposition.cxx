@@ -17,8 +17,8 @@
  *=========================================================================*/
 
 #include "rtkspectralsimplexdecomposition_ggo.h"
-#include "rtkGgoFunctions.h"
 #include "rtkConfiguration.h"
+#include "rtkGgoFunctions.h"
 #include "rtkMacro.h"
 #include "rtkSimplexSpectralProjectionsDecompositionImageFilter.h"
 

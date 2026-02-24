@@ -76,9 +76,9 @@ FFTVarianceRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>::UpdateFFTP
   // numerical integration to calculate f_interp
   const double aprecision = 0.00001;
   double       finterp = 0.;
-  for (unsigned int i = 0; i < int(1. / aprecision); i++)
+  for (unsigned int i = 0; i < static_cast<int>(1. / aprecision); i++)
   {
-    const double a = double(i) * aprecision;
+    const double a = static_cast<double>(i) * aprecision;
     finterp += (1 - a) * (1 - a) + 2 * ratiogcg2 * (1 - a) * a + a * a;
   }
   finterp *= aprecision;

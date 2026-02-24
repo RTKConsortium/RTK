@@ -1,9 +1,9 @@
 #include "rtkTest.h"
 #include "rtkMacro.h"
-#include "rtkOraGeometryReader.h"
-#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
-#include "rtkProjectionsReader.h"
 #include "rtkMaskCollimationImageFilter.h"
+#include "rtkOraGeometryReader.h"
+#include "rtkProjectionsReader.h"
+#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 
 #include <itkRegularExpressionSeriesFileNames.h>
 

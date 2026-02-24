@@ -32,7 +32,7 @@ main(int argc, char * argv[])
   // Projection matrices
   for (int noProj = 0; noProj < args_info.nproj_arg; noProj++)
   {
-    double angle = args_info.first_angle_arg + noProj * args_info.arc_arg / args_info.nproj_arg;
+    double angle = args_info.first_angle_arg + (noProj * args_info.arc_arg / args_info.nproj_arg);
     geometry->AddProjection(args_info.sid_arg,
                             args_info.sdd_arg,
                             angle,

@@ -59,10 +59,7 @@ rtk::OraImageIO::CanReadFile(const char * FileNameToRead)
     return false;
   std::string extension = filename.substr(filename.size() - 7, 7);
 
-  if (extension != std::string("ora.xml"))
-    return false;
-
-  return true;
+  return extension == std::string("ora.xml");
 }
 
 void

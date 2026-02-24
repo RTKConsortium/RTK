@@ -2,8 +2,8 @@
 #include <itkImageRegionIteratorWithIndex.h>
 #include <itksys/SystemTools.hxx>
 
-#include "rtkTest.h"
 #include "rtkConstantImageSource.h"
+#include "rtkTest.h"
 
 #ifdef USE_CUDA
 #  include "rtkCudaCyclicDeformationImageFilter.h"
@@ -119,7 +119,7 @@ main(int, char **)
 
 #endif
 
-  itksys::SystemTools::RemoveFile(signalFileName.c_str());
+  itksys::SystemTools::RemoveFile(signalFileName);
 
   return EXIT_SUCCESS;
 }

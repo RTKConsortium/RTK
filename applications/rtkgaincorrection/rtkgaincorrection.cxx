@@ -19,6 +19,7 @@
 #include "rtkgaincorrection_ggo.h"
 #include "rtkGgoFunctions.h"
 #include "rtkConfiguration.h"
+
 #include "rtkConstantImageSource.h"
 #include "rtkPolynomialGainCorrectionImageFilter.h"
 #ifdef RTK_USE_CUDA
@@ -27,8 +28,8 @@
 
 #include <string>
 
-#include <itkImageFileWriter.h>
 #include <itkExtractImageFilter.h>
+#include <itkImageFileWriter.h>
 #include <itkPasteImageFilter.h>
 
 int

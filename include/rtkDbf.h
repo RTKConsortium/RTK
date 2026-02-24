@@ -21,11 +21,11 @@
 
 #include "RTKExport.h"
 #include "itkWin32Header.h"
-#include <string>
-#include <fstream>
-#include <vector>
-#include <map>
 #include <cstdlib>
+#include <fstream>
+#include <map>
+#include <string>
+#include <vector>
 
 namespace rtk
 {
@@ -50,19 +50,19 @@ public:
   {
     return m_Name;
   }
-  char
+  [[nodiscard]] char
   GetType() const
   {
     return m_Type;
   }
-  short
+  [[nodiscard]] short
   GetLength() const
   {
     return m_Length;
   }
 
   /** Memory offset from beginning of the record */
-  short
+  [[nodiscard]] short
   GetRecOffset() const
   {
     return m_RecOffset;
@@ -89,7 +89,7 @@ class RTK_EXPORT DbfFile
 {
 public:
   /** Constructor initializes the structure and goes to first record */
-  DbfFile(std::string fileName);
+  explicit DbfFile(const std::string & fileName);
   ~DbfFile();
 
   /** Return open status of file stream */
@@ -113,12 +113,12 @@ public:
 
   /** Access to field value of field named fldName */
   std::string
-  GetFieldAsString(std::string fldName);
+  GetFieldAsString(const std::string & fldName);
 
   double
-  GetFieldAsDouble(std::string fldName)
+  GetFieldAsDouble(const std::string & fldName)
   {
-    return std::stod(GetFieldAsString(fldName).c_str());
+    return std::stod(GetFieldAsString(fldName));
   }
 
 private:
@@ -126,9 +126,9 @@ private:
   std::ifstream m_Stream;
 
   /** Global properties of a dbf file */
-  unsigned int   m_NumRecords;
-  unsigned short m_RecordSize;
-  unsigned short m_HeaderSize;
+  unsigned int   m_NumRecords{};
+  unsigned short m_RecordSize{};
+  unsigned short m_HeaderSize{};
 
   /** Set of fields described in the header */
   std::vector<DbfField> m_Fields;

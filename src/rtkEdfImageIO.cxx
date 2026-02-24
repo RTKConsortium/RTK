@@ -17,9 +17,9 @@
  *=========================================================================*/
 
 #include "rtkEdfImageIO.h"
-#include <itk_zlib.h>
 #include <itkByteSwapper.h>
 #include <itkRawImageIO.h>
+#include <itk_zlib.h>
 
 //--------------------------------------------------------------------
 /* Find value_ptr as pointer to the parameter of the given key in the header.
@@ -60,9 +60,9 @@ rtk::EdfImageIO::ReadImageInformation()
     int header_size_prev = header_size;
     header_size += 512;
     if (!header)
-      header = (char *)malloc(header_size + 1);
+      header = static_cast<char *>(malloc(header_size + 1));
     else
-      header = (char *)realloc(header, header_size + 1);
+      header = static_cast<char *>(realloc(header, header_size + 1));
     header[header_size_prev] = 0; /* protection against empty file */
     // fread(header+header_size_prev, 512, 1, fp);
     k = gzread(inp, header + header_size_prev, 512);
@@ -85,7 +85,7 @@ rtk::EdfImageIO::ReadImageInformation()
   if ((p = edf_findInHeader(header, "EDF_BinaryFileName")))
   {
     int plen = strcspn(p, " ;\n");
-    otherfile_name = (char *)realloc(otherfile_name, plen + 1);
+    otherfile_name = static_cast<char *>(realloc(otherfile_name, plen + 1));
     strncpy(otherfile_name, p, plen);
     otherfile_name[plen] = '\0';
     if ((p = edf_findInHeader(header, "EDF_BinaryFilePosition")))
@@ -233,12 +233,10 @@ bool
 rtk::EdfImageIO::CanReadFile(const char * FileNameToRead)
 {
   std::string                  filename(FileNameToRead);
-  const std::string::size_type it = filename.find_last_of(".");
+  const std::string::size_type it = filename.find_last_of('.');
   std::string                  fileExt(filename, it + 1, filename.length());
 
-  if (fileExt != std::string("edf"))
-    return false;
-  return true;
+  return fileExt == std::string("edf");
 } ////
 
 //--------------------------------------------------------------------

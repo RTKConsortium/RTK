@@ -19,12 +19,12 @@
 #ifndef rtkRayEllipsoidIntersectionImageFilter_h
 #define rtkRayEllipsoidIntersectionImageFilter_h
 
-#include <itkInPlaceImageFilter.h>
-#include "rtkThreeDCircularProjectionGeometry.h"
 #include "rtkRayQuadricIntersectionImageFilter.h"
+#include "rtkThreeDCircularProjectionGeometry.h"
+#include <itkInPlaceImageFilter.h>
 
-#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkRayEllipsoidIntersectionImageFilter.h"
+#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 
 namespace rtk
 {

@@ -17,16 +17,16 @@
  *=========================================================================*/
 
 #include "rtki0estimation_ggo.h"
-#include "rtkMacro.h"
 #include "rtkGgoFunctions.h"
+#include "rtkMacro.h"
 
-#include <itkExtractImageFilter.h>
 #include "rtkI0EstimationProjectionFilter.h"
 #include "rtkProjectionsReader.h"
+#include <itkExtractImageFilter.h>
 
-#include <vector>
 #include <algorithm>
 #include <string>
+#include <vector>
 
 int
 main(int argc, char * argv[])
@@ -57,7 +57,7 @@ main(int argc, char * argv[])
 
   int          istep = 1;
   unsigned int imin = 1;
-  auto         imax = (unsigned int)subsetRegion.GetSize()[2];
+  auto         imax = static_cast<unsigned int>(subsetRegion.GetSize()[2]);
   if (args_info.range_given)
   {
     if ((args_info.range_arg[0] <= args_info.range_arg[2]) &&
@@ -65,7 +65,7 @@ main(int argc, char * argv[])
     {
       imin = args_info.range_arg[0];
       istep = args_info.range_arg[1];
-      imax = std::min(unsigned(args_info.range_arg[2]), imax);
+      imax = std::min(static_cast<unsigned>(args_info.range_arg[2]), imax);
     }
   }
 
@@ -109,7 +109,7 @@ main(int argc, char * argv[])
   {
     std::ofstream paramFile;
     paramFile.open(args_info.debug_arg);
-    std::vector<unsigned short>::const_iterator it = I0buffer.begin();
+    auto it = I0buffer.begin();
     for (; it != I0buffer.end(); ++it)
     {
       paramFile << *it << ",";

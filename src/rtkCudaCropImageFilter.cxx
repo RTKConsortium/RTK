@@ -17,15 +17,15 @@
  *=========================================================================*/
 
 #include "rtkCudaCropImageFilter.h"
-#include "rtkCudaUtilities.hcu"
 #include "rtkCudaCropImageFilter.hcu"
+#include "rtkCudaUtilities.hcu"
 
 #include <itkMacro.h>
 
 namespace rtk
 {
 
-CudaCropImageFilter ::CudaCropImageFilter() {}
+CudaCropImageFilter ::CudaCropImageFilter() = default;
 
 // CUDA cropping call
 void
@@ -51,8 +51,8 @@ CudaCropImageFilter ::GPUGenerateData()
   }
 
 #ifdef CudaCommon_VERSION_MAJOR
-  float * pin = (float *)(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
-  float * pout = (float *)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
+  float * pin = static_cast<float *>(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
+  float * pout = static_cast<float *>(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
 #else
   float * pin = *(float **)(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
   float * pout = *(float **)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());

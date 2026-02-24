@@ -19,9 +19,9 @@
 #include "rtkprojectgeometricphantom_ggo.h"
 #include "rtkGgoFunctions.h"
 
-#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
-#include "rtkRayEllipsoidIntersectionImageFilter.h"
 #include "rtkProjectGeometricPhantomImageFilter.h"
+#include "rtkRayEllipsoidIntersectionImageFilter.h"
+#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 
 #include <itkImageFileWriter.h>
 
@@ -89,7 +89,7 @@ main(int argc, char * argv[])
     }
     for (unsigned int i = 0; i < Dimension; i++)
       for (unsigned int j = 0; j < Dimension; j++)
-        rot[i][j] = args_info.rotation_arg[i * Dimension + j];
+        rot[i][j] = args_info.rotation_arg[(i * Dimension) + j];
   }
 
   auto ppc = PPCType::New();

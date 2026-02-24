@@ -19,10 +19,10 @@
 #ifndef rtkFFTHilbertImageFilter_h
 #define rtkFFTHilbertImageFilter_h
 
-#include <itkConceptChecking.h>
 #include "rtkConfiguration.h"
 #include "rtkFFTProjectionsConvolutionImageFilter.h"
 #include "rtkMacro.h"
+#include <itkConceptChecking.h>
 
 namespace rtk
 {
@@ -96,11 +96,11 @@ protected:
   /** Create and return a pointer to one line of the Hilbert kernel in Fourier space.
    *  Used in generate data functions.  */
   void
-  UpdateFFTProjectionsConvolutionKernel(const SizeType s) override;
+  UpdateFFTProjectionsConvolutionKernel(SizeType s) override;
 
 private:
   SizeType m_PreviousKernelUpdateSize;
-  double   m_PixelShift;
+  double   m_PixelShift{};
 
 }; // end of class
 

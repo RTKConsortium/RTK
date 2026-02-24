@@ -31,7 +31,7 @@ rtk::HndImageIO::ReadImageInformation()
   Hnd_header hnd;
   FILE *     fp = nullptr;
 
-  fp = fopen(m_FileName.c_str(), "rb");
+  fp = fopen(m_FileName.c_str(), "rbe");
   if (fp == nullptr)
     itkGenericExceptionMacro(<< "Could not open file (for reading): " << m_FileName);
 
@@ -134,12 +134,10 @@ bool
 rtk::HndImageIO::CanReadFile(const char * FileNameToRead)
 {
   std::string                  filename(FileNameToRead);
-  const std::string::size_type it = filename.find_last_of(".");
+  const std::string::size_type it = filename.find_last_of('.');
   std::string                  fileExt(filename, it + 1, filename.length());
 
-  if (fileExt != std::string("hnd"))
-    return false;
-  return true;
+  return fileExt == std::string("hnd");
 }
 
 //--------------------------------------------------------------------
@@ -195,9 +193,9 @@ rtk::HndImageIO::Read(void * buffer)
   FILE * fp = nullptr;
   // Long is only garanteed to be AT LEAST 32 bits, it could be 64 bit
   using Int4 = itk::uint32_t;
-  Int4 * buf = (Int4 *)buffer;
+  Int4 * buf = static_cast<Int4 *>(buffer);
 
-  fp = fopen(m_FileName.c_str(), "rb");
+  fp = fopen(m_FileName.c_str(), "rbe");
   if (fp == nullptr)
     itkGenericExceptionMacro(<< "Could not open file (for reading): " << m_FileName);
 
@@ -209,7 +207,7 @@ rtk::HndImageIO::Read(void * buffer)
   const size_t lookUpTableSize = (ydim - 1) * xdim / 4;
   // De"compress" image
   auto m_lookup_table = std::vector<unsigned char>(lookUpTableSize);
-  if (lookUpTableSize != fread((void *)&m_lookup_table[0], sizeof(unsigned char), lookUpTableSize, fp))
+  if (lookUpTableSize != fread((void *)m_lookup_table.data(), sizeof(unsigned char), lookUpTableSize, fp))
   {
     itkGenericExceptionMacro(<< "Could not read lookup table from Hnd file: " << m_FileName);
   }
@@ -232,11 +230,11 @@ rtk::HndImageIO::Read(void * buffer)
     return bytes;
   });
 
-  const auto total_bytes = std::accumulate(std::begin(byte_table), std::end(byte_table), 0ull);
+  const auto total_bytes = std::accumulate(std::begin(byte_table), std::end(byte_table), 0ULL);
 
   auto compr_img_buffer = std::vector<unsigned char>(total_bytes);
   // total_bytes - 3 because the last two bits can be redundant (according to Xim docs)
-  if ((total_bytes - 3) > fread((void *)&compr_img_buffer[0], sizeof(unsigned char), total_bytes, fp))
+  if ((total_bytes - 3) > fread((void *)compr_img_buffer.data(), sizeof(unsigned char), total_bytes, fp))
   {
     itkGenericExceptionMacro(<< "Could not read image buffer of Hnd file: " << m_FileName);
   }
@@ -299,5 +297,5 @@ rtk::HndImageIO::CanWriteFile(const char * itkNotUsed(FileNameToWrite))
 void
 rtk::HndImageIO::Write(const void * itkNotUsed(buffer))
 {
-  // TODO?
+  // TODO(itk-developer): ?
 }

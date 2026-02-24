@@ -19,10 +19,10 @@
 #ifndef rtkFFTRampImageFilter_h
 #define rtkFFTRampImageFilter_h
 
-#include <itkConceptChecking.h>
 #include "rtkConfiguration.h"
 #include "rtkFFTProjectionsConvolutionImageFilter.h"
 #include "rtkMacro.h"
+#include <itkConceptChecking.h>
 
 // The Set macro is redefined to clear the current FFT kernel when a parameter
 // is modified.
@@ -147,7 +147,7 @@ protected:
   /** Creates and return a pointer to one line of the ramp kernel in Fourier space.
    *  Used in generate data functions.  */
   void
-  UpdateFFTProjectionsConvolutionKernel(const SizeType s) override;
+  UpdateFFTProjectionsConvolutionKernel(SizeType s) override;
 
   SizeType m_PreviousKernelUpdateSize;
 

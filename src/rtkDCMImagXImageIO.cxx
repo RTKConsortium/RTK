@@ -18,8 +18,8 @@
 
 #include "rtkDCMImagXImageIO.h"
 
-#include <gdcmImageReader.h>
 #include <gdcmAttribute.h>
+#include <gdcmImageReader.h>
 
 void
 rtk::DCMImagXImageIO::ReadImageInformation()
@@ -47,7 +47,7 @@ rtk::DCMImagXImageIO::CanReadFile(const char * FileNameToRead)
   at1.SetFromDataSet(ds);
   std::string value = at1.GetValue();
 
-  return bool(value == "IBA ");
+  return (value == "IBA ");
 }
 
 bool

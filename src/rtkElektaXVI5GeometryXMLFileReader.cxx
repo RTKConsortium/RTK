@@ -18,9 +18,9 @@
 
 #include "rtkElektaXVI5GeometryXMLFileReader.h"
 
-#include <itksys/SystemTools.hxx>
-#include <itkMetaDataObject.h>
 #include <itkIOCommon.h>
+#include <itkMetaDataObject.h>
+#include <itksys/SystemTools.hxx>
 
 #include <iomanip>
 
@@ -57,7 +57,7 @@ ElektaXVI5GeometryXMLFileReader::EndElement(const char * name)
       itksys::SystemTools::Strucmp(name, "antryAngle") == 0 || // Seen in anonymized _Frames.xml files
       itksys::SystemTools::Strucmp(name, "Gantryngle") == 0)   // Seen in anonymized _Frames.xml files
   {
-    m_GantryAngle = std::stod(this->m_CurCharacterData.c_str());
+    m_GantryAngle = std::stod(this->m_CurCharacterData);
     if (m_GantryAngle < 0)
       m_GantryAngle = m_GantryAngle + 360.0;
   }
@@ -66,12 +66,12 @@ ElektaXVI5GeometryXMLFileReader::EndElement(const char * name)
   // Therefore, negation is required to get classical m_ProjectionOffsetX and m_ProjectionOffsetY values.
   if (itksys::SystemTools::Strucmp(name, "UCentre") == 0 ||
       itksys::SystemTools::Strucmp(name, "Uentre") == 0) // Seen in anonymized _Frames.xml files
-    m_ProjectionOffsetX = std::stod(this->m_CurCharacterData.c_str()) * -1.0;
+    m_ProjectionOffsetX = std::stod(this->m_CurCharacterData) * -1.0;
 
   if (itksys::SystemTools::Strucmp(name, "VCentre") == 0 ||
       itksys::SystemTools::Strucmp(name, "Ventre") == 0) // Seen in anonymized _Frames.xml files
   {
-    m_ProjectionOffsetY = std::stod(this->m_CurCharacterData.c_str()) * -1.0;
+    m_ProjectionOffsetY = std::stod(this->m_CurCharacterData) * -1.0;
   }
 
   if (itksys::SystemTools::Strucmp(name, "Frame") == 0)

@@ -23,7 +23,10 @@
 #include "rtkXimImageIO.h"
 #include <itkMetaDataObject.h>
 
-#define PROPERTY_NAME_MAX_LENGTH 256
+enum
+{
+  PROPERTY_NAME_MAX_LENGTH = 256
+};
 
 template <typename T>
 size_t
@@ -106,7 +109,7 @@ rtk::XimImageIO::ReadImageInformation()
   Xim_header xim;
   FILE *     fp = nullptr;
 
-  fp = fopen(m_FileName.c_str(), "rb");
+  fp = fopen(m_FileName.c_str(), "rbe");
   if (fp == nullptr)
     itkGenericExceptionMacro(<< "Could not open file (for reading): " << m_FileName);
   size_t nelements = 0;
@@ -269,7 +272,7 @@ rtk::XimImageIO::CanReadFile(const char * FileNameToRead)
     return false;
 
   FILE * fp = nullptr;
-  fp = fopen(filename.c_str(), "rb");
+  fp = fopen(filename.c_str(), "rbe");
   if (fp == nullptr)
   {
     std::cerr << "Could not open file (for reading): " << m_FileName << std::endl;
@@ -359,9 +362,9 @@ rtk::XimImageIO::Read(void * buffer)
 {
   FILE * fp = nullptr;
   // Long is only garanteed to be AT LEAST 32 bits, it could be 64 bit
-  Int4 * buf = (Int4 *)buffer;
+  Int4 * buf = static_cast<Int4 *>(buffer);
 
-  fp = fopen(m_FileName.c_str(), "rb");
+  fp = fopen(m_FileName.c_str(), "rbe");
   if (fp == nullptr)
     itkGenericExceptionMacro(<< "Could not open file (for reading): " << m_FileName);
 
@@ -375,7 +378,8 @@ rtk::XimImageIO::Read(void * buffer)
     itkGenericExceptionMacro(<< "Could not read LUT size from: " << m_FileName);
   }
   auto m_lookup_table = std::vector<unsigned char>(lookUpTableSize);
-  if (lookUpTableSize != (Int4)fread((void *)&m_lookup_table[0], sizeof(unsigned char), lookUpTableSize, fp))
+  if (lookUpTableSize !=
+      static_cast<Int4>(fread((void *)m_lookup_table.data(), sizeof(unsigned char), lookUpTableSize, fp)))
   {
     itkGenericExceptionMacro(<< "Could not read lookup table from Xim file: " << m_FileName);
   }
@@ -406,11 +410,11 @@ rtk::XimImageIO::Read(void * buffer)
     return bytes;
   });
 
-  const auto total_bytes = std::accumulate(std::begin(byte_table), std::end(byte_table), 0ull);
+  const auto total_bytes = std::accumulate(std::begin(byte_table), std::end(byte_table), 0ULL);
 
   auto compr_img_buffer = std::vector<unsigned char>(total_bytes);
   // total_bytes - 3 because the last two bits can be redundant (according to Xim docs)
-  if ((total_bytes - 3) > fread((void *)&compr_img_buffer[0], sizeof(unsigned char), total_bytes, fp))
+  if ((total_bytes - 3) > fread((void *)compr_img_buffer.data(), sizeof(unsigned char), total_bytes, fp))
   {
     itkGenericExceptionMacro(<< "Could not read image buffer of Xim file: " << m_FileName);
   }
@@ -473,5 +477,5 @@ rtk::XimImageIO::CanWriteFile(const char * itkNotUsed(FileNameToWrite))
 void
 rtk::XimImageIO::Write(const void * itkNotUsed(buffer))
 {
-  // TODO?
+  // TODO(itk-developer): ?
 }

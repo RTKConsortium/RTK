@@ -1,12 +1,12 @@
 #include "rtkTest.h"
-#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
+#include "rtkConstantImageSource.h"
+#include "rtkDrawSheppLoganFilter.h"
 #include "rtkRayBoxIntersectionImageFilter.h"
 #include "rtkSheppLoganPhantomFilter.h"
-#include "rtkDrawSheppLoganFilter.h"
-#include "rtkConstantImageSource.h"
+#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 
-#include <itkStreamingImageFilter.h>
 #include <itkImageRegionSplitterDirection.h>
+#include <itkStreamingImageFilter.h>
 
 #ifdef USE_CUDA
 #  include "rtkCudaForwardProjectionImageFilter.h"
@@ -111,8 +111,8 @@ main(int, char **)
     auto geometry = GeometryType::New();
     for (unsigned int i = 0; i < NumberOfProjectionImages; i++)
     {
-      const double angle = -45. + i * 2.;
-      geometry->AddProjection(47.6 / std::cos(angle * itk::Math::pi / 180.), 1000., q * 90 + angle);
+      const double angle = -45. + (i * 2.);
+      geometry->AddProjection(47.6 / std::cos(angle * itk::Math::pi / 180.), 1000., (q * 90) + angle);
     }
 
     if (q == 0)

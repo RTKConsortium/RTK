@@ -20,8 +20,8 @@
 #define rtkRayBoxIntersectionImageFilter_h
 
 #include "rtkRayConvexIntersectionImageFilter.h"
-#include "rtkConfiguration.h"
 #include "rtkBoxShape.h"
+#include "rtkConfiguration.h"
 
 namespace rtk
 {

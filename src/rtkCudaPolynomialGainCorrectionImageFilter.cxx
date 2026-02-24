@@ -22,9 +22,9 @@
 namespace rtk
 {
 
-CudaPolynomialGainCorrectionImageFilter ::CudaPolynomialGainCorrectionImageFilter() {}
+CudaPolynomialGainCorrectionImageFilter ::CudaPolynomialGainCorrectionImageFilter() = default;
 
-CudaPolynomialGainCorrectionImageFilter ::~CudaPolynomialGainCorrectionImageFilter() {}
+CudaPolynomialGainCorrectionImageFilter ::~CudaPolynomialGainCorrectionImageFilter() = default;
 
 void
 CudaPolynomialGainCorrectionImageFilter ::GPUGenerateData()
@@ -100,7 +100,7 @@ CudaPolynomialGainCorrectionImageFilter ::GPUGenerateData()
                        outBuffer,
                        darkBuffer,
                        gainBuffer,
-                       &m_PowerLut[0],
+                       m_PowerLut.data(),
                        LUT_size,
                        coefficients);
 }

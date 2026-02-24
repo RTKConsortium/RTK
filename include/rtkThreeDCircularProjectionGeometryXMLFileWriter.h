@@ -24,8 +24,8 @@
 #endif
 
 #include "RTKExport.h"
-#include <itkXMLFile.h>
 #include "rtkThreeDCircularProjectionGeometry.h"
+#include <itkXMLFile.h>
 
 namespace rtk
 {
@@ -93,7 +93,7 @@ ITK_TEMPLATE_EXPORT void
 WriteGeometry(TGeometryPointer && geometry, const std::string & filename)
 {
   using NonReferenceImagePointer = std::remove_reference_t<TGeometryPointer>;
-  static_assert(std::is_pointer<NonReferenceImagePointer>::value ||
+  static_assert(std::is_pointer_v<NonReferenceImagePointer> ||
                   itk::mpl::IsSmartPointer<NonReferenceImagePointer>::Value,
                 "WriteGeometry requires a raw pointer or SmartPointer.");
 

@@ -22,12 +22,12 @@
 #include <itkMultiplyImageFilter.h>
 #include <itkSubtractImageFilter.h>
 
-#include "rtkConjugateGradientOperator.h"
 #include "rtkBackProjectionImageFilter.h"
-#include "rtkForwardProjectionImageFilter.h"
-#include "rtkForwardDifferenceGradientImageFilter.h"
 #include "rtkBackwardDifferenceDivergenceImageFilter.h"
+#include "rtkConjugateGradientOperator.h"
 #include "rtkDisplacedDetectorImageFilter.h"
+#include "rtkForwardDifferenceGradientImageFilter.h"
+#include "rtkForwardProjectionImageFilter.h"
 #include "rtkMultiplyByVectorImageFilter.h"
 #include "rtkThreeDCircularProjectionGeometry.h"
 

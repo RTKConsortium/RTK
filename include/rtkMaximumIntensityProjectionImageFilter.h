@@ -52,13 +52,13 @@ public:
     return !(*this != other);
   }
 
-  inline void
+  void
   operator()(const ThreadIdType itkNotUsed(threadId),
              TOutput &          mipValue,
              const TInput       volumeValue,
              const VectorType & itkNotUsed(stepInMM))
   {
-    TOutput tmp = static_cast<TOutput>(volumeValue);
+    auto tmp = static_cast<TOutput>(volumeValue);
     if (tmp > mipValue)
     {
       mipValue = tmp;
@@ -90,7 +90,7 @@ public:
     return !(*this != other);
   }
 
-  inline void
+  void
   operator()(const ThreadIdType itkNotUsed(threadId),
              const TInput &     input,
              TOutput &          output,
@@ -101,7 +101,7 @@ public:
              const VectorType & itkNotUsed(nearestPoint),
              const VectorType & itkNotUsed(farthestPoint)) const
   {
-    TOutput tmp = static_cast<TOutput>(input);
+    auto tmp = static_cast<TOutput>(input);
     if (tmp < rayCastValue)
     {
       tmp = rayCastValue;

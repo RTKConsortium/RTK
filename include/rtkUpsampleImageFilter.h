@@ -19,8 +19,8 @@
 #ifndef rtkUpsampleImageFilter_h
 #define rtkUpsampleImageFilter_h
 
-#include <itkImageToImageFilter.h>
 #include <itkImageRegionSplitterDirection.h>
+#include <itkImageToImageFilter.h>
 
 namespace rtk
 {
@@ -143,7 +143,7 @@ private:
   typename TOutputImage::SizeType  m_OutputSize;
   typename TOutputImage::IndexType m_OutputIndex;
 
-  const itk::ImageRegionSplitterBase *
+  [[nodiscard]] const itk::ImageRegionSplitterBase *
                                              GetImageRegionSplitter() const override;
   itk::ImageRegionSplitterDirection::Pointer m_Splitter;
 };

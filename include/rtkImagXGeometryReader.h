@@ -19,8 +19,8 @@
 #ifndef rtkImagXGeometryReader_h
 #define rtkImagXGeometryReader_h
 
-#include <itkLightProcessObject.h>
 #include "rtkThreeDCircularProjectionGeometry.h"
+#include <itkLightProcessObject.h>
 
 #include <vector>
 
@@ -95,9 +95,7 @@ public:
 
 protected:
   ImagXGeometryReader()
-    : m_Geometry(nullptr)
-    , m_CalibrationXMLFileName("")
-    , m_RoomXMLFileName("") {};
+    : m_Geometry(nullptr) {};
 
   ~ImagXGeometryReader() override = default;
 
@@ -118,12 +116,12 @@ private:
   // Structure containing the flexmap (for AI versions >= 2.0)
   struct FlexmapType
   {
-    bool               isValid;
+    bool               isValid{};
     std::string        activeArcName;
     std::string        activeGeocalUID;
-    float              sid, sdd, sourceToNozzleOffsetAngle;
-    float              constantDetectorOffset, xMinus, xPlus;
-    bool               isCW;
+    float              sid{}, sdd{}, sourceToNozzleOffsetAngle{};
+    float              constantDetectorOffset{}, xMinus{}, xPlus{};
+    bool               isCW{};
     std::vector<float> anglesDeg;  // Gantry angles [deg]
     std::vector<float> Px, Py, Pz, // Detector translations
       Rx, Ry, Rz,                  // Detector rotations
@@ -145,24 +143,24 @@ private:
   // Structure containing the calibration models (for AI versions < 2.0)
   struct CalibrationModelType
   {
-    bool               isValid;
-    float              sid, sdd, sourceToNozzleOffsetAngle;
+    bool               isValid{};
+    float              sid{}, sdd{}, sourceToNozzleOffsetAngle;
     std::vector<float> Px, Py, Pz, // Detector translations model
       Rx, Ry, Rz,                  // Detector rotations model
       Tx, Ty, Tz;                  // Source translations model
 
     CalibrationModelType()
     {
-      sourceToNozzleOffsetAngle = -90.f;
-      Px = std::vector<float>(5, 0.f);
-      Py = std::vector<float>(5, 0.f);
-      Pz = std::vector<float>(5, 0.f);
-      Rx = std::vector<float>(5, 0.f);
-      Ry = std::vector<float>(5, 0.f);
-      Rz = std::vector<float>(5, 0.f);
-      Tx = std::vector<float>(5, 0.f);
-      Ty = std::vector<float>(5, 0.f);
-      Tz = std::vector<float>(5, 0.f);
+      sourceToNozzleOffsetAngle = -90.F;
+      Px = std::vector<float>(5, 0.F);
+      Py = std::vector<float>(5, 0.F);
+      Pz = std::vector<float>(5, 0.F);
+      Rx = std::vector<float>(5, 0.F);
+      Ry = std::vector<float>(5, 0.F);
+      Rz = std::vector<float>(5, 0.F);
+      Tx = std::vector<float>(5, 0.F);
+      Ty = std::vector<float>(5, 0.F);
+      Tz = std::vector<float>(5, 0.F);
     }
   };
 

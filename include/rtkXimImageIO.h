@@ -54,7 +54,7 @@ public:
   using PixelType = signed short int;
   using Int4 = itk::int32_t; // int of 4 bytes as in xim docs
 
-  typedef struct xim_header
+  using Xim_header = struct xim_header
   {
     // Actual Header:
     char sFileType[32];
@@ -97,11 +97,9 @@ public:
     double       dGating4DInfoY;
     double       dGating4DInfoZ;
     // double dGating4DInfoTime;
-  } Xim_header;
+  } __attribute__((aligned(128)));
 
-  XimImageIO()
-    : Superclass()
-  {}
+  XimImageIO() {}
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -141,8 +139,8 @@ private:
   size_t
   SetPropertyValue(char * property_name, Int4 value_length, FILE * fp, Xim_header * xim);
 
-  int  m_ImageDataStart;
-  Int4 m_BytesPerPixel;
+  int  m_ImageDataStart{};
+  Int4 m_BytesPerPixel{};
 
 }; // end class XimImageIO
 

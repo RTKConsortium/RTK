@@ -20,8 +20,8 @@
 #define rtkSignalToInterpolationWeights_h
 
 #include "RTKExport.h"
-#include "itkCSVFileReaderBase.h"
 #include "itkArray2D.h"
+#include "itkCSVFileReaderBase.h"
 
 namespace rtk
 {
@@ -80,7 +80,7 @@ public:
 
   /** Set the input signal */
   void
-  SetSignal(const std::vector<double> signal);
+  SetSignal(const std::vector<double> & signal);
 
 protected:
   SignalToInterpolationWeights();

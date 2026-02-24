@@ -1,8 +1,8 @@
 #include "rtkTest.h"
-#include "rtkDrawGeometricPhantomImageFilter.h"
 #include "rtkConstantImageSource.h"
-#include "rtkProjectGeometricPhantomImageFilter.h"
+#include "rtkDrawGeometricPhantomImageFilter.h"
 #include "rtkFDKConeBeamReconstructionFilter.h"
+#include "rtkProjectGeometricPhantomImageFilter.h"
 
 /**
  * \file rtkforbildtest.cxx

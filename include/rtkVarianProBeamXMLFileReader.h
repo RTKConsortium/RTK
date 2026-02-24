@@ -23,11 +23,11 @@
 #  pragma warning(disable : 4786)
 #endif
 
-#include <itkXMLFile.h>
-#include <itkMetaDataDictionary.h>
-#include <itkMetaDataObject.h>
 #include "RTKExport.h"
 #include "rtkMacro.h"
+#include <itkMetaDataDictionary.h>
+#include <itkMetaDataObject.h>
+#include <itkXMLFile.h>
 
 namespace rtk
 {

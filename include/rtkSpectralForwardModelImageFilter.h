@@ -22,9 +22,9 @@
 #include "rtkSchlomka2008NegativeLogLikelihood.h"
 #include "rtkVectorImageToImageFilter.h"
 
-#include <itkPermuteAxesImageFilter.h>
-#include <itkInPlaceImageFilter.h>
 #include <itkCastImageFilter.h>
+#include <itkInPlaceImageFilter.h>
+#include <itkPermuteAxesImageFilter.h>
 
 namespace rtk
 {
@@ -212,7 +212,7 @@ template <typename OutputElementType, typename DetectorResponseImageType, typena
 vnl_matrix<OutputElementType>
 SpectralBinDetectorResponse(const DetectorResponseImageType * drm,
                             const ThresholdsType &            thresholds,
-                            const unsigned int                numberOfEnergies);
+                            unsigned int                      numberOfEnergies);
 
 } // end namespace rtk
 

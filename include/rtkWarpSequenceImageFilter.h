@@ -21,15 +21,15 @@
 
 #include "rtkConstantImageSource.h"
 
-#include <itkExtractImageFilter.h>
-#include <itkPasteImageFilter.h>
 #include <itkCastImageFilter.h>
+#include <itkExtractImageFilter.h>
 #include <itkNearestNeighborInterpolateImageFunction.h>
+#include <itkPasteImageFilter.h>
 
 #ifdef RTK_USE_CUDA
-#  include "rtkCudaWarpImageFilter.h"
-#  include "rtkCudaForwardWarpImageFilter.h"
 #  include "rtkCudaCyclicDeformationImageFilter.h"
+#  include "rtkCudaForwardWarpImageFilter.h"
+#  include "rtkCudaWarpImageFilter.h"
 #else
 #  include <itkWarpImageFilter.h>
 #  include "rtkForwardWarpImageFilter.h"

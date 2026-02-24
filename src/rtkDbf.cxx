@@ -30,7 +30,7 @@ DbfField::DbfField(std::string name, char type, unsigned char length, short recO
   , m_RecOffset(recOffset)
 {}
 
-DbfFile::DbfFile(std::string fileName)
+DbfFile::DbfFile(const std::string & fileName)
 {
   m_Stream.open(fileName.c_str(), std::ios_base::in | std::ios_base::binary);
   if (!m_Stream.is_open())
@@ -40,9 +40,9 @@ DbfFile::DbfFile(std::string fileName)
   m_Stream.seekg(4);
 
   // Read number of records, header size, record size
-  m_Stream.read((char *)&m_NumRecords, sizeof(m_NumRecords));
-  m_Stream.read((char *)&m_HeaderSize, sizeof(m_HeaderSize));
-  m_Stream.read((char *)&m_RecordSize, sizeof(m_RecordSize));
+  m_Stream.read(reinterpret_cast<char *>(&m_NumRecords), sizeof(m_NumRecords));
+  m_Stream.read(reinterpret_cast<char *>(&m_HeaderSize), sizeof(m_HeaderSize));
+  m_Stream.read(reinterpret_cast<char *>(&m_RecordSize), sizeof(m_RecordSize));
 
   // Record allocation
   m_Record = new char[m_RecordSize];
@@ -65,14 +65,14 @@ DbfFile::DbfFile(std::string fileName)
 
     // Field types
     char fldType = 0;
-    m_Stream.read((char *)&fldType, sizeof(fldType));
+    m_Stream.read((&fldType), sizeof(fldType));
 
     // Skip displacement of field in record?
     m_Stream.seekg(4, std::ios_base::cur);
 
     // Field length
     unsigned char fldLength = 0;
-    m_Stream.read((char *)&fldLength, sizeof(fldLength));
+    m_Stream.read(reinterpret_cast<char *>(&fldLength), sizeof(fldLength));
 
     // Add field and go to next
     m_Fields.emplace_back(fldName, fldType, fldLength, fldRecOffset);
@@ -98,7 +98,7 @@ DbfFile::ReadNextRecord()
 }
 
 std::string
-DbfFile::GetFieldAsString(std::string fldName)
+DbfFile::GetFieldAsString(const std::string & fldName)
 {
   DbfField &  field = m_Fields[m_MapFieldNameIndex[fldName]];
   std::string result(m_Record + field.GetRecOffset(), field.GetLength());

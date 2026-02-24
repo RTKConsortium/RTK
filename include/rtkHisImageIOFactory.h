@@ -79,7 +79,7 @@ protected:
   HisImageIOFactory();
   ~HisImageIOFactory() override = default;
   using myProductType = HisImageIOFactory;
-  const myProductType * m_MyProduct;
+  const myProductType * m_MyProduct{};
 };
 
 } // namespace rtk

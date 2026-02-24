@@ -18,8 +18,8 @@
 #ifndef rtkConditionalMedianImageFilter_h
 #define rtkConditionalMedianImageFilter_h
 
-#include <itkInPlaceImageFilter.h>
 #include <itkConstNeighborhoodIterator.h>
+#include <itkInPlaceImageFilter.h>
 #include <itkVectorImage.h>
 
 #include "RTKExport.h"

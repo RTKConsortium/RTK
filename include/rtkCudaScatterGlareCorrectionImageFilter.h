@@ -24,8 +24,8 @@
 #ifdef RTK_USE_CUDA
 
 
-#  include "rtkScatterGlareCorrectionImageFilter.h"
 #  include "rtkCudaFFTProjectionsConvolutionImageFilter.h"
+#  include "rtkScatterGlareCorrectionImageFilter.h"
 namespace rtk
 {
 
@@ -61,7 +61,7 @@ public:
 
 protected:
   CudaScatterGlareCorrectionImageFilter() {}
-  ~CudaScatterGlareCorrectionImageFilter() {}
+  ~CudaScatterGlareCorrectionImageFilter() override = default;
 
 }; // end of class
 

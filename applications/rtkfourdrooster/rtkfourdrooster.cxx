@@ -20,9 +20,9 @@
 #include "rtkGgoFunctions.h"
 
 #include "rtkFourDROOSTERConeBeamReconstructionFilter.h"
-#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
-#include "rtkSignalToInterpolationWeights.h"
 #include "rtkReorderProjectionsImageFilter.h"
+#include "rtkSignalToInterpolationWeights.h"
+#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 
 #ifdef RTK_USE_CUDA
 #  include "itkCudaImage.h"

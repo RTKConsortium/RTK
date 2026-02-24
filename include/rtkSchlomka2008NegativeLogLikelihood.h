@@ -22,9 +22,9 @@
 #include "rtkProjectionsDecompositionNegativeLogLikelihood.h"
 #include "rtkMacro.h"
 
-#include <itkVectorImage.h>
 #include <itkVariableLengthVector.h>
 #include <itkVariableSizeMatrix.h>
+#include <itkVectorImage.h>
 
 namespace rtk
 {
@@ -133,7 +133,7 @@ public:
     long double measure = 0;
     // Compute the negative log likelihood from the lambdas
     for (unsigned int i = 0; i < m_NumberOfSpectralBins; i++)
-      measure += forward[i] - std::log((long double)forward[i]) * m_MeasuredData[i];
+      measure += forward[i] - std::log(static_cast<long double>(forward[i])) * m_MeasuredData[i];
     return measure;
   }
 

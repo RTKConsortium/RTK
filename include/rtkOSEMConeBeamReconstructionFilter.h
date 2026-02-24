@@ -20,14 +20,14 @@
 #define rtkOSEMConeBeamReconstructionFilter_h
 
 #include "rtkBackProjectionImageFilter.h"
-#include "rtkForwardProjectionImageFilter.h"
 #include "rtkDePierroRegularizationImageFilter.h"
+#include "rtkForwardProjectionImageFilter.h"
 
-#include <itkExtractImageFilter.h>
-#include <itkMultiplyImageFilter.h>
 #include <itkAddImageAdaptor.h>
 #include <itkDivideImageFilter.h>
 #include <itkDivideOrZeroOutImageFilter.h>
+#include <itkExtractImageFilter.h>
+#include <itkMultiplyImageFilter.h>
 
 #include "rtkConstantImageSource.h"
 #include "rtkIterativeConeBeamReconstructionFilter.h"

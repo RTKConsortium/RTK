@@ -17,8 +17,8 @@
  *=========================================================================*/
 
 #include "rtkXRadImageIO.h"
-#include <itkMetaDataObject.h>
 #include <itkByteSwapper.h>
+#include <itkMetaDataObject.h>
 #include <itkRawImageIO.h>
 
 //--------------------------------------------------------------------
@@ -33,7 +33,7 @@ rtk::XRadImageIO::ReadImageInformation()
     itkExceptionMacro(<< "Could not open file " << m_FileName);
 
   SetNumberOfDimensions(3);
-  std::string section = "";
+  std::string section;
   while (!is.eof())
   {
     std::string line;
@@ -51,31 +51,31 @@ rtk::XRadImageIO::ReadImageInformation()
       std::string  paramValue = line.substr(pos + 1, line.length() - pos - 1);
 
       if (paramName == std::string("CBCT.DimensionalAttributes.IDim"))
-        SetDimensions(0, std::stoi(paramValue.c_str()));
+        SetDimensions(0, std::stoi(paramValue));
       else if (paramName == std::string("CBCT.DimensionalAttributes.JDim"))
-        SetDimensions(1, std::stoi(paramValue.c_str()));
+        SetDimensions(1, std::stoi(paramValue));
       else if (paramName == std::string("CBCT.DimensionalAttributes.KDim"))
-        SetDimensions(2, std::stoi(paramValue.c_str()));
+        SetDimensions(2, std::stoi(paramValue));
       else if (paramName == std::string("CBCT.DimensionalAttributes.DataSize"))
       {
-        if (std::stoi(paramValue.c_str()) == 3)
+        if (std::stoi(paramValue) == 3)
           SetComponentType(itk::ImageIOBase::IOComponentEnum::FLOAT);
-        if (std::stoi(paramValue.c_str()) == 6)
+        if (std::stoi(paramValue) == 6)
           SetComponentType(itk::ImageIOBase::IOComponentEnum::USHORT);
       }
       else if (paramName == std::string("CBCT.DimensionalAttributes.PixelDimension_I_cm"))
       {
-        double spacing = 10 * std::stod(paramValue.c_str());
+        double spacing = 10 * std::stod(paramValue);
         SetSpacing(0, (spacing == 0.) ? 1. : spacing);
       }
       else if (paramName == std::string("CBCT.DimensionalAttributes.PixelDimension_J_cm"))
       {
-        double spacing = 10 * std::stod(paramValue.c_str());
+        double spacing = 10 * std::stod(paramValue);
         SetSpacing(1, (spacing == 0.) ? 1. : spacing);
       }
       else if (paramName == std::string("CBCT.DimensionalAttributes.PixelDimension_K_cm"))
       {
-        double spacing = 10 * std::stod(paramValue.c_str());
+        double spacing = 10 * std::stod(paramValue);
         SetSpacing(2, (spacing == 0.) ? 1. : spacing);
       }
       else
@@ -93,12 +93,10 @@ bool
 rtk::XRadImageIO::CanReadFile(const char * FileNameToRead)
 {
   std::string                  filename(FileNameToRead);
-  const std::string::size_type it = filename.find_last_of(".");
+  const std::string::size_type it = filename.find_last_of('.');
   std::string                  fileExt(filename, it + 1, filename.length());
 
-  if (fileExt != std::string("header"))
-    return false;
-  return true;
+  return fileExt == std::string("header");
 } ////
 
 //--------------------------------------------------------------------

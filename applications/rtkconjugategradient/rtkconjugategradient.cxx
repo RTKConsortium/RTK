@@ -19,12 +19,12 @@
 #include "rtkconjugategradient_ggo.h"
 #include "rtkGgoFunctions.h"
 
-#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkConjugateGradientConeBeamReconstructionFilter.h"
 #include "rtkIterationCommands.h"
+#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 
-#include <iostream>
 #include <fstream>
+#include <iostream>
 #include <iterator>
 
 #ifdef RTK_USE_CUDA

@@ -19,11 +19,11 @@
 #include "rtkImagXImageIO.h"
 #include "rtkImagXXMLFileReader.h"
 
-#include <itksys/SystemTools.hxx>
-#include <itkMetaDataObject.h>
-#include <itkMatrix.h>
 #include <itkByteSwapper.h>
+#include <itkMatrix.h>
+#include <itkMetaDataObject.h>
 #include <itkRawImageIO.h>
+#include <itksys/SystemTools.hxx>
 
 //--------------------------------------------------------------------
 // Read Image Information
@@ -136,10 +136,7 @@ rtk::ImagXImageIO::CanReadFile(const char * FileNameToRead)
     return true;
 
   std::getline(is, line);
-  if (line.substr(0, 12) == std::string("<image name="))
-    return true;
-
-  return false;
+  return line.substr(0, 12) == std::string("<image name=");
 } ////
 
 //--------------------------------------------------------------------

@@ -19,13 +19,13 @@
 #ifndef rtkI0EstimationProjectionFilter_h
 #define rtkI0EstimationProjectionFilter_h
 
-#include <itkInPlaceImageFilter.h>
-#include "rtkThreeDCircularProjectionGeometry.h"
 #include "rtkConfiguration.h"
+#include "rtkThreeDCircularProjectionGeometry.h"
+#include <itkInPlaceImageFilter.h>
 
 #include <mutex>
-#include <vector>
 #include <string>
+#include <vector>
 
 namespace rtk
 {

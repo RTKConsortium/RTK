@@ -23,9 +23,9 @@
 #  pragma warning(disable : 4786)
 #endif
 
-#include <itkXMLFile.h>
-#include "rtkThreeDCircularProjectionGeometry.h"
 #include "RTKExport.h"
+#include "rtkThreeDCircularProjectionGeometry.h"
+#include <itkXMLFile.h>
 
 namespace rtk
 {
@@ -93,7 +93,7 @@ protected:
 private:
   GeometryPointer m_Geometry{ GeometryType::New() };
 
-  std::string m_CurCharacterData{ "" };
+  std::string m_CurCharacterData;
 
   /** Projection parameters */
   double m_InPlaneAngle{ 0. };

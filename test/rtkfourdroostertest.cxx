@@ -1,15 +1,15 @@
+#include <itkJoinSeriesImageFilter.h>
 #include <itkPasteImageFilter.h>
 #include <itksys/SystemTools.hxx>
-#include <itkJoinSeriesImageFilter.h>
 
-#include "rtkTest.h"
-#include "rtkRayEllipsoidIntersectionImageFilter.h"
-#include "rtkDrawEllipsoidImageFilter.h"
 #include "rtkConstantImageSource.h"
-#include "rtkFieldOfViewImageFilter.h"
 #include "rtkCyclicDeformationImageFilter.h"
+#include "rtkDrawEllipsoidImageFilter.h"
+#include "rtkFieldOfViewImageFilter.h"
 #include "rtkFourDROOSTERConeBeamReconstructionFilter.h"
 #include "rtkPhasesToInterpolationWeights.h"
+#include "rtkRayEllipsoidIntersectionImageFilter.h"
+#include "rtkTest.h"
 
 /**
  * \file rtkfourdroostertest.cxx
@@ -142,7 +142,7 @@ main(int, char **)
     // Ellipse 2
     auto e2 = REIType::New();
     semiprincipalaxis.Fill(8.);
-    center[0] = 4 * (itk::Math::abs((4 + noProj) % 8 - 4.) - 2.);
+    center[0] = 4 * (itk::Math::abs(((4 + noProj) % 8) - 4.) - 2.);
     center[1] = 0.;
     center[2] = 0.;
     e2->SetInput(e1->GetOutput());
@@ -253,7 +253,7 @@ main(int, char **)
     axis2.Fill(8.);
     de2->SetAxis(axis2);
     DEType::VectorType center2;
-    center2[0] = 4 * (itk::Math::abs((4 + n) % 8 - 4.) - 2.);
+    center2[0] = 4 * (itk::Math::abs(((4 + n) % 8) - 4.) - 2.);
     center2[1] = 0.;
     center2[2] = 0.;
     de2->SetCenter(center2);
@@ -406,7 +406,7 @@ main(int, char **)
   std::cout << "\n\nTest PASSED! " << std::endl;
 #endif
 
-  itksys::SystemTools::RemoveFile(signalFileName.c_str());
+  itksys::SystemTools::RemoveFile(signalFileName);
   delete[] Volumes;
 
   return EXIT_SUCCESS;

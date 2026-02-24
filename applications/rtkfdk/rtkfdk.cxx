@@ -17,26 +17,26 @@
  *=========================================================================*/
 
 #include "rtkfdk_ggo.h"
-#include "rtkGgoFunctions.h"
 #include "rtkConfiguration.h"
+#include "rtkGgoFunctions.h"
 
-#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkDisplacedDetectorForOffsetFieldOfViewImageFilter.h"
-#include "rtkParkerShortScanImageFilter.h"
 #include "rtkFDKConeBeamReconstructionFilter.h"
+#include "rtkParkerShortScanImageFilter.h"
+#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #ifdef RTK_USE_CUDA
 #  include "rtkCudaDisplacedDetectorImageFilter.h"
 // TODO #  include "rtkCudaDisplacedDetectorForOffsetFieldOfViewImageFilter.h"
-#  include "rtkCudaParkerShortScanImageFilter.h"
 #  include "rtkCudaFDKConeBeamReconstructionFilter.h"
+#  include "rtkCudaParkerShortScanImageFilter.h"
 #endif
-#include "rtkFDKWarpBackProjectionImageFilter.h"
 #include "rtkCyclicDeformationImageFilter.h"
+#include "rtkFDKWarpBackProjectionImageFilter.h"
 #include "rtkProgressCommands.h"
 
-#include <itkStreamingImageFilter.h>
-#include <itkImageRegionSplitterDirection.h>
 #include <itkImageFileWriter.h>
+#include <itkImageRegionSplitterDirection.h>
+#include <itkStreamingImageFilter.h>
 
 int
 main(int argc, char * argv[])

@@ -74,7 +74,7 @@ public:
     unsigned long int   s_valueTag;
     unsigned long int   s_valueLength;
     double *            s_value;
-  };
+  } __attribute__((packed)) __attribute__((aligned(128)));
 
 protected:
   MatlabSparseMatrixStruct m_MatlabSparseMatrix;

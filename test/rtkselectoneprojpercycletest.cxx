@@ -1,10 +1,10 @@
 #include <itksys/SystemTools.hxx>
 
-#include "rtkTest.h"
+#include "rtkConstantImageSource.h"
 #include "rtkMacro.h"
 #include "rtkRayEllipsoidIntersectionImageFilter.h"
-#include "rtkConstantImageSource.h"
 #include "rtkSelectOneProjectionPerCycleImageFilter.h"
+#include "rtkTest.h"
 
 /**
  * \file rtkmotioncompensatedfdktest.cxx
@@ -142,7 +142,7 @@ main(int, char **)
 
   std::cout << "Test PASSED! " << std::endl;
 
-  itksys::SystemTools::RemoveFile(signalFileName.c_str());
+  itksys::SystemTools::RemoveFile(signalFileName);
 
   return EXIT_SUCCESS;
 }

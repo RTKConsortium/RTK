@@ -19,9 +19,9 @@
 #ifndef rtkEdfImageIO_h
 #define rtkEdfImageIO_h
 
-#include <itkImageIOBase.h>
-#include <fstream>
 #include <cstring>
+#include <fstream>
+#include <itkImageIOBase.h>
 
 #include "RTKExport.h"
 #include "rtkMacro.h"
@@ -47,9 +47,7 @@ public:
   using Superclass = itk::ImageIOBase;
   using Pointer = itk::SmartPointer<Self>;
 
-  EdfImageIO()
-    : Superclass()
-  {}
+  EdfImageIO() {}
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);
@@ -85,7 +83,7 @@ public:
 
 protected:
   std::string m_BinaryFileName;
-  int         m_BinaryFileSkip;
+  int         m_BinaryFileSkip{};
 
   static char *
   edf_findInHeader(char * header, const char * key);
@@ -95,15 +93,15 @@ protected:
   enum DataType
   {
     U_CHAR_DATATYPE = 0,
-    CHAR_DATATYPE, //  8 bits = 1 B
-    U_SHORT_DATATYPE,
-    SHORT_DATATYPE, // 16 bits = 2 B
-    U_INT_DATATYPE,
-    INT_DATATYPE, // 32 bits = 4 B
-    U_L_INT_DATATYPE,
-    L_INT_DATATYPE, // 32 bits = 4 B
-    FLOAT_DATATYPE,
-    DOUBLE_DATATYPE, // 4 B, 8 B
+    CHAR_DATATYPE = 1, //  8 bits = 1 B
+    U_SHORT_DATATYPE = 2,
+    SHORT_DATATYPE = 3, // 16 bits = 2 B
+    U_INT_DATATYPE = 4,
+    INT_DATATYPE = 5, // 32 bits = 4 B
+    U_L_INT_DATATYPE = 6,
+    L_INT_DATATYPE = 7, // 32 bits = 4 B
+    FLOAT_DATATYPE = 8,
+    DOUBLE_DATATYPE = 9, // 4 B, 8 B
     UNKNOWN_DATATYPE = -1
   };
 
@@ -122,14 +120,14 @@ protected:
   {
     const char * key;
     int          value;
-  };
+  } __attribute__((aligned(16)));
 
   struct table3
   {
     const char * key;
     int          value;
     short        sajzof;
-  };
+  } __attribute__((aligned(16)));
 
   /* Returns index of the table tbl whose key matches the beginning of the
    * search string search_str.

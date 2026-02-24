@@ -19,9 +19,9 @@
 #ifndef rtkForwardDifferenceGradientImageFilter_h
 #define rtkForwardDifferenceGradientImageFilter_h
 
-#include <itkImageToImageFilter.h>
 #include <itkCovariantVector.h>
 #include <itkImageRegionIterator.h>
+#include <itkImageToImageFilter.h>
 
 #include "rtkMacro.h"
 

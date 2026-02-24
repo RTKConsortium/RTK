@@ -16,7 +16,7 @@
  *
  *=========================================================================*/
 
-#include "math.h"
+#include <cmath>
 
 #include "rtkIntersectionOfConvexShapes.h"
 
@@ -29,7 +29,7 @@ void
 IntersectionOfConvexShapes ::SetConvexShapes(const ConvexShapeVector & _arg)
 {
   m_ConvexShapes.clear();
-  for (auto & convexShape : _arg)
+  for (const auto & convexShape : _arg)
     this->AddConvexShape(convexShape);
   this->Modified();
 }

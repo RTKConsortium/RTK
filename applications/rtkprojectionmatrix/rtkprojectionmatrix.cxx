@@ -16,15 +16,15 @@
  *
  *=========================================================================*/
 
-#include <vnl/vnl_sparse_matrix.h>
 #include <fstream>
+#include <vnl/vnl_sparse_matrix.h>
 
-#include "rtkprojectionmatrix_ggo.h"
-#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
+#include "rtkConfiguration.h"
 #include "rtkGgoFunctions.h"
 #include "rtkJosephBackProjectionImageFilter.h"
-#include "rtkConfiguration.h"
 #include "rtkMatlabSparseMatrix.h"
+#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
+#include "rtkprojectionmatrix_ggo.h"
 
 namespace rtk
 {
@@ -48,7 +48,7 @@ public:
     return !(*this != other);
   }
 
-  inline void
+  void
   operator()(const TInput &        rayValue,
              TOutput &             output,
              const double          stepLengthInVoxel,
@@ -77,8 +77,8 @@ public:
 
 private:
   vnl_sparse_matrix<double> m_SystemMatrix;
-  TInput *                  m_ProjectionsBuffer;
-  TOutput *                 m_VolumeBuffer;
+  TInput *                  m_ProjectionsBuffer{};
+  TOutput *                 m_VolumeBuffer{};
 };
 } // namespace Functor
 } // namespace rtk

@@ -1,6 +1,6 @@
 #include "rtkTest.h"
-#include "rtkMacro.h"
 #include "rtkBioscanGeometryReader.h"
+#include "rtkMacro.h"
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 
 #include <itkRegularExpressionSeriesFileNames.h>

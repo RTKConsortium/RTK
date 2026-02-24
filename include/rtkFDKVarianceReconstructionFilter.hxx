@@ -131,7 +131,7 @@ FDKVarianceReconstructionFilter<TInputImage, TOutputImage, TFFTPrecision>::Gener
   // Each filter is equally weighted across all iterations of the stack
   auto progress = itk::ProgressAccumulator::New();
   progress->SetMiniPipelineFilter(this);
-  auto frac = (1.0f / 4) / itk::Math::ceil(double(nProj) / m_ProjectionSubsetSize);
+  auto frac = (1.0F / 4) / itk::Math::ceil(static_cast<double>(nProj) / m_ProjectionSubsetSize);
   progress->RegisterInternalFilter(m_WeightFilter1, frac);
   progress->RegisterInternalFilter(m_WeightFilter2, frac);
   progress->RegisterInternalFilter(m_VarianceRampFilter, frac);

@@ -1,12 +1,12 @@
 #include "rtkTest.h"
 #include "itkRandomImageSource.h"
 #include "rtkConstantImageSource.h"
-#include "rtkProjectionStackToFourDImageFilter.h"
 #include "rtkFourDToProjectionStackImageFilter.h"
-#include "rtkPhasesToInterpolationWeights.h"
 #include "rtkJosephBackProjectionImageFilter.h"
 #include "rtkJosephForwardProjectionImageFilter.h"
 #include "rtkMacro.h"
+#include "rtkPhasesToInterpolationWeights.h"
+#include "rtkProjectionStackToFourDImageFilter.h"
 
 #include <itkImageFileReader.h>
 

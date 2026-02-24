@@ -2,11 +2,11 @@
 #include "itkRandomImageSource.h"
 #include "rtkConstantImageSource.h"
 #include "rtkInterpolatorWithKnownWeightsImageFilter.h"
-#include "rtkSplatWithKnownWeightsImageFilter.h"
-#include "rtkPhasesToInterpolationWeights.h"
 #include "rtkJosephBackProjectionImageFilter.h"
 #include "rtkJosephForwardProjectionImageFilter.h"
 #include "rtkMacro.h"
+#include "rtkPhasesToInterpolationWeights.h"
+#include "rtkSplatWithKnownWeightsImageFilter.h"
 
 #include <itkImageFileReader.h>
 

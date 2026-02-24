@@ -16,16 +16,16 @@
  *
  *=========================================================================*/
 
-#include "math.h"
-#include <cstdlib>
 #include <clocale>
+#include <cmath>
+#include <cstdlib>
 #include <fstream>
 #include <itksys/RegularExpression.hxx>
 
 #include "rtkForbildPhantomFileReader.h"
-#include "rtkQuadricShape.h"
 #include "rtkBoxShape.h"
 #include "rtkIntersectionOfConvexShapes.h"
+#include "rtkQuadricShape.h"
 
 namespace rtk
 {
@@ -393,7 +393,7 @@ ForbildPhantomFileReader::FindParameterInString(const std::string & name, const 
     itkExceptionMacro(<< "Could not compile " << regex);
   bool bFound = re.find(s.c_str());
   if (bFound)
-    param = std::stod(re.match(1).c_str());
+    param = std::stod(re.match(1));
   return bFound;
 }
 
@@ -409,14 +409,14 @@ ForbildPhantomFileReader::FindVectorInString(const std::string & name, const std
   {
     for (size_t i = 0; i < 3; i++)
     {
-      vec[i] = std::stod(re.match(i + 1).c_str());
+      vec[i] = std::stod(re.match(i + 1));
     }
   }
   return bFound;
 }
 
 ForbildPhantomFileReader::RotationMatrixType
-ForbildPhantomFileReader::ComputeRotationMatrixBetweenVectors(const VectorType & source, const VectorType & dest) const
+ForbildPhantomFileReader::ComputeRotationMatrixBetweenVectors(const VectorType & source, const VectorType & dest)
 {
   // https://math.stackexchange.com/questions/180418/calculate-rotation-matrix-to-align-vector-a-to-vector-b-in-3d/476311#476311
   VectorType         s = source / source.GetNorm();
@@ -456,11 +456,11 @@ ForbildPhantomFileReader::FindClipPlanes(const std::string & s)
     VectorType vec;
     for (size_t i = 0; i < 3; i++)
     {
-      vec[i] = std::stod(re.match(i + 1).c_str());
+      vec[i] = std::stod(re.match(i + 1));
     }
     vec /= vec.GetNorm();
     ScalarType sign = (re.match(4) == std::string("<")) ? 1. : -1.;
-    ScalarType expr = std::stod(re.match(5).c_str());
+    ScalarType expr = std::stod(re.match(5));
     m_ConvexShape->AddClipPlane(sign * vec, sign * expr);
     currs += re.end();
   }
@@ -476,7 +476,7 @@ ForbildPhantomFileReader::FindClipPlanes(const std::string & s)
     vec.Fill(0.);
     vec[0] = 1.;
     ScalarType sign = (re.match(1) == std::string("<")) ? 1. : -1.;
-    ScalarType expr = std::stod(re.match(2).c_str());
+    ScalarType expr = std::stod(re.match(2));
     m_ConvexShape->AddClipPlane(sign * vec, sign * expr);
     currs += re.end();
   }
@@ -492,7 +492,7 @@ ForbildPhantomFileReader::FindClipPlanes(const std::string & s)
     vec.Fill(0.);
     vec[1] = 1.;
     ScalarType sign = (re.match(1) == std::string("<")) ? 1. : -1.;
-    ScalarType expr = std::stod(re.match(2).c_str());
+    ScalarType expr = std::stod(re.match(2));
     m_ConvexShape->AddClipPlane(sign * vec, sign * expr);
     currs += re.end();
   }
@@ -508,7 +508,7 @@ ForbildPhantomFileReader::FindClipPlanes(const std::string & s)
     vec.Fill(0.);
     vec[2] = 1.;
     ScalarType sign = (re.match(1) == std::string("<")) ? 1. : -1.;
-    ScalarType expr = std::stod(re.match(2).c_str());
+    ScalarType expr = std::stod(re.match(2));
     m_ConvexShape->AddClipPlane(sign * vec, sign * expr);
     currs += re.end();
   }
@@ -529,7 +529,7 @@ ForbildPhantomFileReader::FindUnions(const std::string & s)
     auto ico = IntersectionOfConvexShapes::New();
     ico->AddConvexShape(m_ConvexShape);
     size_t len = m_GeometricPhantom->GetConvexShapes().size();
-    int    u = std::stoi(re.match(1).c_str());
+    int    u = std::stoi(re.match(1));
     size_t pos = len + u - 1;
     ico->AddConvexShape(m_GeometricPhantom->GetConvexShapes()[pos]);
     if (m_ConvexShape->GetDensity() != m_GeometricPhantom->GetConvexShapes()[pos]->GetDensity())
@@ -537,7 +537,7 @@ ForbildPhantomFileReader::FindUnions(const std::string & s)
     ico->SetDensity(-1. * m_ConvexShape->GetDensity());
 
     m_UnionWith.back() = pos;
-    m_Unions.push_back(ico.GetPointer());
+    m_Unions.emplace_back(ico.GetPointer());
 
     // Handles the union of three objects. Union of more objects would require
     // the implementation of the inclusion-exclusion formula
@@ -548,14 +548,14 @@ ForbildPhantomFileReader::FindUnions(const std::string & s)
       ico->AddConvexShape(m_ConvexShape);
       ico->AddConvexShape(m_GeometricPhantom->GetConvexShapes()[m_UnionWith[pos]]);
       ico->SetDensity(-1. * m_ConvexShape->GetDensity());
-      m_Unions.push_back(ico.GetPointer());
+      m_Unions.emplace_back(ico.GetPointer());
 
       ico = IntersectionOfConvexShapes::New();
       ico->AddConvexShape(m_ConvexShape);
       ico->AddConvexShape(m_GeometricPhantom->GetConvexShapes()[pos]);
       ico->AddConvexShape(m_GeometricPhantom->GetConvexShapes()[m_UnionWith[pos]]);
       ico->SetDensity(m_ConvexShape->GetDensity());
-      m_Unions.push_back(ico.GetPointer());
+      m_Unions.emplace_back(ico.GetPointer());
     }
   }
 }

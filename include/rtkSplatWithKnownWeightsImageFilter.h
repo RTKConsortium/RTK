@@ -18,8 +18,8 @@
 #ifndef rtkSplatWithKnownWeightsImageFilter_h
 #define rtkSplatWithKnownWeightsImageFilter_h
 
-#include <itkInPlaceImageFilter.h>
 #include <itkArray2D.h>
+#include <itkInPlaceImageFilter.h>
 
 #include <itkImageRegionSplitterDirection.h>
 
@@ -113,7 +113,7 @@ protected:
                        itk::ThreadIdType                             itkNotUsed(threadId)) override;
 
   /** Splits the OutputRequestedRegion along the first direction, not the last */
-  const itk::ImageRegionSplitterBase *
+  [[nodiscard]] const itk::ImageRegionSplitterBase *
                                              GetImageRegionSplitter() const override;
   itk::ImageRegionSplitterDirection::Pointer m_Splitter;
 

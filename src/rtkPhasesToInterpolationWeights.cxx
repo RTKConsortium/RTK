@@ -17,8 +17,9 @@
  *=========================================================================*/
 #include "rtkPhasesToInterpolationWeights.h"
 
-#include <itksys/SystemTools.hxx>
 #include <itkMath.h>
+#include <itksys/SystemTools.hxx>
+#include <utility>
 
 namespace rtk
 {
@@ -40,7 +41,7 @@ PhasesToInterpolationWeights::PrintSelf(std::ostream & os, itk::Indent indent) c
 void
 PhasesToInterpolationWeights::SetSelectedProjections(std::vector<bool> sprojs)
 {
-  this->m_SelectedProjections = sprojs;
+  this->m_SelectedProjections = std::move(sprojs);
   this->Modified();
 }
 
@@ -94,7 +95,7 @@ PhasesToInterpolationWeights::Parse()
   {
     this->GetNextField(entry);
     if ((m_SelectedProjections.empty()) || (m_SelectedProjections[j]))
-      projectionPhases.push_back(itk::Math::Round<float>(std::stod(entry.c_str()) * 1000.) / 1000.);
+      projectionPhases.push_back(itk::Math::Round<float>(std::stod(entry) * 1000.) / 1000.);
   }
 
   // Compute the instant of the cycle each phase represents
@@ -124,7 +125,7 @@ PhasesToInterpolationWeights::Parse()
       {
         i = i + 1;
       }
-      reconstructedFrames.push_back(((float)i) / 100.);
+      reconstructedFrames.push_back((static_cast<float>(i)) / 100.);
     }
     reconstructedFrames.push_back(1);
     for (int n = 0; n < this->m_NumberOfReconstructedFrames; n++)
@@ -146,7 +147,7 @@ PhasesToInterpolationWeights::Parse()
   {
     int lower = 0;
     int upper = 1;
-    while (!((projectionPhases[c] >= reconstructedFrames[lower]) && (projectionPhases[c] < reconstructedFrames[upper])))
+    while ((projectionPhases[c] < reconstructedFrames[lower]) || (projectionPhases[c] >= reconstructedFrames[upper]))
     {
       lower++;
       upper++;

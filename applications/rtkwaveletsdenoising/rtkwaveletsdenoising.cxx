@@ -20,10 +20,10 @@
 #include "rtkGgoFunctions.h"
 
 #include "rtkDeconstructSoftThresholdReconstructImageFilter.h"
-#include <itkImageFileWriter.h>
 #include <itkImageFileReader.h>
-#include <string>
+#include <itkImageFileWriter.h>
 #include <sstream>
+#include <string>
 
 int
 main(int argc, char * argv[])

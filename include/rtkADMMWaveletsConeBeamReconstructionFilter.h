@@ -19,17 +19,17 @@
 #ifndef rtkADMMWaveletsConeBeamReconstructionFilter_h
 #define rtkADMMWaveletsConeBeamReconstructionFilter_h
 
-#include <itkImageToImageFilter.h>
 #include <itkAddImageFilter.h>
-#include <itkSubtractImageFilter.h>
+#include <itkImageToImageFilter.h>
 #include <itkMultiplyImageFilter.h>
+#include <itkSubtractImageFilter.h>
 
+#include "rtkADMMWaveletsConjugateGradientOperator.h"
 #include "rtkConjugateGradientImageFilter.h"
 #include "rtkDeconstructSoftThresholdReconstructImageFilter.h"
-#include "rtkADMMWaveletsConjugateGradientOperator.h"
+#include "rtkDisplacedDetectorImageFilter.h"
 #include "rtkIterativeConeBeamReconstructionFilter.h"
 #include "rtkThreeDCircularProjectionGeometry.h"
-#include "rtkDisplacedDetectorImageFilter.h"
 
 namespace rtk
 {

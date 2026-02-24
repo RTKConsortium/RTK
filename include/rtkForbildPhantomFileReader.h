@@ -20,8 +20,8 @@
 #define rtkForbildPhantomFileReader_h
 
 #include "RTKExport.h"
-#include <itkLightProcessObject.h>
 #include "rtkGeometricPhantom.h"
+#include <itkLightProcessObject.h>
 
 namespace rtk
 {
@@ -98,8 +98,8 @@ protected:
   CreateForbildCone(const std::string & s, const std::string & fig);
   void
   CreateForbildTetrahedron(const std::string & s);
-  RotationMatrixType
-  ComputeRotationMatrixBetweenVectors(const VectorType & source, const VectorType & dest) const;
+  static RotationMatrixType
+  ComputeRotationMatrixBetweenVectors(const VectorType & source, const VectorType & dest);
 
   bool
   FindParameterInString(const std::string & name, const std::string & s, ScalarType & param);
@@ -113,7 +113,7 @@ protected:
 private:
   GeometricPhantomPointer m_GeometricPhantom;
   std::string             m_Filename;
-  PointType               m_Center;
+  PointType               m_Center{};
   ConvexShape::Pointer    m_ConvexShape;
   ConvexShapeVectorType   m_Unions;
   std::vector<int>        m_UnionWith;

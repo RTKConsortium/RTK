@@ -19,9 +19,9 @@
 #ifndef rtkForwardProjectionImageFilter_h
 #define rtkForwardProjectionImageFilter_h
 
-#include <itkInPlaceImageFilter.h>
-#include "rtkThreeDCircularProjectionGeometry.h"
 #include "rtkMacro.h"
+#include "rtkThreeDCircularProjectionGeometry.h"
+#include <itkInPlaceImageFilter.h>
 
 namespace rtk
 {

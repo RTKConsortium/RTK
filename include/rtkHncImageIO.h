@@ -20,8 +20,8 @@
 #define rtkHncImageIO_h
 
 // itk include
-#include <itkImageIOBase.h>
 #include "itksys/SystemTools.hxx"
+#include <itkImageIOBase.h>
 
 #if defined(_MSC_VER) && (_MSC_VER < 1600)
 // SR: taken from
@@ -53,7 +53,7 @@ public:
   using Pointer = itk::SmartPointer<Self>;
   using PixelType = unsigned short int;
 
-  typedef struct hnc_header
+  using Hnc_header = struct hnc_header
   {
     char         sFileType[32];
     unsigned int FileLength;
@@ -115,11 +115,9 @@ public:
     double       dGating4DInfoY;
     double       dGating4DInfoZ;
     double       dGating4DInfoTime;
-  } Hnc_header;
+  } __attribute__((aligned(128)));
 
-  HncImageIO()
-    : Superclass()
-  {}
+  HncImageIO() {}
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);

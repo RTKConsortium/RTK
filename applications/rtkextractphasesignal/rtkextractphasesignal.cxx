@@ -21,8 +21,8 @@
 
 #include "rtkExtractPhaseImageFilter.h"
 
-#include <itkImageFileReader.h>
 #include <fstream>
+#include <itkImageFileReader.h>
 
 namespace rtk
 {
@@ -59,7 +59,7 @@ main(int argc, char * argv[])
   phase->SetInput(signal);
   phase->SetMovingAverageSize(args_info.movavg_arg);
   phase->SetUnsharpMaskSize(args_info.unsharp_arg);
-  phase->SetModel((PhaseFilter::ModelType)args_info.model_arg);
+  phase->SetModel(static_cast<PhaseFilter::ModelType>(args_info.model_arg));
   TRY_AND_EXIT_ON_ITK_EXCEPTION(phase->Update())
 
   // Write output phase

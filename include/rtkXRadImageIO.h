@@ -19,9 +19,9 @@
 #ifndef rtkXRadImageIO_h
 #define rtkXRadImageIO_h
 
-#include <itkImageIOBase.h>
-#include <fstream>
 #include <cstring>
+#include <fstream>
+#include <itkImageIOBase.h>
 
 #include "RTKExport.h"
 #include "rtkMacro.h"
@@ -46,9 +46,7 @@ public:
   using Superclass = itk::ImageIOBase;
   using Pointer = itk::SmartPointer<Self>;
 
-  XRadImageIO()
-    : Superclass()
-  {}
+  XRadImageIO() {}
 
   /** Method for creation through the object factory. */
   itkNewMacro(Self);

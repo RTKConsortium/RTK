@@ -17,8 +17,8 @@
  *=========================================================================*/
 
 #include "rtkTest.h"
-#include "rtkTestConfiguration.h"
 #include "rtkMacro.h"
+#include "rtkTestConfiguration.h"
 
 #include <cmath>
 #include <itkImageRegionConstIterator.h>
@@ -30,7 +30,6 @@
 #  include "rtkPolynomialGainCorrectionImageFilter.h"
 #endif
 
-#include "rtkTestConfiguration.h"
 
 /**
  * \file rtkgaincorrectiontest.cxx
@@ -56,7 +55,7 @@ InputImageType::Pointer
 createDarkImage()
 {
   auto size = itk::MakeSize(sizeI, sizeI, 1);
-  auto spacing = itk::MakeVector(1.f, 1.f, 1.f);
+  auto spacing = itk::MakeVector(1.F, 1.F, 1.F);
 
   InputImageType::RegionType region;
   region.SetSize(size);
@@ -65,10 +64,10 @@ createDarkImage()
   darkImage->SetRegions(region);
   darkImage->SetSpacing(spacing);
   darkImage->Allocate();
-  darkImage->FillBuffer(0.0f);
+  darkImage->FillBuffer(0.0F);
 
-  float orig_x = -static_cast<float>(size[0] - 1) / 2.f;
-  float orig_y = -static_cast<float>(size[1] - 1) / 2.f;
+  float orig_x = -static_cast<float>(size[0] - 1) / 2.F;
+  float orig_y = -static_cast<float>(size[1] - 1) / 2.F;
 
   itk::ImageRegionIteratorWithIndex<InputImageType> itIn(darkImage, darkImage->GetLargestPossibleRegion());
   itIn.GoToBegin();
@@ -89,7 +88,7 @@ OutputImageType::Pointer
 createGainImage()
 {
   auto size = itk::MakeSize(sizeI, sizeI, modelOrder);
-  auto spacing = itk::MakeVector(1.f, 1.f, 1.f);
+  auto spacing = itk::MakeVector(1.F, 1.F, 1.F);
 
   OutputImageType::RegionType region;
   region.SetSize(size);
@@ -98,20 +97,20 @@ createGainImage()
   gainImage->SetRegions(region);
   gainImage->SetSpacing(spacing);
   gainImage->Allocate();
-  gainImage->FillBuffer(0.0f);
+  gainImage->FillBuffer(0.0F);
 
   itk::ImageRegionIteratorWithIndex<OutputImageType> itIn(gainImage, gainImage->GetLargestPossibleRegion());
   itIn.GoToBegin();
   while (!itIn.IsAtEnd())
   {
     InputImageType::IndexType idx = itIn.GetIndex();
-    float                     value = 0.f;
+    float                     value = 0.F;
     if (idx[2] == 0)
-      value = 1.2f;
+      value = 1.2F;
     else if (idx[2] == 1)
-      value = 0.016f;
+      value = 0.016F;
     else if (idx[2] == 3)
-      value = -0.003f;
+      value = -0.003F;
 
     itIn.Set(value);
     ++itIn;
@@ -124,7 +123,7 @@ InputImageType::Pointer
 createInputImage()
 {
   auto size = itk::MakeSize(sizeI, sizeI, 1);
-  auto spacing = itk::MakeVector(1.f, 1.f, 1.f);
+  auto spacing = itk::MakeVector(1.F, 1.F, 1.F);
 
   InputImageType::RegionType region;
   region.SetSize(size);
@@ -133,19 +132,19 @@ createInputImage()
   inputImage->SetRegions(region);
   inputImage->SetSpacing(spacing);
   inputImage->Allocate();
-  inputImage->FillBuffer(32000.0f);
+  inputImage->FillBuffer(32000.0F);
 
   return inputImage;
 }
 
 OutputImageType::Pointer
-generateExpectedOutput(InputImageType::Pointer  inputImage,
-                       float                    K,
-                       InputImageType::Pointer  darkImage,
-                       OutputImageType::Pointer gainImage)
+generateExpectedOutput(const InputImageType::Pointer &  inputImage,
+                       float                            K,
+                       const InputImageType::Pointer &  darkImage,
+                       const OutputImageType::Pointer & gainImage)
 {
   auto size = itk::MakeSize(sizeI, sizeI, 1);
-  auto spacing = itk::MakeVector(1.f, 1.f, 1.f);
+  auto spacing = itk::MakeVector(1.F, 1.F, 1.F);
 
   OutputImageType::RegionType region;
   region.SetSize(size);
@@ -154,7 +153,7 @@ generateExpectedOutput(InputImageType::Pointer  inputImage,
   expectedOutput->SetRegions(region);
   expectedOutput->SetSpacing(spacing);
   expectedOutput->Allocate();
-  expectedOutput->FillBuffer(0.0f);
+  expectedOutput->FillBuffer(0.0F);
 
   itk::ImageRegionConstIterator<InputImageType> itIn(inputImage, inputImage->GetLargestPossibleRegion());
   itk::ImageRegionIterator<OutputImageType>     itOut(expectedOutput, expectedOutput->GetLargestPossibleRegion());
@@ -180,7 +179,7 @@ generateExpectedOutput(InputImageType::Pointer  inputImage,
       int px = static_cast<int>(itIn.Get()) - darkx;
       px = (px >= 0) ? px : 0;
 
-      float correctedValue = 0.f;
+      float correctedValue = 0.F;
       auto  powValue = static_cast<float>(px);
       for (int m = 0; m < modelOrder; ++m)
       {
@@ -191,7 +190,7 @@ generateExpectedOutput(InputImageType::Pointer  inputImage,
       }
       correctedValue *= K;
 
-      itOut.Set(static_cast<float>(correctedValue));
+      itOut.Set(correctedValue);
 
       ++itIn;
       ++itOut;
@@ -206,7 +205,7 @@ generateExpectedOutput(InputImageType::Pointer  inputImage,
 int
 main(int, char **)
 {
-  const float K = 0.5f;
+  const float K = 0.5F;
 #ifdef USE_CUDA
   using GainCorrectionType = rtk::CudaPolynomialGainCorrectionImageFilter;
 #else
@@ -239,7 +238,7 @@ main(int, char **)
 
   itExp.GoToBegin();
   itOut.GoToBegin();
-  float diffValue = 0.f;
+  float diffValue = 0.F;
   while (!itExp.IsAtEnd())
   {
     diffValue += itk::Math::abs(itExp.Get() - itOut.Get());
@@ -248,7 +247,7 @@ main(int, char **)
   }
   diffValue /= static_cast<float>(sizeI * sizeI);
   std::cout << diffValue << std::endl;
-  if (!(diffValue < 1.f))
+  if (!(diffValue < 1.F))
   {
     std::cerr << "Test Failed! " << std::endl;
     exit(EXIT_FAILURE);

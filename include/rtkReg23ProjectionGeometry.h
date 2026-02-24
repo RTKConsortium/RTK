@@ -24,8 +24,8 @@
 #include "RTKExport.h"
 
 // ITK
-#include <itkPoint.h>
 #include <itkMatrix.h>
+#include <itkPoint.h>
 
 namespace rtk
 {

@@ -1,8 +1,8 @@
 #include <itksys/SystemTools.hxx>
 
-#include "rtkTest.h"
 #include "rtkConstantImageSource.h"
 #include "rtkImageToVectorImageFilter.h"
+#include "rtkTest.h"
 #include "rtkVectorImageToImageFilter.h"
 
 #include <itkImageRegionIterator.h>

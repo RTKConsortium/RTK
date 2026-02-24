@@ -21,8 +21,8 @@
 
 #include "rtkConjugateGradientOperator.h"
 
-#include "rtkForwardDifferenceGradientImageFilter.h"
 #include "rtkBackwardDifferenceDivergenceImageFilter.h"
+#include "rtkForwardDifferenceGradientImageFilter.h"
 
 namespace rtk
 {

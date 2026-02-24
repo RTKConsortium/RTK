@@ -18,10 +18,7 @@
 
 #include "rtkReg23ProjectionGeometry.h"
 
-rtk::Reg23ProjectionGeometry::Reg23ProjectionGeometry()
-  : rtk::ThreeDCircularProjectionGeometry()
-{}
-
+rtk::Reg23ProjectionGeometry::Reg23ProjectionGeometry() {}
 rtk::Reg23ProjectionGeometry::~Reg23ProjectionGeometry() = default;
 
 bool

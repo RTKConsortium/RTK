@@ -67,7 +67,7 @@ public:
     this->SetSeed(42);
   }
 
-  float
+  [[nodiscard]] float
   GetMean() const
   {
     return m_Mean;
@@ -79,7 +79,7 @@ public:
     m_Mean = mean;
   }
 
-  float
+  [[nodiscard]] float
   GetStandardDeviation() const
   {
     return m_StandardDeviation;
@@ -222,7 +222,7 @@ public:
    *    Returns the average noise added to the image per pixel.
    *    The default is 0.
    */
-  float
+  [[nodiscard]] float
   GetMean() const
   {
     return m_NoiseFilter->GetFunctor().GetMean();
@@ -243,7 +243,7 @@ public:
    *    Returns the standard deviation of the noise added to the image.
    *    The default is 1.
    */
-  float
+  [[nodiscard]] float
   GetStandardDeviation() const
   {
     return m_NoiseFilter->GetFunctor().GetStandardDeviation();
