@@ -138,7 +138,7 @@ JosephBackProjectionImageFilter<TInputImage,
     BoxShape::VectorType dirVoxAbs;
     for (unsigned int i = 0; i < Dimension; i++)
     {
-      dirVoxAbs[i] = itk::Math::abs(dirVox[i]);
+      dirVoxAbs[i] = itk::Math::Absolute(dirVox[i]);
       if (dirVoxAbs[i] > dirVoxAbs[mainDir])
         mainDir = i;
     }
@@ -209,7 +209,7 @@ JosephBackProjectionImageFilter<TInputImage,
       bool isNewRay = true;
       if (fs == ns) // If the voxel is a corner, we can skip most steps
       {
-        attenuationRay += BilinearInterpolationOnBorders(itk::Math::abs(fp[mainDir] - np[mainDir]),
+        attenuationRay += BilinearInterpolationOnBorders(itk::Math::Absolute(fp[mainDir] - np[mainDir]),
                                                          pxiyi,
                                                          pxsyi,
                                                          pxiys,
@@ -225,7 +225,7 @@ JosephBackProjectionImageFilter<TInputImage,
         const typename TInputImage::PixelType & rayValue =
           m_SumAlongRay(itIn->Value(), attenuationRay, stepMM, isNewRay);
         BilinearSplatOnBorders(rayValue,
-                               itk::Math::abs(fp[mainDir] - np[mainDir]),
+                               itk::Math::Absolute(fp[mainDir] - np[mainDir]),
                                stepMM.GetNorm(),
                                pxiyi,
                                pxsyi,
@@ -274,7 +274,7 @@ JosephBackProjectionImageFilter<TInputImage,
         currenty += stepy;
 
         // Middle steps
-        for (int i{ 0 }; i < itk::Math::abs(fs - ns) - 1; ++i)
+        for (int i{ 0 }; i < itk::Math::Absolute(fs - ns) - 1; ++i)
         {
           attenuationRay += BilinearInterpolation(1., pxiyi, pxsyi, pxiys, pxsys, currentx, currenty, offsetx, offsety);
 

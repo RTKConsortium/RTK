@@ -57,7 +57,7 @@ SelectOneProjectionPerCycleImageFilter<ProjectionStackType>::GenerateOutputInfor
     // Frame is selected if phase is increasing and has opposite signs
     if (valPrev < valAfter && valAfter * valPrev <= 0.)
     {
-      if (itk::Math::abs(valPrev) > itk::Math::abs(valAfter))
+      if (itk::Math::Absolute(valPrev) > itk::Math::Absolute(valAfter))
       {
         this->m_SelectedProjections[i + 1] = true;
         this->m_NbSelectedProjs++;

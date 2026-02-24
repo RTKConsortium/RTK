@@ -117,7 +117,7 @@ QuadricShape ::IsIntersectedByRay(const PointType &  rayOrigin,
     // The epsilon value allows detection of very close intersections, i.e., a
     // ray tangent to the quadric
     static constexpr ScalarType eps = 1e5 * itk::NumericTraits<ScalarType>::epsilon();
-    if (itk::Math::abs(discriminant) <= eps)
+    if (itk::Math::Absolute(discriminant) <= eps)
     {
       infDist = -Bq / (2 * Aq);
       supDist = infDist;

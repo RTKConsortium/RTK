@@ -292,8 +292,8 @@ main(int argc, char * argv[])
     {
       for (std::size_t i = 0; i < referenceMarkerProjections.size(); ++i)
       {
-        if (itk::Math::abs(referenceMarkerProjections[i][0] - rtkMarkerProjections[i][0]) > EPSILON ||
-            itk::Math::abs(referenceMarkerProjections[i][1] - rtkMarkerProjections[i][1]) > EPSILON)
+        if (itk::Math::Absolute(referenceMarkerProjections[i][0] - rtkMarkerProjections[i][0]) > EPSILON ||
+            itk::Math::Absolute(referenceMarkerProjections[i][1] - rtkMarkerProjections[i][1]) > EPSILON)
         {
           VERBOSE(<< "\nAngle-combination out-of-plane=" << anglesList[i][0] << ", gantry=" << anglesList[i][1]
                   << ", in-plane=" << anglesList[i][2] << " failed:\n")

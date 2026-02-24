@@ -66,8 +66,8 @@ rtk::DigisensGeometryReader ::GenerateData()
   }
 
   // Source / Detector / Center distances
-  double sdd = itk::Math::abs(sourcePosition[2] - detectorPosition[2]);
-  double sid = itk::Math::abs(sourcePosition[2] - rotationCenter[2]);
+  double sdd = itk::Math::Absolute(sourcePosition[2] - detectorPosition[2]);
+  double sid = itk::Math::Absolute(sourcePosition[2] - rotationCenter[2]);
 
   // Scaling
   using MetaDataIntegerType = itk::MetaDataObject<int>;

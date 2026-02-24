@@ -424,7 +424,7 @@ ForbildPhantomFileReader::ComputeRotationMatrixBetweenVectors(const VectorType &
   RotationMatrixType r;
   r.SetIdentity();
   ScalarType c = s * d;
-  if (itk::Math::abs(c) - 1. == itk::NumericTraits<ScalarType>::ZeroValue())
+  if (itk::Math::Absolute(c) - 1. == itk::NumericTraits<ScalarType>::ZeroValue())
   {
     return r;
   }

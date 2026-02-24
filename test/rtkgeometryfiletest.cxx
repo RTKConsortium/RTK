@@ -30,7 +30,7 @@ WriteReadAndCheck(GeometryType * geometry)
   {                                                                                           \
     double val1 = geoRead->Get##paramName()[i];                                               \
     double val2 = geometry->Get##paramName()[i];                                              \
-    if (itk::Math::abs(val1 - val2) > epsilon)                                                \
+    if (itk::Math::Absolute(val1 - val2) > epsilon)                                           \
     {                                                                                         \
       std::cerr << #paramName " differ [" << val1 << "] read from written file vs. [" << val2 \
                 << "] for the reference, difference=[" << val1 - val2 << "]." << std::endl;   \

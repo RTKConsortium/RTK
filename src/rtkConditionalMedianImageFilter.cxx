@@ -60,7 +60,7 @@ rtk::ConditionalMedianImageFilter<itk::VectorImage<float, 3>>::DynamicThreadedGe
       std::nth_element(pixels[mat].begin(), pixels[mat].begin() + pixels[mat].size() / 2, pixels[mat].end());
 
       // If the pixel value is too far from the median, replace it by the median
-      if (itk::Math::abs(pixels[mat][pixels[mat].size() / 2] - nIt.GetCenterPixel()[mat]) >
+      if (itk::Math::Absolute(pixels[mat][pixels[mat].size() / 2] - nIt.GetCenterPixel()[mat]) >
           (m_ThresholdMultiplier * stdev))
         vlv[mat] = pixels[mat][pixels[mat].size() / 2];
       else // Otherwise, leave it as is

@@ -150,8 +150,8 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>::GenerateOutputInformati
                              << " Corner inf=" << m_InferiorCorner << " and corner sup=" << m_SuperiorCorner);
   }
   // Case 2: Not displaced, or explicit request not to pad: default outputLargestPossibleRegion is fine
-  else if ((itk::Math::abs(m_InferiorCorner + m_SuperiorCorner) <
-            0.1 * itk::Math::abs(m_SuperiorCorner - m_InferiorCorner)) ||
+  else if ((itk::Math::Absolute(m_InferiorCorner + m_SuperiorCorner) <
+            0.1 * itk::Math::Absolute(m_SuperiorCorner - m_InferiorCorner)) ||
            !m_PadOnTruncatedSide)
   {
   }
@@ -197,8 +197,8 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerate
   }
 
   // Not displaced, nothing to do
-  if ((itk::Math::abs(m_InferiorCorner + m_SuperiorCorner) <
-       0.1 * itk::Math::abs(m_SuperiorCorner - m_InferiorCorner)) ||
+  if ((itk::Math::Absolute(m_InferiorCorner + m_SuperiorCorner) <
+       0.1 * itk::Math::Absolute(m_SuperiorCorner - m_InferiorCorner)) ||
       m_Disable)
   {
     // If not in place, copy is required

@@ -45,7 +45,7 @@ CheckImageQuality(typename TImage1::Pointer recon, typename TImage2::Pointer ref
 
     if (TestVal != RefVal)
     {
-      TestError += itk::Math::abs(RefVal - TestVal);
+      TestError += itk::Math::Absolute(RefVal - TestVal);
       EnerError += std::pow(ErrorType(RefVal - TestVal), 2.);
     }
     ++itTest;

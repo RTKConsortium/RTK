@@ -56,7 +56,7 @@ FDKWeightProjectionFilter<TInputImage, TOutputImage>::BeforeThreadedGenerateData
       sp = m_Geometry->GetSourcePosition(k);
       sp[3] = 0.;
       const double sid = m_Geometry->GetSourceToIsocenterDistances()[k];
-      m_ConstantProjectionFactor[k] *= itk::Math::abs(sdd) / (2. * sid * sid);
+      m_ConstantProjectionFactor[k] *= itk::Math::Absolute(sdd) / (2. * sid * sid);
       m_ConstantProjectionFactor[k] *= sp.GetNorm();
     }
   }

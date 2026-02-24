@@ -120,8 +120,8 @@ ZengBackProjectionImageFilter<TInputImage, TOutputImage>::VerifyInputInformation
 
         // tolerance for origin and spacing depends on the size of pixel
         // tolerance for directions a fraction of the unit cube.
-        const double coordinateTol = itk::Math::abs(Self::GetGlobalDefaultCoordinateTolerance() *
-                                                    inputPtr1->GetSpacing()[0]); // use first dimension spacing
+        const double coordinateTol = itk::Math::Absolute(Self::GetGlobalDefaultCoordinateTolerance() *
+                                                         inputPtr1->GetSpacing()[0]); // use first dimension spacing
 
         if (!inputPtr1->GetOrigin().GetVnlVector().is_equal(inputPtrN->GetOrigin().GetVnlVector(), coordinateTol) ||
             !inputPtr1->GetSpacing().GetVnlVector().is_equal(inputPtrN->GetSpacing().GetVnlVector(), coordinateTol) ||

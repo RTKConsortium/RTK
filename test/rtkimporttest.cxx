@@ -43,7 +43,7 @@ CheckError(typename TImage::Pointer     recon,
   while (!itTest.IsAtEnd())
   {
     typename TImage::PixelType TestVal = itTest.Get();
-    TestError += itk::Math::abs(ErrorType(ref[k] - TestVal));
+    TestError += itk::Math::Absolute(ErrorType(ref[k] - TestVal));
     EnerError += std::pow(ErrorType(ref[k] - TestVal), 2.);
     ++itTest;
     ++k;

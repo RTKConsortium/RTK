@@ -165,7 +165,7 @@ rtk::ThreeDCircularProjectionGeometry::AddProjection(const PointType &  sourcePo
   const PointType &  S = sourcePosition;          // source pos
   const PointType &  R = detectorPosition;        // detector pos
 
-  if (itk::Math::abs(r * c) > 1e-6) // non-orthogonal row/column vectors
+  if (itk::Math::Absolute(r * c) > 1e-6) // non-orthogonal row/column vectors
     return false;
 
   // Euler angles (ZXY convention) from detector orientation in IEC-based WCS:
@@ -222,7 +222,7 @@ rtk::ThreeDCircularProjectionGeometry::AddProjection(const PointType &  sourcePo
   double SID = n[0] * S[0] + n[1] * S[1] + n[2] * S[2];
   // SDD: distance from source to detector along detector normal
   double SDD = n[0] * (S[0] - R[0]) + n[1] * (S[1] - R[1]) + n[2] * (S[2] - R[2]);
-  if (itk::Math::abs(SDD) < 1.0E-06)
+  if (itk::Math::Absolute(SDD) < 1.0E-06)
   {
     itkDebugMacro(<< "SourceDetectorDistance is less than 1.0E-06. For parallel geometry SDD is set to 0.0");
     SDD = 0.0;
@@ -269,7 +269,7 @@ rtk::ThreeDCircularProjectionGeometry::AddProjection(const HomogeneousProjection
              pMat(0, 2) * pMat(1, 0) * pMat(2, 1) - pMat(0, 0) * pMat(1, 2) * pMat(2, 1) -
              pMat(0, 1) * pMat(1, 0) * pMat(2, 2) - pMat(0, 2) * pMat(1, 1) * pMat(2, 0);
 
-  if (itk::Math::abs(d) < std::numeric_limits<double>::epsilon()) // parallel geometry
+  if (itk::Math::Absolute(d) < std::numeric_limits<double>::epsilon()) // parallel geometry
   {
     // setup rotation matrix from three rotated unit vectors
     // v1, v2 - standard unit vectors, n - normal (cross product) [v1,v2]
@@ -312,7 +312,7 @@ rtk::ThreeDCircularProjectionGeometry::AddProjection(const HomogeneousProjection
     return true;
   }
 
-  d = -1. * d / itk::Math::abs(d);
+  d = -1. * d / itk::Math::Absolute(d);
 
   // Extract intrinsic parameters u0, v0 and f (f is chosen to be positive at that point)
   // The extraction of u0 and v0 is independant of KR-decomp.
@@ -658,7 +658,7 @@ rtk::ThreeDCircularProjectionGeometry::ToUntiltedCoordinateAtIsocenter(const uns
 
   // the following relation refers to a note by R. Clackdoyle, title
   // "Samping a tilted detector"
-  return l * itk::Math::abs(sid) / (sidu - l * cosa);
+  return l * itk::Math::Absolute(sid) / (sidu - l * cosa);
 }
 
 bool
@@ -683,7 +683,7 @@ rtk::ThreeDCircularProjectionGeometry::VerifyAngles(const double          outOfP
 
   for (int i = 0; i < 3; i++) // check whether matrices match
     for (int j = 0; j < 3; j++)
-      if (itk::Math::abs(rm[i][j] - m[i][j]) > m_VerifyAnglesTolerance)
+      if (itk::Math::Absolute(rm[i][j] - m[i][j]) > m_VerifyAnglesTolerance)
         return false;
 
   return true;
@@ -697,7 +697,7 @@ rtk::ThreeDCircularProjectionGeometry::FixAngles(double &              outOfPlan
 {
   const Matrix3x3Type & rm = referenceMatrix; // shortcut
 
-  if (itk::Math::abs(itk::Math::abs(rm[2][1]) - 1.) > m_FixAnglesTolerance)
+  if (itk::Math::Absolute(itk::Math::Absolute(rm[2][1]) - 1.) > m_FixAnglesTolerance)
   {
     double oa = NAN, ga = NAN, ia = NAN;
 

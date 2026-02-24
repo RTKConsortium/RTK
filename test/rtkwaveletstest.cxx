@@ -29,7 +29,7 @@ CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer ref)
   {
     typename TImage::PixelType TestVal = itTest.Get();
     typename TImage::PixelType RefVal = itRef.Get();
-    TestError += itk::Math::abs(RefVal - TestVal);
+    TestError += itk::Math::Absolute(RefVal - TestVal);
     EnerError += std::pow(ErrorType(RefVal - TestVal), 2.);
     ++itTest;
     ++itRef;

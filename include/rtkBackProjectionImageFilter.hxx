@@ -235,12 +235,12 @@ BackProjectionImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerateDat
     }
 
     // Optimized version
-    if (itk::Math::abs(matrix[1][0]) < 1e-10 && itk::Math::abs(matrix[2][0]) < 1e-10)
+    if (itk::Math::Absolute(matrix[1][0]) < 1e-10 && itk::Math::Absolute(matrix[2][0]) < 1e-10)
     {
       OptimizedBackprojectionX(outputRegionForThread, matrix, projection);
       continue;
     }
-    if (itk::Math::abs(matrix[1][1]) < 1e-10 && itk::Math::abs(matrix[2][1]) < 1e-10)
+    if (itk::Math::Absolute(matrix[1][1]) < 1e-10 && itk::Math::Absolute(matrix[2][1]) < 1e-10)
     {
       OptimizedBackprojectionY(outputRegionForThread, matrix, projection);
       continue;

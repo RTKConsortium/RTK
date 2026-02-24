@@ -19,6 +19,7 @@
 #ifndef rtkSoftThresholdImageFilter_h
 #define rtkSoftThresholdImageFilter_h
 
+#include "rtkConfiguration.h"
 #include "itkUnaryFunctorImageFilter.h"
 #include "itkConceptChecking.h"
 #include "itkSimpleDataObjectDecorator.h"
@@ -71,7 +72,7 @@ public:
   inline TOutput
   operator()(const TInput & A) const
   {
-    return (itk::Math::sgn(A) * std::max((TInput)itk::Math::abs(A) - m_Threshold, (TInput)0.0));
+    return (itk::Math::sgn(A) * std::max((TInput)itk::Math::Absolute(A) - m_Threshold, (TInput)0.0));
   }
 
 private:
