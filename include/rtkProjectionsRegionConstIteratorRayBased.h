@@ -156,9 +156,9 @@ protected:
 
   ThreeDCircularProjectionGeometry::ConstPointer m_Geometry;
   MatrixType                                     m_PostMultiplyMatrix;
-  PointType                                      m_SourcePosition;
-  PointType                                      m_PixelPosition;
-  PointType                                      m_SourceToPixel;
+  PointType                                      m_SourcePosition{};
+  PointType                                      m_PixelPosition{};
+  PointType                                      m_SourceToPixel{};
 };
 } // namespace rtk
 

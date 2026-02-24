@@ -83,7 +83,7 @@ public:
   Write(const void * buffer) override;
 
 protected:
-  int m_HeaderSize;
+  int m_HeaderSize{};
 
 }; // end class HisImageIO
 } // namespace rtk

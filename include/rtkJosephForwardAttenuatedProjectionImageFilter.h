@@ -102,7 +102,7 @@ public:
   }
 
 private:
-  std::ptrdiff_t m_AttenuationMinusEmissionMapsPtrDiff;
+  std::ptrdiff_t m_AttenuationMinusEmissionMapsPtrDiff{};
   TInput         m_AttenuationRay[itk::ITK_MAX_THREADS];
   TInput         m_AttenuationPixel[itk::ITK_MAX_THREADS];
   TInput         m_Ex1[itk::ITK_MAX_THREADS];

@@ -81,7 +81,7 @@ protected:
   HndImageIOFactory();
   ~HndImageIOFactory() override = default;
   using myProductType = HndImageIOFactory;
-  const myProductType * m_MyProduct;
+  const myProductType * m_MyProduct{};
 };
 
 } // namespace rtk
