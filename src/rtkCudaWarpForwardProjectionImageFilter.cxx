@@ -63,19 +63,19 @@ CudaWarpForwardProjectionImageFilter ::SetDisplacementField(const DVFType * DVF)
 CudaWarpForwardProjectionImageFilter::InputImageType::Pointer
 CudaWarpForwardProjectionImageFilter ::GetInputProjectionStack()
 {
-  return static_cast<InputImageType *>(this->itk::ProcessObject::GetInput(0));
+  return dynamic_cast<InputImageType *>(this->itk::ProcessObject::GetInput(0));
 }
 
 CudaWarpForwardProjectionImageFilter::InputImageType::Pointer
 CudaWarpForwardProjectionImageFilter ::GetInputVolume()
 {
-  return static_cast<InputImageType *>(this->itk::ProcessObject::GetInput(1));
+  return dynamic_cast<InputImageType *>(this->itk::ProcessObject::GetInput(1));
 }
 
 CudaWarpForwardProjectionImageFilter::DVFType::Pointer
 CudaWarpForwardProjectionImageFilter ::GetDisplacementField()
 {
-  return static_cast<DVFType *>(this->itk::ProcessObject::GetInput("DisplacementField"));
+  return dynamic_cast<DVFType *>(this->itk::ProcessObject::GetInput("DisplacementField"));
 }
 
 void
