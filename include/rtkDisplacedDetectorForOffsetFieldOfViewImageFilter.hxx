@@ -23,8 +23,6 @@
 
 
 #include <itkImageRegionIteratorWithIndex.h>
-#include <itkImageRegionConstIterator.h>
-#include <itkImageRegionIterator.h>
 
 #include "rtkFieldOfViewImageFilter.h"
 
@@ -112,11 +110,11 @@ DisplacedDetectorForOffsetFieldOfViewImageFilter<TInputImage, TOutputImage>::Dyn
   const OutputImageRegionType & outputRegionForThread)
 {
   // Compute overlap between input and output
-  itk::ImageRegionIterator<OutputImageType> itOut(this->GetOutput(), outputRegionForThread);
-  OutputImageRegionType                     overlapRegion = outputRegionForThread;
+  OutputImageRegionType overlapRegion = outputRegionForThread;
   if (!overlapRegion.Crop(this->GetInput()->GetLargestPossibleRegion()))
   {
     // No overlap, set output region to 0
+    itk::ImageRegionIterator<OutputImageType> itOut(this->GetOutput(), outputRegionForThread);
     while (!itOut.IsAtEnd())
     {
       itOut.Set(0.);
@@ -124,7 +122,7 @@ DisplacedDetectorForOffsetFieldOfViewImageFilter<TInputImage, TOutputImage>::Dyn
     }
     return;
   }
-  itk::ImageRegionConstIterator<InputImageType> itIn(this->GetInput(), overlapRegion);
+  itk::ImageRegionConstIteratorWithIndex<InputImageType> itIn(this->GetInput(), overlapRegion);
 
   // Not displaced, nothing to do
   if (this->GetInput()->GetLargestPossibleRegion().GetSize()[0] ==
@@ -134,6 +132,7 @@ DisplacedDetectorForOffsetFieldOfViewImageFilter<TInputImage, TOutputImage>::Dyn
     // If not in place, copy is required
     if (this->GetInput() != this->GetOutput())
     {
+      itk::ImageRegionIterator<OutputImageType> itOut(this->GetOutput(), outputRegionForThread);
       while (!itIn.IsAtEnd())
       {
         itOut.Set(itIn.Get());
@@ -160,6 +159,7 @@ DisplacedDetectorForOffsetFieldOfViewImageFilter<TInputImage, TOutputImage>::Dyn
   weights->SetRegions(region);
   weights->Allocate();
   typename itk::ImageRegionIteratorWithIndex<WeightImageType> itWeights(weights, weights->GetLargestPossibleRegion());
+  itk::ImageRegionIteratorWithIndex<OutputImageType>          itOut(this->GetOutput(), outputRegionForThread);
   for (unsigned int k = 0; k < overlapRegion.GetSize(2); k++, itWeights.GoToBegin())
   {
     typename GeometryType::HomogeneousVectorType sourcePosition;

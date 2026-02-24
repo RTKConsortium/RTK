@@ -20,7 +20,6 @@
 #define rtkParkerShortScanImageFilter_hxx
 
 
-#include <itkImageRegionIterator.h>
 #include <itkImageRegionIteratorWithIndex.h>
 #include <itkMacro.h>
 
@@ -116,10 +115,7 @@ ParkerShortScanImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerateDa
   const OutputImageRegionType & outputRegionForThread)
 {
   // Input / ouput iterators
-  itk::ImageRegionConstIterator<InputImageType> itIn(this->GetInput(), outputRegionForThread);
-  itk::ImageRegionIterator<OutputImageType>     itOut(this->GetOutput(), outputRegionForThread);
-  itIn.GoToBegin();
-  itOut.GoToBegin();
+  itk::ImageRegionIterator<OutputImageType> itOut(this->GetOutput(), outputRegionForThread);
 
   // Not a short scan if less than m_AngularGapThreshold degrees max gap, => nothing to do
   // FIXME: do nothing in parallel geometry, currently handled with a trick in the geometry object
@@ -128,6 +124,7 @@ ParkerShortScanImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerateDa
     if (this->GetInput() != this->GetOutput()) // If not in place, copy is
                                                // required
     {
+      itk::ImageRegionConstIterator<InputImageType> itIn(this->GetInput(), outputRegionForThread);
       while (!itIn.IsAtEnd())
       {
         itOut.Set(itIn.Get());
@@ -158,6 +155,7 @@ ParkerShortScanImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerateDa
   const std::vector<double> rotationAngles = m_Geometry->GetGantryAngles();
 
   // Go over projection images
+  itk::ImageRegionConstIteratorWithIndex<InputImageType> itIn(this->GetInput(), outputRegionForThread);
   for (unsigned int k = 0; k < outputRegionForThread.GetSize(2); k++)
   {
     double sox = m_Geometry->GetSourceOffsetsX()[itIn.GetIndex()[2]];

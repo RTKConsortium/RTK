@@ -38,7 +38,7 @@ main(int, char **)
   signal->SetRegions(size);
   signal->Allocate();
 
-  itk::ImageRegionIterator<OutputImageType> signalIt(signal, signal->GetLargestPossibleRegion());
+  itk::ImageRegionIteratorWithIndex<OutputImageType> signalIt(signal, signal->GetLargestPossibleRegion());
 
   while (!signalIt.IsAtEnd())
   {
@@ -56,8 +56,8 @@ main(int, char **)
   analyticHilbertSignal->SetRegions(size);
   analyticHilbertSignal->Allocate();
 
-  itk::ImageRegionIterator<OutputImageType> analyticHilbertSignalIt(analyticHilbertSignal,
-                                                                    analyticHilbertSignal->GetLargestPossibleRegion());
+  itk::ImageRegionIteratorWithIndex<OutputImageType> analyticHilbertSignalIt(
+    analyticHilbertSignal, analyticHilbertSignal->GetLargestPossibleRegion());
 
   while (!analyticHilbertSignalIt.IsAtEnd())
   {
