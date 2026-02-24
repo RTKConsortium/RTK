@@ -92,8 +92,7 @@ UpsampleImageFilter<TInputImage, TOutputImage>::ThreadedGenerateData(
 
   // Define/declare an iterator that will walk the output region for this
   // thread.
-  using OutputIterator = itk::ImageRegionIterator<TOutputImage>;
-  OutputIterator outIt(outputPtr, outputRegionForThread);
+  itk::ImageRegionIterator<TOutputImage> outIt(outputPtr, outputRegionForThread);
 
   // Fill the output region with zeros
   while (!outIt.IsAtEnd())
@@ -133,7 +132,7 @@ UpsampleImageFilter<TInputImage, TOutputImage>::ThreadedGenerateData(
   slice.SetSize(0, 1);
   slice.SetIndex(0, outputRegionForThread.GetIndex(0) + firstValidPixelOffset[0]);
 
-  OutputIterator sliceIt(outputPtr, slice);
+  itk::ImageRegionIteratorWithIndex<TOutputImage> sliceIt(outputPtr, slice);
   while (!sliceIt.IsAtEnd())
   {
     // Determine the offset of the current pixel in the slice
@@ -171,7 +170,7 @@ UpsampleImageFilter<TInputImage, TOutputImage>::ThreadedGenerateData(
       inputLine.SetSize(inputLineSize);
       inputLine.SetIndex(inputStartIndex + inputOffset);
 
-      OutputIterator                             outIt_local(outputPtr, outputLine);
+      itk::ImageRegionIterator<TOutputImage>     outIt_local(outputPtr, outputLine);
       itk::ImageRegionConstIterator<TInputImage> inIt(inputPtr, inputLine);
 
       // Walk the line and copy the pixels

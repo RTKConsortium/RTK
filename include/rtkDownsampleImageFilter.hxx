@@ -20,7 +20,7 @@
 #define rtkDownsampleImageFilter_hxx
 
 
-#include "itkImageRegionIterator.h"
+#include "itkImageRegionIteratorWithIndex.h"
 #include "itkObjectFactory.h"
 
 namespace rtk
@@ -93,10 +93,6 @@ DownsampleImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerateData(
   InputImageConstPointer inputPtr = this->GetInput();
   OutputImagePointer     outputPtr = this->GetOutput();
 
-  // Define/declare an iterator that will walk the output region for this
-  // thread.
-  using OutputIterator = itk::ImageRegionIterator<TOutputImage>;
-
   // Define a few indices that will be used to translate from an input pixel
   // to an output pixel
   typename TInputImage::IndexType  inputStartIndex = inputPtr->GetLargestPossibleRegion().GetIndex();
@@ -137,7 +133,7 @@ DownsampleImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerateData(
   // create an iterator and perform the copy from the input
   OutputImageRegionType slice = outputRegionForThread;
   slice.SetSize(0, 1);
-  OutputIterator sliceIt(outputPtr, slice);
+  itk::ImageRegionIteratorWithIndex<TOutputImage> sliceIt(outputPtr, slice);
 
   while (!sliceIt.IsAtEnd())
   {
@@ -171,7 +167,7 @@ DownsampleImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerateData(
     inputLine.SetSize(inputLineSize);
     inputLine.SetIndex(inputStartIndex + firstPixelOfInputLineOffset);
 
-    OutputIterator                             outIt(outputPtr, outputLine);
+    itk::ImageRegionIterator<TOutputImage>     outIt(outputPtr, outputLine);
     itk::ImageRegionConstIterator<TInputImage> inIt(inputPtr, inputLine);
 
     // Walk the line and copy the pixels

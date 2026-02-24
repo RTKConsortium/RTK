@@ -20,8 +20,7 @@
 #define rtkDrawConvexImageFilter_hxx
 
 
-#include <itkImageRegionConstIterator.h>
-#include <itkImageRegionIterator.h>
+#include <itkImageRegionIteratorWithIndex.h>
 
 namespace rtk
 {
@@ -45,8 +44,8 @@ DrawConvexImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerateData(
   typename TOutputImage::PointType point;
   const TInputImage *              input = this->GetInput();
 
-  typename itk::ImageRegionConstIterator<TInputImage> itIn(input, outputRegionForThread);
-  typename itk::ImageRegionIterator<TOutputImage>     itOut(this->GetOutput(), outputRegionForThread);
+  typename itk::ImageRegionConstIterator<TInputImage>      itIn(input, outputRegionForThread);
+  typename itk::ImageRegionIteratorWithIndex<TOutputImage> itOut(this->GetOutput(), outputRegionForThread);
 
   while (!itOut.IsAtEnd())
   {

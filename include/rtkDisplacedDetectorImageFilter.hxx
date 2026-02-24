@@ -21,8 +21,6 @@
 
 
 #include <itkImageRegionIteratorWithIndex.h>
-#include <itkImageRegionConstIterator.h>
-#include <itkImageRegionIterator.h>
 
 namespace rtk
 {
@@ -185,11 +183,11 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerate
                                                                   this->GetInput()->GetNumberOfComponentsPerPixel());
 
   // Compute overlap between input and output
-  itk::ImageRegionIterator<OutputImageType> itOut(this->GetOutput(), outputRegionForThread);
-  OutputImageRegionType                     overlapRegion = outputRegionForThread;
+  OutputImageRegionType overlapRegion = outputRegionForThread;
   if (!overlapRegion.Crop(this->GetInput()->GetLargestPossibleRegion()))
   {
     // No overlap, set output region to 0
+    itk::ImageRegionIterator<OutputImageType> itOut(this->GetOutput(), outputRegionForThread);
     while (!itOut.IsAtEnd())
     {
       itOut.Set({});
@@ -197,7 +195,6 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerate
     }
     return;
   }
-  itk::ImageRegionConstIterator<InputImageType> itIn(this->GetInput(), overlapRegion);
 
   // Not displaced, nothing to do
   if ((itk::Math::abs(m_InferiorCorner + m_SuperiorCorner) <
@@ -207,6 +204,8 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerate
     // If not in place, copy is required
     if (this->GetInput() != this->GetOutput())
     {
+      itk::ImageRegionConstIterator<InputImageType> itIn(this->GetInput(), overlapRegion);
+      itk::ImageRegionIterator<OutputImageType>     itOut(this->GetOutput(), outputRegionForThread);
       while (!itIn.IsAtEnd())
       {
         itOut.Set(itIn.Get());
@@ -238,6 +237,8 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerate
   unsigned int nLinesPerProjection = overlapRegion.GetNumberOfPixels();
   nLinesPerProjection /= overlapRegion.GetSize(0);
   nLinesPerProjection /= overlapRegion.GetSize(NDimension - 1);
+  itk::ImageRegionConstIteratorWithIndex<InputImageType> itIn(this->GetInput(), overlapRegion);
+  itk::ImageRegionIteratorWithIndex<OutputImageType>     itOut(this->GetOutput(), outputRegionForThread);
   for (unsigned int k = 0; k < overlapRegion.GetSize(NDimension - 1); k++)
   {
     // Prepare weights for current slice (depends on ProjectionOffsetsX)

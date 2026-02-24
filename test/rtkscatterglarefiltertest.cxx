@@ -21,7 +21,6 @@
 #include "rtkMacro.h"
 
 #include <cmath>
-#include <itkImageRegionConstIterator.h>
 #include <itkImageRegionIteratorWithIndex.h>
 
 #ifdef USE_CUDA
@@ -111,9 +110,9 @@ main(int, char **)
   SFilter->SetInput(testImage);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(SFilter->Update())
 
-  ImageType::Pointer                       outputI = SFilter->GetOutput();
-  ImageType::SizeType                      size = outputI->GetLargestPossibleRegion().GetSize();
-  itk::ImageRegionConstIterator<ImageType> itO(outputI, outputI->GetLargestPossibleRegion());
+  ImageType::Pointer                                outputI = SFilter->GetOutput();
+  ImageType::SizeType                               size = outputI->GetLargestPossibleRegion().GetSize();
+  itk::ImageRegionConstIteratorWithIndex<ImageType> itO(outputI, outputI->GetLargestPossibleRegion());
   itO.GoToBegin();
 
   ImageType::IndexType idx;

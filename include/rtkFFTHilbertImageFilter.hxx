@@ -58,7 +58,7 @@ FFTHilbertImageFilter<TInputImage, TOutputImage, TFFTPrecision>::UpdateFFTProjec
   kernel->Allocate();
   kernel->FillBuffer(0.);
 
-  itk::ImageRegionIterator<FFTInputImageType> it(kernel, kernel->GetLargestPossibleRegion());
+  itk::ImageRegionIteratorWithIndex<FFTInputImageType> it(kernel, kernel->GetLargestPossibleRegion());
 
   // Compute band-limited kernel in space domain
   double    spacing = this->GetInput()->GetSpacing()[0];
