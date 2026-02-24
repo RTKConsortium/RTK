@@ -75,7 +75,7 @@ protected:
   DCMImagXImageIOFactory();
   ~DCMImagXImageIOFactory() override = default;
   using myProductType = DCMImagXImageIOFactory;
-  const myProductType * m_MyProduct;
+  const myProductType * m_MyProduct{};
 };
 
 } // namespace rtk

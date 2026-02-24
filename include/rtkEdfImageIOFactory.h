@@ -77,7 +77,7 @@ protected:
   ~EdfImageIOFactory() override = default;
 
   using myProductType = EdfImageIOFactory;
-  const myProductType * m_MyProduct;
+  const myProductType * m_MyProduct{};
 };
 
 } // namespace rtk

@@ -75,7 +75,7 @@ protected:
   ImagXImageIOFactory();
   ~ImagXImageIOFactory() override = default;
   using myProductType = ImagXImageIOFactory;
-  const myProductType * m_MyProduct;
+  const myProductType * m_MyProduct{};
 };
 
 } // namespace rtk

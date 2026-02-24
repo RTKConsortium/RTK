@@ -72,7 +72,7 @@ BioscanGeometryReader::GetFloatTagValue(const gdcm::DataSet & ds, itk::uint16_t 
     itkExceptionMacro(<< "Cannot find tag " << group << "|" << element);
   }
   const gdcm::DataElement &                  de = ds.GetDataElement(tag);
-  gdcm::Element<gdcm::VR::FD, gdcm::VM::VM1> el;
+  gdcm::Element<gdcm::VR::FD, gdcm::VM::VM1> el{};
   el.SetFromDataElement(de);
   return el.GetValue();
 }

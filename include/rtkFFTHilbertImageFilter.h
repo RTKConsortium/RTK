@@ -100,7 +100,7 @@ protected:
 
 private:
   SizeType m_PreviousKernelUpdateSize;
-  double   m_PixelShift;
+  double   m_PixelShift{};
 
 }; // end of class
 

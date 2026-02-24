@@ -32,7 +32,7 @@ CheckGradient(const typename TImage::Pointer &    im,
 
   const int ImageDimension = TImage::ImageDimension;
 
-  itk::Size<ImageDimension> radius;
+  itk::Size<ImageDimension> radius{};
   radius.Fill(1);
 
   itk::ConstNeighborhoodIterator<TImage> iit(radius, im, im->GetLargestPossibleRegion());

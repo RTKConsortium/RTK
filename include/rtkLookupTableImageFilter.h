@@ -97,7 +97,7 @@ private:
   LookupTablePointer     m_LookupTablePointer;
   LookupTableDataPointer m_LookupTableDataPointer;
   InterpolatorPointer    m_Interpolator;
-  double                 m_InverseLUTSpacing;
+  double                 m_InverseLUTSpacing{};
 };
 
 template <class TInput, class TOutput>

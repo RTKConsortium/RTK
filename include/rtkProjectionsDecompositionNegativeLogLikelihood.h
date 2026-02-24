@@ -286,7 +286,7 @@ protected:
   vnl_matrix<double>             m_IncidentSpectrumAndDetectorResponseProduct;
   unsigned int                   m_NumberOfEnergies;
   unsigned int                   m_NumberOfMaterials;
-  unsigned int                   m_NumberOfSpectralBins;
+  unsigned int                   m_NumberOfSpectralBins{};
   bool                           m_Initialized;
   itk::VariableSizeMatrix<float> m_Fischer;
 };

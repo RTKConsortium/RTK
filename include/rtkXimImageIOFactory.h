@@ -82,7 +82,7 @@ protected:
   XimImageIOFactory();
   ~XimImageIOFactory() override = default;
   using myProductType = XimImageIOFactory;
-  const myProductType * m_MyProduct;
+  const myProductType * m_MyProduct{};
 };
 
 } // namespace rtk

@@ -78,7 +78,7 @@ protected:
   OraImageIOFactory();
   ~OraImageIOFactory() override = default;
   using myProductType = OraImageIOFactory;
-  const myProductType * m_MyProduct;
+  const myProductType * m_MyProduct{};
 };
 
 } // namespace rtk

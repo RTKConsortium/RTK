@@ -113,7 +113,7 @@ protected:
 private:
   GeometricPhantomPointer m_GeometricPhantom;
   std::string             m_Filename;
-  PointType               m_Center;
+  PointType               m_Center{};
   ConvexShape::Pointer    m_ConvexShape;
   ConvexShapeVectorType   m_Unions;
   std::vector<int>        m_UnionWith;
