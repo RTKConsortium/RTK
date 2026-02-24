@@ -17,16 +17,16 @@
  *=========================================================================*/
 
 #include "rtki0estimation_ggo.h"
-#include "rtkMacro.h"
 #include "rtkGgoFunctions.h"
+#include "rtkMacro.h"
 
-#include <itkExtractImageFilter.h>
 #include "rtkI0EstimationProjectionFilter.h"
 #include "rtkProjectionsReader.h"
+#include <itkExtractImageFilter.h>
 
-#include <vector>
 #include <algorithm>
 #include <string>
+#include <vector>
 
 int
 main(int argc, char * argv[])

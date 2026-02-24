@@ -20,8 +20,8 @@
 #define rtkFFTVarianceRampImageFilter_h
 
 #include "rtkFFTRampImageFilter.h"
-#include "rtkFFTProjectionsConvolutionImageFilter.h"
 #include "itkHalfHermitianToRealInverseFFTImageFilter.h"
+#include "rtkFFTProjectionsConvolutionImageFilter.h"
 
 namespace rtk
 {

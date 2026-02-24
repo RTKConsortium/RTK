@@ -20,17 +20,17 @@
 #define rtkMechlemOneStepSpectralReconstructionFilter_h
 
 #include "rtkIterativeConeBeamReconstructionFilter.h"
+#include "rtkAddMatrixAndDiagonalImageFilter.h"
+#include "rtkConstantImageSource.h"
+#include "rtkGetNewtonUpdateImageFilter.h"
+#include "rtkNesterovUpdateImageFilter.h"
+#include "rtkReorderProjectionsImageFilter.h"
+#include "rtkSeparableQuadraticSurrogateRegularizationImageFilter.h"
 #include "rtkThreeDCircularProjectionGeometry.h"
 #include "rtkWeidingerForwardModelImageFilter.h"
-#include "rtkGetNewtonUpdateImageFilter.h"
-#include "rtkConstantImageSource.h"
-#include "rtkNesterovUpdateImageFilter.h"
-#include "rtkSeparableQuadraticSurrogateRegularizationImageFilter.h"
-#include "rtkAddMatrixAndDiagonalImageFilter.h"
-#include "rtkReorderProjectionsImageFilter.h"
 
-#include <itkExtractImageFilter.h>
 #include <itkAddImageFilter.h>
+#include <itkExtractImageFilter.h>
 #include <itkMultiplyImageFilter.h>
 
 #include <itkCastImageFilter.h>

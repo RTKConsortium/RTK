@@ -1,6 +1,6 @@
 #include "rtkTestConfiguration.h"
-#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkMacro.h"
+#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include <itksys/SystemTools.hxx>
 
 using GeometryType = rtk::ThreeDCircularProjectionGeometry;

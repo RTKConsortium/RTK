@@ -2,8 +2,8 @@
 #include <itkImageRegionIteratorWithIndex.h>
 #include <itksys/SystemTools.hxx>
 
-#include "rtkTest.h"
 #include "rtkConstantImageSource.h"
+#include "rtkTest.h"
 
 #ifdef USE_CUDA
 #  include "rtkCudaCyclicDeformationImageFilter.h"

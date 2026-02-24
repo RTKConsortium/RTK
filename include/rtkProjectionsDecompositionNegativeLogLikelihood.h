@@ -20,12 +20,12 @@
 #define rtkProjectionsDecompositionNegativeLogLikelihood_h
 
 #include <itkSingleValuedCostFunction.h>
-#include <itkVectorImage.h>
 #include <itkVariableLengthVector.h>
 #include <itkVariableSizeMatrix.h>
+#include <itkVectorImage.h>
 
-#include <algorithm>
 #include "rtkMacro.h"
+#include <algorithm>
 
 namespace rtk
 {

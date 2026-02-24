@@ -1,12 +1,12 @@
 #include "rtkTest.h"
-#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
+#include "rtkConstantImageSource.h"
+#include "rtkDrawSheppLoganFilter.h"
 #include "rtkRayBoxIntersectionImageFilter.h"
 #include "rtkSheppLoganPhantomFilter.h"
-#include "rtkDrawSheppLoganFilter.h"
-#include "rtkConstantImageSource.h"
+#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 
-#include <itkStreamingImageFilter.h>
 #include <itkImageRegionSplitterDirection.h>
+#include <itkStreamingImageFilter.h>
 
 #ifdef USE_CUDA
 #  include "rtkCudaForwardProjectionImageFilter.h"

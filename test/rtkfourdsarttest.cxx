@@ -1,16 +1,16 @@
 #include <itkImageRegionConstIterator.h>
+#include <itkJoinSeriesImageFilter.h>
 #include <itkPasteImageFilter.h>
 #include <itksys/SystemTools.hxx>
-#include <itkJoinSeriesImageFilter.h>
 
-#include "rtkTest.h"
-#include "rtkRayEllipsoidIntersectionImageFilter.h"
-#include "rtkDrawEllipsoidImageFilter.h"
 #include "rtkConstantImageSource.h"
-#include "rtkFieldOfViewImageFilter.h"
 #include "rtkCyclicDeformationImageFilter.h"
+#include "rtkDrawEllipsoidImageFilter.h"
+#include "rtkFieldOfViewImageFilter.h"
 #include "rtkFourDSARTConeBeamReconstructionFilter.h"
 #include "rtkPhasesToInterpolationWeights.h"
+#include "rtkRayEllipsoidIntersectionImageFilter.h"
+#include "rtkTest.h"
 
 /**
  * \file rtkfourdsarttest.cxx

@@ -19,10 +19,10 @@
 #ifndef rtkSimplexSpectralProjectionsDecompositionImageFilter_h
 #define rtkSimplexSpectralProjectionsDecompositionImageFilter_h
 
-#include <itkImageToImageFilter.h>
-#include <itkAmoebaOptimizer.h>
 #include "rtkSchlomka2008NegativeLogLikelihood.h"
 #include "rtkVectorImageToImageFilter.h"
+#include <itkAmoebaOptimizer.h>
+#include <itkImageToImageFilter.h>
 
 #include <itkPermuteAxesImageFilter.h>
 

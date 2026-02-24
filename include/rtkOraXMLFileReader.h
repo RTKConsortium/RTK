@@ -19,9 +19,9 @@
 #ifndef rtkOraXMLFileReader_h
 #define rtkOraXMLFileReader_h
 
-#include <itkXMLFile.h>
 #include <itkMetaDataDictionary.h>
 #include <itkMetaDataObject.h>
+#include <itkXMLFile.h>
 
 #include "RTKExport.h"
 #include "rtkMacro.h"

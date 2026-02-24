@@ -1,12 +1,12 @@
 #include "rtkTest.h"
-#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
-#include "rtkJosephForwardAttenuatedProjectionImageFilter.h"
 #include "rtkConstantImageSource.h"
-#include "rtkZengForwardProjectionImageFilter.h"
-#include <itkImageRegionSplitterDirection.h>
-#include <itkImageRegionIterator.h>
-#include <cmath>
 #include "rtkDrawEllipsoidImageFilter.h"
+#include "rtkJosephForwardAttenuatedProjectionImageFilter.h"
+#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
+#include "rtkZengForwardProjectionImageFilter.h"
+#include <cmath>
+#include <itkImageRegionIterator.h>
+#include <itkImageRegionSplitterDirection.h>
 
 /**
  * \file rtkzengforwardprojectiontest.cxx

@@ -17,8 +17,8 @@
  *=========================================================================*/
 
 #include "rtkCudaCyclicDeformationImageFilter.h"
-#include "rtkCudaCyclicDeformationImageFilter.hcu"
 #include "rtkCudaConstantVolumeSeriesSource.h"
+#include "rtkCudaCyclicDeformationImageFilter.hcu"
 
 #include <itkMacro.h>
 

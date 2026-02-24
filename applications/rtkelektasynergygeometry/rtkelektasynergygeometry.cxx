@@ -18,6 +18,7 @@
 
 #include "rtkelektasynergygeometry_ggo.h"
 #include "rtkGgoFunctions.h"
+
 #include "rtkElektaSynergyGeometryReader.h"
 #include "rtkElektaXVI5GeometryXMLFileReader.h"
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"

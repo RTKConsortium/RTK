@@ -1,9 +1,9 @@
 // RTK includes
 #include <rtkConstantImageSource.h>
-#include <rtkThreeDCircularProjectionGeometryXMLFileWriter.h>
-#include <rtkRayEllipsoidIntersectionImageFilter.h>
 #include <rtkCudaFDKConeBeamReconstructionFilter.h>
 #include <rtkFieldOfViewImageFilter.h>
+#include <rtkRayEllipsoidIntersectionImageFilter.h>
+#include <rtkThreeDCircularProjectionGeometryXMLFileWriter.h>
 
 // ITK includes
 #include <itkImageFileWriter.h>

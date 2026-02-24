@@ -19,8 +19,8 @@
 #include "rtkmaskcollimation_ggo.h"
 #include "rtkGgoFunctions.h"
 
-#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkMaskCollimationImageFilter.h"
+#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 
 #include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>

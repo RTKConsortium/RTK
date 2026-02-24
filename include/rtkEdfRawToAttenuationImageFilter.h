@@ -19,8 +19,8 @@
 #ifndef rtkEdfRawToAttenuationImageFilter_h
 #define rtkEdfRawToAttenuationImageFilter_h
 
-#include <itkImageToImageFilter.h>
 #include <itkImageSeriesReader.h>
+#include <itkImageToImageFilter.h>
 
 #include "rtkConfiguration.h"
 

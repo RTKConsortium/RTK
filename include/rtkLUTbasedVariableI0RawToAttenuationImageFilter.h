@@ -19,9 +19,9 @@
 #ifndef rtkLUTbasedVariableI0RawToAttenuationImageFilter_h
 #define rtkLUTbasedVariableI0RawToAttenuationImageFilter_h
 
+#include <itkLogImageFilter.h>
 #include <itkNumericTraits.h>
 #include <itkSubtractImageFilter.h>
-#include <itkLogImageFilter.h>
 #include <itkThresholdImageFilter.h>
 
 #include "rtkLookupTableImageFilter.h"

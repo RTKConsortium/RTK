@@ -19,10 +19,10 @@
 #ifndef rtkFFTRampImageFilter_h
 #define rtkFFTRampImageFilter_h
 
-#include <itkConceptChecking.h>
 #include "rtkConfiguration.h"
 #include "rtkFFTProjectionsConvolutionImageFilter.h"
 #include "rtkMacro.h"
+#include <itkConceptChecking.h>
 
 // The Set macro is redefined to clear the current FFT kernel when a parameter
 // is modified.

@@ -19,8 +19,8 @@
 #ifndef rtkWaterPrecorrectionImageFilter_h
 #define rtkWaterPrecorrectionImageFilter_h
 
-#include <vector>
 #include <itkInPlaceImageFilter.h>
+#include <vector>
 
 #include "rtkConfiguration.h"
 

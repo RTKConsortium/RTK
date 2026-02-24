@@ -19,8 +19,8 @@
 #ifndef rtkBackwardDifferenceDivergenceImageFilter_h
 #define rtkBackwardDifferenceDivergenceImageFilter_h
 
-#include <itkImageToImageFilter.h>
 #include <itkCastImageFilter.h>
+#include <itkImageToImageFilter.h>
 
 namespace rtk
 {

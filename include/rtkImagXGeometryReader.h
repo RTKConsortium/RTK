@@ -19,8 +19,8 @@
 #ifndef rtkImagXGeometryReader_h
 #define rtkImagXGeometryReader_h
 
-#include <itkLightProcessObject.h>
 #include "rtkThreeDCircularProjectionGeometry.h"
+#include <itkLightProcessObject.h>
 
 #include <vector>
 

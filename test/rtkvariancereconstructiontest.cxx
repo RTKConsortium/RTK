@@ -1,16 +1,16 @@
-#include <itkImageRegionConstIterator.h>
 #include <itkAddImageFilter.h>
-#include <itkSquareImageFilter.h>
+#include <itkImageRegionConstIterator.h>
 #include <itkMultiplyImageFilter.h>
+#include <itkSquareImageFilter.h>
 
-#include "rtkTestConfiguration.h"
-#include "rtkSheppLoganPhantomFilter.h"
-#include "rtkDrawSheppLoganFilter.h"
-#include "rtkConstantImageSource.h"
 #include "itkShotNoiseImageFilter.h"
-#include "rtkTest.h"
+#include "rtkConstantImageSource.h"
+#include "rtkDrawSheppLoganFilter.h"
 #include "rtkFDKConeBeamReconstructionFilter.h"
 #include "rtkFDKVarianceReconstructionFilter.h"
+#include "rtkSheppLoganPhantomFilter.h"
+#include "rtkTest.h"
+#include "rtkTestConfiguration.h"
 
 /**
  * \file rtkvariancereconstructiontest.cxx

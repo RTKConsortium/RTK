@@ -23,8 +23,8 @@
 #define rtkXimImageIOFactory_h
 
 #include "RTKExport.h"
-#include "rtkXimImageIO.h"
 #include "rtkMacro.h"
+#include "rtkXimImageIO.h"
 
 // itk include
 #include <itkImageIOBase.h>

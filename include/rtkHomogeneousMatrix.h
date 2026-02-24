@@ -19,8 +19,8 @@
 #ifndef rtkHomogeneousMatrix_h
 #define rtkHomogeneousMatrix_h
 
-#include <itkMatrix.h>
 #include <itkImage.h>
+#include <itkMatrix.h>
 
 namespace rtk
 {

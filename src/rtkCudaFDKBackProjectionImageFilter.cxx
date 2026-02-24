@@ -17,8 +17,8 @@
  *=========================================================================*/
 
 #include "rtkCudaFDKBackProjectionImageFilter.h"
-#include "rtkCudaUtilities.hcu"
 #include "rtkCudaFDKBackProjectionImageFilter.hcu"
+#include "rtkCudaUtilities.hcu"
 
 #include <itkImageRegionConstIterator.h>
 #include <itkImageRegionIteratorWithIndex.h>

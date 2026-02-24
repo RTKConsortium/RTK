@@ -21,9 +21,9 @@
 
 #include "rtkConstantImageSource.h"
 
+#include <itkCastImageFilter.h>
 #include <itkExtractImageFilter.h>
 #include <itkPasteImageFilter.h>
-#include <itkCastImageFilter.h>
 
 #ifdef RTK_USE_CUDA
 #  include "rtkCudaTotalVariationDenoisingBPDQImageFilter.h"

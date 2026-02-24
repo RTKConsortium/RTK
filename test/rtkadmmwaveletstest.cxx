@@ -1,9 +1,9 @@
 #include <itkImageRegionConstIterator.h>
 
-#include "rtkTestConfiguration.h"
+#include "rtkConstantImageSource.h"
 #include "rtkDrawEllipsoidImageFilter.h"
 #include "rtkRayEllipsoidIntersectionImageFilter.h"
-#include "rtkConstantImageSource.h"
+#include "rtkTestConfiguration.h"
 
 #ifdef USE_CUDA
 #  include "itkCudaImage.h"

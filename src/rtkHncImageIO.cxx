@@ -18,8 +18,8 @@
 
 // std include
 #include <cstdio>
-#include <valarray>
 #include <numeric>
+#include <valarray>
 
 #include "rtkHncImageIO.h"
 #include <itkMetaDataObject.h>

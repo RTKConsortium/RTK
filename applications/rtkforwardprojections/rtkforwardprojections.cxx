@@ -19,10 +19,10 @@
 #include "rtkforwardprojections_ggo.h"
 #include "rtkGgoFunctions.h"
 
-#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
+#include "rtkJosephForwardAttenuatedProjectionImageFilter.h"
 #include "rtkJosephForwardProjectionImageFilter.h"
 #include "rtkMaximumIntensityProjectionImageFilter.h"
-#include "rtkJosephForwardAttenuatedProjectionImageFilter.h"
+#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkZengForwardProjectionImageFilter.h"
 #ifdef RTK_USE_CUDA
 #  include "rtkCudaForwardProjectionImageFilter.h"

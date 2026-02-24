@@ -19,8 +19,8 @@
 #ifndef rtkConjugateGradientGetX_kPlusOneImageFilter_h
 #define rtkConjugateGradientGetX_kPlusOneImageFilter_h
 
-#include <itkImageToImageFilter.h>
 #include <itkAddImageFilter.h>
+#include <itkImageToImageFilter.h>
 #include <itkMultiplyImageFilter.h>
 
 namespace rtk

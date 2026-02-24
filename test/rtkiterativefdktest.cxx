@@ -2,12 +2,12 @@
 #include <itkStreamingImageFilter.h>
 
 #include "rtkConfiguration.h"
-#include "rtkTestConfiguration.h"
-#include "rtkTest.h"
-#include "rtkSheppLoganPhantomFilter.h"
-#include "rtkDrawSheppLoganFilter.h"
 #include "rtkConstantImageSource.h"
+#include "rtkDrawSheppLoganFilter.h"
 #include "rtkFieldOfViewImageFilter.h"
+#include "rtkSheppLoganPhantomFilter.h"
+#include "rtkTest.h"
+#include "rtkTestConfiguration.h"
 
 #ifdef USE_CUDA
 #  include "rtkCudaIterativeFDKConeBeamReconstructionFilter.h"

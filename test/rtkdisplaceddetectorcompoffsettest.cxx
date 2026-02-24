@@ -1,8 +1,8 @@
 #include "rtkTest.h"
-#include "rtkMacro.h"
-#include "rtkDisplacedDetectorImageFilter.h"
-#include "rtkDisplacedDetectorForOffsetFieldOfViewImageFilter.h"
 #include "rtkConstantImageSource.h"
+#include "rtkDisplacedDetectorForOffsetFieldOfViewImageFilter.h"
+#include "rtkDisplacedDetectorImageFilter.h"
+#include "rtkMacro.h"
 #include "rtkSheppLoganPhantomFilter.h"
 
 #include <itkStreamingImageFilter.h>

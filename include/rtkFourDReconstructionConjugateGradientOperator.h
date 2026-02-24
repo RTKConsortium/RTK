@@ -23,20 +23,20 @@
 #include <itkArray2D.h>
 #include <itkMultiplyImageFilter.h>
 
-#include "rtkConstantImageSource.h"
-#include "rtkInterpolatorWithKnownWeightsImageFilter.h"
-#include "rtkForwardProjectionImageFilter.h"
-#include "rtkSplatWithKnownWeightsImageFilter.h"
 #include "rtkBackProjectionImageFilter.h"
-#include "rtkThreeDCircularProjectionGeometry.h"
+#include "rtkConstantImageSource.h"
 #include "rtkDisplacedDetectorImageFilter.h"
+#include "rtkForwardProjectionImageFilter.h"
+#include "rtkInterpolatorWithKnownWeightsImageFilter.h"
+#include "rtkSplatWithKnownWeightsImageFilter.h"
+#include "rtkThreeDCircularProjectionGeometry.h"
 
 #ifdef RTK_USE_CUDA
+#  include "rtkCudaConstantVolumeSeriesSource.h"
+#  include "rtkCudaConstantVolumeSource.h"
+#  include "rtkCudaDisplacedDetectorImageFilter.h"
 #  include "rtkCudaInterpolateImageFilter.h"
 #  include "rtkCudaSplatImageFilter.h"
-#  include "rtkCudaConstantVolumeSource.h"
-#  include "rtkCudaConstantVolumeSeriesSource.h"
-#  include "rtkCudaDisplacedDetectorImageFilter.h"
 #endif
 
 namespace rtk

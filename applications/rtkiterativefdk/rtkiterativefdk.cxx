@@ -17,17 +17,17 @@
  *=========================================================================*/
 
 #include "rtkiterativefdk_ggo.h"
-#include "rtkGgoFunctions.h"
 #include "rtkConfiguration.h"
+#include "rtkGgoFunctions.h"
 
-#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkIterativeFDKConeBeamReconstructionFilter.h"
+#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #ifdef RTK_USE_CUDA
 #  include "rtkCudaIterativeFDKConeBeamReconstructionFilter.h"
 #endif
 
-#include <itkStreamingImageFilter.h>
 #include <itkImageFileWriter.h>
+#include <itkStreamingImageFilter.h>
 
 int
 main(int argc, char * argv[])

@@ -30,15 +30,15 @@
 #include "rtkZengBackProjectionImageFilter.h"
 
 #ifdef RTK_USE_CUDA
-#  include "rtkCudaForwardProjectionImageFilter.h"
-#  include "rtkCudaWarpForwardProjectionImageFilter.h"
 #  include "rtkCudaBackProjectionImageFilter.h"
-#  include "rtkCudaWarpBackProjectionImageFilter.h"
+#  include "rtkCudaForwardProjectionImageFilter.h"
 #  include "rtkCudaRayCastBackProjectionImageFilter.h"
+#  include "rtkCudaWarpBackProjectionImageFilter.h"
+#  include "rtkCudaWarpForwardProjectionImageFilter.h"
 #endif
 
-#include <random>
 #include <algorithm>
+#include <random>
 
 namespace rtk
 {

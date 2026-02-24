@@ -1,8 +1,8 @@
 #include "rtkTest.h"
-#include "rtkProjectionsReader.h"
 #include "rtkMacro.h"
-#include <itkRegularExpressionSeriesFileNames.h>
+#include "rtkProjectionsReader.h"
 #include <itkCastImageFilter.h>
+#include <itkRegularExpressionSeriesFileNames.h>
 
 /**
  * \file rtkluttest.cxx

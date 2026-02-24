@@ -20,10 +20,10 @@
 #include "rtkCudaUtilities.hcu"
 #include "rtkCudaWarpBackProjectionImageFilter.hcu"
 
-#include <itkImageRegionIterator.h>
-#include <itkImageRegionConstIterator.h>
-#include <itkMacro.h>
 #include <itkImageAlgorithm.h>
+#include <itkImageRegionConstIterator.h>
+#include <itkImageRegionIterator.h>
+#include <itkMacro.h>
 
 namespace rtk
 {
