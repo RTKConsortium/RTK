@@ -25,6 +25,8 @@
 #include "rtkHncImageIOFactory.h"
 
 #include <itkImageFileReader.h>
+#include <itkMacro.h>
+#include <itkMetaDataObject.h>
 #include <itksys/SystemTools.hxx>
 
 rtk::VarianObiGeometryReader ::VarianObiGeometryReader()
@@ -46,27 +48,52 @@ rtk::VarianObiGeometryReader ::GenerateData()
   // Constants used to generate projection matrices
   itk::MetaDataDictionary & dic = *(obiXmlReader->GetOutputObject());
   using MetaDataDoubleType = itk::MetaDataObject<double>;
-  const double sdd = dynamic_cast<MetaDataDoubleType *>(dic["CalibratedSID"].GetPointer())->GetMetaDataObjectValue();
-  const double sid = dynamic_cast<MetaDataDoubleType *>(dic["CalibratedSAD"].GetPointer())->GetMetaDataObjectValue();
+  auto * sddMetaData = dynamic_cast<MetaDataDoubleType *>(dic["CalibratedSID"].GetPointer());
+  if (sddMetaData == nullptr)
+    itkExceptionMacro(<< "Missing or invalid metadata \"CalibratedSID\".");
+  const double sdd = sddMetaData->GetMetaDataObjectValue();
 
-  double      offsetx = NAN;
-  std::string fanType =
-    dynamic_cast<const itk::MetaDataObject<std::string> *>(dic["FanType"].GetPointer())->GetMetaDataObjectValue();
+  auto * sidMetaData = dynamic_cast<MetaDataDoubleType *>(dic["CalibratedSAD"].GetPointer());
+  if (sidMetaData == nullptr)
+    itkExceptionMacro(<< "Missing or invalid metadata \"CalibratedSAD\".");
+  const double sid = sidMetaData->GetMetaDataObjectValue();
+
+  double offsetx = NAN;
+  auto * fanTypeMetaData = dynamic_cast<const itk::MetaDataObject<std::string> *>(dic["FanType"].GetPointer());
+  if (fanTypeMetaData == nullptr)
+  {
+    itkExceptionMacro(<< "Missing or invalid metadata \"FanType\".");
+  }
+  std::string fanType = fanTypeMetaData->GetMetaDataObjectValue();
   if (itksys::SystemTools::Strucmp(fanType.c_str(), "HalfFan") == 0)
   {
     // Half Fan (offset detector), get lateral offset from XML file
-    offsetx =
-      dynamic_cast<MetaDataDoubleType *>(dic["CalibratedDetectorOffsetX"].GetPointer())->GetMetaDataObjectValue() +
-      dynamic_cast<MetaDataDoubleType *>(dic["DetectorPosLat"].GetPointer())->GetMetaDataObjectValue();
+    auto * calibratedDetectorOffsetXMetaData =
+      dynamic_cast<MetaDataDoubleType *>(dic["CalibratedDetectorOffsetX"].GetPointer());
+    if (calibratedDetectorOffsetXMetaData == nullptr)
+      itkExceptionMacro(<< "Missing or invalid metadata \"CalibratedDetectorOffsetX\".");
+    const double calibratedDetectorOffsetX = calibratedDetectorOffsetXMetaData->GetMetaDataObjectValue();
+
+    auto * detectorPosLatMetaData = dynamic_cast<MetaDataDoubleType *>(dic["DetectorPosLat"].GetPointer());
+    if (detectorPosLatMetaData == nullptr)
+      itkExceptionMacro(<< "Missing or invalid metadata \"DetectorPosLat\".");
+    const double detectorPosLat = detectorPosLatMetaData->GetMetaDataObjectValue();
+
+    offsetx = calibratedDetectorOffsetX + detectorPosLat;
   }
   else
   {
     // Full Fan (centered detector)
-    offsetx =
-      dynamic_cast<MetaDataDoubleType *>(dic["CalibratedDetectorOffsetX"].GetPointer())->GetMetaDataObjectValue();
+    auto * calibratedDetectorOffsetXMetaData =
+      dynamic_cast<MetaDataDoubleType *>(dic["CalibratedDetectorOffsetX"].GetPointer());
+    if (calibratedDetectorOffsetXMetaData == nullptr)
+      itkExceptionMacro(<< "Missing or invalid metadata \"CalibratedDetectorOffsetX\".");
+    offsetx = calibratedDetectorOffsetXMetaData->GetMetaDataObjectValue();
   }
-  const double offsety =
-    dynamic_cast<MetaDataDoubleType *>(dic["CalibratedDetectorOffsetY"].GetPointer())->GetMetaDataObjectValue();
+  auto * offsetYMetaData = dynamic_cast<MetaDataDoubleType *>(dic["CalibratedDetectorOffsetY"].GetPointer());
+  if (offsetYMetaData == nullptr)
+    itkExceptionMacro(<< "Missing or invalid metadata \"CalibratedDetectorOffsetY\".");
+  const double offsety = offsetYMetaData->GetMetaDataObjectValue();
 
   // Projections reader (for angle)
   rtk::HndImageIOFactory::RegisterOneFactory();
@@ -80,9 +107,12 @@ rtk::VarianObiGeometryReader ::GenerateData()
     reader->SetFileName(projectionsFileName);
     reader->UpdateOutputInformation();
 
-    const double angle =
-      dynamic_cast<MetaDataDoubleType *>(reader->GetMetaDataDictionary()["dCTProjectionAngle"].GetPointer())
-        ->GetMetaDataObjectValue();
+    itk::MetaDataDictionary & projectionDic = reader->GetMetaDataDictionary();
+    auto * angleMetaData = dynamic_cast<MetaDataDoubleType *>(projectionDic["dCTProjectionAngle"].GetPointer());
+    if (angleMetaData == nullptr)
+      itkExceptionMacro(<< "Missing or invalid metadata \"dCTProjectionAngle\" in projection " << projectionsFileName
+                        << ".");
+    const double angle = angleMetaData->GetMetaDataObjectValue();
 
     m_Geometry->AddProjection(sid, sdd, angle, offsetx, offsety);
   }
