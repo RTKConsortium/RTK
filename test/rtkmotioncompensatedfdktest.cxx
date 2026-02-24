@@ -111,7 +111,7 @@ main(int, char **)
     e2->SetGeometry(oneProjGeometry);
     e2->SetDensity(-1.);
     e2->SetAxis(itk::MakeVector(8., 8., 8.));
-    e2->SetCenter(itk::MakeVector(4 * (itk::Math::abs((4 + noProj) % 8 - 4.) - 2.), 0., 0.));
+    e2->SetCenter(itk::MakeVector(4 * (itk::Math::Absolute((4 + noProj) % 8 - 4.) - 2.), 0., 0.));
     e2->SetAngle(0.);
     e2->Update();
 

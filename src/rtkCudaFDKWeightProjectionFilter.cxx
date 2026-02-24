@@ -48,7 +48,7 @@ CudaFDKWeightProjectionFilter ::GPUGenerateData()
       sp = this->GetGeometry()->GetSourcePosition(g);
       sp[3] = 0.;
       const double sid = this->GetGeometry()->GetSourceToIsocenterDistances()[g];
-      constantProjectionFactor[g] *= itk::Math::abs(sdd) / (2. * sid * sid);
+      constantProjectionFactor[g] *= itk::Math::Absolute(sdd) / (2. * sid * sid);
       constantProjectionFactor[g] *= sp.GetNorm();
     }
   }

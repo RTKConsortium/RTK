@@ -48,8 +48,8 @@ CudaDisplacedDetectorImageFilter ::GPUGenerateData()
   outBuffer += this->GetOutput()->ComputeOffset(this->GetOutput()->GetRequestedRegion().GetIndex());
 
   // nothing to do
-  if ((itk::Math::abs(this->GetInferiorCorner() + this->GetSuperiorCorner()) <
-       0.1 * itk::Math::abs(this->GetSuperiorCorner() - this->GetInferiorCorner())) ||
+  if ((itk::Math::Absolute(this->GetInferiorCorner() + this->GetSuperiorCorner()) <
+       0.1 * itk::Math::Absolute(this->GetSuperiorCorner() - this->GetInferiorCorner())) ||
       this->GetDisable())
   {
     if (outBuffer != inBuffer)

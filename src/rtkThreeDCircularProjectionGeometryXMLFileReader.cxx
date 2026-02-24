@@ -153,7 +153,7 @@ ThreeDCircularProjectionGeometryXMLFileReader::EndElement(const char * name)
       {
         // Tolerance can not be vcl_numeric_limits<double>::epsilon(), too strict
         // 0.001 is a random choice to catch "large" inconsistencies
-        if (itk::Math::abs(m_Matrix[i][j] - m_OutputObject->GetMatrices().back()[i][j]) > 0.001)
+        if (itk::Math::Absolute(m_Matrix[i][j] - m_OutputObject->GetMatrices().back()[i][j]) > 0.001)
         {
           itkGenericExceptionMacro(<< "Matrix and parameters are not consistent." << std::endl
                                    << "Read matrix from geometry file: " << std::endl

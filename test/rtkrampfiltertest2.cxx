@@ -53,7 +53,7 @@ main(int, char **)
   // Check the results
   auto  index = itk::MakeIndex(3, 21, 26);
   float value = 0.132652;
-  if (itk::Math::abs(rampFilter->GetOutput()->GetPixel(index) - value) > 0.000001)
+  if (itk::Math::Absolute(rampFilter->GetOutput()->GetPixel(index) - value) > 0.000001)
   {
     std::cout << "Output value #0 should be " << value << " found " << rampFilter->GetOutput()->GetPixel(index)
               << " instead." << std::endl;
@@ -64,7 +64,7 @@ main(int, char **)
   rampFilter->SetHannCutFrequency(0.8);
   rampFilter->Update();
   value = 0.149724;
-  if (itk::Math::abs(rampFilter->GetOutput()->GetPixel(index) - value) > 0.000001)
+  if (itk::Math::Absolute(rampFilter->GetOutput()->GetPixel(index) - value) > 0.000001)
   {
     std::cout << "Output value #1 should be " << value << " found " << rampFilter->GetOutput()->GetPixel(index)
               << " instead." << std::endl;
@@ -75,7 +75,7 @@ main(int, char **)
   rampFilter->SetHannCutFrequencyY(0.1);
   rampFilter->Update();
   value = 0.150181;
-  if (itk::Math::abs(rampFilter->GetOutput()->GetPixel(index) - value) > 0.000001)
+  if (itk::Math::Absolute(rampFilter->GetOutput()->GetPixel(index) - value) > 0.000001)
   {
     std::cout << "Output value #2 should be " << value << " found " << rampFilter->GetOutput()->GetPixel(index)
               << " instead." << std::endl;

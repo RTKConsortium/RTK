@@ -27,7 +27,7 @@ main(int, char **)
             double g1 = geometry1->GetGantryAngles().back();
             double g2 = geometry2->GetGantryAngles().back();
             double d = g1 - g2;
-            d = itk::Math::abs(geometry1->ConvertAngleBetweenMinusAndPlusPIRadians(d));
+            d = itk::Math::Absolute(geometry1->ConvertAngleBetweenMinusAndPlusPIRadians(d));
             if (d > 0.01)
             {
               std::cerr << "ERROR: GantryAngles 1 is " << g1 << " and GantryAngles 2 is " << g2;
@@ -37,7 +37,7 @@ main(int, char **)
             double ia1 = geometry1->GetInPlaneAngles().back();
             double ia2 = geometry2->GetInPlaneAngles().back();
             d = ia1 - ia2;
-            d = itk::Math::abs(geometry1->ConvertAngleBetweenMinusAndPlusPIRadians(d));
+            d = itk::Math::Absolute(geometry1->ConvertAngleBetweenMinusAndPlusPIRadians(d));
             if (d > 0.01)
             {
               std::cerr << "ERROR: InPlaneAngles 1 is " << ia1 << " and InPlaneAngles 2 is " << ia2;
@@ -47,7 +47,7 @@ main(int, char **)
             double oa1 = geometry1->GetOutOfPlaneAngles().back();
             double oa2 = geometry2->GetOutOfPlaneAngles().back();
             d = oa1 - oa2;
-            d = itk::Math::abs(geometry1->ConvertAngleBetweenMinusAndPlusPIRadians(d));
+            d = itk::Math::Absolute(geometry1->ConvertAngleBetweenMinusAndPlusPIRadians(d));
             if (d > 0.01)
             {
               std::cerr << "ERROR: OutOfPlaneAngle 1 is " << oa1 << " and OutOfPlaneAngle 2 is " << oa2;
@@ -56,7 +56,7 @@ main(int, char **)
 
             double py1 = geometry1->GetProjectionOffsetsY().back();
             double py2 = geometry2->GetProjectionOffsetsY().back();
-            d = itk::Math::abs(py1 - py2);
+            d = itk::Math::Absolute(py1 - py2);
             if (d > 0.01)
             {
               std::cerr << "ERROR: ProjectionOffsetsY 1 is " << py1 << " and ProjectionOffsetsY 2 is " << py2;
@@ -65,7 +65,7 @@ main(int, char **)
 
             double px1 = geometry1->GetProjectionOffsetsX().back();
             double px2 = geometry2->GetProjectionOffsetsX().back();
-            d = itk::Math::abs(px1 - px2);
+            d = itk::Math::Absolute(px1 - px2);
             if (d > 0.01)
             {
               std::cerr << "ERROR: ProjectionOffsetsX 1 is " << px1 << " and ProjectionOffsetsX 2 is " << px2;
@@ -74,7 +74,7 @@ main(int, char **)
 
             double sid1 = geometry1->GetSourceToIsocenterDistances().back();
             double sid2 = geometry2->GetSourceToIsocenterDistances().back();
-            d = itk::Math::abs(sid1 - sid2);
+            d = itk::Math::Absolute(sid1 - sid2);
             if (d > 0.01)
             {
               std::cerr << "ERROR: GetSourceToIsocenterDistances 1 is " << sid1
@@ -84,7 +84,7 @@ main(int, char **)
 
             double sdd1 = geometry1->GetSourceToDetectorDistances().back();
             double sdd2 = geometry2->GetSourceToDetectorDistances().back();
-            d = itk::Math::abs(sdd1 - sdd2);
+            d = itk::Math::Absolute(sdd1 - sdd2);
             if (d > 0.01)
             {
               std::cerr << "ERROR: GetSourceToDetectorDistances 1 is " << sdd1

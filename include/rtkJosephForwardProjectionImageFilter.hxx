@@ -126,8 +126,8 @@ JosephForwardProjectionImageFilter<TInputImage,
 
         // tolerance for origin and spacing depends on the size of pixel
         // tolerance for directions a fraction of the unit cube.
-        const double coordinateTol = itk::Math::abs(Self::GetGlobalDefaultCoordinateTolerance() *
-                                                    inputPtr1->GetSpacing()[0]); // use first dimension spacing
+        const double coordinateTol = itk::Math::Absolute(Self::GetGlobalDefaultCoordinateTolerance() *
+                                                         inputPtr1->GetSpacing()[0]); // use first dimension spacing
 
         if (!inputPtr1->GetOrigin().GetVnlVector().is_equal(inputPtrN->GetOrigin().GetVnlVector(), coordinateTol) ||
             !inputPtr1->GetSpacing().GetVnlVector().is_equal(inputPtrN->GetSpacing().GetVnlVector(), coordinateTol) ||
@@ -250,7 +250,7 @@ JosephForwardProjectionImageFilter<TInputImage,
     typename BoxShape::VectorType dirVoxAbs;
     for (unsigned int i = 0; i < Dimension; i++)
     {
-      dirVoxAbs[i] = itk::Math::abs(dirVox[i]);
+      dirVoxAbs[i] = itk::Math::Absolute(dirVox[i]);
       if (dirVoxAbs[i] > dirVoxAbs[mainDir])
         mainDir = i;
     }
@@ -337,7 +337,7 @@ JosephForwardProjectionImageFilter<TInputImage,
       if (fs == ns) // If the voxel is a corner, we can skip most steps
       {
         volumeValue = BilinearInterpolationOnBorders(threadId,
-                                                     itk::Math::abs(fp[mainDir] - np[mainDir]),
+                                                     itk::Math::Absolute(fp[mainDir] - np[mainDir]),
                                                      pxiyi,
                                                      pxsyi,
                                                      pxiys,
@@ -380,7 +380,7 @@ JosephForwardProjectionImageFilter<TInputImage,
         currenty += stepy;
 
         // Middle steps
-        for (int i{ 0 }; i < itk::Math::abs(fs - ns) - 1; ++i)
+        for (int i{ 0 }; i < itk::Math::Absolute(fs - ns) - 1; ++i)
         {
           volumeValue =
             BilinearInterpolation(threadId, 1., pxiyi, pxsyi, pxiys, pxsys, currentx, currenty, offsetx, offsety);

@@ -35,7 +35,7 @@ main(int, char **)
   ImageType::IndexType index;
   index.Fill(2);
 
-  if (itk::Math::abs(crop->GetOutput()->GetPixel(index) - 12.3) > 0.0001)
+  if (itk::Math::Absolute(crop->GetOutput()->GetPixel(index) - 12.3) > 0.0001)
   {
     std::cout << "Output should be 12.3. Value Computed = " << crop->GetOutput()->GetPixel(index) << std::endl;
     return EXIT_FAILURE;

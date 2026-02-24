@@ -643,7 +643,7 @@ ImagXGeometryReader<TInputImage>::interpolate(const std::vector<float> & flexAng
   float delta = 0.f; // to closest angle in flexmap
   for (int i = 0; i < N; ++i)
   {
-    float absdelta = itk::Math::abs(angleDegree - flexAngles[i]);
+    float absdelta = itk::Math::Absolute(angleDegree - flexAngles[i]);
     if (absdelta <= minv)
     {
       idc = i;
@@ -675,7 +675,7 @@ ImagXGeometryReader<TInputImage>::interpolate(const std::vector<float> & flexAng
   {
     if (delta > 0.f)
     {
-      float a = itk::Math::abs(delta / (flexAngles[idc + 1] - flexAngles[idc]));
+      float a = itk::Math::Absolute(delta / (flexAngles[idc + 1] - flexAngles[idc]));
       ires.id0 = idc;
       ires.id1 = idc + 1;
       ires.a0 = 1.f - a;
@@ -683,7 +683,7 @@ ImagXGeometryReader<TInputImage>::interpolate(const std::vector<float> & flexAng
     }
     else if (delta < 0.f)
     {
-      float a = itk::Math::abs(delta / (flexAngles[idc] - flexAngles[idc - 1]));
+      float a = itk::Math::Absolute(delta / (flexAngles[idc] - flexAngles[idc - 1]));
       ires.id0 = idc - 1;
       ires.id1 = idc;
       ires.a0 = a;
@@ -694,7 +694,7 @@ ImagXGeometryReader<TInputImage>::interpolate(const std::vector<float> & flexAng
   {
     if (delta < 0.f)
     {
-      float a = itk::Math::abs(delta / (flexAngles[idc + 1] - flexAngles[idc]));
+      float a = itk::Math::Absolute(delta / (flexAngles[idc + 1] - flexAngles[idc]));
       ires.id0 = idc;
       ires.id1 = idc + 1;
       ires.a0 = 1.f - a;
@@ -702,7 +702,7 @@ ImagXGeometryReader<TInputImage>::interpolate(const std::vector<float> & flexAng
     }
     else if (delta > 0.f)
     {
-      float a = itk::Math::abs(delta / (flexAngles[idc] - flexAngles[idc - 1]));
+      float a = itk::Math::Absolute(delta / (flexAngles[idc] - flexAngles[idc - 1]));
       ires.id0 = idc - 1;
       ires.id1 = idc;
       ires.a0 = a;

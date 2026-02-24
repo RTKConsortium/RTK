@@ -95,8 +95,8 @@ ParkerShortScanImageFilter<TInputImage, TOutputImage>::GenerateInputRequestedReg
     double invsid = 1. / sqrt(sid * sid + sox * sox);
 
     // Check that Parker weighting is relevant for this projection
-    double halfDetectorWidth1 = itk::Math::abs(m_Geometry->ToUntiltedCoordinateAtIsocenter(k, corner1[0]));
-    double halfDetectorWidth2 = itk::Math::abs(m_Geometry->ToUntiltedCoordinateAtIsocenter(k, corner2[0]));
+    double halfDetectorWidth1 = itk::Math::Absolute(m_Geometry->ToUntiltedCoordinateAtIsocenter(k, corner1[0]));
+    double halfDetectorWidth2 = itk::Math::Absolute(m_Geometry->ToUntiltedCoordinateAtIsocenter(k, corner2[0]));
     double halfDetectorWidth = std::min(halfDetectorWidth1, halfDetectorWidth2);
     if (m_Delta < atan(halfDetectorWidth * invsid))
     {

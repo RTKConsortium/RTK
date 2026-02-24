@@ -23,6 +23,8 @@
 
 #include <itkConfigure.h>
 #include <itkIntTypes.h>
+#include <itkMath.h>
+
 namespace rtk
 {
 using ThreadIdType = itk::ThreadIdType;
@@ -51,6 +53,19 @@ using ThreadIdType = itk::ThreadIdType;
 #endif
 #if defined(ITK_USE_FFTWD) && !defined(USE_FFTWD)
 #  define USE_FFTWD
+#endif
+
+/* Fix for ITK5 */
+#if ITK_VERSION_MAJOR<6
+namespace itk::Math
+{
+template <typename T>
+auto
+Absolute(T x)
+{
+  return itk::Math::abs(x);
+}
+}
 #endif
 
 #define RTK_VERSION_MAJOR @RTK_VERSION_MAJOR@
