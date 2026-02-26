@@ -101,7 +101,7 @@ def process(args_info: argparse.Namespace):
     if hasattr(itk, "CudaImage"):
         OutputCudaImageType = itk.CudaImage[OutputPixelType, Dimension]
         ConjugateGradientFilterType = rtk.ConjugateGradientConeBeamReconstructionFilter[
-            OutputCudaImageType
+            OutputCudaImageType, OutputCudaImageType
         ]
         conjugategradient = ConjugateGradientFilterType.New()
         conjugategradient.SetInput(itk.cuda_image_from_image(inputFilter.GetOutput()))
@@ -114,7 +114,7 @@ def process(args_info: argparse.Namespace):
             conjugategradient.SetSupportMask(itk.cuda_image_from_image(supportmask))
     else:
         ConjugateGradientFilterType = rtk.ConjugateGradientConeBeamReconstructionFilter[
-            OutputImageType
+            OutputImageType, OutputImageType
         ]
         conjugategradient = ConjugateGradientFilterType.New()
         conjugategradient.SetInput(inputFilter.GetOutput())

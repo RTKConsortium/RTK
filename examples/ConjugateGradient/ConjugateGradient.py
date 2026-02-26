@@ -45,7 +45,7 @@ conjugate_gradient_source = rtk.constant_image_source(
 if hasattr(itk, "CudaImage"):
     OutputCudaImageType = itk.CudaImage[itk.F, Dimension]
     ConjugateGradientFilterType = rtk.ConjugateGradientConeBeamReconstructionFilter[
-        OutputCudaImageType
+        OutputCudaImageType, OutputCudaImageType
     ]
     conjugategradient = ConjugateGradientFilterType.New()
     conjugategradient.SetCudaConjugateGradient(True)
@@ -60,7 +60,7 @@ if hasattr(itk, "CudaImage"):
 
 else:
     ConjugateGradientFilterType = rtk.ConjugateGradientConeBeamReconstructionFilter[
-        OutputImageType
+        OutputImageType, OutputImageType
     ]
     conjugategradient = ConjugateGradientFilterType.New()
     conjugategradient.SetInput(conjugate_gradient_source)
