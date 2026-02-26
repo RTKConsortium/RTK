@@ -6,7 +6,7 @@ env:
   itk-wheel-tag: 'v5.4.5'
   itk-python-package-tag: 'release-5.4'
   itk-python-package-org: 'InsightSoftwareConsortium'
-  itk-module-deps: "RTKConsortium/ITKCudaCommon@main"
+  itk-module-deps: "axel-grc/ITKCudaCommon@linter"
 
 concurrency:
   group: '${{ github.workflow }}@${{ github.head_ref || github.run_id }}'

@@ -49,28 +49,21 @@ itk_wrap_class("itk::InPlaceImageFilter" POINTER)
 
   if(RTK_USE_CUDA)
 
-    itk_wrap_include(itkCudaImage.h)
-
-    foreach(d ${ITK_WRAP_IMAGE_DIMS})
-      itk_wrap_template("CI${ITKM_F}${d}" "itk::CudaImage<${ITKT_F}, ${d}>")
-    endforeach()
-
-    # Wrap ITK dimension 4 CUDA missing types
+    # Add 4D scalar CUDA instantiation if ITK doesn't include it
     list(FIND ITK_WRAP_IMAGE_DIMS "4" _index)
     if (${_index} EQUAL -1)
-      itk_wrap_template("CIF4CIF4" "itk::CudaImage<${ITKT_F}, 4>, itk::CudaImage<${ITKT_F}, 4>")
+      itk_wrap_template("CI${ITKM_F}4CI${ITKM_F}4" "itk::CudaImage<${ITKT_F}, 4>, itk::CudaImage<${ITKT_F}, 4>")
     endif()
 
-    # Force VECTOR_COMPONENTS to "2;3;4;5"
-    UNIQUE(imageDimensions "${ITK_WRAP_IMAGE_DIMS};2;3;4")
-    UNIQUE(vectorComponents "${ITK_WRAP_VECTOR_COMPONENTS};2;3;4;5")
-    foreach(component ${vectorComponents})
+    # Add vector components with comp == 5 (VF and CVF) across image dims 2,3,4
+    list(FIND ITK_WRAP_VECTOR_COMPONENTS "5" _index)
+    if(${_index} EQUAL -1)
+      UNIQUE(imageDimensions "${ITK_WRAP_IMAGE_DIMS};2;3;4")
       foreach(d ${imageDimensions})
-        itk_wrap_template("CI${ITKM_VF${component}}${d}" "itk::CudaImage<${ITKT_VF${component}}, ${d}>")
-        itk_wrap_template("CI${ITKM_VF${component}}${d}CI${ITKM_VF${component}}${d}"
-          "itk::CudaImage<${ITKT_VF${component}}, ${d}>, itk::CudaImage<${ITKT_VF${component}}, ${d}>")
+        itk_wrap_template("CI${ITKM_VF5}${d}CI${ITKM_VF5}${d}" "itk::CudaImage<${ITKT_VF5}, ${d}>, itk::CudaImage<${ITKT_VF5}, ${d}>")
+        itk_wrap_template("CI${ITKM_CVF5}${d}CI${ITKM_CVF5}${d}" "itk::CudaImage<${ITKT_CVF5}, ${d}>, itk::CudaImage<${ITKT_CVF5}, ${d}>")
       endforeach()
-    endforeach()
+    endif()
 
   endif()
 
