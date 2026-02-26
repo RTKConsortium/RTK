@@ -1,3 +1,11 @@
 itk_wrap_class("rtk::SelectOneProjectionPerCycleImageFilter" POINTER)
+  # Ensure SWIG sees base classes for inheritance to avoid 'Nothing known about base class' warnings
+  itk_wrap_include(rtkSubSelectImageFilter.h)
+  itk_wrap_include(itkCSVFileReaderBase.h)
   itk_wrap_image_filter("${WRAP_ITK_REAL}" 1 3)
+
+  if(RTK_USE_CUDA)
+    itk_wrap_include(itkCudaImage.h)
+    itk_wrap_template("CIF3" "itk::CudaImage<float, 3>")
+  endif()
 itk_end_wrap_class()

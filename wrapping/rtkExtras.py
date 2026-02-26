@@ -2,6 +2,7 @@ import itk
 from itk import RTK as rtk
 import importlib
 import shlex
+import math
 
 
 # Write a 3D circular projection geometry to a file.
@@ -24,6 +25,25 @@ def read_geometry(filename):
 
     # Return the geometry object
     return reader.GetOutputObject()
+
+
+# Read a signal file
+def read_signal_file(filename):
+    signal_vector = []
+    try:
+        with open(filename) as f:
+            for line in f:
+                line = line.strip()
+                if line:
+                    value = float(line)
+                    rounded = round(value * 100) / 100
+                    if rounded == 1.0:
+                        signal_vector.append(0.0)
+                    else:
+                        signal_vector.append(rounded)
+    except OSError:
+        raise RuntimeError(f"Could not open signal file {filename}")
+    return signal_vector
 
 
 # Returns the progress percentage
