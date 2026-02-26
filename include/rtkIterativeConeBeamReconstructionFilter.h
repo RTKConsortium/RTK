@@ -245,8 +245,12 @@ protected:
     ForwardProjectionPointerType fw;
 #ifdef RTK_USE_CUDA
     fw = CudaForwardProjectionImageFilter<ImageType, ImageType>::New();
-    dynamic_cast<rtk::CudaForwardProjectionImageFilter<ImageType, ImageType> *>(fw.GetPointer())
-      ->SetStepSize(m_StepSize);
+    auto * cudaFw = dynamic_cast<rtk::CudaForwardProjectionImageFilter<ImageType, ImageType> *>(fw.GetPointer());
+    if (cudaFw == nullptr)
+    {
+      itkExceptionMacro(<< "Failed to cast forward projector to CudaForwardProjectionImageFilter.");
+    }
+    cudaFw->SetStepSize(m_StepSize);
 #endif
     return fw;
   }
@@ -269,7 +273,12 @@ protected:
     ForwardProjectionPointerType fw;
 #ifdef RTK_USE_CUDA
     fw = CudaWarpForwardProjectionImageFilter::New();
-    dynamic_cast<rtk::CudaWarpForwardProjectionImageFilter *>(fw.GetPointer())->SetStepSize(m_StepSize);
+    auto * cudaWarpFw = dynamic_cast<rtk::CudaWarpForwardProjectionImageFilter *>(fw.GetPointer());
+    if (cudaWarpFw == nullptr)
+    {
+      itkExceptionMacro(<< "Failed to cast forward projector to CudaWarpForwardProjectionImageFilter.");
+    }
+    cudaWarpFw->SetStepSize(m_StepSize);
 #endif
     return fw;
   }
@@ -311,15 +320,25 @@ protected:
     }
     if (this->GetSuperiorClipImage().IsNotNull())
     {
-      dynamic_cast<rtk::JosephForwardAttenuatedProjectionImageFilter<VolumeType, ProjectionStackType> *>(
-        fw.GetPointer())
-        ->SetSuperiorClipImage(this->GetSuperiorClipImage());
+      auto * josephAttenuatedForward =
+        dynamic_cast<rtk::JosephForwardAttenuatedProjectionImageFilter<VolumeType, ProjectionStackType> *>(
+          fw.GetPointer());
+      if (josephAttenuatedForward == nullptr)
+      {
+        itkExceptionMacro(<< "Failed to cast forward projector to JosephForwardAttenuatedProjectionImageFilter.");
+      }
+      josephAttenuatedForward->SetSuperiorClipImage(this->GetSuperiorClipImage());
     }
     if (this->GetInferiorClipImage().IsNotNull())
     {
-      dynamic_cast<rtk::JosephForwardAttenuatedProjectionImageFilter<VolumeType, ProjectionStackType> *>(
-        fw.GetPointer())
-        ->SetInferiorClipImage(this->GetInferiorClipImage());
+      auto * josephAttenuatedForward =
+        dynamic_cast<rtk::JosephForwardAttenuatedProjectionImageFilter<VolumeType, ProjectionStackType> *>(
+          fw.GetPointer());
+      if (josephAttenuatedForward == nullptr)
+      {
+        itkExceptionMacro(<< "Failed to cast forward projector to JosephForwardAttenuatedProjectionImageFilter.");
+      }
+      josephAttenuatedForward->SetInferiorClipImage(this->GetInferiorClipImage());
     }
     return fw;
   }
@@ -343,10 +362,14 @@ protected:
     {
       fw->SetInput(2, this->GetAttenuationMap());
     }
-    dynamic_cast<rtk::ZengForwardProjectionImageFilter<VolumeType, ProjectionStackType> *>(fw.GetPointer())
-      ->SetSigmaZero(m_SigmaZero);
-    dynamic_cast<rtk::ZengForwardProjectionImageFilter<VolumeType, ProjectionStackType> *>(fw.GetPointer())
-      ->SetAlpha(m_AlphaPSF);
+    auto * zengForward =
+      dynamic_cast<rtk::ZengForwardProjectionImageFilter<VolumeType, ProjectionStackType> *>(fw.GetPointer());
+    if (zengForward == nullptr)
+    {
+      itkExceptionMacro(<< "Failed to cast forward projector to ZengForwardProjectionImageFilter.");
+    }
+    zengForward->SetSigmaZero(m_SigmaZero);
+    zengForward->SetAlpha(m_AlphaPSF);
     return fw;
   }
 
@@ -400,7 +423,12 @@ protected:
     BackProjectionPointerType bp;
 #ifdef RTK_USE_CUDA
     bp = CudaRayCastBackProjectionImageFilter::New();
-    dynamic_cast<rtk::CudaRayCastBackProjectionImageFilter *>(bp.GetPointer())->SetStepSize(m_StepSize);
+    auto * cudaRayCastBp = dynamic_cast<rtk::CudaRayCastBackProjectionImageFilter *>(bp.GetPointer());
+    if (cudaRayCastBp == nullptr)
+    {
+      itkExceptionMacro(<< "Failed to cast back projector to CudaRayCastBackProjectionImageFilter.");
+    }
+    cudaRayCastBp->SetStepSize(m_StepSize);
 #endif
     return bp;
   }
@@ -461,10 +489,14 @@ protected:
     {
       bp->SetInput(2, this->GetAttenuationMap());
     }
-    dynamic_cast<rtk::ZengBackProjectionImageFilter<VolumeType, ProjectionStackType> *>(bp.GetPointer())
-      ->SetSigmaZero(m_SigmaZero);
-    dynamic_cast<rtk::ZengBackProjectionImageFilter<VolumeType, ProjectionStackType> *>(bp.GetPointer())
-      ->SetAlpha(m_AlphaPSF);
+    auto * zengBack =
+      dynamic_cast<rtk::ZengBackProjectionImageFilter<VolumeType, ProjectionStackType> *>(bp.GetPointer());
+    if (zengBack == nullptr)
+    {
+      itkExceptionMacro(<< "Failed to cast back projector to ZengBackProjectionImageFilter.");
+    }
+    zengBack->SetSigmaZero(m_SigmaZero);
+    zengBack->SetAlpha(m_AlphaPSF);
     return bp;
   }
 

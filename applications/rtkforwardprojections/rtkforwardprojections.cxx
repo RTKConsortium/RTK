@@ -117,16 +117,23 @@ main(int argc, char * argv[])
       forwardProjection = rtk::MaximumIntensityProjectionImageFilter<OutputImageType, OutputImageType>::New();
       break;
     case (fp_arg_CudaRayCast):
+    {
 #ifdef RTK_USE_CUDA
       forwardProjection = rtk::CudaForwardProjectionImageFilter<OutputImageType, OutputImageType>::New();
-      dynamic_cast<rtk::CudaForwardProjectionImageFilter<OutputImageType, OutputImageType> *>(
-        forwardProjection.GetPointer())
-        ->SetStepSize(args_info.step_arg);
+      auto * cudaForward = dynamic_cast<rtk::CudaForwardProjectionImageFilter<OutputImageType, OutputImageType> *>(
+        forwardProjection.GetPointer());
+      if (cudaForward == nullptr)
+      {
+        std::cerr << "Failed to cast forward projection filter to CudaForwardProjectionImageFilter." << std::endl;
+        return EXIT_FAILURE;
+      }
+      cudaForward->SetStepSize(args_info.step_arg);
 #else
       std::cerr << "The program has not been compiled with cuda option" << std::endl;
       return EXIT_FAILURE;
 #endif
       break;
+    }
     default:
       std::cerr << "Unhandled --method value." << std::endl;
       return EXIT_FAILURE;
@@ -139,52 +146,100 @@ main(int argc, char * argv[])
   {
     if (args_info.fp_arg == fp_arg_Joseph)
     {
-      dynamic_cast<rtk::JosephForwardProjectionImageFilter<OutputImageType, OutputImageType> *>(
-        forwardProjection.GetPointer())
-        ->SetInferiorClipImage(inferiorClipImage);
+      auto * josephForward = dynamic_cast<rtk::JosephForwardProjectionImageFilter<OutputImageType, OutputImageType> *>(
+        forwardProjection.GetPointer());
+      if (josephForward == nullptr)
+      {
+        std::cerr << "Failed to cast forward projection filter to JosephForwardProjectionImageFilter." << std::endl;
+        return EXIT_FAILURE;
+      }
+      josephForward->SetInferiorClipImage(inferiorClipImage);
     }
     else if (args_info.fp_arg == fp_arg_JosephAttenuated)
     {
-      dynamic_cast<rtk::JosephForwardAttenuatedProjectionImageFilter<OutputImageType, OutputImageType> *>(
-        forwardProjection.GetPointer())
-        ->SetInferiorClipImage(inferiorClipImage);
+      auto * josephAttenuatedForward =
+        dynamic_cast<rtk::JosephForwardAttenuatedProjectionImageFilter<OutputImageType, OutputImageType> *>(
+          forwardProjection.GetPointer());
+      if (josephAttenuatedForward == nullptr)
+      {
+        std::cerr << "Failed to cast forward projection filter to JosephForwardAttenuatedProjectionImageFilter."
+                  << std::endl;
+        return EXIT_FAILURE;
+      }
+      josephAttenuatedForward->SetInferiorClipImage(inferiorClipImage);
     }
     else if (args_info.fp_arg == fp_arg_MIP)
     {
-      dynamic_cast<rtk::MaximumIntensityProjectionImageFilter<OutputImageType, OutputImageType> *>(
-        forwardProjection.GetPointer())
-        ->SetInferiorClipImage(inferiorClipImage);
+      auto * mipForward = dynamic_cast<rtk::MaximumIntensityProjectionImageFilter<OutputImageType, OutputImageType> *>(
+        forwardProjection.GetPointer());
+      if (mipForward == nullptr)
+      {
+        std::cerr << "Failed to cast forward projection filter to MaximumIntensityProjectionImageFilter." << std::endl;
+        return EXIT_FAILURE;
+      }
+      mipForward->SetInferiorClipImage(inferiorClipImage);
     }
   }
   if (args_info.superiorclipimage_given)
   {
     if (args_info.fp_arg == fp_arg_Joseph)
     {
-      dynamic_cast<rtk::JosephForwardProjectionImageFilter<OutputImageType, OutputImageType> *>(
-        forwardProjection.GetPointer())
-        ->SetSuperiorClipImage(superiorClipImage);
+      auto * josephForward = dynamic_cast<rtk::JosephForwardProjectionImageFilter<OutputImageType, OutputImageType> *>(
+        forwardProjection.GetPointer());
+      if (josephForward == nullptr)
+      {
+        std::cerr << "Failed to cast forward projection filter to JosephForwardProjectionImageFilter." << std::endl;
+        return EXIT_FAILURE;
+      }
+      josephForward->SetSuperiorClipImage(superiorClipImage);
     }
     else if (args_info.fp_arg == fp_arg_JosephAttenuated)
     {
-      dynamic_cast<rtk::JosephForwardAttenuatedProjectionImageFilter<OutputImageType, OutputImageType> *>(
-        forwardProjection.GetPointer())
-        ->SetSuperiorClipImage(superiorClipImage);
+      auto * josephAttenuatedForward =
+        dynamic_cast<rtk::JosephForwardAttenuatedProjectionImageFilter<OutputImageType, OutputImageType> *>(
+          forwardProjection.GetPointer());
+      if (josephAttenuatedForward == nullptr)
+      {
+        std::cerr << "Failed to cast forward projection filter to JosephForwardAttenuatedProjectionImageFilter."
+                  << std::endl;
+        return EXIT_FAILURE;
+      }
+      josephAttenuatedForward->SetSuperiorClipImage(superiorClipImage);
     }
     else if (args_info.fp_arg == fp_arg_MIP)
     {
-      dynamic_cast<rtk::MaximumIntensityProjectionImageFilter<OutputImageType, OutputImageType> *>(
-        forwardProjection.GetPointer())
-        ->SetSuperiorClipImage(superiorClipImage);
+      auto * mipForward = dynamic_cast<rtk::MaximumIntensityProjectionImageFilter<OutputImageType, OutputImageType> *>(
+        forwardProjection.GetPointer());
+      if (mipForward == nullptr)
+      {
+        std::cerr << "Failed to cast forward projection filter to MaximumIntensityProjectionImageFilter." << std::endl;
+        return EXIT_FAILURE;
+      }
+      mipForward->SetSuperiorClipImage(superiorClipImage);
     }
   }
   if (args_info.sigmazero_given && args_info.fp_arg == fp_arg_Zeng)
-    dynamic_cast<rtk::ZengForwardProjectionImageFilter<OutputImageType, OutputImageType> *>(
-      forwardProjection.GetPointer())
-      ->SetSigmaZero(args_info.sigmazero_arg);
+  {
+    auto * zengForward = dynamic_cast<rtk::ZengForwardProjectionImageFilter<OutputImageType, OutputImageType> *>(
+      forwardProjection.GetPointer());
+    if (zengForward == nullptr)
+    {
+      std::cerr << "Failed to cast forward projection filter to ZengForwardProjectionImageFilter." << std::endl;
+      return EXIT_FAILURE;
+    }
+    zengForward->SetSigmaZero(args_info.sigmazero_arg);
+  }
   if (args_info.alphapsf_given && args_info.fp_arg == fp_arg_Zeng)
-    dynamic_cast<rtk::ZengForwardProjectionImageFilter<OutputImageType, OutputImageType> *>(
-      forwardProjection.GetPointer())
-      ->SetAlpha(args_info.alphapsf_arg);
+  {
+    auto * zengForward = dynamic_cast<rtk::ZengForwardProjectionImageFilter<OutputImageType, OutputImageType> *>(
+      forwardProjection.GetPointer());
+    if (zengForward == nullptr)
+    {
+      std::cerr << "Failed to cast forward projection filter to ZengForwardProjectionImageFilter." << std::endl;
+      return EXIT_FAILURE;
+    }
+    zengForward->SetAlpha(args_info.alphapsf_arg);
+  }
   forwardProjection->SetGeometry(geometry);
   if (!args_info.lowmem_flag)
   {

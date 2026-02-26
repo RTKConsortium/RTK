@@ -57,14 +57,16 @@ VarianProBeamXMLFileReader::EndElement(const char * name)
     itk::EncapsulateMetaData<double>(m_Dictionary, encapsulatedName, d); \
   }
 
-#define MODIFY_META_DATA_DOUBLE_MULTIPLY(metaName, encapsulatedName)                                             \
-  if (itksys::SystemTools::Strucmp(name, metaName) == 0)                                                         \
-  {                                                                                                              \
-    double d = std::stod(m_CurCharacterData.c_str());                                                            \
-    using MetaDataDoubleType = itk::MetaDataObject<double>;                                                      \
-    const double multiplier =                                                                                    \
-      dynamic_cast<MetaDataDoubleType *>(m_Dictionary[encapsulatedName].GetPointer())->GetMetaDataObjectValue(); \
-    itk::EncapsulateMetaData<double>(m_Dictionary, encapsulatedName, d * multiplier);                            \
+#define MODIFY_META_DATA_DOUBLE_MULTIPLY(metaName, encapsulatedName)                                                \
+  if (itksys::SystemTools::Strucmp(name, metaName) == 0)                                                            \
+  {                                                                                                                 \
+    double d = std::stod(m_CurCharacterData.c_str());                                                               \
+    using MetaDataDoubleType = itk::MetaDataObject<double>;                                                         \
+    auto * metaDataObject = dynamic_cast<MetaDataDoubleType *>(m_Dictionary[encapsulatedName].GetPointer());        \
+    if (metaDataObject == nullptr)                                                                                  \
+      itkGenericExceptionMacro(<< "Missing or invalid metadata \"" << encapsulatedName << "\" while reading \""     \
+                               << metaName << "\".");                                                               \
+    itk::EncapsulateMetaData<double>(m_Dictionary, encapsulatedName, d * metaDataObject->GetMetaDataObjectValue()); \
   }
 
 #define ENCAPLULATE_META_DATA_STRING(metaName)                                         \
