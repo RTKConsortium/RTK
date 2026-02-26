@@ -99,7 +99,7 @@ CheckL0NormOfGradient(typename TInputImage::Pointer before, typename TInputImage
 
 
 int
-main(int, char **)
+rtkl0gradientnormtest(int, char *[])
 {
   using OutputPixelType = float;
   using VolumeSeriesType = itk::Image<OutputPixelType, 4>;

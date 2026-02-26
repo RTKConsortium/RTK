@@ -21,7 +21,7 @@
  */
 
 int
-main(int argc, char * argv[])
+rtkelektatest(int argc, char * argv[])
 {
   if (argc < 8)
   {

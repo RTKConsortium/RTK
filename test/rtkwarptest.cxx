@@ -25,7 +25,7 @@
  */
 
 int
-main(int, char **)
+rtkwarptest(int, char *[])
 {
   constexpr unsigned int Dimension = 3;
   using OutputImageType = itk::Image<float, Dimension>;

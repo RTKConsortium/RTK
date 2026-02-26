@@ -86,7 +86,7 @@ IntersectPlaneWithLine(const GeometryType::PointType &  S,
  * @return EXIT_SUCCESS if the test approves correctness of the utility class
  */
 int
-main(int argc, char * argv[])
+rtkTestReg23ProjectionGeometry(int argc, char * argv[])
 {
   // parse cmdln args:
   std::string sarg;

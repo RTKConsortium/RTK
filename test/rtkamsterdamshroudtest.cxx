@@ -27,7 +27,7 @@
  * \author Marc Vila
  */
 int
-main(int argc, char * argv[])
+rtkamsterdamshroudtest(int argc, char * argv[])
 {
   constexpr unsigned int Dimension = 3;
   using reg1DPixelType = double;

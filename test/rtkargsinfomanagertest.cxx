@@ -27,7 +27,7 @@ cleanup_function(args_info_test * args_info)
 }
 
 int
-main(int, char **)
+rtkargsinfomanagertest(int, char *[])
 {
   args_info_test args_info_1, args_info_2;
 

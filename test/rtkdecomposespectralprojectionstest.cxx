@@ -23,7 +23,7 @@
  */
 
 int
-main(int argc, char * argv[])
+rtkdecomposespectralprojectionstest(int argc, char * argv[])
 {
   if (argc < 4)
   {

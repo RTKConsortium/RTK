@@ -27,7 +27,7 @@
  */
 
 int
-main(int argc, char * argv[])
+rtkspectralonesteptest(int argc, char * argv[])
 {
   if (argc < 4)
   {

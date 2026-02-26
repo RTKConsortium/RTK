@@ -16,7 +16,7 @@
  */
 
 int
-main(int, char **)
+rtkforbildtest(int, char *[])
 {
   constexpr unsigned int Dimension = 3;
   using OutputImageType = itk::Image<float, Dimension>;

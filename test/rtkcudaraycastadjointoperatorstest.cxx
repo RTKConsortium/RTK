@@ -19,7 +19,7 @@
  */
 
 int
-main(int, char **)
+rtkcudaraycastadjointoperatorstest(int, char *[])
 {
   constexpr unsigned int Dimension = 3;
   using OutputPixelType = float;

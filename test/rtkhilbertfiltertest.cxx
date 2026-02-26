@@ -13,7 +13,7 @@
  */
 
 int
-main(int, char **)
+rtkhilbertfiltertest(int, char *[])
 {
   constexpr unsigned int Dimension = 3;
   using OutputPixelType = float;

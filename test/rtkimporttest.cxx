@@ -78,7 +78,7 @@ CheckError(typename TImage::Pointer     recon,
 #endif // FAST_TESTS_NO_CHECKS
 
 int
-main(int, char **)
+rtkimporttest(int, char *[])
 {
   // Raw vectors
   auto * vec_uint_2d = new unsigned int[10 * 10];

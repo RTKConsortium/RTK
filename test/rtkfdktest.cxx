@@ -28,7 +28,7 @@
  */
 
 int
-main(int, char **)
+rtkfdktest(int, char *[])
 {
   constexpr unsigned int Dimension = 3;
   using OutputPixelType = float;

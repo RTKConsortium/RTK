@@ -29,7 +29,7 @@ fillImageWithRawData(ShortImageType::Pointer image, unsigned short I0)
 }
 
 int
-main(int, char **)
+rtklutbasedvarI0rawtoatttest(int, char *[])
 {
   auto convert = rtk::LUTbasedVariableI0RawToAttenuationImageFilter<ShortImageType, itk::Image<float, 2>>::New();
 

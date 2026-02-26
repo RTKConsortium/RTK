@@ -16,7 +16,7 @@
  */
 
 int
-main(int, char **)
+rtkbinningtest(int, char *[])
 {
   constexpr unsigned int Dimension = 2;
   using OutputImageType = itk::Image<unsigned short, Dimension>;
