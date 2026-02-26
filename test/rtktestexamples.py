@@ -68,3 +68,7 @@ def test_ConjugateGradient(tmp_path, thorax_file):
     run_example(
         tmp_path, "ConjugateGradient/ConjugateGradient.py", thorax_file, out_img
     )
+
+
+def test_MatlabSparseMatrixExample(tmp_path):
+    run_example(tmp_path, "MatlabSparseMatrix/MatlabSparseMatrixExample.py")

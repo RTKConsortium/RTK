@@ -385,6 +385,9 @@ rtk_add_test(rtkConjugateGradientExampleTest
   ../examples/ConjugateGradient/ConjugateGradient.cxx
   DATA{Input/Forbild/Thorax}
 )
+rtk_add_test(rtkMatlabSparseMatrixExampleTest
+  ../examples/MatlabSparseMatrix/MatlabSparseMatrixExample.cxx
+)
 
 if(ITK_WRAP_PYTHON)
   itk_python_add_test(NAME rtkMaximumIntensityPythonTest COMMAND rtkMaximumIntensity.py)

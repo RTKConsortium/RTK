@@ -16,15 +16,40 @@
  *
  *=========================================================================*/
 
+#ifndef rtkMatlabSparseMatrix_hxx
+#define rtkMatlabSparseMatrix_hxx
+
 #include <fstream>
 #include <iostream>
+#include <string>
+#include <vector>
+
+namespace rtk
+{
 
 //====================================================================
 template <class TOutputImage>
-rtk::MatlabSparseMatrix::MatlabSparseMatrix(const vnl_sparse_matrix<double> & sparseMatrix, TOutputImage * output)
+MatlabSparseMatrix<TOutputImage>::~MatlabSparseMatrix()
 {
-  unsigned int nbColumn = output->GetLargestPossibleRegion().GetSize()[0] *
-                          output->GetLargestPossibleRegion().GetSize()[2]; // it's not sparseMatrix.columns()
+  if (m_MatlabSparseMatrix.s_rowIndex)
+    delete[] m_MatlabSparseMatrix.s_rowIndex;
+  if (m_MatlabSparseMatrix.s_columnIndex)
+    delete[] m_MatlabSparseMatrix.s_columnIndex;
+  if (m_MatlabSparseMatrix.s_value)
+    delete[] m_MatlabSparseMatrix.s_value;
+}
+
+template <class TOutputImage>
+void
+MatlabSparseMatrix<TOutputImage>::BuildMatlabMatrix()
+{
+  if (!m_Output)
+  {
+    itkExceptionMacro("Output image not set");
+  }
+
+  unsigned int nbColumn = m_Output->GetLargestPossibleRegion().GetSize()[0] *
+                          m_Output->GetLargestPossibleRegion().GetSize()[2]; // it's not m_Matrix.columns()
 
   // Take the number of non-zero elements:
   // Compute the column index
@@ -32,21 +57,21 @@ rtk::MatlabSparseMatrix::MatlabSparseMatrix(const vnl_sparse_matrix<double> & sp
   unsigned int nonZeroElement(0);
   using sparseMatrixColumn = std::vector<std::pair<unsigned int, double>>;
   auto * columnsVector = new sparseMatrixColumn[nbColumn];
-  sparseMatrix.reset();
-  while (sparseMatrix.next())
+  m_Matrix.reset();
+  while (m_Matrix.next())
   {
-    typename TOutputImage::IndexType idx = output->ComputeIndex(sparseMatrix.getcolumn());
+    typename TOutputImage::IndexType idx = m_Output->ComputeIndex(m_Matrix.getcolumn());
     if (idx[1] != 1)
       continue;
-    unsigned int indexColumn = idx[0] + idx[2] * output->GetLargestPossibleRegion().GetSize()[2];
+    unsigned int indexColumn = idx[0] + idx[2] * m_Output->GetLargestPossibleRegion().GetSize()[2];
     auto         it = columnsVector[indexColumn].begin();
     while (it != columnsVector[indexColumn].end())
     {
-      if ((unsigned int)sparseMatrix.getrow() < it->first)
+      if ((unsigned int)m_Matrix.getrow() < it->first)
         break;
       ++it;
     }
-    columnsVector[indexColumn].insert(it, std::make_pair(sparseMatrix.getrow(), sparseMatrix.value()));
+    columnsVector[indexColumn].insert(it, std::make_pair(m_Matrix.getrow(), m_Matrix.value()));
     ++nonZeroElement;
   }
 
@@ -69,7 +94,7 @@ rtk::MatlabSparseMatrix::MatlabSparseMatrix(const vnl_sparse_matrix<double> & sp
   m_MatlabSparseMatrix.s_arrayNzmax = nonZeroElement;
   m_MatlabSparseMatrix.s_dimensionTag = 5;
   m_MatlabSparseMatrix.s_dimensionLength = 8;
-  m_MatlabSparseMatrix.s_dimensionNbRow = sparseMatrix.rows();
+  m_MatlabSparseMatrix.s_dimensionNbRow = m_Matrix.rows();
   m_MatlabSparseMatrix.s_dimensionNbColumn = nbColumn;
   m_MatlabSparseMatrix.s_nameLength = 1;
   m_MatlabSparseMatrix.s_nameTag = 1;
@@ -106,11 +131,16 @@ rtk::MatlabSparseMatrix::MatlabSparseMatrix(const vnl_sparse_matrix<double> & sp
     }
   }
   m_MatlabSparseMatrix.s_columnIndex[m_MatlabSparseMatrix.s_dimensionNbColumn] = m_MatlabSparseMatrix.s_arrayNzmax;
+
+  delete[] columnsVector;
 }
 
+template <class TOutputImage>
 void
-rtk::MatlabSparseMatrix::Save(std::ostream & out)
+MatlabSparseMatrix<TOutputImage>::Save(std::ostream & out)
 {
+  BuildMatlabMatrix();
+  
   // Write data
   out.write(reinterpret_cast<const char *>(&m_MatlabSparseMatrix.s_headerMatlab), 116);
   out.write(reinterpret_cast<const char *>(&m_MatlabSparseMatrix.s_headerOffset), 8);
@@ -150,8 +180,9 @@ rtk::MatlabSparseMatrix::Save(std::ostream & out)
     out.write(reinterpret_cast<const char *>(&m_MatlabSparseMatrix.s_value[i]), 8);
 }
 
-void
-rtk::MatlabSparseMatrix::Print()
+template <class TOutputImage>
+inline void
+MatlabSparseMatrix<TOutputImage>::Print()
 {
   std::cout << "m_MatlabSparseMatrix.s_headerMatlab : \"" << m_MatlabSparseMatrix.s_headerMatlab << "\"" << std::endl;
   std::cout << "m_MatlabSparseMatrix.s_headerOffset : \"" << m_MatlabSparseMatrix.s_headerOffset << "\"" << std::endl;
@@ -209,131 +240,6 @@ rtk::MatlabSparseMatrix::Print()
   std::cout << "\"" << std::endl;
 }
 
-/*
-std::istream& operator>>(std::istream& in) {
-  char temp1(0);
-  unsigned short int temp2(0);
-  unsigned long int temp4(0);
-  double temp8(0);
+} // namespace rtk
 
-  //header
-  for (unsigned int i=0; i<116; ++i) {
-    in.read(reinterpret_cast<char*>(&temp1),1);
-    m_MatlabSparseMatrix.s_headerMatlab[i] = temp1;
-  }
-  std::cout << "m_MatlabSparseMatrix.s_headerMatlab : \"" << m_MatlabSparseMatrix.s_headerMatlab << "\"" << std::endl;
-  for (unsigned int i=0; i<8; ++i) {
-    in.read(reinterpret_cast<char*>(&temp1),1);
-    m_MatlabSparseMatrix.s_headerOffset[i] = temp1;
-  }
-  std::cout << "m_MatlabSparseMatrix.s_headerOffset : \"" << m_MatlabSparseMatrix.s_headerOffset << "\"" << std::endl;
-  in.read(reinterpret_cast<char*>(&temp2), 2);
-  m_MatlabSparseMatrix.s_headerVersion = temp2;
-  std::cout << "m_MatlabSparseMatrix.s_headerVersion : \"" << std::hex << +m_MatlabSparseMatrix.s_headerVersion << "\""
-<< std::endl; for (unsigned int i=0; i<2; ++i) { in.read(reinterpret_cast<char*>(&temp1),1);
-    m_MatlabSparseMatrix.s_headerEndian[i] = temp1;
-  }
-  std::cout << "m_MatlabSparseMatrix.s_headerEndian : \"" << m_MatlabSparseMatrix.s_headerEndian << "\"" << std::endl;
-  //data
-  in.read(reinterpret_cast<char*>(&temp4), 4);
-  m_MatlabSparseMatrix.s_mainTag = temp4;
-  std::cout << "m_MatlabSparseMatrix.s_mainTag : \"" << m_MatlabSparseMatrix.s_mainTag << "\"" << std::endl;
-  in.read(reinterpret_cast<char*>(&temp4), 4);
-  m_MatlabSparseMatrix.s_dataLength = temp4;
-  std::cout << "m_MatlabSparseMatrix.s_dataLength : \"" << m_MatlabSparseMatrix.s_dataLength << "\"" << std::endl;
-  in.read(reinterpret_cast<char*>(&temp4), 4);
-  m_MatlabSparseMatrix.s_arrayTag = temp4;
-  std::cout << "m_MatlabSparseMatrix.s_arrayTag : \"" << m_MatlabSparseMatrix.s_arrayTag << "\"" << std::endl;
-  in.read(reinterpret_cast<char*>(&temp4), 4);
-  m_MatlabSparseMatrix.s_arrayLength = temp4;
-  std::cout << "m_MatlabSparseMatrix.s_arrayLength : \"" << m_MatlabSparseMatrix.s_arrayLength << "\"" << std::endl;
-  in.read(reinterpret_cast<char*>(&temp1), 1);
-  m_MatlabSparseMatrix.s_arrayFlags = temp1;
-  std::cout << "m_MatlabSparseMatrix.s_arrayFlags : \"" << (unsigned int)m_MatlabSparseMatrix.s_arrayFlags << "\"" <<
-std::endl; in.read(reinterpret_cast<char*>(&temp1),1); m_MatlabSparseMatrix.s_arrayClass = temp1; std::cout <<
-"m_MatlabSparseMatrix.s_arrayClass : \"" << (unsigned int)m_MatlabSparseMatrix.s_arrayClass << "\"" << std::endl;
-  in.read(reinterpret_cast<char*>(&temp2), 2);
-  m_MatlabSparseMatrix.s_arrayUndefined = temp2;
-  std::cout << "m_MatlabSparseMatrix.s_arrayUndefined : \"" << m_MatlabSparseMatrix.s_arrayUndefined << "\"" <<
-std::endl; in.read(reinterpret_cast<char*>(&temp4), 4); m_MatlabSparseMatrix.s_arrayNzmax = temp4; std::cout <<
-"m_MatlabSparseMatrix.s_arrayNzmax : \"" << m_MatlabSparseMatrix.s_arrayNzmax << "\"" << std::endl;
-  in.read(reinterpret_cast<char*>(&temp4), 4);
-  m_MatlabSparseMatrix.s_dimensionTag = temp4;
-  std::cout << "m_MatlabSparseMatrix.s_dimensionTag : \"" << m_MatlabSparseMatrix.s_dimensionTag << "\"" << std::endl;
-  in.read(reinterpret_cast<char*>(&temp4), 4);
-  m_MatlabSparseMatrix.s_dimensionLength = temp4;
-  std::cout << "m_MatlabSparseMatrix.s_dimensionLength : \"" << m_MatlabSparseMatrix.s_dimensionLength << "\"" <<
-std::endl; in.read(reinterpret_cast<char*>(&temp4), 4); m_MatlabSparseMatrix.s_dimensionNbRow = temp4; std::cout <<
-"m_MatlabSparseMatrix.s_dimensionNbRow : \"" << m_MatlabSparseMatrix.s_dimensionNbRow << "\"" << std::endl;
-  in.read(reinterpret_cast<char*>(&temp4), 4);
-  m_MatlabSparseMatrix.s_dimensionNbColumn = temp4;
-  std::cout << "m_MatlabSparseMatrix.s_dimensionNbColumn : \"" << m_MatlabSparseMatrix.s_dimensionNbColumn << "\"" <<
-std::endl; in.read(reinterpret_cast<char*>(&temp2), 2); m_MatlabSparseMatrix.s_nameLength = temp2; std::cout <<
-"m_MatlabSparseMatrix.s_nameLength : \"" << m_MatlabSparseMatrix.s_nameLength << "\"" << std::endl;
-  in.read(reinterpret_cast<char*>(&temp2), 2);
-  m_MatlabSparseMatrix.s_nameTag = temp2;
-  std::cout << "m_MatlabSparseMatrix.s_nameTag : \"" << m_MatlabSparseMatrix.s_nameTag << "\"" << std::endl;
-  in.read(reinterpret_cast<char*>(&temp1),1);
-  m_MatlabSparseMatrix.s_nameChar = temp1;
-  std::cout << "m_MatlabSparseMatrix.s_nameChar : \"" << m_MatlabSparseMatrix.s_nameChar << "\"" << std::endl;
-  for (unsigned int i=0; i<3; ++i) {
-    in.read(reinterpret_cast<char*>(&temp1),1);
-    m_MatlabSparseMatrix.s_namePadding[i] = temp1;
-  }
-  std::cout << "m_MatlabSparseMatrix.s_namePadding : \"" << m_MatlabSparseMatrix.s_namePadding << "\"" << std::endl;
-  in.read(reinterpret_cast<char*>(&temp4), 4);
-  m_MatlabSparseMatrix.s_rowIndexTag = temp4;
-  std::cout << "m_MatlabSparseMatrix.s_rowIndexTag : \"" << m_MatlabSparseMatrix.s_rowIndexTag << "\"" << std::endl;
-  in.read(reinterpret_cast<char*>(&temp4), 4);
-  m_MatlabSparseMatrix.s_rowIndexLength = temp4;
-  std::cout << "m_MatlabSparseMatrix.s_rowIndexLength : \"" << m_MatlabSparseMatrix.s_rowIndexLength << "\"" <<
-std::endl; m_MatlabSparseMatrix.s_rowIndex = new unsigned long int[m_MatlabSparseMatrix.s_arrayNzmax]; std::cout <<
-"m_MatlabSparseMatrix.s_rowIndex : \""; for (unsigned int i=0; i<m_MatlabSparseMatrix.s_arrayNzmax; ++i) {
-    in.read(reinterpret_cast<char*>(&temp4),4);
-    m_MatlabSparseMatrix.s_rowIndex[i] = temp4;
-    std::cout << m_MatlabSparseMatrix.s_rowIndex[i] << " ";
-  }
-  std::cout << "\"" << std::endl;
-  if (m_MatlabSparseMatrix.s_arrayNzmax*4%8 != 0) {
-    in.read(reinterpret_cast<char*>(&temp4), 4);
-    m_MatlabSparseMatrix.s_rowIndexPadding = temp4;
-    std::cout << "m_MatlabSparseMatrix.s_rowIndexPadding : \"" << m_MatlabSparseMatrix.s_rowIndexPadding << "\"" <<
-std::endl;
-  }
-  in.read(reinterpret_cast<char*>(&temp4), 4);
-  m_MatlabSparseMatrix.s_columnIndexTag = temp4;
-  std::cout << "m_MatlabSparseMatrix.s_columnIndexTag : \"" << m_MatlabSparseMatrix.s_columnIndexTag << "\"" <<
-std::endl; in.read(reinterpret_cast<char*>(&temp4), 4); m_MatlabSparseMatrix.s_columnIndexLength = temp4; std::cout <<
-"m_MatlabSparseMatrix.s_columnIndexLength : \"" << m_MatlabSparseMatrix.s_columnIndexLength << "\"" << std::endl;
-  m_MatlabSparseMatrix.s_columnIndex = new unsigned long int[m_MatlabSparseMatrix.s_dimensionNbColumn+1];
-  std::cout << "m_MatlabSparseMatrix.s_columnIndex : \"";
-  for (unsigned int i=0; i<m_MatlabSparseMatrix.s_dimensionNbColumn+1; ++i) {
-    in.read(reinterpret_cast<char*>(&temp4),4);
-    m_MatlabSparseMatrix.s_columnIndex[i] = temp4;
-    std::cout << m_MatlabSparseMatrix.s_columnIndex[i] << " ";
-  }
-  std::cout << "\"" << std::endl;
-  if ((m_MatlabSparseMatrix.s_dimensionNbColumn+1)*4%8 != 0) {
-    in.read(reinterpret_cast<char*>(&temp4), 4);
-    m_MatlabSparseMatrix.s_columnIndexPadding = temp4;
-    std::cout << "m_MatlabSparseMatrix.s_columnIndexPadding : \"" << m_MatlabSparseMatrix.s_columnIndexPadding << "\""
-<< std::endl;
-  }
-  in.read(reinterpret_cast<char*>(&temp4), 4);
-  m_MatlabSparseMatrix.s_valueTag = temp4;
-  std::cout << "m_MatlabSparseMatrix.s_valueTag : \"" << m_MatlabSparseMatrix.s_valueTag << "\"" << std::endl;
-  in.read(reinterpret_cast<char*>(&temp4), 4);
-  m_MatlabSparseMatrix.s_valueLength = temp4;
-  std::cout << "m_MatlabSparseMatrix.s_valueLength : \"" << m_MatlabSparseMatrix.s_valueLength << "\"" << std::endl;
-  m_MatlabSparseMatrix.s_value = new double[m_MatlabSparseMatrix.s_arrayNzmax];
-  std::cout << "m_MatlabSparseMatrix.s_value : \"";
-  for (unsigned int i=0; i<m_MatlabSparseMatrix.s_arrayNzmax; ++i) {
-    in.read(reinterpret_cast<char*>(&temp8),8);
-    m_MatlabSparseMatrix.s_value[i] = temp8;
-    std::cout << m_MatlabSparseMatrix.s_value[i] << " ";
-  }
-  std::cout << "\"" << std::endl;
-
-  return in;
-}
-*/
+#endif

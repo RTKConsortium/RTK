@@ -1,14 +1,32 @@
 set(WRAPPER_AUTO_INCLUDE_HEADERS OFF)
+itk_wrap_include("rtkStoreSparseMatrixSplatWeightMultiplication.h")
+
 itk_wrap_named_class("rtk::Functor::SplatWeightMultiplication" "rtkFunctorSplatWeightMultiplication")
   foreach(t ${WRAP_ITK_REAL})
     itk_wrap_template("${ITKM_${t}}D${ITKM_${t}}" "${ITKT_${t}}, double, ${ITKT_${t}}")
+  endforeach()
+itk_end_wrap_class()
+
+itk_wrap_named_class("rtk::Functor::StoreSparseMatrixSplatWeightMultiplication" "rtkFunctorStoreSparseMatrixSplatWeightMultiplication")
+  foreach(t ${WRAP_ITK_REAL})
+    itk_wrap_template("${ITKM_${t}}D${ITKM_${t}}" "${ITKT_${t}}, double, ${ITKT_${t}}")
+  endforeach()
+itk_end_wrap_class()
+
+itk_wrap_named_class("rtk::Functor::InterpolationWeightMultiplicationBackProjection" "rtkFunctorInterpolationWeightMultiplicationBackProjection")
+  foreach(t ${WRAP_ITK_REAL})
+    itk_wrap_template("${ITKM_${t}}${ITKM_${t}}" "${ITKT_${t}}, ${ITKT_${t}}")
   endforeach()
 itk_end_wrap_class()
 set(WRAPPER_AUTO_INCLUDE_HEADERS ON)
 
 itk_wrap_class("rtk::JosephBackProjectionImageFilter" POINTER)
   foreach(t ${WRAP_ITK_REAL})
+    # Standard version
     itk_wrap_template("I${ITKM_${t}}3I${ITKM_${t}}3SWM${ITKM_${t}}D${ITKM_${t}}"
       "itk::Image<${ITKT_${t}}, 3>, itk::Image< ${ITKT_${t}}, 3>")
+    # With matrix capture functors
+    itk_wrap_template("I${ITKM_${t}}3I${ITKM_${t}}3IWMBP${ITKM_${t}}${ITKM_${t}}SSMSW${ITKM_${t}}D${ITKM_${t}}"
+      "itk::Image<${ITKT_${t}}, 3>, itk::Image<${ITKT_${t}}, 3>, rtk::Functor::InterpolationWeightMultiplicationBackProjection<${ITKT_${t}}, ${ITKT_${t}}>, rtk::Functor::StoreSparseMatrixSplatWeightMultiplication<${ITKT_${t}}, double, ${ITKT_${t}}>")
   endforeach()
 itk_end_wrap_class()
