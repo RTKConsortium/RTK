@@ -56,6 +56,19 @@ itk_wrap_class("itk::ImageToImageFilter" POINTER)
   if(RTK_USE_CUDA)
     itk_wrap_include(itkCudaImage.h)
 
+    # Add vector components comp == 5 (VF and CVF) across image dims 2,3,4
+    list(FIND ITK_WRAP_VECTOR_COMPONENTS "5" _index)
+    if(${_index} EQUAL -1)
+      UNIQUE(imageDimensions "${ITK_WRAP_IMAGE_DIMS};2;3;4")
+      foreach(d ${imageDimensions})
+        itk_wrap_template("CI${ITKM_VF5}${d}CI${ITKM_VF5}${d}"
+          "itk::CudaImage<${ITKT_VF5}, ${d}>, itk::CudaImage<${ITKT_VF5}, ${d}>")
+        itk_wrap_template("CI${ITKM_CVF5}${d}CI${ITKM_CVF5}${d}"
+          "itk::CudaImage<${ITKT_CVF5}, ${d}>, itk::CudaImage<${ITKT_CVF5}, ${d}>")
+      endforeach()
+    endif()
+
+
     # Wrap ITK dimension 4 missing types
     list(FIND ITK_WRAP_IMAGE_DIMS "4" _index)
     if (${_index} EQUAL -1)
@@ -66,20 +79,6 @@ itk_wrap_class("itk::ImageToImageFilter" POINTER)
     # Wrap ITK short/float combination (required by : rtkCudaPolynomialGainCorrectionImageFilter)
     itk_wrap_template("CIUS3CIF3"
       "itk::CudaImage<${ITKT_US}, 3>, itk::CudaImage<${ITKT_F}, 3>")
-
-    # Force VECTOR_COMPONENTS to "2;3;4;5"
-    UNIQUE(imageDimensions "${ITK_WRAP_IMAGE_DIMS};2;3;4")
-    UNIQUE(vectorComponents "${ITK_WRAP_VECTOR_COMPONENTS};2;3;4;5")
-    foreach(c ${vectorComponents})
-      foreach(d ${imageDimensions})
-        list(FIND ITK_WRAP_IMAGE_DIMS "${d}" _indexd)
-        list(FIND ITK_WRAP_VECTOR_COMPONENTS "${c}" _indexc)
-        if (${_indexd} EQUAL -1 OR ${_indexc} EQUAL -1)
-          itk_wrap_template("CI${ITKM_VF${c}}${d}CI${ITKM_VF${c}}${d}"
-          "itk::CudaImage<${ITKT_VF${c}}, ${d}>, itk::CudaImage<${ITKT_VF${c}}, ${d}>")
-        endif()
-      endforeach()
-    endforeach()
 
   endif()
 

@@ -98,7 +98,7 @@ def process(args_info: argparse.Namespace):
     geometry = rtk.read_geometry(args_info.geometry)
 
     # Phase gating weights reader
-    phaseGating = rtk.PhaseGatingImageFilter[OutputImageType].New()
+    phaseGating = rtk.PhaseGatingImageFilter[OutputImageType, OutputImageType].New()
     if args_info.phases:
         phaseGating.SetPhasesFileName(args_info.phases)
         phaseGating.SetGatingWindowWidth(args_info.windowwidth)
@@ -128,7 +128,7 @@ def process(args_info: argparse.Namespace):
     if hasattr(itk, "CudaImage"):
         CudaOutputImageType = itk.CudaImage[OutputPixelType, Dimension]
         admmFilter = rtk.ADMMTotalVariationConeBeamReconstructionFilter[
-            CudaOutputImageType
+            CudaOutputImageType, CudaOutputImageType
         ].New()
         admmFilter.SetInput(0, itk.cuda_image_from_image(inputFilter.GetOutput()))
         if args_info.phases:
@@ -139,7 +139,7 @@ def process(args_info: argparse.Namespace):
             )
     else:
         admmFilter = rtk.ADMMTotalVariationConeBeamReconstructionFilter[
-            OutputImageType
+            OutputImageType, OutputImageType
         ].New()
         admmFilter.SetInput(0, inputFilter.GetOutput())
         if args_info.phases:

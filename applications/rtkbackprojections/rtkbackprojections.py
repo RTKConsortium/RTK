@@ -145,7 +145,9 @@ def process(args_info: argparse.Namespace):
             sys.exit(1)
     elif args_info.bp == "CudaBackProjection":
         if hasattr(itk, "CudaImage"):
-            bp = rtk.CudaBackProjectionImageFilter[OutputCudaImageType].New()
+            bp = rtk.CudaBackProjectionImageFilter[
+                OutputCudaImageType, OutputCudaImageType
+            ].New()
         else:
             print("The program has not been compiled with cuda option")
             sys.exit(1)

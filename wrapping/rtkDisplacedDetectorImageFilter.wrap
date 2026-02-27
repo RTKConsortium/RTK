@@ -7,7 +7,7 @@ itk_wrap_class("rtk::DisplacedDetectorImageFilter" POINTER)
 
   if(RTK_USE_CUDA)
     foreach(d ${ITK_WRAP_IMAGE_DIMS})
-      itk_wrap_template("CI${ITKM_F}${d}" "itk::CudaImage<${ITKT_F}, ${d}>")
+      itk_wrap_template("CI${ITKM_F}${d}" "itk::CudaImage<${ITKT_F}, ${d}>, itk::CudaImage<${ITKT_F}, ${d}>")
     endforeach()
   endif()
 

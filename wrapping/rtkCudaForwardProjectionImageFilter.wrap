@@ -30,12 +30,12 @@ if(RTK_USE_CUDA)
 
   itk_wrap_class("rtk::CudaForwardProjectionImageFilter" POINTER)
 
-    itk_wrap_template("CIF3" "itk::CudaImage<float, 3>")
+    itk_wrap_template("CIF3" "itk::CudaImage<float, 3>, itk::CudaImage<float, 3>")
 
     # Force VECTOR_COMPONENTS to "2;3;4;5"
     set(vectorComponents 2 3 4 5)
     foreach(component ${vectorComponents})
-      itk_wrap_template("CI${ITKM_VF${component}}3" "itk::CudaImage<${ITKT_VF${component}}, 3>")
+      itk_wrap_template("CI${ITKM_VF${component}}3" "itk::CudaImage<${ITKT_VF${component}}, 3>, itk::CudaImage<${ITKT_VF${component}}, 3>")
     endforeach()
 
   itk_end_wrap_class()

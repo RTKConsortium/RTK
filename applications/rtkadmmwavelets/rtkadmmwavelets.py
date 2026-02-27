@@ -92,12 +92,14 @@ def process(args_info: argparse.Namespace):
     if hasattr(itk, "CudaImage"):
         CudaOutputImageType = itk.CudaImage[OutputPixelType, Dimension]
         admmFilter = rtk.ADMMWaveletsConeBeamReconstructionFilter[
-            CudaOutputImageType
+            CudaOutputImageType, CudaOutputImageType
         ].New()
         admmFilter.SetInput(0, itk.cuda_image_from_image(inputFilter.GetOutput()))
         admmFilter.SetInput(1, itk.cuda_image_from_image(projectionsReader.GetOutput()))
     else:
-        admmFilter = rtk.ADMMWaveletsConeBeamReconstructionFilter[OutputImageType].New()
+        admmFilter = rtk.ADMMWaveletsConeBeamReconstructionFilter[
+            OutputImageType, OutputImageType
+        ].New()
         admmFilter.SetInput(0, inputFilter.GetOutput())
         admmFilter.SetInput(1, projectionsReader.GetOutput())
 
