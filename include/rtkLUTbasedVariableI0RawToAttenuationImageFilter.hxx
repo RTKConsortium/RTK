@@ -20,8 +20,7 @@
 #define rtkLUTbasedVariableI0RawToAttenuationImageFilter_hxx
 
 
-#include <itkImageRegionConstIterator.h>
-#include <itkImageRegionIterator.h>
+#include <itkImageRegionIteratorWithIndex.h>
 #include "rtkI0EstimationProjectionFilter.h"
 
 namespace rtk
