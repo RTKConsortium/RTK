@@ -36,7 +36,7 @@ def process(args_info: argparse.Namespace):
     except ImportError:
         raise ImportError(
             "rtkshowgeometry requires the 'pyvista' package. "
-            "Please install it with 'pip install pyvista' to use this feature."
+            "Please install it with 'pip install itk-rtk[gui]' to use this feature."
         )
 
     OutputPixelType = itk.F

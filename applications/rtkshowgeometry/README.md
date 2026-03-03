@@ -4,6 +4,16 @@
 
 ![geom](../../documentation/docs/ExternalData/ShowGeometry.png){w=800 alt="Show Geometry"}
 
+## Installation
+
+`rtkshowgeometry` requires the GUI optional dependencies. Install RTK with GUI support using:
+
+```bash
+pip install itk-rtk[gui]
+```
+
+## Usage
+
 All geometries described in the [documentation](../../documentation/docs/Geometry.md) are supported: cone-beam and parallel (`SDD = 0`), flat and cylindrical (`RadiusCylindricalDetector > 0`) detectors. If no projections are given, the detector size defaults to 40% of the Source-to-Isocenter Distance (SID) and is centered around point `(u,v)=(0,0)`.
 
 ```{literalinclude} showgeometry.sh
