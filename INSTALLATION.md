@@ -25,7 +25,7 @@ For RTK developpers, it may be useful to compile RTK independently from ITK. Thi
 
 Installation is currently not supported for independent RTK compilations.
 
-Pre-compiled binaries
+Python pre-compiled binaries
 ---------------------
 We only provide pre-compiled binaries for the Python package which depends on ITK. Use the following commands to install the RTK module with `pip`.
 ```
@@ -41,6 +41,41 @@ python -m pip install itk-rtk-cuda124
 ```
 python -m pip install itk-rtk-cuda124
 ```
+
+### GUI tools
+Some RTK command-line tools, such as `rtkshowgeometry`, require graphical visualization capabilities. To use these tools, install the GUI optional dependencies:
+```
+python -m pip install itk-rtk[gui]
+```
+
+This installs:
+* `pyvista` - for 3D visualization
+* `matplotlib` - for additional graphics support
+
+### Testing
+To run RTK Python tests with pytest, install the test dependencies from the directory containing `pyproject.toml`:
+
+```
+pip install --group test
+```
+
+This installs:
+* `pytest>=7.0` - for running Python unit tests
+* `matplotlib` - for visualization in tests
+
+After installing, run the tests with:
+```
+pytest test/
+```
+
+### Documentation
+To build the RTK documentation, install the documentation dependencies from the directory containing `pyproject.toml`:
+
+```
+pip install --group doc
+```
+
+This installs Sphinx and related tools for documentation generation.
 
 Getting started
 ---------------

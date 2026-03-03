@@ -40,6 +40,12 @@ dependencies = [
     "itk == 5.4.*",
 ]
 
+[project.optional-dependencies]
+gui = [
+    "pyvista",
+    "matplotlib"
+]
+
 [project.scripts]
 rtkadmmtotalvariation = "itk.rtkadmmtotalvariation:main"
 rtkadmmwavelets = "itk.rtkadmmwavelets:main"
@@ -160,3 +166,13 @@ minimum-version = "0.8.2"
 
 # The build directory. Defaults to a temporary directory, but can be set.
 build-dir = "build/{wheel_tag}"
+
+[dependency-groups]
+test = ["pytest>=7.0", "matplotlib"]
+doc = [
+    "furo",
+    "myst-parser[linkify]",
+    "sphinx>=7.2.6",
+    "sphinx-copybutton",
+    "sphinx-design",
+]
