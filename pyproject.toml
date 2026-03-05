@@ -40,6 +40,22 @@ dependencies = [
     "itk == 5.4.*",
 ]
 
+[project.optional-dependencies]
+gui = [
+    "pyvista",
+    "matplotlib"
+]
+
+[project.dependency-groups]
+test = ["pytest>=7.0", "matplotlib"]
+doc = [
+    "furo",
+    "myst-parser[linkify]",
+    "sphinx>=7.2.6",
+    "sphinx-copybutton",
+    "sphinx-design",
+]
+
 [project.scripts]
 rtkadmmtotalvariation = "itk.rtkadmmtotalvariation:main"
 rtkadmmwavelets = "itk.rtkadmmwavelets:main"
