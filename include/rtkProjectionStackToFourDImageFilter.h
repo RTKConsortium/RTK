@@ -102,7 +102,8 @@ namespace rtk
  */
 
 template <typename VolumeSeriesType, typename ProjectionStackType, typename TFFTPrecision = double>
-class RTK_EXPORT ProjectionStackToFourDImageFilter : public itk::ImageToImageFilter<VolumeSeriesType, VolumeSeriesType>
+class ITK_TEMPLATE_EXPORT ProjectionStackToFourDImageFilter
+  : public itk::ImageToImageFilter<VolumeSeriesType, VolumeSeriesType>
 {
 public:
   ITK_DISALLOW_COPY_AND_MOVE(ProjectionStackToFourDImageFilter);

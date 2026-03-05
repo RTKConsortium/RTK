@@ -26,21 +26,22 @@
 
 
 template <class TImage>
+ITK_TEMPLATE_EXPORT
 #if FAST_TESTS_NO_CHECKS
-void
-CheckImageQuality(typename TImage::Pointer itkNotUsed(recon),
-                  typename TImage::Pointer itkNotUsed(ref),
-                  double                   itkNotUsed(ErrorPerPixelTolerance),
-                  double                   itkNotUsed(PSNRTolerance),
-                  double                   itkNotUsed(RefValueForPSNR))
+  void
+  CheckImageQuality(typename TImage::Pointer itkNotUsed(recon),
+                    typename TImage::Pointer itkNotUsed(ref),
+                    double                   itkNotUsed(ErrorPerPixelTolerance),
+                    double                   itkNotUsed(PSNRTolerance),
+                    double                   itkNotUsed(RefValueForPSNR))
 {}
 #else
-void
-CheckImageQuality(typename TImage::Pointer recon,
-                  typename TImage::Pointer ref,
-                  double                   ErrorPerPixelTolerance,
-                  double                   PSNRTolerance,
-                  double                   RefValueForPSNR)
+  void
+  CheckImageQuality(typename TImage::Pointer recon,
+                    typename TImage::Pointer ref,
+                    double                   ErrorPerPixelTolerance,
+                    double                   PSNRTolerance,
+                    double                   RefValueForPSNR)
 {
   using ImageIteratorType = itk::ImageRegionConstIterator<TImage>;
   ImageIteratorType itTest(recon, recon->GetBufferedRegion());
@@ -106,21 +107,22 @@ CheckImageQuality(typename TImage::Pointer recon,
 #endif // FAST_TESTS_NO_CHECKS
 
 template <class TImage>
+ITK_TEMPLATE_EXPORT
 #if FAST_TESTS_NO_CHECKS
-void
-CheckVectorImageQuality(typename TImage::Pointer itkNotUsed(recon),
-                        typename TImage::Pointer itkNotUsed(ref),
-                        double                   itkNotUsed(ErrorPerPixelTolerance),
-                        double                   itkNotUsed(PSNRTolerance),
-                        double                   itkNotUsed(RefValueForPSNR))
+  void
+  CheckVectorImageQuality(typename TImage::Pointer itkNotUsed(recon),
+                          typename TImage::Pointer itkNotUsed(ref),
+                          double                   itkNotUsed(ErrorPerPixelTolerance),
+                          double                   itkNotUsed(PSNRTolerance),
+                          double                   itkNotUsed(RefValueForPSNR))
 {}
 #else
-void
-CheckVectorImageQuality(typename TImage::Pointer recon,
-                        typename TImage::Pointer ref,
-                        double                   ErrorPerPixelTolerance,
-                        double                   PSNRTolerance,
-                        double                   RefValueForPSNR)
+  void
+  CheckVectorImageQuality(typename TImage::Pointer recon,
+                          typename TImage::Pointer ref,
+                          double                   ErrorPerPixelTolerance,
+                          double                   PSNRTolerance,
+                          double                   RefValueForPSNR)
 {
   using ImageIteratorType = itk::ImageRegionConstIterator<TImage>;
   ImageIteratorType itTest(recon, recon->GetBufferedRegion());
@@ -187,21 +189,22 @@ CheckVectorImageQuality(typename TImage::Pointer recon,
 
 
 template <class TImage>
+ITK_TEMPLATE_EXPORT
 #if FAST_TESTS_NO_CHECKS
-void
-CheckVariableLengthVectorImageQuality(typename TImage::Pointer itkNotUsed(recon),
-                                      typename TImage::Pointer itkNotUsed(ref),
-                                      double                   itkNotUsed(ErrorPerPixelTolerance),
-                                      double                   itkNotUsed(PSNRTolerance),
-                                      double                   itkNotUsed(RefValueForPSNR))
+  void
+  CheckVariableLengthVectorImageQuality(typename TImage::Pointer itkNotUsed(recon),
+                                        typename TImage::Pointer itkNotUsed(ref),
+                                        double                   itkNotUsed(ErrorPerPixelTolerance),
+                                        double                   itkNotUsed(PSNRTolerance),
+                                        double                   itkNotUsed(RefValueForPSNR))
 {}
 #else
-void
-CheckVariableLengthVectorImageQuality(typename TImage::Pointer recon,
-                                      typename TImage::Pointer ref,
-                                      double                   ErrorPerPixelTolerance,
-                                      double                   PSNRTolerance,
-                                      double                   RefValueForPSNR)
+  void
+  CheckVariableLengthVectorImageQuality(typename TImage::Pointer recon,
+                                        typename TImage::Pointer ref,
+                                        double                   ErrorPerPixelTolerance,
+                                        double                   PSNRTolerance,
+                                        double                   RefValueForPSNR)
 {
   if (!(recon->GetVectorLength() == ref->GetVectorLength()))
   {
@@ -336,19 +339,20 @@ CheckGeometries(const rtk::ThreeDCircularProjectionGeometry * g1, const rtk::Thr
 
 
 template <class TImage1, class TImage2>
+ITK_TEMPLATE_EXPORT
 #if FAST_TESTS_NO_CHECKS
-void
-CheckScalarProducts(typename TImage1::Pointer itkNotUsed(im1A),
-                    typename TImage1::Pointer itkNotUsed(im1B),
-                    typename TImage2::Pointer itkNotUsed(im2A),
-                    typename TImage2::Pointer itkNotUsed(im2B))
+  void
+  CheckScalarProducts(typename TImage1::Pointer itkNotUsed(im1A),
+                      typename TImage1::Pointer itkNotUsed(im1B),
+                      typename TImage2::Pointer itkNotUsed(im2A),
+                      typename TImage2::Pointer itkNotUsed(im2B))
 {}
 #else
-void
-CheckScalarProducts(typename TImage1::Pointer im1A,
-                    typename TImage1::Pointer im1B,
-                    typename TImage2::Pointer im2A,
-                    typename TImage2::Pointer im2B)
+  void
+  CheckScalarProducts(typename TImage1::Pointer im1A,
+                      typename TImage1::Pointer im1B,
+                      typename TImage2::Pointer im2A,
+                      typename TImage2::Pointer im2B)
 {
   using Image1IteratorType = itk::ImageRegionConstIterator<TImage1>;
   using Image2IteratorType = itk::ImageRegionConstIterator<TImage2>;
@@ -413,19 +417,20 @@ CheckScalarProducts(typename TImage1::Pointer im1A,
 #endif
 
 template <class TImage1, class TImage2>
+ITK_TEMPLATE_EXPORT
 #if FAST_TESTS_NO_CHECKS
-void
-CheckVectorScalarProducts(typename TImage1::Pointer im1A,
-                          typename TImage1::Pointer im1B,
-                          typename TImage2::Pointer im2A,
-                          typename TImage2::Pointer im2B)
+  void
+  CheckVectorScalarProducts(typename TImage1::Pointer im1A,
+                            typename TImage1::Pointer im1B,
+                            typename TImage2::Pointer im2A,
+                            typename TImage2::Pointer im2B)
 {}
 #else
-void
-CheckVectorScalarProducts(typename TImage1::Pointer im1A,
-                          typename TImage1::Pointer im1B,
-                          typename TImage2::Pointer im2A,
-                          typename TImage2::Pointer im2B)
+  void
+  CheckVectorScalarProducts(typename TImage1::Pointer im1A,
+                            typename TImage1::Pointer im1B,
+                            typename TImage2::Pointer im2A,
+                            typename TImage2::Pointer im2B)
 {
   using Image1IteratorType = itk::ImageRegionConstIterator<TImage1>;
   using Image2IteratorType = itk::ImageRegionConstIterator<TImage2>;
