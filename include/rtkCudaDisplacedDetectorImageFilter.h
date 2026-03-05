@@ -29,6 +29,18 @@
 #  include <itkCudaImage.h>
 #  include <itkCudaInPlaceImageFilter.h>
 
+#  include "rtkCudaExternTemplates.h"
+
+#  ifdef RTK_EXTERN_TEMPLATES
+ITK_GCC_PRAGMA_DIAG_PUSH()
+ITK_GCC_PRAGMA_DIAG(ignored "-Wattributes")
+extern template class RTK_EXPORT_EXPLICIT
+  itk::CudaInPlaceImageFilter<itk::CudaImage<float, 3>,
+                              itk::CudaImage<float, 3>,
+                              rtk::DisplacedDetectorImageFilter<itk::CudaImage<float, 3>>>;
+ITK_GCC_PRAGMA_DIAG_POP()
+#  endif
+
 namespace rtk
 {
 

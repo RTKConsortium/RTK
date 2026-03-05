@@ -62,3 +62,7 @@ CudaCropImageFilter ::GPUGenerateData()
 }
 
 } // end namespace rtk
+
+template class itk::CudaImageToImageFilter<itk::CudaImage<float, 3>,
+                                           itk::CudaImage<float, 3>,
+                                           itk::CropImageFilter<itk::CudaImage<float, 3>, itk::CudaImage<float, 3>>>;

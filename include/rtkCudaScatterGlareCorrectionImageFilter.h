@@ -26,6 +26,18 @@
 
 #  include "rtkScatterGlareCorrectionImageFilter.h"
 #  include "rtkCudaFFTProjectionsConvolutionImageFilter.h"
+#  include "RTKExport.h"
+
+#  include "rtkCudaExternTemplates.h"
+
+#  ifdef RTK_EXTERN_TEMPLATES
+ITK_GCC_PRAGMA_DIAG_PUSH()
+ITK_GCC_PRAGMA_DIAG(ignored "-Wattributes")
+extern template class RTK_EXPORT_EXPLICIT rtk::CudaFFTProjectionsConvolutionImageFilter<
+  rtk::ScatterGlareCorrectionImageFilter<itk::CudaImage<float, 3>, itk::CudaImage<float, 3>, float>>;
+ITK_GCC_PRAGMA_DIAG_POP()
+#  endif
+
 namespace rtk
 {
 
@@ -40,7 +52,7 @@ namespace rtk
  *
  * \ingroup RTK CudaImageToImageFilter
  */
-class CudaScatterGlareCorrectionImageFilter
+class RTK_EXPORT CudaScatterGlareCorrectionImageFilter
   : public CudaFFTProjectionsConvolutionImageFilter<
       ScatterGlareCorrectionImageFilter<itk::CudaImage<float, 3>, itk::CudaImage<float, 3>, float>>
 {

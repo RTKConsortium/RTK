@@ -106,3 +106,8 @@ CudaPolynomialGainCorrectionImageFilter ::GPUGenerateData()
 }
 
 } // namespace rtk
+
+template class itk::CudaImageToImageFilter<
+  itk::CudaImage<unsigned short, 3>,
+  itk::CudaImage<float, 3>,
+  rtk::PolynomialGainCorrectionImageFilter<itk::CudaImage<unsigned short, 3>, itk::CudaImage<float, 3>>>;

@@ -16,9 +16,6 @@
  *
  *=========================================================================*/
 
-#ifndef __rtkCudaWarpForwardProjectionImageFilter_hxx
-#define __rtkCudaWarpForwardProjectionImageFilter_hxx
-
 #include "rtkCudaWarpForwardProjectionImageFilter.h"
 #include "rtkCudaUtilities.hcu"
 #include "rtkCudaWarpForwardProjectionImageFilter.hcu"
@@ -297,4 +294,6 @@ CudaWarpForwardProjectionImageFilter ::GPUGenerateData()
 
 } // end namespace rtk
 
-#endif
+template class itk::CudaInPlaceImageFilter<itk::CudaImage<float, 3>,
+                                           itk::CudaImage<float, 3>,
+                                           rtk::ForwardProjectionImageFilter<itk::CudaImage<float, 3>>>;

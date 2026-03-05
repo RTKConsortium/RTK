@@ -58,3 +58,9 @@ rtk::CudaTotalVariationDenoisingBPDQImageFilter ::GPUGenerateData()
   CUDA_total_variation(
     inputSize, inputSpacing, pin, pout, static_cast<float>(m_Gamma), static_cast<float>(m_Beta), m_NumberOfIterations);
 }
+
+template class itk::CudaImageToImageFilter<
+  itk::CudaImage<float, 3>,
+  itk::CudaImage<float, 3>,
+  rtk::TotalVariationDenoisingBPDQImageFilter<itk::CudaImage<float, 3>,
+                                              itk::CudaImage<itk::CovariantVector<float, 3>, 3>>>;

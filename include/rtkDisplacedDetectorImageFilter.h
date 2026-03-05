@@ -164,6 +164,15 @@ private:
 
 } // end namespace rtk
 
+#include "rtkCudaExternTemplates.h"
+
+#if defined(RTK_USE_CUDA) && defined(RTK_EXTERN_TEMPLATES)
+ITK_GCC_PRAGMA_DIAG_PUSH()
+ITK_GCC_PRAGMA_DIAG(ignored "-Wattributes")
+extern template class RTK_EXPORT_EXPLICIT rtk::DisplacedDetectorImageFilter<itk::CudaImage<float, 3>>;
+ITK_GCC_PRAGMA_DIAG_POP()
+#endif
+
 #ifndef ITK_MANUAL_INSTANTIATION
 #  include "rtkDisplacedDetectorImageFilter.hxx"
 #endif

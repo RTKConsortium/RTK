@@ -38,3 +38,8 @@ rtk::CudaIterativeFDKConeBeamReconstructionFilter ::GPUGenerateData()
 {
   Superclass::GenerateData();
 }
+
+template class itk::CudaImageToImageFilter<
+  itk::CudaImage<float, 3>,
+  itk::CudaImage<float, 3>,
+  rtk::IterativeFDKConeBeamReconstructionFilter<itk::CudaImage<float, 3>, itk::CudaImage<float, 3>, float>>;
