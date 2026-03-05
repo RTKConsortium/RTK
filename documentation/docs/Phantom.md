@@ -134,6 +134,12 @@ Clip planes can be applied to any volume to restrict their extents.
 
 The function (attenuation, emission, etc. depending on the context) value `rho` is defined absolutely in the shape. RTK automatically deduces how much must be added to the current background based on the center (`x`,`y`,`z`) of the shape (e.g. 0.5 if one adds a shape with `rho=1.5` in a shape with `rho=1`). This is order dependent so the same phantom shapes defined in different orders might result in different results. The background of a shape must be defined first.
 
+### Overlapping shapes with same density
+
+When a new shape's center lies inside an existing shape with the same `rho`, the new shape's contribution is not added to the phantom. The code uses a center-based background-subtraction method which, when applied to multiple shapes with the same `rho`, prevents the last shape from increasing the phantom value within that shape's volume.
+
+The practical solution is to set the `rho` in the overlapping region to the expected combined value so the overlap reflects the sum of contributions. The calculation outside the overlap remains correct because the background-subtraction logic is applied relative to each shape's center.
+
 ## Union
 
 The `union` parameter allows taking the union of two shapes. The second shape takes a negative integer value (`union=-N`), representing an index offset between the current shape and the shape it is being united with.
