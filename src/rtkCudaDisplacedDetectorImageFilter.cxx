@@ -150,3 +150,7 @@ CudaDisplacedDetectorImageFilter ::GPUGenerateData()
 }
 
 } // namespace rtk
+
+template class itk::CudaInPlaceImageFilter<itk::CudaImage<float, 3>,
+                                           itk::CudaImage<float, 3>,
+                                           rtk::DisplacedDetectorImageFilter<itk::CudaImage<float, 3>>>;

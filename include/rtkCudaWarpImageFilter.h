@@ -29,6 +29,20 @@
 #  include <itkWarpImageFilter.h>
 #  include <itkCudaImageToImageFilter.h>
 
+#  include "rtkCudaExternTemplates.h"
+
+#  ifdef RTK_EXTERN_TEMPLATES
+ITK_GCC_PRAGMA_DIAG_PUSH()
+ITK_GCC_PRAGMA_DIAG(ignored "-Wattributes")
+extern template class RTK_EXPORT_EXPLICIT
+  itk::CudaImageToImageFilter<itk::CudaImage<float, 3>,
+                              itk::CudaImage<float, 3>,
+                              itk::WarpImageFilter<itk::CudaImage<float, 3>,
+                                                   itk::CudaImage<float, 3>,
+                                                   itk::CudaImage<itk::CovariantVector<float, 3>, 3>>>;
+ITK_GCC_PRAGMA_DIAG_POP()
+#  endif
+
 namespace rtk
 {
 

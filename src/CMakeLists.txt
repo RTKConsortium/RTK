@@ -76,6 +76,7 @@ if(RTK_USE_CUDA)
   set(
     RTK_SRCS
     ${RTK_SRCS}
+    rtkCudaExternTemplates.cxx
     rtkCudaAverageOutOfROIImageFilter.cxx
     rtkCudaConstantVolumeSeriesSource.cxx
     rtkCudaConstantVolumeSource.cxx
@@ -85,6 +86,7 @@ if(RTK_USE_CUDA)
     rtkCudaFDKBackProjectionImageFilter.cxx
     rtkCudaFDKConeBeamReconstructionFilter.cxx
     rtkCudaFDKWeightProjectionFilter.cxx
+    rtkCudaFFTRampImageFilter.cxx
     rtkCudaForwardWarpImageFilter.cxx
     rtkCudaInterpolateImageFilter.cxx
     rtkCudaIterativeFDKConeBeamReconstructionFilter.cxx
@@ -94,6 +96,7 @@ if(RTK_USE_CUDA)
     rtkCudaParkerShortScanImageFilter.cxx
     rtkCudaPolynomialGainCorrectionImageFilter.cxx
     rtkCudaRayCastBackProjectionImageFilter.cxx
+    rtkCudaScatterGlareCorrectionImageFilter.cxx
     rtkCudaSplatImageFilter.cxx
     rtkCudaTotalVariationDenoisingBPDQImageFilter.cxx
     rtkCudaWarpBackProjectionImageFilter.cxx

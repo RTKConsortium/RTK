@@ -96,3 +96,7 @@ CudaLagCorrectionImageFilter ::GPUGenerateData()
 }
 
 } // namespace rtk
+
+template class itk::CudaInPlaceImageFilter<itk::CudaImage<unsigned short, 3>,
+                                           itk::CudaImage<unsigned short, 3>,
+                                           rtk::LagCorrectionImageFilter<itk::CudaImage<unsigned short, 3>, 4>>;

@@ -61,3 +61,9 @@ rtk::CudaLastDimensionTVDenoisingImageFilter ::GPUGenerateData()
   CUDA_total_variation_last_dimension(
     inputSize, pin, pout, static_cast<float>(m_Gamma), static_cast<float>(m_Beta), m_NumberOfIterations);
 }
+
+template class itk::CudaInPlaceImageFilter<
+  itk::CudaImage<float, 4>,
+  itk::CudaImage<float, 4>,
+  rtk::TotalVariationDenoisingBPDQImageFilter<itk::CudaImage<float, 4>,
+                                              itk::CudaImage<itk::CovariantVector<float, 1>, 4>>>;

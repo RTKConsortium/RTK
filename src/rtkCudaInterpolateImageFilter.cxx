@@ -42,3 +42,8 @@ rtk::CudaInterpolateImageFilter ::GPUGenerateData()
 
   CUDA_interpolation(inputSize, pvolseries, pvol, m_ProjectionNumber, m_Weights.data_array());
 }
+
+template class itk::CudaInPlaceImageFilter<
+  itk::CudaImage<float, 3>,
+  itk::CudaImage<float, 3>,
+  rtk::InterpolatorWithKnownWeightsImageFilter<itk::CudaImage<float, 3>, itk::CudaImage<float, 4>>>;

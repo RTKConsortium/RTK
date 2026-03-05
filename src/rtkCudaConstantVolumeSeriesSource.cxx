@@ -41,3 +41,7 @@ rtk::CudaConstantVolumeSeriesSource ::GPUGenerateData()
 
   CUDA_generate_constant_volume_series(outputSize, pout, m_Constant);
 }
+
+template class itk::CudaImageToImageFilter<itk::CudaImage<float, 4>,
+                                           itk::CudaImage<float, 4>,
+                                           rtk::ConstantImageSource<itk::CudaImage<float, 4>>>;

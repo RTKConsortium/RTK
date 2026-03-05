@@ -42,3 +42,8 @@ rtk::CudaSplatImageFilter ::GPUGenerateData()
 
   CUDA_splat(outputSize, pvol, pvolseries, m_ProjectionNumber, m_Weights.data_array());
 }
+
+template class itk::CudaInPlaceImageFilter<
+  itk::CudaImage<float, 4>,
+  itk::CudaImage<float, 4>,
+  rtk::SplatWithKnownWeightsImageFilter<itk::CudaImage<float, 4>, itk::CudaImage<float, 3>>>;

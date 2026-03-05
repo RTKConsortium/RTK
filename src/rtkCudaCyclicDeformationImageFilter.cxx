@@ -55,3 +55,9 @@ rtk::CudaCyclicDeformationImageFilter ::GPUGenerateData()
   CUDA_linear_interpolate_along_fourth_dimension(
     inputSize, pin, pout, this->m_FrameInf, this->m_FrameSup, this->m_WeightInf, this->m_WeightSup);
 }
+
+template class itk::CudaImageToImageFilter<
+  itk::CudaImage<itk::CovariantVector<float, 3>, 4>,
+  itk::CudaImage<itk::CovariantVector<float, 3>, 3>,
+  rtk::CyclicDeformationImageFilter<itk::CudaImage<itk::CovariantVector<float, 3>, 4>,
+                                    itk::CudaImage<itk::CovariantVector<float, 3>, 3>>>;

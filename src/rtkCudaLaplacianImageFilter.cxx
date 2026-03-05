@@ -56,3 +56,7 @@ rtk::CudaLaplacianImageFilter ::GPUGenerateData()
 
   CUDA_laplacian(inputSize, inputSpacing, pin, pout);
 }
+
+template class itk::CudaImageToImageFilter<itk::CudaImage<float, 3>,
+                                           itk::CudaImage<float, 3>,
+                                           rtk::LaplacianImageFilter<itk::CudaImage<float, 3>>>;

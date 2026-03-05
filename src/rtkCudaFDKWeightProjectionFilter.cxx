@@ -140,3 +140,7 @@ CudaFDKWeightProjectionFilter ::GPUGenerateData()
 }
 
 } // namespace rtk
+
+template class itk::CudaInPlaceImageFilter<itk::CudaImage<float, 3>,
+                                           itk::CudaImage<float, 3>,
+                                           rtk::FDKWeightProjectionFilter<itk::CudaImage<float, 3>>>;

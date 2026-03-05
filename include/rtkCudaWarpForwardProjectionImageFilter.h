@@ -28,6 +28,21 @@
 #  include "itkCudaUtil.h"
 #  include "RTKExport.h"
 
+#  include "rtkCudaExternTemplates.h"
+
+#  ifdef RTK_EXTERN_TEMPLATES
+ITK_GCC_PRAGMA_DIAG_PUSH()
+ITK_GCC_PRAGMA_DIAG(ignored "-Wattributes")
+extern template class RTK_EXPORT_EXPLICIT
+  itk::CudaInPlaceImageFilter<itk::CudaImage<float, 3>,
+                              itk::CudaImage<float, 3>,
+                              rtk::ForwardProjectionImageFilter<itk::CudaImage<float, 3>>>;
+ITK_GCC_PRAGMA_DIAG_POP()
+#  endif
+
+namespace rtk
+{
+
 /** \class CudaWarpForwardProjectionImageFilter
  * \brief Trilinear interpolation forward projection in warped volume implemented in CUDA
  *
@@ -40,14 +55,10 @@
  *
  * \ingroup RTK Projector CudaImageToImageFilter
  */
-
-namespace rtk
-{
-
 class RTK_EXPORT CudaWarpForwardProjectionImageFilter
   : public itk::CudaInPlaceImageFilter<itk::CudaImage<float, 3>,
                                        itk::CudaImage<float, 3>,
-                                       ForwardProjectionImageFilter<itk::CudaImage<float, 3>, itk::CudaImage<float, 3>>>
+                                       ForwardProjectionImageFilter<itk::CudaImage<float, 3>>>
 {
 public:
   ITK_DISALLOW_COPY_AND_MOVE(CudaWarpForwardProjectionImageFilter);
