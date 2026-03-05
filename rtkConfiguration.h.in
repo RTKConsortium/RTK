@@ -55,19 +55,6 @@ using ThreadIdType = itk::ThreadIdType;
 #  define USE_FFTWD
 #endif
 
-/* Fix for ITK5 */
-#if ITK_VERSION_MAJOR<6
-namespace itk::Math
-{
-template <typename T>
-auto
-Absolute(T x)
-{
-  return itk::Math::abs(x);
-}
-}
-#endif
-
 #define RTK_VERSION_MAJOR @RTK_VERSION_MAJOR@
 #define RTK_VERSION_MINOR @RTK_VERSION_MINOR@
 #define RTK_VERSION_PATCH @RTK_VERSION_PATCH@

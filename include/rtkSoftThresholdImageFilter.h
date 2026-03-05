@@ -72,7 +72,7 @@ public:
   inline TOutput
   operator()(const TInput & A) const
   {
-    return (itk::Math::sgn(A) * std::max((TInput)itk::Math::Absolute(A) - m_Threshold, (TInput)0.0));
+    return (itk::Math::sgn(A) * std::max((TInput)std::abs(A) - m_Threshold, (TInput)0.0));
   }
 
 private:

@@ -50,9 +50,8 @@ PhaseGatingImageFilter<ProjectionStackType>::ComputeWeights()
   // Compute the gating weights
   for (float m_Phase : m_Phases)
   {
-    distance = std::min(itk::Math::Absolute(m_GatingWindowCenter - 1 - m_Phase),
-                        itk::Math::Absolute(m_GatingWindowCenter - m_Phase));
-    distance = std::min(distance, itk::Math::Absolute(m_GatingWindowCenter + 1.f - m_Phase));
+    distance = std::min(std::abs(m_GatingWindowCenter - 1 - m_Phase), std::abs(m_GatingWindowCenter - m_Phase));
+    distance = std::min(distance, std::abs(m_GatingWindowCenter + 1.f - m_Phase));
 
     switch (m_GatingWindowShape)
     {
