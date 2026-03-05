@@ -95,6 +95,7 @@ main(int argc, char * argv[])
       bp = rtk::FDKBackProjectionImageFilter<OutputImageType, OutputImageType>::New();
       break;
     case (bp_arg_FDKWarpBackProjection):
+    {
       if (!args_info.signal_given || !args_info.dvf_given)
       {
         std::cerr << "FDKWarpBackProjection requires input 4D deformation "
@@ -104,10 +105,17 @@ main(int argc, char * argv[])
       def->SetInput(itk::ReadImage<DeformationType::InputImageType>(args_info.dvf_arg));
       bp = rtk::FDKWarpBackProjectionImageFilter<OutputImageType, OutputImageType, DeformationType>::New();
       def->SetSignalFilename(args_info.signal_arg);
-      dynamic_cast<rtk::FDKWarpBackProjectionImageFilter<OutputImageType, OutputImageType, DeformationType> *>(
-        bp.GetPointer())
-        ->SetDeformation(def);
+      auto * fdkWarp =
+        dynamic_cast<rtk::FDKWarpBackProjectionImageFilter<OutputImageType, OutputImageType, DeformationType> *>(
+          bp.GetPointer());
+      if (fdkWarp == nullptr)
+      {
+        std::cerr << "Failed to cast back projection filter to FDKWarpBackProjectionImageFilter." << std::endl;
+        return EXIT_FAILURE;
+      }
+      fdkWarp->SetDeformation(def);
       break;
+    }
     case (bp_arg_Joseph):
       bp = rtk::JosephBackProjectionImageFilter<OutputImageType, OutputImageType>::New();
       break;
@@ -151,11 +159,27 @@ main(int argc, char * argv[])
   if (args_info.attenuationmap_given)
     bp->SetInput(2, attenuationMap);
   if (args_info.sigmazero_given && args_info.bp_arg == bp_arg_Zeng)
-    dynamic_cast<rtk::ZengBackProjectionImageFilter<OutputImageType, OutputImageType> *>(bp.GetPointer())
-      ->SetSigmaZero(args_info.sigmazero_arg);
+  {
+    auto * zengBack =
+      dynamic_cast<rtk::ZengBackProjectionImageFilter<OutputImageType, OutputImageType> *>(bp.GetPointer());
+    if (zengBack == nullptr)
+    {
+      std::cerr << "Failed to cast back projection filter to ZengBackProjectionImageFilter." << std::endl;
+      return EXIT_FAILURE;
+    }
+    zengBack->SetSigmaZero(args_info.sigmazero_arg);
+  }
   if (args_info.alphapsf_given && args_info.bp_arg == bp_arg_Zeng)
-    dynamic_cast<rtk::ZengBackProjectionImageFilter<OutputImageType, OutputImageType> *>(bp.GetPointer())
-      ->SetAlpha(args_info.alphapsf_arg);
+  {
+    auto * zengBack =
+      dynamic_cast<rtk::ZengBackProjectionImageFilter<OutputImageType, OutputImageType> *>(bp.GetPointer());
+    if (zengBack == nullptr)
+    {
+      std::cerr << "Failed to cast back projection filter to ZengBackProjectionImageFilter." << std::endl;
+      return EXIT_FAILURE;
+    }
+    zengBack->SetAlpha(args_info.alphapsf_arg);
+  }
   bp->SetGeometry(geometry);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(bp->Update())
 

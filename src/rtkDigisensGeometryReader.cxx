@@ -19,6 +19,7 @@
 #include "rtkDigisensGeometryReader.h"
 #include "rtkDigisensGeometryXMLFileReader.h"
 
+#include <itkMacro.h>
 #include <itkMetaDataObject.h>
 #include <itkVersor.h>
 #include <itkCenteredEuler3DTransform.h>
@@ -42,20 +43,40 @@ rtk::DigisensGeometryReader ::GenerateData()
 
   // Getting elements positions
   using MetaDataVectorType = itk::MetaDataObject<GeometryType::VectorType>;
-  GeometryType::VectorType rotationAxis =
-    dynamic_cast<MetaDataVectorType *>(dic["ROTATIONaxis"].GetPointer())->GetMetaDataObjectValue();
-  GeometryType::VectorType rotationCenter =
-    dynamic_cast<MetaDataVectorType *>(dic["ROTATIONcenter"].GetPointer())->GetMetaDataObjectValue();
-  GeometryType::VectorType sourcePosition =
-    dynamic_cast<MetaDataVectorType *>(dic["XRAYsource"].GetPointer())->GetMetaDataObjectValue();
-  GeometryType::VectorType detectorPosition =
-    dynamic_cast<MetaDataVectorType *>(dic["CAMERAreference"].GetPointer())->GetMetaDataObjectValue();
-  GeometryType::VectorType detectorNormal =
-    dynamic_cast<MetaDataVectorType *>(dic["CAMERAnormal"].GetPointer())->GetMetaDataObjectValue();
-  GeometryType::VectorType detectorHorizontal =
-    dynamic_cast<MetaDataVectorType *>(dic["CAMERAhorizontal"].GetPointer())->GetMetaDataObjectValue();
-  GeometryType::VectorType detectorVertical =
-    dynamic_cast<MetaDataVectorType *>(dic["CAMERAvertical"].GetPointer())->GetMetaDataObjectValue();
+  auto * rotationAxisMetaData = dynamic_cast<MetaDataVectorType *>(dic["ROTATIONaxis"].GetPointer());
+  if (rotationAxisMetaData == nullptr)
+    itkExceptionMacro(<< "Missing or invalid metadata \"ROTATIONaxis\".");
+  GeometryType::VectorType rotationAxis = rotationAxisMetaData->GetMetaDataObjectValue();
+
+  auto * rotationCenterMetaData = dynamic_cast<MetaDataVectorType *>(dic["ROTATIONcenter"].GetPointer());
+  if (rotationCenterMetaData == nullptr)
+    itkExceptionMacro(<< "Missing or invalid metadata \"ROTATIONcenter\".");
+  GeometryType::VectorType rotationCenter = rotationCenterMetaData->GetMetaDataObjectValue();
+
+  auto * sourcePositionMetaData = dynamic_cast<MetaDataVectorType *>(dic["XRAYsource"].GetPointer());
+  if (sourcePositionMetaData == nullptr)
+    itkExceptionMacro(<< "Missing or invalid metadata \"XRAYsource\".");
+  GeometryType::VectorType sourcePosition = sourcePositionMetaData->GetMetaDataObjectValue();
+
+  auto * detectorPositionMetaData = dynamic_cast<MetaDataVectorType *>(dic["CAMERAreference"].GetPointer());
+  if (detectorPositionMetaData == nullptr)
+    itkExceptionMacro(<< "Missing or invalid metadata \"CAMERAreference\".");
+  GeometryType::VectorType detectorPosition = detectorPositionMetaData->GetMetaDataObjectValue();
+
+  auto * detectorNormalMetaData = dynamic_cast<MetaDataVectorType *>(dic["CAMERAnormal"].GetPointer());
+  if (detectorNormalMetaData == nullptr)
+    itkExceptionMacro(<< "Missing or invalid metadata \"CAMERAnormal\".");
+  GeometryType::VectorType detectorNormal = detectorNormalMetaData->GetMetaDataObjectValue();
+
+  auto * detectorHorizontalMetaData = dynamic_cast<MetaDataVectorType *>(dic["CAMERAhorizontal"].GetPointer());
+  if (detectorHorizontalMetaData == nullptr)
+    itkExceptionMacro(<< "Missing or invalid metadata \"CAMERAhorizontal\".");
+  GeometryType::VectorType detectorHorizontal = detectorHorizontalMetaData->GetMetaDataObjectValue();
+
+  auto * detectorVerticalMetaData = dynamic_cast<MetaDataVectorType *>(dic["CAMERAvertical"].GetPointer());
+  if (detectorVerticalMetaData == nullptr)
+    itkExceptionMacro(<< "Missing or invalid metadata \"CAMERAvertical\".");
+  GeometryType::VectorType detectorVertical = detectorVerticalMetaData->GetMetaDataObjectValue();
 
   // Check assumptions
   if (sourcePosition[0] != 0. || sourcePosition[1] != 0. || detectorNormal[0] != 0. || detectorNormal[1] != 0. ||
@@ -87,11 +108,20 @@ rtk::DigisensGeometryReader ::GenerateData()
   double projectionOffsetY = detectorPosition[1] * detectorVertical[1];
 
   // Rotation
-  double startAngle =
-    dynamic_cast<MetaDataDoubleType *>(dic["RADIOSstartAngle"].GetPointer())->GetMetaDataObjectValue();
-  double angularRange =
-    dynamic_cast<MetaDataDoubleType *>(dic["RADIOSangularRange"].GetPointer())->GetMetaDataObjectValue();
-  int nProj = dynamic_cast<MetaDataIntegerType *>(dic["RADIOSNumberOfFiles"].GetPointer())->GetMetaDataObjectValue();
+  auto * startAngleMetaData = dynamic_cast<MetaDataDoubleType *>(dic["RADIOSstartAngle"].GetPointer());
+  if (startAngleMetaData == nullptr)
+    itkExceptionMacro(<< "Missing or invalid metadata \"RADIOSstartAngle\".");
+  const double startAngle = startAngleMetaData->GetMetaDataObjectValue();
+
+  auto * angularRangeMetaData = dynamic_cast<MetaDataDoubleType *>(dic["RADIOSangularRange"].GetPointer());
+  if (angularRangeMetaData == nullptr)
+    itkExceptionMacro(<< "Missing or invalid metadata \"RADIOSangularRange\".");
+  const double angularRange = angularRangeMetaData->GetMetaDataObjectValue();
+
+  auto * nProjMetaData = dynamic_cast<MetaDataIntegerType *>(dic["RADIOSNumberOfFiles"].GetPointer());
+  if (nProjMetaData == nullptr)
+    itkExceptionMacro(<< "Missing or invalid metadata \"RADIOSNumberOfFiles\".");
+  const int nProj = nProjMetaData->GetMetaDataObjectValue();
   for (int i = 0; i < nProj; i++)
   {
     // Convert rotation center and rotation axis parameterization to euler angles
