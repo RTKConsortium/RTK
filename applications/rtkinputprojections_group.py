@@ -143,7 +143,7 @@ def GetProjectionsFileNamesFromArgParse(args_info):
         print(f"Regular expression matches {len(names.GetFileNames())} file(s)...")
 
     # Check submatch in file names TODO
-    # rtk.RegisterIOFactories() TODO
+    rtk.RegisterIOFactories()
 
     fileNames = []
     for fn in names.GetFileNames():

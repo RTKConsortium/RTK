@@ -4,6 +4,35 @@ import importlib
 import shlex
 
 
+def RegisterIOFactories():
+    """
+    Register RTK ImageIO factories in Python, mirroring rtk::RegisterIOFactories().
+    """
+    # Unregister GDCM factory first, then re-register at the end.
+    # This mirrors src/rtkIOFactories.cxx behavior.
+    gdcm_factory = getattr(itk, "GDCMImageIOFactory", None)
+    for factory in gdcm_factory.GetRegisteredFactories():
+        gdcm_factory.UnRegisterFactory(factory)
+
+    factory_names = [
+        "HndImageIOFactory",
+        "HncImageIOFactory",
+        "XimImageIOFactory",
+        "HisImageIOFactory",
+        "ImagXImageIOFactory",
+        "DCMImagXImageIOFactory",
+        "EdfImageIOFactory",
+        "XRadImageIOFactory",
+        "OraImageIOFactory",
+    ]
+
+    for name in factory_names:
+        factory = getattr(rtk, name)
+        factory.RegisterOneFactory()
+
+    gdcm_factory.RegisterOneFactory()
+
+
 # Write a 3D circular projection geometry to a file.
 def write_geometry(geometry, filename):
     # Create and configure the writer
