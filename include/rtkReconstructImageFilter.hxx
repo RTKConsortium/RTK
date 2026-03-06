@@ -73,7 +73,7 @@ ReconstructImageFilter<TImage>::GeneratePassVectors()
   m_PassVectors.clear();
   for (unsigned int vectIndex = 0; vectIndex < n; vectIndex++)
   {
-    typename ConvolutionFilterType::PassVector temp;
+    typename ConvolutionFilterType::PassVector temp{};
     m_PassVectors.push_back(temp);
   }
 
