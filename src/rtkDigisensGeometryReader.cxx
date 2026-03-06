@@ -19,9 +19,9 @@
 #include "rtkDigisensGeometryReader.h"
 #include "rtkDigisensGeometryXMLFileReader.h"
 
+#include <itkCenteredEuler3DTransform.h>
 #include <itkMetaDataObject.h>
 #include <itkVersor.h>
-#include <itkCenteredEuler3DTransform.h>
 
 rtk::DigisensGeometryReader ::DigisensGeometryReader() = default;
 
@@ -95,7 +95,7 @@ rtk::DigisensGeometryReader ::GenerateData()
   for (int i = 0; i < nProj; i++)
   {
     // Convert rotation center and rotation axis parameterization to euler angles
-    double angle = -startAngle - i * angularRange / nProj;
+    double angle = -startAngle - (i * angularRange / nProj);
 
     const double        degreesToRadians = std::atan(1.0) / 45.0;
     itk::Versor<double> xfm3DVersor;

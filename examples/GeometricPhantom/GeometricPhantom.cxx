@@ -1,7 +1,7 @@
 #include "rtkDrawGeometricPhantomImageFilter.h"
 #include "rtkConstantImageSource.h"
-#include "rtkProjectGeometricPhantomImageFilter.h"
 #include "rtkFDKConeBeamReconstructionFilter.h"
+#include "rtkProjectGeometricPhantomImageFilter.h"
 #include "rtkThreeDCircularProjectionGeometryXMLFileWriter.h"
 
 int

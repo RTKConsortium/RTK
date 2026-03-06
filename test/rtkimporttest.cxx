@@ -26,11 +26,11 @@ CheckError(typename TImage::Pointer     itkNotUsed(recon),
 {}
 #else
 void
-CheckError(typename TImage::Pointer     recon,
-           typename TImage::PixelType * ref,
-           double                       ErrorPerPixelTolerance,
-           double                       PSNRTolerance,
-           double                       RefValueForPSNR)
+CheckError(const typename TImage::Pointer & recon,
+           typename TImage::PixelType *     ref,
+           double                           ErrorPerPixelTolerance,
+           double                           PSNRTolerance,
+           double                           RefValueForPSNR)
 {
   itk::ImageRegionConstIterator<TImage> itTest(recon, recon->GetBufferedRegion());
 
@@ -91,7 +91,7 @@ main(int, char **)
   {
     vec_uint_2d[i] = i;
     vec_int_2d[i] = i;
-    vec_float_2d[i] = i * 1.01f;
+    vec_float_2d[i] = i * 1.01F;
     vec_double_2d[i] = i * 1.01;
   }
 

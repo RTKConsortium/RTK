@@ -22,9 +22,9 @@
 namespace rtk
 {
 
-CudaParkerShortScanImageFilter ::CudaParkerShortScanImageFilter() {}
+CudaParkerShortScanImageFilter ::CudaParkerShortScanImageFilter() = default;
 
-CudaParkerShortScanImageFilter ::~CudaParkerShortScanImageFilter() {}
+CudaParkerShortScanImageFilter ::~CudaParkerShortScanImageFilter() = default;
 
 void
 CudaParkerShortScanImageFilter ::GPUGenerateData()
@@ -97,17 +97,17 @@ CudaParkerShortScanImageFilter ::GPUGenerateData()
   // 0: sdd
   // 1: projection offset x
   // 2: gantry angle
-  int     geomIdx = this->GetInput()->GetRequestedRegion().GetIndex()[2];
-  float * geomMatrix = new float[proj_size[2] * 5];
+  int    geomIdx = this->GetInput()->GetRequestedRegion().GetIndex()[2];
+  auto * geomMatrix = new float[proj_size[2] * 5];
   if (geomMatrix == nullptr)
     itkExceptionMacro(<< "Couldn't allocate geomMatrix");
   for (int g = 0; g < proj_size[2]; ++g)
   {
-    geomMatrix[g * 5 + 0] = this->GetGeometry()->GetSourceToDetectorDistances()[g + geomIdx];
-    geomMatrix[g * 5 + 1] = this->GetGeometry()->GetSourceOffsetsX()[g + geomIdx];
-    geomMatrix[g * 5 + 2] = this->GetGeometry()->GetProjectionOffsetsX()[g + geomIdx];
-    geomMatrix[g * 5 + 3] = this->GetGeometry()->GetSourceToIsocenterDistances()[g + geomIdx];
-    geomMatrix[g * 5 + 4] = this->GetGeometry()->GetGantryAngles()[g + geomIdx];
+    geomMatrix[(g * 5) + 0] = this->GetGeometry()->GetSourceToDetectorDistances()[g + geomIdx];
+    geomMatrix[(g * 5) + 1] = this->GetGeometry()->GetSourceOffsetsX()[g + geomIdx];
+    geomMatrix[(g * 5) + 2] = this->GetGeometry()->GetProjectionOffsetsX()[g + geomIdx];
+    geomMatrix[(g * 5) + 3] = this->GetGeometry()->GetSourceToIsocenterDistances()[g + geomIdx];
+    geomMatrix[(g * 5) + 4] = this->GetGeometry()->GetGantryAngles()[g + geomIdx];
   }
 
   CUDA_parker_weight(proj_idx,

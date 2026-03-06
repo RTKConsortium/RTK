@@ -17,10 +17,10 @@
  *=========================================================================*/
 
 #include "rtkvarianprobeamgeometry_ggo.h"
-#include "rtkMacro.h"
-#include "rtkVarianProBeamGeometryReader.h"
-#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkGgoFunctions.h"
+#include "rtkMacro.h"
+#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
+#include "rtkVarianProBeamGeometryReader.h"
 
 int
 main(int argc, char * argv[])

@@ -19,9 +19,9 @@
 #include "rtkamsterdamshroud_ggo.h"
 #include "rtkMacro.h"
 
-#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkAmsterdamShroudImageFilter.h"
 #include "rtkGgoFunctions.h"
+#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 
 #include <itkImageFileWriter.h>
 
@@ -62,7 +62,7 @@ main(int argc, char * argv[])
     for (int i = 0; i < 3; i++)
     {
       c1[i] = args_info.clipbox_arg[i * 2];
-      c2[i] = args_info.clipbox_arg[i * 2 + 1];
+      c2[i] = args_info.clipbox_arg[(i * 2) + 1];
     }
     shroudFilter->SetCorner1(c1);
     shroudFilter->SetCorner2(c2);

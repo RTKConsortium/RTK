@@ -1,11 +1,11 @@
-#include <itkRandomImageSource.h>
 #include <itkConstantBoundaryCondition.h>
 #include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>
 #include <itkMultiplyImageFilter.h>
+#include <itkRandomImageSource.h>
 
-#include "rtkTest.h"
 #include "rtkMacro.h"
+#include "rtkTest.h"
 
 #include "rtkBackwardDifferenceDivergenceImageFilter.h"
 #include "rtkForwardDifferenceGradientImageFilter.h"

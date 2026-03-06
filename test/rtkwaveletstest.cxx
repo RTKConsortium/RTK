@@ -1,9 +1,9 @@
 #include <itkImageRegionConstIterator.h>
 #include <itkRandomImageSource.h>
 
-#include "rtkTestConfiguration.h"
 #include "rtkDeconstructSoftThresholdReconstructImageFilter.h"
 #include "rtkMacro.h"
+#include "rtkTestConfiguration.h"
 
 template <class TImage>
 #if FAST_TESTS_NO_CHECKS
@@ -12,7 +12,7 @@ CheckImageQuality(typename TImage::Pointer itkNotUsed(recon), typename TImage::P
 {}
 #else
 void
-CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer ref)
+CheckImageQuality(const typename TImage::Pointer & recon, const typename TImage::Pointer & ref)
 {
   using ImageIteratorType = itk::ImageRegionConstIterator<TImage>;
   ImageIteratorType itTest(recon, recon->GetBufferedRegion());
@@ -41,7 +41,7 @@ CheckImageQuality(typename TImage::Pointer recon, typename TImage::Pointer ref)
   ErrorType MSE = EnerError / ref->GetBufferedRegion().GetNumberOfPixels();
   std::cout << "MSE = " << MSE << std::endl;
   // PSNR
-  ErrorType PSNR = 20 * log10(2.0) - 10 * log10(MSE);
+  ErrorType PSNR = (20 * log10(2.0)) - (10 * log10(MSE));
   std::cout << "PSNR = " << PSNR << "dB" << std::endl;
   // QI
   ErrorType QI = (2.0 - ErrorPerPixel) / 2.0;

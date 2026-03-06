@@ -1,8 +1,8 @@
 #include "rtkTest.h"
-#include "rtkMacro.h"
-#include "rtkDisplacedDetectorImageFilter.h"
-#include "rtkDisplacedDetectorForOffsetFieldOfViewImageFilter.h"
 #include "rtkConstantImageSource.h"
+#include "rtkDisplacedDetectorForOffsetFieldOfViewImageFilter.h"
+#include "rtkDisplacedDetectorImageFilter.h"
+#include "rtkMacro.h"
 #include "rtkSheppLoganPhantomFilter.h"
 
 #include <itkStreamingImageFilter.h>
@@ -67,7 +67,7 @@ main(int, char **)
 
     CheckImageQuality<OutputImageType>(cudaddf->GetOutput(), cpuddf->GetOutput(), 1.e-6, 100, 1.);
 
-    std::cout << "\n\n****** Case " << inPlace * 2 + 1 << ": with streaming, ";
+    std::cout << "\n\n****** Case " << (inPlace * 2) + 1 << ": with streaming, ";
     if (!inPlace)
       std::cout << "not";
     std::cout << " in place ******" << std::endl;

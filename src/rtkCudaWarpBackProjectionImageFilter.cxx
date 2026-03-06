@@ -20,10 +20,10 @@
 #include "rtkCudaUtilities.hcu"
 #include "rtkCudaWarpBackProjectionImageFilter.hcu"
 
-#include <itkImageRegionIterator.h>
-#include <itkImageRegionConstIterator.h>
-#include <itkMacro.h>
 #include <itkImageAlgorithm.h>
+#include <itkImageRegionConstIterator.h>
+#include <itkImageRegionIterator.h>
+#include <itkMacro.h>
 
 namespace rtk
 {
@@ -51,19 +51,19 @@ CudaWarpBackProjectionImageFilter ::SetDisplacementField(const DVFType * DVF)
 CudaWarpBackProjectionImageFilter::ImageType::Pointer
 CudaWarpBackProjectionImageFilter ::GetInputVolume()
 {
-  return static_cast<ImageType *>(this->itk::ProcessObject::GetInput(0));
+  return dynamic_cast<ImageType *>(this->itk::ProcessObject::GetInput(0));
 }
 
 CudaWarpBackProjectionImageFilter::ImageType::Pointer
 CudaWarpBackProjectionImageFilter ::GetInputProjectionStack()
 {
-  return static_cast<ImageType *>(this->itk::ProcessObject::GetInput(1));
+  return dynamic_cast<ImageType *>(this->itk::ProcessObject::GetInput(1));
 }
 
 CudaWarpBackProjectionImageFilter::DVFType::Pointer
 CudaWarpBackProjectionImageFilter ::GetDisplacementField()
 {
-  return static_cast<DVFType *>(this->itk::ProcessObject::GetInput("DisplacementField"));
+  return dynamic_cast<DVFType *>(this->itk::ProcessObject::GetInput("DisplacementField"));
 }
 
 void
@@ -181,18 +181,19 @@ CudaWarpBackProjectionImageFilter ::GPUGenerateData()
   float fIndexInputToPPInputMatrix[12];
   for (int j = 0; j < 12; j++)
   {
-    fIndexInputToIndexDVFMatrix[j] = (float)indexInputToIndexDVFMatrix[j / 4][j % 4];
-    fPPInputToIndexInputMatrix[j] = (float)PPInputToIndexInputMatrix[j / 4][j % 4];
-    fIndexInputToPPInputMatrix[j] = (float)indexInputToPPInputMatrix[j / 4][j % 4];
+    fIndexInputToIndexDVFMatrix[j] = static_cast<float>(indexInputToIndexDVFMatrix[j / 4][j % 4]);
+    fPPInputToIndexInputMatrix[j] = static_cast<float>(PPInputToIndexInputMatrix[j / 4][j % 4]);
+    fIndexInputToPPInputMatrix[j] = static_cast<float>(indexInputToPPInputMatrix[j / 4][j % 4]);
   }
 
   // Load the required images onto the GPU (handled by the CudaDataManager)
 #ifdef CudaCommon_VERSION_MAJOR
-  float * pin = (float *)(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
-  float * pout = (float *)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
-  float * pDVF = (float *)(this->GetDisplacementField()->GetCudaDataManager()->GetGPUBufferPointer());
+  float * pin = static_cast<float *>(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
+  float * pout = static_cast<float *>(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
+  float * pDVF = static_cast<float *>(this->GetDisplacementField()->GetCudaDataManager()->GetGPUBufferPointer());
 
-  float * stackGPUPointer = (float *)(this->GetInputProjectionStack()->GetCudaDataManager()->GetGPUBufferPointer());
+  float * stackGPUPointer =
+    static_cast<float *>(this->GetInputProjectionStack()->GetCudaDataManager()->GetGPUBufferPointer());
 #else
   float * pin = *(float **)(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
   float * pout = *(float **)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
@@ -207,9 +208,9 @@ CudaWarpBackProjectionImageFilter ::GPUGenerateData()
 
   // Allocate a large matrix to hold the matrix of all projections
   // fMatrix is for flat detector, the other two are for cylindrical
-  float * fMatrix = new float[12 * nProj];
-  float * fvolIndexToProjPP = new float[12 * nProj];
-  float * fprojPPToProjIndex = new float[9];
+  auto * fMatrix = new float[12 * nProj];
+  auto * fvolIndexToProjPP = new float[12 * nProj];
+  auto * fprojPPToProjIndex = new float[9];
 
   // Correction for non-zero indices in the projections
   itk::Matrix<double, 3, 3> matrixIdxProj;
@@ -246,26 +247,26 @@ CudaWarpBackProjectionImageFilter ::GPUGenerateData()
     // Fill float arrays with matrices coefficients, to be passed to GPU
     for (int j = 0; j < 12; j++)
     {
-      fvolIndexToProjPP[j + (iProj - iFirstProj) * 12] = volIndexToProjPP[j / 4][j % 4];
-      fMatrix[j + (iProj - iFirstProj) * 12] = matrix[j / 4][j % 4];
+      fvolIndexToProjPP[j + ((iProj - iFirstProj) * 12)] = volIndexToProjPP[j / 4][j % 4];
+      fMatrix[j + ((iProj - iFirstProj) * 12)] = matrix[j / 4][j % 4];
     }
   }
 
   for (unsigned int i = 0; i < nProj; i += SLAB_SIZE)
   {
     // If nProj is not a multiple of SLAB_SIZE, the last slab will contain less than SLAB_SIZE projections
-    projectionSize[2] = std::min(nProj - i, (unsigned int)SLAB_SIZE);
+    projectionSize[2] = std::min(nProj - i, static_cast<unsigned int>(SLAB_SIZE));
 
     // Run the back projection with a slab of SLAB_SIZE or less projections
     CUDA_warp_back_project(projectionSize,
                            volumeSize,
                            inputDVFSize,
-                           fMatrix + 12 * i,
-                           fvolIndexToProjPP + 12 * i,
+                           fMatrix + (12 * i),
+                           fvolIndexToProjPP + (12 * i),
                            fprojPPToProjIndex,
                            pin,
                            pout,
-                           stackGPUPointer + projSize * i,
+                           stackGPUPointer + (projSize * i),
                            pDVF,
                            fIndexInputToIndexDVFMatrix,
                            fPPInputToIndexInputMatrix,

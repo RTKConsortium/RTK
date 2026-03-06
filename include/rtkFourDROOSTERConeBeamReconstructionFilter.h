@@ -21,25 +21,25 @@
 #include "rtkFourDConjugateGradientConeBeamReconstructionFilter.h"
 #include "rtkTotalVariationDenoiseSequenceImageFilter.h"
 #ifdef RTK_USE_CUDA
-#  include "rtkCudaLastDimensionTVDenoisingImageFilter.h"
 #  include "rtkCudaAverageOutOfROIImageFilter.h"
+#  include "rtkCudaLastDimensionTVDenoisingImageFilter.h"
 #else
 #  include "rtkTotalVariationDenoisingBPDQImageFilter.h"
 #  include "rtkAverageOutOfROIImageFilter.h"
 #endif
 #include "rtkDaubechiesWaveletsDenoiseSequenceImageFilter.h"
-#include "rtkWarpSequenceImageFilter.h"
-#include "rtkUnwarpSequenceImageFilter.h"
 #include "rtkLastDimensionL0GradientDenoisingImageFilter.h"
 #include "rtkTotalNuclearVariationDenoisingBPDQImageFilter.h"
+#include "rtkUnwarpSequenceImageFilter.h"
+#include "rtkWarpSequenceImageFilter.h"
 
-#include <itkThresholdImageFilter.h>
-#include <itkSubtractImageFilter.h>
 #include <itkAddImageFilter.h>
+#include <itkSubtractImageFilter.h>
+#include <itkThresholdImageFilter.h>
 
-#include <itkResampleImageFilter.h>
-#include <itkNearestNeighborInterpolateImageFunction.h>
 #include <itkIdentityTransform.h>
+#include <itkNearestNeighborInterpolateImageFunction.h>
+#include <itkResampleImageFilter.h>
 
 
 namespace rtk
@@ -303,7 +303,7 @@ public:
 
   /** Pass the interpolation weights to SingleProjectionToFourDFilter */
   virtual void
-  SetWeights(const itk::Array2D<float> _arg);
+  SetWeights(itk::Array2D<float> _arg);
 
   /** Set / Get whether the displaced detector filter should be disabled */
   itkSetMacro(DisableDisplacedDetectorFilter, bool);
@@ -375,7 +375,7 @@ public:
 
   /** Store the phase signal in a member variable */
   virtual void
-  SetSignal(const std::vector<double> signal);
+  SetSignal(std::vector<double> signal);
 
 protected:
   FourDROOSTERConeBeamReconstructionFilter();

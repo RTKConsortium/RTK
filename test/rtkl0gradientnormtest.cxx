@@ -1,10 +1,11 @@
+#include <itkJoinSeriesImageFilter.h>
 #include <itkPasteImageFilter.h>
 #include <itksys/SystemTools.hxx>
-#include <itkJoinSeriesImageFilter.h>
+#include <utility>
 
+#include "rtkLastDimensionL0GradientDenoisingImageFilter.h"
 #include "rtkTest.h"
 #include <itkImageRegionIteratorWithIndex.h>
-#include "rtkLastDimensionL0GradientDenoisingImageFilter.h"
 
 /**
  * \file rtkl0gradientnormtest.cxx
@@ -21,7 +22,7 @@
 
 template <class TInputImage>
 static unsigned int
-ComputeL0NormAlongLastDimension(typename TInputImage::Pointer in)
+ComputeL0NormAlongLastDimension(const typename TInputImage::Pointer & in)
 {
 
   // Create a slice to iterate on
@@ -83,10 +84,10 @@ CheckL0NormOfGradient(typename TInputImage::Pointer before, typename TInputImage
   unsigned int normBefore = 0;
   unsigned int normAfter = 0;
 
-  normBefore = ComputeL0NormAlongLastDimension<TInputImage>(before);
+  normBefore = ComputeL0NormAlongLastDimension<TInputImage>(std::move(before));
   std::cout << "L0 norm of the gradient before denoising is " << normBefore << std::endl;
 
-  normAfter = ComputeL0NormAlongLastDimension<TInputImage>(after);
+  normAfter = ComputeL0NormAlongLastDimension<TInputImage>(std::move(after));
   std::cout << "L0 norm of the gradient after denoising is " << normAfter << std::endl;
 
   // Checking results

@@ -1,6 +1,6 @@
 #include "rtkTest.h"
-#include "rtkTestConfiguration.h"
 #include "rtkMacro.h"
+#include "rtkTestConfiguration.h"
 #ifdef USE_CUDA
 #  include "rtkCudaLagCorrectionImageFilter.h"
 #else
@@ -44,16 +44,16 @@ main(int, char **)
   region.SetSize(size);
 
   VectorType a;
-  a[0] = 0.7055f;
-  a[1] = 0.1141f;
-  a[2] = 0.0212f;
-  a[3] = 0.0033f;
+  a[0] = 0.7055F;
+  a[1] = 0.1141F;
+  a[2] = 0.0212F;
+  a[3] = 0.0033F;
 
   VectorType b;
-  b[0] = 2.911e-3f;
-  b[1] = 0.4454e-3f;
-  b[2] = 0.0748e-3f;
-  b[3] = 0.0042e-3f;
+  b[0] = 2.911e-3F;
+  b[1] = 0.4454e-3F;
+  b[2] = 0.0748e-3F;
+  b[3] = 0.0042e-3F;
 
   lagcorr->SetCoefficients(a, b);
 
@@ -62,7 +62,7 @@ main(int, char **)
     auto inputI = ImageType::New();
     inputI->SetRegions(region);
     inputI->Allocate();
-    inputI->FillBuffer(1.0f);
+    inputI->FillBuffer(1.0F);
 
     lagcorr->SetInput(inputI.GetPointer());
 

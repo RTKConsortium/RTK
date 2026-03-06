@@ -19,10 +19,10 @@
 #include "rtkdrawshepploganphantom_ggo.h"
 #include "rtkGgoFunctions.h"
 
-#include "rtkSheppLoganPhantomFilter.h"
-#include "rtkDrawSheppLoganFilter.h"
-#include "rtkConstantImageSource.h"
 #include "rtkAdditiveGaussianNoiseImageFilter.h"
+#include "rtkConstantImageSource.h"
+#include "rtkDrawSheppLoganFilter.h"
+#include "rtkSheppLoganPhantomFilter.h"
 
 #include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>

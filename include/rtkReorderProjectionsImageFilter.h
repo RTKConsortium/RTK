@@ -19,9 +19,9 @@
 #ifndef rtkReorderProjectionsImageFilter_h
 #define rtkReorderProjectionsImageFilter_h
 
-#include <itkInPlaceImageFilter.h>
-#include "rtkThreeDCircularProjectionGeometry.h"
 #include "rtkConfiguration.h"
+#include "rtkThreeDCircularProjectionGeometry.h"
+#include <itkInPlaceImageFilter.h>
 
 namespace rtk
 {
@@ -80,7 +80,7 @@ public:
 
   /** Set the input signal */
   void
-  SetInputSignal(const std::vector<double> signal);
+  SetInputSignal(std::vector<double> signal);
   std::vector<double>
   GetOutputSignal();
 

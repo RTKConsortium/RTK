@@ -19,14 +19,14 @@
 #ifndef rtkSoftThresholdTVImageFilter_h
 #define rtkSoftThresholdTVImageFilter_h
 
-#include <itkNeighborhoodIterator.h>
-#include <itkImageToImageFilter.h>
-#include <itkImage.h>
-#include <itkVector.h>
+#include "rtkConfiguration.h"
+#include "vnl/algo/vnl_symmetric_eigensystem.h"
 #include "vnl/vnl_matrix.h"
 #include "vnl/vnl_vector_fixed.h"
-#include "vnl/algo/vnl_symmetric_eigensystem.h"
-#include "rtkConfiguration.h"
+#include <itkImage.h>
+#include <itkImageToImageFilter.h>
+#include <itkNeighborhoodIterator.h>
+#include <itkVector.h>
 
 namespace rtk
 {

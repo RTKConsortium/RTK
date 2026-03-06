@@ -54,7 +54,7 @@ public:
     return !(*this != other);
   }
 
-  inline TOutput
+  TOutput
   operator()(const double stepLengthInVoxel, const TCoordinateType weight, const TInput * p, const int i)
   {
     const double w = weight * stepLengthInVoxel;
@@ -75,7 +75,7 @@ public:
   }
 
 private:
-  std::ptrdiff_t m_AttenuationMinusEmissionMapsPtrDiff;
+  std::ptrdiff_t m_AttenuationMinusEmissionMapsPtrDiff{};
   TInput         m_AttenuationPixel;
 };
 
@@ -107,7 +107,7 @@ public:
     return !(*this != other);
   }
 
-  inline TOutput
+  TOutput
   operator()(const TInput rayValue, const TInput attenuationRay, const VectorType & stepInMM, bool & isNewRay)
   {
     if (isNewRay)
@@ -168,7 +168,7 @@ public:
     return !(*this != other);
   }
 
-  inline void
+  void
   operator()(const TInput &        rayValue,
              TOutput &             output,
              const double          stepLengthInVoxel,

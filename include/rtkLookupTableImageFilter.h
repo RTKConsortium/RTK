@@ -19,8 +19,8 @@
 #ifndef rtkLookupTableImageFilter_h
 #define rtkLookupTableImageFilter_h
 
-#include <itkUnaryFunctorImageFilter.h>
 #include <itkLinearInterpolateImageFunction.h>
+#include <itkUnaryFunctorImageFilter.h>
 
 namespace rtk
 {
@@ -73,7 +73,7 @@ public:
     m_Interpolator->SetInputImage(lut);
   }
 
-  LookupTableDataPointer
+  [[nodiscard]] LookupTableDataPointer
   GetLookupTable() const
   {
     return m_LookupTableDataPointer;
@@ -97,7 +97,7 @@ private:
   LookupTablePointer     m_LookupTablePointer;
   LookupTableDataPointer m_LookupTableDataPointer;
   InterpolatorPointer    m_Interpolator;
-  double                 m_InverseLUTSpacing;
+  double                 m_InverseLUTSpacing{};
 };
 
 template <class TInput, class TOutput>
@@ -113,7 +113,7 @@ LUT<float, float>::operator()(const float & val) const
 {
   InterpolatorType::ContinuousIndexType index;
   index[0] = m_InverseLUTSpacing * (val - m_LookupTablePointer->GetOrigin()[0]);
-  return float(m_Interpolator->EvaluateAtContinuousIndex(index));
+  return static_cast<float>(m_Interpolator->EvaluateAtContinuousIndex(index));
 }
 
 template <>
@@ -122,7 +122,7 @@ LUT<double, double>::operator()(const double & val) const
 {
   InterpolatorType::ContinuousIndexType index;
   index[0] = m_InverseLUTSpacing * (val - m_LookupTablePointer->GetOrigin()[0]);
-  return double(m_Interpolator->EvaluateAtContinuousIndex(index));
+  return static_cast<double>(m_Interpolator->EvaluateAtContinuousIndex(index));
 }
 
 } // end namespace Functor

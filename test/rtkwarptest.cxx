@@ -1,12 +1,12 @@
 #include <itkPasteImageFilter.h>
 #include <itksys/SystemTools.hxx>
 
-#include "rtkTest.h"
-#include "rtkRayEllipsoidIntersectionImageFilter.h"
-#include "rtkDrawEllipsoidImageFilter.h"
 #include "rtkConstantImageSource.h"
 #include "rtkCyclicDeformationImageFilter.h"
+#include "rtkDrawEllipsoidImageFilter.h"
 #include "rtkForwardWarpImageFilter.h"
+#include "rtkRayEllipsoidIntersectionImageFilter.h"
+#include "rtkTest.h"
 
 #include <itkWarpImageFilter.h>
 

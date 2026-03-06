@@ -19,13 +19,13 @@
 #include "rtkoverlayphaseandshroud_ggo.h"
 #include "rtkMacro.h"
 
+#include <itkCSVArray2DFileReader.h>
 #include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>
-#include <itkCSVArray2DFileReader.h>
-#include <itkRGBPixel.h>
 #include <itkImageRegionConstIterator.h>
 #include <itkImageRegionIteratorWithIndex.h>
 #include <itkNumericTraits.h>
+#include <itkRGBPixel.h>
 
 #include <fstream>
 
@@ -75,10 +75,8 @@ main(int argc, char * argv[])
   while (!itIn.IsAtEnd())
   {
     double currentPixel = itIn.Get();
-    if (currentPixel < min)
-      min = currentPixel;
-    if (currentPixel > max)
-      max = currentPixel;
+    min = std::min(currentPixel, min);
+    max = std::max(currentPixel, max);
     ++itIn;
   }
 

@@ -24,15 +24,15 @@
 #ifdef RTK_USE_CUDA
 
 #  include "rtkCudaForwardProjectionImageFilter.h"
-#  include "rtkCudaUtilities.hcu"
 #  include "rtkCudaForwardProjectionImageFilter.hcu"
+#  include "rtkCudaUtilities.hcu"
 
+#  include "itkCudaUtil.h"
+#  include "rtkMacro.h"
 #  include <itkImageRegionConstIterator.h>
 #  include <itkImageRegionIteratorWithIndex.h>
 #  include <itkLinearInterpolateImageFunction.h>
 #  include <itkMacro.h>
-#  include "rtkMacro.h"
-#  include "itkCudaUtil.h"
 
 namespace rtk
 {
@@ -93,9 +93,9 @@ CudaForwardProjectionImageFilter<TInputImage, TOutputImage>::GPUGenerateData()
   volumeSize[2] = this->GetInput(1)->GetBufferedRegion().GetSize()[2];
 
 #  ifdef CudaCommon_VERSION_MAJOR
-  float * pin = (float *)(this->GetInput(0)->GetCudaDataManager()->GetGPUBufferPointer());
-  float * pout = (float *)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
-  float * pvol = (float *)(this->GetInput(1)->GetCudaDataManager()->GetGPUBufferPointer());
+  auto * pin = (float *)(this->GetInput(0)->GetCudaDataManager()->GetGPUBufferPointer());
+  auto * pout = (float *)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
+  auto * pvol = (float *)(this->GetInput(1)->GetCudaDataManager()->GetGPUBufferPointer());
 #  else
   float * pin = *(float **)(this->GetInput(0)->GetCudaDataManager()->GetGPUBufferPointer());
   float * pout = *(float **)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
@@ -122,9 +122,9 @@ CudaForwardProjectionImageFilter<TInputImage, TOutputImage>::GPUGenerateData()
   }
 
   // Compute matrices to transform projection index to volume index, one per projection
-  float * translatedProjectionIndexTransformMatrices = new float[12 * nProj];
-  float * translatedVolumeTransformMatrices = new float[12 * nProj];
-  float * source_positions = new float[4 * nProj];
+  auto * translatedProjectionIndexTransformMatrices = new float[12 * nProj];
+  auto * translatedVolumeTransformMatrices = new float[12 * nProj];
+  auto * source_positions = new float[4 * nProj];
 
   float radiusCylindricalDetector = geometry->GetRadiusCylindricalDetector();
 
@@ -179,19 +179,19 @@ CudaForwardProjectionImageFilter<TInputImage, TOutputImage>::GPUGenerateData()
   for (unsigned int i = 0; i < nProj; i += SLAB_SIZE)
   {
     // If nProj is not a multiple of SLAB_SIZE, the last slab will contain less than SLAB_SIZE projections
-    projectionSize[2] = std::min(nProj - i, (unsigned int)SLAB_SIZE);
+    projectionSize[2] = std::min(nProj - i, static_cast<unsigned int>(SLAB_SIZE));
     projectionOffset = iFirstProj + i - this->GetOutput()->GetBufferedRegion().GetIndex(2);
 
     // Run the forward projection with a slab of SLAB_SIZE or less projections
     CUDA_forward_project(projectionSize,
                          volumeSize,
-                         (float *)&(translatedProjectionIndexTransformMatrices[12 * i]),
-                         (float *)&(translatedVolumeTransformMatrices[12 * i]),
+                         (&(translatedProjectionIndexTransformMatrices[12 * i])),
+                         (&(translatedVolumeTransformMatrices[12 * i])),
                          pin + nPixelsPerProj * projectionOffset,
                          pout + nPixelsPerProj * projectionOffset,
                          pvol,
                          m_StepSize,
-                         (float *)&(source_positions[3 * i]),
+                         (&(source_positions[3 * i])),
                          radiusCylindricalDetector,
                          boxMin,
                          boxMax,

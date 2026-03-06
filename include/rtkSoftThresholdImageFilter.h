@@ -57,11 +57,7 @@ public:
   bool
   operator!=(const SoftThreshold & other) const
   {
-    if (m_Threshold != other.m_Threshold)
-    {
-      return true;
-    }
-    return false;
+    return static_cast<bool>(m_Threshold != other.m_Threshold);
   }
   bool
   operator==(const SoftThreshold & other) const
@@ -69,7 +65,7 @@ public:
     return !(*this != other);
   }
 
-  inline TOutput
+  TOutput
   operator()(const TInput & A) const
   {
     return (itk::Math::sgn(A) * std::max((TInput)std::abs(A) - m_Threshold, (TInput)0.0));
@@ -92,11 +88,10 @@ public:
 
   /** Standard class type alias. */
   using Self = SoftThresholdImageFilter;
-  typedef itk::UnaryFunctorImageFilter<
+  using Superclass = itk::UnaryFunctorImageFilter<
     TInputImage,
     TOutputImage,
-    Functor::SoftThreshold<typename TInputImage::PixelType, typename TOutputImage::PixelType>>
-    Superclass;
+    Functor::SoftThreshold<typename TInputImage::PixelType, typename TOutputImage::PixelType>>;
   using Pointer = itk::SmartPointer<Self>;
   using ConstPointer = itk::SmartPointer<const Self>;
 
@@ -115,7 +110,7 @@ public:
 
   /** Set the threshold */
   virtual void
-  SetThreshold(const InputPixelType threshold);
+  SetThreshold(InputPixelType threshold);
 
   /** Begin concept checking */
   itkConceptMacro(OutputEqualityComparableCheck, (itk::Concept::EqualityComparable<OutputPixelType>));

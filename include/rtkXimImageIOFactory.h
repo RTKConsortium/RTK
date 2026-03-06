@@ -23,8 +23,8 @@
 #define rtkXimImageIOFactory_h
 
 #include "RTKExport.h"
-#include "rtkXimImageIO.h"
 #include "rtkMacro.h"
+#include "rtkXimImageIO.h"
 
 // itk include
 #include <itkImageIOBase.h>
@@ -82,7 +82,7 @@ protected:
   XimImageIOFactory();
   ~XimImageIOFactory() override = default;
   using myProductType = XimImageIOFactory;
-  const myProductType * m_MyProduct;
+  const myProductType * m_MyProduct{};
 };
 
 } // namespace rtk

@@ -1,10 +1,10 @@
 #include "itkRandomImageSource.h"
+#include "itkImageFileReader.h"
+#include "rtkConstantImageSource.h"
+#include "rtkDrawSheppLoganFilter.h"
 #include "rtkLaplacianImageFilter.h"
 #include "rtkMacro.h"
 #include "rtkTest.h"
-#include "rtkDrawSheppLoganFilter.h"
-#include "itkImageFileReader.h"
-#include "rtkConstantImageSource.h"
 
 #ifdef USE_CUDA
 #  include "rtkCudaLaplacianImageFilter.h"
@@ -86,8 +86,8 @@ main(int argc, char * argv[])
   std::cout << "\n\n****** Case 2: CUDA laplacian ******" << std::endl;
 
   // Create and set the laplacian filter
-  typedef rtk::CudaLaplacianImageFilter CUDALaplacianFilterType;
-  auto                                  cudaLaplacian = CUDALaplacianFilterType::New();
+  using CUDALaplacianFilterType = rtk::CudaLaplacianImageFilter;
+  auto cudaLaplacian = CUDALaplacianFilterType::New();
   cudaLaplacian->SetInput(dsl->GetOutput());
 
   // Compute the laplacian of the shepp logan

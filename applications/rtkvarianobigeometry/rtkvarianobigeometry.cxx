@@ -17,10 +17,10 @@
  *=========================================================================*/
 
 #include "rtkvarianobigeometry_ggo.h"
-#include "rtkMacro.h"
-#include "rtkVarianObiGeometryReader.h"
-#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkGgoFunctions.h"
+#include "rtkMacro.h"
+#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
+#include "rtkVarianObiGeometryReader.h"
 
 #include <itkRegularExpressionSeriesFileNames.h>
 

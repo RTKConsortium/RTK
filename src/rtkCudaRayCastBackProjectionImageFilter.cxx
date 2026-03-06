@@ -17,8 +17,8 @@
  *=========================================================================*/
 
 #include "rtkCudaRayCastBackProjectionImageFilter.h"
-#include "rtkCudaUtilities.hcu"
 #include "rtkCudaRayCastBackProjectionImageFilter.hcu"
+#include "rtkCudaUtilities.hcu"
 
 #include <itkImageRegionConstIterator.h>
 #include <itkImageRegionIteratorWithIndex.h>
@@ -31,13 +31,13 @@ namespace rtk
 void
 CudaRayCastBackProjectionImageFilter ::GPUGenerateData()
 {
-  if (this->GetGeometry()->GetSourceToDetectorDistances().size() &&
+  if (!this->GetGeometry()->GetSourceToDetectorDistances().empty() &&
       this->GetGeometry()->GetSourceToDetectorDistances()[0] == 0)
   {
     itkGenericExceptionMacro(<< "Parallel geometry is not handled by CUDA forward projector.");
   }
 
-  const GeometryType * geometry = dynamic_cast<const GeometryType *>(this->GetGeometry());
+  const auto * geometry = dynamic_cast<const GeometryType *>(this->GetGeometry());
   if (!geometry)
   {
     itkGenericExceptionMacro(<< "Error, ThreeDCircularProjectionGeometry expected");
@@ -86,9 +86,9 @@ CudaRayCastBackProjectionImageFilter ::GPUGenerateData()
   volumeSize[2] = this->GetOutput()->GetRequestedRegion().GetSize()[2];
 
 #ifdef CudaCommon_VERSION_MAJOR
-  float * pin = (float *)(this->GetInput(0)->GetCudaDataManager()->GetGPUBufferPointer());
-  float * pout = (float *)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
-  float * pproj = (float *)(this->GetInput(1)->GetCudaDataManager()->GetGPUBufferPointer());
+  float * pin = static_cast<float *>(this->GetInput(0)->GetCudaDataManager()->GetGPUBufferPointer());
+  float * pout = static_cast<float *>(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
+  float * pproj = static_cast<float *>(this->GetInput(1)->GetCudaDataManager()->GetGPUBufferPointer());
 #else
   float * pin = *(float **)(this->GetInput(0)->GetCudaDataManager()->GetGPUBufferPointer());
   float * pout = *(float **)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
@@ -111,9 +111,9 @@ CudaRayCastBackProjectionImageFilter ::GPUGenerateData()
   }
 
   // Compute matrices to transform projection index to volume index, one per projection
-  float * translatedProjectionIndexTransformMatrices = new float[12 * nProj];
-  float * translatedVolumeTransformMatrices = new float[12 * nProj];
-  float * source_positions = new float[4 * nProj];
+  auto * translatedProjectionIndexTransformMatrices = new float[12 * nProj];
+  auto * translatedVolumeTransformMatrices = new float[12 * nProj];
+  auto * source_positions = new float[4 * nProj];
 
   float radiusCylindricalDetector = geometry->GetRadiusCylindricalDetector();
 
@@ -133,8 +133,8 @@ CudaRayCastBackProjectionImageFilter ::GPUGenerateData()
         rtk::GetIndexToPhysicalPointMatrix(this->GetInput(1)).GetVnlMatrix() * projIndexTranslation.GetVnlMatrix();
       for (int j = 0; j < 3; j++) // Ignore the 4th row
         for (int k = 0; k < 4; k++)
-          translatedProjectionIndexTransformMatrices[(j + 3 * (iProj - iFirstProj)) * 4 + k] =
-            (float)translatedProjectionIndexTransformMatrix[j][k];
+          translatedProjectionIndexTransformMatrices[((j + 3 * (iProj - iFirstProj)) * 4) + k] =
+            static_cast<float>(translatedProjectionIndexTransformMatrix[j][k]);
     }
     else
     {
@@ -143,15 +143,15 @@ CudaRayCastBackProjectionImageFilter ::GPUGenerateData()
         rtk::GetIndexToPhysicalPointMatrix(this->GetInput(1)).GetVnlMatrix() * projIndexTranslation.GetVnlMatrix();
       for (int j = 0; j < 3; j++) // Ignore the 4th row
         for (int k = 0; k < 4; k++)
-          translatedProjectionIndexTransformMatrices[(j + 3 * (iProj - iFirstProj)) * 4 + k] =
-            (float)translatedProjectionIndexTransformMatrix[j][k];
+          translatedProjectionIndexTransformMatrices[((j + 3 * (iProj - iFirstProj)) * 4) + k] =
+            static_cast<float>(translatedProjectionIndexTransformMatrix[j][k]);
 
       translatedVolumeTransformMatrix = volIndexTranslation.GetVnlMatrix() * volPPToIndex.GetVnlMatrix() *
                                         geometry->GetRotationMatrices()[iProj].GetInverse();
       for (int j = 0; j < 3; j++) // Ignore the 4th row
         for (int k = 0; k < 4; k++)
-          translatedVolumeTransformMatrices[(j + 3 * (iProj - iFirstProj)) * 4 + k] =
-            (float)translatedVolumeTransformMatrix[j][k];
+          translatedVolumeTransformMatrices[((j + 3 * (iProj - iFirstProj)) * 4) + k] =
+            static_cast<float>(translatedVolumeTransformMatrix[j][k]);
     }
 
     // Compute source position in volume indices
@@ -159,25 +159,25 @@ CudaRayCastBackProjectionImageFilter ::GPUGenerateData()
 
     // Copy it into a single large array
     for (unsigned int d = 0; d < 3; d++)
-      source_positions[(iProj - iFirstProj) * 3 + d] = source_position[d]; // Ignore the 4th component
+      source_positions[((iProj - iFirstProj) * 3) + d] = source_position[d]; // Ignore the 4th component
   }
 
   int projectionOffset = 0;
   for (unsigned int i = 0; i < nProj; i += SLAB_SIZE)
   {
     // If nProj is not a multiple of SLAB_SIZE, the last slab will contain less than SLAB_SIZE projections
-    projectionSize[2] = std::min(nProj - i, (unsigned int)SLAB_SIZE);
+    projectionSize[2] = std::min(nProj - i, static_cast<unsigned int>(SLAB_SIZE));
     projectionOffset = iFirstProj + i - this->GetInput(1)->GetBufferedRegion().GetIndex(2);
 
     CUDA_ray_cast_back_project(projectionSize,
                                volumeSize,
-                               (float *)&(translatedProjectionIndexTransformMatrices[12 * i]),
-                               (float *)&(translatedVolumeTransformMatrices[12 * i]),
+                               (&(translatedProjectionIndexTransformMatrices[12 * i])),
+                               (&(translatedVolumeTransformMatrices[12 * i])),
                                pin,
                                pout,
-                               pproj + nPixelsPerProj * projectionOffset,
+                               pproj + (nPixelsPerProj * projectionOffset),
                                m_StepSize,
-                               (double *)&(source_positions[3 * i]),
+                               reinterpret_cast<double *>(&(source_positions[3 * i])),
                                radiusCylindricalDetector,
                                boxMin,
                                boxMax,

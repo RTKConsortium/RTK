@@ -19,10 +19,10 @@
 #ifndef rtkProjectGeometricPhantomImageFilter_h
 #define rtkProjectGeometricPhantomImageFilter_h
 
-#include <itkInPlaceImageFilter.h>
-#include <itkAddImageFilter.h>
 #include "rtkGeometricPhantom.h"
 #include "rtkThreeDCircularProjectionGeometry.h"
+#include <itkAddImageFilter.h>
+#include <itkInPlaceImageFilter.h>
 
 namespace rtk
 {

@@ -20,8 +20,8 @@
 #define rtkLaplacianImageFilter_h
 
 #include "rtkForwardDifferenceGradientImageFilter.h"
-#include "rtkBackwardDifferenceDivergenceImageFilter.h"
 #include "itkMultiplyImageFilter.h"
+#include "rtkBackwardDifferenceDivergenceImageFilter.h"
 
 namespace rtk
 {

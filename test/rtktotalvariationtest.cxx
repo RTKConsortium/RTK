@@ -1,13 +1,13 @@
 #include "itkRandomImageSource.h"
-#include "math.h"
+#include <cmath>
 
-#include "rtkTotalVariationImageFilter.h"
-#include "rtkTotalVariationDenoisingBPDQImageFilter.h"
 #include "rtkMacro.h"
+#include "rtkTotalVariationDenoisingBPDQImageFilter.h"
+#include "rtkTotalVariationImageFilter.h"
 
 template <class TImage>
 void
-CheckTotalVariation(typename TImage::Pointer before, typename TImage::Pointer after)
+CheckTotalVariation(const typename TImage::Pointer & before, const typename TImage::Pointer & after)
 {
   auto tv = rtk::TotalVariationImageFilter<TImage>::New();
 

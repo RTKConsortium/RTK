@@ -20,10 +20,12 @@
 #define rtkProjectionsDecompositionNegativeLogLikelihood_h
 
 #include <itkSingleValuedCostFunction.h>
-#include <itkVectorImage.h>
 #include <itkVariableLengthVector.h>
 #include <itkVariableSizeMatrix.h>
+#include <itkVectorImage.h>
+
 #include "rtkMacro.h"
+#include <algorithm>
 
 namespace rtk
 {
@@ -191,7 +193,7 @@ public:
         double accumulate = 0;
         double accumulateWeights = 0;
         for (int energy = m_Thresholds[bin] - 1;
-             (energy < m_Thresholds[bin + 1]) && (energy < (int)(this->m_MaterialAttenuations.rows()));
+             (energy < m_Thresholds[bin + 1]) && (energy < static_cast<int>(this->m_MaterialAttenuations.rows()));
              energy++)
         {
           accumulate += this->m_MaterialAttenuations[energy][mat] * this->m_IncidentSpectrum[0][energy];
@@ -210,8 +212,7 @@ public:
         // Compute the length of current material required to obtain the attenuation
         // observed in current bin. Keep only the minimum among all bins
         double requiredLength = this->BinwiseLogTransform()[bin] / MeanAttenuationInBin[mat][bin];
-        if (initialGuess[mat] > requiredLength)
-          initialGuess[mat] = requiredLength;
+        initialGuess[mat] = std::min(initialGuess[mat], requiredLength);
       }
     }
 
@@ -285,7 +286,7 @@ protected:
   vnl_matrix<double>             m_IncidentSpectrumAndDetectorResponseProduct;
   unsigned int                   m_NumberOfEnergies;
   unsigned int                   m_NumberOfMaterials;
-  unsigned int                   m_NumberOfSpectralBins;
+  unsigned int                   m_NumberOfSpectralBins{};
   bool                           m_Initialized;
   itk::VariableSizeMatrix<float> m_Fischer;
 };

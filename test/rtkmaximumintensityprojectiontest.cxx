@@ -1,13 +1,13 @@
 #include "rtkTest.h"
-#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
-#include "rtkRayBoxIntersectionImageFilter.h"
 #include "rtkConstantImageSource.h"
 #include "rtkMaximumIntensityProjectionImageFilter.h"
-#include <itkImageRegionSplitterDirection.h>
-#include <itkImageRegionIterator.h>
-#include <itkImageFileWriter.h>
-#include <itkShiftScaleImageFilter.h>
+#include "rtkRayBoxIntersectionImageFilter.h"
+#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include <cmath>
+#include <itkImageFileWriter.h>
+#include <itkImageRegionIterator.h>
+#include <itkImageRegionSplitterDirection.h>
+#include <itkShiftScaleImageFilter.h>
 
 
 /**

@@ -17,8 +17,8 @@
  *=========================================================================*/
 
 #include "rtkspectralforwardmodel_ggo.h"
-#include "rtkGgoFunctions.h"
 #include "rtkConfiguration.h"
+#include "rtkGgoFunctions.h"
 #include "rtkMacro.h"
 #include "rtkSpectralForwardModelImageFilter.h"
 

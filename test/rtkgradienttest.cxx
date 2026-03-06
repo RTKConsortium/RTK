@@ -1,11 +1,11 @@
-#include "math.h"
+#include <cmath>
 #include <itkImageRegionConstIterator.h>
 
 #include "rtkMacro.h"
 
-#include "rtkTestConfiguration.h"
 #include "itkRandomImageSource.h"
 #include "rtkForwardDifferenceGradientImageFilter.h"
+#include "rtkTestConfiguration.h"
 
 template <class TImage, class TGradient>
 #if FAST_TESTS_NO_CHECKS
@@ -16,7 +16,9 @@ CheckGradient(typename TImage::Pointer    itkNotUsed(im),
 {}
 #else
 void
-CheckGradient(typename TImage::Pointer im, typename TGradient::Pointer grad, const bool * dimensionsProcessed)
+CheckGradient(const typename TImage::Pointer &    im,
+              const typename TGradient::Pointer & grad,
+              const bool *                        dimensionsProcessed)
 {
   // Generate a list of indices of the dimensions to process
   std::vector<int> dimsToProcess;
@@ -30,7 +32,7 @@ CheckGradient(typename TImage::Pointer im, typename TGradient::Pointer grad, con
 
   const int ImageDimension = TImage::ImageDimension;
 
-  itk::Size<ImageDimension> radius;
+  itk::Size<ImageDimension> radius{};
   radius.Fill(1);
 
   itk::ConstNeighborhoodIterator<TImage> iit(radius, im, im->GetLargestPossibleRegion());

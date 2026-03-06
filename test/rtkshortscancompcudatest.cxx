@@ -1,11 +1,11 @@
 #include "rtkTest.h"
-#include "rtkMacro.h"
-#include "rtkCudaParkerShortScanImageFilter.h"
 #include "rtkConstantImageSource.h"
+#include "rtkCudaParkerShortScanImageFilter.h"
+#include "rtkMacro.h"
 #include "rtkSheppLoganPhantomFilter.h"
 
-#include <itkStreamingImageFilter.h>
 #include <itkImageRegionSplitterDirection.h>
+#include <itkStreamingImageFilter.h>
 
 /**
  * \file rtkshortscancompcudatest.cxx
@@ -72,7 +72,7 @@ main(int, char **)
 
     CheckImageQuality<OutputImageType>(cudassf->GetOutput(), cpussf->GetOutput(), 1.e-5, 100, 1.);
 
-    std::cout << "\n\n****** Case " << inPlace * 2 + 1 << ": with streaming, ";
+    std::cout << "\n\n****** Case " << (inPlace * 2) + 1 << ": with streaming, ";
     if (!inPlace)
       std::cout << "not";
     std::cout << " in place ******" << std::endl;

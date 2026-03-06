@@ -58,12 +58,7 @@ public:
   /** Convenient type alias. */
   using KernelSizeType = typename TImage::SizeType::SizeValueType;
   using PositionsListType = std::vector<int>;
-  typedef enum
-  {
-    LOCAL_PHASE = 0,
-    LINEAR_BETWEEN_MINIMA,
-    LINEAR_BETWEEN_MAXIMA
-  } ModelType;
+  using ModelType = enum { LOCAL_PHASE = 0, LINEAR_BETWEEN_MINIMA, LINEAR_BETWEEN_MAXIMA };
 
   /** Standard New method. */
   itkNewMacro(Self);

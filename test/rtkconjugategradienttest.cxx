@@ -1,13 +1,13 @@
-#include <itkRandomImageSource.h>
 #include <itkImageRegionIterator.h>
+#include <itkRandomImageSource.h>
 
-#include "rtkConstantImageSource.h"
-#include "rtkTestConfiguration.h"
-#include "rtkConjugateGradientImageFilter.h"
-#include "rtkDivergenceOfGradientConjugateGradientOperator.h"
-#include "rtkMacro.h"
-#include "rtkForwardDifferenceGradientImageFilter.h"
 #include "rtkBackwardDifferenceDivergenceImageFilter.h"
+#include "rtkConjugateGradientImageFilter.h"
+#include "rtkConstantImageSource.h"
+#include "rtkDivergenceOfGradientConjugateGradientOperator.h"
+#include "rtkForwardDifferenceGradientImageFilter.h"
+#include "rtkMacro.h"
+#include "rtkTestConfiguration.h"
 
 
 template <class TImage1, class TImage2>
@@ -17,7 +17,7 @@ CheckImageQuality(typename TImage1::Pointer itkNotUsed(recon), typename TImage2:
 {}
 #else
 void
-CheckImageQuality(typename TImage1::Pointer recon, typename TImage2::Pointer ref)
+CheckImageQuality(const typename TImage1::Pointer & recon, const typename TImage2::Pointer & ref)
 {
   itk::ImageRegionConstIterator<TImage1> itTest(recon, recon->GetBufferedRegion());
   itk::ImageRegionConstIterator<TImage2> itRef(ref, ref->GetBufferedRegion());

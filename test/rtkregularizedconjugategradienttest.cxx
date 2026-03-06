@@ -1,7 +1,7 @@
 #include "rtkTest.h"
+#include "rtkConstantImageSource.h"
 #include "rtkDrawEllipsoidImageFilter.h"
 #include "rtkRayEllipsoidIntersectionImageFilter.h"
-#include "rtkConstantImageSource.h"
 #include "rtkRegularizedConjugateGradientConeBeamReconstructionFilter.h"
 
 #include <itkAdditiveGaussianNoiseImageFilter.h>

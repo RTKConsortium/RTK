@@ -20,17 +20,17 @@
 #define rtkFourDConjugateGradientConeBeamReconstructionFilter_h
 
 #include "rtkBackProjectionImageFilter.h"
-#include "rtkForwardProjectionImageFilter.h"
-#include "rtkIterativeConeBeamReconstructionFilter.h"
 #include "rtkConjugateGradientImageFilter.h"
-#include "rtkFourDReconstructionConjugateGradientOperator.h"
-#include "rtkProjectionStackToFourDImageFilter.h"
 #include "rtkDisplacedDetectorImageFilter.h"
+#include "rtkForwardProjectionImageFilter.h"
+#include "rtkFourDReconstructionConjugateGradientOperator.h"
+#include "rtkIterativeConeBeamReconstructionFilter.h"
+#include "rtkProjectionStackToFourDImageFilter.h"
 
 #include <itkExtractImageFilter.h>
-#include <itkSubtractImageFilter.h>
-#include <itkMultiplyImageFilter.h>
 #include <itkIterationReporter.h>
+#include <itkMultiplyImageFilter.h>
+#include <itkSubtractImageFilter.h>
 #ifdef RTK_USE_CUDA
 #  include "rtkCudaConjugateGradientImageFilter.h"
 #endif
@@ -165,11 +165,11 @@ public:
 
   /** Pass the interpolation weights to subfilters */
   void
-  SetWeights(const itk::Array2D<float> _arg);
+  SetWeights(itk::Array2D<float> _arg);
 
   /** Store the phase signal in a member variable */
   virtual void
-  SetSignal(const std::vector<double> signal);
+  SetSignal(std::vector<double> signal);
 
   /** Set / Get whether the displaced detector filter should be disabled */
   itkSetMacro(DisableDisplacedDetectorFilter, bool);

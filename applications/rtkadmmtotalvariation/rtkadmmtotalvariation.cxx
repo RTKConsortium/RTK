@@ -17,17 +17,17 @@
  *=========================================================================*/
 
 #include "rtkadmmtotalvariation_ggo.h"
-#include "rtkGgoFunctions.h"
 #include "rtkConfiguration.h"
+#include "rtkGgoFunctions.h"
 
 #include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>
 
+#include "rtkADMMTotalVariationConeBeamReconstructionFilter.h"
+#include "rtkConstantImageSource.h"
+#include "rtkPhaseGatingImageFilter.h"
 #include "rtkProjectionsReader.h"
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
-#include "rtkConstantImageSource.h"
-#include "rtkADMMTotalVariationConeBeamReconstructionFilter.h"
-#include "rtkPhaseGatingImageFilter.h"
 
 int
 main(int argc, char * argv[])

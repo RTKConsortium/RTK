@@ -23,9 +23,9 @@
 namespace rtk
 {
 
-CudaFDKWeightProjectionFilter ::CudaFDKWeightProjectionFilter() {}
+CudaFDKWeightProjectionFilter ::CudaFDKWeightProjectionFilter() = default;
 
-CudaFDKWeightProjectionFilter ::~CudaFDKWeightProjectionFilter() {}
+CudaFDKWeightProjectionFilter ::~CudaFDKWeightProjectionFilter() = default;
 
 void
 CudaFDKWeightProjectionFilter ::GPUGenerateData()
@@ -91,19 +91,19 @@ CudaFDKWeightProjectionFilter ::GPUGenerateData()
   // 4: source offset x
   // 5: source offset y
   // 6: weight factor
-  int     geomIdx = this->GetInput()->GetRequestedRegion().GetIndex()[2];
-  float * geomMatrix = new float[proj_size[2] * 7];
+  int    geomIdx = this->GetInput()->GetRequestedRegion().GetIndex()[2];
+  auto * geomMatrix = new float[proj_size[2] * 7];
   if (geomMatrix == nullptr)
     itkExceptionMacro(<< "Couldn't allocate geomMatrix");
   for (int g = 0; g < proj_size[2]; ++g)
   {
-    geomMatrix[g * 7 + 0] = this->GetGeometry()->GetSourceToDetectorDistances()[g + geomIdx];
-    geomMatrix[g * 7 + 1] = this->GetGeometry()->GetSourceToIsocenterDistances()[g + geomIdx];
-    geomMatrix[g * 7 + 2] = this->GetGeometry()->GetProjectionOffsetsX()[g + geomIdx];
-    geomMatrix[g * 7 + 3] = this->GetGeometry()->GetProjectionOffsetsY()[g + geomIdx];
-    geomMatrix[g * 7 + 4] = this->GetGeometry()->GetSourceOffsetsY()[g + geomIdx];
-    geomMatrix[g * 7 + 5] = constantProjectionFactor[g + geomIdx];
-    geomMatrix[g * 7 + 6] = tiltAngles[g + geomIdx];
+    geomMatrix[(g * 7) + 0] = this->GetGeometry()->GetSourceToDetectorDistances()[g + geomIdx];
+    geomMatrix[(g * 7) + 1] = this->GetGeometry()->GetSourceToIsocenterDistances()[g + geomIdx];
+    geomMatrix[(g * 7) + 2] = this->GetGeometry()->GetProjectionOffsetsX()[g + geomIdx];
+    geomMatrix[(g * 7) + 3] = this->GetGeometry()->GetProjectionOffsetsY()[g + geomIdx];
+    geomMatrix[(g * 7) + 4] = this->GetGeometry()->GetSourceOffsetsY()[g + geomIdx];
+    geomMatrix[(g * 7) + 5] = constantProjectionFactor[g + geomIdx];
+    geomMatrix[(g * 7) + 6] = tiltAngles[g + geomIdx];
   }
 
   // Put the two data pointers at the same location

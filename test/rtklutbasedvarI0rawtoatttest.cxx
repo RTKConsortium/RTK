@@ -1,6 +1,6 @@
 #include "rtkTest.h"
-#include "rtkMacro.h"
 #include "rtkLUTbasedVariableI0RawToAttenuationImageFilter.h"
+#include "rtkMacro.h"
 #include <itkImageRegionIterator.h>
 
 /**
@@ -14,7 +14,7 @@
 using ShortImageType = itk::Image<unsigned short, 2>;
 
 void
-fillImageWithRawData(ShortImageType::Pointer image, unsigned short I0)
+fillImageWithRawData(const ShortImageType::Pointer & image, unsigned short I0)
 {
   itk::ImageRegionIterator<ShortImageType> it(image, image->GetLargestPossibleRegion());
   it.GoToBegin();
@@ -46,7 +46,7 @@ main(int, char **)
 
   for (unsigned short i = 0; i < 10; ++i)
   {
-    unsigned short I0 = 10 * i + 1;
+    unsigned short I0 = (10 * i) + 1;
 
     fillImageWithRawData(rawImage, I0);
 

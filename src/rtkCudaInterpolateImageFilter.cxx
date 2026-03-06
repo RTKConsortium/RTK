@@ -21,7 +21,7 @@
 
 #include <itkMacro.h>
 
-rtk::CudaInterpolateImageFilter ::CudaInterpolateImageFilter() {}
+rtk::CudaInterpolateImageFilter ::CudaInterpolateImageFilter() = default;
 
 void
 rtk::CudaInterpolateImageFilter ::GPUGenerateData()
@@ -33,8 +33,8 @@ rtk::CudaInterpolateImageFilter ::GPUGenerateData()
   inputSize.w = this->GetInputVolumeSeries()->GetBufferedRegion().GetSize()[3];
 
 #ifdef CudaCommon_VERSION_MAJOR
-  float * pvolseries = (float *)(this->GetInputVolumeSeries()->GetCudaDataManager()->GetGPUBufferPointer());
-  float * pvol = (float *)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
+  float * pvolseries = static_cast<float *>(this->GetInputVolumeSeries()->GetCudaDataManager()->GetGPUBufferPointer());
+  float * pvol = static_cast<float *>(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
 #else
   float * pvolseries = *(float **)(this->GetInputVolumeSeries()->GetCudaDataManager()->GetGPUBufferPointer());
   float * pvol = *(float **)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());

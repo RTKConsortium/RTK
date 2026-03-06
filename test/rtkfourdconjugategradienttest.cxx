@@ -1,15 +1,15 @@
 #include <itkImageRegionConstIterator.h>
+#include <itkJoinSeriesImageFilter.h>
 #include <itkPasteImageFilter.h>
 #include <itksys/SystemTools.hxx>
-#include <itkJoinSeriesImageFilter.h>
 
-#include "rtkTest.h"
-#include "rtkRayEllipsoidIntersectionImageFilter.h"
-#include "rtkDrawEllipsoidImageFilter.h"
 #include "rtkConstantImageSource.h"
+#include "rtkDrawEllipsoidImageFilter.h"
 #include "rtkFieldOfViewImageFilter.h"
 #include "rtkFourDConjugateGradientConeBeamReconstructionFilter.h"
 #include "rtkPhasesToInterpolationWeights.h"
+#include "rtkRayEllipsoidIntersectionImageFilter.h"
+#include "rtkTest.h"
 
 /**
  * \file rtkfourdconjugategradienttest.cxx
@@ -254,7 +254,7 @@ main(int, char **)
   std::cout << "\n\nTest PASSED! " << std::endl;
 #endif
 
-  itksys::SystemTools::RemoveFile(signalFileName.c_str());
+  itksys::SystemTools::RemoveFile(signalFileName);
   delete[] Volumes;
 
   return EXIT_SUCCESS;

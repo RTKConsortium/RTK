@@ -20,8 +20,8 @@
 #define rtkIntersectionOfConvexShapes_h
 
 #include "RTKExport.h"
-#include "rtkMacro.h"
 #include "rtkConvexShape.h"
+#include "rtkMacro.h"
 
 namespace rtk
 {

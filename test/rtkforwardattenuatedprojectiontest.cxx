@@ -1,16 +1,15 @@
 #include "rtkTest.h"
-#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkConstantImageSource.h"
-#include "rtkJosephForwardAttenuatedProjectionImageFilter.h"
-#include "rtkRayEllipsoidIntersectionImageFilter.h"
 #include "rtkDrawEllipsoidImageFilter.h"
-#include <itkStreamingImageFilter.h>
-#include <itkImageRegionSplitterDirection.h>
-#include <itkSubtractImageFilter.h>
-#include <itkCenteredEuler3DTransform.h>
-#include <itkPasteImageFilter.h>
+#include "rtkRayEllipsoidIntersectionImageFilter.h"
+#include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include <cmath>
+#include <itkCenteredEuler3DTransform.h>
+#include <itkImageRegionSplitterDirection.h>
 #include <itkMemoryUsageObserver.h>
+#include <itkPasteImageFilter.h>
+#include <itkStreamingImageFilter.h>
+#include <itkSubtractImageFilter.h>
 
 
 #ifdef USE_CUDA

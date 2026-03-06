@@ -23,9 +23,9 @@
 #include "rtkBioscanGeometryReader.h"
 #include "rtkIOFactories.h"
 
-#include <gdcmImageReader.h>
 #include <gdcmAttribute.h>
 #include <gdcmDataSet.h>
+#include <gdcmImageReader.h>
 
 namespace rtk
 {
@@ -42,6 +42,7 @@ BioscanGeometryReader::GetVectorTagValue(const gdcm::DataSet & ds, itk::uint16_t
   gdcm::Element<gdcm::VR::FL, gdcm::VM::VM1_n> el;
   el.Set(de.GetValue());
   std::vector<float> val;
+  val.reserve(el.GetLength());
   for (unsigned int i = 0; i < el.GetLength(); i++)
   {
     val.push_back(el.GetValue(i));
@@ -71,7 +72,7 @@ BioscanGeometryReader::GetFloatTagValue(const gdcm::DataSet & ds, itk::uint16_t 
     itkExceptionMacro(<< "Cannot find tag " << group << "|" << element);
   }
   const gdcm::DataElement &                  de = ds.GetDataElement(tag);
-  gdcm::Element<gdcm::VR::FD, gdcm::VM::VM1> el;
+  gdcm::Element<gdcm::VR::FD, gdcm::VM::VM1> el{};
   el.SetFromDataElement(de);
   return el.GetValue();
 }
@@ -93,8 +94,8 @@ BioscanGeometryReader::GenerateData()
     // See https://github.com/JStrydhorst/win-cone-ct/blob/master/ct_recon_win.h#L111
     const std::vector<float> zOffsets = GetVectorTagValue(ds, 0x0009, 0x1046);
     const std::vector<float> yOffsets = GetVectorTagValue(ds, 0x0009, 0x1047);
-    const double             sdd = std::stod(GetStringTagValue(ds, 0x0018, 0x1110).c_str());
-    const double             sid = std::stod(GetStringTagValue(ds, 0x0018, 0x1111).c_str());
+    const double             sdd = std::stod(GetStringTagValue(ds, 0x0018, 0x1110));
+    const double             sid = std::stod(GetStringTagValue(ds, 0x0018, 0x1111));
     // const double spacing = GetFloatTagValue(ds, 0x0018, 0x9306);
     const double angle = GetFloatTagValue(ds, 0x0009, 0x1036);
 

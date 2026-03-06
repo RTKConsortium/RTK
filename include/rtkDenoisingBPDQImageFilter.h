@@ -23,9 +23,9 @@
 #include "rtkBackwardDifferenceDivergenceImageFilter.h"
 
 #include <itkCastImageFilter.h>
-#include <itkSubtractImageFilter.h>
-#include <itkMultiplyImageFilter.h>
 #include <itkInPlaceImageFilter.h>
+#include <itkMultiplyImageFilter.h>
+#include <itkSubtractImageFilter.h>
 
 namespace rtk
 {
@@ -56,11 +56,10 @@ public:
   itkOverrideGetNameOfClassMacro(DenoisingBPDQImageFilter);
 
   /** Sub filter type definitions */
-  typedef ForwardDifferenceGradientImageFilter<TOutputImage,
-                                               typename TOutputImage::ValueType,
-                                               typename TOutputImage::ValueType,
-                                               TGradientImage>
-    GradientFilterType;
+  using GradientFilterType = ForwardDifferenceGradientImageFilter<TOutputImage,
+                                                                  typename TOutputImage::ValueType,
+                                                                  typename TOutputImage::ValueType,
+                                                                  TGradientImage>;
   using MultiplyFilterType = itk::MultiplyImageFilter<TOutputImage>;
   using SubtractImageFilterType = itk::SubtractImageFilter<TOutputImage>;
   using SubtractGradientFilterType = itk::SubtractImageFilter<TGradientImage>;

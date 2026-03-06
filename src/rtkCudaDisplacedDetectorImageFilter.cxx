@@ -22,9 +22,9 @@
 namespace rtk
 {
 
-CudaDisplacedDetectorImageFilter ::CudaDisplacedDetectorImageFilter() {}
+CudaDisplacedDetectorImageFilter ::CudaDisplacedDetectorImageFilter() = default;
 
-CudaDisplacedDetectorImageFilter ::~CudaDisplacedDetectorImageFilter() {}
+CudaDisplacedDetectorImageFilter ::~CudaDisplacedDetectorImageFilter() = default;
 
 void
 CudaDisplacedDetectorImageFilter ::GPUGenerateData()
@@ -110,7 +110,7 @@ CudaDisplacedDetectorImageFilter ::GPUGenerateData()
   proj_size_out[2] = this->GetOutput()->GetRequestedRegion().GetSize()[2];
 
   double theta = std::min(-1. * this->GetInferiorCorner(), this->GetSuperiorCorner());
-  bool   isPositiveCase = (this->GetSuperiorCorner() + this->GetInferiorCorner() > 0.) ? true : false;
+  bool   isPositiveCase = this->GetSuperiorCorner() + this->GetInferiorCorner() > 0.;
 
   // 2D matrix (numgeom * 4 values) in one block for memcpy!
   // for each geometry, the following structure is used:
@@ -118,16 +118,16 @@ CudaDisplacedDetectorImageFilter ::GPUGenerateData()
   // 1: source offset x
   // 2: projection offset x
   // 3: sid
-  int     geomIdx = proj_idx_out[2];
-  float * geomMatrix = new float[proj_size_out[2] * 4];
+  int    geomIdx = proj_idx_out[2];
+  auto * geomMatrix = new float[proj_size_out[2] * 4];
   if (geomMatrix == nullptr)
     itkExceptionMacro(<< "Couldn't allocate geomMatrix");
   for (int g = 0; g < proj_size_out[2]; ++g)
   {
-    geomMatrix[g * 4 + 0] = this->GetGeometry()->GetSourceToDetectorDistances()[g + geomIdx];
-    geomMatrix[g * 4 + 1] = this->GetGeometry()->GetSourceOffsetsX()[g + geomIdx];
-    geomMatrix[g * 4 + 2] = this->GetGeometry()->GetProjectionOffsetsX()[g + geomIdx];
-    geomMatrix[g * 4 + 3] = this->GetGeometry()->GetSourceToIsocenterDistances()[g + geomIdx];
+    geomMatrix[(g * 4) + 0] = this->GetGeometry()->GetSourceToDetectorDistances()[g + geomIdx];
+    geomMatrix[(g * 4) + 1] = this->GetGeometry()->GetSourceOffsetsX()[g + geomIdx];
+    geomMatrix[(g * 4) + 2] = this->GetGeometry()->GetProjectionOffsetsX()[g + geomIdx];
+    geomMatrix[(g * 4) + 3] = this->GetGeometry()->GetSourceToIsocenterDistances()[g + geomIdx];
   }
 
 

@@ -24,8 +24,8 @@
 #ifdef RTK_USE_CUDA
 
 #  include "rtkCudaBackProjectionImageFilter.h"
-#  include "rtkCudaUtilities.hcu"
 #  include "rtkCudaBackProjectionImageFilter.hcu"
+#  include "rtkCudaUtilities.hcu"
 
 #  include <itkImageRegionConstIterator.h>
 #  include <itkImageRegionIteratorWithIndex.h>
@@ -36,8 +36,7 @@ namespace rtk
 {
 
 template <class ImageType>
-CudaBackProjectionImageFilter<ImageType>::CudaBackProjectionImageFilter()
-{}
+CudaBackProjectionImageFilter<ImageType>::CudaBackProjectionImageFilter() = default;
 
 template <class ImageType>
 void
@@ -78,9 +77,9 @@ CudaBackProjectionImageFilter<ImageType>::GPUGenerateData()
   volumeSize[2] = this->GetOutput()->GetBufferedRegion().GetSize()[2];
 
 #  ifdef CudaCommon_VERSION_MAJOR
-  float * pin = (float *)(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
-  float * pout = (float *)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
-  float * stackGPUPointer = (float *)(this->GetInput(1)->GetCudaDataManager()->GetGPUBufferPointer());
+  auto * pin = (float *)(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
+  auto * pout = (float *)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
+  auto * stackGPUPointer = (float *)(this->GetInput(1)->GetCudaDataManager()->GetGPUBufferPointer());
 #  else
   float * pin = *(float **)(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
   float * pout = *(float **)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
@@ -94,9 +93,9 @@ CudaBackProjectionImageFilter<ImageType>::GPUGenerateData()
 
   // Allocate a large matrix to hold the matrix of all projections
   // fMatrix is for flat detector, the other two are for cylindrical
-  float * fMatrix = new float[12 * nProj];
-  float * fvolIndexToProjPP = new float[12 * nProj];
-  float * fprojPPToProjIndex = new float[9];
+  auto * fMatrix = new float[12 * nProj];
+  auto * fvolIndexToProjPP = new float[12 * nProj];
+  auto * fprojPPToProjIndex = new float[9];
 
   // Correction for non-zero indices in the projections
   itk::Matrix<double, 3, 3> matrixIdxProj;
@@ -145,7 +144,7 @@ CudaBackProjectionImageFilter<ImageType>::GPUGenerateData()
   for (unsigned int i = 0; i < nProj; i += SLAB_SIZE)
   {
     // If nProj is not a multiple of SLAB_SIZE, the last slab will contain less than SLAB_SIZE projections
-    projectionSize[2] = std::min(nProj - i, (unsigned int)SLAB_SIZE);
+    projectionSize[2] = std::min(nProj - i, static_cast<unsigned int>(SLAB_SIZE));
 
     // Run the back projection with a slab of SLAB_SIZE or less projections
     CUDA_back_project(projectionSize,

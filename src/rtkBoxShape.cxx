@@ -16,7 +16,8 @@
  *
  *=========================================================================*/
 
-#include "math.h"
+#include <algorithm>
+#include <cmath>
 
 #include "rtkBoxShape.h"
 
@@ -84,10 +85,8 @@ BoxShape ::IsIntersectedByRay(const PointType &  rayOrigin,
     T2 = (max[i] - org[i]) * invRayDir;
     if (T1 > T2)
       std::swap(T1, T2);
-    if (T1 > infDist)
-      infDist = T1;
-    if (T2 < supDist)
-      supDist = T2;
+    infDist = std::max(T1, infDist);
+    supDist = std::min(T2, supDist);
     if (infDist > supDist)
       return false;
     if (supDist < itk::NumericTraits<ScalarType>::ZeroValue())

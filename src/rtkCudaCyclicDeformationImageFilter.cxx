@@ -17,12 +17,12 @@
  *=========================================================================*/
 
 #include "rtkCudaCyclicDeformationImageFilter.h"
-#include "rtkCudaCyclicDeformationImageFilter.hcu"
 #include "rtkCudaConstantVolumeSeriesSource.h"
+#include "rtkCudaCyclicDeformationImageFilter.hcu"
 
 #include <itkMacro.h>
 
-rtk::CudaCyclicDeformationImageFilter ::CudaCyclicDeformationImageFilter() {}
+rtk::CudaCyclicDeformationImageFilter ::CudaCyclicDeformationImageFilter() = default;
 
 void
 rtk::CudaCyclicDeformationImageFilter ::GPUGenerateData()
@@ -45,8 +45,8 @@ rtk::CudaCyclicDeformationImageFilter ::GPUGenerateData()
   }
 
 #ifdef CudaCommon_VERSION_MAJOR
-  float * pin = (float *)(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
-  float * pout = (float *)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
+  float * pin = static_cast<float *>(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
+  float * pout = static_cast<float *>(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
 #else
   float * pin = *(float **)(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
   float * pout = *(float **)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());

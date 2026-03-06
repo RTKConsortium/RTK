@@ -17,12 +17,12 @@
  *=========================================================================*/
 
 
-#include "math.h"
+#include <cmath>
 
 #include "rtkVarianObiGeometryReader.h"
-#include "rtkVarianObiXMLFileReader.h"
-#include "rtkHndImageIOFactory.h"
 #include "rtkHncImageIOFactory.h"
+#include "rtkHndImageIOFactory.h"
+#include "rtkVarianObiXMLFileReader.h"
 
 #include <itkImageFileReader.h>
 #include <itksys/SystemTools.hxx>

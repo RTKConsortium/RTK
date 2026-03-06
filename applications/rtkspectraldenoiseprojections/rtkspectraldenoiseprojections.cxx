@@ -17,12 +17,12 @@
  *=========================================================================*/
 
 #include "rtkspectraldenoiseprojections_ggo.h"
-#include "rtkMacro.h"
-#include "rtkGgoFunctions.h"
 #include "rtkConditionalMedianImageFilter.h"
+#include "rtkGgoFunctions.h"
+#include "rtkMacro.h"
 
-#include <itkImageFileWriter.h>
 #include <itkImageFileReader.h>
+#include <itkImageFileWriter.h>
 
 int
 main(int argc, char * argv[])

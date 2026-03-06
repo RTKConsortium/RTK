@@ -23,12 +23,12 @@
 // Conditional definition of the class to pass ITKHeaderTest
 #ifdef RTK_USE_CUDA
 
-#  include "rtkIterativeFDKConeBeamReconstructionFilter.h"
-#  include "rtkCudaFDKConeBeamReconstructionFilter.h"
-#  include "rtkCudaDisplacedDetectorImageFilter.h"
-#  include "rtkCudaParkerShortScanImageFilter.h"
-#  include "rtkCudaConstantVolumeSource.h"
 #  include "RTKExport.h"
+#  include "rtkCudaConstantVolumeSource.h"
+#  include "rtkCudaDisplacedDetectorImageFilter.h"
+#  include "rtkCudaFDKConeBeamReconstructionFilter.h"
+#  include "rtkCudaParkerShortScanImageFilter.h"
+#  include "rtkIterativeFDKConeBeamReconstructionFilter.h"
 
 namespace rtk
 {
@@ -78,10 +78,10 @@ public:
 
 protected:
   CudaIterativeFDKConeBeamReconstructionFilter();
-  ~CudaIterativeFDKConeBeamReconstructionFilter() {}
+  ~CudaIterativeFDKConeBeamReconstructionFilter() override = default;
 
-  virtual void
-  GPUGenerateData();
+  void
+  GPUGenerateData() override;
 
 }; // end of class
 

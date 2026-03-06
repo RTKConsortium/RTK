@@ -17,8 +17,8 @@
  *=========================================================================*/
 
 #include "rtkscatterglarecorrection_ggo.h"
-#include "rtkMacro.h"
 #include "rtkGgoFunctions.h"
+#include "rtkMacro.h"
 
 #include <itkExtractImageFilter.h>
 #include <itkSubtractImageFilter.h>
@@ -29,13 +29,13 @@
 #endif
 
 #include "rtkProjectionsReader.h"
+#include <itkImageFileWriter.h>
 #include <itkPasteImageFilter.h>
 #include <rtkConstantImageSource.h>
-#include <itkImageFileWriter.h>
 
-#include <vector>
 #include <algorithm>
 #include <string>
+#include <vector>
 
 int
 main(int argc, char * argv[])

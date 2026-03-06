@@ -23,8 +23,8 @@
 #include "rtkForwardProjectionImageFilter.h"
 #include "rtkJosephForwardProjectionImageFilter.h"
 #include "rtkMacro.h"
-#include <itkPixelTraits.h>
 #include <cmath>
+#include <itkPixelTraits.h>
 #include <vector>
 
 namespace rtk
@@ -66,7 +66,7 @@ public:
     return !(*this != other);
   }
 
-  inline TOutput
+  TOutput
   operator()(const ThreadIdType    threadId,
              const double          stepLengthInVoxel,
              const TCoordinateType weight,
@@ -102,7 +102,7 @@ public:
   }
 
 private:
-  std::ptrdiff_t m_AttenuationMinusEmissionMapsPtrDiff;
+  std::ptrdiff_t m_AttenuationMinusEmissionMapsPtrDiff{};
   TInput         m_AttenuationRay[itk::ITK_MAX_THREADS];
   TInput         m_AttenuationPixel[itk::ITK_MAX_THREADS];
   TInput         m_Ex1[itk::ITK_MAX_THREADS];
@@ -135,7 +135,7 @@ public:
     return !(*this != other);
   }
 
-  inline void
+  void
   operator()(const ThreadIdType threadId, TOutput & sumValue, const TInput volumeValue, const VectorType & stepInMM)
   {
     TInput ex2 = exp(-m_AttenuationRay[threadId] * stepInMM.GetNorm());
@@ -204,7 +204,7 @@ public:
     return !(*this != other);
   }
 
-  inline void
+  void
   operator()(const ThreadIdType threadId,
              const TInput &     input,
              TOutput &          output,

@@ -18,8 +18,8 @@
 
 // std include
 #include <cstdio>
-#include <valarray>
 #include <numeric>
+#include <valarray>
 
 #include "rtkHncImageIO.h"
 #include <itkMetaDataObject.h>
@@ -30,7 +30,7 @@ void
 rtk::HncImageIO::ReadImageInformation()
 {
   Hnc_header hnc;
-  FILE *     fp;
+  FILE *     fp = nullptr;
 
   fp = fopen(m_FileName.c_str(), "rb");
   if (fp == nullptr)
@@ -124,12 +124,10 @@ bool
 rtk::HncImageIO::CanReadFile(const char * FileNameToRead)
 {
   std::string                  filename(FileNameToRead);
-  const std::string::size_type it = filename.find_last_of(".");
+  const std::string::size_type it = filename.find_last_of('.');
   std::string                  fileExt(filename, it + 1, filename.length());
 
-  if (fileExt != std::string("hnc"))
-    return false;
-  return true;
+  return fileExt == std::string("hnc");
 }
 
 //--------------------------------------------------------------------
@@ -137,7 +135,7 @@ rtk::HncImageIO::CanReadFile(const char * FileNameToRead)
 void
 rtk::HncImageIO::Read(void * buffer)
 {
-  FILE * fp;
+  FILE * fp = nullptr;
 
   fp = fopen(m_FileName.c_str(), "rb");
   if (fp == nullptr)
@@ -154,7 +152,6 @@ rtk::HncImageIO::Read(void * buffer)
     itkGenericExceptionMacro(<< "Could not read " << nelements << " bytes in " << m_FileName);
 
   fclose(fp);
-  return;
 }
 
 //--------------------------------------------------------------------

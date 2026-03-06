@@ -1,12 +1,12 @@
 #include "rtkTest.h"
-#include "rtkMacro.h"
-#include "rtkCudaFDKWeightProjectionFilter.h"
 #include "rtkConstantImageSource.h"
+#include "rtkCudaFDKWeightProjectionFilter.h"
+#include "rtkMacro.h"
 #include "rtkSheppLoganPhantomFilter.h"
 #include "rtkThreeDCircularProjectionGeometry.h"
 
-#include <itkStreamingImageFilter.h>
 #include <itkImageRegionSplitterDirection.h>
+#include <itkStreamingImageFilter.h>
 
 /**
  * \file rtkfdkprojweightcompcudatest.cxx

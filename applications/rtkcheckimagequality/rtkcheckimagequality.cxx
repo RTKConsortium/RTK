@@ -17,11 +17,11 @@
  *=========================================================================*/
 
 #include "rtkcheckimagequality_ggo.h"
-#include "rtkConfiguration.h"
-#include "rtkMacro.h"
 #include "itkImage.h"
 #include "itkImageFileReader.h"
 #include "itkImageRegionConstIterator.h"
+#include "rtkConfiguration.h"
+#include "rtkMacro.h"
 
 namespace rtk
 {
@@ -35,7 +35,7 @@ namespace rtk
 
 template <class TImage>
 double
-MSE(typename TImage::Pointer reference, typename TImage::Pointer reconstruction)
+MSE(const typename TImage::Pointer & reference, const typename TImage::Pointer & reconstruction)
 {
   using ImageIteratorType = itk::ImageRegionConstIterator<TImage>;
   ImageIteratorType itTest(reconstruction, reconstruction->GetBufferedRegion());

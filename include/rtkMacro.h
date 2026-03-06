@@ -19,11 +19,11 @@
 #ifndef rtkMacro_h
 #define rtkMacro_h
 
-#include <iostream>
-#include <itkMacro.h>
-#include <itkImageBase.h>
 #include "rtkGgoArgsInfoManager.h"
 #include "rtkIterationCommands.h"
+#include <iostream>
+#include <itkImageBase.h>
+#include <itkMacro.h>
 
 //--------------------------------------------------------------------
 #ifndef CLANG_PRAGMA_PUSH

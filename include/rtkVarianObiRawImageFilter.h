@@ -19,9 +19,9 @@
 #ifndef rtkVarianObiRawImageFilter_h
 #define rtkVarianObiRawImageFilter_h
 
-#include <itkUnaryFunctorImageFilter.h>
 #include <itkConceptChecking.h>
 #include <itkNumericTraits.h>
+#include <itkUnaryFunctorImageFilter.h>
 
 #include "rtkMacro.h"
 
@@ -57,7 +57,7 @@ public:
   {
     return !(*this != other);
   }
-  inline TOutput
+  TOutput
   operator()(const TInput & A) const
   {
     return (!A) ? 0. : TOutput(std::log((m_I0 - m_IDark) / (A - m_IDark)));

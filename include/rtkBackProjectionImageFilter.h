@@ -21,8 +21,8 @@
 
 #include "rtkConfiguration.h"
 
-#include <itkInPlaceImageFilter.h>
 #include <itkConceptChecking.h>
+#include <itkInPlaceImageFilter.h>
 
 #include "rtkThreeDCircularProjectionGeometry.h"
 
@@ -110,21 +110,21 @@ protected:
     const OutputImageRegionType &                                                         region,
     const ProjectionMatrixType &                                                          volIndexToProjPP,
     const itk::Matrix<double, TInputImage::ImageDimension, TInputImage::ImageDimension> & projPPToProjIndex,
-    const ProjectionImagePointer                                                          projection);
+    ProjectionImagePointer                                                                projection);
 
   /** Optimized version when the rotation is parallel to X, i.e. matrix[1][0]
     and matrix[2][0] are zeros. */
   virtual void
   OptimizedBackprojectionX(const OutputImageRegionType & region,
                            const ProjectionMatrixType &  matrix,
-                           const ProjectionImagePointer  projection);
+                           ProjectionImagePointer        projection);
 
   /** Optimized version when the rotation is parallel to Y, i.e. matrix[1][1]
     and matrix[2][1] are zeros. */
   virtual void
   OptimizedBackprojectionY(const OutputImageRegionType & region,
                            const ProjectionMatrixType &  matrix,
-                           const ProjectionImagePointer  projection);
+                           ProjectionImagePointer        projection);
 
   /** The two inputs should not be in the same space so there is nothing
    * to verify. */
@@ -138,18 +138,18 @@ protected:
       The function is templated to allow getting an itk::CudaImage. */
   template <class TProjectionImage>
   typename TProjectionImage::Pointer
-  GetProjection(const unsigned int iProj);
+  GetProjection(unsigned int iProj);
 
   /** Creates iProj index to index projection matrices with current inputs
       instead of the physical point to physical point projection matrix provided by Geometry */
   ProjectionMatrixType
-  GetIndexToIndexProjectionMatrix(const unsigned int iProj);
+  GetIndexToIndexProjectionMatrix(unsigned int iProj);
 
   ProjectionMatrixType
-  GetVolumeIndexToProjectionPhysicalPointMatrix(const unsigned int iProj);
+  GetVolumeIndexToProjectionPhysicalPointMatrix(unsigned int iProj);
 
   itk::Matrix<double, TInputImage::ImageDimension, TInputImage::ImageDimension>
-  GetProjectionPhysicalPointToProjectionIndexMatrix(const unsigned int iProj);
+  GetProjectionPhysicalPointToProjectionIndexMatrix(unsigned int iProj);
 
   /** RTK geometry object */
   GeometryConstPointer m_Geometry;

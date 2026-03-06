@@ -18,8 +18,8 @@
 
 #include "rtkSignalToInterpolationWeights.h"
 
-#include <itksys/SystemTools.hxx>
 #include <itkMath.h>
+#include <itksys/SystemTools.hxx>
 
 namespace rtk
 {
@@ -34,7 +34,7 @@ SignalToInterpolationWeights::PrintSelf(std::ostream & os, itk::Indent indent) c
 }
 
 void
-SignalToInterpolationWeights::SetSignal(const std::vector<double> signal)
+SignalToInterpolationWeights::SetSignal(const std::vector<double> & signal)
 {
   this->m_Signal = signal;
 }
@@ -63,7 +63,7 @@ SignalToInterpolationWeights::Update()
   {
     int lower = 0;
     int upper = 1;
-    while (!((m_Signal[c] >= reconstructedFrames[lower]) && (m_Signal[c] < reconstructedFrames[upper])))
+    while ((m_Signal[c] < reconstructedFrames[lower]) || (m_Signal[c] >= reconstructedFrames[upper]))
     {
       lower++;
       upper++;
