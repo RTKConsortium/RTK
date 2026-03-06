@@ -21,7 +21,7 @@
  */
 
 int
-main(int, char **)
+rtkfovtest(int, char *[])
 {
   constexpr unsigned int Dimension = 3;
   using OutputImageType = itk::Image<float, Dimension>;

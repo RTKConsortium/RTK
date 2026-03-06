@@ -24,7 +24,7 @@
  */
 
 int
-main(int, char **)
+rtkregularizedconjugategradienttest(int, char *[])
 {
   using OutputPixelType = float;
   constexpr unsigned int Dimension = 3;
