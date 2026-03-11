@@ -244,9 +244,9 @@ protected:
   {
     ForwardProjectionPointerType fw;
 #ifdef RTK_USE_CUDA
-    fw = CudaForwardProjectionImageFilter<ImageType, ImageType>::New();
-    dynamic_cast<rtk::CudaForwardProjectionImageFilter<ImageType, ImageType> *>(fw.GetPointer())
-      ->SetStepSize(m_StepSize);
+    auto cudaFw = CudaForwardProjectionImageFilter<ImageType, ImageType>::New();
+    cudaFw->SetStepSize(m_StepSize);
+    fw = cudaFw;
 #endif
     return fw;
   }
@@ -268,8 +268,9 @@ protected:
   {
     ForwardProjectionPointerType fw;
 #ifdef RTK_USE_CUDA
-    fw = CudaWarpForwardProjectionImageFilter::New();
-    dynamic_cast<rtk::CudaWarpForwardProjectionImageFilter *>(fw.GetPointer())->SetStepSize(m_StepSize);
+    auto cudaWarpFw = CudaWarpForwardProjectionImageFilter::New();
+    cudaWarpFw->SetStepSize(m_StepSize);
+    fw = cudaWarpFw;
 #endif
     return fw;
   }
@@ -298,11 +299,10 @@ protected:
   ForwardProjectionPointerType
   InstantiateJosephForwardAttenuatedProjection()
   {
-    ForwardProjectionPointerType fw;
-    fw = JosephForwardAttenuatedProjectionImageFilter<VolumeType, ProjectionStackType>::New();
+    auto josephAttenuatedForward = JosephForwardAttenuatedProjectionImageFilter<VolumeType, ProjectionStackType>::New();
     if (this->GetAttenuationMap().IsNotNull())
     {
-      fw->SetInput(2, this->GetAttenuationMap());
+      josephAttenuatedForward->SetInput(2, this->GetAttenuationMap());
     }
     else
     {
@@ -311,17 +311,13 @@ protected:
     }
     if (this->GetSuperiorClipImage().IsNotNull())
     {
-      dynamic_cast<rtk::JosephForwardAttenuatedProjectionImageFilter<VolumeType, ProjectionStackType> *>(
-        fw.GetPointer())
-        ->SetSuperiorClipImage(this->GetSuperiorClipImage());
+      josephAttenuatedForward->SetSuperiorClipImage(this->GetSuperiorClipImage());
     }
     if (this->GetInferiorClipImage().IsNotNull())
     {
-      dynamic_cast<rtk::JosephForwardAttenuatedProjectionImageFilter<VolumeType, ProjectionStackType> *>(
-        fw.GetPointer())
-        ->SetInferiorClipImage(this->GetInferiorClipImage());
+      josephAttenuatedForward->SetInferiorClipImage(this->GetInferiorClipImage());
     }
-    return fw;
+    return josephAttenuatedForward.GetPointer();
   }
 
   template <typename ImageType, EnableVectorType<ImageType> * = nullptr>
@@ -337,17 +333,14 @@ protected:
   ForwardProjectionPointerType
   InstantiateZengForwardProjection()
   {
-    ForwardProjectionPointerType fw;
-    fw = ZengForwardProjectionImageFilter<VolumeType, ProjectionStackType>::New();
+    auto zengForward = ZengForwardProjectionImageFilter<VolumeType, ProjectionStackType>::New();
     if (this->GetAttenuationMap().IsNotNull())
     {
-      fw->SetInput(2, this->GetAttenuationMap());
+      zengForward->SetInput(2, this->GetAttenuationMap());
     }
-    dynamic_cast<rtk::ZengForwardProjectionImageFilter<VolumeType, ProjectionStackType> *>(fw.GetPointer())
-      ->SetSigmaZero(m_SigmaZero);
-    dynamic_cast<rtk::ZengForwardProjectionImageFilter<VolumeType, ProjectionStackType> *>(fw.GetPointer())
-      ->SetAlpha(m_AlphaPSF);
-    return fw;
+    zengForward->SetSigmaZero(m_SigmaZero);
+    zengForward->SetAlpha(m_AlphaPSF);
+    return zengForward.GetPointer();
   }
 
   template <typename ImageType, EnableCudaScalarAndVectorType<ImageType> * = nullptr>
@@ -399,8 +392,9 @@ protected:
   {
     BackProjectionPointerType bp;
 #ifdef RTK_USE_CUDA
-    bp = CudaRayCastBackProjectionImageFilter::New();
-    dynamic_cast<rtk::CudaRayCastBackProjectionImageFilter *>(bp.GetPointer())->SetStepSize(m_StepSize);
+    auto cudaRayCastBp = CudaRayCastBackProjectionImageFilter::New();
+    cudaRayCastBp->SetStepSize(m_StepSize);
+    bp = cudaRayCastBp;
 #endif
     return bp;
   }
@@ -455,17 +449,14 @@ protected:
   BackProjectionPointerType
   InstantiateZengBackProjection()
   {
-    BackProjectionPointerType bp;
-    bp = ZengBackProjectionImageFilter<ImageType, ImageType>::New();
+    auto zengBack = ZengBackProjectionImageFilter<ImageType, ImageType>::New();
     if (this->GetAttenuationMap().IsNotNull())
     {
-      bp->SetInput(2, this->GetAttenuationMap());
+      zengBack->SetInput(2, this->GetAttenuationMap());
     }
-    dynamic_cast<rtk::ZengBackProjectionImageFilter<VolumeType, ProjectionStackType> *>(bp.GetPointer())
-      ->SetSigmaZero(m_SigmaZero);
-    dynamic_cast<rtk::ZengBackProjectionImageFilter<VolumeType, ProjectionStackType> *>(bp.GetPointer())
-      ->SetAlpha(m_AlphaPSF);
-    return bp;
+    zengBack->SetSigmaZero(m_SigmaZero);
+    zengBack->SetAlpha(m_AlphaPSF);
+    return zengBack.GetPointer();
   }
 
 }; // end of class

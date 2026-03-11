@@ -105,28 +105,57 @@ main(int argc, char * argv[])
   switch (args_info.fp_arg)
   {
     case (fp_arg_Joseph):
-      forwardProjection = rtk::JosephForwardProjectionImageFilter<OutputImageType, OutputImageType>::New();
+    {
+      auto joseph = rtk::JosephForwardProjectionImageFilter<OutputImageType, OutputImageType>::New();
+      if (args_info.inferiorclipimage_given)
+        joseph->SetInferiorClipImage(inferiorClipImage);
+      if (args_info.superiorclipimage_given)
+        joseph->SetSuperiorClipImage(superiorClipImage);
+      forwardProjection = joseph;
       break;
+    }
     case (fp_arg_JosephAttenuated):
-      forwardProjection = rtk::JosephForwardAttenuatedProjectionImageFilter<OutputImageType, OutputImageType>::New();
+    {
+      auto josephAtt = rtk::JosephForwardAttenuatedProjectionImageFilter<OutputImageType, OutputImageType>::New();
+      if (args_info.inferiorclipimage_given)
+        josephAtt->SetInferiorClipImage(inferiorClipImage);
+      if (args_info.superiorclipimage_given)
+        josephAtt->SetSuperiorClipImage(superiorClipImage);
+      forwardProjection = josephAtt;
       break;
+    }
     case (fp_arg_Zeng):
-      forwardProjection = rtk::ZengForwardProjectionImageFilter<OutputImageType, OutputImageType>::New();
+    {
+      auto zeng = rtk::ZengForwardProjectionImageFilter<OutputImageType, OutputImageType>::New();
+      if (args_info.sigmazero_given)
+        zeng->SetSigmaZero(args_info.sigmazero_arg);
+      if (args_info.alphapsf_given)
+        zeng->SetAlpha(args_info.alphapsf_arg);
+      forwardProjection = zeng;
       break;
+    }
     case (fp_arg_MIP):
-      forwardProjection = rtk::MaximumIntensityProjectionImageFilter<OutputImageType, OutputImageType>::New();
+    {
+      auto mip = rtk::MaximumIntensityProjectionImageFilter<OutputImageType, OutputImageType>::New();
+      if (args_info.inferiorclipimage_given)
+        mip->SetInferiorClipImage(inferiorClipImage);
+      if (args_info.superiorclipimage_given)
+        mip->SetSuperiorClipImage(superiorClipImage);
+      forwardProjection = mip;
       break;
+    }
     case (fp_arg_CudaRayCast):
+    {
 #ifdef RTK_USE_CUDA
-      forwardProjection = rtk::CudaForwardProjectionImageFilter<OutputImageType, OutputImageType>::New();
-      dynamic_cast<rtk::CudaForwardProjectionImageFilter<OutputImageType, OutputImageType> *>(
-        forwardProjection.GetPointer())
-        ->SetStepSize(args_info.step_arg);
+      auto cudaForward = rtk::CudaForwardProjectionImageFilter<OutputImageType, OutputImageType>::New();
+      cudaForward->SetStepSize(args_info.step_arg);
+      forwardProjection = cudaForward;
 #else
       std::cerr << "The program has not been compiled with cuda option" << std::endl;
       return EXIT_FAILURE;
 #endif
       break;
+    }
     default:
       std::cerr << "Unhandled --method value." << std::endl;
       return EXIT_FAILURE;
@@ -135,56 +164,6 @@ main(int argc, char * argv[])
   forwardProjection->SetInput(1, inputVolume);
   if (args_info.attenuationmap_given)
     forwardProjection->SetInput(2, attenuationMap);
-  if (args_info.inferiorclipimage_given)
-  {
-    if (args_info.fp_arg == fp_arg_Joseph)
-    {
-      dynamic_cast<rtk::JosephForwardProjectionImageFilter<OutputImageType, OutputImageType> *>(
-        forwardProjection.GetPointer())
-        ->SetInferiorClipImage(inferiorClipImage);
-    }
-    else if (args_info.fp_arg == fp_arg_JosephAttenuated)
-    {
-      dynamic_cast<rtk::JosephForwardAttenuatedProjectionImageFilter<OutputImageType, OutputImageType> *>(
-        forwardProjection.GetPointer())
-        ->SetInferiorClipImage(inferiorClipImage);
-    }
-    else if (args_info.fp_arg == fp_arg_MIP)
-    {
-      dynamic_cast<rtk::MaximumIntensityProjectionImageFilter<OutputImageType, OutputImageType> *>(
-        forwardProjection.GetPointer())
-        ->SetInferiorClipImage(inferiorClipImage);
-    }
-  }
-  if (args_info.superiorclipimage_given)
-  {
-    if (args_info.fp_arg == fp_arg_Joseph)
-    {
-      dynamic_cast<rtk::JosephForwardProjectionImageFilter<OutputImageType, OutputImageType> *>(
-        forwardProjection.GetPointer())
-        ->SetSuperiorClipImage(superiorClipImage);
-    }
-    else if (args_info.fp_arg == fp_arg_JosephAttenuated)
-    {
-      dynamic_cast<rtk::JosephForwardAttenuatedProjectionImageFilter<OutputImageType, OutputImageType> *>(
-        forwardProjection.GetPointer())
-        ->SetSuperiorClipImage(superiorClipImage);
-    }
-    else if (args_info.fp_arg == fp_arg_MIP)
-    {
-      dynamic_cast<rtk::MaximumIntensityProjectionImageFilter<OutputImageType, OutputImageType> *>(
-        forwardProjection.GetPointer())
-        ->SetSuperiorClipImage(superiorClipImage);
-    }
-  }
-  if (args_info.sigmazero_given && args_info.fp_arg == fp_arg_Zeng)
-    dynamic_cast<rtk::ZengForwardProjectionImageFilter<OutputImageType, OutputImageType> *>(
-      forwardProjection.GetPointer())
-      ->SetSigmaZero(args_info.sigmazero_arg);
-  if (args_info.alphapsf_given && args_info.fp_arg == fp_arg_Zeng)
-    dynamic_cast<rtk::ZengForwardProjectionImageFilter<OutputImageType, OutputImageType> *>(
-      forwardProjection.GetPointer())
-      ->SetAlpha(args_info.alphapsf_arg);
   forwardProjection->SetGeometry(geometry);
   if (!args_info.lowmem_flag)
   {
