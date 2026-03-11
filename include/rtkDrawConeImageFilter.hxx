@@ -29,7 +29,12 @@ void
 DrawConeImageFilter<TInputImage, TOutputImage>::BeforeThreadedGenerateData()
 {
   Superclass::BeforeThreadedGenerateData();
-  dynamic_cast<QuadricShape *>(this->GetModifiableConvexShape())->SetJ(0.);
+  auto * quadricShape = dynamic_cast<QuadricShape *>(this->GetModifiableConvexShape());
+  if (quadricShape == nullptr)
+  {
+    itkExceptionMacro(<< "Failed to cast convex shape to QuadricShape.");
+  }
+  quadricShape->SetJ(0.);
 }
 
 } // end namespace rtk
