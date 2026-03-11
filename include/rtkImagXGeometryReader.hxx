@@ -199,7 +199,12 @@ ImagXGeometryReader<TInputImage>::GetGeometryForAI2p1()
 
             for (const auto & flexmap : list_flexmap)
             {
-              std::string        str = dynamic_cast<const itk::DOMTextNode *>(flexmap)->GetText();
+              const auto * textNode = dynamic_cast<const itk::DOMTextNode *>(flexmap);
+              if (textNode == nullptr)
+              {
+                itkExceptionMacro(<< "Unexpected non-text node in flexmap.");
+              }
+              std::string        str = textNode->GetText();
               std::stringstream  iss(str);
               std::vector<float> v;
               while (iss.good())
@@ -264,7 +269,12 @@ ImagXGeometryReader<TInputImage>::GetGeometryForAI1p5()
   itk::ImageIOBase::Pointer imageIO = itk::ImageIOFactory::CreateImageIO(m_ProjectionsFileNames[0].c_str(),
                                                                          itk::ImageIOFactory::IOFileModeEnum::ReadMode);
   imageIO = itk::GDCMImageIO::New();
-  dynamic_cast<itk::GDCMImageIO *>(imageIO.GetPointer())->LoadPrivateTagsOn();
+  auto * gdcmImageIO = dynamic_cast<itk::GDCMImageIO *>(imageIO.GetPointer());
+  if (gdcmImageIO == nullptr)
+  {
+    itkExceptionMacro(<< "Failed to cast ImageIO to GDCMImageIO.");
+  }
+  gdcmImageIO->LoadPrivateTagsOn();
 
   // Define, create and set projection reader
   using ReaderType = itk::ImageFileReader<TInputImage>;
@@ -276,7 +286,7 @@ ImagXGeometryReader<TInputImage>::GetGeometryForAI1p5()
   // Read room setup parameters in the DICOM info of the first projection
   std::string roomSetupTagKey = "3001|0012";
   std::string roomSetupInfo;
-  dynamic_cast<itk::GDCMImageIO *>(imageIO.GetPointer())->GetValueFromTag(roomSetupTagKey, roomSetupInfo);
+  gdcmImageIO->GetValueFromTag(roomSetupTagKey, roomSetupInfo);
 
   // Extract SID, SDD and angle offset from the roomSetupInfo
   auto               parser = itk::DOMNodeXMLReader::New();
@@ -291,7 +301,7 @@ ImagXGeometryReader<TInputImage>::GetGeometryForAI1p5()
   // Read calibration model's parameters in the DICOM info of the first projection
   std::string calibrationTagKey = "3001|0013";
   std::string calibrationInfo;
-  dynamic_cast<itk::GDCMImageIO *>(imageIO.GetPointer())->GetValueFromTag(calibrationTagKey, calibrationInfo);
+  gdcmImageIO->GetValueFromTag(calibrationTagKey, calibrationInfo);
 
   // Extract calibration model's parameters from calibrationInfo
   is.clear();
@@ -473,7 +483,12 @@ ImagXGeometryReader<TInputImage>::getAIversion()
                                                                          itk::ImageIOFactory::IOFileModeEnum::ReadMode);
 
   imageIO = itk::GDCMImageIO::New();
-  dynamic_cast<itk::GDCMImageIO *>(imageIO.GetPointer())->LoadPrivateTagsOn();
+  auto * gdcmImageIO = dynamic_cast<itk::GDCMImageIO *>(imageIO.GetPointer());
+  if (gdcmImageIO == nullptr)
+  {
+    itkExceptionMacro(<< "Failed to cast ImageIO to GDCMImageIO.");
+  }
+  gdcmImageIO->LoadPrivateTagsOn();
 
   // Define, create and set projection reader
   using ReaderType = itk::ImageFileReader<TInputImage>;
@@ -485,7 +500,7 @@ ImagXGeometryReader<TInputImage>::getAIversion()
   // Read room setup parameters in the DICOM info of the first projection
   std::string AIVersionTagKey = "0018|1020";
   std::string AIVersion = "";
-  dynamic_cast<itk::GDCMImageIO *>(imageIO.GetPointer())->GetValueFromTag(AIVersionTagKey, AIVersion);
+  gdcmImageIO->GetValueFromTag(AIVersionTagKey, AIVersion);
 
   return AIVersion;
 }
@@ -551,7 +566,12 @@ ImagXGeometryReader<TInputImage>::GenerateData()
     // Reading Gantry Angle
     std::string labelId, value;
     itk::GDCMImageIO::GetLabelFromTag(gantryAngleTag, labelId);
-    dynamic_cast<itk::GDCMImageIO *>(imageIO.GetPointer())->GetValueFromTag(gantryAngleTag, value);
+    auto * gdcmProjectionImageIO = dynamic_cast<itk::GDCMImageIO *>(imageIO.GetPointer());
+    if (gdcmProjectionImageIO == nullptr)
+    {
+      itkExceptionMacro(<< "Failed to cast ImageIO to GDCMImageIO for projection " << m_ProjectionsFileName << ".");
+    }
+    gdcmProjectionImageIO->GetValueFromTag(gantryAngleTag, value);
 
     if (isImagX1p5 || isImagX1p2) // Using CalibModel
     {
