@@ -21,6 +21,7 @@
 #include "rtkXRadImageIOFactory.h"
 
 #include <itkImageIOFactory.h>
+#include <itkMacro.h>
 #include <itkMetaDataObject.h>
 
 rtk::XRadGeometryReader ::XRadGeometryReader()
@@ -54,15 +55,25 @@ rtk::XRadGeometryReader ::GenerateData()
     sectionName = os.str();
 
     paramName = sectionName + "_CBCT.ProjectionGeometryArray.u_axis";
-    std::istringstream isu(dynamic_cast<MetaDataStringType *>(dic[paramName].GetPointer())->GetMetaDataObjectValue());
+    auto * uAxisMetaData = dynamic_cast<MetaDataStringType *>(dic[paramName].GetPointer());
+    if (uAxisMetaData == nullptr)
+      itkExceptionMacro(<< "Missing or invalid metadata \"" << paramName << "\".");
+    std::istringstream isu(uAxisMetaData->GetMetaDataObjectValue());
     paramName = sectionName + "_CBCT.ProjectionGeometryArray.v_axis";
-    std::istringstream isv(dynamic_cast<MetaDataStringType *>(dic[paramName].GetPointer())->GetMetaDataObjectValue());
+    auto * vAxisMetaData = dynamic_cast<MetaDataStringType *>(dic[paramName].GetPointer());
+    if (vAxisMetaData == nullptr)
+      itkExceptionMacro(<< "Missing or invalid metadata \"" << paramName << "\".");
+    std::istringstream isv(vAxisMetaData->GetMetaDataObjectValue());
     paramName = sectionName + "_CBCT.ProjectionGeometryArray.focus";
-    std::istringstream isfocus(
-      dynamic_cast<MetaDataStringType *>(dic[paramName].GetPointer())->GetMetaDataObjectValue());
+    auto * focusMetaData = dynamic_cast<MetaDataStringType *>(dic[paramName].GetPointer());
+    if (focusMetaData == nullptr)
+      itkExceptionMacro(<< "Missing or invalid metadata \"" << paramName << "\".");
+    std::istringstream isfocus(focusMetaData->GetMetaDataObjectValue());
     paramName = sectionName + "_CBCT.ProjectionGeometryArray.center";
-    std::istringstream iscenter(
-      dynamic_cast<MetaDataStringType *>(dic[paramName].GetPointer())->GetMetaDataObjectValue());
+    auto * centerMetaData = dynamic_cast<MetaDataStringType *>(dic[paramName].GetPointer());
+    if (centerMetaData == nullptr)
+      itkExceptionMacro(<< "Missing or invalid metadata \"" << paramName << "\".");
+    std::istringstream     iscenter(centerMetaData->GetMetaDataObjectValue());
     itk::Vector<double, 3> u, v;
     itk::Vector<double, 3> focus, center;
     for (unsigned int j = 0; j < 3; j++)
@@ -99,11 +110,17 @@ rtk::XRadGeometryReader ::GenerateData()
     tmpGeo->AddProjection(&(focus[0]), &(center[0]), u, v);
 
     paramName = sectionName + "_CBCT.ProjectionGeometryArray.u_off";
-    std::string suoff = dynamic_cast<MetaDataStringType *>(dic[paramName].GetPointer())->GetMetaDataObjectValue();
+    auto * uOffsetMetaData = dynamic_cast<MetaDataStringType *>(dic[paramName].GetPointer());
+    if (uOffsetMetaData == nullptr)
+      itkExceptionMacro(<< "Missing or invalid metadata \"" << paramName << "\".");
+    std::string suoff = uOffsetMetaData->GetMetaDataObjectValue();
     double      uoff = std::stod(suoff.c_str()) * reader->GetSpacing(0);
 
     paramName = sectionName + "_CBCT.ProjectionGeometryArray.v_off";
-    std::string svoff = dynamic_cast<MetaDataStringType *>(dic[paramName].GetPointer())->GetMetaDataObjectValue();
+    auto * vOffsetMetaData = dynamic_cast<MetaDataStringType *>(dic[paramName].GetPointer());
+    if (vOffsetMetaData == nullptr)
+      itkExceptionMacro(<< "Missing or invalid metadata \"" << paramName << "\".");
+    std::string svoff = vOffsetMetaData->GetMetaDataObjectValue();
     double      voff = std::stod(svoff.c_str()) * reader->GetSpacing(1);
 
     m_Geometry->AddProjectionInRadians(tmpGeo->GetSourceToIsocenterDistances()[i],
