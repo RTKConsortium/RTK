@@ -172,9 +172,19 @@ endif()
 #=========================================================
 add_subdirectory(utilities/lp_solve)
 
-# Prefer target-oriented usage requirements; keep RTK_LIBRARIES compatible with
-# legacy consumers that still use the variable.
-list(APPEND RTK_LIBRARIES lpsolve55)
+if("${ITK_VERSION_MAJOR}" VERSION_LESS "6")
+  set(
+    LPSOLVE_INCLUDE_DIRS
+    ${PROJECT_SOURCE_DIR}/utilities/lp_solve
+    ${PROJECT_SOURCE_DIR}/utilities/lp_solve/shared
+    ${PROJECT_SOURCE_DIR}/utilities/lp_solve/bfp
+    ${PROJECT_SOURCE_DIR}/utilities/lp_solve/bfp/bfp_LUSOL
+    ${PROJECT_SOURCE_DIR}/utilities/lp_solve/bfp/bfp_LUSOL/LUSOL
+    ${PROJECT_SOURCE_DIR}/utilities/lp_solve/colamd
+  )
+
+  list(APPEND RTK_INCLUDE_DIRS "${LPSOLVE_INCLUDE_DIRS}")
+endif()
 
 #=========================================================
 # Generate RTKConfig.cmake for the build tree.
@@ -316,6 +326,14 @@ install(
   DESTINATION ${RTK_INSTALL_INCLUDE_DIR}/lpsolve
   COMPONENT Development
 )
+
+if("${ITK_VERSION_MAJOR}" VERSION_LESS "6")
+  target_include_directories(
+    lpsolve55
+    PUBLIC
+      $<INSTALL_INTERFACE:${RTK_INSTALL_INCLUDE_DIR}/lpsolve>
+  )
+endif()
 
 # Install configuration file
 install(
