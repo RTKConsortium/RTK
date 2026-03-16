@@ -39,49 +39,105 @@ add_library(
   yacc_read.c
 )
 
-target_include_directories(
-  lpsolve55
-  PUBLIC
+if("${ITK_VERSION_MAJOR}" VERSION_LESS "6")
+  include_directories(
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-    $<INSTALL_INTERFACE:${RTK_INSTALL_INCLUDE_DIR}/lpsolve>
-  PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/shared
-    ${CMAKE_CURRENT_SOURCE_DIR}/bfp
-    ${CMAKE_CURRENT_SOURCE_DIR}/bfp/bfp_LUSOL
-    ${CMAKE_CURRENT_SOURCE_DIR}/bfp/bfp_LUSOL/LUSOL
-    ${CMAKE_CURRENT_SOURCE_DIR}/colamd
-)
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/shared>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/bfp>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/bfp/bfp_LUSOL>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/bfp/bfp_LUSOL/LUSOL>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/colamd>
+  )
 
-target_compile_definitions(
-  lpsolve55
-  PRIVATE
-    YY_NEVER_INTERACTIVE
-    PARSER_LP
-    INVERSE_ACTIVE=INVERSE_LUSOL
-    RoleIsExternalInvEngine
-    LoadInverseLib=FALSE
-    LoadLanguageLib=FALSE
-    LoadableBlasLib=0
-)
+  set_property(
+    TARGET
+      lpsolve55
+    APPEND
+    PROPERTY
+      COMPILE_DEFINITIONS
+        YY_NEVER_INTERACTIVE
+        PARSER_LP
+        INVERSE_ACTIVE=INVERSE_LUSOL
+        RoleIsExternalInvEngine
+        LoadInverseLib=FALSE
+        LoadLanguageLib=FALSE
+        LoadableBlasLib=0
+  )
 
-if(WIN32)
+  if(WIN32)
+    set_property(
+      TARGET
+        lpsolve55
+      APPEND
+      PROPERTY
+        COMPILE_DEFINITIONS
+          INLINE=static
+          _USRDLL
+          WIN32
+    )
+  endif()
+
+  include(CheckSymbolExists)
+  check_symbol_exists(
+    isnan
+    math.h
+    HAVE_ISNAN
+  )
+  if(NOT HAVE_ISNAN)
+    set_property(
+      TARGET
+        lpsolve55
+      APPEND
+      PROPERTY
+        COMPILE_DEFINITIONS
+          NOISNAN
+    )
+  endif()
+else()
+  target_include_directories(
+    lpsolve55
+    PUBLIC
+      $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+      $<INSTALL_INTERFACE:${RTK_INSTALL_INCLUDE_DIR}/lpsolve>
+    PRIVATE
+      ${CMAKE_CURRENT_SOURCE_DIR}/shared
+      ${CMAKE_CURRENT_SOURCE_DIR}/bfp
+      ${CMAKE_CURRENT_SOURCE_DIR}/bfp/bfp_LUSOL
+      ${CMAKE_CURRENT_SOURCE_DIR}/bfp/bfp_LUSOL/LUSOL
+      ${CMAKE_CURRENT_SOURCE_DIR}/colamd
+  )
+
   target_compile_definitions(
     lpsolve55
     PRIVATE
-      INLINE=static
-      _USRDLL
-      WIN32
+      YY_NEVER_INTERACTIVE
+      PARSER_LP
+      INVERSE_ACTIVE=INVERSE_LUSOL
+      RoleIsExternalInvEngine
+      LoadInverseLib=FALSE
+      LoadLanguageLib=FALSE
+      LoadableBlasLib=0
   )
-endif()
 
-include(CheckSymbolExists)
-check_symbol_exists(
-  isnan
-  math.h
-  HAVE_ISNAN
-)
-if(NOT HAVE_ISNAN)
-  target_compile_definitions(lpsolve55 PRIVATE NOISNAN)
+  if(WIN32)
+    target_compile_definitions(
+      lpsolve55
+      PRIVATE
+        INLINE=static
+        _USRDLL
+        WIN32
+    )
+  endif()
+
+  include(CheckSymbolExists)
+  check_symbol_exists(
+    isnan
+    math.h
+    HAVE_ISNAN
+  )
+  if(NOT HAVE_ISNAN)
+    target_compile_definitions(lpsolve55 PRIVATE NOISNAN)
+  endif()
 endif()
 
 # Set version of library
