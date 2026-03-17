@@ -1,5 +1,4 @@
-RTK: The Reconstruction ToolKit
-===============================
+# RTK: The Reconstruction ToolKit
 
 [![GitHub release](https://img.shields.io/github/release/RTKConsortium/RTK.svg)](https://github.com/RTKConsortium/RTK/releases/latest)
 [![PyPI](https://img.shields.io/pypi/v/itk-rtk.svg)](https://pypi.python.org/pypi/itk-rtk)
@@ -11,8 +10,7 @@ RTK: The Reconstruction ToolKit
 [gha-link]: https://github.com/RTKConsortium/RTK/actions/workflows/build-test-package.yml
 
 
-Links
------
+## Links
 
 * [Homepage](https://www.openrtk.org)
 * [Download](https://www.openrtk.org/RTK/resources/software.html)
@@ -22,8 +20,7 @@ Links
 * [Issue tracking](https://github.com/RTKConsortium/RTK/issues)
 
 
-Copyright RTK Consortium
-------------------------
+## Copyright RTK Consortium
 
   Licensed under the Apache License, Version 2.0 (the
   "[License](https://www.apache.org/licenses/LICENSE-2.0.txt)"); you may not use

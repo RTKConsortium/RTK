@@ -1,5 +1,4 @@
-Getting started
-===============
+# Getting started
 
 Here are suggested steps for the RTK beginner.
 

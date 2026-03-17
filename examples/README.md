@@ -1,5 +1,4 @@
-C++ / Python examples
-========
+# C++ / Python examples
 
 This section provides a collection of C++ and Python code examples
 to demonstrate how to effectively use RTK in various applications.
