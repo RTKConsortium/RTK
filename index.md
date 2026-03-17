@@ -1,5 +1,4 @@
-﻿The Reconstruction Toolkit (RTK)
-================================
+﻿# The Reconstruction Toolkit (RTK)
 
 RTK is an open-source and cross-platform software for fast circular cone-beam CT reconstruction based on the Insight Toolkit (ITK). RTK is developed by the RTK consortium.
 

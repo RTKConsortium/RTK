@@ -1,8 +1,6 @@
-RTK installation
-================
+# RTK installation
 
-Configuration, compilation and installation with ITK
-----------------------------------------------------
+## Configuration, compilation and installation with ITK
 RTK is a module of [ITK](https://www.itk.org), the Insight Toolkit. Follow the instructions of the [ITK software guide](https://itk.org/ITKSoftwareGuide/html) ([chapter 2](https://itk.org/ITKSoftwareGuide/html/Book1/ITKSoftwareGuide-Book1ch2.html) mainly) for configuring and compiling ITK. The following CMake options are RTK specific:
 
 * `Module_RTK`: Activates RTK download and compilation. Default is `OFF`. Turn it `ON` to activate RTK or compile RTK independently (see below).
@@ -15,8 +13,7 @@ RTK is a module of [ITK](https://www.itk.org), the Insight Toolkit. Follow the i
 
 RTK will automatically be installed when installing ITK.
 
-Independent configuration and compilation
------------------------------------------
+## Independent configuration and compilation
 For RTK developpers, it may be useful to compile RTK independently from ITK. This is possible, simply:
 * Compile ITK with `Module_RTK=OFF`.
 * If you want to use CUDA, also activate `Module_CudaCommon` or compile it separately as RTK in the following two bullet points (cloning its [GitHub repository](https://github.com/RTKConsortium/ITKCudaCommon) or downloading it as a [zip package](https://codeload.github.com/RTKConsortium/ITKCudaCommon/zip/main)).
@@ -25,8 +22,7 @@ For RTK developpers, it may be useful to compile RTK independently from ITK. Thi
 
 Installation is currently not supported for independent RTK compilations.
 
-Python pre-compiled binaries
----------------------
+## Python pre-compiled binaries
 We only provide pre-compiled binaries for the Python package which depends on ITK. Use the following commands to install the RTK module with `pip`.
 ```
 python -m pip install --upgrade pip
@@ -77,6 +73,5 @@ pip install --group doc
 
 This installs Sphinx and related tools for documentation generation.
 
-Getting started
----------------
+## Getting started
 See [GettingStarted.md](GettingStarted.md). Your `CMakeLists.txt` can now use RTK when importing ITK as shown in the [FirstReconstruction's CMakeLists.txt](https://github.com/RTKConsortium/RTK/blob/main/examples/FirstReconstruction/CMakeLists.txt#L7).
