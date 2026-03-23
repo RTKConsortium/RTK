@@ -47,7 +47,9 @@ def process(args_info: argparse.Namespace):
     rtk.SetProjectionsReaderFromArgParse(reader, args_info)
 
     # Amsterdam Shroud
-    shroudFilter = rtk.AmsterdamShroudImageFilter[OutputImageType].New()
+    shroudFilter = rtk.AmsterdamShroudImageFilter[
+        OutputImageType, OutputImageType
+    ].New()
     shroudFilter.SetInput(reader.GetOutput())
     shroudFilter.SetUnsharpMaskSize(args_info.unsharp)
 

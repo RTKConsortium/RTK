@@ -123,10 +123,10 @@ def process(args_info: argparse.Namespace):
         pssf = rtk.CudaParkerShortScanImageFilter.New()
     else:
         ddf = rtk.DisplacedDetectorForOffsetFieldOfViewImageFilter[
-            OutputImageType
+            OutputImageType, OutputImageType
         ].New()
         ddf.SetInput(reader.GetOutput())
-        pssf = rtk.ParkerShortScanImageFilter[OutputImageType].New()
+        pssf = rtk.ParkerShortScanImageFilter[OutputImageType, OutputImageType].New()
 
     # Displaced detector weighting
     ddf.SetGeometry(geometry)
@@ -169,7 +169,9 @@ def process(args_info: argparse.Namespace):
         feldkamp = rtk.CudaFDKConeBeamReconstructionFilter.New()
         feldkamp.SetInput(0, itk.cuda_image_from_image(constantImageSource.GetOutput()))
     else:
-        feldkamp = rtk.FDKConeBeamReconstructionFilter[OutputImageType].New()
+        feldkamp = rtk.FDKConeBeamReconstructionFilter[
+            OutputImageType, OutputImageType, OutputPixelType
+        ].New()
         feldkamp.SetInput(0, constantImageSource.GetOutput())
 
     # Set inputs and options for the FDK filter

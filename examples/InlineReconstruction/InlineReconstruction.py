@@ -69,7 +69,7 @@ if has_gpu_capability:
     )
     fdk = rtk.CudaFDKConeBeamReconstructionFilter.New(Geometry=geometry_rec)
 else:
-    parker = rtk.ParkerShortScanImageFilter[image_type].New(
+    parker = rtk.ParkerShortScanImageFilter[image_type, image_type].New(
         Input=extractor.GetOutput(), Geometry=geometry_rec
     )
     reconstruction_source = rtk.ConstantImageSource[image_type].New(
@@ -77,7 +77,9 @@ else:
         Spacing=[spacing * sid / sdd] * 3,
         Size=[size] * 3,
     )
-    fdk = rtk.FDKConeBeamReconstructionFilter[image_type].New(Geometry=geometry_rec)
+    fdk = rtk.FDKConeBeamReconstructionFilter[image_type, image_type, itk.F].New(
+        Geometry=geometry_rec
+    )
 fdk.SetInput(0, reconstruction_source.GetOutput())
 fdk.SetInput(1, parker.GetOutput())
 

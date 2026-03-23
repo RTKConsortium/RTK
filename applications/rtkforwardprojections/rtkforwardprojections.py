@@ -167,7 +167,7 @@ def process(args_info):
     elif args_info.fp == "CudaRayCast":
         if hasattr(itk, "CudaImage"):
             forwardProjection = rtk.CudaForwardProjectionImageFilter[
-                OutputCudaImageType
+                OutputCudaImageType, OutputCudaImageType
             ].New()
             forwardProjection.SetStepSize(args_info.step)
         else:
