@@ -41,6 +41,26 @@ git branch -u origin/main main
 git remote set-head origin -a
 ```
 
+## Python class instantiations: required explicit template arguments
+
+RTK requires callers to provide the full template argument list in Python. You must explicitly supply every template parameter the wrapped C++ class expects (for example `Filter[InputImageType, OutputImageType]`). The single-argument shorthand `Filter[InputImageType]` is no longer supported in RTK and should not be used.
+
+Affected classes:
+
+- `ADMMTotalVariationConeBeamReconstructionFilter`
+- `AmsterdamShroudImageFilter`
+- `BoellaardScatterCorrectionImageFilter`
+- `ConjugateGradientConeBeamReconstructionFilter`
+- `CudaForwardProjectionImageFilter`
+- `DisplacedDetectorForOffsetFieldOfViewImageFilter`
+- `DisplacedDetectorImageFilter`
+- `FDKConeBeamReconstructionFilter`
+- `FDKVarianceReconstructionFilter`
+- `FDKWeightProjectionFilter`
+- `IterativeConeBeamReconstructionFilter`
+- `ParkerShortScanImageFilter`
+- `PhaseGatingImageFilter`
+
 ## Removed `m_Normalize` from `rtk::CudaRayCastBackProjectionImageFilter`
 
 Most users intuitively expect this for the backprojector matched to `rtk::CudaForwardProjectionFilter`. The filter was originally implemented with the normalization for SART and OSEM reconstruction but the normalization is now done in the reconstruction filters so it can be removed.
