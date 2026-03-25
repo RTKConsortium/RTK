@@ -9,6 +9,9 @@ configure_file(
   ${_test_header_file}
 )
 
+# Sets module info for tests, e.g., RTK_LIBRARIES and RTK-Test_LIBRARIES.
+itk_module_test()
+
 #-----------------------------------------------------------------------------
 # Find ITK.
 # Required to include ITK_USE_FILE in order to Register IO factories
@@ -76,8 +79,6 @@ function(rtk_add_cuda_test testname testfile)
     )
   endif()
 endfunction()
-
-itk_module_test()
 
 # Use sha512 algorithm to generate content link
 if(NOT ITK_SOURCE_DIR)
