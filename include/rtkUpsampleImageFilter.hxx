@@ -22,6 +22,7 @@
 
 #include "itkImageRegionIterator.h"
 #include "itkImageRegionConstIterator.h"
+#include "itkImageRegionIteratorWithIndex.h"
 #include "itkObjectFactory.h"
 #include "itkProgressReporter.h"
 #include "itkNumericTraits.h"
