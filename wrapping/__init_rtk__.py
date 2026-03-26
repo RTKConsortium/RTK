@@ -4,9 +4,12 @@ import importlib
 itk_module = sys.modules["itk"]
 rtk_module = getattr(itk_module, "RTK")
 
+# Load the CMake-generated version and assign it to `itk.RTK.__version__`.
+rtk_version = importlib.import_module("itk.rtkConfig").RTK_GLOBAL_VERSION_STRING
+setattr(rtk_module, "__version__", rtk_version)
+
 # Import RTK submodules
 rtk_submodules = [
-    "itk.rtkversion",
     "itk.rtkargumentparser",
     "itk.rtkinputprojections_group",
     "itk.rtk3Doutputimage_group",
