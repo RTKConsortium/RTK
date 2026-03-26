@@ -30,10 +30,9 @@ set(
 itk_auto_load_submodules()
 itk_end_wrap_module()
 
-set(RTK_VERSION_SCRIPT "${RTK_BINARY_DIR}/applications/rtkversion.py")
 configure_file(
-  ${RTK_SOURCE_DIR}/applications/rtkversion.py.in
-  ${RTK_VERSION_SCRIPT}
+  ${RTK_SOURCE_DIR}/wrapping/rtkConfig.py.in
+  ${RTK_BINARY_DIR}/Wrapping/Generators/Python/rtkConfig.py
 )
 
 file(
@@ -51,7 +50,7 @@ wrap_itk_python_bindings_install(/itk "RTK"
   __init_rtk__.py
   ${RTK_GROUP_SCRIPTS}
   ${RTK_APP_SCRIPTS}
-  ${RTK_VERSION_SCRIPT}
+  ${RTK_BINARY_DIR}/Wrapping/Generators/Python/rtkConfig.py
   ${RTK_SOURCE_DIR}/wrapping/rtkExtras.py
   ${RTK_SOURCE_DIR}/applications/rtkargumentparser.py
 )

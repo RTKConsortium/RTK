@@ -8,6 +8,11 @@ This update aligns RTK with upstream ITK's member name, where `--size` more
 accurately reflects the expected parameter (e.g., image size) and avoids
 confusion with spatial dimensions (e.g., 2D vs 3D).
 
+## Python: `version()` replaced by `__version__`
+
+In the Python wrappers the previous `version()` call has been replaced by the
+module attribute `__version__`.
+
 ## Forbild phantom file format only
 
 The legacy `rtk::GeometricPhantomFileReader` has been removed starting with RTK
