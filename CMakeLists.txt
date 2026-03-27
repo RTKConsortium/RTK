@@ -195,6 +195,11 @@ option(RTK_BUILD_APPLICATIONS "Build RTK applications" ON)
 
 #-----------------------------------------------------------------------------
 # Common revision info between applications
+
+# ITK_CMAKE_DIR is needed to find GetGitRevisionDescription
+if(NOT ITK_SOURCE_DIR)
+  list(APPEND CMAKE_MODULE_PATH ${ITK_CMAKE_DIR})
+endif()
 include(GetGitRevisionDescription)
 get_git_head_revision(GIT_REFSPEC GIT_SHA1)
 if(GIT_SHA1 MATCHES ".*NOTFOUND")
@@ -255,8 +260,6 @@ if(NOT ITK_SOURCE_DIR)
       "Modules can only be built against an ITK build tree; they cannot be built against an ITK install tree."
     )
   endif()
-
-  list(APPEND CMAKE_MODULE_PATH ${ITK_CMAKE_DIR})
   include(ITKModuleExternal)
 
   # Add third party to RTK build targets.
@@ -344,8 +347,6 @@ install(
 install(
   FILES
     ${RTK_SOURCE_DIR}/cmake/FindGengetopt.cmake
-    ${RTK_SOURCE_DIR}/cmake/GetGitRevisionDescription.cmake
-    ${RTK_SOURCE_DIR}/cmake/GetGitRevisionDescription.cmake.in
   DESTINATION ${ITK_INSTALL_PACKAGE_DIR}
 )
 if(NOT ITK_SOURCE_DIR)
