@@ -77,7 +77,7 @@ jobs:
         LIBCUBLAS=`basename /home/srit/Downloads/cuda${CUDA_VERSION}/targets/x86_64-linux/lib/libcublas.so.${CUDA_VERSION_MAJOR}*`
         LIBCUBLASLT=`basename /home/srit/Downloads/cuda${CUDA_VERSION}/targets/x86_64-linux/lib/libcublasLt.so.${CUDA_VERSION_MAJOR}*`
         LIBCUFFT=`basename /home/srit/Downloads/cuda${CUDA_VERSION}/targets/x86_64-linux/lib/libcufft.so.$((${CUDA_VERSION_MAJOR}-1))*`
-        sed -i "s/dependencies = \[/dependencies = [ \"itk-cudacommon-cuda${CUDA_VERSION}  == 2.0.*\",/g" pyproject.toml
+        sed -i "s/dependencies = \[/dependencies = [ \"itk-cudacommon-cuda${CUDA_VERSION}  == 2.1.*\",/g" pyproject.toml
         sed -i "s/itk-rtk/itk-rtk-cuda${CUDA_VERSION}/g" pyproject.toml
 
         ./dockcross-manylinux-download-cache-and-build-module-wheels.sh "${CMAKE_OPTIONS[@]}" -x "libcuda.so.1;${LIBCUDART};${LIBCUBLAS};${LIBCUBLASLT};${LIBCUFFT}" cp3${{ matrix.python3-minor-version }}
@@ -171,7 +171,7 @@ jobs:
           $CUDA_ARCHITECTURES = "52"
         }
         ((Get-Content -Path pyproject.toml) -replace "itk-rtk","itk-rtk-cuda${CUDA_VERSION}") | Set-Content -Path pyproject.toml
-        ((Get-Content -Path pyproject.toml) -replace "dependencies = \[","dependencies = [""itk-cudacommon-cuda${CUDA_VERSION}  == 2.0.*"",") | Set-Content -Path pyproject.toml
+        ((Get-Content -Path pyproject.toml) -replace "dependencies = \[","dependencies = [""itk-cudacommon-cuda${CUDA_VERSION}  == 2.1.*"",") | Set-Content -Path pyproject.toml
 
         ./windows-download-cache-and-build-module-wheels.ps1 "${{ matrix.python3-minor-version }}" -setup_options "--lib-paths ""C:/Program\ Files/NVIDIA\ GPU\ Computing\ Toolkit/CUDA/v${CUDA_VERSION_MAJOR}.${CUDA_VERSION_MINOR}/bin"" --exclude-libs ""nvcuda.dll;concrt140.dll;${LIBCUDART};${LIBCUBLAS};${LIBCUBLASLT};${LIBCUFFT}""" -cmake_options """-DRTK_CUDA_VERSION=${CUDA_VERSION_MAJOR}.${CUDA_VERSION_MINOR}"" ""-DCMAKE_CUDA_COMPILER=$env:CUDACXX"" ""-DRTK_BUILD_APPLICATIONS:BOOL=OFF"" ""-DCMAKE_CUDA_ARCHITECTURES=${CUDA_ARCHITECTURES}"""
 
