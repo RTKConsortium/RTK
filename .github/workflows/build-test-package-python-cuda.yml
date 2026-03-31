@@ -245,8 +245,7 @@ jobs:
       run: |
         # Find the CUDA 128 wheel for Python 3.11 dynamically
         wheel=$(find wheels -name "*cuda128*cp311*manylinux_2_28_x86_64.whl" -type f | head -1)
-
-        pip uninstall -y $(pip list |  grep -E '^itk-') || true
+        pip uninstall -y $(pip freeze | sed -E 's/(==.*|[[:space:]]+@.*)$//' | grep -E '^itk-') || true
         echo "Installing wheel: $wheel"
         pip install $wheel
 
