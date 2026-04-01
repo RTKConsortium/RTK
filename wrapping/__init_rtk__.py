@@ -53,6 +53,7 @@ _app_modules = [
     "rtkgaincorrection",
     "rtkorageometry",
     "rtkosem",
+    "rtkoverlayphaseandshroud",
     "rtkprojectgeometricphantom",
     "rtkprojections",
     "rtkprojectshepploganphantom",
