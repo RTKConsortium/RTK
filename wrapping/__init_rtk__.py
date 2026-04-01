@@ -66,6 +66,7 @@ _app_modules = [
     "rtktotalnuclearvariationdenoising",
     "rtktotalvariationdenoising",
     "rtkvarianobigeometry",
+    "rtkvectorconjugategradient",
     "rtkwaveletsdenoising",
     "rtkxradgeometry",
 ]
