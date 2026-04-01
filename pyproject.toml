@@ -88,6 +88,7 @@ rtktotalvariationdenoising = "itk.rtktotalvariationdenoising:main"
 rtktotalnuclearvariationdenoising = "itk.rtktotalnuclearvariationdenoising:main"
 rtkvarianobigeometry = "itk.rtkvarianobigeometry:main"
 rtkvarianprobeamgeometry = "itk.rtkvarianprobeamgeometry:main"
+rtkvectorconjugategradient = "itk.rtkvectorconjugategradient:main"
 rtkwaveletsdenoising = "itk.rtkwaveletsdenoising:main"
 rtkxradgeometry = "itk.rtkxradgeometry:main"
 
