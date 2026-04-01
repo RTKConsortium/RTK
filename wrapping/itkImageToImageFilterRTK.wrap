@@ -62,6 +62,9 @@ itk_wrap_class("itk::ImageToImageFilter" POINTER)
       itk_wrap_template("CI${ITKM_F}4CI${ITKM_F}4"
         "itk::CudaImage<${ITKT_F}, 4>, itk::CudaImage<${ITKT_F}, 4>")
     endif()
+    # Required for rtkCudaLagCorrection ImageFilter
+    itk_wrap_template("CI${ITKM_US}3CI${ITKM_US}3"
+        "itk::CudaImage<${ITKT_US}, 3>, itk::CudaImage<${ITKT_US}, 3>")
 
     # Wrap ITK short/float combination (required by : rtkCudaPolynomialGainCorrectionImageFilter)
     itk_wrap_template("CIUS3CIF3"

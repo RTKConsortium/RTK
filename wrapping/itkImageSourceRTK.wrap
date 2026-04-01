@@ -53,6 +53,9 @@ itk_wrap_class("itk::ImageSource" POINTER)
       itk_wrap_template("CIF4" "itk::CudaImage<${ITKT_F}, 4>")
     endif()
 
+    # Required for rtkCudaLagCorrectionImageFilter
+    itk_wrap_template("CI${ITK_US}3" "itk::CudaImage<${ITKT_US}, 3>")
+
     # Force VECTOR_COMPONENTS to "2;3;4;5"
     UNIQUE(imageDimensions "${ITK_WRAP_IMAGE_DIMS};2;3;4")
     UNIQUE(vectorComponents "${ITK_WRAP_VECTOR_COMPONENTS};2;3;4;5")
