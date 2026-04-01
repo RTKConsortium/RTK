@@ -11,7 +11,7 @@ itk_wrap_class("rtk::DenoisingBPDQImageFilter" POINTER)
       endforeach()
     endforeach()
     # Explicit float instantiation with gradient length (d-1) needed by TotalNuclearVariationDenoisingBPDQ
-    if(d GREATER 1)
+    if(d GREATER 2)
       math(EXPR gradDim "${d}-1")
       itk_wrap_template("IF${d}ICVF${gradDim}${d}"
         "itk::Image<float, ${d}>, itk::Image<itk::CovariantVector< float,${gradDim} >, ${d}>")
