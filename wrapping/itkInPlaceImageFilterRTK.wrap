@@ -56,6 +56,9 @@ itk_wrap_class("itk::InPlaceImageFilter" POINTER)
       itk_wrap_template("CI${ITKM_F}4CI${ITKM_F}4" "itk::CudaImage<${ITKT_F}, 4>, itk::CudaImage<${ITKT_F}, 4>")
     endif()
 
+    # Required for rtkCudaLagCorrectionImageFilter
+    itk_wrap_template("CI${ITKM_US}3" "itk::CudaImage<${ITKT_US}, 3>")
+
     set(vectorComponents 2 3 4 5)
     foreach(c ${vectorComponents})
       list(FIND ITK_WRAP_VECTOR_COMPONENTS "${c}" _index)
