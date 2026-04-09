@@ -12,10 +12,10 @@ def build_parser():
 
     parser.add_argument("--geometry", "-g", help="Geometry file name", required=True)
     parser.add_argument(
-        "--show_trajectory", "-t", help="Show source trajectory", action="store_true"
+        "--show-trajectory", "-t", help="Show source trajectory", action="store_true"
     )
     parser.add_argument("--input", "-i", help="Input volume")
-    parser.add_argument("--hide_volume", help="hide input volume", action="store_true")
+    parser.add_argument("--hide-volume", help="hide input volume", action="store_true")
 
     rtk.add_rtkinputprojections_group(parser)
 

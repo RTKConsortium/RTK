@@ -10,12 +10,12 @@ __all__ = [
 def add_rtkiterations_group(parser):
     rtkiterations_group = parser.add_argument_group("Iteration reporting")
     rtkiterations_group.add_argument(
-        "--outputevery",
+        "--output-every",
         help="Output intermediate reconstruction after some iterations",
         type=int,
     )
     rtkiterations_group.add_argument(
-        "--iterationfilename",
+        "--iteration-file-name",
         help="File name to output intermediate iterations with {i} as a placeholder for iteration number",
     )
 
@@ -37,22 +37,22 @@ class VerboseEndCommand:
 
 # Mimicks OutputIterationCommand
 class OutputIterationCommand:
-    def __init__(self, reconstruction_filter, outputevery, iterationfilename):
+    def __init__(self, reconstruction_filter, output_every, iteration_file_name):
         self.count = 0
         self.reconstruction_filter = reconstruction_filter
-        self.outputevery = outputevery
-        self.iterationfilename = iterationfilename
+        self.output_every = output_every
+        self.iteration_file_name = iteration_file_name
 
     def callback(self):
         self.count = self.count + 1
-        if self.count % self.outputevery == 0:
+        if self.count % self.output_every == 0:
             output = self.reconstruction_filter.GetOutput()
             OutputImageType = type(output)
             if hasattr(output, "GetCudaDataManager"):
                 OutputImageType = OutputImageType.__bases__[0]
             writer = itk.ImageFileWriter[OutputImageType].New()
             writer.SetInput(output)
-            writer.SetFileName(self.iterationfilename.format(i=self.count))
+            writer.SetFileName(self.iteration_file_name.format(i=self.count))
             writer.Update()
 
 
@@ -63,8 +63,8 @@ def SetIterationsReportFromArgParse(args_info, filt):
         filt.AddObserver(itk.IterationEvent(), cmd.callback)
         cmd = VerboseEndCommand()
         filt.AddObserver(itk.EndEvent(), cmd.callback)
-    if args_info.outputevery is not None:
+    if args_info.output_every is not None:
         cmd = OutputIterationCommand(
-            filt, args_info.outputevery, args_info.iterationfilename
+            filt, args_info.output_every, args_info.iteration_file_name
         )
         filt.AddObserver(itk.IterationEvent(), cmd.callback)
