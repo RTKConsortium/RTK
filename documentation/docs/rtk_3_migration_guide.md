@@ -1,5 +1,13 @@
 # RTK v3 migration guide
 
+## Python application options use hyphens
+
+Multi-word options in Python applications now use hyphens to match the C++
+applications and the GNU coding standards:
+`--outputevery` →`--output-every`,
+`--iterationfilename` → `--iteration-file-name`,
+`--hide_volume` → `--hide-volume`.
+
 ## Use `--size` instead of `--dimension`
 
 As of RTK 3.0, the `--dimension` argument in applications is deprecated and
