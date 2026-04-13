@@ -57,7 +57,12 @@ GetFreeGPUGlobalMemory(int device)
 
   // create cuda context
   CUcontext cudaContext;
+#if CUDA_VERSION >= 13000
+  CUctxCreateParams ctxCreateParams = {};
+  result = cuCtxCreate(&cudaContext, &ctxCreateParams, CU_CTX_SCHED_AUTO, device);
+#else
   result = cuCtxCreate(&cudaContext, CU_CTX_SCHED_AUTO, device);
+#endif
   if (result != CUDA_SUCCESS)
   {
     itkGenericExceptionMacro(<< "Could not create context on this CUDA device");
