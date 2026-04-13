@@ -20,7 +20,7 @@ jobs:
       matrix:
         python3-minor-version: ${{ github.event_name == 'pull_request' && fromJSON('["11"]') || fromJSON('["9","10","11"]') }}
         manylinux-platform: ${{ github.event_name == 'pull_request' && fromJSON('["_2_28-x64"]') || fromJSON('["_2_28-x64","2014-x64"]') }}
-        cuda-version: ${{ github.event_name == 'pull_request' && fromJSON('["128"]') || fromJSON('["118","128","130"]') }}
+        cuda-version: ${{ github.event_name == 'pull_request' && fromJSON('["118","130"]') || fromJSON('["118","128","130"]') }}
 
     steps:
     - uses: actions/checkout@v4
@@ -244,7 +244,7 @@ jobs:
     - name: Test python wheel
       run: |
         # Find the CUDA 128 wheel for Python 3.11 dynamically
-        wheel=$(find wheels -name "*cuda128*cp311*manylinux_2_28_x86_64.whl" -type f | head -1)
+        wheel=$(find wheels -name "*cuda130*cp311*manylinux_2_28_x86_64.whl" -type f | head -1)
         pip uninstall -y $(pip freeze | sed -E 's/(==.*|[[:space:]]+@.*)$//' | grep -E '^itk-') || true
         echo "Installing wheel: $wheel"
         pip install $wheel
