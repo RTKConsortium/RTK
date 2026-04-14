@@ -231,7 +231,15 @@ jobs:
   test-python-wheel:
     needs:
       - build-linux-cuda-python-packages
-    runs-on: self-hosted-linux
+      - build-windows-cuda-python-packages
+    strategy:
+      matrix:
+        include:
+          - runs-on: self-hosted-linux
+            wheel-pattern: "*cuda130*cp311*manylinux_2_28_x86_64.whl"
+          - runs-on: self-hosted-windows
+            wheel-pattern: "*cuda128*cp311*win*.whl"
+    runs-on: ${{ matrix.runs-on }}
 
     steps:
     - uses: actions/checkout@v4
@@ -247,9 +255,11 @@ jobs:
         python-version: '3.11'
 
     - name: Test python wheel
+      shell: bash
       run: |
-        # Find the CUDA 128 wheel for Python 3.11 dynamically
-        wheel=$(find wheels -name "*cuda130*cp311*manylinux_2_28_x86_64.whl" -type f | head -1)
+        # Find wheel for Python 3.11 dynamically
+        wheel=$(find wheels -name "${{ matrix.wheel-pattern }}" -type f | head -1)
+
         pip uninstall -y $(pip freeze | sed -E 's/(==.*|[[:space:]]+@.*)$//' | grep -E '^itk-') || true
         echo "Installing wheel: $wheel"
         pip install $wheel
@@ -260,7 +270,7 @@ jobs:
         # SWIG < 4.4 triggers the Py_LIMITED_API "builtin type swig…" warning when
         # Python runs with -Walways; pytest enables that behavior, so we ignore it.
         test_log=$(mktemp)
-        pytest $GITHUB_WORKSPACE/test/*.py -vv -s -W error -W "ignore:builtin type swig" 2>&1 | tee "$test_log"
+        pytest test/*.py -vv -s -W error -W "ignore:builtin type swig" 2>&1 | tee "$test_log"
         matches=$(grep -Ei "warning|exception|redefin(ed|ition)?" "$test_log" || true)
         if [ -n "$matches" ]; then
           echo "Unexpected output found:"
