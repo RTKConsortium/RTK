@@ -223,7 +223,7 @@ jobs:
         user: __token__
         password: ${{ secrets.pypi_password }}
 
-  test-python-wheel:
+  test-python-wheel-linux:
     needs:
       - build-linux-cuda-python-packages
     runs-on: self-hosted-linux
@@ -243,7 +243,7 @@ jobs:
 
     - name: Test python wheel
       run: |
-        # Find the CUDA 128 wheel for Python 3.11 dynamically
+        # Find the CUDA 13 wheel for Python 3.11 dynamically
         wheel=$(find wheels -name "*cuda130*cp311*manylinux_2_28_x86_64.whl" -type f | head -1)
         pip uninstall -y $(pip freeze | sed -E 's/(==.*|[[:space:]]+@.*)$//' | grep -E '^itk-') || true
         echo "Installing wheel: $wheel"
@@ -256,6 +256,44 @@ jobs:
         # Python runs with -Walways; pytest enables that behavior, so we ignore it.
         test_log=$(mktemp)
         pytest $GITHUB_WORKSPACE/test/*.py -vv -s -W error -W "ignore:builtin type swig" 2>&1 | tee "$test_log"
+        matches=$(grep -Ei "warning|exception|redefin(ed|ition)?" "$test_log" || true)
+        if [ -n "$matches" ]; then
+          echo "Unexpected output found:"
+          echo "$matches"
+          exit 1
+        fi
+
+  test-python-wheel-windows:
+    needs:
+      - build-windows-cuda-python-packages
+    runs-on: self-hosted-windows
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Download all wheel artifacts
+      uses: actions/download-artifact@v4
+      with:
+        path: wheels
+
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Test python wheel
+      shell: bash
+      run: |
+        wheel=$(find wheels -name "*cuda130*cp311*win*.whl" -type f | head -1)
+
+        pip uninstall -y $(pip freeze | sed -E 's/(==.*|[[:space:]]+@.*)$//' | grep -E '^itk-') || true
+        echo "Installing wheel: $wheel"
+        pip install $wheel
+
+        pip install pytest matplotlib
+
+        test_log=$(mktemp)
+        pytest test/*.py -vv -s -W error -W "ignore:builtin type swig" 2>&1 | tee "$test_log"
         matches=$(grep -Ei "warning|exception|redefin(ed|ition)?" "$test_log" || true)
         if [ -n "$matches" ]; then
           echo "Unexpected output found:"

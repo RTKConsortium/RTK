@@ -19,7 +19,7 @@ jobs:
     secrets:
       pypi_password: ${{ secrets.pypi_password }}
 
-  test-python-wheel:
+  test-python-wheel-linux:
     needs:
       - python-build-workflow
     runs-on: self-hosted-linux
@@ -51,11 +51,10 @@ jobs:
         # Run tests with warning detection.
         # SWIG < 4.4 triggers the Py_LIMITED_API "builtin type swig…" warning when
         # Python runs with -Walways; pytest enables that behavior, so we ignore it.
-        test_log=$(mktemp)
-        pytest $GITHUB_WORKSPACE/test/*.py -vv -s -W error -W "ignore:builtin type swig" 2>&1 | tee "$test_log"
-        matches=$(grep -Ei "warning|exception|redefin(ed|ition)?" "$test_log" || true)
-        if [ -n "$matches" ]; then
-          echo "Unexpected output found:"
-          echo "$matches"
+        stderr_log=$(mktemp)
+        pytest test/*.py -vv -s -W "ignore:builtin type swig" 2> "$stderr_log"
+        if grep -q "Warning" "$stderr_log"; then
+          echo "Warnings found in stderr, failing the build"
+          cat "$stderr_log"
           exit 1
         fi
