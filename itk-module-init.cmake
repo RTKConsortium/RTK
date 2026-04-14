@@ -69,7 +69,9 @@ if(RTK_USE_CUDA)
   mark_as_advanced(RTK_CUDA_VERSION)
 
   enable_language(CUDA)
-  set(CMAKE_CUDA_RUNTIME_LIBRARY Static)
+  if(NOT DEFINED CMAKE_CUDA_RUNTIME_LIBRARY)
+    set(CMAKE_CUDA_RUNTIME_LIBRARY Static)
+  endif()
 
   include_directories(${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES})
   if(RTK_CUDA_VERSION)
