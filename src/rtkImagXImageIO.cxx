@@ -20,6 +20,7 @@
 #include "rtkImagXXMLFileReader.h"
 
 #include <itksys/SystemTools.hxx>
+#include <itkMacro.h>
 #include <itkMetaDataObject.h>
 #include <itkMatrix.h>
 #include <itkByteSwapper.h>
@@ -41,8 +42,10 @@ rtk::ImagXImageIO::ReadImageInformation()
   using MetaDataDoubleType = itk::MetaDataObject<double>;
   using MetaDataStringType = itk::MetaDataObject<std::string>;
   using MetaDataIntType = itk::MetaDataObject<int>;
-
-  std::string pixelType = dynamic_cast<MetaDataStringType *>(dic["pixelFormat"].GetPointer())->GetMetaDataObjectValue();
+  auto * pixelTypeMetaData = dynamic_cast<MetaDataStringType *>(dic["pixelFormat"].GetPointer());
+  if (pixelTypeMetaData == nullptr)
+    itkExceptionMacro(<< "Missing or invalid metadata \"pixelFormat\".");
+  std::string pixelType = pixelTypeMetaData->GetMetaDataObjectValue();
   if (pixelType == "Type_uint8")
     SetComponentType(itk::ImageIOBase::IOComponentEnum::UCHAR);
   if (pixelType == "Type_sint8")
@@ -61,19 +64,42 @@ rtk::ImagXImageIO::ReadImageInformation()
   if (dic["dimensions"].GetPointer() == nullptr)
     SetNumberOfDimensions(3);
   else
-    SetNumberOfDimensions((dynamic_cast<MetaDataIntType *>(dic["dimensions"].GetPointer())->GetMetaDataObjectValue()));
+  {
+    auto * dimensionsMetaData = dynamic_cast<MetaDataIntType *>(dic["dimensions"].GetPointer());
+    if (dimensionsMetaData == nullptr)
+      itkExceptionMacro(<< "Missing or invalid metadata \"dimensions\".");
+    SetNumberOfDimensions(dimensionsMetaData->GetMetaDataObjectValue());
+  }
 
-  SetDimensions(0, dynamic_cast<MetaDataIntType *>(dic["x"].GetPointer())->GetMetaDataObjectValue());
-  SetSpacing(0, dynamic_cast<MetaDataDoubleType *>(dic["spacing_x"].GetPointer())->GetMetaDataObjectValue());
+  auto * xMetaData = dynamic_cast<MetaDataIntType *>(dic["x"].GetPointer());
+  if (xMetaData == nullptr)
+    itkExceptionMacro(<< "Missing or invalid metadata \"x\".");
+  SetDimensions(0, xMetaData->GetMetaDataObjectValue());
+  auto * spacingXMetaData = dynamic_cast<MetaDataDoubleType *>(dic["spacing_x"].GetPointer());
+  if (spacingXMetaData == nullptr)
+    itkExceptionMacro(<< "Missing or invalid metadata \"spacing_x\".");
+  SetSpacing(0, spacingXMetaData->GetMetaDataObjectValue());
   if (GetNumberOfDimensions() > 1)
   {
-    SetDimensions(1, dynamic_cast<MetaDataIntType *>(dic["y"].GetPointer())->GetMetaDataObjectValue());
-    SetSpacing(1, dynamic_cast<MetaDataDoubleType *>(dic["spacing_y"].GetPointer())->GetMetaDataObjectValue());
+    auto * yMetaData = dynamic_cast<MetaDataIntType *>(dic["y"].GetPointer());
+    if (yMetaData == nullptr)
+      itkExceptionMacro(<< "Missing or invalid metadata \"y\".");
+    SetDimensions(1, yMetaData->GetMetaDataObjectValue());
+    auto * spacingYMetaData = dynamic_cast<MetaDataDoubleType *>(dic["spacing_y"].GetPointer());
+    if (spacingYMetaData == nullptr)
+      itkExceptionMacro(<< "Missing or invalid metadata \"spacing_y\".");
+    SetSpacing(1, spacingYMetaData->GetMetaDataObjectValue());
   }
   if (GetNumberOfDimensions() > 2)
   {
-    SetDimensions(2, dynamic_cast<MetaDataIntType *>(dic["z"].GetPointer())->GetMetaDataObjectValue());
-    SetSpacing(2, dynamic_cast<MetaDataDoubleType *>(dic["spacing_z"].GetPointer())->GetMetaDataObjectValue());
+    auto * zMetaData = dynamic_cast<MetaDataIntType *>(dic["z"].GetPointer());
+    if (zMetaData == nullptr)
+      itkExceptionMacro(<< "Missing or invalid metadata \"z\".");
+    SetDimensions(2, zMetaData->GetMetaDataObjectValue());
+    auto * spacingZMetaData = dynamic_cast<MetaDataDoubleType *>(dic["spacing_z"].GetPointer());
+    if (spacingZMetaData == nullptr)
+      itkExceptionMacro(<< "Missing or invalid metadata \"spacing_z\".");
+    SetSpacing(2, spacingZMetaData->GetMetaDataObjectValue());
     if (GetSpacing(2) == 0)
       SetSpacing(2, 1);
   }
@@ -83,8 +109,10 @@ rtk::ImagXImageIO::ReadImageInformation()
     matrix.SetIdentity();
   else
   {
-    std::istringstream iss(
-      dynamic_cast<MetaDataStringType *>(dic["matrixTransform"].GetPointer())->GetMetaDataObjectValue());
+    auto * matrixTransformMetaData = dynamic_cast<MetaDataStringType *>(dic["matrixTransform"].GetPointer());
+    if (matrixTransformMetaData == nullptr)
+      itkExceptionMacro(<< "Missing or invalid metadata \"matrixTransform\".");
+    std::istringstream iss(matrixTransformMetaData->GetMetaDataObjectValue());
     for (unsigned int j = 0; j < 4; j++)
       for (unsigned int i = 0; i < 4; i++)
         iss >> matrix[j][i];
@@ -101,7 +129,10 @@ rtk::ImagXImageIO::ReadImageInformation()
     SetOrigin(i, matrix[i][3]);
   }
 
-  if (std::string("LSB") == dynamic_cast<MetaDataStringType *>(dic["byteOrder"].GetPointer())->GetMetaDataObjectValue())
+  auto * byteOrderMetaData = dynamic_cast<MetaDataStringType *>(dic["byteOrder"].GetPointer());
+  if (byteOrderMetaData == nullptr)
+    itkExceptionMacro(<< "Missing or invalid metadata \"byteOrder\".");
+  if (std::string("LSB") == byteOrderMetaData->GetMetaDataObjectValue())
     this->SetByteOrder(IOByteOrderEnum::LittleEndian);
   else
     this->SetByteOrder(IOByteOrderEnum::BigEndian);
@@ -110,7 +141,10 @@ rtk::ImagXImageIO::ReadImageInformation()
   m_RawFileName = itksys::SystemTools::GetFilenamePath(m_FileName);
   if (!m_RawFileName.empty())
     m_RawFileName += std::string("/");
-  m_RawFileName += dynamic_cast<MetaDataStringType *>(dic["rawFile"].GetPointer())->GetMetaDataObjectValue();
+  auto * rawFileMetaData = dynamic_cast<MetaDataStringType *>(dic["rawFile"].GetPointer());
+  if (rawFileMetaData == nullptr)
+    itkExceptionMacro(<< "Missing or invalid metadata \"rawFile\".");
+  m_RawFileName += rawFileMetaData->GetMetaDataObjectValue();
 } ////
 
 //--------------------------------------------------------------------
