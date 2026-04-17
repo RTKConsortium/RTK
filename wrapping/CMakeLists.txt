@@ -13,15 +13,16 @@ set(
   itkImageRTK
   itkCudaImageRTK
   itkVectorImageRTK
+  itkImageSourceRTK
+  itkImageToImageFilterRTK
+  itkInPlaceImageFilterRTK
   rtkFFTRampImageFilter
   rtkParkerShortScanImageFilter
   rtkScatterGlareCorrectionImageFilter
   rtkPolynomialGainCorrectionImageFilter
-  itkImageSourceRTK
-  itkImageToImageFilterRTK
+  rtkLagCorrectionImageFilter
   rtkTotalVariationDenoisingBPDQImageFilter
   itkCudaImageToImageFilterRTK
-  itkInPlaceImageFilterRTK
   itkCudaInPlaceImageFilterRTK
   rtkForwardProjectionImageFilter
   itkPyBufferRTK
