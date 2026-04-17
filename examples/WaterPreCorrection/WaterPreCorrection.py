@@ -6,7 +6,6 @@ import os
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.optimize
-import glob
 
 # Script parameters
 directory = "output/"
@@ -16,14 +15,59 @@ order = 6
 reference_attenuation = 0.02
 origin = [-(size[0] / 2 + 0.5) * spacing[0], 0.0, -(size[2] / 2 + 0.5) * spacing[2]]
 
+# Generate test data if output directory does not exist
+# The original example requires pre-generated attenuation projection files
+# from a prior acquisition step. Here we generate them using the core RTK API.
+if not os.path.exists(directory):
+    print(f"Generating test data in {directory}...")
+    os.makedirs(directory, exist_ok=True)
+
+    numberOfProjections = 360
+    sid = 1000
+    sdd = 1500
+
+    # Create geometry
+    geometry = rtk.ThreeDCircularProjectionGeometry.New()
+    for i in range(numberOfProjections):
+        angle = i * 360.0 / numberOfProjections
+        geometry.AddProjection(sid, sdd, angle)
+    rtk.write_geometry(geometry, os.path.join(directory, "geometry.xml"))
+
+    # Create individual projection files using Shepp-Logan phantom
+    ImageType = itk.Image[itk.F, 3]
+    for i in range(numberOfProjections):
+        geo_single = rtk.ThreeDCircularProjectionGeometry.New()
+        angle = i * 360.0 / numberOfProjections
+        geo_single.AddProjection(sid, sdd, angle)
+
+        proj_source = rtk.constant_image_source(
+            size=[size[0], size[2], 1],
+            spacing=[spacing[0], spacing[1], spacing[2]],
+            ttype=[ImageType],
+            origin=[origin[0], origin[1], origin[2]],
+        )
+        proj = rtk.shepp_logan_phantom_filter(
+            proj_source,
+            geometry=geo_single,
+            phantom_scale=150,
+        )
+        itk.imwrite(proj, os.path.join(directory, f"attenuation{i:03d}.mha"))
+    print(f"Generated {numberOfProjections} projections in {directory}")
+
 # List of filenames
 file_names = list()
 for file in os.listdir(directory):
     if file.startswith("attenuation") and file.endswith(".mha"):
         file_names.append(directory + file)
 
+if not file_names:
+    raise FileNotFoundError(
+        f"No attenuation projection files found in {directory}. "
+        "Please generate test data first or provide projection files."
+    )
+
 # Read in full geometry
-geometry = rtk.read_geometry("output/geometry.xml")
+geometry = rtk.read_geometry(os.path.join(directory, "geometry.xml"))
 
 # Crate template image
 ImageType = itk.Image[itk.F, 3]

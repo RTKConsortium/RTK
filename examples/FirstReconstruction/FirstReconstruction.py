@@ -59,7 +59,7 @@ constantImageSource2.SetConstant(0.0)
 
 # FDK reconstruction
 print("Reconstructing...")
-FDKCPUType = rtk.FDKConeBeamReconstructionFilter[ImageType, ImageType, itk.F]
+FDKCPUType = rtk.FDKConeBeamReconstructionFilter[ImageType]
 feldkamp = FDKCPUType.New()
 feldkamp.SetInput(0, constantImageSource2.GetOutput())
 feldkamp.SetInput(1, rei.GetOutput())
