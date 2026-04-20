@@ -34,9 +34,14 @@ We also provide pre-compiled [CUDA](https://developer.nvidia.com/cuda-toolkit) p
 ```
 python -m pip install itk-rtk-cuda124
 ```
-```
-python -m pip install itk-rtk-cuda124
-```
+**Note**: the official PyPI packages are built from the [latest RTK release](https://github.com/RTKConsortium/RTK/releases/latest) and may not include features described in the latest documentation. If you install from PyPI, consult the corresponding [stable documentation](https://docs.openrtk.org/en/stable/index.html).
+
+To try the newest features before they are published on PyPI, download the most recent wheels produced by our CI workflows:
+
+- [Non-CUDA packages](https://github.com/RTKConsortium/RTK/actions/workflows/build-test-package.yml?query=branch%3Amain+is%3Asuccess)
+- [CUDA packages](https://github.com/RTKConsortium/RTK/actions/workflows/build-test-package-python-cuda.yml?query=branch%3Amain+is%3Asuccess)
+
+Each workflow shows a list of *Artifacts* at the bottom of its front page if you are logged in on GitHub. Just select the version corresponding to your operating system and Python version, unzip the wheel and `pip install wheel_filename`.
 
 ### GUI tools
 Some RTK command-line tools, such as `rtkshowgeometry`, require graphical visualization capabilities. To use these tools, install the GUI optional dependencies:
