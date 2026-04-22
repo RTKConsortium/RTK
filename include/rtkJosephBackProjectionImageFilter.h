@@ -24,120 +24,10 @@
 #include "rtkThreeDCircularProjectionGeometry.h"
 
 #include <itkVectorImage.h>
+#include <itkPixelTraits.h>
 
 namespace rtk
 {
-namespace Functor
-{
-/** \class InterpolationWeightMultiplicationBackProjection
- * \brief Function to multiply the interpolation weights with the projected
- * volume values.
- *
- * \author Simon Rit
- *
- * \ingroup RTK Functions
- */
-template <class TInput, class TCoordinateType, class TOutput = TInput>
-class ITK_TEMPLATE_EXPORT InterpolationWeightMultiplicationBackProjection
-{
-public:
-  InterpolationWeightMultiplicationBackProjection() = default;
-  ~InterpolationWeightMultiplicationBackProjection() = default;
-  bool
-  operator!=(const InterpolationWeightMultiplicationBackProjection &) const
-  {
-    return false;
-  }
-  bool
-  operator==(const InterpolationWeightMultiplicationBackProjection & other) const
-  {
-    return !(*this != other);
-  }
-
-  inline TOutput
-  operator()(const double          itkNotUsed(stepLengthInVoxel),
-             const TCoordinateType itkNotUsed(weight),
-             const TInput *        itkNotUsed(p),
-             const int             itkNotUsed(i)) const
-  {
-    return {};
-  }
-};
-
-/** \class SumAlongRay
- * \brief Function to compute the attenuation correction on the projection.
- *
- * \author Antoine Robert
- *
- * \ingroup RTK Functions
- */
-template <class TInput, class TOutput>
-class ITK_TEMPLATE_EXPORT ValueAlongRay
-{
-public:
-  using VectorType = itk::Vector<double, 3>;
-
-  ValueAlongRay() = default;
-  ~ValueAlongRay() = default;
-  bool
-  operator!=(const ValueAlongRay &) const
-  {
-    return false;
-  }
-  bool
-  operator==(const ValueAlongRay & other) const
-  {
-    return !(*this != other);
-  }
-
-  inline const TOutput &
-  operator()(const TInput &     rayValue,
-             const TInput       itkNotUsed(attenuationRay),
-             const VectorType & itkNotUsed(stepInMM),
-             bool               itkNotUsed(isEndRay)) const
-  {
-    return rayValue;
-  }
-};
-/** \class SplatWeightMultiplication
- * \brief Function to multiply the interpolation weights with the projection
- * values.
- *
- * \author Cyril Mory
- *
- * \ingroup RTK Functions
- */
-template <class TInput, class TCoordinateType, class TOutput = TCoordinateType>
-class ITK_TEMPLATE_EXPORT SplatWeightMultiplication
-{
-public:
-  SplatWeightMultiplication() = default;
-  ~SplatWeightMultiplication() = default;
-  bool
-  operator!=(const SplatWeightMultiplication &) const
-  {
-    return false;
-  }
-  bool
-  operator==(const SplatWeightMultiplication & other) const
-  {
-    return !(*this != other);
-  }
-
-  inline void
-  operator()(const TInput &        rayValue,
-             TOutput &             output,
-             const double          stepLengthInVoxel,
-             const double          voxelSize,
-             const TCoordinateType weight) const
-  {
-    output += rayValue * weight * voxelSize * stepLengthInVoxel;
-  }
-};
-
-} // end namespace Functor
-
-
 /** \class JosephBackProjectionImageFilter
  * \brief Joseph back projection.
  *
@@ -151,16 +41,7 @@ public:
  *
  * \ingroup RTK Projector
  */
-
-template <
-  class TInputImage,
-  class TOutputImage,
-  class TInterpolationWeightMultiplication = Functor::InterpolationWeightMultiplicationBackProjection<
-    typename TInputImage::PixelType,
-    typename itk::PixelTraits<typename TInputImage::PixelType>::ValueType>,
-  class TSplatWeightMultiplication =
-    Functor::SplatWeightMultiplication<typename TInputImage::PixelType, double, typename TOutputImage::PixelType>,
-  class TSumAlongRay = Functor::ValueAlongRay<typename TInputImage::PixelType, typename TOutputImage::PixelType>>
+template <class TInputImage, class TOutputImage>
 class ITK_TEMPLATE_EXPORT JosephBackProjectionImageFilter : public BackProjectionImageFilter<TInputImage, TOutputImage>
 {
 public:
@@ -173,84 +54,86 @@ public:
   using ConstPointer = itk::SmartPointer<const Self>;
   using InputPixelType = typename TInputImage::PixelType;
   using OutputPixelType = typename TOutputImage::PixelType;
+  using WeightCoordinateType = typename itk::PixelTraits<InputPixelType>::ValueType;
+
   using OutputImageRegionType = typename TOutputImage::RegionType;
   using CoordinateType = double;
   using VectorType = itk::Vector<CoordinateType, TInputImage::ImageDimension>;
   using GeometryType = rtk::ThreeDCircularProjectionGeometry;
   using GeometryPointer = typename GeometryType::Pointer;
 
-  /** Method for creation through the object factory. */
-  itkNewMacro(Self);
+  /** \brief Function to multiply the interpolation weights with the sampled
+   *         volume values.
+   */
+  using InterpolationWeightMultiplicationFunc =
+    std::function<OutputPixelType(const ThreadIdType, double, const WeightCoordinateType, const InputPixelType *, int)>;
 
-  /** Run-time type information (and related methods). */
+  /** \brief Function to compute the value to backproject from a projection
+   *         sample.
+   */
+  using SumAlongRayFunc =
+    std::function<OutputPixelType(const InputPixelType &, const InputPixelType, const VectorType &, bool &)>;
+
+  /** \brief Function to apply the splat weight multiplication and accumulate
+   *         the contribution into the output voxel.
+   */
+  using SplatWeightMultiplicationFunc = std::function<
+    void(const InputPixelType &, OutputPixelType &, const double, const double, const WeightCoordinateType)>;
+
+  itkNewMacro(Self);
   itkOverrideGetNameOfClassMacro(JosephBackProjectionImageFilter);
 
-  /** Get/Set the functor that is used to multiply each interpolation value with a volume value */
-  TInterpolationWeightMultiplication &
+  InterpolationWeightMultiplicationFunc &
   GetInterpolationWeightMultiplication()
   {
     return m_InterpolationWeightMultiplication;
   }
-  const TInterpolationWeightMultiplication &
+  const InterpolationWeightMultiplicationFunc &
   GetInterpolationWeightMultiplication() const
   {
     return m_InterpolationWeightMultiplication;
   }
   void
-  SetInterpolationWeightMultiplication(const TInterpolationWeightMultiplication & _arg)
+  SetInterpolationWeightMultiplication(const InterpolationWeightMultiplicationFunc & _arg)
   {
-    if (m_InterpolationWeightMultiplication != _arg)
-    {
-      m_InterpolationWeightMultiplication = _arg;
-      this->Modified();
-    }
+    m_InterpolationWeightMultiplication = _arg;
+    this->Modified();
   }
 
-  /** Get/Set the functor that is used to multiply each interpolation value with a volume value */
-  TSplatWeightMultiplication &
+  SplatWeightMultiplicationFunc &
   GetSplatWeightMultiplication()
   {
     return m_SplatWeightMultiplication;
   }
-  const TSplatWeightMultiplication &
+  const SplatWeightMultiplicationFunc &
   GetSplatWeightMultiplication() const
   {
     return m_SplatWeightMultiplication;
   }
   void
-  SetSplatWeightMultiplication(const TSplatWeightMultiplication & _arg)
+  SetSplatWeightMultiplication(const SplatWeightMultiplicationFunc & _arg)
   {
-    if (m_SplatWeightMultiplication != _arg)
-    {
-      m_SplatWeightMultiplication = _arg;
-      this->Modified();
-    }
+    m_SplatWeightMultiplication = _arg;
+    this->Modified();
   }
 
-  /** Get/Set the functor that is used to compute the sum along the ray*/
-  TSumAlongRay &
+  SumAlongRayFunc &
   GetSumAlongRay()
   {
     return m_SumAlongRay;
   }
-  const TSumAlongRay &
+  const SumAlongRayFunc &
   GetSumAlongRay() const
   {
     return m_SumAlongRay;
   }
   void
-  SetSumAlongRay(const TSumAlongRay & _arg)
+  SetSumAlongRay(const SumAlongRayFunc & _arg)
   {
-    if (m_SumAlongRay != _arg)
-    {
-      m_SumAlongRay = _arg;
-      this->Modified();
-    }
+    m_SumAlongRay = _arg;
+    this->Modified();
   }
 
-  /** Each ray is clipped from source+m_InferiorClip*(pixel-source) to
-  ** source+m_SuperiorClip*(pixel-source) with m_InferiorClip and
-  ** m_SuperiorClip equal 0 and 1 by default. */
   itkGetMacro(InferiorClip, double);
   itkSetMacro(InferiorClip, double);
   itkGetMacro(SuperiorClip, double);
@@ -263,8 +146,6 @@ protected:
   void
   GenerateData() override;
 
-  /** The two inputs should not be in the same space so there is nothing
-   * to verify. */
   void
   VerifyInputInformation() const override
   {}
@@ -277,8 +158,8 @@ protected:
                 OutputPixelType *      pxsyi,
                 OutputPixelType *      pxiys,
                 OutputPixelType *      pxsys,
-                const double           x,
-                const double           y,
+                const CoordinateType   x,
+                const CoordinateType   y,
                 const int              ox,
                 const int              oy);
 
@@ -290,8 +171,8 @@ protected:
                          OutputPixelType *      pxsyi,
                          OutputPixelType *      pxiys,
                          OutputPixelType *      pxsys,
-                         const double           x,
-                         const double           y,
+                         const CoordinateType   x,
+                         const CoordinateType   y,
                          const int              ox,
                          const int              oy,
                          const CoordinateType   minx,
@@ -305,8 +186,8 @@ protected:
                         const InputPixelType * pxsyi,
                         const InputPixelType * pxiys,
                         const InputPixelType * pxsys,
-                        const double           x,
-                        const double           y,
+                        const CoordinateType   x,
+                        const CoordinateType   y,
                         const int              ox,
                         const int              oy);
 
@@ -316,21 +197,23 @@ protected:
                                  const InputPixelType * pxsyi,
                                  const InputPixelType * pxiys,
                                  const InputPixelType * pxsys,
-                                 const double           x,
-                                 const double           y,
+                                 const CoordinateType   x,
+                                 const CoordinateType   y,
                                  const int              ox,
                                  const int              oy,
-                                 const double           minx,
-                                 const double           miny,
-                                 const double           maxx,
-                                 const double           maxy);
+                                 const CoordinateType   minx,
+                                 const CoordinateType   miny,
+                                 const CoordinateType   maxx,
+                                 const CoordinateType   maxy);
 
-  /** Functor */
-  TSplatWeightMultiplication         m_SplatWeightMultiplication;
-  TInterpolationWeightMultiplication m_InterpolationWeightMultiplication;
-  TSumAlongRay                       m_SumAlongRay;
-  double                             m_InferiorClip{ 0. };
-  double                             m_SuperiorClip{ 1. };
+  // lambdas or std::functions
+  // MUST BE initiated in constructor, or custom functions
+  // must be set by means of Set methods in application
+  SplatWeightMultiplicationFunc         m_SplatWeightMultiplication;
+  InterpolationWeightMultiplicationFunc m_InterpolationWeightMultiplication;
+  SumAlongRayFunc                       m_SumAlongRay;
+  double                                m_InferiorClip{ 0. };
+  double                                m_SuperiorClip{ 1. };
 };
 
 } // end namespace rtk

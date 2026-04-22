@@ -29,33 +29,68 @@
 
 namespace rtk
 {
-template <class TInputImage,
-          class TOutputImage,
-          class TInterpolationWeightMultiplication,
-          class TSplatWeightMultiplication,
-          class TSumAlongRay>
-JosephBackAttenuatedProjectionImageFilter<TInputImage,
-                                          TOutputImage,
-                                          TInterpolationWeightMultiplication,
-                                          TSplatWeightMultiplication,
-                                          TSumAlongRay>::JosephBackAttenuatedProjectionImageFilter()
+template <class TInputImage, class TOutputImage>
+JosephBackAttenuatedProjectionImageFilter<TInputImage, TOutputImage>::JosephBackAttenuatedProjectionImageFilter()
+  : JosephBackProjectionImageFilter<TInputImage, TOutputImage>()
 {
   this->m_InferiorClip = 0.;
   this->m_SuperiorClip = 1.;
   this->SetNumberOfRequiredInputs(3);
+
+  /** \brief Interpolation: accumulate attenuation pixel along the ray */
+  auto interpolationWeightMultiplicationAttenuatedFunc = [this](const ThreadIdType         itkNotUsed(threadId),
+                                                                double                     stepLengthInVoxel,
+                                                                const WeightCoordinateType weight,
+                                                                const InputPixelType *     p,
+                                                                const int                  i) -> OutputPixelType {
+    const double w = weight * stepLengthInVoxel;
+    this->m_AttenuationPixel += w * (p + this->m_AttenuationMinusEmissionMapsPtrDiff)[i];
+    return static_cast<OutputPixelType>(w * (p + this->m_AttenuationMinusEmissionMapsPtrDiff)[i]);
+  };
+  this->SetInterpolationWeightMultiplication(interpolationWeightMultiplicationAttenuatedFunc);
+
+  /** \brief Sum along ray: compute attenuation correction and reset accumulator */
+  auto computeAttenuationCorrectionFunc = [this](const InputPixelType rayValue,
+                                                 const InputPixelType attenuationRay,
+                                                 const VectorType &   stepInMM,
+                                                 bool &               isNewRay) -> OutputPixelType {
+    if (isNewRay)
+    {
+      this->m_Ex1 = static_cast<InputPixelType>(1);
+      isNewRay = false;
+    }
+    InputPixelType ex2 = static_cast<InputPixelType>(exp(-attenuationRay * stepInMM.GetNorm()));
+    InputPixelType wf;
+    if (this->m_AttenuationPixel > 0)
+    {
+      wf = (this->m_Ex1 - ex2) / this->m_AttenuationPixel;
+    }
+    else
+    {
+      wf = this->m_Ex1 * stepInMM.GetNorm();
+    }
+    this->m_Ex1 = ex2;
+    this->m_AttenuationPixel = static_cast<InputPixelType>(0);
+    return static_cast<OutputPixelType>(wf * rayValue);
+  };
+  this->SetSumAlongRay(computeAttenuationCorrectionFunc);
+
+  /** \brief Splat multiplication: simple accumulation */
+  auto splatWeightMultiplicationAttenuatedFunc = [](const InputPixelType &     rayValue,
+                                                    OutputPixelType &          output,
+                                                    const double               stepLengthInVoxel,
+                                                    const double               itkNotUsed(voxelSize),
+                                                    const WeightCoordinateType weight) {
+    output += static_cast<OutputPixelType>(rayValue * weight * stepLengthInVoxel);
+  };
+  this->SetSplatWeightMultiplication(splatWeightMultiplicationAttenuatedFunc);
+
+  this->DynamicMultiThreadingOff();
 }
 
-template <class TInputImage,
-          class TOutputImage,
-          class TInterpolationWeightMultiplication,
-          class TSplatWeightMultiplication,
-          class TSumAlongRay>
+template <class TInputImage, class TOutputImage>
 void
-JosephBackAttenuatedProjectionImageFilter<TInputImage,
-                                          TOutputImage,
-                                          TInterpolationWeightMultiplication,
-                                          TSplatWeightMultiplication,
-                                          TSumAlongRay>::GenerateInputRequestedRegion()
+JosephBackAttenuatedProjectionImageFilter<TInputImage, TOutputImage>::GenerateInputRequestedRegion()
 {
   // Input 2 is the attenuation map relative to the volume
   typename Superclass::InputImagePointer inputPtr2 = const_cast<TInputImage *>(this->GetInput(2));
@@ -64,17 +99,9 @@ JosephBackAttenuatedProjectionImageFilter<TInputImage,
   Superclass::GenerateInputRequestedRegion();
 }
 
-template <class TInputImage,
-          class TOutputImage,
-          class TInterpolationWeightMultiplication,
-          class TSplatWeightMultiplication,
-          class TSumAlongRay>
+template <class TInputImage, class TOutputImage>
 void
-JosephBackAttenuatedProjectionImageFilter<TInputImage,
-                                          TOutputImage,
-                                          TInterpolationWeightMultiplication,
-                                          TSplatWeightMultiplication,
-                                          TSumAlongRay>::VerifyInputInformation() const
+JosephBackAttenuatedProjectionImageFilter<TInputImage, TOutputImage>::VerifyInputInformation() const
 {
   using ImageBaseType = const itk::ImageBase<InputImageDimension>;
 
@@ -154,38 +181,22 @@ JosephBackAttenuatedProjectionImageFilter<TInputImage,
   }
 }
 
-template <class TInputImage,
-          class TOutputImage,
-          class TInterpolationWeightMultiplication,
-          class TSplatWeightMultiplication,
-          class TSumAlongRay>
+template <class TInputImage, class TOutputImage>
 void
-JosephBackAttenuatedProjectionImageFilter<TInputImage,
-                                          TOutputImage,
-                                          TInterpolationWeightMultiplication,
-                                          TSplatWeightMultiplication,
-                                          TSumAlongRay>::Init()
+JosephBackAttenuatedProjectionImageFilter<TInputImage, TOutputImage>::Init()
 {
   if (!this->GetInput(2))
   {
     itkExceptionMacro("Attenuation map (input 2) must be set before running the attenuated back projector.");
   }
-  this->m_InterpolationWeightMultiplication.SetAttenuationMinusEmissionMapsPtrDiff(
-    this->GetInput(2)->GetBufferPointer() - this->GetInput(0)->GetBufferPointer());
-  this->m_SumAlongRay.SetAttenuationPixel(this->m_InterpolationWeightMultiplication.GetAttenuationPixel());
+  this->m_AttenuationMinusEmissionMapsPtrDiff =
+    this->GetInput(2)->GetBufferPointer() - this->GetInput(0)->GetBufferPointer();
+  this->m_AttenuationMapBuffer = this->GetInput(2)->GetBufferPointer();
 }
 
-template <class TInputImage,
-          class TOutputImage,
-          class TInterpolationWeightMultiplication,
-          class TSplatWeightMultiplication,
-          class TSumAlongRay>
+template <class TInputImage, class TOutputImage>
 void
-JosephBackAttenuatedProjectionImageFilter<TInputImage,
-                                          TOutputImage,
-                                          TInterpolationWeightMultiplication,
-                                          TSplatWeightMultiplication,
-                                          TSumAlongRay>::GenerateData()
+JosephBackAttenuatedProjectionImageFilter<TInputImage, TOutputImage>::GenerateData()
 {
   Init();
   Superclass::GenerateData();
