@@ -25,160 +25,7 @@
 
 namespace rtk
 {
-namespace Functor
-{
-/** \class InterpolationWeightMultiplicationAttenuatedBackProjection
- * \brief Function to multiply the interpolation weights with the projected
- * volume values and attenuation map.
- *
- * \author Antoine Robert
- *
- * \ingroup RTK Functions
- */
-template <class TInput, class TCoordinateType, class TOutput = TInput>
-class ITK_TEMPLATE_EXPORT InterpolationWeightMultiplicationAttenuatedBackProjection
-{
-public:
-  InterpolationWeightMultiplicationAttenuatedBackProjection() { m_AttenuationPixel = 0; }
 
-  ~InterpolationWeightMultiplicationAttenuatedBackProjection() = default;
-  bool
-  operator!=(const InterpolationWeightMultiplicationAttenuatedBackProjection &) const
-  {
-    return false;
-  }
-
-  bool
-  operator==(const InterpolationWeightMultiplicationAttenuatedBackProjection & other) const
-  {
-    return !(*this != other);
-  }
-
-  inline TOutput
-  operator()(const double stepLengthInVoxel, const TCoordinateType weight, const TInput * p, const int i)
-  {
-    const double w = weight * stepLengthInVoxel;
-
-    m_AttenuationPixel += w * (p + m_AttenuationMinusEmissionMapsPtrDiff)[i];
-    return w * (p + m_AttenuationMinusEmissionMapsPtrDiff)[i];
-  }
-
-  void
-  SetAttenuationMinusEmissionMapsPtrDiff(std::ptrdiff_t pd)
-  {
-    m_AttenuationMinusEmissionMapsPtrDiff = pd;
-  }
-  TOutput *
-  GetAttenuationPixel()
-  {
-    return &m_AttenuationPixel;
-  }
-
-private:
-  std::ptrdiff_t m_AttenuationMinusEmissionMapsPtrDiff;
-  TInput         m_AttenuationPixel;
-};
-
-/** \class ComputeAttenuationCorrectionBackProjection
- * \brief Function to compute the attenuation correction on the projection.
- *
- * \author Antoine Robert
- *
- * \ingroup RTK Functions
- */
-template <class TInput, class TOutput>
-class ITK_TEMPLATE_EXPORT ComputeAttenuationCorrectionBackProjection
-{
-public:
-  using VectorType = itk::Vector<double, 3>;
-
-  ComputeAttenuationCorrectionBackProjection() { m_Ex1 = 1; }
-
-  ~ComputeAttenuationCorrectionBackProjection() = default;
-  bool
-  operator!=(const ComputeAttenuationCorrectionBackProjection &) const
-  {
-    return false;
-  }
-
-  bool
-  operator==(const ComputeAttenuationCorrectionBackProjection & other) const
-  {
-    return !(*this != other);
-  }
-
-  inline TOutput
-  operator()(const TInput rayValue, const TInput attenuationRay, const VectorType & stepInMM, bool & isNewRay)
-  {
-    if (isNewRay)
-    {
-      m_Ex1 = 1;
-      isNewRay = false;
-    }
-    TInput ex2 = exp(-attenuationRay * stepInMM.GetNorm());
-    TInput wf;
-    if (*m_AttenuationPixel > 0)
-    {
-      wf = (m_Ex1 - ex2) / *m_AttenuationPixel;
-    }
-    else
-    {
-      wf = m_Ex1 * stepInMM.GetNorm();
-    }
-
-    m_Ex1 = ex2;
-    *m_AttenuationPixel = 0;
-    return wf * rayValue;
-  }
-
-  void
-  SetAttenuationPixel(TInput * attenuationPixel)
-  {
-    m_AttenuationPixel = attenuationPixel;
-  }
-
-private:
-  TInput   m_Ex1;
-  TInput * m_AttenuationPixel;
-};
-
-/** \class SplatWeightMultiplicationAttenuated
- * \brief Function to multiply the interpolation weights with the projection
- * values.
- *
- * \author Cyril Mory
- *
- * \ingroup RTK Functions
- */
-template <class TInput, class TCoordinateType, class TOutput = TCoordinateType>
-class ITK_TEMPLATE_EXPORT SplatWeightMultiplicationAttenuated
-{
-public:
-  SplatWeightMultiplicationAttenuated() = default;
-  ~SplatWeightMultiplicationAttenuated() = default;
-  bool
-  operator!=(const SplatWeightMultiplicationAttenuated &) const
-  {
-    return false;
-  }
-
-  bool
-  operator==(const SplatWeightMultiplicationAttenuated & other) const
-  {
-    return !(*this != other);
-  }
-
-  inline void
-  operator()(const TInput &        rayValue,
-             TOutput &             output,
-             const double          stepLengthInVoxel,
-             const double          itkNotUsed(voxelSize),
-             const TCoordinateType weight) const
-  {
-    output += rayValue * weight * stepLengthInVoxel;
-  }
-};
-} // end namespace Functor
 
 /** \class JosephBackAttenuatedProjectionImageFilter
  * \brief Attenuated Joseph back projection.
@@ -194,37 +41,21 @@ public:
  * \ingroup RTK Projector
  */
 
-template <
-  class TInputImage,
-  class TOutputImage,
-  class TInterpolationWeightMultiplication = Functor::InterpolationWeightMultiplicationAttenuatedBackProjection<
-    typename TInputImage::PixelType,
-    typename itk::PixelTraits<typename TInputImage::PixelType>::ValueType>,
-  class TSplatWeightMultiplication = Functor::
-    SplatWeightMultiplicationAttenuated<typename TInputImage::PixelType, double, typename TOutputImage::PixelType>,
-  class TSumAlongRay = Functor::ComputeAttenuationCorrectionBackProjection<typename TInputImage::PixelType,
-                                                                           typename TOutputImage::PixelType>>
+template <class TInputImage, class TOutputImage>
 class ITK_TEMPLATE_EXPORT JosephBackAttenuatedProjectionImageFilter
-  : public JosephBackProjectionImageFilter<TInputImage,
-                                           TOutputImage,
-                                           TInterpolationWeightMultiplication,
-                                           TSplatWeightMultiplication,
-                                           TSumAlongRay>
+  : public JosephBackProjectionImageFilter<TInputImage, TOutputImage>
 {
 public:
   ITK_DISALLOW_COPY_AND_MOVE(JosephBackAttenuatedProjectionImageFilter);
 
   /** Standard class type alias. */
   using Self = JosephBackAttenuatedProjectionImageFilter;
-  using Superclass = JosephBackProjectionImageFilter<TInputImage,
-                                                     TOutputImage,
-                                                     TInterpolationWeightMultiplication,
-                                                     TSplatWeightMultiplication,
-                                                     TSumAlongRay>;
+  using Superclass = JosephBackProjectionImageFilter<TInputImage, TOutputImage>;
   using Pointer = itk::SmartPointer<Self>;
   using ConstPointer = itk::SmartPointer<const Self>;
   using InputPixelType = typename TInputImage::PixelType;
   using OutputPixelType = typename TOutputImage::PixelType;
+  using WeightCoordinateType = typename itk::PixelTraits<InputPixelType>::ValueType;
   using OutputImageRegionType = typename TOutputImage::RegionType;
   using CoordinateType = double;
   using VectorType = itk::Vector<CoordinateType, TInputImage::ImageDimension>;
@@ -243,6 +74,11 @@ public:
 protected:
   JosephBackAttenuatedProjectionImageFilter();
   ~JosephBackAttenuatedProjectionImageFilter() override = default;
+
+  std::ptrdiff_t         m_AttenuationMinusEmissionMapsPtrDiff{ 0 };
+  InputPixelType         m_AttenuationPixel{ static_cast<InputPixelType>(0) };
+  InputPixelType         m_Ex1{ static_cast<InputPixelType>(1) };
+  const InputPixelType * m_AttenuationMapBuffer{ nullptr };
 
   /** Apply changes to the input image requested region. */
   void
