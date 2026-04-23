@@ -61,7 +61,7 @@ This installs:
 
 After installing, run the tests with:
 ```
-pytest test/
+pytest test/*.py
 ```
 
 ### Documentation
