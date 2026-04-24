@@ -4,6 +4,8 @@
 
 RTK is based on ITK and aims at following its coding conventions. Any developer should follow these conventions when submitting new code or contributions to the existing one. We strongly recommend you to read thoroughly [ITK's style guide](http://www.itk.org/Wiki/ITK/Coding_Style_Guide).
 
+All (new) command-line options in applications must use hyphen-separated lowercase names (for example, `output-file`), following the [glibc convention](https://ftp.gnu.org/old-gnu/Manuals/glibc-2.2.3/html_node/libc_511.html). This rule applies to both C++ and Python applications. Some existing options not following this style are kept for backward compatibility.
+
 ## Testing
 
 This section describes how to add/edit datasets for testing purposes for RTK. Datasets are not stored in the GIT repository for efficiency and also to avoid having large history due to binary files. Instead the files are stored on a [Girder](http://data.kitware.com) instance. Here's the recipe to add new datasets:
@@ -20,6 +22,8 @@ RTK_ADD_TEST(NAME rtkimagxtest
     DATA{Data/Input/ImagX/raw.xml,raw.raw}
     DATA{Data/Baseline/ImagX/attenuation.mha})
 ```
+
+
 ## Dashboard
 
 *   The RTK dashboard is available at [RTK Dashboard](http://my.cdash.org/index.php?project=RTK)
