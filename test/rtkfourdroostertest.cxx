@@ -129,7 +129,7 @@ rtkfourdroostertest(int, char *[])
     // Ellipse 1
     auto e1 = REIType::New();
     auto semiprincipalaxis = itk::MakeVector(60., 30., 60.);
-    auto center = itk::MakeVector(0., 0., 0.);
+    auto center = itk::MakePoint(0., 0., 0.);
     e1->SetInput(oneProjectionSource->GetOutput());
     e1->SetGeometry(oneProjGeometry);
     e1->SetDensity(2.);
@@ -198,9 +198,8 @@ rtkfourdroostertest(int, char *[])
   IteratorType  dvfIt(deformationField, deformationField->GetLargestPossibleRegion());
   IteratorType  idvfIt(inverseDeformationField, inverseDeformationField->GetLargestPossibleRegion());
 
-  DVFSequenceImageType::OffsetType DVFCenter;
+  DVFSequenceImageType::OffsetType DVFCenter{};
   DVFSequenceImageType::IndexType  toCenter;
-  DVFCenter.Fill(0);
   DVFCenter[0] = sizeMotion[0] / 2;
   DVFCenter[1] = sizeMotion[1] / 2;
   DVFCenter[2] = sizeMotion[2] / 2;
@@ -238,8 +237,7 @@ rtkfourdroostertest(int, char *[])
     axis.Fill(60.);
     axis[1] = 30;
     de1->SetAxis(axis);
-    DEType::VectorType center;
-    center.Fill(0.);
+    DEType::PointType center{};
     de1->SetCenter(center);
     de1->SetAngle(0.);
     de1->InPlaceOff();
@@ -252,7 +250,7 @@ rtkfourdroostertest(int, char *[])
     DEType::VectorType axis2;
     axis2.Fill(8.);
     de2->SetAxis(axis2);
-    DEType::VectorType center2;
+    DEType::PointType center2;
     center2[0] = 4 * (std::abs((4 + n) % 8 - 4.) - 2.);
     center2[1] = 0.;
     center2[2] = 0.;
@@ -276,8 +274,7 @@ rtkfourdroostertest(int, char *[])
   axis.Fill(15.);
   axis[0] = 20;
   roi->SetAxis(axis);
-  DEType::VectorType center;
-  center.Fill(0.);
+  DEType::PointType center{};
   roi->SetCenter(center);
   roi->SetAngle(0.);
   roi->InPlaceOff();

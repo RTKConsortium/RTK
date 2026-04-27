@@ -82,15 +82,13 @@ main(int argc, char * argv[])
                              << " does not match the number of bins " << NumberOfSpectralBins);
 
   // Check that the inputs have the expected size
-  DecomposedProjectionType::IndexType indexDecomp;
-  indexDecomp.Fill(0);
+  DecomposedProjectionType::IndexType indexDecomp{};
   if (decomposedProjection->GetPixel(indexDecomp).Size() != NumberOfMaterials)
     itkGenericExceptionMacro(<< "Decomposed projections (i.e. initialization data) image has vector size "
                              << decomposedProjection->GetPixel(indexDecomp).Size() << ", should be "
                              << NumberOfMaterials);
 
-  SpectralProjectionsType::IndexType indexSpect;
-  indexSpect.Fill(0);
+  SpectralProjectionsType::IndexType indexSpect{};
   if (spectralProjection->GetPixel(indexSpect).Size() != NumberOfSpectralBins)
     itkGenericExceptionMacro(<< "Spectral projections (i.e. photon count data) image has vector size "
                              << spectralProjection->GetPixel(indexSpect).Size() << ", should be "

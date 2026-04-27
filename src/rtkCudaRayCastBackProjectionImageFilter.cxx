@@ -121,8 +121,7 @@ CudaRayCastBackProjectionImageFilter ::GPUGenerateData()
   for (unsigned int iProj = iFirstProj; iProj < iFirstProj + nProj; iProj++)
   {
     GeometryType::ThreeDHomogeneousMatrixType translatedProjectionIndexTransformMatrix;
-    GeometryType::ThreeDHomogeneousMatrixType translatedVolumeTransformMatrix;
-    translatedVolumeTransformMatrix.Fill(0);
+    GeometryType::ThreeDHomogeneousMatrixType translatedVolumeTransformMatrix{};
 
     // The matrices required depend on the type of detector
     if (radiusCylindricalDetector == 0)

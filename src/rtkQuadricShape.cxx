@@ -221,10 +221,7 @@ void
 QuadricShape ::Rotate(const RotationMatrixType & r)
 {
   Superclass::Rotate(r);
-  VectorType newABC, newDFE, newGHI;
-  newABC.Fill(0.);
-  newDFE.Fill(0.);
-  newGHI.Fill(0.);
+  VectorType newABC{}, newDFE{}, newGHI{};
   VectorType oldABC, oldDFE, oldGHI;
   oldABC[0] = m_A;
   oldABC[1] = m_B;
@@ -316,7 +313,7 @@ QuadricShape ::SetEllipsoid(const PointType & center, const VectorType & axis, c
   m_I = TempG * sin(yangle * (itk::Math::pi / 180)) + TempI * cos(yangle * (itk::Math::pi / 180));
   m_J = TempJ;
 
-  Translate(center);
+  Translate(center.GetVectorFromOrigin());
 }
 
 itk::LightObject::Pointer

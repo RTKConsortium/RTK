@@ -74,15 +74,13 @@ main(int argc, char * argv[])
   thresholds[NumberOfSpectralBins] = MaximumPulseHeight;
 
   // Check that the inputs have the expected size
-  DecomposedProjectionType::IndexType indexDecomp;
-  indexDecomp.Fill(0);
+  DecomposedProjectionType::IndexType indexDecomp{};
   if (decomposedProjection->GetPixel(indexDecomp).Size() != NumberOfMaterials)
     itkGenericExceptionMacro(<< "Decomposed projections (i.e. initialization data) image has vector size "
                              << decomposedProjection->GetPixel(indexDecomp).Size() << ", should be "
                              << NumberOfMaterials);
 
-  MeasuredProjectionsType::IndexType indexSpect;
-  indexSpect.Fill(0);
+  MeasuredProjectionsType::IndexType indexSpect{};
   if (measuredProjections->GetPixel(indexSpect).Size() != NumberOfSpectralBins)
     itkGenericExceptionMacro(<< "Spectral projections (i.e. photon count data) image has vector size "
                              << measuredProjections->GetPixel(indexSpect).Size() << ", should be "

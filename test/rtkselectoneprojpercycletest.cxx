@@ -55,9 +55,7 @@ rtkselectoneprojpercycletest(int, char *[])
 
   // Projections
   using REIType = rtk::RayEllipsoidIntersectionImageFilter<OutputImageType, OutputImageType>;
-  OutputImageType::IndexType destinationIndex, destinationIndexRef;
-  destinationIndex.Fill(0);
-  destinationIndexRef.Fill(0);
+  OutputImageType::IndexType destinationIndex{}, destinationIndexRef{};
   auto pasteFilter = itk::PasteImageFilter<OutputImageType, OutputImageType, OutputImageType>::New();
 
   std::string              signalFileName = "signal_SelectOneProjPerCycle.txt";
@@ -77,7 +75,7 @@ rtkselectoneprojpercycletest(int, char *[])
     // Ellipse 1
     auto e1 = REIType::New();
     auto semiprincipalaxis = itk::MakeVector(60., 60., 60.);
-    auto center = itk::MakeVector(0., 0., 0.);
+    auto center = itk::MakePoint(0., 0., 0.);
     e1->SetInput(oneProjectionSource->GetOutput());
     e1->SetGeometry(oneProjGeometry);
     e1->SetDensity(2.);

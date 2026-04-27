@@ -101,18 +101,15 @@ FourDToProjectionStackImageFilter<ProjectionStackType, VolumeSeriesType>::Initia
   // Set the volume source
   int VolumeDimension = VolumeType::ImageDimension;
 
-  typename VolumeType::SizeType constantVolumeSourceSize;
-  constantVolumeSourceSize.Fill(0);
+  typename VolumeType::SizeType constantVolumeSourceSize{};
   for (int i = 0; i < VolumeDimension; i++)
     constantVolumeSourceSize[i] = GetInputVolumeSeries()->GetLargestPossibleRegion().GetSize()[i];
 
-  typename VolumeType::SpacingType constantVolumeSourceSpacing;
-  constantVolumeSourceSpacing.Fill(0);
+  typename VolumeType::SpacingType constantVolumeSourceSpacing{};
   for (int i = 0; i < VolumeDimension; i++)
     constantVolumeSourceSpacing[i] = GetInputVolumeSeries()->GetSpacing()[i];
 
-  typename VolumeType::PointType constantVolumeSourceOrigin;
-  constantVolumeSourceOrigin.Fill(0);
+  typename VolumeType::PointType constantVolumeSourceOrigin{};
   for (int i = 0; i < VolumeDimension; i++)
     constantVolumeSourceOrigin[i] = GetInputVolumeSeries()->GetOrigin()[i];
 

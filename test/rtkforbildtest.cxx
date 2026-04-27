@@ -56,8 +56,7 @@ rtkforbildtest(int, char *[])
   projectionsSource->SetConstant(0.);
 
   // Rotation matrix
-  rtk::ThreeDCircularProjectionGeometry::Matrix3x3Type rotMat;
-  rotMat.Fill(0.);
+  rtk::ThreeDCircularProjectionGeometry::Matrix3x3Type rotMat{};
   rotMat[0][0] = 1.;
   rotMat[1][2] = 1.;
   rotMat[2][1] = -1.;

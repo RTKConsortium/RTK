@@ -151,8 +151,8 @@ ForbildPhantomFileReader::CreateForbildCylinder(const std::string & s, const std
     itkExceptionMacro(<< "Could not find r (radius) in " << s);
   VectorType axes;
   axes.Fill(r);
-  VectorType planeDir;
-  planeDir.Fill(0.);
+  VectorType planeDir{};
+
   ConvexShape::RotationMatrixType rot;
   rot.SetIdentity();
   if (fig == "Cylinder_x")
@@ -180,11 +180,11 @@ ForbildPhantomFileReader::CreateForbildCylinder(const std::string & s, const std
     rot = ComputeRotationMatrixBetweenVectors(planeDir, dir);
   }
   auto q = QuadricShape::New();
-  q->SetEllipsoid(VectorType(0.), axes);
+  q->SetEllipsoid(itk::Point<double, 3>{}, axes);
   q->AddClipPlane(planeDir, 0.5 * l);
   q->AddClipPlane(-1. * planeDir, 0.5 * l);
   q->Rotate(rot);
-  q->Translate(m_Center);
+  q->Translate(m_Center.GetVectorFromOrigin());
   m_ConvexShape = q.GetPointer();
 }
 
@@ -194,9 +194,8 @@ ForbildPhantomFileReader::CreateForbildElliptCyl(const std::string & s, const st
   ScalarType l = 0.;
   if (!FindParameterInString("l", s, l))
     itkExceptionMacro(<< "Could not find l (length) in " << s);
-  VectorType axes;
-  axes.Fill(0.);
-  size_t found = 0;
+  VectorType axes{};
+  size_t     found = 0;
   if (FindParameterInString("dx", s, axes[0]))
     found++;
   if (FindParameterInString("dy", s, axes[1]))
@@ -210,7 +209,7 @@ ForbildPhantomFileReader::CreateForbildElliptCyl(const std::string & s, const st
     planeDir[i] = (axes[i] == 0.) ? 1. : 0.;
 
   auto q = QuadricShape::New();
-  q->SetEllipsoid(VectorType(0.), axes);
+  q->SetEllipsoid(itk::MakePoint(0., 0., 0.), axes);
   q->AddClipPlane(planeDir, 0.5 * l);
   q->AddClipPlane(-1. * planeDir, 0.5 * l);
   if (fig == "Ellipt_Cyl")
@@ -252,7 +251,7 @@ ForbildPhantomFileReader::CreateForbildElliptCyl(const std::string & s, const st
     }
     q->Rotate(rot);
   }
-  q->Translate(m_Center);
+  q->Translate(m_Center.GetVectorFromOrigin());
   m_ConvexShape = q.GetPointer();
 }
 
@@ -267,7 +266,7 @@ ForbildPhantomFileReader::CreateForbildEllipsoid(const std::string & s, const st
   if (!FindParameterInString("dz", s, axes[2]))
     itkExceptionMacro(<< "Could not find dz in " << s);
   auto q = QuadricShape::New();
-  q->SetEllipsoid(VectorType(0.), axes);
+  q->SetEllipsoid(itk::Point<double, 3>{}, axes);
 
   if (fig == "Ellipsoid_free")
   {
@@ -296,7 +295,7 @@ ForbildPhantomFileReader::CreateForbildEllipsoid(const std::string & s, const st
     }
     q->Rotate(rot);
   }
-  q->Translate(m_Center);
+  q->Translate(m_Center.GetVectorFromOrigin());
   m_ConvexShape = q.GetPointer();
 }
 
@@ -325,10 +324,8 @@ ForbildPhantomFileReader::CreateForbildCone(const std::string & s, const std::st
   planeDir[1] = 0.;
   planeDir[2] = 1.;
 
-  auto      q = QuadricShape::New();
-  PointType spatialOffset;
-  spatialOffset[0] = 0.;
-  spatialOffset[1] = 0.;
+  auto       q = QuadricShape::New();
+  VectorType spatialOffset{};
   if (r2 > r1)
   {
     axes[2] = -l * r1 / (r2 - r1);
@@ -343,11 +340,10 @@ ForbildPhantomFileReader::CreateForbildCone(const std::string & s, const std::st
     q->AddClipPlane(planeDir, l + axes[2]);
     spatialOffset[2] = -axes[2] - 0.5 * l;
   }
-  q->SetEllipsoid(VectorType(0.), axes);
+  q->SetEllipsoid(itk::Point<double, 3>{}, axes);
   q->SetJ(0.);
 
-  RotationMatrixType rot;
-  rot.Fill(0.);
+  RotationMatrixType rot{};
   if (fig == "Cone_x")
   {
     rot[0][2] = 1.;
@@ -376,7 +372,8 @@ ForbildPhantomFileReader::CreateForbildCone(const std::string & s, const std::st
     itkExceptionMacro(<< "Unknown figure: " << fig);
   }
   q->Rotate(rot);
-  q->Translate(m_Center + rot * spatialOffset);
+  VectorType translation = m_Center.GetVectorFromOrigin() + rot * spatialOffset;
+  q->Translate(translation);
   m_ConvexShape = q.GetPointer();
 }
 
@@ -429,8 +426,7 @@ ForbildPhantomFileReader::ComputeRotationMatrixBetweenVectors(const VectorType &
     return r;
   }
   VectorType                      v = CrossProduct(s, d);
-  ConvexShape::RotationMatrixType vx;
-  vx.Fill(0.);
+  ConvexShape::RotationMatrixType vx{};
   vx[0][1] = -v[2];
   vx[0][2] = v[1];
   vx[1][0] = v[2];
@@ -472,8 +468,7 @@ ForbildPhantomFileReader::FindClipPlanes(const std::string & s)
   currs = s.c_str();
   while (re.find(currs))
   {
-    VectorType vec;
-    vec.Fill(0.);
+    VectorType vec{};
     vec[0] = 1.;
     ScalarType sign = (re.match(1) == std::string("<")) ? 1. : -1.;
     ScalarType expr = std::stod(re.match(2));
@@ -488,8 +483,7 @@ ForbildPhantomFileReader::FindClipPlanes(const std::string & s)
   currs = s.c_str();
   while (re.find(currs))
   {
-    VectorType vec;
-    vec.Fill(0.);
+    VectorType vec{};
     vec[1] = 1.;
     ScalarType sign = (re.match(1) == std::string("<")) ? 1. : -1.;
     ScalarType expr = std::stod(re.match(2));
@@ -504,8 +498,7 @@ ForbildPhantomFileReader::FindClipPlanes(const std::string & s)
   currs = s.c_str();
   while (re.find(currs))
   {
-    VectorType vec;
-    vec.Fill(0.);
+    VectorType vec{};
     vec[2] = 1.;
     ScalarType sign = (re.match(1) == std::string("<")) ? 1. : -1.;
     ScalarType expr = std::stod(re.match(2));

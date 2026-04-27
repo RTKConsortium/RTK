@@ -221,8 +221,8 @@ JosephForwardProjectionImageFilter<TInputImage,
   }
 
   // Create intersection functions, one for each possible main direction
-  auto                          box = BoxShape::New();
-  typename BoxShape::VectorType boxMin, boxMax;
+  auto                         box = BoxShape::New();
+  typename BoxShape::PointType boxMin, boxMax;
   for (unsigned int i = 0; i < Dimension; i++)
   {
     boxMin[i] = this->GetInput(1)->GetBufferedRegion().GetIndex()[i];
@@ -239,11 +239,12 @@ JosephForwardProjectionImageFilter<TInputImage,
   double superiorClip = 1. - m_InferiorClip;
 
   // Go over each pixel of the projection
-  typename BoxShape::VectorType stepMM, np, fp;
+  typename BoxShape::VectorType           stepMM;
+  typename InputRegionIterator::PointType np, fp;
   for (unsigned int pix = 0; pix < outputRegionForThread.GetNumberOfPixels(); pix++, itIn->Next(), ++itOut)
   {
-    typename InputRegionIterator::PointType pixelPosition = itIn->GetPixelPosition();
-    typename InputRegionIterator::PointType dirVox = -itIn->GetSourceToPixel();
+    typename InputRegionIterator::PointType  pixelPosition = itIn->GetPixelPosition();
+    typename InputRegionIterator::VectorType dirVox = -itIn->GetSourceToPixel();
 
     // Select main direction
     unsigned int                  mainDir = 0;
@@ -417,7 +418,7 @@ JosephForwardProjectionImageFilter<TInputImage,
     }
     else
       m_ProjectedValueAccumulation(
-        threadId, itIn->Get(), itOut.Value(), {}, pixelPosition, pixelPosition, dirVox, pixelPosition, pixelPosition);
+        threadId, itIn->Get(), itOut.Value(), {}, stepMM, pixelPosition, dirVox, pixelPosition, pixelPosition);
   }
   delete itIn;
 }

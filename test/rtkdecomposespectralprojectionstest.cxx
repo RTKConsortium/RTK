@@ -83,8 +83,7 @@ rtkdecomposespectralprojectionstest(int argc, char * argv[])
   decomposed->SetOrigin(origin);
   decomposed->SetSpacing(spacing);
   DecomposedProjectionsType::RegionType region;
-  DecomposedProjectionsType::IndexType  index;
-  index.Fill(0);
+  DecomposedProjectionsType::IndexType  index{};
   region.SetSize(size);
   region.SetIndex(index);
   decomposed->SetRegions(region);
@@ -102,7 +101,7 @@ rtkdecomposespectralprojectionstest(int argc, char * argv[])
   for (unsigned int material = 0; material < 3; material++)
   {
     auto semiprincipalaxis = itk::MakeVector(10., 10., 10.);
-    auto center = itk::MakeVector(15., 0., 15.);
+    auto center = itk::MakePoint(15., 0., 15.);
     rei->SetAngle(0.);
     if (material == 2) // water
       rei->SetDensity(1.);

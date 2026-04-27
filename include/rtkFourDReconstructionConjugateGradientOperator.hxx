@@ -107,14 +107,10 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
   unsigned int Dimension = 3;
 
   // Configure the constant volume sources
-  typename VolumeType::SizeType      ConstantVolumeSourceSize;
-  typename VolumeType::SpacingType   ConstantVolumeSourceSpacing;
-  typename VolumeType::PointType     ConstantVolumeSourceOrigin;
+  typename VolumeType::SizeType      ConstantVolumeSourceSize{};
+  typename VolumeType::SpacingType   ConstantVolumeSourceSpacing{};
+  typename VolumeType::PointType     ConstantVolumeSourceOrigin{};
   typename VolumeType::DirectionType ConstantVolumeSourceDirection;
-
-  ConstantVolumeSourceSize.Fill(0);
-  ConstantVolumeSourceSpacing.Fill(0);
-  ConstantVolumeSourceOrigin.Fill(0);
 
   for (unsigned int i = 0; i < Dimension; i++)
   {
