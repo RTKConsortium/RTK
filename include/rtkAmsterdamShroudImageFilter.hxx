@@ -179,10 +179,8 @@ AmsterdamShroudImageFilter<TInputImage>::CropOutsideProjectedBox()
   for (int iProj = reg.GetIndex(2); iProj < reg.GetIndex(2) + (int)reg.GetSize(2); iProj++)
   {
     // Project and keep the inferior and superior 2d corner
-    itk::ContinuousIndex<double, 3> pCornerInf, pCornerSup;
-    pCornerInf.Fill(0.); // Useless but removes warning
-    pCornerSup.Fill(0.); // Useless but removes warning
-    GeometryType::MatrixType matrix;
+    itk::ContinuousIndex<double, 3> pCornerInf{}, pCornerSup{};
+    GeometryType::MatrixType        matrix;
     matrix = m_Geometry->GetMatrices()[iProj].GetVnlMatrix();
     for (unsigned int ci = 0; ci < 8; ci++)
     {

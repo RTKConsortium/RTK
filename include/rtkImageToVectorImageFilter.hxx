@@ -114,12 +114,10 @@ ImageToVectorImageFilter<InputImageType, OutputImageType>::ThreadedGenerateData(
   const unsigned int InputDimension = InputImageType::ImageDimension;
   const unsigned int OutputDimension = OutputImageType::ImageDimension;
 
-  typename InputImageType::SizeType   inputSize;
-  typename InputImageType::IndexType  inputIndex;
+  typename InputImageType::SizeType   inputSize{};
+  typename InputImageType::IndexType  inputIndex{};
   typename InputImageType::RegionType inputRegion;
 
-  inputSize.Fill(0);
-  inputIndex.Fill(0);
   for (unsigned int dim = 0; dim < OutputDimension; dim++)
   {
     inputSize[dim] = outputRegionForThread.GetSize()[dim];

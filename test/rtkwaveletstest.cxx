@@ -90,7 +90,6 @@ rtkwaveletstest(int, char *[])
   auto size = itk::MakeSize(64, 64, 64);
   auto spacing = itk::MakeVector(4., 4., 4.);
 #endif
-  origin.Fill(0.);
   randomVolumeSource->SetOrigin(origin);
   randomVolumeSource->SetSpacing(spacing);
   randomVolumeSource->SetSize(size);

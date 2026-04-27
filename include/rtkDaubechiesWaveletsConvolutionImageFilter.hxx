@@ -202,8 +202,7 @@ DaubechiesWaveletsConvolutionImageFilter<TImage>::GenerateOutputInformation()
     kernelSize.Fill(1);
     kernelSize[d] = 2 * m_Order;
 
-    typename TImage::IndexType kernelIndex;
-    kernelIndex.Fill(0);
+    typename TImage::IndexType kernelIndex{};
 
     typename TImage::RegionType kernelRegion;
     kernelRegion.SetSize(kernelSize);
@@ -281,8 +280,7 @@ DaubechiesWaveletsConvolutionImageFilter<TImage>::GenerateData()
     kernelSize.Fill(1);
     kernelSize[d] = 2 * m_Order;
 
-    typename TImage::IndexType kernelIndex;
-    kernelIndex.Fill(0);
+    typename TImage::IndexType kernelIndex{};
 
     typename TImage::RegionType kernelRegion;
     kernelRegion.SetSize(kernelSize);

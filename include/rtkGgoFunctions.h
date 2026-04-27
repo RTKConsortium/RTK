@@ -239,8 +239,7 @@ SetProjectionsReaderFromGgo(TProjectionsReaderType * reader, const TArgsInfo & a
     reader->SetUpperBoundaryCropSize(upperCrop);
 
   // Conditional median
-  typename TProjectionsReaderType::MedianRadiusType medianRadius;
-  medianRadius.Fill(0);
+  typename TProjectionsReaderType::MedianRadiusType medianRadius{};
   for (unsigned int i = 0; i < args_info.radius_given; i++)
     medianRadius[i] = args_info.radius_arg[i];
   reader->SetMedianRadius(medianRadius);

@@ -230,8 +230,7 @@ rtkfourdsarttest(int, char *[])
     axis.Fill(60.);
     axis[1] = 30;
     de1->SetAxis(axis);
-    DEType::PointType center;
-    center.Fill(0.);
+    DEType::PointType center{};
     de1->SetCenter(center);
     de1->SetAngle(0.);
     de1->InPlaceOff();

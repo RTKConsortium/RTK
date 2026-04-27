@@ -69,11 +69,10 @@ rtkvectorimageconverterstest(int, char *[])
   auto refVectorImage = VectorImageType::New();
 
   VectorImageType::SizeType    refVectorSize;
-  VectorImageType::IndexType   refVectorIndex;
+  VectorImageType::IndexType   refVectorIndex{};
   VectorImageType::SpacingType refVectorSpacing;
   VectorImageType::RegionType  refVectorRegion;
 
-  refVectorIndex.Fill(0);
   refVectorSpacing.Fill(1);
   refVectorSize[0] = hsize[0];
   refVectorSize[1] = hsize[1];

@@ -279,14 +279,10 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>:
     // Set the resample filter
     m_ResampleFilter->SetInterpolator(itk::NearestNeighborInterpolateImageFunction<VolumeType, double>::New());
     m_ResampleFilter->SetTransform(itk::IdentityTransform<double, Dimension>::New());
-    typename VolumeType::SizeType      VolumeSize;
-    typename VolumeType::SpacingType   VolumeSpacing;
-    typename VolumeType::PointType     VolumeOrigin;
-    typename VolumeType::DirectionType VolumeDirection;
-    VolumeSize.Fill(0);
-    VolumeSpacing.Fill(0);
-    VolumeOrigin.Fill(0);
-    VolumeDirection.Fill(0);
+    typename VolumeType::SizeType      VolumeSize{};
+    typename VolumeType::SpacingType   VolumeSpacing{};
+    typename VolumeType::PointType     VolumeOrigin{};
+    typename VolumeType::DirectionType VolumeDirection{};
     for (int i = 0; i < Dimension; i++)
     {
       VolumeSize[i] = this->GetInputVolumeSeries()->GetLargestPossibleRegion().GetSize()[i];

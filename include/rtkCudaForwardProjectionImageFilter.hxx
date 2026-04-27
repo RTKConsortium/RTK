@@ -132,8 +132,7 @@ CudaForwardProjectionImageFilter<TInputImage, TOutputImage>::GPUGenerateData()
   for (unsigned int iProj = iFirstProj; iProj < iFirstProj + nProj; iProj++)
   {
     typename Superclass::GeometryType::ThreeDHomogeneousMatrixType translatedProjectionIndexTransformMatrix;
-    typename Superclass::GeometryType::ThreeDHomogeneousMatrixType translatedVolumeTransformMatrix;
-    translatedVolumeTransformMatrix.Fill(0);
+    typename Superclass::GeometryType::ThreeDHomogeneousMatrixType translatedVolumeTransformMatrix{};
 
     // The matrices required depend on the type of detector
     if (radiusCylindricalDetector == 0)

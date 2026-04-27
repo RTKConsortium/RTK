@@ -149,8 +149,8 @@ rtkmotioncompensatedfdktest(int, char *[])
   deformationField->Allocate();
 
   // Vector Field initilization
-  DVFPixelType vec;
-  vec.Fill(0.);
+  DVFPixelType vec{};
+
   itk::ImageRegionIteratorWithIndex<DeformationType::InputImageType> inputIt(
     deformationField, deformationField->GetLargestPossibleRegion());
   for (inputIt.GoToBegin(); !inputIt.IsAtEnd(); ++inputIt)
