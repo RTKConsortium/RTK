@@ -55,9 +55,7 @@ rtkselectoneprojpercycletest(int, char *[])
 
   // Projections
   using REIType = rtk::RayEllipsoidIntersectionImageFilter<OutputImageType, OutputImageType>;
-  OutputImageType::IndexType destinationIndex, destinationIndexRef;
-  destinationIndex.Fill(0);
-  destinationIndexRef.Fill(0);
+  OutputImageType::IndexType destinationIndex{}, destinationIndexRef{};
   auto pasteFilter = itk::PasteImageFilter<OutputImageType, OutputImageType, OutputImageType>::New();
 
   std::string              signalFileName = "signal_SelectOneProjPerCycle.txt";

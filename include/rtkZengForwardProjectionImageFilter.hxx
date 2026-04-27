@@ -194,8 +194,8 @@ ZengForwardProjectionImageFilter<TInputImage, TOutputImage>::GenerateOutputInfor
   m_centerVolume =
     this->GetInput(1)->template TransformContinuousIndexToPhysicalPoint<CoordinateType, ValueType>(centerIndex);
 
-  PointType centerRotation;
-  centerRotation.Fill(0);
+  PointType centerRotation{};
+
   m_Transform->SetCenter(centerRotation);
   m_ResampleImageFilter->SetTransform(m_Transform);
   m_ResampleImageFilter->SetOutputParametersFromImage(this->GetInput(1));
@@ -314,14 +314,12 @@ ZengForwardProjectionImageFilter<TInputImage, TOutputImage>::GenerateData()
   typename OuputCPUImageType::Pointer   currentSlice;
   typename OuputCPUImageType::Pointer   pimg;
   typename OuputCPUImageType::Pointer   rotatedVolume;
-  typename OuputCPUImageType::IndexType indexSlice;
-  typename OuputCPUImageType::IndexType indexProjection;
+  typename OuputCPUImageType::IndexType indexSlice{};
+  typename OuputCPUImageType::IndexType indexProjection{};
   PointType                             pointSlice;
   PointType                             centerRotatedVolume;
   PointType                             originRotatedVolume;
 
-  indexSlice.Fill(0);
-  indexProjection.Fill(0);
   double dist = NAN, sigmaSlice = NAN;
   double thicknessSlice = NAN;
   int    nbProjections = projRegion.GetIndex(Dimension - 1);

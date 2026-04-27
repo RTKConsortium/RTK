@@ -121,8 +121,6 @@ CudaRayCastBackProjectionImageFilter ::GPUGenerateData()
   for (unsigned int iProj = iFirstProj; iProj < iFirstProj + nProj; iProj++)
   {
     GeometryType::ThreeDHomogeneousMatrixType translatedProjectionIndexTransformMatrix;
-    GeometryType::ThreeDHomogeneousMatrixType translatedVolumeTransformMatrix;
-    translatedVolumeTransformMatrix.Fill(0);
 
     // The matrices required depend on the type of detector
     if (radiusCylindricalDetector == 0)
@@ -146,8 +144,9 @@ CudaRayCastBackProjectionImageFilter ::GPUGenerateData()
           translatedProjectionIndexTransformMatrices[(j + 3 * (iProj - iFirstProj)) * 4 + k] =
             static_cast<float>(translatedProjectionIndexTransformMatrix[j][k]);
 
-      translatedVolumeTransformMatrix = volIndexTranslation.GetVnlMatrix() * volPPToIndex.GetVnlMatrix() *
-                                        geometry->GetRotationMatrices()[iProj].GetInverse();
+      GeometryType::ThreeDHomogeneousMatrixType translatedVolumeTransformMatrix =
+        volIndexTranslation.GetVnlMatrix() * volPPToIndex.GetVnlMatrix() *
+        geometry->GetRotationMatrices()[iProj].GetInverse();
       for (int j = 0; j < 3; j++) // Ignore the 4th row
         for (int k = 0; k < 4; k++)
           translatedVolumeTransformMatrices[(j + 3 * (iProj - iFirstProj)) * 4 + k] =

@@ -149,8 +149,8 @@ rtkmotioncompensatedfdktest(int, char *[])
   deformationField->Allocate();
 
   // Vector Field initilization
-  DVFPixelType vec;
-  vec.Fill(0.);
+  DVFPixelType vec{};
+
   itk::ImageRegionIteratorWithIndex<DeformationType::InputImageType> inputIt(
     deformationField, deformationField->GetLargestPossibleRegion());
   for (inputIt.GoToBegin(); !inputIt.IsAtEnd(); ++inputIt)
@@ -197,7 +197,7 @@ rtkmotioncompensatedfdktest(int, char *[])
   e1->SetInput(tomographySource->GetOutput());
   e1->SetDensity(2.);
   e1->SetAxis(itk::MakeVector(60., 60., 60.));
-  e1->SetCenter(itk::MakePoint(0., 0., 0.));
+  e1->SetCenter({});
   e1->SetAngle(0.);
   e1->InPlaceOff();
   TRY_AND_EXIT_ON_ITK_EXCEPTION(e1->Update())
@@ -207,7 +207,7 @@ rtkmotioncompensatedfdktest(int, char *[])
   e2->SetInput(e1->GetOutput());
   e2->SetDensity(-1.);
   e2->SetAxis(itk::MakeVector(8., 8., 8.));
-  e2->SetCenter(itk::MakePoint(0., 0., 0.));
+  e2->SetCenter({});
   e2->SetAngle(0.);
   e2->InPlaceOff();
   TRY_AND_EXIT_ON_ITK_EXCEPTION(e2->Update())

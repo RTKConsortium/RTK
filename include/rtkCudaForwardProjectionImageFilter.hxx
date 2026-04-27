@@ -132,8 +132,6 @@ CudaForwardProjectionImageFilter<TInputImage, TOutputImage>::GPUGenerateData()
   for (unsigned int iProj = iFirstProj; iProj < iFirstProj + nProj; iProj++)
   {
     typename Superclass::GeometryType::ThreeDHomogeneousMatrixType translatedProjectionIndexTransformMatrix;
-    typename Superclass::GeometryType::ThreeDHomogeneousMatrixType translatedVolumeTransformMatrix;
-    translatedVolumeTransformMatrix.Fill(0);
 
     // The matrices required depend on the type of detector
     if (radiusCylindricalDetector == 0)
@@ -157,8 +155,9 @@ CudaForwardProjectionImageFilter<TInputImage, TOutputImage>::GPUGenerateData()
           translatedProjectionIndexTransformMatrices[(j + 3 * (iProj - iFirstProj)) * 4 + k] =
             (float)translatedProjectionIndexTransformMatrix[j][k];
 
-      translatedVolumeTransformMatrix = volIndexTranslation.GetVnlMatrix() * volPPToIndex.GetVnlMatrix() *
-                                        geometry->GetRotationMatrices()[iProj].GetInverse();
+      typename Superclass::GeometryType::ThreeDHomogeneousMatrixType translatedVolumeTransformMatrix =
+        volIndexTranslation.GetVnlMatrix() * volPPToIndex.GetVnlMatrix() *
+        geometry->GetRotationMatrices()[iProj].GetInverse();
       for (int j = 0; j < 3; j++) // Ignore the 4th row
         for (int k = 0; k < 4; k++)
           translatedVolumeTransformMatrices[(j + 3 * (iProj - iFirstProj)) * 4 + k] =

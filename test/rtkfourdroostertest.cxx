@@ -198,9 +198,8 @@ rtkfourdroostertest(int, char *[])
   IteratorType  dvfIt(deformationField, deformationField->GetLargestPossibleRegion());
   IteratorType  idvfIt(inverseDeformationField, inverseDeformationField->GetLargestPossibleRegion());
 
-  DVFSequenceImageType::OffsetType DVFCenter;
+  DVFSequenceImageType::OffsetType DVFCenter{};
   DVFSequenceImageType::IndexType  toCenter;
-  DVFCenter.Fill(0);
   DVFCenter[0] = sizeMotion[0] / 2;
   DVFCenter[1] = sizeMotion[1] / 2;
   DVFCenter[2] = sizeMotion[2] / 2;
@@ -238,8 +237,7 @@ rtkfourdroostertest(int, char *[])
     axis.Fill(60.);
     axis[1] = 30;
     de1->SetAxis(axis);
-    DEType::PointType center;
-    center.Fill(0.);
+    DEType::PointType center{};
     de1->SetCenter(center);
     de1->SetAngle(0.);
     de1->InPlaceOff();
@@ -276,8 +274,7 @@ rtkfourdroostertest(int, char *[])
   axis.Fill(15.);
   axis[0] = 20;
   roi->SetAxis(axis);
-  DEType::PointType center;
-  center.Fill(0.);
+  DEType::PointType center{};
   roi->SetCenter(center);
   roi->SetAngle(0.);
   roi->InPlaceOff();

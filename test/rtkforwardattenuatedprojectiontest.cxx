@@ -88,7 +88,7 @@ rtkforwardattenuatedprojectiontest(int, char *[])
   typename OutputImageType::Pointer attenuationMap, volumeSource;
   volumeSource = deif->GetOutput();
   volumeSource->DisconnectPipeline();
-  deif->SetCenter(itk::MakePoint(0., 0., 0.));
+  deif->SetCenter({});
   deif->SetAxis(itk::MakeVector(90, 90, 90));
   deif->SetDensity(att);
   deif->Update();
@@ -157,7 +157,7 @@ rtkforwardattenuatedprojectiontest(int, char *[])
     auto sphere_attenuation = REIType::New();
     sphere_attenuation->SetAngle(0);
     sphere_attenuation->SetDensity(1);
-    sphere_attenuation->SetCenter(itk::MakePoint(0., 0., 0.));
+    sphere_attenuation->SetCenter({});
     sphere_attenuation->SetAxis(itk::MakeVector(90, 90, 90));
     sphere_attenuation->SetInput(projInput->GetOutput());
     auto sphere_emission = REIType::New();

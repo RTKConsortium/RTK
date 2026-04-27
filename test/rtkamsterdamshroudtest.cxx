@@ -105,7 +105,7 @@ rtkamsterdamshroudtest(int argc, char * argv[])
     e1->SetGeometry(geometry);
     e1->SetDensity(2.);
     e1->SetAxis(itk::MakeVector(88.32, 115.2, 117.76));
-    e1->SetCenter(itk::MakePoint(0., 0., 0.));
+    e1->SetCenter({});
     e1->SetAngle(0.);
     e1->InPlaceOff();
     e1->Update();

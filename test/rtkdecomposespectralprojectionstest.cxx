@@ -83,8 +83,7 @@ rtkdecomposespectralprojectionstest(int argc, char * argv[])
   decomposed->SetOrigin(origin);
   decomposed->SetSpacing(spacing);
   DecomposedProjectionsType::RegionType region;
-  DecomposedProjectionsType::IndexType  index;
-  index.Fill(0);
+  DecomposedProjectionsType::IndexType  index{};
   region.SetSize(size);
   region.SetIndex(index);
   decomposed->SetRegions(region);
