@@ -6,7 +6,7 @@ env:
   itk-wheel-tag: 'v5.4.5'
   itk-python-package-tag: 'release-5.4'
   itk-python-package-org: 'InsightSoftwareConsortium'
-  itk-module-deps: "RTKConsortium/ITKCudaCommon@main"
+  itk-module-deps: "axel-grc/ITKCudaCommon@Manylinux"
 
 concurrency:
   group: '${{ github.workflow }}@${{ github.head_ref || github.run_id }}'
@@ -19,8 +19,8 @@ jobs:
       max-parallel: 2
       matrix:
         python3-minor-version: ${{ github.event_name == 'pull_request' && fromJSON('["11"]') || fromJSON('["9","10","11"]') }}
-        manylinux-platform: ${{ github.event_name == 'pull_request' && fromJSON('["_2_28-x64"]') || fromJSON('["_2_28-x64","2014-x64"]') }}
-        cuda-version: ${{ github.event_name == 'pull_request' && fromJSON('["118","130"]') || fromJSON('["118","128","130"]') }}
+        manylinux-platform: ${{ github.event_name == 'pull_request' && fromJSON('["2014-x64"]') || fromJSON('["_2_28-x64","2014-x64"]') }}
+        cuda-version: ${{ github.event_name == 'pull_request' && fromJSON('["130"]') || fromJSON('["118","128","130"]') }}
 
     steps:
     - uses: actions/checkout@v4
