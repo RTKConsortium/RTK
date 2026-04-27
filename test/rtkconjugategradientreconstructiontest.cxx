@@ -82,7 +82,7 @@ rtkconjugategradientreconstructiontest(int, char *[])
   rei = REIType::New();
   rei->SetAngle(0.);
   rei->SetDensity(1.);
-  rei->SetCenter(itk::MakePoint(0., 0., 0.));
+  rei->SetCenter({});
   rei->SetAxis(itk::MakeVector(90., 90., 90.));
   rei->SetInput(projectionsSource->GetOutput());
   rei->SetGeometry(geometry);

@@ -63,8 +63,8 @@ rtkwarptest(int, char *[])
   deformationField->Allocate();
 
   // Vector Field initilization
-  DVFPixelType vec;
-  vec.Fill(0.);
+  DVFPixelType vec{};
+
   itk::ImageRegionIteratorWithIndex<DVFImageType> defIt(deformationField, deformationField->GetLargestPossibleRegion());
   for (defIt.GoToBegin(); !defIt.IsAtEnd(); ++defIt)
   {
@@ -82,8 +82,7 @@ rtkwarptest(int, char *[])
   DEType::VectorType axis;
   axis.Fill(60.);
   e1->SetAxis(axis);
-  DEType::PointType center;
-  center.Fill(0.);
+  DEType::PointType center{};
   e1->SetCenter(center);
   e1->SetAngle(0.);
   e1->InPlaceOff();
@@ -96,8 +95,7 @@ rtkwarptest(int, char *[])
   DEType::VectorType axis2;
   axis2.Fill(8.);
   e2->SetAxis(axis2);
-  DEType::PointType center2;
-  center2.Fill(0.);
+  DEType::PointType center2{};
   e2->SetCenter(center2);
   e2->SetAngle(0.);
   e2->InPlaceOff();

@@ -67,9 +67,7 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>::UpdateFFTProjectio
   // Compute kernel in space domain (see Kak & Slaney, chapter 3 equation 61
   // page 72) although spacing is not squared according to equation 69 page 75
   double    spacing = this->GetInput()->GetSpacing()[0];
-  IndexType ix, jx;
-  ix.Fill(0);
-  jx.Fill(0);
+  IndexType ix{}, jx{};
   kernel->SetPixel(ix, 1. / (4. * spacing));
   for (ix[0] = 1, jx[0] = size[0] - 1; ix[0] < typename IndexType::IndexValueType(size[0] / 2); ix[0] += 2, jx[0] -= 2)
   {

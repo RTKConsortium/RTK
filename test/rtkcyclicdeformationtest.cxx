@@ -61,9 +61,8 @@ rtkcyclicdeformationtest(int, char *[])
   itk::ImageRegionIteratorWithIndex<DVFSequenceImageType> dvfIt(deformationField,
                                                                 deformationField->GetLargestPossibleRegion());
 
-  DVFSequenceImageType::OffsetType DVFCenter;
+  DVFSequenceImageType::OffsetType DVFCenter{};
   DVFSequenceImageType::IndexType  toCenter;
-  DVFCenter.Fill(0);
   DVFCenter[0] = size[0] / 2;
   DVFCenter[1] = size[1] / 2;
   DVFCenter[2] = size[2] / 2;
