@@ -33,3 +33,9 @@ CMakeLists.txt.user*
 
 # Mac System File
 .DS_Store
+build/
+
+# Generated output files from examples
+*.mha
+geometry.xml
+output.xml

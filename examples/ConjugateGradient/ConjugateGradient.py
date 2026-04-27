@@ -12,26 +12,27 @@ sid = 600
 sdd = 1200
 scale = 2.0
 
-# Using RTK applications python APIs to create the geometry and projections
-rtk.rtksimulatedgeometry(
-    nproj=numberOfProjections,
-    arc=angularArc,
-    sid=sid,
-    sdd=sdd,
-    output="geometry.xml",
-)
-rtk.rtkprojectgeometricphantom(
-    geometry="geometry.xml",
-    output="projections.mha",
-    phantomfile="Thorax",
-    phantomscale=scale,
-    rotation="1,0,0,0,0,-1,0,1,0",
-    spacing=2,
-    size=128,
-)
+# Create geometry using core RTK API (replaces rtk.rtksimulatedgeometry)
+geometry = rtk.ThreeDCircularProjectionGeometry.New()
+for i in range(numberOfProjections):
+    angle = i * angularArc / numberOfProjections
+    geometry.AddProjection(sid, sdd, angle)
+rtk.write_geometry(geometry, "geometry.xml")
 
-projections = itk.imread("projections.mha")
-geometry = rtk.read_geometry("geometry.xml")
+# Create projections using Shepp-Logan phantom
+# (replaces rtk.rtkprojectgeometricphantom which is an application-level function)
+projections_source = rtk.constant_image_source(
+    ttype=[OutputImageType],
+    origin=[-127.0, -127.0, 0.0],
+    size=[128, 128, numberOfProjections],
+    spacing=[2.0] * 3,
+)
+projections = rtk.shepp_logan_phantom_filter(
+    projections_source,
+    geometry=geometry,
+    phantom_scale=scale,
+)
+itk.imwrite(projections, "projections.mha")
 
 # Create a constant image source to initialize the reconstruction
 conjugate_gradient_source = rtk.constant_image_source(
@@ -41,36 +42,20 @@ conjugate_gradient_source = rtk.constant_image_source(
     spacing=[2.0] * 3,
 )
 
-# Set the forward and back projection filters to be used
-if hasattr(itk, "CudaImage"):
-    OutputCudaImageType = itk.CudaImage[itk.F, Dimension]
-    ConjugateGradientFilterType = rtk.ConjugateGradientConeBeamReconstructionFilter[
-        OutputCudaImageType, OutputCudaImageType, OutputCudaImageType
-    ]
-    conjugategradient = ConjugateGradientFilterType.New()
-    conjugategradient.SetCudaConjugateGradient(True)
-    conjugategradient.SetInput(itk.cuda_image_from_image(conjugate_gradient_source))
-    conjugategradient.SetInput(1, itk.cuda_image_from_image(projections))
-    conjugategradient.SetBackProjectionFilter(
-        ConjugateGradientFilterType.BackProjectionType_BP_CUDAVOXELBASED
-    )
-    conjugategradient.SetForwardProjectionFilter(
-        ConjugateGradientFilterType.ForwardProjectionType_FP_CUDARAYCAST
-    )
-
-else:
-    ConjugateGradientFilterType = rtk.ConjugateGradientConeBeamReconstructionFilter[
-        OutputImageType, OutputImageType, OutputImageType
-    ]
-    conjugategradient = ConjugateGradientFilterType.New()
-    conjugategradient.SetInput(conjugate_gradient_source)
-    conjugategradient.SetInput(1, projections)
-    conjugategradient.SetBackProjectionFilter(
-        ConjugateGradientFilterType.BackProjectionType_BP_VOXELBASED
-    )
-    conjugategradient.SetForwardProjectionFilter(
-        ConjugateGradientFilterType.ForwardProjectionType_FP_JOSEPH
-    )
+# Set up conjugate gradient reconstruction
+# Note: wrapped filter only accepts 1 template parameter
+ConjugateGradientFilterType = rtk.ConjugateGradientConeBeamReconstructionFilter[
+    OutputImageType
+]
+conjugategradient = ConjugateGradientFilterType.New()
+conjugategradient.SetInput(conjugate_gradient_source)
+conjugategradient.SetInput(1, projections)
+conjugategradient.SetBackProjectionFilter(
+    ConjugateGradientFilterType.BackProjectionType_BP_VOXELBASED
+)
+conjugategradient.SetForwardProjectionFilter(
+    ConjugateGradientFilterType.ForwardProjectionType_FP_JOSEPH
+)
 
 conjugategradient.SetGeometry(geometry)
 conjugategradient.SetNumberOfIterations(niterations)
