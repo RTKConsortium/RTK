@@ -67,6 +67,7 @@ _app_modules = [
     "rtkspectraldenoiseprojections",
     "rtkspectralonestep",
     "rtkspectralrooster",
+    "rtkspectralsimplexdecomposition",
     "rtksubselect",
     "rtktotalnuclearvariationdenoising",
     "rtktotalvariationdenoising",
