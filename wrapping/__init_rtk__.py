@@ -62,6 +62,7 @@ _app_modules = [
     "rtksimulatedgeometry",
     "rtkspectralforwardmodel",
     "rtkspectraldenoiseprojections",
+    "rtkspectralonestep",
     "rtkspectralrooster",
     "rtksubselect",
     "rtktotalnuclearvariationdenoising",
