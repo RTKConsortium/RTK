@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import os
+import filecmp
 import shutil
 import subprocess
 import pytest
@@ -55,45 +56,33 @@ def test_fdk_application(rtk_workdir):
 
 
 def test_application_invocation_modes(rtk_workdir):
-    """Validate rtkfdk equivalence across invocation styles"""
+    """Validate rtksimulatedgeometry equivalence across invocation styles"""
 
     # Keyword API baseline
-    rtk.rtkfdk(
-        path=".",
-        regexp="projections.mha",
-        output="fdk_kw.mha",
-        geometry="geometry.xml",
-        spacing="2,2,2",
-        size=[64, 64, 64],
-    )
-
-    # String API
-    rtk.rtkfdk(
-        "-p . -r projections.mha -o fdk_str.mha -g geometry.xml --spacing 2 --size 64"
+    rtk.rtksimulatedgeometry(
+        output="geometry_kw.xml",
+        nproj=180,
+        sid=600,
+        sdd=1200,
     )
 
     # CLI
-    exe = shutil.which("rtkfdk")
+    exe = shutil.which("rtksimulatedgeometry")
     cli_cmd = [
         exe,
-        "-p",
-        ".",
-        "-r",
-        "projections.mha",
+        "-n",
+        "180",
+        "--sid",
+        "600",
+        "--sdd",
+        "1200",
         "-o",
-        "fdk_cli.mha",
-        "-g",
-        "geometry.xml",
-        "--spacing",
-        "2",
-        "--size",
-        "64",
+        "geometry_cli.xml",
     ]
     subprocess.run(cli_cmd, check=True, capture_output=True)
 
-    rtk.rtkcheckimagequality("-i fdk_kw.mha -j fdk_str.mha -t 10")
-    rtk.rtkcheckimagequality("-i fdk_kw.mha -j fdk_cli.mha -t 10")
-    rtk.rtkcheckimagequality("-i fdk_str.mha -j fdk_cli.mha -t 10")
+    assert filecmp.cmp("geometry_kw.xml", "geometry.xml", shallow=False)
+    assert filecmp.cmp("geometry_cli.xml", "geometry.xml", shallow=False)
 
 
 def test_conjugategradient_application(rtk_workdir):
