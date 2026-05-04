@@ -4,7 +4,7 @@ import math
 
 
 # Test for rtkConvexShape::IsIntersectedByRay
-def test_IsIntersectedByRay():
+def test_is_intersected_by_ray():
     q = rtk.QuadricShape.New()
 
     # Define a sphere of radius 10
@@ -25,7 +25,7 @@ def test_IsIntersectedByRay():
 
 
 # Test for rtk::FieldOfViewImageFilter::ComputeFOVRadius
-def test_ComputeFOVRadius():
+def test_compute_fov_radius():
     geometry = rtk.ThreeDCircularProjectionGeometry.New()
     numberOfProjections = 360
     firstAngle = 0
@@ -69,5 +69,5 @@ def test_ComputeFOVRadius():
 
 
 if __name__ == "__main__":
-    test_IsIntersectedByRay()
-    test_ComputeFOVRadius()
+    test_is_intersected_by_ray()
+    test_compute_fov_radius()
