@@ -14,16 +14,13 @@ def rtk_reference(tmp_path_factory):
     cwd = os.getcwd()
     os.chdir(d)
     try:
-        if not os.path.exists("geometry.xml"):
-            rtk.rtksimulatedgeometry("-n 180 --sid 600 --sdd 1200 -o geometry.xml")
-        if not os.path.exists("projections.mha"):
-            rtk.rtkprojectshepploganphantom(
-                "-g geometry.xml -o projections.mha --spacing 4 --size 64 --phantomscale 64"
-            )
-        if not os.path.exists("reference.mha"):
-            rtk.rtkdrawshepploganphantom(
-                "--spacing 2 --size 64 -o reference.mha --phantomscale 64"
-            )
+        rtk.rtksimulatedgeometry("-n 180 --sid 600 --sdd 1200 -o geometry.xml")
+        rtk.rtkprojectshepploganphantom(
+            "-g geometry.xml -o projections.mha --spacing 4 --size 64 --phantomscale 64"
+        )
+        rtk.rtkdrawshepploganphantom(
+            "--spacing 2 --size 64 -o reference.mha --phantomscale 64"
+        )
     finally:
         os.chdir(cwd)
     return d
