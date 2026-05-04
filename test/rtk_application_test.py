@@ -3,6 +3,7 @@ import os
 import shutil
 import subprocess
 import pytest
+import itk
 from itk import RTK as rtk
 
 
@@ -42,9 +43,14 @@ def rtk_workdir(tmp_path, rtk_reference):
 
 
 def test_fdk_application(rtk_workdir):
-    rtk.rtkfdk(
-        "-g geometry.xml -p . -r projections.mha -o fdk.mha --spacing 2 --size 64 --origin=-64"
-    )
+    if hasattr(itk, "CudaImage"):
+        rtk.rtkfdk(
+            "-g geometry.xml -p . -r projections.mha -o fdk.mha --spacing 2 --size 64 --origin=-64 --hardware cuda"
+        )
+    else:
+        rtk.rtkfdk(
+            "-g geometry.xml -p . -r projections.mha -o fdk.mha --spacing 2 --size 64 --origin=-64"
+        )
     rtk.rtkcheckimagequality("-i reference.mha -j fdk.mha -t 200000")
 
 
