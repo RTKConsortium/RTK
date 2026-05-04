@@ -270,7 +270,7 @@ jobs:
         # SWIG < 4.4 triggers the Py_LIMITED_API "builtin type swig…" warning when
         # Python runs with -Walways; pytest enables that behavior, so we ignore it.
         test_log=$(mktemp)
-        pytest test/*.py -vv -s -W error -W "ignore:builtin type swig" 2>&1 | tee "$test_log"
+        pytest -vv -s -W error -W "ignore:builtin type swig" 2>&1 | tee "$test_log"
         matches=$(grep -Ei "warning|exception|redefin(ed|ition)?" "$test_log" || true)
         if [ -n "$matches" ]; then
           echo "Unexpected output found:"
