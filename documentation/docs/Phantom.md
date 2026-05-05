@@ -151,3 +151,30 @@ The `union` parameter is valid only when the two shapes share the same density (
     union=-1
 }
 ```
+
+Since the absolute value of `rho` is actually converted to an additive value relative to its background (see `rho` section), the union of two shapes
+```
+{
+        [Sphere: x=0 y=0 z=0 r=50]
+                rho = 1.0
+}
+{
+        [Sphere: x=30 y=0 z=0 r=50]
+                rho = 1.0
+                union=-1
+}
+
+```
+will fail with the message `Cannot unionize objects of different density`. This is because RTK attempts to add a shape with density 0 as the second shape center is in the first shape with the same density. This can be circumvented by accounting for the background at the shape center. For the example above, the solution would be
+```
+{
+        [Sphere: x=0 y=0 z=0 r=50]
+                rho = 1.0
+}
+{
+        [Sphere: x=30 y=0 z=0 r=50]
+                rho = 2.0
+                union=-1
+}
+
+```
