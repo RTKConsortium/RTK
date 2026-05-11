@@ -314,9 +314,15 @@ SetBackProjectionFromGgo(const TArgsInfo & args_info, TIterativeReconstructionFi
       recon->SetBackProjectionFilter(TIterativeReconstructionFilter::BP_JOSEPH);
       break;
     case (2): // bp_arg_CudaVoxelBased
+#ifndef RTK_USE_CUDA
+      itkGenericExceptionMacro(<< "--bp CudaVoxelBased requires RTK to be built with CUDA support.");
+#endif
       recon->SetBackProjectionFilter(TIterativeReconstructionFilter::BP_CUDAVOXELBASED);
       break;
     case (3): // bp_arg_CudaRayCast
+#ifndef RTK_USE_CUDA
+      itkGenericExceptionMacro(<< "--bp CudaRayCast requires RTK to be built with CUDA support.");
+#endif
       recon->SetBackProjectionFilter(TIterativeReconstructionFilter::BP_CUDARAYCAST);
       if (args_info.step_given)
         recon->SetStepSize(args_info.step_arg);
@@ -334,6 +340,19 @@ SetBackProjectionFromGgo(const TArgsInfo & args_info, TIterativeReconstructionFi
         recon->SetAlphaPSF(args_info.alphapsf_arg);
       if (args_info.attenuationmap_given)
         recon->SetAttenuationMap(attenuationMap);
+      break;
+    case (6): // bp_arg_CudaWarp
+#ifndef RTK_USE_CUDA
+      itkGenericExceptionMacro(<< "--bp CudaWarp requires RTK to be built with CUDA support.");
+#endif
+      recon->SetBackProjectionFilter(TIterativeReconstructionFilter::BP_CUDAWARP);
+#ifdef RTK_USE_CUDA
+      if (args_info.warp_dvf_given)
+      {
+        using DisplacementFieldType = typename TIterativeReconstructionFilter::DisplacementFieldType;
+        recon->SetDisplacementField(itk::ReadImage<DisplacementFieldType>(args_info.warp_dvf_arg));
+      }
+#endif
       break;
   }
 }
@@ -382,6 +401,9 @@ SetForwardProjectionFromGgo(const TArgsInfo & args_info, TIterativeReconstructio
         recon->SetInferiorClipImage(inferiorClipImage);
       break;
     case (1): // fp_arg_CudaRayCast
+#ifndef RTK_USE_CUDA
+      itkGenericExceptionMacro(<< "--fp CudaRayCast requires RTK to be built with CUDA support.");
+#endif
       recon->SetForwardProjectionFilter(TIterativeReconstructionFilter::FP_CUDARAYCAST);
       if (args_info.step_given)
         recon->SetStepSize(args_info.step_arg);
@@ -403,6 +425,21 @@ SetForwardProjectionFromGgo(const TArgsInfo & args_info, TIterativeReconstructio
         recon->SetAlphaPSF(args_info.alphapsf_arg);
       if (args_info.attenuationmap_given)
         recon->SetAttenuationMap(attenuationMap);
+      break;
+    case (4): // fp_arg_CudaWarp
+#ifndef RTK_USE_CUDA
+      itkGenericExceptionMacro(<< "--fp CudaWarp requires RTK to be built with CUDA support.");
+#endif
+      recon->SetForwardProjectionFilter(TIterativeReconstructionFilter::FP_CUDAWARP);
+      if (args_info.step_given)
+        recon->SetStepSize(args_info.step_arg);
+#ifdef RTK_USE_CUDA
+      if (args_info.warp_dvf_given)
+      {
+        using DisplacementFieldType = typename TIterativeReconstructionFilter::DisplacementFieldType;
+        recon->SetDisplacementField(itk::ReadImage<DisplacementFieldType>(args_info.warp_dvf_arg));
+      }
+#endif
       break;
   }
 }
