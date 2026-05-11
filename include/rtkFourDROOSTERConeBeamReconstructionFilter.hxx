@@ -108,7 +108,7 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>:
 
 template <typename VolumeSeriesType, typename ProjectionStackType>
 void
-FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::SetDisplacementField(
+FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::SetMotionDisplacementField(
   const DVFSequenceImageType * DVFs)
 {
   this->SetInput("DisplacementField", const_cast<DVFSequenceImageType *>(DVFs));
@@ -116,7 +116,7 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>:
 
 template <typename VolumeSeriesType, typename ProjectionStackType>
 void
-FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::SetInverseDisplacementField(
+FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::SetInverseMotionDisplacementField(
   const DVFSequenceImageType * DVFs)
 {
   this->SetInput("InverseDisplacementField", const_cast<DVFSequenceImageType *>(DVFs));
@@ -145,14 +145,14 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>:
 
 template <typename VolumeSeriesType, typename ProjectionStackType>
 typename FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::DVFSequenceImageType::Pointer
-FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::GetDisplacementField()
+FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::GetMotionDisplacementField()
 {
   return static_cast<DVFSequenceImageType *>(this->itk::ProcessObject::GetInput("DisplacementField"));
 }
 
 template <typename VolumeSeriesType, typename ProjectionStackType>
 typename FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::DVFSequenceImageType::Pointer
-FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::GetInverseDisplacementField()
+FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::GetInverseMotionDisplacementField()
 {
   return static_cast<DVFSequenceImageType *>(this->itk::ProcessObject::GetInput("InverseDisplacementField"));
 }
@@ -209,12 +209,12 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>:
 
   if (m_PerformWarping)
   {
-    typename DVFSequenceImageType::Pointer DisplacementFieldPtr = this->GetDisplacementField();
+    typename DVFSequenceImageType::Pointer DisplacementFieldPtr = this->GetMotionDisplacementField();
     DisplacementFieldPtr->SetRequestedRegionToLargestPossibleRegion();
 
     if (!m_ComputeInverseWarpingByConjugateGradient)
     {
-      typename DVFSequenceImageType::Pointer InverseDisplacementFieldPtr = this->GetInverseDisplacementField();
+      typename DVFSequenceImageType::Pointer InverseDisplacementFieldPtr = this->GetInverseMotionDisplacementField();
       InverseDisplacementFieldPtr->SetRequestedRegionToLargestPossibleRegion();
     }
     else
@@ -334,7 +334,7 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>:
     m_DownstreamFilter->ReleaseDataFlagOff();
 
     m_Warp->SetInput(m_DownstreamFilter->GetOutput());
-    m_Warp->SetDisplacementField(this->GetDisplacementField());
+    m_Warp->SetDisplacementField(this->GetMotionDisplacementField());
     m_Warp->SetPhaseShift(m_PhaseShift);
     m_Warp->SetUseNearestNeighborInterpolationInWarping(m_UseNearestNeighborInterpolationInWarping);
     m_Warp->SetUseCudaCyclicDeformation(m_UseCudaCyclicDeformation);
@@ -407,7 +407,7 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>:
 
       m_Unwarp->SetNumberOfIterations(4);
       m_Unwarp->SetInput(m_DownstreamFilter->GetOutput());
-      m_Unwarp->SetDisplacementField(this->GetDisplacementField());
+      m_Unwarp->SetDisplacementField(this->GetMotionDisplacementField());
       m_Unwarp->SetPhaseShift(m_PhaseShift);
       m_Unwarp->SetUseNearestNeighborInterpolationInWarping(m_UseNearestNeighborInterpolationInWarping);
       m_Unwarp->SetCudaConjugateGradient(this->GetCudaConjugateGradient());
@@ -425,7 +425,7 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>:
 
       // Deform only that correction with the inverse field
       m_InverseWarp->SetInput(0, m_SubtractFilter->GetOutput());
-      m_InverseWarp->SetDisplacementField(this->GetInverseDisplacementField());
+      m_InverseWarp->SetDisplacementField(this->GetInverseMotionDisplacementField());
       m_InverseWarp->SetPhaseShift(m_PhaseShift);
       m_InverseWarp->SetUseNearestNeighborInterpolationInWarping(m_UseNearestNeighborInterpolationInWarping);
       m_InverseWarp->SetUseCudaCyclicDeformation(m_UseCudaCyclicDeformation);
