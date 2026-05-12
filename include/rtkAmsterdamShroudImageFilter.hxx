@@ -180,7 +180,6 @@ AmsterdamShroudImageFilter<TInputImage>::CropOutsideProjectedBox()
   {
     // Project and keep the inferior and superior 2d corner
     itk::ContinuousIndex<double, 3> pCornerInf{}, pCornerSup{};
-    GeometryType::MatrixType        matrix = m_Geometry->GetMatrices()[iProj].GetVnlMatrix();
     for (unsigned int ci = 0; ci < 8; ci++)
     {
       typename TInputImage::PointType pCorner(0.);
