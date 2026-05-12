@@ -72,7 +72,6 @@ MaskCollimationImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerateDa
   {
     for (unsigned int pix = 0; pix < npixperslice; pix++, itIn->Next(), ++itOut)
     {
-      using PointType = typename InputRegionIterator::PointType;
       using VectorType = typename InputRegionIterator::VectorType;
 
       VectorType source = itIn->GetSourcePosition().GetVectorFromOrigin();
