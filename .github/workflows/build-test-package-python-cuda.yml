@@ -228,6 +228,7 @@ jobs:
         user: __token__
         password: ${{ secrets.pypi_password }}
 
+
   test-python-wheel:
     needs:
       - build-linux-cuda-python-packages
@@ -236,9 +237,9 @@ jobs:
       matrix:
         include:
           - runs-on: self-hosted-linux
-            wheel-pattern: "*cuda130*cp311*manylinux_2_28_x86_64.whl"
+            cuda-version: "130"
           - runs-on: self-hosted-windows
-            wheel-pattern: "*cuda128*cp311*win*.whl"
+            cuda-version: "128"
     runs-on: ${{ matrix.runs-on }}
 
     steps:
@@ -254,17 +255,28 @@ jobs:
       with:
         python-version: '3.11'
 
+
     - name: Test python wheel
       shell: bash
       run: |
+        if [[ "${{ matrix.runs-on }}" == "self-hosted-linux" ]]; then
+          export LD_LIBRARY_PATH="/home/srit/Downloads/cuda${{ matrix.cuda-version }}/targets/x86_64-linux/lib:$LD_LIBRARY_PATH"
+        else
+          CUDA_VERSION="${{ matrix.cuda-version }}"
+          CUDA_VERSION_MAJOR=$(echo "$CUDA_VERSION" | cut -b1-2)
+          CUDA_VERSION_MINOR=$(echo "$CUDA_VERSION" | cut -b3-)
+          CUDA_BIN_PATH="C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v${CUDA_VERSION_MAJOR}.${CUDA_VERSION_MINOR}/bin"
+        fi
+
         # Find wheel for Python 3.11 dynamically
-        wheel=$(find wheels -name "${{ matrix.wheel-pattern }}" -type f | head -1)
+        if [[ "${{ matrix.runs-on }}" == "self-hosted-linux" ]]; then
+          wheel=$(find wheels -name "*cuda${{ matrix.cuda-version }}**manylinux_2_28_x86_64.whl" -type f | head -1)
+        else
+          wheel=$(find wheels -name "*cuda${{ matrix.cuda-version }}*cp311*win*.whl" -type f | head -1)
+        fi
 
-        pip uninstall -y $(pip freeze | sed -E 's/(==.*|[[:space:]]+@.*)$//' | grep -E '^itk-') || true
         echo "Installing wheel: $wheel"
-        pip install $wheel
-
-        pip install pytest matplotlib
+        pip install "$wheel" pytest matplotlib
 
         # Run tests with warning detection.
         # SWIG < 4.4 triggers the Py_LIMITED_API "builtin type swig…" warning when
