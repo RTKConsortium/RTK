@@ -274,13 +274,13 @@ public:
 
   /** The motion vector fields used to warp the sequence before and after TV denoising along time */
   void
-  SetDisplacementField(const DVFSequenceImageType * DVFs);
+  SetMotionDisplacementField(const DVFSequenceImageType * DVFs);
   void
-  SetInverseDisplacementField(const DVFSequenceImageType * DVFs);
+  SetInverseMotionDisplacementField(const DVFSequenceImageType * DVFs);
   typename DVFSequenceImageType::Pointer
-  GetDisplacementField();
+  GetMotionDisplacementField();
   typename DVFSequenceImageType::Pointer
-  GetInverseDisplacementField();
+  GetInverseMotionDisplacementField();
 
   using FourDCGFilterType =
     rtk::FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>;

@@ -346,7 +346,7 @@ rtkfourdroostertest(int, char *[])
   rooster->SetPerformTVTemporalDenoising(false);
   rooster->SetPerformL0TemporalDenoising(true);
   rooster->SetPerformWarping(true);
-  rooster->SetDisplacementField(deformationField);
+  rooster->SetMotionDisplacementField(deformationField);
   rooster->SetComputeInverseWarpingByConjugateGradient(true);
   rooster->SetUseNearestNeighborInterpolationInWarping(true);
 
@@ -371,9 +371,9 @@ rtkfourdroostertest(int, char *[])
   rooster->SetPerformTVTemporalDenoising(true);
   rooster->SetPerformL0TemporalDenoising(false);
   rooster->SetPerformWarping(true);
-  rooster->SetDisplacementField(deformationField);
+  rooster->SetMotionDisplacementField(deformationField);
   rooster->SetComputeInverseWarpingByConjugateGradient(false);
-  rooster->SetInverseDisplacementField(inverseDeformationField);
+  rooster->SetInverseMotionDisplacementField(inverseDeformationField);
   rooster->SetUseNearestNeighborInterpolationInWarping(false);
 
   TRY_AND_EXIT_ON_ITK_EXCEPTION(rooster->Update());

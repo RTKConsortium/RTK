@@ -257,6 +257,12 @@ def process(args_info: argparse.Namespace):
     # Positivity
     rooster.SetPerformPositivity(not args_info.nopositivity)
 
+    if args_info.fp == "CudaWarp" or args_info.bp == "CudaWarp":
+        raise RuntimeError(
+            "CudaWarp projectors are not currently supported by FourDROOSTER. "
+            "They require a separate 3D projector DVF via --warp-dvf, while FourDROOSTER uses 4D motion DVFs via --dvf/--idvf."
+        )
+
     rtk.SetForwardProjectionFromArgParse(args_info, rooster)
     rtk.SetBackProjectionFromArgParse(args_info, rooster)
     # Motion mask
@@ -325,7 +331,7 @@ def process(args_info: argparse.Namespace):
         dvf = reader.GetOutput()
         if hasattr(itk, "CudaImage"):
             dvf = itk.cuda_image_from_image(dvf)
-        rooster.SetDisplacementField(dvf)
+        rooster.SetMotionDisplacementField(dvf)
 
         if args_info.idvf:
             rooster.SetComputeInverseWarpingByConjugateGradient(False)
@@ -333,7 +339,7 @@ def process(args_info: argparse.Namespace):
             idvf = reader.GetOutput()
             if hasattr(itk, "CudaImage"):
                 idvf = itk.cuda_image_from_image(idvf)
-            rooster.SetInverseDisplacementField(idvf)
+            rooster.SetInverseMotionDisplacementField(idvf)
     else:
         rooster.SetPerformWarping(False)
 
