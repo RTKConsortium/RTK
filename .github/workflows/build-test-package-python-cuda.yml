@@ -237,8 +237,10 @@ jobs:
         include:
           - runs-on: self-hosted-linux
             wheel-pattern: "*cuda130*cp311*manylinux_2_28_x86_64.whl"
+            cuda-version: "130"
           - runs-on: self-hosted-windows
             wheel-pattern: "*cuda128*cp311*win*.whl"
+            cuda-version: "128"
     runs-on: ${{ matrix.runs-on }}
 
     steps:
@@ -257,6 +259,12 @@ jobs:
     - name: Test python wheel
       shell: bash
       run: |
+        if [[ "${{ matrix.runs-on }}" == "self-hosted-linux" ]]; then
+          export LD_LIBRARY_PATH="/home/srit/Downloads/cuda${{ matrix.cuda-version }}/targets/x86_64-linux/lib:$LD_LIBRARY_PATH"
+        else
+          export PATH="/c/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v${{ matrix.cuda-version }}/bin:$PATH"
+        fi
+
         # Find wheel for Python 3.11 dynamically
         wheel=$(find wheels -name "${{ matrix.wheel-pattern }}" -type f | head -1)
 
