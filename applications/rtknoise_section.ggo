@@ -1,0 +1,3 @@
+section "Poisson and Gaussian noise"
+option "poisson" - "Pre-log Poisson noise parameters: pre-log normalization I0 and (optional) pre-exponential multiplicative factor" double multiple no
+option "gaussian" - "Additive Gaussian noise standard deviation (pre-log if --poisson given, without exp/log otherwise)" double no
