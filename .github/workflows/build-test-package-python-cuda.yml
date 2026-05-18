@@ -255,18 +255,28 @@ jobs:
       with:
         python-version: '3.11'
 
-
     - name: Test python wheel
       shell: bash
       run: |
+        python -m venv .test-venv
         if [[ "${{ matrix.runs-on }}" == "self-hosted-linux" ]]; then
           export LD_LIBRARY_PATH="/home/srit/Downloads/cuda${{ matrix.cuda-version }}/targets/x86_64-linux/lib:$LD_LIBRARY_PATH"
+          source .test-venv/bin/activate
         else
           CUDA_VERSION="${{ matrix.cuda-version }}"
           CUDA_VERSION_MAJOR=$(echo "$CUDA_VERSION" | cut -b1-2)
           CUDA_VERSION_MINOR=$(echo "$CUDA_VERSION" | cut -b3-)
           CUDA_BIN_PATH="C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v${CUDA_VERSION_MAJOR}.${CUDA_VERSION_MINOR}/bin"
+          source .test-venv/Scripts/activate
+
+          # Register the CUDA DLL directory via a .pth file so site.py adds it to the
+          # process DLL search path before any extension module is loaded.
+          site_packages=$(python -c "import sysconfig; print(sysconfig.get_path('purelib'))")
+          echo "import os; os.add_dll_directory('${CUDA_BIN_PATH}')" > "${site_packages}/cuda_dll.pth"
         fi
+
+        # Ensure virtualenv is deactivated and removed on script exit
+        trap 'deactivate; rm -rf .test-venv' EXIT
 
         # Find wheel for Python 3.11 dynamically
         if [[ "${{ matrix.runs-on }}" == "self-hosted-linux" ]]; then

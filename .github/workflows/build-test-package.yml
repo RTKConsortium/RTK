@@ -51,7 +51,14 @@ jobs:
         # Find wheel for Python 3.11 dynamically
         wheel=$(find wheels -name "${{ matrix.wheel-pattern }}" -type f | head -1)
 
-        pip uninstall -y $(pip freeze | sed -E 's/(==.*|[[:space:]]+@.*)$//' | grep -E '^itk-') || true
+        python -m venv .venv
+        if [[ "${{ matrix.runs-on }}" == "windows-latest" ]]; then
+          source .venv/Scripts/activate
+        else
+          source .venv/bin/activate
+        fi
+        trap 'deactivate >/dev/null 2>&1 || true; rm -rf .venv' EXIT
+
         echo "Installing wheel: $wheel"
         pip install $wheel
 
