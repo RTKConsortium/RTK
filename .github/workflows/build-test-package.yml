@@ -22,8 +22,16 @@ jobs:
   test-python-wheel:
     needs:
       - python-build-workflow
-    runs-on: self-hosted-linux
-
+    strategy:
+      matrix:
+        include:
+          - runs-on: ubuntu-22.04
+            wheel-pattern: "*cp311*manylinux_2_28_x86_64.whl"
+          - runs-on: windows-latest
+            wheel-pattern: "*cp311*win*.whl"
+          - runs-on: macos-latest
+            wheel-pattern: "*cp311*macosx_*.whl"
+    runs-on: ${{ matrix.runs-on }}
     steps:
     - uses: actions/checkout@v4
 
@@ -38,11 +46,19 @@ jobs:
         python-version: '3.11'
 
     - name: Test python wheel
+      shell: bash
       run: |
-        # Find wheel for Python 3.11 dynamically
-        wheel=$(find wheels -name "*cp311*manylinux_2_28_x86_64.whl" -type f | head -1)
+        python -m venv .venv
+        if [[ "${{ matrix.runs-on }}" == "self-hosted-windows" ]]; then
+          source .venv/Scripts/activate
+        else
+          source .venv/bin/activate
+        fi
+        trap 'deactivate >/dev/null 2>&1 || true; rm -rf .venv' EXIT
 
-        pip uninstall -y $(pip list |  grep -E '^itk-') || true
+        # Find wheel for Python 3.11 dynamically
+        wheel=$(find wheels -name "${{ matrix.wheel-pattern }}" -type f | head -1)
+
         echo "Installing wheel: $wheel"
         pip install $wheel
 
@@ -51,10 +67,11 @@ jobs:
         # Run tests with warning detection.
         # SWIG < 4.4 triggers the Py_LIMITED_API "builtin type swig…" warning when
         # Python runs with -Walways; pytest enables that behavior, so we ignore it.
-        stderr_log=$(mktemp)
-        pytest $GITHUB_WORKSPACE/test/*.py -vv -s -W "ignore:builtin type swig" 2> "$stderr_log"
-        if grep -q "Warning" "$stderr_log"; then
-          echo "Warnings found in stderr, failing the build"
-          cat "$stderr_log"
+        test_log=$(mktemp)
+        pytest -vv -s -W error -W "ignore:builtin type swig" 2>&1 | tee "$test_log"
+        matches=$(grep -Ei "warning|exception|redefin(ed|ition)?" "$test_log" || true)
+        if [ -n "$matches" ]; then
+          echo "Unexpected output found:"
+          echo "$matches"
           exit 1
         fi

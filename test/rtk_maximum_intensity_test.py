@@ -3,7 +3,7 @@ import itk
 from itk import RTK as rtk
 
 
-def test_MaximumIntensity():
+def test_maximum_intensity():
     TImageType = itk.Image[itk.F, 3]
     # Defines the RTK geometry object
     geometry = rtk.ThreeDCircularProjectionGeometry.New()
