@@ -165,15 +165,14 @@ CudaWarpBackProjectionImageFilter ::GPUGenerateData()
   itk::Matrix<double, 4, 4> PPInputToIndexInputMatrix;
   itk::Matrix<double, 4, 4> indexInputToPPInputMatrix;
 
-  indexInputToIndexDVFMatrix =
-    rtk::GetPhysicalPointToIndexMatrix(this->GetDisplacementField().GetPointer()).GetVnlMatrix() *
-    rtk::GetIndexToPhysicalPointMatrix(this->GetInputVolume().GetPointer()).GetVnlMatrix() *
-    matrixIdxVol.GetVnlMatrix();
+  indexInputToIndexDVFMatrix = GetPhysicalPointToIndexMatrix(this->GetDisplacementField().GetPointer()).GetVnlMatrix() *
+                               GetIndexToPhysicalPointMatrix(this->GetInputVolume().GetPointer()).GetVnlMatrix() *
+                               matrixIdxVol.GetVnlMatrix();
 
-  PPInputToIndexInputMatrix = rtk::GetPhysicalPointToIndexMatrix(this->GetInputVolume().GetPointer()).GetVnlMatrix();
+  PPInputToIndexInputMatrix = GetPhysicalPointToIndexMatrix(this->GetInputVolume().GetPointer()).GetVnlMatrix();
 
-  indexInputToPPInputMatrix = rtk::GetIndexToPhysicalPointMatrix(this->GetInputVolume().GetPointer()).GetVnlMatrix() *
-                              matrixIdxVol.GetVnlMatrix();
+  indexInputToPPInputMatrix =
+    GetIndexToPhysicalPointMatrix(this->GetInputVolume().GetPointer()).GetVnlMatrix() * matrixIdxVol.GetVnlMatrix();
 
   // Convert the matrices to arrays of floats (skipping the last line, as we don't care)
   float fIndexInputToIndexDVFMatrix[12];

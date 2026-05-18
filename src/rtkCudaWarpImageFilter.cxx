@@ -70,13 +70,13 @@ CudaWarpImageFilter ::GPUGenerateData()
 
   // Transform matrices that we will need during the warping process
   indexOutputToPPOutputMatrix =
-    rtk::GetIndexToPhysicalPointMatrix(this->GetOutput()).GetVnlMatrix() * matrixIdxOutputVol.GetVnlMatrix();
+    GetIndexToPhysicalPointMatrix(this->GetOutput()).GetVnlMatrix() * matrixIdxOutputVol.GetVnlMatrix();
 
-  indexOutputToIndexDVFMatrix = rtk::GetPhysicalPointToIndexMatrix(this->GetDisplacementField()).GetVnlMatrix() *
-                                rtk::GetIndexToPhysicalPointMatrix(this->GetOutput()).GetVnlMatrix() *
+  indexOutputToIndexDVFMatrix = GetPhysicalPointToIndexMatrix(this->GetDisplacementField()).GetVnlMatrix() *
+                                GetIndexToPhysicalPointMatrix(this->GetOutput()).GetVnlMatrix() *
                                 matrixIdxOutputVol.GetVnlMatrix();
 
-  PPInputToIndexInputMatrix = rtk::GetPhysicalPointToIndexMatrix(this->GetInput(0)).GetVnlMatrix();
+  PPInputToIndexInputMatrix = GetPhysicalPointToIndexMatrix(this->GetInput(0)).GetVnlMatrix();
 
   // Convert the matrices to arrays of floats (skipping the last line, as we don't care)
   float fIndexOutputToPPOutputMatrix[12];

@@ -18,5 +18,8 @@
 
 #include "rtkCudaScatterGlareCorrectionImageFilter.h"
 
+namespace rtk
+{} // namespace rtk
+
 template class rtk::CudaFFTProjectionsConvolutionImageFilter<
   rtk::ScatterGlareCorrectionImageFilter<itk::CudaImage<float, 3>, itk::CudaImage<float, 3>, float>>;

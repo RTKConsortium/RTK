@@ -21,12 +21,15 @@
 #include <itkRawImageIO.h>
 #include <itk_zlib.h>
 
+namespace rtk
+{
+
 //--------------------------------------------------------------------
 /* Find value_ptr as pointer to the parameter of the given key in the header.
  * Returns NULL on success.
  */
 char *
-rtk::EdfImageIO::edf_findInHeader(char * header, const char * key)
+EdfImageIO::edf_findInHeader(char * header, const char * key)
 {
   char * value_ptr = strstr(header, key);
 
@@ -42,7 +45,7 @@ rtk::EdfImageIO::edf_findInHeader(char * header, const char * key)
 //--------------------------------------------------------------------
 // Read Image Information
 void
-rtk::EdfImageIO::ReadImageInformation()
+EdfImageIO::ReadImageInformation()
 {
   int    k = 0;
   char * header = nullptr;
@@ -230,7 +233,7 @@ rtk::EdfImageIO::ReadImageInformation()
 //--------------------------------------------------------------------
 // Read Image Information
 bool
-rtk::EdfImageIO::CanReadFile(const char * FileNameToRead)
+EdfImageIO::CanReadFile(const char * FileNameToRead)
 {
   std::string                  filename(FileNameToRead);
   const std::string::size_type it = filename.find_last_of('.');
@@ -242,7 +245,7 @@ rtk::EdfImageIO::CanReadFile(const char * FileNameToRead)
 //--------------------------------------------------------------------
 // Read Image Content
 void
-rtk::EdfImageIO::Read(void * buffer)
+EdfImageIO::Read(void * buffer)
 {
   gzFile inp = nullptr;
 
@@ -270,13 +273,13 @@ rtk::EdfImageIO::Read(void * buffer)
 //--------------------------------------------------------------------
 // Write Image Information
 void
-rtk::EdfImageIO::WriteImageInformation(bool itkNotUsed(keepOfStream))
+EdfImageIO::WriteImageInformation(bool itkNotUsed(keepOfStream))
 {}
 
 //--------------------------------------------------------------------
 // Write Image Information
 bool
-rtk::EdfImageIO::CanWriteFile(const char * itkNotUsed(FileNameToWrite))
+EdfImageIO::CanWriteFile(const char * itkNotUsed(FileNameToWrite))
 {
   return false;
 }
@@ -284,5 +287,7 @@ rtk::EdfImageIO::CanWriteFile(const char * itkNotUsed(FileNameToWrite))
 //--------------------------------------------------------------------
 // Write Image
 void
-rtk::EdfImageIO::Write(const void * itkNotUsed(buffer))
+EdfImageIO::Write(const void * itkNotUsed(buffer))
 {} ////
+
+} // namespace rtk

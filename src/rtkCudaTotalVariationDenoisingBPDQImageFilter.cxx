@@ -21,10 +21,13 @@
 
 #include <itkMacro.h>
 
-rtk::CudaTotalVariationDenoisingBPDQImageFilter ::CudaTotalVariationDenoisingBPDQImageFilter() = default;
+namespace rtk
+{
+
+CudaTotalVariationDenoisingBPDQImageFilter ::CudaTotalVariationDenoisingBPDQImageFilter() = default;
 
 void
-rtk::CudaTotalVariationDenoisingBPDQImageFilter ::GPUGenerateData()
+CudaTotalVariationDenoisingBPDQImageFilter ::GPUGenerateData()
 {
   int   inputSize[3];
   int   outputSize[3];
@@ -53,6 +56,8 @@ rtk::CudaTotalVariationDenoisingBPDQImageFilter ::GPUGenerateData()
   CUDA_total_variation(
     inputSize, inputSpacing, pin, pout, static_cast<float>(m_Gamma), static_cast<float>(m_Beta), m_NumberOfIterations);
 }
+
+} // namespace rtk
 
 template class itk::CudaImageToImageFilter<
   itk::CudaImage<float, 3>,

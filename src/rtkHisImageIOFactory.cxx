@@ -20,7 +20,10 @@
 
 #include <fstream>
 
-rtk::HisImageIOFactory::HisImageIOFactory()
+namespace rtk
+{
+
+HisImageIOFactory::HisImageIOFactory()
 {
   this->RegisterOverride(
     "itkImageIOBase", "HisImageIO", "His Image IO", true, itk::CreateObjectFunction<HisImageIO>::New());
@@ -40,8 +43,10 @@ HisImageIOFactoryRegister__Private()
   if (!HisImageIOFactoryHasBeenRegistered)
   {
     HisImageIOFactoryHasBeenRegistered = true;
-    rtk::HisImageIOFactory::RegisterOneFactory();
+    HisImageIOFactory::RegisterOneFactory();
   }
 }
 
 } // namespace itk
+
+} // namespace rtk

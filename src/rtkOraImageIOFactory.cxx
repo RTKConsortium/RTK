@@ -20,8 +20,11 @@
 
 #include <fstream>
 
+namespace rtk
+{
+
 //====================================================================
-rtk::OraImageIOFactory::OraImageIOFactory()
+OraImageIOFactory::OraImageIOFactory()
 {
   this->RegisterOverride(
     "itkImageIOBase", "OraImageIO", "Ora Image IO", true, itk::CreateObjectFunction<OraImageIO>::New());
@@ -41,8 +44,10 @@ OraImageIOFactoryRegister__Private()
   if (!OraImageIOFactoryHasBeenRegistered)
   {
     OraImageIOFactoryHasBeenRegistered = true;
-    rtk::OraImageIOFactory::RegisterOneFactory();
+    OraImageIOFactory::RegisterOneFactory();
   }
 }
 
 } // end namespace itk
+
+} // namespace rtk

@@ -23,6 +23,9 @@
 #include "rtkXimImageIO.h"
 #include <itkMetaDataObject.h>
 
+namespace rtk
+{
+
 enum
 {
   PROPERTY_NAME_MAX_LENGTH = 256
@@ -30,7 +33,7 @@ enum
 
 template <typename T>
 size_t
-rtk::XimImageIO::SetPropertyValue(char * property_name, Int4 value_length, FILE * fp, Xim_header * xim)
+XimImageIO::SetPropertyValue(char * property_name, Int4 value_length, FILE * fp, Xim_header * xim)
 {
   T      property_value;
   T *    unused_property_value = nullptr;
@@ -104,7 +107,7 @@ rtk::XimImageIO::SetPropertyValue(char * property_name, Int4 value_length, FILE 
 //--------------------------------------------------------------------
 // Read Image Information
 void
-rtk::XimImageIO::ReadImageInformation()
+XimImageIO::ReadImageInformation()
 {
   Xim_header xim;
   FILE *     fp = nullptr;
@@ -262,7 +265,7 @@ rtk::XimImageIO::ReadImageInformation()
 }
 //--------------------------------------------------------------------
 bool
-rtk::XimImageIO::CanReadFile(const char * FileNameToRead)
+XimImageIO::CanReadFile(const char * FileNameToRead)
 {
   std::string                  filename(FileNameToRead);
   const std::string::size_type it = filename.find_last_of('.');
@@ -358,7 +361,7 @@ lut_to_bytes(const char val)
 
 // Read Image Content
 void
-rtk::XimImageIO::Read(void * buffer)
+XimImageIO::Read(void * buffer)
 {
   FILE * fp = nullptr;
   // Long is only garanteed to be AT LEAST 32 bits, it could be 64 bit
@@ -467,7 +470,7 @@ rtk::XimImageIO::Read(void * buffer)
 
 //--------------------------------------------------------------------
 bool
-rtk::XimImageIO::CanWriteFile(const char * itkNotUsed(FileNameToWrite))
+XimImageIO::CanWriteFile(const char * itkNotUsed(FileNameToWrite))
 {
   return false;
 }
@@ -475,7 +478,9 @@ rtk::XimImageIO::CanWriteFile(const char * itkNotUsed(FileNameToWrite))
 //--------------------------------------------------------------------
 // Write Image
 void
-rtk::XimImageIO::Write(const void * itkNotUsed(buffer))
+XimImageIO::Write(const void * itkNotUsed(buffer))
 {
   // TODO(itk-developer): ?
 }
+
+} // namespace rtk

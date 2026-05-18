@@ -44,13 +44,13 @@ WatcherForResourceProbe ::WatcherForResourceProbe(ProcessObject * o)
 void
 WatcherForResourceProbe ::StartFilter()
 {
-  rtk::GlobalResourceProbe::GetInstance()->Start(m_Process->GetNameOfClass());
+  GlobalResourceProbe::GetInstance()->Start(m_Process->GetNameOfClass());
 }
 
 void
 WatcherForResourceProbe ::EndFilter()
 {
-  rtk::GlobalResourceProbe::GetInstance()->Stop(m_Process->GetNameOfClass());
+  GlobalResourceProbe::GetInstance()->Stop(m_Process->GetNameOfClass());
 }
 
 void
@@ -68,7 +68,7 @@ WatcherForResourceProbe ::DeleteFilter()
   {
     m_Process->RemoveObserver(m_DeleteTag);
   }
-  rtk::GlobalResourceProbe::GetInstance()->Remove(this);
+  GlobalResourceProbe::GetInstance()->Remove(this);
 }
 
 WatcherForResourceProbe ::WatcherForResourceProbe(const WatcherForResourceProbe & watch)

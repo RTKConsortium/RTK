@@ -23,10 +23,13 @@
 #include "rtkHndImageIO.h"
 #include <itkMetaDataObject.h>
 
+namespace rtk
+{
+
 //--------------------------------------------------------------------
 // Read Image Information
 void
-rtk::HndImageIO::ReadImageInformation()
+HndImageIO::ReadImageInformation()
 {
   Hnd_header hnd;
   FILE *     fp = nullptr;
@@ -131,7 +134,7 @@ rtk::HndImageIO::ReadImageInformation()
 
 //--------------------------------------------------------------------
 bool
-rtk::HndImageIO::CanReadFile(const char * FileNameToRead)
+HndImageIO::CanReadFile(const char * FileNameToRead)
 {
   std::string                  filename(FileNameToRead);
   const std::string::size_type it = filename.find_last_of('.');
@@ -188,7 +191,7 @@ lut_to_bytes(const char val)
 
 // Read Image Content
 void
-rtk::HndImageIO::Read(void * buffer)
+HndImageIO::Read(void * buffer)
 {
   FILE * fp = nullptr;
   // Long is only garanteed to be AT LEAST 32 bits, it could be 64 bit
@@ -287,7 +290,7 @@ rtk::HndImageIO::Read(void * buffer)
 
 //--------------------------------------------------------------------
 bool
-rtk::HndImageIO::CanWriteFile(const char * itkNotUsed(FileNameToWrite))
+HndImageIO::CanWriteFile(const char * itkNotUsed(FileNameToWrite))
 {
   return false;
 }
@@ -295,7 +298,9 @@ rtk::HndImageIO::CanWriteFile(const char * itkNotUsed(FileNameToWrite))
 //--------------------------------------------------------------------
 // Write Image
 void
-rtk::HndImageIO::Write(const void * itkNotUsed(buffer))
+HndImageIO::Write(const void * itkNotUsed(buffer))
 {
   // TODO(itk-developer): ?
 }
+
+} // namespace rtk

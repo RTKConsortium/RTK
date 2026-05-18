@@ -122,7 +122,7 @@ CudaRayCastBackProjectionImageFilter ::GPUGenerateData()
       translatedProjectionIndexTransformMatrix =
         volIndexTranslation.GetVnlMatrix() * volPPToIndex.GetVnlMatrix() *
         geometry->GetProjectionCoordinatesToFixedSystemMatrix(iProj).GetVnlMatrix() *
-        rtk::GetIndexToPhysicalPointMatrix(this->GetInput(1)).GetVnlMatrix() * projIndexTranslation.GetVnlMatrix();
+        GetIndexToPhysicalPointMatrix(this->GetInput(1)).GetVnlMatrix() * projIndexTranslation.GetVnlMatrix();
       for (int j = 0; j < 3; j++) // Ignore the 4th row
         for (int k = 0; k < 4; k++)
           translatedProjectionIndexTransformMatrices[(j + 3 * (iProj - iFirstProj)) * 4 + k] =
@@ -132,7 +132,7 @@ CudaRayCastBackProjectionImageFilter ::GPUGenerateData()
     {
       translatedProjectionIndexTransformMatrix =
         geometry->GetProjectionCoordinatesToDetectorSystemMatrix(iProj).GetVnlMatrix() *
-        rtk::GetIndexToPhysicalPointMatrix(this->GetInput(1)).GetVnlMatrix() * projIndexTranslation.GetVnlMatrix();
+        GetIndexToPhysicalPointMatrix(this->GetInput(1)).GetVnlMatrix() * projIndexTranslation.GetVnlMatrix();
       for (int j = 0; j < 3; j++) // Ignore the 4th row
         for (int k = 0; k < 4; k++)
           translatedProjectionIndexTransformMatrices[(j + 3 * (iProj - iFirstProj)) * 4 + k] =

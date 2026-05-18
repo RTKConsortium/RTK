@@ -21,10 +21,13 @@
 
 #include <itkMacro.h>
 
-rtk::CudaInterpolateImageFilter ::CudaInterpolateImageFilter() = default;
+namespace rtk
+{
+
+CudaInterpolateImageFilter ::CudaInterpolateImageFilter() = default;
 
 void
-rtk::CudaInterpolateImageFilter ::GPUGenerateData()
+CudaInterpolateImageFilter ::GPUGenerateData()
 {
   int4 inputSize;
   inputSize.x = this->GetInputVolumeSeries()->GetBufferedRegion().GetSize()[0];
@@ -37,6 +40,8 @@ rtk::CudaInterpolateImageFilter ::GPUGenerateData()
 
   CUDA_interpolation(inputSize, pvolseries, pvol, m_ProjectionNumber, m_Weights.data_array());
 }
+
+} // namespace rtk
 
 template class itk::CudaInPlaceImageFilter<
   itk::CudaImage<float, 3>,

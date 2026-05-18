@@ -18,8 +18,11 @@
 
 #include "rtkXRadImageIOFactory.h"
 
+namespace rtk
+{
+
 //====================================================================
-rtk::XRadImageIOFactory::XRadImageIOFactory()
+XRadImageIOFactory::XRadImageIOFactory()
 {
   this->RegisterOverride(
     "itkImageIOBase", "XRadImageIO", "XRad Image IO", true, itk::CreateObjectFunction<XRadImageIO>::New());
@@ -39,8 +42,10 @@ XRadImageIOFactoryRegister__Private()
   if (!XRadImageIOFactoryHasBeenRegistered)
   {
     XRadImageIOFactoryHasBeenRegistered = true;
-    rtk::XRadImageIOFactory::RegisterOneFactory();
+    XRadImageIOFactory::RegisterOneFactory();
   }
 }
 
 } // end namespace itk
+
+} // namespace rtk
