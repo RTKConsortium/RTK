@@ -26,19 +26,22 @@
 #include <itkMetaDataObject.h>
 #include <itksys/SystemTools.hxx>
 
-rtk::VarianProBeamGeometryReader ::VarianProBeamGeometryReader()
+namespace rtk
+{
+
+VarianProBeamGeometryReader ::VarianProBeamGeometryReader()
   : m_Geometry(nullptr)
 {}
 
 void
-rtk::VarianProBeamGeometryReader ::GenerateData()
+VarianProBeamGeometryReader ::GenerateData()
 {
   // Create new RTK geometry object
   m_Geometry = GeometryType::New();
 
   // Read Varian XML file (for common geometric information)
-  rtk::VarianProBeamXMLFileReader::Pointer proBeamXmlReader;
-  proBeamXmlReader = rtk::VarianProBeamXMLFileReader::New();
+  VarianProBeamXMLFileReader::Pointer proBeamXmlReader;
+  proBeamXmlReader = VarianProBeamXMLFileReader::New();
   proBeamXmlReader->SetFilename(m_XMLFileName);
   proBeamXmlReader->GenerateOutputInformation();
 
@@ -56,7 +59,7 @@ rtk::VarianProBeamGeometryReader ::GenerateData()
   const double sid = sidMetaData->GetMetaDataObjectValue();
 
   // Projections reader (for angle)
-  rtk::XimImageIOFactory::RegisterOneFactory();
+  XimImageIOFactory::RegisterOneFactory();
   // Projection matrices
   for (const std::string & projectionsFileName : m_ProjectionsFileNames)
   {
@@ -92,3 +95,5 @@ rtk::VarianProBeamGeometryReader ::GenerateData()
     }
   }
 }
+
+} // namespace rtk

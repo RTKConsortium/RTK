@@ -26,22 +26,25 @@
 #include <itkCenteredEuler3DTransform.h>
 #include <itkEuler3DTransform.h>
 
-rtk::ThreeDCircularProjectionGeometry::ThreeDCircularProjectionGeometry() = default;
+namespace rtk
+{
+
+ThreeDCircularProjectionGeometry::ThreeDCircularProjectionGeometry() = default;
 
 double
-rtk::ThreeDCircularProjectionGeometry::ConvertAngleBetween0And360Degrees(const double a)
+ThreeDCircularProjectionGeometry::ConvertAngleBetween0And360Degrees(const double a)
 {
   return a - 360 * floor(a / 360);
 }
 
 double
-rtk::ThreeDCircularProjectionGeometry::ConvertAngleBetween0And2PIRadians(const double a)
+ThreeDCircularProjectionGeometry::ConvertAngleBetween0And2PIRadians(const double a)
 {
   return a - 2 * itk::Math::pi * floor(a / (2 * itk::Math::pi));
 }
 
 double
-rtk::ThreeDCircularProjectionGeometry::ConvertAngleBetweenMinusAndPlusPIRadians(const double a)
+ThreeDCircularProjectionGeometry::ConvertAngleBetweenMinusAndPlusPIRadians(const double a)
 {
   double d = ConvertAngleBetween0And2PIRadians(a);
   if (d > itk::Math::pi)
@@ -50,15 +53,15 @@ rtk::ThreeDCircularProjectionGeometry::ConvertAngleBetweenMinusAndPlusPIRadians(
 }
 
 void
-rtk::ThreeDCircularProjectionGeometry::AddProjection(const double sid,
-                                                     const double sdd,
-                                                     const double gantryAngle,
-                                                     const double projOffsetX,
-                                                     const double projOffsetY,
-                                                     const double outOfPlaneAngle,
-                                                     const double inPlaneAngle,
-                                                     const double sourceOffsetX,
-                                                     const double sourceOffsetY)
+ThreeDCircularProjectionGeometry::AddProjection(const double sid,
+                                                const double sdd,
+                                                const double gantryAngle,
+                                                const double projOffsetX,
+                                                const double projOffsetY,
+                                                const double outOfPlaneAngle,
+                                                const double inPlaneAngle,
+                                                const double sourceOffsetX,
+                                                const double sourceOffsetY)
 {
   const double degreesToRadians = std::atan(1.0) / 45.0;
   AddProjectionInRadians(sid,
@@ -73,15 +76,15 @@ rtk::ThreeDCircularProjectionGeometry::AddProjection(const double sid,
 }
 
 void
-rtk::ThreeDCircularProjectionGeometry::AddProjectionInRadians(const double sid,
-                                                              const double sdd,
-                                                              const double gantryAngle,
-                                                              const double projOffsetX,
-                                                              const double projOffsetY,
-                                                              const double outOfPlaneAngle,
-                                                              const double inPlaneAngle,
-                                                              const double sourceOffsetX,
-                                                              const double sourceOffsetY)
+ThreeDCircularProjectionGeometry::AddProjectionInRadians(const double sid,
+                                                         const double sdd,
+                                                         const double gantryAngle,
+                                                         const double projOffsetX,
+                                                         const double projOffsetY,
+                                                         const double outOfPlaneAngle,
+                                                         const double inPlaneAngle,
+                                                         const double sourceOffsetX,
+                                                         const double sourceOffsetY)
 {
   // Check parallel / divergent projections consistency
   if (!m_GantryAngles.empty())
@@ -150,10 +153,10 @@ rtk::ThreeDCircularProjectionGeometry::AddProjectionInRadians(const double sid,
 }
 
 bool
-rtk::ThreeDCircularProjectionGeometry::AddProjection(const PointType &  sourcePosition,
-                                                     const PointType &  detectorPosition,
-                                                     const VectorType & detectorRowVector,
-                                                     const VectorType & detectorColumnVector)
+ThreeDCircularProjectionGeometry::AddProjection(const PointType &  sourcePosition,
+                                                const PointType &  detectorPosition,
+                                                const VectorType & detectorRowVector,
+                                                const VectorType & detectorColumnVector)
 {
   using EulerType = itk::Euler3DTransform<double>;
 
@@ -249,7 +252,7 @@ rtk::ThreeDCircularProjectionGeometry::AddProjection(const PointType &  sourcePo
 }
 
 bool
-rtk::ThreeDCircularProjectionGeometry::AddProjection(const HomogeneousProjectionMatrixType & pMat)
+ThreeDCircularProjectionGeometry::AddProjection(const HomogeneousProjectionMatrixType & pMat)
 {
   Matrix3x3Type A;
   for (unsigned int i = 0; i < 3; i++)
@@ -374,7 +377,7 @@ rtk::ThreeDCircularProjectionGeometry::AddProjection(const HomogeneousProjection
 }
 
 void
-rtk::ThreeDCircularProjectionGeometry::Clear()
+ThreeDCircularProjectionGeometry::Clear()
 {
   Superclass::Clear();
 
@@ -401,7 +404,7 @@ rtk::ThreeDCircularProjectionGeometry::Clear()
 }
 
 std::vector<double>
-rtk::ThreeDCircularProjectionGeometry::GetTiltAngles() const
+ThreeDCircularProjectionGeometry::GetTiltAngles() const
 {
   const std::vector<double> sangles = this->GetSourceAngles();
   const std::vector<double> gangles = this->GetGantryAngles();
@@ -415,7 +418,7 @@ rtk::ThreeDCircularProjectionGeometry::GetTiltAngles() const
 }
 
 std::multimap<double, unsigned int>
-rtk::ThreeDCircularProjectionGeometry::GetSortedAngles(const std::vector<double> & angles)
+ThreeDCircularProjectionGeometry::GetSortedAngles(const std::vector<double> & angles)
 {
   unsigned int                        nProj = angles.size();
   std::multimap<double, unsigned int> sangles;
@@ -428,7 +431,7 @@ rtk::ThreeDCircularProjectionGeometry::GetSortedAngles(const std::vector<double>
 }
 
 std::map<double, unsigned int>
-rtk::ThreeDCircularProjectionGeometry::GetUniqueSortedAngles(const std::vector<double> & angles)
+ThreeDCircularProjectionGeometry::GetUniqueSortedAngles(const std::vector<double> & angles)
 {
   unsigned int                   nProj = angles.size();
   std::map<double, unsigned int> sangles;
@@ -441,7 +444,7 @@ rtk::ThreeDCircularProjectionGeometry::GetUniqueSortedAngles(const std::vector<d
 }
 
 std::vector<double>
-rtk::ThreeDCircularProjectionGeometry::GetAngularGapsWithNext(const std::vector<double> & angles) const
+ThreeDCircularProjectionGeometry::GetAngularGapsWithNext(const std::vector<double> & angles) const
 {
   std::vector<double> angularGaps;
   unsigned int        nProj = angles.size();
@@ -475,7 +478,7 @@ rtk::ThreeDCircularProjectionGeometry::GetAngularGapsWithNext(const std::vector<
 }
 
 std::vector<double>
-rtk::ThreeDCircularProjectionGeometry::GetAngularGaps(const std::vector<double> & angles)
+ThreeDCircularProjectionGeometry::GetAngularGaps(const std::vector<double> & angles)
 {
   std::vector<double> angularGaps;
   unsigned int        nProj = angles.size();
@@ -529,8 +532,8 @@ rtk::ThreeDCircularProjectionGeometry::GetAngularGaps(const std::vector<double> 
   return angularGaps;
 }
 
-rtk::ThreeDCircularProjectionGeometry::ThreeDHomogeneousMatrixType
-rtk::ThreeDCircularProjectionGeometry::ComputeRotationHomogeneousMatrix(double angleX, double angleY, double angleZ)
+ThreeDCircularProjectionGeometry::ThreeDHomogeneousMatrixType
+ThreeDCircularProjectionGeometry::ComputeRotationHomogeneousMatrix(double angleX, double angleY, double angleZ)
 {
   auto xfm = itk::CenteredEuler3DTransform<double>::New();
   xfm->SetIdentity();
@@ -545,8 +548,8 @@ rtk::ThreeDCircularProjectionGeometry::ComputeRotationHomogeneousMatrix(double a
   return matrix;
 }
 
-rtk::ThreeDCircularProjectionGeometry::TwoDHomogeneousMatrixType
-rtk::ThreeDCircularProjectionGeometry::ComputeTranslationHomogeneousMatrix(double transX, double transY)
+ThreeDCircularProjectionGeometry::TwoDHomogeneousMatrixType
+ThreeDCircularProjectionGeometry::ComputeTranslationHomogeneousMatrix(double transX, double transY)
 {
   TwoDHomogeneousMatrixType matrix;
   matrix.SetIdentity();
@@ -555,8 +558,8 @@ rtk::ThreeDCircularProjectionGeometry::ComputeTranslationHomogeneousMatrix(doubl
   return matrix;
 }
 
-rtk::ThreeDCircularProjectionGeometry::ThreeDHomogeneousMatrixType
-rtk::ThreeDCircularProjectionGeometry::ComputeTranslationHomogeneousMatrix(double transX, double transY, double transZ)
+ThreeDCircularProjectionGeometry::ThreeDHomogeneousMatrixType
+ThreeDCircularProjectionGeometry::ComputeTranslationHomogeneousMatrix(double transX, double transY, double transZ)
 {
   ThreeDHomogeneousMatrixType matrix;
   matrix.SetIdentity();
@@ -566,8 +569,8 @@ rtk::ThreeDCircularProjectionGeometry::ComputeTranslationHomogeneousMatrix(doubl
   return matrix;
 }
 
-rtk::ThreeDCircularProjectionGeometry::Superclass::MatrixType
-rtk::ThreeDCircularProjectionGeometry::ComputeProjectionMagnificationMatrix(double sdd, const double sid)
+ThreeDCircularProjectionGeometry::Superclass::MatrixType
+ThreeDCircularProjectionGeometry::ComputeProjectionMagnificationMatrix(double sdd, const double sid)
 {
   Superclass::MatrixType matrix;
   matrix.Fill(0.0);
@@ -579,10 +582,10 @@ rtk::ThreeDCircularProjectionGeometry::ComputeProjectionMagnificationMatrix(doub
 }
 
 void
-rtk::ThreeDCircularProjectionGeometry::SetCollimationOfLastProjection(const double uinf,
-                                                                      const double usup,
-                                                                      const double vinf,
-                                                                      const double vsup)
+ThreeDCircularProjectionGeometry::SetCollimationOfLastProjection(const double uinf,
+                                                                 const double usup,
+                                                                 const double vinf,
+                                                                 const double vsup)
 {
   m_CollimationUInf.back() = uinf;
   m_CollimationUSup.back() = usup;
@@ -590,8 +593,8 @@ rtk::ThreeDCircularProjectionGeometry::SetCollimationOfLastProjection(const doub
   m_CollimationVSup.back() = vsup;
 }
 
-rtk::ThreeDCircularProjectionGeometry::HomogeneousVectorType
-rtk::ThreeDCircularProjectionGeometry::GetSourcePosition(const unsigned int i) const
+ThreeDCircularProjectionGeometry::HomogeneousVectorType
+ThreeDCircularProjectionGeometry::GetSourcePosition(const unsigned int i) const
 {
   HomogeneousVectorType sourcePosition;
   sourcePosition[0] = this->GetSourceOffsetsX()[i];
@@ -604,8 +607,8 @@ rtk::ThreeDCircularProjectionGeometry::GetSourcePosition(const unsigned int i) c
   return sourcePosition;
 }
 
-rtk::ThreeDCircularProjectionGeometry::ThreeDHomogeneousMatrixType
-rtk::ThreeDCircularProjectionGeometry::GetProjectionCoordinatesToDetectorSystemMatrix(const unsigned int i) const
+ThreeDCircularProjectionGeometry::ThreeDHomogeneousMatrixType
+ThreeDCircularProjectionGeometry::GetProjectionCoordinatesToDetectorSystemMatrix(const unsigned int i) const
 {
   // Compute projection inverse and distance to source
   ThreeDHomogeneousMatrixType matrix;
@@ -624,8 +627,8 @@ rtk::ThreeDCircularProjectionGeometry::GetProjectionCoordinatesToDetectorSystemM
   return matrix;
 }
 
-rtk::ThreeDCircularProjectionGeometry::ThreeDHomogeneousMatrixType
-rtk::ThreeDCircularProjectionGeometry::GetProjectionCoordinatesToFixedSystemMatrix(const unsigned int i) const
+ThreeDCircularProjectionGeometry::ThreeDHomogeneousMatrixType
+ThreeDCircularProjectionGeometry::GetProjectionCoordinatesToFixedSystemMatrix(const unsigned int i) const
 {
   ThreeDHomogeneousMatrixType matrix;
   matrix =
@@ -635,8 +638,8 @@ rtk::ThreeDCircularProjectionGeometry::GetProjectionCoordinatesToFixedSystemMatr
 
 
 double
-rtk::ThreeDCircularProjectionGeometry::ToUntiltedCoordinateAtIsocenter(const unsigned int noProj,
-                                                                       const double       tiltedCoord) const
+ThreeDCircularProjectionGeometry::ToUntiltedCoordinateAtIsocenter(const unsigned int noProj,
+                                                                  const double       tiltedCoord) const
 {
   // Aliases / constant
   const double sid = this->GetSourceToIsocenterDistances()[noProj];
@@ -660,10 +663,10 @@ rtk::ThreeDCircularProjectionGeometry::ToUntiltedCoordinateAtIsocenter(const uns
 }
 
 bool
-rtk::ThreeDCircularProjectionGeometry::VerifyAngles(const double          outOfPlaneAngleRAD,
-                                                    const double          gantryAngleRAD,
-                                                    const double          inPlaneAngleRAD,
-                                                    const Matrix3x3Type & referenceMatrix) const
+ThreeDCircularProjectionGeometry::VerifyAngles(const double          outOfPlaneAngleRAD,
+                                               const double          gantryAngleRAD,
+                                               const double          inPlaneAngleRAD,
+                                               const Matrix3x3Type & referenceMatrix) const
 {
   // Check if parameters are Nan. Fails if they are.
   if (outOfPlaneAngleRAD != outOfPlaneAngleRAD || gantryAngleRAD != gantryAngleRAD ||
@@ -688,10 +691,10 @@ rtk::ThreeDCircularProjectionGeometry::VerifyAngles(const double          outOfP
 }
 
 bool
-rtk::ThreeDCircularProjectionGeometry::FixAngles(double &              outOfPlaneAngleRAD,
-                                                 double &              gantryAngleRAD,
-                                                 double &              inPlaneAngleRAD,
-                                                 const Matrix3x3Type & referenceMatrix) const
+ThreeDCircularProjectionGeometry::FixAngles(double &              outOfPlaneAngleRAD,
+                                            double &              gantryAngleRAD,
+                                            double &              inPlaneAngleRAD,
+                                            const Matrix3x3Type & referenceMatrix) const
 {
   const Matrix3x3Type & rm = referenceMatrix; // shortcut
 
@@ -762,7 +765,7 @@ rtk::ThreeDCircularProjectionGeometry::FixAngles(double &              outOfPlan
 }
 
 itk::LightObject::Pointer
-rtk::ThreeDCircularProjectionGeometry::InternalClone() const
+ThreeDCircularProjectionGeometry::InternalClone() const
 {
   LightObject::Pointer loPtr = Superclass::InternalClone();
   Self::Pointer        clone = dynamic_cast<Self *>(loPtr.GetPointer());
@@ -785,3 +788,5 @@ rtk::ThreeDCircularProjectionGeometry::InternalClone() const
   clone->SetRadiusCylindricalDetector(this->GetRadiusCylindricalDetector());
   return loPtr;
 }
+
+} // namespace rtk

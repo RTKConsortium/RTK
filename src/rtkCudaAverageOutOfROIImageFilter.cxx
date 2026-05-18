@@ -21,10 +21,13 @@
 
 #include <itkMacro.h>
 
-rtk::CudaAverageOutOfROIImageFilter ::CudaAverageOutOfROIImageFilter() = default;
+namespace rtk
+{
+
+CudaAverageOutOfROIImageFilter ::CudaAverageOutOfROIImageFilter() = default;
 
 void
-rtk::CudaAverageOutOfROIImageFilter ::GPUGenerateData()
+CudaAverageOutOfROIImageFilter ::GPUGenerateData()
 {
   int size[4];
 
@@ -42,6 +45,8 @@ rtk::CudaAverageOutOfROIImageFilter ::GPUGenerateData()
   // Transfer the ROI volume back to the CPU memory to save space on the GPU
   this->GetROI()->GetCudaDataManager()->GetCPUBufferPointer();
 }
+
+} // namespace rtk
 
 template class itk::CudaInPlaceImageFilter<
   itk::CudaImage<float, 4>,

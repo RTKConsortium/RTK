@@ -29,19 +29,22 @@
 #include <itkMetaDataObject.h>
 #include <itksys/SystemTools.hxx>
 
-rtk::VarianObiGeometryReader ::VarianObiGeometryReader()
+namespace rtk
+{
+
+VarianObiGeometryReader ::VarianObiGeometryReader()
   : m_Geometry(nullptr)
 {}
 
 void
-rtk::VarianObiGeometryReader ::GenerateData()
+VarianObiGeometryReader ::GenerateData()
 {
   // Create new RTK geometry object
   m_Geometry = GeometryType::New();
 
   // Read Varian XML file (for common geometric information)
-  rtk::VarianObiXMLFileReader::Pointer obiXmlReader;
-  obiXmlReader = rtk::VarianObiXMLFileReader::New();
+  VarianObiXMLFileReader::Pointer obiXmlReader;
+  obiXmlReader = VarianObiXMLFileReader::New();
   obiXmlReader->SetFilename(m_XMLFileName);
   obiXmlReader->GenerateOutputInformation();
 
@@ -96,8 +99,8 @@ rtk::VarianObiGeometryReader ::GenerateData()
   const double offsety = offsetYMetaData->GetMetaDataObjectValue();
 
   // Projections reader (for angle)
-  rtk::HndImageIOFactory::RegisterOneFactory();
-  rtk::HncImageIOFactory::RegisterOneFactory();
+  HndImageIOFactory::RegisterOneFactory();
+  HncImageIOFactory::RegisterOneFactory();
 
   // Projection matrices
   for (const std::string & projectionsFileName : m_ProjectionsFileNames)
@@ -117,3 +120,5 @@ rtk::VarianObiGeometryReader ::GenerateData()
     m_Geometry->AddProjection(sid, sdd, angle, offsetx, offsety);
   }
 }
+
+} // namespace rtk

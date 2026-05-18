@@ -21,8 +21,11 @@
 #include <gdcmAttribute.h>
 #include <gdcmImageReader.h>
 
+namespace rtk
+{
+
 void
-rtk::DCMImagXImageIO::ReadImageInformation()
+DCMImagXImageIO::ReadImageInformation()
 {
   Superclass::ReadImageInformation();
 
@@ -32,7 +35,7 @@ rtk::DCMImagXImageIO::ReadImageInformation()
 }
 
 bool
-rtk::DCMImagXImageIO::CanReadFile(const char * FileNameToRead)
+DCMImagXImageIO::CanReadFile(const char * FileNameToRead)
 {
   if (!Superclass::CanReadFile(FileNameToRead))
     return false;
@@ -51,7 +54,9 @@ rtk::DCMImagXImageIO::CanReadFile(const char * FileNameToRead)
 }
 
 bool
-rtk::DCMImagXImageIO::CanWriteFile(const char * itkNotUsed(FileNameToWrite))
+DCMImagXImageIO::CanWriteFile(const char * itkNotUsed(FileNameToWrite))
 {
   return false;
 }
+
+} // namespace rtk

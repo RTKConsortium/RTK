@@ -22,10 +22,13 @@
 
 #include <itkMacro.h>
 
-rtk::CudaCyclicDeformationImageFilter ::CudaCyclicDeformationImageFilter() = default;
+namespace rtk
+{
+
+CudaCyclicDeformationImageFilter ::CudaCyclicDeformationImageFilter() = default;
 
 void
-rtk::CudaCyclicDeformationImageFilter ::GPUGenerateData()
+CudaCyclicDeformationImageFilter ::GPUGenerateData()
 {
   // Run the superclass method that updates all member variables
   this->Superclass::BeforeThreadedGenerateData();
@@ -50,6 +53,8 @@ rtk::CudaCyclicDeformationImageFilter ::GPUGenerateData()
   CUDA_linear_interpolate_along_fourth_dimension(
     inputSize, pin, pout, this->m_FrameInf, this->m_FrameSup, this->m_WeightInf, this->m_WeightSup);
 }
+
+} // namespace rtk
 
 template class itk::CudaImageToImageFilter<
   itk::CudaImage<itk::CovariantVector<float, 3>, 4>,

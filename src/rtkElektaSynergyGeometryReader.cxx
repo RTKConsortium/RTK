@@ -21,17 +21,20 @@
 #include "rtkDbf.h"
 #include "rtkMacro.h"
 
-rtk::ElektaSynergyGeometryReader ::ElektaSynergyGeometryReader()
+namespace rtk
+{
+
+ElektaSynergyGeometryReader ::ElektaSynergyGeometryReader()
   : m_Geometry(nullptr)
   , m_ImageDbfFileName("IMAGE.DBF")
   , m_FrameDbfFileName("FRAME.DBF")
 {}
 
 std::string
-rtk::ElektaSynergyGeometryReader ::GetImageIDFromDicomUID()
+ElektaSynergyGeometryReader ::GetImageIDFromDicomUID()
 {
   // Open frame database file
-  rtk::DbfFile dbImage(m_ImageDbfFileName);
+  DbfFile dbImage(m_ImageDbfFileName);
   if (!dbImage.is_open())
     itkGenericExceptionMacro(<< "Couldn't open " << m_ImageDbfFileName);
 
@@ -53,13 +56,13 @@ rtk::ElektaSynergyGeometryReader ::GetImageIDFromDicomUID()
 }
 
 void
-rtk::ElektaSynergyGeometryReader ::GetProjInfoFromDB(const std::string &  imageID,
-                                                     std::vector<float> & projAngle,
-                                                     std::vector<float> & projFlexX,
-                                                     std::vector<float> & projFlexY)
+ElektaSynergyGeometryReader ::GetProjInfoFromDB(const std::string &  imageID,
+                                                std::vector<float> & projAngle,
+                                                std::vector<float> & projFlexX,
+                                                std::vector<float> & projFlexY)
 {
   // Open frame database file
-  rtk::DbfFile dbFrame(m_FrameDbfFileName);
+  DbfFile dbFrame(m_FrameDbfFileName);
   if (!dbFrame.is_open())
     itkGenericExceptionMacro(<< "Couldn't open " << m_FrameDbfFileName);
 
@@ -76,7 +79,7 @@ rtk::ElektaSynergyGeometryReader ::GetProjInfoFromDB(const std::string &  imageI
 }
 
 void
-rtk::ElektaSynergyGeometryReader ::GenerateData()
+ElektaSynergyGeometryReader ::GenerateData()
 {
   // Create new RTK geometry object
   m_Geometry = GeometryType::New();
@@ -91,3 +94,5 @@ rtk::ElektaSynergyGeometryReader ::GenerateData()
     m_Geometry->AddProjection(1000., 1536., projAngle[noProj], -projFlexX[noProj], -projFlexY[noProj]);
   }
 }
+
+} // namespace rtk

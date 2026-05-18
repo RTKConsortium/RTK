@@ -24,10 +24,13 @@
 #include "rtkHncImageIO.h"
 #include <itkMetaDataObject.h>
 
+namespace rtk
+{
+
 //--------------------------------------------------------------------
 // Read Image Information
 void
-rtk::HncImageIO::ReadImageInformation()
+HncImageIO::ReadImageInformation()
 {
   Hnc_header hnc;
 
@@ -120,7 +123,7 @@ rtk::HncImageIO::ReadImageInformation()
 
 //--------------------------------------------------------------------
 bool
-rtk::HncImageIO::CanReadFile(const char * FileNameToRead)
+HncImageIO::CanReadFile(const char * FileNameToRead)
 {
   std::string                  filename(FileNameToRead);
   const std::string::size_type it = filename.find_last_of('.');
@@ -132,7 +135,7 @@ rtk::HncImageIO::CanReadFile(const char * FileNameToRead)
 //--------------------------------------------------------------------
 // Read Image Content
 void
-rtk::HncImageIO::Read(void * buffer)
+HncImageIO::Read(void * buffer)
 {
   FILE * fp = fopen(m_FileName.c_str(), "rb");
   if (fp == nullptr)
@@ -153,7 +156,7 @@ rtk::HncImageIO::Read(void * buffer)
 
 //--------------------------------------------------------------------
 bool
-rtk::HncImageIO::CanWriteFile(const char * itkNotUsed(FileNameToWrite))
+HncImageIO::CanWriteFile(const char * itkNotUsed(FileNameToWrite))
 {
   return false;
 }
@@ -161,7 +164,9 @@ rtk::HncImageIO::CanWriteFile(const char * itkNotUsed(FileNameToWrite))
 //--------------------------------------------------------------------
 // Write Image
 void
-rtk::HncImageIO::Write(const void * itkNotUsed(buffer))
+HncImageIO::Write(const void * itkNotUsed(buffer))
 {
   // TODO?
 }
+
+} // namespace rtk

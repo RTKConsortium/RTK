@@ -56,15 +56,15 @@ RegisterIOFactories()
     {
       itk::GDCMImageIOFactory::UnRegisterFactory(factory);
     }
-  rtk::HndImageIOFactory::RegisterOneFactory();
-  rtk::HncImageIOFactory::RegisterOneFactory();
-  rtk::XimImageIOFactory::RegisterOneFactory();
-  rtk::HisImageIOFactory::RegisterOneFactory();
-  rtk::ImagXImageIOFactory::RegisterOneFactory();
-  rtk::DCMImagXImageIOFactory::RegisterOneFactory();
-  rtk::EdfImageIOFactory::RegisterOneFactory();
-  rtk::XRadImageIOFactory::RegisterOneFactory();
-  rtk::OraImageIOFactory::RegisterOneFactory();
+  HndImageIOFactory::RegisterOneFactory();
+  HncImageIOFactory::RegisterOneFactory();
+  XimImageIOFactory::RegisterOneFactory();
+  HisImageIOFactory::RegisterOneFactory();
+  ImagXImageIOFactory::RegisterOneFactory();
+  DCMImagXImageIOFactory::RegisterOneFactory();
+  EdfImageIOFactory::RegisterOneFactory();
+  XRadImageIOFactory::RegisterOneFactory();
+  OraImageIOFactory::RegisterOneFactory();
   itk::GDCMImageIOFactory::RegisterOneFactory();
 }
 

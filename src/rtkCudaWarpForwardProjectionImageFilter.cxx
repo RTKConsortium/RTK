@@ -192,15 +192,14 @@ CudaWarpForwardProjectionImageFilter ::GPUGenerateData()
   float * pDVF = static_cast<float *>(this->GetDisplacementField()->GetCudaDataManager()->GetGPUBufferPointer());
 
   // Transform matrices that we will need during the warping process
-  indexInputToPPInputMatrix = rtk::GetIndexToPhysicalPointMatrix(this->GetInputVolume().GetPointer()).GetVnlMatrix() *
+  indexInputToPPInputMatrix = GetIndexToPhysicalPointMatrix(this->GetInputVolume().GetPointer()).GetVnlMatrix() *
                               matrixIdxInputVol.GetVnlMatrix();
 
-  indexInputToIndexDVFMatrix =
-    rtk::GetPhysicalPointToIndexMatrix(this->GetDisplacementField().GetPointer()).GetVnlMatrix() *
-    rtk::GetIndexToPhysicalPointMatrix(this->GetInputVolume().GetPointer()).GetVnlMatrix() *
-    matrixIdxInputVol.GetVnlMatrix();
+  indexInputToIndexDVFMatrix = GetPhysicalPointToIndexMatrix(this->GetDisplacementField().GetPointer()).GetVnlMatrix() *
+                               GetIndexToPhysicalPointMatrix(this->GetInputVolume().GetPointer()).GetVnlMatrix() *
+                               matrixIdxInputVol.GetVnlMatrix();
 
-  PPInputToIndexInputMatrix = rtk::GetPhysicalPointToIndexMatrix(this->GetInputVolume().GetPointer()).GetVnlMatrix();
+  PPInputToIndexInputMatrix = GetPhysicalPointToIndexMatrix(this->GetInputVolume().GetPointer()).GetVnlMatrix();
 
   // Convert the matrices to arrays of floats (skipping the last line, as we don't care)
   float fIndexInputToIndexDVFMatrix[12];
@@ -242,8 +241,7 @@ CudaWarpForwardProjectionImageFilter ::GPUGenerateData()
     Superclass::GeometryType::ThreeDHomogeneousMatrixType d_matrix;
     d_matrix = volIndexTranslation.GetVnlMatrix() * volPPToIndex.GetVnlMatrix() *
                geometry->GetProjectionCoordinatesToFixedSystemMatrix(iProj).GetVnlMatrix() *
-               rtk::GetIndexToPhysicalPointMatrix(this->GetInput()).GetVnlMatrix() *
-               projIndexTranslation.GetVnlMatrix();
+               GetIndexToPhysicalPointMatrix(this->GetInput()).GetVnlMatrix() * projIndexTranslation.GetVnlMatrix();
     for (int j = 0; j < 3; j++) // Ignore the 4th row
       for (int k = 0; k < 4; k++)
         matrices[(j + 3 * (iProj - iFirstProj)) * 4 + k] = static_cast<float>(d_matrix[j][k]);

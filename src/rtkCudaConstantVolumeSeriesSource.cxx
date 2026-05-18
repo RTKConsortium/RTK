@@ -21,10 +21,13 @@
 
 #include <itkMacro.h>
 
-rtk::CudaConstantVolumeSeriesSource ::CudaConstantVolumeSeriesSource() = default;
+namespace rtk
+{
+
+CudaConstantVolumeSeriesSource ::CudaConstantVolumeSeriesSource() = default;
 
 void
-rtk::CudaConstantVolumeSeriesSource ::GPUGenerateData()
+CudaConstantVolumeSeriesSource ::GPUGenerateData()
 {
   int outputSize[4];
 
@@ -37,6 +40,8 @@ rtk::CudaConstantVolumeSeriesSource ::GPUGenerateData()
 
   CUDA_generate_constant_volume_series(outputSize, pout, m_Constant);
 }
+
+} // namespace rtk
 
 template class itk::CudaImageToImageFilter<itk::CudaImage<float, 4>,
                                            itk::CudaImage<float, 4>,

@@ -21,10 +21,13 @@
 
 #include <itkMacro.h>
 
-rtk::CudaLaplacianImageFilter ::CudaLaplacianImageFilter() = default;
+namespace rtk
+{
+
+CudaLaplacianImageFilter ::CudaLaplacianImageFilter() = default;
 
 void
-rtk::CudaLaplacianImageFilter ::GPUGenerateData()
+CudaLaplacianImageFilter ::GPUGenerateData()
 {
   int   inputSize[3];
   int   outputSize[3];
@@ -51,6 +54,8 @@ rtk::CudaLaplacianImageFilter ::GPUGenerateData()
 
   CUDA_laplacian(inputSize, inputSpacing, pin, pout);
 }
+
+} // namespace rtk
 
 template class itk::CudaImageToImageFilter<itk::CudaImage<float, 3>,
                                            itk::CudaImage<float, 3>,

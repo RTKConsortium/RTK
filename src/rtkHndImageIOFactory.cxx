@@ -20,8 +20,11 @@
 
 #include <fstream>
 
+namespace rtk
+{
+
 //====================================================================
-rtk::HndImageIOFactory::HndImageIOFactory()
+HndImageIOFactory::HndImageIOFactory()
 {
   this->RegisterOverride(
     "itkImageIOBase", "HndImageIO", "Hnd Image IO", true, itk::CreateObjectFunction<HndImageIO>::New());
@@ -41,8 +44,10 @@ HndImageIOFactoryRegister__Private()
   if (!HndImageIOFactoryHasBeenRegistered)
   {
     HndImageIOFactoryHasBeenRegistered = true;
-    rtk::HndImageIOFactory::RegisterOneFactory();
+    HndImageIOFactory::RegisterOneFactory();
   }
 }
 
 } // end namespace itk
+
+} // namespace rtk

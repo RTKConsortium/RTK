@@ -24,17 +24,20 @@
 #include <itkMetaDataObject.h>
 #include <itkVersor.h>
 
-rtk::DigisensGeometryReader ::DigisensGeometryReader() = default;
+namespace rtk
+{
+
+DigisensGeometryReader ::DigisensGeometryReader() = default;
 
 void
-rtk::DigisensGeometryReader ::GenerateData()
+DigisensGeometryReader ::GenerateData()
 {
   // Create new RTK geometry object
   m_Geometry = GeometryType::New();
 
   // Read Varian XML file (for common geometric information)
-  rtk::DigisensGeometryXMLFileReader::Pointer digisensXmlReader;
-  digisensXmlReader = rtk::DigisensGeometryXMLFileReader::New();
+  DigisensGeometryXMLFileReader::Pointer digisensXmlReader;
+  digisensXmlReader = DigisensGeometryXMLFileReader::New();
   digisensXmlReader->SetFilename(m_XMLFileName);
   digisensXmlReader->GenerateOutputInformation();
 
@@ -145,3 +148,5 @@ rtk::DigisensGeometryReader ::GenerateData()
                                        rotationCenter[1]);
   }
 }
+
+} // namespace rtk

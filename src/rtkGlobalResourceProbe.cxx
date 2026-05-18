@@ -79,13 +79,13 @@ void
 GlobalResourceProbe ::Watch(ProcessObject * o)
 {
   m_Mutex.lock();
-  auto * w = new rtk::WatcherForResourceProbe(o);
+  auto * w = new WatcherForResourceProbe(o);
   m_Watchers.push_back(w);
   m_Mutex.unlock();
 }
 
 void
-GlobalResourceProbe ::Remove(const rtk::WatcherForResourceProbe * w)
+GlobalResourceProbe ::Remove(const WatcherForResourceProbe * w)
 {
   m_Mutex.lock();
   auto itw = std::find(m_Watchers.begin(), m_Watchers.end(), w);

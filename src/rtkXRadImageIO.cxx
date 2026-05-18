@@ -21,10 +21,13 @@
 #include <itkMetaDataObject.h>
 #include <itkRawImageIO.h>
 
+namespace rtk
+{
+
 //--------------------------------------------------------------------
 // Read Image Information
 void
-rtk::XRadImageIO::ReadImageInformation()
+XRadImageIO::ReadImageInformation()
 {
   std::ifstream is;
   is.open(m_FileName.c_str());
@@ -90,7 +93,7 @@ rtk::XRadImageIO::ReadImageInformation()
 //--------------------------------------------------------------------
 // Read Image Information
 bool
-rtk::XRadImageIO::CanReadFile(const char * FileNameToRead)
+XRadImageIO::CanReadFile(const char * FileNameToRead)
 {
   std::string                  filename(FileNameToRead);
   const std::string::size_type it = filename.find_last_of('.');
@@ -102,7 +105,7 @@ rtk::XRadImageIO::CanReadFile(const char * FileNameToRead)
 //--------------------------------------------------------------------
 // Read Image Content
 void
-rtk::XRadImageIO::Read(void * buffer)
+XRadImageIO::Read(void * buffer)
 {
   // Adapted from itkRawImageIO
   std::string rawFileName(m_FileName, 0, m_FileName.size() - 6);
@@ -131,13 +134,13 @@ rtk::XRadImageIO::Read(void * buffer)
 //--------------------------------------------------------------------
 // Write Image Information
 void
-rtk::XRadImageIO::WriteImageInformation(bool itkNotUsed(keepOfStream))
+XRadImageIO::WriteImageInformation(bool itkNotUsed(keepOfStream))
 {}
 
 //--------------------------------------------------------------------
 // Write Image Information
 bool
-rtk::XRadImageIO::CanWriteFile(const char * itkNotUsed(FileNameToWrite))
+XRadImageIO::CanWriteFile(const char * itkNotUsed(FileNameToWrite))
 {
   return false;
 }
@@ -145,5 +148,7 @@ rtk::XRadImageIO::CanWriteFile(const char * itkNotUsed(FileNameToWrite))
 //--------------------------------------------------------------------
 // Write Image
 void
-rtk::XRadImageIO::Write(const void * itkNotUsed(buffer))
+XRadImageIO::Write(const void * itkNotUsed(buffer))
 {} ////
+
+} // namespace rtk

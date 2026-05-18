@@ -24,19 +24,22 @@
 #include <itkMacro.h>
 #include <itkMetaDataObject.h>
 
-rtk::XRadGeometryReader ::XRadGeometryReader()
+namespace rtk
+{
+
+XRadGeometryReader ::XRadGeometryReader()
   : m_Geometry(nullptr)
 {}
 
 void
-rtk::XRadGeometryReader ::GenerateData()
+XRadGeometryReader ::GenerateData()
 {
   // Create new RTK geometry object
   m_Geometry = GeometryType::New();
   auto tmpGeo = GeometryType::New();
 
   // Read image information which contains geometry information
-  rtk::XRadImageIOFactory::RegisterOneFactory();
+  XRadImageIOFactory::RegisterOneFactory();
   itk::ImageIOBase::Pointer reader =
     itk::ImageIOFactory::CreateImageIO(m_ImageFileName.c_str(), itk::ImageIOFactory::IOFileModeEnum::ReadMode);
   if (!reader)
@@ -134,3 +137,5 @@ rtk::XRadGeometryReader ::GenerateData()
                                        tmpGeo->GetSourceOffsetsY()[i]);
   }
 }
+
+} // namespace rtk

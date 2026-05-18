@@ -21,14 +21,17 @@
 
 #include <itksys/SystemTools.hxx>
 
-void
-rtk::OraImageIO::ReadImageInformation()
+namespace rtk
 {
-  rtk::OraXMLFileReader::Pointer xmlReader;
+
+void
+OraImageIO::ReadImageInformation()
+{
+  OraXMLFileReader::Pointer xmlReader;
 
   std::string oraFileName = this->GetFileName();
 
-  xmlReader = rtk::OraXMLFileReader::New();
+  xmlReader = OraXMLFileReader::New();
   xmlReader->SetFilename(oraFileName);
   xmlReader->GenerateOutputInformation();
 
@@ -52,7 +55,7 @@ rtk::OraImageIO::ReadImageInformation()
 }
 
 bool
-rtk::OraImageIO::CanReadFile(const char * FileNameToRead)
+OraImageIO::CanReadFile(const char * FileNameToRead)
 {
   std::string filename(FileNameToRead);
   if (filename.size() < 8)
@@ -63,7 +66,7 @@ rtk::OraImageIO::CanReadFile(const char * FileNameToRead)
 }
 
 void
-rtk::OraImageIO::Read(void * buffer)
+OraImageIO::Read(void * buffer)
 {
   std::string oraFileName = this->GetFileName();
   this->SetFileName(m_MetaFileName);
@@ -72,7 +75,9 @@ rtk::OraImageIO::Read(void * buffer)
 }
 
 bool
-rtk::OraImageIO::CanWriteFile(const char * itkNotUsed(FileNameToWrite))
+OraImageIO::CanWriteFile(const char * itkNotUsed(FileNameToWrite))
 {
   return false;
 }
+
+} // namespace rtk
