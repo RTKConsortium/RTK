@@ -90,19 +90,11 @@ CudaForwardWarpImageFilter ::GPUGenerateData()
     ++itDVF;
   }
 
-#ifdef CudaCommon_VERSION_MAJOR
   float * pinVol = static_cast<float *>(this->GetInput(0)->GetCudaDataManager()->GetGPUBufferPointer());
   float * poutVol = static_cast<float *>(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
   float * pinxDVF = static_cast<float *>(xCompDVF->GetCudaDataManager()->GetGPUBufferPointer());
   float * pinyDVF = static_cast<float *>(yCompDVF->GetCudaDataManager()->GetGPUBufferPointer());
   float * pinzDVF = static_cast<float *>(zCompDVF->GetCudaDataManager()->GetGPUBufferPointer());
-#else
-  float * pinVol = *(float **)(this->GetInput(0)->GetCudaDataManager()->GetGPUBufferPointer());
-  float * poutVol = *(float **)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
-  float * pinxDVF = *(float **)(xCompDVF->GetCudaDataManager()->GetGPUBufferPointer());
-  float * pinyDVF = *(float **)(yCompDVF->GetCudaDataManager()->GetGPUBufferPointer());
-  float * pinzDVF = *(float **)(zCompDVF->GetCudaDataManager()->GetGPUBufferPointer());
-#endif
 
   // Transform matrices that we will need during the ForwardWarping process
   indexInputToPPInputMatrix =

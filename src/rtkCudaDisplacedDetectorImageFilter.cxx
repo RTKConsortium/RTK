@@ -34,17 +34,9 @@ CudaDisplacedDetectorImageFilter ::GPUGenerateData()
   overlapRegion.Crop(this->GetInput()->GetBufferedRegion());
 
   // Put the two data pointers at the same location
-#ifdef CudaCommon_VERSION_MAJOR
   float * inBuffer = static_cast<float *>(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
-#else
-  float * inBuffer = *static_cast<float **>(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
-#endif
   inBuffer += this->GetInput()->ComputeOffset(overlapRegion.GetIndex());
-#ifdef CudaCommon_VERSION_MAJOR
   float * outBuffer = static_cast<float *>(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
-#else
-  float * outBuffer = *static_cast<float **>(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
-#endif
   outBuffer += this->GetOutput()->ComputeOffset(this->GetOutput()->GetRequestedRegion().GetIndex());
 
   // nothing to do

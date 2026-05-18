@@ -55,13 +55,8 @@ CudaConjugateGradientImageFilter<TImage>::GPUGenerateData()
   R_k->CopyInformation(this->GetOutput());
 
   // Copy the input to the output (X_0 = input)
-#  ifdef CudaCommon_VERSION_MAJOR
   auto * pin = (DataType *)(this->GetX()->GetCudaDataManager()->GetGPUBufferPointer());
   auto * pX = (DataType *)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
-#  else
-  DataType * pin = *(DataType **)(this->GetX()->GetCudaDataManager()->GetGPUBufferPointer());
-  DataType * pX = *(DataType **)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
-#  endif
 
   // On GPU, initialize the output to the input
   CUDA_copy(numberOfElements, pin, pX);
@@ -74,15 +69,9 @@ CudaConjugateGradientImageFilter<TImage>::GPUGenerateData()
   typename TImage::Pointer AOut = this->m_A->GetOutput();
   AOut->DisconnectPipeline();
 
-#  ifdef CudaCommon_VERSION_MAJOR
   auto * pR = (DataType *)(R_k->GetCudaDataManager()->GetGPUBufferPointer());
   auto * pB = (DataType *)(this->GetB()->GetCudaDataManager()->GetGPUBufferPointer());
   auto * pAOut = (DataType *)(AOut->GetCudaDataManager()->GetGPUBufferPointer());
-#  else
-  DataType * pR = *(DataType **)(R_k->GetCudaDataManager()->GetGPUBufferPointer());
-  DataType * pB = *(DataType **)(this->GetB()->GetCudaDataManager()->GetGPUBufferPointer());
-  DataType * pAOut = *(DataType **)(AOut->GetCudaDataManager()->GetGPUBufferPointer());
-#  endif
 
   // Compute, on GPU, R_zero = P_zero = this->GetB() - this->m_A->GetOutput()
   CUDA_copy(numberOfElements, pB, pR);
@@ -92,12 +81,7 @@ CudaConjugateGradientImageFilter<TImage>::GPUGenerateData()
   // Transfer it back to the CPU memory
   this->GetB()->GetCudaDataManager()->GetCPUBufferPointer();
 
-#  ifdef CudaCommon_VERSION_MAJOR
   auto * pP = (DataType *)(P_k->GetCudaDataManager()->GetGPUBufferPointer());
-#  else
-  DataType * pP = *(DataType **)(P_k->GetCudaDataManager()->GetGPUBufferPointer());
-#  endif
-
   // P0 = R0
   CUDA_copy(numberOfElements, pR, pP);
 
@@ -111,17 +95,10 @@ CudaConjugateGradientImageFilter<TImage>::GPUGenerateData()
     AOut = this->m_A->GetOutput();
     AOut->DisconnectPipeline();
 
-#  ifdef CudaCommon_VERSION_MAJOR
     pX = (DataType *)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
     pR = (DataType *)(R_k->GetCudaDataManager()->GetGPUBufferPointer());
     pP = (DataType *)(P_k->GetCudaDataManager()->GetGPUBufferPointer());
     pAOut = (DataType *)(AOut->GetCudaDataManager()->GetGPUBufferPointer());
-#  else
-    pX = *(DataType **)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
-    pR = *(DataType **)(R_k->GetCudaDataManager()->GetGPUBufferPointer());
-    pP = *(DataType **)(P_k->GetCudaDataManager()->GetGPUBufferPointer());
-    pAOut = *(DataType **)(AOut->GetCudaDataManager()->GetGPUBufferPointer());
-#  endif
 
     // Compute, on GPU, alpha_k (only on GPU), X_k+1 (output), R_k+1, beta_k (only on GPU), P_k+1
     // The inputs are replaced by their next iterate
