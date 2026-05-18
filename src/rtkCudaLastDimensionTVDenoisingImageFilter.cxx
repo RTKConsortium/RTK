@@ -21,10 +21,13 @@
 
 #include <itkMacro.h>
 
-rtk::CudaLastDimensionTVDenoisingImageFilter ::CudaLastDimensionTVDenoisingImageFilter() { this->SetInPlace(true); }
+namespace rtk
+{
+
+CudaLastDimensionTVDenoisingImageFilter ::CudaLastDimensionTVDenoisingImageFilter() { this->SetInPlace(true); }
 
 void
-rtk::CudaLastDimensionTVDenoisingImageFilter ::GPUGenerateData()
+CudaLastDimensionTVDenoisingImageFilter ::GPUGenerateData()
 {
   // Allocate the output image
   this->AllocateOutputs();
@@ -50,17 +53,14 @@ rtk::CudaLastDimensionTVDenoisingImageFilter ::GPUGenerateData()
     }
   }
 
-#ifdef CudaCommon_VERSION_MAJOR
   float * pin = static_cast<float *>(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
   float * pout = static_cast<float *>(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
-#else
-  float * pin = *(float **)(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
-  float * pout = *(float **)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
-#endif
 
   CUDA_total_variation_last_dimension(
     inputSize, pin, pout, static_cast<float>(m_Gamma), static_cast<float>(m_Beta), m_NumberOfIterations);
 }
+
+} // namespace rtk
 
 template class itk::CudaInPlaceImageFilter<
   itk::CudaImage<float, 4>,

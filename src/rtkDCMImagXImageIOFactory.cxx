@@ -18,8 +18,11 @@
 
 #include "rtkDCMImagXImageIOFactory.h"
 
+namespace rtk
+{
+
 //====================================================================
-rtk::DCMImagXImageIOFactory::DCMImagXImageIOFactory()
+DCMImagXImageIOFactory::DCMImagXImageIOFactory()
 {
   this->RegisterOverride("itkImageIOBase",
                          "DCMImagXImageIO",
@@ -47,3 +50,5 @@ DCMImagXImageIOFactoryRegister__Private()
 }
 
 } // end namespace itk
+
+} // namespace rtk

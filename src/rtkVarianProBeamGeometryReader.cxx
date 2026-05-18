@@ -26,12 +26,15 @@
 #include <itkMetaDataObject.h>
 #include <itksys/SystemTools.hxx>
 
-rtk::VarianProBeamGeometryReader ::VarianProBeamGeometryReader()
+namespace rtk
+{
+
+VarianProBeamGeometryReader ::VarianProBeamGeometryReader()
   : m_Geometry(nullptr)
 {}
 
 void
-rtk::VarianProBeamGeometryReader ::GenerateData()
+VarianProBeamGeometryReader ::GenerateData()
 {
   // Create new RTK geometry object
   m_Geometry = GeometryType::New();
@@ -92,3 +95,5 @@ rtk::VarianProBeamGeometryReader ::GenerateData()
     }
   }
 }
+
+} // namespace rtk

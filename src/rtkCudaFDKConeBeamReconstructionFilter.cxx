@@ -18,7 +18,10 @@
 
 #include "rtkCudaFDKConeBeamReconstructionFilter.h"
 
-rtk::CudaFDKConeBeamReconstructionFilter ::CudaFDKConeBeamReconstructionFilter()
+namespace rtk
+{
+
+CudaFDKConeBeamReconstructionFilter ::CudaFDKConeBeamReconstructionFilter()
 {
   // Create each filter which are specific for cuda
   m_WeightFilter = WeightFilterType::New();
@@ -39,10 +42,12 @@ rtk::CudaFDKConeBeamReconstructionFilter ::CudaFDKConeBeamReconstructionFilter()
 }
 
 void
-rtk::CudaFDKConeBeamReconstructionFilter ::GPUGenerateData()
+CudaFDKConeBeamReconstructionFilter ::GPUGenerateData()
 {
   CPUSuperclass::GenerateData();
 }
+
+} // namespace rtk
 
 template class itk::CudaInPlaceImageFilter<
   itk::CudaImage<float, 3>,

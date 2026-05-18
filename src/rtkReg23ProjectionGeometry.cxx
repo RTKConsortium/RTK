@@ -18,14 +18,19 @@
 
 #include "rtkReg23ProjectionGeometry.h"
 
-rtk::Reg23ProjectionGeometry::Reg23ProjectionGeometry() {}
-rtk::Reg23ProjectionGeometry::~Reg23ProjectionGeometry() = default;
+namespace rtk
+{
+
+Reg23ProjectionGeometry::Reg23ProjectionGeometry() {}
+Reg23ProjectionGeometry::~Reg23ProjectionGeometry() = default;
 
 bool
-rtk::Reg23ProjectionGeometry::AddReg23Projection(const PointType &  sourcePosition,
-                                                 const PointType &  detectorPosition,
-                                                 const VectorType & detectorRowVector,
-                                                 const VectorType & detectorColumnVector)
+Reg23ProjectionGeometry::AddReg23Projection(const PointType &  sourcePosition,
+                                            const PointType &  detectorPosition,
+                                            const VectorType & detectorRowVector,
+                                            const VectorType & detectorColumnVector)
 {
   return Superclass::AddProjection(sourcePosition, detectorPosition, detectorRowVector, detectorColumnVector);
 }
+
+} // namespace rtk

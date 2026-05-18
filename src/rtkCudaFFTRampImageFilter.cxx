@@ -18,5 +18,8 @@
 
 #include "rtkCudaFFTRampImageFilter.h"
 
+namespace rtk
+{} // namespace rtk
+
 template class rtk::CudaFFTProjectionsConvolutionImageFilter<
   rtk::FFTRampImageFilter<itk::CudaImage<float, 3>, itk::CudaImage<float, 3>, float>>;

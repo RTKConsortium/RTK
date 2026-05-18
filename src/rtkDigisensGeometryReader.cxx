@@ -24,10 +24,13 @@
 #include <itkMetaDataObject.h>
 #include <itkVersor.h>
 
-rtk::DigisensGeometryReader ::DigisensGeometryReader() = default;
+namespace rtk
+{
+
+DigisensGeometryReader ::DigisensGeometryReader() = default;
 
 void
-rtk::DigisensGeometryReader ::GenerateData()
+DigisensGeometryReader ::GenerateData()
 {
   // Create new RTK geometry object
   m_Geometry = GeometryType::New();
@@ -145,3 +148,5 @@ rtk::DigisensGeometryReader ::GenerateData()
                                        rotationCenter[1]);
   }
 }
+
+} // namespace rtk
