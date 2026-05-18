@@ -29,10 +29,13 @@ enum
 #include "rtkMacro.h"
 #include <fstream>
 
+namespace rtk
+{
+
 //--------------------------------------------------------------------
 // Read Image Information
 void
-rtk::HisImageIO::ReadImageInformation()
+HisImageIO::ReadImageInformation()
 {
   // open file
   std::ifstream file(m_FileName.c_str(), std::ios::in | std::ios::binary);
@@ -98,7 +101,7 @@ rtk::HisImageIO::ReadImageInformation()
 //--------------------------------------------------------------------
 // Read Image Information
 bool
-rtk::HisImageIO::CanReadFile(const char * FileNameToRead)
+HisImageIO::CanReadFile(const char * FileNameToRead)
 {
   std::string                  filename(FileNameToRead);
   const std::string::size_type it = filename.find_last_of('.');
@@ -110,7 +113,7 @@ rtk::HisImageIO::CanReadFile(const char * FileNameToRead)
 //--------------------------------------------------------------------
 // Read Image Content
 void
-rtk::HisImageIO::Read(void * buffer)
+HisImageIO::Read(void * buffer)
 {
   // open file
   std::ifstream file(m_FileName.c_str(), std::ios::in | std::ios::binary);
@@ -130,7 +133,7 @@ rtk::HisImageIO::Read(void * buffer)
 
 //--------------------------------------------------------------------
 bool
-rtk::HisImageIO::CanWriteFile(const char * itkNotUsed(FileNameToWrite))
+HisImageIO::CanWriteFile(const char * itkNotUsed(FileNameToWrite))
 {
   return false;
 }
@@ -138,5 +141,7 @@ rtk::HisImageIO::CanWriteFile(const char * itkNotUsed(FileNameToWrite))
 //--------------------------------------------------------------------
 // Write Image
 void
-rtk::HisImageIO::Write(const void * itkNotUsed(buffer))
+HisImageIO::Write(const void * itkNotUsed(buffer))
 {} ////
+
+} // namespace rtk

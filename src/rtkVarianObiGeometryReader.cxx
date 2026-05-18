@@ -29,12 +29,15 @@
 #include <itkMetaDataObject.h>
 #include <itksys/SystemTools.hxx>
 
-rtk::VarianObiGeometryReader ::VarianObiGeometryReader()
+namespace rtk
+{
+
+VarianObiGeometryReader ::VarianObiGeometryReader()
   : m_Geometry(nullptr)
 {}
 
 void
-rtk::VarianObiGeometryReader ::GenerateData()
+VarianObiGeometryReader ::GenerateData()
 {
   // Create new RTK geometry object
   m_Geometry = GeometryType::New();
@@ -117,3 +120,5 @@ rtk::VarianObiGeometryReader ::GenerateData()
     m_Geometry->AddProjection(sid, sdd, angle, offsetx, offsety);
   }
 }
+
+} // namespace rtk

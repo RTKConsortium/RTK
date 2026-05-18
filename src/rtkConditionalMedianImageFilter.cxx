@@ -18,9 +18,12 @@
 
 #include "rtkConditionalMedianImageFilter.h"
 
+namespace rtk
+{
+
 template <>
 void
-rtk::ConditionalMedianImageFilter<itk::VectorImage<float, 3>>::DynamicThreadedGenerateData(
+ConditionalMedianImageFilter<itk::VectorImage<float, 3>>::DynamicThreadedGenerateData(
   const itk::VectorImage<float, 3>::RegionType & outputRegionForThread)
 {
   using TInputImage = itk::VectorImage<float, 3>;
@@ -71,3 +74,5 @@ rtk::ConditionalMedianImageFilter<itk::VectorImage<float, 3>>::DynamicThreadedGe
     ++outIt;
   }
 }
+
+} // namespace rtk

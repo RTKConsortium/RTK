@@ -26,10 +26,13 @@
 #include <itkRawImageIO.h>
 #include <itksys/SystemTools.hxx>
 
+namespace rtk
+{
+
 //--------------------------------------------------------------------
 // Read Image Information
 void
-rtk::ImagXImageIO::ReadImageInformation()
+ImagXImageIO::ReadImageInformation()
 {
   rtk::ImagXXMLFileReader::Pointer xmlReader;
 
@@ -150,7 +153,7 @@ rtk::ImagXImageIO::ReadImageInformation()
 //--------------------------------------------------------------------
 // Read Image Information
 bool
-rtk::ImagXImageIO::CanReadFile(const char * FileNameToRead)
+ImagXImageIO::CanReadFile(const char * FileNameToRead)
 {
   std::string ext = itksys::SystemTools::GetFilenameLastExtension(FileNameToRead);
 
@@ -176,7 +179,7 @@ rtk::ImagXImageIO::CanReadFile(const char * FileNameToRead)
 //--------------------------------------------------------------------
 // Read Image Content
 void
-rtk::ImagXImageIO::Read(void * buffer)
+ImagXImageIO::Read(void * buffer)
 {
   // Adapted from itkRawImageIO
   std::ifstream is(m_RawFileName.c_str(), std::ios::binary);
@@ -203,13 +206,13 @@ rtk::ImagXImageIO::Read(void * buffer)
 //--------------------------------------------------------------------
 // Write Image Information
 void
-rtk::ImagXImageIO::WriteImageInformation(bool itkNotUsed(keepOfStream))
+ImagXImageIO::WriteImageInformation(bool itkNotUsed(keepOfStream))
 {}
 
 //--------------------------------------------------------------------
 // Write Image Information
 bool
-rtk::ImagXImageIO::CanWriteFile(const char * itkNotUsed(FileNameToWrite))
+ImagXImageIO::CanWriteFile(const char * itkNotUsed(FileNameToWrite))
 {
   return false;
 }
@@ -217,5 +220,7 @@ rtk::ImagXImageIO::CanWriteFile(const char * itkNotUsed(FileNameToWrite))
 //--------------------------------------------------------------------
 // Write Image
 void
-rtk::ImagXImageIO::Write(const void * itkNotUsed(buffer))
+ImagXImageIO::Write(const void * itkNotUsed(buffer))
 {} ////
+
+} // namespace rtk

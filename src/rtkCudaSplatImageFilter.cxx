@@ -21,10 +21,13 @@
 
 #include <itkMacro.h>
 
-rtk::CudaSplatImageFilter ::CudaSplatImageFilter() = default;
+namespace rtk
+{
+
+CudaSplatImageFilter ::CudaSplatImageFilter() = default;
 
 void
-rtk::CudaSplatImageFilter ::GPUGenerateData()
+CudaSplatImageFilter ::GPUGenerateData()
 {
   int4 outputSize;
   outputSize.x = this->GetOutput()->GetLargestPossibleRegion().GetSize()[0];
@@ -37,6 +40,8 @@ rtk::CudaSplatImageFilter ::GPUGenerateData()
 
   CUDA_splat(outputSize, pvol, pvolseries, m_ProjectionNumber, m_Weights.data_array());
 }
+
+} // namespace rtk
 
 template class itk::CudaInPlaceImageFilter<
   itk::CudaImage<float, 4>,

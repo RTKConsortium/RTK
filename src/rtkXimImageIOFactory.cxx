@@ -20,8 +20,11 @@
 
 #include <fstream>
 
+namespace rtk
+{
+
 //====================================================================
-rtk::XimImageIOFactory::XimImageIOFactory()
+XimImageIOFactory::XimImageIOFactory()
 {
   this->RegisterOverride(
     "itkImageIOBase", "XimImageIO", "Xim Image IO", true, itk::CreateObjectFunction<XimImageIO>::New());
@@ -46,3 +49,5 @@ XimImageIOFactoryRegister__Private()
 }
 
 } // end namespace itk
+
+} // namespace rtk

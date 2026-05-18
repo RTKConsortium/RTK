@@ -24,12 +24,15 @@
 #include <itkMacro.h>
 #include <itkMetaDataObject.h>
 
-rtk::XRadGeometryReader ::XRadGeometryReader()
+namespace rtk
+{
+
+XRadGeometryReader ::XRadGeometryReader()
   : m_Geometry(nullptr)
 {}
 
 void
-rtk::XRadGeometryReader ::GenerateData()
+XRadGeometryReader ::GenerateData()
 {
   // Create new RTK geometry object
   m_Geometry = GeometryType::New();
@@ -134,3 +137,5 @@ rtk::XRadGeometryReader ::GenerateData()
                                        tmpGeo->GetSourceOffsetsY()[i]);
   }
 }
+
+} // namespace rtk

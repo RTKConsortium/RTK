@@ -18,9 +18,14 @@
 
 #include "rtkEdfImageIOFactory.h"
 
+namespace rtk
+{
+
 //====================================================================
-rtk::EdfImageIOFactory::EdfImageIOFactory()
+EdfImageIOFactory::EdfImageIOFactory()
 {
   this->RegisterOverride(
     "itkImageIOBase", "EdfImageIO", "Edf Image IO", true, itk::CreateObjectFunction<EdfImageIO>::New());
 }
+
+} // namespace rtk

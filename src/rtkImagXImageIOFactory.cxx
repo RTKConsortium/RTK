@@ -18,8 +18,11 @@
 
 #include "rtkImagXImageIOFactory.h"
 
+namespace rtk
+{
+
 //====================================================================
-rtk::ImagXImageIOFactory::ImagXImageIOFactory()
+ImagXImageIOFactory::ImagXImageIOFactory()
 {
   this->RegisterOverride(
     "itkImageIOBase", "ImagXImageIO", "ImagX Image IO", true, itk::CreateObjectFunction<ImagXImageIO>::New());
@@ -44,3 +47,5 @@ ImagXImageIOFactoryRegister__Private()
 }
 
 } // end namespace itk
+
+} // namespace rtk
