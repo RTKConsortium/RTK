@@ -33,11 +33,7 @@ rtk::CudaConstantVolumeSource ::GPUGenerateData()
     outputSize[i] = this->GetOutput()->GetRequestedRegion().GetSize()[i];
   }
 
-#ifdef CudaCommon_VERSION_MAJOR
   float * pout = static_cast<float *>(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
-#else
-  float * pout = *(float **)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
-#endif
 
   CUDA_generate_constant_volume(outputSize, pout, m_Constant);
 }

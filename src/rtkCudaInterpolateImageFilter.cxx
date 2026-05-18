@@ -32,13 +32,8 @@ rtk::CudaInterpolateImageFilter ::GPUGenerateData()
   inputSize.z = this->GetInputVolumeSeries()->GetBufferedRegion().GetSize()[2];
   inputSize.w = this->GetInputVolumeSeries()->GetBufferedRegion().GetSize()[3];
 
-#ifdef CudaCommon_VERSION_MAJOR
   float * pvolseries = static_cast<float *>(this->GetInputVolumeSeries()->GetCudaDataManager()->GetGPUBufferPointer());
   float * pvol = static_cast<float *>(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
-#else
-  float * pvolseries = *(float **)(this->GetInputVolumeSeries()->GetCudaDataManager()->GetGPUBufferPointer());
-  float * pvol = *(float **)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
-#endif
 
   CUDA_interpolation(inputSize, pvolseries, pvol, m_ProjectionNumber, m_Weights.data_array());
 }

@@ -33,15 +33,9 @@ rtk::CudaAverageOutOfROIImageFilter ::GPUGenerateData()
     size[i] = this->GetOutput()->GetBufferedRegion().GetSize()[i];
   }
 
-#ifdef CudaCommon_VERSION_MAJOR
   float * pin = static_cast<float *>(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
   float * pout = static_cast<float *>(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
   float * proi = static_cast<float *>(this->GetROI()->GetCudaDataManager()->GetGPUBufferPointer());
-#else
-  float * pin = *(float **)(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
-  float * pout = *(float **)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
-  float * proi = *(float **)(this->GetROI()->GetCudaDataManager()->GetGPUBufferPointer());
-#endif
 
   CUDA_average_out_of_ROI(size, pin, pout, proi);
 

@@ -44,13 +44,8 @@ rtk::CudaCyclicDeformationImageFilter ::GPUGenerateData()
     }
   }
 
-#ifdef CudaCommon_VERSION_MAJOR
   float * pin = static_cast<float *>(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
   float * pout = static_cast<float *>(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
-#else
-  float * pin = *(float **)(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
-  float * pout = *(float **)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
-#endif
 
   CUDA_linear_interpolate_along_fourth_dimension(
     inputSize, pin, pout, this->m_FrameInf, this->m_FrameSup, this->m_WeightInf, this->m_WeightSup);
