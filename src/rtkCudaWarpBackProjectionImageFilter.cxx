@@ -187,20 +187,12 @@ CudaWarpBackProjectionImageFilter ::GPUGenerateData()
   }
 
   // Load the required images onto the GPU (handled by the CudaDataManager)
-#ifdef CudaCommon_VERSION_MAJOR
   float * pin = static_cast<float *>(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
   float * pout = static_cast<float *>(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
   float * pDVF = static_cast<float *>(this->GetDisplacementField()->GetCudaDataManager()->GetGPUBufferPointer());
 
   float * stackGPUPointer =
     static_cast<float *>(this->GetInputProjectionStack()->GetCudaDataManager()->GetGPUBufferPointer());
-#else
-  float * pin = *(float **)(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
-  float * pout = *(float **)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
-  float * pDVF = *(float **)(this->GetDisplacementField()->GetCudaDataManager()->GetGPUBufferPointer());
-
-  float * stackGPUPointer = *(float **)(this->GetInputProjectionStack()->GetCudaDataManager()->GetGPUBufferPointer());
-#endif
 
   ptrdiff_t projSize = this->GetInputProjectionStack()->GetBufferedRegion().GetSize()[0] *
                        this->GetInputProjectionStack()->GetBufferedRegion().GetSize()[1];
