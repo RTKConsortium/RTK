@@ -31,9 +31,6 @@ XRadImageIOFactory::XRadImageIOFactory()
 // Undocumented API used to register during static initialization.
 // DO NOT CALL DIRECTLY.
 
-namespace itk
-{
-
 static bool XRadImageIOFactoryHasBeenRegistered;
 
 void RTK_EXPORT
@@ -45,7 +42,5 @@ XRadImageIOFactoryRegister__Private()
     XRadImageIOFactory::RegisterOneFactory();
   }
 }
-
-} // end namespace itk
 
 } // namespace rtk

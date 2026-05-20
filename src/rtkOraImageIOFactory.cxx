@@ -33,9 +33,6 @@ OraImageIOFactory::OraImageIOFactory()
 // Undocumented API used to register during static initialization.
 // DO NOT CALL DIRECTLY.
 
-namespace itk
-{
-
 static bool OraImageIOFactoryHasBeenRegistered;
 
 void RTK_EXPORT
@@ -47,7 +44,5 @@ OraImageIOFactoryRegister__Private()
     OraImageIOFactory::RegisterOneFactory();
   }
 }
-
-} // end namespace itk
 
 } // namespace rtk

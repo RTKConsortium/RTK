@@ -33,9 +33,6 @@ HndImageIOFactory::HndImageIOFactory()
 // Undocumented API used to register during static initialization.
 // DO NOT CALL DIRECTLY.
 
-namespace itk
-{
-
 static bool HndImageIOFactoryHasBeenRegistered;
 
 void RTK_EXPORT
@@ -47,7 +44,5 @@ HndImageIOFactoryRegister__Private()
     HndImageIOFactory::RegisterOneFactory();
   }
 }
-
-} // end namespace itk
 
 } // namespace rtk

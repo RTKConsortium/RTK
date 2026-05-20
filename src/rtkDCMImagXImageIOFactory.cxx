@@ -34,9 +34,6 @@ DCMImagXImageIOFactory::DCMImagXImageIOFactory()
 // Undocumented API used to register during static initialization.
 // DO NOT CALL DIRECTLY.
 
-namespace itk
-{
-
 static bool DCMImagXImageIOFactoryHasBeenRegistered;
 
 void RTK_EXPORT
@@ -48,7 +45,5 @@ DCMImagXImageIOFactoryRegister__Private()
     rtk::DCMImagXImageIOFactory::RegisterOneFactory();
   }
 }
-
-} // end namespace itk
 
 } // namespace rtk

@@ -33,9 +33,6 @@ XimImageIOFactory::XimImageIOFactory()
 // Undocumented API used to register during static initialization.
 // DO NOT CALL DIRECTLY.
 
-namespace itk
-{
-
 static bool XimImageIOFactoryHasBeenRegistered;
 
 void RTK_EXPORT
@@ -47,7 +44,5 @@ XimImageIOFactoryRegister__Private()
     XimImageIOFactory::RegisterOneFactory();
   }
 }
-
-} // end namespace itk
 
 } // namespace rtk
