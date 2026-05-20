@@ -32,9 +32,6 @@ HisImageIOFactory::HisImageIOFactory()
 // Undocumented API used to register during static initialization.
 // DO NOT CALL DIRECTLY.
 
-namespace itk
-{
-
 static bool HisImageIOFactoryHasBeenRegistered;
 
 void RTK_EXPORT
@@ -46,7 +43,5 @@ HisImageIOFactoryRegister__Private()
     HisImageIOFactory::RegisterOneFactory();
   }
 }
-
-} // namespace itk
 
 } // namespace rtk

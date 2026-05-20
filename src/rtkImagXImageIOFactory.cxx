@@ -31,9 +31,6 @@ ImagXImageIOFactory::ImagXImageIOFactory()
 // Undocumented API used to register during static initialization.
 // DO NOT CALL DIRECTLY.
 
-namespace itk
-{
-
 static bool ImagXImageIOFactoryHasBeenRegistered;
 
 void RTK_EXPORT
@@ -45,7 +42,5 @@ ImagXImageIOFactoryRegister__Private()
     ImagXImageIOFactory::RegisterOneFactory();
   }
 }
-
-} // end namespace itk
 
 } // namespace rtk
