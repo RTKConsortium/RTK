@@ -1,6 +1,6 @@
+#include <itkAdditiveGaussianNoiseImageFilter.h>
 #include <itkImageRegionConstIterator.h>
 
-#include "rtkAdditiveGaussianNoiseImageFilter.h"
 #include "rtkConstantImageSource.h"
 #include "rtkDrawSheppLoganFilter.h"
 #include "rtkSheppLoganPhantomFilter.h"
@@ -87,7 +87,7 @@ rtkrampfiltertest(int, char *[])
   std::cout << "\n\n****** Test 1: add noise and test Hann window ******" << std::endl;
 
   // Add noise
-  auto noisy = rtk::AdditiveGaussianNoiseImageFilter<OutputImageType>::New();
+  auto noisy = itk::AdditiveGaussianNoiseImageFilter<OutputImageType>::New();
   noisy->SetInput(slp->GetOutput());
   noisy->SetMean(0.0);
   noisy->SetStandardDeviation(1.);

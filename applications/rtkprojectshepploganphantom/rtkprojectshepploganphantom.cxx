@@ -17,7 +17,6 @@
  *=========================================================================*/
 
 #include "rtkprojectshepploganphantom_ggo.h"
-#include "rtkAdditiveGaussianNoiseImageFilter.h"
 #include "rtkGgoFunctions.h"
 #include "rtkRayEllipsoidIntersectionImageFilter.h"
 #include "rtkSheppLoganPhantomFilter.h"
