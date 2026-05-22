@@ -10,4 +10,4 @@ The simulation files, the output projections and the processing script are avail
 ```
 The resulting central profiles are
 
-![Profile](Profile.png){w=800px alt="Profile"}
+![Profile](../../documentation/docs/ExternalData/WaterPrecorrection-Profile.png){w=800px alt="Profile"}
