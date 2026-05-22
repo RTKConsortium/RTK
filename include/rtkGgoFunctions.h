@@ -33,7 +33,7 @@
 #include <itkShotNoiseImageFilter.h>
 #include <itkThresholdImageFilter.h>
 #include <itkLogImageFilter.h>
-#include "rtkAdditiveGaussianNoiseImageFilter.h"
+#include <itkAdditiveGaussianNoiseImageFilter.h>
 
 namespace rtk
 {
@@ -326,7 +326,7 @@ AddNoiseFromGgo(typename TImageType::Pointer projections, const TArgsInfo & args
 
     auto multiply3 = itk::MultiplyImageFilter<ImageType>::New();
     // Gaussian noise
-    auto gaussian = rtk::AdditiveGaussianNoiseImageFilter<ImageType>::New();
+    auto gaussian = itk::AdditiveGaussianNoiseImageFilter<ImageType>::New();
     if (args_info.gaussian_given)
     {
       gaussian->SetInput(threshold->GetOutput());
@@ -349,7 +349,7 @@ AddNoiseFromGgo(typename TImageType::Pointer projections, const TArgsInfo & args
   }
   else if (args_info.gaussian_given)
   {
-    auto gaussian = rtk::AdditiveGaussianNoiseImageFilter<ImageType>::New();
+    auto gaussian = itk::AdditiveGaussianNoiseImageFilter<ImageType>::New();
     gaussian->SetInput(newproj);
     gaussian->SetStandardDeviation(args_info.gaussian_arg);
 

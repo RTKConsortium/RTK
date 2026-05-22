@@ -77,7 +77,7 @@ def process(args_info: argparse.Namespace):
     # Add noise
     output = dsl.GetOutput()
     if args_info.noise:
-        noisy = rtk.AdditiveGaussianNoiseImageFilter[OutputImageType].New()
+        noisy = itk.AdditiveGaussianNoiseImageFilter[OutputImageType].New()
         noisy.SetInput(output)
         noisy.SetMean(0.0)
         noisy.SetStandardDeviation(args_info.noise)

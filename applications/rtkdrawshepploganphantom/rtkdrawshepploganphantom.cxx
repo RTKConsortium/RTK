@@ -19,11 +19,11 @@
 #include "rtkdrawshepploganphantom_ggo.h"
 #include "rtkGgoFunctions.h"
 
-#include "rtkAdditiveGaussianNoiseImageFilter.h"
 #include "rtkConstantImageSource.h"
 #include "rtkDrawSheppLoganFilter.h"
 #include "rtkSheppLoganPhantomFilter.h"
 
+#include <itkAdditiveGaussianNoiseImageFilter.h>
 #include <itkImageFileReader.h>
 #include <itkImageFileWriter.h>
 
@@ -62,7 +62,7 @@ main(int argc, char * argv[])
   OutputImageType::Pointer output = dsl->GetOutput();
   if (args_info.noise_given)
   {
-    auto noisy = rtk::AdditiveGaussianNoiseImageFilter<OutputImageType>::New();
+    auto noisy = itk::AdditiveGaussianNoiseImageFilter<OutputImageType>::New();
     noisy->SetInput(output);
     noisy->SetMean(0.0);
     noisy->SetStandardDeviation(args_info.noise_arg);

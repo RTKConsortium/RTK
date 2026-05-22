@@ -18,10 +18,10 @@
 
 #include "rtkdrawgeometricphantom_ggo.h"
 #include "itkImageFileWriter.h"
-#include "rtkAdditiveGaussianNoiseImageFilter.h"
 #include "rtkDrawGeometricPhantomImageFilter.h"
 #include "rtkGgoFunctions.h"
 
+#include <itkAdditiveGaussianNoiseImageFilter.h>
 
 int
 main(int argc, char * argv[])
@@ -93,7 +93,7 @@ main(int argc, char * argv[])
   OutputImageType::Pointer output = dq->GetOutput();
   if (args_info.noise_given)
   {
-    auto noisy = rtk::AdditiveGaussianNoiseImageFilter<OutputImageType>::New();
+    auto noisy = itk::AdditiveGaussianNoiseImageFilter<OutputImageType>::New();
     noisy->SetInput(output);
     noisy->SetMean(0.0);
     noisy->SetStandardDeviation(args_info.noise_arg);
