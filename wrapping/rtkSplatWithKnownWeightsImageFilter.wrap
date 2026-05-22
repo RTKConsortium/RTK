@@ -6,19 +6,19 @@ if(RTK_USE_CUDA)
   # rtk::SplatWithKnownWeightsImageFilter
   #-----------------------------------------------------------------------------
   itk_wrap_class("rtk::SplatWithKnownWeightsImageFilter" POINTER)
-    itk_wrap_template("CIF4CIF3" "itk::CudaImage<float, 4>, itk::CudaImage<float, 3>")
+    itk_wrap_template("CI${ITKM_F}4CI${ITKM_F}3" "itk::CudaImage<${ITKT_F}, 4>, itk::CudaImage<${ITKT_F}, 3>")
   itk_end_wrap_class()
 
   #-----------------------------------------------------------------------------
   # Templates to be used with rtk::CudaSplatImageFilter
   #-----------------------------------------------------------------------------
   itk_wrap_class("itk::CudaImageToImageFilter" POINTER)
-    itk_wrap_template("CIF4CIF4SplatCIF4CIF3"
+    itk_wrap_template("CI${ITKM_F}4CI${ITKM_F}4SplatCI${ITKM_F}4CI${ITKM_F}3"
       "itk::CudaImage<${ITKT_F}, 4>, itk::CudaImage<${ITKT_F}, 4>, rtk::SplatWithKnownWeightsImageFilter< itk::CudaImage<${ITKT_F}, 4>, itk::CudaImage<${ITKT_F}, 3> >")
   itk_end_wrap_class()
 
   itk_wrap_class("itk::CudaInPlaceImageFilter" POINTER)
-    itk_wrap_template("CIF4CIF4SplatCIF4CIF3"
+    itk_wrap_template("CI${ITKM_F}4CI${ITKM_F}4SplatCI${ITKM_F}4CI${ITKM_F}3"
       "itk::CudaImage<${ITKT_F}, 4>, itk::CudaImage<${ITKT_F}, 4>, rtk::SplatWithKnownWeightsImageFilter< itk::CudaImage<${ITKT_F}, 4>, itk::CudaImage<${ITKT_F}, 3> >")
   itk_end_wrap_class()
 

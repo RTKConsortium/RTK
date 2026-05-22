@@ -75,7 +75,7 @@ itk_wrap_class("itk::Image" POINTER)
   if (${_index} EQUAL -1)
     list(FIND WRAP_ITK_COV_VECTOR_REAL "CVD" _index)
     if (${_index} EQUAL -1)
-      itk_wrap_template("${ITKM_CVD5}3" "itk::CovariantVector<double,5>, 3")
+      itk_wrap_template("${ITKM_CVD5}3" "itk::CovariantVector<${ITKT_D},5>, 3")
     endif()
   endif()
 

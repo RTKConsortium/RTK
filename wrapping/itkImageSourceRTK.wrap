@@ -2,21 +2,21 @@ itk_wrap_class("itk::ImageSource" POINTER)
 
   # Wrap ITK double missing types
   if (NOT ITK_WRAP_double)
-    itk_wrap_template("ID1" "itk::Image<${ITKT_D}, 1>")
-    itk_wrap_template("ID2" "itk::Image<${ITKT_D}, 2>")
-    itk_wrap_template("ID3" "itk::Image<${ITKT_D}, 3>")
+    itk_wrap_template("I${ITKM_UD}1" "itk::Image<${ITKT_D}, 1>")
+    itk_wrap_template("I${ITKM_UD}2" "itk::Image<${ITKT_D}, 2>")
+    itk_wrap_template("I${ITKM_UD}3" "itk::Image<${ITKT_D}, 3>")
   endif()
 
   # Wrap ITK unsigned char missing types
   if (NOT ITK_WRAP_unsigned_char)
-    itk_wrap_template("IUC1" "itk::Image<${ITKT_UC}, 1>")
+    itk_wrap_template("I${ITKM_UC}1" "itk::Image<${ITKT_UC}, 1>")
   endif()
 
   # Wrap ITK unsigned short missing types
   if (NOT ITK_WRAP_unsigned_short)
-    itk_wrap_template("IUS1" "itk::Image<${ITKT_US}, 1>")
-    itk_wrap_template("IUS2" "itk::Image<${ITKT_US}, 2>")
-    itk_wrap_template("IUS3" "itk::Image<${ITKT_US}, 3>")
+    itk_wrap_template("I${ITKM_US}1" "itk::Image<${ITKT_US}, 1>")
+    itk_wrap_template("I${ITKM_US}2" "itk::Image<${ITKT_US}, 2>")
+    itk_wrap_template("I${ITKM_US}3" "itk::Image<${ITKT_US}, 3>")
   endif()
 
   # Wrap ITK dimension 1 missing types
@@ -27,19 +27,19 @@ itk_wrap_class("itk::ImageSource" POINTER)
     endforeach()
 
     if (ITK_WRAP_unsigned_char)
-      itk_wrap_template("IUC1" "itk::Image<${ITKT_UC}, 1>")
+      itk_wrap_template("I${ITKM_UC}1" "itk::Image<${ITKT_UC}, 1>")
     endif()
     if (ITK_WRAP_unsigned_short)
-      itk_wrap_template("IUS1" "itk::Image<${ITKT_US}, 1>")
+      itk_wrap_template("I${ITKM_US}1" "itk::Image<${ITKT_US}, 1>")
     endif()
   endif()
 
   # Wrap ITK dimension 4 missing types
   list(FIND ITK_WRAP_IMAGE_DIMS "4" _index)
   if (${_index} EQUAL -1)
-    itk_wrap_template("IF4" "itk::Image<${ITKT_F}, 4>")
+    itk_wrap_template("I${ITKM_F}4" "itk::Image<${ITKT_F}, 4>")
     if (ITK_WRAP_double)
-      itk_wrap_template("ID4" "itk::Image<${ITKT_D}, 4>")
+      itk_wrap_template("I${ITKM_UD}4" "itk::Image<${ITKT_D}, 4>")
     endif()
   endif()
 
@@ -50,7 +50,7 @@ itk_wrap_class("itk::ImageSource" POINTER)
     # Wrap ITK dimension 4 missing types
     list(FIND ITK_WRAP_IMAGE_DIMS "4" _index)
     if (${_index} EQUAL -1)
-      itk_wrap_template("CIF4" "itk::CudaImage<${ITKT_F}, 4>")
+      itk_wrap_template("CI${ITKM_F}4" "itk::CudaImage<${ITKT_F}, 4>")
     endif()
 
     # Required for rtkCudaLagCorrectionImageFilter

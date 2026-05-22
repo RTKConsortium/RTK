@@ -25,14 +25,14 @@ if(RTK_USE_CUDA)
       endif()
     endforeach()
 
-    itk_wrap_template("CIF3CIF3RFCIF3CIF3F"
-      "itk::CudaImage<float, 3>, itk::CudaImage<float, 3>, rtk::FFTRampImageFilter< itk::CudaImage<float, 3>, itk::CudaImage<float, 3>, float >")
-    itk_wrap_template("CIF3CIF3SGCIF3CIF3F"
-      "itk::CudaImage<float, 3>, itk::CudaImage<float, 3>, rtk::ScatterGlareCorrectionImageFilter< itk::CudaImage<float, 3>, itk::CudaImage<float, 3>, float >")
-    itk_wrap_template("CIUS3CIF3PGCIFCIUS3CIF3"
-      "itk::CudaImage<unsigned short, 3>, itk::CudaImage<float, 3>, rtk::PolynomialGainCorrectionImageFilter< itk::CudaImage<unsigned short, 3>, itk::CudaImage<float, 3> >")
-    itk_wrap_template("CIF3CIF3TVDBPDQCIF3CICVF33"
-      "itk::CudaImage<float, 3>, itk::CudaImage<float, 3>, rtk::TotalVariationDenoisingBPDQImageFilter< itk::CudaImage<float, 3>, itk::CudaImage<itk::CovariantVector<float, 3>, 3> >")
+    itk_wrap_template("CI${ITKM_F}3CI${ITKM_F}3RFCI${ITKM_F}3CI${ITKM_F}3F"
+      "itk::CudaImage<${ITKT_F}, 3>, itk::CudaImage<${ITKT_F}, 3>, rtk::FFTRampImageFilter< itk::CudaImage<${ITKT_F}, 3>, itk::CudaImage<${ITKT_F}, 3>, float >")
+    itk_wrap_template("CI${ITKM_F}3CI${ITKM_F}3SGCI${ITKM_F}3CI${ITKM_F}3F"
+      "itk::CudaImage<${ITKT_F}, 3>, itk::CudaImage<${ITKT_F}, 3>, rtk::ScatterGlareCorrectionImageFilter< itk::CudaImage<${ITKT_F}, 3>, itk::CudaImage<${ITKT_F}, 3>, float >")
+    itk_wrap_template("CI${ITKM_US}3CI${ITKM_F}3PGCI${ITKM_F}CI${ITKM_US}3CI${ITKM_F}3"
+      "itk::CudaImage<${ITKT_US}, 3>, itk::CudaImage<${ITKT_F}, 3>, rtk::PolynomialGainCorrectionImageFilter< itk::CudaImage<${ITKT_US}, 3>, itk::CudaImage<${ITKT_F}, 3> >")
+    itk_wrap_template("CI${ITKM_F}3CI${ITKM_F}3TVDBPDQCI${ITKM_F}3CICVF33"
+      "itk::CudaImage<${ITKT_F}, 3>, itk::CudaImage<${ITKT_F}, 3>, rtk::TotalVariationDenoisingBPDQImageFilter< itk::CudaImage<${ITKT_F}, 3>, itk::CudaImage<itk::CovariantVector<float, 3>, 3> >")
   itk_end_wrap_class()
 
 endif()
