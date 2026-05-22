@@ -6,7 +6,7 @@ itk_wrap_class("rtk::ReorderProjectionsImageFilter" POINTER)
     itk_wrap_image_filter("${WRAP_ITK_REAL}" 2 3)
 
     if(RTK_USE_CUDA)
-        itk_wrap_template("CIF3CIF3" "itk::CudaImage<${ITKT_F}, 3>, itk::CudaImage<${ITKT_F}, 3>")
+        itk_wrap_template("CI${ITKM_F}3CI${ITKM_F}3" "itk::CudaImage<${ITKT_F}, 3>, itk::CudaImage<${ITKT_F}, 3>")
     endif()
 
     # Force VECTOR_COMPONENTS to contain "2;3;4;5"

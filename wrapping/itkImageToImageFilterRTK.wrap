@@ -2,53 +2,53 @@ itk_wrap_class("itk::ImageToImageFilter" POINTER)
 
   # Wrap ITK double missing types
   if (NOT ITK_WRAP_double)
-    itk_wrap_template("ID1ID1" "itk::Image<${ITKT_D}, 1>, itk::Image<${ITKT_D}, 1>")
-    itk_wrap_template("ID3ID2" "itk::Image<${ITKT_D}, 3>, itk::Image<${ITKT_D}, 2>")
+    itk_wrap_template("I${ITKM_UD}1I${ITKM_UD}1" "itk::Image<${ITKT_D}, 1>, itk::Image<${ITKT_D}, 1>")
+    itk_wrap_template("I${ITKM_UD}3I${ITKM_UD}2" "itk::Image<${ITKT_D}, 3>, itk::Image<${ITKT_D}, 2>")
   endif()
 
   # Wrap ITK dimension 1 missing types
   list(FIND ITK_WRAP_IMAGE_DIMS "1" _index)
   if (${_index} EQUAL -1)
-    itk_wrap_template("IF1IF1" "itk::Image<${ITKT_F}, 1>, itk::Image<${ITKT_F}, 1>")
+    itk_wrap_template("I${ITKM_F}1I${ITKM_F}1" "itk::Image<${ITKT_F}, 1>, itk::Image<${ITKT_F}, 1>")
     if (ITK_WRAP_double)
-      itk_wrap_template("ID1ID1" "itk::Image<${ITKT_D}, 1>, itk::Image<${ITKT_D}, 1>")
+      itk_wrap_template("I${ITKM_UD}1I${ITKM_UD}1" "itk::Image<${ITKT_D}, 1>, itk::Image<${ITKT_D}, 1>")
     endif()
   endif()
 
   # Wrap ITK unsigned short missing types
   if (NOT ITK_WRAP_unsigned_short)
-    itk_wrap_template("IUS2IUS2" "itk::Image<${ITKT_US}, 2>, itk::Image<${ITKT_US}, 2>")
-    itk_wrap_template("IUS3IUS3" "itk::Image<${ITKT_US}, 3>, itk::Image<${ITKT_US}, 3>")
+    itk_wrap_template("I${ITKM_US}2I${ITKM_US}2" "itk::Image<${ITKT_US}, 2>, itk::Image<${ITKT_US}, 2>")
+    itk_wrap_template("I${ITKM_US}3I${ITKM_US}3" "itk::Image<${ITKT_US}, 3>, itk::Image<${ITKT_US}, 3>")
   endif()
 
   # Wrap ITK unsigned short combination (required by : rtkLookupTableImageFilter)
   if (NOT ITK_WRAP_unsigned_short)
     foreach(t ${WRAP_ITK_REAL})
-      itk_wrap_template("IUS2I${ITKM_${t}}2" "itk::Image<${ITKT_US}, 2>, itk::Image<${ITKT_${t}}, 2>")
-      itk_wrap_template("IUS3I${ITKM_${t}}3" "itk::Image<${ITKT_US}, 3>, itk::Image<${ITKT_${t}}, 3>")
+      itk_wrap_template("I${ITKM_US}2I${ITKM_${t}}2" "itk::Image<${ITKT_US}, 2>, itk::Image<${ITKT_${t}}, 2>")
+      itk_wrap_template("I${ITKM_US}3I${ITKM_${t}}3" "itk::Image<${ITKT_US}, 3>, itk::Image<${ITKT_${t}}, 3>")
     endforeach()
     list(FIND ITK_WRAP_IMAGE_DIMS "1" _index)
     if (NOT ${_index} EQUAL -1)
-      itk_wrap_template("IUS1IF1" "itk::Image<${ITKT_US}, 1>, itk::Image<${ITKT_F}, 1>")
+      itk_wrap_template("I${ITKM_US}1I${ITKM_F}1" "itk::Image<${ITKT_US}, 1>, itk::Image<${ITKT_F}, 1>")
     endif()
   endif()
 
   # Wrap ITK short combination (required by : rtkLookupTableImageFilter)
   if (NOT ITK_WRAP_signed_short)
-    itk_wrap_template("ISS3IF3" "itk::Image<${ITKT_SS}, 3>, itk::Image<${ITKT_F}, 3>")
+    itk_wrap_template("ISS3I${ITKM_F}3" "itk::Image<${ITKT_SS}, 3>, itk::Image<${ITKT_F}, 3>")
   endif()
 
   # Wrap ITK real type combination
-  itk_wrap_template("IF3ID2" "itk::Image<${ITKT_F}, 3>, itk::Image<${ITKT_D}, 2>")
+  itk_wrap_template("I${ITKM_F}3I${ITKM_UD}2" "itk::Image<${ITKT_F}, 3>, itk::Image<${ITKT_D}, 2>")
 
   # Wrap ITK dimension 4 missing types
   list(FIND ITK_WRAP_IMAGE_DIMS "4" _index)
   if (${_index} EQUAL -1)
-    itk_wrap_template("IF4IF3" "itk::Image<${ITKT_F}, 4>, itk::Image<${ITKT_F}, 3>")
-    itk_wrap_template("IF4IF4" "itk::Image<${ITKT_F}, 4>, itk::Image<${ITKT_F}, 4>")
+    itk_wrap_template("I${ITKM_F}4I${ITKM_F}3" "itk::Image<${ITKT_F}, 4>, itk::Image<${ITKT_F}, 3>")
+    itk_wrap_template("I${ITKM_F}4I${ITKM_F}4" "itk::Image<${ITKT_F}, 4>, itk::Image<${ITKT_F}, 4>")
     if (ITK_WRAP_double)
-      itk_wrap_template("ID4ID3" "itk::Image<${ITKT_D}, 4>, itk::Image<${ITKT_D}, 3>")
-      itk_wrap_template("ID4ID4" "itk::Image<${ITKT_D}, 4>, itk::Image<${ITKT_D}, 4>")
+      itk_wrap_template("I${ITKM_UD}4I${ITKM_UD}3" "itk::Image<${ITKT_D}, 4>, itk::Image<${ITKT_D}, 3>")
+      itk_wrap_template("I${ITKM_UD}4I${ITKM_UD}4" "itk::Image<${ITKT_D}, 4>, itk::Image<${ITKT_D}, 4>")
     endif()
   endif()
 
@@ -67,7 +67,7 @@ itk_wrap_class("itk::ImageToImageFilter" POINTER)
         "itk::CudaImage<${ITKT_US}, 3>, itk::CudaImage<${ITKT_US}, 3>")
 
     # Wrap ITK short/float combination (required by : rtkCudaPolynomialGainCorrectionImageFilter)
-    itk_wrap_template("CIUS3CIF3"
+    itk_wrap_template("CI${ITKM_US}3CI${ITKM_F}3"
       "itk::CudaImage<${ITKT_US}, 3>, itk::CudaImage<${ITKT_F}, 3>")
 
     set(vectorComponents 2 3 4 5)

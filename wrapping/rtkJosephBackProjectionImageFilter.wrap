@@ -1,7 +1,7 @@
 set(WRAPPER_AUTO_INCLUDE_HEADERS OFF)
 itk_wrap_named_class("rtk::Functor::SplatWeightMultiplication" "rtkFunctorSplatWeightMultiplication")
   foreach(t ${WRAP_ITK_REAL})
-    itk_wrap_template("${ITKM_${t}}D${ITKM_${t}}" "${ITKT_${t}}, double, ${ITKT_${t}}")
+    itk_wrap_template("${ITKM_${t}}${ITKM_D}${ITKM_${t}}" "${ITKT_${t}}, ${ITKT_D}, ${ITKT_${t}}")
   endforeach()
 itk_end_wrap_class()
 set(WRAPPER_AUTO_INCLUDE_HEADERS ON)

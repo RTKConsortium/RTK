@@ -14,7 +14,7 @@ itk_wrap_class("rtk::TotalVariationDenoisingBPDQImageFilter" POINTER)
   endforeach()
   if(RTK_USE_CUDA)
     # CUDA instantiation needed by rtk::CudaTotalVariationDenoisingBPDQImageFilter base
-    itk_wrap_template("CIF3CICVF33"
-      "itk::CudaImage<float, 3>, itk::CudaImage<itk::CovariantVector<float, 3>, 3>")
+    itk_wrap_template("CI${ITKM_F}3CICVF33"
+      "itk::CudaImage<${ITKT_F}, 3>, itk::CudaImage<itk::CovariantVector<float, 3>, 3>")
   endif()
 itk_end_wrap_class()

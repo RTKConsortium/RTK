@@ -1,8 +1,8 @@
 itk_wrap_class("rtk::IterativeConeBeamReconstructionFilter" POINTER)
 
   if(RTK_USE_CUDA)
-    itk_wrap_template("CIF3CIF3" "itk::CudaImage<float, 3>, itk::CudaImage<float, 3>")
-    itk_wrap_template("CIF4CIF3" "itk::CudaImage<float, 4>, itk::CudaImage<float, 3>")
+    itk_wrap_template("CI${ITKM_F}3CI${ITKM_F}3" "itk::CudaImage<${ITKT_F}, 3>, itk::CudaImage<${ITKT_F}, 3>")
+    itk_wrap_template("CI${ITKM_F}4CI${ITKM_F}3" "itk::CudaImage<${ITKT_F}, 4>, itk::CudaImage<${ITKT_F}, 3>")
   endif()
   itk_wrap_image_filter("${WRAP_ITK_REAL}" 2 3)
   #-------------------------------------------------------------------------

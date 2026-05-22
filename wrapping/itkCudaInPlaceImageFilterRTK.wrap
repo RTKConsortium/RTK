@@ -24,9 +24,9 @@ if(RTK_USE_CUDA)
       endif()
     endforeach()
 
-    itk_wrap_template("CIF3CIF3PSCIF3"
-      "itk::CudaImage<float, 3>, itk::CudaImage<float, 3>, rtk::ParkerShortScanImageFilter< itk::CudaImage<float, 3>, itk::CudaImage<float, 3> >")
-    itk_wrap_template("CIUS3CIUS3LCCIUS34"
+    itk_wrap_template("CI${ITKM_F}3CI${ITKM_F}3PSCI${ITKM_F}3"
+      "itk::CudaImage<${ITKT_F}, 3>, itk::CudaImage<${ITKT_F}, 3>, rtk::ParkerShortScanImageFilter< itk::CudaImage<${ITKT_F}, 3>, itk::CudaImage<${ITKT_F}, 3> >")
+    itk_wrap_template("CI${ITKM_US}3CI${ITKM_US}3LCCI${ITKM_US}34"
       "itk::CudaImage<${ITKT_US}, 3>, itk::CudaImage<${ITKT_US}, 3>, rtk::LagCorrectionImageFilter< itk::CudaImage<${ITKT_US}, 3>, 4>")
   itk_end_wrap_class()
 
@@ -36,7 +36,7 @@ if(RTK_USE_CUDA)
     foreach(d ${imageDimensions})
       list(FIND ITK_WRAP_IMAGE_DIMS "${d}" _index)
       if(${_index} EQUAL -1)
-        itk_wrap_template("CI${ITKM_F}${d}CI${ITKM_F}${d}CIPIFCI${ITKM_F}${d}"
+        itk_wrap_template("CI${ITKM_F}${d}CI${ITKM_F}${d}CIPI${ITKM_F}CI${ITKM_F}${d}"
           "itk::CudaImage<${ITKT_F}, ${d}>, itk::CudaImage<${ITKT_F}, ${d}>, itk::InPlaceImageFilter< itk::CudaImage<${ITKT_F}, ${d}>, itk::CudaImage<${ITKT_F}, ${d}> >")
       endif()
     endforeach()
@@ -47,14 +47,14 @@ if(RTK_USE_CUDA)
       if(${_index} EQUAL -1)
         UNIQUE(imageDimensions "${ITK_WRAP_IMAGE_DIMS};2;3;4")
         foreach(d ${imageDimensions})
-          itk_wrap_template("CI${ITKM_VF${c}}${d}CI${ITKM_VF${c}}${d}CIPIFCI${ITKM_VF${c}}${d}" "itk::CudaImage<${ITKT_VF${c}}, ${d}>, itk::CudaImage<${ITKT_VF${c}}, ${d}>, itk::InPlaceImageFilter< itk::CudaImage<${ITKT_VF${c}}, ${d}>, itk::CudaImage<${ITKT_VF${c}}, ${d}> >")
+          itk_wrap_template("CI${ITKM_VF${c}}${d}CI${ITKM_VF${c}}${d}CIPI${ITKM_F}CI${ITKM_VF${c}}${d}" "itk::CudaImage<${ITKT_VF${c}}, ${d}>, itk::CudaImage<${ITKT_VF${c}}, ${d}>, itk::InPlaceImageFilter< itk::CudaImage<${ITKT_VF${c}}, ${d}>, itk::CudaImage<${ITKT_VF${c}}, ${d}> >")
         endforeach()
       endif()
     endforeach()
 
-    itk_wrap_template("CIF3CIF3PSCIF3"
-      "itk::CudaImage<float, 3>, itk::CudaImage<float, 3>, rtk::ParkerShortScanImageFilter< itk::CudaImage<float, 3>, itk::CudaImage<float, 3> >")
-    itk_wrap_template("CIUS3CIUS3LCCIUS34"
+    itk_wrap_template("CI${ITKM_F}3CI${ITKM_F}3PSCI${ITKM_F}3"
+      "itk::CudaImage<${ITKT_F}, 3>, itk::CudaImage<${ITKT_F}, 3>, rtk::ParkerShortScanImageFilter< itk::CudaImage<${ITKT_F}, 3>, itk::CudaImage<${ITKT_F}, 3> >")
+    itk_wrap_template("CI${ITKM_US}3CI${ITKM_US}3LCCI${ITKM_US}34"
       "itk::CudaImage<${ITKT_US}, 3>, itk::CudaImage<${ITKT_US}, 3>, rtk::LagCorrectionImageFilter< itk::CudaImage<${ITKT_US}, 3>, 4>")
   itk_end_wrap_class()
 

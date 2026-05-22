@@ -1,5 +1,5 @@
 itk_wrap_class("rtk::Reg1DExtractShroudSignalImageFilter" POINTER)
 
-  itk_wrap_template("${ITKM_D}${ITKM_D}" "double, double")
+  itk_wrap_template("${ITKM_D}${ITKM_D}" "${ITKT_D}, ${ITKT_D}")
 
 itk_end_wrap_class()
