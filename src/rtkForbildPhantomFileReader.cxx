@@ -384,7 +384,7 @@ ForbildPhantomFileReader::CreateForbildTetrahedron(const std::string & /*s*/)
 bool
 ForbildPhantomFileReader::FindParameterInString(const std::string & name, const std::string & s, ScalarType & param)
 {
-  std::string               regex = std::string("  *") + name + std::string(" *= *([-+0-9.]*)");
+  std::string               regex = std::string("  *") + name + std::string(" *= *([-+0-9.eE]*)");
   itksys::RegularExpression re;
   if (!re.compile(regex.c_str()))
     itkExceptionMacro(<< "Could not compile " << regex);
@@ -397,7 +397,8 @@ ForbildPhantomFileReader::FindParameterInString(const std::string & name, const 
 bool
 ForbildPhantomFileReader::FindVectorInString(const std::string & name, const std::string & s, VectorType & vec)
 {
-  std::string regex = std::string(" *") + name + std::string(" *\\( *([-+0-9.]*) *, *([-+0-9.]*) *, *([-+0-9.]*) *\\)");
+  std::string regex =
+    std::string(" *") + name + std::string(" *\\( *([-+0-9.eE]*) *, *([-+0-9.eE]*) *, *([-+0-9.eE]*) *\\)");
   itksys::RegularExpression re;
   if (!re.compile(regex.c_str()))
     itkExceptionMacro(<< "Could not compile " << regex);
@@ -443,7 +444,7 @@ void
 ForbildPhantomFileReader::FindClipPlanes(const std::string & s)
 {
   // of the form r(x,y,z) > expr
-  std::string               regex(" +r *\\( *([-+0-9.]*) *, *([-+0-9.]*) *, *([-+0-9.]*) *\\) *([<>]) *([-+0-9.]*)");
+  std::string regex(" +r *\\( *([-+0-9.eE]*) *, *([-+0-9.eE]*) *, *([-+0-9.eE]*) *\\) *([<>]) *([-+0-9.eE]*)");
   itksys::RegularExpression re;
   if (!re.compile(regex.c_str()))
     itkExceptionMacro(<< "Could not compile " << regex);
@@ -463,7 +464,7 @@ ForbildPhantomFileReader::FindClipPlanes(const std::string & s)
   }
 
   // of the form x>expr or x<expr
-  regex = " +x *([<>]) *([-+0-9.]*)";
+  regex = " +x *([<>]) *([-+0-9.eE]*)";
   if (!re.compile(regex.c_str()))
     itkExceptionMacro(<< "Could not compile " << regex);
   currs = s.c_str();
@@ -478,7 +479,7 @@ ForbildPhantomFileReader::FindClipPlanes(const std::string & s)
   }
 
   // of the form y>expr or y<expr
-  regex = " +y *([<>]) *([-+0-9.]*)";
+  regex = " +y *([<>]) *([-+0-9.eE]*)";
   if (!re.compile(regex.c_str()))
     itkExceptionMacro(<< "Could not compile " << regex);
   currs = s.c_str();
@@ -493,7 +494,7 @@ ForbildPhantomFileReader::FindClipPlanes(const std::string & s)
   }
 
   // of the form z>expr or z<expr
-  regex = " +z *([<>]) *([-+0-9.]*)";
+  regex = " +z *([<>]) *([-+0-9.eE]*)";
   if (!re.compile(regex.c_str()))
     itkExceptionMacro(<< "Could not compile " << regex);
   currs = s.c_str();
