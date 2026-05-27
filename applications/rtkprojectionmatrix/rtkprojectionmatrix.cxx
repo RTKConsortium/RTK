@@ -159,19 +159,28 @@ main(int argc, char * argv[])
   if (args_info.verbose_flag)
     std::cout << "Backprojecting volume and recording matrix values..." << std::endl;
 
-  auto backProjection = rtk::JosephBackProjectionImageFilter<
-    OutputImageType,
-    OutputImageType,
-    rtk::Functor::InterpolationWeightMultiplicationBackProjection<OutputPixelType, OutputPixelType>,
-    rtk::Functor::StoreSparseMatrixSplatWeightMultiplication<OutputPixelType, double, OutputPixelType>>::New();
+  auto backProjection = rtk::JosephBackProjectionImageFilter<OutputImageType, OutputImageType>::New();
   backProjection->SetInput(constantImageSource->GetOutput());
   backProjection->SetInput(1, reader->GetOutput());
   backProjection->SetGeometry(geometry);
-  backProjection->GetSplatWeightMultiplication().SetProjectionsBuffer(reader->GetOutput()->GetBufferPointer());
-  backProjection->GetSplatWeightMultiplication().SetVolumeBuffer(constantImageSource->GetOutput()->GetBufferPointer());
-  backProjection->GetSplatWeightMultiplication().GetVnlSparseMatrix().resize(
+  // Create and configure a StoreSparseMatrixSplatWeightMultiplication instance
+  using SplatFunctorType =
+    rtk::Functor::StoreSparseMatrixSplatWeightMultiplication<OutputPixelType, double, OutputPixelType>;
+  auto splatFunctor = std::make_shared<SplatFunctorType>();
+  splatFunctor->SetProjectionsBuffer(reader->GetOutput()->GetBufferPointer());
+  splatFunctor->SetVolumeBuffer(constantImageSource->GetOutput()->GetBufferPointer());
+  splatFunctor->GetVnlSparseMatrix().resize(
     reader->GetOutput()->GetLargestPossibleRegion().GetNumberOfPixels(),
     constantImageSource->GetOutput()->GetLargestPossibleRegion().GetNumberOfPixels());
+
+  using WeightCoordinateType = typename itk::PixelTraits<OutputPixelType>::ValueType;
+  backProjection->SetSplatWeightMultiplication([splatFunctor](const OutputPixelType &    rayValue,
+                                                              OutputPixelType &          output,
+                                                              const double               stepLengthInVoxel,
+                                                              const double               voxelSize,
+                                                              const WeightCoordinateType weight) {
+    (*splatFunctor)(rayValue, output, stepLengthInVoxel, voxelSize, weight);
+  });
   TRY_AND_EXIT_ON_ITK_EXCEPTION(backProjection->Update())
 
   // Write matrix to disk
@@ -183,8 +192,7 @@ main(int argc, char * argv[])
     std::cerr << "Failed to open " << args_info.output_arg << std::endl;
     return EXIT_FAILURE;
   }
-  rtk::MatlabSparseMatrix matlabSparseMatrix(backProjection->GetSplatWeightMultiplication().GetVnlSparseMatrix(),
-                                             backProjection->GetOutput());
+  rtk::MatlabSparseMatrix matlabSparseMatrix(splatFunctor->GetVnlSparseMatrix(), backProjection->GetOutput());
   ofs << matlabSparseMatrix;
   ofs.close();
   return EXIT_SUCCESS;
