@@ -35,3 +35,11 @@ repos:
     - id: gersemi
       args: ['--config', '.gersemi.config', '-i']
       files: '\.(cmake|wrap)$|CMakeLists.txt'
+
+- repo: https://github.com/lycheeverse/lychee
+  rev: lychee-v0.24.2
+  hooks:
+    - id: lychee
+      args: ['--no-progress', '--config', 'utilities/lychee.toml']
+      files: '\.(md|rst|txt|html|htm|h|hxx|cxx)$'
+      exclude: '^(documentation/Doxygen|utilities/(gengetopt|lp_solve))/'
