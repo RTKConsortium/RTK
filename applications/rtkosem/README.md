@@ -5,7 +5,6 @@ The following example illustrates the command line application `rtkosem` by reco
 ![sin_3D](../../documentation/docs/ExternalData/SheppLogan-Sinogram-3D.png){w=200px alt="SheppLogan sinogram 3D "}
 ![img](../../documentation/docs/ExternalData/Osem.png){w=200px alt="Osem reconstruction"}
 
-
 ```{literalinclude} OSEM.sh
 ```
 

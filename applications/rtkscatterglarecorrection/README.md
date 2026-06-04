@@ -1,0 +1,11 @@
+# Scatter Glare Correction
+
+Corrects projection images for scatter glare using a deconvolution kernel following [\[Poludniowski et al, Phys Med Biol, 2011\]](https://doi.org/10.1088/0031-9155/56/6/019).
+
+```bash
+# Apply glare correction using two kernel coefficients
+rtkscatterglarecorrection -p . -r '.*.his' -c 0.8,0.2 -o projections_corrected.mha --verbose
+
+# Output the difference image
+rtkscatterglarecorrection -p . -r '.*.his' -c 0.8,0.2 -d -o diff.mha
+```
