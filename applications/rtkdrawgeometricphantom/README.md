@@ -1,4 +1,4 @@
-# Create gammex phantom
+# Draw geometric phantom
 
 ![img](../../documentation/docs/ExternalData/GammexPhantom.png){w=400px alt="Gammex"}
 
