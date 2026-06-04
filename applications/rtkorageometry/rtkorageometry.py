@@ -46,7 +46,6 @@ def build_parser():
         help="Regular expression to select projection files in path",
         required=True,
     )
-    
 
     return parser
 
