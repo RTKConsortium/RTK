@@ -162,8 +162,6 @@ Post-process with Matlab to obtain the phase signal, ensuring the phase ranges f
 
 ![Signal](../../documentation/docs/ExternalData/Signal.jpg){w=800px alt="Phase signal"}
 
----
-
 ### Motion-compensated cone-beam CT reconstruction
 
 Gather all the pieces to perform motion-compensated reconstruction. Use the following commands:

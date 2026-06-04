@@ -31,7 +31,7 @@ Reconstruct a slice (e.g., slice 30) of the volume using the `rtkfdk` algorithm:
 ```bash
 rtkfdk \
   --geometry geometry.xml \
-  --regexp .*\.hnd \
+  --regexp .*\\.hnd \
   --path Scan0 \
   --output slice30.mha \
   --verbose \
@@ -47,7 +47,7 @@ Apply the field-of-view (FOV) filter to discard everything outside the FOV:
 ```bash
 rtkfieldofview \
   --geometry geometry.xml \
-  --regexp .*\.hnd \
+  --regexp .*\\.hnd \
   --path Scan0 \
   --reconstruction slice30.mha \
   --output slice30.mha \
