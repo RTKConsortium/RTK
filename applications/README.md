@@ -2,7 +2,7 @@
 
 RTK provides command line applications which can be built from the C++ code by turning `ON` the `RTK_BUILD_APPLICATIONS` CMake option. A few of these applications have also been translated to Python and integrated in the [Pypi package](https://pypi.org/project/itk-rtk/). The options of each command line application can be listed with the `--help option`.
 
-The following are examples using RTK applications:
+The following groups collect the applications by purpose:
 
 ```{toctree}
 :maxdepth: 1
@@ -12,8 +12,6 @@ The following are examples using RTK applications:
 ./rtkforwardprojections/README.md
 ./rtkdrawgeometricphantom/README.md
 ./rtkamsterdamshroud/README.md
-./rtkelektasynergygeometry/README.md
-./rtkvarianobigeometry/README.md
 ./rtkadmmtotalvariation/README.md
 ./rtkadmmwavelets/README.md
 ./rtkfourdfdk/README.md
@@ -23,7 +21,38 @@ The following are examples using RTK applications:
 ./rtkshowgeometry/README.md
 ./rtkosem/README.md
 ./rtksart/README.md
+./rtkvarianobigeometry/README.md
+./rtkelektasynergygeometry/README.md
+./rtkimagxgeometry/README.md
+./rtkorageometry/README.md
+./rtkdigisensgeometry/README.md
+./rtkbioscangeometry/README.md
+./rtkxradgeometry/README.md
 ./rtksubselect/README.md
+./rtkbackprojections/README.md
+./rtkcheckimagequality/README.md
+./rtkextractshroudsignal/README.md
+./rtkextractphasesignal/README.md
+./rtkfieldofview/README.md
+./rtkgaincorrection/README.md
+./rtki0estimation/README.md
+./rtkiterativefdk/README.md
+./rtklagcorrection/README.md
+./rtkmaskcollimation/README.md
+./rtkoverlayphaseandshroud/README.md
+./rtkprojectgeometricphantom/README.md
+./rtkprojections/README.md
+./rtkspectralforwardmodel/README.md
+./rtkspectraldenoiseprojections/README.md
+./rtkspectralonestep/README.md
+./rtkspectralrooster/README.md
+./rtkspectralsimplexdecomposition/README.md
+./rtkprojectshepploganphantom/README.md
+./rtkregularizedconjugategradient/README.md
+./rtkvectorconjugategradient/README.md
+./rtkwaveletsdenoising/README.md
+./rtktotalvariationdenoising/README.md
+./rtkscatterglarecorrection/README.md
 ```
 
 In [applications/rtktutorialapplication/](https://github.com/RTKConsortium/RTK/blob/main/applications/rtktutorialapplication), you will find a very basic RTK application that can be used as a starting point for building your own new application.
