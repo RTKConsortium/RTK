@@ -30,3 +30,15 @@ The same reconstruction can be performed using the original 2D Shepp-Logan phant
 ```
 
 ````
+`````
+
+## Command line options
+
+::::{container} argparse-no-usage
+```{eval-rst}
+.. argparse::
+	:filename: applications/rtkiterativefdk/rtkiterativefdk.py
+	:func: build_parser
+	:nodescription:
+```
+::::

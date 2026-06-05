@@ -13,3 +13,15 @@ rtkprojections -o projections_noisy.mha -p . -r '.*.his' --gaussian 0.01
 # Simulate pre-log Poisson noise (I0) and then additive Gaussian (optional)
 rtkprojections -o projections_noisy2.mha -p . -r '.*.his' --poisson 1e5 0.01879 --gaussian 0.01
 ```
+
+
+## Command line options
+
+::::{container} argparse-no-usage
+```{eval-rst}
+.. argparse::
+	:filename: applications/rtkprojections/rtkprojections.py
+	:func: build_parser
+	:nodescription:
+```
+::::

@@ -14,3 +14,16 @@ rtkcheckimagequality -i ref1.mha ref2.mha -j rec1.mha rec2.mha -t 1e-3 2e-3
 # Broadcast a single threshold to multiple comparisons
 rtkcheckimagequality -i ref1.mha ref2.mha -j rec1.mha rec2.mha -t 2e-3
 ```
+
+
+## Command line options
+
+
+::::{container} argparse-no-usage
+```{eval-rst}
+.. argparse::
+	:filename: applications/rtkcheckimagequality/rtkcheckimagequality.py
+	:func: build_parser
+	:nodescription:
+```
+::::

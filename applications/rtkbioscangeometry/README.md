@@ -13,3 +13,15 @@ rtkbioscangeometry \
 	--regexp 'bioscan.dcm' \
 	--verbose
 ```
+
+
+## Command line options
+
+::::{container} argparse-no-usage
+```{eval-rst}
+.. argparse::
+	:filename: applications/rtkbioscangeometry/rtkbioscangeometry.py
+	:func: build_parser
+	:nodescription:
+```
+::::

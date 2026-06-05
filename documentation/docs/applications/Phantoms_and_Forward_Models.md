@@ -9,6 +9,7 @@ forward/backprojection models and related simulation tools.
 ../../../applications/rtkprojectgeometricphantom/README.md
 ../../../applications/rtkprojectshepploganphantom/README.md
 ../../../applications/rtkdrawgeometricphantom/README.md
+../../../applications/rtkdrawshepploganphantom/README.md
 ../../../applications/rtkforwardprojections/README.md
 ../../../applications/rtkspectralforwardmodel/README.md
 ```

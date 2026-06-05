@@ -177,6 +177,7 @@ doc = [
     "furo",
     "myst-parser[linkify]",
     "sphinx>=7.2.6",
+    "sphinx-argparse",
     "sphinx-copybutton",
     "sphinx-design",
 ]

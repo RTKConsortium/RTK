@@ -11,3 +11,14 @@ rtkfieldofview -g geometry.xml -p /projections -r '.*.mha' --reconstruction reco
 # Backprojection-based FOV (non-cylindrical geometry)
 rtkfieldofview -g geometry.xml -p /projections -r '.*.mha' --reconstruction recon.mha -o fov_bp.mha --bp --mask --hardware cuda
 ```
+
+## Command line options
+
+::::{container} argparse-no-usage
+```{eval-rst}
+.. argparse::
+  :filename: applications/rtkfieldofview/rtkfieldofview.py
+  :func: build_parser
+  :nodescription:
+```
+::::

@@ -16,6 +16,18 @@ rtkimagxgeometry \
   --calibration calibration.xml \
   --room_setup room.xml \
   -p . \
-  -r '1\.dcm' \
+  -r '1\\.dcm' \
   -o geometry.xml
 ```
+
+
+## Command line options
+
+::::{container} argparse-no-usage
+```{eval-rst}
+.. argparse::
+  :filename: applications/rtkimagxgeometry/rtkimagxgeometry.py
+  :func: build_parser
+  :nodescription:
+```
+::::
