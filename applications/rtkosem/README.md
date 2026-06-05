@@ -10,3 +10,15 @@ The following example illustrates the command line application `rtkosem` by reco
 ```
 
 For details about available forward/back projectors and their options, see the Projectors documentation: [documentation/docs/Projectors.md](../../documentation/docs/Projectors.md).
+
+
+## Command line options
+
+::::{container} argparse-no-usage
+```{eval-rst}
+.. argparse::
+	:filename: applications/rtkosem/rtkosem.py
+	:func: build_parser
+	:nodescription:
+```
+::::

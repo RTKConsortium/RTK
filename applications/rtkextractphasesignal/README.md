@@ -13,3 +13,15 @@ rtkextractphasesignal -i signal.mha -o phase.txt --movavg 3 --unsharp 53
 # Use LOCAL_PHASE model
 rtkextractphasesignal -i signal.mha -o phase.txt --model LOCAL_PHASE
 ```
+
+
+## Command line options
+
+::::{container} argparse-no-usage
+```{eval-rst}
+.. argparse::
+  :filename: applications/rtkextractphasesignal/rtkextractphasesignal.py
+  :func: build_parser
+  :nodescription:
+```
+::::

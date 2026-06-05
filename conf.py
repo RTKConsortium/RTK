@@ -35,6 +35,7 @@ author = "RTK Consortium"
 extensions = [
     "myst_parser",
     "sphinx.ext.autodoc",
+    "sphinxarg.ext",
     "sphinx_copybutton",
     "sphinx_design",
     "sphinx.ext.graphviz",

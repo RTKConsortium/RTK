@@ -12,6 +12,9 @@ build:
   apt_packages:
     - fonts-roboto
     - graphviz
+  jobs:
+    post_install:
+      - python -m pip install itk-rtk
 
 sphinx:
   configuration: conf.py

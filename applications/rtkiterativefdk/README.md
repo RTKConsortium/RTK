@@ -1,6 +1,6 @@
 # Iterative FDK
 
-Iterative Feldkamp-Davis-Kress reconstruction (Iterative FDK). This application performs an iterative correction of an FDK reconstruction using projection-subset based updates. It supports CPU and CUDA backends and common projector options.
+Iterative Feldkamp-Davis-Kress reconstruction (Iterative FDK). This application performs an iterative correction of an FDK reconstruction using scaled forward-projected residuals. It supports CPU and CUDA backends and the common forward projector options; `--subsetsize` controls how many projections are processed at a time.
 
 `````{tab-set}
 
@@ -24,3 +24,15 @@ The same reconstruction can be performed using the original 2D Shepp-Logan phant
 ```
 
 ````
+`````
+
+## Command line options
+
+::::{container} argparse-no-usage
+```{eval-rst}
+.. argparse::
+	:filename: applications/rtkiterativefdk/rtkiterativefdk.py
+	:func: build_parser
+	:nodescription:
+```
+::::
