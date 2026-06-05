@@ -13,3 +13,15 @@ rtkxradgeometry \
 	-i SolidWater_HiGain1x1.header \
 	-o geometry.xml
 ```
+
+
+## Command line options
+
+::::{container} argparse-no-usage
+```{eval-rst}
+.. argparse::
+  :filename: applications/rtkxradgeometry/rtkxradgeometry.py
+  :func: build_parser
+  :nodescription:
+```
+::::

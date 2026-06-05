@@ -13,3 +13,15 @@ rtkprojectshepploganphantom -g geometry.xml -o projections.mha --spacing 2 --siz
 
 # Use the reconstruction filter of your choice like rtkfdk or rtkconjugategradient
 ```
+
+
+## Command line options
+
+::::{container} argparse-no-usage
+```{eval-rst}
+.. argparse::
+	:filename: applications/rtkprojectshepploganphantom/rtkprojectshepploganphantom.py
+	:func: build_parser
+	:nodescription:
+```
+::::

@@ -35,3 +35,14 @@ rtkfdk \
   --size 1024,1,1024 \
   --origin -127.875,30,-127.875
 ```
+
+## Command line options
+
+::::{container} argparse-no-usage
+```{eval-rst}
+.. argparse::
+  :filename: applications/rtkorageometry/rtkorageometry.py
+  :func: build_parser
+  :nodescription:
+```
+::::

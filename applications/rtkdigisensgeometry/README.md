@@ -9,3 +9,15 @@ rtkdigisensgeometry \
   --xml_file calibration.cal \
   -o geometry.xml
 ```
+
+## Command line options
+
+
+::::{container} argparse-no-usage
+```{eval-rst}
+.. argparse::
+  :filename: applications/rtkdigisensgeometry/rtkdigisensgeometry.py
+  :func: build_parser
+  :nodescription:
+```
+::::

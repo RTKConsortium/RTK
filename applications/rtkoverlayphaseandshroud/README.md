@@ -6,3 +6,15 @@ This example is illustrated with a set of [projection](https://data.kitware.com/
 
 ```{literalinclude} OverlayPhaseAndShroud.sh
 ```
+
+
+## Command line options
+
+::::{container} argparse-no-usage
+```{eval-rst}
+.. argparse::
+	:filename: applications/rtkoverlayphaseandshroud/rtkoverlayphaseandshroud.py
+	:func: build_parser
+	:nodescription:
+```
+::::
