@@ -280,9 +280,9 @@ jobs:
 
         # Find wheel for Python 3.11 dynamically
         if [[ "${{ matrix.runs-on }}" == "self-hosted-linux" ]]; then
-          wheel=$(find wheels -name "*cuda${{ matrix.cuda-version }}**manylinux_2_28_x86_64.whl" -type f | head -1)
+          wheel=$(find wheels -name "itk_rtk_cuda${{ matrix.cuda-version }}*cp311-abi3-manylinux_2_28_x86_64.whl" -type f | head -1)
         else
-          wheel=$(find wheels -name "*cuda${{ matrix.cuda-version }}*cp311*win*.whl" -type f | head -1)
+          wheel=$(find wheels -name "itk_rtk_cuda${{ matrix.cuda-version }}*cp311-abi3-win_amd64.whl" -type f | head -1)
         fi
 
         echo "Installing wheel: $wheel"
