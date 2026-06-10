@@ -13,6 +13,7 @@ set(
   itkImageRTK
   itkCudaImageRTK
   itkVectorImageRTK
+  itkImageDuplicatorRTK
   itkImageSourceRTK
   itkImageToImageFilterRTK
   itkInPlaceImageFilterRTK
