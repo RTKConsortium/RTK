@@ -18,4 +18,11 @@ You can also skip this part and [download the data](https://data.kitware.com/#co
 :language: c++
 ```
 ````
+
+````{tab-item} Python
+
+```{literalinclude} ./GenerateFourDData.py
+:language: python
+```
+````
 `````
