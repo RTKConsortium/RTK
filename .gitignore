@@ -33,3 +33,7 @@ CMakeLists.txt.user*
 
 # Mac System File
 .DS_Store
+
+# lychee link-checker local artifacts
+.lycheecache
+.lychee-report.md
