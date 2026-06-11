@@ -34,9 +34,9 @@ def process(args_info: argparse.Namespace):
         reader.UpdateOutputData()
         geometry = reader.GetGeometry()
     elif (
-        args_info.image_db
-        and args_info.frame_db
-        and args_info.dicom_uid
+        args_info.image_db is None
+        and args_info.frame_db is None
+        and args_info.dicom_uid is None
         and args_info.xml is not None
     ):
         if args_info.verbose:
