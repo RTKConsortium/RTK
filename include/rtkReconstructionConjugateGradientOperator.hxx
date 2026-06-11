@@ -32,11 +32,11 @@ ReconstructionConjugateGradientOperator<TOutputImage, TSingleComponentImage, TWe
   // Create filters
   // #ifdef RTK_USE_CUDA
   //  m_ConstantProjectionsSource = rtk::CudaConstantVolumeSource::New();
-  //  m_ConstantVolumeSource = rtk::CudaConstantVolumeSource::New();
+  //  m_ConstantImageSource = rtk::CudaConstantVolumeSource::New();
   //  m_LaplacianFilter = rtk::CudaLaplacianImageFilter::New();
   // #else
   m_ConstantProjectionsSource = ConstantSourceType::New();
-  m_ConstantVolumeSource = ConstantSourceType::New();
+  m_ConstantImageSource = ConstantSourceType::New();
   // #endif
   m_MultiplyWithWeightsFilter = MultiplyWithWeightsFilterType::New();
   m_MultiplyOutputVolumeFilter = MultiplyFilterType::New();
@@ -44,11 +44,11 @@ ReconstructionConjugateGradientOperator<TOutputImage, TSingleComponentImage, TWe
 
   // Set permanent parameters
   m_ConstantProjectionsSource->SetConstant(itk::NumericTraits<typename TOutputImage::PixelType>::ZeroValue());
-  m_ConstantVolumeSource->SetConstant(itk::NumericTraits<typename TOutputImage::PixelType>::ZeroValue());
+  m_ConstantImageSource->SetConstant(itk::NumericTraits<typename TOutputImage::PixelType>::ZeroValue());
 
   // Set memory management options
   m_ConstantProjectionsSource->ReleaseDataFlagOn();
-  m_ConstantVolumeSource->ReleaseDataFlagOn();
+  m_ConstantImageSource->ReleaseDataFlagOn();
   //  m_LaplacianFilter->ReleaseDataFlagOn();
   //  m_MultiplyLaplacianFilter->ReleaseDataFlagOn();
 }
@@ -196,7 +196,7 @@ ReconstructionConjugateGradientOperator<TOutputImage, TSingleComponentImage, TWe
   // Set runtime connections, and connections with
   // forward and back projection filters, which are set
   // at runtime
-  m_ConstantVolumeSource->SetInformationFromImage(this->GetInputVolume());
+  m_ConstantImageSource->SetInformationFromImage(this->GetInputVolume());
   m_ConstantProjectionsSource->SetInformationFromImage(this->GetInputProjectionStack());
 
   m_FloatingInputPointer = const_cast<TOutputImage *>(this->GetInputVolume().GetPointer());
@@ -218,7 +218,7 @@ ReconstructionConjugateGradientOperator<TOutputImage, TSingleComponentImage, TWe
   m_MultiplyWithWeightsFilter->SetInput2(this->GetInputWeights());
 
   // Set the back projection filter's inputs
-  m_BackProjectionFilter->SetInput(0, m_ConstantVolumeSource->GetOutput());
+  m_BackProjectionFilter->SetInput(0, m_ConstantImageSource->GetOutput());
   m_BackProjectionFilter->SetInput(1, m_MultiplyWithWeightsFilter->GetOutput());
   m_FloatingOutputPointer = m_BackProjectionFilter->GetOutput();
 

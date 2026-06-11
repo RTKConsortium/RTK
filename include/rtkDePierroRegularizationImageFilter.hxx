@@ -30,8 +30,8 @@ DePierroRegularizationImageFilter<TInputImage, TOutputImage>::DePierroRegulariza
   // Create each filter of the composite filter
   m_MultiplyConstant1ImageFilter = MultiplyImageFilterType::New();
   m_MultiplyConstant2ImageFilter = MultiplyImageFilterType::New();
-  m_KernelImage = ConstantVolumeSourceType::New();
-  m_DefaultNormalizationVolume = ConstantVolumeSourceType::New();
+  m_KernelImage = ConstantImageSourceType::New();
+  m_DefaultNormalizationVolume = ConstantImageSourceType::New();
   m_SubtractImageFilter = SubtractImageFilterType::New();
   m_ConvolutionFilter = NOIFType::New();
   m_CustomBinaryFilter = CustomBinaryFilterType::New();
@@ -49,9 +49,9 @@ DePierroRegularizationImageFilter<TInputImage, TOutputImage>::DePierroRegulariza
   m_CustomBinaryFilter->SetInput2(m_MultiplyConstant2ImageFilter->GetOutput());
 
   // Set the kernel image
-  typename ConstantVolumeSourceType::PointType   origin;
-  typename ConstantVolumeSourceType::SizeType    size;
-  typename ConstantVolumeSourceType::SpacingType spacing;
+  typename ConstantImageSourceType::PointType   origin;
+  typename ConstantImageSourceType::SizeType    size;
+  typename ConstantImageSourceType::SpacingType spacing;
   origin.Fill(-1);
   size.Fill(3);
   spacing.Fill(1);

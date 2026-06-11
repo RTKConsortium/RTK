@@ -80,8 +80,8 @@ public:
   using AddImageFilterPointerType = typename AddImageFilterType::Pointer;
   using PasteImageFilterType = itk::PasteImageFilter<OuputCPUImageType, InputCPUImageType>;
   using PasteImageFilterPointerType = typename PasteImageFilterType::Pointer;
-  using DiscreteGaussianFilterType = itk::DiscreteGaussianImageFilter<OuputCPUImageType, OuputCPUImageType>;
-  using DiscreteGaussianFilterPointeurType = typename DiscreteGaussianFilterType::Pointer;
+  using DiscreteGaussianImageFilterType = itk::DiscreteGaussianImageFilter<OuputCPUImageType, OuputCPUImageType>;
+  using DiscreteGaussianImageFilterPointerType = typename DiscreteGaussianImageFilterType::Pointer;
   using ResampleImageFilterType = itk::ResampleImageFilter<OuputCPUImageType, OuputCPUImageType>;
   using ResampleImageFilterPointerType = typename ResampleImageFilterType::Pointer;
   using TransformType = itk::CenteredEuler3DTransform<double>;
@@ -133,20 +133,20 @@ protected:
   void
   VerifyInputInformation() const override;
 
-  RegionOfInterestPointerType        m_RegionOfInterest;
-  AddImageFilterPointerType          m_AddImageFilter;
-  PasteImageFilterPointerType        m_PasteImageFilter;
-  DiscreteGaussianFilterPointeurType m_DiscreteGaussianFilter;
-  ResampleImageFilterPointerType     m_ResampleImageFilter;
-  TransformPointerType               m_Transform;
-  ChangeInformationPointerType       m_ChangeInformation;
-  MultpiplyImageFilterPointerType    m_MultiplyImageFilter;
-  MultpiplyImageFilterPointerType    m_AttenuationMapMultiplyImageFilter;
-  RegionOfInterestPointerType        m_AttenuationMapRegionOfInterest;
-  ResampleImageFilterPointerType     m_AttenuationMapResampleImageFilter;
-  ChangeInformationPointerType       m_AttenuationMapChangeInformation;
-  BoundaryCondition                  m_BoundsCondition;
-  CustomUnaryFilterPointerType       m_CustomUnaryFilter;
+  RegionOfInterestPointerType            m_RegionOfInterest;
+  AddImageFilterPointerType              m_AddImageFilter;
+  PasteImageFilterPointerType            m_PasteImageFilter;
+  DiscreteGaussianImageFilterPointerType m_DiscreteGaussianImageFilter;
+  ResampleImageFilterPointerType         m_ResampleImageFilter;
+  TransformPointerType                   m_Transform;
+  ChangeInformationPointerType           m_ChangeInformation;
+  MultpiplyImageFilterPointerType        m_MultiplyImageFilter;
+  MultpiplyImageFilterPointerType        m_AttenuationMapMultiplyImageFilter;
+  RegionOfInterestPointerType            m_AttenuationMapRegionOfInterest;
+  ResampleImageFilterPointerType         m_AttenuationMapResampleImageFilter;
+  ChangeInformationPointerType           m_AttenuationMapChangeInformation;
+  BoundaryCondition                      m_BoundsCondition;
+  CustomUnaryFilterPointerType           m_CustomUnaryFilter;
 
 
 private:

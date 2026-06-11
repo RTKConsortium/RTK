@@ -163,7 +163,7 @@ public:
   using ForwardProjectionFilterType = ForwardProjectionImageFilter<ProjectionStackType, ProjectionStackType>;
   using InterpolationFilterType = InterpolatorWithKnownWeightsImageFilter<VolumeType, VolumeSeriesType>;
   using SplatFilterType = SplatWithKnownWeightsImageFilter<VolumeSeriesType, VolumeType>;
-  using ConstantVolumeSourceType = ConstantImageSource<VolumeType>;
+  using ConstantImageSourceType = ConstantImageSource<VolumeType>;
   using ConstantProjectionStackSourceType = ConstantImageSource<ProjectionStackType>;
   using ConstantVolumeSeriesSourceType = ConstantImageSource<VolumeSeriesType>;
 
@@ -183,7 +183,7 @@ public:
     conditional_t<std::is_same_v<ProjectionStackType, CPUProjectionStackType>, SplatFilterType, CudaSplatImageFilter>;
   using CudaConstantVolumeSourceType =
     typename std::conditional_t<std::is_same_v<ProjectionStackType, CPUProjectionStackType>,
-                                ConstantVolumeSourceType,
+                                ConstantImageSourceType,
                                 CudaConstantVolumeSource>;
   using CudaConstantVolumeSeriesSourceType =
     typename std::conditional_t<std::is_same_v<ProjectionStackType, CPUProjectionStackType>,
@@ -193,7 +193,7 @@ public:
   using DisplacedDetectorFilterType = DisplacedDetectorImageFilter<ProjectionStackType>;
   using CudaInterpolateImageFilterType = InterpolationFilterType;
   using CudaSplatImageFilterType = SplatFilterType;
-  using CudaConstantVolumeSourceType = ConstantVolumeSourceType;
+  using CudaConstantVolumeSourceType = ConstantImageSourceType;
   using CudaConstantVolumeSeriesSourceType = ConstantVolumeSeriesSourceType;
 #endif
 
@@ -257,8 +257,8 @@ protected:
   typename ForwardProjectionFilterType::Pointer       m_ForwardProjectionFilter;
   typename InterpolationFilterType::Pointer           m_InterpolationFilter;
   typename SplatFilterType::Pointer                   m_SplatFilter;
-  typename ConstantVolumeSourceType::Pointer          m_ConstantVolumeSource1;
-  typename ConstantVolumeSourceType::Pointer          m_ConstantVolumeSource2;
+  typename ConstantImageSourceType::Pointer           m_ConstantImageSource1;
+  typename ConstantImageSourceType::Pointer           m_ConstantImageSource2;
   typename ConstantProjectionStackSourceType::Pointer m_ConstantProjectionStackSource;
   typename ConstantVolumeSeriesSourceType::Pointer    m_ConstantVolumeSeriesSource;
   typename DisplacedDetectorFilterType::Pointer       m_DisplacedDetectorFilter;

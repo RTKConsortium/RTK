@@ -95,8 +95,8 @@ public:
   /** Typedefs of each subfilter of this composite filter */
   using MultiplyImageFilterType = itk::MultiplyImageFilter<InputImageType, InputImageType>;
   using MultpiplyImageFilterPointerType = typename MultiplyImageFilterType::Pointer;
-  using ConstantVolumeSourceType = rtk::ConstantImageSource<InputImageType>;
-  using ConstantVolumeSourcePointerType = typename ConstantVolumeSourceType::Pointer;
+  using ConstantImageSourceType = rtk::ConstantImageSource<InputImageType>;
+  using ConstantImageSourcePointerType = typename ConstantImageSourceType::Pointer;
   using SubtractImageFilterType = itk::SubtractImageFilter<InputImageType, InputImageType>;
   using SubtractImageFilterPointerType = typename SubtractImageFilterType::Pointer;
   using ImageKernelOperatorType = itk::ImageKernelOperator<InputPixelType, InputImageDimension>;
@@ -133,8 +133,8 @@ protected:
 
   MultpiplyImageFilterPointerType m_MultiplyConstant1ImageFilter;
   MultpiplyImageFilterPointerType m_MultiplyConstant2ImageFilter;
-  ConstantVolumeSourcePointerType m_KernelImage;
-  ConstantVolumeSourcePointerType m_DefaultNormalizationVolume;
+  ConstantImageSourcePointerType  m_KernelImage;
+  ConstantImageSourcePointerType  m_DefaultNormalizationVolume;
   SubtractImageFilterPointerType  m_SubtractImageFilter;
   BoundaryCondition               m_BoundsCondition;
   ImageKernelOperatorType         m_KernelOperator;

@@ -131,7 +131,7 @@ public:
   using ForwardProjectionFilterType = rtk::ForwardProjectionImageFilter<ProjectionStackType, ProjectionStackType>;
   using PasteFilterType = itk::PasteImageFilter<ProjectionStackType, ProjectionStackType>;
   using InterpolatorFilterType = rtk::InterpolatorWithKnownWeightsImageFilter<VolumeType, VolumeSeriesType>;
-  using ConstantVolumeSourceType = rtk::ConstantImageSource<VolumeType>;
+  using ConstantImageSourceType = rtk::ConstantImageSource<VolumeType>;
   using ConstantProjectionStackSourceType = rtk::ConstantImageSource<ProjectionStackType>;
   using GeometryType = rtk::ThreeDCircularProjectionGeometry;
 
@@ -148,7 +148,7 @@ public:
 
   /** Initializes the empty volume source, set it and update it */
   void
-  InitializeConstantVolumeSource();
+  InitializeConstantImageSource();
 
   /** Store the phase signal in a member variable */
   virtual void
@@ -176,7 +176,7 @@ protected:
   /** Member pointers to the filters used internally (for convenience)*/
   typename PasteFilterType::Pointer                   m_PasteFilter;
   typename InterpolatorFilterType::Pointer            m_InterpolationFilter;
-  typename ConstantVolumeSourceType::Pointer          m_ConstantVolumeSource;
+  typename ConstantImageSourceType::Pointer           m_ConstantImageSource;
   typename ConstantProjectionStackSourceType::Pointer m_ConstantProjectionStackSource;
   typename ForwardProjectionFilterType::Pointer       m_ForwardProjectionFilter;
 

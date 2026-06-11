@@ -136,7 +136,7 @@ public:
 
   using BackProjectionFilterType = rtk::BackProjectionImageFilter<VolumeType, VolumeType>;
   using ExtractFilterType = itk::ExtractImageFilter<ProjectionStackType, ProjectionStackType>;
-  using ConstantVolumeSourceType = rtk::ConstantImageSource<VolumeType>;
+  using ConstantImageSourceType = rtk::ConstantImageSource<VolumeType>;
   using ConstantVolumeSeriesSourceType = rtk::ConstantImageSource<VolumeSeriesType>;
   using SplatFilterType = rtk::SplatWithKnownWeightsImageFilter<VolumeSeriesType, VolumeType>;
 
@@ -150,7 +150,7 @@ public:
     conditional_t<std::is_same_v<VolumeSeriesType, CPUVolumeSeriesType>, SplatFilterType, CudaSplatImageFilter>;
   using CudaConstantVolumeSourceType =
     typename std::conditional_t<std::is_same_v<VolumeSeriesType, CPUVolumeSeriesType>,
-                                ConstantVolumeSourceType,
+                                ConstantImageSourceType,
                                 CudaConstantVolumeSource>;
   using CudaConstantVolumeSeriesSourceType =
     typename std::conditional_t<std::is_same_v<VolumeSeriesType, CPUVolumeSeriesType>,
@@ -158,7 +158,7 @@ public:
                                 CudaConstantVolumeSeriesSource>;
 #else
   using CudaSplatImageFilterType = SplatFilterType;
-  using CudaConstantVolumeSourceType = ConstantVolumeSourceType;
+  using CudaConstantVolumeSourceType = ConstantImageSourceType;
   using CudaConstantVolumeSeriesSourceType = ConstantVolumeSeriesSourceType;
 #endif
 
@@ -208,7 +208,7 @@ protected:
   typename SplatFilterType::Pointer                m_SplatFilter;
   typename BackProjectionFilterType::Pointer       m_BackProjectionFilter;
   typename ExtractFilterType::Pointer              m_ExtractFilter;
-  typename ConstantVolumeSourceType::Pointer       m_ConstantVolumeSource;
+  typename ConstantImageSourceType::Pointer        m_ConstantImageSource;
   typename ConstantVolumeSeriesSourceType::Pointer m_ConstantVolumeSeriesSource;
 
   /** Other member variables */
