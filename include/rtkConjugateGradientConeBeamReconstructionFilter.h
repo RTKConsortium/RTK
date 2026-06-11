@@ -231,7 +231,7 @@ protected:
   typename BackProjectionImageFilter<TOutputImage, TOutputImage>::Pointer    m_BackProjectionFilter;
   typename BackProjectionImageFilter<TOutputImage, TOutputImage>::Pointer    m_BackProjectionFilterForB;
   typename DisplacedDetectorFilterType::Pointer                              m_DisplacedDetectorFilter;
-  typename ConstantImageSourceType::Pointer                                  m_ConstantVolumeSource;
+  typename ConstantImageSourceType::Pointer                                  m_ConstantImageSource;
   typename MultiplyWithWeightsFilterType::Pointer                            m_MultiplyWithWeightsFilter;
 
   /** The inputs of this filter have the same type (float, 3) but not the same meaning

@@ -42,7 +42,7 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage, TSingleComponentImag
 
   // Create the filters
   m_DisplacedDetectorFilter = DisplacedDetectorFilterType::New();
-  m_ConstantVolumeSource = ConstantImageSourceType::New();
+  m_ConstantImageSource = ConstantImageSourceType::New();
   m_CGOperator = CGOperatorFilterType::New();
   m_MultiplyVolumeFilter = MultiplyFilterType::New();
   m_MultiplyProjectionsFilter = MultiplyFilterType::New();
@@ -50,7 +50,7 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage, TSingleComponentImag
   m_MultiplyWithWeightsFilter = MultiplyWithWeightsFilterType::New();
 
   // Set permanent parameters
-  m_ConstantVolumeSource->SetConstant(itk::NumericTraits<typename TOutputImage::PixelType>::ZeroValue());
+  m_ConstantImageSource->SetConstant(itk::NumericTraits<typename TOutputImage::PixelType>::ZeroValue());
   m_DisplacedDetectorFilter->SetPadOnTruncatedSide(false);
 }
 
@@ -215,7 +215,7 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage, TSingleComponentImag
   m_CGOperator->SetBackProjectionFilter(m_BackProjectionFilter);
 
   // Set runtime connections
-  m_ConstantVolumeSource->SetInformationFromImage(this->GetInputVolume());
+  m_ConstantImageSource->SetInformationFromImage(this->GetInputVolume());
   m_CGOperator->SetInputProjectionStack(this->GetInputProjectionStack());
   m_CGOperator->SetSupportMask(this->GetSupportMask());
   m_ConjugateGradientFilter->SetX(this->GetInputVolume());
@@ -233,7 +233,7 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage, TSingleComponentImag
 
   // Links with the m_BackProjectionFilter should be set here and not
   // in the constructor, as m_BackProjectionFilter is set at runtime
-  m_BackProjectionFilterForB->SetInput(0, m_ConstantVolumeSource->GetOutput());
+  m_BackProjectionFilterForB->SetInput(0, m_ConstantImageSource->GetOutput());
   m_ConjugateGradientFilter->SetB(m_BackProjectionFilterForB->GetOutput());
 
   // Multiply the projections by the weights map

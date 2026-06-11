@@ -45,7 +45,7 @@ SARTConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>::SARTConeBeamRe
   m_DisplacedDetectorFilter = DisplacedDetectorFilterType::New();
   m_MultiplyFilter = MultiplyFilterType::New();
   m_GatingWeightsFilter = GatingWeightsFilterType::New();
-  m_ConstantVolumeSource = ConstantVolumeSourceType::New();
+  m_ConstantImageSource = ConstantImageSourceType::New();
 
   // Create the filters required for correct weighting of the difference
   // projection
@@ -148,19 +148,19 @@ SARTConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>::GenerateOutput
 
   // Links with the forward and back projection filters should be set here
   // and not in the constructor, as these filters are set at runtime
-  m_ConstantVolumeSource->SetInformationFromImage(const_cast<TVolumeImage *>(this->GetInput(0)));
-  m_ConstantVolumeSource->SetConstant(0);
-  m_ConstantVolumeSource->UpdateOutputInformation();
+  m_ConstantImageSource->SetInformationFromImage(const_cast<TVolumeImage *>(this->GetInput(0)));
+  m_ConstantImageSource->SetConstant(0);
+  m_ConstantImageSource->UpdateOutputInformation();
 
   m_OneConstantProjectionStackSource->SetInformationFromImage(
     const_cast<TProjectionImage *>(m_ExtractFilter->GetOutput()));
   m_OneConstantProjectionStackSource->SetConstant(1);
 
-  m_BackProjectionFilter->SetInput(0, m_ConstantVolumeSource->GetOutput());
+  m_BackProjectionFilter->SetInput(0, m_ConstantImageSource->GetOutput());
   m_BackProjectionFilter->SetInput(1, m_DisplacedDetectorFilter->GetOutput());
   m_BackProjectionFilter->SetTranspose(false);
 
-  m_BackProjectionNormalizationFilter->SetInput(0, m_ConstantVolumeSource->GetOutput());
+  m_BackProjectionNormalizationFilter->SetInput(0, m_ConstantImageSource->GetOutput());
   m_BackProjectionNormalizationFilter->SetInput(1, m_OneConstantProjectionStackSource->GetOutput());
   m_BackProjectionNormalizationFilter->SetTranspose(false);
 
@@ -328,8 +328,8 @@ SARTConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>::GenerateData()
           m_AddFilter->SetInput2(pimg);
         else
           m_NesterovFilter->SetInput(pimg);
-        m_BackProjectionFilter->SetInput(0, m_ConstantVolumeSource->GetOutput());
-        m_BackProjectionNormalizationFilter->SetInput(0, m_ConstantVolumeSource->GetOutput());
+        m_BackProjectionFilter->SetInput(0, m_ConstantImageSource->GetOutput());
+        m_BackProjectionNormalizationFilter->SetInput(0, m_ConstantImageSource->GetOutput());
 
         projectionsProcessedInSubset = 0;
       }

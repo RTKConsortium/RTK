@@ -94,24 +94,24 @@ ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPre
   unsigned int Dimension = 3;
 
   // Configure the constant volume sources
-  typename VolumeType::SizeType      ConstantVolumeSourceSize{};
-  typename VolumeType::SpacingType   ConstantVolumeSourceSpacing{};
-  typename VolumeType::PointType     ConstantVolumeSourceOrigin{};
-  typename VolumeType::DirectionType ConstantVolumeSourceDirection;
+  typename VolumeType::SizeType      ConstantImageSourceSize{};
+  typename VolumeType::SpacingType   ConstantImageSourceSpacing{};
+  typename VolumeType::PointType     ConstantImageSourceOrigin{};
+  typename VolumeType::DirectionType ConstantImageSourceDirection;
 
   for (unsigned int i = 0; i < Dimension; i++)
   {
-    ConstantVolumeSourceSize[i] = GetInputVolumeSeries()->GetLargestPossibleRegion().GetSize()[i];
-    ConstantVolumeSourceSpacing[i] = GetInputVolumeSeries()->GetSpacing()[i];
-    ConstantVolumeSourceOrigin[i] = GetInputVolumeSeries()->GetOrigin()[i];
+    ConstantImageSourceSize[i] = GetInputVolumeSeries()->GetLargestPossibleRegion().GetSize()[i];
+    ConstantImageSourceSpacing[i] = GetInputVolumeSeries()->GetSpacing()[i];
+    ConstantImageSourceOrigin[i] = GetInputVolumeSeries()->GetOrigin()[i];
   }
-  ConstantVolumeSourceDirection.SetIdentity();
+  ConstantImageSourceDirection.SetIdentity();
 
-  m_ConstantVolumeSource->SetOrigin(ConstantVolumeSourceOrigin);
-  m_ConstantVolumeSource->SetSpacing(ConstantVolumeSourceSpacing);
-  m_ConstantVolumeSource->SetDirection(ConstantVolumeSourceDirection);
-  m_ConstantVolumeSource->SetSize(ConstantVolumeSourceSize);
-  m_ConstantVolumeSource->SetConstant(0.);
+  m_ConstantImageSource->SetOrigin(ConstantImageSourceOrigin);
+  m_ConstantImageSource->SetSpacing(ConstantImageSourceSpacing);
+  m_ConstantImageSource->SetDirection(ConstantImageSourceDirection);
+  m_ConstantImageSource->SetSize(ConstantImageSourceSize);
+  m_ConstantImageSource->SetConstant(0.);
 
   // Configure the constant volume series source
   m_ConstantVolumeSeriesSource->SetInformationFromImage(this->GetInputVolumeSeries());
@@ -143,20 +143,20 @@ ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPre
   }
 
   // Create the constant sources (first on CPU, and overwrite with the GPU version if CUDA requested)
-  m_ConstantVolumeSource = ConstantVolumeSourceType::New();
+  m_ConstantImageSource = ConstantImageSourceType::New();
   m_ConstantVolumeSeriesSource = ConstantVolumeSeriesSourceType::New();
   if (m_UseCudaSources)
   {
     if (std::is_same_v<VolumeSeriesType, CPUVolumeSeriesType>)
       itkGenericExceptionMacro(<< "UseCudaSources option only available with itk::CudaImage.");
-    m_ConstantVolumeSource = CudaConstantVolumeSourceType::New();
+    m_ConstantImageSource = CudaConstantVolumeSourceType::New();
     m_ConstantVolumeSeriesSource = CudaConstantVolumeSeriesSourceType::New();
   }
 
   // Set runtime connections
   m_ExtractFilter->SetInput(this->GetInputProjectionStack());
 
-  m_BackProjectionFilter->SetInput(0, m_ConstantVolumeSource->GetOutput());
+  m_BackProjectionFilter->SetInput(0, m_ConstantImageSource->GetOutput());
   m_BackProjectionFilter->SetInput(1, m_ExtractFilter->GetOutput());
   m_BackProjectionFilter->SetInPlace(false);
 
@@ -271,7 +271,7 @@ ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPre
     pimg->ReleaseData();
   m_BackProjectionFilter->GetOutput()->ReleaseData();
   m_ExtractFilter->GetOutput()->ReleaseData();
-  m_ConstantVolumeSource->GetOutput()->ReleaseData();
+  m_ConstantImageSource->GetOutput()->ReleaseData();
 }
 
 } // namespace rtk

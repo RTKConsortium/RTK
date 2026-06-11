@@ -70,10 +70,10 @@ namespace rtk
  *
  *  Add [ label="itk::AddImageFilter" URL="\ref itk::AddImageFilter"];
  *  Paste [ label="itk::PasteImageFilter" URL="\ref itk::PasteImageFilter"];
- *  Gaussian [ label="itk::DiscreteGaussianFilter" URL="\ref itk::DiscreteGaussianFilter"];
+ *  Gaussian [ label="itk::DiscreteGaussianImageFilter" URL="\ref itk::DiscreteGaussianImageFilter"];
  *  Resample [ label="itk::ResampleImageFilter" URL="\ref itk::ResampleImageFilter"];
  *  Multiply [ label="itk::MultiplyImageFilter" URL="\ref itk::MultiplyImageFilter"];
- *  Constant [ label="itk::ConstantVolumeSource" URL="\ref itk::ConstantVolumeSource"];
+ *  Constant [ label="rtk::ConstantImageSource" URL="\ref rtk::ConstantImageSource"];
  *  Extract [ label="itk::ExtractImageFilter" URL="\ref itk::ExtractImageFilter"];
  *  ChangeInfo [ label="itk::ChangeInformationImageFilter" URL="\ref itk::ChangeInformationImageFilter"];
  *  AttMultiply [ label="itk::MultiplyImageFilter" URL="\ref itk::MultiplyImageFilter"];
@@ -130,8 +130,8 @@ public:
   using AddImageFilterPointerType = typename AddImageFilterType::Pointer;
   using PasteImageFilterType = itk::PasteImageFilter<InputCPUImageType, OuputCPUImageType>;
   using PasteImageFilterPointerType = typename PasteImageFilterType::Pointer;
-  using DiscreteGaussianFilterType = itk::DiscreteGaussianImageFilter<OuputCPUImageType, OuputCPUImageType>;
-  using DiscreteGaussianFilterPointeurType = typename DiscreteGaussianFilterType::Pointer;
+  using DiscreteGaussianImageFilterType = itk::DiscreteGaussianImageFilter<OuputCPUImageType, OuputCPUImageType>;
+  using DiscreteGaussianImageFilterPointerType = typename DiscreteGaussianImageFilterType::Pointer;
   using ResampleImageFilterType = itk::ResampleImageFilter<InputCPUImageType, InputCPUImageType>;
   using ResampleImageFilterPointerType = typename ResampleImageFilterType::Pointer;
   using TransformType = itk::CenteredEuler3DTransform<double>;
@@ -140,8 +140,8 @@ public:
   using ChangeInformationPointerType = typename ChangeInformationFilterType::Pointer;
   using MultiplyImageFilterType = itk::MultiplyImageFilter<InputCPUImageType, InputCPUImageType>;
   using MultiplyImageFilterPointerType = typename MultiplyImageFilterType::Pointer;
-  using ConstantVolumeSourceType = rtk::ConstantImageSource<InputCPUImageType>;
-  using ConstantVolumeSourcePointerType = typename ConstantVolumeSourceType::Pointer;
+  using ConstantImageSourceType = rtk::ConstantImageSource<InputCPUImageType>;
+  using ConstantImageSourcePointerType = typename ConstantImageSourceType::Pointer;
   using ExtractImageFilterType = itk::ExtractImageFilter<OuputCPUImageType, OuputCPUImageType>;
   using ExtractImageFilterPointerType = typename ExtractImageFilterType::Pointer;
   using RegionOfInterestFilterType = itk::RegionOfInterestImageFilter<OuputCPUImageType, OuputCPUImageType>;
@@ -189,21 +189,21 @@ protected:
   void
   VerifyInputInformation() const override;
 
-  AddImageFilterPointerType          m_AddImageFilter;
-  PasteImageFilterPointerType        m_PasteImageFilter;
-  DiscreteGaussianFilterPointeurType m_DiscreteGaussianFilter;
-  ResampleImageFilterPointerType     m_ResampleImageFilter;
-  TransformPointerType               m_Transform;
-  MultiplyImageFilterPointerType     m_MultiplyImageFilter;
-  ConstantVolumeSourcePointerType    m_ConstantVolumeSource;
-  ExtractImageFilterPointerType      m_ExtractImageFilter;
-  ChangeInformationPointerType       m_ChangeInformation;
-  MultiplyImageFilterPointerType     m_AttenuationMapMultiplyImageFilter;
-  RegionOfInterestPointerType        m_AttenuationMapRegionOfInterest;
-  ResampleImageFilterPointerType     m_AttenuationMapResampleImageFilter;
-  ChangeInformationPointerType       m_AttenuationMapChangeInformation;
-  BoundaryCondition                  m_BoundsCondition;
-  CustomUnaryFilterPointerType       m_CustomUnaryFilter;
+  AddImageFilterPointerType              m_AddImageFilter;
+  PasteImageFilterPointerType            m_PasteImageFilter;
+  DiscreteGaussianImageFilterPointerType m_DiscreteGaussianImageFilter;
+  ResampleImageFilterPointerType         m_ResampleImageFilter;
+  TransformPointerType                   m_Transform;
+  MultiplyImageFilterPointerType         m_MultiplyImageFilter;
+  ConstantImageSourcePointerType         m_ConstantImageSource;
+  ExtractImageFilterPointerType          m_ExtractImageFilter;
+  ChangeInformationPointerType           m_ChangeInformation;
+  MultiplyImageFilterPointerType         m_AttenuationMapMultiplyImageFilter;
+  RegionOfInterestPointerType            m_AttenuationMapRegionOfInterest;
+  ResampleImageFilterPointerType         m_AttenuationMapResampleImageFilter;
+  ChangeInformationPointerType           m_AttenuationMapChangeInformation;
+  BoundaryCondition                      m_BoundsCondition;
+  CustomUnaryFilterPointerType           m_CustomUnaryFilter;
 
 private:
   ZengBackProjectionImageFilter(const Self &) = delete; // purposely not implemented

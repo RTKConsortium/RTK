@@ -107,30 +107,30 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
   unsigned int Dimension = 3;
 
   // Configure the constant volume sources
-  typename VolumeType::SizeType      ConstantVolumeSourceSize{};
-  typename VolumeType::SpacingType   ConstantVolumeSourceSpacing{};
-  typename VolumeType::PointType     ConstantVolumeSourceOrigin{};
-  typename VolumeType::DirectionType ConstantVolumeSourceDirection;
+  typename VolumeType::SizeType      ConstantImageSourceSize{};
+  typename VolumeType::SpacingType   ConstantImageSourceSpacing{};
+  typename VolumeType::PointType     ConstantImageSourceOrigin{};
+  typename VolumeType::DirectionType ConstantImageSourceDirection;
 
   for (unsigned int i = 0; i < Dimension; i++)
   {
-    ConstantVolumeSourceSize[i] = GetInputVolumeSeries()->GetLargestPossibleRegion().GetSize()[i];
-    ConstantVolumeSourceSpacing[i] = GetInputVolumeSeries()->GetSpacing()[i];
-    ConstantVolumeSourceOrigin[i] = GetInputVolumeSeries()->GetOrigin()[i];
+    ConstantImageSourceSize[i] = GetInputVolumeSeries()->GetLargestPossibleRegion().GetSize()[i];
+    ConstantImageSourceSpacing[i] = GetInputVolumeSeries()->GetSpacing()[i];
+    ConstantImageSourceOrigin[i] = GetInputVolumeSeries()->GetOrigin()[i];
   }
-  ConstantVolumeSourceDirection.SetIdentity();
+  ConstantImageSourceDirection.SetIdentity();
 
-  m_ConstantVolumeSource1->SetOrigin(ConstantVolumeSourceOrigin);
-  m_ConstantVolumeSource1->SetSpacing(ConstantVolumeSourceSpacing);
-  m_ConstantVolumeSource1->SetDirection(ConstantVolumeSourceDirection);
-  m_ConstantVolumeSource1->SetSize(ConstantVolumeSourceSize);
-  m_ConstantVolumeSource1->SetConstant(0.);
+  m_ConstantImageSource1->SetOrigin(ConstantImageSourceOrigin);
+  m_ConstantImageSource1->SetSpacing(ConstantImageSourceSpacing);
+  m_ConstantImageSource1->SetDirection(ConstantImageSourceDirection);
+  m_ConstantImageSource1->SetSize(ConstantImageSourceSize);
+  m_ConstantImageSource1->SetConstant(0.);
 
-  m_ConstantVolumeSource2->SetOrigin(ConstantVolumeSourceOrigin);
-  m_ConstantVolumeSource2->SetSpacing(ConstantVolumeSourceSpacing);
-  m_ConstantVolumeSource2->SetDirection(ConstantVolumeSourceDirection);
-  m_ConstantVolumeSource2->SetSize(ConstantVolumeSourceSize);
-  m_ConstantVolumeSource2->SetConstant(0.);
+  m_ConstantImageSource2->SetOrigin(ConstantImageSourceOrigin);
+  m_ConstantImageSource2->SetSpacing(ConstantImageSourceSpacing);
+  m_ConstantImageSource2->SetDirection(ConstantImageSourceDirection);
+  m_ConstantImageSource2->SetSize(ConstantImageSourceSize);
+  m_ConstantImageSource2->SetConstant(0.);
 
   // Configure the constant projection stack source
   m_ConstantProjectionStackSource->SetInformationFromImage(this->GetInputProjectionStack());
@@ -186,16 +186,16 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
   }
 
   // Create the constant sources (first on CPU, and overwrite with the GPU version if CUDA requested)
-  m_ConstantVolumeSource1 = ConstantVolumeSourceType::New();
-  m_ConstantVolumeSource2 = ConstantVolumeSourceType::New();
+  m_ConstantImageSource1 = ConstantImageSourceType::New();
+  m_ConstantImageSource2 = ConstantImageSourceType::New();
   m_ConstantProjectionStackSource = ConstantProjectionStackSourceType::New();
   m_ConstantVolumeSeriesSource = ConstantVolumeSeriesSourceType::New();
   if (m_UseCudaSources)
   {
     if (std::is_same_v<ProjectionStackType, CPUProjectionStackType>)
       itkGenericExceptionMacro(<< "UseCudaSources option only available with itk::CudaImage.");
-    m_ConstantVolumeSource1 = CudaConstantVolumeSourceType::New();
-    m_ConstantVolumeSource2 = CudaConstantVolumeSourceType::New();
+    m_ConstantImageSource1 = CudaConstantVolumeSourceType::New();
+    m_ConstantImageSource2 = CudaConstantVolumeSourceType::New();
     m_ConstantProjectionStackSource = CudaConstantVolumeSourceType::New();
     m_ConstantVolumeSeriesSource = CudaConstantVolumeSeriesSourceType::New();
   }
@@ -204,7 +204,7 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
   this->InitializeConstantSources();
 
   // Set runtime connections
-  m_InterpolationFilter->SetInputVolume(m_ConstantVolumeSource1->GetOutput());
+  m_InterpolationFilter->SetInputVolume(m_ConstantImageSource1->GetOutput());
   m_InterpolationFilter->SetInputVolumeSeries(this->GetInputVolumeSeries());
 
   m_ForwardProjectionFilter->SetInput(0, m_ConstantProjectionStackSource->GetOutput());
@@ -212,7 +212,7 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
 
   m_DisplacedDetectorFilter->SetInput(m_ForwardProjectionFilter->GetOutput());
 
-  m_BackProjectionFilter->SetInput(0, m_ConstantVolumeSource2->GetOutput());
+  m_BackProjectionFilter->SetInput(0, m_ConstantImageSource2->GetOutput());
   m_BackProjectionFilter->SetInput(1, m_DisplacedDetectorFilter->GetOutput());
   m_BackProjectionFilter->SetInPlace(false);
 
@@ -318,8 +318,8 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
 
   // Release the data in internal filters
   pimg->ReleaseData();
-  m_ConstantVolumeSource1->GetOutput()->ReleaseData();
-  m_ConstantVolumeSource2->GetOutput()->ReleaseData();
+  m_ConstantImageSource1->GetOutput()->ReleaseData();
+  m_ConstantImageSource2->GetOutput()->ReleaseData();
   m_ConstantVolumeSeriesSource->GetOutput()->ReleaseData();
   m_ConstantProjectionStackSource->GetOutput()->ReleaseData();
   m_DisplacedDetectorFilter->GetOutput()->ReleaseData();

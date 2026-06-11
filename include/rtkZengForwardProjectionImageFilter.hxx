@@ -44,7 +44,7 @@ ZengForwardProjectionImageFilter<TInputImage, TOutputImage>::ZengForwardProjecti
   m_RegionOfInterest = RegionOfInterestFilterType::New();
   m_AddImageFilter = AddImageFilterType::New();
   m_PasteImageFilter = PasteImageFilterType::New();
-  m_DiscreteGaussianFilter = DiscreteGaussianFilterType::New();
+  m_DiscreteGaussianImageFilter = DiscreteGaussianImageFilterType::New();
   m_ResampleImageFilter = ResampleImageFilterType::New();
   m_Transform = TransformType::New();
   m_ChangeInformation = ChangeInformationFilterType::New();
@@ -56,17 +56,17 @@ ZengForwardProjectionImageFilter<TInputImage, TOutputImage>::ZengForwardProjecti
   m_CustomUnaryFilter = nullptr;
 
   // Permanent internal connections
-  m_AddImageFilter->SetInput1(m_DiscreteGaussianFilter->GetOutput());
+  m_AddImageFilter->SetInput1(m_DiscreteGaussianImageFilter->GetOutput());
   m_AddImageFilter->SetInput2(m_ChangeInformation->GetOutput());
   m_MultiplyImageFilter->SetInput(m_PasteImageFilter->GetOutput());
 
   // Default parameters
-  m_DiscreteGaussianFilter->SetMaximumError(0.00001);
-  m_DiscreteGaussianFilter->SetFilterDimensionality(2);
-  m_DiscreteGaussianFilter->SetInputBoundaryCondition(&m_BoundsCondition);
-  m_DiscreteGaussianFilter->SetRealBoundaryCondition(&m_BoundsCondition);
+  m_DiscreteGaussianImageFilter->SetMaximumError(0.00001);
+  m_DiscreteGaussianImageFilter->SetFilterDimensionality(2);
+  m_DiscreteGaussianImageFilter->SetInputBoundaryCondition(&m_BoundsCondition);
+  m_DiscreteGaussianImageFilter->SetRealBoundaryCondition(&m_BoundsCondition);
   m_ChangeInformation->ChangeOriginOn();
-  m_ChangeInformation->SetReferenceImage(m_DiscreteGaussianFilter->GetOutput());
+  m_ChangeInformation->SetReferenceImage(m_DiscreteGaussianImageFilter->GetOutput());
   m_ChangeInformation->SetUseReferenceImage(true);
 }
 
@@ -234,11 +234,11 @@ ZengForwardProjectionImageFilter<TInputImage, TOutputImage>::GenerateOutputInfor
   m_RegionOfInterest->SetInput(m_ResampleImageFilter->GetOutput());
   m_RegionOfInterest->UpdateOutputInformation();
 
-  m_DiscreteGaussianFilter->SetVariance(pow(m_SigmaZero, 2.0));
+  m_DiscreteGaussianImageFilter->SetVariance(pow(m_SigmaZero, 2.0));
 
   if (!(this->GetInput(2)))
   {
-    m_DiscreteGaussianFilter->SetInput(m_RegionOfInterest->GetOutput());
+    m_DiscreteGaussianImageFilter->SetInput(m_RegionOfInterest->GetOutput());
   }
   else
   {
@@ -247,7 +247,7 @@ ZengForwardProjectionImageFilter<TInputImage, TOutputImage>::GenerateOutputInfor
     m_AttenuationMapResampleImageFilter = ResampleImageFilterType::New();
     m_AttenuationMapChangeInformation = ChangeInformationFilterType::New();
     m_AttenuationMapChangeInformation->ChangeOriginOn();
-    m_AttenuationMapChangeInformation->SetReferenceImage(m_DiscreteGaussianFilter->GetOutput());
+    m_AttenuationMapChangeInformation->SetReferenceImage(m_DiscreteGaussianImageFilter->GetOutput());
     m_AttenuationMapChangeInformation->SetUseReferenceImage(true);
     m_CustomUnaryFilter = CustomUnaryFilterType::New();
 
@@ -275,14 +275,14 @@ ZengForwardProjectionImageFilter<TInputImage, TOutputImage>::GenerateOutputInfor
 
     m_AttenuationMapMultiplyImageFilter->SetInput1(m_RegionOfInterest->GetOutput());
     m_AttenuationMapMultiplyImageFilter->SetInput2(m_AttenuationMapRegionOfInterest->GetOutput());
-    m_DiscreteGaussianFilter->SetInput(m_AttenuationMapMultiplyImageFilter->GetOutput());
+    m_DiscreteGaussianImageFilter->SetInput(m_AttenuationMapMultiplyImageFilter->GetOutput());
   }
 
   m_MultiplyImageFilter->SetConstant(spacingVolume[2]);
 
-  m_PasteImageFilter->SetSourceImage(m_DiscreteGaussianFilter->GetOutput());
+  m_PasteImageFilter->SetSourceImage(m_DiscreteGaussianImageFilter->GetOutput());
   m_PasteImageFilter->SetDestinationImage(this->GetInput(0));
-  m_PasteImageFilter->SetSourceRegion(m_DiscreteGaussianFilter->GetOutput()->GetLargestPossibleRegion());
+  m_PasteImageFilter->SetSourceRegion(m_DiscreteGaussianImageFilter->GetOutput()->GetLargestPossibleRegion());
 
   // Update output information
   m_PasteImageFilter->UpdateOutputInformation();
@@ -374,7 +374,7 @@ ZengForwardProjectionImageFilter<TInputImage, TOutputImage>::GenerateData()
       currentSlice = m_AttenuationMapMultiplyImageFilter->GetOutput();
     }
     currentSlice->DisconnectPipeline();
-    m_DiscreteGaussianFilter->SetInput(currentSlice);
+    m_DiscreteGaussianImageFilter->SetInput(currentSlice);
     m_ChangeInformation->SetInput(m_RegionOfInterest->GetOutput());
 
     // Compute the distance between the current slice and the detector
@@ -391,7 +391,7 @@ ZengForwardProjectionImageFilter<TInputImage, TOutputImage>::GenerateData()
       // Compute the variance of the PSF for the current slice
       sigmaSlice = dist * 2. * thicknessSlice * pow(m_Alpha, 2.0) + 2. * thicknessSlice * m_Alpha * m_SigmaZero -
                    pow(m_Alpha, 2.0) * pow(thicknessSlice, 2.0);
-      m_DiscreteGaussianFilter->SetVariance(sigmaSlice);
+      m_DiscreteGaussianImageFilter->SetVariance(sigmaSlice);
 
       // Extract the next slice
       desiredRegion.SetIndex(Dimension - 1, index);
@@ -416,15 +416,15 @@ ZengForwardProjectionImageFilter<TInputImage, TOutputImage>::GenerateData()
         currentSlice = m_AttenuationMapMultiplyImageFilter->GetOutput();
       }
       currentSlice->DisconnectPipeline();
-      m_DiscreteGaussianFilter->SetInput(currentSlice);
+      m_DiscreteGaussianImageFilter->SetInput(currentSlice);
       dist -= rotatedVolume->GetSpacing()[2];
     }
     // Compute the variance of the PSF for the last slice
     sigmaSlice = pow(m_Alpha * dist + m_SigmaZero, 2.0);
-    m_DiscreteGaussianFilter->SetVariance(sigmaSlice);
+    m_DiscreteGaussianImageFilter->SetVariance(sigmaSlice);
     // Paste the projection in the output volume
     indexProjection[Dimension - 1] = nbProjections;
-    m_PasteImageFilter->SetSourceRegion(m_DiscreteGaussianFilter->GetOutput()->GetLargestPossibleRegion());
+    m_PasteImageFilter->SetSourceRegion(m_DiscreteGaussianImageFilter->GetOutput()->GetLargestPossibleRegion());
     m_PasteImageFilter->SetDestinationIndex(indexProjection);
     m_PasteImageFilter->UpdateLargestPossibleRegion();
     pimg = m_PasteImageFilter->GetOutput();

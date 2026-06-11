@@ -31,7 +31,7 @@ FourDToProjectionStackImageFilter<ProjectionStackType, VolumeSeriesType>::FourDT
   // Create the filters that can be created (all but the forward projection filter)
   m_PasteFilter = PasteFilterType::New();
   m_InterpolationFilter = InterpolatorFilterType::New();
-  m_ConstantVolumeSource = ConstantVolumeSourceType::New();
+  m_ConstantImageSource = ConstantImageSourceType::New();
   m_ConstantProjectionStackSource = ConstantProjectionStackSourceType::New();
 
   // Set parameters
@@ -96,7 +96,7 @@ FourDToProjectionStackImageFilter<VolumeSeriesType, ProjectionStackType>::SetSig
 
 template <typename ProjectionStackType, typename VolumeSeriesType>
 void
-FourDToProjectionStackImageFilter<ProjectionStackType, VolumeSeriesType>::InitializeConstantVolumeSource()
+FourDToProjectionStackImageFilter<ProjectionStackType, VolumeSeriesType>::InitializeConstantImageSource()
 {
   // Set the volume source
   int VolumeDimension = VolumeType::ImageDimension;
@@ -116,19 +116,19 @@ FourDToProjectionStackImageFilter<ProjectionStackType, VolumeSeriesType>::Initia
   typename VolumeType::DirectionType constantVolumeSourceDirection;
   constantVolumeSourceDirection.SetIdentity();
 
-  m_ConstantVolumeSource->SetOrigin(constantVolumeSourceOrigin);
-  m_ConstantVolumeSource->SetSpacing(constantVolumeSourceSpacing);
-  m_ConstantVolumeSource->SetDirection(constantVolumeSourceDirection);
-  m_ConstantVolumeSource->SetSize(constantVolumeSourceSize);
-  m_ConstantVolumeSource->SetConstant(0.);
-  m_ConstantVolumeSource->Update();
+  m_ConstantImageSource->SetOrigin(constantVolumeSourceOrigin);
+  m_ConstantImageSource->SetSpacing(constantVolumeSourceSpacing);
+  m_ConstantImageSource->SetDirection(constantVolumeSourceDirection);
+  m_ConstantImageSource->SetSize(constantVolumeSourceSize);
+  m_ConstantImageSource->SetConstant(0.);
+  m_ConstantImageSource->Update();
 }
 
 template <typename ProjectionStackType, typename VolumeSeriesType>
 void
 FourDToProjectionStackImageFilter<ProjectionStackType, VolumeSeriesType>::GenerateOutputInformation()
 {
-  this->InitializeConstantVolumeSource();
+  this->InitializeConstantImageSource();
 
   int ProjectionStackDimension = ProjectionStackType::ImageDimension;
   m_PasteRegion = this->GetInputProjectionStack()->GetLargestPossibleRegion();
@@ -141,7 +141,7 @@ FourDToProjectionStackImageFilter<ProjectionStackType, VolumeSeriesType>::Genera
 
   // Connect the filters
   m_InterpolationFilter->SetInputVolumeSeries(this->GetInputVolumeSeries());
-  m_InterpolationFilter->SetInputVolume(m_ConstantVolumeSource->GetOutput());
+  m_InterpolationFilter->SetInputVolume(m_ConstantImageSource->GetOutput());
   m_PasteFilter->SetDestinationImage(this->GetInputProjectionStack());
 
   // Connections with the Forward projection filter can only be set at runtime

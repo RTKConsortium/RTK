@@ -166,7 +166,7 @@ public:
   using RayBoxIntersectionFilterType = rtk::RayBoxIntersectionImageFilter<ProjectionType, ProjectionType>;
   using DivideProjectionFilterType = itk::DivideOrZeroOutImageFilter<ProjectionType, ProjectionType, ProjectionType>;
   using DivideVolumeFilterType = itk::DivideOrZeroOutImageFilter<VolumeType, VolumeType, VolumeType>;
-  using ConstantVolumeSourceType = rtk::ConstantImageSource<VolumeType>;
+  using ConstantImageSourceType = rtk::ConstantImageSource<VolumeType>;
   using ConstantProjectionSourceType = rtk::ConstantImageSource<ProjectionType>;
   using ThresholdFilterType = itk::ThresholdImageFilter<VolumeType>;
   using DisplacedDetectorFilterType = rtk::DisplacedDetectorImageFilter<ProjectionType>;
@@ -260,7 +260,7 @@ protected:
   typename DivideVolumeFilterType::Pointer       m_DivideVolumeFilter;
   typename ConstantProjectionSourceType::Pointer m_ConstantProjectionStackSource;
   typename ConstantProjectionSourceType::Pointer m_OneConstantProjectionStackSource;
-  typename ConstantVolumeSourceType::Pointer     m_ConstantVolumeSource;
+  typename ConstantImageSourceType::Pointer      m_ConstantImageSource;
   typename ThresholdFilterType::Pointer          m_ThresholdFilter;
   typename DisplacedDetectorFilterType::Pointer  m_DisplacedDetectorFilter;
   typename GatingWeightsFilterType::Pointer      m_GatingWeightsFilter;

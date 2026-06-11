@@ -73,7 +73,7 @@ namespace rtk
  * Output [shape=Mdiamond];
  *
  * node [shape=box];
- * ConstantVolumeSource [label="rtk::ConstantImageSource" URL="\ref rtk::ConstantImageSource"];
+ * ConstantImageSource [label="rtk::ConstantImageSource" URL="\ref rtk::ConstantImageSource"];
  * ConstantProjectionsSource [label="rtk::ConstantImageSource" URL="\ref rtk::ConstantImageSource"];
  * BackProjection [ label="rtk::BackProjectionImageFilter" URL="\ref rtk::BackProjectionImageFilter"];
  * ForwardProjection [ label="rtk::ForwardProjectionImageFilter" URL="\ref rtk::ForwardProjectionImageFilter"];
@@ -91,7 +91,7 @@ namespace rtk
  * Input3 -> MultiplyInput;
  * MultiplyInput -> ForwardProjection;
  * ConstantProjectionsSource -> ForwardProjection;
- * ConstantVolumeSource -> BackProjection;
+ * ConstantImageSource -> BackProjection;
  * ForwardProjection -> Multiply;
  * Input2 -> Multiply;
  * Multiply -> BackProjection;
@@ -220,7 +220,7 @@ protected:
   ForwardProjectionFilterPointer m_ForwardProjectionFilter;
 
   typename ConstantSourceType::Pointer                                  m_ConstantProjectionsSource;
-  typename ConstantSourceType::Pointer                                  m_ConstantVolumeSource;
+  typename ConstantSourceType::Pointer                                  m_ConstantImageSource;
   typename MultiplyFilterType::Pointer                                  m_MultiplyOutputVolumeFilter;
   typename MultiplyFilterType::Pointer                                  m_MultiplyInputVolumeFilter;
   typename MultiplyFilterType::Pointer                                  m_MultiplyLaplacianFilter;
