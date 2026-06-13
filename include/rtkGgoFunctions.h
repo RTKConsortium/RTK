@@ -412,6 +412,14 @@ SetBackProjectionFromGgo(const TArgsInfo & args_info, TIterativeReconstructionFi
       if (args_info.attenuationmap_given)
         recon->SetAttenuationMap(attenuationMap);
       break;
+    case (6): // bp_arg_CudaWarp
+      recon->SetBackProjectionFilter(TIterativeReconstructionFilter::BP_CUDAWARP);
+      if (args_info.warp_dvf_given)
+      {
+        using DisplacementFieldType = typename TIterativeReconstructionFilter::DisplacementFieldType;
+        recon->SetDisplacementField(itk::ReadImage<DisplacementFieldType>(args_info.warp_dvf_arg));
+      }
+      break;
   }
 }
 
@@ -480,6 +488,16 @@ SetForwardProjectionFromGgo(const TArgsInfo & args_info, TIterativeReconstructio
         recon->SetAlphaPSF(args_info.alphapsf_arg);
       if (args_info.attenuationmap_given)
         recon->SetAttenuationMap(attenuationMap);
+      break;
+    case (4): // fp_arg_CudaWarp
+      recon->SetForwardProjectionFilter(TIterativeReconstructionFilter::FP_CUDAWARP);
+      if (args_info.step_given)
+        recon->SetStepSize(args_info.step_arg);
+      if (args_info.warp_dvf_given)
+      {
+        using DisplacementFieldType = typename TIterativeReconstructionFilter::DisplacementFieldType;
+        recon->SetDisplacementField(itk::ReadImage<DisplacementFieldType>(args_info.warp_dvf_arg));
+      }
       break;
   }
 }
