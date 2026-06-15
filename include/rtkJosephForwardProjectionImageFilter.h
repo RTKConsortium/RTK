@@ -66,6 +66,7 @@ public:
   using TClipImageType = itk::Image<double, TOutputImage::ImageDimension>;
   using TClipImagePointer = typename TClipImageType::Pointer;
 
+#if !defined(ITK_WRAPPING_PARSER)
   /** \brief Function to multiply the interpolation weights with the projected
    * volume values.
    *
@@ -152,6 +153,7 @@ public:
     m_SumAlongRay = _arg;
     this->Modified();
   }
+#endif
 
   /** Set/Get the inferior clip image. Each pixel of the image
    ** corresponds to the value of the inferior clip of the ray
@@ -236,14 +238,16 @@ protected:
                                  double                 maxy);
 
 private:
+#if !defined(ITK_WRAPPING_PARSER)
   // lambdas or std::functions
   // MUST BE initiated in constructor, or custom functions
   // must be set by means of Set methods in application
   InterpolationWeightMultiplicationFunc m_InterpolationWeightMultiplication;
   SumAlongRayFunc                       m_SumAlongRay;
   ProjectedValueAccumulationFunc        m_ProjectedValueAccumulation;
-  double                                m_InferiorClip{ 0. };
-  double                                m_SuperiorClip{ 1. };
+#endif
+  double m_InferiorClip{ 0. };
+  double m_SuperiorClip{ 1. };
 };
 
 } // end namespace rtk
