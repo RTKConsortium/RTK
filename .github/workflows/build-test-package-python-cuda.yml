@@ -165,16 +165,18 @@ jobs:
         $env:CUDA_PATH = "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v${CUDA_VERSION_MAJOR}.${CUDA_VERSION_MINOR}"
         $env:CUDACXX = "$env:CUDA_PATH\bin\nvcc.exe"
         $env:Path = "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v${CUDA_VERSION_MAJOR}.${CUDA_VERSION_MINOR}\bin;" + $env:Path
-        $LIBCUDART= (Get-Item "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v${CUDA_VERSION_MAJOR}.${CUDA_VERSION_MINOR}\bin\cudart64*dll" ).Name
-        $LIBCUBLAS= (Get-Item "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v${CUDA_VERSION_MAJOR}.${CUDA_VERSION_MINOR}\bin\cublas64*dll" ).Name
-        $LIBCUBLASLT= (Get-Item "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v${CUDA_VERSION_MAJOR}.${CUDA_VERSION_MINOR}\bin\cublasLt64*dll" ).Name
-        $LIBCUFFT= (Get-Item "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v${CUDA_VERSION_MAJOR}.${CUDA_VERSION_MINOR}\bin\cufft64*dll" ).Name
         if(${CUDA_VERSION_MAJOR} -ge 13) {
           $CUDA_ARCHITECTURES = "75"
+          $CUDA_LIB_DIR= "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v${CUDA_VERSION_MAJOR}.${CUDA_VERSION_MINOR}\bin\x64"
         }
         else {
           $CUDA_ARCHITECTURES = "52"
+          $CUDA_LIB_DIR= "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v${CUDA_VERSION_MAJOR}.${CUDA_VERSION_MINOR}\bin"
         }
+        $LIBCUDART= (Get-Item "${CUDA_LIB_DIR}\cudart64*dll" ).Name
+        $LIBCUBLAS= (Get-Item "${CUDA_LIB_DIR}\cublas64*dll" ).Name
+        $LIBCUBLASLT= (Get-Item "${CUDA_LIB_DIR}\cublasLt64*dll" ).Name
+        $LIBCUFFT= (Get-Item "${CUDA_LIB_DIR}\cufft64*dll" ).Name
         ((Get-Content -Path pyproject.toml) -replace "itk-rtk","itk-rtk-cuda${CUDA_VERSION}") | Set-Content -Path pyproject.toml
         ((Get-Content -Path pyproject.toml) -replace "dependencies = \[","dependencies = [""itk-cudacommon-cuda${CUDA_VERSION}  == 2.1.*"",") | Set-Content -Path pyproject.toml
 
