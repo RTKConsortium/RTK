@@ -32,7 +32,7 @@ namespace rtk
 /** \class XRadImageIO
  * \brief Class for reading XRad image file format. XRad is the format of
  * exported X-ray projection images on the small animal irradiator SMART.
- * http://www.pxinc.com/products/small-animal-igrt-platform/x-rad-225cx/
+ * https://precisionxray.com/system/x-rad225/
  *
  * \author Simon Rit
  *
