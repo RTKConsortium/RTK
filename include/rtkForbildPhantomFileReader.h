@@ -29,7 +29,7 @@ namespace rtk
 /** \class ForbildPhantomFileReader
  * \brief Reads GeometricPhantom from a Forbild file
  *
- * See http://www.imp.uni-erlangen.de/phantoms/. In addition to the original
+ * See https://docs.openrtk.org/en/latest/documentation/docs/Phantom.html. In addition to the original
  * parameters, the parameter "union=N", allows defining the union with a previous
  * shape. For example, union=-1 will create a union with the previous shape.
  *

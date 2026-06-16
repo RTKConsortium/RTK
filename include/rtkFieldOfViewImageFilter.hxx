@@ -102,7 +102,7 @@ FieldOfViewImageFilter<TInputImage, TOutputImage>::ComputeFOVRadius(const FOVRad
       c[i] = sourcePosition[0] * corners[i][2] - corners[i][0] * sourcePosition[2];
 
       // Then compute the coefficient in front of r as suggested in
-      // http://www.ifor.math.ethz.ch/teaching/lectures/intro_ss11/Exercises/solutionEx11-12.pdf
+      // https://web.archive.org/web/20160920080738/http://www.ifor.math.ethz.ch/teaching/lectures/intro_ss11/Exercises/solutionEx11-12.pdf
       d[i] = std::sqrt(a[i] * a[i] + b[i] * b[i]);
     }
 
@@ -398,7 +398,7 @@ FieldOfViewImageFilter<TInputImage, TOutputImage>::AddCollimationConstraints(con
     // Compute the equation of a line of the ax+by=c
     // https://en.wikipedia.org/wiki/Linear_equation#Two-point_form
     // Then compute the coefficient in front of r as suggested in
-    // http://www.ifor.math.ethz.ch/teaching/lectures/intro_ss11/Exercises/solutionEx11-12.pdf
+    // https://web.archive.org/web/20160920080738/http://www.ifor.math.ethz.ch/teaching/lectures/intro_ss11/Exercises/solutionEx11-12.pdf
     PointType inf = u * -1. * X1;
     double    aInf = inf[2] - source[2];
     double    bInf = source[0] - inf[0];
