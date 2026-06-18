@@ -157,8 +157,15 @@ protected:
     using WriterType = itk::ImageFileWriter<TOutputImage>;
     auto writer = WriterType::New();
 
-    char         buffer[1024];
+    char buffer[1024];
+#if defined(__GNUC__) || defined(__clang__)
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic ignored "-Wformat-nonliteral"
+#endif
     unsigned int size = snprintf(buffer, 1024, m_FileFormat.c_str(), this->m_IterationCount);
+#if defined(__GNUC__) || defined(__clang__)
+#  pragma GCC diagnostic pop
+#endif
     writer->SetFileName(std::string(buffer, size));
 
     writer->SetInput(caller->GetOutput());
