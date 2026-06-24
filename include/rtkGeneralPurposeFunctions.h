@@ -25,6 +25,7 @@
 #include <cmath>
 
 #include <itkImageFileWriter.h>
+#include <itkImageIOFactory.h>
 #include <itkMacro.h>
 #include <itkMath.h>
 
@@ -64,6 +65,21 @@ ReadSignalFile(const std::string & filename)
   }
 
   return signalVector;
+}
+
+/** Read the header of an image file without reading its pixels */
+static inline itk::ImageIOBase::Pointer
+GetFileHeader(const std::string & filename)
+{
+  itk::ImageIOBase::Pointer reader =
+    itk::ImageIOFactory::CreateImageIO(filename.c_str(), itk::ImageIOFactory::IOFileModeEnum::ReadMode);
+  if (!reader)
+  {
+    itkGenericExceptionMacro(<< "Could not read " << filename);
+  }
+  reader->SetFileName(filename);
+  reader->ReadImageInformation();
+  return reader;
 }
 
 template <typename ImageType>

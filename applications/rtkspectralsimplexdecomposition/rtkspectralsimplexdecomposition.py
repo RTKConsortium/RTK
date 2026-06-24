@@ -74,6 +74,7 @@ def process(args_info: argparse.Namespace):
     DecomposedProjectionType = itk.VectorImage[PixelValueType, Dimension]
     SpectralProjectionsType = itk.VectorImage[PixelValueType, Dimension]
     IncidentSpectrumImageType = itk.Image[PixelValueType, Dimension]
+    VectorSpectrumImageType = itk.VectorImage[PixelValueType, Dimension - 1]
     DetectorResponseImageType = itk.Image[PixelValueType, Dimension - 1]
     MaterialAttenuationsImageType = itk.Image[PixelValueType, Dimension - 1]
 
@@ -98,10 +99,22 @@ def process(args_info: argparse.Namespace):
 
     if args_info.verbose:
         print(f"Reading incident spectrum from {args_info.incident}...")
-    reader = itk.ImageFileReader[IncidentSpectrumImageType].New()
-    reader.SetFileName(args_info.incident)
-    reader.Update()
-    incidentSpectrum = reader.GetOutput()
+    incidentHeader = rtk.get_file_header(args_info.incident)
+    if (
+        incidentHeader.GetNumberOfDimensions() == Dimension - 1
+        and incidentHeader.GetNumberOfComponents() > 1
+    ):
+        reader = itk.ImageFileReader[VectorSpectrumImageType].New()
+        reader.SetFileName(args_info.incident)
+        reader.Update()
+        incidentSpectrum = reader.GetOutput()
+        MaximumEnergy = int(incidentSpectrum.GetVectorLength())
+    else:
+        reader = itk.ImageFileReader[IncidentSpectrumImageType].New()
+        reader.SetFileName(args_info.incident)
+        reader.Update()
+        incidentSpectrum = reader.GetOutput()
+        MaximumEnergy = int(incidentSpectrum.GetLargestPossibleRegion().GetSize()[0])
 
     if args_info.verbose:
         print(f"Reading detector response from {args_info.detector}...")
@@ -122,7 +135,6 @@ def process(args_info: argparse.Namespace):
         materialAttenuations.GetLargestPossibleRegion().GetSize()[0]
     )
     NumberOfSpectralBins = int(spectralProjection.GetVectorLength())
-    MaximumEnergy = int(incidentSpectrum.GetLargestPossibleRegion().GetSize()[0])
 
     # Thresholds
     if len(args_info.thresholds) != NumberOfSpectralBins:
