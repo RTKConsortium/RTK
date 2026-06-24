@@ -20,7 +20,6 @@
 #define rtkSoftThresholdTVImageFilter_h
 
 #include "rtkConfiguration.h"
-#include "vnl/algo/vnl_symmetric_eigensystem.h"
 #include "vnl/vnl_matrix.h"
 #include "vnl/vnl_vector_fixed.h"
 #include <itkImage.h>
