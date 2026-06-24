@@ -1,17 +1,22 @@
 #include "rtkTest.h"
 #include "rtkConstantImageSource.h"
 #include "rtkDrawEllipsoidImageFilter.h"
+#include "rtkImageToVectorImageFilter.h"
 #include "rtkMechlemOneStepSpectralReconstructionFilter.h"
 #include "rtkRayEllipsoidIntersectionImageFilter.h"
 #include "rtkSpectralForwardModelImageFilter.h"
+#include "rtkVectorImageToImageFilter.h"
 
 #ifdef USE_CUDA
 #  include "itkCudaImage.h"
 #endif
 
 #include <itkComposeImageFilter.h>
+#include <itkChangeInformationImageFilter.h>
+#include <itkImageDuplicator.h>
 #include <itkImageFileReader.h>
 #include <itkImportImageFilter.h>
+#include <itkPermuteAxesImageFilter.h>
 #include <itkVectorIndexSelectionCastImageFilter.h>
 
 /**
@@ -61,6 +66,14 @@ rtkspectralonesteptest(int argc, char * argv[])
   using MaterialAttenuationsImageType = itk::Image<DataType, Dimension - 1>;
   using SingleComponentImageType = itk::Image<DataType, Dimension>;
 #endif
+  using ScalarSpectrumImageType = itk::Image<DataType, Dimension>;
+  using VectorSpectrumImageType = itk::VectorImage<DataType, Dimension - 1>;
+  using PermuteIncidentSpectrumFilterType = itk::PermuteAxesImageFilter<ScalarSpectrumImageType>;
+  using ChangeIncidentSpectrumInformationFilterType = itk::ChangeInformationImageFilter<ScalarSpectrumImageType>;
+  using IncidentSpectrumToVectorFilterType =
+    rtk::ImageToVectorImageFilter<ScalarSpectrumImageType, VectorSpectrumImageType>;
+  using VectorSpectrumToScalarFilterType =
+    rtk::VectorImageToImageFilter<VectorSpectrumImageType, ScalarSpectrumImageType>;
 
 
   // Cast filters to convert between vector image types
@@ -71,12 +84,16 @@ rtkspectralonesteptest(int argc, char * argv[])
   incidentSpectrumReader->SetFileName(argv[1]);
   incidentSpectrumReader->Update();
 
+  auto scalarIncidentSpectrumReader = itk::ImageFileReader<ScalarSpectrumImageType>::New();
+  scalarIncidentSpectrumReader->SetFileName(argv[1]);
+  scalarIncidentSpectrumReader->Update();
+
   auto detectorResponseReader = itk::ImageFileReader<DetectorResponseImageType>::New();
-  detectorResponseReader->SetFileName(argv[3]);
+  detectorResponseReader->SetFileName(argv[2]);
   detectorResponseReader->Update();
 
   auto materialAttenuationsReader = itk::ImageFileReader<MaterialAttenuationsImageType>::New();
-  materialAttenuationsReader->SetFileName(argv[4]);
+  materialAttenuationsReader->SetFileName(argv[3]);
   materialAttenuationsReader->Update();
 
 #if FAST_TESTS_NO_CHECKS
@@ -303,6 +320,61 @@ rtkspectralonesteptest(int argc, char * argv[])
   mechlemOneStep->SetInputMeasuredProjections(forward->GetOutput());
   TRY_AND_EXIT_ON_ITK_EXCEPTION(mechlemOneStep->Update());
 
+  CheckVectorImageQuality<MaterialVolumeType>(mechlemOneStep->GetOutput(), composeVols->GetOutput(), 0.08, 23, 2.0);
+  std::cout << "\n\nTest PASSED! " << std::endl;
+
+  auto scalarIncidentSpectrumResult = itk::ImageDuplicator<MaterialVolumeType>::New();
+  scalarIncidentSpectrumResult->SetInputImage(mechlemOneStep->GetOutput());
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(scalarIncidentSpectrumResult->Update())
+
+  auto permuteIncidentSpectrum = PermuteIncidentSpectrumFilterType::New();
+  permuteIncidentSpectrum->SetInput(scalarIncidentSpectrumReader->GetOutput());
+  typename PermuteIncidentSpectrumFilterType::PermuteOrderArrayType order;
+  order[0] = 1;
+  order[1] = 2;
+  order[2] = 0;
+  permuteIncidentSpectrum->SetOrder(order);
+
+  auto changeIncidentSpectrumInformation = ChangeIncidentSpectrumInformationFilterType::New();
+  changeIncidentSpectrumInformation->SetInput(permuteIncidentSpectrum->GetOutput());
+  typename ScalarSpectrumImageType::DirectionType identityDirection;
+  identityDirection.SetIdentity();
+  changeIncidentSpectrumInformation->SetOutputDirection(identityDirection);
+  changeIncidentSpectrumInformation->ChangeDirectionOn();
+
+  auto vectorIncidentSpectrum = IncidentSpectrumToVectorFilterType::New();
+  vectorIncidentSpectrum->SetInput(changeIncidentSpectrumInformation->GetOutput());
+
+  // Validate the test input itself: the vector spectrum must round-trip to the original scalar spectrum before it is
+  // used to compare the overloaded SetInputIncidentSpectrum path.
+  auto scalarIncidentSpectrumFromVector = VectorSpectrumToScalarFilterType::New();
+  scalarIncidentSpectrumFromVector->SetInput(vectorIncidentSpectrum->GetOutput());
+
+  auto inversePermuteIncidentSpectrum = PermuteIncidentSpectrumFilterType::New();
+  inversePermuteIncidentSpectrum->SetInput(scalarIncidentSpectrumFromVector->GetOutput());
+  order[0] = 2;
+  order[1] = 0;
+  order[2] = 1;
+  inversePermuteIncidentSpectrum->SetOrder(order);
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(inversePermuteIncidentSpectrum->Update())
+  CheckImageQuality<ScalarSpectrumImageType>(
+    inversePermuteIncidentSpectrum->GetOutput(), scalarIncidentSpectrumReader->GetOutput(), 1e-7, 120, 1000.0);
+
+#ifdef RTK_USE_CUDA
+  std::cout << "\n\n****** Case 6: CUDA voxel-based Backprojector, 4 subsets, with regularization, "
+               "itkVectorImage incident spectrum converted from scalar input ******"
+            << std::endl;
+#else
+  std::cout << "\n\n****** Case 5: Voxel-based Backprojector, 4 subsets, with regularization, "
+               "itkVectorImage incident spectrum converted from scalar input ******"
+            << std::endl;
+#endif
+
+  mechlemOneStep->SetInputIncidentSpectrum(vectorIncidentSpectrum->GetOutput());
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(mechlemOneStep->Update());
+
+  CheckVectorImageQuality<MaterialVolumeType>(
+    mechlemOneStep->GetOutput(), scalarIncidentSpectrumResult->GetOutput(), 1e-7, 10, 1.0);
   CheckVectorImageQuality<MaterialVolumeType>(mechlemOneStep->GetOutput(), composeVols->GetOutput(), 0.08, 23, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 
