@@ -87,17 +87,6 @@ def build_parser():
     return parser
 
 
-def GetFileHeader(filename: str):
-    io = itk.ImageIOFactory.CreateImageIO(filename, itk.CommonEnums.IOFileMode_ReadMode)
-    if not io:
-        raise RuntimeError(
-            f"ImageIOFactory could not create an ImageIO for '{filename}'"
-        )
-    io.SetFileName(filename)
-    io.ReadImageInformation()
-    return io
-
-
 def spectral_bin_detector_response(drm_img, thresholds):
     # drm_img: itk image 2D (energies, pulseHeights)
     region = drm_img.GetLargestPossibleRegion()
@@ -168,8 +157,8 @@ def process(args_info: argparse.Namespace):
     dataType = itk.F
     Dimension = 3
 
-    headerInputMeasuredProjections = GetFileHeader(args_info.spectral)
-    headerAttenuations = GetFileHeader(args_info.attenuations)
+    headerInputMeasuredProjections = rtk.get_file_header(args_info.spectral)
+    headerAttenuations = rtk.get_file_header(args_info.attenuations)
     nBins = headerInputMeasuredProjections.GetNumberOfComponents()
     nMaterials = headerAttenuations.GetDimensions(0)
 
@@ -177,6 +166,7 @@ def process(args_info: argparse.Namespace):
     MeasuredProjectionsType = itk.Image[itk.Vector[dataType, nBins], Dimension]
     MaterialVolumesType = itk.Image[itk.Vector[dataType, nMaterials], Dimension]
     IncidentSpectrumType = itk.Image[dataType, Dimension]
+    VectorSpectrumType = itk.VectorImage[dataType, Dimension - 1]
     DetectorResponseType = itk.Image[dataType, Dimension - 1]
     MaterialAttenuationsType = itk.Image[dataType, Dimension - 1]
 
@@ -186,7 +176,15 @@ def process(args_info: argparse.Namespace):
     mea.Update()
     mea = mea.GetOutput()
 
-    incidentSpectrum = itk.ImageFileReader[IncidentSpectrumType].New()
+    incidentHeader = rtk.get_file_header(args_info.incident)
+    isVectorIncidentSpectrum = (
+        incidentHeader.GetNumberOfDimensions() == Dimension - 1
+        and incidentHeader.GetNumberOfComponents() > 1
+    )
+    if isVectorIncidentSpectrum:
+        incidentSpectrum = itk.ImageFileReader[VectorSpectrumType].New()
+    else:
+        incidentSpectrum = itk.ImageFileReader[IncidentSpectrumType].New()
     incidentSpectrum.SetFileName(args_info.incident)
     incidentSpectrum.Update()
     incidentSpectrum = incidentSpectrum.GetOutput()
@@ -287,9 +285,12 @@ def process(args_info: argparse.Namespace):
         ].New()
 
         mechlemOneStep.SetInputMaterialVolumes(itk.cuda_image_from_image(input))
-        mechlemOneStep.SetInputIncidentSpectrum(
-            itk.cuda_image_from_image(incidentSpectrum)
-        )
+        if isVectorIncidentSpectrum:
+            mechlemOneStep.SetInputIncidentSpectrum(incidentSpectrum)
+        else:
+            mechlemOneStep.SetInputIncidentSpectrum(
+                itk.cuda_image_from_image(incidentSpectrum)
+            )
         mechlemOneStep.SetInputMeasuredProjections(itk.cuda_image_from_image(mea))
         if args_info.mask:
             mechlemOneStep.SetSupportMask(itk.cuda_image_from_image(supportmask))

@@ -61,6 +61,7 @@ def process(args_info: argparse.Namespace):
     DecomposedProjectionType = itk.VectorImage[PixelValueType, Dimension]
     MeasuredProjectionsType = itk.VectorImage[PixelValueType, Dimension]
     IncidentSpectrumImageType = itk.Image[PixelValueType, Dimension]
+    VectorSpectrumImageType = itk.VectorImage[PixelValueType, Dimension - 1]
     DetectorResponseImageType = itk.Image[PixelValueType, Dimension - 1]
     MaterialAttenuationsImageType = itk.Image[PixelValueType, Dimension - 1]
 
@@ -74,10 +75,22 @@ def process(args_info: argparse.Namespace):
 
     if args_info.verbose:
         print(f"Reading incident spectrum from {args_info.incident}...")
-    incidentSpectrumReader = itk.ImageFileReader[IncidentSpectrumImageType].New()
-    incidentSpectrumReader.SetFileName(args_info.incident)
-    incidentSpectrumReader.Update()
-    incidentSpectrum = incidentSpectrumReader.GetOutput()
+    incidentHeader = rtk.get_file_header(args_info.incident)
+    if (
+        incidentHeader.GetNumberOfDimensions() == Dimension - 1
+        and incidentHeader.GetNumberOfComponents() > 1
+    ):
+        incidentSpectrumReader = itk.ImageFileReader[VectorSpectrumImageType].New()
+        incidentSpectrumReader.SetFileName(args_info.incident)
+        incidentSpectrumReader.Update()
+        incidentSpectrum = incidentSpectrumReader.GetOutput()
+        MaximumEnergy = incidentSpectrum.GetVectorLength()
+    else:
+        incidentSpectrumReader = itk.ImageFileReader[IncidentSpectrumImageType].New()
+        incidentSpectrumReader.SetFileName(args_info.incident)
+        incidentSpectrumReader.Update()
+        incidentSpectrum = incidentSpectrumReader.GetOutput()
+        MaximumEnergy = incidentSpectrum.GetLargestPossibleRegion().GetSize()[0]
 
     if args_info.verbose:
         print(f"Reading detector response from {args_info.detector}...")
@@ -98,7 +111,6 @@ def process(args_info: argparse.Namespace):
     # Get parameters from the images
     NumberOfMaterials = materialAttenuations.GetLargestPossibleRegion().GetSize()[0]
     NumberOfSpectralBins = len(args_info.thresholds)
-    MaximumEnergy = incidentSpectrum.GetLargestPossibleRegion().GetSize()[0]
 
     # Generate a set of zero-filled photon count projections
     measuredProjections = MeasuredProjectionsType.New()
