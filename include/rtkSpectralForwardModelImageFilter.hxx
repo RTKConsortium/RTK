@@ -52,11 +52,9 @@ SpectralForwardModelImageFilter<DecomposedProjectionsType,
   // Cramer-rao lower bound
   this->SetNthOutput(2, this->MakeOutput(2));
 
-#ifndef ITK_FUTURE_LEGACY_REMOVE
   // Instantiate the filters required in the overload of SetInputIncidentSpectrum
   m_FlattenFilter = FlattenVectorFilterType::New();
   m_PermuteFilter = PermuteFilterType::New();
-#endif
 }
 
 template <typename DecomposedProjectionsType,
@@ -254,7 +252,6 @@ SpectralForwardModelImageFilter<
   this->SetInput("IncidentSpectrum", const_cast<IncidentSpectrumImageType *>(IncidentSpectrum));
 }
 
-#ifndef ITK_FUTURE_LEGACY_REMOVE
 template <typename DecomposedProjectionsType,
           typename MeasuredProjectionsType,
           typename IncidentSpectrumImageType,
@@ -277,7 +274,6 @@ SpectralForwardModelImageFilter<DecomposedProjectionsType,
   this->m_PermuteFilter->SetOrder(order);
   this->SetInputIncidentSpectrum(m_PermuteFilter->GetOutput());
 }
-#endif
 
 template <typename DecomposedProjectionsType,
           typename MeasuredProjectionsType,
