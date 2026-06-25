@@ -183,6 +183,10 @@ rtk_add_test(rtkSpectralOneStepTest rtkspectralonesteptest.cxx
   DATA{Input/Spectral/material_attenuations.mha}
 )
 
+rtk_add_test(rtkProjectionsReaderVectorImageTest rtkprojectionsreadervectorimagetest.cxx
+  DATA{Input/Spectral/OneStep/photonCounts.mha}
+)
+
 rtk_add_test(rtkVectorImageConvertersTest rtkvectorimageconverterstest.cxx)
 
 rtk_add_test(rtkAmsterdamShroudTest rtkamsterdamshroudtest.cxx

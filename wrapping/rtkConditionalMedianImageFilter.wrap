@@ -1,3 +1,4 @@
 itk_wrap_class("rtk::ConditionalMedianImageFilter" POINTER)
   itk_wrap_image_filter("${WRAP_ITK_REAL}" 1)
+  itk_wrap_template("VI${ITKM_F}3" "itk::VectorImage<${ITKT_F}, 3>")
 itk_end_wrap_class()
