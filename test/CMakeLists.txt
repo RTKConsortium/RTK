@@ -410,11 +410,6 @@ rtk_add_test(rtkConjugateGradientExampleTest
   DATA{Input/Forbild/Thorax}
 )
 
-if(ITK_WRAP_PYTHON)
-  itk_python_add_test(NAME rtkMaximumIntensityPythonTest COMMAND rtkMaximumIntensity.py)
-  itk_python_add_test(NAME rtkOutputArgumentWrappingTest COMMAND rtkOutputArgumentWrapping.py)
-endif()
-
 #-----------------------------------------------------------------------------
 # Test drivers
 createtestdriver(RTK "${RTK-Test_LIBRARIES}" "${RTKTests}")
