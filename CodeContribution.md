@@ -10,18 +10,18 @@ All (new) command-line options in applications must use hyphen-separated lowerca
 
 This section describes how to add/edit datasets for testing purposes for RTK. Datasets are not stored in the GIT repository for efficiency and also to avoid having large history due to binary files. Instead, the files are stored on a [Girder](http://data.kitware.com) instance. Here's the recipe to add new datasets:
 
-1.  Register/Login to Girder hosted at Kitware: [http://data.kitware.com](http://data.kitware.com)
-2.  Locate the RTK collection: [https://data.kitware.com/#collection/5a7706878d777f0649e04776](https://data.kitware.com/#collection/5a7706878d777f0649e04776)
-3.  Upload the new datasets in the appropriate folder. If you do not have the necessary privileges please email the mailing list
+1.  Register/Login to Girder hosted at Kitware: [http://data.kitware.com](http://data.kitware.com).
+2.  Locate the RTK collection: [https://data.kitware.com/#collection/5a7706878d777f0649e04776](https://data.kitware.com/#collection/5a7706878d777f0649e04776).
+3.  Upload the new datasets in the appropriate folder. If you do not have the necessary privileges please email the mailing list.
 4.  In the GIT repository, add a file in `test/Baseline` or `test/Input` a file with the exact filename of the original file **but with the .md5 extension**. Inside that file put the md5sum of the file on Girder.
-5.  When adding a test use the new macro `rtk_add_test` instead of `itk_add_test` and specify the datasets you want CTest to download by appending the data to `DATA{}`. For example:
+5.  When adding a test use the new macro `rtk_add_test` or `rtk_cuda_add_test` instead of `add_test` and specify the datasets you want CTest to download by appending the data to 'DATA{}'. For example:
 ```cmake
 rtk_add_test(NAME rtkimagxtest
     COMMAND ${EXECUTABLE\_OUTPUT\_PATH}/rtkimagxtest
     DATA{Data/Input/ImagX/raw.xml,raw.raw}
     DATA{Data/Baseline/ImagX/attenuation.mha})
 ```
-Alternatively, tests can also be defined in Python. RTK uses [`pytest`](https://docs.pytest.org/en/stable/) for the Python tests and follows its conventions. To add a Python test, create a Python file in the `test` folder. The name of the file should end in `_test.py` in order to be automatically picked up by `pytest`. Then create a test function whose name starts with `test_`. This function will be automatically executed when running `pytest`. For example:
+Alternatively, tests can also be defined in Python. RTK uses [`pytest`](https://docs.pytest.org/en/stable/) for the Python tests and follows its conventions. To add a Python test, create a Python file in the `test` folder. Pytest will find them automatically if they respect the [conventions for test discovery](https://docs.pytest.org/en/stable/explanation/goodpractices.html#test-discovery), e.g., the name of the file ends with `_test.py` and the test function name starts with `test_`. This function will be automatically executed when running `pytest`. For example:
 ```python
 def test_IsIntersectedByRay():
     q = rtk.QuadricShape.New()
@@ -36,4 +36,4 @@ def test_IsIntersectedByRay():
 
 ## Dashboard
 
-*   The RTK dashboard is available at [RTK Dashboard](http://my.cdash.org/index.php?project=RTK)
+*   The RTK dashboard is available at [RTK Dashboard](http://my.cdash.org/index.php?project=RTK).
