@@ -12,11 +12,7 @@
 #include <itkSubtractImageFilter.h>
 
 
-#ifdef USE_CUDA
-#  include "rtkCudaForwardProjectionImageFilter.h"
-#else
-#  include "rtkJosephForwardAttenuatedProjectionImageFilter.h"
-#endif
+#include "rtkJosephForwardAttenuatedProjectionImageFilter.h"
 
 /**
  * \file rtkforwardattenuatedprojectiontest.cxx
@@ -36,11 +32,7 @@ rtkforwardattenuatedprojectiontest(int, char *[])
   constexpr unsigned int Dimension = 3;
   using OutputPixelType = float;
 
-#ifdef USE_CUDA
-  using OutputImageType = itk::CudaImage<OutputPixelType, Dimension>;
-#else
-  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
-#endif
+using OutputImageType = itk::Image<OutputPixelType, Dimension>;
 
 #if FAST_TESTS_NO_CHECKS
   constexpr unsigned int NumberOfProjectionImages = 3;
@@ -113,21 +105,13 @@ rtkforwardattenuatedprojectiontest(int, char *[])
   projTotal->SetConstant(0.);
   projTotal->Update();
 
-  // Joseph Forward Projection filter
-#ifdef USE_CUDA
-  using JFPType = rtk::CudaForwardProjectionImageFilter<OutputImageType, OutputImageType>;
-#else
+  // Joseph attenuated forward projection filter
   using JFPType = rtk::JosephForwardAttenuatedProjectionImageFilter<OutputImageType, OutputImageType>;
-#endif
   auto jfp = JFPType::New();
   jfp->InPlaceOff();
   jfp->SetInput(projTotal->GetOutput());
   jfp->SetInput(1, volumeSource);
   jfp->SetInput(2, attenuationMap);
-
-#ifdef USE_CUDA
-  jfp->SetStepSize(10);
-#endif
   // Geometry
   using GeometryType = rtk::ThreeDCircularProjectionGeometry;
   auto   geometry_projection = GeometryType::New();
