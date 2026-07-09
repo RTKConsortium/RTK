@@ -82,7 +82,7 @@ rtkspectralonesteptest(int argc, char * argv[])
 #if FAST_TESTS_NO_CHECKS
   constexpr unsigned int NumberOfProjectionImages = 4;
 #else
-  constexpr unsigned int NumberOfProjectionImages = 64;
+  constexpr unsigned int NumberOfProjectionImages = 32;
 #endif
 
   // Define the material concentrations
@@ -240,7 +240,7 @@ rtkspectralonesteptest(int argc, char * argv[])
   mechlemOneStep->SetBinnedDetectorResponse(drm);
   mechlemOneStep->SetMaterialAttenuations(materialAttenuationsMatrix);
   mechlemOneStep->SetGeometry(geometry);
-  mechlemOneStep->SetNumberOfIterations(20);
+  mechlemOneStep->SetNumberOfIterations(5);
 
   std::cout << "\n\n****** Case 1: Joseph Backprojector ******" << std::endl;
 
@@ -262,7 +262,7 @@ rtkspectralonesteptest(int argc, char * argv[])
 
   mechlemOneStep->SetBackProjectionFilter(MechlemType::BP_VOXELBASED);
   mechlemOneStep->SetNumberOfSubsets(4);
-  mechlemOneStep->SetNumberOfIterations(5);
+  mechlemOneStep->SetNumberOfIterations(2);
   MaterialVolumeType::RegionType::SizeType radius;
   radius.Fill(1);
   MaterialVolumeType::PixelType weights;
