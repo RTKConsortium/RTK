@@ -186,10 +186,11 @@ CUDA_WeidingerForwardModel(int          projectionSize[3],
   cudaMemcpyToSymbol(c_binnedDetectorResponse, &(binnedDetectorResponse[0]), nBins * nEnergies * sizeof(float));
   cudaMemcpyToSymbol(c_materialAttenuations, &(materialAttenuations[0]), nMaterials * nEnergies * sizeof(float));
 
-  // Set both outputs to zeros
-  size_t memSize = sizeof(float) * projectionSize[0] * projectionSize[1] * projectionSize[2] * nMaterials;
-  cudaMemset((void *)pOut1, 0, memSize);
-  cudaMemset((void *)pOut2, 0, memSize);
+  // Set both outputs to zeros. Output 1 is a material gradient vector,
+  // output 2 is a material Hessian matrix.
+  const size_t numberOfPixels = projectionSize[0] * projectionSize[1] * projectionSize[2];
+  cudaMemset((void *)pOut1, 0, sizeof(float) * numberOfPixels * nMaterials);
+  cudaMemset((void *)pOut2, 0, sizeof(float) * numberOfPixels * nMaterials * nMaterials);
 
   dim3 dimBlock = dim3(4, 4, 4);
   dim3 dimGrid = dim3(iDivUp(projectionSize[0], dimBlock.x),
