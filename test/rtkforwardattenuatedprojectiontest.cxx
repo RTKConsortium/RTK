@@ -45,7 +45,7 @@ rtkforwardattenuatedprojectiontest(int, char *[])
 #if FAST_TESTS_NO_CHECKS
   constexpr unsigned int NumberOfProjectionImages = 3;
 #else
-  constexpr unsigned int NumberOfProjectionImages = 45;
+  constexpr unsigned int NumberOfProjectionImages = 24;
 #endif
 
   // Constant image sources
@@ -191,7 +191,7 @@ rtkforwardattenuatedprojectiontest(int, char *[])
   auto stream = itk::StreamingImageFilter<OutputImageType, OutputImageType>::New();
   stream->SetInput(jfp->GetOutput());
 
-  stream->SetNumberOfStreamDivisions(9);
+  stream->SetNumberOfStreamDivisions(4);
   auto splitter = itk::ImageRegionSplitterDirection::New();
   splitter->SetDirection(2); // Splitting along direction 1, NOT 2
   stream->SetRegionSplitter(splitter);

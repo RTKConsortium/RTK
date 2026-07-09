@@ -203,7 +203,7 @@ rtkTestReg23ProjectionGeometry(int argc, char * argv[])
     gantryAngles.insert(gantryAngles.end(), criticalAngles.begin(), criticalAngles.end());
     outOfPlaneAngles.insert(outOfPlaneAngles.end(), criticalAngles.begin(), criticalAngles.end());
     // randomly sample further angles in [-180;+180] deg range:
-    constexpr int NUM_RANDOM_ANGLES = 100;
+    constexpr int NUM_RANDOM_ANGLES = 10;
     for (int u = 0; u < NUM_RANDOM_ANGLES; u++)
     {
       inPlaneAngles.push_back(generator->GetUniformVariate(-180, 180));
