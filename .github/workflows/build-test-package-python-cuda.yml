@@ -19,13 +19,15 @@ jobs:
       max-parallel: 2
       matrix:
         python3-minor-version: ${{ github.event_name == 'pull_request' && fromJSON('["11"]') || fromJSON('["9","10","11"]') }}
-        manylinux-platform: ${{ github.event_name == 'pull_request' && fromJSON('["_2_28-x64"]') || fromJSON('["_2_28-x64","2014-x64"]') }}
+        manylinux-platform: ${{ github.event_name == 'pull_request' && fromJSON('["_2_28-x64","_2_28-aarch64"]') || fromJSON('["_2_28-x64","2014-x64","_2_28-aarch64"]') }}
         cuda-version: ${{ github.event_name == 'pull_request' && fromJSON('["118","130"]') || fromJSON('["118","124","128","130"]') }}
         exclude:
           - manylinux-platform: "2014-x64"
             cuda-version: "128"
           - manylinux-platform: "2014-x64"
             cuda-version: "130"
+          - manylinux-platform: "_2_28-aarch64"
+            cuda-version: "118"
 
     steps:
     - uses: actions/checkout@v4
@@ -48,10 +50,54 @@ jobs:
         export CUDA_VERSION=${{ matrix.cuda-version }}
         export CUDA_VERSION_MAJOR=`(echo ${CUDA_VERSION} | cut -b1-2)`
         export CUDA_VERSION_MINOR=`(echo ${CUDA_VERSION} | cut -b3-)`
+        MANYLINUX_PLATFORM=${{ matrix.manylinux-platform }}
+        export MANYLINUX_VERSION=`(echo ${MANYLINUX_PLATFORM} | cut -d '-' -f 1)`
+        export TARGET_ARCH=`(echo ${MANYLINUX_PLATFORM} | cut -d '-' -f 2)`
+        echo "Manylinux platform ${MANYLINUX_PLATFORM}"
+        echo "Building for manylinux specialization ${MANYLINUX_VERSION} and target architecture ${TARGET_ARCH}"
+        CUDA_ROOT="/home/srit/Downloads/cuda${CUDA_VERSION}"
+        if [[ ${TARGET_ARCH} == "aarch64" ]]; then
+          CUDA_TARGET="sbsa-linux"
+        else
+          CUDA_TARGET="x86_64-linux"
+        fi
+        CUDA_CONTAINER_ROOT="/usr/lib64/$(basename "${CUDA_ROOT}")"
+        CUDA_TARGET_LIB_DIR="${CUDA_ROOT}/targets/${CUDA_TARGET}/lib"
+        CUDA_TARGET_INCLUDE_DIR="${CUDA_ROOT}/targets/${CUDA_TARGET}/include"
+        if [[ ${TARGET_ARCH} == "aarch64" && ! -d "${CUDA_TARGET_LIB_DIR}" && -d "${CUDA_ROOT}/targets/aarch64-linux/lib" ]]; then
+          CUDA_TARGET="aarch64-linux"
+          CUDA_TARGET_LIB_DIR="${CUDA_ROOT}/targets/${CUDA_TARGET}/lib"
+          CUDA_TARGET_INCLUDE_DIR="${CUDA_ROOT}/targets/${CUDA_TARGET}/include"
+        fi
+        if [[ ! -x "${CUDA_ROOT}/bin/nvcc" ]]; then
+          echo "CUDA compiler not found or not executable: ${CUDA_ROOT}/bin/nvcc"
+          exit 1
+        fi
+        if [[ ! -d "${CUDA_TARGET_LIB_DIR}" ]]; then
+          echo "CUDA target library directory not found: ${CUDA_TARGET_LIB_DIR}"
+          exit 1
+        fi
+        if [[ ! -f "${CUDA_TARGET_INCLUDE_DIR}/cuda_runtime.h" && -f "${CUDA_ROOT}/include/cuda_runtime.h" ]]; then
+          CUDA_TARGET_INCLUDE_DIR="${CUDA_ROOT}/include"
+        fi
+        if [[ ! -f "${CUDA_TARGET_INCLUDE_DIR}/cuda_runtime.h" ]]; then
+          echo "CUDA target include directory does not contain cuda_runtime.h: ${CUDA_TARGET_INCLUDE_DIR}"
+          exit 1
+        fi
+        CUDA_CONTAINER_TARGET_DIR="${CUDA_CONTAINER_ROOT}/targets/${CUDA_TARGET}"
+        CUDA_CONTAINER_INCLUDE_DIR="${CUDA_CONTAINER_TARGET_DIR}/include"
+        if [[ "${CUDA_TARGET_INCLUDE_DIR}" == "${CUDA_ROOT}/include" ]]; then
+          CUDA_CONTAINER_INCLUDE_DIR="${CUDA_CONTAINER_ROOT}/include"
+        fi
         CMAKE_OPTIONS="-DRTK_CUDA_VERSION=${CUDA_VERSION_MAJOR}.${CUDA_VERSION_MINOR}"
         CMAKE_OPTIONS="${CMAKE_OPTIONS} -DRTK_BUILD_APPLICATIONS:BOOL=OFF"
-        CMAKE_OPTIONS="${CMAKE_OPTIONS} -DCUDAToolkit_ROOT=/usr/lib64/cuda${CUDA_VERSION}"
-        CMAKE_OPTIONS="${CMAKE_OPTIONS} -DCMAKE_CUDA_COMPILER=/usr/lib64/cuda${CUDA_VERSION}/bin/nvcc"
+        CMAKE_OPTIONS="${CMAKE_OPTIONS} -DCUDAToolkit_ROOT=${CUDA_CONTAINER_ROOT}"
+        CMAKE_OPTIONS="${CMAKE_OPTIONS} -DCUDAToolkit_TARGET_DIR=${CUDA_CONTAINER_TARGET_DIR}"
+        CMAKE_OPTIONS="${CMAKE_OPTIONS} -DCUDAToolkit_INCLUDE_DIRECTORIES=${CUDA_CONTAINER_INCLUDE_DIR}"
+        CMAKE_OPTIONS="${CMAKE_OPTIONS} -DCMAKE_CUDA_COMPILER=${CUDA_CONTAINER_ROOT}/bin/nvcc"
+        if [[ ${TARGET_ARCH} == "aarch64" ]]; then
+          CMAKE_OPTIONS="${CMAKE_OPTIONS} -DCMAKE_SYSTEM_PROCESSOR=aarch64"
+        fi
         CMAKE_OPTIONS="${CMAKE_OPTIONS} --config-setting=build.tool-args=-j16"
         if test ${CUDA_VERSION_MAJOR} -ge 13; then
           CMAKE_OPTIONS="${CMAKE_OPTIONS} -DCMAKE_CUDA_ARCHITECTURES=75"
@@ -59,29 +105,25 @@ jobs:
 
         # The first two are not library paths but are included to be mounted in the
         # docker by dockcross-manylinux-build-module-wheels.sh
-        export LD_LIBRARY_PATH="/home/srit/Downloads/cuda${CUDA_VERSION}"
+        export LD_LIBRARY_PATH="${CUDA_ROOT}"
         export LD_LIBRARY_PATH="/usr/lib64/libcuda.so.1:$LD_LIBRARY_PATH"
-        export LD_LIBRARY_PATH="/home/srit/Downloads/cuda${CUDA_VERSION}/targets/x86_64-linux/lib:$LD_LIBRARY_PATH"
+        export LD_LIBRARY_PATH="${CUDA_TARGET_LIB_DIR}:$LD_LIBRARY_PATH"
         if test -e ../../ITKPythonBuilds-linux-manylinux2014.tar.zst ; then
            mv ../../*zst .
         fi
 
-        MANYLINUX_PLATFORM=${{ matrix.manylinux-platform }}
         if test ${MANYLINUX_PLATFORM} == "_2_28-x64" && test ${CUDA_VERSION} -lt 120; then
           export IMAGE_TAG=20230106-1aeaea0
           CMAKE_OPTIONS="${CMAKE_OPTIONS} -DITK_USE_PYTHON_LIMITED_API=FALSE"
         fi
         CMAKE_OPTIONS=(--cmake_options "${CMAKE_OPTIONS}")
-        echo "Manylinux platform ${MANYLINUX_PLATFORM}"
         rm -rf ITKPythonPackage
-        export MANYLINUX_VERSION=`(echo ${MANYLINUX_PLATFORM} | cut -d '-' -f 1)`
-        export TARGET_ARCH=`(echo ${MANYLINUX_PLATFORM} | cut -d '-' -f 2)`
         export ITK_MODULE_NO_CLEANUP=TRUE
-        echo "Building for manylinux specialization ${MANYLINUX_VERSION} and target architecture ${TARGET_ARCH}"
-        LIBCUDART=`basename /home/srit/Downloads/cuda${CUDA_VERSION}/targets/x86_64-linux/lib/libcudart.so.${CUDA_VERSION_MAJOR}*`
-        LIBCUBLAS=`basename /home/srit/Downloads/cuda${CUDA_VERSION}/targets/x86_64-linux/lib/libcublas.so.${CUDA_VERSION_MAJOR}*`
-        LIBCUBLASLT=`basename /home/srit/Downloads/cuda${CUDA_VERSION}/targets/x86_64-linux/lib/libcublasLt.so.${CUDA_VERSION_MAJOR}*`
-        LIBCUFFT=`basename /home/srit/Downloads/cuda${CUDA_VERSION}/targets/x86_64-linux/lib/libcufft.so.$((${CUDA_VERSION_MAJOR}-1))*`
+        export NO_SUDO=TRUE
+        LIBCUDART=`basename ${CUDA_TARGET_LIB_DIR}/libcudart.so.${CUDA_VERSION_MAJOR}*`
+        LIBCUBLAS=`basename ${CUDA_TARGET_LIB_DIR}/libcublas.so.${CUDA_VERSION_MAJOR}*`
+        LIBCUBLASLT=`basename ${CUDA_TARGET_LIB_DIR}/libcublasLt.so.${CUDA_VERSION_MAJOR}*`
+        LIBCUFFT=`basename ${CUDA_TARGET_LIB_DIR}/libcufft.so.$((${CUDA_VERSION_MAJOR}-1))*`
         sed -i "s/dependencies = \[/dependencies = [ \"itk-cudacommon-cuda${CUDA_VERSION}  == 2.1.*\",/g" pyproject.toml
         sed -i "s/itk-rtk/itk-rtk-cuda${CUDA_VERSION}/g" pyproject.toml
 
