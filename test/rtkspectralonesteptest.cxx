@@ -46,7 +46,7 @@ rtkspectralonesteptest(int argc, char * argv[])
 
   using VectorImageType = typename itk::VectorImage<DataType, Dimension>;
 
-#ifdef RTK_USE_CUDA
+#ifdef USE_CUDA
   using MaterialVolumeType = itk::CudaImage<MaterialPixelType, Dimension>;
   using MeasuredProjectionsType = itk::CudaImage<MeasuredProjectionsPixelType, Dimension>;
   using IncidentSpectrumImageType = itk::CudaImage<DataType, Dimension>;
@@ -274,7 +274,7 @@ rtkspectralonesteptest(int argc, char * argv[])
   CheckVectorImageQuality<MaterialVolumeType>(mechlemOneStep->GetOutput(), composeVols->GetOutput(), 0.08, 23, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 
-#ifdef RTK_USE_CUDA
+#ifdef USE_CUDA
   std::cout << "\n\n****** Case 4: CUDA voxel-based Backprojector, 4 subsets, with regularization ******" << std::endl;
 
   mechlemOneStep->SetForwardProjectionFilter(MechlemType::FP_CUDARAYCAST);
@@ -285,7 +285,7 @@ rtkspectralonesteptest(int argc, char * argv[])
   std::cout << "\n\nTest PASSED! " << std::endl;
 #endif
 
-#ifdef RTK_USE_CUDA
+#ifdef USE_CUDA
   std::cout
     << "\n\n****** Case 5: CUDA voxel-based Backprojector, 4 subsets, with regularization, itkVectorImage inputs ******"
     << std::endl;

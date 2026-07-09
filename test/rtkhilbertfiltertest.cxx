@@ -1,6 +1,11 @@
 #include "rtkTest.h"
 
 #include "rtkFFTHilbertImageFilter.h"
+
+#ifdef USE_CUDA
+#  include "itkCudaImage.h"
+#endif
+
 /**
  * \file rtkhilbertfiltertest.cxx
  *

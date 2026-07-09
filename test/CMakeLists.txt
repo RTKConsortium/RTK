@@ -116,6 +116,7 @@ rtk_add_cuda_test(rtkFDKCudaTest rtkfdktest.cxx)
 rtk_add_cuda_test(rtkFDKProjWeightCompCudaTest rtkfdkprojweightcompcudatest.cxx)
 
 rtk_add_test(rtkFBPParallelTest rtkfbpparalleltest.cxx)
+rtk_add_cuda_test(rtkFBPParallelCudaTest rtkfbpparalleltest.cxx)
 
 rtk_add_test(rtkImportTest rtkimporttest.cxx)
 rtk_add_cuda_test(rtkImportCudaTest rtkimporttest.cxx)
@@ -123,6 +124,7 @@ rtk_add_cuda_test(rtkImportCudaTest rtkimporttest.cxx)
 rtk_add_cuda_test(rtkCropFilterCudaTest rtkcroptest.cxx)
 
 rtk_add_test(rtkMotionCompensatedFDKTest rtkmotioncompensatedfdktest.cxx)
+rtk_add_cuda_test(rtkMotionCompensatedFDKCudaTest rtkmotioncompensatedfdktest.cxx)
 
 rtk_add_test(rtkDisplacedDetectorTest rtkdisplaceddetectortest.cxx)
 rtk_add_cuda_test(rtkDisplacedDetectorCudaTest rtkdisplaceddetectortest.cxx)
@@ -141,6 +143,7 @@ rtk_add_test(rtkRampFilterTest2 rtkrampfiltertest2.cxx)
 rtk_add_cuda_test(rtkRampFilterCudaTest2 rtkrampfiltertest2.cxx)
 
 rtk_add_test(rtkHilbertFilterTest rtkhilbertfiltertest.cxx)
+rtk_add_cuda_test(rtkHilbertFilterCudaTest rtkhilbertfiltertest.cxx)
 
 rtk_add_test(rtkScatterGlareFilterTest rtkscatterglarefiltertest.cxx)
 rtk_add_cuda_test(rtkScatterGlareFilterCudaTest rtkscatterglarefiltertest.cxx)
@@ -154,6 +157,7 @@ rtk_add_test(rtkForwardProjectionTest rtkforwardprojectiontest.cxx)
 rtk_add_cuda_test(rtkForwardProjectionCudaTest rtkforwardprojectiontest.cxx)
 rtk_add_test(rtkForwardAttenuatedProjectionTest rtkforwardattenuatedprojectiontest.cxx)
 rtk_add_test(rtkZengProjectionTest rtkzengforwardprojectiontest.cxx)
+rtk_add_cuda_test(rtkZengProjectionCudaTest rtkzengforwardprojectiontest.cxx)
 rtk_add_test(rtkMaximumIntensityProjectionTest rtkmaximumintensityprojectiontest.cxx)
 
 rtk_add_test(rtkGeometryFileTest rtkgeometryfiletest.cxx)
@@ -178,6 +182,12 @@ rtk_add_test(rtkDecomposeSpectralProjectionsTest rtkdecomposespectralprojections
 )
 
 rtk_add_test(rtkSpectralOneStepTest rtkspectralonesteptest.cxx
+  DATA{Input/Spectral/OneStep/no_vector_incident_spectrum_64_rows.mha}
+  DATA{Input/Spectral/OneStep/incident_spectrum_64_rows.mha}
+  DATA{Input/Spectral/detector_response.mha}
+  DATA{Input/Spectral/material_attenuations.mha}
+)
+rtk_add_cuda_test(rtkSpectralOneStepCudaTest rtkspectralonesteptest.cxx
   DATA{Input/Spectral/OneStep/no_vector_incident_spectrum_64_rows.mha}
   DATA{Input/Spectral/OneStep/incident_spectrum_64_rows.mha}
   DATA{Input/Spectral/detector_response.mha}
@@ -298,6 +308,9 @@ rtk_add_cuda_test(rtkAdjointOperatorsCudaTest rtkadjointoperatorstest.cxx)
 rtk_add_test(rtkFourDAdjointOperatorsTest rtkfourdadjointoperatorstest.cxx
   DATA{Input/Phases/phases_slow.txt}
 )
+rtk_add_cuda_test(rtkFourDAdjointOperatorsCudaTest rtkfourdadjointoperatorstest.cxx
+  DATA{Input/Phases/phases_slow.txt}
+)
 
 rtk_add_test(rtkInterpolateSplatAdjointTest rtkinterpolatesplatadjointtest.cxx
   DATA{Input/Phases/phases_slow.txt}
@@ -311,10 +324,13 @@ rtk_add_cuda_test(rtkLaplacianCudaTest rtklaplaciantest.cxx
 )
 
 rtk_add_test(rtkTotalVariationTest rtktotalvariationtest.cxx)
+rtk_add_cuda_test(rtkTotalVariationCudaTest rtktotalvariationtest.cxx)
 
 rtk_add_test(rtkGradientTest rtkgradienttest.cxx)
+rtk_add_cuda_test(rtkGradientCudaTest rtkgradienttest.cxx)
 
 rtk_add_test(rtkDivergenceTest rtkdivergencetest.cxx)
+rtk_add_cuda_test(rtkDivergenceCudaTest rtkdivergencetest.cxx)
 
 rtk_add_test(rtkLagCorrectionTest rtklagcorrectiontest.cxx)
 rtk_add_cuda_test(rtkLagCorrectionCudaTest rtklagcorrectiontest.cxx)
