@@ -4,11 +4,17 @@
 #include "rtkConstantImageSource.h"
 #include "rtkCyclicDeformationImageFilter.h"
 #include "rtkDrawEllipsoidImageFilter.h"
-#include "rtkFDKConeBeamReconstructionFilter.h"
 #include "rtkFDKWarpBackProjectionImageFilter.h"
 #include "rtkFieldOfViewImageFilter.h"
 #include "rtkRayEllipsoidIntersectionImageFilter.h"
 #include "rtkTest.h"
+
+#ifdef USE_CUDA
+#  include "itkCudaImage.h"
+#  include "rtkCudaFDKConeBeamReconstructionFilter.h"
+#else
+#  include "rtkFDKConeBeamReconstructionFilter.h"
+#endif
 
 /**
  * \file rtkmotioncompensatedfdktest.cxx
@@ -28,7 +34,11 @@ int
 rtkmotioncompensatedfdktest(int, char *[])
 {
   constexpr unsigned int Dimension = 3;
+#ifdef USE_CUDA
+  using OutputImageType = itk::CudaImage<float, Dimension>;
+#else
   using OutputImageType = itk::Image<float, Dimension>;
+#endif
 #if FAST_TESTS_NO_CHECKS
   constexpr unsigned int NumberOfProjectionImages = 3;
 #else
@@ -81,7 +91,12 @@ rtkmotioncompensatedfdktest(int, char *[])
   auto destinationIndex = itk::MakeIndex(0, 0, 0);
   auto pasteFilter = itk::PasteImageFilter<OutputImageType, OutputImageType, OutputImageType>::New();
 
-  std::ofstream            signalFile("signal.txt");
+#ifdef USE_CUDA
+  std::string signalFileName = "signal_cuda.txt";
+#else
+  std::string signalFileName = "signal.txt";
+#endif
+  std::ofstream            signalFile(signalFileName);
   OutputImageType::Pointer wholeImage = projectionsSource->GetOutput();
   for (unsigned int noProj = 0; noProj < NumberOfProjectionImages; noProj++)
   {
@@ -179,7 +194,7 @@ rtkmotioncompensatedfdktest(int, char *[])
   feldkamp->SetInput(0, tomographySource->GetOutput());
   feldkamp->SetInput(1, wholeImage);
   feldkamp->SetGeometry(geometry);
-  def->SetSignalFilename("signal.txt");
+  def->SetSignalFilename(signalFileName);
   feldkamp.GetPointer()->SetBackProjectionFilter(bp.GetPointer());
   TRY_AND_EXIT_ON_ITK_EXCEPTION(feldkamp->Update());
 
@@ -216,7 +231,7 @@ rtkmotioncompensatedfdktest(int, char *[])
 
   std::cout << "Test PASSED! " << std::endl;
 
-  itksys::SystemTools::RemoveFile("signal.txt");
+  itksys::SystemTools::RemoveFile(signalFileName);
 
   return EXIT_SUCCESS;
 }
