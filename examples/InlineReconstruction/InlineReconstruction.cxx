@@ -26,19 +26,19 @@
 using ImageType = itk::Image<float, 3>;
 
 // Constants for acquisition and reconstruction
-const int                       numProjections = 64;
+const int                       numProjections = 32;
 const double                    sid = 1000.0;
 const double                    sdd = 1500.0;
 const double                    arc = 200.0;
 const double                    spacing = 1.0;
-const int                       imageSize = 256;
+const int                       imageSize = 128;
 const double                    origin = -0.5 * (imageSize - 1);
-const std::chrono::milliseconds acquisitionSleepDuration(100);
+const std::chrono::milliseconds acquisitionSleepDuration(20);
 
 std::atomic<int> AcquiredProjectionsCount(0);
 
 // Function for the thread simulating an acquisition
-// Simulates and writes a projection every 100 ms.
+// Simulates and writes a projection every 20 ms.
 void
 Acquisition()
 {

@@ -21,7 +21,7 @@ number_of_acquired_projections = 0
 
 
 # Function for the thread simulating an acquisition: simulates and writes a
-# projection every 100 ms.
+# projection every 20 ms.
 def acquisition():
     global number_of_acquired_projections
     for i in range(nproj):
@@ -44,7 +44,7 @@ def acquisition():
         # is the case with CPython
         # https://docs.python.org/3/library/threading.html
         number_of_acquired_projections += 1
-        time.sleep(0.1)
+        time.sleep(0.02)
 
 
 # Launches the acquisition thread, then waits for new projections and reconstructs inline / on-the-fly
