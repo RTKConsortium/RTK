@@ -8,10 +8,6 @@
 #include <itkImageRegionIterator.h>
 #include <itkImageRegionSplitterDirection.h>
 
-#ifdef USE_CUDA
-#  include "itkCudaImage.h"
-#endif
-
 /**
  * \file rtkzengforwardprojectiontest.cxx
  *
@@ -29,12 +25,7 @@ rtkzengforwardprojectiontest(int, char *[])
 {
   constexpr unsigned int Dimension = 3;
   using OutputPixelType = float;
-
-#ifdef USE_CUDA
-  using OutputImageType = itk::CudaImage<OutputPixelType, Dimension>;
-#else
   using OutputImageType = itk::Image<OutputPixelType, Dimension>;
-#endif
 
 #if FAST_TESTS_NO_CHECKS
   constexpr unsigned int NumberOfProjectionImages = 3;
