@@ -20,7 +20,6 @@
 
 #include "itkImageRegionIteratorWithIndex.h"
 #include "itkImageRegionIterator.h"
-#include "vnl/vnl_inverse.h"
 
 namespace rtk
 {

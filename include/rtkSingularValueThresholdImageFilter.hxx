@@ -26,6 +26,12 @@
 
 #include <itkProgressReporter.h>
 
+#if ITK_VERSION_MAJOR < 6
+#  include "vnl/algo/vnl_svd.h"
+#else
+#  include "itkMathSVD.h"
+#endif
+
 namespace rtk
 {
 
@@ -94,7 +100,11 @@ SingularValueThresholdImageFilter<TInputImage, TRealType, TOutputImage>::Threade
     }
 
     // Perform the singular value decomposition of the jacobian matrix
+#if ITK_VERSION_MAJOR < 6
     vnl_svd<double> svd(jacobian);
+#else
+    auto svd = itk::Math::SVD(jacobian);
+#endif
 
     // Threshold the singular values. Since they are sorted in descending order, we
     // can stop as soon as we reach one that is below threshold
@@ -104,7 +114,11 @@ SingularValueThresholdImageFilter<TInputImage, TRealType, TOutputImage>::Threade
     }
 
     // Reconstruct the jacobian
+#if ITK_VERSION_MAJOR < 6
     jacobian = svd.recompose();
+#else
+    jacobian = itk::Math::detail::Recompose(svd.U, svd.W, svd.V, 0.);
+#endif
 
     // Walk the output along last dimension for this voxel,
     // replacing gradient vectors with their newly computed value
