@@ -48,3 +48,14 @@ rtkfourdfdk \
 ```
 
 Note that the reconstructed volume in this example does not fully contain the attenuating object, causing hyper-attenuation artifacts at the borders of the result.
+
+## Command line options
+
+::::{container} argparse-no-usage
+```{eval-rst}
+.. argparse::
+  :filename: applications/rtkfourdfdk/rtkfourdfdk.py
+  :func: build_parser
+  :nodescription:
+```
+::::

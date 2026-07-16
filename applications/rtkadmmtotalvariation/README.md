@@ -7,3 +7,15 @@ This script uses the SheppLogan phantom
 
 ```{literalinclude} TotalVariationRegularizedReconstruction.sh
 ```
+
+
+## Command line options
+
+::::{container} argparse-no-usage
+```{eval-rst}
+.. argparse::
+  :filename: applications/rtkadmmtotalvariation/rtkadmmtotalvariation.py
+  :func: build_parser
+  :nodescription:
+```
+::::

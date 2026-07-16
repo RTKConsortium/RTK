@@ -51,3 +51,16 @@ rtkfourdconjugategradient \
 ```
 
 Note that the reconstructed volume in this example does not fully contain the attenuating object, causing hyper-attenuation artifacts at the borders of the result. To avoid these artifacts, reconstructing a larger volume with `--size 256` should help.
+
+
+## Command line options
+
+
+::::{container} argparse-no-usage
+```{eval-rst}
+.. argparse::
+  :filename: applications/rtkfourdconjugategradient/rtkfourdconjugategradient.py
+  :func: build_parser
+  :nodescription:
+```
+::::
