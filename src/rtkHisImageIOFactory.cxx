@@ -29,8 +29,13 @@ HisImageIOFactory::HisImageIOFactory()
     "itkImageIOBase", "HisImageIO", "His Image IO", true, itk::CreateObjectFunction<HisImageIO>::New());
 }
 
+} // namespace rtk
+
 // Undocumented API used to register during static initialization.
 // DO NOT CALL DIRECTLY.
+
+namespace itk
+{
 
 static bool HisImageIOFactoryHasBeenRegistered;
 
@@ -40,8 +45,8 @@ HisImageIOFactoryRegister__Private()
   if (!HisImageIOFactoryHasBeenRegistered)
   {
     HisImageIOFactoryHasBeenRegistered = true;
-    HisImageIOFactory::RegisterOneFactory();
+    rtk::HisImageIOFactory::RegisterOneFactory();
   }
 }
 
-} // namespace rtk
+} // namespace itk
