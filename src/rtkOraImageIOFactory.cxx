@@ -30,8 +30,13 @@ OraImageIOFactory::OraImageIOFactory()
     "itkImageIOBase", "OraImageIO", "Ora Image IO", true, itk::CreateObjectFunction<OraImageIO>::New());
 }
 
+} // namespace rtk
+
 // Undocumented API used to register during static initialization.
 // DO NOT CALL DIRECTLY.
+
+namespace itk
+{
 
 static bool OraImageIOFactoryHasBeenRegistered;
 
@@ -41,8 +46,8 @@ OraImageIOFactoryRegister__Private()
   if (!OraImageIOFactoryHasBeenRegistered)
   {
     OraImageIOFactoryHasBeenRegistered = true;
-    OraImageIOFactory::RegisterOneFactory();
+    rtk::OraImageIOFactory::RegisterOneFactory();
   }
 }
 
-} // namespace rtk
+} // namespace itk

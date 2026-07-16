@@ -28,8 +28,13 @@ ImagXImageIOFactory::ImagXImageIOFactory()
     "itkImageIOBase", "ImagXImageIO", "ImagX Image IO", true, itk::CreateObjectFunction<ImagXImageIO>::New());
 }
 
+} // namespace rtk
+
 // Undocumented API used to register during static initialization.
 // DO NOT CALL DIRECTLY.
+
+namespace itk
+{
 
 static bool ImagXImageIOFactoryHasBeenRegistered;
 
@@ -39,8 +44,8 @@ ImagXImageIOFactoryRegister__Private()
   if (!ImagXImageIOFactoryHasBeenRegistered)
   {
     ImagXImageIOFactoryHasBeenRegistered = true;
-    ImagXImageIOFactory::RegisterOneFactory();
+    rtk::ImagXImageIOFactory::RegisterOneFactory();
   }
 }
 
-} // namespace rtk
+} // namespace itk

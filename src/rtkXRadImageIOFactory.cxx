@@ -28,8 +28,13 @@ XRadImageIOFactory::XRadImageIOFactory()
     "itkImageIOBase", "XRadImageIO", "XRad Image IO", true, itk::CreateObjectFunction<XRadImageIO>::New());
 }
 
+} // namespace rtk
+
 // Undocumented API used to register during static initialization.
 // DO NOT CALL DIRECTLY.
+
+namespace itk
+{
 
 static bool XRadImageIOFactoryHasBeenRegistered;
 
@@ -39,8 +44,8 @@ XRadImageIOFactoryRegister__Private()
   if (!XRadImageIOFactoryHasBeenRegistered)
   {
     XRadImageIOFactoryHasBeenRegistered = true;
-    XRadImageIOFactory::RegisterOneFactory();
+    rtk::XRadImageIOFactory::RegisterOneFactory();
   }
 }
 
-} // namespace rtk
+} // namespace itk

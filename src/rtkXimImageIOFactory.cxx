@@ -30,8 +30,13 @@ XimImageIOFactory::XimImageIOFactory()
     "itkImageIOBase", "XimImageIO", "Xim Image IO", true, itk::CreateObjectFunction<XimImageIO>::New());
 }
 
+} // namespace rtk
+
 // Undocumented API used to register during static initialization.
 // DO NOT CALL DIRECTLY.
+
+namespace itk
+{
 
 static bool XimImageIOFactoryHasBeenRegistered;
 
@@ -41,8 +46,8 @@ XimImageIOFactoryRegister__Private()
   if (!XimImageIOFactoryHasBeenRegistered)
   {
     XimImageIOFactoryHasBeenRegistered = true;
-    XimImageIOFactory::RegisterOneFactory();
+    rtk::XimImageIOFactory::RegisterOneFactory();
   }
 }
 
-} // namespace rtk
+} // namespace itk

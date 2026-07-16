@@ -30,8 +30,13 @@ HndImageIOFactory::HndImageIOFactory()
     "itkImageIOBase", "HndImageIO", "Hnd Image IO", true, itk::CreateObjectFunction<HndImageIO>::New());
 }
 
+} // namespace rtk
+
 // Undocumented API used to register during static initialization.
 // DO NOT CALL DIRECTLY.
+
+namespace itk
+{
 
 static bool HndImageIOFactoryHasBeenRegistered;
 
@@ -41,8 +46,8 @@ HndImageIOFactoryRegister__Private()
   if (!HndImageIOFactoryHasBeenRegistered)
   {
     HndImageIOFactoryHasBeenRegistered = true;
-    HndImageIOFactory::RegisterOneFactory();
+    rtk::HndImageIOFactory::RegisterOneFactory();
   }
 }
 
-} // namespace rtk
+} // namespace itk
