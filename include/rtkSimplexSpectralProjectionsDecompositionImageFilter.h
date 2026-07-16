@@ -69,12 +69,10 @@ public:
   using DecomposedProjectionsDataType = typename DecomposedProjectionsType::PixelType::ValueType;
   using MeasuredProjectionsDataType = typename MeasuredProjectionsType::PixelType::ValueType;
 
-#ifndef ITK_FUTURE_LEGACY_REMOVE
   /** Additional types to overload SetInputIncidentSpectrum */
   using VectorSpectrumImageType = itk::VectorImage<float, 2>;
   using FlattenVectorFilterType = rtk::VectorImageToImageFilter<VectorSpectrumImageType, IncidentSpectrumImageType>;
   using PermuteFilterType = itk::PermuteAxesImageFilter<IncidentSpectrumImageType>;
-#endif
 
   /** Standard New method. */
   itkNewMacro(Self);
@@ -122,10 +120,8 @@ public:
   /** Set/Get the incident spectrum input images */
   void
   SetInputIncidentSpectrum(const IncidentSpectrumImageType * IncidentSpectrum);
-#ifndef ITK_FUTURE_LEGACY_REMOVE
   void
   SetInputIncidentSpectrum(const VectorSpectrumImageType * IncidentSpectrum);
-#endif
   typename IncidentSpectrumImageType::ConstPointer
   GetInputIncidentSpectrum();
 
@@ -209,11 +205,9 @@ protected:
   typename itk::ImageSource<DecomposedProjectionsType>::Pointer m_CastDecomposedProjectionsPointer;
   typename itk::ImageSource<MeasuredProjectionsType>::Pointer   m_CastMeasuredProjectionsPointer;
 
-#ifndef ITK_FUTURE_LEGACY_REMOVE
   /** Filters required for the overload of SetInputIncidentSpectrum */
   typename FlattenVectorFilterType::Pointer m_FlattenFilter;
   typename PermuteFilterType::Pointer       m_PermuteFilter;
-#endif
 }; // end of class
 
 } // end namespace rtk
