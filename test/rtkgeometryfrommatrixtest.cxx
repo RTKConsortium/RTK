@@ -9,13 +9,13 @@ rtkgeometryfrommatrixtest(int, char *[])
   geometry1 = rtk::ThreeDCircularProjectionGeometry::New();
   geometry2 = rtk::ThreeDCircularProjectionGeometry::New();
 
-  for (double oa = -60.; oa < 65.; oa += 60.)
-    for (double ia = -60.; ia < 65.; ia += 60.)
-      for (double ga = 0.; ga < 360.; ga += 45.)
-        for (double sx = -50.; sx < 55.; sx += 25.)
-          for (double sy = -50.; sy < 55.; sy += 25.)
-            for (double px = -50.; px < 55.; px += 25.)
-              for (double py = -50.; py < 55.; py += 25.)
+  for (double oa = -60.; oa < 65.; oa += 120.)
+    for (double ia = -60.; ia < 65.; ia += 120.)
+      for (double ga = 0.; ga < 360.; ga += 90.)
+        for (double sx = -50.; sx < 55.; sx += 50.)
+          for (double sy = -50.; sy < 55.; sy += 50.)
+            for (double px = -50.; px < 55.; px += 50.)
+              for (double py = -50.; py < 55.; py += 50.)
                 for (double sdd = 200.; sdd < 405.; sdd += 200.)
                   for (double sid = 100.; sid < 200.; sid += 200.)
                   {

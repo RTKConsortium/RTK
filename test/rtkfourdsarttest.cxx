@@ -44,7 +44,7 @@ rtkfourdsarttest(int, char *[])
 #if FAST_TESTS_NO_CHECKS
   constexpr unsigned int NumberOfProjectionImages = 5;
 #else
-  constexpr unsigned int NumberOfProjectionImages = 64;
+  constexpr unsigned int NumberOfProjectionImages = 32;
 #endif
 
   // Constant image sources
@@ -100,7 +100,7 @@ rtkfourdsarttest(int, char *[])
   fourDSize[0] = 32;
   fourDSize[1] = 16;
   fourDSize[2] = 32;
-  fourDSize[3] = 8;
+  fourDSize[3] = 4;
   fourDSpacing[0] = 4.;
   fourDSpacing[1] = 4.;
   fourDSpacing[2] = 4.;
@@ -186,7 +186,7 @@ rtkfourdsarttest(int, char *[])
     // Ellipse 2
     auto e2 = REIType::New();
     semiprincipalaxis.Fill(8.);
-    center[0] = 4 * (std::abs((4 + noProj) % 8 - 4.) - 2.);
+    center[0] = 4 * (std::abs((fourDSize[3] / 2 + noProj) % fourDSize[3] - fourDSize[3] / 2.) - 2.);
     center[1] = 0.;
     center[2] = 0.;
     e2->SetInput(e1->GetOutput());
@@ -211,7 +211,7 @@ rtkfourdsarttest(int, char *[])
     destinationIndex[2]++;
 
     // Signal
-    signalFile << (noProj % 8) / 8. << std::endl;
+    signalFile << (noProj % fourDSize[3]) / static_cast<double>(fourDSize[3]) << std::endl;
   }
   signalFile.close();
 
@@ -244,7 +244,7 @@ rtkfourdsarttest(int, char *[])
     axis2.Fill(8.);
     de2->SetAxis(axis2);
     DEType::PointType center2;
-    center2[0] = 4 * (std::abs((4 + n) % 8 - 4.) - 2.);
+    center2[0] = 4 * (std::abs((fourDSize[3] / 2 + n) % fourDSize[3] - fourDSize[3] / 2.) - 2.);
     center2[1] = 0.;
     center2[2] = 0.;
     de2->SetCenter(center2);

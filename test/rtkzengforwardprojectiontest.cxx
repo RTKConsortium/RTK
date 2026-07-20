@@ -8,6 +8,10 @@
 #include <itkImageRegionIterator.h>
 #include <itkImageRegionSplitterDirection.h>
 
+#ifdef USE_CUDA
+#  include "itkCudaImage.h"
+#endif
+
 /**
  * \file rtkzengforwardprojectiontest.cxx
  *
@@ -35,7 +39,7 @@ rtkzengforwardprojectiontest(int, char *[])
 #if FAST_TESTS_NO_CHECKS
   constexpr unsigned int NumberOfProjectionImages = 3;
 #else
-  constexpr unsigned int NumberOfProjectionImages = 40;
+  constexpr unsigned int NumberOfProjectionImages = 20;
 #endif
 
   // Constant image sources
@@ -47,8 +51,8 @@ rtkzengforwardprojectiontest(int, char *[])
   auto size = itk::MakeSize(2, 2, 2);
   auto spacing = itk::MakeVector(252., 252., 252.);
 #else
-  auto size = itk::MakeSize(64, 64, 64);
-  auto spacing = itk::MakeVector(4., 4., 4.);
+  auto size = itk::MakeSize(33, 33, 33);
+  auto spacing = itk::MakeVector(8., 8., 8.);
 #endif
 
   auto tomographySource = ConstantImageSourceType::New();

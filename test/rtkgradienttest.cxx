@@ -7,6 +7,10 @@
 #include "rtkForwardDifferenceGradientImageFilter.h"
 #include "rtkTestConfiguration.h"
 
+#ifdef USE_CUDA
+#  include "itkCudaImage.h"
+#endif
+
 template <class TImage, class TGradient>
 #if FAST_TESTS_NO_CHECKS
 void

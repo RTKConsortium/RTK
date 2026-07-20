@@ -4,11 +4,17 @@
 #include "rtkConstantImageSource.h"
 #include "rtkCyclicDeformationImageFilter.h"
 #include "rtkDrawEllipsoidImageFilter.h"
-#include "rtkFDKConeBeamReconstructionFilter.h"
 #include "rtkFDKWarpBackProjectionImageFilter.h"
 #include "rtkFieldOfViewImageFilter.h"
 #include "rtkRayEllipsoidIntersectionImageFilter.h"
 #include "rtkTest.h"
+
+#ifdef USE_CUDA
+#  include "itkCudaImage.h"
+#  include "rtkCudaFDKConeBeamReconstructionFilter.h"
+#else
+#  include "rtkFDKConeBeamReconstructionFilter.h"
+#endif
 
 /**
  * \file rtkmotioncompensatedfdktest.cxx
@@ -28,7 +34,11 @@ int
 rtkmotioncompensatedfdktest(int, char *[])
 {
   constexpr unsigned int Dimension = 3;
+#ifdef USE_CUDA
+  using OutputImageType = itk::CudaImage<float, Dimension>;
+#else
   using OutputImageType = itk::Image<float, Dimension>;
+#endif
 #if FAST_TESTS_NO_CHECKS
   constexpr unsigned int NumberOfProjectionImages = 3;
 #else

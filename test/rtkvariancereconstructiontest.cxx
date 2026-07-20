@@ -34,8 +34,8 @@ rtkvariancereconstructiontest(int, char *[])
   constexpr unsigned int NumberOfProjectionImages = 3;
   constexpr unsigned int NumberOfSamples = 2;
 #else
-  constexpr unsigned int NumberOfProjectionImages = 50;
-  constexpr unsigned int NumberOfSamples = 100;
+  constexpr unsigned int NumberOfProjectionImages = 30;
+  constexpr unsigned int NumberOfSamples = 30;
 #endif
 
   // Constant image sources

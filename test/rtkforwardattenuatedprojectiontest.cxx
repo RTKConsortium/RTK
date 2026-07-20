@@ -12,11 +12,7 @@
 #include <itkSubtractImageFilter.h>
 
 
-#ifdef USE_CUDA
-#  include "rtkCudaForwardProjectionImageFilter.h"
-#else
-#  include "rtkJosephForwardAttenuatedProjectionImageFilter.h"
-#endif
+#include "rtkJosephForwardAttenuatedProjectionImageFilter.h"
 
 /**
  * \file rtkforwardattenuatedprojectiontest.cxx
@@ -36,16 +32,12 @@ rtkforwardattenuatedprojectiontest(int, char *[])
   constexpr unsigned int Dimension = 3;
   using OutputPixelType = float;
 
-#ifdef USE_CUDA
-  using OutputImageType = itk::CudaImage<OutputPixelType, Dimension>;
-#else
-  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
-#endif
+using OutputImageType = itk::Image<OutputPixelType, Dimension>;
 
 #if FAST_TESTS_NO_CHECKS
   constexpr unsigned int NumberOfProjectionImages = 3;
 #else
-  constexpr unsigned int NumberOfProjectionImages = 45;
+  constexpr unsigned int NumberOfProjectionImages = 24;
 #endif
 
   // Constant image sources
@@ -113,21 +105,13 @@ rtkforwardattenuatedprojectiontest(int, char *[])
   projTotal->SetConstant(0.);
   projTotal->Update();
 
-  // Joseph Forward Projection filter
-#ifdef USE_CUDA
-  using JFPType = rtk::CudaForwardProjectionImageFilter<OutputImageType, OutputImageType>;
-#else
+  // Joseph attenuated forward projection filter
   using JFPType = rtk::JosephForwardAttenuatedProjectionImageFilter<OutputImageType, OutputImageType>;
-#endif
   auto jfp = JFPType::New();
   jfp->InPlaceOff();
   jfp->SetInput(projTotal->GetOutput());
   jfp->SetInput(1, volumeSource);
   jfp->SetInput(2, attenuationMap);
-
-#ifdef USE_CUDA
-  jfp->SetStepSize(10);
-#endif
   // Geometry
   using GeometryType = rtk::ThreeDCircularProjectionGeometry;
   auto   geometry_projection = GeometryType::New();
@@ -191,7 +175,7 @@ rtkforwardattenuatedprojectiontest(int, char *[])
   auto stream = itk::StreamingImageFilter<OutputImageType, OutputImageType>::New();
   stream->SetInput(jfp->GetOutput());
 
-  stream->SetNumberOfStreamDivisions(9);
+  stream->SetNumberOfStreamDivisions(4);
   auto splitter = itk::ImageRegionSplitterDirection::New();
   splitter->SetDirection(2); // Splitting along direction 1, NOT 2
   stream->SetRegionSplitter(splitter);

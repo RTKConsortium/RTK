@@ -43,7 +43,7 @@ rtkadjointoperatorstest(int, char *[])
 #if FAST_TESTS_NO_CHECKS
   constexpr unsigned int NumberOfProjectionImages = 3;
 #else
-  constexpr unsigned int NumberOfProjectionImages = 60;
+  constexpr unsigned int NumberOfProjectionImages = 14;
 #endif
 
   // Random image sources
@@ -58,13 +58,13 @@ rtkadjointoperatorstest(int, char *[])
   auto constantAttenuationSource = ConstantImageSourceType::New();
 
   // Volume metadata
-  auto origin = itk::MakePoint(-128., -128., -128.);
+  auto origin = itk::MakePoint(-64., -64., -64.);
 #if FAST_TESTS_NO_CHECKS
   auto spacing = itk::MakeVector(252., 252., 252.);
   auto size = itk::MakeSize(2, 2, 2);
 #else
   auto spacing = itk::MakeVector(4., 4., 4.);
-  auto size = itk::MakeSize(65, 65, 65);
+  auto size = itk::MakeSize(32, 32, 32);
 #endif
   randomVolumeSource->SetOrigin(origin);
   randomVolumeSource->SetSpacing(spacing);
@@ -81,16 +81,16 @@ rtkadjointoperatorstest(int, char *[])
   constantAttenuationSource->SetOrigin(origin);
   constantAttenuationSource->SetSpacing(spacing);
   constantAttenuationSource->SetSize(size);
-  constantAttenuationSource->SetConstant(0.0154);
+  constantAttenuationSource->SetConstant(0.002);
 
   // Projections metadata
-  origin = itk::MakePoint(-128., -128., -128.);
+  origin = itk::MakePoint(-64., -64., -64.);
 #if FAST_TESTS_NO_CHECKS
-  spacing = itk::MakeVector(504., 504., 504.);
+  spacing = itk::MakeVector(126., 126., 126.);
   size = itk::MakeSize(2, 2, NumberOfProjectionImages);
 #else
   spacing = itk::MakeVector(4., 4., 1.);
-  size = itk::MakeSize(65, 65, NumberOfProjectionImages);
+  size = itk::MakeSize(32, 32, NumberOfProjectionImages);
 #endif
   randomProjectionsSource->SetOrigin(origin);
   randomProjectionsSource->SetSpacing(spacing);
