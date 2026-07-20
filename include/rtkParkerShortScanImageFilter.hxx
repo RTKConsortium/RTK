@@ -77,6 +77,18 @@ ParkerShortScanImageFilter<TInputImage, TOutputImage>::GenerateInputRequestedReg
   m_Delta = 0.5 * (lastAngle - m_FirstAngle - itk::Math::pi);
   m_Delta = m_Delta - 2 * itk::Math::pi * floor(m_Delta / (2 * itk::Math::pi)); // between -2*PI and 2*PI
 
+  // Extend scan range by half an angular step on each side.
+  // This accounts for the fact that the acquisition starts/ends
+  // half a step before/after the first/last projection, so that
+  // the first and last projections receive non-zero Parker weights.
+  if (nProj > 1)
+  {
+    double angularStep = (lastAngle - m_FirstAngle) / (nProj - 1);
+    double halfStep = angularStep / 2;
+    m_FirstAngle -= halfStep;
+    m_Delta += halfStep;
+  }
+
   // Pre-compute the two corners of the projection images
   typename TInputImage::IndexType id = this->GetInput()->GetLargestPossibleRegion().GetIndex();
   typename TInputImage::SizeType  sz = this->GetInput()->GetLargestPossibleRegion().GetSize();
