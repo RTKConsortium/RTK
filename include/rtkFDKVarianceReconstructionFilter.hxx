@@ -32,21 +32,19 @@ FDKVarianceReconstructionFilter<TInputImage, TOutputImage, TFFTPrecision>::FDKVa
   this->SetNumberOfRequiredInputs(2);
 
   // Create each filter of the composite filter
-  m_ExtractFilter = ExtractFilterType::New();
   m_WeightFilter1 = WeightFilterType::New();
   m_WeightFilter2 = WeightFilterType::New();
   m_VarianceRampFilter = VarianceRampFilterType::New();
   this->SetBackProjectionFilter(BackProjectionFilterType::New());
 
   // Permanent internal connections
-  m_WeightFilter1->SetInput(m_ExtractFilter->GetOutput());
   m_WeightFilter2->SetInput(m_WeightFilter1->GetOutput());
   m_VarianceRampFilter->SetInput(m_WeightFilter2->GetOutput());
 
-  // Default parameters
-  m_ExtractFilter->SetDirectionCollapseToSubmatrix();
-  m_WeightFilter1->InPlaceOn();
-  m_WeightFilter2->InPlaceOn();
+  // Default parameters: in-place must be off because our zero-copy substacks
+  // share the input buffer. In-place modification would corrupt the original data.
+  m_WeightFilter1->InPlaceOff();
+  m_WeightFilter2->InPlaceOff();
 
   // Default to one projection per subset when FFTW is not available
 #if !defined(USE_FFTWD)
@@ -80,9 +78,13 @@ FDKVarianceReconstructionFilter<TInputImage, TOutputImage, TFFTPrecision>::Gener
   // SR: is this useful?
   m_BackProjectionFilter->SetInput(0, this->GetInput(0));
   m_BackProjectionFilter->SetInPlace(this->GetInPlace());
-  m_ExtractFilter->SetInput(this->GetInput(1));
   m_BackProjectionFilter->GetOutput()->SetRequestedRegion(this->GetOutput()->GetRequestedRegion());
   m_BackProjectionFilter->GetOutput()->PropagateRequestedRegion();
+
+  // The zero-copy subStack is a standalone image, not connected to input(1)
+  // in the pipeline. PropagateRequestedRegion cannot reach input(1) through
+  // the mini-pipeline, so set its requested region explicitly.
+  const_cast<TInputImage *>(this->GetInput(1))->SetRequestedRegion(this->GetInput(1)->GetLargestPossibleRegion());
 }
 
 template <class TInputImage, class TOutputImage, class TFFTPrecision>
@@ -91,22 +93,29 @@ FDKVarianceReconstructionFilter<TInputImage, TOutputImage, TFFTPrecision>::Gener
 {
   const unsigned int Dimension = this->InputImageDimension;
 
+  // Ensure upstream metadata is fresh before reading input region.
+  // Filters like DisplacedDetectorImageFilter can change the output region
+  // (e.g., doubling dimension 0), so we must trigger their update first.
+  const_cast<TInputImage *>(this->GetInput(1))->UpdateOutputInformation();
+
   m_WeightFilter1->SetGeometry(m_Geometry);
   m_WeightFilter2->SetGeometry(m_Geometry);
   m_BackProjectionFilter->SetGeometry(m_Geometry);
 
   // We only set the first sub-stack at that point, the rest will be
   // requested in the GenerateData function
-  typename ExtractFilterType::InputImageRegionType projRegion;
+  typename InputImageType::RegionType projRegion;
   projRegion = this->GetInput(1)->GetLargestPossibleRegion();
   unsigned int firstStackSize = std::min(m_ProjectionSubsetSize, (unsigned int)projRegion.GetSize(Dimension - 1));
   projRegion.SetSize(Dimension - 1, firstStackSize);
-  m_ExtractFilter->SetExtractionRegion(projRegion);
+
+  // Create a zero-copy view of the first sub-stack
+  typename InputImageType::Pointer subStack = rtk::ExtractImageSubRegion(this->GetInput(1), projRegion);
+  m_WeightFilter1->SetInput(subStack);
 
   // Run composite filter update
   m_BackProjectionFilter->SetInput(0, this->GetInput(0));
   m_BackProjectionFilter->SetInPlace(this->GetInPlace());
-  m_ExtractFilter->SetInput(this->GetInput(1));
   m_BackProjectionFilter->UpdateOutputInformation();
 
   // Update output information
@@ -123,7 +132,7 @@ FDKVarianceReconstructionFilter<TInputImage, TOutputImage, TFFTPrecision>::Gener
   const unsigned int Dimension = this->InputImageDimension;
 
   // The backprojection works on a small stack of projections, not the full stack
-  typename ExtractFilterType::InputImageRegionType subsetRegion;
+  typename InputImageType::RegionType subsetRegion;
   subsetRegion = this->GetInput(1)->GetLargestPossibleRegion();
   unsigned int nProj = subsetRegion.GetSize(Dimension - 1);
 
@@ -146,15 +155,17 @@ FDKVarianceReconstructionFilter<TInputImage, TOutputImage, TFFTPrecision>::Gener
       pimg->DisconnectPipeline();
       m_BackProjectionFilter->SetInput(pimg);
 
-      // Change projection subset
-      subsetRegion.SetIndex(Dimension - 1, i);
-      subsetRegion.SetSize(Dimension - 1, std::min(m_ProjectionSubsetSize, nProj - i));
-      m_ExtractFilter->SetExtractionRegion(subsetRegion);
-
       // This is required to reset the full pipeline
       m_BackProjectionFilter->GetOutput()->UpdateOutputInformation();
       m_BackProjectionFilter->GetOutput()->PropagateRequestedRegion();
     }
+
+    // Always create the substack for the current subset
+    subsetRegion.SetIndex(Dimension - 1, i);
+    subsetRegion.SetSize(Dimension - 1, std::min(m_ProjectionSubsetSize, nProj - i));
+    typename InputImageType::Pointer subStack = rtk::ExtractImageSubRegion(this->GetInput(1), subsetRegion);
+    m_WeightFilter1->SetInput(subStack);
+
     m_BackProjectionFilter->Update();
   }
 

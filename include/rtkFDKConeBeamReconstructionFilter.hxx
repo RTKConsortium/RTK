@@ -31,18 +31,16 @@ FDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecision>::FDKCo
   this->SetNumberOfRequiredInputs(2);
 
   // Create each filter of the composite filter
-  m_ExtractFilter = ExtractFilterType::New();
   m_WeightFilter = WeightFilterType::New();
   m_RampFilter = RampFilterType::New();
   this->SetBackProjectionFilter(BackProjectionFilterType::New());
 
   // Permanent internal connections
-  m_WeightFilter->SetInput(m_ExtractFilter->GetOutput());
   m_RampFilter->SetInput(m_WeightFilter->GetOutput());
 
-  // Default parameters
-  m_ExtractFilter->SetDirectionCollapseToSubmatrix();
-  m_WeightFilter->InPlaceOn();
+  // Default parameters: in-place must be off because our zero-copy substacks
+  // share the input buffer. In-place modification would corrupt the original data.
+  m_WeightFilter->InPlaceOff();
 
   // Default to one projection per subset when FFTW is not available
 #if !defined(USE_FFTWD)
@@ -76,9 +74,13 @@ FDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecision>::Gener
   // SR: is this useful?
   m_BackProjectionFilter->SetInput(0, this->GetInput(0));
   m_BackProjectionFilter->SetInPlace(this->GetInPlace());
-  m_ExtractFilter->SetInput(this->GetInput(1));
   m_BackProjectionFilter->GetOutput()->SetRequestedRegion(this->GetOutput()->GetRequestedRegion());
   m_BackProjectionFilter->GetOutput()->PropagateRequestedRegion();
+
+  // The zero-copy subStack is a standalone image, not connected to input(1)
+  // in the pipeline. PropagateRequestedRegion cannot reach input(1) through
+  // the mini-pipeline, so set its requested region explicitly.
+  const_cast<TInputImage *>(this->GetInput(1))->SetRequestedRegion(this->GetInput(1)->GetLargestPossibleRegion());
 }
 
 template <class TInputImage, class TOutputImage, class TFFTPrecision>
@@ -87,21 +89,28 @@ FDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecision>::Gener
 {
   const unsigned int Dimension = this->InputImageDimension;
 
+  // Ensure upstream metadata is fresh before reading input region.
+  // Filters like DisplacedDetectorImageFilter can change the output region
+  // (e.g., doubling dimension 0), so we must trigger their update first.
+  const_cast<TInputImage *>(this->GetInput(1))->UpdateOutputInformation();
+
   m_WeightFilter->SetGeometry(m_Geometry);
   m_BackProjectionFilter->SetGeometry(m_Geometry);
 
   // We only set the first sub-stack at that point, the rest will be
   // requested in the GenerateData function
-  typename ExtractFilterType::InputImageRegionType projRegion;
+  typename InputImageType::RegionType projRegion;
   projRegion = this->GetInput(1)->GetLargestPossibleRegion();
   unsigned int firstStackSize = std::min(m_ProjectionSubsetSize, (unsigned int)projRegion.GetSize(Dimension - 1));
   projRegion.SetSize(Dimension - 1, firstStackSize);
-  m_ExtractFilter->SetExtractionRegion(projRegion);
+
+  // Create a zero-copy view of the first sub-stack
+  typename InputImageType::Pointer subStack = rtk::ExtractImageSubRegion(this->GetInput(1), projRegion);
+  m_WeightFilter->SetInput(subStack);
 
   // Run composite filter update
   m_BackProjectionFilter->SetInput(0, this->GetInput(0));
   m_BackProjectionFilter->SetInPlace(this->GetInPlace());
-  m_ExtractFilter->SetInput(this->GetInput(1));
   m_BackProjectionFilter->UpdateOutputInformation();
 
   // Update output information
@@ -118,7 +127,7 @@ FDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecision>::Gener
   const unsigned int Dimension = this->InputImageDimension;
 
   // The backprojection works on a small stack of projections, not the full stack
-  typename ExtractFilterType::InputImageRegionType subsetRegion;
+  typename InputImageType::RegionType subsetRegion;
   subsetRegion = this->GetInput(1)->GetLargestPossibleRegion();
   unsigned int nProj = subsetRegion.GetSize(Dimension - 1);
 
@@ -133,17 +142,20 @@ FDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecision>::Gener
 
   for (unsigned int i = 0; i < nProj; i += m_ProjectionSubsetSize)
   {
+    // Create the substack for the current subset BEFORE pipeline reset,
+    // matching the original code where SetExtractionRegion was called before
+    // UpdateOutputInformation/PropagateRequestedRegion.
+    subsetRegion.SetIndex(Dimension - 1, i);
+    subsetRegion.SetSize(Dimension - 1, std::min(m_ProjectionSubsetSize, nProj - i));
+    typename InputImageType::Pointer subStack = rtk::ExtractImageSubRegion(this->GetInput(1), subsetRegion);
+    m_WeightFilter->SetInput(subStack);
+
     // After the first bp update, we need to use its output as input.
     if (i)
     {
       typename TInputImage::Pointer pimg = m_BackProjectionFilter->GetOutput();
       pimg->DisconnectPipeline();
       m_BackProjectionFilter->SetInput(pimg);
-
-      // Change projection subset
-      subsetRegion.SetIndex(Dimension - 1, i);
-      subsetRegion.SetSize(Dimension - 1, std::min(m_ProjectionSubsetSize, nProj - i));
-      m_ExtractFilter->SetExtractionRegion(subsetRegion);
 
       // This is required to reset the full pipeline
       m_BackProjectionFilter->GetOutput()->UpdateOutputInformation();
