@@ -51,6 +51,8 @@ __constant__ float
 __constant__ float
   c_translatedVolumeTransformMatrices[SLAB_SIZE * 12]; // Can process stacks of at most SLAB_SIZE projections
 __constant__ float c_sourcePos[SLAB_SIZE * 3];         // Can process stacks of at most SLAB_SIZE projections
+__constant__ float c_sourceToPixel[SLAB_SIZE * 3];     // Can process stacks of at most SLAB_SIZE projections
+__constant__ int   c_isParallel;
 
 
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
@@ -77,24 +79,34 @@ kernel_forwardProject(float * dev_proj_in, float * dev_proj_out, cudaTextureObje
 
   for (unsigned int proj = 0; proj < c_projSize.z; proj++)
   {
-    // Setting ray origin
-    ray.o = make_float3(c_sourcePos[3 * proj], c_sourcePos[3 * proj + 1], c_sourcePos[3 * proj + 2]);
-
-    if (c_radius == 0)
+    if (c_isParallel)
     {
+      // Start outside the volume and follow the shared parallel ray direction.
       pixelPos = matrix_multiply(make_float3(i, j, 0), &(c_translatedProjectionIndexTransformMatrices[12 * proj]));
+      ray.d = make_float3(c_sourceToPixel[3 * proj], c_sourceToPixel[3 * proj + 1], c_sourceToPixel[3 * proj + 2]);
+      ray.o = pixelPos - ray.d;
     }
     else
     {
-      float3 posProj;
-      posProj = matrix_multiply(make_float3(i, j, 0), &(c_translatedProjectionIndexTransformMatrices[12 * proj]));
-      double a = posProj.x / c_radius;
-      posProj.x = sin(a) * c_radius;
-      posProj.z += (1. - cos(a)) * c_radius;
-      pixelPos = matrix_multiply(posProj, &(c_translatedVolumeTransformMatrices[12 * proj]));
-    }
+      // Setting ray origin
+      ray.o = make_float3(c_sourcePos[3 * proj], c_sourcePos[3 * proj + 1], c_sourcePos[3 * proj + 2]);
 
-    ray.d = pixelPos - ray.o;
+      if (c_radius == 0)
+      {
+        pixelPos = matrix_multiply(make_float3(i, j, 0), &(c_translatedProjectionIndexTransformMatrices[12 * proj]));
+      }
+      else
+      {
+        float3 posProj;
+        posProj = matrix_multiply(make_float3(i, j, 0), &(c_translatedProjectionIndexTransformMatrices[12 * proj]));
+        double a = posProj.x / c_radius;
+        posProj.x = sin(a) * c_radius;
+        posProj.z += (1. - cos(a)) * c_radius;
+        pixelPos = matrix_multiply(posProj, &(c_translatedVolumeTransformMatrices[12 * proj]));
+      }
+
+      ray.d = pixelPos - ray.o;
+    }
     ray.d = ray.d / sqrtf(dot(ray.d, ray.d));
 
     int projOffset = numThread + proj * c_projSize.x * c_projSize.y;
@@ -170,6 +182,8 @@ CUDA_forward_project(int          projSize[3],
                      float *      dev_vol,
                      float        t_step,
                      float *      source_positions,
+                     float *      source_to_pixels,
+                     bool         is_parallel,
                      float        radiusCylindricalDetector,
                      float        box_min[3],
                      float        box_max[3],
@@ -184,12 +198,15 @@ CUDA_forward_project(int          projSize[3],
   cudaMemcpyToSymbol(c_volSize, volSize, sizeof(int3));
   cudaMemcpyToSymbol(c_tStep, &t_step, sizeof(float));
   cudaMemcpyToSymbol(c_radius, &radiusCylindricalDetector, sizeof(float));
+  int isParallel = is_parallel ? 1 : 0;
+  cudaMemcpyToSymbol(c_isParallel, &isParallel, sizeof(int));
 
   dim3 dimBlock = dim3(16, 16, 1);
   dim3 dimGrid = dim3(iDivUp(projSize[0], dimBlock.x), iDivUp(projSize[1], dimBlock.x));
 
   // Copy the source position matrix into a float3 in constant memory
   cudaMemcpyToSymbol(c_sourcePos, &(source_positions[0]), 3 * sizeof(float) * projSize[2]);
+  cudaMemcpyToSymbol(c_sourceToPixel, &(source_to_pixels[0]), 3 * sizeof(float) * projSize[2]);
 
   // Copy the projection matrices into constant memory
   cudaMemcpyToSymbol(c_translatedProjectionIndexTransformMatrices,

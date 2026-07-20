@@ -45,8 +45,10 @@ __constant__ float3 c_boxMax;
 __constant__ float3 c_spacing;
 __constant__ int3   c_volSize;
 __constant__ float  c_tStep;
-__constant__ float  c_matrices[SLAB_SIZE * 12]; // Can process stacks of at most SLAB_SIZE projections
-__constant__ float  c_sourcePos[SLAB_SIZE * 3]; // Can process stacks of at most SLAB_SIZE projections
+__constant__ float  c_matrices[SLAB_SIZE * 12];     // Can process stacks of at most SLAB_SIZE projections
+__constant__ float  c_sourcePos[SLAB_SIZE * 3];     // Can process stacks of at most SLAB_SIZE projections
+__constant__ float  c_sourceToPixel[SLAB_SIZE * 3]; // Can process stacks of at most SLAB_SIZE projections
+__constant__ int    c_isParallel;
 
 __constant__ float c_IndexInputToPPInputMatrix[12];
 __constant__ float c_IndexInputToIndexDVFMatrix[12];
@@ -80,12 +82,20 @@ kernel_warped_forwardProject(float *             dev_proj_in,
 
   for (unsigned int proj = 0; proj < c_projSize.z; proj++)
   {
-    // Setting ray origin
-    ray.o = make_float3(c_sourcePos[3 * proj], c_sourcePos[3 * proj + 1], c_sourcePos[3 * proj + 2]);
-
     pixelPos = matrix_multiply(make_float3(i, j, 0), &(c_matrices[12 * proj]));
 
-    ray.d = pixelPos - ray.o;
+    if (c_isParallel)
+    {
+      // Start outside the volume and follow the shared parallel ray direction.
+      ray.d = make_float3(c_sourceToPixel[3 * proj], c_sourceToPixel[3 * proj + 1], c_sourceToPixel[3 * proj + 2]);
+      ray.o = pixelPos - ray.d;
+    }
+    else
+    {
+      // Setting ray origin
+      ray.o = make_float3(c_sourcePos[3 * proj], c_sourcePos[3 * proj + 1], c_sourcePos[3 * proj + 2]);
+      ray.d = pixelPos - ray.o;
+    }
     ray.d = ray.d / sqrtf(dot(ray.d, ray.d));
 
     // Detect intersection with box
@@ -163,6 +173,8 @@ CUDA_warp_forward_project(int     projSize[3],
                           float * dev_vol,
                           float   t_step,
                           float * source_positions,
+                          float * source_to_pixels,
+                          bool    is_parallel,
                           float   box_min[3],
                           float   box_max[3],
                           float   spacing[3],
@@ -178,9 +190,12 @@ CUDA_warp_forward_project(int     projSize[3],
   cudaMemcpyToSymbol(c_spacing, spacing, sizeof(float3));
   cudaMemcpyToSymbol(c_volSize, volSize, sizeof(int3));
   cudaMemcpyToSymbol(c_tStep, &t_step, sizeof(float));
+  int isParallel = is_parallel ? 1 : 0;
+  cudaMemcpyToSymbol(c_isParallel, &isParallel, sizeof(int));
 
   // Copy the source position matrix into a float3 in constant memory
   cudaMemcpyToSymbol(c_sourcePos, &(source_positions[0]), 3 * sizeof(float) * projSize[2]);
+  cudaMemcpyToSymbol(c_sourceToPixel, &(source_to_pixels[0]), 3 * sizeof(float) * projSize[2]);
 
   // Copy the projection matrices into constant memory
   cudaMemcpyToSymbol(c_matrices, &(matrices[0]), 12 * sizeof(float) * projSize[2]);

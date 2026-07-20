@@ -136,5 +136,25 @@ rtkcudaraycastadjointoperatorstest(int, char *[])
     randomVolumeSource->GetOutput(), bp->GetOutput(), randomProjectionsSource->GetOutput(), fw->GetOutput());
   std::cout << "\n\nTest PASSED! " << std::endl;
 
+  // Start over with parallel geometry
+  geometry = rtk::ThreeDCircularProjectionGeometry::New();
+  for (unsigned int noProj = 0; noProj < NumberOfProjectionImages; noProj++)
+    geometry->AddProjection(600., 0., noProj * 360. / NumberOfProjectionImages);
+
+  std::cout << "\n\n****** CUDA ray cast Forward projector, parallel geometry ******" << std::endl;
+
+  fw->SetGeometry(geometry);
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(fw->Update());
+
+  std::cout << "\n\n****** CUDA ray cast Back projector, parallel geometry ******" << std::endl;
+
+  bp->SetGeometry(geometry.GetPointer());
+
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(bp->Update());
+
+  CheckScalarProducts<OutputImageType, OutputImageType>(
+    randomVolumeSource->GetOutput(), bp->GetOutput(), randomProjectionsSource->GetOutput(), fw->GetOutput());
+  std::cout << "\n\nTest PASSED! " << std::endl;
+
   return EXIT_SUCCESS;
 }
