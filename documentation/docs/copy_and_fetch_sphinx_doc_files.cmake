@@ -55,7 +55,7 @@ endforeach()
 if(POLICY CMP0009)
   cmake_policy(SET CMP0009 NEW)
 endif()
-set(link_content sha512)
+set(link_content cid)
 file(GLOB_RECURSE content_files "${RTK_DOC_OUTPUT_DIR}/*${link_content}")
 foreach(content_file ${content_files})
   file(
