@@ -409,6 +409,9 @@ rtk_add_test(rtkConjugateGradientExampleTest
   ../examples/ConjugateGradient/ConjugateGradient.cxx
   DATA{Input/Forbild/Thorax}
 )
+rtk_add_test(rtkMatlabSparseMatrixExampleTest
+  ../examples/MatlabSparseMatrix/MatlabSparseMatrixExample.cxx
+)
 
 #-----------------------------------------------------------------------------
 # Test drivers

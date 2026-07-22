@@ -22,4 +22,5 @@ providing efficient implementations for high-performance applications.
 ./InlineReconstruction/README.md
 ./AddNoise/README.md
 ./GeometricPhantom/README.md
+./MatlabSparseMatrix/README.md
 ```
