@@ -36,7 +36,6 @@ OSEMConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>::OSEMConeBeamRe
   this->SetNumberOfRequiredInputs(2);
 
   // Create each filter of the composite filter
-  m_ExtractFilter = ExtractFilterType::New();
   m_MultiplyFilter = MultiplyFilterType::New();
   m_ConstantImageSource = ConstantImageSourceType::New();
   m_ZeroConstantProjectionStackSource = ConstantProjectionSourceType::New();
@@ -49,11 +48,9 @@ OSEMConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>::OSEMConeBeamRe
   m_DivideVolumeFilter = DivideVolumeFilterType::New();
 
   // Permanent internal connections
-  m_DivideProjectionFilter->SetInput1(m_ExtractFilter->GetOutput());
   m_DivideVolumeFilter->SetInput1(m_MultiplyFilter->GetOutput());
 
   // Default parameters
-  m_ExtractFilter->SetDirectionCollapseToSubmatrix();
 }
 
 template <class TVolumeImage, class TProjectionImage>
@@ -86,7 +83,7 @@ OSEMConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>::GenerateOutput
 
   // We only set the first sub-stack at that point, the rest will be
   // requested in the GenerateData function
-  typename ExtractFilterType::InputImageRegionType projRegion;
+  typename ProjectionType::RegionType projRegion;
 
   // Set forward projection filter
   m_ForwardProjectionFilter = this->InstantiateForwardProjectionFilter(this->m_CurrentForwardProjectionConfiguration);
@@ -97,22 +94,19 @@ OSEMConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>::GenerateOutput
     this->InstantiateBackProjectionFilter(this->m_CurrentBackProjectionConfiguration);
 
   projRegion = this->GetInput(1)->GetLargestPossibleRegion();
-  m_ExtractFilter->SetExtractionRegion(projRegion);
-
-  m_ExtractFilter->SetInput(this->GetInput(1));
-  m_ExtractFilter->UpdateOutputInformation();
 
   // Links with the forward and back projection filters should be set here
   // and not in the constructor, as these filters are set at runtime
   m_ConstantImageSource->SetInformationFromImage(const_cast<TVolumeImage *>(this->GetInput(0)));
   m_ConstantImageSource->SetConstant(0);
 
-  m_OneConstantProjectionStackSource->SetInformationFromImage(
-    const_cast<TProjectionImage *>(m_ExtractFilter->GetOutput()));
+  // Create a zero-copy sub-region view for metadata setup
+  typename ProjectionType::Pointer projSubStack = rtk::ExtractImageSubRegion(this->GetInput(1), projRegion);
+  m_DivideProjectionFilter->SetInput1(projSubStack);
+  m_OneConstantProjectionStackSource->SetInformationFromImage(projSubStack.GetPointer());
   m_OneConstantProjectionStackSource->SetConstant(1);
 
-  m_ZeroConstantProjectionStackSource->SetInformationFromImage(
-    const_cast<TProjectionImage *>(m_ExtractFilter->GetOutput()));
+  m_ZeroConstantProjectionStackSource->SetInformationFromImage(projSubStack.GetPointer());
   m_ZeroConstantProjectionStackSource->SetConstant(0);
 
   m_BackProjectionFilter->SetInput(0, m_ConstantImageSource->GetOutput());
@@ -163,7 +157,7 @@ OSEMConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>::GenerateData()
   const unsigned int Dimension = this->InputImageDimension;
 
   // The backprojection works on one projection at a time
-  typename ExtractFilterType::InputImageRegionType subsetRegion;
+  typename ProjectionType::RegionType subsetRegion;
   subsetRegion = this->GetInput(1)->GetLargestPossibleRegion();
   unsigned int nProj = subsetRegion.GetSize(Dimension - 1);
   subsetRegion.SetSize(Dimension - 1, 1);
@@ -196,11 +190,21 @@ OSEMConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>::GenerateData()
     {
       // Change projection subset
       subsetRegion.SetIndex(Dimension - 1, projOrder[i]);
-      m_ExtractFilter->SetExtractionRegion(subsetRegion);
-      m_ExtractFilter->UpdateOutputInformation();
+      typename ProjectionType::Pointer projSubStack = rtk::ExtractImageSubRegion(this->GetInput(1), subsetRegion);
 
-      m_ZeroConstantProjectionStackSource->SetInformationFromImage(
-        const_cast<TProjectionImage *>(m_ExtractFilter->GetOutput()));
+      // Create a zero-copy constant projection for normalization backprojection
+      typename ConstantProjectionSourceType::Pointer oneNormProj = ConstantProjectionSourceType::New();
+      oneNormProj->SetInformationFromImage(projSubStack.GetPointer());
+      oneNormProj->SetConstant(1);
+
+      // Create a zero-copy constant projection for forward projection (zero input)
+      typename ConstantProjectionSourceType::Pointer zeroProj = ConstantProjectionSourceType::New();
+      zeroProj->SetInformationFromImage(projSubStack.GetPointer());
+      zeroProj->SetConstant(0);
+      zeroProj->Update();
+
+      m_DivideProjectionFilter->SetInput1(projSubStack);
+      m_ForwardProjectionFilter->SetInput(0, zeroProj->GetOutput());
 
       // This is required to reset the full pipeline
       m_BackProjectionFilter->GetOutput()->UpdateOutputInformation();
@@ -209,8 +213,8 @@ OSEMConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>::GenerateData()
       m_BackProjectionFilter->Update();
       if (iter == 0 || !m_StoreNormalizationImages)
       {
-        m_OneConstantProjectionStackSource->SetInformationFromImage(
-          const_cast<TProjectionImage *>(m_ExtractFilter->GetOutput()));
+        oneNormProj->SetInformationFromImage(projSubStack.GetPointer());
+        m_BackProjectionNormalizationFilter->SetInput(1, oneNormProj->GetOutput());
         m_BackProjectionNormalizationFilter->GetOutput()->UpdateOutputInformation();
         m_BackProjectionNormalizationFilter->GetOutput()->PropagateRequestedRegion();
         m_BackProjectionNormalizationFilter->Update();

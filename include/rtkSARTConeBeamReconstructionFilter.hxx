@@ -37,7 +37,6 @@ SARTConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>::SARTConeBeamRe
   m_Lambda = 0.3;
 
   // Create each filter of the composite filter
-  m_ExtractFilter = ExtractFilterType::New();
   m_ZeroMultiplyFilter = MultiplyFilterType::New();
   m_SubtractFilter = SubtractFilterType::New();
   m_AddFilter = AddFilterType::New();
@@ -49,7 +48,6 @@ SARTConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>::SARTConeBeamRe
 
   // Create the filters required for correct weighting of the difference
   // projection
-  m_ExtractFilterRayBox = ExtractFilterType::New();
   m_RayBoxFilter = RayBoxIntersectionFilterType::New();
   m_DivideProjectionFilter = DivideProjectionFilterType::New();
   m_ConstantProjectionStackSource = ConstantProjectionSourceType::New();
@@ -65,22 +63,16 @@ SARTConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>::SARTConeBeamRe
 
   // Permanent internal connections
   m_ZeroMultiplyFilter->SetInput1(itk::NumericTraits<typename ProjectionType::PixelType>::ZeroValue());
-  m_ZeroMultiplyFilter->SetInput2(m_ExtractFilter->GetOutput());
-
-  m_SubtractFilter->SetInput(0, m_ExtractFilter->GetOutput());
 
   m_MultiplyFilter->SetInput1(m_Lambda);
   m_MultiplyFilter->SetInput2(m_SubtractFilter->GetOutput());
 
-  m_ExtractFilterRayBox->SetInput(m_ConstantProjectionStackSource->GetOutput());
-  m_RayBoxFilter->SetInput(m_ExtractFilterRayBox->GetOutput());
+  m_RayBoxFilter->SetInput(m_ConstantProjectionStackSource->GetOutput());
   m_DivideProjectionFilter->SetInput1(m_MultiplyFilter->GetOutput());
   m_DivideProjectionFilter->SetInput2(m_RayBoxFilter->GetOutput());
   m_DisplacedDetectorFilter->SetInput(m_DivideProjectionFilter->GetOutput());
 
   // Default parameters
-  m_ExtractFilter->SetDirectionCollapseToSubmatrix();
-  m_ExtractFilterRayBox->SetDirectionCollapseToSubmatrix();
   m_DisplacedDetectorFilter->SetPadOnTruncatedSide(false);
 }
 
@@ -132,11 +124,14 @@ SARTConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>::GenerateOutput
 
   // We only set the first sub-stack at that point, the rest will be
   // requested in the GenerateData function
-  typename ExtractFilterType::InputImageRegionType projRegion;
+  typename ProjectionType::RegionType projRegion;
 
   projRegion = this->GetInput(1)->GetLargestPossibleRegion();
-  m_ExtractFilter->SetExtractionRegion(projRegion);
-  m_ExtractFilterRayBox->SetExtractionRegion(projRegion);
+
+  // Create a zero-copy view of the full projection stack initially
+  typename ProjectionType::Pointer projSubStack = rtk::ExtractImageSubRegion(this->GetInput(1), projRegion);
+  m_ZeroMultiplyFilter->SetInput2(projSubStack);
+  m_SubtractFilter->SetInput(0, projSubStack);
 
   // Set forward projection filter
   m_ForwardProjectionFilter = this->InstantiateForwardProjectionFilter(this->m_CurrentForwardProjectionConfiguration);
@@ -152,9 +147,12 @@ SARTConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>::GenerateOutput
   m_ConstantImageSource->SetConstant(0);
   m_ConstantImageSource->UpdateOutputInformation();
 
-  m_OneConstantProjectionStackSource->SetInformationFromImage(
-    const_cast<TProjectionImage *>(m_ExtractFilter->GetOutput()));
+  m_OneConstantProjectionStackSource->SetInformationFromImage(projSubStack.GetPointer());
   m_OneConstantProjectionStackSource->SetConstant(1);
+
+  // Create a zero-copy view of the constant projection stack for RayBox
+  typename ProjectionType::RegionType constantProjRegion;
+  constantProjRegion = m_ConstantProjectionStackSource->GetOutput()->GetLargestPossibleRegion();
 
   m_BackProjectionFilter->SetInput(0, m_ConstantImageSource->GetOutput());
   m_BackProjectionFilter->SetInput(1, m_DisplacedDetectorFilter->GetOutput());
@@ -186,7 +184,6 @@ SARTConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>::GenerateOutput
 
   m_ForwardProjectionFilter->SetInput(0, m_ZeroMultiplyFilter->GetOutput());
   m_ForwardProjectionFilter->SetInput(1, this->GetInput(0));
-  m_ExtractFilter->SetInput(this->GetInput(1));
   m_SubtractFilter->SetInput(1, m_ForwardProjectionFilter->GetOutput());
 
   m_ForwardProjectionFilter->SetGeometry(this->m_Geometry);
@@ -250,7 +247,7 @@ SARTConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>::GenerateData()
   const unsigned int Dimension = this->InputImageDimension;
 
   // The backprojection works on one projection at a time
-  typename ExtractFilterType::InputImageRegionType subsetRegion;
+  typename ProjectionType::RegionType subsetRegion;
   subsetRegion = this->GetInput(1)->GetLargestPossibleRegion();
   unsigned int nProj = subsetRegion.GetSize(Dimension - 1);
   subsetRegion.SetSize(Dimension - 1, 1);
@@ -278,14 +275,18 @@ SARTConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>::GenerateData()
     unsigned int projectionsProcessedInSubset = 0;
     for (unsigned int i = 0; i < nProj; i++)
     {
-      // Change projection subset
+      // Change projection subset and create zero-copy view for forward projection path
       subsetRegion.SetIndex(Dimension - 1, projOrder[i]);
-      m_ExtractFilter->SetExtractionRegion(subsetRegion);
-      m_ExtractFilterRayBox->SetExtractionRegion(subsetRegion);
-      m_ExtractFilter->UpdateOutputInformation();
+      typename ProjectionType::Pointer projSubStack = rtk::ExtractImageSubRegion(this->GetInput(1), subsetRegion);
+      m_ZeroMultiplyFilter->SetInput2(projSubStack);
+      m_SubtractFilter->SetInput(0, projSubStack);
 
-      m_OneConstantProjectionStackSource->SetInformationFromImage(
-        const_cast<TProjectionImage *>(m_ExtractFilter->GetOutput()));
+      // Update the constant sources with the current projection's metadata
+      // (the data object pointers stay the same; only metadata changes)
+      m_OneConstantProjectionStackSource->SetInformationFromImage(projSubStack.GetPointer());
+      m_OneConstantProjectionStackSource->SetConstant(1);
+      m_ConstantProjectionStackSource->SetInformationFromImage(projSubStack.GetPointer());
+      m_ConstantProjectionStackSource->SetConstant(0);
 
       // Set gating weight for the current projection
       if (m_IsGated)
