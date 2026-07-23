@@ -95,7 +95,8 @@ ConditionalMedianImageFilter<TInputImage>::DynamicThreadedGenerateData(
     std::nth_element(pixels.begin(), pixels.begin() + pixels.size() / 2, pixels.end());
 
     // If the pixel value is too far from the median, replace it by the median
-    if (std::abs<double>(pixels[pixels.size() / 2] - nIt.GetCenterPixel()) > (m_ThresholdMultiplier * stdev))
+    if (std::abs(static_cast<double>(pixels[pixels.size() / 2] - nIt.GetCenterPixel())) >
+        (m_ThresholdMultiplier * stdev))
       outIt.Set(pixels[pixels.size() / 2]);
     else // Otherwise, leave it as is
       outIt.Set(nIt.GetCenterPixel());
