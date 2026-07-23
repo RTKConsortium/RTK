@@ -15,7 +15,7 @@ find_package(Gengetopt)
 set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 # add path to RTK libraries to the install path
-set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${RTK_INSTALL_LIB_DIR}")
+set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/${RTK_INSTALL_LIBRARY_DIR}")
 
 #-----------------------------------------------------------------------------
 # Find ITK.

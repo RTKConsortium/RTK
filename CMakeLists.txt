@@ -33,28 +33,6 @@ set(RTK_VERSION_STRING "${RTK_VERSION_MAJOR}.${RTK_VERSION_MINOR}")
 
 set(RTK_LIBRARIES RTK)
 
-#=========================================================
-# Installation variables
-#=========================================================
-if(NOT CMAKE_INSTALL_LIBDIR)
-  set(CMAKE_INSTALL_LIBDIR lib)
-endif()
-if(NOT RTK_INSTALL_RUNTIME_DIR)
-  set(RTK_INSTALL_RUNTIME_DIR bin)
-endif()
-if(NOT RTK_INSTALL_LIB_DIR)
-  set(RTK_INSTALL_LIB_DIR ${CMAKE_INSTALL_LIBDIR})
-endif()
-if(NOT RTK_INSTALL_ARCHIVE_DIR)
-  set(RTK_INSTALL_ARCHIVE_DIR ${CMAKE_INSTALL_LIBDIR})
-endif()
-if(NOT RTK_INSTALL_INCLUDE_DIR)
-  set(RTK_INSTALL_INCLUDE_DIR include/RTK)
-endif()
-if(NOT RTK_INSTALL_PACKAGE_DIR)
-  set(RTK_INSTALL_PACKAGE_DIR "${CMAKE_INSTALL_LIBDIR}/cmake/RTK")
-endif()
-
 #Set position independent code for Unix (-fPIC)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
@@ -144,6 +122,9 @@ if(RTK_BUILD_SPHINX)
 endif()
 
 # Setup build locations.
+if(NOT CMAKE_INSTALL_LIBDIR)
+  set(CMAKE_INSTALL_LIBDIR lib)
+endif()
 if(NOT CMAKE_RUNTIME_OUTPUT_DIRECTORY)
   set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 endif()
