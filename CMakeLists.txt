@@ -349,13 +349,6 @@ install(
     ${RTK_SOURCE_DIR}/cmake/FindGengetopt.cmake
   DESTINATION ${ITK_INSTALL_PACKAGE_DIR}
 )
-if(NOT ITK_SOURCE_DIR)
-  install(
-    CODE
-      "MESSAGE(FATAL_ERROR \"Cannot install, RTK is compiled separately from ITK. Installation is only functional if RTK is compiled within ITK.\")"
-  )
-endif()
-
 #=========================================================
 # Build applications
 #=========================================================
