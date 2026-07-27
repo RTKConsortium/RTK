@@ -30,10 +30,11 @@
 #include <itkAddImageAdaptor.h>
 #include <itkAddImageFilter.h>
 #include <itkDivideOrZeroOutImageFilter.h>
-#include <itkExtractImageFilter.h>
 #include <itkMultiplyImageFilter.h>
 #include <itkSubtractImageFilter.h>
 #include <itkThresholdImageFilter.h>
+
+#include "rtkExtractImageSubRegion.h"
 
 namespace rtk
 {
@@ -48,8 +49,8 @@ namespace rtk
  * - SubtractImageFilter,
  * - BackProjectionImageFilter.
  * The input stack of projections is processed piece by piece (the size is
- * controlled with ProjectionSubsetSize) via the use of itk::ExtractImageFilter
- * to extract sub-stacks.
+ * controlled with ProjectionSubsetSize) by extracting sub-stacks directly
+ * from the input buffer pointer (zero-copy).
  *
  * Two weighting steps must be applied when processing a given projection:
  * - each pixel of the forward projection must be divided by the total length of the
@@ -156,7 +157,6 @@ public:
   using ProjectionPixelType = typename ProjectionType::PixelType;
 
   /** Typedefs of each subfilter of this composite filter */
-  using ExtractFilterType = itk::ExtractImageFilter<ProjectionType, ProjectionType>;
   using MultiplyFilterType = itk::MultiplyImageFilter<ProjectionType, ProjectionType, ProjectionType>;
   using ForwardProjectionFilterType = rtk::ForwardProjectionImageFilter<ProjectionType, VolumeType>;
   using SubtractFilterType = itk::SubtractImageFilter<ProjectionType, ProjectionType>;
@@ -246,8 +246,6 @@ protected:
   {}
 
   /** Pointers to each subfilter of this composite filter */
-  typename ExtractFilterType::Pointer            m_ExtractFilter;
-  typename ExtractFilterType::Pointer            m_ExtractFilterRayBox;
   typename MultiplyFilterType::Pointer           m_ZeroMultiplyFilter;
   typename ForwardProjectionFilterType::Pointer  m_ForwardProjectionFilter;
   typename SubtractFilterType::Pointer           m_SubtractFilter;

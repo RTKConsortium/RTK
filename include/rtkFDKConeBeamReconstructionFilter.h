@@ -23,8 +23,7 @@
 #include "rtkConfiguration.h"
 #include "rtkFDKBackProjectionImageFilter.h"
 #include "rtkFFTRampImageFilter.h"
-
-#include <itkExtractImageFilter.h>
+#include "rtkExtractImageSubRegion.h"
 
 namespace rtk
 {
@@ -38,8 +37,8 @@ namespace rtk
  * - rtk::FFTRampImageFilter for ramp filtering,
  * - rtk::FDKBackProjectionImageFilter for backprojection.
  * The input stack of projections is processed piece by piece (the size is
- * controlled with ProjectionSubsetSize) via the use of itk::ExtractImageFilter
- * to extract sub-stacks.
+ * controlled with ProjectionSubsetSize) by extracting sub-stacks directly
+ * from the input buffer pointer (zero-copy).
  *
  * \dot
  * digraph FDKConeBeamReconstructionFilter {
@@ -76,7 +75,6 @@ public:
   using OutputImageType = TOutputImage;
 
   /** Typedefs of each subfilter of this composite filter */
-  using ExtractFilterType = itk::ExtractImageFilter<InputImageType, OutputImageType>;
   using WeightFilterType = rtk::FDKWeightProjectionFilter<InputImageType, OutputImageType>;
   using RampFilterType = rtk::FFTRampImageFilter<OutputImageType, OutputImageType, TFFTPrecision>;
   using BackProjectionFilterType = rtk::FDKBackProjectionImageFilter<OutputImageType, OutputImageType>;
@@ -142,10 +140,9 @@ protected:
   {}
 
   /** Pointers to each subfilter of this composite filter */
-  typename ExtractFilterType::Pointer m_ExtractFilter;
-  typename WeightFilterType::Pointer  m_WeightFilter;
-  typename RampFilterType::Pointer    m_RampFilter;
-  BackProjectionFilterPointer         m_BackProjectionFilter;
+  typename WeightFilterType::Pointer m_WeightFilter;
+  typename RampFilterType::Pointer   m_RampFilter;
+  BackProjectionFilterPointer        m_BackProjectionFilter;
 
 private:
   /** Number of projections processed at a time. */

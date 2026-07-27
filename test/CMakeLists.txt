@@ -113,6 +113,9 @@ endif()
 rtk_add_test(rtkFDKTest rtkfdktest.cxx)
 rtk_add_cuda_test(rtkFDKCudaTest rtkfdktest.cxx)
 
+rtk_add_test(rtkExtractImageSubRegionTest rtkextractimagesubregiontest.cxx)
+rtk_add_cuda_test(rtkExtractImageSubRegionCudaTest rtkextractimagesubregiontest.cxx)
+
 rtk_add_cuda_test(rtkFDKProjWeightCompCudaTest rtkfdkprojweightcompcudatest.cxx)
 
 rtk_add_test(rtkFBPParallelTest rtkfbpparalleltest.cxx)
