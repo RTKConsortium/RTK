@@ -26,10 +26,10 @@
 #include <itkAddImageAdaptor.h>
 #include <itkDivideImageFilter.h>
 #include <itkDivideOrZeroOutImageFilter.h>
-#include <itkExtractImageFilter.h>
 #include <itkMultiplyImageFilter.h>
 
 #include "rtkConstantImageSource.h"
+#include "rtkSubRegionViewImageFilter.h"
 #include "rtkIterativeConeBeamReconstructionFilter.h"
 
 namespace rtk
@@ -45,7 +45,7 @@ namespace rtk
  * - DivideImageFilter,
  * - BackProjectionImageFilter.
  * The input stack of projections is processed piece by piece (the size is
- * controlled with ProjectionSubsetSize) via the use of itk::ExtractImageFilter
+ * controlled with ProjectionSubsetSize) via the use of rtk::SubRegionViewImageFilter
  * to extract sub-stacks.
  *
  * One weighting steps must be applied when processing a given subset:
@@ -69,7 +69,7 @@ namespace rtk
  *
  *  node [shape=box];
  *  ForwardProject [ label="rtk::ForwardProjectionImageFilter" URL="\ref rtk::ForwardProjectionImageFilter"];
- *  Extract [ label="itk::ExtractImageFilter" URL="\ref itk::ExtractImageFilter"];
+ *  Extract [ label="rtk::SubRegionViewImageFilter" URL="\ref rtk::SubRegionViewImageFilter"];
  *  Divide1 [ label="itk::DivideImageFilter" URL="\ref itk::DivideImageFilter"];
  *  Divide [ label="itk::DivideImageFilter" URL="\ref itk::DivideImageFilter"];
  *  ProjectionZero [ label="rtk::ConstantImageSource (full of zero)" URL="\ref rtk::ConstantImageSource"];
@@ -132,7 +132,7 @@ public:
   using ProjectionType = TProjectionImage;
 
   /** Typedefs of each subfilter of this composite filter */
-  using ExtractFilterType = itk::ExtractImageFilter<ProjectionType, ProjectionType>;
+  using ExtractFilterType = rtk::SubRegionViewImageFilter<ProjectionType>;
   using MultiplyFilterType = itk::MultiplyImageFilter<VolumeType, VolumeType, VolumeType>;
   using ForwardProjectionFilterType = rtk::ForwardProjectionImageFilter<ProjectionType, VolumeType>;
   using BackProjectionFilterType = rtk::BackProjectionImageFilter<VolumeType, ProjectionType>;
