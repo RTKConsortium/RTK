@@ -151,9 +151,9 @@ endif()
 #=========================================================
 # lp_solve library
 #=========================================================
-add_subdirectory(utilities/lp_solve)
 
 if("${ITK_VERSION_MAJOR}" VERSION_LESS "6")
+  add_subdirectory(utilities/lp_solve)
   set(
     LPSOLVE_INCLUDE_DIRS
     ${PROJECT_SOURCE_DIR}/utilities/lp_solve
@@ -246,9 +246,15 @@ if(NOT ITK_SOURCE_DIR)
   # Add third party to RTK build targets.
   # This must be done after RTK has been loaded by ITK to make sure
   # ${itk-module} variables are defined for RTK.
-  itk_module_target(lpsolve55)
+  if("${ITK_VERSION_MAJOR}" VERSION_LESS "6")
+    itk_module_target(lpsolve55)
+  endif()
 else()
   itk_module_impl()
+endif()
+
+if("${ITK_VERSION_MAJOR}" VERSION_GREATER_EQUAL "6")
+  add_subdirectory(utilities/lp_solve)
 endif()
 
 # Propagate cmake options in a header file

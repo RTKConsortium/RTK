@@ -38,6 +38,9 @@ add_library(
   lp_utils.c
   yacc_read.c
 )
+if(NOT ITK_SOURCE_DIR AND "${ITK_VERSION_MAJOR}" VERSION_GREATER_EQUAL "6")
+  itk_module_target(lpsolve55)
+endif()
 
 if("${ITK_VERSION_MAJOR}" VERSION_LESS "6")
   include_directories(
