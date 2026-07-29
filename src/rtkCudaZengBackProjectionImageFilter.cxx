@@ -28,27 +28,6 @@ namespace
 {
 using MatrixType = ThreeDCircularProjectionGeometry::ThreeDHomogeneousMatrixType;
 
-float *
-GetCudaBufferPointer(const itk::CudaDataManager::Pointer & manager)
-{
-  void *                candidate = manager->GetGPUBufferPointer();
-  cudaPointerAttributes attributes{};
-  if (cudaPointerGetAttributes(&attributes, candidate) == cudaSuccess &&
-      (attributes.type == cudaMemoryTypeDevice || attributes.type == cudaMemoryTypeManaged))
-    return static_cast<float *>(candidate);
-
-  // CudaCommon versions before 2.0 returned void** here. Current versions
-  // return void*. Supporting both keeps the filter GPU-resident with either API.
-  cudaGetLastError();
-  void * indirectCandidate = *static_cast<void **>(candidate);
-  if (cudaPointerGetAttributes(&attributes, indirectCandidate) == cudaSuccess &&
-      (attributes.type == cudaMemoryTypeDevice || attributes.type == cudaMemoryTypeManaged))
-    return static_cast<float *>(indirectCandidate);
-
-  cudaGetLastError();
-  itkGenericExceptionMacro(<< "CudaDataManager did not provide a valid CUDA buffer.");
-}
-
 MatrixType
 TransformMatrix(const itk::CenteredEuler3DTransform<double> * transform)
 {
@@ -167,12 +146,12 @@ CudaZengBackProjectionImageFilter::GPUGenerateData()
 
   const auto    projectionOffset = firstProjection - projectionRegion.GetIndex(2);
   const auto    pixelsPerProjection = projectionSize[0] * projectionSize[1];
-  const float * projections =
-    GetCudaBufferPointer(this->GetInput(1)->GetCudaDataManager()) + projectionOffset * pixelsPerProjection;
-  const float * volumeIn = GetCudaBufferPointer(this->GetInput(0)->GetCudaDataManager());
-  float *       volumeOut = GetCudaBufferPointer(this->GetOutput()->GetCudaDataManager());
+  const float * projections = static_cast<float *>(this->GetInput(1)->GetCudaDataManager()->GetGPUBufferPointer()) +
+                              projectionOffset * pixelsPerProjection;
+  const float * volumeIn = static_cast<float *>(this->GetInput(0)->GetCudaDataManager()->GetGPUBufferPointer());
+  float *       volumeOut = static_cast<float *>(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
   const float * attenuation =
-    this->GetInput(2) ? GetCudaBufferPointer(this->GetInput(2)->GetCudaDataManager()) : nullptr;
+    this->GetInput(2) ? static_cast<float *>(this->GetInput(2)->GetCudaDataManager()->GetGPUBufferPointer()) : nullptr;
   CUDA_zeng_back_project(projectionSize,
                          volumeSize,
                          rotatedSize,
