@@ -12,7 +12,7 @@ def add_rtkprojectors_group(parser):
         "--fp",
         "-f",
         help="Forward projection method",
-        choices=["Joseph", "CudaRayCast", "JosephAttenuated", "Zeng"],
+        choices=["Joseph", "CudaRayCast", "JosephAttenuated", "Zeng", "CudaZeng"],
         default="Joseph",
     )
     rtkprojectors_group.add_argument(
@@ -26,6 +26,7 @@ def add_rtkprojectors_group(parser):
             "CudaRayCast",
             "JosephAttenuated",
             "Zeng",
+            "CudaZeng",
         ],
         default="VoxelBasedBackProjection",
     )
@@ -97,6 +98,14 @@ def SetBackProjectionFromArgParse(args_info, recon):
             recon.SetAlphaPSF(args_info.alphapsf)
         if args_info.attenuationmap is not None:
             recon.SetAttenuationMap(attenuation_map)
+    elif args_info.bp == "CudaZeng":
+        recon.SetBackProjectionFilter(ReconType.BackProjectionType_BP_CUDAZENG)
+        if args_info.sigmazero is not None:
+            recon.SetSigmaZero(args_info.sigmazero)
+        if args_info.alphapsf is not None:
+            recon.SetAlphaPSF(args_info.alphapsf)
+        if args_info.attenuationmap is not None:
+            recon.SetAttenuationMap(attenuation_map)
 
 
 # Mimicks SetForwardProjectionFromGgo
@@ -121,6 +130,14 @@ def SetForwardProjectionFromArgParse(args_info, recon):
         recon.SetAttenuationMap(attenuation_map)
     elif args_info.fp == "Zeng":  # fp_arg_RotationBased
         recon.SetForwardProjectionFilter(ReconType.ForwardProjectionType_FP_ZENG)
+        if args_info.sigmazero is not None:
+            recon.SetSigmaZero(args_info.sigmazero)
+        if args_info.alphapsf is not None:
+            recon.SetAlphaPSF(args_info.alphapsf)
+        if args_info.attenuationmap is not None:
+            recon.SetAttenuationMap(attenuation_map)
+    elif args_info.fp == "CudaZeng":
+        recon.SetForwardProjectionFilter(ReconType.ForwardProjectionType_FP_CUDAZENG)
         if args_info.sigmazero is not None:
             recon.SetSigmaZero(args_info.sigmazero)
         if args_info.alphapsf is not None:
