@@ -412,6 +412,15 @@ SetBackProjectionFromGgo(const TArgsInfo & args_info, TIterativeReconstructionFi
       if (args_info.attenuationmap_given)
         recon->SetAttenuationMap(attenuationMap);
       break;
+    case (6): // bp_arg_CudaZeng
+      recon->SetBackProjectionFilter(TIterativeReconstructionFilter::BP_CUDAZENG);
+      if (args_info.sigmazero_given)
+        recon->SetSigmaZero(args_info.sigmazero_arg);
+      if (args_info.alphapsf_given)
+        recon->SetAlphaPSF(args_info.alphapsf_arg);
+      if (args_info.attenuationmap_given)
+        recon->SetAttenuationMap(attenuationMap);
+      break;
   }
 }
 
@@ -474,6 +483,15 @@ SetForwardProjectionFromGgo(const TArgsInfo & args_info, TIterativeReconstructio
       break;
     case (3): // fp_arg_RotationBased
       recon->SetForwardProjectionFilter(TIterativeReconstructionFilter::FP_ZENG);
+      if (args_info.sigmazero_given)
+        recon->SetSigmaZero(args_info.sigmazero_arg);
+      if (args_info.alphapsf_given)
+        recon->SetAlphaPSF(args_info.alphapsf_arg);
+      if (args_info.attenuationmap_given)
+        recon->SetAttenuationMap(attenuationMap);
+      break;
+    case (4): // fp_arg_CudaZeng
+      recon->SetForwardProjectionFilter(TIterativeReconstructionFilter::FP_CUDAZENG);
       if (args_info.sigmazero_given)
         recon->SetSigmaZero(args_info.sigmazero_arg);
       if (args_info.alphapsf_given)

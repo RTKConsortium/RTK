@@ -4,6 +4,9 @@
 #include "rtkJosephForwardAttenuatedProjectionImageFilter.h"
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkZengForwardProjectionImageFilter.h"
+#ifdef USE_CUDA
+#  include "rtkCudaZengForwardProjectionImageFilter.h"
+#endif
 #include <cmath>
 #include <itkImageRegionIterator.h>
 #include <itkImageRegionSplitterDirection.h>
@@ -34,7 +37,12 @@ rtkzengforwardprojectiontest(int, char *[])
 #endif
 
   // Constant image sources
-  using ConstantImageSourceType = rtk::ConstantImageSource<OutputImageType>;
+#ifdef USE_CUDA
+  using InputImageType = itk::CudaImage<OutputPixelType, Dimension>;
+#else
+  using InputImageType = OutputImageType;
+#endif
+  using ConstantImageSourceType = rtk::ConstantImageSource<InputImageType>;
   constexpr double att = 0.0154;
   // Create Joseph Forward Projector volume input.
   auto origin = itk::MakePoint(-126., -126., -126.);
@@ -69,7 +77,7 @@ rtkzengforwardprojectiontest(int, char *[])
   projInput->Update();
 
 
-  auto volInput = rtk::DrawEllipsoidImageFilter<OutputImageType, OutputImageType>::New();
+  auto volInput = rtk::DrawEllipsoidImageFilter<InputImageType, InputImageType>::New();
   auto axis_vol = itk::MakeVector(32., 32., 32.);
   auto center_vol = itk::MakePoint(0., 0., 0.);
   volInput->SetInput(tomographySource->GetOutput());
@@ -80,14 +88,18 @@ rtkzengforwardprojectiontest(int, char *[])
 
   // Zeng Forward Projection filter
 
-  auto jfp = rtk::ZengForwardProjectionImageFilter<OutputImageType, OutputImageType>::New();
+#ifdef USE_CUDA
+  auto jfp = rtk::CudaZengForwardProjectionImageFilter::New();
+#else
+  auto jfp = rtk::ZengForwardProjectionImageFilter<InputImageType, InputImageType>::New();
+#endif
   jfp->InPlaceOff();
   jfp->SetInput(projInput->GetOutput());
   jfp->SetInput(1, volInput->GetOutput());
   jfp->SetInput(2, attenuationInput->GetOutput());
 
   // Joseph Forward Attenuated Projection filter
-  auto attjfp = rtk::JosephForwardAttenuatedProjectionImageFilter<OutputImageType, OutputImageType>::New();
+  auto attjfp = rtk::JosephForwardAttenuatedProjectionImageFilter<InputImageType, InputImageType>::New();
   attjfp->InPlaceOff();
   attjfp->SetInput(projInput->GetOutput());
   attjfp->SetInput(1, volInput->GetOutput());
@@ -107,7 +119,15 @@ rtkzengforwardprojectiontest(int, char *[])
   jfp->SetSigmaZero(0.);
   jfp->Update();
 
-  CheckImageQuality<OutputImageType>(jfp->GetOutput(), attjfp->GetOutput(), 0.1, 44.0, 255.0);
+#ifdef USE_CUDA
+  if (!jfp->GetOutput()->GetCudaDataManager()->IsCPUBufferDirty())
+  {
+    std::cerr << "CUDA Zeng output was unexpectedly synchronized back to the CPU." << std::endl;
+    return EXIT_FAILURE;
+  }
+#endif
+
+  CheckImageQuality<InputImageType>(jfp->GetOutput(), attjfp->GetOutput(), 0.1, 44.0, 255.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 
   return EXIT_SUCCESS;
