@@ -380,7 +380,7 @@ SetBackProjectionFromGgo(const TArgsInfo & args_info, TIterativeReconstructionFi
     attenuationMap = itk::ReadImage<VolumeType>(args_info.attenuationmap_arg);
   }
 
-  switch (args_info.bp_arg)
+  switch (static_cast<int>(args_info.bp_arg))
   {
     case (-1): // bp__NULL, keep default
       break;
@@ -456,7 +456,7 @@ SetForwardProjectionFromGgo(const TArgsInfo & args_info, TIterativeReconstructio
     superiorClipImage = itk::ReadImage<ClipImageType>(args_info.superiorclipimage_arg);
   }
 
-  switch (args_info.fp_arg)
+  switch (static_cast<int>(args_info.fp_arg))
   {
     case (-1): // fp__NULL, keep default
       break;
