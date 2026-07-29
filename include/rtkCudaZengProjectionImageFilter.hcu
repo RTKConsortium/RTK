@@ -1,0 +1,43 @@
+/*=========================================================================
+ * CUDA entry points shared by the Zeng forward and backprojectors.
+ *=========================================================================*/
+#ifndef rtkCudaZengProjectionImageFilter_hcu
+#define rtkCudaZengProjectionImageFilter_hcu
+
+#include "RTKExport.h"
+
+void RTK_EXPORT
+CUDA_zeng_forward_project(const int    projectionSize[3],
+                          const int    volumeSize[3],
+                          const int    rotatedSize[3],
+                          const float  rotatedSpacing[3],
+                          const float *rotatedToVolumeMatrices,
+                          const float *farDistances,
+                          const float *devProjectionIn,
+                          float *      devProjectionOut,
+                          const float *devVolume,
+                          const float *devAttenuation,
+                          float        sigmaZero,
+                          float        alpha,
+                          void **      workspace);
+
+void RTK_EXPORT
+CUDA_zeng_back_project(const int    projectionSize[3],
+                       const int    volumeSize[3],
+                       const int    rotatedSize[3],
+                       const float  rotatedSpacing[3],
+                       const float *volumeToRotatedMatrices,
+                       const float *nearDistances,
+                       const int *  firstSlices,
+                       const float *devVolumeIn,
+                       float *      devVolumeOut,
+                       const float *devProjections,
+                       const float *devAttenuation,
+                       float        sigmaZero,
+                       float        alpha,
+                       void **      workspace);
+
+void RTK_EXPORT
+CUDA_zeng_release_workspace(void * workspace);
+
+#endif
