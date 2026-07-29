@@ -66,11 +66,9 @@ SimplexSpectralProjectionsDecompositionImageFilter<
   m_LogTransformEachBin = false;
   m_GuessInitialization = false;
 
-#ifndef ITK_FUTURE_LEGACY_REMOVE
   // Instantiate the filters required in the overload of SetInputIncidentSpectrum
   m_FlattenFilter = FlattenVectorFilterType::New();
   m_PermuteFilter = PermuteFilterType::New();
-#endif
 }
 
 template <typename DecomposedProjectionsType,
@@ -301,7 +299,6 @@ SimplexSpectralProjectionsDecompositionImageFilter<
   this->SetInput("IncidentSpectrum", const_cast<IncidentSpectrumImageType *>(IncidentSpectrum));
 }
 
-#ifndef ITK_FUTURE_LEGACY_REMOVE
 template <typename DecomposedProjectionsType,
           typename MeasuredProjectionsType,
           typename IncidentSpectrumImageType,
@@ -324,7 +321,6 @@ SimplexSpectralProjectionsDecompositionImageFilter<
   this->m_PermuteFilter->SetOrder(order);
   this->SetInputIncidentSpectrum(m_PermuteFilter->GetOutput());
 }
-#endif
 
 template <typename DecomposedProjectionsType,
           typename MeasuredProjectionsType,

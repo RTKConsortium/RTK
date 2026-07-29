@@ -313,8 +313,8 @@ private:
   typename itk::ImageSource<TOutputImage>::Pointer m_RawCastFilter;
 
   /** Pointers for post-processing filters that are created only when required. */
-  typename WaterPrecorrectionType::Pointer m_WaterPrecorrectionFilter;
-  typename StreamingType::Pointer          m_StreamingFilter;
+  itk::ProcessObject::Pointer     m_WaterPrecorrectionFilter;
+  typename StreamingType::Pointer m_StreamingFilter;
 
   /** Image IO object which is stored to create the pipe only when required */
   itk::ImageIOBase::Pointer m_ImageIO{ nullptr };
