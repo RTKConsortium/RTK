@@ -168,7 +168,12 @@ def process(args_info: argparse.Namespace):
             print("The program has not been compiled with cuda option")
             sys.exit(1)
 
-    if args_info.bp in ["CudaFDKBackProjection", "CudaBackProjection", "CudaRayCast", "CudaZeng"]:
+    if args_info.bp in [
+        "CudaFDKBackProjection",
+        "CudaBackProjection",
+        "CudaRayCast",
+        "CudaZeng",
+    ]:
         bp.SetInput(itk.cuda_image_from_image(constantImageSource.GetOutput()))
         bp.SetInput(1, itk.cuda_image_from_image(reader.GetOutput()))
         if attenuation_map:

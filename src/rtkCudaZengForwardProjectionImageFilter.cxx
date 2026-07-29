@@ -1,5 +1,19 @@
 /*=========================================================================
- * CUDA Zeng forward projector host-side implementation.
+ *
+ *  Copyright RTK Consortium
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *         https://www.apache.org/licenses/LICENSE-2.0.txt
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
  *=========================================================================*/
 #include "rtkCudaZengForwardProjectionImageFilter.h"
 
@@ -17,7 +31,7 @@ using MatrixType = ThreeDCircularProjectionGeometry::ThreeDHomogeneousMatrixType
 float *
 GetCudaBufferPointer(const itk::CudaDataManager::Pointer & manager)
 {
-  void * candidate = manager->GetGPUBufferPointer();
+  void *                candidate = manager->GetGPUBufferPointer();
   cudaPointerAttributes attributes{};
   if (cudaPointerGetAttributes(&attributes, candidate) == cudaSuccess &&
       (attributes.type == cudaMemoryTypeDevice || attributes.type == cudaMemoryTypeManaged))
@@ -61,10 +75,7 @@ StoreTextureMatrix(const MatrixType & matrix, const itk::Index<3> & bufferedInde
 }
 } // namespace
 
-CudaZengForwardProjectionImageFilter::CudaZengForwardProjectionImageFilter()
-{
-  this->InPlaceOff();
-}
+CudaZengForwardProjectionImageFilter::CudaZengForwardProjectionImageFilter() { this->InPlaceOff(); }
 
 CudaZengForwardProjectionImageFilter::~CudaZengForwardProjectionImageFilter()
 {
@@ -79,25 +90,25 @@ CudaZengForwardProjectionImageFilter::GPUGenerateData()
     itkGenericExceptionMacro(<< "CudaZengForwardProjectionImageFilter requires a projection geometry.");
 
   constexpr unsigned int Dimension = 3;
-  const auto & projectionRegion = this->GetOutput()->GetBufferedRegion();
-  const auto & volumeRegion = this->GetInput(1)->GetBufferedRegion();
-  const unsigned int firstProjection = this->GetOutput()->GetRequestedRegion().GetIndex(2);
-  const unsigned int numberOfProjections = this->GetOutput()->GetRequestedRegion().GetSize(2);
+  const auto &           projectionRegion = this->GetOutput()->GetBufferedRegion();
+  const auto &           volumeRegion = this->GetInput(1)->GetBufferedRegion();
+  const unsigned int     firstProjection = this->GetOutput()->GetRequestedRegion().GetIndex(2);
+  const unsigned int     numberOfProjections = this->GetOutput()->GetRequestedRegion().GetSize(2);
 
-  int projectionSize[3] = { static_cast<int>(projectionRegion.GetSize(0)),
-                            static_cast<int>(projectionRegion.GetSize(1)),
-                            static_cast<int>(numberOfProjections) };
-  int volumeSize[3] = { static_cast<int>(volumeRegion.GetSize(0)),
-                        static_cast<int>(volumeRegion.GetSize(1)),
-                        static_cast<int>(volumeRegion.GetSize(2)) };
-  int rotatedSize[3] = { projectionSize[0],
-                         projectionSize[1],
-                         static_cast<int>(std::ceil(volumeRegion.GetSize(2) * std::sqrt(2.0))) };
+  int   projectionSize[3] = { static_cast<int>(projectionRegion.GetSize(0)),
+                              static_cast<int>(projectionRegion.GetSize(1)),
+                              static_cast<int>(numberOfProjections) };
+  int   volumeSize[3] = { static_cast<int>(volumeRegion.GetSize(0)),
+                          static_cast<int>(volumeRegion.GetSize(1)),
+                          static_cast<int>(volumeRegion.GetSize(2)) };
+  int   rotatedSize[3] = { projectionSize[0],
+                           projectionSize[1],
+                           static_cast<int>(std::ceil(volumeRegion.GetSize(2) * std::sqrt(2.0))) };
   float rotatedSpacing[3] = { static_cast<float>(this->GetInput(0)->GetSpacing()[0]),
                               static_cast<float>(this->GetInput(0)->GetSpacing()[1]),
                               static_cast<float>(this->GetInput(1)->GetSpacing()[2]) };
 
-  CPUImageType::PointType volumeCenter;
+  CPUImageType::PointType                 volumeCenter;
   itk::ContinuousIndex<double, Dimension> centerIndex;
   for (unsigned int d = 0; d < Dimension; ++d)
     centerIndex[d] = volumeRegion.GetIndex(d) + (volumeRegion.GetSize(d) - 1.0) / 2.0;
@@ -106,17 +117,17 @@ CudaZengForwardProjectionImageFilter::GPUGenerateData()
   std::vector<float> matrices(12 * numberOfProjections);
   std::vector<float> farDistances(numberOfProjections);
   using TransformType = itk::CenteredEuler3DTransform<double>;
-  auto transform = TransformType::New();
+  auto                          transform = TransformType::New();
   TransformType::InputPointType zero{};
   transform->SetCenter(zero);
 
-  auto rotatedImage = CPUImageType::New();
-  CPUImageType::SpacingType spacing;
-  CPUImageType::PointType origin;
+  auto                        rotatedImage = CPUImageType::New();
+  CPUImageType::SpacingType   spacing;
+  CPUImageType::PointType     origin;
   CPUImageType::DirectionType direction = this->GetInput(0)->GetDirection();
-  CPUImageType::RegionType rotatedRegion;
-  CPUImageType::IndexType rotatedIndex{};
-  CPUImageType::SizeType rotatedImageSize;
+  CPUImageType::RegionType    rotatedRegion;
+  CPUImageType::IndexType     rotatedIndex{};
+  CPUImageType::SizeType      rotatedImageSize;
   for (unsigned int d = 0; d < 3; ++d)
   {
     spacing[d] = rotatedSpacing[d];
@@ -131,7 +142,7 @@ CudaZengForwardProjectionImageFilter::GPUGenerateData()
   for (unsigned int local = 0; local < numberOfProjections; ++local)
   {
     const unsigned int projection = firstProjection + local;
-    const double angle = geometry->GetGantryAngles()[projection];
+    const double       angle = geometry->GetGantryAngles()[projection];
     transform->SetRotation(0., angle, 0.);
     transform->SetTranslation(itk::MakeVector(geometry->GetProjectionOffsetsX()[projection] * std::cos(-angle),
                                               geometry->GetProjectionOffsetsY()[projection],
@@ -151,10 +162,10 @@ CudaZengForwardProjectionImageFilter::GPUGenerateData()
                                              spacing[2] * (rotatedSize[2] - 1));
   }
 
-  const auto projectionOffset = firstProjection - projectionRegion.GetIndex(2);
-  const auto pixelsPerProjection = projectionSize[0] * projectionSize[1];
-  const float * projectionIn = GetCudaBufferPointer(this->GetInput(0)->GetCudaDataManager()) +
-                               projectionOffset * pixelsPerProjection;
+  const auto    projectionOffset = firstProjection - projectionRegion.GetIndex(2);
+  const auto    pixelsPerProjection = projectionSize[0] * projectionSize[1];
+  const float * projectionIn =
+    GetCudaBufferPointer(this->GetInput(0)->GetCudaDataManager()) + projectionOffset * pixelsPerProjection;
   float * projectionOut =
     GetCudaBufferPointer(this->GetOutput()->GetCudaDataManager()) + projectionOffset * pixelsPerProjection;
   const float * volume = GetCudaBufferPointer(this->GetInput(1)->GetCudaDataManager());

@@ -22,8 +22,8 @@
  *
  * This test generates a random volume "v" and a random set of projections "p",
  * and compares the scalar products <Rv , p> and <v, R* p>, where R is either the
- * Joseph forward projector or the Cuda ray cast forward projector,
- * and R* is either the Joseph back projector or the Cuda ray cast back projector.
+ * Joseph or Zeng forward projector, including their CUDA implementations,
+ * and R* is the corresponding backprojector.
  * If R* is indeed the adjoint of R, these scalar products are equal.
  *
  * \author Cyril Mory

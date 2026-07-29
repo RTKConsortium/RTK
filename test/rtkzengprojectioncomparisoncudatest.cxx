@@ -14,6 +14,15 @@
 #include <iostream>
 #include <limits>
 
+/**
+ * \file rtkzengprojectioncomparisoncudatest.cxx
+ *
+ * \brief Compares the CPU and CUDA Zeng projectors.
+ *
+ * The test checks forward projection and backprojection, with and without an
+ * attenuation map. It also verifies that CUDA outputs remain GPU-resident.
+ */
+
 namespace
 {
 template <typename TReferenceImage, typename TResultImage>
@@ -171,8 +180,7 @@ rtkzengprojectioncomparisoncudatest(int, char *[])
     std::cerr << "Attenuated CUDA Zeng forward output was synchronized to the CPU." << std::endl;
     return EXIT_FAILURE;
   }
-  CheckError(
-    "Attenuated forward", RelativeL2Error(cpuForward->GetOutput(), cudaForward->GetOutput()), 5.e-4);
+  CheckError("Attenuated forward", RelativeL2Error(cpuForward->GetOutput(), cudaForward->GetOutput()), 5.e-4);
 
   cpuBack->SetInput(1, cpuForward->GetOutput());
   cpuBack->SetInput(2, cpuAttenuation->GetOutput());
@@ -187,9 +195,7 @@ rtkzengprojectioncomparisoncudatest(int, char *[])
     std::cerr << "Attenuated CUDA Zeng backprojection output was synchronized to the CPU." << std::endl;
     return EXIT_FAILURE;
   }
-  CheckError("Attenuated backprojection",
-             RelativeL2Error(cpuBack->GetOutput(), cudaBack->GetOutput()),
-             2.e-3);
+  CheckError("Attenuated backprojection", RelativeL2Error(cpuBack->GetOutput(), cudaBack->GetOutput()), 2.e-3);
 
   std::cout << "CUDA Zeng CPU comparison test PASSED." << std::endl;
   return EXIT_SUCCESS;
