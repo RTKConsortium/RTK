@@ -96,6 +96,8 @@ if(RTK_USE_CUDA)
     rtkCudaParkerShortScanImageFilter.cxx
     rtkCudaPolynomialGainCorrectionImageFilter.cxx
     rtkCudaRayCastBackProjectionImageFilter.cxx
+    rtkCudaZengBackProjectionImageFilter.cxx
+    rtkCudaZengForwardProjectionImageFilter.cxx
     rtkCudaScatterGlareCorrectionImageFilter.cxx
     rtkCudaSplatImageFilter.cxx
     rtkCudaTotalVariationDenoisingBPDQImageFilter.cxx
@@ -128,6 +130,7 @@ if(RTK_USE_CUDA)
     rtkCudaParkerShortScanImageFilter.cu
     rtkCudaPolynomialGainCorrectionImageFilter.cu
     rtkCudaRayCastBackProjectionImageFilter.cu
+    rtkCudaZengProjectionImageFilter.cu
     rtkCudaSplatImageFilter.cu
     rtkCudaTotalVariationDenoisingBPDQImageFilter.cu
     rtkCudaUtilities.cu

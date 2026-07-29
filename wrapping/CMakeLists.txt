@@ -26,6 +26,8 @@ set(
   itkCudaImageToImageFilterRTK
   itkCudaInPlaceImageFilterRTK
   rtkForwardProjectionImageFilter
+  rtkZengBackProjectionImageFilter
+  rtkZengForwardProjectionImageFilter
   itkPyBufferRTK
 )
 
