@@ -20,7 +20,17 @@ For RTK developpers, it may be useful to compile RTK independently from ITK. Thi
 * Manually download RTK's source repository from [GitHub](https://github.com/RTKConsortium/RTK) with `git` (recommended) or as a [zip package](https://codeload.github.com/RTKConsortium/RTK/zip/main).
 * Configure the project with CMake pointing to RTK's source directory and setting the CMake option `ITK_DIR` to ITK's compilation directory. All CMake options above can be set except `Module_RTK`.
 
-Installation is currently not supported for independent RTK compilations.
+A convenience script at `utilities/build_rtk_python.sh` builds and installs RTK as a Python package. It must be run from the RTK source directory. It requires ITK and, when using CUDA, CudaCommon, both built with Python wrapping enabled:
+
+```bash
+ITK_DIR=/path/to/itk-build ./utilities/build_rtk_python.sh           # no CUDA
+ITK_DIR=/path/to/itk-build RTK_USE_CUDA=ON ./utilities/build_rtk_python.sh  # with CUDA
+```
+The script installs into the active Python environment (the one used to run the script).
+The script uses pip editable which is mainly intended for local development.
+Pip configures the environment so that importing the package uses the source code from your working directory. Therefore, changes to your Python files are generally visible immediately, without reinstalling the package.
+C++ changes require re-running the script to recompile.
+
 
 ## Python pre-compiled binaries
 We only provide pre-compiled binaries for the Python package which depends on ITK. Use the following commands to install the RTK module with `pip`.
