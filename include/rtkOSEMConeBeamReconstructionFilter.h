@@ -26,10 +26,10 @@
 #include <itkAddImageAdaptor.h>
 #include <itkDivideImageFilter.h>
 #include <itkDivideOrZeroOutImageFilter.h>
-#include <itkExtractImageFilter.h>
 #include <itkMultiplyImageFilter.h>
 
 #include "rtkConstantImageSource.h"
+#include "rtkExtractImageSubRegion.h"
 #include "rtkIterativeConeBeamReconstructionFilter.h"
 
 namespace rtk
@@ -132,7 +132,6 @@ public:
   using ProjectionType = TProjectionImage;
 
   /** Typedefs of each subfilter of this composite filter */
-  using ExtractFilterType = itk::ExtractImageFilter<ProjectionType, ProjectionType>;
   using MultiplyFilterType = itk::MultiplyImageFilter<VolumeType, VolumeType, VolumeType>;
   using ForwardProjectionFilterType = rtk::ForwardProjectionImageFilter<ProjectionType, VolumeType>;
   using BackProjectionFilterType = rtk::BackProjectionImageFilter<VolumeType, ProjectionType>;
@@ -199,7 +198,6 @@ protected:
   {}
 
   /** Pointers to each subfilter of this composite filter */
-  typename ExtractFilterType::Pointer                m_ExtractFilter;
   typename ForwardProjectionFilterType::Pointer      m_ForwardProjectionFilter;
   typename MultiplyFilterType::Pointer               m_MultiplyFilter;
   typename BackProjectionFilterType::Pointer         m_BackProjectionFilter;

@@ -29,7 +29,6 @@ CudaFDKConeBeamReconstructionFilter ::CudaFDKConeBeamReconstructionFilter()
   m_BackProjectionFilter = BackProjectionFilterType::New();
 
   // Permanent internal connections
-  m_WeightFilter->SetInput(m_ExtractFilter->GetOutput());
   m_RampFilter->SetInput(m_WeightFilter->GetOutput());
   m_BackProjectionFilter->SetInput(1, m_RampFilter->GetOutput());
 
