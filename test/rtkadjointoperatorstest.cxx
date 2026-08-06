@@ -11,6 +11,8 @@
 #ifdef USE_CUDA
 #  include "rtkCudaForwardProjectionImageFilter.h"
 #  include "rtkCudaRayCastBackProjectionImageFilter.h"
+#  include "rtkCudaZengBackProjectionImageFilter.h"
+#  include "rtkCudaZengForwardProjectionImageFilter.h"
 #endif
 
 /**
@@ -20,8 +22,8 @@
  *
  * This test generates a random volume "v" and a random set of projections "p",
  * and compares the scalar products <Rv , p> and <v, R* p>, where R is either the
- * Joseph forward projector or the Cuda ray cast forward projector,
- * and R* is either the Joseph back projector or the Cuda ray cast back projector.
+ * Joseph or Zeng forward projector, including their CUDA implementations,
+ * and R* is the corresponding backprojector.
  * If R* is indeed the adjoint of R, these scalar products are equal.
  *
  * \author Cyril Mory
@@ -299,22 +301,43 @@ rtkadjointoperatorstest(int, char *[])
 
   std::cout << "\n\n******  Zeng Forward projector ******" << std::endl;
 
+#ifdef USE_CUDA
+  using ZengForwardProjectorType = rtk::CudaZengForwardProjectionImageFilter;
+#else
   using ZengForwardProjectorType = rtk::ZengForwardProjectionImageFilter<OutputImageType, OutputImageType>;
+#endif
   auto zfw = ZengForwardProjectorType::New();
   zfw->SetInput(0, constantProjectionsSource->GetOutput());
   zfw->SetInput(1, randomVolumeSource->GetOutput());
   zfw->SetGeometry(geometry_parallel);
+  zfw->SetSigmaZero(1.5);
+  zfw->SetAlpha(0.016);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(zfw->Update());
 
   std::cout << "\n\n****** Zeng Back projector ******" << std::endl;
 
+#ifdef USE_CUDA
+  using ZengBackProjectorType = rtk::CudaZengBackProjectionImageFilter;
+#else
   using ZengBackProjectorType = rtk::ZengBackProjectionImageFilter<OutputImageType, OutputImageType>;
+#endif
   auto zbp = ZengBackProjectorType::New();
   zbp->SetInput(0, constantVolumeSource->GetOutput());
   zbp->SetInput(1, randomProjectionsSource->GetOutput());
   zbp->SetGeometry(geometry_parallel);
+  zbp->SetSigmaZero(1.5);
+  zbp->SetAlpha(0.016);
 
   TRY_AND_EXIT_ON_ITK_EXCEPTION(zbp->Update());
+
+#ifdef USE_CUDA
+  if (!zfw->GetOutput()->GetCudaDataManager()->IsCPUBufferDirty() ||
+      !zbp->GetOutput()->GetCudaDataManager()->IsCPUBufferDirty())
+  {
+    std::cerr << "CUDA Zeng output was unexpectedly synchronized back to the CPU." << std::endl;
+    return EXIT_FAILURE;
+  }
+#endif
 
   CheckScalarProducts<OutputImageType, OutputImageType>(
     randomVolumeSource->GetOutput(), zbp->GetOutput(), randomProjectionsSource->GetOutput(), zfw->GetOutput());
@@ -322,24 +345,35 @@ rtkadjointoperatorstest(int, char *[])
 
   std::cout << "\n\n******  Attenuated Zeng Forward projector ******" << std::endl;
 
-  using ZengForwardProjectorType = rtk::ZengForwardProjectionImageFilter<OutputImageType, OutputImageType>;
   auto attzfw = ZengForwardProjectorType::New();
   attzfw->SetInput(0, constantProjectionsSource->GetOutput());
   attzfw->SetInput(1, randomVolumeSource->GetOutput());
   attzfw->SetInput(2, constantAttenuationSource->GetOutput());
   attzfw->SetGeometry(geometry_parallel);
+  attzfw->SetSigmaZero(1.5);
+  attzfw->SetAlpha(0.016);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(attzfw->Update());
 
   std::cout << "\n\n****** Attenuated Zeng Back projector ******" << std::endl;
 
-  using ZengBackProjectorType = rtk::ZengBackProjectionImageFilter<OutputImageType, OutputImageType>;
   auto attzbp = ZengBackProjectorType::New();
   attzbp->SetInput(0, constantVolumeSource->GetOutput());
   attzbp->SetInput(1, randomProjectionsSource->GetOutput());
   attzbp->SetInput(2, constantAttenuationSource->GetOutput());
   attzbp->SetGeometry(geometry_parallel);
+  attzbp->SetSigmaZero(1.5);
+  attzbp->SetAlpha(0.016);
 
   TRY_AND_EXIT_ON_ITK_EXCEPTION(attzbp->Update());
+
+#ifdef USE_CUDA
+  if (!attzfw->GetOutput()->GetCudaDataManager()->IsCPUBufferDirty() ||
+      !attzbp->GetOutput()->GetCudaDataManager()->IsCPUBufferDirty())
+  {
+    std::cerr << "Attenuated CUDA Zeng output was unexpectedly synchronized back to the CPU." << std::endl;
+    return EXIT_FAILURE;
+  }
+#endif
 
   CheckScalarProducts<OutputImageType, OutputImageType>(
     randomVolumeSource->GetOutput(), attzbp->GetOutput(), randomProjectionsSource->GetOutput(), attzfw->GetOutput());

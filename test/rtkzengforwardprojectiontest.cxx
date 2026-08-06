@@ -4,6 +4,9 @@
 #include "rtkJosephForwardAttenuatedProjectionImageFilter.h"
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkZengForwardProjectionImageFilter.h"
+#ifdef USE_CUDA
+#  include "rtkCudaZengForwardProjectionImageFilter.h"
+#endif
 #include <cmath>
 #include <itkImageRegionIterator.h>
 #include <itkImageRegionSplitterDirection.h>
@@ -85,7 +88,11 @@ rtkzengforwardprojectiontest(int, char *[])
 
   // Zeng Forward Projection filter
 
+#ifdef USE_CUDA
+  auto jfp = rtk::CudaZengForwardProjectionImageFilter::New();
+#else
   auto jfp = rtk::ZengForwardProjectionImageFilter<OutputImageType, OutputImageType>::New();
+#endif
   jfp->InPlaceOff();
   jfp->SetInput(projInput->GetOutput());
   jfp->SetInput(1, volInput->GetOutput());
@@ -111,6 +118,14 @@ rtkzengforwardprojectiontest(int, char *[])
   jfp->SetAlpha(0.);
   jfp->SetSigmaZero(0.);
   jfp->Update();
+
+#ifdef USE_CUDA
+  if (!jfp->GetOutput()->GetCudaDataManager()->IsCPUBufferDirty())
+  {
+    std::cerr << "CUDA Zeng output was unexpectedly synchronized back to the CPU." << std::endl;
+    return EXIT_FAILURE;
+  }
+#endif
 
   CheckImageQuality<OutputImageType>(jfp->GetOutput(), attjfp->GetOutput(), 0.1, 44.0, 255.0);
   std::cout << "\n\nTest PASSED! " << std::endl;

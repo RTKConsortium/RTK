@@ -62,6 +62,9 @@ IterativeConeBeamReconstructionFilter<TOutputImage, ProjectionStackType>::Instan
     case (FP_CUDAWARP):
       fw = InstantiateCudaWarpForwardProjection<ProjectionStackType>();
       break;
+    case (FP_CUDAZENG):
+      fw = InstantiateCudaZengForwardProjection<ProjectionStackType>();
+      break;
     default:
       itkGenericExceptionMacro(<< "Unhandled --fp value.");
   }
@@ -95,6 +98,9 @@ IterativeConeBeamReconstructionFilter<TOutputImage, ProjectionStackType>::Instan
       break;
     case (BP_CUDAWARP):
       bp = InstantiateCudaWarpBackProjection<ProjectionStackType>();
+      break;
+    case (BP_CUDAZENG):
+      bp = InstantiateCudaZengBackProjection<ProjectionStackType>();
       break;
     default:
       itkGenericExceptionMacro(<< "Unhandled --bp value.");
