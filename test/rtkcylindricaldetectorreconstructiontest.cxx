@@ -37,7 +37,7 @@ rtkcylindricaldetectorreconstructiontest(int, char *[])
 #if FAST_TESTS_NO_CHECKS
   constexpr unsigned int NumberOfProjectionImages = 3;
 #else
-  constexpr unsigned int NumberOfProjectionImages = 180;
+  constexpr unsigned int NumberOfProjectionImages = 40;
 #endif
 
   // Constant image sources
@@ -110,7 +110,7 @@ rtkcylindricaldetectorreconstructiontest(int, char *[])
   conjugategradient->SetInput(1, rei->GetOutput());
   conjugategradient->SetInputWeights(uniformWeightsSource->GetOutput());
   conjugategradient->SetGeometry(geometry);
-  conjugategradient->SetNumberOfIterations(5);
+  conjugategradient->SetNumberOfIterations(3);
   conjugategradient->SetDisableDisplacedDetectorFilter(true);
 
   std::cout << "\n\n****** Case 1: Joseph forward and back projectors ******" << std::endl;

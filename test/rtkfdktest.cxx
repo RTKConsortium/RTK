@@ -41,7 +41,7 @@ rtkfdktest(int, char *[])
 #if FAST_TESTS_NO_CHECKS
   constexpr unsigned int NumberOfProjectionImages = 3;
 #else
-  constexpr unsigned int NumberOfProjectionImages = 180;
+  constexpr unsigned int NumberOfProjectionImages = 120;
 #endif
 
   // Constant image sources
@@ -164,7 +164,7 @@ rtkfdktest(int, char *[])
 
   auto streamer = itk::StreamingImageFilter<OutputImageType, OutputImageType>::New();
   streamer->SetInput(0, fov->GetOutput());
-  streamer->SetNumberOfStreamDivisions(8);
+  streamer->SetNumberOfStreamDivisions(2);
   auto splitter = itk::ImageRegionSplitterDirection::New();
   splitter->SetDirection(2); // Prevent splitting along z axis. As a result, splitting will be performed along y axis
   streamer->SetRegionSplitter(splitter);

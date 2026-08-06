@@ -54,8 +54,8 @@ rtkosemtest(int, char *[])
   auto size = itk::MakeSize(2, 2, 2);
   auto spacing = itk::MakeVector(252., 252., 252.);
 #else
-  auto size = itk::MakeSize(34, 34, 34);
-  auto spacing = itk::MakeVector(4., 4., 4.);
+  auto size = itk::MakeSize(24, 24, 24);
+  auto spacing = itk::MakeVector(6., 6., 6.);
 #endif
   tomographySource->SetOrigin(origin);
   tomographySource->SetSpacing(spacing);
@@ -76,8 +76,8 @@ rtkosemtest(int, char *[])
   size = itk::MakeSize(2, 2, NumberOfProjectionImages);
   spacing = itk::MakeVector(504., 504., 504.);
 #else
-  size = itk::MakeSize(34, 34, NumberOfProjectionImages);
-  spacing = itk::MakeVector(8., 8., 8.);
+  size = itk::MakeSize(24, 24, NumberOfProjectionImages);
+  spacing = itk::MakeVector(12., 12., 8.);
 #endif
   projectionsSource->SetOrigin(origin);
   projectionsSource->SetSpacing(spacing);

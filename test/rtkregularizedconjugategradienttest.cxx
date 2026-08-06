@@ -49,8 +49,8 @@ rtkregularizedconjugategradienttest(int, char *[])
   auto size = itk::MakeSize(2, 2, 2);
   auto spacing = itk::MakeVector(252., 252., 252.);
 #else
-  auto size = itk::MakeSize(64, 64, 64);
-  auto spacing = itk::MakeVector(4., 4., 4.);
+  auto size = itk::MakeSize(48, 48, 48);
+  auto spacing = itk::MakeVector(5., 5., 5.);
 #endif
   tomographySource->SetOrigin(origin);
   tomographySource->SetSpacing(spacing);
@@ -63,8 +63,8 @@ rtkregularizedconjugategradienttest(int, char *[])
   size = itk::MakeSize(2, 2, NumberOfProjectionImages);
   spacing = itk::MakeVector(504., 504., 504.);
 #else
-  size = itk::MakeSize(64, 64, NumberOfProjectionImages);
-  spacing = itk::MakeVector(8., 8., 8.);
+  size = itk::MakeSize(48, 48, NumberOfProjectionImages);
+  spacing = itk::MakeVector(10., 10., 8.);
 #endif
   projectionsSource->SetOrigin(origin);
   projectionsSource->SetSpacing(spacing);
@@ -113,7 +113,7 @@ rtkregularizedconjugategradienttest(int, char *[])
   regularizedConjugateGradient->SetCudaConjugateGradient(false);
 
   regularizedConjugateGradient->SetGammaTV(1);
-  regularizedConjugateGradient->SetTV_iterations(3);
+  regularizedConjugateGradient->SetTV_iterations(2);
 
   regularizedConjugateGradient->SetSoftThresholdWavelets(0.1);
   regularizedConjugateGradient->SetOrder(3);

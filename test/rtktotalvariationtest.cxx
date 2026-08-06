@@ -5,6 +5,10 @@
 #include "rtkTotalVariationDenoisingBPDQImageFilter.h"
 #include "rtkTotalVariationImageFilter.h"
 
+#ifdef USE_CUDA
+#  include "itkCudaImage.h"
+#endif
+
 template <class TImage>
 void
 CheckTotalVariation(const typename TImage::Pointer & before, const typename TImage::Pointer & after)

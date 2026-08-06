@@ -6,6 +6,7 @@ itk_wrap_class("rtk::ConstantImageSource" POINTER)
 
   itk_wrap_image_filter("${WRAP_ITK_REAL}" 1)
   itk_wrap_image_filter("${WRAP_ITK_VECTOR_REAL}" 1)
+  itk_wrap_template("I${ITKM_CVF3}4" "itk::Image<${ITKT_CVF3}, 4>")
 
   if(RTK_USE_CUDA)
     foreach(d ${ITK_WRAP_IMAGE_DIMS})

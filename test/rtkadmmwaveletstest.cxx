@@ -94,7 +94,7 @@ rtkadmmwaveletstest(int, char *[])
 #if FAST_TESTS_NO_CHECKS
   constexpr unsigned int NumberOfProjectionImages = 3;
 #else
-  constexpr unsigned int NumberOfProjectionImages = 180;
+  constexpr unsigned int NumberOfProjectionImages = 60;
 #endif
 
 

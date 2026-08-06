@@ -10,6 +10,10 @@
 
 #include <itkImageFileReader.h>
 
+#ifdef USE_CUDA
+#  include "itkCudaImage.h"
+#endif
+
 /**
  * \file rtkfourdadjointoperatorstest.cxx
  *
@@ -37,7 +41,7 @@ rtkfourdadjointoperatorstest(int argc, char * argv[])
   constexpr unsigned int Dimension = 3;
   using OutputPixelType = float;
 
-#ifdef RTK_USE_CUDA
+#ifdef USE_CUDA
   using ProjectionStackType = itk::CudaImage<OutputPixelType, Dimension>;
   using VolumeSeriesType = itk::CudaImage<OutputPixelType, Dimension + 1>;
 #else

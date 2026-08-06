@@ -9,6 +9,7 @@
 #include "rtkTest.h"
 
 #ifdef USE_CUDA
+#  include "itkCudaImage.h"
 #  include "rtkCudaFDKConeBeamReconstructionFilter.h"
 #else
 #  include "rtkFDKConeBeamReconstructionFilter.h"

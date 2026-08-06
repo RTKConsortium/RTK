@@ -22,7 +22,9 @@
 #include "rtkConfiguration.h"
 #ifdef RTK_USE_CUDA
 
+#  include <itkCropImageFilter.h>
 #  include <itkCudaImage.h>
+#  include <itkExtractImageFilter.h>
 #  include <itkImageSource.h>
 #  include <itkImageToImageFilter.h>
 #  include <itkInPlaceImageFilter.h>
@@ -49,6 +51,8 @@ extern template class RTK_EXPORT_EXPLICIT itk::ImageSource<itk::CudaImage<float,
 extern template class RTK_EXPORT_EXPLICIT itk::ImageToImageFilter<itk::CudaImage<float, 3>, itk::CudaImage<float, 3>>;
 extern template class RTK_EXPORT_EXPLICIT itk::InPlaceImageFilter<itk::CudaImage<float, 3>, itk::CudaImage<float, 3>>;
 extern template class RTK_EXPORT_EXPLICIT itk::ImageSource<itk::CudaImage<itk::CovariantVector<float, 3>, 3>>;
+extern template class RTK_EXPORT_EXPLICIT itk::ExtractImageFilter<itk::CudaImage<float, 3>, itk::CudaImage<float, 3>>;
+extern template class RTK_EXPORT_EXPLICIT itk::CropImageFilter<itk::CudaImage<float, 3>, itk::CudaImage<float, 3>>;
 ITK_GCC_PRAGMA_DIAG_POP()
 #  endif
 

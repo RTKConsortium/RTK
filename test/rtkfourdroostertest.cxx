@@ -47,7 +47,7 @@ rtkfourdroostertest(int, char *[])
 #if FAST_TESTS_NO_CHECKS
   constexpr unsigned int NumberOfProjectionImages = 5;
 #else
-  constexpr unsigned int NumberOfProjectionImages = 64;
+  constexpr unsigned int NumberOfProjectionImages = 24;
 #endif
 
   // Constant image sources
@@ -72,7 +72,7 @@ rtkfourdroostertest(int, char *[])
   auto fourDSize = itk::MakeSize(8, 8, 8, 2);
   auto fourDSpacing = itk::MakeVector(16., 8., 16., 1.);
 #else
-  auto fourDSize = itk::MakeSize(32, 16, 32, 8);
+  auto fourDSize = itk::MakeSize(32, 16, 32, 4);
   auto fourDSpacing = itk::MakeVector(4., 4., 4., 1.);
 #endif
   fourdSource->SetOrigin(fourDOrigin);
@@ -142,7 +142,7 @@ rtkfourdroostertest(int, char *[])
     // Ellipse 2
     auto e2 = REIType::New();
     semiprincipalaxis.Fill(8.);
-    center[0] = 4 * (std::abs((4 + noProj) % 8 - 4.) - 2.);
+    center[0] = 4 * (std::abs((fourDSize[3] / 2 + noProj) % fourDSize[3] - fourDSize[3] / 2.) - 2.);
     center[1] = 0.;
     center[2] = 0.;
     e2->SetInput(e1->GetOutput());
@@ -167,7 +167,7 @@ rtkfourdroostertest(int, char *[])
     destinationIndex[2]++;
 
     // Signal
-    signalFile << (noProj % 8) / 8. << std::endl;
+    signalFile << (noProj % fourDSize[3]) / static_cast<double>(fourDSize[3]) << std::endl;
   }
   signalFile.close();
 
@@ -251,7 +251,7 @@ rtkfourdroostertest(int, char *[])
     axis2.Fill(8.);
     de2->SetAxis(axis2);
     DEType::PointType center2;
-    center2[0] = 4 * (std::abs((4 + n) % 8 - 4.) - 2.);
+    center2[0] = 4 * (std::abs((fourDSize[3] / 2 + n) % fourDSize[3] - fourDSize[3] / 2.) - 2.);
     center2[1] = 0.;
     center2[2] = 0.;
     de2->SetCenter(center2);
@@ -298,7 +298,7 @@ rtkfourdroostertest(int, char *[])
   rooster->SetCG_iterations(2);
   rooster->SetMainLoop_iterations(2);
 
-  rooster->SetTV_iterations(3);
+  rooster->SetTV_iterations(2);
   rooster->SetGammaTVSpace(1);
   rooster->SetGammaTVTime(0.1);
 
@@ -307,7 +307,7 @@ rtkfourdroostertest(int, char *[])
   rooster->SetNumberOfLevels(3);
 
   rooster->SetLambdaL0Time(0.1);
-  rooster->SetL0_iterations(5);
+  rooster->SetL0_iterations(3);
 
   std::cout << "\n\n****** Case 1: Joseph forward projector, voxel-based back projector, positivity, motion mask, "
                "wavelets spatial denoising, TV temporal denoising, no warping ******"

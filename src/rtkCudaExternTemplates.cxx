@@ -25,6 +25,8 @@ template class itk::ImageSource<itk::CudaImage<float, 3>>;
 template class itk::ImageToImageFilter<itk::CudaImage<float, 3>, itk::CudaImage<float, 3>>;
 template class itk::InPlaceImageFilter<itk::CudaImage<float, 3>, itk::CudaImage<float, 3>>;
 template class itk::ImageSource<itk::CudaImage<itk::CovariantVector<float, 3>, 3>>;
+template class itk::ExtractImageFilter<itk::CudaImage<float, 3>, itk::CudaImage<float, 3>>;
+template class itk::CropImageFilter<itk::CudaImage<float, 3>, itk::CudaImage<float, 3>>;
 
 // RTK base class explicit instantiation definitions
 #  include "rtkBackProjectionImageFilter.h"

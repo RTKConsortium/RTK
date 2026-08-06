@@ -10,6 +10,10 @@
 #include "rtkBackwardDifferenceDivergenceImageFilter.h"
 #include "rtkForwardDifferenceGradientImageFilter.h"
 
+#ifdef USE_CUDA
+#  include "itkCudaImage.h"
+#endif
+
 /**
  * \file rtkdivergencetest.cxx
  *
