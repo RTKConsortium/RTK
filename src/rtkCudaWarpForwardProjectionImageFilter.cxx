@@ -127,12 +127,6 @@ CudaWarpForwardProjectionImageFilter ::GenerateInputRequestedRegion()
 void
 CudaWarpForwardProjectionImageFilter ::GPUGenerateData()
 {
-  if (!this->GetGeometry()->GetSourceToDetectorDistances().empty() &&
-      this->GetGeometry()->GetSourceToDetectorDistances()[0] == 0)
-  {
-    itkGenericExceptionMacro(<< "Parallel geometry is not handled by CUDA forward projector.");
-  }
-
   itk::Matrix<double, 4, 4> matrixIdxInputVol;
   itk::Matrix<double, 4, 4> indexInputToPPInputMatrix;
   itk::Matrix<double, 4, 4> indexInputToIndexDVFMatrix;
@@ -144,13 +138,16 @@ CudaWarpForwardProjectionImageFilter ::GPUGenerateData()
   }
 
   const Superclass::GeometryType * geometry = this->GetGeometry();
-  const unsigned int               Dimension = InputImageType::ImageDimension;
+  bool                             isParallel = geometry->GetSourceToDetectorDistances()[0] == 0.;
+  if (isParallel && geometry->GetRadiusCylindricalDetector() != 0.)
+  {
+    itkGenericExceptionMacro(<< "Parallel geometry assumes a flat panel detector.");
+  }
+  const unsigned int Dimension = InputImageType::ImageDimension;
   const unsigned int iFirstProj = this->GetInputProjectionStack()->GetRequestedRegion().GetIndex(Dimension - 1);
   const unsigned int nProj = this->GetInputProjectionStack()->GetRequestedRegion().GetSize(Dimension - 1);
   const unsigned int nPixelsPerProj =
     this->GetOutput()->GetBufferedRegion().GetSize(0) * this->GetOutput()->GetBufferedRegion().GetSize(1);
-
-  itk::Vector<double, 4> source_position;
 
   // Setting BoxMin and BoxMax
   // SR: we are using cuda textures where the pixel definition is not center but corner.
@@ -232,8 +229,9 @@ CudaWarpForwardProjectionImageFilter ::GPUGenerateData()
   }
 
   // Compute matrices to transform projection index to volume index, one per projection
-  auto * matrices = new float[12 * nProj];
-  auto * source_positions = new float[4 * nProj];
+  auto * matrices = new float[12 * nProj]{};
+  auto * source_positions = new float[3 * nProj]{};
+  auto * source_to_pixels = new float[3 * nProj]{};
 
   // Go over each projection
   for (unsigned int iProj = iFirstProj; iProj < iFirstProj + nProj; iProj++)
@@ -246,12 +244,25 @@ CudaWarpForwardProjectionImageFilter ::GPUGenerateData()
       for (int k = 0; k < 4; k++)
         matrices[(j + 3 * (iProj - iFirstProj)) * 4 + k] = static_cast<float>(d_matrix[j][k]);
 
-    // Compute source position in volume indices
-    source_position = volPPToIndex * geometry->GetSourcePosition(iProj);
+    if (isParallel)
+    {
+      // Parallel projections have no finite source; store the common ray direction instead.
+      itk::Vector<double, 3> sourceToPixel;
+      for (unsigned int d = 0; d < 3; d++)
+        sourceToPixel[d] = geometry->GetRotationMatrices()[iProj][2][d];
+      sourceToPixel *= -2. * geometry->GetSourceToIsocenterDistances()[iProj];
+      auto sourceToPixelVnl = volPPToIndex.GetVnlMatrix().extract(3, 3) * sourceToPixel.GetVnlVector();
 
-    // Copy it into a single large array
-    for (unsigned int d = 0; d < 3; d++)
-      source_positions[(iProj - iFirstProj) * 3 + d] = source_position[d]; // Ignore the 4th component
+      for (unsigned int d = 0; d < 3; d++)
+        source_to_pixels[(iProj - iFirstProj) * 3 + d] = static_cast<float>(sourceToPixelVnl[d]);
+    }
+    else
+    {
+      // Cone-beam projections use the finite source position in volume indices.
+      auto sourcePosition = volPPToIndex * geometry->GetSourcePosition(iProj);
+      for (unsigned int d = 0; d < 3; d++)
+        source_positions[(iProj - iFirstProj) * 3 + d] = sourcePosition[d];
+    }
   }
 
   int projectionOffset = 0;
@@ -270,6 +281,8 @@ CudaWarpForwardProjectionImageFilter ::GPUGenerateData()
                               pvol,
                               m_StepSize,
                               &(source_positions[3 * i]),
+                              &(source_to_pixels[3 * i]),
+                              isParallel,
                               boxMin,
                               boxMax,
                               spacing,
@@ -281,6 +294,7 @@ CudaWarpForwardProjectionImageFilter ::GPUGenerateData()
 
   delete[] matrices;
   delete[] source_positions;
+  delete[] source_to_pixels;
 }
 
 } // end namespace rtk

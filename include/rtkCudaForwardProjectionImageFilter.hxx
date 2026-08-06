@@ -41,12 +41,6 @@ template <class TInputImage, class TOutputImage>
 void
 CudaForwardProjectionImageFilter<TInputImage, TOutputImage>::GPUGenerateData()
 {
-  if (this->GetGeometry()->GetSourceToDetectorDistances().size() &&
-      this->GetGeometry()->GetSourceToDetectorDistances()[0] == 0)
-  {
-    itkGenericExceptionMacro(<< "Parallel geometry is not handled by CUDA forward projector.");
-  }
-
   const typename Superclass::GeometryType * geometry = this->GetGeometry();
   const unsigned int                        Dimension = TInputImage::ImageDimension;
   const unsigned int iFirstProj = this->GetInput(0)->GetRequestedRegion().GetIndex(Dimension - 1);
@@ -54,8 +48,6 @@ CudaForwardProjectionImageFilter<TInputImage, TOutputImage>::GPUGenerateData()
   const unsigned int nPixelsPerProj = this->GetOutput()->GetBufferedRegion().GetSize(0) *
                                       this->GetOutput()->GetBufferedRegion().GetSize(1) *
                                       itk::NumericTraits<typename TInputImage::PixelType>::GetLength();
-
-  itk::Vector<double, 4> source_position;
 
   // Setting BoxMin and BoxMax
   // SR: we are using cuda textures where the pixel definition is not center but corner.
@@ -116,11 +108,17 @@ CudaForwardProjectionImageFilter<TInputImage, TOutputImage>::GPUGenerateData()
   }
 
   // Compute matrices to transform projection index to volume index, one per projection
-  auto * translatedProjectionIndexTransformMatrices = new float[12 * nProj];
-  auto * translatedVolumeTransformMatrices = new float[12 * nProj];
-  auto * source_positions = new float[4 * nProj];
+  auto * translatedProjectionIndexTransformMatrices = new float[12 * nProj]{};
+  auto * translatedVolumeTransformMatrices = new float[12 * nProj]{};
+  auto * source_positions = new float[3 * nProj]{};
+  auto * source_to_pixels = new float[3 * nProj]{};
 
   float radiusCylindricalDetector = geometry->GetRadiusCylindricalDetector();
+  bool  isParallel = geometry->GetSourceToDetectorDistances()[0] == 0.;
+  if (isParallel && radiusCylindricalDetector != 0.)
+  {
+    itkGenericExceptionMacro(<< "Parallel geometry assumes a flat panel detector.");
+  }
 
   // Go over each projection
   for (unsigned int iProj = iFirstProj; iProj < iFirstProj + nProj; iProj++)
@@ -158,12 +156,25 @@ CudaForwardProjectionImageFilter<TInputImage, TOutputImage>::GPUGenerateData()
             (float)translatedVolumeTransformMatrix[j][k];
     }
 
-    // Compute source position in volume indices
-    source_position = volPPToIndex * geometry->GetSourcePosition(iProj);
+    if (isParallel)
+    {
+      // Parallel projections have no finite source; store the common ray direction instead.
+      itk::Vector<double, 3> sourceToPixel;
+      for (unsigned int d = 0; d < 3; d++)
+        sourceToPixel[d] = geometry->GetRotationMatrices()[iProj][2][d];
+      sourceToPixel *= -2. * geometry->GetSourceToIsocenterDistances()[iProj];
+      auto sourceToPixelVnl = volPPToIndex.GetVnlMatrix().extract(3, 3) * sourceToPixel.GetVnlVector();
 
-    // Copy it into a single large array
-    for (unsigned int d = 0; d < 3; d++)
-      source_positions[(iProj - iFirstProj) * 3 + d] = source_position[d]; // Ignore the 4th component
+      for (unsigned int d = 0; d < 3; d++)
+        source_to_pixels[(iProj - iFirstProj) * 3 + d] = static_cast<float>(sourceToPixelVnl[d]);
+    }
+    else
+    {
+      // Cone-beam projections use the finite source position in volume indices.
+      auto sourcePosition = volPPToIndex * geometry->GetSourcePosition(iProj);
+      for (unsigned int d = 0; d < 3; d++)
+        source_positions[(iProj - iFirstProj) * 3 + d] = sourcePosition[d];
+    }
   }
 
   int                projectionOffset = 0;
@@ -185,6 +196,8 @@ CudaForwardProjectionImageFilter<TInputImage, TOutputImage>::GPUGenerateData()
                          pvol,
                          m_StepSize,
                          (&(source_positions[3 * i])),
+                         (&(source_to_pixels[3 * i])),
+                         isParallel,
                          radiusCylindricalDetector,
                          boxMin,
                          boxMax,
@@ -195,6 +208,7 @@ CudaForwardProjectionImageFilter<TInputImage, TOutputImage>::GPUGenerateData()
   delete[] translatedProjectionIndexTransformMatrices;
   delete[] translatedVolumeTransformMatrices;
   delete[] source_positions;
+  delete[] source_to_pixels;
 }
 
 } // end namespace rtk

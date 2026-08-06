@@ -206,5 +206,21 @@ rtkforwardprojectiontest(int, char *[])
   CheckImageQuality<OutputImageType>(stream->GetOutput(), slp->GetOutput(), 1.28, 44, 255.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 
+  std::cout << "\n\n****** Case 6: Shepp-Logan, parallel geometry, flat panel detector ******" << std::endl;
+
+  // Parallel geometry: SDD = 0
+  geometry = GeometryType::New();
+  for (unsigned int i = 0; i < NumberOfProjectionImages; i++)
+    geometry->AddProjection(1000., 0., i * 8.);
+
+  slp->SetGeometry(geometry);
+  slp->Update();
+
+  jfp->SetGeometry(geometry);
+  stream->Update();
+
+  CheckImageQuality<OutputImageType>(stream->GetOutput(), slp->GetOutput(), 1.28, 40, 255.0);
+  std::cout << "\n\nTest PASSED! " << std::endl;
+
   return EXIT_SUCCESS;
 }
