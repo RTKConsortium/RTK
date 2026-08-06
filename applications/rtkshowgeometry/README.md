@@ -18,3 +18,15 @@ All geometries described in the [documentation](../../documentation/docs/Geometr
 
 ```{literalinclude} showgeometry.sh
 ```
+
+
+## Command line options
+
+::::{container} argparse-no-usage
+```{eval-rst}
+.. argparse::
+	:filename: applications/rtkshowgeometry/rtkshowgeometry.py
+	:func: build_parser
+	:nodescription:
+```
+::::

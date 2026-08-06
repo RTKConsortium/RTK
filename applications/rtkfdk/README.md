@@ -162,7 +162,6 @@ Post-process with Matlab to obtain the phase signal, ensuring the phase ranges f
 
 ![Signal](../../documentation/docs/ExternalData/Signal.jpg){w=800px alt="Phase signal"}
 
----
 
 ### Motion-compensated cone-beam CT reconstruction
 
@@ -198,3 +197,14 @@ Toggle between uncorrected and motion-compensated reconstruction to appreciate t
 The 4D vector field is constructed with phase 50% as a reference. Modify the reference image to reconstruct other phases, such as the time-average position.
 ````
 `````
+
+## Command line options
+
+::::{container} argparse-no-usage
+```{eval-rst}
+.. argparse::
+  :filename: applications/rtkfdk/rtkfdk.py
+  :func: build_parser
+  :nodescription:
+```
+::::
