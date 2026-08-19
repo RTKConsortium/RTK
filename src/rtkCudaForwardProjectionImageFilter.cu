@@ -95,20 +95,19 @@ kernel_forwardProject(float * dev_proj_in, float * dev_proj_out, cudaTextureObje
     }
 
     ray.d = pixelPos - ray.o;
-    ray.d = ray.d / sqrtf(dot(ray.d, ray.d));
 
     int projOffset = numThread + proj * c_projSize.x * c_projSize.y;
 
     // Detect intersection with box
-    if (!intersectBox(ray, &tnear, &tfar, c_boxMin, c_boxMax) || tfar <= 0.f || tfar == tnear)
+    if (!intersectBox(ray, &tnear, &tfar, c_boxMin, c_boxMax) || tnear >= 1.0f || tfar <= 0.f || tfar == tnear)
     {
       for (unsigned int c = 0; c < VVectorLength; c++)
         dev_proj_out[projOffset * VVectorLength + c] = dev_proj_in[projOffset * VVectorLength + c];
     }
     else
     {
-      if (tnear < 0.f)
-        tnear = 0.f; // clamp to near plane
+      tnear = fmaxf(tnear, 0.0f); // clamp to near plane
+      tfar = fminf(tfar, 1.0f);   // clamp to far plane
 
       // Step length in mm
       float3 dirInMM = c_spacing * ray.d;
