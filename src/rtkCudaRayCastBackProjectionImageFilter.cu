@@ -86,13 +86,12 @@ kernel_ray_cast_back_project(float * dev_vol_out, float * dev_proj)
   }
 
   ray.d = pixelPos - ray.o;
-  ray.d = ray.d / sqrtf(dot(ray.d, ray.d));
 
   // Detect intersection with box
-  if (intersectBox(ray, &tnear, &tfar, c_boxMin, c_boxMax) && tfar > 0.f && tfar != tnear)
+  if (intersectBox(ray, &tnear, &tfar, c_boxMin, c_boxMax) && tfar > 0.f && tnear < 1.0f && tfar != tnear)
   {
-    if (tnear < 0.f)
-      tnear = 0.f; // clamp to near plane
+    tnear = fmaxf(tnear, 0.0f);
+    tfar = fminf(tfar, 1.0f);
 
     // Step length in mm
     float3 dirInMM = c_spacing * ray.d;

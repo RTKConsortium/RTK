@@ -73,9 +73,9 @@ Affected classes:
 
 Most users intuitively expect this for the backprojector matched to `rtk::CudaForwardProjectionFilter`. The filter was originally implemented with the normalization for SART and OSEM reconstruction but the normalization is now done in the reconstruction filters so it can be removed.
 
-## CUDA forward projector clipping
+## CUDA forward / back projector clipping
 
-The CUDA forward projector `rtk::CudaForwardProjectionFilter` now only accumulates attenuation values for ray samples located in-between the source and detector. This matches the behavior of the CPU forward projector `rtk::JosephForwardProjectionImageFilter`.
+The CUDA forward projector `rtk::CudaForwardProjectionFilter` now only accumulates attenuation values for ray samples located in-between the source and detector. This matches the behavior of the CPU forward projector `rtk::JosephForwardProjectionImageFilter`. The same clipping behavior is also applied to the adjoint operator `rtk::rtkCudaRayCastBackProjectionImageFilter`.
 
 ## CUDA forward / ray-cast step size default
 
