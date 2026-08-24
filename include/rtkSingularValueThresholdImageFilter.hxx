@@ -29,7 +29,7 @@
 #if ITK_VERSION_MAJOR < 6
 #  include "vnl/algo/vnl_svd.h"
 #else
-#  include "itkMathSVD.h"
+#  include "itkBridgeMathSVD.h"
 #endif
 
 namespace rtk
@@ -103,7 +103,7 @@ SingularValueThresholdImageFilter<TInputImage, TRealType, TOutputImage>::Threade
 #if ITK_VERSION_MAJOR < 6
     vnl_svd<double> svd(jacobian);
 #else
-    auto svd = itk::Math::SVD(jacobian);
+    auto svd = itk::bridge::Math::SVD(jacobian);
 #endif
 
     // Threshold the singular values. Since they are sorted in descending order, we
@@ -117,7 +117,7 @@ SingularValueThresholdImageFilter<TInputImage, TRealType, TOutputImage>::Threade
 #if ITK_VERSION_MAJOR < 6
     jacobian = svd.recompose();
 #else
-    jacobian = itk::Math::detail::Recompose(svd.U, svd.W, svd.V, 0.);
+    jacobian = itk::bridge::Math::detail::Recompose(svd.U, svd.W, svd.V, 0.);
 #endif
 
     // Walk the output along last dimension for this voxel,
