@@ -23,7 +23,7 @@
 #if ITK_VERSION_MAJOR < 6
 #  include "vnl/vnl_inverse.h"
 #else
-#  include "itkMathSVD.h"
+#  include "itkBridgeMathSVD.h"
 #endif
 
 namespace rtk
@@ -107,7 +107,7 @@ GetNewtonUpdateImageFilter<TGradient, THessian>::DynamicThreadedGenerateData(
 #if ITK_VERSION_MAJOR < 6
     const vnl_matrix<dataType> hessian_regul_inv = vnl_inverse(hessian + regul);
 #else
-    const vnl_matrix<dataType> hessian_regul_inv = itk::Math::SVD(hessian + regul).PseudoInverse();
+    const vnl_matrix<dataType> hessian_regul_inv = itk::bridge::Math::SVD(hessian + regul).PseudoInverse();
 #endif
     forOutput.SetVnlVector(hessian_regul_inv * gradIt.Get().GetVnlVector());
     outIt.Set(forOutput);
