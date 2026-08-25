@@ -18,3 +18,5 @@ jobs:
 
     - name: Run pre-commit
       run: pre-commit run --all-files
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
