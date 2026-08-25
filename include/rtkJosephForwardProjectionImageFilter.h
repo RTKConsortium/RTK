@@ -61,7 +61,7 @@ public:
              const double          itkNotUsed(stepLengthInVoxel),
              const TCoordinateType weight,
              const TInput *        p,
-             const int             i) const
+             const ptrdiff_t       i) const
   {
     return weight * p[i];
   }
@@ -323,8 +323,8 @@ protected:
                         const InputPixelType * pxsys,
                         double                 x,
                         double                 y,
-                        int                    ox,
-                        int                    oy);
+                        ptrdiff_t              ox,
+                        ptrdiff_t              oy);
 
   inline OutputPixelType
   BilinearInterpolationOnBorders(ThreadIdType           threadId,
@@ -335,8 +335,8 @@ protected:
                                  const InputPixelType * pxsys,
                                  double                 x,
                                  double                 y,
-                                 int                    ox,
-                                 int                    oy,
+                                 ptrdiff_t              ox,
+                                 ptrdiff_t              oy,
                                  double                 minx,
                                  double                 miny,
                                  double                 maxx,
