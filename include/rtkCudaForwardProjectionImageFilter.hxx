@@ -59,8 +59,8 @@ CudaForwardProjectionImageFilter<TInputImage, TOutputImage>::GPUGenerateData()
 
   // Setting BoxMin and BoxMax
   // SR: we are using cuda textures where the pixel definition is not center but corner.
-  // Therefore, we set the box limits from index to index+size instead of, for ITK,
-  // index-0.5 to index+size-0.5.
+  // Therefore, we set the box limits from index+0.5 to index+size-0.5 instead of, for ITK,
+  // index to index+size-1 (from the first pixel center to the last pixel center).
   float boxMin[3];
   float boxMax[3];
   for (unsigned int i = 0; i < 3; i++)
