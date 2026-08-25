@@ -55,7 +55,7 @@ public:
   }
 
   TOutput
-  operator()(const double stepLengthInVoxel, const TCoordinateType weight, const TInput * p, const int i)
+  operator()(const double stepLengthInVoxel, const TCoordinateType weight, const TInput * p, const ptrdiff_t i)
   {
     const double w = weight * stepLengthInVoxel;
 

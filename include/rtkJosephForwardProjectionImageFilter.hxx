@@ -184,7 +184,7 @@ JosephForwardProjectionImageFilter<TInputImage,
                                                                        ThreadIdType threadId)
 {
   const unsigned int Dimension = TInputImage::ImageDimension;
-  int                offsets[3];
+  ptrdiff_t          offsets[3];
   offsets[0] = 1;
   offsets[1] = this->GetInput(1)->GetBufferedRegion().GetSize()[0];
   offsets[2] =
@@ -239,7 +239,7 @@ JosephForwardProjectionImageFilter<TInputImage,
   double superiorClip = 1. - m_InferiorClip;
 
   // Go over each pixel of the projection
-  for (unsigned int pix = 0; pix < outputRegionForThread.GetNumberOfPixels(); pix++, itIn->Next(), ++itOut)
+  for (size_t pix = 0; pix < outputRegionForThread.GetNumberOfPixels(); pix++, itIn->Next(), ++itOut)
   {
     typename InputRegionIterator::PointType  pixelPosition = itIn->GetPixelPosition();
     typename InputRegionIterator::VectorType dirVox = -itIn->GetSourceToPixel();
@@ -298,9 +298,9 @@ JosephForwardProjectionImageFilter<TInputImage,
       const CoordinateType maxy = box->GetBoxMax()[notMainDirSup];
 
       // Init data pointers to first pixel of slice ns (i)nferior and (s)uperior (x|y) corner
-      const int offsetx = offsets[notMainDirInf];
-      const int offsety = offsets[notMainDirSup];
-      int       offsetz = offsets[mainDir];
+      const ptrdiff_t offsetx = offsets[notMainDirInf];
+      const ptrdiff_t offsety = offsets[notMainDirSup];
+      ptrdiff_t       offsetz = offsets[mainDir];
 
       const typename TInputImage::PixelType * pxiyi = beginBuffer + ns * offsetz;
       const typename TInputImage::PixelType * pxsyi = pxiyi + offsetx;
@@ -448,12 +448,12 @@ JosephForwardProjectionImageFilter<TInputImage,
                                                                         const InputPixelType * pxsys,
                                                                         const CoordinateType   x,
                                                                         const CoordinateType   y,
-                                                                        const int              ox,
-                                                                        const int              oy)
+                                                                        const ptrdiff_t        ox,
+                                                                        const ptrdiff_t        oy)
 {
-  int            ix = itk::Math::floor(x);
-  int            iy = itk::Math::floor(y);
-  int            idx = ix * ox + iy * oy;
+  ptrdiff_t      ix = itk::Math::floor(x);
+  ptrdiff_t      iy = itk::Math::floor(y);
+  ptrdiff_t      idx = ix * ox + iy * oy;
   CoordinateType lx = x - ix;
   CoordinateType ly = y - iy;
   CoordinateType lxc = 1. - lx;
@@ -498,25 +498,25 @@ JosephForwardProjectionImageFilter<TInputImage,
                                                                                  const InputPixelType * pxsys,
                                                                                  const CoordinateType   x,
                                                                                  const CoordinateType   y,
-                                                                                 const int              ox,
-                                                                                 const int              oy,
+                                                                                 const ptrdiff_t        ox,
+                                                                                 const ptrdiff_t        oy,
                                                                                  const CoordinateType   minx,
                                                                                  const CoordinateType   miny,
                                                                                  const CoordinateType   maxx,
                                                                                  const CoordinateType   maxy)
 {
-  int            ix = itk::Math::floor(x);
-  int            iy = itk::Math::floor(y);
-  int            idx = ix * ox + iy * oy;
+  ptrdiff_t      ix = itk::Math::floor(x);
+  ptrdiff_t      iy = itk::Math::floor(y);
+  ptrdiff_t      idx = ix * ox + iy * oy;
   CoordinateType lx = x - ix;
   CoordinateType ly = y - iy;
   CoordinateType lxc = 1. - lx;
   CoordinateType lyc = 1. - ly;
 
-  int offset_xi = 0;
-  int offset_yi = 0;
-  int offset_xs = 0;
-  int offset_ys = 0;
+  ptrdiff_t offset_xi = 0;
+  ptrdiff_t offset_yi = 0;
+  ptrdiff_t offset_xs = 0;
+  ptrdiff_t offset_ys = 0;
 
   OutputPixelType result = itk::NumericTraits<typename TOutputImage::PixelType>::ZeroValue();
   if (ix < minx)

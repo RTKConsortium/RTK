@@ -58,7 +58,7 @@ public:
   operator()(const double          itkNotUsed(stepLengthInVoxel),
              const TCoordinateType itkNotUsed(weight),
              const TInput *        itkNotUsed(p),
-             const int             itkNotUsed(i)) const
+             const ptrdiff_t       itkNotUsed(i)) const
   {
     return {};
   }
@@ -279,8 +279,8 @@ protected:
                 OutputPixelType *      pxsys,
                 double                 x,
                 double                 y,
-                int                    ox,
-                int                    oy);
+                ptrdiff_t              ox,
+                ptrdiff_t              oy);
 
   inline void
   BilinearSplatOnBorders(const InputPixelType & rayValue,
@@ -292,8 +292,8 @@ protected:
                          OutputPixelType *      pxsys,
                          double                 x,
                          double                 y,
-                         int                    ox,
-                         int                    oy,
+                         ptrdiff_t              ox,
+                         ptrdiff_t              oy,
                          CoordinateType         minx,
                          CoordinateType         miny,
                          CoordinateType         maxx,
@@ -307,8 +307,8 @@ protected:
                         const InputPixelType * pxsys,
                         double                 x,
                         double                 y,
-                        int                    ox,
-                        int                    oy);
+                        ptrdiff_t              ox,
+                        ptrdiff_t              oy);
 
   inline OutputPixelType
   BilinearInterpolationOnBorders(double                 stepLengthInVoxel,
@@ -318,8 +318,8 @@ protected:
                                  const InputPixelType * pxsys,
                                  double                 x,
                                  double                 y,
-                                 int                    ox,
-                                 int                    oy,
+                                 ptrdiff_t              ox,
+                                 ptrdiff_t              oy,
                                  double                 minx,
                                  double                 miny,
                                  double                 maxx,

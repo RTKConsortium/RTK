@@ -71,7 +71,7 @@ public:
              const double          stepLengthInVoxel,
              const TCoordinateType weight,
              const TInput *        p,
-             const int             i)
+             const ptrdiff_t       i)
   {
     const double w = weight * stepLengthInVoxel;
 
