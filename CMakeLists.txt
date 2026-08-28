@@ -210,26 +210,7 @@ endif()
 "
 )
 
-set(
-  RTK_EXPORT_CODE_INSTALL
-  "
-# The RTK version number
-set(RTK_VERSION_MAJOR ${RTK_VERSION_MAJOR})
-set(RTK_VERSION_MINOR ${RTK_VERSION_MINOR})
-set(RTK_VERSION_PATCH ${RTK_VERSION_PATCH})
-
-# Whether the compiled version of RTK uses CUDA
-set(RTK_USE_CUDA ${RTK_USE_CUDA})
-
-# Whether RTK applications were built
-set(RTK_BUILD_APPLICATIONS ${RTK_BUILD_APPLICATIONS})
-
-if(RTK_USE_CUDA)
-  find_package(CUDAToolkit)
-  set(RTK_CUDA_PROJECTIONS_SLAB_SIZE \"16\" CACHE STRING \"Number of projections processed simultaneously in CUDA forward and back projections\")
-endif()
-"
-)
+set(RTK_EXPORT_CODE_INSTALL "${RTK_EXPORT_CODE_BUILD}")
 
 #=========================================================
 # Configure and build ITK external module
