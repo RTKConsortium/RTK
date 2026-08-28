@@ -1,0 +1,5 @@
+.argparse-no-usage > div.highlight-default.notranslate,
+.argparse-no-usage > div.highlight-none.notranslate,
+.argparse-no-usage > div.highlight {
+  display: none;
+}
