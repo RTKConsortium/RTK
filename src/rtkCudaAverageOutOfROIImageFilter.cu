@@ -47,7 +47,7 @@ average_along_dim_4(float * in, float * out, float * roi, unsigned int strideInF
     return;
 
   // Compute the index of the initial voxel
-  long int id = (k * c_Size.y + j) * c_Size.x + i;
+  long int id = (static_cast<long int>(k) * c_Size.y + j) * c_Size.x + i;
   long int strided_id = id; // strided_id will run along the 4th dimension
 
   // Compute the average along last dimension

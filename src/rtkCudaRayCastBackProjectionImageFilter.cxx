@@ -45,7 +45,7 @@ CudaRayCastBackProjectionImageFilter ::GPUGenerateData()
   constexpr unsigned int Dimension = 3;
   const unsigned int     iFirstProj = this->GetInput(1)->GetRequestedRegion().GetIndex(Dimension - 1);
   const unsigned int     nProj = this->GetInput(1)->GetRequestedRegion().GetSize(Dimension - 1);
-  const unsigned int     nPixelsPerProj =
+  const size_t           nPixelsPerProj =
     this->GetInput(1)->GetBufferedRegion().GetSize(0) * this->GetInput(1)->GetBufferedRegion().GetSize(1);
 
   itk::Vector<double, 4> source_position;
@@ -155,7 +155,7 @@ CudaRayCastBackProjectionImageFilter ::GPUGenerateData()
       source_positions[(iProj - iFirstProj) * 3 + d] = source_position[d]; // Ignore the 4th component
   }
 
-  int projectionOffset = 0;
+  ptrdiff_t projectionOffset = 0;
   for (unsigned int i = 0; i < nProj; i += SLAB_SIZE)
   {
     // If nProj is not a multiple of SLAB_SIZE, the last slab will contain less than SLAB_SIZE projections

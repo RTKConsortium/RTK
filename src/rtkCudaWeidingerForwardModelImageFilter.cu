@@ -75,8 +75,11 @@ kernel_forward_model(float *      pMatProj,
 
   // Index row major in the projection
   long int first_proj_idx =
-    i + (j + (nIdxProj + k) % nProjSpectrum * c_projSize.y) * c_projSize.x; // To determine the efficient spectrum
-  long int proj_idx = i + (j + k * c_projSize.y) * (c_projSize.x);          // For all the rest
+    static_cast<long int>(i) +
+    (static_cast<long int>(j) + static_cast<long int>((nIdxProj + k) % nProjSpectrum) * c_projSize.y) *
+      c_projSize.x; // To determine the efficient spectrum
+  long int proj_idx = static_cast<long int>(i) + (static_cast<long int>(j) + static_cast<long int>(k) * c_projSize.y) *
+                                                   c_projSize.x; // For all the rest
 
   // Compute the efficient spectrum at the current pixel
   float efficientSpectrum[VBins * VEnergies];

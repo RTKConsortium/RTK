@@ -166,7 +166,7 @@ prepareVectorTextureObject(int                                size[3],
 
   // Allocate an intermediate memory space to extract the components of the input volume
   float * singleComponent;
-  size_t  numel = size[0] * size[1] * size[2];
+  size_t  numel = static_cast<size_t>(size[0]) * size[1] * size[2];
   if (nComponents > 1)
   {
     cudaMalloc(&singleComponent, numel * sizeof(float));

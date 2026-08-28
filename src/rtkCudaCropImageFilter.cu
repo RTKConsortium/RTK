@@ -42,8 +42,11 @@ crop_kernel(float *            input,
   if (i >= cropDim.x || j >= cropDim.y || k >= cropDim.z)
     return;
 
-  unsigned long int out_idx = i + j * cropDim.x + k * cropDim.y * cropDim.x;
-  unsigned long int in_idx = (cropIdx.x + i) + (cropIdx.y + j) * inputDim.x + (cropIdx.z + k) * inputDim.y * inputDim.x;
+  unsigned long int out_idx = static_cast<unsigned long>(i) + static_cast<unsigned long>(j) * cropDim.x +
+                              static_cast<unsigned long>(k) * cropDim.y * cropDim.x;
+  unsigned long int in_idx = static_cast<unsigned long>(cropIdx.x + i) +
+                             static_cast<unsigned long>(cropIdx.y + j) * inputDim.x +
+                             static_cast<unsigned long>(cropIdx.z + k) * inputDim.y * inputDim.x;
 
   output[out_idx] = input[in_idx];
 }

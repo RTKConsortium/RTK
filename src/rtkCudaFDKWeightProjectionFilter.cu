@@ -45,8 +45,12 @@ kernel_weight_projection(int2                proj_idx,
   pIdx.x = blockIdx.x * blockDim.x + threadIdx.x;
   pIdx.y = blockIdx.y * blockDim.y + threadIdx.y;
   pIdx.z = blockIdx.z * blockDim.z + threadIdx.z;
-  long int pIdx_comp_in = pIdx.x + (pIdx.y + pIdx.z * proj_size_buf_in.y) * (proj_size_buf_in.x);
-  long int pIdx_comp_out = pIdx.x + (pIdx.y + pIdx.z * proj_size_buf_out.y) * (proj_size_buf_out.x);
+  size_t pIdx_comp_in =
+    static_cast<size_t>(pIdx.x) +
+    (static_cast<size_t>(pIdx.y) + static_cast<size_t>(pIdx.z) * proj_size_buf_in.y) * (proj_size_buf_in.x);
+  size_t pIdx_comp_out =
+    static_cast<size_t>(pIdx.x) +
+    (static_cast<size_t>(pIdx.y) + static_cast<size_t>(pIdx.z) * proj_size_buf_out.y) * (proj_size_buf_out.x);
 
   // check if outside of projection grid
   if (pIdx.x >= proj_size.x || pIdx.y >= proj_size.y || pIdx.z >= proj_size.z)

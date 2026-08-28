@@ -73,8 +73,9 @@ kernel_warp_back_project_3Dgrid(float *             dev_vol_in,
     return;
   }
 
-  // Index row major into the volume
-  long int vol_idx = i + (j + k * c_volSize.y) * (c_volSize.x);
+  // Index row major into the volume (64-bit arithmetic to avoid overflow on large volumes)
+  long int vol_idx =
+    static_cast<long int>(i) + (static_cast<long int>(j) + static_cast<long int>(k) * c_volSize.y) * c_volSize.x;
 
   float3 IndexInDVF, Displacement, PP, IndexInInput, ip;
   float  voxel_data = 0;
@@ -129,8 +130,9 @@ kernel_warp_back_project_3Dgrid_cylindrical_detector(float *             dev_vol
     return;
   }
 
-  // Index row major into the volume
-  long int vol_idx = i + (j + k * c_volSize.y) * (c_volSize.x);
+  // Index row major into the volume (64-bit arithmetic to avoid overflow on large volumes)
+  long int vol_idx =
+    static_cast<long int>(i) + (static_cast<long int>(j) + static_cast<long int>(k) * c_volSize.y) * c_volSize.x;
 
   float3 IndexInDVF, Displacement, PP, IndexInInput, ip, pp;
   float  voxel_data = 0;

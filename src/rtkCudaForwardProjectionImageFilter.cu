@@ -97,7 +97,7 @@ kernel_forwardProject(float * dev_proj_in, float * dev_proj_out, cudaTextureObje
     ray.d = pixelPos - ray.o;
     ray.d = ray.d / sqrtf(dot(ray.d, ray.d));
 
-    int projOffset = numThread + proj * c_projSize.x * c_projSize.y;
+    size_t projOffset = static_cast<size_t>(numThread) + static_cast<size_t>(proj) * c_projSize.x * c_projSize.y;
 
     // Detect intersection with box
     if (!intersectBox(ray, &tnear, &tfar, c_boxMin, c_boxMax) || tfar <= 0.f || tfar == tnear)
