@@ -12,7 +12,7 @@ def add_rtkprojectors_group(parser):
         "--fp",
         "-f",
         help="Forward projection method",
-        choices=["Joseph", "CudaRayCast", "JosephAttenuated", "Zeng"],
+        choices=["Joseph", "CudaRayCast", "JosephAttenuated", "Zeng", "CudaWarp"],
         default="Joseph",
     )
     rtkprojectors_group.add_argument(
@@ -26,6 +26,7 @@ def add_rtkprojectors_group(parser):
             "CudaRayCast",
             "JosephAttenuated",
             "Zeng",
+            "CudaWarp",
         ],
         default="VoxelBasedBackProjection",
     )
@@ -56,6 +57,10 @@ def add_rtkprojectors_group(parser):
     rtkprojectors_group.add_argument(
         "--superiorclipimage",
         help="Superior clip of the ray for each pixel of the projections (Joseph only)",
+    )
+    rtkprojectors_group.add_argument(
+        "--warp-dvf",
+        help="3D DVF for CudaWarp projectors. This is distinct from the 4D motion DVF (--dvf/--idvf)",
     )
 
 
@@ -97,6 +102,16 @@ def SetBackProjectionFromArgParse(args_info, recon):
             recon.SetAlphaPSF(args_info.alphapsf)
         if args_info.attenuationmap is not None:
             recon.SetAttenuationMap(attenuation_map)
+    elif args_info.bp == "CudaWarp":
+        recon.SetBackProjectionFilter(ReconType.BackProjectionType_BP_CUDAWARP)
+        if getattr(args_info, "warp_dvf", None) is None:
+            raise RuntimeError(
+                "A displacement field is required with CudaWarp projectors (use --warp-dvf)"
+            )
+        displacement_field = itk.imread(args_info.warp_dvf)
+        if hasattr(itk, "CudaImage"):
+            displacement_field = itk.cuda_image_from_image(displacement_field)
+        recon.SetDisplacementField(displacement_field)
 
 
 # Mimicks SetForwardProjectionFromGgo
@@ -127,3 +142,15 @@ def SetForwardProjectionFromArgParse(args_info, recon):
             recon.SetAlphaPSF(args_info.alphapsf)
         if args_info.attenuationmap is not None:
             recon.SetAttenuationMap(attenuation_map)
+    elif args_info.fp == "CudaWarp":
+        recon.SetForwardProjectionFilter(ReconType.ForwardProjectionType_FP_CUDAWARP)
+        if args_info.step is not None:
+            recon.SetStepSize(args_info.step)
+        if getattr(args_info, "warp_dvf", None) is None:
+            raise RuntimeError(
+                "A displacement field is required with CudaWarp projectors (use --warp-dvf)"
+            )
+        displacement_field = itk.imread(args_info.warp_dvf)
+        if hasattr(itk, "CudaImage"):
+            displacement_field = itk.cuda_image_from_image(displacement_field)
+        recon.SetDisplacementField(displacement_field)
