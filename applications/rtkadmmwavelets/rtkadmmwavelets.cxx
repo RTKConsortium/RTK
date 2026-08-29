@@ -25,7 +25,6 @@
 
 #include "rtkADMMWaveletsConeBeamReconstructionFilter.h"
 #include "rtkConstantImageSource.h"
-#include "rtkDisplacedDetectorImageFilter.h"
 #include "rtkProjectionsReader.h"
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 
@@ -57,11 +56,6 @@ main(int argc, char * argv[])
     std::cout << "Reading geometry information from " << args_info.geometry_arg << "..." << std::endl;
   rtk::ThreeDCircularProjectionGeometry::Pointer geometry;
   TRY_AND_EXIT_ON_ITK_EXCEPTION(geometry = rtk::ReadGeometry(args_info.geometry_arg));
-
-  // Displaced detector weighting
-  auto ddf = rtk::DisplacedDetectorImageFilter<OutputImageType>::New();
-  ddf->SetInput(projectionsReader->GetOutput());
-  ddf->SetGeometry(geometry);
 
   // Create input: either an existing volume read from a file or a blank image
   itk::ImageSource<OutputImageType>::Pointer inputFilter;
