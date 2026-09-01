@@ -28,7 +28,7 @@ jobs:
             cuda-version: "130"
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
 
     - name: 'Fetch build script'
       run: |
@@ -106,7 +106,7 @@ jobs:
         python -m twine check ${WHEEL_PATTERN}
 
     - name: Publish Python package as GitHub Artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: LinuxWheel3${{ matrix.python3-minor-version }}${{ matrix.manylinux-platform }}-cuda${{ matrix.cuda-version }}
         path: dist/*.whl
@@ -120,7 +120,7 @@ jobs:
         cuda-version: ${{ github.event_name == 'pull_request' && fromJSON('["128"]') || fromJSON('["128","130"]') }}
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
       with:
         path: "im"
 
@@ -197,7 +197,7 @@ jobs:
         python -m twine check ${WHEEL_PATTERN}
 
     - name: Publish Python package as GitHub Artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v6
       with:
         name: WindowsWheel3${{ matrix.python3-minor-version }}-cuda${{ matrix.cuda-version }}
         path: dist/*.whl
@@ -210,7 +210,7 @@ jobs:
 
     steps:
     - name: Download Python Packages
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v7
 
     - name: Prepare packages for upload
       run: |
@@ -245,15 +245,15 @@ jobs:
     runs-on: ${{ matrix.runs-on }}
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
 
     - name: Download all wheel artifacts
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v7
       with:
         path: wheels
 
     - name: Set up Python 3.11
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v6
       with:
         python-version: '3.11'
 
