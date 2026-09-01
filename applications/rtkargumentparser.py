@@ -77,9 +77,11 @@ class RTKArgumentParser(argparse.ArgumentParser):
             if nargs != "+":
                 continue
             t = getattr(action, "type", None)
-            if t and t is not str:
-                neutralized[dest] = t
-                action.type = str
+            # Neutralize all types (including str) so comma tokens like "a,b" or
+            # "1,2,3" can be split after parsing. str types were previously skipped,
+            # breaking string/path lists passed via the Python API.
+            neutralized[dest] = t or str
+            action.type = str
         namespace = super().parse_args(args, namespace)
         for action in self._actions:
             dest = getattr(action, "dest", None)
