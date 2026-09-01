@@ -34,6 +34,7 @@ template class itk::ImageSource<itk::CudaImage<itk::CovariantVector<float, 3>, 3
 #  include "rtkFDKWeightProjectionFilter.h"
 #  include "rtkConstantImageSource.h"
 #  include "rtkInterpolatorWithKnownWeightsImageFilter.h"
+#  include "rtkSubRegionViewImageFilter.h"
 
 template class rtk::BackProjectionImageFilter<itk::CudaImage<float, 3>, itk::CudaImage<float, 3>>;
 template class rtk::FDKBackProjectionImageFilter<itk::CudaImage<float, 3>, itk::CudaImage<float, 3>>;
@@ -42,6 +43,7 @@ template class rtk::DisplacedDetectorImageFilter<itk::CudaImage<float, 3>>;
 template class rtk::FDKWeightProjectionFilter<itk::CudaImage<float, 3>>;
 template class rtk::ConstantImageSource<itk::CudaImage<float, 3>>;
 template class rtk::InterpolatorWithKnownWeightsImageFilter<itk::CudaImage<float, 3>, itk::CudaImage<float, 4>>;
+template class rtk::SubRegionViewImageFilter<itk::CudaImage<float, 3>>;
 
 namespace rtk
 {

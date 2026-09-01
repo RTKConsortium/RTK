@@ -151,6 +151,8 @@ private:
 
 } // namespace rtk
 
+#include "rtkCudaExternTemplates.h"
+
 #ifndef ITK_MANUAL_INSTANTIATION
 #  include "rtkSubRegionViewImageFilter.hxx"
 #endif
