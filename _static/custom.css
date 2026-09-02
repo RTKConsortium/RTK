@@ -1,0 +1,14 @@
+/* Invert SVG diagrams with transparent backgrounds in dark mode,
+   so black lines become visible on the dark page background. */
+
+/* When user explicitly selects dark mode in the Furo theme toggle */
+body[data-theme="dark"] img[src$=".svg"] {
+  filter: invert(1);
+}
+
+/* When Furo auto mode follows OS dark preference */
+@media (prefers-color-scheme: dark) {
+  body[data-theme="auto"] img[src$=".svg"] {
+    filter: invert(1);
+  }
+}

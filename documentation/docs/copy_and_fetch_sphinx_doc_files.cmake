@@ -15,6 +15,7 @@ set(
   "examples"
   "applications"
   "documentation"
+  "_static"
 )
 
 # List of files to grab from CudaCommon

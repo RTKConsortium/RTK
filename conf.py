@@ -74,7 +74,8 @@ html_theme_options = {
 # Add any paths that contain custom static files (such as style sheets or icons)
 # here, relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = []
+html_static_path = ["_static"]
+html_css_files = ["custom.css"]
 html_logo = "https://www.openrtk.org/opensourcelogos/rtk75.png"
 html_title = f"{project}'s documentation"
 html_favicon = "https://www.openrtk.org/RTK/img/rtk_favicon.ico"
