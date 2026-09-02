@@ -44,6 +44,7 @@ def build_parser():
             "JosephAttenuated",
             "CudaRayCast",
             "Zeng",
+            "CudaZeng",
             "MIP",
             "CudaWrapRayCast",
         ],
@@ -161,6 +162,12 @@ def process(args_info):
         forwardProjection = rtk.ZengForwardProjectionImageFilter[
             OutputImageType, OutputImageType
         ].New()
+    elif args_info.fp == "CudaZeng":
+        if hasattr(itk, "CudaImage"):
+            forwardProjection = rtk.CudaZengForwardProjectionImageFilter.New()
+        else:
+            print("The program has not been compiled with cuda option")
+            sys.exit(1)
     elif args_info.fp == "MIP":
         forwardProjection = rtk.MaximumIntensityProjectionImageFilter[
             OutputImageType, OutputImageType
@@ -191,7 +198,7 @@ def process(args_info):
             print("The program has not been compiled with cuda option")
             sys.exit(1)
 
-    if args_info.fp in ["CudaWrapRayCast", "CudaRayCast"]:
+    if args_info.fp in ["CudaWrapRayCast", "CudaRayCast", "CudaZeng"]:
         forwardProjection.SetInput(
             itk.cuda_image_from_image(constantImageSource.GetOutput())
         )
@@ -218,9 +225,9 @@ def process(args_info):
             forwardProjection.SetSuperiorClipImage(superiorClipImage)
         elif args_info.fp == "MIP":
             forwardProjection.SetSuperiorClipImage(superiorClipImage)
-    if args_info.sigmazero and args_info.fp == "Zeng":
+    if args_info.sigmazero and args_info.fp in ["Zeng", "CudaZeng"]:
         forwardProjection.SetSigmaZero(args_info.sigmazero)
-    if args_info.alphapsf and args_info.fp == "Zeng":
+    if args_info.alphapsf and args_info.fp in ["Zeng", "CudaZeng"]:
         forwardProjection.SetAlpha(args_info.alphapsf)
 
     forwardProjection.SetGeometry(geometry)
