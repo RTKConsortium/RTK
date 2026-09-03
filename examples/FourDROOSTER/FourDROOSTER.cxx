@@ -11,19 +11,17 @@
 #include <itkImageFileWriter.h>
 
 int
-main(int argc, char * argv[])
+main(int, char *[])
 {
   using OutputPixelType = float;
   using DVFVectorType = itk::CovariantVector<OutputPixelType, 3>;
 #ifdef RTK_USE_CUDA
   using VolumeSeriesType = itk::CudaImage<OutputPixelType, 4>;
   using ProjectionStackType = itk::CudaImage<OutputPixelType, 3>;
-  using VolumeType = itk::CudaImage<OutputPixelType, 3>;
   using DVFSequenceImageType = itk::CudaImage<DVFVectorType, VolumeSeriesType::ImageDimension>;
 #else
   using VolumeSeriesType = itk::Image<OutputPixelType, 4>;
   using ProjectionStackType = itk::Image<OutputPixelType, 3>;
-  using VolumeType = itk::Image<OutputPixelType, 3>;
   using DVFSequenceImageType = itk::Image<DVFVectorType, VolumeSeriesType::ImageDimension>;
 #endif
 
