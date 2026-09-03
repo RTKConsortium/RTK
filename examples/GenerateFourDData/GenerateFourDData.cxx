@@ -14,7 +14,7 @@
 #include "rtkThreeDCircularProjectionGeometry.h"
 
 int
-main(int argc, char * argv[])
+main(int, char *[])
 {
   using PixelType = float;
   using DVFVectorType = itk::CovariantVector<PixelType, 3>;

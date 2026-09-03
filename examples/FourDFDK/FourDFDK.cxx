@@ -13,7 +13,7 @@
 #include <itkImageFileWriter.h>
 
 int
-main(int argc, char * argv[])
+main(int, char *[])
 {
   using OutputPixelType = float;
   constexpr unsigned int Dimension = 3;

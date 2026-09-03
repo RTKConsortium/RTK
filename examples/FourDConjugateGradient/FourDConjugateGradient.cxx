@@ -11,18 +11,16 @@
 #include <itkImageFileWriter.h>
 
 int
-main(int argc, char * argv[])
+main(int, char *[])
 {
   using OutputPixelType = float;
 
 #ifdef RTK_USE_CUDA
   using VolumeSeriesType = itk::CudaImage<OutputPixelType, 4>;
   using ProjectionStackType = itk::CudaImage<OutputPixelType, 3>;
-  using VolumeType = itk::CudaImage<OutputPixelType, 3>;
 #else
   using VolumeSeriesType = itk::Image<OutputPixelType, 4>;
   using ProjectionStackType = itk::Image<OutputPixelType, 3>;
-  using VolumeType = itk::Image<OutputPixelType, 3>;
 #endif
 
   // Generate the input volume series, used as initial estimate by 4D conjugate gradient
