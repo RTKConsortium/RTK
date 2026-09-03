@@ -105,7 +105,7 @@ main(int argc, char * argv[])
     e2->SetGeometry(geom);
     e2->SetDensity(-1.);
     e2->SetAxis(itk::MakeVector(8., 8., 8.));
-    auto center = itk::MakePoint(4 * (itk::Math::abs((4 + i) % 8 - 4.) - 2.), 0., 0.);
+    auto center = itk::MakePoint(4 * (std::abs((4 + i) % 8 - 4.) - 2.), 0., 0.);
     e2->SetCenter(center);
     e2->InPlaceOff();
     e2->Update();
@@ -195,7 +195,7 @@ main(int argc, char * argv[])
     de2->SetInput(de1->GetOutput());
     de2->SetDensity(-1.);
     de2->SetAxis(itk::MakeVector(8., 8., 8.));
-    de2->SetCenter(itk::MakePoint(4 * (itk::Math::abs((4 + t) % 8 - 4.) - 2.), 0., 0.));
+    de2->SetCenter(itk::MakePoint(4 * (std::abs((4 + t) % 8 - 4.) - 2.), 0., 0.));
     de2->InPlaceOff();
     de2->Update();
 
