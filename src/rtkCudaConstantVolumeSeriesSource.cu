@@ -45,7 +45,7 @@ set_volume_series_to_constant(float * out, float value)
   if (i >= c_Size.x || j >= c_Size.y || k >= c_Size.z * c_Size.w)
     return;
 
-  long int id = (k * c_Size.y + j) * c_Size.x + i;
+  long int id = (static_cast<long int>(k) * c_Size.y + j) * c_Size.x + i;
 
   out[id] = value;
 }
@@ -74,7 +74,7 @@ CUDA_generate_constant_volume_series(int size[4], float * dev_out, float constan
   // run a kernel to replace the zeros with constantValue.
 
   // Reset output volume
-  size_t memorySizeOutput = size[0] * size[1] * size[2] * size[3] * sizeof(float);
+  size_t memorySizeOutput = static_cast<size_t>(size[0]) * size[1] * size[2] * size[3] * sizeof(float);
   cudaMemset((void *)dev_out, 0, memorySizeOutput);
 
   if (!(constantValue == 0))

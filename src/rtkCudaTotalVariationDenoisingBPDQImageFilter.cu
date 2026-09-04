@@ -45,7 +45,7 @@ magnitude_threshold_kernel(float * grad_x, float * grad_y, float * grad_z, float
   if (i >= c_Size.x || j >= c_Size.y || k >= c_Size.z)
     return;
 
-  long int id = (k * c_Size.y + j) * c_Size.x + i;
+  long int id = (static_cast<long int>(k) * c_Size.y + j) * c_Size.x + i;
 
   float norm = sqrt(grad_x[id] * grad_x[id] + grad_y[id] * grad_y[id] + grad_z[id] * grad_z[id]);
   if (norm > gamma)
@@ -67,10 +67,10 @@ gradient_and_subtract_kernel(float * in, float * grad_x, float * grad_y, float *
   if (i >= c_Size.x || j >= c_Size.y || k >= c_Size.z)
     return;
 
-  long int id = (k * c_Size.y + j) * c_Size.x + i;
-  long int id_x = (k * c_Size.y + j) * c_Size.x + i + 1;
-  long int id_y = (k * c_Size.y + j + 1) * c_Size.x + i;
-  long int id_z = ((k + 1) * c_Size.y + j) * c_Size.x + i;
+  long int id = (static_cast<long int>(k) * c_Size.y + j) * c_Size.x + i;
+  long int id_x = (static_cast<long int>(k) * c_Size.y + j) * c_Size.x + i + 1;
+  long int id_y = (static_cast<long int>(k) * c_Size.y + j + 1) * c_Size.x + i;
+  long int id_z = ((static_cast<long int>(k) + 1) * c_Size.y + j) * c_Size.x + i;
 
   if (i != (c_Size.x - 1))
     grad_x[id] -= ((in[id_x] - in[id]) / c_Spacing.x);
@@ -90,7 +90,7 @@ multiply_by_beta_kernel(float * input, float * output, float beta)
   if (i >= c_Size.x || j >= c_Size.y || k >= c_Size.z)
     return;
 
-  long int id = (k * c_Size.y + j) * c_Size.x + i;
+  long int id = (static_cast<long int>(k) * c_Size.y + j) * c_Size.x + i;
 
   output[id] = input[id] * beta;
 }
@@ -105,7 +105,7 @@ subtract_kernel(float * in1, float * in2, float * out)
   if (i >= c_Size.x || j >= c_Size.y || k >= c_Size.z)
     return;
 
-  long int id = (k * c_Size.y + j) * c_Size.x + i;
+  long int id = (static_cast<long int>(k) * c_Size.y + j) * c_Size.x + i;
 
   out[id] = in1[id] - in2[id];
 }
@@ -138,7 +138,7 @@ CUDA_total_variation(int     size[3],
     minSpacing = spacing[2];
 
   // Reset output volume
-  size_t memorySizeOutput = sizeof(float) * size[0] * size[1] * size[2];
+  size_t memorySizeOutput = sizeof(float) * static_cast<size_t>(size[0]) * size[1] * size[2];
   cudaMemset((void *)dev_out, 0, memorySizeOutput);
 
   // Initialize volume to store intermediate images

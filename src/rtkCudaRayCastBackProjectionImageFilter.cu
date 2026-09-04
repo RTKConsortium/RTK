@@ -144,18 +144,27 @@ kernel_ray_cast_back_project(float * dev_vol_out, float * dev_proj)
       pos_high.y = min(floor_pos.y + 1, c_volSize.y - 1);
       pos_high.z = min(floor_pos.z + 1, c_volSize.z - 1);
 
-      // Compute indices in the volume
-      indices[0] = pos_low.x + pos_low.y * c_volSize.x + pos_low.z * c_volSize.x * c_volSize.y;    // index000
-      indices[1] = pos_low.x + pos_low.y * c_volSize.x + pos_high.z * c_volSize.x * c_volSize.y;   // index001
-      indices[2] = pos_low.x + pos_high.y * c_volSize.x + pos_low.z * c_volSize.x * c_volSize.y;   // index010
-      indices[3] = pos_low.x + pos_high.y * c_volSize.x + pos_high.z * c_volSize.x * c_volSize.y;  // index011
-      indices[4] = pos_high.x + pos_low.y * c_volSize.x + pos_low.z * c_volSize.x * c_volSize.y;   // index100
-      indices[5] = pos_high.x + pos_low.y * c_volSize.x + pos_high.z * c_volSize.x * c_volSize.y;  // index101
-      indices[6] = pos_high.x + pos_high.y * c_volSize.x + pos_low.z * c_volSize.x * c_volSize.y;  // index110
-      indices[7] = pos_high.x + pos_high.y * c_volSize.x + pos_high.z * c_volSize.x * c_volSize.y; // index111
+      // Compute indices in the volume (using 64-bit arithmetic to avoid overflow on large volumes)
+      const size_t volSize_X = static_cast<size_t>(c_volSize.x);
+      const size_t volSize_XY = volSize_X * static_cast<size_t>(c_volSize.y);
+      const size_t pxl = static_cast<size_t>(pos_low.x);
+      const size_t pxh = static_cast<size_t>(pos_high.x);
+      const size_t pyl = static_cast<size_t>(pos_low.y);
+      const size_t pyh = static_cast<size_t>(pos_high.y);
+      const size_t pzl = static_cast<size_t>(pos_low.z);
+      const size_t pzh = static_cast<size_t>(pos_high.z);
+      indices[0] = static_cast<long int>(pxl + pyl * volSize_X + pzl * volSize_XY); // index000
+      indices[1] = static_cast<long int>(pxl + pyl * volSize_X + pzh * volSize_XY); // index001
+      indices[2] = static_cast<long int>(pxl + pyh * volSize_X + pzl * volSize_XY); // index010
+      indices[3] = static_cast<long int>(pxl + pyh * volSize_X + pzh * volSize_XY); // index011
+      indices[4] = static_cast<long int>(pxh + pyl * volSize_X + pzl * volSize_XY); // index100
+      indices[5] = static_cast<long int>(pxh + pyl * volSize_X + pzh * volSize_XY); // index101
+      indices[6] = static_cast<long int>(pxh + pyh * volSize_X + pzl * volSize_XY); // index110
+      indices[7] = static_cast<long int>(pxh + pyh * volSize_X + pzh * volSize_XY); // index111
 
       // Compute the value to be splatted
-      toSplat = dev_proj[numThread + proj * c_projSize.x * c_projSize.y] * mmStep;
+      size_t projOffset = static_cast<size_t>(numThread) + static_cast<size_t>(proj) * c_projSize.x * c_projSize.y;
+      toSplat = dev_proj[projOffset] * mmStep;
       atomicAdd(&dev_vol_out[indices[0]], toSplat * weights[0]);
       atomicAdd(&dev_vol_out[indices[1]], toSplat * weights[1]);
       atomicAdd(&dev_vol_out[indices[2]], toSplat * weights[2]);
@@ -170,7 +179,8 @@ kernel_ray_cast_back_project(float * dev_vol_out, float * dev_proj)
     }
 
     // Last position
-    toSplat = dev_proj[numThread + proj * c_projSize.x * c_projSize.y] * (tfar - t + halfVStep) * dirLengthInMM;
+    size_t projOffsetLast = static_cast<size_t>(numThread) + static_cast<size_t>(proj) * c_projSize.x * c_projSize.y;
+    toSplat = dev_proj[projOffsetLast] * (tfar - t + halfVStep) * dirLengthInMM;
     atomicAdd(&dev_vol_out[indices[0]], toSplat * weights[0]);
     atomicAdd(&dev_vol_out[indices[1]], toSplat * weights[1]);
     atomicAdd(&dev_vol_out[indices[2]], toSplat * weights[2]);

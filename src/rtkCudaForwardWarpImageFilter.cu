@@ -386,7 +386,8 @@ CUDA_ForwardWarp(int     input_vol_dim[3],
 
   ///////////////////////////////////////
   /// Initialize the output
-  size_t memorySizeOutput = sizeof(float) * output_vol_dim[0] * output_vol_dim[1] * output_vol_dim[2];
+  size_t memorySizeOutput =
+    sizeof(float) * static_cast<size_t>(output_vol_dim[0]) * output_vol_dim[1] * output_vol_dim[2];
   cudaMemset((void *)dev_output_vol, 0, memorySizeOutput);
 
   //////////////////////////////////////

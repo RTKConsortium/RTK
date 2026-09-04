@@ -64,7 +64,8 @@ kernel_displaced_weight(int3                proj_idx_in,
   tIdx.x = blockIdx.x * blockDim.x + threadIdx.x;
   tIdx.y = blockIdx.y * blockDim.y + threadIdx.y;
   tIdx.z = blockIdx.z * blockDim.z + threadIdx.z;
-  long int tIdx_comp = tIdx.x + tIdx.y * proj_size_out.x + tIdx.z * proj_size_out_buf.x * proj_size_out_buf.y;
+  size_t tIdx_comp = static_cast<size_t>(tIdx.x) + static_cast<size_t>(tIdx.y) * proj_size_out.x +
+                     static_cast<size_t>(tIdx.z) * proj_size_out_buf.x * proj_size_out_buf.y;
 
   // check if outside of projection grid
   if (tIdx.x >= proj_size_out.x || tIdx.y >= proj_size_out.y || tIdx.z >= proj_size_out.z)
@@ -73,8 +74,9 @@ kernel_displaced_weight(int3                proj_idx_in,
   // compute projection index from thread index
   int3 pIdx = make_int3(tIdx.x + proj_idx_out.x, tIdx.y + proj_idx_out.y, tIdx.z + proj_idx_out.z);
   // combined proj. index -> use thread index in z because accessing memory only with this index
-  long int pIdx_comp = (pIdx.x - proj_idx_in.x) + (pIdx.y - proj_idx_in.y) * proj_size_in_buf.x +
-                       (pIdx.z - proj_idx_in.z) * proj_size_in_buf.x * proj_size_in_buf.y;
+  size_t pIdx_comp = static_cast<size_t>(pIdx.x - proj_idx_in.x) +
+                     static_cast<size_t>(pIdx.y - proj_idx_in.y) * proj_size_in_buf.x +
+                     static_cast<size_t>(pIdx.z - proj_idx_in.z) * proj_size_in_buf.x * proj_size_in_buf.y;
 
   // check if outside overlapping region
   if (pIdx.x < proj_idx_in.x || pIdx.x >= (proj_idx_in.x + proj_size_in.x) || pIdx.y < proj_idx_in.y ||

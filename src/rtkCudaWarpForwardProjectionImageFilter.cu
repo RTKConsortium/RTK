@@ -91,8 +91,8 @@ kernel_warped_forwardProject(float *             dev_proj_in,
     // Detect intersection with box
     if (!intersectBox(ray, &tnear, &tfar, c_boxMin, c_boxMax) || tfar < 0.f)
     {
-      dev_proj_out[numThread + proj * c_projSize.x * c_projSize.y] =
-        dev_proj_in[numThread + proj * c_projSize.x * c_projSize.y];
+      size_t projOffset = static_cast<size_t>(numThread) + static_cast<size_t>(proj) * c_projSize.x * c_projSize.y;
+      dev_proj_out[projOffset] = dev_proj_in[projOffset];
     }
     else
     {
@@ -139,9 +139,8 @@ kernel_warped_forwardProject(float *             dev_proj_in,
         sum += sample;
         pos += step;
       }
-      dev_proj_out[numThread + proj * c_projSize.x * c_projSize.y] =
-        dev_proj_in[numThread + proj * c_projSize.x * c_projSize.y] +
-        (sum + (tfar - t + halfVStep) / vStep * sample) * c_tStep;
+      size_t projOffset = static_cast<size_t>(numThread) + static_cast<size_t>(proj) * c_projSize.x * c_projSize.y;
+      dev_proj_out[projOffset] = dev_proj_in[projOffset] + (sum + (tfar - t + halfVStep) / vStep * sample) * c_tStep;
     }
   }
 }

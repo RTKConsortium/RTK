@@ -51,9 +51,9 @@ CudaForwardProjectionImageFilter<TInputImage, TOutputImage>::GPUGenerateData()
   const unsigned int                        Dimension = TInputImage::ImageDimension;
   const unsigned int iFirstProj = this->GetInput(0)->GetRequestedRegion().GetIndex(Dimension - 1);
   const unsigned int nProj = this->GetInput(0)->GetRequestedRegion().GetSize(Dimension - 1);
-  const unsigned int nPixelsPerProj = this->GetOutput()->GetBufferedRegion().GetSize(0) *
-                                      this->GetOutput()->GetBufferedRegion().GetSize(1) *
-                                      itk::NumericTraits<typename TInputImage::PixelType>::GetLength();
+  const size_t       nPixelsPerProj = this->GetOutput()->GetBufferedRegion().GetSize(0) *
+                                this->GetOutput()->GetBufferedRegion().GetSize(1) *
+                                itk::NumericTraits<typename TInputImage::PixelType>::GetLength();
 
   itk::Vector<double, 4> source_position;
 
@@ -166,7 +166,7 @@ CudaForwardProjectionImageFilter<TInputImage, TOutputImage>::GPUGenerateData()
       source_positions[(iProj - iFirstProj) * 3 + d] = source_position[d]; // Ignore the 4th component
   }
 
-  int                projectionOffset = 0;
+  ptrdiff_t          projectionOffset = 0;
   const unsigned int vectorLength = itk::PixelTraits<typename TInputImage::PixelType>::Dimension;
 
   for (unsigned int i = 0; i < nProj; i += SLAB_SIZE)

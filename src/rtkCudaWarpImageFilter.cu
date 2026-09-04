@@ -68,7 +68,8 @@ kernel_3Dgrid(float *             dev_vol_out,
   }
 
   // Index row major into the volume
-  long int vol_idx = i + (j + k * vol_dim.y) * (vol_dim.x);
+  long int vol_idx =
+    static_cast<long int>(i) + (static_cast<long int>(j) + static_cast<long int>(k) * vol_dim.y) * vol_dim.x;
 
   // Matrix multiply to get the index in the DVF texture of the current point in the output volume
   float3 IndexInDVF = matrix_multiply(make_float3(i, j, k), c_IndexOutputToIndexDVFMatrix);
