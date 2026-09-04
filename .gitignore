@@ -15,6 +15,9 @@
 # KWStyle hook output
 *.kws
 
+# build directories
+build-*/
+
 # compiled python files
 *.pyc
 
