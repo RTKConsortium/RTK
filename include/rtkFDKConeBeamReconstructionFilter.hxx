@@ -41,7 +41,6 @@ FDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecision>::FDKCo
   m_RampFilter->SetInput(m_WeightFilter->GetOutput());
 
   // Default parameters
-  m_ExtractFilter->SetDirectionCollapseToSubmatrix();
   m_WeightFilter->InPlaceOn();
 
   // Default to one projection per subset when FFTW is not available
@@ -92,16 +91,19 @@ FDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecision>::Gener
 
   // We only set the first sub-stack at that point, the rest will be
   // requested in the GenerateData function
-  typename ExtractFilterType::InputImageRegionType projRegion;
+  typename InputImageType::RegionType projRegion;
   projRegion = this->GetInput(1)->GetLargestPossibleRegion();
   unsigned int firstStackSize = std::min(m_ProjectionSubsetSize, (unsigned int)projRegion.GetSize(Dimension - 1));
   projRegion.SetSize(Dimension - 1, firstStackSize);
+
+  m_ExtractFilter->SetInput(this->GetInput(1));
   m_ExtractFilter->SetExtractionRegion(projRegion);
+  if (rtk::IsContiguousSubRegion(this->GetInput(1), projRegion))
+    m_WeightFilter->InPlaceOff();
 
   // Run composite filter update
   m_BackProjectionFilter->SetInput(0, this->GetInput(0));
   m_BackProjectionFilter->SetInPlace(this->GetInPlace());
-  m_ExtractFilter->SetInput(this->GetInput(1));
   m_BackProjectionFilter->UpdateOutputInformation();
 
   // Update output information
@@ -117,13 +119,11 @@ FDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecision>::Gener
 {
   const unsigned int Dimension = this->InputImageDimension;
 
-  // The backprojection works on a small stack of projections, not the full stack
-  typename ExtractFilterType::InputImageRegionType subsetRegion;
+  typename InputImageType::RegionType subsetRegion;
   subsetRegion = this->GetInput(1)->GetLargestPossibleRegion();
   unsigned int nProj = subsetRegion.GetSize(Dimension - 1);
+  unsigned int baseIndex = subsetRegion.GetIndex(Dimension - 1);
 
-  // The progress accumulator tracks the progress of the pipeline
-  // Each filter is equally weighted across all iterations of the stack
   auto progress = itk::ProgressAccumulator::New();
   progress->SetMiniPipelineFilter(this);
   auto frac = (1.0f / 3) / itk::Math::ceil(double(nProj) / m_ProjectionSubsetSize);
@@ -133,22 +133,23 @@ FDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecision>::Gener
 
   for (unsigned int i = 0; i < nProj; i += m_ProjectionSubsetSize)
   {
-    // After the first bp update, we need to use its output as input.
+    subsetRegion.SetIndex(Dimension - 1, baseIndex + i);
+    subsetRegion.SetSize(Dimension - 1, std::min(m_ProjectionSubsetSize, nProj - i));
+    m_ExtractFilter->SetInput(this->GetInput(1));
+    m_ExtractFilter->SetExtractionRegion(subsetRegion);
+    if (rtk::IsContiguousSubRegion(this->GetInput(1), subsetRegion))
+      m_WeightFilter->InPlaceOff();
+
     if (i)
     {
       typename TInputImage::Pointer pimg = m_BackProjectionFilter->GetOutput();
       pimg->DisconnectPipeline();
       m_BackProjectionFilter->SetInput(pimg);
 
-      // Change projection subset
-      subsetRegion.SetIndex(Dimension - 1, i);
-      subsetRegion.SetSize(Dimension - 1, std::min(m_ProjectionSubsetSize, nProj - i));
-      m_ExtractFilter->SetExtractionRegion(subsetRegion);
-
-      // This is required to reset the full pipeline
       m_BackProjectionFilter->GetOutput()->UpdateOutputInformation();
       m_BackProjectionFilter->GetOutput()->PropagateRequestedRegion();
     }
+
     m_BackProjectionFilter->Update();
   }
 
