@@ -1,6 +1,7 @@
 #include <itkImageRegionConstIterator.h>
 #include <itkJoinSeriesImageFilter.h>
 #include <itkPasteImageFilter.h>
+#include <itkCovariantVector.h>
 #include <itksys/SystemTools.hxx>
 
 #include "rtkConstantImageSource.h"
@@ -248,6 +249,29 @@ rtkfourdconjugategradienttest(int, char *[])
   conjugategradient->SetBackProjectionFilter(ConjugateGradientFilterType::BP_CUDAVOXELBASED);
   conjugategradient->SetForwardProjectionFilter(ConjugateGradientFilterType::FP_CUDARAYCAST);
   conjugategradient->SetCudaConjugateGradient(true);
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(conjugategradient->Update());
+
+  CheckImageQuality<VolumeSeriesType>(conjugategradient->GetOutput(), join->GetOutput(), 0.4, 12, 2.0);
+  std::cout << "\n\nTest PASSED! " << std::endl;
+
+  std::cout << "\n\n****** Case 3: CUDA Warp forward projector, CUDA Warp back projector, GPU interpolation and splat "
+               "******"
+            << std::endl;
+
+  using DVFPixelType = itk::CovariantVector<OutputPixelType, 3>;
+  using DVFImageType = itk::CudaImage<DVFPixelType, 3>;
+  auto dvfSource = rtk::ConstantImageSource<DVFImageType>::New();
+  dvfSource->SetOrigin(tomographySource->GetOutput()->GetOrigin());
+  dvfSource->SetSpacing(tomographySource->GetOutput()->GetSpacing());
+  dvfSource->SetSize(tomographySource->GetOutput()->GetLargestPossibleRegion().GetSize());
+  DVFPixelType dvf;
+  dvf.Fill(0.0);
+  dvfSource->SetConstant(dvf);
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(dvfSource->Update())
+
+  conjugategradient->SetDisplacementField(dvfSource->GetOutput());
+  conjugategradient->SetBackProjectionFilter(ConjugateGradientFilterType::BP_CUDAWARP);
+  conjugategradient->SetForwardProjectionFilter(ConjugateGradientFilterType::FP_CUDAWARP);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(conjugategradient->Update());
 
   CheckImageQuality<VolumeSeriesType>(conjugategradient->GetOutput(), join->GetOutput(), 0.4, 12, 2.0);

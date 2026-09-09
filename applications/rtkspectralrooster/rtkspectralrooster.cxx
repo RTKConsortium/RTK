@@ -197,6 +197,13 @@ main(int argc, char * argv[])
 
   // Set the forward and back projection filters to be used
   auto rooster = rtk::FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::New();
+  if (args_info.fp_arg == fp_arg_CudaWarp || args_info.bp_arg == bp_arg_CudaWarp)
+  {
+    itkGenericExceptionMacro(
+      << "CudaWarp projectors are not currently supported by SpectralROOSTER. "
+      << "They require a separate 3D projector DVF via --warp-dvf, while ROOSTER-based motion compensation uses 4D "
+      << "motion DVFs.");
+  }
   SetForwardProjectionFromGgo(args_info, rooster.GetPointer());
   SetBackProjectionFromGgo(args_info, rooster.GetPointer());
   rooster->SetInputVolumeSeries(input);
