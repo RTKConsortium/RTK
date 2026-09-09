@@ -105,9 +105,9 @@ function(rtk_add_cuda_test testname testfile)
   endif()
 endfunction()
 
-# Use sha512 algorithm to generate content link
+# Use cid algorithm to generate content link
 if(NOT ITK_SOURCE_DIR)
-  set(ExternalData_LINK_CONTENT SHA512)
+  set(ExternalData_LINK_CONTENT CID)
 endif()
 
 rtk_add_test(rtkFDKTest rtkfdktest.cxx)

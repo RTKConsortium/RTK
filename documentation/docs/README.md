@@ -17,7 +17,7 @@ You may also add new `toctree` elements and new `index.md` file as needed.
 
 ### Inline images
 Images can be referenced with their URL in markdown, but this can delay their presentation in the page.
-Another option is to store the images in the [RTK collection](https://data.kitware.com/?#collection/5a7706878d777f0649e04776/folder/5eaeaa2f9014a6d84e47adb3) on data.kitware.com and to push their content file (SHA512) to the RTK source tree.
+Another option is to store the images in the [RTK collection](https://data.kitware.com/?#collection/5a7706878d777f0649e04776/folder/5eaeaa2f9014a6d84e47adb3) on data.kitware.com and to push their content file (CID) to the RTK source tree.
 Such images will be automatically downloaded when building the documentation and served as static files when navigating.
 To add a new image:
 1. Go to the [RTKDocumentationData](https://data.kitware.com/?#collection/5a7706878d777f0649e04776/folder/5eaeaa2f9014a6d84e47adb3) folder on data.kitware.com
