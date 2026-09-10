@@ -22,6 +22,8 @@
 
 #include <itkProgressAccumulator.h>
 
+#include <cmath>
+
 namespace rtk
 {
 
@@ -63,6 +65,23 @@ FDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecision>::Verif
 
   if (this->m_Geometry.IsNull())
     itkExceptionMacro(<< "Geometry has not been set.");
+
+  // Check that the rotation axis is along Y (index 1), as required by the ramp filter
+  // which always applies along the first direction of the projection images. Some
+  // misalignment is allowed, up to the configurable angular tolerance.
+  const double cosTolerance = std::cos(this->m_AngularTolerance * itk::Math::pi / 180.);
+  const auto & matrices = this->m_Geometry->GetRotationMatrices();
+  for (unsigned int i = 0; i < matrices.size(); i++)
+  {
+    const double dot = matrices[i][1][1];
+    if (dot < cosTolerance)
+    {
+      itkExceptionMacro(<< "The rotation axis is not along the Y direction for projection #" << i
+                        << ": it is tilted by " << std::acos(dot) * 180. / itk::Math::pi
+                        << " degrees while the angular tolerance is " << this->m_AngularTolerance
+                        << " degrees. FDK reconstruction assumes a rotation around Y.");
+    }
+  }
 }
 
 template <class TInputImage, class TOutputImage, class TFFTPrecision>

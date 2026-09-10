@@ -111,6 +111,12 @@ public:
   itkGetMacro(ProjectionSubsetSize, unsigned int);
   itkSetMacro(ProjectionSubsetSize, unsigned int);
 
+  /** Get / Set the maximum angular deviation, in degrees, allowed between the rotation
+   * axis and the Y axis. FDK reconstruction assumes a rotation around Y and will throw
+   * if the deviation exceeds this tolerance. Default is 30 degrees. */
+  itkGetConstMacro(AngularTolerance, double);
+  itkSetMacro(AngularTolerance, double);
+
   /** Get / Set and init the backprojection filter. The set function takes care
    * of initializing the mini-pipeline and the ramp filter must therefore be
    * created before calling this set function. */
@@ -150,6 +156,9 @@ protected:
 private:
   /** Number of projections processed at a time. */
   unsigned int m_ProjectionSubsetSize{ 16 };
+
+  /** Maximum angular deviation, in degrees, between the rotation axis and the Y axis. */
+  double m_AngularTolerance{ 30. };
 
   /** Geometry propagated to subfilters of the mini-pipeline. */
   ThreeDCircularProjectionGeometry::Pointer m_Geometry;

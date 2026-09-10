@@ -1,6 +1,7 @@
 #include <itkImageRegionConstIterator.h>
 #include <itkImageRegionSplitterDirection.h>
 #include <itkStreamingImageFilter.h>
+#include <itkTestingMacros.h>
 
 #include "rtkConstantImageSource.h"
 #include "rtkDrawSheppLoganFilter.h"
@@ -180,5 +181,21 @@ rtkfdktest(int, char *[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION(dsl->UpdateLargestPossibleRegion())
   CheckImageQuality<OutputImageType>(fov->GetOutput(), dsl->GetOutput(), 0.03, 26, 2.0);
   std::cout << "Test PASSED! " << std::endl;
+
+  std::cout << "\n\n****** Case 6: rotation axis tilted beyond tolerance should throw ******" << std::endl;
+
+  // Geometry with an out-of-plane angle larger than the default tolerance (30 degrees)
+  auto badGeometry = rtk::ThreeDCircularProjectionGeometry::New();
+  for (unsigned int noProj = 0; noProj < NumberOfProjectionImages; noProj++)
+    badGeometry->AddProjection(600., 1200., noProj * 360. / NumberOfProjectionImages, 0, 0, 60);
+
+  auto badFeldkamp = FDKType::New();
+  badFeldkamp->SetInput(0, tomographySource->GetOutput());
+  badFeldkamp->SetInput(1, slp->GetOutput());
+  badFeldkamp->SetGeometry(badGeometry);
+
+  ITK_TRY_EXPECT_EXCEPTION(badFeldkamp->Update());
+  std::cout << "Test PASSED! " << std::endl;
+
   return EXIT_SUCCESS;
 }
