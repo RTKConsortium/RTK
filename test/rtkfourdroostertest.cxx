@@ -401,6 +401,31 @@ rtkfourdroostertest(int, char *[])
 
   CheckImageQuality<VolumeSeriesType>(rooster->GetOutput(), join->GetOutput(), 0.25, 15, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
+
+  std::cout << "\n\n****** Case 5: CUDA forward and back projectors, CUDA conjugate gradient, "
+               "spatial TV denoising (regression test for black frames) ******"
+            << std::endl;
+
+  rooster->SetBackProjectionFilter(ROOSTERFilterType::BP_CUDAVOXELBASED); // Cuda voxel based
+  rooster->SetForwardProjectionFilter(ROOSTERFilterType::FP_CUDARAYCAST); // Cuda ray cast
+
+  rooster->SetPerformPositivity(false);
+  rooster->SetPerformMotionMask(false);
+  rooster->SetPerformTVSpatialDenoising(true);
+  rooster->SetPerformWaveletsSpatialDenoising(false);
+  rooster->SetPerformTVTemporalDenoising(false);
+  rooster->SetPerformL0TemporalDenoising(false);
+  rooster->SetPerformWarping(false);
+  rooster->SetComputeInverseWarpingByConjugateGradient(false);
+  rooster->SetUseNearestNeighborInterpolationInWarping(false);
+
+  // With --cudacg and spatial TV, every frame but the first used to come out
+  // black (all zeros). The spatial TV produces a slightly different result than
+  // other regularization modes, so use a looser tolerance here.
+  rooster->SetCudaConjugateGradient(true);
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(rooster->Update());
+  CheckImageQuality<VolumeSeriesType>(rooster->GetOutput(), join->GetOutput(), 0.3, 14, 2.0);
+  std::cout << "\n\nTest PASSED! " << std::endl;
 #endif
 
   itksys::SystemTools::RemoveFile(signalFileName);

@@ -124,18 +124,18 @@ TotalVariationDenoiseSequenceImageFilter<TImageSequence>::GenerateData()
 {
   int Dimension = TImageSequence::ImageDimension;
 
-  // Declare an image pointer to disconnect the output of paste
-  typename TImageSequence::Pointer pimg;
+  // Accumulate all frames in place into a single, freshly allocated buffer so
+  // that the accumulator never aliases an upstream buffer.
+  typename TImageSequence::Pointer pimg = TImageSequence::New();
+  pimg->CopyInformation(this->GetOutput());
+  pimg->SetRegions(this->GetOutput()->GetLargestPossibleRegion());
+  pimg->Allocate();
+  pimg->FillBuffer(0);
+  m_PasteFilter->SetInPlace(true);
+  m_PasteFilter->SetDestinationImage(pimg);
 
   for (unsigned int frame = 0; frame < this->GetInput(0)->GetLargestPossibleRegion().GetSize(Dimension - 1); frame++)
   {
-    if (frame > 0) // After the first frame, use the output of paste as input
-    {
-      pimg = m_PasteFilter->GetOutput();
-      pimg->DisconnectPipeline();
-      m_PasteFilter->SetDestinationImage(pimg);
-    }
-
     m_ExtractAndPasteRegion.SetIndex(Dimension - 1, frame);
 
     m_ExtractFilter->SetExtractionRegion(m_ExtractAndPasteRegion);
