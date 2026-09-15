@@ -1,6 +1,6 @@
 import re
 import argparse
-from itk import RTK as rtk
+from itk import rtkConfig
 import difflib
 import inspect
 from typing import Optional
@@ -51,7 +51,7 @@ class RTKArgumentParser(argparse.ArgumentParser):
 
     def __init__(self, description=None, version=None, **kwargs):
         super().__init__(description=description, **kwargs)
-        self._version = version or rtk.__version__
+        self._version = version or rtkConfig.RTK_GLOBAL_VERSION_STRING
         self.formatter_class = _make_help_formatter(self._version)
         # allow negative numeric tokens to be treated as values, not options. This mirrors CPython behavior in python 3.14
         self._negative_number_matcher = re.compile(r"-\.?\d")
