@@ -131,23 +131,20 @@ def process(args_info: argparse.Namespace):
         bp = rtk.JosephBackAttenuatedProjectionImageFilter[
             OutputImageType, OutputImageType
         ].New()
-    elif args_info.bp == "Zeng":
-        bp = rtk.ZengBackProjectionImageFilter[OutputImageType, OutputImageType].New()
-        if args_info.sigmazero:
-            bp.SetSigmaZero(args_info.sigmazero)
-        if args_info.alphapsf:
-            bp.SetAlpha(args_info.alphapsf)
-
-    elif args_info.bp == "CudaZeng":
-        if hasattr(itk, "CudaImage"):
+    elif args_info.bp in ("Zeng", "CudaZeng"):
+        if args_info.bp == "CudaZeng":
+            if not hasattr(itk, "CudaImage"):
+                print("The program has not been compiled with cuda option")
+                sys.exit(1)
             bp = rtk.CudaZengBackProjectionImageFilter.New()
-            if args_info.sigmazero:
-                bp.SetSigmaZero(args_info.sigmazero)
-            if args_info.alphapsf:
-                bp.SetAlpha(args_info.alphapsf)
         else:
-            print("The program has not been compiled with cuda option")
-            sys.exit(1)
+            bp = rtk.ZengBackProjectionImageFilter[
+                OutputImageType, OutputImageType
+            ].New()
+        if args_info.sigmazero is not None:
+            bp.SetSigmaZero(args_info.sigmazero)
+        if args_info.alphapsf is not None:
+            bp.SetAlpha(args_info.alphapsf)
 
     elif args_info.bp == "CudaFDKBackProjection":
         if hasattr(itk, "CudaImage"):

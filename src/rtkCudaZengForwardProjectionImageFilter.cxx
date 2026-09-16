@@ -27,34 +27,9 @@ namespace rtk
 namespace
 {
 using MatrixType = ThreeDCircularProjectionGeometry::ThreeDHomogeneousMatrixType;
-
-MatrixType
-TransformMatrix(const itk::CenteredEuler3DTransform<double> * transform)
-{
-  MatrixType matrix;
-  matrix.SetIdentity();
-  for (unsigned int r = 0; r < 3; ++r)
-  {
-    for (unsigned int c = 0; c < 3; ++c)
-      matrix[r][c] = transform->GetMatrix()[r][c];
-    matrix[r][3] = transform->GetOffset()[r];
-  }
-  return matrix;
-}
-
-void
-StoreTextureMatrix(const MatrixType & matrix, const itk::Index<3> & bufferedIndex, float * destination)
-{
-  for (unsigned int r = 0; r < 3; ++r)
-    for (unsigned int c = 0; c < 4; ++c)
-      destination[4 * r + c] = static_cast<float>(matrix[r][c]);
-  destination[3] -= bufferedIndex[0];
-  destination[7] -= bufferedIndex[1];
-  destination[11] -= bufferedIndex[2];
-}
 } // namespace
 
-CudaZengForwardProjectionImageFilter::CudaZengForwardProjectionImageFilter() { this->InPlaceOff(); }
+CudaZengForwardProjectionImageFilter::CudaZengForwardProjectionImageFilter() = default;
 
 CudaZengForwardProjectionImageFilter::~CudaZengForwardProjectionImageFilter()
 {
@@ -133,10 +108,23 @@ CudaZengForwardProjectionImageFilter::GPUGenerateData()
     origin[2] = rotatedCenter[2] - spacing[2] * (rotatedSize[2] - 1.0) / 2.0;
     rotatedImage->SetOrigin(origin);
 
+    MatrixType transformMatrix;
+    transformMatrix.SetIdentity();
+    for (unsigned int r = 0; r < 3; ++r)
+    {
+      for (unsigned int c = 0; c < 3; ++c)
+        transformMatrix[r][c] = transform->GetMatrix()[r][c];
+      transformMatrix[r][3] = transform->GetOffset()[r];
+    }
     const MatrixType matrix = GetPhysicalPointToIndexMatrix(this->GetInput(1)).GetVnlMatrix() *
-                              TransformMatrix(transform).GetVnlMatrix() *
+                              transformMatrix.GetVnlMatrix() *
                               GetIndexToPhysicalPointMatrix(rotatedImage.GetPointer()).GetVnlMatrix();
-    StoreTextureMatrix(matrix, volumeRegion.GetIndex(), matrices.data() + 12 * local);
+    for (unsigned int r = 0; r < 3; ++r)
+    {
+      for (unsigned int c = 0; c < 4; ++c)
+        matrices[12 * local + 4 * r + c] = static_cast<float>(matrix[r][c]);
+      matrices[12 * local + 4 * r + 3] -= volumeRegion.GetIndex(r);
+    }
     farDistances[local] = static_cast<float>(geometry->GetSourceToIsocenterDistances()[projection] + origin[2] +
                                              spacing[2] * (rotatedSize[2] - 1));
   }
@@ -161,8 +149,8 @@ CudaZengForwardProjectionImageFilter::GPUGenerateData()
                             projectionOut,
                             volume,
                             attenuation,
-                            static_cast<float>(m_SigmaZero),
-                            static_cast<float>(m_Alpha),
+                            static_cast<float>(this->GetSigmaZero()),
+                            static_cast<float>(this->GetAlpha()),
                             &m_CudaWorkspace);
 }
 

@@ -158,16 +158,16 @@ def process(args_info):
                 "Please provide it using --attenuationmap."
             )
             sys.exit(1)
-    elif args_info.fp == "Zeng":
-        forwardProjection = rtk.ZengForwardProjectionImageFilter[
-            OutputImageType, OutputImageType
-        ].New()
-    elif args_info.fp == "CudaZeng":
-        if hasattr(itk, "CudaImage"):
+    elif args_info.fp in ("Zeng", "CudaZeng"):
+        if args_info.fp == "CudaZeng":
+            if not hasattr(itk, "CudaImage"):
+                print("The program has not been compiled with cuda option")
+                sys.exit(1)
             forwardProjection = rtk.CudaZengForwardProjectionImageFilter.New()
         else:
-            print("The program has not been compiled with cuda option")
-            sys.exit(1)
+            forwardProjection = rtk.ZengForwardProjectionImageFilter[
+                OutputImageType, OutputImageType
+            ].New()
     elif args_info.fp == "MIP":
         forwardProjection = rtk.MaximumIntensityProjectionImageFilter[
             OutputImageType, OutputImageType

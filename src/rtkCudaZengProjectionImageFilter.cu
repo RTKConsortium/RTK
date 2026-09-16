@@ -625,7 +625,8 @@ CUDA_zeng_back_project(const int     projectionSize[3],
   float * current = workspace.current;
   float * blurred = workspace.blurred;
   float * gaussianScratch = workspace.gaussianScratch;
-  cudaMemcpy(devVolumeOut, devVolumeIn, volumeBytes, cudaMemcpyDeviceToDevice);
+  if (devVolumeOut != devVolumeIn)
+    cudaMemcpy(devVolumeOut, devVolumeIn, volumeBytes, cudaMemcpyDeviceToDevice);
 
   cudaArray *         attenuationArray = nullptr;
   cudaTextureObject_t attenuationTexture = 0;

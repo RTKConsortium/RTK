@@ -38,16 +38,16 @@ def add_rtkprojectors_group(parser):
     )
     rtkprojectors_group.add_argument(
         "--attenuationmap",
-        help="Attenuation map relative to the volume to perfom the attenuation correction (JosephAttenuated and Zeng)",
+        help="Attenuation map relative to the volume to perform the attenuation correction (JosephAttenuated, Zeng and CudaZeng)",
     )
     rtkprojectors_group.add_argument(
         "--sigmazero",
-        help="PSF value at a distance of 0 meter of the detector (Zeng only)",
+        help="PSF value at a distance of 0 meter of the detector (Zeng and CudaZeng only)",
         type=float,
     )
     rtkprojectors_group.add_argument(
         "--alphapsf",
-        help="Slope of the PSF against the detector distance (Zeng only)",
+        help="Slope of the PSF against the detector distance (Zeng and CudaZeng only)",
         type=float,
     )
     rtkprojectors_group.add_argument(
@@ -90,16 +90,13 @@ def SetBackProjectionFromArgParse(args_info, recon):
         if args_info.superiorclipimage is not None:
             recon.SetSuperiorClipImage(superior_clip_image)
         recon.SetAttenuationMap(attenuation_map)
-    elif args_info.bp == "Zeng":  # bp_arg_RotationBased
-        recon.SetBackProjectionFilter(ReconType.BackProjectionType_BP_ZENG)
-        if args_info.sigmazero is not None:
-            recon.SetSigmaZero(args_info.sigmazero)
-        if args_info.alphapsf is not None:
-            recon.SetAlphaPSF(args_info.alphapsf)
-        if args_info.attenuationmap is not None:
-            recon.SetAttenuationMap(attenuation_map)
-    elif args_info.bp == "CudaZeng":
-        recon.SetBackProjectionFilter(ReconType.BackProjectionType_BP_CUDAZENG)
+    elif args_info.bp in ("Zeng", "CudaZeng"):
+        projector = (
+            ReconType.BackProjectionType_BP_ZENG
+            if args_info.bp == "Zeng"
+            else ReconType.BackProjectionType_BP_CUDAZENG
+        )
+        recon.SetBackProjectionFilter(projector)
         if args_info.sigmazero is not None:
             recon.SetSigmaZero(args_info.sigmazero)
         if args_info.alphapsf is not None:
@@ -128,16 +125,13 @@ def SetForwardProjectionFromArgParse(args_info, recon):
             ReconType.ForwardProjectionType_FP_JOSEPHATTENUATED
         )
         recon.SetAttenuationMap(attenuation_map)
-    elif args_info.fp == "Zeng":  # fp_arg_RotationBased
-        recon.SetForwardProjectionFilter(ReconType.ForwardProjectionType_FP_ZENG)
-        if args_info.sigmazero is not None:
-            recon.SetSigmaZero(args_info.sigmazero)
-        if args_info.alphapsf is not None:
-            recon.SetAlphaPSF(args_info.alphapsf)
-        if args_info.attenuationmap is not None:
-            recon.SetAttenuationMap(attenuation_map)
-    elif args_info.fp == "CudaZeng":
-        recon.SetForwardProjectionFilter(ReconType.ForwardProjectionType_FP_CUDAZENG)
+    elif args_info.fp in ("Zeng", "CudaZeng"):
+        projector = (
+            ReconType.ForwardProjectionType_FP_ZENG
+            if args_info.fp == "Zeng"
+            else ReconType.ForwardProjectionType_FP_CUDAZENG
+        )
+        recon.SetForwardProjectionFilter(projector)
         if args_info.sigmazero is not None:
             recon.SetSigmaZero(args_info.sigmazero)
         if args_info.alphapsf is not None:

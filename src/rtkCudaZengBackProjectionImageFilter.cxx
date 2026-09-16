@@ -27,30 +27,9 @@ namespace rtk
 namespace
 {
 using MatrixType = ThreeDCircularProjectionGeometry::ThreeDHomogeneousMatrixType;
-
-MatrixType
-TransformMatrix(const itk::CenteredEuler3DTransform<double> * transform)
-{
-  MatrixType matrix;
-  matrix.SetIdentity();
-  for (unsigned int r = 0; r < 3; ++r)
-  {
-    for (unsigned int c = 0; c < 3; ++c)
-      matrix[r][c] = transform->GetMatrix()[r][c];
-    matrix[r][3] = transform->GetOffset()[r];
-  }
-  return matrix;
-}
-void
-StoreMatrix(const MatrixType & matrix, float * destination)
-{
-  for (unsigned int r = 0; r < 3; ++r)
-    for (unsigned int c = 0; c < 4; ++c)
-      destination[4 * r + c] = static_cast<float>(matrix[r][c]);
-}
 } // namespace
 
-CudaZengBackProjectionImageFilter::CudaZengBackProjectionImageFilter() { this->InPlaceOff(); }
+CudaZengBackProjectionImageFilter::CudaZengBackProjectionImageFilter() = default;
 
 CudaZengBackProjectionImageFilter::~CudaZengBackProjectionImageFilter()
 {
@@ -133,11 +112,20 @@ CudaZengBackProjectionImageFilter::GPUGenerateData()
     auto inverse = TransformType::New();
     if (!transform->GetInverse(inverse))
       itkGenericExceptionMacro(<< "Could not invert Zeng rotation transform.");
-    const MatrixType matrix = GetPhysicalPointToIndexMatrix(rotatedImage.GetPointer()).GetVnlMatrix() *
-                              TransformMatrix(inverse).GetVnlMatrix() *
-                              GetIndexToPhysicalPointMatrix(this->GetInput(0)).GetVnlMatrix() *
-                              volumeIndexTranslation.GetVnlMatrix();
-    StoreMatrix(matrix, matrices.data() + 12 * local);
+    MatrixType inverseMatrix;
+    inverseMatrix.SetIdentity();
+    for (unsigned int r = 0; r < 3; ++r)
+    {
+      for (unsigned int c = 0; c < 3; ++c)
+        inverseMatrix[r][c] = inverse->GetMatrix()[r][c];
+      inverseMatrix[r][3] = inverse->GetOffset()[r];
+    }
+    const MatrixType matrix =
+      GetPhysicalPointToIndexMatrix(rotatedImage.GetPointer()).GetVnlMatrix() * inverseMatrix.GetVnlMatrix() *
+      GetIndexToPhysicalPointMatrix(this->GetInput(0)).GetVnlMatrix() * volumeIndexTranslation.GetVnlMatrix();
+    for (unsigned int r = 0; r < 3; ++r)
+      for (unsigned int c = 0; c < 4; ++c)
+        matrices[12 * local + 4 * r + c] = static_cast<float>(matrix[r][c]);
 
     const double firstDistance = geometry->GetSourceToIsocenterDistances()[projection] + origin[2];
     firstSlices[local] = std::max(0, static_cast<int>(std::ceil(-firstDistance / spacing[2])));
@@ -163,8 +151,8 @@ CudaZengBackProjectionImageFilter::GPUGenerateData()
                          volumeOut,
                          projections,
                          attenuation,
-                         static_cast<float>(m_SigmaZero),
-                         static_cast<float>(m_Alpha),
+                         static_cast<float>(this->GetSigmaZero()),
+                         static_cast<float>(this->GetAlpha()),
                          &m_CudaWorkspace);
 }
 
