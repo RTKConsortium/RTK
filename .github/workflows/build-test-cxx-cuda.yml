@@ -5,6 +5,9 @@ on: [push,pull_request]
 env:
   itk-git-tag: "v5.4.7"
   itk-module-deps: "CudaCommon@main"
+  warnings-to-ignore: |
+    "warning #1388-D"
+    "warning #1394-D"
 
 concurrency:
   group: '${{ github.workflow }}@${{ github.head_ref || github.run_id }}'

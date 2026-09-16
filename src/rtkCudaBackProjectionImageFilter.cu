@@ -39,6 +39,9 @@
  *****************/
 #include <cuda.h>
 
+// System-adaptive buffer index types (ITK)
+using SizeValueType = itk::SizeValueType;
+
 // Constant memory
 __constant__ float c_matrices[SLAB_SIZE * 12]; // Can process stacks of at most SLAB_SIZE projections
 __constant__ float c_volIndexToProjPP[SLAB_SIZE * 12];
@@ -55,9 +58,9 @@ template <unsigned int VVectorLength, bool VIsCylindrical>
 __global__ void
 kernel_backProject(float * dev_vol_in, float * dev_vol_out, float radius, cudaTextureObject_t * dev_tex_proj)
 {
-  itk::SizeValueType i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
-  itk::SizeValueType j = __umul24(blockIdx.y, blockDim.y) + threadIdx.y;
-  itk::SizeValueType k = __umul24(blockIdx.z, blockDim.z) + threadIdx.z;
+  SizeValueType i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
+  SizeValueType j = __umul24(blockIdx.y, blockDim.y) + threadIdx.y;
+  SizeValueType k = __umul24(blockIdx.z, blockDim.z) + threadIdx.z;
 
   if (i >= c_volSize.x || j >= c_volSize.y || k >= c_volSize.z)
   {
@@ -65,7 +68,7 @@ kernel_backProject(float * dev_vol_in, float * dev_vol_out, float radius, cudaTe
   }
 
   // Index row major into the volume
-  itk::SizeValueType vol_idx = i + (j + k * c_volSize.y) * (c_volSize.x);
+  SizeValueType vol_idx = i + (j + k * c_volSize.y) * (c_volSize.x);
 
   float3 ip, pp;
   float  voxel_data[VVectorLength];

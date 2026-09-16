@@ -20,25 +20,28 @@
 #include "rtkCudaUtilities.hcu"
 #include "rtkCudaFFTProjectionsConvolutionImageFilter.hcu"
 
-#include <itkMacro.h>
+#include <itkIntTypes.h>
 
 // cuda includes
 #include <cuda.h>
 #include <cufft.h>
 
+// System-adaptive buffer index types (ITK)
+using SizeValueType = itk::SizeValueType;
+
 __global__ void
 multiply_kernel(cufftComplex * projFFT, int3 fftDimension, cufftComplex * kernelFFT, unsigned int Blocks_Y)
 {
-  unsigned int blockIdx_z = blockIdx.y / Blocks_Y;
-  unsigned int blockIdx_y = blockIdx.y - __umul24(blockIdx_z, Blocks_Y);
-  unsigned int i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
-  unsigned int j = __umul24(blockIdx_y, blockDim.y) + threadIdx.y;
-  unsigned int k = __umul24(blockIdx_z, blockDim.z) + threadIdx.z;
+  unsigned int  blockIdx_z = blockIdx.y / Blocks_Y;
+  unsigned int  blockIdx_y = blockIdx.y - __umul24(blockIdx_z, Blocks_Y);
+  unsigned int  i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
+  unsigned int  j = __umul24(blockIdx_y, blockDim.y) + threadIdx.y;
+  SizeValueType k = __umul24(blockIdx_z, blockDim.z) + threadIdx.z;
 
   if (i >= fftDimension.x || j >= fftDimension.y || k >= fftDimension.z)
     return;
 
-  long int proj_idx = i + (j + k * fftDimension.y) * fftDimension.x;
+  SizeValueType proj_idx = i + (j + k * fftDimension.y) * fftDimension.x;
 
   cufftComplex result;
   result.x = projFFT[proj_idx].x * kernelFFT[i].x - projFFT[proj_idx].y * kernelFFT[i].y;
@@ -49,17 +52,17 @@ multiply_kernel(cufftComplex * projFFT, int3 fftDimension, cufftComplex * kernel
 __global__ void
 multiply_kernel2D(cufftComplex * projFFT, int3 fftDimension, cufftComplex * kernelFFT, unsigned int Blocks_Y)
 {
-  unsigned int blockIdx_z = blockIdx.y / Blocks_Y;
-  unsigned int blockIdx_y = blockIdx.y - __umul24(blockIdx_z, Blocks_Y);
-  unsigned int i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
-  unsigned int j = __umul24(blockIdx_y, blockDim.y) + threadIdx.y;
-  unsigned int k = __umul24(blockIdx_z, blockDim.z) + threadIdx.z;
+  unsigned int  blockIdx_z = blockIdx.y / Blocks_Y;
+  unsigned int  blockIdx_y = blockIdx.y - __umul24(blockIdx_z, Blocks_Y);
+  unsigned int  i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
+  unsigned int  j = __umul24(blockIdx_y, blockDim.y) + threadIdx.y;
+  SizeValueType k = __umul24(blockIdx_z, blockDim.z) + threadIdx.z;
 
   if (i >= fftDimension.x || j >= fftDimension.y || k >= fftDimension.z)
     return;
 
-  long int kernel_idx = i + j * fftDimension.x;
-  long int proj_idx = kernel_idx + k * fftDimension.y * fftDimension.x;
+  SizeValueType kernel_idx = i + j * fftDimension.x;
+  SizeValueType proj_idx = kernel_idx + k * fftDimension.y * fftDimension.x;
 
   cufftComplex result;
   result.x = projFFT[proj_idx].x * kernelFFT[kernel_idx].x - projFFT[proj_idx].y * kernelFFT[kernel_idx].y;
@@ -78,7 +81,8 @@ CUDA_fft_convolution(const int3 &   inputDimension,
   int3           fftDimension = inputDimension;
   fftDimension.x = inputDimension.x / 2 + 1;
 
-  size_t memorySizeProjectionFFT = sizeof(cufftComplex) * fftDimension.x * fftDimension.y * fftDimension.z;
+  size_t memorySizeProjectionFFT =
+    sizeof(cufftComplex) * static_cast<size_t>(fftDimension.x) * fftDimension.y * fftDimension.z;
   cudaMalloc((void **)&deviceProjectionFFT, memorySizeProjectionFFT);
   CUDA_CHECK_ERROR;
 
@@ -143,28 +147,33 @@ padding_kernel(float *            input,
   if (i >= paddingDim.x || j >= paddingDim.y || k >= paddingDim.z)
     return;
 
-  unsigned long int out_idx = i + (j + k * paddingDim.y) * paddingDim.x;
+  // 64-bit copies of the (here non-negative) grid coordinates avoid 32-bit overflow
+  SizeValueType gi = i, gj = j, gk = k;
+  SizeValueType out_idx = gi + (gj + gk * paddingDim.y) * paddingDim.x;
   i -= paddingIdx.x;
   j -= paddingIdx.y;
   k -= paddingIdx.z;
+  // 64-bit copies of the subtracted indices (only used where the int is non-negative)
+  SizeValueType ii = i, jj = j, kk = k;
 
   // out of input y/z dimensions
   if (j < 0 || j >= inputDim.y || k < 0 || k >= inputDim.z)
     output[out_idx] = 0.0f;
   // central part in CPU code
   else if (i >= 0 && i < inputDim.x)
-    output[out_idx] = input[i + (j + k * inputDim.y) * inputDim.x];
+    output[out_idx] = input[ii + (jj + kk * inputDim.y) * inputDim.x];
   // left mirroring (equation 3a in [Ohnesorge et al, Med Phys, 2000])
   else if (i < 0 && -i < sizeWeights)
   {
-    int begRow = (j + k * inputDim.y) * inputDim.x;
-    output[out_idx] = (2 * input[begRow + 1] - input[-i + begRow]) * truncationWeights[-i];
+    SizeValueType mirroredPixel = -i;
+    SizeValueType begRow = (jj + kk * inputDim.y) * inputDim.x;
+    output[out_idx] = (2 * input[begRow + 1] - input[mirroredPixel + begRow]) * truncationWeights[-i];
   }
   // right mirroring (equation 3b in [Ohnesorge et al, Med Phys, 2000])
   else if ((i >= inputDim.x) && (i - inputDim.x + 1) < sizeWeights)
   {
-    unsigned int borderDist = i - inputDim.x + 1;
-    int          endRow = inputDim.x - 1 + (j + k * inputDim.y) * inputDim.x;
+    SizeValueType borderDist = ii - inputDim.x + 1;
+    SizeValueType endRow = inputDim.x - 1 + (jj + kk * inputDim.y) * inputDim.x;
     output[out_idx] = (2 * input[endRow] - input[endRow - borderDist]) * truncationWeights[borderDist];
   }
   // zero padding

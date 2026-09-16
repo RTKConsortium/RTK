@@ -25,6 +25,9 @@
 #include <cuda.h>
 #include <cufft.h>
 
+// System-adaptive buffer index types (ITK)
+using SizeValueType = itk::SizeValueType;
+
 __global__ void
 crop_kernel(float *            input,
             float *            output,
@@ -33,17 +36,17 @@ crop_kernel(float *            input,
             const uint3        inputDim,
             const unsigned int Blocks_Y)
 {
-  unsigned int blockIdx_z = blockIdx.y / Blocks_Y;
-  unsigned int blockIdx_y = blockIdx.y - __umul24(blockIdx_z, Blocks_Y);
-  unsigned int i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
-  unsigned int j = __umul24(blockIdx_y, blockDim.y) + threadIdx.y;
-  unsigned int k = __umul24(blockIdx_z, blockDim.z) + threadIdx.z;
+  unsigned int  blockIdx_z = blockIdx.y / Blocks_Y;
+  unsigned int  blockIdx_y = blockIdx.y - __umul24(blockIdx_z, Blocks_Y);
+  SizeValueType i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
+  SizeValueType j = __umul24(blockIdx_y, blockDim.y) + threadIdx.y;
+  SizeValueType k = __umul24(blockIdx_z, blockDim.z) + threadIdx.z;
 
   if (i >= cropDim.x || j >= cropDim.y || k >= cropDim.z)
     return;
 
-  unsigned long int out_idx = i + j * cropDim.x + k * cropDim.y * cropDim.x;
-  unsigned long int in_idx = (cropIdx.x + i) + (cropIdx.y + j) * inputDim.x + (cropIdx.z + k) * inputDim.y * inputDim.x;
+  SizeValueType out_idx = i + j * cropDim.x + k * cropDim.y * cropDim.x;
+  SizeValueType in_idx = cropIdx.x + i + (cropIdx.y + j) * inputDim.x + (cropIdx.z + k) * inputDim.y * inputDim.x;
 
   output[out_idx] = input[in_idx];
 }

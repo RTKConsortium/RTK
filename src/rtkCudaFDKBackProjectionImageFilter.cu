@@ -39,6 +39,9 @@
  *****************/
 #include <cuda.h>
 
+// System-adaptive buffer index types (ITK)
+using SizeValueType = itk::SizeValueType;
+
 // Constant memory
 __constant__ float c_matrices[SLAB_SIZE * 12]; // Can process stacks of at most SLAB_SIZE projections
 __constant__ int3  c_projSize;
@@ -52,9 +55,9 @@ __constant__ int3  c_vol_size;
 __global__ void
 kernel_fdk_3Dgrid(float * dev_vol_in, float * dev_vol_out, cudaTextureObject_t tex_proj)
 {
-  itk::SizeValueType i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
-  itk::SizeValueType j = __umul24(blockIdx.y, blockDim.y) + threadIdx.y;
-  itk::SizeValueType k = __umul24(blockIdx.z, blockDim.z) + threadIdx.z;
+  SizeValueType i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
+  SizeValueType j = __umul24(blockIdx.y, blockDim.y) + threadIdx.y;
+  SizeValueType k = __umul24(blockIdx.z, blockDim.z) + threadIdx.z;
 
   if (i >= c_vol_size.x || j >= c_vol_size.y || k >= c_vol_size.z)
   {
@@ -62,7 +65,7 @@ kernel_fdk_3Dgrid(float * dev_vol_in, float * dev_vol_out, cudaTextureObject_t t
   }
 
   // Index row major into the volume
-  itk::SizeValueType vol_idx = i + (j + k * c_vol_size.y) * (c_vol_size.x);
+  SizeValueType vol_idx = i + (j + k * c_vol_size.y) * (c_vol_size.x);
 
   float3 ip;
   float  voxel_data = 0;

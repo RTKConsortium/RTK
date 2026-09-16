@@ -20,11 +20,14 @@
 #include "rtkCudaAverageOutOfROIImageFilter.hcu"
 #include "rtkCudaUtilities.hcu"
 
-#include <itkMacro.h>
+#include <itkIntTypes.h>
 
 // cuda includes
 #include <cuda.h>
 #include <cuda_runtime.h>
+
+// System-adaptive buffer index types (ITK)
+using SizeValueType = itk::SizeValueType;
 
 // TEXTURES AND CONSTANTS //
 
@@ -37,18 +40,18 @@ __constant__ int4 c_Size;
 
 
 __global__ void
-average_along_dim_4(float * in, float * out, float * roi, unsigned int strideInFloats)
+average_along_dim_4(float * in, float * out, float * roi, SizeValueType strideInFloats)
 {
-  unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
-  unsigned int j = blockIdx.y * blockDim.y + threadIdx.y;
-  unsigned int k = blockIdx.z * blockDim.z + threadIdx.z;
+  SizeValueType i = blockIdx.x * blockDim.x + threadIdx.x;
+  SizeValueType j = blockIdx.y * blockDim.y + threadIdx.y;
+  SizeValueType k = blockIdx.z * blockDim.z + threadIdx.z;
 
   if (i >= c_Size.x || j >= c_Size.y || k >= c_Size.z)
     return;
 
   // Compute the index of the initial voxel
-  long int id = (k * c_Size.y + j) * c_Size.x + i;
-  long int strided_id = id; // strided_id will run along the 4th dimension
+  SizeValueType id = (k * c_Size.y + j) * c_Size.x + i;
+  SizeValueType strided_id = id; // strided_id will run along the 4th dimension
 
   // Compute the average along last dimension
   float avg = 0;
@@ -84,7 +87,7 @@ CUDA_average_out_of_ROI(int size[4], float * input, float * output, float * roi)
 
   // Compute the stride (in floats, not Bytes) to jump from one voxel
   // to the next one along 4th dimension
-  unsigned int strideInFloats = size[0] * size[1] * size[2];
+  SizeValueType strideInFloats = static_cast<SizeValueType>(size[0]) * size[1] * size[2];
 
   // Thread Block Dimensions
   dim3 dimBlock = dim3(8, 8, 8);

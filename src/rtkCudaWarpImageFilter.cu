@@ -39,6 +39,9 @@
  *****************/
 #include <cuda.h>
 
+// System-adaptive buffer index types (ITK)
+using SizeValueType = itk::SizeValueType;
+
 // CONSTANTS //////////////////////////////////////////////////////////////
 __constant__ float c_IndexOutputToPPOutputMatrix[12];
 __constant__ float c_IndexOutputToIndexDVFMatrix[12];
@@ -58,9 +61,9 @@ kernel_3Dgrid(float *             dev_vol_out,
               cudaTextureObject_t tex_zdvf,
               cudaTextureObject_t tex_input_vol)
 {
-  unsigned int i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
-  unsigned int j = __umul24(blockIdx.y, blockDim.y) + threadIdx.y;
-  unsigned int k = __umul24(blockIdx.z, blockDim.z) + threadIdx.z;
+  SizeValueType i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
+  SizeValueType j = __umul24(blockIdx.y, blockDim.y) + threadIdx.y;
+  SizeValueType k = __umul24(blockIdx.z, blockDim.z) + threadIdx.z;
 
   if (i >= vol_dim.x || j >= vol_dim.y || k >= vol_dim.z)
   {
@@ -68,7 +71,7 @@ kernel_3Dgrid(float *             dev_vol_out,
   }
 
   // Index row major into the volume
-  long int vol_idx = i + (j + k * vol_dim.y) * (vol_dim.x);
+  SizeValueType vol_idx = i + (j + k * vol_dim.y) * vol_dim.x;
 
   // Matrix multiply to get the index in the DVF texture of the current point in the output volume
   float3 IndexInDVF = matrix_multiply(make_float3(i, j, k), c_IndexOutputToIndexDVFMatrix);

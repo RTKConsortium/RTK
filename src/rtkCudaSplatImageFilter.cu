@@ -33,7 +33,7 @@ CUDA_splat(const int4 & outputSize, float * input, float * output, int projectio
   cublasHandle_t handle;
   cublasCreate(&handle);
 
-  size_t numel = outputSize.x * outputSize.y * outputSize.z;
+  size_t numel = static_cast<size_t>(outputSize.x) * outputSize.y * outputSize.z;
 
   for (int phase = 0; phase < outputSize.w; phase++)
   {

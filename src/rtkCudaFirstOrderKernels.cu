@@ -17,21 +17,26 @@
  *=========================================================================*/
 
 #include "rtkCudaFirstOrderKernels.hcu"
+#include <itkIntTypes.h>
+
+// System-adaptive buffer index types (ITK)
+using SizeValueType = itk::SizeValueType;
+using OffsetValueType = itk::OffsetValueType;
 
 __global__ void
 divergence_kernel(float * grad_x, float * grad_y, float * grad_z, float * out, int3 c_Size, float3 c_Spacing)
 {
-  int i = blockIdx.x * blockDim.x + threadIdx.x;
-  int j = blockIdx.y * blockDim.y + threadIdx.y;
-  int k = blockIdx.z * blockDim.z + threadIdx.z;
+  OffsetValueType i = blockIdx.x * blockDim.x + threadIdx.x;
+  OffsetValueType j = blockIdx.y * blockDim.y + threadIdx.y;
+  OffsetValueType k = blockIdx.z * blockDim.z + threadIdx.z;
 
   if (i >= c_Size.x || j >= c_Size.y || k >= c_Size.z)
     return;
 
-  long int id = (k * c_Size.y + j) * c_Size.x + i;
-  long int id_x = (k * c_Size.y + j) * c_Size.x + i - 1;
-  long int id_y = (k * c_Size.y + j - 1) * c_Size.x + i;
-  long int id_z = ((k - 1) * c_Size.y + j) * c_Size.x + i;
+  OffsetValueType id = (k * c_Size.y + j) * c_Size.x + i;
+  OffsetValueType id_x = (k * c_Size.y + j) * c_Size.x + i - 1;
+  OffsetValueType id_y = (k * c_Size.y + j - 1) * c_Size.x + i;
+  OffsetValueType id_z = ((k - 1) * c_Size.y + j) * c_Size.x + i;
 
   float3 A;
   float3 B;
@@ -69,17 +74,17 @@ divergence_kernel(float * grad_x, float * grad_y, float * grad_z, float * out, i
 __global__ void
 gradient_kernel(float * in, float * grad_x, float * grad_y, float * grad_z, int3 c_Size, float3 c_Spacing)
 {
-  unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
-  unsigned int j = blockIdx.y * blockDim.y + threadIdx.y;
-  unsigned int k = blockIdx.z * blockDim.z + threadIdx.z;
+  SizeValueType i = blockIdx.x * blockDim.x + threadIdx.x;
+  SizeValueType j = blockIdx.y * blockDim.y + threadIdx.y;
+  SizeValueType k = blockIdx.z * blockDim.z + threadIdx.z;
 
   if (i >= c_Size.x || j >= c_Size.y || k >= c_Size.z)
     return;
 
-  long int id = (k * c_Size.y + j) * c_Size.x + i;
-  long int id_x = (k * c_Size.y + j) * c_Size.x + i + 1;
-  long int id_y = (k * c_Size.y + j + 1) * c_Size.x + i;
-  long int id_z = ((k + 1) * c_Size.y + j) * c_Size.x + i;
+  SizeValueType id = (k * c_Size.y + j) * c_Size.x + i;
+  SizeValueType id_x = (k * c_Size.y + j) * c_Size.x + i + 1;
+  SizeValueType id_y = (k * c_Size.y + j + 1) * c_Size.x + i;
+  SizeValueType id_z = ((k + 1) * c_Size.y + j) * c_Size.x + i;
 
   if (i == (c_Size.x - 1))
     grad_x[id] = 0;

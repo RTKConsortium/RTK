@@ -39,6 +39,10 @@
  *****************/
 #include <cuda.h>
 
+// System-adaptive buffer index types (ITK)
+using SizeValueType = itk::SizeValueType;
+using OffsetValueType = itk::OffsetValueType;
+
 // CONSTANTS //////////////////////////////////////////////////////////////
 __constant__ float c_IndexInputToPPInputMatrix[12];
 __constant__ float c_IndexInputToIndexDVFMatrix[12];
@@ -62,10 +66,11 @@ fillHoles_3Dgrid(float * dev_vol_out, float * dev_accumulate_weights, int3 out_d
     return;
   }
 
-  // Index row major into the volume
-  long int out_idx = i + (j + k * out_dim.y) * (out_dim.x);
-  long int current_idx;
-  int      radius = 3;
+  // Index row major into the volume (64-bit to avoid 32-bit overflow)
+  SizeValueType ii = i, jj = j, kk = k;
+  SizeValueType out_idx = ii + (jj + kk * out_dim.y) * out_dim.x;
+  SizeValueType current_idx;
+  int           radius = 3;
 
   float eps = 1e-6;
 
@@ -87,7 +92,8 @@ fillHoles_3Dgrid(float * dev_vol_out, float * dev_accumulate_weights, int3 out_d
           if ((i + delta_i >= 0) && (i + delta_i < out_dim.x) && (j + delta_j >= 0) && (j + delta_j < out_dim.y) &&
               (k + delta_k >= 0) && (k + delta_k < out_dim.z))
           {
-            current_idx = i + delta_i + (j + delta_j + (k + delta_k) * out_dim.y) * (out_dim.x);
+            SizeValueType ni = i + delta_i, nj = j + delta_j, nk = k + delta_k;
+            current_idx = ni + (nj + nk * out_dim.y) * out_dim.x;
             sum += dev_vol_out[current_idx] * dev_accumulate_weights[current_idx];
             sum_weights += dev_accumulate_weights[current_idx];
           }
@@ -104,9 +110,9 @@ fillHoles_3Dgrid(float * dev_vol_out, float * dev_accumulate_weights, int3 out_d
 __global__ void
 normalize_3Dgrid(float * dev_vol_out, float * dev_accumulate_weights, int3 out_dim)
 {
-  unsigned int i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
-  unsigned int j = __umul24(blockIdx.y, blockDim.y) + threadIdx.y;
-  unsigned int k = __umul24(blockIdx.z, blockDim.z) + threadIdx.z;
+  SizeValueType i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
+  SizeValueType j = __umul24(blockIdx.y, blockDim.y) + threadIdx.y;
+  SizeValueType k = __umul24(blockIdx.z, blockDim.z) + threadIdx.z;
 
   if (i >= out_dim.x || j >= out_dim.y || k >= out_dim.z)
   {
@@ -114,7 +120,7 @@ normalize_3Dgrid(float * dev_vol_out, float * dev_accumulate_weights, int3 out_d
   }
 
   // Index row major into the volume
-  long int out_idx = i + (j + k * out_dim.y) * (out_dim.x);
+  SizeValueType out_idx = i + (j + k * out_dim.y) * (out_dim.x);
 
   float eps = 1e-6;
 
@@ -134,9 +140,9 @@ linearSplat_3Dgrid(float *             dev_vol_in,
                    cudaTextureObject_t tex_ydvf,
                    cudaTextureObject_t tex_zdvf)
 {
-  unsigned int i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
-  unsigned int j = __umul24(blockIdx.y, blockDim.y) + threadIdx.y;
-  unsigned int k = __umul24(blockIdx.z, blockDim.z) + threadIdx.z;
+  SizeValueType i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
+  SizeValueType j = __umul24(blockIdx.y, blockDim.y) + threadIdx.y;
+  SizeValueType k = __umul24(blockIdx.z, blockDim.z) + threadIdx.z;
 
   if (i >= in_dim.x || j >= in_dim.y || k >= in_dim.z)
   {
@@ -144,8 +150,8 @@ linearSplat_3Dgrid(float *             dev_vol_in,
   }
 
   // Index row major into the volume
-  float3   idx = make_float3(i, j, k);
-  long int in_idx = i + (j + k * in_dim.y) * (in_dim.x);
+  float3        idx = make_float3(i, j, k);
+  SizeValueType in_idx = i + (j + k * in_dim.y) * (in_dim.x);
 
   // Matrix multiply to get the index in the DVF texture of the current point in the output volume
   float3 IndexInDVF = matrix_multiply(idx, c_IndexInputToIndexDVFMatrix);
@@ -188,23 +194,17 @@ linearSplat_3Dgrid(float *             dev_vol_in,
   float weight110 = Distance.x * Distance.y * (1 - Distance.z);
   float weight111 = Distance.x * Distance.y * Distance.z;
 
-  // Compute indices in the volume
-  long int out_idx000 = (BaseIndexInOutput.x + 0) + (BaseIndexInOutput.y + 0) * out_dim.x +
-                        (BaseIndexInOutput.z + 0) * out_dim.x * out_dim.y;
-  long int out_idx001 = (BaseIndexInOutput.x + 0) + (BaseIndexInOutput.y + 0) * out_dim.x +
-                        (BaseIndexInOutput.z + 1) * out_dim.x * out_dim.y;
-  long int out_idx010 = (BaseIndexInOutput.x + 0) + (BaseIndexInOutput.y + 1) * out_dim.x +
-                        (BaseIndexInOutput.z + 0) * out_dim.x * out_dim.y;
-  long int out_idx011 = (BaseIndexInOutput.x + 0) + (BaseIndexInOutput.y + 1) * out_dim.x +
-                        (BaseIndexInOutput.z + 1) * out_dim.x * out_dim.y;
-  long int out_idx100 = (BaseIndexInOutput.x + 1) + (BaseIndexInOutput.y + 0) * out_dim.x +
-                        (BaseIndexInOutput.z + 0) * out_dim.x * out_dim.y;
-  long int out_idx101 = (BaseIndexInOutput.x + 1) + (BaseIndexInOutput.y + 0) * out_dim.x +
-                        (BaseIndexInOutput.z + 1) * out_dim.x * out_dim.y;
-  long int out_idx110 = (BaseIndexInOutput.x + 1) + (BaseIndexInOutput.y + 1) * out_dim.x +
-                        (BaseIndexInOutput.z + 0) * out_dim.x * out_dim.y;
-  long int out_idx111 = (BaseIndexInOutput.x + 1) + (BaseIndexInOutput.y + 1) * out_dim.x +
-                        (BaseIndexInOutput.z + 1) * out_dim.x * out_dim.y;
+  // Compute indices in the volume (64-bit to avoid 32-bit overflow of the products)
+  OffsetValueType bx0 = BaseIndexInOutput.x, by0 = BaseIndexInOutput.y, bz0 = BaseIndexInOutput.z;
+  OffsetValueType bx1 = bx0 + 1, by1 = by0 + 1, bz1 = bz0 + 1;
+  OffsetValueType out_idx000 = bx0 + by0 * out_dim.x + bz0 * out_dim.x * out_dim.y;
+  OffsetValueType out_idx001 = bx0 + by0 * out_dim.x + bz1 * out_dim.x * out_dim.y;
+  OffsetValueType out_idx010 = bx0 + by1 * out_dim.x + bz0 * out_dim.x * out_dim.y;
+  OffsetValueType out_idx011 = bx0 + by1 * out_dim.x + bz1 * out_dim.x * out_dim.y;
+  OffsetValueType out_idx100 = bx1 + by0 * out_dim.x + bz0 * out_dim.x * out_dim.y;
+  OffsetValueType out_idx101 = bx1 + by0 * out_dim.x + bz1 * out_dim.x * out_dim.y;
+  OffsetValueType out_idx110 = bx1 + by1 * out_dim.x + bz0 * out_dim.x * out_dim.y;
+  OffsetValueType out_idx111 = bx1 + by1 * out_dim.x + bz1 * out_dim.x * out_dim.y;
 
   // Determine whether they are indeed in the volume
   bool isInVolume_out_idx000 = (BaseIndexInOutput.x + 0 >= 0) && (BaseIndexInOutput.x + 0 < out_dim.x) &&
@@ -386,7 +386,8 @@ CUDA_ForwardWarp(int     input_vol_dim[3],
 
   ///////////////////////////////////////
   /// Initialize the output
-  size_t memorySizeOutput = sizeof(float) * output_vol_dim[0] * output_vol_dim[1] * output_vol_dim[2];
+  size_t memorySizeOutput =
+    sizeof(float) * static_cast<size_t>(output_vol_dim[0]) * output_vol_dim[1] * output_vol_dim[2];
   cudaMemset((void *)dev_output_vol, 0, memorySizeOutput);
 
   //////////////////////////////////////

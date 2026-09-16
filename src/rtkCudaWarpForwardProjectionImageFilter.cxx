@@ -30,6 +30,10 @@
 #include <itkLinearInterpolateImageFunction.h>
 #include <itkMacro.h>
 
+// System-adaptive buffer index types (ITK)
+using SizeValueType = itk::SizeValueType;
+using OffsetValueType = itk::OffsetValueType;
+
 namespace rtk
 {
 
@@ -145,9 +149,9 @@ CudaWarpForwardProjectionImageFilter ::GPUGenerateData()
 
   const Superclass::GeometryType * geometry = this->GetGeometry();
   const unsigned int               Dimension = InputImageType::ImageDimension;
-  const unsigned int iFirstProj = this->GetInputProjectionStack()->GetRequestedRegion().GetIndex(Dimension - 1);
-  const unsigned int nProj = this->GetInputProjectionStack()->GetRequestedRegion().GetSize(Dimension - 1);
-  const unsigned int nPixelsPerProj =
+  const unsigned int  iFirstProj = this->GetInputProjectionStack()->GetRequestedRegion().GetIndex(Dimension - 1);
+  const unsigned int  nProj = this->GetInputProjectionStack()->GetRequestedRegion().GetSize(Dimension - 1);
+  const SizeValueType nPixelsPerProj =
     this->GetOutput()->GetBufferedRegion().GetSize(0) * this->GetOutput()->GetBufferedRegion().GetSize(1);
 
   itk::Vector<double, 4> source_position;
@@ -254,7 +258,7 @@ CudaWarpForwardProjectionImageFilter ::GPUGenerateData()
       source_positions[(iProj - iFirstProj) * 3 + d] = source_position[d]; // Ignore the 4th component
   }
 
-  int projectionOffset = 0;
+  OffsetValueType projectionOffset = 0;
   for (unsigned int i = 0; i < nProj; i += SLAB_SIZE)
   {
     // If nProj is not a multiple of SLAB_SIZE, the last slab will contain less than SLAB_SIZE projections

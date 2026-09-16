@@ -40,6 +40,10 @@
 #include <cuda.h>
 #include <cuda_runtime.h>
 
+// System-adaptive buffer index types (ITK)
+using SizeValueType = itk::SizeValueType;
+using OffsetValueType = itk::OffsetValueType;
+
 #define IDX2D(r, c, cols) ((r) * (cols) + (c))
 
 // CONSTANTS //////////////////////////////////////////////////////////////
@@ -64,9 +68,9 @@ kernel_forward_model(float *      pMatProj,
                      unsigned int nProjSpectrum,
                      int          nIdxProj)
 {
-  unsigned int i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
-  unsigned int j = __umul24(blockIdx.y, blockDim.y) + threadIdx.y;
-  unsigned int k = __umul24(blockIdx.z, blockDim.z) + threadIdx.z;
+  SizeValueType i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
+  SizeValueType j = __umul24(blockIdx.y, blockDim.y) + threadIdx.y;
+  SizeValueType k = __umul24(blockIdx.z, blockDim.z) + threadIdx.z;
 
   if (i >= c_projSize.x || j >= c_projSize.y || k >= c_projSize.z)
   {
@@ -74,9 +78,9 @@ kernel_forward_model(float *      pMatProj,
   }
 
   // Index row major in the projection
-  long int first_proj_idx =
-    i + (j + (nIdxProj + k) % nProjSpectrum * c_projSize.y) * c_projSize.x; // To determine the efficient spectrum
-  long int proj_idx = i + (j + k * c_projSize.y) * (c_projSize.x);          // For all the rest
+  OffsetValueType first_proj_idx =
+    i + (j + ((nIdxProj + k) % nProjSpectrum) * c_projSize.y) * c_projSize.x; // To determine the efficient spectrum
+  SizeValueType proj_idx = i + (j + k * c_projSize.y) * c_projSize.x;         // For all the rest
 
   // Compute the efficient spectrum at the current pixel
   float efficientSpectrum[VBins * VEnergies];

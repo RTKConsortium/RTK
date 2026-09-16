@@ -37,6 +37,9 @@
  *****************/
 #include <cuda.h>
 
+// System-adaptive buffer index types (ITK)
+using SizeValueType = itk::SizeValueType;
+
 // TEXTURES AND CONSTANTS //
 
 __constant__ int3   c_projSize;
@@ -55,10 +58,10 @@ __constant__ float c_sourcePos[SLAB_SIZE * 3];         // Can process stacks of 
 __global__ void
 kernel_ray_cast_back_project(float * dev_vol_out, float * dev_proj)
 {
-  unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
-  unsigned int j = blockIdx.y * blockDim.y + threadIdx.y;
-  unsigned int numThread = j * c_projSize.x + i;
-  unsigned int proj = blockIdx.z * blockDim.z + threadIdx.z;
+  unsigned int  i = blockIdx.x * blockDim.x + threadIdx.x;
+  unsigned int  j = blockIdx.y * blockDim.y + threadIdx.y;
+  unsigned int  numThread = j * c_projSize.x + i;
+  SizeValueType proj = blockIdx.z * blockDim.z + threadIdx.z;
 
   if (i >= c_projSize.x || j >= c_projSize.y || proj >= c_projSize.z)
     return;
@@ -100,10 +103,10 @@ kernel_ray_cast_back_project(float * dev_vol_out, float * dev_proj)
     float  mmStep = vStep * dirLengthInMM;
 
     // Skip rays intersecting less half a step
-    float    toSplat;
-    long int indices[8];
-    float    weights[8];
-    int3     floor_pos;
+    float         toSplat;
+    SizeValueType indices[8];
+    float         weights[8];
+    int3          floor_pos;
 
     // First position in the box
     float halfVStep = 0.5f * vStep;
@@ -144,18 +147,27 @@ kernel_ray_cast_back_project(float * dev_vol_out, float * dev_proj)
       pos_high.y = min(floor_pos.y + 1, c_volSize.y - 1);
       pos_high.z = min(floor_pos.z + 1, c_volSize.z - 1);
 
-      // Compute indices in the volume
-      indices[0] = pos_low.x + pos_low.y * c_volSize.x + pos_low.z * c_volSize.x * c_volSize.y;    // index000
-      indices[1] = pos_low.x + pos_low.y * c_volSize.x + pos_high.z * c_volSize.x * c_volSize.y;   // index001
-      indices[2] = pos_low.x + pos_high.y * c_volSize.x + pos_low.z * c_volSize.x * c_volSize.y;   // index010
-      indices[3] = pos_low.x + pos_high.y * c_volSize.x + pos_high.z * c_volSize.x * c_volSize.y;  // index011
-      indices[4] = pos_high.x + pos_low.y * c_volSize.x + pos_low.z * c_volSize.x * c_volSize.y;   // index100
-      indices[5] = pos_high.x + pos_low.y * c_volSize.x + pos_high.z * c_volSize.x * c_volSize.y;  // index101
-      indices[6] = pos_high.x + pos_high.y * c_volSize.x + pos_low.z * c_volSize.x * c_volSize.y;  // index110
-      indices[7] = pos_high.x + pos_high.y * c_volSize.x + pos_high.z * c_volSize.x * c_volSize.y; // index111
+      // Compute indices in the volume (using 64-bit arithmetic to avoid overflow on large volumes)
+      const SizeValueType volSize_X = c_volSize.x;
+      const SizeValueType volSize_XY = volSize_X * c_volSize.y;
+      const SizeValueType pxl = pos_low.x;
+      const SizeValueType pxh = pos_high.x;
+      const SizeValueType pyl = pos_low.y;
+      const SizeValueType pyh = pos_high.y;
+      const SizeValueType pzl = pos_low.z;
+      const SizeValueType pzh = pos_high.z;
+      indices[0] = pxl + pyl * volSize_X + pzl * volSize_XY; // index000
+      indices[1] = pxl + pyl * volSize_X + pzh * volSize_XY; // index001
+      indices[2] = pxl + pyh * volSize_X + pzl * volSize_XY; // index010
+      indices[3] = pxl + pyh * volSize_X + pzh * volSize_XY; // index011
+      indices[4] = pxh + pyl * volSize_X + pzl * volSize_XY; // index100
+      indices[5] = pxh + pyl * volSize_X + pzh * volSize_XY; // index101
+      indices[6] = pxh + pyh * volSize_X + pzl * volSize_XY; // index110
+      indices[7] = pxh + pyh * volSize_X + pzh * volSize_XY; // index111
 
       // Compute the value to be splatted
-      toSplat = dev_proj[numThread + proj * c_projSize.x * c_projSize.y] * mmStep;
+      SizeValueType projOffset = numThread + proj * c_projSize.x * c_projSize.y;
+      toSplat = dev_proj[projOffset] * mmStep;
       atomicAdd(&dev_vol_out[indices[0]], toSplat * weights[0]);
       atomicAdd(&dev_vol_out[indices[1]], toSplat * weights[1]);
       atomicAdd(&dev_vol_out[indices[2]], toSplat * weights[2]);
@@ -170,7 +182,8 @@ kernel_ray_cast_back_project(float * dev_vol_out, float * dev_proj)
     }
 
     // Last position
-    toSplat = dev_proj[numThread + proj * c_projSize.x * c_projSize.y] * (tfar - t + halfVStep) * dirLengthInMM;
+    SizeValueType projOffsetLast = numThread + proj * c_projSize.x * c_projSize.y;
+    toSplat = dev_proj[projOffsetLast] * (tfar - t + halfVStep) * dirLengthInMM;
     atomicAdd(&dev_vol_out[indices[0]], toSplat * weights[0]);
     atomicAdd(&dev_vol_out[indices[1]], toSplat * weights[1]);
     atomicAdd(&dev_vol_out[indices[2]], toSplat * weights[2]);

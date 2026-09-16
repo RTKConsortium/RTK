@@ -18,9 +18,13 @@
 
 #include "rtkCudaDisplacedDetectorImageFilter.hcu"
 #include "rtkCudaUtilities.hcu"
+#include <itkIntTypes.h>
 #include <cuda.h>
 #include <cuda_runtime.h>
 #include <math_constants.h>
+
+// System-adaptive buffer index types (ITK)
+using SizeValueType = itk::SizeValueType;
 
 inline __device__ float
 TransformIndexToPhysicalPoint(int2 idx, float origin, float row, float column)
@@ -59,22 +63,22 @@ kernel_displaced_weight(int3                proj_idx_in,
                         cudaTextureObject_t tex_geom   // geometry texture object
 )
 {
-  // compute thread index
-  int3 tIdx;
-  tIdx.x = blockIdx.x * blockDim.x + threadIdx.x;
-  tIdx.y = blockIdx.y * blockDim.y + threadIdx.y;
-  tIdx.z = blockIdx.z * blockDim.z + threadIdx.z;
-  long int tIdx_comp = tIdx.x + tIdx.y * proj_size_out.x + tIdx.z * proj_size_out_buf.x * proj_size_out_buf.y;
+  // compute thread index (64-bit to avoid 32-bit overflow of combined indices)
+  SizeValueType tIdx_x = blockIdx.x * blockDim.x + threadIdx.x;
+  SizeValueType tIdx_y = blockIdx.y * blockDim.y + threadIdx.y;
+  SizeValueType tIdx_z = blockIdx.z * blockDim.z + threadIdx.z;
+  SizeValueType tIdx_comp = tIdx_x + tIdx_y * proj_size_out.x + tIdx_z * proj_size_out_buf.x * proj_size_out_buf.y;
 
   // check if outside of projection grid
-  if (tIdx.x >= proj_size_out.x || tIdx.y >= proj_size_out.y || tIdx.z >= proj_size_out.z)
+  if (tIdx_x >= proj_size_out.x || tIdx_y >= proj_size_out.y || tIdx_z >= proj_size_out.z)
     return;
 
   // compute projection index from thread index
-  int3 pIdx = make_int3(tIdx.x + proj_idx_out.x, tIdx.y + proj_idx_out.y, tIdx.z + proj_idx_out.z);
-  // combined proj. index -> use thread index in z because accessing memory only with this index
-  long int pIdx_comp = (pIdx.x - proj_idx_in.x) + (pIdx.y - proj_idx_in.y) * proj_size_in_buf.x +
-                       (pIdx.z - proj_idx_in.z) * proj_size_in_buf.x * proj_size_in_buf.y;
+  int3 pIdx = make_int3(tIdx_x + proj_idx_out.x, tIdx_y + proj_idx_out.y, tIdx_z + proj_idx_out.z);
+  // combined proj. index -> arithmetic in 64-bit to avoid overflow of the products
+  SizeValueType pIdx_comp = (tIdx_x - proj_idx_in.x + proj_idx_out.x) +
+                            (tIdx_y - proj_idx_in.y + proj_idx_out.y) * proj_size_in_buf.x +
+                            (tIdx_z - proj_idx_in.z + proj_idx_out.z) * proj_size_in_buf.x * proj_size_in_buf.y;
 
   // check if outside overlapping region
   if (pIdx.x < proj_idx_in.x || pIdx.x >= (proj_idx_in.x + proj_size_in.x) || pIdx.y < proj_idx_in.y ||
@@ -89,10 +93,10 @@ kernel_displaced_weight(int3                proj_idx_in,
   {
     float pPoint = TransformIndexToPhysicalPoint(make_int2(pIdx.x, pIdx.y), proj_orig, proj_row, proj_col);
 
-    float sdd = tex1Dfetch<float>(tex_geom, tIdx.z * 4 + 0);
-    float sx = tex1Dfetch<float>(tex_geom, tIdx.z * 4 + 1);
-    float px = tex1Dfetch<float>(tex_geom, tIdx.z * 4 + 2);
-    float sid = tex1Dfetch<float>(tex_geom, tIdx.z * 4 + 3);
+    float sdd = tex1Dfetch<float>(tex_geom, tIdx_z * 4 + 0);
+    float sx = tex1Dfetch<float>(tex_geom, tIdx_z * 4 + 1);
+    float px = tex1Dfetch<float>(tex_geom, tIdx_z * 4 + 2);
+    float sid = tex1Dfetch<float>(tex_geom, tIdx_z * 4 + 3);
 
     float hyp = sqrtf(sid * sid + sx * sx); // to untilted situation
     float l = ToUntiltedCoordinateAtIsocenter(pPoint, sdd, sid, sx, px, hyp);

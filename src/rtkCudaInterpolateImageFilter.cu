@@ -34,7 +34,7 @@ CUDA_interpolation(const int4 & inputSize, float * input, float * output, int pr
   cublasCreate(&handle);
 
   // CUDA device pointers
-  size_t nVoxelsOutput = inputSize.x * inputSize.y * inputSize.z;
+  size_t nVoxelsOutput = static_cast<size_t>(inputSize.x) * inputSize.y * inputSize.z;
   size_t memorySizeOutput = nVoxelsOutput * sizeof(float);
 
   // Reset output volume

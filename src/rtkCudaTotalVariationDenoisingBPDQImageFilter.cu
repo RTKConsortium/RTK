@@ -21,10 +21,13 @@
 #include "rtkCudaFirstOrderKernels.hcu"
 #include "rtkCudaUtilities.hcu"
 
-#include <itkMacro.h>
+#include <itkIntTypes.h>
 
 // cuda includes
 #include <cuda.h>
+
+// System-adaptive buffer index types (ITK)
+using SizeValueType = itk::SizeValueType;
 
 // TEXTURES AND CONSTANTS //
 
@@ -38,14 +41,14 @@ __constant__ float3 c_Spacing;
 __global__ void
 magnitude_threshold_kernel(float * grad_x, float * grad_y, float * grad_z, float gamma)
 {
-  unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
-  unsigned int j = blockIdx.y * blockDim.y + threadIdx.y;
-  unsigned int k = blockIdx.z * blockDim.z + threadIdx.z;
+  SizeValueType i = blockIdx.x * blockDim.x + threadIdx.x;
+  SizeValueType j = blockIdx.y * blockDim.y + threadIdx.y;
+  SizeValueType k = blockIdx.z * blockDim.z + threadIdx.z;
 
   if (i >= c_Size.x || j >= c_Size.y || k >= c_Size.z)
     return;
 
-  long int id = (k * c_Size.y + j) * c_Size.x + i;
+  SizeValueType id = (k * c_Size.y + j) * c_Size.x + i;
 
   float norm = sqrt(grad_x[id] * grad_x[id] + grad_y[id] * grad_y[id] + grad_z[id] * grad_z[id]);
   if (norm > gamma)
@@ -60,17 +63,17 @@ magnitude_threshold_kernel(float * grad_x, float * grad_y, float * grad_z, float
 __global__ void
 gradient_and_subtract_kernel(float * in, float * grad_x, float * grad_y, float * grad_z)
 {
-  unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
-  unsigned int j = blockIdx.y * blockDim.y + threadIdx.y;
-  unsigned int k = blockIdx.z * blockDim.z + threadIdx.z;
+  SizeValueType i = blockIdx.x * blockDim.x + threadIdx.x;
+  SizeValueType j = blockIdx.y * blockDim.y + threadIdx.y;
+  SizeValueType k = blockIdx.z * blockDim.z + threadIdx.z;
 
   if (i >= c_Size.x || j >= c_Size.y || k >= c_Size.z)
     return;
 
-  long int id = (k * c_Size.y + j) * c_Size.x + i;
-  long int id_x = (k * c_Size.y + j) * c_Size.x + i + 1;
-  long int id_y = (k * c_Size.y + j + 1) * c_Size.x + i;
-  long int id_z = ((k + 1) * c_Size.y + j) * c_Size.x + i;
+  SizeValueType id = (k * c_Size.y + j) * c_Size.x + i;
+  SizeValueType id_x = (k * c_Size.y + j) * c_Size.x + i + 1;
+  SizeValueType id_y = (k * c_Size.y + j + 1) * c_Size.x + i;
+  SizeValueType id_z = ((k + 1) * c_Size.y + j) * c_Size.x + i;
 
   if (i != (c_Size.x - 1))
     grad_x[id] -= ((in[id_x] - in[id]) / c_Spacing.x);
@@ -83,14 +86,14 @@ gradient_and_subtract_kernel(float * in, float * grad_x, float * grad_y, float *
 __global__ void
 multiply_by_beta_kernel(float * input, float * output, float beta)
 {
-  unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
-  unsigned int j = blockIdx.y * blockDim.y + threadIdx.y;
-  unsigned int k = blockIdx.z * blockDim.z + threadIdx.z;
+  SizeValueType i = blockIdx.x * blockDim.x + threadIdx.x;
+  SizeValueType j = blockIdx.y * blockDim.y + threadIdx.y;
+  SizeValueType k = blockIdx.z * blockDim.z + threadIdx.z;
 
   if (i >= c_Size.x || j >= c_Size.y || k >= c_Size.z)
     return;
 
-  long int id = (k * c_Size.y + j) * c_Size.x + i;
+  SizeValueType id = (k * c_Size.y + j) * c_Size.x + i;
 
   output[id] = input[id] * beta;
 }
@@ -98,14 +101,14 @@ multiply_by_beta_kernel(float * input, float * output, float beta)
 __global__ void
 subtract_kernel(float * in1, float * in2, float * out)
 {
-  unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
-  unsigned int j = blockIdx.y * blockDim.y + threadIdx.y;
-  unsigned int k = blockIdx.z * blockDim.z + threadIdx.z;
+  SizeValueType i = blockIdx.x * blockDim.x + threadIdx.x;
+  SizeValueType j = blockIdx.y * blockDim.y + threadIdx.y;
+  SizeValueType k = blockIdx.z * blockDim.z + threadIdx.z;
 
   if (i >= c_Size.x || j >= c_Size.y || k >= c_Size.z)
     return;
 
-  long int id = (k * c_Size.y + j) * c_Size.x + i;
+  SizeValueType id = (k * c_Size.y + j) * c_Size.x + i;
 
   out[id] = in1[id] - in2[id];
 }
@@ -138,7 +141,7 @@ CUDA_total_variation(int     size[3],
     minSpacing = spacing[2];
 
   // Reset output volume
-  size_t memorySizeOutput = sizeof(float) * size[0] * size[1] * size[2];
+  size_t memorySizeOutput = sizeof(float) * static_cast<size_t>(size[0]) * size[1] * size[2];
   cudaMemset((void *)dev_out, 0, memorySizeOutput);
 
   // Initialize volume to store intermediate images

@@ -20,10 +20,13 @@
 #include "rtkCudaLastDimensionTVDenoisingImageFilter.hcu"
 #include "rtkCudaUtilities.hcu"
 
-#include <itkMacro.h>
+#include <itkIntTypes.h>
 
 // cuda includes
 #include <cuda.h>
+
+// System-adaptive buffer index types (ITK)
+using SizeValueType = itk::SizeValueType;
 
 // TEXTURES AND CONSTANTS //
 
@@ -45,8 +48,9 @@ denoise_oneD_TV_kernel(float * in, float * out, float beta, float gamma, int nit
   float *                 gradient = &shared[3 * c_Size.w];
 
   // Each thread reads one element into the shared buffer
-  long int gindex = ((threadIdx.x * c_Size.z + blockIdx.z) * c_Size.y + blockIdx.y) * c_Size.x + blockIdx.x;
-  int      lindex = threadIdx.x;
+  SizeValueType tx = threadIdx.x;
+  SizeValueType gindex = ((tx * c_Size.z + blockIdx.z) * c_Size.y + blockIdx.y) * c_Size.x + blockIdx.x;
+  int           lindex = threadIdx.x;
   input[lindex] = in[gindex];
   __syncthreads();
 

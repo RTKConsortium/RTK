@@ -38,6 +38,9 @@
 #include <cuda.h>
 #include <cuda_runtime.h>
 
+// System-adaptive buffer index types (ITK)
+using SizeValueType = itk::SizeValueType;
+
 // CONSTANTS
 __constant__ int3   c_projSize;
 __constant__ float3 c_boxMin;
@@ -78,7 +81,7 @@ kernel_warped_forwardProject(float *             dev_proj_in,
   float3 pixelPos;
   float  tnear, tfar;
 
-  for (unsigned int proj = 0; proj < c_projSize.z; proj++)
+  for (SizeValueType proj = 0; proj < c_projSize.z; proj++)
   {
     // Setting ray origin
     ray.o = make_float3(c_sourcePos[3 * proj], c_sourcePos[3 * proj + 1], c_sourcePos[3 * proj + 2]);
@@ -91,8 +94,8 @@ kernel_warped_forwardProject(float *             dev_proj_in,
     // Detect intersection with box
     if (!intersectBox(ray, &tnear, &tfar, c_boxMin, c_boxMax) || tfar < 0.f)
     {
-      dev_proj_out[numThread + proj * c_projSize.x * c_projSize.y] =
-        dev_proj_in[numThread + proj * c_projSize.x * c_projSize.y];
+      SizeValueType projOffset = numThread + proj * c_projSize.x * c_projSize.y;
+      dev_proj_out[projOffset] = dev_proj_in[projOffset];
     }
     else
     {
@@ -139,9 +142,8 @@ kernel_warped_forwardProject(float *             dev_proj_in,
         sum += sample;
         pos += step;
       }
-      dev_proj_out[numThread + proj * c_projSize.x * c_projSize.y] =
-        dev_proj_in[numThread + proj * c_projSize.x * c_projSize.y] +
-        (sum + (tfar - t + halfVStep) / vStep * sample) * c_tStep;
+      SizeValueType projOffset = numThread + proj * c_projSize.x * c_projSize.y;
+      dev_proj_out[projOffset] = dev_proj_in[projOffset] + (sum + (tfar - t + halfVStep) / vStep * sample) * c_tStep;
     }
   }
 }
