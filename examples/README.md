@@ -26,4 +26,6 @@ providing efficient implementations for high-performance applications.
 ./FourDFDK/README.md
 ./FourDConjugateGradient/README.md
 ./FourDROOSTER/README.md
+./SpectralOneStep/README.md
+./SpectralTwoStep/README.md
 ```
