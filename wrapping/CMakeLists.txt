@@ -1,5 +1,8 @@
 itk_wrap_module(RTK)
 
+# Python.h is included in itkPyBufferRTK
+list(APPEND WRAPPER_LIBRARY_INCLUDE_DIRECTORIES ${Python3_INCLUDE_DIRS})
+
 set(
   WRAPPER_SUBMODULE_ORDER
   itkFixedArrayRTK
