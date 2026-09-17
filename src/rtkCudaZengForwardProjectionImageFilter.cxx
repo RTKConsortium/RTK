@@ -57,7 +57,7 @@ CudaZengForwardProjectionImageFilter::GPUGenerateData()
                           static_cast<int>(volumeRegion.GetSize(2)) };
   int   rotatedSize[3] = { projectionSize[0],
                            projectionSize[1],
-                           static_cast<int>(std::ceil(volumeRegion.GetSize(2) * std::sqrt(2.0))) };
+                           static_cast<int>(volumeRegion.GetSize(2) * std::sqrt(2.0)) };
   float rotatedSpacing[3] = { static_cast<float>(this->GetInput(0)->GetSpacing()[0]),
                               static_cast<float>(this->GetInput(0)->GetSpacing()[1]),
                               static_cast<float>(this->GetInput(1)->GetSpacing()[2]) };
