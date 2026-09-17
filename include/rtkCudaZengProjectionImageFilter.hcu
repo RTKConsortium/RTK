@@ -33,6 +33,7 @@ CUDA_zeng_forward_project(const int    projectionSize[3],
                           const float *devAttenuation,
                           float        sigmaZero,
                           float        alpha,
+                          unsigned int batchSize,
                           void **      workspace);
 
 void RTK_EXPORT
@@ -49,6 +50,7 @@ CUDA_zeng_back_project(const int    projectionSize[3],
                        const float *devAttenuation,
                        float        sigmaZero,
                        float        alpha,
+                       unsigned int batchSize,
                        void **      workspace);
 
 void RTK_EXPORT

@@ -27,6 +27,9 @@
 
 namespace
 {
+constexpr int CoefficientStride = 33;
+constexpr int MaximumRadius = 32;
+
 inline __device__ float3
 applyMatrix(const float * m, float x, float y, float z)
 {
@@ -56,7 +59,9 @@ trilinearZero(const float * image, int3 size, float3 p)
     for (int dy = 0; dy <= 1; ++dy)
       for (int dx = 0; dx <= 1; ++dx)
       {
-        const int x = x0 + dx, y = y0 + dy, z = z0 + dz;
+        const int x = x0 + dx;
+        const int y = y0 + dy;
+        const int z = z0 + dz;
         if (x >= 0 && x < size.x && y >= 0 && y < size.y && z >= 0 && z < size.z)
         {
           const float wx = dx ? fx : 1.f - fx;
@@ -68,104 +73,21 @@ trilinearZero(const float * image, int3 size, float3 p)
   return result;
 }
 
-__global__ void
-sampleForwardSlice(float *       slice,
-                   const float * previous,
-                   const float * volume,
-                   const float * attenuation,
-                   int3          volumeSize,
-                   const float * matrix,
-                   int           width,
-                   int           height,
-                   int           z,
-                   float         attenuationStep,
-                   bool          addPrevious)
-{
-  const int x = blockIdx.x * blockDim.x + threadIdx.x;
-  const int y = blockIdx.y * blockDim.y + threadIdx.y;
-  if (x >= width || y >= height)
-    return;
-  const float3 position = applyMatrix(matrix, x, y, z);
-  float        value = trilinearZero(volume, volumeSize, position);
-  if (addPrevious)
-    value += previous[y * width + x];
-  if (attenuation)
-    value *= expf(-attenuationStep * trilinearZero(attenuation, volumeSize, position));
-  slice[y * width + x] = value;
-}
-
-__global__ void
-gaussianXShared(const float * input, float * output, int width, int height, const float * coefficients, int radius)
-{
-  extern __shared__ float tile[];
-  const int               x = blockIdx.x * blockDim.x + threadIdx.x;
-  const int               y = blockIdx.y * blockDim.y + threadIdx.y;
-  const int               tileWidth = blockDim.x + 2 * radius;
-  const int               tileElements = tileWidth * blockDim.y;
-  const int               threadIndex = threadIdx.y * blockDim.x + threadIdx.x;
-  const int               threadCount = blockDim.x * blockDim.y;
-  for (int index = threadIndex; index < tileElements; index += threadCount)
-  {
-    const int localX = index % tileWidth;
-    const int localY = index / tileWidth;
-    const int globalX = blockIdx.x * blockDim.x + localX - radius;
-    const int globalY = blockIdx.y * blockDim.y + localY;
-    tile[index] = globalX >= 0 && globalX < width && globalY < height ? input[globalY * width + globalX] : 0.f;
-  }
-  __syncthreads();
-  if (x >= width || y >= height)
-    return;
-  float sum = 0.f;
-  for (int offset = -radius; offset <= radius; ++offset)
-    sum += coefficients[abs(offset)] * tile[threadIdx.y * tileWidth + threadIdx.x + radius + offset];
-  output[y * width + x] = sum;
-}
-
-__global__ void
-gaussianYShared(const float * input, float * output, int width, int height, const float * coefficients, int radius)
-{
-  extern __shared__ float tile[];
-  const int               x = blockIdx.x * blockDim.x + threadIdx.x;
-  const int               y = blockIdx.y * blockDim.y + threadIdx.y;
-  const int               tileHeight = blockDim.y + 2 * radius;
-  const int               tileElements = blockDim.x * tileHeight;
-  const int               threadIndex = threadIdx.y * blockDim.x + threadIdx.x;
-  const int               threadCount = blockDim.x * blockDim.y;
-  for (int index = threadIndex; index < tileElements; index += threadCount)
-  {
-    const int localX = index % blockDim.x;
-    const int localY = index / blockDim.x;
-    const int globalX = blockIdx.x * blockDim.x + localX;
-    const int globalY = blockIdx.y * blockDim.y + localY - radius;
-    tile[index] = globalX < width && globalY >= 0 && globalY < height ? input[globalY * width + globalX] : 0.f;
-  }
-  __syncthreads();
-  if (x >= width || y >= height)
-    return;
-  float sum = 0.f;
-  for (int offset = -radius; offset <= radius; ++offset)
-    sum += coefficients[abs(offset)] * tile[(threadIdx.y + radius + offset) * blockDim.x + threadIdx.x];
-  output[y * width + x] = sum;
-}
-
 std::vector<float>
 discreteGaussianCoefficients(double variance)
 {
   if (variance <= 1.e-12)
     return { 1.f };
-
   constexpr double    maximumError = 1.e-5;
-  constexpr size_t    maximumKernelWidth = 32;
   const double        exponential = std::exp(-variance);
-  std::vector<double> coefficients;
-  coefficients.push_back(exponential * std::cyl_bessel_i(0., variance));
-  double sum = coefficients[0];
+  std::vector<double> coefficients{ exponential * std::cyl_bessel_i(0., variance) };
+  double              sum = coefficients[0];
   for (int order = 1; sum < 1. - maximumError; ++order)
   {
     const double coefficient = exponential * std::cyl_bessel_i(static_cast<double>(order), variance);
     coefficients.push_back(coefficient);
     sum += 2. * coefficient;
-    if (coefficient <= 0. || coefficients.size() > maximumKernelWidth)
+    if (coefficient <= 0. || coefficients.size() > MaximumRadius)
       break;
   }
   std::vector<float> normalized(coefficients.size());
@@ -175,9 +97,7 @@ discreteGaussianCoefficients(double variance)
   return normalized;
 }
 
-constexpr size_t GaussianCoefficientStride = 33;
-
-struct GaussianMetadata
+struct HostGaussianMetadata
 {
   std::vector<float> coefficientsX;
   std::vector<float> coefficientsY;
@@ -198,67 +118,6 @@ struct MetadataKey
   }
 };
 
-struct DeviceMetadata
-{
-  float *          coefficientsX{};
-  float *          coefficientsY{};
-  float *          matrices{};
-  float *          inverseMatrices{};
-  std::vector<int> radiiX;
-  std::vector<int> radiiY;
-
-  ~DeviceMetadata()
-  {
-    cudaFree(inverseMatrices);
-    cudaFree(matrices);
-    cudaFree(coefficientsY);
-    cudaFree(coefficientsX);
-  }
-};
-
-struct CudaZengWorkspace
-{
-  float *                               current{};
-  float *                               blurred{};
-  float *                               gaussianScratch{};
-  float *                               rotated{};
-  size_t                                sliceCapacity{};
-  size_t                                rotatedCapacity{};
-  std::map<MetadataKey, DeviceMetadata> metadata;
-
-  ~CudaZengWorkspace()
-  {
-    cudaFree(rotated);
-    cudaFree(gaussianScratch);
-    cudaFree(blurred);
-    cudaFree(current);
-  }
-};
-
-void
-ensureSliceBuffers(CudaZengWorkspace & workspace, size_t requiredElements)
-{
-  if (requiredElements <= workspace.sliceCapacity)
-    return;
-  cudaFree(workspace.gaussianScratch);
-  cudaFree(workspace.blurred);
-  cudaFree(workspace.current);
-  cudaMalloc(&workspace.current, requiredElements * sizeof(float));
-  cudaMalloc(&workspace.blurred, requiredElements * sizeof(float));
-  cudaMalloc(&workspace.gaussianScratch, requiredElements * sizeof(float));
-  workspace.sliceCapacity = requiredElements;
-}
-
-void
-ensureRotatedBuffer(CudaZengWorkspace & workspace, size_t requiredElements)
-{
-  if (requiredElements <= workspace.rotatedCapacity)
-    return;
-  cudaFree(workspace.rotated);
-  cudaMalloc(&workspace.rotated, requiredElements * sizeof(float));
-  workspace.rotatedCapacity = requiredElements;
-}
-
 MetadataKey
 makeMetadataKey(int           mode,
                 const int     projectionSize[3],
@@ -276,8 +135,7 @@ makeMetadataKey(int           mode,
   key.integers.insert(key.integers.end(), projectionSize, projectionSize + 3);
   key.integers.insert(key.integers.end(), volumeSize, volumeSize + 3);
   key.integers.insert(key.integers.end(), rotatedSize, rotatedSize + 3);
-  if (firstSlices)
-    key.integers.insert(key.integers.end(), firstSlices, firstSlices + projectionSize[2]);
+  key.integers.insert(key.integers.end(), firstSlices, firstSlices + projectionSize[2]);
   key.values.insert(key.values.end(), rotatedSpacing, rotatedSpacing + 3);
   key.values.push_back(sigmaZero);
   key.values.push_back(alpha);
@@ -287,107 +145,455 @@ makeMetadataKey(int           mode,
 }
 
 void
-appendGaussianMetadata(GaussianMetadata &                     metadata,
-                       std::map<double, std::vector<float>> & coefficientCache,
-                       float                                  variance,
-                       float                                  spacingX,
-                       float                                  spacingY)
+appendGaussian(HostGaussianMetadata &                 metadata,
+               std::map<double, std::vector<float>> & cache,
+               float                                  variance,
+               float                                  spacingX,
+               float                                  spacingY)
 {
   const double         variances[] = { variance / (spacingX * spacingX), variance / (spacingY * spacingY) };
   std::vector<float> * packed[] = { &metadata.coefficientsX, &metadata.coefficientsY };
   std::vector<int> *   radii[] = { &metadata.radiiX, &metadata.radiiY };
   for (int dimension = 0; dimension < 2; ++dimension)
   {
-    auto [iterator, inserted] = coefficientCache.try_emplace(variances[dimension]);
+    auto [it, inserted] = cache.try_emplace(variances[dimension]);
     if (inserted)
-      iterator->second = discreteGaussianCoefficients(variances[dimension]);
-    const auto & coefficients = iterator->second;
-    radii[dimension]->push_back(static_cast<int>(coefficients.size()) - 1);
-    packed[dimension]->insert(packed[dimension]->end(), coefficients.begin(), coefficients.end());
-    packed[dimension]->resize(packed[dimension]->size() + GaussianCoefficientStride - coefficients.size(), 0.f);
+      it->second = discreteGaussianCoefficients(variances[dimension]);
+    radii[dimension]->push_back(static_cast<int>(it->second.size()) - 1);
+    packed[dimension]->insert(packed[dimension]->end(), it->second.begin(), it->second.end());
+    packed[dimension]->resize(packed[dimension]->size() + CoefficientStride - it->second.size(), 0.f);
+  }
+}
+
+struct DeviceMetadata
+{
+  float * coefficientsX{};
+  float * coefficientsY{};
+  float * matrices{};
+  float * inverseMatrices{};
+  int *   radiiX{};
+  int *   radiiY{};
+  int *   firstSlices{};
+
+  ~DeviceMetadata()
+  {
+    cudaFree(firstSlices);
+    cudaFree(radiiY);
+    cudaFree(radiiX);
+    cudaFree(inverseMatrices);
+    cudaFree(matrices);
+    cudaFree(coefficientsY);
+    cudaFree(coefficientsX);
+  }
+};
+
+struct Workspace
+{
+  float *                               current{};
+  float *                               blurred{};
+  float *                               scratch{};
+  float *                               rotated{};
+  size_t                                sliceCapacity{};
+  size_t                                rotatedCapacity{};
+  std::map<MetadataKey, DeviceMetadata> metadata;
+
+  ~Workspace()
+  {
+    cudaFree(rotated);
+    cudaFree(scratch);
+    cudaFree(blurred);
+    cudaFree(current);
+  }
+};
+
+void
+releaseSlices(Workspace & workspace)
+{
+  cudaFree(workspace.scratch);
+  cudaFree(workspace.blurred);
+  cudaFree(workspace.current);
+  workspace.scratch = nullptr;
+  workspace.blurred = nullptr;
+  workspace.current = nullptr;
+  workspace.sliceCapacity = 0;
+}
+
+bool
+allocateBuffer(float ** buffer, size_t elements)
+{
+  const auto error = cudaMalloc(buffer, elements * sizeof(float));
+  if (error == cudaErrorMemoryAllocation)
+  {
+    cudaGetLastError();
+    return false;
+  }
+  if (error != cudaSuccess)
+    itkGenericExceptionMacro(<< "CUDA Zeng allocation failed: " << cudaGetErrorString(error));
+  return true;
+}
+
+bool
+ensureSlices(Workspace & workspace, size_t elements)
+{
+  if (elements <= workspace.sliceCapacity)
+    return true;
+  releaseSlices(workspace);
+  if (!allocateBuffer(&workspace.current, elements) || !allocateBuffer(&workspace.blurred, elements) ||
+      !allocateBuffer(&workspace.scratch, elements))
+  {
+    releaseSlices(workspace);
+    return false;
+  }
+  workspace.sliceCapacity = elements;
+  return true;
+}
+
+bool
+ensureRotated(Workspace & workspace, size_t elements)
+{
+  if (elements <= workspace.rotatedCapacity)
+    return true;
+  cudaFree(workspace.rotated);
+  workspace.rotated = nullptr;
+  workspace.rotatedCapacity = 0;
+  if (!allocateBuffer(&workspace.rotated, elements))
+    return false;
+  workspace.rotatedCapacity = elements;
+  return true;
+}
+
+unsigned int
+automaticBatchSize(const Workspace & workspace, int projections, int depth, size_t pixels, bool backward)
+{
+  size_t freeBytes = 0;
+  size_t totalBytes = 0;
+  cudaMemGetInfo(&freeBytes, &totalBytes);
+  (void)totalBytes;
+  const size_t slices = backward ? static_cast<size_t>(depth) + 3 : 3;
+  const size_t bytesPerProjection = std::max<size_t>(1, slices * pixels * sizeof(float));
+  size_t       existingCapacity = workspace.sliceCapacity / pixels;
+  if (backward)
+    existingCapacity = std::min(existingCapacity, workspace.rotatedCapacity / (static_cast<size_t>(depth) * pixels));
+  return static_cast<unsigned int>(std::max<size_t>(
+    1, std::min<size_t>(projections, std::max(freeBytes * 3 / 5 / bytesPerProjection, existingCapacity))));
+}
+
+unsigned int
+allocateBatch(Workspace & workspace, unsigned int batchSize, int depth, size_t pixels, bool backward)
+{
+  for (;;)
+  {
+    if (ensureSlices(workspace, static_cast<size_t>(batchSize) * pixels) &&
+        (!backward || ensureRotated(workspace, static_cast<size_t>(batchSize) * depth * pixels)))
+      return batchSize;
+    releaseSlices(workspace);
+    if (batchSize == 1)
+      itkGenericExceptionMacro(<< "Insufficient GPU memory for one CUDA Zeng projection.");
+    batchSize = std::max(1u, batchSize / 2);
   }
 }
 
 void
-gaussian2D(const float * input,
-           float *       output,
-           float *       scratch,
-           const float * deviceCoefficientsX,
-           const float * deviceCoefficientsY,
-           int           radiusX,
-           int           radiusY,
-           int           width,
-           int           height,
-           dim3          grid,
-           dim3          block)
+uploadMetadata(DeviceMetadata &           device,
+               HostGaussianMetadata &&    metadata,
+               const float *              matrices,
+               const std::vector<float> & inverseMatrices,
+               const std::vector<int> &   firstSlices,
+               int                        projections)
 {
-  const size_t sharedX = (block.x + 2 * radiusX) * block.y * sizeof(float);
-  const size_t sharedY = block.x * (block.y + 2 * radiusY) * sizeof(float);
-  gaussianXShared<<<grid, block, sharedX>>>(input, scratch, width, height, deviceCoefficientsX, radiusX);
-  gaussianYShared<<<grid, block, sharedY>>>(scratch, output, width, height, deviceCoefficientsY, radiusY);
+  cudaMalloc(&device.coefficientsX, metadata.coefficientsX.size() * sizeof(float));
+  cudaMalloc(&device.coefficientsY, metadata.coefficientsY.size() * sizeof(float));
+  cudaMalloc(&device.radiiX, metadata.radiiX.size() * sizeof(int));
+  cudaMalloc(&device.radiiY, metadata.radiiY.size() * sizeof(int));
+  cudaMalloc(&device.matrices, 12 * projections * sizeof(float));
+  cudaMalloc(&device.firstSlices, projections * sizeof(int));
+  cudaMemcpy(device.coefficientsX,
+             metadata.coefficientsX.data(),
+             metadata.coefficientsX.size() * sizeof(float),
+             cudaMemcpyHostToDevice);
+  cudaMemcpy(device.coefficientsY,
+             metadata.coefficientsY.data(),
+             metadata.coefficientsY.size() * sizeof(float),
+             cudaMemcpyHostToDevice);
+  cudaMemcpy(device.radiiX, metadata.radiiX.data(), metadata.radiiX.size() * sizeof(int), cudaMemcpyHostToDevice);
+  cudaMemcpy(device.radiiY, metadata.radiiY.data(), metadata.radiiY.size() * sizeof(int), cudaMemcpyHostToDevice);
+  cudaMemcpy(device.matrices, matrices, 12 * projections * sizeof(float), cudaMemcpyHostToDevice);
+  cudaMemcpy(device.firstSlices, firstSlices.data(), projections * sizeof(int), cudaMemcpyHostToDevice);
+  if (!inverseMatrices.empty())
+  {
+    cudaMalloc(&device.inverseMatrices, inverseMatrices.size() * sizeof(float));
+    cudaMemcpy(
+      device.inverseMatrices, inverseMatrices.data(), inverseMatrices.size() * sizeof(float), cudaMemcpyHostToDevice);
+  }
+  CUDA_CHECK_ERROR;
 }
 
 __global__ void
-finishForward(const float * input, const float * zeng, float * output, int count, float thickness)
+gaussianX(const float * input,
+          float *       output,
+          int           width,
+          int           height,
+          const float * coefficients,
+          const int *   radii,
+          const int *   firstSlices,
+          int           metadataStride,
+          int           metadataZ,
+          int           batchStart)
 {
-  const int i = blockIdx.x * blockDim.x + threadIdx.x;
-  if (i < count)
-    output[i] = input[i] + thickness * zeng[i];
-}
-
-__global__ void
-copyProjection(const float * projections, float * slice, int count, int projection)
-{
-  const int i = blockIdx.x * blockDim.x + threadIdx.x;
-  if (i < count)
-    slice[i] = projections[projection * count + i];
-}
-
-__global__ void
-attenuateSlice(float *             slice,
-               cudaTextureObject_t attenuation,
-               int3                volumeSize,
-               const float *       rotatedToVolume,
-               int                 width,
-               int                 height,
-               int                 z,
-               float               attenuationStep)
-{
+  extern __shared__ float tile[];
+  const int               localProjection = blockIdx.z;
+  if (metadataZ < firstSlices[batchStart + localProjection])
+  {
+    const int x = blockIdx.x * blockDim.x + threadIdx.x;
+    const int y = blockIdx.y * blockDim.y + threadIdx.y;
+    if (x < width && y < height)
+    {
+      const size_t offset = static_cast<size_t>(localProjection) * width * height + y * width + x;
+      output[offset] = input[offset];
+    }
+    return;
+  }
+  const int    metadataIndex = (batchStart + localProjection) * metadataStride + metadataZ;
+  const int    radius = radii[metadataIndex];
+  const int    tileWidth = blockDim.x + 2 * radius;
+  const int    tileElements = tileWidth * blockDim.y;
+  const int    threadIndex = threadIdx.y * blockDim.x + threadIdx.x;
+  const int    threadCount = blockDim.x * blockDim.y;
+  const size_t sliceOffset = static_cast<size_t>(localProjection) * width * height;
+  for (int index = threadIndex; index < tileElements; index += threadCount)
+  {
+    const int localX = index % tileWidth;
+    const int localY = index / tileWidth;
+    const int x = blockIdx.x * blockDim.x + localX - radius;
+    const int y = blockIdx.y * blockDim.y + localY;
+    tile[index] = x >= 0 && x < width && y < height ? input[sliceOffset + y * width + x] : 0.f;
+  }
+  __syncthreads();
   const int x = blockIdx.x * blockDim.x + threadIdx.x;
   const int y = blockIdx.y * blockDim.y + threadIdx.y;
   if (x >= width || y >= height)
     return;
-  const float3 position = applyMatrix(rotatedToVolume, x, y, z);
+  float         sum = 0.f;
+  const float * kernel = coefficients + static_cast<size_t>(metadataIndex) * CoefficientStride;
+  for (int offset = -radius; offset <= radius; ++offset)
+    sum += kernel[abs(offset)] * tile[threadIdx.y * tileWidth + threadIdx.x + radius + offset];
+  output[sliceOffset + y * width + x] = sum;
+}
+
+__global__ void
+gaussianY(const float * input,
+          float *       output,
+          int           width,
+          int           height,
+          const float * coefficients,
+          const int *   radii,
+          const int *   firstSlices,
+          int           metadataStride,
+          int           metadataZ,
+          int           batchStart)
+{
+  extern __shared__ float tile[];
+  const int               localProjection = blockIdx.z;
+  if (metadataZ < firstSlices[batchStart + localProjection])
+  {
+    const int x = blockIdx.x * blockDim.x + threadIdx.x;
+    const int y = blockIdx.y * blockDim.y + threadIdx.y;
+    if (x < width && y < height)
+    {
+      const size_t offset = static_cast<size_t>(localProjection) * width * height + y * width + x;
+      output[offset] = input[offset];
+    }
+    return;
+  }
+  const int    metadataIndex = (batchStart + localProjection) * metadataStride + metadataZ;
+  const int    radius = radii[metadataIndex];
+  const int    tileHeight = blockDim.y + 2 * radius;
+  const int    tileElements = blockDim.x * tileHeight;
+  const int    threadIndex = threadIdx.y * blockDim.x + threadIdx.x;
+  const int    threadCount = blockDim.x * blockDim.y;
+  const size_t sliceOffset = static_cast<size_t>(localProjection) * width * height;
+  for (int index = threadIndex; index < tileElements; index += threadCount)
+  {
+    const int localX = index % blockDim.x;
+    const int localY = index / blockDim.x;
+    const int x = blockIdx.x * blockDim.x + localX;
+    const int y = blockIdx.y * blockDim.y + localY - radius;
+    tile[index] = x < width && y >= 0 && y < height ? input[sliceOffset + y * width + x] : 0.f;
+  }
+  __syncthreads();
+  const int x = blockIdx.x * blockDim.x + threadIdx.x;
+  const int y = blockIdx.y * blockDim.y + threadIdx.y;
+  if (x >= width || y >= height)
+    return;
+  float         sum = 0.f;
+  const float * kernel = coefficients + static_cast<size_t>(metadataIndex) * CoefficientStride;
+  for (int offset = -radius; offset <= radius; ++offset)
+    sum += kernel[abs(offset)] * tile[(threadIdx.y + radius + offset) * blockDim.x + threadIdx.x];
+  output[sliceOffset + y * width + x] = sum;
+}
+
+void
+gaussianBatch(const float *          input,
+              float *                output,
+              float *                scratch,
+              const DeviceMetadata & metadata,
+              int                    width,
+              int                    height,
+              int                    batchStart,
+              int                    batchCount,
+              int                    metadataZ,
+              int                    metadataStride)
+{
+  const dim3   block(16, 16);
+  const dim3   grid(iDivUp(width, 16), iDivUp(height, 16), batchCount);
+  const size_t sharedX = (block.x + 2 * MaximumRadius) * block.y * sizeof(float);
+  const size_t sharedY = block.x * (block.y + 2 * MaximumRadius) * sizeof(float);
+  gaussianX<<<grid, block, sharedX>>>(input,
+                                      scratch,
+                                      width,
+                                      height,
+                                      metadata.coefficientsX,
+                                      metadata.radiiX,
+                                      metadata.firstSlices,
+                                      metadataStride,
+                                      metadataZ,
+                                      batchStart);
+  gaussianY<<<grid, block, sharedY>>>(scratch,
+                                      output,
+                                      width,
+                                      height,
+                                      metadata.coefficientsY,
+                                      metadata.radiiY,
+                                      metadata.firstSlices,
+                                      metadataStride,
+                                      metadataZ,
+                                      batchStart);
+}
+
+__global__ void
+sampleForward(float *       current,
+              const float * previous,
+              const float * volume,
+              const float * attenuation,
+              int3          volumeSize,
+              const float * matrices,
+              const int *   firstSlices,
+              int           width,
+              int           height,
+              int           z,
+              float         attenuationStep,
+              int           batchStart,
+              bool          addPrevious)
+{
+  const int x = blockIdx.x * blockDim.x + threadIdx.x;
+  const int y = blockIdx.y * blockDim.y + threadIdx.y;
+  const int localProjection = blockIdx.z;
+  const int projection = batchStart + localProjection;
+  if (x >= width || y >= height || z < firstSlices[projection])
+    return;
+  const int    pixel = y * width + x;
+  const size_t offset = static_cast<size_t>(localProjection) * width * height + pixel;
+  const float3 position = applyMatrix(matrices + 12 * projection, x, y, z);
+  float        value = trilinearZero(volume, volumeSize, position);
+  if (addPrevious)
+    value += previous[offset];
+  if (attenuation)
+    value *= expf(-attenuationStep * trilinearZero(attenuation, volumeSize, position));
+  current[offset] = value;
+}
+
+__global__ void
+finishForward(const float * input, const float * zeng, float * output, int pixels, float thickness, int batchStart)
+{
+  const int pixel = blockIdx.x * blockDim.x + threadIdx.x;
+  const int localProjection = blockIdx.y;
+  if (pixel >= pixels)
+    return;
+  const int    projection = batchStart + localProjection;
+  const size_t local = static_cast<size_t>(localProjection) * pixels + pixel;
+  output[static_cast<size_t>(projection) * pixels + pixel] =
+    input[static_cast<size_t>(projection) * pixels + pixel] + thickness * zeng[local];
+}
+
+__global__ void
+copyProjections(const float * projections, float * current, int pixels, int batchStart)
+{
+  const int pixel = blockIdx.x * blockDim.x + threadIdx.x;
+  const int localProjection = blockIdx.y;
+  if (pixel < pixels)
+    current[static_cast<size_t>(localProjection) * pixels + pixel] =
+      projections[static_cast<size_t>(batchStart + localProjection) * pixels + pixel];
+}
+
+__global__ void
+storeSlices(const float * current,
+            float *       rotated,
+            int           pixels,
+            int           depth,
+            int           z,
+            const int *   firstSlices,
+            int           batchStart)
+{
+  const int pixel = blockIdx.x * blockDim.x + threadIdx.x;
+  const int localProjection = blockIdx.y;
+  const int projection = batchStart + localProjection;
+  if (pixel < pixels && z >= firstSlices[projection])
+    rotated[(static_cast<size_t>(localProjection) * depth + z) * pixels + pixel] =
+      current[static_cast<size_t>(localProjection) * pixels + pixel];
+}
+
+__global__ void
+attenuate(float *             current,
+          cudaTextureObject_t attenuation,
+          int3                volumeSize,
+          const float *       inverseMatrices,
+          int                 width,
+          int                 height,
+          int                 z,
+          const int *         firstSlices,
+          bool                firstSlice,
+          float               step,
+          int                 batchStart)
+{
+  const int x = blockIdx.x * blockDim.x + threadIdx.x;
+  const int y = blockIdx.y * blockDim.y + threadIdx.y;
+  const int localProjection = blockIdx.z;
+  const int projection = batchStart + localProjection;
+  if (x >= width || y >= height || (!firstSlice && z <= firstSlices[projection]))
+    return;
+  const int    slice = firstSlice ? firstSlices[projection] : z;
+  const float3 position = applyMatrix(inverseMatrices + 12 * projection, x, y, slice);
+  const size_t offset = static_cast<size_t>(localProjection) * width * height + y * width + x;
   if (position.x >= 0.f && position.x < volumeSize.x && position.y >= 0.f && position.y < volumeSize.y &&
       position.z >= 0.f && position.z < volumeSize.z)
-    slice[y * width + x] *= expf(-attenuationStep * tex3D<float>(attenuation, position.x, position.y, position.z));
+    current[offset] *= expf(-step * tex3D<float>(attenuation, position.x, position.y, position.z));
 }
 
 __global__ void
-storeSlice(const float * slice, float * volume, int count, int z)
-{
-  const int i = blockIdx.x * blockDim.x + threadIdx.x;
-  if (i < count)
-    volume[z * count + i] = slice[i];
-}
-
-__global__ void
-addRotatedVolume(const float * rotated,
-                 const float * input,
-                 float *       output,
-                 int3          volumeSize,
-                 int3          rotatedSize,
-                 const float * volumeToRotated,
-                 float         thickness)
+addRotatedBatch(const float * rotated,
+                float *       output,
+                int3          volumeSize,
+                int3          rotatedSize,
+                const float * matrices,
+                int           batchStart,
+                int           batchCount,
+                float         thickness)
 {
   const int x = blockIdx.x * blockDim.x + threadIdx.x;
   const int y = blockIdx.y * blockDim.y + threadIdx.y;
   const int z = blockIdx.z * blockDim.z + threadIdx.z;
   if (x >= volumeSize.x || y >= volumeSize.y || z >= volumeSize.z)
     return;
-  const int    index = (z * volumeSize.y + y) * volumeSize.x + x;
-  const float3 position = applyMatrix(volumeToRotated, x, y, z);
-  output[index] = input[index] + thickness * trilinearZero(rotated, rotatedSize, position);
+  float        sum = 0.f;
+  const size_t rotatedElements = static_cast<size_t>(rotatedSize.x) * rotatedSize.y * rotatedSize.z;
+  for (int localProjection = 0; localProjection < batchCount; ++localProjection)
+  {
+    const int    projection = batchStart + localProjection;
+    const float3 position = applyMatrix(matrices + 12 * projection, x, y, z);
+    sum += trilinearZero(rotated + localProjection * rotatedElements, rotatedSize, position);
+  }
+  const int index = (z * volumeSize.y + y) * volumeSize.x + x;
+  output[index] += thickness * sum;
 }
 
 void
@@ -423,15 +629,30 @@ CUDA_zeng_forward_project(const int     projectionSize[3],
                           const float * devAttenuation,
                           float         sigmaZero,
                           float         alpha,
+                          unsigned int  requestedBatchSize,
                           void **       workspacePointer)
 {
-  const int3 cudaVolumeSize = make_int3(volumeSize[0], volumeSize[1], volumeSize[2]);
   if (!*workspacePointer)
-    *workspacePointer = new CudaZengWorkspace;
-  auto &    workspace = *static_cast<CudaZengWorkspace *>(*workspacePointer);
-  const int pixelCount = rotatedSize[0] * rotatedSize[1];
-  ensureSliceBuffers(workspace, pixelCount);
-
+    *workspacePointer = new Workspace;
+  auto &             workspace = *static_cast<Workspace *>(*workspacePointer);
+  const int          projections = projectionSize[2];
+  const int          depth = rotatedSize[2];
+  const int          pixels = rotatedSize[0] * rotatedSize[1];
+  const int          metadataStride = depth + 1;
+  std::vector<int>   firstSlices(projections);
+  std::vector<float> nearDistances(projections);
+  for (int projection = 0; projection < projections; ++projection)
+  {
+    float nearDistance = farDistances[projection];
+    int   first = depth - 1;
+    while (first > 0 && nearDistance - rotatedSpacing[2] >= 0.f)
+    {
+      --first;
+      nearDistance -= rotatedSpacing[2];
+    }
+    firstSlices[projection] = first;
+    nearDistances[projection] = nearDistance;
+  }
   const auto key = makeMetadataKey(0,
                                    projectionSize,
                                    volumeSize,
@@ -441,112 +662,94 @@ CUDA_zeng_forward_project(const int     projectionSize[3],
                                    alpha,
                                    rotatedToVolumeMatrices,
                                    farDistances,
-                                   nullptr);
-  auto [metadataIterator, inserted] = workspace.metadata.try_emplace(key);
-  auto & deviceMetadata = metadataIterator->second;
+                                   firstSlices.data());
+  auto [iterator, inserted] = workspace.metadata.try_emplace(key);
+  auto & deviceMetadata = iterator->second;
   if (inserted)
   {
-    GaussianMetadata                     metadata;
-    std::map<double, std::vector<float>> coefficientCache;
-    for (int projection = 0; projection < projectionSize[2]; ++projection)
+    HostGaussianMetadata                 metadata;
+    std::map<double, std::vector<float>> cache;
+    for (int projection = 0; projection < projections; ++projection)
     {
-      float distance = farDistances[projection];
-      for (int z = rotatedSize[2] - 2; z >= 0 && distance - rotatedSpacing[2] >= 0.f; --z)
+      const float nearDistance = nearDistances[projection];
+      for (int z = 0; z < depth; ++z)
       {
-        const float variance = distance * 2.f * rotatedSpacing[2] * alpha * alpha +
-                               2.f * rotatedSpacing[2] * alpha * sigmaZero -
-                               alpha * alpha * rotatedSpacing[2] * rotatedSpacing[2];
-        appendGaussianMetadata(
-          metadata, coefficientCache, std::max(0.f, variance), rotatedSpacing[0], rotatedSpacing[1]);
-        distance -= rotatedSpacing[2];
+        float variance = 0.f;
+        if (z >= firstSlices[projection] && z + 1 < depth)
+        {
+          const float distance = nearDistance + (z + 1 - firstSlices[projection]) * rotatedSpacing[2];
+          variance = distance * 2.f * rotatedSpacing[2] * alpha * alpha + 2.f * rotatedSpacing[2] * alpha * sigmaZero -
+                     alpha * alpha * rotatedSpacing[2] * rotatedSpacing[2];
+        }
+        appendGaussian(metadata, cache, std::max(0.f, variance), rotatedSpacing[0], rotatedSpacing[1]);
       }
-      const float finalVariance = (alpha * distance + sigmaZero) * (alpha * distance + sigmaZero);
-      appendGaussianMetadata(metadata, coefficientCache, finalVariance, rotatedSpacing[0], rotatedSpacing[1]);
+      const float finalVariance = (alpha * nearDistance + sigmaZero) * (alpha * nearDistance + sigmaZero);
+      appendGaussian(metadata, cache, finalVariance, rotatedSpacing[0], rotatedSpacing[1]);
     }
-    deviceMetadata.radiiX = std::move(metadata.radiiX);
-    deviceMetadata.radiiY = std::move(metadata.radiiY);
-    cudaMalloc(&deviceMetadata.coefficientsX, metadata.coefficientsX.size() * sizeof(float));
-    cudaMalloc(&deviceMetadata.coefficientsY, metadata.coefficientsY.size() * sizeof(float));
-    cudaMalloc(&deviceMetadata.matrices, 12 * projectionSize[2] * sizeof(float));
-    cudaMemcpy(deviceMetadata.coefficientsX,
-               metadata.coefficientsX.data(),
-               metadata.coefficientsX.size() * sizeof(float),
-               cudaMemcpyHostToDevice);
-    cudaMemcpy(deviceMetadata.coefficientsY,
-               metadata.coefficientsY.data(),
-               metadata.coefficientsY.size() * sizeof(float),
-               cudaMemcpyHostToDevice);
-    cudaMemcpy(
-      deviceMetadata.matrices, rotatedToVolumeMatrices, 12 * projectionSize[2] * sizeof(float), cudaMemcpyHostToDevice);
+    uploadMetadata(deviceMetadata, std::move(metadata), rotatedToVolumeMatrices, {}, firstSlices, projections);
   }
 
-  float *    current = workspace.current;
-  float *    blurred = workspace.blurred;
-  float *    gaussianScratch = workspace.gaussianScratch;
-  const dim3 block(16, 16);
-  const dim3 grid(iDivUp(rotatedSize[0], 16), iDivUp(rotatedSize[1], 16));
-
-  size_t gaussianIndex = 0;
-  for (int projection = 0; projection < projectionSize[2]; ++projection)
+  const unsigned int desiredBatchSize = requestedBatchSize
+                                          ? std::min(requestedBatchSize, static_cast<unsigned int>(projections))
+                                          : automaticBatchSize(workspace, projections, depth, pixels, false);
+  const unsigned int batchSize = allocateBatch(workspace, desiredBatchSize, depth, pixels, false);
+  const dim3         block(16, 16);
+  const int3         cudaVolumeSize = make_int3(volumeSize[0], volumeSize[1], volumeSize[2]);
+  for (int batchStart = 0; batchStart < projections; batchStart += batchSize)
   {
-    const float * matrix = deviceMetadata.matrices + 12 * projection;
-    float         distance = farDistances[projection];
-    int           z = rotatedSize[2] - 1;
-    sampleForwardSlice<<<grid, block>>>(current,
-                                        nullptr,
-                                        devVolume,
-                                        devAttenuation,
-                                        cudaVolumeSize,
-                                        matrix,
-                                        rotatedSize[0],
-                                        rotatedSize[1],
-                                        z,
-                                        rotatedSpacing[2],
-                                        false);
-    for (--z; z >= 0 && distance - rotatedSpacing[2] >= 0.f; --z)
+    const int  batchCount = std::min<int>(batchSize, projections - batchStart);
+    const dim3 grid(iDivUp(rotatedSize[0], 16), iDivUp(rotatedSize[1], 16), batchCount);
+    sampleForward<<<grid, block>>>(workspace.current,
+                                   nullptr,
+                                   devVolume,
+                                   devAttenuation,
+                                   cudaVolumeSize,
+                                   deviceMetadata.matrices,
+                                   deviceMetadata.firstSlices,
+                                   rotatedSize[0],
+                                   rotatedSize[1],
+                                   depth - 1,
+                                   rotatedSpacing[2],
+                                   batchStart,
+                                   false);
+    for (int z = depth - 2; z >= 0; --z)
     {
-      gaussian2D(current,
-                 blurred,
-                 gaussianScratch,
-                 deviceMetadata.coefficientsX + GaussianCoefficientStride * gaussianIndex,
-                 deviceMetadata.coefficientsY + GaussianCoefficientStride * gaussianIndex,
-                 deviceMetadata.radiiX[gaussianIndex],
-                 deviceMetadata.radiiY[gaussianIndex],
-                 rotatedSize[0],
-                 rotatedSize[1],
-                 grid,
-                 block);
-      ++gaussianIndex;
-      sampleForwardSlice<<<grid, block>>>(current,
-                                          blurred,
-                                          devVolume,
-                                          devAttenuation,
-                                          cudaVolumeSize,
-                                          matrix,
-                                          rotatedSize[0],
-                                          rotatedSize[1],
-                                          z,
-                                          rotatedSpacing[2],
-                                          true);
-      distance -= rotatedSpacing[2];
+      gaussianBatch(workspace.current,
+                    workspace.blurred,
+                    workspace.scratch,
+                    deviceMetadata,
+                    rotatedSize[0],
+                    rotatedSize[1],
+                    batchStart,
+                    batchCount,
+                    z,
+                    metadataStride);
+      sampleForward<<<grid, block>>>(workspace.current,
+                                     workspace.blurred,
+                                     devVolume,
+                                     devAttenuation,
+                                     cudaVolumeSize,
+                                     deviceMetadata.matrices,
+                                     deviceMetadata.firstSlices,
+                                     rotatedSize[0],
+                                     rotatedSize[1],
+                                     z,
+                                     rotatedSpacing[2],
+                                     batchStart,
+                                     true);
     }
-    gaussian2D(current,
-               blurred,
-               gaussianScratch,
-               deviceMetadata.coefficientsX + GaussianCoefficientStride * gaussianIndex,
-               deviceMetadata.coefficientsY + GaussianCoefficientStride * gaussianIndex,
-               deviceMetadata.radiiX[gaussianIndex],
-               deviceMetadata.radiiY[gaussianIndex],
-               rotatedSize[0],
-               rotatedSize[1],
-               grid,
-               block);
-    ++gaussianIndex;
-    finishForward<<<iDivUp(pixelCount, 256), 256>>>(devProjectionIn + projection * pixelCount,
-                                                    blurred,
-                                                    devProjectionOut + projection * pixelCount,
-                                                    pixelCount,
-                                                    rotatedSpacing[2]);
+    gaussianBatch(workspace.current,
+                  workspace.blurred,
+                  workspace.scratch,
+                  deviceMetadata,
+                  rotatedSize[0],
+                  rotatedSize[1],
+                  batchStart,
+                  batchCount,
+                  depth,
+                  metadataStride);
+    finishForward<<<dim3(iDivUp(pixels, 256), batchCount), 256>>>(
+      devProjectionIn, workspace.blurred, devProjectionOut, pixels, rotatedSpacing[2], batchStart);
   }
   CUDA_CHECK_ERROR;
 }
@@ -565,19 +768,18 @@ CUDA_zeng_back_project(const int     projectionSize[3],
                        const float * devAttenuation,
                        float         sigmaZero,
                        float         alpha,
+                       unsigned int  requestedBatchSize,
                        void **       workspacePointer)
 {
-  const size_t volumeBytes = static_cast<size_t>(volumeSize[0]) * volumeSize[1] * volumeSize[2] * sizeof(float);
   if (!*workspacePointer)
-    *workspacePointer = new CudaZengWorkspace;
-  auto &       workspace = *static_cast<CudaZengWorkspace *>(*workspacePointer);
-  const int    slicePixels = rotatedSize[0] * rotatedSize[1];
-  const size_t rotatedElements = static_cast<size_t>(slicePixels) * rotatedSize[2];
-  const size_t rotatedBytes = rotatedElements * sizeof(float);
-  ensureSliceBuffers(workspace, slicePixels);
-  ensureRotatedBuffer(workspace, rotatedElements);
-
-  const auto key = makeMetadataKey(1,
+    *workspacePointer = new Workspace;
+  auto &           workspace = *static_cast<Workspace *>(*workspacePointer);
+  const int        projections = projectionSize[2];
+  const int        depth = rotatedSize[2];
+  const int        pixels = rotatedSize[0] * rotatedSize[1];
+  const int        metadataStride = depth + 1;
+  std::vector<int> first(firstSlices, firstSlices + projections);
+  const auto       key = makeMetadataKey(1,
                                    projectionSize,
                                    volumeSize,
                                    rotatedSize,
@@ -587,57 +789,41 @@ CUDA_zeng_back_project(const int     projectionSize[3],
                                    volumeToRotatedMatrices,
                                    nearDistances,
                                    firstSlices);
-  auto [metadataIterator, inserted] = workspace.metadata.try_emplace(key);
-  auto & deviceMetadata = metadataIterator->second;
+  auto [iterator, inserted] = workspace.metadata.try_emplace(key);
+  auto & deviceMetadata = iterator->second;
   if (inserted)
   {
-    GaussianMetadata                     metadata;
-    std::map<double, std::vector<float>> coefficientCache;
-    std::vector<float>                   inverseMatrices(12 * projectionSize[2]);
-    for (int projection = 0; projection < projectionSize[2]; ++projection)
+    HostGaussianMetadata                 metadata;
+    std::map<double, std::vector<float>> cache;
+    std::vector<float>                   inverseMatrices(12 * projections);
+    for (int projection = 0; projection < projections; ++projection)
     {
-      float distance = nearDistances[projection];
-      float variance = (alpha * distance + sigmaZero) * (alpha * distance + sigmaZero);
-      appendGaussianMetadata(metadata, coefficientCache, variance, rotatedSpacing[0], rotatedSpacing[1]);
-      for (int z = firstSlices[projection]; z + 1 < rotatedSize[2]; ++z)
+      for (int z = 0; z < depth; ++z)
       {
-        distance += rotatedSpacing[2];
-        variance = distance * 2.f * rotatedSpacing[2] * alpha * alpha + 2.f * rotatedSpacing[2] * alpha * sigmaZero -
-                   alpha * alpha * rotatedSpacing[2] * rotatedSpacing[2];
-        appendGaussianMetadata(
-          metadata, coefficientCache, std::max(0.f, variance), rotatedSpacing[0], rotatedSpacing[1]);
+        float variance = 0.f;
+        if (z >= firstSlices[projection] && z + 1 < depth)
+        {
+          const float distance = nearDistances[projection] + (z + 1 - firstSlices[projection]) * rotatedSpacing[2];
+          variance = distance * 2.f * rotatedSpacing[2] * alpha * alpha + 2.f * rotatedSpacing[2] * alpha * sigmaZero -
+                     alpha * alpha * rotatedSpacing[2] * rotatedSpacing[2];
+        }
+        appendGaussian(metadata, cache, std::max(0.f, variance), rotatedSpacing[0], rotatedSpacing[1]);
       }
+      const float initialVariance =
+        (alpha * nearDistances[projection] + sigmaZero) * (alpha * nearDistances[projection] + sigmaZero);
+      appendGaussian(metadata, cache, initialVariance, rotatedSpacing[0], rotatedSpacing[1]);
       invertAffine(volumeToRotatedMatrices + 12 * projection, inverseMatrices.data() + 12 * projection);
     }
-    deviceMetadata.radiiX = std::move(metadata.radiiX);
-    deviceMetadata.radiiY = std::move(metadata.radiiY);
-    cudaMalloc(&deviceMetadata.coefficientsX, metadata.coefficientsX.size() * sizeof(float));
-    cudaMalloc(&deviceMetadata.coefficientsY, metadata.coefficientsY.size() * sizeof(float));
-    cudaMalloc(&deviceMetadata.matrices, 12 * projectionSize[2] * sizeof(float));
-    cudaMalloc(&deviceMetadata.inverseMatrices, 12 * projectionSize[2] * sizeof(float));
-    cudaMemcpy(deviceMetadata.coefficientsX,
-               metadata.coefficientsX.data(),
-               metadata.coefficientsX.size() * sizeof(float),
-               cudaMemcpyHostToDevice);
-    cudaMemcpy(deviceMetadata.coefficientsY,
-               metadata.coefficientsY.data(),
-               metadata.coefficientsY.size() * sizeof(float),
-               cudaMemcpyHostToDevice);
-    cudaMemcpy(
-      deviceMetadata.matrices, volumeToRotatedMatrices, 12 * projectionSize[2] * sizeof(float), cudaMemcpyHostToDevice);
-    cudaMemcpy(deviceMetadata.inverseMatrices,
-               inverseMatrices.data(),
-               inverseMatrices.size() * sizeof(float),
-               cudaMemcpyHostToDevice);
+    uploadMetadata(deviceMetadata, std::move(metadata), volumeToRotatedMatrices, inverseMatrices, first, projections);
   }
 
-  float * rotated = workspace.rotated;
-  float * current = workspace.current;
-  float * blurred = workspace.blurred;
-  float * gaussianScratch = workspace.gaussianScratch;
+  const unsigned int desiredBatchSize = requestedBatchSize
+                                          ? std::min(requestedBatchSize, static_cast<unsigned int>(projections))
+                                          : automaticBatchSize(workspace, projections, depth, pixels, true);
+  const unsigned int batchSize = allocateBatch(workspace, desiredBatchSize, depth, pixels, true);
+  const size_t       volumeBytes = static_cast<size_t>(volumeSize[0]) * volumeSize[1] * volumeSize[2] * sizeof(float);
   if (devVolumeOut != devVolumeIn)
     cudaMemcpy(devVolumeOut, devVolumeIn, volumeBytes, cudaMemcpyDeviceToDevice);
-
   cudaArray *         attenuationArray = nullptr;
   cudaTextureObject_t attenuationTexture = 0;
   if (devAttenuation)
@@ -648,78 +834,81 @@ CUDA_zeng_back_project(const int     projectionSize[3],
                                false,
                                true,
                                cudaAddressModeClamp);
-
   const dim3 block2(16, 16);
-  const dim3 grid2(iDivUp(rotatedSize[0], 16), iDivUp(rotatedSize[1], 16));
   const dim3 block3(8, 8, 4);
   const dim3 grid3(iDivUp(volumeSize[0], 8), iDivUp(volumeSize[1], 8), iDivUp(volumeSize[2], 4));
   const int3 cudaVolumeSize = make_int3(volumeSize[0], volumeSize[1], volumeSize[2]);
   const int3 cudaRotatedSize = make_int3(rotatedSize[0], rotatedSize[1], rotatedSize[2]);
-
-  size_t gaussianIndex = 0;
-  for (int projection = 0; projection < projectionSize[2]; ++projection)
+  for (int batchStart = 0; batchStart < projections; batchStart += batchSize)
   {
-    const float * matrix = deviceMetadata.matrices + 12 * projection;
-    const float * inverseMatrix = deviceMetadata.inverseMatrices + 12 * projection;
-    cudaMemset(rotated, 0, rotatedBytes);
-    copyProjection<<<iDivUp(slicePixels, 256), 256>>>(devProjections, current, slicePixels, projection);
+    const int  batchCount = std::min<int>(batchSize, projections - batchStart);
+    float *    current = workspace.current;
+    float *    blurred = workspace.blurred;
+    const dim3 grid2(iDivUp(rotatedSize[0], 16), iDivUp(rotatedSize[1], 16), batchCount);
+    cudaMemset(workspace.rotated, 0, static_cast<size_t>(batchCount) * depth * pixels * sizeof(float));
+    copyProjections<<<dim3(iDivUp(pixels, 256), batchCount), 256>>>(devProjections, current, pixels, batchStart);
     if (attenuationTexture)
-      attenuateSlice<<<grid2, block2>>>(current,
-                                        attenuationTexture,
-                                        cudaVolumeSize,
-                                        inverseMatrix,
-                                        rotatedSize[0],
-                                        rotatedSize[1],
-                                        firstSlices[projection],
-                                        rotatedSpacing[2]);
-    float distance = nearDistances[projection];
-    gaussian2D(current,
-               blurred,
-               gaussianScratch,
-               deviceMetadata.coefficientsX + GaussianCoefficientStride * gaussianIndex,
-               deviceMetadata.coefficientsY + GaussianCoefficientStride * gaussianIndex,
-               deviceMetadata.radiiX[gaussianIndex],
-               deviceMetadata.radiiY[gaussianIndex],
-               rotatedSize[0],
-               rotatedSize[1],
-               grid2,
-               block2);
-    ++gaussianIndex;
+      attenuate<<<grid2, block2>>>(current,
+                                   attenuationTexture,
+                                   cudaVolumeSize,
+                                   deviceMetadata.inverseMatrices,
+                                   rotatedSize[0],
+                                   rotatedSize[1],
+                                   0,
+                                   deviceMetadata.firstSlices,
+                                   true,
+                                   rotatedSpacing[2],
+                                   batchStart);
+    gaussianBatch(current,
+                  blurred,
+                  workspace.scratch,
+                  deviceMetadata,
+                  rotatedSize[0],
+                  rotatedSize[1],
+                  batchStart,
+                  batchCount,
+                  depth,
+                  metadataStride);
     std::swap(current, blurred);
-
-    for (int z = firstSlices[projection]; z < rotatedSize[2]; ++z)
+    for (int z = 0; z < depth; ++z)
     {
-      storeSlice<<<iDivUp(slicePixels, 256), 256>>>(current, rotated, slicePixels, z);
-      if (z + 1 == rotatedSize[2])
+      storeSlices<<<dim3(iDivUp(pixels, 256), batchCount), 256>>>(
+        current, workspace.rotated, pixels, depth, z, deviceMetadata.firstSlices, batchStart);
+      if (z + 1 == depth)
         break;
       if (attenuationTexture)
-        attenuateSlice<<<grid2, block2>>>(current,
-                                          attenuationTexture,
-                                          cudaVolumeSize,
-                                          inverseMatrix,
-                                          rotatedSize[0],
-                                          rotatedSize[1],
-                                          z + 1,
-                                          rotatedSpacing[2]);
-      distance += rotatedSpacing[2];
-      gaussian2D(current,
-                 blurred,
-                 gaussianScratch,
-                 deviceMetadata.coefficientsX + GaussianCoefficientStride * gaussianIndex,
-                 deviceMetadata.coefficientsY + GaussianCoefficientStride * gaussianIndex,
-                 deviceMetadata.radiiX[gaussianIndex],
-                 deviceMetadata.radiiY[gaussianIndex],
-                 rotatedSize[0],
-                 rotatedSize[1],
-                 grid2,
-                 block2);
-      ++gaussianIndex;
+        attenuate<<<grid2, block2>>>(current,
+                                     attenuationTexture,
+                                     cudaVolumeSize,
+                                     deviceMetadata.inverseMatrices,
+                                     rotatedSize[0],
+                                     rotatedSize[1],
+                                     z + 1,
+                                     deviceMetadata.firstSlices,
+                                     false,
+                                     rotatedSpacing[2],
+                                     batchStart);
+      gaussianBatch(current,
+                    blurred,
+                    workspace.scratch,
+                    deviceMetadata,
+                    rotatedSize[0],
+                    rotatedSize[1],
+                    batchStart,
+                    batchCount,
+                    z,
+                    metadataStride);
       std::swap(current, blurred);
     }
-    addRotatedVolume<<<grid3, block3>>>(
-      rotated, devVolumeOut, devVolumeOut, cudaVolumeSize, cudaRotatedSize, matrix, rotatedSpacing[2]);
+    addRotatedBatch<<<grid3, block3>>>(workspace.rotated,
+                                       devVolumeOut,
+                                       cudaVolumeSize,
+                                       cudaRotatedSize,
+                                       deviceMetadata.matrices,
+                                       batchStart,
+                                       batchCount,
+                                       rotatedSpacing[2]);
   }
-  CUDA_CHECK_ERROR;
   if (attenuationArray)
   {
     cudaDestroyTextureObject(attenuationTexture);
@@ -731,5 +920,5 @@ CUDA_zeng_back_project(const int     projectionSize[3],
 void
 CUDA_zeng_release_workspace(void * workspace)
 {
-  delete static_cast<CudaZengWorkspace *>(workspace);
+  delete static_cast<Workspace *>(workspace);
 }
