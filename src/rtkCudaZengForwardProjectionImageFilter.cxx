@@ -151,6 +151,7 @@ CudaZengForwardProjectionImageFilter::GPUGenerateData()
                             attenuation,
                             static_cast<float>(this->GetSigmaZero()),
                             static_cast<float>(this->GetAlpha()),
+                            m_BatchSize,
                             &m_CudaWorkspace);
 }
 

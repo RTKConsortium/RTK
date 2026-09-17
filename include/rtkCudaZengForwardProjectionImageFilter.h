@@ -62,6 +62,10 @@ public:
   itkNewMacro(Self);
   itkOverrideGetNameOfClassMacro(CudaZengForwardProjectionImageFilter);
 
+  /** Maximum number of projections processed together. Zero selects the automatic size (default). */
+  itkSetMacro(BatchSize, unsigned int);
+  itkGetConstMacro(BatchSize, unsigned int);
+
 protected:
   CudaZengForwardProjectionImageFilter();
   ~CudaZengForwardProjectionImageFilter() override;
@@ -69,7 +73,8 @@ protected:
   GPUGenerateData() override;
 
 private:
-  void * m_CudaWorkspace{ nullptr };
+  void *       m_CudaWorkspace{ nullptr };
+  unsigned int m_BatchSize{ 0 };
 };
 
 } // namespace rtk
