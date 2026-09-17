@@ -38,6 +38,13 @@ applyMatrix(const float * m, float x, float y, float z)
 __device__ float
 trilinearZero(const float * image, int3 size, float3 p)
 {
+  // Match ITK's linear interpolator at the half-voxel image boundary.
+  if (!(p.x >= -0.5f && p.x < size.x - 0.5f && p.y >= -0.5f && p.y < size.y - 0.5f && p.z >= -0.5f &&
+        p.z < size.z - 0.5f))
+    return 0.f;
+  p.x = fminf(fmaxf(p.x, 0.f), static_cast<float>(size.x - 1));
+  p.y = fminf(fmaxf(p.y, 0.f), static_cast<float>(size.y - 1));
+  p.z = fminf(fmaxf(p.z, 0.f), static_cast<float>(size.z - 1));
   const int   x0 = static_cast<int>(floorf(p.x));
   const int   y0 = static_cast<int>(floorf(p.y));
   const int   z0 = static_cast<int>(floorf(p.z));
@@ -339,6 +346,7 @@ copyProjection(const float * projections, float * slice, int count, int projecti
 __global__ void
 attenuateSlice(float *             slice,
                cudaTextureObject_t attenuation,
+               int3                volumeSize,
                const float *       rotatedToVolume,
                int                 width,
                int                 height,
@@ -350,7 +358,9 @@ attenuateSlice(float *             slice,
   if (x >= width || y >= height)
     return;
   const float3 position = applyMatrix(rotatedToVolume, x, y, z);
-  slice[y * width + x] *= expf(-attenuationStep * tex3D<float>(attenuation, position.x, position.y, position.z));
+  if (position.x >= 0.f && position.x < volumeSize.x && position.y >= 0.f && position.y < volumeSize.y &&
+      position.z >= 0.f && position.z < volumeSize.z)
+    slice[y * width + x] *= expf(-attenuationStep * tex3D<float>(attenuation, position.x, position.y, position.z));
 }
 
 __global__ void
@@ -637,7 +647,7 @@ CUDA_zeng_back_project(const int     projectionSize[3],
                                attenuationTexture,
                                false,
                                true,
-                               cudaAddressModeBorder);
+                               cudaAddressModeClamp);
 
   const dim3 block2(16, 16);
   const dim3 grid2(iDivUp(rotatedSize[0], 16), iDivUp(rotatedSize[1], 16));
@@ -653,6 +663,15 @@ CUDA_zeng_back_project(const int     projectionSize[3],
     const float * inverseMatrix = deviceMetadata.inverseMatrices + 12 * projection;
     cudaMemset(rotated, 0, rotatedBytes);
     copyProjection<<<iDivUp(slicePixels, 256), 256>>>(devProjections, current, slicePixels, projection);
+    if (attenuationTexture)
+      attenuateSlice<<<grid2, block2>>>(current,
+                                        attenuationTexture,
+                                        cudaVolumeSize,
+                                        inverseMatrix,
+                                        rotatedSize[0],
+                                        rotatedSize[1],
+                                        firstSlices[projection],
+                                        rotatedSpacing[2]);
     float distance = nearDistances[projection];
     gaussian2D(current,
                blurred,
@@ -674,8 +693,14 @@ CUDA_zeng_back_project(const int     projectionSize[3],
       if (z + 1 == rotatedSize[2])
         break;
       if (attenuationTexture)
-        attenuateSlice<<<grid2, block2>>>(
-          current, attenuationTexture, inverseMatrix, rotatedSize[0], rotatedSize[1], z + 1, rotatedSpacing[2]);
+        attenuateSlice<<<grid2, block2>>>(current,
+                                          attenuationTexture,
+                                          cudaVolumeSize,
+                                          inverseMatrix,
+                                          rotatedSize[0],
+                                          rotatedSize[1],
+                                          z + 1,
+                                          rotatedSpacing[2]);
       distance += rotatedSpacing[2];
       gaussian2D(current,
                  blurred,
