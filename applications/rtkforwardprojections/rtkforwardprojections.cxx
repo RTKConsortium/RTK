@@ -26,6 +26,7 @@
 #include "rtkZengForwardProjectionImageFilter.h"
 #ifdef RTK_USE_CUDA
 #  include "rtkCudaForwardProjectionImageFilter.h"
+#  include "rtkCudaZengForwardProjectionImageFilter.h"
 #endif
 
 #include <itkImageFileReader.h>
@@ -150,6 +151,21 @@ main(int argc, char * argv[])
       auto cudaForward = rtk::CudaForwardProjectionImageFilter<OutputImageType, OutputImageType>::New();
       cudaForward->SetStepSize(args_info.step_arg);
       forwardProjection = cudaForward;
+#else
+      std::cerr << "The program has not been compiled with cuda option" << std::endl;
+      return EXIT_FAILURE;
+#endif
+      break;
+    }
+    case (fp_arg_CudaZeng):
+    {
+#ifdef RTK_USE_CUDA
+      auto zeng = rtk::CudaZengForwardProjectionImageFilter::New();
+      if (args_info.sigmazero_given)
+        zeng->SetSigmaZero(args_info.sigmazero_arg);
+      if (args_info.alphapsf_given)
+        zeng->SetAlpha(args_info.alphapsf_arg);
+      forwardProjection = zeng;
 #else
       std::cerr << "The program has not been compiled with cuda option" << std::endl;
       return EXIT_FAILURE;
