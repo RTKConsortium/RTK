@@ -1,6 +1,10 @@
 # Find PyBuffer swig files from ITKBridgeNumPy sources
-list(GET ITKBridgeNumPy_INCLUDE_DIRS 0 ITKBridgeNumPy_INCLUDE_DIR)
-set(ITKBridgeNumpy_WRAP_DIR "${ITKBridgeNumPy_INCLUDE_DIR}/../wrapping")
+# An installed ITK keeps the templates under its wrapping package directory.
+set(ITKBridgeNumpy_WRAP_DIR "${WRAP_ITK_CMAKE_DIR}/Modules/ITKBridgeNumPy")
+if(NOT EXISTS "${ITKBridgeNumpy_WRAP_DIR}/PyBuffer.i.init")
+  list(GET ITKBridgeNumPy_INCLUDE_DIRS 0 ITKBridgeNumPy_INCLUDE_DIR)
+  set(ITKBridgeNumpy_WRAP_DIR "${ITKBridgeNumPy_INCLUDE_DIR}/../wrapping")
+endif()
 
 file(READ "${ITKBridgeNumpy_WRAP_DIR}/PyBuffer.i.init"
     PyBufferInit)
