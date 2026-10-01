@@ -19,8 +19,6 @@
 #ifndef rtkTotalVariationDenoiseSequenceImageFilter_hxx
 #define rtkTotalVariationDenoiseSequenceImageFilter_hxx
 
-#include <itkImageFileWriter.h>
-
 namespace rtk
 {
 
@@ -150,7 +148,12 @@ TotalVariationDenoiseSequenceImageFilter<TImageSequence>::GenerateData()
 
     m_PasteFilter->UpdateLargestPossibleRegion();
   }
-  this->GraftOutput(m_PasteFilter->GetOutput());
+
+  // Disconnect the paste filter output to make sure its constant input source
+  // is reallocated in the next call as it operates in place
+  pimg = m_PasteFilter->GetOutput();
+  pimg->DisconnectPipeline();
+  this->GraftOutput(pimg);
 
   m_ExtractFilter->GetOutput()->ReleaseData();
   m_TVDenoisingFilter->GetOutput()->ReleaseData();
