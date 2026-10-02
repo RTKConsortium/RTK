@@ -62,6 +62,7 @@ namespace rtk
  * TVDenoising -> Cast;
  * Cast -> BeforePaste [arrowhead=none];
  * BeforePaste -> Paste;
+ * ConstantSource -> Paste;
  * Paste -> AfterPaste [arrowhead=none];
  * AfterPaste -> BeforePaste [style=dashed];
  * AfterPaste -> Output [style=dashed];
