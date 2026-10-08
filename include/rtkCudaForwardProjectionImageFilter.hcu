@@ -22,8 +22,8 @@
 #include "RTKExport.h"
 
 void RTK_EXPORT
-CUDA_forward_project(int                projSize[3],
-                     int                volSize[3],
+CUDA_forward_project(itk::SizeValueType projSize[3],
+                     itk::SizeValueType volSize[3],
                      float *            translatedProjectionIndexTransformMatrices,
                      float *            translatedVolumeTransformMatrices,
                      float *            dev_proj_in,

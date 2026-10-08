@@ -34,17 +34,17 @@ CudaCyclicDeformationImageFilter ::GPUGenerateData()
   this->Superclass::BeforeThreadedGenerateData();
 
   // Prepare the data to perform the linear interpolation on GPU
-  unsigned int inputSize[4];
-
-  for (unsigned int i = 0; i < 4; i++)
-    inputSize[i] = this->GetInput()->GetBufferedRegion().GetSize()[i];
-  for (unsigned int i = 0; i < 3; i++)
+  itk::SizeValueType inputSize[4];
+  inputSize[0] = this->GetInput()->GetBufferedRegion().GetSize()[0];
+  inputSize[1] = this->GetInput()->GetBufferedRegion().GetSize()[1];
+  inputSize[2] = this->GetInput()->GetBufferedRegion().GetSize()[2];
+  inputSize[3] = this->GetInput()->GetBufferedRegion().GetSize()[3];
+  if ((this->GetOutput()->GetRequestedRegion().GetSize()[0] != inputSize[0]) ||
+      (this->GetOutput()->GetRequestedRegion().GetSize()[1] != inputSize[1]) ||
+      (this->GetOutput()->GetRequestedRegion().GetSize()[2] != inputSize[2]))
   {
-    if (this->GetOutput()->GetRequestedRegion().GetSize()[i] != inputSize[i])
-    {
-      itkExceptionMacro("In rtk::CudaCyclicDeformationImageFilter: the output's requested region must have the same "
-                        "size as the input's buffered region on the first 3 dimensions");
-    }
+    itkExceptionMacro("In rtk::CudaCyclicDeformationImageFilter: the output's requested region must have the same "
+                      "size as the input's buffered region on the first 3 dimensions");
   }
 
   float * pin = static_cast<float *>(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());

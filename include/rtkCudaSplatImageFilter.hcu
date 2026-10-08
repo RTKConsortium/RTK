@@ -19,9 +19,13 @@
 #ifndef rtkCudaSplatImageFilter_hcu
 #define rtkCudaSplatImageFilter_hcu
 
-#include <vector_types.h>
+#include "rtkCudaUtilities.hcu"
 
 void
-CUDA_splat(const int4 & outputSize, float * input, float * output, int projectionNumber, float ** weights);
+CUDA_splat(const itk::SizeValueType outputSize[4],
+           float *                  input,
+           float *                  output,
+           int                      projectionNumber,
+           float **                 weights);
 
 #endif
