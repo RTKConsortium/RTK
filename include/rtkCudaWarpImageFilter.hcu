@@ -20,15 +20,15 @@
 #define rtkCudaWarpImageFilter_hcu
 
 void
-CUDA_warp(int     input_vol_dim[3],
-          int     input_dvf_dim[3],
-          int     output_vol_dim[3],
-          float   IndexOutputToPPOutputMatrix[12],
-          float   IndexOutputToIndexDVFMatrix[12],
-          float   PPInputToIndexInputMatrix[12],
-          float * dev_input_vol,
-          float * dev_output_vol,
-          float * dev_DVF,
-          bool    isLinear);
+CUDA_warp(itk::SizeValueType input_vol_dim[3],
+          itk::SizeValueType input_dvf_dim[3],
+          itk::SizeValueType output_vol_dim[3],
+          float              IndexOutputToPPOutputMatrix[12],
+          float              IndexOutputToIndexDVFMatrix[12],
+          float              PPInputToIndexInputMatrix[12],
+          float *            dev_input_vol,
+          float *            dev_output_vol,
+          float *            dev_DVF,
+          bool               isLinear);
 
 #endif

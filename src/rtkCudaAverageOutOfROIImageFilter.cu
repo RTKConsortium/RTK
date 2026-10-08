@@ -28,7 +28,7 @@
 
 // TEXTURES AND CONSTANTS //
 
-__constant__ int4 c_Size;
+__constant__ SizeValueType4 c_Size;
 
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 // K E R N E L S -_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
@@ -37,18 +37,18 @@ __constant__ int4 c_Size;
 
 
 __global__ void
-average_along_dim_4(float * in, float * out, float * roi, unsigned int strideInFloats)
+average_along_dim_4(float * in, float * out, float * roi, itk::SizeValueType strideInFloats)
 {
-  unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
-  unsigned int j = blockIdx.y * blockDim.y + threadIdx.y;
-  unsigned int k = blockIdx.z * blockDim.z + threadIdx.z;
+  itk::IndexValueType i = blockIdx.x * blockDim.x + threadIdx.x;
+  itk::IndexValueType j = blockIdx.y * blockDim.y + threadIdx.y;
+  itk::IndexValueType k = blockIdx.z * blockDim.z + threadIdx.z;
 
   if (i >= c_Size.x || j >= c_Size.y || k >= c_Size.z)
     return;
 
   // Compute the index of the initial voxel
-  long int id = (k * c_Size.y + j) * c_Size.x + i;
-  long int strided_id = id; // strided_id will run along the 4th dimension
+  itk::OffsetValueType id = (k * c_Size.y + j) * c_Size.x + i;
+  itk::OffsetValueType strided_id = id; // strided_id will run along the 4th dimension
 
   // Compute the average along last dimension
   float avg = 0;
@@ -77,14 +77,13 @@ average_along_dim_4(float * in, float * out, float * roi, unsigned int strideInF
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
 void
-CUDA_average_out_of_ROI(int size[4], float * input, float * output, float * roi)
+CUDA_average_out_of_ROI(itk::SizeValueType size[4], float * input, float * output, float * roi)
 {
-  int4 dev_Size = make_int4(size[0], size[1], size[2], size[3]);
-  cudaMemcpyToSymbol(c_Size, &dev_Size, sizeof(int4));
+  cudaMemcpyToSymbol(c_Size, size, sizeof(SizeValueType4));
 
   // Compute the stride (in floats, not Bytes) to jump from one voxel
   // to the next one along 4th dimension
-  unsigned int strideInFloats = size[0] * size[1] * size[2];
+  itk::SizeValueType strideInFloats = size[0] * size[1] * size[2];
 
   // Thread Block Dimensions
   dim3 dimBlock = dim3(8, 8, 8);
