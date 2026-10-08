@@ -23,9 +23,18 @@
 #include <string>
 #include <vector>
 #define ITK_STATIC
+#include <itkIntTypes.h>
 #include <itkMacro.h>
 #undef ITK_STATIC
 #include <cuda.h>
+
+// Keep CUDA vector types as unconditional 64-bit (unsigned for sizes, signed for
+// indices/offsets). Conditional mapping based on ITK_USE_64BITS_IDS like itk::SizeValueType can flip
+// between 32 and 64-bit and reintroduce integer overflows on large data sizes.
+using SizeValueType3 = ulonglong3;
+using SizeValueType4 = ulonglong4;
+using IndexValueType3 = longlong3;
+using IndexValueType4 = longlong4;
 
 #define CUDA_CHECK_ERROR                                                                   \
   {                                                                                        \
@@ -112,9 +121,9 @@ operator+=(float3 & a, float3 b)
   a.z += b.z;
 }
 inline __host__ __device__ int
-iDivUp(int a, int b)
+iDivUp(itk::SizeValueType a, itk::SizeValueType b)
 {
-  return (a % b != 0) ? (a / b + 1) : (a / b);
+  return static_cast<int>((a % b != 0) ? (a / b + 1) : (a / b));
 }
 inline __host__ __device__ float
 dot_vector(float3 u, float3 v)
@@ -123,7 +132,7 @@ dot_vector(float3 u, float3 v)
 }
 
 __host__ void
-prepareScalarTextureObject(int                          size[3],
+prepareScalarTextureObject(itk::SizeValueType           size[3],
                            float *                      dev_ptr,
                            cudaArray *&                 threeDArray,
                            cudaTextureObject_t &        tex,
@@ -132,7 +141,7 @@ prepareScalarTextureObject(int                          size[3],
                            const cudaTextureAddressMode texAddressMode = cudaAddressModeBorder);
 
 __host__ void
-prepareVectorTextureObject(int                                size[3],
+prepareVectorTextureObject(itk::SizeValueType                 size[3],
                            const float *                      dev_ptr,
                            std::vector<cudaArray *> &         componentArrays,
                            const unsigned int                 nComponents,

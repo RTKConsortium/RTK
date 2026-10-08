@@ -19,9 +19,9 @@
 #ifndef rtkCudaAverageOutOfROIImageFilter_hcu
 #define rtkCudaAverageOutOfROIImageFilter_hcu
 
-#include <vector_types.h>
+#include "rtkCudaUtilities.hcu"
 
 void
-CUDA_average_out_of_ROI(int size[4], float * input, float * output, float * roi);
+CUDA_average_out_of_ROI(itk::SizeValueType size[4], float * input, float * output, float * roi);
 
 #endif

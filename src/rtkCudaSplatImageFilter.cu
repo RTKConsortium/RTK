@@ -25,17 +25,29 @@
 // cuda includes
 #include <cuda.h>
 #include <cublas_v2.h>
+#include <limits>
 #include <cuda_runtime.h>
 
 void
-CUDA_splat(const int4 & outputSize, float * input, float * output, int projectionNumber, float ** weights)
+CUDA_splat(const itk::SizeValueType outputSize[4],
+           float *                  input,
+           float *                  output,
+           int                      projectionNumber,
+           float **                 weights)
 {
+  size_t numel = static_cast<size_t>(outputSize[0]) * outputSize[1] * outputSize[2];
+
+#if CUBLAS_VER_MAJOR < 12
+  if (numel > static_cast<size_t>(std::numeric_limits<int>::max()))
+  {
+    itkGenericExceptionMacro(<< "Operations with more than INT_MAX elements require cuBLAS 12 or newer.");
+  }
+#endif
+
   cublasHandle_t handle;
   cublasCreate(&handle);
 
-  size_t numel = outputSize.x * outputSize.y * outputSize.z;
-
-  for (int phase = 0; phase < outputSize.w; phase++)
+  for (itk::SizeValueType phase = 0; phase < outputSize[3]; phase++)
   {
     float weight = weights[phase][projectionNumber];
     if (weight != 0)
@@ -44,7 +56,7 @@ CUDA_splat(const int4 & outputSize, float * input, float * output, int projectio
       float * p = output + phase * numel;
 
       // Add "weight" times the input to the "phase"-th volume in the output
-#if CUDA_VERSION < 12000
+#if CUBLAS_VER_MAJOR < 12
       cublasSaxpy(handle, (int)numel, &weight, input, 1, p, 1);
 #else
       cublasSaxpy_64(handle, numel, &weight, input, 1, p, 1);

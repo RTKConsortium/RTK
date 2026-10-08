@@ -29,16 +29,16 @@
 __global__ void
 multiply_kernel(cufftComplex * projFFT, int3 fftDimension, cufftComplex * kernelFFT, unsigned int Blocks_Y)
 {
-  unsigned int blockIdx_z = blockIdx.y / Blocks_Y;
-  unsigned int blockIdx_y = blockIdx.y - __umul24(blockIdx_z, Blocks_Y);
-  unsigned int i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
-  unsigned int j = __umul24(blockIdx_y, blockDim.y) + threadIdx.y;
-  unsigned int k = __umul24(blockIdx_z, blockDim.z) + threadIdx.z;
+  unsigned int        blockIdx_z = blockIdx.y / Blocks_Y;
+  unsigned int        blockIdx_y = blockIdx.y - __umul24(blockIdx_z, Blocks_Y);
+  itk::IndexValueType i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
+  itk::IndexValueType j = __umul24(blockIdx_y, blockDim.y) + threadIdx.y;
+  itk::IndexValueType k = __umul24(blockIdx_z, blockDim.z) + threadIdx.z;
 
   if (i >= fftDimension.x || j >= fftDimension.y || k >= fftDimension.z)
     return;
 
-  long int proj_idx = i + (j + k * fftDimension.y) * fftDimension.x;
+  itk::OffsetValueType proj_idx = i + (j + k * fftDimension.y) * fftDimension.x;
 
   cufftComplex result;
   result.x = projFFT[proj_idx].x * kernelFFT[i].x - projFFT[proj_idx].y * kernelFFT[i].y;
@@ -49,17 +49,17 @@ multiply_kernel(cufftComplex * projFFT, int3 fftDimension, cufftComplex * kernel
 __global__ void
 multiply_kernel2D(cufftComplex * projFFT, int3 fftDimension, cufftComplex * kernelFFT, unsigned int Blocks_Y)
 {
-  unsigned int blockIdx_z = blockIdx.y / Blocks_Y;
-  unsigned int blockIdx_y = blockIdx.y - __umul24(blockIdx_z, Blocks_Y);
-  unsigned int i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
-  unsigned int j = __umul24(blockIdx_y, blockDim.y) + threadIdx.y;
-  unsigned int k = __umul24(blockIdx_z, blockDim.z) + threadIdx.z;
+  unsigned int        blockIdx_z = blockIdx.y / Blocks_Y;
+  unsigned int        blockIdx_y = blockIdx.y - __umul24(blockIdx_z, Blocks_Y);
+  itk::IndexValueType i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
+  itk::IndexValueType j = __umul24(blockIdx_y, blockDim.y) + threadIdx.y;
+  itk::IndexValueType k = __umul24(blockIdx_z, blockDim.z) + threadIdx.z;
 
   if (i >= fftDimension.x || j >= fftDimension.y || k >= fftDimension.z)
     return;
 
-  long int kernel_idx = i + j * fftDimension.x;
-  long int proj_idx = kernel_idx + k * fftDimension.y * fftDimension.x;
+  itk::OffsetValueType kernel_idx = i + j * fftDimension.x;
+  itk::OffsetValueType proj_idx = kernel_idx + k * fftDimension.y * fftDimension.x;
 
   cufftComplex result;
   result.x = projFFT[proj_idx].x * kernelFFT[kernel_idx].x - projFFT[proj_idx].y * kernelFFT[kernel_idx].y;
@@ -134,16 +134,16 @@ padding_kernel(float *            input,
                float *            truncationWeights,
                size_t             sizeWeights)
 {
-  unsigned int blockIdx_z = blockIdx.y / Blocks_Y;
-  unsigned int blockIdx_y = blockIdx.y - __umul24(blockIdx_z, Blocks_Y);
-  int          i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
-  int          j = __umul24(blockIdx_y, blockDim.y) + threadIdx.y;
-  int          k = __umul24(blockIdx_z, blockDim.z) + threadIdx.z;
+  unsigned int        blockIdx_z = blockIdx.y / Blocks_Y;
+  unsigned int        blockIdx_y = blockIdx.y - __umul24(blockIdx_z, Blocks_Y);
+  itk::IndexValueType i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
+  itk::IndexValueType j = __umul24(blockIdx_y, blockDim.y) + threadIdx.y;
+  itk::IndexValueType k = __umul24(blockIdx_z, blockDim.z) + threadIdx.z;
 
   if (i >= paddingDim.x || j >= paddingDim.y || k >= paddingDim.z)
     return;
 
-  unsigned long int out_idx = i + (j + k * paddingDim.y) * paddingDim.x;
+  itk::OffsetValueType out_idx = i + (j + k * paddingDim.y) * paddingDim.x;
   i -= paddingIdx.x;
   j -= paddingIdx.y;
   k -= paddingIdx.z;
@@ -157,14 +157,14 @@ padding_kernel(float *            input,
   // left mirroring (equation 3a in [Ohnesorge et al, Med Phys, 2000])
   else if (i < 0 && -i < sizeWeights)
   {
-    int begRow = (j + k * inputDim.y) * inputDim.x;
+    itk::OffsetValueType begRow = (j + k * inputDim.y) * inputDim.x;
     output[out_idx] = (2 * input[begRow + 1] - input[-i + begRow]) * truncationWeights[-i];
   }
   // right mirroring (equation 3b in [Ohnesorge et al, Med Phys, 2000])
   else if ((i >= inputDim.x) && (i - inputDim.x + 1) < sizeWeights)
   {
-    unsigned int borderDist = i - inputDim.x + 1;
-    int          endRow = inputDim.x - 1 + (j + k * inputDim.y) * inputDim.x;
+    itk::OffsetValueType borderDist = i - inputDim.x + 1;
+    itk::OffsetValueType endRow = inputDim.x - 1 + (j + k * inputDim.y) * inputDim.x;
     output[out_idx] = (2 * input[endRow] - input[endRow - borderDist]) * truncationWeights[borderDist];
   }
   // zero padding

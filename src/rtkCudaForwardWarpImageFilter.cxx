@@ -49,17 +49,17 @@ CudaForwardWarpImageFilter ::GPUGenerateData()
   }
 
   // Cuda convenient format for dimensions
-  int inputVolumeSize[3];
+  itk::SizeValueType inputVolumeSize[3];
   inputVolumeSize[0] = this->GetInput(0)->GetBufferedRegion().GetSize()[0];
   inputVolumeSize[1] = this->GetInput(0)->GetBufferedRegion().GetSize()[1];
   inputVolumeSize[2] = this->GetInput(0)->GetBufferedRegion().GetSize()[2];
 
-  int inputDVFSize[3];
+  itk::SizeValueType inputDVFSize[3];
   inputDVFSize[0] = this->GetDisplacementField()->GetBufferedRegion().GetSize()[0];
   inputDVFSize[1] = this->GetDisplacementField()->GetBufferedRegion().GetSize()[1];
   inputDVFSize[2] = this->GetDisplacementField()->GetBufferedRegion().GetSize()[2];
 
-  int outputVolumeSize[3];
+  itk::SizeValueType outputVolumeSize[3];
   outputVolumeSize[0] = this->GetOutput()->GetBufferedRegion().GetSize()[0];
   outputVolumeSize[1] = this->GetOutput()->GetBufferedRegion().GetSize()[1];
   outputVolumeSize[2] = this->GetOutput()->GetBufferedRegion().GetSize()[2];
