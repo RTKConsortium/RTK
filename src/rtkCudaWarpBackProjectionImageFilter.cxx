@@ -146,16 +146,16 @@ CudaWarpBackProjectionImageFilter ::GPUGenerateData()
   }
 
   // Cuda convenient format for dimensions
-  int projectionSize[3];
+  itk::SizeValueType projectionSize[3];
   projectionSize[0] = this->GetInputProjectionStack()->GetBufferedRegion().GetSize()[0];
   projectionSize[1] = this->GetInputProjectionStack()->GetBufferedRegion().GetSize()[1];
 
-  int volumeSize[3];
+  itk::SizeValueType volumeSize[3];
   volumeSize[0] = this->GetOutput()->GetBufferedRegion().GetSize()[0];
   volumeSize[1] = this->GetOutput()->GetBufferedRegion().GetSize()[1];
   volumeSize[2] = this->GetOutput()->GetBufferedRegion().GetSize()[2];
 
-  int inputDVFSize[3];
+  itk::SizeValueType inputDVFSize[3];
   inputDVFSize[0] = this->GetDisplacementField()->GetBufferedRegion().GetSize()[0];
   inputDVFSize[1] = this->GetDisplacementField()->GetBufferedRegion().GetSize()[1];
   inputDVFSize[2] = this->GetDisplacementField()->GetBufferedRegion().GetSize()[2];

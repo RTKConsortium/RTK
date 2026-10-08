@@ -19,9 +19,9 @@
 #ifndef rtkCudaConstantVolumeSource_hcu
 #define rtkCudaConstantVolumeSource_hcu
 
-#include <vector_types.h>
+#include "rtkCudaUtilities.hcu"
 
 void
-CUDA_generate_constant_volume(int size[3], float * dev_out, float constantValue);
+CUDA_generate_constant_volume(itk::SizeValueType size[3], float * dev_out, float constantValue);
 
 #endif
