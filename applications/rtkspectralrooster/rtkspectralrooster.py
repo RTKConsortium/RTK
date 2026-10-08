@@ -61,8 +61,8 @@ def build_parser():
     parser.add_argument("--gamma_tnv", help="TNV regularization parameter", type=float)
 
     # Projector choices
-    rtk.add_rtkprojectors_group(parser)
     rtk.add_rtk3Doutputimage_group(parser)
+    rtk.add_rtkprojectors_group(parser)
     return parser
 
 

@@ -79,8 +79,9 @@ def build_parser():
         help="Reset Nesterov after a number of subsets",
     )
 
-    rtk.add_rtkiterations_group(parser)
+    rtk.add_rtk3Doutputimage_group(parser)
     rtk.add_rtkprojectors_group(parser)
+    rtk.add_rtkiterations_group(parser)
 
     return parser
 

@@ -74,9 +74,9 @@ def build_parser():
         default=0.0,
     )
 
-    rtk.add_rtkprojectors_group(parser)
     rtk.add_rtkinputprojections_group(parser)
     rtk.add_rtk3Doutputimage_group(parser)
+    rtk.add_rtkprojectors_group(parser)
     rtk.add_rtkiterations_group(parser)
 
     return parser

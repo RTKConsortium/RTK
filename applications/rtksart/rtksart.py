@@ -88,8 +88,9 @@ def build_parser():
 
     # RTK specific groups
     rtk.add_rtkinputprojections_group(parser)
-    rtk.add_rtkprojectors_group(parser)
     rtk.add_rtk3Doutputimage_group(parser)
+    rtk.add_rtkprojectors_group(parser)
+    rtk.add_rtkiterations_group(parser)
 
     # Parse the command line arguments
     return parser
