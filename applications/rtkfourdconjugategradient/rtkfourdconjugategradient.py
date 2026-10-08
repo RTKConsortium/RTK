@@ -36,9 +36,9 @@ def build_parser():
         required=True,
     )
     rtk.add_rtkinputprojections_group(parser)
+    rtk.add_rtk4Doutputimage_group(parser)
     rtk.add_rtkprojectors_group(parser)
     rtk.add_rtkiterations_group(parser)
-    rtk.add_rtk4Doutputimage_group(parser)
     return parser
 
 

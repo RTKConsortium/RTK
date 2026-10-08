@@ -146,8 +146,8 @@ def build_parser():
 
     # RTK common groups (projections input)
     rtk.add_rtkinputprojections_group(parser)
-    rtk.add_rtkprojectors_group(parser)
     rtk.add_rtk4Doutputimage_group(parser)
+    rtk.add_rtkprojectors_group(parser)
     rtk.add_rtkiterations_group(parser)
 
     return parser
