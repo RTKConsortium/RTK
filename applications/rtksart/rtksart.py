@@ -112,7 +112,7 @@ def process(args_info: argparse.Namespace):
     geometry = rtk.read_geometry(args_info.geometry)
 
     # Phase gating weights reader
-    phaseGating = rtk.PhaseGatingImageFilter[OutputImageType, OutputImageType].New()
+    phaseGating = rtk.PhaseGatingImageFilter[OutputImageType].New()
     if args_info.signal:
         phaseGating.SetPhasesFileName(args_info.signal)
         phaseGating.SetGatingWindowWidth(args_info.windowwidth)
