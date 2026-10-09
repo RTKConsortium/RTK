@@ -37,39 +37,37 @@ kernel_gain_correction(int3             proj_idx_in,
                        float *          dev_gain_in,
                        float *          powerlut)
 {
-  // compute thread index
-  int3 tIdx;
-  tIdx.x = blockIdx.x * blockDim.x + threadIdx.x;
-  tIdx.y = blockIdx.y * blockDim.y + threadIdx.y;
-  tIdx.z = blockIdx.z * blockDim.z + threadIdx.z;
-  long int tIdx_comp = tIdx.x + tIdx.y * proj_size_out.x + tIdx.z * proj_size_out_buf.x * proj_size_out_buf.y;
+  // compute thread index (64-bit to avoid 32-bit overflow of combined indices)
+  itk::SizeValueType tIdx_x = blockIdx.x * blockDim.x + threadIdx.x;
+  itk::SizeValueType tIdx_y = blockIdx.y * blockDim.y + threadIdx.y;
+  itk::SizeValueType tIdx_z = blockIdx.z * blockDim.z + threadIdx.z;
+  itk::SizeValueType tIdx_comp = tIdx_x + tIdx_y * proj_size_out.x + tIdx_z * proj_size_out_buf.x * proj_size_out_buf.y;
 
   // check if outside of projection grid
-  if (tIdx.x >= proj_size_out.x || tIdx.y >= proj_size_out.y || tIdx.z >= proj_size_out.z)
+  if (tIdx_x >= proj_size_out.x || tIdx_y >= proj_size_out.y || tIdx_z >= proj_size_out.z)
     return;
 
-  // compute projection index from thread index
-  int3 pIdx = make_int3(tIdx.x + proj_idx_out.x, tIdx.y + proj_idx_out.y, tIdx.z + proj_idx_out.z);
-  // combined proj. index -> use thread index in z because accessing memory only with this index
-  long int pIdx_comp = (pIdx.x - proj_idx_in.x) + (pIdx.y - proj_idx_in.y) * proj_size_in_buf.x +
-                       (pIdx.z - proj_idx_in.z) * proj_size_in_buf.x * proj_size_in_buf.y;
+  // combined projection index (arithmetic in 64-bit to avoid overflow of the products)
+  itk::SizeValueType pIdx_comp = (tIdx_x - proj_idx_in.x + proj_idx_out.x) +
+                                 (tIdx_y - proj_idx_in.y + proj_idx_out.y) * proj_size_in_buf.x +
+                                 (tIdx_z - proj_idx_in.z + proj_idx_out.z) * proj_size_in_buf.x * proj_size_in_buf.y;
 
   int modelOrder = static_cast<float>(cst_coef[0]);
 
-  long int sIdx_comp = tIdx.x + tIdx.y * proj_size_out.x; // in-slice index
+  itk::SizeValueType sIdx_comp = tIdx_x + tIdx_y * proj_size_out.x; // in-slice index
 
   // Correct for dark field
   unsigned short xk = 0;
   if (dev_proj_in[pIdx_comp] > dev_dark_in[sIdx_comp])
     xk = dev_proj_in[pIdx_comp] - dev_dark_in[sIdx_comp];
 
-  float yk = 0.f;
-  int   lutidx = xk * modelOrder; // index to powerlut
-  int   projsize = proj_size_in.x * proj_size_in.y;
+  float              yk = 0.f;
+  itk::SizeValueType lutidx = static_cast<itk::SizeValueType>(xk) * modelOrder; // index to powerlut
+  itk::SizeValueType projsize = static_cast<itk::SizeValueType>(proj_size_in.x) * proj_size_in.y;
   for (int n = 0; n < modelOrder; n++)
   {
-    int   gainidx = n * projsize + sIdx_comp;
-    float gainM = dev_gain_in[gainidx];
+    itk::SizeValueType gainidx = n * projsize + sIdx_comp;
+    float              gainM = dev_gain_in[gainidx];
     yk += gainM * powerlut[lutidx + n];
   }
 

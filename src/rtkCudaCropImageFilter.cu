@@ -33,17 +33,18 @@ crop_kernel(float *            input,
             const uint3        inputDim,
             const unsigned int Blocks_Y)
 {
-  unsigned int blockIdx_z = blockIdx.y / Blocks_Y;
-  unsigned int blockIdx_y = blockIdx.y - __umul24(blockIdx_z, Blocks_Y);
-  unsigned int i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
-  unsigned int j = __umul24(blockIdx_y, blockDim.y) + threadIdx.y;
-  unsigned int k = __umul24(blockIdx_z, blockDim.z) + threadIdx.z;
+  unsigned int        blockIdx_z = blockIdx.y / Blocks_Y;
+  unsigned int        blockIdx_y = blockIdx.y - __umul24(blockIdx_z, Blocks_Y);
+  itk::IndexValueType i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
+  itk::IndexValueType j = __umul24(blockIdx_y, blockDim.y) + threadIdx.y;
+  itk::IndexValueType k = __umul24(blockIdx_z, blockDim.z) + threadIdx.z;
 
   if (i >= cropDim.x || j >= cropDim.y || k >= cropDim.z)
     return;
 
-  unsigned long int out_idx = i + j * cropDim.x + k * cropDim.y * cropDim.x;
-  unsigned long int in_idx = (cropIdx.x + i) + (cropIdx.y + j) * inputDim.x + (cropIdx.z + k) * inputDim.y * inputDim.x;
+  itk::OffsetValueType out_idx = i + j * cropDim.x + k * cropDim.y * cropDim.x;
+  itk::OffsetValueType in_idx =
+    cropIdx.x + i + (cropIdx.y + j) * inputDim.x + (cropIdx.z + k) * inputDim.y * inputDim.x;
 
   output[out_idx] = input[in_idx];
 }

@@ -67,11 +67,11 @@ CudaBackProjectionImageFilter<ImageType>::GPUGenerateData()
   }
 
   // Cuda convenient format for dimensions
-  int projectionSize[3];
+  itk::SizeValueType projectionSize[3];
   projectionSize[0] = this->GetInput(1)->GetBufferedRegion().GetSize()[0];
   projectionSize[1] = this->GetInput(1)->GetBufferedRegion().GetSize()[1];
 
-  int volumeSize[3];
+  itk::SizeValueType volumeSize[3];
   volumeSize[0] = this->GetOutput()->GetBufferedRegion().GetSize()[0];
   volumeSize[1] = this->GetOutput()->GetBufferedRegion().GetSize()[1];
   volumeSize[2] = this->GetOutput()->GetBufferedRegion().GetSize()[2];

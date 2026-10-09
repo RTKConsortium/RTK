@@ -39,13 +39,13 @@
 #include <cuda_runtime.h>
 
 // CONSTANTS //
-__constant__ int3   c_projSize;
-__constant__ float3 c_boxMin;
-__constant__ float3 c_boxMax;
-__constant__ float3 c_spacing;
-__constant__ int3   c_volSize;
-__constant__ float  c_tStep;
-__constant__ float  c_radius;
+__constant__ SizeValueType3 c_projSize;
+__constant__ float3         c_boxMin;
+__constant__ float3         c_boxMax;
+__constant__ float3         c_spacing;
+__constant__ SizeValueType3 c_volSize;
+__constant__ float          c_tStep;
+__constant__ float          c_radius;
 __constant__ float
   c_translatedProjectionIndexTransformMatrices[SLAB_SIZE * 12]; // Can process stacks of at most SLAB_SIZE projections
 __constant__ float
@@ -63,9 +63,9 @@ template <unsigned int VVectorLength>
 __global__ void
 kernel_forwardProject(float * dev_proj_in, float * dev_proj_out, cudaTextureObject_t * dev_tex_vol)
 {
-  unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
-  unsigned int j = blockIdx.y * blockDim.y + threadIdx.y;
-  unsigned int numThread = j * c_projSize.x + i;
+  itk::SizeValueType i = blockIdx.x * blockDim.x + threadIdx.x;
+  itk::SizeValueType j = blockIdx.y * blockDim.y + threadIdx.y;
+  itk::SizeValueType numThread = j * c_projSize.x + i;
 
   if (i >= c_projSize.x || j >= c_projSize.y)
     return;
@@ -75,7 +75,7 @@ kernel_forwardProject(float * dev_proj_in, float * dev_proj_out, cudaTextureObje
   float3 pixelPos;
   float  tnear, tfar;
 
-  for (unsigned int proj = 0; proj < c_projSize.z; proj++)
+  for (itk::SizeValueType proj = 0; proj < c_projSize.z; proj++)
   {
     // Setting ray origin
     ray.o = make_float3(c_sourcePos[3 * proj], c_sourcePos[3 * proj + 1], c_sourcePos[3 * proj + 2]);
@@ -96,7 +96,7 @@ kernel_forwardProject(float * dev_proj_in, float * dev_proj_out, cudaTextureObje
 
     ray.d = pixelPos - ray.o;
 
-    int projOffset = numThread + proj * c_projSize.x * c_projSize.y;
+    itk::SizeValueType projOffset = numThread + proj * c_projSize.x * c_projSize.y;
 
     // Detect intersection with box
     if (!intersectBox(ray, &tnear, &tfar, c_boxMin, c_boxMax) || tnear >= 1.0f || tfar <= 0.f || tfar == tnear)
@@ -160,27 +160,27 @@ kernel_forwardProject(float * dev_proj_in, float * dev_proj_out, cudaTextureObje
 ///////////////////////////////////////////////////////////////////////////
 // FUNCTION: CUDA_forward_project() //////////////////////////////////
 void
-CUDA_forward_project(int          projSize[3],
-                     int          volSize[3],
-                     float *      translatedProjectionIndexTransformMatrices,
-                     float *      translatedVolumeTransformMatrices,
-                     float *      dev_proj_in,
-                     float *      dev_proj_out,
-                     float *      dev_vol,
-                     float        t_step,
-                     float *      source_positions,
-                     float        radiusCylindricalDetector,
-                     float        box_min[3],
-                     float        box_max[3],
-                     float        spacing[3],
-                     unsigned int vectorLength)
+CUDA_forward_project(itk::SizeValueType projSize[3],
+                     itk::SizeValueType volSize[3],
+                     float *            translatedProjectionIndexTransformMatrices,
+                     float *            translatedVolumeTransformMatrices,
+                     float *            dev_proj_in,
+                     float *            dev_proj_out,
+                     float *            dev_vol,
+                     float              t_step,
+                     float *            source_positions,
+                     float              radiusCylindricalDetector,
+                     float              box_min[3],
+                     float              box_max[3],
+                     float              spacing[3],
+                     unsigned int       vectorLength)
 {
   // Constant memory
-  cudaMemcpyToSymbol(c_projSize, projSize, sizeof(int3));
+  cudaMemcpyToSymbol(c_projSize, projSize, sizeof(SizeValueType3));
   cudaMemcpyToSymbol(c_boxMin, box_min, sizeof(float3));
   cudaMemcpyToSymbol(c_boxMax, box_max, sizeof(float3));
   cudaMemcpyToSymbol(c_spacing, spacing, sizeof(float3));
-  cudaMemcpyToSymbol(c_volSize, volSize, sizeof(int3));
+  cudaMemcpyToSymbol(c_volSize, volSize, sizeof(SizeValueType3));
   cudaMemcpyToSymbol(c_tStep, &t_step, sizeof(float));
   cudaMemcpyToSymbol(c_radius, &radiusCylindricalDetector, sizeof(float));
 

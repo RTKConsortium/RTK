@@ -39,14 +39,14 @@
 #include <cuda_runtime.h>
 
 // CONSTANTS
-__constant__ int3   c_projSize;
-__constant__ float3 c_boxMin;
-__constant__ float3 c_boxMax;
-__constant__ float3 c_spacing;
-__constant__ int3   c_volSize;
-__constant__ float  c_tStep;
-__constant__ float  c_matrices[SLAB_SIZE * 12]; // Can process stacks of at most SLAB_SIZE projections
-__constant__ float  c_sourcePos[SLAB_SIZE * 3]; // Can process stacks of at most SLAB_SIZE projections
+__constant__ SizeValueType3 c_projSize;
+__constant__ float3         c_boxMin;
+__constant__ float3         c_boxMax;
+__constant__ float3         c_spacing;
+__constant__ SizeValueType3 c_volSize;
+__constant__ float          c_tStep;
+__constant__ float          c_matrices[SLAB_SIZE * 12]; // Can process stacks of at most SLAB_SIZE projections
+__constant__ float          c_sourcePos[SLAB_SIZE * 3]; // Can process stacks of at most SLAB_SIZE projections
 
 __constant__ float c_IndexInputToPPInputMatrix[12];
 __constant__ float c_IndexInputToIndexDVFMatrix[12];
@@ -66,9 +66,9 @@ kernel_warped_forwardProject(float *             dev_proj_in,
                              cudaTextureObject_t tex_zdvf,
                              cudaTextureObject_t tex_vol)
 {
-  unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
-  unsigned int j = blockIdx.y * blockDim.y + threadIdx.y;
-  unsigned int numThread = j * c_projSize.x + i;
+  itk::SizeValueType i = blockIdx.x * blockDim.x + threadIdx.x;
+  itk::SizeValueType j = blockIdx.y * blockDim.y + threadIdx.y;
+  itk::SizeValueType numThread = j * c_projSize.x + i;
 
   if (i >= c_projSize.x || j >= c_projSize.y)
     return;
@@ -78,7 +78,7 @@ kernel_warped_forwardProject(float *             dev_proj_in,
   float3 pixelPos;
   float  tnear, tfar;
 
-  for (unsigned int proj = 0; proj < c_projSize.z; proj++)
+  for (itk::SizeValueType proj = 0; proj < c_projSize.z; proj++)
   {
     // Setting ray origin
     ray.o = make_float3(c_sourcePos[3 * proj], c_sourcePos[3 * proj + 1], c_sourcePos[3 * proj + 2]);
@@ -91,8 +91,8 @@ kernel_warped_forwardProject(float *             dev_proj_in,
     // Detect intersection with box
     if (!intersectBox(ray, &tnear, &tfar, c_boxMin, c_boxMax) || tfar < 0.f)
     {
-      dev_proj_out[numThread + proj * c_projSize.x * c_projSize.y] =
-        dev_proj_in[numThread + proj * c_projSize.x * c_projSize.y];
+      itk::OffsetValueType projOffset = numThread + proj * c_projSize.x * c_projSize.y;
+      dev_proj_out[projOffset] = dev_proj_in[projOffset];
     }
     else
     {
@@ -139,9 +139,8 @@ kernel_warped_forwardProject(float *             dev_proj_in,
         sum += sample;
         pos += step;
       }
-      dev_proj_out[numThread + proj * c_projSize.x * c_projSize.y] =
-        dev_proj_in[numThread + proj * c_projSize.x * c_projSize.y] +
-        (sum + (tfar - t + halfVStep) / vStep * sample) * c_tStep;
+      itk::OffsetValueType projOffset = numThread + proj * c_projSize.x * c_projSize.y;
+      dev_proj_out[projOffset] = dev_proj_in[projOffset] + (sum + (tfar - t + halfVStep) / vStep * sample) * c_tStep;
     }
   }
 }
@@ -154,29 +153,29 @@ kernel_warped_forwardProject(float *             dev_proj_in,
 ///////////////////////////////////////////////////////////////////////////
 // FUNCTION: CUDA_forward_project() //////////////////////////////////
 void
-CUDA_warp_forward_project(int     projSize[3],
-                          int     volSize[3],
-                          int     dvfSize[3],
-                          float * matrices,
-                          float * dev_proj_in,
-                          float * dev_proj_out,
-                          float * dev_vol,
-                          float   t_step,
-                          float * source_positions,
-                          float   box_min[3],
-                          float   box_max[3],
-                          float   spacing[3],
-                          float * dev_input_dvf,
-                          float   IndexInputToIndexDVFMatrix[12],
-                          float   PPInputToIndexInputMatrix[12],
-                          float   IndexInputToPPInputMatrix[12])
+CUDA_warp_forward_project(itk::SizeValueType projSize[3],
+                          itk::SizeValueType volSize[3],
+                          itk::SizeValueType dvfSize[3],
+                          float *            matrices,
+                          float *            dev_proj_in,
+                          float *            dev_proj_out,
+                          float *            dev_vol,
+                          float              t_step,
+                          float *            source_positions,
+                          float              box_min[3],
+                          float              box_max[3],
+                          float              spacing[3],
+                          float *            dev_input_dvf,
+                          float              IndexInputToIndexDVFMatrix[12],
+                          float              PPInputToIndexInputMatrix[12],
+                          float              IndexInputToPPInputMatrix[12])
 {
   // constant memory
-  cudaMemcpyToSymbol(c_projSize, projSize, sizeof(int3));
+  cudaMemcpyToSymbol(c_projSize, projSize, sizeof(SizeValueType3));
   cudaMemcpyToSymbol(c_boxMin, box_min, sizeof(float3));
   cudaMemcpyToSymbol(c_boxMax, box_max, sizeof(float3));
   cudaMemcpyToSymbol(c_spacing, spacing, sizeof(float3));
-  cudaMemcpyToSymbol(c_volSize, volSize, sizeof(int3));
+  cudaMemcpyToSymbol(c_volSize, volSize, sizeof(SizeValueType3));
   cudaMemcpyToSymbol(c_tStep, &t_step, sizeof(float));
 
   // Copy the source position matrix into a float3 in constant memory

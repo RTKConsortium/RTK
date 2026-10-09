@@ -38,14 +38,14 @@ __constant__ float3 c_Spacing;
 __global__ void
 magnitude_threshold_kernel(float * grad_x, float * grad_y, float * grad_z, float gamma)
 {
-  unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
-  unsigned int j = blockIdx.y * blockDim.y + threadIdx.y;
-  unsigned int k = blockIdx.z * blockDim.z + threadIdx.z;
+  itk::SizeValueType i = blockIdx.x * blockDim.x + threadIdx.x;
+  itk::SizeValueType j = blockIdx.y * blockDim.y + threadIdx.y;
+  itk::SizeValueType k = blockIdx.z * blockDim.z + threadIdx.z;
 
   if (i >= c_Size.x || j >= c_Size.y || k >= c_Size.z)
     return;
 
-  long int id = (k * c_Size.y + j) * c_Size.x + i;
+  itk::SizeValueType id = (k * c_Size.y + j) * c_Size.x + i;
 
   float norm = sqrt(grad_x[id] * grad_x[id] + grad_y[id] * grad_y[id] + grad_z[id] * grad_z[id]);
   if (norm > gamma)
@@ -60,17 +60,17 @@ magnitude_threshold_kernel(float * grad_x, float * grad_y, float * grad_z, float
 __global__ void
 gradient_and_subtract_kernel(float * in, float * grad_x, float * grad_y, float * grad_z)
 {
-  unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
-  unsigned int j = blockIdx.y * blockDim.y + threadIdx.y;
-  unsigned int k = blockIdx.z * blockDim.z + threadIdx.z;
+  itk::SizeValueType i = blockIdx.x * blockDim.x + threadIdx.x;
+  itk::SizeValueType j = blockIdx.y * blockDim.y + threadIdx.y;
+  itk::SizeValueType k = blockIdx.z * blockDim.z + threadIdx.z;
 
   if (i >= c_Size.x || j >= c_Size.y || k >= c_Size.z)
     return;
 
-  long int id = (k * c_Size.y + j) * c_Size.x + i;
-  long int id_x = (k * c_Size.y + j) * c_Size.x + i + 1;
-  long int id_y = (k * c_Size.y + j + 1) * c_Size.x + i;
-  long int id_z = ((k + 1) * c_Size.y + j) * c_Size.x + i;
+  itk::SizeValueType id = (k * c_Size.y + j) * c_Size.x + i;
+  itk::SizeValueType id_x = (k * c_Size.y + j) * c_Size.x + i + 1;
+  itk::SizeValueType id_y = (k * c_Size.y + j + 1) * c_Size.x + i;
+  itk::SizeValueType id_z = ((k + 1) * c_Size.y + j) * c_Size.x + i;
 
   if (i != (c_Size.x - 1))
     grad_x[id] -= ((in[id_x] - in[id]) / c_Spacing.x);
@@ -83,14 +83,14 @@ gradient_and_subtract_kernel(float * in, float * grad_x, float * grad_y, float *
 __global__ void
 multiply_by_beta_kernel(float * input, float * output, float beta)
 {
-  unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
-  unsigned int j = blockIdx.y * blockDim.y + threadIdx.y;
-  unsigned int k = blockIdx.z * blockDim.z + threadIdx.z;
+  itk::SizeValueType i = blockIdx.x * blockDim.x + threadIdx.x;
+  itk::SizeValueType j = blockIdx.y * blockDim.y + threadIdx.y;
+  itk::SizeValueType k = blockIdx.z * blockDim.z + threadIdx.z;
 
   if (i >= c_Size.x || j >= c_Size.y || k >= c_Size.z)
     return;
 
-  long int id = (k * c_Size.y + j) * c_Size.x + i;
+  itk::SizeValueType id = (k * c_Size.y + j) * c_Size.x + i;
 
   output[id] = input[id] * beta;
 }
@@ -98,14 +98,14 @@ multiply_by_beta_kernel(float * input, float * output, float beta)
 __global__ void
 subtract_kernel(float * in1, float * in2, float * out)
 {
-  unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
-  unsigned int j = blockIdx.y * blockDim.y + threadIdx.y;
-  unsigned int k = blockIdx.z * blockDim.z + threadIdx.z;
+  itk::SizeValueType i = blockIdx.x * blockDim.x + threadIdx.x;
+  itk::SizeValueType j = blockIdx.y * blockDim.y + threadIdx.y;
+  itk::SizeValueType k = blockIdx.z * blockDim.z + threadIdx.z;
 
   if (i >= c_Size.x || j >= c_Size.y || k >= c_Size.z)
     return;
 
-  long int id = (k * c_Size.y + j) * c_Size.x + i;
+  itk::SizeValueType id = (k * c_Size.y + j) * c_Size.x + i;
 
   out[id] = in1[id] - in2[id];
 }

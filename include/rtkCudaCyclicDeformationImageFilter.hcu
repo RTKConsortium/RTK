@@ -19,13 +19,15 @@
 #ifndef rtkCudaCyclicDeformationImageFilter_hcu
 #define rtkCudaCyclicDeformationImageFilter_hcu
 
+#include "rtkCudaUtilities.hcu"
+
 void
-CUDA_linear_interpolate_along_fourth_dimension(unsigned int inputSize[4],
-                                               float *      input,
-                                               float *      output,
-                                               unsigned int frameInf,
-                                               unsigned int frameSup,
-                                               double       weightInf,
-                                               double       weightSup);
+CUDA_linear_interpolate_along_fourth_dimension(itk::SizeValueType inputSize[4],
+                                               float *            input,
+                                               float *            output,
+                                               unsigned int       frameInf,
+                                               unsigned int       frameSup,
+                                               double             weightInf,
+                                               double             weightSup);
 
 #endif

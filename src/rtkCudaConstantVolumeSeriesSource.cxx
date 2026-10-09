@@ -29,12 +29,11 @@ CudaConstantVolumeSeriesSource ::CudaConstantVolumeSeriesSource() = default;
 void
 CudaConstantVolumeSeriesSource ::GPUGenerateData()
 {
-  int outputSize[4];
-
-  for (int i = 0; i < 4; i++)
-  {
-    outputSize[i] = this->GetOutput()->GetRequestedRegion().GetSize()[i];
-  }
+  itk::SizeValueType outputSize[4];
+  outputSize[0] = this->GetOutput()->GetRequestedRegion().GetSize()[0];
+  outputSize[1] = this->GetOutput()->GetRequestedRegion().GetSize()[1];
+  outputSize[2] = this->GetOutput()->GetRequestedRegion().GetSize()[2];
+  outputSize[3] = this->GetOutput()->GetRequestedRegion().GetSize()[3];
 
   float * pout = static_cast<float *>(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
 
