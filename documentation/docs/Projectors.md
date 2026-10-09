@@ -57,6 +57,7 @@ RTK supports the following forward projector implementations :
 Cuda based projector:
 - [CudaRayCast](https://www.openrtk.org/Doxygen/classrtk_1_1CudaForwardProjectionImageFilter.html)
 - [CudaWarpRayCast](https://www.openrtk.org/Doxygen/classrtk_1_1CudaWarpForwardProjectionImageFilter.html)
+- [CudaZeng](https://www.openrtk.org/Doxygen/classrtk_1_1CudaZengForwardProjectionImageFilter.html)
 
 ## Back projectors
 
@@ -95,3 +96,4 @@ Cuda based projector:
 - [CudaFDKBackProjection](https://www.openrtk.org/Doxygen/classrtk_1_1CudaFDKBackProjectionImageFilter.html)
 - [CudaRayCast](https://www.openrtk.org/Doxygen/classrtk_1_1CudaRayCastBackProjectionImageFilter.html)
 - [CudaWarpBackProjection](https://www.openrtk.org/Doxygen/classrtk_1_1CudaWarpBackProjectionImageFilter.html)
+- [CudaZeng](https://www.openrtk.org/Doxygen/classrtk_1_1CudaZengBackProjectionImageFilter.html)
