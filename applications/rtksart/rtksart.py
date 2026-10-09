@@ -187,6 +187,8 @@ def process(args_info: argparse.Namespace):
         sart.AddObserver(itk.ProgressEvent(), progress.callback)
         sart.AddObserver(itk.EndEvent(), progress.End)
 
+    rtk.SetIterationsReportFromArgParse(args_info, sart)
+
     sart.Update()
 
     # Write
