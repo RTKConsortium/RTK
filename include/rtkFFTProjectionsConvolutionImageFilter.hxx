@@ -27,6 +27,7 @@
 
 #include <itkImageRegionIterator.h>
 #include <itkImageRegionIteratorWithIndex.h>
+#include <itkTotalProgressReporter.h>
 
 namespace rtk
 {
@@ -120,12 +121,12 @@ template <class TInputImage, class TOutputImage, class TFFTPrecision>
 void
 FFTProjectionsConvolutionImageFilter<TInputImage, TOutputImage, TFFTPrecision>::ThreadedGenerateData(
   const RegionType & outputRegionForThread,
-  ThreadIdType       threadId)
+  ThreadIdType       itkNotUsed(threadId))
 {
   auto nproj = outputRegionForThread.GetNumberOfPixels() /
                (outputRegionForThread.GetSize()[0] * outputRegionForThread.GetSize()[1]);
 
-  itk::ProgressReporter progress(this, threadId, outputRegionForThread.GetNumberOfPixels(), 100);
+  itk::TotalProgressReporter progress(this, this->GetOutput()->GetRequestedRegion().GetNumberOfPixels(), 100);
 
   for (unsigned int i = 0; i < nproj; i++)
   {
