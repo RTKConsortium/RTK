@@ -233,6 +233,8 @@ public:
     typename VolumeSeriesType::template RebindImageType<DVFVectorType, VolumeSeriesType::ImageDimension>;
   using DVFImageType =
     typename VolumeSeriesType::template RebindImageType<DVFVectorType, VolumeSeriesType::ImageDimension - 1>;
+  // Alias 4D DVF to base-class DisplacementFieldType
+  using DisplacementFieldType = DVFSequenceImageType;
 
 #ifdef RTK_USE_CUDA
   using AverageOutOfROIFilterType = std::conditional_t<std::is_same_v<VolumeSeriesType, CPUVolumeSeriesType>,

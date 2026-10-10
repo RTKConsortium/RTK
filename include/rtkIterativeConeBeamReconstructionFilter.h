@@ -19,6 +19,7 @@
 #ifndef rtkIterativeConeBeamReconstructionFilter_h
 #define rtkIterativeConeBeamReconstructionFilter_h
 
+#include <itkCovariantVector.h>
 #include <itkPixelTraits.h>
 
 // Forward projection filters
@@ -70,6 +71,10 @@ public:
 
   /** Convenient type alias */
   using VolumeType = ProjectionStackType;
+  using VolumeValueType = typename itk::PixelTraits<typename VolumeType::PixelType>::ValueType;
+  // Keep the same image backend as the volume/projection stack while changing the pixel type to a 3D DVF vector.
+  using DisplacementFieldType =
+    typename VolumeType::template RebindImageType<itk::CovariantVector<VolumeValueType, 3>, VolumeType::ImageDimension>;
   using TClipImageType = itk::Image<double, VolumeType::ImageDimension>;
   using ForwardProjectionType = enum {
     FP_JOSEPH = 0,
@@ -158,6 +163,18 @@ public:
   GetSuperiorClipImage()
   {
     return static_cast<const TClipImageType *>(this->itk::ProcessObject::GetInput("SuperiorClipImage"));
+  }
+
+  /** Set/Get the displacement field (DVF) required by warp forward/back projectors. */
+  void
+  SetDisplacementField(const DisplacementFieldType * dvf)
+  {
+    this->SetInput("DisplacementField", const_cast<DisplacementFieldType *>(dvf));
+  }
+  typename DisplacementFieldType::ConstPointer
+  GetDisplacementField()
+  {
+    return static_cast<const DisplacementFieldType *>(this->itk::ProcessObject::GetInput("DisplacementField"));
   }
 
   /** Get / Set the sigma zero of the PSF. Default is 1.5417233052142099 */
@@ -266,7 +283,16 @@ protected:
 #ifdef RTK_USE_CUDA
     auto cudaWarpFw = CudaWarpForwardProjectionImageFilter::New();
     cudaWarpFw->SetStepSize(m_StepSize);
-    fw = cudaWarpFw;
+    if (this->GetDisplacementField().IsNull())
+    {
+      itkExceptionMacro(
+        << "CudaWarpForwardProjectionImageFilter requires a displacement field. Call SetDisplacementField().");
+    }
+    else
+    {
+      cudaWarpFw->SetDisplacementField(this->GetDisplacementField().GetPointer());
+    }
+    fw = cudaWarpFw.GetPointer();
 #endif
     return fw;
   }
@@ -367,7 +393,17 @@ protected:
   {
     BackProjectionPointerType bp;
 #ifdef RTK_USE_CUDA
-    bp = CudaWarpBackProjectionImageFilter::New();
+    auto cudaWarpBp = CudaWarpBackProjectionImageFilter::New();
+    if (this->GetDisplacementField().IsNull())
+    {
+      itkExceptionMacro(
+        << "CudaWarpBackProjectionImageFilter requires a displacement field. Call SetDisplacementField().");
+    }
+    else
+    {
+      cudaWarpBp->SetDisplacementField(this->GetDisplacementField().GetPointer());
+    }
+    bp = cudaWarpBp.GetPointer();
 #endif
     return bp;
   }
