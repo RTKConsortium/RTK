@@ -30,10 +30,11 @@
 #include <itkAddImageAdaptor.h>
 #include <itkAddImageFilter.h>
 #include <itkDivideOrZeroOutImageFilter.h>
-#include <itkExtractImageFilter.h>
 #include <itkMultiplyImageFilter.h>
 #include <itkSubtractImageFilter.h>
 #include <itkThresholdImageFilter.h>
+
+#include "rtkSubRegionViewImageFilter.h"
 
 namespace rtk
 {
@@ -48,8 +49,8 @@ namespace rtk
  * - SubtractImageFilter,
  * - BackProjectionImageFilter.
  * The input stack of projections is processed piece by piece (the size is
- * controlled with ProjectionSubsetSize) via the use of itk::ExtractImageFilter
- * to extract sub-stacks.
+ * controlled with ProjectionSubsetSize) by extracting sub-stacks directly
+ * from the input buffer pointer (zero-copy).
  *
  * Two weighting steps must be applied when processing a given projection:
  * - each pixel of the forward projection must be divided by the total length of the
@@ -74,7 +75,7 @@ namespace rtk
  *
  * node [shape=box];
  * ForwardProject [ label="rtk::ForwardProjectionImageFilter" URL="\ref rtk::ForwardProjectionImageFilter"];
- * Extract [ label="itk::ExtractImageFilter" URL="\ref itk::ExtractImageFilter"];
+ * Extract [ label="rtk::SubRegionViewImageFilter" URL="\ref rtk::SubRegionViewImageFilter"];
  * MultiplyByZero [ label="itk::MultiplyImageFilter (by zero)" URL="\ref itk::MultiplyImageFilter"];
  * AfterExtract [label="", fixedsize="false", width=0, height=0, shape=none];
  * Subtract [ label="itk::SubtractImageFilter" URL="\ref itk::SubtractImageFilter"];
@@ -85,7 +86,7 @@ namespace rtk
  *                URL="\ref itk::MultiplyImageFilter", style=dashed];
  * Displaced [ label="rtk::DisplacedDetectorImageFilter" URL="\ref rtk::DisplacedDetectorImageFilter"];
  * ConstantProjectionStack [ label="rtk::ConstantImageSource (0)" URL="\ref rtk::ConstantImageSource"];
- * ExtractConstantProjection [ label="itk::ExtractImageFilter" URL="\ref itk::ExtractImageFilter"];
+ * ExtractConstantProjection [ label="rtk::SubRegionViewImageFilter" URL="\ref rtk::SubRegionViewImageFilter"];
  * RayBox [ label="rtk::RayBoxIntersectionImageFilter" URL="\ref rtk::RayBoxIntersectionImageFilter"];
  * ConstantVolume [ label="rtk::ConstantImageSource (0)" URL="\ref rtk::ConstantImageSource"];
  * BackProjection [ label="rtk::BackProjectionImageFilter" URL="\ref rtk::BackProjectionImageFilter"];
@@ -156,7 +157,7 @@ public:
   using ProjectionPixelType = typename ProjectionType::PixelType;
 
   /** Typedefs of each subfilter of this composite filter */
-  using ExtractFilterType = itk::ExtractImageFilter<ProjectionType, ProjectionType>;
+  using ExtractFilterType = rtk::SubRegionViewImageFilter<ProjectionType>;
   using MultiplyFilterType = itk::MultiplyImageFilter<ProjectionType, ProjectionType, ProjectionType>;
   using ForwardProjectionFilterType = rtk::ForwardProjectionImageFilter<ProjectionType, VolumeType>;
   using SubtractFilterType = itk::SubtractImageFilter<ProjectionType, ProjectionType>;
@@ -247,7 +248,6 @@ protected:
 
   /** Pointers to each subfilter of this composite filter */
   typename ExtractFilterType::Pointer            m_ExtractFilter;
-  typename ExtractFilterType::Pointer            m_ExtractFilterRayBox;
   typename MultiplyFilterType::Pointer           m_ZeroMultiplyFilter;
   typename ForwardProjectionFilterType::Pointer  m_ForwardProjectionFilter;
   typename SubtractFilterType::Pointer           m_SubtractFilter;

@@ -23,8 +23,7 @@
 #include "rtkConfiguration.h"
 #include "rtkFDKBackProjectionImageFilter.h"
 #include "rtkFFTVarianceRampImageFilter.h"
-
-#include <itkExtractImageFilter.h>
+#include "rtkSubRegionViewImageFilter.h"
 
 namespace rtk
 {
@@ -68,7 +67,7 @@ public:
   using OutputImageType = TOutputImage;
 
   /** Typedefs of each subfilter of this composite filter */
-  using ExtractFilterType = itk::ExtractImageFilter<InputImageType, OutputImageType>;
+  using ExtractFilterType = rtk::SubRegionViewImageFilter<InputImageType>;
   using WeightFilterType = rtk::FDKWeightProjectionFilter<InputImageType, OutputImageType>;
   using VarianceRampFilterType = rtk::FFTVarianceRampImageFilter<OutputImageType, OutputImageType, TFFTPrecision>;
   using BackProjectionFilterType = rtk::FDKBackProjectionImageFilter<OutputImageType, OutputImageType>;
