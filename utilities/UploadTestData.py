@@ -44,7 +44,7 @@ class GirderExternalDataCli(GirderClient):
         :param dryRun: Do not actually upload any content.
         """
         test_folder = os.path.normpath(test_folder)
-        name = os.path.splitext(content_link)[0]  # remove .sha512 extension
+        name = os.path.splitext(content_link)[0]  # remove .cid extension
 
         if dryRun:
             # create a dryRun placeholder
@@ -71,11 +71,11 @@ class GirderExternalDataCli(GirderClient):
 
         content_link = os.path.join(workDir, content_link)
 
-        if os.path.isfile(content_link) and fnmatch.fnmatch(content_link, "*.sha512"):
+        if os.path.isfile(content_link) and fnmatch.fnmatch(content_link, "*.cid"):
             with open(content_link) as fp:
                 hash_value = fp.readline().strip()
 
-            content_file = os.path.join(workDir, ".ExternalData_SHA512_" + hash_value)
+            content_file = os.path.join(workDir, ".ExternalData_CID_" + hash_value)
             if os.path.isfile(content_file):
                 print("\n Found content file: " + content_file)
 
@@ -113,7 +113,7 @@ def main():
     parser.add_argument(
         "--content-link",
         required=True,
-        help="name of the content-link .sha512 file. (eg: Test.png.sha512)",
+        help="name of the content-link .cid file. (eg: Test.png.cid)",
     )
     parser.add_argument(
         "--test-folder",
