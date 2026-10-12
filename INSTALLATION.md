@@ -20,6 +20,24 @@ For RTK developpers, it may be useful to compile RTK independently from ITK. Thi
 * Manually download RTK's source repository from [GitHub](https://github.com/RTKConsortium/RTK) with `git` (recommended) or as a [zip package](https://codeload.github.com/RTKConsortium/RTK/zip/main).
 * Configure the project with CMake pointing to RTK's source directory and setting the CMake option `ITK_DIR` to ITK's compilation directory. All CMake options above can be set except `Module_RTK`.
 
+#### Installing the Python wrapping into a Python environment
+
+The recommended way is to create a self-contained *Python packages folder* compatible with any environment and Python version and install ITK's Python package into it, built with `-DITK_WRAP_PYTHON=ON -DPY_SITE_PACKAGES_PATH=/path/to/python_packages_folder` and installed with `cmake --install <itk-build-dir> --component RuntimeLibraries`.
+
+[utilities/rtk_install_python_packages.sh](https://github.com/RTKConsortium/RTK/blob/main/utilities/rtk_install_python_packages.sh) automates the RTK side: it validates that the `itk` package is in place (and CudaCommon's wrapping when `RTK_USE_CUDA=ON`), then configures, builds and installs RTK into the same folder with CMake (`-DPY_SITE_PACKAGES_PATH=$DEST_DIR`, `cmake --install --component RuntimeLibraries`), makes the folder importable with a `.pth` file, and symlinks RTK's Python modules to the source tree so their edits are taken into account without reinstalling. Run it from the RTK source directory, with `DEST_DIR` set to the same folder given by `-DPY_SITE_PACKAGES_PATH` above:
+
+```
+ITK_DIR=<itk-build-dir> DEST_DIR=/path/to/python_packages_folder utilities/rtk_install_python_packages.sh
+```
+
+With CUDA, set `RTK_USE_CUDA=ON` and make sure CudaCommon's wrapping is also in the folder (built inside ITK with `-DModule_CudaCommon=ON`, or standalone):
+
+```
+ITK_DIR=<itk-build-dir> DEST_DIR=/path/to/python_packages RTK_USE_CUDA=ON utilities/rtk_install_python_packages.sh
+```
+
+The packages folder is environment-agnostic, but the `.pth` file that makes it importable is added by the script to the `site-packages` of the Python interpreter it runs with (the one given by `PYTHON`, `python3` by default). To use it in another environment, run the script with `PYTHON=/path/to/other/env/bin/python ...` or export `PYTHONPATH=$DEST_DIR`. Run the RTK applications as Python modules, e.g. `python -m itk.rtkfdk --help`
+
 ## Python pre-compiled binaries
 We only provide pre-compiled binaries for the Python package which depends on ITK. Use the following commands to install the RTK module with `pip`.
 ```
