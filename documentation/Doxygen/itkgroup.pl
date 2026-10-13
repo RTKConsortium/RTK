@@ -82,3 +82,18 @@ while(<>)
 	}
     }
 }
+
+# Flush any group still buffered when the file ends without a trailing blank
+# line. Without this, a single /** ... */ block that fills the whole file
+# (such as MainPage.dox) is silently discarded.
+if($ingroup)
+{
+    if($endparencount > 1 && ($semicount > 1 || $endbracecount > 1))
+    {
+        print "/**@\{" . $savebuffer . "//@}\n\n";
+    }
+    else
+    {
+        print "/**" . $savebuffer . "\n";
+    }
+}
