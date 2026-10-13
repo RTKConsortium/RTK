@@ -38,7 +38,7 @@ namespace rtk
  *
  * \author Simon Rit
  *
- * \ingroup RTK Geometry
+ * \ingroup RTK RTKGeometry
  */
 template <unsigned int TDimension = 3>
 class ITK_TEMPLATE_EXPORT ProjectionGeometry : public itk::DataObject
