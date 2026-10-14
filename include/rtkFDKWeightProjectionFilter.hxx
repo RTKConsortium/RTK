@@ -37,6 +37,16 @@ FDKWeightProjectionFilter<TInputImage, TOutputImage>::VerifyPreconditions() cons
 
 template <class TInputImage, class TOutputImage>
 void
+FDKWeightProjectionFilter<TInputImage, TOutputImage>::VerifyInputInformation() const
+{
+  this->Superclass::VerifyInputInformation();
+
+  ThreeDCircularProjectionGeometry::CheckNumberOfProjections(*this->m_Geometry,
+                                                             this->GetInput()->GetLargestPossibleRegion());
+}
+
+template <class TInputImage, class TOutputImage>
+void
 FDKWeightProjectionFilter<TInputImage, TOutputImage>::BeforeThreadedGenerateData()
 {
   // Get angular weights from geometry

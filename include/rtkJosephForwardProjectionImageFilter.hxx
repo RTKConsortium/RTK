@@ -90,6 +90,8 @@ JosephForwardProjectionImageFilter<TInputImage,
                                    TProjectedValueAccumulation,
                                    TSumAlongRay>::VerifyInputInformation() const
 {
+  this->Superclass::VerifyInputInformation();
+
   using ImageBaseType = const itk::ImageBase<TInputImage::ImageDimension>;
 
   ImageBaseType * inputPtr1 = nullptr;

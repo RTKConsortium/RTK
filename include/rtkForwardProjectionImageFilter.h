@@ -73,11 +73,10 @@ protected:
   void
   GenerateInputRequestedRegion() override;
 
-  /** The two inputs should not be in the same space so there is nothing
-   * to verify. */
+  /** Check projection bounds without comparing the physical spaces of the
+   * projection stack and the volume. */
   void
-  VerifyInputInformation() const override
-  {}
+  VerifyInputInformation() const override;
 
 private:
   /** RTK geometry object */

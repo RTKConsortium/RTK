@@ -41,6 +41,14 @@ ForwardProjectionImageFilter<TInputImage, TOutputImage>::VerifyPreconditions() c
 
 template <class TInputImage, class TOutputImage>
 void
+ForwardProjectionImageFilter<TInputImage, TOutputImage>::VerifyInputInformation() const
+{
+  const auto projRegion = this->GetInput(0)->GetLargestPossibleRegion();
+  GeometryType::CheckNumberOfProjections(*this->m_Geometry, projRegion);
+}
+
+template <class TInputImage, class TOutputImage>
+void
 ForwardProjectionImageFilter<TInputImage, TOutputImage>::GenerateInputRequestedRegion()
 {
   // Input 0 is the stack of projections in which we project

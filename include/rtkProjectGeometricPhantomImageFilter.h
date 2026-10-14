@@ -111,6 +111,9 @@ protected:
   VerifyPreconditions() const override;
 
   void
+  VerifyInputInformation() const override;
+
+  void
   GenerateData() override;
 
 private:

@@ -32,7 +32,8 @@ namespace rtk
  * This abstract class takes as input a stack of projections and the
  * corresponding geometry and creates an output stack of projections and
  * its corresponding geometry using the two members m_NbSelectedProjs and
- * m_SelectedProjections. The members must be set before
+ * m_SelectedProjections. The input stack must contain all projections of the
+ * input geometry, starting at index zero. The members must be set before
  * GenerateOutputInformation is called. Streaming of the output is possible.
  * The output is produced from the following mini-pipeline:
  *
@@ -101,6 +102,9 @@ protected:
   /** Checks that inputs are correctly set. */
   void
   VerifyPreconditions() const override;
+
+  void
+  VerifyInputInformation() const override;
 
   void
   GenerateInputRequestedRegion() override;

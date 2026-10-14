@@ -132,6 +132,9 @@ protected:
   ~AmsterdamShroudImageFilter() override = default;
 
   void
+  VerifyInputInformation() const override;
+
+  void
   GenerateOutputInformation() override;
   void
   GenerateInputRequestedRegion() override;
