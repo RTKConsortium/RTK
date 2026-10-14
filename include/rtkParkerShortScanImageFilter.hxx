@@ -34,6 +34,10 @@ ParkerShortScanImageFilter<TInputImage, TOutputImage>::VerifyPreconditions() con
 
   if (this->m_Geometry.IsNull())
     itkExceptionMacro(<< "Geometry has not been set.");
+
+  // The input region may not be up to date yet.
+  const_cast<TInputImage *>(this->GetInput())->UpdateOutputInformation();
+  GeometryType::CheckNumberOfProjections(*this->m_Geometry, this->GetInput()->GetLargestPossibleRegion());
 }
 
 template <class TInputImage, class TOutputImage>

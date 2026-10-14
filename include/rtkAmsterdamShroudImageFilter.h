@@ -131,6 +131,10 @@ protected:
   AmsterdamShroudImageFilter();
   ~AmsterdamShroudImageFilter() override = default;
 
+  /** Checks that inputs are correctly set. */
+  void
+  VerifyPreconditions() const override;
+
   void
   GenerateOutputInformation() override;
   void
