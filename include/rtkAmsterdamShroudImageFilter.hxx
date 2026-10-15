@@ -71,6 +71,21 @@ AmsterdamShroudImageFilter<TInputImage>::AmsterdamShroudImageFilter()
 
 template <class TInputImage>
 void
+AmsterdamShroudImageFilter<TInputImage>::VerifyPreconditions() const
+{
+  this->Superclass::VerifyPreconditions();
+
+  // The geometry is optional, it is only used to crop the projections.
+  if (this->m_Geometry.IsNull())
+    return;
+
+  // The input region may not be up to date yet.
+  const_cast<TInputImage *>(this->GetInput())->UpdateOutputInformation();
+  GeometryType::CheckNumberOfProjections(*this->m_Geometry, this->GetInput()->GetLargestPossibleRegion());
+}
+
+template <class TInputImage>
+void
 AmsterdamShroudImageFilter<TInputImage>::GenerateOutputInformation()
 {
   // get pointers to the input and output

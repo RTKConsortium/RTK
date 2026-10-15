@@ -75,9 +75,6 @@ protected:
   void
   VerifyPreconditions() const override;
 
-  void
-  BeforeThreadedGenerateData() override;
-
   /** Apply changes to the input image requested region. */
   void
   DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread) override;

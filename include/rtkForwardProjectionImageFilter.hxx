@@ -37,6 +37,11 @@ ForwardProjectionImageFilter<TInputImage, TOutputImage>::VerifyPreconditions() c
 
   if (this->m_Geometry.IsNull())
     itkExceptionMacro(<< "Geometry has not been set.");
+
+  // Input 0 is the projection stack, whose region may not be up to date yet.
+  const_cast<TInputImage *>(this->GetInput(0))->UpdateOutputInformation();
+  const auto projRegion = this->GetInput(0)->GetLargestPossibleRegion();
+  GeometryType::CheckNumberOfProjections(*this->m_Geometry, projRegion);
 }
 
 template <class TInputImage, class TOutputImage>
