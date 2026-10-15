@@ -1,7 +1,0 @@
-itk_wrap_class("rtk::DPExtractShroudSignalImageFilter" POINTER)
-  foreach(t_in ${WRAP_ITK_REAL})
-    foreach(t_out ${WRAP_ITK_REAL})
-      itk_wrap_template("${ITKM_${t_in}}${ITKM_${t_out}}" "${ITKT_${t_in}}, ${ITKT_${t_out}}")
-    endforeach()
-  endforeach()
-itk_end_wrap_class()

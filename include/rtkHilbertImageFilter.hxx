@@ -46,11 +46,11 @@ HilbertImageFilter<TInputImage, TOutputImage>::GenerateData()
   ++it;
   int n = fft->GetLargestPossibleRegion().GetSize()[0];
   for (int i = 1; i < n / 2 - 1; i++, ++it)
-    it.Set(2. * it.Get());
+    it.Set(typename TOutputImage::PixelType(2.) * it.Get());
   if (n % 2 == 1) // Odd
-    it.Set(2. * it.Get());
+    it.Set(typename TOutputImage::PixelType(2.) * it.Get());
   else
-    it.Set(1. * it.Get());
+    it.Set(typename TOutputImage::PixelType(1.) * it.Get());
   typename TOutputImage::PixelType val = 0.;
   while (!it.IsAtEnd())
   {

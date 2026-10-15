@@ -25,6 +25,13 @@ itk_wrap_class("itk::Image" POINTER)
     itk_wrap_template("D1" "${ITKT_D}, 1")
   endif()
 
+  # Wrap complex 1D output images for rtk::HilbertImageFilter.
+  if (${_index} EQUAL -1)
+    foreach(ct ${WRAP_ITK_COMPLEX_REAL})
+      itk_wrap_template("${ITKM_${ct}}1" "${ITKT_${ct}}, 1")
+    endforeach()
+  endif()
+
   # Wrap ITK dimension 4 missing types
   list(FIND ITK_WRAP_IMAGE_DIMS "4" _index)
   if (${_index} EQUAL -1)
