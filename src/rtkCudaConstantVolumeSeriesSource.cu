@@ -27,7 +27,7 @@
 
 // TEXTURES AND CONSTANTS //
 
-__constant__ int4 c_Size;
+__constant__ SizeValueType4 c_Size;
 
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 // K E R N E L S -_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
@@ -38,14 +38,14 @@ __constant__ int4 c_Size;
 __global__ void
 set_volume_series_to_constant(float * out, float value)
 {
-  unsigned int i = blockIdx.x * blockDim.x + threadIdx.x;
-  unsigned int j = blockIdx.y * blockDim.y + threadIdx.y;
-  unsigned int k = blockIdx.z * blockDim.z + threadIdx.z;
+  itk::IndexValueType i = blockIdx.x * blockDim.x + threadIdx.x;
+  itk::IndexValueType j = blockIdx.y * blockDim.y + threadIdx.y;
+  itk::IndexValueType k = blockIdx.z * blockDim.z + threadIdx.z;
 
-  if (i >= c_Size.x || j >= c_Size.y || k >= c_Size.z * c_Size.w)
+  if (i >= c_Size.x || j >= c_Size.y || k >= c_Size.z)
     return;
 
-  long int id = (k * c_Size.y + j) * c_Size.x + i;
+  itk::OffsetValueType id = (k * c_Size.y + j) * c_Size.x + i;
 
   out[id] = value;
 }
@@ -57,10 +57,9 @@ set_volume_series_to_constant(float * out, float value)
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
 void
-CUDA_generate_constant_volume_series(int size[4], float * dev_out, float constantValue)
+CUDA_generate_constant_volume_series(itk::SizeValueType size[4], float * dev_out, float constantValue)
 {
-  int4 dev_Size = make_int4(size[0], size[1], size[2], size[3]);
-  cudaMemcpyToSymbol(c_Size, &dev_Size, sizeof(int4));
+  cudaMemcpyToSymbol(c_Size, size, sizeof(SizeValueType4));
 
   // NOTE : memset sets every BYTE of the memory to the value given in
   // argument (here, 0). With 0, it's fine, as all number formats seem

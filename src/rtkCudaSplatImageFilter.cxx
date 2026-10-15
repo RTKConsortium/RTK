@@ -29,11 +29,11 @@ CudaSplatImageFilter ::CudaSplatImageFilter() = default;
 void
 CudaSplatImageFilter ::GPUGenerateData()
 {
-  int4 outputSize;
-  outputSize.x = this->GetOutput()->GetLargestPossibleRegion().GetSize()[0];
-  outputSize.y = this->GetOutput()->GetLargestPossibleRegion().GetSize()[1];
-  outputSize.z = this->GetOutput()->GetLargestPossibleRegion().GetSize()[2];
-  outputSize.w = this->GetOutput()->GetLargestPossibleRegion().GetSize()[3];
+  itk::SizeValueType outputSize[4];
+  outputSize[0] = this->GetOutput()->GetLargestPossibleRegion().GetSize()[0];
+  outputSize[1] = this->GetOutput()->GetLargestPossibleRegion().GetSize()[1];
+  outputSize[2] = this->GetOutput()->GetLargestPossibleRegion().GetSize()[2];
+  outputSize[3] = this->GetOutput()->GetLargestPossibleRegion().GetSize()[3];
 
   float * pvolseries = static_cast<float *>(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
   float * pvol = static_cast<float *>(this->GetInputVolume()->GetCudaDataManager()->GetGPUBufferPointer());

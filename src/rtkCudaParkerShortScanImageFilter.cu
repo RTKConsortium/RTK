@@ -57,26 +57,25 @@ kernel_parker_weight(int2                proj_idx,
                      cudaTextureObject_t tex_geom   // geometry texture object
 )
 {
-  // compute projection index (== thread index)
-  int3 pIdx;
-  pIdx.x = blockIdx.x * blockDim.x + threadIdx.x;
-  pIdx.y = blockIdx.y * blockDim.y + threadIdx.y;
-  pIdx.z = blockIdx.z * blockDim.z + threadIdx.z;
-  long int pIdx_comp_in = pIdx.x + (pIdx.y + pIdx.z * proj_size_buf_in.y) * (proj_size_buf_in.x);
-  long int pIdx_comp_out = pIdx.x + (pIdx.y + pIdx.z * proj_size_buf_out.y) * (proj_size_buf_out.x);
+  // compute projection index (== thread index), 64-bit to avoid 32-bit overflow of combined indices
+  itk::SizeValueType pIdx_x = blockIdx.x * blockDim.x + threadIdx.x;
+  itk::SizeValueType pIdx_y = blockIdx.y * blockDim.y + threadIdx.y;
+  itk::SizeValueType pIdx_z = blockIdx.z * blockDim.z + threadIdx.z;
+  itk::SizeValueType pIdx_comp_in = pIdx_x + (pIdx_y + pIdx_z * proj_size_buf_in.y) * proj_size_buf_in.x;
+  itk::SizeValueType pIdx_comp_out = pIdx_x + (pIdx_y + pIdx_z * proj_size_buf_out.y) * proj_size_buf_out.x;
 
   // check if outside of projection grid
-  if (pIdx.x >= proj_size.x || pIdx.y >= proj_size.y || pIdx.z >= proj_size.z)
+  if (pIdx_x >= proj_size.x || pIdx_y >= proj_size.y || pIdx_z >= proj_size.z)
     return;
 
-  float sdd = tex1Dfetch<float>(tex_geom, pIdx.z * 5 + 0);
-  float sx = tex1Dfetch<float>(tex_geom, pIdx.z * 5 + 1);
-  float px = tex1Dfetch<float>(tex_geom, pIdx.z * 5 + 2);
-  float sid = tex1Dfetch<float>(tex_geom, pIdx.z * 5 + 3);
+  float sdd = tex1Dfetch<float>(tex_geom, pIdx_z * 5 + 0);
+  float sx = tex1Dfetch<float>(tex_geom, pIdx_z * 5 + 1);
+  float px = tex1Dfetch<float>(tex_geom, pIdx_z * 5 + 2);
+  float sid = tex1Dfetch<float>(tex_geom, pIdx_z * 5 + 3);
 
   // convert actual index to point
   float pPoint =
-    TransformIndexToPhysicalPoint(make_int2(pIdx.x + proj_idx.x, pIdx.y + proj_idx.y), proj_orig, proj_row, proj_col);
+    TransformIndexToPhysicalPoint(make_int2(pIdx_x + proj_idx.x, pIdx_y + proj_idx.y), proj_orig, proj_row, proj_col);
 
   // alpha projection angle
   float hyp = sqrtf(sid * sid + sx * sx); // to untilted situation
@@ -85,7 +84,7 @@ kernel_parker_weight(int2                proj_idx,
   float alpha = atan(-1 * l * invsid);
 
   // beta projection angle: Parker's article assumes that the scan starts at 0
-  float beta = tex1Dfetch<float>(tex_geom, pIdx.z * 5 + 4);
+  float beta = tex1Dfetch<float>(tex_geom, pIdx_z * 5 + 4);
   beta -= firstAngle;
   if (beta < 0)
     beta += (2.f * CUDART_PI_F);

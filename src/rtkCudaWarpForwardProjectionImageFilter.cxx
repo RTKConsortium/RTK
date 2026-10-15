@@ -145,9 +145,9 @@ CudaWarpForwardProjectionImageFilter ::GPUGenerateData()
 
   const Superclass::GeometryType * geometry = this->GetGeometry();
   const unsigned int               Dimension = InputImageType::ImageDimension;
-  const unsigned int iFirstProj = this->GetInputProjectionStack()->GetRequestedRegion().GetIndex(Dimension - 1);
-  const unsigned int nProj = this->GetInputProjectionStack()->GetRequestedRegion().GetSize(Dimension - 1);
-  const unsigned int nPixelsPerProj =
+  const unsigned int       iFirstProj = this->GetInputProjectionStack()->GetRequestedRegion().GetIndex(Dimension - 1);
+  const unsigned int       nProj = this->GetInputProjectionStack()->GetRequestedRegion().GetSize(Dimension - 1);
+  const itk::SizeValueType nPixelsPerProj =
     this->GetOutput()->GetBufferedRegion().GetSize(0) * this->GetOutput()->GetBufferedRegion().GetSize(1);
 
   itk::Vector<double, 4> source_position;
@@ -172,16 +172,16 @@ CudaWarpForwardProjectionImageFilter ::GPUGenerateData()
   }
 
   // Cuda convenient format for dimensions
-  int projectionSize[3];
+  itk::SizeValueType projectionSize[3];
   projectionSize[0] = this->GetOutput()->GetBufferedRegion().GetSize()[0];
   projectionSize[1] = this->GetOutput()->GetBufferedRegion().GetSize()[1];
 
-  int volumeSize[3];
+  itk::SizeValueType volumeSize[3];
   volumeSize[0] = this->GetInputVolume()->GetBufferedRegion().GetSize()[0];
   volumeSize[1] = this->GetInputVolume()->GetBufferedRegion().GetSize()[1];
   volumeSize[2] = this->GetInputVolume()->GetBufferedRegion().GetSize()[2];
 
-  int inputDVFSize[3];
+  itk::SizeValueType inputDVFSize[3];
   inputDVFSize[0] = this->GetDisplacementField()->GetBufferedRegion().GetSize()[0];
   inputDVFSize[1] = this->GetDisplacementField()->GetBufferedRegion().GetSize()[1];
   inputDVFSize[2] = this->GetDisplacementField()->GetBufferedRegion().GetSize()[2];
@@ -254,7 +254,7 @@ CudaWarpForwardProjectionImageFilter ::GPUGenerateData()
       source_positions[(iProj - iFirstProj) * 3 + d] = source_position[d]; // Ignore the 4th component
   }
 
-  int projectionOffset = 0;
+  itk::OffsetValueType projectionOffset = 0;
   for (unsigned int i = 0; i < nProj; i += SLAB_SIZE)
   {
     // If nProj is not a multiple of SLAB_SIZE, the last slab will contain less than SLAB_SIZE projections

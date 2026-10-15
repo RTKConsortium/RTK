@@ -41,14 +41,14 @@
 #include <cuda_runtime.h>
 
 // CONSTANTS //////////////////////////////////////////////////////////////
-__constant__ float c_matrices[SLAB_SIZE * 12]; // Can process stacks of at most SLAB_SIZE projections
-__constant__ float c_volIndexToProjPP[SLAB_SIZE * 12];
-__constant__ float c_projPPToProjIndex[9];
-__constant__ int3  c_projSize;
-__constant__ int3  c_volSize;
-__constant__ float c_IndexInputToIndexDVFMatrix[12];
-__constant__ float c_PPInputToIndexInputMatrix[12];
-__constant__ float c_IndexInputToPPInputMatrix[12];
+__constant__ float          c_matrices[SLAB_SIZE * 12]; // Can process stacks of at most SLAB_SIZE projections
+__constant__ float          c_volIndexToProjPP[SLAB_SIZE * 12];
+__constant__ float          c_projPPToProjIndex[9];
+__constant__ SizeValueType3 c_projSize;
+__constant__ SizeValueType3 c_volSize;
+__constant__ float          c_IndexInputToIndexDVFMatrix[12];
+__constant__ float          c_PPInputToIndexInputMatrix[12];
+__constant__ float          c_IndexInputToPPInputMatrix[12];
 ////////////////////////////////////////////////////////////////////////////
 
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
@@ -64,9 +64,9 @@ kernel_warp_back_project_3Dgrid(float *             dev_vol_in,
                                 cudaTextureObject_t tex_zdvf,
                                 cudaTextureObject_t tex_proj)
 {
-  unsigned int i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
-  unsigned int j = __umul24(blockIdx.y, blockDim.y) + threadIdx.y;
-  unsigned int k = __umul24(blockIdx.z, blockDim.z) + threadIdx.z;
+  itk::SizeValueType i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
+  itk::SizeValueType j = __umul24(blockIdx.y, blockDim.y) + threadIdx.y;
+  itk::SizeValueType k = __umul24(blockIdx.z, blockDim.z) + threadIdx.z;
 
   if (i >= c_volSize.x || j >= c_volSize.y || k >= c_volSize.z)
   {
@@ -74,7 +74,7 @@ kernel_warp_back_project_3Dgrid(float *             dev_vol_in,
   }
 
   // Index row major into the volume
-  long int vol_idx = i + (j + k * c_volSize.y) * (c_volSize.x);
+  itk::SizeValueType vol_idx = i + (j + k * c_volSize.y) * c_volSize.x;
 
   float3 IndexInDVF, Displacement, PP, IndexInInput, ip;
   float  voxel_data = 0;
@@ -120,9 +120,9 @@ kernel_warp_back_project_3Dgrid_cylindrical_detector(float *             dev_vol
                                                      cudaTextureObject_t tex_zdvf,
                                                      cudaTextureObject_t tex_proj)
 {
-  unsigned int i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
-  unsigned int j = __umul24(blockIdx.y, blockDim.y) + threadIdx.y;
-  unsigned int k = __umul24(blockIdx.z, blockDim.z) + threadIdx.z;
+  itk::SizeValueType i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
+  itk::SizeValueType j = __umul24(blockIdx.y, blockDim.y) + threadIdx.y;
+  itk::SizeValueType k = __umul24(blockIdx.z, blockDim.z) + threadIdx.z;
 
   if (i >= c_volSize.x || j >= c_volSize.y || k >= c_volSize.z)
   {
@@ -130,7 +130,7 @@ kernel_warp_back_project_3Dgrid_cylindrical_detector(float *             dev_vol
   }
 
   // Index row major into the volume
-  long int vol_idx = i + (j + k * c_volSize.y) * (c_volSize.x);
+  itk::SizeValueType vol_idx = i + (j + k * c_volSize.y) * c_volSize.x;
 
   float3 IndexInDVF, Displacement, PP, IndexInInput, ip, pp;
   float  voxel_data = 0;
@@ -183,24 +183,24 @@ kernel_warp_back_project_3Dgrid_cylindrical_detector(float *             dev_vol
 ///////////////////////////////////////////////////////////////////////////
 // FUNCTION: CUDA_back_project /////////////////////////////
 void
-CUDA_warp_back_project(int     projSize[3],
-                       int     volSize[3],
-                       int     dvf_size[3],
-                       float * matrices,
-                       float * volIndexToProjPPs,
-                       float * projPPToProjIndex,
-                       float * dev_vol_in,
-                       float * dev_vol_out,
-                       float * dev_proj,
-                       float * dev_input_dvf,
-                       float   IndexInputToIndexDVFMatrix[12],
-                       float   PPInputToIndexInputMatrix[12],
-                       float   IndexInputToPPInputMatrix[12],
-                       double  radiusCylindricalDetector)
+CUDA_warp_back_project(itk::SizeValueType projSize[3],
+                       itk::SizeValueType volSize[3],
+                       itk::SizeValueType dvf_size[3],
+                       float *            matrices,
+                       float *            volIndexToProjPPs,
+                       float *            projPPToProjIndex,
+                       float *            dev_vol_in,
+                       float *            dev_vol_out,
+                       float *            dev_proj,
+                       float *            dev_input_dvf,
+                       float              IndexInputToIndexDVFMatrix[12],
+                       float              PPInputToIndexInputMatrix[12],
+                       float              IndexInputToPPInputMatrix[12],
+                       double             radiusCylindricalDetector)
 {
   // Copy the size of inputs into constant memory
-  cudaMemcpyToSymbol(c_projSize, projSize, sizeof(int3));
-  cudaMemcpyToSymbol(c_volSize, volSize, sizeof(int3));
+  cudaMemcpyToSymbol(c_projSize, projSize, sizeof(SizeValueType3));
+  cudaMemcpyToSymbol(c_volSize, volSize, sizeof(SizeValueType3));
 
   // Copy the projection matrices into constant memory
   cudaMemcpyToSymbol(c_matrices, &(matrices[0]), 12 * sizeof(float) * projSize[2]);

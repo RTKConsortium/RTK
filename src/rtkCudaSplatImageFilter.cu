@@ -28,14 +28,18 @@
 #include <cuda_runtime.h>
 
 void
-CUDA_splat(const int4 & outputSize, float * input, float * output, int projectionNumber, float ** weights)
+CUDA_splat(const itk::SizeValueType outputSize[4],
+           float *                  input,
+           float *                  output,
+           int                      projectionNumber,
+           float **                 weights)
 {
   cublasHandle_t handle;
   cublasCreate(&handle);
 
-  size_t numel = outputSize.x * outputSize.y * outputSize.z;
+  size_t numel = outputSize[0] * outputSize[1] * outputSize[2];
 
-  for (int phase = 0; phase < outputSize.w; phase++)
+  for (itk::SizeValueType phase = 0; phase < outputSize[3]; phase++)
   {
     float weight = weights[phase][projectionNumber];
     if (weight != 0)
