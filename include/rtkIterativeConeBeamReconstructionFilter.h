@@ -35,6 +35,8 @@
 #  include "rtkCudaRayCastBackProjectionImageFilter.h"
 #  include "rtkCudaWarpBackProjectionImageFilter.h"
 #  include "rtkCudaWarpForwardProjectionImageFilter.h"
+#  include "rtkCudaZengBackProjectionImageFilter.h"
+#  include "rtkCudaZengForwardProjectionImageFilter.h"
 #endif
 
 #include <algorithm>
@@ -76,7 +78,8 @@ public:
     FP_CUDARAYCAST = 2,
     FP_JOSEPHATTENUATED = 3,
     FP_ZENG = 4,
-    FP_CUDAWARP = 5
+    FP_CUDAWARP = 5,
+    FP_CUDAZENG = 6
   };
   using BackProjectionType = enum {
     BP_VOXELBASED = 0,
@@ -85,7 +88,8 @@ public:
     BP_CUDARAYCAST = 4,
     BP_JOSEPHATTENUATED = 5,
     BP_ZENG = 6,
-    BP_CUDAWARP = 7
+    BP_CUDAWARP = 7,
+    BP_CUDAZENG = 8
   };
 
   /** Typedefs of each subfilter of this composite filter */
@@ -324,6 +328,30 @@ protected:
     return nullptr;
   }
 
+  template <typename ImageType, EnableCudaScalarType<ImageType> * = nullptr>
+  ForwardProjectionPointerType
+  InstantiateCudaZengForwardProjection()
+  {
+    ForwardProjectionPointerType fw;
+#ifdef RTK_USE_CUDA
+    auto zeng = CudaZengForwardProjectionImageFilter::New();
+    if (this->GetAttenuationMap().IsNotNull())
+      zeng->SetInput(2, this->GetAttenuationMap());
+    zeng->SetSigmaZero(m_SigmaZero);
+    zeng->SetAlpha(m_AlphaPSF);
+    fw = zeng;
+#endif
+    return fw;
+  }
+
+  template <typename ImageType, DisableCudaScalarType<ImageType> * = nullptr>
+  ForwardProjectionPointerType
+  InstantiateCudaZengForwardProjection()
+  {
+    itkGenericExceptionMacro(<< "CudaZengForwardProjectionImageFilter only available with 3D CudaImage<float>.");
+    return nullptr;
+  }
+
 
   template <typename ImageType, DisableVectorType<ImageType> * = nullptr>
   ForwardProjectionPointerType
@@ -437,6 +465,30 @@ protected:
   InstantiateZengBackProjection()
   {
     itkGenericExceptionMacro(<< "JosephBackAttenuatedProjectionImageFilter only available with scalar pixel types.");
+    return nullptr;
+  }
+
+  template <typename ImageType, EnableCudaScalarType<ImageType> * = nullptr>
+  BackProjectionPointerType
+  InstantiateCudaZengBackProjection()
+  {
+    BackProjectionPointerType bp;
+#ifdef RTK_USE_CUDA
+    auto zeng = CudaZengBackProjectionImageFilter::New();
+    if (this->GetAttenuationMap().IsNotNull())
+      zeng->SetInput(2, this->GetAttenuationMap());
+    zeng->SetSigmaZero(m_SigmaZero);
+    zeng->SetAlpha(m_AlphaPSF);
+    bp = zeng;
+#endif
+    return bp;
+  }
+
+  template <typename ImageType, DisableCudaScalarType<ImageType> * = nullptr>
+  BackProjectionPointerType
+  InstantiateCudaZengBackProjection()
+  {
+    itkGenericExceptionMacro(<< "CudaZengBackProjectionImageFilter only available with 3D CudaImage<float>.");
     return nullptr;
   }
 
