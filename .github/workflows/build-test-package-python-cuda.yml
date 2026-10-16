@@ -288,7 +288,8 @@ jobs:
         fi
 
         echo "Installing wheel: $wheel"
-        pip install "$wheel" pytest matplotlib
+        pip install --upgrade pip
+        pip install --group test "$wheel"
 
         # Run tests with warning detection.
         # SWIG < 4.4 triggers the Py_LIMITED_API "builtin type swig…" warning when
