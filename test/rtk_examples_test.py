@@ -94,3 +94,11 @@ def test_FourDConjugateGradientExample(four_d_data_dir):
 
 def test_FourDROOSTERExample(four_d_data_dir):
     run_example(four_d_data_dir, "FourDROOSTER/FourDROOSTER.py")
+
+
+def test_SpectralOneStep(tmp_path):
+    run_example(tmp_path, "SpectralOneStep/SpectralOneStep.py")
+
+
+def test_SpectralTwoStep(tmp_path):
+    run_example(tmp_path, "SpectralTwoStep/SpectralTwoStep.py")

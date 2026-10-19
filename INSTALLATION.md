@@ -55,12 +55,14 @@ This installs:
 To run RTK Python tests with pytest, install the test dependencies from the directory containing `pyproject.toml`:
 
 ```
-pip install --group test
+pip install --group test itk-rtk
 ```
 
 This installs:
 * `pytest>=7.0` - for running Python unit tests
 * `matplotlib` - for visualization in tests
+* `spekpy` - for generating x-ray spectra
+* `xraylib` - for retrieving tabulated x-ray attenuation coefficients
 
 After installing, run the tests with:
 ```
