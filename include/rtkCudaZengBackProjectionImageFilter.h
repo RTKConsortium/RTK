@@ -70,6 +70,8 @@ protected:
   CudaZengBackProjectionImageFilter();
   ~CudaZengBackProjectionImageFilter() override;
   void
+  GenerateInputRequestedRegion() override;
+  void
   GPUGenerateData() override;
 
 private:

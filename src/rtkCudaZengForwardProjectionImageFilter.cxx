@@ -37,6 +37,23 @@ CudaZengForwardProjectionImageFilter::~CudaZengForwardProjectionImageFilter()
 }
 
 void
+CudaZengForwardProjectionImageFilter::EnlargeOutputRequestedRegion(itk::DataObject * output)
+{
+  Superclass::EnlargeOutputRequestedRegion(output);
+  auto * image = dynamic_cast<ImageType *>(output);
+  if (!image)
+    return;
+  auto         requested = image->GetRequestedRegion();
+  const auto & largest = image->GetLargestPossibleRegion();
+  for (unsigned int dimension = 0; dimension < 2; ++dimension)
+  {
+    requested.SetIndex(dimension, largest.GetIndex(dimension));
+    requested.SetSize(dimension, largest.GetSize(dimension));
+  }
+  image->SetRequestedRegion(requested);
+}
+
+void
 CudaZengForwardProjectionImageFilter::GPUGenerateData()
 {
   const auto * geometry = this->GetGeometry();
@@ -138,6 +155,17 @@ CudaZengForwardProjectionImageFilter::GPUGenerateData()
   const float * volume = static_cast<float *>(this->GetInput(1)->GetCudaDataManager()->GetGPUBufferPointer());
   const float * attenuation =
     this->GetInput(2) ? static_cast<float *>(this->GetInput(2)->GetCudaDataManager()->GetGPUBufferPointer()) : nullptr;
+  int attenuationSize[3] = { 0, 0, 0 };
+  int attenuationOffset[3] = { 0, 0, 0 };
+  if (this->GetInput(2))
+  {
+    const auto & attenuationRegion = this->GetInput(2)->GetBufferedRegion();
+    for (unsigned int d = 0; d < 3; ++d)
+    {
+      attenuationSize[d] = static_cast<int>(attenuationRegion.GetSize(d));
+      attenuationOffset[d] = static_cast<int>(volumeRegion.GetIndex(d) - attenuationRegion.GetIndex(d));
+    }
+  }
 
   CUDA_zeng_forward_project(projectionSize,
                             volumeSize,
@@ -149,6 +177,8 @@ CudaZengForwardProjectionImageFilter::GPUGenerateData()
                             projectionOut,
                             volume,
                             attenuation,
+                            attenuationSize,
+                            attenuationOffset,
                             static_cast<float>(this->GetSigmaZero()),
                             static_cast<float>(this->GetAlpha()),
                             m_BatchSize,

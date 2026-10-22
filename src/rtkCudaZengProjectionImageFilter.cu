@@ -73,18 +73,61 @@ trilinearZero(const float * image, int3 size, float3 p)
   return result;
 }
 
+__device__ float
+trilinearAttenuationFactor(const float * image, int3 size, float3 p, float step)
+{
+  // Match the CPU path: exponentiate voxel coefficients before interpolation.
+  if (!(p.x >= -0.5f && p.x < size.x - 0.5f && p.y >= -0.5f && p.y < size.y - 0.5f && p.z >= -0.5f &&
+        p.z < size.z - 0.5f))
+    return 1.f;
+  p.x = fminf(fmaxf(p.x, 0.f), static_cast<float>(size.x - 1));
+  p.y = fminf(fmaxf(p.y, 0.f), static_cast<float>(size.y - 1));
+  p.z = fminf(fmaxf(p.z, 0.f), static_cast<float>(size.z - 1));
+  const int   x0 = static_cast<int>(floorf(p.x));
+  const int   y0 = static_cast<int>(floorf(p.y));
+  const int   z0 = static_cast<int>(floorf(p.z));
+  const float fx = p.x - x0, fy = p.y - y0, fz = p.z - z0;
+  float       result = 0.f;
+  for (int dz = 0; dz <= 1; ++dz)
+    for (int dy = 0; dy <= 1; ++dy)
+      for (int dx = 0; dx <= 1; ++dx)
+      {
+        const int   x = x0 + dx, y = y0 + dy, z = z0 + dz;
+        const float weight = (dx ? fx : 1.f - fx) * (dy ? fy : 1.f - fy) * (dz ? fz : 1.f - fz);
+        const float factor = (x >= 0 && x < size.x && y >= 0 && y < size.y && z >= 0 && z < size.z)
+                               ? expf(-step * image[(z * size.y + y) * size.x + x])
+                               : 1.f;
+        result += weight * factor;
+      }
+  return result;
+}
+
 std::vector<float>
 discreteGaussianCoefficients(double variance)
 {
   if (variance <= 1.e-12)
     return { 1.f };
-  constexpr double    maximumError = 1.e-5;
-  const double        exponential = std::exp(-variance);
-  std::vector<double> coefficients{ exponential * std::cyl_bessel_i(0., variance) };
+  constexpr double maximumError = 1.e-5;
+  const auto       scaledBessel = [variance](int order) {
+    if (variance < 500.)
+      return std::exp(-variance) * std::cyl_bessel_i(static_cast<double>(order), variance);
+    constexpr int    intervals = 4096;
+    constexpr double pi = 3.14159265358979323846;
+    const double     step = pi / intervals;
+    double           sum = 0.;
+    for (int i = 0; i <= intervals; ++i)
+    {
+      const double angle = i * step;
+      const double value = std::exp(variance * (std::cos(angle) - 1.)) * std::cos(order * angle);
+      sum += (i == 0 || i == intervals) ? value : (i % 2 ? 4. : 2.) * value;
+    }
+    return std::max(0., step * sum / (3. * pi));
+  };
+  std::vector<double> coefficients{ scaledBessel(0) };
   double              sum = coefficients[0];
   for (int order = 1; sum < 1. - maximumError; ++order)
   {
-    const double coefficient = exponential * std::cyl_bessel_i(static_cast<double>(order), variance);
+    const double coefficient = scaledBessel(order);
     coefficients.push_back(coefficient);
     sum += 2. * coefficient;
     if (coefficient <= 0. || coefficients.size() > MaximumRadius)
@@ -476,6 +519,8 @@ sampleForward(float *       current,
               const float * volume,
               const float * attenuation,
               int3          volumeSize,
+              int3          attenuationSize,
+              int3          attenuationOffset,
               const float * matrices,
               const int *   firstSlices,
               int           width,
@@ -498,7 +543,11 @@ sampleForward(float *       current,
   if (addPrevious)
     value += previous[offset];
   if (attenuation)
-    value *= expf(-attenuationStep * trilinearZero(attenuation, volumeSize, position));
+    value *= trilinearAttenuationFactor(
+      attenuation,
+      attenuationSize,
+      make_float3(position.x + attenuationOffset.x, position.y + attenuationOffset.y, position.z + attenuationOffset.z),
+      attenuationStep);
   current[offset] = value;
 }
 
@@ -543,17 +592,19 @@ storeSlices(const float * current,
 }
 
 __global__ void
-attenuate(float *             current,
-          cudaTextureObject_t attenuation,
-          int3                volumeSize,
-          const float *       inverseMatrices,
-          int                 width,
-          int                 height,
-          int                 z,
-          const int *         firstSlices,
-          bool                firstSlice,
-          float               step,
-          int                 batchStart)
+attenuate(float *       current,
+          const float * attenuation,
+          int3          volumeSize,
+          int3          attenuationSize,
+          int3          attenuationOffset,
+          const float * inverseMatrices,
+          int           width,
+          int           height,
+          int           z,
+          const int *   firstSlices,
+          bool          firstSlice,
+          float         step,
+          int           batchStart)
 {
   const int x = blockIdx.x * blockDim.x + threadIdx.x;
   const int y = blockIdx.y * blockDim.y + threadIdx.y;
@@ -564,9 +615,15 @@ attenuate(float *             current,
   const int    slice = firstSlice ? firstSlices[projection] : z;
   const float3 position = applyMatrix(inverseMatrices + 12 * projection, x, y, slice);
   const size_t offset = static_cast<size_t>(localProjection) * width * height + y * width + x;
-  if (position.x >= 0.f && position.x < volumeSize.x && position.y >= 0.f && position.y < volumeSize.y &&
-      position.z >= 0.f && position.z < volumeSize.z)
-    current[offset] *= expf(-step * tex3D<float>(attenuation, position.x, position.y, position.z));
+  current[offset] *= trilinearAttenuationFactor(attenuation,
+                                                attenuationSize,
+                                                // inverseMatrices contains the half-texel offset used by
+                                                // the former CUDA texture lookup; trilinearAttenuationFactor
+                                                // instead uses ITK's voxel-centre coordinates.
+                                                make_float3(position.x - 0.5f + attenuationOffset.x,
+                                                            position.y - 0.5f + attenuationOffset.y,
+                                                            position.z - 0.5f + attenuationOffset.z),
+                                                step);
 }
 
 __global__ void
@@ -627,6 +684,8 @@ CUDA_zeng_forward_project(const int     projectionSize[3],
                           float *       devProjectionOut,
                           const float * devVolume,
                           const float * devAttenuation,
+                          const int     attenuationSize[3],
+                          const int     attenuationOffset[3],
                           float         sigmaZero,
                           float         alpha,
                           unsigned int  requestedBatchSize,
@@ -686,7 +745,15 @@ CUDA_zeng_forward_project(const int     projectionSize[3],
       const float finalVariance = (alpha * nearDistance + sigmaZero) * (alpha * nearDistance + sigmaZero);
       appendGaussian(metadata, cache, finalVariance, rotatedSpacing[0], rotatedSpacing[1]);
     }
-    uploadMetadata(deviceMetadata, std::move(metadata), rotatedToVolumeMatrices, {}, firstSlices, projections);
+    try
+    {
+      uploadMetadata(deviceMetadata, std::move(metadata), rotatedToVolumeMatrices, {}, firstSlices, projections);
+    }
+    catch (...)
+    {
+      workspace.metadata.erase(iterator);
+      throw;
+    }
   }
 
   const unsigned int desiredBatchSize = requestedBatchSize
@@ -695,6 +762,8 @@ CUDA_zeng_forward_project(const int     projectionSize[3],
   const unsigned int batchSize = allocateBatch(workspace, desiredBatchSize, depth, pixels, false);
   const dim3         block(16, 16);
   const int3         cudaVolumeSize = make_int3(volumeSize[0], volumeSize[1], volumeSize[2]);
+  const int3         cudaAttenuationSize = make_int3(attenuationSize[0], attenuationSize[1], attenuationSize[2]);
+  const int3 cudaAttenuationOffset = make_int3(attenuationOffset[0], attenuationOffset[1], attenuationOffset[2]);
   for (int batchStart = 0; batchStart < projections; batchStart += batchSize)
   {
     const int  batchCount = std::min<int>(batchSize, projections - batchStart);
@@ -704,6 +773,8 @@ CUDA_zeng_forward_project(const int     projectionSize[3],
                                    devVolume,
                                    devAttenuation,
                                    cudaVolumeSize,
+                                   cudaAttenuationSize,
+                                   cudaAttenuationOffset,
                                    deviceMetadata.matrices,
                                    deviceMetadata.firstSlices,
                                    rotatedSize[0],
@@ -729,6 +800,8 @@ CUDA_zeng_forward_project(const int     projectionSize[3],
                                      devVolume,
                                      devAttenuation,
                                      cudaVolumeSize,
+                                     cudaAttenuationSize,
+                                     cudaAttenuationOffset,
                                      deviceMetadata.matrices,
                                      deviceMetadata.firstSlices,
                                      rotatedSize[0],
@@ -766,6 +839,8 @@ CUDA_zeng_back_project(const int     projectionSize[3],
                        float *       devVolumeOut,
                        const float * devProjections,
                        const float * devAttenuation,
+                       const int     attenuationSize[3],
+                       const int     attenuationOffset[3],
                        float         sigmaZero,
                        float         alpha,
                        unsigned int  requestedBatchSize,
@@ -814,7 +889,15 @@ CUDA_zeng_back_project(const int     projectionSize[3],
       appendGaussian(metadata, cache, initialVariance, rotatedSpacing[0], rotatedSpacing[1]);
       invertAffine(volumeToRotatedMatrices + 12 * projection, inverseMatrices.data() + 12 * projection);
     }
-    uploadMetadata(deviceMetadata, std::move(metadata), volumeToRotatedMatrices, inverseMatrices, first, projections);
+    try
+    {
+      uploadMetadata(deviceMetadata, std::move(metadata), volumeToRotatedMatrices, inverseMatrices, first, projections);
+    }
+    catch (...)
+    {
+      workspace.metadata.erase(iterator);
+      throw;
+    }
   }
 
   const unsigned int desiredBatchSize = requestedBatchSize
@@ -824,20 +907,12 @@ CUDA_zeng_back_project(const int     projectionSize[3],
   const size_t       volumeBytes = static_cast<size_t>(volumeSize[0]) * volumeSize[1] * volumeSize[2] * sizeof(float);
   if (devVolumeOut != devVolumeIn)
     cudaMemcpy(devVolumeOut, devVolumeIn, volumeBytes, cudaMemcpyDeviceToDevice);
-  cudaArray *         attenuationArray = nullptr;
-  cudaTextureObject_t attenuationTexture = 0;
-  if (devAttenuation)
-    prepareScalarTextureObject(const_cast<int *>(volumeSize),
-                               const_cast<float *>(devAttenuation),
-                               attenuationArray,
-                               attenuationTexture,
-                               false,
-                               true,
-                               cudaAddressModeClamp);
   const dim3 block2(16, 16);
   const dim3 block3(8, 8, 4);
   const dim3 grid3(iDivUp(volumeSize[0], 8), iDivUp(volumeSize[1], 8), iDivUp(volumeSize[2], 4));
   const int3 cudaVolumeSize = make_int3(volumeSize[0], volumeSize[1], volumeSize[2]);
+  const int3 cudaAttenuationSize = make_int3(attenuationSize[0], attenuationSize[1], attenuationSize[2]);
+  const int3 cudaAttenuationOffset = make_int3(attenuationOffset[0], attenuationOffset[1], attenuationOffset[2]);
   const int3 cudaRotatedSize = make_int3(rotatedSize[0], rotatedSize[1], rotatedSize[2]);
   for (int batchStart = 0; batchStart < projections; batchStart += batchSize)
   {
@@ -847,10 +922,12 @@ CUDA_zeng_back_project(const int     projectionSize[3],
     const dim3 grid2(iDivUp(rotatedSize[0], 16), iDivUp(rotatedSize[1], 16), batchCount);
     cudaMemset(workspace.rotated, 0, static_cast<size_t>(batchCount) * depth * pixels * sizeof(float));
     copyProjections<<<dim3(iDivUp(pixels, 256), batchCount), 256>>>(devProjections, current, pixels, batchStart);
-    if (attenuationTexture)
+    if (devAttenuation)
       attenuate<<<grid2, block2>>>(current,
-                                   attenuationTexture,
+                                   devAttenuation,
                                    cudaVolumeSize,
+                                   cudaAttenuationSize,
+                                   cudaAttenuationOffset,
                                    deviceMetadata.inverseMatrices,
                                    rotatedSize[0],
                                    rotatedSize[1],
@@ -876,10 +953,12 @@ CUDA_zeng_back_project(const int     projectionSize[3],
         current, workspace.rotated, pixels, depth, z, deviceMetadata.firstSlices, batchStart);
       if (z + 1 == depth)
         break;
-      if (attenuationTexture)
+      if (devAttenuation)
         attenuate<<<grid2, block2>>>(current,
-                                     attenuationTexture,
+                                     devAttenuation,
                                      cudaVolumeSize,
+                                     cudaAttenuationSize,
+                                     cudaAttenuationOffset,
                                      deviceMetadata.inverseMatrices,
                                      rotatedSize[0],
                                      rotatedSize[1],
@@ -908,11 +987,6 @@ CUDA_zeng_back_project(const int     projectionSize[3],
                                        batchStart,
                                        batchCount,
                                        rotatedSpacing[2]);
-  }
-  if (attenuationArray)
-  {
-    cudaDestroyTextureObject(attenuationTexture);
-    cudaFreeArray(attenuationArray);
   }
   CUDA_CHECK_ERROR;
 }

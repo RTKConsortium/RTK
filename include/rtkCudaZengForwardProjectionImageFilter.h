@@ -70,6 +70,8 @@ protected:
   CudaZengForwardProjectionImageFilter();
   ~CudaZengForwardProjectionImageFilter() override;
   void
+  EnlargeOutputRequestedRegion(itk::DataObject * output) override;
+  void
   GPUGenerateData() override;
 
 private:
