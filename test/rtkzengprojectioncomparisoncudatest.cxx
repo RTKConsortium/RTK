@@ -117,7 +117,7 @@ rtkzengprojectioncomparisoncudatest(int, char *[])
 
   auto geometry = rtk::ThreeDCircularProjectionGeometry::New();
   for (unsigned int projection = 0; projection < 4; ++projection)
-    geometry->AddProjection(100., 0., projection * 90.);
+    geometry->AddProjection(100., 0., 45. + projection * 90.);
 
   using CPUForwardType = rtk::ZengForwardProjectionImageFilter<CPUImageType, CPUImageType>;
   auto cpuForward = CPUForwardType::New();
