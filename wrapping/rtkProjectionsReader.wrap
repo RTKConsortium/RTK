@@ -6,5 +6,6 @@ itk_wrap_class("rtk::ProjectionsReader" POINTER)
   #WARNING: "UC;${WRAP_ITK_REAL}" is too restrictive.
   # Types should be similar to vnl wrapped types :
   #  "D;F;SI;SL;LD;SC;UC;US;UI;UL"
-  #Removing VectorImage<> (VI) and WRAP_ITK_SCALAR
+  #Removing WRAP_ITK_SCALAR
+  itk_wrap_template("VI${ITKM_F}3" "itk::VectorImage<${ITKT_F}, 3>")
 itk_end_wrap_class()
