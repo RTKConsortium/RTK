@@ -197,6 +197,39 @@ rtkzengprojectioncomparisoncudatest(int, char *[])
   }
   CheckError("Attenuated backprojection", RelativeL2Error(cpuBack->GetOutput(), cudaBack->GetOutput()), 2.e-3);
 
+  // A spatially varying map catches the otherwise non-commutative order of
+  // attenuation interpolation and exponentiation.
+  auto cpuNonUniformAttenuation = rtk::DrawEllipsoidImageFilter<CPUImageType, CPUImageType>::New();
+  cpuNonUniformAttenuation->SetInput(cpuAttenuation->GetOutput());
+  cpuNonUniformAttenuation->SetCenter(itk::MakePoint(0., 0., 0.));
+  cpuNonUniformAttenuation->SetAxis(itk::MakeVector(20., 16., 12.));
+  cpuNonUniformAttenuation->SetDensity(0.04);
+  auto cudaNonUniformAttenuation = rtk::DrawEllipsoidImageFilter<CudaImageType, CudaImageType>::New();
+  cudaNonUniformAttenuation->SetInput(cudaAttenuation->GetOutput());
+  cudaNonUniformAttenuation->SetCenter(itk::MakePoint(0., 0., 0.));
+  cudaNonUniformAttenuation->SetAxis(itk::MakeVector(20., 16., 12.));
+  cudaNonUniformAttenuation->SetDensity(0.04);
+
+  cpuForward->SetInput(2, cpuNonUniformAttenuation->GetOutput());
+  cpuForward->Modified();
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(cpuForward->Update());
+  cudaForward->SetInput(2, cudaNonUniformAttenuation->GetOutput());
+  cudaForward->Modified();
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(cudaForward->Update());
+  CheckError(
+    "Non-uniform attenuated forward", RelativeL2Error(cpuForward->GetOutput(), cudaForward->GetOutput()), 5.e-4);
+
+  cpuBack->SetInput(1, cpuForward->GetOutput());
+  cpuBack->SetInput(2, cpuNonUniformAttenuation->GetOutput());
+  cpuBack->Modified();
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(cpuBack->Update());
+  cudaBack->SetInput(1, cudaForward->GetOutput());
+  cudaBack->SetInput(2, cudaNonUniformAttenuation->GetOutput());
+  cudaBack->Modified();
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(cudaBack->Update());
+  CheckError(
+    "Non-uniform attenuated backprojection", RelativeL2Error(cpuBack->GetOutput(), cudaBack->GetOutput()), 2.e-3);
+
   std::cout << "CUDA Zeng CPU comparison test PASSED." << std::endl;
   return EXIT_SUCCESS;
 }

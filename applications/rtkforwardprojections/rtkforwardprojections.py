@@ -225,9 +225,9 @@ def process(args_info):
             forwardProjection.SetSuperiorClipImage(superiorClipImage)
         elif args_info.fp == "MIP":
             forwardProjection.SetSuperiorClipImage(superiorClipImage)
-    if args_info.sigmazero and args_info.fp in ["Zeng", "CudaZeng"]:
+    if args_info.sigmazero is not None and args_info.fp in ["Zeng", "CudaZeng"]:
         forwardProjection.SetSigmaZero(args_info.sigmazero)
-    if args_info.alphapsf and args_info.fp in ["Zeng", "CudaZeng"]:
+    if args_info.alphapsf is not None and args_info.fp in ["Zeng", "CudaZeng"]:
         forwardProjection.SetAlpha(args_info.alphapsf)
 
     forwardProjection.SetGeometry(geometry)
