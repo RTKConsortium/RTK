@@ -188,15 +188,17 @@ rtk_add_test(rtkDecomposeSpectralProjectionsTest rtkdecomposespectralprojections
 
 rtk_add_test(rtkSpectralOneStepTest rtkspectralonesteptest.cxx
   DATA{Input/Spectral/OneStep/no_vector_incident_spectrum_64_rows.mha}
-  DATA{Input/Spectral/OneStep/incident_spectrum_64_rows.mha}
   DATA{Input/Spectral/detector_response.mha}
   DATA{Input/Spectral/material_attenuations.mha}
 )
 rtk_add_cuda_test(rtkSpectralOneStepCudaTest rtkspectralonesteptest.cxx
   DATA{Input/Spectral/OneStep/no_vector_incident_spectrum_64_rows.mha}
-  DATA{Input/Spectral/OneStep/incident_spectrum_64_rows.mha}
   DATA{Input/Spectral/detector_response.mha}
   DATA{Input/Spectral/material_attenuations.mha}
+)
+
+rtk_add_test(rtkProjectionsReaderVectorImageTest rtkprojectionsreadervectorimagetest.cxx
+  DATA{Input/Spectral/OneStep/photonCounts.mha}
 )
 
 rtk_add_test(rtkVectorImageConvertersTest rtkvectorimageconverterstest.cxx)

@@ -61,6 +61,9 @@ MechlemOneStepSpectralReconstructionFilter<TOutputImage, TMeasuredProjections, T
   m_MultiplySupportFilter = MultiplyFilterType::New();
   m_ReorderMeasuredProjectionsFilter = ReorderMeasuredProjectionsFilterType::New();
   m_ReorderProjectionsWeightsFilter = ReorderProjectionsWeightsFilterType::New();
+  m_FlattenVectorSpectrumFilter = FlattenVectorSpectrumFilterType::New();
+  m_PermuteSpectrumFilter = PermuteSpectrumFilterType::New();
+  m_CastIncidentSpectrumFilter = CastIncidentSpectrumFilterType::New();
 
   // Set permanent parameters
   m_ProjectionsSource->SetConstant(itk::NumericTraits<typename TOutputImage::PixelType>::ZeroValue());
@@ -117,6 +120,22 @@ MechlemOneStepSpectralReconstructionFilter<TOutputImage, TMeasuredProjections, T
   SetInputIncidentSpectrum(const TIncidentSpectrum * incidentSpectrum)
 {
   this->SetNthInput(2, const_cast<TIncidentSpectrum *>(incidentSpectrum));
+}
+
+template <class TOutputImage, class TMeasuredProjections, class TIncidentSpectrum>
+void
+MechlemOneStepSpectralReconstructionFilter<TOutputImage, TMeasuredProjections, TIncidentSpectrum>::
+  SetInputIncidentSpectrum(const VectorSpectrumImageType * incidentSpectrum)
+{
+  m_FlattenVectorSpectrumFilter->SetInput(incidentSpectrum);
+  m_PermuteSpectrumFilter->SetInput(m_FlattenVectorSpectrumFilter->GetOutput());
+  typename PermuteSpectrumFilterType::PermuteOrderArrayType order;
+  order[0] = 2;
+  order[1] = 0;
+  order[2] = 1;
+  m_PermuteSpectrumFilter->SetOrder(order);
+  m_CastIncidentSpectrumFilter->SetInput(m_PermuteSpectrumFilter->GetOutput());
+  this->SetInputIncidentSpectrum(m_CastIncidentSpectrumFilter->GetOutput());
 }
 
 #ifndef ITK_FUTURE_LEGACY_REMOVE

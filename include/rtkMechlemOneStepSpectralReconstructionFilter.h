@@ -27,16 +27,19 @@
 #include "rtkReorderProjectionsImageFilter.h"
 #include "rtkSeparableQuadraticSurrogateRegularizationImageFilter.h"
 #include "rtkThreeDCircularProjectionGeometry.h"
+#include "rtkVectorImageToImageFilter.h"
 #include "rtkWeidingerForwardModelImageFilter.h"
 
 #include <itkAddImageFilter.h>
 #include <itkExtractImageFilter.h>
 #include <itkMultiplyImageFilter.h>
+#include <itkPermuteAxesImageFilter.h>
 
 #include <itkCastImageFilter.h>
 
 #ifdef RTK_USE_CUDA
 #  include "rtkCudaWeidingerForwardModelImageFilter.h"
+#  include <itkCudaImageFromImageFilter.h>
 #endif
 
 namespace rtk
@@ -185,6 +188,25 @@ public:
   using SingleComponentImageType =
     typename TOutputImage::template RebindImageType<dataType, TOutputImage::ImageDimension>;
 
+  // Vector incident spectra are flattened with CPU iterators first. When the reconstruction uses CUDA, the transfer to
+  // TIncidentSpectrum must happen after this CPU-only conversion step.
+  using CPUIncidentSpectrumType = itk::Image<dataType, TIncidentSpectrum::ImageDimension>;
+  using VectorSpectrumImageType = itk::VectorImage<dataType, TIncidentSpectrum::ImageDimension - 1>;
+  using FlattenVectorSpectrumFilterType =
+    rtk::VectorImageToImageFilter<VectorSpectrumImageType, CPUIncidentSpectrumType>;
+  using PermuteSpectrumFilterType = itk::PermuteAxesImageFilter<CPUIncidentSpectrumType>;
+#ifdef RTK_USE_CUDA
+  // The VectorImage overload first converts the spectrum to a scalar CPU image. When the reconstruction uses CUDA, that
+  // CPU image must then be adapted to itk::CudaImage; a plain CastImageFilter would leave the CUDA data manager
+  // uninitialized and CudaWeidingerForwardModelImageFilter would read an invalid GPU buffer.
+  using CastIncidentSpectrumFilterType =
+    std::conditional_t<std::is_same_v<TIncidentSpectrum, CPUIncidentSpectrumType>,
+                       itk::CastImageFilter<CPUIncidentSpectrumType, TIncidentSpectrum>,
+                       itk::CudaImageFromImageFilter<CPUIncidentSpectrumType>>;
+#else
+  using CastIncidentSpectrumFilterType = itk::CastImageFilter<CPUIncidentSpectrumType, TIncidentSpectrum>;
+#endif
+
 #if !defined(ITK_WRAPPING_PARSER)
 #  ifdef RTK_USE_CUDA
   using WeidingerForwardModelType = typename std::conditional_t<
@@ -264,6 +286,8 @@ public:
   SetInputMeasuredProjections(const VectorImageType * measuredProjections);
   void
   SetInputIncidentSpectrum(const TIncidentSpectrum * incidentSpectrum);
+  void
+  SetInputIncidentSpectrum(const VectorSpectrumImageType * incidentSpectrum);
 #ifndef ITK_FUTURE_LEGACY_REMOVE
   void
   SetInputPhotonCounts(const TMeasuredProjections * measuredProjections);
@@ -332,6 +356,9 @@ protected:
   typename MultiplyGradientFilterType::Pointer                 m_MultiplyGradientToBeBackprojectedFilter;
   typename ReorderMeasuredProjectionsFilterType::Pointer       m_ReorderMeasuredProjectionsFilter;
   typename ReorderProjectionsWeightsFilterType::Pointer        m_ReorderProjectionsWeightsFilter;
+  typename FlattenVectorSpectrumFilterType::Pointer            m_FlattenVectorSpectrumFilter;
+  typename PermuteSpectrumFilterType::Pointer                  m_PermuteSpectrumFilter;
+  typename CastIncidentSpectrumFilterType::Pointer             m_CastIncidentSpectrumFilter;
 #endif
 
   /** The inputs of this filter have the same type but not the same meaning
