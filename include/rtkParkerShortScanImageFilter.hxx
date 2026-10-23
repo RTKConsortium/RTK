@@ -95,15 +95,15 @@ ParkerShortScanImageFilter<TInputImage, TOutputImage>::GenerateInputRequestedReg
     double invsid = 1. / sqrt(sid * sid + sox * sox);
 
     // Check that Parker weighting is relevant for this projection
-    double halfDetectorWidth1 = std::abs(m_Geometry->ToUntiltedCoordinateAtIsocenter(k, corner1[0]));
-    double halfDetectorWidth2 = std::abs(m_Geometry->ToUntiltedCoordinateAtIsocenter(k, corner2[0]));
-    double halfDetectorWidth = std::min(halfDetectorWidth1, halfDetectorWidth2);
-    if (m_Delta < atan(halfDetectorWidth * invsid))
+    double halfBeamAngle =
+      std::max(std::abs(atan(m_Geometry->ToUntiltedCoordinateAtIsocenter(k, corner1[0]) * invsid)),
+               std::abs(atan(m_Geometry->ToUntiltedCoordinateAtIsocenter(k, corner2[0]) * invsid)));
+    if (m_Delta < halfBeamAngle)
     {
       itkWarningMacro(<< "You do not have enough data for proper Parker weighting (short scan)"
                       << " according to projection #" << k << ". Delta is " << m_Delta * 180. / itk::Math::pi
                       << " degrees and should be more than half the beam angle, i.e. "
-                      << atan(halfDetectorWidth * invsid) * 180. / itk::Math::pi << " degrees.");
+                      << halfBeamAngle * 180. / itk::Math::pi << " degrees.");
       return;
     }
   }
