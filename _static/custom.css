@@ -12,3 +12,11 @@ body[data-theme="dark"] img[src$=".svg"] {
     filter: invert(1);
   }
 }
+
+/* Hide the auto-generated argparse usage block, which duplicates the
+   options tables produced by sphinx-argparse. */
+.argparse-no-usage > div.highlight-default.notranslate,
+.argparse-no-usage > div.highlight-none.notranslate,
+.argparse-no-usage > div.highlight {
+  display: none;
+}

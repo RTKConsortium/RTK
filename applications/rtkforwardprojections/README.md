@@ -11,3 +11,15 @@ This script uses the files [00.mhd](http://www.creatis.insa-lyon.fr/~srit/POPI/M
 Note that the original file is in Hounsfield units which explains the negative values in the projection images since, e.g., the attenuation of air is -1000 HU.
 
 It is also worth of note that the file is oriented in the DICOM coordinate system although RTK uses the IEC 61217 which results in a rotation around the antero-posterior axis of the patient. This can be easily changed by modifying the TransformMatrix in the 00.mhd file.
+
+
+## Command line options
+
+::::{container} argparse-no-usage
+```{eval-rst}
+.. argparse::
+  :filename: applications/rtkforwardprojections/rtkforwardprojections.py
+  :func: build_parser
+  :nodescription:
+```
+::::

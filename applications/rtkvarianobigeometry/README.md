@@ -31,7 +31,7 @@ Reconstruct a slice (e.g., slice 30) of the volume using the `rtkfdk` algorithm:
 ```bash
 rtkfdk \
   --geometry geometry.xml \
-  --regexp .*\.hnd \
+  --regexp .*\\.hnd \
   --path Scan0 \
   --output slice30.mha \
   --verbose \
@@ -47,7 +47,7 @@ Apply the field-of-view (FOV) filter to discard everything outside the FOV:
 ```bash
 rtkfieldofview \
   --geometry geometry.xml \
-  --regexp .*\.hnd \
+  --regexp .*\\.hnd \
   --path Scan0 \
   --reconstruction slice30.mha \
   --output slice30.mha \
@@ -90,7 +90,7 @@ Reconstruct a slice (e.g., slice 58) of the volume using the `rtkfdk` algorithm:
 ```bash
 rtkfdk \
   --geometry geometry.xml \
-  --regexp .*\.xim \
+  --regexp .*\\.xim \
   --path Acquisitions/733061622 \
   --output slice58.mha \
   --verbose \
@@ -106,7 +106,7 @@ Apply the field-of-view (FOV) filter to discard everything outside the FOV:
 ```bash
 rtkfieldofview \
   --geometry geometry.xml \
-  --regexp .*\.xim \
+  --regexp .*\\.xim \
   --path Acquisitions/733061622 \
   --reconstruction slice58.mha \
   --output slice58.mha \
@@ -118,5 +118,17 @@ rtkfieldofview \
 You can visualize the result using a viewer (e.g., VV). The resulting image should look like this:
 
 ![../../documentation/docs/ExternalData/VarianProBeam](../../documentation/docs/ExternalData/VarianProBeam.png){w=400px alt="VarianProBeam snapshot"}
-`````
 ````
+`````
+
+
+## Command line options
+
+::::{container} argparse-no-usage
+```{eval-rst}
+.. argparse::
+  :filename: applications/rtkvarianobigeometry/rtkvarianobigeometry.py
+  :func: build_parser
+  :nodescription:
+```
+::::

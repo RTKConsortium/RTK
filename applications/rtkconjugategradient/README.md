@@ -39,3 +39,16 @@ In the presence of noise, all projection data may not be equally reliable. The c
 ```
 ````
 `````
+
+
+## Command line options
+
+
+::::{container} argparse-no-usage
+```{eval-rst}
+.. argparse::
+	:filename: applications/rtkconjugategradient/rtkconjugategradient.py
+	:func: build_parser
+	:nodescription:
+```
+::::

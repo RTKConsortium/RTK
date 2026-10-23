@@ -11,3 +11,15 @@ This script uses the SheppLogan phantom.
 ```
 
 For projector choices and options, see the Projectors documentation: [documentation/docs/Projectors.md](../../documentation/docs/Projectors.md).
+
+
+## Command line options
+
+::::{container} argparse-no-usage
+```{eval-rst}
+.. argparse::
+	:filename: applications/rtksart/rtksart.py
+	:func: build_parser
+	:nodescription:
+```
+::::

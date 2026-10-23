@@ -26,3 +26,16 @@ rtkextractshroudsignal --input shroud.mha \
 Phase is commonly measured in radians, with values in $[0,2\pi[$, but in RTK it is normalized to $[0,1[$, where 0.3 corresponds to 30% in the respiratory cycle, i.e., frame 3 if you have a 10-frames 4D reconstruction or frame 6 if you have a 20-frames 4D reconstruction. The [resulting phase](https://data.kitware.com/api/v1/item/5be99af98d777f2179a2e160/download) is in green on top of the blue respiratory signal and the detected end-exhale peaks:
 
 ![Signal](../../documentation/docs/ExternalData/Signal.jpg){w=800px alt="Phase signal"}
+
+
+## Command line options
+
+
+::::{container} argparse-no-usage
+```{eval-rst}
+.. argparse::
+  :filename: applications/rtkamsterdamshroud/rtkamsterdamshroud.py
+  :func: build_parser
+  :nodescription:
+```
+::::
