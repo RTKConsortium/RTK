@@ -22,6 +22,8 @@
 #include "RTKExport.h"
 #include "rtkProjectionGeometry.h"
 
+#include <itkImageRegion.h>
+
 namespace rtk
 {
 /** \class ThreeDCircularProjectionGeometry
@@ -149,6 +151,38 @@ public:
   /** Empty the geometry object. */
   void
   Clear() override;
+
+  /** Get the number of projections of the geometry. */
+  unsigned int
+  GetNumberOfProjections() const
+  {
+    return static_cast<unsigned int>(this->GetMatrices().size());
+  }
+
+  /** Check that the projections of a stack fit in the geometry, i.e. that they
+   * do not go beyond its last projection. The stack may hold a subset of the
+   * projections of the geometry. The projection dimension is the last dimension
+   * of the stack.
+   * \param geometry geometry combined with the projection stack
+   * \param projRegion region of the projection stack
+   */
+  template <unsigned int VImageDimension>
+  static void
+  CheckNumberOfProjections(const ThreeDCircularProjectionGeometry &  geometry,
+                           const itk::ImageRegion<VImageDimension> & projRegion)
+  {
+    const unsigned int nProjGeometry = geometry.GetNumberOfProjections();
+    const unsigned int nProj = static_cast<unsigned int>(projRegion.GetSize(VImageDimension - 1));
+    const unsigned int firstProj = static_cast<unsigned int>(projRegion.GetIndex(VImageDimension - 1));
+
+    // Written so that firstProj + nProj cannot overflow.
+    if (nProj <= nProjGeometry && firstProj <= nProjGeometry - nProj)
+      return;
+
+    itkGenericExceptionMacro(<< "The projection stack contains " << nProj << " projections starting at index "
+                             << firstProj << ", which does not fit in the " << nProjGeometry
+                             << " projections of the geometry.");
+  }
 
   /** Get the vector of geometry parameters (one per projection). Angles are
    * in radians.*/
