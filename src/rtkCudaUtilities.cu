@@ -83,7 +83,7 @@ GetFreeGPUGlobalMemory(int device)
 }
 
 __host__ void
-prepareScalarTextureObject(int                          size[3],
+prepareScalarTextureObject(itk::SizeValueType           size[3],
                            float *                      dev_ptr,
                            cudaArray *&                 threeDArray,
                            cudaTextureObject_t &        tex,
@@ -136,7 +136,7 @@ prepareScalarTextureObject(int                          size[3],
 }
 
 __host__ void
-prepareVectorTextureObject(int                                size[3],
+prepareVectorTextureObject(itk::SizeValueType                 size[3],
                            const float *                      dev_ptr,
                            std::vector<cudaArray *> &         componentArrays,
                            const unsigned int                 nComponents,

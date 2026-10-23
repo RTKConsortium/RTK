@@ -40,9 +40,9 @@
 #include <cuda.h>
 
 // Constant memory
-__constant__ float c_matrices[SLAB_SIZE * 12]; // Can process stacks of at most SLAB_SIZE projections
-__constant__ int3  c_projSize;
-__constant__ int3  c_vol_size;
+__constant__ float          c_matrices[SLAB_SIZE * 12]; // Can process stacks of at most SLAB_SIZE projections
+__constant__ SizeValueType3 c_projSize;
+__constant__ SizeValueType3 c_vol_size;
 
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 // K E R N E L S -_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
@@ -52,9 +52,9 @@ __constant__ int3  c_vol_size;
 __global__ void
 kernel_fdk_3Dgrid(float * dev_vol_in, float * dev_vol_out, cudaTextureObject_t tex_proj)
 {
-  itk::SizeValueType i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
-  itk::SizeValueType j = __umul24(blockIdx.y, blockDim.y) + threadIdx.y;
-  itk::SizeValueType k = __umul24(blockIdx.z, blockDim.z) + threadIdx.z;
+  itk::IndexValueType i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
+  itk::IndexValueType j = __umul24(blockIdx.y, blockDim.y) + threadIdx.y;
+  itk::IndexValueType k = __umul24(blockIdx.z, blockDim.z) + threadIdx.z;
 
   if (i >= c_vol_size.x || j >= c_vol_size.y || k >= c_vol_size.z)
   {
@@ -62,7 +62,7 @@ kernel_fdk_3Dgrid(float * dev_vol_in, float * dev_vol_out, cudaTextureObject_t t
   }
 
   // Index row major into the volume
-  itk::SizeValueType vol_idx = i + (j + k * c_vol_size.y) * (c_vol_size.x);
+  itk::OffsetValueType vol_idx = i + (j + k * c_vol_size.y) * (c_vol_size.x);
 
   float3 ip;
   float  voxel_data = 0;
@@ -93,16 +93,16 @@ kernel_fdk_3Dgrid(float * dev_vol_in, float * dev_vol_out, cudaTextureObject_t t
 ///////////////////////////////////////////////////////////////////////////
 // FUNCTION: CUDA_back_project /////////////////////////////
 void
-CUDA_reconstruct_conebeam(int     proj_size[3],
-                          int     vol_size[3],
-                          float * matrices,
-                          float * dev_vol_in,
-                          float * dev_vol_out,
-                          float * dev_proj)
+CUDA_reconstruct_conebeam(itk::SizeValueType proj_size[3],
+                          itk::SizeValueType vol_size[3],
+                          float *            matrices,
+                          float *            dev_vol_in,
+                          float *            dev_vol_out,
+                          float *            dev_proj)
 {
   // Copy the size of inputs into constant memory
-  cudaMemcpyToSymbol(c_projSize, proj_size, sizeof(int3));
-  cudaMemcpyToSymbol(c_vol_size, vol_size, sizeof(int3));
+  cudaMemcpyToSymbol(c_projSize, proj_size, sizeof(SizeValueType3));
+  cudaMemcpyToSymbol(c_vol_size, vol_size, sizeof(SizeValueType3));
 
   // Copy the projection matrices into constant memory
   cudaMemcpyToSymbol(c_matrices, &(matrices[0]), 12 * sizeof(float) * proj_size[2]);

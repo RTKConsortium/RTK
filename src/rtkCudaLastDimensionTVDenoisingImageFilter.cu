@@ -27,7 +27,7 @@
 
 // TEXTURES AND CONSTANTS //
 
-__constant__ int4 c_Size;
+__constant__ SizeValueType4 c_Size;
 
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 // K E R N E L S -_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
@@ -45,9 +45,9 @@ denoise_oneD_TV_kernel(float * in, float * out, float beta, float gamma, int nit
   float *                 gradient = &shared[3 * c_Size.w];
 
   // Each thread reads one element into the shared buffer
-  long int gindex = ((threadIdx.x * c_Size.z + blockIdx.z) * c_Size.y + blockIdx.y) * c_Size.x + blockIdx.x;
-  int      lindex = threadIdx.x;
-  input[lindex] = in[gindex];
+  const itk::SizeValueType gindex =
+    ((threadIdx.x * c_Size.z + blockIdx.z) * c_Size.y + blockIdx.y) * c_Size.x + blockIdx.x;
+  input[threadIdx.x] = in[gindex];
   __syncthreads();
 
   ///////////////////////////////////////////////////
@@ -55,58 +55,58 @@ denoise_oneD_TV_kernel(float * in, float * out, float beta, float gamma, int nit
   // with circular padding border conditions
 
   // Multiply by beta
-  interm[lindex] = beta * input[lindex];
+  interm[threadIdx.x] = beta * input[threadIdx.x];
 
   // Compute gradient
   __syncthreads();
-  if (lindex == (c_Size.w - 1))
-    gradient[lindex] = interm[0] - interm[lindex];
+  if (threadIdx.x == (c_Size.w - 1))
+    gradient[threadIdx.x] = interm[0] - interm[threadIdx.x];
   else
-    gradient[lindex] = interm[lindex + 1] - interm[lindex];
+    gradient[threadIdx.x] = interm[threadIdx.x + 1] - interm[threadIdx.x];
 
   // Magnitude threshold (in 1D, hard threshold on absolute value)
-  if (gradient[lindex] >= 0)
-    gradient[lindex] = fminf(gradient[lindex], gamma);
+  if (gradient[threadIdx.x] >= 0)
+    gradient[threadIdx.x] = fminf(gradient[threadIdx.x], gamma);
   else
-    gradient[lindex] = fmaxf(gradient[lindex], -gamma);
+    gradient[threadIdx.x] = fmaxf(gradient[threadIdx.x], -gamma);
 
   // Rest of the iterations
   for (int iter = 0; iter < niter; iter++)
   {
     // Compute divergence
     __syncthreads();
-    if (lindex == 0)
-      interm[lindex] = gradient[lindex] - gradient[c_Size.w - 1];
+    if (threadIdx.x == 0)
+      interm[threadIdx.x] = gradient[threadIdx.x] - gradient[c_Size.w - 1];
     else
-      interm[lindex] = gradient[lindex] - gradient[lindex - 1];
+      interm[threadIdx.x] = gradient[threadIdx.x] - gradient[threadIdx.x - 1];
 
     // Subtract and store in output buffer
     __syncthreads();
-    output[lindex] = input[lindex] - interm[lindex];
+    output[threadIdx.x] = input[threadIdx.x] - interm[threadIdx.x];
 
     // Multiply by beta
     __syncthreads();
-    interm[lindex] = output[lindex] * beta;
+    interm[threadIdx.x] = output[threadIdx.x] * beta;
 
     // Compute gradient
     __syncthreads();
-    if (lindex == (c_Size.w - 1))
-      gradient[lindex] -= (interm[0] - interm[lindex]);
+    if (threadIdx.x == (c_Size.w - 1))
+      gradient[threadIdx.x] -= (interm[0] - interm[threadIdx.x]);
     else
-      gradient[lindex] -= (interm[lindex + 1] - interm[lindex]);
+      gradient[threadIdx.x] -= (interm[threadIdx.x + 1] - interm[threadIdx.x]);
 
     // Magnitude threshold
     __syncthreads();
-    if (gradient[lindex] >= 0)
-      gradient[lindex] = fminf(gradient[lindex], gamma);
+    if (gradient[threadIdx.x] >= 0)
+      gradient[threadIdx.x] = fminf(gradient[threadIdx.x], gamma);
     else
-      gradient[lindex] = fmaxf(gradient[lindex], -gamma);
+      gradient[threadIdx.x] = fmaxf(gradient[threadIdx.x], -gamma);
   }
   // Done computing 1D TV for this buffer
   ////////////////////////////////////////////////////////
 
   // Each thread writes one element from the shared buffer into the global memory
-  out[gindex] = output[lindex];
+  out[gindex] = output[threadIdx.x];
   //  out[gindex] = gindex;
 }
 
@@ -124,8 +124,8 @@ CUDA_total_variation_last_dimension(int     size[4],
                                     float   beta,
                                     int     NumberOfIterations)
 {
-  int4 dev_Size = make_int4(size[0], size[1], size[2], size[3]);
-  cudaMemcpyToSymbol(c_Size, &dev_Size, sizeof(int4));
+  SizeValueType4 dev_Size = make_ulonglong4(size[0], size[1], size[2], size[3]);
+  cudaMemcpyToSymbol(c_Size, &dev_Size, sizeof(SizeValueType4));
 
   // Thread Block Dimensions
   // Create one thread block per voxel of the 3D volume.
