@@ -23,8 +23,7 @@
 #include "rtkConfiguration.h"
 #include "rtkFDKBackProjectionImageFilter.h"
 #include "rtkFFTRampImageFilter.h"
-
-#include <itkExtractImageFilter.h>
+#include "rtkSubRegionViewImageFilter.h"
 
 namespace rtk
 {
@@ -38,8 +37,8 @@ namespace rtk
  * - rtk::FFTRampImageFilter for ramp filtering,
  * - rtk::FDKBackProjectionImageFilter for backprojection.
  * The input stack of projections is processed piece by piece (the size is
- * controlled with ProjectionSubsetSize) via the use of itk::ExtractImageFilter
- * to extract sub-stacks.
+ * controlled with ProjectionSubsetSize) by extracting sub-stacks directly
+ * from the input buffer pointer (zero-copy).
  *
  * \dot
  * digraph FDKConeBeamReconstructionFilter {
@@ -76,7 +75,7 @@ public:
   using OutputImageType = TOutputImage;
 
   /** Typedefs of each subfilter of this composite filter */
-  using ExtractFilterType = itk::ExtractImageFilter<InputImageType, OutputImageType>;
+  using ExtractFilterType = rtk::SubRegionViewImageFilter<InputImageType>;
   using WeightFilterType = rtk::FDKWeightProjectionFilter<InputImageType, OutputImageType>;
   using RampFilterType = rtk::FFTRampImageFilter<OutputImageType, OutputImageType, TFFTPrecision>;
   using BackProjectionFilterType = rtk::FDKBackProjectionImageFilter<OutputImageType, OutputImageType>;
