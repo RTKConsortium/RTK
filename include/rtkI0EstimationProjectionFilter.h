@@ -146,8 +146,6 @@ private:
                                         // at half width
 
   std::mutex m_Mutex;
-  int        m_Nsync;
-  int        m_Nthreads;
 };
 } // end namespace rtk
 
