@@ -37,52 +37,69 @@ kernel_lag_correction(int3             proj_idx_in,
 {
   constexpr int modelOrder = 4;
 
-  // compute thread index (64-bit to avoid 32-bit overflow of combined indices)
+  // One thread per detector column: the autoregressive state must be updated
+  // sequentially along the projection axis, so a thread processes the whole
+  // z range of its column instead of one projection. Parallelizing over z
+  // would race on state and break the recursion. The 64-bit index type keeps
+  // the combined indices below from overflowing, as in the other CUDA filters.
   itk::SizeValueType tIdx_x = blockIdx.x * blockDim.x + threadIdx.x;
   itk::SizeValueType tIdx_y = blockIdx.y * blockDim.y + threadIdx.y;
-  itk::SizeValueType tIdx_z = blockIdx.z * blockDim.z + threadIdx.z;
-  itk::SizeValueType tIdx_comp = tIdx_x + tIdx_y * proj_size_out.x + tIdx_z * proj_size_out_buf.x * proj_size_out_buf.y;
-
-  // check if outside of projection grid
-  if (tIdx_x >= proj_size_out.x || tIdx_y >= proj_size_out.y || tIdx_z >= proj_size_out.z)
+  if (tIdx_x >= proj_size_out.x || tIdx_y >= proj_size_out.y)
     return;
-
-  // combined projection index (arithmetic in 64-bit to avoid overflow of the products)
-  itk::SizeValueType pIdx_comp = (tIdx_x - proj_idx_in.x + proj_idx_out.x) +
-                                 (tIdx_y - proj_idx_in.y + proj_idx_out.y) * proj_size_in_buf.x +
-                                 (tIdx_z - proj_idx_in.z + proj_idx_out.z) * proj_size_in_buf.x * proj_size_in_buf.y;
 
   itk::SizeValueType sIdx_comp = tIdx_x + tIdx_y * proj_size_out.x;
   itk::SizeValueType idx_s = sIdx_comp * modelOrder;
 
-  float yk = static_cast<float>(dev_proj_in[pIdx_comp]);
-  float xk = yk;
-
-  float Sa[modelOrder];
+  float s[modelOrder];
   for (unsigned int n = 0; n < modelOrder; n++)
   {
-    // Compute the update of internal state for nth exponential
-    float expmA_n = cst_coef[4 + n];
-    Sa[n] = expmA_n * state[idx_s + n];
-
-    // Update x[k] by removing contribution of the nth exponential
-    float B_n = cst_coef[n];
-    xk -= B_n * Sa[n];
+    s[n] = state[idx_s + n];
   }
 
-  // Apply normalization factor
-  xk = xk / cst_coef[8];
+  for (int z = 0; z < proj_size_out.z; z++)
+  {
+    itk::SizeValueType tIdx_comp =
+      sIdx_comp + static_cast<itk::SizeValueType>(z) * proj_size_out_buf.x * proj_size_out_buf.y;
 
-  // Update internal state Snk
+    // combined projection index (arithmetic in 64-bit to avoid overflow of the products)
+    itk::SizeValueType pIdx_comp =
+      (tIdx_x - proj_idx_in.x + proj_idx_out.x) + (tIdx_y - proj_idx_in.y + proj_idx_out.y) * proj_size_in_buf.x +
+      (static_cast<itk::SizeValueType>(z) - proj_idx_in.z + proj_idx_out.z) * proj_size_in_buf.x * proj_size_in_buf.y;
+
+    float yk = static_cast<float>(dev_proj_in[pIdx_comp]);
+    float xk = yk;
+
+    float Sa[modelOrder];
+    for (unsigned int n = 0; n < modelOrder; n++)
+    {
+      // Compute the update of internal state for nth exponential
+      float expmA_n = cst_coef[4 + n];
+      Sa[n] = expmA_n * s[n];
+
+      // Update x[k] by removing contribution of the nth exponential
+      float B_n = cst_coef[n];
+      xk -= B_n * Sa[n];
+    }
+
+    // Apply normalization factor
+    xk = xk / cst_coef[8];
+
+    // Update internal state Snk
+    for (unsigned int n = 0; n < modelOrder; n++)
+    {
+      s[n] = xk + Sa[n];
+    }
+
+    // Avoid negative values
+    xk = (xk < 0.0f) ? 0.f : xk;
+
+    dev_proj_out[tIdx_comp] = static_cast<unsigned short>(xk);
+  }
+
   for (unsigned int n = 0; n < modelOrder; n++)
   {
-    state[idx_s + n] = xk + Sa[n];
+    state[idx_s + n] = s[n];
   }
-
-  // Avoid negative values
-  xk = (xk < 0.0f) ? 0.f : xk;
-
-  dev_proj_out[tIdx_comp] = static_cast<unsigned short>(xk);
 }
 
 void
@@ -98,15 +115,14 @@ CUDA_lag_correction(int              proj_idx_in[3],      // overlapping input r
                     size_t           state_size,
                     float *          coefficients)
 {
-  // Thread Block Dimensions
+  // Thread Block Dimensions. The projection axis is handled serially within
+  // each detector column by the kernel, so the grid is 2D.
   int tBlock_x = 16;
   int tBlock_y = 16;
-  int tBlock_z = 2;
 
-  // Each element in the volume (each voxel) gets 1 thread
+  // Each detector column gets 1 thread
   unsigned int blocksInX = (proj_dim_out[0] - 1) / tBlock_x + 1;
   unsigned int blocksInY = (proj_dim_out[1] - 1) / tBlock_y + 1;
-  unsigned int blocksInZ = (proj_dim_out[2] - 1) / tBlock_z + 1;
 
   float * d_state; // device state
   cudaMalloc((void **)&d_state, state_size);
@@ -120,8 +136,8 @@ CUDA_lag_correction(int              proj_idx_in[3],      // overlapping input r
 
   cudaMemcpyToSymbol(cst_coef, coefficients, 9 * sizeof(float));
 
-  dim3 dimGrid = dim3(blocksInX, blocksInY, blocksInZ);
-  dim3 dimBlock = dim3(tBlock_x, tBlock_y, tBlock_z);
+  dim3 dimGrid = dim3(blocksInX, blocksInY, 1);
+  dim3 dimBlock = dim3(tBlock_x, tBlock_y, 1);
   kernel_lag_correction<<<dimGrid, dimBlock>>>(make_int3(proj_idx_in[0], proj_idx_in[1], proj_idx_in[2]),
                                                make_int3(proj_dim_in[0], proj_dim_in[1], proj_dim_in[2]),
                                                make_int2(proj_dim_in_buf[0], proj_dim_in_buf[1]),
