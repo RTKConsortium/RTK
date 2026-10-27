@@ -402,56 +402,64 @@ rtk_add_test(rtkBioscanTest rtkbioscantest.cxx
 
 rtk_add_test(rtkVarianceReconstructionTest rtkvariancereconstructiontest.cxx)
 
-rtk_add_test(rtkFirstReconstructionExampleTest
-  ../examples/FirstReconstruction/FirstReconstruction.cxx
-  ${CMAKE_CURRENT_BINARY_DIR}/FirstReconstruction.mha
-  ${CMAKE_CURRENT_BINARY_DIR}/FirstReconstruction.xml
-)
-rtk_add_cuda_test(rtkFirstCudaReconstructionExampleTest
-  ../examples/FirstReconstruction/FirstCudaReconstruction.cxx
-  ${CMAKE_CURRENT_BINARY_DIR}/FirstCudaReconstruction.mha
-  ${CMAKE_CURRENT_BINARY_DIR}/FirstCudaReconstruction.xml
-)
-rtk_add_test(rtkInlineReconstructionExampleTest
-  ../examples/InlineReconstruction/InlineReconstruction.cxx
-)
-rtk_add_test(rtkAddNoiseExampleTest
-  ../examples/AddNoise/AddNoise.cxx
-)
-rtk_add_test(rtkGeometricPhantomExampleTest
-  ../examples/GeometricPhantom/GeometricPhantom.cxx
-  DATA{Input/Forbild/Thorax}
-)
-rtk_add_test(rtkConjugateGradientExampleTest
-  ../examples/ConjugateGradient/ConjugateGradient.cxx
-  DATA{Input/Forbild/Thorax}
-)
-rtk_add_test(rtkGenerateFourDDataExampleTest
-  ../examples/GenerateFourDData/GenerateFourDData.cxx
-)
-set_tests_properties(
-  rtkGenerateFourDDataExampleTest
-  PROPERTIES
-    FIXTURES_SETUP
-      FourDData
-)
-rtk_add_test(rtkFourDConjugateGradientExampleTest
-  ../examples/FourDConjugateGradient/FourDConjugateGradient.cxx
-)
-rtk_add_test(rtkFourDFDKExampleTest
-  ../examples/FourDFDK/FourDFDK.cxx
-)
-rtk_add_test(rtkFourDROOSTERExampleTest
-  ../examples/FourDROOSTER/FourDROOSTER.cxx
-)
-set_tests_properties(
-  rtkFourDConjugateGradientExampleTest
-  rtkFourDFDKExampleTest
-  rtkFourDROOSTERExampleTest
-  PROPERTIES
-    FIXTURES_REQUIRED
-      FourDData
-)
+# The example test sources live under ../examples/ and create_test_sourcelist
+# derives the test driver function names from these relative paths. Those names
+# are not valid C identifiers before CMake 3.25:
+# See https://github.com/Kitware/CMake/commit/f0802b2f500447aca8cd0db3fc3ce802d7de8235.
+if(CMAKE_VERSION VERSION_LESS 3.25)
+  message(STATUS "RTK example tests require CMake 3.25 or newer, skipping them")
+else()
+  rtk_add_test(rtkFirstReconstructionExampleTest
+    ../examples/FirstReconstruction/FirstReconstruction.cxx
+    ${CMAKE_CURRENT_BINARY_DIR}/FirstReconstruction.mha
+    ${CMAKE_CURRENT_BINARY_DIR}/FirstReconstruction.xml
+  )
+  rtk_add_cuda_test(rtkFirstCudaReconstructionExampleTest
+    ../examples/FirstReconstruction/FirstCudaReconstruction.cxx
+    ${CMAKE_CURRENT_BINARY_DIR}/FirstCudaReconstruction.mha
+    ${CMAKE_CURRENT_BINARY_DIR}/FirstCudaReconstruction.xml
+  )
+  rtk_add_test(rtkInlineReconstructionExampleTest
+    ../examples/InlineReconstruction/InlineReconstruction.cxx
+  )
+  rtk_add_test(rtkAddNoiseExampleTest
+    ../examples/AddNoise/AddNoise.cxx
+  )
+  rtk_add_test(rtkGeometricPhantomExampleTest
+    ../examples/GeometricPhantom/GeometricPhantom.cxx
+    DATA{Input/Forbild/Thorax}
+  )
+  rtk_add_test(rtkConjugateGradientExampleTest
+    ../examples/ConjugateGradient/ConjugateGradient.cxx
+    DATA{Input/Forbild/Thorax}
+  )
+  rtk_add_test(rtkGenerateFourDDataExampleTest
+    ../examples/GenerateFourDData/GenerateFourDData.cxx
+  )
+  set_tests_properties(
+    rtkGenerateFourDDataExampleTest
+    PROPERTIES
+      FIXTURES_SETUP
+        FourDData
+  )
+  rtk_add_test(rtkFourDConjugateGradientExampleTest
+    ../examples/FourDConjugateGradient/FourDConjugateGradient.cxx
+  )
+  rtk_add_test(rtkFourDFDKExampleTest
+    ../examples/FourDFDK/FourDFDK.cxx
+  )
+  rtk_add_test(rtkFourDROOSTERExampleTest
+    ../examples/FourDROOSTER/FourDROOSTER.cxx
+  )
+  set_tests_properties(
+    rtkFourDConjugateGradientExampleTest
+    rtkFourDFDKExampleTest
+    rtkFourDROOSTERExampleTest
+    PROPERTIES
+      FIXTURES_REQUIRED
+        FourDData
+  )
+endif()
 
 #-----------------------------------------------------------------------------
 # Test drivers
