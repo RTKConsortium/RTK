@@ -290,7 +290,7 @@ SARTConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>::GenerateData()
       // Set gating weight for the current projection
       if (m_IsGated)
       {
-        m_GatingWeightsFilter->SetConstant2(m_GatingWeights[i]);
+        m_GatingWeightsFilter->SetConstant2(m_GatingWeights[projOrder[i]]);
       }
 
       // This is required to reset the full pipeline
