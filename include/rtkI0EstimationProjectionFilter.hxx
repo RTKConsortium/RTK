@@ -54,7 +54,6 @@ void
 I0EstimationProjectionFilter<TInputImage, TOutputImage, bitShift>::BeforeThreadedGenerateData()
 {
   m_NBins = (std::vector<unsigned int>::size_type)((m_MaxPixelValue + 1) >> bitShift);
-  m_Imax = m_MaxPixelValue;
   m_Histogram.resize(m_NBins, 0);
 
   auto it = m_Histogram.begin();
@@ -63,9 +62,6 @@ I0EstimationProjectionFilter<TInputImage, TOutputImage, bitShift>::BeforeThreade
   {
     *it = 0;
   }
-
-  m_Nthreads = this->GetNumberOfWorkUnits();
-  m_Nsync = 0;
 
   if (m_Reset)
   {
@@ -115,47 +111,6 @@ I0EstimationProjectionFilter<TInputImage, TOutputImage, bitShift>::ThreadedGener
     {
       m_Histogram[i] += m_thHisto[i];
     }
-
-    // The last thread has to do something more
-    ++m_Nsync;
-    if (m_Nsync >= m_Nthreads)
-    {
-      // RMQ 1 : there might be pixels outside the min-max region. They are
-      // supposed to be inconsistents (unused detector lines, dead pixels,...)
-
-      // Search for upper bound of the histogram : gives the highest intensity
-      // value
-      m_Imax = m_NBins - 1;
-      while ((m_Histogram[m_Imax] <= m_DynThreshold) && (m_Imax > 0))
-      {
-        --m_Imax;
-      }
-      while ((m_Histogram[m_Imax] == 0) && (m_Imax < m_NBins)) // Get back
-                                                               // to zero
-      {
-        ++m_Imax;
-      }
-
-      // Search for lower bound of the histogram: gives the lowest intensity
-      // value
-      m_Imin = 0;
-      while ((m_Histogram[m_Imin] <= m_DynThreshold) && (m_Imin < m_Imax))
-      {
-        ++m_Imin;
-      }
-      while ((m_Histogram[m_Imin] == 0) && (m_Imin > 0)) // Get back to
-                                                         // zero
-      {
-        --m_Imin;
-      }
-
-      m_Imin = (m_Imin << bitShift);
-      m_Imax = (m_Imax << bitShift);
-
-      // If Imax near zero - Potentially no exposure
-      // If Imin near Imax - problem to be fixed - No object
-      // If Imax very close to MaxPixelValue then possible saturation
-    }
   }
   m_Mutex.unlock();
 }
@@ -164,6 +119,40 @@ template <class TInputImage, class TOutputImage, unsigned char bitShift>
 void
 I0EstimationProjectionFilter<TInputImage, TOutputImage, bitShift>::AfterThreadedGenerateData()
 {
+  // RMQ 1 : there might be pixels outside the min-max region. They are
+  // supposed to be inconsistents (unused detector lines, dead pixels,...)
+
+  // Search for upper bound of the histogram : gives the highest intensity
+  // value
+  m_Imax = m_NBins - 1;
+  while ((m_Histogram[m_Imax] <= m_DynThreshold) && (m_Imax > 0))
+  {
+    --m_Imax;
+  }
+  while ((m_Histogram[m_Imax] == 0) && (m_Imax < m_NBins)) // Get back to zero
+  {
+    ++m_Imax;
+  }
+
+  // Search for lower bound of the histogram: gives the lowest intensity
+  // value
+  m_Imin = 0;
+  while ((m_Histogram[m_Imin] <= m_DynThreshold) && (m_Imin < m_Imax))
+  {
+    ++m_Imin;
+  }
+  while ((m_Histogram[m_Imin] == 0) && (m_Imin > 0)) // Get back to zero
+  {
+    --m_Imin;
+  }
+
+  m_Imin = (m_Imin << bitShift);
+  m_Imax = (m_Imax << bitShift);
+
+  // If Imax near zero - Potentially no exposure
+  // If Imin near Imax - problem to be fixed - No object
+  // If Imax very close to MaxPixelValue then possible saturation
+
   // Search for the background mode in the last quarter of the histogram
 
   unsigned int        startIdx = (3 * (m_Imax >> 2)) >> bitShift;
