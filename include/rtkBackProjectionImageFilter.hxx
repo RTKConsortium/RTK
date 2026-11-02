@@ -512,7 +512,7 @@ BackProjectionImageFilter<TInputImage, TOutputImage>::GetProjection(const unsign
   projection->SetRegions(region);
   projection->Allocate();
 
-  const unsigned int             npixels = projection->GetBufferedRegion().GetNumberOfPixels();
+  const itk::SizeValueType       npixels = projection->GetBufferedRegion().GetNumberOfPixels();
   const InternalInputPixelType * pi = stack->GetBufferPointer() + (iProj - iProjBuff) * npixels;
   InternalInputPixelType *       po = projection->GetBufferPointer();
 
