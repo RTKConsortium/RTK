@@ -1,0 +1,9 @@
+itk_wrap_class("rtk::DPExtractShroudSignalImageFilter" POINTER)
+  # This filter maps 2D images to 1D images, so wrap its pixel types directly.
+  foreach(t ${WRAP_ITK_REAL})
+    itk_wrap_template("${ITKM_${t}}${ITKM_${t}}" "${ITKT_${t}}, ${ITKT_${t}}")
+  endforeach()
+  if (NOT ITK_WRAP_double)
+    itk_wrap_template("${ITKM_D}${ITKM_D}" "${ITKT_D}, ${ITKT_D}")
+  endif()
+itk_end_wrap_class()

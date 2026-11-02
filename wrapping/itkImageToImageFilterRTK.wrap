@@ -149,4 +149,21 @@ itk_wrap_class("itk::ImageToImageFilter" POINTER)
     itk_wrap_template("VI${ITKM_${t}}3I${ITKM_${t}}4" "itk::VectorImage<${ITKT_${t}}, 3>, itk::Image<${ITKT_${t}}, 4>")
   endforeach()
 
+  # Parent template required by the double-precision 2D-to-1D shroud filter.
+  if (${_index} EQUAL -1 AND NOT ITK_WRAP_double)
+    itk_wrap_template("ID2ID1" "itk::Image<${ITKT_D}, 2>, itk::Image<${ITKT_D}, 1>")
+  endif()
+
+  # Parent template required by rtk::HilbertImageFilter.
+  if (${_index} EQUAL -1)
+    foreach(t ${WRAP_ITK_REAL})
+      set(ct "C${t}")
+      list(FIND WRAP_ITK_COMPLEX_REAL "${ct}" _complex_index)
+      if (NOT ${_complex_index} EQUAL -1)
+        itk_wrap_template("I${ITKM_${t}}1I${ITKM_${ct}}1"
+          "itk::Image<${ITKT_${t}}, 1>, itk::Image<${ITKT_${ct}}, 1>")
+      endif()
+    endforeach()
+  endif()
+
 itk_end_wrap_class()

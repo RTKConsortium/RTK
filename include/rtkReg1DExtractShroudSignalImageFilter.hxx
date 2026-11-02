@@ -91,9 +91,11 @@ Reg1DExtractShroudSignalImageFilter<TInputPixel, TOutputPixel>::register1D(const
   using RegistrationType = itk::ImageRegistrationMethod<RegisterImageType, RegisterImageType>;
 
   auto metric = itk::MeanSquaresImageToImageMetric<RegisterImageType, RegisterImageType>::New();
-  auto transform = itk::TranslationTransform<TOutputPixel, 1>::New();
+  // ImageRegistrationMethod uses double-precision coordinates regardless of
+  // the image pixel type.
+  auto transform = itk::TranslationTransform<double, 1>::New();
   auto optimizer = itk::RegularStepGradientDescentOptimizer::New();
-  auto interpolator = itk::LinearInterpolateImageFunction<RegisterImageType, TOutputPixel>::New();
+  auto interpolator = itk::LinearInterpolateImageFunction<RegisterImageType, double>::New();
   auto registration = RegistrationType::New();
 
   registration->SetMetric(metric);
