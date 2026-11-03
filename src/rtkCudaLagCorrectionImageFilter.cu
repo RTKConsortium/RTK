@@ -31,6 +31,8 @@ kernel_lag_correction(int3             proj_idx_in,
                       int3             proj_idx_out,
                       int3             proj_size_out,
                       int2             proj_size_out_buf,
+                      int2             state_idx,
+                      int              state_size_x,
                       unsigned short * dev_proj_in,
                       unsigned short * dev_proj_out,
                       float *          state)
@@ -48,7 +50,11 @@ kernel_lag_correction(int3             proj_idx_in,
     return;
 
   itk::SizeValueType sIdx_comp = tIdx_x + tIdx_y * proj_size_out.x;
-  itk::SizeValueType idx_s = sIdx_comp * modelOrder;
+
+  // The state covers the largest possible region of a projection, the
+  // requested region may be a part of it
+  itk::SizeValueType idx_s =
+    ((tIdx_x + state_idx.x) + (tIdx_y + state_idx.y) * static_cast<itk::SizeValueType>(state_size_x)) * modelOrder;
 
   float s[modelOrder];
   for (unsigned int n = 0; n < modelOrder; n++)
@@ -109,6 +115,8 @@ CUDA_lag_correction(int              proj_idx_in[3],      // overlapping input r
                     int              proj_idx_out[3],     // output region index
                     int              proj_dim_out[3],     // output region size
                     int              proj_dim_out_buf[2], // output size of buffered region
+                    int              state_idx[2],        // output region index in the state
+                    int              state_size_x,        // state size along x
                     unsigned short * dev_proj_in,
                     unsigned short * dev_proj_out,
                     float *          h_state,
@@ -124,11 +132,34 @@ CUDA_lag_correction(int              proj_idx_in[3],      // overlapping input r
   unsigned int blocksInX = (proj_dim_out[0] - 1) / tBlock_x + 1;
   unsigned int blocksInY = (proj_dim_out[1] - 1) / tBlock_y + 1;
 
+  // Without lag (b[0] == 0), the CPU filter copies the input and the state
+  // is not allocated. The input and output buffers may have different
+  // strides, hence the 3D copy.
+  if (coefficients[0] == 0.f)
+  {
+    cudaMemcpy3DParms copyParams = {};
+    copyParams.srcPtr = make_cudaPitchedPtr(
+      dev_proj_in, proj_dim_in_buf[0] * sizeof(unsigned short), proj_dim_in_buf[0], proj_dim_in_buf[1]);
+    copyParams.dstPtr = make_cudaPitchedPtr(
+      dev_proj_out, proj_dim_out_buf[0] * sizeof(unsigned short), proj_dim_out_buf[0], proj_dim_out_buf[1]);
+    copyParams.extent = make_cudaExtent(proj_dim_out[0] * sizeof(unsigned short), proj_dim_out[1], proj_dim_out[2]);
+    copyParams.kind = cudaMemcpyDeviceToDevice;
+    if (cudaMemcpy3D(&copyParams) != cudaSuccess)
+    {
+      itkGenericExceptionMacro("Error copying input to output");
+    }
+    return;
+  }
+
   float * d_state; // device state
-  cudaMalloc((void **)&d_state, state_size);
-  if (cudaMemcpy(d_state, h_state, state_size, cudaMemcpyHostToDevice) != cudaSuccess)
+  if (cudaMalloc((void **)&d_state, state_size) != cudaSuccess)
   {
     itkGenericExceptionMacro("Error allocating state");
+  }
+  if (cudaMemcpy(d_state, h_state, state_size, cudaMemcpyHostToDevice) != cudaSuccess)
+  {
+    cudaFree(d_state);
+    itkGenericExceptionMacro("Error copying state to device");
   }
 
   if (coefficients[8] <= 0.0)
@@ -144,12 +175,21 @@ CUDA_lag_correction(int              proj_idx_in[3],      // overlapping input r
                                                make_int3(proj_idx_out[0], proj_idx_out[1], proj_idx_out[2]),
                                                make_int3(proj_dim_out[0], proj_dim_out[1], proj_dim_out[2]),
                                                make_int2(proj_dim_out_buf[0], proj_dim_out_buf[1]),
+                                               make_int2(state_idx[0], state_idx[1]),
+                                               state_size_x,
                                                dev_proj_in,
                                                dev_proj_out,
                                                d_state);
 
-  cudaMemcpy(h_state, d_state, state_size, cudaMemcpyDeviceToHost);
+  // Check the kernel before overwriting the host state with the device state
+  cudaError_t err = cudaDeviceSynchronize();
+  if (err == cudaSuccess)
+    err = cudaMemcpy(h_state, d_state, state_size, cudaMemcpyDeviceToHost);
   cudaFree(d_state);
+  if (err != cudaSuccess)
+  {
+    itkGenericExceptionMacro(<< "CUDA ERROR: " << cudaGetErrorString(err));
+  }
 
   CUDA_CHECK_ERROR;
 }
