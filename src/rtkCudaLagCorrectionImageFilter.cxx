@@ -69,6 +69,13 @@ CudaLagCorrectionImageFilter ::GPUGenerateData()
   proj_size_out[1] = this->GetOutput()->GetRequestedRegion().GetSize()[1];
   proj_size_out[2] = this->GetOutput()->GetRequestedRegion().GetSize()[2];
 
+  // Position of the output region in the state, which covers the largest
+  // possible region of a projection (see LagCorrectionImageFilter)
+  int state_idx[2];
+  state_idx[0] = proj_idx_out[0] - m_StartIdx[0];
+  state_idx[1] = proj_idx_out[1] - m_StartIdx[1];
+  int state_size_x = this->GetInput()->GetLargestPossibleRegion().GetSize()[0];
+
   float coefficients[9] = { m_B[0], m_B[1], m_B[2], m_B[3], m_ExpmA[0], m_ExpmA[1], m_ExpmA[2], m_ExpmA[3], m_SumB };
 
   size_t S_size = sizeof(float) * m_S.size();
@@ -78,6 +85,8 @@ CudaLagCorrectionImageFilter ::GPUGenerateData()
                       proj_idx_out,
                       proj_size_out,
                       proj_size_out_buf,
+                      state_idx,
+                      state_size_x,
                       inBuffer,
                       outBuffer,
                       m_S.data(),

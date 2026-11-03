@@ -122,11 +122,11 @@ protected:
   float      m_SumB;  // normalization factor
 
 
-  FloatVectorType m_S; // State variable
+  FloatVectorType m_S;        // State variable
+  IndexType       m_StartIdx; // To account for cropping
 
 private:
-  bool      m_NewParamJustReceived; // For state/correction initialization
-  IndexType m_StartIdx;             // To account for cropping
+  bool m_NewParamJustReceived; // For state/correction initialization
 };
 
 } // namespace rtk
