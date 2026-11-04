@@ -30,7 +30,7 @@ def build_parser():
     parser.add_argument(
         "--divisions",
         "-d",
-        help="Streaming option: number of stream divisions of the 3D reconstruction per frame",
+        help="Streaming option: number of stream divisions of the CT",
         type=int,
         default=1,
     )

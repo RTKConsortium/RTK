@@ -10,4 +10,4 @@ option "nprojpersubset" - "Number of projections processed between each update o
 option "nodisplaced"    - "Disable the displaced detector filter"              flag   off
 
 section "Phase gating"
-option "signal"       - "File containing the phase of each projection"                                              string              no
+option "signal"       - "File containing the phase of each projection"                                              string              yes

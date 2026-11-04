@@ -14,7 +14,7 @@ def build_parser():
     parser.add_argument("--output", "-o", required=True, help="Output file name")
 
     # Projections group (path, regexp, nsort, submatch)
-    rtk.add_rtkinputprojections_group(parser)
+    rtk.add_rtkprojectionsfilenames_group(parser)
 
     return parser
 

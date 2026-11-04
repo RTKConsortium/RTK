@@ -25,7 +25,7 @@ def add_rtk3Doutputimage_group(parser):
     )
     rtk3Doutputimage_group.add_argument(
         "--dimension",
-        help="Dimension",
+        help="Dimension (Deprecated) Use --size instead.",
         type=int,
         nargs="+",
     )
@@ -46,7 +46,7 @@ def SetConstantImageSourceFromArgParse(source, args_info):
     ImageType = type(source.GetOutput())
 
     # Handle deprecated --dimension argument
-    if args_info.dimension is not None and args_info.size is None:
+    if args_info.dimension is not None:
         print(
             "Warning: '--dimension' is deprecated and will be removed in a future release. "
             "Please use '--size' instead."

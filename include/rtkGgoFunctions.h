@@ -60,7 +60,7 @@ SetConstantImageSourceFromGgo(TConstantImageSourceType * source, const TArgsInfo
   const unsigned int Dimension = ImageType::GetImageDimension();
 
   typename ImageType::SizeType imageSize;
-  if (args_info.dimension_given && !args_info.size_given)
+  if (args_info.dimension_given)
   {
     itkGenericOutputMacro(
       "Warning: --dimension is deprecated and will be removed in a future release. Use --size instead.");

@@ -8,10 +8,10 @@ def build_parser():
         description="Creates an RTK geometry file from an Elekta Synergy acquisition."
     )
 
-    parser.add_argument("--image-db", "-i", help="Image table filename (prior to XVI5)")
-    parser.add_argument("--frame-db", "-f", help="Frame table filename (prior to XVI5)")
+    parser.add_argument("--image_db", "-i", help="Image table filename (prior to XVI5)")
+    parser.add_argument("--frame_db", "-f", help="Frame table filename (prior to XVI5)")
     parser.add_argument("--xml", "-x", help="XML file name (starting with XVI5)")
-    parser.add_argument("--dicom-uid", "-u", help="Dicom uid of the acquisition")
+    parser.add_argument("--dicom_uid", "-u", help="Dicom uid of the acquisition")
     parser.add_argument("--output", "-o", help="Output file name", required=True)
 
     return parser

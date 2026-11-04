@@ -23,7 +23,6 @@ def build_parser():
         nargs="+",
         default=[128],
     )
-    parser.add_argument("--noise", help="Gaussian noise parameter (SD)", type=float)
     parser.add_argument(
         "--offset",
         help="3D spatial offset of the phantom center",

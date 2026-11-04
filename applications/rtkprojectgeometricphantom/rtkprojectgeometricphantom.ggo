@@ -2,7 +2,7 @@ purpose "Computes projections through a 3D phantom described by a file, accordin
 
 option "geometry"     g  "XML geometry file name"                   string          yes
 option "output"       o "Output projections file name"              string          yes
-option "phantomfile"  - "Configuration parameteres for the phantom" string          yes
+option "phantomfile"  - "Configuration parameters for the phantom" string          yes
 option "phantomscale" - "Scaling factor for the phantom dimensions" double multiple no default="1."
 option "offset"       - "3D spatial offset of the phantom center"   double multiple no
 option "rotation"     - "Rotation matrix for the phantom"           double multiple no

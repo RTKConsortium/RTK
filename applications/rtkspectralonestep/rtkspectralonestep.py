@@ -14,7 +14,7 @@ def build_parser():
     )
     parser.add_argument("--output", "-o", required=True, help="Output file name")
     parser.add_argument(
-        "--niterations", "-n", type=int, default=1, help="Number of iterations"
+        "--niterations", "-n", type=int, default=5, help="Number of iterations"
     )
     parser.add_argument("--input", "-i", help="Material volumes initial guess")
     parser.add_argument(
@@ -40,11 +40,13 @@ def build_parser():
     )
     parser.add_argument(
         "--regul_spatial_weights",
-        help="Spatial regularization weights file",
+        help="One-component image of spatial regularization weights",
         default=None,
     )
     parser.add_argument(
-        "--projection_weights", help="Projection weights file", default=None
+        "--projection_weights",
+        help="One-component image of projection weights (size of photon counts)",
+        default=None,
     )
     parser.add_argument(
         "--thresholds",
@@ -57,7 +59,7 @@ def build_parser():
     parser.add_argument(
         "--subsets",
         type=int,
-        default=1,
+        default=4,
         help="Number of subsets of projections (should not exceed 6)",
     )
     parser.add_argument(
@@ -75,7 +77,6 @@ def build_parser():
     parser.add_argument(
         "--reset_nesterov",
         type=int,
-        default=1,
         help="Reset Nesterov after a number of subsets",
     )
 
@@ -325,7 +326,7 @@ def process(args_info: argparse.Namespace):
     mechlemOneStep.SetNumberOfSubsets(args_info.subsets)
     mechlemOneStep.SetRegularizationRadius(regulRadius)
     mechlemOneStep.SetRegularizationWeights(regulWeights)
-    if args_info.reset_nesterov:
+    if args_info.reset_nesterov is not None:
         mechlemOneStep.SetResetNesterovEvery(args_info.reset_nesterov)
     mechlemOneStep.SetGeometry(geometry)
 

@@ -40,7 +40,9 @@ def build_parser():
     )
 
     rtkprojectors_group.add_argument(
-        "--attenuationmap", help="Attenuation map for attenuation correction", type=str
+        "--attenuationmap",
+        help="Attenuation map relative to the volume to perform the attenuation correction",
+        type=str,
     )
     rtkprojectors_group.add_argument(
         "--sigmazero",

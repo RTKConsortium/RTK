@@ -7,10 +7,8 @@ def build_parser():
     parser = rtk.RTKArgumentParser(
         description="Read Bioscan geometry and write RTK geometry XML file."
     )
-    parser.add_argument(
-        "--output", "-o", required=True, help="Output geometry XML file"
-    )
-    rtk.add_rtkinputprojections_group(parser)
+    parser.add_argument("--output", "-o", required=True, help="Output file name")
+    rtk.add_rtkprojectionsfilenames_group(parser)
     return parser
 
 

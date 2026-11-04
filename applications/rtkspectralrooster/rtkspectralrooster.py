@@ -30,7 +30,7 @@ def build_parser():
         help="Perform conjugate gradient calculations on GPU",
         action="store_true",
     )
-    parser.add_argument("--input", "-i", help="Input volume (materials) file")
+    parser.add_argument("--input", "-i", help="Input volume")
     parser.add_argument(
         "--projection", "-p", help="Vector projections file", required=True
     )
@@ -44,21 +44,55 @@ def build_parser():
     parser.add_argument(
         "--nopositivity", help="Do not enforce positivity", action="store_true"
     )
-    parser.add_argument("--tviter", help="TV iterations", type=int, default=10)
     parser.add_argument(
-        "--gamma_space", help="Spatial TV regularization parameter", type=float
-    )
-    parser.add_argument("--threshold", help="Wavelets soft threshold", type=float)
-    parser.add_argument("--order", help="Wavelets order", type=int, default=5)
-    parser.add_argument("--levels", help="Wavelets levels", type=int, default=3)
-    parser.add_argument(
-        "--gamma_time", help="Temporal TV regularization parameter", type=float
+        "--tviter",
+        help="Total variation (spatial, temporal and nuclear) regularization: number of iterations",
+        type=int,
+        default=10,
     )
     parser.add_argument(
-        "--lambda_time", help="Temporal L0 regularization parameter", type=float
+        "--gamma_space",
+        help="Total variation spatial regularization parameter. The larger, the smoother",
+        type=float,
     )
-    parser.add_argument("--l0iter", help="L0 iterations", type=int, default=5)
-    parser.add_argument("--gamma_tnv", help="TNV regularization parameter", type=float)
+    parser.add_argument(
+        "--threshold",
+        help="Daubechies wavelets spatial regularization: soft threshold",
+        type=float,
+    )
+    parser.add_argument(
+        "--order",
+        help="Daubechies wavelets spatial regularization: order of the wavelets",
+        type=int,
+        default=5,
+    )
+    parser.add_argument(
+        "--levels",
+        help="Daubechies wavelets spatial regularization: number of decomposition levels",
+        type=int,
+        default=3,
+    )
+    parser.add_argument(
+        "--gamma_time",
+        help="Total variation temporal regularization parameter. The larger, the smoother",
+        type=float,
+    )
+    parser.add_argument(
+        "--lambda_time",
+        help="Temporal gradient's L0 norm regularization parameter. The larger, the stronger",
+        type=float,
+    )
+    parser.add_argument(
+        "--l0iter",
+        help="Temporal gradient's L0 norm regularization: number of iterations",
+        type=int,
+        default=5,
+    )
+    parser.add_argument(
+        "--gamma_tnv",
+        help="Total nuclear variation regularization parameter. The larger, the smoother",
+        type=float,
+    )
 
     # Projector choices
     rtk.add_rtk3Doutputimage_group(parser)

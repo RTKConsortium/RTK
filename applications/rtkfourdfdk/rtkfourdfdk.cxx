@@ -89,6 +89,7 @@ main(int argc, char * argv[])
     ddf = rtk::DisplacedDetectorForOffsetFieldOfViewImageFilter<OutputImageType>::New();
   ddf->SetInput(selector->GetOutput());
   ddf->SetGeometry(selector->GetOutputGeometry());
+  ddf->SetDisable(args_info.nodisplaced_flag);
 
   // Short scan image filter
   using PSSFCPUType = rtk::ParkerShortScanImageFilter<OutputImageType>;

@@ -7,12 +7,14 @@ from itk import RTK as rtk
 def build_parser():
     parser = rtk.RTKArgumentParser(description="Estimate I0 from projections")
 
-    parser.add_argument("--debug", "-d", help="Debug CSV output file name")
+    parser.add_argument(
+        "--debug", "-d", help="Debug mode: output CSV file name with I0 estimates"
+    )
     parser.add_argument(
         "--range",
         nargs=3,
         type=int,
-        help="Range of projection to analyse min step max",
+        help="Range of projection to analyse min,step,max",
         metavar=("MIN", "STEP", "MAX"),
     )
 

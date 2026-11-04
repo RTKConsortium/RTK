@@ -7,11 +7,9 @@ def build_parser():
         description="Read Digisens geometry XML and write RTK geometry XML file."
     )
     parser.add_argument(
-        "--xml_file", "-x", required=True, help="Input Digisens XML calibration file"
+        "--xml_file", "-x", required=True, help="Digisens XML information file"
     )
-    parser.add_argument(
-        "--output", "-o", required=True, help="Output geometry XML file"
-    )
+    parser.add_argument("--output", "-o", required=True, help="Output file name")
     return parser
 
 

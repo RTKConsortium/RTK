@@ -57,7 +57,7 @@ def build_parser():
     parser.add_argument(
         "--mask",
         "-m",
-        help="Apply a support binary mask: reconstruction kept null outside the mask)",
+        help="Apply a support binary mask: reconstruction kept null outside the mask",
         type=str,
     )
     parser.add_argument(

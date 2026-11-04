@@ -20,7 +20,7 @@ def build_parser():
     parser.add_argument(
         "--clipbox",
         "-c",
-        help="3D clipbox for cropping projections (x1, x2, y1, y2, z1, z2) in mm",
+        help="3D clipbox for cropping projections (x1,x2,y1,y2,z1,z2) mm",
         type=float,
         nargs="+",
     )

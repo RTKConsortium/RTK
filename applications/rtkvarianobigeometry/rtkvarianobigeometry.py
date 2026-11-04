@@ -17,15 +17,8 @@ def build_parser():
         required=True,
     )
     parser.add_argument("--output", "-o", help="Output file name", required=True)
-    parser.add_argument(
-        "--path", "-p", help="Path containing projections", required=True
-    )
-    parser.add_argument(
-        "--regexp",
-        "-r",
-        help="Regular expression to select projection files in path",
-        required=True,
-    )
+
+    rtk.add_rtkprojectionsfilenames_group(parser)
 
     # Parse the command line arguments
     return parser
@@ -33,13 +26,9 @@ def build_parser():
 
 def process(args: argparse.Namespace):
 
-    names = itk.RegularExpressionSeriesFileNames.New()
-    names.SetDirectory(args.path)
-    names.SetRegularExpression(args.regexp)
-
     reader = rtk.VarianObiGeometryReader.New()
     reader.SetXMLFileName(args.xml_file)
-    reader.SetProjectionsFileNames(names.GetFileNames())
+    reader.SetProjectionsFileNames(rtk.GetProjectionsFileNamesFromArgParse(args))
     reader.UpdateOutputData()
 
     rtk.write_geometry(reader.GetGeometry(), args.output)

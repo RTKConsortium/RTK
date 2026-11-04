@@ -57,7 +57,7 @@ def build_parser():
     parser.add_argument(
         "-w",
         "--windowwidth",
-        help="Tolerance around the target phase",
+        help="Tolerance around the target phase to determine in-phase and out-of-phase projections",
         type=float,
         default=1.0,
     )

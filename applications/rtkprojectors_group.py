@@ -5,8 +5,9 @@ __all__ = [
 ]
 
 
-# Mimicks rtkprojectors_section.ggo
-def add_rtkprojectors_group(parser):
+# Mimicks rtkprojectors_section.ggo. Set backprojection to False for applications
+# which only forward project, e.g., rtkiterativefdk.
+def add_rtkprojectors_group(parser, backprojection=True):
     rtkprojectors_group = parser.add_argument_group("Projectors")
     rtkprojectors_group.add_argument(
         "--fp",
@@ -15,21 +16,22 @@ def add_rtkprojectors_group(parser):
         choices=["Joseph", "CudaRayCast", "JosephAttenuated", "Zeng", "CudaZeng"],
         default="Joseph",
     )
-    rtkprojectors_group.add_argument(
-        "--bp",
-        "-b",
-        help="Back projection method",
-        choices=[
-            "VoxelBasedBackProjection",
-            "Joseph",
-            "CudaVoxelBased",
-            "CudaRayCast",
-            "JosephAttenuated",
-            "Zeng",
-            "CudaZeng",
-        ],
-        default="VoxelBasedBackProjection",
-    )
+    if backprojection:
+        rtkprojectors_group.add_argument(
+            "--bp",
+            "-b",
+            help="Back projection method",
+            choices=[
+                "VoxelBasedBackProjection",
+                "Joseph",
+                "CudaVoxelBased",
+                "CudaRayCast",
+                "JosephAttenuated",
+                "Zeng",
+                "CudaZeng",
+            ],
+            default="VoxelBasedBackProjection",
+        )
     rtkprojectors_group.add_argument(
         "--step",
         help="Step size along ray (for CudaRayCast only, default to the minimum voxel spacing of the input volume if set to 0)",
