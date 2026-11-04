@@ -39,15 +39,17 @@ def build_parser():
         "--thresholds",
         "-t",
         help="Lower threshold of bins, expressed in pulse height",
-        type=int,
+        type=float,
         nargs="+",
         required=True,
     )
     parser.add_argument(
-        "--cramer_rao", help="Output Cramer-Rao lower bound file", type=str
+        "--cramer_rao",
+        help="File name for the output Cramer Rao Lower Bound (estimation of the variance in the material decomposed images)",
+        type=str,
     )
     parser.add_argument(
-        "--variances", help="Output variances of photon counts", type=str
+        "--variances", help="Output variances of photon counts, file name", type=str
     )
     return parser
 

@@ -250,7 +250,7 @@ public:
   /** Parameter to trigger Nesterov's reset. The value is a number of subsets
   ** which can be larger than the number of subsets per iteration. 1 means no
   ** Nesterov acceleration. */
-  itkSetMacro(ResetNesterovEvery, int);
+  itkSetClampMacro(ResetNesterovEvery, int, 1, itk::NumericTraits<int>::max());
   itkGetMacro(ResetNesterovEvery, int);
 
   /** Set methods for all inputs, since they have different types */

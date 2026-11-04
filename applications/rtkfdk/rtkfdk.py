@@ -50,7 +50,7 @@ def build_parser():
     )
     parser.add_argument(
         "--short",
-        help="Minimum angular gap to detect a short scan (converted to radians)",
+        help="Minimum angular gap to detect a short scan (in degree).",
         type=float,
         default=20.0,
     )

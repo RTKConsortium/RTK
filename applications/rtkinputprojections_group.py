@@ -4,8 +4,35 @@ import numpy as np
 
 __all__ = [
     "add_rtkinputprojections_group",
+    "add_rtkprojectionsfilenames_group",
     "GetProjectionsFileNamesFromArgParse",
 ]
+
+
+# Mimicks the "Projections" section of geometry applications which only need the
+# projection file names, e.g. rtkbioscangeometry.ggo
+def add_rtkprojectionsfilenames_group(parser):
+    projections_group = parser.add_argument_group("Projections")
+    projections_group.add_argument(
+        "--path", "-p", help="Path containing projections", required=True
+    )
+    projections_group.add_argument(
+        "--regexp",
+        "-r",
+        help="Regular expression to select projection files in path",
+        required=True,
+    )
+    projections_group.add_argument(
+        "--nsort",
+        help="Numeric sort for regular expression matches",
+        action="store_true",
+    )
+    projections_group.add_argument(
+        "--submatch",
+        help="Index of the submatch that will be used to sort matches",
+        type=int,
+        default=0,
+    )
 
 
 # Mimicks rtkinputprojections_section.ggo
@@ -36,8 +63,7 @@ def add_rtkinputprojections_group(parser):
     rtkinputprojections_group.add_argument(
         "--nolineint",
         help="Disable raw to line integral conversion, just casts to float",
-        type=bool,
-        default=False,
+        action="store_true",
     )
     rtkinputprojections_group.add_argument(
         "--newdirection",

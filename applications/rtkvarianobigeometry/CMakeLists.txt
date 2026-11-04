@@ -1,4 +1,4 @@
-wrap_ggo(rtkvarianobigeometry_GGO_C rtkvarianobigeometry.ggo ../rtkinputprojections_section.ggo)
+wrap_ggo(rtkvarianobigeometry_GGO_C rtkvarianobigeometry.ggo)
 add_executable(
   rtkvarianobigeometry
   rtkvarianobigeometry.cxx

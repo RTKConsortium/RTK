@@ -11,8 +11,8 @@ option "short"      - "Minimum angular gap to detect a short scan (in degree)." 
 
 section "Ramp filter"
 option "pad"       - "Data padding parameter to correct for truncation"          double                       no   default="0.0"
-option "hann"      - "Cut frequency for hann window in ]0,1] (0.0 disables it)"  double                       no   default="0.0"
-option "hannY"     - "Cut frequency for hann window in ]0,1] (0.0 disables it)"  double                       no   default="0.0"
+option "hann"      - "Cut frequency for Hann window in ]0,1] (0.0 disables it)"  double                       no   default="0.0"
+option "hannY"     - "Cut frequency for Hann window in ]0,1] (0.0 disables it)"  double                       no   default="0.0"
 
 section "Motion-compensation described in [Rit et al, TMI, 2009] and [Rit et al, Med Phys, 2009]"
 option "signal"    - "Signal file name"          string    no

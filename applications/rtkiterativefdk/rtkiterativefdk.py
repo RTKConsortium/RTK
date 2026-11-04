@@ -36,7 +36,6 @@ def build_parser():
     )
     parser.add_argument(
         "--lambda",
-        "-l",
         dest="lambda_",
         type=float,
         default=0.3,
@@ -63,20 +62,20 @@ def build_parser():
     )
     ramp_group.add_argument(
         "--hann",
-        help="Cut frequency for hann window in ]0,1] (0.0 disables it)",
+        help="Cut frequency for Hann window in ]0,1] (0.0 disables it)",
         type=float,
         default=0.0,
     )
     ramp_group.add_argument(
         "--hannY",
-        help="Cut frequency for hann window in ]0,1] (0.0 disables it)",
+        help="Cut frequency for Hann window in ]0,1] (0.0 disables it)",
         type=float,
         default=0.0,
     )
 
     rtk.add_rtkinputprojections_group(parser)
     rtk.add_rtk3Doutputimage_group(parser)
-    rtk.add_rtkprojectors_group(parser)
+    rtk.add_rtkprojectors_group(parser, backprojection=False)
     rtk.add_rtkiterations_group(parser)
 
     return parser

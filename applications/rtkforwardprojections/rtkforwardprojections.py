@@ -46,13 +46,12 @@ def build_parser():
             "Zeng",
             "CudaZeng",
             "MIP",
-            "CudaWrapRayCast",
         ],
         default="Joseph",
     )
     rtkprojectors_group.add_argument(
         "--attenuationmap",
-        help="Attenuation map relative to the volume to perfom the attenuation correction",
+        help="Attenuation map relative to the volume to perform the attenuation correction",
         type=str,
     )
     rtkprojectors_group.add_argument(
@@ -73,15 +72,6 @@ def build_parser():
         help="Value of the superior clip of the ray for each pixel of the projections (only with Joseph-based projector)",
         type=str,
     )
-
-    # Motion compensation options
-    warp_forwardprojection_group = parser.add_argument_group(
-        "Motion compensation described in [Rit et al, TMI, 2009]"
-    )
-    warp_forwardprojection_group.add_argument(
-        "--signal", help="Signal file name", type=str
-    )
-    warp_forwardprojection_group.add_argument("--dvf", help="Input 4D DVF", type=str)
 
     rtk.add_rtk3Doutputimage_group(parser)
     rtk.add_rtknoise_group(parser)
@@ -181,24 +171,8 @@ def process(args_info):
         else:
             print("The program has not been compiled with cuda option")
             sys.exit(1)
-    elif args_info.fp == "CudaWrapRayCast":
-        if hasattr(itk, "CudaImage"):
-            if not args_info.dvf or not args_info.signal:
-                print("CudaWrapRayCast requires --dvf and --signal arguments.")
-                sys.exit(1)
-            forwardProjection = rtk.CudaWarpForwardProjectionImageFilter[
-                OutputCudaImageType
-            ].New()
-            forwardProjection.SetStepSize(args_info.step)
 
-            dvf_image = itk.imread(args_info.dvf)
-            forwardProjection.SetDisplacementField(dvf_image)
-            forwardProjection.SetSignalFilename(args_info.signal)
-        else:
-            print("The program has not been compiled with cuda option")
-            sys.exit(1)
-
-    if args_info.fp in ["CudaWrapRayCast", "CudaRayCast", "CudaZeng"]:
+    if args_info.fp in ["CudaRayCast", "CudaZeng"]:
         forwardProjection.SetInput(
             itk.cuda_image_from_image(constantImageSource.GetOutput())
         )

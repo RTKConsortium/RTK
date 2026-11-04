@@ -6,5 +6,5 @@ section "Filter parameters"
 option  "calibDir"   c "Directory containing the calibration files"               string        yes
 option  "Gain"       - "Gain maps filename"                                       string        yes
 option  "Dark"       - "Offset map filename"                                      string        yes
-option  "K"          - "Normalization coefficient"                                float         yes  default="1.0"
+option  "K"          - "Normalization coefficient"                                float         no   default="1.0"
 option  "bufferSize" - "Number of projections computed at the same time"         int           no   default="4"

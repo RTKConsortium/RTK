@@ -27,6 +27,7 @@ def build_parser():
         help="Radius of neighborhood in each direction (actual radius is 2r+1)",
         type=int,
         nargs="+",
+        default=[1],
     )
     return parser
 
@@ -43,12 +44,9 @@ def process(args_info: argparse.Namespace):
     median = rtk.ConditionalMedianImageFilter[OutputImageType].New()
     median.SetThresholdMultiplier(args_info.multiplier)
     radius = itk.Size[3]()
-    if args_info.radius is None:
-        radius.Fill(1)
-    else:
-        radius.Fill(args_info.radius[0])
-        for i in range(len(args_info.radius)):
-            radius[i] = args_info.radius[i]
+    radius.Fill(args_info.radius[0])
+    for i in range(min(len(args_info.radius), 3)):
+        radius[i] = args_info.radius[i]
     median.SetRadius(radius)
     median.SetInput(input_image)
 

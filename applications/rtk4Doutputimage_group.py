@@ -8,7 +8,6 @@ def add_rtk4Doutputimage_group(parser):
         help="Dimension (Deprecated) Use --size instead.",
         type=int,
         nargs="+",
-        default=[256],
     )
     group.add_argument("--size", help="Size", type=int, nargs="+", default=[256])
     group.add_argument("--spacing", help="Spacing", type=float, nargs="+", default=[1])

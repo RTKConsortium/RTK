@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import argparse
+import time
 import itk
 from itk import RTK as rtk
 
@@ -10,17 +11,30 @@ def build_parser():
         description="Reconstructs a 3D volume from a sequence of projections with a conjugate gradient technique"
     )
 
-    parser.add_argument("--geometry", "-g", help="Geometry file name", required=True)
+    parser.add_argument(
+        "--geometry", "-g", help="XML geometry file name", required=True
+    )
     parser.add_argument("--output", "-o", help="Output file name", required=True)
     parser.add_argument(
         "--niterations", "-n", type=int, default=5, help="Number of iterations"
+    )
+    parser.add_argument(
+        "--time",
+        "-t",
+        help="Records elapsed time during the process",
+        action="store_true",
     )
     parser.add_argument("--input", "-i", help="Input volume")
     parser.add_argument(
         "--weights", "-w", help="Weights file for Weighted Least Squares (WLS)"
     )
-    parser.add_argument("--gamma", help="Laplacian regularization weight")
-    parser.add_argument("--tikhonov", help="Tikhonov regularization weight")
+    parser.add_argument("--regweights", help="Local regularization weights file")
+    parser.add_argument(
+        "--gamma", help="Laplacian regularization weight", type=float, default=0.0
+    )
+    parser.add_argument(
+        "--tikhonov", help="Tikhonov regularization weight", type=float, default=0.0
+    )
     parser.add_argument(
         "--nocudacg",
         help="Do not perform conjugate gradient calculations on GPU",
@@ -29,7 +43,7 @@ def build_parser():
     parser.add_argument(
         "--mask",
         "-m",
-        help="Apply a support binary mask: reconstruction kept null outside the mask)",
+        help="Apply a support binary mask: reconstruction kept null outside the mask",
     )
     parser.add_argument(
         "--nodisplaced",
@@ -93,6 +107,10 @@ def process(args_info: argparse.Namespace):
         constantWeightsSource.SetConstant(1.0)
         weightsSource = constantWeightsSource
 
+    # Read regularization weights if given
+    if args_info.regweights is not None:
+        localRegWeights = itk.imread(args_info.regweights, OutputPixelType)
+
     # Read Support Mask if given
     if args_info.mask is not None:
         supportmask = itk.imread(args_info.mask)
@@ -110,6 +128,10 @@ def process(args_info: argparse.Namespace):
             2, itk.cuda_image_from_image(weightsSource.GetOutput())
         )
         conjugategradient.SetCudaConjugateGradient(not args_info.nocudacg)
+        if args_info.regweights is not None:
+            conjugategradient.SetLocalRegularizationWeights(
+                itk.cuda_image_from_image(localRegWeights)
+            )
         if args_info.mask is not None:
             conjugategradient.SetSupportMask(itk.cuda_image_from_image(supportmask))
     else:
@@ -120,6 +142,8 @@ def process(args_info: argparse.Namespace):
         conjugategradient.SetInput(inputFilter.GetOutput())
         conjugategradient.SetInput(1, reader.GetOutput())
         conjugategradient.SetInput(2, weightsSource.GetOutput())
+        if args_info.regweights is not None:
+            conjugategradient.SetLocalRegularizationWeights(localRegWeights)
         if args_info.mask is not None:
             conjugategradient.SetSupportMask(supportmask)
 
@@ -127,10 +151,8 @@ def process(args_info: argparse.Namespace):
     rtk.SetBackProjectionFromArgParse(args_info, conjugategradient)
     rtk.SetIterationsReportFromArgParse(args_info, conjugategradient)
 
-    if args_info.gamma is not None:
-        conjugategradient.SetGamma(args_info.gamma)
-    if args_info.tikhonov is not None:
-        conjugategradient.SetTikhonov(args_info.tikhonov)
+    conjugategradient.SetGamma(args_info.gamma)
+    conjugategradient.SetTikhonov(args_info.tikhonov)
 
     conjugategradient.SetGeometry(geometry)
     conjugategradient.SetNumberOfIterations(args_info.niterations)
@@ -138,7 +160,15 @@ def process(args_info: argparse.Namespace):
 
     rtk.SetIterationsReportFromArgParse(args_info, conjugategradient)
 
+    if args_info.time:
+        print("Recording elapsed time... ", end="", flush=True)
+        start_time = time.time()
+
     conjugategradient.Update()
+
+    if args_info.time:
+        elapsed = time.time() - start_time
+        print(f"It took...  {elapsed:.3f} s")
 
     # Write
     writer = itk.ImageFileWriter[OutputImageType].New()

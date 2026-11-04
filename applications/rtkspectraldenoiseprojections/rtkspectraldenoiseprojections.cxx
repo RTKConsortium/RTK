@@ -41,12 +41,9 @@ main(int argc, char * argv[])
   auto median = MedianType::New();
   median->SetThresholdMultiplier(args_info.multiplier_arg);
   MedianType::MedianRadiusType radius;
-  if (args_info.radius_given)
-  {
-    radius.Fill(args_info.radius_arg[0]);
-    for (unsigned int i = 0; i < args_info.radius_given; i++)
-      radius[i] = args_info.radius_arg[i];
-  }
+  radius.Fill(args_info.radius_arg[0]);
+  for (unsigned int i = 0; i < std::min(args_info.radius_given, Dimension); i++)
+    radius[i] = args_info.radius_arg[i];
   median->SetRadius(radius);
   median->SetInput(input);
 
