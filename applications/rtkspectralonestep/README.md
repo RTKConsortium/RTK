@@ -48,3 +48,14 @@ rtkspectralonestep \
   -f CudaRayCast \
   -b CudaVoxelBased
 ```
+
+## Command line options
+
+::::{container} argparse-no-usage
+```{eval-rst}
+.. argparse::
+  :filename: applications/rtkspectralonestep/rtkspectralonestep.py
+  :func: build_parser
+  :nodescription:
+```
+::::

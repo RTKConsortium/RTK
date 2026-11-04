@@ -10,3 +10,14 @@ See the [geometry documentation](../../documentation/docs/Geometry.md) for more 
 # 180 projections over a full turn (defaults: sdd 1536 mm, sid 1000 mm)
 rtksimulatedgeometry -o geometry.xml -n 180
 ```
+
+## Command line options
+
+::::{container} argparse-no-usage
+```{eval-rst}
+.. argparse::
+  :filename: applications/rtksimulatedgeometry/rtksimulatedgeometry.py
+  :func: build_parser
+  :nodescription:
+```
+::::

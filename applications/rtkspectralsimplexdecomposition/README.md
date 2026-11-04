@@ -35,3 +35,14 @@ After decomposition, you can reconstruct the two components of the image one by 
 rtkfdk -p . -r '^cl_decomposed.mha$' -o fdk0.mha --component 0 -g geometry.xml -v
 rtkfdk -p . -r '^cl_decomposed.mha$' -o fdk1.mha --component 1 -g geometry.xml -v
 ```
+
+## Command line options
+
+::::{container} argparse-no-usage
+```{eval-rst}
+.. argparse::
+  :filename: applications/rtkspectralsimplexdecomposition/rtkspectralsimplexdecomposition.py
+  :func: build_parser
+  :nodescription:
+```
+::::

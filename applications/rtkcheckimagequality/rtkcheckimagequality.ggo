@@ -2,4 +2,4 @@ purpose "Checks the MSE of a reconstructed image against a reference."
 
 option  "reference" i "Reference volume(s)"  string  multiple  yes
 option  "reconstruction"  j "Reconstructed volume(s)"  string  multiple  yes
-option  "threshold" t "MSE threshold(s)" int multiple  yes
+option  "threshold" t "MSE threshold(s)" double multiple  yes

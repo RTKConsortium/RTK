@@ -5,3 +5,14 @@ Masks out the region behind the collimator jaws from projection images using the
 ```bash
 rtkmaskcollimation -g geometry.xml -p . -r '.*.mha' -o corrected_projections.mha
 ```
+
+## Command line options
+
+::::{container} argparse-no-usage
+```{eval-rst}
+.. argparse::
+	:filename: applications/rtkmaskcollimation/rtkmaskcollimation.py
+	:func: build_parser
+	:nodescription:
+```
+::::

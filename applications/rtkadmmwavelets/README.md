@@ -7,3 +7,14 @@ This script uses the SheppLogan phantom
 
 ```{literalinclude} DaubechiesWavelets.sh
 ```
+
+## Command line options
+
+::::{container} argparse-no-usage
+```{eval-rst}
+.. argparse::
+  :filename: applications/rtkadmmwavelets/rtkadmmwavelets.py
+  :func: build_parser
+  :nodescription:
+```
+::::

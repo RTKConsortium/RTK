@@ -14,3 +14,14 @@ rtkextractphasesignal -i signal.mha -o phase.txt --model LOCAL_PHASE
 ```
 
 See [rtkamsterdamshroud](../rtkamsterdamshroud/README.md) for the calculation of the Amsterdam shroud and [rtkextractshroudsignal](../rtkextractshroudsignal/README.md) for the signal extraction.
+
+## Command line options
+
+::::{container} argparse-no-usage
+```{eval-rst}
+.. argparse::
+  :filename: applications/rtkextractphasesignal/rtkextractphasesignal.py
+  :func: build_parser
+  :nodescription:
+```
+::::

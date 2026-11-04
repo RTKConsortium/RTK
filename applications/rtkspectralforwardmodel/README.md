@@ -26,3 +26,14 @@ rtkspectralforwardmodel \
 ```
 
 `cl_counts.mha` should be identical to `counts.mha` available on [Girder](https://data.kitware.com/#collection/5a7706878d777f0649e04776/folder/699fdb4af94d0dc14645a411).
+
+## Command line options
+
+::::{container} argparse-no-usage
+```{eval-rst}
+.. argparse::
+  :filename: applications/rtkspectralforwardmodel/rtkspectralforwardmodel.py
+  :func: build_parser
+  :nodescription:
+```
+::::

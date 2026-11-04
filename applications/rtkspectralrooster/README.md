@@ -50,3 +50,14 @@ rtkspectralrooster \
   --fp CudaRayCast \
   --bp CudaVoxelBased
 ```
+
+## Command line options
+
+::::{container} argparse-no-usage
+```{eval-rst}
+.. argparse::
+  :filename: applications/rtkspectralrooster/rtkspectralrooster.py
+  :func: build_parser
+  :nodescription:
+```
+::::
