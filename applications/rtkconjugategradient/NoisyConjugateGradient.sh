@@ -12,4 +12,4 @@ rtkconjugategradient -p . -r noisyLineIntegrals.mha -o LeastSquares.mha -g geom.
 rtkconjugategradient -p . -r noisyLineIntegrals.mha -o WeightedLeastSquares.mha -g geom.xml -w weightsmap.mha -n 10
 
 # Create a reference volume for comparison
- rtkdrawshepploganphantom --spacing 2 --size 256 -o ref.mha
+rtkdrawshepploganphantom --spacing 2 --size 256 -o ref.mha
