@@ -181,7 +181,9 @@ test = ["pytest>=7.0", "matplotlib", "spekpy", "xraylib"]
 doc = [
     "furo",
     "myst-parser[linkify]",
+    "numpy",
     "sphinx>=7.2.6",
+    "sphinx-argparse",
     "sphinx-copybutton",
     "sphinx-design",
 ]

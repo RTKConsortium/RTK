@@ -6,18 +6,67 @@
 
 from datetime import date
 
+import importlib.util
 import subprocess
 import os
+import sys
+import types
+
+# Directory of this file, i.e., the documentation source directory, so that the
+# build does not depend on the directory sphinx-build is run from
+_conf_dir = os.path.dirname(os.path.abspath(__file__))
+
+
+# -- Lightweight itk.RTK for sphinx-argparse ---------------------------------
+# The application parsers only need the pure Python argument parser and option
+# groups of applications/. Load them from the source tree into a stub itk
+# package so that the documented options match the documented commit without
+# requiring an RTK wheel.
+def _install_itk_stub():
+    itk = types.ModuleType("itk")
+    itk.__path__ = []
+    sys.modules["itk"] = itk
+
+    # Only used for the --version output, which is not documented
+    rtk_config = types.ModuleType("itk.rtkConfig")
+    rtk_config.RTK_GLOBAL_VERSION_STRING = ""
+    itk.rtkConfig = sys.modules["itk.rtkConfig"] = rtk_config
+
+    rtk = types.ModuleType("itk.RTK")
+    itk.RTK = sys.modules["itk.RTK"] = rtk
+
+    # Same submodules as wrapping/__init_rtk__.py, except rtkExtras which
+    # needs the compiled module
+    for mod_name in [
+        "rtkargumentparser",
+        "rtkinputprojections_group",
+        "rtk3Doutputimage_group",
+        "rtk4Doutputimage_group",
+        "rtkprojectors_group",
+        "rtkiterations_group",
+        "rtknoise_group",
+    ]:
+        spec = importlib.util.spec_from_file_location(
+            f"itk.{mod_name}", os.path.join(_conf_dir, "applications", f"{mod_name}.py")
+        )
+        mod = importlib.util.module_from_spec(spec)
+        sys.modules[spec.name] = mod
+        spec.loader.exec_module(mod)
+        for a in dir(mod):
+            if a[0] != "_":
+                setattr(rtk, a, getattr(mod, a))
+
+
+_install_itk_stub()
 
 
 # -- Build setup -------------------------------------------------------------
 def setup(app):
     # Fetch documentation images
-    cwd = os.getcwd()
     subprocess.check_call(
-        f"cmake -DRTK_SOURCE_DIR:PATH={cwd}"
-        f"      -DRTK_DOC_OUTPUT_DIR:PATH={cwd}"
-        "      -P documentation/docs/copy_and_fetch_sphinx_doc_files.cmake",
+        f"cmake -DRTK_SOURCE_DIR:PATH={_conf_dir}"
+        f"      -DRTK_DOC_OUTPUT_DIR:PATH={_conf_dir}"
+        f"      -P {_conf_dir}/documentation/docs/copy_and_fetch_sphinx_doc_files.cmake",
         stderr=subprocess.STDOUT,
         shell=True,
     )
@@ -35,6 +84,7 @@ author = "RTK Consortium"
 extensions = [
     "myst_parser",
     "sphinx.ext.autodoc",
+    "sphinxarg.ext",
     "sphinx_copybutton",
     "sphinx_design",
     "sphinx.ext.graphviz",

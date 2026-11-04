@@ -6,3 +6,14 @@ See the [rtkfdk example](../rtkfdk/README.md):
 
 ```{literalinclude} ../rtkfdk/FDK3D.sh
 ```
+
+## Command line options
+
+ ::::{container} argparse-no-usage
+```{eval-rst}
+.. argparse::
+  :filename: applications/rtkdrawshepploganphantom/rtkdrawshepploganphantom.py
+  :func: build_parser
+  :nodescription:
+```
+::::

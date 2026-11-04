@@ -196,3 +196,14 @@ You do not need the 4D planning CT data to perform the MA-ROOSTER reconstruction
 *   4D planning CT
     *   [Patient 1](https://data.kitware.com/api/v1/item/5be98bd28d777f2179a2a279/download)
     *   [Patient 2](https://data.kitware.com/api/v1/item/5be9a1918d777f2179a2f568/download)
+
+## Command line options
+
+::::{container} argparse-no-usage
+```{eval-rst}
+.. argparse::
+  :filename: applications/rtkfourdrooster/rtkfourdrooster.py
+  :func: build_parser
+  :nodescription:
+```
+::::

@@ -1,6 +1,8 @@
 cmake
 furo
 myst-parser[linkify]
+numpy
 sphinx>=7.2.6
 sphinx-copybutton
 sphinx-design
+sphinx-argparse

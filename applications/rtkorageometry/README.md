@@ -19,3 +19,14 @@ rtkorageometry \
   -r "0_afterLog.ora.xml" \
   -o geometry.xml
 ```
+
+## Command line options
+
+::::{container} argparse-no-usage
+```{eval-rst}
+.. argparse::
+  :filename: applications/rtkorageometry/rtkorageometry.py
+  :func: build_parser
+  :nodescription:
+```
+::::

@@ -13,3 +13,14 @@ rtkvarianprobeamgeometry \
   --regexp Proj_.*.xim \
   -o geometry.xml
 ```
+
+## Command line options
+
+::::{container} argparse-no-usage
+```{eval-rst}
+.. argparse::
+  :filename: applications/rtkvarianprobeamgeometry/rtkvarianprobeamgeometry.py
+  :func: build_parser
+  :nodescription:
+```
+::::

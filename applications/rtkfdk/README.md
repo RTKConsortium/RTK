@@ -196,3 +196,14 @@ Toggle between uncorrected and motion-compensated reconstruction to appreciate t
 The 4D vector field is constructed with phase 50% as a reference. Modify the reference image to reconstruct other phases, such as the time-average position.
 ````
 `````
+
+## Command line options
+
+::::{container} argparse-no-usage
+```{eval-rst}
+.. argparse::
+  :filename: applications/rtkfdk/rtkfdk.py
+  :func: build_parser
+  :nodescription:
+```
+::::
