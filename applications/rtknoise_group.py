@@ -47,7 +47,7 @@ def AddNoiseFromArgParse(projections, args_info):
         multiply2.SetInput(expf.GetOutput())
         multiply2.SetConstant(I0)
 
-        poisson = itk.ShotNoiseImageFilter[OutputImageType].New()
+        poisson = itk.ShotNoiseImageFilter[OutputImageType, OutputImageType].New()
         poisson.SetInput(multiply2.GetOutput())
 
         threshold = itk.ThresholdImageFilter[OutputImageType].New()
@@ -58,7 +58,7 @@ def AddNoiseFromArgParse(projections, args_info):
         multiply3 = itk.MultiplyImageFilter[
             OutputImageType, OutputImageType, OutputImageType
         ].New()
-        noisy = itk.AdditiveGaussianNoiseImageFilter[
+        gaussian = itk.AdditiveGaussianNoiseImageFilter[
             OutputImageType, OutputImageType
         ].New()
         if args_info.gaussian is not None:
