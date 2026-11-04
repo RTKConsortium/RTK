@@ -20,7 +20,7 @@ For RTK developpers, it may be useful to compile RTK independently from ITK. Thi
 * Manually download RTK's source repository from [GitHub](https://github.com/RTKConsortium/RTK) with `git` (recommended) or as a [zip package](https://codeload.github.com/RTKConsortium/RTK/zip/main).
 * Configure the project with CMake pointing to RTK's source directory and setting the CMake option `ITK_DIR` to ITK's compilation directory. All CMake options above can be set except `Module_RTK`.
 
-#### Installing the Python wrapping into a Python environment
+### Installing the Python wrapping into a Python environment
 
 The recommended way is to create a self-contained *Python packages folder* holding ITK's compiled Python extensions and install ITK's Python package into it, built with `-DITK_WRAP_PYTHON=ON -DPY_SITE_PACKAGES_PATH=/path/to/python_packages_folder` and installed with `cmake --install <itk-build-dir> --component RuntimeLibraries`. The extensions are built for a specific Python ABI and platform, so the folder is portable across environments that support that ABI/platform; using a different Python version or OS requires rebuilding ITK (and RTK).
 
