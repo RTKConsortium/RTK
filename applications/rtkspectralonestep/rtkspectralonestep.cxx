@@ -56,21 +56,25 @@ rtkspectralonestep(const args_info_rtkspectralonestep & args_info)
   using DetectorResponseType = itk::Image<dataType, 2>;
   using MaterialAttenuationsType = itk::Image<dataType, 2>;
 #endif
+#ifndef ITK_FUTURE_LEGACY_REMOVE
   using VectorSpectrumType = itk::VectorImage<dataType, Dimension - 1>;
+#endif
 
   // Instantiate and update the readers
   typename MeasuredProjectionsType::Pointer mea;
   TRY_AND_EXIT_ON_ITK_EXCEPTION(mea = itk::ReadImage<MeasuredProjectionsType>(args_info.spectral_arg))
 
   IncidentSpectrumType::Pointer incidentSpectrum;
-  VectorSpectrumType::Pointer   vectorIncidentSpectrum;
-  itk::ImageIOBase::Pointer     incidentHeader;
+#ifndef ITK_FUTURE_LEGACY_REMOVE
+  VectorSpectrumType::Pointer vectorIncidentSpectrum;
+  itk::ImageIOBase::Pointer   incidentHeader;
   TRY_AND_EXIT_ON_ITK_EXCEPTION(incidentHeader = GetFileHeader(args_info.incident_arg))
   if (incidentHeader->GetNumberOfDimensions() == Dimension - 1 && incidentHeader->GetNumberOfComponents() > 1)
   {
     TRY_AND_EXIT_ON_ITK_EXCEPTION(vectorIncidentSpectrum = itk::ReadImage<VectorSpectrumType>(args_info.incident_arg))
   }
   else
+#endif
   {
     TRY_AND_EXIT_ON_ITK_EXCEPTION(incidentSpectrum = itk::ReadImage<IncidentSpectrumType>(args_info.incident_arg))
   }
@@ -186,9 +190,11 @@ rtkspectralonestep(const args_info_rtkspectralonestep & args_info)
   SetForwardProjectionFromGgo(args_info, mechlemOneStep.GetPointer());
   SetBackProjectionFromGgo(args_info, mechlemOneStep.GetPointer());
   mechlemOneStep->SetInputMaterialVolumes(input);
+#ifndef ITK_FUTURE_LEGACY_REMOVE
   if (vectorIncidentSpectrum.IsNotNull())
     mechlemOneStep->SetInputIncidentSpectrum(vectorIncidentSpectrum);
   else
+#endif
     mechlemOneStep->SetInputIncidentSpectrum(incidentSpectrum);
   mechlemOneStep->SetBinnedDetectorResponse(drm);
   mechlemOneStep->SetMaterialAttenuations(materialAttenuationsMatrix);

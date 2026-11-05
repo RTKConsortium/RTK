@@ -188,6 +188,7 @@ public:
   using SingleComponentImageType =
     typename TOutputImage::template RebindImageType<dataType, TOutputImage::ImageDimension>;
 
+#ifndef ITK_FUTURE_LEGACY_REMOVE
   // Vector incident spectra are flattened with CPU iterators first. When the reconstruction uses CUDA, the transfer to
   // TIncidentSpectrum must happen after this CPU-only conversion step.
   using IncidentSpectrumPixelType = typename TIncidentSpectrum::PixelType;
@@ -196,7 +197,7 @@ public:
   using FlattenVectorSpectrumFilterType =
     rtk::VectorImageToImageFilter<VectorSpectrumImageType, CPUIncidentSpectrumType>;
   using PermuteSpectrumFilterType = itk::PermuteAxesImageFilter<CPUIncidentSpectrumType>;
-#ifdef RTK_USE_CUDA
+#  ifdef RTK_USE_CUDA
   // The VectorImage overload first converts the spectrum to a scalar CPU image. When the reconstruction uses CUDA, that
   // CPU image must then be adapted to itk::CudaImage; a plain CastImageFilter would leave the CUDA data manager
   // uninitialized and CudaWeidingerForwardModelImageFilter would read an invalid GPU buffer.
@@ -204,8 +205,9 @@ public:
     std::conditional_t<std::is_same_v<TIncidentSpectrum, CPUIncidentSpectrumType>,
                        itk::CastImageFilter<CPUIncidentSpectrumType, TIncidentSpectrum>,
                        itk::CudaImageFromImageFilter<CPUIncidentSpectrumType>>;
-#else
+#  else
   using CastIncidentSpectrumFilterType = itk::CastImageFilter<CPUIncidentSpectrumType, TIncidentSpectrum>;
+#  endif
 #endif
 
 #if !defined(ITK_WRAPPING_PARSER)
@@ -287,9 +289,9 @@ public:
   SetInputMeasuredProjections(const VectorImageType * measuredProjections);
   void
   SetInputIncidentSpectrum(const TIncidentSpectrum * incidentSpectrum);
+#ifndef ITK_FUTURE_LEGACY_REMOVE
   void
   SetInputIncidentSpectrum(const VectorSpectrumImageType * incidentSpectrum);
-#ifndef ITK_FUTURE_LEGACY_REMOVE
   void
   SetInputPhotonCounts(const TMeasuredProjections * measuredProjections);
   void
@@ -357,9 +359,11 @@ protected:
   typename MultiplyGradientFilterType::Pointer                 m_MultiplyGradientToBeBackprojectedFilter;
   typename ReorderMeasuredProjectionsFilterType::Pointer       m_ReorderMeasuredProjectionsFilter;
   typename ReorderProjectionsWeightsFilterType::Pointer        m_ReorderProjectionsWeightsFilter;
-  typename FlattenVectorSpectrumFilterType::Pointer            m_FlattenVectorSpectrumFilter;
-  typename PermuteSpectrumFilterType::Pointer                  m_PermuteSpectrumFilter;
-  typename CastIncidentSpectrumFilterType::Pointer             m_CastIncidentSpectrumFilter;
+#  ifndef ITK_FUTURE_LEGACY_REMOVE
+  typename FlattenVectorSpectrumFilterType::Pointer m_FlattenVectorSpectrumFilter;
+  typename PermuteSpectrumFilterType::Pointer       m_PermuteSpectrumFilter;
+  typename CastIncidentSpectrumFilterType::Pointer  m_CastIncidentSpectrumFilter;
+#  endif
 #endif
 
   /** The inputs of this filter have the same type but not the same meaning
