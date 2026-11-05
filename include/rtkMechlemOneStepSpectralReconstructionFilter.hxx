@@ -61,9 +61,11 @@ MechlemOneStepSpectralReconstructionFilter<TOutputImage, TMeasuredProjections, T
   m_MultiplySupportFilter = MultiplyFilterType::New();
   m_ReorderMeasuredProjectionsFilter = ReorderMeasuredProjectionsFilterType::New();
   m_ReorderProjectionsWeightsFilter = ReorderProjectionsWeightsFilterType::New();
+#ifndef ITK_FUTURE_LEGACY_REMOVE
   m_FlattenVectorSpectrumFilter = FlattenVectorSpectrumFilterType::New();
   m_PermuteSpectrumFilter = PermuteSpectrumFilterType::New();
   m_CastIncidentSpectrumFilter = CastIncidentSpectrumFilterType::New();
+#endif
 
   // Set permanent parameters
   m_ProjectionsSource->SetConstant(itk::NumericTraits<typename TOutputImage::PixelType>::ZeroValue());
@@ -122,6 +124,7 @@ MechlemOneStepSpectralReconstructionFilter<TOutputImage, TMeasuredProjections, T
   this->SetNthInput(2, const_cast<TIncidentSpectrum *>(incidentSpectrum));
 }
 
+#ifndef ITK_FUTURE_LEGACY_REMOVE
 template <class TOutputImage, class TMeasuredProjections, class TIncidentSpectrum>
 void
 MechlemOneStepSpectralReconstructionFilter<TOutputImage, TMeasuredProjections, TIncidentSpectrum>::
@@ -138,7 +141,6 @@ MechlemOneStepSpectralReconstructionFilter<TOutputImage, TMeasuredProjections, T
   this->SetInputIncidentSpectrum(m_CastIncidentSpectrumFilter->GetOutput());
 }
 
-#ifndef ITK_FUTURE_LEGACY_REMOVE
 template <class TOutputImage, class TMeasuredProjections, class TIncidentSpectrum>
 void
 MechlemOneStepSpectralReconstructionFilter<TOutputImage, TMeasuredProjections, TIncidentSpectrum>::SetInputPhotonCounts(

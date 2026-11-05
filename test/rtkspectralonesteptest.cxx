@@ -66,6 +66,7 @@ rtkspectralonesteptest(int argc, char * argv[])
   using MaterialAttenuationsImageType = itk::Image<DataType, Dimension - 1>;
   using SingleComponentImageType = itk::Image<DataType, Dimension>;
 #endif
+#ifndef ITK_FUTURE_LEGACY_REMOVE
   using ScalarSpectrumImageType = itk::Image<DataType, Dimension>;
   using VectorSpectrumImageType = itk::VectorImage<DataType, Dimension - 1>;
   using PermuteIncidentSpectrumFilterType = itk::PermuteAxesImageFilter<ScalarSpectrumImageType>;
@@ -74,6 +75,7 @@ rtkspectralonesteptest(int argc, char * argv[])
     rtk::ImageToVectorImageFilter<ScalarSpectrumImageType, VectorSpectrumImageType>;
   using VectorSpectrumToScalarFilterType =
     rtk::VectorImageToImageFilter<VectorSpectrumImageType, ScalarSpectrumImageType>;
+#endif
 
 
   // Cast filters to convert between vector image types
@@ -84,9 +86,11 @@ rtkspectralonesteptest(int argc, char * argv[])
   incidentSpectrumReader->SetFileName(argv[1]);
   incidentSpectrumReader->Update();
 
+#ifndef ITK_FUTURE_LEGACY_REMOVE
   auto scalarIncidentSpectrumReader = itk::ImageFileReader<ScalarSpectrumImageType>::New();
   scalarIncidentSpectrumReader->SetFileName(argv[1]);
   scalarIncidentSpectrumReader->Update();
+#endif
 
   auto detectorResponseReader = itk::ImageFileReader<DetectorResponseImageType>::New();
   detectorResponseReader->SetFileName(argv[2]);
@@ -323,6 +327,7 @@ rtkspectralonesteptest(int argc, char * argv[])
   CheckVectorImageQuality<MaterialVolumeType>(mechlemOneStep->GetOutput(), composeVols->GetOutput(), 0.08, 23, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 
+#ifndef ITK_FUTURE_LEGACY_REMOVE
   auto scalarIncidentSpectrumResult = itk::ImageDuplicator<MaterialVolumeType>::New();
   scalarIncidentSpectrumResult->SetInputImage(mechlemOneStep->GetOutput());
   TRY_AND_EXIT_ON_ITK_EXCEPTION(scalarIncidentSpectrumResult->Update())
@@ -360,15 +365,15 @@ rtkspectralonesteptest(int argc, char * argv[])
   CheckImageQuality<ScalarSpectrumImageType>(
     inversePermuteIncidentSpectrum->GetOutput(), scalarIncidentSpectrumReader->GetOutput(), 1e-7, 120, 1000.0);
 
-#ifdef RTK_USE_CUDA
+#  ifdef RTK_USE_CUDA
   std::cout << "\n\n****** Case 6: CUDA voxel-based Backprojector, 4 subsets, with regularization, "
                "itkVectorImage incident spectrum converted from scalar input ******"
             << std::endl;
-#else
+#  else
   std::cout << "\n\n****** Case 5: Voxel-based Backprojector, 4 subsets, with regularization, "
                "itkVectorImage incident spectrum converted from scalar input ******"
             << std::endl;
-#endif
+#  endif
 
   mechlemOneStep->SetInputIncidentSpectrum(vectorIncidentSpectrum->GetOutput());
   TRY_AND_EXIT_ON_ITK_EXCEPTION(mechlemOneStep->Update());
@@ -377,6 +382,7 @@ rtkspectralonesteptest(int argc, char * argv[])
     mechlemOneStep->GetOutput(), scalarIncidentSpectrumResult->GetOutput(), 1e-7, 10, 1.0);
   CheckVectorImageQuality<MaterialVolumeType>(mechlemOneStep->GetOutput(), composeVols->GetOutput(), 0.08, 23, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
+#endif
 
   return EXIT_SUCCESS;
 }
