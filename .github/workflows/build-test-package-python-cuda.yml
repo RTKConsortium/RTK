@@ -224,7 +224,7 @@ jobs:
 
     - name: Publish 🐍 Python 📦 package to PyPI
       if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags')
-      uses: pypa/gh-action-pypi-publish@v1.5.1
+      uses: pypa/gh-action-pypi-publish@v1.14.3
       with:
         skip_existing: true
         user: __token__
