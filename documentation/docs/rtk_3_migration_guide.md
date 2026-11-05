@@ -81,6 +81,10 @@ The CUDA forward projector `rtk::CudaForwardProjectionFilter` now only accumulat
 
 The CUDA forward projector and the CUDA ray-cast backprojector now use the minimum voxel spacing of the input volume as the ray step when StepSize is not set. The previous default value was 1.
 
+## Image type itk::Image for incident spectrum in spectral code
+
+Different formats were used across the spectral code for the incident spectrum, 2D itk::VectorImage and 3D itk::Image. All applications and filters now accept the two formats but handling of the `itk::VectorImage` format will be removed in the future and is marked as `ITK_FUTURE_LEGACY_REMOVE`.
+
 ## rtkdualenergy applications and associated code removed
 
 Historically, several applications had been developed to handle material decomposition of specific dual-energy spectral CT acquisitions with fast switching. `rtkdualenergysimplexdecomposition` and `rtkdualenergyforwardmodel` and the associated code in `DualEnergyNegativeLogLikelihood` and `SpectralForwardModelImageFilter` have been removed as one can do the same with `rtkspectralsimplexdecomposition` and `rtkdualenergysimplexdecomposition`.
