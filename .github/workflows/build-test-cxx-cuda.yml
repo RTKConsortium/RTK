@@ -12,17 +12,17 @@ concurrency:
 
 jobs:
   build-test-cxx:
-    runs-on: ${{ matrix.os }}
+    runs-on: [self-hosted, "${{ matrix.os }}"]
     strategy:
       max-parallel: 3
       matrix:
-        os: [self-hosted-linux, self-hosted-windows]
+        os: [linux, windows]
         include:
-          - os: self-hosted-linux
+          - os: linux
             c-compiler: "gcc"
             cxx-compiler: "g++"
             cmake-build-type: "MinSizeRel"
-          - os: self-hosted-windows
+          - os: windows
             c-compiler: "cl.exe"
             cxx-compiler: "cl.exe"
             cmake-build-type: "Release"
@@ -50,7 +50,7 @@ jobs:
         git checkout ${{ env.itk-git-tag }}
 
     - name: Build ITK
-      if: matrix.os != 'self-hosted-windows'
+      if: matrix.os != 'windows'
       shell: bash
       run: |
         cd ..
@@ -74,7 +74,7 @@ jobs:
         ninja
 
     - name: Build ITK
-      if: matrix.os == 'self-hosted-windows'
+      if: matrix.os == 'windows'
       shell: pwsh
       run: |
         Set-PSDebug -Trace 1
@@ -154,12 +154,12 @@ jobs:
         cat dashboard.cmake
 
     - name: Build and test
-      if: matrix.os != 'self-hosted-windows'
+      if: matrix.os != 'windows'
       run: |
         ctest --output-on-failure -j 2 -VV -S dashboard.cmake ${{ env.ctest-options }}
 
     - name: Build and test
-      if: matrix.os == 'self-hosted-windows'
+      if: matrix.os == 'windows'
       shell: pwsh
       run: |
         & "C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\Tools\Launch-VsDevShell.ps1" -Arch amd64 -SkipAutomaticLocation

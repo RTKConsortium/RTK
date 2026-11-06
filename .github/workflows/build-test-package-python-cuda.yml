@@ -14,7 +14,7 @@ concurrency:
 
 jobs:
   build-linux-cuda-python-packages:
-    runs-on: self-hosted-linux
+    runs-on: [self-hosted, linux]
     strategy:
       max-parallel: 2
       matrix:
@@ -112,7 +112,7 @@ jobs:
         path: dist/*.whl
 
   build-windows-cuda-python-packages:
-    runs-on: self-hosted-windows
+    runs-on: [self-hosted, windows]
     strategy:
       max-parallel: 2
       matrix:
@@ -238,11 +238,11 @@ jobs:
     strategy:
       matrix:
         include:
-          - runs-on: self-hosted-linux
+          - os: linux
             cuda-version: "130"
-          - runs-on: self-hosted-windows
+          - os: windows
             cuda-version: "128"
-    runs-on: ${{ matrix.runs-on }}
+    runs-on: [self-hosted, "${{ matrix.os }}"]
 
     steps:
     - uses: actions/checkout@v5
@@ -261,7 +261,7 @@ jobs:
       shell: bash
       run: |
         python -m venv .test-venv
-        if [[ "${{ matrix.runs-on }}" == "self-hosted-linux" ]]; then
+        if [[ "${{ matrix.os }}" == "linux" ]]; then
           export LD_LIBRARY_PATH="/home/srit/Downloads/cuda${{ matrix.cuda-version }}/targets/x86_64-linux/lib:$LD_LIBRARY_PATH"
           source .test-venv/bin/activate
         else
@@ -281,7 +281,7 @@ jobs:
         trap 'deactivate; rm -rf .test-venv' EXIT
 
         # Find wheel for Python 3.11 dynamically
-        if [[ "${{ matrix.runs-on }}" == "self-hosted-linux" ]]; then
+        if [[ "${{ matrix.os }}" == "linux" ]]; then
           wheel=$(find wheels -name "itk_rtk_cuda${{ matrix.cuda-version }}*cp311-abi3-manylinux_2_28_x86_64.whl" -type f | head -1)
         else
           wheel=$(find wheels -name "itk_rtk_cuda${{ matrix.cuda-version }}*cp311-abi3-win_amd64.whl" -type f | head -1)
