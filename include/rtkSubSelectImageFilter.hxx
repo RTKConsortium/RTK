@@ -56,6 +56,15 @@ SubSelectImageFilter<ProjectionStackType>::VerifyPreconditions() const
 
 template <typename ProjectionStackType>
 void
+SubSelectImageFilter<ProjectionStackType>::VerifyInputInformation() const
+{
+  this->Superclass::VerifyInputInformation();
+
+  GeometryType::CheckExactNumberOfProjections(*this->m_InputGeometry, this->GetInput()->GetLargestPossibleRegion());
+}
+
+template <typename ProjectionStackType>
+void
 SubSelectImageFilter<ProjectionStackType>::GenerateInputRequestedRegion()
 {
   const unsigned int Dimension = this->InputImageDimension;

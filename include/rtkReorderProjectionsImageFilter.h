@@ -30,6 +30,8 @@ namespace rtk
  * \brief Sorts or shuffle projections and geometry inputs
  *
  * This filter permutes projections and geometry with the same permutation.
+ * The input stack must contain all projections of the input geometry,
+ * starting at index zero.
  * The permutation is either the one that sorts projections by ascending phase,
  * so that the ones with the same phase can be forward and back projected together
  * (which is faster than one-by-one), or it is a random shuffle, useful for subset
@@ -92,6 +94,9 @@ protected:
   /** Checks that inputs are correctly set. */
   void
   VerifyPreconditions() const override;
+
+  void
+  VerifyInputInformation() const override;
 
   void
   GenerateOutputInformation() override;

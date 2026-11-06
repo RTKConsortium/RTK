@@ -83,6 +83,9 @@ protected:
   VerifyPreconditions() const override;
 
   void
+  VerifyInputInformation() const override;
+
+  void
   BeforeThreadedGenerateData() override;
 
   void

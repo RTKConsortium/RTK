@@ -85,6 +85,9 @@ protected:
   VerifyPreconditions() const override;
 
   void
+  VerifyInputInformation() const override;
+
+  void
   GenerateInputRequestedRegion() override;
 
   void

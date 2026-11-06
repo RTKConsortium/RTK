@@ -85,6 +85,8 @@ template <class TInputImage, class TOutputImage>
 void
 ZengForwardProjectionImageFilter<TInputImage, TOutputImage>::VerifyInputInformation() const
 {
+  this->Superclass::VerifyInputInformation();
+
   using ImageBaseType = const itk::ImageBase<InputImageDimension>;
 
   ImageBaseType * inputPtr1 = nullptr;
@@ -167,7 +169,6 @@ template <class TInputImage, class TOutputImage>
 void
 ZengForwardProjectionImageFilter<TInputImage, TOutputImage>::GenerateOutputInformation()
 {
-
   // Info of the input volume
   const typename OuputCPUImageType::SpacingType spacingVolume = this->GetInput(1)->GetSpacing();
   const typename OuputCPUImageType::SizeType    sizeVolume = this->GetInput(1)->GetLargestPossibleRegion().GetSize();
