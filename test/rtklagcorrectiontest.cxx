@@ -5,6 +5,7 @@
 #ifdef USE_CUDA
 #  include "rtkCudaLagCorrectionImageFilter.h"
 #  include <itkCudaImage.h>
+#  include <itkImageRegionIteratorWithIndex.h>
 #endif
 
 #include <algorithm>
@@ -85,7 +86,7 @@ rtklagcorrectiontest(int, char *[])
   auto cpuInput = FloatImageType::New();
   cpuInput->SetRegions(stackSize);
   cpuInput->Allocate();
-  itk::ImageRegionIterator<FloatImageType> itSrc(cpuInput, cpuInput->GetBufferedRegion());
+  itk::ImageRegionIteratorWithIndex<FloatImageType> itSrc(cpuInput, cpuInput->GetBufferedRegion());
   for (itSrc.GoToBegin(); !itSrc.IsAtEnd(); ++itSrc)
   {
     const auto idx = itSrc.GetIndex();
@@ -116,7 +117,7 @@ rtklagcorrectiontest(int, char *[])
   cudaStackFilter->SetInput(cudaStackInput);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(cudaStackFilter->Update())
 
-  itk::ImageRegionIterator<itk::CudaImage<unsigned short, Dimension>> itCuda(
+  itk::ImageRegionIteratorWithIndex<itk::CudaImage<unsigned short, Dimension>> itCuda(
     cudaStackFilter->GetOutput(), cudaStackFilter->GetOutput()->GetBufferedRegion());
   itk::ImageRegionIterator<FloatImageType> itRef(cpuStackOutput, cpuStackOutput->GetBufferedRegion());
   for (itCuda.GoToBegin(), itRef.GoToBegin(); !itCuda.IsAtEnd(); ++itCuda, ++itRef)
@@ -136,7 +137,7 @@ rtklagcorrectiontest(int, char *[])
   auto cpuStack2 = FloatImageType::New();
   cpuStack2->SetRegions(stackSize);
   cpuStack2->Allocate();
-  itk::ImageRegionIterator<FloatImageType> itSrc2(cpuStack2, cpuStack2->GetBufferedRegion());
+  itk::ImageRegionIteratorWithIndex<FloatImageType> itSrc2(cpuStack2, cpuStack2->GetBufferedRegion());
   for (itSrc2.GoToBegin(); !itSrc2.IsAtEnd(); ++itSrc2)
   {
     const auto idx = itSrc2.GetIndex();
@@ -165,7 +166,7 @@ rtklagcorrectiontest(int, char *[])
   cudaStackFilter->SetInput(cudaStackInput2);
   TRY_AND_EXIT_ON_ITK_EXCEPTION(cudaStackFilter->UpdateLargestPossibleRegion())
 
-  itk::ImageRegionIterator<itk::CudaImage<unsigned short, Dimension>> itCuda2(
+  itk::ImageRegionIteratorWithIndex<itk::CudaImage<unsigned short, Dimension>> itCuda2(
     cudaStackFilter->GetOutput(), cudaStackFilter->GetOutput()->GetBufferedRegion());
   itk::ImageRegionIterator<FloatImageType> itRef2(cpuOutput2, cpuOutput2->GetBufferedRegion());
   for (itCuda2.GoToBegin(), itRef2.GoToBegin(); !itCuda2.IsAtEnd(); ++itCuda2, ++itRef2)
