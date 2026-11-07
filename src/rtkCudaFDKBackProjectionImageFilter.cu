@@ -115,9 +115,9 @@ CUDA_reconstruct_conebeam(itk::SizeValueType proj_size[3],
   constexpr int tBlock_z = 4;
 
   // Each element in the volume (each voxel) gets 1 thread
-  unsigned int blocksInX = (vol_size[0] - 1) / tBlock_x + 1;
-  unsigned int blocksInY = (vol_size[1] - 1) / tBlock_y + 1;
-  unsigned int blocksInZ = (vol_size[2] - 1) / tBlock_z + 1;
+  unsigned int blocksInX = static_cast<unsigned int>((vol_size[0] - 1) / tBlock_x + 1);
+  unsigned int blocksInY = static_cast<unsigned int>((vol_size[1] - 1) / tBlock_y + 1);
+  unsigned int blocksInZ = static_cast<unsigned int>((vol_size[2] - 1) / tBlock_z + 1);
 
   // Run kernels. Note: Projection data is passed via texture memory,
   // transform matrix is passed via constant memory

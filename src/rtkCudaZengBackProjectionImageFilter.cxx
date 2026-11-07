@@ -106,7 +106,6 @@ CudaZengBackProjectionImageFilter::GPUGenerateData()
   volumeIndexTranslation.SetIdentity();
   for (unsigned int d = 0; d < 3; ++d)
     volumeIndexTranslation[d][3] = volumeRegion.GetIndex(d);
-  using TransformType = itk::CenteredEuler3DTransform<double>;
   auto                          transform = TransformType::New();
   auto                          inverse = TransformType::New();
   TransformType::InputPointType zero{};

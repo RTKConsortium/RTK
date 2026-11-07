@@ -51,7 +51,7 @@ __constant__ float c_PPOutputToIndexOutputMatrix[12];
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
 __global__ void
-fillHoles_3Dgrid(float * dev_vol_out, float * dev_accumulate_weights, int3 out_dim)
+fillHoles_3Dgrid(float * dev_vol_out, float * dev_accumulate_weights, SizeValueType3 out_dim)
 {
   itk::OffsetValueType i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
   itk::OffsetValueType j = __umul24(blockIdx.y, blockDim.y) + threadIdx.y;
@@ -102,7 +102,7 @@ fillHoles_3Dgrid(float * dev_vol_out, float * dev_accumulate_weights, int3 out_d
 }
 
 __global__ void
-normalize_3Dgrid(float * dev_vol_out, float * dev_accumulate_weights, int3 out_dim)
+normalize_3Dgrid(float * dev_vol_out, float * dev_accumulate_weights, SizeValueType3 out_dim)
 {
   itk::SizeValueType i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
   itk::SizeValueType j = __umul24(blockIdx.y, blockDim.y) + threadIdx.y;
@@ -128,8 +128,8 @@ __global__ void
 linearSplat_3Dgrid(float *             dev_vol_in,
                    float *             dev_vol_out,
                    float *             dev_accumulate_weights,
-                   int3                in_dim,
-                   int3                out_dim,
+                   SizeValueType3      in_dim,
+                   SizeValueType3      out_dim,
                    cudaTextureObject_t tex_xdvf,
                    cudaTextureObject_t tex_ydvf,
                    cudaTextureObject_t tex_zdvf)
@@ -280,8 +280,8 @@ __global__ void
 nearestNeighborSplat_3Dgrid(float *             dev_vol_in,
                             float *             dev_vol_out,
                             float *             dev_accumulate_weights,
-                            int3                in_dim,
-                            int3                out_dim,
+                            SizeValueType3      in_dim,
+                            SizeValueType3      out_dim,
                             cudaTextureObject_t tex_xdvf,
                             cudaTextureObject_t tex_ydvf,
                             cudaTextureObject_t tex_zdvf)
@@ -400,9 +400,9 @@ CUDA_ForwardWarp(itk::SizeValueType input_vol_dim[3],
   constexpr int tBlock_z = 4;
 
   // Each element in the volume (each voxel) gets 1 thread
-  unsigned int blocksInX = (output_vol_dim[0] - 1) / tBlock_x + 1;
-  unsigned int blocksInY = (output_vol_dim[1] - 1) / tBlock_y + 1;
-  unsigned int blocksInZ = (output_vol_dim[2] - 1) / tBlock_z + 1;
+  unsigned int blocksInX = static_cast<unsigned int>((output_vol_dim[0] - 1) / tBlock_x + 1);
+  unsigned int blocksInY = static_cast<unsigned int>((output_vol_dim[1] - 1) / tBlock_y + 1);
+  unsigned int blocksInZ = static_cast<unsigned int>((output_vol_dim[2] - 1) / tBlock_z + 1);
 
   dim3 dimGrid = dim3(blocksInX, blocksInY, blocksInZ);
   dim3 dimBlock = dim3(tBlock_x, tBlock_y, tBlock_z);
@@ -413,8 +413,8 @@ CUDA_ForwardWarp(itk::SizeValueType input_vol_dim[3],
     linearSplat_3Dgrid<<<dimGrid, dimBlock>>>(dev_input_vol,
                                               dev_output_vol,
                                               dev_accumulate_weights,
-                                              make_int3(input_vol_dim[0], input_vol_dim[1], input_vol_dim[2]),
-                                              make_int3(output_vol_dim[0], output_vol_dim[1], output_vol_dim[2]),
+                                              make_ulonglong3(input_vol_dim[0], input_vol_dim[1], input_vol_dim[2]),
+                                              make_ulonglong3(output_vol_dim[0], output_vol_dim[1], output_vol_dim[2]),
                                               tex_xdvf,
                                               tex_ydvf,
                                               tex_zdvf);
@@ -423,8 +423,8 @@ CUDA_ForwardWarp(itk::SizeValueType input_vol_dim[3],
       dev_input_vol,
       dev_output_vol,
       dev_accumulate_weights,
-      make_int3(input_vol_dim[0], input_vol_dim[1], input_vol_dim[2]),
-      make_int3(output_vol_dim[0], output_vol_dim[1], output_vol_dim[2]),
+      make_ulonglong3(input_vol_dim[0], input_vol_dim[1], input_vol_dim[2]),
+      make_ulonglong3(output_vol_dim[0], output_vol_dim[1], output_vol_dim[2]),
       tex_xdvf,
       tex_ydvf,
       tex_zdvf);
@@ -432,11 +432,11 @@ CUDA_ForwardWarp(itk::SizeValueType input_vol_dim[3],
   CUDA_CHECK_ERROR;
 
   normalize_3Dgrid<<<dimGrid, dimBlock>>>(
-    dev_output_vol, dev_accumulate_weights, make_int3(output_vol_dim[0], output_vol_dim[1], output_vol_dim[2]));
+    dev_output_vol, dev_accumulate_weights, make_ulonglong3(output_vol_dim[0], output_vol_dim[1], output_vol_dim[2]));
   CUDA_CHECK_ERROR;
 
   fillHoles_3Dgrid<<<dimGrid, dimBlock>>>(
-    dev_output_vol, dev_accumulate_weights, make_int3(output_vol_dim[0], output_vol_dim[1], output_vol_dim[2]));
+    dev_output_vol, dev_accumulate_weights, make_ulonglong3(output_vol_dim[0], output_vol_dim[1], output_vol_dim[2]));
   CUDA_CHECK_ERROR;
 
   // Cleanup

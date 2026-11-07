@@ -114,19 +114,19 @@ rtklagcorrectiontest(int, char *[])
   auto cudaStackFilter = rtk::CudaLagCorrectionImageFilter::New();
   cudaStackFilter->SetCoefficients(a, b);
   auto compare = [&](const std::pair<FloatImageType::Pointer, ImageType::Pointer> & stacks,
-                     const ImageType::RegionType &                                  region,
+                     const ImageType::RegionType &                                  reqRegion,
                      const char *                                                   description) {
     cpuStackFilter->SetInput(stacks.first);
     cpuStackFilter->UpdateOutputInformation();
-    cpuStackFilter->GetOutput()->SetRequestedRegion(region);
+    cpuStackFilter->GetOutput()->SetRequestedRegion(reqRegion);
     cpuStackFilter->Update();
     cudaStackFilter->SetInput(stacks.second);
     cudaStackFilter->UpdateOutputInformation();
-    cudaStackFilter->GetOutput()->SetRequestedRegion(region);
+    cudaStackFilter->GetOutput()->SetRequestedRegion(reqRegion);
     TRY_AND_EXIT_ON_ITK_EXCEPTION(cudaStackFilter->Update())
 
-    itk::ImageRegionConstIteratorWithIndex<ImageType> itCuda(cudaStackFilter->GetOutput(), region);
-    itk::ImageRegionConstIterator<FloatImageType>     itRef(cpuStackFilter->GetOutput(), region);
+    itk::ImageRegionConstIteratorWithIndex<ImageType> itCuda(cudaStackFilter->GetOutput(), reqRegion);
+    itk::ImageRegionConstIterator<FloatImageType>     itRef(cpuStackFilter->GetOutput(), reqRegion);
     for (; !itCuda.IsAtEnd(); ++itCuda, ++itRef)
     {
       if (std::fabs((float)itCuda.Get() - itRef.Get()) > 1.5)
