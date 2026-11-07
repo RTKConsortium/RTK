@@ -109,7 +109,7 @@ CUDA_conjugate_gradient(size_t numberOfElements, float * Xk, float * Rk, float *
   cublasHandle_t handle;
   cublasCreate(&handle);
 
-  float eps = 1e-30;
+  float eps = 1e-30f;
 
   // Compute Rk_square = sum(Rk(:).^2) by cublas
   float Rk_square = 0;

@@ -85,9 +85,8 @@ CudaZengForwardProjectionImageFilter::GPUGenerateData()
     centerIndex[d] = volumeRegion.GetIndex(d) + (volumeRegion.GetSize(d) - 1.0) / 2.0;
   this->GetInput(1)->TransformContinuousIndexToPhysicalPoint(centerIndex, volumeCenter);
 
-  std::vector<float> matrices(12 * numberOfProjections);
-  std::vector<float> farDistances(numberOfProjections);
-  using TransformType = itk::CenteredEuler3DTransform<double>;
+  std::vector<float>            matrices(12 * numberOfProjections);
+  std::vector<float>            farDistances(numberOfProjections);
   auto                          transform = TransformType::New();
   TransformType::InputPointType zero{};
   transform->SetCenter(zero);
