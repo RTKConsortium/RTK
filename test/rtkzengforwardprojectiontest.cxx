@@ -28,7 +28,6 @@ rtkzengforwardprojectiontest(int, char *[])
 {
   constexpr unsigned int Dimension = 3;
   using OutputPixelType = float;
-  using OutputImageType = itk::Image<OutputPixelType, Dimension>;
 
 #if FAST_TESTS_NO_CHECKS
   constexpr unsigned int NumberOfProjectionImages = 3;
@@ -38,11 +37,11 @@ rtkzengforwardprojectiontest(int, char *[])
 
   // Constant image sources
 #ifdef USE_CUDA
-  using InputImageType = itk::CudaImage<OutputPixelType, Dimension>;
+  using ImageType = itk::CudaImage<OutputPixelType, Dimension>;
 #else
-  using InputImageType = OutputImageType;
+  using ImageType = itk::Image<OutputPixelType, Dimension>;
 #endif
-  using ConstantImageSourceType = rtk::ConstantImageSource<InputImageType>;
+  using ConstantImageSourceType = rtk::ConstantImageSource<ImageType>;
   constexpr double att = 0.0154;
   // Create Joseph Forward Projector volume input.
   auto origin = itk::MakePoint(-126., -126., -126.);
@@ -77,7 +76,7 @@ rtkzengforwardprojectiontest(int, char *[])
   projInput->Update();
 
 
-  auto volInput = rtk::DrawEllipsoidImageFilter<InputImageType, InputImageType>::New();
+  auto volInput = rtk::DrawEllipsoidImageFilter<ImageType, ImageType>::New();
   auto axis_vol = itk::MakeVector(32., 32., 32.);
   auto center_vol = itk::MakePoint(0., 0., 0.);
   volInput->SetInput(tomographySource->GetOutput());
@@ -91,7 +90,7 @@ rtkzengforwardprojectiontest(int, char *[])
 #ifdef USE_CUDA
   auto jfp = rtk::CudaZengForwardProjectionImageFilter::New();
 #else
-  auto jfp = rtk::ZengForwardProjectionImageFilter<InputImageType, InputImageType>::New();
+  auto jfp = rtk::ZengForwardProjectionImageFilter<ImageType, ImageType>::New();
 #endif
   jfp->InPlaceOff();
   jfp->SetInput(projInput->GetOutput());
@@ -99,7 +98,7 @@ rtkzengforwardprojectiontest(int, char *[])
   jfp->SetInput(2, attenuationInput->GetOutput());
 
   // Joseph Forward Attenuated Projection filter
-  auto attjfp = rtk::JosephForwardAttenuatedProjectionImageFilter<InputImageType, InputImageType>::New();
+  auto attjfp = rtk::JosephForwardAttenuatedProjectionImageFilter<ImageType, ImageType>::New();
   attjfp->InPlaceOff();
   attjfp->SetInput(projInput->GetOutput());
   attjfp->SetInput(1, volInput->GetOutput());
@@ -127,7 +126,7 @@ rtkzengforwardprojectiontest(int, char *[])
   }
 #endif
 
-  CheckImageQuality<InputImageType>(jfp->GetOutput(), attjfp->GetOutput(), 0.1, 44.0, 255.0);
+  CheckImageQuality<ImageType>(jfp->GetOutput(), attjfp->GetOutput(), 0.1, 44.0, 255.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 
   return EXIT_SUCCESS;

@@ -52,7 +52,7 @@ __constant__ float c_PPInputToIndexInputMatrix[12];
 
 __global__ void
 kernel_3Dgrid(float *             dev_vol_out,
-              int3                vol_dim,
+              SizeValueType3      vol_dim,
               cudaTextureObject_t tex_xdvf,
               cudaTextureObject_t tex_ydvf,
               cudaTextureObject_t tex_zdvf,
@@ -138,15 +138,15 @@ CUDA_warp(itk::SizeValueType input_vol_dim[3],
   constexpr int tBlock_z = 4;
 
   // Each element in the volume (each voxel) gets 1 thread
-  unsigned int blocksInX = (output_vol_dim[0] - 1) / tBlock_x + 1;
-  unsigned int blocksInY = (output_vol_dim[1] - 1) / tBlock_y + 1;
-  unsigned int blocksInZ = (output_vol_dim[2] - 1) / tBlock_z + 1;
+  unsigned int blocksInX = static_cast<unsigned int>((output_vol_dim[0] - 1) / tBlock_x + 1);
+  unsigned int blocksInY = static_cast<unsigned int>((output_vol_dim[1] - 1) / tBlock_y + 1);
+  unsigned int blocksInZ = static_cast<unsigned int>((output_vol_dim[2] - 1) / tBlock_z + 1);
 
   dim3 dimGrid = dim3(blocksInX, blocksInY, blocksInZ);
   dim3 dimBlock = dim3(tBlock_x, tBlock_y, tBlock_z);
 
   kernel_3Dgrid<<<dimGrid, dimBlock>>>(dev_output_vol,
-                                       make_int3(output_vol_dim[0], output_vol_dim[1], output_vol_dim[2]),
+                                       make_ulonglong3(output_vol_dim[0], output_vol_dim[1], output_vol_dim[2]),
                                        tex_dvf[0],
                                        tex_dvf[1],
                                        tex_dvf[2],
