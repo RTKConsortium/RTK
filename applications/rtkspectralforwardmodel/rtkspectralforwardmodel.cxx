@@ -19,6 +19,7 @@
 #include "rtkspectralforwardmodel_ggo.h"
 #include "rtkConfiguration.h"
 #include "rtkGgoFunctions.h"
+#include "rtkGeneralPurposeFunctions.h"
 #include "rtkMacro.h"
 #include "rtkSpectralForwardModelImageFilter.h"
 
@@ -35,6 +36,9 @@ main(int argc, char * argv[])
   using DecomposedProjectionType = itk::VectorImage<PixelValueType, Dimension>;
   using MeasuredProjectionsType = itk::VectorImage<PixelValueType, Dimension>;
   using IncidentSpectrumImageType = itk::Image<PixelValueType, Dimension>;
+#ifndef ITK_FUTURE_LEGACY_REMOVE
+  using VectorSpectrumImageType = itk::VectorImage<PixelValueType, Dimension - 1>;
+#endif
   using DetectorResponseImageType = itk::Image<PixelValueType, Dimension - 1>;
   using MaterialAttenuationsImageType = itk::Image<PixelValueType, Dimension - 1>;
 
@@ -43,7 +47,23 @@ main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION(decomposedProjection = itk::ReadImage<DecomposedProjectionType>(args_info.input_arg))
 
   IncidentSpectrumImageType::Pointer incidentSpectrum;
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(incidentSpectrum = itk::ReadImage<IncidentSpectrumImageType>(args_info.incident_arg))
+  unsigned int                       MaximumEnergy = 0;
+#ifndef ITK_FUTURE_LEGACY_REMOVE
+  VectorSpectrumImageType::Pointer vectorIncidentSpectrum;
+  itk::ImageIOBase::Pointer        incidentHeader;
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(incidentHeader = rtk::GetFileHeader(args_info.incident_arg))
+  if (incidentHeader->GetNumberOfDimensions() == Dimension - 1 && incidentHeader->GetNumberOfComponents() > 1)
+  {
+    TRY_AND_EXIT_ON_ITK_EXCEPTION(vectorIncidentSpectrum =
+                                    itk::ReadImage<VectorSpectrumImageType>(args_info.incident_arg))
+    MaximumEnergy = vectorIncidentSpectrum->GetVectorLength();
+  }
+  else
+#endif
+  {
+    TRY_AND_EXIT_ON_ITK_EXCEPTION(incidentSpectrum = itk::ReadImage<IncidentSpectrumImageType>(args_info.incident_arg))
+    MaximumEnergy = incidentSpectrum->GetLargestPossibleRegion().GetSize()[0];
+  }
 
   DetectorResponseImageType::Pointer detectorResponse;
   TRY_AND_EXIT_ON_ITK_EXCEPTION(detectorResponse = itk::ReadImage<DetectorResponseImageType>(args_info.detector_arg))
@@ -55,7 +75,6 @@ main(int argc, char * argv[])
   // Get parameters from the images
   const unsigned int NumberOfMaterials = materialAttenuations->GetLargestPossibleRegion().GetSize()[0];
   const unsigned int NumberOfSpectralBins = args_info.thresholds_given;
-  const unsigned int MaximumEnergy = incidentSpectrum->GetLargestPossibleRegion().GetSize()[0];
 
   // Generate a set of zero-filled photon count projections
   auto measuredProjections = MeasuredProjectionsType::New();
@@ -97,7 +116,12 @@ main(int argc, char * argv[])
                                                       IncidentSpectrumImageType>::New();
   forward->SetInputDecomposedProjections(decomposedProjection);
   forward->SetInputMeasuredProjections(measuredProjections);
-  forward->SetInputIncidentSpectrum(incidentSpectrum);
+#ifndef ITK_FUTURE_LEGACY_REMOVE
+  if (vectorIncidentSpectrum.IsNotNull())
+    forward->SetInputIncidentSpectrum(vectorIncidentSpectrum);
+  else
+#endif
+    forward->SetInputIncidentSpectrum(incidentSpectrum);
   forward->SetDetectorResponse(detectorResponse);
   forward->SetMaterialAttenuations(materialAttenuations);
   forward->SetThresholds(thresholds);

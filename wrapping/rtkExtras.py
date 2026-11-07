@@ -46,6 +46,16 @@ def read_signal_file(filename):
     return signal_vector
 
 
+# Read the header of an image file without reading its pixels
+def get_file_header(filename):
+    io = itk.ImageIOFactory.CreateImageIO(filename, itk.CommonEnums.IOFileMode_ReadMode)
+    if not io:
+        raise RuntimeError(f"Could not read {filename}")
+    io.SetFileName(filename)
+    io.ReadImageInformation()
+    return io
+
+
 # Returns the progress percentage
 class PercentageProgressCommand:
     def __init__(self, caller):

@@ -17,6 +17,7 @@
  *=========================================================================*/
 
 #include "rtkspectralonestep_ggo.h"
+#include "rtkGeneralPurposeFunctions.h"
 #include "rtkGgoFunctions.h"
 
 #include "rtkMechlemOneStepSpectralReconstructionFilter.h"
@@ -31,20 +32,6 @@
 #include <vector> // std::vector
 
 #include <itkImageFileWriter.h>
-
-itk::ImageIOBase::Pointer
-GetFileHeader(const std::string & filename)
-{
-  itk::ImageIOBase::Pointer reader =
-    itk::ImageIOFactory::CreateImageIO(filename.c_str(), itk::ImageIOFactory::IOFileModeEnum::ReadMode);
-  if (!reader)
-  {
-    itkGenericExceptionMacro(<< "Could not read " << filename);
-  }
-  reader->SetFileName(filename);
-  reader->ReadImageInformation();
-  return reader;
-}
 
 namespace rtk
 {
@@ -69,13 +56,28 @@ rtkspectralonestep(const args_info_rtkspectralonestep & args_info)
   using DetectorResponseType = itk::Image<dataType, 2>;
   using MaterialAttenuationsType = itk::Image<dataType, 2>;
 #endif
+#ifndef ITK_FUTURE_LEGACY_REMOVE
+  using VectorSpectrumType = itk::VectorImage<dataType, Dimension - 1>;
+#endif
 
   // Instantiate and update the readers
   typename MeasuredProjectionsType::Pointer mea;
   TRY_AND_EXIT_ON_ITK_EXCEPTION(mea = itk::ReadImage<MeasuredProjectionsType>(args_info.spectral_arg))
 
   IncidentSpectrumType::Pointer incidentSpectrum;
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(incidentSpectrum = itk::ReadImage<IncidentSpectrumType>(args_info.incident_arg))
+#ifndef ITK_FUTURE_LEGACY_REMOVE
+  VectorSpectrumType::Pointer vectorIncidentSpectrum;
+  itk::ImageIOBase::Pointer   incidentHeader;
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(incidentHeader = GetFileHeader(args_info.incident_arg))
+  if (incidentHeader->GetNumberOfDimensions() == Dimension - 1 && incidentHeader->GetNumberOfComponents() > 1)
+  {
+    TRY_AND_EXIT_ON_ITK_EXCEPTION(vectorIncidentSpectrum = itk::ReadImage<VectorSpectrumType>(args_info.incident_arg))
+  }
+  else
+#endif
+  {
+    TRY_AND_EXIT_ON_ITK_EXCEPTION(incidentSpectrum = itk::ReadImage<IncidentSpectrumType>(args_info.incident_arg))
+  }
 
   DetectorResponseType::Pointer detectorResponse;
   TRY_AND_EXIT_ON_ITK_EXCEPTION(detectorResponse = itk::ReadImage<DetectorResponseType>(args_info.detector_arg))
@@ -188,7 +190,12 @@ rtkspectralonestep(const args_info_rtkspectralonestep & args_info)
   SetForwardProjectionFromGgo(args_info, mechlemOneStep.GetPointer());
   SetBackProjectionFromGgo(args_info, mechlemOneStep.GetPointer());
   mechlemOneStep->SetInputMaterialVolumes(input);
-  mechlemOneStep->SetInputIncidentSpectrum(incidentSpectrum);
+#ifndef ITK_FUTURE_LEGACY_REMOVE
+  if (vectorIncidentSpectrum.IsNotNull())
+    mechlemOneStep->SetInputIncidentSpectrum(vectorIncidentSpectrum);
+  else
+#endif
+    mechlemOneStep->SetInputIncidentSpectrum(incidentSpectrum);
   mechlemOneStep->SetBinnedDetectorResponse(drm);
   mechlemOneStep->SetMaterialAttenuations(materialAttenuationsMatrix);
   mechlemOneStep->SetNumberOfIterations(args_info.niterations_arg);
@@ -221,9 +228,9 @@ main(int argc, char * argv[])
   GGO(rtkspectralonestep, args_info);
   try
   {
-    itk::ImageIOBase::Pointer headerInputMeasuredProjections = GetFileHeader(args_info.spectral_arg);
+    itk::ImageIOBase::Pointer headerInputMeasuredProjections = rtk::GetFileHeader(args_info.spectral_arg);
     unsigned int              nBins = headerInputMeasuredProjections->GetNumberOfComponents();
-    itk::ImageIOBase::Pointer headerAttenuations = GetFileHeader(args_info.attenuations_arg);
+    itk::ImageIOBase::Pointer headerAttenuations = rtk::GetFileHeader(args_info.attenuations_arg);
     unsigned int              nMaterials = headerAttenuations->GetDimensions(0);
 
     if (nMaterials == 3 && nBins == 1)

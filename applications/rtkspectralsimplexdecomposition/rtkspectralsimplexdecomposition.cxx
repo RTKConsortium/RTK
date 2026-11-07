@@ -19,6 +19,7 @@
 #include "rtkspectralsimplexdecomposition_ggo.h"
 #include "rtkConfiguration.h"
 #include "rtkGgoFunctions.h"
+#include "rtkGeneralPurposeFunctions.h"
 #include "rtkMacro.h"
 #include "rtkSimplexSpectralProjectionsDecompositionImageFilter.h"
 
@@ -38,6 +39,9 @@ main(int argc, char * argv[])
   using SpectralProjectionsType = itk::VectorImage<PixelValueType, Dimension>;
 
   using IncidentSpectrumImageType = itk::Image<PixelValueType, Dimension>;
+#ifndef ITK_FUTURE_LEGACY_REMOVE
+  using VectorSpectrumImageType = itk::VectorImage<PixelValueType, Dimension - 1>;
+#endif
 
   using DetectorResponseImageType = itk::Image<PixelValueType, Dimension - 1>;
 
@@ -51,7 +55,23 @@ main(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION(spectralProjection = itk::ReadImage<SpectralProjectionsType>(args_info.spectral_arg))
 
   IncidentSpectrumImageType::Pointer incidentSpectrum;
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(incidentSpectrum = itk::ReadImage<IncidentSpectrumImageType>(args_info.incident_arg))
+  unsigned int                       MaximumEnergy = 0;
+#ifndef ITK_FUTURE_LEGACY_REMOVE
+  VectorSpectrumImageType::Pointer vectorIncidentSpectrum;
+  itk::ImageIOBase::Pointer        incidentHeader;
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(incidentHeader = rtk::GetFileHeader(args_info.incident_arg))
+  if (incidentHeader->GetNumberOfDimensions() == Dimension - 1 && incidentHeader->GetNumberOfComponents() > 1)
+  {
+    TRY_AND_EXIT_ON_ITK_EXCEPTION(vectorIncidentSpectrum =
+                                    itk::ReadImage<VectorSpectrumImageType>(args_info.incident_arg))
+    MaximumEnergy = vectorIncidentSpectrum->GetVectorLength();
+  }
+  else
+#endif
+  {
+    TRY_AND_EXIT_ON_ITK_EXCEPTION(incidentSpectrum = itk::ReadImage<IncidentSpectrumImageType>(args_info.incident_arg))
+    MaximumEnergy = incidentSpectrum->GetLargestPossibleRegion().GetSize()[0];
+  }
 
   DetectorResponseImageType::Pointer detectorResponse;
   TRY_AND_EXIT_ON_ITK_EXCEPTION(detectorResponse = itk::ReadImage<DetectorResponseImageType>(args_info.detector_arg))
@@ -63,7 +83,6 @@ main(int argc, char * argv[])
   // Get parameters from the images
   const unsigned int NumberOfMaterials = materialAttenuations->GetLargestPossibleRegion().GetSize()[0];
   const unsigned int NumberOfSpectralBins = spectralProjection->GetVectorLength();
-  const unsigned int MaximumEnergy = incidentSpectrum->GetLargestPossibleRegion().GetSize()[0];
 
   // Read the thresholds on command line and check their number
   itk::VariableLengthVector<unsigned int> thresholds;
@@ -106,7 +125,12 @@ main(int argc, char * argv[])
   simplex->SetInputDecomposedProjections(decomposedProjection);
   simplex->SetGuessInitialization(args_info.guess_flag);
   simplex->SetInputMeasuredProjections(spectralProjection);
-  simplex->SetInputIncidentSpectrum(incidentSpectrum);
+#ifndef ITK_FUTURE_LEGACY_REMOVE
+  if (vectorIncidentSpectrum.IsNotNull())
+    simplex->SetInputIncidentSpectrum(vectorIncidentSpectrum);
+  else
+#endif
+    simplex->SetInputIncidentSpectrum(incidentSpectrum);
   simplex->SetDetectorResponse(detectorResponse);
   simplex->SetMaterialAttenuations(materialAttenuations);
   simplex->SetThresholds(thresholds);
