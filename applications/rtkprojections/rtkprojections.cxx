@@ -17,10 +17,14 @@
  *=========================================================================*/
 
 #include "rtkprojections_ggo.h"
+#include "rtkGeneralPurposeFunctions.h"
 #include "rtkGgoFunctions.h"
 #include "rtkMacro.h"
 
 #include <itkImageFileWriter.h>
+#include <itkVectorImage.h>
+
+#include <iostream>
 
 int
 main(int argc, char * argv[])
@@ -28,25 +32,58 @@ main(int argc, char * argv[])
   GGO(rtkprojections, args_info);
 
   constexpr unsigned int Dimension = 3;
-  using OutputImageType = itk::Image<float, Dimension>;
+  bool                   inputIsVectorImage = false;
 
-  // Projections reader
-  using ReaderType = rtk::ProjectionsReader<OutputImageType>;
-  auto reader = ReaderType::New();
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(rtk::SetProjectionsReaderFromGgo<ReaderType>(reader, args_info))
+  if (!args_info.component_given)
+  {
+    TRY_AND_EXIT_ON_ITK_EXCEPTION({
+      const auto                fileNames = rtk::GetProjectionsFileNamesFromGgo(args_info);
+      itk::ImageIOBase::Pointer header = rtk::GetFileHeader(fileNames.front().c_str());
+      inputIsVectorImage = header->GetPixelType() == itk::IOPixelEnum::VECTOR;
+    })
+  }
+  if (inputIsVectorImage)
+  {
+    using OutputImageType = itk::VectorImage<float, Dimension>;
+    if (args_info.poisson_given || args_info.gaussian_given)
+    {
+      std::cerr << "Noise addition is not supported for vector projections" << std::endl;
+      return EXIT_FAILURE;
+    }
 
-  OutputImageType::Pointer output =
-    rtk::AddNoiseFromGgo<OutputImageType, args_info_rtkprojections>(reader->GetOutput(), args_info);
+    using ReaderType = rtk::ProjectionsReader<OutputImageType>;
+    auto reader = ReaderType::New();
+    TRY_AND_EXIT_ON_ITK_EXCEPTION(rtk::SetProjectionsReaderFromGgo<ReaderType>(reader, args_info))
 
-  // Write
-  auto writer = itk::ImageFileWriter<OutputImageType>::New();
-  writer->SetFileName(args_info.output_arg);
-  writer->SetInput(output);
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(writer->UpdateOutputInformation())
-  writer->SetNumberOfStreamDivisions(1 + reader->GetOutput()->GetLargestPossibleRegion().GetNumberOfPixels() /
-                                           (1024 * 1024 * 4));
+    auto writer = itk::ImageFileWriter<OutputImageType>::New();
+    writer->SetFileName(args_info.output_arg);
+    writer->SetInput(reader->GetOutput());
+    TRY_AND_EXIT_ON_ITK_EXCEPTION(writer->UpdateOutputInformation())
+    writer->SetNumberOfStreamDivisions(1 + reader->GetOutput()->GetLargestPossibleRegion().GetNumberOfPixels() /
+                                             (1024 * 1024 * 4));
 
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(writer->Update())
+    TRY_AND_EXIT_ON_ITK_EXCEPTION(writer->Update())
+  }
+  else
+  {
+    using OutputImageType = itk::Image<float, Dimension>;
+
+    using ReaderType = rtk::ProjectionsReader<OutputImageType>;
+    auto reader = ReaderType::New();
+    TRY_AND_EXIT_ON_ITK_EXCEPTION(rtk::SetProjectionsReaderFromGgo<ReaderType>(reader, args_info))
+
+    OutputImageType::Pointer output =
+      rtk::AddNoiseFromGgo<OutputImageType, args_info_rtkprojections>(reader->GetOutput(), args_info);
+
+    auto writer = itk::ImageFileWriter<OutputImageType>::New();
+    writer->SetFileName(args_info.output_arg);
+    writer->SetInput(output);
+    TRY_AND_EXIT_ON_ITK_EXCEPTION(writer->UpdateOutputInformation())
+    writer->SetNumberOfStreamDivisions(1 + reader->GetOutput()->GetLargestPossibleRegion().GetNumberOfPixels() /
+                                             (1024 * 1024 * 4));
+
+    TRY_AND_EXIT_ON_ITK_EXCEPTION(writer->Update())
+  }
 
   return EXIT_SUCCESS;
 }

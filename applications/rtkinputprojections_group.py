@@ -139,7 +139,6 @@ def add_rtkinputprojections_group(parser):
         "--component",
         help="Vector component to extract, for multi-material projections",
         type=int,
-        default=0,
     )
     rtkinputprojections_group.add_argument(
         "--radius",

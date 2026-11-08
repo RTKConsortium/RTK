@@ -64,7 +64,6 @@ _app_modules = [
     "rtksart",
     "rtksimulatedgeometry",
     "rtkspectralforwardmodel",
-    "rtkspectraldenoiseprojections",
     "rtkspectralonestep",
     "rtkspectralrooster",
     "rtkspectralsimplexdecomposition",

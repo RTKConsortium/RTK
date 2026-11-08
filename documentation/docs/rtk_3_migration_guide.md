@@ -102,3 +102,11 @@ Projection iterators (`rtkProjectionsRegionConstIteratorRayBased*`), Joseph forw
 ## Common noise options in applications generating projections
 
 Noise options are now provided similarly in all command line applications generating projections via `rtknoise_section.ggo` and the Python helper `rtknoise_group.py` (for example: `--poisson <I0>,<muref>`, `--gaussian <std>`). The legacy `--noise` option in `rtkprojectshepploganphantom` has been removed.
+
+## `ProjectionsReader` for vector images
+
+`ProjectionsReader` can now accept an image of vectors (i.e. a vector field), either represented by an `itk::VectorImage` or an `itk::Image<itk::Vector<>, 3>` as template output type. This change has triggered a change in its API: its member `m_VectorComponent` is now an `int` instead of an `unsigned int` and its value is `-1` by default. If its member `m_FileNames[0]` is a vector image, its template output type a scalar image and `m_VectorComponent` has not been set to a valid component, `ProjectionsReader` now triggers an exception instead of silently selecting the first component in previous versions.
+
+## `rtkspectraldenoiseprojections` deleted
+
+Thanks to the previous change, the command line application `rtkprojections` can now process vector images with cropping, conditional median filtering and binning options. The dedicated command line application `rtkspectraldenoiseprojections` was therefore obsolete and has been deleted.

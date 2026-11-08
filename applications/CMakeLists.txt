@@ -81,7 +81,6 @@ add_subdirectory(rtkspectralsimplexdecomposition)
 add_subdirectory(rtkspectralrooster)
 add_subdirectory(rtkspectralforwardmodel)
 add_subdirectory(rtkmaskcollimation)
-add_subdirectory(rtkspectraldenoiseprojections)
 add_subdirectory(rtkprojectionmatrix)
 add_subdirectory(rtkvectorconjugategradient)
 
