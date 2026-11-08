@@ -109,6 +109,7 @@ namespace rtk
  * Streaming->Output
  *
  * Binning->WPC [label="Default"]
+ * Binning->Streaming [label="Vector"]
  *
  * {rank=same; XRad EDF Varian LUT OraRaw}
  * }
@@ -247,8 +248,8 @@ public:
 
   /** Set/Get the index of the component to be extracted
    * if the projection data contains vectors instead of scalars. */
-  itkGetMacro(VectorComponent, unsigned int);
-  itkSetMacro(VectorComponent, unsigned int);
+  itkGetMacro(VectorComponent, int);
+  itkSetMacro(VectorComponent, int);
 
   /** Set/Get the ImageIO helper class. Often this is created via the object
    * factory mechanism that determines whether a particular ImageIO can
@@ -313,8 +314,8 @@ private:
   typename itk::ImageSource<TOutputImage>::Pointer m_RawCastFilter;
 
   /** Pointers for post-processing filters that are created only when required. */
-  typename WaterPrecorrectionType::Pointer m_WaterPrecorrectionFilter;
-  typename StreamingType::Pointer          m_StreamingFilter;
+  itk::ProcessObject::Pointer     m_WaterPrecorrectionFilter;
+  typename StreamingType::Pointer m_StreamingFilter;
 
   /** Image IO object which is stored to create the pipe only when required */
   itk::ImageIOBase::Pointer m_ImageIO{ nullptr };
@@ -339,7 +340,7 @@ private:
   double                   m_ConditionalMedianThresholdMultiplier{ 1. };
   WaterPrecorrectionVectorType m_WaterPrecorrectionCoefficients;
   bool                         m_ComputeLineIntegral{ true };
-  unsigned int                 m_VectorComponent{ 0 };
+  int                          m_VectorComponent{ -1 };
 };
 
 } // namespace rtk
