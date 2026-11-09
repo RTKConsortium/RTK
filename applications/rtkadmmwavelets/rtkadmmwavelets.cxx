@@ -49,7 +49,7 @@ main(int argc, char * argv[])
   // Projections reader
   using projectionsReaderType = rtk::ProjectionsReader<OutputImageType>;
   auto projectionsReader = projectionsReaderType::New();
-  rtk::SetProjectionsReaderFromGgo<projectionsReaderType, args_info_rtkadmmwavelets>(projectionsReader, args_info);
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(rtk::SetProjectionsReaderFromGgo<projectionsReaderType>(projectionsReader, args_info))
 
   // Geometry
   if (args_info.verbose_flag)

@@ -31,7 +31,7 @@ main(int argc, char * argv[])
 
   // Create geometry reader
   auto imagxReader = rtk::ImagXGeometryReader<itk::Image<float, Dimension>>::New();
-  imagxReader->SetProjectionsFileNames(rtk::GetProjectionsFileNamesFromGgo(args_info));
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(imagxReader->SetProjectionsFileNames(rtk::GetProjectionsFileNamesFromGgo(args_info)))
   if (args_info.calibration_given)
   {
     imagxReader->SetCalibrationXMLFileName(args_info.calibration_arg);

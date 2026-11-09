@@ -46,7 +46,7 @@ main(int argc, char * argv[])
   // Projections reader
   using ReaderType = rtk::ProjectionsReader<OutputImageType>;
   auto reader = ReaderType::New();
-  rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtkiterativefdk>(reader, args_info);
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(rtk::SetProjectionsReaderFromGgo<ReaderType>(reader, args_info))
 
   if (args_info.verbose_flag)
     std::cout << "Reading... " << std::endl;

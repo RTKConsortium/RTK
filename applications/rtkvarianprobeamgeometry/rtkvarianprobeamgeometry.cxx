@@ -31,7 +31,7 @@ main(int argc, char * argv[])
   rtk::VarianProBeamGeometryReader::Pointer reader;
   reader = rtk::VarianProBeamGeometryReader::New();
   reader->SetXMLFileName(args_info.xml_file_arg);
-  reader->SetProjectionsFileNames(rtk::GetProjectionsFileNamesFromGgo(args_info));
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(reader->SetProjectionsFileNames(rtk::GetProjectionsFileNamesFromGgo(args_info)))
   TRY_AND_EXIT_ON_ITK_EXCEPTION(reader->UpdateOutputData())
 
   // Write

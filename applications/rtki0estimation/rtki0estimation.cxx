@@ -37,7 +37,7 @@ main(int argc, char * argv[])
   using InputImageType = itk::Image<unsigned short, Dimension>;
 
   auto reader = rtk::ProjectionsReader<InputImageType>::New();
-  reader->SetFileNames(rtk::GetProjectionsFileNamesFromGgo(args_info));
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(reader->SetFileNames(rtk::GetProjectionsFileNamesFromGgo(args_info)))
   TRY_AND_EXIT_ON_ITK_EXCEPTION(reader->UpdateOutputInformation())
 
   using ExtractFilterType = itk::ExtractImageFilter<InputImageType, InputImageType>;

@@ -165,6 +165,9 @@ def GetProjectionsFileNamesFromArgParse(args_info):
     names.SetRegularExpression(args_info.regexp)
     names.SetSubMatch(args_info.submatch)
 
+    if len(names.GetFileNames()) == 0:
+        raise RuntimeError("The regular expression matches 0 file")
+
     if args_info.verbose:
         print(f"Regular expression matches {len(names.GetFileNames())} file(s)...")
 
@@ -180,6 +183,11 @@ def GetProjectionsFileNamesFromArgParse(args_info):
             print(f"Ignoring file: {fn}")
             continue
         fileNames.append(fn)
+
+    if len(fileNames) == 0:
+        raise RuntimeError(
+            "All file names matched by the regular expression could not be read"
+        )
 
     return fileNames
 

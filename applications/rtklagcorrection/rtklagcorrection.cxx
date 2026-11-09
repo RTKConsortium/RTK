@@ -50,9 +50,9 @@ main(int argc, char * argv[])
   // Projections reader
   using ReaderType = rtk::ProjectionsReader<OutputImageType>;
   auto reader = ReaderType::New();
-  rtk::SetProjectionsReaderFromGgo<ReaderType, args_info_rtklagcorrection>(reader, args_info);
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(rtk::SetProjectionsReaderFromGgo<ReaderType>(reader, args_info))
   reader->ComputeLineIntegralOff(); // Don't want to preprocess data
-  reader->SetFileNames(rtk::GetProjectionsFileNamesFromGgo(args_info));
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(reader->SetFileNames(rtk::GetProjectionsFileNamesFromGgo(args_info)))
   TRY_AND_EXIT_ON_ITK_EXCEPTION(reader->Update())
 
   if ((args_info.coefficients_given != VModelOrder) && (args_info.rates_given != VModelOrder))
