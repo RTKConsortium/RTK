@@ -2,7 +2,7 @@
 
 ## Coding style
 
-RTK is based on ITK and aims at following its coding conventions. Any developer should follow these conventions when submitting new code or contributions to the existing one. We strongly recommend you reading thoroughly [ITK's style guide](http://www.itk.org/Wiki/ITK/Coding_Style_Guide).
+RTK is based on ITK and aims at following its coding conventions. Any developer should follow these conventions when submitting new code or contributions to the existing one. We strongly recommend you reading thoroughly [ITK's contribution guide](https://docs.itk.org/en/latest/contributing/index.html).
 
 All (new) command-line options in applications must use hyphen-separated lowercase names (for example, `output-file`), following the [glibc convention](https://ftp.gnu.org/old-gnu/Manuals/glibc-2.2.3/html_node/libc_511.html). This rule applies to both C++ and Python applications. Some existing options not following this style are kept for backward compatibility.
 
