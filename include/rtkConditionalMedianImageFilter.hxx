@@ -19,6 +19,9 @@
 #define rtkConditionalMedianImageFilter_hxx
 
 #include <itkImageRegionIterator.h>
+#include <itkNumericTraitsVariableLengthVectorPixel.h>
+#include <itkNumericTraitsVectorPixel.h>
+#include <itkVariableLengthVector.h>
 #include <numeric>
 
 namespace rtk
@@ -70,39 +73,102 @@ void
 ConditionalMedianImageFilter<TInputImage>::DynamicThreadedGenerateData(
   const typename TInputImage::RegionType & outputRegionForThread)
 {
-  // Compute the centered difference with the previous and next frames, store it into the intermediate image
-  itk::ConstNeighborhoodIterator<TInputImage> nIt(m_Radius, this->GetInput(), outputRegionForThread);
-  itk::ImageRegionIterator<TInputImage>       outIt(this->GetOutput(), outputRegionForThread);
-
-  // Build a vector in which all pixel of the neighborhood will be temporarily stored
-  std::vector<typename TInputImage::PixelType> pixels;
-  pixels.resize(nIt.Size());
-
-  // Walk the output image
-  while (!outIt.IsAtEnd())
+  // Scalar implementaton
+  if constexpr (std::is_same_v<typename itk::NumericTraits<typename TInputImage::PixelType>::ValueType,
+                               typename TInputImage::PixelType>)
   {
-    // Walk the neighborhood in the input image, store the pixels into a vector
-    for (unsigned int i = 0; i < nIt.Size(); i++)
-      pixels[i] = nIt.GetPixel(i);
+    // Compute the centered difference with the previous and next frames, store it into the intermediate image
+    itk::ConstNeighborhoodIterator<TInputImage> nIt(m_Radius, this->GetInput(), outputRegionForThread);
+    itk::ImageRegionIterator<TInputImage>       outIt(this->GetOutput(), outputRegionForThread);
 
-    // Compute the standard deviation
-    double sum = std::accumulate(pixels.begin(), pixels.end(), 0.0);
-    double mean = sum / pixels.size();
-    double sq_sum = std::inner_product(pixels.begin(), pixels.end(), pixels.begin(), 0.0);
-    double stdev = std::sqrt(sq_sum / pixels.size() - mean * mean);
+    // Build a vector in which all pixel of the neighborhood will be temporarily stored
+    std::vector<typename TInputImage::PixelType> pixels;
+    pixels.resize(nIt.Size());
 
-    // Compute the median of the neighborhood
-    std::nth_element(pixels.begin(), pixels.begin() + pixels.size() / 2, pixels.end());
+    // Walk the output image
+    while (!outIt.IsAtEnd())
+    {
+      // Walk the neighborhood in the input image, store the pixels into a vector
+      for (unsigned int i = 0; i < nIt.Size(); i++)
+        pixels[i] = nIt.GetPixel(i);
 
-    // If the pixel value is too far from the median, replace it by the median
-    if (std::abs(static_cast<double>(pixels[pixels.size() / 2] - nIt.GetCenterPixel())) >
-        (m_ThresholdMultiplier * stdev))
-      outIt.Set(pixels[pixels.size() / 2]);
-    else // Otherwise, leave it as is
-      outIt.Set(nIt.GetCenterPixel());
+      // Compute the standard deviation
+      double sum = std::accumulate(pixels.begin(), pixels.end(), 0.0);
+      double mean = sum / pixels.size();
+      double sq_sum = std::inner_product(pixels.begin(), pixels.end(), pixels.begin(), 0.0);
+      double stdev = std::sqrt(sq_sum / pixels.size() - mean * mean);
 
-    ++nIt;
-    ++outIt;
+      // Compute the median of the neighborhood
+      std::nth_element(pixels.begin(), pixels.begin() + pixels.size() / 2, pixels.end());
+
+      // If the pixel value is too far from the median, replace it by the median
+      if (std::abs(static_cast<double>(pixels[pixels.size() / 2] - nIt.GetCenterPixel())) >
+          (m_ThresholdMultiplier * stdev))
+        outIt.Set(pixels[pixels.size() / 2]);
+      else // Otherwise, leave it as is
+        outIt.Set(nIt.GetCenterPixel());
+
+      ++nIt;
+      ++outIt;
+    }
+  }
+  // Vector implementation
+  else
+  {
+    // Compute the centered difference with the previous and next frames, store it into the intermediate image
+    itk::ConstNeighborhoodIterator<TInputImage> nIt(m_Radius, this->GetInput(), outputRegionForThread);
+    itk::ImageRegionIterator<TInputImage>       outIt(this->GetOutput(), outputRegionForThread);
+
+    // Build a vector in which all pixel of the neighborhood will be temporarily stored
+    std::vector<std::vector<typename itk::NumericTraits<typename TInputImage::PixelType>::ValueType>> pixels;
+    if constexpr (std::is_same_v<typename TInputImage::PixelType,
+                                 itk::VariableLengthVector<typename TInputImage::InternalPixelType>>)
+      pixels.resize(this->GetInput()->GetVectorLength());
+    else
+    {
+      static constexpr unsigned int VectorLength = TInputImage::PixelType::Dimension;
+      pixels.resize(VectorLength);
+    }
+    for (auto & pixel : pixels)
+      pixel.resize(nIt.Size());
+
+    typename TInputImage::PixelType vlv;
+    if constexpr (std::is_same_v<typename TInputImage::PixelType,
+                                 itk::VariableLengthVector<typename TInputImage::InternalPixelType>>)
+      vlv.SetSize(this->GetInput()->GetVectorLength());
+
+    // Walk the output image
+    while (!outIt.IsAtEnd())
+    {
+      // Walk the neighborhood in the input image, store the pixels into a vector
+      for (unsigned int i = 0; i < nIt.Size(); i++)
+      {
+        for (unsigned int mat = 0; mat < pixels.size(); mat++)
+          pixels[mat][i] = nIt.GetPixel(i)[mat];
+      }
+
+      for (unsigned int mat = 0; mat < pixels.size(); mat++)
+      {
+        // Compute the standard deviation
+        double sum = std::accumulate(pixels[mat].begin(), pixels[mat].end(), 0.0);
+        double mean = sum / pixels[mat].size();
+        double sq_sum = std::inner_product(pixels[mat].begin(), pixels[mat].end(), pixels[mat].begin(), 0.0);
+        double stdev = std::sqrt(sq_sum / pixels[mat].size() - mean * mean);
+
+        // Compute the median of the neighborhood
+        std::nth_element(pixels[mat].begin(), pixels[mat].begin() + pixels[mat].size() / 2, pixels[mat].end());
+
+        // If the pixel value is too far from the median, replace it by the median
+        if (std::abs(pixels[mat][pixels[mat].size() / 2] - nIt.GetCenterPixel()[mat]) > (m_ThresholdMultiplier * stdev))
+          vlv[mat] = pixels[mat][pixels[mat].size() / 2];
+        else // Otherwise, leave it as is
+          vlv[mat] = nIt.GetCenterPixel()[mat];
+      }
+      outIt.Set(vlv);
+
+      ++nIt;
+      ++outIt;
+    }
   }
 }
 

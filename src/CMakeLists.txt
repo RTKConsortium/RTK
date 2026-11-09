@@ -2,7 +2,6 @@ set(
   RTK_SRCS
   rtkBioscanGeometryReader.cxx
   rtkBoxShape.cxx
-  rtkConditionalMedianImageFilter.cxx
   rtkConvexShape.cxx
   rtkDbf.cxx
   rtkDCMImagXImageIO.cxx
