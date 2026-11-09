@@ -142,6 +142,9 @@ GetProjectionsFileNamesFromGgo(const TArgsInfo & args_info)
   names->SetRegularExpression(args_info.regexp_arg);
   names->SetSubMatch(args_info.submatch_arg);
 
+  if (!names->GetFileNames().size())
+    itkGenericExceptionMacro(<< "The regular expression matches 0 file");
+
   if (args_info.verbose_flag)
     std::cout << "Regular expression matches " << names->GetFileNames().size() << " file(s)..." << std::endl;
 
@@ -188,6 +191,9 @@ GetProjectionsFileNamesFromGgo(const TArgsInfo & args_info)
   {
     fileNames.erase(fileNames.begin() + id);
   }
+
+  if (fileNames.empty())
+    itkGenericExceptionMacro(<< "All file names matched by the regular expression could not be read");
 
   return fileNames;
 }

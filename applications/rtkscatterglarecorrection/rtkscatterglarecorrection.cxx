@@ -52,7 +52,7 @@ main(int argc, char * argv[])
 
   using ReaderType = rtk::ProjectionsReader<InputImageType>; // Warning: preprocess images
   auto reader = ReaderType::New();
-  reader->SetFileNames(rtk::GetProjectionsFileNamesFromGgo(args_info));
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(reader->SetFileNames(rtk::GetProjectionsFileNamesFromGgo(args_info)))
   reader->ComputeLineIntegralOff();
   TRY_AND_EXIT_ON_ITK_EXCEPTION(reader->UpdateOutputInformation())
 
