@@ -86,11 +86,6 @@ protected:
   double           m_ThresholdMultiplier;
 };
 
-template <>
-RTK_EXPORT void
-ConditionalMedianImageFilter<itk::VectorImage<float, 3>>::DynamicThreadedGenerateData(
-  const itk::VectorImage<float, 3>::RegionType & outputRegionForThread);
-
 } // namespace rtk
 
 
