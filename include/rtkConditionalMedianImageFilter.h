@@ -19,7 +19,7 @@
 #define rtkConditionalMedianImageFilter_h
 
 #include <itkConstNeighborhoodIterator.h>
-#include <itkInPlaceImageFilter.h>
+#include <itkImageToImageFilter.h>
 #include <itkVectorImage.h>
 
 #include "RTKExport.h"
@@ -46,14 +46,14 @@ namespace rtk
  *
  */
 template <typename TInputImage>
-class ITK_TEMPLATE_EXPORT ConditionalMedianImageFilter : public itk::InPlaceImageFilter<TInputImage>
+class ITK_TEMPLATE_EXPORT ConditionalMedianImageFilter : public itk::ImageToImageFilter<TInputImage, TInputImage>
 {
 public:
   ITK_DISALLOW_COPY_AND_MOVE(ConditionalMedianImageFilter);
 
   /** Standard class type alias. */
   using Self = ConditionalMedianImageFilter;
-  using Superclass = itk::InPlaceImageFilter<TInputImage>;
+  using Superclass = itk::ImageToImageFilter<TInputImage, TInputImage>;
   using Pointer = itk::SmartPointer<Self>;
   using MedianRadiusType = typename itk::ConstNeighborhoodIterator<TInputImage>::RadiusType;
 
