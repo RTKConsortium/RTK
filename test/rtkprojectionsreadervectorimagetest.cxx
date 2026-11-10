@@ -3,9 +3,11 @@
 #include "rtkConditionalMedianImageFilter.h"
 #include "rtkProjectionsReader.h"
 
+#include <itkBinShrinkImageFilter.h>
 #include <itkExtractImageFilter.h>
 #include <itkImageFileReader.h>
 #include <itkVectorImage.h>
+#include <itkVectorIndexSelectionCastImageFilter.h>
 #include <itkImageFileWriter.h>
 
 #include <vector>
@@ -13,7 +15,8 @@
 /**
  * \file rtkprojectionsreadervectorimagetest.cxx
  *
- * \brief Test rtk::ProjectionsReader with an itk::VectorImage output.
+ * \brief Test rtk::ProjectionsReader with an itk::VectorImage output and with the
+ * extraction of one component of a vector image followed by preprocessing.
  */
 
 int
@@ -81,6 +84,39 @@ rtkprojectionsreadervectorimagetest(int argc, char * argv[])
 
   CheckVariableLengthVectorImageQuality<VectorImageType>(
     projectionsReader->GetOutput(), referenceSeriesReader->GetOutput(), 1e-10, 1e10, 1.);
+
+  // Extraction of one component followed by conditional median and binning
+  using ScalarImageType = itk::Image<float, 3>;
+  constexpr unsigned int component = 1;
+  auto                   selection = itk::VectorIndexSelectionCastImageFilter<VectorImageType, ScalarImageType>::New();
+  selection->SetInput(referenceReader->GetOutput());
+  selection->SetIndex(component);
+
+  using ScalarMedianType = rtk::ConditionalMedianImageFilter<ScalarImageType>;
+  auto scalarMedian = ScalarMedianType::New();
+  scalarMedian->SetInput(selection->GetOutput());
+  scalarMedian->SetRadius(radius);
+  scalarMedian->SetThresholdMultiplier(1.);
+
+  using BinType = itk::BinShrinkImageFilter<ScalarImageType, ScalarImageType>;
+  auto                       bin = BinType::New();
+  BinType::ShrinkFactorsType shrinkFactors;
+  shrinkFactors[0] = 2;
+  shrinkFactors[1] = 1;
+  shrinkFactors[2] = 1;
+  bin->SetInput(scalarMedian->GetOutput());
+  bin->SetShrinkFactors(shrinkFactors);
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(bin->Update());
+
+  auto componentProjectionsReader = rtk::ProjectionsReader<ScalarImageType>::New();
+  componentProjectionsReader->SetFileNames(std::vector<std::string>{ argv[1] });
+  componentProjectionsReader->SetVectorComponent(component);
+  componentProjectionsReader->SetMedianRadius(radius);
+  componentProjectionsReader->SetConditionalMedianThresholdMultiplier(1.);
+  componentProjectionsReader->SetShrinkFactors(shrinkFactors);
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(componentProjectionsReader->Update());
+
+  CheckImageQuality<ScalarImageType>(componentProjectionsReader->GetOutput(), bin->GetOutput(), 1e-10, 1e10, 1.);
 
   itksys::SystemTools::RemoveFile("slice_rtkprojectionsreadervectorimagetest.mha");
   std::cout << "\n\nTest PASSED! " << std::endl;

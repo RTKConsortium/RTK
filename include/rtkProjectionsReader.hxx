@@ -103,7 +103,8 @@
       dynamic_cast<VectorComponentSelectionType *>(m_VectorComponentSelectionFilter.GetPointer());                  \
     assert(vectorComponentSelectionFilter != nullptr);                                                              \
     vectorComponentSelectionFilter->SetInput(raw->GetOutput());                                                     \
-    output = vectorComponentSelectionFilter->GetOutput();                                                           \
+    nextInput = dynamic_cast<TInputImage *>(vectorComponentSelectionFilter->GetOutput());                           \
+    assert(nextInput != nullptr);                                                                                   \
   }
 
 namespace rtk
@@ -513,7 +514,7 @@ ProjectionsReader<TOutputImage>::PropagateParametersToMiniPipeline()
   TInputImage *     nextInput = nullptr;
   OutputImageType * output = nullptr;
 
-  // Vector component selection
+  // Raw data reading, possibly followed by the extraction of one component of vector pixels
   if (m_VectorComponentSelectionFilter.GetPointer() != nullptr)
   {
     PROPAGATE_INPUT_IMAGE_VECTOR_TYPE(float, 1)
@@ -529,9 +530,8 @@ ProjectionsReader<TOutputImage>::PropagateParametersToMiniPipeline()
     PROPAGATE_INPUT_IMAGE_VECTOR_TYPE(double, 5)
     PROPAGATE_INPUT_IMAGE_VECTOR_TYPE(double, 6)
   }
-  else // Regular case
+  else
   {
-    // Raw
     using RawType = typename itk::ImageSeriesReader<TInputImage>;
     auto * raw = dynamic_cast<RawType *>(m_RawDataReader.GetPointer());
 
@@ -539,219 +539,219 @@ ProjectionsReader<TOutputImage>::PropagateParametersToMiniPipeline()
     raw->SetFileNames(this->GetFileNames());
     raw->SetImageIO(m_ImageIO);
     nextInput = raw->GetOutput();
+  }
 
-    // Image information
-    OutputImageSpacingType defaultSpacing;
-    defaultSpacing.Fill(itk::NumericTraits<typename OutputImageType::SpacingValueType>::max());
-    OutputImagePointType defaultOrigin;
-    defaultOrigin.Fill(itk::NumericTraits<typename OutputImageType::PointValueType>::max());
-    OutputImageDirectionType defaultDirection;
-    defaultDirection.Fill(itk::NumericTraits<typename OutputImageType::PointValueType>::max());
-    if (m_Spacing != defaultSpacing || m_Origin != defaultOrigin || m_Direction != defaultDirection)
+  // Image information
+  OutputImageSpacingType defaultSpacing;
+  defaultSpacing.Fill(itk::NumericTraits<typename OutputImageType::SpacingValueType>::max());
+  OutputImagePointType defaultOrigin;
+  defaultOrigin.Fill(itk::NumericTraits<typename OutputImageType::PointValueType>::max());
+  OutputImageDirectionType defaultDirection;
+  defaultDirection.Fill(itk::NumericTraits<typename OutputImageType::PointValueType>::max());
+  if (m_Spacing != defaultSpacing || m_Origin != defaultOrigin || m_Direction != defaultDirection)
+  {
+    if (m_ChangeInformationFilter.GetPointer() == nullptr)
     {
-      if (m_ChangeInformationFilter.GetPointer() == nullptr)
-      {
-        itkGenericExceptionMacro(<< "Can not change image information with this input (not implemented)");
-      }
-      else
-      {
-        using ChangeInfoType = itk::ChangeInformationImageFilter<TInputImage>;
-        auto * cif = dynamic_cast<ChangeInfoType *>(m_ChangeInformationFilter.GetPointer());
-        assert(cif != nullptr);
-        if (m_Spacing != defaultSpacing)
-        {
-          cif->SetOutputSpacing(m_Spacing);
-          cif->ChangeSpacingOn();
-        }
-        if (m_Origin != defaultOrigin)
-        {
-          cif->SetOutputOrigin(m_Origin);
-          cif->ChangeOriginOn();
-        }
-        if (m_Direction != defaultDirection)
-        {
-          cif->SetOutputDirection(m_Direction);
-          cif->ChangeDirectionOn();
-        }
-        cif->SetInput(nextInput);
-        nextInput = cif->GetOutput();
-      }
-    }
-
-    // Crop
-    if (m_LowerBoundaryCropSize != m_DefaultBoundaryCropSize || m_UpperBoundaryCropSize != m_DefaultBoundaryCropSize)
-    {
-      if (m_CropFilter.GetPointer() == nullptr)
-      {
-        itkGenericExceptionMacro(<< "Can not crop images read with this input (not implemented)");
-      }
-      else
-      {
-        using CropType = itk::CropImageFilter<TInputImage, TInputImage>;
-        auto * crop = dynamic_cast<CropType *>(m_CropFilter.GetPointer());
-        assert(crop != nullptr);
-        if (m_LowerBoundaryCropSize == m_DefaultBoundaryCropSize)
-          m_LowerBoundaryCropSize.Fill(0);
-        crop->SetLowerBoundaryCropSize(m_LowerBoundaryCropSize);
-        if (m_UpperBoundaryCropSize == m_DefaultBoundaryCropSize)
-          m_UpperBoundaryCropSize.Fill(0);
-        crop->SetUpperBoundaryCropSize(m_UpperBoundaryCropSize);
-        crop->SetInput(nextInput);
-        nextInput = crop->GetOutput();
-      }
-    }
-
-    // Elekta raw data converter
-    auto * nextInputBase = dynamic_cast<itk::ImageBase<OutputImageDimension> *>(nextInput);
-    assert(nextInputBase != nullptr);
-    ConnectElektaRawFilter(&nextInputBase);
-    nextInput = dynamic_cast<TInputImage *>(nextInputBase);
-    assert(nextInput != nullptr);
-
-    // Conditional median
-    MedianRadiusType defaultMedianRadius;
-    defaultMedianRadius.Fill(0);
-    if (m_MedianRadius != defaultMedianRadius)
-    {
-      if (m_ConditionalMedianFilter.GetPointer() == nullptr)
-      {
-        itkGenericExceptionMacro(<< "Can not apply conditional median filter on this input (not implemented)");
-      }
-      else
-      {
-        using ConditionalMedianType = rtk::ConditionalMedianImageFilter<TInputImage>;
-        auto * cond = dynamic_cast<ConditionalMedianType *>(m_ConditionalMedianFilter.GetPointer());
-        assert(cond != nullptr);
-        cond->SetRadius(m_MedianRadius);
-        cond->SetInput(nextInput);
-        cond->SetThresholdMultiplier(m_ConditionalMedianThresholdMultiplier);
-        nextInput = cond->GetOutput();
-      }
-    }
-
-    // Binning
-    ShrinkFactorsType defaultShrinkFactors;
-    defaultShrinkFactors.Fill(1);
-    if (m_ShrinkFactors != defaultShrinkFactors)
-    {
-      if (m_BinningFilter.GetPointer() == nullptr)
-      {
-        itkGenericExceptionMacro(<< "Can not bin / shrink images read with this input (not implemented)");
-      }
-      else
-      {
-        using BinType = itk::BinShrinkImageFilter<TInputImage, TInputImage>;
-        auto * bin = dynamic_cast<BinType *>(m_BinningFilter.GetPointer());
-        assert(bin != nullptr);
-        bin->SetShrinkFactors(m_ShrinkFactors);
-        bin->SetInput(nextInput);
-        nextInput = bin->GetOutput();
-      }
-    }
-
-    if constexpr (!std::is_same_v<typename itk::NumericTraits<typename OutputImageType::PixelType>::ValueType,
-                                  typename OutputImageType::PixelType>)
-    {
-      if (m_NonNegativityConstraintThreshold != itk::NumericTraits<double>::NonpositiveMin() ||
-          m_ScatterToPrimaryRatio != 0. || m_I0 != itk::NumericTraits<double>::NonpositiveMin() ||
-          !m_WaterPrecorrectionCoefficients.empty())
-      {
-        itkGenericExceptionMacro(
-          << "Raw projection conversion, scatter correction, and water precorrection are not supported for vector "
-             "projections");
-      }
-
-      output = dynamic_cast<OutputImageType *>(nextInput);
-      assert(output != nullptr);
+      itkGenericExceptionMacro(<< "Can not change image information with this input (not implemented)");
     }
     else
     {
-      // Boellaard scatter correction
-      if (m_NonNegativityConstraintThreshold != itk::NumericTraits<double>::NonpositiveMin() ||
-          m_ScatterToPrimaryRatio != 0.)
+      using ChangeInfoType = itk::ChangeInformationImageFilter<TInputImage>;
+      auto * cif = dynamic_cast<ChangeInfoType *>(m_ChangeInformationFilter.GetPointer());
+      assert(cif != nullptr);
+      if (m_Spacing != defaultSpacing)
       {
-        if (m_ScatterFilter.GetPointer() == nullptr)
-        {
-          itkGenericExceptionMacro(<< "Can not use Boellaard scatter correction with this input (not implemented)");
-        }
-        else
-        {
-          using ScatterFilterType = rtk::BoellaardScatterCorrectionImageFilter<TInputImage, TInputImage>;
-          auto * scatter = dynamic_cast<ScatterFilterType *>(m_ScatterFilter.GetPointer());
-          assert(scatter != nullptr);
-          scatter->SetAirThreshold(m_AirThreshold);
-          scatter->SetScatterToPrimaryRatio(m_ScatterToPrimaryRatio);
-          if (m_NonNegativityConstraintThreshold != itk::NumericTraits<double>::NonpositiveMin())
-            scatter->SetNonNegativityConstraintThreshold(m_NonNegativityConstraintThreshold);
-          scatter->SetInput(nextInput);
-          nextInput = scatter->GetOutput();
-        }
+        cif->SetOutputSpacing(m_Spacing);
+        cif->ChangeSpacingOn();
       }
-
-      // LUTbasedVariableI0RawToAttenuationImageFilter
-      if (m_I0 != itk::NumericTraits<double>::NonpositiveMin())
+      if (m_Origin != defaultOrigin)
       {
-        if (m_RawToAttenuationFilter.GetPointer() == nullptr)
-        {
-          itkGenericExceptionMacro(
-            << "Can not use I0 in LUTbasedVariableI0RawToAttenuationImageFilter with this input (not implemented)");
-        }
-        else
-        {
-          nextInputBase = dynamic_cast<itk::ImageBase<OutputImageDimension> *>(nextInput);
-          assert(nextInputBase != nullptr);
-          PropagateI0(&nextInputBase);
-          nextInput = dynamic_cast<TInputImage *>(nextInputBase);
-          assert(nextInput != nullptr);
-        }
+        cif->SetOutputOrigin(m_Origin);
+        cif->ChangeOriginOn();
       }
-
-      // Raw to attenuation or cast filter, change of type
-      if (m_RawToAttenuationFilter.GetPointer() != nullptr)
+      if (m_Direction != defaultDirection)
       {
-        // Check if Ora pointer
-        using OraRawType = rtk::OraLookupTableImageFilter<OutputImageType>;
-        auto * oraraw = dynamic_cast<OraRawType *>(m_RawToAttenuationFilter.GetPointer());
-        if (oraraw != nullptr)
-        {
-          oraraw->SetComputeLineIntegral(m_ComputeLineIntegral);
-          oraraw->SetFileNames(m_FileNames);
-        }
+        cif->SetOutputDirection(m_Direction);
+        cif->ChangeDirectionOn();
+      }
+      cif->SetInput(nextInput);
+      nextInput = cif->GetOutput();
+    }
+  }
 
-        // Cast or convert to line integral depending on m_ComputeLineIntegral
-        using IToIFilterType = itk::ImageToImageFilter<TInputImage, OutputImageType>;
-        IToIFilterType * itoi = nullptr;
-        if (m_ComputeLineIntegral || oraraw != nullptr)
-          itoi = dynamic_cast<IToIFilterType *>(m_RawToAttenuationFilter.GetPointer());
-        else
-          itoi = dynamic_cast<IToIFilterType *>(m_RawCastFilter.GetPointer());
-        assert(itoi != nullptr);
-        itoi->SetInput(nextInput);
-        output = itoi->GetOutput();
+  // Crop
+  if (m_LowerBoundaryCropSize != m_DefaultBoundaryCropSize || m_UpperBoundaryCropSize != m_DefaultBoundaryCropSize)
+  {
+    if (m_CropFilter.GetPointer() == nullptr)
+    {
+      itkGenericExceptionMacro(<< "Can not crop images read with this input (not implemented)");
+    }
+    else
+    {
+      using CropType = itk::CropImageFilter<TInputImage, TInputImage>;
+      auto * crop = dynamic_cast<CropType *>(m_CropFilter.GetPointer());
+      assert(crop != nullptr);
+      if (m_LowerBoundaryCropSize == m_DefaultBoundaryCropSize)
+        m_LowerBoundaryCropSize.Fill(0);
+      crop->SetLowerBoundaryCropSize(m_LowerBoundaryCropSize);
+      if (m_UpperBoundaryCropSize == m_DefaultBoundaryCropSize)
+        m_UpperBoundaryCropSize.Fill(0);
+      crop->SetUpperBoundaryCropSize(m_UpperBoundaryCropSize);
+      crop->SetInput(nextInput);
+      nextInput = crop->GetOutput();
+    }
+  }
 
-        // Release output data of m_RawDataReader if conversion occurs
-        itoi->ReleaseDataFlagOn();
+  // Elekta raw data converter
+  auto * nextInputBase = dynamic_cast<itk::ImageBase<OutputImageDimension> *>(nextInput);
+  assert(nextInputBase != nullptr);
+  ConnectElektaRawFilter(&nextInputBase);
+  nextInput = dynamic_cast<TInputImage *>(nextInputBase);
+  assert(nextInput != nullptr);
+
+  // Conditional median
+  MedianRadiusType defaultMedianRadius;
+  defaultMedianRadius.Fill(0);
+  if (m_MedianRadius != defaultMedianRadius)
+  {
+    if (m_ConditionalMedianFilter.GetPointer() == nullptr)
+    {
+      itkGenericExceptionMacro(<< "Can not apply conditional median filter on this input (not implemented)");
+    }
+    else
+    {
+      using ConditionalMedianType = rtk::ConditionalMedianImageFilter<TInputImage>;
+      auto * cond = dynamic_cast<ConditionalMedianType *>(m_ConditionalMedianFilter.GetPointer());
+      assert(cond != nullptr);
+      cond->SetRadius(m_MedianRadius);
+      cond->SetInput(nextInput);
+      cond->SetThresholdMultiplier(m_ConditionalMedianThresholdMultiplier);
+      nextInput = cond->GetOutput();
+    }
+  }
+
+  // Binning
+  ShrinkFactorsType defaultShrinkFactors;
+  defaultShrinkFactors.Fill(1);
+  if (m_ShrinkFactors != defaultShrinkFactors)
+  {
+    if (m_BinningFilter.GetPointer() == nullptr)
+    {
+      itkGenericExceptionMacro(<< "Can not bin / shrink images read with this input (not implemented)");
+    }
+    else
+    {
+      using BinType = itk::BinShrinkImageFilter<TInputImage, TInputImage>;
+      auto * bin = dynamic_cast<BinType *>(m_BinningFilter.GetPointer());
+      assert(bin != nullptr);
+      bin->SetShrinkFactors(m_ShrinkFactors);
+      bin->SetInput(nextInput);
+      nextInput = bin->GetOutput();
+    }
+  }
+
+  if constexpr (!std::is_same_v<typename itk::NumericTraits<typename OutputImageType::PixelType>::ValueType,
+                                typename OutputImageType::PixelType>)
+  {
+    if (m_NonNegativityConstraintThreshold != itk::NumericTraits<double>::NonpositiveMin() ||
+        m_ScatterToPrimaryRatio != 0. || m_I0 != itk::NumericTraits<double>::NonpositiveMin() ||
+        !m_WaterPrecorrectionCoefficients.empty())
+    {
+      itkGenericExceptionMacro(
+        << "Raw projection conversion, scatter correction, and water precorrection are not supported for vector "
+           "projections");
+    }
+
+    output = dynamic_cast<OutputImageType *>(nextInput);
+    assert(output != nullptr);
+  }
+  else
+  {
+    // Boellaard scatter correction
+    if (m_NonNegativityConstraintThreshold != itk::NumericTraits<double>::NonpositiveMin() ||
+        m_ScatterToPrimaryRatio != 0.)
+    {
+      if (m_ScatterFilter.GetPointer() == nullptr)
+      {
+        itkGenericExceptionMacro(<< "Can not use Boellaard scatter correction with this input (not implemented)");
       }
       else
       {
-        output = dynamic_cast<OutputImageType *>(nextInput);
-        assert(output != nullptr);
+        using ScatterFilterType = rtk::BoellaardScatterCorrectionImageFilter<TInputImage, TInputImage>;
+        auto * scatter = dynamic_cast<ScatterFilterType *>(m_ScatterFilter.GetPointer());
+        assert(scatter != nullptr);
+        scatter->SetAirThreshold(m_AirThreshold);
+        scatter->SetScatterToPrimaryRatio(m_ScatterToPrimaryRatio);
+        if (m_NonNegativityConstraintThreshold != itk::NumericTraits<double>::NonpositiveMin())
+          scatter->SetNonNegativityConstraintThreshold(m_NonNegativityConstraintThreshold);
+        scatter->SetInput(nextInput);
+        nextInput = scatter->GetOutput();
       }
+    }
 
-      // ESRF raw to attenuation converter also needs the filenames
-      auto * edf = dynamic_cast<rtk::EdfRawToAttenuationImageFilter<TInputImage, OutputImageType> *>(
-        m_RawToAttenuationFilter.GetPointer());
-      if (edf)
-        edf->SetFileNames(this->GetFileNames());
-
-      // Water coefficients
-      if (!m_WaterPrecorrectionCoefficients.empty())
+    // LUTbasedVariableI0RawToAttenuationImageFilter
+    if (m_I0 != itk::NumericTraits<double>::NonpositiveMin())
+    {
+      if (m_RawToAttenuationFilter.GetPointer() == nullptr)
       {
-        auto * wpc = static_cast<WaterPrecorrectionType *>(m_WaterPrecorrectionFilter.GetPointer());
-        wpc->SetCoefficients(m_WaterPrecorrectionCoefficients);
-        wpc->SetInput(output);
-        output = wpc->GetOutput();
+        itkGenericExceptionMacro(
+          << "Can not use I0 in LUTbasedVariableI0RawToAttenuationImageFilter with this input (not implemented)");
       }
+      else
+      {
+        nextInputBase = dynamic_cast<itk::ImageBase<OutputImageDimension> *>(nextInput);
+        assert(nextInputBase != nullptr);
+        PropagateI0(&nextInputBase);
+        nextInput = dynamic_cast<TInputImage *>(nextInputBase);
+        assert(nextInput != nullptr);
+      }
+    }
+
+    // Raw to attenuation or cast filter, change of type
+    if (m_RawToAttenuationFilter.GetPointer() != nullptr)
+    {
+      // Check if Ora pointer
+      using OraRawType = rtk::OraLookupTableImageFilter<OutputImageType>;
+      auto * oraraw = dynamic_cast<OraRawType *>(m_RawToAttenuationFilter.GetPointer());
+      if (oraraw != nullptr)
+      {
+        oraraw->SetComputeLineIntegral(m_ComputeLineIntegral);
+        oraraw->SetFileNames(m_FileNames);
+      }
+
+      // Cast or convert to line integral depending on m_ComputeLineIntegral
+      using IToIFilterType = itk::ImageToImageFilter<TInputImage, OutputImageType>;
+      IToIFilterType * itoi = nullptr;
+      if (m_ComputeLineIntegral || oraraw != nullptr)
+        itoi = dynamic_cast<IToIFilterType *>(m_RawToAttenuationFilter.GetPointer());
+      else
+        itoi = dynamic_cast<IToIFilterType *>(m_RawCastFilter.GetPointer());
+      assert(itoi != nullptr);
+      itoi->SetInput(nextInput);
+      output = itoi->GetOutput();
+
+      // Release output data of m_RawDataReader if conversion occurs
+      itoi->ReleaseDataFlagOn();
+    }
+    else
+    {
+      output = dynamic_cast<OutputImageType *>(nextInput);
+      assert(output != nullptr);
+    }
+
+    // ESRF raw to attenuation converter also needs the filenames
+    auto * edf = dynamic_cast<rtk::EdfRawToAttenuationImageFilter<TInputImage, OutputImageType> *>(
+      m_RawToAttenuationFilter.GetPointer());
+    if (edf)
+      edf->SetFileNames(this->GetFileNames());
+
+    // Water coefficients
+    if (!m_WaterPrecorrectionCoefficients.empty())
+    {
+      auto * wpc = static_cast<WaterPrecorrectionType *>(m_WaterPrecorrectionFilter.GetPointer());
+      wpc->SetCoefficients(m_WaterPrecorrectionCoefficients);
+      wpc->SetInput(output);
+      output = wpc->GetOutput();
     }
   }
   // Streaming image filter
