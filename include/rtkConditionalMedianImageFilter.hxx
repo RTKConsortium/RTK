@@ -73,7 +73,7 @@ void
 ConditionalMedianImageFilter<TInputImage>::DynamicThreadedGenerateData(
   const typename TInputImage::RegionType & outputRegionForThread)
 {
-  // Scalar implementaton
+  // Scalar implementation
   if constexpr (std::is_same_v<typename itk::NumericTraits<typename TInputImage::PixelType>::ValueType,
                                typename TInputImage::PixelType>)
   {
