@@ -26,11 +26,35 @@ DEST_DIR=$(cd "$DEST_DIR" && pwd)
 mkdir -p "$RTK_BUILD_DIR"
 RTK_BUILD_DIR=$(cd "$RTK_BUILD_DIR" && pwd)
 
+# Pick the folders that will receive the .pth file and the rtk<app> wrappers
+# before building: $PYTHON's own if writable (e.g. a virtual environment), else
+# the user site and user scripts folder.
+PYTHON_DIRS=$("$PYTHON" -c '
+import os, site, sys, sysconfig
+d = site.getsitepackages()[0]
+s = sysconfig.get_path("scripts")
+if not os.access(d, os.W_OK):
+    if not site.ENABLE_USER_SITE:
+        sys.exit(f"Error: {d} is not writable and the user site is disabled. "
+                 "Set PYTHON to the python of a virtual environment.")
+    d = site.getusersitepackages()
+    scheme = (sysconfig.get_preferred_scheme("user")
+              if hasattr(sysconfig, "get_preferred_scheme") else f"{os.name}_user")
+    s = sysconfig.get_path("scripts", scheme)
+print(d)
+print(s)
+')
+SITE_PACKAGES=${PYTHON_DIRS%%$'\n'*}
+SCRIPTS_DIR=${PYTHON_DIRS#*$'\n'}
+mkdir -p "$SITE_PACKAGES" "$SCRIPTS_DIR"
+
 echo "ITK build tree: $ITK_DIR"
 echo "RTK source:     $RTK_SRC"
 echo "RTK build dir:  $RTK_BUILD_DIR"
 echo "Install folder: $DEST_DIR"
 echo "Python:         $PYTHON"
+echo ".pth folder:    $SITE_PACKAGES"
+echo "Scripts folder: $SCRIPTS_DIR"
 echo "RTK_USE_CUDA:   $RTK_USE_CUDA"
 
 # The Python wrapping must already be installed in DEST_DIR.
@@ -88,18 +112,15 @@ done
 echo "RTK Python modules in $DEST_DIR/itk are symlinked to the RTK source tree, so their edits are taken into account immediately."
 
 # Make DEST_DIR importable and give it priority over installed packages.
-SITE_PACKAGES=$("$PYTHON" -c "import site; print(site.getsitepackages()[0])")
 PTH_FILE="$SITE_PACKAGES/rtk_python_packages.pth"
 
 "$PYTHON" -c 'import pathlib, sys; pathlib.Path(sys.argv[2]).write_text(f"import sys; sys.path.insert(0, {sys.argv[1]!r})\n")' \
   "$DEST_DIR" "$PTH_FILE"
 
-# Generate rtk<app> console-style wrappers in $PYTHON's scripts dir, mirroring
-# pip's [console_scripts] entry points, so apps can be run as `rtk<app>` instead
-# of `python -m itk.rtk<app>`.
+# Generate rtk<app> console-style wrappers in SCRIPTS_DIR, mirroring pip's
+# [console_scripts] entry points, so apps can be run as `rtk<app>` instead of
+# `python -m itk.rtk<app>`.
 PYTHON_BIN=$("$PYTHON" -c "import sys; print(sys.executable)")
-SCRIPTS_DIR=$("$PYTHON" -c "import sysconfig; print(sysconfig.get_path('scripts'))")
-mkdir -p "$SCRIPTS_DIR"
 for src in "$RTK_SRC"/applications/rtk*/rtk*.py; do
   [ -f "$src" ] || continue
   name=$(basename "$src" .py)
@@ -114,6 +135,10 @@ EOF
   chmod +x "$SCRIPTS_DIR/$name"
 done
 echo "Generated rtk<app> wrappers in $SCRIPTS_DIR"
+case ":$PATH:" in
+  *":$SCRIPTS_DIR:"*) ;;
+  *) echo "Warning: $SCRIPTS_DIR is not in PATH; add it to run rtk<app> directly." ;;
+esac
 
 echo "Done. $DEST_DIR was added to PYTHONPATH through $PTH_FILE, so no manual export is needed for $PYTHON."
 echo "Run the RTK applications as Python modules, e.g.:"
