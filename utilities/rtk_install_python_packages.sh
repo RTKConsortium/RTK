@@ -4,7 +4,8 @@
 # ITK Python package). Symlinks hand-written Python to the source (live edits)
 # and makes DEST_DIR importable via a .pth. Does not build ITK; ITK_DIR is the
 # ITK build tree (with Python wrapping). When RTK_USE_CUDA=ON, CudaCommon's
-# wrapping must already be in DEST_DIR.
+# wrapping must already be in DEST_DIR. CMAKE_BUILD_TYPE (Release by default)
+# should match the configuration of ITK.
 # Set inputs via environment variables, e.g.:
 #   ITK_DIR=/path/to/itk/build DEST_DIR=/path/to/python_packages \
 #   rtk_install_python_packages.sh
@@ -15,6 +16,7 @@ RTK_USE_CUDA=${RTK_USE_CUDA:-OFF}
 PYTHON=${PYTHON:-python3}
 NTHREADS=${NTHREADS:-$("$PYTHON" -c "import os; print(os.cpu_count() or 1)")}
 RTK_BUILD_DIR=${RTK_BUILD_DIR:-$PWD/build-rtk-python}
+CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE:-Release}
 
 ITK_DIR=${ITK_DIR:?"ITK_DIR must be set (ITK build tree with Python wrapping)"}
 DEST_DIR=${DEST_DIR:?"DEST_DIR must be set (folder that already holds the itk package)"}
@@ -53,6 +55,7 @@ echo "RTK source:     $RTK_SRC"
 echo "RTK build dir:  $RTK_BUILD_DIR"
 echo "Install folder: $DEST_DIR"
 echo "Python:         $PYTHON"
+echo "Build type:     $CMAKE_BUILD_TYPE"
 echo ".pth folder:    $SITE_PACKAGES"
 echo "Scripts folder: $SCRIPTS_DIR"
 echo "RTK_USE_CUDA:   $RTK_USE_CUDA"
@@ -88,14 +91,18 @@ fi
 
 # Configure, build and install RTK. PY_SITE_PACKAGES_PATH merges the wrapping
 # into the itk package in DEST_DIR; RuntimeLibraries matches the itk install.
+# CMAKE_BUILD_TYPE is passed to every step so that multi-configuration
+# generators (Visual Studio, Ninja Multi-Config) build and install the same
+# configuration.
 cmake -S "$RTK_SRC" -B "$RTK_BUILD_DIR" \
   -DITK_DIR="$ITK_DIR" \
+  -DCMAKE_BUILD_TYPE="$CMAKE_BUILD_TYPE" \
   -DRTK_USE_CUDA="$RTK_USE_CUDA" \
   -DRTK_BUILD_APPLICATIONS=OFF \
   -DBUILD_TESTING=OFF \
   -DPY_SITE_PACKAGES_PATH="$DEST_DIR"
-cmake --build "$RTK_BUILD_DIR" -j "$NTHREADS"
-cmake --install "$RTK_BUILD_DIR" --component RuntimeLibraries
+cmake --build "$RTK_BUILD_DIR" --config "$CMAKE_BUILD_TYPE" -j "$NTHREADS"
+cmake --install "$RTK_BUILD_DIR" --config "$CMAKE_BUILD_TYPE" --component RuntimeLibraries
 
 # Symlink hand-written Python (apps and support modules) to the source so edits
 # are picked up without reinstalling; generated wrapping still needs a rebuild.
