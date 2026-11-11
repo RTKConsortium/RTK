@@ -38,6 +38,8 @@ ITK_DIR=<itk-build-dir> DEST_DIR=/path/to/python_packages RTK_USE_CUDA=ON utilit
 
 The packages folder holds compiled extensions for a specific Python ABI/platform, but the `.pth` file that makes it importable is added by the script to the `site-packages` of the Python interpreter it runs with (the one given by `PYTHON`, `python3` by default), or to its user `site-packages` if the former is not writable, e.g. for a system Python outside a virtual environment. To use it in another environment, run the script with `PYTHON=/path/to/other/env/bin/python ...` or export `PYTHONPATH=$DEST_DIR`. The script also generates `rtk<app>` wrapper scripts in that interpreter's scripts directory (its user scripts directory, e.g. `~/.local/bin`, in the latter case), so the applications can be run directly (e.g. `rtkfdk --help`) in addition to as Python modules (e.g. `python -m itk.rtkfdk --help`).
 
+RTK is built in the `Release` configuration. Set `CMAKE_BUILD_TYPE` (e.g. `CMAKE_BUILD_TYPE=Debug`) to match another configuration of ITK.
+
 ## Python pre-compiled binaries
 We only provide pre-compiled binaries for the Python package which depends on ITK. Use the following commands to install the RTK module with `pip`.
 ```
