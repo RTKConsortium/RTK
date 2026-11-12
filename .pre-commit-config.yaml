@@ -1,4 +1,6 @@
 fail_fast: true
+default_install_hook_types: [pre-commit, commit-msg]
+default_stages: [pre-commit]
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
   rev: v5.0.0
@@ -24,7 +26,7 @@ repos:
       args: ['--target-version', 'py39']
 
 - repo: https://github.com/asottile/pyupgrade
-  rev: v3.19.0
+  rev: v3.22.0
   hooks:
     - id: pyupgrade
       args: ['--py39-plus']
@@ -43,3 +45,16 @@ repos:
       args: ['--no-progress', '--config', 'utilities/lychee.toml']
       files: '\.(md|rst|txt|html|htm|h|hxx|cxx)$'
       exclude: '^(documentation/Doxygen|utilities/(gengetopt|lp_solve))/'
+
+- repo: local
+  hooks:
+    - id: kw-commit-msg
+      name: 'kw commit-msg'
+      entry: python utilities/hooks/kw-commit-msg.py
+      language: python
+      stages: [commit-msg]
+    - id: kw-prose-budget
+      name: 'kw prose-budget (advisory unless ITK_AI_AGENT=1)'
+      entry: python utilities/hooks/kw-prose-budget.py
+      language: python
+      stages: [commit-msg]
