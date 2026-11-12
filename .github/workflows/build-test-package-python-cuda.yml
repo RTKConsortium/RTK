@@ -20,7 +20,7 @@ jobs:
       matrix:
         python3-minor-version: ${{ github.event_name == 'pull_request' && fromJSON('["11"]') || fromJSON('["9","10","11"]') }}
         manylinux-platform: ${{ github.event_name == 'pull_request' && fromJSON('["_2_28-x64"]') || fromJSON('["_2_28-x64","2014-x64"]') }}
-        cuda-version: ${{ github.event_name == 'pull_request' && fromJSON('["118","130"]') || fromJSON('["118","124","128","130"]') }}
+        cuda-version: ${{ github.event_name == 'pull_request' && fromJSON('["128"]') || fromJSON('["118","128","130"]') }}
         exclude:
           - manylinux-platform: "2014-x64"
             cuda-version: "128"
@@ -53,9 +53,7 @@ jobs:
         CMAKE_OPTIONS="${CMAKE_OPTIONS} -DCUDAToolkit_ROOT=/usr/lib64/cuda${CUDA_VERSION}"
         CMAKE_OPTIONS="${CMAKE_OPTIONS} -DCMAKE_CUDA_COMPILER=/usr/lib64/cuda${CUDA_VERSION}/bin/nvcc"
         CMAKE_OPTIONS="${CMAKE_OPTIONS} --config-setting=build.tool-args=-j16"
-        if test ${CUDA_VERSION_MAJOR} -ge 13; then
-          CMAKE_OPTIONS="${CMAKE_OPTIONS} -DCMAKE_CUDA_ARCHITECTURES=75"
-        fi
+        CMAKE_OPTIONS="${CMAKE_OPTIONS} -DCMAKE_CUDA_ARCHITECTURES=75"
 
         # The first two are not library paths but are included to be mounted in the
         # docker by dockcross-manylinux-build-module-wheels.sh
@@ -160,27 +158,43 @@ jobs:
         $env:ITKPYTHONPACKAGE_ORG = "${{ env.itk-python-package-org }}"
         $env:ITK_MODULE_PREQ = "${{ env.itk-module-deps }}"
         $CUDA_VERSION = "${{ matrix.cuda-version }}"
-        $CUDA_VERSION_MAJOR=$CUDA_VERSION.substring(0,2)
-        $CUDA_VERSION_MINOR=$CUDA_VERSION.substring(2,$CUDA_VERSION.Length-2)
-        $env:CUDA_PATH = "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v${CUDA_VERSION_MAJOR}.${CUDA_VERSION_MINOR}"
-        $env:CUDACXX = "$env:CUDA_PATH\bin\nvcc.exe"
-        $env:Path = "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v${CUDA_VERSION_MAJOR}.${CUDA_VERSION_MINOR}\bin;" + $env:Path
-        if(${CUDA_VERSION_MAJOR} -ge 13) {
-          $CUDA_ARCHITECTURES = "75"
-          $CUDA_LIB_DIR= "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v${CUDA_VERSION_MAJOR}.${CUDA_VERSION_MINOR}\bin\x64"
-        }
-        else {
-          $CUDA_ARCHITECTURES = "52"
-          $CUDA_LIB_DIR= "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v${CUDA_VERSION_MAJOR}.${CUDA_VERSION_MINOR}\bin"
-        }
-        $LIBCUDART= (Get-Item "${CUDA_LIB_DIR}\cudart64*dll" ).Name
-        $LIBCUBLAS= (Get-Item "${CUDA_LIB_DIR}\cublas64*dll" ).Name
-        $LIBCUBLASLT= (Get-Item "${CUDA_LIB_DIR}\cublasLt64*dll" ).Name
-        $LIBCUFFT= (Get-Item "${CUDA_LIB_DIR}\cufft64*dll" ).Name
-        ((Get-Content -Path pyproject.toml) -replace "itk-rtk","itk-rtk-cuda${CUDA_VERSION}") | Set-Content -Path pyproject.toml
-        ((Get-Content -Path pyproject.toml) -replace "dependencies = \[","dependencies = [""itk-cudacommon-cuda${CUDA_VERSION}  == 2.1.*"",") | Set-Content -Path pyproject.toml
+        $CUDA_VERSION_MAJOR = $CUDA_VERSION.substring(0,2)
+        $CUDA_VERSION_MINOR = $CUDA_VERSION.substring(2,$CUDA_VERSION.Length-2)
 
-        ./windows-download-cache-and-build-module-wheels.ps1 "${{ matrix.python3-minor-version }}" -setup_options "--lib-paths ""C:/Program\ Files/NVIDIA\ GPU\ Computing\ Toolkit/CUDA/v${CUDA_VERSION_MAJOR}.${CUDA_VERSION_MINOR}/bin"" --exclude-libs ""nvcuda.dll;concrt140.dll;${LIBCUDART};${LIBCUBLAS};${LIBCUBLASLT};${LIBCUFFT}""" -cmake_options """-DRTK_CUDA_VERSION=${CUDA_VERSION_MAJOR}.${CUDA_VERSION_MINOR}"" ""-DCMAKE_CUDA_COMPILER=$env:CUDACXX"" ""-DRTK_BUILD_APPLICATIONS:BOOL=OFF"" ""-DCMAKE_CUDA_ARCHITECTURES=${CUDA_ARCHITECTURES}"""
+        # nvcc is in bin for every supported CUDA version.
+        $env:CUDA_PATH = "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v${CUDA_VERSION_MAJOR}.${CUDA_VERSION_MINOR}"
+        $CUDA_BIN_DIR = "$env:CUDA_PATH\bin"
+        $env:CUDACXX = "$CUDA_BIN_DIR\nvcc.exe"
+        $env:Path = "$CUDA_BIN_DIR;" + $env:Path
+        & nvcc --version
+
+        # Runtime DLLs moved from bin to bin/x64 in CUDA 13.
+        $CUDA_DLL_DIR = $CUDA_BIN_DIR
+        if ($CUDA_VERSION_MAJOR -ge 13) {
+          $CUDA_DLL_DIR = "$CUDA_BIN_DIR\x64"
+        }
+        $env:Path = "$CUDA_DLL_DIR;" + $env:Path
+        $LIBCUDART = (Get-Item "$CUDA_DLL_DIR\cudart64*.dll").Name
+        $LIBCUBLAS = (Get-Item "$CUDA_DLL_DIR\cublas64*.dll").Name
+        $LIBCUBLASLT = (Get-Item "$CUDA_DLL_DIR\cublasLt64*.dll").Name
+        $LIBCUFFT = (Get-Item "$CUDA_DLL_DIR\cufft64*.dll").Name
+
+        # The packaging script requires forward slashes and escaped spaces
+        # in its --lib-paths argument (e.g. C:/Program\ Files/...).
+        $CUDA_PACKAGING_DLL_DIR = $CUDA_DLL_DIR.Replace('\', '/').Replace(' ', '\ ')
+
+        # Give the wheel its CUDA-specific package name, e.g. cuda128, and
+        # depend on the CudaCommon wheel built for the same CUDA version.
+        $PACKAGE_NAME = "itk-rtk-cuda${CUDA_VERSION}"
+        $PYPROJECT_CONTENT = Get-Content -Path pyproject.toml
+        $PYPROJECT_CONTENT = $PYPROJECT_CONTENT -replace "itk-rtk", $PACKAGE_NAME
+        $PYPROJECT_CONTENT = $PYPROJECT_CONTENT -replace "dependencies = \[","dependencies = [""itk-cudacommon-cuda${CUDA_VERSION}  == 2.1.*"","
+        $PYPROJECT_CONTENT | Set-Content -Path pyproject.toml
+
+        # Use the same Turing target as the Linux wheels.
+        $CUDA_ARCHITECTURES = "75"
+
+        ./windows-download-cache-and-build-module-wheels.ps1 "${{ matrix.python3-minor-version }}" -setup_options "--lib-paths ""${CUDA_PACKAGING_DLL_DIR}"" --exclude-libs ""nvcuda.dll;concrt140.dll;${LIBCUDART};${LIBCUBLAS};${LIBCUBLASLT};${LIBCUFFT}""" -cmake_options """-DRTK_CUDA_VERSION=${CUDA_VERSION_MAJOR}.${CUDA_VERSION_MINOR}"" ""-DCMAKE_CUDA_COMPILER=$env:CUDACXX"" ""-DRTK_BUILD_APPLICATIONS:BOOL=OFF"" ""-DCMAKE_CUDA_ARCHITECTURES=${CUDA_ARCHITECTURES}"""
 
         mkdir -p '${{ github.workspace }}\dist'
         cp 'dist\*.whl' '${{ github.workspace }}\dist'
@@ -237,11 +251,11 @@ jobs:
       - build-windows-cuda-python-packages
     strategy:
       matrix:
-        include:
-          - os: linux
-            cuda-version: "130"
+        os: [linux, windows]
+        cuda-version: ${{ github.event_name == 'pull_request' && fromJSON('["128"]') || fromJSON('["118","128","130"]') }}
+        exclude:
           - os: windows
-            cuda-version: "128"
+            cuda-version: "118"
     runs-on: [self-hosted, "${{ matrix.os }}"]
 
     steps:
@@ -261,31 +275,31 @@ jobs:
       shell: bash
       run: |
         python -m venv .test-venv
+        CUDA_VERSION="${{ matrix.cuda-version }}"
+        CUDA_VERSION_MAJOR=$(echo "$CUDA_VERSION" | cut -b1-2)
+        CUDA_VERSION_MINOR=$(echo "$CUDA_VERSION" | cut -b3-)
         if [[ "${{ matrix.os }}" == "linux" ]]; then
-          export LD_LIBRARY_PATH="/home/srit/Downloads/cuda${{ matrix.cuda-version }}/targets/x86_64-linux/lib:$LD_LIBRARY_PATH"
+          export LD_LIBRARY_PATH="/home/srit/Downloads/cuda${CUDA_VERSION}/targets/x86_64-linux/lib:$LD_LIBRARY_PATH"
           source .test-venv/bin/activate
+          wheel=$(find wheels -name "itk_rtk_cuda${CUDA_VERSION}*cp311-*manylinux_2_28_x86_64.whl" -type f | head -1)
         else
-          CUDA_VERSION="${{ matrix.cuda-version }}"
-          CUDA_VERSION_MAJOR=$(echo "$CUDA_VERSION" | cut -b1-2)
-          CUDA_VERSION_MINOR=$(echo "$CUDA_VERSION" | cut -b3-)
           CUDA_BIN_PATH="C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v${CUDA_VERSION_MAJOR}.${CUDA_VERSION_MINOR}/bin"
+          export PATH="$(cygpath -u "$CUDA_BIN_PATH"):$PATH"
+          if [[ "$CUDA_VERSION_MAJOR" -ge 13 ]]; then
+            CUDA_BIN_PATH="${CUDA_BIN_PATH}/x64"
+          fi
+          export PATH="$(cygpath -u "$CUDA_BIN_PATH"):$PATH"
           source .test-venv/Scripts/activate
 
           # Register the CUDA DLL directory via a .pth file so site.py adds it to the
           # process DLL search path before any extension module is loaded.
           site_packages=$(python -c "import sysconfig; print(sysconfig.get_path('purelib'))")
-          echo "import os; os.add_dll_directory('${CUDA_BIN_PATH}')" > "${site_packages}/cuda_dll.pth"
+          echo "import os; os._rtk_cuda_dll_directory = os.add_dll_directory('${CUDA_BIN_PATH}')" > "${site_packages}/cuda_dll.pth"
+          wheel=$(find wheels -name "itk_rtk_cuda${CUDA_VERSION}*cp311-*win_amd64.whl" -type f | head -1)
         fi
 
         # Ensure virtualenv is deactivated and removed on script exit
         trap 'deactivate; rm -rf .test-venv' EXIT
-
-        # Find wheel for Python 3.11 dynamically
-        if [[ "${{ matrix.os }}" == "linux" ]]; then
-          wheel=$(find wheels -name "itk_rtk_cuda${{ matrix.cuda-version }}*cp311-abi3-manylinux_2_28_x86_64.whl" -type f | head -1)
-        else
-          wheel=$(find wheels -name "itk_rtk_cuda${{ matrix.cuda-version }}*cp311-abi3-win_amd64.whl" -type f | head -1)
-        fi
 
         echo "Installing wheel: $wheel"
         python -m pip install --upgrade pip
@@ -295,7 +309,7 @@ jobs:
         # SWIG < 4.4 triggers the Py_LIMITED_API "builtin type swig…" warning when
         # Python runs with -Walways; pytest enables that behavior, so we ignore it.
         test_log=$(mktemp)
-        pytest -vv -s -W error -W "ignore:builtin type swig" 2>&1 | tee "$test_log"
+        python -m pytest -vv -s -W error -W "ignore:builtin type swig" 2>&1 | tee "$test_log"
         matches=$(grep -Ei "warning|exception|redefin(ed|ition)?" "$test_log" || true)
         if [ -n "$matches" ]; then
           echo "Unexpected output found:"
