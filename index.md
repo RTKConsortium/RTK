@@ -40,6 +40,7 @@ applications/README.md
 :maxdepth: 1
 :caption: CudaCommon
 CudaCommon/README.md
+CudaCommon/INSTALLATION.md
 CudaCommon/cuda_array_interface.md
 ```
 
