@@ -75,7 +75,7 @@ def process(args_info: argparse.Namespace):
     source = rtk.ConstantImageSource[OutputImageType].New()
     source.SetInformationFromImage(reader.GetOutput())
     outputSize = itk.size(reader.GetOutput())
-    outputSize_list = [s for s in outputSize]
+    outputSize_list = [*outputSize]
     outputSize_list[Dimension - 1] = len(indices)
     source.SetSize(outputSize_list)
     source.SetConstant(0)
