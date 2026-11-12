@@ -15,7 +15,7 @@ if(NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
       "CUDA architectures"
     )
   else()
-    set(CMAKE_CUDA_ARCHITECTURES "52" CACHE STRING "CUDA architectures")
+    set(CMAKE_CUDA_ARCHITECTURES "75" CACHE STRING "CUDA architectures")
   endif()
 endif()
 include(CheckLanguage)
@@ -37,11 +37,11 @@ if(CMAKE_CUDA_COMPILER)
     AND
       "${CUDAToolkit_VERSION}"
         VERSION_LESS
-        8.0
+        10.0
   )
     message(
       WARNING
-      "CUDA version ${CUDAToolkit_VERSION} is not supported by RTK, version 8 is required. RTK_USE_CUDA set to OFF."
+      "CUDA version ${CUDAToolkit_VERSION} is not supported by RTK, version 10 or later is required. RTK_USE_CUDA set to OFF."
     )
   else()
     set(RTK_USE_CUDA_DEFAULT ON)
@@ -75,7 +75,7 @@ if(RTK_USE_CUDA)
   if(RTK_CUDA_VERSION)
     find_package(CUDAToolkit EXACT ${RTK_CUDA_VERSION} REQUIRED)
   else()
-    find_package(CUDAToolkit REQUIRED 8.0)
+    find_package(CUDAToolkit REQUIRED 10.0)
   endif()
 
   set(
