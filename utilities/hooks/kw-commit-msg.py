@@ -17,9 +17,7 @@
 #
 # ==========================================================================
 
-import os
 import re
-import subprocess
 import sys
 
 from pathlib import Path
@@ -44,13 +42,13 @@ To continue editing, run the command
 
 
 def main():
-    git_dir_path: Path = Path(os.environ.get("GIT_DIR", ".git")).resolve()
-    commit_msg_path: Path = git_dir_path / "COMMIT_MSG"
-
     if len(sys.argv) < 2:
-        die(f"Usage: {sys.argv[0]} <git_commit_message_file>", commit_msg_path)
+        print(f"Usage: {sys.argv[0]} <git_commit_message_file>", file=sys.stderr)
+        sys.exit(1)
 
     input_file: Path = Path(sys.argv[1])
+    # Git passes a file in its git directory, which may be a worktree's.
+    commit_msg_path: Path = input_file.resolve().parent / "COMMIT_MSG"
     if not input_file.exists():
         die(
             f"Missing input_file {sys.argv[1]} for {sys.argv[0]} processing",
@@ -82,10 +80,8 @@ def main():
             f"The first line must be at least 8 characters:\n--------\n{subject_line}\n--------",
             commit_msg_path,
         )
-    if (
-        len(subject_line) > max_subjectline_length
-        and not subject_line.startswith("Merge ")
-        and not subject_line.startswith("Revert ")
+    if len(subject_line) > max_subjectline_length and not subject_line.startswith(
+        ("Merge ", "Revert ", "fixup! ", "squash! ", "amend! ")
     ):
         die(
             f"The first line may be at most {max_subjectline_length} characters:\n"
@@ -100,7 +96,8 @@ def main():
             commit_msg_path,
         )
     if not re.match(
-        r"^(Merge|Revert|BUG:|COMP:|DOC:|ENH:|PERF:|STYLE:|WIP:)\s", subject_line
+        r"^(Merge|Revert|fixup!|squash!|amend!|BUG:|COMP:|DOC:|ENH:|PERF:|STYLE:|WIP:)\s",
+        subject_line,
     ):
         die(
             f"""Start RTK commit messages with a standard prefix (and a space):
