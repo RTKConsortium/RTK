@@ -15,7 +15,7 @@ if(NOT DEFINED CMAKE_CUDA_ARCHITECTURES)
       "CUDA architectures"
     )
   else()
-    set(CMAKE_CUDA_ARCHITECTURES "52" CACHE STRING "CUDA architectures")
+    set(CMAKE_CUDA_ARCHITECTURES "75" CACHE STRING "CUDA architectures")
   endif()
 endif()
 include(CheckLanguage)
