@@ -23,6 +23,7 @@ set(
   CUDACOMMONFILES
   "README.md"
   "cuda_array_interface.md"
+  "INSTALLATION.md"
   "examples/itkCudaArrayInterfaceCupyExample.py"
   "examples/itkCudaArrayInterfaceTorchExample.py"
 )
