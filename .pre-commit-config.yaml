@@ -26,7 +26,7 @@ repos:
       args: ['--target-version', 'py39']
 
 - repo: https://github.com/asottile/pyupgrade
-  rev: v3.19.0
+  rev: v3.22.0
   hooks:
     - id: pyupgrade
       args: ['--py39-plus']
