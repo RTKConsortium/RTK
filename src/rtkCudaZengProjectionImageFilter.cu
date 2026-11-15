@@ -169,6 +169,8 @@ makeMetadataKey(int           mode,
                 const float   rotatedSpacing[3],
                 float         sigmaZero,
                 float         alpha,
+                float         sigmaZeroY,
+                float         alphaY,
                 const float * matrices,
                 const float * distances,
                 const int *   firstSlices)
@@ -182,19 +184,41 @@ makeMetadataKey(int           mode,
   key.values.insert(key.values.end(), rotatedSpacing, rotatedSpacing + 3);
   key.values.push_back(sigmaZero);
   key.values.push_back(alpha);
+  key.values.push_back(sigmaZeroY);
+  key.values.push_back(alphaY);
   key.values.insert(key.values.end(), matrices, matrices + 12 * projectionSize[2]);
   key.values.insert(key.values.end(), distances, distances + projectionSize[2]);
   return key;
 }
 
+// Variance of the PSF at this distance of the detector. The standard deviation
+// alpha * distance + sigmaZero is clamped to 0, so that a negative sigmaZero
+// gives no blur, instead of a negative variance, near the detector.
+float
+distanceVariance(float distance, float sigmaZero, float alpha)
+{
+  const float sigma = std::max(0.f, alpha * distance + sigmaZero);
+  return sigma * sigma;
+}
+
+// Variance added to the PSF by a slice of this thickness at this distance of
+// the detector: the difference of the variances at its two sides.
+float
+sliceVariance(float distance, float thickness, float sigmaZero, float alpha)
+{
+  return std::max(
+    0.f, distanceVariance(distance, sigmaZero, alpha) - distanceVariance(distance - thickness, sigmaZero, alpha));
+}
+
 void
 appendGaussian(HostGaussianMetadata &                 metadata,
                std::map<double, std::vector<float>> & cache,
-               float                                  variance,
+               float                                  varianceX,
+               float                                  varianceY,
                float                                  spacingX,
                float                                  spacingY)
 {
-  const double         variances[] = { variance / (spacingX * spacingX), variance / (spacingY * spacingY) };
+  const double         variances[] = { varianceX / (spacingX * spacingX), varianceY / (spacingY * spacingY) };
   std::vector<float> * packed[] = { &metadata.coefficientsX, &metadata.coefficientsY };
   std::vector<int> *   radii[] = { &metadata.radiiX, &metadata.radiiY };
   for (int dimension = 0; dimension < 2; ++dimension)
@@ -688,6 +712,8 @@ CUDA_zeng_forward_project(const int     projectionSize[3],
                           const int     attenuationOffset[3],
                           float         sigmaZero,
                           float         alpha,
+                          float         sigmaZeroY,
+                          float         alphaY,
                           unsigned int  requestedBatchSize,
                           void **       workspacePointer)
 {
@@ -719,6 +745,8 @@ CUDA_zeng_forward_project(const int     projectionSize[3],
                                    rotatedSpacing,
                                    sigmaZero,
                                    alpha,
+                                   sigmaZeroY,
+                                   alphaY,
                                    rotatedToVolumeMatrices,
                                    farDistances,
                                    firstSlices.data());
@@ -733,17 +761,22 @@ CUDA_zeng_forward_project(const int     projectionSize[3],
       const float nearDistance = nearDistances[projection];
       for (int z = 0; z < depth; ++z)
       {
-        float variance = 0.f;
+        float varianceX = 0.f;
+        float varianceY = 0.f;
         if (z >= firstSlices[projection] && z + 1 < depth)
         {
           const float distance = nearDistance + (z + 1 - firstSlices[projection]) * rotatedSpacing[2];
-          variance = distance * 2.f * rotatedSpacing[2] * alpha * alpha + 2.f * rotatedSpacing[2] * alpha * sigmaZero -
-                     alpha * alpha * rotatedSpacing[2] * rotatedSpacing[2];
+          varianceX = sliceVariance(distance, rotatedSpacing[2], sigmaZero, alpha);
+          varianceY = sliceVariance(distance, rotatedSpacing[2], sigmaZeroY, alphaY);
         }
-        appendGaussian(metadata, cache, std::max(0.f, variance), rotatedSpacing[0], rotatedSpacing[1]);
+        appendGaussian(metadata, cache, varianceX, varianceY, rotatedSpacing[0], rotatedSpacing[1]);
       }
-      const float finalVariance = (alpha * nearDistance + sigmaZero) * (alpha * nearDistance + sigmaZero);
-      appendGaussian(metadata, cache, finalVariance, rotatedSpacing[0], rotatedSpacing[1]);
+      appendGaussian(metadata,
+                     cache,
+                     distanceVariance(nearDistance, sigmaZero, alpha),
+                     distanceVariance(nearDistance, sigmaZeroY, alphaY),
+                     rotatedSpacing[0],
+                     rotatedSpacing[1]);
     }
     try
     {
@@ -843,6 +876,8 @@ CUDA_zeng_back_project(const int     projectionSize[3],
                        const int     attenuationOffset[3],
                        float         sigmaZero,
                        float         alpha,
+                       float         sigmaZeroY,
+                       float         alphaY,
                        unsigned int  requestedBatchSize,
                        void **       workspacePointer)
 {
@@ -861,6 +896,8 @@ CUDA_zeng_back_project(const int     projectionSize[3],
                                    rotatedSpacing,
                                    sigmaZero,
                                    alpha,
+                                   sigmaZeroY,
+                                   alphaY,
                                    volumeToRotatedMatrices,
                                    nearDistances,
                                    firstSlices);
@@ -875,18 +912,22 @@ CUDA_zeng_back_project(const int     projectionSize[3],
     {
       for (int z = 0; z < depth; ++z)
       {
-        float variance = 0.f;
+        float varianceX = 0.f;
+        float varianceY = 0.f;
         if (z >= firstSlices[projection] && z + 1 < depth)
         {
           const float distance = nearDistances[projection] + (z + 1 - firstSlices[projection]) * rotatedSpacing[2];
-          variance = distance * 2.f * rotatedSpacing[2] * alpha * alpha + 2.f * rotatedSpacing[2] * alpha * sigmaZero -
-                     alpha * alpha * rotatedSpacing[2] * rotatedSpacing[2];
+          varianceX = sliceVariance(distance, rotatedSpacing[2], sigmaZero, alpha);
+          varianceY = sliceVariance(distance, rotatedSpacing[2], sigmaZeroY, alphaY);
         }
-        appendGaussian(metadata, cache, std::max(0.f, variance), rotatedSpacing[0], rotatedSpacing[1]);
+        appendGaussian(metadata, cache, varianceX, varianceY, rotatedSpacing[0], rotatedSpacing[1]);
       }
-      const float initialVariance =
-        (alpha * nearDistances[projection] + sigmaZero) * (alpha * nearDistances[projection] + sigmaZero);
-      appendGaussian(metadata, cache, initialVariance, rotatedSpacing[0], rotatedSpacing[1]);
+      appendGaussian(metadata,
+                     cache,
+                     distanceVariance(nearDistances[projection], sigmaZero, alpha),
+                     distanceVariance(nearDistances[projection], sigmaZeroY, alphaY),
+                     rotatedSpacing[0],
+                     rotatedSpacing[1]);
       invertAffine(volumeToRotatedMatrices + 12 * projection, inverseMatrices.data() + 12 * projection);
     }
     try

@@ -52,6 +52,16 @@ def build_parser():
     rtkprojectors_group.add_argument(
         "--alphapsf", help="Slope of the PSF against the detector distance", type=float
     )
+    rtkprojectors_group.add_argument(
+        "--sigmazeroy",
+        help="PSF value at a distance of 0 meter of the detector along the second axis of the projections, if not the one of sigmazero (Zeng and CudaZeng only)",
+        type=float,
+    )
+    rtkprojectors_group.add_argument(
+        "--alphapsfy",
+        help="Slope of the PSF against the detector distance along the second axis of the projections, if not the one of alphapsf (Zeng and CudaZeng only)",
+        type=float,
+    )
 
     # Warped backprojections group
     Warped_backprojection_group = parser.add_argument_group(
@@ -147,6 +157,10 @@ def process(args_info: argparse.Namespace):
             bp.SetSigmaZero(args_info.sigmazero)
         if args_info.alphapsf is not None:
             bp.SetAlpha(args_info.alphapsf)
+        if args_info.sigmazeroy is not None:
+            bp.SetSigmaZeroY(args_info.sigmazeroy)
+        if args_info.alphapsfy is not None:
+            bp.SetAlphaY(args_info.alphapsfy)
 
     elif args_info.bp == "CudaFDKBackProjection":
         if hasattr(itk, "CudaImage"):

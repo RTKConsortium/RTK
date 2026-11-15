@@ -53,6 +53,16 @@ def add_rtkprojectors_group(parser, backprojection=True):
         type=float,
     )
     rtkprojectors_group.add_argument(
+        "--sigmazeroy",
+        help="PSF value at a distance of 0 meter of the detector along the second axis of the projections, if not the one of sigmazero (Zeng and CudaZeng only)",
+        type=float,
+    )
+    rtkprojectors_group.add_argument(
+        "--alphapsfy",
+        help="Slope of the PSF against the detector distance along the second axis of the projections, if not the one of alphapsf (Zeng and CudaZeng only)",
+        type=float,
+    )
+    rtkprojectors_group.add_argument(
         "--inferiorclipimage",
         help="Inferior clip of the ray for each pixel of the projections (Joseph only)",
     )
@@ -103,6 +113,10 @@ def SetBackProjectionFromArgParse(args_info, recon):
             recon.SetSigmaZero(args_info.sigmazero)
         if args_info.alphapsf is not None:
             recon.SetAlphaPSF(args_info.alphapsf)
+        if args_info.sigmazeroy is not None:
+            recon.SetSigmaZeroY(args_info.sigmazeroy)
+        if args_info.alphapsfy is not None:
+            recon.SetAlphaPSFY(args_info.alphapsfy)
         if args_info.attenuationmap is not None:
             recon.SetAttenuationMap(attenuation_map)
 
@@ -138,5 +152,9 @@ def SetForwardProjectionFromArgParse(args_info, recon):
             recon.SetSigmaZero(args_info.sigmazero)
         if args_info.alphapsf is not None:
             recon.SetAlphaPSF(args_info.alphapsf)
+        if args_info.sigmazeroy is not None:
+            recon.SetSigmaZeroY(args_info.sigmazeroy)
+        if args_info.alphapsfy is not None:
+            recon.SetAlphaPSFY(args_info.alphapsfy)
         if args_info.attenuationmap is not None:
             recon.SetAttenuationMap(attenuation_map)

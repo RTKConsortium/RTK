@@ -28,6 +28,7 @@
 // Back projection filters
 #include "rtkJosephBackAttenuatedProjectionImageFilter.h"
 #include "rtkZengBackProjectionImageFilter.h"
+#include <itkNumericTraits.h>
 
 #ifdef RTK_USE_CUDA
 #  include "rtkCudaBackProjectionImageFilter.h"
@@ -172,6 +173,17 @@ public:
   itkGetMacro(AlphaPSF, double);
   itkSetMacro(AlphaPSF, double);
 
+  /** Get / Set the sigma zero and the alpha of the PSF along the second axis
+   * of the projections (Y, the rotation axis), for a PSF that is not
+   * isotropic (Zeng projectors and their CUDA implementation). Not set
+   * (itk::NumericTraits<double>::max(), default) means the same value as
+   * along the first axis (X); a negative value is a value (the standard
+   * deviation of the PSF is clamped to 0 near the detector). */
+  itkGetMacro(SigmaZeroY, double);
+  itkSetMacro(SigmaZeroY, double);
+  itkGetMacro(AlphaPSFY, double);
+  itkSetMacro(AlphaPSFY, double);
+
   /** Get / Set step size along ray (in mm). Default is 1 mm. */
   itkGetConstMacro(StepSize, double);
   itkSetMacro(StepSize, double);
@@ -202,6 +214,8 @@ protected:
   /** PSF correction coefficients */
   double m_SigmaZero{ 1.5417233052142099 };
   double m_AlphaPSF{ 0.016241189545787734 };
+  double m_SigmaZeroY{ itk::NumericTraits<double>::max() };
+  double m_AlphaPSFY{ itk::NumericTraits<double>::max() };
 
   /** Step size along ray (in mm). */
   double m_StepSize{ 1.0 };
@@ -339,6 +353,8 @@ protected:
       zeng->SetInput(2, this->GetAttenuationMap());
     zeng->SetSigmaZero(m_SigmaZero);
     zeng->SetAlpha(m_AlphaPSF);
+    zeng->SetSigmaZeroY(m_SigmaZeroY);
+    zeng->SetAlphaY(m_AlphaPSFY);
     fw = zeng;
 #endif
     return fw;
@@ -364,6 +380,8 @@ protected:
     }
     zengForward->SetSigmaZero(m_SigmaZero);
     zengForward->SetAlpha(m_AlphaPSF);
+    zengForward->SetSigmaZeroY(m_SigmaZeroY);
+    zengForward->SetAlphaY(m_AlphaPSFY);
     return zengForward.GetPointer();
   }
 
@@ -479,6 +497,8 @@ protected:
       zeng->SetInput(2, this->GetAttenuationMap());
     zeng->SetSigmaZero(m_SigmaZero);
     zeng->SetAlpha(m_AlphaPSF);
+    zeng->SetSigmaZeroY(m_SigmaZeroY);
+    zeng->SetAlphaY(m_AlphaPSFY);
     bp = zeng;
 #endif
     return bp;
@@ -504,6 +524,8 @@ protected:
     }
     zengBack->SetSigmaZero(m_SigmaZero);
     zengBack->SetAlpha(m_AlphaPSF);
+    zengBack->SetSigmaZeroY(m_SigmaZeroY);
+    zengBack->SetAlphaY(m_AlphaPSFY);
     return zengBack.GetPointer();
   }
 
