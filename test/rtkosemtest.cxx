@@ -1,5 +1,7 @@
 #include <itkImageRegionConstIterator.h>
+#include <itkImageRegionIteratorWithIndex.h>
 
+#include "itkAddImageFilter.h"
 #include "itkMaskImageFilter.h"
 #include "rtkConstantImageSource.h"
 #include "rtkDrawEllipsoidImageFilter.h"
@@ -19,7 +21,8 @@
  * This test generates the projections of an ellipsoid and reconstructs the CT
  * image using the OSEM algorithm with different backprojectors (Voxel-Based,
  * Joseph and CUDA Voxel-Based). The generated results are compared to the
- * expected results (analytical calculation).
+ * expected results (analytical calculation). The additive projections are
+ * tested with projections to which a different value is added in each view.
  *
  * \author Antoine Robert
  */
@@ -173,6 +176,37 @@ rtkosemtest(int, char *[])
   CheckImageQuality<OutputImageType>(osem->GetOutput(), dsl->GetOutput(), 0.032, 26, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
 #endif
+
+  std::cout << "\n\n****** Case with additive projections: Joseph-Based Backprojector, OS-EM with 10 projections per "
+               "subset and 3 iterations******"
+            << std::endl;
+
+  // Additive projections with a different value in each view (2, 11 or 20),
+  // added to the projections and given as additive projections: the filter
+  // must pair each projection with its own additive view
+  auto additiveSource = ConstantImageSourceType::New();
+  additiveSource->SetInformationFromImage(rei->GetOutput());
+  additiveSource->SetConstant(0.);
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(additiveSource->Update());
+  OutputImageType::Pointer additive = additiveSource->GetOutput();
+  additive->DisconnectPipeline();
+  for (itk::ImageRegionIteratorWithIndex<OutputImageType> it(additive, additive->GetLargestPossibleRegion());
+       !it.IsAtEnd();
+       ++it)
+    it.Set(2. + 9. * (it.GetIndex()[2] % 3));
+  auto addFilter = itk::AddImageFilter<OutputImageType>::New();
+  addFilter->SetInput1(rei->GetOutput());
+  addFilter->SetInput2(additive);
+
+  osem->SetInput(1, addFilter->GetOutput());
+  osem->SetAdditiveProjections(additive);
+  osem->SetBackProjectionFilter(OSEMType::BP_JOSEPH);
+  osem->SetForwardProjectionFilter(OSEMType::FP_JOSEPH);
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(osem->Update());
+
+  CheckImageQuality<OutputImageType>(osem->GetOutput(), dsl->GetOutput(), 0.045, 25.0, 2.0);
+  std::cout << "\n\nTest PASSED! " << std::endl;
+  osem->SetAdditiveProjections(nullptr);
 
   itk::ImageRegionIterator<OutputImageType> itRei(rei->GetOutput(), rei->GetOutput()->GetBufferedRegion());
 

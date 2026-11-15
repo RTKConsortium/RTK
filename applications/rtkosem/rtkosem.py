@@ -32,6 +32,11 @@ def build_parser():
         default=0.0,
     )
     parser.add_argument(
+        "--additive",
+        help="Additive projections, e.g., an estimate of the scatter (same size as the projections), added to the forward projections",
+        type=str,
+    )
+    parser.add_argument(
         "--nostorenormalizationimages",
         help="Do not store the normalization images during the reconstruction",
         action="store_true",
@@ -92,6 +97,13 @@ def process(args_info: argparse.Namespace):
         osem.SetInput(1, projections)
 
     osem.SetGeometry(geometry)
+
+    # Additive projections, e.g., an estimate of the scatter
+    if args_info.additive:
+        additive = itk.imread(args_info.additive, OutputPixelType)
+        if hasattr(itk, "CudaImage"):
+            additive = itk.cuda_image_from_image(additive)
+        osem.SetAdditiveProjections(additive)
 
     # Set the forward and back projection filters
     rtk.SetForwardProjectionFromArgParse(args_info, osem)
