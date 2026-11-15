@@ -37,6 +37,8 @@ OSEMConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>::OSEMConeBeamRe
 
   // Create each filter of the composite filter
   m_ExtractFilter = ExtractFilterType::New();
+  m_ExtractAdditiveFilter = ExtractFilterType::New();
+  m_AddProjectionFilter = AddProjectionFilterType::New();
   m_MultiplyFilter = MultiplyFilterType::New();
   m_ConstantImageSource = ConstantImageSourceType::New();
   m_ZeroConstantProjectionStackSource = ConstantProjectionSourceType::New();
@@ -54,6 +56,7 @@ OSEMConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>::OSEMConeBeamRe
 
   // Default parameters
   m_ExtractFilter->SetDirectionCollapseToSubmatrix();
+  m_ExtractAdditiveFilter->SetDirectionCollapseToSubmatrix();
 }
 
 template <class TVolumeImage, class TProjectionImage>
@@ -136,7 +139,21 @@ OSEMConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>::GenerateOutput
   m_ForwardProjectionFilter->SetInput(0, m_ZeroConstantProjectionStackSource->GetOutput());
   m_ForwardProjectionFilter->SetInput(1, this->GetInput(0));
 
-  m_DivideProjectionFilter->SetInput2(m_ForwardProjectionFilter->GetOutput());
+  // The additive projections, if any, are added to the forward projection of
+  // the current volume before the division of the measured projections
+  if (this->GetAdditiveProjections().IsNotNull())
+  {
+    if (this->GetAdditiveProjections()->GetLargestPossibleRegion() != this->GetInput(1)->GetLargestPossibleRegion())
+      itkExceptionMacro(<< "The additive projections and the projections must have the same size.");
+    m_ExtractAdditiveFilter->SetInput(this->GetAdditiveProjections());
+    m_ExtractAdditiveFilter->SetExtractionRegion(projRegion);
+    m_AddProjectionFilter->SetInput1(m_ForwardProjectionFilter->GetOutput());
+    m_AddProjectionFilter->SetInput2(m_ExtractAdditiveFilter->GetOutput());
+    m_AddProjectionFilter->ReleaseDataFlagOn();
+    m_DivideProjectionFilter->SetInput2(m_AddProjectionFilter->GetOutput());
+  }
+  else
+    m_DivideProjectionFilter->SetInput2(m_ForwardProjectionFilter->GetOutput());
   m_DivideProjectionFilter->SetConstant(1);
 
   m_ForwardProjectionFilter->SetGeometry(this->m_Geometry);
@@ -198,6 +215,8 @@ OSEMConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>::GenerateData()
       subsetRegion.SetIndex(Dimension - 1, projOrder[i]);
       m_ExtractFilter->SetExtractionRegion(subsetRegion);
       m_ExtractFilter->UpdateOutputInformation();
+      if (this->GetAdditiveProjections().IsNotNull())
+        m_ExtractAdditiveFilter->SetExtractionRegion(subsetRegion);
 
       m_ZeroConstantProjectionStackSource->SetInformationFromImage(
         const_cast<TProjectionImage *>(m_ExtractFilter->GetOutput()));

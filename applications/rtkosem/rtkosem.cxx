@@ -83,6 +83,14 @@ main(int argc, char * argv[])
   osem->SetInput(inputFilter->GetOutput());
   osem->SetInput(1, reader->GetOutput());
   osem->SetGeometry(geometry);
+  if (args_info.additive_given)
+  {
+    // Additive projections, e.g., an estimate of the scatter
+    auto additiveReader = itk::ImageFileReader<OutputImageType>::New();
+    additiveReader->SetFileName(args_info.additive_arg);
+    TRY_AND_EXIT_ON_ITK_EXCEPTION(additiveReader->Update())
+    osem->SetAdditiveProjections(additiveReader->GetOutput());
+  }
   if (args_info.betaregularization_given)
     osem->SetBetaRegularization(args_info.betaregularization_arg);
 

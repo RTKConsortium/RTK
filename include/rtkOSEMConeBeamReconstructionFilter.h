@@ -24,6 +24,7 @@
 #include "rtkForwardProjectionImageFilter.h"
 
 #include <itkAddImageAdaptor.h>
+#include <itkAddImageFilter.h>
 #include <itkDivideImageFilter.h>
 #include <itkDivideOrZeroOutImageFilter.h>
 #include <itkExtractImageFilter.h>
@@ -61,6 +62,14 @@ namespace rtk
  * using the SetBetaRegularization method. If the hyperparameter is set to 0 the
  * filter behaves like the classic MLEM/OSEM algorithm.
  *
+ * An optional stack of additive projections (e.g., an estimate of the scatter
+ * and of the random events in emission tomography) can be provided with
+ * SetAdditiveProjections. It must have the same size as the stack of measured
+ * projections. It is added to the forward projection of the current volume
+ * before the division of the measured projections, i.e., the algorithm
+ * maximizes the Poisson likelihood of the model "forward projection of the
+ * volume + additive projections" [Lange and Carson, JCAT, 1984, p312, point 6].
+ *
  * \dot
  * digraph OSEMConeBeamReconstructionFilter {
  *
@@ -68,12 +77,16 @@ namespace rtk
  *  Input0 [shape=Mdiamond];
  *  Input1 [label="Input 1 (Projections)"];
  *  Input1 [shape=Mdiamond];
+ *  InputAdd [label="AdditiveProjections (optional)"];
+ *  InputAdd [shape=Mdiamond];
  *  Output [label="Output (Reconstruction)"];
  *  Output [shape=Mdiamond];
  *
  *  node [shape=box];
  *  ForwardProject [ label="rtk::ForwardProjectionImageFilter" URL="\ref rtk::ForwardProjectionImageFilter"];
  *  Extract [ label="itk::ExtractImageFilter" URL="\ref itk::ExtractImageFilter"];
+ *  ExtractAdd [ label="itk::ExtractImageFilter" URL="\ref itk::ExtractImageFilter"];
+ *  Add [ label="itk::AddImageFilter" URL="\ref itk::AddImageFilter"];
  *  Divide1 [ label="itk::DivideImageFilter" URL="\ref itk::DivideImageFilter"];
  *  Divide [ label="itk::DivideImageFilter" URL="\ref itk::DivideImageFilter"];
  *  ProjectionZero [ label="rtk::ConstantImageSource (full of zero)" URL="\ref rtk::ConstantImageSource"];
@@ -95,7 +108,10 @@ namespace rtk
  *  Extract -> Divide1;
  *  ProjectionZero -> ForwardProject;
  *  Input1 -> Extract;
- *  ForwardProject -> Divide1;
+ *  InputAdd -> ExtractAdd;
+ *  ExtractAdd -> Add;
+ *  ForwardProject -> Add;
+ *  Add -> Divide1;
  *  Divide1 -> BackProjection;
  *  ConstantVolume -> BeforeBP [arrowhead=none];
  *  BeforeBP -> BackProjection;
@@ -140,6 +156,7 @@ public:
   using MultiplyFilterType = itk::MultiplyImageFilter<VolumeType, VolumeType, VolumeType>;
   using ForwardProjectionFilterType = rtk::ForwardProjectionImageFilter<ProjectionType, VolumeType>;
   using BackProjectionFilterType = rtk::BackProjectionImageFilter<VolumeType, ProjectionType>;
+  using AddProjectionFilterType = itk::AddImageFilter<ProjectionType, ProjectionType, ProjectionType>;
   using DivideProjectionFilterType = itk::DivideOrZeroOutImageFilter<ProjectionType, ProjectionType, ProjectionType>;
   using DivideVolumeFilterType = itk::DivideOrZeroOutImageFilter<VolumeType, VolumeType, VolumeType>;
   using ConstantImageSourceType = rtk::ConstantImageSource<VolumeType>;
@@ -179,6 +196,22 @@ public:
   itkGetMacro(StoreNormalizationImages, bool);
   itkSetMacro(StoreNormalizationImages, bool);
 
+  /** Set / Get the optional stack of additive projections, e.g., an estimate
+   * of the scatter. Same size as the stack of measured projections (input 1).
+   * It is added to the forward projection of the current volume before the
+   * division of the measured projections, see [Lange and Carson, JCAT, 1984,
+   * p312, point 6]. Default is none. */
+  void
+  SetAdditiveProjections(const ProjectionType * additiveProjections)
+  {
+    this->SetInput("AdditiveProjections", const_cast<ProjectionType *>(additiveProjections));
+  }
+  typename ProjectionType::ConstPointer
+  GetAdditiveProjections()
+  {
+    return static_cast<const ProjectionType *>(this->itk::ProcessObject::GetInput("AdditiveProjections"));
+  }
+
 protected:
   OSEMConeBeamReconstructionFilter();
   ~OSEMConeBeamReconstructionFilter() override = default;
@@ -204,6 +237,8 @@ protected:
 
   /** Pointers to each subfilter of this composite filter */
   typename ExtractFilterType::Pointer                m_ExtractFilter;
+  typename ExtractFilterType::Pointer                m_ExtractAdditiveFilter;
+  typename AddProjectionFilterType::Pointer          m_AddProjectionFilter;
   typename ForwardProjectionFilterType::Pointer      m_ForwardProjectionFilter;
   typename MultiplyFilterType::Pointer               m_MultiplyFilter;
   typename BackProjectionFilterType::Pointer         m_BackProjectionFilter;
