@@ -63,6 +63,16 @@ def build_parser():
         "--alphapsf", help="Slope of the PSF against the detector distance", type=float
     )
     rtkprojectors_group.add_argument(
+        "--sigmazeroy",
+        help="PSF value at a distance of 0 meter of the detector along the second axis of the projections, if not the one of sigmazero (Zeng and CudaZeng only)",
+        type=float,
+    )
+    rtkprojectors_group.add_argument(
+        "--alphapsfy",
+        help="Slope of the PSF against the detector distance along the second axis of the projections, if not the one of alphapsf (Zeng and CudaZeng only)",
+        type=float,
+    )
+    rtkprojectors_group.add_argument(
         "--inferiorclipimage",
         help="Value of the inferior clip of the ray for each pixel of the projections (only with Joseph-based projector)",
         type=str,
@@ -203,6 +213,10 @@ def process(args_info):
         forwardProjection.SetSigmaZero(args_info.sigmazero)
     if args_info.alphapsf is not None and args_info.fp in ["Zeng", "CudaZeng"]:
         forwardProjection.SetAlpha(args_info.alphapsf)
+    if args_info.sigmazeroy is not None and args_info.fp in ["Zeng", "CudaZeng"]:
+        forwardProjection.SetSigmaZeroY(args_info.sigmazeroy)
+    if args_info.alphapsfy is not None and args_info.fp in ["Zeng", "CudaZeng"]:
+        forwardProjection.SetAlphaY(args_info.alphapsfy)
 
     forwardProjection.SetGeometry(geometry)
 

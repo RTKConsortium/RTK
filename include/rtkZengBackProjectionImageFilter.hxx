@@ -27,6 +27,7 @@
 #include "rtkHomogeneousMatrix.h"
 #include "rtkBoxShape.h"
 #include "rtkProjectionsRegionConstIteratorRayBased.h"
+#include <algorithm>
 
 #include <itkImageRegionIteratorWithIndex.h>
 #include <itkInputDataObjectConstIterator.h>
@@ -226,7 +227,14 @@ ZengBackProjectionImageFilter<TInputImage, TOutputImage>::GenerateOutputInformat
   m_ChangeInformation->SetOutputSpacing(outputSpacing);
   m_ChangeInformation->UpdateOutputInformation();
 
-  m_DiscreteGaussianImageFilter->SetVariance(pow(m_SigmaZero, 2.0));
+  // PSF at the detector, along the two axes of the projections. SigmaZeroY not
+  // set (itk::NumericTraits<double>::max()): the one of the first axis.
+  const double sigmaZeroY = m_SigmaZeroY == itk::NumericTraits<double>::max() ? m_SigmaZero : m_SigmaZeroY;
+  typename DiscreteGaussianImageFilterType::ArrayType varianceZero;
+  varianceZero.Fill(0.);
+  varianceZero[0] = pow(m_SigmaZero, 2.0);
+  varianceZero[1] = pow(sigmaZeroY, 2.0);
+  m_DiscreteGaussianImageFilter->SetVariance(varianceZero);
 
   if (!(this->GetInput(2)))
   {
@@ -332,7 +340,23 @@ ZengBackProjectionImageFilter<TInputImage, TOutputImage>::GenerateData()
   PointType                                                 centerRotatedVolume;
   PointType                                                 originRotatedVolume;
 
-  double dist = NAN, sigmaSlice = NAN;
+  double dist = NAN;
+  // PSF parameters along the two axes of the projections (X, Y). The PSF is
+  // isotropic unless SigmaZeroY or AlphaY are set.
+  const double notSet = itk::NumericTraits<double>::max();
+  const double sigmaZero[2] = { m_SigmaZero, m_SigmaZeroY == notSet ? m_SigmaZero : m_SigmaZeroY };
+  const double alpha[2] = { m_Alpha, m_AlphaY == notSet ? m_Alpha : m_AlphaY };
+  // Variance of the PSF at a distance of the detector. The standard deviation
+  // sigmaZero + alpha * distance is clamped to 0, so that a negative sigmaZero
+  // (e.g. from a linear fit of measured widths) gives no blur, instead of a
+  // negative variance, near the detector. The variance added by a slice is the
+  // difference of the variances at its two sides, never negative.
+  const auto psfVariance = [](double distance, double s0, double a) {
+    const double sigma = std::max(0., s0 + a * distance);
+    return sigma * sigma;
+  };
+  typename DiscreteGaussianImageFilterType::ArrayType varianceSlice;
+  varianceSlice.Fill(0.);
   double thicknessSlice = this->GetInput(0)->GetSpacing()[2];
   int    nbProjections = indexProj;
   int    startSlice = -1;
@@ -386,8 +410,9 @@ ZengBackProjectionImageFilter<TInputImage, TOutputImage>::GenerateData()
       m_AttenuationMapRegionOfInterest->UpdateOutputInformation();
     }
     // Compute the variance of the PSF for the first slice
-    sigmaSlice = pow(m_Alpha * dist + m_SigmaZero, 2.0);
-    m_DiscreteGaussianImageFilter->SetVariance(sigmaSlice);
+    for (unsigned int d = 0; d < 2; d++)
+      varianceSlice[d] = psfVariance(dist, sigmaZero[d], alpha[d]);
+    m_DiscreteGaussianImageFilter->SetVariance(varianceSlice);
     m_DiscreteGaussianImageFilter->UpdateLargestPossibleRegion();
     currentSlice = m_DiscreteGaussianImageFilter->GetOutput();
     currentSlice->DisconnectPipeline();
@@ -420,9 +445,10 @@ ZengBackProjectionImageFilter<TInputImage, TOutputImage>::GenerateData()
       indexSlice[Dimension - 1] = index + 1;
       dist += m_ConstantImageSource->GetSpacing()[2];
       // Compute the variance of the PSF for the current slice
-      sigmaSlice = dist * 2. * thicknessSlice * pow(m_Alpha, 2.0) + 2. * thicknessSlice * m_Alpha * m_SigmaZero -
-                   pow(m_Alpha, 2.0) * pow(thicknessSlice, 2.0);
-      m_DiscreteGaussianImageFilter->SetVariance(sigmaSlice);
+      for (unsigned int d = 0; d < 2; d++)
+        varianceSlice[d] = std::max(
+          0., psfVariance(dist, sigmaZero[d], alpha[d]) - psfVariance(dist - thicknessSlice, sigmaZero[d], alpha[d]));
+      m_DiscreteGaussianImageFilter->SetVariance(varianceSlice);
       m_DiscreteGaussianImageFilter->Update();
       currentSlice = m_DiscreteGaussianImageFilter->GetOutput();
       currentSlice->DisconnectPipeline();

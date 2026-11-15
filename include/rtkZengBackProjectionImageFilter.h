@@ -38,6 +38,7 @@
 #include <itkVector.h>
 
 #include "rtkConstantImageSource.h"
+#include <itkNumericTraits.h>
 
 #include <itkVectorImage.h>
 namespace rtk
@@ -169,6 +170,18 @@ public:
   itkGetMacro(Alpha, double);
   itkSetMacro(Alpha, double);
 
+  /** Get / Set the sigma zero and the alpha of the PSF along the second axis
+   * of the projections (Y, the rotation axis), for a PSF that is not
+   * isotropic. SigmaZero and Alpha are then the ones along the first axis (X).
+   * Not set (itk::NumericTraits<double>::max(), default) means the same value as along X; a negative value
+   * is a value, e.g. a sigma zero from a linear fit of measured widths. Along
+   * each axis, the standard deviation of the PSF at a distance d of the
+   * detector is max(0, SigmaZero + Alpha * d). */
+  itkGetMacro(SigmaZeroY, double);
+  itkSetMacro(SigmaZeroY, double);
+  itkGetMacro(AlphaY, double);
+  itkSetMacro(AlphaY, double);
+
 
 protected:
   ZengBackProjectionImageFilter();
@@ -212,6 +225,8 @@ private:
 
   double     m_SigmaZero{ 1.5417233052142099 };
   double     m_Alpha{ 0.016241189545787734 };
+  double     m_SigmaZeroY{ itk::NumericTraits<double>::max() };
+  double     m_AlphaY{ itk::NumericTraits<double>::max() };
   VectorType m_VectorOrthogonalDetector{ 0. };
   PointType  m_centerVolume{ 0 };
 };

@@ -415,6 +415,10 @@ SetBackProjectionFromGgo(const TArgsInfo & args_info, TIterativeReconstructionFi
         recon->SetSigmaZero(args_info.sigmazero_arg);
       if (args_info.alphapsf_given)
         recon->SetAlphaPSF(args_info.alphapsf_arg);
+      if (args_info.sigmazeroy_given)
+        recon->SetSigmaZeroY(args_info.sigmazeroy_arg);
+      if (args_info.alphapsfy_given)
+        recon->SetAlphaPSFY(args_info.alphapsfy_arg);
       if (args_info.attenuationmap_given)
         recon->SetAttenuationMap(attenuationMap);
       break;
@@ -424,6 +428,10 @@ SetBackProjectionFromGgo(const TArgsInfo & args_info, TIterativeReconstructionFi
         recon->SetSigmaZero(args_info.sigmazero_arg);
       if (args_info.alphapsf_given)
         recon->SetAlphaPSF(args_info.alphapsf_arg);
+      if (args_info.sigmazeroy_given)
+        recon->SetSigmaZeroY(args_info.sigmazeroy_arg);
+      if (args_info.alphapsfy_given)
+        recon->SetAlphaPSFY(args_info.alphapsfy_arg);
       if (args_info.attenuationmap_given)
         recon->SetAttenuationMap(attenuationMap);
       break;
@@ -493,6 +501,10 @@ SetForwardProjectionFromGgo(const TArgsInfo & args_info, TIterativeReconstructio
         recon->SetSigmaZero(args_info.sigmazero_arg);
       if (args_info.alphapsf_given)
         recon->SetAlphaPSF(args_info.alphapsf_arg);
+      if (args_info.sigmazeroy_given)
+        recon->SetSigmaZeroY(args_info.sigmazeroy_arg);
+      if (args_info.alphapsfy_given)
+        recon->SetAlphaPSFY(args_info.alphapsfy_arg);
       if (args_info.attenuationmap_given)
         recon->SetAttenuationMap(attenuationMap);
       break;
@@ -502,6 +514,10 @@ SetForwardProjectionFromGgo(const TArgsInfo & args_info, TIterativeReconstructio
         recon->SetSigmaZero(args_info.sigmazero_arg);
       if (args_info.alphapsf_given)
         recon->SetAlphaPSF(args_info.alphapsf_arg);
+      if (args_info.sigmazeroy_given)
+        recon->SetSigmaZeroY(args_info.sigmazeroy_arg);
+      if (args_info.alphapsfy_given)
+        recon->SetAlphaPSFY(args_info.alphapsfy_arg);
       if (args_info.attenuationmap_given)
         recon->SetAttenuationMap(attenuationMap);
       break;

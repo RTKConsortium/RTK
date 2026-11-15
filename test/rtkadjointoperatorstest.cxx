@@ -343,6 +343,19 @@ rtkadjointoperatorstest(int, char *[])
     randomVolumeSource->GetOutput(), zbp->GetOutput(), randomProjectionsSource->GetOutput(), zfw->GetOutput());
   std::cout << "\n\nTest PASSED! " << std::endl;
 
+  std::cout << "\n\n****** Zeng Forward and Back projectors, anisotropic PSF ******" << std::endl;
+
+  zfw->SetSigmaZeroY(2.5);
+  zfw->SetAlphaY(0.03);
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(zfw->Update());
+  zbp->SetSigmaZeroY(2.5);
+  zbp->SetAlphaY(0.03);
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(zbp->Update());
+
+  CheckScalarProducts<OutputImageType, OutputImageType>(
+    randomVolumeSource->GetOutput(), zbp->GetOutput(), randomProjectionsSource->GetOutput(), zfw->GetOutput());
+  std::cout << "\n\nTest PASSED! " << std::endl;
+
   std::cout << "\n\n******  Attenuated Zeng Forward projector ******" << std::endl;
 
   auto attzfw = ZengForwardProjectorType::New();

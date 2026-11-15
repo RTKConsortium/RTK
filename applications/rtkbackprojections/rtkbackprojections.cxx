@@ -123,6 +123,10 @@ main(int argc, char * argv[])
         zeng->SetSigmaZero(args_info.sigmazero_arg);
       if (args_info.alphapsf_given)
         zeng->SetAlpha(args_info.alphapsf_arg);
+      if (args_info.sigmazeroy_given)
+        zeng->SetSigmaZeroY(args_info.sigmazeroy_arg);
+      if (args_info.alphapsfy_given)
+        zeng->SetAlphaY(args_info.alphapsfy_arg);
       bp = zeng;
       break;
     }
@@ -134,6 +138,10 @@ main(int argc, char * argv[])
         zeng->SetSigmaZero(args_info.sigmazero_arg);
       if (args_info.alphapsf_given)
         zeng->SetAlpha(args_info.alphapsf_arg);
+      if (args_info.sigmazeroy_given)
+        zeng->SetSigmaZeroY(args_info.sigmazeroy_arg);
+      if (args_info.alphapsfy_given)
+        zeng->SetAlphaY(args_info.alphapsfy_arg);
       bp = zeng;
 #else
       std::cerr << "The program has not been compiled with cuda option" << std::endl;

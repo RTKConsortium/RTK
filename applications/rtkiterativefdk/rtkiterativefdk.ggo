@@ -19,6 +19,8 @@ option "fp"    f "Forward projection method" values="Joseph","CudaRayCast","Jose
 option "attenuationmap" - "Attenuation map relative to the volume to perform the attenuation correction (JosephAttenuated, Zeng and CudaZeng)"   string  no
 option "sigmazero" - "PSF value at a distance of 0 meter of the detector (Zeng and CudaZeng only)"   double  no
 option "alphapsf" - "Slope of the PSF against the detector distance (Zeng and CudaZeng only)"   double  no
+option "sigmazeroy" - "PSF value at a distance of 0 meter of the detector along the second axis of the projections, if not the one of sigmazero (Zeng and CudaZeng only)"   double  no
+option "alphapsfy" - "Slope of the PSF against the detector distance along the second axis of the projections, if not the one of alphapsf (Zeng and CudaZeng only)"   double  no
 option "inferiorclipimage" - "Inferior clip of the ray for each pixel of the projections (Joseph only)" string no
 option "superiorclipimage" - "Superior clip of the ray for each pixel of the projections (Joseph only)" string no
 option "step" - "Step size along ray (for CudaRayCast only, default to the minimum voxel spacing of the input volume if set to 0)"                double   no   default="0"
