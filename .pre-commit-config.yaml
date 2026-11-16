@@ -15,7 +15,8 @@ repos:
   hooks:
     - id: clang-format
       args: ['--style=file']
-      files: '\.(c|cc|h|cxx|hxx|cu)$'
+      files: '\.(c|cc|h|cxx|hxx|cu|hcu)$'
+      types_or: [file]
 
 - repo: https://github.com/psf/black
   rev: 24.2.0
