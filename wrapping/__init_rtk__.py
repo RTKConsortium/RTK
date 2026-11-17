@@ -39,6 +39,7 @@ _app_modules = [
     "rtkdrawshepploganphantom",
     "rtkelektasynergygeometry",
     "rtkextractphasesignal",
+    "rtkextractshroudsignal",
     "rtkfdk",
     "rtkfieldofview",
     "rtkforwardprojections",
