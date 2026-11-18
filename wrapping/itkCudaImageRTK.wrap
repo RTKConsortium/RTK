@@ -1,49 +1,63 @@
 if(RTK_USE_CUDA)
-
-  configure_file("${CudaCommon_SOURCE_DIR}/wrapping/CudaImage.i.init" "${CMAKE_CURRENT_BINARY_DIR}/CudaImageRTK.i" @ONLY)
+  configure_file(
+    "${CudaCommon_SOURCE_DIR}/wrapping/CudaImage.i.init"
+    "${CMAKE_CURRENT_BINARY_DIR}/CudaImageRTK.i"
+    @ONLY
+  )
 
   function(wrap_CudaImage_swig_ext type px_type)
     set(CudaImageTypes ${type})
     set(PixelType ${px_type})
-    configure_file(${CudaCommon_SOURCE_DIR}/wrapping/CudaImage.i.in ${CMAKE_CURRENT_BINARY_DIR}/CudaImageRTK.i.temp @ONLY)
-    file(READ ${CMAKE_CURRENT_BINARY_DIR}/CudaImageRTK.i.temp CudaImageInterfaceTemp)
-    file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/CudaImageRTK.i ${CudaImageInterfaceTemp})
+    configure_file(
+      ${CudaCommon_SOURCE_DIR}/wrapping/CudaImage.i.in
+      ${CMAKE_CURRENT_BINARY_DIR}/CudaImageRTK.i.temp
+      @ONLY
+    )
+    file(
+      READ
+      ${CMAKE_CURRENT_BINARY_DIR}/CudaImageRTK.i.temp
+      CudaImageInterfaceTemp
+    )
+    file(
+      APPEND
+      ${CMAKE_CURRENT_BINARY_DIR}/CudaImageRTK.i
+      ${CudaImageInterfaceTemp}
+    )
   endfunction()
 
   itk_wrap_class("itk::CudaImage" POINTER_WITH_CONST_POINTER)
 
-    if (NOT ITK_WRAP_unsigned_short)
-      itk_wrap_template("US3" "unsigned short, 3")
-      wrap_CudaImage_swig_ext(US3 US)
-    endif()
+  if(NOT ITK_WRAP_unsigned_short)
+    itk_wrap_template("US3" "unsigned short, 3")
+    wrap_cudaimage_swig_ext(US3 US)
+  endif()
 
-    # Add all missing image with dim == 4
-    list(FIND ITK_WRAP_IMAGE_DIMS "4" _index)
-    if (${_index} EQUAL -1)
-      itk_wrap_template("F4" "${ITKT_F}, 4")
-      wrap_CudaImage_swig_ext(F4 F)
+  # Add all missing image with dim == 4
+  list(FIND ITK_WRAP_IMAGE_DIMS "4" _index)
+  if(${_index} EQUAL -1)
+    itk_wrap_template("F4" "${ITKT_F}, 4")
+    wrap_cudaimage_swig_ext(F4 F)
+    foreach(vector_type VF CVF)
+      foreach(c 2 3 4)
+        itk_wrap_template("${ITKM_${vector_type}${c}}4" "${ITKT_${vector_type}${c}}, 4")
+        wrap_cudaimage_swig_ext(${ITKM_${vector_type}${c}}4 F)
+      endforeach()
+    endforeach()
+  endif()
+
+  # Add all missing image with comp == 5
+  list(FIND ITK_WRAP_VECTOR_COMPONENTS "5" _index)
+  if(${_index} EQUAL -1)
+    unique(imageDimensions "${ITK_WRAP_IMAGE_DIMS};2;3;4")
+    foreach(d ${imageDimensions})
       foreach(vector_type VF CVF)
-        foreach(c 2 3 4)
-          itk_wrap_template("${ITKM_${vector_type}${c}}4" "${ITKT_${vector_type}${c}}, 4")
-          wrap_CudaImage_swig_ext(${ITKM_${vector_type}${c}}4 F)
-        endforeach()
+        itk_wrap_template("${ITKM_${vector_type}5}${d}" "${ITKT_${vector_type}5}, ${d}")
+        wrap_cudaimage_swig_ext(${ITKM_${vector_type}5}${d} F)
       endforeach()
-    endif()
-
-    # Add all missing image with comp == 5
-    list(FIND ITK_WRAP_VECTOR_COMPONENTS "5" _index)
-    if(${_index} EQUAL -1)
-      UNIQUE(imageDimensions "${ITK_WRAP_IMAGE_DIMS};2;3;4")
-      foreach(d ${imageDimensions})
-        foreach(vector_type VF CVF)
-          itk_wrap_template("${ITKM_${vector_type}5}${d}" "${ITKT_${vector_type}5}, ${d}")
-          wrap_CudaImage_swig_ext(${ITKM_${vector_type}5}${d} F)
-        endforeach()
-      endforeach()
-    endif()
+    endforeach()
+  endif()
 
   itk_end_wrap_class()
-
 
   # Add library files to be included at a submodule level and copy them into
   # ITK's wrapping typedef directory.
@@ -52,15 +66,19 @@ if(RTK_USE_CUDA)
   # itkCudaDataManagerPython.py even if the WRAPPER_SUBMODULE_ORDER is set.
   # Prefer using ITK_WRAP_PYTHON_SWIG_EXT to make sure the block is included in
   # the right file exclusively.
-  set(ITK_WRAP_PYTHON_SWIG_EXT
-    "%include CudaImageRTK.i\n${ITK_WRAP_PYTHON_SWIG_EXT}")
+  set(
+    ITK_WRAP_PYTHON_SWIG_EXT
+    "%include CudaImageRTK.i\n${ITK_WRAP_PYTHON_SWIG_EXT}"
+  )
 
-  file(COPY "${CMAKE_CURRENT_BINARY_DIR}/CudaImageRTK.i"
-    DESTINATION "${WRAPPER_MASTER_INDEX_OUTPUT_DIR}")
+  file(
+    COPY
+      "${CMAKE_CURRENT_BINARY_DIR}/CudaImageRTK.i"
+    DESTINATION "${WRAPPER_MASTER_INDEX_OUTPUT_DIR}"
+  )
 
   # Make sure to rebuild the python file when CudaImage.i is modified.
   # Touching CudaImage.i directly does not force a rebuild because it is just
   # appended to the ITK_WRAP_PYTHON_SWIG_EXT variable
   file(TOUCH ${WRAPPER_MASTER_INDEX_OUTPUT_DIR}/itkCudaImageRTK.i)
-
 endif()

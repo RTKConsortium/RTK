@@ -1,19 +1,19 @@
 itk_wrap_class("rtk::ProjectionsReader" POINTER)
-  # Force uchar image IO
-  UNIQUE(image_types "UC;${WRAP_ITK_REAL}")
-  itk_wrap_image_filter("${image_types}" 1)
-  itk_wrap_template("I${ITKM_US}3" "itk::Image<unsigned short, 3>")
-  #WARNING: "UC;${WRAP_ITK_REAL}" is too restrictive.
-  # Types should be similar to vnl wrapped types :
-  #  "D;F;SI;SL;LD;SC;UC;US;UI;UL"
-  #Removing WRAP_ITK_SCALAR
-  foreach(vt ${WRAP_ITK_REAL})
-    itk_wrap_template("VI${ITKM_${vt}}3" "itk::VectorImage<${ITKT_${vt}}, 3>")
+# Force uchar image IO
+unique(image_types "UC;${WRAP_ITK_REAL}")
+itk_wrap_image_filter("${image_types}" 1)
+itk_wrap_template("I${ITKM_US}3" "itk::Image<unsigned short, 3>")
+#WARNING: "UC;${WRAP_ITK_REAL}" is too restrictive.
+# Types should be similar to vnl wrapped types :
+#  "D;F;SI;SL;LD;SC;UC;US;UI;UL"
+#Removing WRAP_ITK_SCALAR
+foreach(vt ${WRAP_ITK_REAL})
+  itk_wrap_template("VI${ITKM_${vt}}3" "itk::VectorImage<${ITKT_${vt}}, 3>")
+endforeach()
+set(vectorComponents "2;3;4;5")
+foreach(vc ${vectorComponents})
+  foreach(vt ${WRAP_ITK_VECTOR_REAL})
+    itk_wrap_template("I${ITKM_${vt}${vc}}3" "itk::Image<${ITKT_${vt}${vc}},3>")
   endforeach()
-  set(vectorComponents 2 3 4 5)
-  foreach(vc ${vectorComponents})
-    foreach(vt ${WRAP_ITK_VECTOR_REAL})
-      itk_wrap_template("I${ITKM_${vt}${vc}}3" "itk::Image<${ITKT_${vt}${vc}},3>")
-    endforeach()
-  endforeach()
+endforeach()
 itk_end_wrap_class()

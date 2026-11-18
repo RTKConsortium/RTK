@@ -3,18 +3,20 @@ if(RTK_USE_CUDA)
 endif()
 
 itk_wrap_class("rtk::TotalVariationDenoisingBPDQImageFilter" POINTER)
-  foreach(d ${ITK_WRAP_IMAGE_DIMS})
-    # Do not use WRAP_ITK_COV_VECTOR_REAL types to prevent wrapping for DOUBLE
-    # as rtkMagnitudeThresholdImageFilter (contained in this class) is instantiated
-    # for TRealType=float only.
-    foreach(cvt "CVF")
-      itk_wrap_template("I${ITKM_F}${d}I${ITKM_${cvt}${d}}${d}"
-        "itk::Image<${ITKT_F}, ${d}>, itk::Image<${ITKT_${cvt}${d}}, ${d}>")
-    endforeach()
+foreach(d ${ITK_WRAP_IMAGE_DIMS})
+  # Do not use WRAP_ITK_COV_VECTOR_REAL types to prevent wrapping for DOUBLE
+  # as rtkMagnitudeThresholdImageFilter (contained in this class) is instantiated
+  # for TRealType=float only.
+  foreach(cvt "CVF")
+    itk_wrap_template("I${ITKM_F}${d}I${ITKM_${cvt}${d}}${d}"
+        "itk::Image<${ITKT_F}, ${d}>, itk::Image<${ITKT_${cvt}${d}}, ${d}>"
+    )
   endforeach()
-  if(RTK_USE_CUDA)
-    # CUDA instantiation needed by rtk::CudaTotalVariationDenoisingBPDQImageFilter base
-    itk_wrap_template("CI${ITKM_F}3CICVF33"
-      "itk::CudaImage<${ITKT_F}, 3>, itk::CudaImage<itk::CovariantVector<float, 3>, 3>")
-  endif()
+endforeach()
+if(RTK_USE_CUDA)
+  # CUDA instantiation needed by rtk::CudaTotalVariationDenoisingBPDQImageFilter base
+  itk_wrap_template("CI${ITKM_F}3CICVF33"
+      "itk::CudaImage<${ITKT_F}, 3>, itk::CudaImage<itk::CovariantVector<float, 3>, 3>"
+  )
+endif()
 itk_end_wrap_class()

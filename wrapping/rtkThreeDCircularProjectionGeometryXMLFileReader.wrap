@@ -1,5 +1,5 @@
 itk_wrap_named_class("itk::XMLReader" itkXMLReader)
-  itk_wrap_template(3DCPG "rtk::ThreeDCircularProjectionGeometry" )
+itk_wrap_template(3DCPG "rtk::ThreeDCircularProjectionGeometry" )
 itk_end_wrap_class()
 
 itk_wrap_named_simple_class("itk::XMLReaderBase" itkXMLFile)

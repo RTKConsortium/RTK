@@ -1,8 +1,8 @@
 itk_wrap_class("rtk::ConjugateGradientConeBeamReconstructionFilter" POINTER)
 
- if(RTK_USE_CUDA)
-    itk_wrap_template("CI${ITKM_F}3CI${ITKM_F}3CI${ITKM_F}3" "itk::CudaImage<${ITKT_F}, 3>,itk::CudaImage<${ITKT_F}, 3>,itk::CudaImage<${ITKT_F}, 3>")
-  endif()
-  itk_wrap_image_filter("${WRAP_ITK_REAL}" 3 3)
+if(RTK_USE_CUDA)
+  itk_wrap_template("CI${ITKM_F}3CI${ITKM_F}3CI${ITKM_F}3" "itk::CudaImage<${ITKT_F}, 3>,itk::CudaImage<${ITKT_F}, 3>,itk::CudaImage<${ITKT_F}, 3>")
+endif()
+itk_wrap_image_filter("${WRAP_ITK_REAL}" 3 3)
 
 itk_end_wrap_class()

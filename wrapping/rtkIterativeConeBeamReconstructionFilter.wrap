@@ -1,29 +1,29 @@
 itk_wrap_class("rtk::IterativeConeBeamReconstructionFilter" POINTER)
 
-  if(RTK_USE_CUDA)
-    itk_wrap_template("CI${ITKM_F}3CI${ITKM_F}3" "itk::CudaImage<${ITKT_F}, 3>, itk::CudaImage<${ITKT_F}, 3>")
-    itk_wrap_template("CI${ITKM_F}4CI${ITKM_F}3" "itk::CudaImage<${ITKT_F}, 4>, itk::CudaImage<${ITKT_F}, 3>")
-  endif()
-  itk_wrap_image_filter("${WRAP_ITK_REAL}" 2 3)
-  #-------------------------------------------------------------------------
-  # Wrap template :
-  #   -rtk::IterativeConeBeamReconstructionFilter< itk::Image< float,4 >,itk::Image< float,3 > >
-  # required by :
-  #   -rtk::FourDConjugateGradientConeBeamReconstructionFilter
-  #   -rtk::FourDSARTConeBeamReconstructionFilter
-  #-------------------------------------------------------------------------
-  foreach(t ${WRAP_ITK_REAL})
-    itk_wrap_template("I${ITKM_${t}}4I${ITKM_${t}}3" "itk::Image<${ITKT_${t}}, 4>, itk::Image<${ITKT_${t}}, 3>")
-  endforeach()
+if(RTK_USE_CUDA)
+  itk_wrap_template("CI${ITKM_F}3CI${ITKM_F}3" "itk::CudaImage<${ITKT_F}, 3>, itk::CudaImage<${ITKT_F}, 3>")
+  itk_wrap_template("CI${ITKM_F}4CI${ITKM_F}3" "itk::CudaImage<${ITKT_F}, 4>, itk::CudaImage<${ITKT_F}, 3>")
+endif()
+itk_wrap_image_filter("${WRAP_ITK_REAL}" 2 3)
+#-------------------------------------------------------------------------
+# Wrap template :
+#   -rtk::IterativeConeBeamReconstructionFilter< itk::Image< float,4 >,itk::Image< float,3 > >
+# required by :
+#   -rtk::FourDConjugateGradientConeBeamReconstructionFilter
+#   -rtk::FourDSARTConeBeamReconstructionFilter
+#-------------------------------------------------------------------------
+foreach(t ${WRAP_ITK_REAL})
+  itk_wrap_template("I${ITKM_${t}}4I${ITKM_${t}}3" "itk::Image<${ITKT_${t}}, 4>, itk::Image<${ITKT_${t}}, 3>")
+endforeach()
 
-  set(vectorComponents 2 3 4 5)
-  foreach(v ${vectorComponents})
-    foreach(vt ${WRAP_ITK_VECTOR_REAL})
-      itk_wrap_template("I${ITKM_${vt}${v}}3I${ITKM_${vt}${v}}3" "itk::Image<${ITKT_${vt}${v}}, 3>, itk::Image<${ITKT_${vt}${v}}, 3>")
-    endforeach()
-    if(RTK_USE_CUDA)
-      itk_wrap_template("CI${ITKM_VF${v}}3CI${ITKM_VF${v}}3" "itk::CudaImage<${ITKT_VF${v}}, 3>, itk::CudaImage<${ITKT_VF${v}}, 3>")
-    endif()
+set(vectorComponents "2;3;4;5")
+foreach(v ${vectorComponents})
+  foreach(vt ${WRAP_ITK_VECTOR_REAL})
+    itk_wrap_template("I${ITKM_${vt}${v}}3I${ITKM_${vt}${v}}3" "itk::Image<${ITKT_${vt}${v}}, 3>, itk::Image<${ITKT_${vt}${v}}, 3>")
   endforeach()
+  if(RTK_USE_CUDA)
+    itk_wrap_template("CI${ITKM_VF${v}}3CI${ITKM_VF${v}}3" "itk::CudaImage<${ITKT_VF${v}}, 3>, itk::CudaImage<${ITKT_VF${v}}, 3>")
+  endif()
+endforeach()
 
 itk_end_wrap_class()
