@@ -38,6 +38,7 @@ repos:
     - id: gersemi
       args: ['--config', '.gersemi.config', '-i']
       files: '\.(cmake|wrap)$|CMakeLists.txt'
+      types: [file]
 
 - repo: https://github.com/lycheeverse/lychee
   rev: lychee-v0.24.2
