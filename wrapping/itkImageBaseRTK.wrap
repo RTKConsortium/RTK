@@ -1,14 +1,17 @@
 list(FIND ITK_WRAP_IMAGE_DIMS "1" _index)
-if (${_index} EQUAL -1)
+if(${_index} EQUAL -1)
   itk_wrap_class("itk::ImageBase" POINTER)
-    # See ITK_DIR/Wrapping/Generators/Python/CMakeLists.txt to understand the next 3 lines
-    set(ITK_WRAP_PYTHON_SWIG_EXT "${ITK_WRAP_PYTHON_SWIG_EXT}%inline %{\n")
-    set(ITK_WRAP_PYTHON_SWIG_EXT "${ITK_WRAP_PYTHON_SWIG_EXT}#include \"itkContinuousIndexRTKSwigInterface.h\"\n")
-    set(ITK_WRAP_PYTHON_SWIG_EXT "${ITK_WRAP_PYTHON_SWIG_EXT}%}\n")
+  # See ITK_DIR/Wrapping/Generators/Python/CMakeLists.txt to understand the next 3 lines
+  set(ITK_WRAP_PYTHON_SWIG_EXT "${ITK_WRAP_PYTHON_SWIG_EXT}%inline %{\n")
+  set(
+    ITK_WRAP_PYTHON_SWIG_EXT
+    "${ITK_WRAP_PYTHON_SWIG_EXT}#include \"itkContinuousIndexRTKSwigInterface.h\"\n"
+  )
+  set(ITK_WRAP_PYTHON_SWIG_EXT "${ITK_WRAP_PYTHON_SWIG_EXT}%}\n")
 
-    list(FIND ITK_WRAP_IMAGE_DIMS "1" _index)
-    if (${_index} EQUAL -1)
-      itk_wrap_template("1" "1")
-    endif()
+  list(FIND ITK_WRAP_IMAGE_DIMS "1" _index)
+  if(${_index} EQUAL -1)
+    itk_wrap_template("1" "1")
+  endif()
   itk_end_wrap_class()
 endif()
