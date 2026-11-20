@@ -109,6 +109,15 @@ jobs:
         name: LinuxWheel3${{ matrix.python3-minor-version }}${{ matrix.manylinux-platform }}-cuda${{ matrix.cuda-version }}
         path: dist/*.whl
 
+    # Not published: the CudaCommon wheel is only used to test the RTK wheel
+    # built against the same CudaCommon sources
+    - name: Keep CudaCommon Python package for testing
+      uses: actions/upload-artifact@v6
+      with:
+        name: CudaCommonLinux3${{ matrix.python3-minor-version }}${{ matrix.manylinux-platform }}-cuda${{ matrix.cuda-version }}
+        path: ITKCudaCommon/dist/*.whl
+        if-no-files-found: error
+
   build-windows-cuda-python-packages:
     runs-on: [self-hosted, windows]
     strategy:
@@ -198,6 +207,9 @@ jobs:
 
         mkdir -p '${{ github.workspace }}\dist'
         cp 'dist\*.whl' '${{ github.workspace }}\dist'
+        if (Test-Path '${{ github.workspace }}\cudacommon-dist') { rm '${{ github.workspace }}\cudacommon-dist' -r -fo }
+        mkdir -p '${{ github.workspace }}\cudacommon-dist'
+        cp 'ITKCudaCommon\dist\*.whl' '${{ github.workspace }}\cudacommon-dist'
 
     - name: Validate build output
       shell: pwsh
@@ -216,6 +228,13 @@ jobs:
         name: WindowsWheel3${{ matrix.python3-minor-version }}-cuda${{ matrix.cuda-version }}
         path: dist/*.whl
 
+    - name: Keep CudaCommon Python package for testing
+      uses: actions/upload-artifact@v6
+      with:
+        name: CudaCommonWindows3${{ matrix.python3-minor-version }}-cuda${{ matrix.cuda-version }}
+        path: cudacommon-dist/*.whl
+        if-no-files-found: error
+
   publish-python-packages-to-pypi:
     needs:
       - build-linux-cuda-python-packages
@@ -225,6 +244,8 @@ jobs:
     steps:
     - name: Download Python Packages
       uses: actions/download-artifact@v7
+      with:
+        pattern: '*Wheel*'
 
     - name: Prepare packages for upload
       run: |
@@ -282,6 +303,7 @@ jobs:
           export LD_LIBRARY_PATH="/home/srit/Downloads/cuda${CUDA_VERSION}/targets/x86_64-linux/lib:$LD_LIBRARY_PATH"
           source .test-venv/bin/activate
           wheel=$(find wheels -name "itk_rtk_cuda${CUDA_VERSION}*cp311-*manylinux_2_28_x86_64.whl" -type f | head -1)
+          cudacommon_wheel=$(find "wheels/CudaCommonLinux311_2_28-x64-cuda${CUDA_VERSION}" -name "itk_cudacommon-*.whl" -type f | head -1)
         else
           CUDA_BIN_PATH="C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v${CUDA_VERSION_MAJOR}.${CUDA_VERSION_MINOR}/bin"
           export PATH="$(cygpath -u "$CUDA_BIN_PATH"):$PATH"
@@ -296,6 +318,7 @@ jobs:
           site_packages=$(python -c "import sysconfig; print(sysconfig.get_path('purelib'))")
           echo "import os; os._rtk_cuda_dll_directory = os.add_dll_directory('${CUDA_BIN_PATH}')" > "${site_packages}/cuda_dll.pth"
           wheel=$(find wheels -name "itk_rtk_cuda${CUDA_VERSION}*cp311-*win_amd64.whl" -type f | head -1)
+          cudacommon_wheel=$(find "wheels/CudaCommonWindows311-cuda${CUDA_VERSION}" -name "itk_cudacommon-*.whl" -type f | head -1)
         fi
 
         # Ensure virtualenv is deactivated and removed on script exit
@@ -304,6 +327,13 @@ jobs:
         echo "Installing wheel: $wheel"
         python -m pip install --upgrade pip
         python -m pip install --group test "$wheel"
+
+        # The RTK wheel and the CudaCommon wheel from PyPI may be built from
+        # different CudaCommon sources, whose template classes do not match.
+        # Replace the latter with the CudaCommon wheel built in this workflow.
+        echo "Installing CudaCommon wheel: $cudacommon_wheel"
+        python -m pip uninstall -y "itk-cudacommon-cuda${CUDA_VERSION}"
+        python -m pip install --no-deps "$cudacommon_wheel"
 
         # Run tests with warning detection.
         # SWIG < 4.4 triggers the Py_LIMITED_API "builtin type swig…" warning when
