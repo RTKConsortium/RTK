@@ -37,7 +37,7 @@ __constant__ SizeValueType4 c_Size;
 
 
 __global__ void
-average_along_dim_4(float * in, float * out, float * roi, itk::SizeValueType strideInFloats)
+average_along_dim_4(const float * in, float * out, const float * roi, itk::SizeValueType strideInFloats)
 {
   itk::IndexValueType i = blockIdx.x * blockDim.x + threadIdx.x;
   itk::IndexValueType j = blockIdx.y * blockDim.y + threadIdx.y;
@@ -77,7 +77,7 @@ average_along_dim_4(float * in, float * out, float * roi, itk::SizeValueType str
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
 void
-CUDA_average_out_of_ROI(itk::SizeValueType size[4], float * input, float * output, float * roi)
+CUDA_average_out_of_ROI(itk::SizeValueType size[4], const float * input, float * output, const float * roi)
 {
   const SizeValueType4 dev_size = make_ulonglong4(size[0], size[1], size[2], size[3]);
   cudaMemcpyToSymbol(c_Size, &dev_size, sizeof(dev_size));

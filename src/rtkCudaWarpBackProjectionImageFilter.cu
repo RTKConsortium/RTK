@@ -57,7 +57,7 @@ __constant__ float          c_IndexInputToPPInputMatrix[12];
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
 __global__ void
-kernel_warp_back_project_3Dgrid(float *             dev_vol_in,
+kernel_warp_back_project_3Dgrid(const float *       dev_vol_in,
                                 float *             dev_vol_out,
                                 cudaTextureObject_t tex_xdvf,
                                 cudaTextureObject_t tex_ydvf,
@@ -112,7 +112,7 @@ kernel_warp_back_project_3Dgrid(float *             dev_vol_in,
 }
 
 __global__ void
-kernel_warp_back_project_3Dgrid_cylindrical_detector(float *             dev_vol_in,
+kernel_warp_back_project_3Dgrid_cylindrical_detector(const float *       dev_vol_in,
                                                      float *             dev_vol_out,
                                                      float               radius,
                                                      cudaTextureObject_t tex_xdvf,
@@ -189,10 +189,10 @@ CUDA_warp_back_project(itk::SizeValueType projSize[3],
                        float *            matrices,
                        float *            volIndexToProjPPs,
                        float *            projPPToProjIndex,
-                       float *            dev_vol_in,
+                       const float *      dev_vol_in,
                        float *            dev_vol_out,
-                       float *            dev_proj,
-                       float *            dev_input_dvf,
+                       const float *      dev_proj,
+                       const float *      dev_input_dvf,
                        float              IndexInputToIndexDVFMatrix[12],
                        float              PPInputToIndexInputMatrix[12],
                        float              IndexInputToPPInputMatrix[12],

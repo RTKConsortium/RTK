@@ -20,18 +20,18 @@
 #define rtkCudaLagCorrectionImageFilter_hcu
 
 void
-CUDA_lag_correction(int              proj_idx_in[3],
-                    int              proj_dim_in[3],
-                    int              proj_dim_in_buf[2],
-                    int              proj_idx_out[3],
-                    int              proj_dim_out[3],
-                    int              proj_dim_out_buf[2],
-                    int              state_idx[2],
-                    int              state_size_x,
-                    unsigned short * dev_proj_in,
-                    unsigned short * dev_proj_out,
-                    float *          h_state,
-                    size_t           state_size,
-                    float *          coefficients);
+CUDA_lag_correction(int                    proj_idx_in[3],
+                    int                    proj_dim_in[3],
+                    int                    proj_dim_in_buf[2],
+                    int                    proj_idx_out[3],
+                    int                    proj_dim_out[3],
+                    int                    proj_dim_out_buf[2],
+                    int                    state_idx[2],
+                    int                    state_size_x,
+                    const unsigned short * dev_proj_in,
+                    unsigned short *       dev_proj_out,
+                    float *                h_state,
+                    size_t                 state_size,
+                    float *                coefficients);
 
 #endif // rtkCudaLagCorrectionImageFilter_hcu

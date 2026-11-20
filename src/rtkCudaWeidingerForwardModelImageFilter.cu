@@ -55,14 +55,14 @@ __constant__ float c_binnedDetectorResponse[5 * 150];
 
 template <unsigned int VBins, unsigned int VEnergies, unsigned int VMaterials>
 __global__ void
-kernel_forward_model(float *      pMatProj,
-                     float *      pPhoCount,
-                     float *      pSpectrum,
-                     float *      pProjOnes,
-                     float *      pOut1,
-                     float *      pOut2,
-                     unsigned int nProjSpectrum,
-                     int          nIdxProj)
+kernel_forward_model(const float * pMatProj,
+                     const float * pPhoCount,
+                     const float * pSpectrum,
+                     const float * pProjOnes,
+                     float *       pOut1,
+                     float *       pOut2,
+                     unsigned int  nProjSpectrum,
+                     int           nIdxProj)
 {
   itk::SizeValueType i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
   itk::SizeValueType j = __umul24(blockIdx.y, blockDim.y) + threadIdx.y;
@@ -88,7 +88,7 @@ kernel_forward_model(float *      pMatProj,
   // Get attenuation factors at each energy from material projections
   float attenuationFactors[VEnergies];
   matrix_matrix_multiply(
-    c_materialAttenuations, (float *)&pMatProj[proj_idx * VMaterials], attenuationFactors, VEnergies, 1, VMaterials);
+    c_materialAttenuations, &pMatProj[proj_idx * VMaterials], attenuationFactors, VEnergies, 1, VMaterials);
 
   for (unsigned int e = 0; e < VEnergies; e++)
     attenuationFactors[e] = std::exp(-attenuationFactors[e]);
@@ -167,20 +167,20 @@ kernel_forward_model(float *      pMatProj,
 ///////////////////////////////////////////////////////////////////////////
 // FUNCTION: CUDA_WeidingerForwardModel /////////////////////////////
 void
-CUDA_WeidingerForwardModel(int          projectionSize[3],
-                           float *      materialAttenuations,
-                           float *      binnedDetectorResponse,
-                           float *      pMatProj,
-                           float *      pPhoCount,
-                           float *      pSpectrum,
-                           float *      pProjOnes,
-                           float *      pOut1,
-                           float *      pOut2,
-                           unsigned int nBins,
-                           unsigned int nEnergies,
-                           unsigned int nMaterials,
-                           unsigned int nProjSpectrum,
-                           int          nIdxProj)
+CUDA_WeidingerForwardModel(int           projectionSize[3],
+                           float *       materialAttenuations,
+                           float *       binnedDetectorResponse,
+                           const float * pMatProj,
+                           const float * pPhoCount,
+                           const float * pSpectrum,
+                           const float * pProjOnes,
+                           float *       pOut1,
+                           float *       pOut2,
+                           unsigned int  nBins,
+                           unsigned int  nEnergies,
+                           unsigned int  nMaterials,
+                           unsigned int  nProjSpectrum,
+                           int           nIdxProj)
 {
   cudaMemcpyToSymbol(c_projSize, projectionSize, sizeof(int3));
   cudaMemcpyToSymbol(c_binnedDetectorResponse, &(binnedDetectorResponse[0]), nBins * nEnergies * sizeof(float));

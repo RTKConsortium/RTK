@@ -25,17 +25,17 @@
 __constant__ float cst_coef[9];
 
 __global__ void
-kernel_lag_correction(int3             proj_idx_in,
-                      int3             proj_size_in,
-                      int2             proj_size_in_buf,
-                      int3             proj_idx_out,
-                      int3             proj_size_out,
-                      int2             proj_size_out_buf,
-                      int2             state_idx,
-                      int              state_size_x,
-                      unsigned short * dev_proj_in,
-                      unsigned short * dev_proj_out,
-                      float *          state)
+kernel_lag_correction(int3                   proj_idx_in,
+                      int3                   proj_size_in,
+                      int2                   proj_size_in_buf,
+                      int3                   proj_idx_out,
+                      int3                   proj_size_out,
+                      int2                   proj_size_out_buf,
+                      int2                   state_idx,
+                      int                    state_size_x,
+                      const unsigned short * dev_proj_in,
+                      unsigned short *       dev_proj_out,
+                      float *                state)
 {
   constexpr int modelOrder = 4;
 
@@ -109,19 +109,19 @@ kernel_lag_correction(int3             proj_idx_in,
 }
 
 void
-CUDA_lag_correction(int              proj_idx_in[3],      // overlapping input region index
-                    int              proj_dim_in[3],      // overlapping input region size
-                    int              proj_dim_in_buf[2],  // input size of buffered region
-                    int              proj_idx_out[3],     // output region index
-                    int              proj_dim_out[3],     // output region size
-                    int              proj_dim_out_buf[2], // output size of buffered region
-                    int              state_idx[2],        // output region index in the state
-                    int              state_size_x,        // state size along x
-                    unsigned short * dev_proj_in,
-                    unsigned short * dev_proj_out,
-                    float *          h_state,
-                    size_t           state_size,
-                    float *          coefficients)
+CUDA_lag_correction(int                    proj_idx_in[3],      // overlapping input region index
+                    int                    proj_dim_in[3],      // overlapping input region size
+                    int                    proj_dim_in_buf[2],  // input size of buffered region
+                    int                    proj_idx_out[3],     // output region index
+                    int                    proj_dim_out[3],     // output region size
+                    int                    proj_dim_out_buf[2], // output size of buffered region
+                    int                    state_idx[2],        // output region index in the state
+                    int                    state_size_x,        // state size along x
+                    const unsigned short * dev_proj_in,
+                    unsigned short *       dev_proj_out,
+                    float *                h_state,
+                    size_t                 state_size,
+                    float *                coefficients)
 {
   // Thread Block Dimensions. The projection axis is handled serially within
   // each detector column by the kernel, so the grid is 2D.
@@ -139,7 +139,7 @@ CUDA_lag_correction(int              proj_idx_in[3],      // overlapping input r
   {
     cudaMemcpy3DParms copyParams = {};
     copyParams.srcPtr = make_cudaPitchedPtr(
-      dev_proj_in, proj_dim_in_buf[0] * sizeof(unsigned short), proj_dim_in_buf[0], proj_dim_in_buf[1]);
+      (void *)dev_proj_in, proj_dim_in_buf[0] * sizeof(unsigned short), proj_dim_in_buf[0], proj_dim_in_buf[1]);
     copyParams.dstPtr = make_cudaPitchedPtr(
       dev_proj_out, proj_dim_out_buf[0] * sizeof(unsigned short), proj_dim_out_buf[0], proj_dim_out_buf[1]);
     copyParams.extent = make_cudaExtent(proj_dim_out[0] * sizeof(unsigned short), proj_dim_out[1], proj_dim_out[2]);

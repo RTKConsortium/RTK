@@ -84,7 +84,7 @@ GetFreeGPUGlobalMemory(int device)
 
 __host__ void
 prepareScalarTextureObject(itk::SizeValueType           size[3],
-                           float *                      dev_ptr,
+                           const float *                dev_ptr,
                            cudaArray *&                 threeDArray,
                            cudaTextureObject_t &        tex,
                            const bool                   isProjections,
@@ -121,7 +121,7 @@ prepareScalarTextureObject(itk::SizeValueType           size[3],
 
   // Fill it
   cudaMemcpy3DParms CopyParams = {};
-  CopyParams.srcPtr = make_cudaPitchedPtr(dev_ptr, size[0] * sizeof(float), size[0], size[1]);
+  CopyParams.srcPtr = make_cudaPitchedPtr((void *)dev_ptr, size[0] * sizeof(float), size[0], size[1]);
   CUDA_CHECK_ERROR;
   CopyParams.dstArray = threeDArray;
   CopyParams.extent = volExtent;

@@ -23,7 +23,7 @@
 
 void
 CUDA_splat(const itk::SizeValueType outputSize[4],
-           float *                  input,
+           const float *            input,
            float *                  output,
            int                      projectionNumber,
            float **                 weights);

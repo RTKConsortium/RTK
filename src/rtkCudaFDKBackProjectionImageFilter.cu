@@ -50,7 +50,7 @@ __constant__ SizeValueType3 c_vol_size;
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
 __global__ void
-kernel_fdk_3Dgrid(float * dev_vol_in, float * dev_vol_out, cudaTextureObject_t tex_proj)
+kernel_fdk_3Dgrid(const float * dev_vol_in, float * dev_vol_out, cudaTextureObject_t tex_proj)
 {
   itk::IndexValueType i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
   itk::IndexValueType j = __umul24(blockIdx.y, blockDim.y) + threadIdx.y;
@@ -96,9 +96,9 @@ void
 CUDA_reconstruct_conebeam(itk::SizeValueType proj_size[3],
                           itk::SizeValueType vol_size[3],
                           float *            matrices,
-                          float *            dev_vol_in,
+                          const float *      dev_vol_in,
                           float *            dev_vol_out,
-                          float *            dev_proj)
+                          const float *      dev_proj)
 {
   // Copy the size of inputs into constant memory
   const SizeValueType3 dev_proj_size = make_ulonglong3(proj_size[0], proj_size[1], proj_size[2]);
