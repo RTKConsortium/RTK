@@ -20,18 +20,18 @@
 #define rtkCudaPolynomialGainCorrectionImageFilter_hcu
 
 void
-CUDA_gain_correction(int              proj_idx_in[3],
-                     int              proj_dim_in[3],
-                     int              proj_dim_in_buf[2],
-                     int              proj_idx_out[3],
-                     int              proj_dim_out[3],
-                     int              proj_dim_out_buf[2],
-                     unsigned short * dev_proj_in,
-                     float *          dev_proj_out,
-                     unsigned short * dev_dark_in,
-                     float *          dev_gain_in,
-                     float *          h_powerlut,
-                     size_t           lut_size,
-                     float *          coefficients);
+CUDA_gain_correction(int                    proj_idx_in[3],
+                     int                    proj_dim_in[3],
+                     int                    proj_dim_in_buf[2],
+                     int                    proj_idx_out[3],
+                     int                    proj_dim_out[3],
+                     int                    proj_dim_out_buf[2],
+                     const unsigned short * dev_proj_in,
+                     float *                dev_proj_out,
+                     const unsigned short * dev_dark_in,
+                     const float *          dev_gain_in,
+                     float *                h_powerlut,
+                     size_t                 lut_size,
+                     float *                coefficients);
 
 #endif // rtkCudaPolynomialGainCorrectionImageFilter_hcu

@@ -27,7 +27,7 @@
 #include <cuda.h>
 
 void
-CUDA_laplacian(int size[3], float spacing[3], float * dev_in, float * dev_out)
+CUDA_laplacian(int size[3], float spacing[3], const float * dev_in, float * dev_out)
 {
   int3   dev_Size = make_int3(size[0], size[1], size[2]);
   float3 dev_Spacing = make_float3(spacing[0], spacing[1], spacing[2]);

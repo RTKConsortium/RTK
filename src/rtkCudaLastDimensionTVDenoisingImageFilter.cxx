@@ -53,8 +53,8 @@ CudaLastDimensionTVDenoisingImageFilter ::GPUGenerateData()
     }
   }
 
-  float * pin = static_cast<float *>(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
-  float * pout = static_cast<float *>(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
+  const float * pin = static_cast<const float *>(this->GetInput()->GetCudaDataManager()->GetConstGPUBufferPointer());
+  float *       pout = static_cast<float *>(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
 
   CUDA_total_variation_last_dimension(
     inputSize, pin, pout, static_cast<float>(m_Gamma), static_cast<float>(m_Beta), m_NumberOfIterations);

@@ -74,7 +74,7 @@ CudaFFTProjectionsConvolutionImageFilter<TParentImageFilter>::PadInputImageRegio
   sz_i.y = inBuffRegion.GetSize()[1];
   sz_i.z = inBuffRegion.GetSize()[2];
 
-  auto *  pin = (float *)(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
+  auto *  pin = (const float *)(this->GetInput()->GetCudaDataManager()->GetConstGPUBufferPointer());
   float * pout = static_cast<float *>(paddedImage->GetCudaDataManager()->GetGPUBufferPointer());
 
   CUDA_padding(idx, sz, sz_i, pin, pout, TParentImageFilter::m_TruncationMirrorWeights);
@@ -133,7 +133,7 @@ CudaFFTProjectionsConvolutionImageFilter<TParentImageFilter>::GPUGenerateData()
   CUDA_fft_convolution(inputDimension,
                        kernelDimension,
                        static_cast<float *>(cuPadImgP->GetCudaDataManager()->GetGPUBufferPointer()),
-                       (float2 *)(this->m_KernelFFTCUDA->GetCudaDataManager()->GetGPUBufferPointer()));
+                       (const float2 *)(this->m_KernelFFTCUDA->GetCudaDataManager()->GetConstGPUBufferPointer()));
 
   /* Impossible to get a pixel-wise progress reporting with CUDA
    * so this filter only reports 0 and 100% completion. */

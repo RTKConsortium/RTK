@@ -61,7 +61,7 @@ __constant__ float c_sourcePos[SLAB_SIZE * 3];         // Can process stacks of 
 // KERNEL kernel_forwardProject
 template <unsigned int VVectorLength>
 __global__ void
-kernel_forwardProject(float * dev_proj_in, float * dev_proj_out, cudaTextureObject_t * dev_tex_vol)
+kernel_forwardProject(const float * dev_proj_in, float * dev_proj_out, cudaTextureObject_t * dev_tex_vol)
 {
   itk::SizeValueType i = blockIdx.x * blockDim.x + threadIdx.x;
   itk::SizeValueType j = blockIdx.y * blockDim.y + threadIdx.y;
@@ -164,9 +164,9 @@ CUDA_forward_project(itk::SizeValueType projSize[3],
                      itk::SizeValueType volSize[3],
                      float *            translatedProjectionIndexTransformMatrices,
                      float *            translatedVolumeTransformMatrices,
-                     float *            dev_proj_in,
+                     const float *      dev_proj_in,
                      float *            dev_proj_out,
-                     float *            dev_vol,
+                     const float *      dev_vol,
                      float              t_step,
                      float *            source_positions,
                      float              radiusCylindricalDetector,

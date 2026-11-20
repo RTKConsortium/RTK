@@ -55,7 +55,7 @@ CudaConjugateGradientImageFilter<TImage>::GPUGenerateData()
   R_k->CopyInformation(this->GetOutput());
 
   // Copy the input to the output (X_0 = input)
-  auto * pin = (DataType *)(this->GetX()->GetCudaDataManager()->GetGPUBufferPointer());
+  auto * pin = (const DataType *)(this->GetX()->GetCudaDataManager()->GetConstGPUBufferPointer());
   auto * pX = (DataType *)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
 
   // On GPU, initialize the output to the input
@@ -70,7 +70,7 @@ CudaConjugateGradientImageFilter<TImage>::GPUGenerateData()
   AOut->DisconnectPipeline();
 
   auto * pR = (DataType *)(R_k->GetCudaDataManager()->GetGPUBufferPointer());
-  auto * pB = (DataType *)(this->GetB()->GetCudaDataManager()->GetGPUBufferPointer());
+  auto * pB = (const DataType *)(this->GetB()->GetCudaDataManager()->GetConstGPUBufferPointer());
   auto * pAOut = (DataType *)(AOut->GetCudaDataManager()->GetGPUBufferPointer());
 
   // Compute, on GPU, R_zero = P_zero = this->GetB() - this->m_A->GetOutput()

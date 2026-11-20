@@ -35,7 +35,8 @@ CudaInterpolateImageFilter ::GPUGenerateData()
   inputSize[2] = this->GetInputVolumeSeries()->GetBufferedRegion().GetSize()[2];
   inputSize[3] = this->GetInputVolumeSeries()->GetBufferedRegion().GetSize()[3];
 
-  float * pvolseries = static_cast<float *>(this->GetInputVolumeSeries()->GetCudaDataManager()->GetGPUBufferPointer());
+  const float * pvolseries =
+    static_cast<const float *>(this->GetInputVolumeSeries()->GetCudaDataManager()->GetConstGPUBufferPointer());
   float * pvol = static_cast<float *>(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
 
   CUDA_interpolation(inputSize, pvolseries, pvol, m_ProjectionNumber, m_Weights.data_array());
