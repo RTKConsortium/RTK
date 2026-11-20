@@ -92,9 +92,9 @@ CudaForwardProjectionImageFilter<TInputImage, TOutputImage>::GPUGenerateData()
   volumeSize[1] = this->GetInput(1)->GetBufferedRegion().GetSize()[1];
   volumeSize[2] = this->GetInput(1)->GetBufferedRegion().GetSize()[2];
 
-  auto * pin = (float *)(this->GetInput(0)->GetCudaDataManager()->GetGPUBufferPointer());
+  auto * pin = (const float *)(this->GetInput(0)->GetCudaDataManager()->GetConstGPUBufferPointer());
   auto * pout = (float *)(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
-  auto * pvol = (float *)(this->GetInput(1)->GetCudaDataManager()->GetGPUBufferPointer());
+  auto * pvol = (const float *)(this->GetInput(1)->GetCudaDataManager()->GetConstGPUBufferPointer());
 
   // Account for system rotations
   typename Superclass::GeometryType::ThreeDHomogeneousMatrixType volPPToIndex;

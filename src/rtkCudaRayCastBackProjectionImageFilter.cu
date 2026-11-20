@@ -53,7 +53,7 @@ __constant__ float
 __constant__ float c_sourcePos[SLAB_SIZE * 3];         // Can process stacks of at most SLAB_SIZE projections
 
 __global__ void
-kernel_ray_cast_back_project(float * dev_vol_out, float * dev_proj)
+kernel_ray_cast_back_project(float * dev_vol_out, const float * dev_proj)
 {
   itk::SizeValueType i = blockIdx.x * blockDim.x + threadIdx.x;
   itk::SizeValueType j = blockIdx.y * blockDim.y + threadIdx.y;
@@ -193,19 +193,19 @@ kernel_ray_cast_back_project(float * dev_vol_out, float * dev_proj)
 }
 
 void
-CUDA_ray_cast_back_project(int      projSize[3],
-                           int      volSize[3],
-                           float *  translatedProjectionIndexTransformMatrices,
-                           float *  translatedVolumeTransformMatrices,
-                           float *  dev_vol_in,
-                           float *  dev_vol_out,
-                           float *  dev_proj,
-                           float    t_step,
-                           double * source_positions,
-                           float    radiusCylindricalDetector,
-                           float    box_min[3],
-                           float    box_max[3],
-                           float    spacing[3])
+CUDA_ray_cast_back_project(int           projSize[3],
+                           int           volSize[3],
+                           float *       translatedProjectionIndexTransformMatrices,
+                           float *       translatedVolumeTransformMatrices,
+                           const float * dev_vol_in,
+                           float *       dev_vol_out,
+                           const float * dev_proj,
+                           float         t_step,
+                           double *      source_positions,
+                           float         radiusCylindricalDetector,
+                           float         box_min[3],
+                           float         box_max[3],
+                           float         spacing[3])
 {
   // Constant memory
   cudaMemcpyToSymbol(c_projSize, projSize, sizeof(int3));

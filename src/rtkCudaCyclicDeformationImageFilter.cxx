@@ -47,8 +47,8 @@ CudaCyclicDeformationImageFilter ::GPUGenerateData()
                       "size as the input's buffered region on the first 3 dimensions");
   }
 
-  float * pin = static_cast<float *>(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
-  float * pout = static_cast<float *>(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
+  const float * pin = static_cast<const float *>(this->GetInput()->GetCudaDataManager()->GetConstGPUBufferPointer());
+  float *       pout = static_cast<float *>(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
 
   CUDA_linear_interpolate_along_fourth_dimension(
     inputSize, pin, pout, this->m_FrameInf, this->m_FrameSup, this->m_WeightInf, this->m_WeightSup);

@@ -30,7 +30,7 @@
 
 void
 CUDA_interpolation(const itk::SizeValueType inputSize[4],
-                   float *                  input,
+                   const float *            input,
                    float *                  output,
                    int                      projectionNumber,
                    float **                 weights)
@@ -58,7 +58,7 @@ CUDA_interpolation(const itk::SizeValueType inputSize[4],
     if (weight != 0)
     {
       // Create a pointer to the "phase"-th volume in the input
-      float * p = input + phase * nVoxelsOutput;
+      const float * p = input + phase * nVoxelsOutput;
 
       // Add "weight" times the "phase"-th volume in the input to the output
 #if CUBLAS_VER_MAJOR < 12

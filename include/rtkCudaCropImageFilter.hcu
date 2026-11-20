@@ -25,7 +25,7 @@ void
 CUDA_crop(const long3 & cropIndex,
           const uint3 & cropSize,
           const uint3 & inputSize,
-          float *       deviceVolume,
+          const float * deviceVolume,
           float *       deviceCroppedVolume);
 
 #endif

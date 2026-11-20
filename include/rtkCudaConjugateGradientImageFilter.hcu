@@ -22,10 +22,10 @@
 #include "RTKExport.h"
 
 void RTK_EXPORT
-CUDA_copy(size_t numberOfElements, float * in, float * out);
+CUDA_copy(size_t numberOfElements, const float * in, float * out);
 
 void RTK_EXPORT
-CUDA_copy(size_t numberOfElements, double * in, double * out);
+CUDA_copy(size_t numberOfElements, const double * in, double * out);
 
 void RTK_EXPORT
 CUDA_subtract(size_t numberOfElements, float * out, float * toBeSubtracted);

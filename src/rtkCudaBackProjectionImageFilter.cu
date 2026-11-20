@@ -53,7 +53,7 @@ __constant__ SizeValueType3 c_volSize;
 
 template <unsigned int VVectorLength, bool VIsCylindrical>
 __global__ void
-kernel_backProject(float * dev_vol_in, float * dev_vol_out, float radius, cudaTextureObject_t * dev_tex_proj)
+kernel_backProject(const float * dev_vol_in, float * dev_vol_out, float radius, cudaTextureObject_t * dev_tex_proj)
 {
   itk::IndexValueType i = __umul24(blockIdx.x, blockDim.x) + threadIdx.x;
   itk::IndexValueType j = __umul24(blockIdx.y, blockDim.y) + threadIdx.y;
@@ -128,9 +128,9 @@ CUDA_back_project(itk::SizeValueType projSize[3],
                   float *            matrices,
                   float *            volIndexToProjPPs,
                   float *            projPPToProjIndex,
-                  float *            dev_vol_in,
+                  const float *      dev_vol_in,
                   float *            dev_vol_out,
-                  float *            dev_proj,
+                  const float *      dev_proj,
                   double             radiusCylindricalDetector,
                   unsigned int       vectorLength)
 {

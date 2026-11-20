@@ -35,7 +35,7 @@ __constant__ SizeValueType4 c_Size;
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
 __global__ void
-denoise_oneD_TV_kernel(float * in, float * out, float beta, float gamma, int niter)
+denoise_oneD_TV_kernel(const float * in, float * out, float beta, float gamma, int niter)
 {
   // Allocate a few shared buffers
   extern __shared__ float shared[];
@@ -117,12 +117,12 @@ denoise_oneD_TV_kernel(float * in, float * out, float beta, float gamma, int nit
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
 void
-CUDA_total_variation_last_dimension(int     size[4],
-                                    float * dev_in,
-                                    float * dev_out,
-                                    float   gamma,
-                                    float   beta,
-                                    int     NumberOfIterations)
+CUDA_total_variation_last_dimension(int           size[4],
+                                    const float * dev_in,
+                                    float *       dev_out,
+                                    float         gamma,
+                                    float         beta,
+                                    int           NumberOfIterations)
 {
   SizeValueType4 dev_Size = make_ulonglong4(size[0], size[1], size[2], size[3]);
   cudaMemcpyToSymbol(c_Size, &dev_Size, sizeof(SizeValueType4));

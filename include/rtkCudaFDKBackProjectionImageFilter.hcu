@@ -23,8 +23,8 @@ void
 CUDA_reconstruct_conebeam(itk::SizeValueType img_dim[3],
                           itk::SizeValueType vol_dim[3],
                           float *            matrices,
-                          float *            dev_vol_in,
+                          const float *      dev_vol_in,
                           float *            dev_vol_out,
-                          float *            dev_img);
+                          const float *      dev_img);
 
 #endif

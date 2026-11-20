@@ -35,9 +35,9 @@ CudaAverageOutOfROIImageFilter ::GPUGenerateData()
   size[2] = this->GetOutput()->GetBufferedRegion().GetSize()[2];
   size[3] = this->GetOutput()->GetBufferedRegion().GetSize()[3];
 
-  float * pin = static_cast<float *>(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
-  float * pout = static_cast<float *>(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
-  float * proi = static_cast<float *>(this->GetROI()->GetCudaDataManager()->GetGPUBufferPointer());
+  const float * pin = static_cast<const float *>(this->GetInput()->GetCudaDataManager()->GetConstGPUBufferPointer());
+  float *       pout = static_cast<float *>(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
+  const float * proi = static_cast<const float *>(this->GetROI()->GetCudaDataManager()->GetConstGPUBufferPointer());
 
   CUDA_average_out_of_ROI(size, pin, pout, proi);
 

@@ -133,7 +133,7 @@ dot_vector(float3 u, float3 v)
 
 __host__ void
 prepareScalarTextureObject(itk::SizeValueType           size[3],
-                           float *                      dev_ptr,
+                           const float *                dev_ptr,
                            cudaArray *&                 threeDArray,
                            cudaTextureObject_t &        tex,
                            const bool                   isProjections,
@@ -157,7 +157,12 @@ prepareGeometryTextureObject(int                   size,
                              const unsigned int    nParam);
 
 inline __device__ void
-matrix_matrix_multiply(float * A, float * B, float * C, unsigned int rowsA, unsigned int colsB, unsigned int colsArowsB)
+matrix_matrix_multiply(const float * A,
+                       const float * B,
+                       float *       C,
+                       unsigned int  rowsA,
+                       unsigned int  colsB,
+                       unsigned int  colsArowsB)
 {
   unsigned int indexInA, indexInB, indexInC;
   for (unsigned int rowA = 0; rowA < rowsA; rowA++)

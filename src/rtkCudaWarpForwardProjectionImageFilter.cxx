@@ -186,10 +186,13 @@ CudaWarpForwardProjectionImageFilter ::GPUGenerateData()
   inputDVFSize[1] = this->GetDisplacementField()->GetBufferedRegion().GetSize()[1];
   inputDVFSize[2] = this->GetDisplacementField()->GetBufferedRegion().GetSize()[2];
 
-  float * pin = static_cast<float *>(this->GetInputProjectionStack()->GetCudaDataManager()->GetGPUBufferPointer());
-  float * pout = static_cast<float *>(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
-  float * pvol = static_cast<float *>(this->GetInputVolume()->GetCudaDataManager()->GetGPUBufferPointer());
-  float * pDVF = static_cast<float *>(this->GetDisplacementField()->GetCudaDataManager()->GetGPUBufferPointer());
+  const float * pin =
+    static_cast<const float *>(this->GetInputProjectionStack()->GetCudaDataManager()->GetConstGPUBufferPointer());
+  float *       pout = static_cast<float *>(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
+  const float * pvol =
+    static_cast<const float *>(this->GetInputVolume()->GetCudaDataManager()->GetConstGPUBufferPointer());
+  const float * pDVF =
+    static_cast<const float *>(this->GetDisplacementField()->GetCudaDataManager()->GetConstGPUBufferPointer());
 
   // Transform matrices that we will need during the warping process
   indexInputToPPInputMatrix = GetIndexToPhysicalPointMatrix(this->GetInputVolume().GetPointer()).GetVnlMatrix() *

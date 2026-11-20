@@ -29,7 +29,7 @@
 // TEXTURES AND CONSTANTS //
 
 void
-CUDA_copy(size_t numberOfElements, float * in, float * out)
+CUDA_copy(size_t numberOfElements, const float * in, float * out)
 {
   // Copy input volume to output
   size_t memorySizeOutput = numberOfElements * sizeof(float);
@@ -37,7 +37,7 @@ CUDA_copy(size_t numberOfElements, float * in, float * out)
 }
 
 void
-CUDA_copy(size_t numberOfElements, double * in, double * out)
+CUDA_copy(size_t numberOfElements, const double * in, double * out)
 {
   // Copy input volume to output
   size_t memorySizeOutput = numberOfElements * sizeof(double);

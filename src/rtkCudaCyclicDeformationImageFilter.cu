@@ -36,7 +36,7 @@
 
 void
 CUDA_linear_interpolate_along_fourth_dimension(itk::SizeValueType inputSize[4],
-                                               float *            input,
+                                               const float *      input,
                                                float *            output,
                                                unsigned int       frameInf,
                                                unsigned int       frameSup,
@@ -54,7 +54,7 @@ CUDA_linear_interpolate_along_fourth_dimension(itk::SizeValueType inputSize[4],
   cudaMemset((void *)output, 0, numel * sizeof(float));
 
   // Add it weightInf times the frameInf to the output
-  float * pinf = input + frameInf * numel;
+  const float * pinf = input + frameInf * numel;
 #if CUDA_VERSION < 12000
   cublasSaxpy(handle, (int)numel, &wInf, pinf, 1, output, 1);
 #else
@@ -62,7 +62,7 @@ CUDA_linear_interpolate_along_fourth_dimension(itk::SizeValueType inputSize[4],
 #endif
 
   // Add it weightSup times the frameSup to the output
-  float * psup = input + frameSup * numel;
+  const float * psup = input + frameSup * numel;
 #if CUDA_VERSION < 12000
   cublasSaxpy(handle, (int)numel, &wSup, psup, 1, output, 1);
 #else

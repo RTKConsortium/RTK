@@ -32,7 +32,7 @@ kernel_weight_projection(int2                proj_idx,
                          int3                proj_size,
                          int2                proj_size_buf_in,
                          int2                proj_size_buf_out,
-                         float *             dev_proj_in,
+                         const float *       dev_proj_in,
                          float *             dev_proj_out,
                          float2              proj_orig, // projection origin
                          float2              proj_row,  // projection row direction & spacing
@@ -82,16 +82,16 @@ kernel_weight_projection(int2                proj_idx,
 }
 
 void
-CUDA_weight_projection(int     proj_idx[2],
-                       int     proj_dim[3],
-                       int     proj_dim_buf_in[2],
-                       int     proj_dim_buf_out[2],
-                       float * dev_proj_in,
-                       float * dev_proj_out,
-                       float * geometry,
-                       float   proj_orig[2],
-                       float   proj_row[2],
-                       float   proj_col[2])
+CUDA_weight_projection(int           proj_idx[2],
+                       int           proj_dim[3],
+                       int           proj_dim_buf_in[2],
+                       int           proj_dim_buf_out[2],
+                       const float * dev_proj_in,
+                       float *       dev_proj_out,
+                       float *       geometry,
+                       float         proj_orig[2],
+                       float         proj_row[2],
+                       float         proj_col[2])
 {
   float *             dev_geom;
   cudaTextureObject_t tex_geom;

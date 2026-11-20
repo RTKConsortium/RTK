@@ -85,9 +85,9 @@ CudaRayCastBackProjectionImageFilter ::GPUGenerateData()
   volumeSize[1] = this->GetOutput()->GetRequestedRegion().GetSize()[1];
   volumeSize[2] = this->GetOutput()->GetRequestedRegion().GetSize()[2];
 
-  float * pin = static_cast<float *>(this->GetInput(0)->GetCudaDataManager()->GetGPUBufferPointer());
-  float * pout = static_cast<float *>(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
-  float * pproj = static_cast<float *>(this->GetInput(1)->GetCudaDataManager()->GetGPUBufferPointer());
+  const float * pin = static_cast<const float *>(this->GetInput(0)->GetCudaDataManager()->GetConstGPUBufferPointer());
+  float *       pout = static_cast<float *>(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
+  const float * pproj = static_cast<const float *>(this->GetInput(1)->GetCudaDataManager()->GetConstGPUBufferPointer());
 
   // Account for system rotations
   GeometryType::ThreeDHomogeneousMatrixType volPPToIndex;

@@ -27,9 +27,9 @@ CUDA_back_project(itk::SizeValueType projSize[3],
                   float *            matrices,
                   float *            volIndexToProjPPs,
                   float *            projPPToProjIndex,
-                  float *            dev_vol_in,
+                  const float *      dev_vol_in,
                   float *            dev_vol_out,
-                  float *            dev_img,
+                  const float *      dev_img,
                   double             radiusCylindricalDetector,
                   unsigned int       vectorLength);
 

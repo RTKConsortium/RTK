@@ -35,8 +35,9 @@ CudaSplatImageFilter ::GPUGenerateData()
   outputSize[2] = this->GetOutput()->GetLargestPossibleRegion().GetSize()[2];
   outputSize[3] = this->GetOutput()->GetLargestPossibleRegion().GetSize()[3];
 
-  float * pvolseries = static_cast<float *>(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
-  float * pvol = static_cast<float *>(this->GetInputVolume()->GetCudaDataManager()->GetGPUBufferPointer());
+  float *       pvolseries = static_cast<float *>(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
+  const float * pvol =
+    static_cast<const float *>(this->GetInputVolume()->GetCudaDataManager()->GetConstGPUBufferPointer());
 
   CUDA_splat(outputSize, pvol, pvolseries, m_ProjectionNumber, m_Weights.data_array());
 }

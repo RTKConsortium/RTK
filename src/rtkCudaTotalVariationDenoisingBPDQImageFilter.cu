@@ -81,7 +81,7 @@ gradient_and_subtract_kernel(float * in, float * grad_x, float * grad_y, float *
 }
 
 __global__ void
-multiply_by_beta_kernel(float * input, float * output, float beta)
+multiply_by_beta_kernel(const float * input, float * output, float beta)
 {
   itk::SizeValueType i = blockIdx.x * blockDim.x + threadIdx.x;
   itk::SizeValueType j = blockIdx.y * blockDim.y + threadIdx.y;
@@ -96,7 +96,7 @@ multiply_by_beta_kernel(float * input, float * output, float beta)
 }
 
 __global__ void
-subtract_kernel(float * in1, float * in2, float * out)
+subtract_kernel(const float * in1, const float * in2, float * out)
 {
   itk::SizeValueType i = blockIdx.x * blockDim.x + threadIdx.x;
   itk::SizeValueType j = blockIdx.y * blockDim.y + threadIdx.y;
@@ -117,13 +117,13 @@ subtract_kernel(float * in1, float * in2, float * out)
 //_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_
 
 void
-CUDA_total_variation(int     size[3],
-                     float   spacing[3],
-                     float * dev_in,
-                     float * dev_out,
-                     float   gamma,
-                     float   beta,
-                     int     NumberOfIterations)
+CUDA_total_variation(int           size[3],
+                     float         spacing[3],
+                     const float * dev_in,
+                     float *       dev_out,
+                     float         gamma,
+                     float         beta,
+                     int           NumberOfIterations)
 {
   int3 dev_Size = make_int3(size[0], size[1], size[2]);
   cudaMemcpyToSymbol(c_Size, &dev_Size, sizeof(int3));
