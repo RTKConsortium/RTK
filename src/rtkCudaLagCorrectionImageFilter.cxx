@@ -34,8 +34,8 @@ CudaLagCorrectionImageFilter ::GPUGenerateData()
   // overlapRegion.Crop(this->GetInput()->GetBufferedRegion());
 
   // Put the two data pointers at the same location
-  unsigned short * inBuffer =
-    static_cast<unsigned short *>(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
+  const unsigned short * inBuffer =
+    static_cast<const unsigned short *>(this->GetInput()->GetCudaDataManager()->GetConstGPUBufferPointer());
   inBuffer += this->GetInput()->ComputeOffset(overlapRegion.GetIndex());
   unsigned short * outBuffer =
     static_cast<unsigned short *>(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());

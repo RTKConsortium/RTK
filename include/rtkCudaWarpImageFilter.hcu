@@ -26,9 +26,9 @@ CUDA_warp(itk::SizeValueType input_vol_dim[3],
           float              IndexOutputToPPOutputMatrix[12],
           float              IndexOutputToIndexDVFMatrix[12],
           float              PPInputToIndexInputMatrix[12],
-          float *            dev_input_vol,
+          const float *      dev_input_vol,
           float *            dev_output_vol,
-          float *            dev_DVF,
+          const float *      dev_DVF,
           bool               isLinear);
 
 #endif

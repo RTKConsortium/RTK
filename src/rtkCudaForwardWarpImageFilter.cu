@@ -125,7 +125,7 @@ normalize_3Dgrid(float * dev_vol_out, float * dev_accumulate_weights, SizeValueT
 }
 
 __global__ void
-linearSplat_3Dgrid(float *             dev_vol_in,
+linearSplat_3Dgrid(const float *       dev_vol_in,
                    float *             dev_vol_out,
                    float *             dev_accumulate_weights,
                    SizeValueType3      in_dim,
@@ -277,7 +277,7 @@ linearSplat_3Dgrid(float *             dev_vol_in,
 }
 
 __global__ void
-nearestNeighborSplat_3Dgrid(float *             dev_vol_in,
+nearestNeighborSplat_3Dgrid(const float *       dev_vol_in,
                             float *             dev_vol_out,
                             float *             dev_accumulate_weights,
                             SizeValueType3      in_dim,
@@ -353,10 +353,10 @@ CUDA_ForwardWarp(itk::SizeValueType input_vol_dim[3],
                  float              IndexInputToPPInputMatrix[12],
                  float              IndexInputToIndexDVFMatrix[12],
                  float              PPOutputToIndexOutputMatrix[12],
-                 float *            dev_input_vol,
-                 float *            dev_input_xdvf,
-                 float *            dev_input_ydvf,
-                 float *            dev_input_zdvf,
+                 const float *      dev_input_vol,
+                 const float *      dev_input_xdvf,
+                 const float *      dev_input_ydvf,
+                 const float *      dev_input_zdvf,
                  float *            dev_output_vol,
                  bool               isLinear)
 {

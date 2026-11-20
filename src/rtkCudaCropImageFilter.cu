@@ -26,7 +26,7 @@
 #include <cufft.h>
 
 __global__ void
-crop_kernel(float *            input,
+crop_kernel(const float *      input,
             float *            output,
             const long3        cropIdx,
             const uint3        cropDim,
@@ -50,7 +50,7 @@ crop_kernel(float *            input,
 }
 
 void
-CUDA_crop(const long3 & cropIndex, const uint3 & cropSize, const uint3 & inputSize, float * input, float * output)
+CUDA_crop(const long3 & cropIndex, const uint3 & cropSize, const uint3 & inputSize, const float * input, float * output)
 {
   // Thread Block Dimensions
   unsigned int tBlock_x = 4;

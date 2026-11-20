@@ -33,15 +33,16 @@ CudaPolynomialGainCorrectionImageFilter ::GPUGenerateData()
   OutputImageRegionType overlapRegion = this->GetOutput()->GetRequestedRegion();
 
   // Put the two data pointers at the same location
-  unsigned short * inBuffer =
-    static_cast<unsigned short *>(this->GetInput()->GetCudaDataManager()->GetGPUBufferPointer());
+  const unsigned short * inBuffer =
+    static_cast<const unsigned short *>(this->GetInput()->GetCudaDataManager()->GetConstGPUBufferPointer());
   inBuffer += this->GetInput()->ComputeOffset(overlapRegion.GetIndex());
   float * outBuffer = static_cast<float *>(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer());
   outBuffer += this->GetOutput()->ComputeOffset(this->GetOutput()->GetRequestedRegion().GetIndex());
 
-  unsigned short * darkBuffer = static_cast<unsigned short *>(m_DarkImage->GetCudaDataManager()->GetGPUBufferPointer());
+  const unsigned short * darkBuffer =
+    static_cast<const unsigned short *>(m_DarkImage->GetCudaDataManager()->GetConstGPUBufferPointer());
 
-  float * gainBuffer = static_cast<float *>(m_GainImage->GetCudaDataManager()->GetGPUBufferPointer());
+  const float * gainBuffer = static_cast<const float *>(m_GainImage->GetCudaDataManager()->GetConstGPUBufferPointer());
 
   int proj_idx_in[3];
   proj_idx_in[0] = overlapRegion.GetIndex()[0];

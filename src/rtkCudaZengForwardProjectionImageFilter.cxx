@@ -147,13 +147,16 @@ CudaZengForwardProjectionImageFilter::GPUGenerateData()
 
   const auto    projectionOffset = firstProjection - projectionRegion.GetIndex(2);
   const auto    pixelsPerProjection = projectionSize[0] * projectionSize[1];
-  const float * projectionIn = static_cast<float *>(this->GetInput(0)->GetCudaDataManager()->GetGPUBufferPointer()) +
-                               projectionOffset * pixelsPerProjection;
+  const float * projectionIn =
+    static_cast<const float *>(this->GetInput(0)->GetCudaDataManager()->GetConstGPUBufferPointer()) +
+    projectionOffset * pixelsPerProjection;
   float * projectionOut = static_cast<float *>(this->GetOutput()->GetCudaDataManager()->GetGPUBufferPointer()) +
                           projectionOffset * pixelsPerProjection;
-  const float * volume = static_cast<float *>(this->GetInput(1)->GetCudaDataManager()->GetGPUBufferPointer());
+  const float * volume =
+    static_cast<const float *>(this->GetInput(1)->GetCudaDataManager()->GetConstGPUBufferPointer());
   const float * attenuation =
-    this->GetInput(2) ? static_cast<float *>(this->GetInput(2)->GetCudaDataManager()->GetGPUBufferPointer()) : nullptr;
+    this->GetInput(2) ? static_cast<const float *>(this->GetInput(2)->GetCudaDataManager()->GetConstGPUBufferPointer())
+                      : nullptr;
   int attenuationSize[3] = { 0, 0, 0 };
   int attenuationOffset[3] = { 0, 0, 0 };
   if (this->GetInput(2))

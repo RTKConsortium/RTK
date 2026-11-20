@@ -69,7 +69,7 @@ divergence_kernel(float * grad_x, float * grad_y, float * grad_z, float * out, i
 }
 
 __global__ void
-gradient_kernel(float * in, float * grad_x, float * grad_y, float * grad_z, int3 c_Size, float3 c_Spacing)
+gradient_kernel(const float * in, float * grad_x, float * grad_y, float * grad_z, int3 c_Size, float3 c_Spacing)
 {
   itk::IndexValueType i = blockIdx.x * blockDim.x + threadIdx.x;
   itk::IndexValueType j = blockIdx.y * blockDim.y + threadIdx.y;

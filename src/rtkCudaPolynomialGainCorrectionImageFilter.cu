@@ -25,17 +25,17 @@
 __constant__ float cst_coef[2];
 
 __global__ void
-kernel_gain_correction(int3             proj_idx_in,
-                       int3             proj_size_in,
-                       int2             proj_size_in_buf,
-                       int3             proj_idx_out,
-                       int3             proj_size_out,
-                       int2             proj_size_out_buf,
-                       unsigned short * dev_proj_in,
-                       float *          dev_proj_out,
-                       unsigned short * dev_dark_in,
-                       float *          dev_gain_in,
-                       float *          powerlut)
+kernel_gain_correction(int3                   proj_idx_in,
+                       int3                   proj_size_in,
+                       int2                   proj_size_in_buf,
+                       int3                   proj_idx_out,
+                       int3                   proj_size_out,
+                       int2                   proj_size_out_buf,
+                       const unsigned short * dev_proj_in,
+                       float *                dev_proj_out,
+                       const unsigned short * dev_dark_in,
+                       const float *          dev_gain_in,
+                       float *                powerlut)
 {
   // compute thread index (64-bit to avoid 32-bit overflow of combined indices)
   itk::SizeValueType tIdx_x = blockIdx.x * blockDim.x + threadIdx.x;
@@ -81,19 +81,19 @@ kernel_gain_correction(int3             proj_idx_in,
 }
 
 void
-CUDA_gain_correction(int              proj_idx_in[3],      // overlapping input region index
-                     int              proj_dim_in[3],      // overlapping input region size
-                     int              proj_dim_in_buf[2],  // input size of buffered region
-                     int              proj_idx_out[3],     // output region index
-                     int              proj_dim_out[3],     // output region size
-                     int              proj_dim_out_buf[2], // output size of buffered region
-                     unsigned short * dev_proj_in,
-                     float *          dev_proj_out,
-                     unsigned short * dev_dark_in,
-                     float *          dev_gain_in,
-                     float *          h_powerlut,
-                     size_t           lut_size,
-                     float *          coefficients)
+CUDA_gain_correction(int                    proj_idx_in[3],      // overlapping input region index
+                     int                    proj_dim_in[3],      // overlapping input region size
+                     int                    proj_dim_in_buf[2],  // input size of buffered region
+                     int                    proj_idx_out[3],     // output region index
+                     int                    proj_dim_out[3],     // output region size
+                     int                    proj_dim_out_buf[2], // output size of buffered region
+                     const unsigned short * dev_proj_in,
+                     float *                dev_proj_out,
+                     const unsigned short * dev_dark_in,
+                     const float *          dev_gain_in,
+                     float *                h_powerlut,
+                     size_t                 lut_size,
+                     float *                coefficients)
 {
   // Thread Block Dimensions
   int tBlock_x = 16;

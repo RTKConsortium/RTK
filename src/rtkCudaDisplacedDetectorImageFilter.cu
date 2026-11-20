@@ -49,7 +49,7 @@ kernel_displaced_weight(int3                proj_idx_in,
                         int3                proj_idx_out,
                         int3                proj_size_out,
                         int2                proj_size_out_buf,
-                        float *             dev_proj_in,
+                        const float *       dev_proj_in,
                         float *             dev_proj_out,
                         float               theta,
                         bool                isPositiveCase,
@@ -132,20 +132,20 @@ kernel_displaced_weight(int3                proj_idx_in,
 }
 
 void
-CUDA_displaced_weight(int     proj_idx_in[3],      // overlapping input region index
-                      int     proj_dim_in[3],      // overlapping input region size
-                      int     proj_dim_in_buf[2],  // input size of buffered region
-                      int     proj_idx_out[3],     // output region index
-                      int     proj_dim_out[3],     // output region size
-                      int     proj_dim_out_buf[2], // output size of buffered region
-                      float * dev_proj_in,
-                      float * dev_proj_out,
-                      float * geometry,
-                      float   theta,
-                      bool    isPositiveCase,
-                      float   proj_orig,
-                      float   proj_row,
-                      float   proj_col)
+CUDA_displaced_weight(int           proj_idx_in[3],      // overlapping input region index
+                      int           proj_dim_in[3],      // overlapping input region size
+                      int           proj_dim_in_buf[2],  // input size of buffered region
+                      int           proj_idx_out[3],     // output region index
+                      int           proj_dim_out[3],     // output region size
+                      int           proj_dim_out_buf[2], // output size of buffered region
+                      const float * dev_proj_in,
+                      float *       dev_proj_out,
+                      float *       geometry,
+                      float         theta,
+                      bool          isPositiveCase,
+                      float         proj_orig,
+                      float         proj_row,
+                      float         proj_col)
 {
   // copy geometry matrix to device, bind the matrix to the texture
   float *             dev_geom;

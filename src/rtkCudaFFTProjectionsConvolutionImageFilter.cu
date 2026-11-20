@@ -27,7 +27,7 @@
 #include <cufft.h>
 
 __global__ void
-multiply_kernel(cufftComplex * projFFT, int3 fftDimension, cufftComplex * kernelFFT, unsigned int Blocks_Y)
+multiply_kernel(cufftComplex * projFFT, int3 fftDimension, const cufftComplex * kernelFFT, unsigned int Blocks_Y)
 {
   unsigned int        blockIdx_z = blockIdx.y / Blocks_Y;
   unsigned int        blockIdx_y = blockIdx.y - __umul24(blockIdx_z, Blocks_Y);
@@ -47,7 +47,7 @@ multiply_kernel(cufftComplex * projFFT, int3 fftDimension, cufftComplex * kernel
 }
 
 __global__ void
-multiply_kernel2D(cufftComplex * projFFT, int3 fftDimension, cufftComplex * kernelFFT, unsigned int Blocks_Y)
+multiply_kernel2D(cufftComplex * projFFT, int3 fftDimension, const cufftComplex * kernelFFT, unsigned int Blocks_Y)
 {
   unsigned int        blockIdx_z = blockIdx.y / Blocks_Y;
   unsigned int        blockIdx_y = blockIdx.y - __umul24(blockIdx_z, Blocks_Y);
@@ -68,10 +68,10 @@ multiply_kernel2D(cufftComplex * projFFT, int3 fftDimension, cufftComplex * kern
 }
 
 void
-CUDA_fft_convolution(const int3 &   inputDimension,
-                     const int2 &   kernelDimension,
-                     float *        deviceProjection,
-                     cufftComplex * deviceKernelFFT)
+CUDA_fft_convolution(const int3 &         inputDimension,
+                     const int2 &         kernelDimension,
+                     float *              deviceProjection,
+                     const cufftComplex * deviceKernelFFT)
 {
   // CUDA device pointers
   cufftComplex * deviceProjectionFFT;
@@ -125,7 +125,7 @@ CUDA_fft_convolution(const int3 &   inputDimension,
 }
 
 __global__ void
-padding_kernel(float *            input,
+padding_kernel(const float *      input,
                float *            output,
                const int3         paddingIdx,
                const uint3        paddingDim,
@@ -176,7 +176,7 @@ void
 CUDA_padding(const int3 &               paddingIndex,
              const uint3 &              paddingSize,
              const uint3 &              inputSize,
-             float *                    deviceVolume,
+             const float *              deviceVolume,
              float *                    devicePaddedVolume,
              const std::vector<float> & mirrorWeights)
 {

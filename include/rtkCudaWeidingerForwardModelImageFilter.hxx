@@ -54,10 +54,14 @@ CudaWeidingerForwardModelImageFilter<TDecomposedProjections, TMeasuredProjection
     projectionSize[d] = this->GetInputDecomposedProjections()->GetBufferedRegion().GetSize()[d];
 
   // Pointers to inputs and outputs
-  auto * pMatProj = (float *)(this->GetInputDecomposedProjections()->GetCudaDataManager()->GetGPUBufferPointer());
-  auto * pPhoCount = (float *)(this->GetInputMeasuredProjections()->GetCudaDataManager()->GetGPUBufferPointer());
-  auto * pSpectrum = (float *)(this->GetInputIncidentSpectrum()->GetCudaDataManager()->GetGPUBufferPointer());
-  auto * pProjOnes = (float *)(this->GetInputProjectionsOfOnes()->GetCudaDataManager()->GetGPUBufferPointer());
+  auto * pMatProj =
+    (const float *)(this->GetInputDecomposedProjections()->GetCudaDataManager()->GetConstGPUBufferPointer());
+  auto * pPhoCount =
+    (const float *)(this->GetInputMeasuredProjections()->GetCudaDataManager()->GetConstGPUBufferPointer());
+  auto * pSpectrum =
+    (const float *)(this->GetInputIncidentSpectrum()->GetCudaDataManager()->GetConstGPUBufferPointer());
+  auto * pProjOnes =
+    (const float *)(this->GetInputProjectionsOfOnes()->GetCudaDataManager()->GetConstGPUBufferPointer());
   auto * pOut1 = (float *)(this->GetOutput1()->GetCudaDataManager()->GetGPUBufferPointer());
   auto * pOut2 = (float *)(this->GetOutput2()->GetCudaDataManager()->GetGPUBufferPointer());
 
