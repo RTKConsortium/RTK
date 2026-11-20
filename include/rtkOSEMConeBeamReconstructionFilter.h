@@ -38,6 +38,10 @@ namespace rtk
 /** \class OSEMConeBeamReconstructionFilter
  * \brief Implements the Ordered-Subset Expectation-Maximization algorithm.
  *
+ * The Expectation-Maximization (EM) algorithm for emission and transmission
+ * tomography is described in [Lange and Carson, JCAT, 1984] and its
+ * Ordered-Subset (OSEM) acceleration in [Hudson and Larkin, IEEE TMI, 1994].
+ *
  * OSEMConeBeamReconstructionFilter is a composite filter which combines
  * the different steps of the OSEM cone-beam reconstruction, mainly:
  * - ExtractFilterType to create the subsets.
