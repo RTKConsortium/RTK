@@ -234,6 +234,28 @@ else()
   itk_module_impl()
 endif()
 
+# Check the minimum CudaCommon version required to compile RTK
+if(RTK_USE_CUDA)
+  set(_cudacommon_minimum_version "2.2.0")
+  # CudaCommon defines its version variables since 2.0.0
+  if(NOT DEFINED CudaCommon_VERSION_MAJOR)
+    message(
+      FATAL_ERROR
+      "RTK requires CudaCommon ${_cudacommon_minimum_version} or later, found a version older than 2.0.0."
+    )
+  endif()
+  set(
+    _cudacommon_version
+    "${CudaCommon_VERSION_MAJOR}.${CudaCommon_VERSION_MINOR}.${CudaCommon_VERSION_PATCH}"
+  )
+  if(_cudacommon_version VERSION_LESS _cudacommon_minimum_version)
+    message(
+      FATAL_ERROR
+      "RTK requires CudaCommon ${_cudacommon_minimum_version} or later, found ${_cudacommon_version}."
+    )
+  endif()
+endif()
+
 if("${ITK_VERSION_MAJOR}" VERSION_GREATER_EQUAL "6")
   add_subdirectory(utilities/lp_solve)
 endif()
