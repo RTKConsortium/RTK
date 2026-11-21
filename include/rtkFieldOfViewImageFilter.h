@@ -82,7 +82,8 @@ public:
 
   /** Get / Set the region of projection images, required to determine the
     FOV radius. Note that only the geometric information is required, the
-    data are therefore not updated. */
+    data are therefore not updated. When generating the mask, the stack must
+    contain all projections of the geometry, starting at index zero. */
   itkGetMacro(ProjectionsStack, ProjectionsStackPointer);
   itkSetObjectMacro(ProjectionsStack, ProjectionsStackType);
 
@@ -125,6 +126,9 @@ protected:
   /** Checks that inputs are correctly set. */
   void
   VerifyPreconditions() const override;
+
+  void
+  VerifyInputInformation() const override;
 
   void
   BeforeThreadedGenerateData() override;

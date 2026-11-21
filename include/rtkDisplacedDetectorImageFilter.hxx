@@ -54,6 +54,15 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>::VerifyPreconditions() c
     itkExceptionMacro(<< "Geometry has not been set.");
 }
 
+template <class TInputImage, class TOutputImage>
+void
+DisplacedDetectorImageFilter<TInputImage, TOutputImage>::VerifyInputInformation() const
+{
+  this->Superclass::VerifyInputInformation();
+
+  GeometryType::CheckNumberOfProjections(*this->m_Geometry, this->GetInput()->GetLargestPossibleRegion());
+}
+
 /**
  * Account for the padding computed in GenerateOutputInformation to propagate the
  * requested region.

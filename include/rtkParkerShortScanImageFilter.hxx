@@ -38,6 +38,15 @@ ParkerShortScanImageFilter<TInputImage, TOutputImage>::VerifyPreconditions() con
 
 template <class TInputImage, class TOutputImage>
 void
+ParkerShortScanImageFilter<TInputImage, TOutputImage>::VerifyInputInformation() const
+{
+  this->Superclass::VerifyInputInformation();
+
+  GeometryType::CheckNumberOfProjections(*this->m_Geometry, this->GetInput()->GetLargestPossibleRegion());
+}
+
+template <class TInputImage, class TOutputImage>
+void
 ParkerShortScanImageFilter<TInputImage, TOutputImage>::GenerateInputRequestedRegion()
 {
   Superclass::GenerateInputRequestedRegion();
