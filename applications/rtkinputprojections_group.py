@@ -88,14 +88,12 @@ def add_rtkinputprojections_group(parser):
         help="Lower boundary crop size",
         type=int,
         nargs="+",
-        default=[0],
     )
     rtkinputprojections_group.add_argument(
         "--uppercrop",
         help="Upper boundary crop size",
         type=int,
         nargs="+",
-        default=[0],
     )
     rtkinputprojections_group.add_argument(
         "--binning",
@@ -222,17 +220,18 @@ def SetProjectionsReaderFromArgParse(reader, args_info):
             origin[i] = args_info.neworigin[i]
         reader.SetOrigin(origin)
 
-    # Crop boundaries
-    upperCrop = [0] * Dimension
-    lowerCrop = [0] * Dimension
+    # Crop boundaries. Only set them when given so that the reader keeps its
+    # format specific defaults otherwise, e.g. for Elekta projections.
     if args_info.lowercrop is not None:
+        lowerCrop = [0] * Dimension
         for i in range(len(args_info.lowercrop)):
             lowerCrop[i] = args_info.lowercrop[i]
-    reader.SetLowerBoundaryCropSize(lowerCrop)
+        reader.SetLowerBoundaryCropSize(lowerCrop)
     if args_info.uppercrop is not None:
+        upperCrop = [0] * Dimension
         for i in range(len(args_info.uppercrop)):
             upperCrop[i] = args_info.uppercrop[i]
-    reader.SetUpperBoundaryCropSize(upperCrop)
+        reader.SetUpperBoundaryCropSize(upperCrop)
 
     # Conditional median
     medianRadius = reader.GetMedianRadius()
