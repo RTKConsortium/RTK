@@ -31,32 +31,39 @@
 namespace rtk
 {
 
-template <class TInputImage,
-          class TOutputImage,
-          class TInterpolationWeightMultiplication,
-          class TProjectedValueAccumulation,
-          class TSumAlongRay>
-JosephForwardProjectionImageFilter<TInputImage,
-                                   TOutputImage,
-                                   TInterpolationWeightMultiplication,
-                                   TProjectedValueAccumulation,
-                                   TSumAlongRay>::JosephForwardProjectionImageFilter()
+template <class TInputImage, class TOutputImage>
+JosephForwardProjectionImageFilter<TInputImage, TOutputImage>::JosephForwardProjectionImageFilter()
 {
+  this->m_InterpolationWeightMultiplication = [](const ThreadIdType         itkNotUsed(threadId),
+                                                 Self &                     itkNotUsed(filter),
+                                                 double                     itkNotUsed(stepLengthInVoxel),
+                                                 const WeightCoordinateType weight,
+                                                 const InputPixelType *     p,
+                                                 ptrdiff_t i) -> OutputPixelType { return weight * p[i]; };
+
+  this->m_SumAlongRay =
+    [](const ThreadIdType, Self &, OutputPixelType & sumValue, const InputPixelType volumeValue, const VectorType &) {
+      sumValue += static_cast<OutputPixelType>(volumeValue);
+    };
+
+  this->m_ProjectedValueAccumulation = [](const ThreadIdType,
+                                          Self &,
+                                          const InputPixelType &  input,
+                                          OutputPixelType &       output,
+                                          const OutputPixelType & rayCastValue,
+                                          const VectorType &      stepInMM,
+                                          const PointType &,
+                                          const VectorType &,
+                                          const PointType &,
+                                          const PointType &) { output = input + rayCastValue * stepInMM.GetNorm(); };
+
   this->DynamicMultiThreadingOff();
 }
 
 
-template <class TInputImage,
-          class TOutputImage,
-          class TInterpolationWeightMultiplication,
-          class TProjectedValueAccumulation,
-          class TSumAlongRay>
+template <class TInputImage, class TOutputImage>
 void
-JosephForwardProjectionImageFilter<TInputImage,
-                                   TOutputImage,
-                                   TInterpolationWeightMultiplication,
-                                   TProjectedValueAccumulation,
-                                   TSumAlongRay>::GenerateInputRequestedRegion()
+JosephForwardProjectionImageFilter<TInputImage, TOutputImage>::GenerateInputRequestedRegion()
 {
   Superclass::GenerateInputRequestedRegion();
 
@@ -78,17 +85,9 @@ JosephForwardProjectionImageFilter<TInputImage,
 }
 
 
-template <class TInputImage,
-          class TOutputImage,
-          class TInterpolationWeightMultiplication,
-          class TProjectedValueAccumulation,
-          class TSumAlongRay>
+template <class TInputImage, class TOutputImage>
 void
-JosephForwardProjectionImageFilter<TInputImage,
-                                   TOutputImage,
-                                   TInterpolationWeightMultiplication,
-                                   TProjectedValueAccumulation,
-                                   TSumAlongRay>::VerifyInputInformation() const
+JosephForwardProjectionImageFilter<TInputImage, TOutputImage>::VerifyInputInformation() const
 {
   using ImageBaseType = const itk::ImageBase<TInputImage::ImageDimension>;
 
@@ -169,19 +168,11 @@ JosephForwardProjectionImageFilter<TInputImage,
 }
 
 
-template <class TInputImage,
-          class TOutputImage,
-          class TInterpolationWeightMultiplication,
-          class TProjectedValueAccumulation,
-          class TSumAlongRay>
+template <class TInputImage, class TOutputImage>
 void
-JosephForwardProjectionImageFilter<TInputImage,
-                                   TOutputImage,
-                                   TInterpolationWeightMultiplication,
-                                   TProjectedValueAccumulation,
-                                   TSumAlongRay>::ThreadedGenerateData(const OutputImageRegionType &
-                                                                                    outputRegionForThread,
-                                                                       ThreadIdType threadId)
+JosephForwardProjectionImageFilter<TInputImage, TOutputImage>::ThreadedGenerateData(
+  const OutputImageRegionType & outputRegionForThread,
+  ThreadIdType                  threadId)
 {
   const unsigned int Dimension = TInputImage::ImageDimension;
   ptrdiff_t          offsets[3];
@@ -350,7 +341,7 @@ JosephForwardProjectionImageFilter<TInputImage,
                                                      miny,
                                                      maxx,
                                                      maxy);
-        m_SumAlongRay(threadId, sum, volumeValue, stepMM);
+        m_SumAlongRay(threadId, *this, sum, volumeValue, stepMM);
       }
       else
       {
@@ -369,7 +360,7 @@ JosephForwardProjectionImageFilter<TInputImage,
                                                      miny,
                                                      maxx,
                                                      maxy);
-        m_SumAlongRay(threadId, sum, volumeValue, stepMM);
+        m_SumAlongRay(threadId, *this, sum, volumeValue, stepMM);
 
         // Move to next main direction slice
         pxiyi += offsetz;
@@ -384,7 +375,7 @@ JosephForwardProjectionImageFilter<TInputImage,
         {
           volumeValue =
             BilinearInterpolation(threadId, 1., pxiyi, pxsyi, pxiys, pxsys, currentx, currenty, offsetx, offsety);
-          m_SumAlongRay(threadId, sum, volumeValue, stepMM);
+          m_SumAlongRay(threadId, *this, sum, volumeValue, stepMM);
 
           // Move to next main direction slice
           pxiyi += offsetz;
@@ -410,46 +401,35 @@ JosephForwardProjectionImageFilter<TInputImage,
                                                      miny,
                                                      maxx,
                                                      maxy);
-        m_SumAlongRay(threadId, sum, volumeValue, stepMM);
+        m_SumAlongRay(threadId, *this, sum, volumeValue, stepMM);
       }
       // Accumulate
-      m_ProjectedValueAccumulation(threadId, itIn->Get(), itOut.Value(), sum, stepMM, pixelPosition, dirVox, np, fp);
+      m_ProjectedValueAccumulation(
+        threadId, *this, itIn->Get(), itOut.Value(), sum, stepMM, pixelPosition, dirVox, np, fp);
     }
     else
     {
       // This ray does not intersect the input image so just accumulate the
       // current pixel with the input value. Step and intersection points are
       // set to 0.
-      m_ProjectedValueAccumulation(threadId, itIn->Get(), itOut.Value(), {}, {}, pixelPosition, dirVox, {}, {});
+      m_ProjectedValueAccumulation(threadId, *this, itIn->Get(), itOut.Value(), {}, {}, pixelPosition, dirVox, {}, {});
     }
   }
   delete itIn;
 }
 
-template <class TInputImage,
-          class TOutputImage,
-          class TInterpolationWeightMultiplication,
-          class TProjectedValueAccumulation,
-          class TSumAlongRay>
-typename JosephForwardProjectionImageFilter<TInputImage,
-                                            TOutputImage,
-                                            TInterpolationWeightMultiplication,
-                                            TProjectedValueAccumulation,
-                                            TSumAlongRay>::OutputPixelType
-JosephForwardProjectionImageFilter<TInputImage,
-                                   TOutputImage,
-                                   TInterpolationWeightMultiplication,
-                                   TProjectedValueAccumulation,
-                                   TSumAlongRay>::BilinearInterpolation(const ThreadIdType     threadId,
-                                                                        const double           stepLengthInVoxel,
-                                                                        const InputPixelType * pxiyi,
-                                                                        const InputPixelType * pxsyi,
-                                                                        const InputPixelType * pxiys,
-                                                                        const InputPixelType * pxsys,
-                                                                        const CoordinateType   x,
-                                                                        const CoordinateType   y,
-                                                                        const ptrdiff_t        ox,
-                                                                        const ptrdiff_t        oy)
+template <class TInputImage, class TOutputImage>
+typename JosephForwardProjectionImageFilter<TInputImage, TOutputImage>::OutputPixelType
+JosephForwardProjectionImageFilter<TInputImage, TOutputImage>::BilinearInterpolation(const ThreadIdType threadId,
+                                                                                     const double stepLengthInVoxel,
+                                                                                     const InputPixelType * pxiyi,
+                                                                                     const InputPixelType * pxsyi,
+                                                                                     const InputPixelType * pxiys,
+                                                                                     const InputPixelType * pxsys,
+                                                                                     const CoordinateType   x,
+                                                                                     const CoordinateType   y,
+                                                                                     const ptrdiff_t        ox,
+                                                                                     const ptrdiff_t        oy)
 {
   ptrdiff_t      ix = itk::Math::floor(x);
   ptrdiff_t      iy = itk::Math::floor(y);
@@ -458,10 +438,10 @@ JosephForwardProjectionImageFilter<TInputImage,
   CoordinateType ly = y - iy;
   CoordinateType lxc = 1. - lx;
   CoordinateType lyc = 1. - ly;
-  return (m_InterpolationWeightMultiplication(threadId, stepLengthInVoxel, lxc * lyc, pxiyi, idx) +
-          m_InterpolationWeightMultiplication(threadId, stepLengthInVoxel, lx * lyc, pxsyi, idx) +
-          m_InterpolationWeightMultiplication(threadId, stepLengthInVoxel, lxc * ly, pxiys, idx) +
-          m_InterpolationWeightMultiplication(threadId, stepLengthInVoxel, lx * ly, pxsys, idx));
+  return (m_InterpolationWeightMultiplication(threadId, *this, stepLengthInVoxel, lxc * lyc, pxiyi, idx) +
+          m_InterpolationWeightMultiplication(threadId, *this, stepLengthInVoxel, lx * lyc, pxsyi, idx) +
+          m_InterpolationWeightMultiplication(threadId, *this, stepLengthInVoxel, lxc * ly, pxiys, idx) +
+          m_InterpolationWeightMultiplication(threadId, *this, stepLengthInVoxel, lx * ly, pxsys, idx));
   /* Alternative slower solution
   const unsigned int   ix = itk::Math::Floor(x);
   const unsigned int   iy = itk::Math::Floor(y);
@@ -476,34 +456,23 @@ JosephForwardProjectionImageFilter<TInputImage,
 */
 }
 
-template <class TInputImage,
-          class TOutputImage,
-          class TInterpolationWeightMultiplication,
-          class TProjectedValueAccumulation,
-          class TSumAlongRay>
-typename JosephForwardProjectionImageFilter<TInputImage,
-                                            TOutputImage,
-                                            TInterpolationWeightMultiplication,
-                                            TProjectedValueAccumulation,
-                                            TSumAlongRay>::OutputPixelType
-JosephForwardProjectionImageFilter<TInputImage,
-                                   TOutputImage,
-                                   TInterpolationWeightMultiplication,
-                                   TProjectedValueAccumulation,
-                                   TSumAlongRay>::BilinearInterpolationOnBorders(const ThreadIdType threadId,
-                                                                                 const double       stepLengthInVoxel,
-                                                                                 const InputPixelType * pxiyi,
-                                                                                 const InputPixelType * pxsyi,
-                                                                                 const InputPixelType * pxiys,
-                                                                                 const InputPixelType * pxsys,
-                                                                                 const CoordinateType   x,
-                                                                                 const CoordinateType   y,
-                                                                                 const ptrdiff_t        ox,
-                                                                                 const ptrdiff_t        oy,
-                                                                                 const CoordinateType   minx,
-                                                                                 const CoordinateType   miny,
-                                                                                 const CoordinateType   maxx,
-                                                                                 const CoordinateType   maxy)
+template <class TInputImage, class TOutputImage>
+typename JosephForwardProjectionImageFilter<TInputImage, TOutputImage>::OutputPixelType
+JosephForwardProjectionImageFilter<TInputImage, TOutputImage>::BilinearInterpolationOnBorders(
+  const ThreadIdType     threadId,
+  const double           stepLengthInVoxel,
+  const InputPixelType * pxiyi,
+  const InputPixelType * pxsyi,
+  const InputPixelType * pxiys,
+  const InputPixelType * pxsys,
+  const CoordinateType   x,
+  const CoordinateType   y,
+  const ptrdiff_t        ox,
+  const ptrdiff_t        oy,
+  const CoordinateType   minx,
+  const CoordinateType   miny,
+  const CoordinateType   maxx,
+  const CoordinateType   maxy)
 {
   ptrdiff_t      ix = itk::Math::floor(x);
   ptrdiff_t      iy = itk::Math::floor(y);
@@ -528,14 +497,14 @@ JosephForwardProjectionImageFilter<TInputImage,
   if (iy >= maxy)
     offset_ys = -oy;
 
-  result +=
-    m_InterpolationWeightMultiplication(threadId, stepLengthInVoxel, lxc * lyc, pxiyi, idx + offset_xi + offset_yi);
-  result +=
-    m_InterpolationWeightMultiplication(threadId, stepLengthInVoxel, lxc * ly, pxiys, idx + offset_xi + offset_ys);
-  result +=
-    m_InterpolationWeightMultiplication(threadId, stepLengthInVoxel, lx * lyc, pxsyi, idx + offset_xs + offset_yi);
-  result +=
-    m_InterpolationWeightMultiplication(threadId, stepLengthInVoxel, lx * ly, pxsys, idx + offset_xs + offset_ys);
+  result += m_InterpolationWeightMultiplication(
+    threadId, *this, stepLengthInVoxel, lxc * lyc, pxiyi, idx + offset_xi + offset_yi);
+  result += m_InterpolationWeightMultiplication(
+    threadId, *this, stepLengthInVoxel, lxc * ly, pxiys, idx + offset_xi + offset_ys);
+  result += m_InterpolationWeightMultiplication(
+    threadId, *this, stepLengthInVoxel, lx * lyc, pxsyi, idx + offset_xs + offset_yi);
+  result += m_InterpolationWeightMultiplication(
+    threadId, *this, stepLengthInVoxel, lx * ly, pxsys, idx + offset_xs + offset_ys);
 
   result *= stepLengthInVoxel;
 
