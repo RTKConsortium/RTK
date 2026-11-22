@@ -138,6 +138,33 @@ The CUDA forward projector `rtk::CudaForwardProjectionFilter` now only accumulat
 
 The CUDA forward projector and the CUDA ray-cast backprojector now use the minimum voxel spacing of the input volume as the ray step when StepSize is not set. The previous default value was 1.
 
+## Joseph projectors use lambda functions instead of functor template parameters
+
+The following projectors now only take the input and output image types as
+template parameters, `<TInputImage, TOutputImage>`:
+
+- `rtk::JosephForwardProjectionImageFilter`
+- `rtk::JosephForwardAttenuatedProjectionImageFilter`
+- `rtk::MaximumIntensityProjectionImageFilter`
+- `rtk::JosephBackProjectionImageFilter`
+- `rtk::JosephBackAttenuatedProjectionImageFilter`
+
+The functor classes of the `rtk::Functor` namespace which were passed as
+template parameters have been removed. The behavior is now customized at run
+time with lambda functions (or any
+callable). Note that:
+
+- the functions take the filter as an argument so that their state can be
+  stored in the filter rather than in a functor. It is the first argument of
+  the back projector functions and the second one of the forward projector
+  functions, after the thread id which indexes per-thread state;
+- the back projector `SumAlongRay` function returns a reference, so lambdas
+  must explicitly declare their return type as `const OutputPixelType &`.
+
+In Python, the functor classes are no longer wrapped and these setters are not
+available. Instantiations such as
+`rtk.JosephForwardProjectionImageFilter[I, I]` are unchanged.
+
 ## Image type itk::Image for incident spectrum in spectral code
 
 Different formats were used across the spectral code for the incident spectrum, 2D itk::VectorImage and 3D itk::Image. All applications and filters now accept the two formats but handling of the `itk::VectorImage` format will be removed in the future and is marked as `ITK_FUTURE_LEGACY_REMOVE`.
