@@ -97,7 +97,71 @@ protected:
   AllocateOutputs() override;
 
   void
+  GenerateData() override;
+
+  void
   Init();
+
+#if !defined(ITK_WRAPPING_PARSER)
+  // Lambdas of the attenuated projector. Their types are used to detect that
+  // they have not been replaced. They access the state of the filter through
+  // their filter argument, which is generic so that the class is complete
+  // when their bodies are instantiated.
+
+  /** Interpolation: accumulate attenuation pixel along the ray */
+  static constexpr auto AttenuatedInterpolationWeightMultiplication = [](auto &                     filter,
+                                                                         double                     stepLengthInVoxel,
+                                                                         const WeightCoordinateType weight,
+                                                                         const InputPixelType *     p,
+                                                                         const ptrdiff_t i) -> OutputPixelType {
+    Self &       self = static_cast<Self &>(filter);
+    const double w = weight * stepLengthInVoxel;
+    self.m_AttenuationPixel += w * (p + self.m_AttenuationMinusEmissionMapsPtrDiff)[i];
+    return static_cast<OutputPixelType>(w * (p + self.m_AttenuationMinusEmissionMapsPtrDiff)[i]);
+  };
+  using AttenuatedInterpolationWeightMultiplicationType =
+    std::remove_const_t<decltype(AttenuatedInterpolationWeightMultiplication)>;
+
+  /** Sum along ray: compute attenuation correction and reset accumulator */
+  static constexpr auto AttenuatedSumAlongRay = [](auto &               filter,
+                                                   const InputPixelType rayValue,
+                                                   const InputPixelType attenuationRay,
+                                                   const VectorType &   stepInMM,
+                                                   bool &               isNewRay) -> const OutputPixelType & {
+    Self & self = static_cast<Self &>(filter);
+    if (isNewRay)
+    {
+      self.m_Ex1 = static_cast<InputPixelType>(1);
+      isNewRay = false;
+    }
+    InputPixelType ex2 = static_cast<InputPixelType>(exp(-attenuationRay * stepInMM.GetNorm()));
+    InputPixelType wf;
+    if (self.m_AttenuationPixel > 0)
+    {
+      wf = (self.m_Ex1 - ex2) / self.m_AttenuationPixel;
+    }
+    else
+    {
+      wf = self.m_Ex1 * stepInMM.GetNorm();
+    }
+    self.m_Ex1 = ex2;
+    self.m_AttenuationPixel = static_cast<InputPixelType>(0);
+    self.m_SumAlongRayValue = static_cast<OutputPixelType>(wf * rayValue);
+    return self.m_SumAlongRayValue;
+  };
+  using AttenuatedSumAlongRayType = std::remove_const_t<decltype(AttenuatedSumAlongRay)>;
+
+  /** Splat multiplication: simple accumulation */
+  static constexpr auto AttenuatedSplatWeightMultiplication = [](Superclass &           itkNotUsed(filter),
+                                                                 const InputPixelType & rayValue,
+                                                                 OutputPixelType &      output,
+                                                                 const double           stepLengthInVoxel,
+                                                                 const double           itkNotUsed(voxelSize),
+                                                                 const double           weight) {
+    output += static_cast<OutputPixelType>(rayValue * weight * stepLengthInVoxel);
+  };
+  using AttenuatedSplatWeightMultiplicationType = std::remove_const_t<decltype(AttenuatedSplatWeightMultiplication)>;
+#endif
 };
 } // end namespace rtk
 

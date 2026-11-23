@@ -37,58 +37,9 @@ JosephBackAttenuatedProjectionImageFilter<TInputImage, TOutputImage>::JosephBack
   this->m_SuperiorClip = 1.;
   this->SetNumberOfRequiredInputs(3);
 
-  /** Interpolation: accumulate attenuation pixel along the ray */
-  auto interpolationWeightMultiplicationAttenuatedFunc = [](Superclass &               filter,
-                                                            double                     stepLengthInVoxel,
-                                                            const WeightCoordinateType weight,
-                                                            const InputPixelType *     p,
-                                                            const ptrdiff_t            i) -> OutputPixelType {
-    Self &       self = static_cast<Self &>(filter);
-    const double w = weight * stepLengthInVoxel;
-    self.m_AttenuationPixel += w * (p + self.m_AttenuationMinusEmissionMapsPtrDiff)[i];
-    return static_cast<OutputPixelType>(w * (p + self.m_AttenuationMinusEmissionMapsPtrDiff)[i]);
-  };
-  this->SetInterpolationWeightMultiplication(interpolationWeightMultiplicationAttenuatedFunc);
-
-  /** Sum along ray: compute attenuation correction and reset accumulator */
-  auto computeAttenuationCorrectionFunc = [](Superclass &         filter,
-                                             const InputPixelType rayValue,
-                                             const InputPixelType attenuationRay,
-                                             const VectorType &   stepInMM,
-                                             bool &               isNewRay) -> const OutputPixelType & {
-    Self & self = static_cast<Self &>(filter);
-    if (isNewRay)
-    {
-      self.m_Ex1 = static_cast<InputPixelType>(1);
-      isNewRay = false;
-    }
-    InputPixelType ex2 = static_cast<InputPixelType>(exp(-attenuationRay * stepInMM.GetNorm()));
-    InputPixelType wf;
-    if (self.m_AttenuationPixel > 0)
-    {
-      wf = (self.m_Ex1 - ex2) / self.m_AttenuationPixel;
-    }
-    else
-    {
-      wf = self.m_Ex1 * stepInMM.GetNorm();
-    }
-    self.m_Ex1 = ex2;
-    self.m_AttenuationPixel = static_cast<InputPixelType>(0);
-    self.m_SumAlongRayValue = static_cast<OutputPixelType>(wf * rayValue);
-    return self.m_SumAlongRayValue;
-  };
-  this->SetSumAlongRay(computeAttenuationCorrectionFunc);
-
-  /** Splat multiplication: simple accumulation */
-  auto splatWeightMultiplicationAttenuatedFunc = [](Superclass &           itkNotUsed(filter),
-                                                    const InputPixelType & rayValue,
-                                                    OutputPixelType &      output,
-                                                    const double           stepLengthInVoxel,
-                                                    const double           itkNotUsed(voxelSize),
-                                                    const double           weight) {
-    output += static_cast<OutputPixelType>(rayValue * weight * stepLengthInVoxel);
-  };
-  this->SetSplatWeightMultiplication(splatWeightMultiplicationAttenuatedFunc);
+  this->SetInterpolationWeightMultiplication(AttenuatedInterpolationWeightMultiplication);
+  this->SetSumAlongRay(AttenuatedSumAlongRay);
+  this->SetSplatWeightMultiplication(AttenuatedSplatWeightMultiplication);
 
   this->DynamicMultiThreadingOff();
 }
@@ -204,6 +155,18 @@ JosephBackAttenuatedProjectionImageFilter<TInputImage, TOutputImage>::AllocateOu
 {
   Superclass::AllocateOutputs();
   Init();
+}
+
+template <class TInputImage, class TOutputImage>
+void
+JosephBackAttenuatedProjectionImageFilter<TInputImage, TOutputImage>::GenerateData()
+{
+  if (!this->template BackProjectIfFunctionTypesAre<AttenuatedInterpolationWeightMultiplicationType,
+                                                    AttenuatedSplatWeightMultiplicationType,
+                                                    AttenuatedSumAlongRayType>())
+  {
+    Superclass::GenerateData();
+  }
 }
 } // end namespace rtk
 

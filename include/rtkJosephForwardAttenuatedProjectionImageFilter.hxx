@@ -40,68 +40,9 @@ JosephForwardAttenuatedProjectionImageFilter<TInputImage, TOutputImage>::JosephF
   std::fill(m_Ex1.begin(), m_Ex1.end(), 1.);
   m_AttenuationMinusEmissionMapsPtrDiff = 0;
 
-  /** Function to multiply the interpolation weights with the projected
-   * volume values and attenuation map. */
-  auto interpolationWeightMultiplicationAttenuatedFunc = [](const ThreadIdType         threadId,
-                                                            Superclass &               filter,
-                                                            double                     stepLengthInVoxel,
-                                                            const WeightCoordinateType weight,
-                                                            const InputPixelType *     p,
-                                                            const ptrdiff_t            i) -> OutputPixelType {
-    Self &            self = static_cast<Self &>(filter);
-    const std::size_t t = threadId * ThreadStride;
-    const double      w = weight * stepLengthInVoxel;
-
-    self.m_AttenuationRay[t] += w * (p + self.m_AttenuationMinusEmissionMapsPtrDiff)[i];
-    self.m_AttenuationPixel[t] += w * (p + self.m_AttenuationMinusEmissionMapsPtrDiff)[i];
-    return weight * p[i];
-  };
-  this->SetInterpolationWeightMultiplication(interpolationWeightMultiplicationAttenuatedFunc);
-
-  /** Function to compute the attenuation correction on the projection. */
-  auto computeAttenuationCorrectionFunc = [](const ThreadIdType   threadId,
-                                             Superclass &         filter,
-                                             OutputPixelType &    sumValue,
-                                             const InputPixelType volumeValue,
-                                             const VectorType &   stepInMM) {
-    Self &            self = static_cast<Self &>(filter);
-    const std::size_t t = threadId * ThreadStride;
-    InputPixelType    ex2 = exp(-1. * self.m_AttenuationRay[t] * stepInMM.GetNorm());
-    InputPixelType    wf;
-
-    if (self.m_AttenuationPixel[t] > 0)
-    {
-      wf = (self.m_Ex1[t] - ex2) / self.m_AttenuationPixel[t];
-    }
-    else
-    {
-      wf = self.m_Ex1[t] * stepInMM.GetNorm();
-    }
-
-    self.m_Ex1[t] = ex2;
-    self.m_AttenuationPixel[t] = 0;
-    sumValue += wf * volumeValue;
-  };
-  this->SetSumAlongRay(computeAttenuationCorrectionFunc);
-
-  /** Function to accumulate the ray casting on the projection. */
-  auto projectedValueAccumulationAttenuatedFunc = [](const ThreadIdType      threadId,
-                                                     Superclass &            filter,
-                                                     const InputPixelType &  input,
-                                                     OutputPixelType &       output,
-                                                     const OutputPixelType & rayCastValue,
-                                                     const VectorType &      itkNotUsed(stepInMM),
-                                                     const PointType &       itkNotUsed(source),
-                                                     const VectorType &      itkNotUsed(sourceToPixel),
-                                                     const PointType &       itkNotUsed(nearestPoint),
-                                                     const PointType &       itkNotUsed(farthestPoint)) {
-    Self &            self = static_cast<Self &>(filter);
-    const std::size_t t = threadId * ThreadStride;
-    output = input + rayCastValue;
-    self.m_AttenuationRay[t] = 0;
-    self.m_Ex1[t] = 1;
-  };
-  this->SetProjectedValueAccumulation(projectedValueAccumulationAttenuatedFunc);
+  this->SetInterpolationWeightMultiplication(AttenuatedInterpolationWeightMultiplication);
+  this->SetSumAlongRay(AttenuatedSumAlongRay);
+  this->SetProjectedValueAccumulation(AttenuatedProjectedValueAccumulation);
 
   this->SetNumberOfRequiredInputs(3);
   this->DynamicMultiThreadingOff();
@@ -214,6 +155,20 @@ JosephForwardAttenuatedProjectionImageFilter<TInputImage, TOutputImage>::BeforeT
   }
   this->m_AttenuationMinusEmissionMapsPtrDiff =
     this->GetInput(2)->GetBufferPointer() - this->GetInput(1)->GetBufferPointer();
+}
+template <class TInputImage, class TOutputImage>
+void
+JosephForwardAttenuatedProjectionImageFilter<TInputImage, TOutputImage>::ThreadedGenerateData(
+  const OutputImageRegionType & outputRegionForThread,
+  ThreadIdType                  threadId)
+{
+  if (!this->template RayCastIfFunctionTypesAre<AttenuatedInterpolationWeightMultiplicationType,
+                                                AttenuatedSumAlongRayType,
+                                                AttenuatedProjectedValueAccumulationType>(outputRegionForThread,
+                                                                                          threadId))
+  {
+    Superclass::ThreadedGenerateData(outputRegionForThread, threadId);
+  }
 }
 } // end namespace rtk
 
