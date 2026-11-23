@@ -24,8 +24,10 @@
 #include "rtkThreeDCircularProjectionGeometry.h"
 
 #include <itkVectorImage.h>
+#include <itkMath.h>
 #include <itkPixelTraits.h>
 
+#include <array>
 #include <functional>
 
 namespace rtk
@@ -71,79 +73,38 @@ public:
   itkOverrideGetNameOfClassMacro(JosephBackProjectionImageFilter);
 
 #if !defined(ITK_WRAPPING_PARSER)
-  /* The functions below receive the filter so that they can store state in
-   * the filter, e.g. in a subclass, without capturing it. */
+  /** Bilinear weights and offsets of the four corners of a ray step. The
+   * offsets are relative to the start of the volume buffer. */
+  using SplatWeightsType = std::array<double, 4>;
+  using CornerOffsetsType = std::array<ptrdiff_t, 4>;
 
-  /** Function to multiply the interpolation weights with the sampled volume
-   * values. */
-  using InterpolationWeightMultiplicationFunc =
-    std::function<OutputPixelType(Self &, double, const WeightCoordinateType, const InputPixelType *, ptrdiff_t)>;
-
-  /** Function to compute the value to backproject from a projection sample.
-   * It returns a reference which must remain valid until the sample has been
-   * splat, e.g. a reference to the input projection pixel or to a data member.
-   * Lambdas must therefore explicitly declare their return type as
-   * const OutputPixelType &, otherwise they return by value and the back
-   * projection silently reads a dangling reference. */
-  using SumAlongRayFunc = std::function<
-    const OutputPixelType &(Self &, const InputPixelType &, const InputPixelType, const VectorType &, bool &)>;
-
-  /** Function to apply the splat weight multiplication and accumulate the
-   * contribution into the output voxel. */
-  using SplatWeightMultiplicationFunc =
-    std::function<void(Self &, const InputPixelType &, OutputPixelType &, const double, const double, const double)>;
-
-  /** Get/Set the lambda function that is used to multiply each interpolation value with a volume value */
-  InterpolationWeightMultiplicationFunc &
-  GetInterpolationWeightMultiplication()
+  /** Projection value, bilinear weights and volume offsets of the four corners of a ray step. */
+  struct StepSamples
   {
-    return m_InterpolationWeightMultiplication;
-  }
-  const InterpolationWeightMultiplicationFunc &
-  GetInterpolationWeightMultiplication() const
-  {
-    return m_InterpolationWeightMultiplication;
-  }
+    InputPixelType projectionValue;
+    /** Offset of the projection pixel from the start of the projection buffer. */
+    size_t            projectionOffset;
+    SplatWeightsType  weights;
+    CornerOffsetsType offsets;
+    /** Length of the step along the main direction in voxels, smaller than 1 at the ends of the ray. */
+    double stepLengthInVoxel;
+    /** Length in mm of a step of one voxel along the main direction. */
+    double stepSizeInMM;
+  };
+
+  /** Per-ray state of the step functions which need none. */
+  struct EmptyRayState
+  {};
+
+  /** Set the function called at each ray step as step(volume, state, samples).
+   * volume points at the start of the output buffer, in which the function
+   * accumulates the contribution of the step, and state is a copy of
+   * initialState for each ray. The function is inlined in the ray stepping loop. */
+  template <class TStep, class TRayState = EmptyRayState>
   void
-  SetInterpolationWeightMultiplication(const InterpolationWeightMultiplicationFunc & _arg)
+  SetStepFunction(TStep step, TRayState initialState = TRayState())
   {
-    m_InterpolationWeightMultiplication = _arg;
-    this->Modified();
-  }
-
-  /** Get/Set the lambda function that is used to multiply each splat weight with a projection value */
-  SplatWeightMultiplicationFunc &
-  GetSplatWeightMultiplication()
-  {
-    return m_SplatWeightMultiplication;
-  }
-  const SplatWeightMultiplicationFunc &
-  GetSplatWeightMultiplication() const
-  {
-    return m_SplatWeightMultiplication;
-  }
-  void
-  SetSplatWeightMultiplication(const SplatWeightMultiplicationFunc & _arg)
-  {
-    m_SplatWeightMultiplication = _arg;
-    this->Modified();
-  }
-
-  /** Get/Set the lambda function that is used to compute the sum along the ray */
-  SumAlongRayFunc &
-  GetSumAlongRay()
-  {
-    return m_SumAlongRay;
-  }
-  const SumAlongRayFunc &
-  GetSumAlongRay() const
-  {
-    return m_SumAlongRay;
-  }
-  void
-  SetSumAlongRay(const SumAlongRayFunc & _arg)
-  {
-    m_SumAlongRay = _arg;
+    m_BackProject = [step = std::move(step), initialState](Self & filter) { filter.BackProject(step, initialState); };
     this->Modified();
   }
 #endif
@@ -169,72 +130,94 @@ protected:
   VerifyInputInformation() const override
   {}
 
-  inline void
-  BilinearSplat(const InputPixelType & rayValue,
-                double                 stepLengthInVoxel,
-                double                 voxelSize,
-                OutputPixelType *      pxiyi,
-                OutputPixelType *      pxsyi,
-                OutputPixelType *      pxiys,
-                OutputPixelType *      pxsys,
-                CoordinateType         x,
-                CoordinateType         y,
-                ptrdiff_t              ox,
-                ptrdiff_t              oy);
-
-  inline void
-  BilinearSplatOnBorders(const InputPixelType & rayValue,
-                         double                 stepLengthInVoxel,
-                         double                 voxelSize,
-                         OutputPixelType *      pxiyi,
-                         OutputPixelType *      pxsyi,
-                         OutputPixelType *      pxiys,
-                         OutputPixelType *      pxsys,
-                         CoordinateType         x,
-                         CoordinateType         y,
-                         ptrdiff_t              ox,
-                         ptrdiff_t              oy,
-                         CoordinateType         minx,
-                         CoordinateType         miny,
-                         CoordinateType         maxx,
-                         CoordinateType         maxy);
-
-  inline OutputPixelType
-  BilinearInterpolation(double                 stepLengthInVoxel,
-                        const InputPixelType * pxiyi,
-                        const InputPixelType * pxsyi,
-                        const InputPixelType * pxiys,
-                        const InputPixelType * pxsys,
-                        CoordinateType         x,
-                        CoordinateType         y,
-                        ptrdiff_t              ox,
-                        ptrdiff_t              oy);
-
-  inline OutputPixelType
-  BilinearInterpolationOnBorders(double                 stepLengthInVoxel,
-                                 const InputPixelType * pxiyi,
-                                 const InputPixelType * pxsyi,
-                                 const InputPixelType * pxiys,
-                                 const InputPixelType * pxsys,
-                                 CoordinateType         x,
-                                 CoordinateType         y,
-                                 ptrdiff_t              ox,
-                                 ptrdiff_t              oy,
-                                 CoordinateType         minx,
-                                 CoordinateType         miny,
-                                 CoordinateType         maxx,
-                                 CoordinateType         maxy);
-
 #if !defined(ITK_WRAPPING_PARSER)
-  // lambdas or std::functions
-  // MUST BE initiated in constructor, or custom functions
-  // must be set by means of Set methods in application
-  SplatWeightMultiplicationFunc         m_SplatWeightMultiplication;
-  InterpolationWeightMultiplicationFunc m_InterpolationWeightMultiplication;
-  SumAlongRayFunc                       m_SumAlongRay;
+  /** Bilinear weights and buffer offsets of the four corners of a ray step. */
+  template <class TWeight>
+  struct RayStencil
+  {
+    std::array<TWeight, 4> weights;
+    CornerOffsetsType      offsets;
+  };
+
+  /** Stencil at (x, y) in the slice starting at offset slice of the buffer.
+   * On borders, corners outside [minx, maxx] x [miny, maxy] are replaced by
+   * their neighbor inside, possibly repeating an offset. */
+  template <bool VOnBorder, class TWeight>
+  static RayStencil<TWeight>
+  MakeRayStencil(ptrdiff_t slice,
+                 double    x,
+                 double    y,
+                 ptrdiff_t ox,
+                 ptrdiff_t oy,
+                 double    minx = 0.,
+                 double    miny = 0.,
+                 double    maxx = 0.,
+                 double    maxy = 0.)
+  {
+    const ptrdiff_t ix = itk::Math::floor(x);
+    const ptrdiff_t iy = itk::Math::floor(y);
+    const ptrdiff_t idx = slice + ix * ox + iy * oy;
+    const double    lx = x - ix;
+    const double    ly = y - iy;
+    const double    lxc = 1. - lx;
+    const double    lyc = 1. - ly;
+
+    if constexpr (VOnBorder)
+    {
+      const ptrdiff_t xi = ix < minx ? ox : 0;
+      const ptrdiff_t yi = iy < miny ? oy : 0;
+      const ptrdiff_t xs = ix >= maxx ? 0 : ox;
+      const ptrdiff_t ys = iy >= maxy ? 0 : oy;
+      return { { static_cast<TWeight>(lxc * lyc),
+                 static_cast<TWeight>(lxc * ly),
+                 static_cast<TWeight>(lx * lyc),
+                 static_cast<TWeight>(lx * ly) },
+               { idx + xi + yi, idx + xi + ys, idx + xs + yi, idx + xs + ys } };
+    }
+    else
+    {
+      return { { static_cast<TWeight>(lxc * lyc),
+                 static_cast<TWeight>(lx * lyc),
+                 static_cast<TWeight>(lxc * ly),
+                 static_cast<TWeight>(lx * ly) },
+               { idx, idx + ox, idx + oy, idx + ox + oy } };
+    }
+  }
+
+  /** Samples of the ray step at (x, y) in the slice starting at offset slice of the volume buffer. */
+  template <bool VOnBorder>
+  static StepSamples
+  MakeStepSamples(const InputPixelType & projectionValue,
+                  size_t                 projectionOffset,
+                  ptrdiff_t              slice,
+                  double                 x,
+                  double                 y,
+                  ptrdiff_t              ox,
+                  ptrdiff_t              oy,
+                  double                 stepLengthInVoxel,
+                  double                 stepSizeInMM,
+                  double                 minx = 0.,
+                  double                 miny = 0.,
+                  double                 maxx = 0.,
+                  double                 maxy = 0.)
+  {
+    const auto stencil = MakeRayStencil<VOnBorder, double>(slice, x, y, ox, oy, minx, miny, maxx, maxy);
+    return { projectionValue, projectionOffset, stencil.weights, stencil.offsets, stepLengthInVoxel, stepSizeInMM };
+  }
 #endif
+
   double m_InferiorClip{ 0. };
   double m_SuperiorClip{ 1. };
+
+private:
+#if !defined(ITK_WRAPPING_PARSER)
+  /** Back projects the projections with step, which is inlined in the ray stepping loop. */
+  template <class TStep, class TRayState>
+  void
+  BackProject(const TStep & step, const TRayState & initialState);
+
+  std::function<void(Self &)> m_BackProject;
+#endif
 };
 
 } // end namespace rtk

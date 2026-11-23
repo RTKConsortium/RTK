@@ -34,29 +34,17 @@ namespace rtk
 template <class TInputImage, class TOutputImage>
 JosephForwardProjectionImageFilter<TInputImage, TOutputImage>::JosephForwardProjectionImageFilter()
 {
-  this->m_InterpolationWeightMultiplication = [](const ThreadIdType         itkNotUsed(threadId),
-                                                 Self &                     itkNotUsed(filter),
-                                                 double                     itkNotUsed(stepLengthInVoxel),
-                                                 const WeightCoordinateType weight,
-                                                 const InputPixelType *     p,
-                                                 ptrdiff_t i) -> OutputPixelType { return weight * p[i]; };
-
-  this->m_SumAlongRay =
-    [](const ThreadIdType, Self &, OutputPixelType & sumValue, const InputPixelType volumeValue, const VectorType &) {
-      sumValue += static_cast<OutputPixelType>(volumeValue);
-    };
-
-  this->m_ProjectedValueAccumulation = [](const ThreadIdType,
-                                          Self &,
-                                          const InputPixelType &  input,
-                                          OutputPixelType &       output,
-                                          const OutputPixelType & rayCastValue,
-                                          const VectorType &      stepInMM,
-                                          const PointType &,
-                                          const VectorType &,
-                                          const PointType &,
-                                          const PointType &) { output = input + rayCastValue * stepInMM.GetNorm(); };
-
+  this->SetStepFunction([](OutputPixelType & rayValue, EmptyRayState &, const StepSamples & samples) {
+    rayValue += samples.Interpolate();
+  });
+  m_ProjectedValueAccumulation = [](const InputPixelType &  input,
+                                    OutputPixelType &       output,
+                                    const OutputPixelType & rayValue,
+                                    const VectorType &      stepInMM,
+                                    const PointType &,
+                                    const VectorType &,
+                                    const PointType &,
+                                    const PointType &) { output = input + rayValue * stepInMM.GetNorm(); };
   this->DynamicMultiThreadingOff();
 }
 
@@ -172,7 +160,18 @@ template <class TInputImage, class TOutputImage>
 void
 JosephForwardProjectionImageFilter<TInputImage, TOutputImage>::ThreadedGenerateData(
   const OutputImageRegionType & outputRegionForThread,
-  ThreadIdType                  threadId)
+  ThreadIdType                  itkNotUsed(threadId))
+{
+  m_RayCast(*this, outputRegionForThread);
+}
+
+template <class TInputImage, class TOutputImage>
+template <class TStep, class TRayState>
+void
+JosephForwardProjectionImageFilter<TInputImage, TOutputImage>::RayCast(
+  const OutputImageRegionType & outputRegionForThread,
+  const TStep &                 step,
+  const TRayState &             initialState)
 {
   const unsigned int Dimension = TInputImage::ImageDimension;
   ptrdiff_t          offsets[3];
@@ -182,12 +181,11 @@ JosephForwardProjectionImageFilter<TInputImage, TOutputImage>::ThreadedGenerateD
     this->GetInput(1)->GetBufferedRegion().GetSize()[0] * this->GetInput(1)->GetBufferedRegion().GetSize()[1];
   const typename Superclass::GeometryType::ConstPointer geometry = this->GetGeometry();
 
-  // beginBuffer is pointing at point with index (0,0,0) in memory, even if
-  // it is not in the allocated memory
-  const typename TInputImage::PixelType * beginBuffer =
-    this->GetInput(1)->GetBufferPointer() - offsets[0] * this->GetInput(1)->GetBufferedRegion().GetIndex()[0] -
-    offsets[1] * this->GetInput(1)->GetBufferedRegion().GetIndex()[1] -
-    offsets[2] * this->GetInput(1)->GetBufferedRegion().GetIndex()[2];
+  // Offsets are relative to the start of the buffer, originOffset is the offset of index (0,0,0)
+  const InputPixelType * buffer = this->GetInput(1)->GetBufferPointer();
+  const auto &           bufferIndex = this->GetInput(1)->GetBufferedRegion().GetIndex();
+  const ptrdiff_t        originOffset =
+    -offsets[0] * bufferIndex[0] - offsets[1] * bufferIndex[1] - offsets[2] * bufferIndex[2];
 
   // volPPToIndex maps the physical 3D coordinates of a point (in mm) to the
   // corresponding 3D volume index
@@ -288,15 +286,11 @@ JosephForwardProjectionImageFilter<TInputImage, TOutputImage>::ThreadedGenerateD
       const CoordinateType maxx = box->GetBoxMax()[notMainDirInf];
       const CoordinateType maxy = box->GetBoxMax()[notMainDirSup];
 
-      // Init data pointers to first pixel of slice ns (i)nferior and (s)uperior (x|y) corner
+      // Init data offset to first pixel of slice ns
       const ptrdiff_t offsetx = offsets[notMainDirInf];
       const ptrdiff_t offsety = offsets[notMainDirSup];
       ptrdiff_t       offsetz = offsets[mainDir];
-
-      const typename TInputImage::PixelType * pxiyi = beginBuffer + ns * offsetz;
-      const typename TInputImage::PixelType * pxsyi = pxiyi + offsetx;
-      const typename TInputImage::PixelType * pxiys = pxiyi + offsety;
-      const typename TInputImage::PixelType * pxsys = pxsyi + offsety;
+      ptrdiff_t       slice = originOffset + ns * offsetz;
 
       // Compute step size and go to first voxel
       CoordinateType       residualB = ns - np[mainDir];
@@ -322,194 +316,92 @@ JosephForwardProjectionImageFilter<TInputImage, TOutputImage>::ThreadedGenerateD
       stepMM[mainDir] = this->GetInput(1)->GetSpacing()[mainDir];
 
       // Initialize the accumulation
-      typename TOutputImage::PixelType sum = itk::NumericTraits<typename TOutputImage::PixelType>::ZeroValue();
-
-      typename TInputImage::PixelType volumeValue = itk::NumericTraits<typename TInputImage::PixelType>::ZeroValue();
+      OutputPixelType rayValue = itk::NumericTraits<OutputPixelType>::ZeroValue();
+      TRayState       state = initialState;
+      const double    stepSizeInMM = stepMM.GetNorm();
       if (fs == ns) // If the voxel is a corner, we can skip most steps
       {
-        volumeValue = BilinearInterpolationOnBorders(threadId,
-                                                     std::abs(fp[mainDir] - np[mainDir]),
-                                                     pxiyi,
-                                                     pxsyi,
-                                                     pxiys,
-                                                     pxsys,
-                                                     currentx,
-                                                     currenty,
-                                                     offsetx,
-                                                     offsety,
-                                                     minx,
-                                                     miny,
-                                                     maxx,
-                                                     maxy);
-        m_SumAlongRay(threadId, *this, sum, volumeValue, stepMM);
+        step(rayValue,
+             state,
+             MakeStepSamples<true>(buffer,
+                                   slice,
+                                   currentx,
+                                   currenty,
+                                   offsetx,
+                                   offsety,
+                                   std::abs(fp[mainDir] - np[mainDir]),
+                                   stepSizeInMM,
+                                   minx,
+                                   miny,
+                                   maxx,
+                                   maxy));
       }
       else
       {
         // First step
-        volumeValue = BilinearInterpolationOnBorders(threadId,
-                                                     residualB + 0.5,
-                                                     pxiyi,
-                                                     pxsyi,
-                                                     pxiys,
-                                                     pxsys,
-                                                     currentx,
-                                                     currenty,
-                                                     offsetx,
-                                                     offsety,
-                                                     minx,
-                                                     miny,
-                                                     maxx,
-                                                     maxy);
-        m_SumAlongRay(threadId, *this, sum, volumeValue, stepMM);
+        step(rayValue,
+             state,
+             MakeStepSamples<true>(buffer,
+                                   slice,
+                                   currentx,
+                                   currenty,
+                                   offsetx,
+                                   offsety,
+                                   residualB + 0.5,
+                                   stepSizeInMM,
+                                   minx,
+                                   miny,
+                                   maxx,
+                                   maxy));
 
         // Move to next main direction slice
-        pxiyi += offsetz;
-        pxsyi += offsetz;
-        pxiys += offsetz;
-        pxsys += offsetz;
+        slice += offsetz;
         currentx += stepx;
         currenty += stepy;
 
         // Middle steps
         for (int i{ 0 }; i < std::abs(fs - ns) - 1; ++i)
         {
-          volumeValue =
-            BilinearInterpolation(threadId, 1., pxiyi, pxsyi, pxiys, pxsys, currentx, currenty, offsetx, offsety);
-          m_SumAlongRay(threadId, *this, sum, volumeValue, stepMM);
+          step(rayValue,
+               state,
+               MakeStepSamples<false>(buffer, slice, currentx, currenty, offsetx, offsety, 1., stepSizeInMM));
 
           // Move to next main direction slice
-          pxiyi += offsetz;
-          pxsyi += offsetz;
-          pxiys += offsetz;
-          pxsys += offsetz;
+          slice += offsetz;
           currentx += stepx;
           currenty += stepy;
         }
 
         // Last step
-        volumeValue = BilinearInterpolationOnBorders(threadId,
-                                                     residualE + 0.5,
-                                                     pxiyi,
-                                                     pxsyi,
-                                                     pxiys,
-                                                     pxsys,
-                                                     currentx,
-                                                     currenty,
-                                                     offsetx,
-                                                     offsety,
-                                                     minx,
-                                                     miny,
-                                                     maxx,
-                                                     maxy);
-        m_SumAlongRay(threadId, *this, sum, volumeValue, stepMM);
+        step(rayValue,
+             state,
+             MakeStepSamples<true>(buffer,
+                                   slice,
+                                   currentx,
+                                   currenty,
+                                   offsetx,
+                                   offsety,
+                                   residualE + 0.5,
+                                   stepSizeInMM,
+                                   minx,
+                                   miny,
+                                   maxx,
+                                   maxy));
       }
       // Accumulate
-      m_ProjectedValueAccumulation(
-        threadId, *this, itIn->Get(), itOut.Value(), sum, stepMM, pixelPosition, dirVox, np, fp);
+      m_ProjectedValueAccumulation(itIn->Get(), itOut.Value(), rayValue, stepMM, pixelPosition, dirVox, np, fp);
     }
     else
     {
       // This ray does not intersect the input image so just accumulate the
       // current pixel with the input value. Step and intersection points are
       // set to 0.
-      m_ProjectedValueAccumulation(threadId, *this, itIn->Get(), itOut.Value(), {}, {}, pixelPosition, dirVox, {}, {});
+      m_ProjectedValueAccumulation(itIn->Get(), itOut.Value(), {}, {}, pixelPosition, dirVox, {}, {});
     }
   }
   delete itIn;
 }
 
-template <class TInputImage, class TOutputImage>
-typename JosephForwardProjectionImageFilter<TInputImage, TOutputImage>::OutputPixelType
-JosephForwardProjectionImageFilter<TInputImage, TOutputImage>::BilinearInterpolation(const ThreadIdType threadId,
-                                                                                     const double stepLengthInVoxel,
-                                                                                     const InputPixelType * pxiyi,
-                                                                                     const InputPixelType * pxsyi,
-                                                                                     const InputPixelType * pxiys,
-                                                                                     const InputPixelType * pxsys,
-                                                                                     const CoordinateType   x,
-                                                                                     const CoordinateType   y,
-                                                                                     const ptrdiff_t        ox,
-                                                                                     const ptrdiff_t        oy)
-{
-  ptrdiff_t      ix = itk::Math::floor(x);
-  ptrdiff_t      iy = itk::Math::floor(y);
-  ptrdiff_t      idx = ix * ox + iy * oy;
-  CoordinateType lx = x - ix;
-  CoordinateType ly = y - iy;
-  CoordinateType lxc = 1. - lx;
-  CoordinateType lyc = 1. - ly;
-  return (m_InterpolationWeightMultiplication(threadId, *this, stepLengthInVoxel, lxc * lyc, pxiyi, idx) +
-          m_InterpolationWeightMultiplication(threadId, *this, stepLengthInVoxel, lx * lyc, pxsyi, idx) +
-          m_InterpolationWeightMultiplication(threadId, *this, stepLengthInVoxel, lxc * ly, pxiys, idx) +
-          m_InterpolationWeightMultiplication(threadId, *this, stepLengthInVoxel, lx * ly, pxsys, idx));
-  /* Alternative slower solution
-  const unsigned int   ix = itk::Math::Floor(x);
-  const unsigned int   iy = itk::Math::Floor(y);
-  const unsigned int   idx = ix*ox + iy*oy;
-  const CoordinateType a = p1[idx];
-  const CoordinateType b = p2[idx] - a;
-  const CoordinateType c = p3[idx] - a;
-  const CoordinateType lx = x-ix;
-  const CoordinateType ly = y-iy;
-  const CoordinateType d = p4[idx] - a - b - c;
-  return a + b*lx + c*ly + d*lx*ly;
-*/
-}
-
-template <class TInputImage, class TOutputImage>
-typename JosephForwardProjectionImageFilter<TInputImage, TOutputImage>::OutputPixelType
-JosephForwardProjectionImageFilter<TInputImage, TOutputImage>::BilinearInterpolationOnBorders(
-  const ThreadIdType     threadId,
-  const double           stepLengthInVoxel,
-  const InputPixelType * pxiyi,
-  const InputPixelType * pxsyi,
-  const InputPixelType * pxiys,
-  const InputPixelType * pxsys,
-  const CoordinateType   x,
-  const CoordinateType   y,
-  const ptrdiff_t        ox,
-  const ptrdiff_t        oy,
-  const CoordinateType   minx,
-  const CoordinateType   miny,
-  const CoordinateType   maxx,
-  const CoordinateType   maxy)
-{
-  ptrdiff_t      ix = itk::Math::floor(x);
-  ptrdiff_t      iy = itk::Math::floor(y);
-  ptrdiff_t      idx = ix * ox + iy * oy;
-  CoordinateType lx = x - ix;
-  CoordinateType ly = y - iy;
-  CoordinateType lxc = 1. - lx;
-  CoordinateType lyc = 1. - ly;
-
-  ptrdiff_t offset_xi = 0;
-  ptrdiff_t offset_yi = 0;
-  ptrdiff_t offset_xs = 0;
-  ptrdiff_t offset_ys = 0;
-
-  OutputPixelType result = itk::NumericTraits<typename TOutputImage::PixelType>::ZeroValue();
-  if (ix < minx)
-    offset_xi = ox;
-  if (iy < miny)
-    offset_yi = oy;
-  if (ix >= maxx)
-    offset_xs = -ox;
-  if (iy >= maxy)
-    offset_ys = -oy;
-
-  result += m_InterpolationWeightMultiplication(
-    threadId, *this, stepLengthInVoxel, lxc * lyc, pxiyi, idx + offset_xi + offset_yi);
-  result += m_InterpolationWeightMultiplication(
-    threadId, *this, stepLengthInVoxel, lxc * ly, pxiys, idx + offset_xi + offset_ys);
-  result += m_InterpolationWeightMultiplication(
-    threadId, *this, stepLengthInVoxel, lx * lyc, pxsyi, idx + offset_xs + offset_yi);
-  result += m_InterpolationWeightMultiplication(
-    threadId, *this, stepLengthInVoxel, lx * ly, pxsys, idx + offset_xs + offset_ys);
-
-  result *= stepLengthInVoxel;
-
-  return (result);
-}
 } // end namespace rtk
 
 #endif

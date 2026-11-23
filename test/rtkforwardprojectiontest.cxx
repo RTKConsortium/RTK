@@ -84,15 +84,10 @@ rtkforwardprojectiontest(int, char *[])
   jfp->SetInput(1, volInput->GetOutput());
 
 #ifndef USE_CUDA
-  // Adding custom SumAlongRay lambda function doesn't work with CUDA filter
-  JFPType::SumAlongRayFunc sumFuncTest = [](const itk::ThreadIdType,
-                                            JFPType &,
-                                            JFPType::OutputPixelType &    sum,
-                                            const JFPType::InputPixelType in,
-                                            const JFPType::VectorType &) -> void {
-    sum += static_cast<JFPType::OutputPixelType>(in);
-  };
-  jfp->SetSumAlongRay(sumFuncTest);
+  // Custom step function equal to the default one, not available with the CUDA filter
+  jfp->SetStepFunction([](JFPType::OutputPixelType & rayValue,
+                          JFPType::EmptyRayState &,
+                          const JFPType::StepSamples & samples) { rayValue += samples.Interpolate(); });
 #endif
 
   // Ray Box Intersection filter (reference)

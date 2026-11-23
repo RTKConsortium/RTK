@@ -35,70 +35,31 @@ template <class TInputImage, class TOutputImage>
 JosephForwardAttenuatedProjectionImageFilter<TInputImage, TOutputImage>::JosephForwardAttenuatedProjectionImageFilter()
   : JosephForwardProjectionImageFilter<TInputImage, TOutputImage>()
 {
-  std::fill(m_AttenuationRay.begin(), m_AttenuationRay.end(), 0.);
-  std::fill(m_AttenuationPixel.begin(), m_AttenuationPixel.end(), 0.);
-  std::fill(m_Ex1.begin(), m_Ex1.end(), 1.);
-  m_AttenuationMinusEmissionMapsPtrDiff = 0;
-
-  /** Function to multiply the interpolation weights with the projected
-   * volume values and attenuation map. */
-  auto interpolationWeightMultiplicationAttenuatedFunc = [](const ThreadIdType         threadId,
-                                                            Superclass &               filter,
-                                                            double                     stepLengthInVoxel,
-                                                            const WeightCoordinateType weight,
-                                                            const InputPixelType *     p,
-                                                            const ptrdiff_t            i) -> OutputPixelType {
-    Self &       self = static_cast<Self &>(filter);
-    const double w = weight * stepLengthInVoxel;
-
-    self.m_AttenuationRay[threadId] += w * (p + self.m_AttenuationMinusEmissionMapsPtrDiff)[i];
-    self.m_AttenuationPixel[threadId] += w * (p + self.m_AttenuationMinusEmissionMapsPtrDiff)[i];
-    return weight * p[i];
-  };
-  this->SetInterpolationWeightMultiplication(interpolationWeightMultiplicationAttenuatedFunc);
-
-  /** Function to compute the attenuation correction on the projection. */
-  auto computeAttenuationCorrectionFunc = [](const ThreadIdType   threadId,
-                                             Superclass &         filter,
-                                             OutputPixelType &    sumValue,
-                                             const InputPixelType volumeValue,
-                                             const VectorType &   stepInMM) {
-    Self &         self = static_cast<Self &>(filter);
-    InputPixelType ex2 = exp(-1. * self.m_AttenuationRay[threadId] * stepInMM.GetNorm());
-    InputPixelType wf;
-
-    if (self.m_AttenuationPixel[threadId] > 0)
-    {
-      wf = (self.m_Ex1[threadId] - ex2) / self.m_AttenuationPixel[threadId];
-    }
-    else
-    {
-      wf = self.m_Ex1[threadId] * stepInMM.GetNorm();
-    }
-
-    self.m_Ex1[threadId] = ex2;
-    self.m_AttenuationPixel[threadId] = 0;
-    sumValue += wf * volumeValue;
-  };
-  this->SetSumAlongRay(computeAttenuationCorrectionFunc);
-
-  /** Function to accumulate the ray casting on the projection. */
-  auto projectedValueAccumulationAttenuatedFunc = [](const ThreadIdType      threadId,
-                                                     Superclass &            filter,
-                                                     const InputPixelType &  input,
-                                                     OutputPixelType &       output,
-                                                     const OutputPixelType & rayCastValue,
-                                                     const VectorType &      itkNotUsed(stepInMM),
-                                                     const PointType &       itkNotUsed(source),
-                                                     const VectorType &      itkNotUsed(sourceToPixel),
-                                                     const PointType &       itkNotUsed(nearestPoint),
-                                                     const PointType &       itkNotUsed(farthestPoint)) {
-    Self & self = static_cast<Self &>(filter);
-    output = input + rayCastValue;
-    self.m_AttenuationRay[threadId] = 0;
-    self.m_Ex1[threadId] = 1;
-  };
-  this->SetProjectedValueAccumulation(projectedValueAccumulationAttenuatedFunc);
+  this->SetStepFunction(
+    [this](OutputPixelType & rayValue, AttenuationRayState & ray, const typename Superclass::StepSamples & samples) {
+      const auto     attenuation = this->SampleAttenuation(samples.offsets);
+      InputPixelType stepAttenuation = 0;
+      for (unsigned int k = 0; k < 4; ++k)
+      {
+        const double w = samples.weights[k] * samples.stepLengthInVoxel;
+        ray.attenuationRay += w * attenuation[k];
+        stepAttenuation += w * attenuation[k];
+      }
+      const InputPixelType ex2 = exp(-1. * ray.attenuationRay * samples.stepSizeInMM);
+      const InputPixelType wf =
+        stepAttenuation > 0 ? (ray.ex1 - ex2) / stepAttenuation : ray.ex1 * samples.stepSizeInMM;
+      ray.ex1 = ex2;
+      rayValue += wf * samples.Interpolate();
+    },
+    AttenuationRayState());
+  this->SetProjectedValueAccumulation([](const InputPixelType &  input,
+                                         OutputPixelType &       output,
+                                         const OutputPixelType & rayValue,
+                                         const VectorType &,
+                                         const PointType &,
+                                         const VectorType &,
+                                         const PointType &,
+                                         const PointType &) { output = input + rayValue; });
 
   this->SetNumberOfRequiredInputs(3);
   this->DynamicMultiThreadingOff();
@@ -205,12 +166,18 @@ template <class TInputImage, class TOutputImage>
 void
 JosephForwardAttenuatedProjectionImageFilter<TInputImage, TOutputImage>::BeforeThreadedGenerateData()
 {
-  if (!this->GetInput(2))
+  const TInputImage * attenuationMap = this->GetInput(2);
+  if (!attenuationMap)
   {
     itkExceptionMacro("Attenuation map (input 2) must be set before running the attenuated forward projector.");
   }
-  this->m_AttenuationMinusEmissionMapsPtrDiff =
-    this->GetInput(2)->GetBufferPointer() - this->GetInput(1)->GetBufferPointer();
+  const auto & volumeRegion = this->GetInput(1)->GetBufferedRegion();
+  if (!attenuationMap->GetBufferedRegion().IsInside(volumeRegion))
+  {
+    itkExceptionMacro("The attenuation map (input 2) must cover the buffered region of the volume (input 1).");
+  }
+  m_AttenuationBuffer = attenuationMap->GetBufferPointer();
+  m_AttenuationSameLayout = attenuationMap->GetBufferedRegion() == volumeRegion;
 }
 } // end namespace rtk
 

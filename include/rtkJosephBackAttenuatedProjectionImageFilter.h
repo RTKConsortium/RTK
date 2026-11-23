@@ -75,10 +75,8 @@ protected:
   JosephBackAttenuatedProjectionImageFilter();
   ~JosephBackAttenuatedProjectionImageFilter() override = default;
 
-  std::ptrdiff_t  m_AttenuationMinusEmissionMapsPtrDiff{ 0 };
-  InputPixelType  m_AttenuationPixel{ static_cast<InputPixelType>(0) };
-  InputPixelType  m_Ex1{ static_cast<InputPixelType>(1) };
-  OutputPixelType m_SumAlongRayValue{ static_cast<OutputPixelType>(0) };
+  const InputPixelType * m_AttenuationBuffer{ nullptr };
+  bool                   m_AttenuationSameLayout{ true };
 
   /** Apply changes to the input image requested region. */
   void
@@ -89,11 +87,35 @@ protected:
   void
   VerifyInputInformation() const override;
 
+  /** The attenuation map is sampled at offsets of the output buffer, which is
+   * allocated here. */
   void
-  GenerateData() override;
+  AllocateOutputs() override;
 
   void
   Init();
+
+#if !defined(ITK_WRAPPING_PARSER)
+  /** Attenuation along the ray up to the current step and transmission at the previous step. */
+  struct AttenuationRayState
+  {
+    OutputPixelType attenuationRay{ 0 };
+    InputPixelType  ex1{ 1 };
+  };
+
+  /** Attenuation map values at the corner offsets of the volume buffer. */
+  std::array<InputPixelType, 4>
+  SampleAttenuation(const typename Superclass::CornerOffsetsType & offsets) const
+  {
+    std::array<InputPixelType, 4> samples;
+    for (unsigned int k = 0; k < 4; ++k)
+    {
+      samples[k] = m_AttenuationSameLayout ? m_AttenuationBuffer[offsets[k]]
+                                           : this->GetInput(2)->GetPixel(this->GetOutput()->ComputeIndex(offsets[k]));
+    }
+    return samples;
+  }
+#endif
 };
 } // end namespace rtk
 

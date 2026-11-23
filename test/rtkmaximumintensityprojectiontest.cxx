@@ -64,24 +64,18 @@ rtkmaximumintensityprojectiontest(int, char *[])
   jfp->SetInput(1, volInput->GetOutput());
 
   // Function to compute the maximum intensity (MIP) value along the ray projection.
-  JFPType::SumAlongRayFunc sumAlongFunc = [](const itk::ThreadIdType,
-                                             JFPType &,
-                                             JFPType::OutputPixelType &    mipValue,
-                                             const JFPType::InputPixelType volumeValue,
-                                             const JFPType::VectorType &) -> void {
-    JFPType::OutputPixelType tmp = static_cast<JFPType::OutputPixelType>(volumeValue);
-    if (tmp > mipValue)
-    {
-      mipValue = tmp;
-    }
-  };
-  jfp->SetSumAlongRay(sumAlongFunc);
+  jfp->SetStepFunction(
+    [](JFPType::OutputPixelType & mipValue, JFPType::EmptyRayState &, const JFPType::StepSamples & samples) {
+      const JFPType::OutputPixelType value = samples.Interpolate();
+      if (value > mipValue)
+      {
+        mipValue = value;
+      }
+    });
 
   // Performs a MIP forward projection, i.e. calculation of a maximum intensity
   // step along the x-ray line.
-  JFPType::ProjectedValueAccumulationFunc projAccumFunc = [](const itk::ThreadIdType          itkNotUsed(threadId),
-                                                             JFPType &                        itkNotUsed(filter),
-                                                             const JFPType::InputPixelType &  input,
+  JFPType::ProjectedValueAccumulationFunc projAccumFunc = [](const JFPType::InputPixelType &  input,
                                                              JFPType::OutputPixelType &       output,
                                                              const JFPType::OutputPixelType & rayCastValue,
                                                              const JFPType::VectorType &      stepInMM,

@@ -138,6 +138,43 @@ The CUDA forward projector `rtk::CudaForwardProjectionFilter` now only accumulat
 
 The CUDA forward projector and the CUDA ray-cast backprojector now use the minimum voxel spacing of the input volume as the ray step when StepSize is not set. The previous default value was 1.
 
+## Joseph projectors use lambda functions instead of functor template parameters
+
+The following projectors now only take the input and output image types as
+template parameters, `<TInputImage, TOutputImage>`:
+
+- `rtk::JosephForwardProjectionImageFilter`
+- `rtk::JosephForwardAttenuatedProjectionImageFilter`
+- `rtk::MaximumIntensityProjectionImageFilter`
+- `rtk::JosephBackProjectionImageFilter`
+- `rtk::JosephBackAttenuatedProjectionImageFilter`
+
+The functor classes of the `rtk::Functor` namespace which were passed as
+template parameters have been removed. The behavior is now customized at run
+time with a step function, a lambda (or any callable) passed to
+`SetStepFunction` and called once per ray step for the four bilinear corners
+of the step:
+
+- forward projectors call `step(rayValue, state, samples)`, where `samples`
+  holds the weights, volume values and offsets of the corners and
+  `samples.Interpolate()` computes the default interpolation. `rayValue` is
+  then passed to the function set with `SetProjectedValueAccumulation`;
+- back projectors call `step(volume, state, samples)`, where `samples` holds
+  the projection value and the weights and offsets of the corners, and the
+  function accumulates the contribution of the step in the output buffer
+  `volume`;
+- `state` is a copy, for each ray, of the optional second argument of
+  `SetStepFunction`, e.g., the attenuation along the ray in the attenuated
+  projectors;
+- the offsets are relative to the start of the volume buffer and also index
+  other images with the same buffered region;
+- the step function is inlined in the ray casting loop and may be called
+  concurrently for different rays.
+
+In Python, the functor classes are no longer wrapped and these setters are not
+available. Instantiations such as
+`rtk.JosephForwardProjectionImageFilter[I, I]` are unchanged.
+
 ## Image type itk::Image for incident spectrum in spectral code
 
 Different formats were used across the spectral code for the incident spectrum, 2D itk::VectorImage and 3D itk::Image. All applications and filters now accept the two formats but handling of the `itk::VectorImage` format will be removed in the future and is marked as `ITK_FUTURE_LEGACY_REMOVE`.

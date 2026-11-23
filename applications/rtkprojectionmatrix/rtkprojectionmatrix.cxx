@@ -26,63 +26,6 @@
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 #include "rtkprojectionmatrix_ggo.h"
 
-namespace rtk
-{
-namespace Functor
-{
-template <class TInput, class TCoordinateType, class TOutput = TCoordinateType>
-class StoreSparseMatrixSplatWeightMultiplication
-{
-public:
-  StoreSparseMatrixSplatWeightMultiplication() = default;
-  ~StoreSparseMatrixSplatWeightMultiplication() = default;
-
-  bool
-  operator!=(const StoreSparseMatrixSplatWeightMultiplication &) const
-  {
-    return false;
-  }
-  bool
-  operator==(const StoreSparseMatrixSplatWeightMultiplication & other) const
-  {
-    return !(*this != other);
-  }
-
-  void
-  operator()(const TInput &        rayValue,
-             TOutput &             output,
-             const double          stepLengthInVoxel,
-             const double          voxelSize,
-             const TCoordinateType weight)
-  {
-    // One row of the matrix is one ray, it should be thread safe
-    m_SystemMatrix.put(
-      &rayValue - m_ProjectionsBuffer, &output - m_VolumeBuffer, weight * voxelSize * stepLengthInVoxel);
-  }
-  vnl_sparse_matrix<double> &
-  GetVnlSparseMatrix()
-  {
-    return m_SystemMatrix;
-  }
-  void
-  SetProjectionsBuffer(TInput * pb)
-  {
-    m_ProjectionsBuffer = pb;
-  }
-  void
-  SetVolumeBuffer(TOutput * vb)
-  {
-    m_VolumeBuffer = vb;
-  }
-
-private:
-  vnl_sparse_matrix<double> m_SystemMatrix;
-  TInput *                  m_ProjectionsBuffer{};
-  TOutput *                 m_VolumeBuffer{};
-};
-} // namespace Functor
-} // namespace rtk
-
 std::ostream &
 operator<<(std::ostream & out, rtk::MatlabSparseMatrix & matlabSparseMatrix)
 {
@@ -159,28 +102,25 @@ main(int argc, char * argv[])
   if (args_info.verbose_flag)
     std::cout << "Backprojecting volume and recording matrix values..." << std::endl;
 
-  auto backProjection = rtk::JosephBackProjectionImageFilter<OutputImageType, OutputImageType>::New();
+  using BackProjectionType = rtk::JosephBackProjectionImageFilter<OutputImageType, OutputImageType>;
+  auto backProjection = BackProjectionType::New();
   backProjection->SetInput(constantImageSource->GetOutput());
   backProjection->SetInput(1, reader->GetOutput());
   backProjection->SetGeometry(geometry);
-  // Create and configure a StoreSparseMatrixSplatWeightMultiplication instance
-  using SplatFunctorType =
-    rtk::Functor::StoreSparseMatrixSplatWeightMultiplication<OutputPixelType, double, OutputPixelType>;
-  auto splatFunctor = std::make_shared<SplatFunctorType>();
-  splatFunctor->SetProjectionsBuffer(reader->GetOutput()->GetBufferPointer());
-  splatFunctor->SetVolumeBuffer(constantImageSource->GetOutput()->GetBufferPointer());
-  splatFunctor->GetVnlSparseMatrix().resize(
+  // Record the weights of each ray step instead of backprojecting them. One row of the matrix is one ray.
+  vnl_sparse_matrix<double> systemMatrix(
     reader->GetOutput()->GetLargestPossibleRegion().GetNumberOfPixels(),
     constantImageSource->GetOutput()->GetLargestPossibleRegion().GetNumberOfPixels());
-
-  // rayValue is a reference to the projection pixel, which gives the row of the matrix
-  backProjection->SetSplatWeightMultiplication(
-    [splatFunctor](rtk::JosephBackProjectionImageFilter<OutputImageType, OutputImageType> &,
-                   const OutputPixelType & rayValue,
-                   OutputPixelType &       output,
-                   const double            stepLengthInVoxel,
-                   const double            voxelSize,
-                   const double weight) { (*splatFunctor)(rayValue, output, stepLengthInVoxel, voxelSize, weight); });
+  backProjection->SetStepFunction([&systemMatrix](OutputPixelType *,
+                                                  BackProjectionType::EmptyRayState &,
+                                                  const BackProjectionType::StepSamples & samples) {
+    for (unsigned int k = 0; k < 4; ++k)
+    {
+      systemMatrix.put(samples.projectionOffset,
+                       samples.offsets[k],
+                       samples.weights[k] * samples.stepSizeInMM * samples.stepLengthInVoxel);
+    }
+  });
   TRY_AND_EXIT_ON_ITK_EXCEPTION(backProjection->Update())
 
   // Write matrix to disk
@@ -192,7 +132,7 @@ main(int argc, char * argv[])
     std::cerr << "Failed to open " << args_info.output_arg << std::endl;
     return EXIT_FAILURE;
   }
-  rtk::MatlabSparseMatrix matlabSparseMatrix(splatFunctor->GetVnlSparseMatrix(), backProjection->GetOutput());
+  rtk::MatlabSparseMatrix matlabSparseMatrix(systemMatrix, backProjection->GetOutput());
   ofs << matlabSparseMatrix;
   ofs.close();
   return EXIT_SUCCESS;

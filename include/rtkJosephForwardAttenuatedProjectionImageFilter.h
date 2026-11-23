@@ -90,10 +90,30 @@ protected:
   void
   VerifyInputInformation() const override;
 
-  std::ptrdiff_t                                   m_AttenuationMinusEmissionMapsPtrDiff;
-  std::array<InputPixelType, itk::ITK_MAX_THREADS> m_AttenuationRay;
-  std::array<InputPixelType, itk::ITK_MAX_THREADS> m_AttenuationPixel;
-  std::array<InputPixelType, itk::ITK_MAX_THREADS> m_Ex1;
+  const InputPixelType * m_AttenuationBuffer{ nullptr };
+  bool                   m_AttenuationSameLayout{ true };
+
+#if !defined(ITK_WRAPPING_PARSER)
+  /** Attenuation along the ray up to the current step and transmission at the previous step. */
+  struct AttenuationRayState
+  {
+    InputPixelType attenuationRay{ 0 };
+    InputPixelType ex1{ 1 };
+  };
+
+  /** Attenuation map values at the corner offsets of the volume buffer. */
+  std::array<InputPixelType, 4>
+  SampleAttenuation(const typename Superclass::CornerOffsetsType & offsets) const
+  {
+    std::array<InputPixelType, 4> samples;
+    for (unsigned int k = 0; k < 4; ++k)
+    {
+      samples[k] = m_AttenuationSameLayout ? m_AttenuationBuffer[offsets[k]]
+                                           : this->GetInput(2)->GetPixel(this->GetInput(1)->ComputeIndex(offsets[k]));
+    }
+    return samples;
+  }
+#endif
 };
 } // end namespace rtk
 

@@ -26,37 +26,30 @@ template <class TInputImage, class TOutputImage>
 MaximumIntensityProjectionImageFilter<TInputImage, TOutputImage>::MaximumIntensityProjectionImageFilter()
   : JosephForwardProjectionImageFilter<TInputImage, TOutputImage>()
 {
-  auto sumAlongRayFunc = [](const ThreadIdType,
-                            Superclass &,
-                            OutputPixelType &    mipValue,
-                            const InputPixelType volumeValue,
-                            const VectorType &) {
-    OutputPixelType tmp = static_cast<OutputPixelType>(volumeValue);
-    if (tmp > mipValue)
+  this->SetStepFunction([](OutputPixelType & maxValue,
+                           typename Superclass::EmptyRayState &,
+                           const typename Superclass::StepSamples & samples) {
+    const OutputPixelType value = samples.Interpolate();
+    if (value > maxValue)
     {
-      mipValue = tmp;
+      maxValue = value;
     }
-  };
-  this->SetSumAlongRay(sumAlongRayFunc);
-
-  auto projectedValueAccumulationFunc = [](const ThreadIdType,
-                                           Superclass &,
-                                           const InputPixelType &  input,
-                                           OutputPixelType &       output,
-                                           const OutputPixelType & rayCastValue,
-                                           const VectorType &      stepInMM,
-                                           const PointType &,
-                                           const VectorType &,
-                                           const PointType &,
-                                           const PointType &) {
-    OutputPixelType tmp = static_cast<OutputPixelType>(input);
-    if (tmp < rayCastValue)
+  });
+  this->SetProjectedValueAccumulation([](const InputPixelType &  input,
+                                         OutputPixelType &       output,
+                                         const OutputPixelType & maxValue,
+                                         const VectorType &      stepInMM,
+                                         const PointType &,
+                                         const VectorType &,
+                                         const PointType &,
+                                         const PointType &) {
+    OutputPixelType value = static_cast<OutputPixelType>(input);
+    if (value < maxValue)
     {
-      tmp = rayCastValue;
+      value = maxValue;
     }
-    output = tmp * stepInMM.GetNorm();
-  };
-  this->SetProjectedValueAccumulation(projectedValueAccumulationFunc);
+    output = value * stepInMM.GetNorm();
+  });
 }
 
 } // end namespace rtk

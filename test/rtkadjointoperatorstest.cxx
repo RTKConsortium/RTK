@@ -148,6 +148,29 @@ rtkadjointoperatorstest(int, char *[])
       randomVolumeSource->GetOutput(), bp->GetOutput(), randomProjectionsSource->GetOutput(), fw->GetOutput());
     std::cout << "\n\nTest PASSED! " << std::endl;
 
+    std::cout << "\n\n****** Joseph Back projector with a custom step function ******" << std::endl;
+
+    using JosephBackProjectionType = rtk::JosephBackProjectionImageFilter<OutputImageType, OutputImageType>;
+    auto customBp = JosephBackProjectionType::New();
+    customBp->SetInput(0, constantVolumeSource->GetOutput());
+    customBp->SetInput(1, randomProjectionsSource->GetOutput());
+    customBp->SetGeometry(geometry.GetPointer());
+    customBp->SetStepFunction([](OutputPixelType * volume,
+                                 JosephBackProjectionType::EmptyRayState &,
+                                 const JosephBackProjectionType::StepSamples & samples) {
+      for (unsigned int k = 0; k < 4; ++k)
+      {
+        volume[samples.offsets[k]] += static_cast<OutputPixelType>(samples.projectionValue * samples.weights[k] *
+                                                                   samples.stepSizeInMM * samples.stepLengthInVoxel);
+      }
+    });
+
+    TRY_AND_EXIT_ON_ITK_EXCEPTION(customBp->Update());
+
+    CheckScalarProducts<OutputImageType, OutputImageType>(
+      randomVolumeSource->GetOutput(), customBp->GetOutput(), randomProjectionsSource->GetOutput(), fw->GetOutput());
+    std::cout << "\n\nTest PASSED! " << std::endl;
+
     using VectorImageType = itk::Image<itk::Vector<OutputPixelType, 3>, Dimension>;
     auto vectorRandomProjections = VectorImageType::New();
     auto vectorConstantProjections = VectorImageType::New();
@@ -254,18 +277,59 @@ rtkadjointoperatorstest(int, char *[])
     attfw->SetGeometry(geometry);
     TRY_AND_EXIT_ON_ITK_EXCEPTION(attfw->Update());
 
-    std::cout << "\n\n****** Attenuated Joseph Back projector ******" << std::endl;
+    // Both in place and not in place since the output buffer then differs from input 0
+    for (bool inPlace : { true, false })
+    {
+      std::cout << "\n\n****** Attenuated Joseph Back projector, in place " << inPlace << " ******" << std::endl;
 
-    auto attbp = rtk::JosephBackAttenuatedProjectionImageFilter<OutputImageType, OutputImageType>::New();
-    attbp->SetInput(0, constantVolumeSource->GetOutput());
-    attbp->SetInput(1, randomProjectionsSource->GetOutput());
-    attbp->SetInput(2, constantAttenuationSource->GetOutput());
-    attbp->SetGeometry(geometry.GetPointer());
+      auto attbp = rtk::JosephBackAttenuatedProjectionImageFilter<OutputImageType, OutputImageType>::New();
+      attbp->SetInput(0, constantVolumeSource->GetOutput());
+      attbp->SetInput(1, randomProjectionsSource->GetOutput());
+      attbp->SetInput(2, constantAttenuationSource->GetOutput());
+      attbp->SetGeometry(geometry.GetPointer());
+      attbp->SetInPlace(inPlace);
 
-    TRY_AND_EXIT_ON_ITK_EXCEPTION(attbp->Update());
+      TRY_AND_EXIT_ON_ITK_EXCEPTION(attbp->Update());
 
-    CheckScalarProducts<OutputImageType, OutputImageType>(
-      randomVolumeSource->GetOutput(), attbp->GetOutput(), randomProjectionsSource->GetOutput(), attfw->GetOutput());
+      CheckScalarProducts<OutputImageType, OutputImageType>(
+        randomVolumeSource->GetOutput(), attbp->GetOutput(), randomProjectionsSource->GetOutput(), attfw->GetOutput());
+      std::cout << "\n\nTest PASSED! " << std::endl;
+    }
+
+    std::cout << "\n\n****** Attenuated Joseph projectors with a padded attenuation map ******" << std::endl;
+
+    // Same values as constantAttenuationSource inside, another value in the halo to catch indexing errors
+    auto paddedRegion = constantAttenuationSource->GetOutput()->GetBufferedRegion();
+    paddedRegion.PadByRadius(1);
+    auto paddedAttenuation = OutputImageType::New();
+    paddedAttenuation->CopyInformation(constantAttenuationSource->GetOutput());
+    paddedAttenuation->SetRegions(paddedRegion);
+    paddedAttenuation->Allocate();
+    paddedAttenuation->FillBuffer(0.01);
+    itk::ImageRegionIterator<OutputImageType> paddedIt(paddedAttenuation,
+                                                       constantAttenuationSource->GetOutput()->GetBufferedRegion());
+    for (; !paddedIt.IsAtEnd(); ++paddedIt)
+      paddedIt.Set(0.002);
+
+    auto paddedAttfw = rtk::JosephForwardAttenuatedProjectionImageFilter<OutputImageType, OutputImageType>::New();
+    paddedAttfw->SetInput(0, constantProjectionsSource->GetOutput());
+    paddedAttfw->SetInput(1, randomVolumeSource->GetOutput());
+    paddedAttfw->SetInput(2, paddedAttenuation);
+    paddedAttfw->SetGeometry(geometry);
+    TRY_AND_EXIT_ON_ITK_EXCEPTION(paddedAttfw->Update());
+    CheckImageQuality<OutputImageType>(paddedAttfw->GetOutput(), attfw->GetOutput(), 1.e-6, 100., 1.);
+
+    auto paddedAttbp = rtk::JosephBackAttenuatedProjectionImageFilter<OutputImageType, OutputImageType>::New();
+    paddedAttbp->SetInput(0, constantVolumeSource->GetOutput());
+    paddedAttbp->SetInput(1, randomProjectionsSource->GetOutput());
+    paddedAttbp->SetInput(2, paddedAttenuation);
+    paddedAttbp->SetGeometry(geometry.GetPointer());
+    paddedAttbp->SetInPlace(false);
+    TRY_AND_EXIT_ON_ITK_EXCEPTION(paddedAttbp->Update());
+    CheckScalarProducts<OutputImageType, OutputImageType>(randomVolumeSource->GetOutput(),
+                                                          paddedAttbp->GetOutput(),
+                                                          randomProjectionsSource->GetOutput(),
+                                                          attfw->GetOutput());
     std::cout << "\n\nTest PASSED! " << std::endl;
 
 #ifdef USE_CUDA

@@ -22,12 +22,14 @@
 #include "rtkConfiguration.h"
 #include "rtkForwardProjectionImageFilter.h"
 #include "rtkMacro.h"
+#include <itkMath.h>
 #include <itkPixelTraits.h>
 
 #include "rtkProjectionsRegionConstIteratorRayBased.h"
 
 #include <itkVectorImage.h>
 
+#include <array>
 #include <functional>
 namespace rtk
 {
@@ -75,23 +77,41 @@ public:
   itkOverrideGetNameOfClassMacro(JosephForwardProjectionImageFilter);
 
 #if !defined(ITK_WRAPPING_PARSER)
-  /* The functions below receive the thread id and the filter so that they
-   * can store per-thread state in the filter, e.g. in a subclass, without
-   * capturing it. */
+  /** Bilinear weights and offsets of the four corners of a ray step. The
+   * offsets are relative to the start of the volume buffer. */
+  using InterpolationWeightsType = std::array<WeightCoordinateType, 4>;
+  using CornerOffsetsType = std::array<ptrdiff_t, 4>;
 
-  /** Function to multiply the interpolation weights with the projected
-   * volume values. */
-  using InterpolationWeightMultiplicationFunc = std::function<
-    OutputPixelType(const ThreadIdType, Self &, double, const WeightCoordinateType, const InputPixelType *, ptrdiff_t)>;
+  /** Bilinear weights, volume values and offsets of the four corners of a ray step. */
+  struct StepSamples
+  {
+    InterpolationWeightsType      weights;
+    std::array<InputPixelType, 4> values;
+    CornerOffsetsType             offsets;
+    /** Length of the step along the main direction in voxels, smaller than 1 at the ends of the ray. */
+    double stepLengthInVoxel;
+    /** Length in mm of a step of one voxel along the main direction. */
+    double stepSizeInMM;
 
-  /** Function to compute the attenuation correction on the projection. */
-  using SumAlongRayFunc =
-    std::function<void(const ThreadIdType, Self &, OutputPixelType &, const InputPixelType, const VectorType &)>;
+    /** Volume interpolated at the step, multiplied by stepLengthInVoxel. */
+    OutputPixelType
+    Interpolate() const
+    {
+      OutputPixelType result = weights[0] * values[0];
+      for (unsigned int k = 1; k < 4; ++k)
+      {
+        result += weights[k] * values[k];
+      }
+      return static_cast<OutputPixelType>(result * stepLengthInVoxel);
+    }
+  };
 
-  /** Function to accumulate the ray casting on the projection. */
-  using ProjectedValueAccumulationFunc = std::function<void(const ThreadIdType,
-                                                            Self &,
-                                                            const InputPixelType &,
+  /** Per-ray state of the step functions which need none. */
+  struct EmptyRayState
+  {};
+
+  /** Function to accumulate the value computed along a ray in the projection. */
+  using ProjectedValueAccumulationFunc = std::function<void(const InputPixelType &,
                                                             OutputPixelType &,
                                                             const OutputPixelType &,
                                                             const VectorType &,
@@ -100,21 +120,17 @@ public:
                                                             const PointType &,
                                                             const PointType &)>;
 
-  /** Get/Set the lambda function that is used to multiply each interpolation value with a volume value */
-  InterpolationWeightMultiplicationFunc &
-  GetInterpolationWeightMultiplication()
-  {
-    return m_InterpolationWeightMultiplication;
-  }
-  const InterpolationWeightMultiplicationFunc &
-  GetInterpolationWeightMultiplication() const
-  {
-    return m_InterpolationWeightMultiplication;
-  }
+  /** Set the function called at each ray step as step(rayValue, state, samples).
+   * rayValue is then passed to ProjectedValueAccumulation and state is a copy of
+   * initialState for each ray. The function is called concurrently for different
+   * rays and inlined in the ray casting loop. */
+  template <class TStep, class TRayState = EmptyRayState>
   void
-  SetInterpolationWeightMultiplication(const InterpolationWeightMultiplicationFunc & _arg)
+  SetStepFunction(TStep step, TRayState initialState = TRayState())
   {
-    m_InterpolationWeightMultiplication = _arg;
+    m_RayCast = [step = std::move(step), initialState](Self & filter, const OutputImageRegionType & region) {
+      filter.RayCast(region, step, initialState);
+    };
     this->Modified();
   }
 
@@ -134,24 +150,6 @@ public:
   SetProjectedValueAccumulation(const ProjectedValueAccumulationFunc & _arg)
   {
     m_ProjectedValueAccumulation = _arg;
-    this->Modified();
-  }
-
-  /** Get/Set the lambda function that is used to compute the sum along the ray */
-  SumAlongRayFunc &
-  GetSumAlongRay()
-  {
-    return m_SumAlongRay;
-  }
-  const SumAlongRayFunc &
-  GetSumAlongRay() const
-  {
-    return m_SumAlongRay;
-  }
-  void
-  SetSumAlongRay(const SumAlongRayFunc & _arg)
-  {
-    m_SumAlongRay = _arg;
     this->Modified();
   }
 #endif
@@ -210,42 +208,94 @@ protected:
   void
   VerifyInputInformation() const override;
 
-  inline OutputPixelType
-  BilinearInterpolation(ThreadIdType           threadId,
-                        double                 stepLengthInVoxel,
-                        const InputPixelType * pxiyi,
-                        const InputPixelType * pxsyi,
-                        const InputPixelType * pxiys,
-                        const InputPixelType * pxsys,
-                        double                 x,
-                        double                 y,
-                        ptrdiff_t              ox,
-                        ptrdiff_t              oy);
+#if !defined(ITK_WRAPPING_PARSER)
+  /** Bilinear weights and buffer offsets of the four corners of a ray step. */
+  template <class TWeight>
+  struct RayStencil
+  {
+    std::array<TWeight, 4> weights;
+    CornerOffsetsType      offsets;
+  };
 
-  inline OutputPixelType
-  BilinearInterpolationOnBorders(ThreadIdType           threadId,
-                                 double                 stepLengthInVoxel,
-                                 const InputPixelType * pxiyi,
-                                 const InputPixelType * pxsyi,
-                                 const InputPixelType * pxiys,
-                                 const InputPixelType * pxsys,
-                                 double                 x,
-                                 double                 y,
-                                 ptrdiff_t              ox,
-                                 ptrdiff_t              oy,
-                                 double                 minx,
-                                 double                 miny,
-                                 double                 maxx,
-                                 double                 maxy);
+  /** Stencil at (x, y) in the slice starting at offset slice of the buffer.
+   * On borders, corners outside [minx, maxx] x [miny, maxy] are replaced by
+   * their neighbor inside, possibly repeating an offset. */
+  template <bool VOnBorder, class TWeight>
+  static RayStencil<TWeight>
+  MakeRayStencil(ptrdiff_t slice,
+                 double    x,
+                 double    y,
+                 ptrdiff_t ox,
+                 ptrdiff_t oy,
+                 double    minx = 0.,
+                 double    miny = 0.,
+                 double    maxx = 0.,
+                 double    maxy = 0.)
+  {
+    const ptrdiff_t ix = itk::Math::floor(x);
+    const ptrdiff_t iy = itk::Math::floor(y);
+    const ptrdiff_t idx = slice + ix * ox + iy * oy;
+    const double    lx = x - ix;
+    const double    ly = y - iy;
+    const double    lxc = 1. - lx;
+    const double    lyc = 1. - ly;
+
+    if constexpr (VOnBorder)
+    {
+      const ptrdiff_t xi = ix < minx ? ox : 0;
+      const ptrdiff_t yi = iy < miny ? oy : 0;
+      const ptrdiff_t xs = ix >= maxx ? 0 : ox;
+      const ptrdiff_t ys = iy >= maxy ? 0 : oy;
+      return { { static_cast<TWeight>(lxc * lyc),
+                 static_cast<TWeight>(lxc * ly),
+                 static_cast<TWeight>(lx * lyc),
+                 static_cast<TWeight>(lx * ly) },
+               { idx + xi + yi, idx + xi + ys, idx + xs + yi, idx + xs + ys } };
+    }
+    else
+    {
+      return { { static_cast<TWeight>(lxc * lyc),
+                 static_cast<TWeight>(lx * lyc),
+                 static_cast<TWeight>(lxc * ly),
+                 static_cast<TWeight>(lx * ly) },
+               { idx, idx + ox, idx + oy, idx + ox + oy } };
+    }
+  }
+
+  /** Samples of the ray step at (x, y) in the slice starting at offset slice of buffer. */
+  template <bool VOnBorder>
+  static StepSamples
+  MakeStepSamples(const InputPixelType * buffer,
+                  ptrdiff_t              slice,
+                  double                 x,
+                  double                 y,
+                  ptrdiff_t              ox,
+                  ptrdiff_t              oy,
+                  double                 stepLengthInVoxel,
+                  double                 stepSizeInMM,
+                  double                 minx = 0.,
+                  double                 miny = 0.,
+                  double                 maxx = 0.,
+                  double                 maxy = 0.)
+  {
+    const auto   stencil = MakeRayStencil<VOnBorder, WeightCoordinateType>(slice, x, y, ox, oy, minx, miny, maxx, maxy);
+    const auto & o = stencil.offsets;
+    return {
+      stencil.weights, { buffer[o[0]], buffer[o[1]], buffer[o[2]], buffer[o[3]] }, o, stepLengthInVoxel, stepSizeInMM
+    };
+  }
+#endif
 
 private:
 #if !defined(ITK_WRAPPING_PARSER)
-  // lambdas or std::functions
-  // MUST BE initiated in constructor, or custom functions
-  // must be set by means of Set methods in application
-  InterpolationWeightMultiplicationFunc m_InterpolationWeightMultiplication;
-  SumAlongRayFunc                       m_SumAlongRay;
-  ProjectedValueAccumulationFunc        m_ProjectedValueAccumulation;
+  /** Ray casts the projection pixels of outputRegionForThread with step, which
+   * is inlined in the ray stepping loop. */
+  template <class TStep, class TRayState>
+  void
+  RayCast(const OutputImageRegionType & outputRegionForThread, const TStep & step, const TRayState & initialState);
+
+  std::function<void(Self &, const OutputImageRegionType &)> m_RayCast;
+  ProjectedValueAccumulationFunc                             m_ProjectedValueAccumulation;
 #endif
   double m_InferiorClip{ 0. };
   double m_SuperiorClip{ 1. };

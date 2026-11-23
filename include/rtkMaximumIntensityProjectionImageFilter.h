@@ -52,6 +52,7 @@ public:
   using InputPixelType = typename TInputImage::PixelType;
   using OutputPixelType = typename TOutputImage::PixelType;
   using PointType = typename TInputImage::PointType;
+  using OutputImageRegionType = typename TOutputImage::RegionType;
   using CoordinateType = double;
   using VectorType = itk::Vector<CoordinateType, TInputImage::ImageDimension>;
 
