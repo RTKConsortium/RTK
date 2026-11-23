@@ -166,61 +166,120 @@ protected:
   VerifyInputInformation() const override
   {}
 
+#if !defined(ITK_WRAPPING_PARSER)
+  /** Back projects the projections with the given functions. It is templated
+   * over their types so that they can be inlined in the ray stepping loop when
+   * they are lambdas rather than std::function. */
+  template <class TInterpolationWeightMultiplication, class TSplatWeightMultiplication, class TSumAlongRay>
+  void
+  BackProject(TInterpolationWeightMultiplication & interpolationWeightMultiplication,
+              TSplatWeightMultiplication &         splatWeightMultiplication,
+              TSumAlongRay &                       sumAlongRay);
+
+  /** Calls BackProject with the lambdas stored in the std::function members if
+   * they are of the given types and returns true, returns false otherwise.
+   * Subclasses which set their own lambdas call it in GenerateData with the
+   * types of these lambdas to avoid indirect calls at each step. */
+  template <class TInterpolationWeightMultiplication, class TSplatWeightMultiplication, class TSumAlongRay>
+  bool
+  BackProjectIfFunctionTypesAre();
+
+  /** Default lambdas. Their types are used to detect that they have not been
+   * replaced. */
+  static auto
+  MakeDefaultInterpolationWeightMultiplication()
+  {
+    // The interpolated value is only used by SumAlongRay for attenuation correction, which the default
+    // SumAlongRay ignores, so do not read the volume
+    return [](double                     itkNotUsed(stepLengthInVoxel),
+              const WeightCoordinateType itkNotUsed(weight),
+              const InputPixelType *     itkNotUsed(p),
+              ptrdiff_t                  itkNotUsed(i)) -> OutputPixelType { return {}; };
+  }
+  static auto
+  MakeDefaultSplatWeightMultiplication()
+  {
+    return [](const InputPixelType & rayValue,
+              OutputPixelType &      output,
+              const double           stepLengthInVoxel,
+              const double           voxelSize,
+              const double           weight) {
+      output += static_cast<OutputPixelType>(rayValue * weight * voxelSize * stepLengthInVoxel);
+    };
+  }
+  static auto
+  MakeDefaultSumAlongRay()
+  {
+    return [](const InputPixelType & rayValue,
+              const InputPixelType   itkNotUsed(attenuationRay),
+              const VectorType &     itkNotUsed(stepInMM),
+              bool &                 itkNotUsed(isEndRay)) -> const OutputPixelType & { return rayValue; };
+  }
+#endif
+
+  template <class TSplatWeightMultiplication>
   inline void
-  BilinearSplat(const InputPixelType & rayValue,
-                double                 stepLengthInVoxel,
-                double                 voxelSize,
-                OutputPixelType *      pxiyi,
-                OutputPixelType *      pxsyi,
-                OutputPixelType *      pxiys,
-                OutputPixelType *      pxsys,
-                CoordinateType         x,
-                CoordinateType         y,
-                ptrdiff_t              ox,
-                ptrdiff_t              oy);
+  BilinearSplat(TSplatWeightMultiplication & splatWeightMultiplication,
+                const InputPixelType &       rayValue,
+                double                       stepLengthInVoxel,
+                double                       voxelSize,
+                OutputPixelType *            pxiyi,
+                OutputPixelType *            pxsyi,
+                OutputPixelType *            pxiys,
+                OutputPixelType *            pxsys,
+                CoordinateType               x,
+                CoordinateType               y,
+                ptrdiff_t                    ox,
+                ptrdiff_t                    oy);
 
+  template <class TSplatWeightMultiplication>
   inline void
-  BilinearSplatOnBorders(const InputPixelType & rayValue,
-                         double                 stepLengthInVoxel,
-                         double                 voxelSize,
-                         OutputPixelType *      pxiyi,
-                         OutputPixelType *      pxsyi,
-                         OutputPixelType *      pxiys,
-                         OutputPixelType *      pxsys,
-                         CoordinateType         x,
-                         CoordinateType         y,
-                         ptrdiff_t              ox,
-                         ptrdiff_t              oy,
-                         CoordinateType         minx,
-                         CoordinateType         miny,
-                         CoordinateType         maxx,
-                         CoordinateType         maxy);
+  BilinearSplatOnBorders(TSplatWeightMultiplication & splatWeightMultiplication,
+                         const InputPixelType &       rayValue,
+                         double                       stepLengthInVoxel,
+                         double                       voxelSize,
+                         OutputPixelType *            pxiyi,
+                         OutputPixelType *            pxsyi,
+                         OutputPixelType *            pxiys,
+                         OutputPixelType *            pxsys,
+                         CoordinateType               x,
+                         CoordinateType               y,
+                         ptrdiff_t                    ox,
+                         ptrdiff_t                    oy,
+                         CoordinateType               minx,
+                         CoordinateType               miny,
+                         CoordinateType               maxx,
+                         CoordinateType               maxy);
 
+  template <class TInterpolationWeightMultiplication>
   inline OutputPixelType
-  BilinearInterpolation(double                 stepLengthInVoxel,
-                        const InputPixelType * pxiyi,
-                        const InputPixelType * pxsyi,
-                        const InputPixelType * pxiys,
-                        const InputPixelType * pxsys,
-                        CoordinateType         x,
-                        CoordinateType         y,
-                        ptrdiff_t              ox,
-                        ptrdiff_t              oy);
+  BilinearInterpolation(TInterpolationWeightMultiplication & interpolationWeightMultiplication,
+                        double                               stepLengthInVoxel,
+                        const InputPixelType *               pxiyi,
+                        const InputPixelType *               pxsyi,
+                        const InputPixelType *               pxiys,
+                        const InputPixelType *               pxsys,
+                        CoordinateType                       x,
+                        CoordinateType                       y,
+                        ptrdiff_t                            ox,
+                        ptrdiff_t                            oy);
 
+  template <class TInterpolationWeightMultiplication>
   inline OutputPixelType
-  BilinearInterpolationOnBorders(double                 stepLengthInVoxel,
-                                 const InputPixelType * pxiyi,
-                                 const InputPixelType * pxsyi,
-                                 const InputPixelType * pxiys,
-                                 const InputPixelType * pxsys,
-                                 CoordinateType         x,
-                                 CoordinateType         y,
-                                 ptrdiff_t              ox,
-                                 ptrdiff_t              oy,
-                                 CoordinateType         minx,
-                                 CoordinateType         miny,
-                                 CoordinateType         maxx,
-                                 CoordinateType         maxy);
+  BilinearInterpolationOnBorders(TInterpolationWeightMultiplication & interpolationWeightMultiplication,
+                                 double                               stepLengthInVoxel,
+                                 const InputPixelType *               pxiyi,
+                                 const InputPixelType *               pxsyi,
+                                 const InputPixelType *               pxiys,
+                                 const InputPixelType *               pxsys,
+                                 CoordinateType                       x,
+                                 CoordinateType                       y,
+                                 ptrdiff_t                            ox,
+                                 ptrdiff_t                            oy,
+                                 CoordinateType                       minx,
+                                 CoordinateType                       miny,
+                                 CoordinateType                       maxx,
+                                 CoordinateType                       maxy);
 
 #if !defined(ITK_WRAPPING_PARSER)
   // lambdas or std::functions

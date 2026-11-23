@@ -26,33 +26,25 @@ template <class TInputImage, class TOutputImage>
 MaximumIntensityProjectionImageFilter<TInputImage, TOutputImage>::MaximumIntensityProjectionImageFilter()
   : JosephForwardProjectionImageFilter<TInputImage, TOutputImage>()
 {
-  auto sumAlongRayFunc =
-    [](const ThreadIdType, OutputPixelType & mipValue, const InputPixelType volumeValue, const VectorType &) {
-      OutputPixelType tmp = static_cast<OutputPixelType>(volumeValue);
-      if (tmp > mipValue)
-      {
-        mipValue = tmp;
-      }
-    };
-  this->SetSumAlongRay(sumAlongRayFunc);
+  this->SetSumAlongRay(MakeMaximumSumAlongRay());
+  this->SetProjectedValueAccumulation(MakeMaximumProjectedValueAccumulation());
+}
 
-  auto projectedValueAccumulationFunc = [](const ThreadIdType,
-                                           const InputPixelType &  input,
-                                           OutputPixelType &       output,
-                                           const OutputPixelType & rayCastValue,
-                                           const VectorType &      stepInMM,
-                                           const PointType &,
-                                           const VectorType &,
-                                           const PointType &,
-                                           const PointType &) {
-    OutputPixelType tmp = static_cast<OutputPixelType>(input);
-    if (tmp < rayCastValue)
-    {
-      tmp = rayCastValue;
-    }
-    output = tmp * stepInMM.GetNorm();
-  };
-  this->SetProjectedValueAccumulation(projectedValueAccumulationFunc);
+template <class TInputImage, class TOutputImage>
+void
+MaximumIntensityProjectionImageFilter<TInputImage, TOutputImage>::ThreadedGenerateData(
+  const OutputImageRegionType & outputRegionForThread,
+  ThreadIdType                  threadId)
+{
+  using InterpolationWeightMultiplicationType = decltype(Superclass::MakeDefaultInterpolationWeightMultiplication());
+  using SumAlongRayType = decltype(MakeMaximumSumAlongRay());
+  using ProjectedValueAccumulationType = decltype(MakeMaximumProjectedValueAccumulation());
+  if (!this->template RayCastIfFunctionTypesAre<InterpolationWeightMultiplicationType,
+                                                SumAlongRayType,
+                                                ProjectedValueAccumulationType>(outputRegionForThread, threadId))
+  {
+    Superclass::ThreadedGenerateData(outputRegionForThread, threadId);
+  }
 }
 
 } // end namespace rtk

@@ -205,33 +205,90 @@ protected:
   void
   VerifyInputInformation() const override;
 
-  inline OutputPixelType
-  BilinearInterpolation(ThreadIdType           threadId,
-                        double                 stepLengthInVoxel,
-                        const InputPixelType * pxiyi,
-                        const InputPixelType * pxsyi,
-                        const InputPixelType * pxiys,
-                        const InputPixelType * pxsys,
-                        double                 x,
-                        double                 y,
-                        ptrdiff_t              ox,
-                        ptrdiff_t              oy);
+#if !defined(ITK_WRAPPING_PARSER)
+  /** Ray casts the projection pixels of outputRegionForThread with the given
+   * functions. It is templated over their types so that they can be inlined
+   * in the ray stepping loop when they are lambdas rather than std::function. */
+  template <class TInterpolationWeightMultiplication, class TSumAlongRay, class TProjectedValueAccumulation>
+  void
+  RayCast(const OutputImageRegionType &        outputRegionForThread,
+          ThreadIdType                         threadId,
+          TInterpolationWeightMultiplication & interpolationWeightMultiplication,
+          TSumAlongRay &                       sumAlongRay,
+          TProjectedValueAccumulation &        projectedValueAccumulation);
 
+  /** Calls RayCast with the lambdas stored in the std::function members if
+   * they are of the given types and returns true, returns false otherwise.
+   * Subclasses which set their own lambdas call it in ThreadedGenerateData
+   * with the types of these lambdas to avoid indirect calls at each step. */
+  template <class TInterpolationWeightMultiplication, class TSumAlongRay, class TProjectedValueAccumulation>
+  bool
+  RayCastIfFunctionTypesAre(const OutputImageRegionType & outputRegionForThread, ThreadIdType threadId);
+
+  /** Default lambdas. Their types are used to detect that they have not been
+   * replaced. */
+  static auto
+  MakeDefaultInterpolationWeightMultiplication()
+  {
+    return [](const ThreadIdType         itkNotUsed(threadId),
+              double                     itkNotUsed(stepLengthInVoxel),
+              const WeightCoordinateType weight,
+              const InputPixelType *     p,
+              ptrdiff_t                  i) -> OutputPixelType { return weight * p[i]; };
+  }
+  static auto
+  MakeDefaultSumAlongRay()
+  {
+    return [](const ThreadIdType, OutputPixelType & sumValue, const InputPixelType volumeValue, const VectorType &) {
+      sumValue += static_cast<OutputPixelType>(volumeValue);
+    };
+  }
+  static auto
+  MakeDefaultProjectedValueAccumulation()
+  {
+    return [](const ThreadIdType,
+              const InputPixelType &  input,
+              OutputPixelType &       output,
+              const OutputPixelType & rayCastValue,
+              const VectorType &      stepInMM,
+              const PointType &,
+              const VectorType &,
+              const PointType &,
+              const PointType &) { output = input + rayCastValue * stepInMM.GetNorm(); };
+  }
+#endif
+
+  template <class TInterpolationWeightMultiplication>
   inline OutputPixelType
-  BilinearInterpolationOnBorders(ThreadIdType           threadId,
-                                 double                 stepLengthInVoxel,
-                                 const InputPixelType * pxiyi,
-                                 const InputPixelType * pxsyi,
-                                 const InputPixelType * pxiys,
-                                 const InputPixelType * pxsys,
-                                 double                 x,
-                                 double                 y,
-                                 ptrdiff_t              ox,
-                                 ptrdiff_t              oy,
-                                 double                 minx,
-                                 double                 miny,
-                                 double                 maxx,
-                                 double                 maxy);
+  BilinearInterpolation(TInterpolationWeightMultiplication & interpolationWeightMultiplication,
+                        ThreadIdType                         threadId,
+                        double                               stepLengthInVoxel,
+                        const InputPixelType *               pxiyi,
+                        const InputPixelType *               pxsyi,
+                        const InputPixelType *               pxiys,
+                        const InputPixelType *               pxsys,
+                        double                               x,
+                        double                               y,
+                        ptrdiff_t                            ox,
+                        ptrdiff_t                            oy);
+
+  template <class TInterpolationWeightMultiplication>
+  inline OutputPixelType
+  BilinearInterpolationOnBorders(TInterpolationWeightMultiplication & interpolationWeightMultiplication,
+                                 ThreadIdType                         threadId,
+                                 double                               stepLengthInVoxel,
+                                 const InputPixelType *               pxiyi,
+                                 const InputPixelType *               pxsyi,
+                                 const InputPixelType *               pxiys,
+                                 const InputPixelType *               pxsys,
+                                 double                               x,
+                                 double                               y,
+                                 ptrdiff_t                            ox,
+                                 ptrdiff_t                            oy,
+                                 double                               minx,
+                                 double                               miny,
+                                 double                               maxx,
+                                 double                               maxy);
 
 private:
 #if !defined(ITK_WRAPPING_PARSER)

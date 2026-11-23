@@ -29,30 +29,30 @@
 
 namespace rtk
 {
+/** Interpolation: accumulate attenuation pixel along the ray */
 template <class TInputImage, class TOutputImage>
-JosephBackAttenuatedProjectionImageFilter<TInputImage, TOutputImage>::JosephBackAttenuatedProjectionImageFilter()
-  : JosephBackProjectionImageFilter<TInputImage, TOutputImage>()
+auto
+JosephBackAttenuatedProjectionImageFilter<TInputImage, TOutputImage>::MakeAttenuatedInterpolationWeightMultiplication()
 {
-  this->m_InferiorClip = 0.;
-  this->m_SuperiorClip = 1.;
-  this->SetNumberOfRequiredInputs(3);
-
-  /** Interpolation: accumulate attenuation pixel along the ray */
-  auto interpolationWeightMultiplicationAttenuatedFunc = [this](double                     stepLengthInVoxel,
-                                                                const WeightCoordinateType weight,
-                                                                const InputPixelType *     p,
-                                                                const ptrdiff_t            i) -> OutputPixelType {
+  return [this](double                     stepLengthInVoxel,
+                const WeightCoordinateType weight,
+                const InputPixelType *     p,
+                const ptrdiff_t            i) -> OutputPixelType {
     const double w = weight * stepLengthInVoxel;
     this->m_AttenuationPixel += w * (p + this->m_AttenuationMinusEmissionMapsPtrDiff)[i];
     return static_cast<OutputPixelType>(w * (p + this->m_AttenuationMinusEmissionMapsPtrDiff)[i]);
   };
-  this->SetInterpolationWeightMultiplication(interpolationWeightMultiplicationAttenuatedFunc);
+}
 
-  /** Sum along ray: compute attenuation correction and reset accumulator */
-  auto computeAttenuationCorrectionFunc = [this](const InputPixelType rayValue,
-                                                 const InputPixelType attenuationRay,
-                                                 const VectorType &   stepInMM,
-                                                 bool &               isNewRay) -> const OutputPixelType & {
+/** Sum along ray: compute attenuation correction and reset accumulator */
+template <class TInputImage, class TOutputImage>
+auto
+JosephBackAttenuatedProjectionImageFilter<TInputImage, TOutputImage>::MakeAttenuatedSumAlongRay()
+{
+  return [this](const InputPixelType rayValue,
+                const InputPixelType attenuationRay,
+                const VectorType &   stepInMM,
+                bool &               isNewRay) -> const OutputPixelType & {
     if (isNewRay)
     {
       this->m_Ex1 = static_cast<InputPixelType>(1);
@@ -73,17 +73,31 @@ JosephBackAttenuatedProjectionImageFilter<TInputImage, TOutputImage>::JosephBack
     this->m_SumAlongRayValue = static_cast<OutputPixelType>(wf * rayValue);
     return this->m_SumAlongRayValue;
   };
-  this->SetSumAlongRay(computeAttenuationCorrectionFunc);
+}
 
-  /** Splat multiplication: simple accumulation */
-  auto splatWeightMultiplicationAttenuatedFunc = [](const InputPixelType & rayValue,
-                                                    OutputPixelType &      output,
-                                                    const double           stepLengthInVoxel,
-                                                    const double           itkNotUsed(voxelSize),
-                                                    const double           weight) {
-    output += static_cast<OutputPixelType>(rayValue * weight * stepLengthInVoxel);
-  };
-  this->SetSplatWeightMultiplication(splatWeightMultiplicationAttenuatedFunc);
+/** Splat multiplication: simple accumulation */
+template <class TInputImage, class TOutputImage>
+auto
+JosephBackAttenuatedProjectionImageFilter<TInputImage, TOutputImage>::MakeAttenuatedSplatWeightMultiplication()
+{
+  return [](const InputPixelType & rayValue,
+            OutputPixelType &      output,
+            const double           stepLengthInVoxel,
+            const double           itkNotUsed(voxelSize),
+            const double weight) { output += static_cast<OutputPixelType>(rayValue * weight * stepLengthInVoxel); };
+}
+
+template <class TInputImage, class TOutputImage>
+JosephBackAttenuatedProjectionImageFilter<TInputImage, TOutputImage>::JosephBackAttenuatedProjectionImageFilter()
+  : JosephBackProjectionImageFilter<TInputImage, TOutputImage>()
+{
+  this->m_InferiorClip = 0.;
+  this->m_SuperiorClip = 1.;
+  this->SetNumberOfRequiredInputs(3);
+
+  this->SetInterpolationWeightMultiplication(MakeAttenuatedInterpolationWeightMultiplication());
+  this->SetSumAlongRay(MakeAttenuatedSumAlongRay());
+  this->SetSplatWeightMultiplication(MakeAttenuatedSplatWeightMultiplication());
 
   this->DynamicMultiThreadingOff();
 }
@@ -199,6 +213,21 @@ JosephBackAttenuatedProjectionImageFilter<TInputImage, TOutputImage>::AllocateOu
 {
   Superclass::AllocateOutputs();
   Init();
+}
+
+template <class TInputImage, class TOutputImage>
+void
+JosephBackAttenuatedProjectionImageFilter<TInputImage, TOutputImage>::GenerateData()
+{
+  using InterpolationWeightMultiplicationType = decltype(MakeAttenuatedInterpolationWeightMultiplication());
+  using SplatWeightMultiplicationType = decltype(MakeAttenuatedSplatWeightMultiplication());
+  using SumAlongRayType = decltype(MakeAttenuatedSumAlongRay());
+  if (!this->template BackProjectIfFunctionTypesAre<InterpolationWeightMultiplicationType,
+                                                    SplatWeightMultiplicationType,
+                                                    SumAlongRayType>())
+  {
+    Superclass::GenerateData();
+  }
 }
 } // end namespace rtk
 

@@ -52,6 +52,7 @@ public:
   using InputPixelType = typename TInputImage::PixelType;
   using OutputPixelType = typename TOutputImage::PixelType;
   using PointType = typename TInputImage::PointType;
+  using OutputImageRegionType = typename TOutputImage::RegionType;
   using CoordinateType = double;
   using VectorType = itk::Vector<CoordinateType, TInputImage::ImageDimension>;
 
@@ -64,6 +65,43 @@ public:
 protected:
   MaximumIntensityProjectionImageFilter();
   ~MaximumIntensityProjectionImageFilter() override = default;
+
+  void
+  ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, ThreadIdType threadId) override;
+
+#if !defined(ITK_WRAPPING_PARSER)
+  static auto
+  MakeMaximumSumAlongRay()
+  {
+    return [](const ThreadIdType, OutputPixelType & mipValue, const InputPixelType volumeValue, const VectorType &) {
+      OutputPixelType tmp = static_cast<OutputPixelType>(volumeValue);
+      if (tmp > mipValue)
+      {
+        mipValue = tmp;
+      }
+    };
+  }
+  static auto
+  MakeMaximumProjectedValueAccumulation()
+  {
+    return [](const ThreadIdType,
+              const InputPixelType &  input,
+              OutputPixelType &       output,
+              const OutputPixelType & rayCastValue,
+              const VectorType &      stepInMM,
+              const PointType &,
+              const VectorType &,
+              const PointType &,
+              const PointType &) {
+      OutputPixelType tmp = static_cast<OutputPixelType>(input);
+      if (tmp < rayCastValue)
+      {
+        tmp = rayCastValue;
+      }
+      output = tmp * stepInMM.GetNorm();
+    };
+  }
+#endif
 };
 } // end namespace rtk
 

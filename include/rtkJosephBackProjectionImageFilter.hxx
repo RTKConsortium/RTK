@@ -36,30 +36,48 @@ namespace rtk
 template <class TInputImage, class TOutputImage>
 JosephBackProjectionImageFilter<TInputImage, TOutputImage>::JosephBackProjectionImageFilter()
 {
-  // The interpolated value is only used by SumAlongRay for attenuation correction, which the default
-  // SumAlongRay ignores, so do not read the volume
-  this->m_InterpolationWeightMultiplication = [](double                     itkNotUsed(stepLengthInVoxel),
-                                                 const WeightCoordinateType itkNotUsed(weight),
-                                                 const InputPixelType *     itkNotUsed(p),
-                                                 ptrdiff_t itkNotUsed(i)) -> OutputPixelType { return {}; };
-
-  this->m_SplatWeightMultiplication = [](const InputPixelType & rayValue,
-                                         OutputPixelType &      output,
-                                         const double           stepLengthInVoxel,
-                                         const double           voxelSize,
-                                         const double           weight) {
-    output += static_cast<OutputPixelType>(rayValue * weight * voxelSize * stepLengthInVoxel);
-  };
-
-  this->m_SumAlongRay = [](const InputPixelType & rayValue,
-                           const InputPixelType   itkNotUsed(attenuationRay),
-                           const VectorType &     itkNotUsed(stepInMM),
-                           bool &                 itkNotUsed(isEndRay)) -> const OutputPixelType & { return rayValue; };
+  this->m_InterpolationWeightMultiplication = MakeDefaultInterpolationWeightMultiplication();
+  this->m_SplatWeightMultiplication = MakeDefaultSplatWeightMultiplication();
+  this->m_SumAlongRay = MakeDefaultSumAlongRay();
 }
 
 template <class TInputImage, class TOutputImage>
 void
 JosephBackProjectionImageFilter<TInputImage, TOutputImage>::GenerateData()
+{
+  using DefaultInterpolationWeightMultiplicationType = decltype(MakeDefaultInterpolationWeightMultiplication());
+  using DefaultSplatWeightMultiplicationType = decltype(MakeDefaultSplatWeightMultiplication());
+  using DefaultSumAlongRayType = decltype(MakeDefaultSumAlongRay());
+  if (!this->template BackProjectIfFunctionTypesAre<DefaultInterpolationWeightMultiplicationType,
+                                                    DefaultSplatWeightMultiplicationType,
+                                                    DefaultSumAlongRayType>())
+  {
+    BackProject(m_InterpolationWeightMultiplication, m_SplatWeightMultiplication, m_SumAlongRay);
+  }
+}
+
+template <class TInputImage, class TOutputImage>
+template <class TInterpolationWeightMultiplication, class TSplatWeightMultiplication, class TSumAlongRay>
+bool
+JosephBackProjectionImageFilter<TInputImage, TOutputImage>::BackProjectIfFunctionTypesAre()
+{
+  auto * interpolationWeightMultiplication =
+    m_InterpolationWeightMultiplication.template target<TInterpolationWeightMultiplication>();
+  auto * splatWeightMultiplication = m_SplatWeightMultiplication.template target<TSplatWeightMultiplication>();
+  auto * sumAlongRay = m_SumAlongRay.template target<TSumAlongRay>();
+  if (!interpolationWeightMultiplication || !splatWeightMultiplication || !sumAlongRay)
+    return false;
+  BackProject(*interpolationWeightMultiplication, *splatWeightMultiplication, *sumAlongRay);
+  return true;
+}
+
+template <class TInputImage, class TOutputImage>
+template <class TInterpolationWeightMultiplication, class TSplatWeightMultiplication, class TSumAlongRay>
+void
+JosephBackProjectionImageFilter<TInputImage, TOutputImage>::BackProject(
+  TInterpolationWeightMultiplication & interpolationWeightMultiplication,
+  TSplatWeightMultiplication &         splatWeightMultiplication,
+  TSumAlongRay &                       sumAlongRay)
 {
   // Allocate the output image
   this->AllocateOutputs();
@@ -215,7 +233,8 @@ JosephBackProjectionImageFilter<TInputImage, TOutputImage>::GenerateData()
       bool isNewRay = true;
       if (fs == ns) // If the voxel is a corner, we can skip most steps
       {
-        attenuationRay += BilinearInterpolationOnBorders(std::abs(fp[mainDir] - np[mainDir]),
+        attenuationRay += BilinearInterpolationOnBorders(interpolationWeightMultiplication,
+                                                         std::abs(fp[mainDir] - np[mainDir]),
                                                          pxiyi,
                                                          pxsyi,
                                                          pxiys,
@@ -228,9 +247,9 @@ JosephBackProjectionImageFilter<TInputImage, TOutputImage>::GenerateData()
                                                          miny,
                                                          maxx,
                                                          maxy);
-        const typename TInputImage::PixelType & rayValue =
-          m_SumAlongRay(itIn->Value(), attenuationRay, stepMM, isNewRay);
-        BilinearSplatOnBorders(rayValue,
+        const typename TInputImage::PixelType & rayValue = sumAlongRay(itIn->Value(), attenuationRay, stepMM, isNewRay);
+        BilinearSplatOnBorders(splatWeightMultiplication,
+                               rayValue,
                                std::abs(fp[mainDir] - np[mainDir]),
                                stepMM.GetNorm(),
                                pxiyi,
@@ -249,13 +268,26 @@ JosephBackProjectionImageFilter<TInputImage, TOutputImage>::GenerateData()
       else
       {
         // First step
-        attenuationRay += BilinearInterpolationOnBorders(
-          residualB + 0.5, pxiyi, pxsyi, pxiys, pxsys, currentx, currenty, offsetx, offsety, minx, miny, maxx, maxy);
+        attenuationRay += BilinearInterpolationOnBorders(interpolationWeightMultiplication,
+                                                         residualB + 0.5,
+                                                         pxiyi,
+                                                         pxsyi,
+                                                         pxiys,
+                                                         pxsys,
+                                                         currentx,
+                                                         currenty,
+                                                         offsetx,
+                                                         offsety,
+                                                         minx,
+                                                         miny,
+                                                         maxx,
+                                                         maxy);
 
         const typename TInputImage::PixelType & rayValueF =
-          m_SumAlongRay(itIn->Value(), attenuationRay, stepMM, isNewRay);
+          sumAlongRay(itIn->Value(), attenuationRay, stepMM, isNewRay);
 
-        BilinearSplatOnBorders(rayValueF,
+        BilinearSplatOnBorders(splatWeightMultiplication,
+                               rayValueF,
                                residualB + 0.5,
                                stepMM.GetNorm(),
                                pxiyi,
@@ -282,13 +314,24 @@ JosephBackProjectionImageFilter<TInputImage, TOutputImage>::GenerateData()
         // Middle steps
         for (int i{ 0 }; i < std::abs(fs - ns) - 1; ++i)
         {
-          attenuationRay += BilinearInterpolation(1., pxiyi, pxsyi, pxiys, pxsys, currentx, currenty, offsetx, offsety);
+          attenuationRay += BilinearInterpolation(
+            interpolationWeightMultiplication, 1., pxiyi, pxsyi, pxiys, pxsys, currentx, currenty, offsetx, offsety);
 
           const typename TInputImage::PixelType & rayValueM =
-            m_SumAlongRay(itIn->Value(), attenuationRay, stepMM, isNewRay);
+            sumAlongRay(itIn->Value(), attenuationRay, stepMM, isNewRay);
 
-          BilinearSplat(
-            rayValueM, 1.0, stepMM.GetNorm(), pxiyi, pxsyi, pxiys, pxsys, currentx, currenty, offsetx, offsety);
+          BilinearSplat(splatWeightMultiplication,
+                        rayValueM,
+                        1.0,
+                        stepMM.GetNorm(),
+                        pxiyi,
+                        pxsyi,
+                        pxiys,
+                        pxsys,
+                        currentx,
+                        currenty,
+                        offsetx,
+                        offsety);
 
           // Move to next main direction slice
           pxiyi += offsetz;
@@ -300,13 +343,26 @@ JosephBackProjectionImageFilter<TInputImage, TOutputImage>::GenerateData()
         }
 
         // Last step
-        attenuationRay += BilinearInterpolationOnBorders(
-          residualE + 0.5, pxiyi, pxsyi, pxiys, pxsys, currentx, currenty, offsetx, offsety, minx, miny, maxx, maxy);
+        attenuationRay += BilinearInterpolationOnBorders(interpolationWeightMultiplication,
+                                                         residualE + 0.5,
+                                                         pxiyi,
+                                                         pxsyi,
+                                                         pxiys,
+                                                         pxsys,
+                                                         currentx,
+                                                         currenty,
+                                                         offsetx,
+                                                         offsety,
+                                                         minx,
+                                                         miny,
+                                                         maxx,
+                                                         maxy);
 
         const typename TInputImage::PixelType & rayValueE =
-          m_SumAlongRay(itIn->Value(), attenuationRay, stepMM, isNewRay);
+          sumAlongRay(itIn->Value(), attenuationRay, stepMM, isNewRay);
 
-        BilinearSplatOnBorders(rayValueE,
+        BilinearSplatOnBorders(splatWeightMultiplication,
+                               rayValueE,
                                residualE + 0.5,
                                stepMM.GetNorm(),
                                pxiyi,
@@ -328,18 +384,21 @@ JosephBackProjectionImageFilter<TInputImage, TOutputImage>::GenerateData()
 }
 
 template <class TInputImage, class TOutputImage>
+template <class TSplatWeightMultiplication>
 void
-JosephBackProjectionImageFilter<TInputImage, TOutputImage>::BilinearSplat(const InputPixelType & rayValue,
-                                                                          const double           stepLengthInVoxel,
-                                                                          const double           voxelSize,
-                                                                          OutputPixelType *      pxiyi,
-                                                                          OutputPixelType *      pxsyi,
-                                                                          OutputPixelType *      pxiys,
-                                                                          OutputPixelType *      pxsys,
-                                                                          const CoordinateType   x,
-                                                                          const CoordinateType   y,
-                                                                          const ptrdiff_t        ox,
-                                                                          const ptrdiff_t        oy)
+JosephBackProjectionImageFilter<TInputImage, TOutputImage>::BilinearSplat(
+  TSplatWeightMultiplication & splatWeightMultiplication,
+  const InputPixelType &       rayValue,
+  const double                 stepLengthInVoxel,
+  const double                 voxelSize,
+  OutputPixelType *            pxiyi,
+  OutputPixelType *            pxsyi,
+  OutputPixelType *            pxiys,
+  OutputPixelType *            pxsys,
+  const CoordinateType         x,
+  const CoordinateType         y,
+  const ptrdiff_t              ox,
+  const ptrdiff_t              oy)
 {
   ptrdiff_t      ix = itk::Math::floor(x);
   ptrdiff_t      iy = itk::Math::floor(y);
@@ -349,29 +408,32 @@ JosephBackProjectionImageFilter<TInputImage, TOutputImage>::BilinearSplat(const 
   CoordinateType lxc = 1. - lx;
   CoordinateType lyc = 1. - ly;
 
-  m_SplatWeightMultiplication(rayValue, pxiyi[idx], stepLengthInVoxel, voxelSize, lxc * lyc);
-  m_SplatWeightMultiplication(rayValue, pxsyi[idx], stepLengthInVoxel, voxelSize, lx * lyc);
-  m_SplatWeightMultiplication(rayValue, pxiys[idx], stepLengthInVoxel, voxelSize, lxc * ly);
-  m_SplatWeightMultiplication(rayValue, pxsys[idx], stepLengthInVoxel, voxelSize, lx * ly);
+  splatWeightMultiplication(rayValue, pxiyi[idx], stepLengthInVoxel, voxelSize, lxc * lyc);
+  splatWeightMultiplication(rayValue, pxsyi[idx], stepLengthInVoxel, voxelSize, lx * lyc);
+  splatWeightMultiplication(rayValue, pxiys[idx], stepLengthInVoxel, voxelSize, lxc * ly);
+  splatWeightMultiplication(rayValue, pxsys[idx], stepLengthInVoxel, voxelSize, lx * ly);
 }
 
 template <class TInputImage, class TOutputImage>
+template <class TSplatWeightMultiplication>
 void
-JosephBackProjectionImageFilter<TInputImage, TOutputImage>::BilinearSplatOnBorders(const InputPixelType & rayValue,
-                                                                                   const double      stepLengthInVoxel,
-                                                                                   const double      voxelSize,
-                                                                                   OutputPixelType * pxiyi,
-                                                                                   OutputPixelType * pxsyi,
-                                                                                   OutputPixelType * pxiys,
-                                                                                   OutputPixelType * pxsys,
-                                                                                   const CoordinateType x,
-                                                                                   const CoordinateType y,
-                                                                                   const ptrdiff_t      ox,
-                                                                                   const ptrdiff_t      oy,
-                                                                                   const CoordinateType minx,
-                                                                                   const CoordinateType miny,
-                                                                                   const CoordinateType maxx,
-                                                                                   const CoordinateType maxy)
+JosephBackProjectionImageFilter<TInputImage, TOutputImage>::BilinearSplatOnBorders(
+  TSplatWeightMultiplication & splatWeightMultiplication,
+  const InputPixelType &       rayValue,
+  const double                 stepLengthInVoxel,
+  const double                 voxelSize,
+  OutputPixelType *            pxiyi,
+  OutputPixelType *            pxsyi,
+  OutputPixelType *            pxiys,
+  OutputPixelType *            pxsys,
+  const CoordinateType         x,
+  const CoordinateType         y,
+  const ptrdiff_t              ox,
+  const ptrdiff_t              oy,
+  const CoordinateType         minx,
+  const CoordinateType         miny,
+  const CoordinateType         maxx,
+  const CoordinateType         maxy)
 {
   ptrdiff_t      ix = itk::Math::floor(x);
   ptrdiff_t      iy = itk::Math::floor(y);
@@ -395,23 +457,26 @@ JosephBackProjectionImageFilter<TInputImage, TOutputImage>::BilinearSplatOnBorde
   if (iy >= maxy)
     offset_ys = -oy;
 
-  m_SplatWeightMultiplication(rayValue, pxiyi[idx + offset_xi + offset_yi], stepLengthInVoxel, voxelSize, lxc * lyc);
-  m_SplatWeightMultiplication(rayValue, pxiys[idx + offset_xi + offset_ys], stepLengthInVoxel, voxelSize, lxc * ly);
-  m_SplatWeightMultiplication(rayValue, pxsyi[idx + offset_xs + offset_yi], stepLengthInVoxel, voxelSize, lx * lyc);
-  m_SplatWeightMultiplication(rayValue, pxsys[idx + offset_xs + offset_ys], stepLengthInVoxel, voxelSize, lx * ly);
+  splatWeightMultiplication(rayValue, pxiyi[idx + offset_xi + offset_yi], stepLengthInVoxel, voxelSize, lxc * lyc);
+  splatWeightMultiplication(rayValue, pxiys[idx + offset_xi + offset_ys], stepLengthInVoxel, voxelSize, lxc * ly);
+  splatWeightMultiplication(rayValue, pxsyi[idx + offset_xs + offset_yi], stepLengthInVoxel, voxelSize, lx * lyc);
+  splatWeightMultiplication(rayValue, pxsys[idx + offset_xs + offset_ys], stepLengthInVoxel, voxelSize, lx * ly);
 }
 
 template <class TInputImage, class TOutputImage>
+template <class TInterpolationWeightMultiplication>
 typename JosephBackProjectionImageFilter<TInputImage, TOutputImage>::OutputPixelType
-JosephBackProjectionImageFilter<TInputImage, TOutputImage>::BilinearInterpolation(const double stepLengthInVoxel,
-                                                                                  const InputPixelType * pxiyi,
-                                                                                  const InputPixelType * pxsyi,
-                                                                                  const InputPixelType * pxiys,
-                                                                                  const InputPixelType * pxsys,
-                                                                                  const CoordinateType   x,
-                                                                                  const CoordinateType   y,
-                                                                                  const ptrdiff_t        ox,
-                                                                                  const ptrdiff_t        oy)
+JosephBackProjectionImageFilter<TInputImage, TOutputImage>::BilinearInterpolation(
+  TInterpolationWeightMultiplication & interpolationWeightMultiplication,
+  const double                         stepLengthInVoxel,
+  const InputPixelType *               pxiyi,
+  const InputPixelType *               pxsyi,
+  const InputPixelType *               pxiys,
+  const InputPixelType *               pxsys,
+  const CoordinateType                 x,
+  const CoordinateType                 y,
+  const ptrdiff_t                      ox,
+  const ptrdiff_t                      oy)
 {
   ptrdiff_t      ix = itk::Math::floor(x);
   ptrdiff_t      iy = itk::Math::floor(y);
@@ -420,28 +485,30 @@ JosephBackProjectionImageFilter<TInputImage, TOutputImage>::BilinearInterpolatio
   CoordinateType ly = y - iy;
   CoordinateType lxc = 1. - lx;
   CoordinateType lyc = 1. - ly;
-  return (m_InterpolationWeightMultiplication(stepLengthInVoxel, lxc * lyc, pxiyi, idx) +
-          m_InterpolationWeightMultiplication(stepLengthInVoxel, lx * lyc, pxsyi, idx) +
-          m_InterpolationWeightMultiplication(stepLengthInVoxel, lxc * ly, pxiys, idx) +
-          m_InterpolationWeightMultiplication(stepLengthInVoxel, lx * ly, pxsys, idx));
+  return (interpolationWeightMultiplication(stepLengthInVoxel, lxc * lyc, pxiyi, idx) +
+          interpolationWeightMultiplication(stepLengthInVoxel, lx * lyc, pxsyi, idx) +
+          interpolationWeightMultiplication(stepLengthInVoxel, lxc * ly, pxiys, idx) +
+          interpolationWeightMultiplication(stepLengthInVoxel, lx * ly, pxsys, idx));
 }
 
 template <class TInputImage, class TOutputImage>
+template <class TInterpolationWeightMultiplication>
 typename JosephBackProjectionImageFilter<TInputImage, TOutputImage>::OutputPixelType
 JosephBackProjectionImageFilter<TInputImage, TOutputImage>::BilinearInterpolationOnBorders(
-  const double           stepLengthInVoxel,
-  const InputPixelType * pxiyi,
-  const InputPixelType * pxsyi,
-  const InputPixelType * pxiys,
-  const InputPixelType * pxsys,
-  const CoordinateType   x,
-  const CoordinateType   y,
-  const ptrdiff_t        ox,
-  const ptrdiff_t        oy,
-  const CoordinateType   minx,
-  const CoordinateType   miny,
-  const CoordinateType   maxx,
-  const CoordinateType   maxy)
+  TInterpolationWeightMultiplication & interpolationWeightMultiplication,
+  const double                         stepLengthInVoxel,
+  const InputPixelType *               pxiyi,
+  const InputPixelType *               pxsyi,
+  const InputPixelType *               pxiys,
+  const InputPixelType *               pxsys,
+  const CoordinateType                 x,
+  const CoordinateType                 y,
+  const ptrdiff_t                      ox,
+  const ptrdiff_t                      oy,
+  const CoordinateType                 minx,
+  const CoordinateType                 miny,
+  const CoordinateType                 maxx,
+  const CoordinateType                 maxy)
 {
   ptrdiff_t      ix = itk::Math::floor(x);
   ptrdiff_t      iy = itk::Math::floor(y);
@@ -466,10 +533,10 @@ JosephBackProjectionImageFilter<TInputImage, TOutputImage>::BilinearInterpolatio
   if (iy >= maxy)
     offset_ys = -oy;
 
-  result += m_InterpolationWeightMultiplication(stepLengthInVoxel, lxc * lyc, pxiyi, idx + offset_xi + offset_yi);
-  result += m_InterpolationWeightMultiplication(stepLengthInVoxel, lxc * ly, pxiys, idx + offset_xi + offset_ys);
-  result += m_InterpolationWeightMultiplication(stepLengthInVoxel, lx * lyc, pxsyi, idx + offset_xs + offset_yi);
-  result += m_InterpolationWeightMultiplication(stepLengthInVoxel, lx * ly, pxsys, idx + offset_xs + offset_ys);
+  result += interpolationWeightMultiplication(stepLengthInVoxel, lxc * lyc, pxiyi, idx + offset_xi + offset_yi);
+  result += interpolationWeightMultiplication(stepLengthInVoxel, lxc * ly, pxiys, idx + offset_xi + offset_ys);
+  result += interpolationWeightMultiplication(stepLengthInVoxel, lx * lyc, pxsyi, idx + offset_xs + offset_yi);
+  result += interpolationWeightMultiplication(stepLengthInVoxel, lx * ly, pxsys, idx + offset_xs + offset_ys);
 
   return (result);
 }

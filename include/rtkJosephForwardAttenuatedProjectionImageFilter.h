@@ -86,6 +86,20 @@ protected:
   void
   BeforeThreadedGenerateData() override;
 
+  void
+  ThreadedGenerateData(const OutputImageRegionType & outputRegionForThread, ThreadIdType threadId) override;
+
+#if !defined(ITK_WRAPPING_PARSER)
+  /** Lambdas of the attenuated projector. Their types are used to detect that
+   * they have not been replaced. */
+  auto
+  MakeAttenuatedInterpolationWeightMultiplication();
+  auto
+  MakeAttenuatedSumAlongRay();
+  auto
+  MakeAttenuatedProjectedValueAccumulation();
+#endif
+
   /** Only the last two inputs should be in the same space so we need
    * to overwrite the method. */
   void
