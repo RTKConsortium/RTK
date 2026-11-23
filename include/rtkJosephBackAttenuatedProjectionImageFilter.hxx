@@ -171,7 +171,7 @@ JosephBackAttenuatedProjectionImageFilter<TInputImage,
     itkExceptionMacro("Attenuation map (input 2) must be set before running the attenuated back projector.");
   }
   this->m_InterpolationWeightMultiplication.SetAttenuationMinusEmissionMapsPtrDiff(
-    this->GetInput(2)->GetBufferPointer() - this->GetInput(0)->GetBufferPointer());
+    this->GetInput(2)->GetBufferPointer() - this->GetOutput()->GetBufferPointer());
   this->m_SumAlongRay.SetAttenuationPixel(this->m_InterpolationWeightMultiplication.GetAttenuationPixel());
 }
 
@@ -185,10 +185,10 @@ JosephBackAttenuatedProjectionImageFilter<TInputImage,
                                           TOutputImage,
                                           TInterpolationWeightMultiplication,
                                           TSplatWeightMultiplication,
-                                          TSumAlongRay>::GenerateData()
+                                          TSumAlongRay>::AllocateOutputs()
 {
+  Superclass::AllocateOutputs();
   Init();
-  Superclass::GenerateData();
 }
 } // end namespace rtk
 

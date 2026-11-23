@@ -253,8 +253,12 @@ protected:
   void
   VerifyInputInformation() const override;
 
+  /** Allocates the output and initializes the functors. The interpolation
+   * weight functor receives pointers to the output buffer, so the offset to
+   * the attenuation map must be computed after the output allocation, which
+   * differs from input 0 when the filter does not run in place. */
   void
-  GenerateData() override;
+  AllocateOutputs() override;
 
   void
   Init();
