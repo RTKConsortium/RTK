@@ -25,12 +25,24 @@
 #include "rtkMacro.h"
 #include <cmath>
 #include <itkPixelTraits.h>
+#include <algorithm>
 #include <vector>
 
 namespace rtk
 {
 namespace Functor
 {
+/** Stride between the per-thread values of the attenuated forward projector
+ * functors, i.e., values of thread threadId are at index
+ * threadId * JosephAttenuatedThreadStride<TInput>(). Each value is on its
+ * own 64-byte cache line to avoid false sharing between threads. */
+template <class TInput>
+constexpr std::size_t
+JosephAttenuatedThreadStride()
+{
+  return std::max<std::size_t>(1, 64 / sizeof(TInput));
+}
+
 /** \class InterpolationWeightMultiplicationAttenuated
  * \brief Function to multiply the interpolation weights with the projected
  * volume values and attenuation map.
@@ -45,12 +57,9 @@ class ITK_TEMPLATE_EXPORT InterpolationWeightMultiplicationAttenuated
 public:
   InterpolationWeightMultiplicationAttenuated()
   {
-    for (std::size_t i = 0; i < itk::ITK_MAX_THREADS; i++)
-    {
-      m_AttenuationRay[i] = 0;
-      m_AttenuationPixel[i] = 0;
-      m_Ex1[i] = 1;
-    }
+    std::fill(std::begin(m_AttenuationRay), std::end(m_AttenuationRay), 0);
+    std::fill(std::begin(m_AttenuationPixel), std::end(m_AttenuationPixel), 0);
+    std::fill(std::begin(m_Ex1), std::end(m_Ex1), 1);
   }
 
   ~InterpolationWeightMultiplicationAttenuated() = default;
@@ -73,10 +82,11 @@ public:
              const TInput *        p,
              const ptrdiff_t       i)
   {
-    const double w = weight * stepLengthInVoxel;
+    const double      w = weight * stepLengthInVoxel;
+    const std::size_t t = threadId * Stride;
 
-    m_AttenuationRay[threadId] += w * (p + m_AttenuationMinusEmissionMapsPtrDiff)[i];
-    m_AttenuationPixel[threadId] += w * (p + m_AttenuationMinusEmissionMapsPtrDiff)[i];
+    m_AttenuationRay[t] += w * (p + m_AttenuationMinusEmissionMapsPtrDiff)[i];
+    m_AttenuationPixel[t] += w * (p + m_AttenuationMinusEmissionMapsPtrDiff)[i];
     return weight * p[i];
   }
 
@@ -102,10 +112,11 @@ public:
   }
 
 private:
-  std::ptrdiff_t m_AttenuationMinusEmissionMapsPtrDiff{};
-  TInput         m_AttenuationRay[itk::ITK_MAX_THREADS];
-  TInput         m_AttenuationPixel[itk::ITK_MAX_THREADS];
-  TInput         m_Ex1[itk::ITK_MAX_THREADS];
+  static constexpr std::size_t Stride = JosephAttenuatedThreadStride<TInput>();
+  std::ptrdiff_t               m_AttenuationMinusEmissionMapsPtrDiff{};
+  TInput                       m_AttenuationRay[itk::ITK_MAX_THREADS * Stride];
+  TInput                       m_AttenuationPixel[itk::ITK_MAX_THREADS * Stride];
+  TInput                       m_Ex1[itk::ITK_MAX_THREADS * Stride];
 };
 
 /** \class ComputeAttenuationCorrection
@@ -138,20 +149,21 @@ public:
   void
   operator()(const ThreadIdType threadId, TOutput & sumValue, const TInput volumeValue, const VectorType & stepInMM)
   {
-    TInput ex2 = exp(-m_AttenuationRay[threadId] * stepInMM.GetNorm());
-    TInput wf;
+    const std::size_t t = threadId * JosephAttenuatedThreadStride<TInput>();
+    TInput            ex2 = exp(-m_AttenuationRay[t] * stepInMM.GetNorm());
+    TInput            wf;
 
-    if (m_AttenuationPixel[threadId] > 0)
+    if (m_AttenuationPixel[t] > 0)
     {
-      wf = (m_Ex1[threadId] - ex2) / m_AttenuationPixel[threadId];
+      wf = (m_Ex1[t] - ex2) / m_AttenuationPixel[t];
     }
     else
     {
-      wf = m_Ex1[threadId] * stepInMM.GetNorm();
+      wf = m_Ex1[t] * stepInMM.GetNorm();
     }
 
-    m_Ex1[threadId] = ex2;
-    m_AttenuationPixel[threadId] = 0;
+    m_Ex1[t] = ex2;
+    m_AttenuationPixel[t] = 0;
     sumValue += wf * volumeValue;
   }
 
@@ -216,9 +228,10 @@ public:
              const PointType &  itkNotUsed(nearestPoint),
              const PointType &  itkNotUsed(farthestPoint))
   {
+    const std::size_t t = threadId * JosephAttenuatedThreadStride<TInput>();
     output = input + rayCastValue;
-    m_Attenuation[threadId] = 0;
-    m_Ex1[threadId] = 1;
+    m_Attenuation[t] = 0;
+    m_Ex1[t] = 1;
   }
 
   void
