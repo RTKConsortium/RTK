@@ -254,19 +254,24 @@ rtkadjointoperatorstest(int, char *[])
     attfw->SetGeometry(geometry);
     TRY_AND_EXIT_ON_ITK_EXCEPTION(attfw->Update());
 
-    std::cout << "\n\n****** Attenuated Joseph Back projector ******" << std::endl;
+    // Both in place and not in place since the output buffer then differs from input 0
+    for (bool inPlace : { true, false })
+    {
+      std::cout << "\n\n****** Attenuated Joseph Back projector, in place " << inPlace << " ******" << std::endl;
 
-    auto attbp = rtk::JosephBackAttenuatedProjectionImageFilter<OutputImageType, OutputImageType>::New();
-    attbp->SetInput(0, constantVolumeSource->GetOutput());
-    attbp->SetInput(1, randomProjectionsSource->GetOutput());
-    attbp->SetInput(2, constantAttenuationSource->GetOutput());
-    attbp->SetGeometry(geometry.GetPointer());
+      auto attbp = rtk::JosephBackAttenuatedProjectionImageFilter<OutputImageType, OutputImageType>::New();
+      attbp->SetInput(0, constantVolumeSource->GetOutput());
+      attbp->SetInput(1, randomProjectionsSource->GetOutput());
+      attbp->SetInput(2, constantAttenuationSource->GetOutput());
+      attbp->SetGeometry(geometry.GetPointer());
+      attbp->SetInPlace(inPlace);
 
-    TRY_AND_EXIT_ON_ITK_EXCEPTION(attbp->Update());
+      TRY_AND_EXIT_ON_ITK_EXCEPTION(attbp->Update());
 
-    CheckScalarProducts<OutputImageType, OutputImageType>(
-      randomVolumeSource->GetOutput(), attbp->GetOutput(), randomProjectionsSource->GetOutput(), attfw->GetOutput());
-    std::cout << "\n\nTest PASSED! " << std::endl;
+      CheckScalarProducts<OutputImageType, OutputImageType>(
+        randomVolumeSource->GetOutput(), attbp->GetOutput(), randomProjectionsSource->GetOutput(), attfw->GetOutput());
+      std::cout << "\n\nTest PASSED! " << std::endl;
+    }
 
 #ifdef USE_CUDA
     std::cout << "\n\n****** Cuda Ray Cast Forward projector ******" << std::endl;
