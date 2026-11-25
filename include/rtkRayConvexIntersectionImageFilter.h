@@ -67,8 +67,7 @@ public:
   itkSetObjectMacro(ConvexShape, ConvexShape);
 
   /** Get / Set the object pointer to projection geometry */
-  itkGetConstObjectMacro(Geometry, GeometryType);
-  itkSetConstObjectMacro(Geometry, GeometryType);
+  itkSetGetDecoratedObjectInputMacro(Geometry, ThreeDCircularProjectionGeometry);
 
   /** Get / Set the attenuation \f$\mu\f$ to simulate the attenuated line integral. Default is 0.
    * The attenuated line integral model is
@@ -104,9 +103,8 @@ protected:
   DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread) override;
 
 private:
-  ConvexShapePointer   m_ConvexShape;
-  GeometryConstPointer m_Geometry;
-  double               m_Attenuation = 0.;
+  ConvexShapePointer m_ConvexShape;
+  double             m_Attenuation = 0.;
 };
 
 } // end namespace rtk

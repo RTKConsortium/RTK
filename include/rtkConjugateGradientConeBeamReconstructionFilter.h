@@ -185,7 +185,7 @@ public:
   GetSupportMask();
 
   /** Pass the geometry to all filters needing it */
-  itkSetConstObjectMacro(Geometry, ThreeDCircularProjectionGeometry);
+  itkSetGetDecoratedObjectInputMacro(Geometry, ThreeDCircularProjectionGeometry);
 
   itkSetMacro(NumberOfIterations, int);
   itkGetMacro(NumberOfIterations, int);
@@ -275,8 +275,6 @@ protected:
   ReportProgress(itk::Object *, const itk::EventObject &);
 
 private:
-  ThreeDCircularProjectionGeometry::ConstPointer m_Geometry;
-
   int   m_NumberOfIterations;
   float m_Gamma;
   float m_Tikhonov;

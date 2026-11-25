@@ -106,7 +106,7 @@ void
 AmsterdamShroudImageFilter<TInputImage>::GenerateData()
 {
   // If there is a geometry set, use it to crop the projections
-  if (m_Geometry.GetPointer())
+  if (this->GetGeometry())
     CropOutsideProjectedBox();
 
   unsigned int kernelWidth = 0;
@@ -183,7 +183,8 @@ AmsterdamShroudImageFilter<TInputImage>::CropOutsideProjectedBox()
     for (unsigned int ci = 0; ci < 8; ci++)
     {
       typename TInputImage::PointType pCorner(0.);
-      vnl_vector<double> pCornerVnl = m_Geometry->GetMatrices()[iProj].GetVnlMatrix() * corners[ci].GetVnlVector();
+      vnl_vector<double>              pCornerVnl =
+        this->GetGeometry()->GetMatrices()[iProj].GetVnlMatrix() * corners[ci].GetVnlVector();
       for (unsigned int i = 0; i < 2; i++)
         pCorner[i] = pCornerVnl[i] / pCornerVnl[2];
       const itk::ContinuousIndex<double, 3> pCornerI =

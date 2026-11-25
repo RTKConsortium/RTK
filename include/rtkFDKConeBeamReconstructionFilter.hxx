@@ -63,14 +63,14 @@ FDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecision>::Verif
 {
   this->Superclass::VerifyPreconditions();
 
-  if (this->m_Geometry.IsNull())
+  if (this->GetGeometry() == nullptr)
     itkExceptionMacro(<< "Geometry has not been set.");
 
   // Check that the rotation axis is along Y (index 1), as required by the ramp filter
   // which always applies along the first direction of the projection images. Some
   // misalignment is allowed, up to the configurable angular tolerance.
   const double cosTolerance = std::cos(this->m_AngularTolerance * itk::Math::pi / 180.);
-  const auto & matrices = this->m_Geometry->GetRotationMatrices();
+  const auto & matrices = this->GetGeometry()->GetRotationMatrices();
   for (unsigned int i = 0; i < matrices.size(); i++)
   {
     const double dot = matrices[i][1][1];
@@ -106,8 +106,8 @@ FDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecision>::Gener
 {
   const unsigned int Dimension = this->InputImageDimension;
 
-  m_WeightFilter->SetGeometry(m_Geometry);
-  m_BackProjectionFilter->SetGeometry(m_Geometry);
+  m_WeightFilter->SetGeometry(this->GetGeometry());
+  m_BackProjectionFilter->SetGeometry(this->GetGeometry());
 
   // We only set the first sub-stack at that point, the rest will be
   // requested in the GenerateData function

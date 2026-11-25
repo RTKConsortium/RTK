@@ -343,7 +343,7 @@ MechlemOneStepSpectralReconstructionFilter<TOutputImage, TMeasuredProjections, T
 {
   this->Superclass::VerifyPreconditions();
 
-  if (this->m_Geometry.IsNull())
+  if (this->GetGeometry() == nullptr)
     itkExceptionMacro(<< "Geometry has not been set.");
 }
 
@@ -428,7 +428,7 @@ MechlemOneStepSpectralReconstructionFilter<TOutputImage, TMeasuredProjections, T
   if (m_NumberOfSubsets != 1)
   {
     m_ReorderMeasuredProjectionsFilter->SetInput(this->GetInputMeasuredProjections());
-    m_ReorderMeasuredProjectionsFilter->SetInputGeometry(this->m_Geometry);
+    m_ReorderMeasuredProjectionsFilter->SetInputGeometry(this->GetGeometry());
     m_ReorderMeasuredProjectionsFilter->SetPermutation(ReorderMeasuredProjectionsFilterType::SHUFFLE);
     m_ExtractMeasuredProjectionsFilter->SetInput(m_ReorderMeasuredProjectionsFilter->GetOutput());
 
@@ -441,10 +441,10 @@ MechlemOneStepSpectralReconstructionFilter<TOutputImage, TMeasuredProjections, T
   {
     m_ExtractMeasuredProjectionsFilter->SetInput(this->GetInputMeasuredProjections());
 
-    m_ForwardProjectionFilter->SetGeometry(this->m_Geometry);
-    m_SingleComponentForwardProjectionFilter->SetGeometry(this->m_Geometry);
-    m_GradientsBackProjectionFilter->SetGeometry(this->m_Geometry.GetPointer());
-    m_HessiansBackProjectionFilter->SetGeometry(this->m_Geometry.GetPointer());
+    m_ForwardProjectionFilter->SetGeometry(this->GetGeometry());
+    m_SingleComponentForwardProjectionFilter->SetGeometry(this->GetGeometry());
+    m_GradientsBackProjectionFilter->SetGeometry(this->GetGeometry());
+    m_HessiansBackProjectionFilter->SetGeometry(this->GetGeometry());
   }
 
   m_ForwardProjectionFilter->SetInput(0, m_ProjectionsSource->GetOutput());
@@ -465,7 +465,7 @@ MechlemOneStepSpectralReconstructionFilter<TOutputImage, TMeasuredProjections, T
     if (m_NumberOfSubsets != 1)
     {
       m_ReorderProjectionsWeightsFilter->SetInput(this->GetProjectionWeights());
-      m_ReorderProjectionsWeightsFilter->SetInputGeometry(this->m_Geometry);
+      m_ReorderProjectionsWeightsFilter->SetInputGeometry(this->GetGeometry());
       m_ReorderProjectionsWeightsFilter->SetPermutation(ReorderProjectionsWeightsFilterType::SHUFFLE);
       m_MultiplyGradientToBeBackprojectedFilter->SetInput2(m_ReorderProjectionsWeightsFilter->GetOutput());
     }

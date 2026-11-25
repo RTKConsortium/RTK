@@ -65,7 +65,7 @@ OSEMConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>::VerifyPrecondi
 {
   this->Superclass::VerifyPreconditions();
 
-  if (this->m_Geometry.IsNull())
+  if (this->GetGeometry() == nullptr)
     itkExceptionMacro(<< "Geometry has not been set.");
 }
 
@@ -156,9 +156,9 @@ OSEMConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>::GenerateOutput
     m_DivideProjectionFilter->SetInput2(m_ForwardProjectionFilter->GetOutput());
   m_DivideProjectionFilter->SetConstant(1);
 
-  m_ForwardProjectionFilter->SetGeometry(this->m_Geometry);
-  m_BackProjectionFilter->SetGeometry(this->m_Geometry);
-  m_BackProjectionNormalizationFilter->SetGeometry(this->m_Geometry);
+  m_ForwardProjectionFilter->SetGeometry(this->GetGeometry());
+  m_BackProjectionFilter->SetGeometry(this->GetGeometry());
+  m_BackProjectionNormalizationFilter->SetGeometry(this->GetGeometry());
 
   // Update output information
   m_DivideVolumeFilter->UpdateOutputInformation();

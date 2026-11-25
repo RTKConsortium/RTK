@@ -151,7 +151,7 @@ ReconstructionConjugateGradientOperator<TOutputImage, TSingleComponentImage, TWe
 {
   this->Superclass::VerifyPreconditions();
 
-  if (this->m_Geometry.IsNull())
+  if (this->GetGeometry() == nullptr)
     itkExceptionMacro(<< "Geometry has not been set.");
 }
 
@@ -261,8 +261,8 @@ ReconstructionConjugateGradientOperator<TOutputImage, TSingleComponentImage, TWe
   }
 
   // Set geometry
-  m_ForwardProjectionFilter->SetGeometry(this->m_Geometry);
-  m_BackProjectionFilter->SetGeometry(this->m_Geometry.GetPointer());
+  m_ForwardProjectionFilter->SetGeometry(this->GetGeometry());
+  m_BackProjectionFilter->SetGeometry(this->GetGeometry());
 
   // Set memory management parameters for forward
   // and back projection filters

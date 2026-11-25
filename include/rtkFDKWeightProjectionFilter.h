@@ -71,8 +71,7 @@ public:
   itkOverrideGetNameOfClassMacro(FDKWeightProjectionFilter);
 
   /** Get/ Set geometry structure */
-  itkGetMacro(Geometry, ThreeDCircularProjectionGeometry::Pointer);
-  itkSetObjectMacro(Geometry, ThreeDCircularProjectionGeometry);
+  itkSetGetDecoratedObjectInputMacro(Geometry, ThreeDCircularProjectionGeometry);
 
 protected:
   FDKWeightProjectionFilter() = default;
@@ -95,8 +94,6 @@ private:
   /** Tilt angles with respect to the conventional situation */
   std::vector<double> m_TiltAngles;
 
-  /** Geometrical description of the system */
-  ThreeDCircularProjectionGeometry::Pointer m_Geometry;
 }; // end of class
 
 } // end namespace rtk

@@ -29,6 +29,7 @@ CudaDisplacedDetectorImageFilter ::~CudaDisplacedDetectorImageFilter() = default
 void
 CudaDisplacedDetectorImageFilter ::GPUGenerateData()
 {
+  const ThreeDCircularProjectionGeometry * geometry = this->GetGeometry();
   // compute overlap region by cropping output region with input buffer
   OutputImageRegionType overlapRegion = this->GetOutput()->GetRequestedRegion();
   overlapRegion.Crop(this->GetInput()->GetBufferedRegion());
@@ -117,10 +118,10 @@ CudaDisplacedDetectorImageFilter ::GPUGenerateData()
     itkExceptionMacro(<< "Couldn't allocate geomMatrix");
   for (int g = 0; g < proj_size_out[2]; ++g)
   {
-    geomMatrix[g * 4 + 0] = this->GetGeometry()->GetSourceToDetectorDistances()[g + geomIdx];
-    geomMatrix[g * 4 + 1] = this->GetGeometry()->GetSourceOffsetsX()[g + geomIdx];
-    geomMatrix[g * 4 + 2] = this->GetGeometry()->GetProjectionOffsetsX()[g + geomIdx];
-    geomMatrix[g * 4 + 3] = this->GetGeometry()->GetSourceToIsocenterDistances()[g + geomIdx];
+    geomMatrix[g * 4 + 0] = geometry->GetSourceToDetectorDistances()[g + geomIdx];
+    geomMatrix[g * 4 + 1] = geometry->GetSourceOffsetsX()[g + geomIdx];
+    geomMatrix[g * 4 + 2] = geometry->GetProjectionOffsetsX()[g + geomIdx];
+    geomMatrix[g * 4 + 3] = geometry->GetSourceToIsocenterDistances()[g + geomIdx];
   }
 
 

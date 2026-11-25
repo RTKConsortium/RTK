@@ -36,6 +36,7 @@ template <class TInputImage, class TOutputImage>
 void
 BackProjectionImageFilter<TInputImage, TOutputImage>::GenerateInputRequestedRegion()
 {
+  const ThreeDCircularProjectionGeometry * geometry = this->GetGeometry();
   // Input 0 is the volume in which we backproject
   typename Superclass::InputImagePointer inputPtr0 = const_cast<TInputImage *>(this->GetInput(0));
   if (!inputPtr0)
@@ -51,16 +52,15 @@ BackProjectionImageFilter<TInputImage, TOutputImage>::GenerateInputRequestedRegi
   const unsigned int Dimension = TInputImage::ImageDimension;
   const int          lastProjIndex = this->GetInput(1)->GetLargestPossibleRegion().GetIndex(Dimension - 1) +
                             this->GetInput(1)->GetLargestPossibleRegion().GetSize(Dimension - 1);
-  if ((int)this->m_Geometry->GetMatrices().size() < lastProjIndex)
+  if ((int)geometry->GetMatrices().size() < lastProjIndex)
   {
     itkExceptionMacro(<< "Mismatch between the number of projections and the geometry entries. "
-                      << "Geometry has " << this->m_Geometry->GetMatrices().size()
-                      << " entries, which is less than the "
+                      << "Geometry has " << geometry->GetMatrices().size() << " entries, which is less than the "
                       << "last index of the projections stack, i.e., " << lastProjIndex << ".");
   }
 
   typename TInputImage::RegionType reqRegion = inputPtr1->GetLargestPossibleRegion();
-  if (m_Geometry.GetPointer() == nullptr || m_Geometry->GetRadiusCylindricalDetector() != 0)
+  if (this->GetGeometry() == nullptr || geometry->GetRadiusCylindricalDetector() != 0)
   {
     inputPtr1->SetRequestedRegion(inputPtr1->GetLargestPossibleRegion());
     return;
@@ -156,7 +156,7 @@ BackProjectionImageFilter<TInputImage, TOutputImage>::VerifyPreconditions() cons
 {
   this->Superclass::VerifyPreconditions();
 
-  if (this->m_Geometry.IsNull())
+  if (this->GetGeometry() == nullptr)
     itkExceptionMacro(<< "Geometry has not been set.");
 }
 
@@ -164,16 +164,17 @@ template <class TInputImage, class TOutputImage>
 void
 BackProjectionImageFilter<TInputImage, TOutputImage>::BeforeThreadedGenerateData()
 {
+  const ThreeDCircularProjectionGeometry * geometry = this->GetGeometry();
   this->SetTranspose(true);
 
   // Check if detector is cylindrical
-  double radius = m_Geometry->GetRadiusCylindricalDetector();
-  if ((radius != 0) && (radius != this->m_Geometry->GetSourceToDetectorDistances()[0]))
+  double radius = geometry->GetRadiusCylindricalDetector();
+  if ((radius != 0) && (radius != geometry->GetSourceToDetectorDistances()[0]))
   {
     itkGenericExceptionMacro(<< "Voxel-based back projector can currently handle a cylindrical detector only when it "
                                 "is centered on the source. "
                              << "Detector radius is " << radius << ", should be "
-                             << this->m_Geometry->GetSourceToDetectorDistances()[0]);
+                             << geometry->GetSourceToDetectorDistances()[0]);
   }
 }
 
@@ -224,7 +225,7 @@ BackProjectionImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerateDat
     interpolator->SetInputImage(projection);
 
     // Cylindrical detector centered on source case
-    if (m_Geometry->GetRadiusCylindricalDetector() != 0)
+    if (this->GetGeometry()->GetRadiusCylindricalDetector() != 0)
     {
       ProjectionMatrixType volIndexToProjPP = GetVolumeIndexToProjectionPhysicalPointMatrix(iProj);
       itk::Matrix<double, TInputImage::ImageDimension, TInputImage::ImageDimension> projPPToProjIndex =
@@ -297,7 +298,7 @@ BackProjectionImageFilter<TInputImage, TOutputImage>::CylindricalDetectorCentere
   interpolator->SetInputImage(projection);
 
   // Get radius of the cylindrical detector
-  double radius = m_Geometry->GetRadiusCylindricalDetector();
+  double radius = this->GetGeometry()->GetRadiusCylindricalDetector();
 
   // Continuous index at which we interpolate
   itk::ContinuousIndex<double, Dimension - 1> pointProj, pointProjIdx;
@@ -551,14 +552,15 @@ typename BackProjectionImageFilter<TInputImage, TOutputImage>::ProjectionMatrixT
 BackProjectionImageFilter<TInputImage, TOutputImage>::GetVolumeIndexToProjectionPhysicalPointMatrix(
   const unsigned int iProj)
 {
-  const unsigned int Dimension = TInputImage::ImageDimension;
+  const ThreeDCircularProjectionGeometry * geometry = this->GetGeometry();
+  const unsigned int                       Dimension = TInputImage::ImageDimension;
 
   itk::Matrix<double, Dimension + 1, Dimension + 1> matrixVol =
     GetIndexToPhysicalPointMatrix<TOutputImage>(this->GetOutput());
 
-  return ProjectionMatrixType(this->m_Geometry->GetMagnificationMatrices()[iProj].GetVnlMatrix() *
-                              this->m_Geometry->GetSourceTranslationMatrices()[iProj].GetVnlMatrix() *
-                              this->m_Geometry->GetRotationMatrices()[iProj].GetVnlMatrix() * matrixVol.GetVnlMatrix());
+  return ProjectionMatrixType(geometry->GetMagnificationMatrices()[iProj].GetVnlMatrix() *
+                              geometry->GetSourceTranslationMatrices()[iProj].GetVnlMatrix() *
+                              geometry->GetRotationMatrices()[iProj].GetVnlMatrix() * matrixVol.GetVnlMatrix());
 }
 
 template <class TInputImage, class TOutputImage>
@@ -591,7 +593,7 @@ BackProjectionImageFilter<TInputImage, TOutputImage>::GetProjectionPhysicalPoint
 
   return itk::Matrix<double, TInputImage::ImageDimension, TInputImage::ImageDimension>(
     matrixFlip.GetVnlMatrix() * matrixProj.GetVnlMatrix() *
-    this->m_Geometry->GetProjectionTranslationMatrices()[iProj].GetVnlMatrix());
+    this->GetGeometry()->GetProjectionTranslationMatrices()[iProj].GetVnlMatrix());
 }
 
 

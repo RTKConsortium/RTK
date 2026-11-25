@@ -22,8 +22,20 @@
 #include "RTKExport.h"
 #include "rtkProjectionGeometry.h"
 
+#include <itkDataObjectDecorator.h>
+
 namespace rtk
 {
+/** itkSetGetDecoratedObjectInputMacro uses these ITK names without namespace
+ * qualification. They are declared in the rtk namespace so that the macro can
+ * be used to set the geometry as a decorated input of RTK filter templates. */
+using itk::DataObjectDecorator;
+using itk::ProcessObject;
+#if ITK_VERSION_MAJOR >= 6
+// itkDynamicCastInDebugMode is in the global namespace in ITK 5
+using itk::itkDynamicCastInDebugMode;
+#endif
+
 /** \class ThreeDCircularProjectionGeometry
  * \brief Projection geometry for a source and a 2-D flat panel.
  *
@@ -229,7 +241,7 @@ public:
   /** Get for each projection half the angular distance between the previous
    *  and the next projection in radians. */
   std::vector<double>
-  GetAngularGaps(const std::vector<double> & angles);
+  GetAngularGaps(const std::vector<double> & angles) const;
 
   /** Compute rotation matrix in homogeneous coordinates from 3 angles in
    * degrees. The convention is the default in itk, i.e. ZXY of Euler angles.*/

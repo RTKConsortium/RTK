@@ -140,7 +140,7 @@ public:
   SetForwardProjectionFilter(ForwardProjectionFilterType * _arg);
 
   /** Pass the geometry to SingleProjectionToFourDFilter */
-  itkSetObjectMacro(Geometry, GeometryType);
+  itkSetGetDecoratedObjectInputMacro(Geometry, ThreeDCircularProjectionGeometry);
 
   /** Pass the interpolation weights to SingleProjectionToFourDFilter */
   void
@@ -182,7 +182,6 @@ protected:
 
   /** Other member variables */
   itk::Array2D<float>                                               m_Weights;
-  GeometryType::Pointer                                             m_Geometry;
   typename ConstantProjectionStackSourceType::OutputImageRegionType m_PasteRegion;
   std::vector<double>                                               m_Signal;
 };

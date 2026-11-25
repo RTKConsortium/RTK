@@ -262,3 +262,13 @@ In Python, replace `rtk.AdditiveGaussianNoiseImageFilter[...]` with
 `itk.AdditiveGaussianNoiseImageFilter[...]`. The RTK applications that add
 Gaussian noise (`rtkdrawgeometricphantom`, `rtkdrawshepploganphantom`) already
 use the ITK filter.
+
+## Geometry set as a decorated input of filters
+
+The geometry of filters is now a pipeline input of type
+`itk::DataObjectDecorator<rtk::ThreeDCircularProjectionGeometry>`, set with
+`SetGeometry()` as before or with the new `SetGeometryInput()`. Modifying the
+geometry after it has been set, e.g. with `AddProjection()`, now triggers the
+re-execution of the filter at the next update. `GetGeometry()` returns a const
+pointer and `GetModifiableGeometry()` has been removed; modify the geometry
+object directly instead of accessing it through the filter.

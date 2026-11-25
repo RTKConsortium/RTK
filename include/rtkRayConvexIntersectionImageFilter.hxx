@@ -31,7 +31,6 @@ namespace rtk
 
 template <class TInputImage, class TOutputImage>
 RayConvexIntersectionImageFilter<TInputImage, TOutputImage>::RayConvexIntersectionImageFilter()
-  : m_Geometry(nullptr)
 {}
 
 template <class TInputImage, class TOutputImage>
@@ -48,7 +47,7 @@ RayConvexIntersectionImageFilter<TInputImage, TOutputImage>::VerifyPreconditions
 {
   this->Superclass::VerifyPreconditions();
 
-  if (this->m_Geometry.IsNull())
+  if (this->GetGeometry() == nullptr)
     itkExceptionMacro(<< "Geometry has not been set.");
 }
 
@@ -60,7 +59,7 @@ RayConvexIntersectionImageFilter<TInputImage, TOutputImage>::DynamicThreadedGene
   // Iterators on input and output
   using InputRegionIterator = ProjectionsRegionConstIteratorRayBased<TInputImage>;
   InputRegionIterator * itIn = nullptr;
-  itIn = InputRegionIterator::New(this->GetInput(), outputRegionForThread, m_Geometry);
+  itIn = InputRegionIterator::New(this->GetInput(), outputRegionForThread, this->GetGeometry());
   itk::ImageRegionIteratorWithIndex<TOutputImage> itOut(this->GetOutput(), outputRegionForThread);
 
   // Go over each projection

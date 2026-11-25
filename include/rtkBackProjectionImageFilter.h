@@ -74,8 +74,7 @@ public:
   itkOverrideGetNameOfClassMacro(BackProjectionImageFilter);
 
   /** Get / Set the object pointer to projection geometry */
-  itkGetConstObjectMacro(Geometry, GeometryType);
-  itkSetConstObjectMacro(Geometry, GeometryType);
+  itkSetGetDecoratedObjectInputMacro(Geometry, ThreeDCircularProjectionGeometry);
 
   /** Get / Set the transpose flag for 2D projections (optimization trick) */
   itkGetMacro(Transpose, bool);
@@ -83,7 +82,6 @@ public:
 
 protected:
   BackProjectionImageFilter()
-    : m_Geometry(nullptr)
   {
     this->SetNumberOfRequiredInputs(2);
     this->SetInPlace(true);
@@ -150,9 +148,6 @@ protected:
 
   itk::Matrix<double, TInputImage::ImageDimension, TInputImage::ImageDimension>
   GetProjectionPhysicalPointToProjectionIndexMatrix(unsigned int iProj);
-
-  /** RTK geometry object */
-  GeometryConstPointer m_Geometry;
 
 private:
   /** Flip projection flag: infludences GetProjection and

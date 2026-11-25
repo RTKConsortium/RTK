@@ -29,6 +29,7 @@ CudaParkerShortScanImageFilter ::~CudaParkerShortScanImageFilter() = default;
 void
 CudaParkerShortScanImageFilter ::GPUGenerateData()
 {
+  const ThreeDCircularProjectionGeometry * geometry = this->GetGeometry();
   // Put the two data pointers at the same location
   const float * inBuffer =
     static_cast<const float *>(this->GetInput()->GetCudaDataManager()->GetConstGPUBufferPointer());
@@ -96,11 +97,11 @@ CudaParkerShortScanImageFilter ::GPUGenerateData()
     itkExceptionMacro(<< "Couldn't allocate geomMatrix");
   for (int g = 0; g < proj_size[2]; ++g)
   {
-    geomMatrix[g * 5 + 0] = this->GetGeometry()->GetSourceToDetectorDistances()[g + geomIdx];
-    geomMatrix[g * 5 + 1] = this->GetGeometry()->GetSourceOffsetsX()[g + geomIdx];
-    geomMatrix[g * 5 + 2] = this->GetGeometry()->GetProjectionOffsetsX()[g + geomIdx];
-    geomMatrix[g * 5 + 3] = this->GetGeometry()->GetSourceToIsocenterDistances()[g + geomIdx];
-    geomMatrix[g * 5 + 4] = this->GetGeometry()->GetGantryAngles()[g + geomIdx];
+    geomMatrix[g * 5 + 0] = geometry->GetSourceToDetectorDistances()[g + geomIdx];
+    geomMatrix[g * 5 + 1] = geometry->GetSourceOffsetsX()[g + geomIdx];
+    geomMatrix[g * 5 + 2] = geometry->GetProjectionOffsetsX()[g + geomIdx];
+    geomMatrix[g * 5 + 3] = geometry->GetSourceToIsocenterDistances()[g + geomIdx];
+    geomMatrix[g * 5 + 4] = geometry->GetGantryAngles()[g + geomIdx];
   }
 
   CUDA_parker_weight(proj_idx,

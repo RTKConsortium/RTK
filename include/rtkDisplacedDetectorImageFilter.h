@@ -85,8 +85,7 @@ public:
   itkOverrideGetNameOfClassMacro(DisplacedDetectorImageFilter);
 
   /** Get / Set the object pointer to projection geometry */
-  itkGetConstObjectMacro(Geometry, GeometryType);
-  itkSetConstObjectMacro(Geometry, GeometryType);
+  itkSetGetDecoratedObjectInputMacro(Geometry, ThreeDCircularProjectionGeometry);
 
   /** Get / Set whether the projections should be padded
    * (yes for FDK, no for iterative) */
@@ -136,9 +135,6 @@ protected:
   bool m_PadOnTruncatedSide{ true };
 
 private:
-  /** RTK geometry object */
-  GeometryConstPointer m_Geometry;
-
   /**
    * Minimum and maximum offsets of the detector along the weighting direction, i.e. x.
    * If a priori known, these values can be given as input. Otherwise, they are computed from the

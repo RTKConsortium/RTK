@@ -130,9 +130,8 @@ public:
   void
   SetForwardProjectionFilter(ForwardProjectionFilterType * _arg);
 
-  /** Set the geometry of both m_BackProjectionFilter and m_ForwardProjectionFilter */
-  void
-  SetGeometry(ThreeDCircularProjectionGeometry * _arg);
+  /** Set / Get the geometry, which is propagated to the forward and back projection filters */
+  itkSetGetDecoratedObjectInputMacro(Geometry, ThreeDCircularProjectionGeometry);
 
   /** Set the regularization parameter */
   itkSetMacro(Beta, float);
@@ -144,6 +143,10 @@ public:
 protected:
   ADMMWaveletsConjugateGradientOperator();
   ~ADMMWaveletsConjugateGradientOperator() override = default;
+
+  /** Checks that inputs are correctly set. */
+  void
+  VerifyPreconditions() const override;
 
   /** Does the real work. */
   void

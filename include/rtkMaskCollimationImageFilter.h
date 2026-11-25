@@ -60,8 +60,7 @@ public:
   itkOverrideGetNameOfClassMacro(MaskCollimationImageFilter);
 
   /** Get / Set the object pointer to projection geometry */
-  itkGetModifiableObjectMacro(Geometry, GeometryType);
-  itkSetObjectMacro(Geometry, GeometryType);
+  itkSetGetDecoratedObjectInputMacro(Geometry, ThreeDCircularProjectionGeometry);
 
   /** Set the index of the rotation axis. The rotation axis is assumed to be one of the vector of the basis of the
    * coordinate system. The default is the y vector (index 1). */
@@ -92,8 +91,6 @@ protected:
   unsigned int m_RotationAxisIndex = 1; // y-axis
 
 private:
-  /** RTK geometry object */
-  GeometryPointer m_Geometry;
 };
 
 } // end namespace rtk

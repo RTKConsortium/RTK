@@ -66,7 +66,7 @@ FieldOfViewImageFilter<TInputImage, TOutputImage>::ComputeFOVRadius(const FOVRad
 
   int  colno[Ncol] = { 1, 2, 3 };
   REAL row[Ncol];
-  for (unsigned int iProj = 0; iProj < m_Geometry->GetGantryAngles().size(); iProj++)
+  for (unsigned int iProj = 0; iProj < this->GetGeometry()->GetGantryAngles().size(); iProj++)
   {
     constexpr unsigned int NCORNERS = 4;
     double                 a[NCORNERS];
@@ -89,7 +89,7 @@ FieldOfViewImageFilter<TInputImage, TOutputImage>::ComputeFOVRadius(const FOVRad
       region.SetIndex(2, iProj);
       dumImg->SetRegions(region);
       dumImg->Allocate();
-      itIn = InputRegionIterator::New(dumImg, region, m_Geometry);
+      itIn = InputRegionIterator::New(dumImg, region, this->GetGeometry());
 
       // Compute the equation of a line of the ax+by=c
       // https://en.wikipedia.org/wiki/Linear_equation#Two-point_form
@@ -192,7 +192,7 @@ FieldOfViewImageFilter<TInputImage, TOutputImage>::VerifyPreconditions() const
 {
   this->Superclass::VerifyPreconditions();
 
-  if (this->m_Geometry.IsNull())
+  if (this->GetGeometry() == nullptr)
     itkExceptionMacro(<< "Geometry has not been set.");
 }
 
@@ -200,6 +200,7 @@ template <class TInputImage, class TOutputImage>
 void
 FieldOfViewImageFilter<TInputImage, TOutputImage>::BeforeThreadedGenerateData()
 {
+  const ThreeDCircularProjectionGeometry * geometry = this->GetGeometry();
   // The radius of the FOV is computed with linear programming.
   if (m_DisplacedDetector)
   {
@@ -244,14 +245,14 @@ FieldOfViewImageFilter<TInputImage, TOutputImage>::BeforeThreadedGenerateData()
   m_HatHeightInf = itk::NumericTraits<double>::NonpositiveMin();
   for (unsigned int k = 0; k < m_ProjectionsStack->GetLargestPossibleRegion().GetSize(2); k++)
   {
-    const double sid = m_Geometry->GetSourceToIsocenterDistances()[k];
-    const double sdd = m_Geometry->GetSourceToDetectorDistances()[k];
+    const double sid = geometry->GetSourceToIsocenterDistances()[k];
+    const double sdd = geometry->GetSourceToDetectorDistances()[k];
     double       mag = 1.; // Parallel
     if (sdd != 0.)
       mag = sid / sdd; // Divergent
 
-    const double projOffsetY = m_Geometry->GetProjectionOffsetsY()[k];
-    const double sourceOffsetY = m_Geometry->GetSourceOffsetsY()[k];
+    const double projOffsetY = geometry->GetProjectionOffsetsY()[k];
+    const double sourceOffsetY = geometry->GetSourceOffsetsY()[k];
     const double heightInf = sourceOffsetY + mag * (corner1[1] + projOffsetY - sourceOffsetY);
     if (heightInf > m_HatHeightInf)
     {
@@ -366,13 +367,14 @@ template <class TInputImage, class TOutputImage>
 void
 FieldOfViewImageFilter<TInputImage, TOutputImage>::AddCollimationConstraints(const FOVRadiusType type, _lprec * lp)
 {
-  constexpr int Ncol = 3;
-  int           colno[Ncol] = { 1, 2, 3 };
-  REAL          row[Ncol];
-  for (unsigned int iProj = 0; iProj < m_Geometry->GetGantryAngles().size(); iProj++)
+  const ThreeDCircularProjectionGeometry * geometry = this->GetGeometry();
+  constexpr int                            Ncol = 3;
+  int                                      colno[Ncol] = { 1, 2, 3 };
+  REAL                                     row[Ncol];
+  for (unsigned int iProj = 0; iProj < geometry->GetGantryAngles().size(); iProj++)
   {
-    const double X1 = m_Geometry->GetCollimationUInf()[iProj];
-    const double X2 = m_Geometry->GetCollimationUSup()[iProj];
+    const double X1 = geometry->GetCollimationUInf()[iProj];
+    const double X2 = geometry->GetCollimationUSup()[iProj];
     if (X1 == std::numeric_limits<double>::max() && X2 == std::numeric_limits<double>::max())
     {
       continue;
@@ -384,7 +386,7 @@ FieldOfViewImageFilter<TInputImage, TOutputImage>::AddCollimationConstraints(con
 
     // Compute 3D position of jaws
     using PointType = typename GeometryType::VectorType;
-    typename GeometryType::HomogeneousVectorType sourceH = m_Geometry->GetSourcePosition(iProj);
+    typename GeometryType::HomogeneousVectorType sourceH = geometry->GetSourcePosition(iProj);
     PointType                                    source(0.);
     source[0] = sourceH[0];
     source[2] = sourceH[2];

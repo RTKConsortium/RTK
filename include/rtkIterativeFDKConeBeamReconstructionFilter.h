@@ -141,8 +141,7 @@ public:
   itkOverrideGetNameOfClassMacro(IterativeFDKConeBeamReconstructionFilter);
 
   /** Get / Set the object pointer to projection geometry */
-  itkGetModifiableObjectMacro(Geometry, ThreeDCircularProjectionGeometry);
-  itkSetObjectMacro(Geometry, ThreeDCircularProjectionGeometry);
+  itkSetGetDecoratedObjectInputMacro(Geometry, ThreeDCircularProjectionGeometry);
 
   /** Get / Set the number of iterations. Default is 3. */
   itkGetMacro(NumberOfIterations, unsigned int);
@@ -226,9 +225,6 @@ protected:
   bool   m_DisableDisplacedDetectorFilter;
 
 private:
-  /** Geometry object */
-  ThreeDCircularProjectionGeometry::Pointer m_Geometry;
-
   /** Number of iterations */
   unsigned int m_NumberOfIterations;
 

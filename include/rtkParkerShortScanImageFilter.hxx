@@ -32,7 +32,7 @@ ParkerShortScanImageFilter<TInputImage, TOutputImage>::VerifyPreconditions() con
 {
   this->Superclass::VerifyPreconditions();
 
-  if (this->m_Geometry.IsNull())
+  if (this->GetGeometry() == nullptr)
     itkExceptionMacro(<< "Geometry has not been set.");
 }
 
@@ -40,10 +40,11 @@ template <class TInputImage, class TOutputImage>
 void
 ParkerShortScanImageFilter<TInputImage, TOutputImage>::GenerateInputRequestedRegion()
 {
+  const ThreeDCircularProjectionGeometry * geometry = this->GetGeometry();
   Superclass::GenerateInputRequestedRegion();
 
   // Get angular gaps and max gap
-  std::vector<double> angularGaps = m_Geometry->GetAngularGapsWithNext(m_Geometry->GetGantryAngles());
+  std::vector<double> angularGaps = geometry->GetAngularGapsWithNext(geometry->GetGantryAngles());
   int                 nProj = angularGaps.size();
   int                 maxAngularGapPos = 0;
   for (int iProj = 1; iProj < nProj; iProj++)
@@ -52,15 +53,15 @@ ParkerShortScanImageFilter<TInputImage, TOutputImage>::GenerateInputRequestedReg
 
   // Not a short scan if less than m_AngularGapThreshold degrees max gap, => nothing to do
   // FIXME: do nothing in parallel geometry, currently handled with a trick in the geometry object
-  if (m_Geometry->GetSourceToDetectorDistances()[0] == 0. || angularGaps[maxAngularGapPos] < m_AngularGapThreshold)
+  if (geometry->GetSourceToDetectorDistances()[0] == 0. || angularGaps[maxAngularGapPos] < m_AngularGapThreshold)
   {
     m_IsShortScan = false;
     return;
   }
   m_IsShortScan = true;
 
-  const std::vector<double>            rotationAngles = m_Geometry->GetGantryAngles();
-  const std::map<double, unsigned int> sortedAngles = m_Geometry->GetUniqueSortedAngles(m_Geometry->GetGantryAngles());
+  const std::vector<double>            rotationAngles = geometry->GetGantryAngles();
+  const std::map<double, unsigned int> sortedAngles = geometry->GetUniqueSortedAngles(geometry->GetGantryAngles());
 
   // Compute delta between first and last angle where there is weighting required
   std::map<double, unsigned int>::const_iterator itLastAngle;
@@ -90,13 +91,13 @@ ParkerShortScanImageFilter<TInputImage, TOutputImage>::GenerateInputRequestedReg
   auto lpr = this->GetOutput()->GetLargestPossibleRegion();
   for (unsigned int k = 0; k < lpr.GetSize(2); k++)
   {
-    double sox = m_Geometry->GetSourceOffsetsX()[k];
-    double sid = m_Geometry->GetSourceToIsocenterDistances()[k];
+    double sox = geometry->GetSourceOffsetsX()[k];
+    double sid = geometry->GetSourceToIsocenterDistances()[k];
     double invsid = 1. / sqrt(sid * sid + sox * sox);
 
     // Check that Parker weighting is relevant for this projection
-    double halfDetectorWidth1 = std::abs(m_Geometry->ToUntiltedCoordinateAtIsocenter(k, corner1[0]));
-    double halfDetectorWidth2 = std::abs(m_Geometry->ToUntiltedCoordinateAtIsocenter(k, corner2[0]));
+    double halfDetectorWidth1 = std::abs(geometry->ToUntiltedCoordinateAtIsocenter(k, corner1[0]));
+    double halfDetectorWidth2 = std::abs(geometry->ToUntiltedCoordinateAtIsocenter(k, corner2[0]));
     double halfDetectorWidth = std::min(halfDetectorWidth1, halfDetectorWidth2);
     if (m_Delta < atan(halfDetectorWidth * invsid))
     {
@@ -114,6 +115,7 @@ void
 ParkerShortScanImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerateData(
   const OutputImageRegionType & outputRegionForThread)
 {
+  const ThreeDCircularProjectionGeometry * geometry = this->GetGeometry();
   // Input / ouput iterators
   itk::ImageRegionIterator<OutputImageType> itOut(this->GetOutput(), outputRegionForThread);
 
@@ -152,14 +154,14 @@ ParkerShortScanImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerateDa
   weights->Allocate();
   typename itk::ImageRegionIteratorWithIndex<WeightImageType> itWeights(weights, weights->GetLargestPossibleRegion());
 
-  const std::vector<double> rotationAngles = m_Geometry->GetGantryAngles();
+  const std::vector<double> rotationAngles = geometry->GetGantryAngles();
 
   // Go over projection images
   itk::ImageRegionConstIteratorWithIndex<InputImageType> itIn(this->GetInput(), outputRegionForThread);
   for (unsigned int k = 0; k < outputRegionForThread.GetSize(2); k++)
   {
-    double sox = m_Geometry->GetSourceOffsetsX()[itIn.GetIndex()[2]];
-    double sid = m_Geometry->GetSourceToIsocenterDistances()[itIn.GetIndex()[2]];
+    double sox = geometry->GetSourceOffsetsX()[itIn.GetIndex()[2]];
+    double sid = geometry->GetSourceToIsocenterDistances()[itIn.GetIndex()[2]];
     double invsid = 1. / sqrt(sid * sid + sox * sox);
 
     // Prepare weights for current slice (depends on ProjectionOffsetsX)
@@ -176,7 +178,7 @@ ParkerShortScanImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerateDa
     itWeights.GoToBegin();
     while (!itWeights.IsAtEnd())
     {
-      const double l = m_Geometry->ToUntiltedCoordinateAtIsocenter(itIn.GetIndex()[2], point[0]);
+      const double l = geometry->ToUntiltedCoordinateAtIsocenter(itIn.GetIndex()[2], point[0]);
       double       alpha = atan(-1 * l * invsid);
       const double pi = itk::Math::pi;
       if (beta <= 2 * m_Delta - 2 * alpha)

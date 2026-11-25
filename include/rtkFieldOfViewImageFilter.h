@@ -71,8 +71,7 @@ public:
   itkOverrideGetNameOfClassMacro(FieldOfViewImageFilter);
 
   /** Get / Set the object pointer to projection geometry */
-  itkGetConstObjectMacro(Geometry, GeometryType);
-  itkSetConstObjectMacro(Geometry, GeometryType);
+  itkSetGetDecoratedObjectInputMacro(Geometry, ThreeDCircularProjectionGeometry);
 
   /** Get / Set of the member Mask. If set, all the pixels in the field of view
    * are set to InsideValue. The data value is kept otherwise. Pixels outside the mask
@@ -108,7 +107,7 @@ public:
    * - if RADIUSBOTH: the fan defined by the pairs of half planes.
    * Returns true if it managed to find such a disk and false otherwise.
    * The function may be called without out computing the output, but
-   * m_Geometry and ProjectionsStack must be set.*/
+   * Geometry and ProjectionsStack must be set.*/
   virtual bool
   ComputeFOVRadius(FOVRadiusType type, double & x, double & z, double & r);
 
@@ -135,7 +134,6 @@ protected:
   DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread) override;
 
 private:
-  GeometryConstPointer    m_Geometry{ nullptr };
   bool                    m_Mask{ false };
   ProjectionsStackPointer m_ProjectionsStack;
   double                  m_Radius{ -1 };

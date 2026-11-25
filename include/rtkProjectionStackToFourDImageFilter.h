@@ -167,7 +167,7 @@ public:
   SetBackProjectionFilter(BackProjectionFilterType * _arg);
 
   /** Pass the geometry to SingleProjectionToFourDFilter */
-  itkSetConstObjectMacro(Geometry, GeometryType);
+  itkSetGetDecoratedObjectInputMacro(Geometry, ThreeDCircularProjectionGeometry);
 
   /** Use CUDA splat / sources */
   itkSetMacro(UseCudaSplat, bool);
@@ -212,11 +212,10 @@ protected:
   typename ConstantVolumeSeriesSourceType::Pointer m_ConstantVolumeSeriesSource;
 
   /** Other member variables */
-  itk::Array2D<float>        m_Weights;
-  GeometryType::ConstPointer m_Geometry;
-  bool                       m_UseCudaSplat;
-  bool                       m_UseCudaSources;
-  std::vector<double>        m_Signal;
+  itk::Array2D<float> m_Weights;
+  bool                m_UseCudaSplat;
+  bool                m_UseCudaSources;
+  std::vector<double> m_Signal;
 };
 } // namespace rtk
 

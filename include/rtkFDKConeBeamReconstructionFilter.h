@@ -89,8 +89,7 @@ public:
   itkOverrideGetNameOfClassMacro(FDKConeBeamReconstructionFilter);
 
   /** Get / Set the object pointer to projection geometry */
-  itkGetModifiableObjectMacro(Geometry, ThreeDCircularProjectionGeometry);
-  itkSetObjectMacro(Geometry, ThreeDCircularProjectionGeometry);
+  itkSetGetDecoratedObjectInputMacro(Geometry, ThreeDCircularProjectionGeometry);
 
   /** Get pointer to the weighting filter used by the feldkamp reconstruction */
   typename WeightFilterType::Pointer
@@ -159,9 +158,6 @@ private:
 
   /** Maximum angular deviation, in degrees, between the rotation axis and the Y axis. */
   double m_AngularTolerance{ 30. };
-
-  /** Geometry propagated to subfilters of the mini-pipeline. */
-  ThreeDCircularProjectionGeometry::Pointer m_Geometry;
 }; // end of class
 
 } // end namespace rtk

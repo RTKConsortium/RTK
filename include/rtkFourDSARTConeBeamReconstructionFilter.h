@@ -177,8 +177,7 @@ public:
   GetInputProjectionStack();
 
   /** Get / Set the object pointer to projection geometry */
-  itkGetModifiableObjectMacro(Geometry, ThreeDCircularProjectionGeometry);
-  itkSetObjectMacro(Geometry, ThreeDCircularProjectionGeometry);
+  itkSetGetDecoratedObjectInputMacro(Geometry, ThreeDCircularProjectionGeometry);
 
   /** Get / Set the number of iterations. Default is 3. */
   itkGetMacro(NumberOfIterations, unsigned int);
@@ -261,9 +260,6 @@ private:
   /** Number of projections processed before the volume is updated (1 for SART,
    * several for OS-SART, all for SIRT) */
   unsigned int m_NumberOfProjectionsPerSubset;
-
-  /** Geometry object */
-  ThreeDCircularProjectionGeometry::Pointer m_Geometry;
 
   /** Number of iterations */
   unsigned int m_NumberOfIterations;

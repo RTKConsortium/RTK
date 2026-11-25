@@ -140,8 +140,7 @@ public:
   itkOverrideGetNameOfClassMacro(FourDConjugateGradientConeBeamReconstructionFilter);
 
   /** Get / Set the object pointer to projection geometry */
-  itkGetConstObjectMacro(Geometry, ThreeDCircularProjectionGeometry);
-  itkSetConstObjectMacro(Geometry, ThreeDCircularProjectionGeometry);
+  itkSetGetDecoratedObjectInputMacro(Geometry, ThreeDCircularProjectionGeometry);
 
   /** Get / Set the number of iterations. Default is 3. */
   itkGetMacro(NumberOfIterations, unsigned int);
@@ -215,9 +214,6 @@ protected:
   itk::IterationReporter m_IterationReporter;
 
 private:
-  /** Geometry object */
-  ThreeDCircularProjectionGeometry::ConstPointer m_Geometry;
-
   /** Number of conjugate gradient descent iterations */
   unsigned int m_NumberOfIterations;
 

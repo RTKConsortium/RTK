@@ -191,8 +191,7 @@ public:
   itkGetMacro(TV_iterations, int);
 
   // Geometry
-  itkSetObjectMacro(Geometry, ThreeDCircularProjectionGeometry);
-  itkGetModifiableObjectMacro(Geometry, ThreeDCircularProjectionGeometry);
+  itkSetGetDecoratedObjectInputMacro(Geometry, ThreeDCircularProjectionGeometry);
 
   /** Preconditioning flag for the conjugate gradient filter */
   itkSetMacro(Preconditioned, bool);
@@ -272,9 +271,6 @@ protected:
   int m_MainLoop_iterations;
   int m_CG_iterations;
   int m_TV_iterations;
-
-  // Geometry
-  typename rtk::ThreeDCircularProjectionGeometry::Pointer m_Geometry;
 };
 } // namespace rtk
 

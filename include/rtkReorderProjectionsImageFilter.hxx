@@ -59,7 +59,7 @@ ReorderProjectionsImageFilter<TInputImage, TOutputImage>::VerifyPreconditions() 
 {
   this->Superclass::VerifyPreconditions();
 
-  if (this->m_InputGeometry.IsNull() || this->m_OutputGeometry.IsNull())
+  if (this->GetInputGeometry() == nullptr || this->m_OutputGeometry.IsNull())
     itkExceptionMacro(<< "Geometries have not been set.");
 }
 
@@ -67,6 +67,7 @@ template <class TInputImage, class TOutputImage>
 void
 ReorderProjectionsImageFilter<TInputImage, TOutputImage>::GenerateOutputInformation()
 {
+  const ThreeDCircularProjectionGeometry * geometry = this->GetInputGeometry();
   Superclass::GenerateOutputInformation();
 
   unsigned int NumberOfProjections =
@@ -118,20 +119,20 @@ ReorderProjectionsImageFilter<TInputImage, TOutputImage>::GenerateOutputInformat
   for (unsigned int proj = 0; proj < NumberOfProjections; proj++)
   {
     // Copy the geometry
-    m_OutputGeometry->SetRadiusCylindricalDetector(m_InputGeometry->GetRadiusCylindricalDetector());
-    m_OutputGeometry->AddProjectionInRadians(m_InputGeometry->GetSourceToIsocenterDistances()[m_NewIndices[proj]],
-                                             m_InputGeometry->GetSourceToDetectorDistances()[m_NewIndices[proj]],
-                                             m_InputGeometry->GetGantryAngles()[m_NewIndices[proj]],
-                                             m_InputGeometry->GetProjectionOffsetsX()[m_NewIndices[proj]],
-                                             m_InputGeometry->GetProjectionOffsetsY()[m_NewIndices[proj]],
-                                             m_InputGeometry->GetOutOfPlaneAngles()[m_NewIndices[proj]],
-                                             m_InputGeometry->GetInPlaneAngles()[m_NewIndices[proj]],
-                                             m_InputGeometry->GetSourceOffsetsX()[m_NewIndices[proj]],
-                                             m_InputGeometry->GetSourceOffsetsY()[m_NewIndices[proj]]);
-    m_OutputGeometry->SetCollimationOfLastProjection(m_InputGeometry->GetCollimationUInf()[m_NewIndices[proj]],
-                                                     m_InputGeometry->GetCollimationUSup()[m_NewIndices[proj]],
-                                                     m_InputGeometry->GetCollimationVInf()[m_NewIndices[proj]],
-                                                     m_InputGeometry->GetCollimationVSup()[m_NewIndices[proj]]);
+    m_OutputGeometry->SetRadiusCylindricalDetector(geometry->GetRadiusCylindricalDetector());
+    m_OutputGeometry->AddProjectionInRadians(geometry->GetSourceToIsocenterDistances()[m_NewIndices[proj]],
+                                             geometry->GetSourceToDetectorDistances()[m_NewIndices[proj]],
+                                             geometry->GetGantryAngles()[m_NewIndices[proj]],
+                                             geometry->GetProjectionOffsetsX()[m_NewIndices[proj]],
+                                             geometry->GetProjectionOffsetsY()[m_NewIndices[proj]],
+                                             geometry->GetOutOfPlaneAngles()[m_NewIndices[proj]],
+                                             geometry->GetInPlaneAngles()[m_NewIndices[proj]],
+                                             geometry->GetSourceOffsetsX()[m_NewIndices[proj]],
+                                             geometry->GetSourceOffsetsY()[m_NewIndices[proj]]);
+    m_OutputGeometry->SetCollimationOfLastProjection(geometry->GetCollimationUInf()[m_NewIndices[proj]],
+                                                     geometry->GetCollimationUSup()[m_NewIndices[proj]],
+                                                     geometry->GetCollimationVInf()[m_NewIndices[proj]],
+                                                     geometry->GetCollimationVSup()[m_NewIndices[proj]]);
 
     // Copy the signal, if any
     if (m_Permutation == SORT)

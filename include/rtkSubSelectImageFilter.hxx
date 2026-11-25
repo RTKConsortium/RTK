@@ -50,7 +50,7 @@ SubSelectImageFilter<ProjectionStackType>::VerifyPreconditions() const
 {
   this->Superclass::VerifyPreconditions();
 
-  if (this->m_InputGeometry.IsNull() || this->m_OutputGeometry.IsNull())
+  if (this->GetInputGeometry() == nullptr || this->m_OutputGeometry.IsNull())
     itkExceptionMacro(<< "Geometries have not been set.");
 }
 
@@ -84,6 +84,7 @@ template <typename ProjectionStackType>
 void
 SubSelectImageFilter<ProjectionStackType>::GenerateOutputInformation()
 {
+  const ThreeDCircularProjectionGeometry * geometry = this->GetInputGeometry();
   unsigned int                             Dimension = this->GetInput(0)->GetImageDimension();
   typename ProjectionStackType::RegionType outputLargestPossibleRegion = this->GetInput(0)->GetLargestPossibleRegion();
   outputLargestPossibleRegion.SetSize(Dimension - 1, m_NbSelectedProjs);
@@ -107,25 +108,25 @@ SubSelectImageFilter<ProjectionStackType>::GenerateOutputInformation()
   // because downstream forward and backprojection filters will need this geometry
   // to compute their output information and input requested region
   m_OutputGeometry->Clear();
-  m_OutputGeometry->SetRadiusCylindricalDetector(m_InputGeometry->GetRadiusCylindricalDetector());
+  m_OutputGeometry->SetRadiusCylindricalDetector(geometry->GetRadiusCylindricalDetector());
 
   for (unsigned long i = 0; i < m_SelectedProjections.size(); i++)
   {
     if (m_SelectedProjections[i])
     {
-      m_OutputGeometry->AddProjectionInRadians(m_InputGeometry->GetSourceToIsocenterDistances()[i],
-                                               m_InputGeometry->GetSourceToDetectorDistances()[i],
-                                               m_InputGeometry->GetGantryAngles()[i],
-                                               m_InputGeometry->GetProjectionOffsetsX()[i],
-                                               m_InputGeometry->GetProjectionOffsetsY()[i],
-                                               m_InputGeometry->GetOutOfPlaneAngles()[i],
-                                               m_InputGeometry->GetInPlaneAngles()[i],
-                                               m_InputGeometry->GetSourceOffsetsX()[i],
-                                               m_InputGeometry->GetSourceOffsetsY()[i]);
-      m_OutputGeometry->SetCollimationOfLastProjection(m_InputGeometry->GetCollimationUInf()[i],
-                                                       m_InputGeometry->GetCollimationUSup()[i],
-                                                       m_InputGeometry->GetCollimationVInf()[i],
-                                                       m_InputGeometry->GetCollimationVSup()[i]);
+      m_OutputGeometry->AddProjectionInRadians(geometry->GetSourceToIsocenterDistances()[i],
+                                               geometry->GetSourceToDetectorDistances()[i],
+                                               geometry->GetGantryAngles()[i],
+                                               geometry->GetProjectionOffsetsX()[i],
+                                               geometry->GetProjectionOffsetsY()[i],
+                                               geometry->GetOutOfPlaneAngles()[i],
+                                               geometry->GetInPlaneAngles()[i],
+                                               geometry->GetSourceOffsetsX()[i],
+                                               geometry->GetSourceOffsetsY()[i]);
+      m_OutputGeometry->SetCollimationOfLastProjection(geometry->GetCollimationUInf()[i],
+                                                       geometry->GetCollimationUSup()[i],
+                                                       geometry->GetCollimationVInf()[i],
+                                                       geometry->GetCollimationVSup()[i]);
     }
   }
 }

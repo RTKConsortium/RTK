@@ -98,7 +98,7 @@ SARTConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>::VerifyPrecondi
 {
   this->Superclass::VerifyPreconditions();
 
-  if (this->m_Geometry.IsNull())
+  if (this->GetGeometry() == nullptr)
     itkExceptionMacro(<< "Geometry has not been set.");
 }
 
@@ -189,10 +189,10 @@ SARTConeBeamReconstructionFilter<TVolumeImage, TProjectionImage>::GenerateOutput
   m_ExtractFilter->SetInput(this->GetInput(1));
   m_SubtractFilter->SetInput(1, m_ForwardProjectionFilter->GetOutput());
 
-  m_ForwardProjectionFilter->SetGeometry(this->m_Geometry);
-  m_BackProjectionFilter->SetGeometry(this->m_Geometry);
-  m_BackProjectionNormalizationFilter->SetGeometry(this->m_Geometry);
-  m_DisplacedDetectorFilter->SetGeometry(this->m_Geometry);
+  m_ForwardProjectionFilter->SetGeometry(this->GetGeometry());
+  m_BackProjectionFilter->SetGeometry(this->GetGeometry());
+  m_BackProjectionNormalizationFilter->SetGeometry(this->GetGeometry());
+  m_DisplacedDetectorFilter->SetGeometry(this->GetGeometry());
 
   if (m_IsGated) // For gated SART, insert a gating filter into the pipeline
   {

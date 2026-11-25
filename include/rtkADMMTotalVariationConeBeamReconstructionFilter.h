@@ -176,7 +176,7 @@ public:
   using GatingWeightsFilterType = rtk::MultiplyByVectorImageFilter<TOutputImage>;
 
   /** Pass the geometry to all filters needing it */
-  itkSetObjectMacro(Geometry, ThreeDCircularProjectionGeometry);
+  itkSetGetDecoratedObjectInputMacro(Geometry, ThreeDCircularProjectionGeometry);
 
   /** Increase the value of Beta at each iteration */
   void
@@ -259,8 +259,6 @@ private:
   float        m_Beta;
   unsigned int m_AL_iterations;
   unsigned int m_CG_iterations;
-
-  ThreeDCircularProjectionGeometry::Pointer m_Geometry;
 };
 } // namespace rtk
 

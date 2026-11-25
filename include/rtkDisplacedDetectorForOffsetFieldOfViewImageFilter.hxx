@@ -121,6 +121,7 @@ void
 DisplacedDetectorForOffsetFieldOfViewImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerateData(
   const OutputImageRegionType & outputRegionForThread)
 {
+  const ThreeDCircularProjectionGeometry * geometry = this->GetGeometry();
   // Compute overlap between input and output
   OutputImageRegionType overlapRegion = outputRegionForThread;
   if (!overlapRegion.Crop(this->GetInput()->GetLargestPossibleRegion()))
@@ -175,7 +176,7 @@ DisplacedDetectorForOffsetFieldOfViewImageFilter<TInputImage, TOutputImage>::Dyn
   for (unsigned int k = 0; k < overlapRegion.GetSize(2); k++, itWeights.GoToBegin())
   {
     typename GeometryType::HomogeneousVectorType sourcePosition;
-    sourcePosition = this->GetGeometry()->GetSourcePosition(itIn.GetIndex()[2]);
+    sourcePosition = geometry->GetSourcePosition(itIn.GetIndex()[2]);
     double oppInvNormSource = -1. / (sourcePosition[0] * sourcePosition[0] + sourcePosition[2] * sourcePosition[2]);
     const double sourceToCenterFOVX = m_FOVCenterX - sourcePosition[0];
     const double sourceToCenterFOVZ = m_FOVCenterZ - sourcePosition[2];
@@ -195,8 +196,8 @@ DisplacedDetectorForOffsetFieldOfViewImageFilter<TInputImage, TOutputImage>::Dyn
     theta2 += centerFOVAngle;
 
     // Prepare weights for current slice (depends on ProjectionOffsetsX)
-    const double sx = this->GetGeometry()->GetSourceOffsetsX()[itIn.GetIndex()[2]];
-    double       sid = this->GetGeometry()->GetSourceToIsocenterDistances()[itIn.GetIndex()[2]];
+    const double sx = geometry->GetSourceOffsetsX()[itIn.GetIndex()[2]];
+    double       sid = geometry->GetSourceToIsocenterDistances()[itIn.GetIndex()[2]];
     sid = sqrt(sid * sid + sx * sx); // To untilted situation
     const double liml1 = tan(theta1) * sid;
     const double liml2 = tan(theta2) * sid;
@@ -216,7 +217,7 @@ DisplacedDetectorForOffsetFieldOfViewImageFilter<TInputImage, TOutputImage>::Dyn
     {
       while (!itWeights.IsAtEnd())
       {
-        const double l = this->GetGeometry()->ToUntiltedCoordinateAtIsocenter(itIn.GetIndex()[2], point[0]);
+        const double l = geometry->ToUntiltedCoordinateAtIsocenter(itIn.GetIndex()[2], point[0]);
         if (l <= liml1)
           itWeights.Set(0.);
         else if (l >= liml2)
@@ -231,7 +232,7 @@ DisplacedDetectorForOffsetFieldOfViewImageFilter<TInputImage, TOutputImage>::Dyn
     {
       while (!itWeights.IsAtEnd())
       {
-        const double l = this->GetGeometry()->ToUntiltedCoordinateAtIsocenter(itIn.GetIndex()[2], point[0]);
+        const double l = geometry->ToUntiltedCoordinateAtIsocenter(itIn.GetIndex()[2], point[0]);
         if (l <= liml1)
           itWeights.Set(2.0);
         else if (l >= liml2)

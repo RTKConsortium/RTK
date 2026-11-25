@@ -181,7 +181,7 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>:
 {
   this->Superclass::VerifyPreconditions();
 
-  if (this->m_Geometry.IsNull())
+  if (this->GetGeometry() == nullptr)
     itkExceptionMacro(<< "Geometry has not been set.");
 }
 
@@ -249,7 +249,7 @@ FourDROOSTERConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>:
   // whatever was the user wants
   m_FourDCGFilter->SetInputVolumeSeries(this->GetInputVolumeSeries());
   m_FourDCGFilter->SetInputProjectionStack(this->GetInputProjectionStack());
-  m_FourDCGFilter->SetGeometry(this->m_Geometry);
+  m_FourDCGFilter->SetGeometry(this->GetGeometry());
   m_FourDCGFilter->SetNumberOfIterations(this->m_CG_iterations);
   m_FourDCGFilter->SetCudaConjugateGradient(this->GetCudaConjugateGradient());
   m_FourDCGFilter->SetDisableDisplacedDetectorFilter(m_DisableDisplacedDetectorFilter);
