@@ -113,7 +113,7 @@ FourDConjugateGradientConeBeamReconstructionFilter<VolumeSeriesType, ProjectionS
 {
   this->Superclass::VerifyPreconditions();
 
-  if (this->m_Geometry.IsNull())
+  if (this->GetGeometry() == nullptr)
     itkExceptionMacro(<< "Geometry has not been set.");
 }
 

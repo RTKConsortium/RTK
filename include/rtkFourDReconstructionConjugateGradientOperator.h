@@ -206,7 +206,7 @@ public:
   SetForwardProjectionFilter(ForwardProjectionFilterType * _arg);
 
   /** Pass the geometry to all filters needing it */
-  itkSetConstObjectMacro(Geometry, ThreeDCircularProjectionGeometry);
+  itkSetGetDecoratedObjectInputMacro(Geometry, ThreeDCircularProjectionGeometry);
 
   /** Use CUDA interpolation/splat filters */
   itkSetMacro(UseCudaInterpolation, bool);
@@ -263,13 +263,12 @@ protected:
   typename ConstantVolumeSeriesSourceType::Pointer    m_ConstantVolumeSeriesSource;
   typename DisplacedDetectorFilterType::Pointer       m_DisplacedDetectorFilter;
 
-  ThreeDCircularProjectionGeometry::ConstPointer m_Geometry;
-  bool                                           m_UseCudaInterpolation;
-  bool                                           m_UseCudaSplat;
-  bool                                           m_UseCudaSources;
-  itk::Array2D<float>                            m_Weights;
-  std::vector<double>                            m_Signal;
-  bool                                           m_DisableDisplacedDetectorFilter;
+  bool                m_UseCudaInterpolation;
+  bool                m_UseCudaSplat;
+  bool                m_UseCudaSources;
+  itk::Array2D<float> m_Weights;
+  std::vector<double> m_Signal;
+  bool                m_DisableDisplacedDetectorFilter;
 };
 } // namespace rtk
 

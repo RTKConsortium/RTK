@@ -96,7 +96,7 @@ ADMMTotalVariationConjugateGradientOperator<TOutputImage>::VerifyPreconditions()
 {
   this->Superclass::VerifyPreconditions();
 
-  if (this->m_Geometry.IsNull())
+  if (this->GetGeometry() == nullptr)
     itkExceptionMacro(<< "Geometry has not been set.");
 }
 
@@ -146,9 +146,9 @@ ADMMTotalVariationConjugateGradientOperator<TOutputImage>::GenerateOutputInforma
   m_GradientFilter->SetInput(this->GetInput(0));
 
   // Set geometry
-  m_BackProjectionFilter->SetGeometry(this->m_Geometry.GetPointer());
-  m_ForwardProjectionFilter->SetGeometry(this->m_Geometry);
-  m_DisplacedDetectorFilter->SetGeometry(this->m_Geometry);
+  m_BackProjectionFilter->SetGeometry(this->GetGeometry());
+  m_ForwardProjectionFilter->SetGeometry(this->GetGeometry());
+  m_DisplacedDetectorFilter->SetGeometry(this->GetGeometry());
 
   // Set runtime parameters
   m_MultiplyFilter->SetConstant2(m_Beta);

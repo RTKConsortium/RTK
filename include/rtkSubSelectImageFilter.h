@@ -86,8 +86,7 @@ public:
   using EmptyProjectionStackSourceType = rtk::ConstantImageSource<ProjectionStackType>;
   using GeometryType = rtk::ThreeDCircularProjectionGeometry;
 
-  itkSetObjectMacro(InputGeometry, GeometryType);
-  itkGetModifiableObjectMacro(InputGeometry, GeometryType);
+  itkSetGetDecoratedObjectInputMacro(InputGeometry, ThreeDCircularProjectionGeometry);
 
   itkGetMacro(SelectedProjections, std::vector<bool>);
 
@@ -113,7 +112,6 @@ protected:
   GenerateData() override;
 
   /** Member variables */
-  GeometryType::Pointer m_InputGeometry;
   GeometryType::Pointer m_OutputGeometry;
   std::vector<bool>     m_SelectedProjections;
   int                   m_NbSelectedProjs;

@@ -68,8 +68,7 @@ public:
   itkSetConstObjectMacro(GeometricPhantom, GeometricPhantom);
 
   /** Get / Set the object pointer to projection geometry */
-  itkGetConstObjectMacro(Geometry, GeometryType);
-  itkSetConstObjectMacro(Geometry, GeometryType);
+  itkSetGetDecoratedObjectInputMacro(Geometry, ThreeDCircularProjectionGeometry);
 
   /** Get/Set the phantom file path. */
   itkSetMacro(ConfigFile, StringType);
@@ -115,7 +114,6 @@ protected:
 
 private:
   GeometricPhantomConstPointer m_GeometricPhantom;
-  GeometryConstPointer         m_Geometry;
   StringType                   m_ConfigFile;
   VectorType                   m_PhantomScale{ 1. };
   VectorType                   m_OriginOffset{ 0. };

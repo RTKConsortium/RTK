@@ -113,8 +113,7 @@ public:
   itkSetMacro(UnsharpMaskSize, unsigned int);
 
   /** Get / Set the object pointer to projection geometry */
-  itkGetModifiableObjectMacro(Geometry, GeometryType);
-  itkSetObjectMacro(Geometry, GeometryType);
+  itkSetGetDecoratedObjectInputMacro(Geometry, ThreeDCircularProjectionGeometry);
 
   /** 3D clipbox corners for selecting part of the projections. Each corner is
    * projected and rounded to the nearest 2D pixel and only those pixels within
@@ -165,7 +164,6 @@ private:
   typename SubtractType::Pointer    m_SubtractFilter;
   typename PermuteType::Pointer     m_PermuteFilter;
   unsigned int                      m_UnsharpMaskSize{ 17 };
-  GeometryPointer                   m_Geometry{ nullptr };
   PointType                         m_Corner1{ 0. };
   PointType                         m_Corner2{ 0. };
 }; // end of class

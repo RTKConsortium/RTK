@@ -72,11 +72,12 @@ ADMMWaveletsConjugateGradientOperator<TOutputImage>::SetForwardProjectionFilter(
 
 template <typename TOutputImage>
 void
-ADMMWaveletsConjugateGradientOperator<TOutputImage>::SetGeometry(ThreeDCircularProjectionGeometry * _arg)
+ADMMWaveletsConjugateGradientOperator<TOutputImage>::VerifyPreconditions() const
 {
-  m_BackProjectionFilter->SetGeometry(_arg);
-  m_ForwardProjectionFilter->SetGeometry(_arg);
-  m_DisplacedDetectorFilter->SetGeometry(_arg);
+  this->Superclass::VerifyPreconditions();
+
+  if (this->GetGeometry() == nullptr)
+    itkExceptionMacro(<< "Geometry has not been set.");
 }
 
 template <typename TOutputImage>
@@ -112,6 +113,11 @@ ADMMWaveletsConjugateGradientOperator<TOutputImage>::GenerateOutputInformation()
   m_ZeroMultiplyProjectionFilter->SetInput1(this->GetInput(1));
   m_ForwardProjectionFilter->SetInput(1, this->GetInput(0));
   m_MultiplyFilter->SetInput1(this->GetInput(0));
+
+  // Set geometry
+  m_BackProjectionFilter->SetGeometry(this->GetGeometry());
+  m_ForwardProjectionFilter->SetGeometry(this->GetGeometry());
+  m_DisplacedDetectorFilter->SetGeometry(this->GetGeometry());
 
   // Set runtime parameters
   m_MultiplyFilter->SetConstant2(m_Beta);

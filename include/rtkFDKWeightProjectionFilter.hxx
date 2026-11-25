@@ -31,7 +31,7 @@ FDKWeightProjectionFilter<TInputImage, TOutputImage>::VerifyPreconditions() cons
 {
   this->Superclass::VerifyPreconditions();
 
-  if (this->m_Geometry.IsNull())
+  if (this->GetGeometry() == nullptr)
     itkExceptionMacro(<< "Geometry has not been set.");
 }
 
@@ -39,23 +39,24 @@ template <class TInputImage, class TOutputImage>
 void
 FDKWeightProjectionFilter<TInputImage, TOutputImage>::BeforeThreadedGenerateData()
 {
+  const ThreeDCircularProjectionGeometry * geometry = this->GetGeometry();
   // Get angular weights from geometry
-  m_ConstantProjectionFactor = m_Geometry->GetAngularGaps(m_Geometry->GetSourceAngles());
-  m_TiltAngles = m_Geometry->GetTiltAngles();
+  m_ConstantProjectionFactor = geometry->GetAngularGaps(geometry->GetSourceAngles());
+  m_TiltAngles = geometry->GetTiltAngles();
 
   for (unsigned int k = 0; k < m_ConstantProjectionFactor.size(); k++)
   {
     // Add correction factor for ramp filter
-    const double sdd = m_Geometry->GetSourceToDetectorDistances()[k];
+    const double sdd = geometry->GetSourceToDetectorDistances()[k];
     if (sdd == 0.) // Parallel
       m_ConstantProjectionFactor[k] *= 0.5;
     else // Divergent
     {
       // See [Rit and Clackdoyle, CT meeting, 2014]
       ThreeDCircularProjectionGeometry::HomogeneousVectorType sp;
-      sp = m_Geometry->GetSourcePosition(k);
+      sp = geometry->GetSourcePosition(k);
       sp[3] = 0.;
-      const double sid = m_Geometry->GetSourceToIsocenterDistances()[k];
+      const double sid = geometry->GetSourceToIsocenterDistances()[k];
       m_ConstantProjectionFactor[k] *= std::abs(sdd) / (2. * sid * sid);
       m_ConstantProjectionFactor[k] *= sp.GetNorm();
     }
@@ -67,6 +68,7 @@ void
 FDKWeightProjectionFilter<TInputImage, TOutputImage>::DynamicThreadedGenerateData(
   const OutputImageRegionType & outputRegionForThread)
 {
+  const ThreeDCircularProjectionGeometry * geometry = this->GetGeometry();
   // Prepare point increment (TransformIndexToPhysicalPoint too slow)
   typename InputImageType::PointType pointBase, pointIncrement;
   typename InputImageType::IndexType index = outputRegionForThread.GetIndex();
@@ -88,15 +90,15 @@ FDKWeightProjectionFilter<TInputImage, TOutputImage>::DynamicThreadedGenerateDat
        k < outputRegionForThread.GetIndex(2) + (int)outputRegionForThread.GetSize(2);
        k++)
   {
-    const double sdd = m_Geometry->GetSourceToDetectorDistances()[k];
+    const double sdd = geometry->GetSourceToDetectorDistances()[k];
     if (sdd != 0.) // Divergent
     {
       typename InputImageType::PointType point = pointBase;
-      point[1] = pointBase[1] + m_Geometry->GetProjectionOffsetsY()[k] - m_Geometry->GetSourceOffsetsY()[k];
+      point[1] = pointBase[1] + geometry->GetProjectionOffsetsY()[k] - geometry->GetSourceOffsetsY()[k];
       const double cosa = cos(m_TiltAngles[k]);
       const double sina = sin(m_TiltAngles[k]);
       const double tana = tan(m_TiltAngles[k]);
-      const double sid = m_Geometry->GetSourceToIsocenterDistances()[k];
+      const double sid = geometry->GetSourceToIsocenterDistances()[k];
       const double sdd2 = sdd * sdd;
       const double RD = sdd - sid;
 
@@ -105,7 +107,7 @@ FDKWeightProjectionFilter<TInputImage, TOutputImage>::DynamicThreadedGenerateDat
 
       for (unsigned int j = 0; j < outputRegionForThread.GetSize(1); j++, point[1] += pointIncrement[1])
       {
-        point[0] = pointBase[0] + m_Geometry->GetProjectionOffsetsX()[k] + tana * RD;
+        point[0] = pointBase[0] + geometry->GetProjectionOffsetsX()[k] + tana * RD;
         const double sdd2y2 = sdd2 + point[1] * point[1];
         for (unsigned int i = 0; i < outputRegionForThread.GetSize(0); i++, ++itI, ++itO, point[0] += pointIncrement[0])
         {

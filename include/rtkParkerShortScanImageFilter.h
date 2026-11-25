@@ -69,8 +69,7 @@ public:
   itkOverrideGetNameOfClassMacro(ParkerShortScanImageFilter);
 
   /** Get / Set the object pointer to projection geometry */
-  itkGetModifiableObjectMacro(Geometry, GeometryType);
-  itkSetObjectMacro(Geometry, GeometryType);
+  itkSetGetDecoratedObjectInputMacro(Geometry, ThreeDCircularProjectionGeometry);
 
   /** Get / Set the angular gap threshold above which a short scan is detected. */
   itkGetMacro(AngularGapThreshold, double);
@@ -100,9 +99,6 @@ protected:
   bool m_IsShortScan{ false };
 
 private:
-  /** RTK geometry object */
-  GeometryPointer m_Geometry;
-
   /** Superior and inferior position of the detector along the weighting direction, i.e. x.
    * The computed value account for the x projection offset of the geometry.
    */

@@ -72,7 +72,7 @@ public:
 
   /** Get / Set the object pointer to projection geometry */
   itkGetModifiableObjectMacro(OutputGeometry, GeometryType);
-  itkSetConstObjectMacro(InputGeometry, ThreeDCircularProjectionGeometry);
+  itkSetGetDecoratedObjectInputMacro(InputGeometry, ThreeDCircularProjectionGeometry);
 
   /** Get / Set the kind of permutation requested */
   itkGetMacro(Permutation, PermutationType);
@@ -100,9 +100,8 @@ protected:
   GenerateData() override;
 
 private:
-  /** RTK geometry objects */
-  GeometryConstPointer m_InputGeometry;
-  GeometryPointer      m_OutputGeometry;
+  /** RTK output geometry object */
+  GeometryPointer m_OutputGeometry;
 
   /** Input and output signal vectors */
   std::vector<double> m_InputSignal;

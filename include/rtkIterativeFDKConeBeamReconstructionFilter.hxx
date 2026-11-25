@@ -62,7 +62,7 @@ IterativeFDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecisio
 {
   this->Superclass::VerifyPreconditions();
 
-  if (this->m_Geometry.IsNull())
+  if (this->GetGeometry() == nullptr)
     itkExceptionMacro(<< "Geometry has not been set.");
 }
 
@@ -131,11 +131,11 @@ IterativeFDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecisio
   m_DivideFilter->SetInput1(m_MultiplyFilter->GetOutput());
   m_DivideFilter->SetInput2(m_RayBoxFilter->GetOutput());
 
-  m_DisplacedDetectorFilter->SetGeometry(m_Geometry);
-  m_ParkerFilter->SetGeometry(m_Geometry);
-  m_FDKFilter->SetGeometry(m_Geometry);
-  m_ForwardProjectionFilter->SetGeometry(m_Geometry);
-  m_RayBoxFilter->SetGeometry(m_Geometry.GetPointer());
+  m_DisplacedDetectorFilter->SetGeometry(this->GetGeometry());
+  m_ParkerFilter->SetGeometry(this->GetGeometry());
+  m_FDKFilter->SetGeometry(this->GetGeometry());
+  m_ForwardProjectionFilter->SetGeometry(this->GetGeometry());
+  m_RayBoxFilter->SetGeometry(this->GetGeometry());
 
   // Slightly modify the pipeline if positivity enforcement is requested
   if (m_EnforcePositivity)

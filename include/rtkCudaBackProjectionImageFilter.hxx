@@ -149,7 +149,7 @@ CudaBackProjectionImageFilter<ImageType>::GPUGenerateData()
                       pin,
                       pout,
                       stackGPUPointer + projSize * i,
-                      this->m_Geometry->GetRadiusCylindricalDetector(),
+                      this->GetGeometry()->GetRadiusCylindricalDetector(),
                       vectorLength);
 
     // Re-use the output as input

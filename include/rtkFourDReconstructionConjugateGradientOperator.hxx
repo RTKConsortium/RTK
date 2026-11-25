@@ -155,7 +155,7 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
 {
   this->Superclass::VerifyPreconditions();
 
-  if (this->m_Geometry.IsNull())
+  if (this->GetGeometry() == nullptr)
     itkExceptionMacro(<< "Geometry has not been set.");
 }
 
@@ -225,9 +225,9 @@ FourDReconstructionConjugateGradientOperator<VolumeSeriesType, ProjectionStackTy
   m_SplatFilter->SetProjectionNumber(0);
 
   // Set geometry
-  m_BackProjectionFilter->SetGeometry(this->m_Geometry.GetPointer());
-  m_ForwardProjectionFilter->SetGeometry(this->m_Geometry);
-  m_DisplacedDetectorFilter->SetGeometry(this->m_Geometry);
+  m_BackProjectionFilter->SetGeometry(this->GetGeometry());
+  m_ForwardProjectionFilter->SetGeometry(this->GetGeometry());
+  m_DisplacedDetectorFilter->SetGeometry(this->GetGeometry());
 
   // Have the last filter calculate its output information
   m_SplatFilter->UpdateOutputInformation();

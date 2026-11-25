@@ -30,24 +30,24 @@ CudaFDKWeightProjectionFilter ::~CudaFDKWeightProjectionFilter() = default;
 void
 CudaFDKWeightProjectionFilter ::GPUGenerateData()
 {
+  const ThreeDCircularProjectionGeometry * geometry = this->GetGeometry();
   // Get angular weights from geometry
-  std::vector<double> constantProjectionFactor =
-    this->GetGeometry()->GetAngularGaps(this->GetGeometry()->GetSourceAngles());
-  std::vector<double> tiltAngles = this->GetGeometry()->GetTiltAngles();
+  std::vector<double> constantProjectionFactor = geometry->GetAngularGaps(geometry->GetSourceAngles());
+  std::vector<double> tiltAngles = geometry->GetTiltAngles();
 
   for (unsigned int g = 0; g < constantProjectionFactor.size(); g++)
   {
     // Add correction factor for ramp filter
-    const double sdd = this->GetGeometry()->GetSourceToDetectorDistances()[g];
+    const double sdd = geometry->GetSourceToDetectorDistances()[g];
     if (sdd == 0.) // Parallel
       constantProjectionFactor[g] *= 0.5;
     else // Divergent
     {
       // See [Rit and Clackdoyle, CT meeting, 2014]
       ThreeDCircularProjectionGeometry::HomogeneousVectorType sp;
-      sp = this->GetGeometry()->GetSourcePosition(g);
+      sp = geometry->GetSourcePosition(g);
       sp[3] = 0.;
-      const double sid = this->GetGeometry()->GetSourceToIsocenterDistances()[g];
+      const double sid = geometry->GetSourceToIsocenterDistances()[g];
       constantProjectionFactor[g] *= std::abs(sdd) / (2. * sid * sid);
       constantProjectionFactor[g] *= sp.GetNorm();
     }
@@ -97,11 +97,11 @@ CudaFDKWeightProjectionFilter ::GPUGenerateData()
     itkExceptionMacro(<< "Couldn't allocate geomMatrix");
   for (int g = 0; g < proj_size[2]; ++g)
   {
-    geomMatrix[g * 7 + 0] = this->GetGeometry()->GetSourceToDetectorDistances()[g + geomIdx];
-    geomMatrix[g * 7 + 1] = this->GetGeometry()->GetSourceToIsocenterDistances()[g + geomIdx];
-    geomMatrix[g * 7 + 2] = this->GetGeometry()->GetProjectionOffsetsX()[g + geomIdx];
-    geomMatrix[g * 7 + 3] = this->GetGeometry()->GetProjectionOffsetsY()[g + geomIdx];
-    geomMatrix[g * 7 + 4] = this->GetGeometry()->GetSourceOffsetsY()[g + geomIdx];
+    geomMatrix[g * 7 + 0] = geometry->GetSourceToDetectorDistances()[g + geomIdx];
+    geomMatrix[g * 7 + 1] = geometry->GetSourceToIsocenterDistances()[g + geomIdx];
+    geomMatrix[g * 7 + 2] = geometry->GetProjectionOffsetsX()[g + geomIdx];
+    geomMatrix[g * 7 + 3] = geometry->GetProjectionOffsetsY()[g + geomIdx];
+    geomMatrix[g * 7 + 4] = geometry->GetSourceOffsetsY()[g + geomIdx];
     geomMatrix[g * 7 + 5] = constantProjectionFactor[g + geomIdx];
     geomMatrix[g * 7 + 6] = tiltAngles[g + geomIdx];
   }

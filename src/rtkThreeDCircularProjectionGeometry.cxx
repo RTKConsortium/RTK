@@ -478,7 +478,7 @@ ThreeDCircularProjectionGeometry::GetAngularGapsWithNext(const std::vector<doubl
 }
 
 std::vector<double>
-ThreeDCircularProjectionGeometry::GetAngularGaps(const std::vector<double> & angles)
+ThreeDCircularProjectionGeometry::GetAngularGaps(const std::vector<double> & angles) const
 {
   std::vector<double> angularGaps;
   unsigned int        nProj = angles.size();
@@ -591,6 +591,7 @@ ThreeDCircularProjectionGeometry::SetCollimationOfLastProjection(const double ui
   m_CollimationUSup.back() = usup;
   m_CollimationVInf.back() = vinf;
   m_CollimationVSup.back() = vsup;
+  this->Modified();
 }
 
 ThreeDCircularProjectionGeometry::HomogeneousVectorType

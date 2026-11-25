@@ -52,12 +52,10 @@ public:
   itkOverrideGetNameOfClassMacro(ForwardProjectionImageFilter);
 
   /** Get / Set the object pointer to projection geometry */
-  itkGetConstObjectMacro(Geometry, GeometryType);
-  itkSetConstObjectMacro(Geometry, GeometryType);
+  itkSetGetDecoratedObjectInputMacro(Geometry, ThreeDCircularProjectionGeometry);
 
 protected:
   ForwardProjectionImageFilter()
-    : m_Geometry(nullptr)
   {
     this->SetNumberOfRequiredInputs(2);
     this->SetInPlace(true);
@@ -80,8 +78,6 @@ protected:
   {}
 
 private:
-  /** RTK geometry object */
-  GeometryPointer m_Geometry;
 };
 
 } // end namespace rtk

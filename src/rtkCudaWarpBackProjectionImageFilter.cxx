@@ -263,7 +263,7 @@ CudaWarpBackProjectionImageFilter ::GPUGenerateData()
                            fIndexInputToIndexDVFMatrix,
                            fPPInputToIndexInputMatrix,
                            fIndexInputToPPInputMatrix,
-                           this->m_Geometry->GetRadiusCylindricalDetector());
+                           this->GetGeometry()->GetRadiusCylindricalDetector());
 
     // Re-use the output as input
     pin = pout;

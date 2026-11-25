@@ -127,7 +127,7 @@ RegularizedConjugateGradientConeBeamReconstructionFilter<TImage>::VerifyPrecondi
 {
   this->Superclass::VerifyPreconditions();
 
-  if (this->m_Geometry.IsNull())
+  if (this->GetGeometry() == nullptr)
     itkExceptionMacro(<< "Geometry has not been set.");
 }
 
@@ -184,7 +184,7 @@ RegularizedConjugateGradientConeBeamReconstructionFilter<TImage>::GenerateOutput
   m_CGFilter->SetInput(1, this->GetInputProjectionStack());
   m_CGFilter->SetInput(2, this->GetInputWeights());
   m_CGFilter->SetSupportMask(this->GetSupportMask());
-  m_CGFilter->SetGeometry(this->m_Geometry);
+  m_CGFilter->SetGeometry(this->GetGeometry());
   m_CGFilter->SetNumberOfIterations(this->m_CG_iterations);
   m_CGFilter->SetCudaConjugateGradient(this->GetCudaConjugateGradient());
   m_CGFilter->SetGamma(this->m_Gamma);

@@ -177,7 +177,7 @@ public:
   using BackProjectionType = typename Superclass::BackProjectionType;
 
   /** Pass the geometry to all filters needing it */
-  itkSetObjectMacro(Geometry, ThreeDCircularProjectionGeometry);
+  itkSetGetDecoratedObjectInputMacro(Geometry, ThreeDCircularProjectionGeometry);
 
   itkSetMacro(Alpha, float);
   itkGetMacro(Alpha, float);
@@ -251,8 +251,6 @@ private:
   unsigned int m_Order{ 3 };
   unsigned int m_NumberOfLevels{ 5 };
   bool         m_DisableDisplacedDetectorFilter;
-
-  ThreeDCircularProjectionGeometry::Pointer m_Geometry;
 };
 } // namespace rtk
 

@@ -125,7 +125,7 @@ ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPre
 {
   this->Superclass::VerifyPreconditions();
 
-  if (this->m_Geometry.IsNull())
+  if (this->GetGeometry() == nullptr)
     itkExceptionMacro(<< "Geometry has not been set.");
 }
 
@@ -175,7 +175,7 @@ ProjectionStackToFourDImageFilter<VolumeSeriesType, ProjectionStackType, TFFTPre
   m_ExtractFilter->SetExtractionRegion(subsetRegion);
 
   // Set runtime parameters
-  m_BackProjectionFilter->SetGeometry(m_Geometry.GetPointer());
+  m_BackProjectionFilter->SetGeometry(this->GetGeometry());
   m_SplatFilter->SetProjectionNumber(subsetRegion.GetIndex(Dimension - 1));
   m_SplatFilter->SetWeights(m_Weights);
 

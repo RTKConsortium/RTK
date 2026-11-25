@@ -50,7 +50,7 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>::VerifyPreconditions() c
 {
   this->Superclass::VerifyPreconditions();
 
-  if (this->m_Geometry.IsNull())
+  if (this->GetGeometry() == nullptr)
     itkExceptionMacro(<< "Geometry has not been set.");
 }
 
@@ -82,6 +82,7 @@ template <class TInputImage, class TOutputImage>
 void
 DisplacedDetectorImageFilter<TInputImage, TOutputImage>::GenerateOutputInformation()
 {
+  const ThreeDCircularProjectionGeometry * geometry = this->GetGeometry();
   // get pointers to the input and output
   typename Superclass::InputImagePointer  inputPtr = const_cast<TInputImage *>(this->GetInput());
   typename Superclass::OutputImagePointer outputPtr = this->GetOutput();
@@ -104,13 +105,13 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>::GenerateOutputInformati
     outputPtr->SetLargestPossibleRegion(outputLargestPossibleRegion);
     return;
   }
-  else if (this->GetGeometry()->GetRadiusCylindricalDetector() != 0)
+  else if (geometry->GetRadiusCylindricalDetector() != 0)
   {
     itkGenericExceptionMacro(<< "Displaced detector cannot handle cylindrical detector. "
                              << "Consider disabling it by setting m_Disable=true "
                              << "or using the nodisplaced flag of the application you are running");
   }
-  else if (this->GetGeometry()->GetSourceToDetectorDistances().front() == 0.)
+  else if (geometry->GetSourceToDetectorDistances().front() == 0.)
   {
     itkGenericExceptionMacro(<< "Displaced detector cannot handle parallel geometry. "
                              << "Consider disabling it by setting m_Disable=true "
@@ -132,12 +133,10 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>::GenerateOutputInformati
     // Account for projections offsets
     double minSupUntiltCorner = itk::NumericTraits<double>::max();
     double maxInfUntiltCorner = itk::NumericTraits<double>::NonpositiveMin();
-    for (unsigned int i = 0; i < m_Geometry->GetProjectionOffsetsX().size(); i++)
+    for (unsigned int i = 0; i < geometry->GetProjectionOffsetsX().size(); i++)
     {
-      maxInfUntiltCorner =
-        std::max(maxInfUntiltCorner, m_Geometry->ToUntiltedCoordinateAtIsocenter(i, m_InferiorCorner));
-      minSupUntiltCorner =
-        std::min(minSupUntiltCorner, m_Geometry->ToUntiltedCoordinateAtIsocenter(i, m_SuperiorCorner));
+      maxInfUntiltCorner = std::max(maxInfUntiltCorner, geometry->ToUntiltedCoordinateAtIsocenter(i, m_InferiorCorner));
+      minSupUntiltCorner = std::min(minSupUntiltCorner, geometry->ToUntiltedCoordinateAtIsocenter(i, m_SuperiorCorner));
     }
     m_InferiorCorner = maxInfUntiltCorner;
     m_SuperiorCorner = minSupUntiltCorner;
@@ -182,6 +181,7 @@ void
 DisplacedDetectorImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerateData(
   const OutputImageRegionType & outputRegionForThread)
 {
+  const ThreeDCircularProjectionGeometry * geometry = this->GetGeometry();
   // Declare the pixel and initialize it to the right length (for vector images)
   typename TOutputImage::PixelType pix;
   itk::NumericTraits<typename TOutputImage::PixelType>::SetLength(pix,
@@ -246,8 +246,8 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerate
   for (unsigned int k = 0; k < overlapRegion.GetSize(NDimension - 1); k++)
   {
     // Prepare weights for current slice (depends on ProjectionOffsetsX)
-    const double sx = m_Geometry->GetSourceOffsetsX()[itIn.GetIndex()[NDimension - 1]];
-    double       sid = m_Geometry->GetSourceToIsocenterDistances()[itIn.GetIndex()[NDimension - 1]];
+    const double sx = geometry->GetSourceOffsetsX()[itIn.GetIndex()[NDimension - 1]];
+    double       sid = geometry->GetSourceToIsocenterDistances()[itIn.GetIndex()[NDimension - 1]];
     sid = sqrt(sid * sid + sx * sx); // To untilted situation
     double invsid = 0.;
     double invden = 0.;
@@ -264,7 +264,7 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerate
       itWeights.GoToBegin();
       while (!itWeights.IsAtEnd())
       {
-        const double l = m_Geometry->ToUntiltedCoordinateAtIsocenter(itIn.GetIndex()[NDimension - 1], point[0]);
+        const double l = geometry->ToUntiltedCoordinateAtIsocenter(itIn.GetIndex()[NDimension - 1], point[0]);
         if (l <= -1 * theta)
           itWeights.Set(0.0);
         else if (l >= theta)
@@ -279,7 +279,7 @@ DisplacedDetectorImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerate
     {
       while (!itWeights.IsAtEnd())
       {
-        const double l = m_Geometry->ToUntiltedCoordinateAtIsocenter(itIn.GetIndex()[NDimension - 1], point[0]);
+        const double l = geometry->ToUntiltedCoordinateAtIsocenter(itIn.GetIndex()[NDimension - 1], point[0]);
         if (l <= -1 * theta)
           itWeights.Set(2.0);
         else if (l >= theta)

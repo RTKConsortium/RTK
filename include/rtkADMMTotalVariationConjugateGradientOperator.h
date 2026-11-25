@@ -147,7 +147,7 @@ public:
   SetForwardProjectionFilter(ForwardProjectionFilterType * _arg);
 
   /** Pass the geometry to all filters needing it */
-  itkSetObjectMacro(Geometry, ThreeDCircularProjectionGeometry);
+  itkSetGetDecoratedObjectInputMacro(Geometry, ThreeDCircularProjectionGeometry);
 
   /** Set the regularization parameter */
   itkSetMacro(Beta, float);
@@ -185,9 +185,8 @@ protected:
   typename DisplacedDetectorFilterType::Pointer m_DisplacedDetectorFilter;
   typename GatingWeightsFilterType::Pointer     m_GatingWeightsFilter;
 
-  ThreeDCircularProjectionGeometry::Pointer m_Geometry;
-  float                                     m_Beta;
-  bool                                      m_DisableDisplacedDetectorFilter;
+  float m_Beta;
+  bool  m_DisableDisplacedDetectorFilter;
 
   /** Have gating weights been set ? If so, apply them, otherwise ignore
    * the gating weights filter */

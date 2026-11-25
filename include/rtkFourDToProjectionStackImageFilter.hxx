@@ -152,7 +152,7 @@ FourDToProjectionStackImageFilter<ProjectionStackType, VolumeSeriesType>::Genera
   // Set runtime parameters
   m_InterpolationFilter->SetWeights(m_Weights);
   m_InterpolationFilter->SetProjectionNumber(m_PasteRegion.GetIndex(ProjectionStackDimension - 1));
-  m_ForwardProjectionFilter->SetGeometry(m_Geometry);
+  m_ForwardProjectionFilter->SetGeometry(this->GetGeometry());
   m_PasteFilter->SetSourceRegion(m_PasteRegion);
   m_PasteFilter->SetDestinationIndex(m_PasteRegion.GetIndex());
 

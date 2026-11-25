@@ -81,8 +81,7 @@ public:
   itkOverrideGetNameOfClassMacro(FDKVarianceReconstructionFilter);
 
   /** Get / Set the object pointer to projection geometry */
-  itkGetModifiableObjectMacro(Geometry, ThreeDCircularProjectionGeometry);
-  itkSetObjectMacro(Geometry, ThreeDCircularProjectionGeometry);
+  itkSetGetDecoratedObjectInputMacro(Geometry, ThreeDCircularProjectionGeometry);
 
   /** Get pointer to the ramp filter used by the feldkamp reconstruction */
   typename VarianceRampFilterType::Pointer
@@ -137,8 +136,6 @@ private:
   /** Number of projections processed at a time. */
   unsigned int m_ProjectionSubsetSize{ 16 };
 
-  /** Geometry propagated to subfilters of the mini-pipeline. */
-  ThreeDCircularProjectionGeometry::Pointer m_Geometry;
 }; // end of class
 
 } // end namespace rtk

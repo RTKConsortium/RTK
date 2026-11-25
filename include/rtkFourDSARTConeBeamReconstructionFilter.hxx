@@ -136,7 +136,7 @@ FourDSARTConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::Ve
 {
   this->Superclass::VerifyPreconditions();
 
-  if (this->m_Geometry.IsNull())
+  if (this->GetGeometry() == nullptr)
     itkExceptionMacro(<< "Geometry has not been set.");
 }
 
@@ -225,9 +225,9 @@ FourDSARTConeBeamReconstructionFilter<VolumeSeriesType, ProjectionStackType>::Ge
   m_SubtractFilter->SetInput2(m_FourDToProjectionStackFilter->GetOutput());
   m_SubtractFilter->SetInput1(m_ExtractFilter->GetOutput());
 
-  m_FourDToProjectionStackFilter->SetGeometry(this->m_Geometry);
-  m_ProjectionStackToFourDFilter->SetGeometry(this->m_Geometry);
-  m_DisplacedDetectorFilter->SetGeometry(this->m_Geometry);
+  m_FourDToProjectionStackFilter->SetGeometry(this->GetGeometry());
+  m_ProjectionStackToFourDFilter->SetGeometry(this->GetGeometry());
+  m_DisplacedDetectorFilter->SetGeometry(this->GetGeometry());
 
   m_ConstantProjectionStackSource->SetInformationFromImage(
     const_cast<ProjectionStackType *>(this->GetInputProjectionStack().GetPointer()));

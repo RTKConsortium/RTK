@@ -141,7 +141,7 @@ ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage>::VerifyPrecondition
 {
   this->Superclass::VerifyPreconditions();
 
-  if (this->m_Geometry.IsNull())
+  if (this->GetGeometry() == nullptr)
     itkExceptionMacro(<< "Geometry has not been set.");
 }
 
@@ -192,9 +192,9 @@ ADMMTotalVariationConeBeamReconstructionFilter<TOutputImage>::GenerateOutputInfo
   m_SubtractVolumeFilter->SetInput1(m_BackProjectionFilter->GetOutput());
 
   // For the same reason, set geometry now
-  m_CGOperator->SetGeometry(this->m_Geometry);
-  m_BackProjectionFilter->SetGeometry(this->m_Geometry.GetPointer());
-  m_DisplacedDetectorFilter->SetGeometry(this->m_Geometry);
+  m_CGOperator->SetGeometry(this->GetGeometry());
+  m_BackProjectionFilter->SetGeometry(this->GetGeometry());
+  m_DisplacedDetectorFilter->SetGeometry(this->GetGeometry());
 
   // Set runtime parameters
   m_ConjugateGradientFilter->SetNumberOfIterations(this->m_CG_iterations);

@@ -31,7 +31,6 @@ namespace rtk
 
 template <class TInputImage, class TOutputImage>
 MaskCollimationImageFilter<TInputImage, TOutputImage>::MaskCollimationImageFilter()
-  : m_Geometry(nullptr)
 {}
 
 template <class TInputImage, class TOutputImage>
@@ -40,7 +39,7 @@ MaskCollimationImageFilter<TInputImage, TOutputImage>::VerifyPreconditions() con
 {
   this->Superclass::VerifyPreconditions();
 
-  if (this->m_Geometry.IsNull())
+  if (this->GetGeometry() == nullptr)
     itkExceptionMacro(<< "Geometry has not been set.");
 }
 
@@ -57,10 +56,11 @@ void
 MaskCollimationImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerateData(
   const OutputImageRegionType & outputRegionForThread)
 {
+  const ThreeDCircularProjectionGeometry * geometry = this->GetGeometry();
   // Iterators on input and output
   using InputRegionIterator = ProjectionsRegionConstIteratorRayBased<TInputImage>;
   InputRegionIterator * itIn = nullptr;
-  itIn = InputRegionIterator::New(this->GetInput(), outputRegionForThread, m_Geometry);
+  itIn = InputRegionIterator::New(this->GetInput(), outputRegionForThread, this->GetGeometry());
   itk::ImageRegionIteratorWithIndex<TOutputImage> itOut(this->GetOutput(), outputRegionForThread);
 
   // Go over each projection
@@ -89,9 +89,9 @@ MaskCollimationImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerateDa
       // The first coordinate on the plane is measured along the detector
       // orthogonal to the plane defined by the detector source direction
       // and the secon detector vector
-      auto v = itk::MakeVector(this->GetGeometry()->GetRotationMatrix(iProj)[m_RotationAxisIndex][0],
-                               this->GetGeometry()->GetRotationMatrix(iProj)[m_RotationAxisIndex][1],
-                               this->GetGeometry()->GetRotationMatrix(iProj)[m_RotationAxisIndex][2]);
+      auto v = itk::MakeVector(geometry->GetRotationMatrix(iProj)[m_RotationAxisIndex][0],
+                               geometry->GetRotationMatrix(iProj)[m_RotationAxisIndex][1],
+                               geometry->GetRotationMatrix(iProj)[m_RotationAxisIndex][2]);
 
       VectorType u = CrossProduct(v, sourceDir);
       u /= u.GetNorm();
@@ -101,10 +101,8 @@ MaskCollimationImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerateDa
       v = CrossProduct(sourceDir, u);
       double vcoord = v * intersection;
 
-      if (ucoord > -1. * this->GetGeometry()->GetCollimationUInf()[iProj] &&
-          ucoord < this->GetGeometry()->GetCollimationUSup()[iProj] &&
-          vcoord > -1. * this->GetGeometry()->GetCollimationVInf()[iProj] &&
-          vcoord < this->GetGeometry()->GetCollimationVSup()[iProj])
+      if (ucoord > -1. * geometry->GetCollimationUInf()[iProj] && ucoord < geometry->GetCollimationUSup()[iProj] &&
+          vcoord > -1. * geometry->GetCollimationVInf()[iProj] && vcoord < geometry->GetCollimationVSup()[iProj])
       {
         itOut.Set(itIn->Get());
       }

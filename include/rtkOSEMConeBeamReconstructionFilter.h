@@ -173,8 +173,7 @@ public:
   itkOverrideGetNameOfClassMacro(OSEMConeBeamReconstructionFilter);
 
   /** Get / Set the object pointer to projection geometry */
-  itkGetModifiableObjectMacro(Geometry, ThreeDCircularProjectionGeometry);
-  itkSetObjectMacro(Geometry, ThreeDCircularProjectionGeometry);
+  itkSetGetDecoratedObjectInputMacro(Geometry, ThreeDCircularProjectionGeometry);
 
   /** Get / Set the number of iterations. Default is 3. */
   itkGetMacro(NumberOfIterations, unsigned int);
@@ -253,9 +252,6 @@ protected:
 private:
   /** Number of projections processed before the volume is updated (several for OS-EM) */
   unsigned int m_NumberOfProjectionsPerSubset{ 1 };
-
-  /** Geometry object */
-  ThreeDCircularProjectionGeometry::Pointer m_Geometry;
 
   /** Number of iterations */
   unsigned int m_NumberOfIterations{ 3 };

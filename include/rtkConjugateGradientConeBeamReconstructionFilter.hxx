@@ -138,7 +138,7 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage, TSingleComponentImag
 {
   this->Superclass::VerifyPreconditions();
 
-  if (this->m_Geometry.IsNull())
+  if (this->GetGeometry() == nullptr)
     itkExceptionMacro(<< "Geometry has not been set.");
 }
 
@@ -258,9 +258,9 @@ ConjugateGradientConeBeamReconstructionFilter<TOutputImage, TSingleComponentImag
   }
 
   // For the same reason, set geometry now
-  m_CGOperator->SetGeometry(this->m_Geometry);
-  m_BackProjectionFilterForB->SetGeometry(this->m_Geometry.GetPointer());
-  m_DisplacedDetectorFilter->SetGeometry(this->m_Geometry);
+  m_CGOperator->SetGeometry(this->GetGeometry());
+  m_BackProjectionFilterForB->SetGeometry(this->GetGeometry());
+  m_DisplacedDetectorFilter->SetGeometry(this->GetGeometry());
 
   // Set runtime parameters
   m_ConjugateGradientFilter->SetNumberOfIterations(this->m_NumberOfIterations);

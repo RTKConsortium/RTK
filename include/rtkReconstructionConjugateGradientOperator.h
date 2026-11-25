@@ -186,7 +186,7 @@ public:
   GetLocalRegularizationWeights();
 
   /** Set the geometry of both m_BackProjectionFilter and m_ForwardProjectionFilter */
-  itkSetConstObjectMacro(Geometry, ThreeDCircularProjectionGeometry);
+  itkSetGetDecoratedObjectInputMacro(Geometry, ThreeDCircularProjectionGeometry);
 
   /** Perform laplacian-based and/or Tikhonov regularization during
    *  reconstruction (gamma is the strength of laplacian the regularization) */
@@ -232,9 +232,8 @@ protected:
   typename MultiplyWithWeightsFilterType::Pointer                       m_MultiplyWithWeightsFilter;
 
   /** Member attributes */
-  rtk::ThreeDCircularProjectionGeometry::ConstPointer m_Geometry{ nullptr };
-  float                                               m_Gamma{ 0 };    // Strength of the laplacian regularization
-  float                                               m_Tikhonov{ 0 }; // Strength of the Tikhonov regularization
+  float m_Gamma{ 0 };    // Strength of the laplacian regularization
+  float m_Tikhonov{ 0 }; // Strength of the Tikhonov regularization
 
   /** Pointers to intermediate images, used to simplify complex branching */
   typename TOutputImage::Pointer m_FloatingInputPointer, m_FloatingOutputPointer;

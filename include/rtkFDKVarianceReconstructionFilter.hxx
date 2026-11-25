@@ -65,7 +65,7 @@ FDKVarianceReconstructionFilter<TInputImage, TOutputImage, TFFTPrecision>::Verif
 {
   this->Superclass::VerifyPreconditions();
 
-  if (this->m_Geometry.IsNull())
+  if (this->GetGeometry() == nullptr)
     itkExceptionMacro(<< "Geometry has not been set.");
 }
 
@@ -91,9 +91,9 @@ FDKVarianceReconstructionFilter<TInputImage, TOutputImage, TFFTPrecision>::Gener
 {
   const unsigned int Dimension = this->InputImageDimension;
 
-  m_WeightFilter1->SetGeometry(m_Geometry);
-  m_WeightFilter2->SetGeometry(m_Geometry);
-  m_BackProjectionFilter->SetGeometry(m_Geometry);
+  m_WeightFilter1->SetGeometry(this->GetGeometry());
+  m_WeightFilter2->SetGeometry(this->GetGeometry());
+  m_BackProjectionFilter->SetGeometry(this->GetGeometry());
 
   // We only set the first sub-stack at that point, the rest will be
   // requested in the GenerateData function
