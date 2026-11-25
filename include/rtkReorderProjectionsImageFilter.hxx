@@ -65,6 +65,15 @@ ReorderProjectionsImageFilter<TInputImage, TOutputImage>::VerifyPreconditions() 
 
 template <class TInputImage, class TOutputImage>
 void
+ReorderProjectionsImageFilter<TInputImage, TOutputImage>::VerifyInputInformation() const
+{
+  this->Superclass::VerifyInputInformation();
+
+  GeometryType::CheckExactNumberOfProjections(*this->m_InputGeometry, this->GetInput()->GetLargestPossibleRegion());
+}
+
+template <class TInputImage, class TOutputImage>
+void
 ReorderProjectionsImageFilter<TInputImage, TOutputImage>::GenerateOutputInformation()
 {
   Superclass::GenerateOutputInformation();

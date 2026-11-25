@@ -46,10 +46,10 @@ MaskCollimationImageFilter<TInputImage, TOutputImage>::VerifyPreconditions() con
 
 template <class TInputImage, class TOutputImage>
 void
-MaskCollimationImageFilter<TInputImage, TOutputImage>::BeforeThreadedGenerateData()
+MaskCollimationImageFilter<TInputImage, TOutputImage>::VerifyInputInformation() const
 {
-  if (this->GetGeometry()->GetGantryAngles().size() != this->GetOutput()->GetLargestPossibleRegion().GetSize()[2])
-    itkExceptionMacro(<< "Number of projections in the input stack and the geometry object differ.");
+  const auto projRegion = this->GetInput()->GetLargestPossibleRegion();
+  GeometryType::CheckNumberOfProjections(*this->m_Geometry, projRegion);
 }
 
 template <class TInputImage, class TOutputImage>

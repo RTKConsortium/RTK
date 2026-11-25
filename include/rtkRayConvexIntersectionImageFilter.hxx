@@ -54,6 +54,16 @@ RayConvexIntersectionImageFilter<TInputImage, TOutputImage>::VerifyPreconditions
 
 template <class TInputImage, class TOutputImage>
 void
+RayConvexIntersectionImageFilter<TInputImage, TOutputImage>::VerifyInputInformation() const
+{
+  this->Superclass::VerifyInputInformation();
+
+  const auto projRegion = this->GetInput()->GetLargestPossibleRegion();
+  GeometryType::CheckNumberOfProjections(*this->m_Geometry, projRegion);
+}
+
+template <class TInputImage, class TOutputImage>
+void
 RayConvexIntersectionImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerateData(
   const OutputImageRegionType & outputRegionForThread)
 {

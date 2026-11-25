@@ -194,6 +194,21 @@ FieldOfViewImageFilter<TInputImage, TOutputImage>::VerifyPreconditions() const
 
   if (this->m_Geometry.IsNull())
     itkExceptionMacro(<< "Geometry has not been set.");
+
+  if (this->m_ProjectionsStack.IsNull())
+    itkExceptionMacro(<< "ProjectionsStack has not been set.");
+}
+
+template <class TInputImage, class TOutputImage>
+void
+FieldOfViewImageFilter<TInputImage, TOutputImage>::VerifyInputInformation() const
+{
+  this->Superclass::VerifyInputInformation();
+
+  // The projection stack is not a pipeline input, so update its information explicitly.
+  this->m_ProjectionsStack->UpdateOutputInformation();
+  const auto projRegion = this->m_ProjectionsStack->GetLargestPossibleRegion();
+  GeometryType::CheckExactNumberOfProjections(*this->m_Geometry, projRegion);
 }
 
 template <class TInputImage, class TOutputImage>

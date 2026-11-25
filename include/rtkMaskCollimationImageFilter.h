@@ -75,18 +75,13 @@ protected:
   void
   VerifyPreconditions() const override;
 
-  void
-  BeforeThreadedGenerateData() override;
-
   /** Apply changes to the input image requested region. */
   void
   DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread) override;
 
-  /** The two inputs should not be in the same space so there is nothing
-   * to verify. */
+  /** Check projection bounds without comparing input physical spaces. */
   void
-  VerifyInputInformation() const override
-  {}
+  VerifyInputInformation() const override;
 
   // Set default parameters
   unsigned int m_RotationAxisIndex = 1; // y-axis
