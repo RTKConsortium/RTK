@@ -23,6 +23,7 @@
 #include <cmath>
 #include <itkImageRegionConstIterator.h>
 #include <itkImageRegionIteratorWithIndex.h>
+#include <itkMultiplyImageFilter.h>
 
 #ifdef USE_CUDA
 #  include "rtkCudaPolynomialGainCorrectionImageFilter.h"
@@ -85,9 +86,9 @@ createDarkImage()
 }
 
 OutputImageType::Pointer
-createGainImage()
+createGainImage(int order = modelOrder)
 {
-  auto size = itk::MakeSize(sizeI, sizeI, modelOrder);
+  auto size = itk::MakeSize(sizeI, sizeI, order);
   auto spacing = itk::MakeVector(1.F, 1.F, 1.F);
 
   OutputImageType::RegionType region;
@@ -138,10 +139,10 @@ createInputImage()
 }
 
 OutputImageType::Pointer
-generateExpectedOutput(const InputImageType::Pointer &  inputImage,
-                       float                            K,
-                       const InputImageType::Pointer &  darkImage,
-                       const OutputImageType::Pointer & gainImage)
+generateExpectedOutput(const InputImageType *  inputImage,
+                       float                   K,
+                       const InputImageType *  darkImage,
+                       const OutputImageType * gainImage)
 {
   auto size = itk::MakeSize(sizeI, sizeI, 1);
   auto spacing = itk::MakeVector(1.F, 1.F, 1.F);
@@ -165,6 +166,7 @@ generateExpectedOutput(const InputImageType::Pointer &  inputImage,
 
   // Get gain map buffer
   const float * gainBuffer = gainImage->GetBufferPointer();
+  const auto    order = static_cast<int>(gainImage->GetLargestPossibleRegion().GetSize(2));
 
   itIn.GoToBegin();
   itOut.GoToBegin();
@@ -181,7 +183,7 @@ generateExpectedOutput(const InputImageType::Pointer &  inputImage,
 
       float correctedValue = 0.F;
       auto  powValue = static_cast<float>(px);
-      for (int m = 0; m < modelOrder; ++m)
+      for (int m = 0; m < order; ++m)
       {
         int   gainidx = m * sizeI2 + j * sizeI + i;
         float Aij = gainBuffer[gainidx];
@@ -225,33 +227,70 @@ rtkgaincorrectiontest(int, char *[])
   InputImageType::Pointer testImage = createInputImage();
   gainfilter->SetInput(testImage);
 
-  // Apply correction
-  TRY_AND_EXIT_ON_ITK_EXCEPTION(gainfilter->Update())
-  OutputImageType::Pointer outputImage = gainfilter->GetOutput();
+  // Compare the output of the filter with the expected output
+  auto checkOutput = [&]() {
+    TRY_AND_EXIT_ON_ITK_EXCEPTION(gainfilter->Update())
+    OutputImageType::Pointer outputImage = gainfilter->GetOutput();
+    OutputImageType::Pointer expectedOutput =
+      generateExpectedOutput(testImage, K, gainfilter->GetDarkImage(), gainfilter->GetGainCoefficients());
 
-  // Generate expected output
-  OutputImageType::Pointer expectedOutput = generateExpectedOutput(testImage, K, darkImage, gainImage);
+    itk::ImageRegionConstIterator<OutputImageType> itExp(expectedOutput, expectedOutput->GetLargestPossibleRegion());
+    itk::ImageRegionConstIterator<OutputImageType> itOut(outputImage, outputImage->GetLargestPossibleRegion());
 
-  // Compare
-  itk::ImageRegionConstIterator<OutputImageType> itExp(expectedOutput, expectedOutput->GetLargestPossibleRegion());
-  itk::ImageRegionConstIterator<OutputImageType> itOut(outputImage, outputImage->GetLargestPossibleRegion());
+    itExp.GoToBegin();
+    itOut.GoToBegin();
+    float diffValue = 0.F;
+    while (!itExp.IsAtEnd())
+    {
+      diffValue += std::abs(itExp.Get() - itOut.Get());
+      ++itExp;
+      ++itOut;
+    }
+    diffValue /= static_cast<float>(sizeI * sizeI);
+    std::cout << diffValue << std::endl;
+    if (!(diffValue < 1.F))
+    {
+      std::cerr << "Test Failed! " << std::endl;
+      exit(EXIT_FAILURE);
+    }
+  };
+  checkOutput();
 
-  itExp.GoToBegin();
-  itOut.GoToBegin();
-  float diffValue = 0.F;
-  while (!itExp.IsAtEnd())
-  {
-    diffValue += std::abs(itExp.Get() - itOut.Get());
-    ++itExp;
-    ++itOut;
-  }
-  diffValue /= static_cast<float>(sizeI * sizeI);
-  std::cout << diffValue << std::endl;
-  if (!(diffValue < 1.F))
-  {
-    std::cerr << "Test Failed! " << std::endl;
-    exit(EXIT_FAILURE);
-  }
+  // The output must be updated when the dark image is changed
+  darkImage = createDarkImage();
+  darkImage->FillBuffer(0);
+  gainfilter->SetDarkImage(darkImage);
+  checkOutput();
+
+  // The output must be updated when the connected dark image is modified
+  darkImage->FillBuffer(100);
+  darkImage->Modified();
+  checkOutput();
+
+  // The output must be updated when the connected gain coefficients are modified
+  float * gainBuffer = gainImage->GetBufferPointer();
+  for (size_t i = 0; i < gainImage->GetPixelContainer()->Size(); ++i)
+    gainBuffer[i] *= 2.F;
+  gainImage->Modified();
+  checkOutput();
+
+  // The output must be updated when the filter producing the gain coefficients
+  // is modified
+  using MultiplyType = itk::MultiplyImageFilter<OutputImageType, OutputImageType>;
+  auto multiply = MultiplyType::New();
+  multiply->SetInput(createGainImage());
+  multiply->SetConstant(1.F);
+  gainfilter->SetGainCoefficients(multiply->GetOutput());
+  checkOutput();
+  multiply->SetConstant(2.F);
+  checkOutput();
+
+  // The output must be updated when the polynomial order is changed
+  multiply->SetInput(createGainImage(modelOrder - 1));
+  checkOutput();
+  gainImage = createGainImage(1);
+  gainfilter->SetGainCoefficients(gainImage);
+  checkOutput();
 
   std::cout << "\n\nTest PASSED! " << std::endl;
 

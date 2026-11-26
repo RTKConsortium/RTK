@@ -40,9 +40,10 @@ CudaPolynomialGainCorrectionImageFilter ::GPUGenerateData()
   outBuffer += this->GetOutput()->ComputeOffset(this->GetOutput()->GetRequestedRegion().GetIndex());
 
   const unsigned short * darkBuffer =
-    static_cast<const unsigned short *>(m_DarkImage->GetCudaDataManager()->GetConstGPUBufferPointer());
+    static_cast<const unsigned short *>(this->GetDarkImage()->GetCudaDataManager()->GetConstGPUBufferPointer());
 
-  const float * gainBuffer = static_cast<const float *>(m_GainImage->GetCudaDataManager()->GetConstGPUBufferPointer());
+  const float * gainBuffer =
+    static_cast<const float *>(this->GetGainCoefficients()->GetCudaDataManager()->GetConstGPUBufferPointer());
 
   int proj_idx_in[3];
   proj_idx_in[0] = overlapRegion.GetIndex()[0];
