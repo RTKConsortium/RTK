@@ -515,6 +515,31 @@ ThreeDCircularProjectionGeometry::GetAngularGaps(const std::vector<double> & ang
   // Last projection wraps the angle of the first one
   angularGaps[curr->second] = 0.5 * (sangles.begin()->first + 2 * itk::Math::pi - prev->first);
 
+  // Short scan handling: fix the weights of the two projections adjacent to
+  // the largest gap
+  auto [firstAngle, lastAngle] = GetShortScanFirstLastAngles(angles);
+  if (firstAngle != lastAngle)
+  {
+    // firstAngle and lastAngle are in the largest gap: the first projection
+    // is the first one after firstAngle and the last projection is the last
+    // one before lastAngle, wrapping around the sorted angles. With repeated
+    // angles, these are the duplicates adjacent to the largest gap.
+    auto itFirst = sangles.upper_bound(ConvertAngleBetween0And2PIRadians(firstAngle));
+    if (itFirst == sangles.end())
+      itFirst = sangles.begin();
+    auto itLast = sangles.lower_bound(ConvertAngleBetween0And2PIRadians(lastAngle));
+    if (itLast == sangles.begin())
+      itLast = sangles.end();
+    --itLast;
+
+    // Replace half the largest gap by half the angular distance between
+    // firstAngle and the angle at itFirst and half the angular distance
+    // between the angle at itLast and lastAngle
+    const double largestGap = ConvertAngleBetween0And2PIRadians(itFirst->first - itLast->first);
+    angularGaps[itFirst->second] += 0.5 * (ConvertAngleBetween0And2PIRadians(itFirst->first - firstAngle) - largestGap);
+    angularGaps[itLast->second] += 0.5 * (ConvertAngleBetween0And2PIRadians(lastAngle - itLast->first) - largestGap);
+  }
+
   // FIXME: Trick for the half scan in parallel geometry case
   if (m_SourceToDetectorDistances[0] == 0.)
   {
