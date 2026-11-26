@@ -110,6 +110,7 @@ def process(args_info: argparse.Namespace):
     if args_info.verbose:
         print(f"Reading geometry information from {args_info.geometry}...")
     geometry = rtk.read_geometry(args_info.geometry)
+    geometry.SetAngularGapThreshold(args_info.short * math.pi / 180.0)
 
     # Check on hardware parameter
     if not hasattr(itk, "CudaImage") and args_info.hardware == "cuda":
@@ -136,7 +137,6 @@ def process(args_info: argparse.Namespace):
     pssf.SetInput(ddf.GetOutput())
     pssf.SetGeometry(geometry)
     pssf.InPlaceOff()
-    pssf.SetAngularGapThreshold(args_info.short * math.pi / 180.0)
 
     # Create reconstructed image
     constantImageSource = rtk.ConstantImageSource[OutputImageType].New()

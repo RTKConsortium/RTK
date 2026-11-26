@@ -307,6 +307,11 @@ CheckGeometries(const rtk::ThreeDCircularProjectionGeometry * g1, const rtk::Thr
     std::cerr << "Geometries don't have the same cylindrical detector radius" << std::endl;
     exit(EXIT_FAILURE);
   }
+  if (e < std::abs(g1->GetAngularGapThreshold() - g2->GetAngularGapThreshold()))
+  {
+    std::cerr << "Geometries don't have the same angular gap threshold" << std::endl;
+    exit(EXIT_FAILURE);
+  }
 
   for (unsigned int i = 0; i < nproj; i++)
   {
