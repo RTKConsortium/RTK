@@ -81,9 +81,20 @@ public:
 
   /** Get / Set the region of projection images, required to determine the
     FOV radius. Note that only the geometric information is required, the
-    data are therefore not updated. */
+    data are therefore not updated. It is not an input of the filter but its
+    modifications are tracked, see UpdateOutputInformation() and GetMTime(). */
   itkGetMacro(ProjectionsStack, ProjectionsStackPointer);
   itkSetObjectMacro(ProjectionsStack, ProjectionsStackType);
+
+  /** Update the information of the projections stack before that of the
+   * filter. */
+  void
+  UpdateOutputInformation() override;
+
+  /** Get the modification time, which includes the modification and pipeline
+   * modification times of the projections stack. */
+  itk::ModifiedTimeType
+  GetMTime() const override;
 
   /** Assume that a displaced detector image filter, e.g.,
    * rtk::DisplacedDetectorImageFilter, has been used. */

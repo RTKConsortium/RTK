@@ -30,11 +30,35 @@
 #include "rtkProjectionsReader.h"
 #include "rtkProjectionsRegionConstIteratorRayBased.h"
 
+#include <algorithm>
+
 namespace rtk
 {
 
 template <class TInputImage, class TOutputImage>
 FieldOfViewImageFilter<TInputImage, TOutputImage>::FieldOfViewImageFilter() = default;
+
+template <class TInputImage, class TOutputImage>
+void
+FieldOfViewImageFilter<TInputImage, TOutputImage>::UpdateOutputInformation()
+{
+  if (m_ProjectionsStack.IsNotNull())
+    m_ProjectionsStack->UpdateOutputInformation();
+  Superclass::UpdateOutputInformation();
+}
+
+template <class TInputImage, class TOutputImage>
+itk::ModifiedTimeType
+FieldOfViewImageFilter<TInputImage, TOutputImage>::GetMTime() const
+{
+  itk::ModifiedTimeType mtime = Superclass::GetMTime();
+  if (m_ProjectionsStack.IsNotNull())
+  {
+    mtime = std::max(mtime, m_ProjectionsStack->GetMTime());
+    mtime = std::max(mtime, m_ProjectionsStack->GetPipelineMTime());
+  }
+  return mtime;
+}
 
 template <class TInputImage, class TOutputImage>
 bool
@@ -43,6 +67,9 @@ FieldOfViewImageFilter<TInputImage, TOutputImage>::ComputeFOVRadius(const FOVRad
                                                                     double &            z,
                                                                     double &            r)
 {
+  if (m_ProjectionsStack.IsNull())
+    itkExceptionMacro(<< "ProjectionsStack has not been set.");
+  // The function may be called outside of the pipeline
   m_ProjectionsStack->UpdateOutputInformation();
   typename TInputImage::SizeType regSize;
   regSize.Fill(1);
@@ -194,6 +221,9 @@ FieldOfViewImageFilter<TInputImage, TOutputImage>::VerifyPreconditions() const
 
   if (this->GetGeometry() == nullptr)
     itkExceptionMacro(<< "Geometry has not been set.");
+
+  if (m_ProjectionsStack.IsNull())
+    itkExceptionMacro(<< "ProjectionsStack has not been set.");
 }
 
 template <class TInputImage, class TOutputImage>
