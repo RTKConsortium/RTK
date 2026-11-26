@@ -27,15 +27,7 @@ template <class TInputImage, class TOutputImage>
 SheppLoganPhantomFilter<TInputImage, TOutputImage>::SheppLoganPhantomFilter()
 {
   this->SetPhantomScale(ConvexShape::VectorType(128));
-}
-
-template <class TInputImage, class TOutputImage>
-void
-SheppLoganPhantomFilter<TInputImage, TOutputImage>::GenerateData()
-{
   this->SetGeometricPhantom(SheppLoganPhantom::New().GetPointer());
-  this->SetConfigFile("");
-  Superclass::GenerateData();
 }
 } // end namespace rtk
 

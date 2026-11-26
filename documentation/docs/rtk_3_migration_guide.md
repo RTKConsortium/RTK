@@ -290,6 +290,16 @@ it in the new `CreateConvexShape()` method and throw an exception if the
 `SetDirection()` of the box filters is now used even if the box has not been
 set with `SetBoxFromImage()`.
 
+## Geometric phantoms set as inputs of filters
+
+The geometric phantom of `rtk::ProjectGeometricPhantomImageFilter` and
+`rtk::DrawGeometricPhantomImageFilter` is now a pipeline input, set with
+`SetGeometricPhantom()` as before. Modifying the phantom after it has been set,
+e.g. with `Translate()` or `SetDensity()` on one of its shapes, now triggers the
+re-execution of the filter at the next update. `rtk::SheppLoganPhantomFilter`
+and `rtk::DrawSheppLoganFilter` set the Shepp-Logan phantom when they are
+created, a `ConfigFile` set on them is now used instead of being ignored.
+
 ## Short scan angular gap threshold stored in the geometry
 
 The angular gap threshold above which `rtk::ParkerShortScanImageFilter`

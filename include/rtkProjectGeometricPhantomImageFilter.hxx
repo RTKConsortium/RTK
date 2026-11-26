@@ -44,6 +44,9 @@ ProjectGeometricPhantomImageFilter<TInputImage, TOutputImage>::VerifyPreconditio
 
   if (this->GetGeometry() == nullptr)
     itkExceptionMacro(<< "Geometry has not been set.");
+
+  if (this->GetGeometricPhantom() == nullptr && m_ConfigFile.empty())
+    itkExceptionMacro(<< "GeometricPhantom or ConfigFile must be set.");
 }
 
 template <class TInputImage, class TOutputImage>
@@ -51,16 +54,17 @@ void
 ProjectGeometricPhantomImageFilter<TInputImage, TOutputImage>::GenerateData()
 {
   // Reading figure config file
+  GeometricPhantomConstPointer phantom = this->GetGeometricPhantom();
   if (!m_ConfigFile.empty())
   {
     auto reader = rtk::ForbildPhantomFileReader::New();
     reader->SetFilename(m_ConfigFile);
     reader->GenerateOutputInformation();
-    this->m_GeometricPhantom = reader->GetGeometricPhantom();
+    phantom = reader->GetGeometricPhantom();
   }
 
   // Check that it's not empty
-  const GeometricPhantom::ConvexShapeVector & cov = m_GeometricPhantom->GetConvexShapes();
+  const GeometricPhantom::ConvexShapeVector & cov = phantom->GetConvexShapes();
   if (cov.empty())
     itkExceptionMacro(<< "Empty phantom");
 

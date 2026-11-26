@@ -1,5 +1,6 @@
 #include "rtkTest.h"
 #include "rtkConstantImageSource.h"
+#include "rtkForbildPhantomFileReader.h"
 #include "rtkMacro.h"
 #include "rtkProjectGeometricPhantomImageFilter.h"
 #include "rtkSheppLoganPhantomFilter.h"
@@ -75,6 +76,45 @@ rtkprojectgeometricphantomtest(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION(pgp->Update());
 
   CheckImageQuality<OutputImageType>(slp->GetOutput(), pgp->GetOutput(), 0.00055, 88, 255.0);
+  std::cout << "Test PASSED! " << std::endl;
+
+  // Phantom set as an input, with a source not shared with filters running in place
+  auto reader = rtk::ForbildPhantomFileReader::New();
+  reader->SetFilename(argv[1]);
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(reader->GenerateOutputInformation());
+  rtk::GeometricPhantom::Pointer phantom = reader->GetModifiableGeometricPhantom();
+  auto                           pgpInputSource = rtk::ConstantImageSource<OutputImageType>::New();
+  pgpInputSource->SetOrigin(origin);
+  pgpInputSource->SetSpacing(spacing);
+  pgpInputSource->SetSize(size);
+  pgpInputSource->SetConstant(0.);
+  auto pgpInput = rtk::ProjectGeometricPhantomImageFilter<OutputImageType, OutputImageType>::New();
+  pgpInput->SetInput(pgpInputSource->GetOutput());
+  pgpInput->SetGeometry(geometry);
+  pgpInput->SetGeometricPhantom(phantom);
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(pgpInput->Update());
+  CheckImageQuality<OutputImageType>(slp->GetOutput(), pgpInput->GetOutput(), 0.00055, 88, 255.0);
+  std::cout << "Test PASSED! " << std::endl;
+
+  // Translating the phantom must update the projections, same as OriginOffset
+  auto translation = itk::MakeVector(10., 0., 0.);
+  phantom->Translate(translation);
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(pgpInput->Update());
+  pgp->SetOriginOffset(translation);
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(pgp->Update());
+  CheckImageQuality<OutputImageType>(pgp->GetOutput(), pgpInput->GetOutput(), 0.00055, 88, 255.0);
+  std::cout << "Test PASSED! " << std::endl;
+
+  // Modifying a convex shape of the phantom must also update the projections
+  const itk::ModifiedTimeType updateTime = pgpInput->GetOutput()->GetUpdateMTime();
+  rtk::ConvexShape *          shape = phantom->GetConvexShapes()[0];
+  shape->SetDensity(shape->GetDensity() + 1.);
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(pgpInput->Update());
+  if (pgpInput->GetOutput()->GetUpdateMTime() == updateTime)
+  {
+    std::cerr << "Test FAILED! The projections have not been updated after modifying a convex shape." << std::endl;
+    return EXIT_FAILURE;
+  }
   std::cout << "Test PASSED! " << std::endl;
 
   return EXIT_SUCCESS;
