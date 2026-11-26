@@ -554,12 +554,28 @@ ThreeDCircularProjectionGeometry::GetShortScanFirstLastAngles(const std::vector<
   auto                                 itFirstAngle = std::next(itLastAngle);
   if (itFirstAngle == sortedAngles.end())
     itFirstAngle = sortedAngles.begin();
-  const double firstAngle = itFirstAngle->first;
-  double       lastAngle = itLastAngle->first;
+  double firstAngle = itFirstAngle->first;
+  double lastAngle = itLastAngle->first;
   if (lastAngle < firstAngle)
     lastAngle += 2 * itk::Math::pi;
 
-  return { firstAngle, lastAngle };
+  // Extend the short scan by the angular step with the projection following the first angle and the angular step
+  // with the projection preceding the last angle so that the first and last projections are accounted for. The
+  // neighbors wrap around the sorted angles in case the short scan crosses 0.
+  auto itAfterFirstAngle = std::next(itFirstAngle);
+  if (itAfterFirstAngle == sortedAngles.end())
+    itAfterFirstAngle = sortedAngles.begin();
+  double firstStep = itAfterFirstAngle->first - itFirstAngle->first;
+  if (firstStep < 0.)
+    firstStep += 2 * itk::Math::pi;
+
+  auto itBeforeLastAngle =
+    (itLastAngle == sortedAngles.begin()) ? std::prev(sortedAngles.end()) : std::prev(itLastAngle);
+  double lastStep = itLastAngle->first - itBeforeLastAngle->first;
+  if (lastStep < 0.)
+    lastStep += 2 * itk::Math::pi;
+
+  return { firstAngle - firstStep, lastAngle + lastStep };
 }
 
 ThreeDCircularProjectionGeometry::ThreeDHomogeneousMatrixType
