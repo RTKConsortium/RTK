@@ -34,10 +34,22 @@ RayConvexIntersectionImageFilter<TInputImage, TOutputImage>::RayConvexIntersecti
 {}
 
 template <class TInputImage, class TOutputImage>
+ConvexShape::Pointer
+RayConvexIntersectionImageFilter<TInputImage, TOutputImage>::CreateConvexShape() const
+{
+  return nullptr;
+}
+
+template <class TInputImage, class TOutputImage>
 void
 RayConvexIntersectionImageFilter<TInputImage, TOutputImage>::BeforeThreadedGenerateData()
 {
-  if (this->m_ConvexShape.IsNull())
+  m_ConvexShape = this->CreateConvexShape();
+  if (m_ConvexShape.IsNull())
+    m_ConvexShape = this->GetConvexShape();
+  else if (this->GetConvexShape() != nullptr)
+    itkExceptionMacro(<< "ConvexShape cannot be set, the shape is created from the parameters of the filter.");
+  if (m_ConvexShape.IsNull())
     itkExceptionMacro(<< "ConvexShape has not been set.");
 }
 

@@ -35,24 +35,16 @@ RayBoxIntersectionImageFilter<TInputImage, TOutputImage>::RayBoxIntersectionImag
 }
 
 template <class TInputImage, class TOutputImage>
-void
-RayBoxIntersectionImageFilter<TInputImage, TOutputImage>::BeforeThreadedGenerateData()
+ConvexShape::Pointer
+RayBoxIntersectionImageFilter<TInputImage, TOutputImage>::CreateConvexShape() const
 {
-  if (this->GetConvexShape() == nullptr)
-    this->SetConvexShape(BoxShape::New().GetPointer());
-
-  Superclass::BeforeThreadedGenerateData();
-
-  auto * qo = dynamic_cast<BoxShape *>(this->GetModifiableConvexShape());
-  if (qo == nullptr)
-  {
-    itkExceptionMacro("This is not a BoxShape!");
-  }
-
-  qo->SetDensity(this->GetDensity());
-  qo->SetClipPlanes(this->GetPlaneDirections(), this->GetPlanePositions());
-  qo->SetBoxMin(this->GetBoxMin());
-  qo->SetBoxMax(this->GetBoxMax());
+  auto qo = BoxShape::New();
+  qo->SetDensity(m_Density);
+  qo->SetClipPlanes(m_PlaneDirections, m_PlanePositions);
+  qo->SetBoxMin(m_BoxMin);
+  qo->SetBoxMax(m_BoxMax);
+  qo->SetDirection(m_Direction);
+  return qo.GetPointer();
 }
 
 template <class TInputImage, class TOutputImage>
@@ -69,17 +61,11 @@ void
 RayBoxIntersectionImageFilter<TInputImage, TOutputImage>::SetBoxFromImage(const ImageBaseType * _arg,
                                                                           bool bWithExternalHalfPixelBorder)
 {
-  if (this->GetConvexShape() == nullptr)
-    this->SetConvexShape(BoxShape::New().GetPointer());
-  auto * qo = dynamic_cast<BoxShape *>(this->GetModifiableConvexShape());
-  if (qo == nullptr)
-  {
-    itkExceptionMacro("This is not a BoxShape!");
-  }
-  qo->SetBoxFromImage(_arg, bWithExternalHalfPixelBorder);
-  SetBoxMin(qo->GetBoxMin());
-  SetBoxMax(qo->GetBoxMax());
-  SetDirection(qo->GetDirection());
+  auto box = BoxShape::New();
+  box->SetBoxFromImage(_arg, bWithExternalHalfPixelBorder);
+  this->SetBoxMin(box->GetBoxMin());
+  this->SetBoxMax(box->GetBoxMax());
+  this->SetDirection(box->GetDirection());
 }
 
 } // end namespace rtk

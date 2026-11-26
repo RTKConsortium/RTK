@@ -20,25 +20,15 @@
 #define rtkThreeDCircularProjectionGeometry_h
 
 #include "RTKExport.h"
+#include "rtkMacro.h"
 #include "rtkProjectionGeometry.h"
 
-#include <itkDataObjectDecorator.h>
 #include <itkMath.h>
 
 #include <utility>
 
 namespace rtk
 {
-/** itkSetGetDecoratedObjectInputMacro uses these ITK names without namespace
- * qualification. They are declared in the rtk namespace so that the macro can
- * be used to set the geometry as a decorated input of RTK filter templates. */
-using itk::DataObjectDecorator;
-using itk::ProcessObject;
-#if ITK_VERSION_MAJOR >= 6
-// itkDynamicCastInDebugMode is in the global namespace in ITK 5
-using itk::itkDynamicCastInDebugMode;
-#endif
-
 /** \class ThreeDCircularProjectionGeometry
  * \brief Projection geometry for a source and a 2-D flat panel.
  *
