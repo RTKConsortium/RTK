@@ -89,8 +89,9 @@ protected:
   RayBoxIntersectionImageFilter();
   ~RayBoxIntersectionImageFilter() override = default;
 
-  void
-  BeforeThreadedGenerateData() override;
+  /** Create the box from the parameters of the filter. */
+  ConvexShape::Pointer
+  CreateConvexShape() const override;
 
 private:
   ScalarType              m_Density{ 1. };

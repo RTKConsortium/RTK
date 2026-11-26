@@ -144,6 +144,23 @@ rtkdrawgeometricphantomtest(int argc, char * argv[])
     std::cerr << "Test FAILED! The clip plane has not been applied to the box." << std::endl;
     return EXIT_FAILURE;
   }
+
+  // The box is defined by the parameters of the filter, a ConvexShape input is rejected
+  dbo->SetConvexShape(rtk::BoxShape::New().GetPointer());
+  bool exceptionThrown = false;
+  try
+  {
+    dbo->Update();
+  }
+  catch (itk::ExceptionObject &)
+  {
+    exceptionThrown = true;
+  }
+  if (!exceptionThrown)
+  {
+    std::cerr << "Test FAILED! The ConvexShape input of the box filter has not been rejected." << std::endl;
+    return EXIT_FAILURE;
+  }
   std::cout << "Test PASSED! " << std::endl;
 
   return EXIT_SUCCESS;

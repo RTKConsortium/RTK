@@ -32,20 +32,14 @@ RayEllipsoidIntersectionImageFilter<TInputImage, TOutputImage>::RayEllipsoidInte
 }
 
 template <class TInputImage, class TOutputImage>
-void
-RayEllipsoidIntersectionImageFilter<TInputImage, TOutputImage>::BeforeThreadedGenerateData()
+ConvexShape::Pointer
+RayEllipsoidIntersectionImageFilter<TInputImage, TOutputImage>::CreateConvexShape() const
 {
-  if (this->GetConvexShape() == nullptr)
-    this->SetConvexShape(QuadricShape::New().GetPointer());
-  Superclass::BeforeThreadedGenerateData();
-  auto * qo = dynamic_cast<QuadricShape *>(this->GetModifiableConvexShape());
-  if (qo == nullptr)
-  {
-    itkExceptionMacro("This is not a QuadricShape!");
-  }
+  auto qo = QuadricShape::New();
   qo->SetEllipsoid(m_Center, m_Axis, m_Angle);
   qo->SetDensity(m_Density);
-  qo->SetClipPlanes(this->GetPlaneDirections(), this->GetPlanePositions());
+  qo->SetClipPlanes(m_PlaneDirections, m_PlanePositions);
+  return qo.GetPointer();
 }
 
 template <class TInputImage, class TOutputImage>

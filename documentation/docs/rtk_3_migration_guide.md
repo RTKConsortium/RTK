@@ -273,6 +273,23 @@ re-execution of the filter at the next update. `GetGeometry()` returns a const
 pointer and `GetModifiableGeometry()` has been removed; modify the geometry
 object directly instead of accessing it through the filter.
 
+## Convex shapes set as inputs of filters
+
+The convex shape of `rtk::RayConvexIntersectionImageFilter` and
+`rtk::DrawConvexImageFilter` is now a pipeline input, set with
+`SetConvexShape()` as before. Modifying the shape after it has been set, e.g.
+with `Translate()` or `AddClipPlane()`, now triggers the re-execution of the
+filter at the next update. `GetConvexShape()` returns a const pointer and
+`GetModifiableConvexShape()` has been removed.
+
+Filters drawing a shape defined by their own parameters, e.g.
+`rtk::RayEllipsoidIntersectionImageFilter` or `rtk::DrawBoxImageFilter`, create
+it in the new `CreateConvexShape()` method and throw an exception if the
+`ConvexShape` input is set. Subclasses which created or modified the shape in
+`BeforeThreadedGenerateData()` must override `CreateConvexShape()` instead. The
+`SetDirection()` of the box filters is now used even if the box has not been
+set with `SetBoxFromImage()`.
+
 ## Short scan angular gap threshold stored in the geometry
 
 The angular gap threshold above which `rtk::ParkerShortScanImageFilter`

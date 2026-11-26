@@ -23,7 +23,22 @@
 #include "rtkIterationCommands.h"
 #include <iostream>
 #include <itkImageBase.h>
+#include <itkDataObjectDecorator.h>
 #include <itkMacro.h>
+#include <itkProcessObject.h>
+
+namespace rtk
+{
+/** itkSetInputMacro, itkGetInputMacro and itkSetGetDecoratedObjectInputMacro
+ * use these ITK names without namespace qualification. They are declared in
+ * the rtk namespace so that the macros can be used in RTK filter templates. */
+using itk::DataObjectDecorator;
+using itk::ProcessObject;
+#if ITK_VERSION_MAJOR >= 6
+// itkDynamicCastInDebugMode is in the global namespace in ITK 5
+using itk::itkDynamicCastInDebugMode;
+#endif
+} // namespace rtk
 
 //--------------------------------------------------------------------
 #ifndef CLANG_PRAGMA_PUSH

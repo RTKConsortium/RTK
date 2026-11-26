@@ -53,6 +53,7 @@ public:
   using GeometryType = rtk::ThreeDCircularProjectionGeometry;
   using GeometryConstPointer = typename GeometryType::ConstPointer;
   using ConvexShapePointer = ConvexShape::Pointer;
+  using ConvexShapeConstPointer = ConvexShape::ConstPointer;
   using ScalarType = ConvexShape::ScalarType;
   using PointType = ConvexShape::PointType;
 
@@ -62,9 +63,11 @@ public:
   /** Run-time type information (and related methods). */
   itkOverrideGetNameOfClassMacro(RayConvexIntersectionImageFilter);
 
-  /** Get / Set the object pointer to the ConvexShape. */
-  itkGetModifiableObjectMacro(ConvexShape, ConvexShape);
-  itkSetObjectMacro(ConvexShape, ConvexShape);
+  /** Get / Set the convex shape, an input of the filter. Subclasses which
+   * create the convex shape from their parameters in CreateConvexShape()
+   * throw an exception if it is set. */
+  itkSetInputMacro(ConvexShape, ConvexShape);
+  itkGetInputMacro(ConvexShape, ConvexShape);
 
   /** Get / Set the object pointer to projection geometry */
   itkSetGetDecoratedObjectInputMacro(Geometry, ThreeDCircularProjectionGeometry);
@@ -89,8 +92,13 @@ protected:
   RayConvexIntersectionImageFilter();
   ~RayConvexIntersectionImageFilter() override = default;
 
-  /** ConvexShape must be created in the BeforeThreadedGenerateData in the
-   * daugter classes. */
+  /** Create the convex shape from the parameters of the filter. It is called
+   * by BeforeThreadedGenerateData() and must not modify the filter. The
+   * default implementation returns nullptr to use the ConvexShape input. */
+  virtual ConvexShapePointer
+  CreateConvexShape() const;
+
+  /** Set the convex shape used by DynamicThreadedGenerateData(). */
   void
   BeforeThreadedGenerateData() override;
 
@@ -103,8 +111,9 @@ protected:
   DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread) override;
 
 private:
-  ConvexShapePointer m_ConvexShape;
-  double             m_Attenuation = 0.;
+  /** Convex shape used during the execution of the filter. */
+  ConvexShapeConstPointer m_ConvexShape;
+  double                  m_Attenuation = 0.;
 };
 
 } // end namespace rtk

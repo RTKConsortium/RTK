@@ -33,32 +33,23 @@ DrawQuadricImageFilter<TInputImage, TOutputImage>::DrawQuadricImageFilter()
 {}
 
 template <class TInputImage, class TOutputImage>
-void
-DrawQuadricImageFilter<TInputImage, TOutputImage>::BeforeThreadedGenerateData()
+ConvexShape::Pointer
+DrawQuadricImageFilter<TInputImage, TOutputImage>::CreateConvexShape() const
 {
-  if (this->GetConvexShape() == nullptr)
-    this->SetConvexShape(QuadricShape::New().GetPointer());
-
-  Superclass::BeforeThreadedGenerateData();
-
-  auto * qo = dynamic_cast<QuadricShape *>(this->GetModifiableConvexShape());
-  if (qo == nullptr)
-  {
-    itkExceptionMacro("This is not a QuadricShape!");
-  }
-
-  qo->SetDensity(this->GetDensity());
-  qo->SetClipPlanes(this->GetPlaneDirections(), this->GetPlanePositions());
-  qo->SetA(this->GetA());
-  qo->SetB(this->GetB());
-  qo->SetC(this->GetC());
-  qo->SetD(this->GetD());
-  qo->SetE(this->GetE());
-  qo->SetF(this->GetF());
-  qo->SetG(this->GetG());
-  qo->SetH(this->GetH());
-  qo->SetI(this->GetI());
-  qo->SetJ(this->GetJ());
+  auto qo = QuadricShape::New();
+  qo->SetDensity(m_Density);
+  qo->SetClipPlanes(m_PlaneDirections, m_PlanePositions);
+  qo->SetA(m_A);
+  qo->SetB(m_B);
+  qo->SetC(m_C);
+  qo->SetD(m_D);
+  qo->SetE(m_E);
+  qo->SetF(m_F);
+  qo->SetG(m_G);
+  qo->SetH(m_H);
+  qo->SetI(m_I);
+  qo->SetJ(m_J);
+  return qo.GetPointer();
 }
 
 template <class TInputImage, class TOutputImage>
