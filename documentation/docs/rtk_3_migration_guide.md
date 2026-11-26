@@ -308,6 +308,14 @@ The dark image and the gain coefficients of
 pointers. Modifying them or the filters producing them now triggers the
 re-execution of the filter at the next update.
 
+## Field-of-view projections tracked by the pipeline
+
+The projections stack of `rtk::FieldOfViewImageFilter`, set with
+`SetProjectionsStack()`, is not an input because only its information is used
+and its pixels are not computed, but its modification times are included in
+that of the filter. Modifying the projections or the filters producing them now
+triggers the re-execution of the filter at the next update.
+
 ## Short scan angular gap threshold stored in the geometry
 
 The angular gap threshold above which `rtk::ParkerShortScanImageFilter`

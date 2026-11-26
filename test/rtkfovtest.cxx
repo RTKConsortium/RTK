@@ -84,7 +84,14 @@ rtkfovtest(int, char *[])
   fov->SetInput(0, fovInput->GetOutput());
   fov->SetProjectionsStack(projectionsSource->GetOutput());
   fov->SetGeometry(geometry);
-  fov->Update();
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(fov->Update());
+
+  // Only the information of the projections is required by the FOV filter
+  if (projectionsSource->GetOutput()->GetBufferedRegion().GetNumberOfPixels() != 0)
+  {
+    std::cerr << "Test FAILED! The FOV filter has updated the projections." << std::endl;
+    return EXIT_FAILURE;
+  }
 
   // Backprojection reconstruction filter
   auto bp = rtk::BackProjectionImageFilter<OutputImageType, OutputImageType>::New();
@@ -110,10 +117,18 @@ rtkfovtest(int, char *[])
   projectionsSource->SetOrigin(origin);
   size[0] = 78;
   projectionsSource->SetSize(size);
-  projectionsSource->UpdateOutputInformation();
-  projectionsSource->UpdateLargestPossibleRegion();
+
+  // The FOV must be updated when the projections are modified
+  const itk::ModifiedTimeType updateTime = fov->GetOutput()->GetUpdateMTime();
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(fov->Update());
+  if (fov->GetOutput()->GetUpdateMTime() == updateTime)
+  {
+    std::cerr << "Test FAILED! The FOV has not been updated after modifying the projections." << std::endl;
+    return EXIT_FAILURE;
+  }
+
   fov->SetDisplacedDetector(true);
-  fov->Update();
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(fov->Update());
 
   CheckImageQuality<OutputImageType>(fov->GetOutput(), threshold->GetOutput(), 0.02, 23.5, 2.0);
   std::cout << "\n\nTest PASSED! " << std::endl;
