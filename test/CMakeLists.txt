@@ -387,6 +387,7 @@ rtk_add_test(rtkWaveletsTest rtkwaveletstest.cxx)
 rtk_add_test(rtkArgsInfoManagerTest rtkargsinfomanagertest.cxx)
 
 rtk_add_test(rtkGeometryCloneTest rtkgeometryclonetest.cxx)
+rtk_add_test(rtkAngularGapsTest rtkangulargapstest.cxx)
 rtk_add_test(rtkGeometryFromMatrixTest rtkgeometryfrommatrixtest.cxx)
 rtk_add_test(rtkParallelGeometryFromMatrixTest rtkparallelgeometryfrommatrixtest.cxx)
 

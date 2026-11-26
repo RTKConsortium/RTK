@@ -242,7 +242,10 @@ public:
   GetAngularGapsWithNext(const std::vector<double> & angles) const;
 
   /** Get for each projection half the angular distance between the previous
-   *  and the next projection in radians. */
+   *  and the next projection in radians. If the angles form a short scan, see
+   *  GetShortScanFirstLastAngles(), half the largest angular gap is replaced
+   *  for the projections adjacent to this gap by half the angular distance to
+   *  the first and last angles of the short scan, respectively. */
   std::vector<double>
   GetAngularGaps(const std::vector<double> & angles) const;
 
