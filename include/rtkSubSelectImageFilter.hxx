@@ -109,6 +109,7 @@ SubSelectImageFilter<ProjectionStackType>::GenerateOutputInformation()
   // to compute their output information and input requested region
   m_OutputGeometry->Clear();
   m_OutputGeometry->SetRadiusCylindricalDetector(geometry->GetRadiusCylindricalDetector());
+  m_OutputGeometry->SetAngularGapThreshold(geometry->GetAngularGapThreshold());
 
   for (unsigned long i = 0; i < m_SelectedProjections.size(); i++)
   {

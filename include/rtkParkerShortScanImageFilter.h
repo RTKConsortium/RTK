@@ -71,10 +71,6 @@ public:
   /** Get / Set the object pointer to projection geometry */
   itkSetGetDecoratedObjectInputMacro(Geometry, ThreeDCircularProjectionGeometry);
 
-  /** Get / Set the angular gap threshold above which a short scan is detected. */
-  itkGetMacro(AngularGapThreshold, double);
-  itkSetMacro(AngularGapThreshold, double);
-
 protected:
   ParkerShortScanImageFilter() = default;
   ~ParkerShortScanImageFilter() override = default;
@@ -83,8 +79,10 @@ protected:
   void
   VerifyPreconditions() const override;
 
+  /** Computes the short scan parameters and checks that the detector is
+   * covered by the short scan. */
   void
-  GenerateInputRequestedRegion() override;
+  GenerateOutputInformation() override;
 
   void
   DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread) override;
@@ -104,9 +102,6 @@ private:
    */
   double m_InferiorCorner{};
   double m_SuperiorCorner{};
-
-  /** Minimum angular gap to automatically detect a short scan. Defaults is pi/9 radians. */
-  double m_AngularGapThreshold{ itk::Math::pi / 9 };
 }; // end of class
 
 } // end namespace rtk

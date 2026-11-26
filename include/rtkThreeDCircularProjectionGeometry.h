@@ -23,6 +23,9 @@
 #include "rtkProjectionGeometry.h"
 
 #include <itkDataObjectDecorator.h>
+#include <itkMath.h>
+
+#include <utility>
 
 namespace rtk
 {
@@ -243,6 +246,16 @@ public:
   std::vector<double>
   GetAngularGaps(const std::vector<double> & angles) const;
 
+  /** Get the first and last angles, in radians, of the short scan formed by
+   * angles, e.g., the gantry angles, with one angle per projection. It is a
+   * short scan if the largest angular gap between two consecutive angles
+   * exceeds the angular gap threshold in a divergent geometry. The last angle
+   * may exceed 2 pi to be greater than the first angle. Both are equal if the
+   * angles do not form a short scan: zero, or the angle if all angles are
+   * equal. */
+  std::pair<double, double>
+  GetShortScanFirstLastAngles(const std::vector<double> & angles) const;
+
   /** Compute rotation matrix in homogeneous coordinates from 3 angles in
    * degrees. The convention is the default in itk, i.e. ZXY of Euler angles.*/
   static ThreeDHomogeneousMatrixType
@@ -384,6 +397,12 @@ public:
   itkGetConstMacro(FixAnglesTolerance, double);
   itkSetMacro(FixAnglesTolerance, double);
 
+  /** Get / Set the angular gap threshold, in radians, above which the scan is
+   * considered a short scan, e.g., by rtk::ParkerShortScanImageFilter. The
+   * default is pi/9 radians, i.e., 20 degrees. */
+  itkGetConstMacro(AngularGapThreshold, double);
+  itkSetMacro(AngularGapThreshold, double);
+
 protected:
   ThreeDCircularProjectionGeometry();
   ~ThreeDCircularProjectionGeometry() override = default;
@@ -500,6 +519,9 @@ protected:
   /** Internal tolerance parameters. */
   double m_VerifyAnglesTolerance{ 1e-4 };
   double m_FixAnglesTolerance{ 1e-6 };
+
+  /** Minimum angular gap to detect a short scan. */
+  double m_AngularGapThreshold{ itk::Math::pi / 9 };
 };
 } // namespace rtk
 

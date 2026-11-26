@@ -272,3 +272,12 @@ geometry after it has been set, e.g. with `AddProjection()`, now triggers the
 re-execution of the filter at the next update. `GetGeometry()` returns a const
 pointer and `GetModifiableGeometry()` has been removed; modify the geometry
 object directly instead of accessing it through the filter.
+
+## Short scan angular gap threshold stored in the geometry
+
+The angular gap threshold above which `rtk::ParkerShortScanImageFilter`
+detects a short scan is now a parameter of
+`rtk::ThreeDCircularProjectionGeometry`. Replace
+`ParkerShortScanImageFilter::SetAngularGapThreshold()` and
+`GetAngularGapThreshold()` with the same methods of
+`ThreeDCircularProjectionGeometry`.

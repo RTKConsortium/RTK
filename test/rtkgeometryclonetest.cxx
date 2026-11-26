@@ -22,6 +22,7 @@ rtkgeometryclonetest(int, char *[])
                     geometry1->SetCollimationOfLastProjection(px * 0.3, px * 0.1, py * 0.4, py * 0.2);
                   }
   geometry1->SetRadiusCylindricalDetector(300.);
+  geometry1->SetAngularGapThreshold(0.1);
   geometry2 = geometry1->Clone();
   CheckGeometries(geometry1, geometry2);
   std::cout << "Test PASSED! " << std::endl;

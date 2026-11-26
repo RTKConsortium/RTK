@@ -113,6 +113,7 @@ ReorderProjectionsImageFilter<TInputImage, TOutputImage>::GenerateOutputInformat
   // Initialize objects (otherwise, if the filter runs several times,
   // the outputs become incorrect)
   m_OutputGeometry->Clear();
+  m_OutputGeometry->SetAngularGapThreshold(geometry->GetAngularGapThreshold());
   m_OutputSignal.clear();
 
   // Perform the copies

@@ -22,6 +22,7 @@
 #include "rtkMacro.h"
 
 #include <algorithm>
+#include <iterator>
 
 #include <itkCenteredEuler3DTransform.h>
 #include <itkEuler3DTransform.h>
@@ -532,6 +533,35 @@ ThreeDCircularProjectionGeometry::GetAngularGaps(const std::vector<double> & ang
   return angularGaps;
 }
 
+std::pair<double, double>
+ThreeDCircularProjectionGeometry::GetShortScanFirstLastAngles(const std::vector<double> & angles) const
+{
+  // Get angular gaps and max gap
+  const std::vector<double> angularGaps = this->GetAngularGapsWithNext(angles);
+  if (angularGaps.empty())
+    return { 0., 0. };
+  const auto maxAngularGapPos =
+    std::distance(angularGaps.begin(), std::max_element(angularGaps.begin(), angularGaps.end()));
+
+  // Not a short scan if the max gap is less than the angular gap threshold
+  // FIXME: not a short scan in parallel geometry, currently handled with a trick in GetAngularGaps
+  if (m_SourceToDetectorDistances[0] == 0. || angularGaps[maxAngularGapPos] < m_AngularGapThreshold)
+    return { 0., 0. };
+
+  // The short scan goes from the angle after the max gap to the angle before the max gap
+  const std::map<double, unsigned int> sortedAngles = GetUniqueSortedAngles(angles);
+  const auto                           itLastAngle = sortedAngles.find(angles[maxAngularGapPos]);
+  auto                                 itFirstAngle = std::next(itLastAngle);
+  if (itFirstAngle == sortedAngles.end())
+    itFirstAngle = sortedAngles.begin();
+  const double firstAngle = itFirstAngle->first;
+  double       lastAngle = itLastAngle->first;
+  if (lastAngle < firstAngle)
+    lastAngle += 2 * itk::Math::pi;
+
+  return { firstAngle, lastAngle };
+}
+
 ThreeDCircularProjectionGeometry::ThreeDHomogeneousMatrixType
 ThreeDCircularProjectionGeometry::ComputeRotationHomogeneousMatrix(double angleX, double angleY, double angleZ)
 {
@@ -787,6 +817,7 @@ ThreeDCircularProjectionGeometry::InternalClone() const
                                           this->GetCollimationVSup()[iProj]);
   }
   clone->SetRadiusCylindricalDetector(this->GetRadiusCylindricalDetector());
+  clone->SetAngularGapThreshold(this->GetAngularGapThreshold());
   return loPtr;
 }
 

@@ -38,47 +38,23 @@ ParkerShortScanImageFilter<TInputImage, TOutputImage>::VerifyPreconditions() con
 
 template <class TInputImage, class TOutputImage>
 void
-ParkerShortScanImageFilter<TInputImage, TOutputImage>::GenerateInputRequestedRegion()
+ParkerShortScanImageFilter<TInputImage, TOutputImage>::GenerateOutputInformation()
 {
   const ThreeDCircularProjectionGeometry * geometry = this->GetGeometry();
-  Superclass::GenerateInputRequestedRegion();
+  Superclass::GenerateOutputInformation();
 
-  // Get angular gaps and max gap
-  std::vector<double> angularGaps = geometry->GetAngularGapsWithNext(geometry->GetGantryAngles());
-  int                 nProj = angularGaps.size();
-  int                 maxAngularGapPos = 0;
-  for (int iProj = 1; iProj < nProj; iProj++)
-    if (angularGaps[iProj] > angularGaps[maxAngularGapPos])
-      maxAngularGapPos = iProj;
-
-  // Not a short scan if less than m_AngularGapThreshold degrees max gap, => nothing to do
-  // FIXME: do nothing in parallel geometry, currently handled with a trick in the geometry object
-  if (geometry->GetSourceToDetectorDistances()[0] == 0. || angularGaps[maxAngularGapPos] < m_AngularGapThreshold)
-  {
-    m_IsShortScan = false;
+  // Not a short scan if the first and last angles are equal
+  const auto [firstAngle, lastAngle] = geometry->GetShortScanFirstLastAngles(geometry->GetGantryAngles());
+  m_IsShortScan = firstAngle != lastAngle;
+  if (!m_IsShortScan)
     return;
-  }
-  m_IsShortScan = true;
+  m_FirstAngle = firstAngle;
 
-  const std::vector<double>            rotationAngles = geometry->GetGantryAngles();
-  const std::map<double, unsigned int> sortedAngles = geometry->GetUniqueSortedAngles(geometry->GetGantryAngles());
-
-  // Compute delta between first and last angle where there is weighting required
-  std::map<double, unsigned int>::const_iterator itLastAngle;
-  itLastAngle = sortedAngles.find(rotationAngles[maxAngularGapPos]);
-  auto itFirstAngle = itLastAngle;
-  itFirstAngle = (++itFirstAngle == sortedAngles.end()) ? sortedAngles.begin() : itFirstAngle;
-  m_FirstAngle = itFirstAngle->first;
-  double lastAngle = itLastAngle->first;
-  if (lastAngle < m_FirstAngle)
-  {
-    lastAngle += 2 * itk::Math::pi;
-  }
   // Delta
   m_Delta = 0.5 * (lastAngle - m_FirstAngle - itk::Math::pi);
   m_Delta = m_Delta - 2 * itk::Math::pi * floor(m_Delta / (2 * itk::Math::pi)); // between -2*PI and 2*PI
 
-  // Pre-compute the two corners of the projection images
+  // Check that the short scan covers the detector: pre-compute the two corners of the projection images
   typename TInputImage::IndexType id = this->GetInput()->GetLargestPossibleRegion().GetIndex();
   typename TInputImage::SizeType  sz = this->GetInput()->GetLargestPossibleRegion().GetSize();
   typename TInputImage::SizeType  ones;
@@ -119,8 +95,7 @@ ParkerShortScanImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerateDa
   // Input / ouput iterators
   itk::ImageRegionIterator<OutputImageType> itOut(this->GetOutput(), outputRegionForThread);
 
-  // Not a short scan if less than m_AngularGapThreshold degrees max gap, => nothing to do
-  // FIXME: do nothing in parallel geometry, currently handled with a trick in the geometry object
+  // Not a short scan, nothing to do
   if (!m_IsShortScan)
   {
     if (this->GetInput() != this->GetOutput()) // If not in place, copy is
