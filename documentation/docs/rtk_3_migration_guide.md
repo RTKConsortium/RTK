@@ -300,6 +300,14 @@ re-execution of the filter at the next update. `rtk::SheppLoganPhantomFilter`
 and `rtk::DrawSheppLoganFilter` set the Shepp-Logan phantom when they are
 created, a `ConfigFile` set on them is now used instead of being ignored.
 
+## Gain correction maps set as inputs
+
+The dark image and the gain coefficients of
+`rtk::PolynomialGainCorrectionImageFilter`, set with `SetDarkImage()` and
+`SetGainCoefficients()`, are now pipeline inputs and their getters return const
+pointers. Modifying them or the filters producing them now triggers the
+re-execution of the filter at the next update.
+
 ## Short scan angular gap threshold stored in the geometry
 
 The angular gap threshold above which `rtk::ParkerShortScanImageFilter`

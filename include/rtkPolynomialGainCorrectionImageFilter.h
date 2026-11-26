@@ -69,14 +69,14 @@ public:
   /** Runtime information support. */
   itkOverrideGetNameOfClassMacro(PolynomialGainCorrectionImageFilter);
 
-  /** Dark image, 2D same size of one input projection */
-  void
-  SetDarkImage(InputImageType * darkImage);
+  /** Dark image, an input with a single projection of the same size as the
+   * input projections. */
+  itkSetInputMacro(DarkImage, InputImageType);
+  itkGetInputMacro(DarkImage, InputImageType);
 
-  /** Weights, matrix A from reference paper
-   *  3D image: 2D x order. */
-  void
-  SetGainCoefficients(OutputImageType * gain);
+  /** Weights, matrix A from reference paper, an input 3D image: 2D x order. */
+  itkSetInputMacro(GainCoefficients, OutputImageType);
+  itkGetInputMacro(GainCoefficients, OutputImageType);
 
   /* if K==0, the filter is bypassed */
   itkSetMacro(K, float);
@@ -86,22 +86,29 @@ protected:
   PolynomialGainCorrectionImageFilter();
   ~PolynomialGainCorrectionImageFilter() override = default;
 
+  /** Checks that inputs are correctly set. */
+  void
+  VerifyPreconditions() const override;
+
   void
   GenerateOutputInformation() override;
 
   void
   GenerateInputRequestedRegion() override;
 
+  /** The dark image and the gain coefficients are not in the same space as
+   * the projections so there is nothing to verify. */
+  void
+  VerifyInputInformation() const override
+  {}
+
   void
   DynamicThreadedGenerateData(const OutputImageRegionType & outputRegionForThread) override;
 
-  bool               m_MapsLoaded{ false }; // True if gain maps loaded
-  int                m_VModelOrder{ 1 };    // Polynomial correction order
-  float              m_K{ 1.0F };           // Scaling constant, a 0 means no correction
-  VectorType         m_PowerLut;            // Vector containing I^n
-  InputImagePointer  m_DarkImage;           // Dark image
-  OutputImagePointer m_GainImage;           // Gain coefficients (A matrix)
-  OutputSizeType     m_GainSize;            // Gain map size
+  int            m_VModelOrder{ 1 }; // Polynomial correction order
+  float          m_K{ 1.0F };        // Scaling constant, a 0 means no correction
+  VectorType     m_PowerLut;         // Vector containing I^n
+  OutputSizeType m_GainSize;         // Gain map size
 }; // end of class
 
 } // namespace rtk

@@ -23,6 +23,7 @@
 #include <itkImageFileReader.h>
 #include <itkImageRegionConstIterator.h>
 #include <itkImageRegionIterator.h>
+#include <itkInputDataObjectIterator.h>
 
 namespace rtk
 {
@@ -32,16 +33,12 @@ PolynomialGainCorrectionImageFilter<TInputImage, TOutputImage>::PolynomialGainCo
 
 template <class TInputImage, class TOutputImage>
 void
-PolynomialGainCorrectionImageFilter<TInputImage, TOutputImage>::SetDarkImage(InputImageType * darkImage)
+PolynomialGainCorrectionImageFilter<TInputImage, TOutputImage>::VerifyPreconditions() const
 {
-  m_DarkImage = darkImage;
-}
+  this->Superclass::VerifyPreconditions();
 
-template <class TInputImage, class TOutputImage>
-void
-PolynomialGainCorrectionImageFilter<TInputImage, TOutputImage>::SetGainCoefficients(OutputImageType * gain)
-{
-  m_GainImage = gain;
+  if (m_K != 0. && (this->GetDarkImage() == nullptr || this->GetGainCoefficients() == nullptr))
+    itkExceptionMacro(<< "DarkImage and GainCoefficients must be set.");
 }
 
 template <class TInputImage, class TOutputImage>
@@ -75,22 +72,25 @@ PolynomialGainCorrectionImageFilter<TInputImage, TOutputImage>::GenerateOutputIn
   //}
 
   // TInputImage::PixelType
-  if (!m_MapsLoaded && m_K != 0.0)
+  if (m_K != 0.0)
   {
-    m_GainSize = m_GainImage->GetLargestPossibleRegion().GetSize();
-
+    m_GainSize = this->GetGainCoefficients()->GetLargestPossibleRegion().GetSize();
     m_VModelOrder = m_GainSize[2];
-    m_MapsLoaded = true;
 
     // Create power LUT: the values for the different orders for the same pixel value are close to each other
-    int npixValues = 65536; // Input values are 16-bit unsigned
-    for (int pid = 0; pid < npixValues; ++pid)
+    // The power LUT only depends on the model order
+    constexpr int npixValues = 65536; // Input values are 16-bit unsigned
+    if (m_PowerLut.size() != static_cast<size_t>(npixValues * m_VModelOrder))
     {
-      auto value = static_cast<float>(pid);
-      for (int order = 0; order < m_VModelOrder; ++order)
+      m_PowerLut.clear();
+      for (int pid = 0; pid < npixValues; ++pid)
       {
-        m_PowerLut.push_back(value);
-        value = value * value;
+        auto value = static_cast<float>(pid);
+        for (int order = 0; order < m_VModelOrder; ++order)
+        {
+          m_PowerLut.push_back(value);
+          value = value * value;
+        }
       }
     }
   }
@@ -100,15 +100,9 @@ template <class TInputImage, class TOutputImage>
 void
 PolynomialGainCorrectionImageFilter<TInputImage, TOutputImage>::GenerateInputRequestedRegion()
 {
-  typename Superclass::InputImagePointer  inputPtr = const_cast<InputImageType *>(this->GetInput());
-  typename Superclass::OutputImagePointer outputPtr = this->GetOutput();
-
-  if (!inputPtr || !outputPtr)
-    return;
-
-  InputImageRegionType inputRequestedRegion = outputPtr->GetLargestPossibleRegion();
-  inputRequestedRegion.Crop(inputPtr->GetLargestPossibleRegion()); // Because Largest region has been updated
-  inputPtr->SetRegions(inputRequestedRegion);
+  // The whole projections, dark image and gain coefficients are required
+  for (itk::InputDataObjectIterator it(this); !it.IsAtEnd(); ++it)
+    it.GetInput()->SetRequestedRegionToLargestPossibleRegion();
 }
 
 template <class TInputImage, class TOutputImage>
@@ -136,10 +130,10 @@ PolynomialGainCorrectionImageFilter<TInputImage, TOutputImage>::DynamicThreadedG
   InputImageRegionType darkRegion = outputRegionForThread;
   darkRegion.SetSize(2, 1);
   darkRegion.SetIndex(2, 0);
-  itk::ImageRegionConstIterator<InputImageType> itDark(m_DarkImage, darkRegion);
+  itk::ImageRegionConstIterator<InputImageType> itDark(this->GetDarkImage(), darkRegion);
 
   // Get gain map buffer
-  const typename OutputImageType::PixelType * gainBuffer = m_GainImage->GetBufferPointer();
+  const typename OutputImageType::PixelType * gainBuffer = this->GetGainCoefficients()->GetBufferPointer();
 
   int startk = static_cast<int>(outputRegionForThread.GetIndex(2));
   for (int k = startk; k < startk + static_cast<int>(outputRegionForThread.GetSize(2)); k++)
