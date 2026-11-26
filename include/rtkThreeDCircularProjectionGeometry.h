@@ -249,10 +249,13 @@ public:
   /** Get the first and last angles, in radians, of the short scan formed by
    * angles, e.g., the gantry angles, with one angle per projection. It is a
    * short scan if the largest angular gap between two consecutive angles
-   * exceeds the angular gap threshold in a divergent geometry. The last angle
-   * may exceed 2 pi to be greater than the first angle. Both are equal if the
-   * angles do not form a short scan: zero, or the angle if all angles are
-   * equal. */
+   * exceeds the angular gap threshold in a divergent geometry. The first and
+   * last angles are extended by the angular step with the projection following
+   * the first angle and preceding the last angle, respectively, so that the
+   * first and last projections are accounted for. The first angle may be
+   * negative and the last angle may exceed 2 pi to be greater than the first
+   * angle. Both are equal if the angles do not form a short scan: zero, or the
+   * angle if all angles are equal. */
   std::pair<double, double>
   GetShortScanFirstLastAngles(const std::vector<double> & angles) const;
 
