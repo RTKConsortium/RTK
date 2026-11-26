@@ -63,14 +63,17 @@ public:
   /** Run-time type information (and related methods). */
   itkOverrideGetNameOfClassMacro(ProjectGeometricPhantomImageFilter);
 
-  /** Get / Set the object pointer to the geometry. */
-  itkGetConstObjectMacro(GeometricPhantom, GeometricPhantom);
-  itkSetConstObjectMacro(GeometricPhantom, GeometricPhantom);
+  /** Get / Set the geometric phantom, an input of the filter which is not used
+   * if ConfigFile is set. */
+  itkSetInputMacro(GeometricPhantom, GeometricPhantom);
+  itkGetInputMacro(GeometricPhantom, GeometricPhantom);
 
   /** Get / Set the object pointer to projection geometry */
   itkSetGetDecoratedObjectInputMacro(Geometry, ThreeDCircularProjectionGeometry);
 
-  /** Get/Set the phantom file path. */
+  /** Get/Set the path of a Forbild phantom file, read at each execution
+   * instead of the GeometricPhantom input. Modifying the file without
+   * changing its path does not trigger the re-execution of the filter. */
   itkSetMacro(ConfigFile, StringType);
   itkGetMacro(ConfigFile, StringType);
 
@@ -113,13 +116,12 @@ protected:
   GenerateData() override;
 
 private:
-  GeometricPhantomConstPointer m_GeometricPhantom;
-  StringType                   m_ConfigFile;
-  VectorType                   m_PhantomScale{ 1. };
-  VectorType                   m_OriginOffset{ 0. };
-  RotationMatrixType           m_RotationMatrix;
-  std::vector<VectorType>      m_PlaneDirections;
-  std::vector<ScalarType>      m_PlanePositions;
+  StringType              m_ConfigFile;
+  VectorType              m_PhantomScale{ 1. };
+  VectorType              m_OriginOffset{ 0. };
+  RotationMatrixType      m_RotationMatrix;
+  std::vector<VectorType> m_PlaneDirections;
+  std::vector<ScalarType> m_PlanePositions;
 };
 
 } // end namespace rtk

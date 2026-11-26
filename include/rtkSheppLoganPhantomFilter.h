@@ -57,9 +57,6 @@ public:
 protected:
   SheppLoganPhantomFilter();
   ~SheppLoganPhantomFilter() override = default;
-
-  void
-  GenerateData() override;
 };
 
 } // end namespace rtk

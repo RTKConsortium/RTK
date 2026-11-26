@@ -57,9 +57,6 @@ public:
 protected:
   DrawSheppLoganFilter();
   ~DrawSheppLoganFilter() override = default;
-
-  void
-  GenerateData() override;
 };
 
 } // end namespace rtk
