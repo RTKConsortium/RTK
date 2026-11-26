@@ -50,6 +50,7 @@ ConvexShape ::Rescale(const VectorType & r)
       m_PlaneDirection[j] /= r[j];
     }
   }
+  this->Modified();
 }
 
 void
@@ -59,6 +60,7 @@ ConvexShape ::Translate(const VectorType & t)
   {
     m_PlanePositions[i] += m_PlaneDirections[i] * t;
   }
+  this->Modified();
 }
 
 void
@@ -68,6 +70,7 @@ ConvexShape ::Rotate(const RotationMatrixType & r)
   {
     m_PlaneDirection = r * m_PlaneDirection;
   }
+  this->Modified();
 }
 
 itk::LightObject::Pointer
@@ -92,6 +95,7 @@ ConvexShape ::AddClipPlane(const VectorType & dir, const ScalarType & pos)
   }
   m_PlaneDirections.push_back(dir);
   m_PlanePositions.push_back(pos);
+  this->Modified();
 }
 
 void
@@ -99,6 +103,7 @@ ConvexShape ::SetClipPlanes(const std::vector<VectorType> & dir, const std::vect
 {
   m_PlaneDirections = dir;
   m_PlanePositions = pos;
+  this->Modified();
 }
 
 bool
