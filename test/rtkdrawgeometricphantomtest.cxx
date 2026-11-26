@@ -1,5 +1,6 @@
 #include "rtkTest.h"
 #include "rtkConstantImageSource.h"
+#include "rtkDrawBoxImageFilter.h"
 #include "rtkDrawEllipsoidImageFilter.h"
 #include "rtkDrawGeometricPhantomImageFilter.h"
 #include "rtkDrawSheppLoganFilter.h"
@@ -110,6 +111,39 @@ rtkdrawgeometricphantomtest(int argc, char * argv[])
   TRY_AND_EXIT_ON_ITK_EXCEPTION(addFilter->Update());
 
   CheckImageQuality<OutputImageType>(dgp->GetOutput(), addFilter->GetOutput(), 0.0005, 90, 255.0);
+  std::cout << "Test PASSED! " << std::endl;
+
+  //////////////////////////////////
+  // Part 3: box covering the image, then clipped
+  //////////////////////////////////
+
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(tomographySource->UpdateOutputInformation());
+  auto dbo = rtk::DrawBoxImageFilter<OutputImageType, OutputImageType>::New();
+  dbo->SetInput(tomographySource->GetOutput());
+  dbo->SetBoxFromImage(tomographySource->GetOutput());
+  dbo->SetDensity(3.);
+  dbo->InPlaceOff();
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(dbo->Update());
+
+  // Voxels at the two extremities along x, which are on both sides of x=0
+  OutputImageType::IndexType firstIndex = tomographySource->GetOutput()->GetLargestPossibleRegion().GetIndex();
+  OutputImageType::IndexType lastIndex = firstIndex;
+  for (unsigned int i = 0; i < Dimension; i++)
+    lastIndex[i] += size[i] - 1;
+  if (dbo->GetOutput()->GetPixel(firstIndex) != 3. || dbo->GetOutput()->GetPixel(lastIndex) != 3.)
+  {
+    std::cerr << "Test FAILED! The box does not cover the image." << std::endl;
+    return EXIT_FAILURE;
+  }
+
+  // Keep the half space x<0, the filter must be updated
+  dbo->AddClipPlane(itk::MakeVector(1., 0., 0.), 0.);
+  TRY_AND_EXIT_ON_ITK_EXCEPTION(dbo->Update());
+  if (dbo->GetOutput()->GetPixel(firstIndex) != 3. || dbo->GetOutput()->GetPixel(lastIndex) != 0.)
+  {
+    std::cerr << "Test FAILED! The clip plane has not been applied to the box." << std::endl;
+    return EXIT_FAILURE;
+  }
   std::cout << "Test PASSED! " << std::endl;
 
   return EXIT_SUCCESS;

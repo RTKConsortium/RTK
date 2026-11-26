@@ -37,12 +37,12 @@ template <class TInputImage, class TOutputImage>
 void
 DrawBoxImageFilter<TInputImage, TOutputImage>::BeforeThreadedGenerateData()
 {
-  if (this->GetConvexObject() == nullptr)
-    this->SetConvexObject(BoxShape::New().GetPointer());
+  if (this->GetConvexShape() == nullptr)
+    this->SetConvexShape(BoxShape::New().GetPointer());
 
   Superclass::BeforeThreadedGenerateData();
 
-  BoxShape * qo = dynamic_cast<BoxShape *>(this->GetConvexObject());
+  auto * qo = dynamic_cast<BoxShape *>(this->GetModifiableConvexShape());
   if (qo == nullptr)
   {
     itkExceptionMacro("This is not a BoxShape!");
@@ -60,6 +60,7 @@ DrawBoxImageFilter<TInputImage, TOutputImage>::AddClipPlane(const VectorType & d
 {
   m_PlaneDirections.push_back(dir);
   m_PlanePositions.push_back(pos);
+  this->Modified();
 }
 
 template <class TInputImage, class TOutputImage>
@@ -67,16 +68,16 @@ void
 DrawBoxImageFilter<TInputImage, TOutputImage>::SetBoxFromImage(const ImageBaseType * _arg,
                                                                bool                  bWithExternalHalfPixelBorder)
 {
-  if (this->GetConvexObject() == nullptr)
-    this->SetConvexObject(BoxShape::New().GetPointer());
-  BoxShape * qo = dynamic_cast<BoxShape *>(this->GetConvexObject());
+  if (this->GetConvexShape() == nullptr)
+    this->SetConvexShape(BoxShape::New().GetPointer());
+  auto * qo = dynamic_cast<BoxShape *>(this->GetModifiableConvexShape());
   if (qo == nullptr)
   {
     itkExceptionMacro("This is not a BoxShape!");
   }
   qo->SetBoxFromImage(_arg, bWithExternalHalfPixelBorder);
   SetBoxMin(qo->GetBoxMin());
-  SetBoxMax(qo->GetBoxMin());
+  SetBoxMax(qo->GetBoxMax());
   SetDirection(qo->GetDirection());
 }
 
