@@ -18,6 +18,8 @@
 
 #include "rtkGeometricPhantom.h"
 
+#include <algorithm>
+
 namespace rtk
 {
 void
@@ -67,6 +69,15 @@ GeometricPhantom ::AddClipPlane(const VectorType & dir, const ScalarType & pos)
   m_PlanePositions.push_back(pos);
   for (auto & convexShape : m_ConvexShapes)
     convexShape->AddClipPlane(dir, pos);
+}
+
+itk::ModifiedTimeType
+GeometricPhantom ::GetMTime() const
+{
+  itk::ModifiedTimeType mtime = Superclass::GetMTime();
+  for (const auto & convexShape : m_ConvexShapes)
+    mtime = std::max(mtime, convexShape->GetMTime());
+  return mtime;
 }
 
 } // namespace rtk

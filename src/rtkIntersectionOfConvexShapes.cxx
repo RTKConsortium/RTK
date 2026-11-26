@@ -20,6 +20,8 @@
 
 #include "rtkIntersectionOfConvexShapes.h"
 
+#include <algorithm>
+
 namespace rtk
 {
 
@@ -95,6 +97,15 @@ IntersectionOfConvexShapes ::AddConvexShape(const ConvexShape * co)
 {
   ConvexShapePointer clone = co->Clone();
   m_ConvexShapes.push_back(clone);
+}
+
+itk::ModifiedTimeType
+IntersectionOfConvexShapes ::GetMTime() const
+{
+  itk::ModifiedTimeType mtime = Superclass::GetMTime();
+  for (const auto & convexShape : m_ConvexShapes)
+    mtime = std::max(mtime, convexShape->GetMTime());
+  return mtime;
 }
 
 itk::LightObject::Pointer

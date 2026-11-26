@@ -84,6 +84,11 @@ public:
   void
   AddClipPlane(const VectorType & dir, const ScalarType & pos);
 
+  /** Get the modification time, which includes the modification time of the
+   * convex shapes since they can be modified through GetConvexShapes(). */
+  itk::ModifiedTimeType
+  GetMTime() const override;
+
 protected:
   GeometricPhantom() = default;
   ~GeometricPhantom() override = default;

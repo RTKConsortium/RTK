@@ -144,20 +144,23 @@ BoxShape ::SetBoxFromImage(const ImageBaseType * img, bool bWithExternalHalfPixe
     itkGenericExceptionMacro(<< "BoxShape and image dimensions must agree");
 
   // BoxShape corner 1
-  m_BoxMin = img->GetOrigin();
+  PointType boxMin = img->GetOrigin();
   if (bWithExternalHalfPixelBorder)
-    m_BoxMin -= img->GetDirection() * img->GetSpacing() * 0.5;
+    boxMin -= img->GetDirection() * img->GetSpacing() * 0.5;
 
   // BoxShape corner 2
+  PointType boxMax;
   for (unsigned int i = 0; i < Dimension; i++)
     if (bWithExternalHalfPixelBorder)
-      m_BoxMax[i] = img->GetSpacing()[i] * img->GetLargestPossibleRegion().GetSize()[i];
+      boxMax[i] = img->GetSpacing()[i] * img->GetLargestPossibleRegion().GetSize()[i];
     else
-      m_BoxMax[i] = img->GetSpacing()[i] * (img->GetLargestPossibleRegion().GetSize()[i] - 1);
-  m_BoxMax = img->GetDirection() * m_BoxMax;
-  m_BoxMax = m_BoxMin + m_BoxMax.GetVectorFromOrigin();
+      boxMax[i] = img->GetSpacing()[i] * (img->GetLargestPossibleRegion().GetSize()[i] - 1);
+  boxMax = img->GetDirection() * boxMax;
+  boxMax = boxMin + boxMax.GetVectorFromOrigin();
 
-  SetDirection(img->GetDirection());
+  this->SetBoxMin(boxMin);
+  this->SetBoxMax(boxMax);
+  this->SetDirection(img->GetDirection());
 }
 
 } // end namespace rtk
