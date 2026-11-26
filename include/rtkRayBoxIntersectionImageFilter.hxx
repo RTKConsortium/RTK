@@ -61,6 +61,7 @@ RayBoxIntersectionImageFilter<TInputImage, TOutputImage>::AddClipPlane(const Vec
 {
   m_PlaneDirections.push_back(dir);
   m_PlanePositions.push_back(pos);
+  this->Modified();
 }
 
 template <class TInputImage, class TOutputImage>

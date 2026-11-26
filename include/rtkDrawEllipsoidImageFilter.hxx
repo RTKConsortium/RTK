@@ -58,6 +58,7 @@ DrawEllipsoidImageFilter<TInputImage, TOutputImage>::AddClipPlane(const VectorTy
 {
   m_PlaneDirections.push_back(dir);
   m_PlanePositions.push_back(pos);
+  this->Modified();
 }
 
 } // end namespace rtk

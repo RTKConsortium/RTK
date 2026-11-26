@@ -67,6 +67,7 @@ DrawQuadricImageFilter<TInputImage, TOutputImage>::AddClipPlane(const VectorType
 {
   m_PlaneDirections.push_back(dir);
   m_PlanePositions.push_back(pos);
+  this->Modified();
 }
 
 } // end namespace rtk

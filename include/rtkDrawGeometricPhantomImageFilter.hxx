@@ -99,6 +99,7 @@ DrawGeometricPhantomImageFilter<TInputImage, TOutputImage>::AddClipPlane(const V
   }
   m_PlaneDirections.push_back(dir);
   m_PlanePositions.push_back(pos);
+  this->Modified();
 }
 
 template <class TInputImage, class TOutputImage>
@@ -108,6 +109,7 @@ DrawGeometricPhantomImageFilter<TInputImage, TOutputImage>::SetClipPlanes(const 
 {
   m_PlaneDirections = dir;
   m_PlanePositions = pos;
+  this->Modified();
 }
 
 } // end namespace rtk
