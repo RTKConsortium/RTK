@@ -102,7 +102,7 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>::UpdateFFTProjectio
   {
     const unsigned int ncut = itk::Math::Round<double>(n * std::min(1.0, this->GetCosineCutFrequency()));
     for (unsigned int i = 0; i < ncut; i++, ++itK)
-      itK.Set(itK.Get() * TFFTPrecision(std::cos(0.5 * itk::Math::pi * i / ncut)));
+      itK.Set(itK.Get() * TFFTPrecision(std::cos(itk::Math::pi_over_2 * i / ncut)));
   }
   else if (this->GetHammingFrequency() > 0.)
   {
@@ -124,7 +124,7 @@ FFTRampImageFilter<TInputImage, TOutputImage, TFFTPrecision>::UpdateFFTProjectio
     ++itK;
     for (unsigned int i = 1; i < ncut; i++, ++itK)
     {
-      double x = 0.5 * itk::Math::pi * i / ncut;
+      double x = itk::Math::pi_over_2 * i / ncut;
       itK.Set(itK.Get() * TFFTPrecision(std::sin(x) / x));
     }
   }

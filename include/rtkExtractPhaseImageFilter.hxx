@@ -179,7 +179,7 @@ ExtractPhaseImageFilter<TImage>::GenerateData()
       it.GoToBegin();
       while (!it.IsAtEnd())
       {
-        curr = it.Get() / (2. * itk::Math::pi);
+        curr = it.Get() / itk::Math::twopi;
         curr -= itk::Math::Floor<typename TImage::PixelType>(curr);
         it.Set(curr);
         ++it;

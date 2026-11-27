@@ -135,7 +135,7 @@ rtkforwardattenuatedprojectiontest(int, char *[])
   {
     angle = i * 360. / NumberOfProjectionImages;
     geometry_projection->AddProjection(500, 0., angle);
-    transform->SetRotation(0., angle * itk::Math::pi / 180, 0.);
+    transform->SetRotation(0., angle * itk::Math::pi_over_180, 0.);
     clip_plane_direction = transform->GetMatrix() * clip_plane_direction_init;
     center_transform = transform->GetMatrix() * center_vol;
     auto sphere_attenuation = REIType::New();

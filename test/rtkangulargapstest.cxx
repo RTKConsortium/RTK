@@ -36,8 +36,8 @@ CheckValue(const std::string & testName, const std::string & what, double value,
 {
   if (!(std::abs(value - expected) <= tolerance))
   {
-    std::cerr << testName << ": " << what << " is " << value * 180. / itk::Math::pi << " degrees instead of "
-              << expected * 180. / itk::Math::pi << " degrees." << std::endl;
+    std::cerr << testName << ": " << what << " is " << value * itk::Math::deg_per_rad << " degrees instead of "
+              << expected * itk::Math::deg_per_rad << " degrees." << std::endl;
     return false;
   }
   return true;
@@ -74,7 +74,7 @@ CheckAngularGaps(const std::string &         testName,
       prevGap = nextGap;
     if (shortScan && i == largest)
       nextGap = prevGap;
-    expected[i] = 0.5 * (prevGap + nextGap) * itk::Math::pi / 180.;
+    expected[i] = 0.5 * (prevGap + nextGap) * itk::Math::pi_over_180;
   }
 
   // Shuffle the acquisition order: odd sorted positions first, then even ones
@@ -88,7 +88,7 @@ CheckAngularGaps(const std::string &         testName,
     anglesDeg.push_back(sortedAnglesDeg[i]);
 
   auto geometry = CreateGeometry(anglesDeg);
-  geometry->SetAngularGapThreshold(thresholdDeg * itk::Math::pi / 180.);
+  geometry->SetAngularGapThreshold(thresholdDeg * itk::Math::pi_over_180);
   const std::vector<double> gaps = geometry->GetAngularGaps(geometry->GetGantryAngles());
 
   bool ok = gaps.size() == nProj;
@@ -138,7 +138,7 @@ rtkangulargapstest(int, char *[])
   {
     auto geometry = CreateGeometry({ 30. });
     ok &= CheckValue(
-      "Single projection", "angular gap", geometry->GetAngularGaps(geometry->GetGantryAngles())[0], 2 * itk::Math::pi);
+      "Single projection", "angular gap", geometry->GetAngularGaps(geometry->GetGantryAngles())[0], itk::Math::twopi);
   }
 
   // Full scans: regular, and with a gap below the angular gap threshold
@@ -161,7 +161,7 @@ rtkangulargapstest(int, char *[])
     std::vector<double>       anglesDeg = Concatenate(Concatenate({ 0. }, Range(0., 200., 1.)), { 200. });
     auto                      geometry = CreateGeometry(anglesDeg);
     const std::vector<double> gaps = geometry->GetAngularGaps(geometry->GetGantryAngles());
-    const double              step = itk::Math::pi / 180.;
+    const double              step = itk::Math::pi_over_180;
     const unsigned int        n = anglesDeg.size();
     ok &= CheckValue("Repeated angles", "sum of angular gaps at 0 degrees", gaps[0] + gaps[1], step);
     ok &= CheckValue("Repeated angles", "sum of angular gaps at 200 degrees", gaps[n - 2] + gaps[n - 1], step);
@@ -175,12 +175,12 @@ rtkangulargapstest(int, char *[])
   {
     auto geometry = CreateGeometry(Range(0., 179., 1.), 0.);
     for (const double gap : geometry->GetAngularGaps(geometry->GetGantryAngles()))
-      ok &= CheckValue("Parallel half scan", "angular gap", gap, itk::Math::pi / 180.);
+      ok &= CheckValue("Parallel half scan", "angular gap", gap, itk::Math::pi_over_180);
   }
   {
     auto geometry = CreateGeometry(Range(0., 359., 1.), 0.);
     for (const double gap : geometry->GetAngularGaps(geometry->GetGantryAngles()))
-      ok &= CheckValue("Parallel full scan", "angular gap", gap, 0.5 * itk::Math::pi / 180.);
+      ok &= CheckValue("Parallel full scan", "angular gap", gap, 0.5 * itk::Math::pi_over_180);
   }
   {
     const std::vector<double> anglesDeg = Range(0., 199., 1.);
@@ -192,7 +192,7 @@ rtkangulargapstest(int, char *[])
       ok &= CheckValue("Parallel scan over 200 degrees",
                        "angular gap at " + std::to_string(anglesDeg[i]) + " degrees",
                        gaps[i],
-                       (redundant ? 0.5 : 1.) * itk::Math::pi / 180.);
+                       (redundant ? 0.5 : 1.) * itk::Math::pi_over_180);
     }
     ok &= CheckValue("Parallel scan over 200 degrees",
                      "sum of angular gaps",

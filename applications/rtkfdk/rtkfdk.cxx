@@ -70,7 +70,7 @@ main(int argc, char * argv[])
     std::cout << "Reading geometry information from " << args_info.geometry_arg << "..." << std::endl;
   rtk::ThreeDCircularProjectionGeometry::Pointer geometry;
   TRY_AND_EXIT_ON_ITK_EXCEPTION(geometry = rtk::ReadGeometry(args_info.geometry_arg));
-  geometry->SetAngularGapThreshold(args_info.short_arg * itk::Math::pi / 180.);
+  geometry->SetAngularGapThreshold(args_info.short_arg * itk::Math::pi_over_180);
 
   // Check on hardware parameter
 #ifndef RTK_USE_CUDA

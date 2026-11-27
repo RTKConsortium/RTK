@@ -69,7 +69,7 @@ FDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecision>::Verif
   // Check that the rotation axis is along Y (index 1), as required by the ramp filter
   // which always applies along the first direction of the projection images. Some
   // misalignment is allowed, up to the configurable angular tolerance.
-  const double cosTolerance = std::cos(this->m_AngularTolerance * itk::Math::pi / 180.);
+  const double cosTolerance = std::cos(this->m_AngularTolerance * itk::Math::pi_over_180);
   const auto & matrices = this->GetGeometry()->GetRotationMatrices();
   for (unsigned int i = 0; i < matrices.size(); i++)
   {
@@ -77,7 +77,7 @@ FDKConeBeamReconstructionFilter<TInputImage, TOutputImage, TFFTPrecision>::Verif
     if (dot < cosTolerance)
     {
       itkExceptionMacro(<< "The rotation axis is not along the Y direction for projection #" << i
-                        << ": it is tilted by " << std::acos(dot) * 180. / itk::Math::pi
+                        << ": it is tilted by " << std::acos(dot) * itk::Math::deg_per_rad
                         << " degrees while the angular tolerance is " << this->m_AngularTolerance
                         << " degrees. FDK reconstruction assumes a rotation around Y.");
     }

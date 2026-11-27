@@ -600,7 +600,7 @@ ImagXGeometryReader<TInputImage>::addEntryToGeometry(float                gantry
                                                      std::vector<float> & detRot,
                                                      std::vector<float> & srcTrans)
 {
-  float deg2rad = float(itk::Math::pi) / 180.f;
+  float deg2rad = float(itk::Math::pi_over_180);
 
   // Conversion from iMagX geometry to RTK geometry standard
   float aid = sid - sdd;

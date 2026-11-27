@@ -186,9 +186,9 @@ DisplacedDetectorForOffsetFieldOfViewImageFilter<TInputImage, TOutputImage>::Dyn
       atan2(sourceToCenterFOVZ * invNormSourceCenterFOV, sourceToCenterFOVX * invNormSourceCenterFOV) -
       atan2(sourcePosition[2] * oppInvNormSource, sourcePosition[0] * oppInvNormSource);
     if (centerFOVAngle > itk::Math::pi)
-      centerFOVAngle -= 2 * itk::Math::pi;
+      centerFOVAngle -= itk::Math::twopi;
     if (centerFOVAngle < -itk::Math::pi)
-      centerFOVAngle += 2 * itk::Math::pi;
+      centerFOVAngle += itk::Math::twopi;
     double theta2 =
       asin(m_FOVRadius / sqrt(pow(m_FOVCenterX - sourcePosition[0], 2.) + pow(m_FOVCenterZ - sourcePosition[2], 2.)));
     double theta1 = -1. * theta2;
