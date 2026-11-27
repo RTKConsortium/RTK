@@ -19,6 +19,7 @@
 #ifndef rtkElektaSynergyLookupTableImageFilter_hxx
 #define rtkElektaSynergyLookupTableImageFilter_hxx
 
+#include <itkImageRegionIteratorWithIndex.h>
 
 namespace rtk
 {

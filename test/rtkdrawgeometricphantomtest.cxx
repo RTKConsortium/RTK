@@ -1,10 +1,10 @@
 #include "rtkTest.h"
 #include "rtkConstantImageSource.h"
-#include "rtkDrawConeImageFilter.h"
-#include "rtkDrawCylinderImageFilter.h"
+#include "rtkDrawEllipsoidImageFilter.h"
 #include "rtkDrawGeometricPhantomImageFilter.h"
 #include "rtkDrawSheppLoganFilter.h"
 #include "rtkMacro.h"
+#include "rtkQuadricShape.h"
 #include "rtkThreeDCircularProjectionGeometryXMLFile.h"
 
 #include <itkRegularExpressionSeriesFileNames.h>
@@ -84,20 +84,8 @@ rtkdrawgeometricphantomtest(int argc, char * argv[])
   dgp->InPlaceOff();
   TRY_AND_EXIT_ON_ITK_EXCEPTION(dgp->Update());
 
-  //    // Create Reference
-  //    std::vector< double > axis;
-  //    axis.push_back(100.);
-  //    axis.push_back(0.);
-  //    axis.push_back(100.);
-
-  //    std::vector< double > center;
-  //    center.push_back(2.);
-  //    center.push_back(2.);
-  //    center.push_back(2.);
-
-  // Draw CYLINDER
-  auto dcl = rtk::DrawCylinderImageFilter<OutputImageType, OutputImageType>::New();
-
+  // Draw cylinder, i.e., an ellipsoid with an infinite axis
+  auto dcl = rtk::DrawEllipsoidImageFilter<OutputImageType, OutputImageType>::New();
   dcl->SetInput(tomographySource->GetOutput());
   dcl->SetAxis(itk::MakeVector(100., 0., 100.));
   dcl->SetCenter(itk::MakePoint(2., 2., 2.));
@@ -105,13 +93,14 @@ rtkdrawgeometricphantomtest(int argc, char * argv[])
   dcl->SetDensity(2.);
   dcl->InPlaceOff();
 
-  // Draw CONE
-  auto dco = rtk::DrawConeImageFilter<OutputImageType, OutputImageType>::New();
+  // Draw cone, i.e., an ellipsoid quadric without constant term
+  auto cone = rtk::QuadricShape::New();
+  cone->SetEllipsoid(itk::MakePoint(2., 2., 2.), itk::MakeVector(25., -50., 25.), 0.);
+  cone->SetJ(0.);
+  cone->SetDensity(-0.54);
+  auto dco = rtk::DrawConvexImageFilter<OutputImageType, OutputImageType>::New();
   dco->SetInput(tomographySource->GetOutput());
-  dco->SetAxis(itk::MakeVector(25., -50., 25.));
-  dco->SetCenter(itk::MakePoint(2., 2., 2.));
-  dco->SetAngle(0.);
-  dco->SetDensity(-0.54);
+  dco->SetConvexShape(cone);
 
   // Add Image Filter used to concatenate the different figures obtained on each iteration
   auto addFilter = itk::AddImageFilter<OutputImageType, OutputImageType, OutputImageType>::New();
