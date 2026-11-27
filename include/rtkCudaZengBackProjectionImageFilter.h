@@ -39,6 +39,11 @@ namespace rtk
  * See Zeng et al., IEEE Transactions on Medical Imaging, 1999,
  * doi:10.1109/42.796285.
  *
+ * VirtualDetectorPadding uses the same per-side column count and zero default
+ * as ZengBackProjectionImageFilter.
+ *
+ * \sa ZengBackProjectionImageFilter::SetVirtualDetectorPadding
+ *
  * \ingroup RTK Projector CudaImageToImageFilter
  */
 class RTK_EXPORT CudaZengBackProjectionImageFilter

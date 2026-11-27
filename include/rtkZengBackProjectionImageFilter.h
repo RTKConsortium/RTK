@@ -55,6 +55,15 @@ namespace rtk
  * after the source and the volume. If the detector is in the volume the sum is
  * performed only until that point.
  *
+ * \par Detector padding
+ * SetVirtualDetectorPadding() adds the specified number of columns on each
+ * side of the existing intermediate grid. Physical projections are inserted
+ * with zero-filled margins before the PSF recursion. The default is zero;
+ * the internal width is the physical detector width plus twice the padding.
+ * The added columns are not observations. Projection metadata, geometry and
+ * PSF parameters are unchanged. Use the same padding as the forward projector,
+ * including when computing sensitivity.
+ *
  * \dot
  * digraph ZengBackProjectionImageFilter {
  *
@@ -182,6 +191,10 @@ public:
   itkGetMacro(AlphaY, double);
   itkSetMacro(AlphaY, double);
 
+  /** Number of columns added on each side of the intermediate PSF grid. Default: zero. */
+  itkSetMacro(VirtualDetectorPadding, unsigned int);
+  itkGetConstMacro(VirtualDetectorPadding, unsigned int);
+
 
 protected:
   ZengBackProjectionImageFilter();
@@ -223,12 +236,13 @@ private:
   void
   operator=(const Self &) = delete; // purposely not implemented
 
-  double     m_SigmaZero{ 1.5417233052142099 };
-  double     m_Alpha{ 0.016241189545787734 };
-  double     m_SigmaZeroY{ itk::NumericTraits<double>::max() };
-  double     m_AlphaY{ itk::NumericTraits<double>::max() };
-  VectorType m_VectorOrthogonalDetector{ 0. };
-  PointType  m_centerVolume{ 0 };
+  unsigned int m_VirtualDetectorPadding{ 0 };
+  double       m_SigmaZero{ 1.5417233052142099 };
+  double       m_Alpha{ 0.016241189545787734 };
+  double       m_SigmaZeroY{ itk::NumericTraits<double>::max() };
+  double       m_AlphaY{ itk::NumericTraits<double>::max() };
+  VectorType   m_VectorOrthogonalDetector{ 0. };
+  PointType    m_centerVolume{ 0 };
 };
 
 } // end namespace rtk
