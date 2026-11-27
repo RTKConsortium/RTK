@@ -173,8 +173,6 @@ rtk_add_test(rtkMaximumIntensityProjectionTest rtkmaximumintensityprojectiontest
 
 rtk_add_test(rtkGeometryFileTest rtkgeometryfiletest.cxx)
 
-rtk_add_test(rtkReg23ProjectionGeometryTest rtkTestReg23ProjectionGeometry.cxx)
-
 rtk_add_test(rtkFOVTest rtkfovtest.cxx)
 
 rtk_add_test(rtkBinningTest rtkbinningtest.cxx)

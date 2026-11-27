@@ -288,3 +288,19 @@ In parallel geometry, `rtk::ThreeDCircularProjectionGeometry::GetAngularGaps()`
 now takes the angles modulo pi and the angular gaps sum to pi instead of 2 pi.
 The factor 0.5 previously applied to parallel projections by
 `rtk::FDKWeightProjectionFilter` has been removed accordingly.
+
+## Removed unused shape filters and `rtk::Reg23ProjectionGeometry`
+
+`rtk::DrawCubeImageFilter`, `rtk::DrawCylinderImageFilter`,
+`rtk::DrawConeImageFilter` and `rtk::Reg23ProjectionGeometry` have been removed.
+Replace them with:
+
+- `rtk::DrawCubeImageFilter`: `rtk::DrawBoxImageFilter`, which is now also
+  available in Python.
+- `rtk::DrawCylinderImageFilter`: `rtk::DrawEllipsoidImageFilter` with one axis
+  set to 0.
+- `rtk::DrawConeImageFilter`: `rtk::DrawConvexImageFilter` with a
+  `rtk::QuadricShape` input set with `SetEllipsoid()` followed by `SetJ(0.)`.
+- `rtk::Reg23ProjectionGeometry::AddReg23Projection()`:
+  `rtk::ThreeDCircularProjectionGeometry::AddProjection()` with the same
+  arguments.

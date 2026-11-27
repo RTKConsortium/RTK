@@ -33,7 +33,6 @@ set(
   rtkPhaseReader.cxx
   rtkPhasesToInterpolationWeights.cxx
   rtkQuadricShape.cxx
-  rtkReg23ProjectionGeometry.cxx
   rtkSheppLoganPhantom.cxx
   rtkSignalToInterpolationWeights.cxx
   rtkThreeDCircularProjectionGeometry.cxx
