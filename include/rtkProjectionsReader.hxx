@@ -146,10 +146,7 @@ ProjectionsReader<TOutputImage>::GenerateOutputInformation()
   if (m_FileNames.empty())
     return;
 
-  static bool firstTime = true;
-  if (firstTime)
-    rtk::RegisterIOFactories();
-  firstTime = false;
+  rtk::RegisterIOFactories();
 
   itk::ImageIOBase::Pointer imageIO =
     itk::ImageIOFactory::CreateImageIO(m_FileNames[0].c_str(), itk::ImageIOFactory::IOFileModeEnum::ReadMode);

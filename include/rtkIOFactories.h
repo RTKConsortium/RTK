@@ -24,7 +24,10 @@
 namespace rtk
 {
 
-/** Register all rtk IO factories. */
+/** Register all rtk IO factories. Only the first call registers them. The
+ * registration modifies the list of ITK factories, which is not thread safe.
+ * Applications which create ITK objects in several threads must call it
+ * before starting them. */
 void RTK_EXPORT
 RegisterIOFactories();
 
