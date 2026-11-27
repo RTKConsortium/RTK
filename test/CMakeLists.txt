@@ -167,6 +167,8 @@ rtk_add_cuda_test(rtkZengProjectionCudaTest rtkzengforwardprojectiontest.cxx)
 rtk_add_cuda_test(rtkZengProjectionComparisonCudaTest rtkzengprojectioncomparisoncudatest.cxx)
 rtk_add_test(rtkZengPSFTest rtkzengpsftest.cxx)
 rtk_add_cuda_test(rtkZengPSFCudaTest rtkzengpsftest.cxx)
+rtk_add_test(rtkZengVirtualDetectorTest rtkzengvirtualdetectortest.cxx)
+rtk_add_cuda_test(rtkZengVirtualDetectorCudaTest rtkzengvirtualdetectortest.cxx)
 rtk_add_test(rtkMaximumIntensityProjectionTest rtkmaximumintensityprojectiontest.cxx)
 
 rtk_add_test(rtkGeometryFileTest rtkgeometryfiletest.cxx)

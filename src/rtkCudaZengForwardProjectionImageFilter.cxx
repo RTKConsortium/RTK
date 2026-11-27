@@ -72,7 +72,7 @@ CudaZengForwardProjectionImageFilter::GPUGenerateData()
   int   volumeSize[3] = { static_cast<int>(volumeRegion.GetSize(0)),
                           static_cast<int>(volumeRegion.GetSize(1)),
                           static_cast<int>(volumeRegion.GetSize(2)) };
-  int   rotatedSize[3] = { projectionSize[0],
+  int   rotatedSize[3] = { projectionSize[0] + 2 * static_cast<int>(this->GetVirtualDetectorPadding()),
                            projectionSize[1],
                            static_cast<int>(volumeRegion.GetSize(2) * std::sqrt(2.0)) };
   float rotatedSpacing[3] = { static_cast<float>(this->GetInput(0)->GetSpacing()[0]),
@@ -122,6 +122,10 @@ CudaZengForwardProjectionImageFilter::GPUGenerateData()
     origin[0] = this->GetInput(0)->GetOrigin()[0];
     origin[1] = this->GetInput(0)->GetOrigin()[1];
     origin[2] = rotatedCenter[2] - spacing[2] * (rotatedSize[2] - 1.0) / 2.0;
+    if (this->GetVirtualDetectorPadding() != 0)
+      for (unsigned int d = 0; d < 3; ++d)
+        origin[d] -= this->GetVirtualDetectorPadding() * this->GetInput(0)->GetSpacing()[0] *
+                     this->GetInput(0)->GetDirection()[d][0];
     rotatedImage->SetOrigin(origin);
 
     MatrixType transformMatrix;

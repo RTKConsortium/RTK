@@ -28,6 +28,7 @@
 #include "rtkBoxShape.h"
 #include "rtkProjectionsRegionConstIteratorRayBased.h"
 #include <algorithm>
+#include <limits>
 
 #include <itkImageRegionIteratorWithIndex.h>
 #include <itkInputDataObjectConstIterator.h>
@@ -203,16 +204,28 @@ ZengForwardProjectionImageFilter<TInputImage, TOutputImage>::GenerateOutputInfor
 
   // Set the output size of the rotated volume
   typename OuputCPUImageType::SizeType outputSize;
-  outputSize[0] = sizeProjection[0];
+  if (m_VirtualDetectorPadding != 0)
+  {
+    const auto maximumWidth =
+      sizeProjection[1] ? static_cast<unsigned int>(std::numeric_limits<int>::max()) / sizeProjection[1] : 0;
+    if (sizeProjection[0] == 0 || sizeProjection[1] == 0 || sizeProjection[0] > maximumWidth ||
+        m_VirtualDetectorPadding > (maximumWidth - sizeProjection[0]) / 2)
+      itkExceptionMacro(<< "VirtualDetectorPadding is too large for the internal image dimensions.");
+  }
+  outputSize[0] = sizeProjection[0] + 2 * m_VirtualDetectorPadding;
   outputSize[1] = sizeProjection[1];
   outputSize[2] = sizeVolume[2] * std::sqrt(2);
   m_ResampleImageFilter->SetSize(outputSize);
 
   // Set the new origin of the rotated volume
   typename OuputCPUImageType::PointType outputOrigin;
+  const auto                            padding = (outputSize[0] - sizeProjection[0]) / 2;
   outputOrigin[0] = originProjection[0];
   outputOrigin[1] = originProjection[1];
   outputOrigin[2] = m_centerVolume[2] - spacingVolume[2] * (double)(outputSize[2] - 1) / 2.0;
+  if (padding != 0)
+    for (unsigned int d = 0; d < InputImageDimension; ++d)
+      outputOrigin[d] -= padding * spacingProjections[0] * this->GetInput(0)->GetDirection()[d][0];
   m_ResampleImageFilter->SetOutputOrigin(outputOrigin);
 
   // Set the output spacing of the rotated volume
@@ -309,7 +322,8 @@ ZengForwardProjectionImageFilter<TInputImage, TOutputImage>::GenerateData()
   const unsigned int                                    Dimension = this->InputImageDimension;
   const typename Superclass::GeometryType::ConstPointer geometry = this->GetGeometry();
   typename OuputCPUImageType::RegionType                projRegion = this->GetInput(0)->GetLargestPossibleRegion();
-  std::vector<double>                                   list_angle;
+
+  std::vector<double> list_angle;
   if (geometry->GetGantryAngles().size() != projRegion.GetSize(Dimension - 1))
   {
     list_angle.push_back(geometry->GetGantryAngles()[projRegion.GetIndex(Dimension - 1)]);
@@ -361,8 +375,11 @@ ZengForwardProjectionImageFilter<TInputImage, TOutputImage>::GenerateData()
     originRotatedVolume = m_ResampleImageFilter->GetOutputOrigin();
     originRotatedVolume[2] = centerRotatedVolume[2] - m_ResampleImageFilter->GetOutputSpacing()[2] *
                                                         (double)(m_ResampleImageFilter->GetSize()[2] - 1) / 2.0;
+    if (m_VirtualDetectorPadding != 0)
+      originRotatedVolume[2] -=
+        m_VirtualDetectorPadding * this->GetInput(0)->GetSpacing()[0] * this->GetInput(0)->GetDirection()[2][0];
     m_ResampleImageFilter->SetOutputOrigin(originRotatedVolume);
-    m_ResampleImageFilter->Update();
+    m_ResampleImageFilter->UpdateLargestPossibleRegion();
     rotatedVolume = m_ResampleImageFilter->GetOutput();
     rotatedVolume->DisconnectPipeline();
     thicknessSlice = rotatedVolume->GetSpacing()[2];
@@ -376,7 +393,7 @@ ZengForwardProjectionImageFilter<TInputImage, TOutputImage>::GenerateData()
     m_RegionOfInterest->SetInput(rotatedVolume);
     m_RegionOfInterest->SetRegionOfInterest(desiredRegion);
     m_RegionOfInterest->UpdateOutputInformation();
-    m_RegionOfInterest->Update();
+    m_RegionOfInterest->UpdateLargestPossibleRegion();
     if (!(this->GetInput(2)))
     {
       currentSlice = m_RegionOfInterest->GetOutput();
@@ -385,7 +402,7 @@ ZengForwardProjectionImageFilter<TInputImage, TOutputImage>::GenerateData()
     {
       typename OuputCPUImageType::Pointer rotatedAttenuation;
       m_AttenuationMapResampleImageFilter->SetOutputOrigin(originRotatedVolume);
-      m_AttenuationMapResampleImageFilter->Update();
+      m_AttenuationMapResampleImageFilter->UpdateLargestPossibleRegion();
       rotatedAttenuation = m_AttenuationMapResampleImageFilter->GetOutput();
       rotatedAttenuation->DisconnectPipeline();
       m_AttenuationMapRegionOfInterest->SetInput(rotatedAttenuation);
@@ -393,7 +410,7 @@ ZengForwardProjectionImageFilter<TInputImage, TOutputImage>::GenerateData()
       m_AttenuationMapRegionOfInterest->UpdateOutputInformation();
       m_AttenuationMapMultiplyImageFilter->SetInput1(m_RegionOfInterest->GetOutput());
       m_AttenuationMapMultiplyImageFilter->SetInput2(m_AttenuationMapRegionOfInterest->GetOutput());
-      m_AttenuationMapMultiplyImageFilter->Update();
+      m_AttenuationMapMultiplyImageFilter->UpdateLargestPossibleRegion();
       m_AttenuationMapChangeInformation->SetInput(m_AttenuationMapRegionOfInterest->GetOutput());
       currentSlice = m_AttenuationMapMultiplyImageFilter->GetOutput();
     }
@@ -424,9 +441,7 @@ ZengForwardProjectionImageFilter<TInputImage, TOutputImage>::GenerateData()
       m_RegionOfInterest->UpdateOutputInformation();
 
       // Add the current blur slice with the next
-      m_AddImageFilter->GetOutput()->UpdateOutputInformation();
-      m_AddImageFilter->GetOutput()->PropagateRequestedRegion();
-      m_AddImageFilter->Update();
+      m_AddImageFilter->UpdateLargestPossibleRegion();
       if (!(this->GetInput(2)))
       {
         currentSlice = m_AddImageFilter->GetOutput();
@@ -437,7 +452,7 @@ ZengForwardProjectionImageFilter<TInputImage, TOutputImage>::GenerateData()
         m_AttenuationMapRegionOfInterest->UpdateOutputInformation();
         m_AttenuationMapMultiplyImageFilter->SetInput1(m_AddImageFilter->GetOutput());
         m_AttenuationMapMultiplyImageFilter->SetInput2(m_AttenuationMapChangeInformation->GetOutput());
-        m_AttenuationMapMultiplyImageFilter->Update();
+        m_AttenuationMapMultiplyImageFilter->UpdateLargestPossibleRegion();
         currentSlice = m_AttenuationMapMultiplyImageFilter->GetOutput();
       }
       currentSlice->DisconnectPipeline();
@@ -450,7 +465,11 @@ ZengForwardProjectionImageFilter<TInputImage, TOutputImage>::GenerateData()
     m_DiscreteGaussianImageFilter->SetVariance(varianceSlice);
     // Paste the projection in the output volume
     indexProjection[Dimension - 1] = nbProjections;
-    m_PasteImageFilter->SetSourceRegion(m_DiscreteGaussianImageFilter->GetOutput()->GetLargestPossibleRegion());
+    auto       physicalRegion = m_DiscreteGaussianImageFilter->GetOutput()->GetLargestPossibleRegion();
+    const auto physicalWidth = this->GetInput(0)->GetLargestPossibleRegion().GetSize(0);
+    physicalRegion.SetIndex(0, physicalRegion.GetIndex(0) + (physicalRegion.GetSize(0) - physicalWidth) / 2);
+    physicalRegion.SetSize(0, physicalWidth);
+    m_PasteImageFilter->SetSourceRegion(physicalRegion);
     m_PasteImageFilter->SetDestinationIndex(indexProjection);
     m_PasteImageFilter->UpdateLargestPossibleRegion();
     pimg = m_PasteImageFilter->GetOutput();

@@ -576,26 +576,49 @@ sampleForward(float *       current,
 }
 
 __global__ void
-finishForward(const float * input, const float * zeng, float * output, int pixels, float thickness, int batchStart)
+finishForward(const float * input,
+              const float * zeng,
+              float *       output,
+              int           physicalWidth,
+              int           virtualWidth,
+              int           height,
+              float         thickness,
+              int           batchStart)
 {
+  const int pixels = physicalWidth * height;
   const int pixel = blockIdx.x * blockDim.x + threadIdx.x;
   const int localProjection = blockIdx.y;
   if (pixel >= pixels)
     return;
   const int    projection = batchStart + localProjection;
-  const size_t local = static_cast<size_t>(localProjection) * pixels + pixel;
+  const int    padding = (virtualWidth - physicalWidth) / 2;
+  const size_t local = (static_cast<size_t>(localProjection) * height + pixel / physicalWidth) * virtualWidth +
+                       pixel % physicalWidth + padding;
   output[static_cast<size_t>(projection) * pixels + pixel] =
     input[static_cast<size_t>(projection) * pixels + pixel] + thickness * zeng[local];
 }
 
 __global__ void
-copyProjections(const float * projections, float * current, int pixels, int batchStart)
+copyProjections(const float * projections,
+                float *       current,
+                int           physicalWidth,
+                int           virtualWidth,
+                int           height,
+                int           batchStart)
 {
+  const int pixels = virtualWidth * height;
   const int pixel = blockIdx.x * blockDim.x + threadIdx.x;
   const int localProjection = blockIdx.y;
   if (pixel < pixels)
+  {
+    const int x = pixel % virtualWidth - (virtualWidth - physicalWidth) / 2;
     current[static_cast<size_t>(localProjection) * pixels + pixel] =
-      projections[static_cast<size_t>(batchStart + localProjection) * pixels + pixel];
+      x >= 0 && x < physicalWidth
+        ? projections[(static_cast<size_t>(batchStart + localProjection) * height + pixel / virtualWidth) *
+                        physicalWidth +
+                      x]
+        : 0.f;
+  }
 }
 
 __global__ void
@@ -854,8 +877,14 @@ CUDA_zeng_forward_project(const int     projectionSize[3],
                   batchCount,
                   depth,
                   metadataStride);
-    finishForward<<<dim3(iDivUp(pixels, 256), batchCount), 256>>>(
-      devProjectionIn, workspace.blurred, devProjectionOut, pixels, rotatedSpacing[2], batchStart);
+    finishForward<<<dim3(iDivUp(projectionSize[0] * projectionSize[1], 256), batchCount), 256>>>(devProjectionIn,
+                                                                                                 workspace.blurred,
+                                                                                                 devProjectionOut,
+                                                                                                 projectionSize[0],
+                                                                                                 rotatedSize[0],
+                                                                                                 rotatedSize[1],
+                                                                                                 rotatedSpacing[2],
+                                                                                                 batchStart);
   }
   CUDA_CHECK_ERROR;
 }
@@ -962,7 +991,8 @@ CUDA_zeng_back_project(const int     projectionSize[3],
     float *    blurred = workspace.blurred;
     const dim3 grid2(iDivUp(rotatedSize[0], 16), iDivUp(rotatedSize[1], 16), batchCount);
     cudaMemset(workspace.rotated, 0, static_cast<size_t>(batchCount) * depth * pixels * sizeof(float));
-    copyProjections<<<dim3(iDivUp(pixels, 256), batchCount), 256>>>(devProjections, current, pixels, batchStart);
+    copyProjections<<<dim3(iDivUp(pixels, 256), batchCount), 256>>>(
+      devProjections, current, projectionSize[0], rotatedSize[0], rotatedSize[1], batchStart);
     if (devAttenuation)
       attenuate<<<grid2, block2>>>(current,
                                    devAttenuation,

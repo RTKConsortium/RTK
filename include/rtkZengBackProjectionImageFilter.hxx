@@ -28,8 +28,10 @@
 #include "rtkBoxShape.h"
 #include "rtkProjectionsRegionConstIteratorRayBased.h"
 #include <algorithm>
+#include <limits>
 
 #include <itkImageRegionIteratorWithIndex.h>
+#include <itkImageAlgorithm.h>
 #include <itkInputDataObjectConstIterator.h>
 
 namespace rtk
@@ -75,6 +77,21 @@ void
 ZengBackProjectionImageFilter<TInputImage, TOutputImage>::GenerateInputRequestedRegion()
 {
   Superclass::GenerateInputRequestedRegion();
+  if (m_VirtualDetectorPadding != 0)
+  {
+    auto * projections = const_cast<TInputImage *>(this->GetInput(1));
+    if (projections)
+    {
+      auto         requested = projections->GetRequestedRegion();
+      const auto & largest = projections->GetLargestPossibleRegion();
+      for (unsigned int dimension = 0; dimension < 2; ++dimension)
+      {
+        requested.SetIndex(dimension, largest.GetIndex(dimension));
+        requested.SetSize(dimension, largest.GetSize(dimension));
+      }
+      projections->SetRequestedRegion(requested);
+    }
+  }
   // Input 2 is the attenuation map relative to the volume
   typename Superclass::InputImagePointer inputPtr2 = const_cast<TInputImage *>(this->GetInput(2));
   if (!inputPtr2)
@@ -200,15 +217,27 @@ ZengBackProjectionImageFilter<TInputImage, TOutputImage>::GenerateOutputInformat
 
   // Set the output size of volume
   typename InputCPUImageType::SizeType outputSize;
-  outputSize[0] = sizeProjection[0];
+  if (m_VirtualDetectorPadding != 0)
+  {
+    const auto maximumWidth =
+      sizeProjection[1] ? static_cast<unsigned int>(std::numeric_limits<int>::max()) / sizeProjection[1] : 0;
+    if (sizeProjection[0] == 0 || sizeProjection[1] == 0 || sizeProjection[0] > maximumWidth ||
+        m_VirtualDetectorPadding > (maximumWidth - sizeProjection[0]) / 2)
+      itkExceptionMacro(<< "VirtualDetectorPadding is too large for the internal image dimensions.");
+  }
+  outputSize[0] = sizeProjection[0] + 2 * m_VirtualDetectorPadding;
   outputSize[1] = sizeProjection[1];
   outputSize[2] = sizeVolume[2] * std::sqrt(2);
 
   // Set the new origin of the volume
   typename InputCPUImageType::PointType outputOrigin;
+  const auto                            padding = (outputSize[0] - sizeProjection[0]) / 2;
   outputOrigin[0] = originProjection[0];
   outputOrigin[1] = originProjection[1];
   outputOrigin[2] = m_centerVolume[2] - spacingVolume[2] * (double)(outputSize[2] - 1) / 2.0;
+  if (padding != 0)
+    for (unsigned int d = 0; d < InputImageDimension; ++d)
+      outputOrigin[d] -= padding * spacingProjections[0] * this->GetInput(1)->GetDirection()[d][0];
 
   // Set the output spacing of the volume
   typename InputCPUImageType::SpacingType outputSpacing;
@@ -216,13 +245,27 @@ ZengBackProjectionImageFilter<TInputImage, TOutputImage>::GenerateOutputInformat
   outputSpacing[1] = spacingProjections[1];
   outputSpacing[2] = spacingVolume[2];
 
+  m_ConstantImageSource->SetInformationFromImage(const_cast<TInputImage *>(this->GetInput(0)));
+  m_ConstantImageSource->SetSpacing(outputSpacing);
+  m_ConstantImageSource->SetOrigin(outputOrigin);
+  m_ConstantImageSource->SetSize(outputSize);
+  m_ConstantImageSource->SetDirection(this->GetInput(1)->GetDirection());
+  m_ConstantImageSource->SetConstant(0);
+  m_ConstantImageSource->UpdateOutputInformation();
+
   // We only set the first sub-stack at that point, the rest will be
   // requested in the GenerateData function
   typename ExtractImageFilterType::InputImageRegionType projRegion;
   const unsigned int                                    Dimension = this->InputImageDimension;
   projRegion = this->GetInput(1)->GetLargestPossibleRegion();
+  if (padding != 0)
+  {
+    // Use a slice of the existing intermediate grid for the zero-extended projection.
+    projRegion = m_ConstantImageSource->GetOutput()->GetLargestPossibleRegion();
+    projRegion.SetSize(Dimension - 1, 1);
+  }
   m_ExtractImageFilter->SetExtractionRegion(projRegion);
-  m_ExtractImageFilter->SetInput(this->GetInput(1));
+  m_ExtractImageFilter->SetInput(padding ? m_ConstantImageSource->GetOutput() : this->GetInput(1));
   m_ExtractImageFilter->UpdateOutputInformation();
   m_ChangeInformation->SetOutputSpacing(outputSpacing);
   m_ChangeInformation->UpdateOutputInformation();
@@ -285,13 +328,6 @@ ZengBackProjectionImageFilter<TInputImage, TOutputImage>::GenerateOutputInformat
 
   m_MultiplyImageFilter->SetConstant(spacingVolume[2]);
 
-  m_ConstantImageSource->SetInformationFromImage(const_cast<TInputImage *>(this->GetInput(0)));
-  m_ConstantImageSource->SetSpacing(outputSpacing);
-  m_ConstantImageSource->SetOrigin(outputOrigin);
-  m_ConstantImageSource->SetSize(outputSize);
-  m_ConstantImageSource->SetDirection(this->GetInput(1)->GetDirection());
-  m_ConstantImageSource->SetConstant(0);
-
   m_PasteImageFilter->SetSourceImage(m_DiscreteGaussianImageFilter->GetOutput());
   m_PasteImageFilter->SetDestinationImage(m_ConstantImageSource->GetOutput());
   m_PasteImageFilter->SetSourceRegion(m_DiscreteGaussianImageFilter->GetOutput()->GetLargestPossibleRegion());
@@ -316,6 +352,8 @@ ZengBackProjectionImageFilter<TInputImage, TOutputImage>::GenerateData()
 
   typename ExtractImageFilterType::InputImageRegionType projRegion;
   projRegion = this->GetInput(1)->GetLargestPossibleRegion();
+  const auto padding = (m_ConstantImageSource->GetSize()[0] - projRegion.GetSize(0)) / 2;
+
   int                 indexProj = 0;
   std::vector<double> list_angle;
   if (geometry->GetGantryAngles().size() != projRegion.GetSize(Dimension - 1))
@@ -373,6 +411,9 @@ ZengBackProjectionImageFilter<TInputImage, TOutputImage>::GenerateData()
     originRotatedVolume = m_ConstantImageSource->GetOrigin();
     originRotatedVolume[2] = centerRotatedVolume[2] - m_ConstantImageSource->GetSpacing()[2] *
                                                         (double)(m_ConstantImageSource->GetSize()[2] - 1) / 2.0;
+    if (m_VirtualDetectorPadding != 0)
+      originRotatedVolume[2] -=
+        m_VirtualDetectorPadding * this->GetInput(1)->GetSpacing()[0] * this->GetInput(1)->GetDirection()[2][0];
     m_ConstantImageSource->SetOrigin(originRotatedVolume);
 
     // Set the rotation angle.
@@ -380,26 +421,47 @@ ZengBackProjectionImageFilter<TInputImage, TOutputImage>::GenerateData()
 
     // Extract the projection corresponding to the current angle from the projection stack
     projRegion.SetIndex(Dimension - 1, nbProjections);
-    m_ExtractImageFilter->SetExtractionRegion(projRegion);
-    m_ExtractImageFilter->UpdateOutputInformation();
+    if (padding == 0)
+    {
+      m_ExtractImageFilter->SetExtractionRegion(projRegion);
+      m_ExtractImageFilter->UpdateOutputInformation();
+    }
 
     // Find the first positive distance between the volume and the detector
-    m_ConstantImageSource->Update();
-    int nbSlice = m_ConstantImageSource->GetOutput()->GetLargestPossibleRegion().GetSize()[2];
+    m_ConstantImageSource->UpdateLargestPossibleRegion();
+    typename OuputCPUImageType::Pointer rotatedVolume = m_ConstantImageSource->GetOutput();
+    int                                 nbSlice = rotatedVolume->GetLargestPossibleRegion().GetSize()[2];
     dist = -1;
     startSlice = -1;
     while (dist < 0)
     {
       startSlice += 1;
       indexSlice[Dimension - 1] = startSlice;
-      m_ConstantImageSource->GetOutput()->TransformIndexToPhysicalPoint(indexSlice, pointSlice);
+      rotatedVolume->TransformIndexToPhysicalPoint(indexSlice, pointSlice);
       dist = geometry->GetSourceToIsocenterDistances()[nbProjections] +
              pointSlice.GetVectorFromOrigin() * m_VectorOrthogonalDetector;
+    }
+    if (padding != 0)
+    {
+      // Insert only this physical projection into the working grid, leaving zero margins.
+      rotatedVolume->DisconnectPipeline();
+      rotatedVolume->FillBuffer(0);
+      auto destinationRegion = projRegion;
+      destinationRegion.SetIndex(0, rotatedVolume->GetLargestPossibleRegion().GetIndex(0) + padding);
+      destinationRegion.SetIndex(1, rotatedVolume->GetLargestPossibleRegion().GetIndex(1));
+      destinationRegion.SetIndex(Dimension - 1, startSlice);
+      itk::ImageAlgorithm::Copy(this->GetInput(1), rotatedVolume.GetPointer(), projRegion, destinationRegion);
+      auto sliceRegion = rotatedVolume->GetLargestPossibleRegion();
+      sliceRegion.SetSize(Dimension - 1, 1);
+      sliceRegion.SetIndex(Dimension - 1, startSlice);
+      m_ExtractImageFilter->SetInput(rotatedVolume);
+      m_ExtractImageFilter->SetExtractionRegion(sliceRegion);
+      m_ExtractImageFilter->UpdateOutputInformation();
     }
     if (this->GetInput(2))
     {
       m_AttenuationMapResampleImageFilter->SetOutputOrigin(originRotatedVolume);
-      m_AttenuationMapResampleImageFilter->Update();
+      m_AttenuationMapResampleImageFilter->UpdateLargestPossibleRegion();
       rotatedAttenuation = m_AttenuationMapResampleImageFilter->GetOutput();
       rotatedAttenuation->DisconnectPipeline();
       desiredRegion = rotatedAttenuation->GetLargestPossibleRegion();
@@ -418,11 +480,11 @@ ZengBackProjectionImageFilter<TInputImage, TOutputImage>::GenerateData()
     currentSlice->DisconnectPipeline();
 
     // Paste the blur slice into the output volume
-    m_PasteImageFilter->SetDestinationImage(m_ConstantImageSource->GetOutput());
+    m_PasteImageFilter->SetDestinationImage(rotatedVolume);
     m_PasteImageFilter->SetSourceImage(currentSlice);
     m_PasteImageFilter->SetSourceRegion(currentSlice->GetLargestPossibleRegion());
     m_PasteImageFilter->SetDestinationIndex(indexSlice);
-    m_PasteImageFilter->Update();
+    m_PasteImageFilter->UpdateLargestPossibleRegion();
     currentVolume = m_PasteImageFilter->GetOutput();
     currentVolume->DisconnectPipeline();
     m_PasteImageFilter->SetDestinationImage(currentVolume);
@@ -449,7 +511,7 @@ ZengBackProjectionImageFilter<TInputImage, TOutputImage>::GenerateData()
         varianceSlice[d] = std::max(
           0., psfVariance(dist, sigmaZero[d], alpha[d]) - psfVariance(dist - thicknessSlice, sigmaZero[d], alpha[d]));
       m_DiscreteGaussianImageFilter->SetVariance(varianceSlice);
-      m_DiscreteGaussianImageFilter->Update();
+      m_DiscreteGaussianImageFilter->UpdateLargestPossibleRegion();
       currentSlice = m_DiscreteGaussianImageFilter->GetOutput();
       currentSlice->DisconnectPipeline();
 
@@ -457,14 +519,14 @@ ZengBackProjectionImageFilter<TInputImage, TOutputImage>::GenerateData()
       m_PasteImageFilter->SetSourceImage(currentSlice);
       m_PasteImageFilter->SetSourceRegion(currentSlice->GetLargestPossibleRegion());
       m_PasteImageFilter->SetDestinationIndex(indexSlice);
-      m_PasteImageFilter->Update();
+      m_PasteImageFilter->UpdateLargestPossibleRegion();
       currentVolume = m_PasteImageFilter->GetOutput();
       currentVolume->DisconnectPipeline();
       m_PasteImageFilter->SetDestinationImage(currentVolume);
     }
     // Rotate the volume
     m_ResampleImageFilter->SetInput(currentVolume);
-    m_AddImageFilter->Update();
+    m_AddImageFilter->UpdateLargestPossibleRegion();
     pimg = m_AddImageFilter->GetOutput();
     pimg->DisconnectPipeline();
     m_AddImageFilter->SetInput1(pimg);
