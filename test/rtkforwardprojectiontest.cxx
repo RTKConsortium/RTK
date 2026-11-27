@@ -124,7 +124,7 @@ rtkforwardprojectiontest(int, char *[])
     for (unsigned int i = 0; i < NumberOfProjectionImages; i++)
     {
       const double angle = -45. + i * 2.;
-      geometry->AddProjection(47.6 / std::cos(angle * itk::Math::pi / 180.), 1000., q * 90 + angle);
+      geometry->AddProjection(47.6 / std::cos(angle * itk::Math::pi_over_180), 1000., q * 90 + angle);
     }
 
     if (q == 0)

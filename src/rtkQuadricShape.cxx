@@ -300,17 +300,17 @@ QuadricShape ::SetEllipsoid(const PointType & center, const VectorType & axis, c
   ScalarType TempJ = m_J;
 
   // Applying Rotation on Y-axis
-  m_A = TempA * std::pow(cos(yangle * (itk::Math::pi / 180)), 2.0) +
-        TempC * std::pow(sin(yangle * (itk::Math::pi / 180)), 2.0);
+  m_A = TempA * std::pow(cos(yangle * itk::Math::pi_over_180), 2.0) +
+        TempC * std::pow(sin(yangle * itk::Math::pi_over_180), 2.0);
   m_B = TempB;
-  m_C = TempA * std::pow(sin(yangle * (itk::Math::pi / 180)), 2.0) +
-        TempC * std::pow(cos(yangle * (itk::Math::pi / 180)), 2.0);
+  m_C = TempA * std::pow(sin(yangle * itk::Math::pi_over_180), 2.0) +
+        TempC * std::pow(cos(yangle * itk::Math::pi_over_180), 2.0);
   m_D = 0.;
-  m_E = 2 * cos(yangle * (itk::Math::pi / 180)) * sin(yangle * (itk::Math::pi / 180)) * (TempA - TempC);
+  m_E = 2 * cos(yangle * itk::Math::pi_over_180) * sin(yangle * itk::Math::pi_over_180) * (TempA - TempC);
   m_F = 0.;
-  m_G = TempG * cos(yangle * (itk::Math::pi / 180)) - TempI * sin(yangle * (itk::Math::pi / 180));
+  m_G = TempG * cos(yangle * itk::Math::pi_over_180) - TempI * sin(yangle * itk::Math::pi_over_180);
   m_H = TempH;
-  m_I = TempG * sin(yangle * (itk::Math::pi / 180)) + TempI * cos(yangle * (itk::Math::pi / 180));
+  m_I = TempG * sin(yangle * itk::Math::pi_over_180) + TempI * cos(yangle * itk::Math::pi_over_180);
   m_J = TempJ;
 
   Translate(center.GetVectorFromOrigin());

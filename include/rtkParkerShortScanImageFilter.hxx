@@ -77,9 +77,9 @@ ParkerShortScanImageFilter<TInputImage, TOutputImage>::GenerateOutputInformation
     if (m_Delta < atan(halfDetectorWidth * invsid))
     {
       itkWarningMacro(<< "You do not have enough data for proper Parker weighting (short scan)"
-                      << " according to projection #" << k << ". Delta is " << m_Delta * 180. / itk::Math::pi
+                      << " according to projection #" << k << ". Delta is " << m_Delta * itk::Math::deg_per_rad
                       << " degrees and should be more than half the beam angle, i.e. "
-                      << atan(halfDetectorWidth * invsid) * 180. / itk::Math::pi << " degrees.");
+                      << atan(halfDetectorWidth * invsid) * itk::Math::deg_per_rad << " degrees.");
       return;
     }
   }
@@ -147,7 +147,7 @@ ParkerShortScanImageFilter<TInputImage, TOutputImage>::DynamicThreadedGenerateDa
     double beta = rotationAngles[itIn.GetIndex()[2]];
     beta = beta - m_FirstAngle;
     if (beta < 0)
-      beta += 2 * itk::Math::pi;
+      beta += itk::Math::twopi;
 
     itWeights.GoToBegin();
     while (!itWeights.IsAtEnd())

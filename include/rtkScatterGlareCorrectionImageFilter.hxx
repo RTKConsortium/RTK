@@ -71,7 +71,7 @@ ScatterGlareCorrectionImageFilter<TInputImage, TOutputImage, TFFTPrecision>::Upd
   itK.GoToBegin();
 
   // Central value
-  double g = (1 - a3) + a3 * dx * dy / (2. * itk::Math::pi * b3sq);
+  double g = (1 - a3) + a3 * dx * dy / (itk::Math::twopi * b3sq);
   itK.Set(g);
   ++itK;
 
@@ -82,7 +82,7 @@ ScatterGlareCorrectionImageFilter<TInputImage, TOutputImage, TFFTPrecision>::Upd
     double xx = halfXSz - std::abs(halfXSz - idx[0]); // Distance to nearest x border
     double yy = halfYSz - std::abs(halfYSz - idx[1]); // Distance to nearest y border
     double rr2 = (xx * xx + yy * yy);
-    g = (a3 * dx * dy / (2. * itk::Math::pi * b3sq)) / std::pow((1. + rr2 / b3sq), 1.5);
+    g = (a3 * dx * dy / (itk::Math::twopi * b3sq)) / std::pow((1. + rr2 / b3sq), 1.5);
     itK.Set(g);
     ++itK;
   }

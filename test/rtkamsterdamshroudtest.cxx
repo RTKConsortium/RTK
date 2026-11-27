@@ -140,7 +140,7 @@ rtkamsterdamshroudtest(int argc, char * argv[])
     e4->SetAngle(0.);
 
     // Creating movement
-    sinus = 15 * sin(i * 2 * itk::Math::pi / (size[2] / Cycles));
+    sinus = 15 * sin(i * itk::Math::twopi / (size[2] / Cycles));
 
     // Generating projection
     e4->Update();

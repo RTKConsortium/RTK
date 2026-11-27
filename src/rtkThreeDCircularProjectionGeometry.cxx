@@ -41,7 +41,7 @@ ThreeDCircularProjectionGeometry::ConvertAngleBetween0And360Degrees(const double
 double
 ThreeDCircularProjectionGeometry::ConvertAngleBetween0And2PIRadians(const double a)
 {
-  return a - 2 * itk::Math::pi * floor(a / (2 * itk::Math::pi));
+  return a - itk::Math::twopi * floor(a / itk::Math::twopi);
 }
 
 double
@@ -49,7 +49,7 @@ ThreeDCircularProjectionGeometry::ConvertAngleBetweenMinusAndPlusPIRadians(const
 {
   double d = ConvertAngleBetween0And2PIRadians(a);
   if (d > itk::Math::pi)
-    d -= 2 * itk::Math::pi;
+    d -= itk::Math::twopi;
   return d;
 }
 
@@ -141,7 +141,7 @@ ThreeDCircularProjectionGeometry::AddProjectionInRadians(const double sid,
   sp.Normalize();
   double a = acos(sp * z);
   if (sp[0] > 0.)
-    a = 2. * itk::Math::pi - a;
+    a = itk::Math::twopi - a;
   m_SourceAngles.push_back(ConvertAngleBetween0And2PIRadians(a));
 
   // Default collimation (uncollimated)
@@ -453,7 +453,7 @@ ThreeDCircularProjectionGeometry::GetAngularGapsWithNext(const std::vector<doubl
 
   // Special management of single or empty dataset
   if (nProj == 1)
-    angularGaps[0] = 2 * itk::Math::pi;
+    angularGaps[0] = itk::Math::twopi;
   if (nProj < 2)
     return angularGaps;
 
@@ -473,7 +473,7 @@ ThreeDCircularProjectionGeometry::GetAngularGapsWithNext(const std::vector<doubl
   }
 
   // Last projection wraps the angle of the first one
-  angularGaps[curr->second] = sangles.begin()->first + 2 * itk::Math::pi - curr->first;
+  angularGaps[curr->second] = sangles.begin()->first + itk::Math::twopi - curr->first;
 
   return angularGaps;
 }
@@ -583,7 +583,7 @@ ThreeDCircularProjectionGeometry::GetShortScanFirstLastAngles(const std::vector<
   double firstAngle = itFirstAngle->first;
   double lastAngle = itLastAngle->first;
   if (lastAngle < firstAngle)
-    lastAngle += 2 * itk::Math::pi;
+    lastAngle += itk::Math::twopi;
 
   // Extend the short scan by the angular step with the projection following the first angle and the angular step
   // with the projection preceding the last angle so that the first and last projections are accounted for. The
@@ -593,13 +593,13 @@ ThreeDCircularProjectionGeometry::GetShortScanFirstLastAngles(const std::vector<
     itAfterFirstAngle = sortedAngles.begin();
   double firstStep = itAfterFirstAngle->first - itFirstAngle->first;
   if (firstStep < 0.)
-    firstStep += 2 * itk::Math::pi;
+    firstStep += itk::Math::twopi;
 
   auto itBeforeLastAngle =
     (itLastAngle == sortedAngles.begin()) ? std::prev(sortedAngles.end()) : std::prev(itLastAngle);
   double lastStep = itLastAngle->first - itBeforeLastAngle->first;
   if (lastStep < 0.)
-    lastStep += 2 * itk::Math::pi;
+    lastStep += itk::Math::twopi;
 
   return { firstAngle - firstStep, lastAngle + lastStep };
 }
