@@ -485,21 +485,37 @@ ThreeDCircularProjectionGeometry::GetAngularGaps(const std::vector<double> & ang
   unsigned int        nProj = angles.size();
   angularGaps.resize(nProj);
 
-  // Special management of single or empty dataset
-  if (nProj == 1)
-    angularGaps[0] = 2 * itk::Math::pi;
-  if (nProj < 2)
+  // Special management of empty dataset
+  if (nProj == 0)
     return angularGaps;
 
+  // The full angular range of the scan depends on whether it's parallel
+  double              fullAngularRange = itk::Math::twopi;
+  std::vector<double> wangles = angles;
+  if (m_SourceToDetectorDistances[0] == 0.)
+  {
+    // Wrap angles between 0 and pi in parallel geometry
+    for (auto & a : wangles)
+      a -= itk::Math::pi * std::floor(a / itk::Math::pi);
+    fullAngularRange = itk::Math::pi;
+  }
+
+  // Special management of single projection dataset
+  if (nProj == 1)
+  {
+    angularGaps[0] = fullAngularRange;
+    return angularGaps;
+  }
+
   // Otherwise we sort the angles in a multimap
-  std::multimap<double, unsigned int> sangles = this->GetSortedAngles(angles);
+  std::multimap<double, unsigned int> sangles = this->GetSortedAngles(wangles);
 
   // We then go over the sorted angles and deduce the angular weight
   auto prev = sangles.begin(), curr = sangles.begin(), next = sangles.begin();
   next++;
 
   // First projection wraps the angle of the last one
-  angularGaps[curr->second] = 0.5 * (next->first - sangles.rbegin()->first + 2 * itk::Math::pi);
+  angularGaps[curr->second] = 0.5 * (next->first - sangles.rbegin()->first + fullAngularRange);
   curr++;
   next++;
 
@@ -513,7 +529,7 @@ ThreeDCircularProjectionGeometry::GetAngularGaps(const std::vector<double> & ang
   }
 
   // Last projection wraps the angle of the first one
-  angularGaps[curr->second] = 0.5 * (sangles.begin()->first + 2 * itk::Math::pi - prev->first);
+  angularGaps[curr->second] = 0.5 * (sangles.begin()->first + fullAngularRange - prev->first);
 
   // Short scan handling: fix the weights of the two projections adjacent to
   // the largest gap
@@ -540,21 +556,6 @@ ThreeDCircularProjectionGeometry::GetAngularGaps(const std::vector<double> & ang
     angularGaps[itLast->second] += 0.5 * (ConvertAngleBetween0And2PIRadians(lastAngle - itLast->first) - largestGap);
   }
 
-  // FIXME: Trick for the half scan in parallel geometry case
-  if (m_SourceToDetectorDistances[0] == 0.)
-  {
-    auto it = std::max_element(angularGaps.begin(), angularGaps.end());
-    if (*it > itk::Math::pi_over_2)
-    {
-      for (auto & gap : angularGaps)
-      {
-        if (gap > itk::Math::pi_over_2)
-          gap -= itk::Math::pi_over_2;
-        gap *= 2.;
-      }
-    }
-  }
-
   return angularGaps;
 }
 
@@ -569,7 +570,7 @@ ThreeDCircularProjectionGeometry::GetShortScanFirstLastAngles(const std::vector<
     std::distance(angularGaps.begin(), std::max_element(angularGaps.begin(), angularGaps.end()));
 
   // Not a short scan if the max gap is less than the angular gap threshold
-  // FIXME: not a short scan in parallel geometry, currently handled with a trick in GetAngularGaps
+  // Parallel geometry is never a short scan as a pi acquisition is full for parallel
   if (m_SourceToDetectorDistances[0] == 0. || angularGaps[maxAngularGapPos] < m_AngularGapThreshold)
     return { 0., 0. };
 

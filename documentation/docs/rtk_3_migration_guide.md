@@ -281,3 +281,10 @@ detects a short scan is now a parameter of
 `ParkerShortScanImageFilter::SetAngularGapThreshold()` and
 `GetAngularGapThreshold()` with the same methods of
 `ThreeDCircularProjectionGeometry`.
+
+## Angular gaps of parallel geometries
+
+In parallel geometry, `rtk::ThreeDCircularProjectionGeometry::GetAngularGaps()`
+now takes the angles modulo pi and the angular gaps sum to pi instead of 2 pi.
+The factor 0.5 previously applied to parallel projections by
+`rtk::FDKWeightProjectionFilter` has been removed accordingly.

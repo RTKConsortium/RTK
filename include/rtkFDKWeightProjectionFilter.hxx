@@ -48,9 +48,7 @@ FDKWeightProjectionFilter<TInputImage, TOutputImage>::BeforeThreadedGenerateData
   {
     // Add correction factor for ramp filter
     const double sdd = geometry->GetSourceToDetectorDistances()[k];
-    if (sdd == 0.) // Parallel
-      m_ConstantProjectionFactor[k] *= 0.5;
-    else // Divergent
+    if (sdd != 0.) // Divergent
     {
       // See [Rit and Clackdoyle, CT meeting, 2014]
       ThreeDCircularProjectionGeometry::HomogeneousVectorType sp;

@@ -39,9 +39,7 @@ CudaFDKWeightProjectionFilter ::GPUGenerateData()
   {
     // Add correction factor for ramp filter
     const double sdd = geometry->GetSourceToDetectorDistances()[g];
-    if (sdd == 0.) // Parallel
-      constantProjectionFactor[g] *= 0.5;
-    else // Divergent
+    if (sdd != 0.) // Divergent
     {
       // See [Rit and Clackdoyle, CT meeting, 2014]
       ThreeDCircularProjectionGeometry::HomogeneousVectorType sp;
