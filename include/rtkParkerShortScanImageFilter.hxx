@@ -52,7 +52,6 @@ ParkerShortScanImageFilter<TInputImage, TOutputImage>::GenerateOutputInformation
 
   // Delta
   m_Delta = 0.5 * (lastAngle - m_FirstAngle - itk::Math::pi);
-  m_Delta = m_Delta - 2 * itk::Math::pi * floor(m_Delta / (2 * itk::Math::pi)); // between -2*PI and 2*PI
 
   // Check that the short scan covers the detector: pre-compute the two corners of the projection images
   typename TInputImage::IndexType id = this->GetInput()->GetLargestPossibleRegion().GetIndex();
