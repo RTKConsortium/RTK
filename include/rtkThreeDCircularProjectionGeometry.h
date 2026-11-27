@@ -245,7 +245,8 @@ public:
    *  and the next projection in radians. If the angles form a short scan, see
    *  GetShortScanFirstLastAngles(), half the largest angular gap is replaced
    *  for the projections adjacent to this gap by half the angular distance to
-   *  the first and last angles of the short scan, respectively. */
+   *  the first and last angles of the short scan, respectively. In parallel
+   *  geometry, the angles are taken modulo pi and the gaps sum to pi. */
   std::vector<double>
   GetAngularGaps(const std::vector<double> & angles) const;
 

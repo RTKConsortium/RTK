@@ -169,11 +169,35 @@ rtkangulargapstest(int, char *[])
       ok &= CheckValue("Repeated angles", "angular gap " + std::to_string(i), gaps[i], step);
   }
 
-  // Parallel geometry: not a short scan
+  // Parallel geometry: the angles are taken modulo 180 degrees and the angles
+  // which are redundant modulo 180 degrees share the weight of a single
+  // projection
+  {
+    auto geometry = CreateGeometry(Range(0., 179., 1.), 0.);
+    for (const double gap : geometry->GetAngularGaps(geometry->GetGantryAngles()))
+      ok &= CheckValue("Parallel half scan", "angular gap", gap, itk::Math::pi / 180.);
+  }
   {
     auto geometry = CreateGeometry(Range(0., 359., 1.), 0.);
     for (const double gap : geometry->GetAngularGaps(geometry->GetGantryAngles()))
-      ok &= CheckValue("Parallel full scan", "angular gap", gap, itk::Math::pi / 180.);
+      ok &= CheckValue("Parallel full scan", "angular gap", gap, 0.5 * itk::Math::pi / 180.);
+  }
+  {
+    const std::vector<double> anglesDeg = Range(0., 199., 1.);
+    auto                      geometry = CreateGeometry(anglesDeg, 0.);
+    const std::vector<double> gaps = geometry->GetAngularGaps(geometry->GetGantryAngles());
+    for (unsigned int i = 0; i < gaps.size(); i++)
+    {
+      const bool redundant = anglesDeg[i] < 20. || anglesDeg[i] >= 180.;
+      ok &= CheckValue("Parallel scan over 200 degrees",
+                       "angular gap at " + std::to_string(anglesDeg[i]) + " degrees",
+                       gaps[i],
+                       (redundant ? 0.5 : 1.) * itk::Math::pi / 180.);
+    }
+    ok &= CheckValue("Parallel scan over 200 degrees",
+                     "sum of angular gaps",
+                     std::accumulate(gaps.begin(), gaps.end(), 0.),
+                     itk::Math::pi);
   }
 
   if (!ok)
