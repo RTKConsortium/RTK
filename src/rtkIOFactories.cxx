@@ -20,6 +20,8 @@
 #include <itkGDCMImageIOFactory.h>
 #include <itkImageIOFactory.h>
 
+#include <mutex>
+
 // Varian Obi includes
 #include "rtkHncImageIOFactory.h"
 #include "rtkHndImageIOFactory.h"
@@ -49,23 +51,26 @@ namespace rtk
 void
 RegisterIOFactories()
 {
-  // First unregister GDCMImageIO to let ImageXDCM
-  std::list<itk::ObjectFactoryBase *> fl = itk::GDCMImageIOFactory::GetRegisteredFactories();
-  for (auto & factory : fl)
-    if (dynamic_cast<itk::GDCMImageIOFactory *>(factory))
-    {
-      itk::GDCMImageIOFactory::UnRegisterFactory(factory);
-    }
-  HndImageIOFactory::RegisterOneFactory();
-  HncImageIOFactory::RegisterOneFactory();
-  XimImageIOFactory::RegisterOneFactory();
-  HisImageIOFactory::RegisterOneFactory();
-  ImagXImageIOFactory::RegisterOneFactory();
-  DCMImagXImageIOFactory::RegisterOneFactory();
-  EdfImageIOFactory::RegisterOneFactory();
-  XRadImageIOFactory::RegisterOneFactory();
-  OraImageIOFactory::RegisterOneFactory();
-  itk::GDCMImageIOFactory::RegisterOneFactory();
+  static std::once_flag registered;
+  std::call_once(registered, []() {
+    // First unregister GDCMImageIO to let ImageXDCM
+    std::list<itk::ObjectFactoryBase *> fl = itk::GDCMImageIOFactory::GetRegisteredFactories();
+    for (auto & factory : fl)
+      if (dynamic_cast<itk::GDCMImageIOFactory *>(factory))
+      {
+        itk::GDCMImageIOFactory::UnRegisterFactory(factory);
+      }
+    HndImageIOFactory::RegisterOneFactory();
+    HncImageIOFactory::RegisterOneFactory();
+    XimImageIOFactory::RegisterOneFactory();
+    HisImageIOFactory::RegisterOneFactory();
+    ImagXImageIOFactory::RegisterOneFactory();
+    DCMImagXImageIOFactory::RegisterOneFactory();
+    EdfImageIOFactory::RegisterOneFactory();
+    XRadImageIOFactory::RegisterOneFactory();
+    OraImageIOFactory::RegisterOneFactory();
+    itk::GDCMImageIOFactory::RegisterOneFactory();
+  });
 }
 
 } // namespace rtk

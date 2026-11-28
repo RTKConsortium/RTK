@@ -11,6 +11,7 @@
 
 #include <rtkConstantImageSource.h>
 #include <rtkFDKConeBeamReconstructionFilter.h>
+#include <rtkIOFactories.h>
 #include <rtkParkerShortScanImageFilter.h>
 #include <rtkProjectionsReader.h>
 #include <rtkSheppLoganPhantomFilter.h>
@@ -76,8 +77,24 @@ Acquisition()
 int
 main(int, char *[])
 {
-  // Launch the simulated acquisition
+  // Register the RTK IO factories before starting the acquisition thread.
+  // The registration modifies the list of ITK factories, which would race
+  // with the creation of ITK objects in the acquisition thread if done by the
+  // first update of the projections reader.
+  rtk::RegisterIOFactories();
+
+  // Launch the simulated acquisition. The thread is joined when leaving main,
+  // including when an exception is thrown.
   std::thread acquisitionThread(Acquisition);
+  struct ThreadJoiner
+  {
+    std::thread & thread;
+    ~ThreadJoiner()
+    {
+      if (thread.joinable())
+        thread.join();
+    }
+  } acquisitionThreadJoiner{ acquisitionThread };
 
   // Create the geometry for reconstruction
   auto geometryRec = rtk::ThreeDCircularProjectionGeometry::New();
