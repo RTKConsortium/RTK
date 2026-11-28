@@ -145,42 +145,45 @@ rtkzengvirtualdetectortest(int, char *[])
   try
   {
 #ifndef USE_CUDA
-    // A connected source may buffer only the region requested by the projector.
-    auto source = rtk::ConstantImageSource<ImageType>::New();
-    source->SetSize(itk::MakeSize(64, 64, 1));
-    source->SetOrigin(itk::MakePoint(-31.5, -31.5, 0.));
-    source->SetSpacing(itk::MakeVector(1., 1., 1.));
-    source->SetConstant(1.);
-    auto smallVolume = MakeImage(itk::MakeSize(8, 8, 8), itk::MakePoint(-3.5, -3.5, -3.5), itk::MakeVector(1., 1., 1.));
-    auto smallGeometry = rtk::ThreeDCircularProjectionGeometry::New();
-    smallGeometry->AddProjection(65., 0., 0.);
-    auto connectedBack = BackType::New();
-    connectedBack->InPlaceOff();
-    connectedBack->SetInput(0, smallVolume);
-    connectedBack->SetInput(1, source->GetOutput());
-    connectedBack->SetGeometry(smallGeometry);
-    connectedBack->SetVirtualDetectorPadding(4);
-    connectedBack->UpdateOutputInformation();
-    connectedBack->GetOutput()->SetRequestedRegionToLargestPossibleRegion();
-    connectedBack->GetOutput()->PropagateRequestedRegion();
-    const auto requested = source->GetOutput()->GetRequestedRegion();
-    const auto largest = source->GetOutput()->GetLargestPossibleRegion();
-    if (requested.GetIndex(0) != largest.GetIndex(0) || requested.GetSize(0) != largest.GetSize(0) ||
-        requested.GetIndex(1) != largest.GetIndex(1) || requested.GetSize(1) != largest.GetSize(1))
-      itkGenericExceptionMacro(<< "Padded backprojection did not request the complete detector slice.");
-    connectedBack->Update();
+    {
+      // A connected source may buffer only the region requested by the projector.
+      auto source = rtk::ConstantImageSource<ImageType>::New();
+      source->SetSize(itk::MakeSize(64, 64, 1));
+      source->SetOrigin(itk::MakePoint(-31.5, -31.5, 0.));
+      source->SetSpacing(itk::MakeVector(1., 1., 1.));
+      source->SetConstant(1.);
+      auto smallVolume =
+        MakeImage(itk::MakeSize(8, 8, 8), itk::MakePoint(-3.5, -3.5, -3.5), itk::MakeVector(1., 1., 1.));
+      auto smallGeometry = rtk::ThreeDCircularProjectionGeometry::New();
+      smallGeometry->AddProjection(65., 0., 0.);
+      auto connectedBack = BackType::New();
+      connectedBack->InPlaceOff();
+      connectedBack->SetInput(0, smallVolume);
+      connectedBack->SetInput(1, source->GetOutput());
+      connectedBack->SetGeometry(smallGeometry);
+      connectedBack->SetVirtualDetectorPadding(4);
+      connectedBack->UpdateOutputInformation();
+      connectedBack->GetOutput()->SetRequestedRegionToLargestPossibleRegion();
+      connectedBack->GetOutput()->PropagateRequestedRegion();
+      const auto requested = source->GetOutput()->GetRequestedRegion();
+      const auto largest = source->GetOutput()->GetLargestPossibleRegion();
+      if (requested.GetIndex(0) != largest.GetIndex(0) || requested.GetSize(0) != largest.GetSize(0) ||
+          requested.GetIndex(1) != largest.GetIndex(1) || requested.GetSize(1) != largest.GetSize(1))
+        itkGenericExceptionMacro(<< "Padded backprojection did not request the complete detector slice.");
+      connectedBack->Update();
 
-    auto fullProjection =
-      MakeImage(largest.GetSize(), source->GetOutput()->GetOrigin(), source->GetOutput()->GetSpacing());
-    fullProjection->FillBuffer(1.);
-    auto referenceBack = BackType::New();
-    referenceBack->InPlaceOff();
-    referenceBack->SetInput(0, smallVolume);
-    referenceBack->SetInput(1, fullProjection);
-    referenceBack->SetGeometry(smallGeometry);
-    referenceBack->SetVirtualDetectorPadding(4);
-    referenceBack->Update();
-    Compare(connectedBack->GetOutput(), referenceBack->GetOutput());
+      auto fullProjection =
+        MakeImage(largest.GetSize(), source->GetOutput()->GetOrigin(), source->GetOutput()->GetSpacing());
+      fullProjection->FillBuffer(1.);
+      auto referenceBack = BackType::New();
+      referenceBack->InPlaceOff();
+      referenceBack->SetInput(0, smallVolume);
+      referenceBack->SetInput(1, fullProjection);
+      referenceBack->SetGeometry(smallGeometry);
+      referenceBack->SetVirtualDetectorPadding(4);
+      referenceBack->Update();
+      Compare(connectedBack->GetOutput(), referenceBack->GetOutput());
+    }
 #endif
     auto volume =
       MakeImage(itk::MakeSize(24, 8, 16), itk::MakePoint(-28.29, -9.1, -18.45), itk::MakeVector(2.46, 2.6, 2.46));
